@@ -1,0 +1,57 @@
+{   
+    "deno.enable": true,
+    "deno.enablePaths": ["tools/"],
+    "editor.tabSize": 2,
+    
+    "[typescript]": {
+        "editor.defaultFormatter": "denoland.vscode-deno",
+        "editor.formatOnSave": true
+    },
+
+    "[c]": {
+        "editor.wordBasedSuggestions": false,
+        "editor.suggest.insertMode": "replace",
+        "editor.semanticHighlighting.enabled": true,
+        "editor.formatOnSave": true,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation":false
+    },
+
+    "[linkerscript]": {
+        "editor.suggest.insertMode": "replace",
+        "editor.formatOnSave": true,
+        "editor.insertSpaces": true,
+        "editor.detectIndentation":false
+    },
+
+    "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, ColumnLimit: 1000 }",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "tools/agbcc": true,
+        "tools/binutils": true,
+        "*.sav": true,
+        "*.elf": true,
+        "**/*.gfx": true,
+        "**/*.lz": true,
+        "**/*.4bpp": true,
+        "*.sha1": true,
+        "**/*.o": true,
+        "baserom.gba": true,
+        "src/**/*.s": false,
+        "src/libs": false,
+        "tools/gbagfx": true,
+    },
+    "files.associations": {
+        "*.ino": "cpp",
+        "*.tsx": "typescriptreact",
+        "*.s": "arm",
+        "*.inc": "arm",
+        "*.h": "c",
+        "**/linker/*.txt": "linkerscript"
+    }
+}
