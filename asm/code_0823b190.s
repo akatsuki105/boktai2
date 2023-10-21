@@ -4242,11 +4242,11 @@ FUN_0823d414: @ 0x0823D414
 	lsls r0, r1, #3
 	adds r0, r0, r1
 	lsls r0, r0, #2
-	ldr r1, _0823D424 @ =0x08DA9E68
+	ldr r1, _0823D424 @ =gWeaponDB
 	adds r0, r0, r1
 	bx lr
 	.align 2, 0
-_0823D424: .4byte 0x08DA9E68
+_0823D424: .4byte gWeaponDB
 
 	thumb_func_start FUN_0823d428
 FUN_0823d428: @ 0x0823D428

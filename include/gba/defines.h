@@ -75,9 +75,11 @@ extern struct SoundInfo *SOUND_INFO_PTR;
 
 #if MODERN
 #define WIP
+#define NON_MATCH
 #define NORETURN __attribute__((noreturn))
 #else
 #define WIP __attribute__((naked))
+#define NON_MATCH __attribute__((naked))
 #define NORETURN
 #endif
 

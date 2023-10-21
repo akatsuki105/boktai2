@@ -6587,33 +6587,3 @@ _082418B6:
 	pop {r1}
 	bx r1
 	.align 2, 0
-
-	thumb_func_start FUN_082418c0
-FUN_082418c0: @ 0x082418C0
-	push {lr}
-	bl FUN_082477e0
-	adds r1, r0, #0
-	cmp r1, #0
-	blt _082418D6
-	ldr r0, _082418DC @ =0x030047A8
-	ldr r0, [r0]
-	ldr r0, [r0, #4]
-	cmp r1, r0
-	ble _082418E0
-_082418D6:
-	movs r0, #0
-	b _082418EC
-	.align 2, 0
-_082418DC: .4byte 0x030047A8
-_082418E0:
-	subs r1, r0, r1
-	cmp r1, #0x8b
-	bgt _082418EA
-	adds r0, r1, #0
-	b _082418EC
-_082418EA:
-	movs r0, #0x8c
-_082418EC:
-	pop {r1}
-	bx r1
-

@@ -40439,7 +40439,7 @@ FUN_0807a5d8: @ 0x0807A5D8
 	mov r8, r1
 	cmp r5, #5
 	bne _0807A610
-	ldr r0, _0807A608 @ =0x08DA9E68
+	ldr r0, _0807A608 @ =gWeaponDB
 	ldr r1, _0807A60C @ =0x00000874
 	adds r0, r0, r1
 	ldrb r0, [r0]
@@ -40448,7 +40448,7 @@ FUN_0807a5d8: @ 0x0807A5D8
 	b _0807A6C0
 	.align 2, 0
 _0807A604: .4byte 0x030046A0
-_0807A608: .4byte 0x08DA9E68
+_0807A608: .4byte gWeaponDB
 _0807A60C: .4byte 0x00000874
 _0807A610:
 	ldrb r0, [r6, #1]

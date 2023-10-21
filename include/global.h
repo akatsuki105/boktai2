@@ -32,6 +32,12 @@ struct Unk_03004810 {
   u8 _[4];
 };
 
+struct Unk_030016c0 {
+  u8 unk_0[4];
+  s32 unk_4;
+  u8 unk_8[32];
+};
+
 // 0x085a9208
 struct Unk_085a9208 {
   u32 unk;
@@ -56,6 +62,7 @@ struct VM {
 extern struct Unk_0203b000 gUnk_0203b000[128];
 extern struct Unk_085a9208 gUnk085a9208[643];
 extern struct Unk_085a9208 gUnk08dbd758[8];
+extern struct Unk_030016c0* gUnkPtr_030047a8;
 extern struct Unk_030016e8 gUnk030016e8;
 extern struct VM gVM;
 

@@ -1,6 +1,6 @@
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
-	ldr r1, _08242C3C @ =0x08DA9E68
+	ldr r1, _08242C3C @ =gWeaponDB
 	bl FUN_08242b6c
 	movs r2, #0
 	ldr r5, _08242C40 @ =0x030046A0
@@ -25,5 +25,5 @@ _08242C2E:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08242C3C: .4byte 0x08DA9E68
+_08242C3C: .4byte gWeaponDB
 _08242C40: .4byte 0x030046A0

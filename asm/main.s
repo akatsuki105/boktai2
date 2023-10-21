@@ -55741,7 +55741,7 @@ _0801B776:
 	strb r4, [r5, #3]
 	ldrb r1, [r6, #4]
 	strb r1, [r5, #4]
-	ldr r3, _0801B7AC @ =0x08DA9E68
+	ldr r3, _0801B7AC @ =gWeaponDB
 	ldrb r2, [r5]
 	lsls r1, r2, #3
 	adds r1, r1, r2
@@ -55761,7 +55761,7 @@ _0801B776:
 	strb r4, [r1]
 	b _0801B8B2
 	.align 2, 0
-_0801B7AC: .4byte 0x08DA9E68
+_0801B7AC: .4byte gWeaponDB
 _0801B7B0:
 	ldrb r0, [r6, #3]
 	ldrb r1, [r7, #3]
@@ -55792,7 +55792,7 @@ _0801B7C8:
 	strb r1, [r5, #4]
 	ldrh r1, [r2, #6]
 	strh r1, [r5, #6]
-	ldr r3, _0801B800 @ =0x08DA9E68
+	ldr r3, _0801B800 @ =gWeaponDB
 	ldrb r2, [r2]
 	lsls r1, r2, #3
 	adds r1, r1, r2
@@ -55805,7 +55805,7 @@ _0801B7C8:
 	movs r1, #1
 	b _0801B8B0
 	.align 2, 0
-_0801B800: .4byte 0x08DA9E68
+_0801B800: .4byte gWeaponDB
 _0801B804:
 	ldr r2, _0801B834 @ =0x030046B8
 	ldr r0, [r2]
@@ -55883,7 +55883,7 @@ _0801B87A:
 	strb r1, [r5, #4]
 	ldrh r1, [r2, #6]
 	strh r1, [r5, #6]
-	ldr r3, _0801B8CC @ =0x08DA9E68
+	ldr r3, _0801B8CC @ =gWeaponDB
 	ldrb r2, [r2]
 	lsls r1, r2, #3
 	adds r1, r1, r2
@@ -55910,7 +55910,7 @@ _0801B8B2:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_0801B8CC: .4byte 0x08DA9E68
+_0801B8CC: .4byte gWeaponDB
 
 	thumb_func_start FUN_0801b8d0
 FUN_0801b8d0: @ 0x0801B8D0

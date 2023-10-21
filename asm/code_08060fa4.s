@@ -6416,7 +6416,7 @@ weapon_08064664: @ 0x08064664
 	cmp r0, #0
 	bne _080646A0
 	mov r1, sp
-	ldr r0, _0806469C @ =0x08DA9E68
+	ldr r0, _0806469C @ =gWeaponDB
 	ldm r0!, {r2, r3, r4}
 	stm r1!, {r2, r3, r4}
 	ldm r0!, {r2, r3, r4}
@@ -6425,7 +6425,7 @@ weapon_08064664: @ 0x08064664
 	stm r1!, {r2, r3, r4}
 	b _080646C8
 	.align 2, 0
-_0806469C: .4byte 0x08DA9E68
+_0806469C: .4byte gWeaponDB
 _080646A0:
 	mov r1, sp
 	bl FUN_08242a98
@@ -6436,7 +6436,7 @@ _080646A8:
 	adds r1, r5, r4
 	movs r0, #0
 	str r0, [r1]
-	ldr r1, _0806470C @ =0x08DA9E68
+	ldr r1, _0806470C @ =gWeaponDB
 	mov r0, sp
 	movs r2, #0x87
 	lsls r2, r2, #4
@@ -6480,7 +6480,7 @@ _080646C8:
 	str r0, [r1]
 	b _08064738
 	.align 2, 0
-_0806470C: .4byte 0x08DA9E68
+_0806470C: .4byte gWeaponDB
 _08064710: .4byte 0x00000A74
 _08064714: .4byte 0x00000A75
 _08064718: .4byte 0x00000A78

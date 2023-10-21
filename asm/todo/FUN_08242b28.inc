@@ -11,7 +11,7 @@
 	cmp r0, #0
 	bge _08242B5C
 	adds r1, r2, #0
-	ldr r0, _08242B58 @ =0x08DA9E68
+	ldr r0, _08242B58 @ =gWeaponDB
 	ldm r0!, {r2, r3, r4}
 	stm r1!, {r2, r3, r4}
 	ldm r0!, {r2, r3, r4}
@@ -21,7 +21,7 @@
 	b _08242B66
 	.align 2, 0
 _08242B54: .4byte 0x030046A0
-_08242B58: .4byte 0x08DA9E68
+_08242B58: .4byte gWeaponDB
 _08242B5C:
 	movs r4, #0
 	ldrsh r0, [r1, r4]

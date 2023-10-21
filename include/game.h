@@ -75,7 +75,7 @@ struct GameInfo {
   u8 unk_264[68];
   u32 darkDjangoAtkCounter;
   u32 unk_2ac;
-  u8 unk_2b0[4];
+  s16 unk_2b0[2];
   u32 playTime;
   u8 unk_2b8[232];
   u32 armorDex[2];

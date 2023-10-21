@@ -16,7 +16,6 @@ void FUN_08063b6c(struct Player *p);
 void FUN_0807ddbc(struct Player *p);
 void FUN_08065240(struct Player *p);
 void FUN_0807ed04(struct Player *p);
-void FUN_0809c464(void);
 
 static s32 FUN_0807f3ac(struct Player *p, u32 n, void *_) {
   FUN_08065200(p);

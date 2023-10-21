@@ -79,6 +79,7 @@ struct Entity2 {
 extern struct EntityHeader gEntityManager[14];
 extern struct EntityHeader gDefaultEntityManager[14];
 extern struct Entity2* PTR_030016f8;
+extern struct Entity5* PTR_03001708;
 
 // --------------------------------------------
 

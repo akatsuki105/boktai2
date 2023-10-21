@@ -1,7 +1,7 @@
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
 	adds r4, r1, #0
-	ldr r2, _08242AE0 @ =0x08DA9E68
+	ldr r2, _08242AE0 @ =gWeaponDB
 	ldrb r0, [r6]
 	lsls r1, r0, #3
 	adds r1, r1, r0
@@ -36,7 +36,7 @@ _08242AD4:
 	ble _08242AD4
 	b _08242AFA
 	.align 2, 0
-_08242AE0: .4byte 0x08DA9E68
+_08242AE0: .4byte gWeaponDB
 _08242AE4:
 	movs r2, #0
 	adds r5, r4, #0

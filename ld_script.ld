@@ -77,7 +77,6 @@ SECTIONS {
 			asm/code_082418f0.o (.text);
 			src/item_082421f0.o (.text);
 			src/weapon.o (.text);
-			asm/weapon.o (.text);
 			src/armor.o (.text);
 			src/equip_magic.o (.text);
 			asm/code_0824347c.o (.text);

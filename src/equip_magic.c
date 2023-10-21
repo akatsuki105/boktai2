@@ -155,7 +155,7 @@ _08243644: .4byte 0x030046A0\n\
  .syntax divided\n");
 }
 
-u32 FUN_08243648(u32 n) {
+s32 FUN_08243648(s32 n) {
   u32 val = n & (~7);
   if ((n & 7) != 0) {
     val += 8;
