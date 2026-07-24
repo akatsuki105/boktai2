@@ -87,5 +87,6 @@ struct Entity* AllocateEntity(u32 r0);
 struct Entity* CreateEntity(u32 kind, u32 r1);
 u32 KillEntity(struct Entity* p);
 void SetEntityRoutine(struct Entity* p, EntityFunc fn1, EntityFunc fn2);
+void FUN_082309cc(struct Entity* p, u32 r1);
 
 #endif  // GUARD_ZOKTAI_ENTITY_H

@@ -3,7 +3,6 @@
 #include "global.h"
 
 void FUN_0823092c(struct Entity* p);
-void FUN_082309cc(struct Entity* p, u32 r1);
 
 // 0x08230b44
 void ResetEntityManager(void) {

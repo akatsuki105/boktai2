@@ -18,6 +18,7 @@ extern u16 u16_0300486c;
 extern u16 u16_03004870;
 extern u16 u16_ARRAY_03004874[6];
 extern u32 u32_ARRAY_0203f400[256];
+extern void* gUnkPtr;
 
 // --------------------------------------------
 

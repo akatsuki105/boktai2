@@ -112,5 +112,22 @@ const ALIGNED(4) u8 s_eneinline_h_08251f90[] = "eneinline.h";
 const ALIGNED(4) u8 s_eneinline_h_08251f9c[] = "eneinline.h";
 const ALIGNED(4) u8 gString_08251fa8[] = "../system/eneinline.h";
 const ALIGNED(4) u8 s_bokucom_c_08251fc0[] = "bokucom.c";
+const ALIGNED(4) u8 s_eneinline_08251fcc[] = "../system/eneinline.h";
+const ALIGNED(4) u8 s_skeletoncom_08251fe4[] = "skeletoncom.c";
+const ALIGNED(4) u8 s_eneinline_08251ff4[] = "../system/eneinline.h";
+const ALIGNED(4) u8 s_golemcom_c_0825200c[] = "golemcom.c";
+const ALIGNED(4) u8 s_eneinline_08252018[] = "../system/eneinline.h";
+const ALIGNED(4) u8 s_eneinline_08252030[] = "../system/eneinline.h";
+const ALIGNED(4) u8 s_eneinline_08252048[] = "../system/eneinline.h";
+const ALIGNED(4) u8 s_eneinline_08252060[] = "../system/eneinline.h";
+const ALIGNED(4) u8 s_curorocom_c_08252078[] = "curorocom.c";
+const ALIGNED(4) u8 s_eneinline_08252084[] = "../system/eneinline.h";
+const ALIGNED(4) u8 s_eneinline_0825209c[] = "../system/eneinline.h";
+const ALIGNED(4) u8 s_eneinline_082520b4[] = "../system/eneinline.h";
+const ALIGNED(4) u8 s_eneinline_082520cc[] = "../system/eneinline.h";
+const ALIGNED(4) u8 s_dogcom_c_082520e4[] = "dogcom.c";
+const ALIGNED(4) u8 s_eneinline_082520f0[] = "../system/eneinline.h";
+const ALIGNED(4) u8 s_eneinline_08252108[] = "../system/eneinline.h";
+const ALIGNED(4) u8 s_slimecom_c_08252120[] = "slimecom.c";
 
-INCBIN(".rodata", "data/data_08251b2c.bin");  // ./tools/dumper/bin.ts ./baserom.gba 0x08251fca 0x09000000 ./data/data_08251b2c.bin
+INCBIN(".rodata", "data/data_0825212b.bin");  // ./tools/dumper/bin.ts ./baserom.gba 0x0825212b 0x09000000 ./data/data_0825212b.bin
