@@ -7,19 +7,18 @@
 
 #define ARMORS(slot) (*(GAME->armors + slot))
 
-struct ArmorData {
-  u8 id;
-  u8 defence;  // 耐久力
-  u8 weight;   // 重量
-  u8 effectType;
-  u8 value;  // 特殊効果の効果値(Str+2なら2, Spe+10なら10みたいな)
-  u8 unk_5;  // padding?
-  s16 price;
-};
+typedef struct {
+  u8 id;          // 0x00, see include/constants/armor.h
+  u8 defence;     // 0x01, 耐久力
+  u8 weight;      // 0x02, 重量
+  u8 effectType;  // 0x03
+  u8 value;       // 0x04, 特殊効果の効果値(Str+2なら2, Spe+10なら10みたいな)
+  u8 unk_5;       // 0x05, padding?
+  s16 price;      // 0x06
+} ArmorData;
+static_assert(sizeof(ArmorData) == 8);
 
-// ------------------------------------------------------------------------------------------------------------------------------------
-
-extern const struct ArmorData gArmorDB[ARMOR_NUM];
+extern const ArmorData gArmorDB[ARMOR_NUM];
 
 // --------------------------------------------
 

@@ -22,14 +22,10 @@ enum EntityKind {
 };
 
 struct Entity;
+
 typedef struct Entity* (*EntityFunc)(struct Entity*);
 
-struct EntityHeader {
-  struct Entity* entity;
-  u32 unk_04;
-};
-
-struct Entity {
+typedef struct Entity {
   struct Entity* prev;
   struct Entity* next;
   EntityFunc unk_08;
@@ -40,10 +36,10 @@ struct Entity {
   u8 unk_15;
   u8 unk_16;
   u8 unk_17;
-};
+} Entity;
 
 struct Entity5 {
-  struct Entity e;
+  Entity e;
   u8 unk_18;
   u8 unk_19;
   u16 unk_1a;
@@ -66,7 +62,7 @@ struct Unk_0200865c {
 };
 
 struct Entity2 {
-  struct Entity e;
+  Entity e;
   struct Unk_0200865c* unk_18;
   struct Unk_0200865c* unk_1c;
   void* unk_20;
@@ -74,19 +70,26 @@ struct Entity2 {
   // anymore
 };
 
+// --------------------------------------------
+
+typedef struct {
+  Entity* entity;
+  u32 unk_04;
+} EntityHeader;
+
 // ------------------------------------------------------------------------------------------------------------------------------------
 
-extern struct EntityHeader gEntityManager[14];
-extern struct EntityHeader gDefaultEntityManager[14];
+extern EntityHeader gEntityManager[14];
+extern EntityHeader gDefaultEntityManager[14];
 extern struct Entity2* PTR_030016f8;
 extern struct Entity5* PTR_03001708;
 
 // --------------------------------------------
 
-struct Entity* AllocateEntity(u32 r0);
-struct Entity* CreateEntity(u32 kind, u32 r1);
-u32 KillEntity(struct Entity* p);
-void SetEntityRoutine(struct Entity* p, EntityFunc fn1, EntityFunc fn2);
-void FUN_082309cc(struct Entity* p, u32 r1);
+Entity* AllocateEntity(u32 r0);
+Entity* CreateEntity(u32 kind, u32 r1);
+u32 KillEntity(Entity* p);
+void SetEntityRoutine(Entity* p, EntityFunc fn1, EntityFunc fn2);
+void FUN_082309cc(Entity* p, u32 r1);
 
 #endif  // GUARD_ZOKTAI_ENTITY_H

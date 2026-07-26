@@ -2,6 +2,8 @@
 *.map
 build/
 tools/agbcc
+tools/m2c
+tools/decomp-permuter
 *.sav
 *.cheats
 *.elf
@@ -11,3 +13,8 @@ tmp/
 *.8bpp
 *.gbapal
 *.lz
+
+objdiff-*
+expected/
+tools/.venv-ghidra/
+.mcp.json

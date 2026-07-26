@@ -182453,7 +182453,7 @@ _080F8F32:
 	ldr r1, [r0]
 	mov r0, sp
 	movs r2, #0x44
-	bl FUN_082515f0
+	bl memcpy
 	movs r1, #0
 	str r1, [sp, #0x5c]
 	mov r2, sp
@@ -302130,7 +302130,7 @@ _08212CC8:
 	ldr r1, _08212D60 @ =0x08252778
 	mov r0, r8
 	movs r2, #8
-	bl FUN_082515f0
+	bl memcpy
 	movs r3, #0xe3
 	lsls r3, r3, #2
 	adds r6, r7, r3
@@ -304640,7 +304640,7 @@ FUN_08214160: @ 0x08214160
 	ldr r1, _0821423C @ =0x08252780
 	add r0, sp, #0x10
 	movs r2, #0x60
-	bl FUN_082515f0
+	bl memcpy
 	movs r6, #0xec
 	lsls r6, r6, #1
 	add r6, sb
@@ -309860,12 +309860,12 @@ FUN_08216a90: @ 0x08216A90
 	ldr r1, _08216AF0 @ =0x082527E0
 	add r0, sp, #4
 	movs r2, #8
-	bl FUN_082515f0
+	bl memcpy
 	add r6, sp, #0xc
 	ldr r1, _08216AF4 @ =0x082527E8
 	adds r0, r6, #0
 	movs r2, #8
-	bl FUN_082515f0
+	bl memcpy
 	ldr r4, _08216AF8 @ =0x0000166C
 	add r4, r8
 	ldr r5, _08216AFC @ =0x00001FE4
@@ -310023,7 +310023,7 @@ FUN_08216bdc: @ 0x08216BDC
 	ldr r1, _08216C14 @ =0x082527F0
 	add r0, sp, #4
 	movs r2, #0xc
-	bl FUN_082515f0
+	bl memcpy
 	ldr r0, _08216C18 @ =0x0000166C
 	adds r3, r4, r0
 	ldr r2, _08216C1C @ =0x00001FDC
@@ -310279,7 +310279,7 @@ FUN_08216dd8: @ 0x08216DD8
 	ldr r1, _08216E54 @ =0x082527FC
 	mov r0, sp
 	movs r2, #8
-	bl FUN_082515f0
+	bl memcpy
 	adds r0, r6, #0
 	movs r1, #6
 	bl Div
@@ -311674,12 +311674,12 @@ FUN_08217a10: @ 0x08217A10
 	ldr r1, _08217A6C @ =0x082527E0
 	add r0, sp, #4
 	movs r2, #8
-	bl FUN_082515f0
+	bl memcpy
 	add r6, sp, #0xc
 	ldr r1, _08217A70 @ =0x08252804
 	adds r0, r6, #0
 	movs r2, #8
-	bl FUN_082515f0
+	bl memcpy
 	ldr r4, _08217A74 @ =0x0000166C
 	add r4, r8
 	movs r0, #1
@@ -311828,7 +311828,7 @@ FUN_08217b48: @ 0x08217B48
 	ldr r1, _08217BA0 @ =0x0825280C
 	add r0, sp, #4
 	movs r2, #6
-	bl FUN_082515f0
+	bl memcpy
 	ldr r1, _08217BA4 @ =0x00001FDE
 	adds r0, r4, r1
 	movs r2, #0
@@ -314069,7 +314069,7 @@ FUN_08218e90: @ 0x08218E90
 	ldr r1, _08218F04 @ =0x08252820
 	adds r0, r4, #0
 	movs r2, #0x24
-	bl FUN_082515f0
+	bl memcpy
 	ldr r0, _08218F08 @ =0x000012C8
 	add r0, sb
 	mov r8, r0
@@ -314095,7 +314095,7 @@ _08218EE0:
 	ldr r1, _08218F14 @ =0x08252844
 	adds r0, r6, #0
 	movs r2, #0xa
-	bl FUN_082515f0
+	bl memcpy
 	ldr r0, [r7]
 	movs r3, #0x94
 	lsls r3, r3, #2
@@ -323311,12 +323311,12 @@ FUN_0821d9fc: @ 0x0821D9FC
 	ldr r1, _0821DA54 @ =0x08252864
 	mov r0, sp
 	movs r2, #0x20
-	bl FUN_082515f0
+	bl memcpy
 	add r4, sp, #0x20
 	ldr r1, _0821DA58 @ =0x08252884
 	adds r0, r4, #0
 	movs r2, #0x10
-	bl FUN_082515f0
+	bl memcpy
 	ldr r6, _0821DA5C @ =0x00000B74
 	add r6, r8
 	movs r2, #0xb7
@@ -332687,7 +332687,7 @@ FUN_08222270: @ 0x08222270
 	ldr r1, _082222E4 @ =0x08252894
 	add r0, sp, #0x10
 	movs r2, #8
-	bl FUN_082515f0
+	bl memcpy
 	ldr r1, _082222E8 @ =0x0000FFFF
 	ldr r0, [sp, #0x18]
 	ands r0, r1
@@ -332791,17 +332791,17 @@ FUN_08222328: @ 0x08222328
 	ldr r1, _082223F8 @ =0x0825289C
 	adds r0, r4, #0
 	movs r2, #0x12
-	bl FUN_082515f0
+	bl memcpy
 	add r0, sp, #0x30
 	mov sb, r0
 	ldr r1, _082223FC @ =0x082528AE
 	movs r2, #0x36
-	bl FUN_082515f0
+	bl memcpy
 	add r6, sp, #0x68
 	ldr r1, _08222400 @ =0x082528E4
 	adds r0, r6, #0
 	movs r2, #0xe
-	bl FUN_082515f0
+	bl memcpy
 	movs r1, #1
 	mov r8, r1
 	ldr r2, [r7, #0x40]
@@ -352490,7 +352490,7 @@ FUN_0822bf80: @ 0x0822BF80
 	mov r0, sp
 	adds r1, r4, #0
 	movs r2, #0x40
-	bl FUN_082515f0
+	bl memcpy
 	ldr r0, [sp, #0x1c]
 	adds r0, r0, r4
 	str r0, [sp, #0x1c]
@@ -352545,7 +352545,7 @@ FUN_0822bfbc: @ 0x0822BFBC
 	mov r0, sp
 	adds r1, r5, #0
 	movs r2, #0x40
-	bl FUN_082515f0
+	bl memcpy
 	ldr r0, [sp, #0x1c]
 	adds r0, r0, r5
 	str r0, [sp, #0x1c]

@@ -13,12 +13,12 @@
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define max(a, b) ((a) >= (b) ? (a) : (b))
 
-struct Unk_0203b000 {
+typedef struct {
   u16 id;
   u8 unk_02;
   u8 unk_03;
   void* unk_04;
-};
+} Unk_0203b000;
 
 struct Unk_03004810 {
   u8 unk_0;
@@ -50,20 +50,20 @@ struct Unk_030016e8 {
   struct Unk_085a9208* arr;
 };
 
-struct VM {
+typedef struct {
   u8* pc;
   void* result;
   void* unk_08;
   void* unk_0c;
   u8 unk_10[92];
   void* unk_6c[33];
-};
+} VM;
 
-extern struct Unk_0203b000 gUnk_0203b000[128];
+extern Unk_0203b000 gUnk_0203b000[128];
 extern struct Unk_085a9208 gUnk085a9208[643];
 extern struct Unk_085a9208 gUnk08dbd758[8];
 extern struct Unk_030016c0* gUnkPtr_030047a8;
 extern struct Unk_030016e8 gUnk030016e8;
-extern struct VM gVM;
+extern VM gVM;
 
 #endif  // GUARD_ZOKTAI_GLOBAL_H

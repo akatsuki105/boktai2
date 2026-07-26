@@ -185,8 +185,8 @@ void SwapValuable(s32 slot1, s32 slot2) {
   SetValuable(slot2, a);
 }
 
-NAKED void SortInventory(s32 slot) { INCCODE("asm/todo/SortInventory.inc"); }
-NAKED void SortValuable(s32 slot) { INCCODE("asm/todo/SortValuable.inc"); }
+NAKED void SortInventory(s32 slot) { INCCODE("asm/wip/SortInventory.inc"); }
+NAKED void SortValuable(s32 slot) { INCCODE("asm/wip/SortValuable.inc"); }
 
 item32_t GetRottenItemID(item32_t n) {
   switch (n) {
@@ -220,7 +220,7 @@ item32_t GetRottenItemID(item32_t n) {
   }
 }
 
-NAKED void RotItem(s32 rotDelta) { INCCODE("asm/todo/RotItem.inc"); }
+NAKED void RotItem(s32 rotDelta) { INCCODE("asm/wip/RotItem.inc"); }
 
 WIP void item_082427e0(void) {
 #if MODERN

@@ -29,8 +29,8 @@ struct Player_264 {
   s16 unk_276;
 };
 
-struct Player {
-  struct Entity e;
+typedef struct Player {
+  Entity e;
   void* unk_18;
   u32 unk_1c;
   u16 unk_20;
@@ -87,15 +87,15 @@ struct Player {
   s32 unk_9c0;
   u32 unk_9c4;
   u8 unk_9c8[168];
-  struct Weapon* weapon_a70;
-  weapon_t weaponID_a74;
+  Weapon* weapon_a70;
+  weapon8_t weaponID_a74;
   u8 weaponKind_a75;
   u8 unk_a76[62];
-};
-static_assert(sizeof(struct Player) == 2740);
+} Player;
+static_assert(sizeof(Player) == 2740);
 
 // ------------------------------------------------------------------------------------------------------------------------------------
 
-extern struct Player* gPlayerPtr[4];
+extern Player* gPlayerPtr[4];
 
 #endif  // GUARD_ZOKTAI_PLAYER_H

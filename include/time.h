@@ -19,12 +19,12 @@ union Date {
   u16 year;  // BCD, 2023 -> 0x23, 0x20
 };
 
-struct Datetime {
+typedef struct {
   union Date date;
   u32 hour;
   u32 minute;
   u32 second;
-};
+} Datetime;
 
 struct Time {
   u8 hour;

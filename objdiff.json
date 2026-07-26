@@ -1,0 +1,13 @@
+{
+  "$schema": "https://raw.githubusercontent.com/encounter/objdiff/main/config.schema.json",
+  "target_dir": "expected/build/boktai2",
+  "build_target": false,
+  "base_dir": "build/boktai2",
+  "build_base": true,
+  "watch_patterns": [
+    "*.c",
+    "*.h",
+    "*.s",
+    "*.inc"
+  ]
+}

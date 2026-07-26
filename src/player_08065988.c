@@ -3,9 +3,9 @@
 #include "player.h"
 #include "weapon.h"
 
-void FUN_08064a64(struct Player *p, const struct ArmorData *a);
+void FUN_08064a64(Player* p, const ArmorData* a);
 
-void FUN_08065240(struct Player *p) {
+void FUN_08065240(Player* p) {
   if (prepare_08231510(0x52) != 0) {
     p->unk_9c4 = fetch_082316e4();
   } else {
@@ -13,15 +13,15 @@ void FUN_08065240(struct Player *p) {
   }
 }
 
-NAKED void *FUN_08065270(struct Player *p) { INCCODE("asm/todo/FUN_08065270.inc"); }
+NAKED void* FUN_08065270(Player* p) { INCCODE("asm/wip/FUN_08065270.inc"); }
 
-NAKED void FUN_0806540c(struct Player *p) { INCCODE("asm/todo/FUN_0806540c.inc"); }
-NAKED void FUN_08065514(struct Player *p) { INCCODE("asm/todo/FUN_08065514.inc"); }
+NAKED void FUN_0806540c(Player* p) { INCCODE("asm/wip/FUN_0806540c.inc"); }
+NAKED void FUN_08065514(Player* p) { INCCODE("asm/wip/FUN_08065514.inc"); }
 
-NAKED bool32 FUN_08065744(struct Player *p, u32 n) { INCCODE("asm/todo/FUN_08065744.inc"); }
+NAKED bool32 FUN_08065744(Player* p, u32 n) { INCCODE("asm/wip/FUN_08065744.inc"); }
 
-void weapon_08065924(struct Player *p) {
-  struct Weapon *w;
+void weapon_08065924(Player* p) {
+  Weapon* w;
 
   if (p->kind != PLAYER_SABATA) {
     if (REGISTERED_WEAPON(GAME->equippedWeaponIdx) >= 0) {
@@ -37,8 +37,8 @@ void weapon_08065924(struct Player *p) {
   }
 }
 
-void armor_08065988(struct Player *p) {
-  const struct ArmorData *a;
+void armor_08065988(Player* p) {
+  const ArmorData* a;
 
   if (p->kind != PLAYER_SABATA) {
     if (GAME->armor < 0) {

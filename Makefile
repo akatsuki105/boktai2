@@ -8,7 +8,7 @@ endif
 MODERN ?= 0
 
 # Build target
-RONNAME := zoktai
+RONNAME := boktai2
 BUILD_DIR := build/$(RONNAME)
 ROM := $(RONNAME).gba
 ELF := $(RONNAME).elf
@@ -46,7 +46,7 @@ else
 endif
 LDFLAGS := $(LIBPATH) -lgcc -lc
 
-ASM_SRCS := $(shell find asm -type f -name '*.s') src/libs/m4a_1.s
+ASM_SRCS := $(shell find src -type f -name '*.s')
 ASM_OBJS := $(addprefix $(BUILD_DIR)/, $(ASM_SRCS:.s=.o))
 
 C_SRCS := $(shell find src -type f -name '*.c')
@@ -88,7 +88,7 @@ $(ROM): $(ELF)
 	$(OBJCOPY) -O binary $< $@
 
 $(ELF): $(LDSCRIPT) $(OBJS)
-	@cd $(BUILD_DIR) && $(LD) -T ../../$< -Map $(RONNAME).map -o ../../$@ $(OBJS_REL) $(LDFLAGS)
+	@cd $(BUILD_DIR) && $(LD) -T ../../$< --no-check-sections -Map $(RONNAME).map -o ../../$@ $(OBJS_REL) $(LDFLAGS)
 
 $(C_OBJS): $(BUILD_DIR)/%.o: %.c
 ifeq ($(MODERN),1)

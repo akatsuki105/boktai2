@@ -16973,7 +16973,7 @@ FUN_0823a928: @ 0x0823A928
 	bl FUN_08229f34
 	bl FUN_08229f34
 	bl FUN_082477b4
-	bl FUN_0824c5b0
+	bl RtcIoDisable
 	ldr r0, _0823A984 @ =0x03002C68
 	ldr r0, [r0]
 	cmp r0, #0

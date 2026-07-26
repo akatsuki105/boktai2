@@ -16,7 +16,7 @@ s32 GetPlayerCoffinID(void) {
   return COFFIN_OAK;
 }
 
-NAKED void FUN_08060e90(struct Player* p, u32 r1) {
+NAKED void FUN_08060e90(Player* p, u32 r1) {
   asm(".syntax unified\n\
 	push {lr}\n\
 	sub sp, #0xc\n\
@@ -48,20 +48,20 @@ _08060EC4: .4byte 0xFFFF0000\n\
  .syntax divided\n");
 }
 
-void FUN_08060ec8(struct Player* p, u32 r1) {
+void FUN_08060ec8(Player* p, u32 r1) {
   p->unk_9bc |= r1;
   return;
 }
 
-u32 FUN_08060ed8(struct Player* p, u32 r1) { return p->unk_9bc & r1; }
+u32 FUN_08060ed8(Player* p, u32 r1) { return p->unk_9bc & r1; }
 
-void FUN_08060ee8(struct Player* p) {
+void FUN_08060ee8(Player* p) {
   if (p->unk_9c0 != 0) {
     FUN_082318ac(p->unk_9c0, 0);
   }
 }
 
-NAKED void FUN_08060f00(struct Player* p) {
+NAKED void FUN_08060f00(Player* p) {
   asm(".syntax unified\n\
 	push {r4, r5, r6, r7, lr}\n\
 	adds r5, r0, #0\n\
@@ -154,7 +154,7 @@ _08060FA0: .4byte 0x030046A0\n\
  .syntax divided\n");
 }
 
-s32 CalcMaxHP(struct Player* p) {
+s32 CalcMaxHP(Player* p) {
   s32 val;
   struct Player_264* unk264 = &p->unk_264;
   if (p->kind == PLAYER_SOLAR_DJANGO) {
@@ -168,7 +168,7 @@ s32 CalcMaxHP(struct Player* p) {
   return val * 10;
 }
 
-s32 CalcMaxEne(struct Player* p) {
+s32 CalcMaxEne(Player* p) {
   s32 val;
   struct Player_264* unk264 = &p->unk_264;
   if (u32_030047a4 & 0x1000) {
@@ -186,7 +186,7 @@ s32 CalcMaxEne(struct Player* p) {
   return val * 5 + 100;
 }
 
-void UpdateMaxHPEne(struct Player* p) {
+void UpdateMaxHPEne(Player* p) {
   s32 maxHP, maxEne;
 
   maxHP = CalcMaxHP(p);
@@ -202,7 +202,7 @@ void UpdateMaxHPEne(struct Player* p) {
   }
 }
 
-NAKED void FUN_080610a4(struct Player* p) {
+NAKED void FUN_080610a4(Player* p) {
   asm(".syntax unified\n\
 	push {r4, r5, lr}\n\
 	adds r4, r0, #0\n\
@@ -329,7 +329,7 @@ _08061194: .4byte 0x0000036A\n\
  .syntax divided\n");
 }
 
-NAKED void FUN_08061198(struct Player* p) {
+NAKED void FUN_08061198(Player* p) {
   asm(".syntax unified\n\
 	push {r4, r5, r6, lr}\n\
 	mov ip, r0\n\
@@ -462,17 +462,17 @@ _08061290: .4byte 0x03002B74\n\
  .syntax divided\n");
 }
 
-void FUN_08061294(struct Player* p) {
+void FUN_08061294(Player* p) {
   FUN_080610a4(p);
   FUN_08061198(p);
 }
 
-void FUN_080612a8(struct Player* p) {
+void FUN_080612a8(Player* p) {
   UpdateMaxHPEne(p);
   FUN_08061198(p);
 }
 
-void FUN_080612bc(struct Player* p) {
+void FUN_080612bc(Player* p) {
   FUN_08060f00(p);
   UpdateMaxHPEne(p);
   FUN_08061198(p);

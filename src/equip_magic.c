@@ -3,7 +3,7 @@
 #include "player.h"
 
 void FUN_0809c2d0(void);
-void FUN_08064fd8(struct Player* p, magic32_t n);
+void FUN_08064fd8(Player* p, magic32_t n);
 
 s32 FUN_0824347c(s32 n) {
   if (n < 10) {
@@ -63,15 +63,11 @@ bool32 IsMagicUnlocked(magic32_t n) {
   return unlocked;
 }
 
-WIP bool32 FUN_08243584(void) {
-#if MODERN
-  if (prepare_08231510(109)) {
+bool32 FUN_08243584(void) {
+  s32 x = prepare_08231510(109);
+  if (x) {
     return IsMagicUnlocked(fetch_082316e4());
   }
-  return FALSE;
-#else
-  INCCODE("asm/wip/FUN_08243584.inc");
-#endif
 }
 
 void UnregisterMagic(s32 idx) {

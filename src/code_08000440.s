@@ -15505,7 +15505,7 @@ FUN_08007ccc: @ 0x08007CCC
 	bne _08007CFC
 	movs r0, #1
 	rsbs r0, r0, #0
-	bl FUN_082515a0
+	bl exit
 	.align 2, 0
 _08007CF8: .4byte 0x03000030
 _08007CFC:

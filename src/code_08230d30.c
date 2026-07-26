@@ -4,9 +4,9 @@
 
 #define ACTIVE (1 << 7)
 
-struct Unk_0203b000* CreateUnkStruct_08230d30(void) {
+Unk_0203b000* CreateUnkStruct_08230d30(void) {
   s32 i;
-  struct Unk_0203b000* p = &gUnk_0203b000[0];
+  Unk_0203b000* p = &gUnk_0203b000[0];
   for (i = 0; i < gCount_Unk_0203b000; i++, p++) {
     if (!(p->unk_02 & ACTIVE)) {
       return p;
@@ -20,9 +20,9 @@ struct Unk_0203b000* CreateUnkStruct_08230d30(void) {
   return p;
 }
 
-struct Unk_0203b000* FindUnkStruct_08230d74(u16 id) {
+Unk_0203b000* FindUnkStruct_08230d74(u16 id) {
   s32 i;
-  struct Unk_0203b000* p = &gUnk_0203b000[0];
+  Unk_0203b000* p = &gUnk_0203b000[0];
   for (i = 0; i < gCount_Unk_0203b000; i++, p++) {
     if ((p->unk_02 & ACTIVE) && (p->id == id)) {
       return p;
@@ -99,7 +99,7 @@ _08230E2C: .4byte 0x03004590\n\
 }
 
 void FUN_08230e30(u16 id, void* r1, s32 r2) {
-  struct Unk_0203b000* p = CreateUnkStruct_08230d30();
+  Unk_0203b000* p = CreateUnkStruct_08230d30();
   if (p != NULL) {
     p->id = id;
     p->unk_04 = r1;
@@ -108,14 +108,14 @@ void FUN_08230e30(u16 id, void* r1, s32 r2) {
 }
 
 void FUN_08230e58(u16 id) {
-  struct Unk_0203b000* p = FindUnkStruct_08230d74(id);
+  Unk_0203b000* p = FindUnkStruct_08230d74(id);
   if (p != NULL) {
     p->unk_02 = 0;
   }
 }
 
 void* FUN_08230e70(u16 id) {
-  struct Unk_0203b000* p = FindUnkStruct_08230d74(id);
+  Unk_0203b000* p = FindUnkStruct_08230d74(id);
   if (p == NULL) {
     return NULL;
   } else {

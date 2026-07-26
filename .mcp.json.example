@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "ghidra": {
+      "command": "/path/to/repo/tools/.venv-ghidra/bin/pyghidra-mcp",
+      "args": [
+        "--project-path", "/path/to/ghidra/Projects",
+        "--project-name", "Boktai"
+      ],
+      "env": {
+        "GHIDRA_INSTALL_DIR": "/path/to/Ghidra",
+        "JAVA_HOME": "/path/to/jdk"
+      }
+    }
+  }
+}

@@ -21,7 +21,7 @@ void SetWeaponFoundFlag(weapon32_t n) {
 }
 
 // 0x082429d8
-struct Weapon* GetWeapon(s32 slot) { return WEAPONS(slot); }
+Weapon* GetWeapon(s32 slot) { return WEAPONS(slot); }
 
 weapon32_t GetWeaponID(s32 slot) { return GetWeapon(slot)->id; }
 
@@ -31,26 +31,32 @@ s8 GetWeaponQuality(s32 slot) { return GetWeapon(slot)->quality; }
 
 u32 GetWeaponDurability(s32 slot) { return GetWeapon(slot)->durability; }
 
-NAKED void FUN_08242a38(struct WeaponData* w, void* r1) { INCCODE("asm/todo/FUN_08242a38.inc"); }
+NAKED void FUN_08242a38(WeaponData* w, void* r1) { INCCODE("asm/wip/FUN_08242a38.inc"); }
 
-NAKED void FUN_08242a98(struct Weapon* w, struct WeaponData* data) { INCCODE("asm/todo/FUN_08242a98.inc"); }
+NAKED void FUN_08242a98(Weapon* w, WeaponData* data) { INCCODE("asm/wip/FUN_08242a98.inc"); }
 
-void FUN_08242b14(slot32_t n, struct WeaponData* data) {
+void FUN_08242b14(slot32_t n, WeaponData* data) {
   FUN_08242a98(GetWeapon(n), data);
   return;
 }
 
-NAKED void FUN_08242b28(s32 idx, struct WeaponData* data) { INCCODE("asm/todo/FUN_08242b28.inc"); }
+void FUN_08242b28(s32 idx, WeaponData* data) {
+  if (REGISTERED_WEAPON(idx) < 0) {
+    *data = gWeaponDB[0];
+  } else {
+    FUN_08242b14(REGISTERED_WEAPON(idx), data);
+  }
+}
 
-void FUN_08242b6c(slot32_t n, const struct WeaponData* data) {
-  struct Weapon* w = GetWeapon(n);
-  FUN_08242a38((struct WeaponData*)data, w);
+void FUN_08242b6c(slot32_t n, const WeaponData* data) {
+  Weapon* w = GetWeapon(n);
+  FUN_08242a38((WeaponData*)data, w);
   SetWeaponFoundFlag(data->id);
 }
 
-WIP bool32 FUN_08242b88(struct WeaponData* data) {
+WIP bool32 FUN_08242b88(WeaponData* data) {
 #if MODERN
-  struct Player* p;
+  Player* p;
   s32 slot = 0;
   while (TRUE) {
     if (slot > 15) {
@@ -68,7 +74,7 @@ WIP bool32 FUN_08242b88(struct WeaponData* data) {
     if (data->kind == 0) {
       GAME->equippedWeaponIdx = 0;
       if (gPlayerPtr[0] != NULL) {
-        struct Weapon* w = GetWeapon(slot);
+        Weapon* w = GetWeapon(slot);
         weapon_08064664(gPlayerPtr[0], w);
       }
     }
@@ -84,9 +90,9 @@ WIP void FUN_08242c08(slot32_t n) {
 #if MODERN
   s32 i;
   FUN_08242b6c(n, &gWeaponDB[0]);
-  for (i = 0; i < ARRAY_COUNT(GAME->registeredWeapon[i]); i++) {
-    if (GAME->registeredWeapon[i] == n) {
-      GAME->registeredWeapon[i] = -1;
+  for (i = 0; i <= 3; i++) {
+    if (REGISTERED_WEAPON(i) == n) {
+      REGISTERED_WEAPON(i) = -1;
     }
   }
 #else
@@ -94,12 +100,30 @@ WIP void FUN_08242c08(slot32_t n) {
 #endif
 }
 
-NAKED void SwapWeaponSlot(slot32_t slot1, slot32_t slot2) {
-  // TODO
-  INCCODE("asm/todo/SwapWeaponSlot.inc");
+void SwapWeaponSlot(slot32_t slot1, slot32_t slot2) {
+  Weapon tmp;
+  Weapon *w1, *w2;
+  s32 i;
+
+  w1 = GetWeapon(slot1);
+  w2 = GetWeapon(slot2);
+
+  tmp = *w1;
+  *w1 = *w2;
+  *w2 = tmp;
+
+  for (i = 0; i <= 3; i++) {
+    if (REGISTERED_WEAPON(i) == slot1) {
+      REGISTERED_WEAPON(i) = slot2;
+      FUN_08064658(gPlayerPtr[0], w2);
+    } else if (REGISTERED_WEAPON(i) == slot2) {
+      REGISTERED_WEAPON(i) = slot1;
+      FUN_08064658(gPlayerPtr[0], w1);
+    }
+  }
 }
 
-NAKED void SortWeapons(slot32_t from) { INCCODE("asm/todo/SortWeapons.inc"); }
+NAKED void SortWeapons(slot32_t from) { INCCODE("asm/wip/SortWeapons.inc"); }
 
 bool32 IsSpecialWeapon(weapon32_t w) {
   if ((u32)(w - 58) < 8) {
@@ -108,10 +132,7 @@ bool32 IsSpecialWeapon(weapon32_t w) {
   return FALSE;
 }
 
-NAKED bool32 FUN_08242d90(void) {
-  // TODO
-  INCCODE("asm/todo/FUN_08242d90.inc");
-}
+NAKED bool32 FUN_08242d90(void) { INCCODE("asm/wip/FUN_08242d90.inc"); }
 
 bool32 FUN_08242eb0(void) {
   s32 i, slot;

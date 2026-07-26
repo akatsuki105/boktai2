@@ -31,7 +31,7 @@ NAKED void AgbMain(void) {
 	ldr r0, _0800041C @ =0x85001F40\n\
 	str r0, [r1, #8]\n\
 	ldr r0, [r1, #8]\n\
-	bl FUN_0824c598\n\
+	bl RtcIoEnable\n\
 	bl FUN_0823d91c\n\
 	bl FUN_0823e4ec\n\
 	bl m4aSoundInit\n\

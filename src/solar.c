@@ -4,6 +4,8 @@
 
 s32 FUN_082477e0(void);
 void FUN_082477b4(void);
+void FUN_0823db08(u32* y, u32* m, u32* d, u32 date);
+u32 FUN_0823d9ec(u32 y0, u32 m0, u32 d0, u32 y1, u32 m1, u32 d1);
 
 s32 FUN_082418c0(void) {
   s32 n = FUN_082477e0();
@@ -25,12 +27,34 @@ void SetOverheatTime(void) {
   (GAME->overheatTime).second = GetSecond();
 }
 
-NAKED bool32 IsGunCooled(void) {
-  // TODO
-  INCCODE("asm/todo/IsGunCooled.inc");
+bool32 IsGunCooled(void) {
+  u32 y0, m0, d0, y1, m1, d1;
+  s32 elapsed;
+  u32 curH, curM, curS;
+
+  if (GetDate() == GAME->overheatTime.date.date) {
+    elapsed = 0;
+  } else {
+    FUN_0823db08(&y0, &m0, &d0, GetDate());
+    FUN_0823db08(&y1, &m1, &d1, GAME->overheatTime.date.date);
+    if (FUN_0823d9ec(y0, m0, d0, y1, m1, d1) > 1) {
+      return TRUE;
+    }
+    elapsed = 0x15180;
+  }
+
+  curH = GetHour();
+  curM = GetMinute();
+  curS = GetSecond();
+  elapsed += (curH * 60 + curM) * 60 + curS - ((GAME->overheatTime.hour * 60 + GAME->overheatTime.minute) * 60 + GAME->overheatTime.second);
+
+  if (elapsed > 0xb3) {
+    return TRUE;
+  }
+  return FALSE;
 }
 
-WIP void overheat_08241a04(struct Entity5 *_ UNUSED) {
+WIP void overheat_08241a04(struct Entity5* _ UNUSED) {
 #if MODERN
   if (GAME->thermal > 29999) {
     if ((GAME->unk_942 < 3) || (GAME->unk_934 & 0x4200)) {
@@ -55,7 +79,7 @@ WIP void overheat_08241a04(struct Entity5 *_ UNUSED) {
 #endif
 }
 
-NAKED void solar_08241ac0(struct Entity5 *p) {
+NAKED void solar_08241ac0(struct Entity5* p) {
   asm(".syntax unified\n\
 	push {r4, r5, r6, r7, lr}\n\
 	adds r4, r0, #0\n\
@@ -344,7 +368,7 @@ _08241CF0: .4byte 0x00007530\n\
  .syntax divided\n");
 }
 
-NAKED void FUN_08241cf4(struct Entity5 *p) {
+NAKED void FUN_08241cf4(struct Entity5* p) {
   asm(".syntax unified\n\
 	push {r4, r5, r6, r7, lr}\n\
 	adds r7, r0, #0\n\
@@ -434,7 +458,7 @@ _08241DA4: .4byte 0x03004874\n\
  .syntax divided\n");
 }
 
-NAKED u32 FUN_08241da8(struct Entity5 *p) {
+NAKED u32 FUN_08241da8(struct Entity5* p) {
   asm(".syntax unified\n\
 	push {r4, lr}\n\
 	adds r2, r0, #0\n\
@@ -520,7 +544,7 @@ _08241E38:\n\
  .syntax divided\n");
 }
 
-NAKED void FUN_08241e40(struct Entity5 *p) {
+NAKED void FUN_08241e40(struct Entity5* p) {
   asm(".syntax unified\n\
 	push {r4, r5, r6, r7, lr}\n\
 	adds r7, r0, #0\n\
@@ -611,20 +635,20 @@ _08241EF0: .4byte 0x03004874\n\
  .syntax divided\n");
 }
 
-struct Entity5 *FUN_08241ef4(struct Entity5 *p) {
+struct Entity5* FUN_08241ef4(struct Entity5* p) {
   if (u16_0300486c == 0) {
-    p->unk_2c((struct Entity *)p);
+    p->unk_2c((Entity*)p);
   }
   return NULL;
 }
 
-struct Entity *FUN_08241f14(struct Entity *_) {
+Entity* FUN_08241f14(Entity* _) {
   FUN_082477b4();
   PTR_03001708 = NULL;
   return NULL;
 }
 
-NON_MATCH void FUN_08241f28(struct Entity5 *p) {
+NON_MATCH void FUN_08241f28(struct Entity5* p) {
 #if MODERN
   p->unk_18 = 1;
   p->unk_2c = (EntityFunc)FUN_08241cf4;

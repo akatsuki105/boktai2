@@ -1,7 +1,7 @@
 #include "entity.h"
 #include "global.h"
 
-void FUN_08230e30(u16 id, void *r1, s32 r2);
+void FUN_08230e30(u16 id, void* r1, s32 r2);
 bool32 FUN_082326d8(void);
 
 // 0x082324dc
@@ -84,10 +84,10 @@ s32 Arithmetic(u32 opcode, s32 a, s32 b) {
   }
 }
 
-NAKED void *FUN_08232600(u8 *code) { INCCODE("asm/todo/FUN_08232600.inc"); }
+NAKED void* FUN_08232600(u8* code) { INCCODE("asm/wip/FUN_08232600.inc"); }
 
 void FUN_082326a0(void) {
-  struct Entity *p = AllocateEntity(0xe24);
+  Entity* p = AllocateEntity(0xe24);
   FUN_082309cc(p, 0xe24);
   FUN_08230e30(0x56c2, p, 1);
   gUnkPtr = p;

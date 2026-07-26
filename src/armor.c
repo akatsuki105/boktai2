@@ -37,8 +37,8 @@ void RemoveArmorFromInventory(slot32_t n) {
 
 WIP void SwapArmorSlot(slot32_t slot1, slot32_t slot2) {
 #if MODERN
-  armor_t a = ARMORS(slot1);
-  armor_t b = ARMORS(slot2);
+  armor16_t a = ARMORS(slot1);
+  armor16_t b = ARMORS(slot2);
   ARMORS(slot1) = b;
   ARMORS(slot2) = a;
 
@@ -52,7 +52,7 @@ WIP void SwapArmorSlot(slot32_t slot1, slot32_t slot2) {
 #endif
 }
 
-NAKED void SortArmors(s32 from) { INCCODE("asm/todo/SortArmors.inc"); }
+NAKED void SortArmors(s32 from) { INCCODE("asm/wip/SortArmors.inc"); }
 
 bool32 IsSlotArmorEpuipped(slot32_t n) {
   slot32_t equipped = GAME->armor;
@@ -80,7 +80,39 @@ bool32 FUN_08243380(void) {
   return FALSE;
 }
 
-NAKED void armor_082433bc(void) { INCCODE("asm/todo/armor_082433bc.inc"); }
+WIP void armor_082433bc(void) {
+#if MODERN
+  s32 i;
+  s32 count;
+
+  for (i = 0; i <= 1; i++) {
+    GAME->armorDex[i] = 0;
+  }
+  for (i = 0; i <= 31; i++) {
+    RemoveArmorFromInventory(i);
+  }
+  GAME->armor = -1;
+
+  if (prepare_08231510(0x6e)) {
+    count = fetch_082316e4();
+  } else {
+    count = 0;
+  }
+
+  if (count > 0) {
+    if (prepare_08231510(0x61)) {
+      for (i = 0; i < count; i++) {
+        SetArmorIntoInventory(i, fetch_082316e4());
+      }
+    }
+    if (prepare_08231510(0x65)) {
+      GAME->armor = fetch_082316e4();
+    }
+  }
+#else
+  INCCODE("asm/wip/armor_082433bc.inc");
+#endif
+}
 
 s32 CountFoundArmors(void) {
   s32 i;

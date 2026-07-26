@@ -1,0 +1,4 @@
+compiler_command = "tools/permuter/compile.sh"
+assembler_command = "arm-none-eabi-as -mcpu=arm7tdmi -march=armv4t -mthumb -mthumb-interwork -g"
+asm_prelude_file = "tools/permuter_arm_prelude.inc"
+compiler_type = "gcc"

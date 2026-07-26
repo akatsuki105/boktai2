@@ -9,7 +9,7 @@
 #define REGISTERED_WEAPON(n) (*(GAME->registeredWeapon + n))
 #define REGISTERED_MAGIC(n) (*(GAME->registeredMagic + n))
 
-struct GameInfo {
+typedef struct {
   u32 unk_000;
   u8 unk_004[14];
   u16 unk_012;
@@ -44,16 +44,16 @@ struct GameInfo {
   u8 unk_5e[2];
   slot16_t registeredWeapon[4];
   magic16_t registeredMagic[4];
-  item_t items[16 + 16 + 16];
+  item16_t items[16 + 16 + 16];
   s16 rotTimer[16 + 16 + 16];  // if MSB is set, item is chocolate-covered
-  item_t valuables[16];
-  armor_t armors[16];
+  item16_t valuables[16];
+  armor16_t armors[16];
   u8 unk_170[40];
   union Date date;
   u32 hour;
   u32 minute;
   bool32 isClockTowerBellDone;  // すでに夕方か(時計塔の鐘の音がなったか)
-  struct Datetime overheatTime;
+  Datetime overheatTime;
   s16 unk_1b8;
   u16 unk_1ba;
   s32 thermal;  // 30000に到達したらオーバーヒート
@@ -63,7 +63,7 @@ struct GameInfo {
   u32 treeExp;
   u8 unk_1dc[20];
   s16 totalEnemyKillCount;
-  s16 enemyKillCount[24];
+  s16 enemyKillCount[24];  // idx: include/constants/enemy.h の EnemyCategoryID?
   u16 unk_222;
   u8 unk_224[40];
   u32 unk_24c;
@@ -82,7 +82,7 @@ struct GameInfo {
   u8 unk_3a8[20];
   u32 solarStand;
   u8 unk_3c0[16];
-  struct Weapon weapons[16 + 16 + 16];
+  Weapon weapons[16 + 16 + 16];
   u16 solarBank;
   u8 unk_912[14];
   u32 weaponDex[2];
@@ -92,19 +92,19 @@ struct GameInfo {
   u16 unk_940;
   s16 unk_942;
   u8 unk_944[444];
-};
-static_assert(sizeof(struct GameInfo) == 2816);
+} GameInfo;
+static_assert(sizeof(GameInfo) == 2816);
 
-struct GamePointer {
+typedef struct {
   void* unk_00;
   void* unk_04;
   void* unk_08;
   void* unk_0c;
-  struct GameInfo* s;
-};
+  GameInfo* s;
+} GamePointer;
 
 // --------------------------------------------
 
-extern struct GamePointer gGamePointer;
+extern GamePointer gGamePointer;
 
 #endif  // GUARD_ZOKTAI_GAME_H

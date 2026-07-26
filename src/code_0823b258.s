@@ -4834,7 +4834,7 @@ _0823D900:
 	thumb_func_start FUN_0823d904
 FUN_0823d904: @ 0x0823D904
 	push {lr}
-	bl FUN_0824c598
+	bl RtcIoEnable
 	pop {r0}
 	bx r0
 	.align 2, 0
@@ -4842,7 +4842,7 @@ FUN_0823d904: @ 0x0823D904
 	thumb_func_start FUN_0823d910
 FUN_0823d910: @ 0x0823D910
 	push {lr}
-	bl FUN_0824c5b0
+	bl RtcIoDisable
 	pop {r0}
 	bx r0
 	.align 2, 0

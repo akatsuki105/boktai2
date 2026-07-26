@@ -42,11 +42,11 @@ s32 FUN_0823aedc(void) {
   return 0;
 }
 
-NAKED void* FUN_0823af08(void) { INCCODE("asm/todo/FUN_0823af08.inc"); }
+NAKED void* FUN_0823af08(void) { INCCODE("asm/wip/FUN_0823af08.inc"); }
 
 void* FUN_0823af6c(void* _) { return _; }
 
-NAKED s32 FUN_0823af70(void* r0) { INCCODE("asm/todo/FUN_0823af70.inc"); }
+NAKED s32 FUN_0823af70(void* r0) { INCCODE("asm/wip/FUN_0823af70.inc"); }
 
 void* FUN_0823b0ec(void) {
   bool32 bVar1 = FUN_0823a8b0();

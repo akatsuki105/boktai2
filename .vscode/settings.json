@@ -1,10 +1,8 @@
 {
-  "deno.enable": true,
-  "deno.enablePaths": ["tools/"],
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
 
-  "[typescript][json][jsonc]": {
+  "[json][jsonc]": {
     "editor.defaultFormatter": "denoland.vscode-deno",
     "editor.formatOnSave": true
   },
@@ -32,6 +30,9 @@
   "files.exclude": {
     "*.sav": true,
     "baserom.gba": true
+  },
+  "search.exclude": {
+    "tools/**/.venv*": true
   },
   "files.associations": {
     "*.s": "arm",

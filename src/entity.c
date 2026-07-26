@@ -2,7 +2,7 @@
 
 #include "global.h"
 
-void FUN_0823092c(struct Entity* p);
+void FUN_0823092c(Entity* p);
 
 // 0x08230b44
 void ResetEntityManager(void) {
@@ -11,10 +11,10 @@ void ResetEntityManager(void) {
 }
 
 // 0x08230b68
-void AddEntity(struct Entity* p) {
+void AddEntity(Entity* p) {
   const u32 n = p->kind;
-  struct EntityHeader* h = &gEntityManager[n];
-  struct Entity* cur = h->entity;
+  EntityHeader* h = &gEntityManager[n];
+  Entity* cur = h->entity;
   if (cur != NULL) {
     cur->prev = p;
   }
@@ -22,12 +22,12 @@ void AddEntity(struct Entity* p) {
   h->entity = p;
 }
 
-void RemoveEntity(struct Entity* p) {
+void RemoveEntity(Entity* p) {
   const u32 n = p->kind;
-  struct EntityHeader* h = &gEntityManager[n];
+  EntityHeader* h = &gEntityManager[n];
 
-  struct Entity* prev = p->prev;
-  struct Entity* next = p->next;
+  Entity* prev = p->prev;
+  Entity* next = p->next;
   if (prev != NULL) {
     prev->next = next;
   } else {
@@ -38,8 +38,8 @@ void RemoveEntity(struct Entity* p) {
   }
 }
 
-struct Entity* CreateEntity(u32 kind, u32 r1) {
-  struct Entity* p = AllocateEntity(r1);
+Entity* CreateEntity(u32 kind, u32 r1) {
+  Entity* p = AllocateEntity(r1);
   if (p == NULL) {
     return NULL;
   }
@@ -54,18 +54,18 @@ struct Entity* CreateEntity(u32 kind, u32 r1) {
   return p;
 }
 
-void SetEntityRoutine(struct Entity* p, EntityFunc fn1, EntityFunc fn2) {
+void SetEntityRoutine(Entity* p, EntityFunc fn1, EntityFunc fn2) {
   p->unk_08 = fn1;
   p->unk_0c = fn2;
 }
 
 void entity_08230c00(void) {
   s32 i;
-  struct EntityHeader* h = gEntityManager;
+  EntityHeader* h = gEntityManager;
   for (i = 0; i < ENTITY_KINDS; i++, h++) {
     if ((u32_030044bc & h->unk_04) == 0) {
-      struct Entity* p;
-      struct Entity* list = h->entity;
+      Entity* p;
+      Entity* list = h->entity;
       while (p = list, p != NULL) {
         list = p->next;
         if (!(p->unk_12 & 1)) {
@@ -84,13 +84,13 @@ void entity_08230c00(void) {
   }
 }
 
-u32 KillEntity(struct Entity* p) {
+u32 KillEntity(Entity* p) {
   p->unk_12 |= 1;
   return 0;
 }
 
-struct Entity* entity_08230c78(struct Entity* p) {
-  struct Entity* e;
+Entity* entity_08230c78(Entity* p) {
+  Entity* e;
   if (p->unk_0c != NULL) {
     e = (p->unk_0c(p));
   } else {
@@ -105,10 +105,10 @@ struct Entity* entity_08230c78(struct Entity* p) {
 
 void entity_08230ca4(s32 r0) {
   s32 i;
-  struct EntityHeader* h = gEntityManager;
+  EntityHeader* h = gEntityManager;
   for (i = 0; i < ENTITY_KINDS; i++, h++) {
-    struct Entity* p;
-    struct Entity** cur = &h->entity;
+    Entity* p;
+    Entity** cur = &h->entity;
     for (p = *cur; p != NULL; p = p->next) {
       if (p->unk_16 < r0) {
         KillEntity(p);
@@ -117,11 +117,11 @@ void entity_08230ca4(s32 r0) {
   }
 }
 
-struct Entity* FindEntity(u16 entityID) {
+Entity* FindEntity(u16 entityID) {
   s32 i;
-  struct EntityHeader* h = gEntityManager;
+  EntityHeader* h = gEntityManager;
   for (i = 0; i < ENTITY_KINDS; i++, h++) {
-    struct Entity* p;
+    Entity* p;
     for (p = h->entity; p != NULL; p = p->next) {
       if (p->id == entityID) {
         return p;
@@ -132,7 +132,7 @@ struct Entity* FindEntity(u16 entityID) {
 }
 
 s32 KillEntityIfExists(u16 entityID) {
-  struct Entity* p = FindEntity(entityID);
+  Entity* p = FindEntity(entityID);
   if (p == NULL) {
     return -1;
   }

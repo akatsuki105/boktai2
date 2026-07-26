@@ -567,7 +567,7 @@ _0823E60C:
 	strh r1, [r5]
 	bl FUN_0823d904
 	ldr r0, _0823E64C @ =0x03004810
-	bl FUN_0824c948
+	bl RtcWriteDate
 	lsls r0, r0, #0x18
 	lsrs r6, r0, #0x18
 	bl FUN_0823d910
@@ -621,7 +621,7 @@ _0823E67C:
 	strh r1, [r6]
 	bl FUN_0823d904
 	ldr r0, _0823E764 @ =0x03004810
-	bl FUN_0824c898
+	bl RtcReadDate
 	lsls r0, r0, #0x18
 	lsrs r5, r0, #0x18
 	bl FUN_0823d910
@@ -839,7 +839,7 @@ _0823E822:
 FUN_0823e828: @ 0x0823E828
 	push {r4, r5, lr}
 	bl FUN_0823d904
-	bl FUN_0824c5c8
+	bl RtcPowerOnCheck
 	lsls r5, r0, #0x18
 	lsrs r4, r5, #0x18
 	bl FUN_0823d910
@@ -874,17 +874,17 @@ _0823E864:
 	adds r6, r2, #0
 _0823E868:
 	adds r0, r5, #0
-	bl FUN_0824dcc8
+	bl __floatsidf
 	cmp r5, #0
 	bge _0823E87A
 	ldr r3, _0823E92C @ =0x00000000
 	ldr r2, _0823E928 @ =0x41F00000
-	bl FUN_0824d53c
+	bl __adddf3
 _0823E87A:
 	ldr r2, _0823E930 @ =0x4076D400
 	ldr r3, _0823E934 @ =0x00000000
-	bl FUN_0824d5a4
-	bl FUN_0824cf34
+	bl __muldf3
+	bl __fixunsdfsi
 	adds r4, r0, #0
 	movs r1, #0xc8
 	lsls r1, r1, #1
@@ -896,39 +896,39 @@ _0823E87A:
 	bl __udivsi3
 	subs r4, r4, r0
 	adds r0, r4, #0
-	bl FUN_0824dcc8
+	bl __floatsidf
 	str r0, [sp]
 	str r1, [sp, #4]
 	cmp r4, #0
 	bge _0823E8B8
 	ldr r3, _0823E92C @ =0x00000000
 	ldr r2, _0823E928 @ =0x41F00000
-	bl FUN_0824d53c
+	bl __adddf3
 	str r0, [sp]
 	str r1, [sp, #4]
 _0823E8B8:
 	subs r4, r6, #2
 	adds r0, r4, #0
-	bl FUN_0824dcc8
+	bl __floatsidf
 	cmp r4, #0
 	bge _0823E8CC
 	ldr r3, _0823E92C @ =0x00000000
 	ldr r2, _0823E928 @ =0x41F00000
-	bl FUN_0824d53c
+	bl __adddf3
 _0823E8CC:
 	ldr r2, _0823E938 @ =0x403E970A
 	ldr r3, _0823E93C @ =0x3D70A3D7
-	bl FUN_0824d5a4
-	bl FUN_0824cf34
+	bl __muldf3
+	bl __fixunsdfsi
 	adds r4, r0, #0
-	bl FUN_0824dcc8
+	bl __floatsidf
 	adds r6, r1, #0
 	adds r5, r0, #0
 	cmp r4, #0
 	bge _0823E8F2
 	ldr r3, _0823E92C @ =0x00000000
 	ldr r2, _0823E928 @ =0x41F00000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r6, r1, #0
 	adds r5, r0, #0
 _0823E8F2:
@@ -936,19 +936,19 @@ _0823E8F2:
 	ldr r1, [sp, #4]
 	adds r3, r6, #0
 	adds r2, r5, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	adds r0, r7, #0
-	bl FUN_0824dcc8
+	bl __floatsidf
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, _0823E940 @ =0x4124B800
 	ldr r3, _0823E944 @ =0x00000000
-	bl FUN_0824d56c
+	bl __subdf3
 	str r0, [sp]
 	str r1, [sp, #4]
 	add sp, #8
@@ -970,45 +970,45 @@ FUN_0823e948: @ 0x0823E948
 	push {r4, r5, r6, r7, lr}
 	ldr r3, _0823E9BC @ =0x00000000
 	ldr r2, _0823E9B8 @ =0x40E92B10
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823E9C0 @ =0x3F4845C7
 	ldr r3, _0823E9C4 @ =0x0994535F
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, _0823E9C8 @ =0x40E1D5A0
 	ldr r3, _0823E9CC @ =0x00000000
-	bl FUN_0824d84c
+	bl __divdf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r2, _0823E9D0 @ =0x3F8A9FBE
 	ldr r3, _0823E9D4 @ =0x76C8B439
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	ldr r0, _0823E9D8 @ =0x40377075
 	ldr r1, _0823E9DC @ =0xF6FD21FF
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823E9E0 @ =0x409E3800
 	ldr r3, _0823E9E4 @ =0x00000000
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823E9E8 @ =0x406D6000
 	ldr r3, _0823E9EC @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, _0823E9F0 @ =0x3F91DF46
 	ldr r3, _0823E9F4 @ =0xA2529D34
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823E9F8 @ =0x3F654C98
 	ldr r3, _0823E9FC @ =0x5F06F694
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	pop {r4, r5, r6, r7}
 	pop {r2}
 	bx r2
@@ -1038,346 +1038,346 @@ FUN_0823ea00: @ 0x0823EA00
 	sub sp, #8
 	ldr r3, _0823ED74 @ =0x00000000
 	ldr r2, _0823ED70 @ =0x40E92B10
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823ED78 @ =0x3F4845C7
 	ldr r3, _0823ED7C @ =0x0994535F
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, _0823ED80 @ =0x40E1D5A0
 	ldr r3, _0823ED84 @ =0x00000000
-	bl FUN_0824d84c
+	bl __divdf3
 	str r0, [sp]
 	str r1, [sp, #4]
 	ldr r2, _0823ED88 @ =0x411D5FCF
 	ldr r3, _0823ED8C @ =0x863F1412
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823ED90 @ =0x406B4A21
 	ldr r3, _0823ED94 @ =0x9652BD3C
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r2, _0823ED98 @ =0x3F589374
 	ldr r3, _0823ED9C @ =0xBC6A7EFA
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, [sp]
 	ldr r3, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EDA0 @ =0x411D203B
 	ldr r3, _0823EDA4 @ =0x78D4FDF4
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EDA8 @ =0x40467B43
 	ldr r3, _0823EDAC @ =0x95810625
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r4, _0823EDB0 @ =0x3F91DF46
 	ldr r5, _0823EDB4 @ =0xA2529D34
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EDB8 @ =0x401927BB
 	ldr r3, _0823EDBC @ =0x2FEC56D6
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EDC0 @ =0x41193A5D
 	ldr r3, _0823EDC4 @ =0x66666666
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EDC8 @ =0x40257AE1
 	ldr r3, _0823EDCC @ =0x47AE147B
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EDD0 @ =0x3FF4624D
 	ldr r3, _0823EDD4 @ =0xD2F1A9FC
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EDD8 @ =0x412B2D4C
 	ldr r3, _0823EDDC @ =0x70A3D70A
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EDE0 @ =0x40623666
 	ldr r3, _0823EDE4 @ =0x66666666
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EDE8 @ =0x3FE510CB
 	ldr r3, _0823EDEC @ =0x295E9E1B
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EDF0 @ =0x412D203B
 	ldr r3, _0823EDF4 @ =0x7AE147AE
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EDF8 @ =0x40667DC2
 	ldr r3, _0823EDFC @ =0x8F5C28F6
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EE00 @ =0x3FCB573E
 	ldr r3, _0823EE04 @ =0xAB367A10
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EE08 @ =0x40E193E1
 	ldr r3, _0823EE0C @ =0x9999999A
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EE10 @ =0x4055E1EB
 	ldr r3, _0823EE14 @ =0x851EB852
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EE18 @ =0x3FC7B15B
 	ldr r3, _0823EE1C @ =0x573EAB36
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EE20 @ =0x412D7E08
 	ldr r3, _0823EE24 @ =0x00000000
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EE28 @ =0x40714800
 	ldr r3, _0823EE2C @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EE30 @ =0x3FBD4951
 	ldr r3, _0823EE34 @ =0x82A9930C
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EE38 @ =0x40EF2EF0
 	ldr r3, _0823EE3C @ =0x00000000
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EE40 @ =0x405F0CCC
 	ldr r3, _0823EE44 @ =0xCCCCCCCD
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EE48 @ =0x3FAE1B08
 	ldr r3, _0823EE4C @ =0x9A027525
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EE50 @ =0x411707E1
 	ldr r3, _0823EE54 @ =0x33333333
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EE58 @ =0x402A6666
 	ldr r3, _0823EE5C @ =0x66666666
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EE60 @ =0x3FAD3C36
 	ldr r3, _0823EE64 @ =0x113404EA
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EE68 @ =0x4134DEB5
 	ldr r3, _0823EE6C @ =0x1999999A
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EE70 @ =0x40718B33
 	ldr r3, _0823EE74 @ =0x33333333
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EE78 @ =0x3FAB4A23
 	ldr r3, _0823EE7C @ =0x39C0EBEE
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EE80 @ =0x412A140E
 	ldr r3, _0823EE84 @ =0x66666666
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EE88 @ =0x40628666
 	ldr r3, _0823EE8C @ =0x66666666
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EE90 @ =0x3FA77318
 	ldr r3, _0823EE94 @ =0xFC504817
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EE98 @ =0x411AEDBF
 	ldr r3, _0823EE9C @ =0x33333333
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EEA0 @ =0x4047B333
 	ldr r3, _0823EEA4 @ =0x33333333
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EEA8 @ =0x3FA4F0D8
 	ldr r3, _0823EEAC @ =0x44D013A9
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EEB0 @ =0x411B2D4C
 	ldr r3, _0823EEB4 @ =0x66666666
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EEB8 @ =0x403BE666
 	ldr r3, _0823EEBC @ =0x66666666
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EEC0 @ =0x3FA1C432
 	ldr r3, _0823EEC4 @ =0xCA57A787
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EEC8 @ =0x411F52B7
 	ldr r3, _0823EECC @ =0x9999999A
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EED0 @ =0x406BD000
 	ldr r3, _0823EED4 @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EED8 @ =0x3F9F212D
 	ldr r3, _0823EEDC @ =0x77318FC5
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823EEE0 @ =0x40F285E0
 	ldr r3, _0823EEE4 @ =0x00000000
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823EEE8 @ =0x40448000
 	ldr r3, _0823EEEC @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823EEF0 @ =0x3F8F8A09
 	ldr r3, _0823EEF4 @ =0x02DE00D2
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	b _0823EEF8
@@ -1485,217 +1485,217 @@ _0823EEF8:
 	ldr r2, _0823F128 @ =0x41360713
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F130 @ =0x404A0000
 	ldr r3, _0823F134 @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823F138 @ =0x3F899999
 	ldr r3, _0823F13C @ =0x9999999A
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F140 @ =0x411DDBD4
 	ldr r3, _0823F144 @ =0x00000000
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F148 @ =0x4061C000
 	ldr r3, _0823F14C @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823F150 @ =0x3F86872B
 	ldr r3, _0823F154 @ =0x020C49BA
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F158 @ =0x4133E53E
 	ldr r3, _0823F15C @ =0x00000000
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F160 @ =0x406EC000
 	ldr r3, _0823F164 @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823F168 @ =0x3F85E9E1
 	ldr r3, _0823F16C @ =0xB089A027
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F170 @ =0x4135D82D
 	ldr r3, _0823F174 @ =0x00000000
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F178 @ =0x4073B000
 	ldr r3, _0823F17C @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823F180 @ =0x3F847AE1
 	ldr r3, _0823F184 @ =0x47AE147B
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F188 @ =0x41293A5E
 	ldr r3, _0823F18C @ =0x00000000
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F190 @ =0x405BC000
 	ldr r3, _0823F194 @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823F198 @ =0x3F816872
 	ldr r3, _0823F19C @ =0xB020C49C
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F1A0 @ =0x411B6CD8
 	ldr r3, _0823F1A4 @ =0x00000000
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F1A8 @ =0x40678000
 	ldr r3, _0823F1AC @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823F1B0 @ =0x3F802DE0
 	ldr r3, _0823F1B4 @ =0x0D1B7176
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F1B8 @ =0x412C468A
 	ldr r3, _0823F1BC @ =0x00000000
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F1C0 @ =0x40743000
 	ldr r3, _0823F1C4 @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823F1C8 @ =0x3F7BDA51
 	ldr r3, _0823F1CC @ =0x19CE075F
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F1D0 @ =0x40DF2F00
 	ldr r3, _0823F1D4 @ =0x00000000
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F1D8 @ =0x405AC000
 	ldr r3, _0823F1DC @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823F1E0 @ =0x3F754C98
 	ldr r3, _0823F1E4 @ =0x5F06F694
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F1E8 @ =0x411D5FC8
 	ldr r3, _0823F1EC @ =0x00000000
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F1F0 @ =0x4069A000
 	ldr r3, _0823F1F4 @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
-	bl FUN_0824ebc8
+	bl __muldf3
+	bl fdlibm_cos
 	ldr r2, _0823F1F8 @ =0x3F747AE1
 	ldr r3, _0823F1FC @ =0x47AE147B
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r4, _0823F200 @ =0x40768000
 	ldr r5, _0823F204 @ =0x00000000
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824ef24
+	bl fdlibm_fmod
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F208 @ =0x00000000
 	ldr r3, _0823F20C @ =0x00000000
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _0823F11C
 	adds r1, r7, #0
 	adds r0, r6, #0
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 _0823F11C:
@@ -1771,120 +1771,120 @@ FUN_0823f210: @ 0x0823F210
 	sub sp, #8
 	ldr r3, _0823F348 @ =0x00000000
 	ldr r2, _0823F344 @ =0x40E92B10
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823F34C @ =0x3F4845C7
 	ldr r3, _0823F350 @ =0x0994535F
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, _0823F354 @ =0x4076D400
 	ldr r3, _0823F358 @ =0x00000000
-	bl FUN_0824d84c
+	bl __divdf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r2, _0823F35C @ =0x4076801F
 	ldr r3, _0823F360 @ =0x7F8CA81A
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F364 @ =0x4071875D
 	ldr r3, _0823F368 @ =0x63886595
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F36C @ =0x3F0A36E2
 	ldr r3, _0823F370 @ =0xEB1C432D
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	ldr r0, _0823F374 @ =0x3FFEA233
 	ldr r1, _0823F378 @ =0x9C0EBEE0
-	bl FUN_0824d56c
+	bl __subdf3
 	str r0, [sp]
 	str r1, [sp, #4]
 	ldr r2, _0823F37C @ =0x40767FDB
 	ldr r3, _0823F380 @ =0x22D0E560
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F384 @ =0x4076589B
 	ldr r3, _0823F388 @ =0xA5E353F8
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, _0823F38C @ =0x3F91DF46
 	ldr r3, _0823F390 @ =0xA2529D34
-	bl FUN_0824d5a4
-	bl FUN_0824ec90
+	bl __muldf3
+	bl fdlibm_sin
 	adds r3, r1, #0
 	adds r2, r0, #0
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F394 @ =0x40867FD9
 	ldr r3, _0823F398 @ =0x16872B02
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F39C @ =0x407630CC
 	ldr r3, _0823F3A0 @ =0xCCCCCCCD
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, _0823F38C @ =0x3F91DF46
 	ldr r3, _0823F390 @ =0xA2529D34
-	bl FUN_0824d5a4
-	bl FUN_0824ec90
+	bl __muldf3
+	bl fdlibm_sin
 	ldr r2, _0823F3A4 @ =0x3F947AE1
 	ldr r3, _0823F3A8 @ =0x47AE147B
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F3AC @ =0x4033574B
 	ldr r3, _0823F3B0 @ =0xC6A7EF9E
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823F3B4 @ =0x406D5E66
 	ldr r3, _0823F3B8 @ =0x66666666
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, _0823F38C @ =0x3F91DF46
 	ldr r3, _0823F390 @ =0xA2529D34
-	bl FUN_0824d5a4
-	bl FUN_0824ec90
+	bl __muldf3
+	bl fdlibm_sin
 	ldr r2, _0823F3BC @ =0x3F73A92A
 	ldr r3, _0823F3C0 @ =0x30553261
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r4, _0823F3C4 @ =0x40768000
 	ldr r5, _0823F3C8 @ =0x00000000
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824ef24
+	bl fdlibm_fmod
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823F3CC @ =0x00000000
 	ldr r3, _0823F3D0 @ =0x00000000
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _0823F338
 	adds r1, r7, #0
 	adds r0, r6, #0
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 _0823F338:
@@ -1950,7 +1950,7 @@ FUN_0823f3e4: @ 0x0823F3E4
 	bl FUN_0823e850
 	ldr r3, _0823F40C @ =0x00000000
 	ldr r2, _0823F408 @ =0x3FE00000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	str r6, [sp]
@@ -1966,14 +1966,14 @@ _0823F410:
 	adds r0, r4, #0
 	ldr r3, _0823F510 @ =0x00000000
 	ldr r2, _0823F50C @ =0x00000000
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _0823F430
 	adds r1, r5, #0
 	adds r0, r4, #0
 	ldr r2, _0823F514 @ =0xBFB99999
 	ldr r3, _0823F518 @ =0x9999999A
-	bl FUN_0824dbe4
+	bl __gedf2
 	cmp r0, #0
 	bge _0823F496
 _0823F430:
@@ -1981,12 +1981,12 @@ _0823F430:
 	adds r0, r4, #0
 	ldr r2, _0823F51C @ =0x40285D14
 	ldr r3, _0823F520 @ =0xE3BCD35B
-	bl FUN_0824d84c
+	bl __divdf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	movs r0, #1
@@ -2007,19 +2007,19 @@ _0823F450:
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r3, _0823F510 @ =0x00000000
 	ldr r2, _0823F50C @ =0x00000000
-	bl FUN_0824dbe4
+	bl __gedf2
 	cmp r0, #0
 	blt _0823F410
 	adds r1, r5, #0
 	adds r0, r4, #0
 	ldr r2, _0823F524 @ =0x3FB99999
 	ldr r3, _0823F528 @ =0x9999999A
-	bl FUN_0824dc7c
+	bl __ledf2
 	cmp r0, #0
 	bgt _0823F410
 _0823F496:
@@ -2027,19 +2027,19 @@ _0823F496:
 	ldr r1, [sp, #4]
 	adds r3, r7, #0
 	adds r2, r6, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r3, _0823F510 @ =0x00000000
 	ldr r2, _0823F50C @ =0x00000000
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	blt _0823F4C4
 	adds r1, r5, #0
 	adds r0, r4, #0
 	ldr r2, _0823F52C @ =0x403D8D62
 	ldr r3, _0823F530 @ =0x69BD25B0
-	bl FUN_0824db98
+	bl __gtdf2
 	cmp r0, #0
 	bgt _0823F4C4
 	b _0823F5DA
@@ -2048,31 +2048,31 @@ _0823F4C4:
 	adds r0, r4, #0
 	ldr r3, _0823F510 @ =0x00000000
 	ldr r2, _0823F50C @ =0x00000000
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _0823F534
 	adds r1, r7, #0
 	adds r0, r6, #0
 	ldr r2, _0823F52C @ =0x403D8D62
 	ldr r3, _0823F530 @ =0x69BD25B0
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r0, _0823F52C @ =0x403D8D62
 	ldr r1, _0823F530 @ =0x69BD25B0
-	bl FUN_0824ddb8
+	bl __negdf2
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _0823F544
 	adds r1, r7, #0
 	adds r0, r6, #0
 	ldr r2, _0823F52C @ =0x403D8D62
 	ldr r3, _0823F530 @ =0x69BD25B0
-	bl FUN_0824d56c
+	bl __subdf3
 	b _0823F540
 	.align 2, 0
 _0823F50C: .4byte 0x00000000
@@ -2090,7 +2090,7 @@ _0823F534:
 	adds r0, r6, #0
 	ldr r3, _0823F550 @ =0x69BD25B0
 	ldr r2, _0823F54C @ =0x403D8D62
-	bl FUN_0824d53c
+	bl __adddf3
 _0823F540:
 	adds r7, r1, #0
 	adds r6, r0, #0
@@ -2106,14 +2106,14 @@ _0823F554:
 	adds r0, r4, #0
 	ldr r3, _0823F5FC @ =0x00000000
 	ldr r2, _0823F5F8 @ =0x00000000
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _0823F574
 	adds r1, r5, #0
 	adds r0, r4, #0
 	ldr r2, _0823F600 @ =0xBFB99999
 	ldr r3, _0823F604 @ =0x9999999A
-	bl FUN_0824dbe4
+	bl __gedf2
 	cmp r0, #0
 	bge _0823F5DA
 _0823F574:
@@ -2121,12 +2121,12 @@ _0823F574:
 	adds r0, r4, #0
 	ldr r2, _0823F608 @ =0x40285D14
 	ldr r3, _0823F60C @ =0xE3BCD35B
-	bl FUN_0824d84c
+	bl __divdf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	movs r0, #1
@@ -2147,19 +2147,19 @@ _0823F594:
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r3, _0823F5FC @ =0x00000000
 	ldr r2, _0823F5F8 @ =0x00000000
-	bl FUN_0824dbe4
+	bl __gedf2
 	cmp r0, #0
 	blt _0823F554
 	adds r1, r5, #0
 	adds r0, r4, #0
 	ldr r2, _0823F610 @ =0x3FB99999
 	ldr r3, _0823F614 @ =0x9999999A
-	bl FUN_0824dc7c
+	bl __ledf2
 	cmp r0, #0
 	bgt _0823F554
 _0823F5DA:
@@ -2167,7 +2167,7 @@ _0823F5DA:
 	ldr r1, [sp, #4]
 	adds r3, r7, #0
 	adds r2, r6, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	add sp, #8
@@ -2218,131 +2218,131 @@ FUN_0823f618: @ 0x0823F618
 	adds r0, r6, #0
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d84c
+	bl __divdf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d84c
+	bl __divdf3
 	str r0, [sp, #0x20]
 	str r1, [sp, #0x24]
 	ldr r0, [sp, #8]
 	ldr r1, [sp, #0xc]
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d84c
+	bl __divdf3
 	str r0, [sp, #0x28]
 	str r1, [sp, #0x2c]
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824ebc8
+	bl fdlibm_cos
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r0, [sp, #0x20]
 	ldr r1, [sp, #0x24]
-	bl FUN_0824ec90
+	bl fdlibm_sin
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x2c]
-	bl FUN_0824ec90
+	bl fdlibm_sin
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	str r0, [sp, #0x30]
 	str r1, [sp, #0x34]
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824ec90
+	bl fdlibm_sin
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x2c]
-	bl FUN_0824ebc8
+	bl fdlibm_cos
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	ldr r0, [sp, #0x30]
 	ldr r1, [sp, #0x34]
-	bl FUN_0824d53c
-	bl FUN_0824ee6c
+	bl __adddf3
+	bl fdlibm_asin
 	str r0, [sp, #0x10]
 	str r1, [sp, #0x14]
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824ebc8
+	bl fdlibm_cos
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r0, [sp, #0x20]
 	ldr r1, [sp, #0x24]
-	bl FUN_0824ebc8
+	bl fdlibm_cos
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	str r0, [sp, #0x38]
 	str r1, [sp, #0x3c]
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824ebc8
+	bl fdlibm_cos
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r0, [sp, #0x20]
 	ldr r1, [sp, #0x24]
-	bl FUN_0824ec90
+	bl fdlibm_sin
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x2c]
-	bl FUN_0824ebc8
+	bl fdlibm_cos
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	str r0, [sp, #0x40]
 	str r1, [sp, #0x44]
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824ec90
+	bl fdlibm_sin
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x2c]
-	bl FUN_0824ec90
+	bl fdlibm_sin
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	ldr r0, [sp, #0x40]
 	ldr r1, [sp, #0x44]
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, [sp, #0x38]
 	ldr r3, [sp, #0x3c]
-	bl FUN_0824d84c
-	bl FUN_0824e854
+	bl __divdf3
+	bl fdlibm_atan
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r4, _0823F900 @ =0x00000000
@@ -2351,14 +2351,14 @@ FUN_0823f618: @ 0x0823F618
 	ldr r1, [sp, #0x3c]
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _0823F7B2
 	ldr r2, _0823F908 @ =0x400921FB
 	ldr r3, _0823F90C @ =0x54442D11
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 _0823F7B2:
@@ -2366,14 +2366,14 @@ _0823F7B2:
 	adds r0, r6, #0
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _0823F7D2
 	ldr r2, _0823F910 @ =0x401921FB
 	ldr r3, _0823F914 @ =0x54442D11
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 _0823F7D2:
@@ -2381,66 +2381,66 @@ _0823F7D2:
 	ldr r3, _0823F91C @ =0xA2529D34
 	ldr r0, [sp, #0xb8]
 	ldr r1, [sp, #0xbc]
-	bl FUN_0824d5a4
+	bl __muldf3
 	str r0, [sp, #0x48]
 	str r1, [sp, #0x4c]
-	bl FUN_0824ed44
+	bl fdlibm_tan
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r0, [sp, #0x10]
 	ldr r1, [sp, #0x14]
-	bl FUN_0824ed44
+	bl fdlibm_tan
 	str r0, [sp, #0x50]
 	str r1, [sp, #0x54]
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824ddb8
+	bl __negdf2
 	ldr r2, [sp, #0x50]
 	ldr r3, [sp, #0x54]
-	bl FUN_0824d5a4
+	bl __muldf3
 	str r0, [sp, #0x58]
 	str r1, [sp, #0x5c]
 	ldr r0, _0823F920 @ =0x3FF95EBF
 	ldr r1, _0823F924 @ =0x446C12C1
-	bl FUN_0824ebc8
+	bl fdlibm_cos
 	str r0, [sp, #0x60]
 	str r1, [sp, #0x64]
 	ldr r0, [sp, #0x48]
 	ldr r1, [sp, #0x4c]
-	bl FUN_0824ebc8
+	bl fdlibm_cos
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r0, [sp, #0x10]
 	ldr r1, [sp, #0x14]
-	bl FUN_0824ebc8
+	bl fdlibm_cos
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	ldr r0, [sp, #0x60]
 	ldr r1, [sp, #0x64]
-	bl FUN_0824d84c
+	bl __divdf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	ldr r0, [sp, #0x58]
 	ldr r1, [sp, #0x5c]
-	bl FUN_0824d53c
-	bl FUN_0824edb4
+	bl __adddf3
+	bl fdlibm_acos
 	str r0, [sp, #0x18]
 	str r1, [sp, #0x1c]
 	adds r1, r7, #0
 	adds r0, r6, #0
 	ldr r2, [sp, #0x18]
 	ldr r3, [sp, #0x1c]
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r4, _0823F910 @ =0x401921FB
 	ldr r5, _0823F914 @ =0x54442D11
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d84c
+	bl __divdf3
 	str r0, [sp, #0x68]
 	str r1, [sp, #0x6c]
 	mov r2, r8
@@ -2450,7 +2450,7 @@ _0823F7D2:
 	adds r0, r6, #0
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d84c
+	bl __divdf3
 	str r0, [sp, #0x70]
 	str r1, [sp, #0x74]
 	mov r3, r8
@@ -2460,17 +2460,17 @@ _0823F7D2:
 	adds r0, r6, #0
 	ldr r2, [sp, #0x18]
 	ldr r3, [sp, #0x1c]
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d84c
+	bl __divdf3
 	str r0, [sp, #0x78]
 	str r1, [sp, #0x7c]
 	mov r4, r8
 	str r0, [r4, #0x28]
 	str r1, [r4, #0x2c]
 	ldr r0, [sp, #0xac]
-	bl FUN_0824dcc8
+	bl __floatsidf
 	adds r7, r1, #0
 	adds r6, r0, #0
 	mov r0, sb
@@ -2480,10 +2480,10 @@ _0823F7D2:
 	adds r0, r6, #0
 	ldr r2, [sp, #0x68]
 	ldr r3, [sp, #0x6c]
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, [r4, #0x48]
 	ldr r3, [r4, #0x4c]
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _0823F930
 	ldr r0, [r4, #0x64]
@@ -2493,7 +2493,7 @@ _0823F7D2:
 	ldr r3, _0823F92C @ =0x00000000
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r0, [r4, #0x60]
@@ -2523,10 +2523,10 @@ _0823F930:
 	mov r4, r8
 	ldr r2, [r4, #0x18]
 	ldr r3, [r4, #0x1c]
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, [r4, #0x50]
 	ldr r3, [r4, #0x54]
-	bl FUN_0824db98
+	bl __gtdf2
 	ldr r5, [r4, #0x1c]
 	ldr r4, [r4, #0x18]
 	cmp r0, #0
@@ -2543,7 +2543,7 @@ _0823F95A:
 	ldr r2, _0823F974 @ =0x3FF00000
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	mov r2, r8
@@ -2562,7 +2562,7 @@ _0823F97C:
 	adds r0, r6, #0
 	ldr r2, [sp, #0x70]
 	ldr r3, [sp, #0x74]
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	mov r0, r8
@@ -2570,14 +2570,14 @@ _0823F97C:
 	ldr r3, [r0, #0x4c]
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _0823F9C4
 	ldr r3, _0823F9C0 @ =0x00000000
 	ldr r2, _0823F9BC @ =0x3FF00000
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r4, [sp, #0x68]
@@ -2592,7 +2592,7 @@ _0823F9C4:
 	ldr r3, [r1, #0x54]
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824db98
+	bl __gtdf2
 	ldr r4, [sp, #0x68]
 	ldr r5, [sp, #0x6c]
 	cmp r0, #0
@@ -2601,7 +2601,7 @@ _0823F9C4:
 	ldr r2, _0823F9EC @ =0x3FF00000
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	b _0823FAA8
@@ -2618,14 +2618,14 @@ _0823F9F4:
 	ldr r1, [sp, #0x7c]
 	ldr r3, _0823FA64 @ =0x00000000
 	ldr r2, _0823FA60 @ =0x3FF00000
-	bl FUN_0824db98
+	bl __gtdf2
 	cmp r0, #0
 	ble _0823FA20
 	ldr r0, [sp, #0x78]
 	ldr r1, [sp, #0x7c]
 	ldr r3, _0823FA64 @ =0x00000000
 	ldr r2, _0823FA60 @ =0x3FF00000
-	bl FUN_0824d56c
+	bl __subdf3
 	mov r3, r8
 	str r0, [r3, #0x28]
 	str r1, [r3, #0x2c]
@@ -2635,12 +2635,12 @@ _0823FA20:
 	ldr r3, [r4, #0x2c]
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	str r0, [sp, #0x88]
 	str r1, [sp, #0x8c]
 	ldr r2, [r4, #0x48]
 	ldr r3, [r4, #0x4c]
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _0823FA68
 	ldr r0, [r4, #0x6c]
@@ -2650,7 +2650,7 @@ _0823FA20:
 	adds r0, r6, #0
 	ldr r3, _0823FA64 @ =0x00000000
 	ldr r2, _0823FA60 @ =0x3FF00000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r0, [r4, #0x68]
@@ -2668,11 +2668,11 @@ _0823FA68:
 	ldr r3, [r0, #0x2c]
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	mov r4, r8
 	ldr r2, [r4, #0x50]
 	ldr r3, [r4, #0x54]
-	bl FUN_0824db98
+	bl __gtdf2
 	ldr r5, [r4, #0x1c]
 	ldr r4, [r4, #0x18]
 	cmp r0, #0
@@ -2685,7 +2685,7 @@ _0823FA68:
 	ldr r2, _0823FB68 @ =0x3FF00000
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	mov r2, r8
@@ -2697,32 +2697,32 @@ _0823FAA8:
 	adds r0, r6, #0
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, _0823FB70 @ =0x3FE57AFA
 	ldr r3, _0823FB74 @ =0x7221858C
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r2, _0823FB78 @ =0x40768000
 	ldr r3, _0823FB7C @ =0x00000000
 	ldr r0, [sp, #0xb0]
 	ldr r1, [sp, #0xb4]
-	bl FUN_0824d84c
+	bl __divdf3
 	str r0, [sp, #0x80]
 	str r1, [sp, #0x84]
 	adds r1, r5, #0
 	adds r0, r4, #0
 	ldr r2, [sp, #0x80]
 	ldr r3, [sp, #0x84]
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823FB80 @ =0x3FF00B36
 	ldr r3, _0823FB84 @ =0xE7D9D4AE
-	bl FUN_0824d84c
+	bl __divdf3
 	ldr r4, _0823FB88 @ =0x40E38800
 	ldr r5, _0823FB8C @ =0x00000000
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	mov r3, r8
 	str r0, [r3]
 	str r1, [r3, #4]
@@ -2730,19 +2730,19 @@ _0823FAA8:
 	ldr r3, [r3, #0x24]
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, _0823FB70 @ =0x3FE57AFA
 	ldr r3, _0823FB74 @ =0x7221858C
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, [sp, #0x80]
 	ldr r3, [sp, #0x84]
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823FB80 @ =0x3FF00B36
 	ldr r3, _0823FB84 @ =0xE7D9D4AE
-	bl FUN_0824d84c
+	bl __divdf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	mov r2, r8
 	str r0, [r2, #8]
 	str r1, [r2, #0xc]
@@ -2750,19 +2750,19 @@ _0823FAA8:
 	ldr r2, [r2, #0x28]
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, _0823FB70 @ =0x3FE57AFA
 	ldr r3, _0823FB74 @ =0x7221858C
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, [sp, #0x80]
 	ldr r3, [sp, #0x84]
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823FB80 @ =0x3FF00B36
 	ldr r3, _0823FB84 @ =0xE7D9D4AE
-	bl FUN_0824d84c
+	bl __divdf3
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d53c
+	bl __adddf3
 	mov r3, r8
 	str r0, [r3, #0x10]
 	str r1, [r3, #0x14]
@@ -2802,7 +2802,7 @@ FUN_0823fb90: @ 0x0823FB90
 	ldr r2, _0823FD9C @ =0x40768000
 	ldr r0, [sp, #0xd4]
 	ldr r1, [sp, #0xd8]
-	bl FUN_0824d84c
+	bl __divdf3
 	str r0, [sp, #0x9c]
 	str r1, [sp, #0xa0]
 	add r0, sp, #0x14
@@ -2814,21 +2814,21 @@ FUN_0823fb90: @ 0x0823FB90
 	ldr r5, _0823FDA8 @ =0x00000000
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	str r0, [sp, #0x44]
 	str r1, [sp, #0x48]
 	ldr r2, _0823FDAC @ =0x40E38800
 	ldr r3, _0823FDB0 @ =0x00000000
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823FDB4 @ =0x3FF00B36
 	ldr r3, _0823FDB8 @ =0xE7D9D4AE
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823FDBC @ =0x3FE57AFA
 	ldr r3, _0823FDC0 @ =0x7221858C
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, [sp, #0x9c]
 	ldr r3, [sp, #0xa0]
-	bl FUN_0824d53c
+	bl __adddf3
 	str r0, [sp, #0x5c]
 	str r1, [sp, #0x60]
 	mov r3, sl
@@ -2839,44 +2839,44 @@ FUN_0823fb90: @ 0x0823FB90
 	bl FUN_0823e850
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	str r0, [sp, #0x4c]
 	str r1, [sp, #0x50]
 	ldr r2, _0823FDAC @ =0x40E38800
 	ldr r3, _0823FDB0 @ =0x00000000
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823FDB4 @ =0x3FF00B36
 	ldr r3, _0823FDB8 @ =0xE7D9D4AE
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823FDBC @ =0x3FE57AFA
 	ldr r3, _0823FDC0 @ =0x7221858C
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, [sp, #0x9c]
 	ldr r3, [sp, #0xa0]
-	bl FUN_0824d53c
+	bl __adddf3
 	str r0, [sp, #0x64]
 	str r1, [sp, #0x68]
 	ldr r0, [sp, #0x44]
 	ldr r1, [sp, #0x48]
 	ldr r2, _0823FDC4 @ =0x3FE00000
 	ldr r3, _0823FDC8 @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	str r4, [sp, #0x54]
 	str r5, [sp, #0x58]
 	ldr r2, _0823FDAC @ =0x40E38800
 	ldr r3, _0823FDB0 @ =0x00000000
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823FDB4 @ =0x3FF00B36
 	ldr r3, _0823FDB8 @ =0xE7D9D4AE
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823FDBC @ =0x3FE57AFA
 	ldr r3, _0823FDC0 @ =0x7221858C
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, [sp, #0x9c]
 	ldr r3, [sp, #0xa0]
-	bl FUN_0824d53c
+	bl __adddf3
 	str r0, [sp, #0x6c]
 	str r1, [sp, #0x70]
 	movs r2, #0
@@ -2884,7 +2884,7 @@ FUN_0823fb90: @ 0x0823FB90
 	str r2, [sp, #0x78]
 	str r2, [sp, #0x7c]
 	str r2, [sp, #0x80]
-	bl FUN_0824dd44
+	bl __fixdfsi
 	str r0, [sp]
 	ldr r0, [sp, #0xd4]
 	ldr r1, [sp, #0xd8]
@@ -2905,17 +2905,17 @@ FUN_0823fb90: @ 0x0823FB90
 	adds r0, r4, #0
 	ldr r2, _0823FDAC @ =0x40E38800
 	ldr r3, _0823FDB0 @ =0x00000000
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823FDB4 @ =0x3FF00B36
 	ldr r3, _0823FDB8 @ =0xE7D9D4AE
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823FDBC @ =0x3FE57AFA
 	ldr r3, _0823FDC0 @ =0x7221858C
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, [sp, #0x9c]
 	ldr r3, [sp, #0xa0]
-	bl FUN_0824d53c
-	bl FUN_0824dd44
+	bl __adddf3
+	bl __fixdfsi
 	str r0, [sp]
 	ldr r0, [sp, #0xd4]
 	ldr r1, [sp, #0xd8]
@@ -2940,17 +2940,17 @@ FUN_0823fb90: @ 0x0823FB90
 	adds r0, r4, #0
 	ldr r2, _0823FDAC @ =0x40E38800
 	ldr r3, _0823FDB0 @ =0x00000000
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823FDB4 @ =0x3FF00B36
 	ldr r3, _0823FDB8 @ =0xE7D9D4AE
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823FDBC @ =0x3FE57AFA
 	ldr r3, _0823FDC0 @ =0x7221858C
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, [sp, #0x9c]
 	ldr r3, [sp, #0xa0]
-	bl FUN_0824d53c
-	bl FUN_0824dd44
+	bl __adddf3
+	bl __fixdfsi
 	str r0, [sp]
 	ldr r0, [sp, #0xd4]
 	ldr r1, [sp, #0xd8]
@@ -2971,17 +2971,17 @@ FUN_0823fb90: @ 0x0823FB90
 	adds r0, r6, #0
 	ldr r2, _0823FDAC @ =0x40E38800
 	ldr r3, _0823FDB0 @ =0x00000000
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823FDB4 @ =0x3FF00B36
 	ldr r3, _0823FDB8 @ =0xE7D9D4AE
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823FDBC @ =0x3FE57AFA
 	ldr r3, _0823FDC0 @ =0x7221858C
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, [sp, #0x9c]
 	ldr r3, [sp, #0xa0]
-	bl FUN_0824d53c
-	bl FUN_0824dd44
+	bl __adddf3
+	bl __fixdfsi
 	str r0, [sp]
 	ldr r0, [sp, #0xd4]
 	ldr r1, [sp, #0xd8]
@@ -3002,7 +3002,7 @@ FUN_0823fb90: @ 0x0823FB90
 	adds r0, r6, #0
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824db98
+	bl __gtdf2
 	cmp r0, #0
 	ble _0823FDCC
 	adds r1, r7, #0
@@ -3029,10 +3029,10 @@ _0823FDCC:
 	adds r3, r7, #0
 	adds r2, r6, #0
 _0823FDD4:
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r3, _0823FEBC @ =0x66666666
 	ldr r2, _0823FEB8 @ =0x3FE66666
-	bl FUN_0824db98
+	bl __gtdf2
 	str r4, [sp, #0x8c]
 	str r5, [sp, #0x90]
 	cmp r0, #0
@@ -3046,28 +3046,28 @@ _0823FDF0:
 	ldr r1, [sp, #0x88]
 	ldr r2, _0823FEC8 @ =0x40E38800
 	ldr r3, _0823FECC @ =0x00000000
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823FED0 @ =0x3FF00B36
 	ldr r3, _0823FED4 @ =0xE7D9D4AE
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823FED8 @ =0x3FE57AFA
 	ldr r3, _0823FEDC @ =0x7221858C
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	ldr r2, _0823FEE0 @ =0x40768000
 	ldr r3, _0823FEE4 @ =0x00000000
 	ldr r0, [sp, #0xd4]
 	ldr r1, [sp, #0xd8]
-	bl FUN_0824d84c
+	bl __divdf3
 	str r0, [sp, #0xa4]
 	str r1, [sp, #0xa8]
 	adds r1, r5, #0
 	adds r0, r4, #0
 	ldr r2, [sp, #0xa4]
 	ldr r3, [sp, #0xa8]
-	bl FUN_0824d53c
-	bl FUN_0824dd44
+	bl __adddf3
+	bl __fixdfsi
 	str r0, [sp]
 	ldr r0, [sp, #0xd4]
 	ldr r1, [sp, #0xd8]
@@ -3088,17 +3088,17 @@ _0823FDF0:
 	adds r0, r6, #0
 	ldr r2, _0823FEC8 @ =0x40E38800
 	ldr r3, _0823FECC @ =0x00000000
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823FED0 @ =0x3FF00B36
 	ldr r3, _0823FED4 @ =0xE7D9D4AE
-	bl FUN_0824d5a4
+	bl __muldf3
 	ldr r2, _0823FED8 @ =0x3FE57AFA
 	ldr r3, _0823FEDC @ =0x7221858C
-	bl FUN_0824d53c
+	bl __adddf3
 	ldr r2, [sp, #0xa4]
 	ldr r3, [sp, #0xa8]
-	bl FUN_0824d53c
-	bl FUN_0824dd44
+	bl __adddf3
+	bl __fixdfsi
 	str r0, [sp]
 	ldr r0, [sp, #0xd4]
 	ldr r1, [sp, #0xd8]
@@ -3119,7 +3119,7 @@ _0823FDF0:
 	adds r0, r6, #0
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824db98
+	bl __gtdf2
 	cmp r0, #0
 	ble _0823FEE8
 	adds r1, r7, #0
@@ -3146,10 +3146,10 @@ _0823FEE8:
 	adds r3, r7, #0
 	adds r2, r6, #0
 _0823FEF0:
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r3, _0823FFE0 @ =0x66666666
 	ldr r2, _0823FFDC @ =0x3FE66666
-	bl FUN_0824db98
+	bl __gtdf2
 	str r4, [sp, #0x94]
 	str r5, [sp, #0x98]
 	cmp r0, #0
@@ -3161,28 +3161,28 @@ _0823FEF0:
 _0823FF0C:
 	ldr r0, [sp, #0x8c]
 	ldr r1, [sp, #0x90]
-	bl FUN_0824dd44
-	bl FUN_0824dcc8
+	bl __fixdfsi
+	bl __floatsidf
 	adds r3, r1, #0
 	adds r2, r0, #0
 	ldr r0, [sp, #0x8c]
 	ldr r1, [sp, #0x90]
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0823FFEC @ =0x3FD80000
 	ldr r3, _0823FFF0 @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _0823FFF4 @ =0x3FF00000
 	ldr r3, _0823FFF8 @ =0x00000000
-	bl FUN_0824dbe4
+	bl __gedf2
 	cmp r0, #0
 	blt _0823FF4C
 	adds r1, r7, #0
 	adds r0, r6, #0
 	ldr r2, _0823FFF4 @ =0x3FF00000
 	ldr r3, _0823FFF8 @ =0x00000000
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 _0823FF4C:
@@ -3192,57 +3192,57 @@ _0823FF4C:
 	ldr r1, [sp, #0x90]
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824dbe4
+	bl __gedf2
 	cmp r0, #0
 	blt _0824003E
 	adds r1, r5, #0
 	adds r0, r4, #0
 	ldr r2, _0823FFF4 @ =0x3FF00000
 	ldr r3, _0823FFF8 @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	ldr r0, [sp, #0x8c]
 	ldr r1, [sp, #0x90]
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _0824003E
 	ldr r2, _0823FFFC @ =0x40380000
 	ldr r3, _08240000 @ =0x00000000
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r5, r1, #0
 	adds r4, r0, #0
-	bl FUN_0824dd44
+	bl __fixdfsi
 	adds r6, r0, #0
-	bl FUN_0824dcc8
+	bl __floatsidf
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _08240004 @ =0x404E0000
 	ldr r3, _08240008 @ =0x00000000
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r5, r1, #0
 	adds r4, r0, #0
-	bl FUN_0824dd44
+	bl __fixdfsi
 	adds r7, r0, #0
-	bl FUN_0824dcc8
+	bl __floatsidf
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _0824000C @ =0x3FE00000
 	ldr r3, _08240010 @ =0x00000000
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _08240014
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824dd44
+	bl __fixdfsi
 	adds r1, r7, #0
 	b _08240016
 	.align 2, 0
@@ -3288,28 +3288,28 @@ _08240038:
 _0824003E:
 	ldr r0, [sp, #0x94]
 	ldr r1, [sp, #0x98]
-	bl FUN_0824dd44
-	bl FUN_0824dcc8
+	bl __fixdfsi
+	bl __floatsidf
 	adds r3, r1, #0
 	adds r2, r0, #0
 	ldr r0, [sp, #0x94]
 	ldr r1, [sp, #0x98]
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r3, _08240114 @ =0x00000000
 	ldr r2, _08240110 @ =0x3FD80000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 	ldr r2, _08240118 @ =0x3FF00000
 	ldr r3, _0824011C @ =0x00000000
-	bl FUN_0824dbe4
+	bl __gedf2
 	cmp r0, #0
 	blt _0824007E
 	adds r1, r7, #0
 	adds r0, r6, #0
 	ldr r2, _08240118 @ =0x3FF00000
 	ldr r3, _0824011C @ =0x00000000
-	bl FUN_0824d56c
+	bl __subdf3
 	adds r7, r1, #0
 	adds r6, r0, #0
 _0824007E:
@@ -3319,57 +3319,57 @@ _0824007E:
 	ldr r1, [sp, #0x98]
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824dbe4
+	bl __gedf2
 	cmp r0, #0
 	blt _08240162
 	adds r1, r5, #0
 	adds r0, r4, #0
 	ldr r2, _08240118 @ =0x3FF00000
 	ldr r3, _0824011C @ =0x00000000
-	bl FUN_0824d53c
+	bl __adddf3
 	adds r3, r1, #0
 	adds r2, r0, #0
 	ldr r0, [sp, #0x94]
 	ldr r1, [sp, #0x98]
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _08240162
 	ldr r2, _08240120 @ =0x40380000
 	ldr r3, _08240124 @ =0x00000000
 	adds r1, r7, #0
 	adds r0, r6, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r5, r1, #0
 	adds r4, r0, #0
-	bl FUN_0824dd44
+	bl __fixdfsi
 	adds r6, r0, #0
-	bl FUN_0824dcc8
+	bl __floatsidf
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _08240128 @ =0x404E0000
 	ldr r3, _0824012C @ =0x00000000
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r5, r1, #0
 	adds r4, r0, #0
-	bl FUN_0824dd44
+	bl __fixdfsi
 	adds r7, r0, #0
-	bl FUN_0824dcc8
+	bl __floatsidf
 	adds r3, r1, #0
 	adds r2, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824d56c
+	bl __subdf3
 	ldr r2, _08240130 @ =0x3FE00000
 	ldr r3, _08240134 @ =0x00000000
-	bl FUN_0824dc30
+	bl __ltdf2
 	cmp r0, #0
 	bge _08240138
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0824dd44
+	bl __fixdfsi
 	adds r1, r7, #0
 	b _0824013A
 	.align 2, 0
@@ -3416,8 +3416,8 @@ _08240162:
 	bl FUN_0823f3e4
 	ldr r3, _082401A0 @ =0x00000000
 	ldr r2, _0824019C @ =0x40590000
-	bl FUN_0824d5a4
-	bl FUN_0824dd44
+	bl __muldf3
+	bl __fixdfsi
 	adds r5, r0, #0
 	movs r1, #0xa
 	bl Mod
@@ -3481,19 +3481,19 @@ FUN_082401e8: @ 0x082401E8
 	str r0, [r6, #0x18]
 	str r1, [r6, #0x1c]
 	str r2, [r6, #0x20]
-	bl FUN_0824dcc8
+	bl __floatsidf
 	ldr r4, _0824025C @ =0x3EF00000
 	ldr r5, _08240260 @ =0x00000000
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	str r0, [sp, #0x1c]
 	str r1, [sp, #0x20]
 	mov r0, r8
-	bl FUN_0824dcc8
+	bl __floatsidf
 	adds r3, r5, #0
 	adds r2, r4, #0
-	bl FUN_0824d5a4
+	bl __muldf3
 	adds r5, r1, #0
 	adds r4, r0, #0
 	add r1, sp, #0x14
