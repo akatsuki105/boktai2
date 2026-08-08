@@ -13,12 +13,12 @@ void FUN_08065240(Player* p) {
   }
 }
 
-NAKED void* FUN_08065270(Player* p) { INCCODE("asm/wip/FUN_08065270.inc"); }
+NAKED void* FUN_08065270(Player* p) { INCFUNC("asm/func/FUN_08065270.inc"); }
 
-NAKED void FUN_0806540c(Player* p) { INCCODE("asm/wip/FUN_0806540c.inc"); }
-NAKED void FUN_08065514(Player* p) { INCCODE("asm/wip/FUN_08065514.inc"); }
+NAKED void FUN_0806540c(Player* p) { INCFUNC("asm/func/FUN_0806540c.inc"); }
+NAKED void FUN_08065514(Player* p) { INCFUNC("asm/func/FUN_08065514.inc"); }
 
-NAKED bool32 FUN_08065744(Player* p, u32 n) { INCCODE("asm/wip/FUN_08065744.inc"); }
+NAKED bool32 FUN_08065744(Player* p, u32 n) { INCFUNC("asm/func/FUN_08065744.inc"); }
 
 void weapon_08065924(Player* p) {
   Weapon* w;

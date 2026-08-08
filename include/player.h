@@ -16,7 +16,7 @@ enum PlayerKind {
   PLAYER_SABATA,
 };
 
-struct Player_264 {
+typedef struct {
   u16 unk_264;
   u16 unk_266;
   u16 unk_268;
@@ -27,7 +27,7 @@ struct Player_264 {
   u16 unk_272;
   s16 unk_274;
   s16 unk_276;
-};
+} Player_264;
 
 typedef struct Player {
   Entity e;
@@ -49,22 +49,22 @@ typedef struct Player {
   u16 unk_36;
   u16 unk_38;
   u8 unk_3a[554];
-  struct Player_264 unk_264;
+  Player_264 unk_264;
   u16 unk_278;
   s16 unk_27a;
   u32 unk_27c;
   u8 unk_280[216];
-  u8 kind;
+  u8 kind;  // 0x358: see PlayerKind
   u8 unk_359;
   u16 unk_35a;
   u16 unk_35c;
   u16 unk_35e;
   u16 unk_360;
   u16 unk_362;
-  u16 hp;
-  u16 maxHP;
-  u16 ene;
-  u16 maxEne;
+  u16 hp;      // 0x364
+  u16 maxHP;   // 0x366
+  u16 ene;     // 0x368
+  u16 maxEne;  // 0x36A
   u8 unk_36c[10];
   u16 unk_376;
   u32 unk_378;
@@ -90,9 +90,9 @@ typedef struct Player {
   Weapon* weapon_a70;
   weapon8_t weaponID_a74;
   u8 weaponKind_a75;
-  u8 unk_a76[62];
+  u8 unk_a76[78];
 } Player;
-static_assert(sizeof(Player) == 2740);
+static_assert(sizeof(Player) == 2756);
 
 // ------------------------------------------------------------------------------------------------------------------------------------
 

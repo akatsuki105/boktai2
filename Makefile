@@ -1,50 +1,78 @@
-ifeq ($(OS),Windows_NT)
-EXE := .exe
-else
-EXE :=
+# Builds the ROM using a modern compiler, currently not supported (stub for future use)
+MODERN ?= 0
+ifeq (modern,$(MAKECMDGOALS))
+	$(error Modern build is not supported yet.)
+  MODERN := 1
 endif
 
-# Currently not supported (stub for future use)
-MODERN ?= 0
+# "echo -e" requires bash
+# -o pipefail は、パイプラインのいずれかのコマンドが失敗した場合に、シェルが失敗として終了するようにします。これにより、パイプライン内のエラーを検出しやすくなります。
+# Make は、途中の処理でエラーが発生するとそこで実行をストップする仕組みになっています。しかし、パイプラインの途中でエラーが起きても、最後のコマンドが成功すると、Makefile は「すべて正常に完了した」と勘違いして次の処理へ進んでしまいます。これにより、不完全なファイルが生成されるなどのバグに繋がります。
+SHELL := bash -o pipefail
 
-# Build target
+# Default make rule
+all: compare
+
+# Tools --------------------------------------------
+
+TOOLCHAIN := $(DEVKITARM)
+# Don't use dkP's base_tools anymore because the redefinition of $(CC) conflicts with when we want to use $(CC) to preprocess files. Thus, manually create the variables for the bin files, or use arm-none-eabi binaries on the system if dkP is not installed on this system.
+# Ja: $(CC) の再定義がファイルのプリプロセッシング時に競合するため、dkP の base_tools は使用しないでください。 したがって、バイナリファイル用の変数は手動で作成するか、このシステムに dkP がインストールされていない場合は、システム上の arm-none-eabi バイナリを使用してください。
+ifneq (,$(TOOLCHAIN))
+  ifneq ($(wildcard $(TOOLCHAIN)/bin),)
+    export PATH := $(TOOLCHAIN)/bin:$(PATH)
+  endif
+endif
+
+PREFIX := arm-none-eabi-
+OBJCOPY := $(PREFIX)objcopy
+AS := $(PREFIX)as
+LD := $(PREFIX)ld
+
+EXE :=
+ifeq ($(OS),Windows_NT)
+  EXE := .exe
+endif
+
+# macOS では arm-none-eabi-cpp を使用してください。macOS のデフォルトコンパイラ clang であり、clang のプリプロセッサは .s ファイルをプリプロセスする際に \u 文字を検出すると警告を表示します。これは Unicodeリテラルを期待しているためです。
+# ただし、binutils-arm-none-eabi をインストールする環境では、このツールがデフォルトで付属していないため、無条件に arm-none-eabi-cpp を使用することはできません。
+ifneq ($(MODERN),1)
+# Vanilla
+  ifeq ($(shell uname -s),Darwin)
+    CPP := $(PREFIX)cpp
+  else
+    CPP := $(CC) -E
+  endif
+else
+# Modern
+  CPP := $(PREFIX)cpp
+endif
+
+# ROM name --------------------------------------------
+
 RONNAME := boktai2
 BUILD_DIR := build/$(RONNAME)
 ROM := $(RONNAME).gba
 ELF := $(RONNAME).elf
 
-all: $(ROM) compare
+# Flag --------------------------------------------
 
-# Tools
-TOOL = $(DEVKITARM)/bin
-ifeq ($(MODERN),1)
-  AGBCC := $(TOOL)/arm-none-eabi-gcc
-else
-  AGBCC := tools/agbcc/bin/agbcc$(EXE)
-endif
+ASFLAGS := -mcpu=arm7tdmi --defsym MODERN=$(MODERN)
 
-AS := $(TOOL)/arm-none-eabi-as
-LD := $(TOOL)/arm-none-eabi-ld
-OBJCOPY := $(TOOL)/arm-none-eabi-objcopy
-
-# Flags
-ARCH := -mcpu=arm7tdmi -march=armv4t -mthumb 
-ASFLAGS := $(ARCH) -mthumb-interwork -g
-
-CFLAGS := -mthumb-interwork  -Wimplicit -Wparentheses -Werror -O2 -fshort-enums
+O_LEVEL ?= 2
 ifeq ($(MODERN),0)
-# Vanilla
-# undef: 組み込みマクロ無効, std は 指定しなくても gnu89 っぽい？
-	CPPFLAGS := -I tools/agbcc -I tools/agbcc/include -iquote include -nostdinc -undef -std=gnu89 -DMODERN=$(MODERN)
-	CFLAGS += -fhex-asm
-	LIBPATH := -L ../../tools/agbcc/lib
+  # Vanilla
+  # undef: 組み込みマクロ無効, std は 指定しなくても gnu89 っぽい？
+  CPPFLAGS := -I tools/agbcc -I tools/agbcc/include -iquote include -nostdinc -undef -std=gnu89 -DMODERN=$(MODERN)
+  CC1 := tools/agbcc/bin/agbcc$(EXE)
+  override CFLAGS += -mthumb-interwork -Wimplicit -Wparentheses -Werror -O$(O_LEVEL) -fhex-asm
+  LIBPATH := -L ../../tools/agbcc/lib
 else
-# Modern
-	CPPFLAGS := -I $(DEVKITARM)/arm-none-eabi/include -iquote include -DMODERN=$(MODERN)
-	CFLAGS += $(ARCH) $(CPPFLAGS) -Wno-pointer-to-int-cast -fno-toplevel-reorder -fno-aggressive-loop-optimizations -Wno-address-of-packed-member
-	LIBPATH := -L $(shell dirname $(shell $(AGBCC) --print-file-name=libgcc.a)) -L $(shell dirname $(shell $(AGBCC) --print-file-name=libc.a))
+  # TODO: Modern
 endif
 LDFLAGS := $(LIBPATH) -lgcc -lc
+
+# Collect sources --------------------------------------------
 
 ASM_SRCS := $(shell find src -type f -name '*.s')
 ASM_OBJS := $(addprefix $(BUILD_DIR)/, $(ASM_SRCS:.s=.o))
@@ -58,9 +86,18 @@ OBJS_REL := $(patsubst $(BUILD_DIR)/%,%,$(OBJS))
 SUBDIRS := $(sort $(dir $(OBJS)))
 $(shell mkdir -p $(SUBDIRS))
 
-ifneq ($(MODERN),1)
+# Rules --------------------------------------------
+
+ifeq ($(MODERN),0)
 # Special configurations required for lib files
-$(BUILD_DIR)/src/libs/agb_eeprom.o: CFLAGS := -O -mthumb-interwork
+
+# pret/pokeXXX では old_agbcc を使うが、このゲームでは使わないと思われる
+# 根拠: ビルドが合わない & pretのm4aと異なるソースコード(e.g. SampleFreqSet)を使っている
+# $(BUILD_DIR)/src/lib/m4a.o: CC1 := tools/agbcc/bin/old_agbcc$(EXE)
+
+$(BUILD_DIR)/src/lib/librfu_intr.o: CC1 := tools/agbcc/bin/agbcc_arm$(EXE)
+$(BUILD_DIR)/src/lib/librfu_intr.o: CFLAGS := -O2 -mthumb-interwork -quiet
+$(BUILD_DIR)/src/lib/agb_eeprom.o: CFLAGS := -O -mthumb-interwork
 endif
 
 ifeq ($(MODERN),1)
@@ -85,20 +122,19 @@ clean-code:
 	rm -f $(ELF)
 
 $(ROM): $(ELF)
-	$(OBJCOPY) -O binary $< $@
+	$(OBJCOPY) -O binary --pad-to 0x9000000 $< $@
 
 $(ELF): $(LDSCRIPT) $(OBJS)
-	@cd $(BUILD_DIR) && $(LD) -T ../../$< --no-check-sections -Map $(RONNAME).map -o ../../$@ $(OBJS_REL) $(LDFLAGS)
+	@cd $(BUILD_DIR) && $(LD) -T ../../$< -Map $(RONNAME).map -o ../../$@ $(OBJS_REL) $(LDFLAGS)
 
 $(C_OBJS): $(BUILD_DIR)/%.o: %.c
 ifeq ($(MODERN),1)
-	@$(AGBCC) $(CFLAGS) $< -c -o $@
+# TODO: MODERN
 else
-	$(CPP) $(CPPFLAGS) $< | $(AGBCC) $(CFLAGS) -o $(BUILD_DIR)/$(subst .c,.s,$<)
-	@echo ".text\n\t.align\t2, 0\n" >> $(BUILD_DIR)/$(subst .c,.s,$<)
-	$(AS) $(ASFLAGS) $(BUILD_DIR)/$(subst .c,.s,$<) -o $@ 
+	@$(CPP) $(CPPFLAGS) $< | $(CC1) $(CFLAGS) -o $(BUILD_DIR)/$(subst .c,.s,$<)
+	@echo -e ".text\n\t.align\t2, 0\n" >> $(BUILD_DIR)/$(subst .c,.s,$<)
+	@$(AS) $(ASFLAGS) $(BUILD_DIR)/$(subst .c,.s,$<) -o $@ 
 endif
 
 $(BUILD_DIR)/%.o: %.s
-	$(AS) $(ASFLAGS) $< -o $@
-
+	@$(AS) $(ASFLAGS) $< -o $@

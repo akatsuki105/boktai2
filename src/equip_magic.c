@@ -20,8 +20,8 @@ magic32_t GetEquippedMagic(void) {
   return REGISTERED_MAGIC(idx);
 }
 
-WIP void RegisterMagic(s32 idx, magic32_t m) {
-#if MODERN
+NON_MATCH void RegisterMagic(s32 idx, magic32_t m) {
+#ifdef NONMATCHING_C
   s32 i;
   for (i = 0; i <= 3; i++) {
     if (REGISTERED_MAGIC(i) == m) {
@@ -30,7 +30,7 @@ WIP void RegisterMagic(s32 idx, magic32_t m) {
   }
   REGISTERED_MAGIC(idx) = m;
 #else
-  INCCODE("asm/wip/RegisterMagic.inc");
+  INCFUNC("asm/func/RegisterMagic.inc");
 #endif
 }
 
@@ -75,81 +75,7 @@ void UnregisterMagic(s32 idx) {
   return;
 }
 
-NAKED void magic_082435b8(void) {
-  asm(".syntax unified\n\
-	push {r4, r5, lr}\n\
-	ldr r2, _082435F4 @ =0x030046A0\n\
-	ldr r1, [r2]\n\
-	movs r0, #0\n\
-	str r0, [r1, #0x54]\n\
-	movs r4, #0\n\
-	adds r5, r2, #0\n\
-	subs r0, #1\n\
-	adds r3, r0, #0\n\
-_082435CA:\n\
-	ldr r1, [r2]\n\
-	lsls r0, r4, #1\n\
-	adds r0, r0, r1\n\
-	adds r0, #0x68\n\
-	strh r3, [r0]\n\
-	adds r4, #1\n\
-	cmp r4, #3\n\
-	ble _082435CA\n\
-	ldr r0, [r5]\n\
-	adds r0, #0x5a\n\
-	movs r1, #0\n\
-	strh r1, [r0]\n\
-	movs r0, #0x6e\n\
-	bl prepare_08231510\n\
-	cmp r0, #0\n\
-	beq _082435F8\n\
-	bl fetch_082316e4\n\
-	adds r4, r0, #0\n\
-	b _082435FA\n\
-	.align 2, 0\n\
-_082435F4: .4byte 0x030046A0\n\
-_082435F8:\n\
-	movs r4, #0\n\
-_082435FA:\n\
-	cmp r4, #0\n\
-	ble _0824363C\n\
-	movs r0, #0x6d\n\
-	bl prepare_08231510\n\
-	cmp r0, #0\n\
-	beq _0824361A\n\
-	cmp r4, #0\n\
-	ble _0824361A\n\
-_0824360C:\n\
-	bl fetch_082316e4\n\
-	bl magic_082434f0\n\
-	subs r4, #1\n\
-	cmp r4, #0\n\
-	bne _0824360C\n\
-_0824361A:\n\
-	movs r0, #0x71\n\
-	bl prepare_08231510\n\
-	cmp r0, #0\n\
-	beq _0824363C\n\
-	movs r4, #0\n\
-	ldr r5, _08243644 @ =0x030046A0\n\
-_08243628:\n\
-	bl fetch_082316e4\n\
-	ldr r2, [r5]\n\
-	lsls r1, r4, #1\n\
-	adds r1, r1, r2\n\
-	adds r1, #0x68\n\
-	strh r0, [r1]\n\
-	adds r4, #1\n\
-	cmp r4, #3\n\
-	ble _08243628\n\
-_0824363C:\n\
-	pop {r4, r5}\n\
-	pop {r0}\n\
-	bx r0\n\
-	.align 2, 0\n\
-_08243644: .4byte 0x030046A0\n\
- .syntax divided\n");
-}
+NAKED void magic_082435b8(void) { INCFUNC("asm/func/magic_082435b8.inc"); }
 
 s32 FUN_08243648(s32 n) {
   u32 val = n & (~7);

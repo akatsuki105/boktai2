@@ -4,17 +4,20 @@
 #include "gba/types.h"
 
 // error codes
-#define EEPROM_OUT_OF_RANGE 0x80ff
+#define EEPROM_OUT_OF_RANGE 0x80FF
 #define EEPROM_COMPARE_FAILED 0x8000
 #define EEPROM_UNSUPPORTED_TYPE 0x8080
 
-typedef struct EEPROMConfig {
-  struct EEPROMConfig* unk_00;
-  u16 size;
-  vu16 waitcnt;
-  u8 address_width;
-  // u8 filler[3];
-} EEPROMConfig;
+typedef struct eepromTypeTag {
+  u32 size;       // Byte size
+  u16 adrCount;   // Total number of addresses
+  u16 agbWait;    // Read/write wait value of AGB game pak bus (ROM2 area)
+                  //   (Used inside the library)
+  u8 adrBit;      // Number of address bits at DMA transfer time
+  u8 padding[3];  // Padding for alignment
+} eepromType;
+
+extern const eepromType* gEEPROMConfig;
 
 /**
  * selects EEPROM type

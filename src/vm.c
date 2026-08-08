@@ -1,8 +1,18 @@
 #include "entity.h"
 #include "global.h"
+#include "malloc.h"
 
 void FUN_08230e30(u16 id, void* r1, s32 r2);
 bool32 FUN_082326d8(void);
+void* FUN_0823178c(Unk_030016e8*);
+
+void FUN_082324b0(void) {
+  Unk_030016e8* p = (Unk_030016e8*)0x03000770;
+  p->unk = NULL;
+  p->len = Div(0x30, 8);
+  p->arr = (Unk_085a9208*)0x085B01D0;
+  FUN_0823178c(p);
+}
 
 // 0x082324dc
 s32 Arithmetic(u32 opcode, s32 a, s32 b) {
@@ -84,11 +94,11 @@ s32 Arithmetic(u32 opcode, s32 a, s32 b) {
   }
 }
 
-NAKED void* FUN_08232600(u8* code) { INCCODE("asm/wip/FUN_08232600.inc"); }
+NAKED void* FUN_08232600(u8* code) { INCFUNC("asm/func/FUN_08232600.inc"); }
 
 void FUN_082326a0(void) {
-  Entity* p = AllocateEntity(0xe24);
-  FUN_082309cc(p, 0xe24);
+  void* p = Malloc(3620);
+  ClearMemory(p, 3620);
   FUN_08230e30(0x56c2, p, 1);
   gUnkPtr = p;
   FUN_082326d8();

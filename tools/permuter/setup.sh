@@ -1,5 +1,6 @@
 #!/bin/bash
 # 関数1つ分の decomp-permuter 用ディレクトリをセットアップする
+# decomp-permuter/import.py がこのプロジェクトと相性が悪いので、その代替
 #
 # Usage: tools/permuter/setup.sh <FUNCTION_NAME> [SRC_FILE] [OUTPUT_DIR]
 # 例:
@@ -19,15 +20,14 @@ SRC="${2:-}"
 OUT="${3:-/tmp/perm_$FN}"
 
 REPO="$(cd "$(dirname "$0")/../.." && pwd)"
-PERMUTER="$REPO/tools/decomp-permuter"
+: "${DECOMP_PERMUTER:?DECOMP_PERMUTER is not set}"
+PERMUTER="$DECOMP_PERMUTER"
 AS="${DEVKITARM}/bin/arm-none-eabi-as"
 ASFLAGS="-mcpu=arm7tdmi -march=armv4t -mthumb -mthumb-interwork -g"
 
 # m2c コマンドを解決
 if command -v m2c >/dev/null 2>&1; then
   M2C="m2c"
-elif [ -f "$REPO/tools/m2c/m2c.py" ]; then
-  M2C="python3 $REPO/tools/m2c/m2c.py"
 else
   M2C=""
 fi
@@ -43,7 +43,7 @@ if [ -z "$INC" ]; then
   exit 1
 fi
 
-tmp_s=$(mktemp /tmp/perm_target_XXXX.s)
+tmp_s=$(gmktemp /tmp/perm_target_XXXX.s)
 trap "rm -f $tmp_s" EXIT
 
 cat > "$tmp_s" <<EOF
@@ -63,7 +63,7 @@ echo "✓ target.o を作成しました"
 # ─────────────────────────────────────────────────────────
 # 2. base.c を生成
 #   優先順位:
-#     A. SRC_FILE が指定されていて MODERN=1 でプリプロセス可能
+#     A. SRC_FILE が指定されていて NONMATCHING_C=1 でプリプロセス可能
 #     B. m2c による自動変換（フォールバック）
 # ─────────────────────────────────────────────────────────
 BASE_C_OK=0
@@ -78,7 +78,7 @@ if [ -n "$SRC" ] && [ -f "$REPO/$SRC" ]; then
     -iquote "$REPO/include" \
     -nostdinc -undef -DMODERN=1 \
     "$REPO/$SRC" > "$OUT/base.c" 2>/dev/null \
-  && python3 "$PERMUTER/strip_other_fns.py" "$OUT/base.c" "$FN" 2>/dev/null \
+  && uv run python3 "$PERMUTER/strip_other_fns.py" "$OUT/base.c" "$FN" 2>/dev/null \
   && grep -q "$FN" "$OUT/base.c" \
   && BASE_C_OK=1 \
   || true
@@ -86,9 +86,9 @@ fi
 
 if [ "$BASE_C_OK" -eq 0 ]; then
   if [ -n "$M2C" ]; then
-    echo "(MODERN=1 プリプロセス不可。m2c でフォールバック)"
+    echo "(NONMATCHING_C=1 プリプロセス不可。m2c でフォールバック)"
     # m2c 用オブジェクトを一時的に作成
-    tmp_o=$(mktemp /tmp/perm_m2c_XXXX.o)
+    tmp_o=$(gmktemp /tmp/perm_m2c_XXXX.o)
     $AS $ASFLAGS "$tmp_s" -o "$tmp_o"
     {
       echo '#include "global.h"'
@@ -102,7 +102,7 @@ if [ "$BASE_C_OK" -eq 0 ]; then
     exit 1
   fi
 else
-  echo "✓ base.c を生成しました (MODERN=1 プリプロセス)"
+  echo "✓ base.c を生成しました (NONMATCHING_C=1 プリプロセス)"
 fi
 
 # ─────────────────────────────────────────────────────────

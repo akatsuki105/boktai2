@@ -27,4 +27,9 @@ typedef s32 magic32_t;
 typedef s16 slot16_t;
 typedef s32 slot32_t;
 
+// Placeholder for a NAKED-stub parameter whose real type isn't known yet.
+// Never used for existing plain `void*` params — only for new decomp-naked
+// promotions. Grep for this to find every not-yet-typed parameter.
+typedef void* UNK_PTR;
+
 #endif  // GUARD_ZOKTAI_TYPES_H

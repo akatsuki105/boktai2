@@ -41,7 +41,7 @@ static s32 FUN_0807f3ac(Player* p, u32 n, void* _) {
 
 Player* CreatePlayer_0807f430(u32 n, void* _) {
   s32 ok;
-  Player* p = (Player*)CreateEntity(ENTITY_PLAYER, 0xAC4);
+  Player* p = (Player*)CreateEntity(ENTITY_PLAYER, sizeof(Player));
   if (p != NULL) {
     SetEntityRoutine((Entity*)p, (EntityFunc)FUN_0807f20c, (EntityFunc)FUN_0807f330);
     ok = (s32)FUN_0807f3ac(p, n, _);

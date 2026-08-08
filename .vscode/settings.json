@@ -2,6 +2,12 @@
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
 
+  "[python]": {
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "charliermarsh.ruff"
+  },
+
   "[json][jsonc]": {
     "editor.defaultFormatter": "denoland.vscode-deno",
     "editor.formatOnSave": true
@@ -32,7 +38,8 @@
     "baserom.gba": true
   },
   "search.exclude": {
-    "tools/**/.venv*": true
+    "tools/**/.venv*": true,
+    "expected/**": true
   },
   "files.associations": {
     "*.s": "arm",

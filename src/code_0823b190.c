@@ -3,7 +3,7 @@
 void FUN_08231780(void);
 bool32 FUN_0823a8b0(void);
 void FUN_08231be0(u32 n);
-void* FUN_0823178c(struct Unk_030016e8*);
+void* FUN_0823178c(Unk_030016e8*);
 TaskFn FUN_0823b1d0(u32 n);
 void* FUN_082316bc(void);
 
@@ -42,11 +42,11 @@ s32 FUN_0823aedc(void) {
   return 0;
 }
 
-NAKED void* FUN_0823af08(void) { INCCODE("asm/wip/FUN_0823af08.inc"); }
+NAKED void* FUN_0823af08(void) { INCFUNC("asm/func/FUN_0823af08.inc"); }
 
 void* FUN_0823af6c(void* _) { return _; }
 
-NAKED s32 FUN_0823af70(void* r0) { INCCODE("asm/wip/FUN_0823af70.inc"); }
+NAKED s32 FUN_0823af70(void* r0) { INCFUNC("asm/func/FUN_0823af70.inc"); }
 
 void* FUN_0823b0ec(void) {
   bool32 bVar1 = FUN_0823a8b0();
@@ -73,7 +73,7 @@ void* FUN_0823b130(void) {
 }
 
 void FUN_0823b158(void) {
-  struct Unk_085a9208* cur;
+  Unk_085a9208* cur;
   gUnk085a9208Counter = 0;
   for (cur = &gUnk085a9208[0]; cur->fn != NULL; cur++) {
     gUnk085a9208Counter++;
@@ -82,12 +82,11 @@ void FUN_0823b158(void) {
 
 void FUN_0823b180(void) {
   gUnk085a9208[0].fn = NULL;  // why???
-  return;
 }
 
-void FUN_0823b18c(void) { return; }
+void FUN_0823b18c(void) {}
 
-TaskFn FUN_0823b190(u32 n, struct Unk_085a9208* arr, s32 start, s32 len) {
+TaskFn FUN_0823b190(u32 n, Unk_085a9208* arr, s32 start, s32 len) {
   s32 i;
   // Binary search
   while (start < len) {
@@ -115,7 +114,7 @@ void FUN_0823b1ec(void) {
   return;
 }
 
-void FUN_0823b1f8(struct Unk_0200865c* p) {
+void FUN_0823b1f8(Unk_0200865c* p) {
   if (PTR_030016f8 != NULL) {
     if (PTR_030016f8->unk_18 == NULL) {
       PTR_030016f8->unk_18 = p;
@@ -123,7 +122,7 @@ void FUN_0823b1f8(struct Unk_0200865c* p) {
       p->prev = NULL;
       p->next = NULL;
     } else {
-      struct Unk_0200865c* tmp = PTR_030016f8->unk_1c;
+      Unk_0200865c* tmp = PTR_030016f8->unk_1c;
       tmp->next = p;
       p->prev = tmp;
       p->next = NULL;
@@ -132,8 +131,8 @@ void FUN_0823b1f8(struct Unk_0200865c* p) {
   }
 }
 
-struct Unk_0200865c* FindUnk0200865c(u16 id) {
-  struct Unk_0200865c* p;
+Unk_0200865c* FindUnk0200865c(u16 id) {
+  Unk_0200865c* p;
   if (PTR_030016f8 == NULL) {
     return NULL;
   } else {

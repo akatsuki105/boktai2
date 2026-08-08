@@ -21,26 +21,29 @@ u16 Sqrt(u32 num);
 
 u16 ArcTan2(s16 x, s16 y);
 
+s32 Div(s32 a, s32 b);
+s32 Mod(s32 a, s32 b);
+
 #define CPU_SET_SRC_FIXED 0x01000000
 #define CPU_SET_16BIT 0x00000000
 #define CPU_SET_32BIT 0x04000000
 
-void CpuSet(const void *src, void *dest, u32 control);
+void CpuSet(const void* src, void* dest, u32 control);
 
 #define CPU_FAST_SET_SRC_FIXED 0x01000000
 
-void CpuFastSet(const void *src, void *dest, u32 control);
+void CpuFastSet(const void* src, void* dest, u32 control);
 
-void BgAffineSet(struct BgAffineSrcData *src, struct BgAffineDstData *dest, s32 count);
+void BgAffineSet(struct BgAffineSrcData* src, struct BgAffineDstData* dest, s32 count);
 
-void ObjAffineSet(struct ObjAffineSrcData *src, void *dest, s32 count, s32 offset);
+void ObjAffineSet(struct ObjAffineSrcData* src, void* dest, s32 count, s32 offset);
 
-void LZ77UnCompWram(const void *src, void *dest);
+void LZ77UnCompWram(const void* src, void* dest);
 
-void LZ77UnCompVram(const void *src, void *dest);
+void LZ77UnCompVram(const void* src, void* dest);
 
-void RLUnCompWram(const void *src, void *dest);
+void RLUnCompWram(const void* src, void* dest);
 
-void RLUnCompVram(const void *src, void *dest);
+void RLUnCompVram(const void* src, void* dest);
 
 #endif  // GUARD_GBA_SYSCALL_H

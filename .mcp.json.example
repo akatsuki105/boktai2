@@ -1,15 +1,11 @@
+// .mcp.json のテンプレイート
+// NOTE: .mcp.json は JSONC ではないのでコピペする際はコメントを削除すること
 {
   "mcpServers": {
     "ghidra": {
-      "command": "/path/to/repo/tools/.venv-ghidra/bin/pyghidra-mcp",
-      "args": [
-        "--project-path", "/path/to/ghidra/Projects",
-        "--project-name", "Boktai"
-      ],
-      "env": {
-        "GHIDRA_INSTALL_DIR": "/path/to/Ghidra",
-        "JAVA_HOME": "/path/to/jdk"
-      }
+      // https://github.com/bethington/ghidra-mcp/releases/tag/v6.0.0
+      // GhidraMCPサーバーをたて、 `uv tool install ./ghidra_mcp_bridge-6.0.0-py3-none-any.whl` をしておくこと
+      "command": "bridge-mcp-ghidra"
     }
   }
 }

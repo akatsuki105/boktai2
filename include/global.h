@@ -5,6 +5,7 @@
 #include "definition.h"
 #include "gba/gba.h"
 #include "incbin.h"
+#include "struct.h"
 #include "types.h"
 //
 #include "game.h"
@@ -13,42 +14,15 @@
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define max(a, b) ((a) >= (b) ? (a) : (b))
 
-typedef struct {
-  u16 id;
-  u8 unk_02;
-  u8 unk_03;
-  void* unk_04;
-} Unk_0203b000;
-
-struct Unk_03004810 {
-  u8 unk_0;
-  u8 unk_1;
-  u8 unk_2;
-  u8 unk_3;
-  u8 unk_4;
-  u8 unk_5;
-  u8 unk_6;
-  u8 unk_7;
-  u8 _[4];
-};
-
-struct Unk_030016c0 {
-  u8 unk_0[4];
-  s32 unk_4;
-  u8 unk_8[32];
-};
-
-// 0x085a9208
-struct Unk_085a9208 {
-  u32 unk;
-  void* fn;
-};
-
-struct Unk_030016e8 {
-  void* unk;
-  u32 len;
-  struct Unk_085a9208* arr;
-};
+// NAKED void funcXXX(void) {
+//  INCFUNC("asm/funcXXX.inc");
+// }
+#define INCFUNC(file) \
+  asm(".syntax unified\n\
+  .include \"" file   \
+      "\"\n\
+    .align 2, 0\n    \
+ .syntax divided\n");
 
 typedef struct {
   u8* pc;
@@ -60,10 +34,14 @@ typedef struct {
 } VM;
 
 extern Unk_0203b000 gUnk_0203b000[128];
-extern struct Unk_085a9208 gUnk085a9208[643];
-extern struct Unk_085a9208 gUnk08dbd758[8];
-extern struct Unk_030016c0* gUnkPtr_030047a8;
-extern struct Unk_030016e8 gUnk030016e8;
+extern Unk_085a9208 gUnk085a9208[643];
+extern Unk_085a9208 gUnk08dbd758[8];
+extern Unk_030016c0* gUnkPtr_030047a8;
+extern Unk_030016e8 gUnk030016e8;
 extern VM gVM;
+
+// --------------------------------------------
+
+void ClearMemory(void* dst, s32 bytesize);  // buffer から bytesize バイト分のメモリを0で埋める
 
 #endif  // GUARD_ZOKTAI_GLOBAL_H

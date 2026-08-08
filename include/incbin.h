@@ -61,11 +61,4 @@
       "\"\n\
  .syntax divided\n");
 
-#define INCCODE(file) \
-  asm(".syntax unified\n\
-  .include \"" file   \
-      "\"\n\
-    .align 2, 0\n    \
- .syntax divided\n");
-
 #endif  // GUARD_ZOKTAI_INCBIN_H

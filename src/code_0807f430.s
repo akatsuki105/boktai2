@@ -18637,7 +18637,7 @@ _08088414:
 	cmp r0, #0x32
 	bgt _08088426
 	adds r0, r6, #0
-	bl sub_081D2230
+	bl FUN_081d2230
 	cmp r0, #0
 	bne _08088426
 	movs r0, #1
@@ -24997,7 +24997,7 @@ _0808B57C:
 	adds r2, #1
 	adds r0, r2, #0
 	strh r0, [r1, #2]
-	ldr r5, _0808B5BC @ =0x030047E0
+	ldr r5, _0808B5BC @ =gClock
 	ldrb r0, [r5, #0xa]
 	movs r4, #0
 	str r4, [sp]
@@ -25015,7 +25015,7 @@ _0808B5A8:
 	b _0808B5F4
 	.align 2, 0
 _0808B5B8: .4byte 0x0000F027
-_0808B5BC: .4byte 0x030047E0
+_0808B5BC: .4byte gClock
 _0808B5C0:
 	ldr r2, _0808B5FC @ =0x0000F027
 	adds r0, r2, #0
@@ -25027,7 +25027,7 @@ _0808B5C0:
 	adds r2, #2
 	adds r0, r2, #0
 	strh r0, [r1, #2]
-	ldr r5, _0808B600 @ =0x030047E0
+	ldr r5, _0808B600 @ =gClock
 	ldrb r0, [r5, #0xc]
 	movs r4, #0
 	str r4, [sp]
@@ -25048,7 +25048,7 @@ _0808B5F4:
 	bx r0
 	.align 2, 0
 _0808B5FC: .4byte 0x0000F027
-_0808B600: .4byte 0x030047E0
+_0808B600: .4byte gClock
 
 	thumb_func_start FUN_0808b604
 FUN_0808b604: @ 0x0808B604
@@ -25110,7 +25110,7 @@ _0808B670:
 	movs r2, #0
 	ldrsh r0, [r0, r2]
 	lsls r0, r0, #3
-	ldr r1, _0808B6A0 @ =0x08DAA7B0
+	ldr r1, _0808B6A0 @ =gArmorDB
 	adds r0, r0, r1
 	bl FUN_0807a70c
 	adds r3, r6, #3
@@ -25124,7 +25124,7 @@ _0808B698:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_0808B6A0: .4byte 0x08DAA7B0
+_0808B6A0: .4byte gArmorDB
 
 	thumb_func_start FUN_0808b6a4
 FUN_0808b6a4: @ 0x0808B6A4

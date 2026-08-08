@@ -3,6 +3,8 @@
 
 #include "gba/gba.h"
 
+// AgbSound.h
+
 // ASCII encoding of 'Smsh' in reverse
 // This is presumably short for SMASH, the developer of MKS4AGB.
 #define ID_NUMBER 0x68736D53
@@ -36,13 +38,14 @@
 #define SOUND_MODE_DA_BIT 0x00B00000
 #define SOUND_MODE_DA_BIT_SHIFT 20
 
+// 波形データの構造
 struct WaveData {
-  u16 type;
-  u16 status;
-  u32 freq;
-  u32 loopStart;
-  u32 size;    // number of samples
-  s8 data[1];  // samples
+  u16 type;       // タイプ
+  u16 status;     // ステータス
+  u32 freq;       // 周波数計算値
+  u32 loopStart;  // ループ開始位置
+  u32 size;       // サンプリング数
+  s8 data[1];     // サンプリングデータ配列
 };
 
 #define TONEDATA_TYPE_CGB 0x07
@@ -53,16 +56,17 @@ struct WaveData {
 #define TONEDATA_P_S_PAN 0xc0
 #define TONEDATA_P_S_PAM TONEDATA_P_S_PAN
 
+// 音色データの構造
 struct ToneData {
-  u8 type;
-  u8 key;
-  u8 length;     // sound length (compatible sound)
-  u8 pan_sweep;  // pan or sweep (compatible sound ch. 1)
-  struct WaveData *wav;
-  u8 attack;
-  u8 decay;
-  u8 sustain;
-  u8 release;
+  u8 type;               // タイプ
+  u8 key;                // オリジナルキー
+  u8 length;             // 音の長さ（互換サウンド)
+  u8 pan_sweep;          // パンポット or スイープ（互換サウンド１）
+  struct WaveData* wav;  // 波形データのアドレス
+  u8 attack;             // アタック
+  u8 decay;              // ディケイ
+  u8 sustain;            // サスティン
+  u8 release;            // リリース
 };
 
 #define SOUND_CHANNEL_SF_START 0x80
@@ -114,11 +118,11 @@ struct CgbChannel {
   u8 length;
   u8 sweep;
   u32 frequency;
-  u32 *wavePointer;     // instructs CgbMain to load targeted wave
-  u32 *currentPointer;  // stores the currently loaded wave
-  struct MusicPlayerTrack *track;
-  void *prevChannelPointer;
-  void *nextChannelPointer;
+  u32* wavePointer;     // instructs CgbMain to load targeted wave
+  u32* currentPointer;  // stores the currently loaded wave
+  struct MusicPlayerTrack* track;
+  void* prevChannelPointer;
+  void* nextChannelPointer;
   u8 dummy4[8];
 };
 
@@ -150,11 +154,11 @@ struct SoundChannel {
   u32 count;
   u32 fw;
   u32 frequency;
-  struct WaveData *wav;
-  s8 *currentPointer;
-  struct MusicPlayerTrack *track;
-  void *prevChannelPointer;
-  void *nextChannelPointer;
+  struct WaveData* wav;
+  s8* currentPointer;
+  struct MusicPlayerTrack* track;
+  void* prevChannelPointer;
+  void* nextChannelPointer;
   u32 dummy4;
   u16 xpi;
   u16 xpc;
@@ -162,18 +166,19 @@ struct SoundChannel {
 
 #define MAX_DIRECTSOUND_CHANNELS 12
 
-#define PCM_DMA_BUF_SIZE 792  // size of Direct Sound buffer
+#define PCM_DMA_BUF_SIZE 792  // ダイレクトサウンド転送バッファのサイズ
 
 struct MusicPlayerInfo;
 
 typedef void (*MPlayFunc)();
-typedef void (*PlyNoteFunc)(u32, struct MusicPlayerInfo *, struct MusicPlayerTrack *);
+typedef void (*PlyNoteFunc)(u32, struct MusicPlayerInfo*, struct MusicPlayerTrack*);
 typedef void (*CgbSoundFunc)(void);
 typedef void (*CgbOscOffFunc)(u8);
 typedef u32 (*MidiKeyToCgbFreqFunc)(u8, u8, u8);
 typedef void (*ExtVolPitFunc)(void);
-typedef void (*MPlayMainFunc)(struct MusicPlayerInfo *);
+typedef void (*MPlayMainFunc)(struct MusicPlayerInfo*);
 
+// a.k.a. SoundArea
 struct SoundInfo {
   // This field is normally equal to ID_NUMBER but it is set to other
   // values during sensitive operations for locking purposes.
@@ -197,13 +202,13 @@ struct SoundInfo {
   s32 pcmSamplesPerVBlank;
   s32 pcmFreq;
   s32 divFreq;
-  struct CgbChannel *cgbChans;
+  struct CgbChannel* cgbChans;
   MPlayMainFunc MPlayMainHead;
-  struct MusicPlayerInfo *musicPlayerHead;
+  struct MusicPlayerInfo* musicPlayerHead;
   CgbSoundFunc CgbSound;
   CgbOscOffFunc CgbOscOff;
   MidiKeyToCgbFreqFunc MidiKeyToCgbFreq;
-  MPlayFunc *MPlayJumpTable;
+  MPlayFunc* MPlayJumpTable;
   PlyNoteFunc plynote;
   ExtVolPitFunc ExtVolPit;
   u8 gap2[16];
@@ -216,8 +221,8 @@ struct SongHeader {
   u8 blockCount;
   u8 priority;
   u8 reverb;
-  struct ToneData *tone;
-  u8 *part[1];
+  struct ToneData* tone;
+  u8* part[1];
 };
 
 #define MPT_FLG_VOLSET 0x01
@@ -260,14 +265,15 @@ struct MusicPlayerTrack {
   u8 priority;
   u8 pseudoEchoVolume;
   u8 pseudoEchoLength;
-  struct SoundChannel *chan;
+  struct SoundChannel* chan;
   struct ToneData tone;
   u8 gap[10];
   u16 unk_3A;
   u32 unk_3C;
-  u8 *cmdPtr;
-  u8 *patternStack[3];
+  u8* cmdPtr;
+  u8* patternStack[3];
 };
+static_assert(sizeof(struct MusicPlayerTrack) == 80);
 
 #define MUSICPLAYER_STATUS_TRACK 0x0000ffff
 #define MUSICPLAYER_STATUS_PAUSE 0x80000000
@@ -279,16 +285,17 @@ struct MusicPlayerTrack {
 #define FADE_VOL_MAX 64
 #define FADE_VOL_SHIFT 2
 
+// a.k.a. MusicPlayerArea
 struct MusicPlayerInfo {
-  struct SongHeader *songHeader;
-  u32 status;
-  u8 trackCount;
-  u8 priority;
+  struct SongHeader* songHeader;  // 現在のソングポインタ
+  u32 status;                     // ステータス
+  u8 trackCount;                  // トラック数
+  u8 priority;                    // 現在のプライオリティ
   u8 cmd;
   u8 unk_B;
-  u32 clock;
+  u32 clock;  // 演奏開始からの通算クロック
   u8 gap[8];
-  u8 *memAccArea;
+  u8* memAccArea;
   u16 tempoD;
   u16 tempoU;
   u16 tempoI;
@@ -296,22 +303,22 @@ struct MusicPlayerInfo {
   u16 fadeOI;
   u16 fadeOC;
   u16 fadeOV;
-  struct MusicPlayerTrack *tracks;
-  struct ToneData *tone;
+  struct MusicPlayerTrack* tracks;
+  struct ToneData* tone;
   u32 ident;
   MPlayMainFunc MPlayMainNext;
-  struct MusicPlayerInfo *musicPlayerNext;
+  struct MusicPlayerInfo* musicPlayerNext;
 };
 
 struct MusicPlayer {
-  struct MusicPlayerInfo *info;
-  struct MusicPlayerTrack *track;
+  struct MusicPlayerInfo* info;
+  struct MusicPlayerTrack* track;
   u8 unk_8;
   u16 unk_A;
 };
 
 struct Song {
-  struct SongHeader *header;
+  struct SongHeader* header;
   u16 ms;
   u16 me;
 };
@@ -325,7 +332,7 @@ extern char SoundMainRAM[];
 
 extern MPlayFunc gMPlayJumpTable[];
 
-typedef void (*XcmdFunc)(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
+typedef void (*XcmdFunc)(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
 extern const XcmdFunc gXcmdTable[];
 
 extern struct CgbChannel gCgbChans[];
@@ -349,76 +356,76 @@ extern char gMaxLines[];
 u32 umul3232H32(u32 multiplier, u32 multiplicand);
 void SoundMain(void);
 void SoundMainBTM(void);
-void TrackStop(struct MusicPlayerInfo *mplayInfo, struct MusicPlayerTrack *track);
-void MPlayMain(struct MusicPlayerInfo *);
-void RealClearChain(void *x);
+void TrackStop(struct MusicPlayerInfo* mplayInfo, struct MusicPlayerTrack* track);
+void MPlayMain(struct MusicPlayerInfo*);
+void RealClearChain(void* x);
 
-void MPlayContinue(struct MusicPlayerInfo *mplayInfo);
-void MPlayStart(struct MusicPlayerInfo *mplayInfo, struct SongHeader *songHeader);
-void m4aMPlayStop(struct MusicPlayerInfo *mplayInfo);
-void FadeOutBody(struct MusicPlayerInfo *mplayInfo);
-void TrkVolPitSet(struct MusicPlayerInfo *mplayInfo, struct MusicPlayerTrack *track);
-void MPlayFadeOut(struct MusicPlayerInfo *mplayInfo, u16 speed);
-void ClearChain(void *x);
-void Clear64byte(void *addr);
-void SoundInit(struct SoundInfo *soundInfo);
-void MPlayExtender(struct CgbChannel *cgbChans);
+void MPlayContinue(struct MusicPlayerInfo* mplayInfo);
+void MPlayStart(struct MusicPlayerInfo* mplayInfo, struct SongHeader* songHeader);
+void m4aMPlayStop(struct MusicPlayerInfo* mplayInfo);
+void FadeOutBody(struct MusicPlayerInfo* mplayInfo);
+void TrkVolPitSet(struct MusicPlayerInfo* mplayInfo, struct MusicPlayerTrack* track);
+void MPlayFadeOut(struct MusicPlayerInfo* mplayInfo, u16 speed);
+void ClearChain(void* x);
+void Clear64byte(void* addr);
+void SoundInit(struct SoundInfo* soundInfo);
+void MPlayExtender(struct CgbChannel* cgbChans);
 void m4aSoundMode(u32 mode);
-void MPlayOpen(struct MusicPlayerInfo *mplayInfo, struct MusicPlayerTrack *track, u8 a3);
+void MPlayOpen(struct MusicPlayerInfo* mplayInfo, struct MusicPlayerTrack* track, u8 a3);
 void CgbSound(void);
 void CgbOscOff(u8);
-void CgbModVol(struct CgbChannel *chan);
+void CgbModVol(struct CgbChannel* chan);
 u32 MidiKeyToCgbFreq(u8, u8, u8);
 void DummyFunc(void);
-void MPlayJumpTableCopy(MPlayFunc *mplayJumpTable);
+void MPlayJumpTableCopy(MPlayFunc* mplayJumpTable);
 void SampleFreqSet(u32 freq);
 void m4aSoundVSyncOn(void);
 void m4aSoundVSyncOff(void);
 
-void m4aMPlayTempoControl(struct MusicPlayerInfo *mplayInfo, u16 tempo);
-void m4aMPlayVolumeControl(struct MusicPlayerInfo *mplayInfo, u16 trackBits, u16 volume);
-void m4aMPlayPitchControl(struct MusicPlayerInfo *mplayInfo, u16 trackBits, s16 pitch);
-void m4aMPlayPanpotControl(struct MusicPlayerInfo *mplayInfo, u16 trackBits, s8 pan);
-void ClearModM(struct MusicPlayerTrack *track);
-void m4aMPlayModDepthSet(struct MusicPlayerInfo *mplayInfo, u16 trackBits, u8 modDepth);
-void m4aMPlayLFOSpeedSet(struct MusicPlayerInfo *mplayInfo, u16 trackBits, u8 lfoSpeed);
+void m4aMPlayTempoControl(struct MusicPlayerInfo* mplayInfo, u16 tempo);
+void m4aMPlayVolumeControl(struct MusicPlayerInfo* mplayInfo, u16 trackBits, u16 volume);
+void m4aMPlayPitchControl(struct MusicPlayerInfo* mplayInfo, u16 trackBits, s16 pitch);
+void m4aMPlayPanpotControl(struct MusicPlayerInfo* mplayInfo, u16 trackBits, s8 pan);
+void ClearModM(struct MusicPlayerTrack* track);
+void m4aMPlayModDepthSet(struct MusicPlayerInfo* mplayInfo, u16 trackBits, u8 modDepth);
+void m4aMPlayLFOSpeedSet(struct MusicPlayerInfo* mplayInfo, u16 trackBits, u8 lfoSpeed);
 
 // sound command handler functions
-void ply_fine(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_goto(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_patt(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_pend(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_rept(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_memacc(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_prio(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_tempo(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_keysh(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_voice(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_vol(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_pan(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_bend(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_bendr(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_lfos(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_lfodl(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_mod(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_modt(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_tune(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_port(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_xcmd(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_endtie(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_note(u32 note_cmd, struct MusicPlayerInfo *, struct MusicPlayerTrack *);
+void ply_fine(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_goto(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_patt(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_pend(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_rept(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_memacc(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_prio(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_tempo(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_keysh(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_voice(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_vol(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_pan(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_bend(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_bendr(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_lfos(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_lfodl(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_mod(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_modt(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_tune(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_port(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_xcmd(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_endtie(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_note(u32 note_cmd, struct MusicPlayerInfo*, struct MusicPlayerTrack*);
 
 // extended sound command handler functions
-void ply_xxx(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_xwave(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_xtype(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_xatta(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_xdeca(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_xsust(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_xrele(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_xiecv(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_xiecl(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_xleng(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
-void ply_xswee(struct MusicPlayerInfo *, struct MusicPlayerTrack *);
+void ply_xxx(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_xwave(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_xtype(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_xatta(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_xdeca(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_xsust(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_xrele(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_xiecv(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_xiecl(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_xleng(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+void ply_xswee(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
 
 #endif  // GUARD_GBA_M4A_INTERNAL_H

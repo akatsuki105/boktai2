@@ -32,7 +32,7 @@ struct Time {
 } PACKED;
 
 // 0x030047e0
-struct Clock {
+typedef struct Clock {
   union Date date;
   u8 hour;
   u8 minute;
@@ -51,13 +51,12 @@ struct Clock {
   u32 unk_18;
   u32 unk_1c;
   u32 unk_20;
-  u32 unk_24[3];
-};  // 48 bytes
-static_assert(sizeof(struct Clock) == 48);
+} Clock;                             // 36 bytes
+static_assert(sizeof(Clock) == 36);  // 0x0823d91c でのメモリクリアのサイズ指定的に36バイトで間違いない
 
 // ------------------------------------------------------------------------------------------------------------------------------------
 
-extern struct Clock gClock;
+extern Clock gClock;
 
 // --------------------------------------------
 

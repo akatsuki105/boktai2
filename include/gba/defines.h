@@ -24,7 +24,7 @@
 
 #define ALIGNED(n) __attribute__((aligned(n)))
 
-extern struct SoundInfo *SOUND_INFO_PTR;
+extern struct SoundInfo* SOUND_INFO_PTR;
 
 #define EWRAM 0x2000000
 #define IWRAM 0x3000000
@@ -43,16 +43,17 @@ extern struct SoundInfo *SOUND_INFO_PTR;
 
 #define BG_VRAM VRAM
 #define BG_VRAM_SIZE 0x10000
-#define BG_CHAR_ADDR(n) (void *)(BG_VRAM + (0x4000 * (n)))
-#define BG_SCREEN_ADDR(n) (void *)(BG_VRAM + (0x800 * (n)))
-#define BG_TILE_ADDR(n) (void *)(BG_VRAM + (0x80 * (n)))
+#define BG_CHAR_SIZE 0x4000
+#define BG_SCREEN_SIZE 0x800
+#define BG_CHAR_ADDR(n) (void*)(BG_VRAM + (BG_CHAR_SIZE * (n)))
+#define BG_SCREEN_ADDR(n) (void*)(BG_VRAM + (BG_SCREEN_SIZE * (n)))
 
 // text-mode BG
-#define OBJ_VRAM0 (void *)(VRAM + 0x10000)
+#define OBJ_VRAM0 (void*)(VRAM + 0x10000)
 #define OBJ_VRAM0_SIZE 0x8000
 
 // bitmap-mode BG
-#define OBJ_VRAM1 (void *)(VRAM + 0x14000)
+#define OBJ_VRAM1 (void*)(VRAM + 0x14000)
 #define OBJ_VRAM1_SIZE 0x4000
 
 #define OAM 0x7000000
@@ -74,17 +75,31 @@ extern struct SoundInfo *SOUND_INFO_PTR;
 #define WIN_RANGE(a, b) (((a) << 8) | (b))
 
 #if MODERN
-#define WIP
-#define NON_MATCH
 #define NORETURN __attribute__((noreturn))
 #else
-#define WIP __attribute__((naked))
-#define NON_MATCH __attribute__((naked))
 #define NORETURN
+#endif
+
+// if NONMATCHING_C is defined, build with NON_MATCH C code
+#ifdef NONMATCHING_C
+#define NON_MATCH
+#else
+#define NON_MATCH __attribute__((naked))
 #endif
 
 #define static_assert(cond) extern char assertion[(cond) ? 1 : -1]
 
 #define ARRAY_COUNT(array) (sizeof(array) / sizeof((array)[0]))
+
+// librfu_sio32id
+typedef struct RfuSIO32Id {
+  u8 MS_mode;
+  u8 state;
+  u16 count;
+  u16 send_id;
+  u16 recv_id;
+  u16 unk8;  // unused
+  u16 lastId;
+} RfuSIO32Id;
 
 #endif  // GUARD_GBA_DEFINES

@@ -1,8 +1,9 @@
 #include "entity.h"
 
 #include "global.h"
+#include "malloc.h"
 
-void FUN_0823092c(Entity* p);
+void Free(void* p);
 
 // 0x08230b44
 void ResetEntityManager(void) {
@@ -33,33 +34,30 @@ void RemoveEntity(Entity* p) {
   } else {
     h->entity = next;
   }
-  if (next != NULL) {
-    next->prev = prev;
-  }
+  if (next != NULL) next->prev = prev;
 }
 
-Entity* CreateEntity(u32 kind, u32 r1) {
-  Entity* p = AllocateEntity(r1);
+Entity* CreateEntity(u32 kind, s32 bytesize) {
+  Entity* p = Malloc(bytesize);
   if (p == NULL) {
     return NULL;
   }
-  FUN_082309cc(p, r1);
+  ClearMemory(p, bytesize);
   p->kind = kind;
-  if (gEntityCount == 0) {
-    gEntityCount++;
-  }
+  if (gEntityCount == 0) gEntityCount++;
   p->id = gEntityCount;
   gEntityCount++;
   AddEntity(p);
   return p;
 }
 
-void SetEntityRoutine(Entity* p, EntityFunc fn1, EntityFunc fn2) {
-  p->unk_08 = fn1;
-  p->unk_0c = fn2;
+void SetEntityRoutine(Entity* p, EntityFunc update, EntityFunc exit) {
+  p->onUpdate = update;
+  p->onExit = exit;
 }
 
-void entity_08230c00(void) {
+// Entityをすべて更新する, ゲームの要素はすべて Entity で表されてるっぽいので 実質的な gameloop
+void UpdateAllEntities(void) {
   s32 i;
   EntityHeader* h = gEntityManager;
   for (i = 0; i < ENTITY_KINDS; i++, h++) {
@@ -68,16 +66,12 @@ void entity_08230c00(void) {
       Entity* list = h->entity;
       while (p = list, p != NULL) {
         list = p->next;
-        if (!(p->unk_12 & 1)) {
-          if (p->unk_08 != NULL) {
-            p->unk_08(p);
-          }
+        if (!(p->unk_12 & E_FLAG_DELETE)) {
+          if (p->onUpdate != NULL) p->onUpdate(p);
         } else {
-          if (p->unk_0c != NULL) {
-            p->unk_0c(p);
-          }
+          if (p->onExit != NULL) p->onExit(p);
           RemoveEntity(p);
-          FUN_0823092c(p);
+          Free(p);
         }
       }
     }
@@ -85,22 +79,22 @@ void entity_08230c00(void) {
 }
 
 u32 KillEntity(Entity* p) {
-  p->unk_12 |= 1;
+  p->unk_12 |= E_FLAG_DELETE;
   return 0;
 }
 
-Entity* entity_08230c78(Entity* p) {
-  Entity* e;
-  if (p->unk_0c != NULL) {
-    e = (p->unk_0c(p));
+s32 entity_08230c78(Entity* p) {
+  s32 result;
+  if (p->onExit != NULL) {
+    result = (s32)p->onExit(p);
   } else {
-    e = NULL;
+    result = 0;
   }
-  if ((s32)(e) >= 0) {
-    p->unk_0c = NULL;
-    p->unk_12 |= 1;
+  if (result >= 0) {
+    p->onExit = NULL;
+    p->unk_12 |= E_FLAG_DELETE;
   }
-  return e;
+  return result;
 }
 
 void entity_08230ca4(s32 r0) {

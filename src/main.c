@@ -32,15 +32,15 @@ NAKED void AgbMain(void) {
 	str r0, [r1, #8]\n\
 	ldr r0, [r1, #8]\n\
 	bl RtcIoEnable\n\
-	bl FUN_0823d91c\n\
+	bl ClearClock\n\
 	bl FUN_0823e4ec\n\
 	bl m4aSoundInit\n\
-	bl FUN_08229cc4\n\
+	bl InitIntrHandlers\n\
 	movs r0, #0x40\n\
 	bl EEPROMConfigure\n\
 	bl FUN_0823a870\n\
 	bl FUN_08231c28\n\
-	bl FUN_08230734\n\
+	bl InitSystemManager\n\
 	bl FUN_08229d80\n\
 	bl FUN_082326a0\n\
 	bl FUN_0822b0a0\n\
@@ -70,7 +70,7 @@ NAKED void AgbMain(void) {
 	bl FUN_08231bec\n\
 	bl FUN_0823acbc\n\
 _08000400:\n\
-	bl entity_08230c00\n\
+	bl UpdateAllEntities\n\
 	b _08000400\n\
 	.align 2, 0\n\
 _08000408: .4byte 0x04000204\n\

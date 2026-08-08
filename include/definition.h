@@ -22,8 +22,6 @@ extern void* gUnkPtr;
 
 // --------------------------------------------
 
-s32 Div(s32 a, s32 b);
-s32 Mod(s32 a, s32 b);
 bool32 prepare_08231510(u8 n);
 u32 fetch_082316e4(void);
 void FUN_0809c464(void);

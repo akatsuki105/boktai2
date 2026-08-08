@@ -35,5 +35,6 @@ extern const struct ItemData gItemDB[ITEM_NUM];
 item32_t GetItemID(bool32 isValuable, s32 slot);
 item32_t GetNormalItemID(s32 slot);
 item32_t GetValuableItemID(s32 slot);
+bool32 RemoveSpecifiedItem(item32_t id);
 
 #endif  // GUARD_ZOKTAI_ITEM_H

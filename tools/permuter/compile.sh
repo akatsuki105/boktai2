@@ -1,5 +1,6 @@
 #!/bin/bash
-# decomp-permuter 用 agbcc コンパイルラッパー
+
+# see permuter_settings.toml.compiler_command
 # decomp-permuter から "{infile} {outfile}" の形式で呼ばれる
 
 set -e
@@ -17,7 +18,7 @@ CPPFLAGS="-I $REPO/tools/agbcc -I $REPO/tools/agbcc/include -iquote $REPO/includ
 CFLAGS="-mthumb-interwork -Wimplicit -Wparentheses -O2 -fshort-enums -fhex-asm"
 ASFLAGS="-mcpu=arm7tdmi -march=armv4t -mthumb -mthumb-interwork"
 
-tmp_s=$(mktemp /tmp/perm_XXXX.s)
+tmp_s=$(gmktemp /tmp/perm_XXXX.s)
 trap "rm -f $tmp_s" EXIT
 
 $CPP $CPPFLAGS "$SRC" | $AGBCC $CFLAGS -o "$tmp_s"

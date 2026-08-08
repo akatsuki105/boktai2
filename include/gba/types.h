@@ -3,7 +3,8 @@
 
 #include <stdint.h>
 
-typedef void (*VoidFunc)(void);
+typedef void (*Procedure)(void);
+typedef void (*IntrFunc)(void);
 
 typedef uint8_t u8;
 typedef uint16_t u16;
@@ -24,7 +25,7 @@ typedef volatile s32 vs32;
 typedef volatile s64 vs64;
 
 typedef float f32;
-typedef double f64;
+typedef double f64;  // mixendian
 
 typedef u8 bool8;
 typedef u16 bool16;
@@ -49,23 +50,25 @@ struct PlttData {
   u16 unused_15 : 1;
 } __attribute__((packed));
 
-struct OamData {
-  /*0x00*/ u32 y : 8;
-  /*0x01*/ u32 affineMode : 2;  // 0x1, 0x2 = 0x3
-  u32 objMode : 2;              // 0x4, 0x8 = 0xC
-  u32 mosaic : 1;               // 0x10
-  u32 bpp : 1;                  // 0x20
-  u32 shape : 2;                // 0x40, 0x80
-
-  /*0x02*/ u32 x : 9;
-  u32 matrixNum : 5;  // bits 3/4 are h-flip/v-flip if not in affine mode
-  u32 size : 2;
-
-  /*0x04*/ u16 tileNum : 10;
-  u16 priority : 2;
-  u16 paletteNum : 4;
-  /*0x06*/ u16 affineParam;
-};
+// OAM(0x07000000) entry
+typedef struct {
+  // 0x00
+  u32 y : 8;           // bit0-7
+  u32 affineMode : 2;  // bit8-9
+  u32 objMode : 2;     // bit10-11, 0: normal, 1: semi-transparent, 2: obj window
+  u32 mosaic : 1;      // bit12, 0x10
+  u32 bpp : 1;         // bit13, 0x20
+  u32 shape : 2;       // bit14-15, 0x40, 0x80
+  u32 x : 9;           // bit16-24
+  u32 matrixNum : 5;   // bit25-29, bits 3/4 are h-flip/v-flip if not in affine mode
+  u32 size : 2;        // bit30-31
+  // 0x04
+  u16 tileNum : 10;    // bit0-9
+  u16 priority : 2;    // bit10-11
+  u16 paletteNum : 4;  // bit12-15
+  // 0x06
+  u16 affineParam;  // Affine Transform Parameter
+} OamData;
 
 #define ST_OAM_OBJ_NORMAL 0
 #define ST_OAM_OBJ_BLEND 1

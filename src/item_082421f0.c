@@ -104,7 +104,52 @@ bool32 TryAddItem(item32_t n, s32 rotCount) {
   return tryAddValuable(n);
 }
 
-INCASM("asm/code_082422f0.inc");
+bool32 FUN_082423a8(void) {
+  item32_t n;
+  s32 rotCount;
+  if (!prepare_08231510(0x69)) {
+    return FALSE;
+  }
+  n = fetch_082316e4();
+  rotCount = prepare_08231510(0x70) ? fetch_082316e4() : 0;
+  return TryAddItem(n, rotCount);
+}
+
+bool32 _RemoveSpecifiedItem(item32_t id) {
+  s32 slot;
+  for (slot = 0; slot < 16; slot++) {
+    if (GetNormalItemID(slot) == id) {
+      RemoveItem(slot);
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+bool32 removeSpecifiedValuable(item32_t id) {
+  s32 slot;
+  for (slot = 0; slot < 16; slot++) {
+    if (GetValuableItemID(slot) == id) {
+      RemoveValuable(slot);
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+bool32 RemoveSpecifiedItem(item32_t id) {
+  if (!IsValuable(id)) {
+    return _RemoveSpecifiedItem(id);
+  }
+  return removeSpecifiedValuable(id);
+}
+
+bool32 FUN_08242450(void) {
+  if (prepare_08231510(0x69) != 0) {
+    return RemoveSpecifiedItem(fetch_082316e4());
+  }
+  return FALSE;
+}
 
 static bool32 checkInventoryItemOwn(item32_t id) {
   s32 slot;
@@ -141,41 +186,14 @@ bool32 FUN_082424d4(void) {
   return FALSE;
 }
 
-NAKED void SwapNormalItem(s32 slot1, s32 slot2) {
-  asm(".syntax unified\n\
-	push {r4, r5, r6, lr}\n\
-	adds r4, r0, #0\n\
-	adds r5, r1, #0\n\
-	ldr r0, _08242534 @ =0x030046A0\n\
-	ldr r1, [r0]\n\
-	lsls r2, r4, #1\n\
-	adds r2, r2, r1\n\
-	adds r2, #0x70\n\
-	movs r0, #0\n\
-	ldrsh r6, [r2, r0]\n\
-	lsls r0, r5, #1\n\
-	adds r0, r0, r1\n\
-	adds r0, #0x70\n\
-	ldrh r1, [r0]\n\
-	strh r1, [r2]\n\
-	strh r6, [r0]\n\
-	adds r0, r4, #0\n\
-	bl GetRotCount\n\
-	adds r6, r0, #0\n\
-	adds r0, r5, #0\n\
-	bl GetRotCount\n\
-	adds r1, r0, #0\n\
-	adds r0, r4, #0\n\
-	bl SetRotCount\n\
-	adds r0, r5, #0\n\
-	adds r1, r6, #0\n\
-	bl SetRotCount\n\
-	pop {r4, r5, r6}\n\
-	pop {r0}\n\
-	bx r0\n\
-	.align 2, 0\n\
-_08242534: .4byte 0x030046A0\n\
- .syntax divided\n");
+void SwapNormalItem(s32 slot1, s32 slot2) {
+  s32 tmp;
+  tmp = ITEM(slot1);
+  ITEM(slot1) = ITEM(slot2);
+  ITEM(slot2) = tmp;
+  tmp = GetRotCount(slot1);
+  SetRotCount(slot1, GetRotCount(slot2));
+  SetRotCount(slot2, tmp);
 }
 
 void SwapValuable(s32 slot1, s32 slot2) {
@@ -185,8 +203,8 @@ void SwapValuable(s32 slot1, s32 slot2) {
   SetValuable(slot2, a);
 }
 
-NAKED void SortInventory(s32 slot) { INCCODE("asm/wip/SortInventory.inc"); }
-NAKED void SortValuable(s32 slot) { INCCODE("asm/wip/SortValuable.inc"); }
+NAKED void SortInventory(s32 slot) { INCFUNC("asm/func/SortInventory.inc"); }
+NAKED void SortValuable(s32 slot) { INCFUNC("asm/func/SortValuable.inc"); }
 
 item32_t GetRottenItemID(item32_t n) {
   switch (n) {
@@ -220,10 +238,10 @@ item32_t GetRottenItemID(item32_t n) {
   }
 }
 
-NAKED void RotItem(s32 rotDelta) { INCCODE("asm/wip/RotItem.inc"); }
+NAKED void RotItem(s32 rotDelta) { INCFUNC("asm/func/RotItem.inc"); }
 
-WIP void item_082427e0(void) {
-#if MODERN
+NON_MATCH void item_082427e0(void) {
+#ifdef NONMATCHING_C
   s32 i;
   s32 val;
   for (i = 0; i < 48; i++) {
@@ -244,7 +262,7 @@ WIP void item_082427e0(void) {
     }
   }
 #else
-  INCCODE("asm/wip/item_082427e0.inc");
+  INCFUNC("asm/func/item_082427e0.inc");
 #endif
 }
 

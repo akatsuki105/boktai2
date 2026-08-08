@@ -3,7 +3,10 @@
 
 #include "gba/gba.h"
 
+// このゲームのすべてのものはEntityで表される。
+
 // idx for gEntityManager, 0x03004520
+// WARNING: これらに決まった意味はなくて、ただのEntityのリソース確保の優先順位かもしれない
 enum EntityKind {
   ENTITY_UNK_0 = 0,
   ENTITY_UNK_1 = 1,  // ここ(0x03004528)をnullにした状態でエリア移動するとフリーズした
@@ -14,31 +17,38 @@ enum EntityKind {
   ENTITY_PLAYER = 6,
   ENTITY_UNK_7 = 7,  // これを削除すると画面のスクロールがおかしくなる
   ENTITY_UNK_8 = 8,
-  ENTITY_NPC = 9,  // 果実屋のリタ、宿屋の太陽ダケ
+  ENTITY_UNK_9 = 9,  // 果実屋のリタ、宿屋の太陽ダケ
   ENTITY_UNK_10 = 10,
   ENTITY_UNK_11 = 11,  // プレイヤーや敵との衝突判定？、背景のパレット？
   ENTITY_UI = 12,
   ENTITY_UNK_13 = 13,  // これを削除すると画面のスクロールがおかしくなる
 };
 
+// Entity.unk_12
+#define E_FLAG_DELETE (1 << 0)  // 1 にすると Entity を削除する
+
 struct Entity;
 
 typedef struct Entity* (*EntityFunc)(struct Entity*);
 
+// Entity
+#define ENTITY                                                                        \
+  struct Entity* prev; /* 0x00 */                                                     \
+  struct Entity* next; /* 0x04 */                                                     \
+  EntityFunc onUpdate; /* 0x08 */                                                     \
+  EntityFunc onExit;   /* 0x0C, Entityが削除される時汎用的な削除処理の前に呼ばれる */ \
+  u16 id;              /* 0x10, Entity全体のID */                                     \
+  u16 unk_12;          /* 0x12, 01 にするとEntityを削除 */                            \
+  u8 kind;             /* 0x14, see EntityKind */                                     \
+  u8 unk_15;           /* 0x15 */                                                     \
+  u8 unk_16;           /* 0x16 */                                                     \
+  u8 unk_17;           /* 0x17 */
+
 typedef struct Entity {
-  struct Entity* prev;
-  struct Entity* next;
-  EntityFunc unk_08;
-  EntityFunc unk_0c;
-  u16 id;      // Entity全体のID
-  u16 unk_12;  // 01 にするとEntityを削除
-  u8 kind;
-  u8 unk_15;
-  u8 unk_16;
-  u8 unk_17;
+  ENTITY;
 } Entity;
 
-struct Entity5 {
+typedef struct {
   Entity e;
   u8 unk_18;
   u8 unk_19;
@@ -51,24 +61,24 @@ struct Entity5 {
   u16 unk_28;
   u16 unk_2a;
   EntityFunc unk_2c;
-};
+} Entity5;
 
 // 0x0200865c
-struct Unk_0200865c {
+typedef struct Unk_0200865c {
   u16 id;
   u8 unk_02[58];
   struct Unk_0200865c* prev;
   struct Unk_0200865c* next;
-};
+} Unk_0200865c;
 
-struct Entity2 {
+typedef struct {
   Entity e;
-  struct Unk_0200865c* unk_18;
-  struct Unk_0200865c* unk_1c;
+  Unk_0200865c* unk_18;
+  Unk_0200865c* unk_1c;
   void* unk_20;
   void* unk_24;
   // anymore
-};
+} Entity2;
 
 // --------------------------------------------
 
@@ -81,15 +91,13 @@ typedef struct {
 
 extern EntityHeader gEntityManager[14];
 extern EntityHeader gDefaultEntityManager[14];
-extern struct Entity2* PTR_030016f8;
-extern struct Entity5* PTR_03001708;
+extern Entity2* PTR_030016f8;
+extern Entity5* PTR_03001708;
 
 // --------------------------------------------
 
-Entity* AllocateEntity(u32 r0);
-Entity* CreateEntity(u32 kind, u32 r1);
+Entity* CreateEntity(u32 kind, s32 bytesize);
 u32 KillEntity(Entity* p);
 void SetEntityRoutine(Entity* p, EntityFunc fn1, EntityFunc fn2);
-void FUN_082309cc(Entity* p, u32 r1);
 
 #endif  // GUARD_ZOKTAI_ENTITY_H

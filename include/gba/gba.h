@@ -3,9 +3,11 @@
 
 #include "gba/types.h"
 //
+#include "gba/agbrfu.h"
 #include "gba/agbrtc.h"
 #include "gba/defines.h"
 #include "gba/io_reg.h"
+#include "gba/linkManager.h"
 #include "gba/macro.h"
 #include "gba/syscall.h"
 //

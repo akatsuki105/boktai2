@@ -35,9 +35,8 @@ void RemoveArmorFromInventory(slot32_t n) {
   return;
 }
 
-WIP void SwapArmorSlot(slot32_t slot1, slot32_t slot2) {
-#if MODERN
-  armor16_t a = ARMORS(slot1);
+void SwapArmorSlot(slot32_t slot1, slot32_t slot2) {
+  s32 a = ARMORS(slot1);
   armor16_t b = ARMORS(slot2);
   ARMORS(slot1) = b;
   ARMORS(slot2) = a;
@@ -47,12 +46,60 @@ WIP void SwapArmorSlot(slot32_t slot1, slot32_t slot2) {
   } else if (GAME->armor == slot2) {
     GAME->armor = slot1;
   }
-#else
-  INCCODE("asm/wip/SwapArmorSlot.inc");
-#endif
 }
 
-NAKED void SortArmors(s32 from) { INCCODE("asm/wip/SortArmors.inc"); }
+NON_MATCH void SortArmors(s32 from) {
+#ifdef NONMATCHING_C
+  s32 emptyCount;
+  s32 validCount;
+  s32 i;
+  s32 slot;
+
+  validCount = 0;
+  emptyCount = 0;
+  i = 0;
+  do {
+    slot = from + i;
+    if (GetInventoryArmor(slot) < 0) {
+      emptyCount += 1;
+    } else {
+      validCount += 1;
+      if (emptyCount > 0) {
+        SwapArmorSlot(slot, slot - emptyCount);
+      }
+    }
+    i += 1;
+  } while (i <= 0xf);
+
+  if (validCount > 1) {
+    s32 j;
+    s32 k;
+    s32 nextJ;
+    s32 lastIdx;
+    s32 pi;
+    s32 pj;
+    s32 vi;
+
+    j = 0;
+    lastIdx = validCount - 1;
+    for (; j < lastIdx;) {
+      k = j;
+      nextJ = j + 1;
+      for (; k < validCount; k++) {
+        pi = from + j;
+        vi = GetInventoryArmor(pi);
+        pj = from + k;
+        if (vi > GetInventoryArmor(pj)) {
+          SwapArmorSlot(pi, pj);
+        }
+      }
+      j = nextJ;
+    }
+  }
+#else
+  INCFUNC("asm/func/SortArmors.inc");
+#endif
+}
 
 bool32 IsSlotArmorEpuipped(slot32_t n) {
   slot32_t equipped = GAME->armor;
@@ -80,8 +127,8 @@ bool32 FUN_08243380(void) {
   return FALSE;
 }
 
-WIP void armor_082433bc(void) {
-#if MODERN
+NON_MATCH void armor_082433bc(void) {
+#ifdef NONMATCHING_C
   s32 i;
   s32 count;
 
@@ -110,7 +157,7 @@ WIP void armor_082433bc(void) {
     }
   }
 #else
-  INCCODE("asm/wip/armor_082433bc.inc");
+  INCFUNC("asm/func/armor_082433bc.inc");
 #endif
 }
 
