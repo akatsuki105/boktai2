@@ -45,7 +45,7 @@ _0822236E:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #2
 	bl FUN_0822b644
 	str r4, [sp]
@@ -53,7 +53,7 @@ _0822236E:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #3
 	bl FUN_0822b644
 	str r4, [sp]
@@ -61,7 +61,7 @@ _0822236E:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r5, #0xb
 	ldr r1, [r7, #0x38]
 	movs r0, #2
@@ -72,7 +72,7 @@ _0822236E:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	str r5, [r7, #0x58]
 	bl FUN_0823d4e8
 	bl FUN_0823d550
@@ -338,7 +338,7 @@ _082225D0:
 	movs r0, #0x14
 	movs r1, #4
 	add r2, sp, #4
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	ldr r0, [r7, #0x54]
 	cmp r0, #0xd2
 	bgt _08222600
@@ -391,7 +391,7 @@ _08222634:
 	adds r2, #0x64
 	movs r0, #0x14
 	movs r1, #4
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	movs r1, #0xde
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -419,7 +419,7 @@ _08222634:
 	movs r0, #0x12
 	movs r1, #7
 	adds r2, r4, #0
-	bl FUN_0821b2b4
+	bl Video_DrawText
 _08222694:
 	ldr r0, [r7, #0x54]
 	cmp r0, #0x3b
@@ -449,7 +449,7 @@ _082226A8:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, [r4, #8]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -484,7 +484,7 @@ _08222704:
 	adds r2, #0x6d
 	movs r0, #0x12
 	movs r1, #7
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	movs r0, #0xde
 	lsls r0, r0, #2
 	adds r4, r7, r0
@@ -554,7 +554,7 @@ _08222786:
 	adds r2, #0x6d
 	movs r0, #0x12
 	movs r1, #7
-	bl FUN_0821b2b4
+	bl Video_DrawText
 _082227B0:
 	ldr r0, [r7, #0x54]
 	cmp r0, #0x3c
@@ -585,7 +585,7 @@ _082227C4:
 	add r2, sl
 	movs r0, #0x17
 	movs r1, #0xa
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	ldr r0, _08222800 @ =0x00000167
 	bl PlaySound_082406e0
 	movs r0, #4
@@ -630,7 +630,7 @@ _08222828:
 	add r2, sb
 	movs r0, #0x14
 	movs r1, #0xd
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	ldr r0, _08222864 @ =0x00000167
 	bl PlaySound_082406e0
 	movs r0, #5
@@ -657,7 +657,7 @@ _08222880:
 	movs r0, #9
 	movs r1, #0x10
 	adds r2, r6, #0
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	movs r0, #6
 	b _08222928
 _0822288E:
@@ -695,7 +695,7 @@ _082228C6:
 	movs r0, #9
 	movs r1, #0x10
 	adds r2, r6, #0
-	bl FUN_0821b2b4
+	bl Video_DrawText
 _082228DC:
 	ldr r0, _08222900 @ =0x030044E0
 	ldrh r1, [r0, #2]
@@ -760,7 +760,7 @@ _0822293C:
 	ble _0822299C
 	ldr r0, [r7, #0x44]
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 	movs r0, #0
 	bl FUN_0822b644
 	movs r4, #0
@@ -769,7 +769,7 @@ _0822293C:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #2
 	bl FUN_0822b644
 	str r4, [sp]
@@ -777,7 +777,7 @@ _0822293C:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #3
 	bl FUN_0822b644
 	str r4, [sp]
@@ -785,7 +785,7 @@ _0822293C:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	adds r0, r7, #0
 	bl KillEntity
 _0822299C:

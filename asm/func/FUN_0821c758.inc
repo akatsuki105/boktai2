@@ -10,7 +10,7 @@
 	ldr r0, _0821C81C @ =0x0000CB05
 	mov sl, r0
 	ldr r1, _0821C820 @ =0x00005D36
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	movs r1, #0xa7
 	lsls r1, r1, #2
@@ -59,7 +59,7 @@
 	strh r5, [r0]
 	ldr r1, _0821C824 @ =0x0000DE23
 	mov r0, sl
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	ldr r1, _0821C828 @ =0x00000B34
 	adds r0, r7, r1

@@ -51,7 +51,7 @@ _08232140:
 	adds r1, r3, #0
 	adds r2, r5, #0
 	mov r3, sp
-	bl FUN_08231db0
+	bl Script_LoadPointer
 	ldr r0, [sp]
 	add sp, #4
 	pop {r4, r5}

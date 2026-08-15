@@ -12,7 +12,7 @@ _0822EC94:
 	ldr r1, _0822ECB0 @ =0x0000539C
 _0822EC96:
 	ldr r0, _0822ECB4 @ =0x000092B3
-	bl FUN_082310cc
+	bl GetFile
 	movs r1, #0xea
 	lsls r1, r1, #1
 	adds r0, r0, r1

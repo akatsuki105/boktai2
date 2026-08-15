@@ -51,7 +51,7 @@ _082320C8:
 	adds r1, r2, #0
 	adds r2, r5, #0
 	adds r3, r6, #0
-	bl FUN_08231ef0
+	bl Script_StorePointerCore
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0

@@ -226,7 +226,7 @@ functions that end up MATCHING.
 - **Symptom**: a first-fit heap allocator over a doubly-linked list of
   `MemBlock` nodes (fields renamed from `unk_00`/`unk_04` to
   `prev`/`next` — pointer types — during this attempt, confirmed
-  harmless by diffing `FUN_082308a8`'s compiled output against
+  harmless by diffing `InitHeap`'s compiled output against
   `expected/build/boktai2/src/malloc.o` unchanged). The register-swap
   symptom is reminiscent of the "declare-with-initializer" and
   "duplicate one variable across a whole function" idioms already
@@ -251,11 +251,11 @@ functions that end up MATCHING.
 - **(5) Bitfield hypothesis, tried and disproven**: user suggested
   `MemBlock.unk_08` might be a real C bitfield (`u32 size : 20; u32 : 11;
   u32 free : 1;`) instead of a plain `u32` with manual mask/shift. Tried
-  rewriting both `FUN_082308a8` (the heap initializer, already
+  rewriting both `InitHeap` (the heap initializer, already
   MATCHING before this attempt) and `Malloc` to use named bitfield
   members (`block->size`, `block->free`) instead of
   `unk_08 & MEMBLOCK_FLAG` / `unk_08 & 0x000FFFFF`. Result: **broke the
-  previously-matching `FUN_082308a8`** — agbcc laid out the 1-bit `free`
+  previously-matching `InitHeap`** — agbcc laid out the 1-bit `free`
   field as its own separate byte-addressed storage unit (compiled to
   `ldrb`/`strb` at offset+11, a read-modify-write on a single byte)
   instead of packing it into the same word as `size`, producing
@@ -265,7 +265,7 @@ functions that end up MATCHING.
   not in a way agbcc packs the way we tried — the field is written as a
   plain whole `u32` (either a literal combined constant like
   `MEMBLOCK_FLAG | HEAP_SIZE`, or masked/OR'd by hand as the pre-existing
-  candidate already does). Reverted immediately; `FUN_082308a8` confirmed
+  candidate already does). Reverted immediately; `InitHeap` confirmed
   restored to its exact prior matching bytes before resuming. **Do not
   retry the bitfield struct approach for this field** without a
   fundamentally different bitfield layout (e.g. explicit union with a
@@ -273,7 +273,7 @@ functions that end up MATCHING.
   version is a confirmed dead end.
 - **Status**: paused at NON_MATCH by user request; candidate from
   attempt (3) — the closest, off by the r2/r3 swap only — kept in
-  `#ifdef NONMATCHING_C`. `FUN_082308a8` confirmed still MATCHING.
+  `#ifdef NONMATCHING_C`. `InitHeap` confirmed still MATCHING.
 
 ### Free (`src/malloc.c`)
 

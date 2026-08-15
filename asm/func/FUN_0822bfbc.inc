@@ -101,7 +101,7 @@ _0822C06C:
 	bl FUN_0822b9d4
 	adds r0, r7, #0
 	ldr r1, [sp, #0x60]
-	bl FUN_0822ba00
+	bl SetBGPrioDirect
 	mov r0, r8
 	strh r0, [r6, #0x14]
 	strh r4, [r6, #0x16]

@@ -10,7 +10,7 @@
 	cmp r4, #0
 	beq _08224AD0
 _08224A54:
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08224AE0 @ =0x00000F46
 	adds r1, r4, r2
 	strh r0, [r1]
@@ -66,7 +66,7 @@ _08224AB2:
 	strb r0, [r2]
 	movs r0, #0x70
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	movs r2, #0xf1
 	lsls r2, r2, #4
 	adds r1, r4, r2

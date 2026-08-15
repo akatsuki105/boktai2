@@ -5,30 +5,21 @@
 
 // 用途不明の構造体　はここに置いておく
 
+// Collision or 座標計算 or スクリプト生成管理 のデータ?
+typedef struct Unk_0200865c {
+  u16 id;                     // 0x00
+  u8 unk_02[54];              // 0x02
+  void* p_38;                 // 0x38, 親構造体のポインタ?
+  struct Unk_0200865c* prev;  // 0x3C
+  struct Unk_0200865c* next;  // 0x40
+} Unk_0200865c;
+
 typedef struct {
   u16 id;
   u8 unk_02;
   u8 unk_03;
   void* unk_04;
 } Unk_0203b000;
-
-typedef struct Unk_030016c0 {
-  u8 unk_0[4];
-  s32 unk_4;
-  u8 unk_8[32];
-} Unk_030016c0;
-
-// 0x085a9208
-typedef struct {
-  u32 unk;
-  void* fn;
-} Unk_085a9208;
-
-typedef struct Unk_030016e8 {
-  void* unk;
-  u32 len;
-  Unk_085a9208* arr;
-} Unk_030016e8;
 
 // 0x085af0ec
 typedef struct {

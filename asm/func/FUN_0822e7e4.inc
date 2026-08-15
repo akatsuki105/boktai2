@@ -17,7 +17,7 @@ _0822E7F8:
 	bl ClearMemory
 	ldr r0, _0822E830 @ =0x0000A635
 	ldr r1, _0822E834 @ =0x00003F51
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _0822E838

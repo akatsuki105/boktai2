@@ -21,7 +21,7 @@
 	cmp r0, #0
 	beq _0824182C
 	adds r0, r4, #0
-	bl FUN_08241774
+	bl GetSunLevel
 	lsls r0, r0, #1
 	cmp r0, #0xa
 	ble _08241826
@@ -40,7 +40,7 @@ _0824182C:
 	cmp r0, #0
 	beq _0824185C
 	adds r0, r4, #0
-	bl FUN_08241774
+	bl GetSunLevel
 	cmp r0, #1
 	bgt _0824187A
 	movs r0, #2
@@ -58,7 +58,7 @@ _0824185C:
 	cmp r0, #0
 	beq _0824187A
 	adds r0, r4, #0
-	bl FUN_08241774
+	bl GetSunLevel
 	cmp r0, #2
 	ble _0824187A
 	movs r0, #2
@@ -76,7 +76,7 @@ _08241886:
 	cmp r1, #0
 	beq _082418A8
 	adds r0, r4, #0
-	bl FUN_08241774
+	bl GetSunLevel
 	adds r0, #4
 	cmp r0, #0xa
 	ble _08241898

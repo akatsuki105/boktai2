@@ -102,7 +102,7 @@ _0823136C:
 	lsls r1, r1, #8
 	ldrb r0, [r4]
 	orrs r0, r1
-	bl FUN_08231978
+	bl Textbox_LookupString
 	str r0, [r5]
 	movs r0, #7
 	str r0, [r6]
@@ -163,7 +163,7 @@ _082313E0:
 	ldrb r1, [r4]
 	movs r0, #0xf
 	ands r0, r1
-	bl ParseInstructionVariable
+	bl VM_GetVariable
 _082313EA:
 	str r0, [r5]
 _082313EC:
@@ -174,21 +174,21 @@ _082313EC:
 _082313F4:
 	adds r0, r4, #0
 	mov r1, sp
-	bl ReadScriptOffset
+	bl VM_ReadContainerLength
 	adds r4, r0, #0
 	str r4, [r5]
 	b _0823142A
 _08231402:
 	adds r0, r4, #0
 	mov r1, sp
-	bl ReadScriptOffset
+	bl VM_ReadContainerLength
 	adds r4, r0, #0
-	bl FUN_08232600
+	bl Script_RunExpression
 	b _08231428
 _08231412:
 	adds r0, r4, #0
 	mov r1, sp
-	bl ReadScriptOffset
+	bl VM_ReadContainerLength
 	adds r4, r0, #0
 	ldrb r1, [r4]
 	lsls r1, r1, #0x10

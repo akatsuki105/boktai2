@@ -11,13 +11,13 @@
 	cmp r4, #0
 	beq _08224944
 _08224892:
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08224954 @ =0x00000F46
 	adds r1, r4, r2
 	strh r0, [r1]
 	movs r0, #0x64
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	lsls r0, r0, #0x18
 	movs r5, #0
 	movs r1, #0xe0

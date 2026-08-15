@@ -5,7 +5,7 @@
 	ldr r5, _0823E314 @ =gClock
 	ldr r3, [r5]
 	mov r0, sp
-	bl FUN_0823db08
+	bl ParseBCDDate
 	add r4, sp, #0xc
 	adds r0, r4, #0
 	bl FUN_0823167c

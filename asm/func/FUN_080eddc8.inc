@@ -1,5 +1,5 @@
 	push {lr}
-	bl fetch_082316e4
+	bl Script_GetValue
 	cmp r0, #0
 	beq _080EDDDA
 	bl FUN_080edda0

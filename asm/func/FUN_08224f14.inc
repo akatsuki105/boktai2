@@ -28,7 +28,7 @@ _08224F36:
 	str r0, [r1]
 	adds r0, r2, #0
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _08224F50:
 	ldr r1, _08224F70 @ =FUN_08224dd0
 	adds r0, r4, #0

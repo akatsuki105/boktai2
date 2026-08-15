@@ -54,7 +54,7 @@ _08214A78:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #2
 	bl FUN_0822b644
 	str r6, [sp]
@@ -62,7 +62,7 @@ _08214A78:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #3
 	bl FUN_0822b644
 	str r6, [sp]
@@ -70,7 +70,7 @@ _08214A78:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r4, #2
 	ldr r1, [r7, #0x38]
 	movs r0, #2
@@ -81,7 +81,7 @@ _08214A78:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	str r4, [r7, #0x64]
 	adds r0, r7, #0
 	bl FUN_08214274
@@ -358,7 +358,7 @@ _08214CC8:
 	ldr r1, _08214CF0 @ =0x000004E4
 	add r1, sl
 	ldrb r1, [r1]
-	bl FUN_0823d970
+	bl GetDaysInMonth
 	adds r5, r0, #0
 	cmp r6, #1
 	bne _08214CF8
@@ -576,7 +576,7 @@ _08214E70:
 	str r1, [r7, #0x44]
 	ldr r0, [r7, #0x50]
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 	movs r0, #0
 	bl FUN_0822b644
 	movs r4, #0
@@ -585,7 +585,7 @@ _08214E70:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #2
 	bl FUN_0822b644
 	str r4, [sp]
@@ -593,7 +593,7 @@ _08214E70:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #3
 	bl FUN_0822b644
 	str r4, [sp]
@@ -601,7 +601,7 @@ _08214E70:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	ldr r0, _08214EDC @ =0x030046A0
 	ldr r0, [r0]
 	ldr r2, _08214EE0 @ =0x0000093E
@@ -647,7 +647,7 @@ _08214F02:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r5, #0
 	movs r1, #0xa
 	bl Div
@@ -687,7 +687,7 @@ _08214F54:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r5, #0
 	movs r1, #0xa
 	bl Div
@@ -714,7 +714,7 @@ _08214FA2:
 	add r0, sl
 	ldrb r1, [r0]
 	adds r0, r2, #0
-	bl FUN_0823d970
+	bl GetDaysInMonth
 	adds r5, r0, #0
 	ldr r1, _082150DC @ =0x000004E5
 	add r1, sl
@@ -754,7 +754,7 @@ _08214FDA:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r5, #0
 	movs r1, #0xa
 	bl Div
@@ -794,7 +794,7 @@ _0821502C:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r5, #0
 	movs r1, #0xa
 	bl Div
@@ -834,7 +834,7 @@ _0821507E:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r5, #0
 	movs r1, #0xa
 	bl Div

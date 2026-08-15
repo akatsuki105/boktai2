@@ -349,7 +349,7 @@ _0821A5A6:
 	adds r0, r6, r1
 	ldr r0, [r0]
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _0821A5C2:
 	adds r0, r6, #0
 	bl KillEntity

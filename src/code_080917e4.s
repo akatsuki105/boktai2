@@ -744,7 +744,7 @@ _08091D82:
 _08091D88: .4byte 0x0000036A
 _08091D8C:
 	movs r2, #0
-	ldr r1, _08091DDC @ =gItemDB
+	ldr r1, _08091DDC @ =0x08DAA8D8
 	lsls r0, r4, #4
 	adds r3, r0, r1
 	ldr r0, _08091DE0 @ =0x0000043C
@@ -777,7 +777,7 @@ _08091DAA:
 	ldr r0, [r0]
 	cmp r0, #0
 	ble _08091E26
-	ldr r1, _08091DDC @ =gItemDB
+	ldr r1, _08091DDC @ =0x08DAA8D8
 	lsls r0, r4, #4
 	adds r0, r0, r1
 	ldrh r1, [r0, #6]
@@ -785,7 +785,7 @@ _08091DAA:
 	ands r0, r1
 	b _08091E22
 	.align 2, 0
-_08091DDC: .4byte gItemDB
+_08091DDC: .4byte 0x08DAA8D8
 _08091DE0: .4byte 0x0000043C
 _08091DE4: .4byte 0x0000038E
 _08091DE8: .4byte 0x030046A0
@@ -969,7 +969,7 @@ _08091F24:
 	cmp r4, #0xd
 	bne _08091F50
 	movs r4, #8
-	ldr r1, _08091F4C @ =gItemDB
+	ldr r1, _08091F4C @ =0x08DAA8D8
 	adds r0, r1, #0
 	adds r0, #0x80
 	ldrh r6, [r0, #6]
@@ -977,9 +977,9 @@ _08091F24:
 	adds r3, r1, #0
 	b _08091FC0
 	.align 2, 0
-_08091F4C: .4byte gItemDB
+_08091F4C: .4byte 0x08DAA8D8
 _08091F50:
-	ldr r1, _08091FA4 @ =gItemDB
+	ldr r1, _08091FA4 @ =0x08DAA8D8
 	lsls r0, r4, #4
 	adds r0, r0, r1
 	ldrh r6, [r0, #6]
@@ -1024,7 +1024,7 @@ _08091FA0:
 	lsls r6, r6, #1
 	b _08091FBE
 	.align 2, 0
-_08091FA4: .4byte gItemDB
+_08091FA4: .4byte 0x08DAA8D8
 _08091FA8:
 	subs r0, r4, #2
 	cmp r0, #2
@@ -1105,7 +1105,7 @@ item_08092034: @ 0x08092034
 	bl GetNormalItemID
 	cmp r0, #0
 	blt _0809204C
-	ldr r1, _08092050 @ =gItemDB
+	ldr r1, _08092050 @ =0x08DAA8D8
 	lsls r0, r0, #4
 	adds r0, r0, r1
 	ldrh r4, [r0, #4]
@@ -1115,7 +1115,7 @@ _0809204C:
 	movs r0, #0xcf
 	b _0809206A
 	.align 2, 0
-_08092050: .4byte gItemDB
+_08092050: .4byte 0x08DAA8D8
 _08092054:
 	adds r0, r5, #0
 	bl GetRotCount2
@@ -1191,7 +1191,7 @@ _080920C8:
 	lsls r2, r3, #0x10
 	lsrs r2, r2, #0x10
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	movs r0, #1
 	bl FUN_080477e4
 	ldr r0, [r6, #0x40]
@@ -1205,7 +1205,7 @@ _080920C8:
 	bl FUN_08047a28
 	bl FUN_08049f5c
 	ldr r0, [r6, #0x40]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	adds r2, r0, #0
 	cmp r7, #0x32
 	bne _08092130
@@ -1251,7 +1251,7 @@ _0809214E:
 	adds r0, r2, #0
 	adds r0, #0xa9
 _08092168:
-	bl FUN_08231978
+	bl Textbox_LookupString
 	bl FUN_08049e30
 	b _080921A0
 	.align 2, 0
@@ -1276,7 +1276,7 @@ _08092194:
 	adds r2, #0x9c
 _08092196:
 	adds r0, r2, r7
-	bl FUN_08231978
+	bl Textbox_LookupString
 	bl FUN_08049e30
 _080921A0:
 	pop {r4, r5, r6, r7}
@@ -1295,7 +1295,7 @@ FUN_080921a8: @ 0x080921A8
 	ldrb r1, [r0]
 	adds r0, r2, #0
 	bl GetItemID
-	ldr r1, _080921DC @ =gItemDB
+	ldr r1, _080921DC @ =0x08DAA8D8
 	lsls r0, r0, #4
 	adds r0, r0, r1
 	ldrh r0, [r0, #2]
@@ -1309,7 +1309,7 @@ FUN_080921a8: @ 0x080921A8
 	.align 2, 0
 _080921D4: .4byte 0x00003F9C
 _080921D8: .4byte 0x00003AEE
-_080921DC: .4byte gItemDB
+_080921DC: .4byte 0x08DAA8D8
 _080921E0:
 	movs r0, #1
 _080921E2:
@@ -1420,7 +1420,7 @@ _08092284:
 	adds r1, r6, #0
 	adds r1, #0xa0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	mov r1, sb
 	ldrb r0, [r1]
 	cmp r0, #0
@@ -1500,7 +1500,7 @@ FUN_08092300: @ 0x08092300
 	adds r0, r4, #0
 	mov r1, sb
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r4, #0
 	adds r0, #0x20
 	mov r1, r8
@@ -1571,7 +1571,7 @@ FUN_080923a0: @ 0x080923A0
 	adds r1, #0x60
 	movs r2, #0xad
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, _0809243C @ =0x000026AC
 	adds r2, r6, r0
 	ldr r0, [r2]
@@ -1643,7 +1643,7 @@ _08092464:
 	adds r1, #0x60
 	movs r2, #0xac
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	b _080924A6
 	.align 2, 0
 _08092480: .4byte 0x000026A4
@@ -1664,7 +1664,7 @@ _08092484:
 	movs r2, #0xae
 _080924A0:
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 _080924A6:
 	adds r1, r7, #0
 	adds r1, #0x3e
@@ -1715,7 +1715,7 @@ _080924DC:
 	adds r1, #0x60
 	movs r2, #0xaf
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r1, r7, #0
 	adds r1, #0x3e
 	lsls r0, r1, #1
@@ -1761,7 +1761,7 @@ _08092540:
 	adds r1, #0x60
 	movs r2, #0xb0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r1, r7, #0
 	adds r1, #0x3e
 	lsls r0, r1, #1
@@ -2233,7 +2233,7 @@ _08092910:
 	mov r1, sl
 	adds r1, #0x60
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	str r4, [r6, #0x18]
 	str r5, [r6, #0x1c]
 	adds r1, r4, #0
@@ -3109,7 +3109,7 @@ _08093060:
 	adds r1, #0xa0
 	movs r2, #0xce
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	movs r0, #1
 	b _0809310C
 	.align 2, 0
@@ -4886,7 +4886,7 @@ FUN_08093f28: @ 0x08093F28
 	ldrb r1, [r1]
 	bl GetItemID
 	adds r5, r0, #0
-	ldr r1, _08093F60 @ =gItemDB
+	ldr r1, _08093F60 @ =0x08DAA8D8
 	lsls r0, r5, #4
 	adds r0, r0, r1
 	ldrh r0, [r0, #2]
@@ -4903,7 +4903,7 @@ _08093F4E:
 	.align 2, 0
 _08093F58: .4byte 0x00003F9C
 _08093F5C: .4byte 0x00003AEE
-_08093F60: .4byte gItemDB
+_08093F60: .4byte 0x08DAA8D8
 _08093F64: .4byte _08093F68
 _08093F68: @ jump table
 	.4byte _08093FA4 @ case 0
@@ -4949,7 +4949,7 @@ _08093FD2:
 _08093FD8: .4byte 0x0000010D
 _08093FDC: .4byte 0x00003AEE
 _08093FE0:
-	ldr r0, _08093FF4 @ =gItemDB
+	ldr r0, _08093FF4 @ =0x08DAA8D8
 	lsls r1, r5, #4
 	adds r1, r1, r0
 	ldrh r0, [r1, #6]
@@ -4959,14 +4959,14 @@ _08093FE0:
 	bl FUN_08092cac
 	b _08094064
 	.align 2, 0
-_08093FF4: .4byte gItemDB
+_08093FF4: .4byte 0x08DAA8D8
 _08093FF8:
 	ldrh r1, [r1, #6]
 	adds r0, r4, #0
 	bl FUN_08092c7c
 	b _08094064
 _08094002:
-	ldr r0, _08094014 @ =gItemDB
+	ldr r0, _08094014 @ =0x08DAA8D8
 	lsls r1, r5, #4
 	adds r1, r1, r0
 	ldrh r1, [r1, #6]
@@ -4974,7 +4974,7 @@ _08094002:
 	bl FUN_080933b4
 	b _08094064
 	.align 2, 0
-_08094014: .4byte gItemDB
+_08094014: .4byte 0x08DAA8D8
 _08094018:
 	adds r0, r4, #0
 	bl FUN_080937d4
@@ -5039,7 +5039,7 @@ FUN_08094070: @ 0x08094070
 	adds r1, #0x60
 	movs r2, #0x38
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #5
@@ -5238,7 +5238,7 @@ _0809423C:
 	adds r1, r6, #0
 	movs r2, #0x38
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, _080942AC @ =0x0000204C
 	adds r2, r4, r0
 	ldr r0, [r2]
@@ -6024,7 +6024,7 @@ FUN_080948ac: @ 0x080948AC
 	adds r1, #0x60
 	movs r2, #0x9d
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_08094838
@@ -6137,7 +6137,7 @@ FUN_080949b0: @ 0x080949B0
 	adds r1, #0x60
 	movs r2, #0xa0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_08094838
@@ -6561,7 +6561,7 @@ FUN_08094d48: @ 0x08094D48
 	push {r6, r7}
 	adds r7, r0, #0
 	adds r0, r1, #0
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	adds r4, r0, #0
 	movs r0, #0x42
 	adds r0, r0, r4
@@ -6578,7 +6578,7 @@ _08094D6E:
 	bl FUN_08049e6c
 	ldrb r0, [r7]
 	add r0, r8
-	bl FUN_08231978
+	bl Textbox_LookupString
 	bl FUN_08049e30
 	movs r6, #0
 	ldrb r0, [r7, #0x18]
@@ -6586,7 +6586,7 @@ _08094D6E:
 	beq _08094D9C
 	adds r0, #0x42
 	add r0, r8
-	bl FUN_08231978
+	bl Textbox_LookupString
 	adds r1, r0, #0
 	movs r0, #0
 	bl FUN_08049eb0
@@ -6594,7 +6594,7 @@ _08094D6E:
 _08094D9C:
 	adds r0, r4, #0
 	adds r0, #0x84
-	bl FUN_08231978
+	bl Textbox_LookupString
 	adds r1, r0, #0
 	movs r0, #0
 	bl FUN_08049eb0
@@ -6609,7 +6609,7 @@ _08094DB4:
 	beq _08094DCC
 	adds r0, #0x42
 	add r0, r8
-	bl FUN_08231978
+	bl Textbox_LookupString
 	adds r1, r0, #0
 	adds r0, r6, #0
 	bl FUN_08049eb0
@@ -6682,7 +6682,7 @@ _08094E3A:
 _08094E48:
 	mov r0, r8
 	adds r0, #0x42
-	bl FUN_08231978
+	bl Textbox_LookupString
 	adds r1, r0, #0
 	adds r0, r6, #0
 	bl FUN_08049eb0
@@ -6813,7 +6813,7 @@ _08094F1C:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	movs r0, #1
 	bl FUN_080477e4
 	ldr r0, [r6, #0x44]
@@ -7244,7 +7244,7 @@ _0809527E:
 	adds r0, r6, #0
 	mov r1, sl
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r1, [sp, #0x5c]
 	adds r1, #8
 	lsls r1, r1, #0x10
@@ -7382,7 +7382,7 @@ FUN_0809536c: @ 0x0809536C
 	adds r0, r4, #0
 	movs r2, #0x3c
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r1, _080953D4 @ =0x000002DF
 	adds r0, r4, #0
 	bl FUN_0808ba0c
@@ -7443,7 +7443,7 @@ _0809540C:
 	adds r1, r7, #0
 	adds r1, #0xa0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r3, _08095454 @ =0x000002DF
 	adds r0, r5, #0
 	adds r1, r3, #0
@@ -7469,7 +7469,7 @@ _08095458:
 	adds r0, #0x40
 	movs r1, #0
 	ldrsh r2, [r0, r1]
-	ldr r1, _08095480 @ =gWeaponDB
+	ldr r1, _08095480 @ =0x08DA9E68
 	lsls r0, r4, #3
 	adds r0, r0, r4
 	lsls r0, r0, #2
@@ -7483,7 +7483,7 @@ _08095458:
 	b _0809548E
 	.align 2, 0
 _0809547C: .4byte 0x030046A0
-_08095480: .4byte gWeaponDB
+_08095480: .4byte 0x08DA9E68
 _08095484:
 	adds r0, r5, #0
 	movs r1, #0xb8
@@ -7591,7 +7591,7 @@ _080954F8:
 	adds r1, r5, #0
 	adds r1, #0xa0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	mov r0, sl
 	cmp r0, #0
 	beq _080955A0
@@ -7678,7 +7678,7 @@ _080955F4:
 	adds r1, #0xa0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	mov r1, sl
 	cmp r1, #0
 	beq _08095650
@@ -7795,7 +7795,7 @@ FUN_080956c4: @ 0x080956C4
 	adds r0, r4, #0
 	mov r1, sb
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r4, #0
 	adds r0, #0x20
 	mov r1, r8
@@ -7858,7 +7858,7 @@ _08095782:
 _08095786:
 	movs r0, #1
 	mov ip, r0
-	ldr r1, _080957A4 @ =gWeaponDB
+	ldr r1, _080957A4 @ =0x08DA9E68
 	lsls r2, r4, #3
 	adds r0, r2, r4
 	lsls r0, r0, #2
@@ -7871,7 +7871,7 @@ _08095786:
 	ldr r2, _080957A8 @ =0x030046A0
 	b _080957D4
 	.align 2, 0
-_080957A4: .4byte gWeaponDB
+_080957A4: .4byte 0x08DA9E68
 _080957A8: .4byte 0x030046A0
 _080957AC:
 	ldr r2, _080957F4 @ =0x030046A0
@@ -8348,7 +8348,7 @@ _08095B30:
 	adds r1, r4, #0
 	movs r2, #0x40
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldrh r1, [r6, #2]
 	movs r6, #1
 	adds r0, r6, #0
@@ -8486,7 +8486,7 @@ FUN_08095c60: @ 0x08095C60
 	adds r1, r4, #0
 	movs r2, #0x38
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r2, _08095D18 @ =0x00001E64
 	adds r0, r5, r2
 	adds r1, r4, #0
@@ -8619,7 +8619,7 @@ _08095D7E:
 	adds r1, r6, #0
 	movs r2, #0x38
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r6, _08095DF8 @ =0x0000204C
 	adds r2, r4, r6
 	ldr r0, [r2]
@@ -9568,7 +9568,7 @@ _0809657E:
 	adds r1, #0x60
 	movs r2, #0x9f
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_080964ac
@@ -9856,7 +9856,7 @@ _080967E8:
 	lsls r0, r0, #0x18
 	asrs r0, r0, #0x18
 	lsls r0, r0, #3
-	ldr r1, _08096830 @ =gArmorDB
+	ldr r1, _08096830 @ =0x08DAA7B0
 	adds r0, r0, r1
 _08096802:
 	bl FUN_0807a70c
@@ -9880,7 +9880,7 @@ _08096822:
 	.align 2, 0
 _08096828: .4byte 0x00003FDC
 _0809682C: .4byte 0x00003FE0
-_08096830: .4byte gArmorDB
+_08096830: .4byte 0x08DAA7B0
 _08096834: .4byte 0x00003AEB
 _08096838:
 	movs r0, #1
@@ -9888,7 +9888,7 @@ _08096838:
 	movs r0, #0
 	ldrsb r0, [r1, r0]
 	lsls r0, r0, #3
-	ldr r1, _08096878 @ =gArmorDB
+	ldr r1, _08096878 @ =0x08DAA7B0
 	adds r0, r0, r1
 	bl FUN_0807a70c
 	adds r6, r0, #0
@@ -9916,7 +9916,7 @@ _08096858:
 	bl FUN_0808b30c
 	b _08096908
 	.align 2, 0
-_08096878: .4byte gArmorDB
+_08096878: .4byte 0x08DAA7B0
 _0809687C: .4byte 0x0000216C
 _08096880:
 	movs r0, #6
@@ -9978,7 +9978,7 @@ _080968D6:
 	adds r0, r6, #0
 	mov r1, sb
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r4, #0x60
 	adds r6, #0x60
 	adds r7, #8
@@ -10015,7 +10015,7 @@ _08096938:
 	movs r1, #0
 	ldrsb r1, [r0, r1]
 	lsls r1, r1, #3
-	ldr r0, _0809698C @ =gArmorDB
+	ldr r0, _0809698C @ =0x08DAA7B0
 	adds r1, r1, r0
 	add r0, sp, #4
 	bl FUN_0807a5d8
@@ -10046,7 +10046,7 @@ _08096962:
 	.align 2, 0
 _08096984: .4byte 0x00003AEB
 _08096988: .4byte 0x00003FE0
-_0809698C: .4byte gArmorDB
+_0809698C: .4byte 0x08DAA7B0
 _08096990: .4byte 0x0000228C
 _08096994:
 	movs r0, #6
@@ -10108,7 +10108,7 @@ _080969EA:
 	adds r0, r6, #0
 	mov r1, sb
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r4, #0x60
 	adds r6, #0x60
 	adds r7, #8
@@ -10175,7 +10175,7 @@ _08096A74:
 	adds r1, #0xa0
 	movs r2, #0xcf
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	movs r0, #1
 	bl FUN_080477e4
 	ldr r0, [r6, #0x48]
@@ -10187,7 +10187,7 @@ _08096A74:
 	bl FUN_08047b8c
 	adds r0, r5, #0
 	bl FUN_08047a28
-	ldr r0, _08096AEC @ =gArmorDB
+	ldr r0, _08096AEC @ =0x08DAA7B0
 	lsls r4, r5, #3
 	adds r4, r4, r0
 	ldrb r1, [r4, #1]
@@ -10197,10 +10197,10 @@ _08096A74:
 	movs r0, #1
 	bl FUN_08049e6c
 	ldr r0, [r6, #0x48]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	adds r0, #0x25
 	adds r0, r0, r5
-	bl FUN_08231978
+	bl Textbox_LookupString
 	bl FUN_08049e30
 _08096ADC:
 	pop {r4, r5, r6}
@@ -10209,7 +10209,7 @@ _08096ADC:
 	.align 2, 0
 _08096AE4: .4byte 0x0000204C
 _08096AE8: .4byte 0x00002044
-_08096AEC: .4byte gArmorDB
+_08096AEC: .4byte 0x08DAA7B0
 
 	thumb_func_start FUN_08096af0
 FUN_08096af0: @ 0x08096AF0
@@ -10303,7 +10303,7 @@ _08096B78:
 	adds r1, r6, #0
 	adds r1, #0xa0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r5, #0
 	ldr r1, _08096BB4 @ =0x000002DF
 	bl FUN_0808ba0c
@@ -10353,7 +10353,7 @@ FUN_08096bb8: @ 0x08096BB8
 	lsrs r2, r2, #0x10
 	adds r0, r5, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	cmp r6, #0
 	beq _08096C38
 	ldr r1, _08096C24 @ =0x00003AE8
@@ -10468,7 +10468,7 @@ FUN_08096cac: @ 0x08096CAC
 	lsrs r2, r2, #0x10
 	adds r0, r4, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r4, #0
 	adds r0, #0x20
 	mov r1, r8
@@ -10529,7 +10529,7 @@ _08096D60:
 _08096D64: .4byte 0x00003FE0
 _08096D68: .4byte 0x00003FDC
 _08096D6C:
-	ldr r0, _08096D84 @ =gArmorDB
+	ldr r0, _08096D84 @ =0x08DAA7B0
 	movs r1, #0
 	ldrsb r1, [r3, r1]
 	lsls r1, r1, #3
@@ -10541,7 +10541,7 @@ _08096D6C:
 	movs r0, #0x11
 	b _08096D8A
 	.align 2, 0
-_08096D84: .4byte gArmorDB
+_08096D84: .4byte 0x08DAA7B0
 _08096D88:
 	movs r0, #1
 _08096D8A:
@@ -10814,9 +10814,19 @@ _08096F8A:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_08096F90:
-	.byte 0x00, 0xB5, 0x01, 0x1C, 0x03, 0x4A, 0x88, 0x18, 0x60, 0x31, 0xA0, 0xF1, 0x97, 0xF9, 0x01, 0xBC
-	.byte 0x00, 0x47, 0x00, 0x00, 0x44, 0x14, 0x00, 0x00
+
+	thumb_func_start FUN_08096f90
+FUN_08096f90: @ 0x08096F90
+	push {lr}
+	adds r1, r0, #0
+	ldr r2, _08096FA4 @ =0x00001444
+	adds r0, r1, r2
+	adds r1, #0x60
+	bl FUN_082372cc
+	pop {r0}
+	bx r0
+	.align 2, 0
+_08096FA4: .4byte 0x00001444
 
 	thumb_func_start FUN_08096fa8
 FUN_08096fa8: @ 0x08096FA8
@@ -10901,7 +10911,7 @@ FUN_08097034: @ 0x08097034
 	adds r1, #0x60
 	movs r2, #0x38
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #5
@@ -11099,7 +11109,7 @@ _080971FA:
 	adds r1, r7, #0
 	movs r2, #0x38
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, _08097274 @ =0x0000204C
 	adds r2, r4, r0
 	ldr r0, [r2]
@@ -11714,7 +11724,7 @@ _08097734:
 	lsls r1, r1, #0x18
 	asrs r1, r1, #0x18
 	lsls r1, r1, #3
-	ldr r2, _080977A0 @ =gArmorDB
+	ldr r2, _080977A0 @ =0x08DAA7B0
 	adds r1, r1, r2
 	bl FUN_08064a64
 	adds r0, r4, #0
@@ -11731,7 +11741,7 @@ _08097790: .4byte 0x00000111
 _08097794: .4byte 0x030046A0
 _08097798: .4byte 0x00003AEE
 _0809779C: .4byte 0x00003FE0
-_080977A0: .4byte gArmorDB
+_080977A0: .4byte 0x08DAA7B0
 
 	thumb_func_start FUN_080977a4
 FUN_080977a4: @ 0x080977A4
@@ -12044,7 +12054,7 @@ _08097A14:
 	adds r1, #0x60
 	movs r2, #0x9e
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_08097948
@@ -12309,7 +12319,7 @@ _08097C44:
 	adds r1, #0xa0
 	movs r2, #0xcf
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	movs r0, #1
 	bl FUN_080477e4
 	ldr r0, [r4, #0x4c]
@@ -12322,10 +12332,10 @@ _08097C44:
 	adds r0, r5, #0
 	bl FUN_08047a28
 	ldr r0, [r4, #0x4c]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	adds r0, #0x12
 	adds r0, r0, r5
-	bl FUN_08231978
+	bl Textbox_LookupString
 	bl FUN_08049e30
 _08097C92:
 	pop {r4, r5}
@@ -12470,7 +12480,7 @@ _08097D5A:
 	adds r1, r5, #0
 	adds r1, #0xa0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r6, #0
 	movs r1, #1
 	bl FUN_0808ba0c
@@ -12637,7 +12647,7 @@ _08097E82:
 	adds r1, r6, #0
 	adds r1, #0xa0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r4, #0
 	movs r1, #1
 	bl FUN_0808ba0c
@@ -12717,7 +12727,7 @@ FUN_08097f48: @ 0x08097F48
 	lsrs r2, r2, #0x10
 	adds r0, r4, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r4, #0
 	adds r0, #0x20
 	mov r1, r8
@@ -13157,7 +13167,7 @@ _080982D4:
 	adds r1, r4, #0
 	movs r2, #0x40
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldrh r1, [r6, #2]
 	movs r0, #1
 	ands r0, r1
@@ -13254,7 +13264,7 @@ FUN_080983a4: @ 0x080983A4
 	adds r1, r4, #0
 	movs r2, #0x38
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r2, _08098424 @ =0x00001E64
 	adds r0, r5, r2
 	adds r1, r4, #0
@@ -14119,14 +14129,14 @@ _08098AC8:
 	mov r0, r8
 	adds r1, r7, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r2, r4, r6
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10
 	ldr r0, [sp, #0x18]
 	adds r1, r7, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	pop {r3}
 	mov r8, r3
 	pop {r4, r5, r6, r7}
@@ -14579,7 +14589,7 @@ FUN_08098e48: @ 0x08098E48
 	ldrb r2, [r3]
 	adds r2, #0x42
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	pop {r4}
 	pop {r0}
 	bx r0
@@ -15495,7 +15505,7 @@ FUN_080995b0: @ 0x080995B0
 	mov r1, r8
 	movs r2, #0x42
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r1, _08099644 @ =0x000020C4
 	adds r0, r4, r1
 	strh r5, [r0]
@@ -15638,7 +15648,7 @@ FUN_080996e0: @ 0x080996E0
 	adds r1, #0x60
 	movs r2, #0xb4
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, _08099780 @ =0x000026AC
 	adds r2, r6, r0
 	ldr r0, [r2]
@@ -15697,7 +15707,7 @@ _0809978C:
 	movs r2, #0xb1
 _080997A2:
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	b _080997C8
 	.align 2, 0
 _080997AC: .4byte 0x000026A4
@@ -15712,7 +15722,7 @@ _080997B0:
 	adds r1, #0x60
 	movs r2, #0xb3
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 _080997C8:
 	adds r1, r7, #0
 	adds r1, #0x3e
@@ -15759,7 +15769,7 @@ _08099808:
 	adds r1, #0x60
 	movs r2, #0xb5
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r1, r7, #0
 	adds r1, #0x3e
 	lsls r0, r1, #1
@@ -15810,7 +15820,7 @@ _08099860:
 	adds r1, #0x60
 	movs r2, #0xb6
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r1, r7, #0
 	adds r1, #0x3e
 	lsls r0, r1, #1
@@ -15856,7 +15866,7 @@ _080998C4:
 	adds r1, #0x60
 	movs r2, #0xb7
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r1, r7, #0
 	adds r1, #0x3e
 	lsls r0, r1, #1
@@ -15995,7 +16005,7 @@ _08099A08:
 	movs r2, #3
 _08099A16:
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	b _08099A34
 	.align 2, 0
 _08099A20: .4byte 0x00002644
@@ -16006,7 +16016,7 @@ _08099A24:
 	adds r1, #0xe0
 	movs r2, #1
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 _08099A34:
 	adds r0, r4, #0
 	bl FUN_08098edc
@@ -16336,7 +16346,7 @@ _08099CC6:
 	adds r2, r2, r3
 	adds r1, r4, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r3, _08099D1C @ =0x00001D44
 	adds r0, r5, r3
 	ldr r2, _08099D20 @ =0x0000400F
@@ -16345,7 +16355,7 @@ _08099CC6:
 	adds r2, r2, r6
 	adds r1, r4, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r3, _08099D24 @ =0x00001DA4
 	adds r0, r5, r3
 	adds r2, r7, #1
@@ -16357,7 +16367,7 @@ _08099CC6:
 	lsrs r2, r2, #0x10
 	adds r1, r4, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	pop {r4, r5, r6, r7}
 	pop {r0}
 	bx r0
@@ -16686,7 +16696,7 @@ FUN_08099f58: @ 0x08099F58
 	adds r0, r5, #0
 	movs r2, #0x4f
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r2, _0809A064 @ =0x00001D4C
 	adds r1, r4, r2
 	ldr r0, [r1]
@@ -16711,7 +16721,7 @@ FUN_08099f58: @ 0x08099F58
 	mov r1, sl
 	movs r2, #0x52
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, _0809A070 @ =0x00001DAC
 	adds r1, r4, r0
 	ldr r0, [r1]
@@ -16736,7 +16746,7 @@ FUN_08099f58: @ 0x08099F58
 	mov r1, sl
 	movs r2, #0x55
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r1, _0809A07C @ =0x00001464
 	adds r0, r4, r1
 	strh r6, [r0]
@@ -17533,10 +17543,10 @@ FUN_0809a6a8: @ 0x0809A6A8
 	str r0, [r1]
 	movs r0, #1
 	movs r1, #2
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	movs r0, #1
 	movs r1, #1
-	bl FUN_0822ba00
+	bl SetBGPrioDirect
 	ldr r0, _0809A7D8 @ =0x0300449C
 	ldrh r1, [r0]
 	ldr r2, _0809A7DC @ =0x00003B16
@@ -17618,8 +17628,8 @@ FUN_0809a800: @ 0x0809A800
 	push {lr}
 	ldr r0, _0809A814 @ =0x0000CEAA
 	ldr r1, _0809A818 @ =0x00003002
-	bl FUN_082310cc
-	bl FUN_0822b0d0
+	bl GetFile
+	bl LoadParticleFile
 	pop {r0}
 	bx r0
 	.align 2, 0
@@ -17646,7 +17656,7 @@ FUN_0809a81c: @ 0x0809A81C
 	strh r0, [r2]
 	movs r0, #1
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	movs r0, #1
 	bl GetTilemapBuffer
 	adds r1, r0, #0
@@ -17871,7 +17881,7 @@ _0809A9E2:
 	mov r1, sb
 	adds r1, #0x60
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	mov r0, sl
 	mov r2, r8
 	subs r1, r0, r2
@@ -17949,7 +17959,7 @@ _0809AA90:
 	adds r1, #0x60
 	movs r2, #0x63
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r0, r7, #0
 	ldr r1, _0809AAF0 @ =0x000002A5
 	bl FUN_0808ba0c
@@ -18569,7 +18579,7 @@ _0809AF94:
 	add r0, sp, #0xc
 	str r0, [r1, #4]
 	adds r0, r2, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _0809AFC8:
 	ldr r1, _0809B108 @ =0x00003FB1
 	adds r0, r6, r1
@@ -18691,7 +18701,7 @@ _0809B082:
 	ldr r2, _0809B128 @ =0x00003FBC
 	adds r0, r6, r2
 	ldr r0, [r0]
-	bl FUN_082318ac
+	bl Script_ExecById
 _0809B0B8:
 	movs r0, #0
 	strb r0, [r4]
@@ -19231,7 +19241,7 @@ FUN_0809b468: @ 0x0809B468
 	adds r1, r6, #0
 	movs r2, #0x40
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, _0809B868 @ =0x00001444
 	adds r5, r7, r0
 	str r4, [sp]
@@ -20107,8 +20117,7 @@ _0809BC1C:
 	pop {r4, r5, r6, r7}
 	pop {r0}
 	bx r0
-_0809BC90:
-	.byte 0x40, 0xE0, 0x00, 0x00
+_0809BC90: .4byte 0x0000E040
 _0809BC94: .4byte 0x00001084
 _0809BC98: .4byte 0x00002824
 _0809BC9C: .4byte 0x00002884
@@ -20149,7 +20158,7 @@ FUN_0809bd14: @ 0x0809BD14
 	ldr r5, _0809BEB0 @ =0x0000CB05
 	ldr r1, _0809BEB4 @ =0x0000B343
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	cmp r3, #0
 	bne _0809BD2A
@@ -20169,7 +20178,7 @@ _0809BD2A:
 	bl FUN_0822f284
 	ldr r1, _0809BEB8 @ =0x00005D04
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	cmp r3, #0
 	bne _0809BD54
@@ -20191,7 +20200,7 @@ _0809BD54:
 	bl FUN_0822f284
 	ldr r1, _0809BEBC @ =0x00000312
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	cmp r3, #0
 	bne _0809BD82
@@ -20211,7 +20220,7 @@ _0809BD82:
 	bl FUN_0822f284
 	ldr r1, _0809BEC0 @ =0x000092F0
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _0809BEA8
@@ -20231,7 +20240,7 @@ _0809BD82:
 	bl FUN_0822f284
 	ldr r1, _0809BEC4 @ =0x0000DE23
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _0809BEA8
@@ -20252,7 +20261,7 @@ _0809BD82:
 	bl FUN_0822f284
 	ldr r1, _0809BEC8 @ =0x0000DFDE
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _0809BEA8
@@ -20273,7 +20282,7 @@ _0809BD82:
 	bl FUN_0822f284
 	ldr r1, _0809BECC @ =0x0000E2DE
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _0809BEA8
@@ -20294,7 +20303,7 @@ _0809BD82:
 	bl FUN_0822f284
 	ldr r1, _0809BED0 @ =0x0000D27A
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _0809BEA8
@@ -20314,7 +20323,7 @@ _0809BD82:
 	bl FUN_0822f284
 	ldr r1, _0809BED4 @ =0x0000DCC1
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _0809BEA8
@@ -20404,7 +20413,7 @@ _0809BF4C:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809BF5C
-	bl FUN_0823172c
+	bl VM_GetValueSafe2
 	str r0, [r4, #0x5c]
 _0809BF5C:
 	movs r0, #0x70
@@ -20412,7 +20421,7 @@ _0809BF5C:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809BF78
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _0809BF74 @ =0x00003FA0
 	adds r1, r4, r2
 	strb r0, [r1]
@@ -20442,7 +20451,7 @@ FUN_0809bf88: @ 0x0809BF88
 	ldr r0, _0809BFAC @ =0x00000F58
 	adds r5, r6, r0
 _0809BF9C:
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, r4
 	strb r0, [r1]
 	adds r4, #1
@@ -20512,7 +20521,7 @@ FUN_0809c010: @ 0x0809C010
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809C02C
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _0809C028 @ =0x00000F3D
 	adds r1, r4, r2
 	b _0809C032
@@ -20529,10 +20538,25 @@ _0809C032:
 	bx r0
 	.align 2, 0
 _0809C03C: .4byte 0x00000F3D
-_0809C040:
-	.byte 0x05, 0x48, 0x00, 0x22, 0x02, 0x60, 0x05, 0x48, 0x01, 0x21, 0x01, 0x80, 0x04, 0x48, 0x02, 0x80
-	.byte 0x04, 0x48, 0x01, 0x80, 0x70, 0x47, 0x00, 0x00, 0x3C, 0x01, 0x00, 0x03, 0x14, 0x2C, 0x00, 0x03
-	.byte 0x10, 0x2C, 0x00, 0x03, 0x18, 0x2C, 0x00, 0x03
+
+	thumb_func_start FUN_0809c040
+FUN_0809c040: @ 0x0809C040
+	ldr r0, _0809C058 @ =0x0300013C
+	movs r2, #0
+	str r2, [r0]
+	ldr r0, _0809C05C @ =0x03002C14
+	movs r1, #1
+	strh r1, [r0]
+	ldr r0, _0809C060 @ =0x03002C10
+	strh r2, [r0]
+	ldr r0, _0809C064 @ =0x03002C18
+	strh r1, [r0]
+	bx lr
+	.align 2, 0
+_0809C058: .4byte 0x0300013C
+_0809C05C: .4byte 0x03002C14
+_0809C060: .4byte 0x03002C10
+_0809C064: .4byte 0x03002C18
 
 	thumb_func_start FUN_0809c068
 FUN_0809c068: @ 0x0809C068
@@ -20679,7 +20703,7 @@ _0809C18A:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 _0809C198:
 	ldr r2, _0809C1BC @ =0x00000A24
 	adds r1, r4, r2
@@ -20759,14 +20783,14 @@ FUN_0809c220: @ 0x0809C220
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_0809c22c
-FUN_0809c22c: @ 0x0809C22C
+	thumb_func_start Textbox_CloseBox
+Textbox_CloseBox: @ 0x0809C22C
 	push {lr}
 	movs r0, #0x6d
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809C240
-	bl fetch_082316e4
+	bl Script_GetValue
 	bl FUN_0809c08c
 _0809C240:
 	pop {r0}
@@ -20888,7 +20912,7 @@ FUN_0809c314: @ 0x0809C314
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809C334
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r1, [r4]
 	ldr r2, _0809C340 @ =0x00000F3D
 	adds r1, r1, r2
@@ -21289,7 +21313,7 @@ FUN_0809c63c: @ 0x0809C63C
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809C65A
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _0809C664 @ =0x00003FA0
 	adds r1, r4, r2
 	strb r0, [r1]
@@ -21333,7 +21357,7 @@ FUN_0809c668: @ 0x0809C668
 	adds r1, r4, #0
 	movs r2, #0xc9
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	b _0809C6E4
 	.align 2, 0
 _0809C6AC: .4byte 0x00000283
@@ -21359,7 +21383,7 @@ _0809C6BC:
 	lsrs r2, r2, #0x10
 	adds r1, r4, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 _0809C6E4:
 	ldr r1, _0809C708 @ =0x00000DA4
 	adds r0, r5, r1
@@ -21372,7 +21396,7 @@ _0809C6E4:
 	ldrb r2, [r1]
 	adds r1, r4, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	pop {r4, r5}
 	pop {r0}
 	bx r0
@@ -21621,12 +21645,38 @@ _0809C8E0:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_0809C8E8:
-	.byte 0x00, 0xB5, 0x02, 0x1C, 0x0B, 0x48, 0x00, 0x68
-	.byte 0x01, 0x21, 0x08, 0x40, 0x00, 0x28, 0x0D, 0xD1, 0x09, 0x49, 0x50, 0x18, 0x00, 0x78, 0x09, 0x49
-	.byte 0x80, 0x00, 0x40, 0x18, 0x01, 0x68, 0x9E, 0x23, 0x1B, 0x01, 0xD0, 0x18, 0x01, 0x60, 0x10, 0x1C
-	.byte 0xFF, 0xF7, 0xB6, 0xFF, 0x00, 0x20, 0x02, 0xBC, 0x08, 0x47, 0x00, 0x00, 0xBC, 0x44, 0x00, 0x03
-	.byte 0xDF, 0x09, 0x00, 0x00, 0xE0, 0x2B, 0x00, 0x03
+
+	thumb_func_start FUN_0809c8e8
+FUN_0809c8e8: @ 0x0809C8E8
+	push {lr}
+	adds r2, r0, #0
+	ldr r0, _0809C91C @ =0x030044BC
+	ldr r0, [r0]
+	movs r1, #1
+	ands r0, r1
+	cmp r0, #0
+	bne _0809C914
+	ldr r1, _0809C920 @ =0x000009DF
+	adds r0, r2, r1
+	ldrb r0, [r0]
+	ldr r1, _0809C924 @ =0x03002BE0
+	lsls r0, r0, #2
+	adds r0, r0, r1
+	ldr r1, [r0]
+	movs r3, #0x9e
+	lsls r3, r3, #4
+	adds r0, r2, r3
+	str r1, [r0]
+	adds r0, r2, #0
+	bl FUN_0809c880
+_0809C914:
+	movs r0, #0
+	pop {r1}
+	bx r1
+	.align 2, 0
+_0809C91C: .4byte 0x030044BC
+_0809C920: .4byte 0x000009DF
+_0809C924: .4byte 0x03002BE0
 
 	thumb_func_start FUN_0809c928
 FUN_0809c928: @ 0x0809C928
@@ -21746,11 +21796,11 @@ FUN_0809ca08: @ 0x0809CA08
 	strb r4, [r0]
 	ldr r0, _0809CAC0 @ =0x0000C091
 	ldr r1, _0809CAC4 @ =0x0000A413
-	bl FUN_082310cc
+	bl GetFile
 	str r0, [r5, #0x18]
 	ldr r0, _0809CAC8 @ =0x000092B3
 	ldr r1, _0809CACC @ =0x0000EFDA
-	bl FUN_082310cc
+	bl GetFile
 	movs r2, #0xda
 	lsls r2, r2, #1
 	adds r0, r0, r2
@@ -21768,7 +21818,7 @@ FUN_0809ca08: @ 0x0809CA08
 	mov r8, r7
 	ldr r1, _0809CAD8 @ =0x00005D04
 	mov r0, r8
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _0809CAB0
@@ -21786,7 +21836,7 @@ FUN_0809ca08: @ 0x0809CA08
 	bl FUN_0822f284
 	ldr r1, _0809CADC @ =0x0000B343
 	mov r0, r8
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _0809CAB0
@@ -21833,7 +21883,7 @@ FUN_0809cae0: @ 0x0809CAE0
 	adds r4, r0, #0
 	movs r0, #0
 	movs r1, #0
-	bl FUN_0822ba00
+	bl SetBGPrioDirect
 	ldr r0, _0809CAFC @ =0x03002C68
 	ldr r0, [r0]
 	cmp r0, #0
@@ -21909,7 +21959,7 @@ FUN_0809cb74: @ 0x0809CB74
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _0809CBC8
-	ldr r1, _0809CBBC @ =0x0809C8E9
+	ldr r1, _0809CBBC @ =FUN_0809c8e8
 	ldr r2, _0809CBC0 @ =FUN_0809c928
 	bl SetEntityRoutine
 	ldr r1, _0809CBC4 @ =0x000009FA
@@ -21927,7 +21977,7 @@ FUN_0809cb74: @ 0x0809CB74
 	.align 2, 0
 _0809CBB4: .4byte 0x0300013C
 _0809CBB8: .4byte 0x0000405C
-_0809CBBC: .4byte 0x0809C8E9
+_0809CBBC: .4byte FUN_0809c8e8
 _0809CBC0: .4byte FUN_0809c928
 _0809CBC4: .4byte 0x000009FA
 _0809CBC8:
@@ -22000,7 +22050,7 @@ FUN_0809cc48: @ 0x0809CC48
 	adds r4, r0, #0
 	movs r0, #0
 	movs r1, #0
-	bl FUN_0822ba00
+	bl SetBGPrioDirect
 	ldr r0, _0809CCBC @ =0x000009FC
 	adds r1, r4, r0
 	movs r0, #0
@@ -22038,7 +22088,7 @@ FUN_0809cc48: @ 0x0809CC48
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809CCD4
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _0809CCD0 @ =0x00004028
 	adds r1, r4, r2
 	str r0, [r1]
@@ -22060,7 +22110,7 @@ _0809CCDA:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809CCFC
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _0809CCF8 @ =0x0000401F
 	adds r1, r4, r2
 	strb r0, [r1]
@@ -22078,7 +22128,7 @@ _0809CD02:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809CD24
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _0809CD20 @ =0x00003FB4
 	adds r1, r4, r2
 	str r0, [r1]
@@ -22096,7 +22146,7 @@ _0809CD2A:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809CD4C
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _0809CD48 @ =0x00003FBC
 	adds r1, r4, r2
 	str r0, [r1]
@@ -22348,7 +22398,7 @@ _0809CF28:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	movs r0, #1
 	bl FUN_080477e4
 	ldr r0, [r6, #0x24]
@@ -22478,7 +22528,7 @@ _0809D044:
 	mov r1, sb
 	movs r2, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	movs r0, #0
 	str r0, [r6]
 	adds r4, #0x60
@@ -22528,7 +22578,7 @@ _0809D0AA:
 	adds r0, r6, #0
 	mov r1, sb
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r6, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -22605,7 +22655,7 @@ _0809D14A:
 	adds r0, r4, #0
 	mov r1, sb
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -22697,7 +22747,7 @@ _0809D204:
 	adds r0, r6, #0
 	mov r1, sb
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r6, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -22869,7 +22919,7 @@ _0809D338:
 	adds r1, #0x48
 	movs r2, #0x3c
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	b _0809D388
 _0809D366:
 	movs r0, #0xd5
@@ -22886,7 +22936,7 @@ _0809D366:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 _0809D388:
 	movs r2, #0x83
 	lsls r2, r2, #4
@@ -23111,7 +23161,7 @@ _0809D528:
 	b _0809D762
 _0809D542:
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 	b _0809D762
 	.align 2, 0
 _0809D54C: .4byte 0x00000F4C
@@ -23361,7 +23411,7 @@ _0809D71A:
 	cmp r0, #0
 	beq _0809D74E
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _0809D74E:
 	movs r3, #1
 	mov r1, r8
@@ -23520,7 +23570,7 @@ FUN_0809d878: @ 0x0809D878
 	adds r6, r0, #0
 	ldr r0, _0809D918 @ =0x0000C091
 	ldr r1, _0809D91C @ =0x0000CD91
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	str r2, [r6, #0x1c]
 	movs r0, #6
@@ -23540,7 +23590,7 @@ FUN_0809d878: @ 0x0809D878
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r2, #0
 	movs r5, #1
 _0809D8B6:
@@ -23581,7 +23631,7 @@ _0809D8EA:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r0, #0x14
 	str r0, [r6, #0x20]
 	ldr r1, _0809D92C @ =0x03004250
@@ -23612,7 +23662,7 @@ FUN_0809d934: @ 0x0809D934
 	ldr r5, _0809DA1C @ =0x0000CB05
 	ldr r1, _0809DA20 @ =0x0000B343
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	cmp r2, #0
 	bne _0809D954
@@ -23633,7 +23683,7 @@ _0809D954:
 	bl FUN_0822f284
 	ldr r1, _0809DA24 @ =0x00005D04
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	str r4, [sp, #0x24]
 	cmp r2, #0
@@ -23655,7 +23705,7 @@ _0809D982:
 	bl FUN_0822f284
 	ldr r1, _0809DA28 @ =0x0000DCC1
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	str r4, [sp, #0x28]
 	cmp r2, #0
@@ -23677,7 +23727,7 @@ _0809D9B0:
 	bl FUN_0822f284
 	ldr r1, _0809DA2C @ =0x0000DE23
 	adds r0, r5, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	str r4, [sp, #0x1c]
 	cmp r2, #0
@@ -24147,7 +24197,7 @@ FUN_0809dd88: @ 0x0809DD88
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809DDA8
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _0809DDA4 @ =0x00000F84
 	adds r1, r4, r2
 	str r0, [r1]
@@ -24164,7 +24214,7 @@ _0809DDAE:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809DDD0
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _0809DDCC @ =0x00000F88
 	adds r1, r4, r2
 	str r0, [r1]
@@ -24279,7 +24329,7 @@ _0809DE74:
 	adds r1, r4, r3
 	movs r0, #0
 	strb r0, [r1]
-	ldr r1, _0809DEA4 @ =gWeaponDB
+	ldr r1, _0809DEA4 @ =0x08DA9E68
 	ldr r5, _0809DEA8 @ =0x00000F4C
 	adds r0, r4, r5
 	movs r2, #0x87
@@ -24293,7 +24343,7 @@ _0809DE74:
 	stm r0!, {r2, r3, r5}
 	b _0809DEC8
 	.align 2, 0
-_0809DEA4: .4byte gWeaponDB
+_0809DEA4: .4byte 0x08DA9E68
 _0809DEA8: .4byte 0x00000F4C
 _0809DEAC:
 	ldrb r0, [r1, #0x17]
@@ -24350,13 +24400,46 @@ _0809DF16:
 _0809DF20: .4byte 0x00000F4C
 _0809DF24: .4byte 0x00000F74
 _0809DF28: .4byte FUN_0809d3d0
-_0809DF2C:
-	.byte 0x10, 0xB5, 0xF9, 0x21
-	.byte 0x09, 0x01, 0x08, 0x20, 0x92, 0xF1, 0x3C, 0xFE, 0x04, 0x1C, 0x00, 0x2C, 0x12, 0xD0, 0x07, 0x49
-	.byte 0x07, 0x4A, 0x92, 0xF1, 0x59, 0xFE, 0x20, 0x1C, 0xFF, 0xF7, 0x80, 0xFF, 0x00, 0x28, 0x09, 0xDA
-	.byte 0x20, 0x1C, 0x92, 0xF1, 0x8B, 0xFE, 0x00, 0x20, 0x05, 0xE0, 0x00, 0x00, 0xE1, 0xD7, 0x09, 0x08
-	.byte 0x2D, 0xD8, 0x09, 0x08, 0x20, 0x1C, 0x10, 0xBC, 0x02, 0xBC, 0x08, 0x47, 0x01, 0x49, 0x00, 0x20
-	.byte 0x08, 0x60, 0x70, 0x47, 0x40, 0x01, 0x00, 0x03
+
+	thumb_func_start FUN_0809df2c
+FUN_0809df2c: @ 0x0809DF2C
+	push {r4, lr}
+	movs r1, #0xf9
+	lsls r1, r1, #4
+	movs r0, #8
+	bl CreateEntity
+	adds r4, r0, #0
+	cmp r4, #0
+	beq _0809DF64
+	ldr r1, _0809DF5C @ =FUN_0809d7e0
+	ldr r2, _0809DF60 @ =FUN_0809d82c
+	bl SetEntityRoutine
+	adds r0, r4, #0
+	bl FUN_0809de4c
+	cmp r0, #0
+	bge _0809DF64
+	adds r0, r4, #0
+	bl KillEntity
+	movs r0, #0
+	b _0809DF66
+	.align 2, 0
+_0809DF5C: .4byte FUN_0809d7e0
+_0809DF60: .4byte FUN_0809d82c
+_0809DF64:
+	adds r0, r4, #0
+_0809DF66:
+	pop {r4}
+	pop {r1}
+	bx r1
+
+	thumb_func_start FUN_0809df6c
+FUN_0809df6c: @ 0x0809DF6C
+	ldr r1, _0809DF74 @ =0x03000140
+	movs r0, #0
+	str r0, [r1]
+	bx lr
+	.align 2, 0
+_0809DF74: .4byte 0x03000140
 
 	thumb_func_start FUN_0809df78
 FUN_0809df78: @ 0x0809DF78
@@ -24725,7 +24808,7 @@ FUN_0809e1f8: @ 0x0809E1F8
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809E220
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r4, #0
 	adds r1, #0x27
 	strb r0, [r1]
@@ -24834,7 +24917,7 @@ FUN_0809e2c4: @ 0x0809E2C4
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _0809E300
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldrb r2, [r5]
 	movs r1, #0xa8
 	muls r1, r2, r1
@@ -24856,26 +24939,26 @@ _0809E30C:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809E392
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldrb r1, [r5]
 	movs r4, #0xa8
 	muls r1, r4, r1
 	adds r1, r6, r1
 	adds r1, #0xcc
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldrb r1, [r5]
 	muls r1, r4, r1
 	adds r1, r6, r1
 	adds r1, #0xce
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldrb r1, [r5]
 	muls r1, r4, r1
 	adds r1, r6, r1
 	adds r1, #0xd0
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldrb r1, [r5]
 	muls r1, r4, r1
 	adds r1, r6, r1
@@ -24946,7 +25029,7 @@ _0809E3C0:
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _0809E3E4
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov r1, r8
 	ldrb r2, [r1]
 	movs r1, #0xa8
@@ -24970,7 +25053,7 @@ _0809E3F2:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809E438
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _0809E430 @ =0xFFFF0000
@@ -24978,14 +25061,14 @@ _0809E3F2:
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #4]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0809E434 @ =0x0000FFFF
 	ldr r1, [sp, #4]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #4]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #8]
@@ -25082,7 +25165,7 @@ _0809E4CC:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809E4E2
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r7, r0, #0
 	b _0809E4E4
 _0809E4E2:
@@ -25092,7 +25175,7 @@ _0809E4E4:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809E4F6
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _0809E4F8
 _0809E4F6:
@@ -25153,7 +25236,7 @@ FUN_0809e54c: @ 0x0809E54C
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809E5BE
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r7, r0, #0
 	movs r3, #0
 	adds r0, r4, #0
@@ -25218,7 +25301,7 @@ FUN_0809e5c4: @ 0x0809E5C4
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809E62A
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r7, r0, #0
 	movs r3, #0
 	adds r0, r6, #0
@@ -26993,7 +27076,7 @@ _0809F29C:
 	adds r0, r6, #0
 	mov r1, sl
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, [sp, #0x10]
 	ldr r1, [sp, #0x14]
 	str r0, [r7]
@@ -27084,14 +27167,64 @@ _0809F356:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_0809F360:
-	.byte 0x10, 0xB5, 0x04, 0x1C, 0xFF, 0xF7, 0xD2, 0xFF, 0x03, 0x49, 0x60, 0x18, 0x00, 0x78, 0x00, 0x28
-	.byte 0x04, 0xD0, 0x01, 0x28, 0x06, 0xD0, 0x08, 0xE0, 0x5E, 0x02, 0x00, 0x00, 0x20, 0x1C, 0xFF, 0xF7
-	.byte 0xDB, 0xFD, 0x02, 0xE0, 0x20, 0x1C, 0xFF, 0xF7, 0x55, 0xFE, 0x20, 0x1C, 0xFF, 0xF7, 0x96, 0xFE
-	.byte 0x20, 0x1C, 0xFF, 0xF7, 0xF3, 0xFE, 0x00, 0x20, 0x10, 0xBC, 0x02, 0xBC, 0x08, 0x47, 0x00, 0x00
-	.byte 0x70, 0xB5, 0x06, 0x1C, 0x18, 0x30, 0x8B, 0xF1, 0x9B, 0xF8, 0x34, 0x1C, 0x80, 0x34, 0x03, 0x25
-	.byte 0x20, 0x1C, 0x8F, 0xF1, 0x05, 0xFF, 0x60, 0x34, 0x01, 0x3D, 0x00, 0x2D, 0xF8, 0xDA, 0x80, 0x21
-	.byte 0x89, 0x00, 0x70, 0x18, 0x97, 0xF1, 0x2E, 0xF8, 0x00, 0x20, 0x70, 0xBC, 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_0809f360
+FUN_0809f360: @ 0x0809F360
+	push {r4, lr}
+	adds r4, r0, #0
+	bl FUN_0809f30c
+	ldr r1, _0809F378 @ =0x0000025E
+	adds r0, r4, r1
+	ldrb r0, [r0]
+	cmp r0, #0
+	beq _0809F37C
+	cmp r0, #1
+	beq _0809F384
+	b _0809F38A
+	.align 2, 0
+_0809F378: .4byte 0x0000025E
+_0809F37C:
+	adds r0, r4, #0
+	bl FUN_0809ef38
+	b _0809F38A
+_0809F384:
+	adds r0, r4, #0
+	bl FUN_0809f034
+_0809F38A:
+	adds r0, r4, #0
+	bl FUN_0809f0bc
+	adds r0, r4, #0
+	bl FUN_0809f17c
+	movs r0, #0
+	pop {r4}
+	pop {r1}
+	bx r1
+	.align 2, 0
+
+	thumb_func_start FUN_0809f3a0
+FUN_0809f3a0: @ 0x0809F3A0
+	push {r4, r5, r6, lr}
+	adds r6, r0, #0
+	adds r0, #0x18
+	bl FUN_0822a4e0
+	adds r4, r6, #0
+	adds r4, #0x80
+	movs r5, #3
+_0809F3B0:
+	adds r0, r4, #0
+	bl FUN_0822f1c0
+	adds r4, #0x60
+	subs r5, #1
+	cmp r5, #0
+	bge _0809F3B0
+	movs r1, #0x80
+	lsls r1, r1, #2
+	adds r0, r6, r1
+	bl FUN_08236424
+	movs r0, #0
+	pop {r4, r5, r6}
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_0809f3d0
 FUN_0809f3d0: @ 0x0809F3D0
@@ -27113,11 +27246,11 @@ FUN_0809f3d0: @ 0x0809F3D0
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809F410
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r5, #0x1c]
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r5, #0x1e]
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _0809F414
 	.align 2, 0
 _0809F40C: .4byte 0x0000A47C
@@ -27130,7 +27263,7 @@ _0809F414:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809F42A
-	bl fetch_082316e4
+	bl Script_GetValue
 	cmp r0, #0
 	beq _0809F42A
 	movs r0, #4
@@ -27148,7 +27281,7 @@ FUN_0809f434: @ 0x0809F434
 	adds r5, r0, #0
 	ldr r0, _0809F4A4 @ =0x0000CB05
 	ldr r1, _0809F4A8 @ =0x0000B343
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _0809F49A
@@ -27387,8 +27520,8 @@ FUN_0809f604: @ 0x0809F604
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _0809F644
-	ldr r1, _0809F63C @ =0x0809F361
-	ldr r2, _0809F640 @ =0x0809F3A1
+	ldr r1, _0809F63C @ =FUN_0809f360
+	ldr r2, _0809F640 @ =FUN_0809f3a0
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
@@ -27401,17 +27534,23 @@ FUN_0809f604: @ 0x0809F604
 	movs r0, #0
 	b _0809F646
 	.align 2, 0
-_0809F63C: .4byte 0x0809F361
-_0809F640: .4byte 0x0809F3A1
+_0809F63C: .4byte FUN_0809f360
+_0809F640: .4byte FUN_0809f3a0
 _0809F644:
 	adds r0, r4, #0
 _0809F646:
 	pop {r4, r5, r6}
 	pop {r1}
 	bx r1
-_0809F64C:
-	.byte 0x01, 0x49, 0x00, 0x20
-	.byte 0x08, 0x60, 0x70, 0x47, 0x44, 0x01, 0x00, 0x03
+
+	thumb_func_start FUN_0809f64c
+FUN_0809f64c: @ 0x0809F64C
+	ldr r1, _0809F654 @ =0x03000144
+	movs r0, #0
+	str r0, [r1]
+	bx lr
+	.align 2, 0
+_0809F654: .4byte 0x03000144
 
 	thumb_func_start FUN_0809f658
 FUN_0809f658: @ 0x0809F658
@@ -27517,7 +27656,7 @@ _0809F708:
 	ldrb r0, [r0]
 	b _0809F73C
 _0809F710:
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r0, #0
 	movs r3, #0
 	ldr r0, [r4]
@@ -28531,11 +28670,30 @@ FUN_0809fe70: @ 0x0809FE70
 	pop {r0}
 	bx r0
 	.align 2, 0
-_0809FEBC:
-	.byte 0x70, 0xB5, 0x06, 0x1C
-	.byte 0x00, 0x25, 0x30, 0x8B, 0x85, 0x42, 0x09, 0xDA, 0x34, 0x1C, 0x1C, 0x34, 0x20, 0x1C, 0xFF, 0xF7
-	.byte 0x93, 0xFE, 0xF4, 0x34, 0x01, 0x35, 0x30, 0x8B, 0x85, 0x42, 0xF7, 0xDB, 0x00, 0x20, 0x70, 0xBC
-	.byte 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_0809febc
+FUN_0809febc: @ 0x0809FEBC
+	push {r4, r5, r6, lr}
+	adds r6, r0, #0
+	movs r5, #0
+	ldrh r0, [r6, #0x18]
+	cmp r5, r0
+	bge _0809FEDC
+	adds r4, r6, #0
+	adds r4, #0x1c
+_0809FECC:
+	adds r0, r4, #0
+	bl FUN_0809fbf8
+	adds r4, #0xf4
+	adds r5, #1
+	ldrh r0, [r6, #0x18]
+	cmp r5, r0
+	blt _0809FECC
+_0809FEDC:
+	movs r0, #0
+	pop {r4, r5, r6}
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_0809fee4
 FUN_0809fee4: @ 0x0809FEE4
@@ -28599,7 +28757,7 @@ FUN_0809ff44: @ 0x0809FF44
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _0809FF7C
-	ldr r1, _0809FF74 @ =0x0809FEBD
+	ldr r1, _0809FF74 @ =FUN_0809febc
 	ldr r2, _0809FF78 @ =FUN_0809fee4
 	bl SetEntityRoutine
 	adds r0, r4, #0
@@ -28612,7 +28770,7 @@ FUN_0809ff44: @ 0x0809FF44
 	b _0809FF7E
 	.align 2, 0
 _0809FF70: .4byte 0x000007BC
-_0809FF74: .4byte 0x0809FEBD
+_0809FF74: .4byte FUN_0809febc
 _0809FF78: .4byte FUN_0809fee4
 _0809FF7C:
 	adds r0, r4, #0
@@ -28641,7 +28799,7 @@ _0809FF9A:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0809FFB4
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _0809FFB6
 	.align 2, 0
 _0809FFB0: .4byte 0x03000144
@@ -28653,7 +28811,7 @@ _0809FFB6:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A0000
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _0809FFF8 @ =0xFFFF0000
@@ -28661,14 +28819,14 @@ _0809FFB6:
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #0xc]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0809FFFC @ =0x0000FFFF
 	ldr r1, [sp, #0xc]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #0xc]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #0x10]
@@ -28690,7 +28848,7 @@ _080A000A:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A0020
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r7, r0, #0
 	b _080A0022
 	.align 2, 0
@@ -28702,7 +28860,7 @@ _080A0022:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A0034
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r0, #0
 	b _080A0036
 _080A0034:
@@ -28712,7 +28870,7 @@ _080A0036:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A0048
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 	b _080A004A
 _080A0048:
@@ -28722,7 +28880,7 @@ _080A004A:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A005A
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080A005C
 _080A005A:
 	movs r0, #0
@@ -28970,7 +29128,7 @@ FUN_080a01d8: @ 0x080A01D8
 	cmp r0, #0
 	beq _080A0260
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 	b _080A0260
 	.align 2, 0
 _080A0224: .4byte 0x03002BE0
@@ -29356,21 +29514,112 @@ _080A050A:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080A0510:
-	.byte 0x30, 0xB5, 0x82, 0xB0, 0x04, 0x1C, 0xFF, 0xF7, 0xE3, 0xFD, 0x05, 0x1C, 0x00, 0x2D, 0x57, 0xD0
-	.byte 0x20, 0x1C, 0xFF, 0xF7, 0xAD, 0xFD, 0x00, 0x28, 0x2A, 0xD0, 0x20, 0x1C, 0xFF, 0xF7, 0xCC, 0xFF
-	.byte 0x00, 0x28, 0x04, 0xD0, 0x20, 0x1C, 0x40, 0x21, 0xFF, 0xF7, 0xDE, 0xFE, 0x50, 0xE0, 0x60, 0x7F
-	.byte 0x00, 0x28, 0x4D, 0xD0, 0x21, 0x7F, 0x20, 0x20, 0x08, 0x40, 0x00, 0x06, 0x05, 0x0E, 0x00, 0x2D
-	.byte 0x04, 0xD0, 0x61, 0x8D, 0x40, 0x20, 0x08, 0x43, 0x60, 0x85, 0x08, 0xE0, 0x20, 0x1C, 0x24, 0x30
-	.byte 0x93, 0xF1, 0xA2, 0xFE, 0x65, 0x77, 0x05, 0x48, 0x00, 0x68, 0xD9, 0xF7, 0xE3, 0xFE, 0x60, 0x6B
-	.byte 0x00, 0x28, 0x35, 0xD0, 0x00, 0x21, 0x91, 0xF1, 0x99, 0xF9, 0x31, 0xE0, 0xE0, 0x2B, 0x00, 0x03
-	.byte 0x20, 0x1C, 0xFF, 0xF7, 0xA1, 0xFF, 0x00, 0x28, 0x18, 0xD0, 0x20, 0x1C, 0x40, 0x21, 0xFF, 0xF7
-	.byte 0xB9, 0xFD, 0x00, 0x28, 0x12, 0xD0, 0x60, 0x7F, 0x00, 0x28, 0x21, 0xD1, 0x20, 0x1C, 0x24, 0x30
-	.byte 0xE1, 0x8B, 0x23, 0x8C, 0xFF, 0x22, 0x00, 0x92, 0x03, 0x4A, 0x01, 0x92, 0x00, 0x22, 0x93, 0xF1
-	.byte 0x5F, 0xFE, 0x01, 0x20, 0x60, 0x77, 0x13, 0xE0, 0x2A, 0x08, 0x00, 0x00, 0x60, 0x7F, 0x00, 0x28
-	.byte 0x0E, 0xD0, 0x20, 0x1C, 0x24, 0x30, 0x93, 0xF1, 0x6F, 0xFE, 0x00, 0x20, 0x60, 0x77, 0x07, 0xE0
-	.byte 0x60, 0x7F, 0x00, 0x28, 0x04, 0xD0, 0x20, 0x1C, 0x24, 0x30, 0x93, 0xF1, 0x65, 0xFE, 0x65, 0x77
-	.byte 0x02, 0xB0, 0x30, 0xBC, 0x01, 0xBC, 0x00, 0x47
+
+	thumb_func_start FUN_080a0510
+FUN_080a0510: @ 0x080A0510
+	push {r4, r5, lr}
+	sub sp, #8
+	adds r4, r0, #0
+	bl FUN_080a00e0
+	adds r5, r0, #0
+	cmp r5, #0
+	beq _080A05D0
+	adds r0, r4, #0
+	bl FUN_080a0080
+	cmp r0, #0
+	beq _080A0580
+	adds r0, r4, #0
+	bl FUN_080a04c8
+	cmp r0, #0
+	beq _080A053E
+	adds r0, r4, #0
+	movs r1, #0x40
+	bl FUN_080a02f8
+	b _080A05E0
+_080A053E:
+	ldrb r0, [r4, #0x1d]
+	cmp r0, #0
+	beq _080A05E0
+	ldrb r1, [r4, #0x1c]
+	movs r0, #0x20
+	ands r0, r1
+	lsls r0, r0, #0x18
+	lsrs r5, r0, #0x18
+	cmp r5, #0
+	beq _080A055C
+	ldrh r1, [r4, #0x2a]
+	movs r0, #0x40
+	orrs r0, r1
+	strh r0, [r4, #0x2a]
+	b _080A056E
+_080A055C:
+	adds r0, r4, #0
+	adds r0, #0x24
+	bl FUN_082342a8
+	strb r5, [r4, #0x1d]
+	ldr r0, _080A057C @ =0x03002BE0
+	ldr r0, [r0]
+	bl FUN_0807a334
+_080A056E:
+	ldr r0, [r4, #0x34]
+	cmp r0, #0
+	beq _080A05E0
+	movs r1, #0
+	bl Script_ExecById
+	b _080A05E0
+	.align 2, 0
+_080A057C: .4byte 0x03002BE0
+_080A0580:
+	adds r0, r4, #0
+	bl FUN_080a04c8
+	cmp r0, #0
+	beq _080A05BC
+	adds r0, r4, #0
+	movs r1, #0x40
+	bl FUN_080a0104
+	cmp r0, #0
+	beq _080A05BC
+	ldrb r0, [r4, #0x1d]
+	cmp r0, #0
+	bne _080A05E0
+	adds r0, r4, #0
+	adds r0, #0x24
+	ldrh r1, [r4, #0x1e]
+	ldrh r3, [r4, #0x20]
+	movs r2, #0xff
+	str r2, [sp]
+	ldr r2, _080A05B8 @ =0x0000082A
+	str r2, [sp, #4]
+	movs r2, #0
+	bl FUN_08234270
+	movs r0, #1
+	strb r0, [r4, #0x1d]
+	b _080A05E0
+	.align 2, 0
+_080A05B8: .4byte 0x0000082A
+_080A05BC:
+	ldrb r0, [r4, #0x1d]
+	cmp r0, #0
+	beq _080A05E0
+	adds r0, r4, #0
+	adds r0, #0x24
+	bl FUN_082342a8
+	movs r0, #0
+	strb r0, [r4, #0x1d]
+	b _080A05E0
+_080A05D0:
+	ldrb r0, [r4, #0x1d]
+	cmp r0, #0
+	beq _080A05E0
+	adds r0, r4, #0
+	adds r0, #0x24
+	bl FUN_082342a8
+	strb r5, [r4, #0x1d]
+_080A05E0:
+	add sp, #8
+	pop {r4, r5}
+	pop {r0}
+	bx r0
 
 	thumb_func_start FUN_080a05e8
 FUN_080a05e8: @ 0x080A05E8
@@ -29418,7 +29667,7 @@ FUN_080a0620: @ 0x080A0620
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A063C
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080A063E
 _080A063C:
 	movs r0, #9
@@ -29428,7 +29677,7 @@ _080A063E:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A0688
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _080A0680 @ =0xFFFF0000
@@ -29436,14 +29685,14 @@ _080A063E:
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _080A0684 @ =0x0000FFFF
 	ldr r1, [sp]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #4]
@@ -29507,7 +29756,7 @@ _080A06DA:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A06F4
-	bl fetch_082316e4
+	bl Script_GetValue
 _080A06F4:
 	str r0, [r5, #0x34]
 	ldrb r1, [r5, #0x1c]
@@ -29530,7 +29779,7 @@ _080A070C:
 	.align 2, 0
 _080A0718: .4byte FUN_080a035c
 _080A071C:
-	ldr r0, _080A072C @ =0x080A0511
+	ldr r0, _080A072C @ =FUN_080a0510
 _080A071E:
 	str r0, [r5, #0x38]
 	movs r0, #0
@@ -29539,7 +29788,7 @@ _080A071E:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080A072C: .4byte 0x080A0511
+_080A072C: .4byte FUN_080a0510
 
 	thumb_func_start FUN_080a0730
 FUN_080a0730: @ 0x080A0730
@@ -29692,9 +29941,14 @@ _080A0832:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080A0838:
-	.byte 0x00, 0xB5, 0xFF, 0xF7, 0xE5, 0xFF, 0x02, 0xBC
-	.byte 0x08, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_080a0838
+FUN_080a0838: @ 0x080A0838
+	push {lr}
+	bl FUN_080a0808
+	pop {r1}
+	bx r1
+	.align 2, 0
 
 	thumb_func_start FUN_080a0844
 FUN_080a0844: @ 0x080A0844
@@ -30435,7 +30689,7 @@ _080A0DC8:
 	subs r0, #0x5a
 	str r0, [sp]
 	movs r0, #1
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 _080A0DDC:
 	movs r0, #0
 	add sp, #0xc
@@ -30443,9 +30697,15 @@ _080A0DDC:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080A0DE8:
-	.byte 0x01, 0x49, 0x00, 0x20, 0x08, 0x60, 0x70, 0x47
-	.byte 0x3C, 0x2C, 0x00, 0x03
+
+	thumb_func_start FUN_080a0de8
+FUN_080a0de8: @ 0x080A0DE8
+	ldr r1, _080A0DF0 @ =0x03002C3C
+	movs r0, #0
+	str r0, [r1]
+	bx lr
+	.align 2, 0
+_080A0DF0: .4byte 0x03002C3C
 
 	thumb_func_start FUN_080a0df4
 FUN_080a0df4: @ 0x080A0DF4
@@ -30454,7 +30714,7 @@ FUN_080a0df4: @ 0x080A0DF4
 	adds r4, r0, #0
 	ldr r0, _080A0E48 @ =0x0000C091
 	ldr r1, _080A0E4C @ =0x00000B12
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	str r2, [r4, #0x18]
 	movs r0, #0
@@ -30470,7 +30730,7 @@ FUN_080a0df4: @ 0x080A0DF4
 	bl FUN_0822c0b8
 	movs r0, #1
 	movs r1, #1
-	bl FUN_0822ba00
+	bl SetBGPrioDirect
 	ldr r0, _080A0E50 @ =0x03002B80
 	ldrh r0, [r0]
 	movs r1, #0
@@ -30643,7 +30903,7 @@ FUN_080a0f58: @ 0x080A0F58
 	cmp r4, #0
 	beq _080A0FA4
 	ldr r1, _080A0F9C @ =FUN_080a0d08
-	ldr r2, _080A0FA0 @ =0x080A0DE9
+	ldr r2, _080A0FA0 @ =FUN_080a0de8
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
@@ -30659,7 +30919,7 @@ FUN_080a0f58: @ 0x080A0F58
 	.align 2, 0
 _080A0F98: .4byte 0x03002C3C
 _080A0F9C: .4byte FUN_080a0d08
-_080A0FA0: .4byte 0x080A0DE9
+_080A0FA0: .4byte FUN_080a0de8
 _080A0FA4:
 	adds r0, r4, #0
 _080A0FA6:
@@ -30697,7 +30957,7 @@ _080A0FDA:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A0FEC
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 	b _080A0FEE
 _080A0FEC:
@@ -30707,7 +30967,7 @@ _080A0FEE:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1000
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r2, r0, #0
 	b _080A1002
 _080A1000:
@@ -30719,12 +30979,44 @@ _080A1002:
 	pop {r4, r5}
 	pop {r1}
 	bx r1
-_080A1010:
-	.byte 0x10, 0xB5, 0x63, 0x20, 0x90, 0xF1, 0x7C, 0xFA, 0x00, 0x28, 0x03, 0xD0, 0x90, 0xF1, 0x62, 0xFB
-	.byte 0x01, 0x1C, 0x01, 0xE0, 0xE1, 0x21, 0xC9, 0x00, 0x0A, 0x4C, 0x20, 0x68, 0x01, 0x83, 0x08, 0x04
-	.byte 0x00, 0x28, 0x0C, 0xD0, 0x49, 0x20, 0xA1, 0xF1, 0x3D, 0xFA, 0x00, 0x28, 0x03, 0xD1, 0x49, 0x20
-	.byte 0x00, 0x21, 0xA1, 0xF1, 0x9F, 0xF9, 0x20, 0x68, 0x18, 0x30, 0xFB, 0xF7, 0x7B, 0xFA, 0x10, 0xBC
-	.byte 0x01, 0xBC, 0x00, 0x47, 0x40, 0x2C, 0x00, 0x03
+
+	thumb_func_start FUN_080a1010
+FUN_080a1010: @ 0x080A1010
+	push {r4, lr}
+	movs r0, #0x63
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A1024
+	bl Script_GetValue
+	adds r1, r0, #0
+	b _080A1028
+_080A1024:
+	movs r1, #0xe1
+	lsls r1, r1, #3
+_080A1028:
+	ldr r4, _080A1054 @ =0x03002C40
+	ldr r0, [r4]
+	strh r1, [r0, #0x18]
+	lsls r0, r1, #0x10
+	cmp r0, #0
+	beq _080A104E
+	movs r0, #0x49
+	bl CheckItemOwn
+	cmp r0, #0
+	bne _080A1046
+	movs r0, #0x49
+	movs r1, #0
+	bl TryAddItem
+_080A1046:
+	ldr r0, [r4]
+	adds r0, #0x18
+	bl FUN_0809c544
+_080A104E:
+	pop {r4}
+	pop {r0}
+	bx r0
+	.align 2, 0
+_080A1054: .4byte 0x03002C40
 
 	thumb_func_start FUN_080a1058
 FUN_080a1058: @ 0x080A1058
@@ -30743,17 +31035,82 @@ _080A106E:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080A1074:
-	.byte 0x10, 0xB5, 0x04, 0x1C, 0x20, 0x8B, 0x00, 0x28, 0x0E, 0xD1, 0x80, 0x22
-	.byte 0x52, 0x01, 0x04, 0x48, 0x00, 0x68, 0x04, 0x49, 0x40, 0x18, 0x01, 0x88, 0x0A, 0x43, 0x02, 0x80
-	.byte 0x22, 0xE0, 0x00, 0x00, 0xA0, 0x46, 0x00, 0x03, 0x34, 0x09, 0x00, 0x00, 0x10, 0x48, 0x01, 0x68
-	.byte 0x10, 0x48, 0x09, 0x18, 0x10, 0x48, 0x0A, 0x88, 0x10, 0x40, 0x08, 0x80, 0x20, 0x8B, 0x01, 0x38
-	.byte 0x20, 0x83, 0x00, 0x04, 0x00, 0x28, 0x0F, 0xD1, 0x49, 0x20, 0xA1, 0xF1, 0xFB, 0xF9, 0x00, 0x28
-	.byte 0x02, 0xD0, 0x49, 0x20, 0xA1, 0xF1, 0xB4, 0xF9, 0xFB, 0xF7, 0x60, 0xFA, 0xE0, 0x69, 0x00, 0x28
-	.byte 0x02, 0xD0, 0x00, 0x21, 0x90, 0xF1, 0xEA, 0xFB, 0x00, 0x20, 0x10, 0xBC, 0x02, 0xBC, 0x08, 0x47
-	.byte 0xA0, 0x46, 0x00, 0x03, 0x34, 0x09, 0x00, 0x00, 0xFF, 0xEF, 0xFF, 0xFF, 0x00, 0xB5, 0x49, 0x20
-	.byte 0xA1, 0xF1, 0xE0, 0xF9, 0x00, 0x28, 0x02, 0xD0, 0x49, 0x20, 0xA1, 0xF1, 0x99, 0xF9, 0x02, 0x49
-	.byte 0x00, 0x20, 0x08, 0x60, 0x02, 0xBC, 0x08, 0x47, 0x40, 0x2C, 0x00, 0x03
+
+	thumb_func_start FUN_080a1074
+FUN_080a1074: @ 0x080A1074
+	push {r4, lr}
+	adds r4, r0, #0
+	ldrh r0, [r4, #0x18]
+	cmp r0, #0
+	bne _080A109C
+	movs r2, #0x80
+	lsls r2, r2, #5
+	ldr r0, _080A1094 @ =0x030046A0
+	ldr r0, [r0]
+	ldr r1, _080A1098 @ =0x00000934
+	adds r0, r0, r1
+	ldrh r1, [r0]
+	orrs r2, r1
+	strh r2, [r0]
+	b _080A10D8
+	.align 2, 0
+_080A1094: .4byte 0x030046A0
+_080A1098: .4byte 0x00000934
+_080A109C:
+	ldr r0, _080A10E0 @ =0x030046A0
+	ldr r1, [r0]
+	ldr r0, _080A10E4 @ =0x00000934
+	adds r1, r1, r0
+	ldr r0, _080A10E8 @ =0xFFFFEFFF
+	ldrh r2, [r1]
+	ands r0, r2
+	strh r0, [r1]
+	ldrh r0, [r4, #0x18]
+	subs r0, #1
+	strh r0, [r4, #0x18]
+	lsls r0, r0, #0x10
+	cmp r0, #0
+	bne _080A10D8
+	movs r0, #0x49
+	bl CheckItemOwn
+	cmp r0, #0
+	beq _080A10C8
+	movs r0, #0x49
+	bl RemoveSpecifiedItem
+_080A10C8:
+	bl FUN_0809c58c
+	ldr r0, [r4, #0x1c]
+	cmp r0, #0
+	beq _080A10D8
+	movs r1, #0
+	bl Script_ExecById
+_080A10D8:
+	movs r0, #0
+	pop {r4}
+	pop {r1}
+	bx r1
+	.align 2, 0
+_080A10E0: .4byte 0x030046A0
+_080A10E4: .4byte 0x00000934
+_080A10E8: .4byte 0xFFFFEFFF
+
+	thumb_func_start FUN_080a10ec
+FUN_080a10ec: @ 0x080A10EC
+	push {lr}
+	movs r0, #0x49
+	bl CheckItemOwn
+	cmp r0, #0
+	beq _080A10FE
+	movs r0, #0x49
+	bl RemoveSpecifiedItem
+_080A10FE:
+	ldr r1, _080A1108 @ =0x03002C40
+	movs r0, #0
+	str r0, [r1]
+	pop {r1}
+	bx r1
+	.align 2, 0
+_080A1108: .4byte 0x03002C40
 
 	thumb_func_start FUN_080a110c
 FUN_080a110c: @ 0x080A110C
@@ -30763,7 +31120,7 @@ FUN_080a110c: @ 0x080A110C
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1120
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080A1124
 _080A1120:
 	movs r0, #0xe1
@@ -30774,7 +31131,7 @@ _080A1124:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1134
-	bl fetch_082316e4
+	bl Script_GetValue
 _080A1134:
 	str r0, [r4, #0x1c]
 	ldrh r0, [r4, #0x18]
@@ -30816,8 +31173,8 @@ FUN_080a1168: @ 0x080A1168
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080A11B0
-	ldr r1, _080A11A8 @ =0x080A1075
-	ldr r2, _080A11AC @ =0x080A10ED
+	ldr r1, _080A11A8 @ =FUN_080a1074
+	ldr r2, _080A11AC @ =FUN_080a10ec
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
@@ -30831,8 +31188,8 @@ FUN_080a1168: @ 0x080A1168
 	b _080A11B2
 	.align 2, 0
 _080A11A4: .4byte 0x03002C40
-_080A11A8: .4byte 0x080A1075
-_080A11AC: .4byte 0x080A10ED
+_080A11A8: .4byte FUN_080a1074
+_080A11AC: .4byte FUN_080a10ec
 _080A11B0:
 	adds r0, r4, #0
 _080A11B2:
@@ -30871,10 +31228,10 @@ FUN_080a11d4: @ 0x080A11D4
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1200
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r1, [r4]
 	strh r0, [r1, #0x1c]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r1, [r4]
 	b _080A1206
 	.align 2, 0
@@ -30889,11 +31246,11 @@ _080A1206:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1228
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r4, _080A1224 @ =0x03000148
 	ldr r1, [r4]
 	strh r0, [r1, #0x20]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r1, [r4]
 	b _080A1230
 	.align 2, 0
@@ -30930,7 +31287,7 @@ FUN_080a1244: @ 0x080A1244
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A126C
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r1, [r4]
 	strh r0, [r1, #0x2a]
 	b _080A1270
@@ -30944,11 +31301,11 @@ _080A1270:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1290
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r4, _080A128C @ =0x03000148
 	ldr r1, [r4]
 	strh r0, [r1, #0x1c]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r1, [r4]
 	b _080A1298
 	.align 2, 0
@@ -30964,11 +31321,11 @@ _080A1298:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A12BC
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r4, _080A12B8 @ =0x03000148
 	ldr r1, [r4]
 	strh r0, [r1, #0x20]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r1, [r4]
 	b _080A12C4
 	.align 2, 0
@@ -31003,7 +31360,7 @@ FUN_080a12d8: @ 0x080A12D8
 	cmp r0, #0
 	beq _080A12F4
 	ldr r4, _080A1300 @ =0x03002B84
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r4]
 _080A12F4:
 	pop {r4}
@@ -31201,10 +31558,25 @@ _080A1470:
 	pop {r4, r5}
 	pop {r1}
 	bx r1
-_080A1478:
-	.byte 0x05, 0x48, 0x00, 0x21, 0x01, 0x80, 0x05, 0x48
-	.byte 0x01, 0x80, 0x05, 0x48, 0x01, 0x80, 0x05, 0x49, 0x00, 0x20, 0x08, 0x60, 0x70, 0x47, 0x00, 0x00
-	.byte 0x84, 0x2B, 0x00, 0x03, 0xAC, 0x2B, 0x00, 0x03, 0x90, 0x2B, 0x00, 0x03, 0x48, 0x01, 0x00, 0x03
+
+	thumb_func_start FUN_080a1478
+FUN_080a1478: @ 0x080A1478
+	ldr r0, _080A1490 @ =0x03002B84
+	movs r1, #0
+	strh r1, [r0]
+	ldr r0, _080A1494 @ =0x03002BAC
+	strh r1, [r0]
+	ldr r0, _080A1498 @ =0x03002B90
+	strh r1, [r0]
+	ldr r1, _080A149C @ =0x03000148
+	movs r0, #0
+	str r0, [r1]
+	bx lr
+	.align 2, 0
+_080A1490: .4byte 0x03002B84
+_080A1494: .4byte 0x03002BAC
+_080A1498: .4byte 0x03002B90
+_080A149C: .4byte 0x03000148
 
 	thumb_func_start FUN_080a14a0
 FUN_080a14a0: @ 0x080A14A0
@@ -31215,7 +31587,7 @@ FUN_080a14a0: @ 0x080A14A0
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A14B6
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080A14B8
 _080A14B6:
 	movs r0, #1
@@ -31227,7 +31599,7 @@ _080A14B8:
 	cmp r2, #0
 	beq _080A14D8
 	ldr r4, _080A14D4 @ =0x03002B84
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r0, #0
 	strh r1, [r4]
 	b _080A14DC
@@ -31260,9 +31632,9 @@ _080A14FC:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1512
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r5, #0x1c]
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080A1516
 _080A1512:
 	movs r0, #3
@@ -31274,9 +31646,9 @@ _080A1516:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A1532
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r5, #0x20]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r0, #0
 	b _080A1536
 _080A1532:
@@ -31335,16 +31707,16 @@ _080A1598:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A15A6
-	bl fetch_082316e4
+	bl Script_GetValue
 _080A15A6:
 	strh r0, [r5, #0x2a]
 	movs r0, #0x70
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A15BE
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r5, #0x1c]
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080A15C2
 _080A15BE:
 	movs r0, #3
@@ -31356,9 +31728,9 @@ _080A15C2:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A15DE
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r5, #0x20]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r0, #0
 	b _080A15E2
 _080A15DE:
@@ -31444,7 +31816,7 @@ FUN_080a1664: @ 0x080A1664
 	cmp r4, #0
 	beq _080A16A8
 	ldr r1, _080A16A0 @ =FUN_080a1304
-	ldr r2, _080A16A4 @ =0x080A1479
+	ldr r2, _080A16A4 @ =FUN_080a1478
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
@@ -31458,7 +31830,7 @@ FUN_080a1664: @ 0x080A1664
 	.align 2, 0
 _080A169C: .4byte 0x03000148
 _080A16A0: .4byte FUN_080a1304
-_080A16A4: .4byte 0x080A1479
+_080A16A4: .4byte FUN_080a1478
 _080A16A8:
 	adds r0, r4, #0
 _080A16AA:
@@ -31564,7 +31936,7 @@ _080A174C:
 	cmp r0, #0
 	beq _080A1778
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A1778:
 	adds r0, r4, #0
 	adds r0, #0x90
@@ -31687,11 +32059,11 @@ FUN_080a1850: @ 0x080A1850
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1874
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r6, #0x28]
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r6, #0x2a]
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080A1878
 _080A1874:
 	strh r0, [r6, #0x28]
@@ -31720,7 +32092,7 @@ _080A1878:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A18BE
-	bl fetch_082316e4
+	bl Script_GetValue
 	cmp r0, #0
 	beq _080A18BE
 	ldr r0, [r6, #0x64]
@@ -31738,7 +32110,7 @@ _080A18BE:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1904
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r6, #0x1c]
 	lsls r0, r0, #0x10
 	cmp r0, #0
@@ -31799,7 +32171,7 @@ _080A1906:
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A195E
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r2, r0, #0
 _080A195E:
 	adds r1, r6, #0
@@ -31844,9 +32216,22 @@ _080A19AE:
 	pop {r4, r5}
 	pop {r1}
 	bx r1
-_080A19B4:
-	.byte 0x00, 0xB5, 0x40, 0x21, 0x40, 0x6B, 0x08, 0x40, 0x00, 0x28, 0x03, 0xD0
-	.byte 0x11, 0x1C, 0xC4, 0x31, 0x01, 0x20, 0x08, 0x70, 0x01, 0xBC, 0x00, 0x47
+
+	thumb_func_start FUN_080a19b4
+FUN_080a19b4: @ 0x080A19B4
+	push {lr}
+	movs r1, #0x40
+	ldr r0, [r0, #0x34]
+	ands r0, r1
+	cmp r0, #0
+	beq _080A19C8
+	adds r1, r2, #0
+	adds r1, #0xc4
+	movs r0, #1
+	strb r0, [r1]
+_080A19C8:
+	pop {r0}
+	bx r0
 
 	thumb_func_start FUN_080a19cc
 FUN_080a19cc: @ 0x080A19CC
@@ -32008,7 +32393,7 @@ FUN_080a1ae8: @ 0x080A1AE8
 	str r0, [r1]
 	adds r0, r2, #0
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A1B18:
 	adds r0, r4, #0
 	bl KillEntity
@@ -32018,10 +32403,22 @@ _080A1B1E:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080A1B28:
-	.byte 0x10, 0xB5, 0x04, 0x1C, 0x18, 0x30, 0x88, 0xF1
-	.byte 0xD7, 0xFC, 0x20, 0x1C, 0x60, 0x30, 0x94, 0xF1, 0x75, 0xFC, 0x20, 0x1C, 0xB0, 0x30, 0x92, 0xF1
-	.byte 0xB3, 0xFB, 0x10, 0xBC, 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_080a1b28
+FUN_080a1b28: @ 0x080A1B28
+	push {r4, lr}
+	adds r4, r0, #0
+	adds r0, #0x18
+	bl FUN_0822a4e0
+	adds r0, r4, #0
+	adds r0, #0x60
+	bl FUN_08236424
+	adds r0, r4, #0
+	adds r0, #0xb0
+	bl FUN_082342a8
+	pop {r4}
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_080a1b48
 FUN_080a1b48: @ 0x080A1B48
@@ -32035,7 +32432,7 @@ FUN_080a1b48: @ 0x080A1B48
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1B6C
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r0, #0
 	adds r0, r4, #0
 	bl FUN_0822b16c
@@ -32053,7 +32450,7 @@ _080A1B74:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1B8C
-	bl fetch_082316e4
+	bl Script_GetValue
 _080A1B8C:
 	strh r0, [r5, #0x10]
 	ldr r0, [r6]
@@ -32064,7 +32461,7 @@ _080A1B8C:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1BB0
-	bl fetch_082316e4
+	bl Script_GetValue
 	cmp r0, #0
 	beq _080A1BB0
 	ldr r0, [r5]
@@ -32119,7 +32516,7 @@ FUN_080a1bbc: @ 0x080A1BBC
 	adds r0, r5, #0
 	movs r3, #0
 	bl FUN_0823646c
-	ldr r1, _080A1C40 @ =0x080A19B5
+	ldr r1, _080A1C40 @ =FUN_080a19b4
 	adds r0, r5, #0
 	adds r2, r6, #0
 	bl FUN_0823651c
@@ -32139,7 +32536,7 @@ FUN_080a1bbc: @ 0x080A1BBC
 _080A1C34: .4byte 0xFFFF0000
 _080A1C38: .4byte 0x0000FFFF
 _080A1C3C: .4byte 0x00004001
-_080A1C40: .4byte 0x080A19B5
+_080A1C40: .4byte FUN_080a19b4
 
 	thumb_func_start FUN_080a1c44
 FUN_080a1c44: @ 0x080A1C44
@@ -32151,7 +32548,7 @@ FUN_080a1c44: @ 0x080A1C44
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A1CA0
-	bl fetch_082316e4
+	bl Script_GetValue
 	asrs r0, r0, #8
 	lsls r0, r0, #8
 	adds r0, #0x80
@@ -32162,14 +32559,14 @@ FUN_080a1c44: @ 0x080A1C44
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #8]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _080A1C9C @ =0x0000FFFF
 	ldr r1, [sp, #8]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #8]
-	bl fetch_082316e4
+	bl Script_GetValue
 	asrs r0, r0, #8
 	lsls r0, r0, #8
 	adds r0, #0x80
@@ -32332,7 +32729,7 @@ _080A1D7A:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A1DD4
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xc8
 	str r0, [r1]
@@ -32362,7 +32759,7 @@ FUN_080a1de4: @ 0x080A1DE4
 	cmp r4, #0
 	beq _080A1E20
 	ldr r1, _080A1E18 @ =FUN_080a1ae8
-	ldr r2, _080A1E1C @ =0x080A1B29
+	ldr r2, _080A1E1C @ =FUN_080a1b28
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
@@ -32376,7 +32773,7 @@ FUN_080a1de4: @ 0x080A1DE4
 	b _080A1E22
 	.align 2, 0
 _080A1E18: .4byte FUN_080a1ae8
-_080A1E1C: .4byte 0x080A1B29
+_080A1E1C: .4byte FUN_080a1b28
 _080A1E20:
 	adds r0, r4, #0
 _080A1E22:
@@ -32630,7 +33027,7 @@ FUN_080a1fc4: @ 0x080A1FC4
 	cmp r0, #0
 	beq _080A1FFE
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A1FFE:
 	movs r0, #1
 	bl FUN_0808670c
@@ -32673,7 +33070,7 @@ _080A2040:
 	cmp r0, #0
 	beq _080A205E
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A205E:
 	movs r0, #0
 	bl FUN_0808670c
@@ -32900,7 +33297,7 @@ FUN_080a21fc: @ 0x080A21FC
 	push {r5, r6, r7}
 	adds r6, r0, #0
 	ldr r0, _080A2290 @ =0x00001C1E
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	adds r1, r6, #0
 	adds r1, #0xb8
 	str r0, [r1]
@@ -32979,15 +33376,15 @@ FUN_080a2294: @ 0x080A2294
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A2350
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r7, #0
 	adds r4, #0xac
 	strh r0, [r4]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r7, #0
 	adds r5, #0xae
 	strh r0, [r5]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r7, #0
 	adds r1, #0xb0
 	strh r0, [r1]
@@ -33145,7 +33542,7 @@ _080A2362:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A2430
-	bl fetch_082316e4
+	bl Script_GetValue
 	cmp r0, #0
 	beq _080A2430
 	ldr r0, [r7, #0x18]
@@ -33200,7 +33597,7 @@ _080A2464:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A247E
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0x98
 	lsls r2, r2, #2
 	adds r1, r7, r2
@@ -33217,7 +33614,7 @@ _080A2486:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A24A0
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0x99
 	lsls r2, r2, #2
 	adds r1, r7, r2
@@ -33321,7 +33718,7 @@ _080A2542:
 	adds r0, r0, r1
 	strh r0, [r4, #0x1c]
 	ldr r0, _080A2584 @ =0x00001C1E
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	adds r1, r0, #0
 	ldrb r2, [r5]
 	lsrs r2, r2, #2
@@ -33963,10 +34360,24 @@ FUN_080a2a14: @ 0x080A2A14
 	bx lr
 	.align 2, 0
 _080A2A28: .4byte 0x00000382
-_080A2A2C:
-	.byte 0x00, 0xB5, 0x02, 0x1C
-	.byte 0x10, 0x6D, 0x01, 0x21, 0x08, 0x43, 0x10, 0x65, 0x10, 0x1C, 0x7C, 0x30, 0xE2, 0x23, 0x5B, 0x00
-	.byte 0xD1, 0x18, 0x09, 0x88, 0x88, 0xF1, 0xE2, 0xFB, 0x01, 0xBC, 0x00, 0x47
+
+	thumb_func_start FUN_080a2a2c
+FUN_080a2a2c: @ 0x080A2A2C
+	push {lr}
+	adds r2, r0, #0
+	ldr r0, [r2, #0x50]
+	movs r1, #1
+	orrs r0, r1
+	str r0, [r2, #0x50]
+	adds r0, r2, #0
+	adds r0, #0x7c
+	movs r3, #0xe2
+	lsls r3, r3, #1
+	adds r1, r2, r3
+	ldrh r1, [r1]
+	bl FUN_0822b20c
+	pop {r0}
+	bx r0
 
 	thumb_func_start FUN_080a2a4c
 FUN_080a2a4c: @ 0x080A2A4C
@@ -34616,7 +35027,7 @@ _080A2EE4:
 	movs r2, #0
 	movs r3, #4
 	bl FUN_0807ba94
-	ldr r1, _080A2F48 @ =0x080A3005
+	ldr r1, _080A2F48 @ =FUN_080a3004
 	adds r0, r4, #0
 	bl FUN_080a2a14
 	b _080A2F86
@@ -34624,7 +35035,7 @@ _080A2EE4:
 _080A2F3C: .4byte 0x03002BC0
 _080A2F40: .4byte 0x030044E0
 _080A2F44: .4byte 0x03002BE0
-_080A2F48: .4byte 0x080A3005
+_080A2F48: .4byte FUN_080a3004
 _080A2F4C:
 	adds r5, r4, #0
 	adds r5, #0x4c
@@ -34723,19 +35134,97 @@ _080A2FFC:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080A3004:
-	.byte 0x30, 0xB5, 0x04, 0x1C, 0xDA, 0x20, 0x80, 0x00, 0x21, 0x18, 0x08, 0x78
-	.byte 0x01, 0x28, 0x01, 0xD9, 0x02, 0x38, 0x00, 0xE0, 0x00, 0x20, 0x08, 0x70, 0x21, 0x1C, 0x9A, 0x31
-	.byte 0xDA, 0x22, 0x92, 0x00, 0xA0, 0x18, 0x09, 0x88, 0x02, 0x78, 0x89, 0x18, 0x22, 0x1C, 0x6E, 0x32
-	.byte 0x11, 0x80, 0x00, 0x78, 0x00, 0x28, 0x36, 0xD1, 0x1C, 0x48, 0x01, 0x68, 0xDF, 0x22, 0x92, 0x00
-	.byte 0x88, 0x18, 0x00, 0x78, 0x00, 0x28, 0x2E, 0xD1, 0x08, 0x1C, 0x04, 0x21, 0x00, 0x22, 0xD9, 0xF7
-	.byte 0xD7, 0xF8, 0x17, 0x48, 0x25, 0x18, 0x00, 0x20, 0x28, 0x70, 0x20, 0x1C, 0xFF, 0xF7, 0x8C, 0xFB
-	.byte 0x00, 0x28, 0x05, 0xD0, 0xE3, 0xF7, 0x28, 0xFD, 0x00, 0x28, 0x01, 0xD0, 0x01, 0x20, 0x28, 0x70
-	.byte 0x20, 0x6D, 0x10, 0x49, 0x08, 0x40, 0x20, 0x65, 0x21, 0x1C, 0x57, 0x31, 0x03, 0x20, 0x08, 0x70
-	.byte 0x22, 0x1C, 0xA0, 0x32, 0x10, 0x68, 0x01, 0x21, 0x08, 0x43, 0x10, 0x60, 0x0A, 0x49, 0x20, 0x1C
-	.byte 0xFF, 0xF7, 0xC0, 0xFC, 0xDB, 0x21, 0x89, 0x00, 0x60, 0x18, 0x00, 0x68, 0x00, 0x28, 0x02, 0xD0
-	.byte 0x00, 0x21, 0x8E, 0xF1, 0x03, 0xFC, 0x30, 0xBC, 0x01, 0xBC, 0x00, 0x47, 0xE0, 0x2B, 0x00, 0x03
-	.byte 0xC3, 0x01, 0x00, 0x00, 0xFF, 0xFD, 0xFF, 0xFF, 0xBD, 0x30, 0x0A, 0x08
+
+	thumb_func_start FUN_080a3004
+FUN_080a3004: @ 0x080A3004
+	push {r4, r5, lr}
+	adds r4, r0, #0
+	movs r0, #0xda
+	lsls r0, r0, #2
+	adds r1, r4, r0
+	ldrb r0, [r1]
+	cmp r0, #1
+	bls _080A3018
+	subs r0, #2
+	b _080A301A
+_080A3018:
+	movs r0, #0
+_080A301A:
+	strb r0, [r1]
+	adds r1, r4, #0
+	adds r1, #0x9a
+	movs r2, #0xda
+	lsls r2, r2, #2
+	adds r0, r4, r2
+	ldrh r1, [r1]
+	ldrb r2, [r0]
+	adds r1, r1, r2
+	adds r2, r4, #0
+	adds r2, #0x6e
+	strh r1, [r2]
+	ldrb r0, [r0]
+	cmp r0, #0
+	bne _080A30A6
+	ldr r0, _080A30AC @ =0x03002BE0
+	ldr r1, [r0]
+	movs r2, #0xdf
+	lsls r2, r2, #2
+	adds r0, r1, r2
+	ldrb r0, [r0]
+	cmp r0, #0
+	bne _080A30A6
+	adds r0, r1, #0
+	movs r1, #4
+	movs r2, #0
+	bl FUN_0807c200
+	ldr r0, _080A30B0 @ =0x000001C3
+	adds r5, r4, r0
+	movs r0, #0
+	strb r0, [r5]
+	adds r0, r4, #0
+	bl FUN_080a2778
+	cmp r0, #0
+	beq _080A3070
+	bl FUN_08086ab8
+	cmp r0, #0
+	beq _080A3070
+	movs r0, #1
+	strb r0, [r5]
+_080A3070:
+	ldr r0, [r4, #0x50]
+	ldr r1, _080A30B4 @ =0xFFFFFDFF
+	ands r0, r1
+	str r0, [r4, #0x50]
+	adds r1, r4, #0
+	adds r1, #0x57
+	movs r0, #3
+	strb r0, [r1]
+	adds r2, r4, #0
+	adds r2, #0xa0
+	ldr r0, [r2]
+	movs r1, #1
+	orrs r0, r1
+	str r0, [r2]
+	ldr r1, _080A30B8 @ =FUN_080a30bc
+	adds r0, r4, #0
+	bl FUN_080a2a14
+	movs r1, #0xdb
+	lsls r1, r1, #2
+	adds r0, r4, r1
+	ldr r0, [r0]
+	cmp r0, #0
+	beq _080A30A6
+	movs r1, #0
+	bl Script_ExecById
+_080A30A6:
+	pop {r4, r5}
+	pop {r0}
+	bx r0
+	.align 2, 0
+_080A30AC: .4byte 0x03002BE0
+_080A30B0: .4byte 0x000001C3
+_080A30B4: .4byte 0xFFFFFDFF
+_080A30B8: .4byte FUN_080a30bc
 
 	thumb_func_start FUN_080a30bc
 FUN_080a30bc: @ 0x080A30BC
@@ -34856,7 +35345,7 @@ _080A316A:
 	ldr r0, [r0]
 	str r0, [sp]
 	adds r0, r2, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A31AA:
 	ldr r1, _080A31D8 @ =0x000001C3
 	adds r0, r4, r1
@@ -34870,7 +35359,7 @@ _080A31AA:
 	cmp r0, #0
 	beq _080A31C6
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A31C6:
 	add sp, #0xc
 	pop {r4}
@@ -35053,7 +35542,7 @@ _080A3324:
 	cmp r0, #0
 	beq _080A3336
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A3336:
 	pop {r4, r5}
 	pop {r0}
@@ -35373,7 +35862,7 @@ _080A3582:
 	adds r4, r5, r0
 	adds r4, r6, r4
 	mov r0, sb
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #1
@@ -35386,7 +35875,7 @@ _080A3582:
 	movs r1, #1
 	bl FUN_0822dadc
 	mov r0, sb
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #2
@@ -35435,15 +35924,15 @@ FUN_080a35fc: @ 0x080A35FC
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A36BC
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r7, #0
 	adds r4, #0x98
 	strh r0, [r4]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r7, #0
 	adds r5, #0x9a
 	strh r0, [r5]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r7, #0
 	adds r1, #0x9c
 	strh r0, [r1]
@@ -35536,7 +36025,7 @@ _080A36CE:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A36E8
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xdb
 	lsls r2, r2, #2
 	adds r1, r7, r2
@@ -35553,7 +36042,7 @@ _080A36F0:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A370A
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xdf
 	lsls r2, r2, #2
 	adds r1, r7, r2
@@ -35570,7 +36059,7 @@ _080A3712:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A372C
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xdc
 	lsls r2, r2, #2
 	adds r1, r7, r2
@@ -35587,7 +36076,7 @@ _080A3734:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A374E
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xdd
 	lsls r2, r2, #2
 	adds r1, r7, r2
@@ -35603,7 +36092,7 @@ _080A3756:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A376A
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r7, #0
 	adds r1, #0x4e
 	b _080A3770
@@ -35619,7 +36108,7 @@ _080A3770:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A3790
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _080A378C @ =0x00000369
 	adds r1, r7, r2
 	strb r0, [r1]
@@ -35636,7 +36125,7 @@ _080A3796:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A37B4
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xde
 	lsls r2, r2, #2
 	adds r1, r7, r2
@@ -35822,20 +36311,20 @@ _080A3882:
 	lsls r1, r1, #2
 	adds r0, r7, r1
 	strb r2, [r0]
-	ldr r1, _080A393C @ =0x080A2A2D
+	ldr r1, _080A393C @ =FUN_080a2a2c
 	b _080A3A70
 	.align 2, 0
 _080A3930: .4byte 0x00000BA8
 _080A3934: .4byte 0x00000201
 _080A3938: .4byte 0x0000036A
-_080A393C: .4byte 0x080A2A2D
+_080A393C: .4byte FUN_080a2a2c
 _080A3940:
 	movs r4, #0
 	movs r0, #0x66
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A3952
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 _080A3952:
 	movs r6, #0
@@ -35843,7 +36332,7 @@ _080A3952:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A3964
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r6, r0, #0
 _080A3964:
 	cmp r4, #0
@@ -35914,7 +36403,7 @@ _080A3964:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A3A02
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 _080A3A02:
 	cmp r4, #0
@@ -36350,7 +36839,7 @@ _080A3D04:
 	movs r1, #1
 	orrs r0, r1
 	str r0, [r2]
-	ldr r1, _080A3D9C @ =0x080A3DA5
+	ldr r1, _080A3D9C @ =FUN_080a3da4
 	adds r0, r4, #0
 	bl FUN_080a3b6c
 	movs r1, #0x84
@@ -36378,7 +36867,7 @@ _080A3D04:
 	ldrh r0, [r0]
 	str r0, [sp, #4]
 	adds r0, r2, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A3D8A:
 	add sp, #0x10
 	pop {r4}
@@ -36387,11 +36876,25 @@ _080A3D8A:
 	.align 2, 0
 _080A3D94: .4byte 0x03002BE0
 _080A3D98: .4byte 0xFFFFFDFF
-_080A3D9C: .4byte 0x080A3DA5
+_080A3D9C: .4byte FUN_080a3da4
 _080A3DA0: .4byte 0xFFFF0000
-_080A3DA4:
-	.byte 0x70, 0x47, 0x00, 0x00, 0x00, 0xB5, 0x88, 0x22, 0x52, 0x00, 0x81, 0x18
-	.byte 0x09, 0x68, 0xA9, 0xF1, 0x57, 0xF8, 0x00, 0x20, 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_080a3da4
+FUN_080a3da4: @ 0x080A3DA4
+	bx lr
+	.align 2, 0
+
+	thumb_func_start FUN_080a3da8
+FUN_080a3da8: @ 0x080A3DA8
+	push {lr}
+	movs r2, #0x88
+	lsls r2, r2, #1
+	adds r1, r0, r2
+	ldr r1, [r1]
+	bl _call_via_r1
+	movs r0, #0
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_080a3dbc
 FUN_080a3dbc: @ 0x080A3DBC
@@ -36429,15 +36932,15 @@ FUN_080a3de4: @ 0x080A3DE4
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _080A3EA4
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r7, #0
 	adds r4, #0xac
 	strh r0, [r4]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r7, #0
 	adds r5, #0xae
 	strh r0, [r5]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r7, #0
 	adds r1, #0xb0
 	strh r0, [r1]
@@ -36530,7 +37033,7 @@ _080A3EB6:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A3ED0
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0x84
 	lsls r2, r2, #1
 	adds r1, r7, r2
@@ -36576,7 +37079,7 @@ _080A3ED8:
 	adds r4, r7, r0
 	movs r5, #1
 _080A3F1C:
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r4]
 	adds r4, #2
 	subs r5, #1
@@ -36625,7 +37128,7 @@ _080A3F72:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A3F80
-	bl fetch_082316e4
+	bl Script_GetValue
 _080A3F80:
 	strb r0, [r7, #0x1b]
 	ldrb r0, [r7, #0x1b]
@@ -36732,7 +37235,7 @@ FUN_080a404c: @ 0x080A404C
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080A408C
-	ldr r1, _080A4084 @ =0x080A3DA9
+	ldr r1, _080A4084 @ =FUN_080a3da8
 	ldr r2, _080A4088 @ =FUN_080a3dbc
 	bl SetEntityRoutine
 	adds r0, r4, #0
@@ -36746,7 +37249,7 @@ FUN_080a404c: @ 0x080A404C
 	movs r0, #0
 	b _080A408E
 	.align 2, 0
-_080A4084: .4byte 0x080A3DA9
+_080A4084: .4byte FUN_080a3da8
 _080A4088: .4byte FUN_080a3dbc
 _080A408C:
 	adds r0, r4, #0
@@ -37039,7 +37542,7 @@ _080A4266:
 	movs r1, #1
 	orrs r0, r1
 	str r0, [r4, #0x6c]
-	ldr r1, _080A42F0 @ =0x080A42F9
+	ldr r1, _080A42F0 @ =FUN_080a42f8
 	adds r0, r4, #0
 	bl FUN_080a40f0
 	adds r0, r4, #0
@@ -37065,7 +37568,7 @@ _080A4266:
 	ldrh r0, [r0]
 	str r0, [sp, #4]
 	adds r0, r2, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A42E0:
 	add sp, #0x10
 	pop {r4}
@@ -37074,10 +37577,13 @@ _080A42E0:
 	.align 2, 0
 _080A42E8: .4byte 0x03002BE0
 _080A42EC: .4byte 0xFFFFFDFF
-_080A42F0: .4byte 0x080A42F9
+_080A42F0: .4byte FUN_080a42f8
 _080A42F4: .4byte 0xFFFF0000
-_080A42F8:
-	.byte 0x70, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_080a42f8
+FUN_080a42f8: @ 0x080A42F8
+	bx lr
+	.align 2, 0
 
 	thumb_func_start FUN_080a42fc
 FUN_080a42fc: @ 0x080A42FC
@@ -37090,9 +37596,21 @@ FUN_080a42fc: @ 0x080A42FC
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080A4310:
-	.byte 0x10, 0xB5, 0x04, 0x1C, 0x1C, 0x30, 0x86, 0xF1, 0xE3, 0xF8, 0x6C, 0x34, 0x20, 0x1C, 0x86, 0xF1
-	.byte 0xDF, 0xF8, 0x00, 0x20, 0x10, 0xBC, 0x02, 0xBC, 0x08, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_080a4310
+FUN_080a4310: @ 0x080A4310
+	push {r4, lr}
+	adds r4, r0, #0
+	adds r0, #0x1c
+	bl FUN_0822a4e0
+	adds r4, #0x6c
+	adds r0, r4, #0
+	bl FUN_0822a4e0
+	movs r0, #0
+	pop {r4}
+	pop {r1}
+	bx r1
+	.align 2, 0
 
 	thumb_func_start FUN_080a432c
 FUN_080a432c: @ 0x080A432C
@@ -37107,7 +37625,7 @@ FUN_080a432c: @ 0x080A432C
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A4348
-	bl fetch_082316e4
+	bl Script_GetValue
 _080A4348:
 	strb r0, [r6, #0x1a]
 	movs r0, #0x70
@@ -37115,15 +37633,15 @@ _080A4348:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A43FC
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r6, #0
 	adds r4, #0x64
 	strh r0, [r4]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r6, #0
 	adds r5, #0x66
 	strh r0, [r5]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r6, #0
 	adds r1, #0x68
 	strh r0, [r1]
@@ -37214,7 +37732,7 @@ _080A440A:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A4422
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r6, #0
 	adds r1, #0xc0
 	str r0, [r1]
@@ -37254,7 +37772,7 @@ _080A4428:
 	adds r4, #0xbc
 	movs r5, #1
 _080A4464:
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r4]
 	adds r4, #2
 	subs r5, #1
@@ -37382,7 +37900,7 @@ FUN_080a4554: @ 0x080A4554
 	cmp r4, #0
 	beq _080A4590
 	ldr r1, _080A4588 @ =FUN_080a42fc
-	ldr r2, _080A458C @ =0x080A4311
+	ldr r2, _080A458C @ =FUN_080a4310
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
@@ -37396,7 +37914,7 @@ FUN_080a4554: @ 0x080A4554
 	b _080A4592
 	.align 2, 0
 _080A4588: .4byte FUN_080a42fc
-_080A458C: .4byte 0x080A4311
+_080A458C: .4byte FUN_080a4310
 _080A4590:
 	adds r0, r4, #0
 _080A4592:
@@ -37482,12 +38000,47 @@ _080A45F6:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080A4620:
-	.byte 0x10, 0xB5, 0x03, 0x1C, 0x14, 0x1C, 0xF4, 0x34, 0x20, 0x78, 0x00, 0x28, 0x16, 0xD1, 0x80, 0x21
-	.byte 0x09, 0x02, 0x58, 0x6B, 0x08, 0x40, 0x00, 0x28, 0x10, 0xD0, 0x0A, 0x48, 0x00, 0x68, 0x0A, 0x49
-	.byte 0x40, 0x18, 0x11, 0x1C, 0xF0, 0x31, 0x00, 0x22, 0x80, 0x5E, 0x0A, 0x88, 0x80, 0x18, 0x08, 0x80
-	.byte 0x20, 0x20, 0x20, 0x70, 0x05, 0x48, 0x01, 0x68, 0x01, 0x20, 0x48, 0x76, 0x10, 0xBC, 0x01, 0xBC
-	.byte 0x00, 0x47, 0x00, 0x00, 0xA0, 0x46, 0x00, 0x03, 0x42, 0x09, 0x00, 0x00, 0x44, 0x2C, 0x00, 0x03
+
+	thumb_func_start FUN_080a4620
+FUN_080a4620: @ 0x080A4620
+	push {r4, lr}
+	adds r3, r0, #0
+	adds r4, r2, #0
+	adds r4, #0xf4
+	ldrb r0, [r4]
+	cmp r0, #0
+	bne _080A465C
+	movs r1, #0x80
+	lsls r1, r1, #8
+	ldr r0, [r3, #0x34]
+	ands r0, r1
+	cmp r0, #0
+	beq _080A465C
+	ldr r0, _080A4664 @ =0x030046A0
+	ldr r0, [r0]
+	ldr r1, _080A4668 @ =0x00000942
+	adds r0, r0, r1
+	adds r1, r2, #0
+	adds r1, #0xf0
+	movs r2, #0
+	ldrsh r0, [r0, r2]
+	ldrh r2, [r1]
+	adds r0, r0, r2
+	strh r0, [r1]
+	movs r0, #0x20
+	strb r0, [r4]
+	ldr r0, _080A466C @ =0x03002C44
+	ldr r1, [r0]
+	movs r0, #1
+	strb r0, [r1, #0x19]
+_080A465C:
+	pop {r4}
+	pop {r0}
+	bx r0
+	.align 2, 0
+_080A4664: .4byte 0x030046A0
+_080A4668: .4byte 0x00000942
+_080A466C: .4byte 0x03002C44
 
 	thumb_func_start FUN_080a4670
 FUN_080a4670: @ 0x080A4670
@@ -37550,7 +38103,7 @@ _080A46CC:
 	b _080A4718
 _080A46E0:
 	strh r6, [r5, #0x10]
-	ldr r1, _080A4720 @ =0x080A4729
+	ldr r1, _080A4720 @ =FUN_080a4728
 	adds r0, r5, #0
 	bl FUN_080a4598
 	movs r1, #0x86
@@ -37574,17 +38127,20 @@ _080A46E0:
 	ldrsh r0, [r0, r3]
 	str r0, [sp]
 	adds r0, r2, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A4718:
 	add sp, #0xc
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080A4720: .4byte 0x080A4729
+_080A4720: .4byte FUN_080a4728
 _080A4724: .4byte 0xFFFF0000
-_080A4728:
-	.byte 0x70, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_080a4728
+FUN_080a4728: @ 0x080A4728
+	bx lr
+	.align 2, 0
 
 	thumb_func_start FUN_080a472c
 FUN_080a472c: @ 0x080A472C
@@ -37728,7 +38284,7 @@ _080A4808:
 	ldrsh r0, [r0, r3]
 	str r0, [sp]
 	adds r0, r2, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A4842:
 	add sp, #0xc
 	pop {r4, r5}
@@ -38149,7 +38705,7 @@ FUN_080a4b4c: @ 0x080A4B4C
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A4B82
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xe6
 	strh r0, [r1]
@@ -38166,15 +38722,15 @@ _080A4B8A:
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A4BB8
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r5, #0
 	adds r4, #0xdc
 	strh r0, [r4]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xde
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xe0
 	strh r0, [r1]
@@ -38231,7 +38787,7 @@ _080A4C0A:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A4C28
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xe4
 	b _080A4C2E
@@ -38266,7 +38822,7 @@ _080A4C3E:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A4C72
-	bl fetch_082316e4
+	bl Script_GetValue
 	cmp r0, #0
 	beq _080A4C72
 	ldr r0, [r5]
@@ -38282,7 +38838,7 @@ _080A4C72:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A4CC0
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xe5
 	strb r0, [r1]
@@ -38320,7 +38876,7 @@ _080A4CC6:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A4CE2
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xf2
 	b _080A4CE8
@@ -38334,7 +38890,7 @@ _080A4CE8:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A4CF8
-	bl fetch_082316e4
+	bl Script_GetValue
 _080A4CF8:
 	adds r1, r5, #0
 	adds r1, #0xee
@@ -38350,7 +38906,7 @@ _080A4CF8:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A4D26
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xf6
 	strb r0, [r1]
@@ -38417,11 +38973,11 @@ _080A4D90:
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A4DB8
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xe8
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0x86
 	lsls r2, r2, #1
 	adds r1, r5, r2
@@ -38492,7 +39048,7 @@ FUN_080a4e1c: @ 0x080A4E1C
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A4E46
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r0, #0
 	b _080A4E48
 	.align 2, 0
@@ -38569,7 +39125,7 @@ _080A4EB0:
 	adds r0, r5, r0
 	b _080A4EE2
 _080A4EB8:
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r6, r0, #0
 	movs r2, #0
 	ldr r0, [r4]
@@ -38595,15 +39151,57 @@ _080A4EE2:
 	pop {r4, r5, r6}
 	pop {r1}
 	bx r1
-_080A4EE8:
-	.byte 0x10, 0xB5, 0xFF, 0xF7, 0xD3, 0xFF, 0x04, 0x1C
-	.byte 0x00, 0x2C, 0x2C, 0xD0, 0x70, 0x20, 0x8C, 0xF1, 0x0B, 0xFB, 0x00, 0x28, 0x27, 0xD0, 0x8C, 0xF1
-	.byte 0xF1, 0xFB, 0x21, 0x1C, 0x78, 0x31, 0x08, 0x80, 0x8C, 0xF1, 0xEC, 0xFB, 0x21, 0x1C, 0x7A, 0x31
-	.byte 0x08, 0x80, 0x8C, 0xF1, 0xE7, 0xFB, 0x21, 0x1C, 0x7C, 0x31, 0x08, 0x80, 0x66, 0x20, 0x8C, 0xF1
-	.byte 0xF7, 0xFA, 0x00, 0x28, 0x13, 0xD0, 0x8C, 0xF1, 0xDD, 0xFB, 0x21, 0x1C, 0x80, 0x31, 0x08, 0x80
-	.byte 0x00, 0x04, 0x00, 0x28, 0x0B, 0xD0, 0xA1, 0x78, 0x01, 0x20, 0x08, 0x43, 0xA0, 0x70, 0x60, 0x6C
-	.byte 0xA1, 0x6C, 0x20, 0x67, 0x61, 0x67, 0x21, 0x1C, 0x82, 0x31, 0x00, 0x20, 0x08, 0x80, 0x10, 0xBC
-	.byte 0x01, 0xBC, 0x00, 0x47
+
+	thumb_func_start FUN_080a4ee8
+FUN_080a4ee8: @ 0x080A4EE8
+	push {r4, lr}
+	bl FUN_080a4e94
+	adds r4, r0, #0
+	cmp r4, #0
+	beq _080A4F4E
+	movs r0, #0x70
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A4F4E
+	bl Script_GetValue
+	adds r1, r4, #0
+	adds r1, #0x78
+	strh r0, [r1]
+	bl Script_GetValue
+	adds r1, r4, #0
+	adds r1, #0x7a
+	strh r0, [r1]
+	bl Script_GetValue
+	adds r1, r4, #0
+	adds r1, #0x7c
+	strh r0, [r1]
+	movs r0, #0x66
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A4F4E
+	bl Script_GetValue
+	adds r1, r4, #0
+	adds r1, #0x80
+	strh r0, [r1]
+	lsls r0, r0, #0x10
+	cmp r0, #0
+	beq _080A4F4E
+	ldrb r1, [r4, #2]
+	movs r0, #1
+	orrs r0, r1
+	strb r0, [r4, #2]
+	ldr r0, [r4, #0x44]
+	ldr r1, [r4, #0x48]
+	str r0, [r4, #0x70]
+	str r1, [r4, #0x74]
+	adds r1, r4, #0
+	adds r1, #0x82
+	movs r0, #0
+	strh r0, [r1]
+_080A4F4E:
+	pop {r4}
+	pop {r0}
+	bx r0
 
 	thumb_func_start FUN_080a4f54
 FUN_080a4f54: @ 0x080A4F54
@@ -38616,7 +39214,7 @@ FUN_080a4f54: @ 0x080A4F54
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A4F70
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r4, #0x38]
 _080A4F70:
 	pop {r4}
@@ -38667,7 +39265,7 @@ FUN_080a4fac: @ 0x080A4FAC
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A4FCC
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r4, #0
 	adds r1, #0x2f
 	strb r0, [r1]
@@ -38688,7 +39286,7 @@ FUN_080a4fd4: @ 0x080A4FD4
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A5046
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r4, #0
 	adds r1, #0x86
 	strh r0, [r1]
@@ -38696,7 +39294,7 @@ FUN_080a4fd4: @ 0x080A4FD4
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A5046
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r4, #0
 	adds r5, #0x88
 	strh r0, [r5]
@@ -38704,7 +39302,7 @@ FUN_080a4fd4: @ 0x080A4FD4
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A5046
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r4, #0
 	adds r1, #0x8c
 	strh r0, [r1]
@@ -38745,7 +39343,7 @@ FUN_080a504c: @ 0x080A504C
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A50D2
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r4, #0
 	adds r1, #0x90
 	strh r0, [r1]
@@ -38753,7 +39351,7 @@ FUN_080a504c: @ 0x080A504C
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A50D2
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r4, #0
 	adds r5, #0x92
 	strh r0, [r5]
@@ -38761,7 +39359,7 @@ FUN_080a504c: @ 0x080A504C
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A50D2
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r2, r4, #0
 	adds r2, #0x96
 	strh r0, [r2]
@@ -38814,7 +39412,7 @@ FUN_080a50d8: @ 0x080A50D8
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A51CC
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r7, r5, #0
 	adds r7, #0x98
 	strb r0, [r7]
@@ -38822,7 +39420,7 @@ FUN_080a50d8: @ 0x080A50D8
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A51CC
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r6, r5, #0
 	adds r6, #0x99
 	strb r0, [r6]
@@ -38830,14 +39428,14 @@ FUN_080a50d8: @ 0x080A50D8
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A51CC
-	bl fetch_082316e4
+	bl Script_GetValue
 	strb r0, [r5, #3]
 	movs r4, #0
 	movs r0, #0x45
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A5130
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 _080A5130:
 	cmp r4, #0
@@ -38871,7 +39469,7 @@ _080A5166:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A5180
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r0, #0
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
@@ -38883,7 +39481,7 @@ _080A5180:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A519A
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0x9a
 	strb r0, [r1]
@@ -38902,7 +39500,7 @@ _080A51A0:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A51BE
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xb0
 	str r0, [r1]
@@ -39381,7 +39979,7 @@ _080A5530:
 	cmp r0, #0
 	beq _080A5556
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A5556:
 	add sp, #0x20
 	pop {r3, r4, r5}
@@ -39392,54 +39990,372 @@ _080A5556:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080A5568:
-	.byte 0xF0, 0xB5, 0x4F, 0x46, 0x46, 0x46, 0xC0, 0xB4
-	.byte 0x81, 0xB0, 0x17, 0x48, 0x04, 0x68, 0x00, 0x2C, 0x00, 0xD1, 0x5F, 0xE1, 0x60, 0x7E, 0x21, 0x7E
-	.byte 0x88, 0x42, 0x00, 0xD3, 0x5A, 0xE1, 0x01, 0x1C, 0xB8, 0x20, 0x48, 0x43, 0x1C, 0x30, 0x27, 0x18
-	.byte 0x6E, 0x20, 0x8B, 0xF1, 0xBD, 0xFF, 0x00, 0x28, 0x01, 0xD0, 0x8C, 0xF1, 0xA3, 0xF8, 0x38, 0x80
-	.byte 0x3C, 0x1C, 0x28, 0x34, 0x3D, 0x1C, 0x54, 0x35, 0x74, 0x20, 0x8B, 0xF1, 0xB1, 0xFF, 0xA1, 0x46
-	.byte 0x00, 0x28, 0x00, 0xD1, 0x42, 0xE1, 0x8C, 0xF1, 0x95, 0xF8, 0x80, 0x46, 0x69, 0x20, 0x8B, 0xF1
-	.byte 0xA7, 0xFF, 0x00, 0x28, 0x06, 0xD0, 0x8C, 0xF1, 0x8D, 0xF8, 0x06, 0x1C, 0x03, 0xE0, 0x00, 0x00
-	.byte 0x48, 0x2C, 0x00, 0x03, 0x00, 0x26, 0x28, 0x1C, 0x41, 0x46, 0x85, 0xF1, 0xC7, 0xFD, 0x20, 0x1C
-	.byte 0x29, 0x1C, 0x00, 0x22, 0x84, 0xF1, 0x44, 0xFF, 0x00, 0x22, 0x26, 0x82, 0xE9, 0x88, 0x38, 0x1C
-	.byte 0x84, 0x30, 0x01, 0x80, 0xFA, 0x70, 0x66, 0x20, 0x8B, 0xF1, 0x8A, 0xFF, 0x00, 0x28, 0x02, 0xD0
-	.byte 0x8C, 0xF1, 0x70, 0xF8, 0xF8, 0x70, 0xF8, 0x78, 0x00, 0x28, 0x03, 0xD0, 0x20, 0x68, 0x04, 0x21
-	.byte 0x08, 0x43, 0x20, 0x60, 0x70, 0x20, 0x8B, 0xF1, 0x7B, 0xFF, 0x00, 0x28, 0x08, 0xD0, 0x8C, 0xF1
-	.byte 0x61, 0xF8, 0xA0, 0x83, 0x8C, 0xF1, 0x5E, 0xF8, 0xE0, 0x83, 0x8C, 0xF1, 0x5B, 0xF8, 0x01, 0xE0
-	.byte 0xA0, 0x83, 0xE0, 0x83, 0x20, 0x84, 0x41, 0x20, 0x8B, 0xF1, 0x6A, 0xFF, 0x00, 0x28, 0x01, 0xD0
-	.byte 0x8C, 0xF1, 0x50, 0xF8, 0x38, 0x71, 0x52, 0x20, 0x8B, 0xF1, 0x62, 0xFF, 0x00, 0x28, 0x02, 0xD0
-	.byte 0x8C, 0xF1, 0x48, 0xF8, 0xE0, 0x71, 0x6D, 0x20, 0x8B, 0xF1, 0x5A, 0xFF, 0x01, 0x1C, 0x00, 0x29
-	.byte 0x00, 0xD1, 0xC0, 0xE0, 0x12, 0x4C, 0x8C, 0xF1, 0x3D, 0xF8, 0x01, 0x1C, 0x09, 0x04, 0x09, 0x0C
-	.byte 0x20, 0x1C, 0x8B, 0xF1, 0x2B, 0xFD, 0x3E, 0x1C, 0xAC, 0x36, 0x30, 0x60, 0x8C, 0xF1, 0x32, 0xF8
-	.byte 0x3D, 0x1C, 0x98, 0x35, 0x28, 0x70, 0x8C, 0xF1, 0x2D, 0xF8, 0x3C, 0x1C, 0x99, 0x34, 0x20, 0x70
-	.byte 0x6F, 0x20, 0x8B, 0xF1, 0x3D, 0xFF, 0x01, 0x1C, 0xB0, 0x46, 0x26, 0x1C, 0x00, 0x29, 0x09, 0xD0
-	.byte 0x8C, 0xF1, 0x20, 0xF8, 0x39, 0x1C, 0x9A, 0x31, 0x08, 0x70, 0x08, 0x1C, 0x05, 0xE0, 0x00, 0x00
-	.byte 0x2E, 0x92, 0x00, 0x00, 0x38, 0x1C, 0x9A, 0x30, 0x01, 0x70, 0x01, 0x78, 0x00, 0x29, 0x0B, 0xD0
-	.byte 0x65, 0x20, 0x8B, 0xF1, 0x25, 0xFF, 0x01, 0x1C, 0x00, 0x29, 0x05, 0xD0, 0x8C, 0xF1, 0x0A, 0xF8
-	.byte 0x39, 0x1C, 0xB0, 0x31, 0x08, 0x60, 0x02, 0xE0, 0x38, 0x1C, 0xB0, 0x30, 0x01, 0x60, 0x3C, 0x1C
-	.byte 0x9C, 0x34, 0x42, 0x46, 0x11, 0x68, 0x2A, 0x78, 0x33, 0x78, 0xF8, 0x78, 0x00, 0x90, 0x20, 0x1C
-	.byte 0x91, 0xF1, 0x5C, 0xFC, 0x50, 0x20, 0x8B, 0xF1, 0x0B, 0xFF, 0x00, 0x28, 0x07, 0xD0, 0x8B, 0xF1
-	.byte 0xF1, 0xFF, 0x01, 0x1C, 0x09, 0x04, 0x09, 0x0C, 0x20, 0x1C, 0x91, 0xF1, 0xC5, 0xFC, 0x4E, 0x46
-	.byte 0x20, 0x89, 0x40, 0x00, 0x21, 0x68, 0x0D, 0x18, 0x28, 0x88, 0x80, 0x09, 0x30, 0x82, 0x20, 0x79
-	.byte 0x01, 0x23, 0x19, 0x1C, 0x01, 0x40, 0x2A, 0x88, 0x30, 0x20, 0x10, 0x40, 0x00, 0x09, 0x18, 0x40
-	.byte 0x81, 0x42, 0x03, 0xD0, 0xB8, 0x6A, 0x04, 0x21, 0x08, 0x43, 0x03, 0xE0, 0xB8, 0x6A, 0x05, 0x21
-	.byte 0x49, 0x42, 0x08, 0x40, 0xB8, 0x62, 0x20, 0x79, 0x02, 0x23, 0x19, 0x1C, 0x01, 0x40, 0x09, 0x06
-	.byte 0x09, 0x0E, 0x2A, 0x88, 0x30, 0x20, 0x10, 0x40, 0x00, 0x09, 0x18, 0x40, 0x81, 0x42, 0x03, 0xD0
-	.byte 0x30, 0x68, 0x08, 0x21, 0x08, 0x43, 0x03, 0xE0, 0x30, 0x68, 0x09, 0x21, 0x49, 0x42, 0x08, 0x40
-	.byte 0x30, 0x60, 0xE0, 0x89, 0x01, 0x30, 0xE0, 0x81, 0x0B, 0x49, 0x0A, 0x1C, 0x00, 0x04, 0x00, 0x0C
-	.byte 0xE1, 0x79, 0x88, 0x42, 0x2C, 0xD3, 0x00, 0x20, 0xE0, 0x81, 0x21, 0x79, 0x04, 0x20, 0x08, 0x40
-	.byte 0x00, 0x06, 0x01, 0x0E, 0x00, 0x29, 0x09, 0xD0, 0x20, 0x89, 0x00, 0x28, 0x00, 0xD1, 0x60, 0x79
-	.byte 0x01, 0x38, 0x20, 0x81, 0x0A, 0xE0, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x20, 0x89, 0x01, 0x30
-	.byte 0x20, 0x81, 0x10, 0x40, 0x62, 0x79, 0x90, 0x42, 0x00, 0xD3, 0x21, 0x81, 0x20, 0x89, 0x40, 0x00
-	.byte 0x21, 0x68, 0x0D, 0x18, 0x29, 0x88, 0x0F, 0x20, 0x08, 0x40, 0xA0, 0x71, 0xA1, 0x79, 0xA0, 0x89
-	.byte 0x48, 0x43, 0x80, 0x11, 0xE0, 0x71, 0x00, 0x06, 0x00, 0x28, 0x01, 0xD1, 0x01, 0x20, 0xE0, 0x71
-	.byte 0x08, 0x20, 0xB8, 0x70, 0x07, 0xE0, 0x38, 0x1C, 0xAC, 0x30, 0x01, 0x60, 0x12, 0x38, 0x01, 0x70
-	.byte 0x16, 0x30, 0x01, 0x60, 0xB9, 0x70, 0x00, 0x25, 0x73, 0x20, 0x8B, 0xF1, 0x89, 0xFE, 0x00, 0x28
-	.byte 0x02, 0xD0, 0x8B, 0xF1, 0x6F, 0xFF, 0x05, 0x1C, 0x3C, 0x1C, 0xB4, 0x34, 0x00, 0x20, 0x20, 0x60
-	.byte 0x00, 0x2D, 0x0E, 0xD0, 0x40, 0x20, 0x8B, 0xF1, 0x51, 0xF8, 0x20, 0x60, 0x00, 0x28, 0x08, 0xD0
-	.byte 0x40, 0x21, 0x8B, 0xF1, 0xD3, 0xF8, 0x20, 0x68, 0x39, 0x1C, 0x44, 0x31, 0x00, 0x22, 0x6E, 0xF7
-	.byte 0x15, 0xF8, 0x06, 0x48, 0x01, 0x68, 0x48, 0x7E, 0x01, 0x30, 0x48, 0x76, 0x01, 0xB0, 0x18, 0xBC
-	.byte 0x98, 0x46, 0xA1, 0x46, 0xF0, 0xBC, 0x01, 0xBC, 0x00, 0x47, 0x00, 0x00, 0x48, 0x2C, 0x00, 0x03
+
+	thumb_func_start FUN_080a5568
+FUN_080a5568: @ 0x080A5568
+	push {r4, r5, r6, r7, lr}
+	mov r7, sb
+	mov r6, r8
+	push {r6, r7}
+	sub sp, #4
+	ldr r0, _080A55D0 @ =0x03002C48
+	ldr r4, [r0]
+	cmp r4, #0
+	bne _080A557C
+	b _080A583C
+_080A557C:
+	ldrb r0, [r4, #0x19]
+	ldrb r1, [r4, #0x18]
+	cmp r0, r1
+	blo _080A5586
+	b _080A583C
+_080A5586:
+	adds r1, r0, #0
+	movs r0, #0xb8
+	muls r0, r1, r0
+	adds r0, #0x1c
+	adds r7, r4, r0
+	movs r0, #0x6e
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A559E
+	bl Script_GetValue
+_080A559E:
+	strh r0, [r7]
+	adds r4, r7, #0
+	adds r4, #0x28
+	adds r5, r7, #0
+	adds r5, #0x54
+	movs r0, #0x74
+	bl prepare_08231510
+	mov sb, r4
+	cmp r0, #0
+	bne _080A55B6
+	b _080A583C
+_080A55B6:
+	bl Script_GetValue
+	mov r8, r0
+	movs r0, #0x69
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A55D4
+	bl Script_GetValue
+	adds r6, r0, #0
+	b _080A55D6
+	.align 2, 0
+_080A55D0: .4byte 0x03002C48
+_080A55D4:
+	movs r6, #0
+_080A55D6:
+	adds r0, r5, #0
+	mov r1, r8
+	bl FUN_0822b16c
+	adds r0, r4, #0
+	adds r1, r5, #0
+	movs r2, #0
+	bl FUN_0822a470
+	movs r2, #0
+	strh r6, [r4, #0x10]
+	ldrh r1, [r5, #6]
+	adds r0, r7, #0
+	adds r0, #0x84
+	strh r1, [r0]
+	strb r2, [r7, #3]
+	movs r0, #0x66
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A5606
+	bl Script_GetValue
+	strb r0, [r7, #3]
+_080A5606:
+	ldrb r0, [r7, #3]
+	cmp r0, #0
+	beq _080A5614
+	ldr r0, [r4]
+	movs r1, #4
+	orrs r0, r1
+	str r0, [r4]
+_080A5614:
+	movs r0, #0x70
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A5630
+	bl Script_GetValue
+	strh r0, [r4, #0x1c]
+	bl Script_GetValue
+	strh r0, [r4, #0x1e]
+	bl Script_GetValue
+	b _080A5634
+_080A5630:
+	strh r0, [r4, #0x1c]
+	strh r0, [r4, #0x1e]
+_080A5634:
+	strh r0, [r4, #0x20]
+	movs r0, #0x41
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A5644
+	bl Script_GetValue
+_080A5644:
+	strb r0, [r7, #4]
+	movs r0, #0x52
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A5656
+	bl Script_GetValue
+	strb r0, [r4, #7]
+_080A5656:
+	movs r0, #0x6d
+	bl prepare_08231510
+	adds r1, r0, #0
+	cmp r1, #0
+	bne _080A5664
+	b _080A57E6
+_080A5664:
+	ldr r4, _080A56B0 @ =0x0000922E
+	bl Script_GetValue
+	adds r1, r0, #0
+	lsls r1, r1, #0x10
+	lsrs r1, r1, #0x10
+	adds r0, r4, #0
+	bl GetFile
+	adds r6, r7, #0
+	adds r6, #0xac
+	str r0, [r6]
+	bl Script_GetValue
+	adds r5, r7, #0
+	adds r5, #0x98
+	strb r0, [r5]
+	bl Script_GetValue
+	adds r4, r7, #0
+	adds r4, #0x99
+	strb r0, [r4]
+	movs r0, #0x6f
+	bl prepare_08231510
+	adds r1, r0, #0
+	mov r8, r6
+	adds r6, r4, #0
+	cmp r1, #0
+	beq _080A56B4
+	bl Script_GetValue
+	adds r1, r7, #0
+	adds r1, #0x9a
+	strb r0, [r1]
+	adds r0, r1, #0
+	b _080A56BA
+	.align 2, 0
+_080A56B0: .4byte 0x0000922E
+_080A56B4:
+	adds r0, r7, #0
+	adds r0, #0x9a
+	strb r1, [r0]
+_080A56BA:
+	ldrb r1, [r0]
+	cmp r1, #0
+	beq _080A56D8
+	movs r0, #0x65
+	bl prepare_08231510
+	adds r1, r0, #0
+	cmp r1, #0
+	beq _080A56D8
+	bl Script_GetValue
+	adds r1, r7, #0
+	adds r1, #0xb0
+	str r0, [r1]
+	b _080A56DE
+_080A56D8:
+	adds r0, r7, #0
+	adds r0, #0xb0
+	str r1, [r0]
+_080A56DE:
+	adds r4, r7, #0
+	adds r4, #0x9c
+	mov r2, r8
+	ldr r1, [r2]
+	ldrb r2, [r5]
+	ldrb r3, [r6]
+	ldrb r0, [r7, #3]
+	str r0, [sp]
+	adds r0, r4, #0
+	bl FUN_08236fac
+	movs r0, #0x50
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A570E
+	bl Script_GetValue
+	adds r1, r0, #0
+	lsls r1, r1, #0x10
+	lsrs r1, r1, #0x10
+	adds r0, r4, #0
+	bl FUN_08237098
+_080A570E:
+	mov r6, sb
+	ldrh r0, [r4, #8]
+	lsls r0, r0, #1
+	ldr r1, [r4]
+	adds r5, r1, r0
+	ldrh r0, [r5]
+	lsrs r0, r0, #6
+	strh r0, [r6, #0x10]
+	ldrb r0, [r4, #4]
+	movs r3, #1
+	adds r1, r3, #0
+	ands r1, r0
+	ldrh r2, [r5]
+	movs r0, #0x30
+	ands r0, r2
+	lsrs r0, r0, #4
+	ands r0, r3
+	cmp r1, r0
+	beq _080A573C
+	ldr r0, [r7, #0x28]
+	movs r1, #4
+	orrs r0, r1
+	b _080A5744
+_080A573C:
+	ldr r0, [r7, #0x28]
+	movs r1, #5
+	rsbs r1, r1, #0
+	ands r0, r1
+_080A5744:
+	str r0, [r7, #0x28]
+	ldrb r0, [r4, #4]
+	movs r3, #2
+	adds r1, r3, #0
+	ands r1, r0
+	lsls r1, r1, #0x18
+	lsrs r1, r1, #0x18
+	ldrh r2, [r5]
+	movs r0, #0x30
+	ands r0, r2
+	lsrs r0, r0, #4
+	ands r0, r3
+	cmp r1, r0
+	beq _080A5768
+	ldr r0, [r6]
+	movs r1, #8
+	orrs r0, r1
+	b _080A5770
+_080A5768:
+	ldr r0, [r6]
+	movs r1, #9
+	rsbs r1, r1, #0
+	ands r0, r1
+_080A5770:
+	str r0, [r6]
+	ldrh r0, [r4, #0xe]
+	adds r0, #1
+	strh r0, [r4, #0xe]
+	ldr r1, _080A57A8 @ =0x0000FFFF
+	adds r2, r1, #0
+	lsls r0, r0, #0x10
+	lsrs r0, r0, #0x10
+	ldrb r1, [r4, #7]
+	cmp r0, r1
+	blo _080A57E0
+	movs r0, #0
+	strh r0, [r4, #0xe]
+	ldrb r1, [r4, #4]
+	movs r0, #4
+	ands r0, r1
+	lsls r0, r0, #0x18
+	lsrs r1, r0, #0x18
+	cmp r1, #0
+	beq _080A57AC
+	ldrh r0, [r4, #8]
+	cmp r0, #0
+	bne _080A57A0
+	ldrb r0, [r4, #5]
+_080A57A0:
+	subs r0, #1
+	strh r0, [r4, #8]
+	b _080A57BC
+	.align 2, 0
+_080A57A8: .4byte 0x0000FFFF
+_080A57AC:
+	ldrh r0, [r4, #8]
+	adds r0, #1
+	strh r0, [r4, #8]
+	ands r0, r2
+	ldrb r2, [r4, #5]
+	cmp r0, r2
+	blo _080A57BC
+	strh r1, [r4, #8]
+_080A57BC:
+	ldrh r0, [r4, #8]
+	lsls r0, r0, #1
+	ldr r1, [r4]
+	adds r5, r1, r0
+	ldrh r1, [r5]
+	movs r0, #0xf
+	ands r0, r1
+	strb r0, [r4, #6]
+	ldrb r1, [r4, #6]
+	ldrh r0, [r4, #0xc]
+	muls r0, r1, r0
+	asrs r0, r0, #6
+	strb r0, [r4, #7]
+	lsls r0, r0, #0x18
+	cmp r0, #0
+	bne _080A57E0
+	movs r0, #1
+	strb r0, [r4, #7]
+_080A57E0:
+	movs r0, #8
+	strb r0, [r7, #2]
+	b _080A57F6
+_080A57E6:
+	adds r0, r7, #0
+	adds r0, #0xac
+	str r1, [r0]
+	subs r0, #0x12
+	strb r1, [r0]
+	adds r0, #0x16
+	str r1, [r0]
+	strb r1, [r7, #2]
+_080A57F6:
+	movs r5, #0
+	movs r0, #0x73
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A5808
+	bl Script_GetValue
+	adds r5, r0, #0
+_080A5808:
+	adds r4, r7, #0
+	adds r4, #0xb4
+	movs r0, #0
+	str r0, [r4]
+	cmp r5, #0
+	beq _080A5832
+	movs r0, #0x40
+	bl Malloc
+	str r0, [r4]
+	cmp r0, #0
+	beq _080A5832
+	movs r1, #0x40
+	bl ClearMemory
+	ldr r0, [r4]
+	adds r1, r7, #0
+	adds r1, #0x44
+	movs r2, #0
+	bl FUN_0801385c
+_080A5832:
+	ldr r0, _080A584C @ =0x03002C48
+	ldr r1, [r0]
+	ldrb r0, [r1, #0x19]
+	adds r0, #1
+	strb r0, [r1, #0x19]
+_080A583C:
+	add sp, #4
+	pop {r3, r4}
+	mov r8, r3
+	mov sb, r4
+	pop {r4, r5, r6, r7}
+	pop {r0}
+	bx r0
+	.align 2, 0
+_080A584C: .4byte 0x03002C48
 
 	thumb_func_start FUN_080a5850
 FUN_080a5850: @ 0x080A5850
@@ -39524,14 +40440,60 @@ FUN_080a58d0: @ 0x080A58D0
 	bx lr
 	.align 2, 0
 _080A58E0: .4byte 0x03002C48
-_080A58E4:
-	.byte 0xF0, 0xB5, 0x06, 0x1C, 0x0F, 0x1C, 0x06, 0x48, 0x00, 0x68, 0x00, 0x28
-	.byte 0x2B, 0xD1, 0x6D, 0x20, 0x8B, 0xF1, 0x0C, 0xFE, 0x00, 0x28, 0x05, 0xD0, 0x8B, 0xF1, 0xF2, 0xFE
-	.byte 0x05, 0x1C, 0x02, 0xE0, 0x48, 0x2C, 0x00, 0x03, 0x01, 0x25, 0xB8, 0x20, 0x29, 0x1C, 0x41, 0x43
-	.byte 0x1C, 0x31, 0x09, 0x20, 0x8B, 0xF1, 0x4C, 0xF9, 0x04, 0x1C, 0x00, 0x2C, 0x14, 0xD0, 0x08, 0x49
-	.byte 0x08, 0x4A, 0x8B, 0xF1, 0x69, 0xF9, 0x20, 0x1C, 0x31, 0x1C, 0x3A, 0x1C, 0x2B, 0x1C, 0xFF, 0xF7
-	.byte 0xCF, 0xFF, 0x00, 0x28, 0x08, 0xDA, 0x20, 0x1C, 0x8B, 0xF1, 0x98, 0xF9, 0x00, 0x20, 0x04, 0xE0
-	.byte 0x51, 0x58, 0x0A, 0x08, 0x8D, 0x58, 0x0A, 0x08, 0x20, 0x1C, 0xF0, 0xBC, 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_080a58e4
+FUN_080a58e4: @ 0x080A58E4
+	push {r4, r5, r6, r7, lr}
+	adds r6, r0, #0
+	adds r7, r1, #0
+	ldr r0, _080A5904 @ =0x03002C48
+	ldr r0, [r0]
+	cmp r0, #0
+	bne _080A594A
+	movs r0, #0x6d
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A5908
+	bl Script_GetValue
+	adds r5, r0, #0
+	b _080A590A
+	.align 2, 0
+_080A5904: .4byte 0x03002C48
+_080A5908:
+	movs r5, #1
+_080A590A:
+	movs r0, #0xb8
+	adds r1, r5, #0
+	muls r1, r0, r1
+	adds r1, #0x1c
+	movs r0, #9
+	bl CreateEntity
+	adds r4, r0, #0
+	cmp r4, #0
+	beq _080A5948
+	ldr r1, _080A5940 @ =FUN_080a5850
+	ldr r2, _080A5944 @ =FUN_080a588c
+	bl SetEntityRoutine
+	adds r0, r4, #0
+	adds r1, r6, #0
+	adds r2, r7, #0
+	adds r3, r5, #0
+	bl FUN_080a58d0
+	cmp r0, #0
+	bge _080A5948
+	adds r0, r4, #0
+	bl KillEntity
+	movs r0, #0
+	b _080A594A
+	.align 2, 0
+_080A5940: .4byte FUN_080a5850
+_080A5944: .4byte FUN_080a588c
+_080A5948:
+	adds r0, r4, #0
+_080A594A:
+	pop {r4, r5, r6, r7}
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_080a5950
 FUN_080a5950: @ 0x080A5950
@@ -39553,7 +40515,7 @@ _080A596C:
 	adds r0, r5, r0
 	b _080A59A0
 _080A5974:
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r6, r0, #0
 	movs r2, #0
 	ldr r0, [r4]
@@ -39581,11 +40543,34 @@ _080A59A0:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080A59A8:
-	.byte 0x30, 0xB5, 0xFF, 0xF7, 0xD1, 0xFF, 0x05, 0x1C
-	.byte 0x00, 0x2D, 0x11, 0xD0, 0x70, 0x20, 0x8B, 0xF1, 0xAB, 0xFD, 0x00, 0x28, 0x0C, 0xD0, 0x2C, 0x1C
-	.byte 0x38, 0x34, 0x18, 0x35, 0x8B, 0xF1, 0x8E, 0xFE, 0x02, 0x1C, 0x12, 0x04, 0x12, 0x0C, 0x20, 0x1C
-	.byte 0x29, 0x1C, 0x00, 0x23, 0x89, 0xF1, 0xFA, 0xFC, 0x30, 0xBC, 0x01, 0xBC, 0x00, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_080a59a8
+FUN_080a59a8: @ 0x080A59A8
+	push {r4, r5, lr}
+	bl FUN_080a5950
+	adds r5, r0, #0
+	cmp r5, #0
+	beq _080A59D8
+	movs r0, #0x70
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A59D8
+	adds r4, r5, #0
+	adds r4, #0x38
+	adds r5, #0x18
+	bl Script_GetValue
+	adds r2, r0, #0
+	lsls r2, r2, #0x10
+	lsrs r2, r2, #0x10
+	adds r0, r4, #0
+	adds r1, r5, #0
+	movs r3, #0
+	bl Sprite_SetSprite
+_080A59D8:
+	pop {r4, r5}
+	pop {r0}
+	bx r0
+	.align 2, 0
 
 	thumb_func_start FUN_080a59e0
 FUN_080a59e0: @ 0x080A59E0
@@ -39598,7 +40583,7 @@ FUN_080a59e0: @ 0x080A59E0
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A5A10
-	bl fetch_082316e4
+	bl Script_GetValue
 	cmp r0, #0
 	beq _080A5A06
 	ldr r0, [r4, #0x40]
@@ -39677,7 +40662,7 @@ FUN_080a5a6c: @ 0x080A5A6C
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A5A8C
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r4, #0
 	adds r1, #0x52
 	strb r0, [r1]
@@ -39698,15 +40683,15 @@ FUN_080a5a94: @ 0x080A5A94
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A5AC8
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r4, #0
 	adds r1, #0xb4
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r4, #0
 	adds r1, #0xb6
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r4, #0
 	adds r1, #0xb8
 	strh r0, [r1]
@@ -39715,7 +40700,7 @@ _080A5AC8:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A5ADC
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r4, #0
 	adds r1, #0xa2
 	strh r0, [r1]
@@ -39904,7 +40889,7 @@ _080A5C22:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A5C48
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0x98
 	strh r0, [r1]
@@ -39922,12 +40907,12 @@ _080A5C4E:
 	bne _080A5C5A
 	b _080A5D62
 _080A5C5A:
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r0, #0
 	ldr r0, _080A5C9C @ =0x0000CB05
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
-	bl FUN_082310cc
+	bl GetFile
 	adds r1, r0, #0
 	adds r2, r5, #0
 	adds r2, #0x18
@@ -39946,7 +40931,7 @@ _080A5C5A:
 	mov r8, r4
 	cmp r0, #0
 	beq _080A5CA0
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r7, r0, #0
 	b _080A5CA2
 	.align 2, 0
@@ -39958,7 +40943,7 @@ _080A5CA2:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A5CB2
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080A5CB4
 _080A5CB2:
 	movs r0, #0
@@ -39974,7 +40959,7 @@ _080A5CC0:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A5CD2
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r6, r0, #0
 	b _080A5CD4
 _080A5CD2:
@@ -39985,15 +40970,15 @@ _080A5CD4:
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A5D00
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r5, #0
 	adds r4, #0xa4
 	strh r0, [r4]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xa6
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xa8
 	strh r0, [r1]
@@ -40029,7 +41014,7 @@ _080A5D12:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A5D4A
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0x9c
 	strh r0, [r1]
@@ -40122,14 +41107,60 @@ FUN_080a5dcc: @ 0x080A5DCC
 	bx lr
 	.align 2, 0
 _080A5DDC: .4byte 0x03002C4C
-_080A5DE0:
-	.byte 0xF0, 0xB5, 0x06, 0x1C, 0x0F, 0x1C, 0x06, 0x48, 0x00, 0x68, 0x00, 0x28, 0x2B, 0xD1, 0x6D, 0x20
-	.byte 0x8B, 0xF1, 0x8E, 0xFB, 0x00, 0x28, 0x05, 0xD0, 0x8B, 0xF1, 0x74, 0xFC, 0x05, 0x1C, 0x02, 0xE0
-	.byte 0x4C, 0x2C, 0x00, 0x03, 0x01, 0x25, 0xBC, 0x20, 0x29, 0x1C, 0x41, 0x43, 0x1C, 0x31, 0x08, 0x20
-	.byte 0x8A, 0xF1, 0xCE, 0xFE, 0x04, 0x1C, 0x00, 0x2C, 0x14, 0xD0, 0x08, 0x49, 0x08, 0x4A, 0x8A, 0xF1
-	.byte 0xEB, 0xFE, 0x20, 0x1C, 0x31, 0x1C, 0x3A, 0x1C, 0x2B, 0x1C, 0xFF, 0xF7, 0xCF, 0xFF, 0x00, 0x28
-	.byte 0x08, 0xDA, 0x20, 0x1C, 0x8A, 0xF1, 0x1A, 0xFF, 0x00, 0x20, 0x04, 0xE0, 0x75, 0x5D, 0x0A, 0x08
-	.byte 0x9D, 0x5D, 0x0A, 0x08, 0x20, 0x1C, 0xF0, 0xBC, 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_080a5de0
+FUN_080a5de0: @ 0x080A5DE0
+	push {r4, r5, r6, r7, lr}
+	adds r6, r0, #0
+	adds r7, r1, #0
+	ldr r0, _080A5E00 @ =0x03002C4C
+	ldr r0, [r0]
+	cmp r0, #0
+	bne _080A5E46
+	movs r0, #0x6d
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A5E04
+	bl Script_GetValue
+	adds r5, r0, #0
+	b _080A5E06
+	.align 2, 0
+_080A5E00: .4byte 0x03002C4C
+_080A5E04:
+	movs r5, #1
+_080A5E06:
+	movs r0, #0xbc
+	adds r1, r5, #0
+	muls r1, r0, r1
+	adds r1, #0x1c
+	movs r0, #8
+	bl CreateEntity
+	adds r4, r0, #0
+	cmp r4, #0
+	beq _080A5E44
+	ldr r1, _080A5E3C @ =FUN_080a5d74
+	ldr r2, _080A5E40 @ =FUN_080a5d9c
+	bl SetEntityRoutine
+	adds r0, r4, #0
+	adds r1, r6, #0
+	adds r2, r7, #0
+	adds r3, r5, #0
+	bl FUN_080a5dcc
+	cmp r0, #0
+	bge _080A5E44
+	adds r0, r4, #0
+	bl KillEntity
+	movs r0, #0
+	b _080A5E46
+	.align 2, 0
+_080A5E3C: .4byte FUN_080a5d74
+_080A5E40: .4byte FUN_080a5d9c
+_080A5E44:
+	adds r0, r4, #0
+_080A5E46:
+	pop {r4, r5, r6, r7}
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_080a5e4c
 FUN_080a5e4c: @ 0x080A5E4C
@@ -40182,7 +41213,7 @@ FUN_080a5e90: @ 0x080A5E90
 	cmp r0, #0
 	beq _080A5EA0
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A5EA0:
 	pop {r0}
 	bx r0
@@ -40205,15 +41236,66 @@ _080A5EBE:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080A5EC4:
-	.byte 0x70, 0xB5, 0x04, 0x1C, 0x9A, 0x30, 0x00, 0x88, 0x00, 0x28, 0x02, 0xD1
-	.byte 0x19, 0x48, 0x9A, 0xF1, 0x05, 0xFC, 0x20, 0x1C, 0x4C, 0x30, 0x00, 0x88, 0x01, 0x38, 0x00, 0x04
-	.byte 0x00, 0x0C, 0x02, 0x28, 0x08, 0xD8, 0x20, 0x1C, 0x44, 0x30, 0x00, 0x88, 0x00, 0x28, 0x03, 0xD1
-	.byte 0x87, 0x20, 0x80, 0x00, 0x9A, 0xF1, 0xF4, 0xFB, 0x21, 0x1C, 0x9A, 0x31, 0x08, 0x88, 0x01, 0x30
-	.byte 0x08, 0x80, 0x25, 0x1C, 0x38, 0x35, 0x26, 0x1C, 0x18, 0x36, 0x28, 0x1C, 0x31, 0x1C, 0x91, 0xF1
-	.byte 0xDD, 0xF9, 0x00, 0x28, 0x0C, 0xD0, 0x28, 0x1C, 0x31, 0x1C, 0x24, 0x22, 0x01, 0x23, 0x89, 0xF1
-	.byte 0x55, 0xFA, 0x06, 0x49, 0x20, 0x1C, 0xFF, 0xF7, 0x9F, 0xFF, 0x20, 0x1C, 0xFF, 0xF7, 0xBA, 0xFF
-	.byte 0x70, 0xBC, 0x01, 0xBC, 0x00, 0x47, 0x00, 0x00, 0xC2, 0x02, 0x00, 0x00, 0x41, 0x5F, 0x0A, 0x08
+
+	thumb_func_start FUN_080a5ec4
+FUN_080a5ec4: @ 0x080A5EC4
+	push {r4, r5, r6, lr}
+	adds r4, r0, #0
+	adds r0, #0x9a
+	ldrh r0, [r0]
+	cmp r0, #0
+	bne _080A5ED6
+	ldr r0, _080A5F38 @ =0x000002C2
+	bl PlaySound_082406e0
+_080A5ED6:
+	adds r0, r4, #0
+	adds r0, #0x4c
+	ldrh r0, [r0]
+	subs r0, #1
+	lsls r0, r0, #0x10
+	lsrs r0, r0, #0x10
+	cmp r0, #2
+	bhi _080A5EF8
+	adds r0, r4, #0
+	adds r0, #0x44
+	ldrh r0, [r0]
+	cmp r0, #0
+	bne _080A5EF8
+	movs r0, #0x87
+	lsls r0, r0, #2
+	bl PlaySound_082406e0
+_080A5EF8:
+	adds r1, r4, #0
+	adds r1, #0x9a
+	ldrh r0, [r1]
+	adds r0, #1
+	strh r0, [r1]
+	adds r5, r4, #0
+	adds r5, #0x38
+	adds r6, r4, #0
+	adds r6, #0x18
+	adds r0, r5, #0
+	adds r1, r6, #0
+	bl FUN_082372cc
+	cmp r0, #0
+	beq _080A5F30
+	adds r0, r5, #0
+	adds r1, r6, #0
+	movs r2, #0x24
+	movs r3, #1
+	bl Sprite_SetSprite
+	ldr r1, _080A5F3C @ =FUN_080a5f40
+	adds r0, r4, #0
+	bl FUN_080a5e68
+	adds r0, r4, #0
+	bl FUN_080a5ea4
+_080A5F30:
+	pop {r4, r5, r6}
+	pop {r0}
+	bx r0
+	.align 2, 0
+_080A5F38: .4byte 0x000002C2
+_080A5F3C: .4byte FUN_080a5f40
 
 	thumb_func_start FUN_080a5f40
 FUN_080a5f40: @ 0x080A5F40
@@ -40288,15 +41370,72 @@ _080A5FC8:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080A5FD0:
-	.byte 0x30, 0xB5, 0x05, 0x1C, 0x2C, 0x1C, 0x9A, 0x34, 0x20, 0x88, 0x00, 0x28, 0x03, 0xD1, 0xA5, 0x20
-	.byte 0x80, 0x00, 0x9A, 0xF1, 0x7D, 0xFB, 0x20, 0x88, 0x01, 0x30, 0x20, 0x80, 0x00, 0x04, 0x00, 0x0C
-	.byte 0x59, 0x28, 0x05, 0xD9, 0x28, 0x1C, 0xFF, 0xF7, 0x55, 0xFF, 0x28, 0x1C, 0x8A, 0xF1, 0x36, 0xFE
-	.byte 0x30, 0xBC, 0x01, 0xBC, 0x00, 0x47, 0x00, 0x00, 0x00, 0xB5, 0x02, 0x1C, 0x9C, 0x30, 0x00, 0x68
-	.byte 0x00, 0x28, 0x03, 0xD0, 0x10, 0x1C, 0x8A, 0xF1, 0x29, 0xFE, 0x05, 0xE0, 0x10, 0x1C, 0xAC, 0x30
-	.byte 0x01, 0x68, 0x10, 0x1C, 0xA6, 0xF1, 0x1E, 0xFF, 0x00, 0x20, 0x02, 0xBC, 0x08, 0x47, 0x00, 0x00
-	.byte 0x00, 0xB5, 0x38, 0x30, 0x89, 0xF1, 0xC4, 0xF8, 0x02, 0x49, 0x00, 0x20, 0x08, 0x60, 0x02, 0xBC
-	.byte 0x08, 0x47, 0x00, 0x00, 0x4C, 0x01, 0x00, 0x03
+
+	thumb_func_start FUN_080a5fd0
+FUN_080a5fd0: @ 0x080A5FD0
+	push {r4, r5, lr}
+	adds r5, r0, #0
+	adds r4, r5, #0
+	adds r4, #0x9a
+	ldrh r0, [r4]
+	cmp r0, #0
+	bne _080A5FE6
+	movs r0, #0xa5
+	lsls r0, r0, #2
+	bl PlaySound_082406e0
+_080A5FE6:
+	ldrh r0, [r4]
+	adds r0, #1
+	strh r0, [r4]
+	lsls r0, r0, #0x10
+	lsrs r0, r0, #0x10
+	cmp r0, #0x59
+	bls _080A6000
+	adds r0, r5, #0
+	bl FUN_080a5ea4
+	adds r0, r5, #0
+	bl KillEntity
+_080A6000:
+	pop {r4, r5}
+	pop {r0}
+	bx r0
+	.align 2, 0
+
+	thumb_func_start FUN_080a6008
+FUN_080a6008: @ 0x080A6008
+	push {lr}
+	adds r2, r0, #0
+	adds r0, #0x9c
+	ldr r0, [r0]
+	cmp r0, #0
+	beq _080A601C
+	adds r0, r2, #0
+	bl KillEntity
+	b _080A6028
+_080A601C:
+	adds r0, r2, #0
+	adds r0, #0xac
+	ldr r1, [r0]
+	adds r0, r2, #0
+	bl _call_via_r1
+_080A6028:
+	movs r0, #0
+	pop {r1}
+	bx r1
+	.align 2, 0
+
+	thumb_func_start FUN_080a6030
+FUN_080a6030: @ 0x080A6030
+	push {lr}
+	adds r0, #0x38
+	bl FUN_0822f1c0
+	ldr r1, _080A6044 @ =0x0300014C
+	movs r0, #0
+	str r0, [r1]
+	pop {r1}
+	bx r1
+	.align 2, 0
+_080A6044: .4byte 0x0300014C
 
 	thumb_func_start FUN_080a6048
 FUN_080a6048: @ 0x080A6048
@@ -40306,7 +41445,7 @@ FUN_080a6048: @ 0x080A6048
 	adds r5, r1, #0
 	ldr r0, _080A60B4 @ =0x0000CB05
 	ldr r1, _080A60B8 @ =0x0000DCC1
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A6108
@@ -40514,7 +41653,7 @@ FUN_080a61e8: @ 0x080A61E8
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A6204
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r0, #0
 	b _080A6206
 _080A6204:
@@ -40524,7 +41663,7 @@ _080A6206:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A6214
-	bl fetch_082316e4
+	bl Script_GetValue
 _080A6214:
 	adds r1, r4, #0
 	adds r1, #0x99
@@ -40534,7 +41673,7 @@ _080A6214:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A6232
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r4, #0
 	adds r1, #0xa8
 	str r0, [r1]
@@ -40592,13 +41731,50 @@ _080A629A:
 	pop {r4}
 	pop {r1}
 	bx r1
-_080A62A0:
-	.byte 0x10, 0xB5, 0x6D, 0x20, 0x8B, 0xF1, 0x34, 0xF9, 0x00, 0x28, 0x1D, 0xD0, 0x10, 0x48, 0x8A, 0xF1
-	.byte 0xDF, 0xFD, 0x04, 0x1C, 0x00, 0x2C, 0x17, 0xD0, 0x8B, 0xF1, 0x14, 0xFA, 0x20, 0x83, 0x00, 0x04
-	.byte 0x00, 0x0C, 0x01, 0x28, 0x10, 0xD1, 0x00, 0x22, 0xA0, 0x8B, 0x82, 0x42, 0x0A, 0xDA, 0x01, 0x23
-	.byte 0x21, 0x1C, 0x20, 0x31, 0x08, 0x68, 0x18, 0x43, 0x08, 0x60, 0x28, 0x31, 0x01, 0x32, 0xA0, 0x8B
-	.byte 0x82, 0x42, 0xF7, 0xDB, 0x00, 0x20, 0xE0, 0x83, 0x10, 0xBC, 0x01, 0xBC, 0x00, 0x47, 0x00, 0x00
-	.byte 0x22, 0xFD, 0x00, 0x00
+
+	thumb_func_start FUN_080a62a0
+FUN_080a62a0: @ 0x080A62A0
+	push {r4, lr}
+	movs r0, #0x6d
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A62E8
+	ldr r0, _080A62F0 @ =0x0000FD22
+	bl FUN_08230e70
+	adds r4, r0, #0
+	cmp r4, #0
+	beq _080A62E8
+	bl Script_GetValue
+	strh r0, [r4, #0x18]
+	lsls r0, r0, #0x10
+	lsrs r0, r0, #0x10
+	cmp r0, #1
+	bne _080A62E8
+	movs r2, #0
+	ldrh r0, [r4, #0x1c]
+	cmp r2, r0
+	bge _080A62E4
+	movs r3, #1
+	adds r1, r4, #0
+	adds r1, #0x20
+_080A62D4:
+	ldr r0, [r1]
+	orrs r0, r3
+	str r0, [r1]
+	adds r1, #0x28
+	adds r2, #1
+	ldrh r0, [r4, #0x1c]
+	cmp r2, r0
+	blt _080A62D4
+_080A62E4:
+	movs r0, #0
+	strh r0, [r4, #0x1e]
+_080A62E8:
+	pop {r4}
+	pop {r0}
+	bx r0
+	.align 2, 0
+_080A62F0: .4byte 0x0000FD22
 
 	thumb_func_start FUN_080a62f4
 FUN_080a62f4: @ 0x080A62F4
@@ -40619,7 +41795,7 @@ FUN_080a62f4: @ 0x080A62F4
 	b _080A640E
 _080A6314:
 	ldr r0, _080A634C @ =0x00001C1A
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	adds r4, r0, #0
 	mov r0, r8
 	ldrh r1, [r0, #0x1c]
@@ -40762,7 +41938,7 @@ FUN_080a641c: @ 0x080A641C
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A6468
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _080A6460 @ =0xFFFF0000
@@ -40770,14 +41946,14 @@ FUN_080a641c: @ 0x080A641C
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _080A6464 @ =0x0000FFFF
 	ldr r1, [sp]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #4]
@@ -40799,7 +41975,7 @@ _080A6472:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A6488
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r0, #0
 	b _080A648A
 	.align 2, 0
@@ -40811,7 +41987,7 @@ _080A648A:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A649C
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 	b _080A649E
 _080A649C:
@@ -40821,7 +41997,7 @@ _080A649E:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A64B0
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r2, r0, #0
 	b _080A64B2
 _080A64B0:
@@ -41618,25 +42794,149 @@ _080A6A64:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080A6A74:
-	.byte 0xF0, 0xB5, 0x83, 0xB0, 0x6E, 0x20, 0x8A, 0xF1, 0x49, 0xFD, 0x00, 0x28
-	.byte 0x02, 0xD0, 0x8A, 0xF1, 0x2F, 0xFE, 0x00, 0xE0, 0x00, 0x20, 0x00, 0x04, 0x00, 0x0C, 0x69, 0x46
-	.byte 0x8D, 0xF1, 0x4C, 0xFF, 0x05, 0x1C, 0x00, 0x2D, 0x72, 0xD0, 0x00, 0x20, 0x29, 0x5E, 0x04, 0x22
-	.byte 0xA8, 0x5E, 0x09, 0x18, 0xC9, 0x03, 0x09, 0x0C, 0x13, 0x4B, 0x01, 0x98, 0x18, 0x40, 0x08, 0x43
-	.byte 0x01, 0x90, 0x02, 0x20, 0x29, 0x5E, 0x06, 0x22, 0xA8, 0x5E, 0x09, 0x18, 0xC9, 0x03, 0x09, 0x0C
-	.byte 0x01, 0xAA, 0x50, 0x68, 0x18, 0x40, 0x08, 0x43, 0x50, 0x60, 0x16, 0x1C, 0x30, 0x88, 0x00, 0x04
-	.byte 0x02, 0x16, 0xB0, 0x88, 0x00, 0x04, 0x01, 0x16, 0x37, 0x1C, 0x00, 0x2A, 0x09, 0xDB, 0x00, 0x29
-	.byte 0x07, 0xDB, 0x06, 0x48, 0x00, 0x68, 0x82, 0x42, 0x03, 0xD2, 0x05, 0x48, 0x00, 0x68, 0x81, 0x42
-	.byte 0x08, 0xD3, 0x00, 0x24, 0x0D, 0xE0, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xA8, 0x46, 0x00, 0x03
-	.byte 0xAC, 0x46, 0x00, 0x03, 0x07, 0x48, 0x00, 0x68, 0x49, 0x00, 0x24, 0x30, 0x40, 0x18, 0x00, 0x88
-	.byte 0x84, 0x18, 0x20, 0x1C, 0x01, 0x21, 0x8D, 0xF1, 0x85, 0xFB, 0x00, 0x28, 0x04, 0xD0, 0x04, 0x30
-	.byte 0x08, 0xE0, 0x00, 0x00, 0xA4, 0x46, 0x00, 0x03, 0x07, 0x48, 0x01, 0x68, 0xA0, 0x00, 0x0C, 0x30
-	.byte 0x49, 0x68, 0x08, 0x18, 0x01, 0x78, 0x0A, 0x09, 0x0F, 0x20, 0x08, 0x40, 0x01, 0x02, 0x01, 0x2A
-	.byte 0x04, 0xD0, 0x02, 0x2A, 0x04, 0xD0, 0x05, 0xE0, 0xA4, 0x46, 0x00, 0x03, 0x30, 0x79, 0x00, 0xE0
-	.byte 0x30, 0x78, 0x09, 0x1A, 0x79, 0x80, 0x28, 0x1C, 0xFF, 0xF7, 0xB8, 0xFC, 0x04, 0x1C, 0x00, 0x2C
-	.byte 0x0E, 0xDB, 0x74, 0x20, 0x8A, 0xF1, 0xD4, 0xFC, 0x00, 0x28, 0x03, 0xD0, 0x8A, 0xF1, 0xBA, 0xFD
-	.byte 0x02, 0x1C, 0x00, 0xE0, 0x00, 0x22, 0x38, 0x1C, 0x21, 0x1C, 0x00, 0x23, 0xFF, 0xF7, 0xBA, 0xFB
-	.byte 0x03, 0xB0, 0xF0, 0xBC, 0x01, 0xBC, 0x00, 0x47
+
+	thumb_func_start Map_SpawnLoadingZoneIndicator
+Map_SpawnLoadingZoneIndicator: @ 0x080A6A74
+	push {r4, r5, r6, r7, lr}
+	sub sp, #0xc
+	movs r0, #0x6e
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A6A88
+	bl Script_GetValue
+	b _080A6A8A
+_080A6A88:
+	movs r0, #0
+_080A6A8A:
+	lsls r0, r0, #0x10
+	lsrs r0, r0, #0x10
+	mov r1, sp
+	bl FUN_0823492c
+	adds r5, r0, #0
+	cmp r5, #0
+	beq _080A6B80
+	movs r0, #0
+	ldrsh r1, [r5, r0]
+	movs r2, #4
+	ldrsh r0, [r5, r2]
+	adds r1, r1, r0
+	lsls r1, r1, #0xf
+	lsrs r1, r1, #0x10
+	ldr r3, _080A6AF8 @ =0xFFFF0000
+	ldr r0, [sp, #4]
+	ands r0, r3
+	orrs r0, r1
+	str r0, [sp, #4]
+	movs r0, #2
+	ldrsh r1, [r5, r0]
+	movs r2, #6
+	ldrsh r0, [r5, r2]
+	adds r1, r1, r0
+	lsls r1, r1, #0xf
+	lsrs r1, r1, #0x10
+	add r2, sp, #4
+	ldr r0, [r2, #4]
+	ands r0, r3
+	orrs r0, r1
+	str r0, [r2, #4]
+	adds r6, r2, #0
+	ldrh r0, [r6]
+	lsls r0, r0, #0x10
+	asrs r2, r0, #0x18
+	ldrh r0, [r6, #4]
+	lsls r0, r0, #0x10
+	asrs r1, r0, #0x18
+	adds r7, r6, #0
+	cmp r2, #0
+	blt _080A6AF2
+	cmp r1, #0
+	blt _080A6AF2
+	ldr r0, _080A6AFC @ =0x030046A8
+	ldr r0, [r0]
+	cmp r2, r0
+	bhs _080A6AF2
+	ldr r0, _080A6B00 @ =0x030046AC
+	ldr r0, [r0]
+	cmp r1, r0
+	blo _080A6B04
+_080A6AF2:
+	movs r4, #0
+	b _080A6B12
+	.align 2, 0
+_080A6AF8: .4byte 0xFFFF0000
+_080A6AFC: .4byte 0x030046A8
+_080A6B00: .4byte 0x030046AC
+_080A6B04:
+	ldr r0, _080A6B24 @ =0x030046A4
+	ldr r0, [r0]
+	lsls r1, r1, #1
+	adds r0, #0x24
+	adds r0, r0, r1
+	ldrh r0, [r0]
+	adds r4, r0, r2
+_080A6B12:
+	adds r0, r4, #0
+	movs r1, #1
+	bl FUN_08234224
+	cmp r0, #0
+	beq _080A6B28
+	adds r0, #4
+	b _080A6B34
+	.align 2, 0
+_080A6B24: .4byte 0x030046A4
+_080A6B28:
+	ldr r0, _080A6B48 @ =0x030046A4
+	ldr r1, [r0]
+	lsls r0, r4, #2
+	adds r0, #0xc
+	ldr r1, [r1, #4]
+	adds r0, r1, r0
+_080A6B34:
+	ldrb r1, [r0]
+	lsrs r2, r1, #4
+	movs r0, #0xf
+	ands r0, r1
+	lsls r1, r0, #8
+	cmp r2, #1
+	beq _080A6B4C
+	cmp r2, #2
+	beq _080A6B50
+	b _080A6B54
+	.align 2, 0
+_080A6B48: .4byte 0x030046A4
+_080A6B4C:
+	ldrb r0, [r6, #4]
+	b _080A6B52
+_080A6B50:
+	ldrb r0, [r6]
+_080A6B52:
+	subs r1, r1, r0
+_080A6B54:
+	strh r1, [r7, #2]
+	adds r0, r5, #0
+	bl FUN_080a64cc
+	adds r4, r0, #0
+	cmp r4, #0
+	blt _080A6B80
+	movs r0, #0x74
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A6B74
+	bl Script_GetValue
+	adds r2, r0, #0
+	b _080A6B76
+_080A6B74:
+	movs r2, #0
+_080A6B76:
+	adds r0, r7, #0
+	adds r1, r4, #0
+	movs r3, #0
+	bl FUN_080a62f4
+_080A6B80:
+	add sp, #0xc
+	pop {r4, r5, r6, r7}
+	pop {r0}
+	bx r0
 
 	thumb_func_start FUN_080a6b88
 FUN_080a6b88: @ 0x080A6B88
@@ -41786,8 +43086,9 @@ _080A6C8E:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_080a6c94
-FUN_080a6c94: @ 0x080A6C94
+@ a.k.a. InitArray
+	thumb_func_start EngineCall_InitArray
+EngineCall_InitArray: @ 0x080A6C94
 	push {r4, lr}
 	sub sp, #8
 	mov r0, sp
@@ -41795,14 +43096,14 @@ FUN_080a6c94: @ 0x080A6C94
 	movs r4, #0
 	b _080A6CB2
 _080A6CA2:
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r2, r0, #0
 	mov r0, sp
 	adds r1, r4, #0
 	bl FUN_0823206c
 	adds r4, #1
 _080A6CB2:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	bne _080A6CA2
 	movs r0, #0
@@ -41811,8 +43112,9 @@ _080A6CB2:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_080a6cc4
-FUN_080a6cc4: @ 0x080A6CC4
+@ a.k.a. Loop
+	thumb_func_start EngineCall_Loop
+EngineCall_Loop: @ 0x080A6CC4
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -41825,11 +43127,11 @@ FUN_080a6cc4: @ 0x080A6CC4
 	str r0, [r7, #0xc]
 	movs r0, #0x61
 	bl prepare_08231510
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov r8, r0
 	movs r0, #0x72
 	bl prepare_08231510
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov sb, r0
 	mov r1, r8
 	lsls r0, r1, #5
@@ -41853,11 +43155,11 @@ FUN_080a6cc4: @ 0x080A6CC4
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A6D66
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov sl, r0
 	movs r0, #0x64
 	bl prepare_08231510
-	bl FUN_082316bc
+	bl VM_GetPC
 	adds r6, r0, #0
 	movs r0, #0
 	cmp r0, sb
@@ -41872,9 +43174,9 @@ _080A6D36:
 	mov r4, r8
 _080A6D44:
 	adds r0, r6, #0
-	bl FUN_082315a4
+	bl VM_GetValueAt
 	stm r5!, {r0}
-	bl FUN_082316bc
+	bl VM_GetPC
 	adds r6, r0, #0
 	subs r4, #1
 	cmp r4, #0
@@ -41882,7 +43184,7 @@ _080A6D44:
 _080A6D58:
 	mov r0, sl
 	adds r1, r7, #0
-	bl FUN_08231b58
+	bl Script_ExecByPointer
 	ldr r0, [r7, #0x10]
 	cmp r0, sb
 	blt _080A6D36
@@ -41900,24 +43202,143 @@ _080A6D66:
 	bx r1
 	.align 2, 0
 _080A6D7C: .4byte 0xFFFF0000
-_080A6D80:
-	.byte 0x00, 0xB5, 0x70, 0x20, 0x8A, 0xF1, 0xC4, 0xFB, 0x00, 0x28, 0x19, 0xD0, 0x8A, 0xF1, 0xAA, 0xFC
-	.byte 0x03, 0x1C, 0x00, 0x2B, 0x14, 0xDD, 0x07, 0x4A, 0x10, 0x68, 0x01, 0x30, 0x06, 0x49, 0x08, 0x40
-	.byte 0x10, 0x60, 0x40, 0x00, 0x05, 0x49, 0x40, 0x18, 0x00, 0x88, 0xC0, 0x10, 0x19, 0x1C, 0xA5, 0xF1
-	.byte 0x09, 0xFA, 0x0F, 0xE0, 0xB8, 0x46, 0x00, 0x03, 0xFF, 0x03, 0x00, 0x00, 0x00, 0xB4, 0x03, 0x02
-	.byte 0x05, 0x4A, 0x10, 0x68, 0x01, 0x30, 0x05, 0x49, 0x08, 0x40, 0x10, 0x60, 0x40, 0x00, 0x04, 0x49
-	.byte 0x40, 0x18, 0x00, 0x88, 0x02, 0xBC, 0x08, 0x47, 0xB8, 0x46, 0x00, 0x03, 0xFF, 0x03, 0x00, 0x00
-	.byte 0x00, 0xB4, 0x03, 0x02, 0x00, 0xB5, 0x70, 0x20, 0x8A, 0xF1, 0x92, 0xFB, 0x00, 0x28, 0x05, 0xD0
-	.byte 0x01, 0x48, 0x40, 0x88, 0x18, 0xE0, 0x00, 0x00, 0xE0, 0x44, 0x00, 0x03, 0x73, 0x20, 0x8A, 0xF1
-	.byte 0x87, 0xFB, 0x00, 0x28, 0x04, 0xD0, 0x01, 0x48, 0x00, 0x88, 0x0D, 0xE0, 0xE0, 0x44, 0x00, 0x03
-	.byte 0x72, 0x20, 0x8A, 0xF1, 0x7D, 0xFB, 0x00, 0x28, 0x04, 0xD1, 0x01, 0x48, 0x40, 0x88, 0x03, 0xE0
-	.byte 0xE0, 0x44, 0x00, 0x03, 0x01, 0x48, 0x80, 0x88, 0x02, 0xBC, 0x08, 0x47, 0xE0, 0x44, 0x00, 0x03
-	.byte 0x30, 0xB5, 0x72, 0x20, 0x8A, 0xF1, 0x6C, 0xFB, 0x00, 0x28, 0x0F, 0xD0, 0x8A, 0xF1, 0x76, 0xFC
-	.byte 0x05, 0x1C, 0x69, 0x20, 0x8A, 0xF1, 0x64, 0xFB, 0x00, 0x28, 0x07, 0xD0, 0x8A, 0xF1, 0x4A, 0xFC
-	.byte 0x04, 0x1C, 0x73, 0x20, 0x8A, 0xF1, 0x5C, 0xFB, 0x00, 0x28, 0x02, 0xD1, 0x01, 0x20, 0x40, 0x42
-	.byte 0x0E, 0xE0, 0x8A, 0xF1, 0x3F, 0xFC, 0x00, 0x28, 0x02, 0xD1, 0x28, 0x19, 0x00, 0x78, 0x07, 0xE0
-	.byte 0x01, 0x28, 0x01, 0xD0, 0xA0, 0x00, 0x00, 0xE0, 0x60, 0x00, 0x28, 0x18, 0x00, 0x21, 0x40, 0x5E
-	.byte 0x30, 0xBC, 0x02, 0xBC, 0x08, 0x47, 0x00, 0x00
+
+@ a.k.a. rand
+	thumb_func_start EngineCall_Rand
+EngineCall_Rand: @ 0x080A6D80
+	push {lr}
+	movs r0, #0x70
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A6DC0
+	bl Script_GetValue
+	adds r3, r0, #0
+	cmp r3, #0
+	ble _080A6DC0
+	ldr r2, _080A6DB4 @ =0x030046B8
+	ldr r0, [r2]
+	adds r0, #1
+	ldr r1, _080A6DB8 @ =0x000003FF
+	ands r0, r1
+	str r0, [r2]
+	lsls r0, r0, #1
+	ldr r1, _080A6DBC @ =0x0203B400
+	adds r0, r0, r1
+	ldrh r0, [r0]
+	asrs r0, r0, #3
+	adds r1, r3, #0
+	bl Mod
+	b _080A6DD4
+	.align 2, 0
+_080A6DB4: .4byte 0x030046B8
+_080A6DB8: .4byte 0x000003FF
+_080A6DBC: .4byte 0x0203B400
+_080A6DC0:
+	ldr r2, _080A6DD8 @ =0x030046B8
+	ldr r0, [r2]
+	adds r0, #1
+	ldr r1, _080A6DDC @ =0x000003FF
+	ands r0, r1
+	str r0, [r2]
+	lsls r0, r0, #1
+	ldr r1, _080A6DE0 @ =0x0203B400
+	adds r0, r0, r1
+	ldrh r0, [r0]
+_080A6DD4:
+	pop {r1}
+	bx r1
+	.align 2, 0
+_080A6DD8: .4byte 0x030046B8
+_080A6DDC: .4byte 0x000003FF
+_080A6DE0: .4byte 0x0203B400
+
+	thumb_func_start FUN_080a6de4
+FUN_080a6de4: @ 0x080A6DE4
+	push {lr}
+	movs r0, #0x70
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A6DFC
+	ldr r0, _080A6DF8 @ =0x030044E0
+	ldrh r0, [r0, #2]
+	b _080A6E28
+	.align 2, 0
+_080A6DF8: .4byte 0x030044E0
+_080A6DFC:
+	movs r0, #0x73
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A6E10
+	ldr r0, _080A6E0C @ =0x030044E0
+	ldrh r0, [r0]
+	b _080A6E28
+	.align 2, 0
+_080A6E0C: .4byte 0x030044E0
+_080A6E10:
+	movs r0, #0x72
+	bl prepare_08231510
+	cmp r0, #0
+	bne _080A6E24
+	ldr r0, _080A6E20 @ =0x030044E0
+	ldrh r0, [r0, #2]
+	b _080A6E28
+	.align 2, 0
+_080A6E20: .4byte 0x030044E0
+_080A6E24:
+	ldr r0, _080A6E2C @ =0x030044E0
+	ldrh r0, [r0, #4]
+_080A6E28:
+	pop {r1}
+	bx r1
+	.align 2, 0
+_080A6E2C: .4byte 0x030044E0
+
+	thumb_func_start FUN_080a6e30
+FUN_080a6e30: @ 0x080A6E30
+	push {r4, r5, lr}
+	movs r0, #0x72
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A6E5C
+	bl VM_GetValueSafe2
+	adds r5, r0, #0
+	movs r0, #0x69
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A6E5C
+	bl Script_GetValue
+	adds r4, r0, #0
+	movs r0, #0x73
+	bl prepare_08231510
+	cmp r0, #0
+	bne _080A6E62
+_080A6E5C:
+	movs r0, #1
+	rsbs r0, r0, #0
+	b _080A6E80
+_080A6E62:
+	bl Script_GetValue
+	cmp r0, #0
+	bne _080A6E70
+	adds r0, r5, r4
+	ldrb r0, [r0]
+	b _080A6E80
+_080A6E70:
+	cmp r0, #1
+	beq _080A6E78
+	lsls r0, r4, #2
+	b _080A6E7A
+_080A6E78:
+	lsls r0, r4, #1
+_080A6E7A:
+	adds r0, r5, r0
+	movs r1, #0
+	ldrsh r0, [r0, r1]
+_080A6E80:
+	pop {r4, r5}
+	pop {r1}
+	bx r1
+	.align 2, 0
 
 	thumb_func_start FUN_080a6e88
 FUN_080a6e88: @ 0x080A6E88
@@ -41947,9 +43368,22 @@ _080A6EB0:
 	.align 2, 0
 _080A6EB8: .4byte 0x030047A4
 _080A6EBC: .4byte 0x030044BC
-_080A6EC0:
-	.byte 0x00, 0xB5, 0x70, 0x20, 0x8A, 0xF1, 0x24, 0xFB, 0x00, 0x28, 0x02, 0xD0, 0x8A, 0xF1, 0x0A, 0xFC
-	.byte 0x00, 0xE0, 0x00, 0x20, 0xFF, 0xF7, 0xD8, 0xFF, 0x01, 0xBC, 0x00, 0x47
+
+	thumb_func_start FUN_080a6ec0
+FUN_080a6ec0: @ 0x080A6EC0
+	push {lr}
+	movs r0, #0x70
+	bl prepare_08231510
+	cmp r0, #0
+	beq _080A6ED2
+	bl Script_GetValue
+	b _080A6ED4
+_080A6ED2:
+	movs r0, #0
+_080A6ED4:
+	bl FUN_080a6e88
+	pop {r0}
+	bx r0
 
 	thumb_func_start FUN_080a6edc
 FUN_080a6edc: @ 0x080A6EDC
@@ -41979,16 +43413,88 @@ _080A6F02:
 _080A6F08: .4byte 0x030047A4
 _080A6F0C: .4byte 0xFFFFFDFF
 _080A6F10: .4byte 0x030044BC
-_080A6F14:
-	.byte 0x00, 0xB5, 0xFF, 0xF7, 0xE1, 0xFF, 0x01, 0xBC, 0x00, 0x47, 0x00, 0x00
-	.byte 0x00, 0xB5, 0x04, 0x48, 0x00, 0x68, 0x80, 0x21, 0x89, 0x00, 0x08, 0x40, 0x00, 0x28, 0x03, 0xD1
-	.byte 0x00, 0x20, 0x02, 0xE0, 0xA4, 0x47, 0x00, 0x03, 0x01, 0x20, 0x02, 0xBC, 0x08, 0x47, 0x00, 0x00
-	.byte 0x03, 0x49, 0x0A, 0x68, 0x80, 0x23, 0x1B, 0x01, 0x1A, 0x43, 0x0A, 0x60, 0x70, 0x47, 0x00, 0x00
-	.byte 0xA4, 0x47, 0x00, 0x03, 0x00, 0xB5, 0x03, 0x1C, 0x9A, 0x30, 0x00, 0x88, 0x05, 0x28, 0x17, 0xD8
-	.byte 0x08, 0x4A, 0x10, 0x68, 0x01, 0x30, 0x08, 0x49, 0x08, 0x40, 0x10, 0x60, 0x40, 0x00, 0x07, 0x49
-	.byte 0x40, 0x18, 0x00, 0x88, 0x00, 0x11, 0x0F, 0x21, 0x08, 0x40, 0x07, 0x38, 0x19, 0x1C, 0x58, 0x31
-	.byte 0x08, 0x80, 0x0B, 0xE0, 0xB8, 0x46, 0x00, 0x03, 0xFF, 0x03, 0x00, 0x00, 0x00, 0xB4, 0x03, 0x02
-	.byte 0x18, 0x1C, 0x58, 0x30, 0x00, 0x21, 0x01, 0x80, 0x02, 0x30, 0x01, 0x80, 0x01, 0xBC, 0x00, 0x47
+
+	thumb_func_start FUN_080a6f14
+FUN_080a6f14: @ 0x080A6F14
+	push {lr}
+	bl FUN_080a6edc
+	pop {r0}
+	bx r0
+	.align 2, 0
+
+	thumb_func_start FUN_080a6f20
+FUN_080a6f20: @ 0x080A6F20
+	push {lr}
+	ldr r0, _080A6F34 @ =0x030047A4
+	ldr r0, [r0]
+	movs r1, #0x80
+	lsls r1, r1, #2
+	ands r0, r1
+	cmp r0, #0
+	bne _080A6F38
+	movs r0, #0
+	b _080A6F3A
+	.align 2, 0
+_080A6F34: .4byte 0x030047A4
+_080A6F38:
+	movs r0, #1
+_080A6F3A:
+	pop {r1}
+	bx r1
+	.align 2, 0
+
+	thumb_func_start FUN_080a6f40
+FUN_080a6f40: @ 0x080A6F40
+	ldr r1, _080A6F50 @ =0x030047A4
+	ldr r2, [r1]
+	movs r3, #0x80
+	lsls r3, r3, #4
+	orrs r2, r3
+	str r2, [r1]
+	bx lr
+	.align 2, 0
+_080A6F50: .4byte 0x030047A4
+
+	thumb_func_start FUN_080a6f54
+FUN_080a6f54: @ 0x080A6F54
+	push {lr}
+	adds r3, r0, #0
+	adds r0, #0x9a
+	ldrh r0, [r0]
+	cmp r0, #5
+	bhi _080A6F90
+	ldr r2, _080A6F84 @ =0x030046B8
+	ldr r0, [r2]
+	adds r0, #1
+	ldr r1, _080A6F88 @ =0x000003FF
+	ands r0, r1
+	str r0, [r2]
+	lsls r0, r0, #1
+	ldr r1, _080A6F8C @ =0x0203B400
+	adds r0, r0, r1
+	ldrh r0, [r0]
+	asrs r0, r0, #4
+	movs r1, #0xf
+	ands r0, r1
+	subs r0, #7
+	adds r1, r3, #0
+	adds r1, #0x58
+	strh r0, [r1]
+	b _080A6F9C
+	.align 2, 0
+_080A6F84: .4byte 0x030046B8
+_080A6F88: .4byte 0x000003FF
+_080A6F8C: .4byte 0x0203B400
+_080A6F90:
+	adds r0, r3, #0
+	adds r0, #0x58
+	movs r1, #0
+	strh r1, [r0]
+	adds r0, #2
+	strh r1, [r0]
+_080A6F9C:
+	pop {r0}
+	bx r0
 
 	thumb_func_start FUN_080a6fa0
 FUN_080a6fa0: @ 0x080A6FA0
@@ -42015,7 +43521,7 @@ FUN_080a6fa0: @ 0x080A6FA0
 	cmp r0, #0
 	beq _080A6FD4
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A6FD4:
 	adds r0, r4, #0
 	bl KillEntity
@@ -42023,8 +43529,16 @@ _080A6FDA:
 	pop {r4}
 	pop {r1}
 	bx r1
-_080A6FE0:
-	.byte 0x00, 0xB5, 0x38, 0x30, 0x88, 0xF1, 0xEC, 0xF8, 0x00, 0x20, 0x02, 0xBC, 0x08, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_080a6fe0
+FUN_080a6fe0: @ 0x080A6FE0
+	push {lr}
+	adds r0, #0x38
+	bl FUN_0822f1c0
+	movs r0, #0
+	pop {r1}
+	bx r1
+	.align 2, 0
 
 	thumb_func_start FUN_080a6ff0
 FUN_080a6ff0: @ 0x080A6FF0
@@ -42033,7 +43547,7 @@ FUN_080a6ff0: @ 0x080A6FF0
 	adds r5, r0, #0
 	ldr r0, _080A700C @ =0x0000CB05
 	ldr r1, _080A7010 @ =0x000082F1
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	cmp r2, #0
 	bne _080A7014
@@ -42063,7 +43577,7 @@ _080A7014:
 	adds r7, r4, #0
 	cmp r0, #0
 	beq _080A7046
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r6, r0, #0
 	b _080A7048
 _080A7046:
@@ -42073,7 +43587,7 @@ _080A7048:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A705C
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0x9c
 	b _080A7062
@@ -42115,7 +43629,7 @@ _080A7062:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A70B8
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r5, #0
 	adds r1, #0xa8
 	str r0, [r1]
@@ -42133,12 +43647,36 @@ _080A70C0:
 	pop {r4, r5, r6, r7}
 	pop {r1}
 	bx r1
-_080A70C8:
-	.byte 0x10, 0xB5, 0x09, 0x20, 0xB0, 0x21, 0x89, 0xF1
-	.byte 0x6F, 0xFD, 0x04, 0x1C, 0x00, 0x2C, 0x11, 0xD0, 0x06, 0x49, 0x07, 0x4A, 0x89, 0xF1, 0x8C, 0xFD
-	.byte 0x20, 0x1C, 0xFF, 0xF7, 0x85, 0xFF, 0x00, 0x28, 0x08, 0xD0, 0x20, 0x1C, 0x89, 0xF1, 0xBE, 0xFD
-	.byte 0x00, 0x20, 0x04, 0xE0, 0xA1, 0x6F, 0x0A, 0x08, 0xE1, 0x6F, 0x0A, 0x08, 0x20, 0x1C, 0x10, 0xBC
-	.byte 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_080a70c8
+FUN_080a70c8: @ 0x080A70C8
+	push {r4, lr}
+	movs r0, #9
+	movs r1, #0xb0
+	bl CreateEntity
+	adds r4, r0, #0
+	cmp r4, #0
+	beq _080A70FC
+	ldr r1, _080A70F4 @ =FUN_080a6fa0
+	ldr r2, _080A70F8 @ =FUN_080a6fe0
+	bl SetEntityRoutine
+	adds r0, r4, #0
+	bl FUN_080a6ff0
+	cmp r0, #0
+	beq _080A70FC
+	adds r0, r4, #0
+	bl KillEntity
+	movs r0, #0
+	b _080A70FE
+	.align 2, 0
+_080A70F4: .4byte FUN_080a6fa0
+_080A70F8: .4byte FUN_080a6fe0
+_080A70FC:
+	adds r0, r4, #0
+_080A70FE:
+	pop {r4}
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_080a7104
 FUN_080a7104: @ 0x080A7104
@@ -42722,7 +44260,7 @@ FUN_080a7550: @ 0x080A7550
 	adds r5, r0, #0
 	ldr r0, _080A75F0 @ =0x0000CB05
 	ldr r1, _080A75F4 @ =0x0000B343
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A75E8
@@ -42828,7 +44366,7 @@ FUN_080a761c: @ 0x080A761C
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A7668
-	bl fetch_082316e4
+	bl Script_GetValue
 	cmp r0, #0
 	beq _080A7668
 	movs r0, #4
@@ -43169,7 +44707,7 @@ _080A78BA:
 	mov r0, sp
 	str r0, [r1, #4]
 	adds r0, r2, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A790A:
 	adds r0, r5, #0
 	bl KillEntity
@@ -43227,7 +44765,7 @@ _080A7950:
 	adds r1, r5, r2
 	movs r2, #0x88
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	b _080A799C
 	.align 2, 0
 _080A7984: .4byte 0x00000343
@@ -43240,7 +44778,7 @@ _080A7988:
 	adds r1, r5, r2
 	movs r2, #0x87
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 _080A799C:
 	adds r0, r5, #0
 	bl FUN_080a74fc
@@ -43374,12 +44912,12 @@ _080A7A9A:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A7AC8
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xd2
 	lsls r2, r2, #2
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _080A7AC4 @ =0x0000034A
 	adds r1, r4, r2
 	b _080A7ADA
@@ -43409,7 +44947,7 @@ _080A7ADA:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A7B04
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xd4
 	lsls r2, r2, #2
 	adds r1, r4, r2
@@ -43971,9 +45509,18 @@ _080A7F40: .4byte 0x030046B8
 _080A7F44: .4byte 0x000003FF
 _080A7F48: .4byte 0xFFFF0000
 _080A7F4C: .4byte 0x0000FFFF
-_080A7F50:
-	.byte 0x00, 0xB5, 0x82, 0x22, 0x92, 0x00, 0x81, 0x18, 0x09, 0x68, 0xA4, 0xF1, 0x83, 0xFF, 0x00, 0x20
-	.byte 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_080a7f50
+FUN_080a7f50: @ 0x080A7F50
+	push {lr}
+	movs r2, #0x82
+	lsls r2, r2, #2
+	adds r1, r0, r2
+	ldr r1, [r1]
+	bl _call_via_r1
+	movs r0, #0
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_080a7f64
 FUN_080a7f64: @ 0x080A7F64
@@ -44082,7 +45629,7 @@ FUN_080a802c: @ 0x080A802C
 	adds r4, r6, #0
 	adds r4, #0x70
 	ldr r0, _080A807C @ =0x00001C1A
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	adds r1, r0, #0
 	adds r5, r6, #0
 	adds r5, #0x98
@@ -44125,7 +45672,7 @@ FUN_080a8080: @ 0x080A8080
 	push {r5, r6, r7}
 	mov r8, r0
 	ldr r0, _080A8100 @ =0x00001C1E
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	mov r1, r8
 	adds r1, #0x9c
 	str r0, [r1]
@@ -44983,7 +46530,7 @@ FUN_080a8704: @ 0x080A8704
 	push {r4, r5, r6, r7, lr}
 	adds r5, r0, #0
 	ldr r0, _080A8750 @ =0x00001C1E
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	str r0, [r5, #0x7c]
 	movs r7, #4
 	rsbs r7, r7, #0
@@ -45024,7 +46571,7 @@ FUN_080a8754: @ 0x080A8754
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A8768
-	bl FUN_0823172c
+	bl VM_GetValueSafe2
 	str r0, [r6, #0x78]
 _080A8768:
 	ldr r0, _080A87B0 @ =0x030046A0
@@ -45805,9 +47352,18 @@ _080A8D38:
 	bx r0
 	.align 2, 0
 _080A8D3C: .4byte 0x000003FB
-_080A8D40:
-	.byte 0x00, 0xB5, 0xEE, 0x22, 0x52, 0x00, 0x81, 0x18, 0x09, 0x68, 0xA4, 0xF1, 0x8B, 0xF8, 0x00, 0x20
-	.byte 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_080a8d40
+FUN_080a8d40: @ 0x080A8D40
+	push {lr}
+	movs r2, #0xee
+	lsls r2, r2, #1
+	adds r1, r0, r2
+	ldr r1, [r1]
+	bl _call_via_r1
+	movs r0, #0
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_080a8d54
 FUN_080a8d54: @ 0x080A8D54
@@ -45898,7 +47454,7 @@ FUN_080a8dd8: @ 0x080A8DD8
 	ldrb r0, [r0]
 	str r0, [sp]
 	ldr r0, _080A8EC8 @ =0x00001C1E
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	movs r2, #0xe6
 	lsls r2, r2, #1
 	adds r1, r7, r2
@@ -46374,9 +47930,18 @@ _080A919A:
 	pop {r4, r5, r6, r7}
 	pop {r0}
 	bx r0
-_080A91A8:
-	.byte 0x00, 0xB5, 0x80, 0x22, 0x92, 0x00, 0x81, 0x18
-	.byte 0x09, 0x68, 0xA3, 0xF1, 0x57, 0xFE, 0x00, 0x20, 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_080a91a8
+FUN_080a91a8: @ 0x080A91A8
+	push {lr}
+	movs r2, #0x80
+	lsls r2, r2, #2
+	adds r1, r0, r2
+	ldr r1, [r1]
+	bl _call_via_r1
+	movs r0, #0
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_080a91bc
 FUN_080a91bc: @ 0x080A91BC
@@ -46418,7 +47983,7 @@ FUN_080a91dc: @ 0x080A91DC
 	ldrb r0, [r0]
 	str r0, [sp]
 	ldr r0, _080A92D0 @ =0x00001C1E
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	movs r2, #0xfa
 	lsls r2, r2, #1
 	adds r1, r7, r2
@@ -46776,14 +48341,63 @@ _080A94D6:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080A94DC:
-	.byte 0x00, 0xB5, 0x04, 0x48
-	.byte 0x01, 0x68, 0x00, 0x29, 0x01, 0xD0, 0x01, 0x20, 0x48, 0x83, 0x01, 0xBC, 0x00, 0x47, 0x00, 0x00
-	.byte 0x50, 0x2C, 0x00, 0x03, 0x10, 0xB5, 0x04, 0x1C, 0x60, 0x8B, 0x00, 0x28, 0x05, 0xD0, 0xF3, 0xF7
-	.byte 0x45, 0xF8, 0x20, 0x1C, 0x87, 0xF1, 0xB2, 0xFB, 0x10, 0xE0, 0x20, 0x8B, 0x01, 0x38, 0x20, 0x83
-	.byte 0x00, 0x04, 0x00, 0x28, 0x0A, 0xD1, 0xF3, 0xF7, 0x39, 0xF8, 0xE0, 0x69, 0x00, 0x28, 0x02, 0xD0
-	.byte 0x00, 0x21, 0x88, 0xF1, 0xC3, 0xF9, 0x20, 0x1C, 0x87, 0xF1, 0xA0, 0xFB, 0x00, 0x20, 0x10, 0xBC
-	.byte 0x02, 0xBC, 0x08, 0x47, 0x01, 0x49, 0x00, 0x20, 0x08, 0x60, 0x70, 0x47, 0x50, 0x2C, 0x00, 0x03
+
+	thumb_func_start FUN_080a94dc
+FUN_080a94dc: @ 0x080A94DC
+	push {lr}
+	ldr r0, _080A94F0 @ =0x03002C50
+	ldr r1, [r0]
+	cmp r1, #0
+	beq _080A94EA
+	movs r0, #1
+	strh r0, [r1, #0x1a]
+_080A94EA:
+	pop {r0}
+	bx r0
+	.align 2, 0
+_080A94F0: .4byte 0x03002C50
+
+	thumb_func_start FUN_080a94f4
+FUN_080a94f4: @ 0x080A94F4
+	push {r4, lr}
+	adds r4, r0, #0
+	ldrh r0, [r4, #0x1a]
+	cmp r0, #0
+	beq _080A950A
+	bl FUN_0809c58c
+	adds r0, r4, #0
+	bl KillEntity
+	b _080A952C
+_080A950A:
+	ldrh r0, [r4, #0x18]
+	subs r0, #1
+	strh r0, [r4, #0x18]
+	lsls r0, r0, #0x10
+	cmp r0, #0
+	bne _080A952C
+	bl FUN_0809c58c
+	ldr r0, [r4, #0x1c]
+	cmp r0, #0
+	beq _080A9526
+	movs r1, #0
+	bl Script_ExecById
+_080A9526:
+	adds r0, r4, #0
+	bl KillEntity
+_080A952C:
+	movs r0, #0
+	pop {r4}
+	pop {r1}
+	bx r1
+
+	thumb_func_start FUN_080a9534
+FUN_080a9534: @ 0x080A9534
+	ldr r1, _080A953C @ =0x03002C50
+	movs r0, #0
+	str r0, [r1]
+	bx lr
+	.align 2, 0
+_080A953C: .4byte 0x03002C50
 
 	thumb_func_start FUN_080a9540
 FUN_080a9540: @ 0x080A9540
@@ -46793,7 +48407,7 @@ FUN_080a9540: @ 0x080A9540
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A9554
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080A9558
 _080A9554:
 	movs r0, #0xe1
@@ -46804,7 +48418,7 @@ _080A9558:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A9568
-	bl fetch_082316e4
+	bl Script_GetValue
 _080A9568:
 	str r0, [r4, #0x1c]
 	adds r0, r4, #0
@@ -47737,10 +49351,26 @@ FUN_080a9c88: @ 0x080A9C88
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080A9CA8:
-	.byte 0x30, 0xB5, 0x04, 0x1C, 0x1C, 0x30, 0x85, 0xF1
-	.byte 0x87, 0xFA, 0x8C, 0x34, 0x07, 0x25, 0x20, 0x1C, 0x83, 0xF1, 0x00, 0xFF, 0x3C, 0x34, 0x01, 0x3D
-	.byte 0x00, 0x2D, 0xF8, 0xDA, 0x00, 0x20, 0x30, 0xBC, 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_080a9ca8
+FUN_080a9ca8: @ 0x080A9CA8
+	push {r4, r5, lr}
+	adds r4, r0, #0
+	adds r0, #0x1c
+	bl FUN_0822f1c0
+	adds r4, #0x8c
+	movs r5, #7
+_080A9CB6:
+	adds r0, r4, #0
+	bl FUN_0822dabc
+	adds r4, #0x3c
+	subs r5, #1
+	cmp r5, #0
+	bge _080A9CB6
+	movs r0, #0
+	pop {r4, r5}
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_080a9ccc
 FUN_080a9ccc: @ 0x080A9CCC
@@ -47749,7 +49379,7 @@ FUN_080a9ccc: @ 0x080A9CCC
 	adds r4, r0, #0
 	ldr r0, _080A9D28 @ =0x0000CB05
 	ldr r1, _080A9D2C @ =0x00005D04
-	bl FUN_082310cc
+	bl GetFile
 	adds r1, r0, #0
 	add r2, sp, #0x10
 	ldm r0!, {r3, r5, r6}
@@ -47799,7 +49429,7 @@ FUN_080a9d30: @ 0x080A9D30
 	push {r5, r6, r7}
 	mov sl, r0
 	ldr r0, _080A9DA4 @ =0x00001C1E
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	adds r6, r0, #0
 	movs r0, #0
 	mov sb, r0
@@ -48066,7 +49696,7 @@ _080A9F34:
 	cmp r0, #0
 	beq _080A9F52
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080A9F52:
 	adds r0, r4, #0
 	bl KillEntity
@@ -48079,8 +49709,11 @@ _080A9F58:
 _080A9F60: .4byte 0x00000366
 _080A9F64: .4byte 0x0000036A
 _080A9F68: .4byte 0x00000259
-_080A9F6C:
-	.byte 0x00, 0x20, 0x70, 0x47
+
+	thumb_func_start FUN_080a9f6c
+FUN_080a9f6c: @ 0x080A9F6C
+	movs r0, #0
+	bx lr
 
 	thumb_func_start FUN_080a9f70
 FUN_080a9f70: @ 0x080A9F70
@@ -48101,7 +49734,7 @@ _080A9F88:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A9F9A
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r0, #0
 	b _080A9F9C
 _080A9F9A:
@@ -48111,7 +49744,7 @@ _080A9F9C:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080A9FAE
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r6, r0, #0
 	b _080A9FB0
 _080A9FAE:
@@ -48191,7 +49824,7 @@ _080AA032:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080AA040
-	bl fetch_082316e4
+	bl Script_GetValue
 _080AA040:
 	str r0, [r4, #0x24]
 	movs r0, #0
@@ -48201,11 +49834,36 @@ _080AA044:
 	bx r1
 	.align 2, 0
 _080AA04C: .4byte 0x00000259
-_080AA050:
-	.byte 0x10, 0xB5, 0x09, 0x20, 0x28, 0x21, 0x86, 0xF1, 0xAB, 0xFD, 0x04, 0x1C, 0x00, 0x2C, 0x11, 0xD0
-	.byte 0x06, 0x49, 0x07, 0x4A, 0x86, 0xF1, 0xC8, 0xFD, 0x20, 0x1C, 0xFF, 0xF7, 0x81, 0xFF, 0x00, 0x28
-	.byte 0x08, 0xDA, 0x20, 0x1C, 0x86, 0xF1, 0xFA, 0xFD, 0x00, 0x20, 0x04, 0xE0, 0xCD, 0x9E, 0x0A, 0x08
-	.byte 0x6D, 0x9F, 0x0A, 0x08, 0x20, 0x1C, 0x10, 0xBC, 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_080aa050
+FUN_080aa050: @ 0x080AA050
+	push {r4, lr}
+	movs r0, #9
+	movs r1, #0x28
+	bl CreateEntity
+	adds r4, r0, #0
+	cmp r4, #0
+	beq _080AA084
+	ldr r1, _080AA07C @ =FUN_080a9ecc
+	ldr r2, _080AA080 @ =FUN_080a9f6c
+	bl SetEntityRoutine
+	adds r0, r4, #0
+	bl FUN_080a9f70
+	cmp r0, #0
+	bge _080AA084
+	adds r0, r4, #0
+	bl KillEntity
+	movs r0, #0
+	b _080AA086
+	.align 2, 0
+_080AA07C: .4byte FUN_080a9ecc
+_080AA080: .4byte FUN_080a9f6c
+_080AA084:
+	adds r0, r4, #0
+_080AA086:
+	pop {r4}
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_080aa08c
 FUN_080aa08c: @ 0x080AA08C
@@ -49064,27 +50722,151 @@ _080AA6FE:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080AA708:
-	.byte 0xF0, 0xB5, 0x57, 0x46, 0x4E, 0x46, 0x45, 0x46
-	.byte 0xE0, 0xB4, 0x83, 0xB0, 0x07, 0x1C, 0x35, 0x48, 0xC0, 0x19, 0x82, 0x46, 0x00, 0x88, 0x01, 0x30
-	.byte 0x51, 0x46, 0x08, 0x80, 0x00, 0x04, 0x00, 0x0C, 0x07, 0x28, 0x2B, 0xD8, 0x08, 0x88, 0x08, 0x25
-	.byte 0x2D, 0x1A, 0x2F, 0x4A, 0x91, 0x46, 0x2F, 0x4C, 0x20, 0x68, 0x01, 0x30, 0x2E, 0x49, 0x88, 0x46
-	.byte 0x08, 0x40, 0x20, 0x60, 0x40, 0x00, 0x48, 0x44, 0x00, 0x88, 0xC0, 0x10, 0x29, 0x1C, 0xA1, 0xF1
-	.byte 0x39, 0xFD, 0x39, 0x1C, 0x7C, 0x31, 0x09, 0x88, 0x09, 0x18, 0x6E, 0x10, 0x89, 0x1B, 0xB9, 0x87
-	.byte 0x20, 0x68, 0x01, 0x30, 0x42, 0x46, 0x10, 0x40, 0x20, 0x60, 0x40, 0x00, 0x48, 0x44, 0x00, 0x88
-	.byte 0xC0, 0x10, 0x29, 0x1C, 0xA1, 0xF1, 0x26, 0xFD, 0x39, 0x1C, 0x7E, 0x31, 0x09, 0x88, 0x09, 0x18
-	.byte 0x89, 0x1B, 0xF9, 0x87, 0x51, 0x46, 0x08, 0x88, 0x1E, 0x28, 0x09, 0xD1, 0x38, 0x1C, 0xFF, 0xF7
-	.byte 0xA9, 0xFC, 0x1A, 0x48, 0x95, 0xF1, 0xA4, 0xFF, 0x78, 0x6A, 0x01, 0x21, 0x08, 0x43, 0x78, 0x62
-	.byte 0xD2, 0x22, 0x92, 0x00, 0xB8, 0x18, 0x01, 0x88, 0x01, 0x29, 0x0E, 0xD1, 0x52, 0x46, 0x10, 0x88
-	.byte 0x1D, 0x28, 0x0A, 0xD1, 0x04, 0x20, 0x00, 0x90, 0x11, 0x48, 0x01, 0x90, 0x02, 0x91, 0x03, 0x20
-	.byte 0x05, 0x21, 0x04, 0x22, 0x04, 0x23, 0x92, 0xF1, 0x4F, 0xFB, 0x08, 0x49, 0x78, 0x18, 0x00, 0x88
-	.byte 0x2C, 0x28, 0x22, 0xD9, 0xD2, 0x22, 0x92, 0x00, 0xB8, 0x18, 0x00, 0x88, 0x00, 0x28, 0x13, 0xD1
-	.byte 0xD3, 0x20, 0x80, 0x00, 0x39, 0x18, 0x07, 0x48, 0x12, 0xE0, 0x00, 0x00, 0x4A, 0x03, 0x00, 0x00
-	.byte 0x00, 0xB4, 0x03, 0x02, 0xB8, 0x46, 0x00, 0x03, 0xFF, 0x03, 0x00, 0x00, 0x85, 0x02, 0x00, 0x00
-	.byte 0xFF, 0x1F, 0x00, 0x00, 0xD1, 0xA5, 0x0A, 0x08, 0xD3, 0x22, 0x92, 0x00, 0xB9, 0x18, 0x07, 0x48
-	.byte 0x08, 0x60, 0x07, 0x48, 0x39, 0x18, 0x00, 0x20, 0x08, 0x80, 0x03, 0xB0, 0x38, 0xBC, 0x98, 0x46
-	.byte 0xA1, 0x46, 0xAA, 0x46, 0xF0, 0xBC, 0x01, 0xBC, 0x00, 0x47, 0x00, 0x00, 0x59, 0xA6, 0x0A, 0x08
-	.byte 0x4A, 0x03, 0x00, 0x00
+
+	thumb_func_start FUN_080aa708
+FUN_080aa708: @ 0x080AA708
+	push {r4, r5, r6, r7, lr}
+	mov r7, sl
+	mov r6, sb
+	mov r5, r8
+	push {r5, r6, r7}
+	sub sp, #0xc
+	adds r7, r0, #0
+	ldr r0, _080AA7EC @ =0x0000034A
+	adds r0, r0, r7
+	mov sl, r0
+	ldrh r0, [r0]
+	adds r0, #1
+	mov r1, sl
+	strh r0, [r1]
+	lsls r0, r0, #0x10
+	lsrs r0, r0, #0x10
+	cmp r0, #7
+	bhi _080AA784
+	ldrh r0, [r1]
+	movs r5, #8
+	subs r5, r5, r0
+	ldr r2, _080AA7F0 @ =0x0203B400
+	mov sb, r2
+	ldr r4, _080AA7F4 @ =0x030046B8
+	ldr r0, [r4]
+	adds r0, #1
+	ldr r1, _080AA7F8 @ =0x000003FF
+	mov r8, r1
+	ands r0, r1
+	str r0, [r4]
+	lsls r0, r0, #1
+	add r0, sb
+	ldrh r0, [r0]
+	asrs r0, r0, #3
+	adds r1, r5, #0
+	bl Mod
+	adds r1, r7, #0
+	adds r1, #0x7c
+	ldrh r1, [r1]
+	adds r1, r1, r0
+	asrs r6, r5, #1
+	subs r1, r1, r6
+	strh r1, [r7, #0x3c]
+	ldr r0, [r4]
+	adds r0, #1
+	mov r2, r8
+	ands r0, r2
+	str r0, [r4]
+	lsls r0, r0, #1
+	add r0, sb
+	ldrh r0, [r0]
+	asrs r0, r0, #3
+	adds r1, r5, #0
+	bl Mod
+	adds r1, r7, #0
+	adds r1, #0x7e
+	ldrh r1, [r1]
+	adds r1, r1, r0
+	subs r1, r1, r6
+	strh r1, [r7, #0x3e]
+_080AA784:
+	mov r1, sl
+	ldrh r0, [r1]
+	cmp r0, #0x1e
+	bne _080AA7A0
+	adds r0, r7, #0
+	bl FUN_080aa0e4
+	ldr r0, _080AA7FC @ =0x00000285
+	bl PlaySound_082406e0
+	ldr r0, [r7, #0x24]
+	movs r1, #1
+	orrs r0, r1
+	str r0, [r7, #0x24]
+_080AA7A0:
+	movs r2, #0xd2
+	lsls r2, r2, #2
+	adds r0, r7, r2
+	ldrh r1, [r0]
+	cmp r1, #1
+	bne _080AA7CA
+	mov r2, sl
+	ldrh r0, [r2]
+	cmp r0, #0x1d
+	bne _080AA7CA
+	movs r0, #4
+	str r0, [sp]
+	ldr r0, _080AA800 @ =0x00001FFF
+	str r0, [sp, #4]
+	str r1, [sp, #8]
+	movs r0, #3
+	movs r1, #5
+	movs r2, #4
+	movs r3, #4
+	bl FUN_0823ce68
+_080AA7CA:
+	ldr r1, _080AA7EC @ =0x0000034A
+	adds r0, r7, r1
+	ldrh r0, [r0]
+	cmp r0, #0x2c
+	bls _080AA81A
+	movs r2, #0xd2
+	lsls r2, r2, #2
+	adds r0, r7, r2
+	ldrh r0, [r0]
+	cmp r0, #0
+	bne _080AA808
+	movs r0, #0xd3
+	lsls r0, r0, #2
+	adds r1, r7, r0
+	ldr r0, _080AA804 @ =FUN_080aa5d0
+	b _080AA810
+	.align 2, 0
+_080AA7EC: .4byte 0x0000034A
+_080AA7F0: .4byte 0x0203B400
+_080AA7F4: .4byte 0x030046B8
+_080AA7F8: .4byte 0x000003FF
+_080AA7FC: .4byte 0x00000285
+_080AA800: .4byte 0x00001FFF
+_080AA804: .4byte FUN_080aa5d0
+_080AA808:
+	movs r2, #0xd3
+	lsls r2, r2, #2
+	adds r1, r7, r2
+	ldr r0, _080AA82C @ =FUN_080aa658
+_080AA810:
+	str r0, [r1]
+	ldr r0, _080AA830 @ =0x0000034A
+	adds r1, r7, r0
+	movs r0, #0
+	strh r0, [r1]
+_080AA81A:
+	add sp, #0xc
+	pop {r3, r4, r5}
+	mov r8, r3
+	mov sb, r4
+	mov sl, r5
+	pop {r4, r5, r6, r7}
+	pop {r0}
+	bx r0
+	.align 2, 0
+_080AA82C: .4byte FUN_080aa658
+_080AA830: .4byte 0x0000034A
 
 	thumb_func_start FUN_080aa834
 FUN_080aa834: @ 0x080AA834
@@ -49185,12 +50967,45 @@ FUN_080aa8d8: @ 0x080AA8D8
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080AA8F8:
-	.byte 0x70, 0xB5, 0x06, 0x1C, 0x1C, 0x30, 0x84, 0xF1
-	.byte 0x5F, 0xFC, 0xB2, 0x20, 0x40, 0x00, 0x34, 0x18, 0x07, 0x25, 0x20, 0x1C, 0x83, 0xF1, 0xD6, 0xF8
-	.byte 0x3C, 0x34, 0x01, 0x3D, 0x00, 0x2D, 0xF8, 0xDA, 0xD2, 0x21, 0x89, 0x00, 0x70, 0x18, 0x00, 0x88
-	.byte 0x00, 0x28, 0x09, 0xD1, 0x34, 0x1C, 0xE4, 0x34, 0x01, 0x25, 0x20, 0x1C, 0x7F, 0xF1, 0xD8, 0xFD
-	.byte 0x2C, 0x34, 0x01, 0x3D, 0x00, 0x2D, 0xF8, 0xDA, 0x00, 0x20, 0x70, 0xBC, 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_080aa8f8
+FUN_080aa8f8: @ 0x080AA8F8
+	push {r4, r5, r6, lr}
+	adds r6, r0, #0
+	adds r0, #0x1c
+	bl FUN_0822f1c0
+	movs r0, #0xb2
+	lsls r0, r0, #1
+	adds r4, r6, r0
+	movs r5, #7
+_080AA90A:
+	adds r0, r4, #0
+	bl FUN_0822dabc
+	adds r4, #0x3c
+	subs r5, #1
+	cmp r5, #0
+	bge _080AA90A
+	movs r1, #0xd2
+	lsls r1, r1, #2
+	adds r0, r6, r1
+	ldrh r0, [r0]
+	cmp r0, #0
+	bne _080AA938
+	adds r4, r6, #0
+	adds r4, #0xe4
+	movs r5, #1
+_080AA92A:
+	adds r0, r4, #0
+	bl FUN_0822a4e0
+	adds r4, #0x2c
+	subs r5, #1
+	cmp r5, #0
+	bge _080AA92A
+_080AA938:
+	movs r0, #0
+	pop {r4, r5, r6}
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_080aa940
 FUN_080aa940: @ 0x080AA940
@@ -49199,7 +51014,7 @@ FUN_080aa940: @ 0x080AA940
 	adds r5, r0, #0
 	ldr r0, _080AA9C8 @ =0x0000CB05
 	ldr r1, _080AA9CC @ =0x00005D04
-	bl FUN_082310cc
+	bl GetFile
 	adds r1, r0, #0
 	add r2, sp, #0x10
 	ldm r0!, {r3, r4, r6}
@@ -49317,7 +51132,7 @@ FUN_080aaa2c: @ 0x080AAA2C
 	push {r5, r6, r7}
 	mov sl, r0
 	ldr r0, _080AAAA4 @ =0x00001C1E
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	adds r6, r0, #0
 	movs r0, #0
 	mov sb, r0
@@ -49792,7 +51607,7 @@ FUN_080aadcc: @ 0x080AADCC
 	mov r8, r0
 	ldr r0, _080AAE2C @ =0x0000CB05
 	ldr r1, _080AAE30 @ =0x000082F1
-	bl FUN_082310cc
+	bl GetFile
 	adds r1, r0, #0
 	add r2, sp, #0x10
 	ldm r0!, {r3, r4, r5}
@@ -49808,15 +51623,15 @@ FUN_080aadcc: @ 0x080AADCC
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _080AAE34
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov r5, r8
 	adds r5, #0x7c
 	strh r0, [r5]
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov r4, r8
 	adds r4, #0x7e
 	strh r0, [r4]
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov r1, r8
 	adds r1, #0x80
 	strh r0, [r1]
@@ -49845,20 +51660,20 @@ _080AAE4C:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080AAE8C
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r5, _080AAE84 @ =0xFFFF0000
 	adds r4, r5, #0
 	ands r4, r6
 	orrs r4, r0
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	ldr r1, _080AAE88 @ =0x0000FFFF
 	ands r4, r1
 	adds r6, r4, #0
 	orrs r6, r0
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ands r5, r7
@@ -49877,7 +51692,7 @@ _080AAE92:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080AAEAC
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov r5, r8
 	strh r0, [r5, #0x1a]
 	b _080AAEB4
@@ -49893,7 +51708,7 @@ _080AAEB4:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080AAEC8
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov r2, r8
 	strh r0, [r2, #0x18]
 	b _080AAECC
@@ -49905,7 +51720,7 @@ _080AAECC:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080AAEDE
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov sb, r0
 	b _080AAEE2
 _080AAEDE:
@@ -49925,7 +51740,7 @@ _080AAEF2:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080AAF02
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080AAF04
 _080AAF02:
 	movs r0, #0
@@ -49937,7 +51752,7 @@ _080AAF08:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080AAF18
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080AAF1A
 _080AAF18:
 	movs r0, #0

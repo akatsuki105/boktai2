@@ -10,7 +10,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0807D232
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r0, #0
 	ldr r0, _0807D23C @ =0x00000121
 	adds r1, r1, r0

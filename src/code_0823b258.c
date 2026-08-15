@@ -1,13 +1,48 @@
+#include "entity_unk.h"
 #include "global.h"
 
-Unk_0200865c* FindUnk0200865c(u16 id);
+void FUN_0823b1ec(void) {
+  gEntity2 = NULL;
+  return;
+}
+
+void FUN_0823b1f8(Unk_0200865c* p) {
+  if (gEntity2 != NULL) {
+    if (gEntity2->unk_18 == NULL) {
+      gEntity2->unk_18 = p;
+      gEntity2->unk_1c = p;
+      p->prev = NULL;
+      p->next = NULL;
+    } else {
+      Unk_0200865c* tmp = gEntity2->unk_1c;
+      tmp->next = p;
+      p->prev = tmp;
+      p->next = NULL;
+      gEntity2->unk_1c = p;
+    }
+  }
+}
+
+Unk_0200865c* FindUnk0200865c(u16 id) {
+  Unk_0200865c* p;
+  if (gEntity2 == NULL) {
+    return NULL;
+  } else {
+    for (p = gEntity2->unk_18; p != NULL; p = p->next) {
+      if (p->id == id) {
+        return p;
+      }
+    }
+    return NULL;
+  }
+}
 
 Unk_0200865c* FUN_0823b258(Unk_0200865c* p) {
   Unk_0200865c* q;
-  if (PTR_030016f8 == NULL) {
+  if (gEntity2 == NULL) {
     return NULL;
   } else {
-    for (q = PTR_030016f8->unk_18; q != NULL; q = q->next) {
+    for (q = gEntity2->unk_18; q != NULL; q = q->next) {
       if (q == p) {
         return q;
       }
@@ -18,7 +53,7 @@ Unk_0200865c* FUN_0823b258(Unk_0200865c* p) {
 
 // リンクリストから指定ノードを削除する
 bool32 FUN_0823b284(Unk_0200865c* p) {
-  Entity2* head = PTR_030016f8;
+  Entity2* head = gEntity2;
   Unk_0200865c* prev;
   Unk_0200865c* next;
   if ((head == NULL) || (p == NULL) || (FUN_0823b258(p) == NULL)) {
@@ -48,33 +83,27 @@ Unk_0200865c* FUN_0823b2e0(Unk_0200865c* p) { return FUN_0823b258(p); }
 
 NAKED s32 FUN_0823b2ec(void) { INCFUNC("asm/func/FUN_0823b2ec.inc"); }
 
-void* FUN_0823b378(void) { return NULL; }
+s32 Entity2_Update(Entity2* _) { return 0; }
 
-void* FUN_0823b37c(void) {
-  PTR_030016f8 = NULL;
-  return NULL;
+s32 Entity2_Destroy(Entity2* _) {
+  gEntity2 = NULL;
+  return 0;
 }
 
-s32 FUN_0823b388(Entity2* p) {
-  PTR_030016f8 = p;
+s32 Entity2_Init(Entity2* p) {
+  gEntity2 = p;
   p->unk_18 = NULL, p->unk_1c = NULL;
   return 0;
 }
 
-NAKED void* FUN_0823b39c(void) { INCFUNC("asm/func/FUN_0823b39c.inc"); }
+NAKED Entity2* Entity2_Create(void) { INCFUNC("asm/func/Entity2_Create.inc"); }
 
-INCASM("asm/code_0823b258.inc");
-
-NAKED void* FUN_0823d85c(void* p) { INCFUNC("asm/func/FUN_0823d85c.inc"); }
-
-void Delay(s32 n) {
-  if (n > 0) {
-    do {
-      n -= 1;
-    } while (n != 0);
+Entity2* FUN_0823b3ec(void) {
+  if (gEntity2 == NULL) {
+    return NULL;
+  } else {
+    return gEntity2;
   }
 }
 
-void FUN_0823d904(void) { RtcIoEnable(); }
-
-void FUN_0823d910(void) { RtcIoDisable(); }
+INCASM("asm/code_0823b258.inc");

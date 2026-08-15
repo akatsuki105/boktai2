@@ -31,7 +31,7 @@ _082160F2:
 	mov r1, sb
 	adds r1, #0x18
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	movs r2, #0xc2
 	lsls r2, r2, #2
 	add r2, r8

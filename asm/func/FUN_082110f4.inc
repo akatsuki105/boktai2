@@ -3,7 +3,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _08211118
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r1, _0821111C @ =0x030046A0
 	ldr r2, [r1]
 	movs r1, #0xea

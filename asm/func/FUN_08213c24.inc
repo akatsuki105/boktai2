@@ -22,7 +22,7 @@
 	adds r1, r5, #0
 	movs r2, #0x94
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	movs r0, #1
 	b _08213CDC
 	.align 2, 0

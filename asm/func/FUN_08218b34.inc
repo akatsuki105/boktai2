@@ -12,9 +12,9 @@
 	lsls r0, r0, #5
 	adds r4, r4, r0
 	ldr r0, [r4]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	adds r0, #0x54
-	bl FUN_08231978
+	bl Textbox_LookupString
 	adds r7, r0, #0
 	movs r1, #0
 	mov ip, r1

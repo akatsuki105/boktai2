@@ -202,7 +202,7 @@ _08212620:
 	adds r2, #0xe0
 	adds r0, r7, r2
 	strb r1, [r0]
-	ldr r0, _08212788 @ =0x030047A8
+	ldr r0, _08212788 @ =gSystemSaveData
 	ldr r0, [r0]
 	ldrb r0, [r0, #9]
 	movs r1, #3
@@ -233,5 +233,5 @@ _08212756:
 _0821277C: .4byte 0x05000002
 _08212780: .4byte 0x030046A0
 _08212784: .4byte 0x0000093C
-_08212788: .4byte 0x030047A8
+_08212788: .4byte gSystemSaveData
 _0821278C: .4byte 0x00000389

@@ -2,20 +2,21 @@
 
 #include "global.h"
 #include "player.h"
+#include "vm.h"
 
 bool32 IsArmorAlreadyFound(armor32_t a) {
   if (a >= 32) {
-    return (GAME->armorDex[1]) & (1 << (a - 32));
+    return (gStat->armorDex[1]) & (1 << (a - 32));
   } else {
-    return (GAME->armorDex[0]) & (1 << a);
+    return (gStat->armorDex[0]) & (1 << a);
   }
 }
 
 void SetArmorFoundFlag(armor32_t a) {
   if (a >= 32) {
-    GAME->armorDex[1] |= (1 << (a - 32));
+    gStat->armorDex[1] |= (1 << (a - 32));
   } else {
-    GAME->armorDex[0] |= (1 << a);
+    gStat->armorDex[0] |= (1 << a);
   }
 }
 
@@ -41,10 +42,10 @@ void SwapArmorSlot(slot32_t slot1, slot32_t slot2) {
   ARMORS(slot1) = b;
   ARMORS(slot2) = a;
 
-  if (GAME->armor == slot1) {
-    GAME->armor = slot2;
-  } else if (GAME->armor == slot2) {
-    GAME->armor = slot1;
+  if (gStat->armor == slot1) {
+    gStat->armor = slot2;
+  } else if (gStat->armor == slot2) {
+    gStat->armor = slot1;
   }
 }
 
@@ -102,7 +103,7 @@ NON_MATCH void SortArmors(s32 from) {
 }
 
 bool32 IsSlotArmorEpuipped(slot32_t n) {
-  slot32_t equipped = GAME->armor;
+  slot32_t equipped = gStat->armor;
   if (equipped == n) {
     return TRUE;
   }
@@ -116,7 +117,7 @@ bool32 FUN_08243380(void) {
     return FALSE;
   }
 
-  a = fetch_082316e4();
+  a = Script_GetValue();
   for (slot = 0; slot < 16; slot++) {
     if (GetInventoryArmor(slot) < 0) {
       SetArmorIntoInventory(slot, a);
@@ -133,15 +134,15 @@ NON_MATCH void armor_082433bc(void) {
   s32 count;
 
   for (i = 0; i <= 1; i++) {
-    GAME->armorDex[i] = 0;
+    gStat->armorDex[i] = 0;
   }
   for (i = 0; i <= 31; i++) {
     RemoveArmorFromInventory(i);
   }
-  GAME->armor = -1;
+  gStat->armor = -1;
 
   if (prepare_08231510(0x6e)) {
-    count = fetch_082316e4();
+    count = Script_GetValue();
   } else {
     count = 0;
   }
@@ -149,11 +150,11 @@ NON_MATCH void armor_082433bc(void) {
   if (count > 0) {
     if (prepare_08231510(0x61)) {
       for (i = 0; i < count; i++) {
-        SetArmorIntoInventory(i, fetch_082316e4());
+        SetArmorIntoInventory(i, Script_GetValue());
       }
     }
     if (prepare_08231510(0x65)) {
-      GAME->armor = fetch_082316e4();
+      gStat->armor = Script_GetValue();
     }
   }
 #else

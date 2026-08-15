@@ -14,7 +14,7 @@
 	bl m4aSoundVSyncOff
 	bl WaitForVBlank
 	bl WaitForVBlank
-	bl FUN_082477b4
+	bl Sensor_Disable
 	bl RtcIoDisable
 	ldr r0, _0823A984 @ =0x03002C68
 	ldr r0, [r0]
@@ -50,13 +50,13 @@ _0823A998:
 	cmp r0, #0
 	bne _0823A9B8
 	movs r0, #0xdc
-	bl FUN_0824c1f8
+	bl SoftResetExram
 	b _0823A9BE
 	.align 2, 0
 _0823A9B4: .4byte 0x03002C6C
 _0823A9B8:
 	movs r0, #0xdc
-	bl FUN_0824c1f8
+	bl SoftResetExram
 _0823A9BE:
 	movs r0, #0
 	pop {r1}

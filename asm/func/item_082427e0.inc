@@ -26,7 +26,7 @@ _08242804:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _08242826
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 	b _08242828
 _08242826:
@@ -41,7 +41,7 @@ _08242828:
 	cmp r4, #0
 	ble _0824284A
 _0824283A:
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r1, #0
 	bl TryAddItem
 	subs r4, #1

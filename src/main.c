@@ -39,19 +39,19 @@ NAKED void AgbMain(void) {
 	movs r0, #0x40\n\
 	bl EEPROMConfigure\n\
 	bl FUN_0823a870\n\
-	bl FUN_08231c28\n\
+	bl RandomizeGameStateAddr\n\
 	bl InitSystemManager\n\
 	bl FUN_08229d80\n\
 	bl FUN_082326a0\n\
-	bl FUN_0822b0a0\n\
+	bl InitPltt\n\
 	ldr r0, _08000420 @ =0x0000CEAA\n\
 	ldr r1, _08000424 @ =0x00003002\n\
-	bl FUN_082310cc\n\
-	bl FUN_0822b0d0\n\
+	bl GetFile\n\
+	bl LoadParticleFile\n\
 	ldr r0, _08000428 @ =0x000098F5\n\
 	ldr r1, _0800042C @ =0x0000FF54\n\
-	bl FUN_082310cc\n\
-	bl FUN_0822b148\n\
+	bl GetFile\n\
+	bl LoadActorSpritesFile\n\
 	ldr r3, _08000430 @ =0x04000208\n\
 	strh r4, [r3]\n\
 	ldr r1, _08000434 @ =0x04000200\n\

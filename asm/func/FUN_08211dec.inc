@@ -11,7 +11,7 @@
 	cmp r0, #0
 	beq _08211E54
 	bl FUN_0823d34c
-	bl FUN_08231504
+	bl VM_SetPC
 	movs r5, #0
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -20,15 +20,15 @@
 	lsls r1, r1, #2
 	adds r7, r6, r1
 _08211E1C:
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r4]
-	bl fetch_082316e4
-	bl fetch_082316e4
-	bl fetch_082316e4
-	bl fetch_082316e4
-	bl fetch_082316e4
+	bl Script_GetValue
+	bl Script_GetValue
+	bl Script_GetValue
+	bl Script_GetValue
+	bl Script_GetValue
 	strh r0, [r4, #2]
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r4, #4]
 	movs r3, #0
 	ldrsh r0, [r4, r3]
@@ -50,16 +50,16 @@ _08211E54:
 	cmp r0, #0
 	beq _08211E92
 	bl FUN_0823d34c
-	bl FUN_08231504
+	bl VM_SetPC
 	movs r5, #0
 	movs r7, #1
 	rsbs r7, r7, #0
 _08211E70:
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r4, #6]
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r4, #8]
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r4, #0xa]
 	lsls r0, r0, #0x10
 	asrs r0, r0, #0x10

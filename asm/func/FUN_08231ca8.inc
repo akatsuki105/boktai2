@@ -16,7 +16,7 @@
 	ldr r0, [r4]
 	adds r0, r0, r5
 	strh r6, [r0]
-	bl FUN_08231cec
+	bl Save_BackupStatAndWorld
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0

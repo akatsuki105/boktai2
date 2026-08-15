@@ -6,7 +6,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _08065290
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xd6
 	lsls r2, r2, #2
 	adds r1, r4, r2

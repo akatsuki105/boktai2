@@ -74,7 +74,7 @@ _080DF1CC:
 	str r1, [r6, #0x20]
 	ldr r0, _080DF23C @ =0x0000922E
 	ldr r1, _080DF240 @ =0x0000121B
-	bl FUN_082310cc
+	bl GetFile
 	adds r5, r6, #0
 	adds r5, #0xec
 	str r0, [r5]

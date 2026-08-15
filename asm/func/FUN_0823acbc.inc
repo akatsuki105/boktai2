@@ -45,8 +45,8 @@
 	ldr r0, [r4]
 	strh r1, [r0, #0x12]
 	ldr r4, _0823AD8C @ =0x030016A0
-	ldr r1, _0823AD90 @ =FUN_0823aa94
-	ldr r2, _0823AD94 @ =FUN_0823acb8
+	ldr r1, _0823AD90 @ =Entity1_030016a0_Update
+	ldr r2, _0823AD94 @ =Entity1_030016a0_Destroy
 	adds r0, r4, #0
 	bl SetEntityRoutine
 	movs r0, #1
@@ -79,5 +79,5 @@ _0823AD80: .4byte 0x030046A0
 _0823AD84: .4byte 0x00000934
 _0823AD88: .4byte 0x03004860
 _0823AD8C: .4byte 0x030016A0
-_0823AD90: .4byte FUN_0823aa94
-_0823AD94: .4byte FUN_0823acb8
+_0823AD90: .4byte Entity1_030016a0_Update
+_0823AD94: .4byte Entity1_030016a0_Destroy

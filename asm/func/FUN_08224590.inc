@@ -10,7 +10,7 @@
 	cmp r4, #0
 	beq _08224694
 _082245A8:
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _082245E8 @ =0x00000F46
 	adds r1, r4, r2
 	strh r0, [r1]
@@ -18,16 +18,16 @@ _082245A8:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _082245F4
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _082245EC @ =0x00000E8C
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r0, #0xa0
 	ldr r2, _082245F0 @ =0x00000E8E
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xe9
 	lsls r2, r2, #4
 	adds r1, r4, r2
@@ -60,13 +60,13 @@ _08224614:
 	movs r1, #1
 	rsbs r1, r1, #0
 	movs r0, #0x64
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	ldr r2, _082246A0 @ =0x00000F23
 	adds r1, r4, r2
 	strb r0, [r1]
 	movs r0, #0x70
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	ldr r2, _082246A4 @ =0x00000F0C
 	adds r1, r4, r2
 	str r0, [r1]

@@ -1,9 +1,9 @@
 	push {r4, r5, lr}
 	sub sp, #0xc
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _08234C04
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	mov r1, sp

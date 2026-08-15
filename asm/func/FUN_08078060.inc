@@ -299,7 +299,7 @@ _080782CC:
 	str r6, [sp]
 	str r5, [r2]
 	adds r0, r3, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 	b _08078424
 	.align 2, 0
 _080782E8: .4byte 0x00000436
@@ -489,7 +489,7 @@ _08078424:
 	str r5, [sp, #0xc]
 	str r5, [r2]
 	adds r0, r3, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _0807847E:
 	add sp, #0x18
 	pop {r4, r5, r6, r7}

@@ -1,7 +1,7 @@
 	push {r4, r5, r6, lr}
 	adds r5, r0, #0
 	ldr r0, _080614B0 @ =0x00001C1C
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	adds r1, r0, #0
 	ldr r0, _080614B4 @ =0x0000064C
 	adds r6, r5, r0

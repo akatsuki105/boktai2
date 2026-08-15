@@ -35,7 +35,7 @@
 	adds r4, r4, r0
 	movs r2, #0
 	ldrsh r1, [r4, r2]
-	ldr r0, _08215728 @ =0x030047A8
+	ldr r0, _08215728 @ =gSystemSaveData
 	ldr r0, [r0]
 	str r1, [r0, #0x20]
 	bl FUN_082410bc
@@ -47,4 +47,4 @@ _08215718: .4byte 0x00000DB4
 _0821571C: .4byte 0x000007B4
 _08215720: .4byte 0x00000DBA
 _08215724: .4byte 0x030047E0
-_08215728: .4byte 0x030047A8
+_08215728: .4byte gSystemSaveData

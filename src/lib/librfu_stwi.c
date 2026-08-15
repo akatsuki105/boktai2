@@ -10,6 +10,8 @@ static void STWI_stop_timer(void);
 static s32 STWI_restart_Command(void);
 static s32 STWI_reset_ClockCounter(void);
 
+IWRAM_DATA STWIStatus* gSTWIStatus = NULL;  // 0x030057D0
+
 void STWI_init_all(struct RfuIntrStruct* interruptStruct, IntrFunc* interrupt, bool8 copyInterruptToRam) {
   // If we're copying our interrupt into RAM, DMA it to block1 and use
   // block2 for our STWIStatus, otherwise block1 holds the STWIStatus.

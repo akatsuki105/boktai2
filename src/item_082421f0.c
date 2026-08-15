@@ -1,5 +1,6 @@
 #include "global.h"
 #include "item.h"
+#include "vm.h"
 #include "weapon.h"
 
 s32 GetRotCount(s32 slot) { return ROTCOUNT(slot); }
@@ -17,16 +18,16 @@ void SetRotCount2(s32 slot, u32 value) {
 }
 
 void CoverChocolate(s32 slot) {
-  ROTCOUNT(slot) |= 0x8000;  // GAME->rotTimer[slot] |= 0x8000
+  ROTCOUNT(slot) |= 0x8000;  // gStat->rotTimer[slot] |= 0x8000
   return;
 }
 
 void UncoverChocolate(s32 slot) {
-  ROTCOUNT(slot) &= 0x7FFF;  // GAME->rotTimer[slot] &= 0x7FFF
+  ROTCOUNT(slot) &= 0x7FFF;  // gStat->rotTimer[slot] &= 0x7FFF
   return;
 }
 
-s32 IsChocolateCovered(u32 slot) { return *(GAME->rotTimer + slot) & 0x8000; }
+s32 IsChocolateCovered(u32 slot) { return *(gStat->rotTimer + slot) & 0x8000; }
 
 item32_t GetNormalItemID(s32 slot) {
   if (IsChocolateCovered(slot)) {
@@ -110,8 +111,8 @@ bool32 FUN_082423a8(void) {
   if (!prepare_08231510(0x69)) {
     return FALSE;
   }
-  n = fetch_082316e4();
-  rotCount = prepare_08231510(0x70) ? fetch_082316e4() : 0;
+  n = Script_GetValue();
+  rotCount = prepare_08231510(0x70) ? Script_GetValue() : 0;
   return TryAddItem(n, rotCount);
 }
 
@@ -146,7 +147,7 @@ bool32 RemoveSpecifiedItem(item32_t id) {
 
 bool32 FUN_08242450(void) {
   if (prepare_08231510(0x69) != 0) {
-    return RemoveSpecifiedItem(fetch_082316e4());
+    return RemoveSpecifiedItem(Script_GetValue());
   }
   return FALSE;
 }
@@ -181,7 +182,7 @@ bool32 CheckItemOwn(item32_t id) {
 
 bool32 FUN_082424d4(void) {
   if (prepare_08231510(0x69) != 0) {
-    return CheckItemOwn(fetch_082316e4());
+    return CheckItemOwn(Script_GetValue());
   }
   return FALSE;
 }
@@ -253,11 +254,11 @@ NON_MATCH void item_082427e0(void) {
     SetValuable(i, ITEM_NONE);
   }
 
-  val = prepare_08231510(0x6e) ? fetch_082316e4() : 0;
+  val = prepare_08231510(0x6e) ? Script_GetValue() : 0;
   if (val > 0) {
     if (prepare_08231510(0x69)) {
       for (; val != 0; val--) {
-        TryAddItem(fetch_082316e4(), 0);
+        TryAddItem(Script_GetValue(), 0);
       }
     }
   }
@@ -287,7 +288,7 @@ bool32 CheckEmptySlotExist(s32 category, item32_t n) {
     }
 
     case 1: {
-      if (GAME->unk_250 != 5) {
+      if (gStat->playerKind != PLAYER_SABATA) {
         for (i = 0; i < 16; i++) {
           if (GetWeaponID(i) == WEAPON_NONE) {
             return TRUE;
@@ -298,9 +299,9 @@ bool32 CheckEmptySlotExist(s32 category, item32_t n) {
     }
 
     case 2: {
-      if (GAME->unk_250 != 5) {
+      if (gStat->playerKind != PLAYER_SABATA) {
         for (i = 0; i < 16; i++) {
-          if (GAME->armors[i] < 0) {
+          if (gStat->armors[i] < 0) {
             return TRUE;
           }
         }
@@ -310,7 +311,7 @@ bool32 CheckEmptySlotExist(s32 category, item32_t n) {
 
     case 3:
     case 4: {
-      if (GAME->unk_250 != 5) {
+      if (gStat->playerKind != PLAYER_SABATA) {
         return TRUE;
       }
       break;
@@ -324,9 +325,9 @@ bool32 item_0824292c(void) {
   if (prepare_08231510(0x6b) == 0) {
     return FALSE;
   } else {
-    u32 category = fetch_082316e4();
+    u32 category = Script_GetValue();
     if (prepare_08231510(0x69)) {
-      item32_t n = fetch_082316e4();
+      item32_t n = Script_GetValue();
       return CheckEmptySlotExist(category, n);
     }
   }

@@ -250,7 +250,7 @@ _08225F24:
 	str r0, [r1]
 	adds r0, r2, #0
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _08225F40:
 	add sp, #4
 	pop {r4, r5, r6, r7}

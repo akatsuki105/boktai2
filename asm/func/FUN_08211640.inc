@@ -11,7 +11,7 @@
 	bl FUN_0822b644
 	ldr r0, _08211718 @ =0x0000C091
 	ldr r1, _0821171C @ =0x00004F8F
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	str r2, [r4, #0x18]
 	movs r5, #0
@@ -26,16 +26,16 @@
 	bl FUN_0822c0b8
 	movs r0, #0
 	movs r1, #3
-	bl FUN_0822ba00
+	bl SetBGPrioDirect
 	str r5, [sp]
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	ldr r0, _08211720 @ =0x000092B3
 	ldr r1, _08211724 @ =0x0000A41A
-	bl FUN_082310cc
+	bl GetFile
 	adds r1, r0, #0
 	adds r0, #0x14
 	str r0, [r4, #0x1c]

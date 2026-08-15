@@ -77,7 +77,7 @@ _080DFEE6:
 	str r1, [r7, #0x20]
 	ldr r0, _080DFFB8 @ =0x0000922E
 	ldr r1, _080DFFBC @ =0x00008DC7
-	bl FUN_082310cc
+	bl GetFile
 	movs r1, #0xd2
 	lsls r1, r1, #1
 	adds r4, r7, r1

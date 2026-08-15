@@ -33,7 +33,7 @@
 _0823DA32:
 	adds r0, r7, #0
 	adds r1, r4, #0
-	bl FUN_0823d970
+	bl GetDaysInMonth
 	adds r6, r6, r0
 	adds r4, #1
 	cmp r4, r8
@@ -66,7 +66,7 @@ _0823DA42:
 _0823DA78:
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_0823d970
+	bl GetDaysInMonth
 	adds r5, r5, r0
 	adds r4, #1
 	cmp r4, sl

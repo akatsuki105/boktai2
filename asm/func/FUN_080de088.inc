@@ -2,14 +2,14 @@
 	adds r6, r0, #0
 	ldr r0, _080DE0B4 @ =0x0000922E
 	ldr r1, _080DE0B8 @ =0x0000D1B8
-	bl FUN_082310cc
+	bl GetFile
 	ldr r2, _080DE0BC @ =0x00000CD8
 	adds r1, r6, r2
 	str r0, [r1]
 	cmp r0, #0
 	beq _080DE0AE
 	ldr r0, _080DE0C0 @ =0x00001C1A
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	ldr r2, _080DE0C4 @ =0x00000CDC
 	adds r1, r6, r2
 	str r0, [r1]

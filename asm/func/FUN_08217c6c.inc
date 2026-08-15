@@ -20,7 +20,7 @@
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	str r6, [r7, #0x64]
 	movs r2, #0
 	ldrsh r0, [r4, r2]

@@ -2,7 +2,7 @@
 	ldr r1, _080622C8 @ =0x00000858
 	adds r5, r0, r1
 	ldr r0, _080622CC @ =0x00001C1E
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	str r0, [r5]
 	movs r6, #0
 	movs r7, #4

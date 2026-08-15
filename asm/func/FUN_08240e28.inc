@@ -8,10 +8,10 @@
 	adds r4, #0x98
 	b _08240E42
 _08240E3C:
-	bl fetch_082316e4
+	bl Script_GetValue
 	stm r4!, {r0}
 _08240E42:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	bne _08240E3C
 _08240E4A:

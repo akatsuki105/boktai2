@@ -4,7 +4,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _08065212
-	bl fetch_082316e4
+	bl Script_GetValue
 _08065212:
 	str r0, [r4, #0x18]
 	pop {r4}

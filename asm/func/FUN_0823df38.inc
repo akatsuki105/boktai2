@@ -3,7 +3,7 @@
 	ldr r2, _0823DF80 @ =gClock
 	strb r3, [r2, #0xc]
 	strb r1, [r2, #0xd]
-	ldr r0, _0823DF84 @ =gUnkPtr_030047a8
+	ldr r0, _0823DF84 @ =gSystemSaveData
 	ldr r0, [r0]
 	ldrb r0, [r0, #0xb]
 	cmp r0, #0
@@ -37,7 +37,7 @@ _0823DF72:
 	b _0823DF8A
 	.align 2, 0
 _0823DF80: .4byte gClock
-_0823DF84: .4byte gUnkPtr_030047a8
+_0823DF84: .4byte gSystemSaveData
 _0823DF88:
 	movs r3, #0x17
 _0823DF8A:

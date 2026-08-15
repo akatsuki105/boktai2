@@ -104,7 +104,7 @@ _080E6698:
 	mov r0, sp
 	str r0, [r1, #4]
 	ldrh r0, [r2]
-	bl FUN_082318ac
+	bl Script_ExecById
 _080E6732:
 	add sp, #0x30
 	pop {r4, r5}

@@ -18,7 +18,9 @@ EWRAM_DATA u8 u8_02039000[0x2000] = {};  // todo
 EWRAM_DATA Unk_0203b000 gUnk_0203b000[128] = {};
 EWRAM_DATA u16 gRandomTable[1024] = {};
 EWRAM_DATA u16 sUnused_0203bc00[1024] = {};
-EWRAM_DATA u8 u8_0203c400[12288] = {};  // todo
+
+EWRAM_DATA u8 gGameStateBuffer[12288] = {};  // 0x0203C400, RandomizeGameStateAddr で このバッファのランダムなアドレスに gScratch, gWorldBackup, gWorld, gStatBackup, gStat の各要素の実態が配置される (チート対策と思われる)
+
 EWRAM_DATA u32 u32_ARRAY_0203f400[256] = {};
 EWRAM_DATA u32 u32_ARRAY_0203f800[256] = {};
 // todo...

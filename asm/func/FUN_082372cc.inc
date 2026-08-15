@@ -21,7 +21,7 @@ _082372DC:
 	ldrb r3, [r4, #0x1b]
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 _082372FC:
 	ldrh r0, [r4, #0xc]
 	adds r0, #1

@@ -6,7 +6,7 @@
 	movs r1, #1
 	rsbs r1, r1, #0
 	movs r0, #0x6b
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	adds r6, r4, #0
 	adds r6, #0xf4
 	str r0, [r6]
@@ -14,13 +14,13 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0821B148
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0x86
 	lsls r2, r2, #1
 	adds r1, r4, r2
 	lsls r0, r0, #0x10
 	str r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r3, #0x88
 	lsls r3, r3, #1
 	adds r1, r4, r3
@@ -31,7 +31,7 @@ _0821B148:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0821B15E
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0x92
 	lsls r2, r2, #1
 	adds r1, r4, r2
@@ -39,7 +39,7 @@ _0821B148:
 _0821B15E:
 	movs r0, #0x53
 	movs r1, #0x40
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	adds r1, r4, #0
 	adds r1, #0xfc
 	str r5, [r1]

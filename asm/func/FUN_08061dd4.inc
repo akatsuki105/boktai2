@@ -3,7 +3,7 @@
 	lsls r1, r1, #3
 	adds r5, r0, r1
 	ldr r0, _08061E28 @ =0x00001C1E
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	str r0, [r5]
 	movs r6, #0
 	movs r7, #4

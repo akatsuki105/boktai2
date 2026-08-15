@@ -27,7 +27,7 @@
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r1, #0x82
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -44,7 +44,7 @@
 	adds r1, r6, #0
 	movs r2, #0x94
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r1, r5, #0
 	adds r1, #0xb8
 	ldr r0, _08213A30 @ =0x0000FFF8

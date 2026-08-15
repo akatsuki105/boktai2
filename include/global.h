@@ -25,20 +25,19 @@
  .syntax divided\n");
 
 typedef struct {
-  u8* pc;
-  void* result;
-  void* unk_08;
-  void* unk_0c;
-  u8 unk_10[92];
-  void* unk_6c[33];
-} VM;
+  s32 frameCounter;   // 0x00
+  s32 calibration;    // 0x04, 太陽センサーのキャリブレーション値
+  u8 unk_08[3];       // 0x08
+  bool8 summerTime;   // 0x0B, サマータイム
+  u8 unk_0c[12];      // 0x0C
+  u16 eventFlags[4];  // 0x18, 0: BB3, 1: BB4, 2: BB5 & バレンタイン, 3: なんか
+  u8 timezone;        // 0x20, タイムゾーン
+  u8 unk_21[7];       // 0x21
+} SystemSaveData;
+static_assert(sizeof(SystemSaveData) == 40);
 
 extern Unk_0203b000 gUnk_0203b000[128];
-extern Unk_085a9208 gUnk085a9208[643];
-extern Unk_085a9208 gUnk08dbd758[8];
-extern Unk_030016c0* gUnkPtr_030047a8;
-extern Unk_030016e8 gUnk030016e8;
-extern VM gVM;
+extern SystemSaveData* gSystemSaveData;
 
 // --------------------------------------------
 

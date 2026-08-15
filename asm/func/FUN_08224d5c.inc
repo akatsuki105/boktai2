@@ -12,7 +12,7 @@
 _08224D74:
 	movs r0, #0x70
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	ldr r2, _08224D90 @ =0x00000DA3
 	adds r1, r4, r2
 	strb r0, [r1]

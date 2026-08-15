@@ -33,7 +33,7 @@ _08215978:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #2
 	bl FUN_0822b644
 	str r4, [sp]
@@ -41,7 +41,7 @@ _08215978:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #3
 	bl FUN_0822b644
 	str r4, [sp]
@@ -49,7 +49,7 @@ _08215978:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r5, #9
 	ldr r1, [r6, #0x38]
 	movs r0, #2
@@ -60,7 +60,7 @@ _08215978:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	str r5, [r6, #0x64]
 	adds r0, r6, #0
 	bl FUN_082158a0
@@ -180,7 +180,7 @@ _08215AB4:
 	adds r0, #4
 	ldr r0, [r0]
 	add r1, sp, #4
-	bl FUN_082318ac
+	bl Script_ExecById
 	ldr r0, [r7, #8]
 	orrs r0, r5
 	str r0, [r7, #8]
@@ -194,7 +194,7 @@ _08215AB4:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #2
 	bl FUN_0822b644
 	str r4, [sp]
@@ -202,7 +202,7 @@ _08215AB4:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #3
 	bl FUN_0822b644
 	str r4, [sp]
@@ -210,7 +210,7 @@ _08215AB4:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	ldr r0, _08215B28 @ =0x030046A0
 	ldr r0, [r0]
 	ldr r1, _08215B2C @ =0x0000093E
@@ -273,7 +273,7 @@ _08215B80:
 	adds r1, #0x18
 	movs r2, #0x43
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, [r7, #0x68]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -406,7 +406,7 @@ _08215C6E:
 	str r0, [r7, #0x68]
 	ldr r0, [r6, #0x50]
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 	movs r0, #0
 	bl FUN_0822b644
 	movs r4, #0
@@ -415,7 +415,7 @@ _08215C6E:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #2
 	bl FUN_0822b644
 	str r4, [sp]
@@ -423,7 +423,7 @@ _08215C6E:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #3
 	bl FUN_0822b644
 	str r4, [sp]
@@ -431,7 +431,7 @@ _08215C6E:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	ldr r0, [r5]
 	ldr r2, _08215CFC @ =0x0000093E
 	adds r0, r0, r2

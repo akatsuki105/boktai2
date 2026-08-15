@@ -12,7 +12,7 @@
 	adds r2, r0, #0
 	movs r0, #9
 	movs r1, #5
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	movs r1, #0x20
 	ldr r0, [r6, #0x44]
 	ands r0, r1
@@ -26,13 +26,13 @@
 	ldr r1, _08213BBC @ =0x00001650
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	adds r0, #7
-	bl FUN_08231978
+	bl Textbox_LookupString
 	adds r2, r0, #0
 	movs r0, #4
 	movs r1, #8
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	movs r0, #0
 	str r0, [sp, #0x20]
 	add r0, sp, #0x20
@@ -42,13 +42,13 @@
 	ldr r2, _08213BC4 @ =0x00001654
 	adds r0, r6, r2
 	ldr r0, [r0]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	ldr r1, _08213BC8 @ =0x030046A0
 	ldr r1, [r1]
 	movs r2, #0xe
 	ldrsh r1, [r1, r2]
 	adds r0, r0, r1
-	bl FUN_08231978
+	bl Textbox_LookupString
 	adds r2, r0, #0
 	mov r1, sp
 	movs r0, #0x80
@@ -77,7 +77,7 @@ _08213BD2:
 	movs r0, #3
 	movs r1, #0xa
 	mov r2, sp
-	bl FUN_0821b2b4
+	bl Video_DrawText
 _08213BEA:
 	adds r0, r5, #0
 	adds r0, #0x8e
@@ -87,7 +87,7 @@ _08213BEA:
 	adds r1, r5, #0
 	movs r2, #0x94
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	adds r1, r5, #0
 	adds r1, #0x40
 	ldr r0, _08213C20 @ =0x0000FFE0

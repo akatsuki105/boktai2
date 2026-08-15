@@ -27,7 +27,7 @@ _Init:
 	mov lr, pc
 	bx r1
 _080001E4:
-	.byte 0xB9, 0xFF, 0xFF, 0xEA
+	b Init
 _080001E8: .4byte 0x03007DA0
 _080001EC: .4byte 0x03007FA0
 

@@ -1,9 +1,9 @@
 	push {lr}
-	bl FUN_082316bc
+	bl VM_GetPC
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _0823ADB2
-	bl FUN_08231cec
+	bl Save_BackupStatAndWorld
 	b _0823ADB8
 _0823ADAA:
 	adds r0, r1, #0

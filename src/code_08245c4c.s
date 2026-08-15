@@ -184,37 +184,37 @@ FUN_0824742c: @ 0x0824742C
 FUN_08247504: @ 0x08247504
   .include "asm/func/FUN_08247504.inc"
 
-	thumb_func_start FUN_08247538
-FUN_08247538: @ 0x08247538
-  .include "asm/func/FUN_08247538.inc"
+	thumb_func_start Sensor_DoEnableIO
+Sensor_DoEnableIO: @ 0x08247538
+  .include "asm/func/Sensor_DoEnableIO.inc"
 
-	thumb_func_start FUN_08247604
-FUN_08247604: @ 0x08247604
-  .include "asm/func/FUN_08247604.inc"
+	thumb_func_start Sensor_DoDisableIO
+Sensor_DoDisableIO: @ 0x08247604
+  .include "asm/func/Sensor_DoDisableIO.inc"
 
-	thumb_func_start FUN_08247650
-FUN_08247650: @ 0x08247650
-  .include "asm/func/FUN_08247650.inc"
+	thumb_func_start Sensor_Tick
+Sensor_Tick: @ 0x08247650
+  .include "asm/func/Sensor_Tick.inc"
 
-	thumb_func_start FUN_08247738
-FUN_08247738: @ 0x08247738
-  .include "asm/func/FUN_08247738.inc"
+	thumb_func_start Sensor_EnableIO
+Sensor_EnableIO: @ 0x08247738
+  .include "asm/func/Sensor_EnableIO.inc"
 
-	thumb_func_start FUN_08247758
-FUN_08247758: @ 0x08247758
-  .include "asm/func/FUN_08247758.inc"
+	thumb_func_start Sensor_DisableIO
+Sensor_DisableIO: @ 0x08247758
+  .include "asm/func/Sensor_DisableIO.inc"
 
-	thumb_func_start FUN_08247774
-FUN_08247774: @ 0x08247774
-  .include "asm/func/FUN_08247774.inc"
+	thumb_func_start Sensor_Enable
+Sensor_Enable: @ 0x08247774
+  .include "asm/func/Sensor_Enable.inc"
 
-	thumb_func_start FUN_082477b4
-FUN_082477b4: @ 0x082477B4
-  .include "asm/func/FUN_082477b4.inc"
+	thumb_func_start Sensor_Disable
+Sensor_Disable: @ 0x082477B4
+  .include "asm/func/Sensor_Disable.inc"
 
-	thumb_func_start FUN_082477e0
-FUN_082477e0: @ 0x082477E0
-  .include "asm/func/FUN_082477e0.inc"
+	thumb_func_start Sensor_GetRawLevel
+Sensor_GetRawLevel: @ 0x082477E0
+  .include "asm/func/Sensor_GetRawLevel.inc"
 
 	thumb_func_start FUN_08247800
 FUN_08247800: @ 0x08247800

@@ -1,6 +1,6 @@
 #include "global.h"
 
-extern u32 gRNG_0300451c;
+extern u32 gRngValue;
 
 void FUN_081dfe5c(void);
 void FUN_0804e36c(void);
@@ -8,12 +8,12 @@ void ReadKeyInput(void);
 void FUN_08230eb4(void);
 
 // gSystemManager.onUpdate
-Entity* SystemManager_Update(Entity* p) {
+s32 SystemManager_Update(Entity* p) {
   FUN_081dfe5c();
   FUN_0804e36c();
   ReadKeyInput();
   FUN_08230eb4();
-  return NULL;
+  return 0;
 }
 
 NAKED void InitSystemManager(void) { INCFUNC("asm/func/InitSystemManager.inc"); }
@@ -32,7 +32,8 @@ u16 FUN_08230860(char* s) {
   return hash;
 }
 
-u32 GetRand_08230888(void) {
-  gRNG_0300451c = (gRNG_0300451c * 0x5D588B65) + 1;
-  return (gRNG_0300451c & 0x7FFF);
+// ゲームの初期化時に乱数表を作るために使う(それ以降は使用されない)
+u32 Random(void) {
+  gRngValue = (gRngValue * 0x5D588B65) + 1;
+  return (gRngValue & 0x7FFF);
 }

@@ -1,5 +1,5 @@
 	push {r4, r5, lr}
-	ldr r5, _08241354 @ =gUnkPtr_030047a8
+	ldr r5, _08241354 @ =gSystemSaveData
 	ldr r0, [r5]
 	ldrb r1, [r0, #8]
 	movs r0, #1
@@ -19,7 +19,7 @@
 	movs r0, #1
 	b _0824135A
 	.align 2, 0
-_08241354: .4byte gUnkPtr_030047a8
+_08241354: .4byte gSystemSaveData
 _08241358:
 	movs r0, #0
 _0824135A:

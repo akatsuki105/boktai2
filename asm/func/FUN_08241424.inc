@@ -49,7 +49,7 @@ _08241482:
 	ldr r0, [r6]
 	cmp r0, r8
 	bhi _08241490
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	bne _08241444
 _08241490:

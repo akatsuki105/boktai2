@@ -9,7 +9,7 @@
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #2
 	bl FUN_0822b644
 	str r4, [sp]
@@ -17,7 +17,7 @@
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #3
 	bl FUN_0822b644
 	str r4, [sp]
@@ -25,7 +25,7 @@
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	ldr r0, _082192DC @ =0x000012F0
 	adds r1, r5, r0
 	ldr r0, [r1]

@@ -30,7 +30,7 @@
 	lsrs r2, r2, #0x10
 	adds r1, r6, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, [r5, #0x68]
 	mov r1, r8
 	ands r0, r1

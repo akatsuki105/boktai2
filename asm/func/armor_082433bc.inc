@@ -31,7 +31,7 @@ _082433DA:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0824340C
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r0, #0
 	b _0824340E
 	.align 2, 0
@@ -49,7 +49,7 @@ _0824340E:
 	cmp r4, r5
 	bge _08243434
 _08243422:
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r0, #0
 	adds r0, r4, #0
 	bl SetArmorIntoInventory
@@ -61,7 +61,7 @@ _08243434:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0824344A
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r1, _08243450 @ =0x030046A0
 	ldr r1, [r1]
 	adds r1, #0x5c

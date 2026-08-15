@@ -229,13 +229,13 @@ The full workflow (Steps 1-4, naming, linker insertion, empty-file
 cleanup) has been exercised end-to-end on `src/code_082418f0.s`
 (4 functions, address order), covering every branch of the design:
 
-- a Ghidra-confirmed pointer return + pointer param (`FUN_0824211c`:
-  `Entity5* FUN_0824211c(Entity5* p)`), cross-checked independently by
+- a Ghidra-confirmed pointer return + pointer param (`UnkSolarEntity_Init`:
+  `UnkSolarEntity* UnkSolarEntity_Init(UnkSolarEntity* p)`), cross-checked independently by
   the parameter being passed unchanged into an already-decompiled
   sibling call.
 - a Ghidra-confirmed `void` (`clock_08241fd0`).
-- a Ghidra-confirmed pointer return with no params (`FUN_0824213c`:
-  `Entity5* FUN_0824213c(void)`).
+- a Ghidra-confirmed pointer return with no params (`UnkSolarEntity_Create`:
+  `UnkSolarEntity* UnkSolarEntity_Create(void)`).
 - the `UNK_PTR` discarded-return fallback (`ReflectClock`: epilogue
   `bx r1` proved a return value exists, but the only known caller
   discards it without reading `r0`).

@@ -8,17 +8,17 @@
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	ldr r1, _08216054 @ =0x000012AC
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	ldr r2, _08216058 @ =0x000012BA
 	adds r4, r4, r2
 	movs r2, #0
 	ldrsh r1, [r4, r2]
 	adds r0, r0, r1
-	bl FUN_08231978
+	bl Textbox_LookupString
 	adds r4, r0, #0
 	movs r0, #0xa
 	movs r1, #4
@@ -28,7 +28,7 @@
 	movs r0, #0xa
 	movs r1, #4
 	adds r2, r4, #0
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	add sp, #4
 	pop {r4}
 	pop {r0}

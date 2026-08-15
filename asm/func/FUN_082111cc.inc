@@ -23,11 +23,11 @@
 	ldr r1, _08211220 @ =0x00000874
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	adds r1, r0, #0
 	ldrb r0, [r6]
 	adds r0, r1, r0
-	bl FUN_08231978
+	bl Textbox_LookupString
 	bl FUN_08049e30
 	b _0821125E
 	.align 2, 0
@@ -50,11 +50,11 @@ _08211224:
 	ldr r1, _08211268 @ =0x00000878
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	adds r1, r0, #0
 	ldrb r0, [r6]
 	adds r0, r1, r0
-	bl FUN_08231978
+	bl Textbox_LookupString
 	bl FUN_08049e30
 _0821125E:
 	pop {r4, r5, r6}

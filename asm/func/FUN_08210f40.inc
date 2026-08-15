@@ -79,7 +79,7 @@ _08210FF0: .4byte 0x00000D8C
 _08210FF4:
 	movs r0, #0x65
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	ldr r2, _08211058 @ =0x00000D94
 	adds r1, r4, r2
 	str r0, [r1]

@@ -1,5 +1,5 @@
 	push {lr}
-	bl FUN_082316bc
+	bl VM_GetPC
 	bl FUN_082321e0
 	pop {r1}
 	bx r1

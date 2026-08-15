@@ -5,7 +5,7 @@
 	adds r6, #0x78
 	ldr r0, _08213950 @ =0x0000CB05
 	ldr r1, _08213954 @ =0x0000B343
-	bl FUN_082310cc
+	bl GetFile
 	adds r1, r0, #0
 	adds r2, r6, #0
 	ldm r0!, {r3, r4, r5}

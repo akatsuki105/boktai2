@@ -43,7 +43,7 @@ _08231900:
 	str r0, [r7, #4]
 	mov r0, r8
 	adds r1, r7, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 	add sp, #0x50
 	pop {r3}
 	mov r8, r3

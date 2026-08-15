@@ -16,7 +16,7 @@
 	lsrs r2, r2, #0x10
 	adds r0, r5, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, [r5, #8]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -35,7 +35,7 @@
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	ldr r6, _08215254 @ =0x00000D98
 	add r6, r8
 	movs r4, #4
@@ -60,18 +60,18 @@ _08215258:
 	ldr r1, _082152B8 @ =0x000006EC
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	lsls r2, r4, #1
 	adds r1, r7, #2
 	adds r1, r1, r2
 	movs r2, #0
 	ldrsh r1, [r1, r2]
 	adds r0, r0, r1
-	bl FUN_08231978
+	bl Textbox_LookupString
 	adds r2, r0, #0
 	movs r0, #4
 	adds r1, r6, #0
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	adds r6, #2
 	adds r4, #1
 _08215280:

@@ -3,9 +3,9 @@
 
 #include "global.h"
 
-#define ITEM(slot) (*(GAME->items + slot))
-#define VALUABLES(slot) (*(GAME->valuables + slot))
-#define ROTCOUNT(slot) (*(GAME->rotTimer + slot))
+#define ITEM(slot) (*(gStat->items + slot))
+#define VALUABLES(slot) (*(gStat->valuables + slot))
+#define ROTCOUNT(slot) (*(gStat->rotTimer + slot))
 
 // ItemData.effectType
 enum ItemEffectType {
@@ -18,19 +18,19 @@ enum ItemEffectType {
   // anymore?
 };
 
-struct ItemData {
+typedef struct {
   u16 unk_00;
-  u16 effectType;
+  u16 effectType;  // see ItemEffectType
   u16 unk_04;
   u16 value;  // 回復アイテムの場合は回復する割合
   u16 unk_08;
   u16 unk_0a;
   u16 price;
   u16 unk_0e;
-};
-static_assert(sizeof(struct ItemData) == 16);
+} ItemData;
+static_assert(sizeof(ItemData) == 16);
 
-extern const struct ItemData gItemDB[ITEM_NUM];
+extern const ItemData gItemDB[ITEM_NUM];
 
 item32_t GetItemID(bool32 isValuable, s32 slot);
 item32_t GetNormalItemID(s32 slot);

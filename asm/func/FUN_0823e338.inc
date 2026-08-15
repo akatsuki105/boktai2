@@ -3,17 +3,17 @@
 	mov r5, r8
 	push {r5, r6}
 	sub sp, #0x10
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov sb, r0
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov r8, r0
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r6, r0, #0
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r0, #0
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
-	bl fetch_082316e4
+	bl Script_GetValue
 	str r4, [sp]
 	str r0, [sp, #4]
 	mov r0, sb

@@ -38,7 +38,7 @@ _08215340:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #2
 	bl FUN_0822b644
 	str r4, [sp]
@@ -46,7 +46,7 @@ _08215340:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #3
 	bl FUN_0822b644
 	str r4, [sp]
@@ -54,7 +54,7 @@ _08215340:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r5, #3
 	ldr r1, [r6, #0x38]
 	movs r0, #2
@@ -65,7 +65,7 @@ _08215340:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	str r5, [r6, #0x64]
 	ldr r1, [r6, #0x40]
 	cmp r1, #0
@@ -81,7 +81,7 @@ _08215340:
 	.align 2, 0
 _082153B0: .4byte 0x00000DB4
 _082153B4:
-	ldr r0, _082153D0 @ =0x030047A8
+	ldr r0, _082153D0 @ =gSystemSaveData
 	ldr r0, [r0]
 	ldr r1, [r0, #0x20]
 	cmp r1, #0
@@ -95,7 +95,7 @@ _082153B4:
 	strh r1, [r0]
 	b _0821541A
 	.align 2, 0
-_082153D0: .4byte 0x030047A8
+_082153D0: .4byte gSystemSaveData
 _082153D4: .4byte 0x00000DB4
 _082153D8:
 	ldr r1, _082153E8 @ =0x000006F4
@@ -400,7 +400,7 @@ _08215608:
 	bne _08215694
 	ldr r0, [r6, #0x50]
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 	movs r0, #0
 	bl FUN_0822b644
 	str r4, [sp]
@@ -408,7 +408,7 @@ _08215608:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #2
 	bl FUN_0822b644
 	str r4, [sp]
@@ -416,7 +416,7 @@ _08215608:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #3
 	bl FUN_0822b644
 	str r4, [sp]
@@ -424,7 +424,7 @@ _08215608:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	ldr r0, _08215688 @ =0x030046A0
 	ldr r0, [r0]
 	ldr r1, _0821568C @ =0x0000093E

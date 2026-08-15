@@ -1,9 +1,9 @@
 	push {r4, r5, r6, lr}
-	bl FUN_082308a8
+	bl InitHeap
 	bl ResetEntityManager
 	bl FUN_08230db8
 	bl FUN_08230e90
-	ldr r1, _08230788 @ =gRNG_0300451c
+	ldr r1, _08230788 @ =gRngValue
 	ldr r0, _0823078C @ =0x0001E240
 	str r0, [r1]
 	ldr r4, _08230790 @ =gSystemManager
@@ -36,7 +36,7 @@ _0823077A:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08230788: .4byte gRNG_0300451c
+_08230788: .4byte gRngValue
 _0823078C: .4byte 0x0001E240
 _08230790: .4byte gSystemManager
 _08230794: .4byte SystemManager_Update

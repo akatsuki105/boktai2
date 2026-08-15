@@ -8,7 +8,7 @@
 	ldrb r2, [r2]
 	adds r2, #0x1e
 	movs r3, #0
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	bl FUN_082111b8
 	cmp r0, #0
 	beq _082113B4

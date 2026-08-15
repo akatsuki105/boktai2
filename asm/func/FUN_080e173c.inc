@@ -50,7 +50,7 @@ _080E177C:
 	ldrh r0, [r4, #0x18]
 	cmp r0, #0
 	beq _080E17BC
-	bl FUN_082318ac
+	bl Script_ExecById
 	movs r0, #1
 	strh r0, [r4, #0x28]
 	b _080E17BC
@@ -60,7 +60,7 @@ _080E17B0:
 	ldrh r0, [r4, #0x1a]
 	cmp r0, #0
 	beq _080E17BC
-	bl FUN_082318ac
+	bl Script_ExecById
 	strh r5, [r4, #0x28]
 _080E17BC:
 	add sp, #0x14

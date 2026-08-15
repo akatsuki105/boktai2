@@ -4,7 +4,7 @@
 #include "gba/gba.h"
 #include "types.h"
 
-#define WEAPONS(slot) (GAME->weapons + slot)
+#define WEAPONS(slot) (gStat->weapons + slot)
 
 struct Player;
 
@@ -14,6 +14,16 @@ enum WeaponKind {
   WK_HAMMER,  // 槌(ハンマー)
   WK_OTHERS,
   WK_GUN,  // 銃(ガン)
+};
+
+// ソース: bokpass.tcl, https://web.archive.org/web/20250420030710/https://notabug.org/UvHCxXJp/bokpass/src/master/bokpass.tcl
+enum WeaponStyle {
+  STYLE_SWORD,
+  STYLE_SPEAR,
+  STYLE_HAMMER,
+  STYLE_GUN,
+  STYLE_FIST,
+  STYLE_NONE,
 };
 
 typedef struct {

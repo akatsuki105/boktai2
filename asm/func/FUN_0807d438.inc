@@ -13,7 +13,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0807D468
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r0, #0
 	b _0807D46A
 	.align 2, 0
@@ -29,7 +29,7 @@ _0807D46A:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0807D4CC
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _0807D4C4 @ =0xFFFF0000
@@ -37,14 +37,14 @@ _0807D46A:
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #4]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0807D4C8 @ =0x0000FFFF
 	ldr r1, [sp, #4]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #4]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #8]

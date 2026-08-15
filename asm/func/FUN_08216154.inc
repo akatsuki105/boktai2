@@ -17,7 +17,7 @@
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, [r5, #0x68]
 	movs r1, #2
 	rsbs r1, r1, #0

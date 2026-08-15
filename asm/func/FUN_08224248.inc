@@ -5,7 +5,7 @@
 	beq _082242D0
 	movs r0, #0x70
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	ldr r2, _082242DC @ =0x00000F32
 	adds r1, r4, r2
 	strb r0, [r1]

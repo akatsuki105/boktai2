@@ -25,7 +25,7 @@ _08212804:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	ldr r0, _0821283C @ =0x030046A0
 	ldr r0, [r0]
 	ldr r1, _08212840 @ =0x00000942

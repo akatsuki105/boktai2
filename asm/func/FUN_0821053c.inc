@@ -52,7 +52,7 @@
 	lsrs r2, r2, #0x10
 	adds r0, r4, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, [r4, #8]
 	movs r1, #2
 	rsbs r1, r1, #0

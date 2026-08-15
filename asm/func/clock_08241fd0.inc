@@ -17,7 +17,7 @@
 	add r2, sp, #0x10
 	add r0, sp, #8
 	adds r3, r4, #0
-	bl FUN_0823db08
+	bl ParseBCDDate
 	add r0, sp, #0x14
 	add r1, sp, #0x18
 	add r2, sp, #0x1c
@@ -27,7 +27,7 @@
 	lsls r4, r4, #1
 	adds r3, r3, r4
 	ldr r3, [r3]
-	bl FUN_0823db08
+	bl ParseBCDDate
 	ldr r0, [sp, #8]
 	ldr r1, [sp, #0xc]
 	ldr r2, [sp, #0x10]

@@ -3,11 +3,11 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0823D73A
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _0823D73A
-	bl FUN_08231660
-	bl FUN_08231978
+	bl VM_ParseStringRef
+	bl Textbox_LookupString
 	ldr r2, _0823D740 @ =0x030047D8
 	ldrb r1, [r0, #1]
 	ldrb r0, [r0]

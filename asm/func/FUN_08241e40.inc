@@ -20,7 +20,7 @@ _08241E5A:
 	lsrs r0, r0, #0x10
 	cmp r0, #0x1d
 	bls _08241EDE
-	bl FUN_08247774
+	bl Sensor_Enable
 	movs r0, #1
 	strb r0, [r7, #0x19]
 	strh r4, [r7, #0x20]
@@ -44,7 +44,7 @@ _08241E8C:
 	strh r0, [r7, #0x1c]
 	movs r1, #0x1c
 	ldrsh r0, [r7, r1]
-	bl FUN_08241774
+	bl GetSunLevel
 	strh r0, [r7, #0x1e]
 	movs r1, #0x1c
 	ldrsh r0, [r7, r1]
@@ -59,7 +59,7 @@ _08241E8C:
 	adds r0, r0, r4
 	movs r1, #0
 	ldrsh r0, [r0, r1]
-	bl FUN_08241774
+	bl GetSunLevel
 	ldr r1, [r5]
 	ldr r6, _08241EE8 @ =0x00000942
 	adds r1, r1, r6

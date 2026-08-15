@@ -42,7 +42,7 @@
 	adds r1, r6, #0
 	movs r2, #0xb
 	movs r3, #0
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	mov r1, sb
 	ldrb r0, [r1]
 	bl FUN_0820fedc

@@ -51,9 +51,9 @@ Entity* CreateEntity(u32 kind, s32 bytesize) {
   return p;
 }
 
-void SetEntityRoutine(Entity* p, EntityFunc update, EntityFunc exit) {
-  p->onUpdate = update;
-  p->onExit = exit;
+void SetEntityRoutine(void* entity, void* entity_func_onupdate, void* entity_func_ondestroy) {
+  ((Entity*)entity)->onUpdate = (EntityFunc)entity_func_onupdate;
+  ((Entity*)entity)->onDestroy = (EntityFunc)entity_func_ondestroy;
 }
 
 // Entityをすべて更新する, ゲームの要素はすべて Entity で表されてるっぽいので 実質的な gameloop
@@ -69,7 +69,7 @@ void UpdateAllEntities(void) {
         if (!(p->unk_12 & E_FLAG_DELETE)) {
           if (p->onUpdate != NULL) p->onUpdate(p);
         } else {
-          if (p->onExit != NULL) p->onExit(p);
+          if (p->onDestroy != NULL) p->onDestroy(p);
           RemoveEntity(p);
           Free(p);
         }
@@ -85,13 +85,13 @@ u32 KillEntity(Entity* p) {
 
 s32 entity_08230c78(Entity* p) {
   s32 result;
-  if (p->onExit != NULL) {
-    result = (s32)p->onExit(p);
+  if (p->onDestroy != NULL) {
+    result = p->onDestroy(p);
   } else {
     result = 0;
   }
   if (result >= 0) {
-    p->onExit = NULL;
+    p->onDestroy = NULL;
     p->unk_12 |= E_FLAG_DELETE;
   }
   return result;

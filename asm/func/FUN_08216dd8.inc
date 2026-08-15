@@ -29,14 +29,14 @@
 	ldr r1, _08216E58 @ =0x00001790
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	ldr r2, _08216E5C @ =0x00001FC4
 	adds r5, r5, r2
 	adds r5, r5, r6
 	movs r1, #0
 	ldrsb r1, [r5, r1]
 	adds r0, r0, r1
-	bl FUN_08231978
+	bl Textbox_LookupString
 	adds r5, r0, #0
 	adds r0, r4, #0
 	mov r1, r8
@@ -46,7 +46,7 @@
 	adds r0, r4, #0
 	mov r1, r8
 	adds r2, r5, #0
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	add sp, #8
 	pop {r3}
 	mov r8, r3

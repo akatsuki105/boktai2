@@ -26,7 +26,7 @@ Every function in this codebase is in one of four states:
 
 2. **NAKED** — C signature defined, but no C implementation:
 ```c
-NAKED void* FUN_0823af08(void) { INCFUNC("asm/func/FUN_0823af08.inc"); }
+NAKED void* VM_Ctrl_22FF(void) { INCFUNC("asm/func/VM_Ctrl_22FF.inc"); }
 ```
 
 3. **NON_MATCH** — C implementation written, but it does not produce matching output:

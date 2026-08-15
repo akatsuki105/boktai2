@@ -166,7 +166,7 @@ _0822359E:
 	cmp r0, #0
 	beq _082235AE
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _082235AE:
 	ldrh r1, [r6, #0x1c]
 	ldr r2, _08223678 @ =0x00000DB8

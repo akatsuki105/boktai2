@@ -1,7 +1,7 @@
 	push {r4, r5, r6, lr}
 	movs r0, #0x6e
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	cmp r0, #0
 	beq _080EF14A
 	bl FUN_080edda0
@@ -12,28 +12,28 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080EF14A
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF078
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080EF07A
 _080EF078:
 	movs r0, #0
 _080EF07A:
 	strh r0, [r4, #8]
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF08A
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080EF08C
 _080EF08A:
 	movs r0, #0
 _080EF08C:
 	strh r0, [r4, #0xa]
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF09C
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080EF09E
 _080EF09C:
 	movs r0, #0

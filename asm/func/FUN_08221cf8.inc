@@ -10,7 +10,7 @@
 	movs r1, #1
 	rsbs r1, r1, #0
 	movs r0, #0x74
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	adds r6, r0, #0
 	adds r0, r7, #0
 	adds r1, r6, #0
@@ -19,7 +19,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _08221D70
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r5, _08221D68 @ =0xFFFF0000
@@ -27,14 +27,14 @@
 	ands r1, r5
 	orrs r1, r0
 	str r1, [sp, #0x20]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _08221D6C @ =0x0000FFFF
 	ldr r1, [sp, #0x20]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #0x20]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	add r4, sp, #0x20
@@ -42,7 +42,7 @@
 	ands r1, r5
 	orrs r1, r0
 	str r1, [r4, #4]
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r0, #0
 	mov sl, r4
 	b _08221D80
@@ -64,15 +64,15 @@ _08221D80:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08221DBC
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08221DB0 @ =0x00000BC4
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08221DB4 @ =0x00000BC6
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08221DB8 @ =0x00000BC8
 	adds r1, r7, r2
 	strh r0, [r1]
@@ -103,11 +103,11 @@ _08221DCE:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _08221E04
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov sb, r0
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08221E00 @ =0x000003EA
 	adds r1, r7, r2
 	b _08221E14
@@ -135,17 +135,17 @@ _08221E14:
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _08221E5C
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xf7
 	lsls r2, r2, #2
 	adds r1, r7, r2
 	str r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xf8
 	lsls r2, r2, #2
 	adds r1, r7, r2
 	str r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xf9
 	lsls r2, r2, #2
 	adds r1, r7, r2
@@ -187,7 +187,7 @@ _08221E76:
 	strb r5, [r0]
 	movs r0, #0x69
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	mov r6, r8
 	adds r6, #0xab
 	strb r0, [r6]
@@ -260,61 +260,61 @@ _08221E76:
 	mov sl, r6
 	cmp r1, #0
 	beq _08221FEC
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08221FD0 @ =0x000003BE
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xf0
 	lsls r2, r2, #2
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08221FD4 @ =0x000003C2
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xf1
 	lsls r2, r2, #2
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08221FD8 @ =0x000003C6
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xf2
 	lsls r2, r2, #2
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08221FDC @ =0x000003CA
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xf3
 	lsls r2, r2, #2
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08221FE0 @ =0x000003CE
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xf4
 	lsls r2, r2, #2
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08221FE4 @ =0x000003D2
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xf5
 	lsls r2, r2, #2
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08221FE8 @ =0x000003D6
 	adds r1, r7, r2
 	strh r0, [r1]
@@ -378,9 +378,9 @@ _0822203A:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0822206C
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r2, r0, #0
 	mov r0, r8
 	adds r1, r4, #0
@@ -407,7 +407,7 @@ _08222076:
 	movs r4, #0
 	b _082220A0
 _08222090:
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r2, r4, #2
 	mov r1, r8
 	adds r1, #0xe8
@@ -417,13 +417,13 @@ _08222090:
 _082220A0:
 	cmp r4, #3
 	bgt _082220AC
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	bne _08222090
 _082220AC:
 	movs r0, #0x4b
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	movs r2, #0xac
 	lsls r2, r2, #1
 	adds r1, r7, r2

@@ -14,15 +14,15 @@ _08224BAC:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _08224BEC
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08224BE0 @ =0x00000DB8
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08224BE4 @ =0x00000DBA
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _08224BE8 @ =0x00000DBC
 	adds r1, r4, r2
 	strh r0, [r1]

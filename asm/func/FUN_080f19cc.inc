@@ -233,7 +233,7 @@ _080F1B8C:
 	mov r1, sp
 	movs r2, #0x20
 	movs r3, #0x20
-	bl 0x080e5e94 @ TODO: FUN_080e5e94
+	bl FUN_080e5e94
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080F1BF4
@@ -318,3 +318,4 @@ _080F1C44: .4byte 0x00000551
 _080F1C48: .4byte 0x00000552
 _080F1C4C: .4byte 0x00000482
 _080F1C50: .4byte 0x00000484
+

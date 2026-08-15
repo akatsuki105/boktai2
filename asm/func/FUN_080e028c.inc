@@ -8,10 +8,10 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080E030C
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E02B0
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080E02B2
 _080E02B0:
 	movs r0, #0
@@ -23,10 +23,10 @@ _080E02B2:
 	ands r0, r2
 	orrs r0, r1
 	str r0, [sp, #0x1c]
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E02D4
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080E02D6
 	.align 2, 0
 _080E02D0: .4byte 0xFFFF0000
@@ -39,10 +39,10 @@ _080E02D6:
 	ands r0, r1
 	orrs r0, r2
 	str r0, [sp, #0x1c]
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E02F4
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080E02F6
 	.align 2, 0
 _080E02F0: .4byte 0x0000FFFF
@@ -68,24 +68,24 @@ _080E030C:
 _080E0316:
 	movs r0, #0x64
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	str r0, [sp, #0x24]
 	movs r0, #0x73
 	movs r1, #0x14
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	str r0, [sp, #0x28]
 	movs r0, #0x61
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	mov sl, r0
 	movs r0, #0x68
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080E0378
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E0350
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080E0352
 	.align 2, 0
 _080E034C: .4byte 0xFFFF0000
@@ -93,20 +93,20 @@ _080E0350:
 	movs r0, #0
 _080E0352:
 	mov sb, r0
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E0364
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov r8, r0
 	b _080E0368
 _080E0364:
 	movs r1, #0
 	mov r8, r1
 _080E0368:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E037E
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r7, r0, #0
 	b _080E0380
 _080E0378:
@@ -120,37 +120,37 @@ _080E0380:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080E03CE
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E039A
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r6, r0, #0
 	b _080E039C
 _080E039A:
 	movs r6, #0
 _080E039C:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E03AC
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r5, r0, #0
 	b _080E03AE
 _080E03AC:
 	movs r5, #0
 _080E03AE:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E03BE
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 	b _080E03C0
 _080E03BE:
 	movs r4, #0
 _080E03C0:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E03D4
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080E03D6
 _080E03CE:
 	movs r6, #0

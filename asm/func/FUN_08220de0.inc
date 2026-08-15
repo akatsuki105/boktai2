@@ -52,7 +52,7 @@ _08220E28:
 	adds r0, r7, r1
 	ldr r0, [r0]
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _08220E50:
 	movs r2, #0xc
 	adds r1, r4, #0
@@ -334,7 +334,7 @@ _08221062:
 	adds r0, r7, r2
 	ldr r0, [r0]
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 	movs r1, #3
 	movs r3, #0xe8
 	lsls r3, r3, #2

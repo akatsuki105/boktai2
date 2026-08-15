@@ -7,7 +7,7 @@
 	adds r7, r0, #0
 	ldr r1, _082109E4 @ =0x00005EBF
 	ldr r0, _082109E8 @ =0x0000CB05
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	adds r1, r7, #0
 	adds r1, #0x28
@@ -147,7 +147,7 @@
 	bl FUN_0822f3fc
 	ldr r1, _082109F4 @ =0x00005D04
 	ldr r0, _082109E8 @ =0x0000CB05
-	bl FUN_082310cc
+	bl GetFile
 	adds r3, r0, #0
 	movs r0, #0x8d
 	lsls r0, r0, #3

@@ -5,7 +5,7 @@
 	sub sp, #0x24
 	movs r0, #0x6e
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	lsls r0, r0, #0x18
 	lsrs r7, r0, #0x18
 	cmp r7, #0
@@ -14,7 +14,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080DE074
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r5, _080DE020 @ =0xFFFF0000
@@ -22,14 +22,14 @@
 	ands r1, r5
 	orrs r1, r0
 	str r1, [sp, #0x14]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	ldr r6, _080DE024 @ =0x0000FFFF
 	ldr r1, [sp, #0x14]
 	ands r1, r6
 	orrs r1, r0
 	str r1, [sp, #0x14]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	add r4, sp, #0x14
@@ -42,20 +42,20 @@
 	mov sb, r4
 	cmp r0, #0
 	beq _080DE028
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #0x1c]
 	ands r1, r5
 	orrs r1, r0
 	str r1, [sp, #0x1c]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	ldr r1, [sp, #0x1c]
 	ands r1, r6
 	orrs r1, r0
 	str r1, [sp, #0x1c]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	add r2, sp, #0x1c
@@ -79,19 +79,19 @@ _080DE028:
 _080DE038:
 	movs r0, #0x64
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	adds r6, r0, #0
 	movs r0, #0x73
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	adds r5, r0, #0
 	movs r0, #0x6b
 	movs r1, #1
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	adds r4, r0, #0
 	movs r0, #0x72
 	movs r1, #2
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	str r5, [sp]
 	movs r1, #0
 	str r1, [sp, #4]

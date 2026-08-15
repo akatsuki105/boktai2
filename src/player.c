@@ -3,7 +3,33 @@
 #include "global.h"
 #include "item.h"
 
-void FUN_082318ac(s32 r0, s32 r1);
+void Script_ExecById(s32 scriptID, s32 r1);
+
+NAKED void FUN_080609dc(Player* p) { INCFUNC("asm/func/FUN_080609dc.inc"); }
+
+NAKED bool32 FUN_08060a24(Player* p, u32 val1, s32 val2) { INCFUNC("asm/func/FUN_08060a24.inc"); }
+
+NAKED void FUN_08060aa4(Player* p, s32 val) { INCFUNC("asm/func/FUN_08060aa4.inc"); }
+
+void FUN_08060b84(Player* p, u32 r1, u32 r2) {
+  p->unk_37c = r1;
+  p->unk_37d = r2;
+  p->unk_37e = 0;
+}
+
+NAKED void FUN_08060bac(Player* p) { INCFUNC("asm/func/FUN_08060bac.inc"); }
+
+void FUN_08060c40(Player* p, u32 val) { p->unk_35a |= val; }
+
+u32 FUN_08060c50(Player* p, u32 mask) { return p->unk_35a & mask; }
+
+NAKED void FUN_08060c60(Player* p) { INCFUNC("asm/func/FUN_08060c60.inc"); }
+
+NAKED u32 FUN_08060c98(UNK_PTR r1, UNK_PTR r2) { INCFUNC("asm/func/FUN_08060c98.inc"); }
+
+NAKED void FUN_08060cf8(Player* p, UNK_PTR r1, UNK_PTR r2) { INCFUNC("asm/func/FUN_08060cf8.inc"); }
+
+NAKED bool32 FUN_08060e1c(Player* p) { INCFUNC("asm/func/FUN_08060e1c.inc"); }
 
 s32 GetPlayerCoffinID(void) {
   s32 slot;
@@ -17,8 +43,8 @@ s32 GetPlayerCoffinID(void) {
 }
 
 void FUN_08060e90(Player* p, u32 r1) {
-  u32 field = p->unk_9c4;
-  if (field != 0) {
+  u32 scriptID = p->scriptID_9c4;
+  if (scriptID != 0) {
     struct {
       s32 arg;
       u32 flags;
@@ -30,7 +56,7 @@ void FUN_08060e90(Player* p, u32 r1) {
     local.arg = r1;
     pw = (s32*)&local.flags;
     pw[1] = (s32)&local.arg;
-    FUN_082318ac(field, (s32)pw);
+    Script_ExecById(scriptID, (s32)pw);
   }
 }
 
@@ -42,8 +68,8 @@ void FUN_08060ec8(Player* p, u32 r1) {
 u32 FUN_08060ed8(Player* p, u32 r1) { return p->unk_9bc & r1; }
 
 void FUN_08060ee8(Player* p) {
-  if (p->unk_9c0 != 0) {
-    FUN_082318ac(p->unk_9c0, 0);
+  if (p->scriptID_9c0 != 0) {
+    Script_ExecById(p->scriptID_9c0, 0);
   }
 }
 
@@ -114,3 +140,7 @@ void FUN_080612bc(Player* p) {
 }
 
 NAKED void FUN_080612d8(Player* p) { INCFUNC("asm/func/FUN_080612d8.inc"); }
+
+NAKED void FUN_08061384(Player* p) { INCFUNC("asm/func/FUN_08061384.inc"); }
+
+INCASM("asm/player.inc");

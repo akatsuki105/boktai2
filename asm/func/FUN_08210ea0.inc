@@ -57,7 +57,7 @@ _08210EE6:
 	bl FUN_0822f1c0
 	movs r0, #0
 	movs r1, #0
-	bl FUN_0822ba00
+	bl SetBGPrioDirect
 	bl FUN_08049fa8
 	movs r0, #0
 	pop {r4, r5, r6}

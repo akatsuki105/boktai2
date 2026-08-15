@@ -28,7 +28,7 @@ _08212326:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #2
 	bl FUN_0822b644
 	str r4, [sp]
@@ -36,7 +36,7 @@ _08212326:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r0, #3
 	bl FUN_0822b644
 	str r4, [sp]
@@ -44,7 +44,7 @@ _08212326:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	movs r5, #2
 	ldr r1, [r6, #0x38]
 	movs r0, #2
@@ -55,7 +55,7 @@ _08212326:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	str r5, [r6, #0x6c]
 _0821238C:
 	ldr r0, _082123BC @ =0x030044E0

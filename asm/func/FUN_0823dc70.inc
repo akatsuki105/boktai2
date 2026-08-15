@@ -39,13 +39,13 @@
 	add r2, sp, #8
 	ldr r3, [r4]
 	mov r0, sp
-	bl FUN_0823db08
+	bl ParseBCDDate
 	ldr r0, [sp, #8]
 	adds r0, #1
 	str r0, [sp, #8]
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
-	bl FUN_0823d970
+	bl GetDaysInMonth
 	ldr r1, [sp, #8]
 	cmp r1, r0
 	blt _0823DCFA
@@ -69,7 +69,7 @@ _0823DCFA:
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
 	ldr r2, [sp, #8]
-	bl FUN_0823db74
+	bl GetBCDDate
 	str r0, [r4]
 	ldr r0, [sp]
 	ldr r1, [sp, #4]

@@ -114,7 +114,7 @@ _0821DA98:
 	ldrh r2, [r0]
 	adds r0, r5, #0
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	mov r0, r8
 	adds r0, #0xaf
 	ldrb r0, [r0]

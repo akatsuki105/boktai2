@@ -36,7 +36,7 @@ void FUN_08230db8(void) {
   return;
 }
 
-NAKED void FUN_08230dc4(bool32 r0) { INCFUNC("asm/func/FUN_08230dc4.inc"); }
+NAKED void FUN_08230dc4(bool32 val) { INCFUNC("asm/func/FUN_08230dc4.inc"); }
 
 void FUN_08230e30(u16 id, void* r1, s32 r2) {
   Unk_0203b000* p = CreateUnkStruct_08230d30();

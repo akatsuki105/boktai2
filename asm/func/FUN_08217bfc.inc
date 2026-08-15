@@ -20,9 +20,9 @@ _08217C14:
 	lsls r1, r1, #1
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	adds r0, #0x54
-	bl FUN_08231978
+	bl Textbox_LookupString
 	ldrb r1, [r0]
 	strb r1, [r4]
 	ldrb r0, [r0, #1]
@@ -40,7 +40,7 @@ _08217C3A:
 	movs r0, #0x12
 	movs r1, #1
 	mov r2, sp
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	add sp, #0x20
 	pop {r4, r5, r6}
 	pop {r0}

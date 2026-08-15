@@ -28,7 +28,7 @@
 	add r2, sp, #0x18
 	ldr r3, [r6]
 	add r0, sp, #0x10
-	bl FUN_0823db08
+	bl ParseBCDDate
 	ldr r0, [sp, #0x10]
 	ldr r1, [sp, #0x14]
 	ldr r2, [sp, #0x18]

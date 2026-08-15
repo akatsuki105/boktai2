@@ -4,10 +4,10 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _08240EE0
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _08240EC4
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	b _08240EC6
@@ -15,10 +15,10 @@ _08240EC4:
 	movs r0, #0
 _08240EC6:
 	adds r6, r0, #0
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _08240EDA
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	b _08240EDC
@@ -33,13 +33,13 @@ _08240EE0:
 _08240EE4:
 	movs r0, #0x72
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	adds r4, r0, #0
 	lsls r4, r4, #0x10
 	lsrs r4, r4, #0x10
 	movs r0, #0x66
 	movs r1, #1
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	movs r3, #0

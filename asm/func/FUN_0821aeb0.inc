@@ -47,7 +47,7 @@ _0821AEEC:
 	bne _0821AF90
 	ldr r0, _0821AF80 @ =0x0000CB05
 	ldr r1, _0821AF84 @ =0x0000DE23
-	bl FUN_082310cc
+	bl GetFile
 	adds r1, r0, #0
 	adds r2, r7, #0
 	adds r2, #0x18
@@ -136,7 +136,7 @@ _0821AF90:
 	strb r1, [r0]
 	ldr r0, _0821B058 @ =0x0000922E
 	ldr r1, _0821B05C @ =0x0000C6A0
-	bl FUN_082310cc
+	bl GetFile
 	adds r1, r0, #0
 	adds r0, r7, #0
 	adds r0, #0xf0

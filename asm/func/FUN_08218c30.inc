@@ -16,7 +16,7 @@
 	bl CpuSet
 	ldr r0, _08218DC0 @ =0x0000CB05
 	ldr r1, _08218DC4 @ =0x0000D27A
-	bl FUN_082310cc
+	bl GetFile
 	adds r1, r0, #0
 	adds r2, r7, #0
 	ldm r0!, {r3, r5, r6}

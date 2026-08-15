@@ -82,17 +82,40 @@ def main() -> None:
         )
         sys.exit(1)
 
-    print("const ArmorData gArmorDB[ARMOR_NUM] = {")
+    labels = ["id", "defence", "weight", "effectType", "value", "unk_5", "price"]
+    rows: list[list[str]] = []
     for i in range(ARMOR_NUM):
         chunk = entries[i * ENTRY_SIZE : (i + 1) * ENTRY_SIZE]
-        id_, defence, weight, effectType, value, unk_5, price = struct.unpack(
+        _id, defence, weight, effectType, value, unk_5, price = struct.unpack(
             "<BBBBBBh", chunk
         )
-        name = ARMOR_NAMES[i]
-        print(
-            f"    {{{id_}, {defence}, {weight}, {effectType}, {value}, {unk_5}, {price}}},"
-            f"  // {name}"
+        rows.append(
+            [ARMOR_NAMES[i], str(defence), str(weight), str(effectType), str(value), str(unk_5), str(price)]
         )
+
+    num_cols = len(labels)
+    widths = []
+    for col in range(num_cols):
+        cell_texts = [row[col] + ("," if col < num_cols - 1 else "") for row in rows]
+        widths.append(max(len(labels[col]), max(len(t) for t in cell_texts)))
+
+    # 各列(最終列のpriceを除く)はラベル/値の間を最低2スペース空ける。
+    def pad(col: int) -> int:
+        if col == num_cols - 1:
+            return widths[col]
+        return widths[col] + 2
+
+    INDENT = "    "
+
+    print("const ArmorData gArmorDB[ARMOR_NUM] = {")
+    header = "".join(labels[c].ljust(pad(c)) for c in range(num_cols)).rstrip()
+    print(f"//{' ' * (len(INDENT) - 1)}{header}")
+    for row in rows:
+        line = "".join(
+            (row[c] + ("," if c < num_cols - 1 else "")).ljust(pad(c))
+            for c in range(num_cols)
+        ).rstrip()
+        print(f"{INDENT}{{{line}}},")
     print("};")
 
 

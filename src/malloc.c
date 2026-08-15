@@ -15,9 +15,9 @@ typedef struct MemBlock {
 } MemBlock;
 static_assert(sizeof(MemBlock) == 16);
 
-EWRAM_DATA u8 gHeap[HEAP_SIZE] = {};  // EWRAM(0x02000000), Malloc用のヒープ領域
+extern u8 gHeap[];  // Malloc用のヒープ領域, 0x02000000..020203FF
 
-void FUN_082308a8(void) {
+void InitHeap(void) {
   MemBlock* block = (void*)EWRAM;  // gHeap
   block->prev = NULL;
   block->next = NULL;

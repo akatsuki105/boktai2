@@ -11,7 +11,7 @@
 	ldr r4, [r5, #4]
 	movs r0, #0x6d
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	adds r6, r0, #0
 	cmp r4, #0
 	beq _080ED9BA

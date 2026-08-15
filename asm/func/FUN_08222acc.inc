@@ -6,7 +6,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _08222AE4
-	bl fetch_082316e4
+	bl Script_GetValue
 	str r0, [r7, #0x44]
 _08222AE4:
 	movs r0, #0

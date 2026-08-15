@@ -30,7 +30,7 @@
 	movs r0, #3
 	strb r0, [r6, #0x1f]
 	ldr r0, _0821B7F8 @ =0x00001C1E
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	str r0, [r6, #0x78]
 	movs r7, #4
 	rsbs r7, r7, #0

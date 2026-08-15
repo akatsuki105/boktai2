@@ -4,7 +4,7 @@ NAKED void* FUN_08243660(void) { INCFUNC("asm/func/FUN_08243660.inc"); }
 
 NAKED u32 FUN_082436dc(void) { INCFUNC("asm/func/FUN_082436dc.inc"); }
 
-NAKED s32 FUN_0824374c(u16 r0, Unk_030016c0* r1, s32 r2) { INCFUNC("asm/func/FUN_0824374c.inc"); }
+NAKED s32 FUN_0824374c(u16 r0, SystemSaveData* r1, s32 r2) { INCFUNC("asm/func/FUN_0824374c.inc"); }
 
 NAKED s32 FUN_08243828(u16 r0, UNK_PTR r1, u32 r2) { INCFUNC("asm/func/FUN_08243828.inc"); }
 
@@ -57,7 +57,7 @@ NON_MATCH s32 FUN_082438e0(u16 addr, s32 len) {
 #endif
 }
 
-NAKED s32 FUN_08243988(u16 addr, Unk_030016c0* r1, s32 r2) { INCFUNC("asm/func/FUN_08243988.inc"); }
+NAKED s32 FUN_08243988(u16 addr, SystemSaveData* r1, s32 r2) { INCFUNC("asm/func/FUN_08243988.inc"); }
 
 NAKED s32 FUN_082439f0(u16 addr, u16* r1, s32 r2) { INCFUNC("asm/func/FUN_082439f0.inc"); }
 

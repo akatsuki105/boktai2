@@ -70,7 +70,7 @@ _08231EDA:
 	adds r0, r6, #0
 	adds r1, r5, #0
 	adds r3, r7, #0
-	bl FUN_08231db0
+	bl Script_LoadPointer
 	adds r0, r4, #0
 	add sp, #0xc
 	pop {r4, r5, r6, r7}

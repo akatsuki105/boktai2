@@ -1,4 +1,4 @@
-	ldr r0, _08241678 @ =PTR_03001708
+	ldr r0, _08241678 @ =gUnkSolarEntity
 	movs r1, #0
 	str r1, [r0]
 	ldr r2, _0824167C @ =0x030046A0
@@ -19,7 +19,7 @@
 	strh r1, [r0]
 	bx lr
 	.align 2, 0
-_08241678: .4byte PTR_03001708
+_08241678: .4byte gUnkSolarEntity
 _0824167C: .4byte 0x030046A0
 _08241680: .4byte 0x00000942
 _08241684: .4byte 0x03004870

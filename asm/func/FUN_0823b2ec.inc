@@ -1,6 +1,6 @@
 	push {r4, lr}
 	sub sp, #8
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	bl FindUnk0200865c

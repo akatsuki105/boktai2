@@ -12,7 +12,7 @@
 _082247A8:
 	movs r0, #0x70
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	ldr r2, _082247E0 @ =0x00000F0C
 	adds r1, r4, r2
 	str r0, [r1]
@@ -21,11 +21,11 @@ _082247A8:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _082247EC
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _082247E4 @ =0x00000E8C
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, _082247E8 @ =0x00000E8E
 	adds r1, r4, r2
 	strh r0, [r1]

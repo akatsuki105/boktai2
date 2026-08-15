@@ -6,9 +6,9 @@
 	movs r0, #3
 	mov r8, r0
 _0823741E:
-	bl GetRand_08230888
+	bl Random
 	adds r4, r0, #0
-	bl GetRand_08230888
+	bl Random
 	mov r1, r8
 	ands r0, r1
 	asrs r4, r0
@@ -19,11 +19,11 @@ _0823741E:
 	cmp r7, r5
 	ble _0823741E
 	ldr r4, _08237460 @ =0x030046B8
-	bl GetRand_08230888
+	bl Random
 	ands r0, r5
 	str r0, [r4]
 	ldr r4, _08237464 @ =0x030046B4
-	bl GetRand_08230888
+	bl Random
 	ands r0, r5
 	str r0, [r4]
 	pop {r3}

@@ -3,13 +3,13 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _082406CE
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 	movs r0, #0x74
 	bl prepare_08231510
 	cmp r0, #0
 	beq _082406A4
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _082406A6
 _082406A4:

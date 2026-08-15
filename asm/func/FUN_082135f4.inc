@@ -2,7 +2,7 @@
 	adds r4, r0, #0
 	ldr r0, _08213628 @ =0x0000CB05
 	ldr r1, _0821362C @ =0x0000D353
-	bl FUN_082310cc
+	bl GetFile
 	adds r1, r0, #0
 	adds r2, r4, #0
 	adds r2, #0x18

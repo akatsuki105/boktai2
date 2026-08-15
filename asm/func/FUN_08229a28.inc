@@ -14,7 +14,7 @@
 	adds r5, r7, r0
 	ldr r0, _08229C04 @ =0x0000922E
 	ldr r1, _08229C08 @ =0x0000C6A0
-	bl FUN_082310cc
+	bl GetFile
 	ldr r2, _08229C0C @ =0x00000E34
 	adds r1, r7, r2
 	str r0, [r1]

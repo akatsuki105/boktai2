@@ -128,7 +128,7 @@
 	ldr r0, _08229F20 @ =0x03003504
 	str r6, [r0]
 	ldr r5, _08229F24 @ =0x03000258
-	ldr r1, _08229F28 @ =FUN_0822a190
+	ldr r1, _08229F28 @ =VideoManager_Update
 	adds r0, r5, #0
 	movs r2, #0
 	bl SetEntityRoutine
@@ -177,6 +177,6 @@ _08229F18: .4byte FUN_0822f204
 _08229F1C: .4byte 0x03002CF0
 _08229F20: .4byte 0x03003504
 _08229F24: .4byte 0x03000258
-_08229F28: .4byte FUN_0822a190
+_08229F28: .4byte VideoManager_Update
 _08229F2C: .4byte 0x03000270
 _08229F30: .4byte FUN_0822a228

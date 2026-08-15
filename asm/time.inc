@@ -2,77 +2,8 @@
 	.syntax unified
 	.text
 
-	thumb_func_start FUN_0823e298
-FUN_0823e298: @ 0x0823E298
-  .include "asm/func/FUN_0823e298.inc"
-
-	thumb_func_start FUN_0823e318
-FUN_0823e318: @ 0x0823E318
-  .include "asm/func/FUN_0823e318.inc"
-
-	thumb_func_start FUN_0823e338
-FUN_0823e338: @ 0x0823E338
-  .include "asm/func/FUN_0823e338.inc"
-
-	thumb_func_start FUN_0823e394
-FUN_0823e394: @ 0x0823E394
-  .include "asm/func/FUN_0823e394.inc"
-
-	thumb_func_start FUN_0823e3e8
-FUN_0823e3e8: @ 0x0823E3E8
-  .include "asm/func/FUN_0823e3e8.inc"
-
-	thumb_func_start FUN_0823e43c
-FUN_0823e43c: @ 0x0823E43C
-  .include "asm/func/FUN_0823e43c.inc"
-
-	thumb_func_start FUN_0823e464
-FUN_0823e464: @ 0x0823E464
-  .include "asm/func/FUN_0823e464.inc"
-
-	thumb_func_start FUN_0823e468
-FUN_0823e468: @ 0x0823E468
-  .include "asm/func/FUN_0823e468.inc"
-
-	thumb_func_start FUN_0823e46c
-FUN_0823e46c: @ 0x0823E46C
-  .include "asm/func/FUN_0823e46c.inc"
-
-	thumb_func_start FUN_0823e470
-FUN_0823e470: @ 0x0823E470
-  .include "asm/func/FUN_0823e470.inc"
-
-	thumb_func_start FUN_0823e4c8
-FUN_0823e4c8: @ 0x0823E4C8
-  .include "asm/func/FUN_0823e4c8.inc"
-
-	thumb_func_start FUN_0823e4d4
-FUN_0823e4d4: @ 0x0823E4D4
-  .include "asm/func/FUN_0823e4d4.inc"
-
-	thumb_func_start FUN_0823e4ec
-FUN_0823e4ec: @ 0x0823E4EC
-  .include "asm/func/FUN_0823e4ec.inc"
-
-	thumb_func_start SetGameDateTimeIntoRTC
-SetGameDateTimeIntoRTC: @ 0x0823E578
-  .include "asm/func/SetGameDateTimeIntoRTC.inc"
-
-	thumb_func_start FUN_0823e650
-FUN_0823e650: @ 0x0823E650
-  .include "asm/func/FUN_0823e650.inc"
-
-	thumb_func_start FUN_0823e768
-FUN_0823e768: @ 0x0823E768
-  .include "asm/func/FUN_0823e768.inc"
-
-	thumb_func_start FUN_0823e80c
-FUN_0823e80c: @ 0x0823E80C
-  .include "asm/func/FUN_0823e80c.inc"
-
-	thumb_func_start FUN_0823e828
-FUN_0823e828: @ 0x0823E828
-  .include "asm/func/FUN_0823e828.inc"
+@ 多分、緯度経度に基づいた計算処理 (f64 を多用する, asm直書きの関数もあるかも)
+@ FUN_082401e8 が gClock に書き込みをしているので時間関連であることは確か
 
 	thumb_func_start FUN_0823e850
 FUN_0823e850: @ 0x0823E850

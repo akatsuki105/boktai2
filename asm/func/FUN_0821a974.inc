@@ -2,7 +2,7 @@
 	movs r1, #1
 	rsbs r1, r1, #0
 	movs r0, #0x6b
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	ldr r1, _0821A9D4 @ =0x03002C98
 	lsls r0, r0, #2
 	adds r0, r0, r1
@@ -19,14 +19,14 @@
 	lsls r2, r2, #1
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	strh r0, [r5]
 _0821A9A8:
 	movs r0, #0x74
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0821A9BE
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0x96
 	lsls r2, r2, #1
 	adds r1, r4, r2

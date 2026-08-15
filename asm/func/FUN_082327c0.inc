@@ -3,7 +3,7 @@
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	ldr r0, _082327E8 @ =0x0000AE1B
-	bl FUN_082310cc
+	bl GetFile
 	ldr r1, _082327EC @ =0x030046A4
 	ldr r1, [r1]
 	str r0, [r1, #4]

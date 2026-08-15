@@ -12,8 +12,8 @@ UNK_PTR FUN_080de11c(void) {
   if (*(Entity**)0x03000174 == NULL) {
     p = CreateEntity(ENTITY_UNK_9, 3300);
     if (p != NULL) {
-      SetEntityRoutine(p, (EntityFunc)FUN_080ddb28, (EntityFunc)FUN_080ddca0);
-      if ((s32)FUN_080de088(p) < 0) {
+      SetEntityRoutine(p, FUN_080ddb28, FUN_080ddca0);
+      if (FUN_080de088(p) < 0) {
         KillEntity(p);
         return NULL;
       }

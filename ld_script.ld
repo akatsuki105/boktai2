@@ -9,7 +9,6 @@ MEMORY {
 gInput = 0x030044E0;
 SOUND_INFO_PTR = 0x03007FF0;
 
-gMPlayTable = 0x0825E3EC;
 gMaxLines = 0;
 gNumMusicPlayers = 32;
 gSongTable = 0x0825E56C;
@@ -19,21 +18,26 @@ gDefaultEntityManager = 0x085B0158;
 /* Strong symbols to prevent libc archive from pulling in impure.o / syscalls.o */
 _impure_ptr = 0x08DBDDD4;
 
-gItemDB = 0x08DAA8D8;
-gWeaponDB = 0x08DA9E68;
-gArmorDB = 0x08DAA7B0;
+gSubroutineTable1 = 0x085A9208;
 
-gUnk085a9208 = 0x085A9208;
-gUnk08dbd758 = 0x08DBD758;
+gCtrlHandlers1_ROM = 0x085B01D0;
+gCtrlHandlers2_ROM = 0x08DBD758;
 
-end = 0x03005820;
+gScriptDirectory = 0x08CBF248;
+
+gParticlesDirectory = 0x08A2011C;
+gParticleFile0 = 0x08A20138;
+
+gActorSpritesFile0 = 0x08A2291C;
+gObjPlttFile0 = 0x08CB9244;
 
 SECTIONS {
 	. = 0x2000000;
 	ewram (NOLOAD) :
 	ALIGN(4)
     {
-      src/malloc.o(ewram_data);
+      gHeap = .;
+      . = 0x20400;
       src/ewram.o(ewram_data);
     } >ewram = 0x00
 
@@ -48,9 +52,12 @@ SECTIONS {
       *libc.a:syscalls.o(.bss);
       src/lib/m4a.o(.bss.code);
       src/iwram2.o(iwram_data);
+      src/lib/librfu_stwi.o(iwram_data);
+      . = ALIGN(16);
       src/lib/librfu_rfu.o(iwram_data);
       src/lib/librfu_sio32id.o(iwram_data);
       src/lib/agb_eeprom.o(iwram_data);
+      end = .;
       *libc.a:sbrkr.o(COMMON);
     } >iwram = 0x00
 
@@ -62,12 +69,21 @@ SECTIONS {
       src/crt0.o (.text);
 			src/main.o (.text);
 			src/code_08000440.o (.text);
+			src/password.o (.text);
+			src/code_08013288.o (.text);
+			src/code_08013634.o (.text);
+			src/code_08013c94.o (.text);
+			src/code_08052290.o (.text);
+			src/code_08052eb8.o (.text);
+			src/code_0805f6d4.o (.text);
+			src/code_0805ff04.o (.text);
+			src/code_080601f0.o (.text);
+			src/code_080604bc.o (.text);
 			src/player.o (.text);
-			src/code_08060fa4.o (.text);
 			src/player_08065988.o (.text);
-			src/code_08065988.o (.text);
 			src/player_0807f430.o (.text);
 			src/code_0807f430.o (.text);
+			src/code_0807f640.o (.text);
 			src/item_08091774.o (.text);
 			src/code_080917e4.o (.text);
 			src/code_080aafdc.o (.text);
@@ -78,6 +94,8 @@ SECTIONS {
 			src/code_081cc550.o (.text);
 			src/code_081eafbc.o (.text);
 			src/code_0820fb20.o (.text);
+			src/code_0821a2bc.o (.text);
+			src/code_0821b860.o (.text);
 			src/code_0822f204.o (.text);
 			src/code_0822f650.o (.text);
 			src/code_0823071c.o (.text);
@@ -89,13 +107,13 @@ SECTIONS {
 			src/code_082324dc.o (.text);
 			src/lib/linkManager.o (.text);
 			src/code_0823a6c0.o (.text);
-			src/code_0823b190.o (.text);
+			src/vm_0823b190.o (.text);
 			src/code_0823b258.o (.text);
+			src/camera.o (.text);
 			src/time.o (.text);
 			src/sound.o (.text);
 			src/code_0823e174.o (.text);
 			src/solar.o (.text);
-			src/code_08241f6c.o (.text);
 			src/item_082421f0.o (.text);
 			src/weapon.o (.text);
 			src/armor.o (.text);
@@ -155,7 +173,7 @@ SECTIONS {
 	{
     src/data.o (.rodata);
     src/lib/m4a_tables.o (.rodata);
-    src/data2.o (.rodata);
+    src/sound.o (.rodata);
     src/lib/librfu_rfu.o (.rodata);
     src/lib/librfu_sio32id.o (.rodata);
     src/data_085a8b30.o (.rodata);
@@ -183,6 +201,8 @@ SECTIONS {
     src/data_085a90dc.o (.rodata);
     *libc.a:syscalls.o(.rodata);
     src/data3.o (.rodata);
+    src/data/item.o (.rodata);
+    src/data4.o (.rodata);
 	} >rom = 0x00
 
     /* Discard everything not specifically mentioned above. */

@@ -1,11 +1,11 @@
 	push {r4, r5, lr}
 	movs r0, #0x6e
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	adds r4, r0, #0
 	movs r0, #0x64
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	adds r5, r0, #0
 	cmp r4, #0
 	beq _080EDA1E

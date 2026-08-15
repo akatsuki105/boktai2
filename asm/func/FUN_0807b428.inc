@@ -3,7 +3,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0807B478
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 	cmp r4, #2
 	bgt _0807B478
@@ -11,7 +11,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0807B450
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r2, r0, #0
 	b _0807B458
 _0807B450:

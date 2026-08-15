@@ -34,7 +34,7 @@ _08210BDA:
 	lsls r3, r3, #3
 	adds r1, r7, r3
 	movs r3, #0
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	ldr r0, [r5, #8]
 	movs r1, #2
 	rsbs r1, r1, #0

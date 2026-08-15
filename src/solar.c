@@ -1,19 +1,45 @@
-#include "entity.h"
+
+#include "solar.h"
+
 #include "global.h"
 #include "time.h"
 
-s32 FUN_082477e0(void);
-void FUN_082477b4(void);
-void FUN_0823db08(u32* y, u32* m, u32* d, u32 date);
+s32 Sensor_GetRawLevel(void);
+void Sensor_Disable(void);
 u32 FUN_0823d9ec(u32 y0, u32 m0, u32 d0, u32 y1, u32 m1, u32 d1);
 
+NAKED void FUN_08241650(void) { INCFUNC("asm/func/FUN_08241650.inc"); }
+
+NAKED bool32 FUN_08241690(void) { INCFUNC("asm/func/FUN_08241690.inc"); }
+
+NAKED void FUN_082416bc(void) { INCFUNC("asm/func/FUN_082416bc.inc"); }
+
+NAKED void FUN_082416c8(void) { INCFUNC("asm/func/FUN_082416c8.inc"); }
+
+NAKED bool32 FUN_082416d4(void) { INCFUNC("asm/func/FUN_082416d4.inc"); }
+
+NAKED void FUN_08241704(void) { INCFUNC("asm/func/FUN_08241704.inc"); }
+
+NAKED void FUN_0824172c(void) { INCFUNC("asm/func/FUN_0824172c.inc"); }
+
+NAKED s32 FUN_0824175c(void) { INCFUNC("asm/func/FUN_0824175c.inc"); }
+
+// ADC
+NAKED Sunlevel GetSunLevel(s32 rawlevel) { INCFUNC("asm/func/GetSunLevel.inc"); }
+
+NAKED s32 FUN_082417cc(Sunlevel slv) { INCFUNC("asm/func/FUN_082417cc.inc"); }
+
+NAKED s32 FUN_082417dc(Sunlevel slv) { INCFUNC("asm/func/FUN_082417dc.inc"); }
+
+NAKED s32 FUN_082417ec(s32 rawlevel) { INCFUNC("asm/func/FUN_082417ec.inc"); }
+
 s32 FUN_082418c0(void) {
-  s32 n = FUN_082477e0();
-  if ((n < 0) || (n > gUnkPtr_030047a8->unk_4)) {
+  s32 n = Sensor_GetRawLevel();
+  if ((n < 0) || (n > gSystemSaveData->calibration)) {
     return 0;
   }
 
-  n = gUnkPtr_030047a8->unk_4 - n;
+  n = gSystemSaveData->calibration - n;
   if (n > 0x8B) {
     return 0x8C;
   }
@@ -21,10 +47,10 @@ s32 FUN_082418c0(void) {
 }
 
 void SetOverheatTime(void) {
-  (GAME->overheatTime).date.date = GetDate();
-  (GAME->overheatTime).hour = GetHour();
-  (GAME->overheatTime).minute = GetMinute();
-  (GAME->overheatTime).second = GetSecond();
+  (gStat->overheatTime).date.val = GetDate();
+  (gStat->overheatTime).hour = GetHour();
+  (gStat->overheatTime).minute = GetMinute();
+  (gStat->overheatTime).second = GetSecond();
 }
 
 bool32 IsGunCooled(void) {
@@ -32,45 +58,45 @@ bool32 IsGunCooled(void) {
   s32 elapsed;
   u32 curH, curM, curS;
 
-  if (GetDate() == GAME->overheatTime.date.date) {
+  if (GetDate() == gStat->overheatTime.date.val) {
     elapsed = 0;
   } else {
-    FUN_0823db08(&y0, &m0, &d0, GetDate());
-    FUN_0823db08(&y1, &m1, &d1, GAME->overheatTime.date.date);
+    ParseBCDDate(&y0, &m0, &d0, (BCDDate)GetDate());
+    ParseBCDDate(&y1, &m1, &d1, gStat->overheatTime.date);
     if (FUN_0823d9ec(y0, m0, d0, y1, m1, d1) > 1) {
       return TRUE;
     }
-    elapsed = 0x15180;
+    elapsed = 86400;
   }
 
   curH = GetHour();
   curM = GetMinute();
   curS = GetSecond();
-  elapsed += (curH * 60 + curM) * 60 + curS - ((GAME->overheatTime.hour * 60 + GAME->overheatTime.minute) * 60 + GAME->overheatTime.second);
+  elapsed += (curH * 60 + curM) * 60 + curS - ((gStat->overheatTime.hour * 60 + gStat->overheatTime.minute) * 60 + gStat->overheatTime.second);
 
-  if (elapsed > 0xb3) {
+  if (elapsed >= 180) {
     return TRUE;
   }
   return FALSE;
 }
 
-NON_MATCH void overheat_08241a04(Entity5* _ UNUSED) {
+NON_MATCH void overheat_08241a04(UnkSolarEntity* _ UNUSED) {
 #ifdef NONMATCHING_C
-  if (GAME->thermal > 29999) {
-    if ((GAME->unk_942 < 3) || (GAME->unk_934 & 0x4200)) {
-      if (GAME->unk_1ba > 0) {
-        GAME->unk_1ba--;
+  if (gStat->thermal > 29999) {
+    if ((gStat->unk_942 < 3) || (gStat->unk_934 & 0x4200)) {
+      if (gStat->unk_1ba > 0) {
+        gStat->unk_1ba--;
       }
       if (IsGunCooled()) {
-        GAME->thermal = 0;
-        GAME->unk_1ba = 0;
+        gStat->thermal = 0;
+        gStat->unk_1ba = 0;
       }
 
     } else {
       SetOverheatTime();
-      GAME->unk_1ba += GAME->unk_942;
-      if ((s16)GAME->unk_1ba > 5000) {
-        GAME->unk_1ba = 5000;
+      gStat->unk_1ba += gStat->unk_942;
+      if ((s16)gStat->unk_1ba > 5000) {
+        gStat->unk_1ba = 5000;
       }
     }
   }
@@ -79,15 +105,15 @@ NON_MATCH void overheat_08241a04(Entity5* _ UNUSED) {
 #endif
 }
 
-NAKED void solar_08241ac0(Entity5* p) { INCFUNC("asm/func/solar_08241ac0.inc"); }
+NAKED void solar_08241ac0(UnkSolarEntity* p) { INCFUNC("asm/func/solar_08241ac0.inc"); }
 
-NAKED void FUN_08241cf4(Entity5* p) { INCFUNC("asm/func/FUN_08241cf4.inc"); }
+NAKED void FUN_08241cf4(UnkSolarEntity* p) { INCFUNC("asm/func/FUN_08241cf4.inc"); }
 
-NAKED u32 FUN_08241da8(Entity5* p) { INCFUNC("asm/func/FUN_08241da8.inc"); }
+NAKED u32 FUN_08241da8(UnkSolarEntity* p) { INCFUNC("asm/func/FUN_08241da8.inc"); }
 
-NAKED void FUN_08241e40(Entity5* p) { INCFUNC("asm/func/FUN_08241e40.inc"); }
+NAKED void FUN_08241e40(UnkSolarEntity* p) { INCFUNC("asm/func/FUN_08241e40.inc"); }
 
-Entity5* FUN_08241ef4(Entity5* p) {
+UnkSolarEntity* FUN_08241ef4(UnkSolarEntity* p) {
   if (u16_0300486c == 0) {
     p->unk_2c((Entity*)p);
   }
@@ -95,12 +121,12 @@ Entity5* FUN_08241ef4(Entity5* p) {
 }
 
 Entity* FUN_08241f14(Entity* _) {
-  FUN_082477b4();
-  PTR_03001708 = NULL;
+  Sensor_Disable();
+  gUnkSolarEntity = NULL;
   return NULL;
 }
 
-NON_MATCH void FUN_08241f28(Entity5* p) {
+NON_MATCH void FUN_08241f28(UnkSolarEntity* p) {
 #ifdef NONMATCHING_C
   u16 tmp;
   p->unk_18 = 1;
@@ -108,10 +134,36 @@ NON_MATCH void FUN_08241f28(Entity5* p) {
   p->unk_19 = 0;
   p->unk_20 = 0;
   p->unk_22 = 0;
-  GAME->unk_940 = u16_03004870;
+  gStat->unk_940 = u16_03004870;
   tmp = u16_ARRAY_03004874[0];
-  GAME->unk_942 = tmp;
+  gStat->unk_942 = tmp;
 #else
   INCFUNC("asm/func/FUN_08241f28.inc");
 #endif
+}
+
+NAKED u32 ReflectClock(void) { INCFUNC("asm/func/ReflectClock.inc"); }
+
+NAKED void clock_08241fd0(UnkSolarEntity* p) { INCFUNC("asm/func/clock_08241fd0.inc"); }
+
+s32 UnkSolarEntity_Init(UnkSolarEntity* p) {
+  FUN_08241f28(p);
+  clock_08241fd0(p);
+  gUnkSolarEntity = p;
+  return 0;
+}
+
+UnkSolarEntity* UnkSolarEntity_Create(void) {
+  if (gUnkSolarEntity == NULL) {
+    UnkSolarEntity* p = (UnkSolarEntity*)CreateEntity(ENTITY_UNK_5, 48);
+    if (p != NULL) {
+      SetEntityRoutine(p, FUN_08241ef4, FUN_08241f14);
+      if (UnkSolarEntity_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gUnkSolarEntity;
 }

@@ -11,7 +11,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0807B2CA
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 	ldr r1, _0807B22C @ =0x08DAA8D8
 	lsls r0, r4, #4
@@ -23,7 +23,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0807B230
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r2, r0, #0
 	b _0807B238
 	.align 2, 0

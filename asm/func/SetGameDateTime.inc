@@ -8,7 +8,7 @@
 	mov sb, r2
 	adds r4, r3, #0
 	ldr r5, [sp, #0x24]
-	bl FUN_0823db74
+	bl GetBCDDate
 	ldr r7, _0823E08C @ =gClock
 	str r0, [r7]
 	adds r0, r6, #0

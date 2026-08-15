@@ -6,7 +6,7 @@
 	movs r0, #0
 	b _0807AFFC
 _0807AFF8:
-	bl fetch_082316e4
+	bl Script_GetValue
 _0807AFFC:
 	pop {r1}
 	bx r1

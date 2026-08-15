@@ -7,7 +7,7 @@
 	mov r0, sp
 	adds r1, r4, #0
 	adds r2, r5, #0
-	bl FUN_0823db08
+	bl ParseBCDDate
 	ldr r0, [sp, #4]
 	add sp, #0xc
 	pop {r4, r5}

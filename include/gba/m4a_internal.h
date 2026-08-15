@@ -318,9 +318,9 @@ struct MusicPlayer {
 };
 
 struct Song {
-  struct SongHeader* header;
-  u16 ms;
-  u16 me;
+  struct SongHeader* header;  // 0x0, 曲データ
+  u16 ms;                     // 0x4, 最大ストリーム数, gMPlayTable の index にも使われる
+  u16 me;                     // 0x6, 最大エフェクト数
 };
 
 extern const struct MusicPlayer gMPlayTable[];

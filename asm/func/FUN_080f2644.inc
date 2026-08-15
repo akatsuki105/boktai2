@@ -139,7 +139,7 @@ _080F272A:
 	mov r3, sp
 	str r3, [r1, #4]
 	ldrh r0, [r2]
-	bl FUN_082318ac
+	bl Script_ExecById
 _080F2762:
 	adds r0, r7, #0
 	bl FUN_08234e3c

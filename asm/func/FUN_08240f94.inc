@@ -11,7 +11,7 @@
 	.align 2, 0
 _08240FAC: .4byte 0x03001700
 _08240FB0:
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r0, #0
 	adds r0, r4, #0
 	bl FUN_08240f20
@@ -24,7 +24,7 @@ _08240FB0:
 	movs r0, #0
 	str r0, [r1]
 _08240FCC:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	bne _08240FB0
 _08240FD4:

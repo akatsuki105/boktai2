@@ -647,7 +647,7 @@ _08226E7E:
 	str r0, [r1]
 	adds r0, r2, #0
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 	b _08226FA0
 	.align 2, 0
 _08226E8C: .4byte 0x00000F14

@@ -122,14 +122,38 @@ FUN_0822f284: @ 0x0822F284
 	pop {r4, r5, r6}
 	pop {r1}
 	bx r1
-_0822F2BC:
-	.byte 0x10, 0xB5, 0x09, 0x04
-	.byte 0x0C, 0x0C, 0xC2, 0x68, 0x00, 0x23, 0x40, 0x88, 0x83, 0x42, 0x09, 0xDA, 0x01, 0x1C, 0x10, 0x88
-	.byte 0xA0, 0x42, 0x01, 0xD1, 0x10, 0x1C, 0x04, 0xE0, 0x14, 0x32, 0x01, 0x33, 0x8B, 0x42, 0xF6, 0xDB
-	.byte 0x00, 0x20, 0x10, 0xBC, 0x02, 0xBC, 0x08, 0x47
 
-	thumb_func_start FUN_0822f2e8
-FUN_0822f2e8: @ 0x0822F2E8
+	thumb_func_start FUN_0822f2bc
+FUN_0822f2bc: @ 0x0822F2BC
+	push {r4, lr}
+	lsls r1, r1, #0x10
+	lsrs r4, r1, #0x10
+	ldr r2, [r0, #0xc]
+	movs r3, #0
+	ldrh r0, [r0, #2]
+	cmp r3, r0
+	bge _0822F2E0
+	adds r1, r0, #0
+_0822F2CE:
+	ldrh r0, [r2]
+	cmp r0, r4
+	bne _0822F2D8
+	adds r0, r2, #0
+	b _0822F2E2
+_0822F2D8:
+	adds r2, #0x14
+	adds r3, #1
+	cmp r3, r1
+	blt _0822F2CE
+_0822F2E0:
+	movs r0, #0
+_0822F2E2:
+	pop {r4}
+	pop {r1}
+	bx r1
+
+	thumb_func_start Sprite_LoadSprite
+Sprite_LoadSprite: @ 0x0822F2E8
 	push {r4, r5, lr}
 	adds r3, r0, #0
 	adds r5, r1, #0
@@ -215,7 +239,7 @@ FUN_0822f364: @ 0x0822F364
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	adds r0, r5, #0
-	bl FUN_0822f2e8
+	bl Sprite_LoadSprite
 	cmp r0, #0
 	blt _0822F3BC
 	ldr r0, _0822F3B8 @ =0x030044B8
@@ -252,15 +276,15 @@ _0822F3C0:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_0822f3cc
-FUN_0822f3cc: @ 0x0822F3CC
+	thumb_func_start Sprite_SetSprite
+Sprite_SetSprite: @ 0x0822F3CC
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10
 	lsls r3, r3, #0x18
 	lsrs r5, r3, #0x18
-	bl FUN_0822f2e8
+	bl Sprite_LoadSprite
 	cmp r0, #0
 	blt _0822F3F0
 	ldr r0, _0822F3EC @ =0x030044B8

@@ -3,7 +3,7 @@
 	adds r6, r0, #0
 	ldr r0, _08212568 @ =0x0000C091
 	ldr r1, _0821256C @ =0x0000C423
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	str r2, [r6, #0x38]
 	movs r5, #0
@@ -19,7 +19,7 @@
 	bl FUN_0822c0b8
 	movs r0, #2
 	movs r1, #2
-	bl FUN_0822ba00
+	bl SetBGPrioDirect
 	str r4, [sp, #0xc]
 	ldr r2, [r6, #0x38]
 	str r5, [sp]
@@ -32,7 +32,7 @@
 	bl FUN_0822c0b8
 	movs r0, #3
 	movs r1, #3
-	bl FUN_0822ba00
+	bl SetBGPrioDirect
 	add sp, #0x10
 	pop {r4, r5, r6}
 	pop {r0}

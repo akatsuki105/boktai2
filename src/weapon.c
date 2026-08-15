@@ -1,22 +1,23 @@
 #include "weapon.h"
 
 #include "global.h"
+#include "vm.h"
 
 void FUN_0809c28c(void);
 
 bool32 IsWeaponAlreadyFound(weapon32_t n) {
   if (n >= 32) {
-    return (GAME->weaponDex[1]) & (1 << (n - 32));
+    return (gStat->weaponDex[1]) & (1 << (n - 32));
   } else {
-    return (GAME->weaponDex[0]) & (1 << n);
+    return (gStat->weaponDex[0]) & (1 << n);
   }
 }
 
 void SetWeaponFoundFlag(weapon32_t n) {
   if (n >= 32) {
-    (GAME->weaponDex[1]) |= (1 << (n - 32));
+    (gStat->weaponDex[1]) |= (1 << (n - 32));
   } else {
-    (GAME->weaponDex[0]) |= (1 << n);
+    (gStat->weaponDex[0]) |= (1 << n);
   }
 }
 
@@ -72,7 +73,7 @@ NON_MATCH bool32 FUN_08242b88(WeaponData* data) {
   if ((data->kind < 3) && (REGISTERED_WEAPON(data->kind) == -1)) {
     REGISTERED_WEAPON(data->kind) = slot;
     if (data->kind == 0) {
-      GAME->equippedWeaponIdx = 0;
+      gStat->equippedWeaponIdx = 0;
       if (gPlayerPtr[0] != NULL) {
         Weapon* w = GetWeapon(slot);
         weapon_08064664(gPlayerPtr[0], w);
@@ -139,12 +140,12 @@ bool32 FUN_08242eb0(void) {
   weapon32_t w;
 
   if (prepare_08231510(102) != 0) {
-    w = fetch_082316e4();
+    w = Script_GetValue();
     if (prepare_08231510(116) == 0) {
       return FALSE;
     }
 
-    slot = (s32)fetch_082316e4();
+    slot = (s32)Script_GetValue();
     for (i = 0; i < 16; i++) {
       if (GetWeaponID(i) == w) {
         FUN_08242b6c(i, &gWeaponDB[slot]);
@@ -156,7 +157,7 @@ bool32 FUN_08242eb0(void) {
 }
 
 void FUN_08242f08(void) {
-  FUN_08242c08(REGISTERED_WEAPON(GAME->equippedWeaponIdx));
+  FUN_08242c08(REGISTERED_WEAPON(gStat->equippedWeaponIdx));
   if (gPlayerPtr[0] != NULL) {
     weapon_08064664(gPlayerPtr[0], NULL);
     FUN_0809c464();
@@ -187,9 +188,9 @@ bool32 FUN_08242f9c(void) {
   weapon32_t w;
 
   if (prepare_08231510(119) != 0) {
-    w = fetch_082316e4();
+    w = Script_GetValue();
     if (prepare_08231510(100) != 0) {
-      len = fetch_082316e4() ? 48 : 16;
+      len = Script_GetValue() ? 48 : 16;
     } else {
       len = 16;
     }

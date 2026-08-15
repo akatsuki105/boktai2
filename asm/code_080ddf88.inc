@@ -770,9 +770,9 @@ FUN_080ed564: @ 0x080ED564
 FUN_080ed724: @ 0x080ED724
   .include "asm/func/FUN_080ed724.inc"
 
-	thumb_func_start FUN_080ed7f0
-FUN_080ed7f0: @ 0x080ED7F0
-  .include "asm/func/FUN_080ed7f0.inc"
+	thumb_func_start Enemy_Sleep
+Enemy_Sleep: @ 0x080ED7F0
+  .include "asm/func/Enemy_Sleep.inc"
 
 	thumb_func_start FUN_080ed834
 FUN_080ed834: @ 0x080ED834

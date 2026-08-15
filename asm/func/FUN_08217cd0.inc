@@ -31,9 +31,9 @@ _08217D0C:
 	adds r0, r4, r1
 _08217D10:
 	ldr r0, [r0]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	adds r0, r0, r7
-	bl FUN_08231978
+	bl Textbox_LookupString
 	ldrb r1, [r0]
 	strb r1, [r5]
 	ldrb r0, [r0, #1]

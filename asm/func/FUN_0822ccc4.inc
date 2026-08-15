@@ -3,7 +3,7 @@
 	lsrs r4, r0, #0x10
 	ldr r0, _0822CCDC @ =0x0000C091
 	adds r1, r4, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r2, r0, #0
 	cmp r2, #0
 	bne _0822CCE0

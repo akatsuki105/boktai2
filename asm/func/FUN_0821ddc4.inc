@@ -42,7 +42,7 @@ _0821DDDA:
 	subs r3, #0x40
 	adds r1, r5, r3
 	movs r3, #1
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	mov r0, r8
 	adds r0, #0xaf
 	ldrb r0, [r0]

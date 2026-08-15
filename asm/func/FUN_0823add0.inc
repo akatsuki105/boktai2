@@ -4,7 +4,7 @@
 	lsrs r4, r0, #0x18
 	cmp r4, #0
 	bne _0823AE04
-	ldr r5, _0823AE0C @ =gUnkPtr_030047a8
+	ldr r5, _0823AE0C @ =gSystemSaveData
 	ldr r0, [r5]
 	cmp r0, #0
 	beq _0823ADEC
@@ -29,5 +29,5 @@ _0823AE04:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_0823AE0C: .4byte gUnkPtr_030047a8
+_0823AE0C: .4byte gSystemSaveData
 _0823AE10: .4byte 0x030046A0

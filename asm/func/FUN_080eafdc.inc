@@ -134,7 +134,7 @@ _080EB0DA:
 	cmp r0, #0
 	beq _080EB0EC
 	adds r0, r5, #0
-	bl 0x080f0b3c @ TODO: Replace by FUN_080f0b3c
+	bl FUN_080f0b3c
 	ldr r0, _080EB0E8 @ =0xFFFFF67E
 	b _080EB152
 	.align 2, 0
@@ -213,3 +213,4 @@ _080EB162:
 	pop {r4, r5, r6, r7}
 	pop {r1}
 	bx r1
+

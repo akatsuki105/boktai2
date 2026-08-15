@@ -14,9 +14,9 @@
 	lsls r1, r1, #5
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	adds r0, #0x54
-	bl FUN_08231978
+	bl Textbox_LookupString
 	adds r2, r0, #0
 	movs r7, #0
 	ldrb r1, [r4]

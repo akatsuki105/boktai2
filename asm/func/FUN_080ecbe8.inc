@@ -174,7 +174,7 @@ _080ECD1C:
 	mov r1, sp
 	movs r2, #0x20
 	movs r3, #0x20
-	bl 0x080e5e94 @ TODO: FUN_080e5e94
+	bl FUN_080e5e94
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080ECD98
@@ -399,3 +399,4 @@ _080ECF08: .4byte 0x0000046A
 _080ECF0C: .4byte 0x00000484
 _080ECF10: .4byte 0x0000046D
 _080ECF14: .4byte 0x0000046B
+

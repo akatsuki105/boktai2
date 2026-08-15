@@ -5,7 +5,7 @@
 #include "gba/gba.h"
 #include "types.h"
 
-#define ARMORS(slot) (*(GAME->armors + slot))
+#define ARMORS(slot) (*(gStat->armors + slot))
 
 typedef struct {
   u8 id;          // 0x00, see include/constants/armor.h

@@ -187,7 +187,7 @@ _082377F4:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x20]
 	movs r3, #0
-	bl FUN_0822f3cc
+	bl Sprite_SetSprite
 	strh r7, [r4, #0x20]
 	add r0, sp, #0x4c
 	ldrh r0, [r0]

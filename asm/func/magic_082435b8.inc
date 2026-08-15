@@ -24,7 +24,7 @@ _082435CA:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _082435F8
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 	b _082435FA
 	.align 2, 0
@@ -41,7 +41,7 @@ _082435FA:
 	cmp r4, #0
 	ble _0824361A
 _0824360C:
-	bl fetch_082316e4
+	bl Script_GetValue
 	bl magic_082434f0
 	subs r4, #1
 	cmp r4, #0
@@ -54,7 +54,7 @@ _0824361A:
 	movs r4, #0
 	ldr r5, _08243644 @ =0x030046A0
 _08243628:
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, [r5]
 	lsls r1, r4, #1
 	adds r1, r1, r2

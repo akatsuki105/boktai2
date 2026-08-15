@@ -47,7 +47,7 @@ _0821B9D4:
 	movs r0, #1
 	str r0, [r4, #0x78]
 	str r5, [r4, #0x68]
-	bl FUN_0823ba00
+	bl Camera_Translate
 	movs r0, #0x79
 	bl PlaySound_082406e0
 	movs r0, #0x79
@@ -63,7 +63,7 @@ _0821B9FA:
 	movs r0, #1
 	str r0, [r4, #0x78]
 	str r5, [r4, #0x68]
-	bl FUN_0823ba00
+	bl Camera_Translate
 	ldr r0, [r4, #0x7c]
 	cmp r0, #0
 	beq _0821BA32

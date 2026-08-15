@@ -9,7 +9,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _08219FFE
-	bl fetch_082316e4
+	bl Script_GetValue
 	str r0, [r7, #0x40]
 _08219FFE:
 	movs r0, #0x73
@@ -39,21 +39,21 @@ _0821A028:
 	lsls r4, r4, #3
 	adds r4, r4, r7
 	mov r8, r4
-	bl FUN_0823172c
+	bl VM_GetValueSafe2
 	movs r2, #0xdb
 	lsls r2, r2, #4
 	adds r1, r7, r2
 	str r0, [r1]
-	bl FUN_08231504
+	bl VM_SetPC
 	movs r3, #0
 	mov sl, r3
 	movs r4, #0xf0
 	lsls r4, r4, #3
 	adds r6, r7, r4
 _0821A054:
-	bl fetch_082316e4
+	bl Script_GetValue
 	strb r0, [r6]
-	bl fetch_082316e4
+	bl Script_GetValue
 	strb r0, [r6, #1]
 	movs r0, #0
 	mov sb, r0
@@ -65,17 +65,17 @@ _0821A054:
 	.align 2, 0
 _0821A070: .4byte 0x00000DAC
 _0821A074:
-	bl FUN_082315a4
+	bl VM_GetValueAt
 	mov r1, r8
 	adds r1, #0xc2
 	adds r1, r1, r5
 	strh r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov r1, r8
 	adds r1, #0xcc
 	adds r1, r1, r4
 	str r0, [r1]
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov r1, r8
 	adds r1, #0xe0
 	adds r1, r1, r4
@@ -89,7 +89,7 @@ _0821A0A0:
 	ldrsb r0, [r6, r0]
 	cmp sb, r0
 	bge _0821A0B0
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	bne _0821A074
 _0821A0B0:
@@ -137,7 +137,7 @@ _0821A100:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0821A114
-	bl FUN_082316bc
+	bl VM_GetPC
 	ldr r4, _0821A258 @ =0x0000178C
 	adds r1, r7, r4
 	str r0, [r1]
@@ -155,7 +155,7 @@ _0821A128:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0821A13C
-	bl FUN_082316bc
+	bl VM_GetPC
 	ldr r3, _0821A260 @ =0x00001794
 	adds r1, r7, r3
 	str r0, [r1]
@@ -164,7 +164,7 @@ _0821A13C:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0821A150
-	bl FUN_082316bc
+	bl VM_GetPC
 	ldr r4, _0821A264 @ =0x00001798
 	adds r1, r7, r4
 	str r0, [r1]
@@ -220,7 +220,7 @@ _0821A1B8:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0821A1CC
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r4, _0821A274 @ =0x00000E88
 	adds r1, r7, r4
 	str r0, [r1]
@@ -229,21 +229,21 @@ _0821A1CC:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0821A1DC
-	bl fetch_082316e4
+	bl Script_GetValue
 	str r0, [r7, #0x48]
 _0821A1DC:
 	movs r0, #0x6c
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0821A1EC
-	bl fetch_082316e4
+	bl Script_GetValue
 	str r0, [r7, #0x4c]
 _0821A1EC:
 	movs r0, #0x65
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0821A1FC
-	bl fetch_082316e4
+	bl Script_GetValue
 	str r0, [r7, #0x50]
 _0821A1FC:
 	movs r1, #0

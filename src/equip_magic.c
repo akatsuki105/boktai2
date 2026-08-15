@@ -1,6 +1,7 @@
 #include "global.h"
 #include "magic.h"
 #include "player.h"
+#include "vm.h"
 
 void FUN_0809c2d0(void);
 void FUN_08064fd8(Player* p, magic32_t n);
@@ -16,7 +17,7 @@ s32 FUN_0824347c(s32 n) {
 }
 
 magic32_t GetEquippedMagic(void) {
-  const s32 idx = GAME->equippedMagicIdx;
+  const s32 idx = gStat->equippedMagicIdx;
   return REGISTERED_MAGIC(idx);
 }
 
@@ -36,12 +37,12 @@ NON_MATCH void RegisterMagic(s32 idx, magic32_t m) {
 
 void magic_082434f0(magic32_t n) {
   s32 i;
-  GAME->unlockedMagic |= (1 << n);
+  gStat->unlockedMagic |= (1 << n);
   for (i = 0; i < 4; i++) {
     if (REGISTERED_MAGIC(i) == MAGIC_NONE) {
       RegisterMagic(i, n);
       FUN_0809c2d0();
-      if (i != GAME->equippedMagicIdx) {
+      if (i != gStat->equippedMagicIdx) {
         return;
       }
       if (gPlayerPtr[0] != NULL) {
@@ -54,19 +55,19 @@ void magic_082434f0(magic32_t n) {
 
 void FUN_08243558(void) {
   if (prepare_08231510(109)) {
-    magic_082434f0(fetch_082316e4());
+    magic_082434f0(Script_GetValue());
   }
 }
 
 bool32 IsMagicUnlocked(magic32_t n) {
-  const u32 unlocked = GAME->unlockedMagic & (1 << n);
+  const u32 unlocked = gStat->unlockedMagic & (1 << n);
   return unlocked;
 }
 
 bool32 FUN_08243584(void) {
   s32 x = prepare_08231510(109);
   if (x) {
-    return IsMagicUnlocked(fetch_082316e4());
+    return IsMagicUnlocked(Script_GetValue());
   }
 }
 

@@ -89,7 +89,7 @@ _080EED0E:
 	movs r4, #1
 _080EED14:
 	mov r0, sb
-	bl 0x0817e83c @ TODO: FUN_0817e83c
+	bl FUN_0817e83c
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EED24
@@ -274,3 +274,4 @@ _080EEE60:
 	pop {r4, r5, r6, r7}
 	pop {r1}
 	bx r1
+

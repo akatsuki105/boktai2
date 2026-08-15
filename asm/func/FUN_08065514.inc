@@ -28,7 +28,7 @@
 	ldr r4, _080655B0 @ =0x0000922E
 	ldr r1, _080655B4 @ =0x00005BB7
 	adds r0, r4, #0
-	bl FUN_082310cc
+	bl GetFile
 	movs r3, #0xd3
 	lsls r3, r3, #2
 	adds r3, r3, r5
@@ -36,14 +36,14 @@
 	str r0, [r3]
 	ldr r1, _080655B8 @ =0x0000AF44
 	adds r0, r4, #0
-	bl FUN_082310cc
+	bl GetFile
 	movs r1, #0xd4
 	lsls r1, r1, #2
 	adds r6, r5, r1
 	str r0, [r6]
 	ldr r1, _080655BC @ =0x00003D95
 	adds r0, r4, #0
-	bl FUN_082310cc
+	bl GetFile
 	adds r1, r0, #0
 	movs r2, #0xd5
 	lsls r2, r2, #2

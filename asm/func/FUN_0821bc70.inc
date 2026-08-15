@@ -4,26 +4,26 @@
 	str r5, [r4, #0x18]
 	movs r0, #0x44
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	str r0, [r4, #0x50]
 	movs r0, #0x69
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	str r0, [r4, #0x54]
 	movs r0, #0x74
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0821BCA8
-	bl fetch_082316e4
+	bl Script_GetValue
 	str r0, [r4, #0x58]
-	bl fetch_082316e4
+	bl Script_GetValue
 	str r0, [r4, #0x5c]
-	bl fetch_082316e4
+	bl Script_GetValue
 	str r0, [r4, #0x60]
 _0821BCA8:
 	movs r0, #0x6c
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	str r0, [r4, #0x64]
 	movs r0, #0
 	str r0, [r4, #0x68]

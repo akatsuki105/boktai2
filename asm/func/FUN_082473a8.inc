@@ -5,11 +5,11 @@
 	movs r0, #0
 	str r0, [r4, #0x20]
 	ldr r0, _082473D4 @ =0x00001C1A
-	bl FUN_0822b10c
+	bl GetParticleGroup
 	str r0, [r4, #0x18]
 	ldr r0, _082473D8 @ =0x0000922E
 	ldr r1, _082473DC @ =0x0000D1B8
-	bl FUN_082310cc
+	bl GetFile
 	str r0, [r4, #0x1c]
 	movs r0, #0
 	pop {r4}

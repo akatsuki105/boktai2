@@ -82,7 +82,7 @@ _0821AC62:
 	ldr r0, [r0]
 	cmp r0, #0
 	beq _0821ACA8
-	bl FUN_082318ac
+	bl Script_ExecById
 _0821ACA8:
 	movs r0, #0x9b
 	lsls r0, r0, #1

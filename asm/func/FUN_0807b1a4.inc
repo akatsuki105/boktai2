@@ -17,7 +17,7 @@ _0807B1C2:
 	.align 2, 0
 _0807B1C8: .4byte 0x03002BE0
 _0807B1CC:
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0xde
 	lsls r2, r2, #2
 	adds r1, r4, r2

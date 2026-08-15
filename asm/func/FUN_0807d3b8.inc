@@ -11,7 +11,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0807D424
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _0807D430 @ =0xFFFF0000
@@ -19,14 +19,14 @@
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0807D434 @ =0x0000FFFF
 	ldr r1, [sp]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp]
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #4]

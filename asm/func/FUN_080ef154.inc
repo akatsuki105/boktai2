@@ -1,7 +1,7 @@
 	push {r4, r5, r6, lr}
 	movs r0, #0x4e
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	cmp r0, #0
 	bne _080EF164
 	b _080EF4DA
@@ -16,10 +16,10 @@ _080EF170:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080EF1D6
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF18A
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF18E
 _080EF18A:
@@ -48,10 +48,10 @@ _080EF18E:
 	adds r0, r4, r2
 	str r1, [r0]
 _080EF1B8:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF1C8
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF1CC
 _080EF1C8:
@@ -71,10 +71,10 @@ _080EF1D6:
 	movs r5, #0
 	movs r6, #0
 _080EF1E4:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF1F8
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF1FC
 	.align 2, 0
@@ -91,10 +91,10 @@ _080EF1FC:
 	adds r0, r0, r6
 	strh r3, [r0]
 _080EF20A:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF21A
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF21E
 _080EF21A:
@@ -109,10 +109,10 @@ _080EF21E:
 	adds r0, r0, r6
 	strh r3, [r0]
 _080EF22C:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF23C
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF240
 _080EF23C:
@@ -128,10 +128,10 @@ _080EF240:
 	adds r0, r0, r1
 	str r3, [r0]
 _080EF250:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF260
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF264
 _080EF260:
@@ -155,10 +155,10 @@ _080EF27A:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080EF360
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF294
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF298
 _080EF294:
@@ -182,10 +182,10 @@ _080EF298:
 	adds r0, r4, r2
 	strh r1, [r0]
 _080EF2B8:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF2CC
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF2D0
 	.align 2, 0
@@ -201,10 +201,10 @@ _080EF2D0:
 	adds r0, r4, r1
 	strb r3, [r0]
 _080EF2DC:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF2EC
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF2F0
 _080EF2EC:
@@ -217,10 +217,10 @@ _080EF2F0:
 	adds r0, r4, r2
 	strb r3, [r0]
 _080EF2FA:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF310
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF314
 	.align 2, 0
@@ -236,10 +236,10 @@ _080EF314:
 	adds r0, r4, r1
 	strb r3, [r0]
 _080EF320:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF330
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF334
 _080EF330:
@@ -253,10 +253,10 @@ _080EF334:
 	adds r0, r4, r2
 	strh r3, [r0]
 _080EF340:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF350
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF354
 _080EF350:
@@ -274,10 +274,10 @@ _080EF360:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080EF3CA
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF37A
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF37E
 _080EF37A:
@@ -291,10 +291,10 @@ _080EF37E:
 	adds r0, r4, r2
 	strh r3, [r0]
 _080EF38A:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF39A
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF39E
 _080EF39A:
@@ -308,10 +308,10 @@ _080EF39E:
 	adds r0, r4, r1
 	strh r3, [r0]
 _080EF3AA:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF3BA
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF3BE
 _080EF3BA:
@@ -329,10 +329,10 @@ _080EF3CA:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080EF424
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF3E4
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF3E8
 _080EF3E4:
@@ -354,10 +354,10 @@ _080EF3E8:
 	adds r0, r3, #0
 	str r0, [r1]
 _080EF404:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF414
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF418
 _080EF414:
@@ -377,7 +377,7 @@ _080EF424:
 	beq _080EF43E
 	movs r0, #0x52
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	movs r2, #0xca
 	lsls r2, r2, #1
 	adds r1, r4, r2
@@ -389,7 +389,7 @@ _080EF43E:
 	beq _080EF458
 	movs r0, #0x46
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	movs r3, #0xcb
 	lsls r3, r3, #1
 	adds r1, r4, r3
@@ -401,7 +401,7 @@ _080EF458:
 	beq _080EF472
 	movs r0, #0x49
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	movs r2, #0xcc
 	lsls r2, r2, #1
 	adds r1, r4, r2
@@ -413,7 +413,7 @@ _080EF472:
 	beq _080EF48C
 	movs r0, #0x44
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	movs r3, #0xcd
 	lsls r3, r3, #1
 	adds r1, r4, r3
@@ -425,10 +425,10 @@ _080EF48C:
 	beq _080EF4C2
 	movs r5, #0
 _080EF498:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF4A8
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r3, r0, #0
 	b _080EF4AC
 _080EF4A8:
@@ -454,7 +454,7 @@ _080EF4C2:
 	beq _080EF4DA
 	movs r0, #0x4b
 	movs r1, #2
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	ldr r3, _080EF4E0 @ =0x0000025A
 	adds r1, r4, r3
 	strh r0, [r1]

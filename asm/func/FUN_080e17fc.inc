@@ -6,19 +6,19 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080E1832
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E181C
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080E181E
 _080E181C:
 	movs r0, #0
 _080E181E:
 	strh r0, [r4, #0x18]
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E182E
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080E1834
 _080E182E:
 	movs r0, #0
@@ -40,10 +40,10 @@ _080E1834:
 	adds r7, #0x1c
 	movs r5, #1
 _080E1850:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E1862
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	b _080E1864
@@ -76,19 +76,19 @@ _080E188A:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _080E18B8
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E18A2
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080E18A4
 _080E18A2:
 	movs r0, #1
 _080E18A4:
 	strb r0, [r6]
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	beq _080E18B4
-	bl fetch_082316e4
+	bl Script_GetValue
 	b _080E18BE
 _080E18B4:
 	movs r0, #1
@@ -102,7 +102,7 @@ _080E18BE:
 	strb r0, [r1]
 	movs r0, #0x66
 	movs r1, #0
-	bl FUN_0823174c
+	bl Script_GetKeywordValue
 	movs r1, #0
 	strh r0, [r4, #0x24]
 	strh r1, [r4, #0x26]

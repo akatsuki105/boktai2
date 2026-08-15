@@ -184,7 +184,7 @@ here once some function's `make compare` actually hits OK using them.
 
 ### Multiple writes to nearby fixed addresses need one shared base pointer
 
-- **Frequency**: 3 functions confirmed — `FUN_082308a8` (`src/code_0823071c.c`,
+- **Frequency**: 3 functions confirmed — `InitHeap` (`src/code_0823071c.c`,
   raw `s32*`), `FUN_082324b0` (`src/vm.c`, struct-typed pointer — see below),
   `FUN_08060e90` (`src/player.c`, `s32*` reused for one field write and the
   call argument together).
@@ -207,9 +207,9 @@ here once some function's `make compare` actually hits OK using them.
   2), casting to that struct type and writing through named fields works
   identically, even at a different address than that struct's other known
   instance. `FUN_082324b0` writes `0x03000770` in the exact
-  `{void* unk; u32 len; Unk_085a9208* arr;}` shape already defined as
-  `struct Unk_030016e8` (used elsewhere at `gUnk030016e8`, a *different*
-  fixed address) — casting `(struct Unk_030016e8*)0x03000770` and writing
+  `{void* unk; u32 len; Subroutine* arr;}` shape already defined as
+  `struct SubroutineTable` (used elsewhere at `gUnk030016e8`, a *different*
+  fixed address) — casting `(struct SubroutineTable*)0x03000770` and writing
   `p->unk`/`p->len`/`p->arr` matched first try.
 
 ### Narrow NAKED-callee parameter forces truncation at a single call site
@@ -219,7 +219,7 @@ here once some function's `make compare` actually hits OK using them.
   (`src/sound.c`, callee `FUN_082403d0`), `sound_082403b8`
   (`src/sound.c`, callee `FUN_08240360`).
 - When the only call site passes a wider value (e.g. a `u32`-returning
-  `fetch_082316e4()`) directly into a NAKED callee declared with a
+  `Script_GetValue()`) directly into a NAKED callee declared with a
   narrower parameter type (`u16`), agbcc inserts a truncation
   (`lsls rN, rN, #0x10` / `lsrs rN, rN, #0x10`) at the call site to
   narrow the argument — but the original binary has no such truncation,

@@ -66,7 +66,7 @@ _0822C130:
 	strh r0, [r2]
 	movs r0, #0
 	movs r1, #2
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	b _0822C2C0
 	.align 2, 0
 _0822C150: .4byte 0x03003E78
@@ -74,7 +74,7 @@ _0822C154:
 	movs r0, #2
 	str r0, [sp]
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	ldr r1, [sp, #0x68]
 	cmp r1, #2
 	bne _0822C184
@@ -87,7 +87,7 @@ _0822C154:
 	movs r0, #3
 	str r0, [sp, #4]
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	movs r2, #2
 	mov r8, r2
 	b _0822C188
@@ -107,7 +107,7 @@ _0822C194:
 	movs r0, #3
 	str r0, [sp]
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	movs r6, #1
 	mov r8, r6
 	mov r1, sp
@@ -120,7 +120,7 @@ _0822C1AE:
 	movs r0, #1
 	str r0, [sp]
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	movs r2, #1
 	mov r8, r2
 	mov r3, sp
@@ -131,7 +131,7 @@ _0822C1C4:
 	movs r0, #1
 	str r0, [sp]
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	ldr r5, [sp, #0x68]
 	cmp r5, #2
 	bne _0822C1F4
@@ -144,7 +144,7 @@ _0822C1C4:
 	movs r0, #3
 	str r0, [sp, #4]
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	movs r6, #2
 	mov r8, r6
 	b _0822C1F8
@@ -162,7 +162,7 @@ _0822C200:
 	movs r0, #2
 	str r0, [sp]
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	ldr r2, [sp, #0x68]
 	cmp r2, #2
 	bne _0822C230
@@ -175,7 +175,7 @@ _0822C200:
 	movs r0, #1
 	str r0, [sp, #4]
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	movs r3, #2
 	mov r8, r3
 	b _0822C234
@@ -195,7 +195,7 @@ _0822C240:
 	movs r0, #1
 	str r0, [sp]
 	movs r1, #2
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	movs r0, #1
 	mov r8, r0
 	movs r4, #0x80
@@ -221,13 +221,13 @@ _0822C264:
 	str r0, [sp, #8]
 	movs r0, #2
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	movs r0, #3
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	movs r0, #1
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	movs r0, #0x80
 	lsls r0, r0, #2
 	ldr r2, _0822C2AC @ =0x03003E78
@@ -250,7 +250,7 @@ _0822C2B0:
 	movs r0, #2
 	str r0, [sp]
 	movs r1, #0
-	bl FUN_0822ba50
+	bl SetBGCharBaseDirect
 	movs r3, #0
 	mov r8, r3
 	movs r4, #0

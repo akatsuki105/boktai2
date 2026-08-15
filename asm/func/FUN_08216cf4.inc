@@ -54,9 +54,9 @@ _08216D52:
 	lsls r1, r1, #1
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl FUN_08231660
+	bl VM_ParseStringRef
 	adds r0, r0, r7
-	bl FUN_08231978
+	bl Textbox_LookupString
 	ldrb r1, [r0]
 	adds r2, r5, #1
 	cmp r1, #0
@@ -87,25 +87,25 @@ _08216D78:
 	adds r2, r6, r1
 	movs r0, #2
 	movs r1, #3
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	movs r0, #0x8e
 	lsls r0, r0, #2
 	adds r2, r6, r0
 	movs r0, #0x10
 	movs r1, #3
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	movs r1, #0xce
 	lsls r1, r1, #2
 	adds r2, r6, r1
 	movs r0, #2
 	movs r1, #5
-	bl FUN_0821b2b4
+	bl Video_DrawText
 	movs r0, #0x87
 	lsls r0, r0, #3
 	adds r2, r6, r0
 	movs r0, #0x10
 	movs r1, #5
-	bl FUN_0821b2b4
+	bl Video_DrawText
 _08216DCC:
 	pop {r3}
 	mov r8, r3

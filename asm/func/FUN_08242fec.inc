@@ -45,7 +45,7 @@ _08243026:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _08243058
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r4, r0, #0
 	b _0824305A
 	.align 2, 0
@@ -65,7 +65,7 @@ _0824305A:
 	ldr r6, _082430CC @ =gWeaponDB
 	mov r5, sp
 _08243070:
-	bl fetch_082316e4
+	bl Script_GetValue
 	lsls r1, r0, #3
 	adds r1, r1, r0
 	lsls r1, r1, #2
@@ -96,7 +96,7 @@ _082430A2:
 	movs r4, #0
 	ldr r5, _082430D0 @ =0x030046A0
 _082430B0:
-	bl fetch_082316e4
+	bl Script_GetValue
 	ldr r2, [r5]
 	lsls r1, r4, #1
 	adds r1, r1, r2

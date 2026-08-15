@@ -10,7 +10,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0807B404
-	bl fetch_082316e4
+	bl Script_GetValue
 	cmp r0, #2
 	ble _0807B40C
 _0807B404:

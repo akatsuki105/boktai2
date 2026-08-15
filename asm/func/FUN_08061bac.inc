@@ -54,7 +54,7 @@ _08061C10:
 	bl FUN_0822b20c
 	ldr r0, _08061C54 @ =0x0000922E
 	ldr r1, _08061C58 @ =0x00000837
-	bl FUN_082310cc
+	bl GetFile
 	ldr r2, _08061C5C @ =0x00000704
 	adds r1, r6, r2
 	str r0, [r1]

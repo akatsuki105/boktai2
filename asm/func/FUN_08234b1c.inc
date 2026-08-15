@@ -24,7 +24,7 @@ _08234B3C:
 	movs r7, #0
 	mov sb, r7
 	str r1, [sp]
-	bl fetch_082316e4
+	bl Script_GetValue
 	mov r8, r0
 	ldr r1, [sp]
 	cmp sb, r5
@@ -74,7 +74,7 @@ _08234BA2:
 _08234BAE:
 	mov r5, sb
 _08234BB0:
-	bl FUN_082316bc
+	bl VM_GetPC
 	cmp r0, #0
 	bne _08234B3C
 	ldr r0, _08234BD0 @ =0x030046A4

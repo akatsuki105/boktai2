@@ -102,7 +102,7 @@ _08217EAE:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822c40c
+	bl Video_GenerateBGMap
 	str r4, [r5, #0x64]
 	ldr r3, _08217F0C @ =0x00000974
 	adds r0, r7, r3

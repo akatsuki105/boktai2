@@ -33,7 +33,7 @@ _0823D78E:
 	ldr r0, [r4, #0x24]
 	adds r1, r4, #0
 	adds r1, #0x1c
-	bl FUN_082318ac
+	bl Script_ExecById
 	b _0823D7BE
 	.align 2, 0
 _0823D7B0: .4byte 0x0000FFFF
@@ -41,7 +41,7 @@ _0823D7B4:
 	ldr r0, [r4, #0x24]
 	adds r1, r4, #0
 	adds r1, #0x1c
-	bl FUN_08231b58
+	bl Script_ExecByPointer
 _0823D7BE:
 	cmp r0, #0
 	bne _0823D7CA

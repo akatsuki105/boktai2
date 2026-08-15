@@ -6,7 +6,7 @@
 	cmp r0, #0
 	beq _080E6764
 	movs r1, #0
-	bl FUN_082318ac
+	bl Script_ExecById
 _080E6764:
 	pop {r0}
 	bx r0

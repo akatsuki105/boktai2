@@ -11,7 +11,7 @@
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0807B3AE
-	bl fetch_082316e4
+	bl Script_GetValue
 	adds r1, r0, #0
 	adds r0, r4, #0
 	bl FUN_08060ec8
@@ -35,7 +35,7 @@ _0807B398:
 	bl prepare_08231510
 	cmp r0, #0
 	beq _0807B3AE
-	bl fetch_082316e4
+	bl Script_GetValue
 	movs r2, #0x9c
 	lsls r2, r2, #4
 	adds r1, r5, r2

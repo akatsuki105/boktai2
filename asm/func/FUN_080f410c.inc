@@ -358,7 +358,7 @@ _080F437C:
 	add r0, sp, #0x10
 	str r0, [r1, #4]
 	ldrh r0, [r2]
-	bl FUN_082318ac
+	bl Script_ExecById
 _080F43DE:
 	ldrb r0, [r4]
 	movs r2, #0x90
