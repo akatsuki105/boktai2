@@ -19,7 +19,7 @@
 	str r0, [r1]
 	ldr r0, _082475CC @ =0x030057C0
 	str r4, [r0]
-	ldr r1, _082475D0 @ =0x030057B0
+	ldr r1, _082475D0 @ =gSolarSensorManager
 	movs r0, #0xff
 	str r0, [r1]
 	ldr r1, _082475D4 @ =0x030057C4
@@ -67,7 +67,7 @@ _082475C0: .4byte 0x030057B8
 _082475C4: .4byte 0x030057CC
 _082475C8: .4byte 0x00003128
 _082475CC: .4byte 0x030057C0
-_082475D0: .4byte 0x030057B0
+_082475D0: .4byte gSolarSensorManager
 _082475D4: .4byte 0x030057C4
 _082475D8: .4byte 0x030057C8
 _082475DC: .4byte 0x04000208

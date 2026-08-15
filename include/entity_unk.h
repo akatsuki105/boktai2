@@ -32,12 +32,12 @@ Entity_03002c68* FUN_081dfc64(void);  // Create
 
 // --------------------------------------------
 
-struct Unk_0200865c;
+struct Entity2UnkData;
 
 typedef struct {
   Entity e;  // ENTITY_UNK_2
-  struct Unk_0200865c* unk_18;
-  struct Unk_0200865c* unk_1c;
+  struct Entity2UnkData* unk_18;
+  struct Entity2UnkData* unk_1c;
 } Entity2;
 static_assert(sizeof(Entity2) == 32);
 

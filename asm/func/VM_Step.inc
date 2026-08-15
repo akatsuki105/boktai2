@@ -183,7 +183,7 @@ _08231402:
 	mov r1, sp
 	bl VM_ReadContainerLength
 	adds r4, r0, #0
-	bl Script_RunExpression
+	bl VM_RunExpression
 	b _08231428
 _08231412:
 	adds r0, r4, #0

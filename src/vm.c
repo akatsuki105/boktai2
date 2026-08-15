@@ -4,8 +4,7 @@
 #include "global.h"
 #include "malloc.h"
 
-void FUN_08230e30(u16 id, void* r1, s32 r2);
-bool32 FUN_082326d8(void);
+void VM_ClearScratchpad(void);
 
 // a.k.a. Script_ReadLength, https://boktaihacking.net/wiki/Bytecode#Container_lengths
 NAKED u8* VM_ReadContainerLength(u8* pc, u32* length) { INCFUNC("asm/func/VM_ReadContainerLength.inc"); }
@@ -120,7 +119,84 @@ NAKED s32 Script_ExecById(u32 scriptID, UNK_PTR r1) { INCFUNC("asm/func/Script_E
 
 NAKED s32 FUN_082318d0(u8* pc) { INCFUNC("asm/func/FUN_082318d0.inc"); }
 
-INCASM("asm/vm.inc");
+NAKED UNK_PTR FUN_0823193c(UNK_PTR p, u32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0823193c.inc"); }
+
+NAKED char* Textbox_LookupString(s32 stringID) { INCFUNC("asm/func/Textbox_LookupString.inc"); }
+
+/**
+ * @param d &gScriptDirectory (0x08cbf248)
+ */
+NAKED s32 Script_LoadIndex(ScriptDirectory* d) { INCFUNC("asm/func/Script_LoadIndex.inc"); }
+
+NAKED UNK_PTR FUN_08231a74(void) { INCFUNC("asm/func/FUN_08231a74.inc"); }
+
+NAKED void VM_SaveScriptTable(ScriptTable* tbl) { INCFUNC("asm/func/VM_SaveScriptTable.inc"); }
+
+NAKED void VM_RestoreScriptTable(ScriptTable* tbl) { INCFUNC("asm/func/VM_RestoreScriptTable.inc"); }
+
+NAKED bool32 Script_ExecBlock(u8* pc, UNK_PTR param_2, s32 param_3) { INCFUNC("asm/func/Script_ExecBlock.inc"); }
+
+NAKED s32 Script_ExecByPointer(u8* pc, UNK_PTR param_2) { INCFUNC("asm/func/Script_ExecByPointer.inc"); }
+
+NAKED s32 Script_Exec(u8* pc, UNK_PTR param_2, UNK_PTR param_3) { INCFUNC("asm/func/Script_Exec.inc"); }
+
+NAKED void FUN_08231ba8(void) { INCFUNC("asm/func/FUN_08231ba8.inc"); }
+
+NAKED s32 FUN_08231bcc(void) { INCFUNC("asm/func/FUN_08231bcc.inc"); }
+
+void FUN_08231be0(u32 scriptID) { gMapInitScriptID = scriptID; }
+
+NAKED void FUN_08231bec(void) { INCFUNC("asm/func/FUN_08231bec.inc"); }
+
+void VM_ClearScratchpad_Proxy(void) { VM_ClearScratchpad(); }
+
+NAKED void RandomizeGameStateAddr(void) { INCFUNC("asm/func/RandomizeGameStateAddr.inc"); }
+
+void FUN_08231c80(void) {
+  ClearMemory(gWorld, sizeof(World));
+  ClearMemory(gStat, sizeof(GameInfo));
+}
+
+NAKED void FUN_08231ca8(void) { INCFUNC("asm/func/FUN_08231ca8.inc"); }
+
+void Save_BackupStatAndWorld(void) {
+  FUN_08230ab0((void*)gStatBackup, (void*)gStat, sizeof(GameInfo));
+  FUN_08230ab0((void*)gWorldBackup, (void*)gWorld, sizeof(World));
+}
+
+void RestoreGameState(void) {
+  FUN_08230ab0((void*)gStat, (void*)gStatBackup, sizeof(GameInfo));
+  FUN_08230ab0((void*)gWorld, (void*)gWorldBackup, sizeof(World));
+}
+
+// gStat を フィールド単位でバックアップするための関数
+void FUN_08231d5c(void* statFieldPtr, s32 bytesize) {
+  s32 offset = (s32)statFieldPtr - (s32)gStat;
+  FUN_08230ab0((u8*)gStatBackup + offset, (u8*)statFieldPtr, bytesize);
+}
+
+// gStatのフィールドのアドレスを受け取り、gStatBackupの対応するフィールドのアドレスを返す
+void* FUN_08231d80(void* statFieldPtr) {
+  s32 offset = (s32)statFieldPtr - (s32)gStat;
+  return (u8*)gStatBackup + offset;
+}
+
+void VM_ClearScratchpad(void) { ClearMemory(gScratch, sizeof(UnkGameStruct)); }
+
+// https://boktaihacking.net/wiki/Bytecode#Opcode_0x10_(pointer), https://boktaihacking.net/wiki/Bytecode#Opcode_0x20_(indexed_pointer)
+NAKED void Script_LoadPointer(void* src, s32 cmdAndArgs, s32 offset, void* out) { INCFUNC("asm/func/Script_LoadPointer.inc"); }
+
+NAKED u8* ReadMemory(u8* pc, u32* op, void* out) { INCFUNC("asm/func/ReadMemory.inc"); }
+
+NAKED void Script_StorePointerCore(void* dst, s32 cmdAndArgs, s32 offset, u32 val) { INCFUNC("asm/func/Script_StorePointerCore.inc"); }
+
+NAKED u8* Script_StorePointer(u8* pc, u32 val) { INCFUNC("asm/func/Script_StorePointer.inc"); }
+
+NAKED u8* FUN_0823201c(u8* pc, u8* dst) { INCFUNC("asm/func/FUN_0823201c.inc"); }
+
+NAKED void FUN_0823206c(u8* pc, s32 offset, u32 val) { INCFUNC("asm/func/FUN_0823206c.inc"); }
+
+NAKED void* FUN_082320e4(u8* pc, s32 offset) { INCFUNC("asm/func/FUN_082320e4.inc"); }
 
 NAKED u8* FUN_08232160(u8* pc) { INCFUNC("asm/func/FUN_08232160.inc"); }
 
@@ -158,8 +234,10 @@ void FUN_082324b0(void) {
   VM_AddCtrlHandlers(&gCtrlHandlers1);
 }
 
-// 0x082324dc, a.k.a Script_RunOperator
-s32 Arithmetic(u32 opcode, s32 a, s32 b) {
+/**
+ * @param opcode 0xA1..0xBF, https://boktaihacking.net/wiki/Bytecode#Opcode_0xa0-0xbf_(operator)
+ */
+s32 VM_RunOperator(u32 opcode, s32 a, s32 b) {
   switch (opcode - 1) {
     case 0: {
       return -b;
@@ -238,12 +316,4 @@ s32 Arithmetic(u32 opcode, s32 a, s32 b) {
   }
 }
 
-NAKED void* Script_RunExpression(u8* code) { INCFUNC("asm/func/Script_RunExpression.inc"); }
-
-void FUN_082326a0(void) {
-  void* p = Malloc(3620);
-  ClearMemory(p, 3620);
-  FUN_08230e30(0x56c2, p, 1);
-  gUnkPtr = p;
-  FUN_082326d8();
-}
+NAKED u32 VM_RunExpression(u8* pc) { INCFUNC("asm/func/VM_RunExpression.inc"); }

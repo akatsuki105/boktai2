@@ -46,7 +46,7 @@ _0823AAE0:
 	str r5, [r0]
 	str r5, [r6, #0x1c]
 	bl FUN_0823a9c4
-	bl FUN_08231c1c
+	bl VM_ClearScratchpad_Proxy
 	ldr r0, _0823AB2C @ =0x03002B28
 	ldrh r4, [r0]
 	cmp r4, #0

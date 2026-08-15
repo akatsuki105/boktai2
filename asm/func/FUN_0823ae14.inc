@@ -4,7 +4,7 @@
 	str r1, [r2]
 	str r1, [r0, #0x1c]
 	bl FUN_0823a9c4
-	bl FUN_08231c1c
+	bl VM_ClearScratchpad_Proxy
 	ldr r0, _0823AE4C @ =0x03002B28
 	ldrh r4, [r0]
 	cmp r4, #0

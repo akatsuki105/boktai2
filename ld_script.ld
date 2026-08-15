@@ -46,12 +46,16 @@ SECTIONS {
     ALIGN(4)
     {
       src/iwram1.o(iwram_data);
+      src/sound.o(iwram_data);
+      src/solar_sensor.o(iwram_data);
       src/lib/libagbrtc.o(.bss);
       *libgcc.a:dp-bit.o(.bss);
       *libgcc.a:fp-bit.o(.bss);
       *libc.a:syscalls.o(.bss);
       src/lib/m4a.o(.bss.code);
       src/iwram2.o(iwram_data);
+      src/sound.o(COMMON);
+      src/solar_sensor.o(COMMON);
       src/lib/librfu_stwi.o(iwram_data);
       . = ALIGN(16);
       src/lib/librfu_rfu.o(iwram_data);
@@ -96,6 +100,7 @@ SECTIONS {
 			src/code_0820fb20.o (.text);
 			src/code_0821a2bc.o (.text);
 			src/code_0821b860.o (.text);
+			src/system.o (.text);
 			src/code_0822f204.o (.text);
 			src/code_0822f650.o (.text);
 			src/code_0823071c.o (.text);
@@ -104,11 +109,13 @@ SECTIONS {
 			src/code_08230d30.o (.text);
 			src/code_08230b88.o (.text);
 			src/vm.o (.text);
+			src/code_082326a0.o (.text);
 			src/code_082324dc.o (.text);
 			src/lib/linkManager.o (.text);
 			src/code_0823a6c0.o (.text);
 			src/vm_0823b190.o (.text);
 			src/code_0823b258.o (.text);
+			src/code_0823b540.o (.text);
 			src/camera.o (.text);
 			src/time.o (.text);
 			src/sound.o (.text);
@@ -127,6 +134,7 @@ SECTIONS {
       src/lib/m4a_1.o (.text);
 			src/lib/m4a.o (.text);
 			src/code_08245c4c.o (.text);
+			src/solar_sensor.o (.text);
 			src/lib/librfu_stwi.o (.text);
       src/lib/librfu_intr.o (.text);
       src/lib/librfu_rfu.o (.text);

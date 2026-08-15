@@ -9,7 +9,7 @@ void weapon_08065924(Player* p);
 void armor_08065988(Player* p);
 void CheckHeartJokerEmblem(Player* p);
 void FUN_08061294(Player* p);
-void FUN_08063b6c(Player* p);
+void Player_Init_Helper_08063b6c(Player* p);
 void FUN_0807ddbc(Player* p);
 void FUN_08065240(Player* p);
 
@@ -61,7 +61,7 @@ static s32 Player_Init(Player* p, u32 n, void* _) {
   armor_08065988(p);
   CheckHeartJokerEmblem(p);
   FUN_08061294(p);
-  FUN_08063b6c(p);
+  Player_Init_Helper_08063b6c(p);
   FUN_0807ddbc(p);
   FUN_08065240(p);
   gPlayerPtr[p->unk_28] = p;

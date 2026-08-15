@@ -41,6 +41,7 @@ typedef struct {
 static_assert(sizeof(ScriptDirectory) == 961568);
 
 // RAM に ScriptDirectory を読み込む際に相対オフセットを絶対アドレスに変換したもの
+// レイアウトがちょっと違うかも(根拠: VM_RestoreScriptTable)
 typedef struct {
   s32* entries;                     // 0x00, = ScriptDirectory.script_entries
   s32 scriptCount;                  // 0x04, = 11539, length of ScriptDirectory.script_entries
@@ -87,7 +88,8 @@ s32 VM_AddCtrlHandlers(SubroutineTable*);  // gCtrlHandlers に gCtrlHandlers1 o
 
 // --------------------------------------------
 
-extern VM gVM;  // 0x030045A0
+extern u16 gMapInitScriptID;  // 0x03002B28
+extern VM gVM;                // 0x030045A0
 
 u8* VM_GetPC(void);
 void VM_SetPC(u8* addr);

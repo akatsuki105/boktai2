@@ -15,7 +15,7 @@
 	bne _08247464
 	movs r0, #0
 	movs r1, #0
-	bl FUN_082473e0
+	bl SSE_Create
 	mov sl, r0
 	cmp r0, #0
 	bne _08247464

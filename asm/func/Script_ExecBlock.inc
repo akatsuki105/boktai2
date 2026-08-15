@@ -46,7 +46,7 @@ _08231B28:
 	mov r1, sp
 	bl VM_ReadContainerLength
 	adds r4, r0, #0
-	bl Script_RunExpression
+	bl VM_RunExpression
 _08231B36:
 	ldr r1, _08231B40 @ =gVM
 	str r0, [r1, #4]

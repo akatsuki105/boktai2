@@ -8,6 +8,7 @@
 #include "weapon.h"
 
 struct Player;
+struct SolarSensorEntity;
 
 typedef void (*PlayerFunc)(struct Player*);
 
@@ -42,6 +43,24 @@ typedef struct {
   s16 unk_276;
 } Player_264;
 
+typedef struct {
+  u8 unk_0[72];  // 0x0
+} Player4c4_0c;
+
+typedef struct Player4c4 {
+  u8 unk_0;  // 0x000
+  u8 unk_1;  // 0x001
+  u8 unk_2;  // 0x002
+  u8 unk_3;  // 0x003
+  u8 unk_4;  // 0x004
+  u8 unk_5;  // 0x005
+  u8 unk_6[2];
+  u32 unk_8;                                                     // 0x008
+  Player4c4_0c unk_c[4];                                         // 0x00C
+  void (*fn_12c)(struct SolarSensorEntity*, struct Player4c4*);  // 0x12C, SSE_Update(0x0824736c)　で実行
+  // 304バイト, これ以上続くのかは不明
+} Player4c4;
+
 // 通信対戦の相手キャラもこの構造体を使う
 typedef struct Player {
   Entity e;
@@ -50,7 +69,7 @@ typedef struct Player {
   u16 unk_20;
   u16 unk_22;
 
-  // FUN_08081ab0 によるとここから Unk_0200865c
+  // FUN_08081ab0 と Player_Destroy によるとここから Entity2UnkData
   u16 unk_24;  // 0x024
   u16 unk_26;
   u8 unk_28;  // 0x028, gPlayerPtr のインデックス, 0..3
@@ -115,7 +134,9 @@ typedef struct Player {
   s16 unk_3f6;
   u8 unk_3f8[68];
   u16 unk_43c[3];
-  u8 unk_442[1402];
+  u8 unk_442[130];
+  Player4c4 unk_4c4;  // 0x4C4
+  u8 unk_5f4[968];
   u16 unk_9bc;
   u16 pad_9be;
   s32 scriptID_9c0;  // 0x9C0

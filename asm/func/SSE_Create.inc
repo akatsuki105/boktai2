@@ -10,12 +10,12 @@
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _08247424
-	ldr r1, _0824741C @ =FUN_0824736c
-	ldr r2, _08247420 @ =0x0824739D
+	ldr r1, _0824741C @ =SSE_Update
+	ldr r2, _08247420 @ =SSE_Destroy
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_082473a8
+	bl SSE_Init
 	cmp r0, #0
 	bge _08247424
 	adds r0, r4, #0
@@ -24,8 +24,8 @@
 	b _08247426
 	.align 2, 0
 _08247418: .4byte 0x030026B0
-_0824741C: .4byte FUN_0824736c
-_08247420: .4byte 0x0824739D
+_0824741C: .4byte SSE_Update
+_08247420: .4byte SSE_Destroy
 _08247424:
 	adds r0, r4, #0
 _08247426:

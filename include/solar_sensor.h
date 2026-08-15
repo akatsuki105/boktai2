@@ -5,11 +5,13 @@
 #include "gba/gba.h"
 #include "types.h"
 
-typedef struct {
-  ENTITY;        // 0x00
-  u32 unk_18;    // 0x18
-  void* anim;    // 0x1C
-  u8 unk_20[4];  // 0x20
+struct Player4c4;
+
+typedef struct SolarSensorEntity {
+  ENTITY;                    // 0x00
+  u32 unk_18;                // 0x18
+  void* anim;                // 0x1C
+  struct Player4c4* unk_20;  // 0x20
 } SolarSensorEntity;
 static_assert(sizeof(SolarSensorEntity) == 36);  // 0x082473e0 で 36バイトで作っている
 
@@ -26,8 +28,6 @@ typedef struct {
 } SolarSensorInterface;
 static_assert(sizeof(SolarSensorInterface) == 24);
 
-extern SolarSensorInterface gSSI;
-
 // SolarSensorInterface が高レベルなインターフェースだったなら、こっちは低レベルなインターフェース(ドライバ)だと思われる
 typedef struct {
   u32 unk_00;        // 0x00
@@ -42,5 +42,10 @@ typedef struct {
 static_assert(sizeof(SolarSensorManager) == 32);
 
 extern SolarSensorManager gSolarSensorManager;  // 0x030057B0
+
+// --------------------------------------------
+
+void Sensor_Disable(void);
+s32 Sensor_GetRawLevel(void);
 
 #endif  // __INCLUDE_SOLAR_SENSOR_H__

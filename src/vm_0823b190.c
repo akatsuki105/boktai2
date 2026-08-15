@@ -11,13 +11,13 @@ void* VM_Ctrl_Unused_0BB3(void) { return NULL; }
 // https://boktaihacking.net/wiki/Bytecode#Control_0xc8bb_(load_map)
 void* VM_Ctrl_LoadMap(void) {
   void* bVar2;
-  u16 n = (u16)Script_GetValue();
+  u16 scriptID = (u16)Script_GetValue();
   u32_03004798 = 0x01;
   if ((prepare_08231510(0x6E) == 0) || ((VM_GetPC() != NULL) && (Script_GetValue() == 0))) {
     u32_03004798 |= 0x10;
   }
-  FUN_08231be0((s16)n);
-  gStat->unk_24c = n;
+  FUN_08231be0((s16)scriptID);
+  gStat->mapInitScriptID = scriptID;
   return NULL;
 }
 

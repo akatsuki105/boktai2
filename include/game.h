@@ -73,7 +73,7 @@ typedef struct {
   u8 unk_23c[4];                 // 0x23C
   s16 unk_240;                   // 0x240
   u8 unk_242[10];                // 0x242
-  u32 unk_24c;                   // 0x24C
+  s32 mapInitScriptID;           // 0x24C, Current map's init script ID
   s16 playerKind;                // 0x250, see PlayerKind in player.h
   coffin_t coffin;               // 0x252
   s16 areaID;                    // 0x254, current area ID
@@ -130,7 +130,7 @@ static_assert(sizeof(UnkGameStruct) == 1024);  // Script_StorePointer で World 
 
 // --------------------------------------------
 
-extern UnkGameStruct* gScratch;  // 0x03004690
+extern UnkGameStruct* gScratch;  // 0x03004690, 多分VM用のスクラッチパッド
 extern World* gWorldBackup;      // 0x03004694, Pointer to backup of the world struct (created on screen transitions, reloaded on death, saved to save file when saving)
 extern World* gWorld;            // 0x03004698
 extern GameInfo* gStatBackup;    // 0x0300469C

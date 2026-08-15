@@ -2,10 +2,9 @@
 #include "solar.h"
 
 #include "global.h"
+#include "solar_sensor.h"
 #include "time.h"
 
-s32 Sensor_GetRawLevel(void);
-void Sensor_Disable(void);
 u32 FUN_0823d9ec(u32 y0, u32 m0, u32 d0, u32 y1, u32 m1, u32 d1);
 
 NAKED void FUN_08241650(void) { INCFUNC("asm/func/FUN_08241650.inc"); }

@@ -11,7 +11,10 @@
 #include "time.h"
 #include "vm.h"
 
-IWRAM_DATA u8 u8_03002b28[48] = {};  // todo
+IWRAM_DATA u16 gMapInitScriptID = 0;     // 0x03002B28
+IWRAM_DATA UNK_PTR PTR_03002b2c = NULL;  // 0x03002B2C
+
+IWRAM_DATA u8 u8_03002b30[40] = {};  // todo
 
 IWRAM_DATA Entity* gUnkEntity1Ptr_03002b58 = NULL;  // 0x03002B58, Malloc(908) で確保したバッファを指すポインタ, RFU関連? (FUN_0804e2c0)
 
@@ -70,8 +73,9 @@ IWRAM_DATA World* gWorld = NULL;            // 0x03004698
 IWRAM_DATA GameInfo* gStatBackup = NULL;    // 0x0300469C
 IWRAM_DATA GameInfo* gStat = NULL;          // 0x030046A0
 
-IWRAM_DATA void* gUnkPtr = NULL;      // Malloc(3620) で確保したバッファを指すポインタ (FUN_082326a0)
-IWRAM_DATA u8 u8_030046a8[152] = {};  // todo
+struct Unk030046a4;
+IWRAM_DATA struct Unk030046a4* gUnk030046a4 = NULL;  // Malloc(3620) で確保したバッファを指すポインタ (FUN_082326a0)
+IWRAM_DATA u8 u8_030046a8[152] = {};                 // todo
 
 IWRAM_DATA LINK_MANAGER lman = {};  // 0x03004740
 
@@ -104,30 +108,3 @@ IWRAM_DATA ALIGNED(4) u16 u16_ARRAY_03004874[6] = {};
 IWRAM_DATA u8 u8_03004880[16] = {};
 
 // --------------------------------------------
-
-IWRAM_DATA struct SoundInfo gSoundInfo = {};  // 0x03004890
-IWRAM_DATA MPlayFunc gMPlayJumpTable[36] = {};
-IWRAM_DATA struct CgbChannel gCgbChans[4] = {};
-
-// 0x030053A0
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_00 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_01 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_02 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_03 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_04 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_05 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_06 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_07 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_08 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_09 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_10 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_11 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_12 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_13 = {};
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_14 = {};
-
-IWRAM_DATA u8 gMPlayMemAccArea[16] = {};  // 0x03005760
-
-IWRAM_DATA struct MusicPlayerInfo gMPlayInfo_15 = {0};  // 0x03005770
-
-IWRAM_DATA SolarSensorManager gSolarSensorManager = {};  // 0x030057B0

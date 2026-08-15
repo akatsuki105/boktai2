@@ -42,7 +42,7 @@ _0823264A:
 _08232650:
 	ldr r1, [r4]
 	ldr r2, [r4, #8]
-	bl Arithmetic
+	bl VM_RunOperator
 	str r0, [r4]
 	movs r0, #0
 	str r0, [r4, #4]

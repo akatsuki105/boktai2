@@ -3,6 +3,31 @@
 #include "global.h"
 #include "vm.h"
 
+IWRAM_DATA ALIGNED(16) struct MusicPlayerTrack gMPlayTracks[50] = {};  // 0x03001710
+
+COMMON_DATA struct SoundInfo gSoundInfo = {};  // 0x03004890
+COMMON_DATA MPlayFunc gMPlayJumpTable[36] = {};
+COMMON_DATA struct CgbChannel gCgbChans[4] = {};
+
+// 0x030053A0
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_00 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_01 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_02 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_03 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_04 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_05 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_06 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_07 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_08 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_09 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_10 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_11 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_12 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_13 = {};
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_14 = {};
+COMMON_DATA u8 gMPlayMemAccArea[16] = {};                // 0x03005760
+COMMON_DATA struct MusicPlayerInfo gMPlayInfo_15 = {0};  // 0x03005770
+
 NAKED void sound_08240264(SoundID32 id) { INCFUNC("asm/func/sound_08240264.inc"); }
 
 void FUN_082402c8(void) {

@@ -186,9 +186,9 @@ FUN_080639f8: @ 0x080639F8
 FUN_08063b24: @ 0x08063B24
   .include "asm/func/FUN_08063b24.inc"
 
-	thumb_func_start FUN_08063b6c
-FUN_08063b6c: @ 0x08063B6C
-  .include "asm/func/FUN_08063b6c.inc"
+	thumb_func_start Player_Init_Helper_08063b6c
+Player_Init_Helper_08063b6c: @ 0x08063B6C
+  .include "asm/func/Player_Init_Helper_08063b6c.inc"
 
 	thumb_func_start FUN_08063d00
 FUN_08063d00: @ 0x08063D00

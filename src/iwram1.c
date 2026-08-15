@@ -47,6 +47,3 @@ IWRAM_DATA u32 DAT_030016fc = 0;
 IWRAM_DATA u32 DAT_03001700 = 0;
 IWRAM_DATA u32 DAT_03001704 = 0;
 IWRAM_DATA UnkSolarEntity* gUnkSolarEntity = NULL;  // 0x03001708
-IWRAM_DATA ALIGNED(16) struct MusicPlayerTrack gMPlayTracks[50] = {};
-
-IWRAM_DATA SolarSensorInterface gSSI = {};  // 0x030026B0

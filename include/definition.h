@@ -19,10 +19,10 @@ extern u16 u16_0300486c;
 extern u16 u16_03004870;
 extern u16 u16_ARRAY_03004874[6];
 extern u32 u32_ARRAY_0203f400[256];
-extern void* gUnkPtr;
 
 // --------------------------------------------
 
 void FUN_0809c464(void);
+bool32 FUN_08234de8(UNK_PTR* p, u32 param_2, u32 param_3, u32 param_4);
 
 #endif  // GUARD_ZOKTAI_DEFINITION_H
