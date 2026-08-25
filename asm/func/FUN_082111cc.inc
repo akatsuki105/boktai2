@@ -3,7 +3,7 @@
 	adds r6, r5, #0
 	adds r6, #0x25
 	ldrb r0, [r6]
-	bl FUN_082110dc
+	bl CheckPhotoUnlocked
 	cmp r0, #0
 	beq _08211224
 	ldr r0, _0821121C @ =0x0000086C

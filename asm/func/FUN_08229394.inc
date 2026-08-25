@@ -10,7 +10,7 @@
 	bne _082293B8
 	ldr r0, _0822941C @ =0x0000BB34
 	movs r1, #0
-	bl FUN_08229c6c
+	bl Entity8AAB_Create
 	adds r6, r0, #0
 	cmp r6, #0
 	bne _082293B8

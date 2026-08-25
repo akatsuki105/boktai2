@@ -95,7 +95,7 @@ _0806F86C:
 _0806F870: .4byte 0x00000A78
 _0806F874:
 	movs r0, #3
-	bl FUN_0807a8c0
+	bl GetWeaponSkillLevel
 	ldr r1, [r4]
 	adds r1, #0x40
 	movs r4, #0
@@ -131,7 +131,7 @@ _0806F8B4:
 _0806F8B8: .4byte 0x00000366
 _0806F8BC:
 	movs r0, #4
-	bl FUN_0807a8c0
+	bl GetWeaponSkillLevel
 	cmp r0, #0x62
 	ble _0806F8D8
 	ldr r4, _0806F8D4 @ =0x00000A78
@@ -144,7 +144,7 @@ _0806F8BC:
 _0806F8D4: .4byte 0x00000A78
 _0806F8D8:
 	movs r0, #4
-	bl FUN_0807a8c0
+	bl GetWeaponSkillLevel
 	movs r1, #0xa
 	bl Div
 	ldr r1, _0806F8FC @ =0x00000A78

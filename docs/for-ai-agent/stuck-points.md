@@ -179,7 +179,7 @@ functions that end up MATCHING.
      uses a fresh register (r2); original places it right before its
      first use (reusing r1, freed right after the preceding pointer
      store) instead of hoisting.
-  2. For `GAME->unk_940 = u16_03004870;`, original fully computes the
+  2. For `GAME->lx = u16_03004870;`, original fully computes the
      LHS field address (`GAME` deref + `0x940` offset add) *before*
      loading the RHS pool value; my compiled code loads the RHS value
      partway through computing the LHS address (interleaved), needing an
@@ -194,9 +194,9 @@ functions that end up MATCHING.
   present); splitting the second field's RHS into an explicit `u16 tmp`
   local before the store (**adopted, genuine improvement, 610→475**, kept
   in the candidate); doing the same for the first field (`tmp =
-  u16_03004870; GAME->unk_940 = tmp;`) — made it *worse* (order flipped
+  u16_03004870; GAME->lx = tmp;`) — made it *worse* (order flipped
   further, extra insertions); introducing local pointer variables
-  (`u16* p940 = &GAME->unk_940;` etc.) for one or both fields — caused
+  (`u16* p940 = &GAME->lx;` etc.) for one or both fields — caused
   the compiler to CSE/cache the `GAME` dereference across both field
   writes instead of reloading it fresh per field like the original does
   (fewer instructions than original, wrong shape); grouping the three

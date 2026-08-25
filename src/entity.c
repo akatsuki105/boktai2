@@ -5,6 +5,67 @@
 
 void Free(void* p);
 
+// clang-format off
+const EntityList gDefaultEntityManager[ENTITY_KINDS] = {
+    {
+        .head = NULL,
+        .disableFlags = 0x0
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0x0
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0x0
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0x0
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0x1
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0x7
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0x7
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0x1
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0xF
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0x7
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0xF
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0x1
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0x0
+    },
+    {
+        .head = NULL,
+        .disableFlags = 0x0
+    }
+}; // 0x085B0158
+// clang-format on
+
 // 0x08230b44
 void ResetEntityManager(void) {
   DmaCopy32(3, gDefaultEntityManager, gEntityManager, sizeof gEntityManager);
@@ -14,25 +75,25 @@ void ResetEntityManager(void) {
 // 0x08230b68
 void AddEntity(Entity* p) {
   const u32 n = p->kind;
-  EntityHeader* h = &gEntityManager[n];
-  Entity* cur = h->entity;
+  EntityList* h = &gEntityManager[n];
+  Entity* cur = h->head;
   if (cur != NULL) {
     cur->prev = p;
   }
   p->next = cur;
-  h->entity = p;
+  h->head = p;
 }
 
 void RemoveEntity(Entity* p) {
   const u32 n = p->kind;
-  EntityHeader* h = &gEntityManager[n];
+  EntityList* h = &gEntityManager[n];
 
   Entity* prev = p->prev;
   Entity* next = p->next;
   if (prev != NULL) {
     prev->next = next;
   } else {
-    h->entity = next;
+    h->head = next;
   }
   if (next != NULL) next->prev = prev;
 }
@@ -59,11 +120,11 @@ void SetEntityRoutine(void* entity, void* entity_func_onupdate, void* entity_fun
 // Entityをすべて更新する, ゲームの要素はすべて Entity で表されてるっぽいので 実質的な gameloop
 void UpdateAllEntities(void) {
   s32 i;
-  EntityHeader* h = gEntityManager;
+  EntityList* h = gEntityManager;
   for (i = 0; i < ENTITY_KINDS; i++, h++) {
-    if ((u32_030044bc & h->unk_04) == 0) {
+    if (!(gEntityDisableFlags & h->disableFlags)) {
       Entity* p;
-      Entity* list = h->entity;
+      Entity* list = h->head;
       while (p = list, p != NULL) {
         list = p->next;
         if (!(p->unk_12 & E_FLAG_DELETE)) {
@@ -99,10 +160,10 @@ s32 entity_08230c78(Entity* p) {
 
 void entity_08230ca4(s32 r0) {
   s32 i;
-  EntityHeader* h = gEntityManager;
+  EntityList* h = gEntityManager;
   for (i = 0; i < ENTITY_KINDS; i++, h++) {
     Entity* p;
-    Entity** cur = &h->entity;
+    Entity** cur = &h->head;
     for (p = *cur; p != NULL; p = p->next) {
       if (p->unk_16 < r0) {
         KillEntity(p);
@@ -113,10 +174,10 @@ void entity_08230ca4(s32 r0) {
 
 Entity* FindEntity(u16 entityID) {
   s32 i;
-  EntityHeader* h = gEntityManager;
+  EntityList* h = gEntityManager;
   for (i = 0; i < ENTITY_KINDS; i++, h++) {
     Entity* p;
-    for (p = h->entity; p != NULL; p = p->next) {
+    for (p = h->head; p != NULL; p = p->next) {
       if (p->id == entityID) {
         return p;
       }

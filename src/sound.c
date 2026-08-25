@@ -96,9 +96,12 @@ NAKED void FUN_08240668(void) { INCFUNC("asm/func/FUN_08240668.inc"); }
 
 NAKED void FUN_08240680(void) { INCFUNC("asm/func/FUN_08240680.inc"); }
 
-NAKED void PlaySound_082406e0(SoundID32 id) { INCFUNC("asm/func/PlaySound_082406e0.inc"); }
+void PlaySound_082406e0(SoundID32 id) {
+  if (!(gEntityDisableFlags & ((1 << 2) | (1 << 1)))) gSoundIDs[gSongTable[id].ms] = id;
+  m4aSongNumStart(id);
+}
 
-NAKED void PlaySound_08240718(SoundID16 id) { INCFUNC("asm/func/PlaySound_08240718.inc"); }
+void PlaySound_08240718(SoundID16 id) { m4aSongNumStart(id); }
 
 NAKED void sound_08240728(void) { INCFUNC("asm/func/sound_08240728.inc"); }
 

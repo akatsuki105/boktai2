@@ -23,7 +23,7 @@
 	bl Script_GetKeywordValue
 	cmp r0, #0
 	beq _0823B620
-	bl FUN_0823b56c
+	bl Map_LoadCollisionMapFile
 	b _0823B650
 _0823B620:
 	cmp r4, #0

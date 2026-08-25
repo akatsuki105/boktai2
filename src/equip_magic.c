@@ -1,18 +1,17 @@
 #include "global.h"
-#include "magic.h"
 #include "player.h"
 #include "vm.h"
 
 void FUN_0809c2d0(void);
 void FUN_08064fd8(Player* p, magic32_t n);
 
-s32 FUN_0824347c(s32 n) {
-  if (n < 10) {
-    return 0;
-  } else if (n < 14) {
-    return 1;
+s32 GetMagicCategory(magic32_t id) {
+  if (id < 10) {
+    return MC_LUNA;
+  } else if (id < 14) {
+    return MC_SOL;
   } else {
-    return 2;
+    return MC_DARK;
   }
 }
 

@@ -3,6 +3,8 @@
 
 #include "gba/types.h"
 
+typedef u16 eepromAdr;  // EEPROM address
+
 // error codes
 #define EEPROM_OUT_OF_RANGE 0x80FF
 #define EEPROM_COMPARE_FAILED 0x8000
@@ -27,8 +29,8 @@ extern const eepromType* gEEPROMConfig;
  * @return 1 on invalid argument, 0 otherwise
  */
 u16 EEPROMConfigure(u16 unk_1);
-u16 EEPROMRead(u16 address, u16* data);
-u16 EEPROMCompare(u16 address, const u16* data);
-u16 EEPROMWrite0_8k_Check(u16 address, const u16* data);
+u16 EEPROMRead(eepromAdr address, u16* data);
+u16 EEPROMCompare(eepromAdr address, const u16* data);
+u16 EEPROMWrite0_8k_Check(eepromAdr address, const u16* data);
 
 #endif  // GUARD_GBA_EEPROM_H

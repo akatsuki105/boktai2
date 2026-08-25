@@ -747,13 +747,13 @@ FUN_080533ec: @ 0x080533EC
 	cmp r1, #2
 	bne _08053422
 	movs r1, #0x27
-	bl FUN_0822f63c
+	bl Sprite_SetPlttID
 	b _0805344E
 _08053422:
 	cmp r1, #1
 	bne _0805344E
 	movs r1, #0x26
-	bl FUN_0822f63c
+	bl Sprite_SetPlttID
 	b _0805344E
 _0805342E:
 	str r3, [sp]
@@ -4490,7 +4490,7 @@ _0805500C:
 	stm r2!, {r3, r4}
 	mov r0, sb
 	mov r1, ip
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	ldr r4, _080550F8 @ =0x0000922E
 	ldr r1, _080550FC @ =0x0000871C
 	adds r0, r4, #0
@@ -4553,7 +4553,7 @@ _08055078:
 	stm r1!, {r2, r3}
 	mov r0, sb
 	mov r1, ip
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 _080550B0:
 	movs r4, #0x20
 	add sb, r4
@@ -5283,7 +5283,7 @@ FUN_0805565c: @ 0x0805565C
 	adds r4, #0x34
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	movs r2, #0
 	str r2, [r5, #0x18]
 	str r2, [r5, #0x24]
@@ -5418,8 +5418,8 @@ _0805578C:
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_08055798
-FUN_08055798: @ 0x08055798
+	thumb_func_start Entity8D5C_Update
+Entity8D5C_Update: @ 0x08055798
 	push {r4, r5, r6, lr}
 	adds r5, r0, #0
 	ldr r6, _080557D4 @ =0x030044E0
@@ -5493,8 +5493,8 @@ _0805581C:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_08055828
-FUN_08055828: @ 0x08055828
+	thumb_func_start Entity8D5C_Init
+Entity8D5C_Init: @ 0x08055828
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x73
@@ -5534,8 +5534,8 @@ _08055878:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_08055880
-FUN_08055880: @ 0x08055880
+	thumb_func_start Entity8D5C_Create
+Entity8D5C_Create: @ 0x08055880
 	push {r4, lr}
 	movs r0, #4
 	movs r1, #0x30
@@ -5543,11 +5543,11 @@ FUN_08055880: @ 0x08055880
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080558B0
-	ldr r1, _080558AC @ =FUN_08055798
+	ldr r1, _080558AC @ =Entity8D5C_Update
 	movs r2, #0
 	bl SetEntityRoutine
 	adds r0, r4, #0
-	bl FUN_08055828
+	bl Entity8D5C_Init
 	cmp r0, #0
 	bge _080558B0
 	adds r0, r4, #0
@@ -5555,7 +5555,7 @@ FUN_08055880: @ 0x08055880
 	movs r0, #0
 	b _080558B2
 	.align 2, 0
-_080558AC: .4byte FUN_08055798
+_080558AC: .4byte Entity8D5C_Update
 _080558B0:
 	adds r0, r4, #0
 _080558B2:
@@ -6379,7 +6379,7 @@ _08055E7C:
 	stm r1!, {r3, r6}
 	adds r0, r5, #0
 	adds r1, r2, #0
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	adds r0, r4, #0
 	adds r0, #0x2c
 	movs r1, #1
@@ -6580,7 +6580,7 @@ _08055FCA:
 	b _08055FDC
 _08055FD6:
 	adds r0, #0x2c
-	bl FUN_0822f63c
+	bl Sprite_SetPlttID
 _08055FDC:
 	movs r0, #0
 _08055FDE:
@@ -23296,7 +23296,7 @@ _0805DC5C:
 	adds r0, r6, #0
 	adds r0, #0x1c
 	adds r1, r2, #0
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	adds r0, r6, #0
 	adds r0, #0x3c
 	movs r1, #7
@@ -26660,7 +26660,7 @@ FUN_0805f5bc: @ 0x0805F5BC
 	adds r5, #0x28
 	adds r0, r5, #0
 	adds r1, r2, #0
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	movs r4, #0x48
 	adds r4, r4, r7
 	mov sb, r4

@@ -142,7 +142,7 @@ For the next (address-order) function in the target `.s` file:
      mechanical. For each parameter:
      - If the type can be identified (from usage inside the function, or
        from already-decompiled call sites) → give it a real type and a
-       semantic name, e.g. `WeaponData* w`. For numeric (non-pointer)
+       semantic name, e.g. `WeaponTemplate* w`. For numeric (non-pointer)
        parameters, check for the `lsls`/`lsrs`/`asrs` truncation and
        sign-extension idioms cataloged in
        `docs/for-ai-agent/agbcc-quirks.md` (repo root) "Signedness &

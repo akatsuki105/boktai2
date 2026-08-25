@@ -2,30 +2,6 @@
 	.syntax unified
 	.text
 
-	thumb_func_start FUN_080613ec
-FUN_080613ec: @ 0x080613EC
-  .include "asm/func/FUN_080613ec.inc"
-
-	thumb_func_start FUN_08061458
-FUN_08061458: @ 0x08061458
-  .include "asm/func/FUN_08061458.inc"
-
-	thumb_func_start FUN_080614bc
-FUN_080614bc: @ 0x080614BC
-  .include "asm/func/FUN_080614bc.inc"
-
-	thumb_func_start FUN_0806161c
-FUN_0806161c: @ 0x0806161C
-  .include "asm/func/FUN_0806161c.inc"
-
-	thumb_func_start FUN_08061680
-FUN_08061680: @ 0x08061680
-  .include "asm/func/FUN_08061680.inc"
-
-	thumb_func_start FUN_080617bc
-FUN_080617bc: @ 0x080617BC
-  .include "asm/func/FUN_080617bc.inc"
-
 	thumb_func_start FUN_080617dc
 FUN_080617dc: @ 0x080617DC
   .include "asm/func/FUN_080617dc.inc"
@@ -54,9 +30,9 @@ FUN_08061b48: @ 0x08061B48
 FUN_08061b98: @ 0x08061B98
   .include "asm/func/FUN_08061b98.inc"
 
-	thumb_func_start FUN_08061bac
-FUN_08061bac: @ 0x08061BAC
-  .include "asm/func/FUN_08061bac.inc"
+	thumb_func_start Player_Init_Anim_08061bac
+Player_Init_Anim_08061bac: @ 0x08061BAC
+  .include "asm/func/Player_Init_Anim_08061bac.inc"
 
 	thumb_func_start FUN_08061c68
 FUN_08061c68: @ 0x08061C68
@@ -178,9 +154,9 @@ FUN_08063814: @ 0x08063814
 FUN_080639d0: @ 0x080639D0
   .include "asm/func/FUN_080639d0.inc"
 
-	thumb_func_start FUN_080639f8
-FUN_080639f8: @ 0x080639F8
-  .include "asm/func/FUN_080639f8.inc"
+	thumb_func_start Player_Update_Helper_080639f8
+Player_Update_Helper_080639f8: @ 0x080639F8
+  .include "asm/func/Player_Update_Helper_080639f8.inc"
 
 	thumb_func_start FUN_08063b24
 FUN_08063b24: @ 0x08063B24
@@ -274,21 +250,21 @@ FUN_08063fb8: @ 0x08063FB8
 FUN_08063fd0: @ 0x08063FD0
   .include "asm/func/FUN_08063fd0.inc"
 
-	thumb_func_start FUN_08063fe8
-FUN_08063fe8: @ 0x08063FE8
-  .include "asm/func/FUN_08063fe8.inc"
+	thumb_func_start CheckNamakuraProc
+CheckNamakuraProc: @ 0x08063FE8
+  .include "asm/func/CheckNamakuraProc.inc"
 
-	thumb_func_start FUN_08064020
-FUN_08064020: @ 0x08064020
-  .include "asm/func/FUN_08064020.inc"
+	thumb_func_start CheckParalyzeProc
+CheckParalyzeProc: @ 0x08064020
+  .include "asm/func/CheckParalyzeProc.inc"
 
 	thumb_func_start FUN_08064058
 FUN_08064058: @ 0x08064058
   .include "asm/func/FUN_08064058.inc"
 
-	thumb_func_start FUN_080640dc
-FUN_080640dc: @ 0x080640DC
-  .include "asm/func/FUN_080640dc.inc"
+	thumb_func_start Player_EnableWeaponSpecialEffects
+Player_EnableWeaponSpecialEffects: @ 0x080640DC
+  .include "asm/func/Player_EnableWeaponSpecialEffects.inc"
 
 	thumb_func_start FUN_080643d4
 FUN_080643d4: @ 0x080643D4
@@ -341,12 +317,3 @@ FUN_08064c48: @ 0x08064C48
 	thumb_func_start FUN_08064d04
 FUN_08064d04: @ 0x08064D04
   .include "asm/func/FUN_08064d04.inc"
-
-	thumb_func_start FUN_08064d54
-FUN_08064d54: @ 0x08064D54
-  .include "asm/func/FUN_08064d54.inc"
-
-	thumb_func_start FUN_08064d6c
-FUN_08064d6c: @ 0x08064D6C
-  .include "asm/func/FUN_08064d6c.inc"
-

@@ -48,6 +48,13 @@ else
   CPP := $(PREFIX)cpp
 endif
 
+include make_tools.mk
+# Tool executables
+BOKASM  := $(TOOLS_DIR)/bokasm/bokasm$(EXE)
+GBAGFX  := $(TOOLS_DIR)/gbagfx/gbagfx$(EXE)
+SCANINC := $(TOOLS_DIR)/scaninc/scaninc$(EXE)
+PREPROC := $(TOOLS_DIR)/preproc/preproc$(EXE)
+
 # ROM name --------------------------------------------
 
 RONNAME := boktai2
@@ -76,9 +83,11 @@ LDFLAGS := $(LIBPATH) -lgcc -lc
 
 ASM_SRCS := $(shell find src -type f -name '*.s')
 ASM_OBJS := $(addprefix $(BUILD_DIR)/, $(ASM_SRCS:.s=.o))
+ASM_DEPS := $(ASM_OBJS:.o=.d)
 
 C_SRCS := $(shell find src -type f -name '*.c')
 C_OBJS := $(addprefix $(BUILD_DIR)/, $(C_SRCS:.c=.o))
+C_DEPS := $(C_OBJS:.o=.d)
 
 OBJS := $(ASM_OBJS) $(C_OBJS)
 OBJS_REL := $(patsubst $(BUILD_DIR)/%,%,$(OBJS))
@@ -107,19 +116,44 @@ else
 endif
 
 # RULES_NO_SCAN: ビルドを伴わないルールの一覧
-RULES_NO_SCAN += clean clean-code
+RULES_NO_SCAN += clean clean-code clean-scripts
 .PHONY: all modern compare $(RULES_NO_SCAN)
+
+NODEP ?= 0
+DO_BUILD ?= 1
+ifneq (,$(MAKECMDGOALS))
+	ifeq (,$(filter-out $(RULES_NO_SCAN),$(MAKECMDGOALS)))
+		NODEP := 1
+		DO_BUILD := 0
+	endif
+endif
+
+# SHELLSTATUS: 直前に実行したコマンドの終了ステータスを格納する特殊変数 (GNU Make 4.3 以降のみらしいので、未定義なら互換性のために 0 を設定しておく)
+.SHELLSTATUS ?= 0
+
+# ビルドを伴うルールの場合は tool をビルドする
+ifeq ($(DO_BUILD),1)
+# やっていることは単なる make -f make_tools.mk
+# あとの仰々しい部分は make -f make_tools.mk のコマンドをターミナルに出すのと、 エラーが起きたときに終了するためのもの
+  $(foreach line, $(shell $(MAKE) -f make_tools.mk | sed "s/ /__SPACE__/g"), $(info $(subst __SPACE__, ,$(line))))
+  ifneq ($(.SHELLSTATUS),0)
+    $(error Errors occurred while building tools. See error messages above for more details)
+  endif
+endif
 
 modern: $(ROM)
 
 compare: $(ROM)
 	@sha1sum -c $(RONNAME).sha1
 
-clean: clean-code
+clean: clean-code clean-scripts clean-graphics
 
 clean-code:
 	rm -rf ./$(BUILD_DIR)
 	rm -f $(ELF)
+
+clean-scripts:
+	rm -f data/scripts/*.inc
 
 $(ROM): $(ELF)
 	$(OBJCOPY) -O binary --pad-to 0x9000000 $< $@
@@ -131,10 +165,42 @@ $(C_OBJS): $(BUILD_DIR)/%.o: %.c
 ifeq ($(MODERN),1)
 # TODO: MODERN
 else
-	@$(CPP) $(CPPFLAGS) $< | $(CC1) $(CFLAGS) -o $(BUILD_DIR)/$(subst .c,.s,$<)
+	@$(CPP) $(CPPFLAGS) $< -o $(BUILD_DIR)/$(subst .c,.i,$<)
+	$(PREPROC) $(BUILD_DIR)/$(subst .c,.i,$<) charmap.txt | $(CC1) $(CFLAGS) -o $(BUILD_DIR)/$(subst .c,.s,$<)
+# 	@$(CPP) $(CPPFLAGS) $< | $(PREPROC) -i $< charmap.txt | $(CC1) $(CFLAGS) -o $(BUILD_DIR)/$(subst .c,.s,$<) -
 	@echo -e ".text\n\t.align\t2, 0\n" >> $(BUILD_DIR)/$(subst .c,.s,$<)
 	@$(AS) $(ASFLAGS) $(BUILD_DIR)/$(subst .c,.s,$<) -o $@ 
 endif
 
+$(C_DEPS): $(BUILD_DIR)/%.d: %.c
+	$(SCANINC) -M $@ -I include $<
+
+# NODEP が 1 のときは依存関係ファイルを読み込まない、これをしないと make clean とかのときに不要な .dファイルを作ろうとしてしまう
+ifneq ($(NODEP),1)
+-include $(C_DEPS)
+endif
+
 $(BUILD_DIR)/%.o: %.s
 	@$(AS) $(ASFLAGS) $< -o $@
+
+$(ASM_OBJS:.o=.d): $(BUILD_DIR)/%.d: %.s
+	$(SCANINC) -M $@ -I include $<
+
+ifneq ($(NODEP),1)
+-include $(ASM_DEPS)
+endif
+
+# Scripts  --------------------------------------------
+
+BOKSCRIPTS := $(shell find data/scripts -type f -name '*.bokasm')
+BOKSCRIPTS_INC := $(BOKSCRIPTS:.bokasm=.inc)
+
+$(BOKSCRIPTS_INC): %.inc: %.bokasm
+	$(BOKASM) $< $@
+
+$(BUILD_DIR)/src/data/scripts.o: src/data/scripts.s $(BOKSCRIPTS_INC) charmap.txt
+	$(PREPROC) $< charmap.txt | $(AS) $(ASFLAGS) -o $@ -
+
+# Assets --------------------------------------------
+
+include graphics_file_rules.mk

@@ -528,8 +528,8 @@ _08243EF8:
 	.align 2, 0
 _08243EFC: .4byte gMPlayJumpTableTemplate
 
-	thumb_func_start FUN_08243f00
-FUN_08243f00: @ 0x08243F00
+	thumb_func_start ld_r3_tp_adr_i
+ld_r3_tp_adr_i: @ 0x08243F00
 	ldr r2, [r1, #0x40]
 
 	non_word_aligned_thumb_func_start FUN_08243f02
@@ -606,7 +606,7 @@ _08243F6C:
 	adds r3, #1
 	strb r3, [r1, #3]
 	mov ip, r3
-	bl FUN_08243f00
+	bl ld_r3_tp_adr_i
 	cmp ip, r3
 	bhs _08243F7E
 	b _08243F0E
@@ -622,7 +622,7 @@ _08243F7E:
 	thumb_func_start ply_prio
 ply_prio: @ 0x08243F8C
 	mov ip, lr
-	bl FUN_08243f00
+	bl ld_r3_tp_adr_i
 	strb r3, [r1, #0x1d]
 	bx ip
 	.align 2, 0
@@ -630,7 +630,7 @@ ply_prio: @ 0x08243F8C
 	thumb_func_start ply_tempo
 ply_tempo: @ 0x08243F98
 	mov ip, lr
-	bl FUN_08243f00
+	bl ld_r3_tp_adr_i
 	lsls r3, r3, #1
 	strh r3, [r0, #0x1c]
 	ldrh r2, [r0, #0x1e]
@@ -642,7 +642,7 @@ ply_tempo: @ 0x08243F98
 	thumb_func_start ply_keysh
 ply_keysh: @ 0x08243FAC
 	mov ip, lr
-	bl FUN_08243f00
+	bl ld_r3_tp_adr_i
 	strb r3, [r1, #0xa]
 	ldrb r3, [r1]
 	movs r2, #0xc
@@ -678,7 +678,7 @@ ply_voice: @ 0x08243FC0
 	thumb_func_start ply_vol
 ply_vol: @ 0x08243FF0
 	mov ip, lr
-	bl FUN_08243f00
+	bl ld_r3_tp_adr_i
 	strb r3, [r1, #0x12]
 	ldrb r3, [r1]
 	movs r2, #3
@@ -690,7 +690,7 @@ ply_vol: @ 0x08243FF0
 	thumb_func_start ply_pan
 ply_pan: @ 0x08244004
 	mov ip, lr
-	bl FUN_08243f00
+	bl ld_r3_tp_adr_i
 	subs r3, #0x40
 	strb r3, [r1, #0x14]
 	ldrb r3, [r1]
@@ -702,7 +702,7 @@ ply_pan: @ 0x08244004
 	thumb_func_start ply_bend
 ply_bend: @ 0x08244018
 	mov ip, lr
-	bl FUN_08243f00
+	bl ld_r3_tp_adr_i
 	subs r3, #0x40
 	strb r3, [r1, #0xe]
 	ldrb r3, [r1]
@@ -714,7 +714,7 @@ ply_bend: @ 0x08244018
 	thumb_func_start ply_bendr
 ply_bendr: @ 0x0824402C
 	mov ip, lr
-	bl FUN_08243f00
+	bl ld_r3_tp_adr_i
 	strb r3, [r1, #0xf]
 	ldrb r3, [r1]
 	movs r2, #0xc
@@ -726,7 +726,7 @@ ply_bendr: @ 0x0824402C
 	thumb_func_start ply_lfodl
 ply_lfodl: @ 0x08244040
 	mov ip, lr
-	bl FUN_08243f00
+	bl ld_r3_tp_adr_i
 	strb r3, [r1, #0x1b]
 	bx ip
 	.align 2, 0
@@ -734,7 +734,7 @@ ply_lfodl: @ 0x08244040
 	thumb_func_start ply_modt
 ply_modt: @ 0x0824404C
 	mov ip, lr
-	bl FUN_08243f00
+	bl ld_r3_tp_adr_i
 	ldrb r0, [r1, #0x18]
 	cmp r0, r3
 	beq _08244062
@@ -749,7 +749,7 @@ _08244062:
 	thumb_func_start ply_tune
 ply_tune: @ 0x08244064
 	mov ip, lr
-	bl FUN_08243f00
+	bl ld_r3_tp_adr_i
 	subs r3, #0x40
 	strb r3, [r1, #0xc]
 	ldrb r3, [r1]

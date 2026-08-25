@@ -106,9 +106,9 @@ FUN_080670fc: @ 0x080670FC
 FUN_080672b0: @ 0x080672B0
   .include "asm/func/FUN_080672b0.inc"
 
-	thumb_func_start FUN_0806734c
-FUN_0806734c: @ 0x0806734C
-  .include "asm/func/FUN_0806734c.inc"
+	thumb_func_start MagicDash_0806734c
+MagicDash_0806734c: @ 0x0806734C
+  .include "asm/func/MagicDash_0806734c.inc"
 
 	thumb_func_start FUN_080674dc
 FUN_080674dc: @ 0x080674DC
@@ -146,9 +146,9 @@ FUN_0806830c: @ 0x0806830C
 FUN_08068624: @ 0x08068624
   .include "asm/func/FUN_08068624.inc"
 
-	thumb_func_start FUN_08068944
-FUN_08068944: @ 0x08068944
-  .include "asm/func/FUN_08068944.inc"
+	thumb_func_start MagicRisingSun_08068944
+MagicRisingSun_08068944: @ 0x08068944
+  .include "asm/func/MagicRisingSun_08068944.inc"
 
 	thumb_func_start FUN_08068c6c
 FUN_08068c6c: @ 0x08068C6C
@@ -178,17 +178,17 @@ FUN_0806961c: @ 0x0806961C
 FUN_08069648: @ 0x08069648
   .include "asm/func/FUN_08069648.inc"
 
-	thumb_func_start FUN_08069710
-FUN_08069710: @ 0x08069710
-  .include "asm/func/FUN_08069710.inc"
+	thumb_func_start MagicFreeze_08069710
+MagicFreeze_08069710: @ 0x08069710
+  .include "asm/func/MagicFreeze_08069710.inc"
 
-	thumb_func_start FUN_08069928
-FUN_08069928: @ 0x08069928
-  .include "asm/func/FUN_08069928.inc"
+	thumb_func_start MagicHealing_08069928
+MagicHealing_08069928: @ 0x08069928
+  .include "asm/func/MagicHealing_08069928.inc"
 
-	thumb_func_start FUN_08069b18
-FUN_08069b18: @ 0x08069B18
-  .include "asm/func/FUN_08069b18.inc"
+	thumb_func_start MagicDynamite_08069b18
+MagicDynamite_08069b18: @ 0x08069B18
+  .include "asm/func/MagicDynamite_08069b18.inc"
 
 	thumb_func_start FUN_08069c8c
 FUN_08069c8c: @ 0x08069C8C
@@ -242,29 +242,29 @@ FUN_0806b06c: @ 0x0806B06C
 FUN_0806b374: @ 0x0806B374
   .include "asm/func/FUN_0806b374.inc"
 
-	thumb_func_start FUN_0806b438
-FUN_0806b438: @ 0x0806B438
-  .include "asm/func/FUN_0806b438.inc"
+	thumb_func_start Sabata_BlackSun
+Sabata_BlackSun: @ 0x0806B438
+  .include "asm/func/Sabata_BlackSun.inc"
 
 	thumb_func_start FUN_0806b758
 FUN_0806b758: @ 0x0806B758
   .include "asm/func/FUN_0806b758.inc"
 
-	thumb_func_start FUN_0806b92c
-FUN_0806b92c: @ 0x0806B92C
-  .include "asm/func/FUN_0806b92c.inc"
+	thumb_func_start MagicTransform_0806b92c
+MagicTransform_0806b92c: @ 0x0806B92C
+  .include "asm/func/MagicTransform_0806b92c.inc"
 
-	thumb_func_start FUN_0806bc74
-FUN_0806bc74: @ 0x0806BC74
-  .include "asm/func/FUN_0806bc74.inc"
+	thumb_func_start MagicChangeBat_0806bc74
+MagicChangeBat_0806bc74: @ 0x0806BC74
+  .include "asm/func/MagicChangeBat_0806bc74.inc"
 
-	thumb_func_start FUN_0806bf18
-FUN_0806bf18: @ 0x0806BF18
-  .include "asm/func/FUN_0806bf18.inc"
+	thumb_func_start MagicChangeMouse_0806bf18
+MagicChangeMouse_0806bf18: @ 0x0806BF18
+  .include "asm/func/MagicChangeMouse_0806bf18.inc"
 
-	thumb_func_start FUN_0806c124
-FUN_0806c124: @ 0x0806C124
-  .include "asm/func/FUN_0806c124.inc"
+	thumb_func_start MagicSleeping_0806c124
+MagicSleeping_0806c124: @ 0x0806C124
+  .include "asm/func/MagicSleeping_0806c124.inc"
 
 	thumb_func_start FUN_0806c2dc
 FUN_0806c2dc: @ 0x0806C2DC
@@ -354,9 +354,9 @@ FUN_0806e7dc: @ 0x0806E7DC
 FUN_0806ea98: @ 0x0806EA98
   .include "asm/func/FUN_0806ea98.inc"
 
-	thumb_func_start FUN_0806eb40
-FUN_0806eb40: @ 0x0806EB40
-  .include "asm/func/FUN_0806eb40.inc"
+	thumb_func_start MagicChangeWolf_0806eb40
+MagicChangeWolf_0806eb40: @ 0x0806EB40
+  .include "asm/func/MagicChangeWolf_0806eb40.inc"
 
 	thumb_func_start FUN_0806f1ec
 FUN_0806f1ec: @ 0x0806F1EC
@@ -366,9 +366,9 @@ FUN_0806f1ec: @ 0x0806F1EC
 FUN_0806f284: @ 0x0806F284
   .include "asm/func/FUN_0806f284.inc"
 
-	thumb_func_start FUN_0806f3a0
-FUN_0806f3a0: @ 0x0806F3A0
-  .include "asm/func/FUN_0806f3a0.inc"
+	thumb_func_start MagicHealing_0806f3a0
+MagicHealing_0806f3a0: @ 0x0806F3A0
+  .include "asm/func/MagicHealing_0806f3a0.inc"
 
 	thumb_func_start FUN_0806f5d8
 FUN_0806f5d8: @ 0x0806F5D8
@@ -830,9 +830,9 @@ FUN_0807a840: @ 0x0807A840
 FUN_0807a8ac: @ 0x0807A8AC
   .include "asm/func/FUN_0807a8ac.inc"
 
-	thumb_func_start FUN_0807a8c0
-FUN_0807a8c0: @ 0x0807A8C0
-  .include "asm/func/FUN_0807a8c0.inc"
+	thumb_func_start GetWeaponSkillLevel
+GetWeaponSkillLevel: @ 0x0807A8C0
+  .include "asm/func/GetWeaponSkillLevel.inc"
 
 	thumb_func_start FUN_0807a8e0
 FUN_0807a8e0: @ 0x0807A8E0
@@ -1449,9 +1449,9 @@ FUN_0807ddbc: @ 0x0807DDBC
 FUN_0807ddd4: @ 0x0807DDD4
   .include "asm/func/FUN_0807ddd4.inc"
 
-	thumb_func_start FUN_0807dde4
-FUN_0807dde4: @ 0x0807DDE4
-  .include "asm/func/FUN_0807dde4.inc"
+	thumb_func_start Player_Update_Helper_0807dde4
+Player_Update_Helper_0807dde4: @ 0x0807DDE4
+  .include "asm/func/Player_Update_Helper_0807dde4.inc"
 
 	thumb_func_start FUN_0807e278
 FUN_0807e278: @ 0x0807E278

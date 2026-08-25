@@ -1,25 +1,47 @@
 #ifndef GUARD_ZOKTAI_PLAYER_H
 #define GUARD_ZOKTAI_PLAYER_H
 
+#include "constants/constants.h"
 #include "entity.h"
 #include "gba/gba.h"
 #include "sprite.h"
+#include "struct.h"
 #include "types.h"
 #include "weapon.h"
 
 struct Player;
 struct SolarSensorEntity;
 
+typedef u32 PlayerFlag378;               // Player.flag378
+#define FLAG378_WET_DURABILITY (1 << 0)  // 0x00000001, WET_DURABILITY を持った武器を装備している間セットされる
+#define FLAG378_WET_ENE_COST (1 << 1)    // 0x00000002, WET_ENE_COST を持った武器を装備している間セットされる
+#define FLAG378_BLOOD_SWORD (1 << 2)     // 0x00000004, WET_BLOOD_SWORD を持った武器を装備している間セットされる
+#define FLAG378_ASTRO (1 << 3)           // 0x00000008, アストロ武器 を装備している間セットされる
+#define FLAG378_WEAPONGUARD (1 << 6)     // 0x00000040, ウェポンガードを装備している間セットされる
+#define FLAG378_UNK_8 (1 << 8)           // 0x00000100, ???
+#define FLAG378_HEART (1 << 28)          // 0x10000000, ハートの紋章所持
+#define FLAG378_JOKER (1 << 29)          // 0x20000000, ジョーカーの紋章所持
+
 typedef void (*PlayerFunc)(struct Player*);
 
-// Player.kind
+// Player.kind, 0x085abb14 (Player.fn_ac0) のインデックスでもある
 enum PlayerKind {
   PLAYER_SOLAR_DJANGO,
   PLAYER_DARK_DJANGO,
-  PLAYER_UNK_02,
-  PLAYER_UNK_03,
+  PLAYER_BAT,
+  PLAYER_MOUSE,
   PLAYER_UNK_04,
   PLAYER_SABATA,
+};
+
+// WeaponKind とは別
+enum AttackStyle {
+  STYLE_SWORD,
+  STYLE_SPEAR,
+  STYLE_HAMMER,
+  STYLE_GUN,
+  STYLE_FIST,
+  STYLE_NONE,
 };
 
 typedef struct {
@@ -28,20 +50,17 @@ typedef struct {
   u32 unk_38;     // 0x38 (Player: 0x1A4)
   u16 unk_3c;     // 0x3C (Player: 0x1A8)
   u16 unk_3e;     // 0x3E (Player: 0x1AA)
-} Player_16c;     // FUN_080659e8, サイズもまだわからん
+} Player_16c;     // Player_Init_Helper_080659e8, サイズもまだわからん
 
 typedef struct {
-  u16 unk_264;
-  u16 unk_266;
-  u16 unk_268;
-  u16 unk_26a;
-  u16 unk_26c;
-  u16 unk_26e;
-  u16 unk_270;
-  u16 unk_272;
-  s16 unk_274;
-  s16 unk_276;
-} Player_264;
+  armor16_t id;           // 0x00 (Player: 0x264), ArmorData.id
+  u16 defence;            // 0x02 (Player: 0x266), ArmorData.defence
+  u16 weight;             // 0x04 (Player: 0x268), ArmorData.weight
+  u16 unk_26a;            // 0x06 (Player: 0x26A)
+  u16 bonus[STAT_KINDS];  // 0x08 (Player: 0x26C), 武者鎧などのステータスに対する補正値
+  s16 hpBonus;            // 0x10 (Player: 0x274), 鎧のHP補正値(赤なら+, 黒なら-)
+  s16 eneBonus;           // 0x12 (Player: 0x276), 鎧のEne補正値(赤なら+, 黒なら-)
+} PlayerArmor;
 
 typedef struct {
   u8 unk_0[72];  // 0x0
@@ -66,62 +85,50 @@ typedef struct Player {
   Entity e;
   u32 unk_18;  // 0x18, 0 or 1 他にもあるか不明
   u32 unk_1c;
-  u16 unk_20;
-  u16 unk_22;
-
-  // FUN_08081ab0 と Player_Destroy によるとここから Entity2UnkData
-  u16 unk_24;  // 0x024
-  u16 unk_26;
-  u8 unk_28;  // 0x028, gPlayerPtr のインデックス, 0..3
-  u8 unk_29;
-  u16 unk_2a;
-  vec3 pos;  // 0x02C
-  u8 unk_32;
-  u8 unk_33;
-  u8 unk_34;
-  bool8 unk_35;
-  u16 unk_36;
-  u16 unk_38;
-  u8 unk_3a[86];
-  u32 unk_90;      // 0x090, FUN_08060a24 で bitfield として使われている
-  u8 unk_94[284];  // 0x094
-  u16 unk_1b0;     // 0x1B0
-  u8 unk_1b2[178];
-  Player_264 unk_264;
+  u32 unk_20;             // 0x20, bitfield
+  Entity2UnkData unk_24;  // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Entity2UnkData
+  SpriteData sprite;      // 0x068, 根拠： FUN_08060a24
+  u8 unk_e8[200];
+  u16 unk_1b0;  // 0x1B0
+  u8 unk_1b2[10];
+  u8 unk_1bc;  // 0x1BC, Entity2UnkData.unk_18 が &Player.unk_1bc
+  u8 unk_1bd[167];
+  PlayerArmor armor;  // 0x264
   u16 unk_278;
   s16 unk_27a;
   u32 unk_27c;
-  s8 unk_280;  // s8の根拠: FUN_08064d04
+  magic8_t equippedMagic;  // 0x280, 現在装備している(画面左下に表示されている)魔法のID
   u8 unk_281;
   u8 unk_282;
   u8 unk_283;
   u8 unk_284[12];
-  u16 unk_290[10];  // 0x290, 根拠: FUN_0806521c
-  u8 unk_2a4[64];
-  u16 unk_2e4;              // 0x2E4
-  u8 unk_2e6[102];          // 0x2E6
-  AnimationFile* anim_34c;  // 0x34c
+  u16 unk_290[10];      // 0x290, 根拠: FUN_0806521c
+  rgb555 pltt_2a4[32];  // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
+  u16 unk_2e4;          // 0x2E4
+  u8 unk_2e6[2];        // 0x2E6
+  u8 unk_2e8;           // 0x2E8, FUN_0801fb08
+  u8 unk_2e9[0x34C - 0x2E9];
+  AnimationFile* anim_34c;  // 0x34C
   AnimationFile* anim_350;  // 0x350
   AnimationFile* anim_354;  // 0x354
   u8 kind;                  // 0x358: see PlayerKind
   u8 unk_359;
   u16 unk_35a;
-  u16 unk_35c;
-  u16 unk_35e;
-  u16 unk_360;
-  u16 unk_362;
-  u16 hp;      // 0x364
-  u16 maxHP;   // 0x366
-  u16 ene;     // 0x368
-  u16 maxEne;  // 0x36A
+  u16 stats[STAT_KINDS];  // 0x35C, プレイヤーのステータス値 (武者鎧などの装備品の補正値は含まない, タロットカードのドーピングは含む)
+  u16 hp;                 // 0x364
+  u16 maxHP;              // 0x366
+  u16 ene;                // 0x368
+  u16 maxEne;             // 0x36A
   u8 unk_36c[10];
   u16 unk_376;
-  u32 unk_378;
-  u8 unk_37c;
-  u8 unk_37d;
+  PlayerFlag378 flag378;  // 0x378, see PlayerFlag378
+  u8 unk_37c;             // 0x37C, 0x085abcac の idx
+  u8 unk_37d;             // 0x37D, 0x085abcacの関数内でステートとして使用されている
   u16 unk_37e;
-  u8 unk_380[14];
-  bool8 isSabata;  // 0x38E, 根拠: FUN_08065270
+  u8 unk_380[7];
+  coffin8_t coffin_387;  // 0x387, MagicSleeping_0806c124
+  u8 unk_388[6];
+  bool8 isSabata;  // 0x38E, 根拠: Player_Init_Helper_08065270
   u8 unk_38f;
   u16 unk_390;
   u16 unk_392;
@@ -134,10 +141,24 @@ typedef struct Player {
   s16 unk_3f6;
   u8 unk_3f8[68];
   u16 unk_43c[3];
-  u8 unk_442[130];
+  u8 unk_442[86];
+  PlayerFunc fn_498;  // 0x498, FUN_08078d5c
+  u8 unk_49c[40];
   Player4c4 unk_4c4;  // 0x4C4
-  u8 unk_5f4[968];
-  u16 unk_9bc;
+  u8 unk_5f4[272];
+  AnimationFile* anim_704;  // 0x704
+  u8 unk_708[8];
+  u8 unk_710;  // 0x710, Player_Init_Anim_08061bac
+  u8 unk_711[3];
+  void* fn_714;  // 0x714, Player_Init_Anim_08061bac シグネチャ不明, FUN_08061680 or FUN_080617bc
+  u8 unk_718[0x94A - 0x718];
+  u16 plttID_94a;  // 0x94A, FUN_08063084
+  s16 unk_94c;     // 0x94C, FUN_08063084
+  u8 unk_94e;      // 0x94E, FUN_08062688
+  u8 unk_94f;      // 0x94F
+  u8 unk_950;      // 0x950, FUN_08063084
+  u8 unk_951[0x9bc - 0x951];
+  u16 unk_9bc;  // 0x9BC
   u16 pad_9be;
   s32 scriptID_9c0;  // 0x9C0
   s32 scriptID_9c4;  // 0x9C4
@@ -146,11 +167,15 @@ typedef struct Player {
   weapon8_t weaponID_a74;  // 武器ID
   u8 weaponKind_a75;       // 武器種
   u8 unk_a76[34];
-  PlayerFunc fn_a98;  // 0xA98, weapon_08064664
-  u8 unk_a9c[36];     // 0xA9C
+  PlayerFunc attackCB;  // 0xA98, gPlayerAttackUpdates
 
-  // 0xAC0, onUpdate で毎フレーム呼ばれる
-  // CreatePlayer製:       FUN_08065270　で 0x085abb14 からのどれかが
+  // 武器の特殊効果のコールバック関数の配列
+  u32 (*weaponExDamageCb[WEAPON_EFFECT_SLOT_COUNT])(struct Player*);  // 0xA9C, プレイヤーの状態を参照する武器の特殊効果コールバック
+  u32 (*weaponEffectCb2[WEAPON_EFFECT_SLOT_COUNT])(void);             // 0xAA8, 状態を参照しない武器の特殊効果コールバック, 防御無視効果と麻痺のハンドラはここ
+  void* weaponEffectCb3[WEAPON_EFFECT_SLOT_COUNT];                    // 0xAB4,　敵の状態を参照する武器の特殊効果コールバック, xx特効系のハンドラはここ, シグネチャはまだ不明
+
+  // 0xAC0, onUpdate (Player_Update) で毎フレーム呼ばれる
+  // CreatePlayer製:       FUN_08065270　で 0x085abb14 の関数テーブルに
   // CreateLinkPlayer2P製: FUN_080817ec で FUN_08084330 がセットされる
   PlayerFunc fn_ac0;
 } Player;
@@ -159,6 +184,7 @@ static_assert(sizeof(Player) == 2756);
 // ------------------------------------------------------------------------------------------------------------------------------------
 
 extern Player* gPlayerPtr[4];
+extern const PlayerFunc gPlayerAttackUpdates[5];  // 0: 剣, 1: 槍, 2: ハンマー, 3: 拳, 4: 銃
 
 Player* CreatePlayer(u32 n, void* _);
 

@@ -75,7 +75,7 @@ _08065064: .4byte 0x00000962
 _08065068:
 	movs r0, #0
 	ldrsb r0, [r4, r0]
-	bl FUN_0824347c
+	bl GetMagicCategory
 	strb r0, [r4, #1]
 	movs r1, #0
 	ldrsb r1, [r4, r1]

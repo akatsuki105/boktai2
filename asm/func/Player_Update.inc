@@ -1,6 +1,6 @@
 	push {r4, r5, lr}
 	adds r4, r0, #0
-	bl FUN_0807dde4
+	bl Player_Update_Helper_0807dde4
 	adds r0, r4, #0
 	bl FUN_08060bac
 	ldr r0, [r4, #0x1c]
@@ -31,7 +31,7 @@ _0807F254:
 	strh r1, [r3]
 _0807F256:
 	adds r0, r4, #0
-	bl FUN_0807e968
+	bl Player_Update_Helper_0807e968
 	cmp r0, #0
 	beq _0807F268
 	adds r0, r4, #0
@@ -74,7 +74,7 @@ _0807F290:
 	strh r2, [r1]
 _0807F2AE:
 	adds r0, r4, #0
-	bl FUN_0807ee58
+	bl Player_Update_Helper_0807ee58
 	ldr r1, _0807F324 @ =0x00000979
 	adds r5, r4, r1
 	ldrb r0, [r5]
@@ -92,7 +92,7 @@ _0807F2C8:
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl FUN_080639f8
+	bl Player_Update_Helper_080639f8
 	adds r0, r4, #0
 	bl FUN_080612a8
 	ldr r0, _0807F32C @ =0x000003EA

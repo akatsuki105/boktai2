@@ -244,7 +244,7 @@ _08071CF2:
 	movs r0, #0x24
 	strh r0, [r1]
 	movs r0, #4
-	bl FUN_0807a8c0
+	bl GetWeaponSkillLevel
 	cmp r0, #0x62
 	ble _08071DAE
 	adds r0, r5, #0

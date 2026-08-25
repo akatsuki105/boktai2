@@ -60,7 +60,7 @@ _0821AEEC:
 	adds r5, r7, #0
 	adds r5, #0x18
 	adds r0, r5, #0
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	add r4, sp, #0x14
 	mov r0, r8
 	str r0, [sp, #0x10]

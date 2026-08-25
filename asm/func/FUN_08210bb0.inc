@@ -12,7 +12,7 @@
 	lsls r0, r0, #3
 	adds r5, r7, r0
 	ldrb r0, [r4]
-	bl FUN_0820feec
+	bl WeaponDexMenu_GetPage1stEntry
 	mov sb, r0
 	movs r6, #0
 	cmp r6, r8

@@ -24,13 +24,13 @@ NAKED void FUN_0824172c(void) { INCFUNC("asm/func/FUN_0824172c.inc"); }
 NAKED s32 FUN_0824175c(void) { INCFUNC("asm/func/FUN_0824175c.inc"); }
 
 // ADC
-NAKED Sunlevel GetSunLevel(s32 rawlevel) { INCFUNC("asm/func/GetSunLevel.inc"); }
+NAKED Sunlevel GetSunLevel(s32 lx) { INCFUNC("asm/func/GetSunLevel.inc"); }
 
 NAKED s32 FUN_082417cc(Sunlevel slv) { INCFUNC("asm/func/FUN_082417cc.inc"); }
 
 NAKED s32 FUN_082417dc(Sunlevel slv) { INCFUNC("asm/func/FUN_082417dc.inc"); }
 
-NAKED s32 FUN_082417ec(s32 rawlevel) { INCFUNC("asm/func/FUN_082417ec.inc"); }
+NAKED s32 FUN_082417ec(s32 lx) { INCFUNC("asm/func/FUN_082417ec.inc"); }
 
 s32 FUN_082418c0(void) {
   s32 n = Sensor_GetRawLevel();
@@ -45,6 +45,7 @@ s32 FUN_082418c0(void) {
   return n;
 }
 
+// 最後に炎天下にいた時間を記録する(これが記録されてから一定時間経てば、オーバーヒート状態が解除される)
 void SetOverheatTime(void) {
   (gStat->overheatTime).date.val = GetDate();
   (gStat->overheatTime).hour = GetHour();
@@ -79,28 +80,25 @@ bool32 IsGunCooled(void) {
   return FALSE;
 }
 
-NON_MATCH void overheat_08241a04(UnkSolarEntity* _ UNUSED) {
+NON_MATCH void UpdateOverheat(UnkSolarEntity* _ UNUSED) {
 #ifdef NONMATCHING_C
   if (gStat->thermal > 29999) {
-    if ((gStat->unk_942 < 3) || (gStat->unk_934 & 0x4200)) {
-      if (gStat->unk_1ba > 0) {
-        gStat->unk_1ba--;
+    if ((gStat->sunGauge < 3) || (gStat->unk_934 & 0x4200)) {
+      if (gStat->heatstroke > 0) {
+        gStat->heatstroke--;
       }
       if (IsGunCooled()) {
         gStat->thermal = 0;
-        gStat->unk_1ba = 0;
+        gStat->heatstroke = 0;
       }
-
     } else {
       SetOverheatTime();
-      gStat->unk_1ba += gStat->unk_942;
-      if ((s16)gStat->unk_1ba > 5000) {
-        gStat->unk_1ba = 5000;
-      }
+      gStat->heatstroke += gStat->sunGauge;
+      if (gStat->heatstroke > 5000) gStat->heatstroke = 5000;
     }
   }
 #else
-  INCFUNC("asm/func/overheat_08241a04.inc");
+  INCFUNC("asm/func/UpdateOverheat.inc");
 #endif
 }
 
@@ -133,9 +131,9 @@ NON_MATCH void FUN_08241f28(UnkSolarEntity* p) {
   p->unk_19 = 0;
   p->unk_20 = 0;
   p->unk_22 = 0;
-  gStat->unk_940 = u16_03004870;
+  gStat->lx = u16_03004870;
   tmp = u16_ARRAY_03004874[0];
-  gStat->unk_942 = tmp;
+  gStat->sunGauge = tmp;
 #else
   INCFUNC("asm/func/FUN_08241f28.inc");
 #endif

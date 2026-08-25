@@ -46,5 +46,9 @@
     "*.sx": "arm",
     "*.inc": "arm",
     "*.h": "c"
+  },
+  "workbench.editorAssociations": {
+    "*.bin": "hexEditor.hexedit",
+    "*.gbapal": "hexEditor.hexedit"
   }
 }

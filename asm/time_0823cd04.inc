@@ -1025,7 +1025,7 @@ _0823D4A8: .4byte 0x030043F0
 	thumb_func_start FUN_0823d4ac
 FUN_0823d4ac: @ 0x0823D4AC
 	push {lr}
-	ldr r2, _0823D4C0 @ =0x02020400
+	ldr r2, _0823D4C0 @ =gSentinel02020400
 	ldr r0, [r2]
 	ldr r1, _0823D4C4 @ =0x516B92EE
 	cmp r0, r1
@@ -1035,13 +1035,13 @@ _0823D4BA:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_0823D4C0: .4byte 0x02020400
+_0823D4C0: .4byte gSentinel02020400
 _0823D4C4: .4byte 0x516B92EE
 
 	thumb_func_start FUN_0823d4c8
 FUN_0823d4c8: @ 0x0823D4C8
 	push {lr}
-	ldr r0, _0823D4D8 @ =0x02020400
+	ldr r0, _0823D4D8 @ =gSentinel02020400
 	ldr r1, [r0]
 	ldr r0, _0823D4DC @ =0x516B92EE
 	cmp r1, r0
@@ -1049,7 +1049,7 @@ FUN_0823d4c8: @ 0x0823D4C8
 	movs r0, #0
 	b _0823D4E2
 	.align 2, 0
-_0823D4D8: .4byte 0x02020400
+_0823D4D8: .4byte gSentinel02020400
 _0823D4DC: .4byte 0x516B92EE
 _0823D4E0:
 	movs r0, #1

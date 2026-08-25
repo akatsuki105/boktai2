@@ -21,7 +21,7 @@
 	adds r5, r5, r7
 	mov sb, r5
 	mov r0, sb
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	add r4, sp, #0x14
 	movs r0, #0
 	str r0, [sp, #0x10]

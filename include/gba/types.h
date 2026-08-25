@@ -51,6 +51,7 @@ struct PlttData {
   u16 b : 5;  // blue
   u16 unused_15 : 1;
 } __attribute__((packed));
+typedef u16 rgb555;
 
 // OAM(0x07000000) entry
 typedef struct {

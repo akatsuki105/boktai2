@@ -14,7 +14,7 @@
 	stm r2!, {r3, r5}
 	adds r0, r4, #0
 	adds r0, #0x18
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	adds r0, r4, #0
 	bl FUN_082138d4
 	adds r0, r4, #0

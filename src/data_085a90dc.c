@@ -1,3 +1,0 @@
-#include "global.h"
-
-const u8 u8_085a90dc[4] = {0x43, 0x00, 0x00, 0x00};

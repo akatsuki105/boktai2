@@ -33,7 +33,7 @@ _0806518A:
 _080651A2:
 	movs r0, #0
 	ldrsb r0, [r4, r0]
-	bl FUN_0824347c
+	bl GetMagicCategory
 	strb r0, [r4, #1]
 	movs r0, #0
 	ldrsb r0, [r4, r0]

@@ -3,7 +3,7 @@
 	push {r7}
 	sub sp, #0x14
 	adds r7, r0, #0
-	bl FUN_08211120
+	bl CountUnlockedPhotos
 	adds r2, r0, #0
 	movs r1, #0x84
 	lsls r1, r1, #1

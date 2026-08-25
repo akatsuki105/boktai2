@@ -284,9 +284,9 @@ Video_GenerateBGMap: @ 0x0822C40C
 Video_GenerateBGMapCore: @ 0x0822C424
   .include "asm/func/Video_GenerateBGMapCore.inc"
 
-	thumb_func_start FUN_0822ccc4
-FUN_0822ccc4: @ 0x0822CCC4
-  .include "asm/func/FUN_0822ccc4.inc"
+	thumb_func_start GetTilemapFile
+GetTilemapFile: @ 0x0822CCC4
+  .include "asm/func/GetTilemapFile.inc"
 
 	thumb_func_start FUN_0822cd24
 FUN_0822cd24: @ 0x0822CD24

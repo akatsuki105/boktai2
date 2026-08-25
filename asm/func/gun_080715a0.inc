@@ -263,7 +263,7 @@ _080717A6:
 	movs r0, #0x24
 	strh r0, [r1]
 	movs r0, #4
-	bl FUN_0807a8c0
+	bl GetWeaponSkillLevel
 	cmp r0, #0x62
 	ble _08071878
 	movs r0, #0xfc

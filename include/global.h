@@ -11,6 +11,11 @@
 #include "game.h"
 #include "player.h"
 
+#if defined(__APPLE__) || defined(__CYGWIN__) || defined(__INTELLISENSE__)
+#define _(x) {x}   // _("string") is converted to charmap.txt by tools/preproc
+#define __(x) {x}  //  __("string") is converted to charmap.txt by tools/preproc, but without a null terminator
+#endif
+
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define max(a, b) ((a) >= (b) ? (a) : (b))
 

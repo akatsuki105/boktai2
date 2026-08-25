@@ -30,7 +30,7 @@
 	cmp r0, #0
 	blt _0824121C
 	ldr r0, [r5]
-	ldr r1, _08241214 @ =0x03004594
+	ldr r1, _08241214 @ =gScriptDirectoryBuildTime
 	ldr r2, [r0]
 	ldr r0, [r1]
 	cmp r2, r0
@@ -42,7 +42,7 @@
 	.align 2, 0
 _0824120C: .4byte 0x03004698
 _08241210: .4byte 0x030046A0
-_08241214: .4byte 0x03004594
+_08241214: .4byte gScriptDirectoryBuildTime
 _08241218: .4byte 0x030047B4
 _0824121C:
 	movs r0, #0

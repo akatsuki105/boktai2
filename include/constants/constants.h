@@ -7,6 +7,8 @@
 #include "constants/enemy.h"
 #include "constants/item.h"
 #include "constants/magic.h"
+#include "constants/map.h"
+#include "constants/miscs.h"
 #include "constants/size.h"
 #include "constants/weapon.h"
 

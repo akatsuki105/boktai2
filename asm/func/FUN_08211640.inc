@@ -49,7 +49,7 @@
 	mov sb, r0
 	adds r4, #0x24
 	ldrb r0, [r4]
-	bl FUN_08211154
+	bl AlbumMenu_GetPhotoSlotCount
 	mov sl, r0
 	movs r2, #0
 	str r2, [sp, #0x14]

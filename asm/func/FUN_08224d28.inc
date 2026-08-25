@@ -5,7 +5,7 @@
 	bne _08224D4C
 	ldr r0, _08224D48 @ =0x0000BB34
 	movs r1, #0
-	bl FUN_08229c6c
+	bl Entity8AAB_Create
 	cmp r0, #0
 	bne _08224D4C
 	movs r0, #0

@@ -26,14 +26,14 @@ void FUN_08065240(Player* p) {
   }
 }
 
-NAKED void* FUN_08065270(Player* p) { INCFUNC("asm/func/FUN_08065270.inc"); }
+NAKED void* Player_Init_Helper_08065270(Player* p) { INCFUNC("asm/func/Player_Init_Helper_08065270.inc"); }
 
 NAKED void FUN_0806540c(Player* p) { INCFUNC("asm/func/FUN_0806540c.inc"); }
 NAKED void FUN_08065514(Player* p) { INCFUNC("asm/func/FUN_08065514.inc"); }
 
 NAKED bool32 FUN_08065744(Player* p, u32 n) { INCFUNC("asm/func/FUN_08065744.inc"); }
 
-void weapon_08065924(Player* p) {
+void Player_InitWeapon(Player* p) {
   Weapon* w;
 
   if (p->kind != PLAYER_SABATA) {
@@ -50,7 +50,8 @@ void weapon_08065924(Player* p) {
   }
 }
 
-void armor_08065988(Player* p) {
+// 現在装備している防具の効果をプレイヤーに反映させる, Player_Init時に呼ばれる
+void Player_InitArmor(Player* p) {
   const ArmorData* a;
 
   if (p->kind != PLAYER_SABATA) {

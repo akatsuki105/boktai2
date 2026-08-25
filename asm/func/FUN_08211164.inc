@@ -6,7 +6,7 @@
 	bge _0821117E
 _08211170:
 	adds r0, r4, #0
-	bl FUN_08211154
+	bl AlbumMenu_GetPhotoSlotCount
 	adds r6, r6, r0
 	adds r4, #1
 	cmp r4, r5

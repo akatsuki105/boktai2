@@ -4,26 +4,6 @@
 	
 	.text
 
-	thumb_func_start FUN_082326d8
-FUN_082326d8: @ 0x082326D8
-  .include "asm/func/FUN_082326d8.inc"
-
-	thumb_func_start FUN_0823273c
-FUN_0823273c: @ 0x0823273C
-  .include "asm/func/FUN_0823273c.inc"
-
-	thumb_func_start FUN_08232760
-FUN_08232760: @ 0x08232760
-  .include "asm/func/FUN_08232760.inc"
-
-	thumb_func_start FUN_0823279c
-FUN_0823279c: @ 0x0823279C
-  .include "asm/func/FUN_0823279c.inc"
-
-	thumb_func_start FUN_082327c0
-FUN_082327c0: @ 0x082327C0
-  .include "asm/func/FUN_082327c0.inc"
-
 	thumb_func_start FUN_082327f0
 FUN_082327f0: @ 0x082327F0
   .include "asm/func/FUN_082327f0.inc"

@@ -3,6 +3,7 @@
 
 #include "entity.h"
 #include "gba/gba.h"
+#include "struct.h"
 #include "types.h"
 
 // 正体不明の Entity を一旦ここに置いておく
@@ -38,12 +39,41 @@ typedef struct {
   Entity e;  // ENTITY_UNK_2
   struct Entity2UnkData* unk_18;
   struct Entity2UnkData* unk_1c;
-} Entity2;
-static_assert(sizeof(Entity2) == 32);
+} EntityB8B9;
+static_assert(sizeof(EntityB8B9) == 32);
 
-extern Entity2* gEntity2;
-Entity2* Entity2_Create(void);
+extern EntityB8B9* gEntityB8B9;
+EntityB8B9* EntityB8B9_Create(void);
 void FUN_0823b1ec(void);
+
+// --------------------------------------------
+
+typedef struct Entity4E69 {
+  Entity e;  // ENTITY_UNK_2
+  u8 unk_18[96];
+  UnkStruct52 unk_78;  // 0x78
+} Entity4E69;
+static_assert(sizeof(Entity4E69) == 172);
+
+extern Entity4E69* gEntity4E69;  // 0x03002B4C
+
+// --------------------------------------------
+
+typedef struct Entity28CB {
+  Entity e;            // ENTITY_UNK_8
+  UnkStruct52 unk_18;  // 0x18
+  u8 unk_4c[400 - 76];
+} Entity28CB;
+static_assert(sizeof(Entity28CB) == 400);
+
+// --------------------------------------------
+
+typedef struct EntityE534 {
+  Entity e;  // ENTITY_UNK_11
+  u8 unk_18[0xCD4 - 24];
+  UnkStruct52 unk_cd4;  // 0xCD4, 根拠: 0x08012bfc
+} EntityE534;
+static_assert(sizeof(EntityE534) == 3336);
 
 // --------------------------------------------
 

@@ -19518,22 +19518,22 @@ _080CE814:
 	ldr r1, _080CE820 @ =0x00000AA8
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE824 @ =FUN_08063fe8
+	ldr r1, _080CE824 @ =CheckNamakuraProc
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE820: .4byte 0x00000AA8
-_080CE824: .4byte FUN_08063fe8
+_080CE824: .4byte CheckNamakuraProc
 _080CE828:
 	ldr r1, _080CE834 @ =0x00000AA8
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE838 @ =FUN_08064020
+	ldr r1, _080CE838 @ =CheckParalyzeProc
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE834: .4byte 0x00000AA8
-_080CE838: .4byte FUN_08064020
+_080CE838: .4byte CheckParalyzeProc
 _080CE83C:
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -20088,7 +20088,7 @@ FUN_080cec70: @ 0x080CEC70
 	cmp r4, #0
 	blt _080CECA0
 	adds r0, r4, #0
-	bl FUN_0824347c
+	bl GetMagicCategory
 	adds r2, r0, #0
 	movs r3, #0xd6
 	lsls r3, r3, #2
@@ -20432,7 +20432,7 @@ FUN_080ceec0: @ 0x080CEEC0
 _080CEEEA:
 	movs r0, #0
 	ldrsb r0, [r4, r0]
-	bl FUN_0824347c
+	bl GetMagicCategory
 	strb r0, [r4, #1]
 	movs r0, #0
 	ldrsb r0, [r4, r0]
@@ -20779,7 +20779,7 @@ FUN_080cf15c: @ 0x080CF15C
 	adds r4, #0x68
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	adds r5, r6, #0
 	adds r5, #0x88
 	movs r3, #0x90

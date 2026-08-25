@@ -12,7 +12,8 @@ typedef s16 armor16_t;
 typedef s32 armor32_t;
 
 // include/constants/coffin.h
-typedef s16 coffin_t;
+typedef u8 coffin8_t;
+typedef s16 coffin16_t;
 
 typedef u16 SoundID16;
 typedef u32 SoundID32;
@@ -22,13 +23,12 @@ typedef u8 weapon8_t;
 typedef s32 weapon32_t;
 
 // include/constants/magic.h
+typedef s8 magic8_t;
 typedef s16 magic16_t;
 typedef s32 magic32_t;
 
 typedef s16 slot16_t;
 typedef s32 slot32_t;
-
-typedef s8_8 vec3[3];
 
 // Placeholder for a NAKED-stub parameter whose real type isn't known yet.
 // Never used for existing plain `void*` params — only for new decomp-naked
@@ -36,5 +36,12 @@ typedef s8_8 vec3[3];
 typedef void* UNK_PTR;
 
 typedef s32 Sunlevel;  // 0..10, (digital) sunlight level
+
+typedef struct {
+  s8_8 x;
+  s8_8 y;  // 高さ
+  s8_8 z;
+  u16 val;  // 用途不明だが、FUN_0823b400 で 0x10 がセットされている, gStat.playerPos の場合はプレイヤーの移動方向に応じて 01 とか 02 とか 05 とかがセットされた
+} Vec3;
 
 #endif  // GUARD_ZOKTAI_TYPES_H

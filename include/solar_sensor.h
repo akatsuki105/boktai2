@@ -8,7 +8,7 @@
 struct Player4c4;
 
 typedef struct SolarSensorEntity {
-  ENTITY;                    // 0x00
+  Entity e;                  // 0x00
   u32 unk_18;                // 0x18
   void* anim;                // 0x1C
   struct Player4c4* unk_20;  // 0x20

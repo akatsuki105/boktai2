@@ -70,7 +70,7 @@ _080646C8:
 	strh r0, [r1]
 	adds r0, r5, #0
 	mov r1, sp
-	bl FUN_080640dc
+	bl Player_EnableWeaponSpecialEffects
 	ldrb r0, [r4]
 	cmp r0, #0x3d
 	bne _08064728

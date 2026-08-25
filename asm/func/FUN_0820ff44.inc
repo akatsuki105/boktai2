@@ -3,7 +3,7 @@
 	bl FUN_0820fedc
 	adds r5, r0, #0
 	adds r0, r4, #0
-	bl FUN_0820feec
+	bl WeaponDexMenu_GetPage1stEntry
 	adds r7, r0, #0
 	movs r6, #0
 	movs r4, #0

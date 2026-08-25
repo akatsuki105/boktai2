@@ -992,7 +992,7 @@ _080529E8:
 	adds r4, #0x30
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	ldr r1, _08052AE0 @ =0x0000D27A
 	adds r0, r5, #0
 	bl GetFile
@@ -1013,7 +1013,7 @@ _080529E8:
 	adds r4, #0x50
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	adds r6, r7, #0
 	adds r6, #0x70
 	mov sl, r4

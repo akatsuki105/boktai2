@@ -30,7 +30,7 @@ _0807A610:
 	cmp r7, #4
 	bne _0807A646
 	movs r0, #4
-	bl FUN_0807a8c0
+	bl GetWeaponSkillLevel
 	cmp r0, #0x62
 	ble _0807A62A
 	ldrb r0, [r6, #4]
@@ -39,7 +39,7 @@ _0807A610:
 	b _0807A6C0
 _0807A62A:
 	movs r0, #4
-	bl FUN_0807a8c0
+	bl GetWeaponSkillLevel
 	movs r1, #0xa
 	bl Div
 	adds r1, r0, #0
@@ -101,7 +101,7 @@ _0807A684:
 	cmp r0, #3
 	bne _0807A6B0
 	movs r0, #3
-	bl FUN_0807a8c0
+	bl GetWeaponSkillLevel
 	mov r2, r8
 	ldr r1, [r2]
 	adds r1, #0x40

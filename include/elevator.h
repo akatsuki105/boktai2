@@ -13,7 +13,7 @@ typedef struct {
 static_assert(sizeof(ElevatorUnkData) == 396);
 
 typedef struct {
-  ENTITY;                      // 0x0000, kind = 5
+  Entity e;                    // 0x0000, ENTITY_UNK_5
   u8 unk_18[4];                // 0x0018
   ElevatorUnkData unk_1c[12];  // 0x001C
   u32 unk_12ac;                // 0x12AC

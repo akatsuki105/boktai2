@@ -21,7 +21,7 @@
 	adds r0, r0, r7
 	mov sb, r0
 	adds r1, r3, #0
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	add r5, sp, #0x14
 	movs r4, #0
 	strh r4, [r5]
@@ -163,7 +163,7 @@
 	stm r2!, {r4, r6}
 	mov r0, r8
 	adds r1, r3, #0
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	movs r0, #0x91
 	lsls r0, r0, #3
 	adds r4, r7, r0

@@ -1,10 +1,15 @@
 #include "vm.h"
 
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "malloc.h"
 
+static void FUN_08231c80(void);
+void FUN_082324b0(void);
 void VM_ClearScratchpad(void);
+
+const u8 u8_ARRAY_085b01c8[8] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
 
 // a.k.a. Script_ReadLength, https://boktaihacking.net/wiki/Bytecode#Container_lengths
 NAKED u8* VM_ReadContainerLength(u8* pc, u32* length) { INCFUNC("asm/func/VM_ReadContainerLength.inc"); }
@@ -111,9 +116,15 @@ NAKED bool32 Script_RunControl(u8* pc) { INCFUNC("asm/func/Script_RunControl.inc
 NAKED void* VM_Parse_ScriptDirectory_ScriptEntries(s32* offsets, s32* length) { INCFUNC("asm/func/VM_Parse_ScriptDirectory_ScriptEntries.inc"); }
 
 /**
+ * @param scriptID スクリプトID, gScriptTable.entries のインデックスに変換する際に -1 することに注意
  * @param unk ScriptDirectory.script_entries のエントリの bit24..31 をここに書き込む (用途不明)
  */
-NAKED u8* Script_LookupById(u32 scriptID, u32* unk) { INCFUNC("asm/func/Script_LookupById.inc"); }
+u8* Script_LookupById(u32 scriptID, u32* unk) {
+  u32 idx = (scriptID & 0x7FFFFFFF) - 1;
+  u8* ptr = (u8*)&gScriptTable.entries[idx];
+  *unk = ptr[3];
+  return &gScriptTable.bytecode[(*(s32*)ptr) & 0x00FFFFFF];
+}
 
 NAKED s32 Script_ExecById(u32 scriptID, UNK_PTR r1) { INCFUNC("asm/func/Script_ExecById.inc"); }
 
@@ -124,9 +135,11 @@ NAKED UNK_PTR FUN_0823193c(UNK_PTR p, u32 param_2, s32 param_3) { INCFUNC("asm/f
 NAKED char* Textbox_LookupString(s32 stringID) { INCFUNC("asm/func/Textbox_LookupString.inc"); }
 
 /**
- * @param d &gScriptDirectory (0x08cbf248)
+ * @param d &gScriptDirectory (0x08CBF248)
+ * @note 0x082319A8
+ * @note a.k.a. Script_LoadIndex
  */
-NAKED s32 Script_LoadIndex(ScriptDirectory* d) { INCFUNC("asm/func/Script_LoadIndex.inc"); }
+NAKED static s32 VM_MountScriptDirectory(ScriptDirectory* d) { INCFUNC("asm/func/VM_MountScriptDirectory.inc"); }
 
 NAKED UNK_PTR FUN_08231a74(void) { INCFUNC("asm/func/FUN_08231a74.inc"); }
 
@@ -146,13 +159,20 @@ NAKED s32 FUN_08231bcc(void) { INCFUNC("asm/func/FUN_08231bcc.inc"); }
 
 void FUN_08231be0(u32 scriptID) { gMapInitScriptID = scriptID; }
 
-NAKED void FUN_08231bec(void) { INCFUNC("asm/func/FUN_08231bec.inc"); }
+void FUN_08231bec(void) {
+  FUN_08231770();
+  FUN_08231c80();
+  FUN_08231780();
+  FUN_082324b0();
+  VM_MountScriptDirectory(GetFile(DIR_SCRIPT, 0xA41E));
+  FUN_08231be0(0);
+}
 
 void VM_ClearScratchpad_Proxy(void) { VM_ClearScratchpad(); }
 
 NAKED void RandomizeGameStateAddr(void) { INCFUNC("asm/func/RandomizeGameStateAddr.inc"); }
 
-void FUN_08231c80(void) {
+static void FUN_08231c80(void) {
   ClearMemory(gWorld, sizeof(World));
   ClearMemory(gStat, sizeof(GameInfo));
 }
@@ -205,115 +225,3 @@ NAKED UNK_PTR FUN_082321e0(u8* pc) { INCFUNC("asm/func/FUN_082321e0.inc"); }
 GameInfo* FUN_08232254(void) { return gStatBackup; }
 
 World* FUN_08232260(void) { return gWorldBackup; }
-
-NAKED void VM_Ctrl_B96E_Internal(UNK_PTR r1, UNK_PTR r2) { INCFUNC("asm/func/VM_Ctrl_B96E_Internal.inc"); }
-
-NAKED u8* VM_Ctrl_If_Internal(u8* pc) { INCFUNC("asm/func/VM_Ctrl_If_Internal.inc"); }
-
-// 0x0D86
-NAKED bool32 VM_Ctrl_If(u8* pc) { INCFUNC("asm/func/VM_Ctrl_If.inc"); }
-
-// 0x4A6F
-NAKED bool32 VM_Ctrl_Switch(u8* pc) { INCFUNC("asm/func/VM_Ctrl_Switch.inc"); }
-
-NAKED bool32 VM_Ctrl_Unused_64C0(u8* pc) { INCFUNC("asm/func/VM_Ctrl_Unused_64C0.inc"); }
-
-// 0xCD3A: 現在実行中のスクリプトを終了(オプションで戻り値を返す)
-NAKED bool32 VM_Ctrl_Return(u8* _) { INCFUNC("asm/func/VM_Ctrl_Return.inc"); }
-
-// https://boktaihacking.net/wiki/Bytecode#Control_0xb96e_(TODO)
-NAKED bool32 VM_Ctrl_B96E(u8* _) { INCFUNC("asm/func/VM_Ctrl_B96E.inc"); }
-
-// https://boktaihacking.net/wiki/Bytecode#Control_0x121f_(call_indirect)
-NAKED bool32 VM_Ctrl_CallIndirect(u8* _) { INCFUNC("asm/func/VM_Ctrl_CallIndirect.inc"); }
-
-void FUN_082324b0(void) {
-  gCtrlHandlers1.next = NULL;
-  gCtrlHandlers1.len = Div(sizeof(gCtrlHandlers1_ROM), sizeof(Subroutine));
-  gCtrlHandlers1.arr = gCtrlHandlers1_ROM;
-  VM_AddCtrlHandlers(&gCtrlHandlers1);
-}
-
-/**
- * @param opcode 0xA1..0xBF, https://boktaihacking.net/wiki/Bytecode#Opcode_0xa0-0xbf_(operator)
- */
-s32 VM_RunOperator(u32 opcode, s32 a, s32 b) {
-  switch (opcode - 1) {
-    case 0: {
-      return -b;
-    }
-    case 1: {
-      return b == 0;
-    }
-    case 2: {
-      return ~b;
-    }
-    case 3: {
-      return a + b;
-    }
-    case 4: {
-      return a - b;
-    }
-    case 5: {
-      return a * b;
-    }
-    case 6: {
-      return Div(a, b);
-    }
-    case 7: {
-      return Mod(a, b);
-    }
-    case 8: {
-      return a << b;
-    }
-    case 9: {
-      return ((u32)a) >> b;
-    }
-    case 10: {
-      return a == b;
-    }
-    case 11: {  // 同じ符号か
-      return ((u32)(-(a ^ b) | (a ^ b))) >> 31;
-    }
-    case 12: {
-      return a < b;
-    }
-    case 13: {
-      return a <= b;
-    }
-    case 14: {
-      return a > b;
-    }
-    case 15: {
-      return a >= b;
-    }
-    case 16: {
-      return a | b;
-    }
-    case 17: {
-      return a & b;
-    }
-    case 18: {
-      return a ^ b;
-    }
-    case 19: {
-      return ((a != 0) || (b != 0));
-    }
-    case 20: {
-      bool32 result = FALSE;
-      if (a != 0) {
-        result = ((u32)((-b) | b)) >> 31;
-      }
-      return result;
-    }
-    case 22: {
-      return b;
-    }
-    case 21:
-    default: {
-      return 0;
-    }
-  }
-}
-
-NAKED u32 VM_RunExpression(u8* pc) { INCFUNC("asm/func/VM_RunExpression.inc"); }

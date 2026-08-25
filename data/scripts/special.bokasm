@@ -1,0 +1,5 @@
+Script_Special: @ 0x08DA9E60
+  block
+    call 0x2bc
+    end
+  end

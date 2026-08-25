@@ -6,7 +6,7 @@
 	adds r4, r7, #0
 	adds r4, #0x24
 	ldrb r0, [r4]
-	bl FUN_08211154
+	bl AlbumMenu_GetPhotoSlotCount
 	mov r8, r0
 	ldrb r0, [r4]
 	bl FUN_08211164
@@ -21,7 +21,7 @@ _0821175A:
 	mov r3, sb
 	adds r5, r3, r6
 	adds r0, r5, #0
-	bl FUN_082110dc
+	bl CheckPhotoUnlocked
 	cmp r0, #0
 	beq _0821178C
 	ldr r1, _08211788 @ =0x085AF9B4

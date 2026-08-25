@@ -32,16 +32,16 @@ s8 GetWeaponQuality(s32 slot) { return GetWeapon(slot)->quality; }
 
 u32 GetWeaponDurability(s32 slot) { return GetWeapon(slot)->durability; }
 
-NAKED void FUN_08242a38(WeaponData* w, void* r1) { INCFUNC("asm/func/FUN_08242a38.inc"); }
+NAKED void FUN_08242a38(WeaponTemplate* tmpl, Weapon* w) { INCFUNC("asm/func/FUN_08242a38.inc"); }
 
-NAKED void FUN_08242a98(Weapon* w, WeaponData* data) { INCFUNC("asm/func/FUN_08242a98.inc"); }
+NAKED void FUN_08242a98(Weapon* w, WeaponTemplate* data) { INCFUNC("asm/func/FUN_08242a98.inc"); }
 
-void FUN_08242b14(slot32_t n, WeaponData* data) {
+void FUN_08242b14(slot32_t n, WeaponTemplate* data) {
   FUN_08242a98(GetWeapon(n), data);
   return;
 }
 
-void FUN_08242b28(s32 idx, WeaponData* data) {
+void FUN_08242b28(s32 idx, WeaponTemplate* data) {
   if (REGISTERED_WEAPON(idx) < 0) {
     *data = gWeaponDB[0];
   } else {
@@ -49,13 +49,13 @@ void FUN_08242b28(s32 idx, WeaponData* data) {
   }
 }
 
-void FUN_08242b6c(slot32_t n, const WeaponData* data) {
+void FUN_08242b6c(slot32_t n, const WeaponTemplate* data) {
   Weapon* w = GetWeapon(n);
-  FUN_08242a38((WeaponData*)data, w);
+  FUN_08242a38((WeaponTemplate*)data, w);
   SetWeaponFoundFlag(data->id);
 }
 
-NON_MATCH bool32 FUN_08242b88(WeaponData* data) {
+NON_MATCH bool32 FUN_08242b88(WeaponTemplate* data) {
 #ifdef NONMATCHING_C
   Player* p;
   s32 slot = 0;

@@ -1,5 +1,9 @@
 #include "global.h"
 
+EWRAM_DATA u32 gSentinel02020400 = 0;  // AgbMainでEWRAMをクリアする前に退避されるのでソフトリセットを検知するためのセンチネル？
+EWRAM_DATA u32 u32_02020404 = 0;       // gSentinel02020400と同様にAgbMainでEWRAMをクリアする前に退避されるが、用途は不明
+EWRAM_DATA u8 u8_02020408[4088] = {};  // 0x02020408, Unused?
+
 NAKED void AgbMain(void) {
   asm(".syntax unified\n\
 	push {r4, r5, r6, lr}\n\
@@ -10,10 +14,10 @@ NAKED void AgbMain(void) {
 	ldr r2, _0800040C @ =0x00004014\n\
 	adds r0, r2, #0\n\
 	strh r0, [r1]\n\
-	ldr r5, _08000410 @ =0x02020400\n\
+	ldr r5, _08000410 @ =gSentinel02020400\n\
 	ldr r0, [r5]\n\
 	mov r8, r0\n\
-	ldr r4, _08000414 @ =0x02020404\n\
+	ldr r4, _08000414 @ =u32_02020404\n\
 	ldr r6, [r4]\n\
 	movs r0, #1\n\
 	bl RegisterRamReset\n\
@@ -75,8 +79,8 @@ _08000400:\n\
 	.align 2, 0\n\
 _08000408: .4byte 0x04000204\n\
 _0800040C: .4byte 0x00004014\n\
-_08000410: .4byte 0x02020400\n\
-_08000414: .4byte 0x02020404\n\
+_08000410: .4byte gSentinel02020400\n\
+_08000414: .4byte u32_02020404\n\
 _08000418: .4byte 0x040000D4\n\
 _0800041C: .4byte 0x85001F40\n\
 _08000420: .4byte 0x0000CEAA\n\

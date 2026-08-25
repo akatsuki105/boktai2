@@ -25,7 +25,7 @@ _082117DC:
 	adds r2, r4, #0
 	adds r2, #0x24
 	ldrb r2, [r2]
-	bl FUN_08211188
+	bl AlbumMenu_CheckCursorPos
 	cmp r0, #0
 	bne _08211868
 _08211808:
@@ -45,7 +45,7 @@ _08211808:
 	adds r2, r4, #0
 	adds r2, #0x24
 	ldrb r2, [r2]
-	bl FUN_08211188
+	bl AlbumMenu_CheckCursorPos
 	cmp r0, #0
 	beq _08211840
 	ldrb r0, [r5]
@@ -71,7 +71,7 @@ _08211840:
 	adds r2, r4, #0
 	adds r2, #0x24
 	ldrb r2, [r2]
-	bl FUN_08211188
+	bl AlbumMenu_CheckCursorPos
 	cmp r0, #0
 	beq _0821187C
 _08211868:
@@ -102,7 +102,7 @@ _0821187C:
 	adds r2, r4, #0
 	adds r2, #0x24
 	ldrb r2, [r2]
-	bl FUN_08211188
+	bl AlbumMenu_CheckCursorPos
 	cmp r0, #0
 	beq _082118B2
 	ldrb r0, [r5]

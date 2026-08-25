@@ -4,13 +4,14 @@
 Usage: tools/dumper/weapon.py <ROM_FILE> <ROM_ADDR>
 e.g. tools/dumper/weapon.py baserom.gba 0x08DA9E68
 
-WeaponData (include/weapon.h, 36バイト):
+WeaponTemplate (include/weapon.h, 36バイト):
   u8 id; u8 kind; u8 unk_02; u8 lv; u32 unk_04;
   u16 unk_08; u16 unk_0a; u32 unk_0c[6];
 
 エントリ数は 66 (include/constants/weapon.h の WEAPON_ASTRO_HAMMER + 1)。
 数値フィールドはすべて10進数で出力する。
 """
+
 import struct
 import sys
 from pathlib import Path
@@ -128,13 +129,22 @@ def main() -> None:
         )
         sys.exit(1)
 
-    print("const WeaponData gWeaponDB[66] = {")
+    print("const WeaponTemplate gWeaponDB[66] = {")
     for i in range(WEAPON_NUM):
         chunk = entries[i * ENTRY_SIZE : (i + 1) * ENTRY_SIZE]
         id_, kind, unk_02, lv, unk_04, unk_08, unk_0a, *unk_0c = struct.unpack(
             "<BBBBIHH6I", chunk
         )
-        fields = [weapon_name(id_), wk_name(kind), unk_02, lv, unk_04, unk_08, unk_0a, *unk_0c]
+        fields = [
+            weapon_name(id_),
+            wk_name(kind),
+            unk_02,
+            lv,
+            unk_04,
+            unk_08,
+            unk_0a,
+            *unk_0c,
+        ]
         body = "{" + ", ".join(str(f) for f in fields) + "},"
         print(f"    {body}")
     print("};")

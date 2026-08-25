@@ -265,7 +265,7 @@ _08241C9C:
 	bl SetOverheatTime
 _08241CC4:
 	adds r0, r4, #0
-	bl overheat_08241a04
+	bl UpdateOverheat
 _08241CCA:
 	ldrh r0, [r4, #0x24]
 	adds r0, #1

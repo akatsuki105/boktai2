@@ -28,7 +28,7 @@ typedef struct {
 // 0x08CBF248
 typedef struct {
   u32 build_data;                  // 0x00000, seconds since unix epoch
-  s32 script_entries[11539 + 1];   // 0x00004, ScriptDirectory.bytecode[ScriptDirectory.script_entries[i]]
+  s32 script_entries[11539 + 1];   // 0x00004, bytecode[script_entries[idx]], 各エントリの上位8bit は用途不明, Script_ExecById で渡すスクリプトID から -1 することに注意
   ScriptDirectoryOffsets offsets;  // 0x0B454
   u32 string_index[7141];          // 0x0B464
   u8 string_data[269792];          // 0x123F8
@@ -43,7 +43,7 @@ static_assert(sizeof(ScriptDirectory) == 961568);
 // RAM に ScriptDirectory を読み込む際に相対オフセットを絶対アドレスに変換したもの
 // レイアウトがちょっと違うかも(根拠: VM_RestoreScriptTable)
 typedef struct {
-  s32* entries;                     // 0x00, = ScriptDirectory.script_entries
+  u32* entries;                     // 0x00, = ScriptDirectory.script_entries
   s32 scriptCount;                  // 0x04, = 11539, length of ScriptDirectory.script_entries
   u8* bytecode;                     // 0x08, 0x08D13428, ScriptDirectory.bytecode, ここにアクセスする際に 0x03000748 からのオフセットでアクセスしている
   u8* special_script_data;          // 0x0C, 0x08DA9E60, ScriptDirectory.special_script_data
@@ -65,10 +65,9 @@ typedef struct Subroutine {
   void* (*fn)(u32 subroutineID, void* unk);
 } Subroutine;
 
-extern Subroutine gSubroutineTable1[643];
+extern Subroutine gSubroutineTable[643];
 
 // 制御命令の処理も Subroutine で行う, なんで 2つのテーブルに分かれてるのかは不明
-extern Subroutine gCtrlHandlers1_ROM[6];
 extern Subroutine gCtrlHandlers2_ROM[8];
 
 // --------------------------------------------
@@ -77,7 +76,7 @@ extern Subroutine gCtrlHandlers2_ROM[8];
 typedef struct SubroutineTable {
   struct SubroutineTable* next;  // 0x00, ?
   u32 len;                       // = 8, length of gSubroutineTableN
-  Subroutine* arr;               // gSubroutineTableN
+  const Subroutine* arr;         // gSubroutineTableN
 } SubroutineTable;
 
 extern SubroutineTable gCtrlHandlers1;

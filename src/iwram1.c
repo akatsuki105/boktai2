@@ -9,15 +9,31 @@
 #include "time.h"
 #include "vm.h"
 
-IWRAM_DATA u8 u8_03000000[208] = {};  // todo, rfu_MBOOT_CHILD_inheritanceLinkStatus で RFU_LINK_STATUS の本体がここにあるが、メインゲーム開始時に別の構造体で上書きされてるように見える (つまり union)
+struct EntityD9AE;
+struct Entity8AAB;
+struct LevelUpper;
+
+IWRAM_DATA u8 u8_03000000[32] = {};  // todo, rfu_MBOOT_CHILD_inheritanceLinkStatus で RFU_LINK_STATUS の本体がここにあるが、メインゲーム開始時に別の構造体で上書きされてるように見える (つまり union)
+
+IWRAM_DATA struct EntityD9AE* gEntityD9AE = NULL;  // 0x03000020
+
+IWRAM_DATA u8 u8_03000024[172] = {};  // todo
 
 IWRAM_DATA Entity* gCredits = NULL;  // 0x030000D0
 
-IWRAM_DATA u8 u8_030000d4[192] = {};
+IWRAM_DATA u8 u8_030000d4[128] = {};
+
+IWRAM_DATA struct LevelUpper* gLevelUpper = NULL;  // 0x03000154
+
+IWRAM_DATA u8 u8_03000158[60] = {};
 
 IWRAM_DATA Elevator* gElevator = NULL;  // 0x03000194
 
-IWRAM_DATA u8 u8_03000198[192] = {};
+IWRAM_DATA u8 u8_03000198[176] = {};
+
+IWRAM_DATA struct Entity8AAB* gEntity8AAB = NULL;  // 0x03000248
+
+IWRAM_DATA u8 u8_0300024c[12] = {};
 
 IWRAM_DATA Entity gVideoManager = {};  // 0x03000258
 
@@ -41,8 +57,8 @@ IWRAM_DATA u8 u8_0300077c[3876] = {};
 IWRAM_DATA Entity1_030016a0 gEntity1_030016a0 = {};    // 0x030016A0
 IWRAM_DATA SystemSaveData gSystemSaveDataBuffer = {};  // 0x030016C0
 IWRAM_DATA SubroutineTable gCtrlHandlers2 = {};
-IWRAM_DATA u16 gUnk085a9208Counter = 0;  // 0x030016f4
-IWRAM_DATA Entity2* gEntity2 = NULL;     // 0x030016f8
+IWRAM_DATA u16 gSubroutineCount = 0;        // 0x030016f4
+IWRAM_DATA EntityB8B9* gEntityB8B9 = NULL;  // 0x030016f8
 IWRAM_DATA u32 DAT_030016fc = 0;
 IWRAM_DATA u32 DAT_03001700 = 0;
 IWRAM_DATA u32 DAT_03001704 = 0;

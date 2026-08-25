@@ -19,7 +19,7 @@
 	adds r4, #0x68
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl FUN_0822f284
+	bl OpenSpriteSetFile
 	adds r5, r6, #0
 	adds r5, #0x88
 	movs r3, #0x90

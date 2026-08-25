@@ -79,17 +79,17 @@ static bool32 tryAddItem(item32_t n, s32 rotCount) {
 
 static bool32 tryAddValuable(item32_t n) {
   s32 slot = 0;
-  u32 flagHeart = (1 << 28);
-  u32 flagJoker = (1 << 29);
+  u32 flagHeart = FLAG378_HEART;
+  u32 flagJoker = FLAG378_JOKER;
 
   for (; slot < 16; slot++) {
     if (GetValuableItemID(slot) < 0) {
       SetValuable(slot, n);
       if (gPlayerPtr[0] != NULL) {
         if (n == ITEM_HEART_EMBLEM) {
-          gPlayerPtr[0]->unk_378 |= flagHeart;
+          gPlayerPtr[0]->flag378 |= flagHeart;
         } else if (n == ITEM_JOKER_EMBLEM) {
-          gPlayerPtr[0]->unk_378 |= flagJoker;
+          gPlayerPtr[0]->flag378 |= flagJoker;
         }
       }
       return TRUE;

@@ -2,18 +2,18 @@
 #include "global.h"
 
 void FUN_08065200(Player* p);
-void* FUN_08065270(Player* p);
+void* Player_Init_Helper_08065270(Player* p);
 void* FUN_08065744(Player* p, u32 n);
 void FUN_08065164(Player* p);
-void weapon_08065924(Player* p);
-void armor_08065988(Player* p);
+void Player_InitWeapon(Player* p);
+void Player_InitArmor(Player* p);
 void CheckHeartJokerEmblem(Player* p);
 void FUN_08061294(Player* p);
 void Player_Init_Helper_08063b6c(Player* p);
 void FUN_0807ddbc(Player* p);
 void FUN_08065240(Player* p);
 
-NAKED void FUN_080659e8(Player* p) { INCFUNC("asm/func/FUN_080659e8.inc"); }
+NAKED void Player_Init_Helper_080659e8(Player* p) { INCFUNC("asm/func/Player_Init_Helper_080659e8.inc"); }
 
 NAKED bool32 FUN_08065a98(u32 val) { INCFUNC("asm/func/FUN_08065a98.inc"); }
 
@@ -35,13 +35,13 @@ INCASM("asm/player_08065988.inc");
 
 NAKED void FUN_0807e854(Player* p) { INCFUNC("asm/func/FUN_0807e854.inc"); }
 
-NAKED bool32 FUN_0807e968(Player* p) { INCFUNC("asm/func/FUN_0807e968.inc"); }
+NAKED bool32 Player_Update_Helper_0807e968(Player* p) { INCFUNC("asm/func/Player_Update_Helper_0807e968.inc"); }
 
 NAKED void FUN_0807eca8(Player* p) { INCFUNC("asm/func/FUN_0807eca8.inc"); }
 
 NAKED void FUN_0807ed04(Player* p) { INCFUNC("asm/func/FUN_0807ed04.inc"); }
 
-NAKED void FUN_0807ee58(Player* p) { INCFUNC("asm/func/FUN_0807ee58.inc"); }
+NAKED void Player_Update_Helper_0807ee58(Player* p) { INCFUNC("asm/func/Player_Update_Helper_0807ee58.inc"); }
 
 NAKED void FUN_0807f0bc(Player* p) { INCFUNC("asm/func/FUN_0807f0bc.inc"); }
 
@@ -53,20 +53,20 @@ NAKED static s32 Player_Destroy(Player* p) { INCFUNC("asm/func/Player_Destroy.in
 
 static s32 Player_Init(Player* p, u32 n, void* _) {
   FUN_08065200(p);
-  FUN_08065270(p);
+  Player_Init_Helper_08065270(p);
   FUN_08065744(p, n);
-  FUN_080659e8(p);
+  Player_Init_Helper_080659e8(p);
   FUN_08065164(p);
-  weapon_08065924(p);
-  armor_08065988(p);
+  Player_InitWeapon(p);
+  Player_InitArmor(p);
   CheckHeartJokerEmblem(p);
   FUN_08061294(p);
   Player_Init_Helper_08063b6c(p);
   FUN_0807ddbc(p);
   FUN_08065240(p);
-  gPlayerPtr[p->unk_28] = p;
+  gPlayerPtr[(p->unk_24).unk_4] = p;
   gPlayerCount++;
-  if (p->unk_28 == 0) {
+  if ((p->unk_24).unk_4 == 0) {
     FUN_0807ed04(p);
     FUN_0809c464();
   }

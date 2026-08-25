@@ -4,7 +4,7 @@
 	cmp r4, #0
 	blt _08064C94
 	adds r0, r4, #0
-	bl FUN_0824347c
+	bl GetMagicCategory
 	adds r5, r0, #0
 	cmp r4, #5
 	bgt _08064C64

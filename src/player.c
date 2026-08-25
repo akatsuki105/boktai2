@@ -60,10 +60,7 @@ void FUN_08060e90(Player* p, u32 r1) {
   }
 }
 
-void FUN_08060ec8(Player* p, u32 r1) {
-  p->unk_9bc |= r1;
-  return;
-}
+void FUN_08060ec8(Player* p, u32 r1) { p->unk_9bc |= r1; }
 
 u32 FUN_08060ed8(Player* p, u32 r1) { return p->unk_9bc & r1; }
 
@@ -77,11 +74,11 @@ NAKED void FUN_08060f00(Player* p) { INCFUNC("asm/func/FUN_08060f00.inc"); }
 
 s32 CalcMaxHP(Player* p) {
   s32 val;
-  Player_264* unk264 = &p->unk_264;
+  PlayerArmor* armor = &p->armor;
   if (p->kind == PLAYER_SOLAR_DJANGO) {
-    val = (p->unk_35c + unk264->unk_26c) + unk264->unk_274;
+    val = (p->stats[STAT_VITALITY] + armor->bonus[STAT_VITALITY]) + armor->hpBonus;
   } else {
-    val = (p->unk_35c + unk264->unk_26c) - unk264->unk_274;
+    val = (p->stats[STAT_VITALITY] + armor->bonus[STAT_VITALITY]) - armor->hpBonus;
   }
   if (99 < val) {
     val = 99;
@@ -91,15 +88,15 @@ s32 CalcMaxHP(Player* p) {
 
 s32 CalcMaxEne(Player* p) {
   s32 val;
-  Player_264* unk264 = &p->unk_264;
-  if (u32_030047a4 & 0x1000) {
+  PlayerArmor* armor = &p->armor;
+  if (gFlag030047a4 & FLAG030047A4_UNK_12) {
     return 10;
   }
 
   if (p->kind == PLAYER_SOLAR_DJANGO) {
-    val = (p->unk_35e + unk264->unk_26e) + unk264->unk_276;
+    val = (p->stats[STAT_SPIRIT] + armor->bonus[STAT_SPIRIT]) + armor->eneBonus;
   } else {
-    val = (p->unk_35e + unk264->unk_26e) - unk264->unk_276;
+    val = (p->stats[STAT_SPIRIT] + armor->bonus[STAT_SPIRIT]) - armor->eneBonus;
   }
   if (99 < val) {
     val = 99;
@@ -143,4 +140,25 @@ NAKED void FUN_080612d8(Player* p) { INCFUNC("asm/func/FUN_080612d8.inc"); }
 
 NAKED void FUN_08061384(Player* p) { INCFUNC("asm/func/FUN_08061384.inc"); }
 
+NAKED void FUN_080613ec(Player* p, UNK_PTR param_2, s32 val) { INCFUNC("asm/func/FUN_080613ec.inc"); }
+
+NAKED void FUN_08061458(Player* p) { INCFUNC("asm/func/FUN_08061458.inc"); }
+
+NAKED void FUN_080614bc(Player* p) { INCFUNC("asm/func/FUN_080614bc.inc"); }
+
+NAKED void FUN_0806161c(Player* p) { INCFUNC("asm/func/FUN_0806161c.inc"); }
+
+// Player.fn_714
+NAKED void FUN_08061680(UNK_PTR p) { INCFUNC("asm/func/FUN_08061680.inc"); }
+
+// Player.fn_714
+NAKED void FUN_080617bc(UNK_PTR p) { INCFUNC("asm/func/FUN_080617bc.inc"); }
+
 INCASM("asm/player.inc");
+
+bool32 Player_HasEnoughEne(Player* p, s32 ene) {
+  if (p->ene < ene) return FALSE;
+  return TRUE;
+}
+
+NAKED bool32 FUN_08064d6c(Player* p, s32 val) { INCFUNC("asm/func/FUN_08064d6c.inc"); }

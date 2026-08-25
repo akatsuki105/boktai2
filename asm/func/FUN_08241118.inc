@@ -2,7 +2,7 @@
 	adds r6, r0, #0
 	ldr r2, _08241198 @ =0x030046A0
 	ldr r1, [r2]
-	ldr r0, _0824119C @ =0x03004594
+	ldr r0, _0824119C @ =gScriptDirectoryBuildTime
 	ldr r0, [r0]
 	str r0, [r1]
 	ldr r0, [r2]
@@ -53,7 +53,7 @@
 	b _082411A6
 	.align 2, 0
 _08241198: .4byte 0x030046A0
-_0824119C: .4byte 0x03004594
+_0824119C: .4byte gScriptDirectoryBuildTime
 _082411A0: .4byte 0x030047B4
 _082411A4:
 	movs r0, #0
