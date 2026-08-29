@@ -46,7 +46,7 @@ NAKED void FUN_082314f4(void) { INCFUNC("asm/func/FUN_082314f4.inc"); }
 void VM_SetPC(u8* addr) { gVM.pc = addr; }
 
 // a.k.a. Script_SeekToKeyword
-NAKED bool32 prepare_08231510(u8 val) { INCFUNC("asm/func/prepare_08231510.inc"); }
+NAKED bool32 prepare_08231510(u8 keyword) { INCFUNC("asm/func/prepare_08231510.inc"); }
 
 NAKED u32 VM_Ctrl_Switch_Internal(void) { INCFUNC("asm/func/VM_Ctrl_Switch_Internal.inc"); }
 

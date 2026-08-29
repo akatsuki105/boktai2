@@ -7,7 +7,9 @@ EWRAM_DATA u8 gDecompressedCollisionMapFile[16384] = {};  // 0x02031400, Collisi
 
 EWRAM_DATA u8 u8_02035400[0x800] = {};  // 0x02035400, 0x0822e8b6 で 0x800 バイトで ClearMemory されるので内容は不明だが、ここが1つのメモリの塊であることは確か
 
-EWRAM_DATA u8 u8_02035c00[0x1200] = {};  // todo
+EWRAM_DATA u8 u8_02035c00[0x1000] = {};  // todo
+
+EWRAM_DATA u8 u8_ARRAY_02036c00[512] = {};  // 0x02036C00
 
 EWRAM_DATA u16 gSlowBgPlttBuffer[256] = {};  // 0x02036e00
 

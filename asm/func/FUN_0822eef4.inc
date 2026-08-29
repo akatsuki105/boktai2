@@ -48,7 +48,7 @@ _0822EF54: .4byte 0x03003514
 _0822EF58:
 	ldr r4, _0822EFA0 @ =0x030044A0
 	ldr r0, [r4]
-	bl FUN_0822ee7c
+	bl Video_GetBGnHOFS
 	mov ip, r0
 	ldr r2, _0822EFA4 @ =0x03003ED0
 	ldr r1, [r4]
@@ -92,7 +92,7 @@ _0822EFB4: .4byte 0x03003514
 _0822EFB8:
 	ldr r4, _0822F000 @ =0x030044A0
 	ldr r0, [r4]
-	bl FUN_0822eeb8
+	bl Video_GetBGnVOFS
 	mov ip, r0
 	ldr r2, _0822F004 @ =0x03003ED0
 	ldr r1, [r4]

@@ -116,7 +116,7 @@ else
 endif
 
 # RULES_NO_SCAN: ビルドを伴わないルールの一覧
-RULES_NO_SCAN += clean clean-code clean-scripts
+RULES_NO_SCAN += clean clean-code clean-scripts clean-graphics
 .PHONY: all modern compare $(RULES_NO_SCAN)
 
 NODEP ?= 0

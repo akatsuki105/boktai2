@@ -11,7 +11,7 @@
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_08221cf8
+	bl Entity0623_Init
 	cmp r0, #0
 	bge _08222268
 	adds r0, r4, #0

@@ -1,6 +1,11 @@
 #include "global.h"
 
-typedef void Entity0623;  // TODO: 後で実装する
+// シェードマンのスプライトをロードしている (Entity0623_Init_Helper_0821c758)
+typedef struct {
+  Entity e;  // 0x0, ENTITY_UNK_8
+  u8 unk_18[3076 - 0x18];
+} Entity0623;
+static_assert(sizeof(Entity0623) == 3076);
 
 const u8 u8_ARRAY_085affa8[16] = {
     0x9, 0x9, 0x9, 0x9, 0x6, 0x6, 0xB, 0xB, 0x6, 0x8, 0x9, 0x9, 0xA, 0xA, 0x6, 0x6,

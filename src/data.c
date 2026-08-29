@@ -256,27 +256,3 @@ const u8 u8_ARRAY_08252894[8] = {0x90, 0x98, 0xA8, 0xB0, 0xB8, 0xC8, 0xD0, 0xD8}
 const char s_RED_0825289c[3][6] = {"  RED", "BLACK", " GRAY"};
 const char s_STYLE_082528ae[6][9] = {"   SWORD", "   SPEAR", "  HAMMER", "    FIST", "     GUN", "NO STYLE"};
 const char s_PUSH_A_BUTTON_082528e4[] = "PUSH A BUTTON";
-
-void VCountIntr(void);
-void HBlankIntr(void);
-void FUN_0822a188(void);
-void IntrDummy(void);
-void VBlankIntr(void);
-
-// clang-format off
-const Procedure gIntrTableTemplate[13] = {
-    VCountIntr,   // V-count interrupt
-    IntrDummy,
-    IntrDummy,
-    HBlankIntr,   // H-blank interrupt
-    VBlankIntr,   // V-blank interrupt
-    IntrDummy,
-    IntrDummy,
-    IntrDummy,
-    IntrDummy,
-    IntrDummy,
-    IntrDummy,
-    IntrDummy,
-    FUN_0822a188,
-};
-// clang-format on

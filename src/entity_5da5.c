@@ -1,6 +1,11 @@
 #include "global.h"
 
-typedef void Entity5DA5;  // TODO: 後で実装する
+// シャンデリアのスプライトセットを使用していた (Entity5DA5_Init)
+typedef struct {
+  Entity e;  // 0x0, ENTITY_UNK_10
+  u8 unk_18[940 - 0x18];
+} Entity5DA5;
+static_assert(sizeof(Entity5DA5) == 940);
 
 const u16 u16_ARRAY_085aa690[8] = {
     0x0, 0x80, 0xFF80, 0x0, 0xFF80, 0x0, 0x0, 0x80,

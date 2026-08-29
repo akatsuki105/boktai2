@@ -43,10 +43,11 @@ static_assert(sizeof(ScriptDirectory) == 961568);
 // RAM に ScriptDirectory を読み込む際に相対オフセットを絶対アドレスに変換したもの
 // レイアウトがちょっと違うかも(根拠: VM_RestoreScriptTable)
 typedef struct {
-  u32* entries;                     // 0x00, = ScriptDirectory.script_entries
-  s32 scriptCount;                  // 0x04, = 11539, length of ScriptDirectory.script_entries
-  u8* bytecode;                     // 0x08, 0x08D13428, ScriptDirectory.bytecode, ここにアクセスする際に 0x03000748 からのオフセットでアクセスしている
-  u8* special_script_data;          // 0x0C, 0x08DA9E60, ScriptDirectory.special_script_data
+  u32* entries;             // 0x00, = ScriptDirectory.script_entries
+  s32 scriptCount;          // 0x04, = 11539, length of ScriptDirectory.script_entries
+  u8* bytecode;             // 0x08, 0x08D13428, ScriptDirectory.bytecode, ここにアクセスする際に 0x03000748 からのオフセットでアクセスしている
+  u8* special_script_data;  // 0x0C, 0x08DA9E60, ScriptDirectory.special_script_data
+  // Textbox_LookupString で .stringIndex と .stringData にアクセスする際に 0x10 からのオフセットでアクセスしていることから、 .offsets から .unknown まで1つの構造体にまとめられているかも
   ScriptDirectoryOffsets* offsets;  // 0x10, = &ScriptDirectory.offsets
   u32* stringIndex;                 // 0x14, 0x08CCA6AC, ScriptDirectory.string_index
   u8* stringData;                   // 0x18, 0x08CD1640, ScriptDirectory.string_data

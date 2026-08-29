@@ -51168,8 +51168,8 @@ FUN_080ddb1c: @ 0x080DDB1C
 	.align 2, 0
 _080DDB24: .4byte 0x03000170
 
-	thumb_func_start FUN_080ddb28
-FUN_080ddb28: @ 0x080DDB28
+	thumb_func_start Entity080de11c_Update
+Entity080de11c_Update: @ 0x080DDB28
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -51373,8 +51373,8 @@ _080DDC90:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_080ddca0
-FUN_080ddca0: @ 0x080DDCA0
+	thumb_func_start Entity080de11c_Destroy
+Entity080de11c_Destroy: @ 0x080DDCA0
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	adds r4, #0x28
@@ -51415,7 +51415,7 @@ FUN_080ddcc8: @ 0x080DDCC8
 	str r0, [sp, #0x10]
 	cmp r0, #0
 	bne _080DDCFC
-	bl FUN_080de11c
+	bl Entity080de11c_Create
 	str r0, [sp, #0x10]
 	cmp r0, #0
 	bne _080DDCFC

@@ -86,6 +86,3 @@ INCBIN(".rodata", "data/gCollisionMapsDirectory.bin");  // ./tmp/bin.sh ./basero
 
 // gPlttDirectory
 INCBIN(".rodata", "data/gPlttDirectory.bin");  // ./tmp/bin.sh ./baserom.gba 0x087fa08c 0x0881882c ./data/gPlttDirectory.bin
-
-// gTilesetsDirectory
-INCBIN(".rodata", "data/gTilesetsDirectory.bin");  // ./tmp/bin.sh ./baserom.gba 0x0881882c 0x089ee074 ./data/gTilesetsDirectory.bin

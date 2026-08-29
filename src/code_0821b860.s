@@ -112,9 +112,10 @@ FUN_0821c740: @ 0x0821C740
 FUN_0821c744: @ 0x0821C744
   .include "asm/func/FUN_0821c744.inc"
 
-	thumb_func_start FUN_0821c758
-FUN_0821c758: @ 0x0821C758
-  .include "asm/func/FUN_0821c758.inc"
+@ シェードマンのスプライトをロードしている
+	thumb_func_start Entity0623_Init_Helper_0821c758
+Entity0623_Init_Helper_0821c758: @ 0x0821C758
+  .include "asm/func/Entity0623_Init_Helper_0821c758.inc"
 
 	thumb_func_start FUN_0821c918
 FUN_0821c918: @ 0x0821C918
@@ -436,9 +437,9 @@ FUN_08221ca8: @ 0x08221CA8
 FUN_08221ccc: @ 0x08221CCC
   .include "asm/func/FUN_08221ccc.inc"
 
-	thumb_func_start FUN_08221cf8
-FUN_08221cf8: @ 0x08221CF8
-  .include "asm/func/FUN_08221cf8.inc"
+	thumb_func_start Entity0623_Init
+Entity0623_Init: @ 0x08221CF8
+  .include "asm/func/Entity0623_Init.inc"
 
 	thumb_func_start Entity0623_Create
 Entity0623_Create: @ 0x0822222C

@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "lib": ["deno.window"],
+    "strict": true
+  },
+  "fmt": {
+    "options": {
+      "lineWidth": 1000 // I hate line wrapping
+    }
+  },
+  "imports": {
+    "@cliffy/command": "jsr:@cliffy/command@^1.2.1",
+    "@std/path": "jsr:@std/path@^1.1.6"
+  }
+}

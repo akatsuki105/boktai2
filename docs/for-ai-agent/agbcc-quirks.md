@@ -165,7 +165,7 @@ here once some function's `make compare` actually hits OK using them.
 ### Declare-with-initializer commits a local to a persistent register too early
 
 - **Frequency**: 2 functions confirmed — `FUN_0824213c` (`src/code_08241f6c.c`),
-  `FUN_080de11c` (`src/code_080ddf88.c`, identical singleton-entity-creation
+  `Entity080de11c_Create` (`src/entity_080ddf88.c`, identical singleton-entity-creation
   shape — same lever applied first-try).
 - `T* p = someGlobal; if (p == NULL) { ...create/use p across calls...; return p; } return p;`
   keeps `p` live across the *entire* function (including the early-return

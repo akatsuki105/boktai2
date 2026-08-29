@@ -155,7 +155,7 @@ int main(int argc, char** argv) {
   const char* extension = GetFileExtension(source);
   if (!extension) FATAL_ERROR("\"%s\" has no file extension.\n", argv[1]);
 
-  if ((extension[0] == 's') && extension[1] == '\0') {  // '.s'
+  if (((extension[0] == 's') && extension[1] == '\0') || ((extension[0] == 'i') && (extension[1] == 'n') && (extension[2] == 'c') && (extension[3] == '\0'))) {  // '.s' or '.inc'
     PreprocAsmFile(source, isStdin, doEnum);
   } else if ((extension[0] == 'c' || extension[0] == 'i') && extension[1] == '\0') {  // '.c' or '.i'
     if (doEnum) FATAL_ERROR("-e is invalid for C sources\n");

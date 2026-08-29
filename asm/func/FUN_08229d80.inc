@@ -133,7 +133,7 @@
 	movs r2, #0
 	bl SetEntityRoutine
 	ldr r4, _08229F2C @ =0x03000270
-	ldr r1, _08229F30 @ =FUN_0822a228
+	ldr r1, _08229F30 @ =EntityKind13_Update
 	adds r0, r4, #0
 	movs r2, #0
 	bl SetEntityRoutine
@@ -179,4 +179,4 @@ _08229F20: .4byte 0x03003504
 _08229F24: .4byte 0x03000258
 _08229F28: .4byte VideoManager_Update
 _08229F2C: .4byte 0x03000270
-_08229F30: .4byte FUN_0822a228
+_08229F30: .4byte EntityKind13_Update

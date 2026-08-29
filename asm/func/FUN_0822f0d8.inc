@@ -26,7 +26,7 @@ _0822F104:
 _0822F10E:
 	ldr r0, _0822F11C @ =0x030044A0
 	ldr r0, [r0]
-	bl FUN_0822ee7c
+	bl Video_GetBGnHOFS
 	adds r1, r0, #0
 	b _0822F13E
 	.align 2, 0
@@ -34,7 +34,7 @@ _0822F11C: .4byte 0x030044A0
 _0822F120:
 	ldr r0, _0822F12C @ =0x030044A0
 	ldr r0, [r0]
-	bl FUN_0822eeb8
+	bl Video_GetBGnVOFS
 	adds r1, r0, #0
 	b _0822F13E
 	.align 2, 0

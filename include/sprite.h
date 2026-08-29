@@ -8,47 +8,49 @@
 
 #define ACTOR_SPRITE_COUNT 253
 #define ACTOR_SPRITES_TILECOUNT 42418
-#define ACTOR_SPRITE_SPRITE_COUNT 3246
+#define ACTOR_SPRITE_SPRITE_COUNT 2164
 
 typedef struct {
-  u8 shape;   // 0x00
-  u8 unk_01;  // 0x01
-  s8 x;       // 0x02
-  s8 y;       // 0x03
-} ActorObject;
-static_assert(sizeof(ActorObject) == 4);
-
-typedef struct {
-  u16 id;             // 0x00
-  u16 unk_02;         // 0x02
-  u8 w;               // 0x04
-  u8 h;               // 0x05
-  s8 x;               // 0x06
-  s8 y;               // 0x07
-  u32 spritesOffset;  // 0x08
+  u16 id;             // 0x00, ID of this actor, used for loading it
+  u16 unk_02;         // 0x02, このゲームでは全て０
+  u8 pw;              // 0x04, pixel width
+  u8 ph;              // 0x05, pixel height
+  s8 px;              // 0x06, offset pixel x
+  s8 py;              // 0x07, offset pixel y
+  u32 spritesOffset;  // 0x08, metasprites[] の先頭からアクターの最初のスプライトまでのバイトオフセット, つまり metasprites[spritesOffset>>3]
 } ActorSpritesActor;
 static_assert(sizeof(ActorSpritesActor) == 12);
 
+// メタスプライト
 typedef struct {
-  u8 objectCount;    // 0x00
-  u8 unk_01;         // 0x01
-  u16 plttID;        // 0x02
-  u16 tileOffset;    // 0x04
-  u16 objectOffset;  // 0x06
-} ActorSprite;
-static_assert(sizeof(ActorSprite) == 8);
+  u8 subspriteCount;    // 0x00, このメタスプライトを構成する ActorSubsprite の数
+  u8 unk_01;            // 0x01
+  u16 plttID;           // 0x02, ObjPlttFile.body[plttID*16]
+  u32 tileOffset;       // 0x04, tiles[]の先頭からこのスプライトの最初のタイルまでのバイトオフセット, つまり tiles[tileOffset >> 5]
+  u32 subspriteOffset;  // 0x08, subsprites[]の先頭から、このスプライトの最初のsubspritesまでのバイトオフセット, つまり subsprites[subspriteOffset>>2] から subsprites[(subspriteOffset>>2) + subspriteCount] がこのメタスプライトのサブスプライト
+} ActorMetasprite;
+static_assert(sizeof(ActorMetasprite) == 12);
+
+// これがGBAスプライトに対応
+typedef struct {
+  u8 shape;   // 0x00, (OAM1.14-15 << 2) | (OAM0.14-15); (size << 2) | shape
+  u8 unk_01;  // 0x01, このゲームでは全て０
+  s8 x;       // 0x02
+  s8 y;       // 0x03
+} ActorSubsprite;
+static_assert(sizeof(ActorSubsprite) == 4);
 
 typedef struct {
-  u32 unk_00;                                      // 0x00
-  u32 actorCount;                                  // 0x04, ACTOR_SPRITE_COUNT
-  u32 unk_08;                                      // 0x08
-  u32 offsetToTiles;                               // 0x0C
-  u32 offsetToSprites;                             // 0x10
-  u32 offsetToObjects;                             // 0x14
-  ActorSpritesActor actors[ACTOR_SPRITE_COUNT];    // 0x18
-  u8 tiles[ACTOR_SPRITES_TILECOUNT * 32];          // 0xBF4, GBA tiles
-  ActorSprite sprites[ACTOR_SPRITE_SPRITE_COUNT];  // 0x14C234
-  ActorObject objects[4641];                       // 0x1527A4
+  u32 unk_00;                                              // 0x000000, 0x0
+  u32 actorCount;                                          // 0x000004, actors[ACTOR_SPRITE_COUNT]
+  u32 unk_08;                                              // 0x000008, 0x0
+  u32 offsetToTiles;                                       // 0x00000C
+  u32 offsetToMetasprites;                                 // 0x000010
+  u32 offsetToSubsprites;                                  // 0x000014
+  ActorSpritesActor actors[ACTOR_SPRITE_COUNT];            // 0x000018, メタスプライトをまとめたもの
+  u8 tiles[ACTOR_SPRITES_TILECOUNT * 32];                  // 0x000BF4, GBA tiles
+  ActorMetasprite metasprites[ACTOR_SPRITE_SPRITE_COUNT];  // 0x14C234, メタスプライト
+  ActorSubsprite subsprites[4641];                         // 0x1527A4, GBAスプライト
 } ActorSpritesFile;
 static_assert(sizeof(ActorSpritesFile) == 1404968);
 
@@ -100,7 +102,7 @@ static_assert(sizeof(spriteset_unk1) == 8);
 // これがGBAスプライトに対応, a.k.a. spriteset_obj
 typedef struct {
   u8 flip;             // 0x00, bit2: xflip, bit3: yflip, TODO: other bits?
-  u8 shape;            // 0x01, (OAM1.14-15 << 2) | (OAM0.14-15)
+  u8 shape;            // 0x01, (OAM1.14-15 << 2) | (OAM0.14-15); (size << 2) | shape
   s16 x;               // 0x02
   s16 y;               // 0x04
   u16 tileNum : 12;    // 0x06.0-11, GBAのタイルIDは 10bitなので、 bit10-11　が本当にタイル番号かは要検証
@@ -187,8 +189,8 @@ typedef struct SpriteState {
   u16 unk_18;  // 0x18
   u8 unk_1a;   // 0x1A
   u8 unk_1b;   // 0x1B
-  u8 unk_1c;
-  u8 unk_1d;  // 0x1D
+  u8 unk_1c;   // 0x1C
+  u8 unk_1d;   // 0x1D
   u8 unk_1e[2];
   u16 offsetX;  // 0x20, SpriteSet で定義された初期位置 からの X方向のオフセット
   u16 offsetY;  // 0x22, SpriteSet で定義された初期位置 からの Y方向のオフセット

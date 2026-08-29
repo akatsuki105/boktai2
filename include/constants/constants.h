@@ -10,6 +10,7 @@
 #include "constants/map.h"
 #include "constants/miscs.h"
 #include "constants/size.h"
+#include "constants/sprite.h"
 #include "constants/weapon.h"
 
 #endif  // __INCLUDE_CONSTANTS_CONSTANTS_H__

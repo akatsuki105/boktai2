@@ -1,15 +1,15 @@
 Script_06E4: @ 0x08D4E9C3, ScriptID: 1764
 block
   expr
-    ptr u8, scratch, 0x140  ; 0x203e340
-    ptr u8, scratch, 0x140  ; 0x203e340
+    ptr u8, scratch, 0x140  @ 0x203e340
+    ptr u8, scratch, 0x140  @ 0x203e340
     i32 0x1
     add
     store
   end-expr
   expr
     var 0x1
-    ptr u8, scratch, 0x140  ; 0x203e340
+    ptr u8, scratch, 0x140  @ 0x203e340
     i32 0xf
     bit-and
     store
@@ -209,16 +209,16 @@ end
 Script_06E6: @ 0x08D4EB71, ScriptID: 1766
 block
   expr
-    ptr u8, scratch, 0x76  ; 0x203e276
-    ptr u8, scratch, 0x76  ; 0x203e276
+    ptr u8, scratch, 0x76  @ 0x203e276
+    ptr u8, scratch, 0x76  @ 0x203e276
     i32 0x1
     add
     store
   end-expr
   if
     expr
-      ptr u8, scratch, 0x76  ; 0x203e276
-      ptr u8, scratch, 0x77  ; 0x203e277
+      ptr u8, scratch, 0x76  @ 0x203e276
+      ptr u8, scratch, 0x77  @ 0x203e277
       gte
     end-expr
     block
@@ -234,7 +234,7 @@ block
         keyword 'e'
         block
           expr
-            ptr bool, world, 0x171, bit=0x3  ; 0x203db71
+            ptr bool, world, 0x171, bit=0x3  @ 0x203db71
             i32 0x1
             store
           end-expr
@@ -252,8 +252,8 @@ end
 Script_06E7: @ 0x08D4EBC1, ScriptID: 1767
 block
   expr
-    ptr u8, scratch, 0x77  ; 0x203e277
-    ptr u8, scratch, 0x77  ; 0x203e277
+    ptr u8, scratch, 0x77  @ 0x203e277
+    ptr u8, scratch, 0x77  @ 0x203e277
     i32 0x1
     add
     store
@@ -389,29 +389,29 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x18
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6f
       eq
       or
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x12
       eq
       or
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6c
       eq
       or
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0xaa
       eq
       or
     end-expr
     block
       expr
-        ptr u8, scratch, 0x15b  ; 0x203e35b
+        ptr u8, scratch, 0x15b  @ 0x203e35b
         i32 0x0
         store
       end-expr
@@ -419,14 +419,14 @@ block
       end
       if
         expr
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           i32 0x18
           eq
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           u8 0x6f
           eq
           or
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           u8 0xaa
           eq
           or
@@ -472,10 +472,10 @@ block
   end
   if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x36
       gte
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x38
       lt
       and
@@ -502,22 +502,22 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x18
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6f
       eq
       or
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x12
       eq
       or
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6c
       eq
       or
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0xaa
       eq
       or
@@ -554,10 +554,10 @@ block
   end
   if
     expr
-      ptr bool, world, 0x171, bit=0x4  ; 0x203db71
+      ptr bool, world, 0x171, bit=0x4  @ 0x203db71
       i32 0x0
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6d
       eq
       and
@@ -665,14 +665,14 @@ Script_06EC: @ 0x08D4EECB, ScriptID: 1772
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6f
       eq
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x36
       gte
       and
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x37
       lt
       and
@@ -708,10 +708,10 @@ Script_06ED: @ 0x08D4EF26, ScriptID: 1773
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6d
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6e
       eq
       or
@@ -719,13 +719,13 @@ block
     block
       if
         expr
-          ptr bool, world, 0x171, bit=0x4  ; 0x203db71
+          ptr bool, world, 0x171, bit=0x4  @ 0x203db71
           i32 0x0
           eq
         end-expr
         block
           expr
-            ptr bool, scratch, 0x14, bit=0x2  ; 0x203e214
+            ptr bool, scratch, 0x14, bit=0x2  @ 0x203e214
             i32 0x0
             store
           end-expr
@@ -850,10 +850,10 @@ Script_06EE: @ 0x08D4F03E, ScriptID: 1774
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x12
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6c
       eq
       or
@@ -879,10 +879,10 @@ block
     end
     else-if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6d
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6e
       eq
       or
@@ -890,7 +890,7 @@ block
     block
       if
         expr
-          ptr bool, world, 0x171, bit=0x4  ; 0x203db71
+          ptr bool, world, 0x171, bit=0x4  @ 0x203db71
           i32 0x0
           eq
         end-expr
@@ -917,14 +917,14 @@ block
     end
     else-if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6f
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x18
       eq
       or
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0xaa
       eq
       or
@@ -937,16 +937,16 @@ end
 Script_06EF: @ 0x08D4F0E2, ScriptID: 1775
 block
   expr
-    ptr u8, scratch, 0x76  ; 0x203e276
-    ptr u8, scratch, 0x76  ; 0x203e276
+    ptr u8, scratch, 0x76  @ 0x203e276
+    ptr u8, scratch, 0x76  @ 0x203e276
     i32 0x1
     add
     store
   end-expr
   if
     expr
-      ptr u8, scratch, 0x76  ; 0x203e276
-      ptr u8, scratch, 0x77  ; 0x203e277
+      ptr u8, scratch, 0x76  @ 0x203e276
+      ptr u8, scratch, 0x77  @ 0x203e277
       gte
     end-expr
     block
@@ -962,7 +962,7 @@ block
         keyword 'e'
         block
           expr
-            ptr bool, world, 0x171, bit=0x4  ; 0x203db71
+            ptr bool, world, 0x171, bit=0x4  @ 0x203db71
             i32 0x1
             store
           end-expr
@@ -981,10 +981,10 @@ Script_06F0: @ 0x08D4F132, ScriptID: 1776
 block
   if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x36
       gte
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x37
       lt
       and
@@ -1112,17 +1112,17 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x15
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6c
       eq
       or
     end-expr
     block
       expr
-        ptr u8, scratch, 0x15b  ; 0x203e35b
+        ptr u8, scratch, 0x15b  @ 0x203e35b
         i32 0x0
         store
       end-expr
@@ -1164,10 +1164,10 @@ block
   end
   if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x38
       lt
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6f
       eq
       and
@@ -1185,10 +1185,10 @@ block
     block
       if
         expr
-          ptr i16, world, 0x0  ; 0x203da00
+          ptr i16, world, 0x0  @ 0x203da00
           i32 0x36
           gte
-          ptr i16, world, 0x0  ; 0x203da00
+          ptr i16, world, 0x0  @ 0x203da00
           i32 0x38
           lt
           and
@@ -1217,10 +1217,10 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x15
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6c
       eq
       or
@@ -1257,10 +1257,10 @@ block
   end
   if
     expr
-      ptr bool, world, 0x171, bit=0x5  ; 0x203db71
+      ptr bool, world, 0x171, bit=0x5  @ 0x203db71
       i32 0x0
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6d
       eq
       and
@@ -1304,7 +1304,7 @@ block
     u8 0x6f
   end
   expr
-    ptr u8, scratch, 0x15  ; 0x203e215
+    ptr u8, scratch, 0x15  @ 0x203e215
     i32 0x4
     store
   end-expr
@@ -1314,7 +1314,7 @@ block
     i32 0x1c
   end
   expr
-    ptr u8, scratch, 0x15  ; 0x203e215
+    ptr u8, scratch, 0x15  @ 0x203e215
     i32 0x0
     store
   end-expr
@@ -1371,13 +1371,13 @@ Script_29F5: @ 0x08D4F40E, ScriptID: 10741
 block
   if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x38
       lt
     end-expr
     block
       expr
-        ptr bool, world, 0x1fb, bit=0x4  ; 0x203dbfb
+        ptr bool, world, 0x1fb, bit=0x4  @ 0x203dbfb
         i32 0x1
         store
       end-expr
@@ -1399,10 +1399,10 @@ Script_06F6: @ 0x08D4F440, ScriptID: 1782
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6d
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6e
       eq
       or
@@ -1410,18 +1410,18 @@ block
     block
       if
         expr
-          ptr bool, world, 0x171, bit=0x5  ; 0x203db71
+          ptr bool, world, 0x171, bit=0x5  @ 0x203db71
           i32 0x0
           eq
         end-expr
         block
           expr
-            ptr bool, scratch, 0x14, bit=0x2  ; 0x203e214
+            ptr bool, scratch, 0x14, bit=0x2  @ 0x203e214
             i32 0x0
             store
           end-expr
           expr
-            ptr bool, scratch, 0x14, bit=0x2  ; 0x203e214
+            ptr bool, scratch, 0x14, bit=0x2  @ 0x203e214
             i32 0x0
             store
           end-expr
@@ -1429,12 +1429,12 @@ block
             i32 0x1
           end
           expr
-            ptr i16, scratch, 0xf8  ; 0x203e2f8
+            ptr i16, scratch, 0xf8  @ 0x203e2f8
             i16 0x4e20
             store
           end-expr
           expr
-            ptr bool, scratch, 0xb9, bit=0x0  ; 0x203e2b9
+            ptr bool, scratch, 0xb9, bit=0x0  @ 0x203e2b9
             i32 0x1
             store
           end-expr
@@ -1497,10 +1497,10 @@ block
     end
     else-if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6f
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x1c
       eq
       or
@@ -1514,7 +1514,7 @@ Script_06F7: @ 0x08D4F50D, ScriptID: 1783
 block
   if
     expr
-      ptr bool, world, 0x171, bit=0x5  ; 0x203db71
+      ptr bool, world, 0x171, bit=0x5  @ 0x203db71
       i32 0x0
       eq
     end-expr
@@ -1578,16 +1578,16 @@ end
 Script_06F8: @ 0x08D4F58E, ScriptID: 1784
 block
   expr
-    ptr u8, scratch, 0x76  ; 0x203e276
-    ptr u8, scratch, 0x76  ; 0x203e276
+    ptr u8, scratch, 0x76  @ 0x203e276
+    ptr u8, scratch, 0x76  @ 0x203e276
     i32 0x1
     add
     store
   end-expr
   if
     expr
-      ptr u8, scratch, 0x76  ; 0x203e276
-      ptr u8, scratch, 0x77  ; 0x203e277
+      ptr u8, scratch, 0x76  @ 0x203e276
+      ptr u8, scratch, 0x77  @ 0x203e277
       gte
     end-expr
     block
@@ -1603,7 +1603,7 @@ block
         keyword 'e'
         block
           expr
-            ptr bool, world, 0x171, bit=0x5  ; 0x203db71
+            ptr bool, world, 0x171, bit=0x5  @ 0x203db71
             i32 0x1
             store
           end-expr
@@ -1746,7 +1746,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x38
       lt
     end-expr
@@ -1763,7 +1763,7 @@ block
     block
       if
         expr
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           i32 0x34
           eq
         end-expr
@@ -1806,14 +1806,14 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x18
       eq
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x37
       gte
       and
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x38
       lt
       and
@@ -1858,7 +1858,7 @@ block
   call 0x8d
     i16 0xb00
     i16 0x500
-    ptr i16, stat, 0x36  ; 0x203c436
+    ptr i16, stat, 0x36  @ 0x203c436
     u8 0x91
     i32 0x0
   end
@@ -1909,7 +1909,7 @@ Script_06FF: @ 0x08D4F7FA, ScriptID: 1791
 block
   if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x38
       gte
     end-expr
@@ -1926,7 +1926,7 @@ block
       end
       if
         expr
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           i32 0x21
           eq
         end-expr
@@ -1978,13 +1978,13 @@ block
         block
           if
             expr
-              ptr bool, scratch, 0x13f, bit=0x7  ; 0x203e33f
+              ptr bool, scratch, 0x13f, bit=0x7  @ 0x203e33f
               i32 0x0
               eq
             end-expr
             block
               expr
-                ptr bool, scratch, 0x13f, bit=0x7  ; 0x203e33f
+                ptr bool, scratch, 0x13f, bit=0x7  @ 0x203e33f
                 i32 0x1
                 store
               end-expr
@@ -2009,13 +2009,13 @@ block
         block
           if
             expr
-              ptr bool, scratch, 0x13f, bit=0x7  ; 0x203e33f
+              ptr bool, scratch, 0x13f, bit=0x7  @ 0x203e33f
               i32 0x0
               eq
             end-expr
             block
               expr
-                ptr bool, scratch, 0x13f, bit=0x7  ; 0x203e33f
+                ptr bool, scratch, 0x13f, bit=0x7  @ 0x203e33f
                 i32 0x1
                 store
               end-expr
@@ -2040,13 +2040,13 @@ block
         block
           if
             expr
-              ptr bool, scratch, 0x13f, bit=0x7  ; 0x203e33f
+              ptr bool, scratch, 0x13f, bit=0x7  @ 0x203e33f
               i32 0x1
               eq
             end-expr
             block
               expr
-                ptr bool, scratch, 0x13f, bit=0x7  ; 0x203e33f
+                ptr bool, scratch, 0x13f, bit=0x7  @ 0x203e33f
                 i32 0x0
                 store
               end-expr
@@ -2071,13 +2071,13 @@ block
         block
           if
             expr
-              ptr bool, scratch, 0x13f, bit=0x7  ; 0x203e33f
+              ptr bool, scratch, 0x13f, bit=0x7  @ 0x203e33f
               i32 0x1
               eq
             end-expr
             block
               expr
-                ptr bool, scratch, 0x13f, bit=0x7  ; 0x203e33f
+                ptr bool, scratch, 0x13f, bit=0x7  @ 0x203e33f
                 i32 0x0
                 store
               end-expr
@@ -2100,13 +2100,13 @@ Script_0700: @ 0x08D4F984, ScriptID: 1792
 block
   if
     expr
-      ptr bool, world, 0x171, bit=0x7  ; 0x203db71
+      ptr bool, world, 0x171, bit=0x7  @ 0x203db71
       i32 0x0
       eq
     end-expr
     block
       expr
-        ptr bool, world, 0x171, bit=0x7  ; 0x203db71
+        ptr bool, world, 0x171, bit=0x7  @ 0x203db71
         i32 0x1
         store
       end-expr
@@ -2131,10 +2131,10 @@ Script_0701: @ 0x08D4F9B7, ScriptID: 1793
 block
   if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x37
       gte
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x38
       lt
       and
@@ -2338,7 +2338,7 @@ Script_0708: @ 0x08D4FB2C, ScriptID: 1800
 block
   if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x38
       gte
     end-expr
@@ -2420,14 +2420,14 @@ block
     keyword 'e'
     i32 0x2
     keyword 'p'
-    ptr i16, scratch, 0x26  ; 0x203e226
-    ptr i16, scratch, 0x1c  ; 0x203e21c
-    ptr i16, scratch, 0x2a  ; 0x203e22a
+    ptr i16, scratch, 0x26  @ 0x203e226
+    ptr i16, scratch, 0x1c  @ 0x203e21c
+    ptr i16, scratch, 0x2a  @ 0x203e22a
   end
   call 0x70a
     param 0x1
-    ptr i16, scratch, 0x26  ; 0x203e226
-    ptr i16, scratch, 0x2a  ; 0x203e22a
+    ptr i16, scratch, 0x26  @ 0x203e226
+    ptr i16, scratch, 0x2a  @ 0x203e22a
   end
   control 0xd4cb
     param 0x2
@@ -2460,17 +2460,17 @@ block
             param 0xc
             keyword 'p'
             expr
-              ptr i16, scratch, 0x26  ; 0x203e226
+              ptr i16, scratch, 0x26  @ 0x203e226
               u8 0x80
               sub
             end-expr
             expr
-              ptr i16, scratch, 0x46  ; 0x203e246
+              ptr i16, scratch, 0x46  @ 0x203e246
               i32 0x20
               sub
             end-expr
             expr
-              ptr i16, scratch, 0x2a  ; 0x203e22a
+              ptr i16, scratch, 0x2a  @ 0x203e22a
               u8 0x80
               add
             end-expr
@@ -2494,15 +2494,15 @@ block
             param 0xc
             keyword 'p'
             expr
-              ptr i16, scratch, 0x26  ; 0x203e226
+              ptr i16, scratch, 0x26  @ 0x203e226
               u8 0x80
               sub
             end-expr
             expr
-              ptr i16, scratch, 0x46  ; 0x203e246
+              ptr i16, scratch, 0x46  @ 0x203e246
             end-expr
             expr
-              ptr i16, scratch, 0x2a  ; 0x203e22a
+              ptr i16, scratch, 0x2a  @ 0x203e22a
               u8 0x80
               add
             end-expr
@@ -2521,7 +2521,7 @@ block
     u16 0xcd4
     param 0x2
     param 0x3
-    ptr i16, scratch, 0x1c  ; 0x203e21c
+    ptr i16, scratch, 0x1c  @ 0x203e21c
   end
   call 0x11e
     param 0x1
@@ -2534,7 +2534,7 @@ block
       u8 0x80
       sub
     end-expr
-    ptr i16, scratch, 0x1c  ; 0x203e21c
+    ptr i16, scratch, 0x1c  @ 0x203e21c
     expr
       param 0x3
       u8 0x80
@@ -2667,17 +2667,17 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x27
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x1f
       eq
       or
     end-expr
     block
       expr
-        ptr u8, scratch, 0x15b  ; 0x203e35b
+        ptr u8, scratch, 0x15b  @ 0x203e35b
         i32 0x0
         store
       end-expr
@@ -2723,10 +2723,10 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x27
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x1f
       eq
       or
@@ -2834,14 +2834,14 @@ Script_0710: @ 0x08D4FF01, ScriptID: 1808
 block
   if
     expr
-      ptr i16, world, 0x2  ; 0x203da02
+      ptr i16, world, 0x2  @ 0x203da02
       i32 0x2
       gte
-      ptr i16, world, 0x2  ; 0x203da02
+      ptr i16, world, 0x2  @ 0x203da02
       i32 0x7
       lt
       and
-      indexed-ptr u8, world, 0x8d  ; 0x203da8d
+      indexed-ptr u8, world, 0x8d  @ 0x203da8d
       i32 0x4
       i32 0x3
       i32 0x0
@@ -2931,15 +2931,15 @@ end
 Script_0712: @ 0x08D4FFC6, ScriptID: 1810
 block
   expr
-    ptr u8, scratch, 0x140  ; 0x203e340
-    ptr u8, scratch, 0x140  ; 0x203e340
+    ptr u8, scratch, 0x140  @ 0x203e340
+    ptr u8, scratch, 0x140  @ 0x203e340
     i32 0x1
     add
     store
   end-expr
   expr
     var 0x1
-    ptr u8, scratch, 0x140  ; 0x203e340
+    ptr u8, scratch, 0x140  @ 0x203e340
     i32 0xf
     bit-and
     store
@@ -3753,10 +3753,10 @@ Script_0729: @ 0x08D505E4, ScriptID: 1833
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6d
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6e
       eq
       or
@@ -3791,10 +3791,10 @@ Script_072A: @ 0x08D50629, ScriptID: 1834
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6d
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x6e
       eq
       or
@@ -3888,7 +3888,7 @@ block
     i32 0x1
     i32 0x1
     expr
-      ptr i16, scratch, 0x4c  ; 0x203e24c
+      ptr i16, scratch, 0x4c  @ 0x203e24c
     end-expr
     i32 0x10
     i32 0xc
@@ -3897,7 +3897,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x2a
       lt
     end-expr
@@ -4045,7 +4045,7 @@ Script_0733: @ 0x08D507E5, ScriptID: 1843
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0xaa
       eq
     end-expr
@@ -4085,8 +4085,8 @@ block
         u16 0x7a8e
       end
       expr
-        ptr i16, scratch, 0x4c  ; 0x203e24c
-        ptr i16, scratch, 0x4c  ; 0x203e24c
+        ptr i16, scratch, 0x4c  @ 0x203e24c
+        ptr i16, scratch, 0x4c  @ 0x203e24c
         u8 0x80
         bit-or
         store
@@ -4095,7 +4095,7 @@ block
         u16 0xb4b4
         u16 0x2da9
         keyword 'f'
-        ptr i16, scratch, 0x4c  ; 0x203e24c
+        ptr i16, scratch, 0x4c  @ 0x203e24c
         keyword 'i'
         i32 0x2
         keyword 'd'
@@ -4228,7 +4228,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0xac
       eq
     end-expr
@@ -4268,7 +4268,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0xaa
       eq
     end-expr
@@ -4293,7 +4293,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0xab
       eq
     end-expr
@@ -4323,7 +4323,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0xac
       eq
     end-expr
@@ -4349,17 +4349,17 @@ Script_0736: @ 0x08D50A3A, ScriptID: 1846
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0xab
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0xac
       eq
       or
     end-expr
     block
       expr
-        ptr i16, world, 0x1f0  ; 0x203dbf0
+        ptr i16, world, 0x1f0  @ 0x203dbf0
         i32 0x0
         store
       end-expr
@@ -4531,7 +4531,7 @@ Script_073A: @ 0x08D50BAC, ScriptID: 1850
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0xac
       eq
     end-expr
@@ -4586,10 +4586,10 @@ block
     u8 0x5f
     i32 0x3
     expr
-      ptr i16, world, 0x18a  ; 0x203db8a
+      ptr i16, world, 0x18a  @ 0x203db8a
     end-expr
     expr
-      ptr i16, world, 0x18c  ; 0x203db8c
+      ptr i16, world, 0x18c  @ 0x203db8c
     end-expr
   end
   control 0xb745
@@ -4743,7 +4743,7 @@ Script_073E: @ 0x08D50D47, ScriptID: 1854
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x8d
       eq
     end-expr
@@ -4765,18 +4765,18 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x8d
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x15
       eq
       or
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x16
       eq
       or
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x80
       eq
       or
@@ -4806,13 +4806,13 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x2
       eq
     end-expr
     block
       expr
-        ptr i16, stat, 0x250  ; 0x203c650
+        ptr i16, stat, 0x250  @ 0x203c650
         i32 0x5
         store
       end-expr
@@ -4827,13 +4827,13 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x3
       eq
     end-expr
     block
       expr
-        ptr i16, stat, 0x250  ; 0x203c650
+        ptr i16, stat, 0x250  @ 0x203c650
         i32 0x0
         store
       end-expr
@@ -4848,13 +4848,13 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x4
       eq
     end-expr
     block
       expr
-        ptr i16, stat, 0x250  ; 0x203c650
+        ptr i16, stat, 0x250  @ 0x203c650
         i32 0x0
         store
       end-expr
@@ -4900,7 +4900,7 @@ Script_073F: @ 0x08D50E70, ScriptID: 1855
 block
   if
     expr
-      ptr bool, world, 0x172, bit=0x0  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x0  @ 0x203db72
       i32 0x0
       eq
     end-expr
@@ -4910,10 +4910,10 @@ block
     end
     else-if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x3e
       gte
-      ptr bool, world, 0x17e, bit=0x0  ; 0x203db7e
+      ptr bool, world, 0x17e, bit=0x0  @ 0x203db7e
       i32 0x0
       eq
       and
@@ -4941,7 +4941,7 @@ block
         i32 0x1
       end
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x0
         store
       end-expr
@@ -4950,21 +4950,21 @@ block
     end
     else-if
     expr
-      ptr i16, world, 0x2  ; 0x203da02
+      ptr i16, world, 0x2  @ 0x203da02
       i32 0x0
       gt
-      ptr i16, world, 0x2  ; 0x203da02
+      ptr i16, world, 0x2  @ 0x203da02
       i32 0xd
       lt
       and
-      ptr bool, world, 0x86, bit=0x4  ; 0x203da86
+      ptr bool, world, 0x86, bit=0x4  @ 0x203da86
       i32 0x0
       eq
       and
     end-expr
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x0
         store
       end-expr
@@ -4978,30 +4978,30 @@ Script_0740: @ 0x08D50F00, ScriptID: 1856
 block
   if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x3e
       gte
-      ptr i16, world, 0x2  ; 0x203da02
+      ptr i16, world, 0x2  @ 0x203da02
       i32 0x0
       gt
-      ptr i16, world, 0x2  ; 0x203da02
+      ptr i16, world, 0x2  @ 0x203da02
       i32 0xd
       lt
       and
       and
-      ptr bool, world, 0x17e, bit=0x0  ; 0x203db7e
+      ptr bool, world, 0x17e, bit=0x0  @ 0x203db7e
       i32 0x1
       eq
       and
     end-expr
     block
       expr
-        ptr bool, scratch, 0x158, bit=0x1  ; 0x203e358
+        ptr bool, scratch, 0x158, bit=0x1  @ 0x203e358
         i32 0x0
         store
       end-expr
       expr
-        ptr u8, scratch, 0x166  ; 0x203e366
+        ptr u8, scratch, 0x166  @ 0x203e366
         i32 0x0
         store
       end-expr
@@ -5060,30 +5060,30 @@ block
     end
     else-if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x3e
       gte
-      ptr i16, world, 0x2  ; 0x203da02
+      ptr i16, world, 0x2  @ 0x203da02
       i32 0x0
       eq
-      ptr i16, world, 0x2  ; 0x203da02
+      ptr i16, world, 0x2  @ 0x203da02
       i32 0xd
       eq
       or
       and
-      ptr bool, world, 0x17e, bit=0x0  ; 0x203db7e
+      ptr bool, world, 0x17e, bit=0x0  @ 0x203db7e
       i32 0x1
       eq
       and
     end-expr
     block
       expr
-        ptr bool, scratch, 0x158, bit=0x1  ; 0x203e358
+        ptr bool, scratch, 0x158, bit=0x1  @ 0x203e358
         i32 0x0
         store
       end-expr
       expr
-        ptr u8, scratch, 0x166  ; 0x203e366
+        ptr u8, scratch, 0x166  @ 0x203e366
         i32 0x0
         store
       end-expr
@@ -5204,7 +5204,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x17a, bit=0x3  ; 0x203db7a
+      ptr bool, world, 0x17a, bit=0x3  @ 0x203db7a
       i32 0x1
       eq
     end-expr
@@ -5244,10 +5244,10 @@ Script_0744: @ 0x08D51131, ScriptID: 1860
 block
   if
     expr
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x3b
       gte
-      ptr i16, world, 0x0  ; 0x203da00
+      ptr i16, world, 0x0  @ 0x203da00
       i32 0x3c
       lt
       and
@@ -5260,7 +5260,7 @@ end
 Script_0745: @ 0x08D5114C, ScriptID: 1861
 block
   expr
-    ptr bool, scratch, 0x158, bit=0x2  ; 0x203e358
+    ptr bool, scratch, 0x158, bit=0x2  @ 0x203e358
     i32 0x0
     store
   end-expr
@@ -5286,7 +5286,7 @@ block
   end-expr
   if
     expr
-      ptr bool, world, 0x172, bit=0x1  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x1  @ 0x203db72
       i32 0x1
       eq
     end-expr
@@ -5300,10 +5300,10 @@ block
   end
   if
     expr
-      ptr i16, world, 0x2  ; 0x203da02
+      ptr i16, world, 0x2  @ 0x203da02
       i32 0x7
       lt
-      ptr i16, world, 0x2  ; 0x203da02
+      ptr i16, world, 0x2  @ 0x203da02
       i32 0x0
       gt
       and
@@ -5398,7 +5398,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x80
       ne
     end-expr
@@ -5480,7 +5480,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x17a, bit=0x3  ; 0x203db7a
+      ptr bool, world, 0x17a, bit=0x3  @ 0x203db7a
       i32 0x0
       eq
     end-expr
@@ -5500,14 +5500,14 @@ block
   end
   if
     expr
-      ptr bool, world, 0x172, bit=0x1  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x1  @ 0x203db72
       i32 0x0
       eq
     end-expr
     block
       if
         expr
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           i32 0x2
           eq
         end-expr
@@ -5529,7 +5529,7 @@ block
             i32 0x1
           end
           expr
-            ptr u8, scratch, 0x2e  ; 0x203e22e
+            ptr u8, scratch, 0x2e  @ 0x203e22e
             i32 0x5
             store
           end-expr
@@ -5538,7 +5538,7 @@ block
         end
         else-if
         expr
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           i32 0x4
           eq
         end-expr
@@ -5560,7 +5560,7 @@ block
             i32 0x1
           end
           expr
-            ptr u8, scratch, 0x2e  ; 0x203e22e
+            ptr u8, scratch, 0x2e  @ 0x203e22e
             i32 0xa
             store
           end-expr
@@ -5569,7 +5569,7 @@ block
         end
         else-if
         expr
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           i32 0x5
           eq
         end-expr
@@ -5591,7 +5591,7 @@ block
             i32 0x1
           end
           expr
-            ptr u8, scratch, 0x2e  ; 0x203e22e
+            ptr u8, scratch, 0x2e  @ 0x203e22e
             i32 0xd
             store
           end-expr
@@ -5615,17 +5615,17 @@ block
     block
       if
         expr
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           u8 0x8d
           eq
         end-expr
         block
           if
             expr
-              ptr i16, world, 0x2  ; 0x203da02
+              ptr i16, world, 0x2  @ 0x203da02
               i32 0x2
               lt
-              ptr i16, world, 0x2  ; 0x203da02
+              ptr i16, world, 0x2  @ 0x203da02
               i32 0x1
               gte
               and
@@ -5671,17 +5671,17 @@ block
     block
       if
         expr
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           u8 0x8d
           eq
         end-expr
         block
           if
             expr
-              ptr i16, world, 0x2  ; 0x203da02
+              ptr i16, world, 0x2  @ 0x203da02
               i32 0x2
               lt
-              ptr i16, world, 0x2  ; 0x203da02
+              ptr i16, world, 0x2  @ 0x203da02
               i32 0x1
               gte
               and
@@ -5727,7 +5727,7 @@ end
 Script_0746: @ 0x08D514D4, ScriptID: 1862
 block
   expr
-    ptr bool, scratch, 0x158, bit=0x3  ; 0x203e358
+    ptr bool, scratch, 0x158, bit=0x3  @ 0x203e358
     i32 0x0
     store
   end-expr
@@ -5768,7 +5768,7 @@ block
       end
       if
         expr
-          ptr bool, scratch, 0x158, bit=0x3  ; 0x203e358
+          ptr bool, scratch, 0x158, bit=0x3  @ 0x203e358
           i32 0x0
           eq
         end-expr
@@ -5793,7 +5793,7 @@ Script_0747: @ 0x08D5155F, ScriptID: 1863
 block
   if
     expr
-      ptr i16, world, 0x2  ; 0x203da02
+      ptr i16, world, 0x2  @ 0x203da02
       i32 0x6
       eq
     end-expr
@@ -5815,7 +5815,7 @@ Script_0748: @ 0x08D51582, ScriptID: 1864
 block
   if
     expr
-      ptr bool, world, 0x17a, bit=0x3  ; 0x203db7a
+      ptr bool, world, 0x17a, bit=0x3  @ 0x203db7a
       i32 0x0
       eq
     end-expr
@@ -5876,7 +5876,7 @@ Script_0749: @ 0x08D51609, ScriptID: 1865
 block
   if
     expr
-      ptr i16, stat, 0x938  ; 0x203cd38
+      ptr i16, stat, 0x938  @ 0x203cd38
       i32 0x0
       eq
       block
@@ -5902,8 +5902,8 @@ block
       control 0xb745
         u16 0x1c64
         keyword 'r'
-        ; <LABEL=KURO_BAN>クロ</LABEL> 「・・・」
-        ; <PROC=0> <END>
+        @ <LABEL=KURO_BAN>クロ</LABEL> 「・・・」
+        @ <PROC=0> <END>
         string-ref 0x48f
       end
       call 0xf8
@@ -5919,18 +5919,18 @@ Script_074A: @ 0x08D51652, ScriptID: 1866
 block
   if
     expr
-      ptr u8, world, 0x17d  ; 0x203db7d
+      ptr u8, world, 0x17d  @ 0x203db7d
       i32 0x0
       eq
-      ptr bool, world, 0x172, bit=0x1  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x1  @ 0x203db72
       i32 0x1
       eq
       and
-      ptr bool, world, 0x172, bit=0x0  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x0  @ 0x203db72
       i32 0x1
       eq
       and
-      ptr bool, world, 0x17a, bit=0x3  ; 0x203db7a
+      ptr bool, world, 0x17a, bit=0x3  @ 0x203db7a
       i32 0x0
       eq
       and
@@ -5988,7 +5988,7 @@ block
                 end-expr
                 block
                   expr
-                    ptr u8, scratch, 0x2f  ; 0x203e22f
+                    ptr u8, scratch, 0x2f  @ 0x203e22f
                     i32 0x0
                     store
                   end-expr
@@ -6020,14 +6020,14 @@ Script_074B: @ 0x08D5171A, ScriptID: 1867
 block
   switch
     expr
-      ptr u8, scratch, 0x2f  ; 0x203e22f
+      ptr u8, scratch, 0x2f  @ 0x203e22f
     end-expr
     case
     i32 0x0
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -6048,52 +6048,52 @@ block
     i32 0x1
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
       end-expr
       if
         expr
-          ptr bool, scratch, 0x158, bit=0x2  ; 0x203e358
+          ptr bool, scratch, 0x158, bit=0x2  @ 0x203e358
           i32 0x0
           eq
         end-expr
         block
           expr
-            ptr bool, scratch, 0x158, bit=0x2  ; 0x203e358
+            ptr bool, scratch, 0x158, bit=0x2  @ 0x203e358
             i32 0x1
             store
           end-expr
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=SABATA>サバタ</LABEL> 「クロのことなら製配ない。
-            ; この悦束の智には、敬モンスタ ーも入って集れんようだからな 」
-            ; <PROC=0> <END>
+            @ <LABEL=SABATA>サバタ</LABEL> 「クロのことなら製配ない。
+            @ この悦束の智には、敬モンスタ ーも入って集れんようだからな 」
+            @ <PROC=0> <END>
             string-ref 0x488
           end
         end
         else-if
         expr
-          ptr bool, scratch, 0x158, bit=0x2  ; 0x203e358
+          ptr bool, scratch, 0x158, bit=0x2  @ 0x203e358
           i32 0x1
           eq
         end-expr
         block
           expr
-            ptr bool, scratch, 0x158, bit=0x2  ; 0x203e358
+            ptr bool, scratch, 0x158, bit=0x2  @ 0x203e358
             i32 0x0
             store
           end-expr
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=SABATA>サバタ</LABEL> 「悪いが、アイテムはおまえの バッグから俊わせてもらう。
-            ; 付わりに伊(おれ)がに入れた アイテムは、おまえのバッグに 入れておこう。
-            ; 映黒転移(ワープ)の麻図だ」
-            ; <PROC=0> <END>
+            @ <LABEL=SABATA>サバタ</LABEL> 「悪いが、アイテムはおまえの バッグから俊わせてもらう。
+            @ 付わりに伊(おれ)がに入れた アイテムは、おまえのバッグに 入れておこう。
+            @ 映黒転移(ワープ)の麻図だ」
+            @ <PROC=0> <END>
             string-ref 0x48b
           end
         end
@@ -6108,8 +6108,8 @@ block
     i32 0x2
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -6117,7 +6117,7 @@ block
       call 0xfe
       end
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x0
         store
       end-expr
@@ -6125,7 +6125,7 @@ block
     default
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x0
         store
       end-expr
@@ -6137,10 +6137,10 @@ Script_074C: @ 0x08D517EB, ScriptID: 1868
 block
   if
     expr
-      ptr bool, scratch, 0x158, bit=0x4  ; 0x203e358
+      ptr bool, scratch, 0x158, bit=0x4  @ 0x203e358
       i32 0x0
       eq
-      ptr i16, stat, 0x938  ; 0x203cd38
+      ptr i16, stat, 0x938  @ 0x203cd38
       i32 0x0
       eq
       and
@@ -6156,14 +6156,14 @@ block
     block
       expr
         var 0x1
-        ptr i16, stat, 0x30  ; 0x203c430
+        ptr i16, stat, 0x30  @ 0x203c430
         i16 0xa80
         sub
         store
       end-expr
       expr
         var 0x2
-        ptr i16, stat, 0x34  ; 0x203c434
+        ptr i16, stat, 0x34  @ 0x203c434
         i16 0xf80
         sub
         store
@@ -6230,7 +6230,7 @@ Script_074D: @ 0x08D51879, ScriptID: 1869
 block
   switch
     expr
-      ptr u8, scratch, 0x2e  ; 0x203e22e
+      ptr u8, scratch, 0x2e  @ 0x203e22e
     end-expr
     case
     i32 0x0
@@ -6257,7 +6257,7 @@ block
         i32 0x1
       end
       expr
-        ptr bool, scratch, 0x158, bit=0x4  ; 0x203e358
+        ptr bool, scratch, 0x158, bit=0x4  @ 0x203e358
         i32 0x0
         store
       end-expr
@@ -6291,14 +6291,14 @@ block
                 end-expr
                 block
                   expr
-                    ptr u8, scratch, 0x2e  ; 0x203e22e
+                    ptr u8, scratch, 0x2e  @ 0x203e22e
                     i32 0x1
                     store
                   end-expr
                   call 0x74d
                   end
                   expr
-                    ptr bool, scratch, 0x158, bit=0x4  ; 0x203e358
+                    ptr bool, scratch, 0x158, bit=0x4  @ 0x203e358
                     i32 0x1
                     store
                   end-expr
@@ -6322,8 +6322,8 @@ block
     i32 0x1
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6341,8 +6341,8 @@ block
     i32 0x2
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6365,8 +6365,8 @@ block
     i32 0x3
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6380,7 +6380,7 @@ block
       control 0xb745
         u16 0x71e7
         keyword 'r'
-        ; <LABEL=SABATA>サバタ</LABEL> 「位はいいな?」  <ALTER>いい</ALTER><ALTER>まだ</ALTER>
+        @ <LABEL=SABATA>サバタ</LABEL> 「位はいいな?」  <ALTER>いい</ALTER><ALTER>まだ</ALTER>
         string-ref 0x45f
       end
     end
@@ -6388,8 +6388,8 @@ block
     i32 0x4
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6423,8 +6423,8 @@ block
     i32 0x5
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6444,8 +6444,8 @@ block
     i32 0x6
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6475,11 +6475,11 @@ block
       control 0xb745
         u16 0x1c64
         keyword 'r'
-        ; <LABEL=SABATA>サバタ</LABEL> 「よし!
-        ; まずは伊(おれ)が映黒チャージ を俊い、映黒の戻(とびら)を闇 ける。
-        ; 映黒の戻が闇いたら、おまえは 急いで太陽チャージをし、太陽 の戻を闇けるんだ。
-        ; いいな、倫くぞ!!」
-        ; <PROC=0> <END>
+        @ <LABEL=SABATA>サバタ</LABEL> 「よし!
+        @ まずは伊(おれ)が映黒チャージ を俊い、映黒の戻(とびら)を闇 ける。
+        @ 映黒の戻が闇いたら、おまえは 急いで太陽チャージをし、太陽 の戻を闇けるんだ。
+        @ いいな、倫くぞ!!」
+        @ <PROC=0> <END>
         string-ref 0x463
       end
       call 0xf8
@@ -6492,8 +6492,8 @@ block
     i32 0x7
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6516,8 +6516,8 @@ block
     i32 0x8
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6576,14 +6576,14 @@ block
     i32 0x9
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
       end-expr
       expr
-        ptr i16, stat, 0x250  ; 0x203c650
+        ptr i16, stat, 0x250  @ 0x203c650
         i32 0x0
         store
       end-expr
@@ -6597,8 +6597,8 @@ block
     i32 0xa
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6627,8 +6627,8 @@ block
     i32 0xb
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6687,8 +6687,8 @@ block
     i32 0xc
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6703,8 +6703,8 @@ block
     i32 0xd
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6742,12 +6742,12 @@ block
       control 0xb745
         u16 0x1c64
         keyword 'r'
-        ; <LABEL=SABATA>サバタ</LABEL> 「いいか、<NAME>。
-        ; この坂では太陽と映黒、2つの ルートを回時に略(こうりゃ く)しなくては、
-        ; 暴上にたどり羅くことはでき ない。
-        ; 伊は映黒の坂を倫く。 おまえは太陽の坂を略するん だ。
-        ; 走を弘っ弾るなよ?」
-        ; <PROC=0> <END>
+        @ <LABEL=SABATA>サバタ</LABEL> 「いいか、<NAME>。
+        @ この坂では太陽と映黒、2つの ルートを回時に略(こうりゃ く)しなくては、
+        @ 暴上にたどり羅くことはでき ない。
+        @ 伊は映黒の坂を倫く。 おまえは太陽の坂を略するん だ。
+        @ 走を弘っ弾るなよ?」
+        @ <PROC=0> <END>
         string-ref 0x46f
       end
       call 0xf8
@@ -6760,8 +6760,8 @@ block
     i32 0xe
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
@@ -6784,14 +6784,14 @@ block
     i32 0xf
     block
       expr
-        ptr u8, scratch, 0x2e  ; 0x203e22e
-        ptr u8, scratch, 0x2e  ; 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
+        ptr u8, scratch, 0x2e  @ 0x203e22e
         i32 0x1
         add
         store
       end-expr
       expr
-        ptr bool, world, 0x172, bit=0x1  ; 0x203db72
+        ptr bool, world, 0x172, bit=0x1  @ 0x203db72
         i32 0x1
         store
       end-expr
@@ -6840,8 +6840,8 @@ block
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=SABATA>サバタ</LABEL> 「時閉はないぞ!! 早く位を決ませるんだ!」
-            ; <PROC=0> <END>
+            @ <LABEL=SABATA>サバタ</LABEL> 「時閉はないぞ!! 早く位を決ませるんだ!」
+            @ <PROC=0> <END>
             string-ref 0x461
           end
           call 0xf8
@@ -6850,7 +6850,7 @@ block
             i32 0x0
           end
           expr
-            ptr bool, scratch, 0x158, bit=0x4  ; 0x203e358
+            ptr bool, scratch, 0x158, bit=0x4  @ 0x203e358
             i32 0x0
             store
           end-expr
@@ -6885,8 +6885,8 @@ block
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=SABATA>サバタ</LABEL> 「時閉はないぞ!! 早く位を決ませるんだ!」
-            ; <PROC=0> <END>
+            @ <LABEL=SABATA>サバタ</LABEL> 「時閉はないぞ!! 早く位を決ませるんだ!」
+            @ <PROC=0> <END>
             string-ref 0x461
           end
           call 0xf8
@@ -6916,7 +6916,7 @@ block
         u16 0xffff
       end
       expr
-        ptr bool, scratch, 0x158, bit=0x4  ; 0x203e358
+        ptr bool, scratch, 0x158, bit=0x4  @ 0x203e358
         i32 0x0
         store
       end-expr
@@ -6936,10 +6936,10 @@ block
       control 0xb745
         u16 0x1c64
         keyword 'r'
-        ; <LABEL=SABATA>サバタ</LABEL> 「時閉がない!!
-        ; 映黒チャージを倫うには、
-        ; 太陽センサーを太陽の児から階 (かく)して、Ａボタンを折(お) しっぱなしにするんだ!」
-        ; <PROC=0> <END>
+        @ <LABEL=SABATA>サバタ</LABEL> 「時閉がない!!
+        @ 映黒チャージを倫うには、
+        @ 太陽センサーを太陽の児から階 (かく)して、Ａボタンを折(お) しっぱなしにするんだ!」
+        @ <PROC=0> <END>
         string-ref 0x46b
       end
       call 0xf8
@@ -6968,9 +6968,9 @@ block
       control 0xb745
         u16 0x1c64
         keyword 'r'
-        ; <LABEL=SABATA>サバタ</LABEL> 「何をやっている!!
-        ; 太陽チャージを倫うには、 太陽センサーに太陽の児を角て Ａボタンを折(お)すんだ!」
-        ; <PROC=0> <END>
+        @ <LABEL=SABATA>サバタ</LABEL> 「何をやっている!!
+        @ 太陽チャージを倫うには、 太陽センサーに太陽の児を角て Ａボタンを折(お)すんだ!」
+        @ <PROC=0> <END>
         string-ref 0x468
       end
       call 0xf8
@@ -6992,7 +6992,7 @@ block
   call 0xfe
   end
   expr
-    ptr i16, stat, 0x250  ; 0x203c650
+    ptr i16, stat, 0x250  @ 0x203c650
     i32 0x0
     store
   end-expr
@@ -7010,9 +7010,9 @@ block
   control 0xb745
     u16 0x1c64
     keyword 'r'
-    ; サバタの崩 「<NAME>!! 何をやっている!
-    ; さっさと太陽の坂を上るんだ! 」
-    ; <PROC=0> <END>
+    @ サバタの崩 「<NAME>!! 何をやっている!
+    @ さっさと太陽の坂を上るんだ! 」
+    @ <PROC=0> <END>
     string-ref 0x475
   end
   call 0xf8
@@ -7030,11 +7030,11 @@ block
     u16 0x933c
     keyword 'p'
     expr
-      ptr i16, stat, 0x30  ; 0x203c430
+      ptr i16, stat, 0x30  @ 0x203c430
     end-expr
-    ptr i16, stat, 0x32  ; 0x203c432
+    ptr i16, stat, 0x32  @ 0x203c432
     expr
-      ptr i16, stat, 0x34  ; 0x203c434
+      ptr i16, stat, 0x34  @ 0x203c434
       i16 0x100
       add
     end-expr
@@ -7046,13 +7046,13 @@ end
 Script_0755: @ 0x08D51ECF, ScriptID: 1877
 block
   expr
-    ptr i16, stat, 0x38  ; 0x203c438
-    indexed-ptr i16, stat, 0x18  ; 0x203c418
+    ptr i16, stat, 0x38  @ 0x203c438
+    indexed-ptr i16, stat, 0x18  @ 0x203c418
     i32 0x4
     i32 0x0
     i32 0xa
     add
-    indexed-ptr i16, stat, 0x20  ; 0x203c420
+    indexed-ptr i16, stat, 0x20  @ 0x203c420
     i32 0x4
     i32 0x0
     add
@@ -7061,13 +7061,13 @@ block
     store
   end-expr
   expr
-    ptr i16, stat, 0x3a  ; 0x203c43a
-    indexed-ptr i16, stat, 0x18  ; 0x203c418
+    ptr i16, stat, 0x3a  @ 0x203c43a
+    indexed-ptr i16, stat, 0x18  @ 0x203c418
     i32 0x4
     i32 0x1
     i32 0xa
     add
-    indexed-ptr i16, stat, 0x20  ; 0x203c420
+    indexed-ptr i16, stat, 0x20  @ 0x203c420
     i32 0x4
     i32 0x1
     add
@@ -7083,14 +7083,14 @@ Script_0756: @ 0x08D51F07, ScriptID: 1878
 block
   switch
     expr
-      ptr u8, scratch, 0x2f  ; 0x203e22f
+      ptr u8, scratch, 0x2f  @ 0x203e22f
     end-expr
     case
     i32 0x0
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -7103,8 +7103,8 @@ block
     i32 0x1
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -7125,8 +7125,8 @@ block
     i32 0x2
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -7134,20 +7134,20 @@ block
       control 0xb745
         u16 0x1c64
         keyword 'r'
-        ; <LABEL=SABATA>サバタ</LABEL> 「烈事、イモータルを求した ようだな。
-        ; ・・・ヤツは坂の中だ。
-        ; この館(らせん)の坂は、太陽 と映黒、2つの坂からなってい る。
-        ; 2つの坂には2つのセキュリティ ロック。ロック預障に志需なカ ギも2つだ。
-        ; それは太陽と映黒の2つの力。
-        ; 太陽の児からまれる太陽エネ ルギーと、聞(やみ)からまれ る映黒指質ダークマターだ。
-        ; どちらが失けていても暴上に たどり羅くことはできない。
-        ; ダーインが親やおまえの身伏 を掛(ねら)ったのもそのためだ
-        ; もはや太陽の力を夫った伊(お れ)ではなくな・・・
-        ; 敬回平であるはずの太陽仮(た いようし)と映黒仮が共に字ろ うとしたもの。
-        ; そうまでして字りたいものとは いったい何なのか・・・?
-        ; それが何であれ、そんなものを ヤツの妖きにさせるわけにはい かない!
-        ; <NAME>、 坂を上りヤツを追うぞ!!」
-        ; <PROC=0> <END>
+        @ <LABEL=SABATA>サバタ</LABEL> 「烈事、イモータルを求した ようだな。
+        @ ・・・ヤツは坂の中だ。
+        @ この館(らせん)の坂は、太陽 と映黒、2つの坂からなってい る。
+        @ 2つの坂には2つのセキュリティ ロック。ロック預障に志需なカ ギも2つだ。
+        @ それは太陽と映黒の2つの力。
+        @ 太陽の児からまれる太陽エネ ルギーと、聞(やみ)からまれ る映黒指質ダークマターだ。
+        @ どちらが失けていても暴上に たどり羅くことはできない。
+        @ ダーインが親やおまえの身伏 を掛(ねら)ったのもそのためだ
+        @ もはや太陽の力を夫った伊(お れ)ではなくな・・・
+        @ 敬回平であるはずの太陽仮(た いようし)と映黒仮が共に字ろ うとしたもの。
+        @ そうまでして字りたいものとは いったい何なのか・・・?
+        @ それが何であれ、そんなものを ヤツの妖きにさせるわけにはい かない!
+        @ <NAME>、 坂を上りヤツを追うぞ!!」
+        @ <PROC=0> <END>
         string-ref 0x451
       end
       call 0xf8
@@ -7160,8 +7160,8 @@ block
     i32 0x3
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -7169,7 +7169,7 @@ block
       call 0x81
       end
       expr
-        ptr bool, world, 0x172, bit=0x0  ; 0x203db72
+        ptr bool, world, 0x172, bit=0x0  @ 0x203db72
         i32 0x1
         store
       end-expr
@@ -7195,7 +7195,7 @@ block
   control 0xb745
     u16 0x71e7
     keyword 'r'
-    ; <LABEL=OTENKO>おてんこさま</LABEL> 「賞独(かくご)はいいな?」  <ALTER>いい</ALTER><ALTER>まだ</ALTER>
+    @ <LABEL=OTENKO>おてんこさま</LABEL> 「賞独(かくご)はいいな?」  <ALTER>いい</ALTER><ALTER>まだ</ALTER>
     string-ref 0x430
   end
 end
@@ -7220,7 +7220,7 @@ block
       call 0xfd
       end
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x0
         store
       end-expr
@@ -7236,23 +7236,23 @@ block
     block
       if
         expr
-          ptr bool, scratch, 0x158, bit=0x1  ; 0x203e358
+          ptr bool, scratch, 0x158, bit=0x1  @ 0x203e358
           i32 0x0
           eq
         end-expr
         block
           expr
-            ptr bool, scratch, 0x158, bit=0x1  ; 0x203e358
+            ptr bool, scratch, 0x158, bit=0x1  @ 0x203e358
             i32 0x1
             store
           end-expr
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=OTENKO>おてんこさま</LABEL> 「<NAME>、
-            ; おまえたちにすべてを渡(たく) して冶えていったリンゴのため にも・・・
-            ; この戦い、 粉対に具けられないぞ!!」
-            ; <PROC=0> <END>
+            @ <LABEL=OTENKO>おてんこさま</LABEL> 「<NAME>、
+            @ おまえたちにすべてを渡(たく) して冶えていったリンゴのため にも・・・
+            @ この戦い、 粉対に具けられないぞ!!」
+            @ <PROC=0> <END>
             string-ref 0x432
           end
           call 0xf8
@@ -7264,19 +7264,19 @@ block
         else
         block
           expr
-            ptr bool, scratch, 0x158, bit=0x1  ; 0x203e358
+            ptr bool, scratch, 0x158, bit=0x1  @ 0x203e358
             i32 0x0
             store
           end-expr
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=OTENKO>おてんこさま</LABEL> 「銀線意忠ダーク・・・
-            ; 吸督変異による全食種のアン デッド化のみならず、
-            ; 帝種の失弓による種の還元(か んげん)までをも読(はか)ると は・・・
-            ; 下をすると、この星そのもの が飯み込(こ)まれてしまうぞ。
-            ; そこまでして種の進化を・・・ 太陽の進化を玉めなければな らないのか・・・?」
-            ; <PROC=0> <END>
+            @ <LABEL=OTENKO>おてんこさま</LABEL> 「銀線意忠ダーク・・・
+            @ 吸督変異による全食種のアン デッド化のみならず、
+            @ 帝種の失弓による種の還元(か んげん)までをも読(はか)ると は・・・
+            @ 下をすると、この星そのもの が飯み込(こ)まれてしまうぞ。
+            @ そこまでして種の進化を・・・ 太陽の進化を玉めなければな らないのか・・・?」
+            @ <PROC=0> <END>
             string-ref 0x436
           end
           call 0xf8
@@ -7325,7 +7325,7 @@ block
             end-expr
             block
               expr
-                ptr u8, scratch, 0x2f  ; 0x203e22f
+                ptr u8, scratch, 0x2f  @ 0x203e22f
                 i32 0x0
                 store
               end-expr
@@ -7352,7 +7352,7 @@ block
                   i32 0x1
                   eq
                   and
-                  indexed-ptr i16, stat, 0x46  ; 0x203c446
+                  indexed-ptr i16, stat, 0x46  @ 0x203c446
                   i32 0x5
                   i32 0x4
                   i16 0x26ac
@@ -7375,7 +7375,7 @@ block
                   end
                   i32 0x2
                   eq
-                  ptr bool, world, 0x1f2, bit=0x0  ; 0x203dbf2
+                  ptr bool, world, 0x1f2, bit=0x0  @ 0x203dbf2
                   i32 0x0
                   eq
                   and
@@ -7441,9 +7441,9 @@ block
   control 0xb745
     u16 0x1c64
     keyword 'r'
-    ; <LABEL=SABATA>サバタ</LABEL> 「どうした、<NAME>。 脱でも温ったのか?
-    ; 代方のないヤツだな・・・ ・・・これでも余え。」
-    ; <PROC=0> <END>
+    @ <LABEL=SABATA>サバタ</LABEL> 「どうした、<NAME>。 脱でも温ったのか?
+    @ 代方のないヤツだな・・・ ・・・これでも余え。」
+    @ <PROC=0> <END>
     string-ref 0x6a9
   end
   call 0xf8
@@ -7464,9 +7464,9 @@ block
   control 0xb745
     u16 0x1c64
     keyword 'r'
-    ; <LABEL=SABATA>サバタ</LABEL> 「チョコレートは協甲界の太陽 文明がみ用した載健芽だ。
-    ; もともとは芳い飯み指だったら しいぞ。」
-    ; <PROC=0> <END>
+    @ <LABEL=SABATA>サバタ</LABEL> 「チョコレートは協甲界の太陽 文明がみ用した載健芽だ。
+    @ もともとは芳い飯み指だったら しいぞ。」
+    @ <PROC=0> <END>
     string-ref 0x6ac
   end
   call 0xf8
@@ -7498,7 +7498,7 @@ block
     end-expr
     block
       expr
-        ptr bool, world, 0x1f2, bit=0x1  ; 0x203dbf2
+        ptr bool, world, 0x1f2, bit=0x1  @ 0x203dbf2
         i32 0x1
         store
       end-expr
@@ -7520,12 +7520,12 @@ block
     block
       if
         expr
-          indexed-ptr bool, world, 0x83, bit=0x2  ; 0x203da83
+          indexed-ptr bool, world, 0x83, bit=0x2  @ 0x203da83
           i32 0x5
           i32 0x3
           i32 0x0
           eq
-          indexed-ptr bool, world, 0x82, bit=0x0  ; 0x203da82
+          indexed-ptr bool, world, 0x82, bit=0x0  @ 0x203da82
           i32 0x5
           i32 0x3
           i32 0x1
@@ -7555,7 +7555,7 @@ end
 Script_075E: @ 0x08D5222B, ScriptID: 1886
 block
   expr
-    indexed-ptr bool, world, 0x83, bit=0x2  ; 0x203da83
+    indexed-ptr bool, world, 0x83, bit=0x2  @ 0x203da83
     i32 0x5
     i32 0x3
     i32 0x1
@@ -7568,7 +7568,7 @@ end
 Script_075F: @ 0x08D5223C, ScriptID: 1887
 block
   expr
-    ptr bool, world, 0x1f2, bit=0x0  ; 0x203dbf2
+    ptr bool, world, 0x1f2, bit=0x0  @ 0x203dbf2
     i32 0x0
     store
   end-expr
@@ -7592,7 +7592,7 @@ block
     block
       call 0x172
         i32 0x4
-        ptr i16, world, 0x1b6  ; 0x203dbb6
+        ptr i16, world, 0x1b6  @ 0x203dbb6
       end
     end
   end
@@ -7602,14 +7602,14 @@ Script_0760: @ 0x08D52275, ScriptID: 1888
 block
   switch
     expr
-      ptr u8, scratch, 0x2f  ; 0x203e22f
+      ptr u8, scratch, 0x2f  @ 0x203e22f
     end-expr
     case
     i32 0x0
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -7634,8 +7634,8 @@ block
     i32 0x1
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -7650,10 +7650,10 @@ block
       control 0xb745
         u16 0x1c64
         keyword 'r'
-        ; <LABEL=SABATA>サバタ</LABEL> 「ん?
-        ; ようやくカンを取り層したか。 チャージショットがレベル2に なったようだな。
-        ; いいだろう・・・ これを受け取れ」
-        ; <PROC=0> <END>
+        @ <LABEL=SABATA>サバタ</LABEL> 「ん?
+        @ ようやくカンを取り層したか。 チャージショットがレベル2に なったようだな。
+        @ いいだろう・・・ これを受け取れ」
+        @ <PROC=0> <END>
         string-ref 0x52f
       end
       call 0xf8
@@ -7672,8 +7672,8 @@ block
     i32 0x2
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -7710,7 +7710,7 @@ block
             i32 0x37
           end
           expr
-            indexed-ptr bool, world, 0x3e, bit=0x5  ; 0x203da3e
+            indexed-ptr bool, world, 0x3e, bit=0x5  @ 0x203da3e
             i32 0xc
             i32 0x4
             i32 0x1
@@ -7719,8 +7719,8 @@ block
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <PROC=1>「ジョーカーの慎哀」 をに入れた!!
-            ; <PROC=0> <END>
+            @ <PROC=1>「ジョーカーの慎哀」 をに入れた!!
+            @ <PROC=0> <END>
             string-ref 0x533
           end
           call 0xf7
@@ -7741,8 +7741,8 @@ block
     i32 0x3
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -7758,12 +7758,12 @@ block
       control 0xb745
         u16 0x1c64
         keyword 'r'
-        ; <LABEL=SABATA>サバタ</LABEL> 「そのジョーカーの慎哀(もん しょう)を術つ凶は、
-        ; ガンタイプの武同を俊うとき、 チャージショットのタメ時閉を 半分にすることができる。
-        ; チャージショットは、
-        ; エナジーの冶費量はそのままに ショットの導力を衣めること のできる導だ。
-        ; それを俊いこなせずして、ガン マスターとは喰べんぞ?」
-        ; <PROC=0> <END>
+        @ <LABEL=SABATA>サバタ</LABEL> 「そのジョーカーの慎哀(もん しょう)を術つ凶は、
+        @ ガンタイプの武同を俊うとき、 チャージショットのタメ時閉を 半分にすることができる。
+        @ チャージショットは、
+        @ エナジーの冶費量はそのままに ショットの導力を衣めること のできる導だ。
+        @ それを俊いこなせずして、ガン マスターとは喰べんぞ?」
+        @ <PROC=0> <END>
         string-ref 0x535
       end
       call 0xf8
@@ -7776,8 +7776,8 @@ block
     i32 0x4
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -7802,14 +7802,14 @@ Script_0761: @ 0x08D523FE, ScriptID: 1889
 block
   switch
     expr
-      ptr u8, scratch, 0x2f  ; 0x203e22f
+      ptr u8, scratch, 0x2f  @ 0x203e22f
     end-expr
     case
     i32 0x0
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -7830,64 +7830,64 @@ block
     i32 0x1
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
       end-expr
       if
         expr
-          ptr u8, scratch, 0x166  ; 0x203e366
+          ptr u8, scratch, 0x166  @ 0x203e366
           i32 0x0
           eq
         end-expr
         block
           if
             expr
-              ptr bool, world, 0x17a, bit=0x7  ; 0x203db7a
+              ptr bool, world, 0x17a, bit=0x7  @ 0x203db7a
               i32 0x0
               eq
             end-expr
             block
               expr
-                ptr bool, world, 0x17a, bit=0x7  ; 0x203db7a
+                ptr bool, world, 0x17a, bit=0x7  @ 0x203db7a
                 i32 0x1
                 store
               end-expr
               control 0xb745
                 u16 0x1c64
                 keyword 'r'
-                ; <LABEL=SABATA>サバタ</LABEL> 「この伊(おれ)が月下衆人にな ろうとはな・・・
-                ; 箱ながら悪い寂訪(じょうだん) だ。
-                ; 伊の中に慈愛(じあい)の製など あるはずもなかろう?
-                ; もしそんなものがあるとしたら それはカーミラの製・・・
-                ; ダークマターと共に伊の前にあ る儀女(かのじょ)の魂(たまし い)だ。
-                ; 儀女の魂こそが、この伊を月下 衆人へと折(お)し上げた・・・
-                ; 伊が殺した喚(なげ)きの座女、 カーミラ・・・
-                ; できることなら・・・ 儀女に人としてと死を取り層 (もど)してやりたかった。
-                ; ・・・それは濱されぬ墓。 それでも、伊は・・・」
-                ; <PROC=0> <END>
+                @ <LABEL=SABATA>サバタ</LABEL> 「この伊(おれ)が月下衆人にな ろうとはな・・・
+                @ 箱ながら悪い寂訪(じょうだん) だ。
+                @ 伊の中に慈愛(じあい)の製など あるはずもなかろう?
+                @ もしそんなものがあるとしたら それはカーミラの製・・・
+                @ ダークマターと共に伊の前にあ る儀女(かのじょ)の魂(たまし い)だ。
+                @ 儀女の魂こそが、この伊を月下 衆人へと折(お)し上げた・・・
+                @ 伊が殺した喚(なげ)きの座女、 カーミラ・・・
+                @ できることなら・・・ 儀女に人としてと死を取り層 (もど)してやりたかった。
+                @ ・・・それは濱されぬ墓。 それでも、伊は・・・」
+                @ <PROC=0> <END>
                 string-ref 0x43c
               end
             end
             else
             block
               expr
-                ptr u8, scratch, 0x166  ; 0x203e366
+                ptr u8, scratch, 0x166  @ 0x203e366
                 i32 0x1
                 store
               end-expr
               control 0xb745
                 u16 0x1c64
                 keyword 'r'
-                ; <LABEL=SABATA>サバタ</LABEL> 「母を夫い、を他(たお)し、
-                ; それでも・・・ 伊(おれ)たちは罠に進まなけれ ばならない。
-                ; 伊たちの戦いに、腹ちはない。 だが、だからこそ、 粉対に具けるわけにはいかない
-                ; あらがい情けること・・・
-                ; それだけが、銀線意忠ダークに 対後(たいこう)するための唯一 (ゆいいつ)粉対の段!!
-                ; そうだろう、<NAME>?」
-                ; <PROC=0> <END>
+                @ <LABEL=SABATA>サバタ</LABEL> 「母を夫い、を他(たお)し、
+                @ それでも・・・ 伊(おれ)たちは罠に進まなけれ ばならない。
+                @ 伊たちの戦いに、腹ちはない。 だが、だからこそ、 粉対に具けるわけにはいかない
+                @ あらがい情けること・・・
+                @ それだけが、銀線意忠ダークに 対後(たいこう)するための唯一 (ゆいいつ)粉対の段!!
+                @ そうだろう、<NAME>?」
+                @ <PROC=0> <END>
                 string-ref 0x446
               end
             end
@@ -7895,23 +7895,23 @@ block
         end
         else-if
         expr
-          ptr u8, scratch, 0x166  ; 0x203e366
+          ptr u8, scratch, 0x166  @ 0x203e366
           i32 0x1
           eq
         end-expr
         block
           expr
-            ptr u8, scratch, 0x166  ; 0x203e366
+            ptr u8, scratch, 0x166  @ 0x203e366
             i32 0x0
             store
           end-expr
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=SABATA>サバタ</LABEL> 「<NAME>、
-            ; おまえが地下に美かっている閉 に、ひまわりたちが封既(ふう いん)の位をする。
-            ; おまえはただひたすら、ヨルム ンガンドの顔を吹(たた)くこと だけを劣えるんだ。いいな?」
-            ; <PROC=0> <END>
+            @ <LABEL=SABATA>サバタ</LABEL> 「<NAME>、
+            @ おまえが地下に美かっている閉 に、ひまわりたちが封既(ふう いん)の位をする。
+            @ おまえはただひたすら、ヨルム ンガンドの顔を吹(たた)くこと だけを劣えるんだ。いいな?」
+            @ <PROC=0> <END>
             string-ref 0x44d
           end
         end
@@ -7926,8 +7926,8 @@ block
     i32 0x2
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -7938,7 +7938,7 @@ block
     default
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x0
         store
       end-expr
@@ -7966,9 +7966,9 @@ block
       control 0xb745
         u16 0x1c64
         keyword 'r'
-        ; <LABEL=ROCKMAN>ロックマン</LABEL> 「<NAME>くん、
-        ; シェードマンの章麻はこの坂の 上みたいだ」
-        ; <PROC=0> <END>
+        @ <LABEL=ROCKMAN>ロックマン</LABEL> 「<NAME>くん、
+        @ シェードマンの章麻はこの坂の 上みたいだ」
+        @ <PROC=0> <END>
         string-ref 0x4af
       end
       call 0xf8
@@ -7977,7 +7977,7 @@ block
         i32 0x0
       end
       expr
-        ptr bool, world, 0x86, bit=0x4  ; 0x203da86
+        ptr bool, world, 0x86, bit=0x4  @ 0x203da86
         i32 0x1
         store
       end-expr
@@ -8023,7 +8023,7 @@ block
                 end-expr
                 block
                   expr
-                    ptr u8, scratch, 0x2f  ; 0x203e22f
+                    ptr u8, scratch, 0x2f  @ 0x203e22f
                     i32 0x0
                     store
                   end-expr
@@ -8036,7 +8036,7 @@ block
                       end
                       i32 0x2
                       eq
-                      ptr bool, world, 0x1f2, bit=0x0  ; 0x203dbf2
+                      ptr bool, world, 0x1f2, bit=0x0  @ 0x203dbf2
                       i32 0x0
                       eq
                       and
@@ -8100,14 +8100,14 @@ Script_0764: @ 0x08D52611, ScriptID: 1892
 block
   switch
     expr
-      ptr u8, scratch, 0x2f  ; 0x203e22f
+      ptr u8, scratch, 0x2f  @ 0x203e22f
     end-expr
     case
     i32 0x0
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -8128,54 +8128,54 @@ block
     i32 0x1
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
       end-expr
       if
         expr
-          ptr u8, scratch, 0x166  ; 0x203e366
+          ptr u8, scratch, 0x166  @ 0x203e366
           i32 0x0
           eq
         end-expr
         block
           expr
-            ptr u8, scratch, 0x166  ; 0x203e366
+            ptr u8, scratch, 0x166  @ 0x203e366
             i32 0x1
             store
           end-expr
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=SABATA>サバタ</LABEL> 「何をしている?
-            ; とっととそのシェードマンとか いうプログラムを、デリート( 冶)してこい。
-            ; その閉、ヨルムンガンドの方は 伊(おれ)がおさえてみせる!!」
-            ; <PROC=0> <END>
+            @ <LABEL=SABATA>サバタ</LABEL> 「何をしている?
+            @ とっととそのシェードマンとか いうプログラムを、デリート( 冶)してこい。
+            @ その閉、ヨルムンガンドの方は 伊(おれ)がおさえてみせる!!」
+            @ <PROC=0> <END>
             string-ref 0x4a6
           end
         end
         else-if
         expr
-          ptr u8, scratch, 0x166  ; 0x203e366
+          ptr u8, scratch, 0x166  @ 0x203e366
           i32 0x1
           eq
         end-expr
         block
           expr
-            ptr u8, scratch, 0x166  ; 0x203e366
+            ptr u8, scratch, 0x166  @ 0x203e366
             i32 0x0
             store
           end-expr
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=SABATA>サバタ</LABEL> <PROC=1>「フッ、
-            ; こんな挑緒(じょうきょう)にあ ってさえ、仔人の製配とはな。
-            ; おまえもあいつと回じ・・・
-            ; まったく、伊(おれ)の囲りはい つもバカばかりだ・・・」
-            ; <PROC=0> <END>
+            @ <LABEL=SABATA>サバタ</LABEL> <PROC=1>「フッ、
+            @ こんな挑緒(じょうきょう)にあ ってさえ、仔人の製配とはな。
+            @ おまえもあいつと回じ・・・
+            @ まったく、伊(おれ)の囲りはい つもバカばかりだ・・・」
+            @ <PROC=0> <END>
             string-ref 0x4aa
           end
         end
@@ -8196,8 +8196,8 @@ block
     i32 0x2
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x1
         add
         store
@@ -8205,7 +8205,7 @@ block
       call 0xfe
       end
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x0
         store
       end-expr
@@ -8213,7 +8213,7 @@ block
     default
     block
       expr
-        ptr u8, scratch, 0x2f  ; 0x203e22f
+        ptr u8, scratch, 0x2f  @ 0x203e22f
         i32 0x0
         store
       end-expr
@@ -8231,21 +8231,21 @@ block
   end
   if
     expr
-      ptr bool, world, 0x86, bit=0x5  ; 0x203da86
+      ptr bool, world, 0x86, bit=0x5  @ 0x203da86
       i32 0x0
       eq
     end-expr
     block
       switch
         expr
-          ptr u8, scratch, 0x2e  ; 0x203e22e
+          ptr u8, scratch, 0x2e  @ 0x203e22e
         end-expr
         case
         i32 0x0
         block
           expr
-            ptr u8, scratch, 0x2e  ; 0x203e22e
-            ptr u8, scratch, 0x2e  ; 0x203e22e
+            ptr u8, scratch, 0x2e  @ 0x203e22e
+            ptr u8, scratch, 0x2e  @ 0x203e22e
             i32 0x1
             add
             store
@@ -8253,10 +8253,10 @@ block
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=OTENKO>おてんこさま</LABEL> 「どうした、<NAME>?
-            ; ん? その械構は・・・」
-            ; <LABEL=ROCKMAN>ロックマン</LABEL> 「あなたは・・・ おてんこさま!?」
-            ; <PROC=0> <END>
+            @ <LABEL=OTENKO>おてんこさま</LABEL> 「どうした、<NAME>?
+            @ ん? その械構は・・・」
+            @ <LABEL=ROCKMAN>ロックマン</LABEL> 「あなたは・・・ おてんこさま!?」
+            @ <PROC=0> <END>
             string-ref 0x491
           end
           call 0xf8
@@ -8269,8 +8269,8 @@ block
         i32 0x1
         block
           expr
-            ptr u8, scratch, 0x2e  ; 0x203e22e
-            ptr u8, scratch, 0x2e  ; 0x203e22e
+            ptr u8, scratch, 0x2e  @ 0x203e22e
+            ptr u8, scratch, 0x2e  @ 0x203e22e
             i32 0x1
             add
             store
@@ -8312,27 +8312,27 @@ block
         i32 0x2
         block
           expr
-            ptr u8, scratch, 0x2e  ; 0x203e22e
-            ptr u8, scratch, 0x2e  ; 0x203e22e
+            ptr u8, scratch, 0x2e  @ 0x203e22e
+            ptr u8, scratch, 0x2e  @ 0x203e22e
             i32 0x1
             add
             store
           end-expr
           expr
-            ptr bool, world, 0x86, bit=0x5  ; 0x203da86
+            ptr bool, world, 0x86, bit=0x5  @ 0x203da86
             i32 0x1
             store
           end-expr
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=OTENKO>おてんこさま</LABEL> 「そうか、そんなことが・・・
-            ; <NAME>、
-            ; おまえはロックマンと博力して シェードマンの野望を余い玉め るんだ。
-            ; ヨルムンガンドについては、私 とサバタが監福(かんし)を情け よう。
-            ; 介は大人しくしているようだが 約収はできん」
-            ; <LABEL=ROCKMAN>ロックマン</LABEL> 「ありがとう、 おてんこさま!!」
-            ; <PROC=0> <END>
+            @ <LABEL=OTENKO>おてんこさま</LABEL> 「そうか、そんなことが・・・
+            @ <NAME>、
+            @ おまえはロックマンと博力して シェードマンの野望を余い玉め るんだ。
+            @ ヨルムンガンドについては、私 とサバタが監福(かんし)を情け よう。
+            @ 介は大人しくしているようだが 約収はできん」
+            @ <LABEL=ROCKMAN>ロックマン</LABEL> 「ありがとう、 おてんこさま!!」
+            @ <PROC=0> <END>
             string-ref 0x495
           end
           call 0xf8
@@ -8350,23 +8350,23 @@ block
     block
       if
         expr
-          ptr bool, scratch, 0x158, bit=0x1  ; 0x203e358
+          ptr bool, scratch, 0x158, bit=0x1  @ 0x203e358
           i32 0x0
           eq
         end-expr
         block
           expr
-            ptr bool, scratch, 0x158, bit=0x1  ; 0x203e358
+            ptr bool, scratch, 0x158, bit=0x1  @ 0x203e358
             i32 0x1
             store
           end-expr
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=OTENKO>おてんこさま</LABEL> 「ロックマン、
-            ; 孫まう甲界は達(ちが)えども、 共に聞(やみ)と戦う作閉だ。
-            ; 哉ったときはえんりょなく号っ てくれ。博力はおしまんぞ!」
-            ; <PROC=0> <END>
+            @ <LABEL=OTENKO>おてんこさま</LABEL> 「ロックマン、
+            @ 孫まう甲界は達(ちが)えども、 共に聞(やみ)と戦う作閉だ。
+            @ 哉ったときはえんりょなく号っ てくれ。博力はおしまんぞ!」
+            @ <PROC=0> <END>
             string-ref 0x49c
           end
           call 0xf8
@@ -8378,19 +8378,19 @@ block
         else
         block
           expr
-            ptr bool, scratch, 0x158, bit=0x1  ; 0x203e358
+            ptr bool, scratch, 0x158, bit=0x1  @ 0x203e358
             i32 0x0
             store
           end-expr
           control 0xb745
             u16 0x1c64
             keyword 'r'
-            ; <LABEL=OTENKO>おてんこさま</LABEL> 「シェードマン・・・
-            ; 聞(やみ)の力をあつかう人型プ ログラム、ダークロイドか。
-            ; だが、いったいどうやってこの 甲怪求甲界に・・・
-            ; それに家伏を術たないプログラ ムに、なぜこの甲界での江動が できるのか?
-            ; ・・・この事休の率には、 何かあるな・・・」
-            ; <PROC=0> <END>
+            @ <LABEL=OTENKO>おてんこさま</LABEL> 「シェードマン・・・
+            @ 聞(やみ)の力をあつかう人型プ ログラム、ダークロイドか。
+            @ だが、いったいどうやってこの 甲怪求甲界に・・・
+            @ それに家伏を術たないプログラ ムに、なぜこの甲界での江動が できるのか?
+            @ ・・・この事休の率には、 何かあるな・・・」
+            @ <PROC=0> <END>
             string-ref 0x4a0
           end
           call 0xf8
@@ -8432,7 +8432,7 @@ block
       end
       if
         expr
-          ptr bool, world, 0xc, bit=0x5  ; 0x203da0c
+          ptr bool, world, 0xc, bit=0x5  @ 0x203da0c
           i32 0x0
           eq
         end-expr
@@ -8489,7 +8489,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x2
       ne
     end-expr
@@ -8591,12 +8591,12 @@ block
   end
   call 0x8d
     expr
-      ptr i16, stat, 0x30  ; 0x203c430
+      ptr i16, stat, 0x30  @ 0x203c430
     end-expr
     expr
-      ptr i16, stat, 0x34  ; 0x203c434
+      ptr i16, stat, 0x34  @ 0x203c434
     end-expr
-    ptr i16, stat, 0x36  ; 0x203c436
+    ptr i16, stat, 0x36  @ 0x203c436
     i32 0x3
     i32 0x0
   end
@@ -8670,10 +8670,10 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x12
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x13
       eq
       or
@@ -8685,7 +8685,7 @@ block
         i32 0x4
       end
       expr
-        indexed-ptr bool, world, 0x3a, bit=0x0  ; 0x203da3a
+        indexed-ptr bool, world, 0x3a, bit=0x0  @ 0x203da3a
         i32 0x10
         i32 0x5
         i32 0x1
@@ -8696,7 +8696,7 @@ block
   call 0x8d
     i16 0x1d00
     i16 0x300
-    ptr i16, stat, 0x36  ; 0x203c436
+    ptr i16, stat, 0x36  @ 0x203c436
     u8 0x93
     i32 0x0
   end
@@ -8728,7 +8728,7 @@ block
   end
   if
     expr
-      ptr i16, stat, 0x250  ; 0x203c650
+      ptr i16, stat, 0x250  @ 0x203c650
       i32 0x5
       eq
     end-expr
@@ -8742,7 +8742,7 @@ block
         block
           if
             expr
-              ptr u8, world, 0x17c  ; 0x203db7c
+              ptr u8, world, 0x17c  @ 0x203db7c
               i32 0x1f
               eq
             end-expr
@@ -8752,7 +8752,7 @@ block
             end
             else-if
             expr
-              ptr bool, world, 0xc, bit=0x4  ; 0x203da0c
+              ptr bool, world, 0xc, bit=0x4  @ 0x203da0c
               i32 0x0
               eq
             end-expr
@@ -8816,7 +8816,7 @@ Script_076E: @ 0x08D52B46, ScriptID: 1902
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x93
       eq
     end-expr
@@ -8824,17 +8824,17 @@ block
     end
     else-if
     expr
-      ptr bool, world, 0x17a, bit=0x6  ; 0x203db7a
+      ptr bool, world, 0x17a, bit=0x6  @ 0x203db7a
       i32 0x0
       eq
     end-expr
     block
       if
         expr
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           i32 0x13
           eq
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           i32 0x19
           eq
           or
@@ -8876,7 +8876,7 @@ block
         end
         else-if
         expr
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           u8 0xa4
           eq
         end-expr
@@ -8996,7 +8996,7 @@ Script_076F: @ 0x08D52CF1, ScriptID: 1903
 block
   if
     expr
-      ptr bool, world, 0x1f2, bit=0x7  ; 0x203dbf2
+      ptr bool, world, 0x1f2, bit=0x7  @ 0x203dbf2
       i32 0x1
       eq
     end-expr
@@ -9015,7 +9015,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x2
       ne
     end-expr
@@ -9028,7 +9028,7 @@ block
       end
       if
         expr
-          ptr bool, world, 0x172, bit=0x2  ; 0x203db72
+          ptr bool, world, 0x172, bit=0x2  @ 0x203db72
           i32 0x0
           eq
         end-expr
@@ -9056,7 +9056,7 @@ block
       end
       if
         expr
-          ptr bool, world, 0x172, bit=0x3  ; 0x203db72
+          ptr bool, world, 0x172, bit=0x3  @ 0x203db72
           i32 0x0
           eq
         end-expr
@@ -9093,13 +9093,13 @@ block
     block
       if
         expr
-          ptr bool, world, 0x172, bit=0x2  ; 0x203db72
+          ptr bool, world, 0x172, bit=0x2  @ 0x203db72
           i32 0x0
           eq
         end-expr
         block
           expr
-            ptr bool, world, 0x172, bit=0x2  ; 0x203db72
+            ptr bool, world, 0x172, bit=0x2  @ 0x203db72
             i32 0x1
             store
           end-expr
@@ -9116,13 +9116,13 @@ block
     block
       if
         expr
-          ptr bool, world, 0x172, bit=0x3  ; 0x203db72
+          ptr bool, world, 0x172, bit=0x3  @ 0x203db72
           i32 0x0
           eq
         end-expr
         block
           expr
-            ptr bool, world, 0x172, bit=0x3  ; 0x203db72
+            ptr bool, world, 0x172, bit=0x3  @ 0x203db72
             i32 0x1
             store
           end-expr
@@ -9135,7 +9135,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x172, bit=0x4  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x4  @ 0x203db72
       i32 0x0
       eq
     end-expr
@@ -9165,7 +9165,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x172, bit=0x4  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x4  @ 0x203db72
       i32 0x0
       eq
     end-expr
@@ -9250,7 +9250,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x2
       eq
     end-expr
@@ -9286,10 +9286,10 @@ block
   control 0xb745
     u16 0x1c64
     keyword 'r'
-    ; 2つの坂に択(いど)め。
-    ; チェンジ座方陰を利図して、2 つの坂を回時に略(こうりゃ く)せよ。
-    ; 座方陰の上でＡボタンを折(お) せば、徳体するキャラクターを 付することができる。
-    ; <PROC=0> <END>
+    @ 2つの坂に択(いど)め。
+    @ チェンジ座方陰を利図して、2 つの坂を回時に略(こうりゃ く)せよ。
+    @ 座方陰の上でＡボタンを折(お) せば、徳体するキャラクターを 付することができる。
+    @ <PROC=0> <END>
     string-ref 0x4c4
   end
   call 0xf8
@@ -9306,9 +9306,9 @@ block
   control 0xb745
     u16 0x1c64
     keyword 'r'
-    ; 月児座次「ゼロシフト」は、瞳 閉移動を向能にする転移座次だ
-    ; 移動の、姿を冶している閉は 敬モンスターやその導をすり 待(ぬ)けることができる。
-    ; <PROC=0> <END>
+    @ 月児座次「ゼロシフト」は、瞳 閉移動を向能にする転移座次だ
+    @ 移動の、姿を冶している閉は 敬モンスターやその導をすり 待(ぬ)けることができる。
+    @ <PROC=0> <END>
     string-ref 0x41f
   end
   call 0xf8
@@ -9325,9 +9325,9 @@ block
   control 0xb745
     u16 0x1c64
     keyword 'r'
-    ; 月児座次「ブラックサン」は、 映黒の失弓を喰び用す古嘆(し ょうかん)座次だ。
-    ; ブラックサンを俊えば、しばら くの閉、太陽の児を収(しゃ だん)することができる。
-    ; <PROC=0> <END>
+    @ 月児座次「ブラックサン」は、 映黒の失弓を喰び用す古嘆(し ょうかん)座次だ。
+    @ ブラックサンを俊えば、しばら くの閉、太陽の児を収(しゃ だん)することができる。
+    @ <PROC=0> <END>
     string-ref 0x422
   end
   call 0xf8
@@ -9341,7 +9341,7 @@ Script_0774: @ 0x08D52F96, ScriptID: 1908
 block
   if
     expr
-      ptr bool, world, 0x172, bit=0x4  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x4  @ 0x203db72
       i32 0x0
       eq
     end-expr
@@ -9350,7 +9350,7 @@ block
         u16 0x3613
       end
       expr
-        ptr bool, world, 0xc, bit=0x5  ; 0x203da0c
+        ptr bool, world, 0xc, bit=0x5  @ 0x203da0c
         i32 0x1
         store
       end-expr
@@ -9370,15 +9370,15 @@ block
             u16 0x8071
             keyword 'p'
             expr
-              ptr i16, stat, 0x30  ; 0x203c430
+              ptr i16, stat, 0x30  @ 0x203c430
               i16 0x200
               add
             end-expr
             expr
-              ptr i16, stat, 0x32  ; 0x203c432
+              ptr i16, stat, 0x32  @ 0x203c432
             end-expr
             expr
-              ptr i16, stat, 0x34  ; 0x203c434
+              ptr i16, stat, 0x34  @ 0x203c434
             end-expr
             keyword 'f'
             i32 0x1e
@@ -9413,7 +9413,7 @@ block
     i16 0x500
   end
   expr
-    ptr u8, scratch, 0x149  ; 0x203e349
+    ptr u8, scratch, 0x149  @ 0x203e349
     i32 0x0
     store
   end-expr
@@ -9428,14 +9428,14 @@ block
     block
       switch
         expr
-          ptr u8, scratch, 0x149  ; 0x203e349
+          ptr u8, scratch, 0x149  @ 0x203e349
         end-expr
         case
         i32 0x0
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -9462,8 +9462,8 @@ block
         i32 0x1
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -9481,8 +9481,8 @@ block
         i32 0x2
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -9509,26 +9509,26 @@ block
         i32 0x3
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
           end-expr
           expr
-            ptr bool, world, 0x172, bit=0x4  ; 0x203db72
+            ptr bool, world, 0x172, bit=0x4  @ 0x203db72
             i32 0x1
             store
           end-expr
           expr
-            ptr bool, world, 0xc, bit=0x5  ; 0x203da0c
+            ptr bool, world, 0xc, bit=0x5  @ 0x203da0c
             i32 0x0
             store
           end-expr
           control 0xb745
             u16 0xc1b
             keyword 's'
-            ptr i16, stat, 0x254  ; 0x203c654
+            ptr i16, stat, 0x254  @ 0x203c654
             keyword 'i'
             i32 0x0
           end
@@ -9571,7 +9571,7 @@ block
       end
       if
         expr
-          ptr bool, world, 0xc, bit=0x5  ; 0x203da0c
+          ptr bool, world, 0xc, bit=0x5  @ 0x203da0c
           i32 0x0
           eq
         end-expr
@@ -9628,7 +9628,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x2
       ne
     end-expr
@@ -9715,12 +9715,12 @@ block
   end
   call 0x8d
     expr
-      ptr i16, stat, 0x30  ; 0x203c430
+      ptr i16, stat, 0x30  @ 0x203c430
     end-expr
     expr
-      ptr i16, stat, 0x34  ; 0x203c434
+      ptr i16, stat, 0x34  @ 0x203c434
     end-expr
-    ptr i16, stat, 0x36  ; 0x203c436
+    ptr i16, stat, 0x36  @ 0x203c436
     i32 0x3
     i32 0x0
   end
@@ -9741,7 +9741,7 @@ block
   call 0x8d
     i16 0x900
     i16 0xa00
-    ptr i16, stat, 0x36  ; 0x203c436
+    ptr i16, stat, 0x36  @ 0x203c436
     u8 0x93
     i32 0x0
   end
@@ -9854,7 +9854,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x2
       ne
     end-expr
@@ -9867,7 +9867,7 @@ block
       end
       if
         expr
-          ptr bool, world, 0x172, bit=0x6  ; 0x203db72
+          ptr bool, world, 0x172, bit=0x6  @ 0x203db72
           i32 0x0
           eq
         end-expr
@@ -9904,13 +9904,13 @@ block
     block
       if
         expr
-          ptr bool, world, 0x172, bit=0x6  ; 0x203db72
+          ptr bool, world, 0x172, bit=0x6  @ 0x203db72
           i32 0x0
           eq
         end-expr
         block
           expr
-            ptr bool, world, 0x172, bit=0x6  ; 0x203db72
+            ptr bool, world, 0x172, bit=0x6  @ 0x203db72
             i32 0x1
             store
           end-expr
@@ -9967,7 +9967,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x172, bit=0x5  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x5  @ 0x203db72
       i32 0x0
       eq
     end-expr
@@ -9986,10 +9986,10 @@ block
     block
       if
         expr
-          ptr i16, world, 0x2  ; 0x203da02
+          ptr i16, world, 0x2  @ 0x203da02
           i32 0x9
           gte
-          ptr i16, world, 0x2  ; 0x203da02
+          ptr i16, world, 0x2  @ 0x203da02
           i32 0xb
           lt
           and
@@ -10007,10 +10007,10 @@ block
         end
         else-if
         expr
-          ptr i16, world, 0x0  ; 0x203da00
+          ptr i16, world, 0x0  @ 0x203da00
           i32 0x3c
           gte
-          ptr i16, world, 0x0  ; 0x203da00
+          ptr i16, world, 0x0  @ 0x203da00
           i32 0x3e
           lt
           and
@@ -10058,7 +10058,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x2
       eq
     end-expr
@@ -10080,7 +10080,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x173, bit=0x2  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x2  @ 0x203db73
       i32 0x1
       eq
     end-expr
@@ -10153,20 +10153,20 @@ block
     store
   end-expr
   expr
-    ptr bool, scratch, 0x158, bit=0x5  ; 0x203e358
+    ptr bool, scratch, 0x158, bit=0x5  @ 0x203e358
     i32 0x0
     store
   end-expr
   if
     expr
-      ptr bool, world, 0x17a, bit=0x6  ; 0x203db7a
+      ptr bool, world, 0x17a, bit=0x6  @ 0x203db7a
       i32 0x0
       eq
     end-expr
     block
       if
         expr
-          ptr u8, world, 0x17d  ; 0x203db7d
+          ptr u8, world, 0x17d  @ 0x203db7d
           i32 0x4
           eq
         end-expr
@@ -10192,7 +10192,7 @@ block
             store
           end-expr
           expr
-            ptr bool, scratch, 0x158, bit=0x5  ; 0x203e358
+            ptr bool, scratch, 0x158, bit=0x5  @ 0x203e358
             i32 0x1
             store
           end-expr
@@ -10202,7 +10202,7 @@ block
   end
   if
     expr
-      ptr bool, scratch, 0x158, bit=0x5  ; 0x203e358
+      ptr bool, scratch, 0x158, bit=0x5  @ 0x203e358
       i32 0x1
       eq
     end-expr
@@ -10223,7 +10223,7 @@ Script_077F: @ 0x08D53652, ScriptID: 1919
 block
   if
     expr
-      ptr bool, world, 0x172, bit=0x5  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x5  @ 0x203db72
       i32 0x0
       eq
     end-expr
@@ -10232,7 +10232,7 @@ block
         u16 0x3613
       end
       expr
-        ptr bool, world, 0xc, bit=0x5  ; 0x203da0c
+        ptr bool, world, 0xc, bit=0x5  @ 0x203da0c
         i32 0x1
         store
       end-expr
@@ -10252,15 +10252,15 @@ block
             u16 0x8071
             keyword 'p'
             expr
-              ptr i16, stat, 0x30  ; 0x203c430
+              ptr i16, stat, 0x30  @ 0x203c430
               i16 0x200
               sub
             end-expr
             expr
-              ptr i16, stat, 0x32  ; 0x203c432
+              ptr i16, stat, 0x32  @ 0x203c432
             end-expr
             expr
-              ptr i16, stat, 0x34  ; 0x203c434
+              ptr i16, stat, 0x34  @ 0x203c434
             end-expr
             keyword 'f'
             i32 0x1e
@@ -10295,7 +10295,7 @@ block
     i16 0x800
   end
   expr
-    ptr u8, scratch, 0x149  ; 0x203e349
+    ptr u8, scratch, 0x149  @ 0x203e349
     i32 0x0
     store
   end-expr
@@ -10310,14 +10310,14 @@ block
     block
       switch
         expr
-          ptr u8, scratch, 0x149  ; 0x203e349
+          ptr u8, scratch, 0x149  @ 0x203e349
         end-expr
         case
         i32 0x0
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -10344,8 +10344,8 @@ block
         i32 0x1
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -10363,8 +10363,8 @@ block
         i32 0x2
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -10391,26 +10391,26 @@ block
         i32 0x3
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
           end-expr
           expr
-            ptr bool, world, 0x172, bit=0x5  ; 0x203db72
+            ptr bool, world, 0x172, bit=0x5  @ 0x203db72
             i32 0x1
             store
           end-expr
           expr
-            ptr bool, world, 0xc, bit=0x5  ; 0x203da0c
+            ptr bool, world, 0xc, bit=0x5  @ 0x203da0c
             i32 0x0
             store
           end-expr
           control 0xb745
             u16 0xc1b
             keyword 's'
-            ptr i16, stat, 0x254  ; 0x203c654
+            ptr i16, stat, 0x254  @ 0x203c654
             keyword 'i'
             i32 0x1
           end
@@ -10651,7 +10651,7 @@ block
     u16 0xb4b4
     u16 0x6406
     keyword 'f'
-    ptr i16, scratch, 0x4c  ; 0x203e24c
+    ptr i16, scratch, 0x4c  @ 0x203e24c
     keyword 'i'
     param 0x2
     keyword 'd'
@@ -10996,7 +10996,7 @@ Script_0792: @ 0x08D53C37, ScriptID: 1938
 block
   if
     expr
-      ptr bool, world, 0x17a, bit=0x3  ; 0x203db7a
+      ptr bool, world, 0x17a, bit=0x3  @ 0x203db7a
       i32 0x0
       eq
     end-expr
@@ -11536,14 +11536,14 @@ Script_07A0: @ 0x08D54038, ScriptID: 1952
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x1f
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x91
       eq
       or
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x2d
       eq
       or
@@ -11635,14 +11635,14 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x1f
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x91
       eq
       or
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x2d
       eq
       or
@@ -11724,7 +11724,7 @@ block
       end
       if
         expr
-          ptr bool, world, 0x17a, bit=0x5  ; 0x203db7a
+          ptr bool, world, 0x17a, bit=0x5  @ 0x203db7a
           i32 0x1
           eq
         end-expr
@@ -11759,13 +11759,13 @@ block
         block
           if
             expr
-              ptr bool, world, 0x17a, bit=0x5  ; 0x203db7a
+              ptr bool, world, 0x17a, bit=0x5  @ 0x203db7a
               i32 0x0
               eq
             end-expr
             block
               expr
-                ptr bool, world, 0x17a, bit=0x5  ; 0x203db7a
+                ptr bool, world, 0x17a, bit=0x5  @ 0x203db7a
                 i32 0x1
                 store
               end-expr
@@ -12043,10 +12043,10 @@ Script_07AB: @ 0x08D5440D, ScriptID: 1963
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x27
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x30
       eq
       or
@@ -12417,14 +12417,14 @@ block
   end
   if
     expr
-      ptr bool, world, 0x173, bit=0x0  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x0  @ 0x203db73
       i32 0x0
       eq
     end-expr
     block
       if
         expr
-          ptr i16, world, 0x186  ; 0x203db86
+          ptr i16, world, 0x186  @ 0x203db86
           u8 0x99
           eq
         end-expr
@@ -12500,7 +12500,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x172, bit=0x7  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x7  @ 0x203db72
       i32 0x0
       eq
     end-expr
@@ -12550,7 +12550,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x172, bit=0x7  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x7  @ 0x203db72
       i32 0x0
       eq
     end-expr
@@ -12592,7 +12592,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x173, bit=0x0  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x0  @ 0x203db73
       i32 0x0
       eq
     end-expr
@@ -12664,20 +12664,20 @@ block
     store
   end-expr
   expr
-    ptr bool, scratch, 0x158, bit=0x5  ; 0x203e358
+    ptr bool, scratch, 0x158, bit=0x5  @ 0x203e358
     i32 0x0
     store
   end-expr
   if
     expr
-      ptr bool, world, 0x17a, bit=0x6  ; 0x203db7a
+      ptr bool, world, 0x17a, bit=0x6  @ 0x203db7a
       i32 0x0
       eq
     end-expr
     block
       if
         expr
-          ptr u8, world, 0x17d  ; 0x203db7d
+          ptr u8, world, 0x17d  @ 0x203db7d
           i32 0xa
           eq
         end-expr
@@ -12703,7 +12703,7 @@ block
             store
           end-expr
           expr
-            ptr bool, scratch, 0x158, bit=0x5  ; 0x203e358
+            ptr bool, scratch, 0x158, bit=0x5  @ 0x203e358
             i32 0x1
             store
           end-expr
@@ -12714,14 +12714,14 @@ block
     block
       if
         expr
-          ptr u8, world, 0x17c  ; 0x203db7c
+          ptr u8, world, 0x17c  @ 0x203db7c
           i32 0x9
           eq
         end-expr
         block
           if
             expr
-              ptr bool, world, 0xc, bit=0x0  ; 0x203da0c
+              ptr bool, world, 0xc, bit=0x0  @ 0x203da0c
               i32 0x0
               eq
             end-expr
@@ -12757,7 +12757,7 @@ block
             store
           end-expr
           expr
-            ptr bool, scratch, 0x158, bit=0x5  ; 0x203e358
+            ptr bool, scratch, 0x158, bit=0x5  @ 0x203e358
             i32 0x1
             store
           end-expr
@@ -12767,7 +12767,7 @@ block
   end
   if
     expr
-      ptr bool, scratch, 0x158, bit=0x5  ; 0x203e358
+      ptr bool, scratch, 0x158, bit=0x5  @ 0x203e358
       i32 0x1
       eq
     end-expr
@@ -12811,7 +12811,7 @@ Script_07B6: @ 0x08D54971, ScriptID: 1974
 block
   if
     expr
-      ptr bool, world, 0x172, bit=0x7  ; 0x203db72
+      ptr bool, world, 0x172, bit=0x7  @ 0x203db72
       i32 0x0
       eq
     end-expr
@@ -12846,7 +12846,7 @@ block
         keyword 'e'
         block
           expr
-            ptr bool, world, 0x172, bit=0x7  ; 0x203db72
+            ptr bool, world, 0x172, bit=0x7  @ 0x203db72
             i32 0x1
             store
           end-expr
@@ -12867,7 +12867,7 @@ Script_07B7: @ 0x08D549EA, ScriptID: 1975
 block
   if
     expr
-      ptr bool, world, 0x173, bit=0x0  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x0  @ 0x203db73
       i32 0x0
       eq
     end-expr
@@ -12902,7 +12902,7 @@ block
         keyword 'e'
         block
           expr
-            ptr bool, world, 0x173, bit=0x0  ; 0x203db73
+            ptr bool, world, 0x173, bit=0x0  @ 0x203db73
             i32 0x1
             store
           end-expr
@@ -13095,7 +13095,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x173, bit=0x1  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x1  @ 0x203db73
       i32 0x0
       eq
     end-expr
@@ -13159,7 +13159,7 @@ block
   call 0x8d
     i16 0xf00
     i16 0x500
-    ptr i16, stat, 0x36  ; 0x203c436
+    ptr i16, stat, 0x36  @ 0x203c436
     u8 0x91
     i32 0x0
   end
@@ -13209,10 +13209,10 @@ Script_07BE: @ 0x08D54C91, ScriptID: 1982
 block
   if
     expr
-      ptr bool, world, 0x173, bit=0x1  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x1  @ 0x203db73
       i32 0x0
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x99
       eq
       and
@@ -13235,7 +13235,7 @@ end
 Script_07BF: @ 0x08D54CC5, ScriptID: 1983
 block
   expr
-    ptr bool, world, 0x173, bit=0x1  ; 0x203db73
+    ptr bool, world, 0x173, bit=0x1  @ 0x203db73
     i32 0x1
     store
   end-expr
@@ -13316,7 +13316,7 @@ block
   end
   if
     expr
-      ptr bool, scratch, 0x17, bit=0x3  ; 0x203e217
+      ptr bool, scratch, 0x17, bit=0x3  @ 0x203e217
       i32 0x0
       eq
     end-expr
@@ -13387,7 +13387,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x173, bit=0x1  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x1  @ 0x203db73
       i32 0x1
       eq
     end-expr
@@ -13409,7 +13409,7 @@ end
 Script_07C1: @ 0x08D54E11, ScriptID: 1985
 block
   expr
-    ptr bool, world, 0x173, bit=0x2  ; 0x203db73
+    ptr bool, world, 0x173, bit=0x2  @ 0x203db73
     i32 0x1
     store
   end-expr
@@ -13432,10 +13432,10 @@ Script_07C2: @ 0x08D54E33, ScriptID: 1986
 block
   if
     expr
-      ptr bool, world, 0x173, bit=0x1  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x1  @ 0x203db73
       i32 0x0
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x99
       eq
       and
@@ -13530,7 +13530,7 @@ block
       end
       if
         expr
-          ptr bool, world, 0xc, bit=0x5  ; 0x203da0c
+          ptr bool, world, 0xc, bit=0x5  @ 0x203da0c
           i32 0x0
           eq
         end-expr
@@ -13780,7 +13780,7 @@ block
     i32 0xc
   end
   expr
-    ptr u8, scratch, 0x15  ; 0x203e215
+    ptr u8, scratch, 0x15  @ 0x203e215
     i32 0x1
     store
   end-expr
@@ -13837,7 +13837,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x173, bit=0x7  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x7  @ 0x203db73
       i32 0x0
       eq
     end-expr
@@ -13867,7 +13867,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x2
       eq
     end-expr
@@ -13882,7 +13882,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x173, bit=0x3  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x3  @ 0x203db73
       i32 0x0
       eq
     end-expr
@@ -13901,7 +13901,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x173, bit=0x4  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x4  @ 0x203db73
       i32 0x0
       eq
     end-expr
@@ -13920,7 +13920,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x173, bit=0x5  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x5  @ 0x203db73
       i32 0x0
       eq
     end-expr
@@ -13987,7 +13987,7 @@ end
 Script_07CA: @ 0x08D5528F, ScriptID: 1994
 block
   expr
-    ptr bool, world, 0x173, bit=0x3  ; 0x203db73
+    ptr bool, world, 0x173, bit=0x3  @ 0x203db73
     i32 0x1
     store
   end-expr
@@ -13996,7 +13996,7 @@ end
 Script_07CB: @ 0x08D55299, ScriptID: 1995
 block
   expr
-    ptr bool, world, 0x173, bit=0x4  ; 0x203db73
+    ptr bool, world, 0x173, bit=0x4  @ 0x203db73
     i32 0x1
     store
   end-expr
@@ -14005,7 +14005,7 @@ end
 Script_07CC: @ 0x08D552A3, ScriptID: 1996
 block
   expr
-    ptr bool, world, 0x173, bit=0x5  ; 0x203db73
+    ptr bool, world, 0x173, bit=0x5  @ 0x203db73
     i32 0x1
     store
   end-expr
@@ -14030,7 +14030,7 @@ block
     i16 0x400
   end
   expr
-    ptr u8, scratch, 0x149  ; 0x203e349
+    ptr u8, scratch, 0x149  @ 0x203e349
     i32 0x0
     store
   end-expr
@@ -14045,14 +14045,14 @@ block
     block
       switch
         expr
-          ptr u8, scratch, 0x149  ; 0x203e349
+          ptr u8, scratch, 0x149  @ 0x203e349
         end-expr
         case
         i32 0x0
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -14079,8 +14079,8 @@ block
         i32 0x1
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -14098,8 +14098,8 @@ block
         i32 0x2
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -14126,26 +14126,26 @@ block
         i32 0x3
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
           end-expr
           expr
-            ptr bool, world, 0xc, bit=0x5  ; 0x203da0c
+            ptr bool, world, 0xc, bit=0x5  @ 0x203da0c
             i32 0x0
             store
           end-expr
           expr
-            ptr bool, world, 0x173, bit=0x7  ; 0x203db73
+            ptr bool, world, 0x173, bit=0x7  @ 0x203db73
             i32 0x1
             store
           end-expr
           control 0xb745
             u16 0xc1b
             keyword 's'
-            ptr i16, stat, 0x254  ; 0x203c654
+            ptr i16, stat, 0x254  @ 0x203c654
             keyword 'i'
             i32 0x2
           end
@@ -14188,7 +14188,7 @@ block
       end
       if
         expr
-          ptr bool, world, 0xc, bit=0x5  ; 0x203da0c
+          ptr bool, world, 0xc, bit=0x5  @ 0x203da0c
           i32 0x0
           eq
         end-expr
@@ -14281,7 +14281,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x2
       ne
     end-expr
@@ -14450,7 +14450,7 @@ block
   end
   if
     expr
-      ptr bool, world, 0x173, bit=0x7  ; 0x203db73
+      ptr bool, world, 0x173, bit=0x7  @ 0x203db73
       i32 0x0
       eq
     end-expr
@@ -14504,7 +14504,7 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x2
       eq
     end-expr
@@ -14543,7 +14543,7 @@ block
     i16 0x700
   end
   expr
-    ptr u8, scratch, 0x149  ; 0x203e349
+    ptr u8, scratch, 0x149  @ 0x203e349
     i32 0x0
     store
   end-expr
@@ -14558,14 +14558,14 @@ block
     block
       switch
         expr
-          ptr u8, scratch, 0x149  ; 0x203e349
+          ptr u8, scratch, 0x149  @ 0x203e349
         end-expr
         case
         i32 0x0
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -14592,8 +14592,8 @@ block
         i32 0x1
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -14616,8 +14616,8 @@ block
         i32 0x2
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -14644,8 +14644,8 @@ block
         i32 0x3
         block
           expr
-            ptr u8, scratch, 0x149  ; 0x203e349
-            ptr u8, scratch, 0x149  ; 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
+            ptr u8, scratch, 0x149  @ 0x203e349
             i32 0x1
             add
             store
@@ -14867,10 +14867,10 @@ Script_07DB: @ 0x08D55945, ScriptID: 2011
 block
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x3a
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x3b
       eq
       or
@@ -15085,12 +15085,12 @@ block
   end
   call 0x8d
     expr
-      ptr i16, stat, 0x30  ; 0x203c430
+      ptr i16, stat, 0x30  @ 0x203c430
     end-expr
     expr
-      ptr i16, stat, 0x34  ; 0x203c434
+      ptr i16, stat, 0x34  @ 0x203c434
     end-expr
-    ptr i16, stat, 0x36  ; 0x203c436
+    ptr i16, stat, 0x36  @ 0x203c436
     i32 0x2
     i32 0x0
   end
@@ -15110,18 +15110,18 @@ block
   end
   if
     expr
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       i32 0x3a
       eq
-      ptr i16, world, 0x186  ; 0x203db86
+      ptr i16, world, 0x186  @ 0x203db86
       u8 0x91
       eq
       or
     end-expr
     block
       expr
-        ptr i16, stat, 0x934  ; 0x203cd34
-        ptr i16, stat, 0x934  ; 0x203cd34
+        ptr i16, stat, 0x934  @ 0x203cd34
+        ptr i16, stat, 0x934  @ 0x203cd34
         i16 0x400
         bit-or
         store

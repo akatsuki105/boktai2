@@ -23,14 +23,8 @@ gAnimDirectory = 0x085b0df0;
 gTilemapDirectory = 0x085b26e4;
 gCollisionMapsDirectory = 0x087b260c;
 gPlttDirectory = 0x087fa08c;
-gTilesetsDirectory = 0x0881882c;
-
 
 gParticleFile0 = 0x08A20138;
-gActorSpritesFile0 = 0x08A2291C;
-gObjPlttFile0 = 0x08CB9244;
-gSpriteSetFile0 = 0x08B79A44;
-gSpriteSetFile1 = 0x08B7BD7C;
 gSpriteSetFile25 = 0x08C5A80C;
 
 SECTIONS {
@@ -87,6 +81,11 @@ SECTIONS {
 			src/code_08013288.o (.text);
 			src/code_08013634.o (.text);
 			src/code_08013c94.o (.text);
+			src/boss.o (.text);
+			src/boss/duneyrr.o (.text);
+			src/boss/entity_ba4b.o (.text);
+			src/boss/durathror.o (.text);
+			src/code_0803c1bc.o (.text);
 			src/crossover_lobby.o (.text);
 			src/code_0804f820.o (.text);
 			src/code_08052290.o (.text);
@@ -112,7 +111,7 @@ SECTIONS {
 			src/entity_d3a9.o (.text);
 			src/code_080c0d6c.o (.text);
 			src/code_080c5058.o (.text);
-			src/code_080ddf88.o (.text);
+			src/entity_080ddf88.o (.text);
 			src/enemy/boku.o (.text);
 			src/enemy/skeleton.o (.text);
 			src/enemy/golem.o (.text);
@@ -140,11 +139,15 @@ SECTIONS {
 			src/enemy/dog_link.o (.text);
 			src/code_081cc550.o (.text);
 			src/code_081eafbc.o (.text);
+			src/boss/dvalinn.o (.text);
+			src/code_08200ab4.o (.text);
 			src/enemy_dex.o (.text);
 			src/entity_c946.o (.text);
 			src/weapon_dex.o (.text);
 			src/album_menu.o (.text);
-			src/code_08211bac.o (.text);
+			src/entity_4ddf.o (.text);
+			src/intro.o (.text);
+			src/code_08213880.o (.text);
 			src/entity_0fc5.o (.text);
 			src/code_0821b21c.o (.text);
 			src/entity_0821b7fc.o (.text);
@@ -152,6 +155,7 @@ SECTIONS {
 			src/entity_83e5.o (.text);
 			src/entity_8aab.o (.text);
 			src/system.o (.text);
+			src/video.o (.text);
 			src/code_0822f204.o (.text);
 			src/sprite_0822f284.o (.text);
 			src/code_0822f650.o (.text);
@@ -235,6 +239,7 @@ SECTIONS {
 	ALIGN(4)
 	{
     src/data.o (.rodata);
+    src/system.o (.rodata);
     src/lib/m4a_tables.o (.rodata);
     src/sound.o (.rodata);
     src/lib/librfu_rfu.o (.rodata);
@@ -284,6 +289,7 @@ SECTIONS {
     src/vm_ctrl1.o (.rodata);
     src/data3c.o (.rodata);
     src/file.o (.rodata);
+    src/data/tilesets.o (.rodata);
     src/data/fonts.o (.rodata);
     src/data/sprites.o (.rodata);
     src/data/scripts.o (.rodata);

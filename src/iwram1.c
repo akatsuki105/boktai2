@@ -12,6 +12,7 @@
 struct EntityD9AE;
 struct Entity8AAB;
 struct LevelUpper;
+struct Entity080de11c;
 
 IWRAM_DATA u8 u8_03000000[32] = {};  // todo, rfu_MBOOT_CHILD_inheritanceLinkStatus で RFU_LINK_STATUS の本体がここにあるが、メインゲーム開始時に別の構造体で上書きされてるように見える (つまり union)
 
@@ -25,7 +26,11 @@ IWRAM_DATA u8 u8_030000d4[128] = {};
 
 IWRAM_DATA struct LevelUpper* gLevelUpper = NULL;  // 0x03000154
 
-IWRAM_DATA u8 u8_03000158[60] = {};
+IWRAM_DATA u8 u8_03000158[28] = {};
+
+IWRAM_DATA struct Entity080de11c* gEntity080de11c = NULL;  // 0x03000174
+
+IWRAM_DATA u8 u8_03000178[28] = {};
 
 IWRAM_DATA Elevator* gElevator = NULL;  // 0x03000194
 

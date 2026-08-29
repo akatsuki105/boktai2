@@ -1,4 +1,5 @@
 {
+  "deno.enable": true,
   "editor.tabSize": 2,
   "editor.detectIndentation": false,
 
@@ -8,7 +9,7 @@
     "editor.defaultFormatter": "charliermarsh.ruff"
   },
 
-  "[json][jsonc]": {
+  "[typescript][json][jsonc]": {
     "editor.defaultFormatter": "denoland.vscode-deno",
     "editor.formatOnSave": true
   },
@@ -39,6 +40,7 @@
   },
   "search.exclude": {
     "tools/**/.venv*": true,
+    "build/**/*.i": true,
     "expected/**": true
   },
   "files.associations": {

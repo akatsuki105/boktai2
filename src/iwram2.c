@@ -40,7 +40,7 @@ IWRAM_DATA Entity_03002c68* gEntity_03002c68 = NULL;  // 0x03002C68
 IWRAM_DATA u8 u8_03002c6c[68] = {};  // todo
 
 IWRAM_DATA IntrFunc gIntrTable[13] = {};  // 0x03002cb0
-IWRAM_DATA bool32 gVblankFlag = FALSE;    // 0x03002cb4
+IWRAM_DATA vu32 gVblankFlag = FALSE;      // 0x03002cb4
 IWRAM_DATA u8 u8_03002ce8[24] = {};       // todo
 
 IWRAM_DATA u32 IntrMain_Buffer[0x200] = {0};  // 0x03002D00, INTR_MAIN のRAMコード
@@ -67,7 +67,8 @@ IWRAM_DATA u8 u8_03003a30[1568] = {};  // todo
 IWRAM_DATA u16 gObjectPlttBuffer[256] = {};  // 0x03004050, CommitPalette で OBJ_PLTT にコピーされる
 IWRAM_DATA u16 gFastBgPlttBuffer[256] = {};  // 0x03004250
 
-IWRAM_DATA u8 u8_03004450[108] = {};     // todo
+IWRAM_DATA u8 u8_03004450[104] = {};     // todo
+IWRAM_DATA u16 u16_030044b8 = 0;         // 0x030044B8
 IWRAM_DATA u32 gEntityDisableFlags = 0;  // 0x030044BC, gEntityDisableFlags & gEntityManager[kind].disableFlags != 0 のときはそのkindのEntityは更新しない, gEntityDisableFlagsの各bitは (1 << kind) ではなさそう
 IWRAM_DATA u16 gEntityCount = 0;
 IWRAM_DATA u8 u8_030044c2[90] = {};                       // todo
