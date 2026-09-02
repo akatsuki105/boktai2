@@ -12190,7 +12190,7 @@ _08176408:
 _08176422:
 	adds r0, r5, #0
 	ldr r1, [sp, #0xc]
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	mov r0, sb
 	adds r1, r5, #0
 	movs r2, #0
@@ -20689,8 +20689,8 @@ _0817A4A6:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_0817a4ac
-FUN_0817a4ac: @ 0x0817A4AC
+	thumb_func_start EnemySandWorm_Destroy
+EnemySandWorm_Destroy: @ 0x0817A4AC
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	movs r0, #0xf9
@@ -20819,8 +20819,8 @@ _0817A596:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_0817a5b4
-FUN_0817a5b4: @ 0x0817A5B4
+	thumb_func_start EnemySandWorm_Init
+EnemySandWorm_Init: @ 0x0817A5B4
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -20858,7 +20858,7 @@ FUN_0817a5b4: @ 0x0817A5B4
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _0817A648 @ =0x0000D636
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -22495,7 +22495,7 @@ _0817B1C0:
 	orrs r0, r1
 	strh r0, [r4]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r6, #0xaa
 	lsls r6, r6, #2
 	adds r4, r7, r6
@@ -22969,7 +22969,7 @@ _0817B6FA:
 	ldr r0, [sp, #0xa4]
 	strh r2, [r0]
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_08175678
 	adds r0, r7, #0
@@ -23036,10 +23036,10 @@ _0817B6FA:
 	movs r4, #0xc4
 	lsls r4, r4, #3
 	adds r1, r7, r4
-	ldr r0, _0817B7F8 @ =FUN_0817a4ac
+	ldr r0, _0817B7F8 @ =EnemySandWorm_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0817B7FC
@@ -23052,7 +23052,7 @@ _0817B7E8: .4byte 0x0000057C
 _0817B7EC: .4byte FUN_080f09e0
 _0817B7F0: .4byte 0x0000061C
 _0817B7F4: .4byte FUN_0817a370
-_0817B7F8: .4byte FUN_0817a4ac
+_0817B7F8: .4byte EnemySandWorm_Destroy
 _0817B7FC:
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -23078,11 +23078,11 @@ EnemySandWorm_Create: @ 0x0817B810
 	adds r1, r5, #0
 	bl ClearMemory
 	adds r0, r4, #0
-	bl FUN_0817a5b4
+	bl EnemySandWorm_Init
 	cmp r0, #0
 	bge _0817B83C
 	adds r0, r4, #0
-	bl FUN_0817a4ac
+	bl EnemySandWorm_Destroy
 	adds r0, r4, #0
 	bl Free
 _0817B83C:

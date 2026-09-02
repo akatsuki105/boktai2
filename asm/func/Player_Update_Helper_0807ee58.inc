@@ -233,7 +233,7 @@ _0807F01C:
 	ldr r0, _0807F0AC @ =0x0000FFFF
 	strh r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08064d04
+	bl Player_CheckMagicEnchant
 	adds r0, #1
 	ldr r2, _0807F0B0 @ =0x00000951
 	adds r1, r5, r2

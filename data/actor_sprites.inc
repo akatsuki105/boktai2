@@ -1271,173 +1271,173 @@ ActorSpriteFile0: @ 0x08A2291C
 			.byte 32, 64 @ w, h (pixel size)
 			.byte 17, 51 @ x, y (pixel offset)
 			.4byte 2156 * 12 @ .metasprite[2156]
-	ActorSpriteFile0_Tiles:
-    .incbin "data/actor_sprites/B306.4bpp"                 @ 0x08A23510, ActorID: 0xB306, PlttID: 2
-    .incbin "data/actor_sprites/F680.4bpp"                 @ 0x08A24910, ActorID: 0xF680, PlttID: 6
-    .incbin "data/actor_sprites/A5B3.4bpp"                 @ 0x08A25190, ActorID: 0xA5B3, PlttID: 0
-    .incbin "data/actor_sprites/A5B4.4bpp"                 @ 0x08A25210, ActorID: 0xA5B4, PlttID: 0
-    .incbin "data/actor_sprites/5AFD.4bpp"                 @ 0x08A25A10, ActorID: 0x5AFD, PlttID: 7
-    .incbin "data/actor_sprites/5AFE.4bpp"                 @ 0x08A25E90, ActorID: 0x5AFE, PlttID: 7
-    .incbin "data/actor_sprites/48DE.4bpp"                 @ 0x08A26B10, ActorID: 0x48DE, PlttID: 23
-    .incbin "data/actor_sprites/D4EE.4bpp"                 @ 0x08A29710, ActorID: 0xD4EE, PlttID: 23
-    .incbin "data/actor_sprites/924B.4bpp"                 @ 0x08A2AE30, ActorID: 0x924B, PlttID: 23
-    .incbin "data/actor_sprites/2C12.4bpp"                 @ 0x08A2C2F0, ActorID: 0x2C12, PlttID: 28
-    .incbin "data/actor_sprites/8F5D.4bpp"                 @ 0x08A2CE70, ActorID: 0x8F5D, PlttID: 29
-    .incbin "data/actor_sprites/7AEE.4bpp"                 @ 0x08A2DE70, ActorID: 0x7AEE, PlttID: 42
-    .incbin "data/actor_sprites/7AEF.4bpp"                 @ 0x08A2EB70, ActorID: 0x7AEF, PlttID: 42
-    .incbin "data/actor_sprites/7AF0.4bpp"                 @ 0x08A2F430, ActorID: 0x7AF0, PlttID: 42
-    .incbin "data/actor_sprites/7AF1.4bpp"                 @ 0x08A2FCF0, ActorID: 0x7AF1, PlttID: 42
-    .incbin "data/actor_sprites/7AF2.4bpp"                 @ 0x08A309F0, ActorID: 0x7AF2, PlttID: 42
-    .incbin "data/actor_sprites/A20C.4bpp"                 @ 0x08A316F0, ActorID: 0xA20C, PlttID: 44
-    .incbin "data/actor_sprites/9D2D.4bpp"                 @ 0x08A31770, ActorID: 0x9D2D, PlttID: 51
-    .incbin "data/actor_sprites/048A.4bpp"                 @ 0x08A31BF0, ActorID: 0x048A, PlttID: 52
-    .incbin "data/actor_sprites/E1D2.4bpp"                 @ 0x08A320F0, ActorID: 0xE1D2, PlttID: 53
-    .incbin "data/actor_sprites/B0E2.4bpp"                 @ 0x08A32570, ActorID: 0xB0E2, PlttID: 54
-    .incbin "data/actor_sprites/C060.4bpp"                 @ 0x08A32770, ActorID: 0xC060, PlttID: 56
-    .incbin "data/actor_sprites/DD5C.4bpp"                 @ 0x08A32970, ActorID: 0xDD5C, PlttID: 60
-    .incbin "data/actor_sprites/4AEE.4bpp"                 @ 0x08A33170, ActorID: 0x4AEE, PlttID: 61
-    .incbin "data/actor_sprites/A0D5.4bpp"                 @ 0x08A33970, ActorID: 0xA0D5, PlttID: 62
-    .incbin "data/actor_sprites/2AF0.4bpp"                 @ 0x08A354B0, ActorID: 0x2AF0, PlttID: 64
-    .incbin "data/actor_sprites/A680.4bpp"                 @ 0x08A36CB0, ActorID: 0xA680, PlttID: 66
-    .incbin "data/actor_sprites/A6A0.4bpp"                 @ 0x08A39930, ActorID: 0xA6A0, PlttID: 71
-    .incbin "data/actor_sprites/2D41.4bpp"                 @ 0x08A39CD0, ActorID: 0x2D41, PlttID: 72
-    .incbin "data/actor_sprites/A850.4bpp"                 @ 0x08A3BFD0, ActorID: 0xA850, PlttID: 73
-    .incbin "data/actor_sprites/9D43.4bpp"                 @ 0x08A3C1D0, ActorID: 0x9D43, PlttID: 79
-    .incbin "data/actor_sprites/008A.4bpp"                 @ 0x08A3C7D0, ActorID: 0x008A, PlttID: 80
-    .incbin "data/actor_sprites/76DB.4bpp"                 @ 0x08A3D3D0, ActorID: 0x76DB, PlttID: 83
-    .incbin "data/actor_sprites/2712.4bpp"                 @ 0x08A3E010, ActorID: 0x2712, PlttID: 86
-    .incbin "data/actor_sprites/5DC0.4bpp"                 @ 0x08A3E410, ActorID: 0x5DC0, PlttID: 87
-    .incbin "data/actor_sprites/6AF6.4bpp"                 @ 0x08A3FC10, ActorID: 0x6AF6, PlttID: 89
-    .incbin "data/actor_sprites/4AAE.4bpp"                 @ 0x08A403F0, ActorID: 0x4AAE, PlttID: 91
-    .incbin "data/actor_sprites/1C1B.4bpp"                 @ 0x08A405F0, ActorID: 0x1C1B, PlttID: 0
-    .incbin "data/actor_sprites/9FF5.4bpp"                 @ 0x08A412B0, ActorID: 0x9FF5, PlttID: 0
-    .incbin "data/actor_sprites/A606.4bpp"                 @ 0x08A41410, ActorID: 0xA606, PlttID: 83
-    .incbin "data/actor_sprites/D28E.4bpp"                 @ 0x08A43BD0, ActorID: 0xD28E, PlttID: 92
-    .incbin "data/actor_sprites/D166.4bpp"                 @ 0x08A450D0, ActorID: 0xD166, PlttID: 95
-    .incbin "data/actor_sprites/0BA8.4bpp"                 @ 0x08A45810, ActorID: 0x0BA8, PlttID: 97
-    .incbin "data/actor_sprites/0BA9.4bpp"                 @ 0x08A48A10, ActorID: 0x0BA9, PlttID: 97
-    .incbin "data/actor_sprites/363C.4bpp"                 @ 0x08A49210, ActorID: 0x363C, PlttID: 0
-    .incbin "data/actor_sprites/363D.4bpp"                 @ 0x08A49430, ActorID: 0x363D, PlttID: 0
-    .incbin "data/actor_sprites/1FBD.4bpp"                 @ 0x08A49B30, ActorID: 0x1FBD, PlttID: 112
-    .incbin "data/actor_sprites/6AF7.4bpp"                 @ 0x08A49E30, ActorID: 0x6AF7, PlttID: 89
-    .incbin "data/actor_sprites/1B59.4bpp"                 @ 0x08A4A0B0, ActorID: 0x1B59, PlttID: 115
-    .incbin "data/actor_sprites/7E82.4bpp"                 @ 0x08A4ACB0, ActorID: 0x7E82, PlttID: 116
-    .incbin "data/actor_sprites/BCA8.4bpp"                 @ 0x08A4B0B0, ActorID: 0xBCA8, PlttID: 120
-    .incbin "data/actor_sprites/4384.4bpp"                 @ 0x08A4B970, ActorID: 0x4384, PlttID: 125
-    .incbin "data/actor_sprites/4385.4bpp"                 @ 0x08A4C7D0, ActorID: 0x4385, PlttID: 130
-    .incbin "data/actor_sprites/05A2.4bpp"                 @ 0x08A4C890, ActorID: 0x05A2, PlttID: 139
-    .incbin "data/actor_sprites/34C0.4bpp"                 @ 0x08A4CD90, ActorID: 0x34C0, PlttID: 142
-    .incbin "data/actor_sprites/spider.4bpp"               @ 0x08A4D090, ActorID: 0x528F, PlttID: 143
-    .incbin "data/actor_sprites/7AD2.4bpp"                 @ 0x08A4EF50, ActorID: 0x7AD2, PlttID: 146
-    .incbin "data/actor_sprites/B96C.4bpp"                 @ 0x08A4FB50, ActorID: 0xB96C, PlttID: 147
-    .incbin "data/actor_sprites/7031.4bpp"                 @ 0x08A51590, ActorID: 0x7031, PlttID: 147
-    .incbin "data/actor_sprites/7032.4bpp"                 @ 0x08A51610, ActorID: 0x7032, PlttID: 147
-    .incbin "data/actor_sprites/E857.4bpp"                 @ 0x08A51670, ActorID: 0xE857, PlttID: 83
-    .incbin "data/actor_sprites/3641.4bpp"                 @ 0x08A54670, ActorID: 0x3641, PlttID: 44
-    .incbin "data/actor_sprites/F070.4bpp"                 @ 0x08A54A70, ActorID: 0xF070, PlttID: 151
-    .incbin "data/actor_sprites/C3C3.4bpp"                 @ 0x08A557B0, ActorID: 0xC3C3, PlttID: 95
-    .incbin "data/actor_sprites/1C84.4bpp"                 @ 0x08A56A30, ActorID: 0x1C84, PlttID: 153
-    .incbin "data/actor_sprites/E505.4bpp"                 @ 0x08A57230, ActorID: 0xE505, PlttID: 83
-    .incbin "data/actor_sprites/FDC5.4bpp"                 @ 0x08A5A9B0, ActorID: 0xFDC5, PlttID: 165
-    .incbin "data/actor_sprites/96F7.4bpp"                 @ 0x08A5C170, ActorID: 0x96F7, PlttID: 166
-    .incbin "data/actor_sprites/A5BD.4bpp"                 @ 0x08A5C270, ActorID: 0xA5BD, PlttID: 0
-    .incbin "data/actor_sprites/7AD3.4bpp"                 @ 0x08A5C370, ActorID: 0x7AD3, PlttID: 167
-    .incbin "data/actor_sprites/7AD4.4bpp"                 @ 0x08A5D070, ActorID: 0x7AD4, PlttID: 167
-    .incbin "data/actor_sprites/7AD5.4bpp"                 @ 0x08A5D930, ActorID: 0x7AD5, PlttID: 167
-    .incbin "data/actor_sprites/7AD6.4bpp"                 @ 0x08A5E1F0, ActorID: 0x7AD6, PlttID: 167
-    .incbin "data/actor_sprites/7AED.4bpp"                 @ 0x08A5EEF0, ActorID: 0x7AED, PlttID: 167
-    .incbin "data/actor_sprites/7AF3.4bpp"                 @ 0x08A5FBF0, ActorID: 0x7AF3, PlttID: 175
-    .incbin "data/actor_sprites/7AF4.4bpp"                 @ 0x08A608F0, ActorID: 0x7AF4, PlttID: 175
-    .incbin "data/actor_sprites/7AF5.4bpp"                 @ 0x08A611B0, ActorID: 0x7AF5, PlttID: 175
-    .incbin "data/actor_sprites/7AF6.4bpp"                 @ 0x08A61A70, ActorID: 0x7AF6, PlttID: 175
-    .incbin "data/actor_sprites/7B0D.4bpp"                 @ 0x08A62770, ActorID: 0x7B0D, PlttID: 175
-    .incbin "data/actor_sprites/9506.4bpp"                 @ 0x08A63470, ActorID: 0x9506, PlttID: 176
-    .incbin "data/actor_sprites/22E7.4bpp"                 @ 0x08A64ED0, ActorID: 0x22E7, PlttID: 83
-    .incbin "data/actor_sprites/41B1.4bpp"                 @ 0x08A69550, ActorID: 0x41B1, PlttID: 179
-    .incbin "data/actor_sprites/DC8E.4bpp"                 @ 0x08A69DB0, ActorID: 0xDC8E, PlttID: 181
-    .incbin "data/actor_sprites/CDAB.4bpp"                 @ 0x08A6A5B0, ActorID: 0xCDAB, PlttID: 187
-    .incbin "data/actor_sprites/D962.4bpp"                 @ 0x08A6A8B0, ActorID: 0xD962, PlttID: 188
-    .incbin "data/actor_sprites/B044.4bpp"                 @ 0x08A6C8B0, ActorID: 0xB044, PlttID: 42
-    .incbin "data/actor_sprites/3668.4bpp"                 @ 0x08A6CBB0, ActorID: 0x3668, PlttID: 195
-    .incbin "data/actor_sprites/18A8.4bpp"                 @ 0x08A6D7D0, ActorID: 0x18A8, PlttID: 207
-    .incbin "data/actor_sprites/18A9.4bpp"                 @ 0x08A6D9D0, ActorID: 0x18A9, PlttID: 207
-    .incbin "data/actor_sprites/2769.4bpp"                 @ 0x08A6DC90, ActorID: 0x2769, PlttID: 208
-    .incbin "data/actor_sprites/5B78.4bpp"                 @ 0x08A6DF30, ActorID: 0x5B78, PlttID: 213
-    .incbin "data/actor_sprites/16F5.4bpp"                 @ 0x08A6E3B0, ActorID: 0x16F5, PlttID: 97
-    .incbin "data/actor_sprites/F422.4bpp"                 @ 0x08A6F7B0, ActorID: 0xF422, PlttID: 216
-    .incbin "data/actor_sprites/848F.4bpp"                 @ 0x08A72470, ActorID: 0x848F, PlttID: 216
-    .incbin "data/actor_sprites/8490.4bpp"                 @ 0x08A72AF0, ActorID: 0x8490, PlttID: 216
-    .incbin "data/actor_sprites/D638.4bpp"                 @ 0x08A743B0, ActorID: 0xD638, PlttID: 220
-    .incbin "data/actor_sprites/EF69.4bpp"                 @ 0x08A7D5F0, ActorID: 0xEF69, PlttID: 220
-    .incbin "data/actor_sprites/5BA7.4bpp"                 @ 0x08A7D770, ActorID: 0x5BA7, PlttID: 236
-    .incbin "data/actor_sprites/5BB7.4bpp"                 @ 0x08A7DBF0, ActorID: 0x5BB7, PlttID: 239
-    .incbin "data/actor_sprites/E74B.4bpp"                 @ 0x08A7DF70, ActorID: 0xE74B, PlttID: 0
-    .incbin "data/actor_sprites/9A1F.4bpp"                 @ 0x08A7EB70, ActorID: 0x9A1F, PlttID: 242
-    .incbin "data/actor_sprites/C459.4bpp"                 @ 0x08A7F0F0, ActorID: 0xC459, PlttID: 243
-    .incbin "data/actor_sprites/DC07.4bpp"                 @ 0x08A7F4F0, ActorID: 0xDC07, PlttID: 244
-    .incbin "data/actor_sprites/D45E.4bpp"                 @ 0x08A7F970, ActorID: 0xD45E, PlttID: 247
-    .incbin "data/actor_sprites/D85E.4bpp"                 @ 0x08A84930, ActorID: 0xD85E, PlttID: 247
-    .incbin "data/actor_sprites/2817.4bpp"                 @ 0x08A86970, ActorID: 0x2817, PlttID: 263
-    .incbin "data/actor_sprites/EFD8.4bpp"                 @ 0x08A869B0, ActorID: 0xEFD8, PlttID: 268
-    .incbin "data/actor_sprites/8639.4bpp"                 @ 0x08A87A30, ActorID: 0x8639, PlttID: 275
-    .incbin "data/actor_sprites/otnk_0.4bpp"               @ 0x08A89A30, ActorID: 0x97D3, PlttID: 279
-    .incbin "data/actor_sprites/otnk_1.4bpp"               @ 0x08A8B4F0, ActorID: 0x97D4, PlttID: 279
-    .incbin "data/actor_sprites/C42D.4bpp"                 @ 0x08A8C330, ActorID: 0xC42D, PlttID: 283
-    .incbin "data/actor_sprites/0334.4bpp"                 @ 0x08A8C530, ActorID: 0x0334, PlttID: 283
-    .incbin "data/actor_sprites/9DFF.4bpp"                 @ 0x08A8C550, ActorID: 0x9DFF, PlttID: 83
-    .incbin "data/actor_sprites/A152.4bpp"                 @ 0x08A8D150, ActorID: 0xA152, PlttID: 284
-    .incbin "data/actor_sprites/17C7.4bpp"                 @ 0x08A8D5D0, ActorID: 0x17C7, PlttID: 287
-    .incbin "data/actor_sprites/210E.4bpp"                 @ 0x08A8DBD0, ActorID: 0x210E, PlttID: 44
-    .incbin "data/actor_sprites/210F.4bpp"                 @ 0x08A8DDD0, ActorID: 0x210F, PlttID: 289
-    .incbin "data/actor_sprites/1FE0.4bpp"                 @ 0x08A8E490, ActorID: 0x1FE0, PlttID: 83
-    .incbin "data/actor_sprites/2C1A.4bpp"                 @ 0x08A92690, ActorID: 0x2C1A, PlttID: 300
-    .incbin "data/actor_sprites/5291.4bpp"                 @ 0x08A92990, ActorID: 0x5291, PlttID: 301
-    .incbin "data/actor_sprites/5292.4bpp"                 @ 0x08A93190, ActorID: 0x5292, PlttID: 301
-    .incbin "data/actor_sprites/9247.4bpp"                 @ 0x08A93550, ActorID: 0x9247, PlttID: 306
-    .incbin "data/actor_sprites/D4EA.4bpp"                 @ 0x08A94C10, ActorID: 0xD4EA, PlttID: 306
-    .incbin "data/actor_sprites/47DE.4bpp"                 @ 0x08A95C10, ActorID: 0x47DE, PlttID: 306
-    .incbin "data/actor_sprites/C046.4bpp"                 @ 0x08A981D0, ActorID: 0xC046, PlttID: 311
-    .incbin "data/actor_sprites/2097.4bpp"                 @ 0x08A993D0, ActorID: 0x2097, PlttID: 312
-    .incbin "data/actor_sprites/17C8.4bpp"                 @ 0x08A9DBD0, ActorID: 0x17C8, PlttID: 287
-    .incbin "data/actor_sprites/BB68.4bpp"                 @ 0x08A9E1D0, ActorID: 0xBB68, PlttID: 313
-    .incbin "data/actor_sprites/EED8.4bpp"                 @ 0x08A9F050, ActorID: 0xEED8, PlttID: 315
-    .incbin "data/actor_sprites/505C.4bpp"                 @ 0x08A9FA50, ActorID: 0x505C, PlttID: 316
-    .incbin "data/actor_sprites/A47C.4bpp"                 @ 0x08A9FDD0, ActorID: 0xA47C, PlttID: 317
-    .incbin "data/actor_sprites/DDE7.4bpp"                 @ 0x08AA0090, ActorID: 0xDDE7, PlttID: 326
-    .incbin "data/actor_sprites/9E08.4bpp"                 @ 0x08AA0510, ActorID: 0x9E08, PlttID: 329
-    .incbin "data/actor_sprites/A8E7.4bpp"                 @ 0x08AA0990, ActorID: 0xA8E7, PlttID: 0
-    .incbin "data/actor_sprites/5A6E.4bpp"                 @ 0x08AA0AF0, ActorID: 0x5A6E, PlttID: 332
-    .incbin "data/actor_sprites/5A6F.4bpp"                 @ 0x08AA25B0, ActorID: 0x5A6F, PlttID: 332
-    .incbin "data/actor_sprites/44EE.4bpp"                 @ 0x08AA32D0, ActorID: 0x44EE, PlttID: 337
-    .incbin "data/actor_sprites/5D7C.4bpp"                 @ 0x08AA38D0, ActorID: 0x5D7C, PlttID: 338
-    .incbin "data/actor_sprites/B837.4bpp"                 @ 0x08AA40D0, ActorID: 0xB837, PlttID: 339
-    .incbin "data/actor_sprites/E0C9.4bpp"                 @ 0x08AA4C10, ActorID: 0xE0C9, PlttID: 340
-    .incbin "data/actor_sprites/8203.4bpp"                 @ 0x08AA5210, ActorID: 0x8203, PlttID: 341
-    .incbin "data/actor_sprites/8204.4bpp"                 @ 0x08AA6B10, ActorID: 0x8204, PlttID: 341
-    .incbin "data/actor_sprites/8205.4bpp"                 @ 0x08AA6DD0, ActorID: 0x8205, PlttID: 350
-    .incbin "data/actor_sprites/8202.4bpp"                 @ 0x08AA6FD0, ActorID: 0x8202, PlttID: 350
+  ActorSpriteFile0_Tiles:
+    .incbin "data/actor_sprites/emblem_block_0.4bpp"       @ 0x08A23510, ActorID: 0xB306, PlttID: 2, 紋章ブロック(炎氷地風)
+    .incbin "data/actor_sprites/komainu.4bpp"              @ 0x08A24910, ActorID: 0xF680, PlttID: 6, 大聖堂の狛犬
+    .incbin "data/actor_sprites/A5B3.4bpp"                 @ 0x08A25190, ActorID: 0xA5B3, PlttID: 0, 大聖堂の水晶?
+    .incbin "data/actor_sprites/ghoul_liquid.4bpp"         @ 0x08A25210, ActorID: 0xA5B4, PlttID: 1, グール系が出すホルルン液
+    .incbin "data/actor_sprites/5AFD.4bpp"                 @ 0x08A25A10, ActorID: 0x5AFD, PlttID: 7, シェードマンのスピーカー?
+    .incbin "data/actor_sprites/5AFE.4bpp"                 @ 0x08A25E90, ActorID: 0x5AFE, PlttID: 7, 輪っかのエフェクト(シェードマン関連?)
+    .incbin "data/actor_sprites/mummy_0.4bpp"              @ 0x08A26B10, ActorID: 0x48DE, PlttID: 23, マミー
+    .incbin "data/actor_sprites/mummy_1.4bpp"              @ 0x08A29710, ActorID: 0xD4EE, PlttID: 23, マミー
+    .incbin "data/actor_sprites/mummy_2.4bpp"              @ 0x08A2AE30, ActorID: 0x924B, PlttID: 23, マミー
+    .incbin "data/actor_sprites/grating.4bpp"              @ 0x08A2C2F0, ActorID: 0x2C12, PlttID: 28, 鳴り床(上を歩くと音が鳴る床)
+    .incbin "data/actor_sprites/8F5D.4bpp"                 @ 0x08A2CE70, ActorID: 0x8F5D, PlttID: 29, 斬撃っぽいエフェクトと水の入ったような入れ物
+    .incbin "data/actor_sprites/7AEE.4bpp"                 @ 0x08A2DE70, ActorID: 0x7AEE, PlttID: 42, 扉
+    .incbin "data/actor_sprites/7AEF.4bpp"                 @ 0x08A2EB70, ActorID: 0x7AEF, PlttID: 42, 扉
+    .incbin "data/actor_sprites/7AF0.4bpp"                 @ 0x08A2F430, ActorID: 0x7AF0, PlttID: 42, 扉
+    .incbin "data/actor_sprites/7AF1.4bpp"                 @ 0x08A2FCF0, ActorID: 0x7AF1, PlttID: 42, 扉
+    .incbin "data/actor_sprites/7AF2.4bpp"                 @ 0x08A309F0, ActorID: 0x7AF2, PlttID: 42, 扉
+    .incbin "data/actor_sprites/A20C.4bpp"                 @ 0x08A316F0, ActorID: 0xA20C, PlttID: 44, キラキラエフェクト?(太陽虫ではない)
+    .incbin "data/actor_sprites/9D2D.4bpp"                 @ 0x08A31770, ActorID: 0x9D2D, PlttID: 51, 壁?
+    .incbin "data/actor_sprites/048A.4bpp"                 @ 0x08A31BF0, ActorID: 0x048A, PlttID: 52, 柱?
+    .incbin "data/actor_sprites/E1D2.4bpp"                 @ 0x08A320F0, ActorID: 0xE1D2, PlttID: 53, 黒塗り
+    .incbin "data/actor_sprites/light_bulb.4bpp"           @ 0x08A32570, ActorID: 0xB0E2, PlttID: 54, 電球
+    .incbin "data/actor_sprites/C060.4bpp"                 @ 0x08A32770, ActorID: 0xC060, PlttID: 56, 謎の球
+    .incbin "data/actor_sprites/DD5C.4bpp"                 @ 0x08A32970, ActorID: 0xDD5C, PlttID: 60, 壁?
+    .incbin "data/actor_sprites/4AEE.4bpp"                 @ 0x08A33170, ActorID: 0x4AEE, PlttID: 61, 壁? 
+    .incbin "data/actor_sprites/A0D5.4bpp"                 @ 0x08A33970, ActorID: 0xA0D5, PlttID: 62, パイルドライバーのエクトプラズム?
+    .incbin "data/actor_sprites/chandelier.4bpp"           @ 0x08A354B0, ActorID: 0x2AF0, PlttID: 64, シャンデリア(スプライトセットの方との使い分けは不明)
+    .incbin "data/actor_sprites/A680.4bpp"                 @ 0x08A36CB0, ActorID: 0xA680, PlttID: 66, 水たまり, 鳴り床, センサー床
+    .incbin "data/actor_sprites/bok1_garden_lever_num.4bpp" @ 0x08A39930, ActorID: 0xA6A0, PlttID: 71, ボクタイ1の血錆の館の中庭の数字が答えになる4つのレバーの上に書いてある数字(不使用?)
+    .incbin "data/actor_sprites/2D41.4bpp"                 @ 0x08A39CD0, ActorID: 0x2D41, PlttID: 72, エフェクト群
+    .incbin "data/actor_sprites/hint_panel.4bpp"           @ 0x08A3BFD0, ActorID: 0xA850, PlttID: 76, ヒントパネル
+    .incbin "data/actor_sprites/9D43.4bpp"                 @ 0x08A3C1D0, ActorID: 0x9D43, PlttID: 79, なんかのブロック
+    .incbin "data/actor_sprites/008A.4bpp"                 @ 0x08A3C7D0, ActorID: 0x008A, PlttID: 80, 瓦礫?
+    .incbin "data/actor_sprites/76DB.4bpp"                 @ 0x08A3D3D0, ActorID: 0x76DB, PlttID: 83, 黒塗り
+    .incbin "data/actor_sprites/coin.4bpp"                 @ 0x08A3E010, ActorID: 0x2712, PlttID: 86, コイン
+    .incbin "data/actor_sprites/5DC0.4bpp"                 @ 0x08A3E410, ActorID: 0x5DC0, PlttID: 87, なんかの物体
+    .incbin "data/actor_sprites/shop_armors.4bpp"          @ 0x08A3FC10, ActorID: 0x6AF6, PlttID: 89, キッドの店の内装
+    .incbin "data/actor_sprites/4AAE.4bpp"                 @ 0x08A403F0, ActorID: 0x4AAE, PlttID: 91, おっさん
+    .incbin "data/actor_sprites/1C1B.4bpp"                 @ 0x08A405F0, ActorID: 0x1C1B, PlttID: 0, エフェクト群(煙、蜘蛛の巣,???)
+    .incbin "data/actor_sprites/9FF5.4bpp"                 @ 0x08A412B0, ActorID: 0x9FF5, PlttID: 0, エフェクト群
+    .incbin "data/actor_sprites/A606.4bpp"                 @ 0x08A41410, ActorID: 0xA606, PlttID: 83, 黒塗り
+    .incbin "data/actor_sprites/curoro.4bpp"               @ 0x08A43BD0, ActorID: 0xD28E, PlttID: 92, クロロホルルン
+    .incbin "data/actor_sprites/lilypad.4bpp"              @ 0x08A450D0, ActorID: 0xD166, PlttID: 95, ハスの葉
+    .incbin "data/actor_sprites/magic_circle.4bpp"         @ 0x08A45810, ActorID: 0x0BA8, PlttID: 97, 魔方陣
+    .incbin "data/actor_sprites/0BA9.4bpp"                 @ 0x08A48A10, ActorID: 0x0BA9, PlttID: 97, 魔方陣(大)
+    .incbin "data/actor_sprites/363C.4bpp"                 @ 0x08A49210, ActorID: 0x363C, PlttID: 0, "!"
+    .incbin "data/actor_sprites/363D.4bpp"                 @ 0x08A49430, ActorID: 0x363D, PlttID: 0, emotion bubbles
+    .incbin "data/actor_sprites/1FBD.4bpp"                 @ 0x08A49B30, ActorID: 0x1FBD, PlttID: 112, なんかの壁
+    .incbin "data/actor_sprites/shop_samurai_armor.4bpp"   @ 0x08A49E30, ActorID: 0x6AF7, PlttID: 89, キッドの店の内装(武者鎧)
+    .incbin "data/actor_sprites/1B59.4bpp"                 @ 0x08A4A0B0, ActorID: 0x1B59, PlttID: 115, 倉庫の扉?
+    .incbin "data/actor_sprites/sunflower.4bpp"            @ 0x08A4ACB0, ActorID: 0x7E82, PlttID: 116, ひまわり
+    .incbin "data/actor_sprites/BCA8.4bpp"                 @ 0x08A4B0B0, ActorID: 0xBCA8, PlttID: 120, 属性キューブ
+    .incbin "data/actor_sprites/4384.4bpp"                 @ 0x08A4B970, ActorID: 0x4384, PlttID: 125, エフェクト(地下水路の滝とかの水飛沫?)
+    .incbin "data/actor_sprites/4385.4bpp"                 @ 0x08A4C7D0, ActorID: 0x4385, PlttID: 130, エフェクト?
+    .incbin "data/actor_sprites/tomb.4bpp"                 @ 0x08A4C890, ActorID: 0x05A2, PlttID: 139, 大聖堂の(偽物の)墓
+    .incbin "data/actor_sprites/34C0.4bpp"                 @ 0x08A4CD90, ActorID: 0x34C0, PlttID: 142, 大聖堂の水晶をはめる穴あたりの壁?
+    .incbin "data/actor_sprites/spider.4bpp"               @ 0x08A4D090, ActorID: 0x528F, PlttID: 143, スパイダー
+    .incbin "data/actor_sprites/7AD2.4bpp"                 @ 0x08A4EF50, ActorID: 0x7AD2, PlttID: 146, 鉄格子の扉
+    .incbin "data/actor_sprites/slime.4bpp"                @ 0x08A4FB50, ActorID: 0xB96C, PlttID: 147, スライム
+    .incbin "data/actor_sprites/slime_debris_l.4bpp"       @ 0x08A51590, ActorID: 0x7031, PlttID: 147, スライムの破片(大)
+    .incbin "data/actor_sprites/slime_debris_s.4bpp"       @ 0x08A51610, ActorID: 0x7032, PlttID: 147, スライムの破片(小)
+    .incbin "data/actor_sprites/E857.4bpp"                 @ 0x08A51670, ActorID: 0xE857, PlttID: 83, 黒塗り
+    .incbin "data/actor_sprites/3641.4bpp"                 @ 0x08A54670, ActorID: 0x3641, PlttID: 44, 丸い光のエフェクト
+    .incbin "data/actor_sprites/wedge.4bpp"                @ 0x08A54A70, ActorID: 0xF070, PlttID: 151, 封印の楔
+    .incbin "data/actor_sprites/healing_plant.4bpp"        @ 0x08A557B0, ActorID: 0xC3C3, PlttID: 95, 太陽の根(ヒーリングで成長させられるもじゃもじゃ)
+    .incbin "data/actor_sprites/1C84.4bpp"                 @ 0x08A56A30, ActorID: 0x1C84, PlttID: 153, ベッド
+    .incbin "data/actor_sprites/E505.4bpp"                 @ 0x08A57230, ActorID: 0xE505, PlttID: 83, 黒塗り
+    .incbin "data/actor_sprites/FDC5.4bpp"                 @ 0x08A5A9B0, ActorID: 0xFDC5, PlttID: 165, なんか浮いている岩
+    .incbin "data/actor_sprites/signboard.4bpp"            @ 0x08A5C170, ActorID: 0x96F7, PlttID: 166, サンミゲルのまだ利用できない施設の入り口にある看板
+    .incbin "data/actor_sprites/A5BD.4bpp"                 @ 0x08A5C270, ActorID: 0xA5BD, PlttID: 0, "COMBO:", "SCORE:" の文字
+    .incbin "data/actor_sprites/7AD3.4bpp"                 @ 0x08A5C370, ActorID: 0x7AD3, PlttID: 167, 鍵のかかった青い扉
+    .incbin "data/actor_sprites/7AD4.4bpp"                 @ 0x08A5D070, ActorID: 0x7AD4, PlttID: 167, 鍵のかかった青い扉
+    .incbin "data/actor_sprites/7AD5.4bpp"                 @ 0x08A5D930, ActorID: 0x7AD5, PlttID: 167, 鍵のかかった青い扉
+    .incbin "data/actor_sprites/7AD6.4bpp"                 @ 0x08A5E1F0, ActorID: 0x7AD6, PlttID: 167, 鍵のかかった青い扉
+    .incbin "data/actor_sprites/7AED.4bpp"                 @ 0x08A5EEF0, ActorID: 0x7AED, PlttID: 167, 鍵のかかった青い扉
+    .incbin "data/actor_sprites/7AF3.4bpp"                 @ 0x08A5FBF0, ActorID: 0x7AF3, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
+    .incbin "data/actor_sprites/7AF4.4bpp"                 @ 0x08A608F0, ActorID: 0x7AF4, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
+    .incbin "data/actor_sprites/7AF5.4bpp"                 @ 0x08A611B0, ActorID: 0x7AF5, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
+    .incbin "data/actor_sprites/7AF6.4bpp"                 @ 0x08A61A70, ActorID: 0x7AF6, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
+    .incbin "data/actor_sprites/7B0D.4bpp"                 @ 0x08A62770, ActorID: 0x7B0D, PlttID: 175, 鉄の扉(どこで使ってたか忘れた)
+    .incbin "data/actor_sprites/bee.4bpp"                  @ 0x08A63470, ActorID: 0x9506, PlttID: 176, ビー
+    .incbin "data/actor_sprites/22E7.4bpp"                 @ 0x08A64ED0, ActorID: 0x22E7, PlttID: 83, 黒塗り
+    .incbin "data/actor_sprites/fruit_shop_interior.4bpp"  @ 0x08A69550, ActorID: 0x41B1, PlttID: 179, 果物屋の内装
+    .incbin "data/actor_sprites/DC8E.4bpp"                 @ 0x08A69DB0, ActorID: 0xDC8E, PlttID: 181, 木(太陽樹?)
+    .incbin "data/actor_sprites/CDAB.4bpp"                 @ 0x08A6A5B0, ActorID: 0xCDAB, PlttID: 187, チェンジ・マウスで渡れる木片
+    .incbin "data/actor_sprites/dungeon_door.4bpp"         @ 0x08A6A8B0, ActorID: 0xD962, PlttID: 188, タレット封印の扉(地下水路の入り口), 螺旋の塔の入り口, etc
+    .incbin "data/actor_sprites/B044.4bpp"                 @ 0x08A6C8B0, ActorID: 0xB044, PlttID: 42, 絨毯
+    .incbin "data/actor_sprites/3668.4bpp"                 @ 0x08A6CBB0, ActorID: 0x3668, PlttID: 195, なんかのエフェクト群
+    .incbin "data/actor_sprites/ojama_bat.4bpp"            @ 0x08A6D7D0, ActorID: 0x18A8, PlttID: 207, オジャマバット
+    .incbin "data/actor_sprites/ojama_bat_counter.4bpp"    @ 0x08A6D9D0, ActorID: 0x18A9, PlttID: 207, オジャマバットのカウンター?
+    .incbin "data/actor_sprites/contact_switch.4bpp"       @ 0x08A6DC90, ActorID: 0x2769, PlttID: 208, 接触スイッチ(+電球?)
+    .incbin "data/actor_sprites/5B78.4bpp"                 @ 0x08A6DF30, ActorID: 0x5B78, PlttID: 213, 天窓の光
+    .incbin "data/actor_sprites/16F5.4bpp"                 @ 0x08A6E3B0, ActorID: 0x16F5, PlttID: 97, 紋章ブロック
+    .incbin "data/actor_sprites/F422.4bpp"                 @ 0x08A6F7B0, ActorID: 0xF422, PlttID: 216, 砂のエフェクト?
+    .incbin "data/actor_sprites/848F.4bpp"                 @ 0x08A72470, ActorID: 0x848F, PlttID: 216, なんかのトゲ飛ばし？
+    .incbin "data/actor_sprites/8490.4bpp"                 @ 0x08A72AF0, ActorID: 0x8490, PlttID: 216, 砂に潜るエフェクト?
+    .incbin "data/actor_sprites/D638.4bpp"                 @ 0x08A743B0, ActorID: 0xD638, PlttID: 220, 暗黒の根
+    .incbin "data/actor_sprites/EF69.4bpp"                 @ 0x08A7D5F0, ActorID: 0xEF69, PlttID: 220, 暗黒の根
+    .incbin "data/actor_sprites/5BA7.4bpp"                 @ 0x08A7D770, ActorID: 0x5BA7, PlttID: 236, 天窓の光
+    .incbin "data/actor_sprites/5BB7.4bpp"                 @ 0x08A7DBF0, ActorID: 0x5BB7, PlttID: 239, 天窓の光
+    .incbin "data/actor_sprites/bomb.4bpp"                 @ 0x08A7DF70, ActorID: 0xE74B, PlttID: 0, (ガストの吐き出す)爆弾, ???, ダイナマイト
+    .incbin "data/actor_sprites/9A1F.4bpp"                 @ 0x08A7EB70, ActorID: 0x9A1F, PlttID: 242, "PUSH START BUTTON"の文字(どこで使ってるか不明)
+    .incbin "data/actor_sprites/C459.4bpp"                 @ 0x08A7F0F0, ActorID: 0xC459, PlttID: 243, 太陽床
+    .incbin "data/actor_sprites/DC07.4bpp"                 @ 0x08A7F4F0, ActorID: 0xDC07, PlttID: 244, 天窓の光
+    .incbin "data/actor_sprites/D45E.4bpp"                 @ 0x08A7F970, ActorID: 0xD45E, PlttID: 247, 水たまり, スケルトン
+    .incbin "data/actor_sprites/D85E.4bpp"                 @ 0x08A84930, ActorID: 0xD85E, PlttID: 247, エフェクト群(電気っぽい)
+    .incbin "data/actor_sprites/2817.4bpp"                 @ 0x08A86970, ActorID: 0x2817, PlttID: 263, 大聖堂の水晶?
+    .incbin "data/actor_sprites/EFD8.4bpp"                 @ 0x08A869B0, ActorID: 0xEFD8, PlttID: 268, 0..9の数字とまだ何も数字が書かれていないパネルの絵
+    .incbin "data/actor_sprites/8639.4bpp"                 @ 0x08A87A30, ActorID: 0x8639, PlttID: 275, 爆発エフェクト
+    .incbin "data/actor_sprites/otnk_0.4bpp"               @ 0x08A89A30, ActorID: 0x97D3, PlttID: 279, おてんこさま(よく使うやつ)
+    .incbin "data/actor_sprites/otnk_1.4bpp"               @ 0x08A8B4F0, ActorID: 0x97D4, PlttID: 279, おてんこさま(あまり使わないやつ)
+    .incbin "data/actor_sprites/C42D.4bpp"                 @ 0x08A8C330, ActorID: 0xC42D, PlttID: 283, なんかの破片?
+    .incbin "data/actor_sprites/0334.4bpp"                 @ 0x08A8C530, ActorID: 0x0334, PlttID: 283, C42Dの破片の小さいやつ?
+    .incbin "data/actor_sprites/9DFF.4bpp"                 @ 0x08A8C550, ActorID: 0x9DFF, PlttID: 83, 黒塗り
+    .incbin "data/actor_sprites/A152.4bpp"                 @ 0x08A8D150, ActorID: 0xA152, PlttID: 284, なんかの魔方陣
+    .incbin "data/actor_sprites/17C7.4bpp"                 @ 0x08A8D5D0, ActorID: 0x17C7, PlttID: 287, 重量スイッチ
+    .incbin "data/actor_sprites/210E.4bpp"                 @ 0x08A8DBD0, ActorID: 0x210E, PlttID: 44, エフェクト
+    .incbin "data/actor_sprites/210F.4bpp"                 @ 0x08A8DDD0, ActorID: 0x210F, PlttID: 289, エフェクト(火花?)
+    .incbin "data/actor_sprites/1FE0.4bpp"                 @ 0x08A8E490, ActorID: 0x1FE0, PlttID: 83, 黒塗り
+    .incbin "data/actor_sprites/2C1A.4bpp"                 @ 0x08A92690, ActorID: 0x2C1A, PlttID: 300, 岩の角みたいな何か
+    .incbin "data/actor_sprites/sword_axe.4bpp"            @ 0x08A92990, ActorID: 0x5291, PlttID: 301, ソード,アックス
+    .incbin "data/actor_sprites/weapon_funnel.4bpp"        @ 0x08A93190, ActorID: 0x5292, PlttID: 301, スレイブソード, リンゴ(ダーイン)の出す剣
+    .incbin "data/actor_sprites/boku_0.4bpp"               @ 0x08A93550, ActorID: 0x9247, PlttID: 307, ボク
+    .incbin "data/actor_sprites/boku_1.4bpp"               @ 0x08A94C10, ActorID: 0xD4EA, PlttID: 307, ボク
+    .incbin "data/actor_sprites/boku_2.4bpp"               @ 0x08A95C10, ActorID: 0x47DE, PlttID: 307, ボク
+    .incbin "data/actor_sprites/C046.4bpp"                 @ 0x08A981D0, ActorID: 0xC046, PlttID: 311, ベルドコンベア
+    .incbin "data/actor_sprites/2097.4bpp"                 @ 0x08A993D0, ActorID: 0x2097, PlttID: 312, 四則演算ブロック
+    .incbin "data/actor_sprites/17C8.4bpp"                 @ 0x08A9DBD0, ActorID: 0x17C8, PlttID: 287, 重量スイッチ
+    .incbin "data/actor_sprites/lever_switch.4bpp"         @ 0x08A9E1D0, ActorID: 0xBB68, PlttID: 313, レバースイッチ
+    .incbin "data/actor_sprites/water_station.4bpp"        @ 0x08A9F050, ActorID: 0xEED8, PlttID: 315, 砂漠の水汲み場
+    .incbin "data/actor_sprites/505C.4bpp"                 @ 0x08A9FA50, ActorID: 0x505C, PlttID: 316, 料理
+    .incbin "data/actor_sprites/solar_station.4bpp"        @ 0x08A9FDD0, ActorID: 0xA47C, PlttID: 317, 太陽スタンド
+    .incbin "data/actor_sprites/DDE7.4bpp"                 @ 0x08AA0090, ActorID: 0xDDE7, PlttID: 326, 天窓の光
+    .incbin "data/actor_sprites/9E08.4bpp"                 @ 0x08AA0510, ActorID: 0x9E08, PlttID: 329, 天窓の光
+    .incbin "data/actor_sprites/A8E7.4bpp"                 @ 0x08AA0990, ActorID: 0xA8E7, PlttID: 0, "25", "10", "BONUS!" などの文字
+    .incbin "data/actor_sprites/5A6E.4bpp"                 @ 0x08AA0AF0, ActorID: 0x5A6E, PlttID: 332, クロウ
+    .incbin "data/actor_sprites/5A6F.4bpp"                 @ 0x08AA25B0, ActorID: 0x5A6F, PlttID: 332, クロウ
+    .incbin "data/actor_sprites/44EE.4bpp"                 @ 0x08AA32D0, ActorID: 0x44EE, PlttID: 337, なんかのブロックor柱
+    .incbin "data/actor_sprites/5D7C.4bpp"                 @ 0x08AA38D0, ActorID: 0x5D7C, PlttID: 338, 瓦礫
+    .incbin "data/actor_sprites/B837.4bpp"                 @ 0x08AA40D0, ActorID: 0xB837, PlttID: 339, わからん(ふしぎのぼうしのチュチュみたいな形)
+    .incbin "data/actor_sprites/cube_iron.4bpp"            @ 0x08AA4C10, ActorID: 0xE0C9, PlttID: 340, 鉄ブロック
+    .incbin "data/actor_sprites/8203.4bpp"                 @ 0x08AA5210, ActorID: 0x8203, PlttID: 341, ヨルムンガンド
+    .incbin "data/actor_sprites/8204.4bpp"                 @ 0x08AA6B10, ActorID: 0x8204, PlttID: 341, ヨルムンガンド
+    .incbin "data/actor_sprites/8205.4bpp"                 @ 0x08AA6DD0, ActorID: 0x8205, PlttID: 350, ヨルムンガンド
+    .incbin "data/actor_sprites/8202.4bpp"                 @ 0x08AA6FD0, ActorID: 0x8202, PlttID: 350, ヨルムンガンド
     .incbin "data/actor_sprites/8206.4bpp"                 @ 0x08AA7650, ActorID: 0x8206, PlttID: 341
     .incbin "data/actor_sprites/8207.4bpp"                 @ 0x08AA7950, ActorID: 0x8207, PlttID: 341
     .incbin "data/actor_sprites/DC38.4bpp"                 @ 0x08AA7A30, ActorID: 0xDC38, PlttID: 83
     .incbin "data/actor_sprites/8393.4bpp"                 @ 0x08AAB1D0, ActorID: 0x8393, PlttID: 83
-    .incbin "data/actor_sprites/066A.4bpp"                 @ 0x08AB09D0, ActorID: 0x066A, PlttID: 361
+    .incbin "data/actor_sprites/solar_bamboo.4bpp"         @ 0x08AB09D0, ActorID: 0x066A, PlttID: 361
     .incbin "data/actor_sprites/17C9.4bpp"                 @ 0x08AB0DD0, ActorID: 0x17C9, PlttID: 287
     .incbin "data/actor_sprites/DB6C.4bpp"                 @ 0x08AB0FD0, ActorID: 0xDB6C, PlttID: 363
     .incbin "data/actor_sprites/D0A3.4bpp"                 @ 0x08AB17D0, ActorID: 0xD0A3, PlttID: 379
-    .incbin "data/actor_sprites/9385.4bpp"                 @ 0x08AB1A10, ActorID: 0x9385, PlttID: 380
-    .incbin "data/actor_sprites/B626.4bpp"                 @ 0x08AB1E90, ActorID: 0xB626, PlttID: 380
+    .incbin "data/actor_sprites/beenest_broken.4bpp"       @ 0x08AB1A10, ActorID: 0x9385, PlttID: 380
+    .incbin "data/actor_sprites/beenest.4bpp"              @ 0x08AB1E90, ActorID: 0xB626, PlttID: 380
     .incbin "data/actor_sprites/D637.4bpp"                 @ 0x08AB20F0, ActorID: 0xD637, PlttID: 381
     .incbin "data/actor_sprites/E7EA.4bpp"                 @ 0x08AB49B0, ActorID: 0xE7EA, PlttID: 386
     .incbin "data/actor_sprites/DFCF.4bpp"                 @ 0x08AB4A50, ActorID: 0xDFCF, PlttID: 387
     .incbin "data/actor_sprites/0E48.4bpp"                 @ 0x08AB60D0, ActorID: 0x0E48, PlttID: 388
     .incbin "data/actor_sprites/DC72.4bpp"                 @ 0x08AB6210, ActorID: 0xDC72, PlttID: 181
-    .incbin "data/actor_sprites/C039.4bpp"                 @ 0x08AB6330, ActorID: 0xC039, PlttID: 392
-    .incbin "data/actor_sprites/9803.4bpp"                 @ 0x08AB6B30, ActorID: 0x9803, PlttID: 83
+    .incbin "data/actor_sprites/piledriver_center.4bpp"    @ 0x08AB6330, ActorID: 0xC039, PlttID: 392, パイルドライバーの方陣の中心
+    .incbin "data/actor_sprites/9803.4bpp"                 @ 0x08AB6B30, ActorID: 0x9803, PlttID: 83, 黒塗り
     .incbin "data/actor_sprites/D56D.4bpp"                 @ 0x08ABC330, ActorID: 0xD56D, PlttID: 404
-    .incbin "data/actor_sprites/17CA.4bpp"                 @ 0x08ABC850, ActorID: 0x17CA, PlttID: 287
-    .incbin "data/actor_sprites/3640.4bpp"                 @ 0x08ABCF50, ActorID: 0x3640, PlttID: 410
-    .incbin "data/actor_sprites/9B09.4bpp"                 @ 0x08ABEF50, ActorID: 0x9B09, PlttID: 83
-    .incbin "data/actor_sprites/D454.4bpp"                 @ 0x08AC23D0, ActorID: 0xD454, PlttID: 83
+    .incbin "data/actor_sprites/17CA.4bpp"                 @ 0x08ABC850, ActorID: 0x17CA, PlttID: 287, 重量スイッチ
+    .incbin "data/actor_sprites/3640.4bpp"                 @ 0x08ABCF50, ActorID: 0x3640, PlttID: 410, 天窓の光
+    .incbin "data/actor_sprites/9B09.4bpp"                 @ 0x08ABEF50, ActorID: 0x9B09, PlttID: 83, 黒塗り
+    .incbin "data/actor_sprites/D454.4bpp"                 @ 0x08AC23D0, ActorID: 0xD454, PlttID: 83, 黒塗り
 		.incbin "data/actor_sprites/D636.4bpp"                 @ 0x08AC4D70, ActorID: 0xD636, PlttID: 417, centipede & sandworm & serpent
 		.incbin "data/actor_sprites/E769.4bpp"                 @ 0x08AC9850, ActorID: 0xE769, PlttID: 418, sandworm & serpent
 		.incbin "data/actor_sprites/E76A.4bpp"                 @ 0x08ACE9F0, ActorID: 0xE76A, PlttID: 421, unk_flame_snake?
@@ -1475,9 +1475,9 @@ ActorSpriteFile0: @ 0x08A2291C
 		.incbin "data/actor_sprites/cube_wood.4bpp"            @ 0x08B23030, ActorID: 0x9D40, PlttID: 509, 木ブロック
 		.incbin "data/actor_sprites/cube_wood_debris_l.4bpp"   @ 0x08B23630, ActorID: 0xA874, PlttID: 509, 木ブロックの破片(大)
 		.incbin "data/actor_sprites/cube_wood_debris_s.4bpp"   @ 0x08B23830, ActorID: 0xA875, PlttID: 509, 木ブロックの破片(小)
-		.incbin "data/actor_sprites/golem.4bpp"                @ 0x08B23850, ActorID: 0x5290, PlttID: 513
-		.incbin "data/actor_sprites/2110.4bpp"                 @ 0x08B2A1B0, ActorID: 0x2110, PlttID: 44
-		.incbin "data/actor_sprites/2111.4bpp"                 @ 0x08B2B9B0, ActorID: 0x2111, PlttID: 44
+		.incbin "data/actor_sprites/golem.4bpp"                @ 0x08B23850, ActorID: 0x5290, PlttID: 513, ゴーレム
+		.incbin "data/actor_sprites/2110.4bpp"                 @ 0x08B2A1B0, ActorID: 0x2110, PlttID: 44, ガンデルソルのエフェクト?
+		.incbin "data/actor_sprites/2111.4bpp"                 @ 0x08B2B9B0, ActorID: 0x2111, PlttID: 44, ガンデルソルのエフェクト?
 		.incbin "data/actor_sprites/coffin.4bpp"               @ 0x08B2BB30, ActorID: 0x2499, PlttID: 519, 全ての棺桶(エレファン含む), TODO: 画像を棺桶ごとに分けてパレットをちゃんと適用する
 		.incbin "data/actor_sprites/elefan.4bpp"               @ 0x08B358F0, ActorID: 0x249A, PlttID: 524, 棺桶獣エレファン(自走時?)
 		.incbin "data/actor_sprites/5B54.4bpp"                 @ 0x08B37650, ActorID: 0x5B54, PlttID: 529, ダイナマイトで壊せる壁

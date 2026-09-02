@@ -322,7 +322,7 @@ _08210A08:
 	adds r5, r7, r2
 	ldr r1, _08210A9C @ =0x00001C1B
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r3, _08210AA0 @ =0x00000C8C
 	adds r4, r7, r3
 	ldr r2, _08210AA4 @ =0x00000212

@@ -15829,8 +15829,8 @@ FUN_0815190c: @ 0x0815190C
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_08151918
-FUN_08151918: @ 0x08151918
+	thumb_func_start EnemyDog_Destroy
+EnemyDog_Destroy: @ 0x08151918
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	ldr r1, _08151930 @ =0x0000025D
@@ -15941,8 +15941,8 @@ _081519DA:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_081519f8
-FUN_081519f8: @ 0x081519F8
+	thumb_func_start EnemyDog_Init
+EnemyDog_Init: @ 0x081519F8
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -15984,7 +15984,7 @@ FUN_081519f8: @ 0x081519F8
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _08151A94 @ =0x0000D635
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -17566,7 +17566,7 @@ _081525A0:
 	orrs r0, r1
 	str r0, [r6]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
 	bl Script_GetKeywordValue
@@ -18021,7 +18021,7 @@ _08152AD6:
 	ldr r0, [r2]
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_081518ac
 	adds r0, r7, #0
@@ -18078,10 +18078,10 @@ _08152AD6:
 	movs r4, #0xc4
 	lsls r4, r4, #3
 	adds r1, r7, r4
-	ldr r0, _08152B94 @ =FUN_08151918
+	ldr r0, _08152B94 @ =EnemyDog_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08152B98
@@ -18095,7 +18095,7 @@ _08152B84: .4byte 0x0000057C
 _08152B88: .4byte FUN_080f09e0
 _08152B8C: .4byte 0x0000061C
 _08152B90: .4byte FUN_0815190c
-_08152B94: .4byte FUN_08151918
+_08152B94: .4byte EnemyDog_Destroy
 _08152B98:
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -18122,11 +18122,11 @@ EnemyDog_Create: @ 0x08152BAC
 	adds r1, r5, #0
 	bl ClearMemory
 	adds r0, r4, #0
-	bl FUN_081519f8
+	bl EnemyDog_Init
 	cmp r0, #0
 	bge _08152BDA
 	adds r0, r4, #0
-	bl FUN_08151918
+	bl EnemyDog_Destroy
 	adds r0, r4, #0
 	bl Free
 _08152BDA:

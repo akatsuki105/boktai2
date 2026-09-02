@@ -1115,8 +1115,8 @@ _0823D536:
 	.align 2, 0
 _0823D54C: .4byte 0x030046A0
 
-	thumb_func_start FUN_0823d550
-FUN_0823d550: @ 0x0823D550
+	thumb_func_start UpdateWeaponStyle
+UpdateWeaponStyle: @ 0x0823D550
 	push {r4, r5, r6, lr}
 	sub sp, #0x14
 	movs r4, #0

@@ -6364,7 +6364,7 @@ EnemyOctopus_Init: @ 0x081876D4
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _0818775C @ =0x0000D291
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -7844,7 +7844,7 @@ _081881F0:
 	movs r0, #0xe
 	strb r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r1, #0x80
 	lsls r1, r1, #2
 	ldr r2, [sp, #0x54]
@@ -8274,7 +8274,7 @@ _08188672:
 	strh r0, [r5]
 _0818868A:
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_08186e0c
 	ldr r6, _0818871C @ =0x0000060C
@@ -8336,7 +8336,7 @@ _0818868A:
 	ldr r0, _08188734 @ =FUN_081875f4
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08188738

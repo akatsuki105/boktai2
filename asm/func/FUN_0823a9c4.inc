@@ -5,7 +5,7 @@
 	bl vram_0822b778
 	bl FUN_0823cd04
 	bl FUN_082326d8
-	bl FUN_08236ed0
+	bl Entity08236ed0_Create
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r2, _0823A9F0 @ =0x03003E78

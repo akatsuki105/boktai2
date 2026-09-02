@@ -148,7 +148,7 @@ FUN_080c0e98: @ 0x080C0E98
 	adds r4, #0x44
 	ldr r1, _080C0F18 @ =0x0000210E
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -705,7 +705,7 @@ _080C132A:
 	adds r4, #0x78
 	ldr r1, _080C139C @ =0x00003641
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #2
@@ -1492,7 +1492,7 @@ FUN_080c19e0: @ 0x080C19E0
 	adds r5, #0x48
 	ldr r1, _080C1A10 @ =0x0000210E
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r4, #0x1c
 	adds r0, r4, #0
 	adds r1, r5, #0
@@ -3608,7 +3608,7 @@ _080C2CD8:
 _080C2CDC:
 	adds r0, r7, #0
 	str r3, [sp, #8]
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r6, #0
 	adds r1, r7, #0
 	movs r2, #0
@@ -4225,7 +4225,7 @@ _080C317E:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r7, #0
 	mov r1, sl
 	ands r0, r1
@@ -5005,7 +5005,7 @@ FUN_080c3784: @ 0x080C3784
 	adds r4, r4, r1
 	ldr r1, _080C37F4 @ =0x00005291
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r2, #3

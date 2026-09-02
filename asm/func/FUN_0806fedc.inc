@@ -152,7 +152,7 @@ _0806FFD2:
 	adds r2, r5, #0
 	adds r2, #0x2c
 	adds r0, r5, #0
-	bl FUN_0806185c
+	bl Player_DarkDjangoSword_0806185c
 _08070016:
 	adds r0, r5, #0
 	bl FUN_0806fd58

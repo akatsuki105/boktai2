@@ -5,6 +5,8 @@
 #include "solar_sensor.h"
 #include "time.h"
 
+IWRAM_DATA UnkSolarEntity* gUnkSolarEntity = NULL;  // 0x03001708
+
 u32 FUN_0823d9ec(u32 y0, u32 m0, u32 d0, u32 y1, u32 m1, u32 d1);
 
 NAKED void FUN_08241650(void) { INCFUNC("asm/func/FUN_08241650.inc"); }
@@ -152,7 +154,7 @@ s32 UnkSolarEntity_Init(UnkSolarEntity* p) {
 
 UnkSolarEntity* UnkSolarEntity_Create(void) {
   if (gUnkSolarEntity == NULL) {
-    UnkSolarEntity* p = (UnkSolarEntity*)CreateEntity(ENTITY_UNK_5, 48);
+    UnkSolarEntity* p = CreateEntity(ENTITY_UNK_5, 48);
     if (p != NULL) {
       SetEntityRoutine(p, FUN_08241ef4, FUN_08241f14);
       if (UnkSolarEntity_Init(p) < 0) {

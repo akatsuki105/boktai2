@@ -4,7 +4,7 @@
 	adds r4, #0x44
 	ldr r1, _080A8700 @ =0x00001C1D
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r0, #0x18
 	adds r1, r4, #0

@@ -25590,8 +25590,8 @@ FUN_081c4a94: @ 0x081C4A94
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_081c4aa0
-FUN_081c4aa0: @ 0x081C4AA0
+	thumb_func_start EnemyBombGolem_Destroy
+EnemyBombGolem_Destroy: @ 0x081C4AA0
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	ldr r1, _081C4AB8 @ =0x0000025D
@@ -25702,8 +25702,8 @@ _081C4B62:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_081c4b80
-FUN_081c4b80: @ 0x081C4B80
+	thumb_func_start EnemyBombGolem_Init
+EnemyBombGolem_Init: @ 0x081C4B80
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -25741,7 +25741,7 @@ FUN_081c4b80: @ 0x081C4B80
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _081C4C14 @ =0x00005290
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -27218,7 +27218,7 @@ _081C562C:
 	orrs r0, r1
 	str r0, [r3]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
 	bl Script_GetKeywordValue
@@ -27641,7 +27641,7 @@ _081C5B3A:
 	ldr r1, [r2]
 	str r1, [r0]
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	ldr r3, _081C5C20 @ =0x00000634
 	adds r1, r7, r3
 	ldr r0, _081C5C24 @ =0x085ADFDC
@@ -27734,10 +27734,10 @@ _081C5B3A:
 	movs r0, #0xc4
 	lsls r0, r0, #3
 	adds r1, r7, r0
-	ldr r0, _081C5C44 @ =FUN_081c4aa0
+	ldr r0, _081C5C44 @ =EnemyBombGolem_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081C5C48
@@ -27753,7 +27753,7 @@ _081C5C34: .4byte 0x0000057C
 _081C5C38: .4byte FUN_080f09e0
 _081C5C3C: .4byte 0x0000061C
 _081C5C40: .4byte FUN_081c4a94
-_081C5C44: .4byte FUN_081c4aa0
+_081C5C44: .4byte EnemyBombGolem_Destroy
 _081C5C48:
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -27780,11 +27780,11 @@ EnemyBombGolem_Create: @ 0x081C5C5C
 	adds r1, r5, #0
 	bl ClearMemory
 	adds r0, r4, #0
-	bl FUN_081c4b80
+	bl EnemyBombGolem_Init
 	cmp r0, #0
 	bge _081C5C88
 	adds r0, r4, #0
-	bl FUN_081c4aa0
+	bl EnemyBombGolem_Destroy
 	adds r0, r4, #0
 	bl Free
 _081C5C88:

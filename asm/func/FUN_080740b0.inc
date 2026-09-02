@@ -136,7 +136,7 @@ _0807418C:
 	adds r2, #0x2c
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_08061970
+	bl Player_DarkDjangoSpear_08061970
 _080741D4:
 	cmp r6, #0
 	beq _0807423C

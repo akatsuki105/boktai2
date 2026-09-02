@@ -16215,7 +16215,7 @@ EnemyCheyenne_Init: @ 0x081834D8
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _08183570 @ =0x0000D3EA
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -17684,7 +17684,7 @@ _08183F94:
 	orrs r0, r1
 	str r0, [r3]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	ldr r5, [sp, #0x30]
 	ldr r6, _08184234 @ =0x0000085C
 	adds r1, r5, r6
@@ -18134,7 +18134,7 @@ _081844D2:
 	adds r0, r7, #0
 	bl FUN_0817c02c
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_08183368
 	adds r0, r7, #0
@@ -18201,7 +18201,7 @@ _081844D2:
 	ldr r0, _08184590 @ =FUN_081833dc
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08184594

@@ -2,66 +2,6 @@
 	.syntax unified
 	.text
 
-	thumb_func_start FUN_08065f34
-FUN_08065f34: @ 0x08065F34
-  .include "asm/func/FUN_08065f34.inc"
-
-	thumb_func_start FUN_08066040
-FUN_08066040: @ 0x08066040
-  .include "asm/func/FUN_08066040.inc"
-
-	thumb_func_start FUN_0806623c
-FUN_0806623c: @ 0x0806623C
-  .include "asm/func/FUN_0806623c.inc"
-
-	thumb_func_start FUN_08066408
-FUN_08066408: @ 0x08066408
-  .include "asm/func/FUN_08066408.inc"
-
-	thumb_func_start FUN_08066794
-FUN_08066794: @ 0x08066794
-  .include "asm/func/FUN_08066794.inc"
-
-	thumb_func_start FUN_080667b0
-FUN_080667b0: @ 0x080667B0
-  .include "asm/func/FUN_080667b0.inc"
-
-	thumb_func_start FUN_0806680c
-FUN_0806680c: @ 0x0806680C
-  .include "asm/func/FUN_0806680c.inc"
-
-	thumb_func_start FUN_0806687c
-FUN_0806687c: @ 0x0806687C
-  .include "asm/func/FUN_0806687c.inc"
-
-	thumb_func_start FUN_0806692c
-FUN_0806692c: @ 0x0806692C
-  .include "asm/func/FUN_0806692c.inc"
-
-	thumb_func_start FUN_08066a04
-FUN_08066a04: @ 0x08066A04
-  .include "asm/func/FUN_08066a04.inc"
-
-	thumb_func_start FUN_08066abc
-FUN_08066abc: @ 0x08066ABC
-  .include "asm/func/FUN_08066abc.inc"
-
-	thumb_func_start FUN_08066c64
-FUN_08066c64: @ 0x08066C64
-  .include "asm/func/FUN_08066c64.inc"
-
-	thumb_func_start FUN_08066d10
-FUN_08066d10: @ 0x08066D10
-  .include "asm/func/FUN_08066d10.inc"
-
-	thumb_func_start FUN_08066d2c
-FUN_08066d2c: @ 0x08066D2C
-  .include "asm/func/FUN_08066d2c.inc"
-
-	thumb_func_start FUN_08066d7c
-FUN_08066d7c: @ 0x08066D7C
-  .include "asm/func/FUN_08066d7c.inc"
-
 	thumb_func_start FUN_08066df8
 FUN_08066df8: @ 0x08066DF8
   .include "asm/func/FUN_08066df8.inc"

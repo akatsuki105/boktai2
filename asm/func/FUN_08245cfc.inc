@@ -21,7 +21,7 @@
 	add r4, sb
 	ldr r1, _08245E44 @ =0x00008202
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r1, _08245E48 @ =0x0000015F
 	adds r0, r4, #0
 	bl FUN_0822b20c

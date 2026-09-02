@@ -115,7 +115,7 @@ _08004718:
 	adds r6, #0x70
 	adds r0, r6, #0
 	ldr r1, [sp, #0x44]
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r4, r7, #0
 	adds r4, #0x8c
 	adds r0, r4, #0
@@ -6118,7 +6118,7 @@ _080073F0:
 	ldr r0, [r5, #0x24]
 	mov r2, r8
 	ldrh r1, [r2, #0x20]
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	cmp r0, #0
 	bne _0800742E
 	ldr r0, [r5, #0x20]
@@ -6897,7 +6897,7 @@ FUN_080079f0: @ 0x080079F0
 	adds r5, #0x20
 	ldr r1, _08007A20 @ =0x0000F680
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	cmp r0, #0
 	beq _08007A28
 	adds r0, r4, #0
@@ -7439,7 +7439,7 @@ _08007DE8:
 	adds r7, #0x20
 	adds r0, r7, #0
 	adds r1, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	cmp r0, #0
 	bne _08007E44
 _08007E36:

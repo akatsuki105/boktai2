@@ -66,8 +66,6 @@ typedef struct Subroutine {
   void* (*fn)(u32 subroutineID, void* unk);
 } Subroutine;
 
-extern Subroutine gSubroutineTable[643];
-
 // 制御命令の処理も Subroutine で行う, なんで 2つのテーブルに分かれてるのかは不明
 extern Subroutine gCtrlHandlers2_ROM[8];
 

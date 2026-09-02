@@ -8,7 +8,7 @@
 #include "types.h"
 
 typedef struct {
-  Entity e;
+  Entity e;  // 0x00, ENTITY_UNK_5
   u8 unk_18;
   u8 unk_19;
   u16 unk_1a;
@@ -23,7 +23,5 @@ typedef struct {
   EntityFunc unk_2c;
 } UnkSolarEntity;
 static_assert(sizeof(UnkSolarEntity) == 48);
-
-extern UnkSolarEntity* gUnkSolarEntity;
 
 #endif  // __INCLUDE_SOLAR_H__

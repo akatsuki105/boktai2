@@ -66,8 +66,8 @@ _08022A62:
 	.align 2, 0
 _08022A6C: .4byte 0x030000A0
 
-	thumb_func_start FUN_08022a70
-FUN_08022a70: @ 0x08022A70
+	thumb_func_start Boss_Init_08022a70
+Boss_Init_08022a70: @ 0x08022A70
 	push {r4, r5, r6, r7, lr}
 	mov r7, r8
 	push {r7}

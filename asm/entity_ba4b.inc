@@ -3978,7 +3978,7 @@ FUN_08029d1c: @ 0x08029D1C
 _08029D2C:
 	adds r0, r4, #0
 	ldr r1, _08029DCC @ =0x00003668
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r4, #0x1c
 	subs r6, #1
 	cmp r6, #0
@@ -29906,7 +29906,7 @@ _08036298:
 	mov r1, r8
 	ldr r2, [sp, #0x28]
 	add r3, sp, #0x1c
-	bl FUN_08022a70
+	bl Boss_Init_08022a70
 	movs r0, #0x8a
 	lsls r0, r0, #1
 	add r0, sb

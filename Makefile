@@ -26,6 +26,7 @@ endif
 
 PREFIX := arm-none-eabi-
 OBJCOPY := $(PREFIX)objcopy
+READELF := $(PREFIX)readelf
 AS := $(PREFIX)as
 LD := $(PREFIX)ld
 
@@ -55,12 +56,15 @@ GBAGFX  := $(TOOLS_DIR)/gbagfx/gbagfx$(EXE)
 SCANINC := $(TOOLS_DIR)/scaninc/scaninc$(EXE)
 PREPROC := $(TOOLS_DIR)/preproc/preproc$(EXE)
 
+PERL := perl
+
 # ROM name --------------------------------------------
 
 RONNAME := boktai2
 BUILD_DIR := build/$(RONNAME)
 ROM := $(RONNAME).gba
 ELF := $(RONNAME).elf
+SYM := $(RONNAME).sym
 
 # Flag --------------------------------------------
 
@@ -145,6 +149,9 @@ modern: $(ROM)
 
 compare: $(ROM)
 	@sha1sum -c $(RONNAME).sha1
+	@$(MAKE) syms
+
+syms: $(SYM)
 
 clean: clean-code clean-scripts clean-graphics
 
@@ -157,6 +164,19 @@ clean-scripts:
 
 $(ROM): $(ELF)
 	$(OBJCOPY) -O binary --pad-to 0x9000000 $< $@
+
+# nm だと ARMと THUMB のシンボルが区別されないので、readelf を使う
+$(SYM): $(ELF)
+	@$(READELF) -sW $< | awk '$$1 ~ /^[0-9]+:$$/ { \
+		addr=$$2; type=$$4; bind=$$5; ndx=$$7; name=$$8; \
+		if (type=="FUNC") c=(bind=="LOCAL")?"t":"T"; \
+		else if (type=="OBJECT") c=(bind=="LOCAL")?"d":"D"; \
+		else if (ndx=="UND") c="U"; \
+		else next; \
+		if (bind=="WEAK") c=(c ~ /[a-z]/)?"w":"W"; \
+		printf "%s %s %s\n", addr, c, name; \
+	}' | sort -u | grep -E "^0[2389]" > $@
+
 
 $(ELF): $(LDSCRIPT) $(OBJS)
 	@cd $(BUILD_DIR) && $(LD) -T ../../$< -Map $(RONNAME).map -o ../../$@ $(OBJS_REL) $(LDFLAGS)

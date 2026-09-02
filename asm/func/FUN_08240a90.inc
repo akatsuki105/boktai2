@@ -15,7 +15,7 @@
 	bl FUN_08230e30
 	ldr r0, _08240AC8 @ =0x030016FC
 	str r4, [r0]
-	bl FUN_08240a54
+	bl Entity08240a54_Create
 	movs r0, #1
 	b _08240ACE
 	.align 2, 0

@@ -2,6 +2,8 @@
 
 INCASM("asm/code_0821b21c.inc");
 
+NAKED void FUN_0821b28c(u32 x8, u32 y8, u32 w8, u32 h8) { INCFUNC("asm/func/FUN_0821b28c.inc"); }
+
 /**
  * @brief 文字列を描画する(セーブデータ選択画面で使用されているが、NPCなどとの会話やメニュー画面では使用されていない)
  * @param x8 描画先のx座標(8x8pxのタイル単位)

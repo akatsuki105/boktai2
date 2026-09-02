@@ -741,7 +741,7 @@ _08002EB8:
 	lsrs r1, r1, #0x10
 _08002EC8:
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r7, r4, #0
 	cmp r0, #0
 	bne _08002EE0

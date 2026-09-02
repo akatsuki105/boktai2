@@ -749,7 +749,7 @@ FUN_080a8d78: @ 0x080A8D78
 	adds r6, #0x48
 	ldr r1, _080A8DC4 @ =0x0000E74B
 	adds r0, r6, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r4, r5, #0
 	adds r4, #0x1c
 	adds r0, r4, #0
@@ -4442,7 +4442,7 @@ FUN_080aa9d0: @ 0x080AA9D0
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	ldr r1, _080AAA24 @ =0x000024BA
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r6, #0
 	movs r0, #0x9e
 	lsls r0, r0, #1

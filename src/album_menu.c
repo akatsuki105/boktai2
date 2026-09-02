@@ -1,3 +1,4 @@
+#include "entity.h"
 #include "game.h"
 #include "global.h"
 #include "sprite.h"

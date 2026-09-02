@@ -7,16 +7,7 @@
 #define VALUABLES(slot) (*(gStat->valuables + slot))
 #define ROTCOUNT(slot) (*(gStat->rotTimer + slot))
 
-// ItemData.effectType
-enum ItemEffectType {
-  ITEM_EFFECT_UNK0,
-  ITEM_EFFECT_HP,          // HP回復
-  ITEM_EFFECT_MP,          // Ene回復
-  ITEM_EFFECT_BAD_STATUS,  // 毒などの状態異常回復
-  ITEM_EFFECT_UNK4,
-  ITEM_EFFECT_UNK5,
-  // anymore?
-};
+typedef u16 ItemEffectType;  // see "include/constants/item.h", gItemEffectHandlers の idx
 
 typedef struct {
   u16 unk_00;

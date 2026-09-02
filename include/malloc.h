@@ -4,5 +4,6 @@
 #include "gba/gba.h"
 
 void* Malloc(size_t bytesize);
+void Free(void* p);
 
 #endif  // __INCLUDE_MALLOC_H__

@@ -30,10 +30,7 @@ typedef s32 magic32_t;
 typedef s16 slot16_t;
 typedef s32 slot32_t;
 
-// Placeholder for a NAKED-stub parameter whose real type isn't known yet.
-// Never used for existing plain `void*` params — only for new decomp-naked
-// promotions. Grep for this to find every not-yet-typed parameter.
-typedef void* UNK_PTR;
+typedef void unknown;  // まだ型が不明なときは unknown* で一応 void* と区別しておく
 
 typedef s32 Sunlevel;  // 0..10, (digital) sunlight level
 

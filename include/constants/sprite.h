@@ -12,7 +12,7 @@
 #define SPRITE_SHADEMAN 0x5D36
 #define SPRITE_UI_GALLERY 0x5EBF
 #define SPRITE_6893 0x6893
-#define SPRITE_MARKERS 0x82F1
+#define SPRITE_MARKERS 0x82F1  // "Undead", "Immortal", "TRAP" といった画面上に表示されるマーカー
 #define SPRITE_92F0 0x92F0
 #define SPRITE_JORMUNGANDR 0x9524
 #define SPRITE_SKELETONS 0xAE52
@@ -41,14 +41,14 @@
 #define SPRITE_CARMILLA 0xE2DE
 #define SPRITE_DAINN 0xE349
 #define SPRITE_E89F 0xE89F
-#define SPRITE_CHANDELIER 0xF099
+#define SPRITE_CHANDELIER 0xF099  // actor_sprite の 0x2AF0 にもシャンデリアがある
 
-// GetFile のファイルIDとして使うが、存在しないスプライト
-#define SPRITE_MISSING_5290 0x5290  // 0x081c4c40
-#define SPRITE_MISSING_5291 0x5291  // 0x081a1a78
-#define SPRITE_MISSING_9247 0x9247  // 0x081b73f0
-#define SPRITE_MISSING_D291 0xD291  // 0x0818778c
-#define SPRITE_MISSING_D635 0xD635  // 0x081ce84c
-#define SPRITE_MISSING_D636 0xD636  // 0x081ad228
+// GetFile のファイルIDとして使うが、存在しないスプライトセットのファイル, actor_sprite に同じActorIDのものがあり、actor_spriteと同じ箇所で読み込むので、元々 spriteset と actor_sprite の両方ともあったのかもしれない
+#define SPRITE_GOLEM 0x5290     // 0x081c4c40
+#define SPRITE_SWORD_AX 0x5291  // 0x081a1a78
+#define SPRITE_BOKU_0 0x9247    // 0x081b73f0
+#define SPRITE_OCTOPUS 0xD291   // 0x0818778c
+#define SPRITE_DOG_0 0xD635     // 0x081ce84c
+#define SPRITE_WORM_0 0xD636    // 0x081ad228
 
 #endif  // __INCLUDE_CONSTANTS_SPRITE_H__

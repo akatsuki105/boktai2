@@ -37,7 +37,7 @@ _08064DF4:
 	movs r6, #1
 	strb r6, [r4, #3]
 	adds r0, r5, #0
-	bl FUN_08064d04
+	bl Player_CheckMagicEnchant
 	cmp r0, #0
 	blt _08064E1A
 	ldr r1, _08064E24 @ =0x00000979
@@ -87,7 +87,7 @@ _08064E48:
 	cmp r0, #2
 	beq _08064EA0
 	adds r0, r5, #0
-	bl FUN_08064b90
+	bl Player_CheckMagicCost
 	cmp r0, #0
 	beq _08064F12
 	movs r2, #0x8a
@@ -117,7 +117,7 @@ _08064E48:
 	strb r0, [r1]
 	str r6, [r4]
 	adds r0, r5, #0
-	bl FUN_08064be4
+	bl Player_PayMagicCost
 _08064EA0:
 	movs r0, #0xc
 	b _08064FCE
@@ -133,7 +133,7 @@ _08064EA8:
 	cmp r0, #3
 	beq _08064EF8
 	adds r0, r5, #0
-	bl FUN_08064b90
+	bl Player_CheckMagicCost
 	cmp r0, #0
 	beq _08064F12
 	movs r2, #0x8a
@@ -159,7 +159,7 @@ _08064EA8:
 	bl FUN_08237040
 	str r6, [r4]
 	adds r0, r5, #0
-	bl FUN_08064be4
+	bl Player_PayMagicCost
 _08064EF8:
 	movs r0, #0xd
 	b _08064FCE
@@ -171,7 +171,7 @@ _08064EFC:
 	cmp r0, #4
 	beq _08064F4C
 	adds r0, r5, #0
-	bl FUN_08064b90
+	bl Player_CheckMagicCost
 	cmp r0, #0
 	bne _08064F16
 _08064F12:
@@ -201,7 +201,7 @@ _08064F16:
 	bl FUN_08237040
 	str r6, [r4]
 	adds r0, r5, #0
-	bl FUN_08064be4
+	bl Player_PayMagicCost
 _08064F4C:
 	movs r0, #0xe
 	b _08064FCE
@@ -215,7 +215,7 @@ _08064F50:
 	cmp r1, #0x11
 	bne _08064F6E
 	adds r0, r5, #0
-	bl FUN_08064b90
+	bl Player_CheckMagicCost
 	cmp r0, #0
 	beq _08064FC8
 	movs r0, #0xb
@@ -239,11 +239,11 @@ _08064F82:
 	cmp r0, #8
 	bne _08064F9E
 	adds r0, r5, #0
-	bl FUN_08064b90
+	bl Player_CheckMagicCost
 	cmp r0, #0
 	beq _08064FC8
 	adds r0, r5, #0
-	bl FUN_08064be4
+	bl Player_PayMagicCost
 	movs r0, #2
 	b _08064FCE
 _08064F9E:

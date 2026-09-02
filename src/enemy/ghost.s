@@ -6098,7 +6098,7 @@ FUN_0816d88c: @ 0x0816D88C
 _0816D8AA:
 	adds r0, r4, #0
 	ldr r1, _0816D90C @ =0x0000D637
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -9222,8 +9222,8 @@ FUN_0816f098: @ 0x0816F098
 	.align 2, 0
 _0816F0B4: .4byte 0x03002BE0
 
-	thumb_func_start FUN_0816f0b8
-FUN_0816f0b8: @ 0x0816F0B8
+	thumb_func_start EnemyGhost_Destroy
+EnemyGhost_Destroy: @ 0x0816F0B8
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	bl FUN_0816db2c
@@ -9335,8 +9335,8 @@ _0816F17E:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_0816f19c
-FUN_0816f19c: @ 0x0816F19C
+	thumb_func_start EnemyGhost_Init
+EnemyGhost_Init: @ 0x0816F19C
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -9374,7 +9374,7 @@ FUN_0816f19c: @ 0x0816F19C
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _0816F238 @ =0x0000D637
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -11216,7 +11216,7 @@ _0816FF60:
 	orrs r0, r1
 	str r0, [r5]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
 	bl Script_GetKeywordValue
@@ -11625,7 +11625,7 @@ _08170406:
 	strh r0, [r5]
 _0817041E:
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_0816cbdc
 	adds r0, r7, #0
@@ -11803,10 +11803,10 @@ _08170506:
 	movs r3, #0xc4
 	lsls r3, r3, #3
 	adds r1, r7, r3
-	ldr r0, _081705B4 @ =FUN_0816f0b8
+	ldr r0, _081705B4 @ =EnemyGhost_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081705B8
@@ -11819,7 +11819,7 @@ _081705A4: .4byte 0x0000057C
 _081705A8: .4byte FUN_080f09e0
 _081705AC: .4byte 0x0000061C
 _081705B0: .4byte FUN_0816f098
-_081705B4: .4byte FUN_0816f0b8
+_081705B4: .4byte EnemyGhost_Destroy
 _081705B8:
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -11845,11 +11845,11 @@ EnemyGhost_Create: @ 0x081705CC
 	adds r1, r5, #0
 	bl ClearMemory
 	adds r0, r4, #0
-	bl FUN_0816f19c
+	bl EnemyGhost_Init
 	cmp r0, #0
 	bge _081705F8
 	adds r0, r4, #0
-	bl FUN_0816f0b8
+	bl EnemyGhost_Destroy
 	adds r0, r4, #0
 	bl Free
 _081705F8:

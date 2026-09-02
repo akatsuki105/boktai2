@@ -351,7 +351,7 @@ _08070476:
 	orrs r3, r0
 	mov sb, r3
 	adds r0, r5, #0
-	bl FUN_08064be4
+	bl Player_PayMagicCost
 _08070490:
 	adds r0, r4, #0
 	adds r0, #0x48

@@ -7,7 +7,7 @@
 	adds r0, r4, #0
 	adds r0, #0x18
 	ldr r1, _080DF418 @ =0x0000F422
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _080DF41C @ =0x03000178
 	str r4, [r0]
 	movs r0, #0

@@ -49,8 +49,8 @@ NAKED void FUN_0823acbc(void) { INCFUNC("asm/func/FUN_0823acbc.inc"); }
 
 NAKED s32 FUN_0823ad98(void) { INCFUNC("asm/func/FUN_0823ad98.inc"); }
 
-NAKED UNK_PTR FUN_0823adc0(void) { INCFUNC("asm/func/FUN_0823adc0.inc"); }
+NAKED unknown* FUN_0823adc0(void) { INCFUNC("asm/func/FUN_0823adc0.inc"); }
 
 NAKED bool32 FUN_0823add0(u32 sid, void* _) { INCFUNC("asm/func/FUN_0823add0.inc"); }
 
-NAKED bool32 FUN_0823ae14(UNK_PTR p) { INCFUNC("asm/func/FUN_0823ae14.inc"); }
+NAKED bool32 FUN_0823ae14(unknown* p) { INCFUNC("asm/func/FUN_0823ae14.inc"); }

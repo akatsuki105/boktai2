@@ -916,7 +916,7 @@ FUN_080117d8: @ 0x080117D8
 	adds r4, #0x6c
 	ldr r1, _08011844 @ =0x0000DA6D
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r4, #0
 	ldr r1, _08011848 @ =0x00000263
 	bl FUN_0822b20c

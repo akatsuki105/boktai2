@@ -238,7 +238,7 @@ _0818890E:
 	ldr r0, _08188968 @ =FUN_0818889c
 	str r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0818896C
@@ -13333,7 +13333,7 @@ FUN_0818ee98: @ 0x0818EE98
 _0818EF0C:
 	adds r0, r5, #0
 	ldr r1, [sp, #0xc]
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	mov r0, r8
 	adds r1, r5, #0
 	movs r2, #0
@@ -24491,8 +24491,8 @@ _081943D6:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_081943dc
-FUN_081943dc: @ 0x081943DC
+	thumb_func_start EnemySerpent_Destroy
+EnemySerpent_Destroy: @ 0x081943DC
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	ldr r0, _08194418 @ =0x000003E5
@@ -24621,8 +24621,8 @@ _081944CA:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_081944e8
-FUN_081944e8: @ 0x081944E8
+	thumb_func_start EnemySerpent_Init
+EnemySerpent_Init: @ 0x081944E8
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -24660,7 +24660,7 @@ FUN_081944e8: @ 0x081944E8
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _0819457C @ =0x0000D636
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -26323,7 +26323,7 @@ _08195130:
 	orrs r0, r1
 	strh r0, [r4]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r6, #0xaa
 	lsls r6, r6, #2
 	adds r4, r7, r6
@@ -26796,7 +26796,7 @@ _0819566E:
 	ldr r0, [sp, #0x78]
 	strh r2, [r0]
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_0818e2a4
 	adds r0, r7, #0
@@ -26865,10 +26865,10 @@ _0819566E:
 	movs r4, #0xc4
 	lsls r4, r4, #3
 	adds r1, r7, r4
-	ldr r0, _08195774 @ =FUN_081943dc
+	ldr r0, _08195774 @ =EnemySerpent_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08195778
@@ -26881,7 +26881,7 @@ _08195764: .4byte 0x0000057C
 _08195768: .4byte FUN_080f09e0
 _0819576C: .4byte 0x0000061C
 _08195770: .4byte FUN_081942a0
-_08195774: .4byte FUN_081943dc
+_08195774: .4byte EnemySerpent_Destroy
 _08195778:
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -26907,11 +26907,11 @@ EnemySerpent_Create: @ 0x0819578C
 	adds r1, r5, #0
 	bl ClearMemory
 	adds r0, r4, #0
-	bl FUN_081944e8
+	bl EnemySerpent_Init
 	cmp r0, #0
 	bge _081957B8
 	adds r0, r4, #0
-	bl FUN_081943dc
+	bl EnemySerpent_Destroy
 	adds r0, r4, #0
 	bl Free
 _081957B8:

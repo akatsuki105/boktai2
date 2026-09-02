@@ -1,4 +1,6 @@
+#include "entity.h"
 #include "global.h"
+#include "player.h"
 #include "sprite.h"
 
 // プレイヤー(ジャンゴ/サバタ)のスプライトに関連するのは確定

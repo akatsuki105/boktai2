@@ -1,34 +1,30 @@
 #!/usr/bin/env -S uv run python3
-"""巨大な .s/.inc ファイルの中から1関数分のアセンブリを asm/func/FUNCNAME.inc
-として切り出し、元の場所を `.include "asm/func/FUNCNAME.inc"` に置き換える。
+"""巨大な .s/.inc ファイルの中から1関数分のアセンブリを asm/func/FUNCNAME.inc として切り出し、元の場所を `.include "asm/func/FUNCNAME.inc"` に置き換える。
 
 Usage: tools/extract-func-asm.py <FUNCTION_NAME> [ASM_FILE]
-
-ASM_FILE を省略すると、src/*.s と asm/*.inc（トップレベルのみ、
-asm/func/ や asm/macros/ は対象外）から `thumb_func_start FUNCTION_NAME`
-を含むファイルを自動検出する。
+ASM_FILE を省略すると、src/*.s と asm/*.inc（トップレベルのみ、asm/func/ や asm/macros/ は対象外）から `thumb_func_start FUNCTION_NAME` を含むファイルを自動検出する。
 
 e.g. tools/extract-func-asm.py FUN_0824c0c4 asm/code_0824beb8.inc
 e.g. tools/extract-func-asm.py FUN_0824c0c4
 
 変換前 (ASM_FILE 内):
-	thumb_func_start FUN_0824c0c4
+        thumb_func_start FUN_0824c0c4
 FUN_0824c0c4: @ 0x0824C0C4
-	push {r4, r5, r6, lr}
-	...
-	bx r1
-	.align 2, 0
+        push {r4, r5, r6, lr}
+        ...
+        bx r1
+        .align 2, 0
 
 変換後 (ASM_FILE 内):
-	thumb_func_start FUN_0824c0c4
+        thumb_func_start FUN_0824c0c4
 FUN_0824c0c4: @ 0x0824C0C4
   .include "asm/func/FUN_0824c0c4.inc"
 
 asm/func/FUN_0824c0c4.inc (新規作成):
-	push {r4, r5, r6, lr}
-	...
-	bx r1
-	.align 2, 0
+        push {r4, r5, r6, lr}
+        ...
+        bx r1
+        .align 2, 0
 """
 
 import re

@@ -435,7 +435,7 @@ _08200538:
 	ldr r1, [sp, #0x1c]
 	mov r2, sl
 	add r3, sp, #0x14
-	bl FUN_08022a70
+	bl Boss_Init_08022a70
 	movs r1, #0x8a
 	lsls r1, r1, #1
 	adds r0, r6, r1
@@ -597,7 +597,7 @@ _08200646:
 	adds r5, r7, r0
 	ldr r1, _082006FC @ =0x00002E7B
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r1, #0xe6
 	lsls r1, r1, #2
 	adds r4, r7, r1

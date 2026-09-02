@@ -1,5 +1,6 @@
 #include "global.h"
 #include "item.h"
+#include "player.h"
 #include "vm.h"
 #include "weapon.h"
 

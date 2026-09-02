@@ -46,7 +46,7 @@ _080626D6:
 	b _0806281A
 _080626E4:
 	adds r0, r5, #0
-	bl FUN_08064d04
+	bl Player_CheckMagicEnchant
 	cmp r0, #0
 	blt _08062770
 	ldr r6, _0806271C @ =0x00000121

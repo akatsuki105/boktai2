@@ -111,7 +111,7 @@ _0821AF90:
 	adds r4, #0xc4
 	ldr r1, _0821B050 @ =0x000097D3
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r7, #0
 	adds r0, #0x98
 	ldr r2, _0821B054 @ =0x00008012
@@ -152,7 +152,7 @@ _0821AFE6:
 	adds r5, r7, r3
 	ldr r1, _0821B060 @ =0x00001C1B
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r0, #0x9e
 	lsls r0, r0, #1
 	adds r4, r7, r0

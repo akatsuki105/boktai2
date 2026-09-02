@@ -22696,8 +22696,8 @@ FUN_0812ca24: @ 0x0812CA24
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_0812ca30
-FUN_0812ca30: @ 0x0812CA30
+	thumb_func_start EnemyMummy_Destroy
+EnemyMummy_Destroy: @ 0x0812CA30
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	ldr r1, _0812CA48 @ =0x0000025D
@@ -22806,8 +22806,8 @@ _0812CAF2:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_0812cb0c
-FUN_0812cb0c: @ 0x0812CB0C
+	thumb_func_start EnemyMummy_Init
+EnemyMummy_Init: @ 0x0812CB0C
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -22847,7 +22847,7 @@ FUN_0812cb0c: @ 0x0812CB0C
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _0812CBA4 @ =0x000048DE
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -24339,7 +24339,7 @@ _0812D5C4:
 	ands r0, r1
 	strh r0, [r4, #6]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
 	bl Script_GetKeywordValue
@@ -24753,7 +24753,7 @@ _0812DAD6:
 	strh r0, [r2]
 _0812DAEE:
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_081275a4
 	adds r0, r7, #0
@@ -24882,10 +24882,10 @@ _0812DB72:
 	movs r4, #0xc4
 	lsls r4, r4, #3
 	adds r1, r7, r4
-	ldr r0, _0812DC28 @ =FUN_0812ca30
+	ldr r0, _0812DC28 @ =EnemyMummy_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0812DC2C
@@ -24898,7 +24898,7 @@ _0812DC18: .4byte 0x0000057C
 _0812DC1C: .4byte FUN_080f09e0
 _0812DC20: .4byte 0x0000061C
 _0812DC24: .4byte FUN_0812ca24
-_0812DC28: .4byte FUN_0812ca30
+_0812DC28: .4byte EnemyMummy_Destroy
 _0812DC2C:
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -24924,11 +24924,11 @@ EnemyMummy_Create: @ 0x0812DC40
 	adds r1, r5, #0
 	bl ClearMemory
 	adds r0, r4, #0
-	bl FUN_0812cb0c
+	bl EnemyMummy_Init
 	cmp r0, #0
 	bge _0812DC6C
 	adds r0, r4, #0
-	bl FUN_0812ca30
+	bl EnemyMummy_Destroy
 	adds r0, r4, #0
 	bl Free
 _0812DC6C:

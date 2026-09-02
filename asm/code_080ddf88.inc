@@ -466,9 +466,9 @@ FUN_080e5d44: @ 0x080E5D44
 FUN_080e5d80: @ 0x080E5D80
   .include "asm/func/FUN_080e5d80.inc"
 
-	thumb_func_start FUN_080e5dd4
-FUN_080e5dd4: @ 0x080E5DD4
-  .include "asm/func/FUN_080e5dd4.inc"
+	thumb_func_start Enemy_Init_080e5dd4
+Enemy_Init_080e5dd4: @ 0x080E5DD4
+  .include "asm/func/Enemy_Init_080e5dd4.inc"
 
 	thumb_func_start FUN_080e5e94
 FUN_080e5e94: @ 0x080E5E94
@@ -682,9 +682,9 @@ FUN_080ec5f0: @ 0x080EC5F0
 FUN_080ec614: @ 0x080EC614
   .include "asm/func/FUN_080ec614.inc"
 
-	thumb_func_start FUN_080ec640
-FUN_080ec640: @ 0x080EC640
-  .include "asm/func/FUN_080ec640.inc"
+	thumb_func_start Enemy_Init_080ec640
+Enemy_Init_080ec640: @ 0x080EC640
+  .include "asm/func/Enemy_Init_080ec640.inc"
 
 	thumb_func_start FUN_080ec6fc
 FUN_080ec6fc: @ 0x080EC6FC
@@ -1158,9 +1158,9 @@ FUN_080f3574: @ 0x080F3574
 FUN_080f35fc: @ 0x080F35FC
   .include "asm/func/FUN_080f35fc.inc"
 
-	thumb_func_start FUN_080f3680
-FUN_080f3680: @ 0x080F3680
-  .include "asm/func/FUN_080f3680.inc"
+	thumb_func_start Enemy_Init_080f3680
+Enemy_Init_080f3680: @ 0x080F3680
+  .include "asm/func/Enemy_Init_080f3680.inc"
 
 	thumb_func_start FUN_080f3718
 FUN_080f3718: @ 0x080F3718

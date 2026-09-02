@@ -1,3 +1,5 @@
+#include "boss.h"
+#include "entity.h"
 #include "global.h"
 
 // ボス戦前の人型のイベント時もこれ使う

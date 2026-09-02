@@ -1,3 +1,4 @@
+#include "entity.h"
 #include "global.h"
 
 void FUN_08211f94(void*);

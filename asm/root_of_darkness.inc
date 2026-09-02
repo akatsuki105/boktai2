@@ -4,8 +4,6 @@
 	
 	.text
 
-@ EnemyXXX_Create でファイル分けしているだけなので他の敵のコードも混じっているかもしれない
-
 	thumb_func_start FUN_081a2b84
 FUN_081a2b84: @ 0x081A2B84
 	push {r4, r5, r6, r7, lr}

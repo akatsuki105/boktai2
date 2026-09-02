@@ -7906,7 +7906,7 @@ _081AA31A:
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, [sp, #0xc]
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -14083,7 +14083,7 @@ EnemyFlameSnake_Init: @ 0x081AD168
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _081AD1FC @ =0x0000D636
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -15751,7 +15751,7 @@ _081ADDB8:
 	orrs r0, r1
 	strh r0, [r4]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0xaa
 	lsls r0, r0, #2
 	adds r4, r7, r0
@@ -16191,7 +16191,7 @@ _081AE2D2:
 	strh r0, [r5]
 _081AE2EA:
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_081a9710
 	adds r0, r7, #0
@@ -16336,7 +16336,7 @@ _081AE2EA:
 	ldr r0, _081AE458 @ =FUN_081ad068
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081AE45C

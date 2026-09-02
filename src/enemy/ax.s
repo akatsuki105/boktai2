@@ -9310,7 +9310,7 @@ FUN_0819a0ac: @ 0x0819A0AC
 	str r0, [r1]
 	ldr r1, _0819A1F8 @ =0x00005291
 	mov r0, r8
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r7, #0
 	mov r1, r8
 	movs r2, #0
@@ -9690,7 +9690,7 @@ _0819A348:
 _0819A45E:
 	mov r0, r8
 	ldr r1, _0819A5B0 @ =0x00005291
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r0, #0x2c
 	mov r4, sb
 	muls r4, r0, r4
@@ -10095,7 +10095,7 @@ _0819A7A6:
 	str r1, [r4, #0x50]
 	ldr r0, [sp, #0x2c]
 	ldr r1, _0819A910 @ =0x00005292
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	mov r0, sl
 	ldr r1, [sp, #0x2c]
 	movs r2, #0
@@ -19241,7 +19241,7 @@ FUN_0819ee70: @ 0x0819EE70
 _0819EE94:
 	adds r0, r5, #0
 	ldr r1, _0819EF00 @ =0x00005291
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
@@ -20684,7 +20684,7 @@ FUN_0819f990: @ 0x0819F990
 	adds r4, r7, r0
 	ldr r1, _0819FA14 @ =0x00005291
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r1, #0xa6
 	lsls r1, r1, #4
 	adds r5, r7, r1
@@ -24827,7 +24827,7 @@ EnemyAx_Init: @ 0x081A19B8
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _081A1A4C @ =0x00005291
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -26434,7 +26434,7 @@ _081A2584:
 	orrs r0, r1
 	str r0, [r5]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
 	bl Script_GetKeywordValue
@@ -26841,7 +26841,7 @@ _081A2A42:
 	strh r0, [r5]
 _081A2A5A:
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_0819dcfc
 	adds r0, r7, #0
@@ -26922,7 +26922,7 @@ _081A2A5A:
 	ldr r0, _081A2B34 @ =FUN_081a18c8
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081A2B38

@@ -1112,7 +1112,7 @@ FUN_08080a10: @ 0x08080A10
 	adds r5, #0x48
 	ldr r1, _08080A40 @ =0x0000210E
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r4, #0x1c
 	adds r0, r4, #0
 	adds r1, r5, #0
@@ -3520,7 +3520,7 @@ _08081C42:
 	adds r4, #0x2c
 	ldr r1, _08081D00 @ =0x00002110
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r2, #0x43
@@ -10480,7 +10480,7 @@ _080852A8:
 	mov sl, r2
 	adds r0, r5, #0
 	mov r1, sl
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #3
@@ -10504,7 +10504,7 @@ _080852A8:
 	adds r5, #0x48
 	adds r0, r5, #0
 	mov r1, sl
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r2, _0808536C @ =0x00000203
 	adds r0, r4, #0
 	adds r1, r5, #0
@@ -10978,7 +10978,7 @@ FUN_0808567c: @ 0x0808567C
 	adds r5, r4, r0
 	ldr r1, _080856C8 @ =0x00001C1B
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r0, #0xcf
 	lsls r0, r0, #2
 	adds r4, r4, r0
@@ -14340,7 +14340,7 @@ FUN_08086f90: @ 0x08086F90
 	adds r4, #0xb0
 	ldr r1, _08087004 @ =0x00002499
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r6, #0
 	adds r0, #0x84
 	adds r1, r4, #0
@@ -20970,7 +20970,7 @@ _0808A246:
 	lsls r2, r2, #1
 	adds r0, r6, r2
 	ldr r1, _0808A294 @ =0x00002499
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r5, #0
 	movs r7, #1
 _0808A258:
@@ -24302,7 +24302,7 @@ _0808BC18:
 	adds r4, r7, r3
 	ldr r1, _0808BCA8 @ =0x0000DA6D
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r0, #0xb6
 	lsls r0, r0, #4
 	adds r5, r7, r0
@@ -24471,7 +24471,7 @@ _0808BD68:
 	adds r4, r7, r3
 	ldr r1, _0808BDF8 @ =0x0000D495
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r0, #0xb6
 	lsls r0, r0, #4
 	adds r5, r7, r0
@@ -24625,7 +24625,7 @@ _0808BE9C:
 	adds r5, r7, r3
 	ldr r1, _0808BF10 @ =0x00002499
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r0, #0xb6
 	lsls r0, r0, #4
 	adds r4, r7, r0

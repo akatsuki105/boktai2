@@ -1,5 +1,7 @@
+#include "entity.h"
 #include "entity_unk.h"
 #include "global.h"
+#include "sprite.h"
 
 void FUN_0823b1ec(void) {
   gEntityB8B9 = NULL;

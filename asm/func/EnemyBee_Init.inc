@@ -36,7 +36,7 @@
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _081697FC @ =0x00009506
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -1710,7 +1710,7 @@ _0816A3E4:
 	orrs r0, r1
 	strh r0, [r5]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
 	bl Script_GetKeywordValue
@@ -2135,7 +2135,7 @@ _0816A882:
 	ldr r6, [sp, #0x9c]
 	strh r1, [r6]
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_08167a24
 	adds r0, r7, #0
@@ -2201,7 +2201,7 @@ _0816A882:
 	ldr r0, _0816A964 @ =FUN_08169688
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0816A968

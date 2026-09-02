@@ -1,6 +1,7 @@
 #include "weapon.h"
 
 #include "global.h"
+#include "player.h"
 #include "vm.h"
 
 void FUN_0809c28c(void);
@@ -32,16 +33,16 @@ s8 GetWeaponQuality(s32 slot) { return GetWeapon(slot)->quality; }
 
 u32 GetWeaponDurability(s32 slot) { return GetWeapon(slot)->durability; }
 
-NAKED void FUN_08242a38(WeaponTemplate* tmpl, Weapon* w) { INCFUNC("asm/func/FUN_08242a38.inc"); }
+NAKED void FUN_08242a38(WeaponData* tmpl, Weapon* w) { INCFUNC("asm/func/FUN_08242a38.inc"); }
 
-NAKED void FUN_08242a98(Weapon* w, WeaponTemplate* data) { INCFUNC("asm/func/FUN_08242a98.inc"); }
+NAKED void FUN_08242a98(Weapon* w, WeaponData* data) { INCFUNC("asm/func/FUN_08242a98.inc"); }
 
-void FUN_08242b14(slot32_t n, WeaponTemplate* data) {
+void FUN_08242b14(slot32_t n, WeaponData* data) {
   FUN_08242a98(GetWeapon(n), data);
   return;
 }
 
-void FUN_08242b28(s32 idx, WeaponTemplate* data) {
+void FUN_08242b28(s32 idx, WeaponData* data) {
   if (REGISTERED_WEAPON(idx) < 0) {
     *data = gWeaponDB[0];
   } else {
@@ -49,13 +50,13 @@ void FUN_08242b28(s32 idx, WeaponTemplate* data) {
   }
 }
 
-void FUN_08242b6c(slot32_t n, const WeaponTemplate* data) {
+void FUN_08242b6c(slot32_t n, const WeaponData* data) {
   Weapon* w = GetWeapon(n);
-  FUN_08242a38((WeaponTemplate*)data, w);
+  FUN_08242a38((WeaponData*)data, w);
   SetWeaponFoundFlag(data->id);
 }
 
-NON_MATCH bool32 FUN_08242b88(WeaponTemplate* data) {
+NON_MATCH bool32 FUN_08242b88(WeaponData* data) {
 #ifdef NONMATCHING_C
   Player* p;
   s32 slot = 0;
@@ -206,6 +207,7 @@ bool32 FUN_08242f9c(void) {
 
 NAKED void FUN_08242fec(void) { INCFUNC("asm/func/FUN_08242fec.inc"); }
 
+// 武器インベントリスロットn の武器が登録中かどうかを返す
 bool32 FUN_082430d4(slot32_t n) {
   s32 i;
   for (i = 0; i < 4; i++) {
@@ -216,6 +218,7 @@ bool32 FUN_082430d4(slot32_t n) {
   return FALSE;
 }
 
+// 武器インベントリで、登録中でない武器の数を返す
 s32 FUN_08243104(void) {
   slot32_t i;
   weapon32_t id;
@@ -224,13 +227,14 @@ s32 FUN_08243104(void) {
   retval = 0;
   for (i = 0; i < 16; i++) {
     id = GetWeaponID(i);
-    if ((gWeaponDB[id].unk_0a != 0) && (FUN_082430d4(i) == 0)) {
+    if ((gWeaponDB[id].price != 0) && (FUN_082430d4(i) == 0)) {
       retval++;
     }
   }
   return retval;
 }
 
+// 武器インベントリで、登録中でない武器の数を返す
 s32 FUN_08243140(void) {
   slot32_t i;
   weapon32_t id;
@@ -239,7 +243,7 @@ s32 FUN_08243140(void) {
   retval = 0;
   for (i = 0; i < 16; i++) {
     id = GetWeaponID(i);
-    if (((id == WEAPON_NONE) || (gWeaponDB[id].unk_0a != 0)) && (FUN_082430d4(i) == 0)) {
+    if (((id == WEAPON_NONE) || (gWeaponDB[id].price != 0)) && (FUN_082430d4(i) == 0)) {
       retval++;
     }
   }
@@ -251,7 +255,7 @@ bool32 FUN_08243180(slot32_t n) {
 
   id = GetWeaponID(n);
   if (id == WEAPON_NONE) return FALSE;
-  if (gWeaponDB[id].unk_0a == 0) return FALSE;
+  if (gWeaponDB[id].price == 0) return FALSE;
   if (FUN_082430d4(n)) return FALSE;
   return TRUE;
 }

@@ -336,7 +336,7 @@ FUN_08060158: @ 0x08060158
 	adds r4, #0x28
 	ldr r1, _080601A0 @ =0x000061F9
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r1, _080601A4 @ =0x000002F6
 	adds r0, r4, #0
 	bl FUN_0822b20c

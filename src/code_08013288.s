@@ -271,7 +271,7 @@ _08013488:
 	adds r4, #0x90
 	ldr r1, _080134AC @ =0x00002567
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	cmp r0, #0
 	bne _080134B0
 	movs r0, #1

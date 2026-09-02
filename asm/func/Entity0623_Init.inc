@@ -174,7 +174,7 @@ _08221E76:
 	ldr r1, [sp, #0x28]
 	adds r2, r6, #0
 	mov r3, sl
-	bl FUN_08022a70
+	bl Boss_Init_08022a70
 	mov r0, r8
 	adds r1, r4, #0
 	adds r2, r4, #0

@@ -118,7 +118,7 @@ _0806FBBC:
 	lsls r0, r1
 	orrs r5, r0
 	adds r0, r4, #0
-	bl FUN_08064be4
+	bl Player_PayMagicCost
 _0806FBD6:
 	adds r0, r6, #0
 	adds r0, #0x48

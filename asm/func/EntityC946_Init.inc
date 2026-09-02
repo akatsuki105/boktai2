@@ -23,7 +23,7 @@ _0820FDBC:
 	adds r5, r6, r3
 	ldr r1, _0820FE3C @ =0x00001C1B
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r0, #0xc3
 	lsls r0, r0, #2
 	adds r4, r6, r0

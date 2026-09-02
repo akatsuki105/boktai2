@@ -18,7 +18,7 @@
 	adds r0, #0x24
 	bl FUN_0823b284
 	adds r0, r4, #0
-	bl FUN_08063b24
+	bl Player_Destroy_Helper_08063b24
 	adds r0, r4, #0
 	bl FUN_0807ddd4
 	adds r0, r4, #0

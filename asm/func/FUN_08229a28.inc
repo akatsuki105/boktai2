@@ -22,7 +22,7 @@
 	adds r4, r7, r3
 	adds r0, r4, #0
 	ldr r1, _08229C14 @ =0x000097D3
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -119,7 +119,7 @@ _08229B0E:
 	adds r5, #0x2c
 	adds r0, r5, #0
 	ldr r1, _08229C48 @ =0x0000A850
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0

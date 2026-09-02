@@ -27962,8 +27962,8 @@ FUN_08160528: @ 0x08160528
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_08160534
-FUN_08160534: @ 0x08160534
+	thumb_func_start EnemyCockatrice_Destroy
+EnemyCockatrice_Destroy: @ 0x08160534
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	movs r1, #0xcb
@@ -28078,8 +28078,8 @@ _081605FE:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_0816061c
-FUN_0816061c: @ 0x0816061C
+	thumb_func_start EnemyCockatrice_Init
+EnemyCockatrice_Init: @ 0x0816061C
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -28147,7 +28147,7 @@ FUN_0816061c: @ 0x0816061C
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _08160700 @ =0x000041CF
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -29874,7 +29874,7 @@ _081614F2:
 	adds r1, r3, r4
 	strh r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
 	bl Script_GetKeywordValue
@@ -30267,7 +30267,7 @@ _081617DE:
 	ldr r0, [r5]
 	str r0, [r4]
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_0815987c
 	adds r0, r7, #0
@@ -30324,10 +30324,10 @@ _081617DE:
 	movs r3, #0xc4
 	lsls r3, r3, #3
 	adds r1, r7, r3
-	ldr r0, _081618A8 @ =FUN_08160534
+	ldr r0, _081618A8 @ =EnemyCockatrice_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081618AC
@@ -30339,7 +30339,7 @@ _08161898: .4byte 0x0000057C
 _0816189C: .4byte FUN_080f09e0
 _081618A0: .4byte 0x0000061C
 _081618A4: .4byte FUN_08160528
-_081618A8: .4byte FUN_08160534
+_081618A8: .4byte EnemyCockatrice_Destroy
 _081618AC:
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -30365,11 +30365,11 @@ EnemyCockatrice_Create: @ 0x081618C0
 	adds r1, r5, #0
 	bl ClearMemory
 	adds r0, r4, #0
-	bl FUN_0816061c
+	bl EnemyCockatrice_Init
 	cmp r0, #0
 	bge _081618EC
 	adds r0, r4, #0
-	bl FUN_08160534
+	bl EnemyCockatrice_Destroy
 	adds r0, r4, #0
 	bl Free
 _081618EC:

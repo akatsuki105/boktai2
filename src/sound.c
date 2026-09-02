@@ -101,6 +101,7 @@ void PlaySound_082406e0(SoundID32 id) {
   m4aSongNumStart(id);
 }
 
+// サンミゲルで建物に入った時のNPCのボイス時に呼ばれる(それ以外はまだ不明)
 void PlaySound_08240718(SoundID16 id) { m4aSongNumStart(id); }
 
 NAKED void sound_08240728(void) { INCFUNC("asm/func/sound_08240728.inc"); }

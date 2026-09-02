@@ -11194,7 +11194,7 @@ _0803BCA8:
 	mov r1, r8
 	ldr r2, [sp, #0x34]
 	add r3, sp, #0x1c
-	bl FUN_08022a70
+	bl Boss_Init_08022a70
 	movs r0, #0x8a
 	lsls r0, r0, #1
 	add r0, sb
@@ -11759,44 +11759,6 @@ _0803C15C:
 	mov sb, r4
 	mov sl, r5
 	pop {r4, r5, r6, r7}
-	pop {r1}
-	bx r1
-
-	thumb_func_start Durathror_Create
-Durathror_Create: @ 0x0803C16C
-	push {r4, r5, lr}
-	adds r5, r0, #0
-	movs r0, #2
-	bl FUN_08022a2c
-	adds r4, r0, #0
-	cmp r4, #0
-	bne _0803C1B6
-	ldr r1, _0803C1A8 @ =0x00000E24
-	movs r0, #8
-	bl CreateEntity
-	adds r4, r0, #0
-	cmp r4, #0
-	beq _0803C1B4
-	ldr r1, _0803C1AC @ =Durathror_Update
-	ldr r2, _0803C1B0 @ =Durathror_Destroy
-	bl SetEntityRoutine
-	adds r0, r4, #0
-	adds r1, r5, #0
-	bl Durathror_Init
-	cmp r0, #0
-	bge _0803C1B4
-	adds r0, r4, #0
-	bl KillEntity
-	movs r0, #0
-	b _0803C1B6
-	.align 2, 0
-_0803C1A8: .4byte 0x00000E24
-_0803C1AC: .4byte Durathror_Update
-_0803C1B0: .4byte Durathror_Destroy
-_0803C1B4:
-	adds r0, r4, #0
-_0803C1B6:
-	pop {r4, r5}
 	pop {r1}
 	bx r1
 

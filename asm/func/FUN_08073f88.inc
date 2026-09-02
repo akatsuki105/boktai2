@@ -108,7 +108,7 @@ _08074028:
 	adds r2, r5, #0
 	adds r2, #0x2c
 	adds r0, r5, #0
-	bl FUN_0806185c
+	bl Player_DarkDjangoSword_0806185c
 _0807406E:
 	cmp r6, #0
 	beq _080740A6

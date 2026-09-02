@@ -18165,8 +18165,8 @@ FUN_081b7244: @ 0x081B7244
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_081b7250
-FUN_081b7250: @ 0x081B7250
+	thumb_func_start EnemyBokuLink_Destroy
+EnemyBokuLink_Destroy: @ 0x081B7250
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	ldr r1, _081B7268 @ =0x0000025D
@@ -18277,8 +18277,8 @@ _081B7312:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_081b7330
-FUN_081b7330: @ 0x081B7330
+	thumb_func_start EnemyBokuLink_Init
+EnemyBokuLink_Init: @ 0x081B7330
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -18315,7 +18315,7 @@ FUN_081b7330: @ 0x081B7330
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _081B73C0 @ =0x00009247
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -19834,7 +19834,7 @@ _081B7E58:
 	movs r1, #4
 	strb r1, [r0]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
 	bl Script_GetKeywordValue
@@ -20249,7 +20249,7 @@ _081B832E:
 	strh r0, [r5]
 _081B8346:
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_081b3fa0
 	adds r0, r7, #0
@@ -20306,10 +20306,10 @@ _081B8346:
 	movs r3, #0xc4
 	lsls r3, r3, #3
 	adds r1, r7, r3
-	ldr r0, _081B83E8 @ =FUN_081b7250
+	ldr r0, _081B83E8 @ =EnemyBokuLink_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081B83EC
@@ -20320,7 +20320,7 @@ _081B83D8: .4byte 0x0000057C
 _081B83DC: .4byte FUN_080f09e0
 _081B83E0: .4byte 0x0000061C
 _081B83E4: .4byte FUN_081b7244
-_081B83E8: .4byte FUN_081b7250
+_081B83E8: .4byte EnemyBokuLink_Destroy
 _081B83EC:
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -20346,11 +20346,11 @@ EnemyBokuLink_Create: @ 0x081B8400
 	adds r1, r5, #0
 	bl ClearMemory
 	adds r0, r4, #0
-	bl FUN_081b7330
+	bl EnemyBokuLink_Init
 	cmp r0, #0
 	bge _081B842C
 	adds r0, r4, #0
-	bl FUN_081b7250
+	bl EnemyBokuLink_Destroy
 	adds r0, r4, #0
 	bl Free
 _081B842C:

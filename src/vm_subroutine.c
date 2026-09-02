@@ -3,6 +3,20 @@
 
 extern u16 gSubroutineCount;
 
+const ALIGNED(4) u8 u8_ARRAY_085a9108[256] = {0x0};  // 0x085A9108
+
+#define INCDATA(file) \
+  asm(".section .rodata\n\
+  .include \"" file   \
+      "\"\n\
+ .syntax divided\n");
+
+INCDATA("data/subroutine.inc");
+
+extern Subroutine gSubroutineTable[643];
+
+const u8 u8_ARRAY_085aa620[4] = {0x37, 0xC8, 0xEC, 0x40};  // 0x085aa620
+
 void FUN_0823b158(void) {
   Subroutine* cur;
   gSubroutineCount = 0;

@@ -3975,8 +3975,8 @@ FUN_08101c1c: @ 0x08101C1C
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_08101c28
-FUN_08101c28: @ 0x08101C28
+	thumb_func_start EnemyBoku_Destroy
+EnemyBoku_Destroy: @ 0x08101C28
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	ldr r1, _08101C40 @ =0x0000025D
@@ -4125,7 +4125,7 @@ EnemyBoku_Init: @ 0x08101D08
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _08101D98 @ =0x00009247
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -5654,7 +5654,7 @@ _08102834:
 	movs r2, #4
 	strb r2, [r0]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
 	bl Script_GetKeywordValue
@@ -6067,7 +6067,7 @@ _08102D16:
 	strh r0, [r5]
 _08102D2E:
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_080ff45c
 	adds r0, r7, #0
@@ -6124,10 +6124,10 @@ _08102D2E:
 	movs r3, #0xc4
 	lsls r3, r3, #3
 	adds r1, r7, r3
-	ldr r0, _08102DD0 @ =FUN_08101c28
+	ldr r0, _08102DD0 @ =EnemyBoku_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08102DD4
@@ -6138,7 +6138,7 @@ _08102DC0: .4byte 0x0000057C
 _08102DC4: .4byte FUN_080f09e0
 _08102DC8: .4byte 0x0000061C
 _08102DCC: .4byte FUN_08101c1c
-_08102DD0: .4byte FUN_08101c28
+_08102DD0: .4byte EnemyBoku_Destroy
 _08102DD4:
 	movs r0, #1
 	rsbs r0, r0, #0

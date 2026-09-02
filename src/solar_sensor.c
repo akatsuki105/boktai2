@@ -53,7 +53,7 @@ NAKED SolarSensorEntity* SSE_Create(u32 _) { INCFUNC("asm/func/SSE_Create.inc");
 
 NAKED s32 FUN_0824742c(Player4c4* p, u32 unk_8, s32 unk_1, s32 unk_4, s32 unk_5) { INCFUNC("asm/func/FUN_0824742c.inc"); }
 
-NAKED s32 FUN_08247504(UNK_PTR p) { INCFUNC("asm/func/FUN_08247504.inc"); }
+NAKED s32 FUN_08247504(unknown* p) { INCFUNC("asm/func/FUN_08247504.inc"); }
 
 NAKED void Sensor_DoEnableIO(void) { INCFUNC("asm/func/Sensor_DoEnableIO.inc"); }
 

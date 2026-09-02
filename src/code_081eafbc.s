@@ -7537,7 +7537,7 @@ _081EE5F6:
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, [sp, #0x48]
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081EE6FC @ =0x0000922E
 	ldr r1, [sp, #0x4c]
 	lsls r1, r1, #0x10
@@ -8660,7 +8660,7 @@ FUN_081eee60: @ 0x081EEE60
 	adds r4, r0, #0
 	adds r0, #0x18
 	ldr r1, _081EEE78 @ =0x00008639
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081EEE7C @ =0x030001D8
 	str r4, [r0]
 	movs r0, #0
@@ -9915,7 +9915,7 @@ _081EF7BC:
 	adds r5, #0x3c
 	adds r0, r5, #0
 	mov r1, r8
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081EF844 @ =0x0000922E
 	mov r2, sl
 	lsls r1, r2, #0x10
@@ -11325,7 +11325,7 @@ FUN_081f0260: @ 0x081F0260
 	adds r4, r0, #0
 	adds r0, #0x18
 	ldr r1, _081F0288 @ =0x0000D45E
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081F028C @ =0x0000922E
 	ldr r1, _081F0290 @ =0x00001DC3
 	bl GetFile
@@ -12503,7 +12503,7 @@ FUN_081f0b58: @ 0x081F0B58
 	adds r4, r0, #0
 	adds r0, #0x18
 	ldr r1, _081F0B80 @ =0x0000D45E
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081F0B84 @ =0x0000922E
 	ldr r1, _081F0B88 @ =0x00001DC3
 	bl GetFile
@@ -14062,7 +14062,7 @@ FUN_081f1738: @ 0x081F1738
 	adds r4, r0, #0
 	adds r0, #0x18
 	ldr r1, _081F1760 @ =0x000084B4
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081F1764 @ =0x0000922E
 	ldr r1, _081F1768 @ =0x00004EC0
 	bl GetFile
@@ -15593,7 +15593,7 @@ FUN_081f229c: @ 0x081F229C
 	adds r4, r2, #0
 	ldr r0, [r0]
 	adds r0, #0x2c
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081F22BC @ =0x0000922E
 	lsls r4, r4, #0x10
 	lsrs r4, r4, #0x10
@@ -17777,7 +17777,7 @@ FUN_081f32ec: @ 0x081F32EC
 	adds r4, r0, #0
 	adds r0, #0x18
 	ldr r1, _081F3314 @ =0x0000A5B3
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081F3318 @ =0x0000922E
 	ldr r1, _081F331C @ =0x00001752
 	bl GetFile
@@ -20028,7 +20028,7 @@ _081F4300:
 	adds r5, #0x2c
 	ldr r1, _081F4430 @ =0x0000D45E
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	cmp r0, #0
 	beq _081F4412
 	adds r0, r4, #0
@@ -21942,7 +21942,7 @@ _081F51D2:
 	adds r4, #0x2c
 	ldr r1, _081F52A0 @ =0x0000D45E
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r7, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -22248,7 +22248,7 @@ FUN_081f5458: @ 0x081F5458
 _081F5482:
 	mov r0, r8
 	ldr r1, [sp, #4]
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r7, #0
 	mov r1, r8
 	movs r2, #0
@@ -27151,7 +27151,7 @@ FUN_081f794c: @ 0x081F794C
 	adds r0, r4, #0
 	adds r0, #0x18
 	ldr r1, _081F796C @ =0x0000F422
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081F7970 @ =0x03000200
 	str r4, [r0]
 	movs r0, #0
@@ -27759,7 +27759,7 @@ FUN_081f7dbc: @ 0x081F7DBC
 	adds r0, r4, #0
 	adds r0, #0x18
 	ldr r1, _081F7DDC @ =0x0000354D
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081F7DE0 @ =0x03000204
 	str r4, [r0]
 	movs r0, #0
@@ -29390,7 +29390,7 @@ FUN_081f8a00: @ 0x081F8A00
 	adds r0, r4, #0
 	adds r0, #0x18
 	ldr r1, _081F8A20 @ =0x0000F422
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081F8A24 @ =0x03000208
 	str r4, [r0]
 	movs r0, #0
@@ -30925,7 +30925,7 @@ FUN_081f9574: @ 0x081F9574
 	adds r0, r4, #0
 	adds r0, #0x18
 	ldr r1, _081F9594 @ =0x0000F422
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081F9598 @ =0x0300020C
 	str r4, [r0]
 	movs r0, #0
@@ -31889,7 +31889,7 @@ FUN_081f9c90: @ 0x081F9C90
 	adds r0, r4, #0
 	adds r0, #0x18
 	ldr r1, _081F9CB0 @ =0x0000F422
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r0, _081F9CB4 @ =0x03000210
 	str r4, [r0]
 	movs r0, #0
@@ -32893,7 +32893,7 @@ _081FA3EE:
 	str r0, [r4]
 	ldr r1, _081FA468 @ =0x0000D636
 	mov r0, sb
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r1, [r4]
 	movs r0, #0
 	str r0, [sp]

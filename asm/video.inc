@@ -108,9 +108,9 @@ GetParticleGroup: @ 0x0822B10C
 LoadActorSpritesFile: @ 0x0822B148
   .include "asm/func/LoadActorSpritesFile.inc"
 
-	thumb_func_start FUN_0822b16c
-FUN_0822b16c: @ 0x0822B16C
-  .include "asm/func/FUN_0822b16c.inc"
+	thumb_func_start Video_GetActorSprite
+Video_GetActorSprite: @ 0x0822B16C
+  .include "asm/func/Video_GetActorSprite.inc"
 
 	thumb_func_start FUN_0822b20c
 FUN_0822b20c: @ 0x0822B20C
@@ -300,9 +300,9 @@ FUN_0822cf50: @ 0x0822CF50
 FUN_0822cf60: @ 0x0822CF60
   .include "asm/func/FUN_0822cf60.inc"
 
-	thumb_func_start FUN_0822cf74
-FUN_0822cf74: @ 0x0822CF74
-  .include "asm/func/FUN_0822cf74.inc"
+	thumb_func_start Video_CreateSpriteLUT
+Video_CreateSpriteLUT: @ 0x0822CF74
+  .include "asm/func/Video_CreateSpriteLUT.inc"
 
 	thumb_func_start FUN_0822d00c
 FUN_0822d00c: @ 0x0822D00C

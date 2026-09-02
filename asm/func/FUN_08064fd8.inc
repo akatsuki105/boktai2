@@ -96,7 +96,7 @@ _08065068:
 	movs r6, #1
 	strb r6, [r4, #3]
 	adds r0, r5, #0
-	bl FUN_08064d04
+	bl Player_CheckMagicEnchant
 	cmp r0, #0
 	blt _080650FE
 	ldr r1, _080650CC @ =0x00000979

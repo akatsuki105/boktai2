@@ -1,3 +1,4 @@
+#include "entity.h"
 #include "global.h"
 #include "sprite.h"
 
@@ -6,18 +7,23 @@ extern u16 u16_030044b8;
 
 const u8 u8_ARRAY_085b0110[32] = {0};
 
+#define SPRITE_SIZE(widthPixel, heightPixel) ((heightPixel << 8) | widthPixel)
+
 // clang-format off
-// 多分スプライトのサイズ
-const u16 u16_ARRAY_085b0130[16] = {
-    0x808, 0x810, 0x1008, 0x0,
-    0x1010, 0x820, 0x2008, 0x0,
-    0x2020, 0x1020, 0x2010, 0x0,
-    0x4040, 0x2040, 0x4020, 0x0
+// idx: (OAM1.14-15 << 2) | (OAM0.14-15), ie. ((sizeidx << 2) | shape)
+const u16 gSpriteSizeTable[16] = {
+// OAM0.14-15:  Square(0)             Horizontal(1)         Vertical(2)           Prohibited(3)
+                SPRITE_SIZE( 8,  8),  SPRITE_SIZE(16,  8),  SPRITE_SIZE( 8, 16),  0x0,
+                SPRITE_SIZE(16, 16),  SPRITE_SIZE(32,  8),  SPRITE_SIZE( 8, 32),  0x0,
+                SPRITE_SIZE(32, 32),  SPRITE_SIZE(32, 16),  SPRITE_SIZE(16, 32),  0x0,
+                SPRITE_SIZE(64, 64),  SPRITE_SIZE(64, 32),  SPRITE_SIZE(32, 64),  0x0,
 }; // 0x085b0130
 // clang-format on
 
+#undef SPRITE_SIZE
+
 // fileID に SPRITE_SHAIAN が渡されている in 0x0818352c
-void FUN_0822b16c(void* p, u32 fileID);
+void Video_GetActorSprite(void* p, u32 fileID);
 
 void FUN_0822a41c(SpriteState* p, s32 idx);
 

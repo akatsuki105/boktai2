@@ -4,118 +4,6 @@
 	
 	.text
 
-	thumb_func_start FUN_082409a0
-FUN_082409a0: @ 0x082409A0
-  .include "asm/func/FUN_082409a0.inc"
-
-	thumb_func_start FUN_082409d0
-FUN_082409d0: @ 0x082409D0
-  .include "asm/func/FUN_082409d0.inc"
-
-	thumb_func_start FUN_08240a04
-FUN_08240a04: @ 0x08240A04
-  .include "asm/func/FUN_08240a04.inc"
-
-	thumb_func_start FUN_08240a08
-FUN_08240a08: @ 0x08240A08
-  .include "asm/func/FUN_08240a08.inc"
-
-	thumb_func_start FUN_08240a20
-FUN_08240a20: @ 0x08240A20
-  .include "asm/func/FUN_08240a20.inc"
-
-	thumb_func_start FUN_08240a54
-FUN_08240a54: @ 0x08240A54
-  .include "asm/func/FUN_08240a54.inc"
-
-	thumb_func_start FUN_08240a90
-FUN_08240a90: @ 0x08240A90
-  .include "asm/func/FUN_08240a90.inc"
-
-	thumb_func_start FUN_08240ad4
-FUN_08240ad4: @ 0x08240AD4
-  .include "asm/func/FUN_08240ad4.inc"
-
-	thumb_func_start FUN_08240b00
-FUN_08240b00: @ 0x08240B00
-  .include "asm/func/FUN_08240b00.inc"
-
-	thumb_func_start FUN_08240b44
-FUN_08240b44: @ 0x08240B44
-  .include "asm/func/FUN_08240b44.inc"
-
-	thumb_func_start FUN_08240b98
-FUN_08240b98: @ 0x08240B98
-  .include "asm/func/FUN_08240b98.inc"
-
-	thumb_func_start FUN_08240bcc
-FUN_08240bcc: @ 0x08240BCC
-  .include "asm/func/FUN_08240bcc.inc"
-
-	thumb_func_start FUN_08240c9c
-FUN_08240c9c: @ 0x08240C9C
-  .include "asm/func/FUN_08240c9c.inc"
-
-	thumb_func_start FUN_08240cc4
-FUN_08240cc4: @ 0x08240CC4
-  .include "asm/func/FUN_08240cc4.inc"
-
-	thumb_func_start FUN_08240cf0
-FUN_08240cf0: @ 0x08240CF0
-  .include "asm/func/FUN_08240cf0.inc"
-
-	thumb_func_start FUN_08240d20
-FUN_08240d20: @ 0x08240D20
-  .include "asm/func/FUN_08240d20.inc"
-
-	thumb_func_start FUN_08240dc8
-FUN_08240dc8: @ 0x08240DC8
-  .include "asm/func/FUN_08240dc8.inc"
-
-	thumb_func_start FUN_08240dec
-FUN_08240dec: @ 0x08240DEC
-  .include "asm/func/FUN_08240dec.inc"
-
-	thumb_func_start FUN_08240e10
-FUN_08240e10: @ 0x08240E10
-  .include "asm/func/FUN_08240e10.inc"
-
-	thumb_func_start FUN_08240e1c
-FUN_08240e1c: @ 0x08240E1C
-  .include "asm/func/FUN_08240e1c.inc"
-
-	thumb_func_start FUN_08240e28
-FUN_08240e28: @ 0x08240E28
-  .include "asm/func/FUN_08240e28.inc"
-
-	thumb_func_start FUN_08240e60
-FUN_08240e60: @ 0x08240E60
-  .include "asm/func/FUN_08240e60.inc"
-
-	thumb_func_start FUN_08240ea4
-FUN_08240ea4: @ 0x08240EA4
-  .include "asm/func/FUN_08240ea4.inc"
-
-	thumb_func_start FUN_08240f20
-FUN_08240f20: @ 0x08240F20
-  .include "asm/func/FUN_08240f20.inc"
-
-	thumb_func_start FUN_08240f4c
-FUN_08240f4c: @ 0x08240F4C
-  .include "asm/func/FUN_08240f4c.inc"
-
-	thumb_func_start FUN_08240f94
-FUN_08240f94: @ 0x08240F94
-  .include "asm/func/FUN_08240f94.inc"
-
-	thumb_func_start FUN_08240fdc
-FUN_08240fdc: @ 0x08240FDC
-  .include "asm/func/FUN_08240fdc.inc"
-
-	thumb_func_start FUN_08241000
-FUN_08241000: @ 0x08241000
-  .include "asm/func/FUN_08241000.inc"
-
 	thumb_func_start FUN_0824100c
 FUN_0824100c: @ 0x0824100C
   .include "asm/func/FUN_0824100c.inc"
@@ -224,19 +112,19 @@ FUN_08241550: @ 0x08241550
 FUN_08241574: @ 0x08241574
   .include "asm/func/FUN_08241574.inc"
 
-	thumb_func_start FUN_082415bc
-FUN_082415bc: @ 0x082415BC
-  .include "asm/func/FUN_082415bc.inc"
+	thumb_func_start EntityB639_Update
+EntityB639_Update: @ 0x082415BC
+  .include "asm/func/EntityB639_Update.inc"
 
-	thumb_func_start FUN_082415c0
-FUN_082415c0: @ 0x082415C0
-  .include "asm/func/FUN_082415c0.inc"
+	thumb_func_start EntityB639_Destroy
+EntityB639_Destroy: @ 0x082415C0
+  .include "asm/func/EntityB639_Destroy.inc"
 
-	thumb_func_start FUN_082415d8
-FUN_082415d8: @ 0x082415D8
-  .include "asm/func/FUN_082415d8.inc"
+	thumb_func_start EntityB639_Init
+EntityB639_Init: @ 0x082415D8
+  .include "asm/func/EntityB639_Init.inc"
 
-	thumb_func_start FUN_0824160c
-FUN_0824160c: @ 0x0824160C
-  .include "asm/func/FUN_0824160c.inc"
+	thumb_func_start EntityB639_Create
+EntityB639_Create: @ 0x0824160C
+  .include "asm/func/EntityB639_Create.inc"
 

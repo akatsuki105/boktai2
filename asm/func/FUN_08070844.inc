@@ -154,7 +154,7 @@ _08070940:
 	adds r2, #0x2c
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_08061970
+	bl Player_DarkDjangoSpear_08061970
 	b _080709FE
 	.align 2, 0
 _0807099C: .4byte 0x000003D1
@@ -180,7 +180,7 @@ _080709A4:
 	adds r2, #0x2c
 	adds r0, r5, #0
 	movs r3, #1
-	bl FUN_08061970
+	bl Player_DarkDjangoSpear_08061970
 	b _080709FE
 _080709D2:
 	cmp r0, #0x1a
@@ -203,7 +203,7 @@ _080709D2:
 	adds r2, #0x2c
 	adds r0, r5, #0
 	movs r3, #2
-	bl FUN_08061970
+	bl Player_DarkDjangoSpear_08061970
 _080709FE:
 	adds r0, r5, #0
 	bl FUN_08070604

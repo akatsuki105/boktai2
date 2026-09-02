@@ -13,7 +13,7 @@
 	bne _08061C10
 	ldr r1, _08061C04 @ =0x00002110
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0x43
@@ -44,7 +44,7 @@ _08061C0C: .4byte FUN_080617bc
 _08061C10:
 	ldr r1, _08061C50 @ =0x00008F5D
 	adds r0, r5, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #1

@@ -43,7 +43,7 @@ def get_data_name(data):
     sym = prog.getSymbolTable().getPrimarySymbol(data.getAddress())
     if sym is not None:
         return sym.getName()
-    return "data_{}".format(data.getAddress())
+    return f"data_{data.getAddress()}"
 
 
 def format_pointer(data):
@@ -66,22 +66,22 @@ def format_pointer(data):
 
     func = func_mgr.getFunctionContaining(value)
     if func is not None:
-        return "&{}".format(func.getName())
+        return f"{func.getName()}"
 
     sym = symtab.getPrimarySymbol(value)
     if sym is not None:
-        return "&{}".format(sym.getName())
+        return f"&{sym.getName()}"
 
     if (value.getOffset() & 1) == 1:
         even_addr = value.subtract(1)
         func = func_mgr.getFunctionContaining(even_addr)
         if func is not None:
-            return "&{}".format(func.getName())
+            return f"{func.getName()}"
         sym = symtab.getPrimarySymbol(even_addr)
         if sym is not None:
-            return "&{}".format(sym.getName())
+            return f"&{sym.getName()}"
 
-    return "(void*)0x{:X}".format(value.getOffset())
+    return f"(void*)0x{value.getOffset():X}"
 
 
 def format_enum(data, dt):
@@ -99,7 +99,7 @@ def format_enum(data, dt):
         name = dt.getName(lv)
     except Exception:
         name = None
-    return name if name else "0x{:X}".format(lv)
+    return name if name else f"0x{lv:X}"
 
 
 def format_leaf(data):
@@ -121,16 +121,16 @@ def format_leaf(data):
     if isinstance(value, Scalar):
         v = value.getUnsignedValue()
         if dt.getName() in ("char", "uchar") and 0x20 <= v < 0x7F:
-            return "'{}'".format(chr(v))
+            return f"'{chr(v)}'"
         # s8/s16/s32(基底型 sbyte/short/int)は符号付きとして表示する。
         # value.getSignedValue() は DataType の符号有無に関係なくスカラーの
         # ビット幅で符号拡張した値を返す。
         if dt.getName() in ("sbyte", "short", "int"):
             sv = value.getSignedValue()
             if sv < 0:
-                return "-0x{:X}".format(-sv)
-            return "0x{:X}".format(sv)
-        return "0x{:X}".format(v)
+                return f"-0x{(-sv):X}"
+            return f"0x{sv:X}"
+        return f"0x{v:X}"
 
     # char配列や文字列型は Ghidra 標準表現(ダブルクォート付き)をそのまま使う
     return data.getDefaultValueRepresentation()
@@ -147,7 +147,7 @@ def format_data(data, indent):
         return format_leaf(data)
 
     n = data.getNumComponents()
-    if n <= 0 or not (isinstance(dt, Array) or isinstance(dt, Structure)):
+    if n <= 0 or not isinstance(dt, (Array, Structure)):
         return format_leaf(data)
 
     is_struct = isinstance(dt, Structure)
@@ -159,15 +159,22 @@ def format_data(data, indent):
             dtc = dt.getComponent(i)
             fname = dtc.getFieldName()
             if not fname:
-                fname = "field_0x{:X}".format(dtc.getOffset())
-            lines.append(
-                INDENT_UNIT * (indent + 1) + ".{} = {}".format(fname, comp_str)
-            )
+                fname = f"field_0x{dtc.getOffset():X}"
+            lines.append(INDENT_UNIT * (indent + 1) + f".{fname} = {comp_str}")
         else:
             lines.append(INDENT_UNIT * (indent + 1) + comp_str)
-
-    inner = ",\n".join(lines)
-    return "{\n" + inner + "\n" + INDENT_UNIT * indent + "}"
+    if is_struct:
+        inner = ",\n".join(lines)
+    else:
+        # 配列は要素ごとに改行せずカンマ区切りで並べる (16個ごとに改行する)
+        inner = INDENT_UNIT * (indent + 1)
+        for i, line in enumerate(lines):
+            inner += line.strip()
+            if i < len(lines) - 1:
+                inner += ", "
+            if (i + 1) % 16 == 0:
+                inner += "\n" + INDENT_UNIT * (indent + 1)
+    return "{\n" + inner + ",\n" + INDENT_UNIT * indent + "}"
 
 
 def get_c_declaration(data):
@@ -188,14 +195,14 @@ def get_c_declaration(data):
         dims.append(arr.getNumElements())
         cur = arr.getDataType()
 
-    dim_str = "".join("[{}]".format(n) for n in dims)
-    return "{} {}{}".format(cur.getDisplayName(), name, dim_str)
+    dim_str = "".join(f"[{n}]" for n in dims)
+    return f"{cur.getDisplayName()} {name}{dim_str}"
 
 
 def dump_one(data):
     decl = get_c_declaration(data)
     body = format_data(data, 0)
-    println("{} = {};".format(decl, body))
+    println(f"const {decl} = {body};")
 
 
 def collect_selection_data(prog, selection):

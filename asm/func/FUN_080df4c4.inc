@@ -15,7 +15,7 @@ _080DF4D0:
 	adds r6, #0x2c
 	adds r0, r6, #0
 	ldr r1, _080DF530 @ =0x0000354D
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r2, #0

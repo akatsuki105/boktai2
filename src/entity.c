@@ -98,7 +98,7 @@ void RemoveEntity(Entity* p) {
   if (next != NULL) next->prev = prev;
 }
 
-Entity* CreateEntity(u32 kind, s32 bytesize) {
+void* CreateEntity(u32 kind, s32 bytesize) {
   Entity* p = Malloc(bytesize);
   if (p == NULL) {
     return NULL;
@@ -109,7 +109,7 @@ Entity* CreateEntity(u32 kind, s32 bytesize) {
   p->id = gEntityCount;
   gEntityCount++;
   AddEntity(p);
-  return p;
+  return (void*)p;
 }
 
 void SetEntityRoutine(void* entity, void* entity_func_onupdate, void* entity_func_ondestroy) {

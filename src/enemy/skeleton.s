@@ -34894,8 +34894,8 @@ _08113DDA:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_08113de0
-FUN_08113de0: @ 0x08113DE0
+	thumb_func_start EnemySkeleton_Destroy
+EnemySkeleton_Destroy: @ 0x08113DE0
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	movs r1, #0xcb
@@ -35010,8 +35010,8 @@ _08113EAA:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_08113ec8
-FUN_08113ec8: @ 0x08113EC8
+	thumb_func_start EnemySkeleton_Init
+EnemySkeleton_Init: @ 0x08113EC8
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -35066,7 +35066,7 @@ _08113F12:
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _08113F7C @ =0x0000AE52
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -36722,7 +36722,7 @@ _08114CE0:
 	strh r0, [r2, #6]
 _08114D0E:
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
 	bl Script_GetKeywordValue
@@ -37113,7 +37113,7 @@ _08114FDA:
 	bl FUN_081075dc
 _08115000:
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_08113c18
 	adds r0, r7, #0
@@ -37450,10 +37450,10 @@ _08115288:
 	movs r0, #0xc4
 	lsls r0, r0, #3
 	adds r1, r7, r0
-	ldr r0, _081152D8 @ =FUN_08113de0
+	ldr r0, _081152D8 @ =EnemySkeleton_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081152DC
@@ -37469,7 +37469,7 @@ _081152C8: .4byte 0x0000057C
 _081152CC: .4byte FUN_080f09e0
 _081152D0: .4byte 0x0000061C
 _081152D4: .4byte FUN_08113ca0
-_081152D8: .4byte FUN_08113de0
+_081152D8: .4byte EnemySkeleton_Destroy
 _081152DC:
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -37496,11 +37496,11 @@ EnemySkeleton_Create: @ 0x081152F0
 	adds r1, r5, #0
 	bl ClearMemory
 	adds r0, r4, #0
-	bl FUN_08113ec8
+	bl EnemySkeleton_Init
 	cmp r0, #0
 	bge _0811531E
 	adds r0, r4, #0
-	bl FUN_08113de0
+	bl EnemySkeleton_Destroy
 	adds r0, r4, #0
 	bl Free
 _0811531E:

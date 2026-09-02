@@ -9,7 +9,6 @@
 #include "types.h"
 //
 #include "game.h"
-#include "player.h"
 
 #if defined(__APPLE__) || defined(__CYGWIN__) || defined(__INTELLISENSE__)
 #define _(x) {x}   // _("string") is converted to charmap.txt by tools/preproc

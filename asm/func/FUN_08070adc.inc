@@ -125,7 +125,7 @@ _08070BCA:
 	lsls r0, r1
 	orrs r6, r0
 	adds r0, r4, #0
-	bl FUN_08064be4
+	bl Player_PayMagicCost
 _08070BE4:
 	adds r0, r5, #0
 	adds r0, #0x48

@@ -9399,7 +9399,7 @@ _08027A1E:
 	mov r1, r8
 	mov r2, sb
 	add r3, sp, #0x1c
-	bl FUN_08022a70
+	bl Boss_Init_08022a70
 	movs r1, #0x8a
 	lsls r1, r1, #1
 	adds r0, r7, r1
@@ -9913,42 +9913,4 @@ _08027E66:
 	.align 2, 0
 _08027E78: .4byte 0x03003584
 _08027E7C: .4byte 0x04000008
-
-	thumb_func_start Duneyrr_Create
-Duneyrr_Create: @ 0x08027E80
-	push {r4, r5, lr}
-	adds r5, r0, #0
-	movs r0, #0
-	bl FUN_08022a2c
-	adds r4, r0, #0
-	cmp r4, #0
-	bne _08027ECA
-	ldr r1, _08027EBC @ =0x000007A4
-	movs r0, #8
-	bl CreateEntity
-	adds r4, r0, #0
-	cmp r4, #0
-	beq _08027EC8
-	ldr r1, _08027EC0 @ =Duneyrr_Update
-	ldr r2, _08027EC4 @ =Duneyrr_Destroy
-	bl SetEntityRoutine
-	adds r0, r4, #0
-	adds r1, r5, #0
-	bl Duneyrr_Init
-	cmp r0, #0
-	bge _08027EC8
-	adds r0, r4, #0
-	bl KillEntity
-	movs r0, #0
-	b _08027ECA
-	.align 2, 0
-_08027EBC: .4byte 0x000007A4
-_08027EC0: .4byte Duneyrr_Update
-_08027EC4: .4byte Duneyrr_Destroy
-_08027EC8:
-	adds r0, r4, #0
-_08027ECA:
-	pop {r4, r5}
-	pop {r1}
-	bx r1
 

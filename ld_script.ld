@@ -13,11 +13,7 @@ gMaxLines = 0;
 gNumMusicPlayers = 32;
 gSongTable = 0x0825E56C;
 
-gSubroutineTable = 0x085A9208;
-
 gCtrlHandlers2_ROM = 0x08DBD758;
-
-gPlayerAttackUpdates = 0x085abab8;
 
 gAnimDirectory = 0x085b0df0;
 gTilemapDirectory = 0x085b26e4;
@@ -26,6 +22,8 @@ gPlttDirectory = 0x087fa08c;
 
 gParticleFile0 = 0x08A20138;
 gSpriteSetFile25 = 0x08C5A80C;
+
+gItemEffectHandlers = 0x085ACF7C;
 
 SECTIONS {
 	. = 0x2000000;
@@ -43,6 +41,7 @@ SECTIONS {
     ALIGN(4)
     {
       src/iwram1.o(iwram_data);
+      src/solar.o(iwram_data);
       src/sound.o(iwram_data);
       src/solar_sensor.o(iwram_data);
       src/lib/libagbrtc.o(.bss);
@@ -80,36 +79,51 @@ SECTIONS {
 			src/password.o (.text);
 			src/code_08013288.o (.text);
 			src/code_08013634.o (.text);
+			src/entity_08013df0.o (.text);
+			src/entity_080146e0.o (.text);
 			src/code_08013c94.o (.text);
+			src/entity_da0b.o (.text);
+			src/entity_ef6f.o (.text);
+			src/entity_6d69.o (.text);
+			src/entity_4e69.o (.text);
+			src/entity_730a.o (.text);
 			src/boss.o (.text);
 			src/boss/duneyrr.o (.text);
 			src/boss/entity_ba4b.o (.text);
 			src/boss/durathror.o (.text);
+			src/boss/shademan.o (.text);
 			src/code_0803c1bc.o (.text);
 			src/crossover_lobby.o (.text);
-			src/code_0804f820.o (.text);
-			src/code_08052290.o (.text);
+			src/entity_af33.o (.text);
+			src/entity_af33_childlen.o (.text);
+			src/entity_723e.o (.text);
 			src/code_08052eb8.o (.text);
 			src/code_0805f6d4.o (.text);
 			src/code_0805ff04.o (.text);
 			src/code_080601f0.o (.text);
-			src/code_080604bc.o (.text);
+			src/entity_080607a8.o (.text);
 			src/player.o (.text);
 			src/player_08065988.o (.text);
-			src/player_0807f430.o (.text);
-			src/code_0807f430.o (.text);
+			src/entity_5941.o (.text);
 			src/player_0807f640.o (.text);
 			src/code_080801f4.o (.text);
-			src/item_08091774.o (.text);
+			src/entity_cc28.o (.text);
 			src/code_080917e4.o (.text);
+			src/gameover.o (.text);
+			src/freeze_effect.o (.text);
 			src/level_upper.o (.text);
 			src/code_080a8804.o (.text);
-			src/code_080aad30.o (.text);
+			src/entity_c438.o (.text);
 			src/code_080aafdc.o (.text);
+			src/entity_cbb0.o (.text);
+			src/solar_generator.o (.text);
+			src/solar_bank.o (.text);
 			src/entity_e9d3.o (.text);
 			src/code_080b5ab0.o (.text);
 			src/entity_d3a9.o (.text);
 			src/code_080c0d6c.o (.text);
+			src/boss/jormungandr.o (.text);
+			src/entity_e06a.o (.text);
 			src/code_080c5058.o (.text);
 			src/entity_080ddf88.o (.text);
 			src/enemy/boku.o (.text);
@@ -152,7 +166,8 @@ SECTIONS {
 			src/code_0821b21c.o (.text);
 			src/entity_0821b7fc.o (.text);
 			src/code_0821b860.o (.text);
-			src/entity_83e5.o (.text);
+			src/boss/entity_0623.o (.text);
+			src/game_result.o (.text);
 			src/entity_8aab.o (.text);
 			src/system.o (.text);
 			src/video.o (.text);
@@ -169,6 +184,8 @@ SECTIONS {
 			src/vm_expr.o (.text);
 			src/code_082326a0.o (.text);
 			src/code_082324dc.o (.text);
+			src/hitbox.o (.text);
+			src/code_08236f18.o (.text);
 			src/lib/linkManager.o (.text);
 			src/code_0823a6c0.o (.text);
 			src/vm_ctrl2.o (.text);
@@ -178,6 +195,8 @@ SECTIONS {
 			src/camera.o (.text);
 			src/time.o (.text);
 			src/sound.o (.text);
+			src/entity_08240a54.o (.text);
+			src/entity_794c.o (.text);
 			src/code_0823e174.o (.text);
 			src/solar.o (.text);
 			src/item_082421f0.o (.text);
@@ -268,20 +287,23 @@ SECTIONS {
     *libc.a:s_scalbn.o(.rodata);
     *libc.a:impure.o(.rodata);
     *libc.a:syscalls.o(.rodata);
-    src/data3.o (.rodata);
+    src/vm_subroutine.o (.rodata);
     src/entity_4ae5.o (.rodata);
     src/entity_d9ae.o (.rodata);
     src/entity_2d2b.o (.rodata);
     src/entity_5da5.o (.rodata);
     src/entity_83b2.o (.rodata);
     src/data3b.o (.rodata);
+    src/player.o (.rodata);
+    src/entity_0b50.o (.rodata);
+    src/entity_28cb.o (.rodata);
     src/entity_c946.o (.rodata);
     src/weapon_dex.o (.rodata);
     src/album_menu.o (.rodata);
     src/data3d.o (.rodata);
     src/entity_0fc5.o (.rodata);
-    src/entity_0623.o (.rodata);
-    src/entity_83e5.o (.rodata);
+    src/boss/entity_0623.o (.rodata);
+    src/game_result.o (.rodata);
     src/entity_8aab.o (.rodata);
     src/video.o (.rodata);
     src/entity.o (.rodata);

@@ -22,4 +22,4 @@ u8 FUN_0824c120(u8* p) { return (*p) >> 5; }
 
 u16 FUN_0824c128(u8* p) { return ((p[1] & 0x1F) << 8) | p[0]; }
 
-NAKED void FUN_0824c138(UNK_PTR p, u8 slot) { INCFUNC("asm/func/FUN_0824c138.inc"); }
+NAKED void FUN_0824c138(unknown* p, u8 slot) { INCFUNC("asm/func/FUN_0824c138.inc"); }

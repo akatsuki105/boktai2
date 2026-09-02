@@ -6573,7 +6573,7 @@ EnemySlime_Init: @ 0x08165654
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _081656DC @ =0x0000B96C
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -8268,7 +8268,7 @@ _081662E8:
 	orrs r0, r1
 	strh r0, [r4]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
 	bl Script_GetKeywordValue
@@ -8728,7 +8728,7 @@ _081667A4:
 	str r0, [r3]
 _081667F4:
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_08163eac
 	adds r0, r7, #0
@@ -8786,7 +8786,7 @@ _081667F4:
 	ldr r0, _081668A4 @ =FUN_08165574
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081668A8

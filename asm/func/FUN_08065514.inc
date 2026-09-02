@@ -10,21 +10,21 @@
 	adds r0, r5, r0
 	str r0, [sp, #4]
 	ldr r1, _080655A4 @ =0x0000DA6D
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r1, #0x9a
 	lsls r1, r1, #1
 	adds r1, r1, r5
 	mov sl, r1
 	ldr r1, _080655A8 @ =0x0000D495
 	mov r0, sl
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r2, #0xa8
 	lsls r2, r2, #1
 	adds r2, r2, r5
 	mov sb, r2
 	ldr r1, _080655AC @ =0x00002499
 	mov r0, sb
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	ldr r4, _080655B0 @ =0x0000922E
 	ldr r1, _080655B4 @ =0x00005BB7
 	adds r0, r4, #0

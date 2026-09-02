@@ -6851,7 +6851,7 @@ EnemySpider_Init: @ 0x0813115C
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _081311F4 @ =0x0000528F
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -8735,7 +8735,7 @@ _081320E6:
 	strh r0, [r3]
 _081320FE:
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_081300d0
 	ldr r4, [sp, #0x34]
@@ -8930,7 +8930,7 @@ _0813221A:
 	ldr r0, _081322C8 @ =FUN_081310f8
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081322CC

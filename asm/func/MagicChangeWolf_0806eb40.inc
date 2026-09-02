@@ -55,7 +55,7 @@ _0806EB9C:
 	bl FUN_08060b84
 _0806EBBA:
 	adds r0, r5, #0
-	bl FUN_08064be4
+	bl Player_PayMagicCost
 	ldr r0, _0806EBE0 @ =0x0000039E
 	bl PlaySound_082406e0
 _0806EBC6:
@@ -412,7 +412,7 @@ _0806EE98:
 	cmp r0, #3
 	bhi _0806EEC2
 	adds r0, r5, #0
-	bl FUN_08064b90
+	bl Player_CheckMagicCost
 	cmp r0, #0
 	beq _0806EEC2
 	movs r1, #0xa3

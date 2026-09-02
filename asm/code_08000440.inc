@@ -4,23 +4,6 @@
 	
 	.text
 
-	thumb_func_start FUN_08000440
-FUN_08000440: @ 0x08000440
-	push {lr}
-	ldr r1, _08000458 @ =0x03000000
-	movs r2, #0
-	adds r0, r1, #0
-	adds r0, #0xc
-_0800044A:
-	str r2, [r0]
-	subs r0, #4
-	cmp r0, r1
-	bge _0800044A
-	pop {r0}
-	bx r0
-	.align 2, 0
-_08000458: .4byte 0x03000000
-
 	thumb_func_start FUN_0800045c
 FUN_0800045c: @ 0x0800045C
 	push {r4, r5, r6, r7, lr}
@@ -2620,44 +2603,4 @@ _0800181C:
 	bx r0
 	.align 2, 0
 _08001824: .4byte 0x03000010
-
-	thumb_func_start FUN_08001828
-FUN_08001828: @ 0x08001828
-	push {r4, r5, r6, r7, lr}
-	sub sp, #0x20
-	movs r0, #0x74
-	movs r1, #1
-	bl Script_GetKeywordValue
-	adds r7, r0, #0
-	movs r0, #0x72
-	movs r1, #0
-	bl Script_GetKeywordValue
-	adds r6, r0, #0
-	movs r4, #0
-	movs r0, #0x70
-	bl prepare_08231510
-	cmp r0, #0
-	beq _08001864
-	mov r5, sp
-	b _08001858
-_08001850:
-	bl Script_GetValue
-	stm r5!, {r0}
-	adds r4, #1
-_08001858:
-	bl VM_GetPC
-	cmp r0, #0
-	beq _08001864
-	cmp r4, #7
-	ble _08001850
-_08001864:
-	adds r0, r7, #0
-	adds r1, r6, #0
-	adds r2, r4, #0
-	mov r3, sp
-	bl FUN_080017d4
-	add sp, #0x20
-	pop {r4, r5, r6, r7}
-	pop {r0}
-	bx r0
 

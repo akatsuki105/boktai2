@@ -5,7 +5,7 @@
 #include "time.h"
 #include "weapon.h"
 
-#define REGISTERED_WEAPON(n) (*(gStat->registeredWeapon + n))
+#define REGISTERED_WEAPON(n) (*(gStat->registeredWeapon + n))  // 登録 = 剣槍槌銃 のスロットに登録されている
 #define REGISTERED_MAGIC(n) (*(gStat->registeredMagic + n))
 
 // 0x0203C400 (ハードリセット時, ソフトリセット時は配置先が変動する)
@@ -35,7 +35,7 @@ typedef struct {
   s16 equippedMagicIdx;          // 0x05A, 登録された4つの魔法のうち、フィールドで選択している魔法のインデックス(0~3)
   slot16_t armor;                // 0x05C
   u8 unk_5e[2];                  // 0x05E
-  slot16_t registeredWeapon[4];  // 0x060
+  slot16_t registeredWeapon[4];  // 0x060, 剣槍槌銃, 登録武器のIDではなく、武器インベントリのどこにある武器を登録しているかのインデックス(0~15)が入る
   magic16_t registeredMagic[4];  // 0x068
   item16_t items[16 + 16 + 16];  // 0x070
   s16 rotTimer[16 + 16 + 16];    // 0x0D0, if MSB is set, item is chocolate-covered
@@ -54,7 +54,7 @@ typedef struct {
   u32 darkDebts;                 // 0x1C4, 実際に返す必要のある額
   u8 unk_1c8[12];                // 0x1C8
   u32 loan_1d4;                  // 0x1D4
-  u32 treeExp;                   // 0x1D8
+  u32 treeExp;                   // 0x1D8, リザルト画面の "ENERGY" でもある
   u8 unk_1dc[18];                // 0x1DC
   u16 titles;                    // 0x1EE, 獲得した称号のビットマスク
   s16 totalEnemyKillCount;       // 0x1F0
@@ -79,8 +79,10 @@ typedef struct {
   s16 unk_2b0[2];                // 0x2B0
   u32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒)
   u8 unk_2b8[8];                 // 0x2B8
-  u8 unk_2c0[56];                // 0x2C0
-  u16 side;                      // 0x2F8, 赤(SolarDjango)寄りか黒(Dark)寄りか, 次の3つのどれかを取る, 0: 赤, 1: 中立, 2: 黒
+  u8 unk_2c0[32];                // 0x2C0
+  u32 weaponFrames[5];           // 0x2E0, 剣槍槌拳銃 の使用フレーム数, これを元に style が決まる (攻撃時のみでなく、その武器で歩いているだけでもカウントされる)
+  u8 unk_2f4[4];                 // 0x2F4
+  u16 side;                      // 0x2F8, 赤(Solar)寄りか黒(Dark)寄りか, 次の3つのどれかを取る, 0: 赤, 1: 中立, 2: 黒
   u16 style;                     // 0x2FA, プレイ中、最も使用フレーム数が多かった攻撃種別, see AttackStyle
   u16 forge;                     // 0x2FC, 0..127, 用途まだ不明
   s16 unk_2fe[5];                // 0x2FE

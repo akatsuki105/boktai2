@@ -5,7 +5,9 @@ tools/agbcc
 *.sav
 *.cheats
 *.elf
+*.sym
 tmp/
+tools/tmp/
 *.1bpp
 *.4bpp
 *.8bpp

@@ -19,11 +19,11 @@ NAKED u8* VM_ReadContainerLength(u8* pc, u32* length) { INCFUNC("asm/func/VM_Rea
 NAKED u8* VM_ReadCtrlNextKeyword(u8* pc, u32* length) { INCFUNC("asm/func/VM_ReadCtrlNextKeyword.inc"); }
 
 // a.k.a. Script_GetValueCore
-NAKED u8* VM_Step(u8* pc, u32* val, UNK_PTR r2) { INCFUNC("asm/func/VM_Step.inc"); }
+NAKED u8* VM_Step(u8* pc, u32* val, unknown* r2) { INCFUNC("asm/func/VM_Step.inc"); }
 
 void FUN_08231438(void) { gVM.unk_6c = &gVM.unk_70[0]; }
 
-NAKED UNK_PTR FUN_08231448(UNK_PTR r0, s32 idx) { INCFUNC("asm/func/FUN_08231448.inc"); }
+NAKED unknown* FUN_08231448(unknown* r0, s32 idx) { INCFUNC("asm/func/FUN_08231448.inc"); }
 
 void FUN_0823146c(void* ptr) {
   if (ptr != NULL) {
@@ -53,9 +53,9 @@ NAKED u32 VM_Ctrl_Switch_Internal(void) { INCFUNC("asm/func/VM_Ctrl_Switch_Inter
 // a.k.a. Script_GetValueAt
 NAKED void* VM_GetValueAt(u8* addr) { INCFUNC("asm/func/VM_GetValueAt.inc"); }
 
-NAKED s32 FUN_082315c0(u8* pc, UNK_PTR r1) { INCFUNC("asm/func/FUN_082315c0.inc"); }
+NAKED s32 FUN_082315c0(u8* pc, unknown* r1) { INCFUNC("asm/func/FUN_082315c0.inc"); }
 
-NAKED s32 FUN_082315f4(u8* pc, UNK_PTR r1) { INCFUNC("asm/func/FUN_082315f4.inc"); }
+NAKED s32 FUN_082315f4(u8* pc, unknown* r1) { INCFUNC("asm/func/FUN_082315f4.inc"); }
 
 // a.k.a. Script_GetValueAtSafe
 NAKED void* VM_GetValueAtSafe(u8* addr) { INCFUNC("asm/func/VM_GetValueAtSafe.inc"); }
@@ -65,7 +65,7 @@ void* VM_GetValueAtSafe_Proxy(u8* addr) { return VM_GetValueAtSafe(addr); }
 // a.k.a. Script_ParseStringRef
 NAKED s32 VM_ParseStringRef(u8* pc) { INCFUNC("asm/func/VM_ParseStringRef.inc"); }
 
-NAKED void FUN_0823167c(UNK_PTR p) { INCFUNC("asm/func/FUN_0823167c.inc"); }
+NAKED void FUN_0823167c(unknown* p) { INCFUNC("asm/func/FUN_0823167c.inc"); }
 
 NAKED u8* FUN_08231698(u8* pc) { INCFUNC("asm/func/FUN_08231698.inc"); }
 
@@ -74,9 +74,9 @@ NAKED u8* VM_GetPC(void) { INCFUNC("asm/func/VM_GetPC.inc"); }
 
 NAKED u32 Script_GetValue(void) { INCFUNC("asm/func/Script_GetValue.inc"); }
 
-NAKED s32 FUN_082316f4(UNK_PTR p) { INCFUNC("asm/func/FUN_082316f4.inc"); }
+NAKED s32 FUN_082316f4(unknown* p) { INCFUNC("asm/func/FUN_082316f4.inc"); }
 
-NAKED s32 FUN_08231708(UNK_PTR p) { INCFUNC("asm/func/FUN_08231708.inc"); }
+NAKED s32 FUN_08231708(unknown* p) { INCFUNC("asm/func/FUN_08231708.inc"); }
 
 // VM_GetValueSafe2 と全く同じ
 void* VM_GetValueSafe1(void) { return VM_GetValueAtSafe(VM_GetPC()); }
@@ -126,11 +126,11 @@ u8* Script_LookupById(u32 scriptID, u32* unk) {
   return &gScriptTable.bytecode[(*(s32*)ptr) & 0x00FFFFFF];
 }
 
-NAKED s32 Script_ExecById(u32 scriptID, UNK_PTR r1) { INCFUNC("asm/func/Script_ExecById.inc"); }
+NAKED s32 Script_ExecById(u32 scriptID, unknown* r1) { INCFUNC("asm/func/Script_ExecById.inc"); }
 
 NAKED s32 FUN_082318d0(u8* pc) { INCFUNC("asm/func/FUN_082318d0.inc"); }
 
-NAKED UNK_PTR FUN_0823193c(UNK_PTR p, u32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0823193c.inc"); }
+NAKED unknown* FUN_0823193c(unknown* p, u32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0823193c.inc"); }
 
 NAKED char* Textbox_LookupString(s32 stringID) { INCFUNC("asm/func/Textbox_LookupString.inc"); }
 
@@ -141,17 +141,17 @@ NAKED char* Textbox_LookupString(s32 stringID) { INCFUNC("asm/func/Textbox_Looku
  */
 NAKED static s32 VM_MountScriptDirectory(ScriptDirectory* d) { INCFUNC("asm/func/VM_MountScriptDirectory.inc"); }
 
-NAKED UNK_PTR FUN_08231a74(void) { INCFUNC("asm/func/FUN_08231a74.inc"); }
+NAKED unknown* FUN_08231a74(void) { INCFUNC("asm/func/FUN_08231a74.inc"); }
 
 NAKED void VM_SaveScriptTable(ScriptTable* tbl) { INCFUNC("asm/func/VM_SaveScriptTable.inc"); }
 
 NAKED void VM_RestoreScriptTable(ScriptTable* tbl) { INCFUNC("asm/func/VM_RestoreScriptTable.inc"); }
 
-NAKED bool32 Script_ExecBlock(u8* pc, UNK_PTR param_2, s32 param_3) { INCFUNC("asm/func/Script_ExecBlock.inc"); }
+NAKED bool32 Script_ExecBlock(u8* pc, unknown* param_2, s32 param_3) { INCFUNC("asm/func/Script_ExecBlock.inc"); }
 
-NAKED s32 Script_ExecByPointer(u8* pc, UNK_PTR param_2) { INCFUNC("asm/func/Script_ExecByPointer.inc"); }
+NAKED s32 Script_ExecByPointer(u8* pc, unknown* param_2) { INCFUNC("asm/func/Script_ExecByPointer.inc"); }
 
-NAKED s32 Script_Exec(u8* pc, UNK_PTR param_2, UNK_PTR param_3) { INCFUNC("asm/func/Script_Exec.inc"); }
+NAKED s32 Script_Exec(u8* pc, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/Script_Exec.inc"); }
 
 NAKED void FUN_08231ba8(void) { INCFUNC("asm/func/FUN_08231ba8.inc"); }
 
@@ -220,7 +220,7 @@ NAKED void* FUN_082320e4(u8* pc, s32 offset) { INCFUNC("asm/func/FUN_082320e4.in
 
 NAKED u8* FUN_08232160(u8* pc) { INCFUNC("asm/func/FUN_08232160.inc"); }
 
-NAKED UNK_PTR FUN_082321e0(u8* pc) { INCFUNC("asm/func/FUN_082321e0.inc"); }
+NAKED unknown* FUN_082321e0(u8* pc) { INCFUNC("asm/func/FUN_082321e0.inc"); }
 
 GameInfo* FUN_08232254(void) { return gStatBackup; }
 

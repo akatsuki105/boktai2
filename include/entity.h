@@ -19,7 +19,7 @@ enum EntityKind {
   ENTITY_UNK_8 = 8,
   ENTITY_UNK_9 = 9,
   ENTITY_UNK_10 = 10,
-  ENTITY_UNK_11 = 11,
+  ENTITY_UNK_11 = 11,  // デーモン的なものはこれ？
   ENTITY_UNK_12 = 12,
   ENTITY_UNK_13 = 13,  // これを削除すると画面のスクロールがおかしくなる
 };
@@ -60,7 +60,7 @@ extern EntityList gEntityManager[ENTITY_KINDS];
 
 // --------------------------------------------
 
-Entity* CreateEntity(u32 kind, s32 bytesize);
+void* CreateEntity(u32 kind, s32 bytesize);
 u32 KillEntity(Entity* p);
 void SetEntityRoutine(void* entity, void* entity_func_onupdate, void* entity_func_ondestroy);
 

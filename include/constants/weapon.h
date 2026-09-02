@@ -1,8 +1,15 @@
 #ifndef GUARD_ZOKTAI_CONST_WEAPON_H
 #define GUARD_ZOKTAI_CONST_WEAPON_H
 
+// WeaponKind
+#define WK_SWORD 0   // 剣(ソード)
+#define WK_SPEAR 1   // 槍(スピア)
+#define WK_HAMMER 2  // 槌(ハンマー)
+#define WK_OTHERS 3  // その他(拳, 星のかけら)
+#define WK_GUN 4     // 銃
+
 // Weapon ID
-#define WEAPON_NONE 0            // なし
+#define WEAPON_NONE 0            // 装備なし (拳)
 #define WEAPON_GRADIUS 1         // グラディウス
 #define WEAPON_SHORT_SWORD 2     // ショートソード
 #define WEAPON_BROAD_SWORD 3     // ブロードソード
@@ -68,6 +75,7 @@
 #define WEAPON_ASTRO_SWORD 63    // アストロソード
 #define WEAPON_ASTRO_SPEAR 64    // アストロスピア
 #define WEAPON_ASTRO_HAMMER 65   // アストロハンマー
+#define WEAPON_NUM 66
 
 // Weapon Effect Type ID (武器の特殊効果ID)
 #define WET_NONE 0

@@ -1,7 +1,7 @@
 #include "global.h"
 #include "vm.h"
 
-NAKED void VM_Ctrl_B96E_Internal(UNK_PTR r1, UNK_PTR r2) { INCFUNC("asm/func/VM_Ctrl_B96E_Internal.inc"); }
+NAKED void VM_Ctrl_B96E_Internal(unknown* r1, unknown* r2) { INCFUNC("asm/func/VM_Ctrl_B96E_Internal.inc"); }
 
 NAKED u8* VM_Ctrl_If_Internal(u8* pc) { INCFUNC("asm/func/VM_Ctrl_If_Internal.inc"); }
 

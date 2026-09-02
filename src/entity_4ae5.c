@@ -1,9 +1,22 @@
+#include "entity.h"
 #include "file.h"
 #include "global.h"
 
+// マップ切り替え時に毎回生成される
 typedef struct Entity4AE5 {
-  Entity e;  // ENTITY_UNK_11
-  u8 unk_18[1564];
+  Entity e;    // ENTITY_UNK_11
+  u16 unk_18;  // 0x18, 0xE231, 0x317B, 0xF68D, 0xA58E, 0x4AE5 などがあるが、意味は不明
+  u8 unk_1a;   // 0x1A, なんかのbitfield
+  u8 unk_1b;   // 0x1B
+  u8 unk_1c;   // 0x1C
+  u8 unk_1d;   // 0x1D
+  u8 unk_1e;   // 0x1E
+  u8 unk_1f;   // 0x1F
+  u8 unk_20[0x24 - 0x20];
+  rgb555* srcPltt1;  // 0x24, PLTTファイルのRGB555データその1
+  rgb555* srcPltt2;  // 0x28, PLTTファイルのRGB555データその2
+  rgb555* dstPltt;   // 0x2C, gFastBgPlttBuffer
+  u8 unk_30[0x634 - 0x30];
   FileID pltt_file_id_634[24];  // 0x634, FUN_08001f54
   s32 unk_664;                  // 0x664, FUN_0800205c
   u16 unk_668[64];              // 0x668, FUN_0800205c
@@ -17,9 +30,9 @@ void FUN_08001878(void) { gEntity4AE5 = NULL; }
 
 INCASM("asm/entity_4ae5.inc");
 
-NAKED void FUN_0800201c(void) { INCFUNC("asm/func/FUN_0800201c.inc"); }
+NAKED void VM_SubCA7D(void) { INCFUNC("asm/func/VM_SubCA7D.inc"); }
 
-NAKED void FUN_0800205c(s32 val, s32 param_2, UNK_PTR param3) { INCFUNC("asm/func/FUN_0800205c.inc"); }
+NAKED void FUN_0800205c(s32 val, s32 param_2, unknown* param3) { INCFUNC("asm/func/FUN_0800205c.inc"); }
 
 NAKED void FUN_080020bc(void) { INCFUNC("asm/func/FUN_080020bc.inc"); }
 

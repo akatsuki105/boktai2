@@ -1,5 +1,17 @@
+#include "entity.h"
 #include "global.h"
-#include "struct.h"
+#include "particle.h"
+
+typedef struct {
+  Particle base;  // 0x00
+  Vec3 offset;    // 0x28, Player + offset が base.pos になる
+  u16 unk_30;     // 0x30
+  u16 unk_32;     // 0x32
+  u8 unk_34[0x38 - 0x34];
+  u16 unk_38;  // 0x38
+  u16 unk_3a;  // 0x3A
+} LevelUpParticle;
+static_assert(sizeof(LevelUpParticle) == 60);  // 根拠: LevelUpper_EmitLevelUpEffect
 
 // 現在の経験値を確認して、レベルアップする場合はレベルアップ処理を行う。
 // またその際のパーティクルやSEなどの演出処理も行う。
@@ -9,10 +21,10 @@ typedef struct LevelUpper {
   u8 unk_1c[0x68 - 0x1C];
   s16 weaponLv[5];  // 0x68, 武器レベル, = GameInfo.weaponExp[n]/100
   u8 unk_72[2];
-  u32 nextExp;            // 0x74, 次にレベルアップする総経験値量
-  u32* expTable;          // 0x78, 経験値テーブルの先頭アドレス, 常に 0x08D09FE8
-  void* p_7c;             // 0x7C, なんかのアドレス, 根拠: 0x080a83c4
-  UnkStruct60 unk_80[8];  // 0x80, 多分グラフィック周りのデータ
+  u32 nextExp;               // 0x74, 次にレベルアップする総経験値量
+  u32* expTable;             // 0x78, 経験値テーブルの先頭アドレス, 常に 0x08D09FE8
+  void* p_7c;                // 0x7C, なんかのアドレス, 根拠: 0x080a83c4
+  LevelUpParticle ptcls[8];  // 0x80
 } LevelUpper;
 static_assert(sizeof(LevelUpper) == 608);
 
@@ -30,11 +42,11 @@ NAKED bool32 TryPlayerLevelUp(LevelUpper* p) { INCFUNC("asm/func/TryPlayerLevelU
 
 NAKED bool32 IsWeaponLevelChanged(LevelUpper* p) { INCFUNC("asm/func/IsWeaponLevelChanged.inc"); }
 
-NAKED void FUN_080a8250(UnkStruct60* p) { INCFUNC("asm/func/FUN_080a8250.inc"); }
+NAKED void FUN_080a8250(LevelUpParticle* p) { INCFUNC("asm/func/FUN_080a8250.inc"); }
 
-NAKED void FUN_080a8314(UnkStruct60* p, UNK_PTR param_2) { INCFUNC("asm/func/FUN_080a8314.inc"); }
+NAKED void FUN_080a8314(LevelUpParticle* p, unknown* param_2) { INCFUNC("asm/func/FUN_080a8314.inc"); }
 
-NAKED void FUN_080a8384(LevelUpper* p) { INCFUNC("asm/func/FUN_080a8384.inc"); }
+NAKED void LevelUpper_EmitLevelUpEffect(LevelUpper* p) { INCFUNC("asm/func/LevelUpper_EmitLevelUpEffect.inc"); }
 
 NAKED void FUN_080a83dc(LevelUpper* p) { INCFUNC("asm/func/FUN_080a83dc.inc"); }
 

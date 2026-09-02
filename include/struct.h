@@ -57,19 +57,19 @@ typedef struct {
 
 // --------------------------------------------
 
-typedef struct {
-  u8 unk_0[52];  // 0x00
+// Entity4E69 で管理されてる?
+typedef struct UnkStruct52 {
+  u16 unk_0;                   // 0x00
+  u8 unk_2;                    // 0x02
+  u8 unk_3;                    // 0x03
+  u8 unk_4[0x2C - 0x4];        // 0x04
+  struct UnkStruct52* unk_2c;  // 0x2C
+  struct UnkStruct52* unk_30;  // 0x30
 } UnkStruct52;
 static_assert(sizeof(UnkStruct52) == 52);  // 52バイトなのは確定, FUN_080220e8 で オフセット 0x34 に 4バイト書き込み, また Entity4E69 の オフセット 0x78 にこの構造体があるが、 Entity4E69 は 172バイトなので、 172 - 0x78 = 52 なので、 52バイト
 
 s32 FUN_080223f4(UnkStruct52* p, u32 val1, s32 val2);
-
-// --------------------------------------------
-
-typedef struct {
-  u8 unk_0[60];
-} UnkStruct60;
-static_assert(sizeof(UnkStruct60) == 60);  // 根拠: FUN_080a8384
+s32 FUN_08022428(UnkStruct52* p);
 
 // --------------------------------------------
 

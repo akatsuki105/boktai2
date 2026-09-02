@@ -12,28 +12,35 @@
 #include "vm.h"
 
 struct Entity4AE5;
+struct Entity4E69;
+struct EntityCBB0;
+struct Player;
 
 IWRAM_DATA u16 gMapInitScriptID = 0;               // 0x03002B28
 IWRAM_DATA struct Entity4AE5* gEntity4AE5 = NULL;  // 0x03002B2C
 
 IWRAM_DATA u8 u8_03002b30[28] = {};  // todo
 
-IWRAM_DATA Entity4E69* gEntity4E69 = NULL;  // 0x03002B4C
+IWRAM_DATA struct Entity4E69* gEntity4E69 = NULL;  // 0x03002B4C
 
 IWRAM_DATA u8 u8_03002b50[8] = {};  // todo
 
 IWRAM_DATA Entity* gUnkEntity1Ptr_03002b58 = NULL;  // 0x03002B58, Malloc(908) で確保したバッファを指すポインタ, RFU関連? (FUN_0804e2c0)
 
-IWRAM_DATA u8 u8_03002b5c[60] = {};     // todo
-IWRAM_DATA u16 gPlayerCount = 0;        // Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
-IWRAM_DATA u8 u8_03002b9a[70] = {};     // todo
-IWRAM_DATA Player* gPlayerPtr[4] = {};  // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
-IWRAM_DATA u8 u8_03002bf0[8] = {};      // todo
+IWRAM_DATA u8 u8_03002b5c[60] = {};            // todo
+IWRAM_DATA u16 gPlayerCount = 0;               // Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
+IWRAM_DATA u8 u8_03002b9a[70] = {};            // todo
+IWRAM_DATA struct Player* gPlayerPtr[4] = {};  // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
+IWRAM_DATA u8 u8_03002bf0[8] = {};             // todo
 
 struct Entity5941;
 IWRAM_DATA struct Entity5941* gEntity5941 = NULL;  // 0x03002BF8
 
-IWRAM_DATA u8 u8_03002bfc[108] = {};  // todo
+IWRAM_DATA u8 u8_03002bfc[0x03002C58 - 0x03002bfc] = {};  // todo
+
+IWRAM_DATA struct EntityCBB0* gEntityCBB0 = NULL;  // 0x03002C58
+
+IWRAM_DATA u8 u8_03002c5c[0x03002C68 - 0x03002C5C] = {};  // todo
 
 IWRAM_DATA Entity_03002c68* gEntity_03002c68 = NULL;  // 0x03002C68
 
@@ -62,7 +69,17 @@ IWRAM_DATA u8 u8_030035A4[140] = {};  // todo
 
 IWRAM_DATA OamData gOAMBuffer[128] = {};  // 0x03003630, OAM のバッファ
 
-IWRAM_DATA u8 u8_03003a30[1568] = {};  // todo
+IWRAM_DATA u8 u8_03003a30[0x03003FB0 - 0x03003a30] = {};  // todo
+
+// idx は ((OAM1.14-15 << 2) | (OAM0.14-15)), ie. ((sizeidx << 2) | shape)
+IWRAM_DATA u8 gOAMTileHeightTable[16] = {};  // 0x03003FB0, タイル(8px)単位
+IWRAM_DATA u8 gOAMHeightTable[16] = {};      // 0x03003FC0, ピクセル単位
+IWRAM_DATA u8 gOAMTileCounts[16] = {};       // 0x03003FD0, タイル枚数
+IWRAM_DATA u8 gOAMTileWidthTable[16] = {};   // 0x03003FE0, タイル(8px)単位
+IWRAM_DATA u32 u32_ARRAY_03003ff0[16] = {};  // 0x03003FF0, todo
+IWRAM_DATA u8 gOAMWidthTable[16] = {};       // 0x03004030, ピクセル単位
+
+IWRAM_DATA u8 u8_03004040[16] = {};  // todo
 
 IWRAM_DATA u16 gObjectPlttBuffer[256] = {};  // 0x03004050, CommitPalette で OBJ_PLTT にコピーされる
 IWRAM_DATA u16 gFastBgPlttBuffer[256] = {};  // 0x03004250

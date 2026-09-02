@@ -290,7 +290,7 @@ _080B5880:
 	adds r4, r7, r1
 	ldr r1, _080B5928 @ =0x0000A47C
 	adds r0, r4, #0
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	movs r2, #0xfb
 	lsls r2, r2, #3
 	adds r5, r7, r2

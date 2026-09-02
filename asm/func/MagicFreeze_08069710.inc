@@ -104,7 +104,7 @@ _080697A6:
 	movs r0, #0x5a
 	str r0, [sp]
 	add r0, sp, #4
-	bl FUN_080a8164
+	bl FreezeEffect_Create
 	ldr r2, _080697F8 @ =0x000003FA
 	adds r0, r5, r2
 	strb r4, [r0]

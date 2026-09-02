@@ -42,12 +42,12 @@ NAKED void FUN_0823c450(Camera* cam) { INCFUNC("asm/func/FUN_0823c450.inc"); }
 
 NAKED void FUN_0823c620(Camera* cam) { INCFUNC("asm/func/FUN_0823c620.inc"); }
 
-NAKED UNK_PTR FUN_0823c928(Camera* cam) { INCFUNC("asm/func/FUN_0823c928.inc"); }
+NAKED unknown* FUN_0823c928(Camera* cam) { INCFUNC("asm/func/FUN_0823c928.inc"); }
 
 NAKED s32 Camera_Update(Camera* cam) { INCFUNC("asm/func/Camera_Update.inc"); }
 
 NAKED s32 Camera_Destroy(Camera* cam) { INCFUNC("asm/func/Camera_Destroy.inc"); }
 
-NAKED s32 Camera_Init(Camera* cam, UNK_PTR* param) { INCFUNC("asm/func/Camera_Init.inc"); }
+NAKED s32 Camera_Init(Camera* cam, unknown* param) { INCFUNC("asm/func/Camera_Init.inc"); }
 
-NAKED Camera* Camera_Create(UNK_PTR* param) { INCFUNC("asm/func/Camera_Create.inc"); }
+NAKED Camera* Camera_Create(unknown* param) { INCFUNC("asm/func/Camera_Create.inc"); }

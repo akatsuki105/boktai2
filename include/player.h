@@ -4,6 +4,7 @@
 #include "constants/constants.h"
 #include "entity.h"
 #include "gba/gba.h"
+#include "hitbox.h"
 #include "sprite.h"
 #include "struct.h"
 #include "types.h"
@@ -30,7 +31,7 @@ enum PlayerKind {
   PLAYER_DARK_DJANGO,
   PLAYER_BAT,
   PLAYER_MOUSE,
-  PLAYER_UNK_04,
+  PLAYER_SLEEPING,
   PLAYER_SABATA,
 };
 
@@ -43,14 +44,6 @@ enum AttackStyle {
   STYLE_FIST,
   STYLE_NONE,
 };
-
-typedef struct {
-  u8 unk_00[52];  // 0x00 (Player: 0x16C)
-  u32 unk_34;     // 0x34 (Player: 0x1A0)
-  u32 unk_38;     // 0x38 (Player: 0x1A4)
-  u16 unk_3c;     // 0x3C (Player: 0x1A8)
-  u16 unk_3e;     // 0x3E (Player: 0x1AA)
-} Player_16c;     // Player_Init_Helper_080659e8, サイズもまだわからん
 
 typedef struct {
   armor16_t id;           // 0x00 (Player: 0x264), ArmorData.id
@@ -83,30 +76,32 @@ typedef struct Player4c4 {
 // 通信対戦の相手キャラもこの構造体を使う
 typedef struct Player {
   Entity e;
-  u32 unk_18;  // 0x18, 0 or 1 他にもあるか不明
-  u32 unk_1c;
+  u32 unk_18;             // 0x18, 0 or 1 他にもあるか不明
+  u32 unk_1c;             // 0x1C, ステート?, (0: ??, 1: 通常状態, 2: マップ移動などの操作できない状態?, 3: ???, 4: HP0, 5: ???, ...)
   u32 unk_20;             // 0x20, bitfield
   Entity2UnkData unk_24;  // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Entity2UnkData
   SpriteData sprite;      // 0x068, 根拠： FUN_08060a24
-  u8 unk_e8[200];
-  u16 unk_1b0;  // 0x1B0
-  u8 unk_1b2[10];
-  u8 unk_1bc;  // 0x1BC, Entity2UnkData.unk_18 が &Player.unk_1bc
+  u8 unk_e8[0x16C - 0xE8];
+  HitboxData unk_16c;  // 0x16C
+  u8 unk_1bc;          // 0x1BC, Entity2UnkData.unk_18 が &Player.unk_1bc
   u8 unk_1bd[167];
   PlayerArmor armor;  // 0x264
   u16 unk_278;
   s16 unk_27a;
   u32 unk_27c;
-  magic8_t equippedMagic;  // 0x280, 現在装備している(画面左下に表示されている)魔法のID
-  u8 unk_281;
-  u8 unk_282;
-  u8 unk_283;
-  u8 unk_284[12];
-  u16 unk_290[10];      // 0x290, 根拠: FUN_0806521c
+  magic8_t equippedMagic;              // 0x280, 現在装備している(画面左下に表示されている)魔法のID
+  u8 equippedMagicCat;                 // 0x281, 現在装備している魔法のカテゴリ (MC_LUNA, MC_SOL, MC_DARK)
+  bool8 isEquippedMagicAvailableForm;  // 0x282, 現在のプレイヤーのフォームで装備している魔法が使用可能かどうか (例えば、赤ジャンゴならエンチャントソルならtrue, チェンジウルフならfalse), フォームと魔法の組み合わせのみで決まる(MPコストや太陽ゲージとかは関係ない), TODO: もっと短い名前を考える
+  bool8 isEnchanted;                   // 0x283, エンチャント○○ がアクティブかどうか(プレイヤーが対応する色に光っているかどうか)
+  u8 equippedMagicBasicCost;           // 0x284, 装備している魔法の消費MP(マジックローブなどの影響を抜いた元々の消費MP)
+  u8 unk_285[0x28C - 0x285];
+  void* input_28c;      // 0x28C, 0x030044E0 (&gInput)
+  u16 unk_290[10];      // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
   rgb555 pltt_2a4[32];  // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
   u16 unk_2e4;          // 0x2E4
-  u8 unk_2e6[2];        // 0x2E6
-  u8 unk_2e8;           // 0x2E8, FUN_0801fb08
+  u8 unk_2e6;           // 0x2E6
+  bool8 xflip_2e7;      // 0x2E7, 多分プレイヤーのxflip(0: 右向き, 1: 左向き)
+  u8 unk_2e8;           // 0x2E8, FUN_0801fb08, プレイヤーの向きに関連?
   u8 unk_2e9[0x34C - 0x2E9];
   AnimationFile* anim_34c;  // 0x34C
   AnimationFile* anim_350;  // 0x350
@@ -140,13 +135,18 @@ typedef struct Player {
   u8 unk_3d2[36];
   s16 unk_3f6;
   u8 unk_3f8[68];
-  u16 unk_43c[3];
+  u16 unk_43c[3];  // 0x43C, 多分状態異常の残り時間
   u8 unk_442[86];
   PlayerFunc fn_498;  // 0x498, FUN_08078d5c
-  u8 unk_49c[40];
+  u8 unk_49c[0x4aa - 0x49c];
+  u8 unk_4aa;  // 0x4AA, FUN_080726b4
+  u8 unk_4ab[0x4b0 - 0x4ab];
+  s32 scriptID_4b0;  // 0x4B0, FUN_08072650
+  u8 unk_4b4[0x4c4 - 0x4b4];
   Player4c4 unk_4c4;  // 0x4C4
-  u8 unk_5f4[272];
-  AnimationFile* anim_704;  // 0x704
+  u8 unk_5f4[0x6AC - 0x5F4];
+  u8 unk_6ac[0x704 - 0x6AC];  // 0x6AC
+  AnimationFile* anim_704;    // 0x704
   u8 unk_708[8];
   u8 unk_710;  // 0x710, Player_Init_Anim_08061bac
   u8 unk_711[3];
@@ -162,10 +162,12 @@ typedef struct Player {
   u16 pad_9be;
   s32 scriptID_9c0;  // 0x9C0
   s32 scriptID_9c4;  // 0x9C4
-  u8 unk_9c8[168];
+  u8 unk_9c8[0xA10 - 0x9C8];
+  HitboxData unk_a10;  // 0xA10, 根拠: 0x08064644
+  u8 unk_a60[0xA70 - 0xA60];
   Weapon* weapon_a70;
   weapon8_t weaponID_a74;  // 武器ID
-  u8 weaponKind_a75;       // 武器種
+  u8 weaponKind_a75;       // 0xA75, 武器種
   u8 unk_a76[34];
   PlayerFunc attackCB;  // 0xA98, gPlayerAttackUpdates
 
@@ -175,7 +177,7 @@ typedef struct Player {
   void* weaponEffectCb3[WEAPON_EFFECT_SLOT_COUNT];                    // 0xAB4,　敵の状態を参照する武器の特殊効果コールバック, xx特効系のハンドラはここ, シグネチャはまだ不明
 
   // 0xAC0, onUpdate (Player_Update) で毎フレーム呼ばれる
-  // CreatePlayer製:       FUN_08065270　で 0x085abb14 の関数テーブルに
+  // CreatePlayer製:       FUN_08065270　で 0x085abb14 の関数テーブル or FUN_08079f1c
   // CreateLinkPlayer2P製: FUN_080817ec で FUN_08084330 がセットされる
   PlayerFunc fn_ac0;
 } Player;
@@ -188,7 +190,7 @@ extern const PlayerFunc gPlayerAttackUpdates[5];  // 0: 剣, 1: 槍, 2: ハン�
 
 Player* CreatePlayer(u32 n, void* _);
 
-Player* CreateLinkPlayer2P(UNK_PTR r0, UNK_PTR r1);     // 0x08084674
-Player* CreatePlayer_080d82ec(UNK_PTR r0, UNK_PTR r1);  // 0x080D82EC
+Player* CreateLinkPlayer2P(unknown* r0, unknown* r1);     // 0x08084674
+Player* CreatePlayer_080d82ec(unknown* r0, unknown* r1);  // 0x080D82EC
 
 #endif  // GUARD_ZOKTAI_PLAYER_H

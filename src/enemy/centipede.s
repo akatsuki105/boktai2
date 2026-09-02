@@ -8226,7 +8226,7 @@ FUN_08136140: @ 0x08136140
 _081361B4:
 	adds r0, r6, #0
 	ldr r1, [sp, #0xc]
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	mov r0, r8
 	adds r1, r6, #0
 	movs r2, #0
@@ -14129,8 +14129,8 @@ FUN_08138e1c: @ 0x08138E1C
 	.align 2, 0
 _08138E38: .4byte 0x03002BE0
 
-	thumb_func_start FUN_08138e3c
-FUN_08138e3c: @ 0x08138E3C
+	thumb_func_start EnemyCentipede_Destroy
+EnemyCentipede_Destroy: @ 0x08138E3C
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	bl FUN_081369d0
@@ -14284,7 +14284,7 @@ EnemyCentipede_Init: @ 0x08138F24
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _08138FB8 @ =0x0000D636
-	bl FUN_0822b16c
+	bl Video_GetActorSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -15923,7 +15923,7 @@ _08139B3C:
 	orrs r0, r1
 	strh r0, [r3]
 	adds r0, r7, #0
-	bl FUN_080e5dd4
+	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
 	bl Script_GetKeywordValue
@@ -16356,7 +16356,7 @@ _0813A00A:
 	ldr r0, [sp, #0xc4]
 	strh r2, [r0]
 	adds r0, r7, #0
-	bl FUN_080f3680
+	bl Enemy_Init_080f3680
 	adds r0, r7, #0
 	bl FUN_081355ac
 	adds r0, r7, #0
@@ -16425,10 +16425,10 @@ _0813A00A:
 	movs r4, #0xc4
 	lsls r4, r4, #3
 	adds r1, r7, r4
-	ldr r0, _0813A110 @ =FUN_08138e3c
+	ldr r0, _0813A110 @ =EnemyCentipede_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080ec640
+	bl Enemy_Init_080ec640
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0813A114
@@ -16441,7 +16441,7 @@ _0813A100: .4byte 0x0000057C
 _0813A104: .4byte FUN_080f09e0
 _0813A108: .4byte 0x0000061C
 _0813A10C: .4byte FUN_08138e1c
-_0813A110: .4byte FUN_08138e3c
+_0813A110: .4byte EnemyCentipede_Destroy
 _0813A114:
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -16471,7 +16471,7 @@ EnemyCentipede_Create: @ 0x0813A128
 	cmp r0, #0
 	bge _0813A154
 	adds r0, r4, #0
-	bl FUN_08138e3c
+	bl EnemyCentipede_Destroy
 	adds r0, r4, #0
 	bl Free
 _0813A154:

@@ -48,26 +48,6 @@ void FUN_0823b1ec(void);
 
 // --------------------------------------------
 
-typedef struct Entity4E69 {
-  Entity e;  // ENTITY_UNK_2
-  u8 unk_18[96];
-  UnkStruct52 unk_78;  // 0x78
-} Entity4E69;
-static_assert(sizeof(Entity4E69) == 172);
-
-extern Entity4E69* gEntity4E69;  // 0x03002B4C
-
-// --------------------------------------------
-
-typedef struct Entity28CB {
-  Entity e;            // ENTITY_UNK_8
-  UnkStruct52 unk_18;  // 0x18
-  u8 unk_4c[400 - 76];
-} Entity28CB;
-static_assert(sizeof(Entity28CB) == 400);
-
-// --------------------------------------------
-
 typedef struct EntityE534 {
   Entity e;  // ENTITY_UNK_11
   u8 unk_18[0xCD4 - 24];

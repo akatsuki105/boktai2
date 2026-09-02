@@ -1,8 +1,9 @@
+#include "entity.h"
 #include "global.h"
 
-typedef struct {
+typedef struct EntityC946 {
   Entity e;  // 0x0, ENTITY_UNK_8
-  u8 unk_18[884 - sizeof(Entity)];
+  u8 unk_18[884 - 0x18];
 } EntityC946;
 static_assert(sizeof(EntityC946) == 884);
 

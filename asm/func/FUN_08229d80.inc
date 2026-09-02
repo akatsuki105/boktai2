@@ -114,7 +114,7 @@
 	ldr r0, _08229F0C @ =0x03002CA8
 	str r6, [r0]
 	bl FUN_0822a2a8
-	bl FUN_0822cf74
+	bl Video_CreateSpriteLUT
 	bl FUN_0822f1b0
 	bl FUN_0822ee38
 	bl FUN_0822e7e4
