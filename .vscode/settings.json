@@ -26,6 +26,9 @@
     "editor.formatOnSave": true,
     "editor.insertSpaces": true
   },
+  "**/*.bokc": {
+    "editor.formatOnSave": false
+  },
 
   "[linkerscript]": {
     "editor.suggest.insertMode": "replace",
@@ -33,7 +36,6 @@
     "editor.insertSpaces": true
   },
 
-  "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, ColumnLimit: 1000 }",
   "files.exclude": {
     "*.sav": true,
     "baserom.gba": true
@@ -47,7 +49,8 @@
     "*.s": "arm",
     "*.sx": "arm",
     "*.inc": "arm",
-    "*.h": "c"
+    "*.h": "c",
+    "*.bokc": "c"
   },
   "workbench.editorAssociations": {
     "*.bin": "hexEditor.hexedit",

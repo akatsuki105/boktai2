@@ -3,7 +3,7 @@
 	push {r7}
 	adds r4, r0, #0
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080E1832
 	bl VM_GetPC
@@ -28,7 +28,7 @@ _080E1832:
 _080E1834:
 	strh r0, [r4, #0x1a]
 	movs r0, #0x41
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080E186E
 	adds r6, r4, #0
@@ -73,7 +73,7 @@ _080E1882:
 	bge _080E1882
 _080E188A:
 	movs r0, #0x75
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080E18B8
 	bl VM_GetPC
@@ -102,7 +102,7 @@ _080E18BE:
 	strb r0, [r1]
 	movs r0, #0x66
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	movs r1, #0
 	strh r0, [r4, #0x24]
 	strh r1, [r4, #0x26]

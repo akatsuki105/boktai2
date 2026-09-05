@@ -723,7 +723,7 @@ EntityE28B_Init: @ 0x08002E90
 	str r0, [r6, #0x1c]
 	str r0, [r6, #0x28]
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08002EB8
 	bl Script_GetValue
@@ -813,7 +813,7 @@ EntityE28B_Create: @ 0x08002F40
 	lsrs r1, r1, #0x10
 	mov sb, r1
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08002F68
 	bl Script_GetValue
@@ -881,11 +881,11 @@ FUN_08002fdc: @ 0x08002FDC
 	push {r4, lr}
 	movs r0, #0x6d
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r4, r0, #0
 	movs r0, #0x6e
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08002FFE

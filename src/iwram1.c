@@ -10,6 +10,9 @@
 #include "vm.h"
 
 struct EntityD9AE;
+struct Entity83B2;
+struct Entity0866;
+struct Entity0800a89c;
 struct Entity080146e0;
 struct Entity8AAB;
 struct GameOverManager;
@@ -23,7 +26,14 @@ IWRAM_DATA u8 u8_03000000[32] = {};  // todo, rfu_MBOOT_CHILD_inheritanceLinkSta
 
 IWRAM_DATA struct EntityD9AE* gEntityD9AE = NULL;  // 0x03000020
 
-IWRAM_DATA u8 u8_03000024[0x58 - 0x24] = {};  // todo
+IWRAM_DATA u8 u8_03000024[0x3C - 0x24] = {};  // todo
+
+IWRAM_DATA struct Entity83B2* gEntity83B2 = NULL;  // 0x0300003C
+
+IWRAM_DATA struct Entity0866* gEntity0866 = NULL;          // 0x03000040
+IWRAM_DATA struct Entity0800a89c* gEntity0800a89c = NULL;  // 0x03000044
+
+IWRAM_DATA u8 u8_03000048[0x58 - 0x48] = {};  // todo
 
 IWRAM_DATA struct Entity080146e0* gEntity080146e0 = NULL;  // 0x03000058
 
@@ -69,6 +79,7 @@ IWRAM_DATA Entity gSystemManager = {};  // 0x03000728
 IWRAM_DATA u8 u8_03000740[8] = {};
 
 IWRAM_DATA ScriptTable gScriptTable = {};  // 0x03000748
+IWRAM_DATA StringTable gStringTable = {};  // 0x03000758
 
 IWRAM_DATA SubroutineTable* gCtrlHandlers = NULL;  // 0x03000768
 

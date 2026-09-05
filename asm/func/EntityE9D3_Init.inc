@@ -13,7 +13,7 @@
 	adds r0, r4, #0
 	bl EntityE9D3_Init_Helper_080b593c
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B59F8
@@ -32,7 +32,7 @@ _080B59F8:
 	str r1, [r0]
 _080B5A00:
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B5A1C
@@ -49,7 +49,7 @@ _080B5A1C:
 	str r1, [r0]
 _080B5A22:
 	movs r0, #0x6f
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B5A44

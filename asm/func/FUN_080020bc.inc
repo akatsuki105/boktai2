@@ -2,11 +2,11 @@
 	sub sp, #0x20
 	movs r0, #0x72
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r6, r0, #0
 	movs r4, #0
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080020EE
 	mov r5, sp

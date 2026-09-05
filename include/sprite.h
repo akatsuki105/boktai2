@@ -148,31 +148,6 @@ static_assert(sizeof(ObjPlttFile) == 24580);
 extern const ObjPlttFile gObjPlttFile0;  // 0x08CB9244
 
 // --------------------------------------------
-// https://boktaihacking.net/wiki/Animation_file
-
-typedef struct {
-  u8 variantCount;  // 0x00
-  u8 frameCount;    // 0x01
-  u16 frameOffset;  // 0x02, Byte offset from start of the file to the 1st frame of the 1st variant for this animation. There are variantCount*frameCount frames in this animation.
-} Animation;
-
-// bit0-3: duration
-// bit4: xflip
-// bit5: yflip
-// bit6-15: sprite index
-typedef u16 AnimFrameCmd;
-
-// ActorSprite's animation
-typedef struct {
-  u16 animationCount;  // 0x00
-  u16 frameCount;      // 0x02
-  // body:
-  //   Animation animations[animationCount];
-  //   AnimFrameCmd frames[frameCount];
-  u8 body[0];
-} AnimationFile;
-
-// --------------------------------------------
 
 // スプライト関連のデータ, Player などの様々なEntityでこの構造体が使われる
 typedef struct SpriteState {
@@ -195,12 +170,14 @@ typedef struct SpriteState {
   u16 offsetX;  // 0x20, SpriteSet で定義された初期位置 からの X方向のオフセット
   u16 offsetY;  // 0x22, SpriteSet で定義された初期位置 からの Y方向のオフセット
   u8 unk_24[4];
-  u16 unk_28;          // 0x28
-  u16 unk_2a;          // 0x2a
-  u16 unk_2c;          // 0x2c
-  u16 unk_2e;          // 0x2e
-  u16 unk_30;          // 0x30
-  u16 unk_32;          // 0x32
+  u16 unk_28;  // 0x28
+  u16 unk_2a;  // 0x2a
+  u16 unk_2c;  // 0x2c
+  u16 unk_2e;  // 0x2e
+  u16 unk_30;  // 0x30
+  u16 unk_32;  // 0x32
+
+  // ここから Video_GetActorSprite の dst?
   u8 unk_34;           // 0x34
   u8 unk_35;           // 0x35
   u16 unk_36;          // 0x36

@@ -6,7 +6,7 @@
 	movs r1, #1
 	rsbs r1, r1, #0
 	movs r0, #0x6e
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	cmp r0, #0
 	blt _080E1732
 	bl FUN_080e1334

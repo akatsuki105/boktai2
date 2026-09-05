@@ -12,6 +12,7 @@
 #include "vm.h"
 
 struct Entity4AE5;
+struct Entity08013df0;
 struct Entity4E69;
 struct EntityCBB0;
 struct Player;
@@ -19,7 +20,11 @@ struct Player;
 IWRAM_DATA u16 gMapInitScriptID = 0;               // 0x03002B28
 IWRAM_DATA struct Entity4AE5* gEntity4AE5 = NULL;  // 0x03002B2C
 
-IWRAM_DATA u8 u8_03002b30[28] = {};  // todo
+IWRAM_DATA u8 u8_03002b30[0x40 - 0x30] = {};  // todo
+
+IWRAM_DATA struct Entity08013df0* gEntity08013df0 = NULL;  // 0x03002B40
+
+IWRAM_DATA u8 u8_03002b44[0x4C - 0x44] = {};  // todo
 
 IWRAM_DATA struct Entity4E69* gEntity4E69 = NULL;  // 0x03002B4C
 

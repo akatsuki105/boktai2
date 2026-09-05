@@ -1,19 +1,19 @@
 	push {r4, r5, r6, lr}
 	sub sp, #8
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0823BFF8
 	bl Script_GetValue
 	adds r6, r0, #0
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0823BFF8
 	bl Script_GetValue
 	adds r5, r0, #0
 	movs r0, #0x6f
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0823BFDC
 	bl Script_GetValue

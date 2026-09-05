@@ -5,7 +5,7 @@
 _082316A0:
 	mov r1, sp
 	adds r2, r4, #0
-	bl VM_Step
+	bl VM_DecodeValue
 	ldr r1, [sp]
 	cmp r1, #0
 	bne _082316A0

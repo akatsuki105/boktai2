@@ -1,7 +1,7 @@
 	push {r4, r5, r6, lr}
 	movs r0, #0x4e
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	cmp r0, #0
 	bne _080EF164
 	b _080EF4DA
@@ -13,7 +13,7 @@ _080EF164:
 	b _080EF4DA
 _080EF170:
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080EF1D6
 	bl VM_GetPC
@@ -65,7 +65,7 @@ _080EF1CC:
 	strb r3, [r0]
 _080EF1D6:
 	movs r0, #0x61
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080EF27A
 	movs r5, #0
@@ -152,7 +152,7 @@ _080EF272:
 	ble _080EF1E4
 _080EF27A:
 	movs r0, #0x41
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080EF360
 	bl VM_GetPC
@@ -271,7 +271,7 @@ _080EF354:
 	strh r3, [r0]
 _080EF360:
 	movs r0, #0x6c
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080EF3CA
 	bl VM_GetPC
@@ -326,7 +326,7 @@ _080EF3BE:
 	strh r3, [r0]
 _080EF3CA:
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080EF424
 	bl VM_GetPC
@@ -372,55 +372,55 @@ _080EF418:
 	strh r3, [r0]
 _080EF424:
 	movs r0, #0x52
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080EF43E
 	movs r0, #0x52
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	movs r2, #0xca
 	lsls r2, r2, #1
 	adds r1, r4, r2
 	strh r0, [r1]
 _080EF43E:
 	movs r0, #0x46
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080EF458
 	movs r0, #0x46
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	movs r3, #0xcb
 	lsls r3, r3, #1
 	adds r1, r4, r3
 	strh r0, [r1]
 _080EF458:
 	movs r0, #0x49
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080EF472
 	movs r0, #0x49
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	movs r2, #0xcc
 	lsls r2, r2, #1
 	adds r1, r4, r2
 	strh r0, [r1]
 _080EF472:
 	movs r0, #0x44
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080EF48C
 	movs r0, #0x44
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	movs r3, #0xcd
 	lsls r3, r3, #1
 	adds r1, r4, r3
 	strh r0, [r1]
 _080EF48C:
 	movs r0, #0x47
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080EF4C2
 	movs r5, #0
@@ -449,12 +449,12 @@ _080EF4BC:
 	ble _080EF498
 _080EF4C2:
 	movs r0, #0x4b
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080EF4DA
 	movs r0, #0x4b
 	movs r1, #2
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r3, _080EF4E0 @ =0x0000025A
 	adds r1, r4, r3
 	strh r0, [r1]

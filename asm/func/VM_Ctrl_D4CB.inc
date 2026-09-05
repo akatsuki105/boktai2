@@ -14,7 +14,7 @@
 	mov r1, sp
 	strh r0, [r1, #6]
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0823AFA8
 	bl Script_GetValue
@@ -27,7 +27,7 @@ _0823AFAC:
 	strh r0, [r1, #4]
 	movs r0, #0x74
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	mov r1, sp
 	movs r3, #0
 	movs r2, #0
@@ -72,7 +72,7 @@ _0823AFFE:
 	cmp r0, r2
 	bge _0823AFFE
 	movs r0, #0x77
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0823B02E
 	movs r5, #0
@@ -100,7 +100,7 @@ _0823B034:
 	cmp r0, r1
 	bge _0823B034
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0823B062
 	movs r5, #0
@@ -119,7 +119,7 @@ _0823B056:
 	bne _0823B04C
 _0823B062:
 	movs r0, #0x62
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0823B07E
 	mov r2, sp
@@ -132,18 +132,18 @@ _0823B062:
 	str r0, [sp, #0x20]
 _0823B07E:
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0823B098
 	bl VM_GetPC
 	add r1, sp, #0x2c
 	add r2, sp, #0x30
-	bl VM_Step
+	bl VM_DecodeValue
 	ldr r0, [sp, #0x30]
 	b _0823B0B2
 _0823B098:
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0823B0B4
 	mov r2, sp

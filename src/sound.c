@@ -31,13 +31,13 @@ COMMON_DATA struct MusicPlayerInfo gMPlayInfo_15 = {0};  // 0x03005770
 NAKED void sound_08240264(SoundID32 id) { INCFUNC("asm/func/sound_08240264.inc"); }
 
 void FUN_082402c8(void) {
-  if (prepare_08231510(0x69) != 0) {
+  if (VM_SeekToKeyword(0x69) != 0) {
     sound_08240264(Script_GetValue());
   }
 }
 
 void FUN_082402e0(void) {
-  if (prepare_08231510(0x69) != 0) {
+  if (VM_SeekToKeyword(0x69) != 0) {
     sound_08240264(Script_GetValue());
   }
 }
@@ -54,12 +54,12 @@ void sound_082402f8(SoundID32 id) {
   }
 }
 
-void sound_08240344(void) { sound_082402f8(prepare_08231510(0x69) ? Script_GetValue() : 0); }
+void sound_08240344(void) { sound_082402f8(VM_SeekToKeyword(0x69) ? Script_GetValue() : 0); }
 
 NAKED void FUN_08240360(u32 id) { INCFUNC("asm/func/FUN_08240360.inc"); }
 
 void sound_082403b8(void) {
-  if (prepare_08231510(0x66) != 0) {
+  if (VM_SeekToKeyword(0x66) != 0) {
     FUN_08240360(Script_GetValue());
   }
 }
@@ -67,7 +67,7 @@ void sound_082403b8(void) {
 NAKED void FUN_082403d0(u32 speed) { INCFUNC("asm/func/FUN_082403d0.inc"); }
 
 void FUN_08240428(void) {
-  if (prepare_08231510(0x66) != 0) {
+  if (VM_SeekToKeyword(0x66) != 0) {
     FUN_082403d0(Script_GetValue());
   }
 }
@@ -116,7 +116,7 @@ NAKED void FUN_082407e0(void) { INCFUNC("asm/func/FUN_082407e0.inc"); }
 
 NAKED void FUN_0824082c(void) { INCFUNC("asm/func/FUN_0824082c.inc"); }
 
-NAKED void FUN_0824087c(void) { INCFUNC("asm/func/FUN_0824087c.inc"); }
+void FUN_0824087c(void) { FUN_0824082c(); }
 
 NAKED void FUN_08240888(void) { INCFUNC("asm/func/FUN_08240888.inc"); }
 

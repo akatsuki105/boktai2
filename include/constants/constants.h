@@ -2,7 +2,6 @@
 #define __INCLUDE_CONSTANTS_CONSTANTS_H__
 
 #include "constants/armor.h"
-#include "constants/bytecode.h"
 #include "constants/coffin.h"
 #include "constants/enemy.h"
 #include "constants/item.h"

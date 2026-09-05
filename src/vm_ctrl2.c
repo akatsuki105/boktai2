@@ -2,7 +2,7 @@
 #include "vm.h"
 
 void FUN_08231780(void);
-void FUN_08231be0(u32 n);
+void SetMapInitScriptID(u32 n);
 bool32 FUN_0823a8b0(void);
 
 TaskFn VM_GetSubroutine(u32 subroutineID);
@@ -14,10 +14,10 @@ void* VM_Ctrl_LoadMap(void) {
   void* bVar2;
   u16 scriptID = (u16)Script_GetValue();
   u32_03004798 = 0x01;
-  if ((prepare_08231510(0x6E) == 0) || ((VM_GetPC() != NULL) && (Script_GetValue() == 0))) {
+  if ((VM_SeekToKeyword(0x6E) == 0) || ((VM_GetPC() != NULL) && (Script_GetValue() == 0))) {
     u32_03004798 |= 0x10;
   }
-  FUN_08231be0((s16)scriptID);
+  SetMapInitScriptID((s16)scriptID);
   gStat->mapInitScriptID = scriptID;
   return NULL;
 }
@@ -29,8 +29,7 @@ s32 VM_Ctrl_CallWithArg(void) {
   if (fn == NULL) {
     return -1;
   }
-  subID = (u16)Script_GetValue();
-  fn(subID, NULL);
+  fn((u16)Script_GetValue(), NULL);
   return 0;
 }
 
@@ -58,9 +57,9 @@ void* VM_Ctrl_E43C(void) {
   bool32 bVar1 = FUN_0823a8b0();
   if (!bVar1) {
     u32_03004798 = 0x40;
-    if (prepare_08231510(0x73) != 0) {
+    if (VM_SeekToKeyword(0x73) != 0) {
       u32_03004798 |= 0x10;
-    } else if (prepare_08231510(0x72) != 0) {
+    } else if (VM_SeekToKeyword(0x72) != 0) {
       u32_03004798 |= 0x100;
     }
   }

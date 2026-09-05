@@ -5,7 +5,7 @@ MAKEFLAGS += --no-print-directory
 
 # Inclusive list. If you don't want a tool to be built, don't add it here.
 TOOLS_DIR := tools
-TOOL_NAMES := bokasm gbagfx scaninc preproc
+TOOL_NAMES := gbagfx scaninc preproc
 
 TOOLDIRS := $(TOOL_NAMES:%=$(TOOLS_DIR)/%)
 

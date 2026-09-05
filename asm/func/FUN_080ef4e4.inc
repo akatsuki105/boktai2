@@ -1,7 +1,7 @@
 	push {r4, lr}
 	movs r0, #0x6e
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	cmp r0, #0
 	beq _080EF52C
 	bl FUN_080edda0
@@ -10,7 +10,7 @@
 	beq _080EF52C
 	movs r0, #0x66
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	cmp r0, #0
 	bne _080EF51C
 	movs r0, #0xbe

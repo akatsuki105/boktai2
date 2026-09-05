@@ -13,7 +13,7 @@
 _08009868:
 	movs r0, #0x6e
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r2, r0, #0
 	mov r0, r8
 	ldr r5, [r0, #0x20]
@@ -42,34 +42,34 @@ _08009896:
 	strh r2, [r5]
 	movs r0, #0x64
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	strb r0, [r5, #2]
 	strb r4, [r5, #3]
 	movs r0, #0x74
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	strb r0, [r5, #4]
 	movs r0, #0x6d
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	str r0, [sp, #8]
 	movs r0, #0x62
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	strh r0, [r5, #0xc]
 	movs r0, #0x65
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	strh r0, [r5, #0xe]
 	movs r0, #0x44
 	movs r1, #0xe6
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r1, r0, #0
 	muls r1, r0, r1
 	adds r0, r1, #0
 	str r0, [r5, #0x10]
 	movs r0, #0x61
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08009910
 	adds r6, r5, #0
@@ -102,7 +102,7 @@ _0800991A:
 	bge _0800991A
 _08009922:
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800996C
 	bl Script_GetValue

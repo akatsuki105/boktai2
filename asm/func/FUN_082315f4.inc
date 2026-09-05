@@ -8,7 +8,7 @@ _08231600:
 	adds r0, r2, #0
 	mov r1, sp
 	adds r2, r6, #0
-	bl VM_Step
+	bl VM_DecodeValue
 	adds r2, r0, #0
 	ldr r0, [sp, #4]
 	strh r0, [r4]

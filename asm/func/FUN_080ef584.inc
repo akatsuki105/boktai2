@@ -5,7 +5,7 @@
 	beq _080EF59C
 	movs r0, #0x6c
 	movs r1, #3
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r1, r4, #0
 	adds r1, #0x30
 	strb r0, [r1]

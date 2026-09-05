@@ -1,1 +1,2 @@
 deno.lock linguist-generated=true
+**/*.bokc linguist-generated=true

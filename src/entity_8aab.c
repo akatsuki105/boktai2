@@ -13,6 +13,16 @@ void FUN_08222cd4(void) { gEntity8AAB = NULL; }
 
 INCASM("asm/entity_8aab.inc");
 
+NAKED s32 Entity8AAB_Update(Entity8AAB* p) { INCFUNC("asm/func/Entity8AAB_Update.inc"); }
+
+NAKED s32 Entity8AAB_Destroy(Entity8AAB* p) { INCFUNC("asm/func/Entity8AAB_Destroy.inc"); }
+
+NAKED void FUN_08229394(void) { INCFUNC("asm/func/FUN_08229394.inc"); }
+
+NAKED void FUN_0822970c(void) { INCFUNC("asm/func/FUN_0822970c.inc"); }
+
+NAKED s32 Entity8AAB_Init(Entity8AAB* p) { INCFUNC("asm/func/Entity8AAB_Init.inc"); }
+
 NAKED Entity8AAB* Entity8AAB_Create(u32 val) { INCFUNC("asm/func/Entity8AAB_Create.inc"); }
 
 void FUN_08224fb8(void*);

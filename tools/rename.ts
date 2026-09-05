@@ -2,6 +2,7 @@
 
 import { Command } from "@cliffy/command";
 import * as path from "@std/path";
+import { getRepoRoot } from "./common/common.ts";
 
 // boktai2 内の関数名を一括リネームする。
 // src/**/*.c, src/**/*.s, include/**/*.h, asm/**/*.inc から OLD_NAME を
@@ -17,11 +18,6 @@ const TARGET_DIRS = ["src", "include", "asm", "data"];
 const TARGET_EXTS = [".c", ".h", ".s", ".inc"];
 
 const escapeRegExp = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-
-const getRepoRoot = (): string => {
-  const { stdout } = new Deno.Command("git", { args: ["rev-parse", "--show-toplevel"] }).outputSync();
-  return new TextDecoder().decode(stdout).trim();
-};
 
 const collectFiles = (dir: string): string[] => {
   const results: string[] = [];

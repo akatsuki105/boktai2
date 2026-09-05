@@ -7,7 +7,7 @@
 	cmp r4, #0
 	beq _0807DDB2
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807DD1C
 	bl Script_GetValue
@@ -28,7 +28,7 @@ _0807DD24:
 	adds r0, r4, r1
 	bl FUN_0809c544
 	movs r0, #0x63
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807DD48
 	bl Script_GetValue

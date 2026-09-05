@@ -328,23 +328,3 @@ FUN_08229288: @ 0x08229288
 FUN_082292ac: @ 0x082292AC
   .include "asm/func/FUN_082292ac.inc"
 
-	thumb_func_start FUN_082292d8
-FUN_082292d8: @ 0x082292D8
-  .include "asm/func/FUN_082292d8.inc"
-
-	thumb_func_start FUN_08229334
-FUN_08229334: @ 0x08229334
-  .include "asm/func/FUN_08229334.inc"
-
-	thumb_func_start FUN_08229394
-FUN_08229394: @ 0x08229394
-  .include "asm/func/FUN_08229394.inc"
-
-	thumb_func_start FUN_0822970c
-FUN_0822970c: @ 0x0822970C
-  .include "asm/func/FUN_0822970c.inc"
-
-	thumb_func_start FUN_08229a28
-FUN_08229a28: @ 0x08229A28
-  .include "asm/func/FUN_08229a28.inc"
-

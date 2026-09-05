@@ -29481,27 +29481,27 @@ EntityBA4B_Init: @ 0x08035ED0
 	mov sb, r7
 	movs r0, #0x74
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	str r0, [sp, #0x28]
 	adds r0, r7, #0
 	ldr r1, [sp, #0x28]
 	bl FUN_08022a0c
 	movs r0, #0x53
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	movs r2, #0x82
 	lsls r2, r2, #4
 	adds r1, r7, r2
 	str r0, [r1]
 	movs r0, #0x52
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r3, _08035F3C @ =0x00000824
 	adds r1, r7, r3
 	str r0, [r1]
 	movs r0, #0x50
 	movs r1, #2
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r4, _08035F40 @ =0x0000016B
 	adds r1, r7, r4
 	strb r0, [r1]
@@ -29557,7 +29557,7 @@ _08035F6A:
 	adds r1, r3, #0
 	bl OpenSpriteSetFile
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08035FDC
 	bl Script_GetValue
@@ -29631,7 +29631,7 @@ _08036004:
 	adds r0, r7, #0
 	bl FUN_08028604
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08036094
 	bl Script_GetValue
@@ -29708,7 +29708,7 @@ _080360C4:
 	adds r1, r7, r2
 	strh r0, [r1]
 	movs r0, #0x61
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08036180
 	bl Script_GetValue
@@ -29804,7 +29804,7 @@ _08036180:
 	strh r2, [r0]
 _080361C8:
 	movs r0, #0x67
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08036214
 	bl Script_GetValue
@@ -29844,7 +29844,7 @@ _08036214:
 _0803622A:
 	strh r0, [r1]
 	movs r0, #0x55
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08036278
 	bl Script_GetValue
@@ -29913,7 +29913,7 @@ _08036298:
 	strb r5, [r0]
 	movs r0, #0x69
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	mov r1, sb
 	adds r1, #0xab
 	strb r0, [r1]
@@ -30017,7 +30017,7 @@ _08036382:
 	beq _08036474
 	movs r0, #0x44
 	movs r1, #1
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r4, r0, #0
 	cmp r4, #1
 	beq _08036400
@@ -30175,7 +30175,7 @@ _080364A8:
 	adds r0, r7, #0
 	bl FUN_0802ad28
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08036520
@@ -30205,7 +30205,7 @@ _08036520:
 	strh r1, [r0]
 _0803652E:
 	movs r0, #0x63
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08036554
 	bl Script_GetValue
@@ -30225,7 +30225,7 @@ _08036554:
 	bl FUN_08022fac
 _0803655E:
 	movs r0, #0x41
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	mov r6, sb
 	adds r6, #0xde
 	movs r1, #0x48
@@ -30258,14 +30258,14 @@ _08036592:
 	strh r0, [r1]
 	movs r0, #0x4b
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	movs r3, #0x8e
 	lsls r3, r3, #4
 	adds r1, r7, r3
 	str r0, [r1]
 	movs r0, #0x78
 	movs r1, #2
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	strb r0, [r6]
 	ldr r4, _080366C0 @ =0x00000173
 	adds r1, r7, r4
@@ -30472,7 +30472,7 @@ EntityBA4B_Create: @ 0x08036774
 	adds r5, r0, #0
 	movs r0, #0x74
 	movs r1, #1
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	bl FUN_08022a2c
 	adds r4, r0, #0
 	cmp r4, #0

@@ -28,7 +28,7 @@ _082433DA:
 	adds r1, r2, #0
 	strh r1, [r0]
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0824340C
 	bl Script_GetValue
@@ -42,7 +42,7 @@ _0824340E:
 	cmp r5, #0
 	ble _0824344A
 	movs r0, #0x61
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08243434
 	movs r4, #0
@@ -58,7 +58,7 @@ _08243422:
 	blt _08243422
 _08243434:
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0824344A
 	bl Script_GetValue

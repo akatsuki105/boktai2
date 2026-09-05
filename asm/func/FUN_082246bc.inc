@@ -16,13 +16,13 @@ _082246D4:
 	strh r0, [r1]
 	movs r0, #0x75
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r2, _08224774 @ =0x00000F33
 	adds r1, r4, r2
 	strb r0, [r1]
 	movs r0, #0x70
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r2, _08224778 @ =0x00000F0C
 	adds r1, r4, r2
 	str r0, [r1]

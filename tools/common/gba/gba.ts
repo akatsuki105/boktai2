@@ -19,6 +19,7 @@ export const toHex = (val: number, maxLength: number): string => {
 
 export const toHex8 = (val: number): string => toHex(val, 2);
 export const toHex16 = (val: number): string => toHex(val, 4);
+export const toHex24 = (val: number): string => toHex(val, 6);
 export const toHex32 = (val: number): string => toHex(val, 8);
 
 // "U32J" や "BZ3J" みたいな、4バイトの文字列

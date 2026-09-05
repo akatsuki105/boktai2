@@ -1,6 +1,6 @@
 	push {lr}
 	movs r0, #0x69
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	bne _0807AFF8
 	movs r0, #0

@@ -66,7 +66,7 @@ _08224AB2:
 	strb r0, [r2]
 	movs r0, #0x70
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	movs r2, #0xf1
 	lsls r2, r2, #4
 	adds r1, r4, r2

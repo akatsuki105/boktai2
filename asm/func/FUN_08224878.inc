@@ -17,7 +17,7 @@ _08224892:
 	strh r0, [r1]
 	movs r0, #0x64
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	lsls r0, r0, #0x18
 	movs r5, #0
 	movs r1, #0xe0

@@ -84,9 +84,9 @@ NAKED void FUN_0823e470(s32 a, s32 b) { INCFUNC("asm/func/FUN_0823e470.inc"); }
 
 u32 FUN_0823e4c8(void) { return gClock.unk_14; }
 
-u32 FUN_0823e4d4(void) { return gClock.unk_16; }
+u32 FUN_0823e4d4(void) { return gClock.moonPhase; }
 
-u32 FUN_0823e4e0(void) { return gClock.unk_16; }
+u32 FUN_0823e4e0(void) { return gClock.moonPhase; }
 
 NAKED void FUN_0823e4ec(void) { INCFUNC("asm/func/FUN_0823e4ec.inc"); }
 

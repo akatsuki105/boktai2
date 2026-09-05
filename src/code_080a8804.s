@@ -1760,7 +1760,7 @@ Entity4063_Init: @ 0x080A9540
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A9554
 	bl Script_GetValue
@@ -1771,7 +1771,7 @@ _080A9554:
 _080A9558:
 	strh r0, [r4, #0x18]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A9568
 	bl Script_GetValue
@@ -3087,7 +3087,7 @@ Entity87FE_Init: @ 0x080A9F70
 _080A9F84: .4byte 0x03002BE0
 _080A9F88:
 	movs r0, #0x6c
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A9F9A
 	bl Script_GetValue
@@ -3097,7 +3097,7 @@ _080A9F9A:
 	movs r5, #0
 _080A9F9C:
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A9FAE
 	bl Script_GetValue
@@ -3177,7 +3177,7 @@ _080AA02C:
 	bl PlaySound_082406e0
 _080AA032:
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080AA040
 	bl Script_GetValue

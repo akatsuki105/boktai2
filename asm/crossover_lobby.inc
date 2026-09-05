@@ -187,7 +187,7 @@ FUN_0804ef50: @ 0x0804EF50
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0x10
-	bl FUN_08230ab0
+	bl CopyMemory
 	movs r0, #0x9a
 	lsls r0, r0, #2
 	adds r6, r6, r0
@@ -198,7 +198,7 @@ FUN_0804ef50: @ 0x0804EF50
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #0x10
-	bl FUN_08230ab0
+	bl CopyMemory
 	mov r1, sb
 	lsls r0, r1, #2
 	ldr r1, _0804EFE4 @ =0x00000554
@@ -249,7 +249,7 @@ _0804F004:
 	adds r1, r4, r0
 	adds r0, r3, #0
 	movs r2, #0x10
-	bl FUN_08230ab0
+	bl CopyMemory
 	lsls r1, r5, #2
 	ldr r2, _0804F038 @ =0x00000554
 	adds r0, r6, r2
@@ -361,14 +361,14 @@ _0804F0C2:
 	adds r1, r1, r4
 	adds r0, r6, #0
 	movs r2, #0x10
-	bl FUN_08230ab0
+	bl CopyMemory
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r7, r1
 	ldr r1, [r5]
 	adds r1, r1, r4
 	movs r2, #0x10
-	bl FUN_08230ab0
+	bl CopyMemory
 	ldr r0, _0804F12C @ =0x00000554
 	add r0, r8
 	ldr r0, [r0]
@@ -1074,7 +1074,7 @@ _0804F67A:
 	adds r1, r3, #0
 	bl OpenSpriteSetFile
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	bne _0804F6A0
 	b _0804F7C8
@@ -1087,7 +1087,7 @@ _0804F6A0:
 _0804F6AC:
 	movs r0, #0x72
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	movs r7, #0xac
 	lsls r7, r7, #3
 	adds r1, r6, r7

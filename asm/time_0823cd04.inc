@@ -52,7 +52,7 @@ FUN_0823cd48: @ 0x0823CD48
 	adds r1, r4, #0
 	bl CpuSet
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0823CD9C
 	bl VM_GetPC
@@ -768,7 +768,7 @@ FUN_0823d2bc: @ 0x0823D2BC
 	push {lr}
 	movs r0, #0x74
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r1, _0823D2D0 @ =0x0300446C
 	str r0, [r1]
 	pop {r0}
@@ -968,15 +968,15 @@ FUN_0823d428: @ 0x0823D428
 	sub sp, #0x10
 	movs r0, #0x62
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r4, r0, #0
 	movs r0, #0x69
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	str r0, [sp, #0xc]
 	movs r0, #0x70
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r5, r0, #0
 	ldr r0, _0823D4A0 @ =0x0000C091
 	lsls r4, r4, #0x10
@@ -1252,7 +1252,7 @@ FUN_0823d6bc: @ 0x0823D6BC
 	ldr r0, [r0]
 	ldr r1, [r0, #0xc]
 	movs r0, #0x70
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r1, r0, #0
 	cmp r1, #0
 	bge _0823D6D8

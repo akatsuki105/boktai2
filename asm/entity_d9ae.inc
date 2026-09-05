@@ -1033,7 +1033,7 @@ _0800378C: .4byte 0x03000020
 _08003790:
 	movs r0, #0x6e
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r7, r0, #0
 	ldr r4, [r6, #0x70]
 	movs r5, #0
@@ -2985,7 +2985,7 @@ EntityD9AE_Create: @ 0x08004610
 	bl SetEntityRoutine
 	movs r0, #0x6d
 	movs r1, #8
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	strh r0, [r4, #0x18]
 	adds r0, r4, #0
 	adds r1, r5, #0

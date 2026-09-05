@@ -1,6 +1,7 @@
 #ifndef GUARD_ZOKTAI_PLAYER_H
 #define GUARD_ZOKTAI_PLAYER_H
 
+#include "animation.h"
 #include "constants/constants.h"
 #include "entity.h"
 #include "gba/gba.h"
@@ -18,7 +19,8 @@ typedef u32 PlayerFlag378;               // Player.flag378
 #define FLAG378_WET_ENE_COST (1 << 1)    // 0x00000002, WET_ENE_COST を持った武器を装備している間セットされる
 #define FLAG378_BLOOD_SWORD (1 << 2)     // 0x00000004, WET_BLOOD_SWORD を持った武器を装備している間セットされる
 #define FLAG378_ASTRO (1 << 3)           // 0x00000008, アストロ武器 を装備している間セットされる
-#define FLAG378_WEAPONGUARD (1 << 6)     // 0x00000040, ウェポンガードを装備している間セットされる
+#define FLAG378_WEAPONGUARD (1 << 6)     // 0x00000040, ウェポンガード〃
+#define FLAG378_FAIRY (1 << 7)           // 0x00000080, 精霊の衣〃
 #define FLAG378_UNK_8 (1 << 8)           // 0x00000100, ???
 #define FLAG378_HEART (1 << 28)          // 0x10000000, ハートの紋章所持
 #define FLAG378_JOKER (1 << 29)          // 0x20000000, ジョーカーの紋章所持
@@ -73,6 +75,7 @@ typedef struct Player4c4 {
   // 304バイト, これ以上続くのかは不明
 } Player4c4;
 
+// 通常プレイでは gPlayerPtr[0] にこの構造体がある
 // 通信対戦の相手キャラもこの構造体を使う
 typedef struct Player {
   Entity e;

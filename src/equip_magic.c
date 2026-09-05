@@ -53,7 +53,7 @@ void magic_082434f0(magic32_t n) {
 }
 
 void FUN_08243558(void) {
-  if (prepare_08231510(109)) {
+  if (VM_SeekToKeyword(109)) {
     magic_082434f0(Script_GetValue());
   }
 }
@@ -64,8 +64,7 @@ bool32 IsMagicUnlocked(magic32_t n) {
 }
 
 bool32 FUN_08243584(void) {
-  s32 x = prepare_08231510(109);
-  if (x) {
+  if (VM_SeekToKeyword(109)) {
     return IsMagicUnlocked(Script_GetValue());
   }
 }
@@ -79,8 +78,6 @@ NAKED void magic_082435b8(void) { INCFUNC("asm/func/magic_082435b8.inc"); }
 
 s32 FUN_08243648(s32 n) {
   u32 val = n & (~7);
-  if ((n & 7) != 0) {
-    val += 8;
-  }
+  if ((n & 7) != 0) val += 8;
   return val;
 }

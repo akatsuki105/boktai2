@@ -1,7 +1,7 @@
 	push {r4, r5, lr}
 	movs r0, #0x6e
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	cmp r0, #0
 	beq _080EF040
 	bl FUN_080edda0
@@ -9,7 +9,7 @@
 	cmp r4, #0
 	beq _080EF040
 	movs r0, #0x72
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080EF040
 	bl VM_GetPC

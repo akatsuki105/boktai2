@@ -32844,7 +32844,7 @@ FUN_081fa378: @ 0x081FA378
 	lsls r6, r6, #1
 	add r6, r8
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _081FA3DC
 	bl Script_GetValue

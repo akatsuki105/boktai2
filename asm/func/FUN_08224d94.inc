@@ -12,7 +12,7 @@
 _08224DAC:
 	movs r0, #0x72
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r2, _08224DC8 @ =0x00000F28
 	adds r1, r4, r2
 	strb r0, [r1]

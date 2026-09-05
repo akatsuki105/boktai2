@@ -19,7 +19,7 @@
 	add r0, sp, #0x10
 	bl OpenSpriteSetFile
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _080AAE34
@@ -57,7 +57,7 @@ _080AAE34:
 	str r0, [sp, #0x3c]
 _080AAE4C:
 	movs r0, #0x6f
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080AAE8C
 	bl Script_GetValue
@@ -89,7 +89,7 @@ _080AAE8C:
 	ands r7, r0
 _080AAE92:
 	movs r0, #0x49
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080AAEAC
 	bl Script_GetValue
@@ -105,7 +105,7 @@ _080AAEAC:
 	strh r0, [r1, #0x1a]
 _080AAEB4:
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080AAEC8
 	bl Script_GetValue
@@ -117,7 +117,7 @@ _080AAEC8:
 	strh r0, [r3, #0x18]
 _080AAECC:
 	movs r0, #0x52
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080AAEDE
 	bl Script_GetValue
@@ -137,7 +137,7 @@ _080AAEE2:
 	b _080AAF1C
 _080AAEF2:
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080AAF02
 	bl Script_GetValue
@@ -149,7 +149,7 @@ _080AAF04:
 	b _080AAF1C
 _080AAF08:
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080AAF18
 	bl Script_GetValue

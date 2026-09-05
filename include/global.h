@@ -46,6 +46,6 @@ extern SystemSaveData* gSystemSaveData;
 // --------------------------------------------
 
 void ClearMemory(void* dst, s32 bytesize);  // buffer から bytesize バイト分のメモリを0で埋める
-void FUN_08230ab0(u8* dst, u8* src, s32 bytesize);
+void CopyMemory(u8* dst, u8* src, s32 bytesize);
 
 #endif  // GUARD_ZOKTAI_GLOBAL_H

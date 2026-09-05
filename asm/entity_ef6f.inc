@@ -2461,7 +2461,7 @@ EntityEF6F_Init: @ 0x0801F4CC
 	adds r0, r6, r1
 	ldr r1, _0801F5C8 @ =0x08DAA084
 	movs r2, #0x24
-	bl FUN_08230ab0
+	bl CopyMemory
 	ldr r4, _0801F5CC @ =0x0000CB05
 	ldr r1, _0801F5D0 @ =0x0000414C
 	adds r0, r4, #0
@@ -2543,12 +2543,12 @@ EntityEF6F_Init: @ 0x0801F4CC
 	bl OpenSpriteSetFile
 	movs r0, #0x65
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r1, r6, #0
 	adds r1, #0x90
 	str r0, [r1]
 	movs r0, #0x45
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0801F5C0
 	bl FUN_0823d340

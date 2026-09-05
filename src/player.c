@@ -3,6 +3,7 @@
 #include "armor.h"
 #include "global.h"
 #include "item.h"
+#include "vm.h"
 
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
 
@@ -115,8 +116,6 @@ const s16 s16_ARRAY_085abc8a[17] = {
 
 INCBIN(".rodata", "data/rodata2.bin");  // ./tmp/bin.sh ./baserom.gba 0x085abcac 0x085abfc8 ./data/rodata2.bin
 
-void Script_ExecById(s32 scriptID, s32 r1);
-
 NAKED void FUN_080609dc(Player* p) { INCFUNC("asm/func/FUN_080609dc.inc"); }
 
 NAKED bool32 FUN_08060a24(Player* p, u32 val1, s32 val2) { INCFUNC("asm/func/FUN_08060a24.inc"); }
@@ -157,18 +156,12 @@ s32 GetPlayerCoffinID(void) {
 void FUN_08060e90(Player* p, u32 r1) {
   u32 scriptID = p->scriptID_9c4;
   if (scriptID != 0) {
-    struct {
-      s32 arg;
-      u32 flags;
-      s32* argPtr;
-    } local;
-    s32* pw;
-    u32 mask = 0xFFFF0000;
-    local.flags = (local.flags & mask) | 1;
-    local.arg = r1;
-    pw = (s32*)&local.flags;
-    pw[1] = (s32)&local.arg;
-    Script_ExecById(scriptID, (s32)pw);
+    u32 arg;
+    ScriptArgs args;
+    args.argc = 1;
+    arg = r1;
+    args.argv = &arg;
+    Script_ExecById(scriptID, &args);
   }
 }
 
@@ -178,7 +171,7 @@ u32 FUN_08060ed8(Player* p, u32 r1) { return p->unk_9bc & r1; }
 
 void FUN_08060ee8(Player* p) {
   if (p->scriptID_9c0 != 0) {
-    Script_ExecById(p->scriptID_9c0, 0);
+    Script_ExecById(p->scriptID_9c0, NULL);
   }
 }
 
@@ -304,7 +297,8 @@ void FUN_08064658(Player* p, Weapon* w) { p->weapon_a70 = w; }
 
 NAKED void weapon_08064664(Player* p, Weapon* w) { INCFUNC("asm/func/weapon_08064664.inc"); }
 
-NAKED void FUN_08064764(Player* p) { INCFUNC("asm/func/FUN_08064764.inc"); }
+// HitboxData.wear (Player.unk_a10.wear) が0以外なら Weapon.wear に加算して HitboxData.wear を 0にする, HitboxData.wear は ジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 の 0x0813EFFC で加算される (他の敵も同様と思われる)
+NAKED void Player_UpdateWeaponWear(Player* p) { INCFUNC("asm/func/Player_UpdateWeaponWear.inc"); }
 
 NAKED void FUN_0806483c(Player* p, const ArmorData* a) { INCFUNC("asm/func/FUN_0806483c.inc"); }
 

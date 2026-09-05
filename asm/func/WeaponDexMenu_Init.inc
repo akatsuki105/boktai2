@@ -45,7 +45,7 @@
 	adds r0, r4, #0
 	bl FUN_08210718
 	movs r0, #0x75
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08210FD4
 	bl FUN_0823d340
@@ -56,7 +56,7 @@
 	cmp r0, #0
 	beq _08210FD4
 	movs r0, #0x77
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08210FD4
 	bl FUN_0823d340
@@ -79,7 +79,7 @@ _08210FF0: .4byte 0x00000D8C
 _08210FF4:
 	movs r0, #0x65
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r2, _08211058 @ =0x00000D94
 	adds r1, r4, r2
 	str r0, [r1]

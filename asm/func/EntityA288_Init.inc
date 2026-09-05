@@ -6,14 +6,14 @@
 	sub sp, #0x14
 	adds r7, r0, #0
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08219FFE
 	bl Script_GetValue
 	str r0, [r7, #0x40]
 _08219FFE:
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A014
 	bl FUN_0823d340
@@ -23,7 +23,7 @@ _08219FFE:
 	str r0, [r1]
 _0821A014:
 	movs r0, #0x61
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A028
 	bl FUN_0823d340
@@ -32,7 +32,7 @@ _0821A014:
 	str r0, [r1]
 _0821A028:
 	movs r0, #0x49
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A0D8
 	movs r4, #0xd8
@@ -116,7 +116,7 @@ _0821A0CC:
 	ble _0821A054
 _0821A0D8:
 	movs r0, #0x62
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A0EC
 	bl FUN_0823d340
@@ -125,7 +125,7 @@ _0821A0D8:
 	str r0, [r1]
 _0821A0EC:
 	movs r0, #0x67
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A100
 	bl FUN_0823d340
@@ -134,7 +134,7 @@ _0821A0EC:
 	str r0, [r1]
 _0821A100:
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A114
 	bl VM_GetPC
@@ -143,7 +143,7 @@ _0821A100:
 	str r0, [r1]
 _0821A114:
 	movs r0, #0x53
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A128
 	bl FUN_0823d340
@@ -152,7 +152,7 @@ _0821A114:
 	str r0, [r1]
 _0821A128:
 	movs r0, #0x50
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A13C
 	bl VM_GetPC
@@ -161,7 +161,7 @@ _0821A128:
 	str r0, [r1]
 _0821A13C:
 	movs r0, #0x4e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A150
 	bl VM_GetPC
@@ -170,7 +170,7 @@ _0821A13C:
 	str r0, [r1]
 _0821A150:
 	movs r0, #0x48
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A164
 	bl FUN_0823d340
@@ -179,7 +179,7 @@ _0821A150:
 	str r0, [r1]
 _0821A164:
 	movs r0, #0x4b
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A17A
 	bl FUN_0823d340
@@ -189,7 +189,7 @@ _0821A164:
 	str r0, [r1]
 _0821A17A:
 	movs r0, #0x54
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A18E
 	bl FUN_0823d340
@@ -198,7 +198,7 @@ _0821A17A:
 	str r0, [r1]
 _0821A18E:
 	movs r0, #0x41
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A1A2
 	bl FUN_0823d340
@@ -207,7 +207,7 @@ _0821A18E:
 	str r0, [r1]
 _0821A1A2:
 	movs r0, #0x58
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A1B8
 	bl FUN_0823d340
@@ -217,7 +217,7 @@ _0821A1A2:
 	str r0, [r1]
 _0821A1B8:
 	movs r0, #0x45
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A1CC
 	bl Script_GetValue
@@ -226,21 +226,21 @@ _0821A1B8:
 	str r0, [r1]
 _0821A1CC:
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A1DC
 	bl Script_GetValue
 	str r0, [r7, #0x48]
 _0821A1DC:
 	movs r0, #0x6c
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A1EC
 	bl Script_GetValue
 	str r0, [r7, #0x4c]
 _0821A1EC:
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A1FC
 	bl Script_GetValue

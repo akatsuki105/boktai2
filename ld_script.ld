@@ -75,6 +75,9 @@ SECTIONS {
 			src/entity_d9ae.o (.text);
 			src/code_080026fc.o (.text);
 			src/entity_83b2.o (.text);
+			src/entity_0866.o (.text);
+			src/entity_0800a89c.o (.text);
+			src/solar_bamboo.o (.text);
 			src/code_08009a58.o (.text);
 			src/password.o (.text);
 			src/code_08013288.o (.text);
@@ -108,7 +111,10 @@ SECTIONS {
 			src/player_0807f640.o (.text);
 			src/code_080801f4.o (.text);
 			src/entity_cc28.o (.text);
+			src/entity_1b24.o (.text);
 			src/code_080917e4.o (.text);
+			src/code_080a6c94.o (.text);
+			src/entity_92be.o (.text);
 			src/gameover.o (.text);
 			src/freeze_effect.o (.text);
 			src/level_upper.o (.text);
@@ -119,6 +125,7 @@ SECTIONS {
 			src/solar_generator.o (.text);
 			src/solar_bank.o (.text);
 			src/entity_e9d3.o (.text);
+			src/entity_e02e.o (.text);
 			src/code_080b5ab0.o (.text);
 			src/entity_d3a9.o (.text);
 			src/code_080c0d6c.o (.text);
@@ -293,6 +300,8 @@ SECTIONS {
     src/entity_2d2b.o (.rodata);
     src/entity_5da5.o (.rodata);
     src/entity_83b2.o (.rodata);
+    src/entity_0866.o (.rodata);
+    src/entity_0800a89c.o (.rodata);
     src/data3b.o (.rodata);
     src/player.o (.rodata);
     src/entity_0b50.o (.rodata);

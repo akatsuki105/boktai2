@@ -4567,7 +4567,7 @@ _080550B0:
 	cmp r5, #6
 	ble _08055078
 	movs r0, #0x63
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _08055120
@@ -4611,11 +4611,11 @@ _08055132:
 	bl FUN_0823b8ac
 	movs r0, #0x70
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	mov r2, r8
 	str r0, [r2, #0x1c]
 	movs r0, #0x43
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08055164
 	mov r3, r8
@@ -5498,7 +5498,7 @@ Entity8D5C_Init: @ 0x08055828
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08055874
 	bl VM_GetPC

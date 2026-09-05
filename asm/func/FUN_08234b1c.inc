@@ -8,7 +8,7 @@
 	ldr r0, [r0]
 	ldrh r5, [r0]
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	b _08234BB0
 	.align 2, 0
 _08234B38: .4byte 0x030046A4

@@ -51,7 +51,7 @@ endif
 
 include make_tools.mk
 # Tool executables
-BOKASM  := $(TOOLS_DIR)/bokasm/bokasm$(EXE)
+BOKCC    := $(TOOLS_DIR)/bokcc/main.ts
 GBAGFX  := $(TOOLS_DIR)/gbagfx/gbagfx$(EXE)
 SCANINC := $(TOOLS_DIR)/scaninc/scaninc$(EXE)
 PREPROC := $(TOOLS_DIR)/preproc/preproc$(EXE)
@@ -161,6 +161,7 @@ clean-code:
 
 clean-scripts:
 	rm -f data/scripts/*.inc
+	rm -f data/scripts/*.bin
 
 $(ROM): $(ELF)
 	$(OBJCOPY) -O binary --pad-to 0x9000000 $< $@
@@ -210,15 +211,15 @@ ifneq ($(NODEP),1)
 -include $(ASM_DEPS)
 endif
 
-# Scripts  --------------------------------------------
+# Scripts (bokc)  --------------------------------------------
 
-BOKSCRIPTS := $(shell find data/scripts -type f -name '*.bokasm')
-BOKSCRIPTS_INC := $(BOKSCRIPTS:.bokasm=.inc)
+BOKC := $(shell find data/scripts -type f -name '*.bokc')
+BOKC_BIN := $(BOKC:.bokc=.bin)
 
-$(BOKSCRIPTS_INC): %.inc: %.bokasm
-	$(BOKASM) $< $@
+$(BOKC_BIN): %.bin: %.bokc
+	$(BOKCC) compile $< --bin $@
 
-$(BUILD_DIR)/src/data/scripts.o: src/data/scripts.s $(BOKSCRIPTS_INC) charmap.txt
+$(BUILD_DIR)/src/data/scripts.o: src/data/scripts.s $(BOKC_BIN) charmap.txt
 	$(PREPROC) $< charmap.txt | $(AS) $(ASFLAGS) -o $@ -
 
 # Assets --------------------------------------------

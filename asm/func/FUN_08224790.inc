@@ -12,12 +12,12 @@
 _082247A8:
 	movs r0, #0x70
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r2, _082247E0 @ =0x00000F0C
 	adds r1, r4, r2
 	str r0, [r1]
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _082247EC

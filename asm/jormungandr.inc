@@ -10778,7 +10778,7 @@ FUN_080ca430: @ 0x080CA430
 	cmp r4, #0
 	beq _080CA4CC
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080CA458
 	bl Script_GetValue
@@ -10795,7 +10795,7 @@ _080CA458:
 _080CA460:
 	strh r0, [r1]
 	movs r0, #0x63
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080CA480
 	bl Script_GetValue
@@ -10812,7 +10812,7 @@ _080CA480:
 _080CA486:
 	strh r0, [r1]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080CA4A8

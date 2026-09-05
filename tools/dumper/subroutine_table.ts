@@ -1,8 +1,8 @@
-#!/usr/bin/env -S deno run --allow-read
+#!/usr/bin/env -S deno run --allow-read --allow-run
 
 import { Command } from "@cliffy/command";
 import * as gba from "../common/gba/gba.ts";
-import { parseSymbolFile } from "../common/symbol.ts";
+import { parseSymbolFile } from "../parser/common/symbol.ts";
 import { getSubroutineTable } from "../parser/script.ts";
 
 // ./tools/dumper/subroutine_table.ts ./baserom.gba > data/subroutine.inc

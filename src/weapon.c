@@ -31,7 +31,7 @@ u32 GetWeaponKind(s32 slot) { return gWeaponDB[GetWeapon(slot)->id].kind; }
 
 s8 GetWeaponQuality(s32 slot) { return GetWeapon(slot)->quality; }
 
-u32 GetWeaponDurability(s32 slot) { return GetWeapon(slot)->durability; }
+u32 GetWeaponWear(s32 slot) { return GetWeapon(slot)->wear; }
 
 NAKED void FUN_08242a38(WeaponData* tmpl, Weapon* w) { INCFUNC("asm/func/FUN_08242a38.inc"); }
 
@@ -140,9 +140,9 @@ bool32 FUN_08242eb0(void) {
   s32 i, slot;
   weapon32_t w;
 
-  if (prepare_08231510(102) != 0) {
+  if (VM_SeekToKeyword(102) != 0) {
     w = Script_GetValue();
-    if (prepare_08231510(116) == 0) {
+    if (VM_SeekToKeyword(116) == 0) {
       return FALSE;
     }
 
@@ -188,9 +188,9 @@ bool32 FUN_08242f9c(void) {
   s32 len, i;
   weapon32_t w;
 
-  if (prepare_08231510(119) != 0) {
+  if (VM_SeekToKeyword(119) != 0) {
     w = Script_GetValue();
-    if (prepare_08231510(100) != 0) {
+    if (VM_SeekToKeyword(100) != 0) {
       len = Script_GetValue() ? 48 : 16;
     } else {
       len = 16;

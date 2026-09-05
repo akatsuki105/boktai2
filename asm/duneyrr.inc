@@ -95,7 +95,7 @@ FUN_08023318: @ 0x08023318
 	cmp r4, #0
 	beq _08023378
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0802333E
 	movs r1, #0xaa
@@ -107,7 +107,7 @@ FUN_08023318: @ 0x08023318
 	bl PlaySound_082406e0
 _0802333E:
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08023352
 	movs r0, #0xaa
@@ -117,7 +117,7 @@ _0802333E:
 	strb r0, [r1]
 _08023352:
 	movs r0, #0x62
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08023364
 	ldr r0, _08023384 @ =0x00000155
@@ -126,7 +126,7 @@ _08023352:
 	strb r0, [r1]
 _08023364:
 	movs r0, #0x69
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08023378
 	movs r0, #0xab
@@ -9153,7 +9153,7 @@ Duneyrr_Init: @ 0x080277EC
 	adds r7, r6, #0
 	movs r0, #0x74
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	mov sb, r0
 	adds r0, r6, #0
 	mov r1, sb
@@ -9223,7 +9223,7 @@ _08027854:
 	lsls r0, r0, #3
 	strh r0, [r1]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080278EC
 	bl Script_GetValue
@@ -9281,7 +9281,7 @@ _080278EC:
 	movs r4, #0x40
 _08027914:
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _08027950
@@ -9316,7 +9316,7 @@ _08027950:
 	strh r2, [r0]
 _08027966:
 	movs r0, #0x61
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080279E0
 	bl Script_GetValue
@@ -9408,7 +9408,7 @@ _08027A1E:
 	strb r4, [r0]
 	movs r0, #0x69
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	movs r3, #0xab
 	adds r3, r3, r7
 	mov sl, r3
@@ -9450,7 +9450,7 @@ _08027A1E:
 _08027A90:
 	movs r0, #0x44
 	movs r1, #1
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r1, r0, #0
 	cmp r1, #1
 	beq _08027B10
@@ -9649,7 +9649,7 @@ _08027BF2:
 	adds r0, r6, #0
 	bl FUN_08024294
 	movs r0, #0x63
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08027C54
 	bl Script_GetValue
@@ -9672,7 +9672,7 @@ _08027C54:
 	bl FUN_08022fac
 _08027C5E:
 	movs r0, #0x41
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r4, r7, #0
 	adds r4, #0xde
 	cmp r0, #0
@@ -9695,7 +9695,7 @@ _08027C80:
 	bne _08027C70
 _08027C8C:
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _08027CD8
@@ -9748,13 +9748,13 @@ _08027CD8:
 _08027CFE:
 	movs r0, #0x4b
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r2, _08027D94 @ =0x0000079C
 	adds r1, r6, r2
 	str r0, [r1]
 	movs r0, #0x78
 	movs r1, #2
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	movs r5, #0
 	strb r0, [r4]
 	ldr r3, _08027D98 @ =0x00000796
@@ -9792,7 +9792,7 @@ _08027CFE:
 	movs r2, #7
 	bl FUN_08013c94
 	movs r0, #0x6a
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08027DB4
 	bl Script_GetValue

@@ -36,7 +36,7 @@ NAKED void VBlankIntr(void) { INCFUNC("asm/func/VBlankIntr.inc"); }
 
 NAKED void VCountIntr(void) { INCFUNC("asm/func/VCountIntr.inc"); }
 
-NAKED void HBlankIntr(void) { INCFUNC("asm/func/HBlankIntr.inc"); }
+void HBlankIntr(void) {}
 
 void FUN_0822a188(void) {}
 

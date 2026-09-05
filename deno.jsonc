@@ -10,6 +10,7 @@
   },
   "imports": {
     "@cliffy/command": "jsr:@cliffy/command@^1.2.1",
+    "@std/assert": "jsr:@std/assert@^1.0.19",
     "@std/path": "jsr:@std/path@^1.1.6",
     "@binary-parser": "npm:binary-parser@2.3.0"
   }

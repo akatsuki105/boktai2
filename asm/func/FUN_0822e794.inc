@@ -12,7 +12,7 @@
 	ldr r2, _0822E7C8 @ =0x02035C00
 	adds r0, r0, r2
 	movs r2, #0x20
-	bl FUN_08230ab0
+	bl CopyMemory
 	ldr r0, [r4]
 	adds r0, #1
 	str r0, [r4]

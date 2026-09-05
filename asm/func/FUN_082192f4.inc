@@ -1094,7 +1094,7 @@ _08219C70:
 	adds r0, r0, r5
 	movs r2, #0
 	ldrsh r0, [r0, r2]
-	bl FUN_08231be0
+	bl SetMapInitScriptID
 	b _08219D7E
 	.align 2, 0
 _08219C88: .4byte 0x030046A0

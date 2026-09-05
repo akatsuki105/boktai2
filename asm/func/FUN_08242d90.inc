@@ -1,7 +1,7 @@
 	push {r4, r5, lr}
 	sub sp, #0x24
 	movs r0, #0x77
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	bne _08242DA2
 	movs r0, #0
@@ -21,7 +21,7 @@ _08242DA2:
 	ldm r1!, {r2, r3, r4}
 	stm r0!, {r2, r3, r4}
 	movs r0, #0x71
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08242DD0
 	bl Script_GetValue
@@ -35,7 +35,7 @@ _08242DD0:
 	cmp r0, #0
 	bne _08242DF6
 	movs r0, #0x6f
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08242DEE
 	bl Script_GetValue
@@ -47,7 +47,7 @@ _08242DEE:
 	strb r4, [r0, #0x18]
 _08242DF6:
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08242E16
 	add r4, sp, #4
@@ -64,7 +64,7 @@ _08242E0E:
 	bge _08242E04
 _08242E16:
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08242EA0
 	bl Script_GetValue
@@ -98,7 +98,7 @@ _08242E54: .4byte gWeaponDB
 _08242E58: .4byte 0x030046A0
 _08242E5C:
 	movs r0, #0x72
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08242EA0
 	bl FUN_0823d340

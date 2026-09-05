@@ -39,7 +39,7 @@ Sort candidates by byte size (address delta between consecutive
 objects). Small functions teach the compiler's habits cheaply.
 
 Before committing to the smallest candidate, check whether its name
-already has a `### FunctionName` entry in `docs/for-ai-agent/stuck-points.md`
+already has an entry in `docs/for-ai-agent/stuck-points.md`
 (a prior session got stuck on it and paused/left it NON_MATCH). If it
 does, skip it and move to the next-smallest candidate, repeating until you
 reach one with no stuck-points.md entry — don't re-attempt a recently
@@ -124,12 +124,12 @@ void* DecompTargetFunc(void) {
     [parallel] decomp-permuter can also be run in the background with a full random search to explore (see below) — separate from the `--debug` score check in Step 6b.
     Don't just let the background search run indefinitely hoping for score 0: launch it with `-j2 --stop-on-zero` (not more than `-j2` — higher pins all CPU cores and causes problems; `--stop-on-zero` makes it exit on its own the moment it finds a match instead of continuing to search past it). permuter.py has no time-based timeout flag, so still enforce the ~2 minute cap externally (a background timer + `pkill`) in case zero is never found — then stop it. If it hasn't found score 0 by then, take its best-scoring candidate (`nonmatchings/<dir>/output-<score>-*/source.c` under the perm dir) as feedback — read what structural/register-allocation change it made — and go back to Step 3 to write the next manual candidate informed by that, rather than treating the permuter as the final word or leaving it running unattended.
     If the iteration loop doesn't finish after 10 iterations, pause and prompt the user for instructions.
-    Before checking siblings (Step 2) on a *different* function, check `docs/for-ai-agent/stuck-points.md` for a matching symptom — a recurring stuck point across functions is usually systemic, not bad luck.
+    Before checking siblings (Step 2) on a *different* function, check `docs/for-ai-agent/stuck-points.md` — the same function name showing up repeatedly, or several functions stuck in the same area, is a signal worth noticing.
 
 8. `make && sha1sum -c boktai2.sha1` to verify the entire ROM matches
     `./tools/refresh-expected.sh` to update the `expected/` baseline
     Once MATCHING, the `asm/func/FUNCNAME.inc` is no longer referenced by any `INCFUNC` — confirm with `grep -rn "FUNCNAME.inc" src/*.c` (expect no hits) and delete it.
-    Add a one-line Japanese comment directly above the function signature summarizing what it does, for human readers (e.g. `// リンクリストからノードを削除する`). Keep it to one line; skip it only if an equivalent comment is already present.
+    Add a one-line Japanese comment directly above the function signature summarizing what it does, for human readers (e.g. `// リンクリストからノードを削除する`). Keep it to one line; skip it if an equivalent comment is already present, or if the function's behavior is self-evident from the code itself (e.g. a bare `return 0;`, or a standard `CreateEntity`/`SetEntityRoutine`/init-or-kill entity-creation function). Never write a comment that's just a literal restatement of the code (e.g. "reads pc[1..2] as a little-endian s16 and advances pc by 3" for code that visibly does exactly that) — describe the *meaning*/*purpose*, not the mechanics; if you don't know the meaning, skip the comment rather than paraphrasing the code.
 
 ## Leaving a function unmatched
 

@@ -1,12 +1,12 @@
 	push {r4, lr}
 	movs r0, #0x76
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _082406CE
 	bl Script_GetValue
 	adds r4, r0, #0
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _082406A4
 	bl Script_GetValue

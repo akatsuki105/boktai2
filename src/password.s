@@ -678,13 +678,13 @@ _08011604: .4byte 0x0008C159
 FUN_08011608: @ 0x08011608
 	push {r4, r5, lr}
 	movs r0, #0x63
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0801165A
 	bl VM_GetPC
 	adds r5, r0, #0
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0801165A
 	bl VM_GetPC
@@ -692,7 +692,7 @@ FUN_08011608: @ 0x08011608
 	cmp r4, #0
 	beq _0801165A
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0801165A
 	bl VM_GetPC
@@ -830,7 +830,7 @@ FUN_08011738: @ 0x08011738
 	bl FUN_0809c08c
 	movs r0, #0x65
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	str r0, [r4, #0x1c]
 	movs r0, #0
 	str r0, [r4, #0x20]
@@ -838,7 +838,7 @@ FUN_08011738: @ 0x08011738
 	rsbs r5, r5, #0
 	str r5, [r4, #0x24]
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08011794
 	bl FUN_0823d340
@@ -4067,7 +4067,7 @@ PasswordScreen_Init: @ 0x0801307C
 	ldr r0, _08013210 @ =0x000B8E6E
 	str r0, [r7, #0x24]
 	movs r0, #0x63
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	bne _08013098
 	b _08013238
@@ -4079,7 +4079,7 @@ _08013098:
 	adds r4, r7, r1
 	str r0, [r4]
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	bne _080130B6
 	b _08013238
@@ -4095,7 +4095,7 @@ _080130B6:
 _080130C8:
 	movs r0, #0x65
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	strh r0, [r7, #0x28]
 	adds r0, r7, #0
 	bl PasswordScreen_EncodeBits

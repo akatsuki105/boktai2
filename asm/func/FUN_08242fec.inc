@@ -42,7 +42,7 @@ _08243026:
 	movs r1, #0
 	strh r1, [r0]
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08243058
 	bl Script_GetValue
@@ -57,7 +57,7 @@ _0824305A:
 	cmp r4, #0
 	ble _082430C4
 	movs r0, #0x77
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _082430A2
 	cmp r4, #0
@@ -90,7 +90,7 @@ _08243096:
 	bne _08243070
 _082430A2:
 	movs r0, #0x71
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _082430C4
 	movs r4, #0

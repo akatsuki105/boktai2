@@ -18,7 +18,7 @@
 	bne _0807D53E
 _0807D514:
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807D52C
 	bl Script_GetValue

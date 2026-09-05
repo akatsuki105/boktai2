@@ -57,7 +57,7 @@ _0823AAE0:
 	cmp r4, #0
 	bne _0823AB12
 _0823AB0E:
-	bl FUN_08231ba8
+	bl VM_ExecSpecial
 _0823AB12:
 	str r5, [r7]
 	mov r1, r8
@@ -194,7 +194,7 @@ _0823AC28:
 	adds r0, r0, r1
 	movs r1, #0
 	ldrsh r0, [r0, r1]
-	bl FUN_08231be0
+	bl SetMapInitScriptID
 _0823AC48:
 	movs r0, #0
 	str r0, [r6, #0x18]

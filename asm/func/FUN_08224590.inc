@@ -15,7 +15,7 @@ _082245A8:
 	adds r1, r4, r2
 	strh r0, [r1]
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _082245F4
 	bl Script_GetValue
@@ -60,13 +60,13 @@ _08224614:
 	movs r1, #1
 	rsbs r1, r1, #0
 	movs r0, #0x64
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r2, _082246A0 @ =0x00000F23
 	adds r1, r4, r2
 	strb r0, [r1]
 	movs r0, #0x70
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r2, _082246A4 @ =0x00000F0C
 	adds r1, r4, r2
 	str r0, [r1]

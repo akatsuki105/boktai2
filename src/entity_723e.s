@@ -955,7 +955,7 @@ Entity723E_Init: @ 0x080529B0
 	ldr r0, _080529E0 @ =0x0300011C
 	str r7, [r0]
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080529DA
 	bl FUN_0823d340
@@ -1056,7 +1056,7 @@ _08052A4E:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x10
-	bl FUN_08230ab0
+	bl CopyMemory
 	ldr r6, _08052AEC @ =0x000008D8
 	adds r4, r7, r6
 	movs r0, #1
@@ -1064,7 +1064,7 @@ _08052A4E:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x10
-	bl FUN_08230ab0
+	bl CopyMemory
 	strb r5, [r7, #0x1c]
 	movs r0, #1
 	strb r0, [r7, #0x1d]

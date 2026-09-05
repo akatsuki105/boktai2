@@ -3,7 +3,7 @@
 	push {r7}
 	adds r7, r0, #0
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08222AE4
 	bl Script_GetValue

@@ -3,7 +3,7 @@
 	adds r5, r0, #0
 	adds r7, r1, #0
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08065794
 	bl Script_GetValue

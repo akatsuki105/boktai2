@@ -14,12 +14,12 @@
 	ldr r1, _08229CB0 @ =0x00000F46
 	adds r0, r4, r1
 	strh r5, [r0]
-	ldr r1, _08229CB4 @ =FUN_082292d8
-	ldr r2, _08229CB8 @ =FUN_08229334
+	ldr r1, _08229CB4 @ =Entity8AAB_Update
+	ldr r2, _08229CB8 @ =Entity8AAB_Destroy
 	adds r0, r4, #0
 	bl SetEntityRoutine
 	adds r0, r4, #0
-	bl FUN_08229a28
+	bl Entity8AAB_Init
 	cmp r0, #0
 	bge _08229CBC
 	adds r0, r4, #0
@@ -29,8 +29,8 @@
 	.align 2, 0
 _08229CAC: .4byte 0x03000248
 _08229CB0: .4byte 0x00000F46
-_08229CB4: .4byte FUN_082292d8
-_08229CB8: .4byte FUN_08229334
+_08229CB4: .4byte Entity8AAB_Update
+_08229CB8: .4byte Entity8AAB_Destroy
 _08229CBC:
 	adds r0, r4, #0
 _08229CBE:

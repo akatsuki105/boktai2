@@ -5,7 +5,7 @@
 	beq _080EF550
 	movs r0, #0x73
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [r4, #0x2c]

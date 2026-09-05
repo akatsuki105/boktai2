@@ -21,7 +21,7 @@ _082435CA:
 	movs r1, #0
 	strh r1, [r0]
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _082435F8
 	bl Script_GetValue
@@ -35,7 +35,7 @@ _082435FA:
 	cmp r4, #0
 	ble _0824363C
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0824361A
 	cmp r4, #0
@@ -48,7 +48,7 @@ _0824360C:
 	bne _0824360C
 _0824361A:
 	movs r0, #0x71
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0824363C
 	movs r4, #0

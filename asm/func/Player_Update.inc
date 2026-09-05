@@ -9,7 +9,7 @@
 	adds r0, r4, #0
 	bl FUN_0807f0bc
 	adds r0, r4, #0
-	bl FUN_08064764
+	bl Player_UpdateWeaponWear
 	adds r0, r4, #0
 	bl FUN_0807e388
 	ldr r3, _0807F24C @ =0x03002B80

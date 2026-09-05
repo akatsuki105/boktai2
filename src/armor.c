@@ -113,7 +113,7 @@ bool32 IsSlotArmorEpuipped(slot32_t n) {
 bool32 FUN_08243380(void) {
   slot32_t slot;
   armor32_t a;
-  if (prepare_08231510(97) == 0) {
+  if (VM_SeekToKeyword(97) == 0) {
     return FALSE;
   }
 
@@ -141,19 +141,19 @@ NON_MATCH void armor_082433bc(void) {
   }
   gStat->armor = -1;
 
-  if (prepare_08231510(0x6e)) {
+  if (VM_SeekToKeyword(0x6e)) {
     count = Script_GetValue();
   } else {
     count = 0;
   }
 
   if (count > 0) {
-    if (prepare_08231510(0x61)) {
+    if (VM_SeekToKeyword(0x61)) {
       for (i = 0; i < count; i++) {
         SetArmorIntoInventory(i, Script_GetValue());
       }
     }
-    if (prepare_08231510(0x65)) {
+    if (VM_SeekToKeyword(0x65)) {
       gStat->armor = Script_GetValue();
     }
   }

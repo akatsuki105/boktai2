@@ -128,10 +128,10 @@ FUN_080027bc: @ 0x080027BC
 	beq _080027FA
 	movs r0, #0x72
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	strh r0, [r4, #0x24]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080027FA
 	movs r5, #0
@@ -297,7 +297,7 @@ Entity6978_Init: @ 0x080028E0
 	strh r1, [r4, #0x18]
 	movs r0, #0x66
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	strh r0, [r4, #0x1a]
 	strh r5, [r4, #0x1c]
 	strh r5, [r4, #0x1e]

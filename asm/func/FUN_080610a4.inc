@@ -6,7 +6,7 @@
 	strh r0, [r5]
 	movs r0, #0x6c
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	cmp r0, #0
 	beq _080610CC
 	ldrh r1, [r5]
@@ -67,7 +67,7 @@ _0806111C:
 	strh r0, [r5]
 	movs r0, #0x65
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	cmp r0, #0
 	beq _08061148
 	ldrh r1, [r5]

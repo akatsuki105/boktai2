@@ -241,15 +241,15 @@ FUN_08013448: @ 0x08013448
 	strh r1, [r6, #0x18]
 	movs r0, #0x74
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	strb r0, [r6, #0x1a]
 	strb r4, [r6, #0x1b]
 	movs r0, #0x6c
 	movs r1, #0x32
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	strh r0, [r6, #0x1c]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08013484
 	bl Script_GetValue
@@ -265,7 +265,7 @@ _08013488:
 	strh r0, [r6, #0x2c]
 	movs r0, #0x65
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	str r0, [r6, #0x24]
 	adds r4, r6, #0
 	adds r4, #0x90

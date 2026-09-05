@@ -27,18 +27,18 @@ _08229720:
 	strh r0, [r1]
 	movs r0, #0x72
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r3, _082297B4 @ =0x00000F29
 	adds r1, r4, r3
 	strb r0, [r1]
 	movs r0, #0x41
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r2, _082297B8 @ =0x00000F26
 	adds r1, r4, r2
 	strb r0, [r1]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _082297C4
 	bl Script_GetValue
@@ -94,7 +94,7 @@ _082297C4:
 _082297EC:
 	strh r0, [r5, #0x20]
 	movs r0, #0x63
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08229802
 	bl Script_GetValue
@@ -104,7 +104,7 @@ _082297EC:
 _08229802:
 	movs r0, #0x73
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r3, _08229830 @ =0x00000F21
 	adds r1, r4, r3
 	strb r0, [r1]

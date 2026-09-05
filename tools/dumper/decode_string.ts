@@ -1,16 +1,12 @@
 #!/usr/bin/env -S deno run --allow-read
 
 import { Command } from "@cliffy/command";
+import * as path from "@std/path";
 import * as gba from "../common/gba/gba.ts";
-import type { addr } from "../common/gba/gba.ts";
+import { ParseFile } from "../parser/common/charmap.ts";
 
-// 指定アドレスから終端文字('$' = charmap.txt上で 0x00 にマップされた文字)まで
-// 読み進め、charmap.txt でデコードできた文字列を .string "..." として出力する。
-// charmap.txt の裸の識別子(シングルクオートで囲まれていない、例: CTRL85FF = 85 FF)
-// に一致したバイト列は {CTRL85FF} のようにブレース付きの名前として出力する。
-// デコード中に charmap.txt に存在しない未定義バイトに遭遇した場合は、文字列の
-// 先頭からその時点で判明している終端文字まで生バイト列として
-// .byte 0xXX, ... (16バイト/行) にフォールバックする。
+// 指定アドレスから終端文字('$')までを charmap.txt の内容に基づいて .string "..." として出力
+// デコード中に charmap.txt に存在しない未定義バイトに遭遇した場合は、文字列の先頭からその時点で判明している終端文字まで生バイト列として .byte 0xXX, ... にフォールバックする。
 //
 // e.g. decode_string.ts baserom.gba 0x08CD167C
 //   -> .string "<PROC=0>\n<END>$"
@@ -24,55 +20,20 @@ export type CharMap = Map<string, string>;
 const seqKey = (bytes: Uint8Array): string => Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
 const keyToBytes = (key: string): Uint8Array => Uint8Array.from(key.match(/../g) ?? [], (h) => parseInt(h, 16));
 
-// charmap.txt を (charMap, escapeMap, constantMap) に変換する。
-//
-// charMap: バイト列 -> 表示文字 (例: 80 01 -> 'あ')
-// escapeMap: バイト列 -> エスケープ名 (例: 0A -> 'n', 出力時は \n になる)
-// constantMap: バイト列 -> 定数名 (シングルクオートなしの裸の識別子。
-//   例: 85 FF -> 'CTRL85FF', 出力時は {CTRL85FF} になる)
-export const parseCharmap = (text: string): { charMap: CharMap; escapeMap: CharMap; constantMap: CharMap } => {
-  const charMap: CharMap = new Map();
-  const escapeMap: CharMap = new Map();
-  const constantMap: CharMap = new Map();
-
-  for (let line of text.split("\n")) {
-    line = line.split(" @")[0].trim();
-    if (!line || line.startsWith("@") || !line.includes("=")) continue;
-
-    if (!line.startsWith("'")) {
-      // シングルクオートで囲まれていない裸の識別子(定数)。
-      const eqIdx = line.indexOf("=");
-      const name = line.slice(0, eqIdx).trim();
-      const rhs = line.slice(eqIdx + 1).trim();
-      const seq = Uint8Array.from(rhs.split(/\s+/).filter(Boolean).map((b) => parseInt(b, 16)));
-      constantMap.set(seqKey(seq), name);
-      continue;
-    }
-
-    // LHS が 'X' や '\X' の場合、X 自体が '=' のこともあるため、
-    // 単純に最初の '=' で区切らずクォートの終端を見て区切る。
-    const closingIdx = line[1] === "\\" ? 3 : 2;
-    if (closingIdx >= line.length || line[closingIdx] !== "'") continue;
-
-    const lhs = line.slice(0, closingIdx + 1);
-    const rhs = line.slice(closingIdx + 1).split("=")[1].trim();
-
-    const inner = lhs.slice(1, -1);
-    const seq = Uint8Array.from(rhs.split(/\s+/).filter(Boolean).map((b) => parseInt(b, 16)));
-
-    if (inner.startsWith("\\") && inner !== "\\'") {
-      escapeMap.set(seqKey(seq), inner.slice(1));
-    } else {
-      const ch = inner === "\\'" ? "'" : inner;
-      charMap.set(seqKey(seq), ch);
-    }
+// tools/parser/common/charmap.ts の ParseFile で charmap.txt をパースし、 バイト列(hex文字列) -> 表示文字 の Map に変換する。
+export const parseCharmap = (charmapPath: string | URL): CharMap => {
+  const entries = ParseFile(charmapPath instanceof URL ? path.fromFileUrl(charmapPath) : charmapPath);
+  const charmap: CharMap = new Map();
+  for (const entry of entries) {
+    // entry.code を直接 hex 化する(Uint8Array.from を経由すると NaN が 0 に クランプされ、"00"(NUL)キーの正しいエントリを上書きしてしまうため)。
+    const key = entry.code.map((b) => b.toString(16).padStart(2, "0")).join("");
+    charmap.set(key, entry.char);
   }
-
-  return { charMap, escapeMap, constantMap };
+  return charmap;
 };
 
-export const findTerminatorSeq = (charMap: CharMap): Uint8Array => {
-  for (const [key, ch] of charMap) {
+export const findTerminatorSeq = (charmap: CharMap): Uint8Array => {
+  for (const [key, ch] of charmap) {
     if (ch === "$") return keyToBytes(key);
   }
   throw new Error("error: charmap.txt に '$' (終端文字) の定義がありません");
@@ -99,49 +60,25 @@ export const indexOfSeq = (data: Uint8Array, seq: Uint8Array): number => {
 
 // 終端文字まで正常にデコードできれば .string 用の中身を返す。未定義バイトに
 // 遭遇したら null を返す(呼び出し側で生バイトダンプにフォールバックする)。
-export const decode = (data: Uint8Array, charMap: CharMap, escapeMap: CharMap, constantMap: CharMap): string | null => {
-  const lengths = Array.from(
-    new Set([
-      ...Array.from(charMap.keys(), (k) => k.length / 2),
-      ...Array.from(escapeMap.keys(), (k) => k.length / 2),
-      ...Array.from(constantMap.keys(), (k) => k.length / 2),
-    ]),
-  ).sort((a, b) => b - a);
+export const decode = (data: Uint8Array, charmap: CharMap): string | null => {
+  const lengths = Array.from(new Set(Array.from(charmap.keys(), (k) => k.length / 2))).sort((a, b) => b - a);
 
   const out: string[] = [];
   let pos = 0;
   while (true) {
-    let matched: [string, string, "char" | "escape" | "constant"] | null = null;
+    let matched: [string, string] | null = null;
     for (const length of lengths) {
       const key = seqKey(data.subarray(pos, pos + length));
-      if (charMap.has(key)) {
-        matched = [key, charMap.get(key)!, "char"];
-        break;
-      }
-      if (escapeMap.has(key)) {
-        matched = [key, escapeMap.get(key)!, "escape"];
-        break;
-      }
-      if (constantMap.has(key)) {
-        matched = [key, constantMap.get(key)!, "constant"];
+      if (charmap.has(key)) {
+        matched = [key, charmap.get(key)!];
         break;
       }
     }
 
     if (matched === null) return null;
 
-    const [key, value, kind] = matched;
+    const [key, value] = matched;
     pos += key.length / 2;
-
-    if (kind === "escape") {
-      out.push("\\" + value);
-      continue;
-    }
-
-    if (kind === "constant") {
-      out.push("{" + value + "}");
-      continue;
-    }
 
     if (value === "$") {
       out.push("$");
@@ -163,18 +100,17 @@ const main = () => {
     .name("decode_string.ts")
     .description("ROM上の文字列を charmap.txt でデコードして .string 形式で標準出力する。")
     .argument("<rom:string>", "Path to a GBA ROM file.")
-    .argument("<addr:string>", "ROM address (or file offset) of the string. e.g. 0x08CD167C")
-    .action((_, romPath, addrStr) => {
-      let romAddr: addr = Number(addrStr);
+    .argument("<addr:number>", "ROM address (or file offset) of the string. e.g. 0x08CD167C")
+    .action((_, romPath, romAddr) => {
       if (romAddr < gba.BASE) romAddr += gba.BASE;
 
-      const { charMap, escapeMap, constantMap } = parseCharmap(Deno.readTextFileSync(CHARMAP_PATH));
-      const termSeq = findTerminatorSeq(charMap);
+      const charmap = parseCharmap(CHARMAP_PATH);
+      const termSeq = findTerminatorSeq(charmap);
 
       const rom = new DataView(Deno.readFileSync(romPath).buffer);
       const window = new Uint8Array(gba.getSlice(rom, romAddr, READ_WINDOW));
 
-      const stringBody = decode(window, charMap, escapeMap, constantMap);
+      const stringBody = decode(window, charmap);
       if (stringBody !== null) {
         console.log(`.string "${stringBody}"`);
         return;

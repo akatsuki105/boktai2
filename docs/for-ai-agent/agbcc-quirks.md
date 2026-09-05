@@ -27,14 +27,7 @@ here once some function's `make compare` actually hits OK using them.
 
 ### Branch direction
 
-- **Frequency**: 1 function confirmed in this project's own log —
-  `RemoveSpecifiedItem` (`src/item_082421f0.c`) — but known from prior
-  experience decompiling another GBA game to be one of the
-  most-frequently-occurring idioms in agbcc-style codebases generally.
-  Expect this project's own count to climb quickly once logging catches
-  up — don't read the low number so far as "rare," it's an artifact of
-  when tracking began, not of true frequency. Log the function every time
-  this idiom is what fixes an if/else fall-through mismatch.
+- **Frequency**: `RemoveSpecifiedItem`.
 - agbcc keeps the *first-written* if-branch as fall-through; put an
   out-of-line block in the `else`.
 - Applies even when **both** arms end in `return` (no shared code after
@@ -51,173 +44,9 @@ here once some function's `make compare` actually hits OK using them.
   (and negating the condition to match) flipped the fall-through arm to
   the correct one.
 
-### Load/declaration order sets register & load order
-
-- **Frequency**: 3 functions confirmed — `FUN_0824c128` (`src/code_0824beb8.c`),
-  `FUN_08230860` (`src/code_0823071c.c`), `FUN_08060e90` (`src/player.c`,
-  see also the shared-base-pointer entry above — `FUN_08060e90` combined
-  both idioms)
-  (this project's own log; treat the class of idiom as established more
-  broadly from prior experience, per the note above).
-- Declaration order of plain locals sets which register each lands in and
-  the load order. To evaluate a field load *before* another compare
-  operand, hoist it to a local right before the `if`
-  (`s32 val = Struct.val; if (val > ...)`). For "compute address early,
-  defer the load," use a *pointer* local
-  (`s32* ppx = (s32*)((u8*)p+0xb4); ... cx - *ppx`).
-- Same principle applies to **operand order within a single expression**,
-  not just separate local declarations: `a | (b << 8)` vs `(b << 8) | a`
-  can compile to a different load/compute order even though the value is
-  identical. `FUN_0824c128`
-  (`return p[0] | ((p[1] & 0x1f) << 8);`) only matched once rewritten as
-  `return ((p[1] & 0x1f) << 8) | p[0];` — original evaluated the
-  mask/shift side first and deferred the plain byte load to just before
-  the final combine.
-- **Caveat found in `FUN_08230860`**: writing both operands of a
-  commutative `|` inline in one expression (`(hash << 5) | (hash >> 0xB)`
-  or the reverse) did **not** let source order control register order —
-  both textual orders compiled to the identical (wrong) result, unlike the
-  `FUN_0824c128` case above. What actually worked was hoisting each
-  operand to its own **widened-type** (`s32`, not the narrow `u16` target
-  type) local in the desired order:
-  ```c
-  s32 lo = hash << 5;
-  s32 hi = hash >> 0xB;
-  hash = lo | hi;       // truncation to u16 happens once, here
-  hash = hash + (u8)*s;  // separate statement — its own truncation
-  ```
-  Two things mattered together: (1) splitting the rotate-combine and the
-  add into **separate statements**, because the original had a truncate
-  to `u16` after *each* — writing it as one combined expression
-  `((hash<<5)|(hash>>0xB)) + byte` loses one of the two truncations; (2)
-  declaring the shift results as `s32` rather than `u16` — declaring them
-  as `u16` let agbcc fold each local's own truncation into the shift
-  immediate (`lsls r0, r1, #21` instead of `#5`), producing extra/wrong
-  instructions instead of one shared truncation after the `orrs`.
-- **Constant-vs-load order in a mask expression** (`FUN_08060e90`,
-  `src/player.c`): for `x & 0xFFFF0000`, plain operand reordering in the
-  source (`x & mask` vs `mask & x`) had **no effect** (consistent with the
-  `FUN_08230860` caveat above — commutative-op source order isn't always
-  load order). What worked was hoisting the constant into its own local
-  (`u32 mask = 0xFFFF0000; ... x & mask`) declared *before* the
-  read-modify-write — this made agbcc load the constant before the
-  variable, matching the original's pool-load-then-variable-load order.
-- **Reusing one local for two unrelated temporaries can be the correct
-  translation, not a stylistic choice** (`SwapNormalItem`,
-  `src/item_082421f0.c`): declaring two separate `s32` locals for (a) the
-  swap-temp holding one item slot's old value and (b) a later, logically
-  unrelated temp holding a `GetRotCount()` result put (a) in a
-  caller-saved register (`r3`) while original kept it in a callee-saved
-  register (`r6`) — the same register (b)'s value ends up in later,
-  since by the time (b) is computed (a) is already dead. Declaring only
-  *one* local and reusing it for both purposes made agbcc allocate it to
-  the same persistent register for both uses, matching original exactly.
-  When two temporaries in the real source never overlap in lifetime, the
-  original C likely reused one variable for both — worth trying before
-  assuming distinct locals when a lone register-letter mismatch persists
-  on an otherwise-matching function.
-- **Swap-temp holding a narrow struct-field value needs a widened local
-  type to get a sign-extending load** (`SwapArmorSlot`, `src/armor.c`):
-  `armor16_t a = ARMORS(slot1);` (narrow-typed local, same width as the
-  field) compiled to a plain `ldrh` (no sign extension) — one instruction
-  short of original's `ldrsh`. Declaring the temp as the wider `s32`
-  instead (`s32 a = ARMORS(slot1);`) reproduced the sign-extending load;
-  the later store back through `ARMORS(slot2) = a;` truncates regardless,
-  so no other instruction changed. Same lever as `FUN_08230860`'s
-  `s32 lo/hi` truncation-folding note above, but here the trigger is a
-  temp that just *carries* a narrow field's value across a couple of
-  statements, not one built from a shift/mask expression. Confirmed twice
-  now (`SwapNormalItem` used the identical fix for its own swap-temp)
-  — worth trying by default whenever a narrow-field swap-temp's load is
-  one instruction short.
-
-### Hoist each pool-constant global-pointer access to its own local, declared together
-
-- **Frequency**: 1 function confirmed — `sound_082402f8` (`src/sound.c`).
-- When a function's body needs the addresses of two different globals
-  (e.g. two array/table pointers, each needing its own `ldr rN, =POOL`)
-  and neither address computation depends on the other, agbcc schedules
-  *both* pool loads back-to-back, ahead of any other computation that
-  doesn't need them yet (like an unrelated shift on a parameter) — even
-  though nothing in a naive reading of control flow requires that
-  ordering. Writing the second global access inline as part of a larger
-  expression (`gSongTable + id * 8`) let the compiler interleave the
-  shift (`id * 8`) *between* the two pool loads instead. Fix: give each
-  global its own local pointer variable, declared as consecutive
-  statements before anything else uses either of them:
-  ```c
-  u8* base = (u8*)gSoundIDs;
-  u8* table = gSongTable;
-  u8* entry = table + id * 8;
-  ```
-  matched only once *both* globals had their own hoisted local — hoisting
-  just one still left the other's load displaced.
-- Related: when a narrow-typed comparison (`if ((u16)cast == ...)`) isn't
-  actually present in the original — i.e. the original just compares the
-  full-width parameter directly and only truncates it later, at an actual
-  narrow-parameter *call site* — adding an explicit narrowing cast for
-  the comparison itself inserts an extra `lsls/lsrs` pair that isn't in
-  the original. Removing the cast and letting the truncation happen
-  naturally at the call (per the "narrow NAKED-callee parameter" entry
-  above) fixed it here (`sound_082402f8`'s `if (id == *q)`, not
-  `if ((u16)id == *q)`).
-
-### Declare-with-initializer commits a local to a persistent register too early
-
-- **Frequency**: 2 functions confirmed — `FUN_0824213c` (`src/code_08241f6c.c`),
-  `Entity080de11c_Create` (`src/entity_080ddf88.c`, identical singleton-entity-creation
-  shape — same lever applied first-try).
-- `T* p = someGlobal; if (p == NULL) { ...create/use p across calls...; return p; } return p;`
-  keeps `p` live across the *entire* function (including the early-return
-  path that doesn't need it to survive any calls), so agbcc allocates it
-  a callee-saved register (e.g. `r4`) immediately at entry — even for the
-  branch that just re-reads the global and returns right away without
-  needing a persistent register at all. Original instead only introduces
-  the persistent-register variable on the branch that actually needs a
-  value to survive a call (`CreateEntity`/`SetEntityRoutine`/etc.); the
-  early-return branch just re-reads the global directly into a scratch
-  register (`r0`) and returns it, no local variable involved. Fix:
-  restructure so the "already have a value, return early" path returns
-  the global directly (`if (X == NULL) { ...; return p; } return X;`)
-  instead of assigning it to a shared local up front — this deferred the
-  register promotion to only the branch that needs it.
-
-### Multiple writes to nearby fixed addresses need one shared base pointer
-
-- **Frequency**: 3 functions confirmed — `InitHeap` (`src/code_0823071c.c`,
-  raw `s32*`), `FUN_082324b0` (`src/vm.c`, struct-typed pointer — see below),
-  `FUN_08060e90` (`src/player.c`, `s32*` reused for one field write and the
-  call argument together).
-- Writing to several nearby fixed/absolute addresses as separate
-  `*(s32*)0x02000000 = ...; *(s32*)0x02000004 = ...;` casts makes agbcc
-  recompute each address independently (extra `add`/pool-load
-  instructions per store). Original reused a single base register with
-  immediate offsets (`str r1, [r0, #4]`, `str r1, [r0, #8]`) computed once.
-  To get that, declare one pointer local and index through it:
-  ```c
-  s32* p = (s32*)0x02000000;
-  p[0] = 0;
-  p[1] = 0;
-  p[2] = 0x80020400;
-  ```
-  rather than three independent absolute-address dereferences.
-- The shared base pointer doesn't have to be a raw type — if a fixed
-  address's field-write shape (offsets/sizes) matches an *already-known*
-  struct from elsewhere in the codebase (found via sibling search, Step
-  2), casting to that struct type and writing through named fields works
-  identically, even at a different address than that struct's other known
-  instance. `FUN_082324b0` writes `0x03000770` in the exact
-  `{void* unk; u32 len; Subroutine* arr;}` shape already defined as
-  `struct SubroutineTable` (used elsewhere at `gUnk030016e8`, a *different*
-  fixed address) — casting `(struct SubroutineTable*)0x03000770` and writing
-  `p->unk`/`p->len`/`p->arr` matched first try.
-
 ### Narrow NAKED-callee parameter forces truncation at a single call site
 
-- **Frequency**: 3 functions confirmed — `FUN_082402c8`/`FUN_082402e0`
-  (`src/sound.c`, callee `sound_08240264`), `FUN_08240428`
-  (`src/sound.c`, callee `FUN_082403d0`), `sound_082403b8`
-  (`src/sound.c`, callee `FUN_08240360`).
+- **Frequency**: `FUN_082402c8`, `FUN_082402e0`, `FUN_08240428`, `sound_082403b8`.
 - When the only call site passes a wider value (e.g. a `u32`-returning
   `Script_GetValue()`) directly into a NAKED callee declared with a
   narrower parameter type (`u16`), agbcc inserts a truncation
@@ -230,51 +59,50 @@ here once some function's `make compare` actually hits OK using them.
   expectations); the callee's own `.inc` body is untouched since it's
   still NAKED.
 
-## Value materialization
+### switch case body layout follows source order, independent of dispatch order
 
-### Signedness & width
+- **Frequency**: `VM_ReadContainerLength`.
+- For a sparse `switch` (few, non-contiguous case values), agbcc lays out each case's compiled body in the same order the `case` labels appear in the source — but the *comparison/dispatch* instructions it emits to reach them can use a completely different order (e.g. a value-magnitude-based pivot). Matching only the dispatch order isn't enough; the case labels' source order must also match, or bodies land in the wrong place in the output.
 
-- **Frequency**: not yet tracked in this project's own log (this scheme
-  just started here), but known from prior experience decompiling another
-  GBA game to be one of the most frequently-occurring idioms in agbcc-style
-  codebases generally. Expect this project's own count to climb quickly
-  once logging catches up — don't read the low number so far as "rare,"
-  it's an artifact of when tracking began, not of true frequency. Log the
-  function every time this idiom is the deciding signal for a
-  parameter/return type, in `/decomp-func` or `/decomp-naked` alike.
-- When working with variables of type `u8`, you frequently encounter
-  machine code instructions like:
-  ```asm
-  	lsls rN, rN, #0x18
-  	lsrs rN, rN, #0x18
-  ```
-  to clear the higher bits.
+### `x << 1` vs `x * 2` pick opposite Rn/Rm order for a later pointer add
 
-  For `u16` values, the equivalent instructions would be:
+- **Frequency**: `Script_StorePointerCore`.
+- Scaling an index by 2 as `offset << 1` vs `offset * 2` is value-identical, but agbcc doesn't always canonicalize the two the same way: in `*(u16*)(dst + (offset << 1))`, the shift form compiled the subsequent `dst + offset*2` addition as `adds r0, r4, r0` (dst first); the literal `offset * 2` form instead gave `adds r0, r0, r4` (offset-term first) — same instruction, swapped operands, real byte difference. When a pointer-add's Rn/Rm order doesn't match and the scale is a power of 2, try switching between `<<` and `*` for the scale before reaching for other levers.
 
-  ```asm
-  lsls rN, rN, #0x10
-  lsrs rN, rN, #0x10
-  ```
+### `x != 0` (and `a != b`) materialized as a 0/1 int normalize via `(0-x)|x >> 31`
 
-  For `s8` and `s16` values, the instructions become:
+- **Frequency**: `Script_LoadPointer`.
+- Only applies when the comparison's result must become an actual 0/1 integer VALUE — assigned, stored, or `return`ed (equivalently, `x != 0 ? 1 : 0` written out explicitly) — not when it's used purely as an `if`/`while` condition (those just branch, no materialization needed).
+- `flag != 0` materialized this way compiles to `rsbs r0, r1, #0` / `orrs r0, r1` / `lsrs r0, r0, #0x1f` — negate, OR with the original, then shift the sign bit down to bit 0. Writing the raw bit trick by hand (`(u32)((0 - flag) | flag) >> 0x1F`) produces byte-identical output to writing the natural `flag != 0`, so prefer the natural form; no need to hand-roll the trick.
+- Two-operand `a != b` (both `s32`) generalizes the same trick via XOR first: `return a != b;` compiles as if written `return ((u32)(-(a ^ b) | (a ^ b))) >> 31;` — i.e. agbcc reduces `a != b` to `(a^b) != 0` then applies the same negate/OR/shift sequence.
 
-  ```asm
-  # s8
-  lsls rN, rN, #0x18
-  asrs rN, rN, #0x18
+### `(x & (1<<n)) != 0` auto-optimizes to `(x>>n)&1` unless the mask is precomputed
 
-  # s16
-  lsls rN, rN, #0x10
-  asrs rN, rN, #0x10
-  ```
+- **Frequency**: `Script_LoadPointer`.
+- Writing a single-bit test as one fused expression — `(byte & (1 << bit)) != 0` — lets agbcc's combiner recognize the "extract one bit" idiom and emit the cheaper `asrs`/`ands` (shift the target bit to position 0, mask with 1) instead of the general nonzero-materialize trick above. If the target's real assembly uses the general `rsbs`/`orrs`/`lsrs` trick instead (i.e. the shift-based optimization did NOT happen), the mask must be computed in its own prior statement — `s32 mask = 1 << bit; ... (byte & mask) != 0;` — splitting it into a separate pseudo-register apparently hides the "single bit" shape from the combiner and falls back to the general path.
+- That statement split has a side effect: splitting *only* the mask into its own statement (leaving the address `src + (offset >> 3)` inline) reintroduced an unrelated register-allocation regression (two unrelated parameters got pinned into extra callee-saved registers for the whole function instead of just one). Also splitting the address into its own pointer variable (`u8* p = src + (offset >> 3);`) alongside the mask fixed it. Net effect: both the mask AND the address need their own statement (address first, then mask, matching the target's instruction order) to get byte-identical output.
 
-  When encountering such shift operations, you can infer that the C code
-  likely contains variables or properties with types `u8`, `u16`, `s8`, or
-  `s16`.
+### A peeled first call duplicates the call and costs a saved register
 
-## The intractable categories — what's actually hard
+- **Frequency**: `VM_CallScript`.
+- `call(); while (cond) { body; call(); }` emits **two** `bl` sites; `while (TRUE) { call(); if (!cond) break; body; }` emits **one**, entered by a `b` that jumps over the body to the call. If the target has a single call site reached by a leading `b`, write the loop in the second form. The peeled form also raised register pressure enough that agbcc strength-reduced `arr[i] = v; i++;` into a walking pointer (`stmia rN!`) and needed an extra callee-saved register; the single-call form dropped both.
 
-"Intractable" is a spectrum. The inverse problem is: *find the source whose
-agbcc output equals these bytes.* It's hard when the bytes encode a
-compiler decision no surface C reliably reproduces.
+### Bitfield store vs hand-written mask differ in operand evaluation order
+
+- **Frequency**: `VM_CallScript`.
+- Assigning a 16-bit bitfield (`u32 argc : 16;` → `s.argc = n;`) computes the truncated value **first** (`lsls`/`lsrs`), then loads the word, ANDs the mask constant, ORs and stores. The hand-written equivalent `w = (w & 0xFFFF0000) | (u16)n;` loads and masks first, then truncates. Same instructions, different order — if the order doesn't match, the original almost certainly used a bitfield.
+
+### `s16` locals defer sign-extension to each use
+
+- **Frequency**: `VM_CallScript`.
+- `s16 x = expr;` keeps the raw value and emits `lsls`/`asrs` at every *use*; `s32 x = (s16)expr;` sign-extends once at the *assignment*. Pick whichever places the extension where the target has it.
+
+### `arr[i]` vs `*p++` change where the walking pointer is initialized
+
+- **Frequency**: `FUN_082315c0`.
+- Both compile to the same `stm rN!, {r0}` walking store, but the init of that pointer lands in a different place. `*out++ = v;` modifies the parameter, so agbcc copies it to a callee-saved register in the **entry block**, before any loop-invariant hoists. `out[i] = v;` leaves the parameter alone and lets loop strength reduction create the pointer, so its init goes in the **preheader**, after the hoists — swapping the order of the two setup instructions. (Strength reduction also frees `i` to be reversed into a down-counter while the pointer still walks up.)
+
+### An intermediate result variable can block a store's cross-jump merge
+
+- **Frequency**: `VM_RunExpression`.
+- `if (c) { x = A; } else { x = B; } slot->f = x;` and `if (c) { slot->f = A; } else { slot->f = B; }` produce the same merged store, but not the same scheduling around it. In `VM_RunExpression` the `x` version delayed a later call's first-argument setup (`adds r0, r5, #0` emitted after the other two argument registers instead of before them); writing the store directly in both arms fixed it. If argument setup order is the only thing off near a two-armed store, try removing the intermediate variable.

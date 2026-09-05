@@ -23,7 +23,7 @@ _08242804:
 	cmp r4, #0xf
 	ble _08242804
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08242826
 	bl Script_GetValue
@@ -35,7 +35,7 @@ _08242828:
 	cmp r4, #0
 	ble _0824284A
 	movs r0, #0x69
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0824284A
 	cmp r4, #0

@@ -207,12 +207,12 @@ _08022534:
 	rsbs r4, r4, #0
 	movs r0, #0x64
 	adds r1, r4, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	movs r6, #0
 	strh r0, [r7, #0x18]
 	movs r0, #0x63
 	adds r1, r4, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	subs r0, #1
 	strh r0, [r7, #0x1a]
 	mov r0, r8
@@ -221,13 +221,13 @@ _08022534:
 	strb r6, [r7, #0x1f]
 	movs r0, #0x65
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	strh r0, [r7, #0x20]
 	adds r4, r7, #0
 	adds r4, #0x22
 	strb r6, [r4]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r6, r7, #0
 	adds r6, #0x78
 	cmp r0, #0

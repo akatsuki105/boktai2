@@ -1,7 +1,7 @@
 	push {lr}
 	movs r0, #0x6e
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	cmp r0, #0
 	beq _080ED82C
 	bl FUN_080edda0

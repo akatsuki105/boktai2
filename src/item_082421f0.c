@@ -109,11 +109,11 @@ bool32 TryAddItem(item32_t n, s32 rotCount) {
 bool32 FUN_082423a8(void) {
   item32_t n;
   s32 rotCount;
-  if (!prepare_08231510(0x69)) {
+  if (!VM_SeekToKeyword(0x69)) {
     return FALSE;
   }
   n = Script_GetValue();
-  rotCount = prepare_08231510(0x70) ? Script_GetValue() : 0;
+  rotCount = VM_SeekToKeyword(0x70) ? Script_GetValue() : 0;
   return TryAddItem(n, rotCount);
 }
 
@@ -147,7 +147,7 @@ bool32 RemoveSpecifiedItem(item32_t id) {
 }
 
 bool32 FUN_08242450(void) {
-  if (prepare_08231510(0x69) != 0) {
+  if (VM_SeekToKeyword(0x69) != 0) {
     return RemoveSpecifiedItem(Script_GetValue());
   }
   return FALSE;
@@ -182,7 +182,7 @@ bool32 CheckItemOwn(item32_t id) {
 }
 
 bool32 FUN_082424d4(void) {
-  if (prepare_08231510(0x69) != 0) {
+  if (VM_SeekToKeyword(0x69) != 0) {
     return CheckItemOwn(Script_GetValue());
   }
   return FALSE;
@@ -255,9 +255,9 @@ NON_MATCH void item_082427e0(void) {
     SetValuable(i, ITEM_NONE);
   }
 
-  val = prepare_08231510(0x6e) ? Script_GetValue() : 0;
+  val = VM_SeekToKeyword(0x6e) ? Script_GetValue() : 0;
   if (val > 0) {
-    if (prepare_08231510(0x69)) {
+    if (VM_SeekToKeyword(0x69)) {
       for (; val != 0; val--) {
         TryAddItem(Script_GetValue(), 0);
       }
@@ -323,11 +323,11 @@ bool32 CheckEmptySlotExist(s32 category, item32_t n) {
 }
 
 bool32 item_0824292c(void) {
-  if (prepare_08231510(0x6b) == 0) {
+  if (VM_SeekToKeyword(0x6b) == 0) {
     return FALSE;
   } else {
     u32 category = Script_GetValue();
-    if (prepare_08231510(0x69)) {
+    if (VM_SeekToKeyword(0x69)) {
       item32_t n = Script_GetValue();
       return CheckEmptySlotExist(category, n);
     }

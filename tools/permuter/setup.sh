@@ -73,6 +73,7 @@ if [ -n "$SRC" ] && [ -f "$REPO/$SRC" ]; then
   cc -E -P \
     -D'__attribute__(x)=' \
     -D'__asm__(x)=' \
+    -DNONMATCHING_C=1 \
     -I "$REPO/tools/agbcc" \
     -I "$REPO/tools/agbcc/include" \
     -iquote "$REPO/include" \

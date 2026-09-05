@@ -1221,7 +1221,7 @@ _0801BF1E:
 	adds r1, r1, r0
 	adds r0, r6, #0
 	movs r2, #0xa
-	bl FUN_08230ab0
+	bl CopyMemory
 	movs r0, #0
 	strb r0, [r5, #0x16]
 	adds r0, r5, #0
@@ -5588,7 +5588,7 @@ _0801E09E:
 	bl OpenSpriteSetFile
 	ldr r1, _0801E150 @ =0x0000B156
 	movs r0, #0x6e
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r6, _0801E154 @ =0x0000131C
 	adds r1, r4, r6
 	strh r0, [r1]
@@ -5597,7 +5597,7 @@ _0801E09E:
 	movs r0, #5
 	strh r0, [r1]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0801E15C
 	bl Script_GetValue
@@ -5629,18 +5629,18 @@ _0801E160:
 	bl FUN_0823b8ac
 	movs r0, #0x63
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r1, r4, #0
 	adds r1, #0xb8
 	strh r0, [r1]
 	movs r0, #0x65
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r1, r4, #0
 	adds r1, #0xba
 	strh r0, [r1]
 	movs r0, #0x77
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0801E1A6
 	bl FUN_0823d340
@@ -5657,7 +5657,7 @@ _0801E1A6:
 _0801E1AC: .4byte 0x00001308
 _0801E1B0:
 	movs r0, #0x6b
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0801E1A6
 	bl FUN_0823d340

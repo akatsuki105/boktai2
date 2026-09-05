@@ -41,29 +41,12 @@ Unknown: @ 0x08D13420
 Bytecode: @ 0x08d13424
   .4byte Bytecode_end - Bytecode_start @ bytecode.bin bytesize
 Bytecode_start:
-  .include "data/scripts/script_08d13428.inc"
-  .include "data/scripts/script_08d1ca88.inc"
-  .include "data/scripts/script_08d23b5b.inc"
-  .include "data/scripts/script_08d2c5f2.inc"
-  .include "data/scripts/script_08d36092.inc"
-  .include "data/scripts/script_08d3e449.inc"
-  .include "data/scripts/script_08d46d1e.inc"
-  .include "data/scripts/script_08d4e9c3.inc"
-  .include "data/scripts/script_08d55b67.inc"
-  .include "data/scripts/script_08d5dc5c.inc"
-  .include "data/scripts/script_08d64455.inc"
-  .include "data/scripts/script_08d6cb82.inc"
-  .include "data/scripts/script_08d75915.inc"
-  .include "data/scripts/script_08d7e702.inc"
-  .include "data/scripts/script_08d89836.inc"
-  .include "data/scripts/script_08d9013a.inc"
-  .include "data/scripts/script_08d97e2a.inc"
-  .include "data/scripts/script_08da7c93.inc"
+  .incbin "data/scripts/scripts.bin"
 Bytecode_end:
 
 SpecialScript: @ 0x08da9e5c
   .4byte SpecialScript_end - (. + 4) @ special.bin bytesize
-  .include "data/scripts/special.inc"
+  .incbin "data/scripts/special.bin"
 SpecialScript_end:
 
 .balign 4, 0

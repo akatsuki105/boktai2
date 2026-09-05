@@ -15,7 +15,7 @@ FUN_080b3904: @ 0x080B3904
 	cmp r0, #0
 	bne _080B39B0
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080B3930
 	bl Script_GetValue
@@ -1774,7 +1774,7 @@ FUN_080b4740: @ 0x080B4740
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x72
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080B475A
 	bl FUN_0823d340
@@ -1815,7 +1815,7 @@ FUN_080b4788: @ 0x080B4788
 	adds r0, r4, #0
 	bl FUN_080b4740
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B47C0

@@ -4,17 +4,53 @@
 #include "gba/gba.h"
 #include "types.h"
 
+#define OP_END 0
+#define OP_S16 1
+#define OP_U8 2
+#define OP_U8_0x03 3  // u8 と同じ扱いだが不使用
+#define OP_BOOL8 4    // 8ビットのブール値
+#define OP_U16 6
+#define OP_STRING 7
+#define OP_U24 8
+#define OP_S32 9
+#define OP_S32_0x0A 10  // s32 と同じ扱いだが不使用
+#define OP_S32_0x0D 13  // 不使用
+#define OP_STRING_REF 14
+
+#define OP_MEMORY 0x10          // Pointer
+#define OP_MEMORY_INDEXED 0x20  // Indexed Pointer
+#define OP_EXPRESSION 0x30
+#define OP_PARAMETER 0x40
+#define OP_KEYWORD 0x50
+#define OP_CONTROL 0x60
+#define OP_CALL 0x70  // 別のスクリプト呼び出し
+#define OP_BLOCK 0x80
+#define OP_VARIABLE 0x90
+#define OP_END_EXPRESSION 0xA0
+
+// OP_KEYWORD
+#define KW_CASE 0x63
+#define KW_DEFAULT 0x64
+#define KW_ELSE 0x65
+#define KW_ELIF 0x69
+#define KW_UNK6D 0x6D
+
 typedef struct {
-  u8* pc;             // 0x00
-  void* result;       // 0x04
-  void* unk_08;       // 0x08
-  void* unk_0c;       // 0x0C
-  u8 unk_10[28];      // 0x10
-  u32 variables[16];  // 0x2C
-  void* unk_6c;       // 0x6C, パラメータスタックへのポインタ?
-  void* unk_70[32];   // 0x70, ポインタが入るっぽい
+  u8* pc;                    // 0x00
+  void* result;              // 0x04, 直前に実行したブロック/式の結果値
+  u8* keywordSeekStackTop;   // 0x08
+  u8* keywordSeekStack[24];  // 0x0C
+  void* framePointer;        // 0x6C, ブロックのフレームスタックのトップポインタ(ブロックがネストするたびに更新される)
+  void* frameStack[32];      // 0x70, ブロックのフレームを保持するスタック
 } VM;
 static_assert(sizeof(VM) == 240);
+
+// スクリプト呼び出し時に呼び出し元が積む引数の記述子(VM_CallScript が組み立て、VM_ParseParameter が読む)
+typedef struct {
+  u32 argc : 16;    // 0x00, 引数の個数
+  u32 unk_02 : 16;  // 0x02
+  u32* argv;        // 0x04, 引数配列の先頭
+} ScriptArgs;
 
 // --------------------------------------------
 
@@ -47,14 +83,19 @@ typedef struct {
   s32 scriptCount;          // 0x04, = 11539, length of ScriptDirectory.script_entries
   u8* bytecode;             // 0x08, 0x08D13428, ScriptDirectory.bytecode, ここにアクセスする際に 0x03000748 からのオフセットでアクセスしている
   u8* special_script_data;  // 0x0C, 0x08DA9E60, ScriptDirectory.special_script_data
-  // Textbox_LookupString で .stringIndex と .stringData にアクセスする際に 0x10 からのオフセットでアクセスしていることから、 .offsets から .unknown まで1つの構造体にまとめられているかも
+} ScriptTable;
+
+extern ScriptTable gScriptTable;  // 0x03000748
+
+// ScriptTable と StringTable として別々の構造体の可能性が高い
+typedef struct {
   ScriptDirectoryOffsets* offsets;  // 0x10, = &ScriptDirectory.offsets
   u32* stringIndex;                 // 0x14, 0x08CCA6AC, ScriptDirectory.string_index
   u8* stringData;                   // 0x18, 0x08CD1640, ScriptDirectory.string_data
   u8* unknown;                      // 0x1C, 0x08D13420, ScriptDirectory.unknown
-} ScriptTable;
+} StringTable;                      // 0x10
 
-extern ScriptTable gScriptTable;  // 0x03000748
+extern StringTable gStringTable;  // 0x03000758
 
 // --------------------------------------------
 
@@ -92,7 +133,11 @@ extern VM gVM;                // 0x030045A0
 u8* VM_GetPC(void);
 void VM_SetPC(u8* addr);
 u8* VM_ReadContainerLength(u8* pc, u32* length);
-bool32 prepare_08231510(u8 val);
+bool32 VM_SeekToKeyword(u8 val);
 u32 Script_GetValue(void);
+u8* VM_DecodeValue(u8* pc, s32* type, void* val);
+
+s32 Script_ExecById(u32 scriptID, ScriptArgs* args);
+bool32 Script_ExecBlock(u8* pc, ScriptArgs* args, s32 varidx);
 
 #endif  // __INCLUDE_VM_H__

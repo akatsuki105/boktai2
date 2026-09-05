@@ -3,7 +3,7 @@
 	movs r0, #1
 	str r0, [r4, #0x1c]
 	movs r0, #0x6b
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08065290
 	bl Script_GetValue

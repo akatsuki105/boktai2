@@ -1,7 +1,7 @@
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A8768
 	bl VM_GetValueSafe2

@@ -47,11 +47,11 @@ _08231FCE:
 	adds r0, r2, #4
 	add r2, sp, #4
 	mov r1, sp
-	bl VM_Step
+	bl VM_DecodeValue
 	adds r4, r0, #0
 	add r2, sp, #8
 	mov r1, sp
-	bl VM_Step
+	bl VM_DecodeValue
 	adds r4, r0, #0
 	b _08232006
 	.align 2, 0

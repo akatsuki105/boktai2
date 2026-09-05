@@ -1,7 +1,7 @@
 	push {r4, lr}
 	movs r0, #0x76
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	cmp r0, #0
 	bne _0823B718
 	ldr r0, _0823B704 @ =0x000056C2

@@ -17,7 +17,7 @@ NAKED void FUN_08065200(Player* p) { INCFUNC("asm/func/FUN_08065200.inc"); }
 NAKED void FUN_0806521c(Player* p) { INCFUNC("asm/func/FUN_0806521c.inc"); }
 
 void FUN_08065240(Player* p) {
-  if (prepare_08231510(0x52) != 0) {
+  if (VM_SeekToKeyword(0x52) != 0) {
     p->scriptID_9c4 = Script_GetValue();
   } else {
     p->scriptID_9c4 = 0;

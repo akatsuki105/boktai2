@@ -49,7 +49,7 @@ gSubroutineTable:
 	.4byte 0x1500, FUN_0823d1fc
 	.4byte 0x150F, FUN_081e1940
 	.4byte 0x15A9, FUN_08200a6c
-	.4byte 0x15B3, FUN_080a6f40
+	.4byte 0x15B3, VM_Sub15B3
 	.4byte 0x15ED, FUN_081d5414
 	.4byte 0x162E, FUN_08089b04
 	.4byte 0x164D, FUN_08018990
@@ -64,7 +64,7 @@ gSubroutineTable:
 	.4byte 0x1887, magic_082435b8
 	.4byte 0x19CC, FUN_080088bc
 	.4byte 0x1A35, FUN_08224790
-	.4byte 0x1B24, FUN_0809df2c
+	.4byte 0x1B24, Entity1B24_Create
 	.4byte 0x1B77, FUN_080558b8
 	.4byte 0x1BEE, FUN_0807b15c
 	.4byte 0x1C3E, FUN_0823e318
@@ -75,7 +75,7 @@ gSubroutineTable:
 	.4byte 0x1EA4, FUN_08037174
 	.4byte 0x1ED1, FUN_0821a9d8
 	.4byte 0x1F3B, FUN_0807da50
-	.4byte 0x1F65, FUN_08009a58
+	.4byte 0x1F65, VM_Sub1F65
 	.4byte 0x2141, FUN_0823bdf8
 	.4byte 0x2207, FUN_081d19cc
 	.4byte 0x225B, FUN_08223f3c
@@ -234,7 +234,7 @@ gSubroutineTable:
 	.4byte 0x5C0B, FUN_0800371c
 	.4byte 0x5C9E, FUN_0823ad98
 	.4byte 0x5CC4, FUN_0823d748
-	.4byte 0x5CCC, FUN_0809eefc
+	.4byte 0x5CCC, VM_Sub5CCC
 	.4byte 0x5D74, FUN_081d5340
 	.4byte 0x5DA5, Entity5DA5_Create
 	.4byte 0x5E27, FUN_08019010
@@ -372,7 +372,7 @@ gSubroutineTable:
 	.4byte 0x9146, FUN_0823e46c
 	.4byte 0x920F, FUN_08044310
 	.4byte 0x9284, CrossoverLobby_Create
-	.4byte 0x92BE, FUN_080a70c8
+	.4byte 0x92BE, Entity92BE_Create
 	.4byte 0x92ED, FUN_081e232c
 	.4byte 0x930F, FUN_08047c14
 	.4byte 0x9311, FUN_080ef534
@@ -382,7 +382,7 @@ gSubroutineTable:
 	.4byte 0x94EB, FUN_0809c5f4
 	.4byte 0x9519, PasswordScreen_Create
 	.4byte 0x9531, FUN_08005bc8
-	.4byte 0x95A8, FUN_0800c3c4
+	.4byte 0x95A8, Entity95A8_Create
 	.4byte 0x95F8, FUN_080110cc
 	.4byte 0x9700, FUN_080e16f4
 	.4byte 0x9763, FUN_0807d438
@@ -572,7 +572,7 @@ gSubroutineTable:
 	.4byte 0xDFC6, FUN_08049de4
 	.4byte 0xE019, FUN_080eddc8
 	.4byte 0xE02A, FUN_08004a04
-	.4byte 0xE02E, FUN_080b9350
+	.4byte 0xE02E, EntityE02E_Create
 	.4byte 0xE06A, EntityE06A_Create
 	.4byte 0xE083, FUN_08243558
 	.4byte 0xE0A5, FUN_0800a458

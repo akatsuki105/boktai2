@@ -4,2136 +4,6 @@
 	
 	.text
 
-	thumb_func_start FUN_0809ce90
-FUN_0809ce90: @ 0x0809CE90
-	ldr r3, _0809CEA0 @ =0x00000F8C
-	adds r2, r0, r3
-	str r1, [r2]
-	ldr r1, _0809CEA4 @ =0x00000F72
-	adds r0, r0, r1
-	movs r1, #0
-	strh r1, [r0]
-	bx lr
-	.align 2, 0
-_0809CEA0: .4byte 0x00000F8C
-_0809CEA4: .4byte 0x00000F72
-
-	thumb_func_start FUN_0809cea8
-FUN_0809cea8: @ 0x0809CEA8
-	push {r4, r5, r6, lr}
-	sub sp, #0x24
-	adds r6, r0, #0
-	ldr r0, [r6, #0x18]
-	adds r0, #0x40
-	ldrb r0, [r0]
-	cmp r0, #2
-	bne _0809CEFC
-	ldr r1, _0809CEF4 @ =0x00000E2B
-	adds r0, r6, r1
-	ldrb r0, [r0]
-	cmp r0, #0
-	bne _0809CF0A
-	movs r0, #1
-	bl FUN_080477e4
-	ldr r0, [r6, #0x24]
-	bl FUN_080478f0
-	movs r0, #2
-	movs r1, #0x10
-	movs r2, #0x1c
-	movs r3, #2
-	bl FUN_08047b8c
-	ldr r0, _0809CEF8 @ =0x00000F4C
-	adds r4, r6, r0
-	adds r0, #0x2c
-	adds r1, r6, r0
-	adds r0, r4, #0
-	bl FUN_08094d1c
-	ldr r1, [r6, #0x24]
-	adds r0, r4, #0
-	bl FUN_08094d48
-	b _0809CF8A
-	.align 2, 0
-_0809CEF4: .4byte 0x00000E2B
-_0809CEF8: .4byte 0x00000F4C
-_0809CEFC:
-	ldr r0, _0809CF24 @ =0x00000E2B
-	adds r4, r6, r0
-	ldrb r0, [r4]
-	bl GetWeaponID
-	cmp r0, #0
-	bne _0809CF28
-_0809CF0A:
-	movs r1, #0xe2
-	lsls r1, r1, #3
-	adds r0, r6, r1
-	ldr r1, [r0]
-	movs r2, #1
-	orrs r1, r2
-	str r1, [r0]
-	bl FUN_08047864
-	bl FUN_08049e5c
-	b _0809CF8A
-	.align 2, 0
-_0809CF24: .4byte 0x00000E2B
-_0809CF28:
-	ldrb r0, [r4]
-	mov r1, sp
-	bl FUN_08242b14
-	movs r0, #0xe2
-	lsls r0, r0, #3
-	adds r2, r6, r0
-	ldr r0, [r2]
-	movs r1, #2
-	rsbs r1, r1, #0
-	ands r0, r1
-	str r0, [r2]
-	movs r1, #0xe1
-	lsls r1, r1, #3
-	adds r4, r6, r1
-	adds r5, r6, #0
-	adds r5, #0x48
-	mov r0, sp
-	bl FUN_08094e70
-	adds r2, r0, #0
-	lsls r2, r2, #0x10
-	lsrs r2, r2, #0x10
-	adds r0, r4, #0
-	adds r1, r5, #0
-	movs r3, #1
-	bl Sprite_SetSprite
-	movs r0, #1
-	bl FUN_080477e4
-	ldr r0, [r6, #0x24]
-	bl FUN_080478f0
-	movs r0, #2
-	movs r1, #0x10
-	movs r2, #0x1c
-	movs r3, #2
-	bl FUN_08047b8c
-	ldr r0, _0809CF94 @ =0x00000F78
-	adds r1, r6, r0
-	mov r0, sp
-	bl FUN_08094d1c
-	ldr r1, [r6, #0x24]
-	mov r0, sp
-	bl FUN_08094d48
-_0809CF8A:
-	add sp, #0x24
-	pop {r4, r5, r6}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_0809CF94: .4byte 0x00000F78
-
-	thumb_func_start FUN_0809cf98
-FUN_0809cf98: @ 0x0809CF98
-	push {lr}
-	bl GetWeaponID
-	cmp r0, #0
-	beq _0809CFB6
-	cmp r0, #0x3a
-	beq _0809CFB6
-	cmp r0, #0x3e
-	beq _0809CFB6
-	cmp r0, #0x3f
-	beq _0809CFB6
-	cmp r0, #0x40
-	beq _0809CFB6
-	cmp r0, #0x41
-	bne _0809CFBA
-_0809CFB6:
-	movs r0, #0
-	b _0809CFBC
-_0809CFBA:
-	movs r0, #1
-_0809CFBC:
-	pop {r1}
-	bx r1
-
-	thumb_func_start FUN_0809cfc0
-FUN_0809cfc0: @ 0x0809CFC0
-	push {r4, lr}
-	adds r4, r1, #0
-	ldrb r1, [r4, #1]
-	cmp r1, #0
-	blt _0809D004
-	cmp r1, #2
-	ble _0809CFD4
-	cmp r1, #4
-	beq _0809CFEC
-	b _0809D004
-_0809CFD4:
-	movs r1, #0xf8
-	lsls r1, r1, #4
-	adds r0, r0, r1
-	ldr r0, [r0]
-	adds r0, #0x63
-	asrs r0, r0, #1
-	ldrb r2, [r4, #4]
-	adds r0, r0, r2
-	movs r2, #8
-	ldrsh r1, [r4, r2]
-	adds r0, r0, r1
-	b _0809D006
-_0809CFEC:
-	movs r0, #0x28
-	movs r1, #0xa
-	bl Div
-	adds r1, r0, #0
-	subs r1, #8
-	lsls r0, r1, #2
-	adds r0, r0, r1
-	ldrb r4, [r4, #4]
-	adds r0, r0, r4
-	lsls r0, r0, #1
-	b _0809D006
-_0809D004:
-	movs r0, #0
-_0809D006:
-	pop {r4}
-	pop {r1}
-	bx r1
-
-	thumb_func_start FUN_0809d00c
-FUN_0809d00c: @ 0x0809D00C
-	push {r4, r5, r6, r7, lr}
-	mov r7, sl
-	mov r6, sb
-	mov r5, r8
-	push {r5, r6, r7}
-	sub sp, #0x44
-	mov r8, r0
-	movs r0, #0
-	mov r1, sp
-	adds r1, #0x24
-	str r1, [sp, #0x40]
-	movs r2, #0x28
-	add r2, r8
-	mov sb, r2
-_0809D028:
-	lsls r1, r0, #1
-	lsls r2, r0, #2
-	adds r7, r0, #1
-	adds r0, #0x16
-	adds r1, r1, r0
-	ldr r0, [sp, #0x40]
-	adds r6, r0, r2
-	movs r5, #2
-	lsls r0, r1, #1
-	adds r0, r0, r1
-	lsls r0, r0, #5
-	adds r0, #0xa8
-	mov r1, r8
-	adds r4, r0, r1
-_0809D044:
-	adds r0, r4, #0
-	mov r1, sb
-	movs r2, #0
-	movs r3, #1
-	bl Sprite_SetSprite
-	movs r0, #0
-	str r0, [r6]
-	adds r4, #0x60
-	subs r5, #1
-	cmp r5, #0
-	bge _0809D044
-	adds r0, r7, #0
-	cmp r0, #3
-	ble _0809D028
-	mov r2, r8
-	ldr r0, [r2, #0x18]
-	adds r0, #0x40
-	ldrb r0, [r0]
-	cmp r0, #2
-	bne _0809D0CC
-	ldr r1, _0809D0C4 @ =0x00000F4C
-	add r1, r8
-	mov r0, r8
-	bl FUN_0809cfc0
-	ldr r1, [sp, #0x40]
-	str r0, [r1, #0xc]
-	movs r1, #0x64
-	bl Div
-	add r4, sp, #0x34
-	str r0, [sp, #0x34]
-	movs r1, #0x64
-	muls r1, r0, r1
-	ldr r2, [sp, #0x40]
-	ldr r0, [r2, #0xc]
-	subs r6, r0, r1
-	adds r0, r6, #0
-	movs r1, #0xa
-	bl Div
-	str r0, [r4, #4]
-	lsls r1, r0, #2
-	adds r1, r1, r0
-	lsls r1, r1, #1
-	subs r1, r6, r1
-	str r1, [r4, #8]
-	ldr r6, _0809D0C8 @ =0x00000C48
-	add r6, r8
-	movs r5, #2
-_0809D0AA:
-	ldm r4!, {r2}
-	lsls r2, r2, #0x10
-	lsrs r2, r2, #0x10
-	adds r0, r6, #0
-	mov r1, sb
-	movs r3, #1
-	bl Sprite_SetSprite
-	adds r6, #0x60
-	subs r5, #1
-	cmp r5, #0
-	bge _0809D0AA
-	b _0809D21E
-	.align 2, 0
-_0809D0C4: .4byte 0x00000F4C
-_0809D0C8: .4byte 0x00000C48
-_0809D0CC:
-	movs r7, #1
-	rsbs r7, r7, #0
-	movs r1, #0xf7
-	lsls r1, r1, #4
-	add r1, r8
-	movs r0, #0
-	ldrsb r0, [r1, r0]
-	cmp r0, #0
-	blt _0809D162
-	mov r1, sp
-	bl FUN_08242b14
-	mov r0, sp
-	ldrb r0, [r0, #1]
-	movs r7, #0
-	cmp r0, #0
-	beq _0809D0FC
-	movs r7, #1
-	cmp r0, #1
-	beq _0809D0FC
-	movs r7, #3
-	cmp r0, #2
-	bne _0809D0FC
-	movs r7, #2
-_0809D0FC:
-	mov r0, r8
-	mov r1, sp
-	bl FUN_0809cfc0
-	lsls r4, r7, #2
-	ldr r1, [sp, #0x40]
-	adds r4, r1, r4
-	str r0, [r4]
-	movs r1, #0x64
-	bl Div
-	add r5, sp, #0x34
-	str r0, [sp, #0x34]
-	movs r1, #0x64
-	muls r1, r0, r1
-	ldr r0, [r4]
-	subs r6, r0, r1
-	adds r0, r6, #0
-	movs r1, #0xa
-	bl Div
-	str r0, [r5, #4]
-	lsls r1, r0, #2
-	adds r1, r1, r0
-	lsls r1, r1, #1
-	subs r1, r6, r1
-	str r1, [r5, #8]
-	lsls r1, r7, #1
-	adds r6, r5, #0
-	adds r0, r7, #0
-	adds r0, #0x16
-	adds r1, r1, r0
-	movs r5, #2
-	lsls r0, r1, #1
-	adds r0, r0, r1
-	lsls r0, r0, #5
-	adds r0, #0xa8
-	mov r2, r8
-	adds r4, r0, r2
-_0809D14A:
-	ldm r6!, {r2}
-	lsls r2, r2, #0x10
-	lsrs r2, r2, #0x10
-	adds r0, r4, #0
-	mov r1, sb
-	movs r3, #1
-	bl Sprite_SetSprite
-	adds r4, #0x60
-	subs r5, #1
-	cmp r5, #0
-	bge _0809D14A
-_0809D162:
-	ldr r4, _0809D1AC @ =0x00000E2B
-	add r4, r8
-	ldrb r0, [r4]
-	bl FUN_0809cf98
-	cmp r0, #0
-	beq _0809D21E
-	ldrb r0, [r4]
-	mov r1, sp
-	bl FUN_08242b14
-	mov r0, sp
-	ldrb r0, [r0, #1]
-	movs r1, #0
-	mov sl, r1
-	cmp r0, #0
-	beq _0809D198
-	movs r2, #1
-	mov sl, r2
-	cmp r0, #1
-	beq _0809D198
-	movs r1, #3
-	mov sl, r1
-	cmp r0, #2
-	bne _0809D198
-	movs r2, #2
-	mov sl, r2
-_0809D198:
-	mov r0, r8
-	mov r1, sp
-	bl FUN_0809cfc0
-	adds r5, r0, #0
-	cmp r7, #0
-	bge _0809D1B0
-	movs r7, #0xa
-	b _0809D1C6
-	.align 2, 0
-_0809D1AC: .4byte 0x00000E2B
-_0809D1B0:
-	lsls r0, r7, #2
-	ldr r1, [sp, #0x40]
-	adds r0, r1, r0
-	ldr r0, [r0]
-	movs r7, #0xa
-	cmp r5, r0
-	bgt _0809D1C6
-	movs r7, #0
-	cmp r5, r0
-	bge _0809D1C6
-	movs r7, #0x14
-_0809D1C6:
-	adds r0, r5, #0
-	movs r1, #0x64
-	bl Div
-	add r4, sp, #0x34
-	str r0, [sp, #0x34]
-	movs r1, #0x64
-	muls r0, r1, r0
-	subs r6, r5, r0
-	adds r0, r6, #0
-	movs r1, #0xa
-	bl Div
-	str r0, [r4, #4]
-	lsls r1, r0, #2
-	adds r1, r1, r0
-	lsls r1, r1, #1
-	subs r1, r6, r1
-	str r1, [r4, #8]
-	mov r2, sl
-	lsls r1, r2, #1
-	mov r0, sl
-	adds r0, #0x16
-	adds r1, r1, r0
-	movs r5, #2
-	lsls r0, r1, #1
-	adds r0, r0, r1
-	lsls r0, r0, #5
-	adds r0, #0xa8
-	mov r1, r8
-	adds r6, r0, r1
-_0809D204:
-	ldm r4!, {r2}
-	adds r2, r2, r7
-	lsls r2, r2, #0x10
-	lsrs r2, r2, #0x10
-	adds r0, r6, #0
-	mov r1, sb
-	movs r3, #1
-	bl Sprite_SetSprite
-	adds r6, #0x60
-	subs r5, #1
-	cmp r5, #0
-	bge _0809D204
-_0809D21E:
-	add sp, #0x44
-	pop {r3, r4, r5}
-	mov r8, r3
-	mov sb, r4
-	mov sl, r5
-	pop {r4, r5, r6, r7}
-	pop {r0}
-	bx r0
-	.align 2, 0
-
-	thumb_func_start FUN_0809d230
-FUN_0809d230: @ 0x0809D230
-	push {lr}
-	bl FUN_08047864
-	bl FUN_08049e5c
-	pop {r0}
-	bx r0
-	.align 2, 0
-
-	thumb_func_start FUN_0809d240
-FUN_0809d240: @ 0x0809D240
-	push {lr}
-	adds r3, r0, #0
-	adds r2, r1, #0
-	cmp r2, #0xf
-	bgt _0809D264
-	movs r1, #3
-	ands r1, r2
-	lsls r0, r1, #1
-	adds r0, r0, r1
-	lsls r0, r0, #3
-	adds r0, #0x90
-	strh r0, [r3]
-	asrs r1, r2, #2
-	lsls r0, r1, #1
-	adds r0, r0, r1
-	lsls r0, r0, #3
-	adds r0, #0x20
-	b _0809D26A
-_0809D264:
-	movs r0, #0x40
-	strh r0, [r3]
-	movs r0, #0x4c
-_0809D26A:
-	strh r0, [r3, #2]
-	pop {r0}
-	bx r0
-
-	thumb_func_start FUN_0809d270
-FUN_0809d270: @ 0x0809D270
-	push {r4, r5, r6, lr}
-	mov r6, r8
-	push {r6}
-	sub sp, #0x44
-	adds r5, r0, #0
-	movs r0, #1
-	str r0, [sp, #0x2c]
-	ldr r1, _0809D2F0 @ =0x00000E2B
-	adds r0, r5, r1
-	ldrb r0, [r0]
-	bl GetWeaponID
-	str r0, [sp, #0x34]
-	ldr r0, _0809D2F4 @ =0x000002DF
-	mov r8, r0
-	str r0, [sp, #0x3c]
-	movs r1, #0xf7
-	lsls r1, r1, #4
-	adds r0, r5, r1
-	movs r1, #0
-	ldrsb r1, [r0, r1]
-	add r0, sp, #0xc
-	bl FUN_0809d240
-	add r4, sp, #0x1c
-	adds r0, r4, #0
-	movs r1, #0x10
-	bl FUN_0809d240
-	movs r2, #0
-	add r1, sp, #0x2c
-	str r2, [r1, #4]
-	add r6, sp, #0x34
-	str r2, [r6, #4]
-	add r3, sp, #0x3c
-	mov r0, r8
-	str r0, [r3, #4]
-	add r0, sp, #0xc
-	strh r2, [r0, #8]
-	strh r2, [r0, #0xa]
-	strh r2, [r0, #0xc]
-	strh r2, [r4, #8]
-	strh r2, [r4, #0xa]
-	strh r2, [r4, #0xc]
-	ldr r0, _0809D2F8 @ =0x00000E58
-	adds r5, r5, r0
-	str r6, [sp]
-	str r3, [sp, #4]
-	movs r0, #0xc
-	str r0, [sp, #8]
-	adds r0, r5, #0
-	add r2, sp, #0xc
-	adds r3, r4, #0
-	bl FUN_080b9a28
-	ldr r0, _0809D2FC @ =0x0000038A
-	bl PlaySound_082406e0
-	add sp, #0x44
-	pop {r3}
-	mov r8, r3
-	pop {r4, r5, r6}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_0809D2F0: .4byte 0x00000E2B
-_0809D2F4: .4byte 0x000002DF
-_0809D2F8: .4byte 0x00000E58
-_0809D2FC: .4byte 0x0000038A
-
-	thumb_func_start FUN_0809d300
-FUN_0809d300: @ 0x0809D300
-	push {r4, r5, r6, lr}
-	adds r6, r0, #0
-	movs r0, #0xf7
-	lsls r0, r0, #4
-	adds r3, r6, r0
-	movs r0, #0
-	ldrsb r0, [r3, r0]
-	cmp r0, #0
-	bge _0809D338
-	movs r2, #0xd6
-	lsls r2, r2, #3
-	adds r1, r6, r2
-	ldr r0, [r1]
-	movs r2, #1
-	orrs r0, r2
-	str r0, [r1]
-	movs r0, #0x83
-	lsls r0, r0, #4
-	adds r1, r6, r0
-	ldr r0, [r1]
-	orrs r0, r2
-	str r0, [r1]
-	movs r0, #0xfa
-	lsls r0, r0, #3
-	adds r1, r6, r0
-	ldr r0, [r1]
-	orrs r0, r2
-	b _0809D3C2
-_0809D338:
-	movs r1, #0xd6
-	lsls r1, r1, #3
-	adds r2, r6, r1
-	ldr r0, [r2]
-	movs r1, #2
-	rsbs r1, r1, #0
-	ands r0, r1
-	str r0, [r2]
-	ldr r0, [r6, #0x18]
-	adds r0, #0x40
-	ldrb r0, [r0]
-	cmp r0, #2
-	bne _0809D366
-	movs r2, #0xd5
-	lsls r2, r2, #3
-	adds r0, r6, r2
-	adds r1, r6, #0
-	adds r1, #0x48
-	movs r2, #0x3c
-	movs r3, #1
-	bl Sprite_SetSprite
-	b _0809D388
-_0809D366:
-	movs r0, #0xd5
-	lsls r0, r0, #3
-	adds r4, r6, r0
-	adds r5, r6, #0
-	adds r5, #0x48
-	movs r0, #0
-	ldrsb r0, [r3, r0]
-	bl GetWeaponID
-	adds r2, r0, #0
-	lsls r2, r2, #0x10
-	lsrs r2, r2, #0x10
-	adds r0, r4, #0
-	adds r1, r5, #0
-	movs r3, #1
-	bl Sprite_SetSprite
-_0809D388:
-	movs r2, #0x83
-	lsls r2, r2, #4
-	adds r1, r6, r2
-	ldr r0, [r1]
-	movs r4, #2
-	rsbs r4, r4, #0
-	ands r0, r4
-	str r0, [r1]
-	ldr r1, _0809D3CC @ =0x00000848
-	adds r0, r6, r1
-	movs r2, #0xf7
-	lsls r2, r2, #4
-	adds r1, r6, r2
-	ldrb r1, [r1]
-	lsls r1, r1, #0x18
-	asrs r1, r1, #0x18
-	bl FUN_0809d240
-	movs r0, #0xfa
-	lsls r0, r0, #3
-	adds r1, r6, r0
-	ldr r0, [r1]
-	ands r0, r4
-	str r0, [r1]
-	movs r2, #0xdd
-	lsls r2, r2, #4
-	adds r1, r6, r2
-	ldr r0, [r1]
-	ands r0, r4
-_0809D3C2:
-	str r0, [r1]
-	pop {r4, r5, r6}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_0809D3CC: .4byte 0x00000848
-
-	thumb_func_start FUN_0809d3d0
-FUN_0809d3d0: @ 0x0809D3D0
-	push {r4, r5, r6, r7, lr}
-	mov r7, sb
-	mov r6, r8
-	push {r6, r7}
-	adds r6, r0, #0
-	movs r0, #0xed
-	lsls r0, r0, #3
-	adds r5, r6, r0
-	adds r1, r6, #0
-	adds r1, #0x28
-	adds r0, r5, #0
-	bl FUN_082372cc
-	ldr r2, _0809D3FC @ =0x00000F74
-	adds r1, r6, r2
-	ldr r0, [r1]
-	cmp r0, #0
-	beq _0809D400
-	subs r0, #1
-	str r0, [r1]
-	b _0809D792
-	.align 2, 0
-_0809D3FC: .4byte 0x00000F74
-_0809D400:
-	ldr r0, _0809D458 @ =0x030044E0
-	ldrh r1, [r0, #2]
-	movs r0, #1
-	ands r0, r1
-	cmp r0, #0
-	beq _0809D468
-	ldr r0, [r6, #0x18]
-	adds r0, #0x40
-	ldrb r0, [r0]
-	cmp r0, #2
-	bne _0809D418
-	b _0809D574
-_0809D418:
-	ldr r3, _0809D45C @ =0x00000E2B
-	adds r4, r6, r3
-	ldrb r0, [r4]
-	bl FUN_0809cf98
-	cmp r0, #0
-	bne _0809D428
-	b _0809D574
-_0809D428:
-	ldrb r2, [r4]
-	movs r0, #0xf7
-	lsls r0, r0, #4
-	adds r1, r6, r0
-	movs r0, #0
-	ldrsb r0, [r1, r0]
-	cmp r2, r0
-	bne _0809D43A
-	b _0809D574
-_0809D43A:
-	strb r2, [r1]
-	movs r0, #0
-	ldrsb r0, [r1, r0]
-	ldr r2, _0809D460 @ =0x00000F4C
-	adds r1, r6, r2
-	bl FUN_08242b14
-	adds r0, r6, #0
-	bl FUN_0809d270
-	ldr r1, _0809D464 @ =FUN_0809d7a4
-	adds r0, r6, #0
-	bl FUN_0809ce90
-	b _0809D792
-	.align 2, 0
-_0809D458: .4byte 0x030044E0
-_0809D45C: .4byte 0x00000E2B
-_0809D460: .4byte 0x00000F4C
-_0809D464: .4byte FUN_0809d7a4
-_0809D468:
-	movs r0, #2
-	ands r0, r1
-	cmp r0, #0
-	beq _0809D55C
-	movs r0, #0xde
-	bl PlaySound_082406e0
-	ldr r0, [r6, #0x18]
-	adds r0, #0x40
-	ldrb r0, [r0]
-	movs r3, #0xb0
-	adds r3, r3, r6
-	mov r8, r3
-	cmp r0, #2
-	beq _0809D51C
-	movs r0, #0xf7
-	lsls r0, r0, #4
-	adds r1, r6, r0
-	movs r0, #0
-	ldrsb r0, [r1, r0]
-	cmp r0, #0
-	blt _0809D51C
-	ldr r2, _0809D54C @ =0x00000F4C
-	adds r4, r6, r2
-	adds r1, r0, #0
-	mov ip, r1
-	ldr r0, _0809D550 @ =0x03002C68
-	ldr r2, [r0]
-	cmp r2, #0
-	beq _0809D51C
-	movs r3, #0xae
-	lsls r3, r3, #1
-	adds r5, r2, r3
-	cmp r5, #0
-	beq _0809D51C
-	ldrb r0, [r4]
-	strb r0, [r5, #0x1c]
-	ldrb r0, [r4, #1]
-	strb r0, [r5, #0x1d]
-	ldrb r0, [r4, #2]
-	strb r0, [r5, #0x1e]
-	ldrb r0, [r4, #3]
-	strb r0, [r5, #0x1f]
-	ldrb r1, [r4, #4]
-	adds r3, #0x20
-	adds r0, r2, r3
-	strb r1, [r0]
-	ldrb r0, [r4, #5]
-	adds r3, #1
-	adds r1, r2, r3
-	strb r0, [r1]
-	ldrh r0, [r4, #6]
-	strh r0, [r5, #0x22]
-	ldrh r0, [r4, #8]
-	strh r0, [r5, #0x24]
-	ldrh r0, [r4, #0xa]
-	strh r0, [r5, #0x26]
-	movs r3, #0
-	movs r0, #0xc2
-	lsls r0, r0, #1
-	adds r7, r2, r0
-	ldr r1, _0809D554 @ =0x00000F58
-	adds r2, r6, r1
-_0809D4E6:
-	adds r0, r7, r3
-	adds r1, r2, r3
-	ldrb r1, [r1]
-	strb r1, [r0]
-	adds r3, #1
-	cmp r3, #0xb
-	ble _0809D4E6
-	adds r2, r5, #0
-	adds r2, #0x34
-	adds r1, r4, #0
-	adds r1, #0x18
-	movs r3, #2
-_0809D4FE:
-	ldrb r0, [r1]
-	strb r0, [r2]
-	ldrb r0, [r1, #1]
-	strb r0, [r2, #1]
-	ldrb r0, [r1, #2]
-	strb r0, [r2, #2]
-	ldrb r0, [r1, #3]
-	strb r0, [r2, #3]
-	adds r2, #4
-	adds r1, #4
-	subs r3, #1
-	cmp r3, #0
-	bge _0809D4FE
-	mov r2, ip
-	strb r2, [r5, #0x17]
-_0809D51C:
-	adds r0, r6, #0
-	bl FUN_0809d230
-	movs r3, #1
-	mov r1, r8
-	movs r2, #0x23
-_0809D528:
-	ldr r0, [r1]
-	orrs r0, r3
-	str r0, [r1]
-	adds r1, #0x60
-	subs r2, #1
-	cmp r2, #0
-	bge _0809D528
-	ldr r3, _0809D558 @ =0x00000F84
-	adds r0, r6, r3
-	ldr r0, [r0]
-	cmp r0, #0
-	bne _0809D542
-	b _0809D762
-_0809D542:
-	movs r1, #0
-	bl Script_ExecById
-	b _0809D762
-	.align 2, 0
-_0809D54C: .4byte 0x00000F4C
-_0809D550: .4byte 0x03002C68
-_0809D554: .4byte 0x00000F58
-_0809D558: .4byte 0x00000F84
-_0809D55C:
-	movs r0, #8
-	ands r0, r1
-	cmp r0, #0
-	bne _0809D566
-	b _0809D770
-_0809D566:
-	movs r0, #0xf7
-	lsls r0, r0, #4
-	adds r5, r6, r0
-	movs r0, #0
-	ldrsb r0, [r5, r0]
-	cmp r0, #0
-	bge _0809D57E
-_0809D574:
-	movs r0, #0xc9
-	lsls r0, r0, #1
-	bl PlaySound_082406e0
-	b _0809D792
-_0809D57E:
-	movs r0, #0xdd
-	bl PlaySound_082406e0
-	ldr r1, [r6, #0x18]
-	adds r0, r1, #0
-	adds r0, #0x40
-	ldrb r0, [r0]
-	cmp r0, #2
-	bne _0809D634
-	ldr r2, _0809D628 @ =0x00000F4C
-	adds r4, r6, r2
-	ldrb r1, [r1, #0x17]
-	lsls r1, r1, #0x18
-	asrs r1, r1, #0x18
-	mov ip, r1
-	ldr r0, _0809D62C @ =0x03002C68
-	ldr r2, [r0]
-	mov sb, r0
-	movs r3, #0xb0
-	adds r3, r3, r6
-	mov r8, r3
-	cmp r2, #0
-	bne _0809D5AE
-	b _0809D6CA
-_0809D5AE:
-	movs r0, #0xae
-	lsls r0, r0, #1
-	adds r5, r2, r0
-	cmp r5, #0
-	bne _0809D5BA
-	b _0809D6CA
-_0809D5BA:
-	ldrb r0, [r4]
-	strb r0, [r5, #0x1c]
-	ldrb r0, [r4, #1]
-	strb r0, [r5, #0x1d]
-	ldrb r0, [r4, #2]
-	strb r0, [r5, #0x1e]
-	ldrb r0, [r4, #3]
-	strb r0, [r5, #0x1f]
-	ldrb r1, [r4, #4]
-	movs r3, #0xbe
-	lsls r3, r3, #1
-	adds r0, r2, r3
-	strb r1, [r0]
-	ldrb r0, [r4, #5]
-	adds r3, #1
-	adds r1, r2, r3
-	strb r0, [r1]
-	ldrh r0, [r4, #6]
-	strh r0, [r5, #0x22]
-	ldrh r0, [r4, #8]
-	strh r0, [r5, #0x24]
-	ldrh r0, [r4, #0xa]
-	strh r0, [r5, #0x26]
-	movs r3, #0
-	movs r0, #0xc2
-	lsls r0, r0, #1
-	adds r7, r2, r0
-	ldr r1, _0809D630 @ =0x00000F58
-	adds r2, r6, r1
-_0809D5F4:
-	adds r0, r7, r3
-	adds r1, r2, r3
-	ldrb r1, [r1]
-	strb r1, [r0]
-	adds r3, #1
-	cmp r3, #0xb
-	ble _0809D5F4
-	adds r2, r5, #0
-	adds r2, #0x34
-	adds r1, r4, #0
-	adds r1, #0x18
-	movs r3, #2
-_0809D60C:
-	ldrb r0, [r1]
-	strb r0, [r2]
-	ldrb r0, [r1, #1]
-	strb r0, [r2, #1]
-	ldrb r0, [r1, #2]
-	strb r0, [r2, #2]
-	ldrb r0, [r1, #3]
-	strb r0, [r2, #3]
-	adds r2, #4
-	adds r1, #4
-	subs r3, #1
-	cmp r3, #0
-	bge _0809D60C
-	b _0809D6C6
-	.align 2, 0
-_0809D628: .4byte 0x00000F4C
-_0809D62C: .4byte 0x03002C68
-_0809D630: .4byte 0x00000F58
-_0809D634:
-	ldr r3, _0809D6E0 @ =0x00000F4C
-	adds r4, r6, r3
-	ldrb r5, [r5]
-	lsls r5, r5, #0x18
-	asrs r5, r5, #0x18
-	mov ip, r5
-	ldr r0, _0809D6E4 @ =0x03002C68
-	ldr r2, [r0]
-	mov sb, r0
-	movs r0, #0xb0
-	adds r0, r0, r6
-	mov r8, r0
-	cmp r2, #0
-	beq _0809D6CA
-	movs r1, #0xae
-	lsls r1, r1, #1
-	adds r5, r2, r1
-	cmp r5, #0
-	beq _0809D6CA
-	ldrb r0, [r4]
-	strb r0, [r5, #0x1c]
-	ldrb r0, [r4, #1]
-	strb r0, [r5, #0x1d]
-	ldrb r0, [r4, #2]
-	strb r0, [r5, #0x1e]
-	ldrb r0, [r4, #3]
-	strb r0, [r5, #0x1f]
-	ldrb r1, [r4, #4]
-	movs r3, #0xbe
-	lsls r3, r3, #1
-	adds r0, r2, r3
-	strb r1, [r0]
-	ldrb r0, [r4, #5]
-	adds r3, #1
-	adds r1, r2, r3
-	strb r0, [r1]
-	ldrh r0, [r4, #6]
-	strh r0, [r5, #0x22]
-	ldrh r0, [r4, #8]
-	strh r0, [r5, #0x24]
-	ldrh r0, [r4, #0xa]
-	strh r0, [r5, #0x26]
-	movs r3, #0
-	movs r0, #0xc2
-	lsls r0, r0, #1
-	adds r7, r2, r0
-	ldr r1, _0809D6E8 @ =0x00000F58
-	adds r2, r6, r1
-_0809D694:
-	adds r0, r7, r3
-	adds r1, r2, r3
-	ldrb r1, [r1]
-	strb r1, [r0]
-	adds r3, #1
-	cmp r3, #0xb
-	ble _0809D694
-	adds r2, r5, #0
-	adds r2, #0x34
-	adds r1, r4, #0
-	adds r1, #0x18
-	movs r3, #2
-_0809D6AC:
-	ldrb r0, [r1]
-	strb r0, [r2]
-	ldrb r0, [r1, #1]
-	strb r0, [r2, #1]
-	ldrb r0, [r1, #2]
-	strb r0, [r2, #2]
-	ldrb r0, [r1, #3]
-	strb r0, [r2, #3]
-	adds r2, #4
-	adds r1, #4
-	subs r3, #1
-	cmp r3, #0
-	bge _0809D6AC
-_0809D6C6:
-	mov r2, ip
-	strb r2, [r5, #0x17]
-_0809D6CA:
-	mov r3, sb
-	ldr r0, [r3]
-	cmp r0, #0
-	beq _0809D6EC
-	adds r0, #0x56
-	ldrb r0, [r0]
-	cmp r0, #1
-	bne _0809D6EC
-	movs r0, #1
-	b _0809D6EE
-	.align 2, 0
-_0809D6E0: .4byte 0x00000F4C
-_0809D6E4: .4byte 0x03002C68
-_0809D6E8: .4byte 0x00000F58
-_0809D6EC:
-	movs r0, #0
-_0809D6EE:
-	cmp r0, #0
-	beq _0809D71A
-	bl FUN_081df8d4
-	adds r0, r6, #0
-	bl FUN_0809d230
-	bl FUN_08049fa8
-	movs r0, #0
-	bl FUN_0822b644
-	movs r0, #1
-	bl FUN_0822b644
-	movs r0, #2
-	bl FUN_0822b644
-	movs r0, #3
-	bl FUN_0822b644
-	b _0809D74E
-_0809D71A:
-	movs r0, #3
-	bl FUN_081df95c
-	adds r0, r6, #0
-	bl FUN_0809d230
-	movs r0, #0
-	bl FUN_0822b644
-	movs r0, #1
-	bl FUN_0822b644
-	movs r0, #2
-	bl FUN_0822b644
-	movs r0, #3
-	bl FUN_0822b644
-	ldr r1, _0809D76C @ =0x00000F88
-	adds r0, r6, r1
-	ldr r0, [r0]
-	cmp r0, #0
-	beq _0809D74E
-	movs r1, #0
-	bl Script_ExecById
-_0809D74E:
-	movs r3, #1
-	mov r1, r8
-	movs r2, #0x23
-_0809D754:
-	ldr r0, [r1]
-	orrs r0, r3
-	str r0, [r1]
-	adds r1, #0x60
-	subs r2, #1
-	cmp r2, #0
-	bge _0809D754
-_0809D762:
-	adds r0, r6, #0
-	bl KillEntity
-	b _0809D792
-	.align 2, 0
-_0809D76C: .4byte 0x00000F88
-_0809D770:
-	ldr r2, _0809D7A0 @ =0x00000E28
-	adds r4, r6, r2
-	adds r0, r4, #0
-	bl FUN_080b9f70
-	cmp r0, #0
-	beq _0809D792
-	adds r0, r6, #0
-	bl FUN_0809cea8
-	adds r0, r6, #0
-	bl FUN_0809d00c
-	adds r0, r4, #0
-	adds r1, r5, #0
-	bl FUN_080b9fc4
-_0809D792:
-	pop {r3, r4}
-	mov r8, r3
-	mov sb, r4
-	pop {r4, r5, r6, r7}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_0809D7A0: .4byte 0x00000E28
-
-	thumb_func_start FUN_0809d7a4
-FUN_0809d7a4: @ 0x0809D7A4
-	push {r4, lr}
-	adds r4, r0, #0
-	ldr r1, _0809D7D4 @ =0x00000E58
-	adds r0, r4, r1
-	bl FUN_080b9adc
-	cmp r0, #0
-	beq _0809D7CE
-	ldr r0, _0809D7D8 @ =0x00000111
-	bl PlaySound_082406e0
-	adds r0, r4, #0
-	bl FUN_0809d300
-	adds r0, r4, #0
-	bl FUN_0809d00c
-	ldr r1, _0809D7DC @ =FUN_0809d3d0
-	adds r0, r4, #0
-	bl FUN_0809ce90
-_0809D7CE:
-	pop {r4}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_0809D7D4: .4byte 0x00000E58
-_0809D7D8: .4byte 0x00000111
-_0809D7DC: .4byte FUN_0809d3d0
-
-	thumb_func_start FUN_0809d7e0
-FUN_0809d7e0: @ 0x0809D7E0
-	push {r4, lr}
-	adds r4, r0, #0
-	bl FUN_081dfa04
-	cmp r0, #0
-	bne _0809D812
-	bl FUN_08049fa8
-	movs r3, #1
-	adds r1, r4, #0
-	adds r1, #0xb0
-	movs r2, #0x23
-_0809D7F8:
-	ldr r0, [r1]
-	orrs r0, r3
-	str r0, [r1]
-	adds r1, #0x60
-	subs r2, #1
-	cmp r2, #0
-	bge _0809D7F8
-	adds r0, r4, #0
-	bl KillEntity
-	movs r0, #1
-	rsbs r0, r0, #0
-	b _0809D820
-_0809D812:
-	ldr r1, _0809D828 @ =0x00000F8C
-	adds r0, r4, r1
-	ldr r1, [r0]
-	adds r0, r4, #0
-	bl _call_via_r1
-	movs r0, #0
-_0809D820:
-	pop {r4}
-	pop {r1}
-	bx r1
-	.align 2, 0
-_0809D828: .4byte 0x00000F8C
-
-	thumb_func_start FUN_0809d82c
-FUN_0809d82c: @ 0x0809D82C
-	push {r4, r5, r6, lr}
-	adds r6, r0, #0
-	adds r4, r6, #0
-	adds r4, #0xa8
-	movs r5, #0x23
-_0809D836:
-	adds r0, r4, #0
-	bl FUN_0822f1c0
-	adds r4, #0x60
-	subs r5, #1
-	cmp r5, #0
-	bge _0809D836
-	ldr r1, _0809D854 @ =0x00000E58
-	adds r0, r6, r1
-	bl FUN_080b9a0c
-	movs r0, #0
-	pop {r4, r5, r6}
-	pop {r1}
-	bx r1
-	.align 2, 0
-_0809D854: .4byte 0x00000E58
-
-	thumb_func_start FUN_0809d858
-FUN_0809d858: @ 0x0809D858
-	lsls r3, r0, #1
-	adds r3, r3, r0
-	lsls r3, r3, #4
-	ldr r0, _0809D874 @ =0x03003ED0
-	adds r3, r3, r0
-	ldr r0, [r3, #0x2c]
-	movs r3, #0x1f
-	ands r1, r3
-	lsls r1, r1, #1
-	adds r0, r0, r1
-	ands r2, r3
-	lsls r2, r2, #6
-	adds r0, r0, r2
-	bx lr
-	.align 2, 0
-_0809D874: .4byte 0x03003ED0
-
-	thumb_func_start FUN_0809d878
-FUN_0809d878: @ 0x0809D878
-	push {r4, r5, r6, lr}
-	sub sp, #0x10
-	adds r6, r0, #0
-	ldr r0, _0809D918 @ =0x0000C091
-	ldr r1, _0809D91C @ =0x0000CD91
-	bl GetFile
-	adds r2, r0, #0
-	str r2, [r6, #0x1c]
-	movs r0, #6
-	str r0, [sp, #0xc]
-	movs r4, #0
-	str r4, [sp]
-	movs r0, #1
-	str r0, [sp, #4]
-	add r0, sp, #0xc
-	str r0, [sp, #8]
-	movs r0, #2
-	movs r1, #0
-	movs r3, #0
-	bl FUN_0822c0b8
-	str r4, [sp]
-	movs r0, #3
-	movs r1, #0
-	movs r2, #0
-	movs r3, #0
-	bl Video_GenerateBGMap
-	movs r2, #0
-	movs r5, #1
-_0809D8B6:
-	ldr r1, _0809D920 @ =0x00000F71
-	adds r0, r6, r1
-	ldrb r0, [r0]
-	asrs r0, r2
-	ands r0, r5
-	adds r4, r2, #1
-	cmp r0, #0
-	bne _0809D8EA
-	adds r0, r2, #0
-	ands r0, r5
-	lsls r1, r0, #1
-	adds r1, r1, r0
-	lsls r1, r1, #1
-	adds r1, #2
-	asrs r2, r2, #1
-	adds r2, #4
-	movs r0, #3
-	bl FUN_0809d858
-	movs r2, #1
-	movs r1, #1
-_0809D8E0:
-	strh r2, [r0]
-	adds r0, #2
-	subs r1, #1
-	cmp r1, #0
-	bge _0809D8E0
-_0809D8EA:
-	adds r2, r4, #0
-	cmp r2, #3
-	ble _0809D8B6
-	ldr r4, _0809D924 @ =0x000092B3
-	ldr r0, _0809D928 @ =0x08251D6C
-	bl FUN_08230860
-	adds r1, r0, #0
-	lsls r1, r1, #0x10
-	lsrs r1, r1, #0x10
-	adds r0, r4, #0
-	bl GetFile
-	adds r0, #0x14
-	str r0, [r6, #0x20]
-	ldr r1, _0809D92C @ =0x03004250
-	ldr r2, _0809D930 @ =0x04000018
-	bl CpuSet
-	add sp, #0x10
-	pop {r4, r5, r6}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_0809D918: .4byte 0x0000C091
-_0809D91C: .4byte 0x0000CD91
-_0809D920: .4byte 0x00000F71
-_0809D924: .4byte 0x000092B3
-_0809D928: .4byte 0x08251D6C
-_0809D92C: .4byte 0x03004250
-_0809D930: .4byte 0x04000018
-
-	thumb_func_start FUN_0809d934
-FUN_0809d934: @ 0x0809D934
-	push {r4, r5, r6, r7, lr}
-	mov r7, sl
-	mov r6, sb
-	mov r5, r8
-	push {r5, r6, r7}
-	sub sp, #0x2c
-	mov r8, r0
-	ldr r5, _0809DA1C @ =0x0000CB05
-	ldr r1, _0809DA20 @ =0x0000B343
-	adds r0, r5, #0
-	bl GetFile
-	adds r2, r0, #0
-	cmp r2, #0
-	bne _0809D954
-	b _0809DD12
-_0809D954:
-	mov r1, r8
-	adds r1, #0x28
-	ldm r0!, {r3, r4, r6}
-	stm r1!, {r3, r4, r6}
-	ldm r0!, {r3, r4, r6}
-	stm r1!, {r3, r4, r6}
-	ldm r0!, {r3, r4}
-	stm r1!, {r3, r4}
-	mov r4, r8
-	adds r4, #0x28
-	adds r0, r4, #0
-	adds r1, r2, #0
-	bl OpenSpriteSetFile
-	ldr r1, _0809DA24 @ =0x00005D04
-	adds r0, r5, #0
-	bl GetFile
-	adds r2, r0, #0
-	str r4, [sp, #0x24]
-	cmp r2, #0
-	bne _0809D982
-	b _0809DD12
-_0809D982:
-	mov r1, r8
-	adds r1, #0x48
-	ldm r0!, {r3, r4, r6}
-	stm r1!, {r3, r4, r6}
-	ldm r0!, {r3, r4, r6}
-	stm r1!, {r3, r4, r6}
-	ldm r0!, {r3, r6}
-	stm r1!, {r3, r6}
-	mov r4, r8
-	adds r4, #0x48
-	adds r0, r4, #0
-	adds r1, r2, #0
-	bl OpenSpriteSetFile
-	ldr r1, _0809DA28 @ =0x0000DCC1
-	adds r0, r5, #0
-	bl GetFile
-	adds r2, r0, #0
-	str r4, [sp, #0x28]
-	cmp r2, #0
-	bne _0809D9B0
-	b _0809DD12
-_0809D9B0:
-	mov r1, r8
-	adds r1, #0x68
-	ldm r0!, {r3, r4, r6}
-	stm r1!, {r3, r4, r6}
-	ldm r0!, {r3, r4, r6}
-	stm r1!, {r3, r4, r6}
-	ldm r0!, {r4, r6}
-	stm r1!, {r4, r6}
-	mov r4, r8
-	adds r4, #0x68
-	adds r0, r4, #0
-	adds r1, r2, #0
-	bl OpenSpriteSetFile
-	ldr r1, _0809DA2C @ =0x0000DE23
-	adds r0, r5, #0
-	bl GetFile
-	adds r2, r0, #0
-	str r4, [sp, #0x1c]
-	cmp r2, #0
-	bne _0809D9DE
-	b _0809DD12
-_0809D9DE:
-	adds r4, #0x20
-	adds r1, r4, #0
-	ldm r0!, {r3, r5, r6}
-	stm r1!, {r3, r5, r6}
-	ldm r0!, {r3, r5, r6}
-	stm r1!, {r3, r5, r6}
-	ldm r0!, {r3, r5}
-	stm r1!, {r3, r5}
-	adds r0, r4, #0
-	adds r1, r2, #0
-	bl OpenSpriteSetFile
-	movs r6, #0
-	str r4, [sp, #0x20]
-	add r0, sp, #0x10
-	mov sl, r0
-	mov r5, r8
-	adds r5, #0xa8
-	mov sb, r6
-_0809DA04:
-	mov r1, r8
-	ldr r0, [r1, #0x18]
-	adds r0, #0x40
-	ldrb r0, [r0]
-	cmp r0, #2
-	bne _0809DA5A
-	cmp r6, #0
-	bne _0809DA30
-	movs r4, #0x3c
-	movs r7, #0x30
-	b _0809DA34
-	.align 2, 0
-_0809DA1C: .4byte 0x0000CB05
-_0809DA20: .4byte 0x0000B343
-_0809DA24: .4byte 0x00005D04
-_0809DA28: .4byte 0x0000DCC1
-_0809DA2C: .4byte 0x0000DE23
-_0809DA30:
-	movs r4, #0
-	movs r7, #0x31
-_0809DA34:
-	add r0, sp, #0x10
-	adds r1, r6, #0
-	bl FUN_0809d240
-	lsls r2, r4, #0x10
-	lsrs r2, r2, #0x10
-	mov r3, sb
-	str r3, [sp]
-	str r3, [sp, #4]
-	movs r0, #0x3c
-	str r0, [sp, #8]
-	mov r4, sl
-	str r4, [sp, #0xc]
-	adds r0, r5, #0
-	ldr r1, [sp, #0x28]
-	adds r3, r7, #0
-	bl FUN_0822f3fc
-	b _0809DAB2
-_0809DA5A:
-	adds r0, r6, #0
-	bl GetWeaponID
-	adds r4, r0, #0
-	movs r7, #0x30
-	cmp r4, #0
-	bne _0809DA6A
-	movs r7, #0x31
-_0809DA6A:
-	add r0, sp, #0x10
-	adds r1, r6, #0
-	bl FUN_0809d240
-	lsls r2, r4, #0x10
-	lsrs r2, r2, #0x10
-	mov r0, sb
-	str r0, [sp]
-	str r0, [sp, #4]
-	movs r0, #0x3c
-	str r0, [sp, #8]
-	mov r1, sl
-	str r1, [sp, #0xc]
-	adds r0, r5, #0
-	ldr r1, [sp, #0x28]
-	adds r3, r7, #0
-	bl FUN_0822f3fc
-	adds r0, r6, #0
-	bl FUN_0809cf98
-	cmp r0, #0
-	beq _0809DAA8
-	adds r0, r5, #0
-	ldr r1, _0809DAA4 @ =0x000002DF
-	bl FUN_080b95bc
-	b _0809DAB2
-	.align 2, 0
-_0809DAA4: .4byte 0x000002DF
-_0809DAA8:
-	adds r0, r5, #0
-	movs r1, #0xb8
-	lsls r1, r1, #2
-	bl FUN_080b95bc
-_0809DAB2:
-	adds r5, #0x60
-	adds r6, #1
-	cmp r6, #0xf
-	ble _0809DA04
-	add r5, sp, #0x10
-	adds r0, r5, #0
-	movs r1, #0x10
-	bl FUN_0809d240
-	movs r0, #0xd5
-	lsls r0, r0, #3
-	add r0, r8
-	movs r4, #0
-	str r4, [sp]
-	str r4, [sp, #4]
-	movs r6, #0x3c
-	str r6, [sp, #8]
-	add r3, sp, #0x10
-	str r3, [sp, #0xc]
-	ldr r1, [sp, #0x28]
-	movs r2, #0
-	movs r3, #0x31
-	bl FUN_0822f3fc
-	movs r0, #0xf9
-	lsls r0, r0, #3
-	add r0, r8
-	str r4, [sp]
-	str r4, [sp, #4]
-	str r6, [sp, #8]
-	add r1, sp, #0x10
-	str r1, [sp, #0xc]
-	ldr r1, [sp, #0x24]
-	movs r2, #0x40
-	movs r3, #0x31
-	bl FUN_0822f3fc
-	add r0, sp, #0x10
-	strh r4, [r0]
-	strh r4, [r5, #2]
-	strh r4, [r5, #4]
-	movs r5, #0xed
-	lsls r5, r5, #3
-	add r5, r8
-	str r4, [sp]
-	str r4, [sp, #4]
-	str r6, [sp, #8]
-	str r0, [sp, #0xc]
-	adds r0, r5, #0
-	ldr r1, [sp, #0x24]
-	movs r2, #0x39
-	movs r3, #0x30
-	bl FUN_0822f3fc
-	str r4, [sp]
-	adds r0, r5, #0
-	ldr r1, [sp, #0x24]
-	movs r2, #0
-	movs r3, #1
-	bl FUN_082370cc
-	ldr r0, _0809DC58 @ =0x00000828
-	add r0, r8
-	str r4, [sp]
-	str r4, [sp, #4]
-	str r6, [sp, #8]
-	add r3, sp, #0x10
-	str r3, [sp, #0xc]
-	ldr r1, [sp, #0x24]
-	movs r2, #0x41
-	movs r3, #0x31
-	bl FUN_0822f3fc
-	movs r6, #0
-	add r4, sp, #0x10
-	mov sl, r4
-_0809DB4A:
-	adds r1, r6, #0
-	movs r5, #1
-	ands r1, r5
-	lsls r0, r1, #1
-	adds r0, r0, r1
-	lsls r0, r0, #4
-	adds r0, #0x20
-	mov r1, sl
-	strh r0, [r1]
-	asrs r0, r6, #1
-	lsls r0, r0, #3
-	adds r0, #0x20
-	strh r0, [r1, #2]
-	movs r3, #0
-	strh r3, [r1, #4]
-	ldr r0, _0809DC5C @ =0x00000F71
-	add r0, r8
-	ldrb r0, [r0]
-	asrs r0, r6
-	ands r0, r5
-	movs r4, #0x31
-	str r4, [sp, #0x18]
-	cmp r0, #0
-	beq _0809DB7E
-	movs r5, #0x30
-	str r5, [sp, #0x18]
-_0809DB7E:
-	movs r7, #0
-	lsls r1, r6, #1
-	adds r0, r6, #1
-	mov sb, r0
-	add r5, sp, #0x10
-	adds r0, #0x15
-	adds r4, r1, r0
-_0809DB8C:
-	lsls r0, r4, #1
-	adds r0, r0, r4
-	lsls r0, r0, #5
-	adds r0, #0xa8
-	add r0, r8
-	movs r1, #0
-	str r1, [sp]
-	str r1, [sp, #4]
-	movs r3, #0x3c
-	str r3, [sp, #8]
-	str r5, [sp, #0xc]
-	ldr r1, [sp, #0x24]
-	movs r2, #0
-	ldr r3, [sp, #0x18]
-	bl FUN_0822f3fc
-	ldrh r0, [r5]
-	adds r0, #8
-	strh r0, [r5]
-	adds r4, #1
-	adds r7, #1
-	cmp r7, #2
-	ble _0809DB8C
-	mov r6, sb
-	cmp r6, #3
-	ble _0809DB4A
-	movs r4, #0
-	add r0, sp, #0x10
-	strh r4, [r0]
-	adds r5, r0, #0
-	movs r0, #0x80
-	strh r0, [r5, #2]
-	movs r0, #0xe1
-	lsls r0, r0, #3
-	add r0, r8
-	str r4, [sp]
-	str r4, [sp, #4]
-	movs r6, #0x3c
-	str r6, [sp, #8]
-	str r5, [sp, #0xc]
-	ldr r1, [sp, #0x28]
-	movs r2, #0xcf
-	movs r3, #0x30
-	bl FUN_0822f3fc
-	add r0, sp, #0x10
-	strh r4, [r0]
-	strh r4, [r5, #2]
-	ldr r0, _0809DC60 @ =0x00000D68
-	add r0, r8
-	str r4, [sp]
-	str r4, [sp, #4]
-	str r6, [sp, #8]
-	add r1, sp, #0x10
-	str r1, [sp, #0xc]
-	ldr r1, [sp, #0x24]
-	movs r2, #0x93
-	movs r3, #0x30
-	bl FUN_0822f3fc
-	add r0, sp, #0x10
-	strh r4, [r0]
-	strh r4, [r5, #2]
-	ldr r0, _0809DC64 @ =0x00000DC8
-	add r0, r8
-	str r4, [sp]
-	str r4, [sp, #4]
-	str r6, [sp, #8]
-	add r3, sp, #0x10
-	str r3, [sp, #0xc]
-	ldr r1, [sp, #0x1c]
-	movs r2, #0x15
-	movs r3, #0x30
-	bl FUN_0822f3fc
-	movs r0, #0xf7
-	lsls r0, r0, #4
-	add r0, r8
-	ldrb r0, [r0]
-	lsls r0, r0, #0x18
-	asrs r0, r0, #0x18
-	cmp r0, #0
-	bge _0809DC40
-	movs r0, #0xdd
-	lsls r0, r0, #4
-	add r0, r8
-	ldr r1, [r0]
-	movs r2, #1
-	orrs r1, r2
-	str r1, [r0]
-_0809DC40:
-	mov r4, r8
-	ldr r0, [r4, #0x18]
-	adds r0, #0x40
-	ldrb r0, [r0]
-	cmp r0, #1
-	beq _0809DC68
-	cmp r0, #1
-	ble _0809DC80
-	cmp r0, #2
-	beq _0809DC74
-	b _0809DC80
-	.align 2, 0
-_0809DC58: .4byte 0x00000828
-_0809DC5C: .4byte 0x00000F71
-_0809DC60: .4byte 0x00000D68
-_0809DC64: .4byte 0x00000DC8
-_0809DC68:
-	ldr r2, _0809DC70 @ =0x0000016B
-	movs r4, #0x26
-	b _0809DC84
-	.align 2, 0
-_0809DC70: .4byte 0x0000016B
-_0809DC74:
-	ldr r2, _0809DC7C @ =0x000002F9
-	movs r4, #0x27
-	b _0809DC84
-	.align 2, 0
-_0809DC7C: .4byte 0x000002F9
-_0809DC80:
-	movs r2, #4
-	movs r4, #0x1d
-_0809DC84:
-	ldr r0, _0809DC9C @ =0x03002C68
-	ldr r1, [r0]
-	adds r3, r0, #0
-	cmp r1, #0
-	beq _0809DCA0
-	adds r0, r1, #0
-	adds r0, #0x56
-	ldrb r0, [r0]
-	cmp r0, #1
-	bne _0809DCA0
-	movs r0, #1
-	b _0809DCA2
-	.align 2, 0
-_0809DC9C: .4byte 0x03002C68
-_0809DCA0:
-	movs r0, #0
-_0809DCA2:
-	cmp r0, #0
-	beq _0809DCC0
-	ldr r0, [r3]
-	cmp r0, #0
-	bne _0809DCB2
-	movs r0, #1
-	rsbs r0, r0, #0
-	b _0809DCB6
-_0809DCB2:
-	movs r5, #0x18
-	ldrsh r0, [r0, r5]
-_0809DCB6:
-	adds r4, r0, #0
-	adds r4, #0x22
-	cmp r0, #0
-	bge _0809DCC0
-	movs r4, #0x22
-_0809DCC0:
-	movs r3, #0
-	movs r1, #0x24
-	add r0, sp, #0x10
-	strh r1, [r0]
-	adds r1, r0, #0
-	movs r0, #0x70
-	strh r0, [r1, #2]
-	ldr r0, _0809DD24 @ =0x00000888
-	add r0, r8
-	str r3, [sp]
-	str r3, [sp, #4]
-	movs r1, #0x3c
-	str r1, [sp, #8]
-	add r6, sp, #0x10
-	str r6, [sp, #0xc]
-	ldr r1, [sp, #0x20]
-	movs r3, #0x10
-	bl FUN_0822f3fc
-	ldr r0, _0809DD28 @ =0x000008C2
-	add r0, r8
-	strh r4, [r0]
-	movs r3, #0x8d
-	lsls r3, r3, #4
-	add r3, r8
-	ldr r2, _0809DD2C @ =0x03003584
-	ldrh r1, [r0]
-	lsls r1, r1, #5
-	ldr r0, [r2]
-	adds r0, r0, r1
-	str r0, [r3]
-	ldr r0, _0809DD30 @ =0x00000E58
-	add r0, r8
-	bl FUN_080b99a0
-	mov r0, r8
-	bl FUN_0809d300
-	mov r0, r8
-	bl FUN_0809d00c
-_0809DD12:
-	add sp, #0x2c
-	pop {r3, r4, r5}
-	mov r8, r3
-	mov sb, r4
-	mov sl, r5
-	pop {r4, r5, r6, r7}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_0809DD24: .4byte 0x00000888
-_0809DD28: .4byte 0x000008C2
-_0809DD2C: .4byte 0x03003584
-_0809DD30: .4byte 0x00000E58
-
-	thumb_func_start FUN_0809dd34
-FUN_0809dd34: @ 0x0809DD34
-	push {r4, r5, lr}
-	sub sp, #4
-	adds r4, r0, #0
-	ldr r0, _0809DD64 @ =0x00000E28
-	adds r5, r4, r0
-	movs r0, #0x1e
-	str r0, [sp]
-	adds r0, r5, #0
-	movs r1, #0
-	movs r2, #0
-	movs r3, #0
-	bl FUN_080b9ff8
-	movs r0, #0xed
-	lsls r0, r0, #3
-	adds r4, r4, r0
-	adds r0, r5, #0
-	adds r1, r4, #0
-	bl FUN_080b9fc4
-	add sp, #4
-	pop {r4, r5}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_0809DD64: .4byte 0x00000E28
-
-	thumb_func_start FUN_0809dd68
-FUN_0809dd68: @ 0x0809DD68
-	push {r4, lr}
-	adds r4, r0, #0
-	movs r0, #0x77
-	bl prepare_08231510
-	cmp r0, #0
-	beq _0809DD7C
-	bl FUN_0823d340
-	str r0, [r4, #0x24]
-_0809DD7C:
-	adds r0, r4, #0
-	bl FUN_0809cea8
-	pop {r4}
-	pop {r0}
-	bx r0
-
-	thumb_func_start FUN_0809dd88
-FUN_0809dd88: @ 0x0809DD88
-	push {r4, lr}
-	adds r4, r0, #0
-	movs r0, #0x70
-	bl prepare_08231510
-	adds r1, r0, #0
-	cmp r1, #0
-	beq _0809DDA8
-	bl Script_GetValue
-	ldr r2, _0809DDA4 @ =0x00000F84
-	adds r1, r4, r2
-	str r0, [r1]
-	b _0809DDAE
-	.align 2, 0
-_0809DDA4: .4byte 0x00000F84
-_0809DDA8:
-	ldr r2, _0809DDC8 @ =0x00000F84
-	adds r0, r4, r2
-	str r1, [r0]
-_0809DDAE:
-	movs r0, #0x6e
-	bl prepare_08231510
-	adds r1, r0, #0
-	cmp r1, #0
-	beq _0809DDD0
-	bl Script_GetValue
-	ldr r2, _0809DDCC @ =0x00000F88
-	adds r1, r4, r2
-	str r0, [r1]
-	b _0809DDD6
-	.align 2, 0
-_0809DDC8: .4byte 0x00000F84
-_0809DDCC: .4byte 0x00000F88
-_0809DDD0:
-	ldr r2, _0809DDDC @ =0x00000F88
-	adds r0, r4, r2
-	str r1, [r0]
-_0809DDD6:
-	pop {r4}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_0809DDDC: .4byte 0x00000F88
-
-	thumb_func_start FUN_0809dde0
-FUN_0809dde0: @ 0x0809DDE0
-	push {r4, r5, r6, lr}
-	adds r2, r0, #0
-	ldr r0, [r2, #0x18]
-	adds r0, #0x40
-	ldrb r0, [r0]
-	cmp r0, #2
-	bne _0809DDFC
-	ldr r0, _0809DDF8 @ =0x00000F71
-	adds r1, r2, r0
-	movs r0, #0xf
-	strb r0, [r1]
-	b _0809DE46
-	.align 2, 0
-_0809DDF8: .4byte 0x00000F71
-_0809DDFC:
-	ldr r0, _0809DE1C @ =0x00000F71
-	adds r1, r2, r0
-	movs r0, #0
-	strb r0, [r1]
-	movs r5, #0
-	ldr r0, _0809DE1C @ =0x00000F71
-	adds r4, r2, r0
-_0809DE0A:
-	adds r0, r5, #0
-	bl GetWeaponKind
-	cmp r0, #0
-	bne _0809DE20
-	ldrb r0, [r4]
-	movs r1, #1
-	b _0809DE3C
-	.align 2, 0
-_0809DE1C: .4byte 0x00000F71
-_0809DE20:
-	cmp r0, #1
-	bne _0809DE2A
-	ldrb r0, [r4]
-	movs r1, #2
-	b _0809DE3C
-_0809DE2A:
-	cmp r0, #2
-	bne _0809DE34
-	ldrb r0, [r4]
-	movs r1, #4
-	b _0809DE3C
-_0809DE34:
-	cmp r0, #4
-	bne _0809DE40
-	ldrb r0, [r4]
-	movs r1, #8
-_0809DE3C:
-	orrs r0, r1
-	strb r0, [r4]
-_0809DE40:
-	adds r5, #1
-	cmp r5, #0xf
-	ble _0809DE0A
-_0809DE46:
-	pop {r4, r5, r6}
-	pop {r0}
-	bx r0
-
-	thumb_func_start FUN_0809de4c
-FUN_0809de4c: @ 0x0809DE4C
-	push {r4, r5, lr}
-	sub sp, #0x10
-	adds r4, r0, #0
-	ldr r0, _0809DE70 @ =0x03002C68
-	ldr r0, [r0]
-	movs r2, #0xae
-	lsls r2, r2, #1
-	adds r1, r0, r2
-	cmp r0, #0
-	bne _0809DE62
-	movs r1, #0
-_0809DE62:
-	str r1, [r4, #0x18]
-	cmp r1, #0
-	bne _0809DE74
-	movs r0, #1
-	rsbs r0, r0, #0
-	b _0809DF16
-	.align 2, 0
-_0809DE70: .4byte 0x03002C68
-_0809DE74:
-	adds r0, r1, #0
-	adds r0, #0x40
-	ldrb r0, [r0]
-	cmp r0, #2
-	bne _0809DEAC
-	movs r3, #0xf7
-	lsls r3, r3, #4
-	adds r1, r4, r3
-	movs r0, #0
-	strb r0, [r1]
-	ldr r1, _0809DEA4 @ =0x08DA9E68
-	ldr r5, _0809DEA8 @ =0x00000F4C
-	adds r0, r4, r5
-	movs r2, #0x87
-	lsls r2, r2, #4
-	adds r1, r1, r2
-	ldm r1!, {r2, r3, r5}
-	stm r0!, {r2, r3, r5}
-	ldm r1!, {r2, r3, r5}
-	stm r0!, {r2, r3, r5}
-	ldm r1!, {r2, r3, r5}
-	stm r0!, {r2, r3, r5}
-	b _0809DEC8
-	.align 2, 0
-_0809DEA4: .4byte 0x08DA9E68
-_0809DEA8: .4byte 0x00000F4C
-_0809DEAC:
-	ldrb r0, [r1, #0x17]
-	movs r3, #0xf7
-	lsls r3, r3, #4
-	adds r1, r4, r3
-	strb r0, [r1]
-	lsls r0, r0, #0x18
-	cmp r0, #0
-	blt _0809DEC8
-	movs r0, #0
-	ldrsb r0, [r1, r0]
-	ldr r5, _0809DF20 @ =0x00000F4C
-	adds r1, r4, r5
-	bl FUN_08242b14
-_0809DEC8:
-	ldr r0, [r4, #0x18]
-	adds r0, #0x41
-	ldrb r0, [r0]
-	movs r2, #0xf8
-	lsls r2, r2, #4
-	adds r1, r4, r2
-	add r3, sp, #8
-	add r2, sp, #0xc
-	str r2, [sp]
-	add r2, sp, #4
-	bl FUN_081dfa20
-	adds r0, r4, #0
-	bl FUN_0809dde0
-	adds r0, r4, #0
-	bl FUN_0809d878
-	adds r0, r4, #0
-	bl FUN_0809d934
-	adds r0, r4, #0
-	bl FUN_0809dd34
-	adds r0, r4, #0
-	bl FUN_0809dd68
-	adds r0, r4, #0
-	bl FUN_0809dd88
-	ldr r3, _0809DF24 @ =0x00000F74
-	adds r1, r4, r3
-	movs r0, #0x1e
-	str r0, [r1]
-	ldr r1, _0809DF28 @ =FUN_0809d3d0
-	adds r0, r4, #0
-	bl FUN_0809ce90
-	movs r0, #0
-_0809DF16:
-	add sp, #0x10
-	pop {r4, r5}
-	pop {r1}
-	bx r1
-	.align 2, 0
-_0809DF20: .4byte 0x00000F4C
-_0809DF24: .4byte 0x00000F74
-_0809DF28: .4byte FUN_0809d3d0
-
-	thumb_func_start FUN_0809df2c
-FUN_0809df2c: @ 0x0809DF2C
-	push {r4, lr}
-	movs r1, #0xf9
-	lsls r1, r1, #4
-	movs r0, #8
-	bl CreateEntity
-	adds r4, r0, #0
-	cmp r4, #0
-	beq _0809DF64
-	ldr r1, _0809DF5C @ =FUN_0809d7e0
-	ldr r2, _0809DF60 @ =FUN_0809d82c
-	bl SetEntityRoutine
-	adds r0, r4, #0
-	bl FUN_0809de4c
-	cmp r0, #0
-	bge _0809DF64
-	adds r0, r4, #0
-	bl KillEntity
-	movs r0, #0
-	b _0809DF66
-	.align 2, 0
-_0809DF5C: .4byte FUN_0809d7e0
-_0809DF60: .4byte FUN_0809d82c
-_0809DF64:
-	adds r0, r4, #0
-_0809DF66:
-	pop {r4}
-	pop {r1}
-	bx r1
-
 	thumb_func_start FUN_0809df6c
 FUN_0809df6c: @ 0x0809DF6C
 	ldr r1, _0809DF74 @ =0x03000140
@@ -2506,7 +376,7 @@ FUN_0809e1f8: @ 0x0809E1F8
 	cmp r4, #0
 	beq _0809E226
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809E220
@@ -2615,7 +485,7 @@ FUN_0809e2c4: @ 0x0809E2C4
 	cmp r1, #0xf
 	bhi _0809E392
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _0809E300
@@ -2638,7 +508,7 @@ _0809E300:
 	strh r2, [r0]
 _0809E30C:
 	movs r0, #0x61
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809E392
 	bl Script_GetValue
@@ -2727,7 +597,7 @@ _0809E3B2:
 	b _0809E53E
 _0809E3C0:
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _0809E3E4
@@ -2752,7 +622,7 @@ _0809E3E4:
 	strh r2, [r0]
 _0809E3F2:
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809E438
 	bl Script_GetValue
@@ -2864,7 +734,7 @@ _0809E4CC:
 	add r0, sp, #4
 	strh r1, [r0, #2]
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809E4E2
 	bl Script_GetValue
@@ -2874,7 +744,7 @@ _0809E4E2:
 	movs r7, #0
 _0809E4E4:
 	movs r0, #0x72
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809E4F6
 	bl Script_GetValue
@@ -2935,7 +805,7 @@ FUN_0809e54c: @ 0x0809E54C
 	cmp r4, #0
 	beq _0809E5BE
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809E5BE
 	bl Script_GetValue
@@ -3000,7 +870,7 @@ FUN_0809e5c4: @ 0x0809E5C4
 	cmp r6, #0
 	beq _0809E62A
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809E62A
 	bl Script_GetValue
@@ -3567,8 +1437,8 @@ _0809E9E8:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_0809e9ec
-FUN_0809e9ec: @ 0x0809E9EC
+	thumb_func_start Entity0809eb24_Update
+Entity0809eb24_Update: @ 0x0809E9EC
 	push {r4, lr}
 	adds r4, r0, #0
 	adds r1, r4, #0
@@ -3650,8 +1520,8 @@ _0809EA7E:
 _0809EA88: .4byte 0x03002B80
 _0809EA8C: .4byte 0x03002BF0
 
-	thumb_func_start FUN_0809ea90
-FUN_0809ea90: @ 0x0809EA90
+	thumb_func_start Entity0809eb24_Destroy
+Entity0809eb24_Destroy: @ 0x0809EA90
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	movs r5, #0
@@ -3710,8 +1580,8 @@ _0809EAEE:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_0809eaf4
-FUN_0809eaf4: @ 0x0809EAF4
+	thumb_func_start Entity0809eb24_Init
+Entity0809eb24_Init: @ 0x0809EAF4
 	push {r4, lr}
 	adds r4, r0, #0
 	bl FUN_0809eacc
@@ -3735,8 +1605,8 @@ FUN_0809eaf4: @ 0x0809EAF4
 	.align 2, 0
 _0809EB20: .4byte 0x03000140
 
-	thumb_func_start FUN_0809eb24
-FUN_0809eb24: @ 0x0809EB24
+	thumb_func_start Entity0809eb24_Create
+Entity0809eb24_Create: @ 0x0809EB24
 	push {r4, r5, r6, lr}
 	adds r5, r0, #0
 	adds r6, r1, #0
@@ -3746,13 +1616,13 @@ FUN_0809eb24: @ 0x0809EB24
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _0809EB64
-	ldr r1, _0809EB5C @ =FUN_0809e9ec
-	ldr r2, _0809EB60 @ =FUN_0809ea90
+	ldr r1, _0809EB5C @ =Entity0809eb24_Update
+	ldr r2, _0809EB60 @ =Entity0809eb24_Destroy
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
 	adds r2, r6, #0
-	bl FUN_0809eaf4
+	bl Entity0809eb24_Init
 	cmp r0, #0
 	bge _0809EB64
 	adds r0, r4, #0
@@ -3761,8 +1631,8 @@ FUN_0809eb24: @ 0x0809EB24
 	b _0809EB66
 	.align 2, 0
 _0809EB58: .4byte 0x00000AB4
-_0809EB5C: .4byte FUN_0809e9ec
-_0809EB60: .4byte FUN_0809ea90
+_0809EB5C: .4byte Entity0809eb24_Update
+_0809EB60: .4byte Entity0809eb24_Destroy
 _0809EB64:
 	adds r0, r4, #0
 _0809EB66:
@@ -4158,8 +2028,8 @@ _0809EE12:
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_0809ee18
-FUN_0809ee18: @ 0x0809EE18
+	thumb_func_start Entity0809eeb4_Update
+Entity0809eeb4_Update: @ 0x0809EE18
 	push {r4, lr}
 	adds r4, r0, #0
 	ldr r0, _0809EE38 @ =0x030046A0
@@ -4188,8 +2058,8 @@ _0809EE46:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_0809ee54
-FUN_0809ee54: @ 0x0809EE54
+	thumb_func_start Entity0809eeb4_Destroy
+Entity0809eeb4_Destroy: @ 0x0809EE54
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	movs r5, #0
@@ -4223,8 +2093,8 @@ _0809EE78:
 	.align 2, 0
 _0809EE8C: .4byte 0x03000140
 
-	thumb_func_start FUN_0809ee90
-FUN_0809ee90: @ 0x0809EE90
+	thumb_func_start Entity0809eeb4_Init
+Entity0809eeb4_Init: @ 0x0809EE90
 	adds r2, r0, #0
 	adds r2, #0x26
 	movs r1, #0
@@ -4243,8 +2113,8 @@ FUN_0809ee90: @ 0x0809EE90
 	.align 2, 0
 _0809EEB0: .4byte 0x03000140
 
-	thumb_func_start FUN_0809eeb4
-FUN_0809eeb4: @ 0x0809EEB4
+	thumb_func_start Entity0809eeb4_Create
+Entity0809eeb4_Create: @ 0x0809EEB4
 	push {r4, r5, r6, lr}
 	adds r5, r0, #0
 	adds r6, r1, #0
@@ -4254,13 +2124,13 @@ FUN_0809eeb4: @ 0x0809EEB4
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _0809EEF4
-	ldr r1, _0809EEEC @ =FUN_0809ee18
-	ldr r2, _0809EEF0 @ =FUN_0809ee54
+	ldr r1, _0809EEEC @ =Entity0809eeb4_Update
+	ldr r2, _0809EEF0 @ =Entity0809eeb4_Destroy
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
 	adds r2, r6, #0
-	bl FUN_0809ee90
+	bl Entity0809eeb4_Init
 	cmp r0, #0
 	bge _0809EEF4
 	adds r0, r4, #0
@@ -4269,8 +2139,8 @@ FUN_0809eeb4: @ 0x0809EEB4
 	b _0809EEF6
 	.align 2, 0
 _0809EEE8: .4byte 0x00000AB4
-_0809EEEC: .4byte FUN_0809ee18
-_0809EEF0: .4byte FUN_0809ee54
+_0809EEEC: .4byte Entity0809eeb4_Update
+_0809EEF0: .4byte Entity0809eeb4_Destroy
 _0809EEF4:
 	adds r0, r4, #0
 _0809EEF6:
@@ -4278,8 +2148,8 @@ _0809EEF6:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_0809eefc
-FUN_0809eefc: @ 0x0809EEFC
+	thumb_func_start VM_Sub5CCC
+VM_Sub5CCC: @ 0x0809EEFC
 	push {lr}
 	adds r2, r0, #0
 	adds r3, r1, #0
@@ -4296,7 +2166,7 @@ FUN_0809eefc: @ 0x0809EEFC
 	bne _0809EF2C
 	adds r0, r2, #0
 	adds r1, r3, #0
-	bl FUN_0809eb24
+	bl Entity0809eb24_Create
 	b _0809EF34
 	.align 2, 0
 _0809EF24: .4byte 0x03000140
@@ -4304,7 +2174,7 @@ _0809EF28: .4byte 0x030047A4
 _0809EF2C:
 	adds r0, r2, #0
 	adds r1, r3, #0
-	bl FUN_0809eeb4
+	bl Entity0809eeb4_Create
 _0809EF34:
 	pop {r1}
 	bx r1
@@ -4945,7 +2815,7 @@ FUN_0809f3d0: @ 0x0809F3D0
 	movs r0, #0
 	strh r0, [r5, #0x10]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809F410
 	bl Script_GetValue
@@ -4962,7 +2832,7 @@ _0809F410:
 _0809F414:
 	strh r0, [r5, #0x20]
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809F42A
 	bl Script_GetValue
@@ -5346,7 +3216,7 @@ FUN_0809f6ec: @ 0x0809F6EC
 	cmp r0, #0
 	beq _0809F738
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	bne _0809F710
 	b _0809F738
@@ -6498,7 +4368,7 @@ _0809FF9A:
 	cmp r0, #7
 	bhi _080A0074
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809FFB4
 	bl Script_GetValue
@@ -6510,7 +4380,7 @@ _0809FFB4:
 _0809FFB6:
 	mov r8, r0
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A0000
 	bl Script_GetValue
@@ -6547,7 +4417,7 @@ _080A0000:
 	str r0, [sp, #0x10]
 _080A000A:
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A0020
 	bl Script_GetValue
@@ -6559,7 +4429,7 @@ _080A0020:
 	movs r7, #0
 _080A0022:
 	movs r0, #0x68
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A0034
 	bl Script_GetValue
@@ -6569,7 +4439,7 @@ _080A0034:
 	movs r5, #0
 _080A0036:
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A0048
 	bl Script_GetValue
@@ -6579,7 +4449,7 @@ _080A0048:
 	movs r4, #0
 _080A004A:
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A005A
 	bl Script_GetValue
@@ -7366,7 +5236,7 @@ FUN_080a0620: @ 0x080A0620
 	strh r1, [r5, #0x18]
 	strb r0, [r5, #0x1d]
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A063C
 	bl Script_GetValue
@@ -7376,7 +5246,7 @@ _080A063C:
 _080A063E:
 	strb r0, [r5, #0x1c]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A0688
 	bl Script_GetValue
@@ -7455,7 +5325,7 @@ _080A06DA:
 	asrs r0, r0, #0x18
 	strh r0, [r5, #0x20]
 	movs r0, #0x52
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A06F4
 	bl Script_GetValue
@@ -8656,7 +6526,7 @@ _080A0FD4:
 	b _080A0FEE
 _080A0FDA:
 	movs r0, #0x69
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A0FEC
 	bl Script_GetValue
@@ -8666,7 +6536,7 @@ _080A0FEC:
 	movs r4, #0
 _080A0FEE:
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1000
 	bl Script_GetValue
@@ -8686,7 +6556,7 @@ _080A1002:
 FUN_080a1010: @ 0x080A1010
 	push {r4, lr}
 	movs r0, #0x63
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1024
 	bl Script_GetValue
@@ -8819,7 +6689,7 @@ FUN_080a110c: @ 0x080A110C
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x63
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1120
 	bl Script_GetValue
@@ -8830,7 +6700,7 @@ _080A1120:
 _080A1124:
 	strh r0, [r4, #0x18]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1134
 	bl Script_GetValue
@@ -8927,7 +6797,7 @@ FUN_080a11d4: @ 0x080A11D4
 	movs r0, #1
 	strh r0, [r1, #0x1a]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1200
 	bl Script_GetValue
@@ -8945,7 +6815,7 @@ _080A1200:
 _080A1206:
 	strh r0, [r1, #0x1e]
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1228
 	bl Script_GetValue
@@ -8985,7 +6855,7 @@ FUN_080a1244: @ 0x080A1244
 	movs r0, #2
 	strh r0, [r1, #0x1a]
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A126C
@@ -9000,7 +6870,7 @@ _080A126C:
 	strh r1, [r0, #0x2a]
 _080A1270:
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1290
 	bl Script_GetValue
@@ -9020,7 +6890,7 @@ _080A1290:
 _080A1298:
 	strh r0, [r1, #0x1e]
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A12BC
 	bl Script_GetValue
@@ -9058,7 +6928,7 @@ FUN_080a12d8: @ 0x080A12D8
 	cmp r0, #0
 	beq _080A12F4
 	movs r0, #0x48
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A12F4
 	ldr r4, _080A1300 @ =0x03002B84
@@ -9286,7 +7156,7 @@ FUN_080a14a0: @ 0x080A14A0
 	adds r5, r0, #0
 	strh r1, [r5, #0x18]
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A14B6
 	bl Script_GetValue
@@ -9296,7 +7166,7 @@ _080A14B6:
 _080A14B8:
 	strh r0, [r5, #0x1a]
 	movs r0, #0x48
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A14D8
@@ -9331,7 +7201,7 @@ _080A14F6:
 	b _080A164A
 _080A14FC:
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1512
 	bl Script_GetValue
@@ -9344,7 +7214,7 @@ _080A1512:
 _080A1516:
 	strh r0, [r5, #0x1e]
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A1532
@@ -9406,14 +7276,14 @@ _080A157E:
 _080A1594: .4byte 0x0203B400
 _080A1598:
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A15A6
 	bl Script_GetValue
 _080A15A6:
 	strh r0, [r5, #0x2a]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A15BE
 	bl Script_GetValue
@@ -9426,7 +7296,7 @@ _080A15BE:
 _080A15C2:
 	strh r0, [r5, #0x1e]
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A15DE
@@ -9758,7 +7628,7 @@ FUN_080a1850: @ 0x080A1850
 	adds r6, r0, #0
 	strh r1, [r6, #0x18]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1874
 	bl Script_GetValue
@@ -9791,7 +7661,7 @@ _080A1878:
 	movs r1, #0x46
 	bl FUN_0822b20c
 	movs r0, #0x72
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A18BE
 	bl Script_GetValue
@@ -9809,7 +7679,7 @@ _080A18BE:
 	str r0, [r5, #0x1c]
 	str r1, [r5, #0x20]
 	movs r0, #0x68
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1904
 	bl Script_GetValue
@@ -9869,7 +7739,7 @@ _080A1906:
 	subs r0, #0x80
 	strh r0, [r5, #0x20]
 	movs r0, #0x52
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A195E
@@ -10131,7 +8001,7 @@ FUN_080a1b48: @ 0x080A1B48
 	adds r4, r0, #0
 	adds r4, #0x44
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1B6C
 	bl Script_GetValue
@@ -10149,7 +8019,7 @@ _080A1B74:
 	movs r2, #0
 	bl FUN_0822a470
 	movs r0, #0x69
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1B8C
 	bl Script_GetValue
@@ -10160,7 +8030,7 @@ _080A1B8C:
 	str r0, [r5, #0x1c]
 	str r1, [r5, #0x20]
 	movs r0, #0x72
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1BB0
 	bl Script_GetValue
@@ -10247,7 +8117,7 @@ FUN_080a1c44: @ 0x080A1C44
 	adds r5, r0, #0
 	adds r7, r1, #0
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A1CA0
 	bl Script_GetValue
@@ -10427,7 +8297,7 @@ _080A1D7A:
 	add r2, sp, #8
 	bl FUN_080a1bbc
 	movs r0, #0x52
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A1DD4
@@ -11074,7 +8944,7 @@ FUN_080a2294: @ 0x080A2294
 	push {r5, r6, r7}
 	adds r7, r0, #0
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A2350
@@ -11241,7 +9111,7 @@ _080A2362:
 	adds r0, r7, #0
 	bl FUN_080a21fc
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A2430
 	bl Script_GetValue
@@ -11295,7 +9165,7 @@ _080A245C:
 	adds r4, r0, #0
 _080A2464:
 	movs r0, #0x69
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A247E
@@ -11312,7 +9182,7 @@ _080A247E:
 	str r1, [r0]
 _080A2486:
 	movs r0, #0x6f
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A24A0
@@ -13622,7 +11492,7 @@ FUN_080a35fc: @ 0x080A35FC
 	adds r7, r0, #0
 	str r1, [sp]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A36BC
@@ -13723,7 +11593,7 @@ _080A36BC:
 	str r1, [sp, #0xc]
 _080A36CE:
 	movs r0, #0x43
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A36E8
@@ -13740,7 +11610,7 @@ _080A36E8:
 	str r1, [r0]
 _080A36F0:
 	movs r0, #0x63
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A370A
@@ -13757,7 +11627,7 @@ _080A370A:
 	str r1, [r0]
 _080A3712:
 	movs r0, #0x69
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A372C
@@ -13774,7 +11644,7 @@ _080A372C:
 	str r1, [r0]
 _080A3734:
 	movs r0, #0x6f
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A374E
@@ -13791,7 +11661,7 @@ _080A374E:
 	str r1, [r0]
 _080A3756:
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A376A
 	bl Script_GetValue
@@ -13806,7 +11676,7 @@ _080A3770:
 	strh r0, [r1]
 	mov sl, r1
 	movs r0, #0x61
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A3790
@@ -13823,7 +11693,7 @@ _080A3790:
 	strb r1, [r0]
 _080A3796:
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A37B4
@@ -13995,7 +11865,7 @@ _080A3882:
 	movs r2, #0xa
 	bl FUN_080223f4
 	movs r0, #0x44
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A3940
 	movs r2, #0
@@ -14023,7 +11893,7 @@ _080A393C: .4byte FUN_080a2a2c
 _080A3940:
 	movs r4, #0
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A3952
 	bl Script_GetValue
@@ -14031,7 +11901,7 @@ _080A3940:
 _080A3952:
 	movs r6, #0
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A3964
 	bl Script_GetValue
@@ -14102,7 +11972,7 @@ _080A3964:
 	bl FUN_080a2a14
 	movs r4, #0
 	movs r0, #0x77
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A3A02
 	bl Script_GetValue
@@ -14630,7 +12500,7 @@ FUN_080a3de4: @ 0x080A3DE4
 	adds r7, r0, #0
 	strh r1, [r7, #0x18]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _080A3EA4
@@ -14731,7 +12601,7 @@ _080A3EA4:
 	str r1, [sp, #0xc]
 _080A3EB6:
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A3ED0
@@ -14748,7 +12618,7 @@ _080A3ED0:
 	str r1, [r0]
 _080A3ED8:
 	movs r0, #0x41
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A3F2C
 	adds r0, r7, #0
@@ -14827,7 +12697,7 @@ _080A3F68:
 	bge _080A3F68
 _080A3F72:
 	movs r0, #0x68
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A3F80
 	bl Script_GetValue
@@ -15324,14 +13194,14 @@ FUN_080a432c: @ 0x080A432C
 	sub sp, #0x10
 	adds r6, r0, #0
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A4348
 	bl Script_GetValue
 _080A4348:
 	strb r0, [r6, #0x1a]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A43FC
@@ -15430,7 +13300,7 @@ _080A43FC:
 	strh r1, [r0]
 _080A440A:
 	movs r0, #0x52
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A4422
@@ -15445,7 +13315,7 @@ _080A4422:
 	str r1, [r0]
 _080A4428:
 	movs r0, #0x41
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A4474
 	movs r0, #0xb4
@@ -16403,7 +14273,7 @@ FUN_080a4b4c: @ 0x080A4B4C
 	mov r1, sb
 	adds r5, r1, r0
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A4B82
@@ -16420,7 +14290,7 @@ _080A4B82:
 	mov sl, r0
 _080A4B8A:
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A4BB8
@@ -16486,7 +14356,7 @@ _080A4C0A:
 	adds r2, #0xea
 	strh r0, [r2]
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A4C28
 	bl Script_GetValue
@@ -16521,7 +14391,7 @@ _080A4C3E:
 	movs r0, #3
 	strb r0, [r5, #7]
 	movs r0, #0x72
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A4C72
 	bl Script_GetValue
@@ -16537,7 +14407,7 @@ _080A4C72:
 	str r0, [r7, #0x1c]
 	str r1, [r7, #0x20]
 	movs r0, #0x68
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A4CC0
 	bl Script_GetValue
@@ -16575,7 +14445,7 @@ _080A4CC6:
 	movs r1, #0
 	strh r1, [r0]
 	movs r0, #0x41
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A4CE2
 	bl Script_GetValue
@@ -16589,7 +14459,7 @@ _080A4CE2:
 _080A4CE8:
 	strh r0, [r1]
 	movs r0, #0x57
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A4CF8
 	bl Script_GetValue
@@ -16604,7 +14474,7 @@ _080A4CF8:
 	movs r0, #0
 	strb r0, [r1]
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A4D26
@@ -16671,7 +14541,7 @@ _080A4D88:
 	bl FUN_080a4598
 _080A4D90:
 	movs r0, #0x67
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A4DB8
@@ -16747,7 +14617,7 @@ FUN_080a4e1c: @ 0x080A4E1C
 	cmp r4, #0
 	beq _080A4E70
 	movs r0, #0x69
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A4E46
 	bl Script_GetValue
@@ -16815,7 +14685,7 @@ FUN_080a4e94: @ 0x080A4E94
 	cmp r0, #0
 	beq _080A4EE0
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	bne _080A4EB8
 	b _080A4EE0
@@ -16862,7 +14732,7 @@ FUN_080a4ee8: @ 0x080A4EE8
 	cmp r4, #0
 	beq _080A4F4E
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A4F4E
 	bl Script_GetValue
@@ -16878,7 +14748,7 @@ FUN_080a4ee8: @ 0x080A4EE8
 	adds r1, #0x7c
 	strh r0, [r1]
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A4F4E
 	bl Script_GetValue
@@ -16913,7 +14783,7 @@ FUN_080a4f54: @ 0x080A4F54
 	cmp r4, #0
 	beq _080A4F70
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A4F70
 	bl Script_GetValue
@@ -16964,7 +14834,7 @@ FUN_080a4fac: @ 0x080A4FAC
 	cmp r4, #0
 	beq _080A4FCC
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A4FCC
 	bl Script_GetValue
@@ -16985,7 +14855,7 @@ FUN_080a4fd4: @ 0x080A4FD4
 	cmp r4, #0
 	beq _080A5046
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5046
 	bl Script_GetValue
@@ -16993,7 +14863,7 @@ FUN_080a4fd4: @ 0x080A4FD4
 	adds r1, #0x86
 	strh r0, [r1]
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5046
 	bl Script_GetValue
@@ -17001,7 +14871,7 @@ FUN_080a4fd4: @ 0x080A4FD4
 	adds r5, #0x88
 	strh r0, [r5]
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5046
 	bl Script_GetValue
@@ -17042,7 +14912,7 @@ FUN_080a504c: @ 0x080A504C
 	cmp r4, #0
 	beq _080A50D2
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A50D2
 	bl Script_GetValue
@@ -17050,7 +14920,7 @@ FUN_080a504c: @ 0x080A504C
 	adds r1, #0x90
 	strh r0, [r1]
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A50D2
 	bl Script_GetValue
@@ -17058,7 +14928,7 @@ FUN_080a504c: @ 0x080A504C
 	adds r5, #0x92
 	strh r0, [r5]
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A50D2
 	bl Script_GetValue
@@ -17111,7 +14981,7 @@ FUN_080a50d8: @ 0x080A50D8
 	cmp r5, #0
 	beq _080A51CC
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A51CC
 	bl Script_GetValue
@@ -17119,7 +14989,7 @@ FUN_080a50d8: @ 0x080A50D8
 	adds r7, #0x98
 	strb r0, [r7]
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A51CC
 	bl Script_GetValue
@@ -17127,14 +14997,14 @@ FUN_080a50d8: @ 0x080A50D8
 	adds r6, #0x99
 	strb r0, [r6]
 	movs r0, #0x72
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A51CC
 	bl Script_GetValue
 	strb r0, [r5, #3]
 	movs r4, #0
 	movs r0, #0x45
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5130
 	bl Script_GetValue
@@ -17168,7 +15038,7 @@ _080A514E:
 	bl FUN_08236fac
 _080A5166:
 	movs r0, #0x50
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5180
 	bl Script_GetValue
@@ -17179,7 +15049,7 @@ _080A5166:
 	bl FUN_08237098
 _080A5180:
 	movs r0, #0x6f
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A519A
@@ -17198,7 +15068,7 @@ _080A51A0:
 	cmp r1, #0
 	beq _080A51BE
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A51BE
@@ -17718,7 +15588,7 @@ _080A5586:
 	adds r0, #0x1c
 	adds r7, r4, r0
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A559E
 	bl Script_GetValue
@@ -17729,7 +15599,7 @@ _080A559E:
 	adds r5, r7, #0
 	adds r5, #0x54
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	mov sb, r4
 	cmp r0, #0
 	bne _080A55B6
@@ -17738,7 +15608,7 @@ _080A55B6:
 	bl Script_GetValue
 	mov r8, r0
 	movs r0, #0x69
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A55D4
 	bl Script_GetValue
@@ -17764,7 +15634,7 @@ _080A55D6:
 	strh r1, [r0]
 	strb r2, [r7, #3]
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5606
 	bl Script_GetValue
@@ -17779,7 +15649,7 @@ _080A5606:
 	str r0, [r4]
 _080A5614:
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5630
 	bl Script_GetValue
@@ -17794,21 +15664,21 @@ _080A5630:
 _080A5634:
 	strh r0, [r4, #0x20]
 	movs r0, #0x41
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5644
 	bl Script_GetValue
 _080A5644:
 	strb r0, [r7, #4]
 	movs r0, #0x52
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5656
 	bl Script_GetValue
 	strb r0, [r4, #7]
 _080A5656:
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _080A5664
@@ -17833,7 +15703,7 @@ _080A5664:
 	adds r4, #0x99
 	strb r0, [r4]
 	movs r0, #0x6f
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	mov r8, r6
 	adds r6, r4, #0
@@ -17856,7 +15726,7 @@ _080A56BA:
 	cmp r1, #0
 	beq _080A56D8
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A56D8
@@ -17881,7 +15751,7 @@ _080A56DE:
 	adds r0, r4, #0
 	bl FUN_08236fac
 	movs r0, #0x50
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A570E
 	bl Script_GetValue
@@ -18018,7 +15888,7 @@ _080A57E6:
 _080A57F6:
 	movs r5, #0
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5808
 	bl Script_GetValue
@@ -18153,7 +16023,7 @@ FUN_080a58e4: @ 0x080A58E4
 	cmp r0, #0
 	bne _080A594A
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5908
 	bl Script_GetValue
@@ -18205,7 +16075,7 @@ FUN_080a5950: @ 0x080A5950
 	cmp r0, #0
 	beq _080A599E
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	bne _080A5974
 	b _080A599E
@@ -18254,7 +16124,7 @@ FUN_080a59a8: @ 0x080A59A8
 	cmp r5, #0
 	beq _080A59D8
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A59D8
 	adds r4, r5, #0
@@ -18282,7 +16152,7 @@ FUN_080a59e0: @ 0x080A59E0
 	cmp r4, #0
 	beq _080A5A10
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5A10
 	bl Script_GetValue
@@ -18361,7 +16231,7 @@ FUN_080a5a6c: @ 0x080A5A6C
 	cmp r4, #0
 	beq _080A5A8C
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5A8C
 	bl Script_GetValue
@@ -18382,7 +16252,7 @@ FUN_080a5a94: @ 0x080A5A94
 	cmp r4, #0
 	beq _080A5AFA
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5AC8
 	bl Script_GetValue
@@ -18399,7 +16269,7 @@ FUN_080a5a94: @ 0x080A5A94
 	strh r0, [r1]
 _080A5AC8:
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5ADC
 	bl Script_GetValue
@@ -18587,7 +16457,7 @@ _080A5C22:
 	adds r0, #0x1c
 	adds r5, r2, r0
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A5C48
@@ -18604,7 +16474,7 @@ _080A5C48:
 	strh r1, [r0]
 _080A5C4E:
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	bne _080A5C5A
 	b _080A5D62
@@ -18629,7 +16499,7 @@ _080A5C5A:
 	adds r0, r4, #0
 	bl OpenSpriteSetFile
 	movs r0, #0x69
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	mov r8, r4
 	cmp r0, #0
 	beq _080A5CA0
@@ -18642,7 +16512,7 @@ _080A5CA0:
 	movs r7, #0
 _080A5CA2:
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5CB2
 	bl Script_GetValue
@@ -18658,7 +16528,7 @@ _080A5CB4:
 	mov sb, r0
 _080A5CC0:
 	movs r0, #0x52
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5CD2
 	bl Script_GetValue
@@ -18668,7 +16538,7 @@ _080A5CD2:
 	movs r6, #2
 _080A5CD4:
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080A5D00
@@ -18712,7 +16582,7 @@ _080A5D12:
 	mov r3, sb
 	bl FUN_0822f3fc
 	movs r0, #0x41
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A5D4A
@@ -18820,7 +16690,7 @@ FUN_080a5de0: @ 0x080A5DE0
 	cmp r0, #0
 	bne _080A5E46
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A5E04
 	bl Script_GetValue
@@ -19352,7 +17222,7 @@ FUN_080a61e8: @ 0x080A61E8
 	movs r1, #1
 	strb r1, [r0]
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A6204
 	bl Script_GetValue
@@ -19362,7 +17232,7 @@ _080A6204:
 	movs r5, #0
 _080A6206:
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A6214
 	bl Script_GetValue
@@ -19371,7 +17241,7 @@ _080A6214:
 	adds r1, #0x99
 	strb r0, [r1]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A6232
@@ -19438,7 +17308,7 @@ _080A629A:
 FUN_080a62a0: @ 0x080A62A0
 	push {r4, lr}
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A62E8
 	ldr r0, _080A62F0 @ =0x0000FD22
@@ -19637,7 +17507,7 @@ FUN_080a641c: @ 0x080A641C
 	push {r4, r5, lr}
 	sub sp, #8
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A6468
 	bl Script_GetValue
@@ -19674,7 +17544,7 @@ _080A6468:
 	str r0, [sp, #4]
 _080A6472:
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A6488
 	bl Script_GetValue
@@ -19686,7 +17556,7 @@ _080A6488:
 	movs r5, #0
 _080A648A:
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A649C
 	bl Script_GetValue
@@ -19696,7 +17566,7 @@ _080A649C:
 	movs r4, #0
 _080A649E:
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A64B0
 	bl Script_GetValue
@@ -20502,7 +18372,7 @@ Map_SpawnLoadingZoneIndicator: @ 0x080A6A74
 	push {r4, r5, r6, r7, lr}
 	sub sp, #0xc
 	movs r0, #0x6e
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A6A88
 	bl Script_GetValue
@@ -20621,7 +18491,7 @@ _080A6B54:
 	cmp r4, #0
 	blt _080A6B80
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A6B74
 	bl Script_GetValue
@@ -20788,595 +18658,4 @@ _080A6C8E:
 	pop {r1}
 	bx r1
 
-@ a.k.a. InitArray
-	thumb_func_start EngineCall_InitArray
-EngineCall_InitArray: @ 0x080A6C94
-	push {r4, lr}
-	sub sp, #8
-	mov r0, sp
-	bl FUN_0823167c
-	movs r4, #0
-	b _080A6CB2
-_080A6CA2:
-	bl Script_GetValue
-	adds r2, r0, #0
-	mov r0, sp
-	adds r1, r4, #0
-	bl FUN_0823206c
-	adds r4, #1
-_080A6CB2:
-	bl VM_GetPC
-	cmp r0, #0
-	bne _080A6CA2
-	movs r0, #0
-	add sp, #8
-	pop {r4}
-	pop {r1}
-	bx r1
-
-@ a.k.a. Loop
-	thumb_func_start EngineCall_Loop
-EngineCall_Loop: @ 0x080A6CC4
-	push {r4, r5, r6, r7, lr}
-	mov r7, sl
-	mov r6, sb
-	mov r5, r8
-	push {r5, r6, r7}
-	sub sp, #0x14
-	mov r7, sp
-	mov r1, sp
-	adds r0, r1, #0
-	str r0, [r7, #0xc]
-	movs r0, #0x61
-	bl prepare_08231510
-	bl Script_GetValue
-	mov r8, r0
-	movs r0, #0x72
-	bl prepare_08231510
-	bl Script_GetValue
-	mov sb, r0
-	mov r1, r8
-	lsls r0, r1, #5
-	lsrs r0, r0, #3
-	mov r1, sp
-	subs r1, r1, r0
-	mov sp, r1
-	mov r0, sp
-	str r0, [r7, #8]
-	mov r0, r8
-	lsls r1, r0, #0x10
-	lsrs r1, r1, #0x10
-	ldr r2, _080A6D7C @ =0xFFFF0000
-	ldr r0, [r7]
-	ands r0, r2
-	orrs r0, r1
-	str r0, [r7]
-	mov r1, sp
-	str r1, [r7, #4]
-	movs r0, #0x65
-	bl prepare_08231510
-	cmp r0, #0
-	beq _080A6D66
-	bl Script_GetValue
-	mov sl, r0
-	movs r0, #0x64
-	bl prepare_08231510
-	bl VM_GetPC
-	adds r6, r0, #0
-	movs r0, #0
-	cmp r0, sb
-	bge _080A6D66
-_080A6D36:
-	adds r0, #1
-	str r0, [r7, #0x10]
-	mov r0, r8
-	cmp r0, #0
-	ble _080A6D58
-	ldr r5, [r7, #8]
-	mov r4, r8
-_080A6D44:
-	adds r0, r6, #0
-	bl VM_GetValueAt
-	stm r5!, {r0}
-	bl VM_GetPC
-	adds r6, r0, #0
-	subs r4, #1
-	cmp r4, #0
-	bne _080A6D44
-_080A6D58:
-	mov r0, sl
-	adds r1, r7, #0
-	bl Script_ExecByPointer
-	ldr r0, [r7, #0x10]
-	cmp r0, sb
-	blt _080A6D36
-_080A6D66:
-	movs r0, #0
-	ldr r1, [r7, #0xc]
-	mov sp, r1
-	add sp, #0x14
-	pop {r3, r4, r5}
-	mov r8, r3
-	mov sb, r4
-	mov sl, r5
-	pop {r4, r5, r6, r7}
-	pop {r1}
-	bx r1
-	.align 2, 0
-_080A6D7C: .4byte 0xFFFF0000
-
-@ a.k.a. rand
-	thumb_func_start EngineCall_Rand
-EngineCall_Rand: @ 0x080A6D80
-	push {lr}
-	movs r0, #0x70
-	bl prepare_08231510
-	cmp r0, #0
-	beq _080A6DC0
-	bl Script_GetValue
-	adds r3, r0, #0
-	cmp r3, #0
-	ble _080A6DC0
-	ldr r2, _080A6DB4 @ =0x030046B8
-	ldr r0, [r2]
-	adds r0, #1
-	ldr r1, _080A6DB8 @ =0x000003FF
-	ands r0, r1
-	str r0, [r2]
-	lsls r0, r0, #1
-	ldr r1, _080A6DBC @ =0x0203B400
-	adds r0, r0, r1
-	ldrh r0, [r0]
-	asrs r0, r0, #3
-	adds r1, r3, #0
-	bl Mod
-	b _080A6DD4
-	.align 2, 0
-_080A6DB4: .4byte 0x030046B8
-_080A6DB8: .4byte 0x000003FF
-_080A6DBC: .4byte 0x0203B400
-_080A6DC0:
-	ldr r2, _080A6DD8 @ =0x030046B8
-	ldr r0, [r2]
-	adds r0, #1
-	ldr r1, _080A6DDC @ =0x000003FF
-	ands r0, r1
-	str r0, [r2]
-	lsls r0, r0, #1
-	ldr r1, _080A6DE0 @ =0x0203B400
-	adds r0, r0, r1
-	ldrh r0, [r0]
-_080A6DD4:
-	pop {r1}
-	bx r1
-	.align 2, 0
-_080A6DD8: .4byte 0x030046B8
-_080A6DDC: .4byte 0x000003FF
-_080A6DE0: .4byte 0x0203B400
-
-	thumb_func_start FUN_080a6de4
-FUN_080a6de4: @ 0x080A6DE4
-	push {lr}
-	movs r0, #0x70
-	bl prepare_08231510
-	cmp r0, #0
-	beq _080A6DFC
-	ldr r0, _080A6DF8 @ =0x030044E0
-	ldrh r0, [r0, #2]
-	b _080A6E28
-	.align 2, 0
-_080A6DF8: .4byte 0x030044E0
-_080A6DFC:
-	movs r0, #0x73
-	bl prepare_08231510
-	cmp r0, #0
-	beq _080A6E10
-	ldr r0, _080A6E0C @ =0x030044E0
-	ldrh r0, [r0]
-	b _080A6E28
-	.align 2, 0
-_080A6E0C: .4byte 0x030044E0
-_080A6E10:
-	movs r0, #0x72
-	bl prepare_08231510
-	cmp r0, #0
-	bne _080A6E24
-	ldr r0, _080A6E20 @ =0x030044E0
-	ldrh r0, [r0, #2]
-	b _080A6E28
-	.align 2, 0
-_080A6E20: .4byte 0x030044E0
-_080A6E24:
-	ldr r0, _080A6E2C @ =0x030044E0
-	ldrh r0, [r0, #4]
-_080A6E28:
-	pop {r1}
-	bx r1
-	.align 2, 0
-_080A6E2C: .4byte 0x030044E0
-
-	thumb_func_start FUN_080a6e30
-FUN_080a6e30: @ 0x080A6E30
-	push {r4, r5, lr}
-	movs r0, #0x72
-	bl prepare_08231510
-	cmp r0, #0
-	beq _080A6E5C
-	bl VM_GetValueSafe2
-	adds r5, r0, #0
-	movs r0, #0x69
-	bl prepare_08231510
-	cmp r0, #0
-	beq _080A6E5C
-	bl Script_GetValue
-	adds r4, r0, #0
-	movs r0, #0x73
-	bl prepare_08231510
-	cmp r0, #0
-	bne _080A6E62
-_080A6E5C:
-	movs r0, #1
-	rsbs r0, r0, #0
-	b _080A6E80
-_080A6E62:
-	bl Script_GetValue
-	cmp r0, #0
-	bne _080A6E70
-	adds r0, r5, r4
-	ldrb r0, [r0]
-	b _080A6E80
-_080A6E70:
-	cmp r0, #1
-	beq _080A6E78
-	lsls r0, r4, #2
-	b _080A6E7A
-_080A6E78:
-	lsls r0, r4, #1
-_080A6E7A:
-	adds r0, r5, r0
-	movs r1, #0
-	ldrsh r0, [r0, r1]
-_080A6E80:
-	pop {r4, r5}
-	pop {r1}
-	bx r1
-	.align 2, 0
-
-	thumb_func_start FUN_080a6e88
-FUN_080a6e88: @ 0x080A6E88
-	push {r4, r5, lr}
-	ldr r3, _080A6EB8 @ =0x030047A4
-	ldr r1, [r3]
-	movs r2, #0x80
-	lsls r2, r2, #2
-	orrs r1, r2
-	str r1, [r3]
-	cmp r0, #0
-	beq _080A6EB0
-	ldr r4, _080A6EBC @ =0x030044BC
-	ldr r0, [r4]
-	movs r5, #8
-	ands r0, r5
-	cmp r0, #0
-	bne _080A6EB0
-	bl FUN_08240918
-	ldr r0, [r4]
-	orrs r0, r5
-	str r0, [r4]
-_080A6EB0:
-	pop {r4, r5}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_080A6EB8: .4byte 0x030047A4
-_080A6EBC: .4byte 0x030044BC
-
-	thumb_func_start FUN_080a6ec0
-FUN_080a6ec0: @ 0x080A6EC0
-	push {lr}
-	movs r0, #0x70
-	bl prepare_08231510
-	cmp r0, #0
-	beq _080A6ED2
-	bl Script_GetValue
-	b _080A6ED4
-_080A6ED2:
-	movs r0, #0
-_080A6ED4:
-	bl FUN_080a6e88
-	pop {r0}
-	bx r0
-
-	thumb_func_start FUN_080a6edc
-FUN_080a6edc: @ 0x080A6EDC
-	push {r4, lr}
-	ldr r2, _080A6F08 @ =0x030047A4
-	ldr r0, [r2]
-	ldr r1, _080A6F0C @ =0xFFFFFDFF
-	ands r0, r1
-	str r0, [r2]
-	ldr r4, _080A6F10 @ =0x030044BC
-	ldr r0, [r4]
-	movs r1, #8
-	ands r0, r1
-	cmp r0, #0
-	beq _080A6F02
-	bl FUN_08240930
-	movs r1, #9
-	rsbs r1, r1, #0
-	ldr r0, [r4]
-	ands r0, r1
-	str r0, [r4]
-_080A6F02:
-	pop {r4}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_080A6F08: .4byte 0x030047A4
-_080A6F0C: .4byte 0xFFFFFDFF
-_080A6F10: .4byte 0x030044BC
-
-	thumb_func_start FUN_080a6f14
-FUN_080a6f14: @ 0x080A6F14
-	push {lr}
-	bl FUN_080a6edc
-	pop {r0}
-	bx r0
-	.align 2, 0
-
-	thumb_func_start FUN_080a6f20
-FUN_080a6f20: @ 0x080A6F20
-	push {lr}
-	ldr r0, _080A6F34 @ =0x030047A4
-	ldr r0, [r0]
-	movs r1, #0x80
-	lsls r1, r1, #2
-	ands r0, r1
-	cmp r0, #0
-	bne _080A6F38
-	movs r0, #0
-	b _080A6F3A
-	.align 2, 0
-_080A6F34: .4byte 0x030047A4
-_080A6F38:
-	movs r0, #1
-_080A6F3A:
-	pop {r1}
-	bx r1
-	.align 2, 0
-
-	thumb_func_start FUN_080a6f40
-FUN_080a6f40: @ 0x080A6F40
-	ldr r1, _080A6F50 @ =0x030047A4
-	ldr r2, [r1]
-	movs r3, #0x80
-	lsls r3, r3, #4
-	orrs r2, r3
-	str r2, [r1]
-	bx lr
-	.align 2, 0
-_080A6F50: .4byte 0x030047A4
-
-	thumb_func_start FUN_080a6f54
-FUN_080a6f54: @ 0x080A6F54
-	push {lr}
-	adds r3, r0, #0
-	adds r0, #0x9a
-	ldrh r0, [r0]
-	cmp r0, #5
-	bhi _080A6F90
-	ldr r2, _080A6F84 @ =0x030046B8
-	ldr r0, [r2]
-	adds r0, #1
-	ldr r1, _080A6F88 @ =0x000003FF
-	ands r0, r1
-	str r0, [r2]
-	lsls r0, r0, #1
-	ldr r1, _080A6F8C @ =0x0203B400
-	adds r0, r0, r1
-	ldrh r0, [r0]
-	asrs r0, r0, #4
-	movs r1, #0xf
-	ands r0, r1
-	subs r0, #7
-	adds r1, r3, #0
-	adds r1, #0x58
-	strh r0, [r1]
-	b _080A6F9C
-	.align 2, 0
-_080A6F84: .4byte 0x030046B8
-_080A6F88: .4byte 0x000003FF
-_080A6F8C: .4byte 0x0203B400
-_080A6F90:
-	adds r0, r3, #0
-	adds r0, #0x58
-	movs r1, #0
-	strh r1, [r0]
-	adds r0, #2
-	strh r1, [r0]
-_080A6F9C:
-	pop {r0}
-	bx r0
-
-	thumb_func_start FUN_080a6fa0
-FUN_080a6fa0: @ 0x080A6FA0
-	push {r4, lr}
-	adds r4, r0, #0
-	adds r0, #0xac
-	ldr r1, [r0]
-	adds r0, r4, #0
-	bl _call_via_r1
-	adds r2, r4, #0
-	adds r2, #0x9a
-	ldrh r1, [r2]
-	adds r1, #1
-	strh r1, [r2]
-	adds r2, #2
-	lsls r1, r1, #0x10
-	lsrs r1, r1, #0x10
-	ldrh r2, [r2]
-	cmp r1, r2
-	blo _080A6FDA
-	adds r0, r4, #0
-	adds r0, #0xa8
-	ldr r0, [r0]
-	cmp r0, #0
-	beq _080A6FD4
-	movs r1, #0
-	bl Script_ExecById
-_080A6FD4:
-	adds r0, r4, #0
-	bl KillEntity
-_080A6FDA:
-	pop {r4}
-	pop {r1}
-	bx r1
-
-	thumb_func_start FUN_080a6fe0
-FUN_080a6fe0: @ 0x080A6FE0
-	push {lr}
-	adds r0, #0x38
-	bl FUN_0822f1c0
-	movs r0, #0
-	pop {r1}
-	bx r1
-	.align 2, 0
-
-	thumb_func_start FUN_080a6ff0
-FUN_080a6ff0: @ 0x080A6FF0
-	push {r4, r5, r6, r7, lr}
-	sub sp, #0x10
-	adds r5, r0, #0
-	ldr r0, _080A700C @ =0x0000CB05
-	ldr r1, _080A7010 @ =0x000082F1
-	bl GetFile
-	adds r2, r0, #0
-	cmp r2, #0
-	bne _080A7014
-	movs r0, #1
-	rsbs r0, r0, #0
-	b _080A70C0
-	.align 2, 0
-_080A700C: .4byte 0x0000CB05
-_080A7010: .4byte 0x000082F1
-_080A7014:
-	adds r1, r5, #0
-	adds r1, #0x18
-	adds r0, r2, #0
-	ldm r0!, {r3, r4, r6}
-	stm r1!, {r3, r4, r6}
-	ldm r0!, {r3, r4, r6}
-	stm r1!, {r3, r4, r6}
-	ldm r0!, {r3, r4}
-	stm r1!, {r3, r4}
-	adds r4, r5, #0
-	adds r4, #0x18
-	adds r0, r4, #0
-	adds r1, r2, #0
-	bl OpenSpriteSetFile
-	movs r0, #0x74
-	bl prepare_08231510
-	adds r7, r4, #0
-	cmp r0, #0
-	beq _080A7046
-	bl Script_GetValue
-	adds r6, r0, #0
-	b _080A7048
-_080A7046:
-	movs r6, #0
-_080A7048:
-	movs r0, #0x49
-	bl prepare_08231510
-	cmp r0, #0
-	beq _080A705C
-	bl Script_GetValue
-	adds r1, r5, #0
-	adds r1, #0x9c
-	b _080A7062
-_080A705C:
-	adds r1, r5, #0
-	adds r1, #0x9c
-	movs r0, #0x3c
-_080A7062:
-	strh r0, [r1]
-	adds r1, r5, #0
-	adds r1, #0xac
-	ldr r0, _080A70B4 @ =0x080A6F55
-	str r0, [r1]
-	adds r4, r5, #0
-	adds r4, #0xa0
-	movs r3, #0
-	strh r3, [r4]
-	adds r0, r5, #0
-	adds r0, #0xa2
-	strh r3, [r0]
-	adds r0, #2
-	strh r3, [r0]
-	subs r0, #0x6c
-	adds r2, r6, #0
-	adds r2, #0xb
-	lsls r2, r2, #0x10
-	lsrs r2, r2, #0x10
-	movs r1, #1
-	str r1, [sp]
-	str r3, [sp, #4]
-	movs r1, #0x3c
-	str r1, [sp, #8]
-	str r4, [sp, #0xc]
-	adds r1, r7, #0
-	movs r3, #0x10
-	bl FUN_0822f3fc
-	movs r0, #0x70
-	bl prepare_08231510
-	adds r1, r0, #0
-	cmp r1, #0
-	beq _080A70B8
-	bl Script_GetValue
-	adds r1, r5, #0
-	adds r1, #0xa8
-	str r0, [r1]
-	b _080A70BE
-	.align 2, 0
-_080A70B4: .4byte 0x080A6F55
-_080A70B8:
-	adds r0, r5, #0
-	adds r0, #0xa8
-	str r1, [r0]
-_080A70BE:
-	movs r0, #0
-_080A70C0:
-	add sp, #0x10
-	pop {r4, r5, r6, r7}
-	pop {r1}
-	bx r1
-
-	thumb_func_start FUN_080a70c8
-FUN_080a70c8: @ 0x080A70C8
-	push {r4, lr}
-	movs r0, #9
-	movs r1, #0xb0
-	bl CreateEntity
-	adds r4, r0, #0
-	cmp r4, #0
-	beq _080A70FC
-	ldr r1, _080A70F4 @ =FUN_080a6fa0
-	ldr r2, _080A70F8 @ =FUN_080a6fe0
-	bl SetEntityRoutine
-	adds r0, r4, #0
-	bl FUN_080a6ff0
-	cmp r0, #0
-	beq _080A70FC
-	adds r0, r4, #0
-	bl KillEntity
-	movs r0, #0
-	b _080A70FE
-	.align 2, 0
-_080A70F4: .4byte FUN_080a6fa0
-_080A70F8: .4byte FUN_080a6fe0
-_080A70FC:
-	adds r0, r4, #0
-_080A70FE:
-	pop {r4}
-	pop {r1}
-	bx r1
 

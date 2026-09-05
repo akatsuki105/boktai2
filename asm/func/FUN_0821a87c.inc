@@ -2,13 +2,13 @@
 	movs r1, #1
 	rsbs r1, r1, #0
 	movs r0, #0x6b
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	ldr r1, _0821A8CC @ =0x03002C98
 	lsls r0, r0, #2
 	adds r0, r0, r1
 	ldr r6, [r0]
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A8B2
 	bl Script_GetValue
@@ -23,7 +23,7 @@
 	str r0, [r1]
 _0821A8B2:
 	movs r0, #0x50
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0821A8D0

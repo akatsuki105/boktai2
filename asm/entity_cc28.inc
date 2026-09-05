@@ -20361,63 +20361,63 @@ FUN_0809bed8: @ 0x0809BED8
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x69
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809BEEC
 	bl FUN_0823d340
 	str r0, [r4, #0x40]
 _0809BEEC:
 	movs r0, #0x77
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809BEFC
 	bl FUN_0823d340
 	str r0, [r4, #0x44]
 _0809BEFC:
 	movs r0, #0x61
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809BF0C
 	bl FUN_0823d340
 	str r0, [r4, #0x48]
 _0809BF0C:
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809BF1C
 	bl FUN_0823d340
 	str r0, [r4, #0x4c]
 _0809BF1C:
 	movs r0, #0x41
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809BF2C
 	bl FUN_0823d340
 	str r0, [r4, #0x50]
 _0809BF2C:
 	movs r0, #0x6c
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809BF3C
 	bl FUN_0823d340
 	str r0, [r4, #0x54]
 _0809BF3C:
 	movs r0, #0x45
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809BF4C
 	bl FUN_0823d340
 	str r0, [r4, #0x58]
 _0809BF4C:
 	movs r0, #0x65
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809BF5C
 	bl VM_GetValueSafe2
 	str r0, [r4, #0x5c]
 _0809BF5C:
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809BF78
@@ -20444,7 +20444,7 @@ FUN_0809bf88: @ 0x0809BF88
 	push {r4, r5, r6, r7, lr}
 	adds r6, r0, #0
 	movs r0, #0x6f
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809BFB0
 	movs r4, #0
@@ -20518,7 +20518,7 @@ FUN_0809c010: @ 0x0809C010
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x71
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809C02C
 	bl Script_GetValue
@@ -20787,7 +20787,7 @@ FUN_0809c220: @ 0x0809C220
 Textbox_CloseBox: @ 0x0809C22C
 	push {lr}
 	movs r0, #0x6d
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809C240
 	bl Script_GetValue
@@ -20909,7 +20909,7 @@ FUN_0809c314: @ 0x0809C314
 	cmp r0, #0
 	beq _0809C334
 	movs r0, #0x66
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809C334
 	bl Script_GetValue
@@ -21310,7 +21310,7 @@ FUN_0809c63c: @ 0x0809C63C
 	cmp r4, #0
 	beq _0809C65A
 	movs r0, #0x69
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809C65A
 	bl Script_GetValue
@@ -22084,7 +22084,7 @@ FUN_0809cc48: @ 0x0809CC48
 	adds r0, r4, #0
 	bl FUN_0809b468
 	movs r0, #0x64
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809CCD4
@@ -22106,7 +22106,7 @@ _0809CCD4:
 	str r1, [r0]
 _0809CCDA:
 	movs r0, #0x56
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809CCFC
@@ -22124,7 +22124,7 @@ _0809CCFC:
 	strb r1, [r0]
 _0809CD02:
 	movs r0, #0x52
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809CD24
@@ -22142,7 +22142,7 @@ _0809CD24:
 	str r1, [r0]
 _0809CD2A:
 	movs r0, #0x44
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809CD4C

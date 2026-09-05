@@ -15,7 +15,7 @@ AS="${DEVKITARM}/bin/arm-none-eabi-as"
 CPP="cc -E"
 
 CPPFLAGS="-I $REPO/tools/agbcc -I $REPO/tools/agbcc/include -iquote $REPO/include -nostdinc -undef -std=gnu89 -DMODERN=0"
-CFLAGS="-mthumb-interwork -Wimplicit -Wparentheses -O2 -fshort-enums -fhex-asm"
+CFLAGS="-mthumb-interwork -Wimplicit -Wparentheses -Werror -O2 -fhex-asm"
 ASFLAGS="-mcpu=arm7tdmi -march=armv4t -mthumb -mthumb-interwork"
 
 tmp_s=$(gmktemp /tmp/perm_XXXX.s)

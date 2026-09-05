@@ -5,13 +5,13 @@
 	sub sp, #0x24
 	movs r0, #0x6e
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	lsls r0, r0, #0x18
 	lsrs r7, r0, #0x18
 	cmp r7, #0
 	beq _080DE074
 	movs r0, #0x70
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080DE074
 	bl Script_GetValue
@@ -38,7 +38,7 @@
 	orrs r1, r0
 	str r1, [r4, #4]
 	movs r0, #0x6f
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	mov sb, r4
 	cmp r0, #0
 	beq _080DE028
@@ -79,19 +79,19 @@ _080DE028:
 _080DE038:
 	movs r0, #0x64
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r6, r0, #0
 	movs r0, #0x73
 	movs r1, #0
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r5, r0, #0
 	movs r0, #0x6b
 	movs r1, #1
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	adds r4, r0, #0
 	movs r0, #0x72
 	movs r1, #2
-	bl Script_GetKeywordValue
+	bl VM_GetKeywordValue
 	str r5, [sp]
 	movs r1, #0
 	str r1, [sp, #4]

@@ -25,8 +25,20 @@ NAKED void FUN_0824172c(void) { INCFUNC("asm/func/FUN_0824172c.inc"); }
 
 NAKED s32 FUN_0824175c(void) { INCFUNC("asm/func/FUN_0824175c.inc"); }
 
-// ADC
-NAKED Sunlevel GetSunLevel(s32 lx) { INCFUNC("asm/func/GetSunLevel.inc"); }
+// 照度(lx)を 0〜10 の太陽レベルに変換する
+Sunlevel GetSunLevel(s32 lx) {
+  if (lx == 0x0) return 0;
+  if (lx <= 0x5) return 1;
+  if (lx <= 0xC) return 2;
+  if (lx <= 0x16) return 3;
+  if (lx <= 0x22) return 4;
+  if (lx <= 0x31) return 5;
+  if (lx <= 0x42) return 6;
+  if (lx <= 0x56) return 7;
+  if (lx <= 0x6D) return 8;
+  if (lx <= 0x8B) return 9;
+  return 10;
+}
 
 NAKED s32 FUN_082417cc(Sunlevel slv) { INCFUNC("asm/func/FUN_082417cc.inc"); }
 

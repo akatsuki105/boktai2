@@ -8,7 +8,7 @@
 	cmp r6, #0
 	beq _0807B2CA
 	movs r0, #0x45
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807B2CA
 	bl Script_GetValue
@@ -20,7 +20,7 @@
 	cmp r0, #5
 	bne _0807B264
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807B230
 	bl Script_GetValue

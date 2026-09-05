@@ -7,7 +7,7 @@
 	cmp r4, #0
 	beq _0807DC5A
 	movs r0, #0x72
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807DC4C
 	bl Script_GetValue

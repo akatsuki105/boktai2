@@ -9,7 +9,8 @@ enum SpanOfTime {
   TIME_MORNING,
   TIME_DAYTIME,
   TIME_SUNSET,
-  // anymore?
+  TIME_UNK4,
+  TIME_UNK5,
 };
 
 // BCD
@@ -33,32 +34,32 @@ struct Time {
   u8 minute;  // 0..59
 } PACKED;
 
-// 0x030047e0
-typedef struct Clock {
-  BCDDate date;                    // 0x00
-  u8 hour;                         // 0x04, 0..23
-  u8 minute;                       // 0x05, 0..59
-  u8 second;                       // 0x06, 0..59
-  u8 frame;                        // 0x07
-  struct Time ALIGNED(2) daytime;  // 0x08
-  struct Time ALIGNED(2) morning;  // 0x0A
-  struct Time ALIGNED(2) sunset;   // 0x0C
-  u8 spanOfTime;                   // 0x0E, see SpanOfTime
-  u8 unk_0f;                       // 0x0F
-  struct Time ALIGNED(2) unk_10;   // なにかの時間までの残り時間
-  struct Time ALIGNED(2) unk_12;   // なにかの時間までの残り時間
-  u16 unk_14;
-  u8 unk_16;
-  u8 unk_17;
-  s32 latitude;                      // 0x18, 緯度
-  s32 longitude;                     // 0x1C, 経度
-  s32 tz;                            // 0x20, Region time zone offset
-} Clock;                             // 36 bytes
-static_assert(sizeof(Clock) == 36);  // 0x0823d91c でのメモリクリアのサイズ指定的に36バイトで間違いない
+// 0x030047E0
+typedef struct {
+  BCDDate date;                         // 0x00
+  u8 hour;                              // 0x04, 0..23
+  u8 minute;                            // 0x05, 0..59
+  u8 second;                            // 0x06, 0..59
+  u8 frame;                             // 0x07
+  struct Time ALIGNED(2) daytime;       // 0x08
+  struct Time ALIGNED(2) morning;       // 0x0A
+  struct Time ALIGNED(2) sunset;        // 0x0C
+  u8 spanOfTime;                        // 0x0E, see SpanOfTime
+  u8 unk_0f;                            // 0x0F
+  struct Time ALIGNED(2) untilSunset;   // 0x10, 日の入までの残り時間
+  struct Time ALIGNED(2) untilSunrise;  // 0x12, 日の出までの残り時間
+  u16 unk_14;                           // 0x14
+  u8 moonPhase;                         // 0x16
+  u8 unk_17;                            // 0x17
+  s32 latitude;                         // 0x18, 緯度
+  s32 longitude;                        // 0x1C, 経度
+  s32 tz;                               // 0x20, Region time zone offset
+} Clock;                                // 36 bytes
+static_assert(sizeof(Clock) == 36);     // 0x0823d91c でのメモリクリアのサイズ指定的に36バイトで間違いない
 
 // ------------------------------------------------------------------------------------------------------------------------------------
 
-extern Clock gClock;
+extern Clock gClock;  // 0x030047E0
 
 // --------------------------------------------
 

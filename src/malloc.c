@@ -128,7 +128,7 @@ NAKED void ClearMemory(void* dst, s32 bytesize) { INCFUNC("asm/func/ClearMemory.
 // dst を fillval << 24 | fillval << 16 | fillval << 8 | fillval で埋める
 NAKED void FillMemory8(u32* dst, u8 fillval, s32 len) { INCFUNC("asm/func/FillMemory8.inc"); }
 
-void FUN_08230ab0(u8* dst, u8* src, s32 bytesize) {
+void CopyMemory(u8* dst, u8* src, s32 bytesize) {
   while (bytesize > 7) {
     dst[0] = src[0];
     dst[1] = src[1];

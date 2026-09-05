@@ -818,21 +818,21 @@ FUN_0807aa00: @ 0x0807AA00
 FUN_0807aa30: @ 0x0807AA30
   .include "asm/func/FUN_0807aa30.inc"
 
-	thumb_func_start FUN_0807aa60
-FUN_0807aa60: @ 0x0807AA60
-  .include "asm/func/FUN_0807aa60.inc"
+	thumb_func_start Player_ReduceENE_0807aa60
+Player_ReduceENE_0807aa60: @ 0x0807AA60
+  .include "asm/func/Player_ReduceENE_0807aa60.inc"
 
-	thumb_func_start FUN_0807aa84
-FUN_0807aa84: @ 0x0807AA84
-  .include "asm/func/FUN_0807aa84.inc"
+	thumb_func_start ApplyLunaBug
+ApplyLunaBug: @ 0x0807AA84
+  .include "asm/func/ApplyLunaBug.inc"
 
-	thumb_func_start FUN_0807aab4
-FUN_0807aab4: @ 0x0807AAB4
-  .include "asm/func/FUN_0807aab4.inc"
+	thumb_func_start ApplySolBug
+ApplySolBug: @ 0x0807AAB4
+  .include "asm/func/ApplySolBug.inc"
 
-	thumb_func_start FUN_0807aae4
-FUN_0807aae4: @ 0x0807AAE4
-  .include "asm/func/FUN_0807aae4.inc"
+	thumb_func_start ApplyDarkBug
+ApplyDarkBug: @ 0x0807AAE4
+  .include "asm/func/ApplyDarkBug.inc"
 
 	thumb_func_start FUN_0807ab14
 FUN_0807ab14: @ 0x0807AB14

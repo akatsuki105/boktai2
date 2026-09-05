@@ -19,7 +19,7 @@ expected/
 tools/.venv-ghidra/
 .mcp.json
 
-data/scripts/*.inc
+data/scripts/*.bin
 
 **/.claude/settings.local.json
 __pycache__/

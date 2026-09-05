@@ -4,7 +4,7 @@
 	str r1, [sp, #8]
 	add r2, sp, #4
 	mov r1, sp
-	bl VM_Step
+	bl VM_DecodeValue
 	bl VM_SetPC
 _08232368:
 	bl VM_Ctrl_Switch_Internal
@@ -22,7 +22,7 @@ _08232374:
 	bl VM_GetPC
 	mov r1, sp
 	add r2, sp, #8
-	bl VM_Step
+	bl VM_DecodeValue
 	b _082323A0
 _08232390:
 	cmp r0, #0x64
@@ -30,7 +30,7 @@ _08232390:
 	bl VM_GetPC
 	mov r1, sp
 	add r2, sp, #8
-	bl VM_Step
+	bl VM_DecodeValue
 _082323A0:
 	ldr r0, [sp, #8]
 	movs r1, #0

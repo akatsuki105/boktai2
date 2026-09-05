@@ -32,11 +32,45 @@ typedef struct Entity83B2 {
 } Entity83B2;
 static_assert(sizeof(Entity83B2) == 48);
 
-s32 FUN_080093f8(Entity83B2* p, Entity83B2Data* q, s32 idx);
-s32 FUN_080094ac(Entity83B2* p, Entity83B2Data* q, s32 idx);
-s32 FUN_0800959c(Entity83B2* p, Entity83B2Data* q, s32 idx);
+extern Entity83B2* gEntity83B2;  // 0x0300003C
+
+s32 FUN_080091c4(Entity83B2Data* p, u32 n) {
+  p->state = n;
+  p->unk_6 = TRUE;
+}
+
+bool32 FUN_080091d0(Entity83B2Data* p) {
+  if (p->unk_6) {
+    p->unk_6 = FALSE;
+    return TRUE;
+  } else {
+    return FALSE;
+  }
+}
 
 INCASM("asm/entity_83b2.inc");
+
+s32 FUN_080093e0(Entity83B2* p, s32 n) {
+  p->unk_19 = n;
+  p->unk_1a = 0;
+}
+
+s32 FUN_080093ec(Entity83B2* p, s32 n) {
+  p->unk_19 = n;
+  p->unk_1a = 1;
+}
+
+NAKED s32 FUN_080093f8(Entity83B2* p, Entity83B2Data* q, s32 idx) { INCFUNC("asm/func/FUN_080093f8.inc"); }
+
+NAKED s32 FUN_080094ac(Entity83B2* p, Entity83B2Data* q, s32 idx) { INCFUNC("asm/func/FUN_080094ac.inc"); }
+
+NAKED s32 FUN_0800959c(Entity83B2* p, Entity83B2Data* q, s32 idx) { INCFUNC("asm/func/FUN_0800959c.inc"); }
+
+NAKED s32 Entity83B2_Update(Entity83B2* p) { INCFUNC("asm/func/Entity83B2_Update.inc"); }
+
+NAKED s32 Entity83B2_Destroy(Entity83B2* p) { INCFUNC("asm/func/Entity83B2_Destroy.inc"); }
+
+NAKED s32 Entity83B2_Init(Entity83B2* p, void* _) { INCFUNC("asm/func/Entity83B2_Init.inc"); }
 
 NAKED Entity83B2* Entity83B2_Create(void* _) { INCFUNC("asm/func/Entity83B2_Create.inc"); }
 
@@ -45,6 +79,8 @@ NAKED s32 VM_Sub883A(void) { INCFUNC("asm/func/VM_Sub883A.inc"); }
 
 // ヒントパネルを閉じると呼ばれる, ATMを終了しても呼ばれない
 NAKED s32 VM_Sub2740(void) { INCFUNC("asm/func/VM_Sub2740.inc"); }
+
+NAKED s32 VM_Sub1F65(void) { INCFUNC("asm/func/VM_Sub1F65.inc"); }
 
 s32 (*const PTR_ARRAY_085aa6ac[3])(Entity83B2*, Entity83B2Data*, s32) = {
     FUN_080093f8,

@@ -31,8 +31,20 @@ NAKED void FUN_08211d7c(Entity4DDF* p) { INCFUNC("asm/func/FUN_08211d7c.inc"); }
 
 NAKED s32 Entity4DDF_Update(Entity4DDF* p) { INCFUNC("asm/func/Entity4DDF_Update.inc"); }
 
-NAKED s32 Entity4DDF_Destroy(Entity4DDF* _) { INCFUNC("asm/func/Entity4DDF_Destroy.inc"); }
+s32 Entity4DDF_Destroy(Entity4DDF* _) {
+  return 0;
+}
 
-NAKED Entity4DDF* Entity4DDF_Init(Entity4DDF* p, void* _) { INCFUNC("asm/func/Entity4DDF_Init.inc"); }
+NAKED s32 Entity4DDF_Init(Entity4DDF* p, void* _) { INCFUNC("asm/func/Entity4DDF_Init.inc"); }
 
-NAKED Entity4DDF* Entity4DDF_Create(void* _) { INCFUNC("asm/func/Entity4DDF_Create.inc"); }
+Entity4DDF* Entity4DDF_Create(void* _) {
+  Entity4DDF* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity4DDF));
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity4DDF_Update, Entity4DDF_Destroy);
+    if (Entity4DDF_Init(p, _) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

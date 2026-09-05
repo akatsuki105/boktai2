@@ -1,6 +1,6 @@
 	push {r4, lr}
 	movs r0, #0x73
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807B478
 	bl Script_GetValue
@@ -8,7 +8,7 @@
 	cmp r4, #2
 	bgt _0807B478
 	movs r0, #0x74
-	bl prepare_08231510
+	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807B450
 	bl Script_GetValue
