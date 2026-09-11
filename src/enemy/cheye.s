@@ -4233,7 +4233,7 @@ _0817D8C2:
 	mov r2, r8
 	ldr r0, [r2, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _0817D902
 	.align 2, 0
 _0817D8E8: .4byte 0x02008000
@@ -6105,7 +6105,7 @@ _0817E6C4:
 	bne _0817E70C
 	adds r0, r3, #0
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _0817E716
 	.align 2, 0
 _0817E700: .4byte 0xFFFEFFFF
@@ -17438,7 +17438,7 @@ _08183EEA:
 	bne _08183F38
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _08183F44
 	.align 2, 0
 _08183F30: .4byte 0x00000272

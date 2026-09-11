@@ -45,7 +45,7 @@ _080132CC:
 	adds r0, #0x90
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r0, #0x9f
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -94,7 +94,7 @@ _0801330C:
 	adds r0, #0x90
 	movs r1, #0xa2
 	lsls r1, r1, #2
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _08013336:
 	adds r0, r7, #0
 	adds r0, #0x30
@@ -297,12 +297,12 @@ _080134B0:
 	movs r1, #0xa2
 	lsls r1, r1, #2
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _080134E2
 _080134DA:
 	ldr r1, _08013578 @ =0x00000287
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _080134E2:
 	adds r4, r6, #0
 	adds r4, #0x30

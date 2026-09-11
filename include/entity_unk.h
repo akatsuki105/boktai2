@@ -33,28 +33,4 @@ Entity_03002c68* FUN_081dfc64(void);  // Create
 
 // --------------------------------------------
 
-struct Entity2UnkData;
-
-typedef struct {
-  Entity e;  // ENTITY_UNK_2
-  struct Entity2UnkData* unk_18;
-  struct Entity2UnkData* unk_1c;
-} EntityB8B9;
-static_assert(sizeof(EntityB8B9) == 32);
-
-extern EntityB8B9* gEntityB8B9;
-EntityB8B9* EntityB8B9_Create(void);
-void FUN_0823b1ec(void);
-
-// --------------------------------------------
-
-typedef struct EntityE534 {
-  Entity e;  // ENTITY_UNK_11
-  u8 unk_18[0xCD4 - 24];
-  UnkStruct52 unk_cd4;  // 0xCD4, 根拠: 0x08012bfc
-} EntityE534;
-static_assert(sizeof(EntityE534) == 3336);
-
-// --------------------------------------------
-
 #endif  // __INCLUDE_ENTITY_UNK_H__

@@ -2192,14 +2192,14 @@ _081D09AC: .4byte 0xFFFFFF00
 _081D09B0:
 	ldr r1, _081D09BC @ =0x00000282
 	mov r0, sb
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081D09C8
 	.align 2, 0
 _081D09BC: .4byte 0x00000282
 _081D09C0:
 	ldr r1, _081D0A14 @ =0x00000283
 	mov r0, sb
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _081D09C8:
 	adds r0, r7, #0
 	mov r1, sb
@@ -3092,7 +3092,7 @@ _081D1060: .4byte 0x0000BB68
 _081D1064:
 	ldr r0, [r6, #0xc]
 	ldr r1, _081D1070 @ =0x00000139
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081D107E
 	.align 2, 0
 _081D1070: .4byte 0x00000139
@@ -3100,7 +3100,7 @@ _081D1074:
 	ldr r0, [r6, #0xc]
 	movs r1, #0x9d
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _081D107E:
 	adds r0, r6, #0
 	movs r1, #1
@@ -3389,7 +3389,7 @@ _081D128C:
 	ldr r0, [r2, #0xc]
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldrb r0, [r4]
 	subs r0, #1
 	strb r0, [r4]
@@ -3409,7 +3409,7 @@ _081D12B0:
 _081D12C2:
 	ldr r0, [r2, #0xc]
 	ldr r1, _081D12CC @ =0x00000139
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081D12DA
 	.align 2, 0
 _081D12CC: .4byte 0x00000139
@@ -3417,7 +3417,7 @@ _081D12D0:
 	ldr r0, [r2, #0xc]
 	movs r1, #0x9d
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _081D12DA:
 	pop {r4}
 	pop {r0}
@@ -4665,7 +4665,7 @@ FUN_081d1bf8: @ 0x081D1BF8
 	ldr r0, [r4, #0xc]
 	movs r1, #0x90
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldrh r1, [r5]
 	movs r0, #4
 	ands r0, r1
@@ -4709,7 +4709,7 @@ FUN_081d1c64: @ 0x081D1C64
 	strh r4, [r5, #0x10]
 	ldr r0, [r5, #0xc]
 	ldr r1, _081D1CB8 @ =0x0000011F
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, _081D1CBC @ =0x030047A4
 	ldr r0, [r0]
 	movs r1, #0x80
@@ -5086,14 +5086,14 @@ _081D1F58:
 	ldr r0, [r6, #0xc]
 	movs r1, #0x90
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081D1F90
 _081D1F84:
 	mov r2, sl
 	strh r0, [r2, #0x10]
 	ldr r0, [r6, #0xc]
 	ldr r1, _081D1F9C @ =0x0000011F
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _081D1F90:
 	bl FUN_0823b3ec
 	cmp r0, #0
@@ -5121,7 +5121,7 @@ _081D1FA0:
 	ldr r0, [r6, #0xc]
 	movs r1, #0x90
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081D203C
 	.align 2, 0
 _081D1FCC: .4byte 0x0000FFFE
@@ -10677,7 +10677,7 @@ _081D4974:
 	movs r1, #0xdc
 	lsls r1, r1, #1
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r0, #0x6d
 	movs r1, #0
 	bl VM_GetKeywordValue
@@ -10717,7 +10717,7 @@ _081D49C8:
 	movs r1, #0xdf
 	lsls r1, r1, #1
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r0, #0x6d
 	movs r1, #0
 	bl VM_GetKeywordValue
@@ -10778,12 +10778,12 @@ _081D4A70:
 	lsls r1, r1, #1
 _081D4A74:
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081D4A84
 _081D4A7C:
 	ldr r1, _081D4AA4 @ =0x000001BD
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _081D4A84:
 	movs r0, #0x6d
 	movs r1, #0
@@ -10840,14 +10840,14 @@ _081D4AE4:
 _081D4AEE:
 	adds r0, r4, #0
 	ldr r1, _081D4AF8 @ =0x000001B7
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081D4B20
 	.align 2, 0
 _081D4AF8: .4byte 0x000001B7
 _081D4AFC:
 	adds r0, r4, #0
 	ldr r1, _081D4B08 @ =0x000001B9
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081D4B20
 	.align 2, 0
 _081D4B08: .4byte 0x000001B9
@@ -10855,12 +10855,12 @@ _081D4B0C:
 	adds r0, r4, #0
 	movs r1, #0xdf
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081D4B20
 _081D4B18:
 	adds r0, r4, #0
 	ldr r1, _081D4BA0 @ =0x000001BD
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _081D4B20:
 	movs r0, #0x6d
 	movs r1, #1
@@ -11993,7 +11993,7 @@ FUN_081d53cc: @ 0x081D53CC
 	adds r0, #0x2c
 	ldr r2, _081D5410 @ =0x000001B7
 	adds r1, r1, r2
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _081D5406:
 	pop {r4}
 	pop {r0}
@@ -13185,7 +13185,7 @@ _081D5CD8:
 	ldr r0, [r1, #0xc]
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldrb r0, [r4]
 	subs r0, #1
 	strb r0, [r4]
@@ -13198,7 +13198,7 @@ _081D5D00:
 	ldr r0, [r1, #0xc]
 	movs r1, #0xbe
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _081D5D0C:
 	pop {r4}
 	pop {r0}
@@ -18825,7 +18825,7 @@ FUN_081d8714: @ 0x081D8714
 	ldr r0, _081D8778 @ =0x00000201
 	adds r1, r7, r0
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _081D8760:
 	add sp, #4
 	pop {r4, r5, r6, r7}
@@ -19292,7 +19292,7 @@ _081D8ABE:
 	bl FUN_0822a470
 	ldr r0, [r5, #0xc]
 	ldr r1, _081D8B3C @ =0x0000014F
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	adds r1, r5, #0
 	adds r1, #0x68
 	movs r2, #1
@@ -21999,13 +21999,13 @@ FUN_081d9ef4: @ 0x081D9EF4
 	adds r4, r0, #0
 	bl FUN_081da370
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #1
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	bl FUN_08049e5c
 	adds r0, r4, #0
 	bl FUN_081da5d0
@@ -22032,13 +22032,13 @@ FUN_081d9f3c: @ 0x081D9F3C
 	adds r0, r4, #0
 	bl FUN_081da370
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #1
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r4, #0
 	bl FUN_081da5d0
 	bl FUN_081df974
@@ -25329,9 +25329,9 @@ _081DB84C:
 	bl PlaySound_082406e0
 	bl FUN_08049fa8
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r5, #0
 	bl FUN_081db2f4
 	b _081DB8A4
@@ -25343,9 +25343,9 @@ _081DB87E:
 	movs r0, #2
 	bl FUN_081df95c
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r5, #0
 	bl FUN_081db2f4
 	movs r0, #0xde
@@ -25441,7 +25441,7 @@ FUN_081db930: @ 0x081DB930
 	b _081DB9A4
 _081DB954:
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r4, #0
 	bl FUN_081daeb8
 	adds r0, r4, #0
@@ -26690,13 +26690,13 @@ FUN_081dc2e0: @ 0x081DC2E0
 	adds r4, r0, #0
 	bl FUN_08049e5c
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #1
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r4, #0
 	bl FUN_081dbe68
 	movs r0, #2
@@ -27052,7 +27052,7 @@ _081DC5A2:
 	movs r4, #0
 	strh r0, [r1]
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r5, #0
 	bl FUN_081db9f4
 	adds r0, r5, #0
@@ -27164,13 +27164,13 @@ FUN_081dc694: @ 0x081DC694
 	beq _081DC6C4
 	bl FUN_081dbe68
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #1
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	bl FUN_08049e5c
 	ldr r0, [r4]
 	bl KillEntity
@@ -28925,13 +28925,13 @@ FUN_081dd434: @ 0x081DD434
 	adds r0, r6, #0
 	bl FUN_081dcb54
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #1
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r5, #0
 	str r5, [sp]
 	movs r0, #0
@@ -30691,10 +30691,10 @@ FUN_081de130: @ 0x081DE130
 	adds r1, r5, r2
 	str r0, [r1]
 	movs r0, #1
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	bl FUN_08049fa8
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 _081DE182:
 	adds r4, r5, #0
 	adds r4, #0x55
@@ -30731,8 +30731,8 @@ _081DE182:
 	movs r0, #1
 	bl FUN_0822b41c
 _081DE1D2:
-	ldr r1, _081DE204 @ =FUN_0822e738
-	ldr r2, _081DE208 @ =FUN_0822b09c
+	ldr r1, _081DE204 @ =nop_0822e738
+	ldr r2, _081DE208 @ =nop_0822b09c
 	ldr r3, _081DE20C @ =FUN_0822f584
 	movs r0, #0
 	bl FUN_0822a448
@@ -30752,8 +30752,8 @@ _081DE1F4: .4byte 0x030044D0
 _081DE1F8: .4byte 0x030044BC
 _081DE1FC: .4byte 0x03003E78
 _081DE200: .4byte 0xFFFFF1FF
-_081DE204: .4byte FUN_0822e738
-_081DE208: .4byte FUN_0822b09c
+_081DE204: .4byte nop_0822e738
+_081DE208: .4byte nop_0822b09c
 _081DE20C: .4byte FUN_0822f584
 _081DE210: .4byte 0x030047B8
 
@@ -31679,7 +31679,7 @@ _081DE8DA:
 	cmp r0, #0
 	bne _081DE958
 	movs r0, #1
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	b _081DE958
 	.align 2, 0
 _081DE900: .4byte FUN_081de360
@@ -31875,7 +31875,7 @@ _081DEA4A:
 	bl FUN_081dd9b8
 	bl FUN_08049fa8
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r4, #0
 	bl FUN_081ddf84
 	ldr r2, _081DEAE0 @ =0x030046B8
@@ -31941,7 +31941,7 @@ FUN_081deaf4: @ 0x081DEAF4
 	cmp r0, #0
 	beq _081DEB10
 	movs r0, #1
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 _081DEB10:
 	ldr r0, [r4, #0x34]
 	cmp r0, #1
@@ -32469,7 +32469,7 @@ FUN_081deef8: @ 0x081DEEF8
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081DEF54
-	bl FUN_082407b8
+	bl Sound_StopAll
 	movs r0, #1
 	movs r1, #0
 	movs r2, #0
@@ -33079,7 +33079,7 @@ _081DF3B8:
 	cmp r1, #0x77
 	bls _081DF3E4
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r4, #0
 	bl FUN_081dded4
 	movs r1, #0xdd
@@ -33774,7 +33774,7 @@ _081DF8BE:
 	adds r0, #0x24
 	strb r2, [r0]
 	movs r0, #1
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 _081DF8CE:
 	pop {r0}
 	bx r0
@@ -35245,9 +35245,9 @@ FUN_081e03d8: @ 0x081E03D8
 	orrs r0, r1
 	str r0, [r2]
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r2, #0xf2
 	lsls r2, r2, #2
 	adds r0, r6, r2
@@ -35618,9 +35618,9 @@ _081E06EA:
 	adds r0, r5, #0
 	bl FUN_081e012c
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r7, #0
 	str r7, [sp]
 	movs r0, #0
@@ -36146,13 +36146,13 @@ _081E0B2C:
 	movs r0, #7
 	bl FUN_0809c08c
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #1
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r4, #0
 	bl FUN_081dfe74
 	adds r0, r4, #0
@@ -38238,7 +38238,7 @@ FUN_081e1a90: @ 0x081E1A90
 	adds r4, r0, #0
 	bl FUN_08047864
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	bl FUN_08237e98
 	bl FUN_08237eb4
 	adds r3, r0, #0
@@ -38929,9 +38929,9 @@ FUN_081e1f80: @ 0x081E1F80
 	cmp r0, #0
 	beq _081E1FD6
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	ldr r1, [r5, #0x58]
 	movs r0, #0
 	movs r2, #3
@@ -38950,7 +38950,7 @@ FUN_081e1f80: @ 0x081E1F80
 	movs r0, #1
 	bl FUN_080477e4
 	movs r0, #1
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	adds r1, r5, #0
 	adds r1, #0x62
 	movs r0, #0
@@ -38988,9 +38988,9 @@ FUN_081e1ff8: @ 0x081E1FF8
 	cmp r0, #0
 	beq _081E204E
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	ldr r1, [r5, #0x58]
 	movs r0, #0
 	movs r2, #3
@@ -39009,7 +39009,7 @@ FUN_081e1ff8: @ 0x081E1FF8
 	movs r0, #1
 	bl FUN_080477e4
 	movs r0, #1
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	adds r1, r5, #0
 	adds r1, #0x62
 	movs r0, #0
@@ -39038,13 +39038,13 @@ _081E2072:
 	cmp r0, #0xb4
 	bls _081E20C0
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #1
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r5, #0
 	adds r0, #0x80
 	ldr r1, [r0]
@@ -44842,9 +44842,9 @@ FUN_081e4d04: @ 0x081E4D04
 	sub sp, #4
 	adds r4, r0, #0
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r4, #0
 	bl FUN_081e2960
 	adds r0, r4, #0
@@ -44932,9 +44932,9 @@ FUN_081e4de0: @ 0x081E4DE0
 	sub sp, #4
 	adds r4, r0, #0
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r4, #0
 	bl FUN_081e2960
 	adds r0, r4, #0
@@ -45039,9 +45039,9 @@ FUN_081e4edc: @ 0x081E4EDC
 	sub sp, #4
 	adds r7, r0, #0
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r7, #0
 	bl FUN_081e2960
 	adds r0, r7, #0
@@ -46833,9 +46833,9 @@ _081E5DE0:
 	ldr r0, [r4]
 	bl FUN_0804a210
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	ldr r1, [r7, #0x20]
 	movs r0, #0
 	movs r2, #4
@@ -47236,9 +47236,9 @@ FUN_081e617c: @ 0x081E617C
 	ands r0, r1
 	str r0, [r2]
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	ldr r1, [r6, #0x20]
 	movs r0, #0
 	movs r2, #3
@@ -47273,7 +47273,7 @@ FUN_081e617c: @ 0x081E617C
 	bl FUN_0804a1f0
 	bl FUN_081e25f0
 	movs r0, #1
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	ldr r4, _081E6258 @ =0x0000162A
 	adds r0, r6, r4
 	movs r1, #0
@@ -47679,9 +47679,9 @@ FUN_081e653c: @ 0x081E653C
 	b _081E664A
 _081E654E:
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	ldr r1, [r7, #0x20]
 	movs r0, #0
 	movs r2, #4
@@ -50061,9 +50061,9 @@ FUN_081e78d0: @ 0x081E78D0
 	ldr r0, [r4]
 	bl FUN_0804a210
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	ldr r1, [r6, #0x20]
 	movs r0, #0
 	movs r2, #3
@@ -50096,7 +50096,7 @@ FUN_081e78d0: @ 0x081E78D0
 	movs r1, #0xb
 	bl FUN_081e4c64
 	movs r0, #1
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	ldr r1, _081E79C8 @ =0x0000162A
 	adds r0, r6, r1
 	movs r1, #0
@@ -50215,13 +50215,13 @@ _081E7A76:
 	cmp r0, #0x3c
 	bls _081E7AB8
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #1
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	bl FUN_081e2380
 	lsls r0, r0, #0x18
 	cmp r0, #0
@@ -50864,7 +50864,7 @@ FUN_081e7fd0: @ 0x081E7FD0
 	cmp r0, #0
 	beq _081E7FF0
 	movs r0, #1
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	ldr r1, _081E8018 @ =0x0000162A
 	adds r0, r4, r1
 	movs r2, #0
@@ -51132,9 +51132,9 @@ _081E81FC:
 	adds r0, r5, #0
 	bl FUN_081e44d0
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r5, #0
 	bl KillEntity
 	b _081E83DA
@@ -51456,9 +51456,9 @@ FUN_081e8468: @ 0x081E8468
 	cmp r5, #0
 	bne _081E84AC
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	bl FUN_0824172c
 	ldr r0, _081E84B4 @ =0x0300481C
 	str r5, [r0]
@@ -55187,7 +55187,7 @@ _081E9FAE:
 	bl FUN_08236fac
 	ldr r0, [r4, #0xc]
 	ldr r1, [sp, #0x2c]
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, [r4]
 	mov r1, sl
 	orrs r0, r1
@@ -56124,7 +56124,7 @@ _081EA6AC:
 	strh r0, [r6, #0x10]
 	ldr r0, [r6, #0xc]
 	ldr r1, _081EA744 @ =0x00000243
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, [r6]
 	mov r1, sb
 	orrs r0, r1

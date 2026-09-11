@@ -1851,7 +1851,7 @@ _08020520:
 	adds r0, r0, r4
 	adds r0, r7, r0
 	movs r1, #0x2b
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _0802057E
 _0802054C:
 	ldr r0, [r6, #0x4c]
@@ -3065,7 +3065,7 @@ _08020E64:
 	adds r0, r0, r4
 	adds r0, r7, r0
 	movs r1, #0xa7
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, [r6, #0x4c]
 	lsls r1, r0, #3
 	subs r1, r1, r0
@@ -3119,7 +3119,7 @@ _08020ED8:
 	adds r0, r7, r0
 	ldrb r1, [r2]
 	adds r1, #0xa7
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, [r6, #0x4c]
 	lsls r1, r0, #3
 	subs r1, r1, r0
@@ -3165,7 +3165,7 @@ _08020F2C:
 	adds r0, r0, r1
 	ldrb r1, [r2]
 	adds r1, #0xa7
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r1, [r6, #0x4c]
 	lsls r0, r1, #3
 	subs r0, r0, r1
@@ -3192,7 +3192,7 @@ _08020F5C:
 	adds r0, r0, r1
 	ldrb r1, [r2]
 	adds r1, #0xa7
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r1, [r6, #0x4c]
 	lsls r0, r1, #3
 	subs r0, r0, r1

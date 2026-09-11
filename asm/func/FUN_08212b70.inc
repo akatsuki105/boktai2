@@ -40,7 +40,7 @@ _08212BAC:
 	adds r0, r5, #0
 	bl FUN_08212570
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r4, #0
 	str r4, [sp]
 	movs r0, #0
@@ -49,7 +49,7 @@ _08212BAC:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -57,7 +57,7 @@ _08212BAC:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #3
 	movs r1, #0
@@ -716,7 +716,7 @@ _082131EE:
 	b _082135A0
 _082131FE:
 	movs r0, #2
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	b _082135A0
 _08213206:
 	movs r2, #2
@@ -1210,7 +1210,7 @@ _082135AA:
 	cmp r0, #0
 	beq _082135E4
 	movs r0, #3
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	b _082135E4
 _082135E0:
 	movs r0, #0

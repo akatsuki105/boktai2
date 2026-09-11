@@ -1,7 +1,7 @@
 #include "global.h"
 #include "vm.h"
 
-extern u16 gSubroutineCount;
+IWRAM_DATA u16 gSubroutineCount = 0;  // 0x030016F4
 
 const ALIGNED(4) u8 u8_ARRAY_085a9108[256] = {0x0};  // 0x085A9108
 

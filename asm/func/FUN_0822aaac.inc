@@ -242,7 +242,7 @@ _0822AC6C:
 	mov r1, sl
 	mov r2, sb
 	ldr r3, [sp, #8]
-	bl FUN_0822a574
+	bl DrawSprite_0822a574
 _0822AC78:
 	ldr r5, [r5, #0x28]
 	cmp r5, #0

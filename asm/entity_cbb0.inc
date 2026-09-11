@@ -596,7 +596,7 @@ _080AD624:
 	subs r3, #0xa5
 	adds r2, r2, r3
 	adds r1, r1, r2
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _080AD664:
 	movs r0, #0x94
 	lsls r0, r0, #2
@@ -715,7 +715,7 @@ _080AD73C:
 	lsls r3, r3, #1
 	adds r2, r2, r3
 	adds r1, r1, r2
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _080AD952
 	.align 2, 0
 _080AD768: .4byte 0x00000C0B
@@ -954,7 +954,7 @@ _080AD914:
 	lsls r5, r5, #1
 	adds r2, r2, r5
 	adds r1, r1, r2
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _080AD952:
 	add sp, #0x18
 	pop {r3, r4, r5}
@@ -6638,7 +6638,7 @@ _080B0588:
 	mov r0, ip
 	adds r0, #0x2c
 	ldr r1, [sp]
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r5, #1
 	add r8, r5
 	mov r0, r8
@@ -7011,7 +7011,7 @@ _080B084E:
 	mov r0, ip
 	adds r0, #0x2c
 	ldr r1, [sp]
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, [sp, #8]
 	adds r0, #4
 	str r0, [sp, #8]
@@ -7199,7 +7199,7 @@ _080B09B4:
 	adds r0, r5, #0
 	adds r0, #0x2c
 	adds r1, r7, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	adds r0, r5, #0
 	adds r1, r7, #0
 	bl FUN_080b0398
@@ -8805,7 +8805,7 @@ _080B169E:
 	adds r0, r5, #0
 	bl FUN_080ad9f4
 	movs r0, #4
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	b _080B170A
 	.align 2, 0
 _080B16B0: .4byte 0x000004FE

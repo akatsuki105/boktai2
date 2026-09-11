@@ -12,7 +12,7 @@
 	bl FUN_0822a470
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, [r5, #0x18]
 	movs r1, #1
 	orrs r0, r1

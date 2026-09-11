@@ -55,11 +55,3 @@ void (*const PTR_ARRAY_085aff84[7])(Entity*) = {
     FUN_0821619c,
 };
 // clang-format on
-
-// --------------------------------------------
-
-void FUN_0821a308(Entity*);
-
-void (*const PTR_ARRAY_085affa0[1])(Entity*) = {
-    FUN_0821a308,
-};

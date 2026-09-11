@@ -2,7 +2,7 @@
 	sub sp, #4
 	adds r4, r0, #0
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #0
 	str r0, [sp]
 	movs r1, #0

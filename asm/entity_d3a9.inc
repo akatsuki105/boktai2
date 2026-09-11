@@ -55,7 +55,7 @@ FUN_080c0b38: @ 0x080C0B38
 	adds r4, r1, #0
 	movs r1, #8
 	ldrsh r0, [r2, r1]
-	bl FUN_08240360
+	bl Sound_FadeInBGM
 	adds r0, r4, #0
 	movs r1, #1
 	bl FUN_08022488
@@ -70,7 +70,7 @@ FUN_080c0b54: @ 0x080C0B54
 	adds r4, r1, #0
 	movs r1, #8
 	ldrsh r0, [r2, r1]
-	bl FUN_082403d0
+	bl Sound_FadeOutBGMTemporarily
 	adds r0, r4, #0
 	movs r1, #1
 	bl FUN_08022488
@@ -85,7 +85,7 @@ FUN_080c0b70: @ 0x080C0B70
 	adds r4, r1, #0
 	movs r1, #8
 	ldrsh r0, [r2, r1]
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	adds r0, r4, #0
 	movs r1, #1
 	bl FUN_08022488

@@ -28,4 +28,9 @@ extern struct MusicPlayerTrack gMPlayTracks[50];
 
 extern SoundID16 gSoundIDs[MUSIC_PLAYER_LENGTH];  // 0x3004820
 
+// --------------------------------------------
+
+void PlaySound_082406e0(SoundID32 id);
+void sound_08240740(SoundID32 id);
+
 #endif  // __INCLUDE_SOUND_H__

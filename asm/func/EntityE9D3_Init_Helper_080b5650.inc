@@ -305,7 +305,7 @@ _080B5880:
 	str r0, [r5]
 	ldr r1, _080B5930 @ =0x00000143
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r4, _080B5934 @ =0x000007F4
 	adds r1, r7, r4
 	movs r0, #0xa0

@@ -184,7 +184,7 @@ _080F5D80:
 _080F5D90:
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _080F5DB0
 	.align 2, 0
 _080F5D9C: .4byte 0x0000047E

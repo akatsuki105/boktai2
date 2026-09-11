@@ -13174,7 +13174,7 @@ FUN_080c01ac: @ 0x080C01AC
 	strh r4, [r0]
 	movs r0, #0x80
 	lsls r0, r0, #1
-	bl FUN_08240630
+	bl Sound_SetBGMTempo
 	movs r0, #8
 	bl FUN_0823bca8
 	adds r0, r7, #0
@@ -13308,7 +13308,7 @@ _080C02B2:
 	strh r5, [r0]
 	movs r0, #0x80
 	lsls r0, r0, #1
-	bl FUN_08240630
+	bl Sound_SetBGMTempo
 	bl FUN_080bfa74
 	b _080C03C8
 	.align 2, 0
@@ -13384,7 +13384,7 @@ _080C03A4:
 	lsls r0, r1, #1
 	adds r0, r0, r1
 	lsls r0, r0, #5
-	bl FUN_08240630
+	bl Sound_SetBGMTempo
 	ldr r0, _080C03EC @ =0x030046A0
 	ldr r1, [r0]
 	movs r0, #0xe2

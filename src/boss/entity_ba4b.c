@@ -11,3 +11,11 @@ typedef struct {
 static_assert(sizeof(EntityBA4B) == 4188);
 
 INCASM("asm/entity_ba4b.inc");
+
+NAKED s32 EntityBA4B_Update(EntityBA4B* p) { INCFUNC("asm/func/EntityBA4B_Update.inc"); }
+
+NAKED s32 EntityBA4B_Destroy(EntityBA4B* p) { INCFUNC("asm/func/EntityBA4B_Destroy.inc"); }
+
+NAKED s32 EntityBA4B_Init(EntityBA4B* p, u32 id) { INCFUNC("asm/func/EntityBA4B_Init.inc"); }
+
+NAKED EntityBA4B* EntityBA4B_Create(u32 id) { INCFUNC("asm/func/EntityBA4B_Create.inc"); }

@@ -7,6 +7,7 @@ const MFT_ENTRY_COUNT = 11;
 const gFS = {
   "U32J": 0x085B0CE4,
   "U32J_rev1": 0x085B0D90,
+  "U33J": 0x08614D6C,
 };
 
 // gFSのエントリ

@@ -234,7 +234,7 @@ _082238D8:
 	adds r1, r5, #0
 	adds r1, #0xcc
 	ldrh r1, [r1]
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r0, #0xa
 	strb r0, [r4]
 	b _0822396A
@@ -247,7 +247,7 @@ _08223920:
 	adds r1, #0xcc
 	ldrh r1, [r1]
 	adds r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _0822396A
 _08223932:
 	adds r2, r5, #0
@@ -267,7 +267,7 @@ _08223932:
 	adds r1, #0xcc
 	ldrh r1, [r1]
 	adds r1, #2
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _0822396A
 _0822395A:
 	adds r0, r5, #0
@@ -276,7 +276,7 @@ _0822395A:
 	adds r1, #0xcc
 	ldrh r1, [r1]
 	adds r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _0822396A:
 	movs r6, #1
 	add sl, r6

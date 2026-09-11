@@ -64,7 +64,7 @@ _0807B820:
 	strh r4, [r6]
 _0807B824:
 	adds r0, r5, #0
-	bl FUN_08060c60
+	bl Player_StopEneChargeSound
 	movs r1, #0xd6
 	lsls r1, r1, #1
 	adds r0, r5, r1

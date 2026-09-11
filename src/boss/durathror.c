@@ -11,11 +11,13 @@ static_assert(sizeof(Durathror) == 3620);
 
 INCASM("asm/durathror.inc");
 
-s32 Durathror_Init(Durathror* p, unknown* param);
-s32 Durathror_Update(Durathror* p);
-s32 Durathror_Destroy(Durathror* p);
+NAKED s32 Durathror_Update(Durathror* p) { INCFUNC("asm/func/Durathror_Update.inc"); }
 
-Durathror* Durathror_Create(unknown* param) {
+NAKED s32 Durathror_Destroy(Durathror* p) { INCFUNC("asm/func/Durathror_Destroy.inc"); }
+
+NAKED s32 Durathror_Init(Durathror* p, u32 id) { INCFUNC("asm/func/Durathror_Init.inc"); }
+
+Durathror* Durathror_Create(u32 id) {
   Durathror* p = FUN_08022a2c(BOSS_DURATHROR);
   if (p != NULL) {
     return p;
@@ -24,7 +26,7 @@ Durathror* Durathror_Create(unknown* param) {
   p = CreateEntity(ENTITY_UNK_8, sizeof(Durathror));
   if (p != NULL) {
     SetEntityRoutine(p, Durathror_Update, Durathror_Destroy);
-    if (Durathror_Init(p, param) < 0) {
+    if (Durathror_Init(p, id) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

@@ -3,13 +3,13 @@
 	movs r4, #0
 	strh r4, [r0]
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #1
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	ldr r3, _0822B814 @ =0x04000008
 	ldrh r2, [r3]
 	ldr r1, _0822B818 @ =0x0000FFBF

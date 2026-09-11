@@ -478,7 +478,7 @@ void MPlayOpen(struct MusicPlayerInfo* mplayInfo, struct MusicPlayerTrack* track
   mplayInfo->ident = ID_NUMBER;
 }
 
-void MPlayStart(struct MusicPlayerInfo* mplayInfo, struct SongHeader* songHeader) {
+void MPlayStart(struct MusicPlayerInfo* mplayInfo, SongHeader* songHeader) {
   s32 i;
   u8 unk_B;
   struct MusicPlayerTrack* track;
@@ -1225,11 +1225,12 @@ void ply_memacc(struct MusicPlayerInfo* mplayInfo, struct MusicPlayerTrack* trac
       return;
   }
 
-cond_true: {
-  // *& is required for matching
-  (*&gMPlayJumpTable[1])(mplayInfo, track);
-  return;
-}
+cond_true:
+  {
+    // *& is required for matching
+    (*&gMPlayJumpTable[1])(mplayInfo, track);
+    return;
+  }
 
 cond_false:
   track->cmdPtr += 4;

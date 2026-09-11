@@ -7,13 +7,19 @@ typedef struct {
   Entity e;    // 0x0, ENTITY_UNK_8
   void* p_18;  // 0x18,  0x08653534 固定?
   u8 unk_1c[4];
-  u32 frameCounter;   // 0x20, フレームカウンタ (多分カーソルの点滅とかで使う)
-  u8 page;            // 0x24, 現在のページ (0: ページ1, 1: ページ2, 2: ページ3)
-  u8 cursor;          // 0x25, 現在のカーソルの位置番号,  = (cursorY * 5) + cursorX
-  u8 cursorX;         // 0x26, 現在のカーソルのX位置 (0..4)
-  u8 cursorY;         // 0x27, 現在のカーソルのY位置 (0..1)
-  SpriteData sprite;  // 0x28
-  u8 unk_a8[2176 - 0xA8];
+  u32 frameCounter;                // 0x020, フレームカウンタ (多分カーソルの点滅とかで使う)
+  u8 page;                         // 0x024, 現在のページ (0: ページ1, 1: ページ2, 2: ページ3)
+  u8 cursor;                       // 0x025, 現在のカーソルの位置番号,  = (cursorY * 5) + cursorX
+  u8 cursorX;                      // 0x026, 現在のカーソルのX位置 (0..4)
+  u8 cursorY;                      // 0x027, 現在のカーソルのY位置 (0..1)
+  SpriteSet spriteSet_28;          // 0x028
+  SpriteState sprites_48[2];       // 0x048
+  SpriteState sprites_108[5];      // 0x108
+  SpriteState sprites_2e8[2];      // 0x2E8
+  SpriteState sprites_3a8[2];      // 0x3A8
+  SpriteSet spriteSet_468;         // 0x468
+  SpriteState sprites_488[5 * 2];  // 0x488
+  u8 unk_848[2176 - 0x848];
 } AlbumMenu;
 static_assert(sizeof(AlbumMenu) == 2176);
 

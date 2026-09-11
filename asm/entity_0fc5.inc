@@ -4,42 +4,6 @@
 	
 	.text
 
-	thumb_func_start FUN_0821a2bc
-FUN_0821a2bc: @ 0x0821A2BC
-  .include "asm/func/FUN_0821a2bc.inc"
-
-	thumb_func_start FUN_0821a308
-FUN_0821a308: @ 0x0821A308
-  .include "asm/func/FUN_0821a308.inc"
-
-	thumb_func_start FUN_0821a5d4
-FUN_0821a5d4: @ 0x0821A5D4
-  .include "asm/func/FUN_0821a5d4.inc"
-
-	thumb_func_start FUN_0821a6f4
-FUN_0821a6f4: @ 0x0821A6F4
-  .include "asm/func/FUN_0821a6f4.inc"
-
-	thumb_func_start FUN_0821a714
-FUN_0821a714: @ 0x0821A714
-  .include "asm/func/FUN_0821a714.inc"
-
-	thumb_func_start FUN_0821a764
-FUN_0821a764: @ 0x0821A764
-  .include "asm/func/FUN_0821a764.inc"
-
-	thumb_func_start FUN_0821a7b0
-FUN_0821a7b0: @ 0x0821A7B0
-  .include "asm/func/FUN_0821a7b0.inc"
-
-	thumb_func_start FUN_0821a7bc
-FUN_0821a7bc: @ 0x0821A7BC
-  .include "asm/func/FUN_0821a7bc.inc"
-
-	thumb_func_start FUN_0821a83c
-FUN_0821a83c: @ 0x0821A83C
-  .include "asm/func/FUN_0821a83c.inc"
-
 	thumb_func_start FUN_0821a87c
 FUN_0821a87c: @ 0x0821A87C
   .include "asm/func/FUN_0821a87c.inc"
@@ -75,12 +39,4 @@ FUN_0821aeb0: @ 0x0821AEB0
 	thumb_func_start FUN_0821b06c
 FUN_0821b06c: @ 0x0821B06C
   .include "asm/func/FUN_0821b06c.inc"
-
-	thumb_func_start FUN_0821b09c
-FUN_0821b09c: @ 0x0821B09C
-  .include "asm/func/FUN_0821b09c.inc"
-
-	thumb_func_start FUN_0821b0e4
-FUN_0821b0e4: @ 0x0821B0E4
-  .include "asm/func/FUN_0821b0e4.inc"
 

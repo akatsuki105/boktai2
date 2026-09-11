@@ -22,7 +22,7 @@
 	strh r0, [r4, #0x10]
 	adds r0, r5, #0
 	movs r1, #0x32
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r0, #1
 	strb r0, [r4, #7]
 	movs r0, #0x7f
@@ -51,7 +51,7 @@ _08061C10:
 	bl FUN_0822a470
 	adds r0, r5, #0
 	movs r1, #0x1d
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, _08061C54 @ =0x0000922E
 	ldr r1, _08061C58 @ =0x00000837
 	bl GetFile

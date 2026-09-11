@@ -24,7 +24,7 @@
 	bl Video_GetActorSprite
 	ldr r1, _08245E48 @ =0x0000015F
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r4, #0x92
 	lsls r4, r4, #1
 	add r4, sb

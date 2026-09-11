@@ -30,5 +30,9 @@ compiler-forced one) in a function that just reached MATCHING:
 
 ## Observed so far
 
-*(none confirmed yet — add findings here as they're corroborated across
-multiple matched functions, not from a single instance)*
+### Entity `_Create` is fixed boilerplate: allocate, wire routines, init-or-kill
+
+- **Frequency**: 13 functions
+- **Seen in**: `Entity080de11c_Create` (entity_080ddf88.c), `GameOverManager_Create` (gameover.c), `EntityAF33_Create` (entity_af33.c), `Entity4DDF_Create` (entity_4ddf.c), `UnkSolarEntity_Create` (solar.c), `LevelUpper_Create` (level_upper.c), `Entity0866_Create` (entity_0866.c), `Entity6367_Create` (entity_6367.c), `Entity0800f110_Create` (entity_0800f110.c), `Duneyrr_Create` (boss/duneyrr.c), `Dvalinn_Create` (boss/dvalinn.c), `Entity0623_Create` (boss/entity_0623.c), `BossShadeMan_Create` (boss/shademan.c)
+- **Description**: every `X_Create` has the same body — `p = CreateEntity(ENTITY_KIND, sizeof(X));` then `if (p != NULL) { SetEntityRoutine(p, X_Update, X_Destroy); if (X_Init(p) < 0) { KillEntity((Entity*)p); return NULL; } }` then `return p;`. Write it verbatim from a matched sibling before analyzing the asm; the only per-function choices are the entity kind, the size argument (`sizeof(X)` vs a bare number — both appear), and whether `X_Init` takes extra arguments.
+- Singleton entities add a global guard, and the two spellings are NOT interchangeable — they differ in branch direction (see `agbcc-quirks.md`). `if (g == NULL) { ...body...; return p; } return g;` (`Entity080de11c_Create`, `UnkSolarEntity_Create`, `LevelUpper_Create`, `Entity0800f110_Create`) vs the early return `if (g != NULL) { return g; }` followed by the unindented body (`GameOverManager_Create`, and the boss files where the "existing instance" comes from `FUN_08022a2c(BOSS_*)` rather than a global: `Duneyrr_Create`, `Dvalinn_Create`, `BossShadeMan_Create`). Pick whichever puts the allocation on the fall-through path in the target.

@@ -169,7 +169,7 @@ _0822B076:
 	adds r1, r6, #0
 	adds r2, r5, #0
 	mov r3, sl
-	bl FUN_0822a574
+	bl DrawSprite_0822a574
 _0822B082:
 	ldr r4, [r4, #0x28]
 	cmp r4, #0

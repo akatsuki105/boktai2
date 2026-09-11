@@ -1,6 +1,6 @@
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_08060c60
+	bl Player_StopEneChargeSound
 	ldr r1, _08078568 @ =0x000003CE
 	adds r0, r4, r1
 	movs r1, #0

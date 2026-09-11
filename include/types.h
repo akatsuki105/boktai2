@@ -15,6 +15,7 @@ typedef s32 armor32_t;
 typedef u8 coffin8_t;
 typedef s16 coffin16_t;
 
+// include/constants/songs.h
 typedef u16 SoundID16;
 typedef u32 SoundID32;
 

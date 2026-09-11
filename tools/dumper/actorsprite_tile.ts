@@ -63,7 +63,7 @@ const main = () => {
         const tileID = f.metasprites[metaspriteStart].tileID; // アクターの最初のメタスプライトのtileID
         const from: addr = tilebase + (tileID * 32);
         const legnth = tileCount * 32;
-        const bpp = new Uint8Array(gba.getSlice(rom, from, legnth)).slice(0, legnth);
+        const bpp = gba.copyBytes(rom, from, legnth).slice(0, legnth);
         const bppPath = path.join(outDir, `${gba.toHex16(actorID)}.4bpp`);
         Deno.writeFileSync(bppPath, bpp);
 
@@ -105,4 +105,4 @@ const main = () => {
     .parse(Deno.args);
 };
 
-main();
+if (import.meta.main) main();

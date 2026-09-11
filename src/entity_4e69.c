@@ -40,7 +40,15 @@ s32 FUN_080220e8(Entity4E69* p, UnkStruct52* data) {
   return 0;
 }
 
-INCASM("asm/entity_4e69.inc");
+NAKED s32 FUN_08022104(Entity4E69* p, UnkStruct52* data) { INCFUNC("asm/func/FUN_08022104.inc"); }
+
+NAKED unknown* FUN_08022128(Entity4E69* p, unknown* q) { INCFUNC("asm/func/FUN_08022128.inc"); }
+
+NAKED void FUN_0802216c(Entity4E69* p) { INCFUNC("asm/func/FUN_0802216c.inc"); }
+
+NAKED void FUN_080221b8(Entity4E69* p, UnkStruct52* q, void* param_3) { INCFUNC("asm/func/FUN_080221b8.inc"); }
+
+NAKED void FUN_080221e0(Entity4E69* p, UnkStruct52* q, void* param_3) { INCFUNC("asm/func/FUN_080221e0.inc"); }
 
 NAKED void FUN_080221fc(Entity4E69* p, UnkStruct52* q, void* _) { INCFUNC("asm/func/FUN_080221fc.inc"); }
 

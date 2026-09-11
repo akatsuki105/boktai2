@@ -1,6 +1,6 @@
 	push {r4, lr}
 	bl FUN_0822d114
-	bl FUN_0822b238
+	bl Video_ResetObjTileAlloc
 	ldr r0, _0822A274 @ =0x03003534
 	ldr r0, [r0]
 	bl _call_via_r0

@@ -2,12 +2,12 @@
 
 import { Command } from "@cliffy/command";
 import * as gba from "../common/gba/gba.ts";
-import { CHARMAP_PATH, decode, findTerminatorSeq, formatByteDump, indexOfSeq, parseCharmap, READ_WINDOW } from "./decode_string.ts";
+import { decode, findTerminatorSeq, formatByteDump, indexOfSeq, parseCharmap, READ_WINDOW } from "./string.ts";
 import * as mft from "../parser/mft.ts";
 import { getScriptDirectory } from "../parser/script.ts";
 import type { addr } from "../common/gba/gba.ts";
 
-// decode_string.ts のバッチスクリプト (アドレスでなく 文字列ID で指定する)
+// string.ts のバッチスクリプト (アドレスでなく 文字列ID で指定する)
 //
 // e.g. decode_string_batch.ts 32 48
 //   -> ID 32 から 47 まで(END_ID は含まない)をダンプする
@@ -17,11 +17,12 @@ import type { addr } from "../common/gba/gba.ts";
 const main = () => {
   new Command()
     .name("decode_string_batch.ts")
-    .description("tmp/string_addr.txt 由来の文字列アドレスを使って、指定した ID 範囲を decode_string.ts と同じロジックでバッチデコードする。")
+    .description("tmp/string_addr.txt 由来の文字列アドレスを使って、指定した ID 範囲を string.ts と同じロジックでバッチデコードする。")
     .argument("<rom:string>", "Path to a GBA ROM file.")
+    .argument("<charmap:string>", "Path to the charmap.txt file.")
     .argument("<start:number>", "開始ID。")
     .argument("[end:number]", "終了ID(含まない)。省略時は start + 1。")
-    .action((_, romPath, startID, endID) => {
+    .action((_, romPath, charmapPath, startID, endID) => {
       const endIndex = endID ?? startID + 1;
 
       const rom = new DataView((Deno.readFileSync(romPath)).buffer);
@@ -33,12 +34,12 @@ const main = () => {
         Deno.exit(1);
       }
 
-      const charmap = parseCharmap(CHARMAP_PATH);
+      const charmap = parseCharmap(Deno.readTextFileSync(charmapPath));
       const termSeq = findTerminatorSeq(charmap);
 
       for (let idx = startID; idx < endIndex; idx++) {
         const addr: addr = stringAddrs[idx];
-        const window = new Uint8Array(gba.getSlice(rom, addr, READ_WINDOW));
+        const window = gba.copyBytes(rom, addr, READ_WINDOW);
 
         const body = decode(window, charmap);
         if (body !== null) {

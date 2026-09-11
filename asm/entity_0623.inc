@@ -397,18 +397,3 @@ FUN_08221938: @ 0x08221938
 FUN_08221ae0: @ 0x08221AE0
   .include "asm/func/FUN_08221ae0.inc"
 
-	thumb_func_start FUN_08221ca8
-FUN_08221ca8: @ 0x08221CA8
-  .include "asm/func/FUN_08221ca8.inc"
-
-	thumb_func_start FUN_08221ccc
-FUN_08221ccc: @ 0x08221CCC
-  .include "asm/func/FUN_08221ccc.inc"
-
-	thumb_func_start Entity0623_Init
-Entity0623_Init: @ 0x08221CF8
-  .include "asm/func/Entity0623_Init.inc"
-
-	thumb_func_start Entity0623_Create
-Entity0623_Create: @ 0x0822222C
-  .include "asm/func/Entity0623_Create.inc"

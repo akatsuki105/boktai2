@@ -57,8 +57,8 @@ NAKED void FUN_08210610(WeaponDexMenu* p) { INCFUNC("asm/func/FUN_08210610.inc")
 
 void FUN_082106a4(WeaponDexMenu* p) {
   SpriteState* cursor = &p->cursor;
-  cursor->offsetX = p->cursorX * 24;
-  cursor->offsetY = p->cursorY * 24;
+  cursor->pos.x = p->cursorX * 24;
+  cursor->pos.y = p->cursorY * 24;
 }
 
 NAKED void FUN_082106c8(WeaponDexMenu* p) { INCFUNC("asm/func/FUN_082106c8.inc"); }

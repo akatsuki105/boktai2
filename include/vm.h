@@ -119,8 +119,6 @@ typedef struct SubroutineTable {
   const Subroutine* arr;         // gSubroutineTableN
 } SubroutineTable;
 
-extern SubroutineTable gCtrlHandlers1;
-extern SubroutineTable gCtrlHandlers2;
 extern SubroutineTable* gCtrlHandlers;  // SubroutineTable のリンクリスト, これが制御命令のハンドラ, なんでこんな構造にしてるのか全くわからん
 
 s32 VM_AddCtrlHandlers(SubroutineTable*);  // gCtrlHandlers に gCtrlHandlers1 or gCtrlHandlers2 を追加する
@@ -139,5 +137,6 @@ u8* VM_DecodeValue(u8* pc, s32* type, void* val);
 
 s32 Script_ExecById(u32 scriptID, ScriptArgs* args);
 bool32 Script_ExecBlock(u8* pc, ScriptArgs* args, s32 varidx);
+s32 Script_ExecByPointer(u8* pc, ScriptArgs* args);
 
 #endif  // __INCLUDE_VM_H__

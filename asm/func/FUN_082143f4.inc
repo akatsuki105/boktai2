@@ -45,7 +45,7 @@ _08214442:
 	cmp r2, #0
 	beq _082144AE
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r6, [sp]
 	movs r0, #0
 	movs r1, #0
@@ -53,7 +53,7 @@ _08214442:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r6, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -61,7 +61,7 @@ _08214442:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r6, [sp]
 	movs r0, #3
 	movs r1, #0

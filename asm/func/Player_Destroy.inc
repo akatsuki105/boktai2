@@ -22,7 +22,7 @@
 	adds r0, r4, #0
 	bl FUN_0807ddd4
 	adds r0, r4, #0
-	bl FUN_08060c60
+	bl Player_StopEneChargeSound
 	ldr r0, _0807F39C @ =0x03002BA8
 	movs r1, #0
 	str r1, [r0]

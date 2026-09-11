@@ -26,7 +26,7 @@ _0821931C:
 	cmp r1, #0
 	beq _082193F6
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r5, #0
 	str r5, [sp]
 	movs r0, #0
@@ -35,7 +35,7 @@ _0821931C:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r5, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -43,7 +43,7 @@ _0821931C:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r5, [sp]
 	movs r0, #3
 	movs r1, #0
@@ -571,7 +571,7 @@ _08219848:
 	adds r0, r6, #0
 	bl FUN_08217bcc
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r4, #0
 	str r4, [sp]
 	movs r0, #0
@@ -580,7 +580,7 @@ _08219848:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -588,7 +588,7 @@ _08219848:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #3
 	movs r1, #0
@@ -763,7 +763,7 @@ _082199E2:
 	cmp r1, #0
 	beq _08219A3E
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r4, #0
 	str r4, [sp]
 	movs r0, #0
@@ -772,7 +772,7 @@ _082199E2:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -780,7 +780,7 @@ _082199E2:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #3
 	movs r1, #0
@@ -850,7 +850,7 @@ _08219A90:
 	adds r0, r6, #0
 	bl FUN_08217bcc
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r4, #0
 	str r4, [sp]
 	movs r0, #0
@@ -859,7 +859,7 @@ _08219A90:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -867,7 +867,7 @@ _08219A90:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #3
 	movs r1, #0
@@ -965,7 +965,7 @@ _08219B82:
 	cmp r1, #0
 	beq _08219B94
 	movs r0, #2
-	bl FUN_082403d0
+	bl Sound_FadeOutBGMTemporarily
 _08219B94:
 	ldr r0, [r6, #0x60]
 	cmp r0, #0x1f
@@ -1127,7 +1127,7 @@ _08219CC2:
 	cmp r0, #0x1e
 	bne _08219D7E
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r4, #0
 	str r4, [sp]
 	movs r0, #0
@@ -1136,7 +1136,7 @@ _08219CC2:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -1144,7 +1144,7 @@ _08219CC2:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #3
 	movs r1, #0
@@ -1168,7 +1168,7 @@ _08219D14:
 	movs r1, #0
 	bl Script_ExecById
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r4, #0
 	str r4, [sp]
 	movs r0, #0
@@ -1177,7 +1177,7 @@ _08219D14:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -1185,7 +1185,7 @@ _08219D14:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #3
 	movs r1, #0

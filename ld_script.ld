@@ -11,7 +11,6 @@ SOUND_INFO_PTR = 0x03007FF0;
 
 gMaxLines = 0;
 gNumMusicPlayers = 32;
-gSongTable = 0x0825E56C;
 
 gCtrlHandlers2_ROM = 0x08DBD758;
 
@@ -24,6 +23,10 @@ gParticleFile0 = 0x08A20138;
 gSpriteSetFile25 = 0x08C5A80C;
 
 gItemEffectHandlers = 0x085ACF7C;
+
+/* gba-mus-ripper が出したやつ(意味はわからない) */
+voicegroup000 = 0x08252fc0;
+voicegroup019 = 0x0825a280;
 
 SECTIONS {
 	. = 0x2000000;
@@ -41,6 +44,18 @@ SECTIONS {
     ALIGN(4)
     {
       src/iwram1.o(iwram_data);
+      src/vm.o(iwram_data);
+      src/vm_ctrl1.o(iwram_data);
+      src/code_082326a0.o(iwram_data);
+      src/hitbox.o(iwram_data);
+      src/code_08236f18.o(iwram_data);
+      src/code_0823a6c0.o(iwram_data);
+      src/vm_ctrl2.o(iwram_data);
+      src/vm_subroutine.o(iwram_data);
+      src/entity_b8b9.o(iwram_data);
+      src/entity_08240a54.o(iwram_data);
+      src/entity_794c.o(iwram_data);
+      src/entity_b639.o(iwram_data);
       src/solar.o(iwram_data);
       src/sound.o(iwram_data);
       src/solar_sensor.o(iwram_data);
@@ -50,6 +65,9 @@ SECTIONS {
       *libc.a:syscalls.o(.bss);
       src/lib/m4a.o(.bss.code);
       src/iwram2.o(iwram_data);
+      src/entity_b639.o(COMMON);
+      src/solar.o(COMMON);
+      src/code_08243660.o(COMMON);
       src/sound.o(COMMON);
       src/solar_sensor.o(COMMON);
       src/lib/librfu_stwi.o(iwram_data);
@@ -78,13 +96,24 @@ SECTIONS {
 			src/entity_0866.o (.text);
 			src/entity_0800a89c.o (.text);
 			src/solar_bamboo.o (.text);
-			src/code_08009a58.o (.text);
+			src/entity_aa65.o (.text);
+			src/entity_c9bc.o (.text);
+			src/entity_55c2.o (.text);
+			src/entity_0800f110.o (.text);
+			src/entity_b426.o (.text);
+			src/entity_4d4d.o (.text);
+			src/entity_329b.o (.text);
+			src/entity_95f8.o (.text);
+			src/entity_b0bc.o (.text);
+			src/entity_e534.o (.text);
 			src/password.o (.text);
 			src/code_08013288.o (.text);
 			src/code_08013634.o (.text);
 			src/entity_08013df0.o (.text);
 			src/entity_080146e0.o (.text);
 			src/code_08013c94.o (.text);
+			src/entity_e435.o (.text);
+			src/code_08017b70.o (.text);
 			src/entity_da0b.o (.text);
 			src/entity_ef6f.o (.text);
 			src/entity_6d69.o (.text);
@@ -103,7 +132,7 @@ SECTIONS {
 			src/code_08052eb8.o (.text);
 			src/code_0805f6d4.o (.text);
 			src/code_0805ff04.o (.text);
-			src/code_080601f0.o (.text);
+			src/entity_08060470.o (.text);
 			src/entity_080607a8.o (.text);
 			src/player.o (.text);
 			src/player_08065988.o (.text);
@@ -118,7 +147,12 @@ SECTIONS {
 			src/gameover.o (.text);
 			src/freeze_effect.o (.text);
 			src/level_upper.o (.text);
-			src/code_080a8804.o (.text);
+			src/entity_080a8ff8.o (.text);
+			src/healing_effect.o (.text);
+			src/entity_4063.o (.text);
+			src/entity_080a9e88.o (.text);
+			src/entity_87fe.o (.text);
+			src/entity_080aace8.o (.text);
 			src/entity_c438.o (.text);
 			src/code_080aafdc.o (.text);
 			src/entity_cbb0.o (.text);
@@ -131,6 +165,7 @@ SECTIONS {
 			src/code_080c0d6c.o (.text);
 			src/boss/jormungandr.o (.text);
 			src/entity_e06a.o (.text);
+			src/entity_c814.o (.text);
 			src/code_080c5058.o (.text);
 			src/entity_080ddf88.o (.text);
 			src/enemy/boku.o (.text);
@@ -169,6 +204,7 @@ SECTIONS {
 			src/entity_4ddf.o (.text);
 			src/intro.o (.text);
 			src/code_08213880.o (.text);
+			src/entity_6367.o (.text);
 			src/entity_0fc5.o (.text);
 			src/code_0821b21c.o (.text);
 			src/entity_0821b7fc.o (.text);
@@ -176,11 +212,11 @@ SECTIONS {
 			src/boss/entity_0623.o (.text);
 			src/game_result.o (.text);
 			src/entity_8aab.o (.text);
-			src/system.o (.text);
+			src/interrupts.o (.text);
 			src/video.o (.text);
 			src/code_0822f204.o (.text);
 			src/sprite_0822f284.o (.text);
-			src/code_0822f650.o (.text);
+			src/sprite_0822f650.o (.text);
 			src/code_0823071c.o (.text);
 			src/malloc.o (.text);
 			src/entity.o (.text);
@@ -190,7 +226,6 @@ SECTIONS {
 			src/vm_ctrl1.o (.text);
 			src/vm_expr.o (.text);
 			src/code_082326a0.o (.text);
-			src/code_082324dc.o (.text);
 			src/hitbox.o (.text);
 			src/code_08236f18.o (.text);
 			src/lib/linkManager.o (.text);
@@ -205,6 +240,7 @@ SECTIONS {
 			src/entity_08240a54.o (.text);
 			src/entity_794c.o (.text);
 			src/code_0823e174.o (.text);
+			src/entity_b639.o (.text);
 			src/solar.o (.text);
 			src/item_082421f0.o (.text);
 			src/weapon.o (.text);
@@ -265,9 +301,10 @@ SECTIONS {
 	ALIGN(4)
 	{
     src/data.o (.rodata);
-    src/system.o (.rodata);
+    src/interrupts.o (.rodata);
     src/lib/m4a_tables.o (.rodata);
     src/sound.o (.rodata);
+    src/data/songs.o (.rodata);
     src/lib/librfu_rfu.o (.rodata);
     src/lib/librfu_sio32id.o (.rodata);
     src/lib/agb_eeprom_data.o (.rodata);
@@ -302,6 +339,13 @@ SECTIONS {
     src/entity_83b2.o (.rodata);
     src/entity_0866.o (.rodata);
     src/entity_0800a89c.o (.rodata);
+    src/solar_bamboo.o (.rodata);
+    src/entity_c9bc.o (.rodata);
+    src/entity_0800f110.o (.rodata);
+    src/entity_329b.o (.rodata);
+    src/entity_e534.o (.rodata);
+    src/password.o (.rodata);
+    src/entity_080146e0.o (.rodata);
     src/data3b.o (.rodata);
     src/player.o (.rodata);
     src/entity_0b50.o (.rodata);
@@ -310,6 +354,7 @@ SECTIONS {
     src/weapon_dex.o (.rodata);
     src/album_menu.o (.rodata);
     src/data3d.o (.rodata);
+    src/entity_6367.o (.rodata);
     src/entity_0fc5.o (.rodata);
     src/boss/entity_0623.o (.rodata);
     src/game_result.o (.rodata);

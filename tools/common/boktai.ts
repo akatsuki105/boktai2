@@ -1,12 +1,10 @@
 import * as gba from "./gba/gba.ts";
 
-export type gameid = "U32J" | "U32J_rev1";
-
+export type gameid = "U32J" | "U32J_rev1" | "U33J";
 export type Region = "J"; // J: Japanese, TODO: support USA version
 
 type GameMeta = {
   id: gameid;
-  supported: boolean;
   seriesNumber: number; // 1, 2, 3
   region: Region; // J: Japanese
 };
@@ -14,14 +12,17 @@ type GameMeta = {
 const GAME_META = {
   "U32J": {
     id: "U32J",
-    supported: true,
     seriesNumber: 2,
     region: "J",
   },
   "U32J_rev1": {
     id: "U32J_rev1",
-    supported: true,
     seriesNumber: 2,
+    region: "J",
+  },
+  "U33J": {
+    id: "U33J",
+    seriesNumber: 3,
     region: "J",
   },
 } as Record<gameid, GameMeta>;

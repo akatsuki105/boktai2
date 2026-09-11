@@ -38,6 +38,15 @@ typedef struct {
   void* unk_04;
 } Unk_0203b000;
 
+// FUN_08230eec が u32_ARRAY_0203f400 のテーブルに登録するレコード
+typedef struct {
+  u32 id : 16;
+  u32 unk_02 : 8;
+  u32 count : 8;
+  u16* values;
+} Unk_0203f400;
+static_assert(sizeof(Unk_0203f400) == 8);
+
 // 0x085af0ec
 typedef struct {
   u16 unk_0;     // 0x000
@@ -70,7 +79,5 @@ static_assert(sizeof(UnkStruct52) == 52);  // 52バイトなのは確定, FUN_08
 
 s32 FUN_080223f4(UnkStruct52* p, u32 val1, s32 val2);
 s32 FUN_08022428(UnkStruct52* p);
-
-// --------------------------------------------
 
 #endif  // __INCLUDE_STRUCT_H__

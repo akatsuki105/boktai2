@@ -50,7 +50,7 @@ _08227644:
 	adds r0, r7, r2
 	movs r1, #0x8d
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, _082276AC @ =0x00000D9C
 	adds r5, r7, r0
 	ldrh r0, [r4, #8]

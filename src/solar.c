@@ -7,6 +7,12 @@
 
 IWRAM_DATA UnkSolarEntity* gUnkSolarEntity = NULL;  // 0x03001708
 
+COMMON_DATA u16 u16_03004864 = 0;
+COMMON_DATA ALIGNED(4) u16 u16_03004868 = 0;
+COMMON_DATA ALIGNED(4) u16 u16_0300486c = 0;
+COMMON_DATA ALIGNED(4) u16 u16_03004870 = 0;
+COMMON_DATA ALIGNED(4) u16 u16_ARRAY_03004874[6] = {};
+
 u32 FUN_0823d9ec(u32 y0, u32 m0, u32 d0, u32 y1, u32 m1, u32 d1);
 
 NAKED void FUN_08241650(void) { INCFUNC("asm/func/FUN_08241650.inc"); }
@@ -15,7 +21,7 @@ NAKED bool32 FUN_08241690(void) { INCFUNC("asm/func/FUN_08241690.inc"); }
 
 NAKED void FUN_082416bc(void) { INCFUNC("asm/func/FUN_082416bc.inc"); }
 
-NAKED void FUN_082416c8(void) { INCFUNC("asm/func/FUN_082416c8.inc"); }
+void FUN_082416c8(void) { u16_03004864 = 0; }
 
 NAKED bool32 FUN_082416d4(void) { INCFUNC("asm/func/FUN_082416d4.inc"); }
 

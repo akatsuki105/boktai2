@@ -10,6 +10,24 @@ static_assert(sizeof(Entity0623) == 3076);
 
 INCASM("asm/entity_0623.inc");
 
+NAKED s32 Entity0623_Update(Entity0623* p) { INCFUNC("asm/func/Entity0623_Update.inc"); }
+
+NAKED s32 Entity0623_Destroy(Entity0623* p) { INCFUNC("asm/func/Entity0623_Destroy.inc"); }
+
+NAKED s32 Entity0623_Init(Entity0623* p, u32 id) { INCFUNC("asm/func/Entity0623_Init.inc"); }
+
+Entity0623* Entity0623_Create(u32 id) {
+  Entity0623* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity0623));
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity0623_Update, Entity0623_Destroy);
+    if (Entity0623_Init(p, id) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
+
 const u8 u8_ARRAY_085affa8[16] = {
     0x9, 0x9, 0x9, 0x9, 0x6, 0x6, 0xB, 0xB, 0x6, 0x8, 0x9, 0x9, 0xA, 0xA, 0x6, 0x6,
 };  // 0x085affa8

@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "particle.h"
+#include "sprite.h"
 
 typedef struct {
   Particle base;  // 0x00
@@ -16,11 +17,15 @@ static_assert(sizeof(LevelUpParticle) == 60);  // 根拠: LevelUpper_EmitLevelUp
 // 現在の経験値を確認して、レベルアップする場合はレベルアップ処理を行う。
 // またその際のパーティクルやSEなどの演出処理も行う。
 typedef struct LevelUpper {
-  Entity e;    // ENTITY_UNK_9
-  u32 unk_18;  // 0x18, なんかのフラグっぽい
-  u8 unk_1c[0x68 - 0x1C];
-  s16 weaponLv[5];  // 0x68, 武器レベル, = GameInfo.weaponExp[n]/100
-  u8 unk_72[2];
+  Entity e;                  // 0x00, ENTITY_UNK_9
+  q_SpriteNode44 q_node;     // 0x18, sprite を指す描画ノード, 根拠: LevelUpper_Init_Helper_080a86cc / LevelUpper_Destroy
+  ActorSpriteState sprite;   // 0x44, 根拠: LevelUpper_Init_Helper_080a86cc
+  u16 unk_60;                // 0x60, LevelUpper_Update
+  u16 unk_62;                // 0x62, LevelUpper_Update
+  u16 unk_64;                // 0x64, FUN_080a841c
+  u16 unk_66;                // 0x66
+  s16 weaponLv[5];           // 0x68, 武器レベル, = GameInfo.weaponExp[n]/100
+  u8 unk_72[2];              // 0x72
   u32 nextExp;               // 0x74, 次にレベルアップする総経験値量
   u32* expTable;             // 0x78, 経験値テーブルの先頭アドレス, 常に 0x08D09FE8
   void* p_7c;                // 0x7C, なんかのアドレス, 根拠: 0x080a83c4
@@ -62,4 +67,18 @@ NAKED void LevelUpper_Init_Helper_080a8704(LevelUpper* p) { INCFUNC("asm/func/Le
 
 NAKED s32 LevelUpper_Init(LevelUpper* p) { INCFUNC("asm/func/LevelUpper_Init.inc"); }
 
-NAKED LevelUpper* LevelUpper_Create(void) { INCFUNC("asm/func/LevelUpper_Create.inc"); }
+LevelUpper* LevelUpper_Create(u32 _) {
+  LevelUpper* p;
+  if (gLevelUpper == NULL) {
+    p = CreateEntity(ENTITY_UNK_9, sizeof(LevelUpper));
+    if (p != NULL) {
+      SetEntityRoutine(p, LevelUpper_Update, LevelUpper_Destroy);
+      if (LevelUpper_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gLevelUpper;
+}

@@ -1282,7 +1282,7 @@ ActorSpriteFile0: @ 0x08A2291C
     .incbin "data/actor_sprites/mummy_1.4bpp"              @ 0x08A29710, ActorID: 0xD4EE, PlttID: 23, マミー
     .incbin "data/actor_sprites/mummy_2.4bpp"              @ 0x08A2AE30, ActorID: 0x924B, PlttID: 23, マミー
     .incbin "data/actor_sprites/grating.4bpp"              @ 0x08A2C2F0, ActorID: 0x2C12, PlttID: 28, 鳴り床(上を歩くと音が鳴る床)
-    .incbin "data/actor_sprites/8F5D.4bpp"                 @ 0x08A2CE70, ActorID: 0x8F5D, PlttID: 29, 斬撃っぽいエフェクトと水の入ったような入れ物
+    .incbin "data/actor_sprites/8F5D.4bpp"                 @ 0x08A2CE70, ActorID: 0x8F5D, PlttID: 29, 斬撃っぽいエフェクト と 太陽鍛治で使う水桶
     .incbin "data/actor_sprites/7AEE.4bpp"                 @ 0x08A2DE70, ActorID: 0x7AEE, PlttID: 42, 扉
     .incbin "data/actor_sprites/7AEF.4bpp"                 @ 0x08A2EB70, ActorID: 0x7AEF, PlttID: 42, 扉
     .incbin "data/actor_sprites/7AF0.4bpp"                 @ 0x08A2F430, ActorID: 0x7AF0, PlttID: 42, 扉
@@ -1328,7 +1328,7 @@ ActorSpriteFile0: @ 0x08A2291C
     .incbin "data/actor_sprites/tomb.4bpp"                 @ 0x08A4C890, ActorID: 0x05A2, PlttID: 139, 大聖堂の(偽物の)墓
     .incbin "data/actor_sprites/34C0.4bpp"                 @ 0x08A4CD90, ActorID: 0x34C0, PlttID: 142, 大聖堂の水晶をはめる穴あたりの壁?
     .incbin "data/actor_sprites/spider.4bpp"               @ 0x08A4D090, ActorID: 0x528F, PlttID: 143, スパイダー
-    .incbin "data/actor_sprites/7AD2.4bpp"                 @ 0x08A4EF50, ActorID: 0x7AD2, PlttID: 146, 鉄格子の扉
+    .incbin "data/actor_sprites/door_iron.4bpp"            @ 0x08A4EF50, ActorID: 0x7AD2, PlttID: 146, 鉄格子の扉
     .incbin "data/actor_sprites/slime.4bpp"                @ 0x08A4FB50, ActorID: 0xB96C, PlttID: 147, スライム
     .incbin "data/actor_sprites/slime_debris_l.4bpp"       @ 0x08A51590, ActorID: 0x7031, PlttID: 147, スライムの破片(大)
     .incbin "data/actor_sprites/slime_debris_s.4bpp"       @ 0x08A51610, ActorID: 0x7032, PlttID: 147, スライムの破片(小)
@@ -1483,7 +1483,7 @@ ActorSpriteFile0: @ 0x08A2291C
 		.incbin "data/actor_sprites/5B54.4bpp"                 @ 0x08B37650, ActorID: 0x5B54, PlttID: 529, ダイナマイトで壊せる壁
 		.incbin "data/actor_sprites/cactus.4bpp"               @ 0x08B38250, ActorID: 0x04B3, PlttID: 283
 		.incbin "data/actor_sprites/4FDA.4bpp"                 @ 0x08B38E50, ActorID: 0x4FDA, PlttID: 531
-		.incbin "data/actor_sprites/863A.4bpp"                 @ 0x08B39E50, ActorID: 0x863A, PlttID: 275
+		.incbin "data/actor_sprites/863A.4bpp"                 @ 0x08B39E50, ActorID: 0x863A, PlttID: 275, 燃える(爆発?)エフェクト
 		.incbin "data/actor_sprites/8638.4bpp"                 @ 0x08B3A670, ActorID: 0x8638, PlttID: 275
 		.incbin "data/actor_sprites/duneyrr.4bpp"              @ 0x08B3D110, ActorID: 0x61F9, PlttID: 547, ドゥネイルの出すエフェクトや芋虫(ドゥネイル本体は spriteset)
 		.incbin "data/actor_sprites/2058.4bpp"                 @ 0x08B43130, ActorID: 0x2058, PlttID: 558, 武器屋(シャイアンの店)の内装?

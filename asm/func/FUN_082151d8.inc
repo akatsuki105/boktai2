@@ -29,7 +29,7 @@
 	adds r0, #0xf4
 	adds r7, r5, r0
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #0
 	str r0, [sp]
 	movs r1, #0

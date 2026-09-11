@@ -405,7 +405,7 @@ _080E2230:
 _080E224A:
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _080E2268
 	.align 2, 0
 _080E2254: .4byte 0x0000047A
@@ -508,7 +508,7 @@ _080E2304:
 _080E2314:
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _080E2334
 	.align 2, 0
 _080E2320: .4byte 0x0000047E
@@ -542,7 +542,7 @@ _080E2340:
 	bne _080E236C
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _080E2378
 	.align 2, 0
 _080E2364: .4byte 0x0000047A
@@ -631,7 +631,7 @@ _080E23F4:
 	bne _080E2420
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _080E242C
 	.align 2, 0
 _080E2418: .4byte 0x0000047A
@@ -725,7 +725,7 @@ _080E24B8:
 _080E24C8:
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _080E24E8
 	.align 2, 0
 _080E24D4: .4byte 0x0000047E

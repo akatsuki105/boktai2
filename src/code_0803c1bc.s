@@ -15961,7 +15961,7 @@ FUN_08048554: @ 0x08048554
 	str r6, [r0]
 	adds r5, r6, #0
 	adds r5, #0x18
-	bl FUN_0822ec58
+	bl nop_0822ec58
 	bl FUN_0822ec5c
 	movs r0, #0x72
 	bl VM_SeekToKeyword
@@ -18027,7 +18027,7 @@ _0804951A:
 	ldrb r1, [r5]
 	lsls r4, r0, #8
 	orrs r4, r1
-	bl FUN_0822e860
+	bl Video_GetZenkakuCharCount
 	cmp r4, r0
 	blo _0804953A
 	adds r0, r6, #0
@@ -20455,7 +20455,7 @@ FUN_0804a660: @ 0x0804A660
 	cmp r0, #0
 	beq _0804A680
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r4, #0
 	bl FUN_0804a604
 	ldrb r0, [r4, #0x1a]
@@ -26554,7 +26554,7 @@ FUN_0804d394: @ 0x0804D394
 	lsls r0, r0, #1
 	adds r7, r6, r0
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r4, #0
 	strb r4, [r6, #0x1f]
 	movs r1, #0xba
@@ -26773,7 +26773,7 @@ FUN_0804d548: @ 0x0804D548
 	adds r0, r6, r0
 	str r0, [sp]
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r3, #0
 	movs r2, #0xb5
 	lsls r2, r2, #1
@@ -26939,7 +26939,7 @@ FUN_0804d698: @ 0x0804D698
 	beq _0804D6AE
 	movs r0, #0
 	strb r0, [r1]
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 _0804D6AE:
 	ldr r0, _0804D6CC @ =0x03004508
 	ldrh r1, [r0]
@@ -26969,7 +26969,7 @@ FUN_0804d6d0: @ 0x0804D6D0
 	beq _0804D6E6
 	movs r0, #0
 	strb r0, [r1]
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 _0804D6E6:
 	ldr r0, _0804D704 @ =0x03004508
 	ldrh r1, [r0]
@@ -27186,7 +27186,7 @@ FUN_0804d868: @ 0x0804D868
 	lsls r0, r0, #1
 	adds r7, r5, r0
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r1, #0xba
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -27247,7 +27247,7 @@ _0804D8CE:
 	bl Script_ExecById
 _0804D8F8:
 	movs r0, #4
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	pop {r4, r5, r6, r7}
 	pop {r0}
 	bx r0
@@ -27653,7 +27653,7 @@ FUN_0804dbe0: @ 0x0804DBE0
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r3, #0
 	movs r0, #0xb5
 	lsls r0, r0, #1
@@ -29611,22 +29611,22 @@ FUN_0804ea1c: @ 0x0804EA1C
 	strh r0, [r2]
 	movs r0, #1
 	bl FUN_0822b41c
-	ldr r1, _0804EA5C @ =FUN_0822e738
-	ldr r2, _0804EA60 @ =FUN_0822b09c
+	ldr r1, _0804EA5C @ =nop_0822e738
+	ldr r2, _0804EA60 @ =nop_0822b09c
 	ldr r3, _0804EA64 @ =FUN_0822f584
 	movs r0, #0
 	bl FUN_0822a448
 	movs r0, #7
 	bl FUN_0809c08c
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	pop {r0}
 	bx r0
 	.align 2, 0
 _0804EA54: .4byte 0x03003E78
 _0804EA58: .4byte 0xFFFFF9FF
-_0804EA5C: .4byte FUN_0822e738
-_0804EA60: .4byte FUN_0822b09c
+_0804EA5C: .4byte nop_0822e738
+_0804EA60: .4byte nop_0822b09c
 _0804EA64: .4byte FUN_0822f584
 
 	thumb_func_start FUN_0804ea68
@@ -29757,7 +29757,7 @@ _0804EB6C:
 	cmp r0, #4
 	bne _0804EBB4
 	movs r0, #1
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	adds r0, r4, #0
 	bl FUN_0804ea1c
 	adds r0, r4, #0
@@ -29806,7 +29806,7 @@ FUN_0804ebc4: @ 0x0804EBC4
 	movs r0, #0
 	strb r0, [r4, #0x19]
 	movs r0, #1
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	adds r0, r4, #0
 	bl FUN_0804ea1c
 	bl FUN_0804e5bc

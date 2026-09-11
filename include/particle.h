@@ -14,12 +14,15 @@
 #define PTCL_GROUP_1 0x1C1C
 #define PTCL_GROUP_2 0x1C1E
 
+typedef u8 ParticleGroupFlags;  // ParticleGroup.flags
+#define PGFLAG_BPP8 (1 << 4)    // 0x10, 8bpp
+
 typedef struct ParticleGroup {
-  u16 id;      // 0x00
-  u8 unk_02;   // 0x02
-  u8 shape;    // 0x03
-  u16 tile;    // 0x04, Start index of this particle group in the tiles array, number of tiles per particle is implied by the shape field.
-  u16 plttID;  // 0x06
+  u16 id;                    // 0x00
+  ParticleGroupFlags flags;  // 0x02, see ParticleGroupFlags
+  u8 shape;                  // 0x03
+  u16 tile;                  // 0x04, Start index of this particle group in the tiles array, number of tiles per particle is implied by the shape field.
+  u16 plttID;                // 0x06
 } ParticleGroup;
 static_assert(sizeof(ParticleGroup) == 8);
 
@@ -40,23 +43,25 @@ ParticleGroup* GetParticleGroup(u16 ptclID);
 // --------------------------------------------
 
 typedef struct Particle {
-  u32 unk_0;  // 0x00
-  u8 unk_4;   // 0x04
-  u8 unk_5[8 - 5];
-  u16 unk_8;        // 0x08
+  u32 flags;        // 0x00
+  u8 active;        // 0x04
+  s8 q_scaleX;      // 0x05
+  s8 q_scaleY;      // 0x06
+  u8 q_rotation;    // 0x07
+  u16 tileNum;      // 0x08
   u8 spriteWidth;   // 0x0A
   u8 spriteHeight;  // 0x0B
-  s8 unk_c;         // 0x0C
-  s8 unk_d;         // 0x0D
-  u8 unk_e;         // 0x0E
-  u8 unk_f;         // 0x0F
-  u8 unk_10;        // 0x10
-  u8 unk_11;        // 0x11
+  s8 q_offsetX;     // 0x0C
+  s8 q_offsetY;     // 0x0D
+  u8 plttSlot;      // 0x0E
+  u8 priority;      // 0x0F
+  u8 q_zOffset;     // 0x10
+  u8 listIdx;       // 0x11
   u8 unk_12[2];
-  u32 unk_14;               // 0x14
-  Vec3 pos;                 // 0x18
-  struct Particle* unk_20;  // 0x20
-  struct Particle* unk_24;  // 0x24
+  u32 oamAttr01;          // 0x14
+  Vec3 pos;               // 0x18
+  struct Particle* prev;  // 0x20
+  struct Particle* next;  // 0x24
 } Particle;
 static_assert(sizeof(Particle) == 40);  // 　FUN_0822a3c4 から 40バイト以上は確定 で 0x0805fdfe のループでは 40バイトずつアドレスが増えていくので、 40バイトで確定と思われる
 

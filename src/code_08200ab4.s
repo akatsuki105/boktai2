@@ -84,7 +84,7 @@ FUN_08200b38: @ 0x08200B38
 	ldr r0, [r0, #0xc]
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	pop {r0}
 	bx r0
 
@@ -93,7 +93,7 @@ FUN_08200b48: @ 0x08200B48
 	push {lr}
 	ldr r0, [r0, #0xc]
 	ldr r1, _08200B58 @ =0x00000231
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	pop {r0}
 	bx r0
 	.align 2, 0
@@ -5352,7 +5352,7 @@ FUN_082033d0: @ 0x082033D0
 	bl Video_GetActorSprite
 	ldr r1, _08203478 @ =0x00000236
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, _0820347C @ =0x0000922E
 	ldr r1, _08203480 @ =0x000038E2
 	bl GetFile
@@ -6174,7 +6174,7 @@ FUN_08203a0c: @ 0x08203A0C
 	bl Video_GetActorSprite
 	ldr r1, _08203A8C @ =0x00000236
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, _08203A90 @ =0x0000922E
 	ldr r1, _08203A94 @ =0x00001752
 	bl GetFile
@@ -8646,7 +8646,7 @@ FUN_08204bf8: @ 0x08204BF8
 	bl Video_GetActorSprite
 	ldr r1, _08204C74 @ =0x00000235
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, _08204C78 @ =0x0000922E
 	ldr r1, _08204C7C @ =0x000038E2
 	bl GetFile

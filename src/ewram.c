@@ -1,7 +1,6 @@
 #include "global.h"
-#include "malloc.h"
 
-EWRAM_DATA u8 gTilemapFileBuffer[65536] = {};  // 0x02021400, 圧縮されたTilemapFileはここに展開して読み出す, 圧縮されてないならROMから直接読み込むのでここは使われない
+EWRAM_DATA u8 gTilemapFileBuffer[0x10000] = {};  // 0x02021400, 圧縮されたTilemapFileはここに展開して読み出す, 圧縮されてないならROMから直接読み込むのでここは使われない
 
 EWRAM_DATA u8 gDecompressedCollisionMapFile[16384] = {};  // 0x02031400, CollisionMapFile が圧縮されている場合、ここに展開してファイル内容を読み込む, 圧縮されていないならROMから直接読み込むのでここは使われない
 
@@ -11,7 +10,7 @@ EWRAM_DATA u8 u8_02035c00[0x1000] = {};  // todo
 
 EWRAM_DATA u8 u8_ARRAY_02036c00[512] = {};  // 0x02036C00
 
-EWRAM_DATA u16 gSlowBgPlttBuffer[256] = {};  // 0x02036e00
+EWRAM_DATA rgb555 gSlowBgPlttBuffer[256] = {};  // 0x02036e00
 
 EWRAM_DATA u8 gTilemapBuffer[BG_SCREEN_SIZE * 4] = {};  // 0x02037000, BG0, BG1, BG2, BG3 のタイルマップのバッファ
 

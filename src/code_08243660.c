@@ -2,6 +2,8 @@
 
 typedef void SaveData;  // 解析が進んできたら普通にvoidにする予定, gSystemSaveData, gWorld, gStat, &gStat->unk_3b8
 
+COMMON_DATA u8 u8_03004880[16] = {};
+
 NAKED s32 FUN_08243660(void) { INCFUNC("asm/func/FUN_08243660.inc"); }
 
 NAKED u32 FUN_082436dc(void) { INCFUNC("asm/func/FUN_082436dc.inc"); }

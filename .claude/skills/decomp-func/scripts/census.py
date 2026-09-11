@@ -17,14 +17,17 @@ REPO = Path(
 
 
 def collect_targets():
-    """src/ の各 .c ファイルを行ごとに走査して NAKED / NON_MATCH 関数を収集する。
+    """src/ 以下(src/lib/ を除く)の各 .c ファイルを行ごとに走査して NAKED / NON_MATCH 関数を収集する。
 
     NAKED の場合:    同じ行に INCFUNC がある
     NON_MATCH の場合: #else ブロック内に INCFUNC がある
     """
     targets = {}  # name -> inc の相対パス
 
-    for src_file in sorted((REPO / "src").glob("*.c")):
+    for src_file in sorted(REPO.glob("src/**/*.c")):
+        # src/lib/ はライブラリのコードなので対象外
+        if src_file.relative_to(REPO).parts[1] == "lib":
+            continue
         state = None        # "NON_MATCH" | None
         current_name = None
         in_else = False     # #else に入ったかどうか

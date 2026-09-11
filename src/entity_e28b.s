@@ -781,10 +781,10 @@ _08002F14:
 	movs r0, #2
 	movs r1, #0xc
 	movs r2, #0x2c
-	bl FUN_0822ceb4
+	bl Video_SetBLDCNTDirect
 	movs r0, #0
 	movs r1, #0x10
-	bl FUN_0822cec8
+	bl Video_SetBLDALPHADirect
 	ldr r0, _08002F3C @ =0x00007BE3
 	adds r1, r6, #0
 	movs r2, #0

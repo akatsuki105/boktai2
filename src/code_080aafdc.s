@@ -1550,7 +1550,7 @@ _080ABB6A:
 	adds r1, r4, #0
 	adds r1, #0x2c
 	adds r0, r6, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r0, #2
 	strb r0, [r7, #7]
 	ldr r0, [r7]
@@ -1577,7 +1577,7 @@ _080ABB6A:
 	ldr r0, _080ABC14 @ =0x00000113
 	adds r1, r2, r0
 	adds r0, r6, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r1, #1
 	strb r1, [r4, #7]
 	ldr r0, [r7, #0x48]
@@ -4284,7 +4284,7 @@ _080ACFAC:
 	ldr r3, _080AD098 @ =0x000001D3
 	adds r1, r1, r3
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, [r6]
 	adds r0, #1
 	ands r0, r7

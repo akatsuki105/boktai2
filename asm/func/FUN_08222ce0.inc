@@ -12,7 +12,7 @@
 	adds r0, r4, r1
 	movs r1, #0x8c
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, _08222D34 @ =0x00000F04
 	adds r2, r4, r0
 	ldr r0, _08222D38 @ =0x00000DD4

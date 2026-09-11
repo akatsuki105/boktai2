@@ -1,7 +1,17 @@
 #include "entity.h"
-#include "entity_unk.h"
 #include "global.h"
 #include "sprite.h"
+
+struct Entity2UnkData;
+
+typedef struct {
+  Entity e;  // ENTITY_UNK_2
+  struct Entity2UnkData* unk_18;
+  struct Entity2UnkData* unk_1c;
+} EntityB8B9;
+static_assert(sizeof(EntityB8B9) == 32);
+
+IWRAM_DATA EntityB8B9* gEntityB8B9 = NULL;  // 0x030016F8
 
 void FUN_0823b1ec(void) {
   gEntityB8B9 = NULL;

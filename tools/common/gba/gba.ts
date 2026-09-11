@@ -10,7 +10,7 @@ export const getU16BE = (rom: DataView, address: addr) => rom.getUint16(address 
 export const getS16 = (rom: DataView, address: addr) => rom.getInt16(address - BASE, true);
 export const getU32 = (rom: DataView, address: addr) => rom.getUint32(address - BASE, true);
 export const getS32 = (rom: DataView, address: addr) => rom.getInt32(address - BASE, true);
-export const getSlice = (rom: DataView, address: addr, bytesize: number): ArrayBufferLike => rom.buffer.slice(address - BASE, address - BASE + bytesize);
+export const copyBytes = (rom: DataView, address: addr, bytesize: number): Uint8Array => new Uint8Array(rom.buffer.slice(address - BASE, address - BASE + bytesize));
 
 export const toHex = (val: number, maxLength: number): string => {
   const abs = Math.abs(val);

@@ -21,7 +21,7 @@ _0822A2C8:
 	subs r0, #1
 	cmp r0, #0
 	bge _0822A2C8
-	bl FUN_0822b238
+	bl Video_ResetObjTileAlloc
 	movs r0, #1
 	bl FUN_0822b41c
 	pop {r4}

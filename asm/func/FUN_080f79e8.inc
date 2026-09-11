@@ -108,7 +108,7 @@ _080F7AB2:
 	bne _080F7ADC
 	ldr r0, [r6, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _080F7AE8
 	.align 2, 0
 _080F7ACC: .4byte 0x0000048A

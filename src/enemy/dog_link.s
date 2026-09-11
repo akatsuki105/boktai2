@@ -19434,7 +19434,7 @@ _081CF252:
 	bne _081CF2B0
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081CF2BC
 	.align 2, 0
 _081CF2A0: .4byte 0x000006C4

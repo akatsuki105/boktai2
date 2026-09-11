@@ -21,7 +21,7 @@ export const parseSpritePlttFile = (rom: DataView, start: addr): SpritePlttFile 
 
   const unk_02 = gba.getU16(rom, start + 2);
   const bytelength = length * 32;
-  const body = new Uint8Array(gba.getSlice(rom, start + 4, bytelength)).slice(0, bytelength);
+  const body = gba.copyBytes(rom, start + 4, bytelength).slice(0, bytelength);
 
   return { length, unk_02, body };
 };
@@ -30,5 +30,5 @@ export const getPlttData = (rom: DataView, plttID: number): Uint8Array => {
   const meta = boktai.getGameMeta(rom);
   const plttBase = PlttDataBase[meta.id];
   const plttStart = plttBase + (plttID * 32);
-  return new Uint8Array(gba.getSlice(rom, plttStart, 32)).slice(0, 32);
+  return gba.copyBytes(rom, plttStart, 32).slice(0, 32);
 };

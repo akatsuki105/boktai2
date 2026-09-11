@@ -2560,7 +2560,7 @@ _0801C968:
 	mov r1, ip
 	strb r0, [r1]
 	strb r0, [r3]
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	adds r0, r5, #0
 	movs r1, #0
 	bl FUN_0801c114

@@ -58,7 +58,7 @@ _0807B096:
 	movs r2, #0
 	bl FUN_08060b84
 	adds r0, r5, #0
-	bl FUN_08060c60
+	bl Player_StopEneChargeSound
 _0807B0B2:
 	pop {r4, r5}
 	pop {r0}

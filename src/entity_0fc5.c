@@ -1,7 +1,7 @@
 #include "entity.h"
 #include "global.h"
 
-typedef struct Entity0FC5 {
+typedef struct {
   Entity e;  // 0x0, ENTITY_UNK_8
   u8 unk_18[392 - 0x18];
 } Entity0FC5;
@@ -10,6 +10,10 @@ static_assert(sizeof(Entity0FC5) == 392);
 void FUN_0821abfc(Entity0FC5*);
 
 INCASM("asm/entity_0fc5.inc");
+
+NAKED s32 Entity0FC5_Update(Entity0FC5* p) { INCFUNC("asm/func/Entity0FC5_Update.inc"); }
+
+NAKED s32 Entity0FC5_Destroy(Entity0FC5* p) { INCFUNC("asm/func/Entity0FC5_Destroy.inc"); }
 
 NAKED s32 Entity0FC5_Init(Entity0FC5* p) { INCFUNC("asm/func/Entity0FC5_Init.inc"); }
 

@@ -13,10 +13,9 @@ extern u16 gEntityCount;
 extern bool32 bool32_03004788;
 extern u32 u32_03004798;
 extern u16 gPlayerCount;
-extern u16 u16_0300486c;
-extern u16 u16_03004870;
-extern u16 u16_ARRAY_03004874[6];
 extern u32 u32_ARRAY_0203f400[256];
+
+extern u32 u32_030047a0;  // 0x030047A0
 
 #define FLAG030047A4_UNK_0 (1 << 0)      // 0x1, セットされていると、(フィールドで)START/SELECTボタンを押しても何も起きない(その他のアクションはできる), メニュー画面では特に影響なし
 #define FLAG030047A4_UNK_9 (1 << 9)      // 0x200, マップ切り替え時, 会話中にセット
@@ -28,7 +27,8 @@ extern u32 gFlag030047a4;                // 0x030047A4
 // --------------------------------------------
 
 void FUN_0809c464(void);
-void FUN_0822a4e0(void* p);
+struct q_SpriteNode44;  // include/sprite_actor.h
+void FUN_0822a4e0(struct q_SpriteNode44* p);
 bool32 FUN_08234de8(unknown* p, u32 param_2, u32 param_3, u32 param_4);
 
 #endif  // GUARD_ZOKTAI_DEFINITION_H

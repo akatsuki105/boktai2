@@ -7,6 +7,9 @@
 // Awesome https://boktaihacking.net/wiki/Master_file_table
 
 // directory id
+#define DIR_OBJPLTT 0x9B1B
+#define DIR_ANIMATION 0x922E
+#define DIR_FONT 0xA635
 #define DIR_SCRIPT 0xA8D9
 
 struct mft_directory;
@@ -18,7 +21,8 @@ typedef struct {
   const struct mft_directory* directory;
 } mft_header;
 
-// NOTE: This applies to all directories, EXCEPT for the script directory. That has its own format.
+// スクリプトは独自のフォーマットを持つ (see ScriptDirectory in "include/vm.h")
+// 他のデータも1つしかファイルがなくて、そこに独自のフォーマットで複数の子データを格納している場合が多く、あまり有効にこの仕組みを使っていない
 typedef struct mft_directory {
   u32 num_entries;
   u32 offset_to_id_array;    // Relative to the start of this struct

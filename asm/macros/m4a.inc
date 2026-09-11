@@ -1,10 +1,10 @@
 .ifndef GUARD_MACROS_M4A_INC
 .set GUARD_MACROS_M4A_INC, 1
 
-	.macro song label, music_player, unknown
+	.macro song label, music_player, max_effect
 	.4byte \label
 	.2byte \music_player
-	.2byte \unknown
+	.2byte \max_effect
 	.endm
 
 	.macro music_player info_struct, track_struct, length, unknown_2

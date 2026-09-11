@@ -1412,7 +1412,7 @@ _08050256:
 	cmp r0, #0x14
 	bne _08050268
 	movs r0, #4
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 _08050268:
 	ldr r0, [r4, #0x24]
 	cmp r0, #0x59

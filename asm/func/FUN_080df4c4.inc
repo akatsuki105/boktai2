@@ -22,7 +22,7 @@ _080DF4D0:
 	bl FUN_0822a470
 	adds r0, r6, #0
 	ldr r1, _080DF534 @ =0x00000272
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	adds r0, r7, #0
 	adds r0, #0x3c
 	adds r0, r0, r5

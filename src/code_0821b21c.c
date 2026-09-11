@@ -1,6 +1,6 @@
 #include "global.h"
 
-INCASM("asm/code_0821b21c.inc");
+NAKED bool32 FUN_0821b21c(unknown* param_1, s32 val1, s32 val2, u16 val3) { INCFUNC("asm/func/FUN_0821b21c.inc"); }
 
 NAKED void FUN_0821b28c(u32 x8, u32 y8, u32 w8, u32 h8) { INCFUNC("asm/func/FUN_0821b28c.inc"); }
 

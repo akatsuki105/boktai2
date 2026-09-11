@@ -15886,7 +15886,7 @@ _081295C2:
 	bne _081295F8
 	ldr r0, [r6, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _08129604
 	.align 2, 0
 _081295DC: .4byte 0x00000121
@@ -24073,7 +24073,7 @@ _0812D52E:
 	bne _0812D568
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _0812D574
 _0812D568:
 	ldr r2, [r7, #0x44]

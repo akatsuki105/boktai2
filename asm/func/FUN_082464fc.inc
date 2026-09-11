@@ -80,7 +80,7 @@ _08246566:
 	ldrb r1, [r5, #2]
 	ldr r2, _0824661C @ =0x0000015F
 	adds r1, r1, r2
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	mov r0, r8
 	mov r1, sl
 	movs r2, #0

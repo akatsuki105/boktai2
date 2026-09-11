@@ -6106,7 +6106,7 @@ _0816D8AA:
 	adds r0, r4, #0
 	movs r1, #0xc0
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, _0816D910 @ =0x0000922E
 	ldr r1, _0816D914 @ =0x000029FB
 	bl GetFile
@@ -10879,7 +10879,7 @@ _0816FDE6:
 	bne _0816FE34
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _0816FE40
 	.align 2, 0
 _0816FE24: .4byte 0x00000844

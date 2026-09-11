@@ -180,7 +180,7 @@ _0806C280:
 	ldrb r1, [r1]
 	ldr r2, _0806C2D0 @ =0x00000207
 	adds r1, r1, r2
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, _0806C2D4 @ =0x0000037E
 	adds r1, r6, r0
 	ldrh r0, [r1]

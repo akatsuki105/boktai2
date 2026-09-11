@@ -8,7 +8,7 @@
 FUN_080a7104: @ 0x080A7104
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_082407b8
+	bl Sound_StopAll
 	movs r0, #2
 	bl PlaySound_082406e0
 	movs r0, #0x96

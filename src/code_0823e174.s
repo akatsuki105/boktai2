@@ -108,23 +108,3 @@ FUN_08241508: @ 0x08241508
 FUN_08241550: @ 0x08241550
   .include "asm/func/FUN_08241550.inc"
 
-	thumb_func_start FUN_08241574
-FUN_08241574: @ 0x08241574
-  .include "asm/func/FUN_08241574.inc"
-
-	thumb_func_start EntityB639_Update
-EntityB639_Update: @ 0x082415BC
-  .include "asm/func/EntityB639_Update.inc"
-
-	thumb_func_start EntityB639_Destroy
-EntityB639_Destroy: @ 0x082415C0
-  .include "asm/func/EntityB639_Destroy.inc"
-
-	thumb_func_start EntityB639_Init
-EntityB639_Init: @ 0x082415D8
-  .include "asm/func/EntityB639_Init.inc"
-
-	thumb_func_start EntityB639_Create
-EntityB639_Create: @ 0x0824160C
-  .include "asm/func/EntityB639_Create.inc"
-

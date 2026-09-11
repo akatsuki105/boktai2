@@ -115,6 +115,10 @@ chmod +x "$OUT/compile.sh"
 # assertion[] 行を除去（agbcc では static_assert が利用不可のため）
 sed -i '' '/^extern char assertion\[/d' "$OUT/base.c"
 
+# ファイルスコープの INCASM("asm/xxx.inc") (= asm(".include ...")) を除去
+# 対象関数以外のアセンブリなので採点に不要で、/tmp 側からは相対パスも解決できない
+sed -i '' '/^asm(".*\.include /d' "$OUT/base.c"
+
 # ─────────────────────────────────────────────────────────
 # 4. settings.toml
 # ─────────────────────────────────────────────────────────

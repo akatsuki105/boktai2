@@ -48,7 +48,7 @@ _0823039C:
 	mov r0, r4
 	mov r1, ip
 	mov r3, lr
-	bl FUN_0822f6fc
+	bl DrawSprite_0822f6fc
 _082303AC:
 	ldr r4, [r4, #0x5c]
 	cmp r4, #0

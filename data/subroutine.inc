@@ -121,7 +121,7 @@ gSubroutineTable:
 	.4byte 0x31FF, FUN_0824175c
 	.4byte 0x320C, FUN_0809e3a0
 	.4byte 0x3215, FUN_081d0c38
-	.4byte 0x329B, FUN_08010d34
+	.4byte 0x329B, Entity329B_Create
 	.4byte 0x3361, FUN_080c13a4
 	.4byte 0x33AA, FUN_08001004
 	.4byte 0x33C4, FUN_081df814
@@ -192,7 +192,7 @@ gSubroutineTable:
 	.4byte 0x4CBB, FUN_082405a8
 	.4byte 0x4CCD, FUN_0823d37c
 	.4byte 0x4CDD, FUN_0807dc60
-	.4byte 0x4D4D, FUN_0800fc4c
+	.4byte 0x4D4D, Entity4D4D_Create
 	.4byte 0x4D88, item_0824292c
 	.4byte 0x4DDF, Entity4DDF_Create
 	.4byte 0x4E22, FUN_080eda24
@@ -218,7 +218,7 @@ gSubroutineTable:
 	.4byte 0x54DF, FUN_081d53cc
 	.4byte 0x5517, FUN_08041bd4
 	.4byte 0x554B, FUN_080a07f0
-	.4byte 0x55C2, FUN_0800e45c
+	.4byte 0x55C2, Entity55C2_Create
 	.4byte 0x55C5, FUN_080ac5f4
 	.4byte 0x5645, FUN_08055430
 	.4byte 0x56AD, FUN_0820c3e0
@@ -245,12 +245,12 @@ gSubroutineTable:
 	.4byte 0x610A, FUN_0809c5dc
 	.4byte 0x612E, FUN_08020010
 	.4byte 0x619C, FUN_0823bee8
-	.4byte 0x61A0, FUN_080b3904
+	.4byte 0x61A0, SolarBank_CalcInterestRate
 	.4byte 0x6206, FUN_080a6ec0
 	.4byte 0x6273, FUN_0804a580
 	.4byte 0x62AA, FUN_080ed834
 	.4byte 0x62BC, FUN_080020bc
-	.4byte 0x6367, FUN_0821a83c
+	.4byte 0x6367, Entity6367_Create
 	.4byte 0x6414, FUN_080b21f4
 	.4byte 0x641D, FUN_0821a87c
 	.4byte 0x6487, FUN_0823d2bc
@@ -296,7 +296,7 @@ gSubroutineTable:
 	.4byte 0x7806, FUN_0823d428
 	.4byte 0x7843, FUN_0807d590
 	.4byte 0x78C9, Entity78C9_Create
-	.4byte 0x78EE, FUN_0800a414
+	.4byte 0x78EE, VM_Sub78EE
 	.4byte 0x7935, EngineCall_InitArray
 	.4byte 0x794C, Entity794C_Create
 	.4byte 0x7974, FUN_08047fac
@@ -318,7 +318,7 @@ gSubroutineTable:
 	.4byte 0x7E73, FUN_0801895c
 	.4byte 0x7EBA, FUN_08240a90
 	.4byte 0x7F44, FUN_08224a3c
-	.4byte 0x7F5E, FUN_080b47d8
+	.4byte 0x7F5E, Entity7F5E_Create
 	.4byte 0x7F67, FUN_08224980
 	.4byte 0x800C, FUN_08018d80
 	.4byte 0x8071, Camera_PanTo
@@ -383,7 +383,7 @@ gSubroutineTable:
 	.4byte 0x9519, PasswordScreen_Create
 	.4byte 0x9531, FUN_08005bc8
 	.4byte 0x95A8, Entity95A8_Create
-	.4byte 0x95F8, FUN_080110cc
+	.4byte 0x95F8, Entity95F8_Create
 	.4byte 0x9700, FUN_080e16f4
 	.4byte 0x9763, FUN_0807d438
 	.4byte 0x9769, FUN_0823be10
@@ -430,7 +430,7 @@ gSubroutineTable:
 	.4byte 0xA995, FUN_0808fd8c
 	.4byte 0xA99F, FUN_08223d68
 	.4byte 0xAA62, FUN_0808fcd8
-	.4byte 0xAA65, FUN_0800c7ac
+	.4byte 0xAA65, EntityAA65_Create
 	.4byte 0xAB3C, TextBox_SetVar
 	.4byte 0xAB41, FUN_0823d0e8
 	.4byte 0xAB4E, FUN_080472e0
@@ -450,14 +450,14 @@ gSubroutineTable:
 	.4byte 0xAF8E, FUN_080a94dc
 	.4byte 0xB005, FUN_080a12d8
 	.4byte 0xB0B4, FUN_08009124
-	.4byte 0xB0BC, FUN_0801179c
+	.4byte 0xB0BC, EntityB0BC_Create
 	.4byte 0xB164, LevelUpper_Create
 	.4byte 0xB189, FUN_08207ed0
 	.4byte 0xB1C4, Elevator_Shake
 	.4byte 0xB294, FUN_080554d8
 	.4byte 0xB3D1, EntityB3D1_Create
 	.4byte 0xB3D7, FUN_080eefec
-	.4byte 0xB426, FUN_0800f974
+	.4byte 0xB426, EntityB426_Create
 	.4byte 0xB45F, FUN_0823d6b0
 	.4byte 0xB47E, FUN_080a4fac
 	.4byte 0xB4B4, FUN_08000aec
@@ -505,9 +505,9 @@ gSubroutineTable:
 	.4byte 0xC765, FUN_080a4f54
 	.4byte 0xC783, FUN_081dc63c
 	.4byte 0xC7DC, FUN_080ef048
-	.4byte 0xC814, FUN_080cb770
+	.4byte 0xC814, EntityC814_Create
 	.4byte 0xC946, EntityC946_Create
-	.4byte 0xC9BC, FUN_0800dac8
+	.4byte 0xC9BC, EntityC9BC_Create
 	.4byte 0xCA3D, FUN_082408b8
 	.4byte 0xCA73, EnemyDogLink_Create
 	.4byte 0xCA7D, VM_SubCA7D

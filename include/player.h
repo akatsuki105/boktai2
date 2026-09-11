@@ -6,6 +6,7 @@
 #include "entity.h"
 #include "gba/gba.h"
 #include "hitbox.h"
+#include "particle.h"
 #include "sprite.h"
 #include "struct.h"
 #include "types.h"
@@ -75,15 +76,46 @@ typedef struct Player4c4 {
   // 304バイト, これ以上続くのかは不明
 } Player4c4;
 
+typedef struct {
+  Particle base;         // 0x00
+  u8 unk_2c[52 - 0x28];  // 0x28
+} Particle52;
+static_assert(sizeof(Particle52) == 52);
+
+typedef struct {
+  ParticleGroup* group1;  // 0x00, PTCL_GROUP_1
+  Particle ptcl;          // 0x04
+  u8 unk_2c;              // 0x2C
+  u8 unk_2d;              // 0x2D
+  u8 unk_2e;              // 0x2E, FUN_080613ec
+  u8 unk_2f;              // 0x2F, padding?
+} PlayerParticleGroup1;
+static_assert(sizeof(PlayerParticleGroup1) == 48);
+
+// FUN_08061dd4 で初期化処理がされるが、アクセス方法的に構造体として扱われるっぽい
+typedef struct {
+  ParticleGroup* group;  // 0x00, PTCL_GROUP_2
+  u8 unk_04[4];
+  Particle52 ptcls[6];  // FUN_08061dd4 でのループ回数
+} PlayerParticleState718;
+
+// FUN_08062278 で初期化処理がされるが、アクセス方法的に構造体として扱われるっぽい
+typedef struct {
+  ParticleGroup* group;  // 0x00, PTCL_GROUP_2
+  u8 unk_04[4];
+  Particle52 ptcls[4];  // FUN_08062278 でのループ回数
+} PlayerParticleState858;
+
 // 通常プレイでは gPlayerPtr[0] にこの構造体がある
 // 通信対戦の相手キャラもこの構造体を使う
 typedef struct Player {
   Entity e;
-  u32 unk_18;             // 0x18, 0 or 1 他にもあるか不明
-  u32 unk_1c;             // 0x1C, ステート?, (0: ??, 1: 通常状態, 2: マップ移動などの操作できない状態?, 3: ???, 4: HP0, 5: ???, ...)
-  u32 unk_20;             // 0x20, bitfield
-  Entity2UnkData unk_24;  // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Entity2UnkData
-  SpriteData sprite;      // 0x068, 根拠： FUN_08060a24
+  u32 unk_18;              // 0x18, 0 or 1 他にもあるか不明
+  u32 unk_1c;              // 0x1C, ステート?, (0: ??, 1: 通常状態, 2: マップ移動などの操作できない状態?, 3: ???, 4: HP0, 5: ???, ...)
+  u32 unk_20;              // 0x20, bitfield
+  Entity2UnkData unk_24;   // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Entity2UnkData
+  SpriteSet spriteSet_68;  // 0x068, 根拠： FUN_08060a24
+  SpriteState sprite_88;   // 0x088, 根拠： FUN_08060a24
   u8 unk_e8[0x16C - 0xE8];
   HitboxData unk_16c;  // 0x16C
   u8 unk_1bc;          // 0x1BC, Entity2UnkData.unk_18 が &Player.unk_1bc
@@ -98,14 +130,11 @@ typedef struct Player {
   bool8 isEnchanted;                   // 0x283, エンチャント○○ がアクティブかどうか(プレイヤーが対応する色に光っているかどうか)
   u8 equippedMagicBasicCost;           // 0x284, 装備している魔法の消費MP(マジックローブなどの影響を抜いた元々の消費MP)
   u8 unk_285[0x28C - 0x285];
-  void* input_28c;      // 0x28C, 0x030044E0 (&gInput)
-  u16 unk_290[10];      // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
-  rgb555 pltt_2a4[32];  // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
-  u16 unk_2e4;          // 0x2E4
-  u8 unk_2e6;           // 0x2E6
-  bool8 xflip_2e7;      // 0x2E7, 多分プレイヤーのxflip(0: 右向き, 1: 左向き)
-  u8 unk_2e8;           // 0x2E8, FUN_0801fb08, プレイヤーの向きに関連?
-  u8 unk_2e9[0x34C - 0x2E9];
+  void* input_28c;         // 0x28C, 0x030044E0 (&gInput)
+  u16 unk_290[10];         // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
+  rgb555 pltt_2a4[32];     // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
+  SpriteState sprite_2e4;  // 0x2E4, 根拠: FUN_08060a24
+  u8 unk_344[0x34C - 0x344];
   AnimationFile* anim_34c;  // 0x34C
   AnimationFile* anim_350;  // 0x350
   AnimationFile* anim_354;  // 0x354
@@ -147,14 +176,21 @@ typedef struct Player {
   s32 scriptID_4b0;  // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4c4 - 0x4b4];
   Player4c4 unk_4c4;  // 0x4C4
-  u8 unk_5f4[0x6AC - 0x5F4];
-  u8 unk_6ac[0x704 - 0x6AC];  // 0x6AC
-  AnimationFile* anim_704;    // 0x704
+  u8 unk_5f4[0x64C - 0x5F4];
+  PlayerParticleGroup1 ptcl_64c;  // 0x64C, FUN_08061458
+  PlayerParticleGroup1 ptcl_67c;  // 0x67C, FUN_0806161c
+  q_SpriteNode44 node_6ac;        // 0x6AC, 直後の sprite_6d8 を指すノード, 根拠: FUN_0822a4e0 に渡している
+  ActorSpriteState sprite_6d8;    // 0x6D8, Player_Init_Anim_08061bac
+  u8 unk_6f0[0x704 - 0x6F4];
+  AnimationFile* anim_704;  // 0x704
   u8 unk_708[8];
   u8 unk_710;  // 0x710, Player_Init_Anim_08061bac
   u8 unk_711[3];
-  void* fn_714;  // 0x714, Player_Init_Anim_08061bac シグネチャ不明, FUN_08061680 or FUN_080617bc
-  u8 unk_718[0x94A - 0x718];
+  void* fn_714;                     // 0x714, Player_Init_Anim_08061bac シグネチャ不明, FUN_08061680 or FUN_080617bc
+  PlayerParticleState718 ptcl_718;  // 0x718, 根拠: FUN_08061dd4
+  PlayerParticleState858 ptcl_858;  // 0x858, 根拠: FUN_08062278
+  u8 unk_930[0x94A - 0x930];
+
   u16 plttID_94a;  // 0x94A, FUN_08063084
   s16 unk_94c;     // 0x94C, FUN_08063084
   u8 unk_94e;      // 0x94E, FUN_08062688

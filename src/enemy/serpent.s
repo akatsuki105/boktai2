@@ -11221,7 +11221,7 @@ _0818DE52:
 	bne _0818DEFC
 	ldr r0, [r6, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _0818DF08
 	.align 2, 0
 _0818DEE8: .4byte 0x0000046D
@@ -13340,7 +13340,7 @@ _0818EF0C:
 	bl FUN_0822a470
 	adds r0, r5, #0
 	ldr r1, _0818EF88 @ =0x000001A3
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	mov r0, sp
 	ldrb r0, [r0, #0x14]
 	strb r0, [r4, #0x14]
@@ -20799,7 +20799,7 @@ FUN_08192744: @ 0x08192744
 	adds r0, #0x2c
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, _08192770 @ =0x00000103
 	adds r1, r4, r0
 	movs r0, #6
@@ -20883,7 +20883,7 @@ _081927F8:
 	adds r0, r0, r2
 	ldr r1, _08192854 @ =0x000001A3
 	str r3, [sp, #0x10]
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r0, [sp, #0xc]
 	strb r4, [r0]
 	ldr r1, [sp, #8]
@@ -21820,7 +21820,7 @@ _08192F20:
 	adds r0, r0, r6
 	movs r1, #0xd4
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _08192F56
 	.align 2, 0
 _08192F3C: .4byte 0x00000684
@@ -21834,7 +21834,7 @@ _08192F40:
 	ldr r1, _08192F5C @ =0x00000684
 	adds r0, r0, r1
 	ldr r1, _08192F60 @ =0x000001A3
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _08192F56:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -26076,7 +26076,7 @@ _08195052:
 	bne _081950D4
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081950E0
 	.align 2, 0
 _081950C0: .4byte 0x00000ED3

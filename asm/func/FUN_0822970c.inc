@@ -13,7 +13,7 @@ _08229720:
 	ldr r1, _082297A0 @ =0x00000DC8
 	adds r0, r4, r1
 	ldr r1, _082297A4 @ =0x00000117
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r2, _082297A8 @ =0x00000DA3
 	adds r0, r4, r2
 	movs r1, #0

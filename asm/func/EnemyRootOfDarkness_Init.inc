@@ -1321,7 +1321,7 @@ _081A6026:
 	bne _081A6062
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081A606E
 _081A6062:
 	ldr r2, [r7, #0x44]

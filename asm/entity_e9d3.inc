@@ -660,7 +660,7 @@ _080B4D06:
 	ldr r1, _080B4D88 @ =0x00000804
 	adds r0, r7, r1
 	ldr r1, _080B4D8C @ =0x00000143
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r0, #4
 	bl FUN_08047a28
 	ldr r1, _080B4D90 @ =0x0000083A
@@ -1162,7 +1162,7 @@ _080B50D0:
 	adds r0, r5, r2
 	ldr r3, _080B5194 @ =0x00000143
 	adds r1, r6, r3
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldrh r0, [r7]
 	adds r0, #1
 	strh r0, [r7]
@@ -1232,7 +1232,7 @@ _080B5198:
 	adds r0, r5, r2
 	ldr r3, _080B523C @ =0x00000143
 	adds r1, r6, r3
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldrh r0, [r7]
 	adds r0, #1
 	strh r0, [r7]
@@ -1285,7 +1285,7 @@ _080B5244:
 	adds r0, r5, r7
 	ldr r2, _080B529C @ =0x00000143
 	adds r1, r6, r2
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldrh r0, [r4]
 	adds r0, #1
 	strh r0, [r4]
@@ -1304,7 +1304,7 @@ _080B52A0:
 	ldr r3, _080B5320 @ =0x00000804
 	adds r0, r5, r3
 	ldr r1, _080B5324 @ =0x00000143
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r7, #0x8e
 	lsls r7, r7, #2
 	adds r0, r5, r7

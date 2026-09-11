@@ -1122,7 +1122,7 @@ FUN_08080a10: @ 0x08080A10
 	strh r0, [r4, #0x10]
 	adds r0, r5, #0
 	adds r1, r6, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0
@@ -3529,7 +3529,7 @@ _08081C42:
 	strh r0, [r6, #0x10]
 	adds r0, r4, #0
 	movs r1, #0x32
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r1, #2
 	mov r8, r1
 	mov r2, r8
@@ -10487,7 +10487,7 @@ _080852A8:
 	bl FUN_0822a470
 	adds r0, r5, #0
 	movs r1, #0x32
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r0, #0
 	strh r0, [r4, #0x10]
 	ldr r1, [sp, #8]
@@ -10511,7 +10511,7 @@ _080852A8:
 	bl FUN_0822a470
 	adds r0, r5, #0
 	movs r1, #0x32
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r0, #1
 	strh r0, [r4, #0x10]
 	ldr r1, [sp, #0xc]
@@ -10991,7 +10991,7 @@ FUN_0808567c: @ 0x0808567C
 	rsbs r2, r2, #0
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl FUN_0822a4f8
+	bl nop_0822a4f8
 	movs r0, #6
 	strh r0, [r4, #0x10]
 	movs r0, #1
@@ -11789,7 +11789,7 @@ FUN_08085cb0: @ 0x08085CB0
 	adds r0, #0xb0
 	ldr r2, _08085CE8 @ =0x00000207
 	adds r1, r1, r2
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	adds r0, r4, #0
 	adds r0, #0xbc
 	adds r5, r4, #0
@@ -14354,7 +14354,7 @@ FUN_08086f90: @ 0x08086F90
 	ldr r0, _0808700C @ =0x00000207
 	adds r1, r1, r0
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	adds r0, r6, #0
 	adds r0, #0xbc
 	subs r4, #0x90
@@ -30276,7 +30276,7 @@ _0808EB0A:
 	adds r0, r6, r4
 	ldr r2, _0808EB48 @ =0x00000143
 	adds r1, r7, r2
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	pop {r3}
 	mov r8, r3
 	pop {r4, r5, r6, r7}
@@ -30500,7 +30500,7 @@ _0808ECCA:
 	ldr r2, _0808ED68 @ =0x00000BE4
 	adds r0, r7, r2
 	ldr r1, _0808ED6C @ =0x00000143
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	movs r0, #4
 	bl FUN_08047a28
 	ldr r1, _0808ED70 @ =FUN_0808ef58

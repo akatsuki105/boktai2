@@ -3,6 +3,7 @@
 #include "armor.h"
 #include "global.h"
 #include "item.h"
+#include "sound.h"
 #include "vm.h"
 
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
@@ -134,7 +135,16 @@ void FUN_08060c40(Player* p, u32 val) { p->unk_35a |= val; }
 
 u32 FUN_08060c50(Player* p, u32 mask) { return p->unk_35a & mask; }
 
-NAKED void FUN_08060c60(Player* p) { INCFUNC("asm/func/FUN_08060c60.inc"); }
+// エネルギーチャージ音を止める
+void Player_StopEneChargeSound(Player* p) {
+  if (p->kind != PLAYER_SABATA) {
+    sound_08240740(0xD8);
+    return;
+  }
+  sound_08240740(0x239);
+  sound_08240740(0x202);
+  sound_08240740(0x366);
+}
 
 NAKED u32 FUN_08060c98(unknown* r1, unknown* r2) { INCFUNC("asm/func/FUN_08060c98.inc"); }
 
@@ -275,7 +285,7 @@ NAKED void FUN_08061a98(Player* p, u32 idx, Vec3* pos) { INCFUNC("asm/func/FUN_0
 // 多分、サバタが攻撃する時に呼ばれる
 NAKED void FUN_08061b48(Player* p, u32 _, Vec3* pos) { INCFUNC("asm/func/FUN_08061b48.inc"); }
 
-void FUN_08061b98(Player* p) { FUN_0822a4e0(&p->unk_6ac[0]); }
+void FUN_08061b98(Player* p) { FUN_0822a4e0(&p->node_6ac); }
 
 NAKED void Player_Init_Anim_08061bac(Player* p) { INCFUNC("asm/func/Player_Init_Anim_08061bac.inc"); }
 

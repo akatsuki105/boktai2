@@ -99,7 +99,7 @@ _0807E912:
 	cmp r1, #0
 	bge _0807E912
 	adds r0, r5, #0
-	bl FUN_08060c60
+	bl Player_StopEneChargeSound
 	ldr r1, _0807E964 @ =0x000003CE
 	adds r0, r5, r1
 	movs r2, #0

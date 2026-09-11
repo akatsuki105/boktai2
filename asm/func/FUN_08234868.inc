@@ -59,7 +59,7 @@ _082348B2:
 	beq _082348E8
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0823a8a4
+	bl Script_ExecById_Proxy_0823a8a4
 	b _082348F0
 	.align 2, 0
 _082348E4: .4byte 0xFFFF0000

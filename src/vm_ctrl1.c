@@ -1,6 +1,8 @@
 #include "global.h"
 #include "vm.h"
 
+IWRAM_DATA SubroutineTable gCtrlHandlers1 = {};  // 0x03000770
+
 s32 VM_Ctrl_Switch_Internal(void);
 
 /**

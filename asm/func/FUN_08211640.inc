@@ -8,7 +8,7 @@
 	movs r0, #3
 	str r0, [sp, #0x10]
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	ldr r0, _08211718 @ =0x0000C091
 	ldr r1, _0821171C @ =0x00004F8F
 	bl GetFile

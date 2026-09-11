@@ -8,11 +8,11 @@
 	cmp r4, #0
 	beq _0821B838
 	ldr r1, _0821B830 @ =Entity0821b7fc_Update
-	ldr r2, _0821B834 @ =FUN_0821b73c
+	ldr r2, _0821B834 @ =Entity0821b7fc_Destroy
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_0821b760
+	bl Entity0821b7fc_Init
 	cmp r0, #0
 	bge _0821B838
 	adds r0, r4, #0
@@ -21,7 +21,7 @@
 	b _0821B83A
 	.align 2, 0
 _0821B830: .4byte Entity0821b7fc_Update
-_0821B834: .4byte FUN_0821b73c
+_0821B834: .4byte Entity0821b7fc_Destroy
 _0821B838:
 	adds r0, r4, #0
 _0821B83A:

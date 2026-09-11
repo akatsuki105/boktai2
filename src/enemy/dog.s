@@ -17317,7 +17317,7 @@ _081524E0:
 	bne _08152544
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _08152550
 	.align 2, 0
 _08152530: .4byte 0x000006C4

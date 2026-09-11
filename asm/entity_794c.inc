@@ -4,10 +4,6 @@
 	
 	.text
 
-	thumb_func_start FUN_08240ad4
-FUN_08240ad4: @ 0x08240AD4
-  .include "asm/func/FUN_08240ad4.inc"
-
 	thumb_func_start FUN_08240b00
 FUN_08240b00: @ 0x08240B00
   .include "asm/func/FUN_08240b00.inc"
@@ -71,20 +67,4 @@ FUN_08240ea4: @ 0x08240EA4
 	thumb_func_start FUN_08240f20
 FUN_08240f20: @ 0x08240F20
   .include "asm/func/FUN_08240f20.inc"
-
-	thumb_func_start FUN_08240f4c
-FUN_08240f4c: @ 0x08240F4C
-  .include "asm/func/FUN_08240f4c.inc"
-
-	thumb_func_start FUN_08240f94
-FUN_08240f94: @ 0x08240F94
-  .include "asm/func/FUN_08240f94.inc"
-
-	thumb_func_start FUN_08240fdc
-FUN_08240fdc: @ 0x08240FDC
-  .include "asm/func/FUN_08240fdc.inc"
-
-	thumb_func_start FUN_08241000
-FUN_08241000: @ 0x08241000
-  .include "asm/func/FUN_08241000.inc"
 

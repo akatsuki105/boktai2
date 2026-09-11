@@ -46,7 +46,7 @@ _0822A1C4:
 	orrs r0, r1
 	strh r0, [r2]
 _0822A1FA:
-	bl FUN_0822ed38
+	bl Video_ApplyMosaic
 	ldr r1, _0822A224 @ =0x03003500
 	movs r0, #0
 	str r0, [r1]

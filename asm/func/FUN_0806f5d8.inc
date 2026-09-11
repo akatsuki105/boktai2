@@ -20,7 +20,7 @@
 	adds r1, #0x2c
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_080a8ff8
+	bl Entity080a8ff8_Create
 	ldrh r0, [r5]
 	subs r0, #2
 	strh r0, [r5]

@@ -82,7 +82,7 @@ _08225416:
 	ldr r1, _082254EC @ =0x00000DC8
 	adds r0, r6, r1
 	ldr r1, _082254F0 @ =0x00000117
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _08225496:
 	ldr r2, _082254DC @ =0x00000D9C
 	adds r5, r6, r2

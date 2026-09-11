@@ -48,7 +48,7 @@ _080A7844:
 	ldr r0, [r0]
 	bl FUN_0807adc0
 	movs r0, #2
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	ldr r3, _080A7890 @ =0x00000346
 	adds r0, r5, r3
 	strh r6, [r0]
@@ -73,7 +73,7 @@ _080A789C:
 	cmp r6, #1
 	bne _080A7918
 	movs r0, #2
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	movs r0, #0xb0
 	lsls r0, r0, #2
 	adds r1, r5, r0

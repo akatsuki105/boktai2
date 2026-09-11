@@ -2691,7 +2691,7 @@ _08185A98:
 	bne _08185AB4
 	adds r0, r3, #0
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _08185ABE
 	.align 2, 0
 _08185AB0: .4byte 0x0000047C
@@ -3074,7 +3074,7 @@ _08185D68:
 	ldr r0, [r5, #0x44]
 	adds r0, #0x2c
 	adds r1, r3, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _08185DCC
 	.align 2, 0
 _08185DB0: .4byte 0x0000FFF7
@@ -3138,7 +3138,7 @@ _08185DEE:
 	bne _08185E40
 	ldr r0, [r5, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _08185E4C
 	.align 2, 0
 _08185E38: .4byte 0x000001D9
@@ -7645,7 +7645,7 @@ _08188152:
 	bne _08188194
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081881A0
 	.align 2, 0
 _08188190: .4byte 0x000001BF

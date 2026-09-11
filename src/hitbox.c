@@ -3,7 +3,7 @@
 #include "entity.h"
 #include "global.h"
 
-typedef struct HitboxManager {
+typedef struct {
   Entity e;            // 0x0, ENTITY_UNK_11
   HitboxData* unk_18;  // 0x18
   HitboxData* unk_1c;  // 0x1C
@@ -16,7 +16,9 @@ typedef struct HitboxManager {
 } HitboxManager;
 static_assert(sizeof(HitboxManager) == 204);
 
-extern HitboxManager* gHitboxManager;  // 0x03000780
+IWRAM_DATA HitboxManager* gHitboxManager = NULL;  // 0x03000780
+
+INCASM("asm/hitbox.inc");
 
 void FUN_08236514(HitboxData* p, u32 val1, u32 val2, u32 val3) {
   p->unk_3c = val1;

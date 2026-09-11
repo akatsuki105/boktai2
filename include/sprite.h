@@ -2,59 +2,8 @@
 #define __INCLUDE_SPRITE_H__
 
 #include "gba/gba.h"
-
-// --------------------------------------------
-// https://boktaihacking.net/wiki/Actor_sprites_file
-
-#define ACTOR_SPRITE_COUNT 253
-#define ACTOR_SPRITES_TILECOUNT 42418
-#define ACTOR_SPRITE_SPRITE_COUNT 2164
-
-typedef struct {
-  u16 id;             // 0x00, ID of this actor, used for loading it
-  u16 unk_02;         // 0x02, このゲームでは全て０
-  u8 pw;              // 0x04, pixel width
-  u8 ph;              // 0x05, pixel height
-  s8 px;              // 0x06, offset pixel x
-  s8 py;              // 0x07, offset pixel y
-  u32 spritesOffset;  // 0x08, metasprites[] の先頭からアクターの最初のスプライトまでのバイトオフセット, つまり metasprites[spritesOffset>>3]
-} ActorSpritesActor;
-static_assert(sizeof(ActorSpritesActor) == 12);
-
-// メタスプライト
-typedef struct {
-  u8 subspriteCount;    // 0x00, このメタスプライトを構成する ActorSubsprite の数
-  u8 unk_01;            // 0x01
-  u16 plttID;           // 0x02, ObjPlttFile.body[plttID*16]
-  u32 tileOffset;       // 0x04, tiles[]の先頭からこのスプライトの最初のタイルまでのバイトオフセット, つまり tiles[tileOffset >> 5]
-  u32 subspriteOffset;  // 0x08, subsprites[]の先頭から、このスプライトの最初のsubspritesまでのバイトオフセット, つまり subsprites[subspriteOffset>>2] から subsprites[(subspriteOffset>>2) + subspriteCount] がこのメタスプライトのサブスプライト
-} ActorMetasprite;
-static_assert(sizeof(ActorMetasprite) == 12);
-
-// これがGBAスプライトに対応
-typedef struct {
-  u8 shape;   // 0x00, (OAM1.14-15 << 2) | (OAM0.14-15); (size << 2) | shape
-  u8 unk_01;  // 0x01, このゲームでは全て０
-  s8 x;       // 0x02
-  s8 y;       // 0x03
-} ActorSubsprite;
-static_assert(sizeof(ActorSubsprite) == 4);
-
-typedef struct {
-  u32 unk_00;                                              // 0x000000, 0x0
-  u32 actorCount;                                          // 0x000004, actors[ACTOR_SPRITE_COUNT]
-  u32 unk_08;                                              // 0x000008, 0x0
-  u32 offsetToTiles;                                       // 0x00000C
-  u32 offsetToMetasprites;                                 // 0x000010
-  u32 offsetToSubsprites;                                  // 0x000014
-  ActorSpritesActor actors[ACTOR_SPRITE_COUNT];            // 0x000018, メタスプライトをまとめたもの
-  u8 tiles[ACTOR_SPRITES_TILECOUNT * 32];                  // 0x000BF4, GBA tiles
-  ActorMetasprite metasprites[ACTOR_SPRITE_SPRITE_COUNT];  // 0x14C234, メタスプライト
-  ActorSubsprite subsprites[4641];                         // 0x1527A4, GBAスプライト
-} ActorSpritesFile;
-static_assert(sizeof(ActorSpritesFile) == 1404968);
-
-extern const ActorSpritesFile gActorSpritesFile0;  // 0x08A2291C
+#include "sprite_actor.h"
+#include "sprite_pltt.h"
 
 // --------------------------------------------
 // https://boktaihacking.net/wiki/Sprite_set_file
@@ -131,75 +80,56 @@ typedef struct {
 } SpriteSet;
 static_assert(sizeof(SpriteSet) == 32);
 
-bool32 OpenSpriteSetFile(SpriteSet* data, spriteset_header* f);
-
-// --------------------------------------------
-// https://boktaihacking.net/wiki/Sprite_set_file#Palettes
-
-#define OBJ_PLTT_LENGTH 768
-
-typedef struct {
-  u16 length;                      // 0x00, OBJ_PLTT_LENGTH
-  u16 unk_02;                      // 0x02, ???
-  u16 body[OBJ_PLTT_LENGTH * 16];  // 0x04, RGB555 array
-} ObjPlttFile;
-static_assert(sizeof(ObjPlttFile) == 24580);
-
-extern const ObjPlttFile gObjPlttFile0;  // 0x08CB9244
+s32 OpenSpriteSetFile(SpriteSet* data, spriteset_header* f);
 
 // --------------------------------------------
 
 // スプライト関連のデータ, Player などの様々なEntityでこの構造体が使われる
 typedef struct SpriteState {
-  u16 unk_0;   // 0x00, Metasprite.unk_0
-  u16 unk_2;   // 0x02
-  u8 unk_4;    // 0x04, FUN_0822f1c0
-  u32 unk_8;   // 0x08, FUN_08060a24 で bitfield として使われている
-  u16 unk_c;   // 0x0C
-  u16 unk_e;   // 0x0E
-  u16 unk_10;  // 0x10
-  u16 unk_12;  // 0x12
-  u16 unk_14;  // 0x14
-  u16 unk_16;  // 0x16
-  u16 unk_18;  // 0x18
-  u8 unk_1a;   // 0x1A
-  u8 unk_1b;   // 0x1B
-  u8 unk_1c;   // 0x1C
-  u8 unk_1d;   // 0x1D
-  u8 unk_1e[2];
-  u16 offsetX;  // 0x20, SpriteSet で定義された初期位置 からの X方向のオフセット
-  u16 offsetY;  // 0x22, SpriteSet で定義された初期位置 からの Y方向のオフセット
-  u8 unk_24[4];
-  u16 unk_28;  // 0x28
-  u16 unk_2a;  // 0x2a
-  u16 unk_2c;  // 0x2c
-  u16 unk_2e;  // 0x2e
-  u16 unk_30;  // 0x30
-  u16 unk_32;  // 0x32
-
-  // ここから Video_GetActorSprite の dst?
-  u8 unk_34;           // 0x34
-  u8 unk_35;           // 0x35
-  u16 unk_36;          // 0x36
-  u16 subspriteCount;  // 0x38, Metasprite.subspriteCount
-  u16 plttID;          // 0x3A, &gObjPlttData[plttID*16]
-  u8 unk_3c[12];
-  rgb555* pltt;           // 0x48, &gObjPlttData[plttID*16]
-  Subsprite* subsprites;  // 0x4C, SpriteSet.subsprites[Metasprite.subspriteOffset/sizeof(Subsprite)]
-  u8* tiles;              // 0x50, SpriteSet.tiles
-  u8 unk_54[12];
+  u16 unk_0;                 // 0x00, Metasprite.unk_0
+  u8 unk_2;                  // 0x02, FUN_080609dc
+  u8 unk_3;                  // 0x03, FUN_080609dc
+  u8 active;                 // 0x04, FUN_0822f1c0
+  SpriteFlags flags;         // 0x08, see SpriteFlags, FUN_08060a24
+  u16 unk_c;                 // 0x0C
+  u16 unk_e;                 // 0x0E
+  u16 unk_10;                // 0x10
+  u16 unk_12;                // 0x12
+  u16 unk_14;                // 0x14
+  u16 unk_16;                // 0x16
+  u16 unk_18;                // 0x18
+  u8 priority;               // 0x1A
+  u8 unk_1b;                 // 0x1B
+  u8 listIdx;                // 0x1C, FUN_0822f1c0
+  u8 unk_1d;                 // 0x1D
+  u8 unk_1e[2];              // 0x1E
+  Vec3 pos;                  // 0x20, ワールド座標. flags bit4 が立っていればスクリーン座標としてそのまま使われる, 根拠: FUN_08230134 のアイソメトリック投影と FUN_0822f364 の Vec3 コピー
+  u16 offsetX;               // 0x28, 投影後のスクリーン座標に加算される, Metasprite.unk_4
+  u16 offsetY;               // 0x2A, Metasprite.unk_6
+  s16 q_boxRight;            // 0x2C, 画面外判定に使う矩形, Metasprite.unk_8
+  s16 q_boxBottom;           // 0x2E, Metasprite.unk_a
+  s16 q_boxLeft;             // 0x30, Metasprite.unk_c
+  s16 q_boxTop;              // 0x32, Metasprite.unk_e
+  u8 q_scaleX;               // 0x34, 6.6固定小数, Sprite_LoadSprite で 0x40 (= 1.0) がセットされる
+  u8 q_scaleY;               // 0x35, 同上
+  u16 q_rotation;            // 0x36, gSineTable の索引として使われる
+  u16 subspriteCount;        // 0x38, Metasprite.subspriteCount
+  u16 plttID;                // 0x3A, &gObjPlttData[plttID*16]
+  u32 q_oamAttr;             // 0x3C, OAM attr0 | attr1<<16 のベース値, q_SpriteNode44.q_oamAttr と同じ役割
+  s32 q_unk_40;              // 0x40, FUN_0822f3fc で -1 が入る
+  s32 q_unk_44;              // 0x44, 同上
+  rgb555* pltt;              // 0x48, &gObjPlttData[plttID*16]
+  Subsprite* subsprites;     // 0x4C, SpriteSet.subsprites[Metasprite.subspriteOffset/sizeof(Subsprite)]
+  u8* tiles;                 // 0x50, SpriteSet.tiles
+  u32 q_unk_54;              // 0x54, FUN_0822f3fc で 0 が入る
+  struct SpriteState* prev;  // 0x58, 根拠: FUN_0822a3f0 / FUN_0822a41c
+  struct SpriteState* next;  // 0x5C, 根拠: FUN_0822f1d8
 } SpriteState;
 static_assert(sizeof(SpriteState) == 96);  // 確定したわけではないが、 0x0808b2a0 や プロパティの使い方から見て、96バイトで合っていると思う
-
-// FUN_082372cc の呼び出し(例: 0x081a64f4) で SpriteState にオフセットでアクセスしているので同じ構造体にありそう, また EnemyのInit関数で Malloc(128) しているのも根拠 (例: 0x08101da6)
-typedef struct {
-  SpriteSet tmpl;  // 0x00, スプライトのROMデータを指す構造体
-  SpriteState s;   // 0x20
-} SpriteData;      // 他に特にSprite系の重要な構造体が出てこなかったら、この構造体の名前は Sprite にする予定
-static_assert(sizeof(SpriteData) == 128);
 
 s32 Sprite_LoadSprite(SpriteState* p, SpriteSet* src, u16 spriteIdx);
 s32 Sprite_SetSprite(SpriteState* p, SpriteSet* src, u16 param_3, u8 unk_1b);
 bool32 FUN_082372cc(SpriteState* p, SpriteSet* src);
+void FUN_0822f1c0(SpriteState* p);
 
 #endif  // __INCLUDE_SPRITE_H__

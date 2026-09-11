@@ -7,7 +7,7 @@
 	cmp r0, #0x12
 	beq _08069CAC
 	adds r0, r4, #0
-	bl FUN_08060c60
+	bl Player_StopEneChargeSound
 	adds r0, r4, #0
 	movs r1, #0x12
 	movs r2, #0

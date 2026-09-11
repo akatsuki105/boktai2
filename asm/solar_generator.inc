@@ -1583,7 +1583,7 @@ _080B33C0:
 	adds r0, r2, #0
 	adds r0, #0x44
 	ldr r1, _080B33D4 @ =0x000001C7
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _080B3416
 	.align 2, 0
 _080B33D4: .4byte 0x000001C7
@@ -1594,7 +1594,7 @@ _080B33D8:
 	adds r0, #0x44
 	movs r1, #0xe3
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _080B3416
 _080B33EA:
 	adds r4, r2, #0
@@ -1606,7 +1606,7 @@ _080B33EA:
 	adds r0, #0x44
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldrb r0, [r4]
 	subs r0, #1
 	strb r0, [r4]
@@ -1617,7 +1617,7 @@ _080B3408:
 	adds r1, r2, #0
 	adds r1, #0xee
 	ldrh r1, [r1]
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 _080B3416:
 	pop {r4}
 	pop {r0}
@@ -2178,7 +2178,7 @@ _080B3854:
 	adds r0, #0x44
 	mov r2, r8
 	ldrh r1, [r2]
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	adds r0, r7, #0
 	adds r0, #0xda
 	movs r4, #0

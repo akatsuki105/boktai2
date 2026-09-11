@@ -8,13 +8,15 @@ typedef struct Duneyrr {
 } Duneyrr;
 static_assert(sizeof(Duneyrr) == 1956);
 
-s32 Duneyrr_Init(Duneyrr* p, unknown* param);
-s32 Duneyrr_Update(Duneyrr* p);
-s32 Duneyrr_Destroy(Duneyrr* p);
-
 INCASM("asm/duneyrr.inc");
 
-Duneyrr* Duneyrr_Create(unknown* param) {
+NAKED s32 Duneyrr_Update(Duneyrr* p) { INCFUNC("asm/func/Duneyrr_Update.inc"); }
+
+NAKED s32 Duneyrr_Destroy(Duneyrr* p) { INCFUNC("asm/func/Duneyrr_Destroy.inc"); }
+
+NAKED s32 Duneyrr_Init(Duneyrr* p, u32 id) { INCFUNC("asm/func/Duneyrr_Init.inc"); }
+
+Duneyrr* Duneyrr_Create(u32 id) {
   Duneyrr* p = FUN_08022a2c(BOSS_DUNEYRR);
   if (p != NULL) {
     return p;
@@ -23,7 +25,7 @@ Duneyrr* Duneyrr_Create(unknown* param) {
   p = CreateEntity(ENTITY_UNK_8, sizeof(Duneyrr));
   if (p != NULL) {
     SetEntityRoutine(p, Duneyrr_Update, Duneyrr_Destroy);
-    if (Duneyrr_Init(p, param) < 0) {
+    if (Duneyrr_Init(p, id) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

@@ -1,15 +1,38 @@
 #include "camera.h"
 #include "entity_unk.h"
 #include "global.h"
+#include "vm.h"
 
 void FUN_0822d0e4(void);
 void FUN_08230dc4(bool32 val);
+void FUN_0823b1ec(void);
+
+IWRAM_DATA Entity1_030016a0 gEntity1_030016a0 = {};    // 0x030016A0
+IWRAM_DATA SystemSaveData gSystemSaveDataBuffer = {};  // 0x030016C0
 
 NAKED s32 FUN_0823a6c0(void) { INCFUNC("asm/func/FUN_0823a6c0.inc"); }
 
 NAKED s32 FUN_0823a6fc(void) { INCFUNC("asm/func/FUN_0823a6fc.inc"); }
 
-INCASM("asm/code_0823a6c0.inc");
+NAKED void FUN_0823a730(unknown* p, u32 param_2, u32 param_3, u16 param_4, u32 param_5, unknown* param_6, unknown* param_7) { INCFUNC("asm/func/FUN_0823a730.inc"); }
+
+NAKED void FUN_0823a76c(unknown* p) { INCFUNC("asm/func/FUN_0823a76c.inc"); }
+
+NAKED bool32 FUN_0823a790(unknown* p, unknown* src) { INCFUNC("asm/func/FUN_0823a790.inc"); }
+
+NAKED bool32 FUN_0823a7d8(unknown* p, unknown* dst) { INCFUNC("asm/func/FUN_0823a7d8.inc"); }
+
+NAKED unknown* FUN_0823a840(s32 idx1, s32 idx2, s32 idx3) { INCFUNC("asm/func/FUN_0823a840.inc"); }
+
+void FUN_0823a870(void) { gSystemSaveData = &gSystemSaveDataBuffer; }
+
+s32 FUN_0823a880(u8* pc, ScriptArgs* args) { return Script_ExecByPointer(pc, args); }
+
+s32 FUN_0823a88c(u8* pc, ScriptArgs* args) { return Script_ExecByPointer(pc, args); }
+
+static s32 FUN_0823a898(u32 scriptID, ScriptArgs* args) { return Script_ExecById(scriptID, args); }
+
+s32 Script_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args) { return Script_ExecById(scriptID, args); }
 
 NAKED bool32 FUN_0823a8b0(void) { INCFUNC("asm/func/FUN_0823a8b0.inc"); }
 

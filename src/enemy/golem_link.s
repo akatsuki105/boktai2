@@ -20185,7 +20185,7 @@ _081C2036:
 	bne _081C2060
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081C206C
 	.align 2, 0
 _081C2050: .4byte 0x00000316
@@ -20993,7 +20993,7 @@ _081C25E4:
 	bne _081C26B4
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081C26C0
 	.align 2, 0
 _081C2684: .4byte 0x0000025A
@@ -26963,7 +26963,7 @@ _081C5592:
 	bne _081C55D0
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _081C55DC
 	.align 2, 0
 _081C55CC: .4byte 0x00000201

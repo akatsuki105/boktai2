@@ -6,9 +6,8 @@ type CharmapEntry = {
 };
 
 // charmap.txt のパーサ
-export const ParseFile = (filename: string): CharmapEntry[] => {
-  const charmapFileContent = Deno.readTextFileSync(filename);
-  const lines = charmapFileContent.split("\n");
+export const Parse = (content: string): CharmapEntry[] => {
+  const lines = content.split("\n");
   const charmapEntries: CharmapEntry[] = [];
 
   // line をパースして charmapEntries に追加する

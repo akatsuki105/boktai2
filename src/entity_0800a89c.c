@@ -83,3 +83,5 @@ INCASM("asm/entity_0800a89c.inc");
 NAKED u32 FUN_0800af7c(void) { INCFUNC("asm/func/FUN_0800af7c.inc"); }
 
 NAKED void FUN_0800afb8(void) { INCFUNC("asm/func/FUN_0800afb8.inc"); }
+
+INCASM("asm/entity_0800a89c_part2.inc");

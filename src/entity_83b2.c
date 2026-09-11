@@ -48,6 +48,8 @@ bool32 FUN_080091d0(Entity83B2Data* p) {
   }
 }
 
+NAKED s32 FUN_080091e8(Entity83B2* p, Entity83B2Data* q, s32 idx) { INCFUNC("asm/func/FUN_080091e8.inc"); }
+
 INCASM("asm/entity_83b2.inc");
 
 s32 FUN_080093e0(Entity83B2* p, s32 n) {

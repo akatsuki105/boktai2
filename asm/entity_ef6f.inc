@@ -2259,7 +2259,7 @@ FUN_0801f328: @ 0x0801F328
 	movs r3, #4
 	bl FUN_0823ce68
 	movs r0, #5
-	bl FUN_082403d0
+	bl Sound_FadeOutBGMTemporarily
 _0801F354:
 	ldr r0, [r4, #0x24]
 	cmp r0, #0x1f
@@ -2315,7 +2315,7 @@ FUN_0801f38c: @ 0x0801F38C
 	movs r3, #4
 	bl FUN_0823ce68
 	movs r0, #5
-	bl FUN_082403d0
+	bl Sound_FadeOutBGMTemporarily
 _0801F3C6:
 	ldr r0, [r5, #0x24]
 	cmp r0, #0x1f

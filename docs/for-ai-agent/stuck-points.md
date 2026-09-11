@@ -27,3 +27,7 @@ Just the function name (and file). No detail write-up.
 - `VM_ConvertEucJpToSjis` (`src/vm_ctrl1.c`)
 - `FUN_08231698` (`src/vm.c`)
 - `VM_Ctrl_Switch` (`src/vm_ctrl1.c`)
+- `FUN_0822ea60` (`src/video.c`)
+- `FUN_0822e920` (`src/video.c`)
+- `FUN_0822f364` (`src/sprite_0822f284.c`)
+- `FUN_0822bd28` (`src/video.c`)

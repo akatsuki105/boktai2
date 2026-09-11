@@ -4,8 +4,11 @@
 void FUN_08231780(void);
 void SetMapInitScriptID(u32 n);
 bool32 FUN_0823a8b0(void);
+void FUN_08230eec(Unk_0203f400*);
 
 TaskFn VM_GetSubroutine(u32 subroutineID);
+
+IWRAM_DATA SubroutineTable gCtrlHandlers2 = {};  // 0x030016E8
 
 void* VM_Ctrl_Unused_0BB3(void) { return NULL; }
 
@@ -45,7 +48,23 @@ s32 VM_Ctrl_Call(void) {
 }
 
 // https://boktaihacking.net/wiki/Bytecode#Control_0x22ff_(TODO)
-NAKED void* VM_Ctrl_22FF(void) { INCFUNC("asm/func/VM_Ctrl_22FF.inc"); }
+// スクリプトからIDと可変個のu16値を読み取り、1件のレコードとして FUN_08230eec のテーブルに登録する
+s32 VM_Ctrl_22FF(void) {
+  u16 args[16];
+  Unk_0203f400 rec;
+  u16* p;
+  s16 count;
+
+  rec.id = Script_GetValue();
+  rec.values = args;
+  p = args;
+  for (count = 0; VM_GetPC() != NULL; count++) {
+    *p++ = Script_GetValue();
+  }
+  rec.count = count;
+  FUN_08230eec(&rec);
+  return 0;
+}
 
 void* VM_Ctrl_Unused_C091(void* _) { return _; }
 

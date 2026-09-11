@@ -32,7 +32,7 @@
 	rsbs r1, r1, #0
 	movs r2, #0x13
 	rsbs r2, r2, #0
-	bl FUN_0822a4f8
+	bl nop_0822a4f8
 	movs r6, #0
 	strb r6, [r5, #7]
 	movs r0, #3
@@ -129,7 +129,7 @@ _08229B0E:
 	rsbs r1, r1, #0
 	movs r2, #0x10
 	rsbs r2, r2, #0
-	bl FUN_0822a4f8
+	bl nop_0822a4f8
 	mov r3, r8
 	str r3, [r4]
 	adds r0, r4, #0

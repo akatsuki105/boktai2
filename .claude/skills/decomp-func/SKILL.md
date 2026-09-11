@@ -123,18 +123,20 @@ void* DecompTargetFunc(void) {
 7. Claude sees the diff and the score and proposes a fix. Go back to Step 3 (loop until match).
     [parallel] decomp-permuter can also be run in the background with a full random search to explore (see below) — separate from the `--debug` score check in Step 6b.
     Don't just let the background search run indefinitely hoping for score 0: launch it with `-j2 --stop-on-zero` (not more than `-j2` — higher pins all CPU cores and causes problems; `--stop-on-zero` makes it exit on its own the moment it finds a match instead of continuing to search past it). permuter.py has no time-based timeout flag, so still enforce the ~2 minute cap externally (a background timer + `pkill`) in case zero is never found — then stop it. If it hasn't found score 0 by then, take its best-scoring candidate (`nonmatchings/<dir>/output-<score>-*/source.c` under the perm dir) as feedback — read what structural/register-allocation change it made — and go back to Step 3 to write the next manual candidate informed by that, rather than treating the permuter as the final word or leaving it running unattended.
-    If the iteration loop doesn't finish after 10 iterations, pause and prompt the user for instructions.
+    **Stop condition.** When you start on a function, note the remaining token count shown in the conversation (`N tokens left`). Whenever it is visible again, check how much has been consumed since then. If more than **30,000 tokens** have been consumed, or the loop has reached 10 iterations, leave the best candidate so far as NON_MATCH and stop: put its C inside `#ifdef NONMATCHING_C`, restore the `INCFUNC` in `#else` (restore the `.inc` from git if it was deleted), confirm `make compare` prints OK, and follow "Leaving a function unmatched" below.
     Before checking siblings (Step 2) on a *different* function, check `docs/for-ai-agent/stuck-points.md` — the same function name showing up repeatedly, or several functions stuck in the same area, is a signal worth noticing.
 
 8. `make && sha1sum -c boktai2.sha1` to verify the entire ROM matches
     `./tools/refresh-expected.sh` to update the `expected/` baseline
-    Once MATCHING, the `asm/func/FUNCNAME.inc` is no longer referenced by any `INCFUNC` — confirm with `grep -rn "FUNCNAME.inc" src/*.c` (expect no hits) and delete it.
+    Once MATCHING, the `asm/func/FUNCNAME.inc` is no longer referenced by any `INCFUNC` — confirm with `grep -rn "FUNCNAME.inc" src` (expect no hits) and delete it.
     Add a one-line Japanese comment directly above the function signature summarizing what it does, for human readers (e.g. `// リンクリストからノードを削除する`). Keep it to one line; skip it if an equivalent comment is already present, or if the function's behavior is self-evident from the code itself (e.g. a bare `return 0;`, or a standard `CreateEntity`/`SetEntityRoutine`/init-or-kill entity-creation function). Never write a comment that's just a literal restatement of the code (e.g. "reads pc[1..2] as a little-endian s16 and advances pc by 3" for code that visibly does exactly that) — describe the *meaning*/*purpose*, not the mechanics; if you don't know the meaning, skip the comment rather than paraphrasing the code.
+    **Record the lever.** If reaching MATCHING took a non-obvious C shape — anything you would not have written on the first try, or that you only found by iterating on a streamdiff hunk — write it into `docs/for-ai-agent/agbcc-quirks.md` before moving on. Follow that file's own "New entry, or extend an existing one?" rule: route by the **asm symptom**, so when an entry already covers that symptom, append a bullet and add the function to its Frequency instead of opening a near-duplicate entry. This step is not optional bookkeeping — a lever that stays in the transcript is a lever the next session pays to rediscover.
 
 ## Leaving a function unmatched
 
 Whenever a function is left at NON_MATCH without reaching MATCHING — the
-10-iteration cap was hit, or the user paused it — add an entry to
+stop condition in Step 7 was hit (30,000 tokens or 10 iterations), or the
+user paused it — add an entry to
 `docs/for-ai-agent/stuck-points.md` (format described there) before ending
 the session on that function. Not needed when it ends up MATCHING.
 

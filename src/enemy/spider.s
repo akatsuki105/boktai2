@@ -8074,7 +8074,7 @@ _08131B7A:
 	bne _08131BB4
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _08131BC0
 _08131BB4:
 	ldr r2, [r7, #0x44]

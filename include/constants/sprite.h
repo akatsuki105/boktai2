@@ -51,4 +51,9 @@
 #define SPRITE_DOG_0 0xD635     // 0x081ce84c
 #define SPRITE_WORM_0 0xD636    // 0x081ad228
 
+// Actor Sprite ID
+#define SPRITE_863A 0x863A
+#define SPRITE_9D3F 0x9D3F
+#define SPRITE_SPIKEBALL 0x24BA
+
 #endif  // __INCLUDE_CONSTANTS_SPRITE_H__

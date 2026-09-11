@@ -46,7 +46,7 @@ FUN_080604ec: @ 0x080604EC
 	mov r8, r1
 	adds r4, r2, #0
 	adds r7, r3, #0
-	bl FUN_08060470
+	bl Entity08060470_Create
 	mov sb, r0
 	mov r1, sp
 	bl FUN_080604bc
@@ -514,7 +514,7 @@ _08060846:
 	adds r0, #0x10
 	ldr r1, _08060894 @ =0x00000113
 	add r1, r8
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	mov r2, sb
 	ldr r0, [r2]
 	ldr r1, [r2, #4]

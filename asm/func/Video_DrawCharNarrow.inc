@@ -16,7 +16,7 @@
 	cmp r0, #0
 	blt _0822EBA2
 _0822EB56:
-	bl FUN_0822e87c
+	bl Video_GetHankakuTiles
 	lsls r1, r7, #6
 	adds r6, r0, r1
 	movs r0, #0

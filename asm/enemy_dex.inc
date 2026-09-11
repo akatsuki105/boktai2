@@ -314,7 +314,7 @@ _0820D226:
 	orrs r0, r1
 	strh r0, [r2]
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0

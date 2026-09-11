@@ -51,7 +51,7 @@ _0821B30C:
 	ldrb r1, [r5]
 	lsls r4, r0, #8
 	orrs r4, r1
-	bl FUN_0822e860
+	bl Video_GetZenkakuCharCount
 	cmp r4, r0
 	blo _0821B326
 	adds r6, #2

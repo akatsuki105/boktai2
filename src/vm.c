@@ -20,6 +20,13 @@ extern u32 gScriptDirectoryBuildTime;  // 0x03004594
 
 static const ScriptArgs sEmptyArgs = {0, 0, NULL};  // 引数無しでスクリプトを呼ぶときに束縛されるデフォルトの引数記述子
 
+IWRAM_DATA ScriptTable gScriptTable = {};  // 0x03000748
+IWRAM_DATA StringTable gStringTable = {};  // 0x03000758
+
+IWRAM_DATA SubroutineTable* gCtrlHandlers = NULL;  // 0x03000768
+
+IWRAM_DATA u8 u8_0300076c[4] = {};  // padding?
+
 // https://boktaihacking.net/wiki/Bytecode#Container_lengths
 u8* VM_ReadContainerLength(u8* pc, u32* length) {
   s32 nibble = pc[0] & 0xF;

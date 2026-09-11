@@ -2,7 +2,21 @@
 
 #include "global.h"
 
-NAKED s32 FindFile(u32 fileID, FileID* list, u32 _, s32 start, s32 end) { INCFUNC("asm/func/FindFile.inc"); }
+// ソート済みのファイルID配列を二分探索し、見つからなければ -1 を返す
+s32 FindFile(u32 fileID, FileID* list, u32 _, s32 start, s32 end) {
+  while (start < end) {
+    s32 mid = (start + end) >> 1;
+    if (list[mid] < fileID) {
+      start = mid + 1;
+    } else {
+      end = mid;
+    }
+  }
+  if (list[start] == fileID) {
+    return start;
+  }
+  return -1;
+}
 
 NAKED void* GetAssetFile(mft_directory* d, u32 directoryID, FileID fileID, FileID _) { INCFUNC("asm/func/GetAssetFile.inc"); }
 

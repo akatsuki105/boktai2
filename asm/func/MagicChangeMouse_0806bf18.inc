@@ -226,7 +226,7 @@ _0806C0DC:
 	adds r0, r6, r1
 	ldr r0, [r0]
 	adds r1, #0xe
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r2, _0806C120 @ =0x0000037E
 	adds r1, r6, r2
 	ldrh r0, [r1]

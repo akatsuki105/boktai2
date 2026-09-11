@@ -34,7 +34,7 @@ _08069B44:
 	adds r1, #0x2c
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_080a8ff8
+	bl Entity080a8ff8_Create
 	b _08069B72
 	.align 2, 0
 _08069B68: .4byte 0x000003FA

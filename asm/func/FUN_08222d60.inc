@@ -172,7 +172,7 @@ _08222E96:
 	adds r0, r5, r1
 	movs r1, #0x8c
 	lsls r1, r1, #1
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r2, _08222F08 @ =0x00000DD4
 	adds r1, r5, r2
 	subs r4, #6

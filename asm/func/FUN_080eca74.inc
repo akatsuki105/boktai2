@@ -20,7 +20,7 @@ _080ECA98:
 _080ECA9A:
 	cmp r0, #0
 	bne _080ECABC
-	bl FUN_080db520
+	bl Entity080db520_Create
 	adds r2, r0, #0
 	str r2, [r4, #0x34]
 	cmp r2, #0

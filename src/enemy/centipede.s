@@ -15685,7 +15685,7 @@ _08139A96:
 	bne _08139AE0
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	b _08139AEC
 	.align 2, 0
 _08139AD8: .4byte 0x00000B46

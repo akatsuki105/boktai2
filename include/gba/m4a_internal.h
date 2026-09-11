@@ -216,14 +216,14 @@ struct SoundInfo {
   s8 pcmBuffer[PCM_DMA_BUF_SIZE * 2];
 };
 
-struct SongHeader {
+typedef struct SongHeader {
   u8 trackCount;
   u8 blockCount;
   u8 priority;
   u8 reverb;
   struct ToneData* tone;
   u8* part[1];
-};
+} SongHeader;
 
 #define MPT_FLG_VOLSET 0x01
 #define MPT_FLG_VOLCHG 0x03
@@ -287,10 +287,10 @@ static_assert(sizeof(struct MusicPlayerTrack) == 80);
 
 // a.k.a. MusicPlayerArea
 struct MusicPlayerInfo {
-  struct SongHeader* songHeader;  // 現在のソングポインタ
-  u32 status;                     // ステータス
-  u8 trackCount;                  // トラック数
-  u8 priority;                    // 現在のプライオリティ
+  SongHeader* songHeader;  // 現在のソングポインタ
+  u32 status;              // ステータス
+  u8 trackCount;           // トラック数
+  u8 priority;             // 現在のプライオリティ
   u8 cmd;
   u8 unk_B;
   u32 clock;  // 演奏開始からの通算クロック
@@ -317,11 +317,11 @@ struct MusicPlayer {
   u16 unk_A;
 };
 
-struct Song {
-  struct SongHeader* header;  // 0x0, 曲データ
-  u16 ms;                     // 0x4, 最大ストリーム数, gMPlayTable の index にも使われる
-  u16 me;                     // 0x6, 最大エフェクト数
-};
+typedef struct Song {
+  SongHeader* header;  // 0x0, 曲データ
+  u16 ms;              // 0x4, 最大ストリーム数, gMPlayTable の index にも使われる
+  u16 me;              // 0x6, 最大エフェクト数
+} Song;
 
 extern const struct MusicPlayer gMPlayTable[];
 extern const struct Song gSongTable[];
@@ -361,7 +361,7 @@ void MPlayMain(struct MusicPlayerInfo*);
 void RealClearChain(void* x);
 
 void MPlayContinue(struct MusicPlayerInfo* mplayInfo);
-void MPlayStart(struct MusicPlayerInfo* mplayInfo, struct SongHeader* songHeader);
+void MPlayStart(struct MusicPlayerInfo* mplayInfo, SongHeader* songHeader);
 void m4aMPlayStop(struct MusicPlayerInfo* mplayInfo);
 void FadeOutBody(struct MusicPlayerInfo* mplayInfo);
 void TrkVolPitSet(struct MusicPlayerInfo* mplayInfo, struct MusicPlayerTrack* track);

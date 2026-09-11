@@ -25,7 +25,7 @@ _08213DEC:
 	cmp r0, #0
 	beq _08213E6C
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r4, #0
 	str r4, [sp]
 	movs r0, #0
@@ -34,7 +34,7 @@ _08213DEC:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -42,7 +42,7 @@ _08213DEC:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	str r4, [sp]
 	movs r0, #3
 	movs r1, #0
@@ -331,7 +331,7 @@ _08214042:
 	cmp r1, #0
 	beq _082140C8
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #0
 	str r0, [sp]
 	movs r1, #0
@@ -364,7 +364,7 @@ _0821408A:
 	cmp r1, #0
 	beq _082140C8
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #0
 	str r0, [sp]
 	movs r1, #0
@@ -428,7 +428,7 @@ _08214108:
 	cmp r2, #0
 	beq _0821412C
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #0
 	str r0, [sp]
 	movs r1, #0

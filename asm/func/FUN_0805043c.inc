@@ -29,7 +29,7 @@
 	movs r1, #5
 	bl FUN_0804fbd0
 	movs r0, #4
-	bl sound_fadeout_08240440
+	bl Sound_FadeOutBGM
 	movs r1, #4
 	ldr r0, _080504CC @ =0x03002BC0
 	ldr r0, [r0]

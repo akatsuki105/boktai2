@@ -53,6 +53,7 @@ include make_tools.mk
 # Tool executables
 BOKCC    := $(TOOLS_DIR)/bokcc/main.ts
 GBAGFX  := $(TOOLS_DIR)/gbagfx/gbagfx$(EXE)
+MID2AGB := $(TOOLS_DIR)/mid2agb/mid2agb$(EXE)
 SCANINC := $(TOOLS_DIR)/scaninc/scaninc$(EXE)
 PREPROC := $(TOOLS_DIR)/preproc/preproc$(EXE)
 
@@ -104,6 +105,9 @@ $(shell mkdir -p $(SUBDIRS))
 ifeq ($(MODERN),0)
 # Special configurations required for lib files
 
+$(BUILD_DIR)/src/sprite_0822f650.o: CC1 := tools/agbcc/bin/agbcc_arm$(EXE)
+$(BUILD_DIR)/src/sprite_0822f650.o: CFLAGS := -O2 -mthumb-interwork -quiet
+
 # pret/pokeXXX では old_agbcc を使うが、このゲームでは使わないと思われる
 # 根拠: ビルドが合わない & pretのm4aと異なるソースコード(e.g. SampleFreqSet)を使っている
 # $(BUILD_DIR)/src/lib/m4a.o: CC1 := tools/agbcc/bin/old_agbcc$(EXE)
@@ -120,7 +124,7 @@ else
 endif
 
 # RULES_NO_SCAN: ビルドを伴わないルールの一覧
-RULES_NO_SCAN += clean clean-code clean-scripts clean-graphics
+RULES_NO_SCAN += clean clean-code clean-scripts clean-graphics clean-midi
 .PHONY: all modern compare $(RULES_NO_SCAN)
 
 NODEP ?= 0
@@ -150,6 +154,7 @@ modern: $(ROM)
 compare: $(ROM)
 	@sha1sum -c $(RONNAME).sha1
 	@$(MAKE) syms
+	tools/refresh-expected.sh
 
 syms: $(SYM)
 
@@ -172,6 +177,7 @@ $(SYM): $(ELF)
 		addr=$$2; type=$$4; bind=$$5; ndx=$$7; name=$$8; \
 		if (type=="FUNC") c=(bind=="LOCAL")?"t":"T"; \
 		else if (type=="OBJECT") c=(bind=="LOCAL")?"d":"D"; \
+		else if (type=="NOTYPE" && bind!="LOCAL" && ndx!="UND") c="D"; \
 		else if (ndx=="UND") c="U"; \
 		else next; \
 		if (bind=="WEAK") c=(c ~ /[a-z]/)?"w":"W"; \
@@ -225,3 +231,4 @@ $(BUILD_DIR)/src/data/scripts.o: src/data/scripts.s $(BOKC_BIN) charmap.txt
 # Assets --------------------------------------------
 
 include graphics_file_rules.mk
+include audio_rules.mk

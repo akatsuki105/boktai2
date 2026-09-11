@@ -17,7 +17,7 @@
 	cmp r0, #0
 	blt _0822EC44
 _0822EBE0:
-	bl FUN_0822e898
+	bl Video_GetZenkakuTiles
 	mov r2, sl
 	lsls r1, r2, #7
 	adds r5, r0, r1

@@ -88,7 +88,7 @@
 	strh r6, [r0]
 	ldr r0, _08229F04 @ =0x030044AC
 	str r6, [r0]
-	bl FUN_0822ecc0
+	bl Video_ResetMosaic
 	movs r0, #0
 	bl FUN_0822b664
 	movs r4, #0xb4
@@ -108,7 +108,7 @@
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822ce30
+	bl Video_SetWindowInOut
 	ldr r0, _08229F08 @ =0x03003590
 	strh r6, [r0]
 	ldr r0, _08229F0C @ =0x03002CA8
@@ -116,7 +116,7 @@
 	bl FUN_0822a2a8
 	bl Video_CreateSpriteLUT
 	bl FUN_0822f1b0
-	bl FUN_0822ee38
+	bl Video_ResetHBlankEffect
 	bl FUN_0822e7e4
 	ldr r1, _08229F10 @ =FUN_0822db5c
 	ldr r2, _08229F14 @ =FUN_0822aaac

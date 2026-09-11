@@ -17567,7 +17567,7 @@ FUN_0809a6a8: @ 0x0809A6A8
 	adds r2, #5
 	adds r0, r7, r2
 	strb r1, [r0]
-	bl FUN_0822ed10
+	bl Video_ClearMosaic
 	ldrh r0, [r5]
 	orrs r4, r0
 	strh r4, [r5]
@@ -20094,7 +20094,7 @@ _0809BC1C:
 	bl FUN_0822a470
 	ldr r1, _0809BD04 @ =0x00000143
 	adds r0, r4, #0
-	bl FUN_0822b20c
+	bl Video_SetActorSpritePltt
 	ldr r2, _0809BD08 @ =0x00000BBF
 	adds r0, r7, r2
 	strb r5, [r0]
@@ -20624,7 +20624,7 @@ _0809C09C:
 	adds r0, r4, r1
 	strb r6, [r0]
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	b _0809C198
 	.align 2, 0
 _0809C0E8: .4byte 0x0300013C

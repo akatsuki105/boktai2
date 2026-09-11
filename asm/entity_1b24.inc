@@ -1086,13 +1086,13 @@ _0809D6EE:
 	bl FUN_0809d230
 	bl FUN_08049fa8
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #1
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	b _0809D74E
 _0809D71A:
 	movs r0, #3
@@ -1100,13 +1100,13 @@ _0809D71A:
 	adds r0, r6, #0
 	bl FUN_0809d230
 	movs r0, #0
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #1
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #2
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	movs r0, #3
-	bl FUN_0822b644
+	bl ClearBGTilemapBuffer
 	ldr r1, _0809D76C @ =0x00000F88
 	adds r0, r6, r1
 	ldr r0, [r0]
