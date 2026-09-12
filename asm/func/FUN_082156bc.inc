@@ -38,7 +38,7 @@
 	ldr r0, _08215728 @ =gSystemSaveData
 	ldr r0, [r0]
 	str r1, [r0, #0x20]
-	bl FUN_082410bc
+	bl Save_WriteSystemData
 	pop {r4, r5}
 	pop {r0}
 	bx r0

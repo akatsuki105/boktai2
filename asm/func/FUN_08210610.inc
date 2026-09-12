@@ -8,7 +8,7 @@
 	adds r0, r0, r7
 	mov sb, r0
 	ldrb r0, [r0]
-	bl FUN_0820ff44
+	bl WeaponDexMenu_CountFoundInPage
 	adds r2, r0, #0
 	movs r1, #0x84
 	lsls r1, r1, #1
@@ -45,7 +45,7 @@
 	bl Sprite_SetSprite
 	mov r1, sb
 	ldrb r0, [r1]
-	bl FUN_0820fedc
+	bl WeaponDexMenu_GetPageEntryCount
 	adds r2, r0, #0
 	movs r1, #0x8a
 	lsls r1, r1, #2

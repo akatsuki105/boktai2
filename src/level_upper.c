@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "particle.h"
+#include "player.h"
 #include "sprite.h"
 
 typedef struct {
@@ -28,7 +29,7 @@ typedef struct LevelUpper {
   u8 unk_72[2];              // 0x72
   u32 nextExp;               // 0x74, 次にレベルアップする総経験値量
   u32* expTable;             // 0x78, 経験値テーブルの先頭アドレス, 常に 0x08D09FE8
-  void* p_7c;                // 0x7C, なんかのアドレス, 根拠: 0x080a83c4
+  ParticleGroup* p_7c;       // 0x7C, 根拠: LevelUpper_EmitLevelUpEffect で FUN_0822dafc に渡される
   LevelUpParticle ptcls[8];  // 0x80
 } LevelUpper;
 static_assert(sizeof(LevelUpper) == 608);
@@ -51,7 +52,22 @@ NAKED void FUN_080a8250(LevelUpParticle* p) { INCFUNC("asm/func/FUN_080a8250.inc
 
 NAKED void FUN_080a8314(LevelUpParticle* p, unknown* param_2) { INCFUNC("asm/func/FUN_080a8314.inc"); }
 
-NAKED void LevelUpper_EmitLevelUpEffect(LevelUpper* p) { INCFUNC("asm/func/LevelUpper_EmitLevelUpEffect.inc"); }
+void FUN_0822dafc(Particle* p, ParticleGroup* g, u32 val);
+
+// レベルアップ演出のスプライトをプレイヤーの頭上に配置し、パーティクル8個を初期化する
+void LevelUpper_EmitLevelUpEffect(LevelUpper* p) {
+  s32 i;
+  p->q_node.flags &= ~1;
+  p->q_node.q_metaspriteIdx = 0;
+  p->q_node.q_pos = gPlayerPtr[0]->unk_24.pos;
+  p->q_node.q_pos.y += 250;
+  p->unk_64 = 0;
+  p->unk_62 = 1;
+  p->unk_60 = 1;
+  for (i = 0; i < 8; i++) {
+    FUN_0822dafc(&p->ptcls[i].base, p->p_7c, 0);
+  }
+}
 
 NAKED void FUN_080a83dc(LevelUpper* p) { INCFUNC("asm/func/FUN_080a83dc.inc"); }
 

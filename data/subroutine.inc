@@ -141,7 +141,7 @@ gSubroutineTable:
 	.4byte 0x3C3E, FUN_0807dbe0
 	.4byte 0x3C47, FUN_0823e394
 	.4byte 0x3C48, FUN_0823d3fc
-	.4byte 0x3C8D, FUN_08241508
+	.4byte 0x3C8D, VM_ResetGameKeepingVars
 	.4byte 0x3D0C, FUN_08055b58
 	.4byte 0x3D17, FUN_08224590
 	.4byte 0x3DB0, FUN_080a1de4

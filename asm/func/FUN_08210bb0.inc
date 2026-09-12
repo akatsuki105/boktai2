@@ -6,7 +6,7 @@
 	adds r4, r7, #0
 	adds r4, #0x24
 	ldrb r0, [r4]
-	bl FUN_0820fedc
+	bl WeaponDexMenu_GetPageEntryCount
 	mov r8, r0
 	movs r0, #0x91
 	lsls r0, r0, #3

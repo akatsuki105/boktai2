@@ -733,7 +733,7 @@ _08011676:
 	ldr r0, [r4, #0x20]
 	cmp r0, #0x3c
 	bne _080116B8
-	bl FUN_08241360
+	bl Save_WriteToNextSlot
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	str r0, [r4, #0x24]

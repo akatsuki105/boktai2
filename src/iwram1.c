@@ -16,7 +16,6 @@ struct Entity0866;
 struct Entity0800a89c;
 struct Entity080146e0;
 struct EntityE435;
-struct Entity8AAB;
 struct GameOverManager;
 struct LevelUpper;
 struct Entity080607a8;
@@ -69,20 +68,3 @@ IWRAM_DATA u8 u8_03000178[28] = {};
 IWRAM_DATA Elevator* gElevator = NULL;  // 0x03000194
 
 IWRAM_DATA u8 u8_03000198[176] = {};
-
-IWRAM_DATA struct Entity8AAB* gEntity8AAB = NULL;  // 0x03000248
-
-IWRAM_DATA u8 u8_0300024c[12] = {};
-
-IWRAM_DATA Entity gVideoManager = {};  // 0x03000258
-
-IWRAM_DATA Entity gEntityKind13 = {};                     // 0x03000270
-IWRAM_DATA u8 u8_03000288[0x030006A0 - 0x03000288] = {};  // おそらく最初の方は gEntityKind13 の続きが入るが、どこまでが gEntityKind13 なのかは不明
-
-IWRAM_DATA u8 u8_ARRAY_030006a0[128] = {};  // 0x030006A0
-IWRAM_DATA u32 u32_03000720 = 0;            // 0x03000720, なんかのカウンタ
-
-IWRAM_DATA FontInfo* gFontInfo = NULL;  // 0x03000724
-IWRAM_DATA Entity gSystemManager = {};  // 0x03000728
-
-IWRAM_DATA u8 u8_03000740[8] = {};

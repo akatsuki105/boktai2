@@ -9,7 +9,7 @@ import { getRepoRoot } from "./common/common.ts";
 // ASM_FILE を省略すると、src/*.s と asm/*.inc(トップレベルのみ、asm/func/ や asm/macros/ は対象外)から
 // `thumb_func_start FUNCTION_NAME` を含むファイルを自動検出する。
 //
-// e.g. tools/extract-func-asm.ts FUN_0824c0c4 asm/code_0824beb8.inc
+// e.g. tools/extract-func-asm.ts FUN_0824c0c4 asm/rfu_0824beb8.inc
 // e.g. tools/extract-func-asm.ts FUN_0824c0c4
 //
 // 変換前 (ASM_FILE 内):

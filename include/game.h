@@ -6,7 +6,6 @@
 #include "weapon.h"
 
 #define REGISTERED_WEAPON(n) (*(gStat->registeredWeapon + n))  // 登録 = 剣槍槌銃 のスロットに登録されている
-#define REGISTERED_MAGIC(n) (*(gStat->registeredMagic + n))
 
 // 0x0203C400 (ハードリセット時, ソフトリセット時は配置先が変動する)
 typedef struct {
@@ -73,7 +72,8 @@ typedef struct {
   s16 areaID;                    // 0x254, current area ID
   u8 unk_256[10];                // 0x256
   u32 unlockedMap;               // 0x260
-  u8 unk_264[68];                // 0x264
+  u32 unk_264;                   // 0x264, なんかのbitfield? (根拠: FUN_08090f0c)
+  u8 unk_268[64];                // 0x268
   u32 darkDjangoAtkCounter;      // 0x2A8
   u32 unk_2ac;                   // 0x2AC
   s16 unk_2b0[2];                // 0x2B0
@@ -94,7 +94,7 @@ typedef struct {
   u32 photo;                     // 0x3A8, ブロマイドの取得フラグ, アルバム画面のカーソル位置とbitが対応してそう
   u8 unk_3ac[12];                // 0x3AC
 
-  // セーブ時には ここからweaponDexまで をセーブデータとして扱っている (根拠: FUN_08241224)
+  // セーブ時には ここからweaponDexまで をセーブデータとして扱っている (根拠: Save_WriteExtra)
   u8 unk_3b8[2];                 // 0x3B8
   u8 unk_3ba[2];                 // 0x3BA
   u32 solarStand;                // 0x3BC
@@ -137,5 +137,8 @@ extern World* gWorldBackup;      // 0x03004694, ハード起動時は 0x0203DE00
 extern World* gWorld;            // 0x03004698, ハード起動時は 0x0203DA00, ゲームプレイ中はこのデータを参照・更新する
 extern GameInfo* gStatBackup;    // 0x0300469C, ハード起動時は 0x0203CF00, gWorldBackup と同じ
 extern GameInfo* gStat;          // 0x030046A0, ハード起動時は 0x0203C400
+
+GameInfo* FUN_08232254(void);
+World* FUN_08232260(void);
 
 #endif  // GUARD_ZOKTAI_GAME_H

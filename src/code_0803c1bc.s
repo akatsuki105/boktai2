@@ -21232,7 +21232,7 @@ FUN_0804ac7c: @ 0x0804AC7C
 	movs r0, #0
 	strb r0, [r7]
 _0804AC96:
-	bl FUN_082412f8
+	bl Save_ReadCurrentSlot
 	lsls r0, r0, #0x18
 	lsrs r2, r0, #0x18
 	cmp r2, #0
@@ -22362,7 +22362,7 @@ _0804B540:
 	movs r0, #0x10
 	adds r1, r4, #0
 	movs r3, #1
-	bl FUN_0824beb8
+	bl Rfu_FindPartnerRecord
 	lsls r0, r0, #0x18
 	asrs r1, r0, #0x18
 	cmp r1, #0
@@ -22620,7 +22620,7 @@ _0804B73E:
 	ldr r0, [r4, #0x24]
 	cmp r0, #0x3c
 	bne _0804B76A
-	bl FUN_082410bc
+	bl Save_WriteSystemData
 	movs r2, #0
 	strb r0, [r4, #0x1f]
 	lsls r0, r0, #0x18

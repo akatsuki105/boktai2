@@ -31,3 +31,7 @@ Just the function name (and file). No detail write-up.
 - `FUN_0822e920` (`src/video.c`)
 - `FUN_0822f364` (`src/sprite_0822f284.c`)
 - `FUN_0822bd28` (`src/video.c`)
+- `FUN_082438e0` (`src/eeprom.c`)
+- `FUN_08243828` (`src/eeprom.c`)
+- `Rfu_FindPartnerByRecord` (`src/rfu_0824beb8.c`)
+- `FUN_08022210` (`src/entity_4e69.c`)

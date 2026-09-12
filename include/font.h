@@ -21,6 +21,4 @@ typedef struct {
 } FontInfo;
 static_assert(sizeof(FontInfo) == 12);
 
-extern FontInfo* gFontInfo;  // 0x03000724
-
 #endif  // __INCLUDE_FONT_H__

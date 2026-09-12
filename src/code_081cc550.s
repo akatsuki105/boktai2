@@ -35357,7 +35357,7 @@ _081E04E4:
 	ldrh r0, [r1]
 	cmp r0, #0x3c
 	bne _081E0538
-	bl FUN_082413b8
+	bl Save_WriteExtraToNextSlot
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081E050C
@@ -35439,7 +35439,7 @@ _081E0584: .4byte 0x000003E9
 FUN_081e0588: @ 0x081E0588
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_08241400
+	bl Save_SwitchSlot
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081E05A0
@@ -44644,7 +44644,7 @@ FUN_081e4b68: @ 0x081E4B68
 	ldrh r0, [r0]
 	cmp r0, r1
 	bne _081E4B90
-	bl FUN_08241400
+	bl Save_SwitchSlot
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081E4B90
@@ -47389,7 +47389,7 @@ _081E62E6:
 	adds r0, r2, #0
 _081E62EC:
 	strh r0, [r1]
-	bl FUN_082413b8
+	bl Save_WriteExtraToNextSlot
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081E6330

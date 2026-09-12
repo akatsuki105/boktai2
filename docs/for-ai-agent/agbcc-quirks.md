@@ -35,7 +35,7 @@ the section matching how you would go looking for it.
 
 ### Branch direction
 
-- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`.
+- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `FUN_080223f4`, `FUN_08022428`, `FUN_08022448`, `FUN_080224f0`, `FUN_08022618`, `FUN_08022644`.
 - agbcc keeps the *first-written* if-branch as fall-through; put an
   out-of-line block in the `else`.
 - Applies even when **both** arms end in `return` (no shared code after
@@ -60,6 +60,12 @@ the section matching how you would go looking for it.
   fall-through path; the target wanted `-1` there) and
   `Video_GetHankakuTiles` (same flip on a `NULL` guard) both needed the
   condition inverted and the two returns swapped.
+- Two guards in a row: only the **last** guard's return moves to the end.
+  The first one stays inline (`bne` jumps over it). `FUN_08022448` needed
+  `if (g == NULL) return -1; if (g->f != 0) return -2; g->f = 1; return 0;`.
+  Here `-1` stays inline and `-2` is placed at the end. Nesting it as
+  `if (g != NULL) { ... } return -1;` flips both branches.
+- A guard with two conditions reverses the single-guard rule. `if (a && b) { A } return B;` put `A` inline and `B` at the end. `if (!a || !b) return B; A` put `B` inline and `A` at the end. `FUN_08022618` and `FUN_08022644` needed the `||` form.
 
 ### switch case body layout follows source order, independent of dispatch order
 
@@ -70,6 +76,12 @@ the section matching how you would go looking for it.
 
 - **Frequency**: `VM_CallScript`.
 - `call(); while (cond) { body; call(); }` emits **two** `bl` sites; `while (TRUE) { call(); if (!cond) break; body; }` emits **one**, entered by a `b` that jumps over the body to the call. If the target has a single call site reached by a leading `b`, write the loop in the second form. The peeled form also raised register pressure enough that agbcc strength-reduced `arr[i] = v; i++;` into a walking pointer (`stmia rN!`) and needed an extra callee-saved register; the single-call form dropped both.
+
+### A `do`-`while` with `break` can lay its latch out mid-body; a `for` increment puts it at the bottom
+
+- **Frequency**: `Rfu_FindPartnerRecord`.
+- Target: body, then `if (f(p) == 7) break;`, then `pos += f(p) + 2; cmp pos, #0xf; bls top` at the very end. `do { ...; if (...) break; pos += ...; } while (pos <= 15);` emitted the increment and test in the middle of the body behind an extra `b` (one insn longer). Moving the increment into a `for (pos = 0; pos <= 15; pos += f(p) + 2)` header, with `p` declared outside the loop, matched.
+- In the same loop, the target keeps `&buf[pos] + 1` in one register across the `== 7` test and the increment. Recomputing `&buf[pos + 1]` at each use rebuilt it every time; a pointer local (`p = &buf[pos]; ... p++;`) matched.
 
 ## Comparisons & bit tests
 
@@ -122,13 +134,15 @@ the section matching how you would go looking for it.
 
 ### Pointer-add Rn/Rm order depends on how the address is spelled
 
-- **Frequency**: `Script_StorePointerCore`, `FUN_0822ea10`.
+- **Frequency**: `Script_StorePointerCore`, `FUN_0822ea10`, `FUN_08022128`.
 - Scaling an index by 2 as `offset << 1` vs `offset * 2` is value-identical, but agbcc doesn't always canonicalize the two the same way: in `*(u16*)(dst + (offset << 1))`, the shift form compiled the subsequent `dst + offset*2` addition as `adds r0, r4, r0` (dst first); the literal `offset * 2` form instead gave `adds r0, r0, r4` (offset-term first) — same instruction, swapped operands, real byte difference. When a pointer-add's Rn/Rm order doesn't match and the scale is a power of 2, try switching between `<<` and `*` for the scale before reaching for other levers.
 - The same symptom also comes from the *pointer vs subscript* choice, and that lever is independent of the one above. In `FUN_0822ea10`, holding the address in a variable (`u32* p = &base[i];` then `*p`) emitted `adds r3, r1, r0` (base first); indexing at each use (`base[i]`, three times) emitted `adds r3, r0, r1` (offset first) and matched. Switching `<<`/`*` did nothing there, so try both levers.
+- The pointer-vs-subscript choice also changes how a field offset is grouped. In `FUN_08022128`, `u8* count = &node->unk_6[side];` emitted `adds r1, r4, #6` / `adds r3, r5, r1`, which is `node + (side + 6)`. Writing `node->unk_6[side]` at each use emitted `adds r1, r5, #6` / `adds r3, r1, r4`, which is `(node + 6) + side`, and matched.
 
 ### `==` operand order sets the `cmp` operands and which value keeps the address register
 
-- **Frequency**: `sound_08240740`.
+- **Frequency**: `sound_08240740`, `Save_WriteCore`.
+- A call result compared directly (`if (f(...) != len + 8)`) keeps the result in `r0` and builds `len + 8` in `r1`; the target had `adds r1, r0, #0` / `adds r0, r5, #0` / `adds r0, #8` / `cmp r1, r0`. Swapping the operands made it worse, but assigning the result to a local first (`ret = f(...); if (ret != len + 8)`) matched.
 - `a[i] == x` and `x == a[i]` are not canonicalized. In `if (gSoundIDs[gSongTable[id].ms] == id) { gSoundIDs[...] = 0; ... }`, agbcc emitted `adds r1, r0, r2` / `ldrh r0, [r1]` / `cmp r0, r4` and stored through `r1`; the target had `adds r0, r0, r2` / `ldrh r1, [r0]` / `cmp r4, r1` and stored through `r0`. Writing `id == gSoundIDs[...]` matched. When a streamdiff shows only a swapped `cmp` plus the loaded value and its address trading registers, swap the operands of the comparison.
 
 ### The `for` increment's comma order is the order of the two `adds`
@@ -148,8 +162,14 @@ the section matching how you would go looking for it.
 
 ### Global-address pool loads are ordered by expression nesting, not by source statement
 
-- **Frequency**: `sound_08240264`.
+- **Frequency**: `sound_08240264`, `FUN_082436dc`.
+- A global struct's address loaded at function entry (`ldr r4, =gSaved` before anything else) and kept in a callee-saved register across calls comes from a pointer local declared first: `SavedHBlankState* s = &gSavedHBlankState;` then `s->field`. Writing `gSavedHBlankState.field` at each use loaded the address late, after the calls, and needed one less saved register.
 - After a call, `u16 ms = gSongTable[id].ms; f(gMPlayTable[ms].info); gSoundIDs[ms] = id;` loaded `=gSongTable` first and `=gMPlayTable` just before its use. The target loads `=gMPlayTable` into a register **before** `=gSongTable`; writing the index inline, `f(gMPlayTable[gSongTable[id].ms].info); gSoundIDs[gSongTable[id].ms] = id;`, matched (CSE still reuses the `ms*2` for the second subscript). If a streamdiff only shows one `ldr rN, =POOL` moved earlier and a register renamed, try inlining or splitting the index local.
+
+### A struct-field store does not force a global pointer to be reloaded; a cast store does
+
+- **Frequency**: `Save_WriteCore`.
+- After `gStat->magicNumber = x;`, agbcc assumes the struct-field store cannot touch the scalar pointer `gStat`, so it reuses the loaded pointer for `f(&gStat->magicNumber, 4)`. The target reloads it (`ldr r2, =gStat` / `ldr r1, [r2]` / `str r0, [r1]` / `ldr r0, [r2]`), which happens only when the store is not a struct-field access: `*(u32*)gStat = x; f(gStat, 4);` matched. If the target re-reads a global pointer right after storing through it, write the store without the field.
 
 ### `(a * 2) * b` moves the doubling onto `b`; `(a << 1) * b` keeps it on `a`
 
@@ -174,7 +194,8 @@ the section matching how you would go looking for it.
 
 ### Where a global's address and value materialize follows statement splitting
 
-- **Frequency**: `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`.
+- **Frequency**: `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`.
+- The same holds for a call used as an argument. `f(0, (T*)gPtr, g(0x28))` loaded `=gPtr` and its value into a callee-saved register before calling `g` (one extra saved register); the target calls `g` first and loads `gPtr` right before `f`. Putting the inner call in its own statement, `s32 len = g(0x28); f(0, (T*)gPtr, len);`, matched.
 - A nested subscript written as one expression (`gMPlayTable[gSongTable[id].ms].info`) hoists the outer table's pool `ldr` *before* the inner subscript is read; splitting the inner index into its own statement (`u16 ms = gSongTable[id].ms;` then `gMPlayTable[ms].info`) emits that `ldr` after it, where the target had it. If only a pool `ldr` sits in the wrong place, try splitting or merging the surrounding subscripts.
 - Related: reading a global in the guard and again in the body (`if (g[10] != 0) { id = g[10]; ... }`) costs an extra `adds rN, r0, #0` — the compare uses the loaded value and the body's copy gets its own register. Hoisting the read above the `if` removes that move, so match whichever the target has.
 - The same choice also decides *which* callee-saved registers a parameter and the array's base address get, with no instruction-count difference. `FUN_082405c0` needed `SoundID16 id = g[12];` above the `if`; testing `g[12] != 0` directly gave the identical 32 instructions with two registers swapped (`r6`/`r7`). Its slot-10 twin `Sound_FadeOutBGM` matched with the opposite shape, so don't assume a copy-pasted sibling used the same one.

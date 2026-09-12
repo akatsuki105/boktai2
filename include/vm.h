@@ -132,6 +132,7 @@ u8* VM_GetPC(void);
 void VM_SetPC(u8* addr);
 u8* VM_ReadContainerLength(u8* pc, u32* length);
 bool32 VM_SeekToKeyword(u8 val);
+s32 VM_GetKeywordValue(u8 val, s32 fallback);
 u32 Script_GetValue(void);
 u8* VM_DecodeValue(u8* pc, s32* type, void* val);
 

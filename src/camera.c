@@ -38,16 +38,30 @@ INCASM("asm/camera.inc");
 
 NAKED void Camera_SetBoundsType2Scripted(void) { INCFUNC("asm/func/Camera_SetBoundsType2Scripted.inc"); }
 
-NAKED void FUN_0823c450(Camera* cam) { INCFUNC("asm/func/FUN_0823c450.inc"); }
+NAKED void FUN_0823c450(Camera* p) { INCFUNC("asm/func/FUN_0823c450.inc"); }
 
-NAKED void FUN_0823c620(Camera* cam) { INCFUNC("asm/func/FUN_0823c620.inc"); }
+NAKED void FUN_0823c620(Camera* p) { INCFUNC("asm/func/FUN_0823c620.inc"); }
 
-NAKED unknown* FUN_0823c928(Camera* cam) { INCFUNC("asm/func/FUN_0823c928.inc"); }
+NAKED unknown* FUN_0823c928(Camera* p) { INCFUNC("asm/func/FUN_0823c928.inc"); }
 
-NAKED s32 Camera_Update(Camera* cam) { INCFUNC("asm/func/Camera_Update.inc"); }
+NAKED s32 Camera_Update(Camera* p) { INCFUNC("asm/func/Camera_Update.inc"); }
 
-NAKED s32 Camera_Destroy(Camera* cam) { INCFUNC("asm/func/Camera_Destroy.inc"); }
+NAKED s32 Camera_Destroy(Camera* p) { INCFUNC("asm/func/Camera_Destroy.inc"); }
 
-NAKED s32 Camera_Init(Camera* cam, unknown* param) { INCFUNC("asm/func/Camera_Init.inc"); }
+NAKED s32 Camera_Init(Camera* p, u32 val) { INCFUNC("asm/func/Camera_Init.inc"); }
 
-NAKED Camera* Camera_Create(unknown* param) { INCFUNC("asm/func/Camera_Create.inc"); }
+Camera* Camera_Create(u32 val) {
+  Camera* p;
+  if (gCamera == NULL) {
+    p = CreateEntity(ENTITY_CAMERA, sizeof(Camera));
+    if (p != NULL) {
+      SetEntityRoutine(p, Camera_Update, Camera_Destroy);
+      if (Camera_Init(p, val) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gCamera;
+}

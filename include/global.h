@@ -31,12 +31,16 @@
 typedef struct {
   s32 frameCounter;   // 0x00
   s32 calibration;    // 0x04, 太陽センサーのキャリブレーション値
-  u8 unk_08[3];       // 0x08
+  u8 currentSlot;     // 0x08
+  u8 unk_09[2];       // 0x09
   bool8 summerTime;   // 0x0B, サマータイム
-  u8 unk_0c[12];      // 0x0C
-  u16 eventFlags[4];  // 0x18, 0: BB3, 1: BB4, 2: BB5 & バレンタイン, 3: なんか
-  u8 timezone;        // 0x20, タイムゾーン
-  u8 unk_21[7];       // 0x21
+  s32 unk_c;          // 0x0C, 根拠: FUN_0823d6bc
+  u32 unk_10;         // 0x10, 根拠: FUN_0823d68c
+  u16 unk_14;         // 0x14, 根拠: FUN_0823d700
+  u16 unk_16;         // 0x16, 根拠: FUN_0823d700
+  u16 eventFlags[4];  // 0x18, 0: BB3 (BlindBoxLv3), 1: BB4, 2: BB5 & バレンタイン, 3: なんか
+  u32 timezone;       // 0x20, タイムゾーン, u32 の根拠: FUN_0823d680
+  u8 unk_24[4];       // 0x24
 } SystemSaveData;
 static_assert(sizeof(SystemSaveData) == 40);
 
@@ -52,10 +56,13 @@ typedef struct {
 } BgState;
 static_assert(sizeof(BgState) == 48);
 
+extern u32 gScriptDirectoryBuildTime;  // 0x03004594
 extern Unk_0203b000 gUnk_0203b000[128];
 extern SystemSaveData* gSystemSaveData;
 
 // --------------------------------------------
+
+void WaitForVBlank(void);
 
 void ClearMemory(void* dst, s32 bytesize);  // buffer から bytesize バイト分のメモリを0で埋める
 void CopyMemory(u8* dst, u8* src, s32 bytesize);

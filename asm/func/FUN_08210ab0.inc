@@ -52,7 +52,7 @@
 	ldr r0, [sp, #0x14]
 	adds r0, #0x24
 	ldrb r0, [r0]
-	bl FUN_0820fedc
+	bl WeaponDexMenu_GetPageEntryCount
 	str r0, [sp, #0x1c]
 	movs r2, #0
 	str r2, [sp, #0x18]

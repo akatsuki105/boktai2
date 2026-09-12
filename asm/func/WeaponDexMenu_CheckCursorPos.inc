@@ -8,7 +8,7 @@
 	blt _0820FF3C
 	cmp r4, #3
 	bgt _0820FF3C
-	bl FUN_0820fedc
+	bl WeaponDexMenu_GetPageEntryCount
 	lsls r1, r4, #2
 	adds r1, r1, r4
 	adds r1, #1

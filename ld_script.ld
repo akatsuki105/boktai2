@@ -44,6 +44,14 @@ SECTIONS {
     ALIGN(4)
     {
       src/iwram1.o(iwram_data);
+      src/entity_8aab.o(iwram_data);
+      . = ALIGN(8);
+      src/interrupts.o(iwram_data);
+      . = ALIGN(8);
+      src/video.o(iwram_data);
+      src/code_0823071c.o(iwram_data);
+      src/code_08230e88.o(iwram_data);
+      . = ALIGN(8);
       src/vm.o(iwram_data);
       src/vm_ctrl1.o(iwram_data);
       src/code_082326a0.o(iwram_data);
@@ -64,10 +72,14 @@ SECTIONS {
       *libgcc.a:fp-bit.o(.bss);
       *libc.a:syscalls.o(.bss);
       src/lib/m4a.o(.bss.code);
+      src/entity_4ae5.o(COMMON);
+      src/entity_6978.o(COMMON);
+      src/entity_aa65.o(COMMON);
+      src/entity_c9bc.o(COMMON);
       src/iwram2.o(iwram_data);
       src/entity_b639.o(COMMON);
       src/solar.o(COMMON);
-      src/code_08243660.o(COMMON);
+      src/eeprom.o(COMMON);
       src/sound.o(COMMON);
       src/solar_sensor.o(COMMON);
       src/lib/librfu_stwi.o(iwram_data);
@@ -139,6 +151,7 @@ SECTIONS {
 			src/entity_5941.o (.text);
 			src/player_0807f640.o (.text);
 			src/code_080801f4.o (.text);
+			src/entity_28cb.o (.text);
 			src/entity_cc28.o (.text);
 			src/entity_1b24.o (.text);
 			src/code_080917e4.o (.text);
@@ -221,6 +234,7 @@ SECTIONS {
 			src/malloc.o (.text);
 			src/entity.o (.text);
 			src/code_08230d30.o (.text);
+			src/code_08230e88.o (.text);
 			src/file.o (.text);
 			src/vm.o (.text);
 			src/vm_ctrl1.o (.text);
@@ -239,14 +253,14 @@ SECTIONS {
 			src/sound.o (.text);
 			src/entity_08240a54.o (.text);
 			src/entity_794c.o (.text);
-			src/code_0823e174.o (.text);
+			src/savedata.o (.text);
 			src/entity_b639.o (.text);
 			src/solar.o (.text);
 			src/item_082421f0.o (.text);
 			src/weapon.o (.text);
 			src/armor.o (.text);
 			src/equip_magic.o (.text);
-			src/code_08243660.o (.text);
+			src/eeprom.o (.text);
     } >rom = 0x00
 
 	lib_text :
@@ -260,7 +274,7 @@ SECTIONS {
       src/lib/librfu_intr.o (.text);
       src/lib/librfu_rfu.o (.text);
       src/lib/librfu_sio32id.o (.text);
-			src/code_0824beb8.o (.text);
+			src/rfu_0824beb8.o (.text);
 			src/lib/libagbsyscall.o (.text);
 			src/lib/agb_eeprom.o (.text);
 			src/lib/libagbrtc.o (.text);
@@ -350,6 +364,7 @@ SECTIONS {
     src/player.o (.rodata);
     src/entity_0b50.o (.rodata);
     src/entity_28cb.o (.rodata);
+    src/entity_cc28.o (.rodata);
     src/entity_c946.o (.rodata);
     src/weapon_dex.o (.rodata);
     src/album_menu.o (.rodata);

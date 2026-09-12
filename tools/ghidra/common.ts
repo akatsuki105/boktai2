@@ -13,9 +13,7 @@ const isFunctionSymbol = (type: string): boolean => type === "T" || type === "t"
 // シンボル名またはROMアドレスの文字列を、Ghidraに渡すROMアドレスに直す。
 export const resolveAddress = (target: string): gba.addr => {
   if (looksLikeAddress(target)) {
-    const val = parseInt(target.replace(/^0x/i, ""), 16);
-    // ファイルオフセットで指定された場合はROMアドレスに直す(tools/bokcc/main.ts と同じ扱い)
-    return val < gba.BASE ? val + gba.BASE : val;
+    return parseInt(target.replace(/^0x/i, ""), 16);
   }
 
   const sym = parseSymbolFile().find((s) => s.name === target);

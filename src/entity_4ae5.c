@@ -3,7 +3,7 @@
 #include "global.h"
 
 // マップ切り替え時に毎回生成される(時間帯によるマップのパレット処理と思われる)
-typedef struct Entity4AE5 {
+typedef struct {
   Entity e;        // ENTITY_UNK_11
   u16 unk_18;      // 0x18, 0xE231, 0x317B, 0xF68D, 0xA58E, 0x4AE5 などがあるが、意味は不明
   u8 unk_1a;       // 0x1A, なんかのbitfield
@@ -41,7 +41,8 @@ typedef struct Entity4AE5 {
 } Entity4AE5;
 static_assert(sizeof(Entity4AE5) == 1784);
 
-extern Entity4AE5* gEntity4AE5;  // 0x03002B2C
+COMMON_DATA u16 gMapInitScriptID = 0;        // 0x03002B28
+COMMON_DATA Entity4AE5* gEntity4AE5 = NULL;  // 0x03002B2C
 
 void FUN_08001878(void) { gEntity4AE5 = NULL; }
 

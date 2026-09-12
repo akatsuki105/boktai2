@@ -24,25 +24,25 @@ typedef struct {
 static_assert(sizeof(q_EntityC9BCElem) == 508);  // 根拠: EntityC9BC_Init の Malloc(count * 0x1FC) と、EntityC9BC_Update のループのストライド
 
 // count 個の要素を状態関数で動かし、全体をサイン波で上下に揺らしながら、パレット 0x78 と 0x79 / 0x7A の間で色を点滅させる
-typedef struct EntityC9BC {
-  Entity e;                  // ENTITY_UNK_9
-  u32 unk_18;                // 0x18, EntityC9BC_Init で 0 を入れるだけ
-  u32 count;                 // 0x1C, 要素数, VM_GetKeywordValue(0x6D, 4)
-  s16 q_bobOffset;           // 0x20, sin(q_bobAngle) * 16, 各要素の高さに加算される
-  u8 q_bobAngle;             // 0x22, gSineTable の添字, 毎フレーム +2
-  u8 q_fadeDir;              // 0x23, 0 なら q_fadeLevel を増やし 32 で 1 に, 1 なら減らし 0 で 0 に戻る
-  s16 q_fadeLevel;           // 0x24, 0..32, rgb555_08237468 の混合率
+typedef struct {
+  Entity e;         // ENTITY_UNK_9
+  u32 unk_18;       // 0x18, EntityC9BC_Init で 0 を入れるだけ
+  u32 count;        // 0x1C, 要素数, VM_GetKeywordValue(0x6D, 4)
+  s16 q_bobOffset;  // 0x20, sin(q_bobAngle) * 16, 各要素の高さに加算される
+  u8 q_bobAngle;    // 0x22, gSineTable の添字, 毎フレーム +2
+  u8 q_fadeDir;     // 0x23, 0 なら q_fadeLevel を増やし 32 で 1 に, 1 なら減らし 0 で 0 に戻る
+  s16 q_fadeLevel;  // 0x24, 0..32, rgb555_08237468 の混合率
   u8 unk_26[2];
-  u16* q_plttBase;           // 0x28, &gObjPlttData[0x78 * 16]
-  u16* q_plttBlendA;         // 0x2C, &gObjPlttData[0x79 * 16]
-  u16* q_plttBlendB;         // 0x30, &gObjPlttData[0x7A * 16]
-  u16 q_plttBufA[16];        // 0x34, q_plttBase と q_plttBlendA の中間色, 要素のパレットが 0x79 のとき使う
-  u16 q_plttBufB[16];        // 0x54, q_plttBase と q_plttBlendB の中間色
-  q_EntityC9BCElem* elems;   // 0x74, Malloc(count * sizeof(q_EntityC9BCElem))
+  u16* q_plttBase;          // 0x28, &gObjPlttData[0x78 * 16]
+  u16* q_plttBlendA;        // 0x2C, &gObjPlttData[0x79 * 16]
+  u16* q_plttBlendB;        // 0x30, &gObjPlttData[0x7A * 16]
+  u16 q_plttBufA[16];       // 0x34, q_plttBase と q_plttBlendA の中間色, 要素のパレットが 0x79 のとき使う
+  u16 q_plttBufB[16];       // 0x54, q_plttBase と q_plttBlendB の中間色
+  q_EntityC9BCElem* elems;  // 0x74, Malloc(count * sizeof(q_EntityC9BCElem))
 } EntityC9BC;
 static_assert(sizeof(EntityC9BC) == 120);
 
-extern EntityC9BC* gEntityC9BC;  // 0x03002B38
+COMMON_DATA EntityC9BC* gEntityC9BC = NULL;  // 0x03002B38
 
 void FUN_0800cf9c(EntityC9BC* p, q_EntityC9BCElem* elem, u32 idx);
 void FUN_0800d074(EntityC9BC* p, q_EntityC9BCElem* elem, u32 idx);

@@ -3,6 +3,8 @@
 
 extern u32 gRngValue;
 
+IWRAM_DATA Entity gSystemManager = {};  // 0x03000728
+
 void FUN_081dfe5c(void);
 void FUN_0804e36c(void);
 void ReadKeyInput(void);

@@ -57,6 +57,13 @@ extern Particle* PTR_ARRAY_03003570[2];
 extern q_SpriteNode44* PTR_ARRAY_03003560[2];
 extern SpriteState* PTR_ARRAY_03003568[2];
 
+IWRAM_DATA Entity gVideoManager = {};                     // 0x03000258
+IWRAM_DATA Entity gEntityKind13 = {};                     // 0x03000270
+IWRAM_DATA u8 u8_03000288[0x030006A0 - 0x03000288] = {};  // おそらく最初の方は gEntityKind13 の続きが入るが、どこまでが gEntityKind13 なのかは不明
+IWRAM_DATA u8 u8_ARRAY_030006a0[128] = {};                // 0x030006A0
+IWRAM_DATA u32 u32_03000720 = 0;                          // 0x03000720, なんかのカウンタ
+IWRAM_DATA FontInfo* gFontInfo = NULL;                    // 0x03000724
+
 const u8 u8_ARRAY_085b0110[32] = {0};
 
 #define SPRITE_SIZE(widthPixel, heightPixel) ((heightPixel << 8) | widthPixel)

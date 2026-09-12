@@ -11,9 +11,6 @@
 #include "time.h"
 #include "vm.h"
 
-struct Entity4AE5;
-struct EntityAA65;
-struct EntityC9BC;
 struct Entity0800f110;
 struct Entity08013df0;
 struct Entity4E69;
@@ -23,13 +20,6 @@ struct EntityCBB0;
 struct Player;
 struct Unk030046a4;
 
-IWRAM_DATA u16 gMapInitScriptID = 0;               // 0x03002B28
-IWRAM_DATA struct Entity4AE5* gEntity4AE5 = NULL;  // 0x03002B2C
-
-IWRAM_DATA u8 u8_03002b30[0x34 - 0x30] = {};  // todo
-
-IWRAM_DATA struct EntityAA65* gEntityAA65 = NULL;          // 0x03002B34
-IWRAM_DATA struct EntityC9BC* gEntityC9BC = NULL;          // 0x03002B38
 IWRAM_DATA struct Entity0800f110* gEntity0800f110 = NULL;  // 0x03002B3C
 IWRAM_DATA struct Entity08013df0* gEntity08013df0 = NULL;  // 0x03002B40
 
@@ -81,7 +71,8 @@ IWRAM_DATA u16 u16_03003514 = 0;             // 0x03003514, FUN_0822f0d8 は 0�
 IWRAM_DATA u8 u8_03003516[2] = {};           // todo
 IWRAM_DATA u16* gHBlankEffectBuffer = NULL;  // 0x03003518, スキャンライン毎(160 ライン)の値のバッファ (= u8_ARRAY_02036c00), 根拠: FUN_0822f0d8, FUN_0822eef4
 
-IWRAM_DATA u8 u8_0300351c[0x03003530 - 0x0300351C] = {};  // todo
+IWRAM_DATA u16 u16_0300351c = 0;                          // 0x0300351C, EEPROM_BeginAccess (EEPROM アクセス前) が 0、EEPROM_EndAccess (アクセス後) が 1 を書く
+IWRAM_DATA u8 u8_0300351e[0x03003530 - 0x0300351E] = {};  // todo
 
 IWRAM_DATA u32 u32_03003530 = 0;  // 0x03003530, PTR_ARRAY_03003568 の idx, 根拠: FUN_0822f1d8
 
@@ -121,12 +112,12 @@ IWRAM_DATA BgState gBgStates[4] = {};  // 0x03003ED0, BG0-3 の状態, 根拠: F
 IWRAM_DATA u8 u8_03003f90[0x03003FB0 - 0x03003F90] = {};  // todo, WIN0H/WIN1H/WIN0V/WIN1V の控えを含む (FUN_0822cd24, FUN_0822cdcc)
 
 // idx は ((OAM1.14-15 << 2) | (OAM0.14-15)), ie. ((sizeidx << 2) | shape)
-IWRAM_DATA u8 gOAMTileHeightTable[16] = {};  // 0x03003FB0, タイル(8px)単位
-IWRAM_DATA u8 gOAMHeightTable[16] = {};      // 0x03003FC0, ピクセル単位
-IWRAM_DATA u8 gOAMTileCounts[16] = {};       // 0x03003FD0, タイル枚数
-IWRAM_DATA u8 gOAMTileWidthTable[16] = {};   // 0x03003FE0, タイル(8px)単位
+IWRAM_DATA u8 gOAMTileHeightTable[16] = {};      // 0x03003FB0, タイル(8px)単位
+IWRAM_DATA u8 gOAMHeightTable[16] = {};          // 0x03003FC0, ピクセル単位
+IWRAM_DATA u8 gOAMTileCounts[16] = {};           // 0x03003FD0, タイル枚数
+IWRAM_DATA u8 gOAMTileWidthTable[16] = {};       // 0x03003FE0, タイル(8px)単位
 IWRAM_DATA u32 gOAMShapeSizeAttrTable[16] = {};  // 0x03003FF0, OAM0.14-15(shape) と OAM1.14-15(size) のビットを attr0|attr1<<16 形式で格納, DrawSprite_0822a574 / DrawSprite_0822f6fc が OR する
-IWRAM_DATA u8 gOAMWidthTable[16] = {};       // 0x03004030, ピクセル単位
+IWRAM_DATA u8 gOAMWidthTable[16] = {};           // 0x03004030, ピクセル単位
 
 IWRAM_DATA u8 u8_03004040[4] = {};  // todo
 IWRAM_DATA s32 s32_03004044 = 0;    // 0x03004044, gObjPlttSlotIDs の使用数 (最大 16), 根拠: FUN_0822d190 (FUN_0822d12c は gObjPlttSlotCount の方を使う)
@@ -135,7 +126,7 @@ IWRAM_DATA u8 u8_03004048[8] = {};  // todo
 IWRAM_DATA rgb555 gObjectPlttBuffer[256] = {};  // 0x03004050, CommitPalette で OBJ_PLTT にコピーされる
 IWRAM_DATA rgb555 gFastBgPlttBuffer[256] = {};  // 0x03004250
 
-IWRAM_DATA s32 s32_03004450 = 0;  // 0x03004450, FUN_0822d114 が s32_03004044 = これ + 2 として 0 に戻す
+IWRAM_DATA s32 s32_03004450 = 0;    // 0x03004450, FUN_0822d114 が s32_03004044 = これ + 2 として 0 に戻す
 IWRAM_DATA u8 u8_03004454[4] = {};  // todo
 
 IWRAM_DATA s32 gObjPlttSlotCount = 0;  // 0x03004458, 確保済みの OBJ パレットスロット数 (最大 2), 根拠: FUN_0822d12c
@@ -196,7 +187,9 @@ IWRAM_DATA u32 u32_030047a0 = 0;
 IWRAM_DATA u32 gFlag030047a4 = 0;
 
 IWRAM_DATA SystemSaveData* gSystemSaveData = NULL;
-IWRAM_DATA u8 u8_030047ac[28] = {};  // todo
+IWRAM_DATA u8 u8_030047ac[8] = {};   // todo
+IWRAM_DATA u32 u32_030047b4 = 0;      // 0x030047B4, Save_WriteCore でセーブ成功時に 1 がセットされる
+IWRAM_DATA u8 u8_030047b8[16] = {};  // todo
 
 IWRAM_DATA Vec3 gCameraVpCoords = {};  // 0x030047C8
 IWRAM_DATA Camera* gCamera = NULL;     // 0x030047D0

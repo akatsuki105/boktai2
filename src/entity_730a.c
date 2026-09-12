@@ -10,6 +10,10 @@ static_assert(sizeof(Entity730A) == 88);
 
 INCASM("asm/entity_730a.inc");
 
+NAKED s32 Entity730A_Update_Helper_08022864(Entity730A* p) { INCFUNC("asm/func/Entity730A_Update_Helper_08022864.inc"); }
+
+NAKED s32 Entity730A_Update(Entity730A* p) { INCFUNC("asm/func/Entity730A_Update.inc"); }
+
 s32 Entity730A_Destroy(Entity730A* p) {
   FUN_08022428(&p->unk_18);
   return 0;

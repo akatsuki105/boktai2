@@ -1,0 +1,21 @@
+	push {lr}
+	movs r0, #0x69
+	bl VM_SeekToKeyword
+	cmp r0, #0
+	beq _08090F04
+	bl Script_GetValue
+	ldr r1, _08090F08 @ =0x030046A0
+	ldr r2, [r1]
+	movs r1, #0x99
+	lsls r1, r1, #2
+	adds r2, r2, r1
+	movs r1, #1
+	lsls r1, r0
+	ldr r0, [r2]
+	orrs r0, r1
+	str r0, [r2]
+_08090F04:
+	pop {r0}
+	bx r0
+	.align 2, 0
+_08090F08: .4byte 0x030046A0

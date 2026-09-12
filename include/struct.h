@@ -47,33 +47,19 @@ typedef struct {
 } Unk_0203f400;
 static_assert(sizeof(Unk_0203f400) == 8);
 
-// 0x085af0ec
-typedef struct {
-  u16 unk_0;     // 0x000
-  u16 unk_2;     // 0x002
-  u16 unk_4;     // 0x004
-  u16 unk_6;     // 0x006
-  u16 unk_8;     // 0x008
-  u8 unk_9;      // 0x009
-  u8 unk_a;      // 0x00a
-  u32 unk_c;     // 0x00c
-  u32 unk_10;    // 0x010
-  s8 unk_14;     // 0x014
-  s8 unk_15;     // 0x015
-  u8 unk_16[6];  // 0x016
-  // TODO: まだ下にたくさんメンバがある
-} Unk_085af0ec;
-
 // --------------------------------------------
 
 // Entity4E69 で管理されてる?
 typedef struct UnkStruct52 {
-  u16 unk_0;                   // 0x00
-  u8 unk_2;                    // 0x02
-  u8 unk_3;                    // 0x03
-  u8 unk_4[0x2C - 0x4];        // 0x04
-  struct UnkStruct52* unk_2c;  // 0x2C
-  struct UnkStruct52* unk_30;  // 0x30
+  u16 unk_0;                 // 0x00
+  u8 unk_2;                  // 0x02
+  u8 unk_3;                  // 0x03
+  u8 unk_4[2];               // 0x04
+  u8 unk_6[2];               // 0x06, Entity4E69.unk_24 (0 or 1) で添字される, 根拠: FUN_0802216c
+  struct UnkStruct08daadb8* unk_8[2][4];  // 0x08, 同上, 根拠: FUN_08022128
+  u8 unk_28[0x2C - 0x28];    // 0x28
+  struct UnkStruct52* prev;  // 0x2C
+  struct UnkStruct52* next;  // 0x30
 } UnkStruct52;
 static_assert(sizeof(UnkStruct52) == 52);  // 52バイトなのは確定, FUN_080220e8 で オフセット 0x34 に 4バイト書き込み, また Entity4E69 の オフセット 0x78 にこの構造体があるが、 Entity4E69 は 172バイトなので、 172 - 0x78 = 52 なので、 52バイト
 
