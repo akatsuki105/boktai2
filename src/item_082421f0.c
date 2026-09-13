@@ -4,6 +4,10 @@
 #include "vm.h"
 #include "weapon.h"
 
+#define ITEM(slot) (*(gStat->items + slot))
+#define VALUABLES(slot) (*(gStat->valuables + slot))
+#define ROTCOUNT(slot) (*(gStat->rotTimer + slot))
+
 s32 GetRotCount(s32 slot) { return ROTCOUNT(slot); }
 
 void SetRotCount(s32 slot, u32 value) {

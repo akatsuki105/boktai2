@@ -71,7 +71,7 @@ _080E5F4E:
 _080E5F56:
 	adds r0, r3, #0
 	adds r1, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r5, #5]
 	ldr r2, _080E5F80 @ =0x085B0A08
 	ldrb r0, [r5, #5]

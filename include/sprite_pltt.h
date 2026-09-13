@@ -1,6 +1,9 @@
 #ifndef __INCLUDE_SPRITE_PLTT_H__
 #define __INCLUDE_SPRITE_PLTT_H__
 
+#include "gba/gba.h"
+#include "types.h"
+
 // https://boktaihacking.net/wiki/Sprite_set_file#Palettes
 
 #define OBJ_PLTT_LENGTH 768
@@ -13,5 +16,7 @@ typedef struct {
 static_assert(sizeof(ObjPlttFile) == 24580);
 
 extern const ObjPlttFile gObjPlttFile0;  // 0x08CB9244
+
+extern rgb555* gObjPlttData;
 
 #endif  // __INCLUDE_SPRITE_PLTT_H__

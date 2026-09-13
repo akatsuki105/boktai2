@@ -22,7 +22,6 @@ extern u8 u8_ARRAY_02036c00[512];
 extern u16 u16_030044b8;
 extern u8 gTilemapBuffer[BG_SCREEN_SIZE * 4];
 extern u16 gObjPlttLen;
-extern rgb555* gObjPlttData;
 extern ParticleFile* gParticleFile;  // 0x0300358C
 
 extern u8 gOAMHeightTable[16];

@@ -56,7 +56,7 @@ _08068EC6:
 _08068EFC:
 	adds r0, r3, #0
 	adds r1, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	ldr r2, _08068F20 @ =0x085B0A08
 	adds r0, #0x40
@@ -445,7 +445,7 @@ _080691D0:
 	subs r2, r1, r0
 	adds r0, r3, #0
 	adds r1, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r1, r0, #0
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10

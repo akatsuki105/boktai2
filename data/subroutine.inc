@@ -169,7 +169,7 @@ gSubroutineTable:
 	.4byte 0x42EF, FUN_080d7f48
 	.4byte 0x430D, FUN_0823d85c
 	.4byte 0x435E, FUN_08013f70
-	.4byte 0x4383, FUN_08015eec
+	.4byte 0x4383, VM_Sub4383
 	.4byte 0x43A0, FUN_080a6e30
 	.4byte 0x43D6, FUN_08041d60
 	.4byte 0x440F, FUN_0807b1a4

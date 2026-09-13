@@ -2,7 +2,7 @@
 
 import { Command } from "@cliffy/command";
 import { basename, join } from "@std/path";
-import { BASE_URL } from "./common.ts";
+import { BASE_URL } from "./api/http.ts";
 
 // Python(PyGhidra) の GhidraScript を、起動中の GUI の Ghidra 上で実行する (GhidraMCP の /run_ghidra_script)。
 // /run_ghidra_script は ~/ghidra_scripts にあるファイルを名前で実行するので、
@@ -32,7 +32,7 @@ const main = () => {
     .description("Python(PyGhidra) の GhidraScript を GUI の Ghidra 上で実行し、出力を表示する。")
     .argument("<script:string>", "実行する .py ファイル。")
     .argument("[args...:string]", "スクリプトに渡す引数。getScriptArgs() で受け取る。")
-    .option("--timeout <sec:number>", "タイムアウト(秒)。関数を全走査するスクリプトは時間がかかる。", { default: 600 })
+    .option("--timeout <sec:number>", "タイムアウト(秒)。関数を全走査するスクリプトは時間がかかる。", { default: 60 })
     .option("--raw", "サーバーの応答をそのまま表示する。")
     .action(async (opts, script, ...args) => {
       const scriptDir = join(Deno.env.get("HOME") ?? "", "ghidra_scripts");

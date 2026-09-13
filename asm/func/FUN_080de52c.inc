@@ -38,7 +38,7 @@ _080DE546:
 	adds r1, #0xe0
 	movs r2, #0
 	ldrsh r1, [r1, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	str r0, [sp, #0x1c]
 	adds r0, r4, #0
 	adds r0, #0x1c

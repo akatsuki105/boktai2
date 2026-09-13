@@ -104,7 +104,7 @@ _080F03BE:
 	ldrsh r0, [r0, r3]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r5, #5]
 	movs r0, #1
 	b _080F0424

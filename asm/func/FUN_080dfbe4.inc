@@ -21,7 +21,7 @@
 	adds r1, r5, r2
 	movs r3, #0
 	ldrsh r1, [r1, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	adds r3, #0x80
 	movs r1, #0xff

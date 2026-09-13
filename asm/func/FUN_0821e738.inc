@@ -229,7 +229,7 @@ _0821E8B0:
 	ldrsh r1, [r1, r4]
 	subs r0, r0, r2
 	subs r1, r1, r3
-	bl FUN_0823785c
+	bl ArcTan2_8
 	movs r2, #0xed
 	lsls r2, r2, #2
 	adds r1, r7, r2

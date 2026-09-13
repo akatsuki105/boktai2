@@ -82,7 +82,7 @@ _0808A1CC:
 	adds r0, #0x70
 	strh r1, [r0]
 _0808A1E8:
-	bl FUN_0808a11c
+	bl GetOwnedCoffinID
 	adds r5, r6, #0
 	adds r5, #0x50
 	strh r0, [r5]

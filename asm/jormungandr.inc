@@ -4089,7 +4089,7 @@ _080C6FE8:
 	beq _080C7052
 _080C701A:
 	adds r0, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r1, _080C7040 @ =0x000008F2
 	adds r3, r7, r1
 	ldrb r2, [r3]
@@ -7189,7 +7189,7 @@ FUN_080c8848: @ 0x080C8848
 	ldrsh r1, [r1, r2]
 	ldr r2, _080C8910 @ =0xFFFFFE00
 	adds r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r2, _080C8914 @ =0x000025EE
 	adds r1, r5, r2
 	strh r0, [r1]

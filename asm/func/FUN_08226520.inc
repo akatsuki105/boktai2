@@ -124,7 +124,7 @@ _082265F4:
 	movs r4, #0
 	ldrsh r2, [r2, r4]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	adds r6, #0x8e

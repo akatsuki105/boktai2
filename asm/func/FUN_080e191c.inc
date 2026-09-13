@@ -607,7 +607,7 @@ _080E1D72:
 	ldrsh r0, [r2, r1]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	asrs r0, r0, #5
 	ldr r4, _080E1E04 @ =0x000001DD
 	adds r1, r5, r4

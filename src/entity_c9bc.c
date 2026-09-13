@@ -31,7 +31,7 @@ typedef struct {
   s16 q_bobOffset;  // 0x20, sin(q_bobAngle) * 16, 各要素の高さに加算される
   u8 q_bobAngle;    // 0x22, gSineTable の添字, 毎フレーム +2
   u8 q_fadeDir;     // 0x23, 0 なら q_fadeLevel を増やし 32 で 1 に, 1 なら減らし 0 で 0 に戻る
-  s16 q_fadeLevel;  // 0x24, 0..32, rgb555_08237468 の混合率
+  s16 q_fadeLevel;  // 0x24, 0..32, BlendPltt の混合率
   u8 unk_26[2];
   u16* q_plttBase;          // 0x28, &gObjPlttData[0x78 * 16]
   u16* q_plttBlendA;        // 0x2C, &gObjPlttData[0x79 * 16]

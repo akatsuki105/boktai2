@@ -25,7 +25,7 @@
 	movs r3, #6
 	str r3, [sp]
 	movs r3, #0x40
-	bl rgb555_08237468
+	bl BlendPltt
 	adds r5, r6, #0
 	adds r5, #0x24
 	movs r4, #0

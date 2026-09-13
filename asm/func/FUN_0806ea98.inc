@@ -49,7 +49,7 @@ _0806EAD6:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	str r3, [sp]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r1, _0806EB3C @ =0xFFFFFF00
 	add r1, sb
 	subs r0, r0, r1

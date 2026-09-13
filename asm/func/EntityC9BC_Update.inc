@@ -93,14 +93,14 @@ _0800D976:
 	movs r4, #5
 	str r4, [sp]
 	mov r0, r8
-	bl rgb555_08237468
+	bl BlendPltt
 	ldr r1, [r5, #0x28]
 	ldr r2, [r5, #0x30]
 	movs r0, #0x24
 	ldrsh r3, [r5, r0]
 	str r4, [sp]
 	ldr r0, [sp, #4]
-	bl rgb555_08237468
+	bl BlendPltt
 	mov r1, sl
 	ldrb r0, [r1]
 	cmp r0, #0

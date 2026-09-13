@@ -28,7 +28,7 @@
 	adds r0, r2, #0
 	adds r1, r4, #0
 	str r2, [sp]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r3, r0, #0x18
 	mov r0, r8

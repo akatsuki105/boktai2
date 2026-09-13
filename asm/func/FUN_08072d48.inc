@@ -167,7 +167,7 @@ _08072E8C:
 	movs r7, #1
 	adds r0, r6, #0
 	adds r1, r5, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x10

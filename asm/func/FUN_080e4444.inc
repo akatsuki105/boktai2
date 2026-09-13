@@ -70,7 +70,7 @@ _080E448C:
 	ldrsh r0, [r0, r3]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	subs r5, r0, r5
 	cmp r5, #0x80
 	ble _080E44E4

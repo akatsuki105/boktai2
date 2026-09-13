@@ -1,9 +1,6 @@
 import * as gba from "../common/gba/gba.ts";
 import { parseSymbolFile } from "../parser/common/symbol.ts";
-
-// GhidraMCP (https://github.com/bethington/ghidra-mcp) が MCP のために立てている HTTP サーバを
-// スクリプトからも利用する。pyghidra で GUI の Ghidra を起動している必要がある。
-export const BASE_URL = "http://127.0.0.1:8089";
+import { findGlobalByName } from "./api/data.ts";
 
 // 引数がアドレスかシンボル名かを判別する。0x 付き、または16進数字だけならアドレス扱い。
 const looksLikeAddress = (s: string): boolean => /^(0x)?[0-9A-Fa-f]+$/.test(s);
@@ -36,19 +33,20 @@ export const symbolsByAddress = (): Map<number, string> => {
   return map;
 };
 
-export const ghidraGet = async (endpoint: string, params: Record<string, string>, timeoutSec: number): Promise<string> => {
-  const url = `${BASE_URL}/${endpoint}?${new URLSearchParams(params)}`;
-  let res: Response;
-  try {
-    res = await fetch(url, { signal: AbortSignal.timeout(timeoutSec * 1000) });
-  } catch (e) {
-    console.error(`エラー: ${BASE_URL} に接続できません(Ghidra を pyghidra で起動していますか?)`);
-    console.error(`  ${e instanceof Error ? e.message : String(e)}`);
-    Deno.exit(1);
-  }
-  if (!res.ok) {
-    console.error(`エラー: ${res.status} ${res.statusText}`);
-    Deno.exit(1);
-  }
-  return await res.text();
+// アドレスまたはシンボル名の文字列を ROM アドレスに直す。見つからなければ undefined。
+// resolveAddress と違い、boktai2.sym にない Ghidra 側だけの名前も引ける。次の順に試す:
+//   1. アドレス (0x 付き、または16進数だけ)
+//   2. boktai2.sym のシンボル名 (Thumb 関数は最下位ビットを落とす)
+//   3. u16_ARRAY_085aa8f0 のように末尾に8桁のアドレスが付いた Ghidra の自動名
+//   4. Ghidra のグローバルなデータ名 (list_globals)
+export const resolveTarget = async (target: string): Promise<gba.addr | undefined> => {
+  if (looksLikeAddress(target)) return parseInt(target.replace(/^0x/i, ""), 16);
+
+  const sym = parseSymbolFile().find((s) => s.name === target);
+  if (sym) return isFunctionSymbol(sym.type) ? sym.offset & ~1 : sym.offset;
+
+  const auto = target.match(/_([0-9A-Fa-f]{8})$/);
+  if (auto) return parseInt(auto[1], 16);
+
+  return await findGlobalByName(target);
 };

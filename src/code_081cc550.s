@@ -6094,7 +6094,7 @@ _081D26EA:
 	beq _081D2762
 _081D26F2:
 	adds r0, r3, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	adds r0, #0x20
@@ -37415,7 +37415,7 @@ _081E14AA:
 	ldrh r3, [r5, #6]
 	movs r4, #6
 	str r4, [sp]
-	bl FUN_08237970
+	bl LerpVec3
 	ldr r2, _081E14E8 @ =0x085B0A08
 	ldrh r0, [r5, #6]
 	lsls r0, r0, #1
@@ -45532,7 +45532,7 @@ _081E5342:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r1, #0
-	bl FUN_08237970
+	bl LerpVec3
 	ldrh r0, [r4]
 	cmp r0, #0xb
 	bls _081E53C0
@@ -52376,7 +52376,7 @@ _081E8B4C:
 	ldrsh r0, [r0, r3]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r2, r5, #0
 	adds r2, #0x86
 	strb r0, [r2]
@@ -52732,7 +52732,7 @@ _081E8DCA:
 	ldrsh r0, [r0, r1]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	cmp r0, #0
 	blt _081E8E14
 	asrs r0, r0, #5
@@ -52777,7 +52777,7 @@ _081E8E2A:
 	ldrsh r0, [r2, r1]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	cmp r0, #0
 	blt _081E8E6A
 	asrs r0, r0, #5

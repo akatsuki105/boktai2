@@ -1757,7 +1757,7 @@ _080CC4B2:
 	b _080CC4E4
 _080CC4DA:
 	adds r0, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r1, r0, #0
 	adds r1, #0x60
 _080CC4E4:
@@ -1873,7 +1873,7 @@ _080CC588:
 	b _080CC5DA
 _080CC5B6:
 	adds r0, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x10
@@ -3432,7 +3432,7 @@ _080CD160:
 	ldrsh r0, [r4, r2]
 	movs r2, #0x30
 	ldrsh r1, [r4, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	adds r1, r4, #0
 	adds r1, #0x2a
@@ -8573,7 +8573,7 @@ _080CF8E4:
 	adds r1, r4, r5
 	movs r2, #0
 	ldrsh r1, [r1, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x10
@@ -9286,7 +9286,7 @@ FUN_080cfdec: @ 0x080CFDEC
 	movs r3, #4
 	ldrsh r2, [r2, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x20
@@ -35084,7 +35084,7 @@ FUN_080dc4a8: @ 0x080DC4A8
 	ldrsh r0, [r0, r1]
 	movs r2, #4
 	ldrsh r1, [r4, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	adds r0, #0x10
 	movs r5, #0xff
@@ -35658,7 +35658,7 @@ _080DC912:
 	ldrsh r0, [r4, r1]
 	movs r2, #4
 	ldrsh r1, [r4, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r0, [sp, #0x18]
 	movs r1, #1
 	bl FUN_08234224
@@ -36874,7 +36874,7 @@ _080DD278: .4byte 0x00000F68
 _080DD27C:
 	adds r0, r3, #0
 	adds r1, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	b _080DD310
 _080DD286:
 	movs r5, #0

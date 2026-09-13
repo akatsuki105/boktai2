@@ -33,7 +33,7 @@
 	movs r5, #4
 	ldrsh r2, [r3, r5]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r4, #9]
 	movs r3, #0
 	movs r0, #0x70

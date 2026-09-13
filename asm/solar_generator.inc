@@ -143,7 +143,7 @@ _080B2932:
 	bgt _080B298C
 	adds r0, r2, #0
 	adds r1, r3, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r4, [r6]
 	mov ip, r4
 	ldr r4, _080B29A0 @ =0x085B0A08

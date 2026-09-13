@@ -111,7 +111,7 @@ _08068710: .4byte 0x000002E7
 _08068714:
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	ldr r2, _08068738 @ =0x085B0A08
 	adds r0, #0x40

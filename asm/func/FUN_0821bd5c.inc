@@ -24,7 +24,7 @@
 _0821BD8A:
 	adds r0, r3, #0
 	adds r1, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r5]
 	adds r0, r4, #0
 	bl Sqrt

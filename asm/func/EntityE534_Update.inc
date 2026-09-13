@@ -92,7 +92,7 @@ _08012AEE:
 	asrs r3, r3, #0x18
 	movs r4, #6
 	str r4, [sp]
-	bl rgb555_08237468
+	bl BlendPltt
 _08012B1E:
 	adds r4, r6, #0
 	adds r4, #0x24

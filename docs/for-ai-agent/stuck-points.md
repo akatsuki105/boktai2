@@ -35,3 +35,4 @@ Just the function name (and file). No detail write-up.
 - `FUN_08243828` (`src/eeprom.c`)
 - `Rfu_FindPartnerByRecord` (`src/rfu_0824beb8.c`)
 - `FUN_08022210` (`src/entity_4e69.c`)
+- `FUN_082376a4` (`src/utility_08237468.c`)

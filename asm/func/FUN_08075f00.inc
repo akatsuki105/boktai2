@@ -21,7 +21,7 @@
 	subs r4, r4, r0
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	adds r0, r5, #0
 	muls r0, r5, r0

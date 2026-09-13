@@ -97,7 +97,7 @@ _08223800:
 	adds r0, r6, #0
 	adds r1, r4, #0
 	str r3, [sp]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	subs r0, #0x10
 	lsls r0, r0, #0x18
 	mov r2, sb

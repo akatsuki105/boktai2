@@ -62,7 +62,7 @@ _08061E9C:
 	ldrsh r0, [r4, r2]
 	movs r2, #0x30
 	ldrsh r1, [r4, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	adds r1, r4, #0
 	adds r1, #0x2a

@@ -36,7 +36,7 @@ _080367F2:
 	movs r3, #0x28
 	ldrsh r2, [r4, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	movs r2, #0xac
 	lsls r2, r2, #1
 	adds r1, r5, r2
@@ -3207,7 +3207,7 @@ _08037FC8:
 	movs r3, #0x24
 	ldrsh r2, [r6, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x20
@@ -3311,7 +3311,7 @@ FUN_08038080: @ 0x08038080
 	movs r6, #4
 	ldrsh r2, [r3, r6]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x20
@@ -3500,7 +3500,7 @@ FUN_08038200: @ 0x08038200
 	movs r4, #4
 	ldrsh r2, [r3, r4]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x20
@@ -3771,7 +3771,7 @@ _0803841C:
 	movs r3, #0x24
 	ldrsh r2, [r5, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x20
@@ -3897,7 +3897,7 @@ bee_08038514: @ 0x08038514
 	movs r4, #4
 	ldrsh r2, [r3, r4]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x20
@@ -4050,7 +4050,7 @@ FUN_080385f8: @ 0x080385F8
 	movs r2, #4
 	ldrsh r3, [r3, r2]
 	subs r1, r1, r3
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r2, r0, #0
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10
@@ -5543,7 +5543,7 @@ _0803920C:
 	subs r4, r4, r0
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	mov r1, r8
 	adds r1, #0xc8
 	strb r0, [r1]
@@ -5799,7 +5799,7 @@ _08039400:
 	movs r4, #4
 	ldrsh r2, [r3, r4]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x20
@@ -5966,7 +5966,7 @@ _08039578:
 	str r0, [sp]
 	adds r0, r1, #0
 	adds r1, r6, #0
-	bl rgb555_08237468
+	bl BlendPltt
 _08039586:
 	adds r0, r7, #0
 	adds r0, #0xb4
@@ -8591,7 +8591,7 @@ _0803A866:
 	ldrb r3, [r3]
 	movs r4, #5
 	str r4, [sp]
-	bl FUN_08237970
+	bl LerpVec3
 _0803A880:
 	movs r1, #0xb6
 	lsls r1, r1, #1
@@ -8887,7 +8887,7 @@ _0803AAB4:
 	ldrb r3, [r3]
 	movs r4, #5
 	str r4, [sp]
-	bl FUN_08237970
+	bl LerpVec3
 _0803AACE:
 	movs r1, #0x80
 	lsls r1, r1, #2

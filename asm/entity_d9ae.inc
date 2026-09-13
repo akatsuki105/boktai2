@@ -2829,7 +2829,7 @@ _080044E8:
 	ldrsh r3, [r6, r4]
 	movs r4, #5
 	str r4, [sp]
-	bl rgb555_08237468
+	bl BlendPltt
 	adds r0, r6, #0
 	adds r0, #0x50
 	ldr r1, [r6, #0x24]
@@ -2837,7 +2837,7 @@ _080044E8:
 	movs r5, #0x1c
 	ldrsh r3, [r6, r5]
 	str r4, [sp]
-	bl rgb555_08237468
+	bl BlendPltt
 	ldrb r0, [r6, #0x1b]
 	cmp r0, #0
 	bne _08004532

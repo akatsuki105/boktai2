@@ -1,7 +1,6 @@
 #include "global.h"
 #include "sprite.h"
 
-extern rgb555* gObjPlttData;
 extern u16 u16_030044b8;
 
 // spriteset ファイルのヘッダをコピーし、各オフセットをファイル先頭からのポインタに変換する

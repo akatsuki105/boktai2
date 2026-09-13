@@ -76,6 +76,9 @@ SECTIONS {
       src/entity_6978.o(COMMON);
       src/entity_aa65.o(COMMON);
       src/entity_c9bc.o(COMMON);
+      src/entity_0800f110.o(COMMON);
+      src/entity_08013df0.o(COMMON);
+      src/entity_08016660.o(COMMON);
       src/iwram2.o(iwram_data);
       src/entity_b639.o(COMMON);
       src/solar.o(COMMON);
@@ -123,7 +126,12 @@ SECTIONS {
 			src/code_08013634.o (.text);
 			src/entity_08013df0.o (.text);
 			src/entity_080146e0.o (.text);
-			src/code_08013c94.o (.text);
+			src/entity_08015220.o (.text);
+			src/entity_08015584.o (.text);
+			src/entity_08016660.o (.text);
+			src/entity_08016ba4.o (.text);
+			src/entity_08016dbc.o (.text);
+			src/entity_08017750.o (.text);
 			src/entity_e435.o (.text);
 			src/code_08017b70.o (.text);
 			src/entity_da0b.o (.text);
@@ -242,6 +250,8 @@ SECTIONS {
 			src/code_082326a0.o (.text);
 			src/hitbox.o (.text);
 			src/code_08236f18.o (.text);
+			src/sprite_082370cc.o (.text);
+			src/utility_08237468.o (.text);
 			src/lib/linkManager.o (.text);
 			src/code_0823a6c0.o (.text);
 			src/vm_ctrl2.o (.text);
@@ -360,6 +370,11 @@ SECTIONS {
     src/entity_e534.o (.rodata);
     src/password.o (.rodata);
     src/entity_080146e0.o (.rodata);
+    src/entity_08015220.o (.rodata);
+    src/entity_08015584.o (.rodata);
+    src/entity_08016660.o (.rodata);
+    src/entity_08016dbc.o (.rodata);
+    src/entity_08017750.o (.rodata);
     src/data3b.o (.rodata);
     src/player.o (.rodata);
     src/entity_0b50.o (.rodata);
@@ -379,6 +394,7 @@ SECTIONS {
     src/vm.o (.rodata);
     src/vm_ctrl1.o (.rodata);
     src/data3c.o (.rodata);
+    src/utility_08237468.o (.rodata);
     src/file.o (.rodata);
     src/data/tilesets.o (.rodata);
     src/data/fonts.o (.rodata);

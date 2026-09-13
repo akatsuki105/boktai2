@@ -19,5 +19,6 @@ static_assert(sizeof(Camera) == 164);
 extern Camera* gCamera;  // 0x030047D0
 
 void Camera_0823b744(void);
+void FUN_0823b9cc(s32 n);
 
 #endif  // __INCLUDE_CAMERA_H__

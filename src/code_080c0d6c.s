@@ -4395,7 +4395,7 @@ _080C32C0:
 	movs r3, #0x30
 	ldrsh r2, [r5, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldrb r2, [r5, #3]
 	subs r0, r0, r2
 	movs r3, #0x80
@@ -6268,7 +6268,7 @@ _080C419C:
 	ldrsh r0, [r4, r3]
 	movs r2, #0xc
 	ldrsh r1, [r4, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r2, r0, #0
 	ldrh r1, [r4, #6]
 	adds r0, #0x40
@@ -7426,7 +7426,7 @@ FUN_080c4a74: @ 0x080C4A74
 	subs r4, r1, r0
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r7, r0, #0
 	cmp r6, #0
 	bne _080C4AD0

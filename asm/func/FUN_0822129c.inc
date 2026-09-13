@@ -172,7 +172,7 @@ _082213E2:
 	ldrsh r1, [r2, r5]
 	subs r0, r0, r3
 	subs r1, r1, r4
-	bl FUN_0823785c
+	bl ArcTan2_8
 	mov r1, sb
 	adds r1, #0x4d
 	strb r0, [r1]

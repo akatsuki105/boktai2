@@ -32,7 +32,7 @@
 	adds r2, r1, #0
 	muls r2, r1, r2
 	adds r4, r4, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x10

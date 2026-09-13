@@ -4166,7 +4166,7 @@ FUN_0808c334: @ 0x0808C334
 	movs r2, #2
 	ldrsh r3, [r3, r2]
 	subs r1, r1, r3
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	adds r3, #0x40
 	movs r1, #0xff

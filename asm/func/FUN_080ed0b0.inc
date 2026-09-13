@@ -273,7 +273,7 @@ _080ED2B8:
 	strh r0, [r4]
 	ldr r0, [sp, #0x1c]
 	mov r1, sl
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r7, #5]
 	movs r0, #0x8e
 	lsls r0, r0, #1

@@ -4331,7 +4331,7 @@ _08019C02:
 	movs r3, #4
 	ldrsh r2, [r5, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r6, #1]
 	mov r0, sp
 	movs r1, #0
@@ -4543,7 +4543,7 @@ _08019D88:
 	movs r3, #4
 	ldrsh r2, [r5, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r6, #1]
 	mov r0, sp
 	movs r1, #0

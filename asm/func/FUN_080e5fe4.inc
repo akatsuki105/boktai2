@@ -47,7 +47,7 @@ _080E602C:
 _080E603A:
 	asrs r1, r0, #0x10
 	adds r0, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r3, r0, #0x18
 	ldr r2, _080E6064 @ =0x085B0A08

@@ -11,8 +11,6 @@
 #include "time.h"
 #include "vm.h"
 
-struct Entity0800f110;
-struct Entity08013df0;
 struct Entity4E69;
 struct Dvalinn;
 struct Entity5941;
@@ -20,10 +18,7 @@ struct EntityCBB0;
 struct Player;
 struct Unk030046a4;
 
-IWRAM_DATA struct Entity0800f110* gEntity0800f110 = NULL;  // 0x03002B3C
-IWRAM_DATA struct Entity08013df0* gEntity08013df0 = NULL;  // 0x03002B40
-
-IWRAM_DATA u8 u8_03002b44[0x4C - 0x44] = {};  // todo
+IWRAM_DATA u8 u8_03002b48[0x4C - 0x48] = {};  // todo
 
 IWRAM_DATA struct Entity4E69* gEntity4E69 = NULL;  // 0x03002B4C
 
@@ -173,8 +168,12 @@ IWRAM_DATA GameInfo* gStat = NULL;          // 0x030046A0
 IWRAM_DATA struct Unk030046a4* gCollisionMap = NULL;  // Malloc(3620) で確保したバッファを指すポインタ (FUN_082326a0)
 IWRAM_DATA s32 gMapBlockW = 0;                        // 0x030046A8
 IWRAM_DATA s32 gMapBlockH = 0;                        // 0x030046AC
+IWRAM_DATA u32 u32_030046b0 = 0;                      // 0x030046B0
 
-IWRAM_DATA u8 u8_030046b0[144] = {};  // todo
+IWRAM_DATA u32 u32_030046b4 = 0;   // 0x030046B4
+IWRAM_DATA u32 gRandTableIdx = 0;  // 0x030046B8
+
+IWRAM_DATA u8 u8_030046bc[0x740 - 0x6BC] = {};  // todo
 
 IWRAM_DATA LINK_MANAGER lman = {};  // 0x03004740
 
@@ -188,7 +187,7 @@ IWRAM_DATA u32 gFlag030047a4 = 0;
 
 IWRAM_DATA SystemSaveData* gSystemSaveData = NULL;
 IWRAM_DATA u8 u8_030047ac[8] = {};   // todo
-IWRAM_DATA u32 u32_030047b4 = 0;      // 0x030047B4, Save_WriteCore でセーブ成功時に 1 がセットされる
+IWRAM_DATA u32 u32_030047b4 = 0;     // 0x030047B4, Save_WriteCore でセーブ成功時に 1 がセットされる
 IWRAM_DATA u8 u8_030047b8[16] = {};  // todo
 
 IWRAM_DATA Vec3 gCameraVpCoords = {};  // 0x030047C8

@@ -289,7 +289,7 @@ _080E413C:
 	ldrsh r0, [r4, r2]
 	movs r3, #4
 	ldrsh r1, [r4, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r0, #0x20
 	asrs r0, r0, #6
 	movs r5, #3
@@ -319,7 +319,7 @@ _080E413C:
 	ldrsh r0, [r4, r1]
 	movs r2, #4
 	ldrsh r1, [r4, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r0, #0x20
 	asrs r4, r0, #6
 	ands r4, r5
@@ -483,7 +483,7 @@ _080E42D0:
 	ldrsh r0, [r2, r3]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r0, #0x20
 	asrs r4, r0, #6
 	movs r6, #3

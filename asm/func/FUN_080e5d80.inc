@@ -5,7 +5,7 @@
 	asrs r4, r1, #0x10
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r1, r0, #0x18
 	cmp r1, #0x40

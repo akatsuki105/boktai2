@@ -1,7 +1,6 @@
 #include "entity.h"
 #include "global.h"
-
-extern u32 gRngValue;
+#include "random.h"
 
 IWRAM_DATA Entity gSystemManager = {};  // 0x03000728
 

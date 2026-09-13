@@ -157,7 +157,7 @@ _08220888:
 	ldr r1, _082208C0 @ =0x0000076C
 	subs r0, r0, r2
 	subs r1, r1, r3
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r4, r0, #0
 	add r3, sp, #8
 	movs r6, #0xa

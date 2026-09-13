@@ -33,7 +33,7 @@
 	ldrsh r0, [r4, r3]
 	subs r1, r1, r0
 	adds r0, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	ldr r2, _082461E8 @ =0x030046B8
 	ldr r0, [r2]
@@ -75,7 +75,7 @@ _08246206:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r4, #0
-	bl FUN_08237970
+	bl LerpVec3
 	ldr r3, _08246258 @ =0x085B0A08
 	ldrh r0, [r5, #6]
 	lsls r0, r0, #2

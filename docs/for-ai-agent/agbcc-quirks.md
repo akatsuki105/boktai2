@@ -35,7 +35,7 @@ the section matching how you would go looking for it.
 
 ### Branch direction
 
-- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `FUN_080223f4`, `FUN_08022428`, `FUN_08022448`, `FUN_080224f0`, `FUN_08022618`, `FUN_08022644`.
+- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `FUN_080223f4`, `FUN_08022428`, `FUN_08022448`, `FUN_080224f0`, `FUN_08022618`, `FUN_08022644`, `ArcTan2_8`, `FUN_082375c8`.
 - agbcc keeps the *first-written* if-branch as fall-through; put an
   out-of-line block in the `else`.
 - Applies even when **both** arms end in `return` (no shared code after
@@ -121,14 +121,25 @@ the section matching how you would go looking for it.
 
 ### `s16` locals defer sign-extension to each use
 
-- **Frequency**: `VM_CallScript`.
+- **Frequency**: `VM_CallScript`, `Entity28CB_Update`.
 - `s16 x = expr;` keeps the raw value and emits `lsls`/`asrs` at every *use*; `s32 x = (s16)expr;` sign-extends once at the *assignment*. Pick whichever places the extension where the target has it.
+- Reading an `s16` field into an `s32` local (`s32 spread = p->q_spread;`) gives a single `ldrsh` that every use shares. An `s16` local gives `ldrh` with `lsls`/`asrs` at each use (`Entity28CB_Update`).
 
 ### `u16` vs `s16` counters increment differently (and `s16` can still use `lsr`)
 
 - **Frequency**: `VM_Ctrl_22FF`.
 - `u16 n; n++;` adds first, then truncates: `adds #1` / `lsls #16` / `lsrs #16`. `s16 n; n++;` shifts up first and adds there: `lsls #16` / `adds 0x10000` (built with `movs #0x80` + `lsls #9`) / `lsrs #16`. If the target has the second shape, the counter is `s16` — no natural `u16` spelling (`n = n + 1`, `for(...; n++)`, `(u16)(n + 1)`, `(n + 1) & 0xFFFF`, `arr[n++]`) produces it.
 - Don't read the `lsr` as proof of `u16`: an `s16` counter that is never compared needs no sign extension, so agbcc drops the `asr`. Adding a comparison on the counter (e.g. `n < 16`) brings the `asr` back.
+
+### `(u8)(x + c) >> n` folds into shifts; `((x + c) & 0xFF) >> n` keeps the `ands`
+
+- **Frequency**: `FUN_08237834`, `FUN_08237848`.
+- `(u8)(val + 0x10) >> 5` compiles to `lsls #24` / `adds 0x10 << 24` / `lsrs #29` (the add is done in the top byte). The target's `adds #0x10` / `movs #0xFF` / `ands` / `asrs #5` comes from `((val + 0x10) & 0xFF) >> 5`; the `asrs` shows the masked value stayed a signed `int`.
+
+### A `u16` local updated with `|=` truncates before a 16-bit store; writing the `|` into the store does not
+
+- **Frequency**: `FUN_08237a04`.
+- `u16 ie = REG_IE; ... REG_IE = ie | 0x40;` emits `orrs` then `strh` directly. The target has `orrs` / `lsls #16` / `lsrs #16` / `strh`, which `ie |= 0x40; REG_IE = ie;` reproduces: the assignment back to the `u16` local keeps its truncation even though the store would drop the upper half anyway.
 
 ## Operand order & scheduling
 
@@ -162,7 +173,13 @@ the section matching how you would go looking for it.
 
 ### Global-address pool loads are ordered by expression nesting, not by source statement
 
-- **Frequency**: `sound_08240264`, `FUN_082436dc`.
+- **Frequency**: `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`.
+- Two draws from the random table (`gRandomTable[(gRandTableIdx + 1) & 0x3FF]`) in `FUN_08089d50` needed three changes. Each one is value-identical to the plain form:
+  - Keep the first index in a local and store only the second. Storing `gRandTableIdx` twice kept the first `str`.
+  - Take the table address into a pointer local first (`u16* table = gRandomTable;`). This loads `=gRandomTable` before `=gRandTableIdx`.
+  - Read each value into a `u16` local before `& 0x1F`. This keeps the mask in its own register (`ands r0, r4`).
+
+  The permuter found the last two. A `static inline` that returns `gRandomTable[++idx]` still stored the first index. The original RNG macro or inline is not known yet.
 - A global struct's address loaded at function entry (`ldr r4, =gSaved` before anything else) and kept in a callee-saved register across calls comes from a pointer local declared first: `SavedHBlankState* s = &gSavedHBlankState;` then `s->field`. Writing `gSavedHBlankState.field` at each use loaded the address late, after the calls, and needed one less saved register.
 - After a call, `u16 ms = gSongTable[id].ms; f(gMPlayTable[ms].info); gSoundIDs[ms] = id;` loaded `=gSongTable` first and `=gMPlayTable` just before its use. The target loads `=gMPlayTable` into a register **before** `=gSongTable`; writing the index inline, `f(gMPlayTable[gSongTable[id].ms].info); gSoundIDs[gSongTable[id].ms] = id;`, matched (CSE still reuses the `ms*2` for the second subscript). If a streamdiff only shows one `ldr rN, =POOL` moved earlier and a register renamed, try inlining or splitting the index local.
 
@@ -173,13 +190,22 @@ the section matching how you would go looking for it.
 
 ### `(a * 2) * b` moves the doubling onto `b`; `(a << 1) * b` keeps it on `a`
 
-- **Frequency**: `FUN_0822bcf4`.
+- **Frequency**: `FUN_0822bcf4`, `FUN_08089b48`, `BlendPlttToColor`.
 - The target computed a row pitch as `ldrsh r0, [...]` / `lsls r0, r0, #1` / `muls r0, r2`. Both `y * (w * 2)` and `(w * 2) * y` emitted `lsls r2, r2, #1` instead, on the other operand, because agbcc reassociates a constant factor through a multiply. Writing the doubling as a shift, `(w << 1) * y`, is not reassociated and matched.
+- Operand order also decides which value is copied before `muls`. In `FUN_08089b48`, `t * g2` emitted `adds r1, r7, #0` / `muls r1, r2` (copy `t`). The target has `adds r1, r2, #0` / `muls r1, r7` (copy `g2`), and writing `g2 * t` matched.
+- Same in `BlendPlttToColor`: the target copies the channel (`adds r3, r0, #0` / `muls r3, r5`), so the channel comes first: `(*src & 0x1F) * ((1 << shift) - t)`.
+
+### `-y * 256` reuses a `-y` computed earlier; `y * -256` negates the product separately
+
+- **Frequency**: `ArcTan2_8`.
+- With `if (x > -y) return t[Div(-y * 256, x)];` agbcc CSE's the `-y` from the compare, overwriting `y` (`rsbs r1, r1` / `lsls r0, r1, #8`). The target keeps `y` alive and negates after the shift (`rsbs r3, r1` for the compare, then `lsls r0, r1, #8` / `rsbs r0, r0`), which `Div(y * -256, x)` reproduces.
 
 ### An `|` chain accumulates left-to-right exactly as written
 
-- **Frequency**: `FUN_0822a4fc`, `FUN_0822bcf4`.
+- **Frequency**: `FUN_0822a4fc`, `FUN_0822bcf4`, `FUN_08089b48`, `BlendPlttToColor`, `BlendPltt`.
 - agbcc does not reassociate `a | b | c`. Written flat, it emits `a|b` into the accumulator and then ORs `c` (`orrs acc, b` ... `orrs acc, c`); written `a | (b | c)`, it builds `b|c` in a separate register first and ORs that into `a` once (`orrs r1, r0` then `orrs r3, r1`). Both forms have the same instruction count, so a streamdiff shows only swapped `orrs` operands — plus, because the grouped form needs one more value live at once, a different `push` list (`{r4, lr}` vs `{r4, r5, lr}`) and every register shifted by one. When the register allocation is off by exactly one callee-saved register in an expression built from three or more `|` terms, try regrouping the parentheses before suspecting anything else. The same should apply to other associative operators (`+`, `&`, `^`).
+- Masks follow the same order as the source. `(r & 0x1F) | (g & 0x3E0) | (b & 0x7C00)` interleaves them: `ands`, `ands`, `orrs`, `ands`, `orrs`. The target did all three `ands` first. Separate statements `r &= 0x1F; g &= 0x3E0; b &= 0x7C00; *dst = r | g | b;` matched (`FUN_08089b48`). Putting each mask into the line that computes the value (`r = (...) >> 6) & 0x1F;`) instead changed the register allocation for the whole loop.
+- The opposite case, `BlendPlttToColor` (blend 16 colors toward one color): the target interleaves `ands`/`orrs`, so the single expression `*dst = (r & 0x1F) | (g & 0x3E0) | (b & 0x7C00);` matched. It also masks each channel straight from `*src` inside its own formula (`((*src & 0x3E0) * k + g2 * t) >> shift`). Pulling all three channels into locals first put three `ands` before the multiplies and spilled the loop counter to the stack.
 
 ### Bitfield store vs hand-written mask differ in operand evaluation order
 
@@ -188,9 +214,20 @@ the section matching how you would go looking for it.
 
 ### `arr[i]` vs `*p++` change where the walking pointer is initialized
 
-- **Frequency**: `FUN_082315c0`, `FUN_0824082c`.
+- **Frequency**: `FUN_082315c0`, `FUN_0824082c`, `FUN_08089ce0`.
 - Both compile to the same `stm rN!, {r0}` walking store, but the init of that pointer lands in a different place. `*out++ = v;` modifies the parameter, so agbcc copies it to a callee-saved register in the **entry block**, before any loop-invariant hoists. `out[i] = v;` leaves the parameter alone and lets loop strength reduction create the pointer, so its init goes in the **preheader**, after the hoists — swapping the order of the two setup instructions. (Strength reduction also frees `i` to be reversed into a down-counter while the pointer still walks up.)
 - A walking pointer compared against `base + const` (`adds r0, r5, #0` / `adds r0, #0x14` / `cmp r4, r0`) with a **signed** loop exit (`ble`) and no pre-loop test is an `s32 i` index loop, not a pointer loop: loop strength reduction deletes `i` and rewrites `i == 10` and `i < 32` as compares on the pointer. In `FUN_0824082c`, writing the pointer loop (`p == &arr[10]`, `p <= &arr[31]`) gave a pre-loop `bhi`, unsigned `bls` and pool-loaded addresses; `for (i = 0; i < 32; i++) { if (arr[i]) { if (i == 10) ... } }` matched, including the second walking pointer used for the `arr[i]` call argument.
+
+### `a = b = v` stores `b` first and evaluates `v` once
+
+- **Frequency**: `Entity28CB_Update`.
+- Two statements `n->q_scaleX = p->q_scale >> 4; n->q_scaleY = p->q_scale >> 4;` load `q_scale` twice, because the byte store may alias it. The target loaded it once and stored `+8` (X) before `+9` (Y). A chained assignment evaluates the value once, but stores the inner target first, so it has to be written `n->q_scaleY = n->q_scaleX = p->q_scale >> 4;` to get X then Y.
+
+### A constant passed through an inline helper is loaded before the store address
+
+- **Frequency**: `FUN_08089d24`, `FUN_08089f38`, `FUN_08089e98`, `FUN_08089f58`.
+- `FUN_08089f38` shows why the helper matters. Without it, eight rewrites (direct stores, a merged `timer` local, both statement orders) all left the two registers swapped. Calling `Entity28CB_SetState(p, 6)` in the `>= 90` branch matched on the first try, merged timer store included.
+- Symptom: the target loads a store's constant (`movs r0, #2`) before it computes the store address (`subs r1, #0xe`). `p->state = 2;` computes the address first. If the value goes through a parameter, the constant becomes its own pseudo that is set up earlier. For `FUN_08089d24`, the permuter found a temporary (`v = 2; p->state = v;`). A natural form that gives the same code is `static inline void Entity28CB_SetState(Entity28CB* p, u16 state) { p->state = state; p->stateTimer = 0; }`. Every state change in that entity also resets `stateTimer`, so the original probably had a helper like this.
 
 ### Where a global's address and value materialize follows statement splitting
 

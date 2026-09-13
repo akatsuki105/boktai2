@@ -1,14 +1,10 @@
-#!/usr/bin/env -S deno run --allow-read --allow-run --allow-net
+#!/usr/bin/env -S deno run --allow-read --allow-run --allow-net --allow-env
 
 import { Command } from "@cliffy/command";
 import * as gba from "../common/gba/gba.ts";
-import { ARM_REGISTERS, Register } from "./arm_registers.ts";
-import { ghidraGet, resolveAddress, symbolsByAddress } from "./common.ts";
-
-type Varnode = { space: string; offset: string; size: number };
-type PcodeOp = { mnemonic: string; seq: { address: string }; inputs: Varnode[]; output?: Varnode };
-type BasicBlock = { start: { address: string }; stop: { address: string }; pcodes: PcodeOp[] };
-type PcodeResponse = { name: string; address: string; basic_blocks: BasicBlock[]; high_pcodes?: PcodeOp[] };
+import { ARM_REGISTERS, Register } from "./api/arm_registers.ts";
+import { BasicBlock, getFunctionPcode, PcodeOp, PcodeResponse, Varnode } from "./api/function.ts";
+import { resolveAddress, symbolsByAddress } from "./common.ts";
 
 // 分岐先(コードアドレス)を第0入力に取る命令。ram 空間の生アドレスではなくラベルとして出す。
 const BRANCH_OPS = new Set(["BRANCH", "CBRANCH", "BRANCHIND", "CALL", "CALLIND"]);
@@ -99,10 +95,20 @@ const main = () => {
     .argument("<target:string>", "Function name or ROM address")
     .option("--granularity <level:string>", "'basic'(基本ブロックのみ) または 'high'(HighFunction込み)。", { default: "basic" })
     .option("--json", "整形せず生のJSONを出力する。")
-    .option("--timeout <sec:number>", "タイムアウト(秒)。", { default: 60 })
+    .option("--timeout <sec:number>", "タイムアウト(秒)。省略時は getFunctionPcode のデフォルト値。")
     .action(async (opts, target) => {
+      if (opts.granularity !== "basic" && opts.granularity !== "high") {
+        console.error(`エラー: --granularity は 'basic' か 'high' です: ${opts.granularity}`);
+        Deno.exit(1);
+      }
       const addr = resolveAddress(target);
-      const raw = await ghidraGet("get_function_pcode", { function_address: `0x${gba.toHex32(addr)}`, granularity: opts.granularity }, opts.timeout);
+      let raw: string;
+      try {
+        raw = await getFunctionPcode(addr, opts.granularity, opts.timeout);
+      } catch (e) {
+        console.error(`エラー: ${e instanceof Error ? e.message : String(e)}`);
+        Deno.exit(1);
+      }
       if (opts.json) {
         console.log(raw);
         return;

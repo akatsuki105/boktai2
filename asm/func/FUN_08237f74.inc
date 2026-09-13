@@ -7,12 +7,12 @@
 	ldr r0, [r0]
 	cmp r0, #0
 	blt _0823800A
-	bl FUN_082379ec
+	bl DisableInterrupts
 	ldr r0, _08237FB8 @ =0x0300078C
 	ldr r4, [r0]
 	ldr r0, _08237FBC @ =0x03000790
 	ldr r7, [r0]
-	bl FUN_082379f8
+	bl EnableInterrupts
 	cmp r7, #0
 	ble _08238008
 	ldr r1, _08237FC0 @ =0x030007A0
@@ -52,7 +52,7 @@ _08237FD4:
 	cmp r1, #0
 	bne _08237FD4
 _08237FE6:
-	bl FUN_082379ec
+	bl DisableInterrupts
 	ldr r0, _08238000 @ =0x03000790
 	ldr r1, [r0]
 	subs r1, #1
@@ -60,7 +60,7 @@ _08237FE6:
 	str r1, [r0]
 	ldr r0, _08238004 @ =0x0300078C
 	str r4, [r0]
-	bl FUN_082379f8
+	bl EnableInterrupts
 	adds r0, r5, #0
 	b _0823800A
 	.align 2, 0

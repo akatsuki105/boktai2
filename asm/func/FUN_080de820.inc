@@ -140,7 +140,7 @@ _080DE922:
 	ldrsh r0, [r7, r6]
 	movs r3, #0
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	str r0, [sp, #0x24]
 	adds r6, r5, #0
 	adds r6, #0xf3

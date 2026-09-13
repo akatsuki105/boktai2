@@ -36,7 +36,7 @@ _08060CB6:
 	b _08060CE8
 _08060CDE:
 	adds r0, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r1, r0, #0
 	adds r1, #0x60
 _08060CE8:

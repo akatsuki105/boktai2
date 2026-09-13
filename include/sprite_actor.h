@@ -2,7 +2,7 @@
 #define __INCLUDE_SPRITE_ACTOR_H__
 
 #include "gba/gba.h"
-#include "types.h"  // Vec3
+#include "types.h"
 
 // GBAスプライト として使う場合は、 spriteset か actorsprite のどちらかを使う
 // メインキャラクターなどのたくさんのグラフィックデータが必要な場合は、 spriteset で、 それ以外の少量のグラフィックデータの場合は、 actorsprite を使う という使い分けをしていたと思われる
