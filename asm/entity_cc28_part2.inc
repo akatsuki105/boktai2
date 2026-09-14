@@ -18552,7 +18552,7 @@ _0809AF36:
 	ldr r2, _0809B0F8 @ =0x00003FB9
 	adds r1, r6, r2
 	ldrb r1, [r1]
-	bl FUN_080aace8
+	bl Entity080aace8_Create
 	strb r5, [r4]
 _0809AF94:
 	ldr r0, _0809B0FC @ =0x00003FB0

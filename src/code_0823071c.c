@@ -1,7 +1,9 @@
 #include "entity.h"
 #include "global.h"
+#include "input.h"
 #include "random.h"
 
+// 他のEntityと違い、SystemManager_Update のみ
 IWRAM_DATA Entity gSystemManager = {};  // 0x03000728
 
 void FUN_081dfe5c(void);
@@ -20,7 +22,39 @@ s32 SystemManager_Update(Entity* p) {
 
 NAKED void InitSystemManager(void) { INCFUNC("asm/func/InitSystemManager.inc"); }
 
-NAKED void ReadKeyInput(void) { INCFUNC("asm/func/ReadKeyInput.inc"); }
+// KEYINPUT (通信対戦時は受信したキー) から gInput の5人分の押下・押した瞬間・離した瞬間を更新する
+void ReadKeyInput(void) {
+  u16 keys, prev;
+  s32 i;
+
+  gRawKeyInput = REG_KEYINPUT;
+  if (!gUseLinkInput) {
+    keys = gRawKeyInput ^ KEYS_MASK;
+    prev = gInput[0].down;
+    gInput[0].down = keys;
+    gInput[0].pressed = keys & ~prev;
+    gInput[0].released = prev & ~keys;
+    keys = 0;
+    for (i = 1; i < 5; i++) {
+      prev = gInput[i].down;
+      gInput[i].down = keys;
+      gInput[i].pressed = keys;
+      gInput[i].released = prev;
+    }
+  } else if (!(gEntityDisableFlags & ENTITY_DISABLE_0)) {
+    for (i = 0; i < 5; i++) {
+      if (gLinkKeyInput[i] == 0xFFFF) {
+        keys = 0;
+      } else {
+        keys = gLinkKeyInput[i] ^ KEYS_MASK;
+      }
+      prev = gInput[i].down;
+      gInput[i].down = keys;
+      gInput[i].pressed = keys & ~prev;
+      gInput[i].released = prev & ~keys;
+    }
+  }
+}
 
 u16 FUN_08230860(char* s) {
   u16 hash = 0;

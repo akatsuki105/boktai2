@@ -66,8 +66,11 @@ _08036812:
 	pop {r4, r5, r6, r7}
 	pop {r0}
 	bx r0
-_08036844:
-	.byte 0x70, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_08036844
+FUN_08036844: @ 0x08036844
+	bx lr
+	.align 2, 0
 
 	thumb_func_start FUN_08036848
 FUN_08036848: @ 0x08036848
@@ -1624,8 +1627,11 @@ FUN_080373a4: @ 0x080373A4
 	bx lr
 	.align 2, 0
 _080373B4: .4byte 0x00006543
-_080373B8:
-	.byte 0x70, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_080373b8
+FUN_080373b8: @ 0x080373B8
+	bx lr
+	.align 2, 0
 
 	thumb_func_start FUN_080373bc
 FUN_080373bc: @ 0x080373BC

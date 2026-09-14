@@ -37,6 +37,23 @@ export const renameFunctionByAddress = async (addr: number, newName: string, tim
   return String(json.message ?? "");
 };
 
+// 逆アセンブルの1命令。operands は "r1,[0x08013b98]" のような Ghidra の表記のまま。
+export type Instruction = { addr: number; mnemonic: string; operands: string };
+
+// addr にある関数を Ghidra で逆アセンブルし、命令の配列を返す (disassemble_function)。
+export const disassembleFunction = async (addr: number, timeoutSec: number = 60): Promise<Instruction[]> => {
+  const text = await get("disassemble_function", { address: toHexAddr(addr) }, timeoutSec);
+  const insns: Instruction[] = [];
+  for (const line of text.split("\n")) {
+    const m = line.match(/^([0-9A-Fa-f]{8}):\s+(\S+)\s*(.*?)\s*$/);
+    if (m) insns.push({ addr: parseInt(m[1], 16), mnemonic: m[2], operands: m[3] });
+  }
+  if (insns.length === 0) {
+    throw new Error(`disassemble_function: ${toHexAddr(addr)} を逆アセンブルできません: ${text.trim()}`);
+  }
+  return insns;
+};
+
 // addr にある関数を Ghidra でデコンパイルし、C コードを返す。
 // 大きい関数だと時間がかかるので、タイムアウトは長めにしておく。
 export const decompileFunction = async (addr: number, timeoutSec: number = 60): Promise<string> => {

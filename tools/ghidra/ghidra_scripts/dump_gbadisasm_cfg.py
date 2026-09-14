@@ -47,24 +47,53 @@ def dump_row(prog, func):
     return f"{mode} 0x{addr} {name}\n"
 
 
-def write_cfg(s):
-    cwd = os.getcwd()
-    filename = askString("Output Path", cwd + "/")
+def check_dst(dst):
+    """意図しない場所に書き出さないよう、出力先を検査する。問題があれば例外を投げる
 
-    if filename == "":
-        filename = "rom.cfg"
-    elif not filename.endswith(".cfg"):
-        filename = filename + ".cfg"
-    dst = cwd + "/" + filename
+    - 絶対パスであること (相対パスは Ghidra のカレントディレクトリ基準になり、場所が分かりにくい)
+    - 拡張子が .cfg であること (ソースなど別のファイルを上書きしないため)
+    - 書き出し先のディレクトリが既にあること (タイプミスで新しい場所に作らないため)
+    """
+    if not os.path.isabs(dst):
+        raise ValueError(f"出力先は絶対パスで指定してください: {dst}")
+    if not dst.endswith(".cfg"):
+        raise ValueError(f"出力先の拡張子は .cfg にしてください: {dst}")
+    if os.path.isdir(dst):
+        raise ValueError(f"出力先がディレクトリです: {dst}")
+    parent = os.path.dirname(dst)
+    if not os.path.isdir(parent):
+        raise ValueError(f"出力先のディレクトリがありません: {parent}")
 
+
+def write_cfg(s, dst=None):
+    """dst が指定されていればそこに書き出す。なければダイアログで出力先を聞く"""
+    if dst is None:
+        cwd = os.getcwd()
+        filename = askString("Output Path", cwd + "/")
+
+        if filename == "":
+            filename = "rom.cfg"
+        elif not filename.endswith(".cfg"):
+            filename = filename + ".cfg"
+        # ダイアログの初期値 (cwd + "/") を残したまま入力すると絶対パスになるので、そのときは cwd を重ねない
+        dst = filename if os.path.isabs(filename) else os.path.join(cwd, filename)
+
+    dst = os.path.normpath(dst)
+    check_dst(dst)
     print("Write cfg file into {}".format(dst))
     with open(dst, "w") as f:
         f.write(s)
 
 
 def main():
+    # 引数で出力先を渡せる (Ghidra のカレントディレクトリはリポジトリではないので絶対パスで渡すこと)
+    #   tools/ghidra/run_pyghidra_script.ts tools/ghidra/ghidra_scripts/dump_gbadisasm_cfg.py $PWD/rom.cfg
+    args = getScriptArgs()
+    dst = args[0] if args else None
+    if dst is not None:
+        check_dst(dst)  # 全関数を走査する前に弾く
     result = dump_gbadisasm_config(currentProgram, 0x08000000, -1)
-    write_cfg(result)
+    write_cfg(result, dst)
 
 
 if __name__ == "__main__":

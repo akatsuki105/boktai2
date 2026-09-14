@@ -258,8 +258,8 @@ _080600D6:
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_080600e4
-FUN_080600e4: @ 0x080600E4
+	thumb_func_start Entity080601a8_Update
+Entity080601a8_Update: @ 0x080600E4
 	push {r4, r5, r6, r7, lr}
 	adds r6, r0, #0
 	adds r4, r6, #0
@@ -296,8 +296,8 @@ _08060114:
 	.align 2, 0
 _08060124: .4byte 0x085ABAA4
 
-	thumb_func_start FUN_08060128
-FUN_08060128: @ 0x08060128
+	thumb_func_start Entity080601a8_Destroy
+Entity080601a8_Destroy: @ 0x08060128
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
 	adds r5, r6, #0
@@ -324,8 +324,8 @@ _08060148:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_08060158
-FUN_08060158: @ 0x08060158
+	thumb_func_start Entity080601a8_Init
+Entity080601a8_Init: @ 0x08060158
 	push {r4, r5, r6, r7, lr}
 	adds r6, r0, #0
 	adds r7, r1, #0
@@ -365,8 +365,8 @@ _08060186:
 _080601A0: .4byte 0x000061F9
 _080601A4: .4byte 0x000002F6
 
-	thumb_func_start FUN_080601a8
-FUN_080601a8: @ 0x080601A8
+	thumb_func_start Entity080601a8_Create
+Entity080601a8_Create: @ 0x080601A8
 	push {r4, r5, r6, lr}
 	adds r5, r0, #0
 	adds r6, r1, #0
@@ -376,13 +376,13 @@ FUN_080601a8: @ 0x080601A8
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080601E8
-	ldr r1, _080601E0 @ =FUN_080600e4
-	ldr r2, _080601E4 @ =FUN_08060128
+	ldr r1, _080601E0 @ =Entity080601a8_Update
+	ldr r2, _080601E4 @ =Entity080601a8_Destroy
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
 	adds r2, r6, #0
-	bl FUN_08060158
+	bl Entity080601a8_Init
 	cmp r0, #0
 	bge _080601E8
 	adds r0, r4, #0
@@ -391,8 +391,8 @@ FUN_080601a8: @ 0x080601A8
 	b _080601EA
 	.align 2, 0
 _080601DC: .4byte 0x000007C4
-_080601E0: .4byte FUN_080600e4
-_080601E4: .4byte FUN_08060128
+_080601E0: .4byte Entity080601a8_Update
+_080601E4: .4byte Entity080601a8_Destroy
 _080601E8:
 	adds r0, r4, #0
 _080601EA:

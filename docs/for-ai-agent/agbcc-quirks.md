@@ -105,7 +105,7 @@ the section matching how you would go looking for it.
 
 ### Narrow NAKED-callee parameter forces truncation at a single call site
 
-- **Frequency**: `FUN_082402c8`, `FUN_082402e0`, `FUN_08240428`, `sound_082403b8`, `sound_08240728`.
+- **Frequency**: `FUN_082402c8`, `FUN_082402e0`, `FUN_08240428`, `sound_082403b8`, `sound_08240728`, `Entity6978_Create`.
 - When the only call site passes a wider value (e.g. a `u32`-returning
   `Script_GetValue()`) directly into a NAKED callee declared with a
   narrower parameter type (`u16`), agbcc inserts a truncation
@@ -118,6 +118,7 @@ the section matching how you would go looking for it.
   expectations); the callee's own `.inc` body is untouched since it's
   still NAKED.
 - The callee may also be a MATCHING C function: `PlaySound_08240718(SoundID16 id) { m4aSongNumStart(id); }` already truncates `id` in its own body for the `u16` callee, so widening it to `SoundID32` left its bytes unchanged and removed the extra truncation from the caller `sound_08240728`.
+- The reverse also holds: when the target *does* truncate before the call, narrow the callee. `Entity6978_Create(u32 id)` has `lsls #16` / `lsrs #16` before `bl Entity6978_Init`, which matched once `Entity6978_Init`'s parameter was declared `u16 id`.
 
 ### `s16` locals defer sign-extension to each use
 
@@ -138,7 +139,8 @@ the section matching how you would go looking for it.
 
 ### A `u16` local updated with `|=` truncates before a 16-bit store; writing the `|` into the store does not
 
-- **Frequency**: `FUN_08237a04`.
+- **Frequency**: `Sio_StartParentTimer`, `Sio_ParentTimerIntr`, `Sio_ChildSerialIntr`.
+- A `u16` local built up with `send |= ...` in `Sio_ParentTimerIntr` / `Sio_ChildSerialIntr` also left an extra `lsls #16` / `lsrs #16` before the store; the target has none, and declaring it `s32` matched. In the same functions, `u16 m2 = REG_SIOMULTI2;` added a register copy (`adds r6, r2, #0`) that the target lacks; `s32` locals for the three register reads removed it.
 - `u16 ie = REG_IE; ... REG_IE = ie | 0x40;` emits `orrs` then `strh` directly. The target has `orrs` / `lsls #16` / `lsrs #16` / `strh`, which `ie |= 0x40; REG_IE = ie;` reproduces: the assignment back to the `u16` local keeps its truncation even though the store would drop the upper half anyway.
 
 ## Operand order & scheduling
@@ -200,6 +202,11 @@ the section matching how you would go looking for it.
 - **Frequency**: `ArcTan2_8`.
 - With `if (x > -y) return t[Div(-y * 256, x)];` agbcc CSE's the `-y` from the compare, overwriting `y` (`rsbs r1, r1` / `lsls r0, r1, #8`). The target keeps `y` alive and negates after the shift (`rsbs r3, r1` for the compare, then `lsls r0, r1, #8` / `rsbs r0, r0`), which `Div(y * -256, x)` reproduces.
 
+### A zero stored from a reused local takes that local's register
+
+- **Frequency**: `ReadKeyInput`.
+- In `ReadKeyInput`, the loop that clears players 1-4 stores 0 twice (`strh r3, [r1]` / `strh r3, [r1, #2]`), with the 0 in `r3`, the register that held `keys` a moment earlier. Writing `gInput[i].down = 0; gInput[i].pressed = 0;` (or a chained `= 0`) put the 0 in a fresh `r0`. Setting the existing local once, `keys = 0;` before the loop, and storing `keys` (`down = keys; pressed = keys;`) matched. Going further and reusing the full update formula (`pressed = keys & ~prev`) with `keys = 0` did not fold and added four instructions.
+
 ### An `|` chain accumulates left-to-right exactly as written
 
 - **Frequency**: `FUN_0822a4fc`, `FUN_0822bcf4`, `FUN_08089b48`, `BlendPlttToColor`, `BlendPltt`.
@@ -225,9 +232,11 @@ the section matching how you would go looking for it.
 
 ### A constant passed through an inline helper is loaded before the store address
 
-- **Frequency**: `FUN_08089d24`, `FUN_08089f38`, `FUN_08089e98`, `FUN_08089f58`.
+- **Frequency**: `FUN_08089d24`, `FUN_08089f38`, `FUN_08089e98`, `FUN_08089f58`, `FUN_0823a9f4`, `FUN_0823aa10`.
 - `FUN_08089f38` shows why the helper matters. Without it, eight rewrites (direct stores, a merged `timer` local, both statement orders) all left the two registers swapped. Calling `Entity28CB_SetState(p, 6)` in the `>= 90` branch matched on the first try, merged timer store included.
 - Symptom: the target loads a store's constant (`movs r0, #2`) before it computes the store address (`subs r1, #0xe`). `p->state = 2;` computes the address first. If the value goes through a parameter, the constant becomes its own pseudo that is set up earlier. For `FUN_08089d24`, the permuter found a temporary (`v = 2; p->state = v;`). A natural form that gives the same code is `static inline void Entity28CB_SetState(Entity28CB* p, u16 state) { p->state = state; p->stateTimer = 0; }`. Every state change in that entity also resets `stateTimer`, so the original probably had a helper like this.
+- Same for a read-modify-write of a global. `gEntityDisableFlags &= ~2;` (and `= ~2 & g`) emitted `ldr r1, [r0]` before building `~2`. The target builds the mask first (`movs r1, #3` / `rsbs r1, r1, #0` / `ldr r0, [r2]`), which `static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }` called as `EnableEntityFlags(2)` reproduces (`FUN_0823a9f4`).
+- Also for a mask in a condition. `if (!((gFlag030047a4 | u32_030047a0) & 1))` built `movs r1, #1` right before `ands`; the target builds it first, before both loads (`movs r2, #1` / `ldr` / `ldr` / `orrs` / `ands r0, r2`). A helper `static inline u32 TestFlag030047a4(u32 flags) { return (gFlag030047a4 | u32_030047a0) & flags; }` matched (`FUN_0823aa10`, which also needed `DisableEntityFlags(2)` for its `|= 2`).
 
 ### Where a global's address and value materialize follows statement splitting
 

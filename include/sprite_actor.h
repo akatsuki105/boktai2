@@ -102,7 +102,7 @@ void Video_SetActorSpritePltt(ActorSpriteState* p, s32 plttID);
 
 // アクタースプライトの描画リストのノード
 // ActorSpriteState が「何を描くか」(タイル・パレット・メタスプライト)を持つのに対し、こちらは「どこにどう描くか」(位置・回転・拡縮・優先度)を持つ
-// 1つの ActorSpriteState を複数のノードが共有できる (FUN_08202a14 ではノード8個が ActorSpriteState 2個を共有している)
+// 1つの ActorSpriteState を複数のノードが共有できる (Entity08202cd8_Init ではノード8個が ActorSpriteState 2個を共有している)
 // PTR_ARRAY_03003560[q_listIdx] を先頭とする双方向リストに繋がれ、FUN_0822aaac などが走査して DrawSprite_0822a574 で OAM に書き出す
 // 同じ描画システムの SpriteState は資源を自分自身に持つので、こちらとは資源の持ち方が異なる
 typedef struct q_SpriteNode44 {
@@ -128,7 +128,7 @@ typedef struct q_SpriteNode44 {
   struct q_SpriteNode44* prev;  // 0x24
   struct q_SpriteNode44* next;  // 0x28
 } q_SpriteNode44;
-static_assert(sizeof(q_SpriteNode44) == 44);  // FUN_08202a14 のループで 44バイトずつアドレスが増える (puVar8 は u16* で += 0x16)
+static_assert(sizeof(q_SpriteNode44) == 44);  // Entity08202cd8_Init のループで 44バイトずつアドレスが増える (puVar8 は u16* で += 0x16)
 
 // --------------------------------------------
 

@@ -1,9 +1,9 @@
 #include "camera.h"
 #include "entity.h"
-#include "entity_unk.h"
 #include "game.h"
 #include "gba/m4a_internal.h"
 #include "global.h"
+#include "input.h"
 #include "particle.h"
 #include "solar_sensor.h"
 #include "sound.h"
@@ -12,17 +12,19 @@
 #include "vm.h"
 
 struct Entity4E69;
+struct Entity286F;
 struct Dvalinn;
 struct Entity5941;
 struct EntityCBB0;
+struct Entity9A9F;
 struct Player;
 struct Unk030046a4;
 
-IWRAM_DATA u8 u8_03002b48[0x4C - 0x48] = {};  // todo
-
+IWRAM_DATA s32 s32_03002b48 = 0;                   // 0x03002B48
 IWRAM_DATA struct Entity4E69* gEntity4E69 = NULL;  // 0x03002B4C
+IWRAM_DATA struct Entity286F* gEntity286F = NULL;  // 0x03002B50
 
-IWRAM_DATA u8 u8_03002b50[8] = {};  // todo
+IWRAM_DATA u8 u8_03002b54[4] = {};  // todo
 
 IWRAM_DATA Entity* gUnkEntity1Ptr_03002b58 = NULL;  // 0x03002B58, Malloc(908) で確保したバッファを指すポインタ, RFU関連? (FUN_0804e2c0)
 
@@ -40,7 +42,7 @@ IWRAM_DATA struct EntityCBB0* gEntityCBB0 = NULL;  // 0x03002C58
 
 IWRAM_DATA u8 u8_03002c5c[0x03002C68 - 0x03002C5C] = {};  // todo
 
-IWRAM_DATA Entity_03002c68* gEntity_03002c68 = NULL;  // 0x03002C68
+IWRAM_DATA struct Entity9A9F* gEntity9A9F = NULL;  // 0x03002C68
 
 IWRAM_DATA u8 u8_03002c6c[0x03002C80 - 0x03002C6C] = {};  // todo
 
@@ -136,22 +138,28 @@ IWRAM_DATA u16 gObjPlttSlotIDs[16] = {};  // 0x03004470, 各 OBJ パレットス
 
 IWRAM_DATA u8 u8_03004490[0x4498 - 0x4490] = {};  // todo
 
-IWRAM_DATA u8 gMosaicTargets = 0;            // 0x03004498, bit0-3: BG0-3 の BGnCNT.6 を立てる, bit4: MOSAIC の OBJ 側(bit8-15)も書く, 根拠: Video_ApplyMosaic
-IWRAM_DATA u8 u8_03004499[3] = {};           // todo
-IWRAM_DATA u16 gMosaicDirty = 0;             // 0x0300449C, 1 なら次の Video_ApplyMosaic で I/O に反映して 0 に戻す
-IWRAM_DATA u16 u16_0300449e = 0;             // todo
-IWRAM_DATA u32 gHBlankEffectBG = 0;          // 0x030044A0, HBlankエフェクトの対象BG番号, 根拠: FUN_0822f0d8
-IWRAM_DATA void* gHBlankEffectTable = NULL;  // 0x030044A4, スキャンライン毎の値のテーブル, 根拠: FUN_0822eef4
-IWRAM_DATA s32 gHBlankEffectKind = 0;        // 0x030044A8, HBlankエフェクトの種類 (0:BGnHOFS, 1:BGnVOFS, 2:MOSAIC, 3:BLDY), 根拠: FUN_0822f0d8
-IWRAM_DATA u32 gObjBlendEnabled = 0;         // 0x030044AC, 0以外なら flags bit14 のスプライトを半透明にする, 根拠: DrawSprite_0822f6fc
-IWRAM_DATA u8 gObjMosaicEnabled = 0;         // 0x030044B0, bit0 が立っているスプライトだけ OAM attr0.12 (mosaic) を立てる, 根拠: DrawSprite_0822f6fc / DrawSprite_0822a574
-IWRAM_DATA u8 u8_030044b1[3] = {};           // todo
-IWRAM_DATA u16 gMosaicSize = 0;              // 0x030044B4, MOSAIC レジスタに書く値 (bit0-3: BG H, bit4-7: BG V, bit8-11: OBJ H, bit12-15: OBJ V)
-IWRAM_DATA u16 u16_030044b6 = 0;             // todo
-IWRAM_DATA u16 u16_030044b8 = 0;             // 0x030044B8
-IWRAM_DATA u32 gEntityDisableFlags = 0;      // 0x030044BC, gEntityDisableFlags & gEntityManager[kind].disableFlags != 0 のときはそのkindのEntityは更新しない, gEntityDisableFlagsの各bitは (1 << kind) ではなさそう
+IWRAM_DATA u8 gMosaicTargets = 0;                       // 0x03004498, bit0-3: BG0-3 の BGnCNT.6 を立てる, bit4: MOSAIC の OBJ 側(bit8-15)も書く, 根拠: Video_ApplyMosaic
+IWRAM_DATA u8 u8_03004499[3] = {};                      // todo
+IWRAM_DATA u16 gMosaicDirty = 0;                        // 0x0300449C, 1 なら次の Video_ApplyMosaic で I/O に反映して 0 に戻す
+IWRAM_DATA u16 u16_0300449e = 0;                        // todo
+IWRAM_DATA u32 gHBlankEffectBG = 0;                     // 0x030044A0, HBlankエフェクトの対象BG番号, 根拠: FUN_0822f0d8
+IWRAM_DATA void* gHBlankEffectTable = NULL;             // 0x030044A4, スキャンライン毎の値のテーブル, 根拠: FUN_0822eef4
+IWRAM_DATA s32 gHBlankEffectKind = 0;                   // 0x030044A8, HBlankエフェクトの種類 (0:BGnHOFS, 1:BGnVOFS, 2:MOSAIC, 3:BLDY), 根拠: FUN_0822f0d8
+IWRAM_DATA u32 gObjBlendEnabled = 0;                    // 0x030044AC, 0以外なら flags bit14 のスプライトを半透明にする, 根拠: DrawSprite_0822f6fc
+IWRAM_DATA u8 gObjMosaicEnabled = 0;                    // 0x030044B0, bit0 が立っているスプライトだけ OAM attr0.12 (mosaic) を立てる, 根拠: DrawSprite_0822f6fc / DrawSprite_0822a574
+IWRAM_DATA u8 u8_030044b1[3] = {};                      // todo
+IWRAM_DATA u16 gMosaicSize = 0;                         // 0x030044B4, MOSAIC レジスタに書く値 (bit0-3: BG H, bit4-7: BG V, bit8-11: OBJ H, bit12-15: OBJ V)
+IWRAM_DATA u16 u16_030044b6 = 0;                        // todo
+IWRAM_DATA u16 u16_030044b8 = 0;                        // 0x030044B8
+IWRAM_DATA EntityDisableFlags gEntityDisableFlags = 0;  // 0x030044BC, gEntityDisableFlags & gEntityManager[kind].disableFlags != 0 のときはそのkindのEntityは更新しない, gEntityDisableFlagsの各bitは (1 << kind) ではなさそう
 IWRAM_DATA u16 gEntityCount = 0;
-IWRAM_DATA u8 u8_030044c2[90] = {};                       // todo
+IWRAM_DATA u8 u8_030044c2[0x44D0 - 0x44C2] = {};          // todo
+IWRAM_DATA bool32 gUseLinkInput = FALSE;                  // 0x030044D0, TRUE なら ReadKeyInput が通信で受け取ったキー (gLinkKeyInput) から gInput を作る
+IWRAM_DATA u8 u8_030044d4[0x44E0 - 0x44D4] = {};          // todo
+IWRAM_DATA Input gInput[5] = {};                          // 0x030044E0
+IWRAM_DATA Keys16 gRawKeyInput = 0;                       // 0x03004508, ReadKeyInput が読んだ KEYINPUT の生の値 (active low), 通信対戦時は | 0x2000 して相手に送る (FUN_0804d698)
+IWRAM_DATA u8 padding_0300450a[0x4510 - 0x450A] = {};     // padding (Unused)
+IWRAM_DATA Keys16 gLinkKeyInput[5] = {};                  // 0x03004510, 通信で受け取った各プレイヤーのキー (KEYINPUT と同じ active low), 0xFFFF はデータなし
 IWRAM_DATA u32 gRngValue = 0;                             // 0x0300451C
 IWRAM_DATA EntityList gEntityManager[ENTITY_KINDS] = {};  // 0x03004520
 IWRAM_DATA s32 gCount_Unk_0203b000 = 0;
@@ -173,7 +181,15 @@ IWRAM_DATA u32 u32_030046b0 = 0;                      // 0x030046B0
 IWRAM_DATA u32 u32_030046b4 = 0;   // 0x030046B4
 IWRAM_DATA u32 gRandTableIdx = 0;  // 0x030046B8
 
-IWRAM_DATA u8 u8_030046bc[0x740 - 0x6BC] = {};  // todo
+IWRAM_DATA u16 gSioParentRecv = 0;       // 0x030046BC, 親が受け取った子のデータ (SIOMULTI1)
+IWRAM_DATA s32 gSioTimerIntrCount = 0;   // 0x030046C0, 親のタイマー3割り込み回数
+IWRAM_DATA u32 u32_030046c4 = 0;         // 0x030046C4
+IWRAM_DATA s32 gSioSerialIntrCount = 0;  // 0x030046C8, 子のシリアル割り込み回数
+IWRAM_DATA s32 gSioMultiId = 0;          // 0x030046CC, 0 = 親, 1 = 子, -1 = 未確定
+IWRAM_DATA u16 gSioChildRecv = 0;        // 0x030046D0, 子が受け取った親のデータ (SIOMULTI0)
+IWRAM_DATA s32 gSioStatus = 0;           // 0x030046D4, 負ならエラー
+
+IWRAM_DATA u8 u8_030046d8[0x740 - 0x6D8] = {};  // todo
 
 IWRAM_DATA LINK_MANAGER lman = {};  // 0x03004740
 
@@ -189,15 +205,3 @@ IWRAM_DATA SystemSaveData* gSystemSaveData = NULL;
 IWRAM_DATA u8 u8_030047ac[8] = {};   // todo
 IWRAM_DATA u32 u32_030047b4 = 0;     // 0x030047B4, Save_WriteCore でセーブ成功時に 1 がセットされる
 IWRAM_DATA u8 u8_030047b8[16] = {};  // todo
-
-IWRAM_DATA Vec3 gCameraVpCoords = {};  // 0x030047C8
-IWRAM_DATA Camera* gCamera = NULL;     // 0x030047D0
-IWRAM_DATA u8 u8_030047d4[12] = {};    // todo
-
-IWRAM_DATA Clock gClock = {};               // 0x030047E0
-IWRAM_DATA u32 pad_Clock_03004804[3] = {};  // 16バイトアラインのためのパディング
-
-IWRAM_DATA RtcDataOrg gRTC = {};  // 0x03004810
-IWRAM_DATA u32 u32_0300481c = 0;
-
-IWRAM_DATA SoundID16 gSoundIDs[MUSIC_PLAYER_LENGTH] = {};  // 0x03004820

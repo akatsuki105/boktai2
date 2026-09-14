@@ -2,6 +2,10 @@
 
 #include "global.h"
 
+COMMON_DATA Vec3 gCameraVpCoords = {};  // 0x030047C8
+COMMON_DATA Camera* gCamera = NULL;     // 0x030047D0
+COMMON_DATA u8 u8_030047d4[12] = {};    // todo
+
 NAKED void Camera_SetTilemapOffset(void) { INCFUNC("asm/func/Camera_SetTilemapOffset.inc"); }
 
 s32 FUN_0823b740(void) { return 0; }

@@ -317,8 +317,11 @@ _0802349E:
 	pop {r4, r5, r6, r7}
 	pop {r0}
 	bx r0
-_080234D8:
-	.byte 0x70, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_080234d8
+FUN_080234d8: @ 0x080234D8
+	bx lr
+	.align 2, 0
 
 	thumb_func_start FUN_080234dc
 FUN_080234dc: @ 0x080234DC

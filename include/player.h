@@ -14,6 +14,7 @@
 
 struct Player;
 struct SolarSensorEntity;
+struct Input;
 
 typedef u32 PlayerFlag378;               // Player.flag378
 #define FLAG378_WET_DURABILITY (1 << 0)  // 0x00000001, WET_DURABILITY を持った武器を装備している間セットされる
@@ -130,10 +131,10 @@ typedef struct Player {
   bool8 isEnchanted;                   // 0x283, エンチャント○○ がアクティブかどうか(プレイヤーが対応する色に光っているかどうか)
   u8 equippedMagicBasicCost;           // 0x284, 装備している魔法の消費MP(マジックローブなどの影響を抜いた元々の消費MP)
   u8 unk_285[0x28C - 0x285];
-  void* input_28c;         // 0x28C, 0x030044E0 (&gInput)
-  u16 unk_290[10];         // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
-  rgb555 pltt_2a4[32];     // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
-  SpriteState sprite_2e4;  // 0x2E4, 根拠: FUN_08060a24
+  struct Input* input_28c;  // 0x28C, &gInput[n]
+  Keys16 unk_290[10];       // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
+  rgb555 pltt_2a4[32];      // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
+  SpriteState sprite_2e4;   // 0x2E4, 根拠: FUN_08060a24
   u8 unk_344[0x34C - 0x344];
   AnimationFile* anim_34c;  // 0x34C
   AnimationFile* anim_350;  // 0x350

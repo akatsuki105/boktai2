@@ -192,7 +192,7 @@ _08071716:
 	movs r1, #0xe6
 	movs r2, #0xb4
 	movs r3, #0
-	bl FUN_08080be8
+	bl Entity08080be8_Create
 	b _08071AD8
 _08071740:
 	adds r0, r5, #0

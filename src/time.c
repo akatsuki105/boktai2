@@ -2,6 +2,11 @@
 
 #include "global.h"
 
+COMMON_DATA Clock gClock = {};  // 0x030047E0
+
+COMMON_DATA ALIGNED(16) RtcDataOrg gRTC = {};  // 0x03004810
+COMMON_DATA u32 u32_0300481c = 0;
+
 INCASM("asm/time_0823cd04.inc");
 
 NAKED s32 UpdateWeaponStyle(void) { INCFUNC("asm/func/UpdateWeaponStyle.inc"); }

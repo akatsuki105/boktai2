@@ -3,67 +3,23 @@
 #include "global.h"
 #include "malloc.h"
 
-void Free(void* p);
-
 // clang-format off
 const EntityList gDefaultEntityManager[ENTITY_KINDS] = {
-    {
-        .head = NULL,
-        .disableFlags = 0x0
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0x0
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0x0
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0x0
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0x1
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0x7
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0x7
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0x1
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0xF
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0x7
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0xF
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0x1
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0x0
-    },
-    {
-        .head = NULL,
-        .disableFlags = 0x0
-    }
-}; // 0x085B0158
+    [ENTITY_SYSTEM] = {.head = NULL,  .disableFlags = 0x0                                                                         },
+    [ENTITY_UNK_1]  = {.head = NULL,  .disableFlags = 0x0                                                                         },
+    [ENTITY_UNK_2]  = {.head = NULL,  .disableFlags = 0x0                                                                         },
+    [ENTITY_UNK_3]  = {.head = NULL,  .disableFlags = 0x0                                                                         },
+    [ENTITY_UNK_4]  = {.head = NULL,  .disableFlags = ENTITY_DISABLE_0                                                            },
+    [ENTITY_UNK_5]  = {.head = NULL,  .disableFlags = (ENTITY_DISABLE_0 | ENTITY_DISABLE_1 | ENTITY_DISABLE_2)                    },
+    [ENTITY_PLAYER] = {.head = NULL,  .disableFlags = (ENTITY_DISABLE_0 | ENTITY_DISABLE_1 | ENTITY_DISABLE_2)                    },
+    [ENTITY_CAMERA] = {.head = NULL,  .disableFlags = ENTITY_DISABLE_0                                                            },
+    [ENTITY_UNK_8]  = {.head = NULL,  .disableFlags = (ENTITY_DISABLE_0 | ENTITY_DISABLE_1 | ENTITY_DISABLE_2 | ENTITY_DISABLE_3) },
+    [ENTITY_UNK_9]  = {.head = NULL,  .disableFlags = (ENTITY_DISABLE_0 | ENTITY_DISABLE_1 | ENTITY_DISABLE_2)                    },
+    [ENTITY_UNK_10] = {.head = NULL,  .disableFlags = (ENTITY_DISABLE_0 | ENTITY_DISABLE_1 | ENTITY_DISABLE_2 | ENTITY_DISABLE_3) },
+    [ENTITY_UNK_11] = {.head = NULL,  .disableFlags = ENTITY_DISABLE_0                                                            },
+    [ENTITY_UNK_12] = {.head = NULL,  .disableFlags = 0x0                                                                         },
+    [ENTITY_UNK_13] = {.head = NULL,  .disableFlags = 0x0                                                                         },
+};  // 0x085B0158
 // clang-format on
 
 // 0x08230b44

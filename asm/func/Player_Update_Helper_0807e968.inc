@@ -401,7 +401,7 @@ _0807EC80:
 	movs r0, #0x30
 	bl RemoveSpecifiedItem
 	adds r0, r5, #0
-	bl FUN_080a9e88
+	bl Entity080a9e88_Create
 _0807EC8C:
 	movs r0, #0
 _0807EC8E:

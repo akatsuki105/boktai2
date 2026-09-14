@@ -886,7 +886,7 @@ _08200964:
 	strh r5, [r1, #0x1a]
 	ldr r1, [sp, #0x24]
 	ldr r2, [sp, #0x20]
-	bl FUN_08202cd8
+	bl Entity08202cd8_Create
 	ldr r2, _08200A04 @ =0x0000083C
 	adds r1, r7, r2
 	str r0, [r1]
@@ -900,13 +900,13 @@ _08200964:
 	add r0, sp, #0x14
 	ldr r1, [sp, #0x24]
 	ldr r2, [sp, #0x20]
-	bl FUN_08202cd8
+	bl Entity08202cd8_Create
 	movs r4, #0x84
 	lsls r4, r4, #4
 	adds r1, r7, r4
 	str r0, [r1]
 	mov r0, sl
-	bl FUN_082047f0
+	bl Entity082047f0_Create
 	ldr r5, _08200A10 @ =0x000007CC
 	adds r1, r7, r5
 	str r0, [r1]

@@ -201,7 +201,7 @@ _08068AA6:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #0
-	bl FUN_080abd14
+	bl Entity080abd14_Create
 _08068AE6:
 	adds r0, r4, #0
 	movs r1, #9

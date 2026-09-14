@@ -4,7 +4,7 @@
 
 // utility functions
 
-extern IntrFunc gIntrTable[13];
+void IntrDummy(void);
 
 const s16 s16_ARRAY_085b0a00[3] = {8, 4, 2};
 
@@ -270,45 +270,3 @@ void LerpVec3(Vec3* dst, Vec3* a, Vec3* b, s32 t, s32 shift) {
 void DisableInterrupts(void) { REG_IME = 0; }
 
 void EnableInterrupts(void) { REG_IME = 1; }
-
-void FUN_08237aac(void);
-
-// タイマー3 を約 100Hz の割り込みで動かし、そのハンドラに FUN_08237aac を登録する
-void FUN_08237a04(void) {
-  u16 ie;
-
-  REG_IME = 0;
-  ie = REG_IE;
-  REG_IE = 0;
-  REG_TM3CNT_L = 0xF5D8;
-  REG_TM3CNT_H = TIMER_ENABLE | TIMER_INTR_ENABLE | TIMER_64CLK;
-  gIntrTable[2] = FUN_08237aac;
-  ie |= INTR_FLAG_TIMER3;
-  REG_IE = ie;
-  REG_IME = 1;
-  REG_IF = INTR_FLAG_TIMER3;
-}
-
-NAKED void FUN_08237a5c(void) { INCFUNC("asm/func/FUN_08237a5c.inc"); }
-
-NAKED void FUN_08237aac(void) { INCFUNC("asm/func/FUN_08237aac.inc"); }
-
-NAKED void FUN_08237be0(void) { INCFUNC("asm/func/FUN_08237be0.inc"); }
-
-NAKED void FUN_08237c34(void) { INCFUNC("asm/func/FUN_08237c34.inc"); }
-
-NAKED void FUN_08237c88(void) { INCFUNC("asm/func/FUN_08237c88.inc"); }
-
-NAKED void FUN_08237dcc(void) { INCFUNC("asm/func/FUN_08237dcc.inc"); }
-
-NAKED void FUN_08237e24(void) { INCFUNC("asm/func/FUN_08237e24.inc"); }
-
-NAKED void FUN_08237e98(void) { INCFUNC("asm/func/FUN_08237e98.inc"); }
-
-NAKED void FUN_08237eb0(void) { INCFUNC("asm/func/FUN_08237eb0.inc"); }
-
-NAKED bool32 FUN_08237eb4(void) { INCFUNC("asm/func/FUN_08237eb4.inc"); }
-
-NAKED bool32 FUN_08237f54(void) { INCFUNC("asm/func/FUN_08237f54.inc"); }
-
-INCASM("asm/code_08237468.inc");

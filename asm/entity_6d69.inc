@@ -842,7 +842,7 @@ FUN_0801fd88: @ 0x0801FD88
 	movs r0, #1
 	mov r8, r0
 	movs r5, #0
-	ldr r7, _0801FDEC @ =0x080206B5
+	ldr r7, _0801FDEC @ =FUN_080206b4
 	mov ip, r7
 	movs r1, #0
 _0801FDB0:
@@ -877,7 +877,7 @@ _0801FDDA:
 	bx r0
 	.align 2, 0
 _0801FDE8: .4byte 0x0000042C
-_0801FDEC: .4byte 0x080206B5
+_0801FDEC: .4byte FUN_080206b4
 
 	thumb_func_start FUN_0801fdf0
 FUN_0801fdf0: @ 0x0801FDF0
@@ -896,7 +896,7 @@ FUN_0801fdf0: @ 0x0801FDF0
 	ldr r7, _0801FE50 @ =0x0000042C
 	adds r6, r4, r7
 	movs r5, #0
-	ldr r0, _0801FE54 @ =0x080206B1
+	ldr r0, _0801FE54 @ =FUN_080206b0
 	mov r8, r0
 	movs r7, #2
 	mov ip, r7
@@ -933,7 +933,7 @@ _0801FE42:
 	bx r0
 	.align 2, 0
 _0801FE50: .4byte 0x0000042C
-_0801FE54: .4byte 0x080206B1
+_0801FE54: .4byte FUN_080206b0
 
 	thumb_func_start FUN_0801fe58
 FUN_0801fe58: @ 0x0801FE58
@@ -1919,7 +1919,7 @@ _080205B4:
 	adds r3, r0, #0
 	cmp r1, #0
 	bne _080205DC
-	ldr r0, _080205D8 @ =0x080206B1
+	ldr r0, _080205D8 @ =FUN_080206b0
 	str r0, [r6, #0x30]
 	adds r0, r6, #0
 	adds r0, #0x39
@@ -1928,11 +1928,11 @@ _080205B4:
 	strb r1, [r0]
 	b _0802060C
 	.align 2, 0
-_080205D8: .4byte 0x080206B1
+_080205D8: .4byte FUN_080206b0
 _080205DC:
 	cmp r1, #1
 	bne _080205FC
-	ldr r0, _080205F8 @ =0x080206B5
+	ldr r0, _080205F8 @ =FUN_080206b4
 	str r0, [r6, #0x30]
 	movs r0, #2
 	adds r2, r6, #0
@@ -1944,9 +1944,9 @@ _080205DC:
 	strb r1, [r0]
 	b _0802060C
 	.align 2, 0
-_080205F8: .4byte 0x080206B5
+_080205F8: .4byte FUN_080206b4
 _080205FC:
-	ldr r0, _0802063C @ =0x080206B1
+	ldr r0, _0802063C @ =FUN_080206b0
 	str r0, [r6, #0x30]
 	adds r1, r6, #0
 	adds r1, #0x39
@@ -1979,7 +1979,7 @@ _0802060C:
 	strb r1, [r2, #4]
 	b _0802066C
 	.align 2, 0
-_0802063C: .4byte 0x080206B1
+_0802063C: .4byte FUN_080206b0
 _08020640: .4byte 0x0000FFFD
 _08020644:
 	cmp r0, #1
@@ -2039,8 +2039,16 @@ _080206AA:
 	pop {r4}
 	pop {r0}
 	bx r0
-_080206B0:
-	.byte 0x70, 0x47, 0x00, 0x00, 0x70, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_080206b0
+FUN_080206b0: @ 0x080206B0
+	bx lr
+	.align 2, 0
+
+	thumb_func_start FUN_080206b4
+FUN_080206b4: @ 0x080206B4
+	bx lr
+	.align 2, 0
 
 	thumb_func_start FUN_080206b8
 FUN_080206b8: @ 0x080206B8
@@ -2097,7 +2105,7 @@ _080206D0:
 	adds r0, #1
 	orrs r1, r0
 	strb r1, [r2, #4]
-	ldr r0, _08020730 @ =0x080206B1
+	ldr r0, _08020730 @ =FUN_080206b0
 	str r0, [r4, #0x30]
 _08020726:
 	pop {r4}
@@ -2105,7 +2113,7 @@ _08020726:
 	bx r0
 	.align 2, 0
 _0802072C: .4byte 0x00FFFF00
-_08020730: .4byte 0x080206B1
+_08020730: .4byte FUN_080206b0
 
 	thumb_func_start FUN_08020734
 FUN_08020734: @ 0x08020734
@@ -2160,7 +2168,7 @@ _0802076E:
 	movs r0, #1
 	subs r1, #2
 	strb r0, [r1]
-	ldr r0, _080207AC @ =0x080206B5
+	ldr r0, _080207AC @ =FUN_080206b4
 	str r0, [r4, #0x30]
 _0802079E:
 	pop {r4}
@@ -2169,7 +2177,7 @@ _0802079E:
 	.align 2, 0
 _080207A4: .4byte 0x00FFFF00
 _080207A8: .4byte 0x0000FFFC
-_080207AC: .4byte 0x080206B5
+_080207AC: .4byte FUN_080206b4
 
 	thumb_func_start FUN_080207b0
 FUN_080207b0: @ 0x080207B0
@@ -3242,7 +3250,7 @@ _08020FC0:
 	adds r3, r0, #0
 	cmp r1, #0
 	bne _08020FE8
-	ldr r0, _08020FE4 @ =0x0802108D
+	ldr r0, _08020FE4 @ =FUN_0802108c
 	str r0, [r6, #0x30]
 	adds r0, r6, #0
 	adds r0, #0x39
@@ -3251,11 +3259,11 @@ _08020FC0:
 	strb r1, [r0]
 	b _08021018
 	.align 2, 0
-_08020FE4: .4byte 0x0802108D
+_08020FE4: .4byte FUN_0802108c
 _08020FE8:
 	cmp r1, #1
 	bne _08021008
-	ldr r0, _08021004 @ =0x08021091
+	ldr r0, _08021004 @ =FUN_08021090
 	str r0, [r6, #0x30]
 	movs r0, #2
 	adds r2, r6, #0
@@ -3267,9 +3275,9 @@ _08020FE8:
 	strb r1, [r0]
 	b _08021018
 	.align 2, 0
-_08021004: .4byte 0x08021091
+_08021004: .4byte FUN_08021090
 _08021008:
-	ldr r0, _08021048 @ =0x0802108D
+	ldr r0, _08021048 @ =FUN_0802108c
 	str r0, [r6, #0x30]
 	adds r1, r6, #0
 	adds r1, #0x39
@@ -3302,7 +3310,7 @@ _08021018:
 	strb r1, [r2, #4]
 	b _08021078
 	.align 2, 0
-_08021048: .4byte 0x0802108D
+_08021048: .4byte FUN_0802108c
 _0802104C: .4byte 0x0000FFFD
 _08021050:
 	cmp r0, #1
@@ -3335,9 +3343,16 @@ _08021078:
 	bx r0
 	.align 2, 0
 _08021088: .4byte 0x0000FFFC
-_0802108C:
-	.byte 0x70, 0x47, 0x00, 0x00
-	.byte 0x70, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_0802108c
+FUN_0802108c: @ 0x0802108C
+	bx lr
+	.align 2, 0
+
+	thumb_func_start FUN_08021090
+FUN_08021090: @ 0x08021090
+	bx lr
+	.align 2, 0
 
 	thumb_func_start Entity6D69_Update
 Entity6D69_Update: @ 0x08021094

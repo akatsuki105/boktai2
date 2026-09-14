@@ -18,7 +18,7 @@
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0x20
-	bl FUN_080ac374
+	bl Entity080ac374_Create
 _0807712E:
 	ldrh r0, [r4]
 	movs r1, #7

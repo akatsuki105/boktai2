@@ -8,7 +8,6 @@ typedef void* (*TaskFn)(u32, void*);
 typedef void* (*TaskFnNoArg)(void);
 
 extern s32 gCount_Unk_0203b000;
-extern u32 gEntityDisableFlags;
 extern u16 gEntityCount;
 extern bool32 bool32_03004788;
 extern u32 u32_03004798;
