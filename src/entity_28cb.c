@@ -70,14 +70,14 @@ void FUN_08089b48(Entity28CB* p, s32 from, s32 to, s32 t) {
 void FUN_08089c44(Entity28CB* p) {
   s32 i;
   for (i = 1; i < 5; i++) {
-    p->nodes[i].flags |= SPRFLAG_UNK_0;
+    p->nodes[i].flags |= SPRFLAG_HIDDEN;
   }
 }
 
 void FUN_08089c60(Entity28CB* p) {
   s32 i;
   for (i = 1; i < 5; i++) {
-    p->nodes[i].flags |= SPRFLAG_UNK_0;
+    p->nodes[i].flags |= SPRFLAG_HIDDEN;
   }
 }
 
@@ -93,7 +93,7 @@ void FUN_08089ce0(Entity28CB* p) {
   s32 i;
   if (FUN_08089c7c(p)) {
     for (i = 1; i < 5; i++) {
-      p->nodes[i].flags &= ~SPRFLAG_UNK_0;
+      p->nodes[i].flags &= ~SPRFLAG_HIDDEN;
     }
     Entity28CB_SetState(p, 1);
     PlaySound_082406e0(0x1C6);
@@ -131,7 +131,7 @@ void FUN_08089d50(Entity28CB* p) {
     FUN_08089c44(p);
   }
   if (p->stateTimer >= 16) {
-    p->nodes[0].flags &= ~SPRFLAG_UNK_0;
+    p->nodes[0].flags &= ~SPRFLAG_HIDDEN;
     Entity28CB_SetState(p, 3);
   } else {
     p->stateTimer++;

@@ -177,9 +177,9 @@ NON_MATCH void FUN_082376a4(SpriteState* p, SpriteSet* data, s32 value, s32 coun
       }
     }
     if (leading) {
-      p->flags |= SPRFLAG_UNK_0;
+      p->flags |= SPRFLAG_HIDDEN;
     } else {
-      p->flags &= ~SPRFLAG_UNK_0;
+      p->flags &= ~SPRFLAG_HIDDEN;
       Sprite_SetSprite(p, data, digits[off + j], 0);
       p->pos.x = px;
       p->pos.y = y;

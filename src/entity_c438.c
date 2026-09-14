@@ -20,4 +20,14 @@ NAKED s32 EntityC438_Destroy(EntityC438* p) { INCFUNC("asm/func/EntityC438_Destr
 
 NAKED s32 EntityC438_Init(EntityC438* p) { INCFUNC("asm/func/EntityC438_Init.inc"); }
 
-NAKED EntityC438* EntityC438_Create(void) { INCFUNC("asm/func/EntityC438_Create.inc"); }
+EntityC438* EntityC438_Create(void) {
+  EntityC438* p = CreateEntity(ENTITY_UNK_9, sizeof(EntityC438));
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityC438_Update, EntityC438_Destroy);
+    if (EntityC438_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

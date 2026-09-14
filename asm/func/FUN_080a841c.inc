@@ -25,7 +25,7 @@ _080A8444:
 	beq _080A8452
 	ldr r1, [r7, #0x7c]
 	adds r0, r4, #0
-	bl FUN_080a8314
+	bl LevelUpper_UpdateParticle
 _080A8452:
 	adds r4, #0x3c
 	subs r5, #1

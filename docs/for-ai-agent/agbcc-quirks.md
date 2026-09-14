@@ -207,6 +207,16 @@ the section matching how you would go looking for it.
 - **Frequency**: `ReadKeyInput`.
 - In `ReadKeyInput`, the loop that clears players 1-4 stores 0 twice (`strh r3, [r1]` / `strh r3, [r1, #2]`), with the 0 in `r3`, the register that held `keys` a moment earlier. Writing `gInput[i].down = 0; gInput[i].pressed = 0;` (or a chained `= 0`) put the 0 in a fresh `r0`. Setting the existing local once, `keys = 0;` before the loop, and storing `keys` (`down = keys; pressed = keys;`) matched. Going further and reusing the full update formula (`pressed = keys & ~prev`) with `keys = 0` did not fold and added four instructions.
 
+### A `u16` parameter saved in a wider local keeps the parameter as the working variable
+
+- **Frequency**: `GetFile`.
+- `GetFile(FileID directoryID, FileID fileID)` rewrites `fileID` in each `case` and passes the original to `GetAssetFile` at the end. The target truncates the incoming `fileID` into `r1`, copies it to `r7` (`adds r7, r1, #0`), and at the call moves `r7` into `r2` first, before building the 4th argument. A copy declared `FileID file = fileID;` either swapped `r1`/`r7` or moved `r2` last. Declaring the copy as `u32 file = fileID;` (found by the permuter as `int`) matched.
+
+### Two loops sharing one counter variable shift the register allocation
+
+- **Frequency**: `LevelUpper_Update`.
+- `LevelUpper_Update` has an 8-iteration loop in one branch and a 5-iteration loop in the other. With one `s32 i` for both, every register was off by one (`p` in `r5` instead of `r4`, the counter and the stored 0 swapped). Giving the first loop its own counter (`s32 i, j;`, `for (j = 0; j < 8; j++)`) matched with no other change.
+
 ### An `|` chain accumulates left-to-right exactly as written
 
 - **Frequency**: `FUN_0822a4fc`, `FUN_0822bcf4`, `FUN_08089b48`, `BlendPlttToColor`, `BlendPltt`.
@@ -240,8 +250,10 @@ the section matching how you would go looking for it.
 
 ### Where a global's address and value materialize follows statement splitting
 
-- **Frequency**: `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`.
+- **Frequency**: `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`.
 - The same holds for a call used as an argument. `f(0, (T*)gPtr, g(0x28))` loaded `=gPtr` and its value into a callee-saved register before calling `g` (one extra saved register); the target calls `g` first and loads `gPtr` right before `f`. Putting the inner call in its own statement, `s32 len = g(0x28); f(0, (T*)gPtr, len);`, matched.
+- Also for an argument shared by several calls. `FreezeEffect_GatherSubParticles` divides three times by `n + 1`; the target computes it once right after `n` (`adds r6, r4, #1`), but writing `Div(..., n + 1)` in each call computed it just before the first `Div`. A local `d = n + 1;` right after `n = 8 - frame;` matched.
+- And for a field compared with a call result. `if (p->weaponLv[i] != GetWeaponSkillLevel(i))` kept the field's address in a callee-saved register and loaded it after the call; the target loads the value first (`ldrh r4, [r0]` before `bl`). `lv = p->weaponLv[i]; if (lv != GetWeaponSkillLevel(i))` matched (`IsWeaponLevelChanged`).
 - A nested subscript written as one expression (`gMPlayTable[gSongTable[id].ms].info`) hoists the outer table's pool `ldr` *before* the inner subscript is read; splitting the inner index into its own statement (`u16 ms = gSongTable[id].ms;` then `gMPlayTable[ms].info`) emits that `ldr` after it, where the target had it. If only a pool `ldr` sits in the wrong place, try splitting or merging the surrounding subscripts.
 - Related: reading a global in the guard and again in the body (`if (g[10] != 0) { id = g[10]; ... }`) costs an extra `adds rN, r0, #0` — the compare uses the loaded value and the body's copy gets its own register. Hoisting the read above the `if` removes that move, so match whichever the target has.
 - The same choice also decides *which* callee-saved registers a parameter and the array's base address get, with no instruction-count difference. `FUN_082405c0` needed `SoundID16 id = g[12];` above the `if`; testing `g[12] != 0` directly gave the identical 32 instructions with two registers swapped (`r6`/`r7`). Its slot-10 twin `Sound_FadeOutBGM` matched with the opposite shape, so don't assume a copy-pasted sibling used the same one.

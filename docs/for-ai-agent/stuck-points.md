@@ -38,3 +38,7 @@ Just the function name (and file). No detail write-up.
 - `FUN_082376a4` (`src/utility_08237468.c`)
 - `Sio_CheckConnection` (`src/utility_08237468.c`)
 - `Sio_Start` (`src/utility_08237468.c`)
+- `FreezeEffect_SpawnSubParticle` (`src/freeze_effect.c`)
+- `FreezeEffect_StateVanish` (`src/freeze_effect.c`)
+- `LevelUpper_EmitWeaponLevelUpEffect` (`src/level_upper.c`)
+- `TryPlayerLevelUp` (`src/level_upper.c`)

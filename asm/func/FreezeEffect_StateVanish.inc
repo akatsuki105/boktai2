@@ -5,7 +5,7 @@
 	push {r5, r6, r7}
 	sub sp, #0x1c
 	adds r7, r0, #0
-	bl FUN_080a7b80
+	bl FreezeEffect_GatherSubParticles
 	adds r0, r7, #0
 	adds r0, #0x20
 	bl FUN_08236400
