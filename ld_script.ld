@@ -14,11 +14,6 @@ gNumMusicPlayers = 32;
 
 gCtrlHandlers2_ROM = 0x08DBD758;
 
-gAnimDirectory = 0x085b0df0;
-gTilemapDirectory = 0x085b26e4;
-gCollisionMapsDirectory = 0x087b260c;
-gPlttDirectory = 0x087fa08c;
-
 gParticleFile0 = 0x08A20138;
 gSpriteSetFile25 = 0x08C5A80C;
 
@@ -416,9 +411,14 @@ SECTIONS {
     src/data3c.o (.rodata);
     src/utility_08237468.o (.rodata);
     src/file.o (.rodata);
+    src/data/sprite_animation.o (.rodata);
+    src/data/tilemap.o (.rodata);
+    src/data/collision_map.o (.rodata);
+    src/data/bgp.o (.rodata);
     src/data/tilesets.o (.rodata);
     src/data/fonts.o (.rodata);
     src/data/sprites.o (.rodata);
+    src/data/obp.o (.rodata);
     src/data/scripts.o (.rodata);
     src/data/item.o (.rodata);
     src/data4.o (.rodata);

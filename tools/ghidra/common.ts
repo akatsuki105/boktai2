@@ -1,5 +1,5 @@
 import * as gba from "../common/gba/gba.ts";
-import { parseSymbolFile } from "../parser/common/symbol.ts";
+import * as Symfile from "../encoding/symbol.ts";
 import { findGlobalByName } from "./api/data.ts";
 
 // 引数がアドレスかシンボル名かを判別する。0x 付き、または16進数字だけならアドレス扱い。
@@ -13,7 +13,7 @@ export const resolveAddress = (target: string): gba.addr => {
     return parseInt(target.replace(/^0x/i, ""), 16);
   }
 
-  const sym = parseSymbolFile().find((s) => s.name === target);
+  const sym = Symfile.ParseFile().find((s) => s.name === target);
   if (!sym) {
     console.error(`エラー: シンボル '${target}' が boktai2.sym に見つかりません`);
     Deno.exit(1);
@@ -25,7 +25,7 @@ export const resolveAddress = (target: string): gba.addr => {
 // アドレス -> シンボル名。Thumb関数は最下位ビットを落としたアドレスでも引けるようにする。
 export const symbolsByAddress = (): Map<number, string> => {
   const map = new Map<number, string>();
-  for (const s of parseSymbolFile()) {
+  for (const s of Symfile.ParseFile()) {
     if (!s.name) continue;
     map.set(s.offset, s.name);
     if (isFunctionSymbol(s.type)) map.set(s.offset & ~1, s.name);
@@ -42,7 +42,7 @@ export const symbolsByAddress = (): Map<number, string> => {
 export const resolveTarget = async (target: string): Promise<gba.addr | undefined> => {
   if (looksLikeAddress(target)) return parseInt(target.replace(/^0x/i, ""), 16);
 
-  const sym = parseSymbolFile().find((s) => s.name === target);
+  const sym = Symfile.ParseFile().find((s) => s.name === target);
   if (sym) return isFunctionSymbol(sym.type) ? sym.offset & ~1 : sym.offset;
 
   const auto = target.match(/_([0-9A-Fa-f]{8})$/);

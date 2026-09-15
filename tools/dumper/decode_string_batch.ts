@@ -3,8 +3,8 @@
 import { Command } from "@cliffy/command";
 import * as gba from "../common/gba/gba.ts";
 import { decode, findTerminatorSeq, formatByteDump, indexOfSeq, parseCharmap, READ_WINDOW } from "./string.ts";
-import * as mft from "../parser/mft.ts";
-import { getScriptDirectory } from "../parser/script.ts";
+import * as MFT from "../encoding/mft/mft.ts";
+import * as VM from "../encoding/script/script.ts";
 import type { addr } from "../common/gba/gba.ts";
 
 // string.ts のバッチスクリプト (アドレスでなく 文字列ID で指定する)
@@ -27,7 +27,7 @@ const main = () => {
 
       const rom = new DataView((Deno.readFileSync(romPath)).buffer);
 
-      const stringAddrs = getScriptDirectory(rom, mft.getMftHeader(rom, 0xA41E).ptr).strings;
+      const stringAddrs = VM.ParseScriptDirectory(rom, MFT.getFSEntry(rom, 0xA41E).ptr).strings;
 
       if (!(0 <= startID && startID <= endIndex && endIndex <= stringAddrs.length)) {
         console.error(`error: ID範囲が不正です (0 <= start <= end <= ${stringAddrs.length} である必要があります)`);

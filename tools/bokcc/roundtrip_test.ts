@@ -8,13 +8,13 @@ import { InsnType } from "./instruction.ts";
 import { parse } from "./parser.ts";
 import { compile } from "./compiler.ts";
 import * as gba from "../common/gba/gba.ts";
-import { getScriptDirectory } from "../parser/script.ts";
-import * as mft from "../parser/mft.ts";
+import * as MFT from "../encoding/mft/mft.ts";
+import * as VM from "../encoding/script/script.ts";
 import type { addr } from "../common/gba/gba.ts";
 
 const romBytes = Deno.readFileSync(new URL("../../baserom.gba", import.meta.url));
 const rom = new DataView(romBytes.buffer);
-const dir = getScriptDirectory(rom, mft.getMftHeader(rom, 0xA41E).ptr);
+const dir = VM.ParseScriptDirectory(rom, MFT.getFSEntry(rom, 0xA41E).ptr);
 
 const getScriptAddr = (scriptId: number): addr => {
   if (scriptId < 1 || scriptId > dir.scripts.length) {

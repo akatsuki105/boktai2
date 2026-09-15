@@ -1,9 +1,9 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write --allow-run
 
-import { getScriptDirectory } from "../parser/script.ts";
+import * as VM from "../encoding/script/script.ts";
 import * as gba from "../common/gba/gba.ts";
 import type { addr } from "../common/gba/gba.ts";
-import * as mft from "../parser/mft.ts";
+import * as MFT from "../encoding/mft/mft.ts";
 import { ByteStream, InstructionReader } from "../bokcc/instruction_reader.ts";
 
 const ROM_PATH = "./baserom.gba";
@@ -11,7 +11,7 @@ const ROM_PATH = "./baserom.gba";
 const main = () => {
   const romData = Deno.readFileSync(ROM_PATH);
   const rom = new DataView(romData.buffer);
-  const dir = getScriptDirectory(rom, mft.getMftHeader(rom, 0xA41E).ptr);
+  const dir = VM.ParseScriptDirectory(rom, MFT.getFSEntry(rom, 0xA41E).ptr);
 
   // アドレス順でソートする
   const scripts: {

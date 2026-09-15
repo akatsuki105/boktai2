@@ -124,7 +124,7 @@ else
 endif
 
 # RULES_NO_SCAN: ビルドを伴わないルールの一覧
-RULES_NO_SCAN += clean clean-code clean-scripts clean-graphics clean-midi
+RULES_NO_SCAN += clean clean-code clean-scripts clean-collisionmap clean-tilemap clean-graphics clean-midi
 .PHONY: all modern compare $(RULES_NO_SCAN)
 
 NODEP ?= 0
@@ -158,7 +158,7 @@ compare: $(ROM)
 
 syms: $(SYM)
 
-clean: clean-code clean-scripts clean-graphics
+clean: clean-code clean-scripts clean-graphics clean-collisionmap clean-tilemap
 
 clean-code:
 	rm -rf ./$(BUILD_DIR)
@@ -167,6 +167,9 @@ clean-code:
 clean-scripts:
 	rm -f data/scripts/*.inc
 	rm -f data/scripts/*.bin
+
+clean-tilemap:
+	rm -f data/tilemap/*.bin.lz
 
 $(ROM): $(ELF)
 	$(OBJCOPY) -O binary --pad-to 0x9000000 $< $@

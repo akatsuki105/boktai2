@@ -1,6 +1,34 @@
 #include "file.h"
 
 #include "global.h"
+#include "vm.h"
+
+extern const mft_directory gAnimDirectory;
+extern const mft_directory gPlttDirectory;
+extern const mft_directory gSpriteSetPlttsDirectory;
+extern const mft_directory gActorSpritesDirectory;
+extern const mft_directory gFontDirectory;
+extern const ScriptDirectory gScriptDirectory;
+extern const mft_directory gCollisionMapsDirectory;
+extern const mft_directory gTilemapDirectory;
+extern const mft_directory gSpriteSetsDirectory;
+extern const mft_directory gTilesetsDirectory;
+extern const mft_directory gParticlesDirectory;
+
+const mft_header gFS[12] = {
+    {id : ((0x9225 << 16) | 0x5130), directory : &gAnimDirectory                  },
+    {id : ((0x9305 << 16) | 0xD710), directory : &gPlttDirectory                  },
+    {id : ((0x9A65 << 16) | 0x4679), directory : &gSpriteSetPlttsDirectory        },
+    {id : ((0x9B05 << 16) | 0x2117), directory : &gActorSpritesDirectory          },
+    {id : ((0xA705 << 16) | 0x6D24), directory : &gFontDirectory                  },
+    {id : ((0xA8D9 << 16) | 0xA41E), directory : (mft_directory*)&gScriptDirectory},
+    {id : ((0xAF05 << 16) | 0xAC2C), directory : &gCollisionMapsDirectory         },
+    {id : ((0xC305 << 16) | 0xE53E), directory : &gTilemapDirectory               },
+    {id : ((0xC8E5 << 16) | 0x5F29), directory : &gSpriteSetsDirectory            },
+    {id : ((0xCEE5 << 16) | 0x4F2D), directory : &gTilesetsDirectory              },
+    {id : ((0xCF05 << 16) | 0x0A4D), directory : &gParticlesDirectory             },
+    {id : 0x0,                       directory : NULL                             },
+};
 
 // ソート済みのファイルID配列を二分探索し、見つからなければ -1 を返す
 s32 FindFile(u32 fileID, FileID* list, u32 _, s32 start, s32 end) {
@@ -71,7 +99,7 @@ void* GetFile(FileID directoryID, FileID fileID) {
       isAsset = TRUE;
       break;
     }
-    case 0x92B3: {
+    case DIR_BGPLTT: {
       directoryID = 0x9305;
       fileID = 0xD710;
       isAsset = TRUE;
@@ -83,7 +111,7 @@ void* GetFile(FileID directoryID, FileID fileID) {
       isAsset = TRUE;
       break;
     }
-    case 0x98F5: {
+    case DIR_ACTOR_SPRITE: {
       directoryID = 0x9B05;
       fileID = 0x2117;
       isAsset = TRUE;
@@ -95,31 +123,31 @@ void* GetFile(FileID directoryID, FileID fileID) {
       isAsset = TRUE;
       break;
     }
-    case 0xAE6C: {
+    case DIR_COLLISION_MAP: {
       directoryID = 0xAF05;
       fileID = 0xAC2C;
       isAsset = TRUE;
       break;
     }
-    case 0xC091: {
+    case DIR_TILE_MAP: {
       directoryID = 0xC305;
       fileID = 0xE53E;
       isAsset = TRUE;
       break;
     }
-    case 0xCB05: {
+    case DIR_SPRITE_SETS: {
       directoryID = 0xC8E5;
       fileID = 0x5F29;
       isAsset = TRUE;
       break;
     }
-    case 0xCEEF: {
+    case DIR_TILESET: {
       directoryID = 0xCEE5;
       fileID = 0x4F2D;
       isAsset = TRUE;
       break;
     }
-    case 0xCEAA: {
+    case DIR_PARTICLE: {
       directoryID = 0xCF05;
       fileID = 0x0A4D;
       isAsset = TRUE;
@@ -133,80 +161,3 @@ void* GetFile(FileID directoryID, FileID fileID) {
   }
   return d;
 }
-
-extern const mft_directory gAnimDirectory;
-extern const mft_directory gPlttDirectory;
-extern const mft_directory gSpriteSetPlttsDirectory;
-extern const mft_directory gActorSpritesDirectory;
-extern const mft_directory gFontDirectory;
-extern const mft_directory gScriptDirectory;
-extern const mft_directory gCollisionMapsDirectory;
-extern const mft_directory gTilemapDirectory;
-extern const mft_directory gSpriteSetsDirectory;
-extern const mft_directory gTilesetsDirectory;
-extern const mft_directory gParticlesDirectory;
-
-// clang-format off
-const mft_header gFS[12] = {
-    {
-        .id = 0x92255130,
-        .directory = &gAnimDirectory
-    },
-    {
-        .id = 0x9305D710,
-        .directory = &gPlttDirectory
-    },
-    {
-        .id = 0x9A654679,
-        .directory = &gSpriteSetPlttsDirectory
-    },
-    {
-        .id = 0x9B052117,
-        .directory = &gActorSpritesDirectory
-    },
-    {
-        .id = 0xA7056D24,
-        .directory = &gFontDirectory
-    },
-    {
-        .id = 0xA8D9A41E,
-        .directory = &gScriptDirectory
-    },
-    {
-        .id = 0xAF05AC2C,
-        .directory = &gCollisionMapsDirectory
-    },
-    {
-        .id = 0xC305E53E,
-        .directory = &gTilemapDirectory
-    },
-    {
-        .id = 0xC8E55F29,
-        .directory = &gSpriteSetsDirectory
-    },
-    {
-        .id = 0xCEE54F2D,
-        .directory = &gTilesetsDirectory
-    },
-    {
-        .id = 0xCF050A4D,
-        .directory = &gParticlesDirectory
-    },
-    {
-        .id = 0x0,
-        .directory = (void*)0x0
-    }
-};
-// clang-format on
-
-// gAnimDirectory
-INCBIN(".rodata", "data/gAnimDirectory.bin");  // ./tmp/bin.sh ./baserom.gba 0x085b0df0 0x085b26e4 ./data/gAnimDirectory.bin
-
-// gTilemapDirectory
-INCBIN(".rodata", "data/gTilemapDirectory.bin");  // ./tmp/bin.sh ./baserom.gba 0x085b26e4 0x087b260c ./data/gTilemapDirectory.bin
-
-// gCollisionMapsDirectory
-INCBIN(".rodata", "data/gCollisionMapsDirectory.bin");  // ./tmp/bin.sh ./baserom.gba 0x087b260c 0x087fa08c ./data/gCollisionMapsDirectory.bin
-
-// gPlttDirectory
-INCBIN(".rodata", "data/gPlttDirectory.bin");  // ./tmp/bin.sh ./baserom.gba 0x087fa08c 0x0881882c ./data/gPlttDirectory.bin

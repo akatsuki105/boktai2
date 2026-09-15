@@ -83,6 +83,12 @@ data/actor_sprites/0D44.4bpp: GFX_OPTS := -num_tiles 362
 
 data/tilesets.4bpp: GFX_OPTS := -num_tiles 53062
 
+# グラフィックデータじゃないけど gbagfx でLZ77圧縮するからここに書く, LZ77UnCompReadNormalWrite8bit を使うので、 -search 1 にする
+# Tilemap も WRAM に展開するけど CollisionMap と違ってこれは不要
+COLLISION_MAPS := $(wildcard data/collision_map/*.bin)
+COLLISION_MAPS_LZ := $(COLLISION_MAPS:.bin=.bin.lz)
+$(COLLISION_MAPS_LZ): GFX_OPTS := -search 1
+
 # 汎用ルール, scaninc がソースファイルから依存関係を自動で生成するため、このルール定義だけでよい
 %.1bpp:   %.png              ; @$(GBAGFX) $< $@ $(GFX_OPTS)
 %.4bpp:   %.png              ; @$(GBAGFX) $< $@ $(GFX_OPTS)
@@ -93,6 +99,9 @@ data/tilesets.4bpp: GFX_OPTS := -num_tiles 53062
 %.rl:     %                  ; @$(GBAGFX) $< $@ $(GFX_OPTS)
 %.lz:     %.lz.4bpp          ; @$(GBAGFX) $< $@ $(GFX_OPTS)
 
-.PHONY: clean-graphics
+.PHONY: clean-graphics clean-collisionmap
 clean-graphics:
-	rm -f data/font_narrow.4bpp data/font_wide.4bpp data/particle_group_*.4bpp data/spriteset/*.4bpp data/tilesets.4bpp data/actor_sprites/*.4bpp
+	rm -f data/font_narrow.4bpp data/font_wide.4bpp data/particle_group_*.4bpp data/spriteset/*.4bpp data/tilesets.4bpp data/actor_sprites/*.4bpp data/bgp/*.gbapal
+
+clean-collisionmap:
+	rm -f $(COLLISION_MAPS_LZ)

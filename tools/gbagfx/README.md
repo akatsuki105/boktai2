@@ -97,7 +97,7 @@ Options:
 > [!NOTE]
 > `.pal -> .gbapal` への変換では、bit15(ブレンド時の緑のLSB)は0になる
 
-## データの圧縮,展開
+## データの圧縮
 
 どの圧縮形式も、GBAのBIOS関数で展開できる。
 
@@ -108,7 +108,17 @@ Options:
 ```
 
 ```sh
-$ gbagfx input output.(huff|lz|rl)  # inputを 拡張子に対応する圧縮形式で圧縮
+$ gbagfx input output.(huff|lz|rl) [OPTIONS]  # inputを 拡張子に対応する圧縮形式で圧縮
+
+Options:
+  -search <N> とりあえず LZ77UnCompReadNormalWrite8bit 使うなら 1 (default 2)
+```
+
+## データの展開
+
+データの圧縮 の逆
+
+```sh
 $ gbagfx input.(huff|lz|rl) output  # inputを 拡張子に対応する圧縮形式で展開
 ```
 

@@ -1,14 +1,14 @@
 #!/usr/bin/env -S deno run --allow-read --allow-write --allow-run
 
 import { Command } from "@cliffy/command";
-import { parseActorSpriteFile } from "../parser/mft_actorsprite.ts";
-import * as mft from "../parser/mft.ts";
-import { gbagfx } from "./gbagfx.ts";
+import { parseActorSpriteFile } from "../encoding/mft_actorsprite.ts";
+import * as MFT from "../encoding/mft/mft.ts";
+import { gbagfx } from "../common/gbagfx.ts";
 import * as boktai from "../common/boktai.ts";
 import * as gba from "../common/gba/gba.ts";
 import type { addr } from "../common/gba/gba.ts";
 import * as path from "@std/path";
-import { getPlttData } from "../parser/mft_spritepltt.ts";
+import { getPlttData } from "../encoding/mft_spritepltt.ts";
 
 // e.g. actorsprite_tile.ts ./baserom.gba tmp/actorsprite 0xA895
 const main = () => {
@@ -25,11 +25,11 @@ const main = () => {
       Deno.mkdirSync(`${outDir}`, { recursive: true });
 
       const rom = new DataView((Deno.readFileSync(romPath)).buffer);
-      const hdr = mft.getMftHeader(rom, 0x2117);
+      const hdr = MFT.getFSEntry(rom, 0x2117);
       if (hdr.end == null) throw new Error(`MFT entry with id1 0x2117 has no end address.`);
       const dirStart: addr = hdr.ptr;
       const dirEnd: addr = hdr.end;
-      const dir = mft.parseMftDirectory(rom, dirStart);
+      const dir = MFT.ParseDirectory(rom, dirStart);
 
       const start: addr = dir.addr + dir.offsetTo1stFile;
       const end = dirEnd;

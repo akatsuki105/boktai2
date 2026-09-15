@@ -100,14 +100,3 @@ gSpriteSetsDirectory: @ 0x08B79944
     .include "data/spriteset/E89F.inc"                        @ 0xE89F
     .include "data/spriteset/chandelier.inc"                  @ 0xF099
 
-.global gSpriteSetPlttsDirectory
-gSpriteSetPlttsDirectory: @ 0x08CB9228
-  .4byte 1, 0x10, 0x14, gObjPlttFile0-gSpriteSetPlttsDirectory
-  .2byte 0xC5E9, 0
-  .4byte gObjPlttFile0-gSpriteSetPlttsDirectory, 0
-gObjPlttFile0: @ 0x08CB9244
-  .2byte 768  @ palette length (16色パレットが 768個ある)
-  .2byte 171  @ unk
-  @ ./tmp/bin.sh ./baserom.gba 0x08cb9248 0x08cbf248 ./data/gObjPlttFile0.bin
-  .incbin "data/gObjPlttFile0.bin"
-

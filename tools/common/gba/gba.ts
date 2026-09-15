@@ -41,3 +41,5 @@ export const getGameID = (rom: DataView): string => {
     return gamecode; // e.g. "BZ3J"
   }
 };
+
+export * from "./lz77.ts";

@@ -3,9 +3,9 @@
 import { Command } from "@cliffy/command";
 import * as gba from "../common/gba/gba.ts";
 import type { addr } from "../common/gba/gba.ts";
-import { parseSymbolFile } from "../parser/common/symbol.ts";
-import * as m4a from "../parser/m4a.ts";
-import * as gas from "./gas.ts";
+import * as Symfile from "../encoding/symbol.ts";
+import * as m4a from "../encoding/m4a/m4a.ts";
+import * as GAS from "../encoding/gas/gas.ts";
 
 const indent = "  ";
 
@@ -17,7 +17,7 @@ const songtable = new Command()
   .argument("[length:number]", "Number of entries in gSongTable.")
   .action((_, romPath, targetAddr, entryCount = -1) => {
     const rom = new DataView((Deno.readFileSync(romPath)).buffer);
-    const syms = parseSymbolFile();
+    const syms = Symfile.ParseFile();
     const dumpC = false;
     const name = "gSongTable";
 
@@ -72,10 +72,10 @@ const dumpSongHeader = (rom: DataView, start: addr) => {
 
   const mml = gba.copyBytes(rom, hdr.part[0], mmlEnd - mmlStart);
   console.log(`${label}_mml:`);
-  console.log(gas.dumpU8array(mml, indent, 32));
+  console.log(GAS.dumpU8array(mml, indent, 32));
 
-  console.log(gas.Align4);
-  console.log(gas.dumpGlobalSymbol(label) + ` @ 0x${gba.toHex32(start)}`);
+  console.log(GAS.Align4);
+  console.log(GAS.dumpGlobalSymbol(label) + ` @ 0x${gba.toHex32(start)}`);
   console.log(indent + `.byte ${hdr.trackCount}, ${hdr.blockCount}, ${hdr.priority}, ${hdr.reverb} @ trackCount, blockCount, priority, reverb`);
   console.log(indent + `.4byte 0x${gba.toHex32(hdr.tone)} @ tone`);
   console.log(indent + `@ parts`);
