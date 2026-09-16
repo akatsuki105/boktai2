@@ -109,7 +109,7 @@ _080F8FD0:
 	add r2, sp, #0x48
 	movs r3, #0
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	subs r1, r0, r4
 	cmp r1, #0x80
 	ble _080F8FF4
@@ -888,7 +888,7 @@ _080F9568:
 	ldrsh r0, [r5, r3]
 	movs r2, #4
 	ldrsh r1, [r5, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	subs r1, r0, r4
 	cmp r1, #0x80
 	ble _080F9588

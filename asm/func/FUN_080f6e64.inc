@@ -359,7 +359,7 @@ _080F7106:
 	strh r0, [r4]
 	ldr r0, [sp, #0x1c]
 	ldr r1, [sp, #0x20]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r6, #5]
 	movs r0, #0x26
 	ldr r3, [sp, #0x30]

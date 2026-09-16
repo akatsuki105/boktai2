@@ -26,7 +26,7 @@
 	subs r1, r1, r0
 	mov r8, r1
 	mov r0, sb
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	adds r6, #0x8c

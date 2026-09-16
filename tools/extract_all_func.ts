@@ -3,7 +3,7 @@
 import { Command } from "@cliffy/command";
 import * as path from "@std/path";
 import { getRepoRoot } from "./common/common.ts";
-import { listFunctions } from "./parser/common/gas.ts";
+import * as GAS from "./encoding/gas/gas.ts";
 
 // extract_func.ts は thumb_func_start しか扱えないので、それ以外の種類の関数は対象外にする。
 // (実際 asm/func/*.inc に arm の関数は1つも無い)
@@ -41,7 +41,7 @@ const extractAllFunctions = (repo: string, asmFile: string): void => {
   if (!isFile(asmPath)) die(`エラー: ${asmPath} が見つかりません`);
   const asmRelPath = path.relative(repo, asmPath);
 
-  const funcs = listFunctions(Deno.readTextFileSync(asmPath));
+  const funcs = GAS.listFunctions(Deno.readTextFileSync(asmPath));
   if (funcs.length === 0) die(`エラー: ${asmRelPath} に関数が1つも見つかりませんでした`);
 
   const skipped = funcs.filter((fn) => fn.extracted);

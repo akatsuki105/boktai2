@@ -221,7 +221,7 @@ _080E0DB4:
 	ldrsh r0, [r0, r2]
 	movs r4, #4
 	ldrsh r1, [r3, r4]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	str r0, [sp, #0x24]
 	add r2, sp, #0x14
 	add r3, sp, #0x18

@@ -36,7 +36,7 @@ _080E60EE:
 	beq _080E6140
 _080E60FA:
 	asrs r1, r1, #0x10
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r0, #0x20
 	movs r1, #0xff
 	ands r0, r1

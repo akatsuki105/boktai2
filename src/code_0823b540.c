@@ -3,7 +3,15 @@
 #include "global.h"
 
 // Collision Map File が圧縮されてたら展開して返す、圧縮されてなかったらそのまま返す
-NAKED CollisionMapFile* OpenCollisionMapFile(void* file) { INCFUNC("asm/func/OpenCollisionMapFile.inc"); }
+CollisionMapFile* OpenCollisionMapFile(void* file) {
+  u8* magic = file;
+
+  if (magic[0] == 0x48 && magic[1] == 0x50) {  // "HP"
+    return (CollisionMapFile*)file;
+  }
+  LZ77UnCompWram(file, gDecompressedCollisionMapHeader);
+  return (CollisionMapFile*)gDecompressedCollisionMapFile;
+}
 
 NAKED s32 Map_LoadCollisionMapFile(FileID id) { INCFUNC("asm/func/Map_LoadCollisionMapFile.inc"); }
 

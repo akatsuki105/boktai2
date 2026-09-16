@@ -4,10 +4,6 @@
 	
 	.text
 
-	thumb_func_start FUN_0820fe94
-FUN_0820fe94: @ 0x0820FE94
-  .include "asm/func/FUN_0820fe94.inc"
-
 	thumb_func_start FUN_0820fe98
 FUN_0820fe98: @ 0x0820FE98
   .include "asm/func/FUN_0820fe98.inc"

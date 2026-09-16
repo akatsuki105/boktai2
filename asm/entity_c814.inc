@@ -29,7 +29,7 @@ EntityC814_Update: @ 0x080CB4D8
 	beq _080CB562
 _080CB502:
 	adds r0, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	ldr r2, _080CB528 @ =0x085B0A08
 	adds r0, #0x40

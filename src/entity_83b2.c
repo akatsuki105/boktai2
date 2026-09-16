@@ -48,9 +48,19 @@ bool32 FUN_080091d0(Entity83B2Data* p) {
   }
 }
 
-NAKED s32 FUN_080091e8(Entity83B2* p, Entity83B2Data* q, s32 idx) { INCFUNC("asm/func/FUN_080091e8.inc"); }
+NAKED s32 FUN_080091e8(Entity83B2* p, Entity83B2Data* data, s32 idx) { INCFUNC("asm/func/FUN_080091e8.inc"); }
 
-INCASM("asm/entity_83b2.inc");
+NAKED s32 FUN_0800922c(Entity83B2* p, u32 n, unknown* param_3) { INCFUNC("asm/func/FUN_0800922c.inc"); }
+
+NAKED void* FUN_08009278(Entity83B2Data* p, s32 val) { INCFUNC("asm/func/FUN_08009278.inc"); }
+
+NAKED void* FUN_08009298(Entity83B2* p, Entity83B2Data* data, unknown* pos) { INCFUNC("asm/func/FUN_08009298.inc"); }
+
+NAKED void FUN_080092f0(Entity83B2* p, Entity83B2Data* data) { INCFUNC("asm/func/FUN_080092f0.inc"); }
+
+NAKED bool32 FUN_08009364(Entity83B2* p) { INCFUNC("asm/func/FUN_08009364.inc"); }
+
+NAKED s32 FUN_08009398(Entity83B2* p, Entity83B2Data* data, s32 idx) { INCFUNC("asm/func/FUN_08009398.inc"); }
 
 s32 FUN_080093e0(Entity83B2* p, s32 n) {
   p->unk_19 = n;
@@ -62,11 +72,11 @@ s32 FUN_080093ec(Entity83B2* p, s32 n) {
   p->unk_1a = 1;
 }
 
-NAKED s32 FUN_080093f8(Entity83B2* p, Entity83B2Data* q, s32 idx) { INCFUNC("asm/func/FUN_080093f8.inc"); }
+NAKED s32 FUN_080093f8(Entity83B2* p, Entity83B2Data* data, s32 idx) { INCFUNC("asm/func/FUN_080093f8.inc"); }
 
-NAKED s32 FUN_080094ac(Entity83B2* p, Entity83B2Data* q, s32 idx) { INCFUNC("asm/func/FUN_080094ac.inc"); }
+NAKED s32 FUN_080094ac(Entity83B2* p, Entity83B2Data* data, s32 idx) { INCFUNC("asm/func/FUN_080094ac.inc"); }
 
-NAKED s32 FUN_0800959c(Entity83B2* p, Entity83B2Data* q, s32 idx) { INCFUNC("asm/func/FUN_0800959c.inc"); }
+NAKED s32 FUN_0800959c(Entity83B2* p, Entity83B2Data* data, s32 idx) { INCFUNC("asm/func/FUN_0800959c.inc"); }
 
 NAKED s32 Entity83B2_Update(Entity83B2* p) { INCFUNC("asm/func/Entity83B2_Update.inc"); }
 

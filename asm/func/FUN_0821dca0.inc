@@ -21,7 +21,7 @@
 	movs r3, #4
 	ldrsh r2, [r2, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	ldr r0, _0821DCFC @ =0x03002BE0
 	ldr r0, [r0]

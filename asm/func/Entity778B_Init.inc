@@ -1,6 +1,6 @@
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_081eaf6c
+	bl Entity081eaf6c_Create
 	ldr r0, _080E14F8 @ =0x03000180
 	str r4, [r0]
 	movs r0, #0

@@ -2,7 +2,7 @@
 #define __INCLUDE_SPRITE_ACTOR_H__
 
 #include "gba/gba.h"
-#include "types.h"  // Vec3
+#include "types.h"
 
 // GBAスプライト として使う場合は、 spriteset か actorsprite のどちらかを使う
 // メインキャラクターなどのたくさんのグラフィックデータが必要な場合は、 spriteset で、 それ以外の少量のグラフィックデータの場合は、 actorsprite を使う という使い分けをしていたと思われる
@@ -11,7 +11,7 @@ typedef u32 ActorSpriteID32;  // spriteset と ID を共有しているっぽい
 typedef u16 ActorSpriteID16;
 
 typedef u32 SpriteFlags;
-#define SPRFLAG_UNK_0 (1 << 0)         // 0x00000001
+#define SPRFLAG_HIDDEN (1 << 0)        // 0x00000001, 描画しない
 #define SPRFLAG_AFFINE (1 << 1)        // 0x00000002, アフィン
 #define SPRFLAG_XFLIP (1 << 2)         // 0x00000004, X軸反転
 #define SPRFLAG_YFLIP (1 << 3)         // 0x00000008, Y軸反転
@@ -19,6 +19,8 @@ typedef u32 SpriteFlags;
 #define SPRFLAG_OAM_DIRECT (1 << 5)    // 0x00000020, OAM直書き
 #define SPRFLAG_NO_CLIP (1 << 6)       // 0x00000040, クリップ省略
 #define SPRFLAG_UNK_7 (1 << 7)         // 0x00000080, ???
+#define SPRFLAG_BLINK_ODD (1 << 9)     // 0x00000200, 奇数フレームだけ描画しない (点滅), 根拠: FUN_0822aaac / FUN_08230134
+#define SPRFLAG_BLINK_EVEN (1 << 10)   // 0x00000400, 偶数フレームだけ描画しない (点滅), 根拠: 同上
 
 // --------------------------------------------
 
@@ -102,7 +104,7 @@ void Video_SetActorSpritePltt(ActorSpriteState* p, s32 plttID);
 
 // アクタースプライトの描画リストのノード
 // ActorSpriteState が「何を描くか」(タイル・パレット・メタスプライト)を持つのに対し、こちらは「どこにどう描くか」(位置・回転・拡縮・優先度)を持つ
-// 1つの ActorSpriteState を複数のノードが共有できる (FUN_08202a14 ではノード8個が ActorSpriteState 2個を共有している)
+// 1つの ActorSpriteState を複数のノードが共有できる (Entity08202cd8_Init ではノード8個が ActorSpriteState 2個を共有している)
 // PTR_ARRAY_03003560[q_listIdx] を先頭とする双方向リストに繋がれ、FUN_0822aaac などが走査して DrawSprite_0822a574 で OAM に書き出す
 // 同じ描画システムの SpriteState は資源を自分自身に持つので、こちらとは資源の持ち方が異なる
 typedef struct q_SpriteNode44 {
@@ -128,7 +130,7 @@ typedef struct q_SpriteNode44 {
   struct q_SpriteNode44* prev;  // 0x24
   struct q_SpriteNode44* next;  // 0x28
 } q_SpriteNode44;
-static_assert(sizeof(q_SpriteNode44) == 44);  // FUN_08202a14 のループで 44バイトずつアドレスが増える (puVar8 は u16* で += 0x16)
+static_assert(sizeof(q_SpriteNode44) == 44);  // Entity08202cd8_Init のループで 44バイトずつアドレスが増える (puVar8 は u16* で += 0x16)
 
 // --------------------------------------------
 

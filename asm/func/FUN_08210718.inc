@@ -10,7 +10,7 @@
 	movs r3, #0
 	bl Sprite_SetSprite
 	ldrb r0, [r4]
-	bl FUN_0820ff78
+	bl WeaponDexMenu_IsPageComplete
 	cmp r0, #0
 	beq _08210756
 	movs r3, #2

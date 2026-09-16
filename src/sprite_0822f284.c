@@ -1,7 +1,6 @@
 #include "global.h"
 #include "sprite.h"
 
-extern rgb555* gObjPlttData;
 extern u16 u16_030044b8;
 
 // spriteset ファイルのヘッダをコピーし、各オフセットをファイル先頭からのポインタに変換する
@@ -50,11 +49,11 @@ NON_MATCH s32 FUN_0822f364(SpriteState* p, SpriteSet* src, u16 spriteIdx, Sprite
 
   *(u16*)&p->unk_2 = u16_030044b8;  // unk_2, unk_3 をまとめて書く (Sprite_SetSprite と同じ)
   p->flags |= flags;
-  p->unk_c = 0;  // 元は movs r1, #0 が unk_2 の strh より前に来て、flags の OR は r2 を使う
-  p->unk_10 = 0x40;
-  p->unk_e = param_7;
+  p->q_frameTimer = 0;  // 元は movs r1, #0 が unk_2 の strh より前に来て、flags の OR は r2 を使う
+  p->q_animSpeed = 0x40;
+  p->q_frameDuration = param_7;
   p->priority = prio;
-  p->unk_1b = param_6;
+  p->q_playMode = param_6;
   p->pos = *pos;
   return 0;
 #else
@@ -62,11 +61,11 @@ NON_MATCH s32 FUN_0822f364(SpriteState* p, SpriteSet* src, u16 spriteIdx, Sprite
 #endif
 }
 
-s32 Sprite_SetSprite(SpriteState* p, SpriteSet* src, u16 spriteIdx, u8 param_4) {
+s32 Sprite_SetSprite(SpriteState* p, SpriteSet* src, u16 spriteIdx, u8 playMode) {
   if (Sprite_LoadSprite(p, src, spriteIdx) < 0) return -1;
 
   *(u16*)&p->unk_2 = u16_030044b8;  // unk_2, unk_3 をまとめて書く (FUN_080609dc は 1 バイトずつ書く)
-  p->unk_1b = param_4;
+  p->q_playMode = playMode;
   return 0;
 }
 

@@ -3,12 +3,11 @@
  * @param srcbuf Compressed data
  * @returns `Uint8Array` of decompressed data
  */
-export const decompressLZ77 = (srcbuf: ArrayBufferLike): ArrayBufferLike => {
+export const decompressLZ77 = (src: Uint8Array): Uint8Array => {
   let ofs = 0;
-  const src = new Uint8Array(srcbuf);
   const id = src[ofs++];
   if (id !== 0x10) {
-    return new ArrayBuffer(0);
+    throw new Error(`Invalid LZ77 header: ${id}, expected 0x10`);
   }
   const decompressedSize = src[ofs] | (src[ofs + 1] << 8) | (src[ofs + 2] << 16);
   ofs += 3;
@@ -57,5 +56,5 @@ export const decompressLZ77 = (srcbuf: ArrayBufferLike): ArrayBufferLike => {
     }
   }
 
-  return result.buffer;
+  return result;
 };

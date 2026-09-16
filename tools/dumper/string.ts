@@ -2,7 +2,7 @@
 
 import { Command } from "@cliffy/command";
 import * as gba from "../common/gba/gba.ts";
-import * as Charmap from "../parser/common/charmap.ts";
+import * as Charmap from "../encoding/charmap.ts";
 
 // 指定アドレスから終端文字('$')までを charmap.txt の内容に基づいて .string "..." として出力
 // デコード中に charmap.txt に存在しない未定義バイトに遭遇した場合は、文字列の先頭からその時点で判明している終端文字まで生バイト列として .byte 0xXX, ... にフォールバックする。
@@ -18,7 +18,7 @@ export type CharMap = Map<string, string>;
 const seqKey = (bytes: Uint8Array): string => Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
 const keyToBytes = (key: string): Uint8Array => Uint8Array.from(key.match(/../g) ?? [], (h) => parseInt(h, 16));
 
-// tools/parser/common/charmap.ts の ParseFile で charmap.txt をパースし、 バイト列(hex文字列) -> 表示文字 の Map に変換する。
+// tools/encoding/charmap.ts の ParseFile で charmap.txt をパースし、 バイト列(hex文字列) -> 表示文字 の Map に変換する。
 export const parseCharmap = (content: string): CharMap => {
   const entries = Charmap.Parse(content);
   const charmap: CharMap = new Map();

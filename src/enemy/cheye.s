@@ -1463,7 +1463,7 @@ _0817C3BE:
 	ldrsh r0, [r0, r3]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r5, #5]
 	movs r1, #0xe6
 	lsls r1, r1, #1
@@ -2836,7 +2836,7 @@ FUN_0817ce48: @ 0x0817CE48
 	ldrsh r0, [r4, r3]
 	movs r2, #4
 	ldrsh r1, [r4, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r0, #0x20
 	ands r0, r5
 	asrs r0, r0, #6
@@ -3359,7 +3359,7 @@ _0817D268:
 _0817D27A:
 	asrs r1, r0, #0x10
 	adds r0, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	mov r1, sb
 	strb r0, [r1, #5]
 	ldr r2, _0817D2A4 @ =0x085B0A08
@@ -3513,7 +3513,7 @@ _0817D38A:
 	movs r2, #4
 	ldrsh r1, [r0, r2]
 	movs r0, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	mov r3, sb
 	strb r0, [r3, #5]
 	ldr r4, _0817D3B8 @ =0x00000256
@@ -3724,7 +3724,7 @@ _0817D50E:
 	movs r3, #0
 	ldrsh r0, [r0, r3]
 	movs r1, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	mov r4, sb
 	strb r0, [r4, #5]
 	ldr r4, _0817D53C @ =0x00000256
@@ -6478,7 +6478,7 @@ _0817E952:
 	blt _0817E9FC
 	adds r0, r3, #0
 	adds r1, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	movs r1, #0xfe
 	lsls r1, r1, #1
 	add r1, r8
@@ -6867,7 +6867,7 @@ _0817EC5C:
 	ldrsh r0, [r0, r1]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	add sp, #8
 	pop {r4, r5, r6, r7}
 	pop {r0}
@@ -7221,7 +7221,7 @@ _0817EF40:
 	ldrsh r0, [r2, r1]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r1, r7, #0
 	adds r1, #0x42
 	strb r0, [r1]
@@ -7731,7 +7731,7 @@ _0817F320:
 	subs r4, r4, r0
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	movs r2, #0xfe
 	lsls r2, r2, #1
 	adds r1, r6, r2
@@ -7956,7 +7956,7 @@ _0817F4E8:
 	mov r1, sp
 	movs r2, #4
 	ldrsh r1, [r1, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r3, _0817F51C @ =0x000001DD
 	adds r1, r6, r3
 _0817F4FC:
@@ -8107,7 +8107,7 @@ _0817F5F8:
 	subs r4, r4, r0
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	movs r2, #0xfe
 	lsls r2, r2, #1
 	adds r1, r6, r2
@@ -13720,7 +13720,7 @@ _0818215C:
 	ldrsh r0, [r3, r4]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldrb r1, [r5, #5]
 	subs r1, r0, r1
 	cmp r1, #0x80

@@ -2865,7 +2865,7 @@ _081EC414:
 	ldrsh r0, [r2, r3]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r0, #0x20
 	movs r1, #0xff
 	ands r0, r1
@@ -5558,7 +5558,7 @@ _081ED74E:
 	adds r6, #0x7c
 	movs r3, #0
 	ldrsh r1, [r6, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	mov sl, r0
 	ldr r0, [r7, #0x70]
 	ldr r1, [r7, #0x74]
@@ -6472,7 +6472,7 @@ _081EDE2A:
 	ldrsh r0, [r6, r1]
 	movs r2, #4
 	ldrsh r1, [r4, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	mov r0, r8
 	movs r1, #1
 	bl FUN_08234224
@@ -8842,7 +8842,7 @@ _081EEF9A:
 	ldrsh r0, [r4, r2]
 	movs r3, #4
 	ldrsh r1, [r4, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r0, [sp, #8]
 	movs r1, #1
 	bl FUN_08234224
@@ -9738,8 +9738,11 @@ _081EF662:
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0
-_081EF668:
-	.byte 0x70, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_081ef668
+FUN_081ef668: @ 0x081EF668
+	bx lr
+	.align 2, 0
 
 	thumb_func_start FUN_081ef66c
 FUN_081ef66c: @ 0x081EF66C
@@ -9792,7 +9795,7 @@ FUN_081ef66c: @ 0x081EF66C
 	mov r2, sb
 	movs r3, #0
 	bl FUN_082364f8
-	ldr r1, _081EF704 @ =0x081EF669
+	ldr r1, _081EF704 @ =FUN_081ef668
 	adds r0, r4, #0
 	adds r2, r5, #0
 	bl FUN_0823651c
@@ -9812,7 +9815,7 @@ FUN_081ef66c: @ 0x081EF66C
 _081EF6F8: .4byte 0xFFFF0000
 _081EF6FC: .4byte 0x0000FFFF
 _081EF700: .4byte 0x00002001
-_081EF704: .4byte 0x081EF669
+_081EF704: .4byte FUN_081ef668
 
 	thumb_func_start FUN_081ef708
 FUN_081ef708: @ 0x081EF708
@@ -11313,11 +11316,43 @@ _081F0210:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_081F0220:
-	.byte 0x30, 0xB5, 0x05, 0x1C, 0x00, 0x24, 0x01, 0x21, 0xA1, 0x40, 0xA8, 0x6B, 0x08, 0x40, 0x00, 0x28
-	.byte 0x01, 0xD0, 0x01, 0x20, 0x00, 0xE0, 0x00, 0x20, 0x00, 0x28, 0x05, 0xD0, 0x9C, 0x20, 0x60, 0x43
-	.byte 0x3C, 0x30, 0x28, 0x18, 0x3A, 0xF0, 0x4C, 0xF9, 0x01, 0x34, 0x0B, 0x2C, 0xEB, 0xDD, 0x03, 0x49
-	.byte 0x00, 0x20, 0x08, 0x60, 0x30, 0xBC, 0x02, 0xBC, 0x08, 0x47, 0x00, 0x00, 0xE0, 0x01, 0x00, 0x03
+
+	thumb_func_start FUN_081f0220
+FUN_081f0220: @ 0x081F0220
+	push {r4, r5, lr}
+	adds r5, r0, #0
+	movs r4, #0
+_081F0226:
+	movs r1, #1
+	lsls r1, r4
+	ldr r0, [r5, #0x38]
+	ands r0, r1
+	cmp r0, #0
+	beq _081F0236
+	movs r0, #1
+	b _081F0238
+_081F0236:
+	movs r0, #0
+_081F0238:
+	cmp r0, #0
+	beq _081F0248
+	movs r0, #0x9c
+	muls r0, r4, r0
+	adds r0, #0x3c
+	adds r0, r5, r0
+	bl FUN_0822a4e0
+_081F0248:
+	adds r4, #1
+	cmp r4, #0xb
+	ble _081F0226
+	ldr r1, _081F025C @ =0x030001E0
+	movs r0, #0
+	str r0, [r1]
+	pop {r4, r5}
+	pop {r1}
+	bx r1
+	.align 2, 0
+_081F025C: .4byte 0x030001E0
 
 	thumb_func_start FUN_081f0260
 FUN_081f0260: @ 0x081F0260
@@ -11358,7 +11393,7 @@ FUN_081f0298: @ 0x081F0298
 	cmp r4, #0
 	beq _081F02DC
 	ldr r1, _081F02D4 @ =FUN_081f01d0
-	ldr r2, _081F02D8 @ =0x081F0221
+	ldr r2, _081F02D8 @ =FUN_081f0220
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	bl FUN_081f0260
@@ -11372,7 +11407,7 @@ FUN_081f0298: @ 0x081F0298
 _081F02CC: .4byte 0x030001E0
 _081F02D0: .4byte 0x0000078C
 _081F02D4: .4byte FUN_081f01d0
-_081F02D8: .4byte 0x081F0221
+_081F02D8: .4byte FUN_081f0220
 _081F02DC:
 	adds r0, r4, #0
 _081F02DE:
@@ -12489,13 +12524,58 @@ _081F0AF0:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_081F0B00:
-	.byte 0xF0, 0xB5, 0x07, 0x1C, 0x00, 0x22, 0x01, 0x21, 0x91, 0x40, 0xB8, 0x6B, 0x08, 0x40, 0x00, 0x28
-	.byte 0x01, 0xD0, 0x01, 0x20, 0x00, 0xE0, 0x00, 0x20, 0x56, 0x1C, 0x00, 0x28, 0x11, 0xD0, 0xAE, 0x20
-	.byte 0x40, 0x00, 0x50, 0x43, 0x3C, 0x30, 0x3D, 0x18, 0x00, 0x24, 0x2C, 0x20, 0x60, 0x43, 0x29, 0x18
-	.byte 0x08, 0x79, 0x00, 0x28, 0x02, 0xD0, 0x08, 0x1C, 0x39, 0xF0, 0xD2, 0xFC, 0x01, 0x34, 0x03, 0x2C
-	.byte 0xF3, 0xDD, 0x32, 0x1C, 0x03, 0x2A, 0xDE, 0xDD, 0x02, 0x49, 0x00, 0x20, 0x08, 0x60, 0xF0, 0xBC
-	.byte 0x02, 0xBC, 0x08, 0x47, 0xE4, 0x01, 0x00, 0x03
+
+	thumb_func_start FUN_081f0b00
+FUN_081f0b00: @ 0x081F0B00
+	push {r4, r5, r6, r7, lr}
+	adds r7, r0, #0
+	movs r2, #0
+_081F0B06:
+	movs r1, #1
+	lsls r1, r2
+	ldr r0, [r7, #0x38]
+	ands r0, r1
+	cmp r0, #0
+	beq _081F0B16
+	movs r0, #1
+	b _081F0B18
+_081F0B16:
+	movs r0, #0
+_081F0B18:
+	adds r6, r2, #1
+	cmp r0, #0
+	beq _081F0B42
+	movs r0, #0xae
+	lsls r0, r0, #1
+	muls r0, r2, r0
+	adds r0, #0x3c
+	adds r5, r7, r0
+	movs r4, #0
+_081F0B2A:
+	movs r0, #0x2c
+	muls r0, r4, r0
+	adds r1, r5, r0
+	ldrb r0, [r1, #4]
+	cmp r0, #0
+	beq _081F0B3C
+	adds r0, r1, #0
+	bl FUN_0822a4e0
+_081F0B3C:
+	adds r4, #1
+	cmp r4, #3
+	ble _081F0B2A
+_081F0B42:
+	adds r2, r6, #0
+	cmp r2, #3
+	ble _081F0B06
+	ldr r1, _081F0B54 @ =0x030001E4
+	movs r0, #0
+	str r0, [r1]
+	pop {r4, r5, r6, r7}
+	pop {r1}
+	bx r1
+	.align 2, 0
+_081F0B54: .4byte 0x030001E4
 
 	thumb_func_start FUN_081f0b58
 FUN_081f0b58: @ 0x081F0B58
@@ -12536,7 +12616,7 @@ FUN_081f0b90: @ 0x081F0B90
 	cmp r4, #0
 	beq _081F0BD4
 	ldr r1, _081F0BCC @ =FUN_081f0aac
-	ldr r2, _081F0BD0 @ =0x081F0B01
+	ldr r2, _081F0BD0 @ =FUN_081f0b00
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	bl FUN_081f0b58
@@ -12550,7 +12630,7 @@ FUN_081f0b90: @ 0x081F0B90
 _081F0BC4: .4byte 0x030001E4
 _081F0BC8: .4byte 0x000005AC
 _081F0BCC: .4byte FUN_081f0aac
-_081F0BD0: .4byte 0x081F0B01
+_081F0BD0: .4byte FUN_081f0b00
 _081F0BD4:
 	adds r0, r4, #0
 _081F0BD6:
@@ -14049,12 +14129,47 @@ _081F16E6:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_081F16F0:
-	.byte 0x30, 0xB5, 0x05, 0x1C, 0x00, 0x24, 0x01, 0x21, 0xA1, 0x40, 0xA8, 0x6B, 0x08, 0x40, 0x00, 0x28
-	.byte 0x01, 0xD0, 0x01, 0x20, 0x00, 0xE0, 0x00, 0x20, 0x00, 0x28, 0x09, 0xD0, 0x94, 0x20, 0x60, 0x43
-	.byte 0x3C, 0x30, 0x29, 0x18, 0x08, 0x79, 0x00, 0x28, 0x02, 0xD0, 0x08, 0x1C, 0x38, 0xF0, 0xE0, 0xFE
-	.byte 0x01, 0x34, 0x13, 0x2C, 0xE7, 0xDD, 0x03, 0x49, 0x00, 0x20, 0x08, 0x60, 0x30, 0xBC, 0x02, 0xBC
-	.byte 0x08, 0x47, 0x00, 0x00, 0xE8, 0x01, 0x00, 0x03
+
+	thumb_func_start FUN_081f16f0
+FUN_081f16f0: @ 0x081F16F0
+	push {r4, r5, lr}
+	adds r5, r0, #0
+	movs r4, #0
+_081F16F6:
+	movs r1, #1
+	lsls r1, r4
+	ldr r0, [r5, #0x38]
+	ands r0, r1
+	cmp r0, #0
+	beq _081F1706
+	movs r0, #1
+	b _081F1708
+_081F1706:
+	movs r0, #0
+_081F1708:
+	cmp r0, #0
+	beq _081F1720
+	movs r0, #0x94
+	muls r0, r4, r0
+	adds r0, #0x3c
+	adds r1, r5, r0
+	ldrb r0, [r1, #4]
+	cmp r0, #0
+	beq _081F1720
+	adds r0, r1, #0
+	bl FUN_0822a4e0
+_081F1720:
+	adds r4, #1
+	cmp r4, #0x13
+	ble _081F16F6
+	ldr r1, _081F1734 @ =0x030001E8
+	movs r0, #0
+	str r0, [r1]
+	pop {r4, r5}
+	pop {r1}
+	bx r1
+	.align 2, 0
+_081F1734: .4byte 0x030001E8
 
 	thumb_func_start FUN_081f1738
 FUN_081f1738: @ 0x081F1738
@@ -14095,7 +14210,7 @@ FUN_081f1770: @ 0x081F1770
 	cmp r4, #0
 	beq _081F17B4
 	ldr r1, _081F17AC @ =FUN_081f166c
-	ldr r2, _081F17B0 @ =0x081F16F1
+	ldr r2, _081F17B0 @ =FUN_081f16f0
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	bl FUN_081f1738
@@ -14109,7 +14224,7 @@ FUN_081f1770: @ 0x081F1770
 _081F17A4: .4byte 0x030001E8
 _081F17A8: .4byte 0x00000BCC
 _081F17AC: .4byte FUN_081f166c
-_081F17B0: .4byte 0x081F16F1
+_081F17B0: .4byte FUN_081f16f0
 _081F17B4:
 	adds r0, r4, #0
 _081F17B6:
@@ -14232,8 +14347,11 @@ _081F1880:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_081F1888:
-	.byte 0x70, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_081f1888
+FUN_081f1888: @ 0x081F1888
+	bx lr
+	.align 2, 0
 
 	thumb_func_start FUN_081f188c
 FUN_081f188c: @ 0x081F188C
@@ -14285,7 +14403,7 @@ FUN_081f188c: @ 0x081F188C
 	mov r2, r8
 	movs r3, #0
 	bl FUN_082364f8
-	ldr r1, _081F1924 @ =0x081F1889
+	ldr r1, _081F1924 @ =FUN_081f1888
 	adds r0, r7, #0
 	adds r2, r6, #0
 	bl FUN_0823651c
@@ -14306,7 +14424,7 @@ FUN_081f188c: @ 0x081F188C
 _081F1918: .4byte 0xFFFF0000
 _081F191C: .4byte 0x0000FFFF
 _081F1920: .4byte 0x00002001
-_081F1924: .4byte 0x081F1889
+_081F1924: .4byte FUN_081f1888
 _081F1928:
 	ldr r1, [r6]
 	adds r1, #0x18
@@ -16864,7 +16982,7 @@ _081F2C04:
 	adds r6, #0x8c
 	movs r2, #0
 	ldrsh r1, [r6, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	mov ip, r0
 	mov r3, sp
 	ldr r2, _081F2C60 @ =0x085B0A08
@@ -17611,7 +17729,7 @@ _081F3146:
 	ldrsh r0, [r0, r3]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	ldr r2, _081F31EC @ =0x085B0A08
 	adds r0, #0x40
@@ -20419,7 +20537,7 @@ _081F46AC:
 	mov r1, sp
 	movs r2, #4
 	ldrsh r1, [r1, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 _081F46BC:
 	adds r5, r6, #0
 	adds r5, #0x1c
@@ -21430,7 +21548,7 @@ _081F4E2C:
 	ldrsh r0, [r0, r1]
 	movs r2, #4
 	ldrsh r1, [r3, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r3, _081F4E80 @ =0x00000175
 	adds r1, r5, r3
 	ldrb r1, [r1]
@@ -23589,8 +23707,11 @@ _081F5E24:
 	bx r0
 	.align 2, 0
 _081F5E48: .4byte 0x000005B4
-_081F5E4C:
-	.byte 0x70, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_081f5e4c
+FUN_081f5e4c: @ 0x081F5E4C
+	bx lr
+	.align 2, 0
 
 	thumb_func_start FUN_081f5e50
 FUN_081f5e50: @ 0x081F5E50
@@ -23721,7 +23842,7 @@ _081F5F50:
 	add r1, sp, #0x20
 	movs r2, #4
 	ldrsh r1, [r1, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r3, r0, #0x18
 _081F5F62:
@@ -23884,7 +24005,7 @@ _081F6078:
 	movs r3, #0
 	bl FUN_082364f8
 	adds r0, r4, #0
-	ldr r1, _081F610C @ =0x081F5E4D
+	ldr r1, _081F610C @ =FUN_081f5e4c
 	adds r2, r6, #0
 	bl FUN_0823651c
 	adds r0, r4, #0
@@ -23930,7 +24051,7 @@ _081F60D0:
 _081F6100: .4byte 0xFFFF0000
 _081F6104: .4byte 0x0000FFFF
 _081F6108: .4byte 0x00002401
-_081F610C: .4byte 0x081F5E4D
+_081F610C: .4byte FUN_081f5e4c
 _081F6110: .4byte 0x00005005
 _081F6114: .4byte 0x000005B4
 _081F6118: .4byte 0x0000064C
@@ -25300,7 +25421,7 @@ FUN_081f6afc: @ 0x081F6AFC
 	ldrsh r0, [r2, r1]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r2, _081F6B84 @ =0x000006DA
 	adds r1, r5, r2
 	strb r0, [r1]
@@ -28039,7 +28160,7 @@ _081F7FA0:
 	ldrsh r0, [r0, r1]
 	movs r2, #4
 	ldrsh r1, [r3, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r2, _081F7FF4 @ =0x00000109
 	adds r1, r5, r2
 	ldrb r1, [r1]
@@ -29523,7 +29644,7 @@ FUN_081f8ab4: @ 0x081F8AB4
 	ldrsh r0, [r2, r1]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	ldr r1, [r6]
 	adds r1, #0x2c
@@ -32652,8 +32773,14 @@ _081FA228:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_081FA230:
-	.byte 0x00, 0xB5, 0x18, 0x30, 0x33, 0xF0, 0x42, 0xFC, 0x02, 0xBC, 0x08, 0x47
+
+	thumb_func_start FUN_081fa230
+FUN_081fa230: @ 0x081FA230
+	push {lr}
+	adds r0, #0x18
+	bl FUN_0822dabc
+	pop {r1}
+	bx r1
 
 	thumb_func_start FUN_081fa23c
 FUN_081fa23c: @ 0x081FA23C
@@ -33127,8 +33254,15 @@ FUN_081fa5b0: @ 0x081FA5B0
 	str r2, [r0, #8]
 	str r2, [r0, #4]
 	bx lr
-_081FA5C4:
-	.byte 0x00, 0x21, 0x81, 0x70, 0x41, 0x70, 0xC1, 0x60, 0x81, 0x60, 0x70, 0x47
+
+	thumb_func_start FUN_081fa5c4
+FUN_081fa5c4: @ 0x081FA5C4
+	movs r1, #0
+	strb r1, [r0, #2]
+	strb r1, [r0, #1]
+	str r1, [r0, #0xc]
+	str r1, [r0, #8]
+	bx lr
 
 	thumb_func_start FUN_081fa5d0
 FUN_081fa5d0: @ 0x081FA5D0

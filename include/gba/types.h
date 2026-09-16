@@ -160,4 +160,8 @@ struct SioMultiCnt {
 #define ST_SIO_57600_BPS 2   //  57600 bps
 #define ST_SIO_115200_BPS 3  // 115200 bps
 
+// GBA key input types, see gba/io_reg.h
+typedef u16 Keys16;
+typedef u32 Keys32;
+
 #endif  // GUARD_GBA_TYPES_H

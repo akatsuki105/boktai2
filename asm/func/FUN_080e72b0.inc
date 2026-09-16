@@ -51,7 +51,7 @@ _080E72DE:
 	movs r3, #4
 	ldrsh r1, [r2, r3]
 	ldrb r4, [r5, #5]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	subs r1, r0, r4
 	cmp r1, #0x80
 	bgt _080E7326

@@ -66,7 +66,7 @@ NAKED void AgbMain(void) {
 	strh r0, [r1]\n\
 	movs r0, #1\n\
 	strh r0, [r3]\n\
-	bl FUN_08237e98\n\
+	bl Sio_Reset\n\
 	ldr r0, _08000438 @ =0x0023A666\n\
 	ldr r1, _0800043C @ =0x008BC000\n\
 	movs r2, #0\n\

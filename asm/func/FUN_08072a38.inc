@@ -19,7 +19,7 @@
 	subs r5, r1, r0
 	adds r0, r6, #0
 	adds r1, r5, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	mov r8, r0
 	movs r7, #0xc
 	movs r0, #0xc

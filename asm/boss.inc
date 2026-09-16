@@ -605,7 +605,7 @@ FUN_08022e20: @ 0x08022E20
 	subs r4, r4, r0
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r1, r7, #0
 	adds r1, #0xd8
 	lsls r0, r0, #0x18
@@ -920,10 +920,28 @@ FUN_08023090: @ 0x08023090
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080230A0:
-	.byte 0x10, 0xB5, 0x04, 0x1C, 0xFF, 0xF7, 0xCA, 0xFC, 0x00, 0x28, 0x05, 0xD0, 0x41, 0x6D, 0x00, 0x6D
-	.byte 0x20, 0x60, 0x61, 0x60, 0x00, 0x20, 0x01, 0xE0, 0x01, 0x20, 0x40, 0x42, 0x10, 0xBC, 0x02, 0xBC
-	.byte 0x08, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_080230a0
+FUN_080230a0: @ 0x080230A0
+	push {r4, lr}
+	adds r4, r0, #0
+	bl FUN_08022a3c
+	cmp r0, #0
+	beq _080230B8
+	ldr r1, [r0, #0x54]
+	ldr r0, [r0, #0x50]
+	str r0, [r4]
+	str r1, [r4, #4]
+	movs r0, #0
+	b _080230BC
+_080230B8:
+	movs r0, #1
+	rsbs r0, r0, #0
+_080230BC:
+	pop {r4}
+	pop {r1}
+	bx r1
+	.align 2, 0
 
 	thumb_func_start FUN_080230c4
 FUN_080230c4: @ 0x080230C4

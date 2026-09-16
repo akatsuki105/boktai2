@@ -196,4 +196,7 @@ Strongest first. Most of these produced a confirmed field on this project.
 | `scripts/StructCandidates.java <size\|-> [HeadType]` | Existing structs that might be the unknown one. |
 | `scripts/check_decomp.ts [--quiet] <func...>` | Decompile and count unresolved raw-offset lines. |
 
-Repo tools on the same server: `tools/ghidra/decompile.ts`, `tools/ghidra/pcode.ts`.
+Repo tools on the same server: `tools/ghidra/decompile.ts`, `tools/ghidra/pcode.ts`,
+`tools/ghidra/rename_struct_field.ts <Struct> <field|0xOFF> <newName>` (renames
+one field, checks that nothing but the name changed, then saves; use it for
+plain renames instead of writing an edit script).

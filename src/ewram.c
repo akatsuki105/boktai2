@@ -1,8 +1,12 @@
 #include "global.h"
 
-EWRAM_DATA u8 gTilemapFileBuffer[0x10000] = {};  // 0x02021400, 圧縮されたTilemapFileはここに展開して読み出す, 圧縮されてないならROMから直接読み込むのでここは使われない
+// 圧縮されたTilemapFileはここに展開して読み出す, 圧縮されてないならROMから直接読み込むのでここは使われない
+EWRAM_DATA u8 gTilemapFileBufferHead[4] = {};   // 0x02021400, 展開先の先頭4バイト, TilemapHeader より手前にある, 用途不明
+EWRAM_DATA u8 gTilemapFileBuffer[65532] = {};   // 0x02021404, 展開された TilemapHeader 本体, 根拠: GetTilemapFile がここを返す
 
-EWRAM_DATA u8 gDecompressedCollisionMapFile[16384] = {};  // 0x02031400, CollisionMapFile が圧縮されている場合、ここに展開してファイル内容を読み込む, 圧縮されていないならROMから直接読み込むのでここは使われない
+// CollisionMapFile が圧縮されている場合、ここに展開してファイル内容を読み込む, 圧縮されていないならROMから直接読み込むのでここは使われない
+EWRAM_DATA u8 gDecompressedCollisionMapHeader[4] = {};    // 0x02031400, 展開先の先頭4バイト, CollisionMapFile より手前にある, 用途不明
+EWRAM_DATA u8 gDecompressedCollisionMapFile[16380] = {};  // 0x02031404, 展開された CollisionMapFile 本体, 根拠: OpenCollisionMapFile がここを返す
 
 EWRAM_DATA u8 u8_02035400[0x800] = {};  // 0x02035400, 0x0822e8b6 で 0x800 バイトで ClearMemory されるので内容は不明だが、ここが1つのメモリの塊であることは確か
 

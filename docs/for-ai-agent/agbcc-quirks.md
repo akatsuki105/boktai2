@@ -35,7 +35,7 @@ the section matching how you would go looking for it.
 
 ### Branch direction
 
-- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`.
+- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `FUN_080223f4`, `FUN_08022428`, `FUN_08022448`, `FUN_080224f0`, `FUN_08022618`, `FUN_08022644`, `ArcTan2_8`, `FUN_082375c8`.
 - agbcc keeps the *first-written* if-branch as fall-through; put an
   out-of-line block in the `else`.
 - Applies even when **both** arms end in `return` (no shared code after
@@ -60,6 +60,12 @@ the section matching how you would go looking for it.
   fall-through path; the target wanted `-1` there) and
   `Video_GetHankakuTiles` (same flip on a `NULL` guard) both needed the
   condition inverted and the two returns swapped.
+- Two guards in a row: only the **last** guard's return moves to the end.
+  The first one stays inline (`bne` jumps over it). `FUN_08022448` needed
+  `if (g == NULL) return -1; if (g->f != 0) return -2; g->f = 1; return 0;`.
+  Here `-1` stays inline and `-2` is placed at the end. Nesting it as
+  `if (g != NULL) { ... } return -1;` flips both branches.
+- A guard with two conditions reverses the single-guard rule. `if (a && b) { A } return B;` put `A` inline and `B` at the end. `if (!a || !b) return B; A` put `B` inline and `A` at the end. `FUN_08022618` and `FUN_08022644` needed the `||` form.
 
 ### switch case body layout follows source order, independent of dispatch order
 
@@ -70,6 +76,12 @@ the section matching how you would go looking for it.
 
 - **Frequency**: `VM_CallScript`.
 - `call(); while (cond) { body; call(); }` emits **two** `bl` sites; `while (TRUE) { call(); if (!cond) break; body; }` emits **one**, entered by a `b` that jumps over the body to the call. If the target has a single call site reached by a leading `b`, write the loop in the second form. The peeled form also raised register pressure enough that agbcc strength-reduced `arr[i] = v; i++;` into a walking pointer (`stmia rN!`) and needed an extra callee-saved register; the single-call form dropped both.
+
+### A `do`-`while` with `break` can lay its latch out mid-body; a `for` increment puts it at the bottom
+
+- **Frequency**: `Rfu_FindPartnerRecord`.
+- Target: body, then `if (f(p) == 7) break;`, then `pos += f(p) + 2; cmp pos, #0xf; bls top` at the very end. `do { ...; if (...) break; pos += ...; } while (pos <= 15);` emitted the increment and test in the middle of the body behind an extra `b` (one insn longer). Moving the increment into a `for (pos = 0; pos <= 15; pos += f(p) + 2)` header, with `p` declared outside the loop, matched.
+- In the same loop, the target keeps `&buf[pos] + 1` in one register across the `== 7` test and the increment. Recomputing `&buf[pos + 1]` at each use rebuilt it every time; a pointer local (`p = &buf[pos]; ... p++;`) matched.
 
 ## Comparisons & bit tests
 
@@ -93,7 +105,7 @@ the section matching how you would go looking for it.
 
 ### Narrow NAKED-callee parameter forces truncation at a single call site
 
-- **Frequency**: `FUN_082402c8`, `FUN_082402e0`, `FUN_08240428`, `sound_082403b8`, `sound_08240728`.
+- **Frequency**: `FUN_082402c8`, `FUN_082402e0`, `FUN_08240428`, `sound_082403b8`, `sound_08240728`, `Entity6978_Create`.
 - When the only call site passes a wider value (e.g. a `u32`-returning
   `Script_GetValue()`) directly into a NAKED callee declared with a
   narrower parameter type (`u16`), agbcc inserts a truncation
@@ -106,11 +118,13 @@ the section matching how you would go looking for it.
   expectations); the callee's own `.inc` body is untouched since it's
   still NAKED.
 - The callee may also be a MATCHING C function: `PlaySound_08240718(SoundID16 id) { m4aSongNumStart(id); }` already truncates `id` in its own body for the `u16` callee, so widening it to `SoundID32` left its bytes unchanged and removed the extra truncation from the caller `sound_08240728`.
+- The reverse also holds: when the target *does* truncate before the call, narrow the callee. `Entity6978_Create(u32 id)` has `lsls #16` / `lsrs #16` before `bl Entity6978_Init`, which matched once `Entity6978_Init`'s parameter was declared `u16 id`.
 
 ### `s16` locals defer sign-extension to each use
 
-- **Frequency**: `VM_CallScript`.
+- **Frequency**: `VM_CallScript`, `Entity28CB_Update`.
 - `s16 x = expr;` keeps the raw value and emits `lsls`/`asrs` at every *use*; `s32 x = (s16)expr;` sign-extends once at the *assignment*. Pick whichever places the extension where the target has it.
+- Reading an `s16` field into an `s32` local (`s32 spread = p->q_spread;`) gives a single `ldrsh` that every use shares. An `s16` local gives `ldrh` with `lsls`/`asrs` at each use (`Entity28CB_Update`).
 
 ### `u16` vs `s16` counters increment differently (and `s16` can still use `lsr`)
 
@@ -118,17 +132,31 @@ the section matching how you would go looking for it.
 - `u16 n; n++;` adds first, then truncates: `adds #1` / `lsls #16` / `lsrs #16`. `s16 n; n++;` shifts up first and adds there: `lsls #16` / `adds 0x10000` (built with `movs #0x80` + `lsls #9`) / `lsrs #16`. If the target has the second shape, the counter is `s16` — no natural `u16` spelling (`n = n + 1`, `for(...; n++)`, `(u16)(n + 1)`, `(n + 1) & 0xFFFF`, `arr[n++]`) produces it.
 - Don't read the `lsr` as proof of `u16`: an `s16` counter that is never compared needs no sign extension, so agbcc drops the `asr`. Adding a comparison on the counter (e.g. `n < 16`) brings the `asr` back.
 
+### `(u8)(x + c) >> n` folds into shifts; `((x + c) & 0xFF) >> n` keeps the `ands`
+
+- **Frequency**: `FUN_08237834`, `FUN_08237848`.
+- `(u8)(val + 0x10) >> 5` compiles to `lsls #24` / `adds 0x10 << 24` / `lsrs #29` (the add is done in the top byte). The target's `adds #0x10` / `movs #0xFF` / `ands` / `asrs #5` comes from `((val + 0x10) & 0xFF) >> 5`; the `asrs` shows the masked value stayed a signed `int`.
+
+### A `u16` local updated with `|=` truncates before a 16-bit store; writing the `|` into the store does not
+
+- **Frequency**: `Sio_StartParentTimer`, `Sio_ParentTimerIntr`, `Sio_ChildSerialIntr`, `Entity87FE_Update`, `Entity87FE_Init`, `FUN_08237098`, `FUN_08237064`.
+- A `u16` local built up with `send |= ...` in `Sio_ParentTimerIntr` / `Sio_ChildSerialIntr` also left an extra `lsls #16` / `lsrs #16` before the store; the target has none, and declaring it `s32` matched. In the same functions, `u16 m2 = REG_SIOMULTI2;` added a register copy (`adds r6, r2, #0`) that the target lacks; `s32` locals for the three register reads removed it.
+- `u16 ie = REG_IE; ... REG_IE = ie | 0x40;` emits `orrs` then `strh` directly. The target has `orrs` / `lsls #16` / `lsrs #16` / `strh`, which `ie |= 0x40; REG_IE = ie;` reproduces: the assignment back to the `u16` local keeps its truncation even though the store would drop the upper half anyway.
+- The same truncation moves when a `u16` compound assignment feeds a comparison. In `Entity87FE_Update` the target stores the sum, reloads the pointer, loads the bound, and only then emits `lsls #16` / `lsrs #16` before the `cmp` — `if ((p->player->hp += step) >= p->player->maxHP)` places it there, because the conversion applies where the assignment's value is read. A `u16` local (`hp = a + b; ... if (hp >= max)`) truncates right after the `adds` instead, and a plain `+=` followed by re-reading the field drops the reuse entirely (6 fewer instructions). A `u8` field behaves the same way with a `lsls #0x18` — `if ((p->wait = (speed * p->duration) >> 6) == 0)` matched `FUN_08237098` first try.
+
 ## Operand order & scheduling
 
 ### Pointer-add Rn/Rm order depends on how the address is spelled
 
-- **Frequency**: `Script_StorePointerCore`, `FUN_0822ea10`.
+- **Frequency**: `Script_StorePointerCore`, `FUN_0822ea10`, `FUN_08022128`.
 - Scaling an index by 2 as `offset << 1` vs `offset * 2` is value-identical, but agbcc doesn't always canonicalize the two the same way: in `*(u16*)(dst + (offset << 1))`, the shift form compiled the subsequent `dst + offset*2` addition as `adds r0, r4, r0` (dst first); the literal `offset * 2` form instead gave `adds r0, r0, r4` (offset-term first) — same instruction, swapped operands, real byte difference. When a pointer-add's Rn/Rm order doesn't match and the scale is a power of 2, try switching between `<<` and `*` for the scale before reaching for other levers.
 - The same symptom also comes from the *pointer vs subscript* choice, and that lever is independent of the one above. In `FUN_0822ea10`, holding the address in a variable (`u32* p = &base[i];` then `*p`) emitted `adds r3, r1, r0` (base first); indexing at each use (`base[i]`, three times) emitted `adds r3, r0, r1` (offset first) and matched. Switching `<<`/`*` did nothing there, so try both levers.
+- The pointer-vs-subscript choice also changes how a field offset is grouped. In `FUN_08022128`, `u8* count = &node->unk_6[side];` emitted `adds r1, r4, #6` / `adds r3, r5, r1`, which is `node + (side + 6)`. Writing `node->unk_6[side]` at each use emitted `adds r1, r5, #6` / `adds r3, r1, r4`, which is `(node + 6) + side`, and matched.
 
 ### `==` operand order sets the `cmp` operands and which value keeps the address register
 
-- **Frequency**: `sound_08240740`.
+- **Frequency**: `sound_08240740`, `Save_WriteCore`.
+- A call result compared directly (`if (f(...) != len + 8)`) keeps the result in `r0` and builds `len + 8` in `r1`; the target had `adds r1, r0, #0` / `adds r0, r5, #0` / `adds r0, #8` / `cmp r1, r0`. Swapping the operands made it worse, but assigning the result to a local first (`ret = f(...); if (ret != len + 8)`) matched.
 - `a[i] == x` and `x == a[i]` are not canonicalized. In `if (gSoundIDs[gSongTable[id].ms] == id) { gSoundIDs[...] = 0; ... }`, agbcc emitted `adds r1, r0, r2` / `ldrh r0, [r1]` / `cmp r0, r4` and stored through `r1`; the target had `adds r0, r0, r2` / `ldrh r1, [r0]` / `cmp r4, r1` and stored through `r0`. Writing `id == gSoundIDs[...]` matched. When a streamdiff shows only a swapped `cmp` plus the loaded value and its address trading registers, swap the operands of the comparison.
 
 ### The `for` increment's comma order is the order of the two `adds`
@@ -138,8 +166,9 @@ the section matching how you would go looking for it.
 
 ### Two reads of one halfword (`ldrh` + `ldrb`) survive only in low-byte-first order
 
-- **Frequency**: `Video_CreateSpriteLUT`.
+- **Frequency**: `Video_CreateSpriteLUT`, `OpenCollisionMapFile`, `GetTilemapFile`.
 - The target read `gSpriteSizeTable[i]` twice (`ldrh r1, [r6]` / `ldrb r2, [r6]`). Writing `s32 w = (u8)t[i]; s32 h = t[i] >> 8;` kept both loads; writing `h` first CSE'd them into one `ldrh` plus `lsls #24` / `lsrs #24` for the low byte. The same function also needed `tw = w >> 3; th = h >> 3;` as locals so the `asrs` land right after the loads instead of at each store.
+- The merge also runs the other way, collapsing two adjacent *byte* compares into one halfword load. `OpenCollisionMapFile` checks a 4-byte magic: `f->magic[0] == 0x48 && f->magic[1] == 0x50` through the `char magic[4]` field emitted a single `ldrh` and one `cmp`, losing the short-circuit. The target keeps two `ldrb`/`cmp` pairs with a branch between them, which reading through a `u8 *` local (`u8 *magic = file;` then `magic[0]` / `magic[1]`) reproduces.
 
 ### A field re-read before a global pool load needs a narrow local
 
@@ -148,18 +177,54 @@ the section matching how you would go looking for it.
 
 ### Global-address pool loads are ordered by expression nesting, not by source statement
 
-- **Frequency**: `sound_08240264`.
+- **Frequency**: `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`.
+- Two draws from the random table (`gRandomTable[(gRandTableIdx + 1) & 0x3FF]`) in `FUN_08089d50` needed three changes. Each one is value-identical to the plain form:
+  - Keep the first index in a local and store only the second. Storing `gRandTableIdx` twice kept the first `str`.
+  - Take the table address into a pointer local first (`u16* table = gRandomTable;`). This loads `=gRandomTable` before `=gRandTableIdx`.
+  - Read each value into a `u16` local before `& 0x1F`. This keeps the mask in its own register (`ands r0, r4`).
+
+  The permuter found the last two. A `static inline` that returns `gRandomTable[++idx]` still stored the first index. The original RNG macro or inline is not known yet.
+- A global struct's address loaded at function entry (`ldr r4, =gSaved` before anything else) and kept in a callee-saved register across calls comes from a pointer local declared first: `SavedHBlankState* s = &gSavedHBlankState;` then `s->field`. Writing `gSavedHBlankState.field` at each use loaded the address late, after the calls, and needed one less saved register.
 - After a call, `u16 ms = gSongTable[id].ms; f(gMPlayTable[ms].info); gSoundIDs[ms] = id;` loaded `=gSongTable` first and `=gMPlayTable` just before its use. The target loads `=gMPlayTable` into a register **before** `=gSongTable`; writing the index inline, `f(gMPlayTable[gSongTable[id].ms].info); gSoundIDs[gSongTable[id].ms] = id;`, matched (CSE still reuses the `ms*2` for the second subscript). If a streamdiff only shows one `ldr rN, =POOL` moved earlier and a register renamed, try inlining or splitting the index local.
+
+### A struct-field store does not force a global pointer to be reloaded; a cast store does
+
+- **Frequency**: `Save_WriteCore`.
+- After `gStat->magicNumber = x;`, agbcc assumes the struct-field store cannot touch the scalar pointer `gStat`, so it reuses the loaded pointer for `f(&gStat->magicNumber, 4)`. The target reloads it (`ldr r2, =gStat` / `ldr r1, [r2]` / `str r0, [r1]` / `ldr r0, [r2]`), which happens only when the store is not a struct-field access: `*(u32*)gStat = x; f(gStat, 4);` matched. If the target re-reads a global pointer right after storing through it, write the store without the field.
 
 ### `(a * 2) * b` moves the doubling onto `b`; `(a << 1) * b` keeps it on `a`
 
-- **Frequency**: `FUN_0822bcf4`.
+- **Frequency**: `FUN_0822bcf4`, `FUN_08089b48`, `BlendPlttToColor`.
 - The target computed a row pitch as `ldrsh r0, [...]` / `lsls r0, r0, #1` / `muls r0, r2`. Both `y * (w * 2)` and `(w * 2) * y` emitted `lsls r2, r2, #1` instead, on the other operand, because agbcc reassociates a constant factor through a multiply. Writing the doubling as a shift, `(w << 1) * y`, is not reassociated and matched.
+- Operand order also decides which value is copied before `muls`. In `FUN_08089b48`, `t * g2` emitted `adds r1, r7, #0` / `muls r1, r2` (copy `t`). The target has `adds r1, r2, #0` / `muls r1, r7` (copy `g2`), and writing `g2 * t` matched.
+- Same in `BlendPlttToColor`: the target copies the channel (`adds r3, r0, #0` / `muls r3, r5`), so the channel comes first: `(*src & 0x1F) * ((1 << shift) - t)`.
+
+### `-y * 256` reuses a `-y` computed earlier; `y * -256` negates the product separately
+
+- **Frequency**: `ArcTan2_8`.
+- With `if (x > -y) return t[Div(-y * 256, x)];` agbcc CSE's the `-y` from the compare, overwriting `y` (`rsbs r1, r1` / `lsls r0, r1, #8`). The target keeps `y` alive and negates after the shift (`rsbs r3, r1` for the compare, then `lsls r0, r1, #8` / `rsbs r0, r0`), which `Div(y * -256, x)` reproduces.
+
+### A zero stored from a reused local takes that local's register
+
+- **Frequency**: `ReadKeyInput`.
+- In `ReadKeyInput`, the loop that clears players 1-4 stores 0 twice (`strh r3, [r1]` / `strh r3, [r1, #2]`), with the 0 in `r3`, the register that held `keys` a moment earlier. Writing `gInput[i].down = 0; gInput[i].pressed = 0;` (or a chained `= 0`) put the 0 in a fresh `r0`. Setting the existing local once, `keys = 0;` before the loop, and storing `keys` (`down = keys; pressed = keys;`) matched. Going further and reusing the full update formula (`pressed = keys & ~prev`) with `keys = 0` did not fold and added four instructions.
+
+### A `u16` parameter saved in a wider local keeps the parameter as the working variable
+
+- **Frequency**: `GetFile`, `GetTilemapFile`.
+- `GetFile(FileID directoryID, FileID fileID)` rewrites `fileID` in each `case` and passes the original to `GetAssetFile` at the end. The target truncates the incoming `fileID` into `r1`, copies it to `r7` (`adds r7, r1, #0`), and at the call moves `r7` into `r2` first, before building the 4th argument. A copy declared `FileID file = fileID;` either swapped `r1`/`r7` or moved `r2` last. Declaring the copy as `u32 file = fileID;` (found by the permuter as `int`) matched.
+
+### Two loops sharing one counter variable shift the register allocation
+
+- **Frequency**: `LevelUpper_Update`.
+- `LevelUpper_Update` has an 8-iteration loop in one branch and a 5-iteration loop in the other. With one `s32 i` for both, every register was off by one (`p` in `r5` instead of `r4`, the counter and the stored 0 swapped). Giving the first loop its own counter (`s32 i, j;`, `for (j = 0; j < 8; j++)`) matched with no other change.
 
 ### An `|` chain accumulates left-to-right exactly as written
 
-- **Frequency**: `FUN_0822a4fc`, `FUN_0822bcf4`.
+- **Frequency**: `FUN_0822a4fc`, `FUN_0822bcf4`, `FUN_08089b48`, `BlendPlttToColor`, `BlendPltt`.
 - agbcc does not reassociate `a | b | c`. Written flat, it emits `a|b` into the accumulator and then ORs `c` (`orrs acc, b` ... `orrs acc, c`); written `a | (b | c)`, it builds `b|c` in a separate register first and ORs that into `a` once (`orrs r1, r0` then `orrs r3, r1`). Both forms have the same instruction count, so a streamdiff shows only swapped `orrs` operands — plus, because the grouped form needs one more value live at once, a different `push` list (`{r4, lr}` vs `{r4, r5, lr}`) and every register shifted by one. When the register allocation is off by exactly one callee-saved register in an expression built from three or more `|` terms, try regrouping the parentheses before suspecting anything else. The same should apply to other associative operators (`+`, `&`, `^`).
+- Masks follow the same order as the source. `(r & 0x1F) | (g & 0x3E0) | (b & 0x7C00)` interleaves them: `ands`, `ands`, `orrs`, `ands`, `orrs`. The target did all three `ands` first. Separate statements `r &= 0x1F; g &= 0x3E0; b &= 0x7C00; *dst = r | g | b;` matched (`FUN_08089b48`). Putting each mask into the line that computes the value (`r = (...) >> 6) & 0x1F;`) instead changed the register allocation for the whole loop.
+- The opposite case, `BlendPlttToColor` (blend 16 colors toward one color): the target interleaves `ands`/`orrs`, so the single expression `*dst = (r & 0x1F) | (g & 0x3E0) | (b & 0x7C00);` matched. It also masks each channel straight from `*src` inside its own formula (`((*src & 0x3E0) * k + g2 * t) >> shift`). Pulling all three channels into locals first put three `ands` before the multiplies and spilled the loop counter to the stack.
 
 ### Bitfield store vs hand-written mask differ in operand evaluation order
 
@@ -168,13 +233,34 @@ the section matching how you would go looking for it.
 
 ### `arr[i]` vs `*p++` change where the walking pointer is initialized
 
-- **Frequency**: `FUN_082315c0`, `FUN_0824082c`.
+- **Frequency**: `FUN_082315c0`, `FUN_0824082c`, `FUN_08089ce0`.
 - Both compile to the same `stm rN!, {r0}` walking store, but the init of that pointer lands in a different place. `*out++ = v;` modifies the parameter, so agbcc copies it to a callee-saved register in the **entry block**, before any loop-invariant hoists. `out[i] = v;` leaves the parameter alone and lets loop strength reduction create the pointer, so its init goes in the **preheader**, after the hoists — swapping the order of the two setup instructions. (Strength reduction also frees `i` to be reversed into a down-counter while the pointer still walks up.)
 - A walking pointer compared against `base + const` (`adds r0, r5, #0` / `adds r0, #0x14` / `cmp r4, r0`) with a **signed** loop exit (`ble`) and no pre-loop test is an `s32 i` index loop, not a pointer loop: loop strength reduction deletes `i` and rewrites `i == 10` and `i < 32` as compares on the pointer. In `FUN_0824082c`, writing the pointer loop (`p == &arr[10]`, `p <= &arr[31]`) gave a pre-loop `bhi`, unsigned `bls` and pool-loaded addresses; `for (i = 0; i < 32; i++) { if (arr[i]) { if (i == 10) ... } }` matched, including the second walking pointer used for the `arr[i]` call argument.
 
+### `a = b = v` stores `b` first and evaluates `v` once
+
+- **Frequency**: `Entity28CB_Update`.
+- Two statements `n->q_scaleX = p->q_scale >> 4; n->q_scaleY = p->q_scale >> 4;` load `q_scale` twice, because the byte store may alias it. The target loaded it once and stored `+8` (X) before `+9` (Y). A chained assignment evaluates the value once, but stores the inner target first, so it has to be written `n->q_scaleY = n->q_scaleX = p->q_scale >> 4;` to get X then Y.
+
+### A constant passed through an inline helper is loaded before the store address
+
+- **Frequency**: `FUN_08089d24`, `FUN_08089f38`, `FUN_08089e98`, `FUN_08089f58`, `FUN_0823a9f4`, `FUN_0823aa10`.
+- `FUN_08089f38` shows why the helper matters. Without it, eight rewrites (direct stores, a merged `timer` local, both statement orders) all left the two registers swapped. Calling `Entity28CB_SetState(p, 6)` in the `>= 90` branch matched on the first try, merged timer store included.
+- Symptom: the target loads a store's constant (`movs r0, #2`) before it computes the store address (`subs r1, #0xe`). `p->state = 2;` computes the address first. If the value goes through a parameter, the constant becomes its own pseudo that is set up earlier. For `FUN_08089d24`, the permuter found a temporary (`v = 2; p->state = v;`). A natural form that gives the same code is `static inline void Entity28CB_SetState(Entity28CB* p, u16 state) { p->state = state; p->stateTimer = 0; }`. Every state change in that entity also resets `stateTimer`, so the original probably had a helper like this.
+- Same for a read-modify-write of a global. `gEntityDisableFlags &= ~2;` (and `= ~2 & g`) emitted `ldr r1, [r0]` before building `~2`. The target builds the mask first (`movs r1, #3` / `rsbs r1, r1, #0` / `ldr r0, [r2]`), which `static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }` called as `EnableEntityFlags(2)` reproduces (`FUN_0823a9f4`).
+- Also for a mask in a condition. `if (!((gFlag030047a4 | u32_030047a0) & 1))` built `movs r1, #1` right before `ands`; the target builds it first, before both loads (`movs r2, #1` / `ldr` / `ldr` / `orrs` / `ands r0, r2`). A helper `static inline u32 TestFlag030047a4(u32 flags) { return (gFlag030047a4 | u32_030047a0) & flags; }` matched (`FUN_0823aa10`, which also needed `DisableEntityFlags(2)` for its `|= 2`).
+
+### Two addresses in one object share a base register; separate symbols get their own pool constants
+
+- **Frequency**: `OpenCollisionMapFile`, `GetTilemapFile`.
+- Passing `arr` to a call and then returning `&arr[4]` held the base in a callee-saved register (`ldr r4, =arr` / `adds r1, r4, #0` / `adds r0, r4, #4`) and cost a `push {r4, lr}`. The target loads `=arr` and `=arr+4` as two independent pool constants and pushes only `lr` — agbcc shares a base only when both addresses come from the same object, so splitting the one `u8 arr[16384]` definition into two adjacent externs (a 4-byte head and the body) matched.
+
 ### Where a global's address and value materialize follows statement splitting
 
-- **Frequency**: `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`.
+- **Frequency**: `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`.
+- The same holds for a call used as an argument. `f(0, (T*)gPtr, g(0x28))` loaded `=gPtr` and its value into a callee-saved register before calling `g` (one extra saved register); the target calls `g` first and loads `gPtr` right before `f`. Putting the inner call in its own statement, `s32 len = g(0x28); f(0, (T*)gPtr, len);`, matched.
+- Also for an argument shared by several calls. `FreezeEffect_GatherSubParticles` divides three times by `n + 1`; the target computes it once right after `n` (`adds r6, r4, #1`), but writing `Div(..., n + 1)` in each call computed it just before the first `Div`. A local `d = n + 1;` right after `n = 8 - frame;` matched.
+- And for a field compared with a call result. `if (p->weaponLv[i] != GetWeaponSkillLevel(i))` kept the field's address in a callee-saved register and loaded it after the call; the target loads the value first (`ldrh r4, [r0]` before `bl`). `lv = p->weaponLv[i]; if (lv != GetWeaponSkillLevel(i))` matched (`IsWeaponLevelChanged`).
 - A nested subscript written as one expression (`gMPlayTable[gSongTable[id].ms].info`) hoists the outer table's pool `ldr` *before* the inner subscript is read; splitting the inner index into its own statement (`u16 ms = gSongTable[id].ms;` then `gMPlayTable[ms].info`) emits that `ldr` after it, where the target had it. If only a pool `ldr` sits in the wrong place, try splitting or merging the surrounding subscripts.
 - Related: reading a global in the guard and again in the body (`if (g[10] != 0) { id = g[10]; ... }`) costs an extra `adds rN, r0, #0` — the compare uses the loaded value and the body's copy gets its own register. Hoisting the read above the `if` removes that move, so match whichever the target has.
 - The same choice also decides *which* callee-saved registers a parameter and the array's base address get, with no instruction-count difference. `FUN_082405c0` needed `SoundID16 id = g[12];` above the `if`; testing `g[12] != 0` directly gave the identical 32 instructions with two registers swapped (`r6`/`r7`). Its slot-10 twin `Sound_FadeOutBGM` matched with the opposite shape, so don't assume a copy-pasted sibling used the same one.

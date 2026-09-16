@@ -1757,7 +1757,7 @@ _080CC4B2:
 	b _080CC4E4
 _080CC4DA:
 	adds r0, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r1, r0, #0
 	adds r1, #0x60
 _080CC4E4:
@@ -1873,7 +1873,7 @@ _080CC588:
 	b _080CC5DA
 _080CC5B6:
 	adds r0, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x10
@@ -3432,7 +3432,7 @@ _080CD160:
 	ldrsh r0, [r4, r2]
 	movs r2, #0x30
 	ldrsh r1, [r4, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	adds r1, r4, #0
 	adds r1, #0x2a
@@ -8573,7 +8573,7 @@ _080CF8E4:
 	adds r1, r4, r5
 	movs r2, #0
 	ldrsh r1, [r1, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x10
@@ -9286,7 +9286,7 @@ FUN_080cfdec: @ 0x080CFDEC
 	movs r3, #4
 	ldrsh r2, [r2, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x20
@@ -16707,7 +16707,7 @@ _080D37CA:
 	movs r1, #0xe6
 	movs r2, #0xb4
 	movs r3, #0
-	bl FUN_08080be8
+	bl Entity08080be8_Create
 	b _080D3AD8
 _080D37F6:
 	adds r0, r5, #0
@@ -17225,7 +17225,7 @@ _080D3C12:
 	movs r1, #0xc8
 	movs r2, #0xaa
 	movs r3, #8
-	bl FUN_08080be8
+	bl Entity08080be8_Create
 	b _080D3F04
 _080D3C3C:
 	adds r0, r5, #0
@@ -17723,7 +17723,7 @@ _080D4032:
 	movs r1, #0xe6
 	movs r2, #0xaa
 	movs r3, #0
-	bl FUN_08080be8
+	bl Entity08080be8_Create
 	b _080D4462
 _080D405E:
 	adds r0, r5, #0
@@ -20434,7 +20434,7 @@ FUN_080d55d8: @ 0x080D55D8
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0x20
-	bl FUN_080ac374
+	bl Entity080ac374_Create
 _080D561C:
 	ldr r0, _080D56E8 @ =0x0000037E
 	adds r4, r6, r0
@@ -22312,7 +22312,7 @@ FUN_080d6408: @ 0x080D6408
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0x20
-	bl FUN_080ac374
+	bl Entity080ac374_Create
 _080D644C:
 	ldr r3, _080D64E8 @ =0x0000037E
 	adds r0, r6, r3
@@ -35084,7 +35084,7 @@ FUN_080dc4a8: @ 0x080DC4A8
 	ldrsh r0, [r0, r1]
 	movs r2, #4
 	ldrsh r1, [r4, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	adds r0, #0x10
 	movs r5, #0xff
@@ -35658,7 +35658,7 @@ _080DC912:
 	ldrsh r0, [r4, r1]
 	movs r2, #4
 	ldrsh r1, [r4, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r0, [sp, #0x18]
 	movs r1, #1
 	bl FUN_08234224
@@ -36874,7 +36874,7 @@ _080DD278: .4byte 0x00000F68
 _080DD27C:
 	adds r0, r3, #0
 	adds r1, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	b _080DD310
 _080DD286:
 	movs r5, #0
@@ -37713,7 +37713,7 @@ FUN_080dd8d4: @ 0x080DD8D4
 	ldr r0, [r0]
 	cmp r0, #0
 	bne _080DD8F4
-	bl FUN_080ddad0
+	bl Entity080ddad0_Create
 	cmp r0, #0
 	beq _080DD92C
 _080DD8F4:
@@ -37762,7 +37762,7 @@ FUN_080dd93c: @ 0x080DD93C
 	ldr r0, [r0]
 	cmp r0, #0
 	bne _080DD954
-	bl FUN_080ddad0
+	bl Entity080ddad0_Create
 	cmp r0, #0
 	beq _080DDA46
 _080DD954:
@@ -37893,8 +37893,8 @@ _080DDA46:
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_080dda54
-FUN_080dda54: @ 0x080DDA54
+	thumb_func_start Entity080ddad0_Update
+Entity080ddad0_Update: @ 0x080DDA54
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	ldr r0, [r4, #0x18]
@@ -37941,8 +37941,8 @@ _080DDAA0:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_080ddaa8
-FUN_080ddaa8: @ 0x080DDAA8
+	thumb_func_start Entity080ddad0_Destroy
+Entity080ddad0_Destroy: @ 0x080DDAA8
 	ldr r1, _080DDAB0 @ =0x03000170
 	movs r0, #0
 	str r0, [r1]
@@ -37955,8 +37955,8 @@ FUN_080ddab4: @ 0x080DDAB4
 	bx lr
 	.align 2, 0
 
-	thumb_func_start FUN_080ddab8
-FUN_080ddab8: @ 0x080DDAB8
+	thumb_func_start Entity080ddad0_Init
+Entity080ddad0_Init: @ 0x080DDAB8
 	push {r4, lr}
 	adds r4, r0, #0
 	bl FUN_080ddab4
@@ -37969,8 +37969,8 @@ FUN_080ddab8: @ 0x080DDAB8
 	.align 2, 0
 _080DDACC: .4byte 0x03000170
 
-	thumb_func_start FUN_080ddad0
-FUN_080ddad0: @ 0x080DDAD0
+	thumb_func_start Entity080ddad0_Create
+Entity080ddad0_Create: @ 0x080DDAD0
 	push {r4, lr}
 	ldr r0, _080DDB08 @ =0x03000170
 	ldr r0, [r0]
@@ -37983,12 +37983,12 @@ FUN_080ddad0: @ 0x080DDAD0
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080DDB14
-	ldr r1, _080DDB0C @ =FUN_080dda54
-	ldr r2, _080DDB10 @ =0x080DDAA9
+	ldr r1, _080DDB0C @ =Entity080ddad0_Update
+	ldr r2, _080DDB10 @ =Entity080ddad0_Destroy
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080ddab8
+	bl Entity080ddad0_Init
 	cmp r0, #0
 	bge _080DDB14
 	adds r0, r4, #0
@@ -37997,8 +37997,8 @@ FUN_080ddad0: @ 0x080DDAD0
 	b _080DDB16
 	.align 2, 0
 _080DDB08: .4byte 0x03000170
-_080DDB0C: .4byte FUN_080dda54
-_080DDB10: .4byte 0x080DDAA9
+_080DDB0C: .4byte Entity080ddad0_Update
+_080DDB10: .4byte Entity080ddad0_Destroy
 _080DDB14:
 	adds r0, r4, #0
 _080DDB16:

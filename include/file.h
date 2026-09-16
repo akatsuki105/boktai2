@@ -8,9 +8,16 @@
 
 // directory id
 #define DIR_OBJPLTT 0x9B1B
+#define DIR_BGPLTT 0x92B3
 #define DIR_ANIMATION 0x922E
 #define DIR_FONT 0xA635
 #define DIR_SCRIPT 0xA8D9
+#define DIR_ACTOR_SPRITE 0x98F5
+#define DIR_COLLISION_MAP 0xAE6C
+#define DIR_TILE_MAP 0xC091
+#define DIR_SPRITE_SETS 0xCB05
+#define DIR_TILESET 0xCEEF
+#define DIR_PARTICLE 0xCEAA
 
 struct mft_directory;
 
@@ -37,6 +44,18 @@ typedef struct mft_directory {
 
 // --------------------------------------------
 
+// directoryID
+//   DIR_OBJPLTT         -> return &ObjPlttFile
+//   DIR_BGPLTT          -> return &BgPlttFile
+//   DIR_ANIMATION       -> return &AnimationFile
+//   DIR_FONT            -> return &FontHeader
+//   DIR_SCRIPT          -> return &ScriptDirectory
+//   DIR_ACTOR_SPRITE    -> return &ActorSpriteFile
+//   DIR_COLLISION_MAP   -> return &CollisionMapFile
+//   DIR_TILE_MAP        -> return &TilemapHeader
+//   DIR_SPRITE_SETS     -> return &spriteset_header
+//   DIR_TILESET         -> return &TileSetFile
+//   DIR_PARTICLE        -> return &ParticleFile
 void* GetFile(FileID directoryID, FileID fileID);
 
 extern const mft_header gFS[12];  // 0x085B0D90

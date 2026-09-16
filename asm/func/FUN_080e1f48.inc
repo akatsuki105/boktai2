@@ -2795,7 +2795,7 @@ _080E3554:
 	subs r4, r4, r0
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	movs r2, #0xfe
 	lsls r2, r2, #1
 	adds r1, r7, r2

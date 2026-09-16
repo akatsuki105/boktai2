@@ -4331,7 +4331,7 @@ _08019C02:
 	movs r3, #4
 	ldrsh r2, [r5, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r6, #1]
 	mov r0, sp
 	movs r1, #0
@@ -4543,7 +4543,7 @@ _08019D88:
 	movs r3, #4
 	ldrsh r2, [r5, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r6, #1]
 	mov r0, sp
 	movs r1, #0
@@ -7595,8 +7595,11 @@ _0801B4F0:
 	pop {r4, r5}
 	pop {r1}
 	bx r1
-_0801B4F8:
-	.byte 0x00, 0x20, 0x70, 0x47
+
+	thumb_func_start FUN_0801b4f8
+FUN_0801b4f8: @ 0x0801B4F8
+	movs r0, #0
+	bx lr
 
 	thumb_func_start FUN_0801b4fc
 FUN_0801b4fc: @ 0x0801B4FC
@@ -7740,8 +7743,11 @@ _0801B606:
 	bx r1
 	.align 2, 0
 _0801B610: .4byte 0x03004250
-_0801B614:
-	.byte 0x00, 0x20, 0x70, 0x47
+
+	thumb_func_start FUN_0801b614
+FUN_0801b614: @ 0x0801B614
+	movs r0, #0
+	bx lr
 
 	thumb_func_start FUN_0801b618
 FUN_0801b618: @ 0x0801B618

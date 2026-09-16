@@ -63,14 +63,4 @@ void* FUN_08230e70(u16 id) {
   }
 }
 
-u32* FUN_08230e88(void) { return u32_ARRAY_0203f400; }
-
-NAKED void FUN_08230e90(void) { INCFUNC("asm/func/FUN_08230e90.inc"); }
-
-NAKED void FUN_08230eb4(void) { INCFUNC("asm/func/FUN_08230eb4.inc"); }
-
-NAKED void FUN_08230eec(unknown* p) { INCFUNC("asm/func/FUN_08230eec.inc"); }
-
-NAKED unknown* FUN_08230f94(unknown* a, unknown* b) { INCFUNC("asm/func/FUN_08230f94.inc"); }
-
 #undef ACTIVE

@@ -848,7 +848,7 @@ _0803C0B2:
 	movs r4, #0xc8
 	lsls r4, r4, #2
 	adds r1, r7, r4
-	bl FUN_080601a8
+	bl Entity080601a8_Create
 	ldr r5, _0803C150 @ =0x00000DE8
 	adds r1, r7, r5
 	str r0, [r1]

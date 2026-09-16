@@ -156,7 +156,7 @@ _0806EC7C:
 	subs r4, r1, r0
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r7, r0, #0
 	mov r3, r8
 	ldr r0, [r3]

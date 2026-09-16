@@ -57,7 +57,7 @@ _0807F4E8:
 	subs r4, r1, r0
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r2, [sp]
 	ldr r3, _0807F554 @ =0xFFFFFF00
 	adds r1, r2, r3

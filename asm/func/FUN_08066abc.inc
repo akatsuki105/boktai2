@@ -140,7 +140,7 @@ _08066BBA:
 	adds r1, r4, r5
 	movs r2, #0
 	ldrsh r1, [r1, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r2, r0, #0x10
 	adds r0, r2, #0

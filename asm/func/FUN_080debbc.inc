@@ -129,7 +129,7 @@ _080DECA6:
 	adds r6, #0xe0
 	movs r3, #0
 	ldrsh r1, [r6, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	mov sb, r0
 	ldr r5, _080DED08 @ =0x0203B400
 	ldr r4, _080DED0C @ =0x030046B8
@@ -217,7 +217,7 @@ _080DED58:
 	ldrsh r0, [r3, r5]
 	movs r2, #0
 	ldrsh r1, [r6, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	mov sb, r0
 	adds r3, r7, #0
 	adds r3, #0xf3

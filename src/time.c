@@ -2,7 +2,39 @@
 
 #include "global.h"
 
+COMMON_DATA Clock gClock = {};  // 0x030047E0
+
+COMMON_DATA ALIGNED(16) RtcDataOrg gRTC = {};  // 0x03004810
+COMMON_DATA u32 u32_0300481c = 0;
+
 INCASM("asm/time_0823cd04.inc");
+
+NAKED s32 UpdateWeaponStyle(void) { INCFUNC("asm/func/UpdateWeaponStyle.inc"); }
+
+NAKED s32 FUN_0823d5b8(void) { INCFUNC("asm/func/FUN_0823d5b8.inc"); }
+
+NAKED bool32 FUN_0823d5f0(void) { INCFUNC("asm/func/FUN_0823d5f0.inc"); }
+
+u32 FUN_0823d680(void) { return gSystemSaveData->timezone; }
+
+bool32 FUN_0823d68c(void) {
+  if (gSystemSaveData->unk_10 == 0x369F) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+s32 FUN_0823d6b0(void) { return gSystemSaveData->unk_c; }
+
+NAKED s32 FUN_0823d6bc(void) { INCFUNC("asm/func/FUN_0823d6bc.inc"); }
+
+u16 FUN_0823d6f4(void) { return gSystemSaveData->unk_14; }
+
+u16 FUN_0823d700(void) { return gSystemSaveData->unk_16; }
+
+NAKED void FUN_0823d70c(void) { INCFUNC("asm/func/FUN_0823d70c.inc"); }
+
+NAKED void FUN_0823d748(void) { INCFUNC("asm/func/FUN_0823d748.inc"); }
 
 NAKED void FUN_0823d764(void* timer) { INCFUNC("asm/func/FUN_0823d764.inc"); }
 

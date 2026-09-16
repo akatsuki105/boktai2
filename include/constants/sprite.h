@@ -52,6 +52,7 @@
 #define SPRITE_WORM_0 0xD636    // 0x081ad228
 
 // Actor Sprite ID
+#define SPRITE_COFFIN 0x2499
 #define SPRITE_863A 0x863A
 #define SPRITE_9D3F 0x9D3F
 #define SPRITE_SPIKEBALL 0x24BA

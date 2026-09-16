@@ -1,9 +1,9 @@
 #!/usr/bin/env -S deno run --allow-read
 
 import { Command } from "@cliffy/command";
+import * as gba from "../common/gba/gba.ts";
 import type { addr } from "../common/gba/gba.ts";
-import { getWeaponTemplate } from "../parser/weapon.ts";
-import { parseHeaderDefines } from "../parser/common/constants_header.ts";
+import * as weapon from "../encoding/weapon.ts";
 
 const gWeaponDB = {
   addr: 0x08DA9E68,
@@ -19,55 +19,11 @@ const main = () => {
     .action((_, romPath) => {
       const rom = new DataView((Deno.readFileSync(romPath)).buffer);
 
-      const defines = parseHeaderDefines("./include/constants/weapon.h") as Record<string, number>;
-      const names = Object.entries(defines).filter(([name]) => name.startsWith("WEAPON_")).map(([name, value]) => ({ name, value }));
-      const kinds = Object.entries(defines).filter(([name]) => name.startsWith("WK_")).map(([name, value]) => ({ name, value }));
-      const effects = Object.entries(defines).filter(([name]) => name.startsWith("WET_")).map(([name, value]) => ({ name, value }));
-
-      const getName = (id: number): string => {
-        for (const { name, value } of names) {
-          if (value === id) return name;
-        }
-        return `${id}`;
-      };
-
-      const getKindName = (kind: number): string => {
-        for (const { name, value } of kinds) {
-          if (value === kind) return name;
-        }
-        return `${kind}`;
-      };
-
-      const getEffectName = (wetid: number): string => {
-        for (const { name, value } of effects) {
-          if (value === wetid) return name;
-        }
-        return `${wetid}`;
-      };
-
-      const dumpWeaponEffects = (effects: [number, number, number]): string => {
-        let result = "";
-        for (let i = 0; i < effects.length; i++) {
-          const effect = effects[i];
-          if (effect === 0) break;
-          if (result.length > 0) result += ", ";
-
-          const name = getEffectName(effect & 0xFF); // bit0-7
-          const value = (effect >> 8) & 0xFFFFFF; // bit8-31: 効果量
-          if (value !== 0) {
-            result += `(${name} | (${value} << 8))`;
-          } else {
-            result += `${name}`;
-          }
-        }
-        return result;
-      };
-
       let result = "const WeaponData gWeaponDB[WEAPON_NUM] = {\n";
       for (let i = 0; i < gWeaponDB.length; i++) {
         const addr: addr = gWeaponDB.addr + i * gWeaponDB.bytesize;
-        const data = getWeaponTemplate(rom, addr);
-        result += `\t{ id: ${getName(data.id)}, kind: ${getKindName(data.kind)}, rank: ${data.rank}, lv: ${data.lv}, durability: ${data.durability}, price: ${data.price}, effects: {${dumpWeaponEffects(data.effects)}} },\n`;
+        const data = weapon.Parse(new Uint8Array(rom.buffer, addr - gba.BASE));
+        result += `\t{ ${weapon.Stringify(data)} },\n`;
       }
       result += "};\n";
 

@@ -5,18 +5,6 @@
 
 // code_0823b540.c でも CollisionMap を扱っている?
 
-typedef struct Unk030046a4 {
-  u8 unk_0[4];
-  CollisionMapTileData* tiledata;  // 0x004
-  u8 unk_8[4];
-  ZoneData* zones;   // 0x00C
-  PathData* paths;   // 0x010
-  NavMesh* navMesh;  // 0x014
-  u8 unk_18[3620 - 0x18];
-} Unk030046a4;
-static_assert(sizeof(Unk030046a4) == 3620);
-
-extern Unk030046a4* gCollisionMap;
 extern s32 gMapBlockW;
 extern s32 gMapBlockH;
 

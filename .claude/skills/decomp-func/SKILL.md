@@ -31,7 +31,7 @@ grep -n "^\(NAKED\|NON_MATCH\)\b.*\b<FUNCTION_NAME>\s*(" src/*.c
 
 ```sh
 # list all NAKED or NON_MATCH functions, sorted by size
-scripts/census.py          # TSV: size  name  inc
+.claude/skills/decomp-func/scripts/census.py   # TSV: size  name  inc
 ```
 
 Sort candidates by byte size (address delta between consecutive
@@ -64,8 +64,8 @@ above.
 1. **Read the context.** Context includes the target assembly, current C implementation.
 
 ```sh
-# e.g. e.g. scripts/context.py FUN_08242b88 src/weapon.c asm/func/FUN_08242b88.inc
-scripts/context.py <FUNCTION_NAME> <SRC_FILE> <ASM_FILE>
+# e.g. .claude/skills/decomp-func/scripts/context.py FUN_08242b88 src/weapon.c asm/func/FUN_08242b88.inc
+.claude/skills/decomp-func/scripts/context.py <FUNCTION_NAME> <SRC_FILE> <ASM_FILE>
 ```
 
 2. **Check siblings.** Before inventing anything, grep `src/` for a
@@ -105,7 +105,7 @@ void* DecompTargetFunc(void) {
 6. **On NON-MATCH, gather two independent signals** — never the ROM bytes (pool offsets shift):
 
     a. **Instruction-stream diff.** Diff your object against the original asm:
-       `scripts/streamdiff.py BUILT_OBJECT SYMBOL ORIGINAL_INC` (keep a copy of the original inc via `git show HEAD:asm/... > /tmp/orig.inc` before truncating it).
+       `.claude/skills/decomp-func/scripts/streamdiff.py BUILT_OBJECT SYMBOL ORIGINAL_INC` (keep a copy of the original inc via `git show HEAD:asm/... > <scratchpad>/orig.inc` before truncating it).
        Every surviving hunk is a real codegen difference; pool offsets, branch targets, and spelling variants are masked.
 
     b. **Permuter score.** Regenerate the per-function work dir from the CURRENT `src/*.c` content (this picks up whatever C you just wrote, permuter-authored or not) and score it, without running a full random search:
@@ -142,7 +142,10 @@ the session on that function. Not needed when it ends up MATCHING.
 
 ## Scripts
 
-All in `scripts/` next to this file (run from the repo root):
+All in `.claude/skills/decomp-func/scripts/`. Run them from the repo root,
+spelling that path out in full — there is no `scripts/` directory at the repo
+root, so a bare `scripts/context.py` just fails with "no such file or
+directory":
 
 - `context.py` — prints the target assembly, current C implementation.
 - `census.py` — remaining-function census, smallest-first TSV with sizes and inc paths; excludes NON_MATCH/NAKED/INCFUNC dual-forms.

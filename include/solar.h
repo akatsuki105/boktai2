@@ -24,4 +24,7 @@ typedef struct {
 } UnkSolarEntity;
 static_assert(sizeof(UnkSolarEntity) == 48);
 
+void FUN_08241704(void);
+void FUN_0824172c(void);
+
 #endif  // __INCLUDE_SOLAR_H__

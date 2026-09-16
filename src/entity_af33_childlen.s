@@ -665,7 +665,7 @@ _0805113E:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r4, #0
-	bl FUN_08237970
+	bl LerpVec3
 	ldr r1, [r5, #8]
 	movs r0, #6
 	ldrsh r2, [r5, r0]
@@ -791,7 +791,7 @@ _08051236:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r4, #0
-	bl FUN_08237970
+	bl LerpVec3
 	ldr r1, [r6, #8]
 	movs r7, #6
 	ldrsh r2, [r6, r7]
@@ -891,7 +891,7 @@ _080512FA:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r4, #0
-	bl FUN_08237970
+	bl LerpVec3
 	ldr r1, [r5, #8]
 	movs r0, #6
 	ldrsh r2, [r5, r0]
@@ -1004,7 +1004,7 @@ FUN_0805136c: @ 0x0805136C
 	movs r3, #2
 	ldrsh r2, [r4, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r3, _08051434 @ =0x030046B8
 	ldr r1, [r3]
 	adds r1, #1
@@ -1085,7 +1085,7 @@ _08051478:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r4, #0
-	bl FUN_08237970
+	bl LerpVec3
 	ldr r1, [r6, #8]
 	movs r3, #6
 	ldrsh r2, [r6, r3]

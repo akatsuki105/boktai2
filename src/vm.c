@@ -8,6 +8,7 @@
 static void FUN_08231c80(void);
 void FUN_082324b0(void);
 void VM_ClearScratchpad(void);
+void Save_BackupStatAndWorld(void);
 u32 VM_ParseParameter(u32 idx);
 u32 VM_GetVariable(u32 varidx);
 char* Textbox_LookupString(s32 stringID);
@@ -15,8 +16,6 @@ u8* VM_ReadMemory(u8* pc, s32* op, void* out);
 u32 VM_RunExpression(u8* pc);
 s32 Script_Exec(u8* pc, ScriptArgs* args, s32 varIdx);
 u8* FUN_0823201c(u8* pc, u8* dst);
-
-extern u32 gScriptDirectoryBuildTime;  // 0x03004594
 
 static const ScriptArgs sEmptyArgs = {0, 0, NULL};  // 引数無しでスクリプトを呼ぶときに束縛されるデフォルトの引数記述子
 
@@ -668,7 +667,14 @@ static void FUN_08231c80(void) {
   ClearMemory(gStat, sizeof(GameInfo));
 }
 
-NAKED void FUN_08231ca8(void) { INCFUNC("asm/func/FUN_08231ca8.inc"); }
+// ゲーム状態を初期化してバックアップを取る (gStat の先頭 0x30 バイトと unk_246 は保持する)
+void FUN_08231ca8(void) {
+  u16 tmp = gStat->unk_246;
+  ClearMemory(gWorld, sizeof(World));
+  ClearMemory(&gStat->playerPos, 0x38A);
+  gStat->unk_246 = tmp;
+  Save_BackupStatAndWorld();
+}
 
 void Save_BackupStatAndWorld(void) {
   CopyMemory((void*)gStatBackup, (void*)gStat, sizeof(GameInfo));

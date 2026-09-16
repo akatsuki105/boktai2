@@ -136,7 +136,7 @@ _0806BA04:
 	movs r1, #7
 	add r2, sp, #4
 	movs r3, #0x32
-	bl FUN_080ac374
+	bl Entity080ac374_Create
 	b _0806BA78
 	.align 2, 0
 _0806BA58: .4byte 0x000002E6
@@ -150,7 +150,7 @@ _0806BA68:
 	movs r1, #7
 	add r2, sp, #4
 	movs r3, #0x32
-	bl FUN_080ac374
+	bl Entity080ac374_Create
 _0806BA78:
 	ldr r0, _0806BA8C @ =0x0000039B
 	bl PlaySound_082406e0

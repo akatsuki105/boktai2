@@ -2976,7 +2976,7 @@ _0801CC88:
 	ldr r3, [r5, #0x44]
 	movs r4, #3
 	str r4, [sp]
-	bl FUN_08237970
+	bl LerpVec3
 	ldr r0, [r5, #0x44]
 	cmp r0, #7
 	bls _0801CCBC
@@ -5182,7 +5182,7 @@ _0801DDC4:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r4, #0
-	bl FUN_08237970
+	bl LerpVec3
 _0801DDE6:
 	adds r0, r4, #0
 	bl FUN_0823b8ac

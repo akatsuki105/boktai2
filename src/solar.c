@@ -6,6 +6,7 @@
 #include "time.h"
 
 IWRAM_DATA UnkSolarEntity* gUnkSolarEntity = NULL;  // 0x03001708
+IWRAM_DATA u32 u32_0300170c = 0;                    // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
 
 COMMON_DATA u16 u16_03004864 = 0;
 COMMON_DATA ALIGNED(4) u16 u16_03004868 = 0;
@@ -14,6 +15,7 @@ COMMON_DATA ALIGNED(4) u16 u16_03004870 = 0;
 COMMON_DATA ALIGNED(4) u16 u16_ARRAY_03004874[6] = {};
 
 u32 FUN_0823d9ec(u32 y0, u32 m0, u32 d0, u32 y1, u32 m1, u32 d1);
+void Sensor_Enable(void);
 
 NAKED void FUN_08241650(void) { INCFUNC("asm/func/FUN_08241650.inc"); }
 
@@ -27,9 +29,18 @@ NAKED bool32 FUN_082416d4(void) { INCFUNC("asm/func/FUN_082416d4.inc"); }
 
 NAKED void FUN_08241704(void) { INCFUNC("asm/func/FUN_08241704.inc"); }
 
-NAKED void FUN_0824172c(void) { INCFUNC("asm/func/FUN_0824172c.inc"); }
+void FUN_0824172c(void) {
+  if (gUnkSolarEntity != NULL) {
+    if (gUnkSolarEntity->unk_19 != 0) {
+      gUnkSolarEntity->unk_19 = 1;
+      gUnkSolarEntity->unk_20 = 0;
+      Sensor_Enable();
+    }
+    u16_0300486c = 0;
+  }
+}
 
-NAKED s32 FUN_0824175c(void) { INCFUNC("asm/func/FUN_0824175c.inc"); }
+s32 FUN_0824175c(void) { return gStat->sunGauge; }
 
 // 照度(lx)を 0〜10 の太陽レベルに変換する
 Sunlevel GetSunLevel(s32 lx) {

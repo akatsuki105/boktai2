@@ -69,7 +69,7 @@
 	ldrsh r0, [r0, r1]
 	movs r2, #4
 	ldrsh r1, [r4, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r5, #5]
 	adds r0, r5, #0
 	bl FUN_080f897c

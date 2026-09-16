@@ -65,7 +65,7 @@ _0806CC4E:
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0x20
-	bl FUN_080ac374
+	bl Entity080ac374_Create
 _0806CC7A:
 	ldr r1, _0806CCB0 @ =0x0000037E
 	adds r0, r5, r1

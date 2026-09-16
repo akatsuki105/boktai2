@@ -4699,7 +4699,7 @@ _081FC99C:
 	movs r3, #0xc
 	ldrsh r2, [r7, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r6, #0
 	adds r3, #0x4d
 	strb r0, [r3]
@@ -4964,7 +4964,7 @@ _081FCBA4:
 	movs r3, #4
 	ldrsh r2, [r2, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r5, #0
 	adds r3, #0x4d
 	strb r0, [r3]
@@ -5784,7 +5784,7 @@ FUN_081fd20c: @ 0x081FD20C
 	movs r4, #4
 	ldrsh r2, [r3, r4]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r6, #0
 	adds r3, #0x4d
 	strb r0, [r3]
@@ -6607,7 +6607,7 @@ _081FD880:
 	movs r3, #4
 	ldrsh r2, [r2, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r5, #0
 	adds r3, #0x4d
 	strb r0, [r3]
@@ -6816,7 +6816,7 @@ _081FDA36:
 	movs r3, #4
 	ldrsh r2, [r4, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r0, #0
 	subs r3, #0x1f
 	ldr r2, _081FDAB8 @ =0x030046B8
@@ -7254,7 +7254,7 @@ _081FDD9C:
 	movs r3, #4
 	ldrsh r2, [r2, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r3, r7, #0
 	adds r3, #0x4d
 	strb r0, [r3]
@@ -7651,7 +7651,7 @@ _081FE0B4:
 	movs r5, #4
 	ldrsh r2, [r3, r5]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r1, r0, #0
 	movs r0, #8
 	str r0, [sp]
@@ -7935,7 +7935,7 @@ FUN_081fe2e0: @ 0x081FE2E0
 	movs r5, #4
 	ldrsh r2, [r3, r5]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	subs r0, #0x20
@@ -11639,7 +11639,7 @@ _08200020:
 	movs r0, #7
 	str r0, [sp]
 	adds r0, r4, #0
-	bl rgb555_08237468
+	bl BlendPltt
 	movs r1, #0xa1
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -11692,7 +11692,7 @@ _08200098:
 	str r0, [sp]
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl rgb555_08237468
+	bl BlendPltt
 	movs r2, #0xa1
 	lsls r2, r2, #2
 	adds r0, r7, r2
@@ -11737,7 +11737,7 @@ _08200110:
 	movs r2, #7
 	str r2, [sp]
 	movs r2, #0
-	bl rgb555_08237510
+	bl BlendPlttToColor
 	movs r5, #0xb9
 	lsls r5, r5, #2
 	adds r1, r7, r5

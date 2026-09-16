@@ -35,7 +35,7 @@ _080506B6:
 	ldr r0, [r4, #0x24]
 	cmp r0, #0x3c
 	bne _080506F4
-	bl FUN_082410bc
+	bl Save_WriteSystemData
 	adds r1, r4, #0
 	adds r1, #0x36
 	strb r0, [r1]

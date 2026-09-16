@@ -13,7 +13,7 @@
 	asrs r0, r0, #0x10
 	lsls r1, r1, #0x10
 	asrs r1, r1, #0x10
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	ldr r3, _080E4B30 @ =0x085B0A08

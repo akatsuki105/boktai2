@@ -1,9 +1,12 @@
+#include "interrupts.h"
+
 #include "global.h"
+
+IWRAM_DATA bool32 bool32_03000250 = FALSE;  // 0x03000250
 
 void VCountIntr(void);
 void HBlankIntr(void);
 void FUN_0822a188(void);
-void IntrDummy(void);
 void VBlankIntr(void);
 
 // clang-format off

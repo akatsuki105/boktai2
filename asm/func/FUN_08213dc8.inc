@@ -309,7 +309,7 @@ _08214024:
 	ldr r0, [r6, #0x40]
 	cmp r0, #0
 	beq _0821402E
-	bl FUN_082410bc
+	bl Save_WriteSystemData
 _0821402E:
 	str r4, [r6, #0x5c]
 	b _082140CC

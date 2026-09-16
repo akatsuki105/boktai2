@@ -1,5 +1,5 @@
 	push {r4, r5, lr}
-	bl FUN_082410e8
+	bl Save_ReadSystemData
 	lsls r0, r0, #0x18
 	lsrs r4, r0, #0x18
 	cmp r4, #0

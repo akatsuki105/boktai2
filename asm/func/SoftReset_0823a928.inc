@@ -40,7 +40,7 @@ _0823A98C:
 	ldr r0, [r0]
 	cmp r0, #0
 	beq _0823A998
-	bl FUN_08237f54
+	bl Sio_Stop
 _0823A998:
 	movs r0, #0
 	bl rfu_setREQCallback

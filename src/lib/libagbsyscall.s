@@ -38,8 +38,8 @@ ModArm: @ 0x0824C1CC
 	bx lr
 	.align 2, 0
 
-	thumb_func_start LZ77UnCompReadNormalWrite8bit
-LZ77UnCompReadNormalWrite8bit: @ 0x0824C1D4
+	thumb_func_start LZ77UnCompWram
+LZ77UnCompWram: @ 0x0824C1D4
 	svc #0x11
 	bx lr
 

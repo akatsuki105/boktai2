@@ -21,6 +21,9 @@ typedef struct {
   // u16 layerData[];
 } TilemapHeader;
 
+extern u8 gTilemapFileBufferHead[4];   // 0x02021400, 展開先の先頭4バイト, 用途不明
+extern u8 gTilemapFileBuffer[65532];   // 0x02021404, 展開された TilemapHeader 本体
+
 typedef struct {
   u16 width;            // 0x0, Width of layer in metatiles
   u16 height;           // 0x2, Height of layer in metatiles

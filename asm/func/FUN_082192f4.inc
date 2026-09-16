@@ -50,7 +50,7 @@ _0821931C:
 	movs r2, #0
 	movs r3, #0
 	bl Video_GenerateBGMap
-	bl FUN_082412f8
+	bl Save_ReadCurrentSlot
 	lsls r0, r0, #0x18
 	lsrs r4, r0, #0x18
 	cmp r4, #0
@@ -70,7 +70,7 @@ _08219388: .4byte 0x000012C8
 _0821938C: .4byte 0x030046A0
 _08219390: .4byte 0x0000093A
 _08219394:
-	bl FUN_08241328
+	bl Save_ReadFromNextSlot
 	lsls r0, r0, #0x18
 	lsrs r1, r0, #0x18
 	cmp r1, #0

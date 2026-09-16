@@ -1,5 +1,8 @@
 # Dumps the data at the cursor (or every defined data item in the current
 # selection) as a C initializer, printed to the Ghidra console.
+# With script arguments (addresses like 0x085AA8F0, or symbol names), dumps
+# the data at each of them instead, e.g.
+#   tools/ghidra/run_pyghidra_script.ts tools/ghidra/ghidra_scripts/dump_data_as_c.py u16_ARRAY_085aa8f0
 # Assumes a boktai2-side struct with the same field layout/names as the
 # Ghidra data type already exists.
 # @author   akatsuki105 (2026-08-20)
@@ -202,7 +205,8 @@ def get_c_declaration(data):
 def dump_one(data):
     decl = get_c_declaration(data)
     body = format_data(data, 0)
-    println(f"const {decl} = {body};")
+    addr = data.getAddress().getOffset()
+    println(f"const {decl} = {body}; // 0x{addr:08X}")
 
 
 def collect_selection_data(prog, selection):
@@ -215,9 +219,43 @@ def collect_selection_data(prog, selection):
     return result
 
 
+def resolve_target(prog, target):
+    """引数(アドレス or シンボル名)を Address に解決する。解決できなければ None"""
+    import re
+
+    if re.fullmatch(r"(0x)?[0-9A-Fa-f]+", target):
+        return toAddr(int(target, 16))
+    symbols = list(prog.getSymbolTable().getGlobalSymbols(target))
+    if not symbols:
+        symbols = list(prog.getSymbolTable().getSymbols(target))
+    if not symbols:
+        return None
+    return symbols[0].getAddress()
+
+
+def dump_targets(prog, targets):
+    """引数で指定されたアドレス/シンボルのデータを順にダンプする"""
+    listing = prog.getListing()
+    for target in targets:
+        addr = resolve_target(prog, target)
+        if addr is None:
+            println(f"[dump_data_as_c] '{target}' を解決できません")
+            continue
+        data = listing.getDataAt(addr)
+        if data is None:
+            println(f"[dump_data_as_c] {target} ({addr}) にデータが定義されていません")
+            continue
+        dump_one(data)
+
+
 def main():
     prog = currentProgram
     listing = prog.getListing()
+
+    args = getScriptArgs()
+    if args:
+        dump_targets(prog, args)
+        return
 
     if currentSelection is not None and not currentSelection.isEmpty():
         items = collect_selection_data(prog, currentSelection)

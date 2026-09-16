@@ -39,7 +39,7 @@ _080DF912:
 	ldrsh r0, [r0, r3]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r2, _080DF970 @ =0x0000019D
 	adds r1, r5, r2
 	ldrb r1, [r1]

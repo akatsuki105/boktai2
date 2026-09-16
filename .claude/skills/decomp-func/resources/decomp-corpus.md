@@ -25,7 +25,7 @@ Seventeen mature GBA decompilation repos, most built with the same compiler fami
 
 ## How to search it
 
-`scripts/corpus-grep.sh 'PATTERN'` greps every corpus repo's `src/` and `asm/`. Typical uses:
+`.claude/skills/decomp-func/scripts/corpus-grep.sh 'PATTERN'` (run from the repo root) greps every corpus repo's `src/` and `asm/`. Typical uses:
 
 - An odd instruction pair in retail (`ands; lsls #24; lsrs #24`) — search corpus asm for it, find which repo matched that function, read their C.
 - A macro idiom — search for the macro name family (`SET_`, `RMW`, bitfield inserts) to see how sister projects structured it.

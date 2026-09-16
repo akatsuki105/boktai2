@@ -2,6 +2,9 @@
 #include "player.h"
 #include "vm.h"
 
+// TODO: このマクロを使わずに自然なCコードで一致するコードがかけるならこのマクロを削除する
+#define REGISTERED_MAGIC(n) (*(gStat->registeredMagic + n))
+
 void FUN_0809c2d0(void);
 void FUN_08064fd8(Player* p, magic32_t n);
 
@@ -75,9 +78,3 @@ void UnregisterMagic(s32 idx) {
 }
 
 NAKED void magic_082435b8(void) { INCFUNC("asm/func/magic_082435b8.inc"); }
-
-s32 FUN_08243648(s32 n) {
-  u32 val = n & (~7);
-  if ((n & 7) != 0) val += 8;
-  return val;
-}

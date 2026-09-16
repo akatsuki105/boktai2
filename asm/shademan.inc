@@ -42,7 +42,7 @@ _0803C1F4:
 	movs r3, #0x28
 	ldrsh r2, [r4, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r2, _0803C25C @ =0x0000016B
 	adds r1, r5, r2
 _0803C210:
@@ -87,8 +87,11 @@ _0803C246:
 	bx r0
 	.align 2, 0
 _0803C25C: .4byte 0x0000016B
-_0803C260:
-	.byte 0x70, 0x47, 0x00, 0x00
+
+	thumb_func_start FUN_0803c260
+FUN_0803c260: @ 0x0803C260
+	bx lr
+	.align 2, 0
 
 	thumb_func_start FUN_0803c264
 FUN_0803c264: @ 0x0803C264
@@ -350,7 +353,7 @@ FUN_0803c40c: @ 0x0803C40C
 _0803C43A:
 	adds r0, r3, #0
 	adds r1, r2, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	strb r0, [r5]
 	adds r0, r4, #0
 	bl Sqrt
@@ -1521,7 +1524,7 @@ FUN_0803cca4: @ 0x0803CCA4
 	adds r0, r4, #0
 	movs r2, #0
 	bl FUN_082364c4
-	ldr r1, _0803CD44 @ =0x0803C261
+	ldr r1, _0803CD44 @ =FUN_0803c260
 	adds r0, r4, #0
 	adds r2, r5, #0
 	bl FUN_0823651c
@@ -1553,7 +1556,7 @@ FUN_0803cca4: @ 0x0803CCA4
 _0803CD38: .4byte 0xFFFF0000
 _0803CD3C: .4byte 0x0000FFFF
 _0803CD40: .4byte 0x00002001
-_0803CD44: .4byte 0x0803C261
+_0803CD44: .4byte FUN_0803c260
 _0803CD48: .4byte 0x000002CA
 
 	thumb_func_start FUN_0803cd4c
@@ -1600,7 +1603,7 @@ FUN_0803cd4c: @ 0x0803CD4C
 	adds r0, r5, #0
 	movs r2, #0
 	bl FUN_082364c4
-	ldr r1, _0803CDEC @ =0x0803C261
+	ldr r1, _0803CDEC @ =FUN_0803c260
 	adds r0, r5, #0
 	adds r2, r4, #0
 	bl FUN_0823651c
@@ -1632,7 +1635,7 @@ FUN_0803cd4c: @ 0x0803CD4C
 _0803CDE0: .4byte 0xFFFF0000
 _0803CDE4: .4byte 0x0000FFFF
 _0803CDE8: .4byte 0x00002001
-_0803CDEC: .4byte 0x0803C261
+_0803CDEC: .4byte FUN_0803c260
 _0803CDF0: .4byte 0x000002CE
 _0803CDF4: .4byte 0x000002D2
 
@@ -1889,7 +1892,7 @@ _0803CFD8:
 	subs r4, r4, r0
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r1, r7, #0
 	adds r1, #0xc8
 	strb r0, [r1]
@@ -2316,7 +2319,7 @@ _0803D330:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r4, #0
-	bl rgb555_08237468
+	bl BlendPltt
 	movs r1, #0xe5
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -2363,7 +2366,7 @@ _0803D39C:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r4, #0
-	bl rgb555_08237468
+	bl BlendPltt
 	movs r1, #0xe5
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -2440,7 +2443,7 @@ _0803D43C:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r4, #0
-	bl rgb555_08237468
+	bl BlendPltt
 	movs r1, #0xe5
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -2519,7 +2522,7 @@ _0803D4E8:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r4, #0
-	bl rgb555_08237468
+	bl BlendPltt
 	movs r1, #0xe5
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -6397,7 +6400,7 @@ _0803F1DC:
 	movs r4, #4
 	ldrsh r2, [r3, r4]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	adds r4, r0, #0
 	ldr r7, _0803F2BC @ =0x000002DE
 	adds r0, r5, r7

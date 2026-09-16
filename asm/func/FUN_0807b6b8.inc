@@ -71,7 +71,7 @@
 	lsls r4, r4, #5
 	adds r0, r2, #0
 	adds r1, r5, #0
-	bl FUN_0823785c
+	bl ArcTan2_8
 	ldr r1, _0807B790 @ =0xFFFFFF00
 	adds r4, r4, r1
 	subs r0, r0, r4

@@ -29,6 +29,9 @@ where it is:
    Before creating a type, reuse it if it already exists with the right size;
    after a failed run, read the current layout before re-running.
 6. **Put the evidence in the field comment** (which function, which access).
+7. **Make pointers with `dtm.getPointer(dt)`.** `new PointerDataType(dt, 4, dtm)`
+   has an explicit length, and Ghidra adds it as a separate type named
+   `T *32` instead of reusing `T *`.
 
 ## Template
 

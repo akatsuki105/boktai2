@@ -22,7 +22,6 @@ extern u8 u8_ARRAY_02036c00[512];
 extern u16 u16_030044b8;
 extern u8 gTilemapBuffer[BG_SCREEN_SIZE * 4];
 extern u16 gObjPlttLen;
-extern rgb555* gObjPlttData;
 extern ParticleFile* gParticleFile;  // 0x0300358C
 
 extern u8 gOAMHeightTable[16];
@@ -56,6 +55,15 @@ extern u16 gMosaicSize;
 extern Particle* PTR_ARRAY_03003570[2];
 extern q_SpriteNode44* PTR_ARRAY_03003560[2];
 extern SpriteState* PTR_ARRAY_03003568[2];
+
+IWRAM_DATA Entity gVideoManager = {};                     // 0x03000258
+IWRAM_DATA Entity gEntityKind13 = {};                     // 0x03000270
+IWRAM_DATA u8 u8_03000288[0x03000688 - 0x03000288] = {};  // おそらく最初の方は gEntityKind13 の続きが入るが、どこまでが gEntityKind13 なのかは不明
+IWRAM_DATA FileID gCachedTilemapFileID = 0;               // 0x03000688, gTilemapFileBuffer に展開済みの TilemapFile の ID, 同じ ID なら展開し直さない, 根拠: GetTilemapFile
+IWRAM_DATA u8 u8_0300068a[0x030006A0 - 0x0300068A] = {};  // 0x0300068A
+IWRAM_DATA u8 u8_ARRAY_030006a0[128] = {};                // 0x030006A0
+IWRAM_DATA u32 u32_03000720 = 0;                          // 0x03000720, なんかのカウンタ
+IWRAM_DATA FontInfo* gFontInfo = NULL;                    // 0x03000724
 
 const u8 u8_ARRAY_085b0110[32] = {0};
 
@@ -464,7 +472,24 @@ NAKED void Video_GenerateBGMap(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 v
 
 NAKED void Video_GenerateBGMapCore(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs, unknown* param_6) { INCFUNC("asm/func/Video_GenerateBGMapCore.inc"); }
 
-NAKED TilemapHeader* GetTilemapFile(FileID id) { INCFUNC("asm/func/GetTilemapFile.inc"); }
+// TilemapFile が圧縮されてたら展開して返す、圧縮されてなかったらそのまま返す
+TilemapHeader* GetTilemapFile(FileID id) {
+  u8* file;
+  u32 fileID = id;
+
+  file = GetFile(DIR_TILE_MAP, fileID);
+  if (file == NULL) {
+    return NULL;
+  }
+  if ((file[0] == 0x4D && file[1] == 0x50) || *(u32*)file == 0x005E8CC5) {  // "MP"
+    return (TilemapHeader*)file;
+  }
+  if (gCachedTilemapFileID != fileID) {
+    gCachedTilemapFileID = fileID;
+    LZ77UnCompWram(file, gTilemapFileBufferHead);
+  }
+  return (TilemapHeader*)gTilemapFileBuffer;
+}
 
 NAKED void FUN_0822cd24(u32 param_1) { INCFUNC("asm/func/FUN_0822cd24.inc"); }
 

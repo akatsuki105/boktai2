@@ -21,6 +21,23 @@ typedef struct {
   // NavMesh navMesh;     // NPCをマップ上の任意の2点間で移動させるためのデータ
 } CollisionMapFile;
 
+extern u8 gDecompressedCollisionMapHeader[4];    // 0x02031400, 展開先の先頭4バイト, 用途不明
+extern u8 gDecompressedCollisionMapFile[16380];  // 0x02031404, 展開された CollisionMapFile 本体
+
+// --------------------------------------------
+
+// gCollisionMap (Unk030046a4.q_mapNodes) の双方向リストに繋がれるノード, 根拠: FUN_08234270 (挿入) / FUN_082342a8 (除去) / FUN_08234208 (各フィールドの初期化)
+typedef struct q_MapNode {
+  u16 unk_0;               // 0x00, FUN_08234208 が 0 を書く
+  u16 q_tileIdx;           // 0x02, FUN_08234208 の第2引数, 呼び出し側はコリジョンマップのタイル索引を渡す
+  u8 q_height;             // 0x04, FUN_08234208 が param_3 << 4 | param_4 を書く, 呼び出し側はタイルの高さを渡す
+  u8 unk_5;                // 0x05, EntityEC96_Init は 0xFF を渡す
+  u16 unk_6;               // 0x06, EntityEC96_Init は 0 を渡す
+  struct q_MapNode* prev;  // 0x08, FUN_08234270 が挿入時に NULL を書く
+  struct q_MapNode* next;  // 0x0C, FUN_08234270 が挿入時に旧 head を書く
+} q_MapNode;
+static_assert(sizeof(q_MapNode) == 16);
+
 // --------------------------------------------
 
 typedef u16 TileAttr;             // CollisionMapTile.attr
@@ -104,5 +121,24 @@ typedef struct {
   u32 islandOffsets[1];  // 0x04, islandOffsets[countIslands]
   NavIsland islands[1];  // NavIsland[countIslands]
 } NavMesh;
+
+// --------------------------------------------
+
+// 読み込み中のコリジョンマップ, gCollisionMap が指す, Malloc(3620) で確保される (FUN_082326a0)
+typedef struct Unk030046a4 {
+  u8 unk_0[4];
+  CollisionMapTileData* tiledata;  // 0x004
+  u8 unk_8[4];
+  ZoneData* zones;        // 0x00C
+  PathData* paths;        // 0x010
+  NavMesh* navMesh;       // 0x014
+  q_MapNode* q_mapNodes;  // 0x018, FUN_08234270 がここを先頭とする双方向リストにノードを繋ぐ
+  u8 unk_1c[0x24 - 0x1C];
+  u16 q_rowOffsets[1];  // 0x024, 行ごとのタイル索引オフセット表 (要素数はマップの高さ分), q_rowOffsets[blockZ] + blockX がタイル索引
+  u8 unk_26[3620 - 0x26];
+} Unk030046a4;
+static_assert(sizeof(Unk030046a4) == 3620);
+
+extern Unk030046a4* gCollisionMap;
 
 #endif  // __INCLUDE_COLLISION_MAP_H__

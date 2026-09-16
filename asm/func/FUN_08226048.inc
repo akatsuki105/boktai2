@@ -186,7 +186,7 @@ _082261AE:
 	movs r4, #0
 	ldrsh r2, [r2, r4]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	ldr r5, _08226224 @ =0x00000F1C

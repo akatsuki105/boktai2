@@ -62,7 +62,7 @@ _080E43CA:
 	ldrsh r0, [r0, r3]
 	movs r3, #4
 	ldrsh r1, [r2, r3]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	subs r3, r0, r4
 	cmp r3, #0x80
 	ble _080E441C

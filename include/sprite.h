@@ -84,6 +84,13 @@ s32 OpenSpriteSetFile(SpriteSet* data, spriteset_header* f);
 
 // --------------------------------------------
 
+// アニメーションの1コマ, 根拠: FUN_082372cc が SpriteState.q_frames を idx*4 で進めて +0 と +2 を ldrh している
+typedef struct {
+  u16 spriteIdx;  // 0x00, Sprite_SetSprite に渡すスプライト番号
+  u16 duration;   // 0x02, このコマの表示フレーム数, SpriteState.q_animSpeed を掛けて 6.6 固定小数として扱う
+} q_AnimFrame;
+static_assert(sizeof(q_AnimFrame) == 4);
+
 // スプライト関連のデータ, Player などの様々なEntityでこの構造体が使われる
 typedef struct SpriteState {
   u16 unk_0;                 // 0x00, Metasprite.unk_0
@@ -91,17 +98,17 @@ typedef struct SpriteState {
   u8 unk_3;                  // 0x03, FUN_080609dc
   u8 active;                 // 0x04, FUN_0822f1c0
   SpriteFlags flags;         // 0x08, see SpriteFlags, FUN_08060a24
-  u16 unk_c;                 // 0x0C
-  u16 unk_e;                 // 0x0E
-  u16 unk_10;                // 0x10
+  u16 q_frameTimer;          // 0x0C, 現在のコマの経過フレーム数, 根拠: FUN_082372cc が毎フレーム +1 してコマ切り替えで 0 に戻す
+  u16 q_frameDuration;       // 0x0E, 現在のコマの表示フレーム数, q_AnimFrame.duration * q_animSpeed / 64 (0 なら 1)
+  u16 q_animSpeed;           // 0x10, 再生速度, 6.6固定小数 (FUN_0822f364 が 0x40 = 等速をセット)
   u16 unk_12;                // 0x12
-  u16 unk_14;                // 0x14
-  u16 unk_16;                // 0x16
-  u16 unk_18;                // 0x18
+  u16 q_frameIdx;            // 0x14, 現在のコマ番号, q_frames の添字
+  u16 q_frameCount;          // 0x16, コマ総数, 根拠: FUN_082372cc の q_frameIdx の上限
+  u16 q_animFlags;           // 0x18, bit1 = 逆再生, 根拠: FUN_082372cc
   u8 priority;               // 0x1A
-  u8 unk_1b;                 // 0x1B
+  u8 q_playMode;             // 0x1B, 0=停止, 2=1回再生して停止, 3=1回再生して非表示, その他=ループ, 根拠: FUN_082372cc
   u8 listIdx;                // 0x1C, FUN_0822f1c0
-  u8 unk_1d;                 // 0x1D
+  u8 q_animEvents;           // 0x1D, FUN_082372cc が毎フレーム先頭でクリアする通知ビット, bit0=次で終わる, bit1=今終わった, bit2=コマが進んだ
   u8 unk_1e[2];              // 0x1E
   Vec3 pos;                  // 0x20, ワールド座標. flags bit4 が立っていればスクリーン座標としてそのまま使われる, 根拠: FUN_08230134 のアイソメトリック投影と FUN_0822f364 の Vec3 コピー
   u16 offsetX;               // 0x28, 投影後のスクリーン座標に加算される, Metasprite.unk_4
@@ -121,14 +128,14 @@ typedef struct SpriteState {
   rgb555* pltt;              // 0x48, &gObjPlttData[plttID*16]
   Subsprite* subsprites;     // 0x4C, SpriteSet.subsprites[Metasprite.subspriteOffset/sizeof(Subsprite)]
   u8* tiles;                 // 0x50, SpriteSet.tiles
-  u32 q_unk_54;              // 0x54, FUN_0822f3fc で 0 が入る
+  q_AnimFrame* q_frames;     // 0x54, アニメーションのコマ配列, FUN_0822f3fc で 0 が入る
   struct SpriteState* prev;  // 0x58, 根拠: FUN_0822a3f0 / FUN_0822a41c
   struct SpriteState* next;  // 0x5C, 根拠: FUN_0822f1d8
 } SpriteState;
 static_assert(sizeof(SpriteState) == 96);  // 確定したわけではないが、 0x0808b2a0 や プロパティの使い方から見て、96バイトで合っていると思う
 
 s32 Sprite_LoadSprite(SpriteState* p, SpriteSet* src, u16 spriteIdx);
-s32 Sprite_SetSprite(SpriteState* p, SpriteSet* src, u16 param_3, u8 unk_1b);
+s32 Sprite_SetSprite(SpriteState* p, SpriteSet* src, u16 param_3, u8 playMode);
 bool32 FUN_082372cc(SpriteState* p, SpriteSet* src);
 void FUN_0822f1c0(SpriteState* p);
 

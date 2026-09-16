@@ -269,7 +269,7 @@ _080EF786:
 	ldrsh r0, [r3, r2]
 	movs r2, #4
 	ldrsh r1, [r3, r2]
-	bl FUN_0823785c
+	bl ArcTan2_8
 	asrs r0, r0, #5
 	ldr r3, _080EF838 @ =0x000001DD
 	adds r1, r5, r3

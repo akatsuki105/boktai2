@@ -302,9 +302,15 @@ _08014078:
 	.align 2, 0
 _08014080: .4byte 0xFFFF0000
 _08014084: .4byte 0x0000FFFF
-_08014088:
-	.byte 0x01, 0x49, 0x00, 0x20, 0x08, 0x60, 0x70, 0x47
-	.byte 0x58, 0x00, 0x00, 0x03
+
+	thumb_func_start FUN_08014088
+FUN_08014088: @ 0x08014088
+	ldr r1, _08014090 @ =0x03000058
+	movs r0, #0
+	str r0, [r1]
+	bx lr
+	.align 2, 0
+_08014090: .4byte 0x03000058
 
 	thumb_func_start FUN_08014094
 FUN_08014094: @ 0x08014094

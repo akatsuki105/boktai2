@@ -1,13 +1,13 @@
 #include "entity.h"
 #include "global.h"
 
-typedef struct Entity8AAB {
+typedef struct {
   Entity e;  // 0x0, ENTITY_UNK_11
   u8 unk_18[3936 - 0x18];
 } Entity8AAB;
 static_assert(sizeof(Entity8AAB) == 3936);
 
-extern Entity8AAB* gEntity8AAB;  // 0x03000248
+IWRAM_DATA Entity8AAB* gEntity8AAB = NULL;  // 0x03000248
 
 void FUN_08222cd4(void) { gEntity8AAB = NULL; }
 

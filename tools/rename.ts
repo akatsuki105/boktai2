@@ -5,7 +5,7 @@ import * as path from "@std/path";
 import { getRepoRoot } from "./common/common.ts";
 
 // boktai2 内の関数名を一括リネームする。
-// src/**/*.c, src/**/*.s, include/**/*.h, asm/**/*.inc から OLD_NAME を
+// src/**/*.c, src/**/*.s, include/**/*.h, asm/**/*.inc, docs/**/*.md から OLD_NAME を
 // 単語境界つきで検索し、NEW_NAME に置換する(INCFUNC("asm/func/OLD_NAME.inc")
 // のような文字列中の参照も、単語境界に囲まれているためあわせて置換される)。
 // さらに asm/func/OLD_NAME.inc が存在すれば asm/func/NEW_NAME.inc にリネームする。
@@ -14,8 +14,8 @@ import { getRepoRoot } from "./common/common.ts";
 //
 // リポジトリのどこから実行しても動くよう、リポジトリルートは git から取得する。
 
-const TARGET_DIRS = ["src", "include", "asm", "data"];
-const TARGET_EXTS = [".c", ".h", ".s", ".inc"];
+const TARGET_DIRS = ["src", "include", "asm", "data", "docs"];
+const TARGET_EXTS = [".c", ".h", ".s", ".inc", ".md"];
 
 const escapeRegExp = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -66,7 +66,8 @@ const main = () => {
   new Command()
     .name("rename.ts")
     .description("boktai2 内の関数名(および対応する asm/func/*.inc ファイル)を一括リネームする。")
-    .arguments("<oldName:string> <newName:string>")
+    .argument("<oldName:string>", "リネームする関数名")
+    .argument("<newName:string>", "新しい関数名")
     .action((_, oldName, newName) => {
       renameFunction(getRepoRoot(), oldName, newName);
     })

@@ -168,7 +168,7 @@ _0821E318:
 	subs r0, r0, r2
 	mov r2, ip
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	movs r2, #0xed
 	lsls r2, r2, #2
 	adds r1, r5, r2

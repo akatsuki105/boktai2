@@ -55,10 +55,12 @@ endpoints.
 - **`clone_data_type` renames instead of copying.** The type and all of its
   pointer/array derivatives get the new name. If this happens, rename it back
   with `rename_data_type` at once.
-- **`add_struct_field` / `modify_struct_field` rewrite names** with Hungarian
-  prefixes (a pointer field `next` becomes `pNext`, a word may get `w…`), and
-  renaming through the same endpoint reapplies the prefix. When the exact name
-  matters, set it with `DataTypeComponent.setFieldName` from a script.
+- **Naming enforcement is off.** GhidraMCP used to rewrite field names with
+  Hungarian prefixes (`next` → `pNext`) and refuse global names without `g_`.
+  The user has turned off "Strict Naming Enforcement" in Tool Options, so
+  names are now kept as written. If a rename comes back changed, the option
+  has been reset; tell the user, and set the name from a script meanwhile
+  (`DataTypeComponent.setFieldName`, `Symbol.setName`).
 - **Growing a field needs truly undefined bytes.** `add_struct_field` at an
   offset and `modify_struct_field_type` to a larger type fail with "Not enough
   undefined bytes" if the target bytes belong to any defined component —
@@ -67,9 +69,9 @@ endpoints.
   the prototype string. Always write the function's current name. Also pass
   `"calling_convention":"__stdcall"`; without it the decompiler prints
   "Unknown calling convention -- yet parameter storage is locked".
-- **`rename_data` enforces its own `g_` naming rule** and refuses other names.
-  Applying a pointer/array type with `apply_data_type` gives an automatic name
-  such as `PTR_ARRAY_03003560`, which is acceptable.
+- Applying a pointer/array type with `apply_data_type` gives an automatic name
+  such as `PTR_ARRAY_03003560`. Rename it afterwards with `rename_data`
+  (`{"address":"0x...","new_name":"..."}`) if needed.
 - **`analyze_struct_field_usage` needs an in-memory struct instance address.**
   It is useless for heap-allocated structs (almost every entity).
 - **Decompiler casts are not evidence of signedness.** Output reflects Ghidra's

@@ -50,7 +50,7 @@ _08065CD8:
 	movs r3, #4
 	ldrsh r2, [r2, r3]
 	subs r1, r1, r2
-	bl FUN_0823785c
+	bl ArcTan2_8
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r0, #0x20

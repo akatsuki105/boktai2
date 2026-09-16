@@ -21,8 +21,11 @@ u16 Sqrt(u32 num);
 
 u16 ArcTan2(s16 x, s16 y);
 
-s32 Div(s32 a, s32 b);
+s32 Div(s32 numer, s32 denom);
+s32 DivArm(s32 denom, s32 numer);
+
 s32 Mod(s32 a, s32 b);
+s32 ModArm(s32 b, s32 a);
 
 #define CPU_SET_SRC_FIXED 0x01000000
 #define CPU_SET_16BIT 0x00000000
@@ -40,10 +43,9 @@ void ObjAffineSet(struct ObjAffineSrcData* src, void* dest, s32 count, s32 offse
 
 void LZ77UnCompWram(const void* src, void* dest);
 
-void LZ77UnCompVram(const void* src, void* dest);
+void SoftResetExram(u32 resetFlags);
 
-void RLUnCompWram(const void* src, void* dest);
-
-void RLUnCompVram(const void* src, void* dest);
+void SoundBias_0(void);
+void SoundBias_200(void);
 
 #endif  // GUARD_GBA_SYSCALL_H

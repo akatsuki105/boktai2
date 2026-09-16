@@ -20,7 +20,7 @@
 	mov r1, r8
 	adds r2, r5, #0
 	adds r3, r6, #0
-	bl Unused_FUN_082369cc
+	bl FUN_082369cc
 	cmp r0, #0
 	bne _08236C08
 	str r4, [sp]

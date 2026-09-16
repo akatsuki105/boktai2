@@ -3613,9 +3613,17 @@ _0820ED12:
 	.align 2, 0
 _0820ED30: .4byte 0x00000E54
 _0820ED34: .4byte 0x00000D94
-_0820ED38:
-	.byte 0x01, 0x1C, 0x48, 0x31, 0x09, 0x78, 0x09, 0x01
-	.byte 0x08, 0x31, 0x8E, 0x30, 0x01, 0x80, 0x70, 0x47
+
+	thumb_func_start FUN_0820ed38
+FUN_0820ed38: @ 0x0820ED38
+	adds r1, r0, #0
+	adds r1, #0x48
+	ldrb r1, [r1]
+	lsls r1, r1, #4
+	adds r1, #8
+	adds r0, #0x8e
+	strh r1, [r0]
+	bx lr
 
 	thumb_func_start FUN_0820ed48
 FUN_0820ed48: @ 0x0820ED48
