@@ -189,7 +189,7 @@ _081EA9E0:
 	adds r1, r4, #0
 	adds r1, #0x18
 	adds r0, r5, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _081EA9EA:
 	movs r3, #0x94
 	lsls r3, r3, #1
@@ -641,7 +641,7 @@ FUN_081eace8: @ 0x081EACE8
 	adds r1, r5, #0
 	movs r2, #0xd
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, _081EAD50 @ =0x085AE478
 	ldrb r2, [r0, #0x12]
 	str r6, [sp]
@@ -888,7 +888,7 @@ FUN_081eaeec: @ 0x081EAEEC
 	adds r0, r4, #0
 	adds r0, #0x18
 	ldr r1, [r4, #0x38]
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	pop {r4, r5}
 	pop {r0}
 	bx r0

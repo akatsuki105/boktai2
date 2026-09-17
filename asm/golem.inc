@@ -4204,7 +4204,7 @@ _081172B8:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _081172D0:
 	ldr r1, _08117380 @ =0x0000046E
 	adds r0, r5, r1
@@ -5311,7 +5311,7 @@ _08117B48:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08117B60:
 	ldr r0, _08117B8C @ =0x000006BE
 	add r0, sb
@@ -5563,7 +5563,7 @@ _08117D3C:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08117D54:
 	movs r6, #3
 	mov r2, sl
@@ -6386,7 +6386,7 @@ _081183A8:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _081183C0:
 	add sp, #0x34
 	pop {r3, r4, r5}
@@ -6747,7 +6747,7 @@ _0811867C:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08118694:
 	add sp, #0x24
 	pop {r3, r4, r5}
@@ -7636,7 +7636,7 @@ _08118D74:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08118D8C:
 	add sp, #0x18
 	pop {r3, r4, r5}
@@ -23668,7 +23668,7 @@ EnemyGolem_Init: @ 0x08120A00
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _08120A94 @ =0x00005290
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -23726,7 +23726,7 @@ _08120A9C:
 	ldm r0!, {r3, r5}
 	stm r2!, {r3, r5}
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r4, #0
 	adds r0, #0x20
 	movs r1, #2
@@ -23739,7 +23739,7 @@ _08120A9C:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, _08120B8C @ =0x000004B7
 	adds r1, r7, r0
 	movs r0, #0xff
@@ -24893,7 +24893,7 @@ _0812141A:
 	bne _08121458
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _08121464
 	.align 2, 0
 _08121454: .4byte 0x00000201
@@ -25495,7 +25495,7 @@ _0812193A:
 	ldr r1, [r7, #0x44]
 	adds r0, r1, #0
 	adds r0, #0x20
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _08121944:
 	movs r0, #0
 	ldr r6, [sp, #0x9c]

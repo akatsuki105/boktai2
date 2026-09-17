@@ -983,7 +983,7 @@ _080176C8:
 	adds r5, #0x1c
 	adds r0, r5, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r0, #0
 	str r0, [r7, #0x18]
 	add r4, sp, #0x14
@@ -1019,7 +1019,7 @@ _0801770C:
 	mov r1, sb
 	movs r2, #0
 	movs r3, #0x11
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	adds r4, #0x84
 	adds r5, #0x84
 	subs r7, #1
@@ -1254,7 +1254,7 @@ _080178CA:
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r5, #0x2c]
 	movs r1, #2
 	rsbs r1, r1, #0

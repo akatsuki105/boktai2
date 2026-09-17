@@ -16,7 +16,7 @@
 	lsrs r2, r2, #0x10
 	adds r0, r5, #0
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r5, #8]
 	movs r1, #2
 	rsbs r1, r1, #0

@@ -64,7 +64,7 @@ _0800C1A0:
 	adds r0, r4, #0
 	adds r0, #0x3c
 	ldr r1, _0800C214 @ =0x00000169
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _0800C1BA:
 	ldrh r0, [r4, #0x2c]
 	adds r0, #1

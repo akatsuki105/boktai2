@@ -44,7 +44,7 @@
 	adds r1, r6, #0
 	movs r2, #0x94
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r1, r5, #0
 	adds r1, #0xb8
 	ldr r0, _08213A30 @ =0x0000FFF8

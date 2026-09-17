@@ -24,7 +24,7 @@ _08224F94:
 	adds r1, #0xcc
 	ldrh r1, [r1]
 	adds r1, #2
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, [r4]
 	movs r1, #2
 	rsbs r1, r1, #0

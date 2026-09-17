@@ -921,7 +921,7 @@ FUN_080a9ccc: @ 0x080A9CCC
 	ldm r0!, {r3, r5}
 	stm r2!, {r3, r5}
 	add r0, sp, #0x10
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r2, r4, #0
 	adds r2, #0x7c
 	movs r1, #0
@@ -943,7 +943,7 @@ FUN_080a9ccc: @ 0x080A9CCC
 	add r1, sp, #0x10
 	movs r2, #0x98
 	movs r3, #0x33
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	add sp, #0x30
 	pop {r4, r5, r6}
 	pop {r0}

@@ -428,7 +428,7 @@ _08050BB0:
 	stm r1!, {r3, r5}
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r7, #0
 	mov r8, r7
 	mov sb, r4
@@ -477,7 +477,7 @@ _08050C28:
 	adds r0, r4, #0
 	mov r1, sb
 	ldr r3, _08050C74 @ =0x00010010
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	adds r4, #0x60
 	movs r1, #1
 	add r8, r1

@@ -3806,7 +3806,7 @@ _08046EC8:
 	adds r1, r1, r0
 	adds r1, r7, r1
 	ldr r0, [sp, #0x18]
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldr r0, _08046F34 @ =0x030047A4
 	ldr r0, [r0]
 	movs r1, #0x80
@@ -4308,7 +4308,7 @@ _0804727E:
 	stm r1!, {r3, r4}
 	mov r0, r8
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r5, #0x20
 	add r8, r5
 	adds r6, #1
@@ -4811,7 +4811,7 @@ _08047694:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r1, _0804770C @ =0x085AB404
 	ldrb r0, [r7, #7]
 	lsls r0, r0, #1
@@ -4959,7 +4959,7 @@ _080477B0:
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 _080477D4:
 	ldrb r2, [r5, #0x15]
 	movs r3, #0xc0
@@ -6240,7 +6240,7 @@ _08048188:
 	movs r3, #0xf6
 	lsls r3, r3, #1
 	adds r1, r5, r3
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _08048198:
 	add sp, #4
 	pop {r3, r4}
@@ -6963,7 +6963,7 @@ _080486F8:
 	stm r1!, {r3, r5}
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	ldr r2, _080487FC @ =0xFFFF0000
 	ldr r0, [sp, #0x10]
 	ands r0, r2
@@ -6996,7 +6996,7 @@ _080486F8:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #8
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0
 	str r0, [sp]
 	adds r0, r5, #0
@@ -7022,7 +7022,7 @@ _080486F8:
 	stm r1!, {r3, r5}
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r1, #4
 	add r0, sp, #0x10
 	strh r1, [r0]
@@ -7043,7 +7043,7 @@ _080486F8:
 	add r7, sp, #0x10
 	str r7, [sp, #0xc]
 	adds r1, r4, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0
 	b _08048810
 	.align 2, 0
@@ -11973,7 +11973,7 @@ _0804AC32:
 	adds r1, r7, #0
 	adds r1, #0x38
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r4, #1
 	adds r5, #0x60
 	mov r2, r8
@@ -12056,7 +12056,7 @@ _0804ACD2:
 	adds r1, r5, #0
 	adds r1, #0x38
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r4, #1
 	adds r6, #0x60
 	mov r2, r8
@@ -12580,7 +12580,7 @@ _0804B0BC:
 	adds r4, #0x38
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r0, #0
 	str r0, [r6, #0x34]
 	ldr r0, _0804B114 @ =gSystemSaveData
@@ -12709,7 +12709,7 @@ _0804B1D0:
 	adds r0, r4, #0
 	mov r1, sb
 	movs r3, #0x11
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r2, #0xbe
 	lsls r2, r2, #1
 	adds r0, r6, r2

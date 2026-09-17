@@ -481,10 +481,10 @@ _0800DE8E:
 	ldr r6, [sp, #0x50]
 	ldr r1, _0800DEC0 @ =0x0000BCA8
 	adds r0, r7, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldrh r1, [r5, #0x2e]
 	adds r0, r7, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r5, #0x2e]
 	cmp r0, #0x79
 	bne _0800DEC4
@@ -519,7 +519,7 @@ _0800DECE:
 	ldr r6, [sp, #0x28]
 	ldr r1, _0800DF3C @ =0x0000BCA8
 	mov r0, sb
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r2, #0x80
 	lsls r2, r2, #2
 	adds r0, r6, #0

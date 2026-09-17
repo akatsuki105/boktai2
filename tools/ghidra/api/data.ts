@@ -1,4 +1,6 @@
-import { get } from "./http.ts";
+import { get, post } from "./http.ts";
+
+const toHexAddr = (addr: number): string => `0x${addr.toString(16).toUpperCase().padStart(8, "0")}`;
 
 // Ghidra 上で定義されているグローバルなデータ1つ分の情報
 export type GlobalInfo = {
@@ -45,4 +47,40 @@ export const auditGlobal = async (addr: number, timeoutSec: number = 60): Promis
     length: Number(json.length),
     xrefCount: Number(json.xref_count ?? 0),
   };
+};
+
+// GhidraMCP の書き込み系エンドポイントの応答。status/success のどちらかで成否を返してくる。
+// warnings は Strict Naming Enforcement が無効なときの「本来なら拒否した」という注意書き。
+type WriteResponse = { ok: boolean; message: string; warnings: string[] };
+
+const parseWriteResponse = (endpoint: string, text: string): WriteResponse => {
+  let json: Record<string, unknown>;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    // JSON を返さず素のメッセージだけ返すエンドポイントもある (rename_variable など)
+    return { ok: true, message: text.trim(), warnings: [] };
+  }
+  if (typeof json.error === "string") {
+    throw new Error(`${endpoint}: ${json.error}`);
+  }
+  const ok = json.status === "success" || json.success === true;
+  const warnings = Array.isArray(json.warnings) ? json.warnings.map(String) : [];
+  return { ok, message: String(json.message ?? text.trim()), warnings };
+};
+
+// addr にあるデータをリネームする (rename_data)。
+// dry_run は受け付けない (GhidraMCP-6.0.0 のハンドラが読んでいない) ので、
+// 呼び出し側で auditGlobal による前後比較をすること。
+export const renameData = async (addr: number, newName: string, timeoutSec: number = 60): Promise<WriteResponse> => {
+  const text = await post("rename_data", { address: toHexAddr(addr), new_name: newName }, timeoutSec);
+  return parseWriteResponse("rename_data", text);
+};
+
+// addr にあるデータに型を適用する (apply_data_type)。
+// 注意: ポインタ型や配列型を当てると Ghidra が名前を自動で付け替えることがある。
+// 名前を保ちたい場合は呼び出し側で控えておき、変わっていたら renameData で戻すこと。
+export const applyDataType = async (addr: number, typeName: string, timeoutSec: number = 60): Promise<WriteResponse> => {
+  const text = await post("apply_data_type", { address: toHexAddr(addr), type_name: typeName }, timeoutSec);
+  return parseWriteResponse("apply_data_type", text);
 };

@@ -21,10 +21,10 @@ FUN_080117d8: @ 0x080117D8
 	adds r4, #0x6c
 	ldr r1, _08011844 @ =0x0000DA6D
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	ldr r1, _08011848 @ =0x00000263
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, _0801184C @ =0x00000CA8
 	adds r5, r5, r0
 	str r5, [r4, #0xc]
@@ -598,7 +598,7 @@ _08011BEC:
 	adds r0, r6, #0
 	adds r0, #0x6c
 	ldr r1, _08011CA4 @ =0x00000263
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, _08011CA8 @ =0x00000CA8
 	add r0, r8
 	str r0, [r4, #0x78]
@@ -911,7 +911,7 @@ _08011E6C:
 	adds r0, r6, #0
 	adds r0, #0x6c
 	ldr r1, _08011F24 @ =0x00000263
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, _08011F28 @ =0x00000CA8
 	add r0, r8
 	str r0, [r4, #0x78]

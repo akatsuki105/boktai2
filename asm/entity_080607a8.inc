@@ -376,7 +376,7 @@ _08060744:
 	adds r0, r7, #0
 	ldr r1, _08060774 @ =0x00008639
 	str r3, [sp]
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r3, [sp]
 	cmp r0, #0
 	bne _08060778
@@ -514,7 +514,7 @@ _08060846:
 	adds r0, #0x10
 	ldr r1, _08060894 @ =0x00000113
 	add r1, r8
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	mov r2, sb
 	ldr r0, [r2]
 	ldr r1, [r2, #4]

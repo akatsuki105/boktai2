@@ -209,7 +209,7 @@ _080227DC:
 	adds r0, r1, #0
 	movs r1, #5
 	mov r2, sp
-	bl FUN_0800205c
+	bl MapPltt_PushCommand
 	add sp, #0x14
 	pop {r4, r5}
 	pop {r0}

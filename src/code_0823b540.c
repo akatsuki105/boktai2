@@ -6,7 +6,7 @@
 CollisionMapFile* OpenCollisionMapFile(void* file) {
   u8* magic = file;
 
-  if (magic[0] == 0x48 && magic[1] == 0x50) {  // "HP"
+  if (magic[0] == 'H' && magic[1] == 'P') {  // "HP"
     return (CollisionMapFile*)file;
   }
   LZ77UnCompWram(file, gDecompressedCollisionMapHeader);

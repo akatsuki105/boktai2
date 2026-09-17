@@ -13,7 +13,7 @@
 	bne _08061C10
 	ldr r1, _08061C04 @ =0x00002110
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0x43
@@ -22,7 +22,7 @@
 	strh r0, [r4, #0x10]
 	adds r0, r5, #0
 	movs r1, #0x32
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r0, #1
 	strb r0, [r4, #7]
 	movs r0, #0x7f
@@ -44,14 +44,14 @@ _08061C0C: .4byte FUN_080617bc
 _08061C10:
 	ldr r1, _08061C50 @ =0x00008F5D
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #1
 	bl FUN_0822a470
 	adds r0, r5, #0
 	movs r1, #0x1d
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, _08061C54 @ =0x0000922E
 	ldr r1, _08061C58 @ =0x00000837
 	bl GetFile

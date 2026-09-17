@@ -679,7 +679,7 @@ FUN_080034c8: @ 0x080034C8
 	adds r0, r4, #0
 	adds r0, #0x70
 	ldrh r1, [r4, #0x1c]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _0800359E
 _08003508:
 	cmp r2, #1
@@ -708,7 +708,7 @@ _08003508:
 	adds r0, r4, #0
 	adds r0, #0x70
 	ldrh r1, [r4, #0x1c]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	adds r1, r4, #0
 	adds r1, #0x21
 	ldrb r0, [r1]
@@ -749,7 +749,7 @@ _08003574:
 	adds r0, r4, #0
 	adds r0, #0x70
 	ldrh r1, [r4, #0x1c]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r3, #1
 _0800359A:
 	cmp r3, #0
@@ -2804,7 +2804,7 @@ _080044B8:
 	adds r0, r5, #0
 	adds r0, #0x70
 	ldrh r1, [r4, #2]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _080044D2:
 	movs r0, #1
 	add r8, r0

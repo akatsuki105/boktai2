@@ -5,26 +5,26 @@
 
 extern const mft_directory gAnimDirectory;
 extern const mft_directory gPlttDirectory;
-extern const mft_directory gSpriteSetPlttsDirectory;
-extern const mft_directory gActorSpritesDirectory;
+extern const mft_directory gSpritePlttsDirectory;
+extern const mft_directory gAuxSpritesDirectory;
 extern const mft_directory gFontDirectory;
 extern const ScriptDirectory gScriptDirectory;
 extern const mft_directory gCollisionMapsDirectory;
 extern const mft_directory gTilemapDirectory;
-extern const mft_directory gSpriteSetsDirectory;
+extern const mft_directory gMainSpritesDirectory;
 extern const mft_directory gTilesetsDirectory;
 extern const mft_directory gParticlesDirectory;
 
 const mft_header gFS[12] = {
     {id : ((0x9225 << 16) | 0x5130), directory : &gAnimDirectory                  },
     {id : ((0x9305 << 16) | 0xD710), directory : &gPlttDirectory                  },
-    {id : ((0x9A65 << 16) | 0x4679), directory : &gSpriteSetPlttsDirectory        },
-    {id : ((0x9B05 << 16) | 0x2117), directory : &gActorSpritesDirectory          },
+    {id : ((0x9A65 << 16) | 0x4679), directory : &gSpritePlttsDirectory           },
+    {id : ((0x9B05 << 16) | 0x2117), directory : &gAuxSpritesDirectory            },
     {id : ((0xA705 << 16) | 0x6D24), directory : &gFontDirectory                  },
     {id : ((0xA8D9 << 16) | 0xA41E), directory : (mft_directory*)&gScriptDirectory},
     {id : ((0xAF05 << 16) | 0xAC2C), directory : &gCollisionMapsDirectory         },
     {id : ((0xC305 << 16) | 0xE53E), directory : &gTilemapDirectory               },
-    {id : ((0xC8E5 << 16) | 0x5F29), directory : &gSpriteSetsDirectory            },
+    {id : ((0xC8E5 << 16) | 0x5F29), directory : &gMainSpritesDirectory           },
     {id : ((0xCEE5 << 16) | 0x4F2D), directory : &gTilesetsDirectory              },
     {id : ((0xCF05 << 16) | 0x0A4D), directory : &gParticlesDirectory             },
     {id : 0x0,                       directory : NULL                             },
@@ -111,7 +111,7 @@ void* GetFile(FileID directoryID, FileID fileID) {
       isAsset = TRUE;
       break;
     }
-    case DIR_ACTOR_SPRITE: {
+    case DIR_AUX_SPRITE: {
       directoryID = 0x9B05;
       fileID = 0x2117;
       isAsset = TRUE;

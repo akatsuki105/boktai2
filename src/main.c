@@ -55,7 +55,7 @@ NAKED void AgbMain(void) {
 	ldr r0, _08000428 @ =0x000098F5\n\
 	ldr r1, _0800042C @ =0x0000FF54\n\
 	bl GetFile\n\
-	bl LoadActorSpritesFile\n\
+	bl LoadAuxSpriteFile\n\
 	ldr r3, _08000430 @ =0x04000208\n\
 	strh r4, [r3]\n\
 	ldr r1, _08000434 @ =0x04000200\n\

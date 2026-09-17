@@ -4125,7 +4125,7 @@ EnemyBoku_Init: @ 0x08101D08
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _08101D98 @ =0x00009247
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -4183,7 +4183,7 @@ _08101DA4:
 	ldm r0!, {r3, r6}
 	stm r2!, {r3, r6}
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r4, #0
 	adds r0, #0x20
 	movs r1, #2
@@ -4196,7 +4196,7 @@ _08101DA4:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r6, _08101E94 @ =0x000004B7
 	adds r1, r7, r6
 	movs r0, #0xff
@@ -5407,7 +5407,7 @@ _08102792:
 	bne _081027D8
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _081027E4
 	.align 2, 0
 _081027D0: .4byte 0x00000674
@@ -6014,7 +6014,7 @@ _08102CC6:
 	ldr r1, [r7, #0x44]
 	adds r0, r1, #0
 	adds r0, #0x20
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _08102CD0:
 	movs r0, #0
 	ldr r3, [sp, #0x98]

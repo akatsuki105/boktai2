@@ -1,3 +1,4 @@
+#include "camera.h"
 #include "entity.h"
 #include "file.h"
 #include "font.h"
@@ -31,13 +32,7 @@ extern u8 gOAMTileHeightTable[16];
 extern u8 gOAMTileCounts[16];
 extern u32 gOAMShapeSizeAttrTable[16];
 
-extern u8* gActorSpriteTiles;
-extern ActorSubsprite* gActorSpriteSubsprites;
-extern ActorSpritesFile* gActorSpritesFile;
-
-extern u32 u32_03003530;
 extern u8 gMosaicTargets;
-extern u16 gActorSpriteTileCount;
 extern u16 u16_0300357c;
 extern u32 gHBlankEffectBG;
 extern void* gHBlankEffectTable;
@@ -52,9 +47,10 @@ extern s16 gParticleFileTileCount;
 extern u16 gMosaicDirty;
 extern u8 gObjMosaicEnabled;
 extern u16 gMosaicSize;
-extern Particle* PTR_ARRAY_03003570[2];
-extern q_SpriteNode44* PTR_ARRAY_03003560[2];
-extern SpriteState* PTR_ARRAY_03003568[2];
+
+extern Procedure PTR_03003534;
+extern Procedure PTR_03003554;
+extern Procedure PTR_03003558;
 
 IWRAM_DATA Entity gVideoManager = {};                     // 0x03000258
 IWRAM_DATA Entity gEntityKind13 = {};                     // 0x03000270
@@ -82,7 +78,7 @@ const u16 gSpriteSizeTable[16] = {
 
 #undef SPRITE_SIZE
 
-void FUN_0822a4fc(q_SpriteNode44* p, ActorSpriteState* s);
+void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* s);
 void FUN_0822e8b4(void);
 void FUN_0822d014(rgb555* pltt, s32 val);
 void FUN_0822dad4(Particle* p, s32 val1, s32 val2);
@@ -98,32 +94,32 @@ NAKED s32 EntityKind13_Update(EntityKind13* p) { INCFUNC("asm/func/EntityKind13_
 
 NAKED void FUN_0822a2a8(void) { INCFUNC("asm/func/FUN_0822a2a8.inc"); }
 
-void UNUSED FUN_0822a2f8(q_SpriteNode44* p) { PTR_ARRAY_03003560[u32_03003530] = p; }
+void UNUSED FUN_0822a2f8(AuxSprite* p) { gAuxSpriteLists[gSpriteListIdx] = p; }
 
-void UNUSED FUN_0822a310(Particle* p) { PTR_ARRAY_03003570[u32_03003530] = p; }
+void UNUSED FUN_0822a310(Particle* p) { gParticleLists[gSpriteListIdx] = p; }
 
-void UNUSED FUN_0822a328(SpriteState* p) { PTR_ARRAY_03003568[u32_03003530] = p; }
+void UNUSED FUN_0822a328(MainSprite* p) { gMainSpriteLists[gSpriteListIdx] = p; }
 
 // 描画リストの先頭にノードを繋ぐ
-s32 FUN_0822a340(q_SpriteNode44* p, s32 idx) {
-  q_SpriteNode44* head;
+s32 FUN_0822a340(AuxSprite* p, s32 idx) {
+  AuxSprite* head;
 
   p->q_listIdx = idx;
   p->q_active = 1;
   p->prev = NULL;
-  head = PTR_ARRAY_03003560[idx];
+  head = gAuxSpriteLists[idx];
   p->next = head;
   if (head != NULL) {
     head->prev = p;
   }
-  PTR_ARRAY_03003560[idx] = p;
+  gAuxSpriteLists[idx] = p;
   return 0;
 }
 
 // 描画リストからノードを外す
-void FUN_0822a36c(q_SpriteNode44* p, s32 idx) {
-  q_SpriteNode44* prev;
-  q_SpriteNode44* next;
+void FUN_0822a36c(AuxSprite* p, s32 idx) {
+  AuxSprite* prev;
+  AuxSprite* next;
 
   prev = p->prev;
   next = p->next;
@@ -131,7 +127,7 @@ void FUN_0822a36c(q_SpriteNode44* p, s32 idx) {
   if (prev != NULL) {
     prev->next = next;
   } else {
-    PTR_ARRAY_03003560[idx] = next;
+    gAuxSpriteLists[idx] = next;
   }
   if (next != NULL) {
     next->prev = prev;
@@ -145,12 +141,12 @@ s32 FUN_0822a398(Particle* p, s32 idx) {
   p->listIdx = idx;
   p->active = 1;
   p->prev = NULL;
-  head = PTR_ARRAY_03003570[idx];
+  head = gParticleLists[idx];
   p->next = head;
   if (head != NULL) {
     head->prev = p;
   }
-  PTR_ARRAY_03003570[idx] = p;
+  gParticleLists[idx] = p;
   return 0;
 }
 
@@ -165,33 +161,33 @@ void FUN_0822a3c4(Particle* p, s32 idx) {
   if (prev != NULL) {
     prev->next = next;
   } else {
-    PTR_ARRAY_03003570[idx] = next;
+    gParticleLists[idx] = next;
   }
   if (next != NULL) {
     next->prev = prev;
   }
 }
 
-// 描画リストの先頭に SpriteState を繋ぐ
-s32 FUN_0822a3f0(SpriteState* p, s32 idx) {
-  SpriteState* head;
+// 描画リストの先頭に MainSprite を繋ぐ
+s32 FUN_0822a3f0(MainSprite* p, s32 idx) {
+  MainSprite* head;
 
   p->listIdx = idx;
   p->active = 1;
   p->prev = NULL;
-  head = PTR_ARRAY_03003568[idx];
+  head = gMainSpriteLists[idx];
   p->next = head;
   if (head != NULL) {
     head->prev = p;
   }
-  PTR_ARRAY_03003568[idx] = p;
+  gMainSpriteLists[idx] = p;
   return 0;
 }
 
-// 描画リストから SpriteState を外す
-void FUN_0822a41c(SpriteState* p, s32 idx) {
-  SpriteState* prev;
-  SpriteState* next;
+// 描画リストから MainSprite を外す
+void FUN_0822a41c(MainSprite* p, s32 idx) {
+  MainSprite* prev;
+  MainSprite* next;
 
   prev = p->prev;
   next = p->next;
@@ -199,17 +195,22 @@ void FUN_0822a41c(SpriteState* p, s32 idx) {
   if (prev != NULL) {
     prev->next = next;
   } else {
-    PTR_ARRAY_03003568[idx] = next;
+    gMainSpriteLists[idx] = next;
   }
   if (next != NULL) {
     next->prev = prev;
   }
 }
 
-NAKED void FUN_0822a448(s32 val, Procedure* fn1, Procedure* fn2, Procedure* fn3) { INCFUNC("asm/func/FUN_0822a448.inc"); }
+void FUN_0822a448(s32 val, Procedure fn1, Procedure fn2, Procedure fn3) {
+  gCameraCoords.unk_12 = val;
+  PTR_03003554 = fn1;
+  PTR_03003534 = fn2;
+  PTR_03003558 = fn3;
+}
 
 // ノードを初期化して描画リストに繋ぐ
-void FUN_0822a470(q_SpriteNode44* p, ActorSpriteState* s, SpriteFlags flags) {
+void FUN_0822a470(AuxSprite* p, AuxSpriteGfx* s, SpriteFlags flags) {
   u32 mask;
   s32 idx;
 
@@ -217,9 +218,9 @@ void FUN_0822a470(q_SpriteNode44* p, ActorSpriteState* s, SpriteFlags flags) {
     p->flags = flags;
     p->unk_05 = 1;
     p->q_oamAttr = 0;
-    p->q_scaleX = 0x40;
-    p->q_scaleY = 0x40;
-    p->q_rotation = 0;
+    p->scaleX = 0x40;
+    p->scaleY = 0x40;
+    p->rotation = 0;
     p->priority = 2;
     FUN_0822a4fc(p, s);
     mask = SPRFLAG_UNK_7;
@@ -231,14 +232,14 @@ void FUN_0822a470(q_SpriteNode44* p, ActorSpriteState* s, SpriteFlags flags) {
 }
 
 // ノードを初期化する (FUN_0822a470 と違い描画リストには繋がない)
-void FUN_0822a4b0(q_SpriteNode44* p, ActorSpriteState* s, SpriteFlags flags) {
+void FUN_0822a4b0(AuxSprite* p, AuxSpriteGfx* s, SpriteFlags flags) {
   if (p->q_active == 0) {
     p->flags = flags;
     p->unk_05 = 1;
     p->q_oamAttr = 0;
-    p->q_scaleX = 0x40;
-    p->q_scaleY = 0x40;
-    p->q_rotation = 0;
+    p->scaleX = 0x40;
+    p->scaleY = 0x40;
+    p->rotation = 0;
     p->priority = 2;
     FUN_0822a4fc(p, s);
     p->prev = NULL;
@@ -247,7 +248,7 @@ void FUN_0822a4b0(q_SpriteNode44* p, ActorSpriteState* s, SpriteFlags flags) {
 }
 
 // 描画リストに繋がれていればノードを外す
-void FUN_0822a4e0(q_SpriteNode44* p) {
+void FUN_0822a4e0(AuxSprite* p) {
   if (p->q_active != 0) {
     FUN_0822a36c(p, p->q_listIdx);
   }
@@ -255,34 +256,34 @@ void FUN_0822a4e0(q_SpriteNode44* p) {
 
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2) {}
 
-// ノードに ActorSpriteState を割り当て、OAM属性のシェイプ/サイズを作り直す
-void FUN_0822a4fc(q_SpriteNode44* p, ActorSpriteState* s) {
+// ノードに AuxSpriteGfx を割り当て、OAM属性のシェイプ/サイズを作り直す
+void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* gfx) {
   u32 attr;
 
-  if (s != NULL) {
+  if (gfx != NULL) {
     p->q_metaspriteIdx = 0;
     p->unk_12 = 0;
     p->q_plttOffset = 0;
-    p->q_spriteWidth = gOAMWidthTable[s->unk_1];
-    p->q_spriteHeight = gOAMHeightTable[s->unk_1];
+    p->q_spriteWidth = gOAMWidthTable[gfx->unk_1];
+    p->q_spriteHeight = gOAMHeightTable[gfx->unk_1];
     p->q_offsetX = 0;
     p->q_offsetY = 0;
-    attr = (p->q_oamAttr & 0x1C00) | (((s->unk_1 & 3) << 14) | ((s->unk_1 & 0xC) << 28));
+    attr = (p->q_oamAttr & 0x1C00) | (((gfx->unk_1 & 3) << 14) | ((gfx->unk_1 & 0xC) << 28));
     p->q_oamAttr = attr;
-    if (s->unk_0 & 0x10) {
+    if (gfx->unk_0 & 0x10) {
       p->q_oamAttr = attr | 0x2000;
     }
-    p->q_sprite = s;
+    p->gfx = gfx;
   }
 }
 
-void FUN_0822a568(q_SpriteNode44* p, ActorSpriteState* s) {
-  if (s != NULL) {
-    p->q_sprite = s;
+void FUN_0822a568(AuxSprite* p, AuxSpriteGfx* gfx) {
+  if (gfx != NULL) {
+    p->gfx = gfx;
   }
 }
 
-NAKED void DrawSprite_0822a574(q_SpriteNode44* p, s32 x, s32 y, s32 z) { INCFUNC("asm/func/DrawSprite_0822a574.inc"); }
+NAKED void DrawSprite_0822a574(AuxSprite* p, s32 x, s32 y, s32 z) { INCFUNC("asm/func/DrawSprite_0822a574.inc"); }
 
 NAKED void FUN_0822aaac(void) { INCFUNC("asm/func/FUN_0822aaac.inc"); }
 
@@ -324,19 +325,19 @@ ParticleGroup* GetParticleGroup(u16 ptclgroupID) {
   return NULL;
 }
 
-void LoadActorSpritesFile(ActorSpritesFile* f) {
-  gActorSpritesFile = f;
-  gActorSpriteSubsprites = (ActorSubsprite*)((u8*)f + f->offsetToSubsprites);
-  gActorSpriteTiles = (u8*)f + f->offsetToTiles;
+void LoadAuxSpriteFile(AuxSpriteFile* f) {
+  gAuxSpriteFile = f;
+  gAuxSubsprites = (AuxSubsprite*)((u8*)f + f->offsetToSubsprites);
+  gAuxSpriteTiles = (u8*)f + f->offsetToTiles;
 }
 
-// ロード中の ActorSpritesFile から id のアクターを探し、描画に必要な情報を ActorSpriteState に詰める
-bool32 Video_GetActorSprite(ActorSpriteState* p, ActorSpriteID32 id) {
-  ActorSpritesFile* f = gActorSpritesFile;
+// ロード中の AuxSpriteFile から id のアクターを探し、描画に必要な情報を AuxSpriteGfx に詰める
+bool32 Video_GetAuxSprite(AuxSpriteGfx* p, SpriteID32 id) {
+  AuxSpriteFile* f = gAuxSpriteFile;
   u8* tiles;
   u8* metasprites;
-  ActorSpritesActor* a;
-  ActorMetasprite* m;
+  AuxSpriteEntry* a;
+  AuxSpritePose* m;
   bool32 found;
   s32 i;
 
@@ -345,8 +346,8 @@ bool32 Video_GetActorSprite(ActorSpriteState* p, ActorSpriteID32 id) {
   tiles = (u8*)f + f->offsetToTiles;
   metasprites = (u8*)f + f->offsetToMetasprites;
   found = FALSE;
-  a = f->actors;
-  for (i = 0; i < gActorSpritesFile->actorCount; a++, i++) {
+  a = f->entries;
+  for (i = 0; i < gAuxSpriteFile->actorCount; a++, i++) {
     if (a->id == id) {
       found = TRUE;
       break;
@@ -354,7 +355,7 @@ bool32 Video_GetActorSprite(ActorSpriteState* p, ActorSpriteID32 id) {
   }
   if (!found) return FALSE;
 
-  m = (ActorMetasprite*)(metasprites + a->spritesOffset);
+  m = (AuxSpritePose*)(metasprites + a->spritesOffset);
   p->unk_0 = a->unk_02;
   p->unk_1 = 0;
   p->unk_2 = 0;
@@ -366,22 +367,22 @@ bool32 Video_GetActorSprite(ActorSpriteState* p, ActorSpriteID32 id) {
   p->plttID = m->plttID;
   p->pltt = &gObjPlttData[p->plttID * 16];
   p->tiles = tiles + m->tileOffset;
-  p->metasprites = (ActorMetasprite*)(metasprites + a->spritesOffset);
+  p->metasprites = (AuxSpritePose*)(metasprites + a->spritesOffset);
   return TRUE;
 }
 
-void Video_SetActorSpritePltt(ActorSpriteState* p, s32 plttID) {
+void Video_SetAuxSpritePltt(AuxSpriteGfx* p, s32 plttID) {
   if (plttID < gObjPlttLen) {
     p->plttID = plttID;
     p->pltt = &gObjPlttData[p->plttID * 16];
   }
 }
 
-void FUN_0822b234(ActorSpriteState* p, u32 val) { p->unk_2 = val; }
+void FUN_0822b234(AuxSpriteGfx* p, u32 val) { p->unk_2 = val; }
 
 // OBJ VRAM のタイル確保状態をフレーム先頭に戻す (パーティクル分のタイルは常駐なのでその後ろから再開する)
 void Video_ResetObjTileAlloc(void) {
-  gActorSpriteTileCount = 0;
+  gAuxSpriteTileCount = 0;
   u16_0300357c = 0;
   gObjTileCursor = 0;
   if (gParticleFile != NULL) {
@@ -481,7 +482,7 @@ TilemapHeader* GetTilemapFile(FileID id) {
   if (file == NULL) {
     return NULL;
   }
-  if ((file[0] == 0x4D && file[1] == 0x50) || *(u32*)file == 0x005E8CC5) {  // "MP"
+  if ((file[0] == 'M' && file[1] == 'P') || *(u32*)file == 0x005E8CC5) {  // "MP"
     return (TilemapHeader*)file;
   }
   if (gCachedTilemapFileID != fileID) {
@@ -614,9 +615,9 @@ void FUN_0822d9f0(Particle* p, ParticleGroup* g, u32 flags) {
     p->oamAttr01 = 0;
     p->priority = 2;
     p->q_zOffset = 0;
-    p->q_rotation = 0;
-    p->q_scaleX = 0x40;
-    p->q_scaleY = 0x40;
+    p->rotation = 0;
+    p->scaleX = 0x40;
+    p->scaleY = 0x40;
     FUN_0822dad4(p, 0, 0);
     FUN_0822dafc(p, g, 0);
     p->plttSlot = FUN_0822d12c(g->plttID, &gObjPlttData[g->plttID * 16]);
@@ -1037,18 +1038,18 @@ s32 FUN_0822f1b0(void) {
   return 0;
 }
 
-void FUN_0822f1c0(SpriteState* p) {
+void FUN_0822f1c0(MainSprite* p) {
   if (p->active != 0) {
     FUN_0822a41c(p, p->listIdx);
   }
 }
 
-// 描画リストに繋がれている SpriteState を全て外す
+// 描画リストに繋がれている MainSprite を全て外す
 void FUN_0822f1d8(void) {
-  SpriteState* p;
-  SpriteState* next;
+  MainSprite* p;
+  MainSprite* next;
 
-  p = PTR_ARRAY_03003568[u32_03003530];
+  p = gMainSpriteLists[gSpriteListIdx];
   while (p != NULL) {
     next = p->next;
     FUN_0822f1c0(p);

@@ -55,5 +55,11 @@
   "workbench.editorAssociations": {
     "*.bin": "hexEditor.hexedit",
     "*.gbapal": "hexEditor.hexedit"
+  },
+  "files.watcherExclude": {
+    "build/**": true,
+    "expected/**": true,
+    "data/**": true,
+    "asm/func/*.inc": true
   }
 }

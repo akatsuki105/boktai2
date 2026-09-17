@@ -79,7 +79,7 @@ _08213AFC:
 	adds r0, r5, #0
 	adds r0, #0x20
 	adds r1, r5, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	b _08213B1C
 _08213B08:
 	ldr r0, _08213B18 @ =0x030044E0

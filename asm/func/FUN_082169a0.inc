@@ -27,7 +27,7 @@
 	adds r1, r7, #0
 	movs r2, #0x15
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, [r6, #8]
 	movs r1, #1
 	mov sb, r1
@@ -44,7 +44,7 @@
 	adds r1, r7, #0
 	movs r2, #0x4e
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, [r6, #0x68]
 	mov r1, sb
 	orrs r0, r1
@@ -60,7 +60,7 @@
 	adds r1, r7, #0
 	movs r2, #0x21
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, _08216A58 @ =0x00001734
 	adds r1, r5, r0
 	ldr r0, [r1]

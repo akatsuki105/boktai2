@@ -52,12 +52,12 @@ s32 Entity87FE_Init(Entity87FE* p) {
   if (p->player == NULL) {
     return -1;
   }
-  if (VM_SeekToKeyword(0x6C)) {
+  if (VM_SeekToKeyword('l')) {
     hpArg = Script_GetValue();
   } else {
     hpArg = 0;
   }
-  if (VM_SeekToKeyword(0x65)) {
+  if (VM_SeekToKeyword('e')) {
     eneArg = Script_GetValue();
   } else {
     eneArg = 0;
@@ -81,7 +81,7 @@ s32 Entity87FE_Init(Entity87FE* p) {
   if (p->hpDone == 0 || p->eneDone == 0) {
     PlaySound_082406e0(0x259);
   }
-  if (VM_SeekToKeyword(0x70)) {
+  if (VM_SeekToKeyword('p')) {
     p->scriptID = Script_GetValue();
   } else {
     p->scriptID = 0;

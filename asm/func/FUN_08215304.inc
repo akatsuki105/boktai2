@@ -452,7 +452,7 @@ _0821569C:
 	adds r0, #0x60
 	adds r1, r6, #0
 	adds r1, #0x18
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _082156AE:
 	add sp, #4
 	pop {r3}

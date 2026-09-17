@@ -700,7 +700,7 @@ _0800F6C4:
 	adds r4, #0x18
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	mov sl, r4
 	cmp r6, #0
 	blt _0800F710
@@ -721,7 +721,7 @@ _0800F6C4:
 	add r7, sp, #0x10
 	str r7, [sp, #0xc]
 	mov r1, sl
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	b _0800F72E
 _0800F710:
 	movs r1, #0xbb
@@ -737,7 +737,7 @@ _0800F710:
 	str r2, [sp, #0xc]
 	mov r1, sl
 	movs r2, #0x17
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 _0800F72E:
 	movs r3, #0xd3
 	lsls r3, r3, #2
@@ -754,7 +754,7 @@ _0800F72E:
 	mov r1, sl
 	movs r2, #0x16
 	mov r3, r8
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	mov r0, sb
 	cmp r0, #0
 	beq _0800F766
@@ -787,7 +787,7 @@ _0800F77C:
 	adds r0, r1, #0
 	mov r1, sl
 	mov r3, r8
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, _0800F7DC @ =0x000002DE
 	adds r4, r5, r0
 	movs r0, #0
@@ -866,7 +866,7 @@ _0800F818:
 	adds r0, r4, #0
 	mov r1, sl
 	ldr r3, _0800F8F4 @ =0x00000871
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r1, _0800F8F8 @ =0x000002DE
 	adds r0, r5, r1
 	ldrb r0, [r0]
@@ -915,7 +915,7 @@ _0800F874:
 	add r7, sp, #0x10
 	str r7, [sp, #0xc]
 	mov r1, sl
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0
 	ldrsb r0, [r6, r0]
 	cmp r0, #0

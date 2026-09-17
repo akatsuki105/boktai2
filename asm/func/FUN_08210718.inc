@@ -8,7 +8,7 @@
 	ldrb r2, [r4]
 	adds r2, #0x19
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldrb r0, [r4]
 	bl WeaponDexMenu_IsPageComplete
 	cmp r0, #0

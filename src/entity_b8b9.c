@@ -132,7 +132,7 @@ bool32 FUN_0823b46c(Entity2UnkData* p, u32 unk_28) {
   return TRUE;
 }
 
-bool32 FUN_0823b474(Entity2UnkData* p, SpriteState* data) {
+bool32 FUN_0823b474(Entity2UnkData* p, MainSprite* data) {
   p->unk_2c = data;
   return TRUE;
 }

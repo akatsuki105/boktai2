@@ -1851,7 +1851,7 @@ _08020520:
 	adds r0, r0, r4
 	adds r0, r7, r0
 	movs r1, #0x2b
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _0802057E
 _0802054C:
 	ldr r0, [r6, #0x4c]
@@ -3073,7 +3073,7 @@ _08020E64:
 	adds r0, r0, r4
 	adds r0, r7, r0
 	movs r1, #0xa7
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, [r6, #0x4c]
 	lsls r1, r0, #3
 	subs r1, r1, r0
@@ -3127,7 +3127,7 @@ _08020ED8:
 	adds r0, r7, r0
 	ldrb r1, [r2]
 	adds r1, #0xa7
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, [r6, #0x4c]
 	lsls r1, r0, #3
 	subs r1, r1, r0
@@ -3173,7 +3173,7 @@ _08020F2C:
 	adds r0, r0, r1
 	ldrb r1, [r2]
 	adds r1, #0xa7
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r1, [r6, #0x4c]
 	lsls r0, r1, #3
 	subs r0, r0, r1
@@ -3200,7 +3200,7 @@ _08020F5C:
 	adds r0, r0, r1
 	ldrb r1, [r2]
 	adds r1, #0xa7
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r1, [r6, #0x4c]
 	lsls r0, r1, #3
 	subs r0, r0, r1
@@ -4940,7 +4940,7 @@ _08021D3E:
 	ldr r1, _08021D54 @ =0x00007ACD
 _08021D40:
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	beq _08021CA4
 	adds r4, #0x1c
@@ -4957,7 +4957,7 @@ _08021D58:
 _08021D5E:
 	adds r0, r4, #0
 	ldr r1, _08021D9C @ =0x00007ACD
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	beq _08021CA4
 	adds r4, #0x1c
@@ -4990,7 +4990,7 @@ _08021DA0:
 _08021DA2:
 	mov r0, r8
 	adds r1, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08021DB0
 	b _08021CA4
@@ -5004,46 +5004,46 @@ _08021DB0:
 	ldr r0, [r0]
 	adds r0, r0, r6
 	adds r1, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r2, _08021E34 @ =0x00000414
 	adds r0, r7, r2
 	ldr r0, [r0]
 	adds r0, r0, r6
 	adds r1, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r1, #0x83
 	lsls r1, r1, #3
 	adds r0, r7, r1
 	ldr r0, [r0]
 	adds r0, r0, r6
 	adds r1, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r2, _08021E38 @ =0x0000041C
 	adds r0, r7, r2
 	ldr r0, [r0]
 	adds r0, r0, r6
 	adds r1, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r1, #0x84
 	lsls r1, r1, #3
 	adds r0, r7, r1
 	ldr r0, [r0]
 	adds r0, r0, r6
 	adds r1, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r2, _08021E3C @ =0x00000424
 	adds r0, r7, r2
 	ldr r0, [r0]
 	adds r0, r0, r6
 	adds r1, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r1, #0x85
 	lsls r1, r1, #3
 	adds r0, r7, r1
 	ldr r0, [r0]
 	adds r0, r0, r6
 	adds r1, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 _08021E20:
 	movs r2, #0x1c
 	add r8, r2
@@ -5065,7 +5065,7 @@ _08021E40:
 _08021E48:
 	adds r0, r4, #0
 	ldr r1, _08021E7C @ =0x00007AD3
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08021E56
 	b _08021CA4
@@ -5097,7 +5097,7 @@ _08021E82:
 _08021E88:
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08021E96
 	b _08021CA4
@@ -5116,7 +5116,7 @@ _08021EA4:
 _08021EAA:
 	adds r0, r4, #0
 	ldr r1, _08021EEC @ =0x00007AD2
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08021EB8
 	b _08021CA4
@@ -5153,14 +5153,14 @@ _08021EF0:
 _08021EF2:
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08021F00
 	b _08021CA4
 _08021F00:
 	mov r0, r8
 	adds r1, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08021F0E
 	b _08021CA4
@@ -5185,14 +5185,14 @@ _08021F20:
 _08021F2E:
 	adds r0, r4, #0
 	ldr r1, _08021F78 @ =0x00007AD3
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08021F3C
 	b _08021CA4
 _08021F3C:
 	adds r0, r6, #0
 	ldr r1, _08021F78 @ =0x00007AD3
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08021F4A
 	b _08021CA4
@@ -5225,7 +5225,7 @@ _08021F7C:
 	ldr r1, _08021F94 @ =0x00007AF3
 _08021F7E:
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08021F8A
 	b _08021CA4
@@ -5245,7 +5245,7 @@ _08021F98:
 _08021FA0:
 	adds r0, r4, #0
 	ldr r1, _08021FDC @ =0x00007AF3
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08021FAE
 	b _08021CA4
@@ -5277,7 +5277,7 @@ _08021FE0:
 	ldr r1, _08021FF8 @ =0x00007AF3
 _08021FE2:
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08021FEE
 	b _08021CA4
@@ -5297,7 +5297,7 @@ _08021FFC:
 _08022004:
 	adds r0, r4, #0
 	ldr r1, _08022068 @ =0x00007AF3
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08022012
 	b _08021CA4

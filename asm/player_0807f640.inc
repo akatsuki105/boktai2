@@ -461,7 +461,7 @@ _0807F972:
 	adds r0, #0x3c
 	adds r1, r4, #0
 	adds r1, #0x1c
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldrh r0, [r5]
 	adds r0, #1
 	strh r0, [r5]
@@ -835,7 +835,7 @@ _0807FCA4:
 _0807FCA6:
 	adds r0, r7, #0
 	adds r1, r6, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldr r0, [r4, #0x18]
 	movs r1, #0xd9
 	lsls r1, r1, #2
@@ -924,7 +924,7 @@ _0807FD38:
 	adds r0, #0x3c
 	adds r1, r5, #0
 	adds r1, #0x1c
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	cmp r0, #0
 	beq _0807FD92
 	ldr r0, [r4]

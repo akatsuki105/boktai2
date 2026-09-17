@@ -155,7 +155,7 @@ _08091318:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldrh r0, [r6]
 	mov r4, sl
 	ldrh r1, [r4]

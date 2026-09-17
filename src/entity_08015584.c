@@ -6,32 +6,32 @@
 
 // パーティクル1個分, FUN_080155e4 で発生させる
 typedef struct {
-  u8 active;                // 0x00, 0 でなければ Update/Destroy が処理する, アニメが終わると 0
-  u8 kind;                  // 0x01, 5/6/7 は別スプライト (0x61F9) と animFiles[1], それ以外はパレット kind + 0x7D
-  u16 timer;                // 0x02, 発生からのフレーム数
-  s16 speedY;               // 0x04, q_decayStartY に達したら *= q_decayY / 256
-  s16 speedXZ;              // 0x06, q_decayStartXZ に達したら *= q_decayXZ / 256
-  u16 q_decayStartY;        // 0x08
-  u16 q_decayY;             // 0x0A, 8.8 固定小数の倍率, どこでも書き込まれないので常に 0 (q_decayStartY で止まる)
-  u16 q_decayStartXZ;       // 0x0C
-  u16 q_decayXZ;            // 0x0E, 同上
-  s16 dirX;                 // 0x10, 4.12 固定小数, gSineTable[(angleXZ + 0x40) & 0xFF]
-  s16 dirY;                 // 0x12, 4.12 固定小数, gSineTable[angleY & 0xFF]
-  s16 dirZ;                 // 0x14, 4.12 固定小数, gSineTable[angleXZ & 0xFF]
-  u8 unk_16[2];             // 0x16
-  u16 velX;                 // 0x18, dirX * speedXZ >> 12, 毎フレーム node.q_pos.x に加算
-  u16 velY;                 // 0x1A, dirY * speedY >> 12, 毎フレーム node.q_pos.y に加算
-  u16 velZ;                 // 0x1C, dirZ * speedXZ >> 12, SCREEN_COORD でなければ node.q_pos.z に加算
-  u8 unk_1e[2];             // 0x1E
-  ActorSpriteState sprite;  // 0x20
-  q_SpriteNode44 node;      // 0x3C
-  AnimState anim;           // 0x68
+  u8 active;            // 0x00, 0 でなければ Update/Destroy が処理する, アニメが終わると 0
+  u8 kind;              // 0x01, 5/6/7 は別スプライト (0x61F9) と animFiles[1], それ以外はパレット kind + 0x7D
+  u16 timer;            // 0x02, 発生からのフレーム数
+  s16 speedY;           // 0x04, q_decayStartY に達したら *= q_decayY / 256
+  s16 speedXZ;          // 0x06, q_decayStartXZ に達したら *= q_decayXZ / 256
+  u16 q_decayStartY;    // 0x08
+  u16 q_decayY;         // 0x0A, 8.8 固定小数の倍率, どこでも書き込まれないので常に 0 (q_decayStartY で止まる)
+  u16 q_decayStartXZ;   // 0x0C
+  u16 q_decayXZ;        // 0x0E, 同上
+  s16 dirX;             // 0x10, 4.12 固定小数, gSineTable[(angleXZ + 0x40) & 0xFF]
+  s16 dirY;             // 0x12, 4.12 固定小数, gSineTable[angleY & 0xFF]
+  s16 dirZ;             // 0x14, 4.12 固定小数, gSineTable[angleXZ & 0xFF]
+  u8 unk_16[2];         // 0x16
+  u16 velX;             // 0x18, dirX * speedXZ >> 12, 毎フレーム node.q_pos.x に加算
+  u16 velY;             // 0x1A, dirY * speedY >> 12, 毎フレーム node.q_pos.y に加算
+  u16 velZ;             // 0x1C, dirZ * speedXZ >> 12, SCREEN_COORD でなければ node.q_pos.z に加算
+  u8 unk_1e[2];         // 0x1E
+  AuxSpriteGfx sprite;  // 0x20
+  AuxSprite node;       // 0x3C
+  AuxAnimState anim;       // 0x68
 } q_Entity08015584Elem;
 static_assert(sizeof(q_Entity08015584Elem) == 120);
 
 typedef struct Entity08015584 {
   Entity e;                        // 0x00, ENTITY_UNK_9
-  AnimationFile* animFiles[2];     // 0x18, GetFile(ANIMATION, FileID_ARRAY_085aa914[i])
+  AuxAnimFile* animFiles[2];     // 0x18, GetFile(ANIMATION, FileID_ARRAY_085aa914[i])
   u32 q_counter;                   // 0x20, Init で 0, Update で毎フレーム +1
   q_Entity08015584Elem elems[32];  // 0x24
 } Entity08015584;

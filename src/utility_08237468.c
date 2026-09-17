@@ -107,7 +107,7 @@ u32 StrCopyPadded(u8* src, u8* dst, s32 length) {
 }
 
 // 値を8桁に分解し、各桁を1つずつスプライトで表示する
-NON_MATCH void FUN_082376a4(SpriteState* p, SpriteSet* data, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, s32 zeroSuppress) {
+NON_MATCH void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, s32 zeroSuppress) {
 #ifdef NONMATCHING_C
   s32 digits[8];
   s32 i, j, n;
@@ -180,7 +180,7 @@ NON_MATCH void FUN_082376a4(SpriteState* p, SpriteSet* data, s32 value, s32 coun
       p->flags |= SPRFLAG_HIDDEN;
     } else {
       p->flags &= ~SPRFLAG_HIDDEN;
-      Sprite_SetSprite(p, data, digits[off + j], 0);
+      MainSprite_SetPose(p, gfx, digits[off + j], 0);
       p->pos.x = px;
       p->pos.y = y;
     }

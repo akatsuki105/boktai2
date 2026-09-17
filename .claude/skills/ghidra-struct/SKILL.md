@@ -71,18 +71,23 @@ These come from the user's corrections; follow them unless told otherwise.
 
 ## Confidence and naming
 
-Two levels only:
+**Do not use the `q_` prefix.** Provisional fields and new struct types get
+plain names, the same as confirmed ones (`scaleX`, `SpriteNode44`). The
+confidence of each item belongs in the report and in the field comment, not in
+the name. Existing `q_` names stay as they are — do not rename them unless the
+user asks.
+
+What still differs is how much evidence a name needs:
 
 - **Confirmed** — uniquely determined by other confirmed facts: the parameter
   type of a callee whose own type is settled (a matching-build function, a
   typed API such as `GetParticleGroup`), an allocation size, a matching
-  build, a GBA hardware definition. Plain names: `hitbox`, `prev`, `priority`.
-- **Provisional** — everything else. Prefix `q_`: fields (`q_scaleX`) and new
-  struct types (`q_SpriteNode44`, `q_FreezeParticle`).
+  build, a GBA hardware definition.
+- **Provisional** — everything else. Name it, and say in the report that it is
+  provisional and on what evidence.
 - Width known, meaning unknown: `unk_XX` (offset in hex) with the right type.
-- Do not retroactively add `q_` to fields that already have names. Giving an
-  `unk_XX` a provisional name is fine. If later evidence confirms a `q_` item,
-  say so; dropping the prefix is the user's call.
+  Do not invent a name for a field whose meaning you cannot back with
+  evidence — `unk_XX` is the honest answer there.
 
 ## Workflow
 

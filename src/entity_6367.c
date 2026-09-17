@@ -4,12 +4,12 @@
 
 // SPRITE_EVENT_SUN_RAY をロードしている
 typedef struct Entity6367 {
-  Entity e;                // 0x000, ENTITY_UNK_11
-  SpriteSet spriteSet;     // 0x018
-  SpriteState sprites[3];  // 0x038
-  u32 unk_158;             // 0x158
-  s32 scriptID_15c;        // 0x15C
-  s32 mode;                // 0x160, PTR_ARRAY_085affa0 の idx
+  Entity e;                 // 0x000, ENTITY_UNK_11
+  MainSpriteGfx spriteSet;  // 0x018
+  MainSprite sprites[3];    // 0x038
+  u32 unk_158;              // 0x158
+  s32 scriptID_15c;         // 0x15C
+  s32 mode;                 // 0x160, PTR_ARRAY_085affa0 の idx
   u8 unk_164[0x190 - 0x164];
   void (*updateCallback)(struct Entity6367*);  // 0x190, このゲームでは FUN_0821a308 で固定
 } Entity6367;

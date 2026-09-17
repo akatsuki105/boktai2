@@ -192,7 +192,7 @@ _080F6FC2:
 	bne _080F7000
 	ldr r0, [r6, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _080F700C
 	.align 2, 0
 _080F6FDC: .4byte 0xFFFEBE3F

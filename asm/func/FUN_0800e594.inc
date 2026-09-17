@@ -328,7 +328,7 @@ _0800E81A:
 	adds r0, r0, r1
 	ldrh r1, [r0]
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _0800E83C
 _0800E832:
@@ -357,7 +357,7 @@ _0800E83C:
 	ldr r1, _0800E880 @ =0x0000027B
 	add r1, sb
 	adds r0, r4, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _0800E868:
 	ldrb r1, [r6, #5]
 	movs r0, #4

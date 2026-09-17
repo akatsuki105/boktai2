@@ -24,10 +24,10 @@ typedef struct EntityC946 {
   u8 unk_18[0x1c - 0x18];
   u32 unk_1c;  // 0x01C
   u8 unk_20[0x30c - 0x20];
-  q_SpriteNode44 node_30c;      // 0x30C
-  ActorSpriteState sprite_338;  // 0x338
-  u16 x_354;                    // 0x354
-  u16 y_356;                    // 0x356
+  AuxSprite node_30c;       // 0x30C
+  AuxSpriteGfx sprite_338;  // 0x338
+  u16 x_354;                // 0x354
+  u16 y_356;                // 0x356
   u8 unk_358[884 - 0x358];
 } EntityC946;
 static_assert(sizeof(EntityC946) == 884);

@@ -6,503 +6,6 @@
 
 @ ファイルが巨大だったため適当に分割しています。
 
-	thumb_func_start FUN_081eafbc
-FUN_081eafbc: @ 0x081EAFBC
-	bx lr
-	.align 2, 0
-
-	thumb_func_start FUN_081eafc0
-FUN_081eafc0: @ 0x081EAFC0
-	push {r4, r5, r6, r7, lr}
-	adds r3, r0, #0
-	adds r7, r1, #0
-	adds r5, r7, #0
-	adds r2, r7, #0
-	adds r2, #0x44
-	ldrb r0, [r2]
-	cmp r0, #0
-	beq _081EAFE0
-	ldr r0, [r7]
-	movs r1, #2
-	rsbs r1, r1, #0
-	ands r0, r1
-	str r0, [r7]
-	movs r0, #0
-	strb r0, [r2]
-_081EAFE0:
-	ldrh r0, [r7, #0x30]
-	cmp r0, #1
-	bne _081EAFF2
-	ldrh r0, [r7, #0x36]
-	cmp r0, #0
-	bne _081EAFF2
-	ldrh r0, [r7, #0x1a]
-	adds r0, #0x20
-	strh r0, [r7, #0x1a]
-_081EAFF2:
-	ldr r3, [r3, #0x1c]
-	adds r4, r7, #0
-	adds r4, #0x28
-	ldrh r0, [r4, #8]
-	lsls r0, r0, #1
-	ldr r1, [r7, #0x28]
-	adds r6, r1, r0
-	ldrh r2, [r6]
-	lsrs r2, r2, #6
-	ldrb r1, [r5, #0xa]
-	lsrs r1, r1, #3
-	ldrb r0, [r5, #0xb]
-	lsrs r0, r0, #3
-	muls r0, r1, r0
-	muls r0, r2, r0
-	ldrh r3, [r3, #4]
-	adds r0, r0, r3
-	strh r0, [r5, #8]
-	ldrb r0, [r4, #4]
-	movs r3, #1
-	adds r1, r3, #0
-	ands r1, r0
-	ldrh r2, [r6]
-	movs r0, #0x30
-	ands r0, r2
-	lsrs r0, r0, #4
-	ands r0, r3
-	cmp r1, r0
-	beq _081EB034
-	ldr r0, [r5]
-	movs r1, #4
-	orrs r0, r1
-	b _081EB03C
-_081EB034:
-	ldr r0, [r5]
-	movs r1, #5
-	rsbs r1, r1, #0
-	ands r0, r1
-_081EB03C:
-	str r0, [r5]
-	ldrb r0, [r4, #4]
-	movs r3, #2
-	adds r1, r3, #0
-	ands r1, r0
-	lsls r1, r1, #0x18
-	lsrs r1, r1, #0x18
-	ldrh r2, [r6]
-	movs r0, #0x30
-	ands r0, r2
-	lsrs r0, r0, #4
-	ands r0, r3
-	cmp r1, r0
-	beq _081EB060
-	ldr r0, [r5]
-	movs r1, #8
-	orrs r0, r1
-	b _081EB068
-_081EB060:
-	ldr r0, [r5]
-	movs r1, #9
-	rsbs r1, r1, #0
-	ands r0, r1
-_081EB068:
-	str r0, [r5]
-	ldrh r0, [r4, #0xe]
-	adds r0, #1
-	strh r0, [r4, #0xe]
-	ldr r1, _081EB0A0 @ =0x0000FFFF
-	adds r2, r1, #0
-	lsls r0, r0, #0x10
-	lsrs r0, r0, #0x10
-	ldrb r1, [r4, #7]
-	cmp r0, r1
-	blo _081EB0D8
-	movs r0, #0
-	strh r0, [r4, #0xe]
-	ldrb r1, [r4, #4]
-	movs r0, #4
-	ands r0, r1
-	lsls r0, r0, #0x18
-	lsrs r1, r0, #0x18
-	cmp r1, #0
-	beq _081EB0AA
-	ldrh r0, [r4, #8]
-	cmp r0, #0
-	bne _081EB0A4
-	ldrb r0, [r4, #5]
-	subs r0, #1
-	strh r0, [r4, #8]
-	movs r2, #1
-	b _081EB0C0
-	.align 2, 0
-_081EB0A0: .4byte 0x0000FFFF
-_081EB0A4:
-	subs r0, #1
-	strh r0, [r4, #8]
-	b _081EB0BE
-_081EB0AA:
-	ldrh r0, [r4, #8]
-	adds r0, #1
-	strh r0, [r4, #8]
-	ands r0, r2
-	ldrb r2, [r4, #5]
-	cmp r0, r2
-	blo _081EB0BE
-	strh r1, [r4, #8]
-	movs r2, #1
-	b _081EB0C0
-_081EB0BE:
-	movs r2, #0
-_081EB0C0:
-	ldrh r0, [r4, #8]
-	lsls r0, r0, #1
-	ldr r1, [r4]
-	adds r6, r1, r0
-	ldrh r1, [r6]
-	movs r0, #0xf
-	ands r0, r1
-	ldrh r1, [r4, #0xc]
-	muls r0, r1, r0
-	asrs r0, r0, #6
-	strb r0, [r4, #7]
-	b _081EB0DA
-_081EB0D8:
-	movs r2, #0
-_081EB0DA:
-	cmp r2, #0
-	beq _081EB0E6
-	adds r1, r7, #0
-	adds r1, #0x42
-	movs r0, #2
-	strb r0, [r1]
-_081EB0E6:
-	pop {r4, r5, r6, r7}
-	pop {r0}
-	bx r0
-
-	thumb_func_start FUN_081eb0ec
-FUN_081eb0ec: @ 0x081EB0EC
-	push {r4, r5, r6, lr}
-	adds r4, r0, #0
-	adds r5, r1, #0
-	adds r0, r5, #0
-	bl FUN_0822dabc
-	adds r1, r5, #0
-	adds r1, #0x42
-	movs r0, #0
-	strb r0, [r1]
-	adds r6, r5, #0
-	adds r6, #0x43
-	movs r0, #0
-	ldrsb r0, [r6, r0]
-	movs r1, #0x92
-	lsls r1, r1, #4
-	adds r4, r4, r1
-	movs r1, #1
-	lsls r1, r0
-	ldr r0, [r4]
-	bics r0, r1
-	str r0, [r4]
-	adds r0, r5, #0
-	movs r1, #0x48
-	bl ClearMemory
-	movs r0, #0xff
-	strb r0, [r6]
-	pop {r4, r5, r6}
-	pop {r0}
-	bx r0
-	.align 2, 0
-
-	thumb_func_start FUN_081eb12c
-FUN_081eb12c: @ 0x081EB12C
-	push {r4, r5, r6, lr}
-	movs r2, #0
-	movs r1, #0x92
-	lsls r1, r1, #4
-	adds r5, r0, r1
-	movs r6, #1
-	adds r3, r0, #0
-	adds r3, #0x63
-	adds r4, r0, #0
-	adds r4, #0x20
-_081EB140:
-	adds r1, r6, #0
-	lsls r1, r2
-	ldr r0, [r5]
-	ands r0, r1
-	cmp r0, #0
-	beq _081EB150
-	movs r0, #1
-	b _081EB152
-_081EB150:
-	movs r0, #0
-_081EB152:
-	cmp r0, #0
-	bne _081EB166
-	strb r2, [r3]
-	adds r1, r6, #0
-	lsls r1, r2
-	ldr r0, [r5]
-	orrs r0, r1
-	str r0, [r5]
-	adds r0, r4, #0
-	b _081EB172
-_081EB166:
-	adds r3, #0x48
-	adds r4, #0x48
-	adds r2, #1
-	cmp r2, #0x1f
-	ble _081EB140
-	movs r0, #0
-_081EB172:
-	pop {r4, r5, r6}
-	pop {r1}
-	bx r1
-
-	thumb_func_start FUN_081eb178
-FUN_081eb178: @ 0x081EB178
-	push {r4, r5, r6, r7, lr}
-	sub sp, #4
-	adds r6, r0, #0
-	adds r7, r1, #0
-	cmp r6, #0
-	beq _081EB1EC
-	ldr r0, _081EB1E8 @ =0x030001C4
-	ldr r5, [r0]
-	cmp r5, #0
-	bne _081EB196
-	bl FUN_081eb2f0
-	adds r5, r0, #0
-	cmp r5, #0
-	beq _081EB1EC
-_081EB196:
-	adds r0, r5, #0
-	bl FUN_081eb12c
-	adds r4, r0, #0
-	cmp r4, #0
-	beq _081EB1EC
-	ldr r0, [r6]
-	ldr r1, [r6, #4]
-	str r0, [r4, #0x18]
-	str r1, [r4, #0x1c]
-	ldr r1, [r5, #0x1c]
-	adds r0, r4, #0
-	movs r2, #0
-	bl FUN_0822d9f0
-	movs r2, #8
-	rsbs r2, r2, #0
-	adds r0, r4, #0
-	adds r1, r2, #0
-	bl FUN_0822dad4
-	movs r2, #0
-	adds r0, r4, #0
-	adds r0, #0x28
-	ldr r1, [r5, #0x18]
-	str r2, [sp]
-	movs r3, #0
-	bl FUN_08236fac
-	ldr r0, [r4]
-	movs r1, #1
-	orrs r0, r1
-	str r0, [r4]
-	strb r7, [r4, #0xf]
-	adds r0, r4, #0
-	adds r0, #0x42
-	strb r1, [r0]
-	adds r0, #2
-	strb r1, [r0]
-	movs r0, #0
-	b _081EB1F0
-	.align 2, 0
-_081EB1E8: .4byte 0x030001C4
-_081EB1EC:
-	movs r0, #1
-	rsbs r0, r0, #0
-_081EB1F0:
-	add sp, #4
-	pop {r4, r5, r6, r7}
-	pop {r1}
-	bx r1
-
-	thumb_func_start FUN_081eb1f8
-FUN_081eb1f8: @ 0x081EB1F8
-	push {r4, r5, r6, r7, lr}
-	mov r7, sb
-	mov r6, r8
-	push {r6, r7}
-	adds r7, r0, #0
-	movs r1, #0x92
-	lsls r1, r1, #4
-	adds r0, r7, r1
-	ldr r0, [r0]
-	cmp r0, #0
-	beq _081EB25C
-	movs r6, #0
-	movs r2, #0x92
-	lsls r2, r2, #4
-	adds r2, r2, r7
-	mov r8, r2
-	ldr r0, _081EB238 @ =0x085AE4B0
-	mov sb, r0
-	adds r5, r7, #0
-	adds r5, #0x62
-	adds r4, r7, #0
-	adds r4, #0x20
-_081EB224:
-	movs r1, #1
-	lsls r1, r6
-	mov r2, r8
-	ldr r0, [r2]
-	ands r0, r1
-	cmp r0, #0
-	beq _081EB23C
-	movs r0, #1
-	b _081EB23E
-	.align 2, 0
-_081EB238: .4byte 0x085AE4B0
-_081EB23C:
-	movs r0, #0
-_081EB23E:
-	cmp r0, #0
-	beq _081EB252
-	ldrb r0, [r5]
-	lsls r0, r0, #2
-	add r0, sb
-	ldr r2, [r0]
-	adds r0, r7, #0
-	adds r1, r4, #0
-	bl _call_via_r2
-_081EB252:
-	adds r5, #0x48
-	adds r4, #0x48
-	adds r6, #1
-	cmp r6, #0x1f
-	ble _081EB224
-_081EB25C:
-	movs r0, #0
-	pop {r3, r4}
-	mov r8, r3
-	mov sb, r4
-	pop {r4, r5, r6, r7}
-	pop {r1}
-	bx r1
-	.align 2, 0
-
-	thumb_func_start FUN_081eb26c
-FUN_081eb26c: @ 0x081EB26C
-	push {r4, r5, r6, lr}
-	movs r5, #0
-	movs r1, #0x92
-	lsls r1, r1, #4
-	adds r6, r0, r1
-	adds r4, r0, #0
-	adds r4, #0x20
-_081EB27A:
-	movs r1, #1
-	lsls r1, r5
-	ldr r0, [r6]
-	ands r0, r1
-	cmp r0, #0
-	beq _081EB28A
-	movs r0, #1
-	b _081EB28C
-_081EB28A:
-	movs r0, #0
-_081EB28C:
-	cmp r0, #0
-	beq _081EB296
-	adds r0, r4, #0
-	bl FUN_0822dabc
-_081EB296:
-	adds r4, #0x48
-	adds r5, #1
-	cmp r5, #0x1f
-	ble _081EB27A
-	movs r1, #0
-	ldr r0, _081EB2AC @ =0x030001C4
-	str r1, [r0]
-	movs r0, #0
-	pop {r4, r5, r6}
-	pop {r1}
-	bx r1
-	.align 2, 0
-_081EB2AC: .4byte 0x030001C4
-
-	thumb_func_start FUN_081eb2b0
-FUN_081eb2b0: @ 0x081EB2B0
-	push {r4, lr}
-	adds r4, r0, #0
-	ldr r0, _081EB2CC @ =0x00001C1A
-	bl GetParticleGroup
-	str r0, [r4, #0x1c]
-	ldr r0, _081EB2D0 @ =0x0000922E
-	ldr r1, _081EB2D4 @ =0x0000D1B8
-	bl GetFile
-	str r0, [r4, #0x18]
-	pop {r4}
-	pop {r0}
-	bx r0
-	.align 2, 0
-_081EB2CC: .4byte 0x00001C1A
-_081EB2D0: .4byte 0x0000922E
-_081EB2D4: .4byte 0x0000D1B8
-
-	thumb_func_start FUN_081eb2d8
-FUN_081eb2d8: @ 0x081EB2D8
-	push {r4, lr}
-	adds r4, r0, #0
-	bl FUN_081eb2b0
-	ldr r0, _081EB2EC @ =0x030001C4
-	str r4, [r0]
-	movs r0, #0
-	pop {r4}
-	pop {r1}
-	bx r1
-	.align 2, 0
-_081EB2EC: .4byte 0x030001C4
-
-	thumb_func_start FUN_081eb2f0
-FUN_081eb2f0: @ 0x081EB2F0
-	push {r4, lr}
-	ldr r0, _081EB324 @ =0x030001C4
-	ldr r0, [r0]
-	cmp r0, #0
-	bne _081EB336
-	ldr r1, _081EB328 @ =0x00000924
-	movs r0, #0xa
-	bl CreateEntity
-	adds r4, r0, #0
-	cmp r4, #0
-	beq _081EB334
-	ldr r1, _081EB32C @ =FUN_081eb1f8
-	ldr r2, _081EB330 @ =FUN_081eb26c
-	bl SetEntityRoutine
-	adds r0, r4, #0
-	bl FUN_081eb2d8
-	cmp r0, #0
-	bge _081EB334
-	adds r0, r4, #0
-	bl KillEntity
-	movs r0, #0
-	b _081EB336
-	.align 2, 0
-_081EB324: .4byte 0x030001C4
-_081EB328: .4byte 0x00000924
-_081EB32C: .4byte FUN_081eb1f8
-_081EB330: .4byte FUN_081eb26c
-_081EB334:
-	adds r0, r4, #0
-_081EB336:
-	pop {r4}
-	pop {r1}
-	bx r1
-
-	thumb_func_start FUN_081eb33c
-FUN_081eb33c: @ 0x081EB33C
-	ldr r1, _081EB344 @ =0x030001C4
-	movs r0, #0
-	str r0, [r1]
-	bx lr
-	.align 2, 0
-_081EB344: .4byte 0x030001C4
-
 	thumb_func_start FUN_081eb348
 FUN_081eb348: @ 0x081EB348
 	push {r4, r5, r6, r7, lr}
@@ -7537,7 +7040,7 @@ _081EE5F6:
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, [sp, #0x48]
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081EE6FC @ =0x0000922E
 	ldr r1, [sp, #0x4c]
 	lsls r1, r1, #0x10
@@ -7561,7 +7064,7 @@ _081EE5F6:
 	bl FUN_08236fac
 	adds r0, r4, #0
 	ldr r1, [sp, #0x58]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r6, _081EE700 @ =0x0203B400
 	ldr r4, _081EE704 @ =0x030046B8
 	ldr r0, [r4]
@@ -8566,7 +8069,7 @@ _081EED86:
 	ldr r2, [sp, #0x28]
 	ldr r3, _081EEDD8 @ =0x00000113
 	adds r1, r2, r3
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _081EEDBC:
 	movs r0, #0
 	pop {r3, r4, r5}
@@ -8660,7 +8163,7 @@ FUN_081eee60: @ 0x081EEE60
 	adds r4, r0, #0
 	adds r0, #0x18
 	ldr r1, _081EEE78 @ =0x00008639
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081EEE7C @ =0x030001D8
 	str r4, [r0]
 	movs r0, #0
@@ -9918,7 +9421,7 @@ _081EF7BC:
 	adds r5, #0x3c
 	adds r0, r5, #0
 	mov r1, r8
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081EF844 @ =0x0000922E
 	mov r2, sl
 	lsls r1, r2, #0x10
@@ -9947,7 +9450,7 @@ _081EF7BC:
 	bl FUN_08236fac
 	ldr r0, [r6, #0xc]
 	ldr r1, [sp, #0x38]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r5, #8]
 	lsls r0, r0, #1
 	ldr r1, [r6, #0x2c]
@@ -11360,7 +10863,7 @@ FUN_081f0260: @ 0x081F0260
 	adds r4, r0, #0
 	adds r0, #0x18
 	ldr r1, _081F0288 @ =0x0000D45E
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081F028C @ =0x0000922E
 	ldr r1, _081F0290 @ =0x00001DC3
 	bl GetFile
@@ -12442,7 +11945,7 @@ _081F0A26:
 	strh r0, [r5, #8]
 	ldr r0, [r4, #0xc]
 	movs r1, #0xfa
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, [sp, #4]
 	ldr r1, [sp, #8]
 	str r0, [r4, #0x1c]
@@ -12583,7 +12086,7 @@ FUN_081f0b58: @ 0x081F0B58
 	adds r4, r0, #0
 	adds r0, #0x18
 	ldr r1, _081F0B80 @ =0x0000D45E
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081F0B84 @ =0x0000922E
 	ldr r1, _081F0B88 @ =0x00001DC3
 	bl GetFile
@@ -13930,7 +13433,7 @@ _081F154E:
 	ldr r0, [r6, #0xc]
 	movs r1, #0xfc
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1
 	mov r2, r8
@@ -14177,7 +13680,7 @@ FUN_081f1738: @ 0x081F1738
 	adds r4, r0, #0
 	adds r0, #0x18
 	ldr r1, _081F1760 @ =0x000084B4
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081F1764 @ =0x0000922E
 	ldr r1, _081F1768 @ =0x00004EC0
 	bl GetFile
@@ -15711,7 +15214,7 @@ FUN_081f229c: @ 0x081F229C
 	adds r4, r2, #0
 	ldr r0, [r0]
 	adds r0, #0x2c
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081F22BC @ =0x0000922E
 	lsls r4, r4, #0x10
 	lsrs r4, r4, #0x10
@@ -15863,7 +15366,7 @@ _081F238E:
 	bl FUN_08236fac
 	ldr r0, [r5, #0xc]
 	ldr r1, [sp, #0x38]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1
 	ldr r1, [r7, #4]
@@ -17702,7 +17205,7 @@ _081F3146:
 	bl FUN_08236fac
 	ldr r0, [r5, #0xc]
 	movs r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	mov r2, sb
 	ldr r0, [r2]
 	ldr r1, [r2, #4]
@@ -17895,7 +17398,7 @@ FUN_081f32ec: @ 0x081F32EC
 	adds r4, r0, #0
 	adds r0, #0x18
 	ldr r1, _081F3314 @ =0x0000A5B3
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081F3318 @ =0x0000922E
 	ldr r1, _081F331C @ =0x00001752
 	bl GetFile
@@ -19728,7 +19231,7 @@ _081F40A6:
 	bne _081F4108
 	ldr r0, [r7, #0xc]
 	movs r1, #0xfe
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, [r7, #0x1c]
 	ldr r1, [r7, #0x20]
 	str r0, [sp, #0xc]
@@ -19913,7 +19416,7 @@ _081F4208:
 	mov r1, sb
 	ldr r0, [r1, #0xc]
 	movs r1, #0xfb
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r4]
 	cmp r0, #0
 	beq _081F4232
@@ -20146,7 +19649,7 @@ _081F4300:
 	adds r5, #0x2c
 	ldr r1, _081F4430 @ =0x0000D45E
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	beq _081F4412
 	adds r0, r4, #0
@@ -20166,7 +19669,7 @@ _081F4300:
 	bl FUN_08236fac
 	ldr r0, [r4, #0xc]
 	movs r1, #0xfb
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	mov r3, sl
 	ldr r0, [r3]
 	ldr r1, [r3, #4]
@@ -22060,7 +21563,7 @@ _081F51D2:
 	adds r4, #0x2c
 	ldr r1, _081F52A0 @ =0x0000D45E
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r7, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -22075,7 +21578,7 @@ _081F51D2:
 	bl FUN_08236fac
 	ldr r0, [r7, #0xc]
 	movs r1, #0xfa
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	mov r2, sb
 	ldr r0, [r2]
 	ldr r1, [r2, #4]
@@ -22366,7 +21869,7 @@ FUN_081f5458: @ 0x081F5458
 _081F5482:
 	mov r0, r8
 	ldr r1, [sp, #4]
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r7, #0
 	mov r1, r8
 	movs r2, #0
@@ -22374,7 +21877,7 @@ _081F5482:
 	mov r0, r8
 	movs r1, #0xd1
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	mov r4, sp
 	ldrb r4, [r4, #0xc]
 	strb r4, [r6, #0x14]
@@ -23574,7 +23077,7 @@ FUN_081f5d3c: @ 0x081F5D3C
 	adds r0, #0x2c
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, _081F5D68 @ =0x00000107
 	adds r1, r4, r0
 	movs r0, #6
@@ -23626,7 +23129,7 @@ _081F5DAC:
 	lsls r1, r1, #1
 	str r2, [sp]
 	str r3, [sp, #4]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	mov r0, r8
 	strb r4, [r0]
 	ldrb r1, [r6]
@@ -27272,7 +26775,7 @@ FUN_081f794c: @ 0x081F794C
 	adds r0, r4, #0
 	adds r0, #0x18
 	ldr r1, _081F796C @ =0x0000F422
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081F7970 @ =0x03000200
 	str r4, [r0]
 	movs r0, #0
@@ -27645,7 +27148,7 @@ _081F7BBE:
 	bl FUN_08236fac
 	ldr r0, [r7, #0xc]
 	ldr r1, _081F7C54 @ =0x00000275
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r5, #8]
 	lsls r0, r0, #1
 	ldr r1, [r7, #0x2c]
@@ -27880,7 +27383,7 @@ FUN_081f7dbc: @ 0x081F7DBC
 	adds r0, r4, #0
 	adds r0, #0x18
 	ldr r1, _081F7DDC @ =0x0000354D
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081F7DE0 @ =0x03000204
 	str r4, [r0]
 	movs r0, #0
@@ -29200,7 +28703,7 @@ _081F86EA:
 	bl FUN_08236fac
 	ldr r0, [r7, #0xc]
 	movs r1, #0xd9
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r5, #8]
 	lsls r0, r0, #1
 	ldr r1, [r7, #0x2c]
@@ -29511,7 +29014,7 @@ FUN_081f8a00: @ 0x081F8A00
 	adds r0, r4, #0
 	adds r0, #0x18
 	ldr r1, _081F8A20 @ =0x0000F422
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081F8A24 @ =0x03000208
 	str r4, [r0]
 	movs r0, #0
@@ -30806,7 +30309,7 @@ _081F9374:
 	mov r1, r8
 	ldr r0, [r1, #0xc]
 	movs r1, #0xd9
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r5, #8]
 	lsls r0, r0, #1
 	ldr r1, [r7, #0x2c]
@@ -31046,7 +30549,7 @@ FUN_081f9574: @ 0x081F9574
 	adds r0, r4, #0
 	adds r0, #0x18
 	ldr r1, _081F9594 @ =0x0000F422
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081F9598 @ =0x0300020C
 	str r4, [r0]
 	movs r0, #0
@@ -31884,7 +31387,7 @@ _081F9B6E:
 	bl FUN_08236fac
 	ldr r0, [r7, #0xc]
 	movs r1, #0xd9
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r0, #2
 	strb r0, [r7, #7]
 	ldr r0, [r7]
@@ -32010,7 +31513,7 @@ FUN_081f9c90: @ 0x081F9C90
 	adds r0, r4, #0
 	adds r0, #0x18
 	ldr r1, _081F9CB0 @ =0x0000F422
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081F9CB4 @ =0x03000210
 	str r4, [r0]
 	movs r0, #0
@@ -33020,7 +32523,7 @@ _081FA3EE:
 	str r0, [r4]
 	ldr r1, _081FA468 @ =0x0000D636
 	mov r0, sb
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r1, [r4]
 	movs r0, #0
 	str r0, [sp]

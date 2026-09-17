@@ -1529,7 +1529,7 @@ _080517A4:
 	mov r1, sl
 	movs r2, #0x31
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	mov r1, r8
 	ldr r0, [r1, #8]
 	movs r1, #2
@@ -1610,7 +1610,7 @@ FUN_08051830: @ 0x08051830
 	adds r0, r4, #0
 	movs r2, #0x32
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r4, #8]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -1957,17 +1957,17 @@ FUN_08051aac: @ 0x08051AAC
 	adds r5, #0x6c
 	adds r0, r5, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r6, #0
 	adds r0, #0x34
 	ldr r1, _08051B10 @ =0x000018A8
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	beq _08051AFE
 	adds r0, r6, #0
 	adds r0, #0x50
 	ldr r1, _08051B14 @ =0x000018A9
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08051B18
 _08051AFE:
@@ -2000,7 +2000,7 @@ _08051B18:
 	adds r1, r5, #0
 	movs r2, #0x31
 	movs r3, #0x11
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	strb r4, [r6, #0x1c]
 	movs r0, #1
 	strb r0, [r6, #0x1d]
@@ -2430,7 +2430,7 @@ FUN_08051e30: @ 0x08051E30
 	adds r0, r4, #0
 	movs r2, #0x45
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r4, #8]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -2473,7 +2473,7 @@ FUN_08051e7c: @ 0x08051E7C
 	adds r0, r4, #0
 	movs r2, #0x44
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r4, #8]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -2492,7 +2492,7 @@ _08051EA6:
 	adds r0, r4, #0
 	movs r2, #0x43
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	b _08051EDA
 _08051EC4:
 	cmp r1, #0x7f
@@ -2504,7 +2504,7 @@ _08051EC4:
 	adds r0, r4, #0
 	movs r2, #0x44
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 _08051EDA:
 	ldrb r0, [r5, #0x1e]
 	cmp r0, #0
@@ -2552,7 +2552,7 @@ _08051F1E:
 	adds r1, r4, #0
 	movs r2, #0x26
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r6, #8]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -2570,7 +2570,7 @@ _08051F1E:
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r6, #8]
 	mov r1, r8
 	ands r0, r1
@@ -2588,7 +2588,7 @@ _08051F1E:
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r6, #8]
 	mov r1, r8
 	ands r0, r1
@@ -2602,7 +2602,7 @@ _08051F1E:
 	adds r1, r4, #0
 	movs r2, #0x4b
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	bl FUN_08050dfc
 	cmp r0, #0
 	beq _08051FB4
@@ -2629,7 +2629,7 @@ _08051FBC:
 	adds r0, r6, #0
 	movs r2, #0x24
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r6, #8]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -2736,7 +2736,7 @@ FUN_08052084: @ 0x08052084
 	adds r0, r7, #0
 	movs r2, #0x24
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r7, #8]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -2823,7 +2823,7 @@ FUN_0805212c: @ 0x0805212C
 	adds r0, r4, #0
 	movs r2, #0x25
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r4, #8]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -2927,7 +2927,7 @@ _080521F0:
 	adds r4, #0x20
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r5, r6, #0
 	adds r5, #0x40
 	mov r8, r4
@@ -2943,7 +2943,7 @@ _08052218:
 	mov r1, r8
 	movs r2, #0x43
 	movs r3, #0x11
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	subs r4, #1
 	adds r5, #0x60
 	cmp r4, #0

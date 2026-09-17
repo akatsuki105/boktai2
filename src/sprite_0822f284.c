@@ -3,13 +3,15 @@
 
 extern u16 u16_030044b8;
 
+s32 FUN_0822a3f0(MainSprite* p, s32 idx);
+
 // spriteset ファイルのヘッダをコピーし、各オフセットをファイル先頭からのポインタに変換する
-s32 OpenSpriteSetFile(SpriteSet* data, spriteset_header* f) {
-  *data = *(SpriteSet*)f;
-  data->sprites = (Metasprite*)((u32)data->sprites + (u32)f);
-  data->unk1 = (spriteset_unk1*)((u32)data->unk1 + (u32)f);
-  data->subsprites = (Subsprite*)((u32)data->subsprites + (u32)f);
-  data->unk2 = (spriteset_unk2*)((u32)data->unk2 + (u32)f);
+s32 OpenMainSpriteFile(MainSpriteGfx* data, MainSpriteFile* f) {
+  *data = *(MainSpriteGfx*)f;
+  data->sprites = (MainSpritePose*)((u32)data->sprites + (u32)f);
+  data->unk1 = (MainAnim*)((u32)data->unk1 + (u32)f);
+  data->subsprites = (MainSubsprite*)((u32)data->subsprites + (u32)f);
+  data->unk2 = (MainAnimCmd*)((u32)data->unk2 + (u32)f);
   data->tiles = (u8*)((u32)data->tiles + (u32)f);
   return 0;
 }
@@ -17,67 +19,145 @@ s32 OpenSpriteSetFile(SpriteSet* data, spriteset_header* f) {
 // Unused?
 NAKED unknown* FUN_0822f2bc(unknown* a, unknown* b) { INCFUNC("asm/func/FUN_0822f2bc.inc"); }
 
-// SpriteSet の spriteIdx 番目のメタスプライトを SpriteState に読み込む (パレットは未設定のときだけ設定する)
-s32 Sprite_LoadSprite(SpriteState* p, SpriteSet* src, u16 spriteIdx) {
-  Metasprite* m = &src->sprites[spriteIdx];
+// MainSpriteGfx の spriteIdx 番目のメタスプライトを MainSprite に読み込む (パレットは未設定のときだけ設定する)
+s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx) {
+  MainSpritePose* m = &gfx->sprites[spriteIdx];
 
   if (m == NULL) return -1;
 
   p->unk_0 = m->unk_0;
-  p->offsetX = m->unk_4;
-  p->offsetY = m->unk_6;
-  p->q_boxRight = m->unk_8;
-  p->q_boxBottom = m->unk_a;
-  p->q_boxLeft = m->unk_c;
-  p->q_boxTop = m->unk_e;
-  p->q_scaleX = 0x40;
-  p->q_scaleY = 0x40;
-  p->q_rotation = 0;
+  p->offsetX = m->offsetX;
+  p->offsetY = m->offsetY;
+  p->boxRight = m->boxRight;
+  p->boxBottom = m->boxBottom;
+  p->boxLeft = m->boxLeft;
+  p->boxTop = m->boxTop;
+  p->scaleX = 0x40;
+  p->scaleY = 0x40;
+  p->rotation = 0;
   if (p->pltt == NULL) {
-    p->plttID = src->palStart;
+    p->plttID = gfx->palStart;
     p->pltt = &gObjPlttData[p->plttID * 16];
   }
   p->subspriteCount = m->subspriteCount;
-  p->subsprites = (Subsprite*)((u8*)src->subsprites + m->subspriteOffset);
-  p->tiles = src->tiles;
+  p->subsprites = (MainSubsprite*)((u8*)gfx->subsprites + m->subspriteOffset);
+  p->tiles = gfx->tiles;
   return 0;
 }
 
-NON_MATCH s32 FUN_0822f364(SpriteState* p, SpriteSet* src, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 param_6, u8 param_7, Vec3* pos) {
+// ポーズ読み込み＋フラグ・優先度・座標の設定
+NON_MATCH s32 MainSprite_Load(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos) {
 #ifdef NONMATCHING_C
-  if (Sprite_LoadSprite(p, src, spriteIdx) < 0) return -1;
+  if (MainSprite_LoadPose(p, gfx, spriteIdx) < 0) return -1;
 
-  *(u16*)&p->unk_2 = u16_030044b8;  // unk_2, unk_3 をまとめて書く (Sprite_SetSprite と同じ)
+  *(u16*)&p->unk_2 = u16_030044b8;  // unk_2, unk_3 をまとめて書く (MainSprite_SetPose と同じ)
   p->flags |= flags;
-  p->q_frameTimer = 0;  // 元は movs r1, #0 が unk_2 の strh より前に来て、flags の OR は r2 を使う
-  p->q_animSpeed = 0x40;
-  p->q_frameDuration = param_7;
+  p->animCmdTimer = 0;  // 元は movs r1, #0 が unk_2 の strh より前に来て、flags の OR は r2 を使う
+  p->animSpeed = 0x40;
+  p->animCmdDuration = animCmdDuration;
   p->priority = prio;
-  p->q_playMode = param_6;
+  p->playMode = playMode;
   p->pos = *pos;
   return 0;
 #else
-  INCFUNC("asm/func/FUN_0822f364.inc");
+  INCFUNC("asm/func/MainSprite_Load.inc");
 #endif
 }
 
-s32 Sprite_SetSprite(SpriteState* p, SpriteSet* src, u16 spriteIdx, u8 playMode) {
-  if (Sprite_LoadSprite(p, src, spriteIdx) < 0) return -1;
+s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, u8 playMode) {
+  if (MainSprite_LoadPose(p, gfx, spriteIdx) < 0) return -1;
 
   *(u16*)&p->unk_2 = u16_030044b8;  // unk_2, unk_3 をまとめて書く (FUN_080609dc は 1 バイトずつ書く)
-  p->q_playMode = playMode;
+  p->playMode = playMode;
   return 0;
 }
 
-NAKED s32 FUN_0822f3fc(SpriteState* p, SpriteSet* src, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 param_6, u8 param_7, Vec3* pos) { INCFUNC("asm/func/FUN_0822f3fc.inc"); }
+// MainSprite を初期化してスプライトを読み込み、描画リストに繋ぐ (pos が NULL なら原点に置く)
+s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos) {
+  Vec3 v;
 
-NAKED s32 FUN_0822f4d8(SpriteState* p, SpriteSet* src, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 param_6, u8 param_7, Vec3* pos) { INCFUNC("asm/func/FUN_0822f4d8.inc"); }
+  if (pos == NULL) {
+    v.x = 0;
+    v.y = 0;
+    v.z = 0;
+  } else {
+    v = *pos;
+  }
+  if (p->active == 0) {
+    p->unk_0 = 0;
+    p->unk_12 = 0;
+    p->animCmdIdx = 0;
+    p->animCmdLength = 0;
+    p->animFlags = 0;
+    p->animEvents = 0;
+    p->offsetX = 0;
+    p->offsetY = 0;
+    p->boxRight = 0;
+    p->boxBottom = 0;
+    p->boxLeft = 0;
+    p->boxTop = 0;
+    p->scaleX = 0;
+    p->scaleY = 0;
+    p->rotation = 0;
+    p->q_oamAttr = 0;
+    p->animCmds = NULL;
+    p->pltt = NULL;
+    p->subsprites = NULL;
+    p->tiles = NULL;
+    MainSprite_Load(p, gfx, spriteIdx, flags, prio, playMode, animCmdDuration, &v);
+    if (++u16_030044b8 == 0xFFFF) {
+      u16_030044b8 = 0;
+    }
+    p->q_unk_40 = -1;
+    p->q_unk_44 = -1;
+    p->prev = NULL;
+    p->next = NULL;
+    FUN_0822a3f0(p, (u32) - (flags & 0x80) >> 31);
+    return 0;
+  }
+  return -1;
+}
+
+// MainSprite を初期化してスプライトを読み込む (MainSprite_Add と違い描画リストには繋がない)
+s32 MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos) {
+  if (p->active != 0) return -1;
+
+  p->unk_0 = 0;
+  p->unk_12 = 0;
+  p->animCmdIdx = 0;
+  p->animCmdLength = 0;
+  p->animFlags = 0;
+  p->animEvents = 0;
+  p->offsetX = 0;
+  p->offsetY = 0;
+  p->boxRight = 0;
+  p->boxBottom = 0;
+  p->boxLeft = 0;
+  p->boxTop = 0;
+  p->scaleX = 0;
+  p->scaleY = 0;
+  p->rotation = 0;
+  p->q_oamAttr = 0;
+  p->animCmds = NULL;
+  p->pltt = NULL;
+  p->subsprites = NULL;
+  p->tiles = NULL;
+  MainSprite_Load(p, gfx, spriteIdx, flags, prio, playMode, animCmdDuration, pos);
+  if (++u16_030044b8 == 0xFFFF) {
+    u16_030044b8 = 0;
+  }
+  p->q_unk_40 = -1;
+  p->q_unk_44 = -1;
+  p->prev = NULL;
+  p->next = NULL;
+  return 0;
+}
 
 void FUN_0822f584(void) {}
 
-NAKED void FUN_0822f588(unknown* a, unknown* b, u32 val) { INCFUNC("asm/func/FUN_0822f588.inc"); }
+NAKED void FUN_0822f588(MainSprite* p, unknown* data, u32 val) { INCFUNC("asm/func/FUN_0822f588.inc"); }
 
-void Sprite_SetPlttID(SpriteState* p, u32 plttID) {
+void MainSprite_SetPlttID(MainSprite* p, u32 plttID) {
   u16 id;
 
   p->plttID = plttID;

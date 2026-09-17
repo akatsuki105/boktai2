@@ -76,7 +76,7 @@ _082251AE:
 	ldr r3, _08225270 @ =0x00000DC8
 	adds r0, r6, r3
 	ldr r1, _08225274 @ =0x00000117
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _08225220:
 	ldr r0, _08225260 @ =0x00000D9C
 	adds r5, r6, r0

@@ -336,10 +336,10 @@ Entity080601a8_Init: @ 0x08060158
 	adds r4, #0x28
 	ldr r1, _080601A0 @ =0x000061F9
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r1, _080601A4 @ =0x000002F6
 	adds r0, r4, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	cmp r5, #0
 	beq _08060180
 	strh r7, [r6, #0x2e]

@@ -584,7 +584,7 @@ _08214840:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r0, r5, #0
 	movs r1, #0xa
 	bl Div
@@ -624,7 +624,7 @@ _08214892:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r0, r5, #0
 	movs r1, #0xa
 	bl Div
@@ -691,7 +691,7 @@ _08214918:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r0, r5, #0
 	movs r1, #0xa
 	bl Div
@@ -731,7 +731,7 @@ _0821496A:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r0, r5, #0
 	movs r1, #0xa
 	bl Div
@@ -771,7 +771,7 @@ _082149BC:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r0, r5, #0
 	movs r1, #0xa
 	bl Div
@@ -788,7 +788,7 @@ _082149F0:
 	add r0, sl
 	adds r1, r7, #0
 	adds r1, #0x18
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _08214A04:
 	add sp, #0x20
 	pop {r3, r4, r5}

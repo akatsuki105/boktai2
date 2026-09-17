@@ -10,7 +10,7 @@
 	adds r1, #0x18
 	movs r2, #0x4e
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r5, #0x68]
 	movs r1, #2
 	rsbs r1, r1, #0

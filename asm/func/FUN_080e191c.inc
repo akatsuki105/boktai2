@@ -179,7 +179,7 @@ _080E1A64:
 	adds r4, #0x20
 	adds r0, r4, #0
 	str r3, [sp, #0x1c]
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	adds r2, r0, #0
 	ldrb r1, [r4, #0x1d]
 	ldr r3, [sp, #0x1c]

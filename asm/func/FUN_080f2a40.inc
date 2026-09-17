@@ -98,7 +98,7 @@ _080F2AFC:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _080F2B14:
 	ldr r0, _080F2B8C @ =0x000004A4
 	adds r4, r5, r0

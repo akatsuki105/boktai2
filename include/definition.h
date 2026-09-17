@@ -26,8 +26,6 @@ extern u32 gFlag030047a4;                // 0x030047A4
 // --------------------------------------------
 
 void FUN_0809c464(void);
-struct q_SpriteNode44;  // include/sprite_actor.h
-void FUN_0822a4e0(struct q_SpriteNode44* p);
 bool32 FUN_08234de8(unknown* p, u32 param_2, u32 param_3, u32 param_4);
 
 #endif  // GUARD_ZOKTAI_DEFINITION_H

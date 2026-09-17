@@ -17,7 +17,6 @@ IWRAM_DATA SystemSaveData gSystemSaveDataBuffer = {};  // 0x030016C0
 void FUN_0822d0e4(void);
 void FUN_08230dc4(bool32 val);
 void FUN_0823b1ec(void);
-s32 SoftReset_0823a928(void);
 
 NAKED s32 FUN_0823a6c0(void) { INCFUNC("asm/func/FUN_0823a6c0.inc"); }
 

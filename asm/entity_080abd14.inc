@@ -1229,7 +1229,7 @@ _080AB91C:
 	adds r5, #0x2c
 	ldr r1, _080AB990 @ =0x00000BA8
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
@@ -1536,7 +1536,7 @@ _080ABB6A:
 	adds r6, #0x2c
 	ldr r1, _080ABC0C @ =0x0000210E
 	adds r0, r6, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r7, #0
 	adds r1, r6, #0
 	movs r2, #0
@@ -1548,7 +1548,7 @@ _080ABB6A:
 	adds r1, r4, #0
 	adds r1, #0x2c
 	adds r0, r6, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r0, #2
 	strb r0, [r7, #7]
 	ldr r0, [r7]
@@ -1564,7 +1564,7 @@ _080ABB6A:
 	adds r6, #0x48
 	ldr r1, _080ABC10 @ =0x00008639
 	adds r0, r6, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r2, #0
@@ -1575,7 +1575,7 @@ _080ABB6A:
 	ldr r0, _080ABC14 @ =0x00000113
 	adds r1, r2, r0
 	adds r0, r6, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r1, #1
 	strb r1, [r4, #7]
 	ldr r0, [r7, #0x48]

@@ -198,7 +198,7 @@ _08212D0C:
 	ldrb r2, [r1]
 	adds r1, r4, #0
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	movs r1, #0xf0
 	lsls r1, r1, #1
 	adds r0, r7, r1
@@ -210,7 +210,7 @@ _08212D0C:
 	ldrb r2, [r1]
 	adds r1, r4, #0
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 _08212D40:
 	ldr r0, [r5, #0x64]
 	cmp r0, #0x63
@@ -763,7 +763,7 @@ _08213244:
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r2, r7, #0
 	adds r2, #0xc8
 	ldr r0, [r2]
@@ -790,7 +790,7 @@ _0821327E:
 	adds r1, #0x18
 	movs r2, #5
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 _08213296:
 	ldr r0, _082132C4 @ =0x0000038A
 	adds r1, r7, r0
@@ -860,7 +860,7 @@ _08213304:
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r2, r7, #0
 	adds r2, #0xc8
 	ldr r0, [r2]
@@ -887,7 +887,7 @@ _0821333E:
 	adds r1, #0x18
 	movs r2, #9
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 _08213356:
 	ldr r0, _082133C4 @ =0x0000038A
 	adds r1, r7, r0
@@ -924,7 +924,7 @@ _0821337E:
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	strh r6, [r4]
 	adds r2, r7, #0
 	adds r2, #0xc8

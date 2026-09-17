@@ -3,6 +3,8 @@
 This file provides guidelines for Claude Code when working in this repository.
 This project's goal is a **matching decompile** of the GBA title *Zoku Bokura no Taiyou: Taiyou Shounen Django*.
 
+NEVER PRINT YOUR OWN SCAFFOLDING TO THE CONSOLE — PLANS, STEP ANNOUNCEMENTS, RAW TOOL OUTPUT, VERIFICATION NARRATION. WRITE ONLY WHAT THE USER NEEDS TO READ.
+
 ---
 
 ## Project Overview

@@ -21,8 +21,8 @@ static_assert(sizeof(LevelUpParticle) == 60);  // 根拠: LevelUpper_EmitLevelUp
 // またその際のパーティクルやSEなどの演出処理も行う。
 typedef struct LevelUpper {
   Entity e;                  // 0x00, ENTITY_UNK_9
-  q_SpriteNode44 q_node;     // 0x18, sprite を指す描画ノード, 根拠: LevelUpper_InitSprite / LevelUpper_Destroy
-  ActorSpriteState sprite;   // 0x44, 根拠: LevelUpper_InitSprite
+  AuxSprite q_node;          // 0x18, sprite を指す描画ノード, 根拠: LevelUpper_InitSprite / LevelUpper_Destroy
+  AuxSpriteGfx sprite;       // 0x44, 根拠: LevelUpper_InitSprite
   u16 unk_60;                // 0x60, LevelUpper_Update
   u16 unk_62;                // 0x62, LevelUpper_Update
   u16 unk_64;                // 0x64, FUN_080a841c
@@ -38,14 +38,13 @@ static_assert(sizeof(LevelUpper) == 608);
 
 extern LevelUpper* gLevelUpper;  // 0x03000154
 
-void FUN_0822a470(q_SpriteNode44* p, ActorSpriteState* s, SpriteFlags flags);
+void FUN_0822a470(AuxSprite* p, AuxSpriteGfx* s, SpriteFlags flags);
 void FUN_0822d9f0(Particle* p, ParticleGroup* g, u32 flags);
 void FUN_0822dabc(Particle* p);
 void FUN_0822dad4(Particle* p, s32 val1, s32 val2);
 void FUN_0822dadc(Particle* p, s32 plttID);
 void FUN_0822dafc(Particle* p, ParticleGroup* g, u32 val);
 s32 GetWeaponSkillLevel(s32 idx);
-void* VM_GetValueSafe2(void);
 
 // 次のレベルになるために必要な"総"経験値量を返す
 u32 GetNextLvExp(LevelUpper* p, s32 lv) {
@@ -184,11 +183,11 @@ s32 LevelUpper_Destroy(LevelUpper* p) {
 
 // 演出用のスプライトを読み込み、非表示のまま描画ノードに登録する
 void LevelUpper_InitSprite(LevelUpper* p) {
-  ActorSpriteState* sprite = &p->sprite;
+  AuxSpriteGfx* sprite = &p->sprite;
 
-  Video_GetActorSprite(sprite, 0x1C1D);
+  Video_GetAuxSprite(sprite, SPRITE_LVUP_INDICATOR);
   FUN_0822a470(&p->q_node, sprite, 0);
-  Video_SetActorSpritePltt(sprite, 1);
+  Video_SetAuxSpritePltt(sprite, 1);
   p->q_node.flags |= 1;
   p->q_node.priority = 1;
 }
@@ -209,7 +208,7 @@ void LevelUpper_InitParticles(LevelUpper* p) {
 s32 LevelUpper_Init(LevelUpper* p) {
   s32 i;
 
-  if (VM_SeekToKeyword(0x65)) {
+  if (VM_SeekToKeyword('e')) {
     p->expTable = VM_GetValueSafe2();
   }
   if (gStat->lv <= 98) {

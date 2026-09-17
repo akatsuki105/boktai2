@@ -195,7 +195,7 @@ FUN_080cb8f8: @ 0x080CB8F8
 	adds r4, #0x44
 	ldr r1, _080CB948 @ =0x0000210E
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r5, r7, #0
 	adds r5, #0x18
 	adds r0, r5, #0
@@ -207,7 +207,7 @@ FUN_080cb8f8: @ 0x080CB8F8
 	adds r6, #0x2c
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	mov r2, sb
 	ldr r0, [r2]
 	ldr r1, [r2, #4]
@@ -658,13 +658,13 @@ FUN_080cbc90: @ 0x080CBC90
 	adds r0, r4, #0
 	adds r0, #0x8c
 	subs r1, #4
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _080CBCB6
 _080CBCAC:
 	adds r0, r4, #0
 	adds r0, #0x8c
 	ldr r1, _080CBCD4 @ =0x00000133
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _080CBCB6:
 	movs r0, #0x98
 	lsls r0, r0, #1
@@ -1140,7 +1140,7 @@ FUN_080cc02c: @ 0x080CC02C
 	adds r4, #0x8c
 	ldr r1, _080CC090 @ =0x00009247
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r5, r6, #0
 	adds r5, #0x60
 	adds r0, r5, #0
@@ -1153,7 +1153,7 @@ FUN_080cc02c: @ 0x080CC02C
 	bl FUN_0823b46c
 	ldr r1, _080CC094 @ =0x00000133
 	adds r0, r4, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	adds r2, r6, #0
 	adds r2, #0x7c
 	ldr r0, [r6, #0x24]
@@ -1400,10 +1400,10 @@ _080CC24C:
 	lsls r1, r7, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	add sp, #4
 	pop {r4, r5, r6, r7}
 	pop {r1}
@@ -3064,7 +3064,7 @@ FUN_080cce70: @ 0x080CCE70
 	bne _080CCED4
 	ldr r1, _080CCEC8 @ =0x00002110
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0x43
@@ -3073,7 +3073,7 @@ FUN_080cce70: @ 0x080CCE70
 	strh r0, [r4, #0x10]
 	adds r0, r5, #0
 	movs r1, #0x32
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r0, #1
 	strb r0, [r4, #7]
 	movs r0, #0x7f
@@ -3095,14 +3095,14 @@ _080CCED0: .4byte FUN_080cca80
 _080CCED4:
 	ldr r1, _080CCF14 @ =0x00008F5D
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #1
 	bl FUN_0822a470
 	adds r0, r5, #0
 	movs r1, #0x1d
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, _080CCF18 @ =0x0000922E
 	ldr r1, _080CCF1C @ =0x00000837
 	bl GetFile
@@ -7626,7 +7626,7 @@ FUN_080cf15c: @ 0x080CF15C
 	adds r4, #0x68
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r5, r6, #0
 	adds r5, #0x88
 	movs r3, #0x90
@@ -7643,7 +7643,7 @@ FUN_080cf15c: @ 0x080CF15C
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0x64
 	bl VM_SeekToKeyword
 	adds r1, r0, #0
@@ -7729,7 +7729,7 @@ FUN_080cf248: @ 0x080CF248
 	adds r4, r7, r0
 	ldr r1, _080CF2F8 @ =0x0000D495
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _080CF2FC @ =0x0000922E
 	ldr r1, _080CF300 @ =0x0000AF44
 	bl GetFile
@@ -16173,7 +16173,7 @@ FUN_080d3338: @ 0x080D3338
 	ldr r3, _080D33C8 @ =0x000009F4
 	adds r0, r4, r3
 	movs r1, #0x2d
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r1, #0xa1
 	lsls r1, r1, #4
 	adds r0, r4, r1
@@ -20633,7 +20633,7 @@ _080D579C:
 	adds r0, r6, r1
 	ldr r0, [r0]
 	adds r1, #0xe
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r2, _080D57E0 @ =0x0000037E
 	adds r1, r6, r2
 	ldrh r0, [r1]
@@ -26356,7 +26356,7 @@ FUN_080d83a8: @ 0x080D83A8
 	adds r4, r3, #0
 	ldr r1, _080D83F8 @ =0x00008639
 	adds r0, r6, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r6, #0
 	movs r2, #0
@@ -26367,7 +26367,7 @@ FUN_080d83a8: @ 0x080D83A8
 	adds r4, r4, r0
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	mov r2, r8
 	ldr r0, [r2]
 	ldr r1, [r2, #4]
@@ -31206,11 +31206,11 @@ FUN_080da7cc: @ 0x080DA7CC
 	adds r5, r0, #0
 	adds r0, #0x18
 	ldr r1, _080DA808 @ =0x0000363C
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r0, #0x34
 	ldr r1, _080DA80C @ =0x0000363D
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _080DA810 @ =0x00001C1C
 	bl GetParticleGroup
 	str r0, [r5, #0x58]
@@ -32948,7 +32948,7 @@ Entity080db520_Init: @ 0x080DB4E8
 	adds r4, r0, #0
 	adds r0, #0x18
 	ldr r1, _080DB510 @ =0x00001C1B
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r0, #0
 	str r0, [r4, #0x38]
 	ldr r0, _080DB514 @ =0x0000922E
@@ -36782,7 +36782,7 @@ FUN_080dd1b8: @ 0x080DD1B8
 	adds r4, r0, #0
 	adds r0, #0x18
 	ldr r1, _080DD1E4 @ =0x0000E74B
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _080DD1E8 @ =0x0000922E
 	ldr r1, _080DD1EC @ =0x0000871C
 	bl GetFile

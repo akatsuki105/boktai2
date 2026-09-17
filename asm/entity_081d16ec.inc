@@ -182,7 +182,7 @@ _081D0F94:
 	adds r4, #0x3c
 	ldr r1, _081D1060 @ =0x0000BB68
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -271,7 +271,7 @@ _081D1060: .4byte 0x0000BB68
 _081D1064:
 	ldr r0, [r6, #0xc]
 	ldr r1, _081D1070 @ =0x00000139
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _081D107E
 	.align 2, 0
 _081D1070: .4byte 0x00000139
@@ -279,7 +279,7 @@ _081D1074:
 	ldr r0, [r6, #0xc]
 	movs r1, #0x9d
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _081D107E:
 	adds r0, r6, #0
 	movs r1, #1
@@ -568,7 +568,7 @@ _081D128C:
 	ldr r0, [r2, #0xc]
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrb r0, [r4]
 	subs r0, #1
 	strb r0, [r4]
@@ -588,7 +588,7 @@ _081D12B0:
 _081D12C2:
 	ldr r0, [r2, #0xc]
 	ldr r1, _081D12CC @ =0x00000139
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _081D12DA
 	.align 2, 0
 _081D12CC: .4byte 0x00000139
@@ -596,7 +596,7 @@ _081D12D0:
 	ldr r0, [r2, #0xc]
 	movs r1, #0x9d
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _081D12DA:
 	pop {r4}
 	pop {r0}

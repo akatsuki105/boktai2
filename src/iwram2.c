@@ -30,7 +30,9 @@ IWRAM_DATA Entity* gUnkEntity1Ptr_03002b58 = NULL;  // 0x03002B58, Malloc(908) �
 
 IWRAM_DATA u8 u8_03002b5c[60] = {};            // todo
 IWRAM_DATA u16 gPlayerCount = 0;               // Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
-IWRAM_DATA u8 u8_03002b9a[70] = {};            // todo
+IWRAM_DATA u8 u8_03002b9a[38] = {};            // todo
+IWRAM_DATA u32 u32_03002bc0 = 0;               // 0x03002BC0, ビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る
+IWRAM_DATA u8 u8_03002bc4[28] = {};            // todo
 IWRAM_DATA struct Player* gPlayerPtr[4] = {};  // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
 IWRAM_DATA u8 u8_03002bf0[8] = {};             // todo
 
@@ -56,7 +58,9 @@ IWRAM_DATA u8 u8_03002ca4[0x03002CB0 - 0x03002CA4] = {};  // todo
 
 IWRAM_DATA IntrFunc gIntrTable[13] = {};  // 0x03002cb0
 IWRAM_DATA vu32 gVblankFlag = FALSE;      // 0x03002cb4
-IWRAM_DATA u8 u8_03002ce8[24] = {};       // todo
+IWRAM_DATA u8 u8_03002ce8[8] = {};        // todo
+IWRAM_DATA u32 gFrameCounter = 0;         // 0x03002CF0, bit0 が点滅の偶奇を決める, 根拠: FUN_08230134 が tst #1 で SPRFLAG_BLINK_ODD / SPRFLAG_BLINK_EVEN を選ぶ
+IWRAM_DATA u8 u8_03002cf4[12] = {};       // todo
 
 IWRAM_DATA u32 IntrMain_Buffer[0x200] = {0};  // 0x03002D00, INTR_MAIN のRAMコード
 
@@ -71,19 +75,25 @@ IWRAM_DATA u16* gHBlankEffectBuffer = NULL;  // 0x03003518, スキャンライ�
 IWRAM_DATA u16 u16_0300351c = 0;                          // 0x0300351C, EEPROM_BeginAccess (EEPROM アクセス前) が 0、EEPROM_EndAccess (アクセス後) が 1 を書く
 IWRAM_DATA u8 u8_0300351e[0x03003530 - 0x0300351E] = {};  // todo
 
-IWRAM_DATA u32 u32_03003530 = 0;  // 0x03003530, PTR_ARRAY_03003568 の idx, 根拠: FUN_0822f1d8
+IWRAM_DATA u32 gSpriteListIdx = 0;  // 0x03003530, 描画リストの選択 (0: 通常, 1: スタートメニュー中), 根拠: FUN_0822f1d8, エミュレータで確認
 
-IWRAM_DATA u8 u8_03003534[0x60 - 0x34] = {};  // todo
+IWRAM_DATA Procedure PTR_03003534 = NULL;  // 0x03003534
+IWRAM_DATA u8 u8_03003538[8] = {};         // 16byte alignment padding?
 
-IWRAM_DATA q_SpriteNode44* PTR_ARRAY_03003560[2] = {};  // 0x03003560
-IWRAM_DATA SpriteState* PTR_ARRAY_03003568[2] = {};     // 0x03003568, 根拠: FUN_0822f1d8
+IWRAM_DATA CameraCoords gCameraCoords = {};  // 0x03003540
 
-IWRAM_DATA Particle* PTR_ARRAY_03003570[2] = {};  // 0x03003570, 根拠: FUN_0822a398
+IWRAM_DATA Procedure PTR_03003554 = NULL;  // 0x03003554
+IWRAM_DATA Procedure PTR_03003558 = NULL;  // 0x03003558
+IWRAM_DATA u8 u8_0300355c[4] = {};         // 16byte alignment padding?
 
-IWRAM_DATA u16 gActorSpriteTileCount = 0;  // 0x03003578, このフレームに FUN_0822b270 が積んだアクタースプライトのタイル数, 根拠: FUN_0822b308 が DMA 先の起点計算に使う
-IWRAM_DATA u16 u16_0300357a = 0;           // todo
-IWRAM_DATA u16 u16_0300357c = 0;           // 0x0300357C, DrawSprite_0822f6fc が積んだタイル数を加算していくが、読み出す箇所が見つかっていない
-IWRAM_DATA u16 u16_0300357e = 0;           // todo
+IWRAM_DATA AuxSprite* gAuxSpriteLists[2] = {};    // 0x03003560
+IWRAM_DATA MainSprite* gMainSpriteLists[2] = {};  // 0x03003568, 根拠: FUN_0822f1d8
+IWRAM_DATA Particle* gParticleLists[2] = {};      // 0x03003570, 根拠: FUN_0822a398
+
+IWRAM_DATA u16 gAuxSpriteTileCount = 0;  // 0x03003578, このフレームに FUN_0822b270 が積んだアクタースプライトのタイル数, 根拠: FUN_0822b308 が DMA 先の起点計算に使う
+IWRAM_DATA u16 u16_0300357a = 0;         // todo
+IWRAM_DATA u16 u16_0300357c = 0;         // 0x0300357C, DrawSprite_0822f6fc が積んだタイル数を加算していくが、読み出す箇所が見つかっていない
+IWRAM_DATA u16 u16_0300357e = 0;         // todo
 
 IWRAM_DATA u16 gObjPlttLen = 0;          // 0x03003580, = ObjPlttFile.length
 IWRAM_DATA rgb555* gObjPlttData = NULL;  // 0x03003584, = ObjPlttFile.body
@@ -94,9 +104,9 @@ IWRAM_DATA ParticleFile* gParticleFile = NULL;         // 0x0300358C, 現在ロ�
 IWRAM_DATA u16 gParticle_03003590 = 0;                 // 0x03003590, まだ不明
 IWRAM_DATA ALIGNED(4) s16 gParticleFileTileCount = 0;  // 0x03003594, ParticleFile.tileCount のタイル数
 
-IWRAM_DATA u8* gActorSpriteTiles = NULL;                   // 0x03003598, &ActorSpritesFile + offsetToTiles
-IWRAM_DATA ActorSubsprite* gActorSpriteSubsprites = NULL;  // 0x0300359C, &ActorSpritesFile + offsetToSubsprites
-IWRAM_DATA ActorSpritesFile* gActorSpritesFile = NULL;     // 0x030035A0
+IWRAM_DATA u8* gAuxSpriteTiles = NULL;            // 0x03003598, &AuxSpriteFile + offsetToTiles
+IWRAM_DATA AuxSubsprite* gAuxSubsprites = NULL;   // 0x0300359C, &AuxSpriteFile + offsetToSubsprites
+IWRAM_DATA AuxSpriteFile* gAuxSpriteFile = NULL;  // 0x030035A0
 
 IWRAM_DATA u8 u8_030035A4[140] = {};  // todo
 
@@ -116,15 +126,17 @@ IWRAM_DATA u8 gOAMTileWidthTable[16] = {};       // 0x03003FE0, タイル(8px)�
 IWRAM_DATA u32 gOAMShapeSizeAttrTable[16] = {};  // 0x03003FF0, OAM0.14-15(shape) と OAM1.14-15(size) のビットを attr0|attr1<<16 形式で格納, DrawSprite_0822a574 / DrawSprite_0822f6fc が OR する
 IWRAM_DATA u8 gOAMWidthTable[16] = {};           // 0x03004030, ピクセル単位
 
-IWRAM_DATA u8 u8_03004040[4] = {};  // todo
+IWRAM_DATA s32 s32_03004040 = 0;    // 0x03004040, MapPltt_FadeIn / MapPltt_FadeOut が明るさとして書く
 IWRAM_DATA s32 s32_03004044 = 0;    // 0x03004044, gObjPlttSlotIDs の使用数 (最大 16), 根拠: FUN_0822d190 (FUN_0822d12c は gObjPlttSlotCount の方を使う)
-IWRAM_DATA u8 u8_03004048[8] = {};  // todo
+IWRAM_DATA s32 s32_03004048 = 0;    // 0x03004048, Entity4AE5_Init が 0x40 を書く
+IWRAM_DATA u8 u8_0300404c[4] = {};  // todo
 
 IWRAM_DATA rgb555 gObjectPlttBuffer[256] = {};  // 0x03004050, CommitPalette で OBJ_PLTT にコピーされる
 IWRAM_DATA rgb555 gFastBgPlttBuffer[256] = {};  // 0x03004250
 
 IWRAM_DATA s32 s32_03004450 = 0;    // 0x03004450, FUN_0822d114 が s32_03004044 = これ + 2 として 0 に戻す
-IWRAM_DATA u8 u8_03004454[4] = {};  // todo
+IWRAM_DATA u16 u16_03004454 = 0;    // 0x03004454, Entity4AE5_Init/Update が書く
+IWRAM_DATA u8 u8_03004456[2] = {};  // todo
 
 IWRAM_DATA s32 gObjPlttSlotCount = 0;  // 0x03004458, 確保済みの OBJ パレットスロット数 (最大 2), 根拠: FUN_0822d12c
 
@@ -132,11 +144,13 @@ IWRAM_DATA u8 u8_0300445c[0x4468 - 0x445C] = {};  // todo
 
 IWRAM_DATA rgb555* gBGPlttBufferPointer = NULL;  // 0x03004468
 
-IWRAM_DATA u8 u8_0300446c[0x4470 - 0x446C] = {};  // todo
+IWRAM_DATA s32 s32_0300446c = 0;  // 0x0300446C
 
 IWRAM_DATA u16 gObjPlttSlotIDs[16] = {};  // 0x03004470, 各 OBJ パレットスロットに割り当てたパレット ID, 根拠: FUN_0822d12c (2 個まで), FUN_0822d190 (16 個まで)
 
-IWRAM_DATA u8 u8_03004490[0x4498 - 0x4490] = {};  // todo
+IWRAM_DATA u8 u8_03004490[4] = {};  // todo
+IWRAM_DATA u16 u16_03004494 = 0;    // 0x03004494, MapPltt_FadeOut が明転の完了時に 0x1084 を書く
+IWRAM_DATA u8 u8_03004496[2] = {};  // todo
 
 IWRAM_DATA u8 gMosaicTargets = 0;                       // 0x03004498, bit0-3: BG0-3 の BGnCNT.6 を立てる, bit4: MOSAIC の OBJ 側(bit8-15)も書く, 根拠: Video_ApplyMosaic
 IWRAM_DATA u8 u8_03004499[3] = {};                      // todo

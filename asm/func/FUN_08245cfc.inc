@@ -21,10 +21,10 @@
 	add r4, sb
 	ldr r1, _08245E44 @ =0x00008202
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r1, _08245E48 @ =0x0000015F
 	adds r0, r4, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r4, #0x92
 	lsls r4, r4, #1
 	add r4, sb

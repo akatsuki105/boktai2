@@ -8,14 +8,14 @@
 typedef struct {
   Entity e;  // 0x0, ENTITY_UNK_11
   u8 unk_18[0x94 - 0x18];
-  SpriteState spr_94;   // 0x094
-  SpriteState spr_f4;   // 0x0F4
-  SpriteState spr_154;  // 0x154
-  SpriteState spr_1b4;  // 0x1B4
-  SpriteState spr_214;  // 0x214
-  SpriteState spr_274;  // 0x274
-  SpriteState spr_2d4;  // 0x2D4
-  SpriteState spr_334;  // 0x334
+  MainSprite spr_94;   // 0x094
+  MainSprite spr_f4;   // 0x0F4
+  MainSprite spr_154;  // 0x154
+  MainSprite spr_1b4;  // 0x1B4
+  MainSprite spr_214;  // 0x214
+  MainSprite spr_274;  // 0x274
+  MainSprite spr_2d4;  // 0x2D4
+  MainSprite spr_334;  // 0x334
   u8 unk_394[1068 - 0x394];
 } Intro;
 static_assert(sizeof(Intro) == 1068);

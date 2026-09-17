@@ -49,7 +49,7 @@ _08001C5E:
 	ldrb r3, [r3]
 	str r5, [sp]
 	str r4, [sp, #4]
-	bl FUN_08001884
+	bl BlendPltt2
 	mov r0, r8
 	strh r5, [r0]
 _08001C7E:

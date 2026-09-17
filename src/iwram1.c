@@ -15,8 +15,8 @@ struct Entity0866;
 struct Entity0800a89c;
 struct Entity329B;
 struct Entity95F8;
-struct Entity0801381c;
-struct Entity08013b68;
+struct ParticleShadowManager;
+struct AuxShadowManager;
 struct Entity080146e0;
 struct Entity08015220;
 struct Entity08015584;
@@ -24,6 +24,7 @@ struct Entity08016ba4;
 struct Entity08016dbc;
 struct Entity08017750;
 struct EntityE435;
+struct Entity8ECD;
 struct GameOverManager;
 struct LevelUpper;
 struct EntityB3D1;
@@ -34,6 +35,7 @@ struct Entity080de11c;
 struct Entity081d0e20;
 struct Entity081d16ec;
 struct Entity081eaf6c;
+struct Entity081eb2f0;
 
 IWRAM_DATA u8 u8_03000000[32] = {};  // todo, rfu_MBOOT_CHILD_inheritanceLinkStatus で RFU_LINK_STATUS の本体がここにあるが、メインゲーム開始時に別の構造体で上書きされてるように見える (つまり union)
 
@@ -43,21 +45,26 @@ IWRAM_DATA u8 u8_03000024[0x3C - 0x24] = {};  // todo
 
 IWRAM_DATA struct Entity83B2* gEntity83B2 = NULL;  // 0x0300003C
 
-IWRAM_DATA struct Entity0866* gEntity0866 = NULL;          // 0x03000040
-IWRAM_DATA struct Entity0800a89c* gEntity0800a89c = NULL;  // 0x03000044
-IWRAM_DATA struct Entity329B* gEntity329B = NULL;          // 0x03000048
-IWRAM_DATA struct Entity95F8* gEntity95F8 = NULL;          // 0x0300004C
-IWRAM_DATA struct Entity0801381c* gEntity0801381c = NULL;  // 0x03000050
-IWRAM_DATA struct Entity08013b68* gEntity08013b68 = NULL;  // 0x03000054
-IWRAM_DATA struct Entity080146e0* gEntity080146e0 = NULL;  // 0x03000058
-IWRAM_DATA struct Entity08015220* gEntity08015220 = NULL;  // 0x0300005C
-IWRAM_DATA struct Entity08015584* gEntity08015584 = NULL;  // 0x03000060
-IWRAM_DATA struct Entity08016ba4* gEntity08016ba4 = NULL;  // 0x03000064
-IWRAM_DATA struct Entity08016dbc* gEntity08016dbc = NULL;  // 0x03000068
-IWRAM_DATA struct Entity08017750* gEntity08017750 = NULL;  // 0x0300006C
-IWRAM_DATA struct EntityE435* gEntityE435 = NULL;          // 0x03000070
+IWRAM_DATA struct Entity0866* gEntity0866 = NULL;                        // 0x03000040
+IWRAM_DATA struct Entity0800a89c* gEntity0800a89c = NULL;                // 0x03000044
+IWRAM_DATA struct Entity329B* gEntity329B = NULL;                        // 0x03000048
+IWRAM_DATA struct Entity95F8* gEntity95F8 = NULL;                        // 0x0300004C
+IWRAM_DATA struct ParticleShadowManager* gParticleShadowManager = NULL;  // 0x03000050
+IWRAM_DATA struct AuxShadowManager* gAuxShadowManager = NULL;            // 0x03000054
+IWRAM_DATA struct Entity080146e0* gEntity080146e0 = NULL;                // 0x03000058
+IWRAM_DATA struct Entity08015220* gEntity08015220 = NULL;                // 0x0300005C
+IWRAM_DATA struct Entity08015584* gEntity08015584 = NULL;                // 0x03000060
+IWRAM_DATA struct Entity08016ba4* gEntity08016ba4 = NULL;                // 0x03000064
+IWRAM_DATA struct Entity08016dbc* gEntity08016dbc = NULL;                // 0x03000068
+IWRAM_DATA struct Entity08017750* gEntity08017750 = NULL;                // 0x0300006C
+IWRAM_DATA struct EntityE435* gEntityE435 = NULL;                        // 0x03000070
 
-IWRAM_DATA u8 u8_03000074[0xA0 - 0x74] = {};  // todo
+IWRAM_DATA u8 u8_03000074[0x80 - 0x74] = {};  // todo
+
+IWRAM_DATA s32 s32_03000080 = 0;                   // 0x03000080
+IWRAM_DATA struct Entity8ECD* gEntity8ECD = NULL;  // 0x03000084
+
+IWRAM_DATA u8 u8_03000088[0xA0 - 0x88] = {};  // todo
 
 IWRAM_DATA void* gBossList[8] = {};  // 0x030000A0, idx is BossID
 
@@ -96,5 +103,6 @@ IWRAM_DATA Elevator* gElevator = NULL;  // 0x03000194
 IWRAM_DATA u8 u8_03000198[0x1C0 - 0x198] = {};
 
 IWRAM_DATA struct Entity081eaf6c* gEntity081eaf6c = NULL;  // 0x030001C0
+IWRAM_DATA struct Entity081eb2f0* gEntity081eb2f0 = NULL;  // 0x030001C4
 
-IWRAM_DATA u8 u8_030001c4[0x248 - 0x1c4] = {};
+IWRAM_DATA u8 u8_030001c8[0x248 - 0x1c8] = {};

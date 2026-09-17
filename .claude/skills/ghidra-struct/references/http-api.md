@@ -70,7 +70,7 @@ endpoints.
   `"calling_convention":"__stdcall"`; without it the decompiler prints
   "Unknown calling convention -- yet parameter storage is locked".
 - Applying a pointer/array type with `apply_data_type` gives an automatic name
-  such as `PTR_ARRAY_03003560`. Rename it afterwards with `rename_data`
+  such as `gAuxSpriteLists`. Rename it afterwards with `rename_data`
   (`{"address":"0x...","new_name":"..."}`) if needed.
 - **`analyze_struct_field_usage` needs an in-memory struct instance address.**
   It is useless for heap-allocated structs (almost every entity).

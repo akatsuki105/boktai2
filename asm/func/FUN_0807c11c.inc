@@ -69,7 +69,7 @@ _0807C172:
 	bl FUN_082370cc
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldr r1, _0807C1CC @ =0x000002E7
 	adds r0, r6, r1
 	ldrb r0, [r0]

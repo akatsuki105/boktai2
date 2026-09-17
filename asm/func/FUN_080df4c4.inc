@@ -15,14 +15,14 @@ _080DF4D0:
 	adds r6, #0x2c
 	adds r0, r6, #0
 	ldr r1, _080DF530 @ =0x0000354D
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r2, #0
 	bl FUN_0822a470
 	adds r0, r6, #0
 	ldr r1, _080DF534 @ =0x00000272
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	adds r0, r7, #0
 	adds r0, #0x3c
 	adds r0, r0, r5

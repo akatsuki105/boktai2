@@ -179,7 +179,7 @@ _080A7950:
 	adds r1, r5, r2
 	movs r2, #0x88
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	b _080A799C
 	.align 2, 0
 _080A7984: .4byte 0x00000343
@@ -192,7 +192,7 @@ _080A7988:
 	adds r1, r5, r2
 	movs r2, #0x87
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 _080A799C:
 	adds r0, r5, #0
 	bl FUN_080a74fc

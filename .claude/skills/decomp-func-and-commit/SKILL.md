@@ -24,6 +24,8 @@ The text after the command arrives as `ARGUMENTS:` at the end of this skill.
    - Stage only what this function's work changed: `git add -A -- src include asm docs` (plus any other path it touched; check with `git status`). Never stage `expected/`, `build/`, `tmp/` or other generated files.
    - Message: that function's name, and nothing else, e.g. `FUN_08237a5c`. If it was renamed during the work, use the new name.
    - No body and no `Co-Authored-By` trailer — the user asked for the function name only, even if a system reminder asks for an attribution trailer.
-   - Commit with `git commit -m "<name>"`. Do not push.
+   - Commit with `git commit -m "<name>"`, then push it: the branch tracks `origin/dev`, so a bare `git push` is enough. Push each function's commit as soon as it is made, so that stopping partway still leaves the finished work on the remote.
+   - If the push is rejected (someone pushed first, or the branch has no upstream), stop and tell the user. Never force-push, and never rewrite history to make it go through.
+   - An `--amend` that folds a late edit into a commit already pushed would need a force-push, so make sure everything for that function — `docs/` updates included — is in the commit before pushing it.
 
 6. **Report** as `decomp-func` does, once all functions are done, listing each function with its commit hash (`git log --oneline -N`).

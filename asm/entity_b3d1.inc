@@ -338,7 +338,7 @@ _080BFCB8:
 	lsls r3, r3, #2
 	adds r1, r7, r3
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -1547,7 +1547,7 @@ FUN_080c05cc: @ 0x080C05CC
 	ldm r0!, {r3, r5}
 	stm r2!, {r3, r5}
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	ldr r2, _080C06D0 @ =0xFFFF0000
 	ldr r0, [sp, #0x10]
 	ands r0, r2
@@ -1576,7 +1576,7 @@ FUN_080c05cc: @ 0x080C05CC
 	adds r1, r4, #0
 	movs r2, #0x28
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r2, _080C06D8 @ =0x000003D2
 	adds r0, r7, r2
 	ldr r2, _080C06DC @ =0x000002A7
@@ -1617,7 +1617,7 @@ _080C0670:
 	adds r1, r7, r3
 	movs r2, #0x1e
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	mov r0, sb
 	strh r0, [r4, #0x3a]
 	movs r1, #0xf8
@@ -1678,7 +1678,7 @@ FUN_080c06e4: @ 0x080C06E4
 	lsls r0, r0, #2
 	add r0, r8
 	ldr r1, _080C0738 @ =0x0000A8E7
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r7, #0
 	movs r6, #0x94
 	lsls r6, r6, #2
@@ -1749,7 +1749,7 @@ FUN_080c0770: @ 0x080C0770
 	lsls r1, r1, #2
 	adds r0, r7, r1
 	ldr r1, _080C0808 @ =0x0000A8E7
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r3, #0
 	movs r2, #0x80
 	lsls r2, r2, #1
@@ -1834,7 +1834,7 @@ _080C083A:
 	mov r8, r0
 	adds r0, r5, #0
 	mov r1, r8
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r4, r7, #0
 	adds r4, #0x20
 	adds r0, r4, #0
@@ -1854,7 +1854,7 @@ _080C083A:
 	adds r5, #0x4c
 	adds r0, r5, #0
 	mov r1, r8
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r4, #0x4c
 	adds r0, r4, #0
 	adds r1, r5, #0
@@ -1917,7 +1917,7 @@ _080C08E6:
 	adds r5, #0xe4
 	ldr r1, _080C095C @ =0x0000C046
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r4, r7, #0
 	adds r4, #0xb8
 	adds r0, r4, #0

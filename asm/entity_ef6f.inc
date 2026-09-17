@@ -161,7 +161,7 @@ FUN_0801e378: @ 0x0801E378
 	adds r2, #0x14
 	adds r0, r4, #0
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r4, #8]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -294,7 +294,7 @@ _0801E47E:
 	adds r1, #0xb0
 	movs r2, #0
 	movs r3, #0x11
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -374,7 +374,7 @@ _0801E50C:
 	adds r1, r5, #0
 	movs r2, #4
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	movs r2, #2
 	mov r8, r2
 	mov r0, r8
@@ -392,7 +392,7 @@ _0801E50C:
 	adds r1, r5, #0
 	movs r2, #3
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r7, #8]
 	orrs r0, r4
 	str r0, [r7, #8]
@@ -408,7 +408,7 @@ _0801E50C:
 	adds r1, r5, #0
 	movs r2, #1
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	mov r2, r8
 	strb r2, [r7, #0x1a]
 	ldr r0, [r7, #8]
@@ -424,7 +424,7 @@ _0801E50C:
 	adds r1, r5, #0
 	movs r2, #2
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	mov r2, r8
 	strb r2, [r7, #0x1a]
 	ldr r0, [r7, #8]
@@ -440,7 +440,7 @@ _0801E50C:
 	adds r0, r7, #0
 	adds r1, r5, #0
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	mov r2, r8
 	strb r2, [r7, #0x1a]
 	ldr r0, [r7, #8]
@@ -459,7 +459,7 @@ _0801E50C:
 	adds r1, r5, #0
 	movs r2, #9
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	movs r2, #3
 	mov sb, r2
 	mov r0, sb
@@ -490,7 +490,7 @@ _0801E50C:
 	adds r1, r5, #0
 	movs r2, #0xa
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	mov r0, sb
 	strb r0, [r7, #0x1a]
 	ldr r0, [r7, #8]
@@ -527,7 +527,7 @@ _0801E65A:
 	adds r1, r5, #0
 	movs r2, #0x16
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	mov r2, r8
 	strb r2, [r7, #0x1a]
 	ldr r0, [r7, #8]
@@ -712,7 +712,7 @@ _0801E7BA:
 _0801E7C8:
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -1308,7 +1308,7 @@ _0801EC36:
 	movs r2, #0x88
 	lsls r2, r2, #1
 	adds r1, r4, r2
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _0801EC46:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -2481,7 +2481,7 @@ EntityEF6F_Init: @ 0x0801F4CC
 	stm r2!, {r5, r7}
 	mov r0, r8
 	adds r1, r3, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	ldr r1, _0801F5D4 @ =0x0000B343
 	adds r0, r4, #0
 	bl GetFile
@@ -2501,7 +2501,7 @@ EntityEF6F_Init: @ 0x0801F4CC
 	stm r2!, {r5, r7}
 	mov r0, r8
 	adds r1, r3, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	ldr r1, _0801F5D8 @ =0x00005D04
 	adds r0, r4, #0
 	bl GetFile
@@ -2521,7 +2521,7 @@ EntityEF6F_Init: @ 0x0801F4CC
 	stm r2!, {r5, r7}
 	mov r0, r8
 	adds r1, r3, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	ldr r1, _0801F5DC @ =0x000082F1
 	adds r0, r4, #0
 	bl GetFile
@@ -2540,7 +2540,7 @@ EntityEF6F_Init: @ 0x0801F4CC
 	ldm r1!, {r4, r5}
 	stm r2!, {r4, r5}
 	adds r1, r3, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r0, #0x65
 	movs r1, #0
 	bl VM_GetKeywordValue
@@ -2687,7 +2687,7 @@ _0801F642:
 	adds r1, r6, #0
 	movs r2, #8
 	movs r3, #0x51
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	str r4, [sp]
 	adds r0, r5, #0
 	adds r1, r6, #0

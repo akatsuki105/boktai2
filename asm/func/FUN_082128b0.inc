@@ -12,7 +12,7 @@
 	lsrs r2, r2, #0x10
 	adds r0, r3, #0
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	pop {r0}
 	bx r0
 	.align 2, 0

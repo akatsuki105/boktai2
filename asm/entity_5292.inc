@@ -245,7 +245,7 @@ _080ACFAC:
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _080AD090 @ =0x0000CC88
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -320,7 +320,7 @@ _080ACFAC:
 	ldr r3, _080AD098 @ =0x000001D3
 	adds r1, r1, r3
 	adds r0, r4, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, [r6]
 	adds r0, #1
 	ands r0, r7

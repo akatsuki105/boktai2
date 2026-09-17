@@ -21,7 +21,7 @@
 	adds r0, r0, r7
 	mov sb, r0
 	adds r1, r3, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	add r5, sp, #0x14
 	movs r4, #0
 	strh r4, [r5]
@@ -40,7 +40,7 @@
 	mov r1, sb
 	movs r2, #0x19
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	strh r4, [r5]
 	strh r4, [r5, #2]
 	strh r4, [r5, #4]
@@ -56,7 +56,7 @@
 	mov r1, sb
 	movs r2, #0x1d
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0xf0
 	adds r0, r0, r7
 	mov r8, r0
@@ -84,7 +84,7 @@
 	mov r1, sb
 	movs r2, #0xd
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r2, #0xbc
 	lsls r2, r2, #2
 	adds r1, r7, r2
@@ -109,7 +109,7 @@
 	mov r1, sb
 	movs r2, #0xd
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r3, #0xd4
 	lsls r3, r3, #2
 	adds r1, r7, r3
@@ -131,7 +131,7 @@
 	mov r1, sb
 	movs r2, #0x22
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r3, #0x81
 	lsls r3, r3, #3
 	adds r0, r7, r3
@@ -144,7 +144,7 @@
 	mov r1, sb
 	movs r2, #0x23
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r1, _082109F4 @ =0x00005D04
 	ldr r0, _082109E8 @ =0x0000CB05
 	bl GetFile
@@ -163,7 +163,7 @@
 	stm r2!, {r4, r6}
 	mov r0, r8
 	adds r1, r3, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r0, #0x91
 	lsls r0, r0, #3
 	adds r4, r7, r0
@@ -209,7 +209,7 @@ _08210900:
 	adds r1, r7, r3
 	movs r2, #0x1d
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, [r4, #8]
 	movs r1, #1
 	orrs r0, r1
@@ -245,7 +245,7 @@ _08210900:
 	str r6, [sp, #0xc]
 	movs r2, #0x1d
 	movs r3, #0x31
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	str r4, [sp, #0x10]
 	add r0, sp, #0x10
 	add r1, sp, #0x14
@@ -268,7 +268,7 @@ _08210990:
 	ldr r1, [sp, #0x2c]
 	movs r2, #0
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	adds r4, #0x60
 	subs r6, #1
 	cmp r6, #0
@@ -322,7 +322,7 @@ _08210A08:
 	adds r5, r7, r2
 	ldr r1, _08210A9C @ =0x00001C1B
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r3, _08210AA0 @ =0x00000C8C
 	adds r4, r7, r3
 	ldr r2, _08210AA4 @ =0x00000212

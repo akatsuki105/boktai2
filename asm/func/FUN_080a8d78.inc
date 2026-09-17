@@ -4,7 +4,7 @@
 	adds r6, #0x48
 	ldr r1, _080A8DC4 @ =0x0000E74B
 	adds r0, r6, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r4, r5, #0
 	adds r4, #0x1c
 	adds r0, r4, #0
@@ -26,7 +26,7 @@
 	movs r1, #0x99
 	lsls r1, r1, #1
 	adds r0, r6, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	adds r1, r5, #0
 	adds r1, #0x23
 	movs r0, #1

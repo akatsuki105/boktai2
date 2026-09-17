@@ -4,6 +4,8 @@
 #include "vm.h"
 #include "weapon.h"
 
+// player.c とファイルを分けてるのは、ファイルサイズが大きくなりすぎてコードを把握しにくいからで、解析が進んだら整理する予定
+
 void FUN_08065164(Player* p);
 void CheckHeartJokerEmblem(Player* p);
 void FUN_08061294(Player* p);
@@ -17,7 +19,7 @@ NAKED void FUN_08065200(Player* p) { INCFUNC("asm/func/FUN_08065200.inc"); }
 NAKED void FUN_0806521c(Player* p) { INCFUNC("asm/func/FUN_0806521c.inc"); }
 
 void FUN_08065240(Player* p) {
-  if (VM_SeekToKeyword(0x52) != 0) {
+  if (VM_SeekToKeyword('R') != 0) {
     p->scriptID_9c4 = Script_GetValue();
   } else {
     p->scriptID_9c4 = 0;
@@ -114,6 +116,8 @@ NAKED bool32 FUN_08066d2c(Player* p, s32 val) { INCFUNC("asm/func/FUN_08066d2c.i
 
 NAKED void FUN_08066d7c(Player* p, s32 val) { INCFUNC("asm/func/FUN_08066d7c.inc"); }
 
+NAKED void FUN_08066df8(Player* p) { INCFUNC("asm/func/FUN_08066df8.inc"); }
+
 INCASM("asm/player_08065988.inc");
 
 NAKED void FUN_0807e854(Player* p) { INCFUNC("asm/func/FUN_0807e854.inc"); }
@@ -170,3 +174,153 @@ Player* CreatePlayer(u32 n, void* _) {
   }
   return p;
 }
+
+// --------------------------------------------
+
+void FUN_08066f7c(Player* p);
+void FUN_080672b0(Player* p);
+void MagicDash_0806734c(Player* p);
+void FUN_080674dc(Player* p);
+void FUN_08067510(Player* p);
+void FUN_08067de8(Player* p);
+void FUN_08067f58(Player* p);
+void FUN_08067f88(Player* p);
+void FUN_08067ffc(Player* p);
+void FUN_080682dc(Player* p);
+void FUN_0806830c(Player* p);
+void FUN_08068624(Player* p);
+void MagicRisingSun_08068944(Player* p);
+void MagicTransform_0806b92c(Player* p);
+void MagicChangeWolf_0806eb40(Player* p);
+void MagicChangeBat_0806bc74(Player* p);
+void MagicChangeMouse_0806bf18(Player* p);
+void MagicSleeping_0806c124(Player* p);
+void MagicFreeze_08069710(Player* p);
+void MagicHealing_08069928(Player* p);
+void MagicDynamite_08069b18(Player* p);
+void FUN_08069c8c(Player* p);
+void FUN_0806961c(Player* p);
+void FUN_08069648(Player* p);
+void FUN_080695ec(Player* p);
+void FUN_08069218(Player* p);
+void FUN_0806a050(Player* p);
+void FUN_08069d70(Player* p);
+void FUN_08069f60(Player* p);
+void FUN_0806a084(Player* p);
+void FUN_0806a32c(Player* p);
+void FUN_0806a628(Player* p);
+void FUN_0806a88c(Player* p);
+void FUN_0806abd4(Player* p);
+void FUN_0806adc8(Player* p);
+void FUN_0806af70(Player* p);
+void FUN_0806f1ec(Player* p);
+void FUN_0806b06c(Player* p);
+void FUN_0806b758(Player* p);
+void FUN_0806b374(Player* p);
+void FUN_08072014(Player* p);
+void FUN_08067510(Player* p);
+void FUN_08067de8(Player* p);
+void Sabata_BlackSun(Player* p);
+void FUN_0806c2dc(Player* p);
+void FUN_0806c400(Player* p);
+void FUN_0806c6d4(Player* p);
+void FUN_0806c868(Player* p);
+void FUN_0806c9bc(Player* p);
+void FUN_0806cbe8(Player* p);
+
+const PlayerFunc PTR_ARRAY_085abcac[33] = {
+    FUN_08066f7c, FUN_080672b0, MagicDash_0806734c, FUN_080695ec, FUN_08067510, FUN_08067de8, FUN_08069218, FUN_08067ffc, FUN_08068624, MagicRisingSun_08068944, MagicTransform_0806b92c, MagicChangeWolf_0806eb40, MagicChangeBat_0806bc74, MagicChangeMouse_0806bf18, MagicSleeping_0806c124, MagicFreeze_08069710, MagicHealing_08069928, MagicDynamite_08069b18, FUN_08069c8c, FUN_0806961c, FUN_08069648, FUN_0806a050, FUN_08069d70, FUN_08069f60, FUN_0806a084, FUN_0806a32c, FUN_0806a628, FUN_0806a88c, FUN_0806abd4, FUN_0806adc8, FUN_0806af70, FUN_0806f1ec, FUN_0806b06c,
+};  // 0x085ABCAC
+
+const PlayerFunc PTR_ARRAY_085abd30[32] = {
+    FUN_08066f7c, FUN_080672b0, FUN_0806b374, FUN_08072014, FUN_08067510, FUN_08067de8, FUN_08069218, FUN_0806830c, FUN_08068624, Sabata_BlackSun, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_0806961c, FUN_08069648, FUN_0806a050, FUN_08069d70, FUN_08069f60, FUN_0806a084, FUN_0806a32c, FUN_0806a628, FUN_0806a88c, FUN_0806abd4, FUN_0806adc8, FUN_0806af70, FUN_0806b758,
+};  // 0x085ABD30
+
+const PlayerFunc PTR_ARRAY_085abdb0[27] = {
+    FUN_0806c2dc, FUN_0806c400, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_0806cbe8, NULL, NULL, NULL, NULL, NULL, NULL, FUN_0806c868, FUN_0806c6d4, NULL, NULL, NULL, FUN_0806c9bc, NULL, NULL,
+};  // 0x085ABDB0
+
+// --------------------------------------------
+
+void FUN_0806ceb0(Player* p);
+void FUN_0806d014(Player* p);
+void FUN_0806d22c(Player* p);
+void FUN_0806dd7c(Player* p);
+void FUN_0806d420(Player* p);
+void FUN_0806d5b0(Player* p);
+void FUN_0806d74c(Player* p);
+void FUN_0806da18(Player* p);
+
+const PlayerFunc PTR_ARRAY_085abe1c[27] = {
+    FUN_0806ceb0, FUN_0806d014, NULL, NULL, FUN_0806d22c, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_0806dd7c, NULL, NULL, NULL, NULL, NULL, FUN_0806d420, FUN_0806d5b0, NULL, NULL, FUN_0806d74c, FUN_0806da18, NULL, NULL,
+};  // 0x085ABE1C
+
+// --------------------------------------------
+
+void FUN_0806df84(Player* p);
+void FUN_0806e15c(Player* p);
+void FUN_0806e404(Player* p);
+void FUN_0806e4b4(Player* p);
+void FUN_0806e7dc(Player* p);
+void FUN_0806e674(Player* p);
+
+const PlayerFunc PTR_ARRAY_085abe88[21] = {
+    FUN_0806df84, FUN_0806e15c, NULL, FUN_0806e404, FUN_0806e4b4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_0806e7dc, NULL, NULL, NULL, NULL, NULL, FUN_0806e674,
+};  // 0x085ABE88
+
+// --------------------------------------------
+
+void FUN_08066f7c(Player* p);
+void FUN_080672b0(Player* p);
+void FUN_0806f284(Player* p);
+void FUN_080695ec(Player* p);
+void FUN_08067510(Player* p);
+void FUN_08067de8(Player* p);
+void FUN_08069218(Player* p);
+void FUN_08067ffc(Player* p);
+void FUN_08068624(Player* p);
+void MagicRisingSun_08068944(Player* p);
+void MagicTransform_0806b92c(Player* p);
+void MagicChangeWolf_0806eb40(Player* p);
+void MagicChangeBat_0806bc74(Player* p);
+void MagicChangeMouse_0806bf18(Player* p);
+void MagicSleeping_0806c124(Player* p);
+void MagicFreeze_08069710(Player* p);
+void MagicHealing_0806f3a0(Player* p);
+void FUN_0806f5d8(Player* p);
+void FUN_08069c8c(Player* p);
+void FUN_0806961c(Player* p);
+void FUN_08069648(Player* p);
+void FUN_0806a050(Player* p);
+void FUN_08069d70(Player* p);
+void FUN_08069f60(Player* p);
+void FUN_0806a084(Player* p);
+void FUN_0806a32c(Player* p);
+void FUN_0806a628(Player* p);
+void FUN_0806a88c(Player* p);
+
+const PlayerFunc PTR_ARRAY_085abedc[28] = {
+    FUN_08066f7c, FUN_080672b0, FUN_0806f284, FUN_080695ec, FUN_08067510, FUN_08067de8, FUN_08069218, FUN_08067ffc, FUN_08068624, MagicRisingSun_08068944, MagicTransform_0806b92c, MagicChangeWolf_0806eb40, MagicChangeBat_0806bc74, MagicChangeMouse_0806bf18, MagicSleeping_0806c124, MagicFreeze_08069710, MagicHealing_0806f3a0, FUN_0806f5d8, FUN_08069c8c, FUN_0806961c, FUN_08069648, FUN_0806a050, FUN_08069d70, FUN_08069f60, FUN_0806a084, FUN_0806a32c, FUN_0806a628, FUN_0806a88c,
+};  // 0x085ABEDC
+
+const u16 u16_ARRAY_085abf4c[3] = {1800, 1800, 900};  // 0x085ABF4C
+
+// --------------------------------------------
+
+void FUN_08081f80(Player* p);
+void FUN_08081fb4(Player* p);
+void FUN_08082bdc(Player* p);
+void FUN_080832b8(Player* p);
+void FUN_08082154(Player* p);
+void FUN_0808301c(Player* p);
+void FUN_08082dac(Player* p);
+void FUN_08082970(Player* p);
+void FUN_08082a94(Player* p);
+void FUN_080835d8(Player* p);
+void FUN_08082464(Player* p);
+void FUN_08082498(Player* p);
+void FUN_08082670(Player* p);
+
+const PlayerFunc PTR_ARRAY_085abf54[29] = {
+    FUN_08081f80, FUN_08081fb4, FUN_08082bdc, FUN_080832b8, NULL, NULL, NULL, FUN_08082154, FUN_0808301c, FUN_08082dac, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_08082970, FUN_08082a94, FUN_080835d8, FUN_08082464, NULL, NULL, FUN_08082498, FUN_08082670, NULL, NULL, NULL,
+};  // 0x085ABF54

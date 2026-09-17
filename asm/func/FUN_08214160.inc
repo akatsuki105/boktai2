@@ -39,7 +39,7 @@ _0821419C:
 	adds r1, #0x18
 	movs r2, #0
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	adds r1, r6, #0
 	adds r1, #8
 	add r1, r8
@@ -72,7 +72,7 @@ _0821419C:
 	ldr r1, [sp, #0x7c]
 	movs r2, #0x36
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r2, #0x91
 	lsls r2, r2, #3
 	adds r1, r6, r2

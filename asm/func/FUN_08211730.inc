@@ -33,7 +33,7 @@ _0821175A:
 	lsls r3, r3, #3
 	adds r1, r7, r3
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r4, #8]
 	movs r1, #2
 	rsbs r1, r1, #0

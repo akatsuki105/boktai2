@@ -393,7 +393,7 @@ _082164C4:
 	adds r1, r6, #0
 	adds r1, #0x18
 	adds r0, r7, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _082164D4:
 	add sp, #4
 	pop {r3, r4}

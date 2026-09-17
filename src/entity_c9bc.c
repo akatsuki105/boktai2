@@ -12,11 +12,11 @@ typedef struct {
   u8 unk_04[0x44 - 0x04];
   u8 q_releaseReq;  // 0x44, 0 以外なら EntityC9BC_Update が FUN_0800cb7c で解放する
   u8 unk_45[0x48 - 0x45];
-  Entity2UnkData obj;       // 0x48, 根拠: FUN_0800cb7c, obj.id は FUN_0800db48 の検索キー
-  ActorSpriteState sprite;  // 0x8C, 根拠: FUN_0800ccd0 が Video_SetActorSpritePltt に渡す
-  q_SpriteNode44 node_a8;   // 0xA8, 根拠: FUN_0800cb7c
+  Entity2UnkData obj;   // 0x48, 根拠: FUN_0800cb7c, obj.id は FUN_0800db48 の検索キー
+  AuxSpriteGfx sprite;  // 0x8C, 根拠: FUN_0800ccd0 が Video_SetAuxSpritePltt に渡す
+  AuxSprite node_a8;    // 0xA8, 根拠: FUN_0800cb7c
   u8 unk_d4[0xF0 - 0xD4];
-  q_SpriteNode44 node_f0;  // 0xF0, 根拠: FUN_0800cb7c
+  AuxSprite node_f0;  // 0xF0, 根拠: FUN_0800cb7c
   u8 unk_11c[0x12C - 0x11C];
   HitboxData hitbox;  // 0x12C, 根拠: FUN_0800cb7c
   u8 unk_17c[0x1FC - 0x17C];
@@ -27,7 +27,7 @@ static_assert(sizeof(q_EntityC9BCElem) == 508);  // 根拠: EntityC9BC_Init の 
 typedef struct {
   Entity e;         // ENTITY_UNK_9
   u32 unk_18;       // 0x18, EntityC9BC_Init で 0 を入れるだけ
-  u32 count;        // 0x1C, 要素数, VM_GetKeywordValue(0x6D, 4)
+  u32 count;        // 0x1C, 要素数, VM_GetKeywordValue('m', 4)
   s16 q_bobOffset;  // 0x20, sin(q_bobAngle) * 16, 各要素の高さに加算される
   u8 q_bobAngle;    // 0x22, gSineTable の添字, 毎フレーム +2
   u8 q_fadeDir;     // 0x23, 0 なら q_fadeLevel を増やし 32 で 1 に, 1 なら減らし 0 で 0 に戻る

@@ -22,7 +22,7 @@
 	adds r6, #0x18
 	adds r0, r6, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	ldr r1, _080B5908 @ =0x0000B343
 	adds r0, r4, #0
 	bl GetFile
@@ -40,7 +40,7 @@
 	mov sb, r5
 	mov r0, sb
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	ldr r1, _080B590C @ =0xFFFF0000
 	movs r4, #0
 	str r4, [sp, #0x10]
@@ -61,7 +61,7 @@
 	adds r1, r6, #0
 	movs r2, #4
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r2, #0x8c
 	lsls r2, r2, #1
 	adds r0, r7, r2
@@ -78,7 +78,7 @@
 	str r1, [sp, #0xc]
 	adds r1, r6, #0
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	add r0, sp, #0x10
 	ldrh r0, [r0]
 	adds r0, #8
@@ -94,7 +94,7 @@
 	adds r1, r6, #0
 	movs r2, #8
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	add r0, sp, #0x10
 	ldrh r0, [r0]
 	adds r0, #8
@@ -110,7 +110,7 @@
 	adds r1, r6, #0
 	movs r2, #8
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r1, _080B5914 @ =0x0000FFF8
 	add r0, sp, #0x10
 	strh r1, [r0]
@@ -126,7 +126,7 @@
 	mov r1, sb
 	movs r2, #0x94
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r1, #0x10
 	add r0, sp, #0x10
 	strh r1, [r0]
@@ -144,7 +144,7 @@
 	adds r1, r6, #0
 	movs r2, #0x12
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r1, #0x90
 	add r0, sp, #0x10
 	strh r1, [r0]
@@ -172,7 +172,7 @@ _080B57A6:
 	adds r1, #0x38
 	movs r2, #0x14
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldrh r0, [r6]
 	adds r0, #8
 	strh r0, [r6]
@@ -194,7 +194,7 @@ _080B57A6:
 	mov r1, sl
 	movs r2, #0x47
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r1, _080B591C @ =0x0000FFC8
 	add r0, sp, #0x10
 	strh r1, [r0]
@@ -222,7 +222,7 @@ _080B580E:
 	mov r1, sb
 	movs r2, #8
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldrh r0, [r6]
 	adds r0, #8
 	strh r0, [r6]
@@ -253,7 +253,7 @@ _080B580E:
 	str r4, [sp, #0xc]
 	mov r1, sb
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r1, _080B5920 @ =0x0000FFD0
 	add r0, sp, #0x10
 	strh r1, [r0]
@@ -277,7 +277,7 @@ _080B5880:
 	mov r1, sb
 	movs r2, #8
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldrh r0, [r6]
 	adds r0, #8
 	strh r0, [r6]
@@ -290,7 +290,7 @@ _080B5880:
 	adds r4, r7, r1
 	ldr r1, _080B5928 @ =0x0000A47C
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r2, #0xfb
 	lsls r2, r2, #3
 	adds r5, r7, r2
@@ -305,7 +305,7 @@ _080B5880:
 	str r0, [r5]
 	ldr r1, _080B5930 @ =0x00000143
 	adds r0, r4, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r4, _080B5934 @ =0x000007F4
 	adds r1, r7, r4
 	movs r0, #0xa0

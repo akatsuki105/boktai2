@@ -67,7 +67,7 @@ _082168F2:
 	adds r1, r7, #0
 	adds r1, #0x18
 	str r2, [sp]
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldr r2, [sp]
 	b _08216952
 	.align 2, 0
@@ -84,7 +84,7 @@ _0821692C:
 	adds r1, r7, #0
 	adds r1, #0x18
 	str r2, [sp]
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldr r2, [sp]
 	cmp r0, #0
 	beq _08216952

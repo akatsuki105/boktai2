@@ -315,14 +315,14 @@ s32 FUN_08022510(void) {
     return -1;
   }
   p->unk_23 = 1;
-  p->unk_18 = VM_GetKeywordValue(0x64, -1);
-  p->unk_1a = VM_GetKeywordValue(0x63, -1) - 1;
+  p->unk_18 = VM_GetKeywordValue('d', -1);
+  p->unk_1a = VM_GetKeywordValue('c', -1) - 1;
   p->unk_1c = 0;
   p->unk_1e = 1;
   p->unk_1f = 0;
-  p->scriptID_20 = VM_GetKeywordValue(0x65, 0);
+  p->scriptID_20 = VM_GetKeywordValue('e', 0);
   p->unk_22 = 0;
-  if (VM_SeekToKeyword(0x70)) {
+  if (VM_SeekToKeyword('p')) {
     for (i = 0; i < 16; i++) {
       if (VM_GetPC() == NULL) {
         break;

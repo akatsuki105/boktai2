@@ -74,7 +74,7 @@ _0822236E:
 	movs r3, #0
 	bl Video_GenerateBGMap
 	str r5, [r7, #0x58]
-	bl FUN_0823d4e8
+	bl UpdateSolDarkSide
 	bl UpdateWeaponStyle
 _082223DC:
 	ldr r5, [r7, #0x50]
@@ -449,7 +449,7 @@ _082226A8:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r4, #8]
 	movs r1, #2
 	rsbs r1, r1, #0

@@ -120,7 +120,7 @@ _080021E0:
 	lsls r0, r0, #0xa
 	orrs r1, r0
 	adds r0, r6, #0
-	bl FUN_08001a18
+	bl MapPltt_Fill
 	b _0800222C
 _080021FC:
 	cmp r3, #4
@@ -227,12 +227,12 @@ _080022A2:
 	cmp r0, #0x3f
 	bhi _080022C8
 	adds r0, r6, #0
-	bl FUN_08001bd0
+	bl MapPltt_StepBlend
 _080022C8:
 	adds r0, r6, #0
 	bl FUN_08001c10
 	adds r0, r6, #0
-	bl FUN_08001a34
+	bl MapPltt_Commit
 	ldrb r2, [r4]
 	ldr r3, _08002308 @ =0x00000641
 	adds r1, r6, r3
@@ -335,7 +335,7 @@ _080023A4:
 	cmp r1, #0
 	beq _080023B4
 	adds r0, r6, #0
-	bl FUN_08001cbc
+	bl MapPltt_BlendRows
 _080023B4:
 	ldr r2, _080023D8 @ =0x085AA634
 	ldrb r1, [r6, #0x1b]

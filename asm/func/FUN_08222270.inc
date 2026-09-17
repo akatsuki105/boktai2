@@ -42,7 +42,7 @@ _082222A0:
 	adds r1, #0x18
 	movs r2, #0
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, [r4, #8]
 	movs r1, #1
 	orrs r0, r1

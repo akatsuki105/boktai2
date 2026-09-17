@@ -581,7 +581,7 @@ _0821EE9C:
 	lsls r1, r1, #2
 	adds r0, r7, r1
 	movs r1, #0x20
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 	ldr r0, _0821EF10 @ =0x0000034B
 	bl PlaySound_082406e0
 _0821EECE:
@@ -595,7 +595,7 @@ _0821EECE:
 	lsls r3, r3, #2
 	adds r0, r7, r3
 	movs r1, #0x40
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _0821EEE6:
 	movs r1, #0xb2
 	lsls r1, r1, #2

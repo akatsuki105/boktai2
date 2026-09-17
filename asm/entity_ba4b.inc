@@ -1236,7 +1236,7 @@ _080287BA:
 	adds r1, r5, r2
 	movs r2, #0
 	ldr r3, _0802880C @ =0x00000201
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0x82
 	lsls r0, r0, #7
 	strh r0, [r4, #0x3a]
@@ -2010,7 +2010,7 @@ FUN_08028dbc: @ 0x08028DBC
 	stm r3!, {r4, r5, r6}
 	ldm r2!, {r4, r5}
 	stm r3!, {r4, r5}
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r6, #0xc5
 	lsls r6, r6, #2
 	adds r0, r7, r6
@@ -2103,7 +2103,7 @@ _08028E68:
 	mov r0, r8
 	movs r2, #0
 	movs r3, #0x11
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	add sp, #0x18
 	pop {r3}
 	mov r8, r3
@@ -3711,7 +3711,7 @@ FUN_08029ab8: @ 0x08029AB8
 	mov r0, sb
 	movs r2, #0
 	movs r3, #1
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	str r5, [sp]
 	mov r0, sb
 	mov r1, r8
@@ -3776,7 +3776,7 @@ FUN_08029b40: @ 0x08029B40
 	lsls r2, r2, #2
 	adds r1, r5, r2
 	adds r0, r4, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	subs r6, #0x2a
 	adds r0, r5, r6
 	ldrb r0, [r0]
@@ -4000,7 +4000,7 @@ FUN_08029d1c: @ 0x08029D1C
 _08029D2C:
 	adds r0, r4, #0
 	ldr r1, _08029DCC @ =0x00003668
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r4, #0x1c
 	subs r6, #1
 	cmp r6, #0
@@ -4008,11 +4008,11 @@ _08029D2C:
 	ldr r1, _08029DC8 @ =0x00000B48
 	adds r0, r7, r1
 	movs r1, #0xc4
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r2, _08029DD0 @ =0x00000B64
 	adds r0, r7, r2
 	movs r1, #0xc8
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, _08029DD4 @ =0x0000922E
 	ldr r1, _08029DD8 @ =0x000078E1
 	bl GetFile
@@ -4665,7 +4665,7 @@ FUN_0802a208: @ 0x0802A208
 	adds r0, r6, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	str r5, [sp]
 	adds r0, r6, #0
 	mov r1, r8
@@ -5025,7 +5025,7 @@ _0802A4FC:
 	lsls r2, r2, #2
 	adds r1, r4, r2
 	adds r0, r5, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _0802A514:
 	ldr r7, _0802A530 @ =0x00000B04
 	adds r1, r4, r7
@@ -7660,7 +7660,7 @@ _0802B9E2:
 _0802B9FA:
 	adds r0, r7, #0
 	adds r1, r4, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	mov r2, sb
 	ldrh r0, [r2]
 	ldr r3, [sp, #0x50]
@@ -7825,7 +7825,7 @@ _0802BB1E:
 _0802BB36:
 	adds r0, r7, #0
 	adds r1, r4, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	b _0802BB90
 _0802BB40:
 	movs r3, #0xae
@@ -21116,7 +21116,7 @@ _08031EDA:
 	movs r2, #0xb5
 	lsls r2, r2, #2
 	adds r1, r7, r2
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	movs r3, #0xdd
 	lsls r3, r3, #2
 	adds r2, r7, r3
@@ -21430,7 +21430,7 @@ _0803214E:
 	adds r0, r6, r2
 	subs r2, #0x80
 	adds r1, r6, r2
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	movs r0, #0xdd
 	lsls r0, r0, #2
 	adds r2, r6, r0
@@ -27847,7 +27847,7 @@ _08035232:
 	adds r0, r6, r2
 	subs r2, #0x80
 	adds r1, r6, r2
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	movs r0, #0xdd
 	lsls r0, r0, #2
 	adds r2, r6, r0

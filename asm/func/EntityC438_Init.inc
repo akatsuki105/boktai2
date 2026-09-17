@@ -17,7 +17,7 @@
 	ldm r0!, {r3, r4}
 	stm r2!, {r3, r4}
 	add r0, sp, #0x10
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r0, #0x70
 	bl VM_SeekToKeyword
 	adds r3, r0, #0
@@ -205,7 +205,7 @@ _080AAF1C:
 	str r3, [sp, #0xc]
 	add r1, sp, #0x10
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, _080AAFA0 @ =0x030047A4
 	ldr r0, [r0]
 	movs r1, #0x80

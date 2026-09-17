@@ -10,7 +10,7 @@ typedef struct Entity0800a89c {
   bool32 isSabata;         // 0x18
   u32 unk_1c;              // 0x1C
   ParticleGroup* group0;   // 0x20, PTCL_GROUP_0
-  AnimationFile* anim_24;  // 0x24
+  AuxAnimFile* anim_24;  // 0x24
   u8 unk_28[0x7D8 - 0x28];
   Player* player;  // 0x7D8, 根拠: 0x0800a860
 } Entity0800a89c;

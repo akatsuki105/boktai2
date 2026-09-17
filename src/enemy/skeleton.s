@@ -885,7 +885,7 @@ _081034EA:
 	ldr r1, [r4, #0x44]
 	adds r0, r1, #0
 	adds r0, #0x20
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0
@@ -16877,7 +16877,7 @@ _0810B0E4:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _0810B0FC:
 	ldrh r0, [r6, #0xc]
 	cmp r0, #0
@@ -18886,7 +18886,7 @@ _0810C084:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _0810C09C:
 	ldr r2, _0810C150 @ =0x0000046E
 	adds r0, r5, r2
@@ -28312,7 +28312,7 @@ _08110A00:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08110A18:
 	ldr r2, _08110A38 @ =0x085B0A08
 	adds r0, r6, #0
@@ -33100,7 +33100,7 @@ _08112FA4:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08112FBC:
 	ldr r0, _08113030 @ =0x000004A4
 	adds r4, r5, r0
@@ -33612,7 +33612,7 @@ _081133B8:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _081133D0:
 	ldr r0, _08113448 @ =0x000004A4
 	adds r4, r5, r0
@@ -34166,7 +34166,7 @@ _08113814:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _0811382C:
 	ldr r0, _081138A4 @ =0x000004A4
 	adds r4, r5, r0
@@ -35066,7 +35066,7 @@ _08113F12:
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _08113F7C @ =0x0000AE52
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -35121,7 +35121,7 @@ _08113F80:
 	ldm r0!, {r3, r5}
 	stm r2!, {r3, r5}
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r4, #0
 	adds r0, #0x20
 	movs r1, #2
@@ -35134,7 +35134,7 @@ _08113F80:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, _08114070 @ =0x000004B7
 	adds r1, r7, r0
 	movs r0, #0xff
@@ -36289,7 +36289,7 @@ _081148F2:
 	bne _08114940
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _0811494C
 	.align 2, 0
 _0811493C: .4byte 0x00000101
@@ -37043,7 +37043,7 @@ _08114F72:
 	ldr r1, [r7, #0x44]
 	adds r0, r1, #0
 	adds r0, #0x20
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _08114F7C:
 	movs r0, #0
 	ldr r3, [sp, #0xf0]

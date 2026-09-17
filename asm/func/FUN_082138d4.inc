@@ -15,7 +15,7 @@
 	ldm r0!, {r3, r4}
 	stm r2!, {r3, r4}
 	adds r0, r6, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	add r5, sp, #0x14
 	movs r4, #0
 	str r4, [sp, #0x10]
@@ -37,7 +37,7 @@
 	adds r1, r6, #0
 	movs r2, #0x94
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, [r6, #0x28]
 	movs r1, #1
 	orrs r0, r1

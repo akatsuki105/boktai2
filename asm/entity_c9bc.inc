@@ -181,7 +181,7 @@ _0800CCE6:
 	adds r0, #0x8c
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r0, #1
 	b _0800CD64
 	.align 2, 0
@@ -216,7 +216,7 @@ _0800CD38:
 	adds r0, #0x8c
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _0800CD62:
 	movs r0, #0
 _0800CD64:
@@ -257,7 +257,7 @@ _0800CD7E:
 	adds r0, #0x8c
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r0, #1
 _0800CDAE:
 	pop {r1}
@@ -297,7 +297,7 @@ FUN_0800cdb4: @ 0x0800CDB4
 	adds r0, #0x4b
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r0, #0x85
 	lsls r0, r0, #2
 	bl PlaySound_082406e0
@@ -310,7 +310,7 @@ _0800CE02:
 	adds r0, #0x4b
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, _0800CE20 @ =0x00000217
 	bl PlaySound_082406e0
 _0800CE18:
@@ -413,7 +413,7 @@ _0800CEAE:
 	adds r0, #0x8c
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	strb r5, [r6, #3]
 	str r4, [r6, #4]
 	movs r0, #1
@@ -1672,7 +1672,7 @@ _0800D7FE:
 	adds r4, #0x8c
 	ldrh r1, [r5, #0x2e]
 	adds r0, r4, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r5, #0x2e]
 	cmp r0, #0x79
 	bne _0800D850
@@ -1688,7 +1688,7 @@ _0800D838:
 	adds r4, #0x8c
 	ldrh r1, [r5, #0x2e]
 	adds r0, r4, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r5, #0x2e]
 	cmp r0, #0x79
 	bne _0800D850

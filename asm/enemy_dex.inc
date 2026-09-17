@@ -895,7 +895,7 @@ FUN_0820d6e4: @ 0x0820D6E4
 	ldr r4, [sp, #0x18]
 	adds r4, #0x4c
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	add r2, sp, #0x10
 	movs r0, #0
 	adds r1, r2, #0
@@ -947,7 +947,7 @@ _0820D75E:
 	ldr r1, [sp, #0x20]
 	movs r2, #0
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -962,7 +962,7 @@ _0820D75E:
 	ldr r1, [sp, #0x20]
 	movs r2, #0xa
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r4, #0x60
 	add sb, r4
 	ldr r5, [sp, #0x34]
@@ -1004,7 +1004,7 @@ _0820D7D6:
 	adds r1, r7, #0
 	movs r2, #0
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r2, #0
 	str r2, [sp]
 	mov r3, sb
@@ -1015,7 +1015,7 @@ _0820D7D6:
 	adds r0, r5, #0
 	adds r1, r7, #0
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	adds r5, #0x60
 	adds r4, #0x60
 	movs r1, #1
@@ -1045,7 +1045,7 @@ _0820D7D6:
 	ldr r1, [sp, #0x20]
 	movs r2, #0x22
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r3, [sp, #0x18]
 	ldr r1, _0820DAB4 @ =0x0000108C
 	adds r0, r3, r1
@@ -1058,7 +1058,7 @@ _0820D7D6:
 	ldr r1, [sp, #0x20]
 	movs r2, #0x23
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	add r4, sp, #0x10
 	movs r6, #0
 	ldr r0, [sp, #0x18]
@@ -1085,7 +1085,7 @@ _0820D876:
 	ldr r1, [sp, #0x20]
 	movs r2, #0xd
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r2, [sp, #0x18]
 	ldr r3, _0820DABC @ =0x00000F14
 	adds r1, r2, r3
@@ -1126,7 +1126,7 @@ _0820D876:
 	ldr r1, [sp, #0x20]
 	movs r2, #0xe
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, [sp, #0x18]
 	ldr r2, _0820DAC4 @ =0x00000FD4
 	adds r1, r0, r2
@@ -1152,7 +1152,7 @@ _0820D876:
 	ldr r1, [sp, #0x20]
 	movs r2, #0xf
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	add r0, sp, #0x10
 	strh r4, [r0]
 	strh r4, [r5, #2]
@@ -1171,7 +1171,7 @@ _0820D876:
 	ldr r1, [sp, #0x20]
 	movs r2, #0x10
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	add r0, sp, #0x10
 	strh r4, [r0]
 	strh r4, [r5, #2]
@@ -1191,7 +1191,7 @@ _0820D876:
 	ldr r1, [sp, #0x20]
 	movs r2, #0x18
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	add r0, sp, #0x10
 	strh r4, [r0]
 	strh r4, [r5, #2]
@@ -1218,7 +1218,7 @@ _0820D988:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x20]
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	adds r4, #0x60
 	adds r6, #1
 	cmp r6, #4
@@ -1251,7 +1251,7 @@ _0820D9C8:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x20]
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	adds r4, #0x60
 	adds r6, #1
 	cmp r6, #2
@@ -1274,7 +1274,7 @@ _0820D9C8:
 	ldr r1, [sp, #0x20]
 	movs r2, #0xc
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	add r0, sp, #0x10
 	strh r5, [r0]
 	strh r5, [r4, #2]
@@ -1289,7 +1289,7 @@ _0820D9C8:
 	ldr r1, [sp, #0x20]
 	movs r2, #0x16
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r1, [sp, #0x1c]
 	ldrb r0, [r1]
 	lsls r0, r0, #4
@@ -1310,7 +1310,7 @@ _0820D9C8:
 	ldr r1, [sp, #0x20]
 	movs r2, #0x17
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r4, [sp, #0x2c]
 	ldr r0, [r4]
 	ldr r5, [sp, #0x18]

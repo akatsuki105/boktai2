@@ -17,7 +17,7 @@ void* VM_Ctrl_LoadMap(void) {
   void* bVar2;
   u16 scriptID = (u16)Script_GetValue();
   u32_03004798 = 0x01;
-  if ((VM_SeekToKeyword(0x6E) == 0) || ((VM_GetPC() != NULL) && (Script_GetValue() == 0))) {
+  if ((VM_SeekToKeyword('n') == 0) || ((VM_GetPC() != NULL) && (Script_GetValue() == 0))) {
     u32_03004798 |= 0x10;
   }
   SetMapInitScriptID((s16)scriptID);
@@ -76,9 +76,9 @@ void* VM_Ctrl_E43C(void) {
   bool32 bVar1 = FUN_0823a8b0();
   if (!bVar1) {
     u32_03004798 = 0x40;
-    if (VM_SeekToKeyword(0x73) != 0) {
+    if (VM_SeekToKeyword('s') != 0) {
       u32_03004798 |= 0x10;
-    } else if (VM_SeekToKeyword(0x72) != 0) {
+    } else if (VM_SeekToKeyword('r') != 0) {
       u32_03004798 |= 0x100;
     }
   }

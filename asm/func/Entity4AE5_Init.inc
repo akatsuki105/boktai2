@@ -109,7 +109,7 @@ _08002478:
 	adds r0, #0x14
 	str r0, [r6, #0x28]
 	adds r0, r6, #0
-	bl FUN_08001b58
+	bl MapPltt_Rebuild
 	ldr r1, _08002508 @ =gClock
 	ldrb r0, [r1, #0xf]
 	strh r0, [r7]

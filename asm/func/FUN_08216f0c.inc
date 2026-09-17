@@ -376,10 +376,10 @@ _08217204:
 	adds r4, r7, #0
 	adds r4, #0x18
 	adds r1, r4, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	movs r0, #0
 _0821721C:
 	add sp, #4

@@ -5,7 +5,7 @@
 
 typedef struct {
   Entity e;             // ENTITY_UNK_8
-  AnimationFile* anim;  // 0x18, 根拠: Entity08016660_Init
+  AuxAnimFile* anim;  // 0x18, 根拠: Entity08016660_Init
   void* unk_1c;         // 0x1C
 } Entity08016660;
 static_assert(sizeof(Entity08016660) == 32);

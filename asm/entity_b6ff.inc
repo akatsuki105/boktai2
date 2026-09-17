@@ -640,7 +640,7 @@ _080ACA70:
 	adds r5, #0x2c
 	adds r0, r5, #0
 	ldr r1, _080ACAD8 @ =0x0000CC88
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0

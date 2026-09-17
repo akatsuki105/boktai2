@@ -4,6 +4,7 @@
 #include "global.h"
 #include "item.h"
 #include "sound.h"
+#include "sprite.h"
 #include "vm.h"
 
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
@@ -114,8 +115,6 @@ const u8 u8_ARRAY_085abc82[8] = {4, 2, 2, 1, 1, 2, 8, 0};  // 0x085abc82
 const s16 s16_ARRAY_085abc8a[17] = {
     -0x1, 0x0, 0x4, -0x1, 0x6, 0x7, 0x5, -0x1, 0x2, 0x1, 0x3, -0x1, -0x1, -0x1, -0x1, -0x1, 0x0,
 };  // 0x085abc8a
-
-INCBIN(".rodata", "data/rodata2.bin");  // ./tmp/bin.sh ./baserom.gba 0x085abcac 0x085abfc8 ./data/rodata2.bin
 
 NAKED void FUN_080609dc(Player* p) { INCFUNC("asm/func/FUN_080609dc.inc"); }
 

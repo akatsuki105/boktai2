@@ -342,11 +342,11 @@ _08015866:
 	adds r4, #0x20
 	adds r0, r4, #0
 	ldr r1, _080158A4 @ =0x000061F9
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	movs r1, #0x89
 	lsls r1, r1, #2
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	adds r1, r5, #0
 	adds r1, #0x3c
 	movs r0, #0x20
@@ -370,11 +370,11 @@ _080158A8:
 	adds r4, #0x20
 	adds r0, r4, #0
 	ldr r1, _080158E0 @ =0x000061F9
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	movs r1, #0x8b
 	lsls r1, r1, #2
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	adds r1, r5, #0
 	adds r1, #0x3c
 	movs r0, #0x20
@@ -398,10 +398,10 @@ _080158E4:
 	adds r4, #0x20
 	adds r0, r4, #0
 	ldr r1, _0801591C @ =0x000061F9
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	ldr r1, _08015920 @ =0x0000022B
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	adds r1, r5, #0
 	adds r1, #0x3c
 	movs r0, #0x2d
@@ -424,11 +424,11 @@ _08015924:
 	adds r4, #0x20
 	adds r0, r4, #0
 	ldr r1, _08015988 @ =0x00004384
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldrb r1, [r5, #1]
 	adds r1, #0x7d
 	adds r0, r4, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	adds r4, #0x48
 	mov r3, sl
 	ldr r0, [r3]

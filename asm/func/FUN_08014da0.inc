@@ -60,7 +60,7 @@ _08014E02:
 	adds r0, r0, r1
 	ldrh r1, [r0]
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	str r4, [sp, #0xc]
 	cmp r0, #0
 	beq _08014DC8
@@ -73,7 +73,7 @@ _08014E2A:
 	ldrh r1, [r7, #0xa]
 	adds r1, #1
 	adds r0, r4, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _08014E34:
 	movs r3, #0
 	ldr r1, [sp]

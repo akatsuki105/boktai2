@@ -32,7 +32,7 @@
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _081A561C @ =0x0000D638
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -89,7 +89,7 @@ _081A5628:
 	ldm r0!, {r3, r6}
 	stm r2!, {r3, r6}
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r4, #0
 	adds r0, #0x20
 	movs r1, #2
@@ -102,7 +102,7 @@ _081A5628:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r6, _081A5718 @ =0x000004B7
 	adds r1, r7, r6
 	movs r0, #0xff
@@ -1321,7 +1321,7 @@ _081A6026:
 	bne _081A6062
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _081A606E
 _081A6062:
 	ldr r2, [r7, #0x44]
@@ -1893,7 +1893,7 @@ _081A64EE:
 	ldr r1, [r7, #0x44]
 	adds r0, r1, #0
 	adds r0, #0x20
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _081A64F8:
 	movs r0, #0
 	ldr r3, [sp, #0xa4]

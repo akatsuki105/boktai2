@@ -1,7 +1,7 @@
 	push {r4, lr}
 	adds r4, r0, #0
 	str r1, [r4, #0x18]
-	bl LoadPlayerSpriteSet_0807fe48
+	bl LoadPlayerSprite_0807fe48
 	adds r0, r4, #0
 	bl FUN_0807fed0
 	adds r0, r4, #0

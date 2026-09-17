@@ -596,7 +596,7 @@ _080AD624:
 	subs r3, #0xa5
 	adds r2, r2, r3
 	adds r1, r1, r2
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _080AD664:
 	movs r0, #0x94
 	lsls r0, r0, #2
@@ -715,7 +715,7 @@ _080AD73C:
 	lsls r3, r3, #1
 	adds r2, r2, r3
 	adds r1, r1, r2
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _080AD952
 	.align 2, 0
 _080AD768: .4byte 0x00000C0B
@@ -954,7 +954,7 @@ _080AD914:
 	lsls r5, r5, #1
 	adds r2, r2, r5
 	adds r1, r1, r2
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _080AD952:
 	add sp, #0x18
 	pop {r3, r4, r5}
@@ -6638,7 +6638,7 @@ _080B0588:
 	mov r0, ip
 	adds r0, #0x2c
 	ldr r1, [sp]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r5, #1
 	add r8, r5
 	mov r0, r8
@@ -7011,7 +7011,7 @@ _080B084E:
 	mov r0, ip
 	adds r0, #0x2c
 	ldr r1, [sp]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, [sp, #8]
 	adds r0, #4
 	str r0, [sp, #8]
@@ -7199,7 +7199,7 @@ _080B09B4:
 	adds r0, r5, #0
 	adds r0, #0x2c
 	adds r1, r7, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	adds r0, r5, #0
 	adds r1, r7, #0
 	bl FUN_080b0398
@@ -7423,7 +7423,7 @@ FUN_080b0b7c: @ 0x080B0B7C
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
@@ -7495,7 +7495,7 @@ _080B0C0C:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	mov r0, r8
 	movs r3, #1
 	ands r0, r3
@@ -7644,7 +7644,7 @@ _080B0D40:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r7, #0
 	mov r3, sb
 	ands r0, r3
@@ -9307,7 +9307,7 @@ FUN_080b1a88: @ 0x080B1A88
 	adds r5, r6, r0
 	ldr r1, _080B1B18 @ =0x0000C039
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
@@ -9373,7 +9373,7 @@ FUN_080b1b1c: @ 0x080B1B1C
 	adds r6, r5, r0
 	ldr r1, _080B1B70 @ =0x00003641
 	adds r0, r6, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r2, #0x80
 	lsls r2, r2, #2
 	adds r0, r4, #0

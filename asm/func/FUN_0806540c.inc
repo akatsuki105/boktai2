@@ -19,7 +19,7 @@
 	adds r4, #0x68
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r5, r6, #0
 	adds r5, #0x88
 	movs r3, #0x90
@@ -36,7 +36,7 @@
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0x64
 	bl VM_SeekToKeyword
 	adds r1, r0, #0

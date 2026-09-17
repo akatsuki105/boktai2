@@ -5,10 +5,10 @@
 #include "sprite.h"
 #include "struct.h"
 
-// FUN_082372cc の呼び出し(例: 0x081a64f4) で SpriteState にオフセットでアクセスしているので同じ構造体にありそう, また EnemyのInit関数で Malloc(128) しているのも根拠 (例: 0x08101da6)
+// MainSprite_AdvanceAnim の呼び出し(例: 0x081a64f4) で MainSprite にオフセットでアクセスしているので同じ構造体にありそう, また EnemyのInit関数で Malloc(128) しているのも根拠 (例: 0x08101da6)
 typedef struct {
-  SpriteSet tmpl;  // 0x00, スプライトのROMデータを指す構造体
-  SpriteState s;   // 0x20
+  MainSpriteGfx tmpl;  // 0x00, スプライトのROMデータを指す構造体
+  MainSprite s;        // 0x20
 } EnemySpriteData;
 static_assert(sizeof(EnemySpriteData) == 128);
 

@@ -60,7 +60,7 @@ _08237132:
 	lsrs r3, r3, #0x18
 	adds r0, r4, #0
 	mov r1, ip
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 _08237142:
 	mov r0, sb
 	adds r1, r0, r7

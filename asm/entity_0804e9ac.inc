@@ -83,7 +83,7 @@ _0804E82A:
 	adds r1, r4, #0
 	adds r1, #0x24
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 _0804E844:
 	pop {r4}
 	pop {r0}
@@ -249,7 +249,7 @@ Entity0804e9ac_Init: @ 0x0804E940
 	adds r4, #0x24
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r5, #0
 	adds r0, #0x44
 	movs r2, #0
@@ -261,7 +261,7 @@ Entity0804e9ac_Init: @ 0x0804E940
 	adds r1, r4, #0
 	movs r2, #0x3f
 	movs r3, #0x11
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0
 	b _0804E9A4
 	.align 2, 0

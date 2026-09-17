@@ -60,7 +60,7 @@ _0821AEEC:
 	adds r5, r7, #0
 	adds r5, #0x18
 	adds r0, r5, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	add r4, sp, #0x14
 	mov r0, r8
 	str r0, [sp, #0x10]
@@ -86,7 +86,7 @@ _0821AEEC:
 	adds r0, r6, #0
 	adds r1, r5, #0
 	movs r2, #7
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	mov r1, r8
 	str r1, [sp]
 	adds r0, r6, #0
@@ -111,7 +111,7 @@ _0821AF90:
 	adds r4, #0xc4
 	ldr r1, _0821B050 @ =0x000097D3
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r7, #0
 	adds r0, #0x98
 	ldr r2, _0821B054 @ =0x00008012
@@ -152,7 +152,7 @@ _0821AFE6:
 	adds r5, r7, r3
 	ldr r1, _0821B060 @ =0x00001C1B
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r0, #0x9e
 	lsls r0, r0, #1
 	adds r4, r7, r0

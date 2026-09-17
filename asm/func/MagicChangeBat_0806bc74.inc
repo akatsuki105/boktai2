@@ -299,7 +299,7 @@ _0806BECC:
 	adds r0, r5, r1
 	ldr r0, [r0]
 	ldr r1, _0806BF10 @ =0x0000026D
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r2, _0806BF14 @ =0x0000037E
 	adds r1, r5, r2
 	ldrh r0, [r1]

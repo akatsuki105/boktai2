@@ -27,7 +27,7 @@
 	mov r1, sb
 	movs r2, #1
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, [r7, #8]
 	movs r6, #1
 	orrs r0, r6
@@ -43,7 +43,7 @@
 	mov r1, sb
 	movs r2, #0xa
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, [r7, #0x68]
 	orrs r0, r6
 	str r0, [r7, #0x68]
@@ -92,7 +92,7 @@ _08212620:
 	adds r1, r6, #0
 	movs r2, #0xb
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	adds r1, r7, #0
 	adds r1, #0xc8
 	ldr r0, [r1]
@@ -111,7 +111,7 @@ _08212620:
 	adds r1, r6, #0
 	movs r2, #0
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r2, #0x94
 	lsls r2, r2, #1
 	adds r1, r7, r2
@@ -130,7 +130,7 @@ _08212620:
 	adds r1, r6, #0
 	movs r2, #6
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r2, #0xc4
 	lsls r2, r2, #1
 	adds r1, r7, r2
@@ -149,7 +149,7 @@ _08212620:
 	adds r1, r6, #0
 	movs r2, #2
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r2, #0xf4
 	lsls r2, r2, #1
 	adds r1, r7, r2
@@ -168,7 +168,7 @@ _08212620:
 	adds r1, r6, #0
 	movs r2, #6
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r2, #0x92
 	lsls r2, r2, #2
 	adds r1, r7, r2
@@ -187,7 +187,7 @@ _08212620:
 	adds r1, r6, #0
 	movs r2, #2
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r2, #0xaa
 	lsls r2, r2, #2
 	adds r1, r7, r2

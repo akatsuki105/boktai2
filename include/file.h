@@ -12,7 +12,7 @@
 #define DIR_ANIMATION 0x922E
 #define DIR_FONT 0xA635
 #define DIR_SCRIPT 0xA8D9
-#define DIR_ACTOR_SPRITE 0x98F5
+#define DIR_AUX_SPRITE 0x98F5
 #define DIR_COLLISION_MAP 0xAE6C
 #define DIR_TILE_MAP 0xC091
 #define DIR_SPRITE_SETS 0xCB05
@@ -47,13 +47,13 @@ typedef struct mft_directory {
 // directoryID
 //   DIR_OBJPLTT         -> return &ObjPlttFile
 //   DIR_BGPLTT          -> return &BgPlttFile
-//   DIR_ANIMATION       -> return &AnimationFile
+//   DIR_ANIMATION       -> return &AuxAnimFile
 //   DIR_FONT            -> return &FontHeader
 //   DIR_SCRIPT          -> return &ScriptDirectory
-//   DIR_ACTOR_SPRITE    -> return &ActorSpriteFile
+//   DIR_AUX_SPRITE      -> return &AuxSpriteFile
 //   DIR_COLLISION_MAP   -> return &CollisionMapFile
 //   DIR_TILE_MAP        -> return &TilemapHeader
-//   DIR_SPRITE_SETS     -> return &spriteset_header
+//   DIR_SPRITE_SETS     -> return &MainSpriteFile
 //   DIR_TILESET         -> return &TileSetFile
 //   DIR_PARTICLE        -> return &ParticleFile
 void* GetFile(FileID directoryID, FileID fileID);

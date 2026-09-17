@@ -85,7 +85,7 @@ _080DF1CC:
 	bl FUN_0822a470
 	ldr r0, [r6, #0xc]
 	movs r1, #0xda
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	adds r4, r6, #0
 	adds r4, #0x2c
 	ldr r1, [r5]

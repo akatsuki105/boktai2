@@ -32,7 +32,7 @@ _0801330C:
 	adds r0, #0x90
 	movs r1, #0xa2
 	lsls r1, r1, #2
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _08013336:
 	adds r0, r7, #0
 	adds r0, #0x30

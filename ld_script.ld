@@ -51,7 +51,7 @@ SECTIONS {
       src/vm_ctrl1.o(iwram_data);
       src/code_082326a0.o(iwram_data);
       src/hitbox.o(iwram_data);
-      src/code_08236f18.o(iwram_data);
+      src/sprite_anim_aux.o(iwram_data);
       src/entity_0823acbc.o(iwram_data);
       src/vm_ctrl2.o(iwram_data);
       src/vm_subroutine.o(iwram_data);
@@ -72,7 +72,7 @@ SECTIONS {
       src/entity_aa65.o(COMMON);
       src/entity_c9bc.o(COMMON);
       src/entity_0800f110.o(COMMON);
-      src/entity_08013df0.o(COMMON);
+      src/shadow_08013df0.o(COMMON);
       src/entity_08016660.o(COMMON);
       src/iwram2.o(iwram_data);
       src/camera.o(COMMON);
@@ -121,9 +121,9 @@ SECTIONS {
 			src/entity_e534.o (.text);
 			src/password.o (.text);
 			src/entity_ec96.o (.text);
-			src/entity_0801381c.o (.text);
-			src/entity_08013b68.o (.text);
-			src/entity_08013df0.o (.text);
+			src/shadow_0801381c.o (.text);
+			src/shadow_08013b68.o (.text);
+			src/shadow_08013df0.o (.text);
 			src/entity_080146e0.o (.text);
 			src/entity_08015220.o (.text);
 			src/entity_08015584.o (.text);
@@ -132,6 +132,7 @@ SECTIONS {
 			src/entity_08016dbc.o (.text);
 			src/entity_08017750.o (.text);
 			src/entity_e435.o (.text);
+			src/entity_8ecd.o (.text);
 			src/code_08017b70.o (.text);
 			src/entity_da0b.o (.text);
 			src/entity_ef6f.o (.text);
@@ -229,6 +230,7 @@ SECTIONS {
 			src/entity_501b.o (.text);
 			src/code_081e0c14.o (.text);
 			src/entity_081eaf6c.o (.text);
+			src/entity_081eb2f0.o (.text);
 			src/code_081eafbc.o (.text);
 			src/boss/dvalinn.o (.text);
 			src/code_08200ab4.o (.text);
@@ -263,8 +265,8 @@ SECTIONS {
 			src/vm_expr.o (.text);
 			src/code_082326a0.o (.text);
 			src/hitbox.o (.text);
-			src/code_08236f18.o (.text);
-			src/sprite_082370cc.o (.text);
+			src/sprite_anim_aux.o (.text);
+			src/sprite_anim_main.o (.text);
 			src/utility_08237468.o (.text);
 			src/link.o (.text);
 			src/lib/linkManager.o (.text);
@@ -274,6 +276,7 @@ SECTIONS {
 			src/entity_b8b9.o (.text);
 			src/code_0823b540.o (.text);
 			src/camera.o (.text);
+			src/code_0823cd04.o (.text);
 			src/time.o (.text);
 			src/sound.o (.text);
 			src/entity_08240a54.o (.text);
@@ -392,6 +395,7 @@ SECTIONS {
     src/entity_08017750.o (.rodata);
     src/data3b.o (.rodata);
     src/player.o (.rodata);
+    src/player_08065988.o (.rodata);
     src/entity_0b50.o (.rodata);
     src/entity_28cb.o (.rodata);
     src/entity_cc28.o (.rodata);
@@ -417,7 +421,9 @@ SECTIONS {
     src/data/bgp.o (.rodata);
     src/data/tilesets.o (.rodata);
     src/data/fonts.o (.rodata);
-    src/data/sprites.o (.rodata);
+    src/data/particle.o (.rodata);
+    src/data/sprite_aux.o (.rodata);
+    src/data/sprite_main.o (.rodata);
     src/data/obp.o (.rodata);
     src/data/scripts.o (.rodata);
     src/data/item.o (.rodata);

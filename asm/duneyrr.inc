@@ -734,7 +734,7 @@ _080237A8:
 	adds r1, r7, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_0822f4d8
+	bl MainSprite_Setup
 	ldr r1, _08023814 @ =0x085AAAEC
 	lsls r0, r6, #1
 	adds r0, r0, r1
@@ -1217,7 +1217,7 @@ _08023B54:
 	movs r2, #0x8e
 	lsls r2, r2, #2
 	adds r1, r6, r2
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	adds r7, #1
 	adds r4, #0x6c
 	adds r5, #0x6c

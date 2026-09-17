@@ -8963,7 +8963,7 @@ _081FEB10:
 	subs r0, #0x80
 	adds r1, r7, r0
 	adds r0, r4, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	mov r1, sb
 	cmp r1, #0xd9
 	bgt _081FEB8E
@@ -9278,7 +9278,7 @@ _081FED90:
 	adds r6, r5, r1
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	cmp r0, #0
 	beq _081FEDCA
 	movs r0, #4
@@ -9330,7 +9330,7 @@ FUN_081fedec: @ 0x081FEDEC
 	adds r6, r5, r2
 	adds r0, r6, #0
 	movs r1, #0x1d
-	bl Sprite_SetPlttID
+	bl MainSprite_SetPlttID
 	movs r0, #0xf
 	ands r0, r4
 	cmp r0, #0
@@ -9400,7 +9400,7 @@ _081FEE88:
 	movs r2, #0xbf
 	lsls r2, r2, #2
 	adds r1, r5, r2
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	b _081FEF28
 _081FEE9A:
 	movs r0, #0xc7
@@ -9408,7 +9408,7 @@ _081FEE9A:
 	adds r6, r5, r0
 	adds r0, r6, #0
 	movs r1, #0x26
-	bl Sprite_SetPlttID
+	bl MainSprite_SetPlttID
 	movs r0, #0xf
 	ands r0, r4
 	cmp r0, #0
@@ -9476,7 +9476,7 @@ _081FEF18:
 	movs r2, #0xbf
 	lsls r2, r2, #2
 	adds r1, r5, r2
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _081FEF28:
 	add sp, #4
 	pop {r4, r5, r6}
@@ -9571,7 +9571,7 @@ _081FEFD0:
 	movs r2, #0x87
 	lsls r2, r2, #2
 	adds r1, r5, r2
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	cmp r0, #0
 	beq _081FF010
 	adds r0, r6, #0
@@ -9810,7 +9810,7 @@ _081FF1A4:
 	movs r2, #0x87
 	lsls r2, r2, #2
 	adds r1, r5, r2
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	adds r4, r0, #0
 	movs r0, #0xf
 	mov r6, r8
@@ -10072,7 +10072,7 @@ _081FF3AC:
 	movs r2, #0x87
 	lsls r2, r2, #2
 	adds r1, r5, r2
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	mov sl, r0
 	movs r2, #0x10
 	adds r1, r5, #0

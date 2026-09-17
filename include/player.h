@@ -111,12 +111,12 @@ typedef struct {
 // 通信対戦の相手キャラもこの構造体を使う
 typedef struct Player {
   Entity e;
-  u32 unk_18;              // 0x18, 0 or 1 他にもあるか不明
-  u32 unk_1c;              // 0x1C, ステート?, (0: ??, 1: 通常状態, 2: マップ移動などの操作できない状態?, 3: ???, 4: HP0, 5: ???, ...)
-  u32 unk_20;              // 0x20, bitfield
-  Entity2UnkData unk_24;   // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Entity2UnkData
-  SpriteSet spriteSet_68;  // 0x068, 根拠： FUN_08060a24
-  SpriteState sprite_88;   // 0x088, 根拠： FUN_08060a24
+  u32 unk_18;                  // 0x18, 0 or 1 他にもあるか不明
+  u32 unk_1c;                  // 0x1C, ステート?, (0: ??, 1: 通常状態, 2: マップ移動などの操作できない状態?, 3: ???, 4: HP0, 5: ???, ...)
+  u32 unk_20;                  // 0x20, bitfield
+  Entity2UnkData unk_24;       // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Entity2UnkData
+  MainSpriteGfx spriteSet_68;  // 0x068, 根拠： FUN_08060a24
+  MainSprite sprite_88;        // 0x088, 根拠： FUN_08060a24
   u8 unk_e8[0x16C - 0xE8];
   HitboxData unk_16c;  // 0x16C
   u8 unk_1bc;          // 0x1BC, Entity2UnkData.unk_18 が &Player.unk_1bc
@@ -134,12 +134,12 @@ typedef struct Player {
   struct Input* input_28c;  // 0x28C, &gInput[n]
   Keys16 unk_290[10];       // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
   rgb555 pltt_2a4[32];      // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
-  SpriteState sprite_2e4;   // 0x2E4, 根拠: FUN_08060a24
+  MainSprite sprite_2e4;    // 0x2E4, 根拠: FUN_08060a24
   u8 unk_344[0x34C - 0x344];
-  AnimationFile* anim_34c;  // 0x34C
-  AnimationFile* anim_350;  // 0x350
-  AnimationFile* anim_354;  // 0x354
-  u8 kind;                  // 0x358: see PlayerKind
+  AuxAnimFile* anim_34c;  // 0x34C
+  AuxAnimFile* anim_350;  // 0x350
+  AuxAnimFile* anim_354;  // 0x354
+  u8 kind;                // 0x358: see PlayerKind
   u8 unk_359;
   u16 unk_35a;
   u16 stats[STAT_KINDS];  // 0x35C, プレイヤーのステータス値 (武者鎧などの装備品の補正値は含まない, タロットカードのドーピングは含む)
@@ -180,10 +180,10 @@ typedef struct Player {
   u8 unk_5f4[0x64C - 0x5F4];
   PlayerParticleGroup1 ptcl_64c;  // 0x64C, FUN_08061458
   PlayerParticleGroup1 ptcl_67c;  // 0x67C, FUN_0806161c
-  q_SpriteNode44 node_6ac;        // 0x6AC, 直後の sprite_6d8 を指すノード, 根拠: FUN_0822a4e0 に渡している
-  ActorSpriteState sprite_6d8;    // 0x6D8, Player_Init_Anim_08061bac
+  AuxSprite node_6ac;             // 0x6AC, 直後の sprite_6d8 を指すノード, 根拠: FUN_0822a4e0 に渡している
+  AuxSpriteGfx sprite_6d8;        // 0x6D8, Player_Init_Anim_08061bac
   u8 unk_6f0[0x704 - 0x6F4];
-  AnimationFile* anim_704;  // 0x704
+  AuxAnimFile* anim_704;  // 0x704
   u8 unk_708[8];
   u8 unk_710;  // 0x710, Player_Init_Anim_08061bac
   u8 unk_711[3];

@@ -50,7 +50,7 @@ _080154FC:
 	strh r0, [r4, #0x14]
 	adds r0, r7, #0
 	ldr r1, _0801552C @ =0x00004384
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08015530
 	movs r0, #1

@@ -100,7 +100,7 @@ _0809CF28:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	movs r0, #1
 	bl FUN_080477e4
 	ldr r0, [r6, #0x24]
@@ -230,7 +230,7 @@ _0809D044:
 	mov r1, sb
 	movs r2, #0
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	movs r0, #0
 	str r0, [r6]
 	adds r4, #0x60
@@ -280,7 +280,7 @@ _0809D0AA:
 	adds r0, r6, #0
 	mov r1, sb
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r6, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -357,7 +357,7 @@ _0809D14A:
 	adds r0, r4, #0
 	mov r1, sb
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -449,7 +449,7 @@ _0809D204:
 	adds r0, r6, #0
 	mov r1, sb
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r6, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -621,7 +621,7 @@ _0809D338:
 	adds r1, #0x48
 	movs r2, #0x3c
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	b _0809D388
 _0809D366:
 	movs r0, #0xd5
@@ -638,7 +638,7 @@ _0809D366:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 _0809D388:
 	movs r2, #0x83
 	lsls r2, r2, #4
@@ -689,7 +689,7 @@ FUN_0809d3d0: @ 0x0809D3D0
 	adds r1, r6, #0
 	adds r1, #0x28
 	adds r0, r5, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldr r2, _0809D3FC @ =0x00000F74
 	adds r1, r6, r2
 	ldr r0, [r1]
@@ -1382,7 +1382,7 @@ _0809D954:
 	adds r4, #0x28
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	ldr r1, _0809DA24 @ =0x00005D04
 	adds r0, r5, #0
 	bl GetFile
@@ -1404,7 +1404,7 @@ _0809D982:
 	adds r4, #0x48
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	ldr r1, _0809DA28 @ =0x0000DCC1
 	adds r0, r5, #0
 	bl GetFile
@@ -1426,7 +1426,7 @@ _0809D9B0:
 	adds r4, #0x68
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	ldr r1, _0809DA2C @ =0x0000DE23
 	adds r0, r5, #0
 	bl GetFile
@@ -1446,7 +1446,7 @@ _0809D9DE:
 	stm r1!, {r3, r5}
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r6, #0
 	str r4, [sp, #0x20]
 	add r0, sp, #0x10
@@ -1491,7 +1491,7 @@ _0809DA34:
 	adds r0, r5, #0
 	ldr r1, [sp, #0x28]
 	adds r3, r7, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	b _0809DAB2
 _0809DA5A:
 	adds r0, r6, #0
@@ -1517,7 +1517,7 @@ _0809DA6A:
 	adds r0, r5, #0
 	ldr r1, [sp, #0x28]
 	adds r3, r7, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	adds r0, r6, #0
 	bl FUN_0809cf98
 	cmp r0, #0
@@ -1555,7 +1555,7 @@ _0809DAB2:
 	ldr r1, [sp, #0x28]
 	movs r2, #0
 	movs r3, #0x31
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0xf9
 	lsls r0, r0, #3
 	add r0, r8
@@ -1567,7 +1567,7 @@ _0809DAB2:
 	ldr r1, [sp, #0x24]
 	movs r2, #0x40
 	movs r3, #0x31
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	add r0, sp, #0x10
 	strh r4, [r0]
 	strh r4, [r5, #2]
@@ -1583,7 +1583,7 @@ _0809DAB2:
 	ldr r1, [sp, #0x24]
 	movs r2, #0x39
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	str r4, [sp]
 	adds r0, r5, #0
 	ldr r1, [sp, #0x24]
@@ -1600,7 +1600,7 @@ _0809DAB2:
 	ldr r1, [sp, #0x24]
 	movs r2, #0x41
 	movs r3, #0x31
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r6, #0
 	add r4, sp, #0x10
 	mov sl, r4
@@ -1654,7 +1654,7 @@ _0809DB8C:
 	ldr r1, [sp, #0x24]
 	movs r2, #0
 	ldr r3, [sp, #0x18]
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldrh r0, [r5]
 	adds r0, #8
 	strh r0, [r5]
@@ -1682,7 +1682,7 @@ _0809DB8C:
 	ldr r1, [sp, #0x28]
 	movs r2, #0xcf
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	add r0, sp, #0x10
 	strh r4, [r0]
 	strh r4, [r5, #2]
@@ -1696,7 +1696,7 @@ _0809DB8C:
 	ldr r1, [sp, #0x24]
 	movs r2, #0x93
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	add r0, sp, #0x10
 	strh r4, [r0]
 	strh r4, [r5, #2]
@@ -1710,7 +1710,7 @@ _0809DB8C:
 	ldr r1, [sp, #0x1c]
 	movs r2, #0x15
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0xf7
 	lsls r0, r0, #4
 	add r0, r8
@@ -1811,7 +1811,7 @@ _0809DCC0:
 	str r6, [sp, #0xc]
 	ldr r1, [sp, #0x20]
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, _0809DD28 @ =0x000008C2
 	add r0, r8
 	strh r4, [r0]

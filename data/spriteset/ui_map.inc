@@ -1,4 +1,4 @@
-SpriteSetFile0: @ 0x08B79A44
+MainSpriteFile0: @ 0x08B79A44
 	.2byte 711 @ palStart
 	.2byte 24 @ metaspriteCount
 	.2byte 5 @ unk1Count

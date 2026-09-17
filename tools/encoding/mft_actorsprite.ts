@@ -1,7 +1,7 @@
 import * as gba from "../common/gba/gba.ts";
 import type { addr } from "../common/gba/gba.ts";
 
-export type ActorSpriteFile = {
+export type AuxSpriteFile = {
   header: {
     unk0: number;
     actorCount: number;
@@ -31,8 +31,8 @@ export type ActorSpriteFile = {
   }[];
 };
 
-export const parseActorSpriteFile = (rom: DataView, start: addr, end: addr): ActorSpriteFile => {
-  const header: ActorSpriteFile["header"] = {
+export const parseActorSpriteFile = (rom: DataView, start: addr, end: addr): AuxSpriteFile => {
+  const header: AuxSpriteFile["header"] = {
     unk0: gba.getU32(rom, start),
     actorCount: gba.getU32(rom, start + 4),
     unk8: gba.getU32(rom, start + 8),
@@ -42,12 +42,12 @@ export const parseActorSpriteFile = (rom: DataView, start: addr, end: addr): Act
   };
 
   // Actors
-  const actors: ActorSpriteFile["actors"] = [];
+  const actors: AuxSpriteFile["actors"] = [];
   for (let i = 0; i < header.actorCount; i++) {
     const p: addr = (start + 0x18) + (i * 12);
     const [id, unk_02] = [gba.getU16(rom, p), gba.getU16(rom, p + 2)];
     if (unk_02 !== 0) {
-      throw new Error(`ActorSprite${i}(ID:0x${gba.toHex16(id)}) has unk_02 = ${unk_02}, expected 0.`);
+      throw new Error(`AuxSprite${i}(ID:0x${gba.toHex16(id)}) has unk_02 = ${unk_02}, expected 0.`);
     }
     const size: [number, number] = [gba.getU8(rom, p + 4), gba.getU8(rom, p + 5)];
     const offset: [number, number] = [gba.getS8(rom, p + 6), gba.getS8(rom, p + 7)];
@@ -56,11 +56,11 @@ export const parseActorSpriteFile = (rom: DataView, start: addr, end: addr): Act
   }
 
   // Metasprites
-  const metasprites: ActorSpriteFile["metasprites"] = [];
+  const metasprites: AuxSpriteFile["metasprites"] = [];
   {
     const bytelength = (start + header.offsetToSubsprites) - (start + header.offsetToMetasprites);
     const length = bytelength / 12;
-    if (length !== 2164) throw new Error(`Warning: ActorSpriteFile has ${length} sprites, expected 2164 in Boktai2.`);
+    if (length !== 2164) throw new Error(`Warning: AuxSpriteFile has ${length} sprites, expected 2164 in Boktai2.`);
     for (let i = 0; i < length; i++) {
       const p: addr = (start + header.offsetToMetasprites) + (i * 12);
       const [subspriteCount, unk_01] = [gba.getU8(rom, p), gba.getU8(rom, p + 1)];
@@ -72,11 +72,11 @@ export const parseActorSpriteFile = (rom: DataView, start: addr, end: addr): Act
   }
 
   // Subsprites
-  const subsprites: ActorSpriteFile["subsprites"] = [];
+  const subsprites: AuxSpriteFile["subsprites"] = [];
   {
     const bytelength = end - (start + header.offsetToSubsprites);
     const length = bytelength >> 2;
-    if (length !== 4641) console.error(`Warning: ActorSpriteFile has ${length} objects, expected 4641 in Boktai2.`);
+    if (length !== 4641) console.error(`Warning: AuxSpriteFile has ${length} objects, expected 4641 in Boktai2.`);
     for (let i = 0; i < length; i++) {
       const p: addr = (start + header.offsetToSubsprites) + (i * 4);
       const [shape, unk_01] = [gba.getU8(rom, p), gba.getU8(rom, p + 1)];

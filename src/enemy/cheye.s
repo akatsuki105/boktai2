@@ -4233,7 +4233,7 @@ _0817D8C2:
 	mov r2, r8
 	ldr r0, [r2, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _0817D902
 	.align 2, 0
 _0817D8E8: .4byte 0x02008000
@@ -6105,7 +6105,7 @@ _0817E6C4:
 	bne _0817E70C
 	adds r0, r3, #0
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _0817E716
 	.align 2, 0
 _0817E700: .4byte 0xFFFEFFFF
@@ -14239,7 +14239,7 @@ _0818259C:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _081825B4:
 	ldr r1, _08182634 @ =0x000004A4
 	adds r0, r6, r1
@@ -14468,7 +14468,7 @@ _08182774:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _0818278C:
 	movs r1, #0xf2
 	lsls r1, r1, #1
@@ -15684,7 +15684,7 @@ _081830F4:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _0818310C:
 	ldr r0, _08183160 @ =0x000004A4
 	adds r4, r5, r0
@@ -16215,7 +16215,7 @@ EnemyCheyenne_Init: @ 0x081834D8
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _08183570 @ =0x0000D3EA
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -16272,7 +16272,7 @@ _08183574:
 	ldm r0!, {r3, r5}
 	stm r2!, {r3, r5}
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r4, #0
 	adds r0, #0x20
 	movs r1, #2
@@ -16285,7 +16285,7 @@ _08183574:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, _08183664 @ =0x000004B7
 	adds r1, r7, r0
 	movs r0, #0xff
@@ -17438,7 +17438,7 @@ _08183EEA:
 	bne _08183F38
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _08183F44
 	.align 2, 0
 _08183F30: .4byte 0x00000272
@@ -18079,7 +18079,7 @@ _0818446A:
 	ldr r1, [r7, #0x44]
 	adds r0, r1, #0
 	adds r0, #0x20
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _08184474:
 	movs r0, #0
 	ldr r3, [sp, #0xa0]

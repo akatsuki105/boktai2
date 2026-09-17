@@ -752,7 +752,7 @@ _0803C70A:
 	adds r1, r5, r2
 	movs r2, #0
 	ldr r3, _0803C760 @ =0x00000201
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0x86
 	lsls r0, r0, #7
 	strh r0, [r4, #0x3a]
@@ -7836,7 +7836,7 @@ _0803FCEC:
 	mov r0, r8
 	adds r1, r4, #0
 	movs r3, #6
-	bl FUN_082371ac
+	bl MainSprite_SetAnimFrame
 	movs r2, #0xaf
 	lsls r2, r2, #1
 	adds r0, r6, r2
@@ -8041,7 +8041,7 @@ _0803FE58:
 	bl FUN_08022c34
 	mov r0, r8
 	movs r1, #0x40
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 	ldrh r0, [r7]
 	adds r0, #1
 	strh r0, [r7]

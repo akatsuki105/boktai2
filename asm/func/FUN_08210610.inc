@@ -42,7 +42,7 @@
 	adds r1, r6, #0
 	movs r2, #0xb
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	mov r1, sb
 	ldrb r0, [r1]
 	bl WeaponDexMenu_GetPageEntryCount

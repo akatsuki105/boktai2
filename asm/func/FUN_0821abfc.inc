@@ -133,7 +133,7 @@ _0821ACFA:
 	adds r0, #0x38
 	adds r1, r6, #0
 	adds r1, #0x18
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	adds r0, r6, #0
 	adds r0, #0x6c
 	mov r5, r8

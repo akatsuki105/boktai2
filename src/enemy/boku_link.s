@@ -2390,7 +2390,7 @@ _081AF758:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _081AF770:
 	ldr r2, _081AF820 @ =0x0000046E
 	adds r0, r5, r2
@@ -8811,7 +8811,7 @@ _081B2954:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _081B296C:
 	ldr r0, _081B29C4 @ =0x000004A4
 	adds r4, r5, r0
@@ -11317,7 +11317,7 @@ _081B3CFC:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _081B3D14:
 	ldr r2, _081B3D6C @ =0x000004A4
 	adds r4, r5, r2
@@ -18315,7 +18315,7 @@ EnemyBokuLink_Init: @ 0x081B7330
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _081B73C0 @ =0x00009247
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -18373,7 +18373,7 @@ _081B73CC:
 	ldm r0!, {r3, r6}
 	stm r2!, {r3, r6}
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r4, #0
 	adds r0, #0x20
 	movs r1, #2
@@ -18386,7 +18386,7 @@ _081B73CC:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r6, _081B74BC @ =0x000004B7
 	adds r1, r7, r6
 	movs r0, #0xff
@@ -19594,7 +19594,7 @@ _081B7DB6:
 	bne _081B7DFC
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _081B7E08
 	.align 2, 0
 _081B7DF4: .4byte 0x00000674
@@ -20196,7 +20196,7 @@ _081B82DE:
 	ldr r1, [r7, #0x44]
 	adds r0, r1, #0
 	adds r0, #0x20
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _081B82E8:
 	movs r0, #0
 	ldr r3, [sp, #0xa0]

@@ -675,7 +675,7 @@ _080AC252:
 	adds r6, #0x2c
 	ldr r1, _080AC2D4 @ =0x00000BA8
 	adds r0, r6, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r2, #0

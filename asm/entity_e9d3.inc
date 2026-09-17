@@ -83,7 +83,7 @@ _080B48A6:
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -185,7 +185,7 @@ _080B495A:
 	adds r0, r5, #0
 	mov r1, sl
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r5, #0x60
 	adds r4, #0x60
 	subs r6, #1
@@ -274,7 +274,7 @@ _080B4A12:
 	adds r0, r5, #0
 	mov r1, sl
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r5, #0x60
 	adds r4, #0x60
 	subs r6, #1
@@ -594,7 +594,7 @@ FUN_080b4c5c: @ 0x080B4C5C
 	adds r1, r6, #0
 	movs r2, #0x12
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r1, _080B4D80 @ =0x0000082E
 	adds r0, r7, r1
 	strh r5, [r0]
@@ -660,7 +660,7 @@ _080B4D06:
 	ldr r1, _080B4D88 @ =0x00000804
 	adds r0, r7, r1
 	ldr r1, _080B4D8C @ =0x00000143
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r0, #4
 	bl FUN_08047a28
 	ldr r1, _080B4D90 @ =0x0000083A
@@ -871,7 +871,7 @@ FUN_080b4f08: @ 0x080B4F08
 	adds r0, #0x58
 	adds r1, r5, #0
 	adds r1, #0x18
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldr r0, _080B4F44 @ =0x00000844
 	adds r4, r5, r0
 	ldrh r0, [r4]
@@ -905,7 +905,7 @@ FUN_080b4f48: @ 0x080B4F48
 	adds r0, #0x58
 	adds r1, r4, #0
 	adds r1, #0x18
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldr r0, _080B4F7C @ =0x030044E0
 	ldrh r1, [r0, #2]
 	movs r0, #1
@@ -980,7 +980,7 @@ _080B4FE8:
 	adds r0, #0xb8
 	adds r1, r4, #0
 	adds r1, #0x38
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _080B4FF4:
 	add sp, #4
 	pop {r4, r5}
@@ -1023,7 +1023,7 @@ dark_loans_080b5020: @ 0x080B5020
 	movs r1, #0x18
 	adds r1, r1, r5
 	mov r8, r1
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldr r1, _080B5054 @ =0x030044E0
 	ldrh r2, [r1, #2]
 	movs r0, #1
@@ -1157,12 +1157,12 @@ _080B50D0:
 	lsrs r2, r2, #0x10
 	mov r1, r8
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r2, _080B5190 @ =0x00000804
 	adds r0, r5, r2
 	ldr r3, _080B5194 @ =0x00000143
 	adds r1, r6, r3
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r7]
 	adds r0, #1
 	strh r0, [r7]
@@ -1227,12 +1227,12 @@ _080B5198:
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r2, _080B5238 @ =0x00000804
 	adds r0, r5, r2
 	ldr r3, _080B523C @ =0x00000143
 	adds r1, r6, r3
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r7]
 	adds r0, #1
 	strh r0, [r7]
@@ -1280,12 +1280,12 @@ _080B5244:
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r7, _080B5298 @ =0x00000804
 	adds r0, r5, r7
 	ldr r2, _080B529C @ =0x00000143
 	adds r1, r6, r2
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r4]
 	adds r0, #1
 	strh r0, [r4]
@@ -1304,7 +1304,7 @@ _080B52A0:
 	ldr r3, _080B5320 @ =0x00000804
 	adds r0, r5, r3
 	ldr r1, _080B5324 @ =0x00000143
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r7, #0x8e
 	lsls r7, r7, #2
 	adds r0, r5, r7
@@ -1312,7 +1312,7 @@ _080B52A0:
 	adds r1, #0x18
 	movs r2, #0x12
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 _080B52BC:
 	ldr r0, _080B5328 @ =0x030044E0
 	ldrh r1, [r0]
@@ -1427,7 +1427,7 @@ FUN_080b539c: @ 0x080B539C
 	adds r0, #0x58
 	adds r1, r4, #0
 	adds r1, #0x18
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldr r0, _080B53E4 @ =0x00000844
 	adds r1, r4, r0
 	ldrh r0, [r1]
@@ -1618,7 +1618,7 @@ FUN_080b5528: @ 0x080B5528
 	adds r0, #0x58
 	adds r1, r5, #0
 	adds r1, #0x18
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldr r0, _080B5584 @ =0x00000844
 	adds r4, r5, r0
 	ldrh r0, [r4]

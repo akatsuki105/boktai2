@@ -2191,14 +2191,14 @@ _081D09AC: .4byte 0xFFFFFF00
 _081D09B0:
 	ldr r1, _081D09BC @ =0x00000282
 	mov r0, sb
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _081D09C8
 	.align 2, 0
 _081D09BC: .4byte 0x00000282
 _081D09C0:
 	ldr r1, _081D0A14 @ =0x00000283
 	mov r0, sb
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _081D09C8:
 	adds r0, r7, #0
 	mov r1, sb
@@ -2762,7 +2762,7 @@ Entity081d0e20_Init: @ 0x081D0DEC
 	adds r4, r0, #0
 	adds r0, #0x1c
 	ldr r1, _081D0E10 @ =0x0000A945
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	ldr r0, _081D0E14 @ =0x0000922E
 	ldr r1, _081D0E18 @ =0x00000AE9
 	bl GetFile

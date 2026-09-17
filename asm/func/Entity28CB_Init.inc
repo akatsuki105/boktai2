@@ -129,7 +129,7 @@ _0808A246:
 	lsls r2, r2, #1
 	adds r0, r6, r2
 	ldr r1, _0808A294 @ =0x00002499
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r5, #0
 	movs r7, #1
 _0808A258:

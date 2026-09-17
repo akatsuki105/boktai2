@@ -363,7 +363,7 @@ gSubroutineTable:
 	.4byte 0x8E9F, EnemyCheyenne_Create
 	.4byte 0x8EA3, FUN_0820c940
 	.4byte 0x8EC8, Entity8EC8_Create
-	.4byte 0x8ECD, FUN_080188e4
+	.4byte 0x8ECD, Entity8ECD_Create
 	.4byte 0x8F41, FUN_08047df0
 	.4byte 0x8FA3, FUN_0807d1c0
 	.4byte 0x904B, FUN_0823d6bc

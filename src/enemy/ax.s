@@ -982,7 +982,7 @@ _08196064:
 	ldr r2, _08196100 @ =0x00000CC8
 	adds r1, r4, r2
 	ldrh r1, [r1]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r1, [r4, #0x36]
 	mov r3, r8
 	ldrh r0, [r3, #0x3e]
@@ -3483,7 +3483,7 @@ FUN_081973e4: @ 0x081973E4
 	ldr r2, _08197424 @ =0x00000CC6
 	adds r1, r5, r2
 	ldrh r1, [r1]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r1, [r4]
 	movs r2, #0xca
 	lsls r2, r2, #4
@@ -5443,7 +5443,7 @@ _08198322:
 	ldr r1, _081983AC @ =0x00000CC8
 	add r1, r8
 	ldrh r1, [r1]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r1, [r4]
 	ldrh r0, [r7, #0x3e]
 	subs r1, r1, r0
@@ -8388,7 +8388,7 @@ FUN_081999f4: @ 0x081999F4
 	ldr r2, _08199A38 @ =0x00000CC6
 	adds r1, r4, r2
 	ldrh r1, [r1]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r0, [r5, #0xc]
 	movs r1, #0xca
 	lsls r1, r1, #4
@@ -8926,7 +8926,7 @@ _08199DFE:
 	ldr r2, _08199ED8 @ =0x00000CC6
 	adds r1, r6, r2
 	ldrh r1, [r1]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r1, #5
 	movs r0, #0x8b
 	lsls r0, r0, #1
@@ -9310,7 +9310,7 @@ FUN_0819a0ac: @ 0x0819A0AC
 	str r0, [r1]
 	ldr r1, _0819A1F8 @ =0x00005291
 	mov r0, r8
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r7, #0
 	mov r1, r8
 	movs r2, #0
@@ -9325,7 +9325,7 @@ FUN_0819a0ac: @ 0x0819A0AC
 	ldr r2, _0819A200 @ =0x00000CC6
 	adds r1, r6, r2
 	ldrh r1, [r1]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	add r3, sp, #0x24
 	mov sl, r3
 	mov r4, r8
@@ -9690,7 +9690,7 @@ _0819A348:
 _0819A45E:
 	mov r0, r8
 	ldr r1, _0819A5B0 @ =0x00005291
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r0, #0x2c
 	mov r4, sb
 	muls r4, r0, r4
@@ -10095,7 +10095,7 @@ _0819A7A6:
 	str r1, [r4, #0x50]
 	ldr r0, [sp, #0x2c]
 	ldr r1, _0819A910 @ =0x00005292
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	mov r0, sl
 	ldr r1, [sp, #0x2c]
 	movs r2, #0
@@ -10107,7 +10107,7 @@ _0819A7A6:
 	ldr r3, _0819A914 @ =0x00000CC6
 	adds r1, r6, r3
 	ldrh r1, [r1]
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	mov r0, sp
 	ldrb r0, [r0, #0x1c]
 	strb r0, [r4]
@@ -15058,7 +15058,7 @@ _0819CE68:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _0819CE80:
 	movs r4, #0xe4
 	lsls r4, r4, #1
@@ -18606,7 +18606,7 @@ _0819E9A6:
 	adds r2, r6, r3
 	ldrh r2, [r2]
 	adds r1, r1, r2
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldr r1, _0819E9E4 @ =0xFFFFFEFF
 	ldr r0, [r5]
 	ands r0, r1
@@ -18681,7 +18681,7 @@ _0819EA40:
 	adds r2, r3, r4
 	ldrh r2, [r2]
 	adds r1, r1, r2
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r0, #0
 	strb r0, [r5]
 	b _0819EB24
@@ -19241,7 +19241,7 @@ FUN_0819ee70: @ 0x0819EE70
 _0819EE94:
 	adds r0, r5, #0
 	ldr r1, _0819EF00 @ =0x00005291
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
@@ -20684,7 +20684,7 @@ FUN_0819f990: @ 0x0819F990
 	adds r4, r7, r0
 	ldr r1, _0819FA14 @ =0x00005291
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r1, #0xa6
 	lsls r1, r1, #4
 	adds r5, r7, r1
@@ -24827,7 +24827,7 @@ EnemyAx_Init: @ 0x081A19B8
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _081A1A4C @ =0x00005291
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -24885,7 +24885,7 @@ _081A1A54:
 	ldm r0!, {r3, r5}
 	stm r2!, {r3, r5}
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r4, #0
 	adds r0, #0x20
 	movs r1, #2
@@ -24898,7 +24898,7 @@ _081A1A54:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, _081A1B44 @ =0x000004B7
 	adds r1, r7, r0
 	movs r0, #0xff
@@ -26186,7 +26186,7 @@ _081A24BC:
 	bne _081A2528
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _081A2534
 	.align 2, 0
 _081A2514: .4byte 0x00000472
@@ -26788,7 +26788,7 @@ _081A29F2:
 	ldr r1, [r7, #0x44]
 	adds r0, r1, #0
 	adds r0, #0x20
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _081A29FC:
 	movs r0, #0
 	ldr r3, [sp, #0x60]

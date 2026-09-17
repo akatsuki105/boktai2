@@ -87,7 +87,7 @@ _08213BEA:
 	adds r1, r5, #0
 	movs r2, #0x94
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	adds r1, r5, #0
 	adds r1, #0x40
 	ldr r0, _08213C20 @ =0x0000FFE0

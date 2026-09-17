@@ -9,7 +9,7 @@
 	adds r1, r3, #0
 	adds r1, #0x4c
 	adds r0, r4, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 _08009292:
 	pop {r4}
 	pop {r1}

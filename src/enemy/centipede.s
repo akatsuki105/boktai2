@@ -4533,7 +4533,7 @@ _08134578:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08134590:
 	ldr r1, _081345C8 @ =0x000004A4
 	adds r0, r5, r1
@@ -4896,7 +4896,7 @@ _08134848:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08134860:
 	ldr r2, _08134898 @ =0x000004A4
 	adds r0, r5, r2
@@ -5263,7 +5263,7 @@ _08134B28:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08134B40:
 	ldr r4, _08134B78 @ =0x000004A4
 	adds r0, r5, r4
@@ -6001,7 +6001,7 @@ _081350E4:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _081350FC:
 	movs r1, #0xee
 	lsls r1, r1, #1
@@ -8226,7 +8226,7 @@ FUN_08136140: @ 0x08136140
 _081361B4:
 	adds r0, r6, #0
 	ldr r1, [sp, #0xc]
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	mov r0, r8
 	adds r1, r6, #0
 	movs r2, #0
@@ -14284,7 +14284,7 @@ EnemyCentipede_Init: @ 0x08138F24
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _08138FB8 @ =0x0000D636
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -14341,7 +14341,7 @@ _08138FC0:
 	ldm r0!, {r3, r5}
 	stm r2!, {r3, r5}
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r4, #0
 	adds r0, #0x20
 	movs r1, #2
@@ -14354,7 +14354,7 @@ _08138FC0:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, _081390B0 @ =0x000004B7
 	adds r1, r7, r0
 	movs r0, #0xff
@@ -15685,7 +15685,7 @@ _08139A96:
 	bne _08139AE0
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _08139AEC
 	.align 2, 0
 _08139AD8: .4byte 0x00000B46
@@ -16274,7 +16274,7 @@ _08139FA2:
 	ldr r1, [r7, #0x44]
 	adds r0, r1, #0
 	adds r0, #0x20
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _08139FAC:
 	movs r0, #0
 	ldr r3, [sp, #0xc8]

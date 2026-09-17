@@ -235,7 +235,7 @@ _080162FA:
 	adds r5, #0x20
 	ldr r1, _08016310 @ =0x0000863A
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _08016314
 _0801630A:
@@ -268,7 +268,7 @@ _08016314:
 	ldr r0, _0801635C @ =0x00000113
 	adds r1, r1, r0
 	adds r0, r5, #0
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r4, #8]
 	cmp r0, #0
 	bne _08016360

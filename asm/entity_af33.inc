@@ -1351,7 +1351,7 @@ _080501DE:
 	adds r2, #0xd4
 	adds r1, r4, #0
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	bl FUN_08050d7c
 	movs r2, #0
 	adds r1, r4, #0
@@ -1367,7 +1367,7 @@ _08050204:
 	adds r0, r5, r3
 	adds r2, #0xd7
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	pop {r4, r5}
 	pop {r0}
 	bx r0

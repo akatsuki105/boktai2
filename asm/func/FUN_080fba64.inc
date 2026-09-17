@@ -683,7 +683,7 @@ _080FBF98:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _080FBFB0:
 	ldr r2, _080FC060 @ =0x0000046E
 	adds r0, r5, r2

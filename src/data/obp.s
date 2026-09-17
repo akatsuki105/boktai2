@@ -3,11 +3,11 @@
 .balign 4, 0
 .section .rodata
 
-.global gSpriteSetPlttsDirectory
-gSpriteSetPlttsDirectory: @ 0x08CB9228
-  .4byte 1, 0x10, 0x14, gObjPlttFile0-gSpriteSetPlttsDirectory
+.global gSpritePlttsDirectory
+gSpritePlttsDirectory: @ 0x08CB9228
+  .4byte 1, 0x10, 0x14, gObjPlttFile0-gSpritePlttsDirectory
   .2byte 0xC5E9, 0
-  .4byte gObjPlttFile0-gSpriteSetPlttsDirectory, 0
+  .4byte gObjPlttFile0-gSpritePlttsDirectory, 0
 gObjPlttFile0: @ 0x08CB9244
   .2byte 768  @ palette length (16色パレットが 768個ある)
   .2byte 171  @ unk

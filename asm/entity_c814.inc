@@ -273,7 +273,7 @@ FUN_080cb6d4: @ 0x080CB6D4
 	adds r4, #0x8c
 	ldr r1, _080CB710 @ =0x00009DA7
 	adds r0, r4, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r5, r6, #0
 	adds r5, #0x60
 	adds r0, r5, #0

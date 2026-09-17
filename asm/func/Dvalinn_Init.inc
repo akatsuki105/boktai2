@@ -62,7 +62,7 @@ _08200298:
 	stm r2!, {r4, r5}
 	mov r0, r8
 	adds r1, r3, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r0, #0x70
 	bl VM_SeekToKeyword
 	cmp r0, #0
@@ -501,7 +501,7 @@ _08200646:
 	adds r0, r4, #0
 	mov r1, sb
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r1, #1
 	mov r8, r1
 	str r1, [sp]
@@ -526,7 +526,7 @@ _08200646:
 	adds r5, r7, r0
 	ldr r1, _082006FC @ =0x00002E7B
 	adds r0, r5, #0
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	movs r1, #0xe6
 	lsls r1, r1, #2
 	adds r4, r7, r1
@@ -577,7 +577,7 @@ _0820070C:
 	stm r1!, {r2, r5}
 	ldr r0, [sp, #0x30]
 	adds r1, r3, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r5, #0xc7
 	lsls r5, r5, #2
 	adds r4, r7, r5
@@ -593,7 +593,7 @@ _0820070C:
 	ldr r1, [sp, #0x30]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, [r4, #8]
 	movs r1, #0x11
 	orrs r0, r1
@@ -613,7 +613,7 @@ _0820070C:
 	mov r1, sb
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	str r5, [sp]
 	adds r0, r4, #0
 	mov r1, sb

@@ -98,7 +98,7 @@ _080DFEE6:
 	bl FUN_08236fac
 	ldr r0, [r7, #0xc]
 	ldr r1, _080DFFC0 @ =0x00000272
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	ldrh r0, [r5, #8]
 	lsls r0, r0, #1
 	ldr r1, [r7, #0x2c]

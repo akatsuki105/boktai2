@@ -72,7 +72,7 @@ const main = () => {
     .description("EntityXXXX_Create から Init / Update / Destroy を見つけ、4つを EntityXXXX_* にリネームする。")
     .argument("<create:string>", "CreateEntity を呼ぶ関数のROMアドレスまたはシンボル名")
     .option("--sub <id:string>", "VM の Subroutine ID (16進数)。指定すると Entity${ID} (4桁大文字) という名前にする。")
-    .option("--dry-run", "リネーム案を表示するだけで、リネームはしない。")
+    .option("-d, --dry-run", "リネーム案を表示するだけで、リネームはしない。")
     .action(async (opts, target) => {
       const create = resolveAddress(target);
 

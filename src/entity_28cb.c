@@ -9,26 +9,26 @@
 
 // (運搬中の)棺桶?
 typedef struct {
-  Entity e;                 // ENTITY_UNK_8
-  UnkStruct52 unk_18;       // 0x18
-  u16 q_linked;             // 0x4C, 0 以外なら Init で unk_18 を Entity4E69 に登録し、Destroy で外す (script keyword 0x4F)
-  u16 state;                // 0x4E, PTR_ARRAY_085ac044 の添字, 変更時に stateTimer を 0 に戻す
-  u16 coffinID;             // 0x50, GetOwnedCoffinID() の結果, metasprite 番号 (x*7) とパレット行 (x+0x207) を選ぶ
-  u16 q_scale;              // 0x52, Init で 0x7F0, >>4 して nodes[0] の拡縮に使う
-  u32 q_scriptDelay;        // 0x54, stateTimer がこの値になったら scriptID を実行する (FUN_08089ff0)
-  u16 q_height;             // 0x58, script keyword 0x68 (既定 0x400), nodes[0].q_pos.y に加算
-  u16 q_heightInit;         // 0x5A, Init で q_height と同じ値, 書き込みのみ
-  s16 q_spread;             // 0x5C, script keyword 0x6D (既定 0x200), nodes[1..4] の x/z に ± する
-  s16 q_spreadInit;         // 0x5E, Init で q_spread と同じ値, 書き込みのみ
-  u16 shakeX;               // 0x60, 棺桶の中の敵が暴れたときの揺れ, (rand & 0x1F) - 0x10, q_pos.x に加算
-  u16 shakeZ;               // 0x62, 同上, q_pos.z に加算
-  u32 stateTimer;           // 0x64
-  u32 scriptID;             // 0x68, Script_ExecById に渡す (script keyword 0x65)
-  Vec3 pos;                 // 0x6C, 既定は gStat->playerPos (script keyword 0x70), 各ノードの q_pos にコピーされる
-  q_SpriteNode44 nodes[5];  // 0x74
-  ActorSpriteState sprite;  // 0x150, Video_GetActorSprite(&sprite, 0x2499), nodes が共有
-  rgb555* pltt;             // 0x16C, plttBuf か gObjPlttData のパレット行を指す (FUN_08089b48)
-  rgb555 plttBuf[16];       // 0x170, FUN_08089b48 で2つのパレットをブレンドした結果
+  Entity e;             // ENTITY_UNK_8
+  UnkStruct52 unk_18;   // 0x18
+  u16 q_linked;         // 0x4C, 0 以外なら Init で unk_18 を Entity4E69 に登録し、Destroy で外す (script keyword 0x4F)
+  u16 state;            // 0x4E, PTR_ARRAY_085ac044 の添字, 変更時に stateTimer を 0 に戻す
+  u16 coffinID;         // 0x50, GetOwnedCoffinID() の結果, metasprite 番号 (x*7) とパレット行 (x+0x207) を選ぶ
+  u16 q_scale;          // 0x52, Init で 0x7F0, >>4 して nodes[0] の拡縮に使う
+  u32 q_scriptDelay;    // 0x54, stateTimer がこの値になったら scriptID を実行する (FUN_08089ff0)
+  u16 q_height;         // 0x58, script keyword 0x68 (既定 0x400), nodes[0].q_pos.y に加算
+  u16 q_heightInit;     // 0x5A, Init で q_height と同じ値, 書き込みのみ
+  s16 q_spread;         // 0x5C, script keyword 0x6D (既定 0x200), nodes[1..4] の x/z に ± する
+  s16 q_spreadInit;     // 0x5E, Init で q_spread と同じ値, 書き込みのみ
+  u16 shakeX;           // 0x60, 棺桶の中の敵が暴れたときの揺れ, (rand & 0x1F) - 0x10, q_pos.x に加算
+  u16 shakeZ;           // 0x62, 同上, q_pos.z に加算
+  u32 stateTimer;       // 0x64
+  u32 scriptID;         // 0x68, Script_ExecById に渡す (script keyword 0x65)
+  Vec3 pos;             // 0x6C, 既定は gStat->playerPos (script keyword 0x70), 各ノードの q_pos にコピーされる
+  AuxSprite nodes[5];   // 0x74
+  AuxSpriteGfx sprite;  // 0x150, Video_GetAuxSprite(&sprite, 0x2499), nodes が共有
+  rgb555* pltt;         // 0x16C, plttBuf か gObjPlttData のパレット行を指す (FUN_08089b48)
+  rgb555 plttBuf[16];   // 0x170, FUN_08089b48 で2つのパレットをブレンドした結果
 } Entity28CB;
 static_assert(sizeof(Entity28CB) == 400);
 
@@ -217,7 +217,7 @@ void (*const PTR_ARRAY_085ac044[8])(Entity28CB*) = {
 };
 
 s32 Entity28CB_Update(Entity28CB* p) {
-  q_SpriteNode44* node;
+  AuxSprite* node;
   s32 spread;
   s32 i;
   PTR_ARRAY_085ac044[p->state](p);
@@ -229,7 +229,7 @@ s32 Entity28CB_Update(Entity28CB* p) {
       switch (i) {
         case 0: {
           node->q_pos.y += p->q_height;
-          node->q_scaleY = node->q_scaleX = p->q_scale >> 4;
+          node->scaleY = node->scaleX = p->q_scale >> 4;
           break;
         }
         case 1: {

@@ -32,7 +32,8 @@ typedef struct {
   s32 frameCounter;   // 0x00
   s32 calibration;    // 0x04, 太陽センサーのキャリブレーション値
   u8 currentSlot;     // 0x08
-  u8 unk_09[2];       // 0x09
+  u8 unk_09;          // 0x09
+  u8 unk_0a;          // 0x0A
   bool8 summerTime;   // 0x0B, サマータイム
   s32 unk_c;          // 0x0C, 根拠: FUN_0823d6bc
   u32 unk_10;         // 0x10, 根拠: FUN_0823d68c
@@ -59,10 +60,12 @@ static_assert(sizeof(BgState) == 48);
 extern u32 gScriptDirectoryBuildTime;  // 0x03004594
 extern Unk_0203b000 gUnk_0203b000[128];
 extern SystemSaveData* gSystemSaveData;
+extern u32 gFrameCounter;
 
 // --------------------------------------------
 
 void WaitForVBlank(void);
+s32 SoftReset_0823a928(void);
 
 void ClearMemory(void* dst, s32 bytesize);  // buffer から bytesize バイト分のメモリを0で埋める
 void CopyMemory(u8* dst, u8* src, s32 bytesize);

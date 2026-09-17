@@ -20,7 +20,7 @@
 	stm r1!, {r3, r6}
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	ldr r2, _080A75F8 @ =0xFFFF0000
 	ldr r0, [sp, #0x10]
 	ands r0, r2
@@ -47,7 +47,7 @@
 	str r1, [sp, #0xc]
 	adds r1, r4, #0
 	movs r2, #0x87
-	bl FUN_0822f4d8
+	bl MainSprite_Setup
 	ldr r0, _080A7608 @ =0x03003584
 	ldr r0, [r0]
 	ldr r3, _080A760C @ =0x00005520

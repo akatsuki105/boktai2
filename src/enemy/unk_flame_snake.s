@@ -3760,7 +3760,7 @@ _081A8364:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _081A837C:
 	ldr r1, _081A83B4 @ =0x000004A4
 	adds r0, r5, r1
@@ -4501,7 +4501,7 @@ _081A8938:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _081A8950:
 	movs r1, #0xee
 	lsls r1, r1, #1
@@ -7906,14 +7906,14 @@ _081AA31A:
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, [sp, #0xc]
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
 	bl FUN_0822a470
 	adds r0, r4, #0
 	ldr r1, _081AA3B0 @ =0x000001A5
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	adds r4, #0x80
 	mov r0, sp
 	ldrb r0, [r0, #0x14]
@@ -12452,7 +12452,7 @@ FUN_081ac50c: @ 0x081AC50C
 	adds r0, #0x2c
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	adds r1, r4, #0
 	adds r1, #0xb3
 	movs r0, #6
@@ -14083,7 +14083,7 @@ EnemyFlameSnake_Init: @ 0x081AD168
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _081AD1FC @ =0x0000D636
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -14140,7 +14140,7 @@ _081AD204:
 	ldm r0!, {r3, r5}
 	stm r2!, {r3, r5}
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r4, #0
 	adds r0, #0x20
 	movs r1, #2
@@ -14153,7 +14153,7 @@ _081AD204:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, _081AD2F4 @ =0x000004B7
 	adds r1, r7, r0
 	movs r0, #0xff
@@ -15505,7 +15505,7 @@ _081ADCF2:
 	bne _081ADD5C
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _081ADD68
 	.align 2, 0
 _081ADD50: .4byte 0x00000C4A
@@ -16138,7 +16138,7 @@ _081AE282:
 	ldr r1, [r7, #0x44]
 	adds r0, r1, #0
 	adds r0, #0x20
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _081AE28C:
 	movs r0, #0
 	ldr r3, [sp, #0x3c]

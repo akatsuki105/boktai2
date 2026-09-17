@@ -17,14 +17,14 @@ static_assert(sizeof(Entity0800f110Data) == 244);
 
 typedef struct {
   Entity e;                  // ENTITY_UNK_8
-  AnimationFile* anim;       // 0x18
+  AuxAnimFile* anim;       // 0x18
   Entity0800f110Data* list;  // 0x1C
 } Entity0800f110;
 static_assert(sizeof(Entity0800f110) == 32);
 
 COMMON_DATA Entity0800f110* gEntity0800f110 = NULL;  // 0x03002B3C
 
-const ActorSpriteID16 u16_ARRAY_085aa790[8] = {
+const SpriteID16 u16_ARRAY_085aa790[8] = {
     SPRITE_863A,
     SPRITE_9D3F,
     SPRITE_SPIKEBALL,

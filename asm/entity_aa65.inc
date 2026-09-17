@@ -31,7 +31,7 @@ _0800C432:
 	adds r0, #0xb8
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r1, #4
 	ldr r0, [r7, #0x34]
 	ands r0, r1
@@ -244,7 +244,7 @@ _0800C5C0:
 	adds r0, r6, #0
 	adds r0, #0xb8
 	ldr r1, _0800C5E4 @ =0x0000011B
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _0800C5F2
 	.align 2, 0
 _0800C5E4: .4byte 0x0000011B
@@ -777,7 +777,7 @@ _0800C9EC:
 	bl FUN_08234270
 	ldr r1, _0800CA14 @ =0x000004B3
 	ldr r0, [sp, #0x2c]
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	cmp r0, #0
 	bne _0800CA18
 _0800CA0A:

@@ -26,7 +26,7 @@
 	ldm r0!, {r3, r5}
 	stm r2!, {r3, r5}
 	adds r0, r7, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r0, #0x18
 	strh r0, [r4]
 	movs r6, #0x28
@@ -44,7 +44,7 @@
 	adds r1, r7, #0
 	movs r2, #0
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, [r7, #0x28]
 	orrs r0, r5
 	str r0, [r7, #0x28]
@@ -66,7 +66,7 @@
 	mov r1, sl
 	movs r2, #0x3e
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r1, _08218DD4 @ =0x00001350
 	add r1, r8
 	ldr r0, [r1]
@@ -101,7 +101,7 @@ _08218CEE:
 	adds r0, r5, #0
 	ldr r1, [sp, #0x1c]
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	lsls r0, r6, #3
 	ldrh r1, [r5, #0x20]
 	adds r0, r0, r1
@@ -144,7 +144,7 @@ _08218D42:
 	mov r1, sl
 	movs r2, #0
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	lsls r0, r6, #3
 	ldrh r3, [r5, #0x20]
 	adds r0, r0, r3

@@ -37,7 +37,7 @@ _080132CC:
 	adds r0, #0x90
 	movs r1, #0x99
 	lsls r1, r1, #1
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r0, #0x9f
 	lsls r0, r0, #1
 	bl PlaySound_082406e0

@@ -27,7 +27,7 @@ _080A7014:
 	adds r4, #0x18
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r0, #0x74
 	bl VM_SeekToKeyword
 	adds r7, r4, #0
@@ -79,7 +79,7 @@ _080A7062:
 	str r4, [sp, #0xc]
 	adds r1, r7, #0
 	movs r3, #0x10
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0x70
 	bl VM_SeekToKeyword
 	adds r1, r0, #0

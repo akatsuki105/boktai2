@@ -26,7 +26,7 @@
 	adds r1, r6, #0
 	movs r2, #0x3f
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, [r7, #8]
 	movs r1, #1
 	mov r8, r1
@@ -42,7 +42,7 @@
 	adds r1, r6, #0
 	movs r2, #0x4b
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r0, [r7, #0x68]
 	mov r1, r8
 	orrs r0, r1
@@ -67,7 +67,7 @@ _08215E2A:
 	adds r1, #0x18
 	movs r2, #0x47
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	adds r2, r7, #0
 	adds r2, #0xc8
 	adds r2, r2, r6
@@ -108,7 +108,7 @@ _08215E7E:
 	ldr r1, [sp, #0x1c]
 	movs r2, #0
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #0xf4
 	lsls r0, r0, #1
 	adds r2, r7, r0
@@ -151,7 +151,7 @@ _08215ED4:
 	ldr r1, [sp, #0x1c]
 	movs r2, #0
 	movs r3, #0x30
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r1, #0xc2
 	lsls r1, r1, #2
 	adds r2, r7, r1

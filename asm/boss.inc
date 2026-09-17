@@ -563,7 +563,7 @@ FUN_08022dfc: @ 0x08022DFC
 	adds r4, r0, #0
 	adds r0, r1, #0
 	adds r1, r2, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	adds r1, r4, #0
 	adds r1, #0xaa
 	strb r0, [r1]

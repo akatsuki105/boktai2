@@ -343,7 +343,7 @@ _080EE124:
 	bne _080EE174
 	ldr r0, [r5, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _080EE1F8
 	.align 2, 0
 _080EE164: .4byte 0xFFFDDFFF

@@ -1411,7 +1411,7 @@ _080C5AB8:
 	adds r0, r4, #0
 	adds r1, r2, #0
 	str r3, [sp, #0x10]
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r2, #1

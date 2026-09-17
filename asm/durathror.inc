@@ -1848,7 +1848,7 @@ FUN_08037538: @ 0x08037538
 	mov r1, r8
 	movs r2, #0
 	movs r3, #1
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r0, #4
 	str r0, [sp]
 	adds r0, r6, #0
@@ -2393,14 +2393,14 @@ _08037976:
 	bne _08037984
 	adds r0, r5, #0
 	movs r1, #0x60
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 	b _08037990
 _08037984:
 	cmp r0, #0x2d
 	bne _08037990
 	adds r0, r5, #0
 	movs r1, #0x80
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08037990:
 	ldr r0, [r4, #0x10]
 	cmp r0, #0x5f
@@ -2830,7 +2830,7 @@ _08037CD6:
 	bne _08037CFC
 	mov r0, sl
 	movs r1, #0x80
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 	b _08037D14
 	.align 2, 0
 _08037CF4: .4byte 0x00000DE3
@@ -2869,7 +2869,7 @@ _08037D14:
 	bl FUN_082370cc
 	mov r0, sl
 	movs r1, #0x80
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 	b _08037D5C
 	.align 2, 0
 _08037D48: .4byte 0x00000DE3
@@ -2879,7 +2879,7 @@ _08037D50:
 	bne _08037D5C
 	mov r0, sl
 	movs r1, #0x40
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08037D5C:
 	ldr r3, _08037DB8 @ =0x00000DDC
 	adds r1, r5, r3
@@ -2988,7 +2988,7 @@ FUN_08037e10: @ 0x08037E10
 	bl FUN_082370cc
 	adds r0, r5, #0
 	movs r1, #0x80
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 	ldrb r0, [r4, #1]
 	cmp r0, #0
 	bne _08037E4C
@@ -3002,14 +3002,14 @@ _08037E4C:
 	bne _08037E64
 	adds r0, r5, #0
 	movs r1, #0x40
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 	b _08037E70
 _08037E64:
 	cmp r0, #0x1e
 	bne _08037E70
 	adds r0, r5, #0
 	movs r1, #0x60
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08037E70:
 	ldr r0, [r4, #0x10]
 	subs r0, #0x2d
@@ -4354,7 +4354,7 @@ _080388B0:
 	movs r2, #0x98
 	lsls r2, r2, #2
 	adds r1, r7, r2
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	ldrh r0, [r5, #0x18]
 	cmp r0, #0
 	beq _080388F2
@@ -5857,7 +5857,7 @@ _08039486:
 	adds r1, r5, r2
 	adds r2, r3, #0
 	movs r3, #0
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	b _080394B4
 _0803949E:
 	movs r3, #0x9d

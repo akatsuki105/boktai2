@@ -36,7 +36,7 @@
 	ldr r2, _080712C0 @ =0x000009F4
 	adds r0, r4, r2
 	movs r1, #0x2d
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	movs r3, #0xa1
 	lsls r3, r3, #4
 	adds r0, r4, r3

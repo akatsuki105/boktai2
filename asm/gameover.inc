@@ -486,7 +486,7 @@ _080A7490:
 	adds r0, r6, #0
 	ldr r1, _080A74F4 @ =0x0000654B
 	str r3, [sp]
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	mov r0, r8
 	adds r1, r6, #0
 	movs r2, #0

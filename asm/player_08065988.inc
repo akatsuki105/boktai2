@@ -2,10 +2,6 @@
 	.syntax unified
 	.text
 
-	thumb_func_start FUN_08066df8
-FUN_08066df8: @ 0x08066DF8
-  .include "asm/func/FUN_08066df8.inc"
-
 	thumb_func_start FUN_08066e84
 FUN_08066e84: @ 0x08066E84
   .include "asm/func/FUN_08066e84.inc"

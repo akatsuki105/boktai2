@@ -10,8 +10,8 @@ typedef struct Entity0866 {
   u8 unk_19[3];
   ParticleGroup* group0;   // 0x1C, PTCL_GROUP_0
   ParticleGroup* group1;   // 0x20, PTCL_GROUP_1
-  AnimationFile* anim_24;  // 0x24
-  AnimationFile* anim_28;  // 0x28
+  AuxAnimFile* anim_24;  // 0x24
+  AuxAnimFile* anim_28;  // 0x28
   u8 unk_2c[2540 - 0x2C];
 } Entity0866;
 static_assert(sizeof(Entity0866) == 2540);

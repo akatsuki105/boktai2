@@ -2255,7 +2255,7 @@ _0812EDA0:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _0812EDB8:
 	ldr r2, _0812EDF0 @ =0x0000046E
 	adds r0, r5, r2
@@ -3662,7 +3662,7 @@ _0812F8C8:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _0812F8E0:
 	ldr r2, _0812F92C @ =0x000004A4
 	adds r4, r5, r2
@@ -3884,7 +3884,7 @@ _0812FA9C:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _0812FAB4:
 	movs r2, #0x80
 	lsls r2, r2, #7
@@ -6851,7 +6851,7 @@ EnemySpider_Init: @ 0x0813115C
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _081311F4 @ =0x0000528F
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -6909,7 +6909,7 @@ _081311FC:
 	ldm r0!, {r3, r5}
 	stm r2!, {r3, r5}
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r4, #0
 	adds r0, #0x20
 	mov r6, sb
@@ -6922,7 +6922,7 @@ _081311FC:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r2, _081312F0 @ =0x000004B7
 	adds r1, r7, r2
 	movs r0, #0xff
@@ -8074,7 +8074,7 @@ _08131B7A:
 	bne _08131BB4
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _08131BC0
 _08131BB4:
 	ldr r2, [r7, #0x44]
@@ -8682,7 +8682,7 @@ _08132096:
 	ldr r1, [r7, #0x44]
 	adds r0, r1, #0
 	adds r0, #0x20
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _081320A0:
 	movs r0, #0
 	ldr r1, [sp, #0xac]

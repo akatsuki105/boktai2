@@ -2084,7 +2084,7 @@ _08122AA8:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08122AC0:
 	ldr r1, _08122B70 @ =0x0000046E
 	adds r0, r5, r1
@@ -9990,7 +9990,7 @@ _08126850:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08126868:
 	ldr r0, _081268A4 @ =0x000004A4
 	adds r4, r5, r0
@@ -11412,7 +11412,7 @@ _08127370:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_0823723c
+	bl MainSprite_SetAnimSpeed
 _08127388:
 	ldr r0, _081273D4 @ =0x000004A4
 	adds r4, r5, r0
@@ -15886,7 +15886,7 @@ _081295C2:
 	bne _081295F8
 	ldr r0, [r6, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _08129604
 	.align 2, 0
 _081295DC: .4byte 0x00000121
@@ -22847,7 +22847,7 @@ EnemyMummy_Init: @ 0x0812CB0C
 	adds r4, #0x2c
 	adds r0, r4, #0
 	ldr r1, _0812CBA4 @ =0x000048DE
-	bl Video_GetActorSprite
+	bl Video_GetAuxSprite
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
@@ -22905,7 +22905,7 @@ _0812CBAC:
 	ldm r0!, {r5, r6}
 	stm r2!, {r5, r6}
 	adds r0, r4, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	adds r0, r4, #0
 	adds r0, #0x20
 	movs r1, #2
@@ -22918,7 +22918,7 @@ _0812CBAC:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	ldr r2, _0812CCA0 @ =0x000004B7
 	adds r1, r7, r2
 	movs r0, #0xff
@@ -24073,7 +24073,7 @@ _0812D52E:
 	bne _0812D568
 	ldr r0, [r7, #0x44]
 	adds r0, #0x2c
-	bl Video_SetActorSpritePltt
+	bl Video_SetAuxSpritePltt
 	b _0812D574
 _0812D568:
 	ldr r2, [r7, #0x44]
@@ -24700,7 +24700,7 @@ _0812DA86:
 	ldr r1, [r7, #0x44]
 	adds r0, r1, #0
 	adds r0, #0x20
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _0812DA90:
 	movs r0, #0
 	ldr r6, [sp, #0x38]

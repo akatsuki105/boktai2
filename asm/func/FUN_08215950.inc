@@ -273,7 +273,7 @@ _08215B80:
 	adds r1, #0x18
 	movs r2, #0x43
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	ldr r0, [r7, #0x68]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -455,7 +455,7 @@ _08215D04:
 	adds r1, r6, #0
 	adds r1, #0x18
 	adds r0, r7, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 _08215D14:
 	add sp, #0xc
 	pop {r3, r4}

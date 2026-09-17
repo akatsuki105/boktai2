@@ -3,9 +3,9 @@ import type { addr } from "../../common/gba/gba.ts";
 
 // gFSのエントリ
 export type FSEntry = {
-  ids: [number, number]; // e.g. [0x2117, 0x9B05] in U32J_rev1's ActorSprite
-  ptr: addr; // start addr, e.g. 0x08A22900 in U32J_rev1's ActorSprite
-  end?: addr; // end addr, e.g. 0x08B79944 in U32J_rev1's ActorSprite
+  ids: [number, number]; // e.g. [0x2117, 0x9B05] in U32J_rev1's AuxSprite
+  ptr: addr; // start addr, e.g. 0x08A22900 in U32J_rev1's AuxSprite
+  end?: addr; // end addr, e.g. 0x08B79944 in U32J_rev1's AuxSprite
 };
 
 export const ParseFS = (rom: DataView, fs: addr, length: number): FSEntry[] => {

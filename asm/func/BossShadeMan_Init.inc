@@ -61,7 +61,7 @@ _080405A0:
 	ldm r1!, {r4, r5}
 	stm r2!, {r4, r5}
 	adds r1, r3, #0
-	bl OpenSpriteSetFile
+	bl OpenMainSpriteFile
 	movs r0, #0x70
 	bl VM_SeekToKeyword
 	cmp r0, #0
@@ -700,7 +700,7 @@ _08040B20:
 	adds r0, r6, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0822f3fc
+	bl MainSprite_Add
 	movs r4, #1
 	str r4, [sp]
 	str r4, [sp, #4]

@@ -22,7 +22,7 @@
 	adds r1, r5, #0
 	movs r2, #0x94
 	movs r3, #1
-	bl Sprite_SetSprite
+	bl MainSprite_SetPose
 	movs r0, #1
 	b _08213CDC
 	.align 2, 0
@@ -81,7 +81,7 @@ _08213CC6:
 	adds r0, r5, #0
 	adds r0, #0x20
 	adds r1, r5, #0
-	bl FUN_082372cc
+	bl MainSprite_AdvanceAnim
 	adds r1, r5, #0
 	adds r1, #0x90
 	ldr r0, [r1]
