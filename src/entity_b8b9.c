@@ -115,7 +115,7 @@ EntityB8B9* FUN_0823b3ec(void) {
 
 NAKED s32 FUN_0823b400(Entity2UnkData* p, u32 id, u32* unk_8, u32 unk_5, u32 unk_4, void* owner) { INCFUNC("asm/func/FUN_0823b400.inc"); }
 
-NAKED bool32 FUN_0823b43c(Entity2UnkData* p, u32 head, u16 unk_1c, u16 unk_1e) { INCFUNC("asm/func/FUN_0823b43c.inc"); }
+NAKED bool32 FUN_0823b43c(Entity2UnkData* p, u32 unk_18, u16 unk_1c, u16 unk_1e) { INCFUNC("asm/func/FUN_0823b43c.inc"); }
 
 bool32 FUN_0823b464(Entity2UnkData* p, u32 unk_20) {
   p->unk_20 = unk_20;
@@ -132,7 +132,13 @@ bool32 FUN_0823b474(Entity2UnkData* p, MainSprite* data) {
   return TRUE;
 }
 
-NAKED bool32 FUN_0823b47c(Entity2UnkData* p, u32* unk_30_and_unk_34) { INCFUNC("asm/func/FUN_0823b47c.inc"); }
+bool32 FUN_0823b47c(Entity2UnkData* p, Vec3* unk_30) {
+  u16 flag = 4;
+
+  p->unk_2 |= flag;
+  p->unk_30 = *unk_30;
+  return TRUE;
+}
 
 bool32 FUN_0823b490(Entity2UnkData* p, void* unk_24, u8 param_3, u8 param_4, u8 param_5) {
   p->unk_24 = unk_24;

@@ -263,3 +263,9 @@ Three rules keep this file usable:
 
 - **Frequency**: `VM_RunExpression`.
 - `if (c) { x = A; } else { x = B; } slot->f = x;` and `if (c) { slot->f = A; } else { slot->f = B; }` produce the same merged store, but not the same scheduling around it. In `VM_RunExpression` the `x` version delayed a later call's first-argument setup (`adds r0, r5, #0` emitted after the other two argument registers instead of before them); writing the store directly in both arms fixed it. If argument setup order is the only thing off near a two-armed store, try removing the intermediate variable.
+
+### A bit constant loaded before the field it is OR'd into needs its own local
+
+- **Frequency**: `FUN_0823b47c`.
+- `p->flags |= 4;` emits `ldrh` then `movs r2, #4`; the target had `movs r2, #4` first and used that register as the `orrs` destination. Writing `4 | p->flags` does not help — agbcc canonicalises the constant to the right. Assigning it first (`u16 flag = 4; p->flags |= flag;`) puts the constant in its own register before the load and matches.
+
