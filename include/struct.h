@@ -8,11 +8,11 @@
 
 struct MainSprite;
 
-// Collision or 座標計算 or スクリプト生成管理 のデータ?
+// Collision or 座標計算 or スクリプト生成管理 のデータ?(まだわからない)
 typedef struct Entity2UnkData {
-  u16 id;     // 0x00, Player_Create で作った Player の場合、 Player_Createの サブルーチンID (0xF5EB) がセットされていた
+  u16 id;     // 0x00, EntityのID?
   u16 unk_2;  // 0x02, フラグっぽい
-  u8 unk_4;   // 0x04, Playerの場合は gPlayerPtr のインデックス, 0..3
+  u8 unk_4;   // 0x04
   u8 unk_5;   // 0x05
   u8 unk_6[2];
   Vec3 pos;                   // 0x08
