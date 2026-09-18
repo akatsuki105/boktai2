@@ -116,7 +116,22 @@ EntityB8B9* FUN_0823b3ec(void) {
   }
 }
 
-NAKED s32 FUN_0823b400(Entity2UnkData* p, u32 id, u32* unk_8, u32 unk_5, u32 unk_4, void* owner) { INCFUNC("asm/func/FUN_0823b400.inc"); }
+// リストに繋ぐところまでやる初期化
+s32 FUN_0823b400(Entity2UnkData* p, u16 id, Vec3* pos, u32 unk_5, u32 unk_4, void* owner) {
+  p->id = id;
+  p->unk_2 = 0;
+  p->unk_4 = unk_4;
+  p->pos = *pos;
+  p->unk_5 = unk_5;
+  p->delta.x = 0, p->delta.y = 0, p->delta.z = 0, p->delta.val = 0x10;
+  p->unk_18 = NULL;
+  p->unk_20 = 0;
+  p->unk_28 = 0;
+  p->unk_24 = NULL;
+  FUN_0823b1f8(p);
+  p->p_38 = owner;
+  return TRUE;
+}
 
 bool32 FUN_0823b43c(Entity2UnkData* p, void* unk_18, u16 unk_1c, u16 unk_1e) {
   p->unk_18 = unk_18;
