@@ -16,8 +16,8 @@ typedef struct Entity2UnkData {
   u8 unk_5;   // 0x05
   u8 unk_6[2];
   Vec3 pos;                   // 0x08
-  Vec3 delta;                 // 0x10, FUN_0823b4b8 で .pos の変化量として使われている (速度ではなさそう)
-  void* unk_18;               // 0x18, Player の場合は、 &Player.unk_1bc
+  Vec3 delta;                 // 0x10, FUN_0823b4b8 で .pos の変化量として使われている
+  void* unk_18;               // 0x18
   u16 unk_1c;                 // 0x1C
   u16 unk_1e;                 // 0x1E
   u32 unk_20;                 // 0x20
@@ -29,7 +29,7 @@ typedef struct Entity2UnkData {
   struct Entity2UnkData* prev;  // 0x3C
   struct Entity2UnkData* next;  // 0x40
 } Entity2UnkData;
-static_assert(sizeof(Entity2UnkData) == 68);  // 0x08142700 で、 0x44以降から別の構造体っぽいので多分サイズは 68バイトのはず
+static_assert(sizeof(Entity2UnkData) == 68);
 
 typedef struct {
   u16 id;
