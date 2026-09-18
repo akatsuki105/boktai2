@@ -1,7 +1,7 @@
 #include "entity.h"
 #include "global.h"
 
-typedef struct EntityE435 {
+typedef struct {
   Entity e;    // 0x0, ENTITY_UNK_9 or ENTITY_UNK_11
   u16 id;      // 0x018
   u16 unk_1a;  // 0x01A
@@ -12,7 +12,7 @@ typedef struct EntityE435 {
 } EntityE435;
 static_assert(sizeof(EntityE435) == 628);
 
-extern EntityE435* gEntityE435;  // 0x03000070
+IWRAM_DATA EntityE435* gEntityE435 = NULL;  // 0x03000070
 
 void FUN_0822f0d8(void);
 

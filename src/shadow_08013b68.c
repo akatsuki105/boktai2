@@ -29,14 +29,14 @@ typedef struct AuxShadow {
 } AuxShadow;
 static_assert(sizeof(AuxShadow) == 108);  // next (0x68) までは確定, それ以降に続くかは未確認
 
-typedef struct AuxShadowManager {
+typedef struct {
   Entity e;            // 0x00, ENTITY_UNK_9
   u8 unk_18[4];        // 0x18, 参照なし
   AuxShadow* shadows;  // 0x1C, 影のリストの先頭, Init で 0, AuxShadowManager_Add / AuxShadowManager_Remove / Update
 } AuxShadowManager;
 static_assert(sizeof(AuxShadowManager) == 32);
 
-extern AuxShadowManager* gAuxShadowManager;  // 0x03000054
+IWRAM_DATA AuxShadowManager* gAuxShadowManager = NULL;  // 0x03000054
 
 void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* s);
 void AuxShadow_UpdateNone(void);

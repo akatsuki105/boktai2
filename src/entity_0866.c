@@ -4,19 +4,19 @@
 #include "hitbox.h"
 #include "particle.h"
 
-typedef struct Entity0866 {
+typedef struct {
   Entity e;   // 0x0, ENTITY_UNK_10
   u8 unk_18;  // 0x18
   u8 unk_19[3];
-  ParticleGroup* group0;   // 0x1C, PTCL_GROUP_0
-  ParticleGroup* group1;   // 0x20, PTCL_GROUP_1
-  AuxAnimFile* anim_24;  // 0x24
-  AuxAnimFile* anim_28;  // 0x28
+  ParticleGroup* group0;  // 0x1C, PTCL_GROUP_0
+  ParticleGroup* group1;  // 0x20, PTCL_GROUP_1
+  AuxAnimFile* anim_24;   // 0x24
+  AuxAnimFile* anim_28;   // 0x28
   u8 unk_2c[2540 - 0x2C];
 } Entity0866;
 static_assert(sizeof(Entity0866) == 2540);
 
-extern Entity0866* gEntity0866;  // 0x03000040
+IWRAM_DATA Entity0866* gEntity0866 = NULL;  // 0x03000040
 
 // --------------------------------------------
 

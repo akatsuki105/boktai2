@@ -2,11 +2,13 @@
 #include "file.h"
 #include "global.h"
 
-typedef struct Entity2D2B {
+typedef struct {
   Entity e;  // 0x0, ENTITY_UNK_10
   u8 unk_18[96 - 0x18];
 } Entity2D2B;
 static_assert(sizeof(Entity2D2B) == 96);
+
+IWRAM_DATA Entity2D2B* gEntity2D2B = NULL;  // 0x03000034
 
 const FileID u16_ARRAY_085aa66c[2] = {SPRITE_CHANDELIER, SPRITE_CANDLE_BOX};  // 0x085aa66c
 
@@ -29,3 +31,5 @@ void (*const PTR_ARRAY_085aa67c[5])(Entity2D2B*) = {
     FUN_080081e0,
 };  // 0x085aa67c
 // clang-format on
+
+INCASM("asm/entity_2d2b.inc");

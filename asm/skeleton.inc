@@ -4,8 +4,6 @@
 	
 	.text
 
-@ EnemyXXX_Create でファイル分けしているだけなので他の敵のコードも混じっているかもしれない
-
 	thumb_func_start FUN_08102e20
 FUN_08102e20: @ 0x08102E20
 	push {r4, lr}
@@ -37482,28 +37480,3 @@ _081152E0:
 	pop {r4, r5, r6, r7}
 	pop {r1}
 	bx r1
-
-	thumb_func_start EnemySkeleton_Create
-EnemySkeleton_Create: @ 0x081152F0
-	push {r4, r5, lr}
-	movs r5, #0xf5
-	lsls r5, r5, #3
-	adds r0, r5, #0
-	bl Malloc
-	adds r4, r0, #0
-	cmp r4, #0
-	beq _0811531E
-	adds r1, r5, #0
-	bl ClearMemory
-	adds r0, r4, #0
-	bl EnemySkeleton_Init
-	cmp r0, #0
-	bge _0811531E
-	adds r0, r4, #0
-	bl EnemySkeleton_Destroy
-	adds r0, r4, #0
-	bl Free
-_0811531E:
-	pop {r4, r5}
-	pop {r0}
-	bx r0

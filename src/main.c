@@ -4,6 +4,8 @@ EWRAM_DATA u32 gSentinel02020400 = 0;  // AgbMainでEWRAMをクリアする前�
 EWRAM_DATA u32 u32_02020404 = 0;       // gSentinel02020400と同様にAgbMainでEWRAMをクリアする前に退避されるが、用途は不明
 EWRAM_DATA u8 u8_02020408[4088] = {};  // 0x02020408, Unused?
 
+IWRAM_DATA u8 u8_03000000[32] = {};  // todo, rfu_MBOOT_CHILD_inheritanceLinkStatus で RFU_LINK_STATUS の本体がここにあるが、メインゲーム開始時に別の構造体で上書きされてるように見える (つまり union)
+
 NAKED void AgbMain(void) {
   asm(".syntax unified\n\
 	push {r4, r5, r6, lr}\n\

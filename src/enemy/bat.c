@@ -4,7 +4,7 @@
 typedef struct {
   Entity2UnkData unk_0;     // 0x000
   EnemySpriteData* sprite;  // 0x044
-  EntityMsgBox unk_48;      // 0x048, 0x08142752
+  EntityMsgBox msgbox;      // 0x048, 0x08142752
   u8 unk_7c[1728 - 0x7C];   // 0x07C
 } Bat;
 static_assert(sizeof(Bat) == 1728);

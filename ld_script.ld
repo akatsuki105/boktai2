@@ -36,6 +36,28 @@ SECTIONS {
     iwram (NOLOAD) :
     ALIGN(4)
     {
+      src/main.o(iwram_data);
+      src/entity_d9ae.o(iwram_data);
+      src/entity_08004fac.o(iwram_data);
+      src/entity_08005b54.o(iwram_data);
+      src/entity_0800704c.o(iwram_data);
+      src/entity_ed07.o(iwram_data);
+      src/entity_2d2b.o(iwram_data);
+      src/entity_5da5.o(iwram_data);
+      src/entity_83b2.o(iwram_data);
+      src/entity_0866.o(iwram_data);
+      src/entity_0800a89c.o(iwram_data);
+      src/entity_329b.o(iwram_data);
+      src/entity_95f8.o(iwram_data);
+      src/shadow_0801381c.o(iwram_data);
+      src/shadow_08013b68.o(iwram_data);
+      src/entity_080146e0.o(iwram_data);
+      src/entity_08015220.o(iwram_data);
+      src/entity_08015584.o(iwram_data);
+      src/entity_08016ba4.o(iwram_data);
+      src/entity_08016dbc.o(iwram_data);
+      src/entity_08017750.o(iwram_data);
+      src/entity_e435.o(iwram_data);
       src/iwram1.o(iwram_data);
       src/entity_8aab.o(iwram_data);
       . = ALIGN(8);
@@ -102,7 +124,12 @@ SECTIONS {
 			src/entity_6978.o (.text);
 			src/entity_e28b.o (.text);
 			src/entity_d9ae.o (.text);
-			src/code_080026fc.o (.text);
+			src/entity_08004fac.o (.text);
+			src/entity_08005b54.o (.text);
+			src/entity_0800704c.o (.text);
+			src/entity_ed07.o (.text);
+			src/entity_2d2b.o (.text);
+			src/entity_5da5.o (.text);
 			src/entity_83b2.o (.text);
 			src/entity_0866.o (.text);
 			src/entity_0800a89c.o (.text);
@@ -150,6 +177,8 @@ SECTIONS {
 			src/entity_af33.o (.text);
 			src/entity_af33_childlen.o (.text);
 			src/entity_723e.o (.text);
+			src/entity_08052ffc.o (.text);
+			src/entity_5645.o (.text);
 			src/code_08052eb8.o (.text);
 			src/entity_0805fe30.o (.text);
 			src/entity_080601a8.o (.text);

@@ -8,6 +8,8 @@ typedef struct {
 } Entity5DA5;
 static_assert(sizeof(Entity5DA5) == 940);
 
+IWRAM_DATA Entity5DA5* gEntity5DA5 = NULL;  // 0x03000038
+
 const u16 u16_ARRAY_085aa690[8] = {
     0x0, 0x80, 0xFF80, 0x0, 0xFF80, 0x0, 0x0, 0x80,
 };  // 0x085aa690
@@ -21,3 +23,5 @@ void (*const PTR_ARRAY_085aa6a0[2])(Entity5DA5*, unknown*) = {
 };  // 0x085aa6a0
 
 const u8 u8_ARRAY_085aa6a8[4] = {11, 12, 11, 10};  // 0x085aa6a8
+
+INCASM("asm/entity_5da5.inc");

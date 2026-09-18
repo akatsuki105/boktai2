@@ -34,7 +34,7 @@ typedef struct SpiritBugSwarm {
 static_assert(sizeof(SpiritBugSwarm) == 328);
 
 // 精霊虫 (太陽虫/月光虫/暗黒虫) をまとめて管理するエンティティ。群れを6つまで同時に持てる
-typedef struct Entity0800a89c {
+typedef struct {
   Entity e;                  // 0x0, ENTITY_UNK_8
   bool32 isSabata;           // 0x18
   u32 unk_1c;                // 0x1C, 毎フレーム +1。下位ビットで虫の更新を間引く, 根拠: Entity0800a89c_UpdateSwarm
@@ -45,7 +45,7 @@ typedef struct Entity0800a89c {
 } Entity0800a89c;
 static_assert(sizeof(Entity0800a89c) == 2012);
 
-extern Entity0800a89c* gEntity0800a89c;
+IWRAM_DATA Entity0800a89c* gEntity0800a89c = NULL;  // 0x03000044
 
 const u16 u16_ARRAY_085aa6d0[24] = {
     0x4, 0x0, 0x5, 0x0, 0x6, 0x0, 0x6, 0x0, 0x5, 0x0, 0x4, 0x0, 0x9, 0x0, 0xA, 0x0, 0xB, 0x0, 0xB, 0x0, 0xA, 0x0, 0x9, 0x0,

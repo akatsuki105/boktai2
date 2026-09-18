@@ -220,7 +220,7 @@ gSubroutineTable:
 	.4byte 0x554B, FUN_080a07f0
 	.4byte 0x55C2, Entity55C2_Create
 	.4byte 0x55C5, FUN_080ac5f4
-	.4byte 0x5645, FUN_08055430
+	.4byte 0x5645, Entity5645_Create
 	.4byte 0x56AD, FUN_0820c3e0
 	.4byte 0x56DC, FUN_08055704
 	.4byte 0x571D, Entity571D_Create
@@ -381,7 +381,7 @@ gSubroutineTable:
 	.4byte 0x94D9, EnemyBokuLink_Create
 	.4byte 0x94EB, FUN_0809c5f4
 	.4byte 0x9519, PasswordScreen_Create
-	.4byte 0x9531, FUN_08005bc8
+	.4byte 0x9531, Entity08005b54_Create
 	.4byte 0x95A8, Entity95A8_Create
 	.4byte 0x95F8, Entity95F8_Create
 	.4byte 0x9700, FUN_080e16f4

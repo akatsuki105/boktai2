@@ -12,9 +12,9 @@ typedef struct ParticleShadowManager {
 } ParticleShadowManager;
 static_assert(sizeof(ParticleShadowManager) == 32);
 
-void ParticleShadow_FollowGround(ParticleShadow* shadow);
+IWRAM_DATA ParticleShadowManager* gParticleShadowManager = NULL;  // 0x03000050
 
-extern ParticleShadowManager* gParticleShadowManager;  // 0x03000050
+void ParticleShadow_FollowGround(ParticleShadow* shadow);
 
 void FUN_08013634(void) { gParticleShadowManager = NULL; }
 
