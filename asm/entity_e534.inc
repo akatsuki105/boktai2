@@ -46,9 +46,9 @@ FUN_080117d8: @ 0x080117D8
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_0801385c
+	bl ParticleShadow_Init
 	adds r0, r4, #0
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	add sp, #4
 	pop {r4, r5, r6, r7}
 	pop {r1}
@@ -65,7 +65,7 @@ FUN_08011854: @ 0x08011854
 	adds r4, r1, #0
 	adds r0, r4, #0
 	adds r0, #0x88
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	adds r4, #0x40
 	adds r0, r4, #0
 	bl FUN_0822a4e0
@@ -604,7 +604,7 @@ _08011BEC:
 	str r0, [r4, #0x78]
 	adds r0, r6, #0
 	adds r0, #0x88
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	ldr r1, [sp, #0xc]
 	adds r1, #1
 	str r1, [sp, #0xc]
@@ -917,7 +917,7 @@ _08011E6C:
 	str r0, [r4, #0x78]
 	adds r0, r6, #0
 	adds r0, #0x88
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	ldr r1, [sp, #0xc]
 	adds r1, #1
 	str r1, [sp, #0xc]
@@ -1089,7 +1089,7 @@ _08012030:
 	ldr r4, [r0]
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #1
 	beq _08012080
@@ -1123,7 +1123,7 @@ _08012080:
 	adds r0, r5, r2
 _0801208E:
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _080120B0
 	.align 2, 0
 _08012098: .4byte 0x00000CD4
@@ -1135,7 +1135,7 @@ _0801209C:
 	ldr r1, _080120CC @ =0x00000CD4
 	adds r0, r5, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080120B0:
 	adds r7, #1
 	ldr r0, _080120D0 @ =0x03002B4C

@@ -61,6 +61,8 @@ extern u32 gScriptDirectoryBuildTime;  // 0x03004594
 extern Unk_0203b000 gUnk_0203b000[128];
 extern SystemSaveData* gSystemSaveData;
 extern u32 gFrameCounter;
+extern s32 gMapBlockW;
+extern s32 gMapBlockH;
 
 // --------------------------------------------
 

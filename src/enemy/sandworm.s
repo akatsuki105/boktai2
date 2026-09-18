@@ -1873,7 +1873,7 @@ _0817140E:
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	b _08171462
 _0817141A:
 	cmp r1, #0x1a
@@ -1939,7 +1939,7 @@ _0817148A:
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r6, r1
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	ldr r2, _081714B0 @ =0x0000025D
 	adds r0, r6, r2
 	ldrb r0, [r0]
@@ -7346,7 +7346,7 @@ _08173E2C:
 	movs r4, #0xaa
 	lsls r4, r4, #2
 	adds r0, r7, r4
-	bl FUN_08013984
+	bl AuxShadow_Show
 _08173E58:
 	movs r0, #0x10
 	ldr r1, [r6]
@@ -7420,7 +7420,7 @@ _08173E58:
 	movs r3, #0xaa
 	lsls r3, r3, #2
 	adds r0, r7, r3
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	b _08173F1A
 	.align 2, 0
 _08173EF8: .4byte 0xFFEFFFFF
@@ -20487,7 +20487,7 @@ _0817A258:
 	strh r0, [r2]
 	adds r6, #0xac
 	adds r0, r7, r6
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 _0817A300:
 	movs r0, #1
 	pop {r3}
@@ -20706,7 +20706,7 @@ EnemySandWorm_Destroy: @ 0x0817A4AC
 	movs r1, #0xaa
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 	movs r0, #0xff
 	strb r0, [r5]
 _0817A4D6:
@@ -20748,7 +20748,7 @@ _0817A51A:
 	beq _0817A526
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 _0817A526:
 	ldr r1, _0817A580 @ =0x0000044C
 	adds r5, r4, r1
@@ -20758,7 +20758,7 @@ _0817A526:
 	movs r2, #0x9a
 	lsls r2, r2, #2
 	adds r0, r4, r2
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	movs r0, #1
 	strb r0, [r5]
 _0817A53E:
@@ -21944,7 +21944,7 @@ _0817AEEA:
 	adds r0, #0x7c
 	ldr r2, _0817AF24 @ =FUN_080f48ac
 	ldr r1, [sp, #0x34]
-	bl FUN_0807f558
+	bl Entity5941_Register
 _0817AEFA:
 	ldr r3, [sp, #0x154]
 	ldrb r0, [r3]
@@ -22514,19 +22514,19 @@ _0817B1C0:
 	ldr r1, [sp, #0x1b4]
 	movs r2, #0x40
 	movs r3, #0x40
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	ldr r2, _0817B470 @ =0x0000044C
 	adds r1, r7, r2
 	strb r0, [r1]
 	ldr r1, _0817B474 @ =0x00001C1B
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08013c94
+	bl AuxShadow_SetSprite
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_08013cb8
+	bl AuxShadow_SetAffine
 	adds r0, r4, #0
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	ldr r3, _0817B478 @ =0x0000044D
 	adds r0, r7, r3
 	movs r4, #1
@@ -22931,7 +22931,7 @@ _0817B6E2:
 	adds r0, #0x48
 	ldrh r1, [r7]
 	movs r2, #3
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r5, [sp, #0x60]

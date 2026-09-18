@@ -167,7 +167,10 @@ typedef struct Player {
   u8 unk_3d1;
   u8 unk_3d2[36];
   s16 unk_3f6;
-  u8 unk_3f8[68];
+  u8 unk_3f8[2];
+  u8 magicFired;     // 0x3FA, 魔法の発動フレームに FUN_08064d6c (太陽ゲージ判定) の結果が入る。1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
+  u8 dynamiteCount;  // 0x3FB, 生存中の Entity080a8ff8 の数。Entity080a8ff8_Init が +1、消滅時に -1。MAGIC_DYNAMITE は 0 でないと再発動できない (FUN_08064db0)
+  u8 unk_3fc[64];
   u16 unk_43c[3];  // 0x43C, 多分状態異常の残り時間
   u8 unk_442[86];
   PlayerFunc fn_498;  // 0x498, FUN_08078d5c
@@ -230,7 +233,6 @@ extern const PlayerFunc gPlayerAttackUpdates[5];  // 0: 剣, 1: 槍, 2: ハン�
 
 Player* CreatePlayer(u32 n, void* _);
 
-Player* CreateLinkPlayer2P(unknown* r0, unknown* r1);     // 0x08084674
 Player* CreatePlayer_080d82ec(unknown* r0, unknown* r1);  // 0x080D82EC
 
 #endif  // GUARD_ZOKTAI_PLAYER_H

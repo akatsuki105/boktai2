@@ -4069,7 +4069,7 @@ _0801D518:
 	bne _0801D518
 _0801D526:
 	adds r0, r4, #0
-	bl FUN_080224f0
+	bl EntityMsg_Send
 	movs r0, #0
 	pop {r4, r5, r6, r7}
 	pop {r1}

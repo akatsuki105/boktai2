@@ -44,4 +44,7 @@ typedef struct {
 } AuxAnimState;
 static_assert(sizeof(AuxAnimState) == 16);
 
+// アニメーションの再生を開始する。同じ animIdx で呼んでも再開はしない (src/sprite_anim_aux.c)
+bool32 FUN_08236fac(AuxAnimState* p, AuxAnimFile* files, u16 animIdx, u8 variant, AuxAnimPlayFlags flags);
+
 #endif  // __INCLUDE_ANIMATION_H__

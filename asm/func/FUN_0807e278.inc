@@ -32,7 +32,7 @@ _0807E2A8:
 	bne _0807E2A8
 _0807E2B6:
 	adds r0, r4, #0
-	bl FUN_080224f0
+	bl EntityMsg_Send
 	pop {r4, r5, r6, r7}
 	pop {r0}
 	bx r0

@@ -15,14 +15,14 @@ typedef struct Entity2UnkData {
   u8 unk_4;   // 0x04, Playerの場合は gPlayerPtr のインデックス, 0..3
   u8 unk_5;   // 0x05
   u8 unk_6[2];
-  Vec3 pos;                    // 0x08
-  Vec3 delta;                  // 0x10, FUN_0823b4b8 で .pos の変化量として使われている (速度ではなさそう)
-  void* unk_18;                // 0x18, Player の場合は、 &Player.unk_1bc
-  u16 unk_1c;                  // 0x1C
-  u16 unk_1e;                  // 0x1E
-  u32 unk_20;                  // 0x20
-  void* unk_24;                // 0x24
-  u32 unk_28;                  // 0x28
+  Vec3 pos;                   // 0x08
+  Vec3 delta;                 // 0x10, FUN_0823b4b8 で .pos の変化量として使われている (速度ではなさそう)
+  void* unk_18;               // 0x18, Player の場合は、 &Player.unk_1bc
+  u16 unk_1c;                 // 0x1C
+  u16 unk_1e;                 // 0x1E
+  u32 unk_20;                 // 0x20
+  void* unk_24;               // 0x24
+  u32 unk_28;                 // 0x28
   struct MainSprite* unk_2c;  // 0x2C, Player の場合は、 &Player.sprite
   u8 unk_30[8];
   void* p_38;                   // 0x38, 親構造体のポインタ?
@@ -46,24 +46,5 @@ typedef struct {
   u16* values;
 } Unk_0203f400;
 static_assert(sizeof(Unk_0203f400) == 8);
-
-// --------------------------------------------
-
-// Entity4E69 で管理されてる?
-typedef struct UnkStruct52 {
-  u16 unk_0;                 // 0x00
-  u8 unk_2;                  // 0x02
-  u8 unk_3;                  // 0x03
-  u8 unk_4[2];               // 0x04
-  u8 unk_6[2];               // 0x06, Entity4E69.unk_24 (0 or 1) で添字される, 根拠: FUN_0802216c
-  struct UnkStruct08daadb8* unk_8[2][4];  // 0x08, 同上, 根拠: FUN_08022128
-  u8 unk_28[0x2C - 0x28];    // 0x28
-  struct UnkStruct52* prev;  // 0x2C
-  struct UnkStruct52* next;  // 0x30
-} UnkStruct52;
-static_assert(sizeof(UnkStruct52) == 52);  // 52バイトなのは確定, FUN_080220e8 で オフセット 0x34 に 4バイト書き込み, また Entity4E69 の オフセット 0x78 にこの構造体があるが、 Entity4E69 は 172バイトなので、 172 - 0x78 = 52 なので、 52バイト
-
-s32 FUN_080223f4(UnkStruct52* p, u32 val1, s32 val2);
-s32 FUN_08022428(UnkStruct52* p);
 
 #endif  // __INCLUDE_STRUCT_H__

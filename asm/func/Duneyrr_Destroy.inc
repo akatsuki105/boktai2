@@ -2,7 +2,7 @@
 	adds r4, r0, #0
 	ldr r1, _080277E8 @ =0x000004D4
 	adds r0, r4, r1
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 	adds r0, r4, #0
 	bl FUN_080234dc
 	movs r1, #0x96

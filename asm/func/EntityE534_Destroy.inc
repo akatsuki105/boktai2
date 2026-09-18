@@ -14,7 +14,7 @@ _08012B7A:
 	ble _08012B7A
 	ldr r1, _08012B9C @ =0x00000CD4
 	adds r0, r6, r1
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	movs r0, #0
 	pop {r4, r5, r6}
 	pop {r1}

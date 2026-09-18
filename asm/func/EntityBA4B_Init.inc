@@ -822,11 +822,11 @@ _08036592:
 	adds r0, r4, #0
 	movs r2, #0x40
 	movs r3, #0x40
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	ldr r1, _080366C4 @ =0x00001C1B
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08013c94
+	bl AuxShadow_SetSprite
 	ldr r0, _080366C8 @ =0x03003584
 	ldr r0, [r0]
 	movs r1, #0x99

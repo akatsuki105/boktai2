@@ -2536,7 +2536,7 @@ _0816BCEC:
 	adds r0, r6, #0
 	movs r1, #0
 	adds r3, r7, #0
-	bl FUN_0800ac80
+	bl Entity0800a89c_SpawnAt
 _0816BD1A:
 	ldr r7, _0816BDD4 @ =0x0000046E
 	adds r0, r4, r7
@@ -9154,7 +9154,7 @@ _0816F024:
 	adds r0, r4, #0
 	adds r0, #0x48
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0816F038:
 	ldr r0, [r5]
 	adds r0, #1
@@ -9264,7 +9264,7 @@ _0816F102:
 	beq _0816F10E
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 _0816F10E:
 	ldr r1, _0816F168 @ =0x0000044C
 	adds r5, r4, r1
@@ -9274,7 +9274,7 @@ _0816F10E:
 	movs r2, #0x9a
 	lsls r2, r2, #2
 	adds r0, r4, r2
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	movs r0, #1
 	strb r0, [r5]
 _0816F126:
@@ -10463,7 +10463,7 @@ _0816FADA:
 	adds r0, #0x7c
 	ldr r2, _0816FB14 @ =FUN_080f48ac
 	ldr r1, [sp, #0x30]
-	bl FUN_0807f558
+	bl Entity5941_Register
 _0816FAEA:
 	ldr r3, [sp, #0x1b0]
 	ldrb r0, [r3]
@@ -11616,7 +11616,7 @@ _08170406:
 	adds r0, #0x48
 	ldrh r1, [r7]
 	movs r2, #3
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r5, [sp, #0x5c]

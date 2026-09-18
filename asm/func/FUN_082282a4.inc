@@ -46,7 +46,7 @@ _082282D6:
 	bl FUN_08223998
 	ldr r1, _08228340 @ =0x00000DF4
 	adds r0, r6, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 _0822830A:
 	ldr r2, _08228344 @ =0x00000F4C
 	adds r0, r6, r2

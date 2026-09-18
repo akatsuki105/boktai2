@@ -71,7 +71,7 @@ _080A8FB8:
 	bl PlaySound_082406e0
 	ldr r1, _080A8FF4 @ =FUN_080a881c
 	adds r0, r6, #0
-	bl FUN_080a8804
+	bl Entity080a8ff8_SetState
 	movs r0, #0
 	pop {r4, r5, r6}
 	pop {r1}

@@ -119,7 +119,7 @@ _080F1FD4:
 	adds r0, r5, #0
 	adds r0, #0x48
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	movs r1, #2
 	movs r3, #0x8d
 	lsls r3, r3, #3

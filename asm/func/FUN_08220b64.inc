@@ -48,7 +48,7 @@ _08220BA6:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	adds r0, r5, #0
 	movs r1, #0x10
 	movs r2, #1

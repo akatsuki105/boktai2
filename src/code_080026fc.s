@@ -3226,7 +3226,7 @@ FUN_08005e90: @ 0x08005E90
 	bl FUN_08005e5c
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 	ldr r0, [r4, #0x24]
 	cmp r0, #0
 	beq _08005EAA
@@ -4003,7 +4003,7 @@ _08006442:
 	strh r0, [r1, #2]
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	b _08006480
 	.align 2, 0
 _08006460: .4byte FUN_080065a4
@@ -5866,7 +5866,7 @@ _080071C4:
 	str r4, [sp, #0x18]
 	movs r2, #0x40
 	movs r3, #0x18
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	adds r0, r5, #0
 	bl FUN_08005e30
 	movs r0, #0
@@ -6396,9 +6396,9 @@ _080075F4:
 	adds r0, r4, #0
 	movs r2, #0x40
 	movs r3, #0x18
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	adds r0, r4, #0
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	adds r0, r5, #0
 	bl FUN_08005e30
 	movs r0, #0

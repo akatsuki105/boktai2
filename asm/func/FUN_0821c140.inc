@@ -38,13 +38,13 @@ _0821C174:
 	movs r1, #0xc7
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	b _0821C19C
 _0821C192:
 	movs r2, #0xc7
 	lsls r2, r2, #2
 	adds r0, r4, r2
-	bl FUN_08013984
+	bl AuxShadow_Show
 _0821C19C:
 	ldr r0, [r4, #0x50]
 	ldr r1, [r4, #0x54]

@@ -85,7 +85,7 @@ _082258EE:
 	strh r0, [r1]
 	adds r3, #0x3a
 	adds r0, r6, r3
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	adds r0, r6, #0
 	bl FUN_08223984
 	ldr r1, _082259DC @ =0x00000DC8

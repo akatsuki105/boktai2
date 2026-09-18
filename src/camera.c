@@ -1,10 +1,10 @@
 #include "camera.h"
 
 #include "global.h"
+#include "msgbus.h"
 #include "random.h"
 #include "vm.h"
 
-bool32 FUN_08022488(UnkStruct52* p, u32 val);
 Entity2UnkData* FUN_0823b2d0(u16 id);
 void* FUN_08230e70(u16 id);
 void FUN_0822a448(s32 val, Procedure fn1, Procedure fn2, Procedure fn3);
@@ -452,7 +452,7 @@ void FUN_0823c050(void) {
 
 void FUN_0823c0a4(Camera* cam) { cam->unk_1e = 2; }
 
-void FUN_0823c0ac(Camera* cam) { FUN_08022488(&cam->unk_20, 1); }
+void FUN_0823c0ac(Camera* cam) { EntityMsgBox_EndWait(&cam->unk_20, 1); }
 
 NAKED void FUN_0823c0bc(Camera* cam) { INCFUNC("asm/func/FUN_0823c0bc.inc"); }
 
@@ -597,7 +597,7 @@ NAKED s32 Camera_Update(Camera* cam) { INCFUNC("asm/func/Camera_Update.inc"); }
 
 s32 Camera_Destroy(Camera* cam) {
   if ((gFlag030047a4 & FLAG030047A4_UNK_11) == 0) {
-    FUN_08022428(&cam->unk_20);
+    EntityMsgBus_Unregister(&cam->unk_20);
   }
   gCamera = NULL;
   return 0;

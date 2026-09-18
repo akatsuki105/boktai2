@@ -77,7 +77,7 @@ _08089E22:
 	adds r0, r4, #0
 	adds r0, #0x18
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _08089E8E
 _08089E88:
 	ldr r0, [r4, #0x64]

@@ -87,11 +87,22 @@ void* VM_Ctrl_E43C(void) {
 
 static void nop_0823b12c(void) { return; }
 
+static const Subroutine sCtrlHandlers2[8] = {
+    {id : 0x22FF, fn : (void*)VM_Ctrl_22FF       },
+    {id : 0xB745, fn : (void*)VM_Ctrl_Call       },
+    {id : 0x9906, fn : (void*)VM_Ctrl_CallWithArg},
+    {id : 0xD4CB, fn : (void*)VM_Ctrl_D4CB       },
+    {id : 0xC8BB, fn : (void*)VM_Ctrl_LoadMap    },
+    {id : 0x0BB3, fn : (void*)VM_Ctrl_Unused_0BB3},
+    {id : 0xC091, fn : (void*)VM_Ctrl_Unused_C091},
+    {id : 0xE43C, fn : (void*)VM_Ctrl_E43C       },
+};  // 0x08DBD758
+
 s32 FUN_0823b130(void) {
   nop_0823b12c();
   FUN_08231780();
   gCtrlHandlers2.next = NULL;
-  gCtrlHandlers2.len = ARRAY_COUNT(gCtrlHandlers2_ROM);
-  gCtrlHandlers2.arr = gCtrlHandlers2_ROM;
+  gCtrlHandlers2.len = ARRAY_COUNT(sCtrlHandlers2);
+  gCtrlHandlers2.arr = sCtrlHandlers2;
   return VM_AddCtrlHandlers(&gCtrlHandlers2);
 }

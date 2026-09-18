@@ -28,7 +28,7 @@ _0807DE08:
 	ldr r4, [r0]
 	adds r0, r7, #0
 	adds r1, r4, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #0x2c
 	bls _0807DE2E

@@ -10,7 +10,33 @@ static_assert(sizeof(GameOverManager) == 852);
 
 extern GameOverManager* gGameOverManager;  // 0x03000150
 
-INCASM("asm/gameover.inc");
+NAKED void FUN_080a7104(GameOverManager* p) { INCFUNC("asm/func/FUN_080a7104.inc"); }
+
+NAKED void FUN_080a7144(GameOverManager* p) { INCFUNC("asm/func/FUN_080a7144.inc"); }
+
+NAKED void FUN_080a7180(GameOverManager* p) { INCFUNC("asm/func/FUN_080a7180.inc"); }
+
+NAKED void FUN_080a71bc(GameOverManager* p) { INCFUNC("asm/func/FUN_080a71bc.inc"); }
+
+NAKED void FUN_080a71f8(GameOverManager* p) { INCFUNC("asm/func/FUN_080a71f8.inc"); }
+
+NAKED void FUN_080a7230(GameOverManager* p) { INCFUNC("asm/func/FUN_080a7230.inc"); }
+
+NAKED void FUN_080a7260(GameOverManager* p) { INCFUNC("asm/func/FUN_080a7260.inc"); }
+
+NAKED void FUN_080a72f8(GameOverManager* p) { INCFUNC("asm/func/FUN_080a72f8.inc"); }
+
+NAKED void FUN_080a7324(GameOverManager* p) { INCFUNC("asm/func/FUN_080a7324.inc"); }
+
+NAKED void FUN_080a73c0(void) { INCFUNC("asm/func/FUN_080a73c0.inc"); }
+
+NAKED void FUN_080a73e4(GameOverManager* p) { INCFUNC("asm/func/FUN_080a73e4.inc"); }
+
+NAKED void FUN_080a7410(GameOverManager* p) { INCFUNC("asm/func/FUN_080a7410.inc"); }
+
+NAKED void FUN_080a7448(GameOverManager* p) { INCFUNC("asm/func/FUN_080a7448.inc"); }
+
+NAKED void FUN_080a74fc(GameOverManager* p) { INCFUNC("asm/func/FUN_080a74fc.inc"); }
 
 NAKED void FUN_080a7550(GameOverManager* p) { INCFUNC("asm/func/FUN_080a7550.inc"); }
 

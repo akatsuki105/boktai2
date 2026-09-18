@@ -40,7 +40,7 @@ _080FC22E:
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	b _080FC282
 _080FC23A:
 	cmp r1, #0x1a

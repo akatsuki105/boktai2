@@ -516,7 +516,7 @@ _0807F9FC:
 	str r1, [r2]
 	ldr r1, _0807FA74 @ =0x0000060C
 	adds r0, r0, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	ldrh r1, [r5]
 	adds r3, r1, #0
 	cmp r3, #7
@@ -919,7 +919,7 @@ _0807FD38:
 	str r1, [r2]
 	ldr r1, _0807FD9C @ =0x0000060C
 	adds r0, r0, r1
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	adds r0, r5, #0
 	adds r0, #0x3c
 	adds r1, r5, #0

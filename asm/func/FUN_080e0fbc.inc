@@ -1,7 +1,7 @@
 	push {lr}
 	bl FUN_080e16e8
 	bl FUN_081eafb0
-	bl FUN_081d0e68
+	bl Entity081d0e20_ClearGlobal
 	bl FUN_081d1738
 	bl FUN_080eeb08
 	bl FUN_080da894

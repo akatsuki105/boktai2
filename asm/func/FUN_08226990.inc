@@ -157,7 +157,7 @@ _08226AAC:
 	strb r2, [r0]
 	ldr r5, _08226B04 @ =0x00000DF4
 	adds r0, r7, r5
-	bl FUN_08013698
+	bl ParticleShadow_Show
 _08226ACC:
 	ldr r0, _08226B08 @ =0x00000D9C
 	adds r3, r7, r0

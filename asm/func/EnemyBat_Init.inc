@@ -1100,7 +1100,7 @@ _08141E92:
 	adds r0, #0x7c
 	ldr r2, _08141ECC @ =FUN_080f48ac
 	ldr r1, [sp, #0x28]
-	bl FUN_0807f558
+	bl Entity5941_Register
 _08141EA2:
 	ldr r3, [sp, #0x16c]
 	ldrb r0, [r3]
@@ -2188,7 +2188,7 @@ _0814274A:
 	adds r0, #0x48
 	ldrh r1, [r7]
 	movs r2, #3
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r5, [sp, #0x48]
@@ -2229,7 +2229,7 @@ _08142798:
 	movs r3, #0x9a
 	lsls r3, r3, #2
 	adds r0, r7, r3
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 _081427B0:
 	ldr r4, [sp, #0x48]
 	ldrh r0, [r4]

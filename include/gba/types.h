@@ -31,7 +31,8 @@ typedef u8 bool8;
 typedef u16 bool16;
 typedef u32 bool32;
 
-typedef s16 s8_8;  // a signed 8.8 fixed-point number
+typedef s16 s8_8;   // a signed 8.8 fixed-point number
+typedef s16 s4_12;  // a signed 4.12 fixed-point number
 
 struct __attribute__((packed, aligned(2))) BgCnt {
   u16 priority : 2;

@@ -1095,7 +1095,7 @@ _081A5E8A:
 	adds r0, #0x7c
 	ldr r2, _081A5EC4 @ =FUN_080f48ac
 	ldr r1, [sp, #0x28]
-	bl FUN_0807f558
+	bl Entity5941_Register
 _081A5E9A:
 	ldr r3, [sp, #0x10c]
 	ldrb r0, [r3]
@@ -1937,7 +1937,7 @@ _081A653E:
 	adds r0, #0x48
 	ldrh r1, [r7]
 	movs r2, #3
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r5, [sp, #0x50]

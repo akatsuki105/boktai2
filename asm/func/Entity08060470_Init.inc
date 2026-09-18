@@ -14,7 +14,7 @@ _0806044E:
 	adds r0, r6, #0
 	adds r1, r5, #0
 	adds r2, r4, #0
-	bl FUN_080602f4
+	bl Entity08060470_InitElem
 	adds r4, #1
 	adds r5, #0x38
 	cmp r4, #0xf

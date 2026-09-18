@@ -105,5 +105,3 @@ bool32 FUN_0823e80c(void) {
 }
 
 NAKED s32 FUN_0823e828(void) { INCFUNC("asm/func/FUN_0823e828.inc"); }
-
-INCASM("asm/time.inc");

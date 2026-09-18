@@ -581,7 +581,7 @@ _080C119A:
 	ldr r4, [r0]
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #6
 	bne _080C11CC
@@ -665,7 +665,7 @@ _080C124A:
 	adds r0, r4, #0
 	adds r0, #0x18
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	adds r0, r4, #0
 	bl KillEntity
 _080C1264:
@@ -679,7 +679,7 @@ FUN_080c126c: @ 0x080C126C
 	push {r4, lr}
 	adds r4, r0, #0
 	adds r0, #0x18
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	adds r4, #0x4c
 	adds r0, r4, #0
 	bl FUN_0822a4e0
@@ -703,7 +703,7 @@ FUN_080c1288: @ 0x080C1288
 	adds r0, #0x18
 	ldrh r1, [r2]
 	movs r2, #0xa
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0x70
 	bl VM_SeekToKeyword
 	adds r2, r0, #0

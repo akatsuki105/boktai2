@@ -1,7 +1,7 @@
 ---
 name: ghidra-struct
 description: Recover C struct layouts in Ghidra for GBA decompilation through the GhidraMCP HTTP server (http://127.0.0.1:8089) — find every function and struct that uses a type, gather evidence from the code (callee parameter types, allocation sizes, loop strides, load/store width and signedness, GBA hardware semantics), check existing types before inventing new ones, and edit Ghidra data types without packing fields or wiping function signatures. Use this whenever the user asks to analyze / 解析 / 調べる a struct or type in Ghidra, fill unknown fields (unk_XX, field_0x...), determine or verify a struct's size, split or merge struct types, retype function signatures around a struct, or otherwise mentions Ghidra together with 構造体 / 型 / フィールド / サイズ — even if they don't name this skill. Invoked as `/ghidra-struct TypeName` to run one full analysis pass on that type.
-argument-hint: <TypeName> [scope]
+argument-hint: <TypeName> [--reflect]
 ---
 
 # Ghidra struct analysis
@@ -17,13 +17,22 @@ works even when the MCP connection is down. Endpoint cheat sheet and the API
 behaviors that have caused damage: `references/http-api.md` — read it before
 the first write.
 
-## Invocation: `/ghidra-struct <TypeName> [scope]`
+## Invocation: `/ghidra-struct <TypeName> [--reflect]`
 
 The text after the command arrives as `ARGUMENTS:` at the end of this skill.
 
 - **The first word is the type** to analyse, by its exact Ghidra name
-  (`FreezeEffect`). Anything after it narrows the scope or names the stopping
-  point ("OAM の書き込みから確定できるものだけ") — follow that literally.
+  (`FreezeEffect`).
+- **Options are matched as exact tokens.** Nothing parses or validates them, so
+  read the argument string literally and apply these two rules before anything
+  else:
+  - `--reflect` present verbatim → do step 10 at the end. Absent → this skill
+    does not touch the repository at all.
+  - Any other `--token` → an option this skill does not have, or a typo of one
+    it does. **Stop and ask.** Do not guess, and do not silently ignore it; a
+    mistyped `--reflct` must not quietly skip the reflection.
+  A plain-language request ("終わったらリポジトリにも反映して") also turns step 10
+  on, but `--reflect` is the form to prefer.
 - **With only a type name, do one complete pass on that type** — the same
   thing that was done for `FreezeEffect`:
   1. current layout and its undefined ranges;
@@ -54,9 +63,10 @@ The text after the command arrives as `ARGUMENTS:` at the end of this skill.
 
 These come from the user's corrections; follow them unless told otherwise.
 
-- **Ghidra only.** Do not edit the repository (headers, `src/`) while doing
-  this. Reflecting Ghidra's result into the repo is a separate task the user
-  asks for.
+- **Ghidra first, repository last.** Do not edit the repository (headers,
+  `src/`) while the analysis is running — the layout is not settled until it is
+  saved in Ghidra. Reflecting it into the repo happens only when the user asked
+  for it, and only in step 10, after the Ghidra side is saved.
 - **The repository's file split is not evidence.** Functions sit in files by
   link order, and neighbours from other modules leak in.
 - **Start from functions.** Collect accesses first; don't propose a layout and
@@ -131,6 +141,15 @@ Keep working files in the scratchpad. `G=http://127.0.0.1:8089`,
      types. Hits can belong to other structs used in the same function (e.g. `gCollisionMap->field_0x24`); only those on the struct under analysis matter. It cannot see offsets hidden in temporaries (`iVar3 = p + 0x2c`
      then `*(u8 *)(iVar3 + 200)`), so skim the decompile too.
 9. **Save** (`POST $G/save_program`) and report.
+10. **Reflect into the repository** — only when the invocation asked for it.
+    Mirror the saved Ghidra layout into the header or `.c` that declares the
+    type, field names and comments included, plus any function signature this
+    pass changed. Ghidra's category path tells you which file. Then
+    `make clean-code && make compare` must print the OK line; a struct edit can
+    change `sizeof` and break a `static_assert`, so never report it as done
+    without that. Do not commit unless the user asked. Keep the two sides
+    spelled the same — the repo's field-name style is `unk_1c`, not `unk_1C`
+    or `unk_01c`.
 
 ## Evidence catalog
 

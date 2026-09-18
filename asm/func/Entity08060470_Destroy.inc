@@ -13,7 +13,7 @@ _08060406:
 	adds r0, r6, #0
 	adds r1, r5, #0
 	adds r2, r4, #0
-	bl FUN_08060338
+	bl Entity08060470_ReleaseElem
 _0806041C:
 	adds r4, #1
 	adds r5, #0x38

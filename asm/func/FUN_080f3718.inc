@@ -283,7 +283,7 @@ _080F3968: .4byte FUN_080e48d0
 _080F396C:
 	ldr r0, [sp, #0x2c]
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _080F3C9A
 _080F3976:
 	mov r5, sb
@@ -659,11 +659,11 @@ _080F3C90:
 _080F3C92:
 	ldr r0, [sp, #0x2c]
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080F3C9A:
 	mov r0, sl
 	mov r1, sb
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldr r0, [sp, #0x28]
 	adds r0, #1
 	str r0, [sp, #0x28]

@@ -5156,7 +5156,7 @@ _081A54FA:
 	beq _081A5506
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 _081A5506:
 	ldr r1, _081A5560 @ =0x0000044C
 	adds r5, r4, r1
@@ -5166,7 +5166,7 @@ _081A5506:
 	movs r2, #0x9a
 	lsls r2, r2, #2
 	adds r0, r4, r2
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	movs r0, #1
 	strb r0, [r5]
 _081A551E:

@@ -28,7 +28,7 @@
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_08013698
+	bl ParticleShadow_Show
 _080F0956:
 	adds r2, r4, #0
 	adds r2, #0xde

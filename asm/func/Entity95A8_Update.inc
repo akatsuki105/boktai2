@@ -30,7 +30,7 @@ _0800C156:
 	strh r0, [r2]
 	adds r0, r4, #0
 	adds r0, #0x84
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	b _0800C240
 _0800C178:
 	ldr r0, [r4, #0x58]
@@ -46,7 +46,7 @@ _0800C178:
 	strh r0, [r2]
 	adds r0, r4, #0
 	adds r0, #0x84
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	ldrh r0, [r4, #0x28]
 	cmp r0, #0
 	beq _0800C1A0

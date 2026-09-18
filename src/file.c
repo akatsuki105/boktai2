@@ -135,7 +135,7 @@ void* GetFile(FileID directoryID, FileID fileID) {
       isAsset = TRUE;
       break;
     }
-    case DIR_SPRITE_SETS: {
+    case DIR_MAIN_SPRITE: {
       directoryID = 0xC8E5;
       fileID = 0x5F29;
       isAsset = TRUE;

@@ -227,7 +227,7 @@ _080E6B44:
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r7, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	movs r2, #1
 	ldr r3, _080E6B74 @ =0x0000025D
 	adds r0, r7, r3

@@ -37,27 +37,24 @@ typedef struct {
 
 extern const ParticleFile gParticleFile0;  // 0x08A20138
 
-void LoadParticleFile(ParticleFile* p);
-ParticleGroup* GetParticleGroup(u16 ptclID);
-
 // --------------------------------------------
 
 typedef struct Particle {
-  u32 flags;        // 0x00
-  u8 active;        // 0x04
-  s8 scaleX;        // 0x05
-  s8 scaleY;        // 0x06
-  u8 rotation;      // 0x07
-  u16 tileNum;      // 0x08
-  u8 spriteWidth;   // 0x0A
-  u8 spriteHeight;  // 0x0B
-  s8 q_offsetX;     // 0x0C
-  s8 q_offsetY;     // 0x0D
-  u8 plttSlot;      // 0x0E
-  u8 priority;      // 0x0F
-  u8 q_zOffset;     // 0x10
-  u8 listIdx;       // 0x11
-  u8 unk_12[2];
+  u32 flags;              // 0x00
+  u8 active;              // 0x04
+  s8 scaleX;              // 0x05
+  s8 scaleY;              // 0x06
+  u8 rotation;            // 0x07
+  u16 tileNum;            // 0x08
+  u8 spriteWidth;         // 0x0A
+  u8 spriteHeight;        // 0x0B
+  s8 q_offsetX;           // 0x0C
+  s8 q_offsetY;           // 0x0D
+  u8 plttSlot;            // 0x0E
+  u8 priority;            // 0x0F
+  u8 q_zOffset;           // 0x10
+  u8 listIdx;             // 0x11
+  u8 unk_12[2];           // 0x12, padding?
   u32 oamAttr01;          // 0x14
   Vec3 pos;               // 0x18
   struct Particle* prev;  // 0x20
@@ -65,28 +62,17 @@ typedef struct Particle {
 } Particle;
 static_assert(sizeof(Particle) == 40);  // 　FUN_0822a3c4 から 40バイト以上は確定 で 0x0805fdfe のループでは 40バイトずつアドレスが増えていくので、 40バイトで確定と思われる
 
-void FUN_0822a3c4(Particle* p, s32 idx);
-
-// --------------------------------------------
-
-// 持ち主の足元に置く影, ParticleShadowManager がリストで管理して毎フレーム fn を呼ぶ
-typedef struct ParticleShadow {
-  u8 active;                    // 0x00, FUN_08013640 でリストに入れると 1, FUN_08013668 で外すと 0
-  u8 q_kind;                    // 0x01, 0 なら fn = FUN_080136cc (床に追従), それ以外は FUN_080136c8 (何もしない)
-  u8 q_flags;                   // 0x02, bit0: FUN_080136cc で当たり判定マップでなく q_pos->y を高さに使う
-  u8 unk_03;                    // 0x03
-  u16 unk_04;                   // 0x04, FUN_0801385c で 0
-  u16 unk_06;                   // 0x06, FUN_0801385c で 0
-  Vec3* q_pos;                  // 0x08, 持ち主の座標
-  Particle particle;            // 0x0C
-  void* fn;                     // 0x34, Entity0801381c_Update が影を引数にして呼ぶ
-  struct ParticleShadow* prev;  // 0x38
-  struct ParticleShadow* next;  // 0x3C
-} ParticleShadow;
-static_assert(sizeof(ParticleShadow) == 64);  // ScriptShadowManager の要素 (Malloc(0x54)) で +0x0C から +0x4C (prev) まで
-
 // --------------------------------------------
 
 extern Particle* gParticleLists[2];
+
+void LoadParticleFile(ParticleFile* p);
+ParticleGroup* GetParticleGroup(u16 ptclID);
+void FUN_0822a3c4(Particle* p, s32 idx);
+void FUN_0822d9f0(Particle* p, ParticleGroup* g, u32 flags);
+void FUN_0822da70(Particle* p, ParticleGroup* g, u32 flags);
+void FUN_0822dabc(Particle* p);
+void FUN_0822dadc(Particle* p, s32 plttID);
+void FUN_0822dad4(Particle* p, s32 offsetX, s32 offsetY);
 
 #endif  // __INCLUDE_PARTICLE_H__

@@ -249,7 +249,7 @@ _080F540A:
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r6, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	ldr r2, _080F5430 @ =0x000001DF
 	adds r0, r6, r2
 	ldrb r0, [r0]

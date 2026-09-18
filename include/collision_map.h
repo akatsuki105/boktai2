@@ -26,7 +26,7 @@ extern u8 gDecompressedCollisionMapFile[16380];  // 0x02031404, 展開された 
 
 // --------------------------------------------
 
-// gCollisionMap (Unk030046a4.q_mapNodes) の双方向リストに繋がれるノード, 根拠: FUN_08234270 (挿入) / FUN_082342a8 (除去) / FUN_08234208 (各フィールドの初期化)
+// gCollisionMap (CollisionMapData.q_mapNodes) の双方向リストに繋がれるノード, 根拠: FUN_08234270 (挿入) / FUN_082342a8 (除去) / FUN_08234208 (各フィールドの初期化)
 typedef struct q_MapNode {
   u16 unk_0;               // 0x00, FUN_08234208 が 0 を書く
   u16 q_tileIdx;           // 0x02, FUN_08234208 の第2引数, 呼び出し側はコリジョンマップのタイル索引を渡す
@@ -113,7 +113,28 @@ typedef struct {
 // --------------------------------------------
 
 typedef struct {
-  // TODO
+  u16 countRects;           // 0x00
+  u16 countPortals;         // 0x02
+  u16 countDistanceMap;     // 0x04
+  u32 offsetToRects;        // 0x08, Byte offset from start of NavIsland to rects
+  u32 offsetToPortals;      // 0x0C, Byte offset from start of NavIsland to portals
+  u32 offsetToDistanceMap;  // 0x10, Byte offset from start of NavIsland to distance map
+
+  struct NavRect {
+    u8 minX;         // 0x00, 1 tile = 1
+    u8 minY;         // 0x01
+    u8 maxX;         // 0x02
+    u8 maxY;         // 0x03
+    u8 portals[12];  // 0x04, Indices into NavMesh.portals. At most 12 portals per rect, unused elements in this array must be at the end of the array, and set to 0xFF.
+  } rects[1];        // NavRect[countRects]
+
+  struct NavPortal {
+    u16 x;       // 0x00, 1 tile = 0x100
+    u16 y;       // 0x02
+    u16 unk_4;   // 0x04
+  } portals[1];  // NavPortal[countPortals]
+
+  u16 distanceMap[1];  // u16[countDistanceMap]
 } NavIsland;
 
 typedef struct {
@@ -124,21 +145,45 @@ typedef struct {
 
 // --------------------------------------------
 
-// 読み込み中のコリジョンマップ, gCollisionMap が指す, Malloc(3620) で確保される (FUN_082326a0)
-typedef struct Unk030046a4 {
-  u8 unk_0[4];
-  CollisionMapTileData* tiledata;  // 0x004
-  u8 unk_8[4];
-  ZoneData* zones;        // 0x00C
-  PathData* paths;        // 0x010
-  NavMesh* navMesh;       // 0x014
-  q_MapNode* q_mapNodes;  // 0x018, FUN_08234270 がここを先頭とする双方向リストにノードを繋ぐ
-  u8 unk_1c[0x24 - 0x1C];
-  u16 q_rowOffsets[1];  // 0x024, 行ごとのタイル索引オフセット表 (要素数はマップの高さ分), q_rowOffsets[blockZ] + blockX がタイル索引
-  u8 unk_26[3620 - 0x26];
-} Unk030046a4;
-static_assert(sizeof(Unk030046a4) == 3620);
+// スクリプトから登録されるイベント, VM_Ctrl_D4CB が 44バイトを組み立て FUN_082349b8 が unk_8 をキーに挿入する
+typedef struct CollisionMapEvent {
+  u32 id;        // 0x00, FUN_082349b8 が u32_030046b0 の連番を書く
+  u16 unk_4;     // 0x04, FUN_08234660 が 0xDD2/0x14C9/0x1516/0x1517/0xA5BF と比較する (VM のキーワード 'm', 既定 0xDD2)
+  s16 unk_6;     // 0x06, VM_Ctrl_D4CB の Script_GetValue 2番目
+  s16 unk_8;     // 0x08, 挿入時のソートキー, 根拠: FUN_082349b8
+  s16 unk_a;     // 0x0A
+  u16 unk_c;     // 0x0C
+  s16 unk_e;     // 0x0E
+  u16 args1[4];  // 0x10, FUN_08234868 が ScriptArgs にコピーする4語
+  u16 args2[4];  // 0x18, 同上、もう4語
+  u8* unk_20;    // 0x20
+  u8* scriptPC;  // 0x24, FUN_08234868 がスクリプトの PC として実行する
+  s32 unk_28;    // 0x28
+} CollisionMapEvent;
+static_assert(sizeof(CollisionMapEvent) == 44);
 
-extern Unk030046a4* gCollisionMap;
+// --------------------------------------------
+
+// 読み込み中のコリジョンマップ, gCollisionMap が指す, Malloc(3620) で確保される (FUN_082326a0)
+typedef struct CollisionMapData {
+  u16 eventCount;                  // 0x000, events の件数, 根拠: FUN_082326d8 が 0 を書き FUN_082349b8 が +1 する
+  u8 unk_2[2];                     // 0x002, 読み書きするコードが見つかっていない, padding?
+  CollisionMapTileData* tiledata;  // 0x004
+  u32 unk_8;                       // 0x008, FUN_082326d8 が 0 を書くだけで読み手がいない
+  ZoneData* zones;                 // 0x00C
+  PathData* paths;                 // 0x010
+  NavMesh* navMesh;                // 0x014
+  q_MapNode* q_mapNodes;           // 0x018, FUN_08234270 がここを先頭とする双方向リストにノードを繋ぐ
+  s16 neighborOffsets[4];          // 0x01C, 隣接タイルへの索引差分 -w/1/w/-1, 根拠: FUN_0823273c。読み手は (dir & 3) で引く
+  u16 q_rowOffsets[256];           // 0x024, 行ごとのタイル索引オフセット表, q_rowOffsets[blockZ] + blockX がタイル索引
+  CollisionMapEvent events[64];    // 0x224, 根拠: FUN_082326d8 が i=0..63 で 44バイトずつクリアする
+  u32 unk_d24[64];                 // 0xD24, events と同じ添字の並列配列, FUN_082349b8 の第2引数が入る
+} CollisionMapData;
+static_assert(sizeof(CollisionMapData) == 3620);
+
+extern CollisionMapData* gCollisionMap;
+
+q_MapNode* FUN_08234224(u32 tileIdx, u32 mask);
+void FUN_082342a8(q_MapNode* p);
 
 #endif  // __INCLUDE_COLLISION_MAP_H__

@@ -5180,7 +5180,7 @@ _08038F28:
 	ldr r4, [r0]
 	adds r0, r7, #0
 	adds r1, r4, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #0x16
 	bls _08038F4E
@@ -5345,7 +5345,7 @@ _080390A4:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _080390D2
 _080390B2:
 	movs r1, #2
@@ -5680,7 +5680,7 @@ _08039320:
 	movs r2, #0xd7
 	lsls r2, r2, #4
 	adds r0, r5, r2
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	b _08039376
 _08039344:
 	movs r3, #0xa0
@@ -5700,13 +5700,13 @@ _08039344:
 	movs r4, #0xd7
 	lsls r4, r4, #4
 	adds r0, r5, r4
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	b _08039376
 _0803936C:
 	movs r1, #0xd7
 	lsls r1, r1, #4
 	adds r0, r5, r1
-	bl FUN_08013984
+	bl AuxShadow_Show
 _08039376:
 	movs r1, #0x80
 	lsls r1, r1, #0xa
@@ -7233,7 +7233,7 @@ _08039E48:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08039E60:
 	adds r1, r4, #0
 	adds r1, #0xbc
@@ -7272,7 +7272,7 @@ _08039E8C:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08039EA4:
 	adds r1, r4, #0
 	adds r1, #0xbc
@@ -7326,7 +7326,7 @@ _08039EE0:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _08039F10
 _08039F06:
 	adds r1, r3, #0
@@ -7381,7 +7381,7 @@ _08039F40:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _08039F70
 _08039F66:
 	adds r1, r3, #0
@@ -7437,7 +7437,7 @@ _08039FA0:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _08039FD2
 _08039FC8:
 	adds r1, r3, #0
@@ -7494,7 +7494,7 @@ _0803A004:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _0803A036
 _0803A02C:
 	adds r1, r3, #0

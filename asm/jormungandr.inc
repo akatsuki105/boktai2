@@ -1582,7 +1582,7 @@ _080C5C32:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080C5C50:
 	add sp, #0xc
 	pop {r4, r5}
@@ -1763,7 +1763,7 @@ _080C5DA0:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080C5DB0:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -1951,7 +1951,7 @@ _080C5EF4:
 	lsls r3, r3, #1
 	adds r0, r4, r3
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080C5F32:
 	add sp, #0xc
 	pop {r4, r5, r6}
@@ -2438,7 +2438,7 @@ FUN_080c62cc: @ 0x080C62CC
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	ldr r0, _080C634C @ =0x00000225
 	bl PlaySound_082406e0
 	movs r1, #0xc0
@@ -2685,7 +2685,7 @@ _080C64CC:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080C64DC:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -10887,7 +10887,7 @@ _080CA504:
 	ldr r4, [r0]
 	mov r0, r8
 	adds r1, r4, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r4, #6]
 	subs r0, #0x12
 	cmp r0, #0x1a
@@ -11003,7 +11003,7 @@ _080CA634:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _080CA672
 	.align 2, 0
 _080CA644: .4byte 0x000025BC

@@ -26,7 +26,7 @@ _0823C0D8:
 	ldr r4, [r0]
 	adds r0, r7, #0
 	adds r1, r4, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #5
 	bhi _0823C1D4

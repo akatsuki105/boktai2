@@ -4382,7 +4382,7 @@ _0811741E:
 	movs r3, #0x9a
 	lsls r3, r3, #2
 	adds r0, r4, r3
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	b _08117472
 _08117430:
 	cmp r3, #0x1a
@@ -4446,7 +4446,7 @@ _0811749A:
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r6, r1
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	ldr r2, _081174C0 @ =0x0000025D
 	adds r0, r6, r2
 	ldrb r0, [r0]
@@ -11805,7 +11805,7 @@ _0811AD70:
 	movs r2, #0x9a
 	lsls r2, r2, #2
 	adds r0, r7, r2
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	ldr r5, _0811AE04 @ =0x0000025D
 	adds r0, r7, r5
 	ldrb r0, [r0]
@@ -23558,7 +23558,7 @@ _08120966:
 	beq _08120972
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 _08120972:
 	ldr r1, _081209CC @ =0x0000044C
 	adds r5, r4, r1
@@ -23568,7 +23568,7 @@ _08120972:
 	movs r2, #0x9a
 	lsls r2, r2, #2
 	adds r0, r4, r2
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	movs r0, #1
 	strb r0, [r5]
 _0812098A:
@@ -24749,7 +24749,7 @@ _08121326:
 	adds r0, #0x7c
 	ldr r2, _08121360 @ =FUN_080f48ac
 	ldr r1, [sp, #0x28]
-	bl FUN_0807f558
+	bl Entity5941_Register
 _08121336:
 	ldr r6, [sp, #0xe4]
 	ldrb r0, [r6]
@@ -25539,7 +25539,7 @@ _0812198A:
 	adds r0, #0x48
 	ldrh r1, [r7]
 	movs r2, #3
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r2, [sp, #0x4c]

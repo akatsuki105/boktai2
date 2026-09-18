@@ -51,7 +51,7 @@ _08063BB6:
 	strh r2, [r0]
 	adds r4, #6
 	adds r0, r5, r4
-	bl FUN_0801385c
+	bl ParticleShadow_Init
 	bl FUN_080dc44c
 	ldr r1, _08063CCC @ =0x00000446
 	adds r0, r5, r1

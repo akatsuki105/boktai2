@@ -43,9 +43,9 @@
 	adds r1, r7, r2
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_0801385c
+	bl ParticleShadow_Init
 	adds r0, r4, #0
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	ldr r3, _08229C20 @ =0x00000E3A
 	adds r1, r7, r3
 	movs r0, #1

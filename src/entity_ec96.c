@@ -93,9 +93,6 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
 #endif
 }
 
-void FUN_08236424(HitboxData* p);
-void FUN_082342a8(q_MapNode* p);
-
 // 当たり判定・マップノード・描画ノードをそれぞれのリストから外す
 s32 EntityEC96_Destroy(EntityEC96* p) {
   FUN_08236424(&p->hitbox);
@@ -104,13 +101,7 @@ s32 EntityEC96_Destroy(EntityEC96* p) {
   return 0;
 }
 
-void FUN_0822a470(AuxSprite* p, AuxSpriteGfx* s, SpriteFlags flags);
-void FUN_08236514(HitboxData* p, u32 val1, u32 val2, u32 val3);
-void FUN_08236400(HitboxData* p);
-u8* FUN_08234224(s32 idx, s32 param_2);
 void FUN_08234270(q_MapNode* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
-extern s32 gMapBlockW;
-extern s32 gMapBlockH;
 
 // スクリプトから位置と耐久を読み、スプライト・当たり判定・マップノードを用意する
 s32 EntityEC96_Init(EntityEC96* p, u32 id) {
@@ -169,7 +160,7 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   } else {
     idx = gCollisionMap->q_rowOffsets[bz] + bx;
   }
-  tile = FUN_08234224(idx, 1);
+  tile = (u8*)FUN_08234224(idx, 1);
   if (tile != NULL) {
     tile += 4;
   } else {

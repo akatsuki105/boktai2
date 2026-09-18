@@ -84,14 +84,14 @@ _08079DDE:
 	beq _08079DFC
 	ldr r1, _08079DF8 @ =0x0000060C
 	adds r0, r5, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	b _08079E04
 	.align 2, 0
 _08079DF8: .4byte 0x0000060C
 _08079DFC:
 	ldr r2, _08079E20 @ =0x0000060C
 	adds r0, r5, r2
-	bl FUN_08013698
+	bl ParticleShadow_Show
 _08079E04:
 	adds r0, r5, #0
 	movs r1, #8

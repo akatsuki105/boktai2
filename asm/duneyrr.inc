@@ -2254,7 +2254,7 @@ _08024378:
 	ldr r4, [r0]
 	mov r0, r8
 	adds r1, r4, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #0xa
 	bls _0802439E
@@ -2394,7 +2394,7 @@ _080244A0:
 	adds r0, r5, r3
 _080244B4:
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _080244DA
 _080244BC:
 	movs r1, #2
@@ -2753,14 +2753,14 @@ _0802475C:
 _08024778:
 	ldr r1, _08024784 @ =0x000004D4
 	adds r0, r5, r1
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	b _08024790
 	.align 2, 0
 _08024784: .4byte 0x000004D4
 _08024788:
 	ldr r2, _080247C8 @ =0x000004D4
 	adds r0, r5, r2
-	bl FUN_08013984
+	bl AuxShadow_Show
 _08024790:
 	movs r3, #0xa9
 	lsls r3, r3, #3
@@ -4506,7 +4506,7 @@ _08025430:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08025448:
 	adds r1, r4, #0
 	adds r1, #0xbc
@@ -4545,7 +4545,7 @@ _08025474:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0802548C:
 	adds r1, r4, #0
 	adds r1, #0xbc
@@ -4602,7 +4602,7 @@ _080254C8:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _080254FE
 _080254F4:
 	adds r1, r3, #0
@@ -4659,7 +4659,7 @@ _08025530:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _08025562
 _08025558:
 	adds r1, r3, #0
@@ -8409,7 +8409,7 @@ FUN_080271e0: @ 0x080271E0
 	movs r1, #0x60
 	movs r2, #0x60
 	movs r3, #0x60
-	bl FUN_08013cd8
+	bl AuxShadow_SetScaleParams
 	movs r0, #0xc0
 	lsls r0, r0, #1
 	strh r0, [r5]
@@ -8480,7 +8480,7 @@ FUN_08027278: @ 0x08027278
 	movs r1, #0x30
 	movs r2, #0x30
 	movs r3, #0x30
-	bl FUN_08013cd8
+	bl AuxShadow_SetScaleParams
 	movs r0, #0xac
 	lsls r0, r0, #1
 	adds r1, r6, r0
@@ -8573,7 +8573,7 @@ FUN_0802730c: @ 0x0802730C
 	movs r1, #0x30
 	movs r2, #0x30
 	movs r3, #0x30
-	bl FUN_08013cd8
+	bl AuxShadow_SetScaleParams
 	movs r2, #0xac
 	lsls r2, r2, #1
 	adds r1, r6, r2
@@ -8734,7 +8734,7 @@ FUN_08027454: @ 0x08027454
 	movs r1, #0x30
 	movs r2, #0x30
 	movs r3, #0x30
-	bl FUN_08013cd8
+	bl AuxShadow_SetScaleParams
 	movs r2, #0xac
 	lsls r2, r2, #1
 	adds r1, r6, r2

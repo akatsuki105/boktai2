@@ -176,7 +176,7 @@ _0823CC7E:
 	adds r0, #0x20
 	ldr r1, [r5, #0x18]
 	movs r2, #6
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 _0823CCA0:
 	ldr r0, _0823CCB4 @ =gCamera
 	str r5, [r0]

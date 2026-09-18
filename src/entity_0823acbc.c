@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "global.h"
+#include "msgbus.h"
 #include "sound.h"
 #include "vm.h"
 
@@ -33,7 +34,20 @@ NAKED bool32 FUN_0823a790(unknown* p, unknown* src) { INCFUNC("asm/func/FUN_0823
 
 NAKED bool32 FUN_0823a7d8(unknown* p, unknown* dst) { INCFUNC("asm/func/FUN_0823a7d8.inc"); }
 
-NAKED unknown* FUN_0823a840(s32 idx1, s32 idx2, s32 idx3) { INCFUNC("asm/func/FUN_0823a840.inc"); }
+// デモ表から demoID/step/idx のメッセージを1件引く (どの段でも NULL に当たったら終端)
+EntityMsg* DemoTable_GetMsg(s32 demoID, s32 step, s32 idx) {
+  const EntityMsg* const* const* demo;
+  const EntityMsg* const* stp;
+
+  demo = gDemoTable[demoID];
+  if (demo != NULL) {
+    stp = demo[step];
+    if (stp != NULL) {
+      return (EntityMsg*)stp[idx];
+    }
+  }
+  return NULL;
+}
 
 void FUN_0823a870(void) { gSystemSaveData = &gSystemSaveDataBuffer; }
 

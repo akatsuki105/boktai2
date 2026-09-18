@@ -539,7 +539,7 @@ _080FE666:
 	movs r6, #0x9a
 	lsls r6, r6, #2
 	adds r0, r7, r6
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 _080FE6DE:
 	add sp, #0x50
 	pop {r3, r4, r5}

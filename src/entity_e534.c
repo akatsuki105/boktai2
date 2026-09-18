@@ -1,10 +1,11 @@
 #include "entity.h"
 #include "global.h"
+#include "msgbus.h"
 
 typedef struct {
   Entity e;  // ENTITY_UNK_11
   u8 unk_18[0xCD4 - 24];
-  UnkStruct52 unk_cd4;  // 0xCD4, 根拠: 0x08012bfc
+  EntityMsgBox unk_cd4;  // 0xCD4, 根拠: 0x08012bfc
 } EntityE534;
 static_assert(sizeof(EntityE534) == 3336);
 

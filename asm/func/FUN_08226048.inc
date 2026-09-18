@@ -71,7 +71,7 @@ _082260CA:
 	strb r1, [r0]
 	ldr r5, _0822613C @ =0x00000DF4
 	adds r0, r6, r5
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	ldr r1, _08226140 @ =0x00000F2B
 	adds r0, r6, r1
 	ldrb r0, [r0]

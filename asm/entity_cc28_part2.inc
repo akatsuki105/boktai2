@@ -18664,7 +18664,7 @@ _0809B04E:
 	str r0, [sp, #8]
 	movs r0, #4
 	adds r3, r7, #0
-	bl FUN_0800a8e0
+	bl Entity0800a89c_Spawn
 	subs r5, #1
 	cmp r5, #0
 	bge _0809B04E

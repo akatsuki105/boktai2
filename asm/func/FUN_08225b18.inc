@@ -54,7 +54,7 @@ _08225B4A:
 	strh r0, [r1]
 	ldr r1, _08225C3C @ =0x00000DF4
 	adds r0, r6, r1
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	adds r0, r6, #0
 	bl FUN_08223984
 	ldr r2, _08225C40 @ =0x00000DC8

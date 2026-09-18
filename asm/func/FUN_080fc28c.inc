@@ -19,7 +19,7 @@ _080FC2AA:
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r6, r1
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	ldr r2, _080FC2D0 @ =0x0000025D
 	adds r0, r6, r2
 	ldrb r0, [r0]

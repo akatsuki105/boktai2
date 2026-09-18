@@ -19313,7 +19313,7 @@ _0810C3B0:
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	b _0810C458
 	.align 2, 0
 _0810C3E8: .4byte 0x000003FF
@@ -19437,7 +19437,7 @@ _0810C48E:
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	b _0810C510
 _0810C4D6:
 	movs r1, #2
@@ -19572,7 +19572,7 @@ _0810C5C2:
 	movs r3, #0x9a
 	lsls r3, r3, #2
 	adds r0, r7, r3
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	adds r0, r7, #0
 	movs r1, #0xd
 	bl FUN_080ef86c
@@ -19884,7 +19884,7 @@ _0810C5EA:
 	adds r0, r7, #0
 	adds r0, #0x48
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0810C84A:
 	add sp, #0x1c
 	pop {r3, r4, r5}
@@ -23199,7 +23199,7 @@ _0810E16C:
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r7, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	movs r0, #1
 	ldr r2, [sp, #0x2c]
 	strb r0, [r2]
@@ -23692,11 +23692,11 @@ _0810E5C2:
 	bl PlaySound_082406e0
 	adds r4, #0xa0
 	adds r0, r7, r4
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	adds r0, r7, #0
 	adds r0, #0x48
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _0810ECCC
 	.align 2, 0
 _0810E630: .4byte 0x030046A0
@@ -24441,7 +24441,7 @@ _0810EC3E:
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r7, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	movs r1, #0x80
 	lsls r1, r1, #4
 	ldr r2, [sp, #0xd8]
@@ -34939,7 +34939,7 @@ _08113E2E:
 	beq _08113E3A
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 _08113E3A:
 	ldr r1, _08113E94 @ =0x0000044C
 	adds r5, r4, r1
@@ -34949,7 +34949,7 @@ _08113E3A:
 	movs r2, #0x9a
 	lsls r2, r2, #2
 	adds r0, r4, r2
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	movs r0, #1
 	strb r0, [r5]
 _08113E52:
@@ -36140,7 +36140,7 @@ _081147FE:
 	adds r0, #0x7c
 	ldr r2, _08114838 @ =FUN_080f48ac
 	ldr r1, [sp, #0x2c]
-	bl FUN_0807f558
+	bl Entity5941_Register
 _0811480E:
 	ldr r6, [sp, #0x1a0]
 	ldrb r0, [r6]
@@ -37087,7 +37087,7 @@ _08114FC2:
 	adds r0, #0x48
 	ldrh r1, [r7]
 	movs r2, #3
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r5, [sp, #0x58]

@@ -138,6 +138,7 @@ extern MainSprite* gMainSpriteLists[2];
 s32 OpenMainSpriteFile(MainSpriteGfx* data, MainSpriteFile* f);
 s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* src, u16 spriteIdx);
 s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* src, u16 param_3, u8 playMode);
+s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
 bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* src);
 void FUN_0822f1c0(MainSprite* p);
 

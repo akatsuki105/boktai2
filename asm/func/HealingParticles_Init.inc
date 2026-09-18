@@ -5,9 +5,9 @@
 	str r2, [r4, #0x1c]
 	str r3, [r4, #0x20]
 	str r1, [r4, #0x18]
-	bl FUN_080a91dc
+	bl HealingParticles_InitParticles
 	adds r0, r4, #0
-	bl FUN_080a939c
+	bl HealingParticles_InitHitbox
 	movs r0, #0xfd
 	lsls r0, r0, #1
 	adds r1, r4, r0
@@ -29,7 +29,7 @@
 	bl PlaySound_082406e0
 	ldr r1, _080A9474 @ =FUN_080a9058
 	adds r0, r4, #0
-	bl FUN_080a9044
+	bl HealingParticles_SetState
 	movs r0, #0
 	pop {r4}
 	pop {r1}

@@ -167,14 +167,14 @@ _08079872:
 	beq _08079890
 	ldr r2, _0807988C @ =0x0000060C
 	adds r0, r5, r2
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	b _08079898
 	.align 2, 0
 _0807988C: .4byte 0x0000060C
 _08079890:
 	ldr r3, _080798A0 @ =0x0000060C
 	adds r0, r5, r3
-	bl FUN_08013698
+	bl ParticleShadow_Show
 _08079898:
 	pop {r4, r5}
 	pop {r0}

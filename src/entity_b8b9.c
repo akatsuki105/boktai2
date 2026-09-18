@@ -13,10 +13,7 @@ static_assert(sizeof(EntityB8B9) == 32);
 
 IWRAM_DATA EntityB8B9* gEntityB8B9 = NULL;  // 0x030016F8
 
-void FUN_0823b1ec(void) {
-  gEntityB8B9 = NULL;
-  return;
-}
+void FUN_0823b1ec(void) { gEntityB8B9 = NULL; }
 
 void FUN_0823b1f8(Entity2UnkData* p) {
   if (gEntityB8B9 != NULL) {

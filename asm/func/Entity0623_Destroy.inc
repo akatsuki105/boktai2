@@ -4,7 +4,7 @@
 	movs r1, #0xc7
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 	movs r1, #0xae
 	lsls r1, r1, #1
 	adds r0, r4, r1

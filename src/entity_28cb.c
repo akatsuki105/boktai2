@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "global.h"
 #include "item.h"
+#include "msgbus.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite.h"
@@ -10,8 +11,8 @@
 // (運搬中の)棺桶?
 typedef struct {
   Entity e;             // ENTITY_UNK_8
-  UnkStruct52 unk_18;   // 0x18
-  u16 q_linked;         // 0x4C, 0 以外なら Init で unk_18 を Entity4E69 に登録し、Destroy で外す (script keyword 0x4F)
+  EntityMsgBox unk_18;  // 0x18
+  u16 q_linked;         // 0x4C, 0 以外なら Init で unk_18 を EntityMsgBus に登録し、Destroy で外す (script keyword 0x4F)
   u16 state;            // 0x4E, PTR_ARRAY_085ac044 の添字, 変更時に stateTimer を 0 に戻す
   u16 coffinID;         // 0x50, GetOwnedCoffinID() の結果, metasprite 番号 (x*7) とパレット行 (x+0x207) を選ぶ
   u16 q_scale;          // 0x52, Init で 0x7F0, >>4 して nodes[0] の拡縮に使う
@@ -88,7 +89,7 @@ static inline void Entity28CB_SetState(Entity28CB* p, u16 state) {
   p->stateTimer = 0;
 }
 
-// Entity4E69 から種類3のコマンドが届くのを待ち、届いたら状態1に進めて効果音を鳴らす
+// EntityMsgBus から種類3のコマンドが届くのを待ち、届いたら状態1に進めて効果音を鳴らす
 void FUN_08089ce0(Entity28CB* p) {
   s32 i;
   if (FUN_08089c7c(p)) {
@@ -266,7 +267,7 @@ s32 Entity28CB_Destroy(Entity28CB* p) {
     FUN_0822a4e0(&p->nodes[i]);
   }
   if (p->q_linked != 0) {
-    FUN_08022428(&p->unk_18);
+    EntityMsgBus_Unregister(&p->unk_18);
   }
   return 0;
 }

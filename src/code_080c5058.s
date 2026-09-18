@@ -1259,7 +1259,7 @@ EntityF41A_Init: @ 0x080CC118
 	adds r1, r4, #0
 	adds r1, #0x1c
 	ldr r2, _080CC154 @ =FUN_080cbb68
-	bl FUN_0807f558
+	bl Entity5941_Register
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_080cbb2c
@@ -5771,7 +5771,7 @@ FUN_080ce330: @ 0x080CE330
 	bl FUN_08247504
 	ldr r1, _080CE374 @ =0x0000060C
 	adds r0, r4, r1
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	movs r1, #0xca
 	lsls r1, r1, #3
 	adds r0, r4, r1
@@ -5828,7 +5828,7 @@ FUN_080ce378: @ 0x080CE378
 	ldr r2, _080CE44C @ =0x0000060C
 	adds r0, r5, r2
 	movs r2, #0
-	bl FUN_0801385c
+	bl ParticleShadow_Init
 	bl FUN_080dc44c
 	adds r0, r5, #0
 	bl FUN_080cdc10
@@ -23147,14 +23147,14 @@ _080D6AC6:
 	beq _080D6AE4
 	ldr r1, _080D6AE0 @ =0x0000060C
 	adds r0, r5, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	b _080D6AEC
 	.align 2, 0
 _080D6AE0: .4byte 0x0000060C
 _080D6AE4:
 	ldr r2, _080D6B1C @ =0x0000060C
 	adds r0, r5, r2
-	bl FUN_08013698
+	bl ParticleShadow_Show
 _080D6AEC:
 	movs r1, #0xfe
 	lsls r1, r1, #2
@@ -35974,7 +35974,7 @@ _080DCB58:
 	bl FUN_0822a4e0
 	adds r0, r6, #0
 	adds r0, #0xdc
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	adds r5, r6, #0
 	adds r5, #0x8c
 	adds r0, r5, #0
@@ -36340,7 +36340,7 @@ _080DCE2A:
 	bl FUN_0822a4e0
 	adds r0, r5, #0
 	adds r0, #0xdc
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	adds r0, r5, #0
 	adds r0, #0x8c
 	bl FUN_08236424
@@ -36624,7 +36624,7 @@ _080DD07C:
 	mov r1, r8
 	adds r1, #0x1c
 	movs r2, #0
-	bl FUN_0801385c
+	bl ParticleShadow_Init
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #0
@@ -36757,7 +36757,7 @@ _080DD186:
 	adds r0, r4, #0
 	bl FUN_0822a4e0
 	adds r0, r5, #0
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 _080DD196:
 	movs r0, #0xa2
 	lsls r0, r0, #1

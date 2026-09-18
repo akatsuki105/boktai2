@@ -36,7 +36,7 @@ _0821BCA8:
 	adds r0, #0x1c
 	adds r1, r5, #0
 	movs r2, #0xa
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0
 	pop {r4, r5}
 	pop {r1}

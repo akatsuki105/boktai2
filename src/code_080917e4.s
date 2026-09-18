@@ -1393,7 +1393,7 @@ _0809E906:
 	movs r1, #1
 	movs r2, #0x19
 	add r3, sp, #0xc
-	bl FUN_0800a8e0
+	bl Entity0800a89c_Spawn
 _0809E99E:
 	ldrh r0, [r5, #0x22]
 	adds r0, #1
@@ -10063,7 +10063,7 @@ _080A2B06:
 	adds r0, r4, #0
 	adds r0, #0x18
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080A2B24:
 	pop {r4, r5}
 	pop {r0}
@@ -10317,7 +10317,7 @@ _080A2CF2:
 	adds r0, r4, #0
 	adds r0, #0x18
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080A2D0E:
 	pop {r4, r5}
 	pop {r0}
@@ -11294,7 +11294,7 @@ _080A346A:
 	ldr r4, [r0]
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #7
 	beq _080A3498
@@ -11403,7 +11403,7 @@ _080A354A:
 	cmp r5, #0
 	bge _080A354A
 	adds r0, r7, #0
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	movs r0, #0
 	pop {r4, r5, r6, r7}
 	pop {r1}
@@ -11863,7 +11863,7 @@ _080A3882:
 	ldr r0, [sp, #0x14]
 	ldr r1, [sp]
 	movs r2, #0xa
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0x44
 	bl VM_SeekToKeyword
 	cmp r0, #0
@@ -15911,7 +15911,7 @@ _080A5808:
 	adds r1, r7, #0
 	adds r1, #0x44
 	movs r2, #0
-	bl FUN_0801385c
+	bl ParticleShadow_Init
 _080A5832:
 	ldr r0, _080A584C @ =0x03002C48
 	ldr r1, [r0]
@@ -15983,7 +15983,7 @@ _080A5894:
 	ldr r0, [r4]
 	cmp r0, #0
 	beq _080A58B8
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	ldr r0, [r4]
 	bl Free
 _080A58B8:

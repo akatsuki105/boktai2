@@ -3,6 +3,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "particle.h"
+#include "shadow.h"
 #include "sprite.h"
 #include "vm.h"
 
@@ -27,7 +28,7 @@ typedef struct {
   u8 unk_3a[2];            // 0x3A
   AuxSpriteGfx sprite;     // 0x3C
   AuxSprite q_node;        // 0x58, sprite を指す描画ノード
-  ParticleShadow shadow;   // 0x84, 根拠: Entity95A8_Destroy が FUN_080138fc に渡している
+  ParticleShadow shadow;   // 0x84, 根拠: Entity95A8_Destroy が ParticleShadow_Remove に渡している
   HitboxData hitbox;       // 0xC4, 0x0800c33a
 } SolarBamboo;
 static_assert(sizeof(SolarBamboo) == 276);
@@ -39,7 +40,7 @@ const u16 u16_ARRAY_085aa76c[4] = {
     0x3,
 };  // 0x085aa76c
 
-void FUN_0800ac80(u16 param_1, s32 param_2, u16 param_3, Vec3* pos, s32 param_5, s32 param_6, s32 param_7);
+void Entity0800a89c_SpawnAt(u16 param_1, s32 param_2, u16 param_3, Vec3* pos, s32 param_5, s32 param_6, s32 param_7);
 
 static inline u32 TestHitboxUnk38(HitboxData* p, u32 flags) { return p->unk_38 & flags; }
 
@@ -60,13 +61,10 @@ void FUN_0800c0b0(HitboxData* a, HitboxData* b, SolarBamboo* p) {
       p->q_unk_24 = p->q_unk_26;
       pos = p->q_node.q_pos;
       pos.y += 0x40;
-      FUN_0800ac80(p->q_unk_36, 1, p->q_unk_38, &pos, 0, 0x258, 0x64);
+      Entity0800a89c_SpawnAt(p->q_unk_36, 1, p->q_unk_38, &pos, 0, 0x258, 0x64);
     }
   }
 }
-
-void FUN_08013698(ParticleShadow* shadow);
-void FUN_080136b4(ParticleShadow* shadow);
 
 // 別のマップにいる間は隠し、いる間はアニメーションと揺れを進める
 NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
@@ -77,11 +75,11 @@ NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
   if (!active) {
     p->q_node.flags |= 1;
     p->hitbox.flags |= 4;
-    FUN_080136b4(&p->shadow);
+    ParticleShadow_Hide(&p->shadow);
   } else {
     p->q_node.flags &= ~1;
     p->hitbox.flags &= ~4;
-    FUN_08013698(&p->shadow);
+    ParticleShadow_Show(&p->shadow);
     if (p->q_unk_28 != 0) {
       p->q_unk_28--;
     }
@@ -118,21 +116,16 @@ NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
 #endif
 }
 
-void FUN_08236424(HitboxData* p);
-s32 FUN_080138fc(ParticleShadow* shadow);
-
 s32 Entity95A8_Destroy(SolarBamboo* p) {
   FUN_08236424(&p->hitbox);
   FUN_0822a4e0(&p->q_node);
-  FUN_080138fc(&p->shadow);
+  ParticleShadow_Remove(&p->shadow);
   return 0;
 }
 
 s32 FUN_08241574(Vec3* pos);
-s32 FUN_0801385c(ParticleShadow* shadow, Vec3* ownerPos, u8 kind);
 void FUN_08236514(HitboxData* p, u32 val1, u32 val2, u32 val3);
 void FUN_08236400(HitboxData* p);
-void FUN_0822a470(AuxSprite* p, AuxSpriteGfx* s, SpriteFlags flags);
 
 // スクリプトから位置と耐久を読み、当たり判定・スプライト・影を用意する
 s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
@@ -183,7 +176,7 @@ s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
   node->q_metaspriteIdx = 0;
   Video_SetAuxSpritePltt(sprite, 0x169);
   p->q_node.q_pos = pos;
-  FUN_0801385c(&p->shadow, &p->q_node.q_pos, 0);
+  ParticleShadow_Init(&p->shadow, &p->q_node.q_pos, 0);
   return 0;
 }
 

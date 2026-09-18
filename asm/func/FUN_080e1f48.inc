@@ -1263,7 +1263,7 @@ _080E290E:
 	movs r3, #0x9a
 	lsls r3, r3, #2
 	adds r0, r7, r3
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	b _080E2A0A
 	.align 2, 0
 _080E291C: .4byte 0x0000044C
@@ -1318,7 +1318,7 @@ _080E296E:
 	movs r2, #0x9a
 	lsls r2, r2, #2
 	adds r0, r7, r2
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	b _080E29C8
 	.align 2, 0
 _080E2988: .4byte 0x0000044C
@@ -1353,7 +1353,7 @@ _080E29B2:
 	movs r1, #0x9a
 	lsls r1, r1, #2
 	adds r0, r7, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 _080E29C8:
 	ldrh r0, [r6]
 	subs r0, #1
@@ -1388,7 +1388,7 @@ _080E29FA:
 	movs r2, #0x9a
 	lsls r2, r2, #2
 	adds r0, r7, r2
-	bl FUN_08013698
+	bl ParticleShadow_Show
 _080E2A0A:
 	mov r3, sl
 	ldrh r0, [r3]

@@ -81,7 +81,6 @@ const u16 gSpriteSizeTable[16] = {
 void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* s);
 void FUN_0822e8b4(void);
 void FUN_0822d014(rgb555* pltt, s32 val);
-void FUN_0822dad4(Particle* p, s32 val1, s32 val2);
 void FUN_0822dafc(Particle* p, ParticleGroup* g, u32 val);
 
 // 他のEntityにある Create, Init, Destroy 関数 はなく Update (VideoManager_Update) のみ
@@ -661,9 +660,9 @@ void FUN_0822dabc(Particle* p) {
   }
 }
 
-void FUN_0822dad4(Particle* p, s32 val1, s32 val2) {
-  p->q_offsetX = val1;
-  p->q_offsetY = val2;
+void FUN_0822dad4(Particle* p, s32 offsetX, s32 offsetY) {
+  p->q_offsetX = offsetX;
+  p->q_offsetY = offsetY;
 }
 
 // パーティクルに OBJ パレット plttID を割り当て、確保されたパレットスロット番号を記録する

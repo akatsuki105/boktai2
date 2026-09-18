@@ -100,7 +100,7 @@ _08009EDA:
 	str r4, [sp, #4]
 	ldrh r4, [r6, #0x12]
 	str r4, [sp, #8]
-	bl FUN_0800a8e0
+	bl Entity0800a89c_Spawn
 	ldrb r0, [r6, #3]
 	cmp r0, #2
 	bne _08009F40

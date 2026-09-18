@@ -477,7 +477,7 @@ _080F44D6:
 	movs r3, #0x9a
 	lsls r3, r3, #2
 	adds r0, r7, r3
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 _080F44E0:
 	add sp, #0x40
 	pop {r3, r4, r5}

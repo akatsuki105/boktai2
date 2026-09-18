@@ -9,7 +9,7 @@ FUN_0804e9f4: @ 0x0804E9F4
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	adds r5, r1, #0
-	bl Entity0804e9ac_Create
+	bl SignalStrengthIcon_Create
 	cmp r0, #0
 	beq _0804EA08
 	adds r0, #0x44

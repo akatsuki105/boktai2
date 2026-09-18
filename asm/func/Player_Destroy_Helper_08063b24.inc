@@ -5,7 +5,7 @@
 	bl FUN_08247504
 	ldr r1, _08063B68 @ =0x0000060C
 	adds r0, r4, r1
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	movs r1, #0xca
 	lsls r1, r1, #3
 	adds r0, r4, r1

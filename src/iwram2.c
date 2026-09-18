@@ -11,18 +11,18 @@
 #include "time.h"
 #include "vm.h"
 
-struct Entity4E69;
+struct EntityMsgBus;
 struct Entity286F;
 struct Dvalinn;
 struct Entity5941;
 struct EntityCBB0;
 struct Entity9A9F;
 struct Player;
-struct Unk030046a4;
+struct CollisionMapData;
 
-IWRAM_DATA s32 s32_03002b48 = 0;                   // 0x03002B48
-IWRAM_DATA struct Entity4E69* gEntity4E69 = NULL;  // 0x03002B4C
-IWRAM_DATA struct Entity286F* gEntity286F = NULL;  // 0x03002B50
+IWRAM_DATA s32 s32_03002b48 = 0;                       // 0x03002B48
+IWRAM_DATA struct EntityMsgBus* gEntityMsgBus = NULL;  // 0x03002B4C
+IWRAM_DATA struct Entity286F* gEntity286F = NULL;      // 0x03002B50
 
 IWRAM_DATA u8 u8_03002b54[4] = {};  // todo
 
@@ -187,10 +187,10 @@ IWRAM_DATA World* gWorld = NULL;            // 0x03004698
 IWRAM_DATA GameInfo* gStatBackup = NULL;    // 0x0300469C
 IWRAM_DATA GameInfo* gStat = NULL;          // 0x030046A0
 
-IWRAM_DATA struct Unk030046a4* gCollisionMap = NULL;  // Malloc(3620) で確保したバッファを指すポインタ (FUN_082326a0)
-IWRAM_DATA s32 gMapBlockW = 0;                        // 0x030046A8
-IWRAM_DATA s32 gMapBlockH = 0;                        // 0x030046AC
-IWRAM_DATA u32 u32_030046b0 = 0;                      // 0x030046B0
+IWRAM_DATA struct CollisionMapData* gCollisionMap = NULL;  // Malloc(3620) で確保したバッファを指すポインタ (FUN_082326a0)
+IWRAM_DATA s32 gMapBlockW = 0;                             // 0x030046A8
+IWRAM_DATA s32 gMapBlockH = 0;                             // 0x030046AC
+IWRAM_DATA u32 u32_030046b0 = 0;                           // 0x030046B0
 
 IWRAM_DATA u32 u32_030046b4 = 0;   // 0x030046B4
 IWRAM_DATA u32 gRandTableIdx = 0;  // 0x030046B8

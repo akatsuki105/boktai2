@@ -42,7 +42,7 @@ _08012BE2:
 	adds r0, r6, r1
 	adds r1, r7, #0
 	movs r2, #0xa
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0
 	add sp, #4
 	pop {r4, r5, r6, r7}

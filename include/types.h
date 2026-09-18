@@ -39,7 +39,7 @@ typedef struct {
   s8_8 x;
   s8_8 y;  // 高さ
   s8_8 z;
-  u16 val;  // 用途不明だが、FUN_0823b400 で 0x10 がセットされている, gStat.playerPos の場合はプレイヤーの移動方向に応じて 01 とか 02 とか 05 とかがセットされた
+  u16 val;  // 用途不明だが、FUN_0823b400 で 0x10 がセットされている
 } Vec3;
 
 #endif  // GUARD_ZOKTAI_TYPES_H

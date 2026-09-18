@@ -27,7 +27,7 @@ _08228DBA:
 	beq _08228DC6
 	ldr r3, _08228DFC @ =0x00000DF4
 	adds r0, r4, r3
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 _08228DC6:
 	ldr r0, _08228E00 @ =0x00000D9C
 	adds r3, r4, r0

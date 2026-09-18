@@ -26,7 +26,7 @@ _08022880:
 	ldr r4, [r0]
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #7
 	bhi _0802295E
@@ -91,7 +91,7 @@ _08022920:
 _0802292A:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _0802295E
 _08022934:
 	ldrh r0, [r4, #8]

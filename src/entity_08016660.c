@@ -4,9 +4,9 @@
 #include "hitbox.h"
 
 typedef struct {
-  Entity e;             // ENTITY_UNK_8
+  Entity e;           // ENTITY_UNK_8
   AuxAnimFile* anim;  // 0x18, 根拠: Entity08016660_Init
-  void* unk_1c;         // 0x1C
+  void* unk_1c;       // 0x1C
 } Entity08016660;
 static_assert(sizeof(Entity08016660) == 32);
 

@@ -5,7 +5,7 @@
 	beq _0800E546
 	adds r0, r4, #0
 	adds r0, #0x80
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 	movs r0, #0
 	strb r0, [r4, #0xb]
 _0800E546:

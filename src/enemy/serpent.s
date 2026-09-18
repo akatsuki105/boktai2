@@ -2637,7 +2637,7 @@ _08189B46:
 	movs r2, #0xaa
 	lsls r2, r2, #2
 	adds r0, r5, r2
-	bl FUN_08013984
+	bl AuxShadow_Show
 _08189B56:
 	adds r0, r6, #0
 	movs r1, #4
@@ -3986,7 +3986,7 @@ _0818A5A6:
 	movs r1, #0xaa
 	lsls r1, r1, #2
 	adds r0, r5, r1
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	ldr r1, _0818A600 @ =0x0000046B
 	adds r0, r5, r1
 	strb r4, [r0]
@@ -8217,7 +8217,7 @@ _0818C688:
 	movs r3, #0xaa
 	lsls r3, r3, #2
 	adds r0, r7, r3
-	bl FUN_08013984
+	bl AuxShadow_Show
 	ldr r5, _0818C708 @ =0x00000472
 	adds r0, r7, r5
 	ldrh r1, [r0]
@@ -8391,7 +8391,7 @@ _0818C77A:
 	movs r5, #0xaa
 	lsls r5, r5, #2
 	adds r0, r7, r5
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	movs r1, #0x80
 	lsls r1, r1, #3
 	ldr r0, _0818C854 @ =0x00000F2C
@@ -23947,7 +23947,7 @@ _08193EA2:
 	movs r3, #0xaa
 	lsls r3, r3, #2
 	adds r0, r7, r3
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	b _08193F96
 	.align 2, 0
 _08193F6C: .4byte 0x0000046B
@@ -24092,7 +24092,7 @@ _08193FB8:
 	movs r3, #0xaa
 	lsls r3, r3, #2
 	adds r0, r7, r3
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	b _081940CA
 	.align 2, 0
 _081940A0: .4byte 0x0000046C
@@ -24507,7 +24507,7 @@ EnemySerpent_Destroy: @ 0x081943DC
 	movs r1, #0xaa
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 	movs r0, #0xff
 	strb r0, [r5]
 _08194404:
@@ -24550,7 +24550,7 @@ _0819444E:
 	beq _0819445A
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 _0819445A:
 	ldr r1, _081944B4 @ =0x0000044C
 	adds r5, r4, r1
@@ -24560,7 +24560,7 @@ _0819445A:
 	movs r2, #0x9a
 	lsls r2, r2, #2
 	adds r0, r4, r2
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	movs r0, #1
 	strb r0, [r5]
 _08194472:
@@ -25746,7 +25746,7 @@ _08194E1E:
 	adds r0, #0x7c
 	ldr r2, _08194E58 @ =FUN_080f48ac
 	ldr r1, [sp, #0x34]
-	bl FUN_0807f558
+	bl Entity5941_Register
 _08194E2E:
 	ldr r3, [sp, #0x134]
 	ldrb r0, [r3]
@@ -26342,19 +26342,19 @@ _08195130:
 	ldr r1, [sp, #0x188]
 	movs r2, #0x40
 	movs r3, #0x40
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	ldr r2, _081953E4 @ =0x0000044C
 	adds r1, r7, r2
 	strb r0, [r1]
 	ldr r1, _081953E8 @ =0x00001C1B
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08013c94
+	bl AuxShadow_SetSprite
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_08013cb8
+	bl AuxShadow_SetAffine
 	adds r0, r4, #0
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	ldr r3, _081953EC @ =0x0000044D
 	adds r0, r7, r3
 	movs r4, #1
@@ -26758,7 +26758,7 @@ _08195656:
 	adds r0, #0x48
 	ldrh r1, [r7]
 	movs r2, #3
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r5, [sp, #0x1b0]

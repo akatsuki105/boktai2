@@ -642,11 +642,11 @@ _08027CFE:
 	adds r0, r4, #0
 	movs r2, #0x60
 	movs r3, #0x60
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	ldr r1, _08027DA4 @ =0x00001C1B
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08013c94
+	bl AuxShadow_SetSprite
 	movs r0, #0x6a
 	bl VM_SeekToKeyword
 	cmp r0, #0

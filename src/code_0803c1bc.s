@@ -50,7 +50,7 @@ _08045304:
 	movs r1, #0x82
 	lsls r1, r1, #1
 	adds r0, r5, r1
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	adds r0, r5, #0
 	adds r0, #0xa4
 	bl FUN_0822f1c0
@@ -2693,7 +2693,7 @@ _08046684:
 	movs r3, #0x82
 	lsls r3, r3, #1
 	adds r0, r5, r3
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	mov r4, r8
 	adds r4, #8
 	ldr r0, [sp, #0x1c]
@@ -3516,7 +3516,7 @@ FUN_08046c98: @ 0x08046C98
 	movs r1, #0x82
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 _08046CC0:
 	ldrh r1, [r4, #0x1c]
 	cmp r1, #0
@@ -4830,9 +4830,9 @@ _08047694:
 	adds r0, r4, #0
 	mov r1, r8
 	movs r2, #1
-	bl FUN_0801385c
+	bl ParticleShadow_Init
 	adds r0, r4, #0
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	strb r6, [r7, #8]
 	movs r1, #1
 	strb r1, [r7, #9]

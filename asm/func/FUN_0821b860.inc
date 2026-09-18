@@ -25,7 +25,7 @@ _0821B87C:
 	ldr r4, [r0]
 	adds r0, r7, #0
 	adds r1, r4, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #4
 	beq _0821B8AC
@@ -50,7 +50,7 @@ _0821B8AC:
 	adds r0, r5, #0
 	adds r0, #0x1c
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _0821B8EC
 _0821B8D0:
 	movs r1, #8
@@ -65,7 +65,7 @@ _0821B8D0:
 	adds r0, r5, #0
 	adds r0, #0x1c
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0821B8EC:
 	adds r6, #1
 	ldr r0, _0821B908 @ =0x03002B4C

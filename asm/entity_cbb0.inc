@@ -10443,7 +10443,7 @@ _080B2378:
 	ldr r4, [r0]
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #0
 	beq _080B23B0
@@ -10461,7 +10461,7 @@ _080B23B0:
 	strb r1, [r0]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _080B23D8
 	.align 2, 0
 _080B23C4: .4byte 0x00000C11
@@ -10471,7 +10471,7 @@ _080B23C8:
 	bl FUN_080ad9f4
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080B23D8:
 	adds r6, #1
 	mov r3, r8
@@ -10497,7 +10497,7 @@ FUN_080b23fc: @ 0x080B23FC
 	push {lr}
 	ldr r1, _080B240C @ =0x000017A8
 	adds r0, r0, r1
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r0}
 	bx r0
 	.align 2, 0
@@ -10511,7 +10511,7 @@ FUN_080b2410: @ 0x080B2410
 	ldrh r1, [r0, #0x18]
 	adds r0, r2, #0
 	movs r2, #9
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	pop {r0}
 	bx r0
 	.align 2, 0

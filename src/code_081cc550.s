@@ -8964,7 +8964,7 @@ _081D5B32:
 	str r2, [sp, #0x18]
 	movs r2, #0x40
 	movs r3, #0x10
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	movs r2, #0xa7
 	lsls r2, r2, #1
 	adds r1, r5, r2
@@ -8989,7 +8989,7 @@ _081D5B76:
 	str r4, [sp, #0x18]
 	movs r2, #0x40
 	movs r3, #0x10
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	movs r3, #0xa7
 	lsls r3, r3, #1
 	adds r1, r5, r3
@@ -9906,7 +9906,7 @@ _081D6238:
 	beq _081D6262
 	adds r0, r5, #0
 	adds r0, #0xa8
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 	movs r0, #0xff
 	strb r0, [r4]
 _081D6262:
@@ -10069,7 +10069,7 @@ _081D636A:
 	beq _081D63A0
 	adds r0, r4, #0
 	adds r0, #0xa8
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 	movs r0, #0xff
 	strb r0, [r5]
 _081D63A0:
@@ -14171,7 +14171,7 @@ FUN_081d822c: @ 0x081D822C
 	beq _081D8286
 	adds r0, r5, #0
 	adds r0, #0x8c
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	ldrh r0, [r4]
 	orrs r0, r6
 	strh r0, [r4]
@@ -14348,7 +14348,7 @@ _081D83B6:
 	str r0, [r6]
 	adds r0, r6, #0
 	adds r0, #0x8c
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	movs r1, #0
 	movs r0, #0
 	strh r0, [r7]
@@ -14915,7 +14915,7 @@ _081D87F4:
 	beq _081D882A
 	adds r0, r4, #0
 	adds r0, #0x8c
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	ldr r0, _081D8844 @ =0x0000FFFF
 	strh r0, [r5]
 _081D882A:
@@ -15125,12 +15125,12 @@ _081D89B4:
 	adds r4, #0x8c
 	subs r1, #0xbc
 	adds r0, r4, #0
-	bl FUN_0801385c
+	bl ParticleShadow_Init
 	adds r1, r5, #0
 	adds r1, #0xd2
 	strh r0, [r1]
 	adds r0, r4, #0
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	adds r0, r5, #0
 	adds r1, r7, #0
 	adds r2, r6, #0
@@ -15474,7 +15474,7 @@ _081D8C64:
 	adds r1, r5, #0
 	adds r1, #0x1c
 	movs r2, #0
-	bl FUN_0801385c
+	bl ParticleShadow_Init
 	adds r1, r5, #0
 	adds r1, #0x79
 	strb r0, [r1]
@@ -17128,7 +17128,7 @@ FUN_081d98a0: @ 0x081D98A0
 	bne _081D98C8
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 _081D98C8:
 	adds r3, r4, #0
 	adds r3, #0x6c
@@ -17256,7 +17256,7 @@ _081D9992:
 	bne _081D99B6
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 _081D99B6:
 	adds r5, #1
 	cmp r5, #0x13

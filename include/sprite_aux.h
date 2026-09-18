@@ -107,6 +107,7 @@ extern AuxSubsprite* gAuxSubsprites;
 extern u16 gAuxSpriteTileCount;
 extern AuxSprite* gAuxSpriteLists[2];
 
+void FUN_0822a470(AuxSprite* p, AuxSpriteGfx* s, SpriteFlags flags);
 void FUN_0822a4e0(AuxSprite* p);
 bool32 Video_GetAuxSprite(AuxSpriteGfx* p, SpriteID32 id);
 void Video_SetAuxSpritePltt(AuxSpriteGfx* p, s32 plttID);

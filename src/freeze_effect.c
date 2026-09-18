@@ -34,10 +34,6 @@ typedef struct {
 } FreezeEffect;
 static_assert(sizeof(FreezeEffect) == 524);
 
-void FUN_0822d9f0(Particle* p, ParticleGroup* g, u32 flags);
-void FUN_0822dabc(Particle* p);
-void FUN_0822dad4(Particle* p, s32 val1, s32 val2);
-void FUN_0822dadc(Particle* p, s32 plttID);
 void FUN_0822dafc(Particle* p, ParticleGroup* g, u32 val);
 
 void FreezeEffect_StateVanish(FreezeEffect* p);
@@ -110,11 +106,6 @@ void FreezeEffect_StateGather(FreezeEffect* p) {
   }
 }
 
-extern s32 gMapBlockW;
-extern s32 gMapBlockH;
-
-u8* FUN_08234224(s32 idx, s32 param_2);
-void FUN_08236400(HitboxData* p);
 void FUN_08014730(s32 param_1, s32 param_2, Vec3* pos, Vec3* spread, Vec3* speed, s32 param_6, s32 param_7);
 
 // 消える状態: 中心の粒子が床より上にあれば氷の破片を散らしてから消える
@@ -142,7 +133,7 @@ NON_MATCH void FreezeEffect_StateVanish(FreezeEffect* p) {
     } else {
       idx = gCollisionMap->q_rowOffsets[bz] + bx;
     }
-    tile = FUN_08234224(idx, 1);
+    tile = (u8*)FUN_08234224(idx, 1);
     if (tile != NULL) {
       tile += 4;
     } else {

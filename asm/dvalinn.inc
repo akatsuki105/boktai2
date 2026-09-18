@@ -4256,7 +4256,7 @@ _081FC684:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _081FC696:
 	pop {r0}
 	bx r0
@@ -4296,7 +4296,7 @@ _081FC6C8:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _081FC6DA:
 	pop {r0}
 	bx r0
@@ -4336,7 +4336,7 @@ _081FC70C:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _081FC71E:
 	pop {r0}
 	bx r0
@@ -4395,7 +4395,7 @@ _081FC75E:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _081FC78A:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -4460,7 +4460,7 @@ _081FC7CA:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _081FC802:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -11086,7 +11086,7 @@ _081FFBA4:
 	ldr r5, [r0]
 	adds r0, r7, #0
 	adds r1, r5, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r5, #6]
 	cmp r0, #0x33
 	bls _081FFBCA
@@ -11199,7 +11199,7 @@ _081FFCC8:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _081FFD78
 	.align 2, 0
 _081FFD0C: .4byte 0x0000025E

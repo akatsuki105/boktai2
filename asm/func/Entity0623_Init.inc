@@ -249,11 +249,11 @@ _08221E76:
 	adds r0, r5, #0
 	movs r2, #0x40
 	movs r3, #0x30
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	ldr r1, _08221FCC @ =0x00001C1B
 	adds r0, r5, #0
 	movs r2, #7
-	bl FUN_08013c94
+	bl AuxShadow_SetSprite
 	movs r0, #0x61
 	bl VM_SeekToKeyword
 	adds r1, r0, #0

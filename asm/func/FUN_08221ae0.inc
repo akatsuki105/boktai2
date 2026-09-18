@@ -32,7 +32,7 @@ _08221B08:
 	ldr r4, [r0]
 	mov r0, r8
 	adds r1, r4, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #0x25
 	bls _08221B2E
@@ -158,7 +158,7 @@ _08221C60:
 	lsls r1, r1, #1
 	adds r0, r6, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	b _08221C7E
 _08221C6E:
 	movs r0, #0

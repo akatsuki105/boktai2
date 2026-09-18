@@ -73,7 +73,7 @@ _08225416:
 	strb r1, [r0]
 	ldr r3, _082254E8 @ =0x00000DF4
 	adds r0, r6, r3
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	movs r0, #0x8f
 	lsls r0, r0, #1
 	bl PlaySound_082406e0

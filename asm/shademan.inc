@@ -2210,7 +2210,7 @@ _0803D26A:
 	movs r1, #0xeb
 	lsls r1, r1, #2
 	adds r0, r5, r1
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	ldr r1, _0803D2B0 @ =0xFFDFFFFF
 	mov r2, sl
 	ldr r0, [r2]
@@ -2242,13 +2242,13 @@ _0803D2B4:
 	beq _0803D2DC
 	adds r3, #0x60
 	adds r0, r5, r3
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	b _0803D2E6
 _0803D2DC:
 	movs r1, #0xeb
 	lsls r1, r1, #2
 	adds r0, r5, r1
-	bl FUN_08013984
+	bl AuxShadow_Show
 _0803D2E6:
 	movs r1, #0x80
 	lsls r1, r1, #0xe

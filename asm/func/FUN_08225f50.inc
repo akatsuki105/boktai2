@@ -28,7 +28,7 @@ _08225F7E:
 	bl FUN_080a6edc
 	ldr r1, _08226028 @ =0x00000DF4
 	adds r0, r5, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	ldr r0, _0822602C @ =0x00000D9C
 	adds r2, r5, r0
 	ldr r0, [r2]

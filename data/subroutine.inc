@@ -82,7 +82,7 @@ gSubroutineTable:
 	.4byte 0x2306, FUN_0800ca58
 	.4byte 0x2354, FUN_0823d6f4
 	.4byte 0x237A, FUN_0807b620
-	.4byte 0x2502, FUN_08022618
+	.4byte 0x2502, Demo_Resume
 	.4byte 0x2571, FUN_080ef584
 	.4byte 0x2575, FUN_08047ca8
 	.4byte 0x2593, FUN_0807d828
@@ -95,7 +95,7 @@ gSubroutineTable:
 	.4byte 0x28CB, Entity28CB_Create
 	.4byte 0x2924, FUN_080a07c0
 	.4byte 0x29F1, FUN_080b22e8
-	.4byte 0x2B06, CreateLinkPlayer2P
+	.4byte 0x2B06, LinkPlayer_Create
 	.4byte 0x2B68, FUN_0807b3c0
 	.4byte 0x2B8C, FUN_0800e908
 	.4byte 0x2D2B, Entity2D2B_Create
@@ -110,7 +110,7 @@ gSubroutineTable:
 	.4byte 0x2FE4, FUN_0823adc0
 	.4byte 0x3004, FUN_08206434
 	.4byte 0x300F, FUN_080ec4d0
-	.4byte 0x3019, FUN_080bcd54
+	.4byte 0x3019, Entity3019_Create
 	.4byte 0x305A, FUN_082423a8
 	.4byte 0x3062, FUN_080a0838
 	.4byte 0x30A3, FUN_08224d94
@@ -168,7 +168,7 @@ gSubroutineTable:
 	.4byte 0x4235, FUN_08018930
 	.4byte 0x42EF, FUN_080d7f48
 	.4byte 0x430D, FUN_0823d85c
-	.4byte 0x435E, FUN_08013f70
+	.4byte 0x435E, ScriptShadow_DeleteFromScript
 	.4byte 0x4383, VM_Sub4383
 	.4byte 0x43A0, FUN_080a6e30
 	.4byte 0x43D6, FUN_08041d60
@@ -197,7 +197,7 @@ gSubroutineTable:
 	.4byte 0x4DDF, Entity4DDF_Create
 	.4byte 0x4E22, FUN_080eda24
 	.4byte 0x4E30, FUN_0823e28c
-	.4byte 0x4E69, Entity4E69_Create
+	.4byte 0x4E69, EntityMsgBus_Create
 	.4byte 0x4EBF, FUN_08205e68
 	.4byte 0x4ED4, sound_082403b8
 	.4byte 0x4F5C, Entity4F5C_Create
@@ -281,9 +281,9 @@ gSubroutineTable:
 	.4byte 0x727F, FUN_08047854
 	.4byte 0x7300, FUN_080bcd94
 	.4byte 0x730A, Entity730A_Create
-	.4byte 0x7348, FUN_08022510
-	.4byte 0x73FE, FUN_08013ebc
-	.4byte 0x744F, FUN_080bea9c
+	.4byte 0x7348, Demo_Start
+	.4byte 0x73FE, ScriptShadow_CreateFromScript
+	.4byte 0x744F, Entity744F_Create
 	.4byte 0x7539, Camera_SetTilemapOffset
 	.4byte 0x7566, FUN_080866e4
 	.4byte 0x75AF, FUN_08047d04
@@ -339,7 +339,7 @@ gSubroutineTable:
 	.4byte 0x8400, FUN_080b2224
 	.4byte 0x8459, FUN_080a11d4
 	.4byte 0x8602, FUN_08008870
-	.4byte 0x86F3, FUN_08013fcc
+	.4byte 0x86F3, ScriptShadow_SetModeFromScript
 	.4byte 0x877F, FUN_08050e18
 	.4byte 0x87E4, EnemySpider_Create
 	.4byte 0x87FE, Entity87FE_Create
@@ -524,7 +524,7 @@ gSubroutineTable:
 	.4byte 0xCF58, EntityCF58_Create
 	.4byte 0xCF79, Intro_Create
 	.4byte 0xCF82, FUN_08018ef4
-	.4byte 0xD0C3, FUN_080225d4
+	.4byte 0xD0C3, Demo_Stop
 	.4byte 0xD0C7, FUN_08240428
 	.4byte 0xD0CE, FUN_082246bc
 	.4byte 0xD169, FUN_08224c8c
@@ -557,7 +557,7 @@ gSubroutineTable:
 	.4byte 0xDA19, FUN_08090ee0
 	.4byte 0xDA5A, FUN_08234be4
 	.4byte 0xDAA4, FUN_0823d680
-	.4byte 0xDB6C, FUN_08014020
+	.4byte 0xDB6C, ScriptShadow_MoveFromScript
 	.4byte 0xDC21, EntityDC21_Create
 	.4byte 0xDD0E, FUN_0807b3e0
 	.4byte 0xDD91, FUN_08047e00

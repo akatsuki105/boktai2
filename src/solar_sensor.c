@@ -6,6 +6,8 @@
 IWRAM_DATA SolarSensorInterface gSSI = {};                // .bss, 0x030026B0
 COMMON_DATA SolarSensorManager gSolarSensorManager = {};  // 0x030057B0
 
+const u16 u16_ARRAY_08dbd810[4] = {3, 3, 1, 2};  // 0x08DBD810
+
 NAKED void FUN_08246660(void) { INCFUNC("asm/func/FUN_08246660.inc"); }
 
 INCASM("asm/solar_sensor1.inc");
@@ -34,9 +36,27 @@ NAKED void FUN_08246e60(SolarSensorEntity* a, Player4c4* b, Player4c4_0c* c) { I
 
 NAKED void FUN_08246f78(SolarSensorEntity* a, Player4c4* b, Player4c4_0c* c) { INCFUNC("asm/func/FUN_08246f78.inc"); }
 
+void (*const PTR_ARRAY_08dbd818[3])(SolarSensorEntity*, Player4c4*, Player4c4_0c*) = {
+    FUN_082469d0,
+    FUN_082469d4,
+    FUN_08246afc,
+};  // 0x08DBD818
+
 NAKED void FUN_082470a8(SolarSensorEntity* a, Player4c4* b) { INCFUNC("asm/func/FUN_082470a8.inc"); }
 
+void (*const PTR_ARRAY_08dbd824[3])(SolarSensorEntity*, Player4c4*, Player4c4_0c*) = {
+    FUN_08246c10,
+    FUN_08246c14,
+    FUN_08246d2c,
+};  // 0x08DBD824
+
 NAKED void FUN_08247194(SolarSensorEntity* a, Player4c4* b) { INCFUNC("asm/func/FUN_08247194.inc"); }
+
+void (*const PTR_ARRAY_08dbd830[3])(SolarSensorEntity*, Player4c4*, Player4c4_0c*) = {
+    FUN_08246e5c,
+    FUN_08246e60,
+    FUN_08246f78,
+};  // 0x08DBD830
 
 NAKED void FUN_08247280(SolarSensorEntity* a, Player4c4* b) { INCFUNC("asm/func/FUN_08247280.inc"); }
 

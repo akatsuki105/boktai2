@@ -9,7 +9,7 @@
 	lsls r2, r2, #2
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	movs r0, #0
 	strb r0, [r4]
 _080726AA:

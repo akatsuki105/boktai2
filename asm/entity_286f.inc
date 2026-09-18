@@ -339,9 +339,9 @@ FUN_08040fc0: @ 0x08040FC0
 	adds r4, r4, r0
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0801385c
+	bl ParticleShadow_Init
 	adds r0, r4, #0
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	b _0804102C
 _08040FF0:
 	cmp r2, #2
@@ -364,13 +364,13 @@ _08040FF0:
 	str r0, [sp, #0x18]
 	adds r0, r4, #0
 	adds r2, r3, #0
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	ldr r1, _08041038 @ =0x00001C1B
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_08013c94
+	bl AuxShadow_SetSprite
 	adds r0, r4, #0
-	bl FUN_08013984
+	bl AuxShadow_Show
 _0804102C:
 	movs r0, #0
 	add sp, #0x1c
@@ -392,7 +392,7 @@ FUN_0804103c: @ 0x0804103C
 	bne _08041056
 	adds r2, #0x30
 	adds r0, r1, r2
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	b _08041064
 _08041056:
 	cmp r0, #2
@@ -400,7 +400,7 @@ _08041056:
 	movs r2, #0x91
 	lsls r2, r2, #2
 	adds r0, r1, r2
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 _08041064:
 	movs r0, #0
 	pop {r1}
@@ -419,7 +419,7 @@ FUN_0804106c: @ 0x0804106C
 	bne _08041086
 	adds r2, #0x30
 	adds r0, r1, r2
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	b _08041094
 _08041086:
 	cmp r0, #2
@@ -427,7 +427,7 @@ _08041086:
 	movs r2, #0x91
 	lsls r2, r2, #2
 	adds r0, r1, r2
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 _08041094:
 	movs r0, #0
 	pop {r1}
@@ -446,7 +446,7 @@ FUN_0804109c: @ 0x0804109C
 	bne _080410B6
 	adds r2, #0x30
 	adds r0, r1, r2
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	b _080410C4
 _080410B6:
 	cmp r0, #2
@@ -454,7 +454,7 @@ _080410B6:
 	movs r2, #0x91
 	lsls r2, r2, #2
 	adds r0, r1, r2
-	bl FUN_08013984
+	bl AuxShadow_Show
 _080410C4:
 	movs r0, #0
 	pop {r1}
@@ -1947,7 +1947,7 @@ _08041B96:
 	bls _08041B96
 _08041BBA:
 	adds r0, r5, #0
-	bl FUN_080224f0
+	bl EntityMsg_Send
 	ldr r1, [r6, #0x28]
 	lsls r1, r1, #2
 	adds r1, r7, r1
@@ -5275,7 +5275,7 @@ FUN_0804355c: @ 0x0804355C
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0804357C:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -5300,7 +5300,7 @@ FUN_08043588: @ 0x08043588
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080435A8:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -5334,7 +5334,7 @@ _080435C8:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080435E4:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -5385,7 +5385,7 @@ _08043632:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08043640:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -5419,7 +5419,7 @@ _08043660:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0804367C:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -5453,7 +5453,7 @@ _0804369C:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080436B8:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -5479,7 +5479,7 @@ FUN_080436c4: @ 0x080436C4
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080436E6:
 	ldr r2, _08043760 @ =0x00000434
 	adds r0, r5, r2
@@ -6449,7 +6449,7 @@ FUN_08043da8: @ 0x08043DA8
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08043DCA:
 	ldr r2, _08043E38 @ =0x00000236
 	adds r1, r4, r2
@@ -6857,7 +6857,7 @@ FUN_080440ac: @ 0x080440AC
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080440CA:
 	pop {r0}
 	bx r0
@@ -6887,7 +6887,7 @@ _080440E2:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080440FE:
 	pop {r0}
 	bx r0
@@ -6917,7 +6917,7 @@ _08044116:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08044132:
 	pop {r0}
 	bx r0
@@ -7121,7 +7121,7 @@ _0804429C:
 	mov r0, r8
 	adds r1, r5, #0
 	str r3, [sp]
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldr r3, [sp]
 	adds r3, #1
 	ldr r0, _080442D0 @ =0x03002B4C
@@ -7177,7 +7177,7 @@ FUN_08044300: @ 0x08044300
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -7311,7 +7311,7 @@ _08044408:
 	adds r0, r4, r2
 	mov r1, sb
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r6, [r0]
@@ -7458,7 +7458,7 @@ FUN_0804454c: @ 0x0804454C
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0804456A:
 	pop {r0}
 	bx r0
@@ -7488,7 +7488,7 @@ _08044582:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0804459E:
 	pop {r0}
 	bx r0
@@ -7518,7 +7518,7 @@ _080445B6:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080445D2:
 	pop {r0}
 	bx r0
@@ -7539,7 +7539,7 @@ FUN_080445d8: @ 0x080445D8
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080445F6:
 	pop {r0}
 	bx r0
@@ -7571,7 +7571,7 @@ _08044610:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0804462E:
 	pop {r0}
 	bx r0
@@ -7592,7 +7592,7 @@ FUN_08044634: @ 0x08044634
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08044652:
 	pop {r0}
 	bx r0
@@ -7624,7 +7624,7 @@ _0804466C:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0804468A:
 	pop {r0}
 	bx r0
@@ -7645,7 +7645,7 @@ FUN_08044690: @ 0x08044690
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080446AE:
 	pop {r0}
 	bx r0
@@ -7666,7 +7666,7 @@ FUN_080446b4: @ 0x080446B4
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _080446D2:
 	pop {r0}
 	bx r0
@@ -7696,7 +7696,7 @@ _080446EA:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08044706:
 	pop {r0}
 	bx r0
@@ -8830,7 +8830,7 @@ _08044F78:
 	ldr r7, [r0]
 	mov r0, sb
 	adds r1, r7, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r7, #6]
 	subs r0, #1
 	cmp r0, #8
@@ -8986,7 +8986,7 @@ FUN_080450b4: @ 0x080450B4
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -9099,7 +9099,7 @@ _0804518A:
 	adds r0, r4, r2
 	adds r1, r7, #0
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]

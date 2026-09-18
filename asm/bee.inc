@@ -2070,7 +2070,7 @@ _08167840:
 	movs r7, #0x9a
 	lsls r7, r7, #2
 	adds r0, r6, r7
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 _0816789E:
 	add sp, #0x28
 	pop {r4, r5, r6, r7}
@@ -5982,7 +5982,7 @@ _081696CE:
 	beq _081696DA
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 _081696DA:
 	ldr r1, _08169734 @ =0x0000044C
 	adds r5, r4, r1
@@ -5992,7 +5992,7 @@ _081696DA:
 	movs r2, #0x9a
 	lsls r2, r2, #2
 	adds r0, r4, r2
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	movs r0, #1
 	strb r0, [r5]
 _081696F2:

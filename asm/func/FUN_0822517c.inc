@@ -221,7 +221,7 @@ _0822532C:
 	beq _082253B0
 	ldr r1, _082253BC @ =0x00000DF4
 	adds r0, r6, r1
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	ldr r3, _082253C0 @ =0x00000F16
 	adds r2, r6, r3
 	ldrh r1, [r2]

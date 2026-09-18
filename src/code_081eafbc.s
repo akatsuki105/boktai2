@@ -17660,7 +17660,7 @@ _081F34D4:
 	bne _081F34EA
 	adds r0, r5, #0
 	adds r0, #0x64
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 _081F34EA:
 	movs r0, #0xff
 	strb r0, [r4]
@@ -19626,7 +19626,7 @@ _081F4300:
 	str r2, [sp, #0x18]
 	movs r2, #0x40
 	movs r3, #0x10
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	ldr r3, _081F442C @ =0x0000015B
 	adds r1, r4, r3
 	strb r0, [r1]
@@ -19803,7 +19803,7 @@ _081F44F0:
 	bne _081F4506
 	adds r0, r4, #0
 	adds r0, #0x64
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 _081F4506:
 	movs r0, #0xba
 	lsls r0, r0, #1
@@ -28086,7 +28086,7 @@ FUN_081f82cc: @ 0x081F82CC
 	strb r0, [r1]
 	adds r0, r5, #0
 	adds r0, #0x3c
-	bl FUN_08013984
+	bl AuxShadow_Show
 	strb r4, [r6]
 _081F8302:
 	ldr r4, _081F8378 @ =0x00000109
@@ -28543,7 +28543,7 @@ FUN_081f8620: @ 0x081F8620
 	bne _081F8676
 	adds r0, r4, #0
 	adds r0, #0x3c
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 	movs r0, #0xff
 	strb r0, [r5]
 _081F8676:
@@ -28860,19 +28860,19 @@ _081F88A0:
 	adds r0, r5, #0
 	movs r2, #0x40
 	movs r3, #0x40
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	ldr r2, _081F8920 @ =0x00000111
 	adds r1, r7, r2
 	strb r0, [r1]
 	ldr r1, _081F8924 @ =0x00001C1B
 	adds r0, r5, #0
 	movs r2, #6
-	bl FUN_08013c94
+	bl AuxShadow_SetSprite
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_08013cb8
+	bl AuxShadow_SetAffine
 	adds r0, r5, #0
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 _081F8910:
 	add sp, #0x20
 	pop {r3, r4, r5}
@@ -28976,7 +28976,7 @@ _081F89BA:
 	cmp r0, #0
 	bne _081F89CE
 	adds r0, r5, #0
-	bl FUN_08013c70
+	bl AuxShadow_Remove
 	movs r0, #0xff
 	strb r0, [r4]
 _081F89CE:

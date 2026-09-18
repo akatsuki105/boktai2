@@ -101,7 +101,7 @@ _080F3DF0:
 	movs r6, #0x9a
 	lsls r6, r6, #2
 	adds r0, r7, r6
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	movs r0, #0xbe
 	lsls r0, r0, #1
 	adds r3, r7, r0

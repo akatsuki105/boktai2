@@ -25,7 +25,7 @@ Three rules keep this file usable:
 
 ### Branch direction: whichever arm should fall through, write it last
 
-- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `FUN_080223f4`, `FUN_08022428`, `FUN_08022448`, `FUN_080224f0`, `FUN_08022618`, `FUN_08022644`, `ArcTan2_8`, `FUN_082375c8`, `MainSprite_Add`.
+- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `EntityMsgBus_Register`, `EntityMsgBus_Unregister`, `Demo_RequestNextStep`, `EntityMsg_Send`, `Demo_Resume`, `Demo_IsRunning`, `ArcTan2_8`, `FUN_082375c8`, `MainSprite_Add`, `ScriptShadow_Move`, `SignalStrengthIcon_Create`, `SignalStrengthIcon_Init`, `Entity081d0e20_Create`.
 - For `if (c) { A } B`, agbcc makes the trailing statement `B` the fall-through
   and places the if-body `A` out of line. So choose the condition's polarity
   and the order of the two arms by which one the target falls through to, not
@@ -37,17 +37,32 @@ Three rules keep this file usable:
   the `if`, `if(){return;}return;` and `if(){return;}else{return;}` compile
   identically, so the `else` is irrelevant — only the written order matters.
 - Two guards in a row: only the **last** guard's return moves to the end.
-  The first one stays inline (`bne` jumps over it). `FUN_08022448` needed
+  The first one stays inline (`bne` jumps over it). `Demo_RequestNextStep` needed
   `if (g == NULL) return -1; if (g->f != 0) return -2; g->f = 1; return 0;`.
   Here `-1` stays inline and `-2` is placed at the end. Nesting it as
   `if (g != NULL) { ... } return -1;` flips both branches.
-- A guard with two conditions reverses the single-guard rule. `if (a && b) { A } return B;` put `A` inline and `B` at the end. `if (!a || !b) return B; A` put `B` inline and `A` at the end. `FUN_08022618` and `FUN_08022644` needed the `||` form.
+- A guard with two conditions reverses the single-guard rule. `if (a && b) { A } return B;` put `A` inline and `B` at the end. `if (!a || !b) return B; A` put `B` inline and `A` at the end. `Demo_Resume` and `Demo_IsRunning` needed the `||` form. The opposite also occurs: `ScriptShadow_Move` needed `if (a && b) { ...; return 0; } return -1;` (success inline, `-1` at the end) while its sibling `ScriptShadow_SetMode` matched with the `||` guard, so try both.
 - The same single guard compiled both ways in one sibling pair. `MainSprite_Setup` matched with `if (p->active != 0) return -1; ...; return 0;` (`-1` inline). `MainSprite_Add`, which has an extra `if`/`else` before the guard, needed `if (p->active == 0) { ...; return 0; } return -1;` (`bne` to `-1` at the end). If the early-return form leaves the return inline when the target puts it at the end, nest the body.
+- When the returned value is still in `r0` from the call just made, an early `return x;` beats falling through to the function's shared `return x;`: the target branches *past* the join's `adds r0, rN, #0` instead of into it. `SignalStrengthIcon_Create` (`p = Get(); if (p != NULL) return p;`) showed up as a streamdiff with equal instruction counts and only a branch target one instruction off.
+- The same applies when the value comes from a **global** rather than a call, and there the fix is to name it twice. `Entity081d0e20_Create` matched only as `if (gEntity081d0e20 != NULL) { return gEntity081d0e20; }`; assigning it to the local that the rest of the function reuses (`p = gEntity081d0e20; if (p != NULL) return p;`) put it in a callee-saved register and branched *into* the join instead of past it.
+- The guard form also decides whether a saved pointer is reloaded afterwards. `SignalStrengthIcon_Init` nested as `if (f != NULL) { ... } return -1;` put `-1` inline *and* emitted `adds r0, r2, #0` before the struct copy; the early-return `if (f == NULL) return -1;` fixed both at once, letting the copy read the call result still in `r0`.
+
+### `pop {r1}; bx r1` means a non-void return type, even with nothing returned
+
+- **Frequency**: `AuxShadow_SetSprite`, `AuxShadow_SetAffine`.
+- A `void` function restores the return address into `r0` (`pop {r0}` / `bx r0`). A function declared to return a value uses `r1`, so `r0` survives. `AuxShadow_SetSprite` ends with `pop {r1}` but never sets `r0` after its last call. Declaring it `s32` with no `return` statement matched; `void` gave `pop {r0}`.
+- The return type also shifts every scratch register up by one, because `r0` is no longer free. `AuxShadow_SetAffine` as `void` used `r0`/`r1`/`r2` for the flag update and `pop {r0}`; as `s32` it used `r1`/`r2`/`r3` and `pop {r1}`, which matched. So a register-renamed diff that also has `pop {r0}` vs `pop {r1}` is this lever, not a register-allocation problem.
+
+### Guards chained with `&&` (or nested `if`s) drop the `adds r0, rN, #0` reload before the next call
+
+- **Frequency**: `ScriptShadow_Create`, `ScriptShadow_Delete`.
+- `if (mgr != NULL && f(mgr, id) == NULL && (p = Malloc(n)) != NULL)` reuses the value still in `r0` as the next call's first argument. The target reloads it from the saved register (`adds r0, r5, #0`) before each call. Splitting the chain into separate guards (`mgr = f(); if (mgr == NULL) return -1; if (g(mgr, id) != NULL) return -1; ...`) restored the three reloads. Nested `if (mgr != NULL) { shadow = g(mgr, id); if (shadow != NULL) { ... } }` loses the reload the same way; early returns fixed `ScriptShadow_Delete` too. The success path of the final `&&` still had to come first (`if (a >= 0 && b >= 0) { ...; return 0; } Free(p); return -1;`) to put `Free` right before the shared `return -1`.
 
 ### switch case body layout follows source order, independent of dispatch order
 
-- **Frequency**: `VM_ReadContainerLength`.
+- **Frequency**: `VM_ReadContainerLength`, `EntityE06A_SetupSprite`.
 - For a sparse `switch` (few, non-contiguous case values), agbcc lays out each case's compiled body in the same order the `case` labels appear in the source — but the *comparison/dispatch* instructions it emits to reach them can use a completely different order (e.g. a value-magnitude-based pivot). Matching only the dispatch order isn't enough; the case labels' source order must also match, or bodies land in the wrong place in the output.
+- The dispatch-first layout is also what lets agbcc cross-jump identical case tails into one. `EntityE06A_SetupSprite` has two cases ending in the same `y -= v;`: written as `if (x == 1) ... else if (x == 2) ...` the subtraction was emitted twice, and the `switch` form merged them and branched past the join in the default case.
 
 ### A peeled first call duplicates the call and costs a saved register
 
@@ -83,7 +98,7 @@ Three rules keep this file usable:
 
 ### Narrow NAKED-callee parameter forces truncation at a single call site
 
-- **Frequency**: `FUN_082402c8`, `FUN_082402e0`, `FUN_08240428`, `sound_082403b8`, `sound_08240728`, `Entity6978_Create`.
+- **Frequency**: `FUN_082402c8`, `FUN_082402e0`, `FUN_08240428`, `sound_082403b8`, `sound_08240728`, `Entity6978_Create`, `ParticleShadow_Init`, `AuxShadow_Init`, `AuxShadow_SetScaleParams`.
 - When the only call site passes a wider value (e.g. a `u32`-returning
   `Script_GetValue()`) directly into a NAKED callee declared with a
   narrower parameter type (`u16`), agbcc inserts a truncation
@@ -97,6 +112,8 @@ Three rules keep this file usable:
   still NAKED.
 - The callee may also be a MATCHING C function: `PlaySound_08240718(SoundID16 id) { m4aSongNumStart(id); }` already truncates `id` in its own body for the `u16` callee, so widening it to `SoundID32` left its bytes unchanged and removed the extra truncation from the caller `sound_08240728`.
 - The reverse also holds: when the target *does* truncate before the call, narrow the callee. `Entity6978_Create(u32 id)` has `lsls #16` / `lsrs #16` before `bl Entity6978_Init`, which matched once `Entity6978_Init`'s parameter was declared `u16 id`.
+- The same applies to the function's *own* parameter. `ParticleShadow_Init(..., u8 kind)` truncated `kind` at entry (`lsls #0x18` / `lsrs #0x18`), but the target copies it untouched (`adds r4, r2, #0`) and only narrows at the test (`lsls r0, r4, #0x18` / `cmp`). Declaring `s32 kind` and writing `(u8)kind == 0` at the use matched; the `strb` store needs no cast.
+- `AuxShadow_Init` has ten narrow fields filled straight from its parameters (`strb r5, [r0]` with no `lsls`/`lsrs` first). Declaring every one of them `s32` matched; the stores truncate by themselves.
 
 ### `s16` locals defer sign-extension to each use
 
@@ -126,10 +143,10 @@ Three rules keep this file usable:
 
 ### Pointer-add Rn/Rm order depends on how the address is spelled
 
-- **Frequency**: `Script_StorePointerCore`, `FUN_0822ea10`, `FUN_08022128`.
+- **Frequency**: `Script_StorePointerCore`, `FUN_0822ea10`, `EntityMsgBus_Post`.
 - Scaling an index by 2 as `offset << 1` vs `offset * 2` is value-identical, but agbcc doesn't always canonicalize the two the same way: in `*(u16*)(dst + (offset << 1))`, the shift form compiled the subsequent `dst + offset*2` addition as `adds r0, r4, r0` (dst first); the literal `offset * 2` form instead gave `adds r0, r0, r4` (offset-term first) — same instruction, swapped operands, real byte difference. When a pointer-add's Rn/Rm order doesn't match and the scale is a power of 2, try switching between `<<` and `*` for the scale before reaching for other levers.
 - The same symptom also comes from the *pointer vs subscript* choice, and that lever is independent of the one above. In `FUN_0822ea10`, holding the address in a variable (`u32* p = &base[i];` then `*p`) emitted `adds r3, r1, r0` (base first); indexing at each use (`base[i]`, three times) emitted `adds r3, r0, r1` (offset first) and matched. Switching `<<`/`*` did nothing there, so try both levers.
-- The pointer-vs-subscript choice also changes how a field offset is grouped. In `FUN_08022128`, `u8* count = &node->unk_6[side];` emitted `adds r1, r4, #6` / `adds r3, r5, r1`, which is `node + (side + 6)`. Writing `node->unk_6[side]` at each use emitted `adds r1, r5, #6` / `adds r3, r1, r4`, which is `(node + 6) + side`, and matched.
+- The pointer-vs-subscript choice also changes how a field offset is grouped. In `EntityMsgBus_Post`, `u8* count = &node->unk_6[side];` emitted `adds r1, r4, #6` / `adds r3, r5, r1`, which is `node + (side + 6)`. Writing `node->unk_6[side]` at each use emitted `adds r1, r5, #6` / `adds r3, r1, r4`, which is `(node + 6) + side`, and matched.
 
 ### `==` operand order sets the `cmp` operands and which value keeps the address register
 
@@ -150,8 +167,10 @@ Three rules keep this file usable:
 
 ### A constant or global address materializes in the wrong place
 
-- **Frequency**: `Sprite_SetPlttID`, `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`, `FUN_08089d24`, `FUN_08089f38`, `FUN_0823a9f4`, `FUN_0823aa10`, `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`.
+- **Frequency**: `Sprite_SetPlttID`, `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`, `FUN_08089d24`, `FUN_08089f38`, `FUN_0823a9f4`, `FUN_0823aa10`, `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`, `ParticleShadow_Init`.
 - **Symptom**: a streamdiff shows only a `movs rN, #k` or `ldr rN, =SYMBOL` sitting earlier or later than the target has it — usually with registers renamed, sometimes with one extra callee-saved register, and often with an identical instruction count. agbcc materializes each of these where the expression tree first needs it, so the lever is always *how the surrounding expression is split into statements*, never the arithmetic. The mask-hoisting bullets under "`(x & (1<<n)) != 0` auto-optimizes" are the same mechanism seen through a bit test.
+
+- The operand order of a `+` also moves a global's load. In `ParticleShadow_Init`, `... * 34 + gMgr->group0->tile` loaded the manager pointer after the multiply; writing the global term first, `gMgr->group0->tile + ... * 34`, loaded it before the two `ldrb`s as the target does.
 
 **Splitting a value out into its own statement makes it materialize earlier.**
 
@@ -218,14 +237,17 @@ Three rules keep this file usable:
 
 ### Bitfield store vs hand-written mask differ in operand evaluation order
 
-- **Frequency**: `VM_CallScript`.
+- **Frequency**: `VM_CallScript`, `ScriptShadow_CreateFromScript`, `ScriptShadow_MoveFromScript`.
 - Assigning a 16-bit bitfield (`u32 argc : 16;` → `s.argc = n;`) computes the truncated value **first** (`lsls`/`lsrs`), then loads the word, ANDs the mask constant, ORs and stores. The hand-written equivalent `w = (w & 0xFFFF0000) | (u16)n;` loads and masks first, then truncates. Same instructions, different order — if the order doesn't match, the original almost certainly used a bitfield.
+- The same shape on a *stack local* means the original declared its coordinates as bitfields, not `s16`. `ScriptShadow_CreateFromScript` fills a `Vec3` from three `Script_GetValue()` calls with `ldr [sp]` / `ands 0xFFFF0000` / `orrs` / `str [sp]` instead of `strh`. `struct { u32 x : 16; u32 y : 16; u32 z : 16; } pos;` passed as `(Vec3*)&pos` matched (x and y share the first word, z starts the second).
 
 ### `arr[i]` vs `*p++` change where the walking pointer is initialized
 
-- **Frequency**: `FUN_082315c0`, `FUN_0824082c`, `FUN_08089ce0`.
+- **Frequency**: `FUN_082315c0`, `FUN_0824082c`, `FUN_08089ce0`, `Entity0800a89c_ReleaseSwarm`, `Entity0800a89c_UpdateSwarm`.
 - Both compile to the same `stm rN!, {r0}` walking store, but the init of that pointer lands in a different place. `*out++ = v;` modifies the parameter, so agbcc copies it to a callee-saved register in the **entry block**, before any loop-invariant hoists. `out[i] = v;` leaves the parameter alone and lets loop strength reduction create the pointer, so its init goes in the **preheader**, after the hoists — swapping the order of the two setup instructions. (Strength reduction also frees `i` to be reversed into a down-counter while the pointer still walks up.)
 - A walking pointer compared against `base + const` (`adds r0, r5, #0` / `adds r0, #0x14` / `cmp r4, r0`) with a **signed** loop exit (`ble`) and no pre-loop test is an `s32 i` index loop, not a pointer loop: loop strength reduction deletes `i` and rewrites `i == 10` and `i < 32` as compares on the pointer. In `FUN_0824082c`, writing the pointer loop (`p == &arr[10]`, `p <= &arr[31]`) gave a pre-loop `bhi`, unsigned `bls` and pool-loaded addresses; `for (i = 0; i < 32; i++) { if (arr[i]) { if (i == 10) ... } }` matched, including the second walking pointer used for the `arr[i]` call argument.
+- The same split decides whether a **member offset** is folded into the pointer. `f(&arr[i].member)` initialises one pointer at `&arr[0].member` and steps it by `sizeof(*arr)`; an explicit `T* p = arr; f(&p->member); p++;` keeps `p` at `arr` and pays an `adds r0, #offset` every iteration. `Entity0800a89c_ReleaseSwarm` (`FUN_0822dabc(&swarm->bugs[i].ptcl)`) needed the index form.
+- With an explicit walker **and** an index that the body still needs, both the init order and the increment order are visible. `Entity0800a89c_UpdateSwarm` matched only as `for (i = 0, bug = swarm->bugs; i < 4; i++) { ...; bug++; }`: putting `bug = ...` first swapped the two registers, and putting `bug++` in the `for` increment emitted it after `i++` instead of before.
 
 ### `a = b = v` stores `b` first and evaluates `v` once
 

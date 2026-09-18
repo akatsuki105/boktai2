@@ -42,7 +42,7 @@ _08227002:
 	bl FUN_08236fac
 	ldr r1, _08227080 @ =0x00000DF4
 	adds r0, r7, r1
-	bl FUN_08013698
+	bl ParticleShadow_Show
 	ldr r2, _08227084 @ =0x00000F48
 	adds r1, r7, r2
 	ldr r0, _08227088 @ =0x08222CE1

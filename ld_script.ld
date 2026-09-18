@@ -12,8 +12,6 @@ SOUND_INFO_PTR = 0x03007FF0;
 gMaxLines = 0;
 gNumMusicPlayers = 32;
 
-gCtrlHandlers2_ROM = 0x08DBD758;
-
 gParticleFile0 = 0x08A20138;
 gSpriteSetFile25 = 0x08C5A80C;
 
@@ -137,7 +135,7 @@ SECTIONS {
 			src/entity_da0b.o (.text);
 			src/entity_ef6f.o (.text);
 			src/entity_6d69.o (.text);
-			src/entity_4e69.o (.text);
+			src/msgbus.o (.text);
 			src/entity_730a.o (.text);
 			src/boss.o (.text);
 			src/boss/duneyrr.o (.text);
@@ -146,7 +144,7 @@ SECTIONS {
 			src/boss/shademan.o (.text);
 			src/entity_286f.o (.text);
 			src/code_0803c1bc.o (.text);
-			src/entity_0804e9ac.o (.text);
+			src/signal_strength_icon.o (.text);
 			src/entity_d53d.o (.text);
 			src/crossover_lobby.o (.text);
 			src/entity_af33.o (.text);
@@ -154,13 +152,15 @@ SECTIONS {
 			src/entity_723e.o (.text);
 			src/code_08052eb8.o (.text);
 			src/entity_0805fe30.o (.text);
-			src/code_0805ff04.o (.text);
+			src/entity_080601a8.o (.text);
 			src/entity_08060470.o (.text);
 			src/entity_080607a8.o (.text);
 			src/player.o (.text);
 			src/player_08065988.o (.text);
 			src/entity_5941.o (.text);
 			src/player_0807f640.o (.text);
+			src/entity_08080be8.o (.text);
+			src/player_link.o (.text);
 			src/code_080801f4.o (.text);
 			src/entity_28cb.o (.text);
 			src/entity_cc28.o (.text);
@@ -190,6 +190,7 @@ SECTIONS {
 			src/entity_e9d3.o (.text);
 			src/entity_e02e.o (.text);
 			src/code_080b5ab0.o (.text);
+			src/entity_571d.o (.text);
 			src/entity_b3d1.o (.text);
 			src/entity_d3a9.o (.text);
 			src/code_080c0d6c.o (.text);
@@ -278,6 +279,7 @@ SECTIONS {
 			src/camera.o (.text);
 			src/code_0823cd04.o (.text);
 			src/time.o (.text);
+			src/time_math.o (.text);
 			src/sound.o (.text);
 			src/entity_08240a54.o (.text);
 			src/entity_794c.o (.text);
@@ -427,7 +429,11 @@ SECTIONS {
     src/data/obp.o (.rodata);
     src/data/scripts.o (.rodata);
     src/data/item.o (.rodata);
-    src/data4.o (.rodata);
+    src/demo.o (.rodata);
+    src/vm_ctrl2.o (.rodata);
+    src/data5.o (.rodata);
+    src/solar_sensor.o (.rodata);
+    src/code_0823cd04.o (.rodata);
 
     /* ????????????? */
     *libc.a:impure.o(.data);

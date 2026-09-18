@@ -57,11 +57,11 @@ public class EditFoo extends GhidraScript {   // class name = file name; keep it
     if (particle.getLength() != 40) { println("ABORT: size mismatch"); return; }
 
     // optional: new element type, reused if a previous run already created it
-    DataType elem = ft("q_FooElem");
+    DataType elem = ft("FooElem");
     if (elem == null) {
-      StructureDataType sd = new StructureDataType(new CategoryPath("/entity.h"), "q_FooElem", 44, dtm);
+      StructureDataType sd = new StructureDataType(new CategoryPath("/entity.h"), "FooElem", 44, dtm);
       sd.replaceAtOffset(0x00, particle, 40, "base", "passed as Particle* to FUN_0822d9f0");
-      sd.replaceAtOffset(0x28, u8, 1, "q_active", "tested != 0 in FUN_xxxx");
+      sd.replaceAtOffset(0x28, u8, 1, "active", "tested != 0 in FUN_xxxx");
       elem = dtm.addDataType(sd, DataTypeConflictHandler.DEFAULT_HANDLER);
     }
 

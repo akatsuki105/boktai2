@@ -8807,7 +8807,7 @@ _08204D40:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08204D5C:
 	pop {r0}
 	bx r0
@@ -8836,7 +8836,7 @@ _08204D72:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08204D8E:
 	pop {r0}
 	bx r0
@@ -8858,7 +8858,7 @@ FUN_08204d94: @ 0x08204D94
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08204DB4:
 	ldrb r0, [r4, #4]
 	ldr r2, _08204DD4 @ =0x00000227
@@ -8904,7 +8904,7 @@ _08204DEA:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08204E06:
 	pop {r0}
 	bx r0
@@ -8935,7 +8935,7 @@ _08204E20:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08204E3C:
 	pop {r0}
 	bx r0
@@ -10069,7 +10069,7 @@ _082056C8:
 	ldr r7, [r0]
 	mov r0, sb
 	adds r1, r7, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r7, #6]
 	cmp r0, #0x29
 	bls _082056F0
@@ -10422,7 +10422,7 @@ FUN_082059bc: @ 0x082059BC
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	ldr r2, _082059D4 @ =0x03002C90
 	movs r1, #0
 	str r1, [r2]
@@ -10587,7 +10587,7 @@ _08205AE4:
 	adds r0, r4, r2
 	mov r1, r8
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]
@@ -11100,7 +11100,7 @@ _08205F10:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08205F2C:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -11134,7 +11134,7 @@ _08205F4C:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08205F68:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -11168,7 +11168,7 @@ _08205F88:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08205FA4:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -11466,7 +11466,7 @@ _082061B0:
 	ldr r7, [r0]
 	mov r0, sb
 	adds r1, r7, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r7, #6]
 	cmp r0, #0x24
 	bls _082061D8
@@ -11762,7 +11762,7 @@ FUN_08206424: @ 0x08206424
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -11887,7 +11887,7 @@ _082064FA:
 	adds r0, r4, r1
 	adds r1, r6, #0
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]
@@ -12097,7 +12097,7 @@ _082066DA:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _082066EC:
 	pop {r0}
 	bx r0
@@ -12121,7 +12121,7 @@ _08206702:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08206714:
 	pop {r0}
 	bx r0
@@ -12141,7 +12141,7 @@ FUN_08206718: @ 0x08206718
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08206736:
 	pop {r0}
 	bx r0
@@ -12166,7 +12166,7 @@ _0820674E:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08206760:
 	pop {r0}
 	bx r0
@@ -12190,7 +12190,7 @@ _08206776:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08206788:
 	pop {r0}
 	bx r0
@@ -12220,7 +12220,7 @@ _082067A0:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _082067BC:
 	pop {r0}
 	bx r0
@@ -12783,7 +12783,7 @@ _08206BA4:
 	ldr r7, [r0]
 	mov r0, sb
 	adds r1, r7, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r7, #6]
 	cmp r0, #0x29
 	bls _08206BCC
@@ -13019,7 +13019,7 @@ FUN_08206db8: @ 0x08206DB8
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -13139,7 +13139,7 @@ _08206E8E:
 	adds r0, r5, r2
 	mov r1, r8
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r5, #0
 	adds r0, #0x61
 	strb r6, [r0]
@@ -13875,7 +13875,7 @@ _0820745E:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08207470:
 	pop {r0}
 	bx r0
@@ -13905,7 +13905,7 @@ _08207488:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _082074A4:
 	pop {r0}
 	bx r0
@@ -13929,7 +13929,7 @@ _082074BA:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _082074CC:
 	pop {r0}
 	bx r0
@@ -13953,7 +13953,7 @@ _082074E2:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _082074F4:
 	pop {r0}
 	bx r0
@@ -13983,7 +13983,7 @@ _0820750C:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08207528:
 	pop {r0}
 	bx r0
@@ -14003,7 +14003,7 @@ FUN_0820752c: @ 0x0820752C
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0820754A:
 	pop {r0}
 	bx r0
@@ -14028,7 +14028,7 @@ _08207562:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08207574:
 	pop {r0}
 	bx r0
@@ -14100,7 +14100,7 @@ _082075D0:
 	ldr r7, [r0]
 	mov r0, sb
 	adds r1, r7, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r7, #6]
 	cmp r0, #0x29
 	bls _082075F8
@@ -14339,7 +14339,7 @@ FUN_082077e8: @ 0x082077E8
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -14461,7 +14461,7 @@ _082078BE:
 	adds r0, r4, r1
 	adds r1, r7, #0
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]
@@ -14697,7 +14697,7 @@ FUN_08207ac4: @ 0x08207AC4
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08207AE4:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -14722,7 +14722,7 @@ FUN_08207af0: @ 0x08207AF0
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08207B10:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -14747,7 +14747,7 @@ FUN_08207b1c: @ 0x08207B1C
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08207B3C:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -14995,7 +14995,7 @@ _08207CDC:
 	ldr r7, [r0]
 	mov r0, sb
 	adds r1, r7, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r7, #6]
 	cmp r0, #0x27
 	bls _08207D04
@@ -15206,7 +15206,7 @@ FUN_08207ec0: @ 0x08207EC0
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -15328,7 +15328,7 @@ _08207F96:
 	adds r0, r4, r1
 	adds r1, r6, #0
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]
@@ -15544,7 +15544,7 @@ _08208174:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08208190:
 	pop {r0}
 	bx r0
@@ -15570,7 +15570,7 @@ _082081A6:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _082081BC:
 	pop {r0}
 	bx r0
@@ -15596,7 +15596,7 @@ _082081D2:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _082081E8:
 	pop {r0}
 	bx r0
@@ -15620,7 +15620,7 @@ _082081FE:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08208210:
 	pop {r0}
 	bx r0
@@ -15642,7 +15642,7 @@ FUN_08208214: @ 0x08208214
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	movs r0, #1
 	strh r0, [r4, #0x16]
 _0820823A:
@@ -15675,7 +15675,7 @@ _08208254:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08208270:
 	pop {r0}
 	bx r0
@@ -15699,7 +15699,7 @@ _08208286:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08208298:
 	pop {r0}
 	bx r0
@@ -15719,7 +15719,7 @@ FUN_0820829c: @ 0x0820829C
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _082082BA:
 	pop {r0}
 	bx r0
@@ -15750,7 +15750,7 @@ _082082D4:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _082082F0:
 	pop {r0}
 	bx r0
@@ -15772,7 +15772,7 @@ FUN_082082f4: @ 0x082082F4
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	movs r0, #1
 	strh r0, [r4, #0x16]
 _0820831A:
@@ -17783,7 +17783,7 @@ _08209220:
 	ldr r7, [r0]
 	mov r0, sl
 	adds r1, r7, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r7, #6]
 	cmp r0, #0x29
 	bls _08209248
@@ -18140,7 +18140,7 @@ FUN_08209524: @ 0x08209524
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -18265,7 +18265,7 @@ _082095F6:
 	adds r0, r4, r3
 	mov r1, r8
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]
@@ -18545,7 +18545,7 @@ _0820984C:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _08209868:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -18685,7 +18685,7 @@ _0820993C:
 	ldr r6, [r0]
 	mov r0, sb
 	adds r1, r6, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r6, #6]
 	cmp r0, #0x14
 	bls _08209964
@@ -18891,7 +18891,7 @@ FUN_08209b00: @ 0x08209B00
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -19013,7 +19013,7 @@ _08209BD6:
 	adds r0, r4, r1
 	adds r1, r6, #0
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]
@@ -19335,7 +19335,7 @@ _08209E68:
 	ldr r6, [r0]
 	mov r0, sb
 	adds r1, r6, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r6, #6]
 	cmp r0, #0xa
 	bhi _08209F62
@@ -19494,7 +19494,7 @@ FUN_08209fb8: @ 0x08209FB8
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -19616,7 +19616,7 @@ _0820A08E:
 	adds r0, r4, r1
 	adds r1, r6, #0
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]
@@ -19938,7 +19938,7 @@ _0820A320:
 	ldr r6, [r0]
 	mov r0, sb
 	adds r1, r6, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r6, #6]
 	cmp r0, #0xa
 	bhi _0820A41A
@@ -20097,7 +20097,7 @@ FUN_0820a470: @ 0x0820A470
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -20219,7 +20219,7 @@ _0820A546:
 	adds r0, r4, r1
 	adds r1, r6, #0
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]
@@ -20541,7 +20541,7 @@ _0820A7D8:
 	ldr r6, [r0]
 	mov r0, sb
 	adds r1, r6, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r6, #6]
 	cmp r0, #0xa
 	bhi _0820A8D2
@@ -20700,7 +20700,7 @@ FUN_0820a928: @ 0x0820A928
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -20822,7 +20822,7 @@ _0820A9FE:
 	adds r0, r4, r1
 	adds r1, r6, #0
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]
@@ -21028,7 +21028,7 @@ FUN_0820abc8: @ 0x0820ABC8
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0820ABE6:
 	pop {r0}
 	bx r0
@@ -21049,7 +21049,7 @@ FUN_0820abec: @ 0x0820ABEC
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0820AC0A:
 	pop {r0}
 	bx r0
@@ -21080,7 +21080,7 @@ _0820AC24:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0820AC40:
 	pop {r0}
 	bx r0
@@ -21110,7 +21110,7 @@ _0820AC58:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0820AC74:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -21710,7 +21710,7 @@ _0820B0DC:
 	ldr r7, [r0]
 	mov r0, sb
 	adds r1, r7, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r7, #6]
 	cmp r0, #0x21
 	bls _0820B104
@@ -21944,7 +21944,7 @@ FUN_0820b2e8: @ 0x0820B2E8
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -22066,7 +22066,7 @@ _0820B3BE:
 	adds r0, r4, r1
 	adds r1, r7, #0
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]
@@ -22311,7 +22311,7 @@ _0820B5D8:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0820B5F4:
 	pop {r0}
 	bx r0
@@ -22340,7 +22340,7 @@ _0820B60A:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0820B626:
 	pop {r0}
 	bx r0
@@ -22361,7 +22361,7 @@ FUN_0820b62c: @ 0x0820B62C
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0820B64A:
 	pop {r0}
 	bx r0
@@ -22386,7 +22386,7 @@ _0820B662:
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0820B674:
 	pop {r0}
 	bx r0
@@ -22411,7 +22411,7 @@ _0820B68C:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 	movs r0, #0
 	strb r0, [r4, #2]
 	strb r0, [r4, #3]
@@ -23002,7 +23002,7 @@ _0820BAD8:
 	ldr r7, [r0]
 	mov r0, sl
 	adds r1, r7, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r7, #6]
 	cmp r0, #0x20
 	bls _0820BB00
@@ -23220,7 +23220,7 @@ FUN_0820bcbc: @ 0x0820BCBC
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -23342,7 +23342,7 @@ _0820BD92:
 	adds r0, r4, r1
 	adds r1, r6, #0
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]
@@ -23549,7 +23549,7 @@ FUN_0820bf5c: @ 0x0820BF5C
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0820BF7C:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -23934,7 +23934,7 @@ _0820C234:
 	ldr r5, [r0]
 	adds r0, r7, #0
 	adds r1, r5, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r5, #6]
 	cmp r0, #0x28
 	bls _0820C25A
@@ -24106,7 +24106,7 @@ FUN_0820c3d0: @ 0x0820C3D0
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -24226,7 +24226,7 @@ _0820C4A6:
 	adds r0, r4, r2
 	mov r1, r8
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]
@@ -24497,7 +24497,7 @@ _0820C6DC:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl FUN_08022488
+	bl EntityMsgBox_EndWait
 _0820C6F8:
 	ldr r0, [r4, #0x14]
 	adds r0, #1
@@ -24573,7 +24573,7 @@ _0820C75C:
 	ldr r7, [r0]
 	mov r0, sb
 	adds r1, r7, #0
-	bl FUN_08022474
+	bl EntityMsgBox_BeginWait
 	ldrb r0, [r7, #6]
 	cmp r0, #0x14
 	bls _0820C784
@@ -24791,7 +24791,7 @@ FUN_0820c930: @ 0x0820C930
 	movs r2, #0xb2
 	lsls r2, r2, #1
 	adds r0, r1, r2
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	pop {r1}
 	bx r1
 
@@ -24915,7 +24915,7 @@ _0820CA10:
 	adds r0, r4, r2
 	mov r1, sb
 	movs r2, #5
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]

@@ -38,11 +38,6 @@ static_assert(sizeof(LevelUpper) == 608);
 
 extern LevelUpper* gLevelUpper;  // 0x03000154
 
-void FUN_0822a470(AuxSprite* p, AuxSpriteGfx* s, SpriteFlags flags);
-void FUN_0822d9f0(Particle* p, ParticleGroup* g, u32 flags);
-void FUN_0822dabc(Particle* p);
-void FUN_0822dad4(Particle* p, s32 val1, s32 val2);
-void FUN_0822dadc(Particle* p, s32 plttID);
 void FUN_0822dafc(Particle* p, ParticleGroup* g, u32 val);
 s32 GetWeaponSkillLevel(s32 idx);
 

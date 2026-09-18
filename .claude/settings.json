@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.command' | grep -qE 'git[[:space:]]+commit' && tools/clang_format_staged.sh || true",
+            "statusMessage": "clang-format (staged .c/.h)"
+          }
+        ]
+      }
+    ]
+  }
+}

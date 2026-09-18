@@ -129,7 +129,7 @@ Boss_Init_08022a70: @ 0x08022A70
 	adds r0, r7, r1
 	mov r1, r8
 	movs r2, #4
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0
 	add sp, #0x10
 	pop {r3}
@@ -147,7 +147,7 @@ FUN_08022b04: @ 0x08022B04
 	movs r1, #0x8c
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	adds r0, r4, #0
 	adds r0, #0x48
 	bl FUN_0823b284

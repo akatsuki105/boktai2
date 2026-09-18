@@ -1,6 +1,6 @@
 	push {lr}
 	adds r0, #0x1c
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 	movs r0, #0x6a
 	bl sound_08240740
 	movs r0, #0

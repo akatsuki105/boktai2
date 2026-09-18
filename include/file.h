@@ -15,7 +15,7 @@
 #define DIR_AUX_SPRITE 0x98F5
 #define DIR_COLLISION_MAP 0xAE6C
 #define DIR_TILE_MAP 0xC091
-#define DIR_SPRITE_SETS 0xCB05
+#define DIR_MAIN_SPRITE 0xCB05
 #define DIR_TILESET 0xCEEF
 #define DIR_PARTICLE 0xCEAA
 
@@ -53,7 +53,7 @@ typedef struct mft_directory {
 //   DIR_AUX_SPRITE      -> return &AuxSpriteFile
 //   DIR_COLLISION_MAP   -> return &CollisionMapFile
 //   DIR_TILE_MAP        -> return &TilemapHeader
-//   DIR_SPRITE_SETS     -> return &MainSpriteFile
+//   DIR_MAIN_SPRITE     -> return &MainSpriteFile
 //   DIR_TILESET         -> return &TileSetFile
 //   DIR_PARTICLE        -> return &ParticleFile
 void* GetFile(FileID directoryID, FileID fileID);

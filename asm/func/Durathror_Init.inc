@@ -805,7 +805,7 @@ _0803C0B2:
 	ldr r2, _0803C144 @ =FUN_08036fd8
 	adds r0, r4, #0
 	ldr r1, [sp, #0x24]
-	bl FUN_0807f558
+	bl Entity5941_Register
 	movs r1, #2
 	rsbs r1, r1, #0
 	ldr r0, [r4, #4]
@@ -833,9 +833,9 @@ _0803C0B2:
 	adds r0, r4, #0
 	movs r2, #0x40
 	movs r3, #0x18
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	adds r0, r4, #0
-	bl FUN_080139a0
+	bl AuxShadow_Hide
 	adds r0, r7, #0
 	bl FUN_080389b0
 	bl FUN_0805d79c

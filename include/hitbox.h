@@ -6,11 +6,12 @@
 
 typedef u16 HitboxFlags;
 typedef u32 HitboxFlags32;
-#define HBFLAG_UNK_0 (1 << 0)    // 0x2
+#define HBFLAG_UNK_0 (1 << 0)    // 0x1
 #define HBFLAG_UNK_1 (1 << 1)    // 0x2
 #define HBFLAG_UNK_2 (1 << 2)    // 0x4
 #define HBFLAG_UNK_8 (1 << 8)    // 0x100
 #define HBFLAG_UNK_13 (1 << 13)  // 0x2000
+#define HBFLAG_UNK_14 (1 << 14)  // 0x4000
 
 // paddingがあるので Vec3 を使うべきかも?
 typedef struct {
@@ -54,9 +55,12 @@ typedef struct HitboxData {
 } HitboxData;
 static_assert(sizeof(HitboxData) == 80);
 
+void FUN_08236400(HitboxData* p);
 void FUN_0823646c(HitboxData* p, u32 param_2, u32 param_3, u32 param_4, u16 param_5, Vec3* size, Vec3* offset);
 void FUN_082364c4(HitboxData* p, Vec3* pos, u32 param_3);
 void FUN_082364f8(HitboxData* p, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6);
+void FUN_08236514(HitboxData* p, u32 val1, u32 val2, u32 val3);
 void FUN_0823651c(HitboxData* p, void* handler, void* owner);
+void FUN_08236424(HitboxData* p);
 
 #endif  // __INCLUDE_HITBOX_H__

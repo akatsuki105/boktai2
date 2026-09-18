@@ -37,7 +37,7 @@ _080E5E14:
 	adds r1, r5, #0
 	adds r1, #8
 	movs r2, #0
-	bl FUN_0801385c
+	bl ParticleShadow_Init
 	ldr r2, _080E5E74 @ =0x0000044C
 	adds r1, r5, r2
 _080E5E28:

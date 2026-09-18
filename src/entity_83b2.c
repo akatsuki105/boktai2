@@ -42,7 +42,6 @@ static_assert(sizeof(Entity83B2) == 48);
 
 extern Entity83B2* gEntity83B2;  // 0x0300003C
 
-void FUN_0822a470(AuxSprite* p, AuxSpriteGfx* s, SpriteFlags flags);
 s32 ArcTan2_8(s32 x, s32 y);
 s32 FUN_08241574(Vec3* pos);
 

@@ -2,6 +2,7 @@
 #define __INCLUDE_ENEMY_H__
 
 #include "gba/gba.h"
+#include "msgbus.h"
 #include "sprite.h"
 #include "struct.h"
 

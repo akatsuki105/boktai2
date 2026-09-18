@@ -28,7 +28,7 @@ struct Entity8ECD;
 struct GameOverManager;
 struct LevelUpper;
 struct EntityB3D1;
-struct Entity0804e9ac;
+struct SignalStrengthIcon;
 struct EntityD53D;
 struct Entity080607a8;
 struct Entity080de11c;
@@ -74,7 +74,7 @@ IWRAM_DATA Entity* gCredits = NULL;  // 0x030000D0
 
 IWRAM_DATA u8 u8_030000d4[0xE4 - 0xD4] = {};
 
-IWRAM_DATA struct Entity0804e9ac* gEntity0804e9ac = NULL;  // 0x030000E4
+IWRAM_DATA struct SignalStrengthIcon* gSignalStrengthIcon = NULL;  // 0x030000E4
 IWRAM_DATA struct EntityD53D* gEntityD53D = NULL;          // 0x030000E8
 
 IWRAM_DATA u8 u8_030000ec[0x138 - 0x0EC] = {};

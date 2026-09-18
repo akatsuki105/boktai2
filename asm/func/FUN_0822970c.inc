@@ -134,7 +134,7 @@ _08229842:
 	strb r0, [r1]
 	ldr r3, _08229874 @ =0x00000DF4
 	adds r0, r4, r3
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	ldr r0, _08229878 @ =0x00000D9C
 	adds r2, r4, r0
 	ldr r0, [r2]

@@ -6257,7 +6257,7 @@ _0818763A:
 	beq _08187646
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl FUN_08022428
+	bl EntityMsgBus_Unregister
 _08187646:
 	ldr r1, _081876A0 @ =0x0000044C
 	adds r5, r4, r1
@@ -6267,7 +6267,7 @@ _08187646:
 	movs r2, #0x9a
 	lsls r2, r2, #2
 	adds r0, r4, r2
-	bl FUN_080138fc
+	bl ParticleShadow_Remove
 	movs r0, #1
 	strb r0, [r5]
 _0818765E:
@@ -7427,7 +7427,7 @@ _08187FCA:
 	adds r0, #0x7c
 	ldr r2, _08188004 @ =FUN_080f48ac
 	ldr r1, [sp, #0x28]
-	bl FUN_0807f558
+	bl Entity5941_Register
 _08187FDA:
 	ldr r3, [sp, #0xd4]
 	ldrb r0, [r3]
@@ -8265,7 +8265,7 @@ _08188672:
 	adds r0, #0x48
 	ldrh r1, [r7]
 	movs r2, #3
-	bl FUN_080223f4
+	bl EntityMsgBus_Register
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r5, [sp, #0x44]

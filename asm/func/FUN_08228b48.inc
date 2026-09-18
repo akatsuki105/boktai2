@@ -44,7 +44,7 @@ _08228B7A:
 	bl FUN_08236fac
 	ldr r1, _08228BF0 @ =0x00000DF4
 	adds r0, r6, r1
-	bl FUN_080136b4
+	bl ParticleShadow_Hide
 	ldr r0, _08228BF4 @ =0x0000011F
 	bl PlaySound_082406e0
 _08228BAE:

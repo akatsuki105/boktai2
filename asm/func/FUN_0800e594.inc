@@ -418,7 +418,7 @@ _0800E8B6:
 	adds r1, r7, #0
 	movs r2, #0x50
 	movs r3, #7
-	bl FUN_08013ba8
+	bl AuxShadow_Init
 	strb r5, [r6, #0xb]
 	strb r4, [r6, #0xd]
 	adds r0, r6, #0
