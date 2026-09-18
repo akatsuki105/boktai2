@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "sprite.h"
+#include "vm.h"
 
 typedef struct {
   Entity e;  // ENTITY_UNK_2
@@ -11,8 +12,10 @@ static_assert(sizeof(EntityB8B9) == 32);
 
 IWRAM_DATA EntityB8B9* gEntityB8B9 = NULL;  // 0x030016F8
 
-// 実体は src/code_082326a0.c
+// 実体は src/code_082326a0.c / src/savedata.c
 void FUN_0823280c(void* p, Vec3* pos);
+void FUN_0823167c(u8* dst);
+void FUN_0823206c(u8* pc, s32 offset, u32 val);
 
 void FUN_0823b1ec(void) { gEntityB8B9 = NULL; }
 
@@ -91,7 +94,28 @@ Entity2UnkData* FUN_0823b2d0(u16 id) {
 
 Entity2UnkData* FUN_0823b2e0(Entity2UnkData* p) { return FUN_0823b258(p); }
 
-NAKED s32 FUN_0823b2ec(void) { INCFUNC("asm/func/FUN_0823b2ec.inc"); }
+// スクリプトから ID を受け取り、そのノードの pos.x/y/z をスクリプト側へ返す
+s32 FUN_0823b2ec(void) {
+  u8 buf[8];
+  Entity2UnkData* p = FindUnk0200865c(Script_GetValue());
+
+  if (p == NULL) {
+    FUN_0823167c(buf);
+    FUN_0823206c(buf, 0, 0);
+    FUN_0823167c(buf);
+    FUN_0823206c(buf, 0, 0);
+    FUN_0823167c(buf);
+    FUN_0823206c(buf, 0, 0);
+    return -1;
+  }
+  FUN_0823167c(buf);
+  FUN_0823206c(buf, 0, p->pos.x);
+  FUN_0823167c(buf);
+  FUN_0823206c(buf, 0, p->pos.y);
+  FUN_0823167c(buf);
+  FUN_0823206c(buf, 0, p->pos.z);
+  return 0;
+}
 
 s32 EntityB8B9_Update(EntityB8B9* _) { return 0; }
 
