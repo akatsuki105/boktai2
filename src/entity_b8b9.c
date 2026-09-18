@@ -100,13 +100,28 @@ s32 EntityB8B9_Destroy(EntityB8B9* _) {
   return 0;
 }
 
-s32 EntityB8B9_Init(EntityB8B9* p) {
+s32 EntityB8B9_Init(EntityB8B9* p, unknown* a, unknown* b) {
   gEntityB8B9 = p;
   p->head = NULL, p->tail = NULL;
   return 0;
 }
 
-NAKED EntityB8B9* EntityB8B9_Create(void) { INCFUNC("asm/func/EntityB8B9_Create.inc"); }
+EntityB8B9* EntityB8B9_Create(unknown* a, unknown* b) {
+  EntityB8B9* p;
+
+  if (gEntityB8B9 != NULL) {
+    return gEntityB8B9;
+  }
+  p = CreateEntity(ENTITY_UNK_2, sizeof(EntityB8B9));
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityB8B9_Update, EntityB8B9_Destroy);
+    if (EntityB8B9_Init(p, a, b) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
 
 EntityB8B9* FUN_0823b3ec(void) {
   if (gEntityB8B9 == NULL) {
