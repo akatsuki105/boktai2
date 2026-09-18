@@ -2,12 +2,10 @@
 #include "global.h"
 #include "sprite.h"
 
-struct Entity2UnkData;
-
 typedef struct {
   Entity e;  // ENTITY_UNK_2
-  struct Entity2UnkData* unk_18;
-  struct Entity2UnkData* unk_1c;
+  Entity2UnkData* unk_18;
+  Entity2UnkData* unk_1c;
 } EntityB8B9;
 static_assert(sizeof(EntityB8B9) == 32);
 

@@ -23,7 +23,7 @@ typedef struct Entity2UnkData {
   u32 unk_20;                 // 0x20
   void* unk_24;               // 0x24
   u32 unk_28;                 // 0x28
-  struct MainSprite* unk_2c;  // 0x2C, Player の場合は、 &Player.sprite
+  struct MainSprite* unk_2c;  // 0x2C
   u8 unk_30[8];
   void* p_38;                   // 0x38, 親構造体のポインタ?
   struct Entity2UnkData* prev;  // 0x3C
