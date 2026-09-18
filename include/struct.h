@@ -7,6 +7,7 @@
 // 用途不明の構造体　はここに置いておく
 
 struct MainSprite;
+struct AuxSprite;
 
 // Collision or 座標計算 or スクリプト生成管理 のデータ?(まだわからない)
 typedef struct Entity2UnkData {
@@ -22,7 +23,7 @@ typedef struct Entity2UnkData {
   u16 unk_1e;                   // 0x1E
   u32 unk_20;                   // 0x20
   void* unk_24;                 // 0x24
-  u32 unk_28;                   // 0x28
+  struct AuxSprite* unk_28;     // 0x28, 非NULLなら FUN_0823b4b8 が pos を unk_28->q_pos に書き戻す, 根拠: FUN_0823b4b8 が +0x1C に8バイト書く
   struct MainSprite* unk_2c;    // 0x2C
   Vec3 unk_30;                  // 0x30, FUN_0823b47c が引数から8バイトまとめて書き、unk_2 に bit2 を立てる。読み手は未発見
   void* p_38;                   // 0x38, 親構造体のポインタ?

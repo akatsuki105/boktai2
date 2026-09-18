@@ -46,7 +46,7 @@ extern Entity081d0e20* gEntity081d0e20;  // 0x03000188
 
 // ヘッダのない外部関数 (実体は src/entity_b8b9.c ほか)
 s32 FUN_0823b400(Entity2UnkData* p, u16 id, Vec3* pos, u32 unk_5, u32 unk_4, void* owner);
-bool32 FUN_0823b46c(Entity2UnkData* p, u32 unk_28);
+bool32 FUN_0823b46c(Entity2UnkData* p, AuxSprite* unk_28);
 s32 FUN_08002a48(Entity2UnkData* p);
 unknown* FUN_081ee9bc(Vec3* pos);
 s32 FUN_08002a58(Entity2UnkData* p);
@@ -340,7 +340,7 @@ NON_MATCH void FUN_081d0864(void) {
     if (VM_GetKeywordValue('s', 0) != 0) {
       elem->flags |= 8;
       FUN_0823b400(&elem->unk_2c, elem->id, &elem->pos, 0, 7, elem);
-      FUN_0823b46c(&elem->unk_2c, (u32)elem);
+      FUN_0823b46c(&elem->unk_2c, &elem->sprite);
       FUN_08002a48(&elem->unk_2c);
     }
   }

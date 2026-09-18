@@ -1,10 +1,12 @@
+#include "camera.h"
 #include "entity.h"
 #include "global.h"
 #include "sprite.h"
+#include "sprite_aux.h"
 #include "vm.h"
 
 typedef struct {
-  Entity e;  // ENTITY_UNK_2
+  Entity e;              // ENTITY_UNK_2
   Entity2UnkData* head;  // 0x18, Entity2UnkData の双方向リストの先頭, 根拠: FUN_0823b1f8 (末尾に追加) / FUN_0823b258 (先頭から走査)
   Entity2UnkData* tail;  // 0x1C, 同リストの末尾
 } EntityB8B9;
@@ -16,6 +18,7 @@ IWRAM_DATA EntityB8B9* gEntityB8B9 = NULL;  // 0x030016F8
 void FUN_0823280c(void* p, Vec3* pos);
 void FUN_0823167c(u8* dst);
 void FUN_0823206c(u8* pc, s32 offset, u32 val);
+void FUN_0823349c(void* param_1, Vec3* pos, Vec3* delta, u16 unk_1c, u16 unk_1e, u8 unk_4);
 
 void FUN_0823b1ec(void) { gEntityB8B9 = NULL; }
 
@@ -185,7 +188,7 @@ bool32 FUN_0823b464(Entity2UnkData* p, u32 unk_20) {
   return TRUE;
 }
 
-bool32 FUN_0823b46c(Entity2UnkData* p, u32 unk_28) {
+bool32 FUN_0823b46c(Entity2UnkData* p, AuxSprite* unk_28) {
   p->unk_28 = unk_28;
   return TRUE;
 }
@@ -209,4 +212,28 @@ bool32 FUN_0823b490(Entity2UnkData* p, void* unk_24, u8 param_3, u8 param_4, u8 
   return TRUE;
 }
 
-NAKED void FUN_0823b4b8(Entity2UnkData* p) { INCFUNC("asm/func/FUN_0823b4b8.inc"); }
+// delta の分だけ pos を進めて delta をクリアする
+void FUN_0823b4b8(Entity2UnkData* p) {
+  if (p->unk_18 != NULL) {
+    switch (gCameraCoords.unk_12) {
+      case 0: {
+        FUN_0823349c(p->unk_18, &p->pos, &p->delta, p->unk_1c, p->unk_1e, p->unk_4);
+        break;
+      }
+      case 1: {
+        p->pos.x += p->delta.x;
+        p->pos.y += p->delta.z;
+        p->pos.z = 0;
+        break;
+      }
+    }
+  } else {
+    p->pos.x += p->delta.x;
+    p->pos.y += p->delta.y;
+    p->pos.z += p->delta.z;
+  }
+  if (p->unk_28 != NULL) {
+    p->unk_28->q_pos = p->pos;
+  }
+  p->delta.x = 0, p->delta.y = 0, p->delta.z = 0;
+}
