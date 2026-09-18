@@ -22403,7 +22403,7 @@ _0817B1C0:
 	ldr r0, _0817B408 @ =FUN_080f0320
 	ldr r3, [sp, #0x1a8]
 	str r0, [r3]
-	ldr r0, _0817B40C @ =FUN_080eff14
+	ldr r0, _0817B40C @ =Enemy_080eff14
 	ldr r4, [sp, #0x14c]
 	str r0, [r4]
 	ldr r0, _0817B410 @ =FUN_080e72b0
@@ -22570,7 +22570,7 @@ _0817B3FC: .4byte FUN_080f0430
 _0817B400: .4byte 0x085AD470
 _0817B404: .4byte FUN_080e73c8
 _0817B408: .4byte FUN_080f0320
-_0817B40C: .4byte FUN_080eff14
+_0817B40C: .4byte Enemy_080eff14
 _0817B410: .4byte FUN_080e72b0
 _0817B414: .4byte FUN_08172384
 _0817B418: .4byte FUN_080f47c8

@@ -11,7 +11,7 @@
 	ldr r4, [r0]
 	cmp r4, #0
 	bne _080DF16E
-	bl FUN_080df420
+	bl Entity080df420_Create
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _080DF16E

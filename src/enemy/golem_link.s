@@ -27124,7 +27124,7 @@ _081C562C:
 	ldr r1, _081C584C @ =FUN_080f0320
 	ldr r5, [sp, #0x188]
 	str r1, [r5]
-	ldr r1, _081C5850 @ =FUN_080eff14
+	ldr r1, _081C5850 @ =Enemy_080eff14
 	ldr r6, [sp, #0x134]
 	str r1, [r6]
 	ldr r1, _081C5854 @ =FUN_080e72b0
@@ -27260,7 +27260,7 @@ _081C5840: .4byte FUN_080f0430
 _081C5844: .4byte 0x085AD470
 _081C5848: .4byte FUN_080e73c8
 _081C584C: .4byte FUN_080f0320
-_081C5850: .4byte FUN_080eff14
+_081C5850: .4byte Enemy_080eff14
 _081C5854: .4byte FUN_080e72b0
 _081C5858: .4byte FUN_081bdb78
 _081C585C: .4byte FUN_080f47c8

@@ -16,6 +16,7 @@ struct Entity286F;
 struct Dvalinn;
 struct Entity5941;
 struct EntityCBB0;
+struct EntityEC2A;
 struct Entity9A9F;
 struct Player;
 struct CollisionMapData;
@@ -41,8 +42,9 @@ IWRAM_DATA struct Entity5941* gEntity5941 = NULL;  // 0x03002BF8
 IWRAM_DATA u8 u8_03002bfc[0x03002C58 - 0x03002bfc] = {};  // todo
 
 IWRAM_DATA struct EntityCBB0* gEntityCBB0 = NULL;  // 0x03002C58
+IWRAM_DATA struct EntityEC2A* gEntityEC2A = NULL;  // 0x03002C5C
 
-IWRAM_DATA u8 u8_03002c5c[0x03002C68 - 0x03002C5C] = {};  // todo
+IWRAM_DATA u8 u8_03002c5c[0x03002C68 - 0x03002C60] = {};  // todo
 
 IWRAM_DATA struct Entity9A9F* gEntity9A9F = NULL;  // 0x03002C68
 

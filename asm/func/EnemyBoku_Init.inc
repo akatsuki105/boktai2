@@ -1471,7 +1471,7 @@ _08102834:
 	ldr r1, _08102A3C @ =FUN_080f0320
 	ldr r5, [sp, #0x18c]
 	str r1, [r5]
-	ldr r1, _08102A40 @ =FUN_080eff14
+	ldr r1, _08102A40 @ =Enemy_080eff14
 	ldr r6, [sp, #0x138]
 	str r1, [r6]
 	ldr r1, _08102A44 @ =FUN_080e72b0
@@ -1603,7 +1603,7 @@ _08102A30: .4byte FUN_080f0430
 _08102A34: .4byte 0x085AD470
 _08102A38: .4byte FUN_080e73c8
 _08102A3C: .4byte FUN_080f0320
-_08102A40: .4byte FUN_080eff14
+_08102A40: .4byte Enemy_080eff14
 _08102A44: .4byte FUN_080e72b0
 _08102A48: .4byte FUN_080fc4ec
 _08102A4C: .4byte FUN_080f47c8

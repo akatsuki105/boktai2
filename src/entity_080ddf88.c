@@ -33,5 +33,3 @@ Entity080de11c* Entity080de11c_Create(void) {
 }
 
 void FUN_080de168(void) { gEntity080de11c = NULL; }
-
-INCASM("asm/code_080ddf88.inc");

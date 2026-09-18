@@ -8169,7 +8169,7 @@ _0813E0FC:
 	ldr r0, _0813E2E4 @ =FUN_080f0320
 	ldr r3, [sp, #0x17c]
 	str r0, [r3]
-	ldr r0, _0813E2E8 @ =FUN_080eff14
+	ldr r0, _0813E2E8 @ =Enemy_080eff14
 	ldr r4, [sp, #0x128]
 	str r0, [r4]
 	ldr r0, _0813E2EC @ =FUN_080e72b0
@@ -8300,7 +8300,7 @@ _0813E2D8: .4byte FUN_080f0430
 _0813E2DC: .4byte 0x085AD470
 _0813E2E0: .4byte FUN_080e73c8
 _0813E2E4: .4byte FUN_080f0320
-_0813E2E8: .4byte FUN_080eff14
+_0813E2E8: .4byte Enemy_080eff14
 _0813E2EC: .4byte FUN_080e72b0
 _0813E2F0: .4byte FUN_080f47c8
 _0813E2F4: .4byte FUN_080f54e4

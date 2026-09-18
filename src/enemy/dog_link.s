@@ -19583,7 +19583,7 @@ _081CF30C:
 	ldr r1, _081CF514 @ =FUN_080f0320
 	ldr r5, [sp, #0x190]
 	str r1, [r5]
-	ldr r1, _081CF518 @ =FUN_080eff14
+	ldr r1, _081CF518 @ =Enemy_080eff14
 	ldr r6, [sp, #0x13c]
 	str r1, [r6]
 	ldr r1, _081CF51C @ =FUN_080e72b0
@@ -19723,7 +19723,7 @@ _081CF508: .4byte FUN_080f0430
 _081CF50C: .4byte 0x085AD470
 _081CF510: .4byte FUN_080e73c8
 _081CF514: .4byte FUN_080f0320
-_081CF518: .4byte FUN_080eff14
+_081CF518: .4byte Enemy_080eff14
 _081CF51C: .4byte FUN_080e72b0
 _081CF520: .4byte FUN_080f47c8
 _081CF524: .4byte FUN_080f54e4

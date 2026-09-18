@@ -228,6 +228,10 @@ SECTIONS {
 			src/entity_c814.o (.text);
 			src/code_080c5058.o (.text);
 			src/entity_080ddf88.o (.text);
+			src/entity_080df420.o (.text);
+			src/code_080df46c.o (.text);
+			src/entity_ec2a.o (.text);
+			src/enemy_080ef84c.o (.text);
 			src/enemy/boku.o (.text);
 			src/enemy/skeleton.o (.text);
 			src/enemy/golem.o (.text);
