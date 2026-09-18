@@ -11,6 +11,9 @@ static_assert(sizeof(EntityB8B9) == 32);
 
 IWRAM_DATA EntityB8B9* gEntityB8B9 = NULL;  // 0x030016F8
 
+// 実体は src/code_082326a0.c
+void FUN_0823280c(void* p, Vec3* pos);
+
 void FUN_0823b1ec(void) { gEntityB8B9 = NULL; }
 
 void FUN_0823b1f8(Entity2UnkData* p) {
@@ -115,7 +118,13 @@ EntityB8B9* FUN_0823b3ec(void) {
 
 NAKED s32 FUN_0823b400(Entity2UnkData* p, u32 id, u32* unk_8, u32 unk_5, u32 unk_4, void* owner) { INCFUNC("asm/func/FUN_0823b400.inc"); }
 
-NAKED bool32 FUN_0823b43c(Entity2UnkData* p, u32 unk_18, u16 unk_1c, u16 unk_1e) { INCFUNC("asm/func/FUN_0823b43c.inc"); }
+bool32 FUN_0823b43c(Entity2UnkData* p, void* unk_18, u16 unk_1c, u16 unk_1e) {
+  p->unk_18 = unk_18;
+  FUN_0823280c(unk_18, &p->pos);
+  p->unk_1c = unk_1c;
+  p->unk_1e = unk_1e;
+  return TRUE;
+}
 
 bool32 FUN_0823b464(Entity2UnkData* p, u32 unk_20) {
   p->unk_20 = unk_20;
