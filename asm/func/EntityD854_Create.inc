@@ -11,12 +11,12 @@
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080F9BE4
-	ldr r1, _080F9BDC @ =FUN_080f9b5c
+	ldr r1, _080F9BDC @ =EntityD854_Update
 	ldr r2, _080F9BE0 @ =0x080F9B75
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_080f9b80
+	bl EntityD854_Init
 	cmp r0, #0
 	bge _080F9BE4
 	adds r0, r4, #0
@@ -25,7 +25,7 @@
 	b _080F9BE6
 	.align 2, 0
 _080F9BD8: .4byte 0x03000184
-_080F9BDC: .4byte FUN_080f9b5c
+_080F9BDC: .4byte EntityD854_Update
 _080F9BE0: .4byte 0x080F9B75
 _080F9BE4:
 	adds r0, r4, #0
