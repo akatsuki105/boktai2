@@ -209,7 +209,28 @@ NAKED void FUN_080ed8f0(void) { INCFUNC("asm/func/FUN_080ed8f0.inc"); }
 
 NAKED void FUN_080ed9d0(void) { INCFUNC("asm/func/FUN_080ed9d0.inc"); }
 
-NAKED void FUN_080eda24(void) { INCFUNC("asm/func/FUN_080eda24.inc"); }
+void FUN_080eda24(void) {
+  EnemyListNode* node;
+  Enemy* p;
+  s32 val;
+  EnemyFlags3 mask;
+
+  if (GetEnemyManager() != NULL) {
+    node = gEnemyListHead;
+    p = node->enemy;
+    val = VM_GetKeywordValue('d', 0);
+    if (p != NULL) {
+      mask = ENEFLAG3_UNK_14;
+      do {
+        if ((FUN_080e8a60(p) == 0) && ((p->flags3 & mask) != 0)) {
+          FUN_080ecbe8(p, val);
+        }
+        node = node->next;
+        p = node->enemy;
+      } while (p != NULL);
+    }
+  }
+}
 
 NAKED void FUN_080eda7c(void) { INCFUNC("asm/func/FUN_080eda7c.inc"); }
 
