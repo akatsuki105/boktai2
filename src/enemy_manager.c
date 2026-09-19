@@ -229,7 +229,22 @@ s32 EnemyManager_Init(EnemyManager* p, u16 msgRecordID, u32 _) {
   gEnemyManager = p;
 }
 
-NAKED EnemyManager* EnemyManager_Create(u16 msgRecordID, u16 _) { INCFUNC("asm/func/EnemyManager_Create.inc"); }
+EnemyManager* EnemyManager_Create(u16 msgRecordID, u16 _) {
+  EnemyManager* p;
+
+  if (gEnemyManager != NULL) {
+    return gEnemyManager;
+  }
+  p = CreateEntity(ENTITY_UNK_8, sizeof(EnemyManager));
+  if (p != NULL) {
+    SetEntityRoutine(p, EnemyManager_Update, EnemyManager_Destroy);
+    if (EnemyManager_Init(p, msgRecordID, _) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
 
 void FUN_080eeb08(void) { gEnemyManager = NULL; }
 
