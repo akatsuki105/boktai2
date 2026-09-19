@@ -26,3 +26,43 @@ extern EnemyManager* gEnemyManager;  // 0x03002C5C
 INCASM("asm/enemy_manager.inc");
 
 // 後続の enemy_080ef84c.c も enemy_manager.c に含めるかは不明
+
+NAKED void FUN_080ee9d4(EnemyManager* p) { INCFUNC("asm/func/FUN_080ee9d4.inc"); }
+
+NAKED s32 EnemyManager_Update(EnemyManager* p) { INCFUNC("asm/func/EnemyManager_Update.inc"); }
+
+NAKED s32 EnemyManager_Destroy(EnemyManager* p) { INCFUNC("asm/func/EnemyManager_Destroy.inc"); }
+
+NAKED s32 EnemyManager_Init(EnemyManager* p, u16 msgRecordID, u32 _) { INCFUNC("asm/func/EnemyManager_Init.inc"); }
+
+NAKED EnemyManager* EnemyManager_Create(u16 msgRecordID, u16 _) { INCFUNC("asm/func/EnemyManager_Create.inc"); }
+
+NAKED void FUN_080eeb08(void) { INCFUNC("asm/func/FUN_080eeb08.inc"); }
+
+NAKED void FUN_080eeb14(u32 plttDst, u32 plttSrc, u32 _, u8 kind, u32 immediate) { INCFUNC("asm/func/FUN_080eeb14.inc"); }
+
+NAKED bool32 FUN_080eec74(EnemyManager* p, Enemy* enemy) { INCFUNC("asm/func/FUN_080eec74.inc"); }
+
+NAKED bool32 FUN_080eee70(void) { INCFUNC("asm/func/FUN_080eee70.inc"); }
+
+NAKED void FUN_080eeee0(void) { INCFUNC("asm/func/FUN_080eeee0.inc"); }
+
+NAKED void FUN_080eef6c(Enemy* p) { INCFUNC("asm/func/FUN_080eef6c.inc"); }
+
+NAKED void FUN_080eefec(void) { INCFUNC("asm/func/FUN_080eefec.inc"); }
+
+NAKED void FUN_080ef048(void) { INCFUNC("asm/func/FUN_080ef048.inc"); }
+
+NAKED void FUN_080ef154(void) { INCFUNC("asm/func/FUN_080ef154.inc"); }
+
+NAKED void FUN_080ef4e4(void) { INCFUNC("asm/func/FUN_080ef4e4.inc"); }
+
+NAKED void FUN_080ef534(void) { INCFUNC("asm/func/FUN_080ef534.inc"); }
+
+NAKED void FUN_080ef55c(void) { INCFUNC("asm/func/FUN_080ef55c.inc"); }
+
+NAKED void FUN_080ef584(void) { INCFUNC("asm/func/FUN_080ef584.inc"); }
+
+NAKED void FUN_080ef5a8(void) { INCFUNC("asm/func/FUN_080ef5a8.inc"); }
+
+NAKED EnemyManager* GetEnemyManager(void) { INCFUNC("asm/func/GetEnemyManager.inc"); }
