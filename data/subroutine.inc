@@ -387,7 +387,7 @@ gSubroutineTable:
 	.4byte 0x9700, FUN_080e16f4
 	.4byte 0x9763, FUN_0807d438
 	.4byte 0x9769, FUN_0823be10
-	.4byte 0x980B, CreatePlayer_080d82ec
+	.4byte 0x980B, Player080d82ec_Create
 	.4byte 0x9817, FUN_0808fcb4
 	.4byte 0x983A, FUN_080e028c
 	.4byte 0x98EC, EnemyGolem_Create
