@@ -14,13 +14,13 @@
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080EEB00
-	ldr r1, _080EEAF8 @ =EntityEC2A_Update
-	ldr r2, _080EEAFC @ =EntityEC2A_Destroy
+	ldr r1, _080EEAF8 @ =EnemyManager_Update
+	ldr r2, _080EEAFC @ =EnemyManager_Destroy
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r6, #0
 	adds r2, r5, #0
-	bl EntityEC2A_Init
+	bl EnemyManager_Init
 	cmp r0, #0
 	bge _080EEB00
 	adds r0, r4, #0
@@ -29,8 +29,8 @@
 	b _080EEB02
 	.align 2, 0
 _080EEAF4: .4byte 0x03002C5C
-_080EEAF8: .4byte EntityEC2A_Update
-_080EEAFC: .4byte EntityEC2A_Destroy
+_080EEAF8: .4byte EnemyManager_Update
+_080EEAFC: .4byte EnemyManager_Destroy
 _080EEB00:
 	adds r0, r4, #0
 _080EEB02:

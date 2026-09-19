@@ -13,7 +13,7 @@
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080EC5E8
-	bl FUN_080ef840
+	bl GetEnemyManager
 	cmp r0, #0
 	beq _080EC5E8
 	strh r6, [r4]

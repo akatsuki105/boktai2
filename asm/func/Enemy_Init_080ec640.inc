@@ -1,6 +1,6 @@
 	push {r4, r5, r6, r7, lr}
 	adds r5, r0, #0
-	bl FUN_080ef840
+	bl GetEnemyManager
 	adds r6, r0, #0
 	cmp r6, #0
 	beq _080EC69A

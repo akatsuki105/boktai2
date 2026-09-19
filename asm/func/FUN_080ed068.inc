@@ -1,5 +1,5 @@
 	push {r4, r5, r6, lr}
-	bl FUN_080ef840
+	bl GetEnemyManager
 	ldr r0, _080ED0AC @ =0x03002C60
 	ldr r5, [r0]
 	ldr r4, [r5, #4]

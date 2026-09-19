@@ -2,7 +2,7 @@
 	mov r7, sb
 	mov r6, r8
 	push {r6, r7}
-	bl FUN_080ef840
+	bl GetEnemyManager
 	ldr r0, _080ED7DC @ =0x03002C60
 	ldr r5, [r0]
 	ldr r4, [r5, #4]

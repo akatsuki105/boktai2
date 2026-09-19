@@ -603,7 +603,7 @@ gSubroutineTable:
 	.4byte 0xEB42, FUN_0809e54c
 	.4byte 0xEBFF, FUN_080a5a18
 	.4byte 0xEC1F, FUN_08231bcc
-	.4byte 0xEC2A, EntityEC2A_Create
+	.4byte 0xEC2A, EnemyManager_Create
 	.4byte 0xEC5B, FUN_0823a910
 	.4byte 0xEC96, EntityEC96_Create
 	.4byte 0xED07, EntityED07_Create

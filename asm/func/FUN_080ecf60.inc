@@ -1,6 +1,6 @@
 	push {r4, r5, r6, r7, lr}
 	adds r4, r0, #0
-	bl FUN_080ef840
+	bl GetEnemyManager
 	ldr r0, _080ECFB4 @ =0x03002C60
 	ldr r2, [r0]
 	ldr r1, [r2, #4]

@@ -34,7 +34,7 @@ static_assert(sizeof(EnemySpriteData) == 128);
   u8 unk_1e0[0x25D - 0x1E0]; /* 0x1E0 */                                                                        \
   u8 spriteKind;             /* 0x25D, 0 なら sprite を AuxSprite 系、非0なら MainSprite 系として扱う */        \
   u8 unk_25e[0x260 - 0x25E]; /* 0x25E */                                                                        \
-  void* unk_260;             /* 0x260, FUN_080eca74 が EntityEC2A.sharedEntity の値を書き込む */                \
+  void* unk_260;             /* 0x260, FUN_080eca74 が EnemyManager.sharedEntity の値を書き込む */              \
   void* unk_264;             /* 0x264, 同上 (kind==0x0E のとき) */                                              \
   u8 unk_268[0x46F - 0x268]; /* 0x268 */                                                                        \
   u8 unk_46f;                /* 0x46F, FUN_080edebc が非0を条件にする */                                        \

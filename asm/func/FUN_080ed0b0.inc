@@ -5,7 +5,7 @@
 	push {r5, r6, r7}
 	sub sp, #0x20
 	str r0, [sp, #0x14]
-	bl FUN_080ef840
+	bl GetEnemyManager
 	ldr r0, _080ED0C8 @ =0x03002C60
 	b _080ED532
 	.align 2, 0

@@ -188,21 +188,21 @@ FUN_080ee738: @ 0x080EE738
 FUN_080ee9d4: @ 0x080EE9D4
   .include "asm/func/FUN_080ee9d4.inc"
 
-	thumb_func_start EntityEC2A_Update
-EntityEC2A_Update: @ 0x080EEA24
-  .include "asm/func/EntityEC2A_Update.inc"
+	thumb_func_start EnemyManager_Update
+EnemyManager_Update: @ 0x080EEA24
+  .include "asm/func/EnemyManager_Update.inc"
 
-	thumb_func_start EntityEC2A_Destroy
-EntityEC2A_Destroy: @ 0x080EEA64
-  .include "asm/func/EntityEC2A_Destroy.inc"
+	thumb_func_start EnemyManager_Destroy
+EnemyManager_Destroy: @ 0x080EEA64
+  .include "asm/func/EnemyManager_Destroy.inc"
 
-	thumb_func_start EntityEC2A_Init
-EntityEC2A_Init: @ 0x080EEA84
-  .include "asm/func/EntityEC2A_Init.inc"
+	thumb_func_start EnemyManager_Init
+EnemyManager_Init: @ 0x080EEA84
+  .include "asm/func/EnemyManager_Init.inc"
 
-	thumb_func_start EntityEC2A_Create
-EntityEC2A_Create: @ 0x080EEAB0
-  .include "asm/func/EntityEC2A_Create.inc"
+	thumb_func_start EnemyManager_Create
+EnemyManager_Create: @ 0x080EEAB0
+  .include "asm/func/EnemyManager_Create.inc"
 
 	thumb_func_start FUN_080eeb08
 FUN_080eeb08: @ 0x080EEB08
@@ -260,7 +260,7 @@ FUN_080ef584: @ 0x080EF584
 FUN_080ef5a8: @ 0x080EF5A8
   .include "asm/func/FUN_080ef5a8.inc"
 
-	thumb_func_start FUN_080ef840
-FUN_080ef840: @ 0x080EF840
-  .include "asm/func/FUN_080ef840.inc"
+	thumb_func_start GetEnemyManager
+GetEnemyManager: @ 0x080EF840
+  .include "asm/func/GetEnemyManager.inc"
 
