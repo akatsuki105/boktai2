@@ -150,7 +150,20 @@ NAKED void FUN_080ee738(Enemy* p) { INCFUNC("asm/func/FUN_080ee738.inc"); }
 
 NAKED void FUN_080ee9d4(EnemyManager* p) { INCFUNC("asm/func/FUN_080ee9d4.inc"); }
 
-NAKED s32 EnemyManager_Update(EnemyManager* p) { INCFUNC("asm/func/EnemyManager_Update.inc"); }
+s32 EnemyManager_Update(EnemyManager* p) {
+  u32 mask;
+
+  FUN_080ee254();
+  FUN_080ec8a4(p);
+  FUN_080ec92c(p);
+  FUN_080ec9b0(p);
+  FUN_080edebc(p);
+  FUN_080ee9d4(p);
+  mask = ~0x1C000;
+  p->flags &= mask;
+  p->frameCounter++;
+  return 0;
+}
 
 s32 EnemyManager_Destroy(EnemyManager* p) {
   FUN_080ee218();
