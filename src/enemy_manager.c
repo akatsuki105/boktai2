@@ -49,7 +49,7 @@ NAKED void FUN_080ec9b0(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec9b0.inc");
 
 NAKED void FUN_080eca74(EnemyManager* p, Enemy* enemy) { INCFUNC("asm/func/FUN_080eca74.inc"); }
 
-NAKED void FUN_080ecbe4(void) { INCFUNC("asm/func/FUN_080ecbe4.inc"); }
+void FUN_080ecbe4(void) {}
 
 NAKED void FUN_080ecbe8(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080ecbe8.inc"); }
 
