@@ -223,6 +223,23 @@ Three rules keep this file usable:
 - **Frequency**: `GetFile`, `GetTilemapFile`.
 - `GetFile(FileID directoryID, FileID fileID)` rewrites `fileID` in each `case` and passes the original to `GetAssetFile` at the end. The target truncates the incoming `fileID` into `r1`, copies it to `r7` (`adds r7, r1, #0`), and at the call moves `r7` into `r2` first, before building the 4th argument. A copy declared `FileID file = fileID;` either swapped `r1`/`r7` or moved `r2` last. Declaring the copy as `u32 file = fileID;` (found by the permuter as `int`) matched.
 
+### agbcc does not rotate loops: a guard plus `do/while` is a different shape from `while`
+
+- **Frequency**: `FUN_080ed068`.
+- `while (p != NULL) { ... }` and `for (node = head; (p = node->enemy) != NULL; node = node->next)`
+  both compile to a `b` into the test at the bottom — the test is never peeled.
+  When the target instead evaluates the condition once before the loop
+  (`ldr` / `cmp` / `beq end`) and ends with `bne` back to the top, the source was
+  an explicit guard around a `do/while`:
+  `p = node->enemy; if (p != NULL) { do { ... } while (p != NULL); }`.
+- This also decides where a loop-invariant constant lands. Inside the guard,
+  `flag = 0x1000;` is emitted between the `beq` and the loop head, which is
+  where the target has it; initialising it at the declaration hoists it to
+  function entry instead, before the first call.
+- The enemy list walkers in `enemy_manager.c` are nearly all this shape
+  (`FUN_080ecf18`, `FUN_080ecf60`, `FUN_080ed020`, `FUN_080ed724`, `FUN_080eda7c`),
+  so check which of the two shapes the target has before writing the loop.
+
 ### Two loops sharing one counter variable shift the register allocation
 
 - **Frequency**: `LevelUpper_Update`.

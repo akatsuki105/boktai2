@@ -27,6 +27,9 @@ extern EnemyManager* gEnemyManager;  // 0x03002C5C
 
 // 実体は src/code_080917e4.s
 u32 FUN_080a0808(void);
+u8 FUN_080e8a60(Enemy* p);
+
+EnemyManager* GetEnemyManager(void);
 
 // 番兵ノードを1つ確保してリストを空の状態にする
 void EnemyManager_InitList(EnemyManager* p) {
@@ -113,7 +116,26 @@ NAKED s32 FUN_080ecfbc(u32 kind, u32 unk_480) { INCFUNC("asm/func/FUN_080ecfbc.i
 
 NAKED Enemy* FUN_080ed020(void) { INCFUNC("asm/func/FUN_080ed020.inc"); }
 
-NAKED void FUN_080ed068(void) { INCFUNC("asm/func/FUN_080ed068.inc"); }
+void FUN_080ed068(void) {
+  EnemyListNode* node;
+  Enemy* p;
+  u32 flag;
+
+  GetEnemyManager();
+  node = gEnemyListHead;
+  p = node->enemy;
+  if (p != NULL) {
+    flag = 0x1000;
+    do {
+      if (FUN_080e8a60(p) == 0) {
+        p->unk_184 = 0;
+        p->flags |= flag;
+      }
+      node = node->next;
+      p = node->enemy;
+    } while (p != NULL);
+  }
+}
 
 NAKED void FUN_080ed0b0(s32 param_1) { INCFUNC("asm/func/FUN_080ed0b0.inc"); }
 
