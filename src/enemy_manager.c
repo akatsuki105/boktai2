@@ -151,4 +151,4 @@ NAKED void FUN_080ef584(void) { INCFUNC("asm/func/FUN_080ef584.inc"); }
 
 NAKED void FUN_080ef5a8(void) { INCFUNC("asm/func/FUN_080ef5a8.inc"); }
 
-NAKED EnemyManager* GetEnemyManager(void) { INCFUNC("asm/func/GetEnemyManager.inc"); }
+EnemyManager* GetEnemyManager(void) { return gEnemyManager; }
