@@ -218,6 +218,7 @@ Strongest first. Most of these produced a confirmed field on this project.
 | `scripts/run_ghidra_script.ts <file.java> [args...]` | Run a GhidraScript in the GUI; prints only its output, exit 1 on build/runtime error. `--raw` for the full response. |
 | `scripts/TypeUsers.java <Type> [bytesAfter]` | Everything that uses a type, with the bytes after each embedding. |
 | `scripts/StructCandidates.java <size\|-> [HeadType]` | Existing structs that might be the unknown one. |
+| `scripts/MergeSplitTail.java <parent> <fake> <end>` | Merge a function Ghidra split off a parent's shared epilogue back into it (bare hex, no `0x`). Guards and aborts on anything unexpected; does not save. See `docs/for-ai-agent/ghidra-split-functions.md`. |
 | `scripts/check_decomp.ts [--quiet] <func...>` | Decompile and count unresolved raw-offset lines. |
 
 Repo tools on the same server: `tools/ghidra/decompile.ts`, `tools/ghidra/pcode.ts`,

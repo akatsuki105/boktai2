@@ -62,13 +62,28 @@ function at the branch target (observed on `FUN_080ff048`, which came back as
    trailing pool constants are data and stay outside the body, the same as
    every other gap in a fragmented body.
 
-Guard the script on the exact "before" state (parent name, parent's current
-max address, the fake function's exact body range) and verify that the range
-belongs to nobody before calling `setBody`. Verify the decompile afterwards —
-it should have no call to the deleted name, no `halt_baddata`, and a normal
-`return` at the end — and only then `POST /save_program`. A
-`Possible PIC construction ... Changing call to branch` warning in the
-decompile output is the expected result of step 1, not a problem.
+All three steps, with those guards, are in
+`.claude/skills/ghidra-struct/scripts/MergeSplitTail.java`:
+
+```sh
+.claude/skills/ghidra-struct/scripts/run_ghidra_script.ts \
+  .claude/skills/ghidra-struct/scripts/MergeSplitTail.java <parent> <fake> <end>
+```
+
+All three arguments are bare hex addresses with no `0x`. `end` is the parent's
+last instruction — read it off the parent's `asm/func/*.inc`, which already has
+the whole range, and stop before the trailing `.align`/pool constants. The
+script aborts without touching anything if the parent's body already reaches
+past `fake`, if `fake` is not a function, if the fake body runs past `end`, if
+`end` lands inside the next function, if a reference comes from outside the
+parent, or if anything else owns part of the range.
+
+It does not save. Verify the decompile first — it should have no call to the
+deleted name, no `halt_baddata`, and a normal `return` at the end — and only
+then `POST /save_program`. A `Possible PIC construction ... Changing call to
+branch` warning in the decompile output is the expected result of step 1, not a
+problem. Nothing is written to the project until that save, so closing Ghidra
+without saving is always a way back.
 
 ## Fixed so far
 
@@ -76,6 +91,7 @@ decompile output is the expected result of step 1, not a problem.
 |---|---|---|
 | `FUN_080ff048` | `FUN_080fe7f4` | `[080FF048, 080FF05B]` |
 | `FUN_080fe198` | `FUN_080fd08c` | `[080FE198, 080FE1A7]` |
+| `FUN_080f9a24` | `FUN_080f8f04` | `[080F9A24, 080F9A35]` |
 
 `FUN_080ff048` also needed a repository-side fix, because the extraction had
 already split it into its own `asm/func/FUN_080ff048.inc`: its contents were
@@ -86,7 +102,7 @@ as `b` would change the instruction length and break the match.
 
 ## Remaining candidates
 
-130 entries as of 2026-09-19, after the two fixes above. Regenerate with the
+129 entries as of 2026-09-19, after the three fixes above. Regenerate with the
 command above rather than trusting this list once work starts on it. Runs of
 addresses a few bytes apart (`080EAFC0` / `080EAFCE` / `080EAFD2`) are the
 typical shape.
@@ -113,7 +129,6 @@ typical shape.
 080ec406
 080f51e0
 080f83ec
-080f9a24
 080fd07c
 08100a02
 08101948
