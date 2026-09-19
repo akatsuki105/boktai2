@@ -45,7 +45,21 @@ NAKED bool32 Enemy_Init_080ec640(Enemy* enemy) { INCFUNC("asm/func/Enemy_Init_08
 
 NAKED void FUN_080ec6fc(Enemy* enemy) { INCFUNC("asm/func/FUN_080ec6fc.inc"); }
 
-NAKED void FUN_080ec758(u8 kind, void* payload) { INCFUNC("asm/func/FUN_080ec758.inc"); }
+// 全ての敵へメッセージを配送する
+void FUN_080ec758(u8 kind, void* payload) {
+  EnemyListNode* node = gEnemyListHead;
+  Enemy* p;
+
+  if (node != NULL) {
+    while (node->next != NULL) {
+      p = node->enemy;
+      if ((kind == 0) && (p->handlerMsg != NULL)) {
+        p->handlerMsg(p, payload);
+      }
+      node = node->next;
+    }
+  }
+}
 
 NAKED void FUN_080ec79c(u8 kind, void* payload) { INCFUNC("asm/func/FUN_080ec79c.inc"); }
 

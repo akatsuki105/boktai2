@@ -16,6 +16,9 @@ static_assert(sizeof(EnemySpriteData) == 128);
 // handlerUpdate / handlerDestroy の型. 引数は unk_1cc ひとつで、戻り値は誰も使っていない
 typedef void (*EnemyHandler)(void* p);
 
+// handlerMsg の型. FUN_080ec758 / FUN_080ec79c / FUN_080ec848 が (enemy, payload) で呼ぶ
+typedef void (*EnemyMsgHandler)(void* p, void* payload);
+
 // 各エネミー共通部. 最小のエネミー(Mimic)が1684バイトなのに対しここは0x654=1620バイトあり、構造体のほとんどが共通部分だとわかる
 // サイズの根拠: Enemy_Init_080f3680 が 0x62C から 0x650 まで10本のテーブルポインタを書き込む
 #define ENEMY_HDR                                                                                                     \
@@ -74,7 +77,7 @@ typedef void (*EnemyHandler)(void* p);
   u32 unk_560;                 /* 0x560, flags2 の初期値. 同じく flags2 へコピーされる */                             \
   u8 unk_564[0x578 - 0x564];   /* 0x564 */                                                                            \
   void* handlerState;          /* 0x578, 状態ハンドラ. Thumb のコードアドレスが入る */                                \
-  void* handlerMsg;            /* 0x57C, FUN_080ec758/080ec79c/080ec848 が (enemy, payload) で呼ぶ */                 \
+  EnemyMsgHandler handlerMsg;            /* 0x57C, FUN_080ec758/080ec79c/080ec848 が (enemy, payload) で呼ぶ */                 \
   u8 unk_580[0x5C0 - 0x580];   /* 0x580 */                                                                            \
   void* unk_5c0;               /* 0x5C0, 既定の状態ハンドラ. FUN_080ed724 が handlerState へコピーする */             \
   u8 unk_5c4[0x600 - 0x5C4];   /* 0x5C4 */                                                                            \
