@@ -144,7 +144,15 @@ s32 EnemyManager_Destroy(EnemyManager* p) {
   return 0;
 }
 
-NAKED s32 EnemyManager_Init(EnemyManager* p, u16 msgRecordID, u32 _) { INCFUNC("asm/func/EnemyManager_Init.inc"); }
+// 戻り値を設定しないまま返る。呼び出し元の EnemyManager_Create は戻り値が負かどうかを見ている
+s32 EnemyManager_Init(EnemyManager* p, u16 msgRecordID, u32 _) {
+  p->msgRecordID = msgRecordID;
+  p->frameCounter = 0;
+  p->enemyCount = 0;
+  p->unk_30 = 3;
+  EnemyManager_InitList(p);
+  gEnemyManager = p;
+}
 
 NAKED EnemyManager* EnemyManager_Create(u16 msgRecordID, u16 _) { INCFUNC("asm/func/EnemyManager_Create.inc"); }
 
