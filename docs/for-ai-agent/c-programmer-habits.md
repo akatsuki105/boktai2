@@ -36,3 +36,30 @@ compiler-forced one) in a function that just reached MATCHING:
 - **Seen in**: `Entity080de11c_Create` (entity_080ddf88.c), `GameOverManager_Create` (gameover.c), `EntityAF33_Create` (entity_af33.c), `Entity4DDF_Create` (entity_4ddf.c), `UnkSolarEntity_Create` (solar.c), `LevelUpper_Create` (level_upper.c), `Entity0866_Create` (entity_0866.c), `Entity6367_Create` (entity_6367.c), `Entity0800f110_Create` (entity_0800f110.c), `Duneyrr_Create` (boss/duneyrr.c), `Dvalinn_Create` (boss/dvalinn.c), `Entity0623_Create` (boss/entity_0623.c), `BossShadeMan_Create` (boss/shademan.c)
 - **Description**: every `X_Create` has the same body — `p = CreateEntity(ENTITY_KIND, sizeof(X));` then `if (p != NULL) { SetEntityRoutine(p, X_Update, X_Destroy); if (X_Init(p) < 0) { KillEntity((Entity*)p); return NULL; } }` then `return p;`. Write it verbatim from a matched sibling before analyzing the asm; the only per-function choices are the entity kind, the size argument (`sizeof(X)` vs a bare number — both appear), and whether `X_Init` takes extra arguments.
 - Singleton entities add a global guard, and the two spellings are NOT interchangeable — they differ in branch direction (see `agbcc-quirks.md`). `if (g == NULL) { ...body...; return p; } return g;` (`Entity080de11c_Create`, `UnkSolarEntity_Create`, `LevelUpper_Create`, `Entity0800f110_Create`) vs the early return `if (g != NULL) { return g; }` followed by the unindented body (`GameOverManager_Create`, and the boss files where the "existing instance" comes from `FUN_08022a2c(BOSS_*)` rather than a global: `Duneyrr_Create`, `Dvalinn_Create`, `BossShadeMan_Create`). Pick whichever puts the allocation on the fall-through path in the target.
+
+### Bit set / clear / test goes through a `static inline` helper, never a bare `|=`
+
+- **Frequency**: 5 files define such helpers; 4 functions verified to need the shape
+- **Seen in**: `EnableEntityFlags` / `DisableEntityFlags` / `TestFlag030047a4` (entity_0823acbc.c), `ClearHitboxFlags` (entity_ec96.c), `TestHitboxUnk38` (solar_bamboo.c), `Entity28CB_SetState` (entity_28cb.c), `Enemy_SetFlag` / `Enemy_SetFlag2` / `Enemy_ClearFlag2` / `Enemy_SetFlag4` (include/enemy.h) used by `FUN_080ef4e4`, `Enemy_Sleep`, `FUN_080ec92c`, `FUN_080ed068` (enemy_manager.c)
+- **Description**: these developers did not write `p->flags |= BIT;` at the call
+  site. They wrote a one-line `static inline` taking the struct pointer and the
+  mask, and called that. `data.c` contains the string
+  `"../enemy/system/eneinline.h"`, so the enemy code had a whole header of them.
+- Unlike most entries here, this one **is** visible in the asm, because the
+  helper's parameter survives inlining as a local: the mask is materialised into
+  its own register *before* the field is loaded, and two call sites in the two
+  arms of one `if` keep their stores separate instead of being cross-jumped into
+  one. Writing `bit = MASK; p->flags |= bit;` by hand reproduces the bytes, but
+  it is the expansion, not the source — prefer the helper.
+- The parameter must be the **mask**, and the helper must take the **struct
+  pointer**. Two near-misses, both of which stop matching:
+  `static inline void f(u32* field, u32 bit) { *field |= bit; }` called with
+  `&p->flags` makes both arms identical so the stores merge, and
+  `static inline void f(T* p, s32 bitidx) { p->flags |= (1 << bitidx); }` folds
+  the shift at compile time so the parameter disappears entirely.
+- One helper per field, not per width — `Enemy` needs a separate pair for
+  `flags`, `flags2`, `flags4`, even though `flags` and `flags2` are both `u32`.
+- The read side exists too and comes in two flavours: returning the masked value
+  (`TestHitboxUnk38`, `TestFlag030047a4`) and returning a `bool32`. Which one a
+  given call site used is still open — see `stuck-points.md` for functions whose
+  only remaining difference is a materialised boolean.
