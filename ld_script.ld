@@ -227,6 +227,7 @@ SECTIONS {
 			src/boss/jormungandr.o (.text);
 			src/entity_e06a.o (.text);
 			src/entity_c814.o (.text);
+			src/entity_080cbabc.o (.text);
 			src/code_080c5058.o (.text);
 			src/entity_080ddf88.o (.text);
 			src/entity_080df420.o (.text);
