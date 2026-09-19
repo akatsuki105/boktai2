@@ -54,7 +54,8 @@ IWRAM_DATA u8 u8_0300015c[24] = {};
 
 IWRAM_DATA struct Entity080de11c* gEntity080de11c = NULL;  // 0x03000174
 
-IWRAM_DATA u8 u8_03000178[0x188 - 0x178] = {};
+IWRAM_DATA u8 u8_03000178[0x184 - 0x178] = {};
+IWRAM_DATA struct EntityD854* gEntityD854 = NULL;  // 0x03000184
 
 IWRAM_DATA struct Entity081d0e20* gEntity081d0e20 = NULL;  // 0x03000188
 IWRAM_DATA struct Entity081d16ec* gEntity081d16ec = NULL;  // 0x0300018C
