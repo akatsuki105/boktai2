@@ -266,6 +266,7 @@ Three rules keep this file usable:
 
 ### A bit constant loaded before the field it is OR'd into needs its own local
 
-- **Frequency**: `FUN_0823b47c`.
+- **Frequency**: `FUN_0823b47c`, `FUN_080ec900`.
 - `p->flags |= 4;` emits `ldrh` then `movs r2, #4`; the target had `movs r2, #4` first and used that register as the `orrs` destination. Writing `4 | p->flags` does not help — agbcc canonicalises the constant to the right. Assigning it first (`u16 flag = 4; p->flags |= flag;`) puts the constant in its own register before the load and matches.
+- Holds for a global's field too, and inside an `if` body: `FUN_080ec900` needed `u16 flag = 1; gStat->unk_934 |= flag;` in the same shape.
 

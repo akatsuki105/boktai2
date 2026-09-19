@@ -52,7 +52,12 @@ NAKED void FUN_080ec848(u8 kind, void* payload, u16 id) { INCFUNC("asm/func/FUN_
 
 NAKED void FUN_080ec8a4(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec8a4.inc"); }
 
-NAKED void FUN_080ec900(u8 kind) { INCFUNC("asm/func/FUN_080ec900.inc"); }
+void FUN_080ec900(u8 kind) {
+  if ((kind == 1) || (kind == 0x19)) {
+    u16 flag = 1;
+    gStat->unk_934 |= flag;
+  }
+}
 
 NAKED void FUN_080ec92c(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec92c.inc"); }
 
