@@ -197,7 +197,30 @@ NAKED bool32 FUN_080edb4c(Enemy* p, Vec3* pos) { INCFUNC("asm/func/FUN_080edb4c.
 
 NAKED Enemy* FUN_080edc40(Vec3* pos) { INCFUNC("asm/func/FUN_080edc40.inc"); }
 
-NAKED Enemy* FUN_080edce8(u32 id) { INCFUNC("asm/func/FUN_080edce8.inc"); }
+NON_MATCH Enemy* FUN_080edce8(u32 id) {
+#ifdef NONMATCHING_C
+  EnemyListNode* node = gEnemyListHead;
+  Enemy* p = node->enemy;
+  u32 flag;
+
+  if (p != NULL) {
+    flag = 1;
+    do {
+      if (((p->flags & flag) == 0) && (id == 0)) {
+        return p;
+      }
+      if (p->unk_0.id == id) {
+        id = 0;
+      }
+      node = node->next;
+      p = node->enemy;
+    } while (p != NULL);
+  }
+  return NULL;
+#else
+  INCFUNC("asm/func/FUN_080edce8.inc");
+#endif
+}
 
 NAKED Enemy* FUN_080edd2c(u32 id) { INCFUNC("asm/func/FUN_080edd2c.inc"); }
 
