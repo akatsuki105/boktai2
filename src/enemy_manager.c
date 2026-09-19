@@ -64,7 +64,21 @@ void FUN_080ec758(u8 kind, void* payload) {
   }
 }
 
-NAKED void FUN_080ec79c(u8 kind, void* payload) { INCFUNC("asm/func/FUN_080ec79c.inc"); }
+// 指定した種族の敵へメッセージを配送する
+void FUN_080ec79c(u8 kind, void* payload) {
+  EnemyListNode* node = gEnemyListHead;
+  Enemy* p;
+
+  if (node != NULL) {
+    while (node->next != NULL) {
+      p = node->enemy;
+      if ((p->kind == kind) && (p->handlerMsg != NULL)) {
+        p->handlerMsg(p, payload);
+      }
+      node = node->next;
+    }
+  }
+}
 
 NAKED void FUN_080ec7e8(u8 kind, u8 unk_480, void* payload) { INCFUNC("asm/func/FUN_080ec7e8.inc"); }
 
