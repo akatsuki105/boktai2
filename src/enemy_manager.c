@@ -14,7 +14,7 @@ typedef struct EnemyManager {
   u16 unk_28;                   // 0x28, 読み手も書き手も未発見
   u16 frameCounter;             // 0x2A, EnemyManager_Update が毎フレーム +1
   u32 flags;                    // 0x2C, bit3/4/5/11/12=sharedEntity の生成済みフラグ, bit13=パレット遷移中, bit14/15/16=種族 0x0B/0x17/0x1B を今フレーム更新済み(Updateで毎回クリア), bit17=遷移でなく即時差し替え
-  u8 unk_30;                    // 0x30, EnemyManager_Init が 3、FUN_080ef584 が VM_GetKeywordValue(0x6C, 3) を代入. FUN_080ec5b4 がレコードの3語目へコピーする
+  u8 unk_30;                    // 0x30, EnemyManager_Init が 3、FUN_080ef584 が VM_GetKeywordValue('l', 3) を代入. FUN_080ec5b4 がレコードの3語目へコピーする
   u8 unk_31;                    // 0x31, 読み手も書き手も未発見
   s16 enemyCount;               // 0x32, Enemy_Init_080ec640 で +1 / FUN_080ec6fc で -1. 0x13 を超えると新規生成を拒否する
   Entity* sharedEntity[8];      // 0x34, FUN_080eca74 が種族に応じて生成する共有エンティティのキャッシュ. [0]=Entity080db520, [1]=FUN_081e8d0c, [2]=FUN_080da848, [6]=FUN_081ea120, [7]=FUN_081ea820
@@ -27,7 +27,6 @@ extern EnemyManager* gEnemyManager;  // 0x03002C5C
 
 // 実体は src/code_080917e4.s
 u32 FUN_080a0808(void);
-u8 FUN_080e8a60(Enemy* p);
 
 EnemyManager* GetEnemyManager(void);
 
@@ -44,9 +43,9 @@ void EnemyManager_InitList(EnemyManager* p) {
   p->cursor = node;
 }
 
-NAKED bool32 Enemy_Init_080ec640(Enemy* enemy) { INCFUNC("asm/func/Enemy_Init_080ec640.inc"); }
+NAKED bool32 Enemy_Init_080ec640(Enemy* p) { INCFUNC("asm/func/Enemy_Init_080ec640.inc"); }
 
-NAKED void FUN_080ec6fc(Enemy* enemy) { INCFUNC("asm/func/FUN_080ec6fc.inc"); }
+NAKED void FUN_080ec6fc(Enemy* p) { INCFUNC("asm/func/FUN_080ec6fc.inc"); }
 
 // 全ての敵へメッセージを配送する
 void FUN_080ec758(u8 kind, void* payload) {
@@ -417,9 +416,9 @@ void FUN_080ef4e4(void) {
   EnemyFlags2 mask;
   EnemyFlags2 bit;
 
-  id = VM_GetKeywordValue(0x6E, 0);
+  id = VM_GetKeywordValue('n', 0);
   if ((id != 0) && ((p = FindEnemyById(id)) != NULL)) {
-    if (VM_GetKeywordValue(0x66, 0) == 0) {
+    if (VM_GetKeywordValue('f', 0) == 0) {
       mask = ENEFLAG2_UNK_26;
       p->flags2 &= ~mask;
     } else {
@@ -433,7 +432,7 @@ void FUN_080ef534(void) {
   EnemyManager* p = gEnemyManager;
 
   if (p != NULL) {
-    p->flags |= (u16)VM_GetKeywordValue(0x73, 0);
+    p->flags |= (u16)VM_GetKeywordValue('s', 0);
   }
 }
 
@@ -441,7 +440,7 @@ void FUN_080ef55c(void) {
   EnemyManager* p = gEnemyManager;
 
   if (p != NULL) {
-    p->flags &= ~(u16)VM_GetKeywordValue(0x73, 0);
+    p->flags &= ~(u16)VM_GetKeywordValue('s', 0);
   }
 }
 
@@ -449,7 +448,7 @@ void FUN_080ef584(void) {
   EnemyManager* p = gEnemyManager;
 
   if (p != NULL) {
-    p->unk_30 = VM_GetKeywordValue(0x6C, 3);
+    p->unk_30 = VM_GetKeywordValue('l', 3);
   }
 }
 
