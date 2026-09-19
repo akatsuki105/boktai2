@@ -15,46 +15,45 @@ static_assert(sizeof(EnemySpriteData) == 128);
 
 // 各エネミー共通部. 最小のエネミー(Mimic)が1684バイトなのに対しここは0x624=1572バイトあり、構造体のほとんどが共通部分だとわかる
 // サイズの根拠: FUN_080ee218 が enemy+0x620 の関数ポインタを読む
-#define ENEMY_HDR                                                                                                        \
-  Entity2UnkData unk_0;              /* 0x000 */                                                                         \
-  EnemySpriteData* sprite;           /* 0x044 */                                                                         \
-  EntityMsgBox msgbox;               /* 0x048 */                                                                         \
-  u8 unk_7c[0x11C - 0x7C];           /* 0x07C */                                                                         \
-  u16 unk_11c;                       /* 0x11C, FUN_080edebc が 0 を書く */                                               \
-  u8 unk_11e[0x178 - 0x11E];         /* 0x11E */                                                                         \
-  u32 flags;                         /* 0x178, bit0/1=活動停止判定, bit3=FUN_080ec92c が毎フレーム1体だけに立てる */     \
-  u32 flags2;                        /* 0x17C, bit21=FUN_080edebc がパレット転送の向きとして反転させる */                \
-  u16 flags3;                        /* 0x180, bit14=FUN_080ec9b0 が立て FUN_080edebc が落とす */                        \
-  u16 flags4;                        /* 0x182, bit12 が立っていると FUN_080edebc が破棄側へ回す */                       \
-  s16 unk_184;                       /* 0x184, FUN_080ee254 が ldrsh で 1 未満かを判定 */                                \
-  u8 unk_186[0x1CC - 0x186];         /* 0x186 */                                                                         \
-  void* unk_1cc;                     /* 0x1CC, handlerUpdate/handlerDestroy の唯一の引数. 破棄時にこれが Free される */  \
-  u8 unk_1d0[0x1DF - 0x1D0];         /* 0x1D0 */                                                                         \
-  u8 kind;                           /* 0x1DF, 種族. 0x02/0x03/0x0B/0x0E/0x17/0x1B で分岐する */                         \
-  u8 unk_1e0[0x25D - 0x1E0];         /* 0x1E0 */                                                                         \
-  u8 spriteKind;                     /* 0x25D, 0 なら sprite を AuxSprite 系、非0なら MainSprite 系として扱う */         \
-  u8 unk_25e[0x260 - 0x25E];         /* 0x25E */                                                                         \
-  void* unk_260;                     /* 0x260, FUN_080eca74 が EntityEC2A.sharedEntity の値を書き込む */                 \
-  void* unk_264;                     /* 0x264, 同上 (kind==0x0E のとき) */                                               \
-  u8 unk_268[0x46F - 0x268];         /* 0x268 */                                                                         \
-  u8 unk_46f;                        /* 0x46F, FUN_080edebc が非0を条件にする */                                         \
-  u8 unk_470[0x478 - 0x470];         /* 0x470 */                                                                         \
-  u16 unk_478;                       /* 0x478, パレット番号. EnemySpriteData の +0x32 / +0x5A に書かれる */              \
-  u16 unk_47a;                       /* 0x47A, unk_480 と足して遷移先パレット番号になる */                               \
-  u8 unk_47c[0x480 - 0x47C];         /* 0x47C */                                                                         \
-  s16 unk_480;                       /* 0x480, FUN_080eca74 が 1 と比較 */                                               \
-  u8 unk_482[0x48E - 0x482];         /* 0x482 */                                                                         \
-  u8 unk_48e;                        /* 0x48E, FUN_080ec9b0 のカウントダウン */                                          \
-  u8 unk_48f;                        /* 0x48F */                                                                         \
-  u16 unk_490;                       /* 0x490, gStat->unk_248 と一致するかを FUN_080edebc が見る */                      \
-  u8 unk_492[0x4BE - 0x492];         /* 0x492 */                                                                         \
-  u16 unk_4be;                       /* 0x4BE, FUN_080edebc が 0 を書く */                                               \
-  u8 unk_4c0[0x57C - 0x4C0];         /* 0x4C0 */                                                                         \
-  void* handlerMsg;                  /* 0x57C, FUN_080ec758/080ec79c/080ec848 が (enemy, payload) で呼ぶ */              \
-  u8 unk_580[0x61C - 0x580];         /* 0x580 */                                                                         \
-  void* handlerUpdate;               /* 0x61C, FUN_080edebc が (unk_1cc) で毎フレーム呼ぶ */                             \
-  void* handlerDestroy;              /* 0x620, FUN_080ee218 が (unk_1cc) で呼び、その後 unk_1cc を Free する */
-// 個々のエネミーの解析をしていって共通部分がわかってきたらここにまとめていき、最後に個々のエネミーの共通部分を ENEMY_HDR で置き換える
+#define ENEMY_HDR                                                                                               \
+  Entity2UnkData unk_0;      /* 0x000 */                                                                        \
+  EnemySpriteData* sprite;   /* 0x044 */                                                                        \
+  EntityMsgBox msgbox;       /* 0x048 */                                                                        \
+  u8 unk_7c[0x11C - 0x7C];   /* 0x07C */                                                                        \
+  u16 unk_11c;               /* 0x11C, FUN_080edebc が 0 を書く */                                              \
+  u8 unk_11e[0x178 - 0x11E]; /* 0x11E */                                                                        \
+  u32 flags;                 /* 0x178, bit0/1=活動停止判定, bit3=FUN_080ec92c が毎フレーム1体だけに立てる */    \
+  u32 flags2;                /* 0x17C, bit21=FUN_080edebc がパレット転送の向きとして反転させる */               \
+  u16 flags3;                /* 0x180, bit14=FUN_080ec9b0 が立て FUN_080edebc が落とす */                       \
+  u16 flags4;                /* 0x182, bit12 が立っていると FUN_080edebc が破棄側へ回す */                      \
+  s16 unk_184;               /* 0x184, FUN_080ee254 が ldrsh で 1 未満かを判定 */                               \
+  u8 unk_186[0x1CC - 0x186]; /* 0x186 */                                                                        \
+  void* unk_1cc;             /* 0x1CC, handlerUpdate/handlerDestroy の唯一の引数. 破棄時にこれが Free される */ \
+  u8 unk_1d0[0x1DF - 0x1D0]; /* 0x1D0 */                                                                        \
+  u8 kind;                   /* 0x1DF, 種族. 0x02/0x03/0x0B/0x0E/0x17/0x1B で分岐する */                        \
+  u8 unk_1e0[0x25D - 0x1E0]; /* 0x1E0 */                                                                        \
+  u8 spriteKind;             /* 0x25D, 0 なら sprite を AuxSprite 系、非0なら MainSprite 系として扱う */        \
+  u8 unk_25e[0x260 - 0x25E]; /* 0x25E */                                                                        \
+  void* unk_260;             /* 0x260, FUN_080eca74 が EntityEC2A.sharedEntity の値を書き込む */                \
+  void* unk_264;             /* 0x264, 同上 (kind==0x0E のとき) */                                              \
+  u8 unk_268[0x46F - 0x268]; /* 0x268 */                                                                        \
+  u8 unk_46f;                /* 0x46F, FUN_080edebc が非0を条件にする */                                        \
+  u8 unk_470[0x478 - 0x470]; /* 0x470 */                                                                        \
+  u16 unk_478;               /* 0x478, パレット番号. EnemySpriteData の +0x32 / +0x5A に書かれる */             \
+  u16 unk_47a;               /* 0x47A, unk_480 と足して遷移先パレット番号になる */                              \
+  u8 unk_47c[0x480 - 0x47C]; /* 0x47C */                                                                        \
+  s16 unk_480;               /* 0x480, FUN_080eca74 が 1 と比較 */                                              \
+  u8 unk_482[0x48E - 0x482]; /* 0x482 */                                                                        \
+  u8 unk_48e;                /* 0x48E, FUN_080ec9b0 のカウントダウン */                                         \
+  u8 unk_48f;                /* 0x48F */                                                                        \
+  u16 unk_490;               /* 0x490, gStat->unk_248 と一致するかを FUN_080edebc が見る */                     \
+  u8 unk_492[0x4BE - 0x492]; /* 0x492 */                                                                        \
+  u16 unk_4be;               /* 0x4BE, FUN_080edebc が 0 を書く */                                              \
+  u8 unk_4c0[0x57C - 0x4C0]; /* 0x4C0 */                                                                        \
+  void* handlerMsg;          /* 0x57C, FUN_080ec758/080ec79c/080ec848 が (enemy, payload) で呼ぶ */             \
+  u8 unk_580[0x61C - 0x580]; /* 0x580 */                                                                        \
+  void* handlerUpdate;       /* 0x61C, FUN_080edebc が (unk_1cc) で毎フレーム呼ぶ */                            \
+  void* handlerDestroy;      /* 0x620, FUN_080ee218 が (unk_1cc) で呼び、その後 unk_1cc を Free する */
 
 typedef struct {
   ENEMY_HDR;  // 共通部分
