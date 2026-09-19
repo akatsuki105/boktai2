@@ -78,3 +78,4 @@ Just the function name (and file). No detail write-up.
 - `Entity081d0e20_Destroy` (`src/entity_081d0e20.c`)
 - `FUN_081d0c6c` (`src/entity_081d0e20.c`)
 - `FUN_081d0718` (`src/entity_081d0e20.c`)
+- `FUN_080ecf18` (`src/enemy_manager.c`)

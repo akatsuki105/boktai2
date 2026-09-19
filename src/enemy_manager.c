@@ -108,7 +108,31 @@ void FUN_080ecbe4(void) {}
 
 NAKED void FUN_080ecbe8(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080ecbe8.inc"); }
 
-NAKED s32 FUN_080ecf18(void) { INCFUNC("asm/func/FUN_080ecf18.inc"); }
+// 生きている敵の数を数える
+NON_MATCH s32 FUN_080ecf18(void) {
+#ifdef NONMATCHING_C
+  EnemyListNode* node;
+  Enemy* p;
+  s32 count;
+
+  GetEnemyManager();
+  node = gEnemyListHead;
+  p = node->enemy;
+  count = 0;
+  if (p != NULL) {
+    do {
+      if ((p->unk_184 > 0) && ((p->flags2 & 0x20000) == 0)) {
+        count++;
+      }
+      node = node->next;
+      p = node->enemy;
+    } while (p != NULL);
+  }
+  return count;
+#else
+  INCFUNC("asm/func/FUN_080ecf18.inc");
+#endif
+}
 
 NAKED s32 FUN_080ecf60(u32 kind) { INCFUNC("asm/func/FUN_080ecf60.inc"); }
 
