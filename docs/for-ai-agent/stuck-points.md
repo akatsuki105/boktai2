@@ -82,3 +82,4 @@ Just the function name (and file). No detail write-up.
 - `FUN_080edce8` (`src/enemy_manager.c`)
 - `FUN_080ede14` (`src/enemy_manager.c`)
 - `FUN_080ed020` (`src/enemy_manager.c`)
+- `FUN_080ed9d0` (`src/enemy_manager.c`)

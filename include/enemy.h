@@ -41,6 +41,10 @@ typedef u16 EnemyFlags4;
 #define ENEFLAG4_UNK_1 (1 << 1)    // 0x0002, Enemy_Sleep が立てる
 #define ENEFLAG4_UNK_12 (1 << 12)  // 0x1000, 立っていると FUN_080edebc が破棄側へ回す
 
+// Enemy.flags5 (0x474)
+typedef u16 EnemyFlags5;
+#define ENEFLAG5_UNK_8 (1 << 8)  // 0x0100, FUN_080ed834 / FUN_080ed8f0 / FUN_080ed9d0 が見る
+
 // handlerUpdate / handlerDestroy の型. 引数は unk_1cc ひとつで、戻り値は誰も使っていない
 typedef void (*EnemyHandler)(void* p);
 
@@ -81,7 +85,9 @@ typedef void (*EnemyMsgHandler)(void* p, void* payload);
   u8 unk_46d;                  /* 0x46D, FUN_080f54e4 が非0を条件にして 0 に戻す */                                   \
   u8 unk_46e;                  /* 0x46E */                                                                            \
   u8 unk_46f;                  /* 0x46F, FUN_080edebc が非0を条件にする */                                            \
-  u8 unk_470[0x478 - 0x470];   /* 0x470 */                                                                            \
+  u8 unk_470[0x474 - 0x470]; /* 0x470 */ \
+  EnemyFlags5 flags5;        /* 0x474 */ \
+  u8 unk_476[0x478 - 0x476]; /* 0x476 */ \
   u16 unk_478;                 /* 0x478, パレット番号. EnemySpriteData の +0x32 / +0x5A に書かれる */                 \
   u16 unk_47a;                 /* 0x47A, unk_480 と足して遷移先パレット番号になる */                                  \
   u8 unk_47c[0x480 - 0x47C];   /* 0x47C */                                                                            \
