@@ -6,7 +6,7 @@
 	bne _080EF164
 	b _080EF4DA
 _080EF164:
-	bl FUN_080edda0
+	bl FindEnemyById
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _080EF170

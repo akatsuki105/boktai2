@@ -38,7 +38,7 @@ _080EC68A:
 	cmp r0, #0x13
 	bhi _080EC69A
 	ldrh r0, [r5]
-	bl FUN_080edda0
+	bl FindEnemyById
 	cmp r0, #0
 	beq _080EC6A4
 _080EC69A:

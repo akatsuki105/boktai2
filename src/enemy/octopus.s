@@ -2456,7 +2456,7 @@ _081858C2:
 	beq _0818590C
 	mov r1, r8
 	ldrh r0, [r1]
-	bl FUN_080edda0
+	bl FindEnemyById
 	adds r1, r0, #0
 	movs r0, #0
 	str r0, [sp]

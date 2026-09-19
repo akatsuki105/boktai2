@@ -265,7 +265,7 @@ _08188970:
 FUN_08188978: @ 0x08188978
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
-	bl FUN_080edda0
+	bl FindEnemyById
 	cmp r0, #0
 	bne _081889B0
 	ldr r5, _081889B8 @ =0x0000069C

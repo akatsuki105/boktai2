@@ -109,14 +109,24 @@ NAKED Enemy* FUN_080edd2c(u32 id) { INCFUNC("asm/func/FUN_080edd2c.inc"); }
 
 Enemy* GetFirstEnemy(void) { return gEnemyListHead->enemy; }
 
-NAKED Enemy* FUN_080edda0(u32 id) { INCFUNC("asm/func/FUN_080edda0.inc"); }
+Enemy* FindEnemyById(u32 id) {
+  EnemyListNode* node;
+  Enemy* p;
+
+  for (node = gEnemyListHead; (p = node->enemy) != NULL; node = node->next) {
+    if (p->unk_0.id == id) {
+      return p;
+    }
+  }
+  return NULL;
+}
 
 NAKED bool32 FUN_080eddc8(void) { INCFUNC("asm/func/FUN_080eddc8.inc"); }
 
 bool32 FUN_080eddf8(void) {
   u32 id = Script_GetValue();
 
-  if ((id != 0) && (FUN_080edda0(id) != NULL)) {
+  if ((id != 0) && (FindEnemyById(id) != NULL)) {
     return TRUE;
   }
   return FALSE;

@@ -10,7 +10,7 @@
 	cmp r4, #0
 	beq _080EDA1E
 	adds r0, r4, #0
-	bl FUN_080edda0
+	bl FindEnemyById
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080EDA1E

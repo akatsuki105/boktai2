@@ -2,7 +2,7 @@
 	bl Script_GetValue
 	cmp r0, #0
 	beq _080EDDDA
-	bl FUN_080edda0
+	bl FindEnemyById
 	cmp r0, #0
 	bne _080EDDDE
 _080EDDDA:
