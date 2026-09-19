@@ -171,7 +171,21 @@ NAKED bool32 FUN_080ede60(u32 kind, u32 unk_480, u32 mask) { INCFUNC("asm/func/F
 
 NAKED void FUN_080edebc(EnemyManager* p) { INCFUNC("asm/func/FUN_080edebc.inc"); }
 
-NAKED void FUN_080ee218(void) { INCFUNC("asm/func/FUN_080ee218.inc"); }
+// 生存中の敵をすべて破棄する
+void FUN_080ee218(void) {
+  EnemyListNode* node = gEnemyListHead;
+  Enemy* p;
+  void* arg;
+
+  if (node != NULL) {
+    while ((p = node->enemy) != NULL) {
+      node = node->next;
+      arg = p->unk_1cc;
+      p->handlerDestroy(arg);
+      Free(arg);
+    }
+  }
+}
 
 NAKED void FUN_080ee254(void) { INCFUNC("asm/func/FUN_080ee254.inc"); }
 

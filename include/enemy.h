@@ -13,6 +13,9 @@ typedef struct {
 } EnemySpriteData;
 static_assert(sizeof(EnemySpriteData) == 128);
 
+// handlerUpdate / handlerDestroy の型. 引数は unk_1cc ひとつで、戻り値は誰も使っていない
+typedef void (*EnemyHandler)(void* p);
+
 // 各エネミー共通部. 最小のエネミー(Mimic)が1684バイトなのに対しここは0x654=1620バイトあり、構造体のほとんどが共通部分だとわかる
 // サイズの根拠: Enemy_Init_080f3680 が 0x62C から 0x650 まで10本のテーブルポインタを書き込む
 #define ENEMY_HDR                                                                                                   \
@@ -68,8 +71,8 @@ static_assert(sizeof(EnemySpriteData) == 128);
   u8 unk_610[0x614 - 0x610]; /* 0x610 */                                                                            \
   void* unk_614;             /* 0x614, fn(p)。FUN_080fa384 が NULL でないときだけ呼ぶ */                            \
   void* unk_618;             /* 0x618, fn(p)。FUN_080f2364 / FUN_080f0430 */                                        \
-  void* handlerUpdate;       /* 0x61C, FUN_080edebc が (unk_1cc) で毎フレーム呼ぶ */                                \
-  void* handlerDestroy;      /* 0x620, FUN_080ee218 が (unk_1cc) で呼び、その後 unk_1cc を Free する */             \
+  EnemyHandler handlerUpdate;       /* 0x61C, FUN_080edebc が (unk_1cc) で毎フレーム呼ぶ */                                \
+  EnemyHandler handlerDestroy;      /* 0x620, FUN_080ee218 が (unk_1cc) で呼び、その後 unk_1cc を Free する */             \
   void* unk_624;             /* 0x624, fn(p)。FUN_080f06b0 が戻り値の下位1バイトを見る */                           \
   void* unk_628;             /* 0x628, fn(p)。FUN_080f06b0 が unk_624 の戻り値が 0 のときだけ呼ぶ */                \
   void* handlerTables[10];   /* 0x62C, 状態ごとの関数ポインタ表を10本。Enemy_Init_080f3680 が 0x62C から順にまとめて書き込む */
