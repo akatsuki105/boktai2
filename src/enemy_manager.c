@@ -23,9 +23,95 @@ static_assert(sizeof(EnemyManager) == 640);
 
 extern EnemyManager* gEnemyManager;  // 0x03002C5C
 
-INCASM("asm/enemy_manager.inc");
+NAKED void FUN_080ec614(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec614.inc"); }
 
-// 後続の enemy_080ef84c.c も enemy_manager.c に含めるかは不明
+NAKED bool32 Enemy_Init_080ec640(Enemy* enemy) { INCFUNC("asm/func/Enemy_Init_080ec640.inc"); }
+
+NAKED void FUN_080ec6fc(Enemy* enemy) { INCFUNC("asm/func/FUN_080ec6fc.inc"); }
+
+NAKED void FUN_080ec758(u8 kind, void* payload) { INCFUNC("asm/func/FUN_080ec758.inc"); }
+
+NAKED void FUN_080ec79c(u8 kind, void* payload) { INCFUNC("asm/func/FUN_080ec79c.inc"); }
+
+NAKED void FUN_080ec7e8(u8 kind, u8 unk_480, void* payload) { INCFUNC("asm/func/FUN_080ec7e8.inc"); }
+
+NAKED void FUN_080ec848(u8 kind, void* payload, u16 id) { INCFUNC("asm/func/FUN_080ec848.inc"); }
+
+NAKED void FUN_080ec8a4(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec8a4.inc"); }
+
+NAKED void FUN_080ec900(u8 kind) { INCFUNC("asm/func/FUN_080ec900.inc"); }
+
+NAKED void FUN_080ec92c(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec92c.inc"); }
+
+NAKED s32 FUN_080ec968(void) { INCFUNC("asm/func/FUN_080ec968.inc"); }
+
+NAKED void FUN_080ec9b0(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec9b0.inc"); }
+
+NAKED void FUN_080eca74(EnemyManager* p, Enemy* enemy) { INCFUNC("asm/func/FUN_080eca74.inc"); }
+
+NAKED void FUN_080ecbe4(void) { INCFUNC("asm/func/FUN_080ecbe4.inc"); }
+
+NAKED void FUN_080ecbe8(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080ecbe8.inc"); }
+
+NAKED s32 FUN_080ecf18(void) { INCFUNC("asm/func/FUN_080ecf18.inc"); }
+
+NAKED s32 FUN_080ecf60(u32 kind) { INCFUNC("asm/func/FUN_080ecf60.inc"); }
+
+NAKED s32 FUN_080ecfbc(u32 kind, u32 unk_480) { INCFUNC("asm/func/FUN_080ecfbc.inc"); }
+
+NAKED Enemy* FUN_080ed020(void) { INCFUNC("asm/func/FUN_080ed020.inc"); }
+
+NAKED void FUN_080ed068(void) { INCFUNC("asm/func/FUN_080ed068.inc"); }
+
+NAKED void FUN_080ed0b0(s32 param_1) { INCFUNC("asm/func/FUN_080ed0b0.inc"); }
+
+NAKED void FUN_080ed564(void) { INCFUNC("asm/func/FUN_080ed564.inc"); }
+
+NAKED void FUN_080ed724(void) { INCFUNC("asm/func/FUN_080ed724.inc"); }
+
+NAKED void Enemy_Sleep(void) { INCFUNC("asm/func/Enemy_Sleep.inc"); }
+
+NAKED void FUN_080ed834(void) { INCFUNC("asm/func/FUN_080ed834.inc"); }
+
+NAKED void FUN_080ed8f0(void) { INCFUNC("asm/func/FUN_080ed8f0.inc"); }
+
+NAKED void FUN_080ed9d0(void) { INCFUNC("asm/func/FUN_080ed9d0.inc"); }
+
+NAKED void FUN_080eda24(void) { INCFUNC("asm/func/FUN_080eda24.inc"); }
+
+NAKED void FUN_080eda7c(void) { INCFUNC("asm/func/FUN_080eda7c.inc"); }
+
+NAKED bool32 FUN_080edb4c(Enemy* p, Vec3* pos) { INCFUNC("asm/func/FUN_080edb4c.inc"); }
+
+NAKED Enemy* FUN_080edc40(Vec3* pos) { INCFUNC("asm/func/FUN_080edc40.inc"); }
+
+NAKED Enemy* FUN_080edce8(u32 id) { INCFUNC("asm/func/FUN_080edce8.inc"); }
+
+NAKED Enemy* FUN_080edd2c(u32 id) { INCFUNC("asm/func/FUN_080edd2c.inc"); }
+
+NAKED Enemy* FUN_080edd94(void) { INCFUNC("asm/func/FUN_080edd94.inc"); }
+
+NAKED Enemy* FUN_080edda0(u32 id) { INCFUNC("asm/func/FUN_080edda0.inc"); }
+
+NAKED bool32 FUN_080eddc8(void) { INCFUNC("asm/func/FUN_080eddc8.inc"); }
+
+NAKED bool32 FUN_080eddf8(void) { INCFUNC("asm/func/FUN_080eddf8.inc"); }
+
+NAKED bool32 FUN_080ede14(u32 kind, u32 mask) { INCFUNC("asm/func/FUN_080ede14.inc"); }
+
+NAKED bool32 FUN_080ede60(u32 kind, u32 unk_480, u32 mask) { INCFUNC("asm/func/FUN_080ede60.inc"); }
+
+NAKED void FUN_080edebc(EnemyManager* p) { INCFUNC("asm/func/FUN_080edebc.inc"); }
+
+NAKED void FUN_080ee218(void) { INCFUNC("asm/func/FUN_080ee218.inc"); }
+
+NAKED void FUN_080ee254(void) { INCFUNC("asm/func/FUN_080ee254.inc"); }
+
+NAKED void FUN_080ee2c8(Enemy* p) { INCFUNC("asm/func/FUN_080ee2c8.inc"); }
+
+NAKED void FUN_080ee538(Enemy* p) { INCFUNC("asm/func/FUN_080ee538.inc"); }
+
+NAKED void FUN_080ee738(Enemy* p) { INCFUNC("asm/func/FUN_080ee738.inc"); }
 
 NAKED void FUN_080ee9d4(EnemyManager* p) { INCFUNC("asm/func/FUN_080ee9d4.inc"); }
 
@@ -66,3 +152,5 @@ NAKED void FUN_080ef584(void) { INCFUNC("asm/func/FUN_080ef584.inc"); }
 NAKED void FUN_080ef5a8(void) { INCFUNC("asm/func/FUN_080ef5a8.inc"); }
 
 NAKED EnemyManager* GetEnemyManager(void) { INCFUNC("asm/func/GetEnemyManager.inc"); }
+
+// 後続の enemy_080ef84c.c も enemy_manager.c に含めるかは不明
