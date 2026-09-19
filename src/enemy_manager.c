@@ -25,6 +25,9 @@ static_assert(sizeof(EnemyManager) == 640);
 
 extern EnemyManager* gEnemyManager;  // 0x03002C5C
 
+// 実体は src/code_080917e4.s
+u32 FUN_080a0808(void);
+
 // 番兵ノードを1つ確保してリストを空の状態にする
 void EnemyManager_InitList(EnemyManager* p) {
   EnemyListNode* node;
@@ -195,7 +198,19 @@ NAKED void FUN_080ee538(Enemy* p) { INCFUNC("asm/func/FUN_080ee538.inc"); }
 
 NAKED void FUN_080ee738(Enemy* p) { INCFUNC("asm/func/FUN_080ee738.inc"); }
 
-NAKED void FUN_080ee9d4(EnemyManager* p) { INCFUNC("asm/func/FUN_080ee9d4.inc"); }
+void FUN_080ee9d4(EnemyManager* p) {
+  u16 flag;
+
+  if (Mod(p->frameCounter, 15) == 0) {
+    if (FUN_080a0808() == 0) {
+      flag = 0x20;
+      gStat->unk_934 |= flag;
+    } else {
+      flag = 0x20;
+      gStat->unk_934 &= ~flag;
+    }
+  }
+}
 
 s32 EnemyManager_Update(EnemyManager* p) {
   u32 mask;
