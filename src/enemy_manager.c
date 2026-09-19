@@ -102,7 +102,7 @@ void FUN_080ec92c(EnemyManager* p) {
   if ((p->frameCounter & 1) == 0) {
     cursor = p->cursor;
     if ((cursor != NULL) && (cursor->enemy != NULL)) {
-      flag = 8;
+      flag = ENEFLAG_UNK_3;
       cursor->enemy->flags |= flag;
       next = cursor->next;
     } else {
@@ -135,7 +135,7 @@ NON_MATCH s32 FUN_080ecf18(void) {
   count = 0;
   if (p != NULL) {
     do {
-      if ((p->unk_184 > 0) && ((p->flags2 & 0x20000) == 0)) {
+      if ((p->unk_184 > 0) && ((p->flags2 & ENEFLAG2_UNK_17) == 0)) {
         count++;
       }
       node = node->next;
@@ -157,13 +157,13 @@ NAKED Enemy* FUN_080ed020(void) { INCFUNC("asm/func/FUN_080ed020.inc"); }
 void FUN_080ed068(void) {
   EnemyListNode* node;
   Enemy* p;
-  u32 flag;
+  EnemyFlags flag;
 
   GetEnemyManager();
   node = gEnemyListHead;
   p = node->enemy;
   if (p != NULL) {
-    flag = 0x1000;
+    flag = ENEFLAG_UNK_12;
     do {
       if (FUN_080e8a60(p) == 0) {
         p->unk_184 = 0;
@@ -376,7 +376,23 @@ NAKED void FUN_080ef048(void) { INCFUNC("asm/func/FUN_080ef048.inc"); }
 
 NAKED void FUN_080ef154(void) { INCFUNC("asm/func/FUN_080ef154.inc"); }
 
-NAKED void FUN_080ef4e4(void) { INCFUNC("asm/func/FUN_080ef4e4.inc"); }
+void FUN_080ef4e4(void) {
+  s32 id;
+  Enemy* p;
+  EnemyFlags2 mask;
+  EnemyFlags2 bit;
+
+  id = VM_GetKeywordValue(0x6E, 0);
+  if ((id != 0) && ((p = FindEnemyById(id)) != NULL)) {
+    if (VM_GetKeywordValue(0x66, 0) == 0) {
+      mask = ENEFLAG2_UNK_26;
+      p->flags2 &= ~mask;
+    } else {
+      bit = ENEFLAG2_UNK_26;
+      p->flags2 |= bit;
+    }
+  }
+}
 
 void FUN_080ef534(void) {
   EnemyManager* p = gEnemyManager;

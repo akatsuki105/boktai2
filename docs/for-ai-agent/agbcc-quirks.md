@@ -298,7 +298,7 @@ Three rules keep this file usable:
 
 ### A bit constant loaded before the field it is OR'd into needs its own local
 
-- **Frequency**: `FUN_0823b47c`, `FUN_080ec900`, `EnemyManager_Update`, `FUN_080ee9d4`, `FUN_080ec92c`.
+- **Frequency**: `FUN_0823b47c`, `FUN_080ec900`, `EnemyManager_Update`, `FUN_080ee9d4`, `FUN_080ec92c`, `FUN_080ef4e4`.
 - `p->flags |= 4;` emits `ldrh` then `movs r2, #4`; the target had `movs r2, #4` first and used that register as the `orrs` destination. Writing `4 | p->flags` does not help — agbcc canonicalises the constant to the right. Assigning it first (`u16 flag = 4; p->flags |= flag;`) puts the constant in its own register before the load and matches.
 - Holds for a global's field too, and inside an `if` body: `FUN_080ec900` needed `u16 flag = 1; gStat->unk_934 |= flag;` in the same shape.
 - Clearing a bit from a **u16** field is a separate trap: `f &= ~0x20;` narrows the
@@ -308,5 +308,11 @@ Three rules keep this file usable:
   literal: `flag = 0x20; f &= ~flag;` keeps the expression `int`. `FUN_080ee9d4`
   sets and clears the same bit in the two arms of one `if`, and both arms use
   the same `u16 flag` local this way.
+- When an `if`/`else` sets the bit in one arm and clears it in the other, each
+  arm needs **its own** local. One local shared by both arms gets its assignment
+  hoisted above the branch, and writing the literal in one arm lets agbcc
+  cross-jump the two `str`s into one. `FUN_080ef4e4` needed two same-valued
+  locals, `mask = BIT; f &= ~mask;` in one arm and `bit = BIT; f |= bit;` in the
+  other.
 - `&=` with a complement mask behaves the same: `p->flags &= ~0x1C000;` loads the field first, the target loaded the mask first. What matters is where the local is **assigned**, not where it is declared — C89-style `u32 mask;` at the top of the function with `mask = ~0x1C000;` immediately before the `&=` matches, while initialising it at the declaration does not (the constant then has to survive six intervening calls). `EnemyManager_Update`.
 

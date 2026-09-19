@@ -13,6 +13,34 @@ typedef struct {
 } EnemySpriteData;
 static_assert(sizeof(EnemySpriteData) == 128);
 
+// Enemy.flags (0x178)
+typedef u32 EnemyFlags;
+#define ENEFLAG_UNK_0 (1 << 0)    // 0x00000001, bit1 と合わせて FUN_080ec968 が「数えない敵」の判定に使う
+#define ENEFLAG_UNK_1 (1 << 1)    // 0x00000002, 同上
+#define ENEFLAG_UNK_3 (1 << 3)    // 0x00000008, FUN_080ec92c が巡回カーソルの通過印として立てる
+#define ENEFLAG_UNK_4 (1 << 4)    // 0x00000010, FUN_080ecbe8 が立てる
+#define ENEFLAG_UNK_12 (1 << 12)  // 0x00001000, FUN_080ed068 / FUN_080edebc が立てる
+#define ENEFLAG_UNK_13 (1 << 13)  // 0x00002000, FUN_080ef5a8 が立てる
+#define ENEFLAG_UNK_17 (1 << 17)  // 0x00020000, FUN_080ef5a8 が立てる
+
+// Enemy.flags2 (0x17C)
+typedef u32 EnemyFlags2;
+#define ENEFLAG2_UNK_17 (1 << 17)  // 0x00020000, FUN_080ecf18 / FUN_080ed020 が「数えない敵」の判定に使う
+#define ENEFLAG2_UNK_21 (1 << 21)  // 0x00200000, FUN_080edebc がパレット転送の向きとして反転させる
+#define ENEFLAG2_UNK_24 (1 << 24)  // 0x01000000, FUN_080ef5a8 が落とす
+#define ENEFLAG2_UNK_25 (1 << 25)  // 0x02000000, Enemy_Init_080ec640 が見る
+#define ENEFLAG2_UNK_26 (1 << 26)  // 0x04000000, FUN_080ef4e4 が VM キーワード 0x66 で立て下げする
+
+// Enemy.flags3 (0x180)
+typedef u16 EnemyFlags3;
+#define ENEFLAG3_UNK_12 (1 << 12)  // 0x1000, FUN_080ee738 が見る
+#define ENEFLAG3_UNK_14 (1 << 14)  // 0x4000, FUN_080ec9b0 が立て FUN_080edebc が落とす
+
+// Enemy.flags4 (0x182)
+typedef u16 EnemyFlags4;
+#define ENEFLAG4_UNK_1 (1 << 1)    // 0x0002, Enemy_Sleep が立てる
+#define ENEFLAG4_UNK_12 (1 << 12)  // 0x1000, 立っていると FUN_080edebc が破棄側へ回す
+
 // handlerUpdate / handlerDestroy の型. 引数は unk_1cc ひとつで、戻り値は誰も使っていない
 typedef void (*EnemyHandler)(void* p);
 
@@ -28,10 +56,10 @@ typedef void (*EnemyMsgHandler)(void* p, void* payload);
   u8 unk_7c[0x11C - 0x7C];     /* 0x07C */                                                                            \
   u16 unk_11c;                 /* 0x11C, FUN_080edebc が 0 を書く */                                                  \
   u8 unk_11e[0x178 - 0x11E];   /* 0x11E */                                                                            \
-  u32 flags;                   /* 0x178, bit0/1=活動停止判定, bit3=FUN_080ec92c が毎フレーム1体だけに立てる */        \
-  u32 flags2;                  /* 0x17C, bit21=FUN_080edebc がパレット転送の向きとして反転させる */                   \
-  u16 flags3;                  /* 0x180, bit14=FUN_080ec9b0 が立て FUN_080edebc が落とす */                           \
-  u16 flags4;                  /* 0x182, bit12 が立っていると FUN_080edebc が破棄側へ回す */                          \
+  EnemyFlags flags;            /* 0x178, bit0/1=活動停止判定, bit3=FUN_080ec92c が毎フレーム1体だけに立てる */        \
+  EnemyFlags2 flags2;          /* 0x17C, bit21=FUN_080edebc がパレット転送の向きとして反転させる */                   \
+  EnemyFlags3 flags3;          /* 0x180, bit14=FUN_080ec9b0 が立て FUN_080edebc が落とす */                           \
+  EnemyFlags4 flags4;          /* 0x182, bit12 が立っていると FUN_080edebc が破棄側へ回す */                          \
   s16 unk_184;                 /* 0x184, FUN_080ee254 が ldrsh で 1 未満かを判定 */                                   \
   u8 unk_186[0x1C8 - 0x186];   /* 0x186 */                                                                            \
   u16 unk_1c8;                 /* 0x1C8, 状態を切り替えるときに 0 でクリアされる */                                   \
