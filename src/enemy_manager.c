@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "global.h"
 #include "malloc.h"
+#include "vm.h"
 
 // エネミー全体の管理者. シングルトンで、生存中のエネミーを gEnemyListHead のリストで持つ
 typedef struct EnemyManager {
@@ -96,7 +97,14 @@ NAKED Enemy* FUN_080edda0(u32 id) { INCFUNC("asm/func/FUN_080edda0.inc"); }
 
 NAKED bool32 FUN_080eddc8(void) { INCFUNC("asm/func/FUN_080eddc8.inc"); }
 
-NAKED bool32 FUN_080eddf8(void) { INCFUNC("asm/func/FUN_080eddf8.inc"); }
+bool32 FUN_080eddf8(void) {
+  u32 id = Script_GetValue();
+
+  if ((id != 0) && (FUN_080edda0(id) != NULL)) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED bool32 FUN_080ede14(u32 kind, u32 mask) { INCFUNC("asm/func/FUN_080ede14.inc"); }
 
