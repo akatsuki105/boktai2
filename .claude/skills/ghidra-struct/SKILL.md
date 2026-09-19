@@ -219,6 +219,7 @@ Strongest first. Most of these produced a confirmed field on this project.
 | `scripts/TypeUsers.java <Type> [bytesAfter]` | Everything that uses a type, with the bytes after each embedding. |
 | `scripts/StructCandidates.java <size\|-> [HeadType]` | Existing structs that might be the unknown one. |
 | `scripts/MergeSplitTail.java <parent> <fake> <end>` | Merge a function Ghidra split off a parent's shared epilogue back into it (bare hex, no `0x`). Guards and aborts on anything unexpected; does not save. See `docs/for-ai-agent/ghidra-split-functions.md`. |
+| `scripts/MergeContinuation.java <parent> <fake>...` | Same, for a chunk of a function registered as its own function (the `.inc` has no `push`). Absorbs several at once, unioning their bodies. |
 | `scripts/check_decomp.ts [--quiet] <func...>` | Decompile and count unresolved raw-offset lines. |
 
 Repo tools on the same server: `tools/ghidra/decompile.ts`, `tools/ghidra/pcode.ts`,

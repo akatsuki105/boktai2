@@ -100,12 +100,80 @@ the one `bl FUN_080ff048` became `bl _080FF048`. It stays `bl` — rewriting it
 as `b` would change the instruction length and break the match.
 `FUN_080fe198` needed no repository change; the repo already had it as a label.
 
+## The worse case: headless continuations
+
+Sometimes the split is not just the epilogue. A whole chunk of a function can
+be registered as its own function, and unlike the epilogue case **the
+repository carries the same split** — the chunk has its own
+`asm/func/FUN_*.inc` and its own `thumb_func_start` stub in the blob. Promoting
+it with `todo-to-naked` produces a C stub for something that is not a function.
+
+**How to spot it:** the `.inc` does not begin with `push`, yet the function
+ends with `pop`. It starts mid-flow, using registers the real function set up
+earlier. The real parent is the function just before it, and the parent's
+`.inc` branches into the child (`bl FUN_<child>`, or `bl` to a label defined
+inside the child's `.inc`).
+
+Scan the whole repo for them:
+
+```sh
+python3 -c "
+import io, os, glob
+for p in sorted(glob.glob('asm/func/*.inc')):
+    lines = io.open(p, encoding='utf-8', errors='replace').read().splitlines()
+    if lines and not lines[0].strip().startswith('push') and 'pop {' in '\n'.join(lines):
+        print(os.path.basename(p)[:-4])
+"
+```
+
+This only sees functions already extracted into `asm/func/`; one still inline
+in a bulk blob will not show up. It also misses nothing that the sym-diff
+finds, and the sym-diff misses these — a chunk the repo also carries has a
+symbol in `boktai2.sym`, so it is not Ghidra-only. Run both.
+
+**Fixing one, repository side** (do this first, so `make compare` proves the
+bytes before Ghidra is touched):
+
+1. Turn every global label inside the child's `.inc` into a local one
+   (`FUN_080f83ec:` → `_080F83EC:`), including any
+   `non_word_aligned_thumb_func_start` line, which emits no alignment and can
+   just be deleted. Update the `bl`s that referenced them.
+2. Prefix the child's contents with a local label for its own address
+   (`_080F79E8:`) and append the whole thing to the parent's `.inc`.
+3. Rewrite the parent's `bl FUN_<child>` to that local label. Keep `bl` —
+   rewriting it as `b` changes the instruction length.
+4. Delete the child's `.inc` and its three-line stub from the blob. The stub's
+   `thumb_func_start` emits `.align 2, 0`, which is already satisfied, so
+   dropping it is byte-neutral.
+5. `make clean-code && make compare`.
+
+**Fixing one, Ghidra side:** `MergeContinuation.java` takes the parent and
+every function to absorb, in one call:
+
+```sh
+.claude/skills/ghidra-struct/scripts/run_ghidra_script.ts \
+  .claude/skills/ghidra-struct/scripts/MergeContinuation.java <parent> <fake>...
+```
+
+It unions the bodies rather than adding a flat range, so the data gaps inside
+each piece are preserved. Same guards and the same
+retype-references-before-deleting order as `MergeSplitTail.java`, and it does
+not save either.
+
+Done so far:
+
+| Parent | Absorbed |
+|---|---|
+| `FUN_080f6e64` | `FUN_080f79e8`, `FUN_080f83ec`, `FUN_080f83ee` |
+| `FUN_080f48ac` | `FUN_080f5104`, `FUN_080f51e0` |
+
+Still open, found by the scan above: `FUN_080eafb4` and `FUN_0823fb90`.
+
 ## Remaining candidates
 
-129 entries as of 2026-09-19, after the three fixes above. Regenerate with the
-command above rather than trusting this list once work starts on it. Runs of
-addresses a few bytes apart (`080EAFC0` / `080EAFCE` / `080EAFD2`) are the
-typical shape.
+127 entries as of 2026-09-19. Regenerate with the command above rather than
+trusting this list once work starts on it. Runs of addresses a few bytes apart
+(`080EAFC0` / `080EAFCE` / `080EAFD2`) are the typical shape.
 
 ```
 08000000
@@ -127,8 +195,6 @@ typical shape.
 080eafd2
 080ec404
 080ec406
-080f51e0
-080f83ec
 080fd07c
 08100a02
 08101948

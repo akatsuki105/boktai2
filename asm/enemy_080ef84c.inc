@@ -244,10 +244,6 @@ FUN_080f47c8: @ 0x080F47C8
 FUN_080f48ac: @ 0x080F48AC
   .include "asm/func/FUN_080f48ac.inc"
 
-	thumb_func_start FUN_080f5104
-FUN_080f5104: @ 0x080F5104
-  .include "asm/func/FUN_080f5104.inc"
-
 	thumb_func_start FUN_080f5208
 FUN_080f5208: @ 0x080F5208
   .include "asm/func/FUN_080f5208.inc"
@@ -323,10 +319,6 @@ FUN_080f6e34: @ 0x080F6E34
 	thumb_func_start FUN_080f6e64
 FUN_080f6e64: @ 0x080F6E64
   .include "asm/func/FUN_080f6e64.inc"
-
-	thumb_func_start FUN_080f79e8
-FUN_080f79e8: @ 0x080F79E8
-  .include "asm/func/FUN_080f79e8.inc"
 
 	thumb_func_start FUN_080f8400
 FUN_080f8400: @ 0x080F8400
