@@ -44,7 +44,8 @@ IWRAM_DATA u8 u8_03002bfc[0x03002C58 - 0x03002bfc] = {};  // todo
 IWRAM_DATA struct EntityCBB0* gEntityCBB0 = NULL;  // 0x03002C58
 IWRAM_DATA struct EntityEC2A* gEntityEC2A = NULL;  // 0x03002C5C
 
-IWRAM_DATA u8 u8_03002c5c[0x03002C68 - 0x03002C60] = {};  // todo
+IWRAM_DATA struct EnemyListNode* gEnemyListHead = NULL;  // 0x03002C60, 生存中のエネミーの単方向リスト. EntityEC2A.list と同じ値
+IWRAM_DATA u8 u8_03002c64[0x03002C68 - 0x03002C64] = {};  // todo
 
 IWRAM_DATA struct Entity9A9F* gEntity9A9F = NULL;  // 0x03002C68
 
