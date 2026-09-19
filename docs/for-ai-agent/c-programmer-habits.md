@@ -67,6 +67,26 @@ compiler-forced one) in a function that just reached MATCHING:
 - One helper per field, not per width — `Enemy` needs a separate pair for
   `flags`, `flags2`, `flags4`, even though `flags` and `flags2` are both `u32`.
 - The read side exists too and comes in two flavours: returning the masked value
-  (`TestHitboxUnk38`, `TestFlag030047a4`) and returning a `bool32`. Which one a
-  given call site used is still open — see `stuck-points.md` for functions whose
-  only remaining difference is a materialised boolean.
+  (`TestHitboxUnk38`, `TestFlag030047a4`) and returning a `bool32`. Both match
+  where the target simply branches on the test.
+- **What no helper shape has reproduced yet**: some targets materialise the
+  boolean into a register and then test *that* —
+  `ands / cmp #0 / beq / movs r0,#1 / b / movs r0,#0 / cmp r0,#0 / beq` — eight
+  instructions where three would do. agbcc's jump threading folds every source
+  shape tried so far, so this is still open. Do not re-try these seven; they all
+  collapse to a plain `ands / cmp / beq`:
+
+  | shape | |
+  |---|---|
+  | `if ((p->f & BIT) != 0)` | direct |
+  | `ok = (p->f & BIT) != 0; if (ok)` | local |
+  | `(p->f & BIT) ? TRUE : FALSE` | ternary |
+  | `if (p->f & BIT) { ok = TRUE; } else { ok = FALSE; }` | if/else into a local |
+  | `static inline u32 f(T*, BIT) { return p->f & bit; }` | helper, masked value |
+  | `static inline bool8 f(T*, BIT) { return (p->f & bit) != 0; }` | helper, narrow bool |
+  | `static inline bool32 f(T*, BIT) { if (p->f & bit) return TRUE; return FALSE; }` | helper, explicit returns |
+
+  The last one assigned to a local before the `if` folds too. Whatever produces
+  it is a boundary the optimiser cannot see through, and an inlined function is
+  not it. Affected: `FUN_080ed9d0` (enemy_manager.c), `Entity081d0e20_AllocElem`
+  and its siblings (entity_081d0e20.c) — see `stuck-points.md`.
