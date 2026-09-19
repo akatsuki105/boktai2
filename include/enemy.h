@@ -138,6 +138,13 @@ typedef struct {
 } Enemy;
 static_assert(sizeof(Enemy) == 1620);
 
+// ビットのセット/クリアはこのヘルパー経由で書く。フィールドごとに専用のものが要る
+// (幅で共通化して u32* を渡す形にすると、if/else の両腕が同じ形になって str が1つに畳まれ一致しない)
+static inline void Enemy_SetFlag(Enemy* p, EnemyFlags bit) { p->flags |= bit; }
+static inline void Enemy_SetFlag2(Enemy* p, EnemyFlags2 bit) { p->flags2 |= bit; }
+static inline void Enemy_ClearFlag2(Enemy* p, EnemyFlags2 bit) { p->flags2 &= ~bit; }
+static inline void Enemy_SetFlag4(Enemy* p, EnemyFlags4 bit) { p->flags4 |= bit; }
+
 // data.c の "../enemy/system/eneinline.h" という文字列から察するに EnemyXXX_Init の関数サイズがすべて異様に大きいのは、共通部分を eneinline.h にまとめていてそれをインライン展開しているからだと思われる(なんで？)
 
 // 生存中のエネミーを繋ぐ単方向リストのノード, 根拠: EnemyManager_InitList が Malloc(8) して gEnemyListHead に繋ぐ

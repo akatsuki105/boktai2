@@ -151,13 +151,11 @@ void FUN_080ec900(u8 kind) {
 void FUN_080ec92c(EnemyManager* p) {
   EnemyListNode* cursor;
   EnemyListNode* next;
-  u32 flag;
 
   if ((p->frameCounter & 1) == 0) {
     cursor = p->cursor;
     if ((cursor != NULL) && (cursor->enemy != NULL)) {
-      flag = ENEFLAG_UNK_3;
-      cursor->enemy->flags |= flag;
+      Enemy_SetFlag(cursor->enemy, ENEFLAG_UNK_3);
       next = cursor->next;
     } else {
       next = gEnemyListHead;
@@ -256,17 +254,15 @@ NON_MATCH Enemy* FUN_080ed020(void) {
 void FUN_080ed068(void) {
   EnemyListNode* node;
   Enemy* p;
-  EnemyFlags flag;
 
   GetEnemyManager();
   node = gEnemyListHead;
   p = node->enemy;
   if (p != NULL) {
-    flag = ENEFLAG_UNK_12;
     do {
       if (FUN_080e8a60(p) == 0) {
         p->unk_184 = 0;
-        p->flags |= flag;
+        Enemy_SetFlag(p, ENEFLAG_UNK_12);
       }
       node = node->next;
       p = node->enemy;
@@ -285,10 +281,8 @@ void Enemy_Sleep(void) {
   if (id != 0) {
     Enemy* p = FindEnemyById(id);
     if (p != NULL && p->unk_594 != NULL) {
-      EnemyFlags4 flag;
       p->unk_192 = p->unk_190;
-      flag = ENEFLAG4_UNK_1;
-      p->flags4 |= flag;
+      Enemy_SetFlag4(p, ENEFLAG4_UNK_1);
     }
   }
 }
@@ -547,11 +541,9 @@ void FUN_080ef4e4(void) {
     Enemy* p = FindEnemyById(id);
     if (p != NULL) {
       if (VM_GetKeywordValue('f', 0) == 0) {
-        EnemyFlags2 bit = ENEFLAG2_UNK_26;
-        p->flags2 &= ~bit;
+        Enemy_ClearFlag2(p, ENEFLAG2_UNK_26);
       } else {
-        EnemyFlags2 bit = ENEFLAG2_UNK_26;
-        p->flags2 |= bit;
+        Enemy_SetFlag2(p, ENEFLAG2_UNK_26);
       }
     }
   }
