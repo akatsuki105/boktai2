@@ -4,6 +4,19 @@
 #include "malloc.h"
 #include "vm.h"
 
+// EnemyManager.flags (0x2C)
+typedef u32 EnemyManagerFlags;
+#define EMFLAG_UNK_3 (1 << 3)    // 0x00000008, sharedEntity[0] 生成済み
+#define EMFLAG_UNK_4 (1 << 4)    // 0x00000010, sharedEntity[1] 生成済み
+#define EMFLAG_UNK_5 (1 << 5)    // 0x00000020, sharedEntity[2] 生成済み
+#define EMFLAG_UNK_11 (1 << 11)  // 0x00000800, sharedEntity[6] 生成済み
+#define EMFLAG_UNK_12 (1 << 12)  // 0x00001000, sharedEntity[7] 生成済み
+#define EMFLAG_UNK_13 (1 << 13)  // 0x00002000, パレット遷移中
+#define EMFLAG_UNK_14 (1 << 14)  // 0x00004000, 種族 0x0B を今フレーム更新済み
+#define EMFLAG_UNK_15 (1 << 15)  // 0x00008000, 種族 0x17 を今フレーム更新済み
+#define EMFLAG_UNK_16 (1 << 16)  // 0x00010000, 種族 0x1B を今フレーム更新済み
+#define EMFLAG_UNK_17 (1 << 17)  // 0x00020000, 遷移でなく即時差し替え
+
 // エネミー全体の管理者. シングルトンで、生存中のエネミーを gEnemyListHead のリストで持つ
 typedef struct EnemyManager {
   Entity e;                     // 0x00, ENTITY_UNK_8
@@ -13,7 +26,7 @@ typedef struct EnemyManager {
   u32 msgRecordID;              // 0x24, EnemyManager_Init の第2引数. FUN_08230f94 の検索キー
   u16 unk_28;                   // 0x28, 読み手も書き手も未発見
   u16 frameCounter;             // 0x2A, EnemyManager_Update が毎フレーム +1
-  u32 flags;                    // 0x2C, bit3/4/5/11/12=sharedEntity の生成済みフラグ, bit13=パレット遷移中, bit14/15/16=種族 0x0B/0x17/0x1B を今フレーム更新済み(Updateで毎回クリア), bit17=遷移でなく即時差し替え
+  EnemyManagerFlags flags;      // 0x2C, bit3/4/5/11/12=sharedEntity の生成済みフラグ, bit13=パレット遷移中, bit14/15/16=種族 0x0B/0x17/0x1B を今フレーム更新済み(Updateで毎回クリア), bit17=遷移でなく即時差し替え
   u8 unk_30;                    // 0x30, EnemyManager_Init が 3、FUN_080ef584 が VM_GetKeywordValue('l', 3) を代入. FUN_080ec5b4 がレコードの3語目へコピーする
   u8 unk_31;                    // 0x31, 読み手も書き手も未発見
   s16 enemyCount;               // 0x32, Enemy_Init_080ec640 で +1 / FUN_080ec6fc で -1. 0x13 を超えると新規生成を拒否する
@@ -30,6 +43,12 @@ u32 FUN_080a0808(void);
 
 EnemyManager* GetEnemyManager(void);
 Enemy* FindEnemyById(u32 id);
+
+static inline void EnemyManager_ClearFlags(EnemyManager* p, EnemyManagerFlags bits) { p->flags &= ~bits; }
+
+static inline void Stat_SetFlag934(u16 bit) { gStat->unk_934 |= bit; }
+
+static inline void Stat_ClearFlag934(u16 bit) { gStat->unk_934 &= ~bit; }
 
 // 番兵ノードを1つ確保してリストを空の状態にする
 void EnemyManager_InitList(EnemyManager* p) {
@@ -142,8 +161,7 @@ NAKED void FUN_080ec8a4(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec8a4.inc");
 
 void FUN_080ec900(u8 kind) {
   if ((kind == 1) || (kind == 0x19)) {
-    u16 flag = 1;
-    gStat->unk_934 |= flag;
+    Stat_SetFlag934(1);
   }
 }
 
@@ -455,30 +473,23 @@ NAKED void FUN_080ee538(Enemy* p) { INCFUNC("asm/func/FUN_080ee538.inc"); }
 NAKED void FUN_080ee738(Enemy* p) { INCFUNC("asm/func/FUN_080ee738.inc"); }
 
 void FUN_080ee9d4(EnemyManager* p) {
-  u16 flag;
-
   if (Mod(p->frameCounter, 15) == 0) {
     if (FUN_080a0808() == 0) {
-      flag = 0x20;
-      gStat->unk_934 |= flag;
+      Stat_SetFlag934(0x20);
     } else {
-      flag = 0x20;
-      gStat->unk_934 &= ~flag;
+      Stat_ClearFlag934(0x20);
     }
   }
 }
 
 s32 EnemyManager_Update(EnemyManager* p) {
-  u32 mask;
-
   FUN_080ee254();
   FUN_080ec8a4(p);
   FUN_080ec92c(p);
   FUN_080ec9b0(p);
   FUN_080edebc(p);
   FUN_080ee9d4(p);
-  mask = ~0x1C000;
-  p->flags &= mask;
+  EnemyManager_ClearFlags(p, EMFLAG_UNK_14 | EMFLAG_UNK_15 | EMFLAG_UNK_16);
   p->frameCounter++;
   return 0;
 }

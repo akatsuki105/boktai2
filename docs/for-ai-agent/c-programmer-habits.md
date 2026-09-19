@@ -39,8 +39,8 @@ compiler-forced one) in a function that just reached MATCHING:
 
 ### Bit set / clear / test goes through a `static inline` helper, never a bare `|=`
 
-- **Frequency**: 5 files define such helpers; 4 functions verified to need the shape
-- **Seen in**: `EnableEntityFlags` / `DisableEntityFlags` / `TestFlag030047a4` (entity_0823acbc.c), `ClearHitboxFlags` (entity_ec96.c), `TestHitboxUnk38` (solar_bamboo.c), `Entity28CB_SetState` (entity_28cb.c), `Enemy_SetFlag` / `Enemy_SetFlag2` / `Enemy_ClearFlag2` / `Enemy_SetFlag4` (include/enemy.h) used by `FUN_080ef4e4`, `Enemy_Sleep`, `FUN_080ec92c`, `FUN_080ed068` (enemy_manager.c)
+- **Frequency**: 5 files define such helpers; 7 functions verified to need the shape
+- **Seen in**: `EnableEntityFlags` / `DisableEntityFlags` / `TestFlag030047a4` (entity_0823acbc.c), `ClearHitboxFlags` (entity_ec96.c), `TestHitboxUnk38` (solar_bamboo.c), `Entity28CB_SetState` (entity_28cb.c), `Enemy_SetFlag` / `Enemy_SetFlag2` / `Enemy_ClearFlag2` / `Enemy_SetFlag4` (include/enemy.h) used by `FUN_080ef4e4`, `Enemy_Sleep`, `FUN_080ec92c`, `FUN_080ed068`, plus `Stat_SetFlag934` / `Stat_ClearFlag934` and `EnemyManager_ClearFlags` used by `FUN_080ec900`, `FUN_080ee9d4`, `EnemyManager_Update` (all enemy_manager.c)
 - **Description**: these developers did not write `p->flags |= BIT;` at the call
   site. They wrote a one-line `static inline` taking the struct pointer and the
   mask, and called that. `data.c` contains the string
@@ -57,6 +57,13 @@ compiler-forced one) in a function that just reached MATCHING:
   `&p->flags` makes both arms identical so the stores merge, and
   `static inline void f(T* p, s32 bitidx) { p->flags |= (1 << bitidx); }` folds
   the shift at compile time so the parameter disappears entirely.
+- It applies to globals too, and then the helper takes only the mask, like
+  `EnableEntityFlags`: `static inline void Stat_SetFlag934(u16 bit) { gStat->unk_934 |= bit; }`.
+  A helper clearing **several** bits at once is the same shape with a plural
+  name (`EnemyManager_ClearFlags(p, A | B | C)`), and it subsumes what looked
+  like a separate u16 trap: writing `f &= ~0x20;` narrows the constant and
+  loads it from the pool, but `~bit` on a `u16` parameter stays `int` and
+  gives the `movs` / `rsbs` pair the target has.
 - One helper per field, not per width — `Enemy` needs a separate pair for
   `flags`, `flags2`, `flags4`, even though `flags` and `flags2` are both `u32`.
 - The read side exists too and comes in two flavours: returning the masked value
