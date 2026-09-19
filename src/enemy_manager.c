@@ -8,7 +8,7 @@
 typedef struct EnemyManager {
   Entity e;                     // 0x00, ENTITY_UNK_8
   Unk_0203f400* msgRecords;     // 0x18, FUN_080ec8a4 が FUN_08230f94(msgRecordID, &msgRecords) で先頭を受け取り、戻り値の件数だけ走査する
-  EnemyListNode* list;          // 0x1C, FUN_080ec614 が Malloc(8) した番兵ノード. gEnemyListHead と同じ値
+  EnemyListNode* list;          // 0x1C, EnemyManager_InitList が Malloc(8) した番兵ノード. gEnemyListHead と同じ値
   EnemyListNode* cursor;        // 0x20, FUN_080ec92c が1フレームおきに1つ進める巡回カーソル
   u32 msgRecordID;              // 0x24, EnemyManager_Init の第2引数. FUN_08230f94 の検索キー
   u16 unk_28;                   // 0x28, 読み手も書き手も未発見
@@ -25,7 +25,18 @@ static_assert(sizeof(EnemyManager) == 640);
 
 extern EnemyManager* gEnemyManager;  // 0x03002C5C
 
-NAKED void FUN_080ec614(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec614.inc"); }
+// 番兵ノードを1つ確保してリストを空の状態にする
+void EnemyManager_InitList(EnemyManager* p) {
+  EnemyListNode* node;
+
+  p->list = Malloc(8);
+  ClearMemory(p->list, 8);
+  node = p->list;
+  node->next = NULL;
+  node->enemy = NULL;
+  gEnemyListHead = node;
+  p->cursor = node;
+}
 
 NAKED bool32 Enemy_Init_080ec640(Enemy* enemy) { INCFUNC("asm/func/Enemy_Init_080ec640.inc"); }
 

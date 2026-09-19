@@ -81,7 +81,7 @@ static_assert(sizeof(Enemy) == 1620);
 
 // data.c の "../enemy/system/eneinline.h" という文字列から察するに EnemyXXX_Init の関数サイズがすべて異様に大きいのは、共通部分を eneinline.h にまとめていてそれをインライン展開しているからだと思われる(なんで？)
 
-// 生存中のエネミーを繋ぐ単方向リストのノード, 根拠: FUN_080ec614 が Malloc(8) して gEnemyListHead に繋ぐ
+// 生存中のエネミーを繋ぐ単方向リストのノード, 根拠: EnemyManager_InitList が Malloc(8) して gEnemyListHead に繋ぐ
 typedef struct EnemyListNode {
   struct EnemyListNode* next;  // 0x00, FUN_080ec6fc が削除時に前ノードの next へ付け替える
   Enemy* enemy;                // 0x04, Enemy_Init_080ec640 が登録対象を書く

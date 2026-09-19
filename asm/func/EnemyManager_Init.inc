@@ -11,7 +11,7 @@
 	movs r0, #3
 	strb r0, [r1]
 	adds r0, r4, #0
-	bl FUN_080ec614
+	bl EnemyManager_InitList
 	ldr r1, _080EEAAC @ =0x03002C5C
 	str r4, [r1]
 	pop {r4}
