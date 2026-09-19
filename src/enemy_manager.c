@@ -542,23 +542,17 @@ NAKED void FUN_080ef048(void) { INCFUNC("asm/func/FUN_080ef048.inc"); }
 NAKED void FUN_080ef154(void) { INCFUNC("asm/func/FUN_080ef154.inc"); }
 
 void FUN_080ef4e4(void) {
-  s32 id;
-  Enemy* p;
-  EnemyFlags2 mask;
-  EnemyFlags2 bit;
-
-  id = VM_GetKeywordValue('n', 0);
-  if (id == 0) {
-    return;
-  }
-  p = FindEnemyById(id);
-  if (p != NULL) {
-    if (VM_GetKeywordValue('f', 0) == 0) {
-      mask = ENEFLAG2_UNK_26;
-      p->flags2 &= ~mask;
-    } else {
-      bit = ENEFLAG2_UNK_26;
-      p->flags2 |= bit;
+  s32 id = VM_GetKeywordValue('n', 0);
+  if (id != 0) {
+    Enemy* p = FindEnemyById(id);
+    if (p != NULL) {
+      if (VM_GetKeywordValue('f', 0) == 0) {
+        EnemyFlags2 bit = ENEFLAG2_UNK_26;
+        p->flags2 &= ~bit;
+      } else {
+        EnemyFlags2 bit = ENEFLAG2_UNK_26;
+        p->flags2 |= bit;
+      }
     }
   }
 }
