@@ -1,6 +1,7 @@
 #include "enemy.h"
 #include "entity.h"
 #include "global.h"
+#include "malloc.h"
 
 // エネミー全体の管理者. シングルトンで、生存中のエネミーを gEnemyListHead のリストで持つ
 typedef struct EnemyManager {
@@ -117,7 +118,12 @@ NAKED void FUN_080ee9d4(EnemyManager* p) { INCFUNC("asm/func/FUN_080ee9d4.inc");
 
 NAKED s32 EnemyManager_Update(EnemyManager* p) { INCFUNC("asm/func/EnemyManager_Update.inc"); }
 
-NAKED s32 EnemyManager_Destroy(EnemyManager* p) { INCFUNC("asm/func/EnemyManager_Destroy.inc"); }
+s32 EnemyManager_Destroy(EnemyManager* p) {
+  FUN_080ee218();
+  Free(gEnemyListHead);
+  gEnemyManager = NULL;
+  return 0;
+}
 
 NAKED s32 EnemyManager_Init(EnemyManager* p, u16 msgRecordID, u32 _) { INCFUNC("asm/func/EnemyManager_Init.inc"); }
 
