@@ -82,7 +82,22 @@ void FUN_080ec79c(u8 kind, void* payload) {
 
 NAKED void FUN_080ec7e8(u8 kind, u8 unk_480, void* payload) { INCFUNC("asm/func/FUN_080ec7e8.inc"); }
 
-NAKED void FUN_080ec848(u8 kind, void* payload, u16 id) { INCFUNC("asm/func/FUN_080ec848.inc"); }
+// 種族と ID で敵を1体だけ特定してメッセージを配送する
+void FUN_080ec848(u8 kind, void* payload, u16 id) {
+  EnemyListNode* node = gEnemyListHead;
+  Enemy* p;
+
+  if (node != NULL) {
+    while (node->next != NULL) {
+      p = node->enemy;
+      if ((p->kind == kind) && (p->unk_0.id == id) && (p->handlerMsg != NULL)) {
+        p->handlerMsg(p, payload);
+        return;
+      }
+      node = node->next;
+    }
+  }
+}
 
 NAKED void FUN_080ec8a4(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec8a4.inc"); }
 
