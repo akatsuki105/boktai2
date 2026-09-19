@@ -4,22 +4,6 @@
 	
 	.text
 
-	thumb_func_start FUN_080ef84c
-FUN_080ef84c: @ 0x080EF84C
-  .include "asm/func/FUN_080ef84c.inc"
-
-	thumb_func_start FUN_080ef86c
-FUN_080ef86c: @ 0x080EF86C
-  .include "asm/func/FUN_080ef86c.inc"
-
-	thumb_func_start FUN_080ef968
-FUN_080ef968: @ 0x080EF968
-  .include "asm/func/FUN_080ef968.inc"
-
-	thumb_func_start FUN_080efa6c
-FUN_080efa6c: @ 0x080EFA6C
-  .include "asm/func/FUN_080efa6c.inc"
-
 	thumb_func_start FUN_080efb60
 FUN_080efb60: @ 0x080EFB60
   .include "asm/func/FUN_080efb60.inc"

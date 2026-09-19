@@ -159,6 +159,7 @@ SECTIONS {
 			src/entity_e435.o (.text);
 			src/entity_8ecd.o (.text);
 			src/code_08017b70.o (.text);
+			src/entity_d9d3.o (.text);
 			src/entity_da0b.o (.text);
 			src/entity_ef6f.o (.text);
 			src/entity_6d69.o (.text);
@@ -377,7 +378,9 @@ SECTIONS {
 	.rodata :
 	ALIGN(4)
 	{
+    src/entity_e28b.o (.rodata);
     src/data.o (.rodata);
+    src/game_result_data.o (.rodata);
     src/interrupts.o (.rodata);
     src/lib/m4a_tables.o (.rodata);
     src/sound.o (.rodata);

@@ -1,3 +1,4 @@
+#include "enemy.h"
 #include "entity.h"
 #include "global.h"
 
@@ -12,4 +13,4 @@ extern EntityEC2A gEntityEC2A;  // 0x03002C5C
 
 INCASM("asm/entity_ec2a.inc");
 
-// 後続の enemy_080ef84c.s も entity_ec2a.c に含めるかは不明
+// 後続の enemy_080ef84c.c も entity_ec2a.c に含めるかは不明
