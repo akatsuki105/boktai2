@@ -264,6 +264,21 @@ Three rules keep this file usable:
 - **Frequency**: `VM_RunExpression`.
 - `if (c) { x = A; } else { x = B; } slot->f = x;` and `if (c) { slot->f = A; } else { slot->f = B; }` produce the same merged store, but not the same scheduling around it. In `VM_RunExpression` the `x` version delayed a later call's first-argument setup (`adds r0, r5, #0` emitted after the other two argument registers instead of before them); writing the store directly in both arms fixed it. If argument setup order is the only thing off near a two-armed store, try removing the intermediate variable.
 
+### A returned boolean built with one branch: initialise, then clear
+
+- **Frequency**: `FUN_080eddc8`.
+- `movs r1, #1` / `cmp` / `bgt` over a `movs r1, #0` / `adds r0, r1, #0` is not
+  `return x > 0;` and not a ternary — agbcc canonicalises both of those into the
+  opposite polarity (`movs r1, #0` first, `ble` over `movs r1, #1`), and writing
+  the comparison inverted (`x <= 0 ? FALSE : TRUE`) does not move it either.
+  What matches is an explicit variable: `alive = TRUE; if (x <= 0) { alive = FALSE; }
+  return alive;`.
+- The **load** has to happen before the `= TRUE`, or the field access is
+  scheduled after it and a second scratch register appears. Read the field into
+  its own local first (`hp = p->unk_184;`), then initialise the flag. Declaring
+  both at the top of the function C89-style and assigning them in that order is
+  what the target looks like.
+
 ### A bit constant loaded before the field it is OR'd into needs its own local
 
 - **Frequency**: `FUN_0823b47c`, `FUN_080ec900`, `EnemyManager_Update`.

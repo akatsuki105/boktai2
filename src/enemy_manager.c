@@ -121,7 +121,23 @@ Enemy* FindEnemyById(u32 id) {
   return NULL;
 }
 
-NAKED bool32 FUN_080eddc8(void) { INCFUNC("asm/func/FUN_080eddc8.inc"); }
+// スクリプトが指定した敵が生存している (unk_184 > 0) かを返す
+bool32 FUN_080eddc8(void) {
+  u32 id = Script_GetValue();
+  Enemy* p;
+  bool32 alive;
+  s32 hp;
+
+  if ((id == 0) || ((p = FindEnemyById(id)) == NULL)) {
+    return FALSE;
+  }
+  hp = p->unk_184;
+  alive = TRUE;
+  if (hp <= 0) {
+    alive = FALSE;
+  }
+  return alive;
+}
 
 bool32 FUN_080eddf8(void) {
   u32 id = Script_GetValue();
