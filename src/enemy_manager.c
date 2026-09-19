@@ -59,7 +59,24 @@ void FUN_080ec900(u8 kind) {
   }
 }
 
-NAKED void FUN_080ec92c(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec92c.inc"); }
+// 巡回カーソルを1つ進め、通りかかった敵に flags の bit3 を立てる
+void FUN_080ec92c(EnemyManager* p) {
+  EnemyListNode* cursor;
+  EnemyListNode* next;
+  u32 flag;
+
+  if ((p->frameCounter & 1) == 0) {
+    cursor = p->cursor;
+    if ((cursor != NULL) && (cursor->enemy != NULL)) {
+      flag = 8;
+      cursor->enemy->flags |= flag;
+      next = cursor->next;
+    } else {
+      next = gEnemyListHead;
+    }
+    p->cursor = next;
+  }
+}
 
 NAKED s32 FUN_080ec968(void) { INCFUNC("asm/func/FUN_080ec968.inc"); }
 
