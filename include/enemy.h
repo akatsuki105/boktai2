@@ -65,7 +65,10 @@ typedef void (*EnemyMsgHandler)(void* p, void* payload);
   EnemyFlags3 flags3;          /* 0x180, bit14=FUN_080ec9b0 が立て FUN_080edebc が落とす */                           \
   EnemyFlags4 flags4;          /* 0x182, bit12 が立っていると FUN_080edebc が破棄側へ回す */                          \
   s16 unk_184;                 /* 0x184, FUN_080ee254 が ldrsh で 1 未満かを判定 */                                   \
-  u8 unk_186[0x1C8 - 0x186];   /* 0x186 */                                                                            \
+  u8 unk_186[0x190 - 0x186]; /* 0x186 */ \
+  u16 unk_190;               /* 0x190, Enemy_Sleep が unk_192 へ写す */ \
+  u16 unk_192;               /* 0x192, Enemy_Sleep / FUN_080ed564 / FUN_080ee738 が書く */ \
+  u8 unk_194[0x1C8 - 0x194]; /* 0x194 */ \
   u16 unk_1c8;                 /* 0x1C8, 状態を切り替えるときに 0 でクリアされる */                                   \
   u8 unk_1ca[0x1CC - 0x1CA];   /* 0x1CA */                                                                            \
   void* unk_1cc;               /* 0x1CC, handlerUpdate/handlerDestroy の唯一の引数. 破棄時にこれが Free される */     \
@@ -112,7 +115,9 @@ typedef void (*EnemyMsgHandler)(void* p, void* payload);
   u8 unk_564[0x578 - 0x564];   /* 0x564 */                                                                            \
   void* handlerState;          /* 0x578, 状態ハンドラ. Thumb のコードアドレスが入る */                                \
   EnemyMsgHandler handlerMsg;  /* 0x57C, FUN_080ec758/080ec79c/080ec848 が (enemy, payload) で呼ぶ */                 \
-  u8 unk_580[0x5C0 - 0x580];   /* 0x580 */                                                                            \
+  u8 unk_580[0x594 - 0x580]; /* 0x580 */ \
+  void* unk_594;             /* 0x594, Enemy_Sleep が非NULLのときだけ動く */ \
+  u8 unk_598[0x5C0 - 0x598]; /* 0x598 */ \
   void* unk_5c0;               /* 0x5C0, 既定の状態ハンドラ. FUN_080ed724 が handlerState へコピーする */             \
   u8 unk_5c4[0x600 - 0x5C4];   /* 0x5C4 */                                                                            \
   void* unk_600;               /* 0x600, EnemyBat_Init がアドレスを取る。呼び出しは未発見 */                          \

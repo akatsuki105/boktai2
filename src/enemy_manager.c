@@ -241,7 +241,18 @@ NAKED void FUN_080ed564(void) { INCFUNC("asm/func/FUN_080ed564.inc"); }
 
 NAKED void FUN_080ed724(void) { INCFUNC("asm/func/FUN_080ed724.inc"); }
 
-NAKED void Enemy_Sleep(void) { INCFUNC("asm/func/Enemy_Sleep.inc"); }
+void Enemy_Sleep(void) {
+  s32 id;
+  Enemy* p;
+  EnemyFlags4 flag;
+
+  id = VM_GetKeywordValue('n', 0);
+  if ((id != 0) && ((p = FindEnemyById(id)) != NULL) && (p->unk_594 != NULL)) {
+    p->unk_192 = p->unk_190;
+    flag = ENEFLAG4_UNK_1;
+    p->flags4 |= flag;
+  }
+}
 
 NAKED void FUN_080ed834(void) { INCFUNC("asm/func/FUN_080ed834.inc"); }
 
