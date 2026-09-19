@@ -46,7 +46,42 @@ void EnemyManager_InitList(EnemyManager* p) {
 
 NAKED bool32 Enemy_Init_080ec640(Enemy* p) { INCFUNC("asm/func/Enemy_Init_080ec640.inc"); }
 
-NAKED void FUN_080ec6fc(Enemy* p) { INCFUNC("asm/func/FUN_080ec6fc.inc"); }
+// リストから指定した敵のノードを外して解放する
+NON_MATCH void FUN_080ec6fc(Enemy* enemy) {
+#ifdef NONMATCHING_C
+  EnemyManager* mgr;
+  EnemyListNode* node;
+  EnemyListNode* prev;
+  EnemyListNode* next;
+
+  mgr = GetEnemyManager();
+  if ((mgr == NULL) || ((node = gEnemyListHead) == NULL)) {
+    return;
+  }
+  if (node->enemy == enemy) {
+    next = node->next;
+    gEnemyListHead = next;
+    mgr->cursor = next;
+    Free(node);
+    mgr->enemyCount--;
+    return;
+  }
+  do {
+    prev = node;
+    if (prev->next == NULL) {
+      return;
+    }
+    node = prev->next;
+  } while (node->enemy != enemy);
+  next = node->next;
+  Free(node);
+  prev->next = next;
+  mgr->cursor = next;
+  mgr->enemyCount--;
+#else
+  INCFUNC("asm/func/FUN_080ec6fc.inc");
+#endif
+}
 
 // 全ての敵へメッセージを配送する
 void FUN_080ec758(u8 kind, void* payload) {
