@@ -94,6 +94,8 @@ SECTIONS {
       src/entity_0800f110.o(COMMON);
       src/shadow_08013df0.o(COMMON);
       src/entity_08016660.o(COMMON);
+      src/msgbus.o(COMMON);
+      src/entity_286f.o(COMMON);
       src/iwram2.o(iwram_data);
       src/camera.o(COMMON);
       src/time.o(COMMON);

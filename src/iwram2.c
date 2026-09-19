@@ -11,8 +11,6 @@
 #include "time.h"
 #include "vm.h"
 
-struct EntityMsgBus;
-struct Entity286F;
 struct Dvalinn;
 struct Entity5941;
 struct EntityCBB0;
@@ -21,12 +19,7 @@ struct Entity9A9F;
 struct Player;
 struct CollisionMapData;
 
-IWRAM_DATA s32 s32_03002b48 = 0;                       // 0x03002B48
-IWRAM_DATA struct EntityMsgBus* gEntityMsgBus = NULL;  // 0x03002B4C
-IWRAM_DATA struct Entity286F* gEntity286F = NULL;      // 0x03002B50
-
-IWRAM_DATA u8 u8_03002b54[4] = {};  // todo
-
+IWRAM_DATA u32 u32_03002b54 = 0;                    // gUnkEntity1Ptr_03002b58 と同じ場所っぽい, rfu_syncVBlank の戻り値が入る
 IWRAM_DATA Entity* gUnkEntity1Ptr_03002b58 = NULL;  // 0x03002B58, Malloc(908) で確保したバッファを指すポインタ, RFU関連? (FUN_0804e2c0)
 
 IWRAM_DATA u8 u8_03002b5c[60] = {};            // todo

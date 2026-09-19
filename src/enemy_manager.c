@@ -152,5 +152,3 @@ NAKED void FUN_080ef584(void) { INCFUNC("asm/func/FUN_080ef584.inc"); }
 NAKED void FUN_080ef5a8(void) { INCFUNC("asm/func/FUN_080ef5a8.inc"); }
 
 NAKED EnemyManager* GetEnemyManager(void) { INCFUNC("asm/func/GetEnemyManager.inc"); }
-
-// 後続の enemy_080ef84c.c も enemy_manager.c に含めるかは不明
