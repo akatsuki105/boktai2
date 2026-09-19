@@ -7,11 +7,13 @@
 
 // gSubroutineTable の 0xD854 から生成されるシングルトン. 実体のポインタは 0x03000184
 typedef struct {
-  Entity e;      // 0x00, ENTITY_UNK_8
-  u8 unk_18[8];  // 0x18
-  u32 unk_20;    // 0x20, EntityD854_Update が毎フレーム +1
-  u16 unk_24;    // 0x24, EntityD854_Init が引数をそのまま書く
-  u8 unk_26[6];  // 0x26
+  Entity e;    // 0x00, ENTITY_UNK_8
+  u32 unk_18;  // 0x18, FUN_080f8c10 が 0 でクリアする
+  s32 count;   // 0x1C, head のリストの登録数. 6件以上だと FUN_080f8c58 が登録を拒否する
+  u32 unk_20;  // 0x20, EntityD854_Update が毎フレーム +1
+  u16 unk_24;  // 0x24, EntityD854_Init が引数をそのまま書く
+  u16 unk_26;  // 0x26, 読み手も書き手も未発見
+  void* head;  // 0x28, ノードの単方向リストの先頭. ノードは +0x00 に Enemy*, +0x04 にフラグ, +0x05 に種別, +0x06 にタイマ, +0x0C に next を持つ
 } EntityD854;
 static_assert(sizeof(EntityD854) == 44);
 
@@ -24,6 +26,46 @@ NAKED void FUN_080ef968(Enemy* p, s32 val1, u32 val2) { INCFUNC("asm/func/FUN_08
 NAKED void FUN_080efa6c(Enemy* p, s32 val1, u32 val2) { INCFUNC("asm/func/FUN_080efa6c.inc"); }
 
 INCASM("asm/enemy_080ef84c.inc");
+
+NAKED s32 FUN_080f84d4(Enemy* p) { INCFUNC("asm/func/FUN_080f84d4.inc"); }
+
+NAKED void FUN_080f8844(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080f8844.inc"); }
+
+NAKED void FUN_080f897c(unknown* param_1) { INCFUNC("asm/func/FUN_080f897c.inc"); }
+
+NAKED s32 FUN_080f8abc(Enemy* p) { INCFUNC("asm/func/FUN_080f8abc.inc"); }
+
+NAKED void FUN_080f8ae0(Enemy* p) { INCFUNC("asm/func/FUN_080f8ae0.inc"); }
+
+NAKED void FUN_080f8bb8(unknown* param_1) { INCFUNC("asm/func/FUN_080f8bb8.inc"); }
+
+NAKED void FUN_080f8c10(void) { INCFUNC("asm/func/FUN_080f8c10.inc"); }
+
+NAKED bool32 FUN_080f8c2c(unknown* node) { INCFUNC("asm/func/FUN_080f8c2c.inc"); }
+
+NAKED bool32 FUN_080f8c58(unknown* node, Enemy* enemy, u8 param_3) { INCFUNC("asm/func/FUN_080f8c58.inc"); }
+
+NAKED void FUN_080f8cac(unknown* node) { INCFUNC("asm/func/FUN_080f8cac.inc"); }
+
+NAKED void FUN_080f8cec(void) { INCFUNC("asm/func/FUN_080f8cec.inc"); }
+
+NAKED unknown* FUN_080f8cf0(u32 param_1) { INCFUNC("asm/func/FUN_080f8cf0.inc"); }
+
+NAKED bool32 FUN_080f8d20(unknown* node) { INCFUNC("asm/func/FUN_080f8d20.inc"); }
+
+NAKED Enemy* FUN_080f8d60(s16 id) { INCFUNC("asm/func/FUN_080f8d60.inc"); }
+
+NAKED void FUN_080f8da4(void) { INCFUNC("asm/func/FUN_080f8da4.inc"); }
+
+NAKED void FUN_080f8e3c(unknown* node) { INCFUNC("asm/func/FUN_080f8e3c.inc"); }
+
+NAKED s32 FUN_080f8e84(unknown* param_1, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080f8e84.inc"); }
+
+NAKED s32 FUN_080f8f04(unknown* param_1, s32 param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080f8f04.inc"); }
+
+NAKED unknown* FUN_080f9a38(Enemy* p, u8 param_2) { INCFUNC("asm/func/FUN_080f9a38.inc"); }
+
+NAKED void FUN_080f9b34(void) { INCFUNC("asm/func/FUN_080f9b34.inc"); }
 
 NAKED s32 EntityD854_Update(EntityD854* p) { INCFUNC("asm/func/EntityD854_Update.inc"); }
 
