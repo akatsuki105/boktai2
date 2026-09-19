@@ -172,7 +172,31 @@ NAKED s32 FUN_080ecf60(u32 kind) { INCFUNC("asm/func/FUN_080ecf60.inc"); }
 
 NAKED s32 FUN_080ecfbc(u32 kind, u32 unk_480) { INCFUNC("asm/func/FUN_080ecfbc.inc"); }
 
-NAKED Enemy* FUN_080ed020(void) { INCFUNC("asm/func/FUN_080ed020.inc"); }
+// 生きている敵を先頭から1体返す
+NON_MATCH Enemy* FUN_080ed020(void) {
+#ifdef NONMATCHING_C
+  EnemyListNode* node;
+  Enemy* p;
+  EnemyFlags2 mask;
+
+  GetEnemyManager();
+  node = gEnemyListHead;
+  p = node->enemy;
+  if (p != NULL) {
+    mask = ENEFLAG2_UNK_17;
+    do {
+      if ((p->unk_184 > 0) && ((p->flags2 & mask) == 0)) {
+        return p;
+      }
+      node = node->next;
+      p = node->enemy;
+    } while (p != NULL);
+  }
+  return NULL;
+#else
+  INCFUNC("asm/func/FUN_080ed020.inc");
+#endif
+}
 
 void FUN_080ed068(void) {
   EnemyListNode* node;
