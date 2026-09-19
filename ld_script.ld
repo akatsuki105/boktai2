@@ -230,7 +230,8 @@ SECTIONS {
 			src/entity_080cbabc.o (.text);
 			src/entity_f41a.o (.text);
 			src/player_080d82ec.o (.text);
-			src/code_080c5058.o (.text);
+			src/entity_080d84f8.o (.text);
+			src/code_080d8644.o (.text);
 			src/entity_080ddf88.o (.text);
 			src/entity_080df420.o (.text);
 			src/code_080df46c.o (.text);
