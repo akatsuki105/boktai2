@@ -176,7 +176,13 @@ void FUN_080ef534(void) {
   }
 }
 
-NAKED void FUN_080ef55c(void) { INCFUNC("asm/func/FUN_080ef55c.inc"); }
+void FUN_080ef55c(void) {
+  EnemyManager* p = gEnemyManager;
+
+  if (p != NULL) {
+    p->flags &= ~(u16)VM_GetKeywordValue(0x73, 0);
+  }
+}
 
 void FUN_080ef584(void) {
   EnemyManager* p = gEnemyManager;
