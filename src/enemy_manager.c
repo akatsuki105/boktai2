@@ -112,7 +112,28 @@ void FUN_080ec92c(EnemyManager* p) {
   }
 }
 
-NAKED s32 FUN_080ec968(void) { INCFUNC("asm/func/FUN_080ec968.inc"); }
+// 活動中の敵の数を数える
+s32 FUN_080ec968(void) {
+  EnemyListNode* node = gEnemyListHead;
+  Enemy* p = node->enemy;
+  s32 count = 0;
+  EnemyFlags mask;
+
+  if (p != NULL) {
+    mask = ENEFLAG_UNK_0 | ENEFLAG_UNK_1;
+    do {
+      if ((FUN_080e8a60(p) != 0) || ((p->flags & mask) != 0)) {
+        node = node->next;
+        p = node->enemy;
+      } else {
+        node = node->next;
+        p = node->enemy;
+        count++;
+      }
+    } while (p != NULL);
+  }
+  return count;
+}
 
 NAKED void FUN_080ec9b0(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec9b0.inc"); }
 
