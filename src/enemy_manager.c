@@ -55,7 +55,11 @@ NON_MATCH void FUN_080ec6fc(Enemy* enemy) {
   EnemyListNode* next;
 
   mgr = GetEnemyManager();
-  if ((mgr == NULL) || ((node = gEnemyListHead) == NULL)) {
+  if (mgr == NULL) {
+    return;
+  }
+  node = gEnemyListHead;
+  if (node == NULL) {
     return;
   }
   if (node->enemy == enemy) {
@@ -297,12 +301,12 @@ NON_MATCH void FUN_080ed9d0(void) {
 #ifdef NONMATCHING_C
   s32 id;
   s32 val;
-  Enemy* p;
 
   id = VM_GetKeywordValue('n', 0);
   val = VM_GetKeywordValue('d', 0);
-  if ((id != 0) && ((p = FindEnemyById(id)) != NULL)) {
-    if ((p->flags5 & ENEFLAG5_UNK_8) != 0) {
+  if (id != 0) {
+    Enemy* p = FindEnemyById(id);
+    if (p != NULL && (p->flags5 & ENEFLAG5_UNK_8) != 0) {
       FUN_080ecbe8(p, val);
     }
   }
@@ -388,7 +392,11 @@ bool32 FUN_080eddc8(void) {
   bool32 alive;
   s32 hp;
 
-  if ((id == 0) || ((p = FindEnemyById(id)) == NULL)) {
+  if (id == 0) {
+    return FALSE;
+  }
+  p = FindEnemyById(id);
+  if (p == NULL) {
     return FALSE;
   }
   hp = p->unk_184;
@@ -540,7 +548,11 @@ void FUN_080ef4e4(void) {
   EnemyFlags2 bit;
 
   id = VM_GetKeywordValue('n', 0);
-  if ((id != 0) && ((p = FindEnemyById(id)) != NULL)) {
+  if (id == 0) {
+    return;
+  }
+  p = FindEnemyById(id);
+  if (p != NULL) {
     if (VM_GetKeywordValue('f', 0) == 0) {
       mask = ENEFLAG2_UNK_26;
       p->flags2 &= ~mask;
