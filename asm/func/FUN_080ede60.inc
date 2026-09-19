@@ -2,7 +2,7 @@
 	adds r7, r0, #0
 	adds r6, r1, #0
 	adds r5, r2, #0
-	bl FUN_080edd94
+	bl GetFirstEnemy
 	b _080EDEA8
 _080EDE6E:
 	movs r0, #1

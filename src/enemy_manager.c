@@ -89,7 +89,7 @@ NAKED Enemy* FUN_080edce8(u32 id) { INCFUNC("asm/func/FUN_080edce8.inc"); }
 
 NAKED Enemy* FUN_080edd2c(u32 id) { INCFUNC("asm/func/FUN_080edd2c.inc"); }
 
-NAKED Enemy* FUN_080edd94(void) { INCFUNC("asm/func/FUN_080edd94.inc"); }
+Enemy* GetFirstEnemy(void) { return gEnemyListHead->enemy; }
 
 NAKED Enemy* FUN_080edda0(u32 id) { INCFUNC("asm/func/FUN_080edda0.inc"); }
 
