@@ -286,7 +286,21 @@ bool32 FUN_080eddf8(void) {
   return FALSE;
 }
 
-NAKED bool32 FUN_080ede14(u32 kind, u32 mask) { INCFUNC("asm/func/FUN_080ede14.inc"); }
+// 指定した種族で flags に mask のビットが立っている敵が1体でもいるかを返す
+NON_MATCH bool32 FUN_080ede14(u32 kind, u32 mask) {
+#ifdef NONMATCHING_C
+  Enemy* p;
+
+  for (p = GetFirstEnemy(); p != NULL; p = FUN_080edce8(p->unk_0.id)) {
+    if ((p->kind == kind) && (FUN_080e8a60(p) == 0) && ((p->flags & mask) != 0)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_080ede14.inc");
+#endif
+}
 
 NAKED bool32 FUN_080ede60(u32 kind, u32 unk_480, u32 mask) { INCFUNC("asm/func/FUN_080ede60.inc"); }
 
