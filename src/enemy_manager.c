@@ -123,7 +123,7 @@ NAKED s32 EnemyManager_Init(EnemyManager* p, u16 msgRecordID, u32 _) { INCFUNC("
 
 NAKED EnemyManager* EnemyManager_Create(u16 msgRecordID, u16 _) { INCFUNC("asm/func/EnemyManager_Create.inc"); }
 
-NAKED void FUN_080eeb08(void) { INCFUNC("asm/func/FUN_080eeb08.inc"); }
+void FUN_080eeb08(void) { gEnemyManager = NULL; }
 
 NAKED void FUN_080eeb14(u32 plttDst, u32 plttSrc, u32 _, u8 kind, u32 immediate) { INCFUNC("asm/func/FUN_080eeb14.inc"); }
 
