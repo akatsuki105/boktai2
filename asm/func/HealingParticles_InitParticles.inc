@@ -44,7 +44,7 @@ _080A9222:
 	rsbs r2, r2, #0
 	adds r0, r5, #0
 	adds r1, r2, #0
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	adds r0, r5, #0
 	movs r1, #1
 	bl FUN_0822dadc

@@ -43,7 +43,7 @@ _080A7490:
 	mov r0, r8
 	adds r1, r6, #0
 	movs r2, #0
-	bl FUN_0822a4b0
+	bl AuxSprite_Setup
 	mov r0, sl
 	strb r0, [r5, #7]
 	ldr r0, _080A74F8 @ =0x00001033

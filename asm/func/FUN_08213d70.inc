@@ -3,11 +3,11 @@
 	movs r1, #0x86
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r1, #0xb6
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	pop {r4}
 	pop {r0}
 	bx r0

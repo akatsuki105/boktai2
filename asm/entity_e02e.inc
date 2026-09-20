@@ -6821,7 +6821,7 @@ EntityE02E_Destroy: @ 0x080B92B4
 	movs r5, #0x2e
 _080B92BE:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0

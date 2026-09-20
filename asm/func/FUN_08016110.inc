@@ -249,7 +249,7 @@ _08016314:
 	adds r0, #0x3c
 	adds r1, r5, #0
 	movs r2, #1
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r1, r4, #0
 	adds r1, #0x43
 	movs r6, #0

@@ -353,7 +353,7 @@ _080143D6:
 	movs r0, #0
 	strb r0, [r4]
 	mov r0, sb
-	bl FUN_0822dabc
+	bl Particle_Remove
 	b _080143FE
 	.align 2, 0
 _080143F4: .4byte 0x085AA850

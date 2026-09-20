@@ -284,7 +284,7 @@ NAKED void FUN_08061a98(Player* p, u32 idx, Vec3* pos) { INCFUNC("asm/func/FUN_0
 // 多分、サバタが攻撃する時に呼ばれる
 NAKED void FUN_08061b48(Player* p, u32 _, Vec3* pos) { INCFUNC("asm/func/FUN_08061b48.inc"); }
 
-void FUN_08061b98(Player* p) { FUN_0822a4e0(&p->node_6ac); }
+void FUN_08061b98(Player* p) { AuxSprite_Remove(&p->node_6ac); }
 
 NAKED void Player_Init_Anim_08061bac(Player* p) { INCFUNC("asm/func/Player_Init_Anim_08061bac.inc"); }
 

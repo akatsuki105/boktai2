@@ -2,7 +2,7 @@
 	adds r4, r1, #0
 	adds r0, r4, #0
 	adds r0, #0x64
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r0, r4, #0
 	adds r0, #0x14
 	bl FUN_08236424

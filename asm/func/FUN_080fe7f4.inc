@@ -37,7 +37,7 @@ _080FE83A:
 	ldr r0, [r1]
 	cmp r0, #0x3c
 	bgt _080FE848
-	bl FUN_080ff048
+	bl _080FF048
 _080FE848:
 	ldr r3, _080FE960 @ =0x000001DF
 	adds r0, r7, r3
@@ -1080,3 +1080,15 @@ _080FF00A:
 	b _080FF04C
 	.align 2, 0
 _080FF044: .4byte 0x00000551
+_080FF048:
+	adds r0, #1
+	str r0, [r1]
+_080FF04C:
+	add sp, #0x60
+	pop {r3, r4, r5}
+	mov r8, r3
+	mov sb, r4
+	mov sl, r5
+	pop {r4, r5, r6, r7}
+	pop {r0}
+	bx r0

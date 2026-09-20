@@ -4,7 +4,7 @@
 	bl VM_GetKeywordValue
 	cmp r0, #0
 	beq _080EF14A
-	bl FUN_080edda0
+	bl FindEnemyById
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080EF14A

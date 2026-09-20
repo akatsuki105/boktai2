@@ -183,7 +183,7 @@ typedef struct Player {
   u8 unk_5f4[0x64C - 0x5F4];
   PlayerParticleGroup1 ptcl_64c;  // 0x64C, FUN_08061458
   PlayerParticleGroup1 ptcl_67c;  // 0x67C, FUN_0806161c
-  AuxSprite node_6ac;             // 0x6AC, 直後の sprite_6d8 を指すノード, 根拠: FUN_0822a4e0 に渡している
+  AuxSprite node_6ac;             // 0x6AC, 直後の sprite_6d8 を指すノード, 根拠: AuxSprite_Remove に渡している
   AuxSpriteGfx sprite_6d8;        // 0x6D8, Player_Init_Anim_08061bac
   u8 unk_6f0[0x704 - 0x6F4];
   AuxAnimFile* anim_704;  // 0x704
@@ -232,7 +232,5 @@ extern Player* gPlayerPtr[4];
 extern const PlayerFunc gPlayerAttackUpdates[5];  // 0: 剣, 1: 槍, 2: ハンマー, 3: 拳, 4: 銃
 
 Player* CreatePlayer(u32 n, void* _);
-
-Player* CreatePlayer_080d82ec(unknown* r0, unknown* r1);  // 0x080D82EC
 
 #endif  // GUARD_ZOKTAI_PLAYER_H

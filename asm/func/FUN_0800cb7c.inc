@@ -5,10 +5,10 @@
 	beq _0800CBC8
 	adds r0, r4, #0
 	adds r0, #0xa8
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r4, #0
 	adds r0, #0xf0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r1, #0x8e
 	lsls r1, r1, #1
 	adds r0, r4, r1

@@ -175,7 +175,7 @@ _081D09C8:
 	adds r0, r7, #0
 	mov r1, sb
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	mov r2, sl
 	ldr r1, [r2, #0x18]
 	mov r0, r8

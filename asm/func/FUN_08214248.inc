@@ -6,7 +6,7 @@
 	movs r5, #0xb
 _08214254:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -14,7 +14,7 @@ _08214254:
 	movs r1, #0xcb
 	lsls r1, r1, #3
 	adds r0, r6, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0

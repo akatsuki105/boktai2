@@ -4018,7 +4018,7 @@ Entity08202cd8_Destroy: @ 0x08202998
 	movs r5, #7
 _082029A0:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x2c
 	subs r5, #1
 	cmp r5, #0
@@ -4206,7 +4206,7 @@ _08202B02:
 	adds r0, r6, #0
 	ldr r1, [sp, #0x28]
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	mov r3, sl
 	strh r3, [r6, #0x10]
 	b _08202B50
@@ -4223,7 +4223,7 @@ _08202B2C:
 	adds r0, r6, #0
 	ldr r1, [sp, #0x24]
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #8
 	strh r0, [r6, #0x10]
 	b _08202B50
@@ -4231,7 +4231,7 @@ _08202B42:
 	adds r0, r6, #0
 	ldr r1, [sp, #0x24]
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	mov r1, sl
 	strh r1, [r6, #0x10]
 _08202B50:
@@ -5317,7 +5317,7 @@ _082033A0:
 	cmp r0, #0
 	beq _082033AC
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _082033AC:
 	adds r0, r4, #0
 	adds r0, #0x3c
@@ -5368,7 +5368,7 @@ _08203406:
 	adds r1, r7, #0
 	adds r1, #0x18
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	adds r0, #0x2c
 	str r6, [sp]
@@ -6145,7 +6145,7 @@ _082039E8:
 	cmp r0, #0
 	beq _082039F4
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _082039F4:
 	adds r4, #0x98
 	subs r5, #1
@@ -6187,7 +6187,7 @@ _08203A3A:
 	adds r1, r7, #0
 	adds r1, #0x18
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r4, #0
 	adds r0, #0x2c
 	str r6, [sp]
@@ -7961,7 +7961,7 @@ _08204710:
 	beq _0820471E
 	adds r0, r4, #0
 	adds r0, #0x10
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _0820471E:
 	adds r4, #0x44
 	subs r5, #1
@@ -8026,7 +8026,7 @@ _08204786:
 	adds r1, r6, #0
 	adds r1, #0x1c
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r1, [r6, #0x18]
 	mov r0, sb
 	str r0, [sp]
@@ -8617,7 +8617,7 @@ _08204BD4:
 	cmp r0, #0
 	beq _08204BE0
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _08204BE0:
 	adds r4, #0x44
 	subs r5, #1
@@ -8660,7 +8660,7 @@ _08204C28:
 	adds r1, r7, #0
 	adds r1, #0x18
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #3
 	strb r0, [r4, #7]
 	adds r0, r4, #0

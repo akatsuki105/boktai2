@@ -533,7 +533,7 @@ _08200646:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r2, #2
 	strh r2, [r4, #0x10]
 	ldr r0, [r4]

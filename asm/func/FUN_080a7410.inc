@@ -15,7 +15,7 @@ _080A741A:
 	lsls r1, r1, #2
 	adds r0, r6, r1
 	movs r1, #0
-	bl FUN_0822a3f0
+	bl MainSprite_AddDrawList
 	ldr r0, _080A7444 @ =0x00000342
 	adds r1, r6, r0
 	movs r0, #1

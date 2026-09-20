@@ -60,7 +60,7 @@ FUN_0800c460: @ 0x0800C460
 	bl FUN_08236424
 	adds r0, r6, #0
 	adds r0, #0x8c
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r6, #0
 	adds r0, #0x7c
 	bl FUN_082342a8
@@ -793,7 +793,7 @@ _0800CA18:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x2c]
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	mov r1, sp
 	ldrh r1, [r1, #0x20]
 	strh r1, [r4, #0x10]

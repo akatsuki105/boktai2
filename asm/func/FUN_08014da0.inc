@@ -283,7 +283,7 @@ _08014FC2:
 	movs r2, #0x80
 	lsls r2, r2, #2
 	str r3, [sp, #0x18]
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r1, _08015008 @ =0x085AA8F0
 	ldrb r0, [r7, #2]
 	lsls r0, r0, #1

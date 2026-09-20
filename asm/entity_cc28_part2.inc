@@ -19120,7 +19120,7 @@ FUN_0809b430: @ 0x0809B430
 	movs r5, #0x73
 _0809B43A:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -19128,10 +19128,10 @@ _0809B43A:
 	movs r1, #0xb6
 	lsls r1, r1, #4
 	adds r0, r6, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	ldr r1, _0809B464 @ =0x00000BB8
 	adds r0, r6, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0
@@ -19485,7 +19485,7 @@ _0809B6C4:
 	adds r0, r7, r1
 	adds r1, r5, #0
 	movs r2, #0x91
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r2, _0809B8A0 @ =0x00000B67
 	adds r0, r7, r2
 	movs r1, #0
@@ -20091,7 +20091,7 @@ _0809BC1C:
 	adds r0, r7, r1
 	adds r1, r4, #0
 	movs r2, #0x91
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r1, _0809BD04 @ =0x00000143
 	adds r0, r4, #0
 	bl Video_SetAuxSpritePltt
@@ -21687,11 +21687,11 @@ FUN_0809c928: @ 0x0809C928
 	bl FUN_0808cffc
 	ldr r1, _0809C954 @ =0x00000C0C
 	adds r0, r4, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r0, _0809C958 @ =0x00000DA4
 	adds r4, r4, r0
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r1, _0809C95C @ =0x0300013C
 	movs r0, #0
 	str r0, [r1]

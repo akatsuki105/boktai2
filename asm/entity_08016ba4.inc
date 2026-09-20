@@ -503,7 +503,7 @@ _08016A3E:
 	adds r4, #0x10
 _08016A54:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x44
 	movs r0, #1
 	add sl, r0
@@ -584,7 +584,7 @@ _08016ABE:
 	adds r4, #0x10
 _08016AE2:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x44
 	adds r6, #1
 	ldrb r2, [r5, #1]

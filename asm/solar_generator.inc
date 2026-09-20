@@ -1700,7 +1700,7 @@ Entity080b3898_Destroy: @ 0x080B34A0
 	push {r4, lr}
 	adds r4, r0, #0
 	adds r0, #0x18
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r4, #0
 	adds r0, #0x68
 	bl FUN_08236424
@@ -1827,7 +1827,7 @@ Entity080b3898_Init: @ 0x080B3548
 	mov r0, sb
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r0, [r7, #0x60]
 	ldr r1, [r7, #0x64]
 	mov r2, sb

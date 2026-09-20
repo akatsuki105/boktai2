@@ -3,7 +3,7 @@
 	adds r0, r1, #0
 	adds r4, r2, #0
 	adds r0, #8
-	bl FUN_0822dabc
+	bl Particle_Remove
 	movs r1, #1
 	lsls r1, r4
 	ldr r0, [r5, #0x1c]

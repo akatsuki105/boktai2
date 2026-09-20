@@ -6,10 +6,10 @@
 	bl FUN_080f8cac
 	adds r0, r4, #0
 	adds r0, #0x88
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r0, r4, #0
 	adds r0, #0xe8
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r1, #0xb6
 	lsls r1, r1, #1
 	adds r0, r4, r1

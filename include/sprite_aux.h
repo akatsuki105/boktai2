@@ -5,15 +5,18 @@
 #include "sprite_common.h"
 #include "types.h"
 
+typedef u8 AuxSpriteGfxFlags;  // AuxSpriteGfx.flags, ParticleGroupFlags と同じもの?
+#define ASGFLAG_BPP8 (1 << 4)  // 0x10, 8bpp
+
 typedef struct {
-  u16 id;             // 0x00, ID of this actor, used for loading it
-  u8 unk_02;          // 0x02, このゲームでは全て０, Video_GetAuxSprite が ldrb で読むので u8
-  u8 unk_03;          // 0x03, このゲームでは全て０
-  u8 pw;              // 0x04, pixel width
-  u8 ph;              // 0x05, pixel height
-  s8 px;              // 0x06, offset pixel x
-  s8 py;              // 0x07, offset pixel y
-  u32 spritesOffset;  // 0x08, metasprites[] の先頭からアクターの最初のスプライトまでのバイトオフセット, つまり metasprites[spritesOffset>>3]
+  u16 id;                   // 0x00, ID of this actor, used for loading it
+  AuxSpriteGfxFlags flags;  // 0x02, このゲームでは全て０
+  u8 unk_03;                // 0x03, このゲームでは全て０
+  u8 pw;                    // 0x04, pixel width
+  u8 ph;                    // 0x05, pixel height
+  s8 px;                    // 0x06, offset pixel x
+  s8 py;                    // 0x07, offset pixel y
+  u32 spritesOffset;        // 0x08, metasprites[] の先頭からアクターの最初のスプライトまでのバイトオフセット, つまり metasprites[spritesOffset>>3]
 } AuxSpriteEntry;
 static_assert(sizeof(AuxSpriteEntry) == 12);
 
@@ -29,10 +32,10 @@ static_assert(sizeof(AuxSpritePose) == 12);
 
 // これがGBAスプライトに対応
 typedef struct {
-  u8 shape;   // 0x00, (OAM1.14-15 << 2) | (OAM0.14-15); (size << 2) | shape
-  u8 unk_01;  // 0x01, このゲームでは全て０
-  s8 x;       // 0x02
-  s8 y;       // 0x03
+  SpriteShape shape;  // 0x00, see SpriteShape
+  u8 unk_01;          // 0x01, このゲームでは全て０
+  s8 x;               // 0x02
+  s8 y;               // 0x03
 } AuxSubsprite;
 static_assert(sizeof(AuxSubsprite) == 4);
 
@@ -54,9 +57,10 @@ static_assert(sizeof(AuxSpriteFile) == 1404968);
 // ゲーム側がRAM内で扱うもの
 
 // AuxSpriteGfx: AuxSprite の描画に必要な情報 (タイル・パレット・ポーズ配列) を保持する構造体
+// Particle でいう ParticleGroup
 typedef struct {
-  u8 unk_0;                    // 0x00, AuxSpriteEntry.unk_02 が入る
-  u8 unk_1;                    // 0x01
+  AuxSpriteGfxFlags flags;     // 0x00, 初期値には AuxSpriteEntry.flags が入る (ただしこのゲームでは全て０)
+  SpriteShape shape;           // 0x01, see SpriteShape
   u16 unk_2;                   // 0x02
   u16 subspriteCount;          // 0x04
   u16 plttID;                  // 0x06, &gObjPlttData[plttID*16]
@@ -76,24 +80,24 @@ static_assert(sizeof(AuxSpriteGfx) == 28);
 // グラフィックデータの小さい小道具的なスプライトは AuxSprite を使う
 typedef struct AuxSprite {
   SpriteFlags flags;       // 0x00, see SpriteFlags
-  u8 q_active;             // 0x04, リストに繋がれていれば 1, FUN_0822a340 / FUN_0822a36c
-  u8 unk_05;               // 0x05, FUN_0822a470 で 1 がセットされる
+  bool8 active;            // 0x04, リストに繋がれていれば 1, FUN_0822a340 / AuxSprite_RemoveUnsafe
+  u8 unk_05;               // 0x05, AuxSprite_Add で 1 がセットされる
   u8 rotation;             // 0x06, gSineTable[-rotation & 0xFF] の索引として使われる
   u8 priority;             // 0x07, OAM attr2 bit10-11
   s8 scaleX;               // 0x08, 6.6固定小数, 0x40 = 1.0
   s8 scaleY;               // 0x09, 同上
-  u8 q_listIdx;            // 0x0A, gAuxSpriteLists の添字
+  u8 listIdx;              // 0x0A, gAuxSpriteLists の添字
   u8 unk_0b;               // 0x0B
   AuxSpriteGfx* gfx;       // 0x0C, FUN_0822a4fc がセットする
-  s16 q_metaspriteIdx;     // 0x10, gfx->metasprites の添字
+  s16 metaspriteIdx;       // 0x10, gfx->metasprites の添字
   u8 unk_12;               // 0x12
-  u8 q_plttOffset;         // 0x13, gfx->plttID に加算される
-  u8 q_spriteWidth;        // 0x14, gOAMWidthTable[AuxSpriteGfx.unk_1]
-  u8 q_spriteHeight;       // 0x15, gOAMHeightTable[AuxSpriteGfx.unk_1]
-  s8 q_offsetX;            // 0x16, フリップ時に符号反転して座標に加算される
-  s8 q_offsetY;            // 0x17, 同上
-  u32 q_oamAttr;           // 0x18, OAM attr0 | attr1<<16 のベース値. MainSprite.q_oamAttr(0x3C) と同じ役割
-  Vec3 q_pos;              // 0x1C, MainSprite.pos と同じアイソメトリック投影にかけられる
+  u8 plttOffset;           // 0x13, gfx->plttID に加算される
+  u8 spriteWidth;          // 0x14, gOAMWidthTable[AuxSpriteGfx.unk_1]
+  u8 spriteHeight;         // 0x15, gOAMHeightTable[AuxSpriteGfx.unk_1]
+  s8 offsetX;              // 0x16, フリップ時に符号反転して座標に加算される
+  s8 offsetY;              // 0x17, 同上
+  u32 oamAttr;             // 0x18, OAM attr0 | attr1<<16 のベース値. MainSprite.oamAttr(0x3C) と同じ役割
+  Vec3 pos;                // 0x1C, MainSprite.pos と同じアイソメトリック投影にかけられる
   struct AuxSprite* prev;  // 0x24
   struct AuxSprite* next;  // 0x28
 } AuxSprite;
@@ -107,9 +111,10 @@ extern AuxSubsprite* gAuxSubsprites;
 extern u16 gAuxSpriteTileCount;
 extern AuxSprite* gAuxSpriteLists[2];
 
-void FUN_0822a470(AuxSprite* p, AuxSpriteGfx* s, SpriteFlags flags);
-void FUN_0822a4e0(AuxSprite* p);
+void AuxSprite_Add(AuxSprite* p, AuxSpriteGfx* s, SpriteFlags flags);
+void AuxSprite_Remove(AuxSprite* p);
 bool32 Video_GetAuxSprite(AuxSpriteGfx* p, SpriteID32 id);
 void Video_SetAuxSpritePltt(AuxSpriteGfx* p, s32 plttID);
+void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* gfx);
 
 #endif  // __INCLUDE_SPRITE_ACTOR_H__

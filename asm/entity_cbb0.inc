@@ -212,7 +212,7 @@ FUN_080ad368: @ 0x080AD368
 	movs r5, #0x1f
 _080AD370:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x34
 	subs r5, #1
 	cmp r5, #0
@@ -253,7 +253,7 @@ _080AD3A8:
 	adds r0, r4, #0
 	adds r1, r7, #0
 	adds r2, r7, #0
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	adds r0, r4, #0
 	movs r1, #1
 	bl FUN_0822dadc
@@ -7317,13 +7317,13 @@ _080B0AB0: .4byte 0x0000134A
 FUN_080b0ab4: @ 0x080B0AB4
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, r6, #0
 	adds r4, #0x68
 	movs r5, #7
 _080B0AC2:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x68
 	subs r5, #1
 	cmp r5, #0
@@ -7334,7 +7334,7 @@ _080B0AC2:
 	movs r5, #5
 _080B0AD8:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x68
 	subs r5, #1
 	cmp r5, #0
@@ -7427,7 +7427,7 @@ FUN_080b0b7c: @ 0x080B0B7C
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r6, #0
 	strh r6, [r4, #0x10]
 	movs r0, #1
@@ -7505,7 +7505,7 @@ _080B0C0C:
 	adds r1, r4, #0
 	movs r2, #0x80
 	lsls r2, r2, #2
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	b _080B0C64
 	.align 2, 0
 _080B0C4C: .4byte 0x030046B8
@@ -7516,7 +7516,7 @@ _080B0C58:
 	adds r1, r4, #0
 	movs r2, #0x80
 	lsls r2, r2, #3
-	bl FUN_0822a470
+	bl AuxSprite_Add
 _080B0C64:
 	movs r0, #0
 	strh r0, [r5, #0x10]
@@ -7654,7 +7654,7 @@ _080B0D40:
 	adds r1, r4, #0
 	movs r2, #0x80
 	lsls r2, r2, #2
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	b _080B0D90
 	.align 2, 0
 _080B0D80: .4byte 0x08251DD0
@@ -7663,7 +7663,7 @@ _080B0D84:
 	adds r1, r4, #0
 	movs r2, #0x80
 	lsls r2, r2, #3
-	bl FUN_0822a470
+	bl AuxSprite_Add
 _080B0D90:
 	mov r0, sl
 	strh r0, [r5, #0x10]
@@ -9311,7 +9311,7 @@ FUN_080b1a88: @ 0x080B1A88
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #3
 	strb r0, [r4, #7]
 	adds r0, r5, #0
@@ -9378,7 +9378,7 @@ FUN_080b1b1c: @ 0x080B1B1C
 	lsls r2, r2, #2
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #0
 	strh r0, [r4, #0x10]
 	ldr r0, [r4]

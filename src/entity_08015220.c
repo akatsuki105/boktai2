@@ -2,13 +2,13 @@
 #include "global.h"
 #include "sprite.h"
 
-typedef struct Entity08015220 {
+typedef struct {
   Entity e;  // ENTITY_UNK_10
   u8 unk_18[1536 - 0x18];
 } Entity08015220;
 static_assert(sizeof(Entity08015220) == 1536);
 
-extern Entity08015220* gEntity08015220;  // 0x0300005C
+IWRAM_DATA Entity08015220* gEntity08015220 = NULL;  // 0x0300005C
 
 const u16 u16_ARRAY_085aa8f0[9] = {
     0x3, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,

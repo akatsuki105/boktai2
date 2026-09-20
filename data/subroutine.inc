@@ -220,7 +220,7 @@ gSubroutineTable:
 	.4byte 0x554B, FUN_080a07f0
 	.4byte 0x55C2, Entity55C2_Create
 	.4byte 0x55C5, FUN_080ac5f4
-	.4byte 0x5645, FUN_08055430
+	.4byte 0x5645, Entity5645_Create
 	.4byte 0x56AD, FUN_0820c3e0
 	.4byte 0x56DC, FUN_08055704
 	.4byte 0x571D, Entity571D_Create
@@ -381,13 +381,13 @@ gSubroutineTable:
 	.4byte 0x94D9, EnemyBokuLink_Create
 	.4byte 0x94EB, FUN_0809c5f4
 	.4byte 0x9519, PasswordScreen_Create
-	.4byte 0x9531, FUN_08005bc8
+	.4byte 0x9531, Entity08005b54_Create
 	.4byte 0x95A8, Entity95A8_Create
 	.4byte 0x95F8, Entity95F8_Create
 	.4byte 0x9700, FUN_080e16f4
 	.4byte 0x9763, FUN_0807d438
 	.4byte 0x9769, FUN_0823be10
-	.4byte 0x980B, CreatePlayer_080d82ec
+	.4byte 0x980B, Player080d82ec_Create
 	.4byte 0x9817, FUN_0808fcb4
 	.4byte 0x983A, FUN_080e028c
 	.4byte 0x98EC, EnemyGolem_Create
@@ -546,7 +546,7 @@ gSubroutineTable:
 	.4byte 0xD774, FUN_082097dc
 	.4byte 0xD7F4, FUN_080a4fd4
 	.4byte 0xD852, EntityD852_Create
-	.4byte 0xD854, FUN_080f9b9c
+	.4byte 0xD854, EntityD854_Create
 	.4byte 0xD8DF, FUN_0807b66c
 	.4byte 0xD916, FUN_08242eb0
 	.4byte 0xD935, FUN_0804e2c0
@@ -603,7 +603,7 @@ gSubroutineTable:
 	.4byte 0xEB42, FUN_0809e54c
 	.4byte 0xEBFF, FUN_080a5a18
 	.4byte 0xEC1F, FUN_08231bcc
-	.4byte 0xEC2A, EntityEC2A_Create
+	.4byte 0xEC2A, EnemyManager_Create
 	.4byte 0xEC5B, FUN_0823a910
 	.4byte 0xEC96, EntityEC96_Create
 	.4byte 0xED07, EntityED07_Create

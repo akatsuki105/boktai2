@@ -6521,14 +6521,14 @@ EnemyCuroro_Destroy: @ 0x0813D460
 	cmp r0, #0
 	bne _0813D47C
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _0813D484
 	.align 2, 0
 _0813D478: .4byte 0x0000025D
 _0813D47C:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _0813D484:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -6667,7 +6667,7 @@ EnemyCuroro_Init: @ 0x0813D540
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _0813D5D8 @ =0x00009607
 	bl FUN_080e3804
@@ -8169,7 +8169,7 @@ _0813E0FC:
 	ldr r0, _0813E2E4 @ =FUN_080f0320
 	ldr r3, [sp, #0x17c]
 	str r0, [r3]
-	ldr r0, _0813E2E8 @ =FUN_080eff14
+	ldr r0, _0813E2E8 @ =Enemy_080eff14
 	ldr r4, [sp, #0x128]
 	str r0, [r4]
 	ldr r0, _0813E2EC @ =FUN_080e72b0
@@ -8300,7 +8300,7 @@ _0813E2D8: .4byte FUN_080f0430
 _0813E2DC: .4byte 0x085AD470
 _0813E2E0: .4byte FUN_080e73c8
 _0813E2E4: .4byte FUN_080f0320
-_0813E2E8: .4byte FUN_080eff14
+_0813E2E8: .4byte Enemy_080eff14
 _0813E2EC: .4byte FUN_080e72b0
 _0813E2F0: .4byte FUN_080f47c8
 _0813E2F4: .4byte FUN_080f54e4

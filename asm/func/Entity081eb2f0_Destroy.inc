@@ -20,7 +20,7 @@ _081EB28C:
 	cmp r0, #0
 	beq _081EB296
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 _081EB296:
 	adds r4, #0x48
 	adds r5, #1

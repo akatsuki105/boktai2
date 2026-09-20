@@ -218,7 +218,7 @@ FUN_081e0004: @ 0x081E0004
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r2, #0
 	movs r3, #0
 	strh r2, [r4, #0x10]
@@ -259,7 +259,7 @@ FUN_081e0074: @ 0x081E0074
 	movs r1, #0xdc
 	lsls r1, r1, #2
 	adds r0, r0, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	pop {r0}
 	bx r0
 
@@ -378,7 +378,7 @@ FUN_081e0148: @ 0x081E0148
 	movs r5, #7
 _081E0150:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0

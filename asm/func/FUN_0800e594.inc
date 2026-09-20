@@ -342,7 +342,7 @@ _0800E83C:
 	adds r0, #0x44
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r6, #0
 	adds r0, #0x4b
 	movs r5, #2

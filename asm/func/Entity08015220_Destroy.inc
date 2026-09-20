@@ -28,7 +28,7 @@ _080151AC:
 	muls r0, r4, r0
 	adds r0, #0x70
 	adds r0, r5, r0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _080151C0:
 	adds r4, #1
 	cmp r4, #5

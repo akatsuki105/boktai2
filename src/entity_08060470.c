@@ -10,7 +10,7 @@ typedef struct Entity08060470Elem {
   u16 timer;      // 0x02, 毎フレーム +1, 根拠: Entity08060470_Update
   u16 lifetime;   // 0x04, timer がこれ以上になると消える。生成時は配置半径としても使われる, 根拠: Entity08060470_UpdateElem / FUN_080604ec
   u8 unk_6[2];    // 0x06, 読み書きとも未発見
-  Particle ptcl;  // 0x08, 根拠: FUN_0822da70 / FUN_0822dabc に渡される
+  Particle ptcl;  // 0x08, 根拠: FUN_0822da70 / Particle_Remove に渡される
   Vec3 vel;       // 0x30, 毎フレーム ptcl.pos に加算される, 根拠: Entity08060470_UpdateElem
 } Entity08060470Elem;
 static_assert(sizeof(Entity08060470Elem) == 56);

@@ -5136,7 +5136,7 @@ _0808CAD2:
 	movs r5, #7
 _0808CAE2:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x40
 	subs r5, #1
 	cmp r5, #0
@@ -5200,7 +5200,7 @@ _0808CB4E:
 	adds r0, r4, #0
 	mov r1, sb
 	mov r2, sb
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	mov r0, r8
 	strb r0, [r4, #0xf]
 	strb r0, [r5]
@@ -5706,7 +5706,7 @@ FUN_0808cf50: @ 0x0808CF50
 	push {lr}
 	ldr r1, _0808CF60 @ =0x00000A34
 	adds r0, r0, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	pop {r0}
 	bx r0
 	.align 2, 0
@@ -5794,7 +5794,7 @@ FUN_0808cffc: @ 0x0808CFFC
 	movs r5, #1
 _0808D006:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -7547,13 +7547,13 @@ _0808DDAA:
 	adds r0, r0, r5
 	ldr r1, _0808DDD4 @ =0x00000C0C
 	adds r0, r0, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r0, #0x68
 	muls r0, r4, r0
 	adds r0, r0, r5
 	ldr r1, _0808DDD8 @ =0x00000DA4
 	adds r0, r0, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #1
 	cmp r4, #3
 	ble _0808DDAA

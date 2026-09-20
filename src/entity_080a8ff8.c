@@ -15,7 +15,7 @@ static_assert(sizeof(Entity080a8ff8Particle) == 44);
 typedef struct {
   Entity e;                             // 0x000, ENTITY_UNK_8
   Player* owner;                        // 0x018, Init の第2引数。owner->unk_3fb がこのエンティティの生存数カウンタ
-  AuxSprite sprite;                     // 0x01C, 根拠: FUN_0822a470 に AuxSprite* として渡る
+  AuxSprite sprite;                     // 0x01C, 根拠: AuxSprite_Add に AuxSprite* として渡る
   AuxSpriteGfx gfx;                     // 0x048, 根拠: Video_GetActorSprite(&gfx, BOMB)
   Vec3 pos;                             // 0x064, Init が引数の Vec3 をまるごと写す
   Entity080a8ff8Particle particles[8];  // 0x06C, 根拠: FUN_080a8dd8 の i=0..7 / stride 0x2C のループ

@@ -18175,14 +18175,14 @@ EnemyBokuLink_Destroy: @ 0x081B7250
 	cmp r0, #0
 	bne _081B726C
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _081B7274
 	.align 2, 0
 _081B7268: .4byte 0x0000025D
 _081B726C:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _081B7274:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -18319,7 +18319,7 @@ EnemyBokuLink_Init: @ 0x081B7330
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _081B73C4 @ =0x00001DF8
 	bl FUN_080e3804
@@ -19749,7 +19749,7 @@ _081B7E58:
 	ldr r1, _081B8050 @ =FUN_080f0320
 	ldr r5, [sp, #0x19c]
 	str r1, [r5]
-	ldr r1, _081B8054 @ =FUN_080eff14
+	ldr r1, _081B8054 @ =Enemy_080eff14
 	ldr r6, [sp, #0x140]
 	str r1, [r6]
 	ldr r1, _081B8058 @ =FUN_080e72b0
@@ -19874,7 +19874,7 @@ _081B8044: .4byte FUN_080f0430
 _081B8048: .4byte 0x085AD470
 _081B804C: .4byte FUN_080e73c8
 _081B8050: .4byte FUN_080f0320
-_081B8054: .4byte FUN_080eff14
+_081B8054: .4byte Enemy_080eff14
 _081B8058: .4byte FUN_080e72b0
 _081B805C: .4byte FUN_081afcac
 _081B8060: .4byte FUN_080f47c8

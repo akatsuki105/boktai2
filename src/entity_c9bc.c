@@ -6,7 +6,7 @@
 
 // EntityC9BC が count 個まとめて管理する要素
 typedef struct {
-  u8 q_active;  // 0x00, 0 以外なら使用中, FUN_0800cb7c で 0 に戻る
+  bool8 active;  // 0x00, 0 以外なら使用中, FUN_0800cb7c で 0 に戻る
   u8 unk_01[3 - 1];
   u8 q_state;  // 0x03, PTR_ARRAY_085aa774 の添字
   u8 unk_04[0x44 - 0x04];

@@ -66,7 +66,7 @@ _08015530:
 	mov r0, r8
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_0822a4b0
+	bl AuxSprite_Setup
 	mov r0, sl
 	ldr r1, [r0, #0x18]
 	mov r0, sb

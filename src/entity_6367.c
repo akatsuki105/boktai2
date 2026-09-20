@@ -26,9 +26,9 @@ void (*const PTR_ARRAY_085affa0[1])(Entity6367*) = {
 NAKED void FUN_0821a5d4(Entity6367* p) { INCFUNC("asm/func/FUN_0821a5d4.inc"); }
 
 void Entity6367_Destroy_Internal(Entity6367* p) {
-  FUN_0822f1c0(p->sprites);
-  FUN_0822f1c0(p->sprites + 1);
-  FUN_0822f1c0(p->sprites + 2);
+  MainSprite_Remove(p->sprites);
+  MainSprite_Remove(p->sprites + 1);
+  MainSprite_Remove(p->sprites + 2);
 }
 
 NAKED void FUN_0821a714(Entity6367* p, s32 idx) { INCFUNC("asm/func/FUN_0821a714.inc"); }

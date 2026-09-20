@@ -16,7 +16,7 @@
 	adds r0, #0x18
 	adds r1, r4, #0
 	movs r2, #2
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r0, [r5]
 	ldr r1, [r5, #4]
 	str r0, [r6, #0x34]
@@ -44,7 +44,7 @@ _0821B7B2:
 	adds r0, r4, #0
 	adds r1, r7, #0
 	adds r2, r7, #0
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	ldr r1, [r6, #0x78]
 	adds r0, r4, #0
 	movs r2, #2

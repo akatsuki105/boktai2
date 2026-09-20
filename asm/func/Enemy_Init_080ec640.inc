@@ -1,6 +1,6 @@
 	push {r4, r5, r6, r7, lr}
 	adds r5, r0, #0
-	bl FUN_080ef840
+	bl GetEnemyManager
 	adds r6, r0, #0
 	cmp r6, #0
 	beq _080EC69A
@@ -38,7 +38,7 @@ _080EC68A:
 	cmp r0, #0x13
 	bhi _080EC69A
 	ldrh r0, [r5]
-	bl FUN_080edda0
+	bl FindEnemyById
 	cmp r0, #0
 	beq _080EC6A4
 _080EC69A:

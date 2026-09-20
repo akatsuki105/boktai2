@@ -2,14 +2,14 @@
 	adds r4, r0, #0
 	ldr r1, _08216A84 @ =0x0000166C
 	adds r0, r4, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r1, _08216A88 @ =0x000016CC
 	adds r0, r4, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r0, _08216A8C @ =0x0000172C
 	adds r4, r4, r0
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	pop {r4}
 	pop {r0}
 	bx r0

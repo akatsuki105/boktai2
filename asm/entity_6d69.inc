@@ -1843,7 +1843,7 @@ _08020520:
 	adds r1, r7, r1
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r1, [r6, #0x4c]
 	lsls r0, r1, #3
 	subs r0, r0, r1
@@ -1865,7 +1865,7 @@ _0802055A:
 	adds r1, r7, r1
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	b _0802057E
 _08020566:
 	ldr r0, [r6, #0x4c]
@@ -1878,7 +1878,7 @@ _08020566:
 	adds r1, r7, r1
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 _0802057E:
 	ldr r0, [r6, #0x78]
 	ldr r1, [r6, #0x7c]
@@ -2442,7 +2442,7 @@ _08020964:
 	adds r1, r2, r1
 	adds r0, r7, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r0, [r7, #0x78]
 	ldr r1, [r7, #0x7c]
 	str r0, [r7, #0x1c]
@@ -3184,7 +3184,7 @@ _08020F4C:
 	adds r0, r5, #0
 _08020F4E:
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	b _08020F8A
 	.align 2, 0
 _08020F58: .4byte 0x00000424
@@ -3209,7 +3209,7 @@ _08020F5C:
 	adds r1, r1, r0
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 _08020F8A:
 	ldr r0, [r6, #0x78]
 	ldr r1, [r6, #0x7c]
@@ -4717,7 +4717,7 @@ _08021B3C:
 	bl Free
 _08021B56:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r6, #1
 	ldrh r0, [r5, #0x1a]
 	cmp r6, r0

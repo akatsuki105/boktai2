@@ -11,7 +11,7 @@
 	beq _080B270E
 	subs r1, #0x68
 	adds r0, r4, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _080B270E
 _080B26F4:
 	ldr r1, _080B2728 @ =0x00000C6C
@@ -20,7 +20,7 @@ _080B26F4:
 	movs r1, #0xa3
 	lsls r1, r1, #3
 	adds r0, r4, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r0, #1
 	movs r1, #1
 	bl SetBGPrioDirect

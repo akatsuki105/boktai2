@@ -10,9 +10,9 @@
 // Entity95A8_Init で太陽ダケのスプライトをロードしているので太陽ダケのEntityだと思われる
 typedef struct {
   Entity e;                // ENTITY_UNK_8
-  u16 q_unk_18;            // 0x18
+  u16 unk_18;              // 0x18
   u8 unk_1a[0x20 - 0x1A];  // 0x1A
-  u32 q_unk_20;            // 0x20
+  u32 unk_20;              // 0x20
   u16 q_unk_24;            // 0x24
   u16 q_unk_26;            // 0x26
   u16 q_unk_28;            // 0x28
@@ -26,8 +26,8 @@ typedef struct {
   u16 q_unk_36;            // 0x36
   u16 q_unk_38;            // 0x38
   u8 unk_3a[2];            // 0x3A
-  AuxSpriteGfx sprite;     // 0x3C
-  AuxSprite q_node;        // 0x58, sprite を指す描画ノード
+  AuxSpriteGfx gfx;        // 0x3C
+  AuxSprite sprite;        // 0x58, gfx を指す描画ノード
   ParticleShadow shadow;   // 0x84, 根拠: Entity95A8_Destroy が ParticleShadow_Remove に渡している
   HitboxData hitbox;       // 0xC4, 0x0800c33a
 } SolarBamboo;
@@ -55,11 +55,11 @@ void FUN_0800c0b0(HitboxData* a, HitboxData* b, SolarBamboo* p) {
   }
   if (p->q_unk_28 == 0 && damage > 0) {
     p->q_unk_28 = 8;
-    Video_SetAuxSpritePltt(&p->sprite, 0x16A);
+    Video_SetAuxSpritePltt(&p->gfx, 0x16A);
     p->q_unk_2e = 8;
     if ((s16)(p->q_unk_24 -= damage) <= 0) {
       p->q_unk_24 = p->q_unk_26;
-      pos = p->q_node.q_pos;
+      pos = p->sprite.pos;
       pos.y += 0x40;
       Entity0800a89c_SpawnAt(p->q_unk_36, 1, p->q_unk_38, &pos, 0, 0x258, 0x64);
     }
@@ -71,13 +71,13 @@ NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
 #ifdef NONMATCHING_C
   bool32 active;
 
-  active = (p->q_unk_20 == gStat->unk_248) ? TRUE : FALSE;
+  active = (p->unk_20 == gStat->unk_248) ? TRUE : FALSE;
   if (!active) {
-    p->q_node.flags |= 1;
+    p->sprite.flags |= 1;
     p->hitbox.flags |= 4;
     ParticleShadow_Hide(&p->shadow);
   } else {
-    p->q_node.flags &= ~1;
+    p->sprite.flags &= ~1;
     p->hitbox.flags &= ~4;
     ParticleShadow_Show(&p->shadow);
     if (p->q_unk_28 != 0) {
@@ -85,7 +85,7 @@ NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
     }
     if (p->q_unk_2e != 0) {
       if (--p->q_unk_2e == 0) {
-        Video_SetAuxSpritePltt(&p->sprite, 0x169);
+        Video_SetAuxSpritePltt(&p->gfx, 0x169);
       }
     }
     if (++p->q_unk_2c >= u16_ARRAY_085aa76c[p->q_unk_2a]) {
@@ -93,7 +93,7 @@ NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
       if (++p->q_unk_2a > 3) {
         p->q_unk_2a = 0;
       }
-      p->q_node.q_metaspriteIdx = p->q_unk_2a;
+      p->sprite.metaspriteIdx = p->q_unk_2a;
     }
     if (p->q_unk_30 != 0) {
       p->q_unk_34 += 2;
@@ -108,7 +108,7 @@ NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
         p->q_unk_30 = 1;
       }
     }
-    p->q_node.q_pos.y = p->q_unk_34 + p->q_unk_32;
+    p->sprite.pos.y = p->q_unk_34 + p->q_unk_32;
   }
   return 0;
 #else
@@ -118,7 +118,7 @@ NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
 
 s32 Entity95A8_Destroy(SolarBamboo* p) {
   FUN_08236424(&p->hitbox);
-  FUN_0822a4e0(&p->q_node);
+  AuxSprite_Remove(&p->sprite);
   ParticleShadow_Remove(&p->shadow);
   return 0;
 }
@@ -130,13 +130,13 @@ void FUN_08236400(HitboxData* p);
 // スクリプトから位置と耐久を読み、当たり判定・スプライト・影を用意する
 s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
   HitboxData* hitbox;
-  AuxSpriteGfx* sprite;
-  AuxSprite* node;
+  AuxSpriteGfx* gfx;
+  AuxSprite* spr;
   Vec3 pos;
   Vec3 size;
   Vec3 offset;
 
-  p->q_unk_18 = param;
+  p->unk_18 = param;
   p->q_unk_26 = VM_GetKeywordValue('l', 0xC8);
   p->q_unk_24 = 1;
   p->q_unk_28 = 0;
@@ -150,33 +150,27 @@ s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
     pos.y = Script_GetValue() + 0x64;
     pos.z = Script_GetValue();
   } else {
-    pos.x = 0;
-    pos.y = 0;
-    pos.z = 0;
+    pos.x = 0, pos.y = 0, pos.z = 0;
   }
-  p->q_unk_20 = FUN_08241574(&pos);
+  p->unk_20 = FUN_08241574(&pos);
   p->q_unk_30 = 0;
   p->q_unk_32 = pos.y;
   p->q_unk_34 = 0;
-  size.x = 0x1E;
-  size.y = 0x140;
-  size.z = 0x1E;
-  offset.x = 0;
-  offset.y = 0xA0;
-  offset.z = 0;
+  size.x = 30, size.y = 320, size.z = 30;
+  offset.x = 0, offset.y = 160, offset.z = 0;
   hitbox = &p->hitbox;
   FUN_0823646c(hitbox, 0, 0x4001, 0, 0x10, &size, &offset);
   FUN_0823651c(hitbox, FUN_0800c0b0, p);
   FUN_082364c4(hitbox, &pos, 0);
   FUN_08236400(hitbox);
-  sprite = &p->sprite;
-  Video_GetAuxSprite(sprite, SPRITE_SOLAR_BAMBOO);
-  node = &p->q_node;
-  FUN_0822a470(node, sprite, 0);
-  node->q_metaspriteIdx = 0;
-  Video_SetAuxSpritePltt(sprite, 0x169);
-  p->q_node.q_pos = pos;
-  ParticleShadow_Init(&p->shadow, &p->q_node.q_pos, 0);
+  gfx = &p->gfx;
+  Video_GetAuxSprite(gfx, SPRITE_SOLAR_BAMBOO);
+  spr = &p->sprite;
+  AuxSprite_Add(spr, gfx, 0);
+  spr->metaspriteIdx = 0;
+  Video_SetAuxSpritePltt(gfx, 0x169);
+  p->sprite.pos = pos;
+  ParticleShadow_Init(&p->shadow, &p->sprite.pos, 0);
   return 0;
 }
 

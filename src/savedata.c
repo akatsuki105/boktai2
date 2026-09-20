@@ -28,21 +28,21 @@ typedef struct {
   struct {
     u8 world[1024];         // World 全体
     EepromTrailer trailer;  // +0x400
-  } coreWorld[2];  // 0x0088
+  } coreWorld[2];           // 0x0088
 
   // ブロック 275 + slot * 161: Core の gStat 部分 (Save_GetCoreAddr(slot, 1))
   struct {
     u8 stat[952];           // gStat の先頭〜0x3B8 (Save_GetExtraOffset), 先頭は magicNumber
     EepromTrailer trailer;  // +0x3B8
     u8 unused[328];         // +0x3C0, 確保されているが使われない
-  } coreStat[2];  // 0x0898
+  } coreStat[2];            // 0x0898
 
   // ブロック 597 + slot * 193: Extra (Save_GetExtraAddr(slot))
   struct {
     u8 stat[1392];          // gStat の 0x3B8〜0x928 (Save_GetExtraSize)
     EepromTrailer trailer;  // +0x570
     u8 unused[144];         // +0x578, 確保されているが使われない
-  } extra[2];  // 0x12A8
+  } extra[2];               // 0x12A8
 
   u8 unused_1eb8[328];  // 0x1EB8, ブロック 983 以降は使われない
 } Boktai2SaveData;
@@ -66,9 +66,6 @@ void FUN_08231ca8(void);
 void Save_BackupStatAndWorld(void);
 void FUN_08231d5c(void* statFieldPtr, s32 bytesize);
 void* FUN_08231d80(void* statFieldPtr);
-void FUN_0823167c(u8* dst);
-u32 FUN_082320e4(u8* pc, s32 offset);
-void FUN_0823206c(u8* pc, s32 offset, u32 val);
 
 u32 Save_GetCoreAddr(u32 val1, u32 val2) {
   if (val2 != 0) {

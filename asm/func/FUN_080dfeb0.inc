@@ -86,7 +86,7 @@ _080DFEE6:
 	adds r1, #0x18
 	adds r0, r7, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r5, r7, #0
 	adds r5, #0x2c
 	ldr r1, [r4]

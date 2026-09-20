@@ -25,7 +25,7 @@ _08014632:
 	cmp r0, #0
 	beq _0801463E
 	adds r0, r5, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 _0801463E:
 	adds r5, #0x38
 	adds r4, #0x38

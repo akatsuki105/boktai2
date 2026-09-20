@@ -23,7 +23,7 @@
 	rsbs r2, r2, #0
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	pop {r4, r5}
 	pop {r0}
 	bx r0

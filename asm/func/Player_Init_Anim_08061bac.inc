@@ -17,7 +17,7 @@
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0x43
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #4
 	strh r0, [r4, #0x10]
 	adds r0, r5, #0
@@ -48,7 +48,7 @@ _08061C10:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #1
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	movs r1, #0x1d
 	bl Video_SetAuxSpritePltt

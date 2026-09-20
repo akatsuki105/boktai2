@@ -10,7 +10,7 @@
 	movs r5, #7
 _080A7A2C:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x50
 	subs r5, #1
 	cmp r5, #0
@@ -18,7 +18,7 @@ _080A7A2C:
 	movs r1, #0xae
 	lsls r1, r1, #2
 	adds r0, r6, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _080A7A44:
 	ldr r1, _080A7A54 @ =0x03000150
 	movs r0, #0

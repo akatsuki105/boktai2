@@ -15839,14 +15839,14 @@ EnemyDog_Destroy: @ 0x08151918
 	cmp r0, #0
 	bne _08151934
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _0815193C
 	.align 2, 0
 _08151930: .4byte 0x0000025D
 _08151934:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _0815193C:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -15988,7 +15988,7 @@ EnemyDog_Init: @ 0x081519F8
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _08151A98 @ =0x0000F6E7
 	bl FUN_080e3804
@@ -17469,7 +17469,7 @@ _081525A0:
 	ldr r1, _081527A4 @ =FUN_080f0320
 	ldr r6, [sp, #0x18c]
 	str r1, [r6]
-	ldr r1, _081527A8 @ =FUN_080eff14
+	ldr r1, _081527A8 @ =Enemy_080eff14
 	ldr r2, [sp, #0x138]
 	str r1, [r2]
 	ldr r1, _081527AC @ =FUN_080e72b0
@@ -17606,7 +17606,7 @@ _08152798: .4byte FUN_080f0430
 _0815279C: .4byte 0x085AD470
 _081527A0: .4byte FUN_080e73c8
 _081527A4: .4byte FUN_080f0320
-_081527A8: .4byte FUN_080eff14
+_081527A8: .4byte Enemy_080eff14
 _081527AC: .4byte FUN_080e72b0
 _081527B0: .4byte FUN_0814e420
 _081527B4: .4byte FUN_080f47c8

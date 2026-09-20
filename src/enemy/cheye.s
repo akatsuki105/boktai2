@@ -16072,7 +16072,7 @@ _081833F8:
 	cmp r0, #0
 	bne _08183414
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _0818341C
 	.align 2, 0
 _0818340C: .4byte 0x0000044C
@@ -16080,7 +16080,7 @@ _08183410: .4byte 0x0000025D
 _08183414:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _0818341C:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -16219,7 +16219,7 @@ EnemyCheyenne_Init: @ 0x081834D8
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	movs r1, #0
 	bl FUN_080e3804
@@ -17593,7 +17593,7 @@ _08183F94:
 	ldr r1, _081841E4 @ =FUN_080f0320
 	ldr r5, [sp, #0x1a4]
 	str r1, [r5]
-	ldr r1, _081841E8 @ =FUN_080eff14
+	ldr r1, _081841E8 @ =Enemy_080eff14
 	ldr r6, [sp, #0x148]
 	str r1, [r6]
 	ldr r1, _081841EC @ =FUN_080e72b0
@@ -17759,7 +17759,7 @@ _081841D8: .4byte FUN_080f0430
 _081841DC: .4byte 0x085AD470
 _081841E0: .4byte FUN_080e73c8
 _081841E4: .4byte FUN_080f0320
-_081841E8: .4byte FUN_080eff14
+_081841E8: .4byte Enemy_080eff14
 _081841EC: .4byte FUN_080e72b0
 _081841F0: .4byte FUN_080f47c8
 _081841F4: .4byte FUN_080f54e4

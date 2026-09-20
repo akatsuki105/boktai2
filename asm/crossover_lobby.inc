@@ -121,12 +121,12 @@ FUN_0804ef14: @ 0x0804EF14
 	adds r4, r1, #0
 	adds r0, r4, #0
 	adds r0, #0x28
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x88
 	movs r5, #4
 _0804EF24:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0

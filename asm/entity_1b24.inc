@@ -1231,7 +1231,7 @@ Entity1B24_Destroy: @ 0x0809D82C
 	movs r5, #0x23
 _0809D836:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0

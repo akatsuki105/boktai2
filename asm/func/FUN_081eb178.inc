@@ -30,7 +30,7 @@ _081EB196:
 	rsbs r2, r2, #0
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	movs r2, #0
 	adds r0, r4, #0
 	adds r0, #0x28

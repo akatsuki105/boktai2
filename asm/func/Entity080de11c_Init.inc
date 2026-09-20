@@ -45,7 +45,7 @@ _080DE0D2:
 	rsbs r1, r1, #0
 	movs r2, #0xa
 	rsbs r2, r2, #0
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	movs r0, #2
 	strb r0, [r4, #0x10]
 	ldr r0, [r4]

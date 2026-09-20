@@ -73,6 +73,8 @@ extern struct SoundInfo* SOUND_INFO_PTR;
 
 #define WIN_RANGE(a, b) (((a) << 8) | (b))
 
+#define OAM0_8BPP (1 << 13)  // 0x2000
+
 #if MODERN
 #define NORETURN __attribute__((noreturn))
 #else

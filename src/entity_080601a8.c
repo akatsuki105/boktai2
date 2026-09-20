@@ -3,21 +3,21 @@
 #include "sprite_aux.h"
 
 // Entity080601a8 が持つ粒子1個。FUN_08060220 が角度と速度を与えて飛ばし、
-// FUN_0805ff58 が毎フレーム sprite.q_pos を動かして lifetime で解放する
+// FUN_0805ff58 が毎フレーム sprite.pos を動かして lifetime で解放する
 typedef struct Entity080601a8Elem {
   u8 state;          // 0x00, PTR_ARRAY_085abaa4 の添字 (0 = 何もしない, 1 = 飛行中), 根拠: Entity080601a8_Update
   u8 unk_1;          // 0x01, 生成時に1、最初の更新で0にされる。読み手は未発見, 根拠: FUN_0805ff58
   u16 timer;         // 0x02, 毎フレーム +1, 根拠: Entity080601a8_Update
   s16 speed;         // 0x04, gSineTable との積が移動量になる, 根拠: FUN_0805ff58 の ldrsh
-  s16 velY;          // 0x06, 毎フレーム sprite.q_pos.y に加算される, 根拠: FUN_0805ff58
+  s16 velY;          // 0x06, 毎フレーム sprite.pos.y に加算される, 根拠: FUN_0805ff58
   s8 angle;          // 0x08, gSineTable の添字 (向き)。毎フレーム angleStep が足される, 根拠: FUN_0805ff58 の ldrsb
   s8 angleStep;      // 0x09, 生成時 (rand & 3) - 2, 根拠: FUN_0805ff58
-  u8 frame;          // 0x0A, 0..3。sprite.q_metaspriteIdx = frame + 0x36, 根拠: FUN_0805ff58 / FUN_08060220
+  u8 frame;          // 0x0A, 0..3。sprite.metaspriteIdx = frame + 0x36, 根拠: FUN_0805ff58 / FUN_08060220
   u8 frameTimer;     // 0x0B, 毎フレーム +1、frameDuration に達したら frame を進めて0に戻す, 根拠: FUN_0805ff58
   u8 frameDuration;  // 0x0C, 生成時 (rand & 3) + 7, 根拠: FUN_0805ff58
   u8 unk_d;          // 0x0D, FUN_08060220 の第6引数が入る。読み手は未発見
   u16 lifetime;      // 0x0E, timer がこれ以上になると解放される, 根拠: FUN_0805ff58
-  AuxSprite sprite;  // 0x10, 根拠: FUN_0822a4b0 / FUN_0822a4e0 に渡される
+  AuxSprite sprite;  // 0x10, 根拠: AuxSprite_Setup / AuxSprite_Remove に渡される
 } Entity080601a8Elem;
 static_assert(sizeof(Entity080601a8Elem) == 60);
 

@@ -5,7 +5,7 @@
 
 // 飛び散って消える粒子1個, 速度と重力で動き、寿命が来ると消える
 typedef struct {
-  u8 active;          // 0x00, 0 なら処理しない, 寿命が来ると 0 にして FUN_0822dabc で描画リストから外す
+  u8 active;          // 0x00, 0 なら処理しない, 寿命が来ると 0 にして Particle_Remove で描画リストから外す
   u8 unk_01;          // 0x01, FUN_08014730 で 1, 読む箇所なし
   u8 age;             // 0x02, 毎フレーム +1, lifetime を超えたら消える
   u8 lifetime;        // 0x03, FUN_08014730 で lifeBase + (rand & lifeRandMask)
@@ -15,7 +15,7 @@ typedef struct {
   s16 velY;           // 0x0A, 毎フレーム -1 (重力)
   s16 velZ;           // 0x0C, 毎フレーム particle.pos.z に加算
   u8 unk_0e[2];       // 0x0E
-  Particle particle;  // 0x10, 根拠: FUN_0822da70 / FUN_0822dad4 / FUN_0822da50 / FUN_0822dabc
+  Particle particle;  // 0x10, 根拠: FUN_0822da70 / Particle_SetOffset / FUN_0822da50 / Particle_Remove
 } ScatterParticle;
 static_assert(sizeof(ScatterParticle) == 56);  // 根拠: Init / Destroy / FUN_0801442c のストライド 0x38
 
@@ -29,7 +29,7 @@ typedef struct {
 } Entity080146e0Data;
 static_assert(sizeof(Entity080146e0Data) == 452);
 
-typedef struct Entity080146e0 {
+typedef struct {
   Entity e;                    // 0x0, ENTITY_UNK_10
   u32 frameCount;              // 0x18, Update で毎フレーム +1, bit0 で床の影と本体を交互に描く (FUN_08014148 / FUN_0801442c)
   ParticleGroup* group1;       // 0x1C, GetParticleGroup(PTCL_GROUP_1)
@@ -38,7 +38,7 @@ typedef struct Entity080146e0 {
 } Entity080146e0;
 static_assert(sizeof(Entity080146e0) == 2748);
 
-extern Entity080146e0* gEntity080146e0;  // 0x03000058
+IWRAM_DATA Entity080146e0* gEntity080146e0 = NULL;  // 0x03000058
 
 const u32 u32_ARRAY_085aa850[40] = {
     0x0, 0x0, 0x8, 0x9, 0xF, 0xC, 0xD, 0xE, 0x10, 0x1C, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x12, 0x11, 0x1B, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0x5, 0x12, 0xA,

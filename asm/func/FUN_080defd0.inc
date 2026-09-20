@@ -170,7 +170,7 @@ _080DF110:
 	cmp r2, #0
 	beq _080DF13E
 	adds r0, r5, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r2, r5, #0
 	adds r2, #0xf7
 	movs r0, #0

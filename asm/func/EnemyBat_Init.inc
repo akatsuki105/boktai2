@@ -40,7 +40,7 @@
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _08141628 @ =0x00005BB7
 	bl FUN_080e3804
@@ -1706,7 +1706,7 @@ _08142332:
 	ldr r0, _08142478 @ =FUN_080f0320
 	ldr r1, [sp, #0x188]
 	str r0, [r1]
-	ldr r0, _0814247C @ =FUN_080eff14
+	ldr r0, _0814247C @ =Enemy_080eff14
 	ldr r3, [sp, #0x118]
 	str r0, [r3]
 	ldr r0, _08142480 @ =FUN_080e72b0
@@ -1825,7 +1825,7 @@ _0814246C: .4byte FUN_080f0430
 _08142470: .4byte 0x085AD470
 _08142474: .4byte FUN_080e73c8
 _08142478: .4byte FUN_080f0320
-_0814247C: .4byte FUN_080eff14
+_0814247C: .4byte Enemy_080eff14
 _08142480: .4byte FUN_080e72b0
 _08142484: .4byte FUN_080f47c8
 _08142488: .4byte FUN_080f54e4

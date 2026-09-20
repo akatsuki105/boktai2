@@ -2130,7 +2130,7 @@ _08081C42:
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r2, #0x43
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #4
 	strh r0, [r6, #0x10]
 	adds r0, r4, #0
@@ -4955,7 +4955,7 @@ _0808325A:
 	adds r1, r3, #0
 	movs r2, #0x20
 	mov r3, ip
-	bl FUN_080cbabc
+	bl Entity080cbabc_Create
 	ldr r0, _080832B4 @ =0x00000367
 	bl PlaySound_082406e0
 	add sp, #0x1c

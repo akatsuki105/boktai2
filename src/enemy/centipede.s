@@ -8230,7 +8230,7 @@ _081361B4:
 	mov r0, r8
 	adds r1, r6, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	mov r0, sp
 	ldrb r0, [r0, #0x14]
 	strb r0, [r4, #0x14]
@@ -9331,7 +9331,7 @@ FUN_081369d0: @ 0x081369D0
 	adds r4, r6, r0
 _081369E8:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r1, #0x90
 	lsls r1, r1, #1
 	adds r4, r4, r1
@@ -14142,14 +14142,14 @@ EnemyCentipede_Destroy: @ 0x08138E3C
 	cmp r0, #0
 	bne _08138E60
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _08138E68
 	.align 2, 0
 _08138E5C: .4byte 0x0000025D
 _08138E60:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _08138E68:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -14288,7 +14288,7 @@ EnemyCentipede_Init: @ 0x08138F24
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _08138FBC @ =0x0000C102
 	bl FUN_080e3804
@@ -15834,7 +15834,7 @@ _08139B3C:
 	ldr r0, _08139D30 @ =FUN_080f0320
 	ldr r4, [sp, #0x4c]
 	str r0, [r4]
-	ldr r0, _08139D34 @ =FUN_080eff14
+	ldr r0, _08139D34 @ =Enemy_080eff14
 	ldr r5, [sp, #0x174]
 	str r0, [r5]
 	ldr r0, _08139D38 @ =FUN_080e72b0
@@ -15963,7 +15963,7 @@ _08139D24: .4byte FUN_080f0430
 _08139D28: .4byte 0x085AD470
 _08139D2C: .4byte FUN_080e73c8
 _08139D30: .4byte FUN_080f0320
-_08139D34: .4byte FUN_080eff14
+_08139D34: .4byte Enemy_080eff14
 _08139D38: .4byte FUN_080e72b0
 _08139D3C: .4byte FUN_08133ed4
 _08139D40: .4byte FUN_080f47c8

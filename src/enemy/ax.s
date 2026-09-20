@@ -9171,7 +9171,7 @@ FUN_08199ffc: @ 0x08199FFC
 	movs r1, #0xae
 	lsls r1, r1, #4
 	adds r0, r6, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	ldr r1, _0819A094 @ =0x00000B28
 	adds r0, r6, r1
 	bl AuxShadow_Remove
@@ -9187,7 +9187,7 @@ FUN_08199ffc: @ 0x08199FFC
 	mov r8, r0
 _0819A02E:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x2c
 	movs r1, #1
 	rsbs r1, r1, #0
@@ -9210,7 +9210,7 @@ _0819A02E:
 	adds r4, r6, r0
 _0819A05C:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r5, #0
 	bl FUN_08236424
 	adds r0, r7, #0
@@ -9314,7 +9314,7 @@ FUN_0819a0ac: @ 0x0819A0AC
 	adds r0, r7, #0
 	mov r1, r8
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r0, [r7]
 	movs r1, #2
 	orrs r0, r1
@@ -9699,7 +9699,7 @@ _0819A45E:
 	adds r0, r6, r0
 	mov r1, r8
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r2, [sp, #0x38]
 	adds r1, r2, r4
 	ldr r0, _0819A5B4 @ =0x00000203
@@ -10099,7 +10099,7 @@ _0819A7A6:
 	mov r0, sl
 	ldr r1, [sp, #0x2c]
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #3
 	ldr r2, [sp, #0x28]
 	str r0, [r2]
@@ -19245,7 +19245,7 @@ _0819EE94:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #0xf7
 	strh r0, [r4, #0x32]
 	ldr r1, _0819EF04 @ =0x00000774
@@ -19923,7 +19923,7 @@ _0819F3DC:
 	cmp r0, #0
 	beq _0819F3E8
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _0819F3E8:
 	adds r4, #0x60
 	subs r5, #1
@@ -20691,7 +20691,7 @@ FUN_0819f990: @ 0x0819F990
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r0, _0819FA18 @ =0x0000922E
 	ldr r1, _0819FA1C @ =0x00003F72
 	bl GetFile
@@ -21069,7 +21069,7 @@ _0819FCBE:
 	movs r1, #0xa6
 	lsls r1, r1, #4
 	adds r0, r6, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _0819FCDE:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -24686,14 +24686,14 @@ FUN_081a18c8: @ 0x081A18C8
 	cmp r0, #0
 	bne _081A18F4
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _081A18FC
 	.align 2, 0
 _081A18F0: .4byte 0x0000025D
 _081A18F4:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _081A18FC:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -24831,7 +24831,7 @@ EnemyAx_Init: @ 0x081A19B8
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _081A1A50 @ =0x00003F72
 	bl FUN_080e3804
@@ -26350,7 +26350,7 @@ _081A2584:
 	ldr r0, _081A277C @ =FUN_080f0320
 	ldr r2, [sp, #0x15c]
 	str r0, [r2]
-	ldr r0, _081A2780 @ =FUN_080eff14
+	ldr r0, _081A2780 @ =Enemy_080eff14
 	ldr r3, [sp, #0x108]
 	str r0, [r3]
 	ldr r0, _081A2784 @ =FUN_080e72b0
@@ -26472,7 +26472,7 @@ _081A2770: .4byte FUN_080f0430
 _081A2774: .4byte 0x085AD470
 _081A2778: .4byte FUN_080e73c8
 _081A277C: .4byte FUN_080f0320
-_081A2780: .4byte FUN_080eff14
+_081A2780: .4byte Enemy_080eff14
 _081A2784: .4byte FUN_080e72b0
 _081A2788: .4byte FUN_080f47c8
 _081A278C: .4byte FUN_080f54e4

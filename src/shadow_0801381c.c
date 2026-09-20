@@ -12,9 +12,9 @@ typedef struct ParticleShadowManager {
 } ParticleShadowManager;
 static_assert(sizeof(ParticleShadowManager) == 32);
 
-void ParticleShadow_FollowGround(ParticleShadow* shadow);
+IWRAM_DATA ParticleShadowManager* gParticleShadowManager = NULL;  // 0x03000050
 
-extern ParticleShadowManager* gParticleShadowManager;  // 0x03000050
+void ParticleShadow_FollowGround(ParticleShadow* shadow);
 
 void FUN_08013634(void) { gParticleShadowManager = NULL; }
 
@@ -57,14 +57,14 @@ s32 ParticleShadowManager_Remove(ParticleShadowManager* p, ParticleShadow* shado
 // 影を表示し、床に追従する更新関数に切り替えてすぐ1回呼ぶ, リネーム案: Shadow_Show
 void ParticleShadow_Show(ParticleShadow* shadow) {
   shadow->particle.flags &= ~SPRFLAG_HIDDEN;
-  shadow->fn = ParticleShadow_FollowGround;
-  ((void (*)(ParticleShadow*))shadow->fn)(shadow);
+  shadow->updateCallback = ParticleShadow_FollowGround;
+  shadow->updateCallback(shadow);
 }
 
 // 影を非表示にし、何もしない更新関数に切り替える, リネーム案: Shadow_Hide
 void ParticleShadow_Hide(ParticleShadow* shadow) {
   shadow->particle.flags |= SPRFLAG_HIDDEN;
-  shadow->fn = ParticleShadow_UpdateNone;
+  shadow->updateCallback = ParticleShadow_UpdateNone;
 }
 
 // 非表示中の影の更新関数 (何もしない), リネーム案: Shadow_UpdateNone
@@ -76,7 +76,7 @@ NON_MATCH void ParticleShadow_FollowGround(ParticleShadow* shadow) {
   s32 idx;  // 元は idx が r7、ptcl が r6。この形だと逆になる
   Particle* ptcl = &shadow->particle;
   Vec3* dst = &shadow->particle.pos;
-  Vec3* pos = shadow->q_pos;
+  Vec3* pos = shadow->pos;
   s32 bx = pos->x >> 8;
   s32 bz = pos->z >> 8;
   u8* tile;
@@ -140,7 +140,7 @@ s32 ParticleShadowManager_Update(ParticleShadowManager* p) {
   ParticleShadow* shadow;
 
   for (shadow = p->head; shadow != NULL; shadow = shadow->next) {
-    ((void (*)(ParticleShadow*))shadow->fn)(shadow);
+    shadow->updateCallback(shadow);
   }
   return 0;
 }
@@ -174,20 +174,20 @@ s32 ParticleShadow_Init(ParticleShadow* shadow, Vec3* ownerPos, s32 kind) {
   if (gParticleShadowManager == NULL && ParticleShadowManager_Create(NULL, 0) == NULL) return -1;
 
   shadow->active = 0;
-  shadow->q_pos = ownerPos;
+  shadow->pos = ownerPos;
   shadow->q_kind = kind;
   shadow->q_flags = 0;
   shadow->unk_04 = 0;
   shadow->unk_06 = 0;
   if ((u8)kind == 0) {
-    shadow->fn = ParticleShadow_FollowGround;
+    shadow->updateCallback = ParticleShadow_FollowGround;
   } else {
-    shadow->fn = ParticleShadow_UpdateNone;
+    shadow->updateCallback = ParticleShadow_UpdateNone;
   }
   FUN_0822d9f0(&shadow->particle, gParticleShadowManager->group0, SPRFLAG_BLINK_ODD);
-  FUN_0822dad4(&shadow->particle, -8, -8);
+  Particle_SetOffset(&shadow->particle, -8, -8);
   shadow->particle.tileNum = gParticleShadowManager->group0->tile + (shadow->particle.spriteWidth >> 3) * (shadow->particle.spriteHeight >> 3) * 34;
-  shadow->particle.q_zOffset = -4;
+  shadow->particle.offsetZ = -4;
   shadow->particle.priority = 2;
   ParticleShadowManager_Add(gParticleShadowManager, shadow);
   return 0;
@@ -195,7 +195,7 @@ s32 ParticleShadow_Init(ParticleShadow* shadow, Vec3* ownerPos, s32 kind) {
 
 // 影を描画リストと影のリストから外す, リネーム案: Shadow_Remove
 s32 ParticleShadow_Remove(ParticleShadow* shadow) {
-  FUN_0822dabc(&shadow->particle);
+  Particle_Remove(&shadow->particle);
   if (gParticleShadowManager != NULL) {
     ParticleShadowManager_Remove(gParticleShadowManager, shadow);
   }

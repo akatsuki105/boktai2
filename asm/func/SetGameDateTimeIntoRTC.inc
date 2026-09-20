@@ -11,39 +11,39 @@
 	adds r0, #0x30
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
-	bl FUN_0823dc40
+	bl ToBCD
 	ldr r4, _0823E5F8 @ =0x03004810
 	movs r7, #0
 	strb r0, [r4]
 	mov r1, sb
 	lsls r0, r1, #0x18
 	lsrs r0, r0, #0x18
-	bl FUN_0823dc40
+	bl ToBCD
 	strb r0, [r4, #1]
 	mov r1, sl
 	lsls r0, r1, #0x18
 	lsrs r0, r0, #0x18
-	bl FUN_0823dc40
+	bl ToBCD
 	strb r0, [r4, #2]
 	mov r0, r8
 	mov r1, sb
 	mov r2, sl
-	bl FUN_0823daa4
+	bl GetDayOfWeek
 	strb r0, [r4, #3]
 	lsls r5, r5, #0x18
 	lsrs r5, r5, #0x18
 	adds r0, r5, #0
-	bl FUN_0823dc40
+	bl ToBCD
 	strb r0, [r4, #4]
 	lsls r6, r6, #0x18
 	lsrs r6, r6, #0x18
 	adds r0, r6, #0
-	bl FUN_0823dc40
+	bl ToBCD
 	strb r0, [r4, #5]
 	ldr r1, [sp, #0x24]
 	lsls r0, r1, #0x18
 	lsrs r0, r0, #0x18
-	bl FUN_0823dc40
+	bl ToBCD
 	strb r0, [r4, #6]
 	strb r7, [r4, #7]
 	movs r6, #0

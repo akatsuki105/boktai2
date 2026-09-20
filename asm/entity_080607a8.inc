@@ -309,7 +309,7 @@ _080606CC:
 	bls _080606E8
 	strb r4, [r2]
 	adds r0, r3, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _080606E8:
 	adds r5, #1
 	cmp r5, #0xf
@@ -335,7 +335,7 @@ _080606FE:
 	beq _08060714
 	adds r0, r1, #0
 	adds r0, #0x2c
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _08060714:
 	adds r4, #1
 	cmp r4, #0xf
@@ -393,7 +393,7 @@ _08060778:
 	adds r1, r7, #0
 	movs r2, #0
 	str r3, [sp]
-	bl FUN_0822a4b0
+	bl AuxSprite_Setup
 	adds r1, r4, #0
 	adds r1, #0x33
 	movs r0, #1

@@ -834,7 +834,7 @@ FUN_081e1220: @ 0x081E1220
 	adds r3, #0x20
 	adds r1, r3, #0
 	movs r2, #1
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r4, r5, #0
 	adds r4, #0x50
 	adds r1, r5, #0
@@ -855,7 +855,7 @@ FUN_081e1260: @ 0x081E1260
 	adds r4, r1, #0
 	adds r0, r4, #0
 	adds r0, #0x24
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x50
 	adds r0, r4, #0
 	bl ParticleShadow_Remove
@@ -7477,14 +7477,14 @@ FUN_081e4484: @ 0x081E4484
 	movs r5, #0x11
 _081E448E:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
 	bge _081E448E
 	ldr r1, _081E44B0 @ =0x0000150C
 	adds r0, r6, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0
@@ -7500,7 +7500,7 @@ FUN_081e44b4: @ 0x081E44B4
 	movs r5, #0x1b
 _081E44BC:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -15707,7 +15707,7 @@ _081E8830:
 	adds r0, #0x96
 	strb r2, [r0]
 	adds r0, r6, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r0, #0xff
 	strb r0, [r4]
 	b _081E8A2A
@@ -16084,7 +16084,7 @@ _081E8ADC:
 	adds r1, #0x18
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldrb r0, [r7, #5]
 	bl FUN_081e8a98
 	lsls r0, r0, #0x18
@@ -16324,7 +16324,7 @@ _081E8CC4:
 	cmp r0, #0
 	beq _081E8CCE
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _081E8CCE:
 	adds r4, #0xa0
 	adds r5, #1
@@ -17054,10 +17054,10 @@ _081E9212:
 	bne _081E924A
 	adds r0, r5, #0
 	adds r0, #0x64
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r5, #0
 	adds r0, #0x90
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r0, #0
 	ldrsb r0, [r7, r0]
 	lsls r4, r0
@@ -17117,10 +17117,10 @@ _081E927E:
 	bne _081E92BE
 	adds r0, r5, #0
 	adds r0, #0x64
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r5, #0
 	adds r0, #0x90
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r1, r5, #0
 	adds r1, #0xe4
 	movs r0, #0
@@ -17715,10 +17715,10 @@ _081E9700:
 	cmp r2, #0
 	beq _081E9736
 	mov r0, ip
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r5, #0
 	adds r0, #0x90
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, r5, #0
 	adds r4, #0xe4
 	movs r0, #0
@@ -18093,11 +18093,11 @@ _081E999E:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r7, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r0, [r6, #0x64]
 	movs r1, #1
 	mov sl, r1
@@ -18439,10 +18439,10 @@ _081E9C40:
 	adds r4, r6, r4
 	adds r0, r4, #0
 	adds r0, #0x64
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x90
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _081E9C5E:
 	adds r5, #1
 	cmp r5, #0xb
@@ -18808,7 +18808,7 @@ FUN_081e9ee8: @ 0x081E9EE8
 	muls r0, r1, r0
 	adds r0, #0x1c
 	adds r0, r4, r0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r0, #0
 	strb r0, [r5, #0xa]
 	movs r0, #0xb
@@ -18932,7 +18932,7 @@ _081E9FAE:
 	lsls r3, r3, #1
 	adds r1, r6, r3
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #0xb
 	ldrsb r0, [r5, r0]
 	lsls r0, r0, #4
@@ -19062,7 +19062,7 @@ _081EA0BA:
 	muls r0, r1, r0
 	adds r0, #0x1c
 	adds r0, r6, r0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _081EA0CE:
 	adds r4, #0xc
 	adds r5, #1
@@ -19415,7 +19415,7 @@ _081EA33E:
 	movs r4, #0
 	strb r4, [r0]
 	mov r0, sb
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r7, #0
 	adds r0, #0x8c
 	bl ParticleShadow_Remove
@@ -19590,7 +19590,7 @@ _081EA4A0:
 	movs r4, #0
 	strb r4, [r0]
 	adds r0, r6, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r5, #0
 	adds r0, #0x8c
 	bl ParticleShadow_Remove
@@ -19881,7 +19881,7 @@ _081EA6AC:
 	adds r1, #0x18
 	adds r0, r6, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #3
 	strh r0, [r6, #0x10]
 	ldr r0, [r6, #0xc]
@@ -19997,7 +19997,7 @@ _081EA7CC:
 	adds r4, #0x38
 	adds r4, r6, r4
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x8c
 	adds r0, r4, #0
 	bl ParticleShadow_Remove

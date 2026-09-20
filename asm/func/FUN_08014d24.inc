@@ -34,7 +34,7 @@ _08014D5E:
 	beq _08014D70
 	adds r0, r5, #0
 	str r2, [sp]
-	bl FUN_0822dabc
+	bl Particle_Remove
 	ldr r2, [sp]
 	strb r2, [r4]
 _08014D70:

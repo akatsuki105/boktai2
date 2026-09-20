@@ -5951,14 +5951,14 @@ FUN_08169688: @ 0x08169688
 	cmp r0, #0
 	bne _081696A4
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _081696AC
 	.align 2, 0
 _081696A0: .4byte 0x0000025D
 _081696A4:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _081696AC:
 	ldr r0, [r4, #0x44]
 	bl Free

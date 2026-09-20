@@ -914,7 +914,7 @@ Entity723E_Destroy: @ 0x08052964
 	movs r5, #0x14
 _0805296E:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	subs r5, #1
 	adds r4, #0x60
 	cmp r5, #0
@@ -923,7 +923,7 @@ _0805296E:
 	lsls r0, r0, #4
 	adds r4, r6, r0
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r0, _080529A8 @ =0x000008B8
 	adds r4, r6, r0
 	movs r5, #3

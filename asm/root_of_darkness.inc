@@ -5125,14 +5125,14 @@ FUN_081a54b4: @ 0x081A54B4
 	cmp r0, #0
 	bne _081A54D0
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _081A54D8
 	.align 2, 0
 _081A54CC: .4byte 0x0000025D
 _081A54D0:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _081A54D8:
 	ldr r0, [r4, #0x44]
 	bl Free

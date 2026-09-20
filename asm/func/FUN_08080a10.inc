@@ -10,7 +10,7 @@
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #1
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #0
 	strh r0, [r4, #0x10]
 	adds r0, r5, #0

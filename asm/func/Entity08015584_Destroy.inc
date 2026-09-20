@@ -9,7 +9,7 @@ _08015480:
 	cmp r0, #0
 	beq _0801548C
 	adds r0, r5, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _0801548C:
 	adds r5, #0x78
 	adds r4, #0x78

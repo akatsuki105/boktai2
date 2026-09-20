@@ -899,7 +899,7 @@ FUN_080036a0: @ 0x080036A0
 	push {r4, lr}
 	adds r4, r0, #0
 	adds r0, #0x8c
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r4, #0
 	adds r0, #0xb8
 	bl FUN_082342a8

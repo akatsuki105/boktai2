@@ -12,7 +12,6 @@ SOUND_INFO_PTR = 0x03007FF0;
 gMaxLines = 0;
 gNumMusicPlayers = 32;
 
-gParticleFile0 = 0x08A20138;
 gSpriteSetFile25 = 0x08C5A80C;
 
 gItemEffectHandlers = 0x085ACF7C;
@@ -36,13 +35,35 @@ SECTIONS {
     iwram (NOLOAD) :
     ALIGN(4)
     {
+      src/main.o(iwram_data);
+      src/entity_d9ae.o(iwram_data);
+      src/entity_08004fac.o(iwram_data);
+      src/entity_08005b54.o(iwram_data);
+      src/entity_0800704c.o(iwram_data);
+      src/entity_ed07.o(iwram_data);
+      src/entity_2d2b.o(iwram_data);
+      src/entity_5da5.o(iwram_data);
+      src/entity_83b2.o(iwram_data);
+      src/entity_0866.o(iwram_data);
+      src/spirit_bugs.o(iwram_data);
+      src/entity_329b.o(iwram_data);
+      src/entity_95f8.o(iwram_data);
+      src/shadow_0801381c.o(iwram_data);
+      src/shadow_08013b68.o(iwram_data);
+      src/entity_080146e0.o(iwram_data);
+      src/entity_08015220.o(iwram_data);
+      src/entity_08015584.o(iwram_data);
+      src/entity_08016ba4.o(iwram_data);
+      src/entity_08016dbc.o(iwram_data);
+      src/entity_08017750.o(iwram_data);
+      src/entity_e435.o(iwram_data);
       src/iwram1.o(iwram_data);
       src/entity_8aab.o(iwram_data);
       . = ALIGN(8);
       src/interrupts.o(iwram_data);
       . = ALIGN(8);
       src/video.o(iwram_data);
-      src/code_0823071c.o(iwram_data);
+      src/system_0823071c.o(iwram_data);
       src/code_08230e88.o(iwram_data);
       . = ALIGN(8);
       src/vm.o(iwram_data);
@@ -65,13 +86,15 @@ SECTIONS {
       *libgcc.a:fp-bit.o(.bss);
       *libc.a:syscalls.o(.bss);
       src/lib/m4a.o(.bss.code);
-      src/entity_4ae5.o(COMMON);
+      src/map_pltt_4ae5.o(COMMON);
       src/entity_6978.o(COMMON);
       src/entity_aa65.o(COMMON);
       src/entity_c9bc.o(COMMON);
       src/entity_0800f110.o(COMMON);
       src/shadow_08013df0.o(COMMON);
       src/entity_08016660.o(COMMON);
+      src/msgbus.o(COMMON);
+      src/entity_286f.o(COMMON);
       src/iwram2.o(iwram_data);
       src/camera.o(COMMON);
       src/time.o(COMMON);
@@ -98,14 +121,19 @@ SECTIONS {
       src/crt0.o (.text);
 			src/main.o (.text);
 			src/code_08000440.o (.text);
-			src/entity_4ae5.o (.text);
+			src/map_pltt_4ae5.o (.text);
 			src/entity_6978.o (.text);
 			src/entity_e28b.o (.text);
 			src/entity_d9ae.o (.text);
-			src/code_080026fc.o (.text);
+			src/entity_08004fac.o (.text);
+			src/entity_08005b54.o (.text);
+			src/entity_0800704c.o (.text);
+			src/entity_ed07.o (.text);
+			src/entity_2d2b.o (.text);
+			src/entity_5da5.o (.text);
 			src/entity_83b2.o (.text);
 			src/entity_0866.o (.text);
-			src/entity_0800a89c.o (.text);
+			src/spirit_bugs.o (.text);
 			src/solar_bamboo.o (.text);
 			src/entity_aa65.o (.text);
 			src/entity_c9bc.o (.text);
@@ -132,6 +160,7 @@ SECTIONS {
 			src/entity_e435.o (.text);
 			src/entity_8ecd.o (.text);
 			src/code_08017b70.o (.text);
+			src/entity_d9d3.o (.text);
 			src/entity_da0b.o (.text);
 			src/entity_ef6f.o (.text);
 			src/entity_6d69.o (.text);
@@ -150,6 +179,8 @@ SECTIONS {
 			src/entity_af33.o (.text);
 			src/entity_af33_childlen.o (.text);
 			src/entity_723e.o (.text);
+			src/entity_08052ffc.o (.text);
+			src/entity_5645.o (.text);
 			src/code_08052eb8.o (.text);
 			src/entity_0805fe30.o (.text);
 			src/entity_080601a8.o (.text);
@@ -157,12 +188,12 @@ SECTIONS {
 			src/entity_080607a8.o (.text);
 			src/player.o (.text);
 			src/player_08065988.o (.text);
-			src/entity_5941.o (.text);
+			src/enemy_entity_5941.o (.text);
 			src/player_0807f640.o (.text);
 			src/entity_08080be8.o (.text);
 			src/player_link.o (.text);
 			src/code_080801f4.o (.text);
-			src/entity_28cb.o (.text);
+			src/coffin_immortal.o (.text);
 			src/entity_cc28.o (.text);
 			src/entity_1b24.o (.text);
 			src/code_080917e4.o (.text);
@@ -197,8 +228,16 @@ SECTIONS {
 			src/boss/jormungandr.o (.text);
 			src/entity_e06a.o (.text);
 			src/entity_c814.o (.text);
-			src/code_080c5058.o (.text);
+			src/entity_080cbabc.o (.text);
+			src/entity_f41a.o (.text);
+			src/player_080d82ec.o (.text);
+			src/entity_080d84f8.o (.text);
+			src/code_080d8644.o (.text);
 			src/entity_080ddf88.o (.text);
+			src/entity_080df420.o (.text);
+			src/code_080df46c.o (.text);
+			src/enemy_manager.o (.text);
+			src/enemy_080ef84c.o (.text);
 			src/enemy/boku.o (.text);
 			src/enemy/skeleton.o (.text);
 			src/enemy/golem.o (.text);
@@ -252,10 +291,9 @@ SECTIONS {
 			src/entity_8aab.o (.text);
 			src/interrupts.o (.text);
 			src/video.o (.text);
-			src/code_0822f204.o (.text);
-			src/sprite_0822f284.o (.text);
-			src/sprite_0822f650.o (.text);
-			src/code_0823071c.o (.text);
+			src/sprite_main.o (.text);
+			src/sprite_main_arm.o (.text);
+			src/system_0823071c.o (.text);
 			src/malloc.o (.text);
 			src/entity.o (.text);
 			src/code_08230d30.o (.text);
@@ -344,7 +382,9 @@ SECTIONS {
 	.rodata :
 	ALIGN(4)
 	{
+    src/entity_e28b.o (.rodata);
     src/data.o (.rodata);
+    src/game_result_data.o (.rodata);
     src/interrupts.o (.rodata);
     src/lib/m4a_tables.o (.rodata);
     src/sound.o (.rodata);
@@ -376,13 +416,13 @@ SECTIONS {
     *libc.a:impure.o(.rodata);
     *libc.a:syscalls.o(.rodata);
     src/vm_subroutine.o (.rodata);
-    src/entity_4ae5.o (.rodata);
+    src/map_pltt_4ae5.o (.rodata);
     src/entity_d9ae.o (.rodata);
     src/entity_2d2b.o (.rodata);
     src/entity_5da5.o (.rodata);
     src/entity_83b2.o (.rodata);
     src/entity_0866.o (.rodata);
-    src/entity_0800a89c.o (.rodata);
+    src/spirit_bugs.o (.rodata);
     src/solar_bamboo.o (.rodata);
     src/entity_c9bc.o (.rodata);
     src/entity_0800f110.o (.rodata);
@@ -399,7 +439,7 @@ SECTIONS {
     src/player.o (.rodata);
     src/player_08065988.o (.rodata);
     src/entity_0b50.o (.rodata);
-    src/entity_28cb.o (.rodata);
+    src/coffin_immortal.o (.rodata);
     src/entity_cc28.o (.rodata);
     src/entity_c946.o (.rodata);
     src/weapon_dex.o (.rodata);

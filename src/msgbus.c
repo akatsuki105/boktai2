@@ -8,7 +8,7 @@
 // 受け口: 全エンティティの EntityMsgBox を boxes のリストで持ち、登録・解除・ダブルバッファの面切り替えを一手に引き受ける
 // 再生: デモスクリプト (PTR_ARRAY_08dbd564) を demoID/step で読み進め、各 EntityMsg を宛先の受け口へ配る
 // 自身も targetClass 1 の宛先で、cmd 0=スクリプト実行 / 1=ウェイト / 2=外部待ち を Demo_HandleMsgs で処理する
-typedef struct EntityMsgBus {
+typedef struct {
   Entity e;             // ENTITY_UNK_2
   u16 demoID;           // 0x18, キーワード 'd'。DemoTable_GetMsg の第1添字
   s16 step;             // 0x1A, キーワード 'c' - 1 から1ずつ進む。第2添字
@@ -30,7 +30,8 @@ typedef struct EntityMsgBus {
 } EntityMsgBus;
 static_assert(sizeof(EntityMsgBus) == 172);
 
-extern EntityMsgBus* gEntityMsgBus;  // 0x03002B4C
+COMMON_DATA s32 s32_03002b48 = 0;                // 0x03002B48, 多分こいつは msgbus.c のものじゃない
+COMMON_DATA EntityMsgBus* gEntityMsgBus = NULL;  // 0x03002B4C
 
 bool32 EntityMsgBox_BeginWait(EntityMsgBox* p, EntityMsg* data);
 bool32 EntityMsgBox_EndWait(EntityMsgBox* p, u32 val);

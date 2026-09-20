@@ -12194,7 +12194,7 @@ _08176422:
 	mov r0, sb
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	movs r1, #0xd1
 	lsls r1, r1, #1
@@ -14509,7 +14509,7 @@ FUN_0817759c: @ 0x0817759C
 	adds r4, r6, r0
 _081775B4:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r1, #0x92
 	lsls r1, r1, #1
 	adds r4, r4, r1
@@ -20716,7 +20716,7 @@ _0817A4D6:
 	cmp r0, #0
 	bne _0817A4F0
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _0817A4F8
 	.align 2, 0
 _0817A4E8: .4byte 0x0000044C
@@ -20724,7 +20724,7 @@ _0817A4EC: .4byte 0x0000025D
 _0817A4F0:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _0817A4F8:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -20862,7 +20862,7 @@ EnemySandWorm_Init: @ 0x0817A5B4
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _0817A64C @ =0x0000C102
 	bl FUN_080e3804
@@ -22403,7 +22403,7 @@ _0817B1C0:
 	ldr r0, _0817B408 @ =FUN_080f0320
 	ldr r3, [sp, #0x1a8]
 	str r0, [r3]
-	ldr r0, _0817B40C @ =FUN_080eff14
+	ldr r0, _0817B40C @ =Enemy_080eff14
 	ldr r4, [sp, #0x14c]
 	str r0, [r4]
 	ldr r0, _0817B410 @ =FUN_080e72b0
@@ -22570,7 +22570,7 @@ _0817B3FC: .4byte FUN_080f0430
 _0817B400: .4byte 0x085AD470
 _0817B404: .4byte FUN_080e73c8
 _0817B408: .4byte FUN_080f0320
-_0817B40C: .4byte FUN_080eff14
+_0817B40C: .4byte Enemy_080eff14
 _0817B410: .4byte FUN_080e72b0
 _0817B414: .4byte FUN_08172384
 _0817B418: .4byte FUN_080f47c8

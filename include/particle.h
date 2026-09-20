@@ -2,12 +2,7 @@
 #define __INCLUDE_PARTICLE_H__
 
 #include "gba/gba.h"
-
-// ParticleFile の長さは .tileCount と .groupCount に依存するが、 boktai2 では ParticleFile が 1つしかないので、固定値で定義している
-
-#define PARTICLE_TILE_SIZE 317  // = ParticleFile.tileCount
-
-#define PTCL_GROUP_COUNT 3  // = ParticleFile.groupCount
+#include "sprite_common.h"
 
 // Particle Group ID
 #define PTCL_GROUP_0 0x1C1A
@@ -17,25 +12,24 @@
 typedef u8 ParticleGroupFlags;  // ParticleGroup.flags
 #define PGFLAG_BPP8 (1 << 4)    // 0x10, 8bpp
 
-typedef struct ParticleGroup {
+// AuxSprite でいう AuxSpriteGfx
+typedef struct {
   u16 id;                    // 0x00
   ParticleGroupFlags flags;  // 0x02, see ParticleGroupFlags
-  u8 shape;                  // 0x03
+  SpriteShape shape;         // 0x03, see SpriteShape
   u16 tile;                  // 0x04, Start index of this particle group in the tiles array, number of tiles per particle is implied by the shape field.
   u16 plttID;                // 0x06
 } ParticleGroup;
 static_assert(sizeof(ParticleGroup) == 8);
 
 typedef struct {
-  u32 unk_00;                                     // 0x00
-  u16 tileCount;                                  // 0x04, Number of elements in the tiles array
-  u16 groupCount;                                 // 0x06, Number of elements in the groups array
-  u32 offsetToTiles;                              // 0x08, Byte offset from start of the file to the tiles array
-  struct ParticleGroup groups[PTCL_GROUP_COUNT];  // 0x0C, Array of particle groups
-  u8 tiles[PARTICLE_TILE_SIZE * 32];              // GBA tiles
-} ParticleFile;
-
-extern const ParticleFile gParticleFile0;  // 0x08A20138
+  u32 unk_00;               // 0x00
+  u16 tileCount;            // 0x04, Number of elements in the tiles array (このゲームでは ParticleFile は 1つで tileCount = 317)
+  u16 groupCount;           // 0x06, Number of elements in the groups array
+  u32 offsetToTiles;        // 0x08, Byte offset from start of the file to the tiles array
+  ParticleGroup groups[3];  // 0x0C, Array of particle groups
+  u8 tiles[317 * 32];       // GBA tiles
+} ParticleFile;             // ParticleFile の長さは .tileCount と .groupCount に依存するが、 boktai2 では ParticleFile が 1つしかないので、固定値で定義している
 
 // --------------------------------------------
 
@@ -48,11 +42,11 @@ typedef struct Particle {
   u16 tileNum;            // 0x08
   u8 spriteWidth;         // 0x0A
   u8 spriteHeight;        // 0x0B
-  s8 q_offsetX;           // 0x0C
-  s8 q_offsetY;           // 0x0D
+  s8 offsetX;             // 0x0C
+  s8 offsetY;             // 0x0D
   u8 plttSlot;            // 0x0E
   u8 priority;            // 0x0F
-  u8 q_zOffset;           // 0x10
+  u8 offsetZ;             // 0x10
   u8 listIdx;             // 0x11
   u8 unk_12[2];           // 0x12, padding?
   u32 oamAttr01;          // 0x14
@@ -60,19 +54,19 @@ typedef struct Particle {
   struct Particle* prev;  // 0x20
   struct Particle* next;  // 0x24
 } Particle;
-static_assert(sizeof(Particle) == 40);  // 　FUN_0822a3c4 から 40バイト以上は確定 で 0x0805fdfe のループでは 40バイトずつアドレスが増えていくので、 40バイトで確定と思われる
+static_assert(sizeof(Particle) == 40);  // 　Particle_RemoveDrawList から 40バイト以上は確定 で 0x0805fdfe のループでは 40バイトずつアドレスが増えていくので、 40バイトで確定と思われる
 
 // --------------------------------------------
 
 extern Particle* gParticleLists[2];
 
 void LoadParticleFile(ParticleFile* p);
-ParticleGroup* GetParticleGroup(u16 ptclID);
-void FUN_0822a3c4(Particle* p, s32 idx);
+ParticleGroup* GetParticleGroup(u16 ptclgroupID);
+void Particle_RemoveDrawList(Particle* p, s32 idx);
 void FUN_0822d9f0(Particle* p, ParticleGroup* g, u32 flags);
 void FUN_0822da70(Particle* p, ParticleGroup* g, u32 flags);
-void FUN_0822dabc(Particle* p);
+void Particle_Remove(Particle* p);
 void FUN_0822dadc(Particle* p, s32 plttID);
-void FUN_0822dad4(Particle* p, s32 offsetX, s32 offsetY);
+void Particle_SetOffset(Particle* p, s32 offsetX, s32 offsetY);
 
 #endif  // __INCLUDE_PARTICLE_H__

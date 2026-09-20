@@ -105,8 +105,8 @@ $(shell mkdir -p $(SUBDIRS))
 ifeq ($(MODERN),0)
 # Special configurations required for lib files
 
-$(BUILD_DIR)/src/sprite_0822f650.o: CC1 := tools/agbcc/bin/agbcc_arm$(EXE)
-$(BUILD_DIR)/src/sprite_0822f650.o: CFLAGS := -O2 -mthumb-interwork -quiet
+$(BUILD_DIR)/src/sprite_main_arm.o: CC1 := tools/agbcc/bin/agbcc_arm$(EXE)
+$(BUILD_DIR)/src/sprite_main_arm.o: CFLAGS := -O2 -mthumb-interwork -quiet
 
 # pret/pokeXXX では old_agbcc を使うが、このゲームでは使わないと思われる
 # 根拠: ビルドが合わない & pretのm4aと異なるソースコード(e.g. SampleFreqSet)を使っている

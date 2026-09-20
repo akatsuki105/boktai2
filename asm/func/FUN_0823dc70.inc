@@ -74,7 +74,7 @@ _0823DCFA:
 	ldr r0, [sp]
 	ldr r1, [sp, #4]
 	ldr r2, [sp, #8]
-	bl FUN_0823daa4
+	bl GetDayOfWeek
 	strb r0, [r4, #8]
 _0823DD12:
 	ldr r0, _0823DD4C @ =0x030047B4

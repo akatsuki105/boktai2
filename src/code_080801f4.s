@@ -667,7 +667,7 @@ FUN_08084b94: @ 0x08084B94
 	movs r5, #0xb
 _08084B9C:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x3c
 	subs r5, #1
 	cmp r5, #0
@@ -710,7 +710,7 @@ _08084BE2:
 	adds r0, r4, #0
 	adds r1, r7, #0
 	adds r2, r7, #0
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	ldr r1, [r5]
 	adds r0, r4, #0
 	movs r2, #1
@@ -1479,10 +1479,10 @@ EntityBD74_Destroy: @ 0x080851C0
 	push {r4, lr}
 	adds r4, r0, #0
 	adds r0, #0x18
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r4, #0
 	adds r0, #0x60
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r4, #0
 	bl FUN_08084b94
 	ldr r1, _080851E4 @ =0x03002BFC
@@ -1600,7 +1600,7 @@ _080852A8:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #3
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	movs r1, #0x32
 	bl Video_SetAuxSpritePltt
@@ -1624,7 +1624,7 @@ _080852A8:
 	ldr r2, _0808536C @ =0x00000203
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	movs r1, #0x32
 	bl Video_SetAuxSpritePltt
@@ -1735,7 +1735,7 @@ _080853CE:
 	adds r0, r4, #0
 	adds r1, r6, #0
 	adds r2, r6, #0
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	movs r0, #0xff
 	strb r0, [r4, #0x10]
 	ldr r0, [r4]
@@ -2070,7 +2070,7 @@ FUN_0808565c: @ 0x0808565C
 	movs r5, #6
 _08085666:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	subs r5, #1
 	adds r4, #0x28
 	cmp r5, #0
@@ -2102,7 +2102,7 @@ FUN_0808567c: @ 0x0808567C
 	lsls r2, r2, #2
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r2, #8
 	rsbs r2, r2, #0
 	adds r0, r4, #0
@@ -2132,7 +2132,7 @@ FUN_080856cc: @ 0x080856CC
 	movs r2, #0xcf
 	lsls r2, r2, #2
 	adds r0, r1, r2
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r0, #0
 	strb r0, [r4]
 _080856E8:
@@ -5461,7 +5461,7 @@ FUN_08086f90: @ 0x08086F90
 	adds r0, #0x84
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldrh r1, [r5]
 	ldr r2, _08087008 @ =0x0000032E
 	adds r0, r6, r2
@@ -10841,7 +10841,7 @@ _080898F0:
 	bl FUN_0823b284
 	adds r0, r4, #0
 	adds r0, #0x84
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r4, #0
 	adds r0, #0xdc
 	bl FUN_08236424

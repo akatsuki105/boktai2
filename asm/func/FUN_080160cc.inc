@@ -1,7 +1,7 @@
 	push {r4, lr}
 	adds r4, r0, #0
 	adds r0, #0x3c
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	ldr r0, _0801610C @ =0x03002B44
 	ldr r0, [r0]
 	cmp r0, #0

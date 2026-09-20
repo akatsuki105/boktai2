@@ -931,7 +931,7 @@ Entity08017750_Destroy: @ 0x0801766C
 	movs r5, #7
 _08017674:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x84
 	subs r5, #1
 	cmp r5, #0

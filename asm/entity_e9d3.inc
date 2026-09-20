@@ -1682,7 +1682,7 @@ EntityE9D3_Destroy: @ 0x080B55A8
 	movs r5, #0x13
 _080B55B2:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -1690,7 +1690,7 @@ _080B55B2:
 	movs r1, #0xfb
 	lsls r1, r1, #3
 	adds r0, r6, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r0, #0
 	pop {r4, r5, r6}
 	pop {r1}

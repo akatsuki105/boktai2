@@ -144,7 +144,7 @@ _081EA940:
 	bics r0, r1
 	str r0, [r2]
 	adds r0, r5, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r1, #0x9c
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -291,7 +291,7 @@ _081EAA92:
 	cmp r0, #0
 	beq _081EAAB4
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldrh r1, [r5]
 	mov r0, r8
 	ands r0, r1

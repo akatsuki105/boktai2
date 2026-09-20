@@ -297,7 +297,7 @@ _080B5880:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r3, _080B592C @ =0x000007DF
 	adds r0, r7, r3
 	strb r6, [r0]

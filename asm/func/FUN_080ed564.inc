@@ -4,7 +4,7 @@
 	mov r5, r8
 	push {r5, r6, r7}
 	sub sp, #4
-	bl FUN_080ef840
+	bl GetEnemyManager
 	ldr r0, _080ED5FC @ =0x03002C60
 	ldr r0, [r0]
 	mov r8, r0

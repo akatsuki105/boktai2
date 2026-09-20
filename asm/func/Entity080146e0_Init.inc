@@ -36,7 +36,7 @@ _080146A2:
 	adds r0, r4, #0
 	mov r1, r8
 	mov r2, r8
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	adds r4, #0x38
 	subs r5, #1
 	cmp r5, #0

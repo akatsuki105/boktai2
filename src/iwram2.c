@@ -11,21 +11,15 @@
 #include "time.h"
 #include "vm.h"
 
-struct EntityMsgBus;
-struct Entity286F;
 struct Dvalinn;
 struct Entity5941;
 struct EntityCBB0;
+struct EnemyManager;
 struct Entity9A9F;
 struct Player;
 struct CollisionMapData;
 
-IWRAM_DATA s32 s32_03002b48 = 0;                       // 0x03002B48
-IWRAM_DATA struct EntityMsgBus* gEntityMsgBus = NULL;  // 0x03002B4C
-IWRAM_DATA struct Entity286F* gEntity286F = NULL;      // 0x03002B50
-
-IWRAM_DATA u8 u8_03002b54[4] = {};  // todo
-
+IWRAM_DATA u32 u32_03002b54 = 0;                    // gUnkEntity1Ptr_03002b58 と同じ場所っぽい, rfu_syncVBlank の戻り値が入る
 IWRAM_DATA Entity* gUnkEntity1Ptr_03002b58 = NULL;  // 0x03002B58, Malloc(908) で確保したバッファを指すポインタ, RFU関連? (FUN_0804e2c0)
 
 IWRAM_DATA u8 u8_03002b5c[60] = {};            // todo
@@ -42,7 +36,9 @@ IWRAM_DATA u8 u8_03002bfc[0x03002C58 - 0x03002bfc] = {};  // todo
 
 IWRAM_DATA struct EntityCBB0* gEntityCBB0 = NULL;  // 0x03002C58
 
-IWRAM_DATA u8 u8_03002c5c[0x03002C68 - 0x03002C5C] = {};  // todo
+IWRAM_DATA struct EnemyManager* gEnemyManager = NULL;     // 0x03002C5C
+IWRAM_DATA struct EnemyListNode* gEnemyListHead = NULL;   // 0x03002C60, 生存中のエネミーの単方向リスト. EnemyManager.list と同じ値
+IWRAM_DATA u8 u8_03002c64[0x03002C68 - 0x03002C64] = {};  // todo
 
 IWRAM_DATA struct Entity9A9F* gEntity9A9F = NULL;  // 0x03002C68
 
@@ -75,7 +71,7 @@ IWRAM_DATA u16* gHBlankEffectBuffer = NULL;  // 0x03003518, スキャンライ�
 IWRAM_DATA u16 u16_0300351c = 0;                          // 0x0300351C, EEPROM_BeginAccess (EEPROM アクセス前) が 0、EEPROM_EndAccess (アクセス後) が 1 を書く
 IWRAM_DATA u8 u8_0300351e[0x03003530 - 0x0300351E] = {};  // todo
 
-IWRAM_DATA u32 gSpriteListIdx = 0;  // 0x03003530, 描画リストの選択 (0: 通常, 1: スタートメニュー中), 根拠: FUN_0822f1d8, エミュレータで確認
+IWRAM_DATA u32 gSpriteListIdx = 0;  // 0x03003530, 描画リストの選択 (0: 通常, 1: スタートメニュー中)
 
 IWRAM_DATA Procedure PTR_03003534 = NULL;  // 0x03003534
 IWRAM_DATA u8 u8_03003538[8] = {};         // 16byte alignment padding?
@@ -87,12 +83,12 @@ IWRAM_DATA Procedure PTR_03003558 = NULL;  // 0x03003558
 IWRAM_DATA u8 u8_0300355c[4] = {};         // 16byte alignment padding?
 
 IWRAM_DATA AuxSprite* gAuxSpriteLists[2] = {};    // 0x03003560
-IWRAM_DATA MainSprite* gMainSpriteLists[2] = {};  // 0x03003568, 根拠: FUN_0822f1d8
+IWRAM_DATA MainSprite* gMainSpriteLists[2] = {};  // 0x03003568
 IWRAM_DATA Particle* gParticleLists[2] = {};      // 0x03003570, 根拠: FUN_0822a398
 
 IWRAM_DATA u16 gAuxSpriteTileCount = 0;  // 0x03003578, このフレームに FUN_0822b270 が積んだアクタースプライトのタイル数, 根拠: FUN_0822b308 が DMA 先の起点計算に使う
 IWRAM_DATA u16 u16_0300357a = 0;         // todo
-IWRAM_DATA u16 u16_0300357c = 0;         // 0x0300357C, DrawSprite_0822f6fc が積んだタイル数を加算していくが、読み出す箇所が見つかっていない
+IWRAM_DATA u16 u16_0300357c = 0;         // 0x0300357C, MainSprite_DrawInternal が積んだタイル数を加算していくが、読み出す箇所が見つかっていない
 IWRAM_DATA u16 u16_0300357e = 0;         // todo
 
 IWRAM_DATA u16 gObjPlttLen = 0;          // 0x03003580, = ObjPlttFile.length
@@ -123,7 +119,7 @@ IWRAM_DATA u8 gOAMTileHeightTable[16] = {};      // 0x03003FB0, タイル(8px)�
 IWRAM_DATA u8 gOAMHeightTable[16] = {};          // 0x03003FC0, ピクセル単位
 IWRAM_DATA u8 gOAMTileCounts[16] = {};           // 0x03003FD0, タイル枚数
 IWRAM_DATA u8 gOAMTileWidthTable[16] = {};       // 0x03003FE0, タイル(8px)単位
-IWRAM_DATA u32 gOAMShapeSizeAttrTable[16] = {};  // 0x03003FF0, OAM0.14-15(shape) と OAM1.14-15(size) のビットを attr0|attr1<<16 形式で格納, DrawSprite_0822a574 / DrawSprite_0822f6fc が OR する
+IWRAM_DATA u32 gOAMShapeSizeAttrTable[16] = {};  // 0x03003FF0, OAM0.14-15(shape) と OAM1.14-15(size) のビットを attr0|attr1<<16 形式で格納, DrawSprite_0822a574 / MainSprite_DrawInternal が OR する
 IWRAM_DATA u8 gOAMWidthTable[16] = {};           // 0x03004030, ピクセル単位
 
 IWRAM_DATA s32 s32_03004040 = 0;    // 0x03004040, MapPltt_FadeIn / MapPltt_FadeOut が明るさとして書く
@@ -159,8 +155,8 @@ IWRAM_DATA u16 u16_0300449e = 0;                        // todo
 IWRAM_DATA u32 gHBlankEffectBG = 0;                     // 0x030044A0, HBlankエフェクトの対象BG番号, 根拠: FUN_0822f0d8
 IWRAM_DATA void* gHBlankEffectTable = NULL;             // 0x030044A4, スキャンライン毎の値のテーブル, 根拠: FUN_0822eef4
 IWRAM_DATA s32 gHBlankEffectKind = 0;                   // 0x030044A8, HBlankエフェクトの種類 (0:BGnHOFS, 1:BGnVOFS, 2:MOSAIC, 3:BLDY), 根拠: FUN_0822f0d8
-IWRAM_DATA u32 gObjBlendEnabled = 0;                    // 0x030044AC, 0以外なら flags bit14 のスプライトを半透明にする, 根拠: DrawSprite_0822f6fc
-IWRAM_DATA u8 gObjMosaicEnabled = 0;                    // 0x030044B0, bit0 が立っているスプライトだけ OAM attr0.12 (mosaic) を立てる, 根拠: DrawSprite_0822f6fc / DrawSprite_0822a574
+IWRAM_DATA u32 gObjBlendEnabled = 0;                    // 0x030044AC, 0以外なら flags bit14 のスプライトを半透明にする, 根拠: MainSprite_DrawInternal
+IWRAM_DATA u8 gObjMosaicEnabled = 0;                    // 0x030044B0, bit0 が立っているスプライトだけ OAM attr0.12 (mosaic) を立てる, 根拠: MainSprite_DrawInternal / DrawSprite_0822a574
 IWRAM_DATA u8 u8_030044b1[3] = {};                      // todo
 IWRAM_DATA u16 gMosaicSize = 0;                         // 0x030044B4, MOSAIC レジスタに書く値 (bit0-3: BG H, bit4-7: BG V, bit8-11: OBJ H, bit12-15: OBJ V)
 IWRAM_DATA u16 u16_030044b6 = 0;                        // todo

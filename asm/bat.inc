@@ -6075,14 +6075,14 @@ EnemyBat_Destroy: @ 0x081414B0
 	cmp r0, #0
 	bne _081414CC
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _081414D4
 	.align 2, 0
 _081414C8: .4byte 0x0000025D
 _081414CC:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _081414D4:
 	ldr r0, [r4, #0x44]
 	bl Free

@@ -18,7 +18,7 @@ _080DF3D0:
 	cmp r0, #0
 	beq _080DF3DA
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _080DF3DA:
 	adds r4, #0xfc
 	adds r5, #1

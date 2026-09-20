@@ -93,7 +93,7 @@ typedef struct MainSprite {
   u16 unk_0;                      // 0x00, MainSpritePose.unk_0
   u8 unk_2;                       // 0x02, FUN_080609dc
   u8 unk_3;                       // 0x03, FUN_080609dc
-  bool8 active;                   // 0x04, FUN_0822f1c0
+  bool8 active;                   // 0x04, MainSprite_Remove
   SpriteFlags flags;              // 0x08, see SpriteFlags, FUN_08060a24
   u16 animCmdTimer;               // 0x0C, 現在のコマの経過フレーム数, 根拠: MainSprite_AdvanceAnim が毎フレーム +1 してコマ切り替えで 0 に戻す
   u16 animCmdDuration;            // 0x0E, 現在のコマの表示フレーム数, MainAnimCmd.duration * animSpeed / 64 (0 なら 1)
@@ -104,7 +104,7 @@ typedef struct MainSprite {
   MainAnimPlayFlags16 animFlags;  // 0x18, see MainAnimPlayFlags16
   u8 priority;                    // 0x1A
   u8 playMode;                    // 0x1B, 0=停止, 2=1回再生して停止, 3=1回再生して非表示, その他=ループ, 根拠: MainSprite_AdvanceAnim
-  u8 listIdx;                     // 0x1C, FUN_0822f1c0
+  u8 listIdx;                     // 0x1C, MainSprite_Remove
   u8 animEvents;                  // 0x1D, MainSprite_AdvanceAnim が毎フレーム先頭でクリアする通知ビット, bit0=次で終わる, bit1=今終わった, bit2=コマが進んだ
   u8 unk_1e[2];                   // 0x1E
   Vec3 pos;                       // 0x20, ワールド座標. flags bit4 が立っていればスクリーン座標としてそのまま使われる, 根拠: FUN_08230134 のアイソメトリック投影と MainSprite_Load の Vec3 コピー
@@ -119,15 +119,15 @@ typedef struct MainSprite {
   u16 rotation;                   // 0x36, gSineTable の索引として使われる
   u16 subspriteCount;             // 0x38, MainSpritePose.subspriteCount
   u16 plttID;                     // 0x3A, &gObjPlttData[plttID*16]
-  u32 q_oamAttr;                  // 0x3C, OAM attr0 | attr1<<16 のベース値, AuxSprite.q_oamAttr と同じ役割
+  u32 oamAttr;                    // 0x3C, OAM attr0 | attr1<<16 のベース値, AuxSprite.oamAttr と同じ役割
   s32 q_unk_40;                   // 0x40, MainSprite_Add で -1 が入る
   s32 q_unk_44;                   // 0x44, 同上
   rgb555* pltt;                   // 0x48, &gObjPlttData[plttID*16]
   MainSubsprite* subsprites;      // 0x4C, MainSpriteGfx.subsprites[MainSpritePose.subspriteOffset/sizeof(MainSubsprite)]
   u8* tiles;                      // 0x50, MainSpriteGfx.tiles
   MainAnimCmd* animCmds;          // 0x54, アニメーションのコマ配列, MainSprite_Add で 0 が入る
-  struct MainSprite* prev;        // 0x58, 根拠: FUN_0822a3f0 / FUN_0822a41c
-  struct MainSprite* next;        // 0x5C, 根拠: FUN_0822f1d8
+  struct MainSprite* prev;        // 0x58
+  struct MainSprite* next;        // 0x5C
 } MainSprite;
 static_assert(sizeof(MainSprite) == 96);
 
@@ -140,6 +140,6 @@ s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* src, u16 spriteIdx);
 s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* src, u16 param_3, u8 playMode);
 s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
 bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* src);
-void FUN_0822f1c0(MainSprite* p);
+void MainSprite_Remove(MainSprite* p);
 
 #endif  // __INCLUDE_SPRITE_MAIN_H__

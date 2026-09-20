@@ -15,7 +15,7 @@
 	adds r3, #0x28
 	adds r0, r4, #0
 	adds r1, r3, #0
-	bl FUN_0822a4b0
+	bl AuxSprite_Setup
 	movs r0, #0x36
 	strh r0, [r4, #0x10]
 	pop {r4}

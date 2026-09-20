@@ -6436,14 +6436,14 @@ FUN_08165574: @ 0x08165574
 	cmp r0, #0
 	bne _08165590
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _08165598
 	.align 2, 0
 _0816558C: .4byte 0x0000025D
 _08165590:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _08165598:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -6577,7 +6577,7 @@ EnemySlime_Init: @ 0x08165654
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _081656E0 @ =0x0000A929
 	bl FUN_080e3804
@@ -8184,7 +8184,7 @@ _081662E8:
 	ldr r0, _081664A8 @ =FUN_080f0320
 	ldr r3, [sp, #0x134]
 	str r0, [r3]
-	ldr r0, _081664AC @ =FUN_080eff14
+	ldr r0, _081664AC @ =Enemy_080eff14
 	ldr r4, [sp, #0xc4]
 	str r0, [r4]
 	ldr r0, _081664B0 @ =FUN_080e72b0
@@ -8304,7 +8304,7 @@ _0816649C: .4byte FUN_080f0430
 _081664A0: .4byte 0x085AD470
 _081664A4: .4byte FUN_080e73c8
 _081664A8: .4byte FUN_080f0320
-_081664AC: .4byte FUN_080eff14
+_081664AC: .4byte Enemy_080eff14
 _081664B0: .4byte FUN_080e72b0
 _081664B4: .4byte FUN_080f47c8
 _081664B8: .4byte FUN_080f54e4

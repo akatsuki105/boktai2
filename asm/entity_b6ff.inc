@@ -609,7 +609,7 @@ EntityB6FF_Destroy: @ 0x080ACA40
 	movs r5, #0x17
 _080ACA48:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x5c
 	subs r5, #1
 	cmp r5, #0
@@ -644,7 +644,7 @@ _080ACA70:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	mov r0, r8
 	strh r0, [r4, #0x10]
 	ldr r0, [r4]

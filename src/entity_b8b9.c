@@ -1,33 +1,38 @@
+#include "camera.h"
 #include "entity.h"
 #include "global.h"
 #include "sprite.h"
-
-struct Entity2UnkData;
+#include "sprite_aux.h"
+#include "vm.h"
 
 typedef struct {
-  Entity e;  // ENTITY_UNK_2
-  struct Entity2UnkData* unk_18;
-  struct Entity2UnkData* unk_1c;
+  Entity e;              // ENTITY_UNK_2
+  Entity2UnkData* head;  // 0x18, Entity2UnkData の双方向リストの先頭, 根拠: FUN_0823b1f8 (末尾に追加) / FUN_0823b258 (先頭から走査)
+  Entity2UnkData* tail;  // 0x1C, 同リストの末尾
 } EntityB8B9;
 static_assert(sizeof(EntityB8B9) == 32);
 
 IWRAM_DATA EntityB8B9* gEntityB8B9 = NULL;  // 0x030016F8
 
+// 実体は src/code_082326a0.c / src/savedata.c
+void FUN_0823280c(void* p, Vec3* pos);
+void FUN_0823349c(void* param_1, Vec3* pos, Vec3* delta, u16 unk_1c, u16 unk_1e, u8 unk_4);
+
 void FUN_0823b1ec(void) { gEntityB8B9 = NULL; }
 
 void FUN_0823b1f8(Entity2UnkData* p) {
   if (gEntityB8B9 != NULL) {
-    if (gEntityB8B9->unk_18 == NULL) {
-      gEntityB8B9->unk_18 = p;
-      gEntityB8B9->unk_1c = p;
+    if (gEntityB8B9->head == NULL) {
+      gEntityB8B9->head = p;
+      gEntityB8B9->tail = p;
       p->prev = NULL;
       p->next = NULL;
     } else {
-      Entity2UnkData* tmp = gEntityB8B9->unk_1c;
+      Entity2UnkData* tmp = gEntityB8B9->tail;
       tmp->next = p;
       p->prev = tmp;
       p->next = NULL;
-      gEntityB8B9->unk_1c = p;
+      gEntityB8B9->tail = p;
     }
   }
 }
@@ -37,7 +42,7 @@ Entity2UnkData* FindUnk0200865c(u16 id) {
   if (gEntityB8B9 == NULL) {
     return NULL;
   } else {
-    for (p = gEntityB8B9->unk_18; p != NULL; p = p->next) {
+    for (p = gEntityB8B9->head; p != NULL; p = p->next) {
       if (p->id == id) {
         return p;
       }
@@ -51,7 +56,7 @@ Entity2UnkData* FUN_0823b258(Entity2UnkData* p) {
   if (gEntityB8B9 == NULL) {
     return NULL;
   } else {
-    for (q = gEntityB8B9->unk_18; q != NULL; q = q->next) {
+    for (q = gEntityB8B9->head; q != NULL; q = q->next) {
       if (q == p) {
         return q;
       }
@@ -62,21 +67,21 @@ Entity2UnkData* FUN_0823b258(Entity2UnkData* p) {
 
 // リンクリストから指定ノードを削除する
 bool32 FUN_0823b284(Entity2UnkData* p) {
-  EntityB8B9* head = gEntityB8B9;
+  EntityB8B9* mgr = gEntityB8B9;
   Entity2UnkData* prev;
   Entity2UnkData* next;
-  if ((head == NULL) || (p == NULL) || (FUN_0823b258(p) == NULL)) {
+  if ((mgr == NULL) || (p == NULL) || (FUN_0823b258(p) == NULL)) {
     return FALSE;
   }
   prev = p->prev;
   if (prev == NULL) {
-    head->unk_18 = p->next;
+    mgr->head = p->next;
   } else {
     prev->next = p->next;
   }
   next = p->next;
   if (next == NULL) {
-    head->unk_1c = p->prev;
+    mgr->tail = p->prev;
   } else {
     next->prev = p->prev;
   }
@@ -90,7 +95,28 @@ Entity2UnkData* FUN_0823b2d0(u16 id) {
 
 Entity2UnkData* FUN_0823b2e0(Entity2UnkData* p) { return FUN_0823b258(p); }
 
-NAKED s32 FUN_0823b2ec(void) { INCFUNC("asm/func/FUN_0823b2ec.inc"); }
+// スクリプトから ID を受け取り、そのノードの pos.x/y/z をスクリプト側へ返す
+s32 FUN_0823b2ec(void) {
+  u8 buf[8];
+  Entity2UnkData* p = FindUnk0200865c(Script_GetValue());
+
+  if (p == NULL) {
+    FUN_0823167c(buf);
+    FUN_0823206c(buf, 0, 0);
+    FUN_0823167c(buf);
+    FUN_0823206c(buf, 0, 0);
+    FUN_0823167c(buf);
+    FUN_0823206c(buf, 0, 0);
+    return -1;
+  }
+  FUN_0823167c(buf);
+  FUN_0823206c(buf, 0, p->pos.x);
+  FUN_0823167c(buf);
+  FUN_0823206c(buf, 0, p->pos.y);
+  FUN_0823167c(buf);
+  FUN_0823206c(buf, 0, p->pos.z);
+  return 0;
+}
 
 s32 EntityB8B9_Update(EntityB8B9* _) { return 0; }
 
@@ -99,13 +125,28 @@ s32 EntityB8B9_Destroy(EntityB8B9* _) {
   return 0;
 }
 
-s32 EntityB8B9_Init(EntityB8B9* p) {
+s32 EntityB8B9_Init(EntityB8B9* p, unknown* a, unknown* b) {
   gEntityB8B9 = p;
-  p->unk_18 = NULL, p->unk_1c = NULL;
+  p->head = NULL, p->tail = NULL;
   return 0;
 }
 
-NAKED EntityB8B9* EntityB8B9_Create(void) { INCFUNC("asm/func/EntityB8B9_Create.inc"); }
+EntityB8B9* EntityB8B9_Create(unknown* a, unknown* b) {
+  EntityB8B9* p;
+
+  if (gEntityB8B9 != NULL) {
+    return gEntityB8B9;
+  }
+  p = CreateEntity(ENTITY_UNK_2, sizeof(EntityB8B9));
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityB8B9_Update, EntityB8B9_Destroy);
+    if (EntityB8B9_Init(p, a, b) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
 
 EntityB8B9* FUN_0823b3ec(void) {
   if (gEntityB8B9 == NULL) {
@@ -115,16 +156,37 @@ EntityB8B9* FUN_0823b3ec(void) {
   }
 }
 
-NAKED s32 FUN_0823b400(Entity2UnkData* p, u32 id, u32* unk_8, u32 unk_5, u32 unk_4, void* owner) { INCFUNC("asm/func/FUN_0823b400.inc"); }
+// リストに繋ぐところまでやる初期化
+s32 FUN_0823b400(Entity2UnkData* p, u16 id, Vec3* pos, u32 unk_5, u32 unk_4, void* owner) {
+  p->id = id;
+  p->unk_2 = 0;
+  p->unk_4 = unk_4;
+  p->pos = *pos;
+  p->unk_5 = unk_5;
+  p->delta.x = 0, p->delta.y = 0, p->delta.z = 0, p->delta.val = 0x10;
+  p->unk_18 = NULL;
+  p->unk_20 = 0;
+  p->unk_28 = 0;
+  p->unk_24 = NULL;
+  FUN_0823b1f8(p);
+  p->p_38 = owner;
+  return TRUE;
+}
 
-NAKED bool32 FUN_0823b43c(Entity2UnkData* p, u32 unk_18, u16 unk_1c, u16 unk_1e) { INCFUNC("asm/func/FUN_0823b43c.inc"); }
+bool32 FUN_0823b43c(Entity2UnkData* p, void* unk_18, u16 unk_1c, u16 unk_1e) {
+  p->unk_18 = unk_18;
+  FUN_0823280c(unk_18, &p->pos);
+  p->unk_1c = unk_1c;
+  p->unk_1e = unk_1e;
+  return TRUE;
+}
 
 bool32 FUN_0823b464(Entity2UnkData* p, u32 unk_20) {
   p->unk_20 = unk_20;
   return TRUE;
 }
 
-bool32 FUN_0823b46c(Entity2UnkData* p, u32 unk_28) {
+bool32 FUN_0823b46c(Entity2UnkData* p, AuxSprite* unk_28) {
   p->unk_28 = unk_28;
   return TRUE;
 }
@@ -134,7 +196,13 @@ bool32 FUN_0823b474(Entity2UnkData* p, MainSprite* data) {
   return TRUE;
 }
 
-NAKED bool32 FUN_0823b47c(Entity2UnkData* p, u32* unk_30_and_unk_34) { INCFUNC("asm/func/FUN_0823b47c.inc"); }
+bool32 FUN_0823b47c(Entity2UnkData* p, Vec3* unk_30) {
+  u16 flag = 4;
+
+  p->unk_2 |= flag;
+  p->unk_30 = *unk_30;
+  return TRUE;
+}
 
 bool32 FUN_0823b490(Entity2UnkData* p, void* unk_24, u8 param_3, u8 param_4, u8 param_5) {
   p->unk_24 = unk_24;
@@ -142,4 +210,28 @@ bool32 FUN_0823b490(Entity2UnkData* p, void* unk_24, u8 param_3, u8 param_4, u8 
   return TRUE;
 }
 
-NAKED void FUN_0823b4b8(Entity2UnkData* p) { INCFUNC("asm/func/FUN_0823b4b8.inc"); }
+// delta の分だけ pos を進めて delta をクリアする
+void FUN_0823b4b8(Entity2UnkData* p) {
+  if (p->unk_18 != NULL) {
+    switch (gCameraCoords.unk_12) {
+      case 0: {
+        FUN_0823349c(p->unk_18, &p->pos, &p->delta, p->unk_1c, p->unk_1e, p->unk_4);
+        break;
+      }
+      case 1: {
+        p->pos.x += p->delta.x;
+        p->pos.y += p->delta.z;
+        p->pos.z = 0;
+        break;
+      }
+    }
+  } else {
+    p->pos.x += p->delta.x;
+    p->pos.y += p->delta.y;
+    p->pos.z += p->delta.z;
+  }
+  if (p->unk_28 != NULL) {
+    p->unk_28->pos = p->pos;
+  }
+  p->delta.x = 0, p->delta.y = 0, p->delta.z = 0;
+}

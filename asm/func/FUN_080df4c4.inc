@@ -19,7 +19,7 @@ _080DF4D0:
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r6, #0
 	ldr r1, _080DF534 @ =0x00000272
 	bl Video_SetAuxSpritePltt

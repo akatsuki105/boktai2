@@ -912,7 +912,7 @@ FUN_0801e960: @ 0x0801E960
 	movs r5, #0xc
 _0801E96A:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -2433,7 +2433,7 @@ EntityEF6F_Destroy: @ 0x0801F49C
 	movs r5, #3
 _0801F4AC:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x28
 	subs r5, #1
 	cmp r5, #0
@@ -2441,7 +2441,7 @@ _0801F4AC:
 	movs r1, #0xdb
 	lsls r1, r1, #3
 	adds r0, r6, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r0, #0
 	pop {r4, r5, r6}
 	pop {r1}
@@ -2619,7 +2619,7 @@ _0801F642:
 	adds r0, r4, #0
 	mov r1, sb
 	mov r2, sb
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	ldr r1, [r7]
 	adds r0, r4, #0
 	movs r2, #0x33

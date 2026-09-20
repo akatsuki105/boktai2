@@ -9,11 +9,11 @@
 	movs r1, #0xca
 	lsls r1, r1, #3
 	adds r0, r4, r1
-	bl FUN_0822dabc
+	bl Particle_Remove
 	movs r1, #0xd0
 	lsls r1, r1, #3
 	adds r0, r4, r1
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r0, r4, #0
 	bl FUN_08061db4
 	adds r0, r4, #0

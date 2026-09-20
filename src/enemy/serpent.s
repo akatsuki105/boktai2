@@ -265,7 +265,7 @@ _08188970:
 FUN_08188978: @ 0x08188978
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
-	bl FUN_080edda0
+	bl FindEnemyById
 	cmp r0, #0
 	bne _081889B0
 	ldr r5, _081889B8 @ =0x0000069C
@@ -13337,7 +13337,7 @@ _0818EF0C:
 	mov r0, r8
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _0818EF88 @ =0x000001A3
 	bl Video_SetAuxSpritePltt
@@ -14576,7 +14576,7 @@ FUN_0818f808: @ 0x0818F808
 	adds r4, r6, r0
 _0818F820:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r1, #0x92
 	lsls r1, r1, #1
 	adds r4, r4, r1
@@ -24517,7 +24517,7 @@ _08194404:
 	cmp r0, #0
 	bne _08194424
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _0819442C
 	.align 2, 0
 _08194418: .4byte 0x000003E5
@@ -24526,7 +24526,7 @@ _08194420: .4byte 0x0000025D
 _08194424:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _0819442C:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -24664,7 +24664,7 @@ EnemySerpent_Init: @ 0x081944E8
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _08194580 @ =0x0000C102
 	bl FUN_080e3804
@@ -26231,7 +26231,7 @@ _08195130:
 	ldr r0, _0819537C @ =FUN_080f0320
 	ldr r3, [sp, #0x17c]
 	str r0, [r3]
-	ldr r0, _08195380 @ =FUN_080eff14
+	ldr r0, _08195380 @ =Enemy_080eff14
 	ldr r4, [sp, #0x110]
 	str r0, [r4]
 	ldr r0, _08195384 @ =FUN_080e72b0
@@ -26397,7 +26397,7 @@ _08195370: .4byte FUN_080f0430
 _08195374: .4byte 0x085AD470
 _08195378: .4byte FUN_080e73c8
 _0819537C: .4byte FUN_080f0320
-_08195380: .4byte FUN_080eff14
+_08195380: .4byte Enemy_080eff14
 _08195384: .4byte FUN_080e72b0
 _08195388: .4byte FUN_0818afc0
 _0819538C: .4byte FUN_080f47c8

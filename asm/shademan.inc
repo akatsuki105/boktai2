@@ -791,7 +791,7 @@ FUN_0803c76c: @ 0x0803C76C
 	movs r5, #2
 _0803C774:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0

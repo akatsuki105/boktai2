@@ -665,7 +665,7 @@ FUN_080b9894: @ 0x080B9894
 	movs r5, #1
 _080B989C:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -871,7 +871,7 @@ FUN_080b9a0c: @ 0x080B9A0C
 	movs r5, #1
 _080B9A14:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -7165,7 +7165,7 @@ Entity3019_Destroy: @ 0x080BCC8C
 	movs r5, #0x30
 _080BCC96:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -10786,7 +10786,7 @@ Entity744F_Destroy: @ 0x080BE9E0
 	movs r5, #0x39
 _080BE9EA:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0

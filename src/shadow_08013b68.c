@@ -13,8 +13,8 @@ typedef struct AuxShadow {
   u16 unk_04;              // 0x04, AuxShadow_Init で 0
   u16 unk_06;              // 0x06, AuxShadow_Init で 0
   Vec3* pos;               // 0x08, 持ち主の座標, AuxShadow_FollowGround が x/y/z を読む
-  AuxSprite sprite;        // 0x0C, 根拠: FUN_0822a470 / FUN_0822a4e0
-  AuxSpriteGfx gfx;        // 0x38, 根拠: Video_GetAuxSprite(EFF_1C1B) / FUN_0822a470
+  AuxSprite sprite;        // 0x0C, 根拠: AuxSprite_Add / AuxSprite_Remove
+  AuxSpriteGfx gfx;        // 0x38, 根拠: Video_GetAuxSprite(EFF_1C1B) / AuxSprite_Add
   s8 scale;                // 0x54, AuxShadow_FollowGround が高さから計算して sprite.scaleX/Y に入れる, 1 未満なら 1
   u8 farScale;             // 0x55, 高さが farHeight を超えたときの scale
   u8 baseScale;            // 0x56, 接地時の scale, 高さに応じてここから引く
@@ -29,16 +29,15 @@ typedef struct AuxShadow {
 } AuxShadow;
 static_assert(sizeof(AuxShadow) == 108);  // next (0x68) までは確定, それ以降に続くかは未確認
 
-typedef struct AuxShadowManager {
+typedef struct {
   Entity e;            // 0x00, ENTITY_UNK_9
   u8 unk_18[4];        // 0x18, 参照なし
   AuxShadow* shadows;  // 0x1C, 影のリストの先頭, Init で 0, AuxShadowManager_Add / AuxShadowManager_Remove / Update
 } AuxShadowManager;
 static_assert(sizeof(AuxShadowManager) == 32);
 
-extern AuxShadowManager* gAuxShadowManager;  // 0x03000054
+IWRAM_DATA AuxShadowManager* gAuxShadowManager = NULL;  // 0x03000054
 
-void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* s);
 void AuxShadow_UpdateNone(void);
 void AuxShadow_FollowGround(AuxShadow* shadow);
 
@@ -113,9 +112,9 @@ NON_MATCH void AuxShadow_FollowGround(AuxShadow* shadow) {
     i = gCollisionMap->q_rowOffsets[bz] + bx;
   }
   idx = i;
-  shadow->sprite.q_pos.x = shadow->pos->x;
+  shadow->sprite.pos.x = shadow->pos->x;
   if (shadow->flags & 1) {
-    shadow->sprite.q_pos.y = shadow->pos->y;
+    shadow->sprite.pos.y = shadow->pos->y;
   } else {
     Vec3* pos = shadow->pos;
 
@@ -138,11 +137,11 @@ NON_MATCH void AuxShadow_FollowGround(AuxShadow* shadow) {
         break;
       }
     }
-    shadow->sprite.q_pos.y = h;
+    shadow->sprite.pos.y = h;
   }
-  shadow->sprite.q_pos.z = shadow->pos->z;
+  shadow->sprite.pos.z = shadow->pos->z;
 
-  dy = shadow->pos->y - shadow->sprite.q_pos.y;
+  dy = shadow->pos->y - shadow->sprite.pos.y;
   if (dy <= 0) {
     shadow->scale = shadow->baseScale;
   } else if (dy < shadow->nearHeight) {
@@ -158,7 +157,7 @@ NON_MATCH void AuxShadow_FollowGround(AuxShadow* shadow) {
   shadow->sprite.scaleX = shadow->scale;
   shadow->sprite.scaleY = shadow->scale;
 
-  if (shadow->pos->y >= shadow->sprite.q_pos.y && shadow->sprite.q_pos.y != 0) {
+  if (shadow->pos->y >= shadow->sprite.pos.y && shadow->sprite.pos.y != 0) {
     tile = (u8*)FUN_08234224(idx, 1);
     if (tile != NULL) {
       tile += 4;
@@ -242,8 +241,8 @@ s32 AuxShadow_Init(AuxShadow* shadow, Vec3* pos, s32 scale, s32 farScale, s32 ba
   gfx = &shadow->gfx;
   Video_GetAuxSprite(gfx, SPRITE_EFF_1C1B);
   sprite = &shadow->sprite;
-  FUN_0822a470(sprite, gfx, SPRFLAG_BLINK_ODD | SPRFLAG_AFFINE);
-  sprite->q_metaspriteIdx = 5;
+  AuxSprite_Add(sprite, gfx, SPRFLAG_BLINK_ODD | SPRFLAG_AFFINE);
+  sprite->metaspriteIdx = 5;
   shadow->sprite.priority = 2;
   AuxShadowManager_Add(mgr, shadow);
   return 0;
@@ -251,7 +250,7 @@ s32 AuxShadow_Init(AuxShadow* shadow, Vec3* pos, s32 scale, s32 farScale, s32 ba
 
 // 影を描画リストと影のリストから外す
 s32 AuxShadow_Remove(AuxShadow* shadow) {
-  FUN_0822a4e0(&shadow->sprite);
+  AuxSprite_Remove(&shadow->sprite);
   if (gAuxShadowManager != NULL) {
     AuxShadowManager_Remove(gAuxShadowManager, shadow);
   }
@@ -266,7 +265,7 @@ s32 AuxShadow_SetSprite(AuxShadow* shadow, SpriteID32 id, s32 poseIdx) {
   Video_GetAuxSprite(gfx, id);
   sprite = &shadow->sprite;
   FUN_0822a4fc(sprite, gfx);
-  sprite->q_metaspriteIdx = poseIdx;
+  sprite->metaspriteIdx = poseIdx;
   // 戻り値のある宣言だが return なし
 }
 

@@ -14,7 +14,7 @@
 	adds r0, r6, #0
 	mov r1, r8
 	mov r2, sb
-	bl FUN_0823daa4
+	bl GetDayOfWeek
 	movs r1, #0
 	strb r0, [r7, #8]
 	strb r4, [r7, #4]

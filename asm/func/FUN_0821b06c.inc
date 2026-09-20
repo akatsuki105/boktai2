@@ -6,17 +6,17 @@
 	bne _0821B082
 	adds r0, r4, #0
 	adds r0, #0x38
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	b _0821B08A
 _0821B082:
 	adds r0, r4, #0
 	adds r0, #0x98
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _0821B08A:
 	movs r1, #0x9e
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	pop {r4}
 	pop {r0}
 	bx r0

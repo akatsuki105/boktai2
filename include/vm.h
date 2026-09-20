@@ -128,8 +128,6 @@ extern VM gVM;                // 0x030045A0
 u8* VM_GetPC(void);
 void VM_SetPC(u8* addr);
 u8* VM_ReadContainerLength(u8* pc, u32* length);
-bool32 VM_SeekToKeyword(u8 val);
-s32 VM_GetKeywordValue(u8 val, s32 fallback);
 u32 Script_GetValue(void);
 u8* VM_DecodeValue(u8* pc, s32* type, void* val);
 void* VM_GetValueSafe2(void);
@@ -137,5 +135,13 @@ void* VM_GetValueSafe2(void);
 s32 Script_ExecById(u32 scriptID, ScriptArgs* args);
 bool32 Script_ExecBlock(u8* pc, ScriptArgs* args, s32 varidx);
 s32 Script_ExecByPointer(u8* pc, ScriptArgs* args);
+
+void FUN_0823167c(u8* dst);
+void FUN_0823206c(u8* pc, s32 offset, u32 val);
+u32 FUN_082320e4(u8* pc, s32 offset);
+
+// keywordChar は ASCII 文字で書いてください。 例えば  VM_SeekToKeyword(0x64)  は  VM_SeekToKeyword('d') と書いてください。
+bool32 VM_SeekToKeyword(u8 keywordChar);
+s32 VM_GetKeywordValue(u8 keywordChar, s32 fallback);
 
 #endif  // __INCLUDE_VM_H__

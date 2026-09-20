@@ -17973,14 +17973,14 @@ EnemyDogLink_Destroy: @ 0x081CE6AC
 	cmp r0, #0
 	bne _081CE6C8
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _081CE6D0
 	.align 2, 0
 _081CE6C4: .4byte 0x0000025D
 _081CE6C8:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _081CE6D0:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -18119,7 +18119,7 @@ EnemyDogLink_Init: @ 0x081CE78C
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _081CE824 @ =0x0000F6E7
 	bl FUN_080e3804
@@ -19583,7 +19583,7 @@ _081CF30C:
 	ldr r1, _081CF514 @ =FUN_080f0320
 	ldr r5, [sp, #0x190]
 	str r1, [r5]
-	ldr r1, _081CF518 @ =FUN_080eff14
+	ldr r1, _081CF518 @ =Enemy_080eff14
 	ldr r6, [sp, #0x13c]
 	str r1, [r6]
 	ldr r1, _081CF51C @ =FUN_080e72b0
@@ -19723,7 +19723,7 @@ _081CF508: .4byte FUN_080f0430
 _081CF50C: .4byte 0x085AD470
 _081CF510: .4byte FUN_080e73c8
 _081CF514: .4byte FUN_080f0320
-_081CF518: .4byte FUN_080eff14
+_081CF518: .4byte Enemy_080eff14
 _081CF51C: .4byte FUN_080e72b0
 _081CF520: .4byte FUN_080f47c8
 _081CF524: .4byte FUN_080f54e4

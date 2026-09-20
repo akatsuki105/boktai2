@@ -142,7 +142,7 @@ _0808A258:
 	lsls r2, r2, #1
 	adds r1, r6, r2
 	movs r2, #2
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	mov r0, r8
 	ldrh r1, [r0]
 	lsls r0, r1, #3

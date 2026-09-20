@@ -150,7 +150,7 @@ Entity080ac574_Destroy: @ 0x080AC4D8
 	movs r5, #3
 _080AC4E0:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x40
 	subs r5, #1
 	cmp r5, #0
@@ -190,7 +190,7 @@ _080AC512:
 	adds r0, r5, #0
 	mov r1, r8
 	mov r2, r8
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	movs r0, #2
 	strb r0, [r4, #0xf]
 	movs r0, #0xec

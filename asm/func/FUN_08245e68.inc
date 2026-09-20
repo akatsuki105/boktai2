@@ -10,7 +10,7 @@
 	movs r5, #8
 _08245E7C:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	subs r5, #1
 	adds r4, #0x2c
 	cmp r5, #0

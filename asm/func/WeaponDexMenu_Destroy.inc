@@ -1,17 +1,17 @@
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
 	adds r0, #0x48
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r0, r6, #0
 	adds r0, #0xa8
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r0, #0x84
 	lsls r0, r0, #1
 	adds r5, r6, r0
 	movs r4, #4
 _08210EBA:
 	adds r0, r5, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r5, #0x60
 	subs r4, #1
 	cmp r4, #0
@@ -22,7 +22,7 @@ _08210EBA:
 	movs r4, #0x13
 _08210ED0:
 	adds r0, r5, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r5, #0x60
 	subs r4, #1
 	cmp r4, #0
@@ -33,28 +33,28 @@ _08210ED0:
 	movs r4, #1
 _08210EE6:
 	adds r0, r5, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r5, #0x60
 	subs r4, #1
 	cmp r4, #0
 	bge _08210EE6
 	ldr r1, _08210F34 @ =0x00000C8C
 	adds r0, r6, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r1, #0xea
 	lsls r1, r1, #2
 	adds r0, r6, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r1, #0x81
 	lsls r1, r1, #3
 	adds r0, r6, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r1, _08210F38 @ =0x00000CD4
 	adds r0, r6, r1
 	bl FUN_08055d7c
 	ldr r1, _08210F3C @ =0x00000C08
 	adds r0, r6, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r0, #0
 	movs r1, #0
 	bl SetBGPrioDirect

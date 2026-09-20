@@ -18,7 +18,7 @@
 	rsbs r2, r2, #0
 	adds r0, r4, #0
 	adds r1, r2, #0
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	ldr r1, [r7, #0x1c]
 	adds r0, r4, #0
 	movs r2, #0

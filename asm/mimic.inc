@@ -4849,14 +4849,14 @@ EnemyMimic_Destroy: @ 0x08148CC0
 	cmp r0, #0
 	bne _08148CDC
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _08148CE4
 	.align 2, 0
 _08148CD8: .4byte 0x0000025D
 _08148CDC:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _08148CE4:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -4989,7 +4989,7 @@ EnemyMimic_Init: @ 0x08148DA0
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _08148E2C @ =0x00009AF2
 	bl FUN_080e3804
@@ -6489,7 +6489,7 @@ _08149958:
 	ldr r0, _08149B18 @ =FUN_080f0320
 	ldr r3, [sp, #0x128]
 	str r0, [r3]
-	ldr r0, _08149B1C @ =FUN_080eff14
+	ldr r0, _08149B1C @ =Enemy_080eff14
 	ldr r4, [sp, #0xd4]
 	str r0, [r4]
 	ldr r0, _08149B20 @ =FUN_080e72b0
@@ -6604,7 +6604,7 @@ _08149B0C: .4byte FUN_080f0430
 _08149B10: .4byte 0x085AD470
 _08149B14: .4byte FUN_080e73c8
 _08149B18: .4byte FUN_080f0320
-_08149B1C: .4byte FUN_080eff14
+_08149B1C: .4byte Enemy_080eff14
 _08149B20: .4byte FUN_080e72b0
 _08149B24: .4byte FUN_080f47c8
 _08149B28: .4byte FUN_080f54e4

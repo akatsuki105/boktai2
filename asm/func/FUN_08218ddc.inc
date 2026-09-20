@@ -2,16 +2,16 @@
 	adds r6, r0, #0
 	ldr r1, _08218E34 @ =0x000012E8
 	adds r0, r6, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r1, _08218E38 @ =0x00001348
 	adds r0, r6, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r0, _08218E3C @ =0x000013A8
 	adds r4, r6, r0
 	movs r5, #4
 _08218DF6:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -21,7 +21,7 @@ _08218DF6:
 	movs r5, #1
 _08218E0A:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0

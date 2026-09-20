@@ -817,7 +817,7 @@ _08023830:
 	str r0, [r5, #0x10]
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_0822a3f0
+	bl MainSprite_AddDrawList
 	movs r0, #1
 	rsbs r0, r0, #0
 	add r8, r0
@@ -1247,7 +1247,7 @@ FUN_08023ba0: @ 0x08023BA0
 _08023BB8:
 	adds r0, r4, #0
 	adds r0, #0xc
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	subs r5, #1
 	adds r4, #0x6c
 	cmp r5, #0

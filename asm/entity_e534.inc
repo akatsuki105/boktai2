@@ -33,7 +33,7 @@ FUN_080117d8: @ 0x080117D8
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #1
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #2
 	strb r0, [r5, #7]
 	adds r5, #0x1c
@@ -68,7 +68,7 @@ FUN_08011854: @ 0x08011854
 	bl ParticleShadow_Remove
 	adds r4, #0x40
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	pop {r4}
 	pop {r1}
 	bx r1

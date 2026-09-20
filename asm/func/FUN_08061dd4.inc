@@ -21,7 +21,7 @@ _08061DEA:
 	adds r0, r4, #0
 	adds r1, r7, #0
 	adds r2, r7, #0
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	adds r0, r4, #0
 	movs r1, #1
 	bl FUN_0822dadc

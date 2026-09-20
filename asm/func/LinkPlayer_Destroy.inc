@@ -1,7 +1,7 @@
 	push {r4, lr}
 	adds r4, r0, #0
 	adds r0, #0x88
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r1, #0xb6
 	lsls r1, r1, #1
 	adds r0, r4, r1
@@ -13,7 +13,7 @@
 	bl FUN_0808168c
 	ldr r1, _08084620 @ =0x000009C8
 	adds r0, r4, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	ldr r1, _08084624 @ =0x03002BE0
 	adds r4, #0x28
 	ldrb r0, [r4]

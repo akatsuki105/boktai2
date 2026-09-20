@@ -11,10 +11,10 @@
 // Entity081d0e20 が抱える要素。Malloc(0xC0) で個別に確保され、先頭が AuxSprite になっている, 根拠: Entity081d0e20_AllocElem
 // 中身のほとんどは FUN_081d0864 がスクリプトのキーワードから埋める
 typedef struct Entity081d0e20Elem {
-  AuxSprite sprite;       // 0x00, 根拠: FUN_0822a4e0 に渡される (Entity081d0e20_Destroy)
+  AuxSprite sprite;       // 0x00, 根拠: AuxSprite_Remove に渡される (Entity081d0e20_Destroy)
   Entity2UnkData unk_2c;  // 0x2C, 根拠: FUN_08002a58 / FUN_0823b284 に渡される (Entity081d0e20_Destroy)
   AuxAnimState anim;      // 0x70, 根拠: FUN_08236fac に渡される (FUN_081d0864)
-  Vec3 pos;               // 0x80, 8バイトまとめて sprite.q_pos にコピーされる, 根拠: FUN_081d0864
+  Vec3 pos;               // 0x80, 8バイトまとめて sprite.pos にコピーされる, 根拠: FUN_081d0864
   s16 id;                 // 0x88, Entity081d0e20_FindElem が引数と比較する (ldrsh)。VM_GetKeywordValue('i', 0)
   u16 scriptID_8a;        // 0x8A, VM_GetKeywordValue('R', 0)。flags bit7 が立つと Script_ExecById に渡して0クリアする, 根拠: FUN_081cf944
   u16 scriptID_8c;        // 0x8C, VM_GetKeywordValue('C', 0)。flags bit8 が立つと Script_ExecById に渡して0クリアする, 根拠: FUN_081cf944
@@ -35,8 +35,8 @@ static_assert(sizeof(Entity081d0e20Elem) == 192);
 // 要素を12個まで抱えるエンティティ。空きスロットは activeMask のビットで管理する
 typedef struct Entity081d0e20 {
   Entity e;                       // 0x00, ENTITY_UNK_8
-  AuxAnimFile* anim;              // 0x18, GetFile(DIR_ANIMATION, 0xAE9), 根拠: Entity081d0e20_Init
-  AuxSpriteGfx gfx;               // 0x1C, Video_GetAuxSprite(&gfx, 0xA945), 根拠: Entity081d0e20_Init
+  AuxAnimFile* anim;              // 0x18, GetFile(DIR_ANIMATION, 0xAE9)
+  AuxSpriteGfx gfx;               // 0x1C, SPRITE_PITFALL_A945
   Entity081d0e20Elem* items[12];  // 0x38, 根拠: Entity081d0e20_AllocElem が確保したものを入れる
   u32 activeMask;                 // 0x68, 1 << i で items[i] が使用中, 根拠: Entity081d0e20_AllocElem / _Update / _Destroy
 } Entity081d0e20;
@@ -45,8 +45,8 @@ static_assert(sizeof(Entity081d0e20) == 108);
 extern Entity081d0e20* gEntity081d0e20;  // 0x03000188
 
 // ヘッダのない外部関数 (実体は src/entity_b8b9.c ほか)
-s32 FUN_0823b400(Entity2UnkData* p, u32 id, u32* unk_8, u32 unk_5, u32 unk_4, void* owner);
-bool32 FUN_0823b46c(Entity2UnkData* p, u32 unk_28);
+s32 FUN_0823b400(Entity2UnkData* p, u16 id, Vec3* pos, u32 unk_5, u32 unk_4, void* owner);
+bool32 FUN_0823b46c(Entity2UnkData* p, AuxSprite* unk_28);
 s32 FUN_08002a48(Entity2UnkData* p);
 unknown* FUN_081ee9bc(Vec3* pos);
 s32 FUN_08002a58(Entity2UnkData* p);
@@ -61,7 +61,7 @@ void FUN_081cf944(Entity081d0e20Elem* p) {
   u32 args[8];
   ScriptArgs sa;
 
-  if (p->flags & 0x100) {
+  if (p->flags & (1 << 8)) {
     ClearMemory(args, sizeof(args));
     if (p->scriptID_8c != 0) {
       args[0] = p->id;
@@ -71,7 +71,7 @@ void FUN_081cf944(Entity081d0e20Elem* p) {
       p->scriptID_8c = 0;
     }
   }
-  if (p->flags & 0x80) {
+  if (p->flags & (1 << 7)) {
     ClearMemory(args, sizeof(args));
     if (p->scriptID_8a != 0) {
       args[0] = p->id;
@@ -190,7 +190,7 @@ NON_MATCH void FUN_081d0718(Entity081d0e20* p, Entity081d0e20Elem* elem) {
   FUN_08236fac(anim, p->anim, 0, elem->unk_b0, 0);
   anim->cmdIdx = 1;
   cmd = &anim->cmds[anim->cmdIdx];
-  elem->sprite.q_metaspriteIdx = *cmd >> 6;
+  elem->sprite.metaspriteIdx = *cmd >> 6;
   if ((anim->flags & ANIM_PLAY_XFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
     elem->sprite.flags &= ~SPRFLAG_XFLIP;
   } else {
@@ -279,17 +279,17 @@ NON_MATCH void FUN_081d0864(void) {
     if ((u16)t > 4) {
       elem->unk_b0 = 4;
     }
-    elem->sprite.q_pos = elem->pos;
-    elem->sprite.q_pos.x -= 0x100;
+    elem->sprite.pos = elem->pos;
+    elem->sprite.pos.x -= 0x100;
     if (elem->unk_b0 == 0) {
       Video_SetAuxSpritePltt(gfx, 0x282);
     } else if (elem->unk_b0 == 1) {
       Video_SetAuxSpritePltt(gfx, 0x283);
     }
-    FUN_0822a470(&elem->sprite, gfx, 0);
+    AuxSprite_Add(&elem->sprite, gfx, 0);
     FUN_08236fac(anim, p->anim, 0, elem->unk_b0, 0);
     cmd = &anim->cmds[anim->cmdIdx];
-    elem->sprite.q_metaspriteIdx = *cmd >> 6;
+    elem->sprite.metaspriteIdx = *cmd >> 6;
     if ((anim->flags & ANIM_PLAY_XFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
       elem->sprite.flags &= ~SPRFLAG_XFLIP;
     } else {
@@ -339,8 +339,8 @@ NON_MATCH void FUN_081d0864(void) {
     FUN_081ee9bc(&pos);
     if (VM_GetKeywordValue('s', 0) != 0) {
       elem->flags |= 8;
-      FUN_0823b400(&elem->unk_2c, elem->id, (u32*)&elem->pos, 0, 7, elem);
-      FUN_0823b46c(&elem->unk_2c, (u32)elem);
+      FUN_0823b400(&elem->unk_2c, elem->id, &elem->pos, 0, 7, elem);
+      FUN_0823b46c(&elem->unk_2c, &elem->sprite);
       FUN_08002a48(&elem->unk_2c);
     }
   }
@@ -424,7 +424,7 @@ NON_MATCH s32 Entity081d0e20_Destroy(Entity081d0e20* p) {
     used = (p->activeMask & (1 << i)) != 0;
     if (used) {
       elem = p->items[i];
-      FUN_0822a4e0(&elem->sprite);
+      AuxSprite_Remove(&elem->sprite);
       if (elem->flags & 8) {
         unk = &elem->unk_2c;
         FUN_08002a58(unk);

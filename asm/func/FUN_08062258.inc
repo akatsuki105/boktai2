@@ -5,7 +5,7 @@
 	movs r5, #3
 _08062262:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x34
 	subs r5, #1
 	cmp r5, #0

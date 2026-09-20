@@ -22,7 +22,7 @@ _0820FD82:
 	movs r1, #0xc3
 	lsls r1, r1, #2
 	adds r0, r5, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r0, #0
 	pop {r4, r5}
 	pop {r1}

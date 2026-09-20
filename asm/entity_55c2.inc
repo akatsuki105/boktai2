@@ -504,7 +504,7 @@ _0800DECE:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #0
 	strh r0, [r6, #0x10]
 	add r4, sp, #0xc
@@ -524,7 +524,7 @@ _0800DECE:
 	lsls r2, r2, #2
 	adds r0, r6, #0
 	mov r1, sb
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #1
 	strh r0, [r6, #0x10]
 	ldr r0, [sp, #0xc]

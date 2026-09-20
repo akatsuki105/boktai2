@@ -5,7 +5,7 @@
 	movs r5, #0xc
 _080B43E6:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -16,7 +16,7 @@ _080B43E6:
 	movs r5, #1
 _080B43FC:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x2c
 	subs r5, #1
 	cmp r5, #0

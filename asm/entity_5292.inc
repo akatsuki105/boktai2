@@ -208,7 +208,7 @@ Entity5292_Destroy: @ 0x080ACF74
 	movs r5, #0xf
 _080ACF7C:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x64
 	subs r5, #1
 	cmp r5, #0
@@ -249,7 +249,7 @@ _080ACFAC:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r0, [r5]
 	movs r1, #0x10
 	orrs r0, r1

@@ -7910,7 +7910,7 @@ _081AA31A:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r4, #0
 	ldr r1, _081AA3B0 @ =0x000001A5
 	bl Video_SetAuxSpritePltt
@@ -8683,7 +8683,7 @@ FUN_081aa8d4: @ 0x081AA8D4
 	adds r6, r1, r2
 _081AA8F0:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0xd0
 	adds r5, #1
 	movs r1, #0
@@ -13940,7 +13940,7 @@ _081AD088:
 	cmp r0, #0
 	bne _081AD0A4
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _081AD0AC
 	.align 2, 0
 _081AD09C: .4byte 0x0000044C
@@ -13948,7 +13948,7 @@ _081AD0A0: .4byte 0x0000025D
 _081AD0A4:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _081AD0AC:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -14087,7 +14087,7 @@ EnemyFlameSnake_Init: @ 0x081AD168
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _081AD200 @ =0x0000C102
 	bl FUN_080e3804
@@ -15654,7 +15654,7 @@ _081ADDB8:
 	ldr r0, _081AE000 @ =FUN_080f0320
 	ldr r2, [sp, #0x150]
 	str r0, [r2]
-	ldr r0, _081AE004 @ =FUN_080eff14
+	ldr r0, _081AE004 @ =Enemy_080eff14
 	ldr r3, [sp, #0xe0]
 	str r0, [r3]
 	ldr r0, _081AE008 @ =FUN_080e72b0
@@ -15824,7 +15824,7 @@ _081ADFF4: .4byte FUN_080f0430
 _081ADFF8: .4byte 0x085AD470
 _081ADFFC: .4byte FUN_080e73c8
 _081AE000: .4byte FUN_080f0320
-_081AE004: .4byte FUN_080eff14
+_081AE004: .4byte Enemy_080eff14
 _081AE008: .4byte FUN_080e72b0
 _081AE00C: .4byte FUN_081a8010
 _081AE010: .4byte FUN_080f47c8

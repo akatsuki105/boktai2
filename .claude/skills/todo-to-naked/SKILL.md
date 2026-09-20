@@ -127,6 +127,12 @@ Spending the time here only pays off when the answer is one xref away.
   order). If it still gets the order wrong it prints a `警告:` line naming the
   two functions; move the line by hand, or `make compare` fails with no other
   clue.
+- A candidate whose body is just a few instructions ending in `pop`/`bx`, sitting
+  right after the previous function, is probably not a function at all but that
+  function's shared epilogue, split off because Ghidra read a long `bl` branch as
+  a call. Promoting it produces a bogus C stub. Check whether the previous
+  function branches to it, and see
+  `docs/for-ai-agent/ghidra-split-functions.md` for how to merge it instead.
 - `rm` is interactive here — use `rm -f` if you ever need to delete a file.
 - Renaming touches `data/*.inc` as well (script command tables reference these
   symbols). Check `git status` for files outside `src`/`include`/`asm` before

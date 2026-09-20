@@ -65,7 +65,7 @@ _080140C6:
 	strb r7, [r4]
 	adds r0, r6, #0
 	str r3, [sp]
-	bl FUN_0822dabc
+	bl Particle_Remove
 	ldr r3, [sp]
 	b _08014124
 	.align 2, 0

@@ -2,7 +2,7 @@
 	adds r6, r0, #0
 	ldr r1, _08229384 @ =0x00000D9C
 	adds r0, r6, r1
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	ldr r1, _08229388 @ =0x00000DF4
 	adds r0, r6, r1
 	bl ParticleShadow_Remove
@@ -11,7 +11,7 @@
 	movs r5, #0xf
 _0822934E:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0xd8
 	subs r5, #1
 	cmp r5, #0

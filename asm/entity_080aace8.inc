@@ -1112,14 +1112,14 @@ Entity080aace8_Destroy: @ 0x080AA8F8
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
 	adds r0, #0x1c
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r0, #0xb2
 	lsls r0, r0, #1
 	adds r4, r6, r0
 	movs r5, #7
 _080AA90A:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x3c
 	subs r5, #1
 	cmp r5, #0
@@ -1135,7 +1135,7 @@ _080AA90A:
 	movs r5, #1
 _080AA92A:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x2c
 	subs r5, #1
 	cmp r5, #0
@@ -1239,7 +1239,7 @@ _080AA9E8:
 	adds r0, r5, r0
 	adds r1, r7, #0
 	movs r2, #1
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r7, #0
 	ldr r1, _080AAA28 @ =0x0000027D
 	bl Video_SetAuxSpritePltt
@@ -1294,7 +1294,7 @@ _080AAA4E:
 	movs r1, #4
 	rsbs r1, r1, #0
 	adds r2, r1, #0
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	ldr r1, [r4]
 	adds r0, r5, #0
 	movs r2, #2

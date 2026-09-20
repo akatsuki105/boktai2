@@ -11,7 +11,7 @@
 	ldr r4, [r0]
 	cmp r4, #0
 	bne _080DF16E
-	bl FUN_080df420
+	bl Entity080df420_Create
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _080DF16E
@@ -82,7 +82,7 @@ _080DF1CC:
 	adds r1, #0x18
 	adds r0, r6, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r0, [r6, #0xc]
 	movs r1, #0xda
 	bl Video_SetAuxSpritePltt

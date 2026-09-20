@@ -294,7 +294,7 @@ _08017D7A:
 	adds r0, r4, #0
 	mov r1, sb
 	mov r2, sb
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	ldr r1, [r6]
 	adds r0, r4, #0
 	movs r2, #0x1e
@@ -328,7 +328,7 @@ _08017DCC:
 	cmp r1, #0
 	beq _08017DE0
 	adds r0, r2, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	movs r1, #0
 	strb r1, [r4]
 _08017DE0:
@@ -393,7 +393,7 @@ _08017E48:
 	cmp r1, #2
 	bls _08017E56
 	adds r0, r3, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	strb r5, [r4]
 _08017E56:
 	ldrb r1, [r4, #1]

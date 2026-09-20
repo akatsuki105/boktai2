@@ -253,7 +253,7 @@ _080B468A:
 	add r0, r8
 	adds r1, r6, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	mov r0, r8
 	adds r5, r0, r4
 	ldr r1, _080B4730 @ =0x0000053F

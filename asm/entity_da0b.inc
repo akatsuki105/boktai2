@@ -1868,7 +1868,7 @@ FUN_0801c434: @ 0x0801C434
 	movs r5, #2
 _0801C43C:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -1887,7 +1887,7 @@ FUN_0801c454: @ 0x0801C454
 	movs r5, #3
 _0801C45C:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -1903,7 +1903,7 @@ FUN_0801c474: @ 0x0801C474
 	push {lr}
 	ldr r1, _0801C484 @ =0x00000DA4
 	adds r0, r0, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	pop {r1}
 	bx r1
 	.align 2, 0
@@ -1935,7 +1935,7 @@ FUN_0801c488: @ 0x0801C488
 FUN_0801c4b0: @ 0x0801C4B0
 	push {lr}
 	adds r0, #0x24
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	pop {r1}
 	bx r1
 
@@ -4262,7 +4262,7 @@ FUN_0801d6a0: @ 0x0801D6A0
 	movs r5, #0xc
 _0801D6A8:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0

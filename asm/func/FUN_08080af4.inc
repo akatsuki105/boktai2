@@ -29,7 +29,7 @@ _08080B24:
 	adds r0, r4, #0
 	mov r1, r8
 	mov r2, r8
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	ldr r1, [r6]
 	adds r0, r4, #0
 	mov r2, sb

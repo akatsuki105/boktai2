@@ -131,7 +131,7 @@ FUN_0805f774: @ 0x0805F774
 	adds r5, #0x14
 _0805F79A:
 	adds r0, r5, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r5, #0x28
 	movs r3, #1
 	add sb, r3
@@ -586,7 +586,7 @@ FUN_0805facc: @ 0x0805FACC
 	adds r4, #0x14
 _0805FAEE:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x28
 	adds r5, #1
 	ldrb r1, [r6, #7]
@@ -998,7 +998,7 @@ _0805FDDA:
 	adds r0, r4, #0
 	mov r1, sl
 	mov r2, sl
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	ldr r1, [r7, #0x1c]
 	adds r0, r4, #0
 	movs r2, #0x20

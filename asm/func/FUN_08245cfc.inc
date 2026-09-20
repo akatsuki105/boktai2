@@ -39,7 +39,7 @@ _08245D46:
 	lsls r1, r1, #2
 	add r1, sb
 	movs r2, #1
-	bl FUN_0822a4b0
+	bl AuxSprite_Setup
 	movs r0, #8
 	subs r0, r0, r5
 	strh r0, [r4, #0x10]

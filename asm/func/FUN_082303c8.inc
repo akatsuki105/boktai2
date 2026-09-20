@@ -113,7 +113,7 @@ _08230574:
 	mov r0, r4
 	mov r1, ip
 	mov r3, lr
-	bl DrawSprite_0822f6fc
+	bl MainSprite_DrawInternal
 _08230584:
 	ldr r4, [r4, #0x5c]
 	cmp r4, #0

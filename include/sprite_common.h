@@ -19,4 +19,8 @@ typedef u32 SpriteFlags;
 #define SPRFLAG_BLINK_ODD (1 << 9)     // 0x00000200, 奇数フレームだけ描画しない (点滅), 根拠: FUN_0822aaac / FUN_08230134
 #define SPRFLAG_BLINK_EVEN (1 << 10)   // 0x00000400, 偶数フレームだけ描画しない (点滅), 根拠: 同上
 
+// 0..15
+// (OAM1.14-15 << 2) | (OAM0.14-15), ie. ((sizeidx << 2) | shape)
+typedef u8 SpriteShape;
+
 #endif  // __INCLUDE_SPRITE_COMMON_H__

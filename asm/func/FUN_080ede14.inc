@@ -1,7 +1,7 @@
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
 	adds r5, r1, #0
-	bl FUN_080edd94
+	bl GetFirstEnemy
 	b _080EDE4E
 _080EDE20:
 	movs r0, #1

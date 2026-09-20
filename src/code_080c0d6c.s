@@ -168,7 +168,7 @@ FUN_080c0e78: @ 0x080C0E78
 FUN_080c0e88: @ 0x080C0E88
 	push {lr}
 	adds r0, #0x18
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r0, #0
 	pop {r1}
 	bx r1
@@ -194,7 +194,7 @@ FUN_080c0e98: @ 0x080C0E98
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldr r0, [r5]
 	ldr r1, [r5, #4]
 	str r0, [r7, #0x60]
@@ -682,7 +682,7 @@ FUN_080c126c: @ 0x080C126C
 	bl EntityMsgBus_Unregister
 	adds r4, #0x4c
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r0, #0
 	pop {r4}
 	pop {r1}
@@ -784,7 +784,7 @@ _080C132A:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #2
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r4, #0
 	movs r1, #0x32
 	bl Video_SetAuxSpritePltt
@@ -1674,12 +1674,12 @@ FUN_080c19bc: @ 0x080C19BC
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	adds r0, #0x1c
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x7c
 	movs r5, #3
 _080C19CA:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x30
 	subs r5, #1
 	cmp r5, #0
@@ -1702,7 +1702,7 @@ FUN_080c19e0: @ 0x080C19E0
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #1
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #0
 	strh r0, [r4, #0x10]
 	adds r0, r5, #0
@@ -1743,7 +1743,7 @@ _080C1A3C:
 	adds r0, r4, #0
 	mov r1, r8
 	mov r2, r8
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	ldr r1, [r5, #0x78]
 	adds r0, r4, #0
 	movs r2, #0x11
@@ -2367,7 +2367,7 @@ FUN_080c1f3c: @ 0x080C1F3C
 	movs r5, #4
 _080C1F44:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -3947,7 +3947,7 @@ _080C2B70:
 	adds r4, r0, r1
 _080C2B84:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x2c
 	adds r5, #1
 	cmp r5, #7
@@ -4137,7 +4137,7 @@ _080C2CDC:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	strh r5, [r6, #0x10]
 	movs r0, #1
 	strb r0, [r6, #7]
@@ -4694,7 +4694,7 @@ FUN_080c311c: @ 0x080C311C
 	movs r5, #0x1f
 _080C3130:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x54
 	subs r5, #1
 	cmp r5, #0
@@ -4759,7 +4759,7 @@ _080C317E:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	ldr r2, _080C31D0 @ =0x00000201
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	b _080C31DE
 	.align 2, 0
 _080C31B8: .4byte 0x00000DB8
@@ -4773,7 +4773,7 @@ _080C31D4:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	ldr r2, _080C3214 @ =0x00000401
-	bl FUN_0822a470
+	bl AuxSprite_Add
 _080C31DE:
 	mov r0, r8
 	strh r0, [r6, #0x10]
@@ -5496,7 +5496,7 @@ FUN_080c3764: @ 0x080C3764
 	beq _080C377A
 	adds r2, #0x10
 	adds r0, r1, r2
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _080C377A:
 	pop {r0}
 	bx r0
@@ -5534,7 +5534,7 @@ FUN_080c3784: @ 0x080C3784
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r2, #3
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	mov r0, r8
 	strh r0, [r6, #0x10]
 	movs r1, #0xab
@@ -6506,7 +6506,7 @@ _080C3F5C:
 	adds r0, r5, #0
 	mov r1, r8
 	mov r2, r8
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	adds r0, r5, #0
 	movs r1, #1
 	bl FUN_0822dadc
@@ -6541,7 +6541,7 @@ FUN_080c3fa0: @ 0x080C3FA0
 	movs r5, #7
 _080C3FB4:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x38
 	subs r5, #1
 	cmp r5, #0

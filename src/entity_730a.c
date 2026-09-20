@@ -4,7 +4,7 @@
 
 typedef struct {
   Entity e;             // ENTITY_UNK_3
-  EntityMsgBox unk_18;  // 0x18
+  EntityMsgBox msgbox;  // 0x18
   u8 unk_4c[88 - 0x4C];
 } Entity730A;
 static_assert(sizeof(Entity730A) == 88);
@@ -28,12 +28,12 @@ NAKED s32 Entity730A_Update_Helper_08022864(Entity730A* p) { INCFUNC("asm/func/E
 NAKED s32 Entity730A_Update(Entity730A* p) { INCFUNC("asm/func/Entity730A_Update.inc"); }
 
 s32 Entity730A_Destroy(Entity730A* p) {
-  EntityMsgBus_Unregister(&p->unk_18);
+  EntityMsgBus_Unregister(&p->msgbox);
   return 0;
 }
 
 s32 Entity730A_Init(Entity730A* p, u32 param) {
-  EntityMsgBus_Register(&p->unk_18, param, 7);
+  EntityMsgBus_Register(&p->msgbox, param, 7);
   return 0;
 }
 

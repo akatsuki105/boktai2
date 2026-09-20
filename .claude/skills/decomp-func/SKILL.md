@@ -14,7 +14,7 @@ See CLAUDE.md's "Function Decompilation Levels" for the 4-level vocabulary
 NON_MATCH level can be targets.
 
 **If the user names a specific function** (passed as an argument to this
-skill), that function is the target — do not run `census.py` or pick
+skill), that function is the target — do not run `census.ts` or pick
 anything else. First confirm it's actually at the NAKED or NON_MATCH level:
 
 ```sh
@@ -30,9 +30,13 @@ grep -n "^\(NAKED\|NON_MATCH\)\b.*\b<FUNCTION_NAME>\s*(" src/*.c
 **Otherwise**, list all NAKED/NON_MATCH functions and work smallest-first:
 
 ```sh
-# list all NAKED or NON_MATCH functions, sorted by size
-.claude/skills/decomp-func/scripts/census.py   # TSV: size  name  inc
+# list the NAKED / NON_MATCH functions in those files, sorted by size
+.claude/skills/decomp-func/scripts/census.ts src/**/*.c   # TSV: size  name  inc
 ```
+
+The `.c` paths are required — pass only the files the request is about
+(`src/enemy_080ef84c.c`), and the glob above only when it really is the whole
+repository.
 
 Sort candidates by byte size (address delta between consecutive
 `thumb_func_start` labels, or `arm-none-eabi-objdump` on the built
@@ -50,7 +54,7 @@ normally.
 
 Also skip a candidate whose `asm/func/FUNCNAME.inc` still contains raw
 `.byte` data instead of proper mnemonics (a disassembler failure, not a
-real target — `census.py`'s reported size is unreliable for these, since
+real target — `census.ts`'s reported size is unreliable for these, since
 it's counting garbled data). Check with a quick
 `grep -l '\.byte' asm/func/FUNCNAME.inc`; if it hits, this isn't a normal
 decompile task (the `.inc` itself needs to be regenerated with a proper
@@ -61,18 +65,36 @@ above.
 
 ## The decompile workflow
 
-1. **Read the context.** Context includes the target assembly, current C implementation.
+1. **Read the context.** The function name is enough — the `.c` is found by
+   searching `src/`, and the assembly defaults to `asm/func/<name>.inc`.
 
 ```sh
-# e.g. .claude/skills/decomp-func/scripts/context.py FUN_08242b88 src/weapon.c asm/func/FUN_08242b88.inc
-.claude/skills/decomp-func/scripts/context.py <FUNCTION_NAME> <SRC_FILE> <ASM_FILE>
+.claude/skills/decomp-func/scripts/context.ts <FUNCTION_NAME>
 ```
 
-2. **Check siblings.** Before inventing anything, grep `src/` for a
-   matched function with the same shape (same macros, same field access
-   pattern). The repo's existing C *is* the idiom dictionary — most
-   "mysterious" codegen (staged dead zeros, merged flag stores, shared
-   constants) falls out of plain porter-style statements.
+   It prints the assembly (instructions and pool split apart, with
+   `=0x030xxxxx` pool constants resolved against the `iwram`/`ewram`
+   declarations), the repo's own signature line, a typed decompile from Ghidra
+   when it is running (m2c is only the fallback), every offset the assembly
+   touches mapped onto the struct declarations in `include/`, the declaration
+   of each `bl` target, and — for a NON_MATCH — the current C.
+
+   The offset table is the part that saves the most work: it resolves
+   `[rN, #0x28]`, `=0x0000046D` and the `movs`/`lsls` pairs that build a large
+   offset, and says `(+4)` when the offset lands inside an `unk_` blob rather
+   than on a named field, which is the signal that the struct needs a new field
+   before the function can be written.
+
+   Add `--brief` to drop the offset table and the sibling list when that
+   information is already in the conversation (working through one file
+   function by function, for instance). `--no-ghidra` skips the Ghidra queries.
+
+2. **Check siblings.** Before inventing anything, read a matched function with
+   the same shape (same macros, same field access pattern). `context.ts` lists
+   the ones in the same `.c` that call the same functions; widen it with a grep
+   over `src/` when none of those fit. The repo's existing C *is* the idiom
+   dictionary — most "mysterious" codegen (staged dead zeros, merged flag
+   stores, shared constants) falls out of plain porter-style statements.
 
 3. Claude proposes draft C code for the target function. The draft may not be perfect, but it should be a good starting point.
 
@@ -144,11 +166,14 @@ the session on that function. Not needed when it ends up MATCHING.
 
 All in `.claude/skills/decomp-func/scripts/`. Run them from the repo root,
 spelling that path out in full — there is no `scripts/` directory at the repo
-root, so a bare `scripts/context.py` just fails with "no such file or
+root, so a bare `scripts/context.ts` just fails with "no such file or
 directory":
 
-- `context.py` — prints the target assembly, current C implementation.
-- `census.py` — remaining-function census, smallest-first TSV with sizes and inc paths; excludes NON_MATCH/NAKED/INCFUNC dual-forms.
+- `context.ts <FUNCTION_NAME> [SRC_FILE] [ASM_FILE]` — the assembly, the repo
+  signature, a Ghidra decompile, the asm offsets mapped onto the struct
+  declarations, the `bl` targets' declarations, and the current C.
+  `--brief` / `--no-ghidra` trim it.
+- `census.ts <file.c>...` — remaining-function census over the given `.c` files, smallest-first TSV with sizes and inc paths.
 - `streamdiff.py` — canonicalized instruction diff, object vs inc.
 - `microtest.sh` — single-file compile probe with the repo flags.
 - `corpus-grep.sh` — search the 17-repo corpus for an asm shape (`-c` for C idioms). Grep the corpus BEFORE inventing a lever.

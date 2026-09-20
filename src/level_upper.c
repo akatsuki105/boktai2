@@ -21,8 +21,8 @@ static_assert(sizeof(LevelUpParticle) == 60);  // 根拠: LevelUpper_EmitLevelUp
 // またその際のパーティクルやSEなどの演出処理も行う。
 typedef struct LevelUpper {
   Entity e;                  // 0x00, ENTITY_UNK_9
-  AuxSprite q_node;          // 0x18, sprite を指す描画ノード, 根拠: LevelUpper_InitSprite / LevelUpper_Destroy
-  AuxSpriteGfx sprite;       // 0x44, 根拠: LevelUpper_InitSprite
+  AuxSprite sprite;          // 0x18, gfx を指す描画ノード, 根拠: LevelUpper_InitSprite / LevelUpper_Destroy
+  AuxSpriteGfx gfx;          // 0x44, 根拠: LevelUpper_InitSprite
   u16 unk_60;                // 0x60, LevelUpper_Update
   u16 unk_62;                // 0x62, LevelUpper_Update
   u16 unk_64;                // 0x64, FUN_080a841c
@@ -69,10 +69,9 @@ NON_MATCH bool32 TryPlayerLevelUp(LevelUpper* p) {
 // 前回記録した武器レベルから変わった武器があれば TRUE を返す
 bool32 IsWeaponLevelChanged(LevelUpper* p) {
   s32 i;
-  u16 lv;
 
   for (i = 0; i < 5; i++) {
-    lv = p->weaponLv[i];
+    u16 lv = p->weaponLv[i];
     if (lv != GetWeaponSkillLevel(i)) {
       return TRUE;
     }
@@ -106,10 +105,10 @@ void LevelUpper_UpdateParticle(LevelUpParticle* p, ParticleGroup* g) {
 // レベルアップ演出のスプライトをプレイヤーの頭上に配置し、パーティクル8個を初期化する
 void LevelUpper_EmitLevelUpEffect(LevelUpper* p) {
   s32 i;
-  p->q_node.flags &= ~1;
-  p->q_node.q_metaspriteIdx = 0;
-  p->q_node.q_pos = gPlayerPtr[0]->unk_24.pos;
-  p->q_node.q_pos.y += 250;
+  p->sprite.flags &= ~SPRFLAG_HIDDEN;
+  p->sprite.metaspriteIdx = 0;
+  p->sprite.pos = gPlayerPtr[0]->unk_24.pos;
+  p->sprite.pos.y += 250;
   p->unk_64 = 0;
   p->unk_62 = 1;
   p->unk_60 = 1;
@@ -121,10 +120,10 @@ void LevelUpper_EmitLevelUpEffect(LevelUpper* p) {
 // 武器レベルアップ演出のスプライトをプレイヤーの頭上に配置する
 NON_MATCH void LevelUpper_EmitWeaponLevelUpEffect(LevelUpper* p) {
 #ifdef NONMATCHING_C
-  p->q_node.flags &= ~1;
-  p->q_node.q_metaspriteIdx = 3;
-  p->q_node.q_pos = gPlayerPtr[0]->unk_24.pos;
-  p->q_node.q_pos.y += 250;
+  p->sprite.flags &= ~SPRFLAG_HIDDEN;
+  p->sprite.metaspriteIdx = 3;
+  p->sprite.pos = gPlayerPtr[0]->unk_24.pos;
+  p->sprite.pos.y += 250;
   p->unk_64 = 0;
   p->unk_62 = 1;
   p->unk_60 = 2;
@@ -141,7 +140,7 @@ s32 LevelUpper_Update(LevelUpper* p) {
   if (gPlayerPtr[0] != NULL) {
     if (gPlayerPtr[0]->unk_1c == 4) {
       if (p->unk_62 == 1) {
-        p->q_node.flags |= 1;
+        p->sprite.flags |= SPRFLAG_HIDDEN;
         p->unk_62 = 0;
         for (j = 0; j < 8; j++) {
           p->ptcls[j].base.flags |= 1;
@@ -168,9 +167,9 @@ s32 LevelUpper_Update(LevelUpper* p) {
 s32 LevelUpper_Destroy(LevelUpper* p) {
   s32 i;
 
-  FUN_0822a4e0(&p->q_node);
+  AuxSprite_Remove(&p->sprite);
   for (i = 0; i < 8; i++) {
-    FUN_0822dabc(&p->ptcls[i].base);
+    Particle_Remove(&p->ptcls[i].base);
   }
   gLevelUpper = NULL;
   return 0;
@@ -178,13 +177,13 @@ s32 LevelUpper_Destroy(LevelUpper* p) {
 
 // 演出用のスプライトを読み込み、非表示のまま描画ノードに登録する
 void LevelUpper_InitSprite(LevelUpper* p) {
-  AuxSpriteGfx* sprite = &p->sprite;
+  AuxSpriteGfx* gfx = &p->gfx;
 
-  Video_GetAuxSprite(sprite, SPRITE_LVUP_INDICATOR);
-  FUN_0822a470(&p->q_node, sprite, 0);
-  Video_SetAuxSpritePltt(sprite, 1);
-  p->q_node.flags |= 1;
-  p->q_node.priority = 1;
+  Video_GetAuxSprite(gfx, SPRITE_LVUP_INDICATOR);
+  AuxSprite_Add(&p->sprite, gfx, 0);
+  Video_SetAuxSpritePltt(gfx, 1);
+  p->sprite.flags |= SPRFLAG_HIDDEN;
+  p->sprite.priority = 1;
 }
 
 // 演出用の粒子 8 個を非表示のまま作る
@@ -195,7 +194,7 @@ void LevelUpper_InitParticles(LevelUpper* p) {
   for (i = 0; i < 8; i++) {
     FUN_0822d9f0(&p->ptcls[i].base, p->p_7c, 1);
     FUN_0822dafc(&p->ptcls[i].base, p->p_7c, 0);
-    FUN_0822dad4(&p->ptcls[i].base, -4, -4);
+    Particle_SetOffset(&p->ptcls[i].base, -4, -4);
     FUN_0822dadc(&p->ptcls[i].base, 1);
   }
 }

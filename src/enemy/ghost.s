@@ -6102,7 +6102,7 @@ _0816D8AA:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r4, #0
 	movs r1, #0xc0
 	lsls r1, r1, #1
@@ -6435,7 +6435,7 @@ FUN_0816db2c: @ 0x0816DB2C
 	movs r5, #3
 _0816DB3E:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0
@@ -9233,14 +9233,14 @@ EnemyGhost_Destroy: @ 0x0816F0B8
 	cmp r0, #0
 	bne _0816F0D8
 	ldr r0, [r4, #0x44]
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _0816F0E0
 	.align 2, 0
 _0816F0D4: .4byte 0x0000025D
 _0816F0D8:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x20
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _0816F0E0:
 	ldr r0, [r4, #0x44]
 	bl Free
@@ -9378,7 +9378,7 @@ EnemyGhost_Init: @ 0x0816F19C
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	ldr r1, _0816F23C @ =0x000029FB
 	bl FUN_080e3804
@@ -11132,7 +11132,7 @@ _0816FF60:
 	ldr r0, _0817013C @ =FUN_080f0320
 	ldr r3, [sp, #0x194]
 	str r0, [r3]
-	ldr r0, _08170140 @ =FUN_080eff14
+	ldr r0, _08170140 @ =Enemy_080eff14
 	ldr r4, [sp, #0x138]
 	str r0, [r4]
 	ldr r0, _08170144 @ =FUN_080e72b0
@@ -11255,7 +11255,7 @@ _08170130: .4byte FUN_080f0430
 _08170134: .4byte 0x085AD470
 _08170138: .4byte FUN_080e73c8
 _0817013C: .4byte FUN_080f0320
-_08170140: .4byte FUN_080eff14
+_08170140: .4byte Enemy_080eff14
 _08170144: .4byte FUN_080e72b0
 _08170148: .4byte FUN_080f47c8
 _0817014C: .4byte FUN_080f54e4

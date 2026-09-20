@@ -252,7 +252,7 @@ _08015430:
 	movs r0, #0
 	strb r0, [r5]
 	adds r0, r7, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _0801543E:
 	ldrh r0, [r5, #2]
 	adds r0, #1

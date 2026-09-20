@@ -30,7 +30,7 @@ _0820FDBC:
 	ldr r2, _0820FE40 @ =0x00000212
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #5
 	strh r0, [r4, #0x10]
 	ldr r3, _0820FE44 @ =0x00000313

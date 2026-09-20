@@ -1469,20 +1469,20 @@ EntityB3D1_Destroy: @ 0x080C0554
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
 	adds r0, #0x20
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r6, #0
 	adds r0, #0x6c
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r6, #0
 	adds r0, #0xb8
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r0, #0xe6
 	lsls r0, r0, #2
 	adds r5, r6, r0
 	movs r4, #4
 _080C0576:
 	adds r0, r5, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r5, #0x60
 	subs r4, #1
 	cmp r4, #0
@@ -1493,7 +1493,7 @@ _080C0576:
 	movs r4, #6
 _080C058C:
 	adds r0, r5, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r5, #0x2c
 	subs r4, #1
 	cmp r4, #0
@@ -1504,7 +1504,7 @@ _080C058C:
 	movs r4, #5
 _080C05A2:
 	adds r0, r5, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r5, #0x2c
 	subs r4, #1
 	cmp r4, #0
@@ -1689,7 +1689,7 @@ _080C0718:
 	lsls r1, r1, #2
 	add r1, r8
 	movs r2, #0x11
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	cmp r7, #1
 	bgt _080C073C
 	adds r0, r7, #3
@@ -1766,7 +1766,7 @@ _080C07A6:
 	adds r1, r7, r2
 	movs r2, #0x10
 	str r3, [sp]
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r4, r7
 	add r0, r8
 	movs r1, #0
@@ -1840,7 +1840,7 @@ _080C083A:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r6, #0
 	strh r6, [r4, #0x10]
 	movs r0, #0xe0
@@ -1859,7 +1859,7 @@ _080C083A:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	strh r6, [r4, #0x10]
 	adds r2, r7, #0
 	adds r2, #0x88
@@ -1923,7 +1923,7 @@ _080C08E6:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #0
 	strh r0, [r4, #0x10]
 	adds r2, r7, #0

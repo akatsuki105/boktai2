@@ -4,7 +4,7 @@
 	movs r5, #7
 _082222F8:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0

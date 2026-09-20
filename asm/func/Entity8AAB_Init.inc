@@ -26,7 +26,7 @@
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r5, #0
 	movs r1, #8
 	rsbs r1, r1, #0
@@ -123,7 +123,7 @@ _08229B0E:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r4, #0
 	movs r1, #8
 	rsbs r1, r1, #0

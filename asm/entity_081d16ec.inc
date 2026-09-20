@@ -186,7 +186,7 @@ _081D0F94:
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r1, r6, #0
 	adds r1, #0xb0
 	movs r2, #1
@@ -1114,7 +1114,7 @@ _081D168A:
 	adds r4, #0x1c
 	adds r4, r6, r4
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x60
 	adds r0, r4, #0
 	bl FUN_08236424

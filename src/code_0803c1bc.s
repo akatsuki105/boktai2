@@ -53,7 +53,7 @@ _08045304:
 	bl ParticleShadow_Remove
 	adds r0, r5, #0
 	adds r0, #0xa4
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r1, #0
 	strb r1, [r5, #9]
 _0804532A:
@@ -6721,11 +6721,11 @@ FUN_0804852c: @ 0x0804852C
 	movs r1, #0x83
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r1, #0xa3
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r1, _08048550 @ =0x030000C4
 	movs r0, #0
 	str r0, [r1]
@@ -12491,7 +12491,7 @@ FUN_0804b030: @ 0x0804B030
 	movs r5, #2
 _0804B03A:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	subs r5, #1
 	adds r4, #0x60
 	cmp r5, #0

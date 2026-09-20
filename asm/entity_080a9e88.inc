@@ -889,12 +889,12 @@ Entity080a9e88_Destroy: @ 0x080A9CA8
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	adds r0, #0x1c
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x8c
 	movs r5, #7
 _080A9CB6:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x3c
 	subs r5, #1
 	cmp r5, #0
@@ -982,7 +982,7 @@ _080A9D50:
 	movs r1, #4
 	rsbs r1, r1, #0
 	adds r2, r1, #0
-	bl FUN_0822dad4
+	bl Particle_SetOffset
 	ldr r1, [r4]
 	adds r0, r5, #0
 	movs r2, #2

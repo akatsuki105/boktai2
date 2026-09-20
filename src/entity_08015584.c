@@ -29,7 +29,7 @@ typedef struct {
 } Entity08015584Elem;
 static_assert(sizeof(Entity08015584Elem) == 120);
 
-typedef struct Entity08015584 {
+typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_9
   AuxAnimFile* animFiles[2];     // 0x18, GetFile(ANIMATION, FileID_ARRAY_085aa914[i])
   u32 counter;                   // 0x20, Init で 0, Update で毎フレーム +1
@@ -37,7 +37,7 @@ typedef struct Entity08015584 {
 } Entity08015584;
 static_assert(sizeof(Entity08015584) == 3876);
 
-extern Entity08015584* gEntity08015584;  // 0x03000060
+IWRAM_DATA Entity08015584* gEntity08015584 = NULL;  // 0x03000060
 
 const FileID FileID_ARRAY_085aa914[2] = {
     0xF62B,

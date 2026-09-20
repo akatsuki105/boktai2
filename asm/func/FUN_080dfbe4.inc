@@ -226,7 +226,7 @@ _080DFD84:
 	adds r0, r5, #0
 	bl FUN_080df714
 	adds r0, r5, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	ldr r3, _080DFDD8 @ =0x000001AF
 	adds r2, r5, r3
 	movs r0, #0

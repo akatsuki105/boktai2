@@ -21,7 +21,7 @@ _081D0D9C:
 	adds r0, r0, r1
 	ldr r5, [r0]
 	adds r0, r5, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r0, r5, #0
 	adds r0, #0xb8
 	ldrh r1, [r0]

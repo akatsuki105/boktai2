@@ -25,7 +25,7 @@ Three rules keep this file usable:
 
 ### Branch direction: whichever arm should fall through, write it last
 
-- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `EntityMsgBus_Register`, `EntityMsgBus_Unregister`, `Demo_RequestNextStep`, `EntityMsg_Send`, `Demo_Resume`, `Demo_IsRunning`, `ArcTan2_8`, `FUN_082375c8`, `MainSprite_Add`, `ScriptShadow_Move`, `SignalStrengthIcon_Create`, `SignalStrengthIcon_Init`, `Entity081d0e20_Create`.
+- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `EntityMsgBus_Register`, `EntityMsgBus_Unregister`, `Demo_RequestNextStep`, `EntityMsg_Send`, `Demo_Resume`, `Demo_IsRunning`, `ArcTan2_8`, `FUN_082375c8`, `MainSprite_Add`, `ScriptShadow_Move`, `SignalStrengthIcon_Create`, `SignalStrengthIcon_Init`, `Entity081d0e20_Create`, `FUN_080eddf8`.
 - For `if (c) { A } B`, agbcc makes the trailing statement `B` the fall-through
   and places the if-body `A` out of line. So choose the condition's polarity
   and the order of the two arms by which one the target falls through to, not
@@ -46,6 +46,20 @@ Three rules keep this file usable:
 - When the returned value is still in `r0` from the call just made, an early `return x;` beats falling through to the function's shared `return x;`: the target branches *past* the join's `adds r0, rN, #0` instead of into it. `SignalStrengthIcon_Create` (`p = Get(); if (p != NULL) return p;`) showed up as a streamdiff with equal instruction counts and only a branch target one instruction off.
 - The same applies when the value comes from a **global** rather than a call, and there the fix is to name it twice. `Entity081d0e20_Create` matched only as `if (gEntity081d0e20 != NULL) { return gEntity081d0e20; }`; assigning it to the local that the rest of the function reuses (`p = gEntity081d0e20; if (p != NULL) return p;`) put it in a callee-saved register and branched *into* the join instead of past it.
 - The guard form also decides whether a saved pointer is reloaded afterwards. `SignalStrengthIcon_Init` nested as `if (f != NULL) { ... } return -1;` put `-1` inline *and* emitted `adds r0, r2, #0` before the struct copy; the early-return `if (f == NULL) return -1;` fixed both at once, letting the copy read the call result still in `r0`.
+
+### A `switch` that starts with `cmp low / beq / cmp low / ble` has one more case than it looks
+
+- **Frequency**: `FUN_080f8abc`.
+- `switch (x) { case 1: case 3: case 5: A; default: B; }` balances its three
+  nodes into a tree rooted at the middle one: `cmp #3 / beq / cmp #3 / bgt`.
+  A target that instead walks them in order — `cmp #1 / beq / cmp #1 / ble /
+  cmp #3 / beq / cmp #5 / bne` — has a **fourth case below the others whose
+  body is the default's**. Writing `case 0: B;` explicitly moves the root to 1,
+  and since the operand is unsigned `x < 1` can only be `0`, so that subtree
+  needs no compare of its own and cross-jumps into `B` — the bare `ble`.
+- Corollary: the rightmost node is tested with `bne default` and no lower-bound
+  check, so a missing `cmp` in the middle of the chain is not evidence of a
+  missing case.
 
 ### `pop {r1}; bx r1` means a non-void return type, even with nothing returned
 
@@ -79,18 +93,32 @@ Three rules keep this file usable:
 
 ### `x != 0` (and `a != b`) materialized as a 0/1 int normalize via `(0-x)|x >> 31`
 
-- **Frequency**: `Script_LoadPointer`, `FUN_0822a470`, `FUN_0822d9f0`.
+- **Frequency**: `Script_LoadPointer`, `AuxSprite_Add`, `FUN_0822d9f0`.
 - Only applies when the comparison's result must become an actual 0/1 integer VALUE — assigned, stored, or `return`ed (equivalently, `x != 0 ? 1 : 0` written out explicitly) — not when it's used purely as an `if`/`while` condition (those just branch, no materialization needed).
 - `flag != 0` materialized this way compiles to `rsbs r0, r1, #0` / `orrs r0, r1` / `lsrs r0, r0, #0x1f` — negate, OR with the original, then shift the sign bit down to bit 0. Writing the raw bit trick by hand (`(u32)((0 - flag) | flag) >> 0x1F`) produces byte-identical output to writing the natural `flag != 0`, so prefer the natural form; no need to hand-roll the trick.
-- **The "prefer the natural form" advice has an exception: position.** In `FUN_0822a470` the target computes the 0/1 value *before* two unrelated stores and only then sets up the call (`movs`/`ands`/`rsbs`/`lsrs`, `str`, `str`, `bl`). Written naturally as a call argument (`f(p, (flags & mask) != 0)`) the trick is emitted correctly but stays anchored at the call, after the stores; assigning it to a local first (`idx = (flags & mask) != 0;`) moves it early but switches agbcc to a *branch-based* setcc (`cmp`/`beq`/`movs #1`, one insn longer). Hand-rolling the trick into the assignment — `idx = (u32)(0 - (flags & mask)) >> 31;` — is the only form that is both early and branchless, and it matched. So: use the natural form when the trick lands where you need it, and hand-roll only when the target evaluates it earlier than the call site would.
+- **The "prefer the natural form" advice has an exception: position.** In `AuxSprite_Add` the target computes the 0/1 value *before* two unrelated stores and only then sets up the call (`movs`/`ands`/`rsbs`/`lsrs`, `str`, `str`, `bl`). Written naturally as a call argument (`f(p, (flags & mask) != 0)`) the trick is emitted correctly but stays anchored at the call, after the stores; assigning it to a local first (`idx = (flags & mask) != 0;`) moves it early but switches agbcc to a *branch-based* setcc (`cmp`/`beq`/`movs #1`, one insn longer). Hand-rolling the trick into the assignment — `idx = (u32)(0 - (flags & mask)) >> 31;` — is the only form that is both early and branchless, and it matched. So: use the natural form when the trick lands where you need it, and hand-roll only when the target evaluates it earlier than the call site would.
 - Two-operand `a != b` (both `s32`) generalizes the same trick via XOR first: `return a != b;` compiles as if written `return ((u32)(-(a ^ b) | (a ^ b))) >> 31;` — i.e. agbcc reduces `a != b` to `(a^b) != 0` then applies the same negate/OR/shift sequence.
+
+### Two bit tests on one load: the masked-value helper folds, the `bool32` one does not
+
+- **Frequency**: `FUN_080f09a4`.
+- A single test through a `bool32` bit-test helper branches cleanly
+  (`FUN_080f1cb8`). But when two tests on the same field share one load, the
+  second one leaves the boolean half-materialized —
+  `ands / cmp #0 / beq / movs r0,#1 / cmp r0,#0 / beq` — three instructions too
+  many, whichever way the condition is written (`&&` chain, nested `if`s,
+  negated guards, positive or negated).
+- Declaring the helper to return the **masked value** instead
+  (`static inline EnemyFlags Enemy_TestFlag(Enemy* p, EnemyFlags bit) { return p->flags & bit; }`,
+  called as `== 0` / `!= 0`) folds both tests. Mixing a helper for one test and
+  a bare `p->flags & BIT` for the other is worse still — it reorders the load.
 
 ### `(x & (1<<n)) != 0` auto-optimizes to `(x>>n)&1` unless the mask is precomputed
 
-- **Frequency**: `Script_LoadPointer`, `FUN_0822a470`, `PlaySound_0824078c`, `FUN_0822da50`, `FUN_0822d9f0`, `MainSprite_Add`.
+- **Frequency**: `Script_LoadPointer`, `AuxSprite_Add`, `PlaySound_0824078c`, `FUN_0822da50`, `FUN_0822d9f0`, `MainSprite_Add`.
 - Hoisting the mask also moves *where* the constant is built. In `PlaySound_0824078c`, `if (!((a | b) & 0x400))` built `movs #0x80` / `lsls #3` right before the `ands`; the target builds it first, before both loads. Swapping the `&` operands changed nothing; `u32 mask = 0x400;` as its own statement before the `if` matched.
 - Writing a single-bit test as one fused expression — `(byte & (1 << bit)) != 0` — lets agbcc's combiner recognize the "extract one bit" idiom and emit the cheaper `asrs`/`ands` (shift the target bit to position 0, mask with 1) instead of the general nonzero-materialize trick above. If the target's real assembly uses the general `rsbs`/`orrs`/`lsrs` trick instead (i.e. the shift-based optimization did NOT happen), the mask must be computed in its own prior statement — `s32 mask = 1 << bit; ... (byte & mask) != 0;` — splitting it into a separate pseudo-register apparently hides the "single bit" shape from the combiner and falls back to the general path.
-- The lever also works with a plain literal mask, not just `1 << bit`: in `FUN_0822a470`, `(flags & 0x80) != 0` compiled to `lsrs r1, rN, #7` / `ands r1, r4` (and pinned one extra callee-saved register), while hoisting the constant into its own statement (`mask = 0x80; ... (flags & mask) != 0`) fell back to the general `movs #0x80` / `ands` path and fixed the register allocation at the same time. Constant propagation does not undo the split.
+- The lever also works with a plain literal mask, not just `1 << bit`: in `AuxSprite_Add`, `(flags & 0x80) != 0` compiled to `lsrs r1, rN, #7` / `ands r1, r4` (and pinned one extra callee-saved register), while hoisting the constant into its own statement (`mask = 0x80; ... (flags & mask) != 0`) fell back to the general `movs #0x80` / `ands` path and fixed the register allocation at the same time. Constant propagation does not undo the split.
 - As a call argument, hand-rolling the trick also avoids the shift form without a separate statement. In `MainSprite_Add`, `f(p, (flags & 0x80) != 0)` gave `lsrs #7` / `movs #1` / `ands`, while `f(p, (u32)-(flags & 0x80) >> 31)` gave the target's `movs #0x80` / `ands` / `rsbs` / `lsrs #0x1f` (no `orrs`, since the masked value is never negative).
 - That statement split has a side effect: splitting *only* the mask into its own statement (leaving the address `src + (offset >> 3)` inline) reintroduced an unrelated register-allocation regression (two unrelated parameters got pinned into extra callee-saved registers for the whole function instead of just one). Also splitting the address into its own pointer variable (`u8* p = src + (offset >> 3);`) alongside the mask fixed it. Net effect: both the mask AND the address need their own statement (address first, then mask, matching the target's instruction order) to get byte-identical output.
 
@@ -223,6 +251,49 @@ Three rules keep this file usable:
 - **Frequency**: `GetFile`, `GetTilemapFile`.
 - `GetFile(FileID directoryID, FileID fileID)` rewrites `fileID` in each `case` and passes the original to `GetAssetFile` at the end. The target truncates the incoming `fileID` into `r1`, copies it to `r7` (`adds r7, r1, #0`), and at the call moves `r7` into `r2` first, before building the 4th argument. A copy declared `FileID file = fileID;` either swapped `r1`/`r7` or moved `r2` last. Declaring the copy as `u32 file = fileID;` (found by the permuter as `int`) matched.
 
+### agbcc does not rotate loops: a guard plus `do/while` is a different shape from `while`
+
+- **Frequency**: `FUN_080ed068`.
+- `while (p != NULL) { ... }` and `for (node = head; (p = node->enemy) != NULL; node = node->next)`
+  both compile to a `b` into the test at the bottom — the test is never peeled.
+  When the target instead evaluates the condition once before the loop
+  (`ldr` / `cmp` / `beq end`) and ends with `bne` back to the top, the source was
+  an explicit guard around a `do/while`:
+  `p = node->enemy; if (p != NULL) { do { ... } while (p != NULL); }`.
+- This also decides where a loop-invariant constant lands. Inside the guard,
+  `flag = 0x1000;` is emitted between the `beq` and the loop head, which is
+  where the target has it; initialising it at the declaration hoists it to
+  function entry instead, before the first call.
+- The enemy list walkers in `enemy_manager.c` are nearly all this shape
+  (`FUN_080ecf18`, `FUN_080ecf60`, `FUN_080ed020`, `FUN_080ed724`, `FUN_080eda7c`),
+  so check which of the two shapes the target has before writing the loop.
+
+### Digits extracted all at once, or one per term: the accumulator decides
+
+- **Frequency**: `FromBCD`.
+- `return d0 + d1 * 10 + d2 * 100 + d3 * 1000;` — whether the digits are
+  written inline or pulled into locals first — makes agbcc hoist **every**
+  extraction (`lsrs` / `ands` per digit) above the first multiply. A target that
+  interleaves them, extracting each digit right before its own multiply, was
+  written as an accumulator instead:
+  `result = d0; result += d1 * 10; result += d2 * 100; ...`.
+- The same rewrite also decided how the parameter is held: with the accumulator
+  and a `u16` parameter agbcc keeps the value left-shifted by 16 and widens the
+  masks (`movs #0xf0` / `lsls #0xc` / `ands` / `lsrs #0x10`) instead of
+  normalising it once with `lsls` / `lsrs` — one instruction longer, and the
+  shape the target has.
+
+### Scalars and an array in one frame: the scalars land above the array
+
+- **Frequency**: `FUN_0823e298`.
+- `s32 year, month, day; u8 buf[8];` (in either declaration order) puts `buf` at
+  `sp+0` and the three scalars above it, so every use of `buf` is a bare
+  `mov r0, sp`. A target that has the scalars at `sp+0` and the array above
+  them — paying `add r4, sp, #0xc` and a callee-saved register to hold it — had
+  the scalars as an **array** too: `s32 ymd[3]; u8 buf[8];`, filled through
+  `&ymd[0]` / `&ymd[1]` / `&ymd[2]`. Two arrays are laid out in declaration
+  order; an array and loose scalars are not.
+
 ### Two loops sharing one counter variable shift the register allocation
 
 - **Frequency**: `LevelUpper_Update`.
@@ -246,7 +317,7 @@ Three rules keep this file usable:
 - **Frequency**: `FUN_082315c0`, `FUN_0824082c`, `FUN_08089ce0`, `Entity0800a89c_ReleaseSwarm`, `Entity0800a89c_UpdateSwarm`.
 - Both compile to the same `stm rN!, {r0}` walking store, but the init of that pointer lands in a different place. `*out++ = v;` modifies the parameter, so agbcc copies it to a callee-saved register in the **entry block**, before any loop-invariant hoists. `out[i] = v;` leaves the parameter alone and lets loop strength reduction create the pointer, so its init goes in the **preheader**, after the hoists — swapping the order of the two setup instructions. (Strength reduction also frees `i` to be reversed into a down-counter while the pointer still walks up.)
 - A walking pointer compared against `base + const` (`adds r0, r5, #0` / `adds r0, #0x14` / `cmp r4, r0`) with a **signed** loop exit (`ble`) and no pre-loop test is an `s32 i` index loop, not a pointer loop: loop strength reduction deletes `i` and rewrites `i == 10` and `i < 32` as compares on the pointer. In `FUN_0824082c`, writing the pointer loop (`p == &arr[10]`, `p <= &arr[31]`) gave a pre-loop `bhi`, unsigned `bls` and pool-loaded addresses; `for (i = 0; i < 32; i++) { if (arr[i]) { if (i == 10) ... } }` matched, including the second walking pointer used for the `arr[i]` call argument.
-- The same split decides whether a **member offset** is folded into the pointer. `f(&arr[i].member)` initialises one pointer at `&arr[0].member` and steps it by `sizeof(*arr)`; an explicit `T* p = arr; f(&p->member); p++;` keeps `p` at `arr` and pays an `adds r0, #offset` every iteration. `Entity0800a89c_ReleaseSwarm` (`FUN_0822dabc(&swarm->bugs[i].ptcl)`) needed the index form.
+- The same split decides whether a **member offset** is folded into the pointer. `f(&arr[i].member)` initialises one pointer at `&arr[0].member` and steps it by `sizeof(*arr)`; an explicit `T* p = arr; f(&p->member); p++;` keeps `p` at `arr` and pays an `adds r0, #offset` every iteration. `Entity0800a89c_ReleaseSwarm` (`Particle_Remove(&swarm->bugs[i].ptcl)`) needed the index form.
 - With an explicit walker **and** an index that the body still needs, both the init order and the increment order are visible. `Entity0800a89c_UpdateSwarm` matched only as `for (i = 0, bug = swarm->bugs; i < 4; i++) { ...; bug++; }`: putting `bug = ...` first swapped the two registers, and putting `bug++` in the `for` increment emitted it after `i++` instead of before.
 
 ### `a = b = v` stores `b` first and evaluates `v` once
@@ -263,3 +334,18 @@ Three rules keep this file usable:
 
 - **Frequency**: `VM_RunExpression`.
 - `if (c) { x = A; } else { x = B; } slot->f = x;` and `if (c) { slot->f = A; } else { slot->f = B; }` produce the same merged store, but not the same scheduling around it. In `VM_RunExpression` the `x` version delayed a later call's first-argument setup (`adds r0, r5, #0` emitted after the other two argument registers instead of before them); writing the store directly in both arms fixed it. If argument setup order is the only thing off near a two-armed store, try removing the intermediate variable.
+
+### A returned boolean built with one branch: initialise, then clear
+
+- **Frequency**: `FUN_080eddc8`.
+- `movs r1, #1` / `cmp` / `bgt` over a `movs r1, #0` / `adds r0, r1, #0` is not
+  `return x > 0;` and not a ternary — agbcc canonicalises both of those into the
+  opposite polarity (`movs r1, #0` first, `ble` over `movs r1, #1`), and writing
+  the comparison inverted (`x <= 0 ? FALSE : TRUE`) does not move it either.
+  What matches is an explicit variable: `alive = TRUE; if (x <= 0) { alive = FALSE; }
+  return alive;`.
+- The **load** has to happen before the `= TRUE`, or the field access is
+  scheduled after it and a second scratch register appears. Read the field into
+  its own local first (`hp = p->unk_184;`), then initialise the flag. Declaring
+  both at the top of the function C89-style and assigning them in that order is
+  what the target looks like.

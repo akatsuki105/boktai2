@@ -64,7 +64,7 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
 
   if (p->q_broken == 0) {
     if (p->q_damageTimer != 0) {
-      p->node.q_pos = p->pos;
+      p->node.pos = p->pos;
       if (--p->q_damageTimer == 0) {
         if (p->q_breakable == 1) {
           Video_SetAuxSpritePltt(&p->sprite, 0x288);
@@ -72,9 +72,9 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
         ClearHitboxFlags(&p->hitbox, HBFLAG_UNK_2);
       } else {
         idx = (gRandTableIdx + 1) & 0x3FF;
-        p->node.q_pos.x = p->node.q_pos.x - 8 + (gRandomTable[idx] & 0xF);
+        p->node.pos.x = p->node.pos.x - 8 + (gRandomTable[idx] & 0xF);
         gRandTableIdx = (idx + 1) & 0x3FF;
-        p->node.q_pos.z = p->node.q_pos.z - 8 + (gRandomTable[gRandTableIdx] & 0xF);
+        p->node.pos.z = p->node.pos.z - 8 + (gRandomTable[gRandTableIdx] & 0xF);
         p->hitbox.flags |= HBFLAG_UNK_2;
       }
     }
@@ -97,7 +97,7 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
 s32 EntityEC96_Destroy(EntityEC96* p) {
   FUN_08236424(&p->hitbox);
   FUN_082342a8(&p->q_mapNode);
-  FUN_0822a4e0(&p->node);
+  AuxSprite_Remove(&p->node);
   return 0;
 }
 
@@ -133,8 +133,8 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   if (!Video_GetAuxSprite(sprite, SPRITE_PLANT_2567)) {
     return -1;
   }
-  FUN_0822a470(&p->node, sprite, 0);
-  p->node.q_pos = p->pos;
+  AuxSprite_Add(&p->node, sprite, 0);
+  p->node.pos = p->pos;
   if (p->q_breakable == 1) {
     Video_SetAuxSpritePltt(sprite, 0x288);
   } else {

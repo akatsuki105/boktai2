@@ -34,7 +34,7 @@ _080E0130:
 	adds r0, r4, r1
 	bl FUN_08236424
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	movs r6, #0
 _080E0156:
 	movs r0, #0x5c
@@ -49,7 +49,7 @@ _080E0156:
 	adds r0, r1, #0
 	adds r0, #0x3c
 	adds r0, r4, r0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _080E0172:
 	adds r6, #1
 	cmp r6, #1

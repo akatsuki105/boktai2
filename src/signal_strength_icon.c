@@ -134,7 +134,7 @@ s32 SignalStrengthIcon_Update(SignalStrengthIcon* p) {
 }
 
 s32 SignalStrengthIcon_Destroy(SignalStrengthIcon* p) {
-  FUN_0822f1c0(&p->sprite);
+  MainSprite_Remove(&p->sprite);
   gSignalStrengthIcon = NULL;
   return 0;
 }

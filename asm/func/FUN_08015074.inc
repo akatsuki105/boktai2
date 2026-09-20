@@ -85,7 +85,7 @@ _080150F2:
 	bne _0801511E
 	strb r2, [r7]
 	adds r0, r3, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	b _08015124
 _0801511E:
 	ldrb r0, [r4, #1]

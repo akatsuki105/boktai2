@@ -1874,7 +1874,7 @@ FUN_080375a4: @ 0x080375A4
 	push {r4, lr}
 	adds r4, r0, #0
 	adds r0, #0x24
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0xd4
 	adds r0, r4, #0
 	bl FUN_08236424

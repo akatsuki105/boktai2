@@ -1204,7 +1204,7 @@ FUN_080c592c: @ 0x080C592C
 	movs r5, #0xd
 _080C5942:
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x50
 	subs r5, #1
 	cmp r5, #0
@@ -1415,7 +1415,7 @@ _080C5AB8:
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r2, #1
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #2
 	add r0, r8
 	strh r0, [r6, #0x10]

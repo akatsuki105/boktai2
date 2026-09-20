@@ -1199,7 +1199,7 @@ FUN_08051534: @ 0x08051534
 	mov r8, r0
 	adds r0, r4, #0
 	mov r2, r8
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r6, #0
 	strh r6, [r4, #0x10]
 	adds r0, r7, #0
@@ -1210,7 +1210,7 @@ FUN_08051534: @ 0x08051534
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, r8
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	mov r1, sl
 	strh r1, [r4, #0x10]
 	adds r0, r7, #0
@@ -1248,10 +1248,10 @@ FUN_080515b8: @ 0x080515B8
 	adds r4, r1, #0
 	adds r0, r4, #0
 	adds r0, #0x24
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x50
 	adds r0, r4, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	pop {r4}
 	pop {r0}
 	bx r0
@@ -1921,7 +1921,7 @@ _08051A82:
 	ble _08051A82
 	adds r0, r6, #0
 	adds r0, #0x8c
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r1, _08051AA8 @ =0x03000118
 	movs r0, #0
 	str r0, [r1]
@@ -2883,7 +2883,7 @@ FUN_080521a8: @ 0x080521A8
 	movs r5, #3
 _080521B0:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	subs r5, #1
 	adds r4, #0x60
 	cmp r5, #0

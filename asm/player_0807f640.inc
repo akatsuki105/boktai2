@@ -1030,12 +1030,12 @@ FUN_0807fe24: @ 0x0807FE24
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	adds r0, #0x3c
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0xf8
 	movs r5, #0xf
 _0807FE32:
 	adds r0, r4, #0
-	bl FUN_0822dabc
+	bl Particle_Remove
 	adds r4, #0x3c
 	subs r5, #1
 	cmp r5, #0

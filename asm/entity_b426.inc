@@ -507,24 +507,24 @@ EntityB426_Destroy: @ 0x0800F520
 	movs r1, #0xbb
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r1, #0xd3
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r1, #0xeb
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r1, _0800F570 @ =0x0000040C
 	adds r0, r4, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r0, _0800F574 @ =0x0000046C
 	adds r4, r4, r0
 	movs r5, #1
 _0800F558:
 	adds r0, r4, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	adds r4, #0x60
 	subs r5, #1
 	cmp r5, #0

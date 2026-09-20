@@ -2921,7 +2921,7 @@ FUN_0820e75c: @ 0x0820E75C
 	cmp r0, #0
 	beq _0820E76C
 	adds r0, r1, #0
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 _0820E76C:
 	pop {r0}
 	bx r0
@@ -3028,10 +3028,10 @@ _0820E834:
 	bl FUN_0820e75c
 	ldr r1, _0820E890 @ =0x0000102C
 	adds r0, r7, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	ldr r1, _0820E894 @ =0x0000108C
 	adds r0, r7, r1
-	bl FUN_0822f1c0
+	bl MainSprite_Remove
 	movs r0, #0
 	pop {r3}
 	mov r8, r3

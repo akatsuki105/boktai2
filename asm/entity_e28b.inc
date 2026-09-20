@@ -699,7 +699,7 @@ _08002E68:
 	cmp r0, #0
 	beq _08002E80
 	adds r0, r1, #0
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 _08002E80:
 	adds r4, #1
 _08002E82:
@@ -767,7 +767,7 @@ _08002EEE:
 	adds r0, r4, #0
 	adds r1, r7, #0
 	movs r2, #1
-	bl FUN_0822a4b0
+	bl AuxSprite_Setup
 	ldr r0, [r4, #0x18]
 	movs r1, #0x80
 	lsls r1, r1, #3

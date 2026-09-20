@@ -108,7 +108,7 @@ _080655F6:
 	ldr r1, [r0]
 	ldr r2, _08065674 @ =0x00001001
 	adds r0, r7, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	ldrh r1, [r5, #0x2c]
 	movs r2, #0x82
 	lsls r2, r2, #1

@@ -116,7 +116,7 @@ _0821AF90:
 	adds r0, #0x98
 	ldr r2, _0821B054 @ =0x00008012
 	adds r1, r4, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r7, #0
 	adds r0, #0xb4
 	movs r1, #0
@@ -159,7 +159,7 @@ _0821AFE6:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0x12
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	movs r0, #5
 	strh r0, [r4, #0x10]
 	movs r1, #0xac

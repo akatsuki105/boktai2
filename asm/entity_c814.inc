@@ -124,7 +124,7 @@ EntityC814_Destroy: @ 0x080CB5B8
 	push {r4, lr}
 	adds r4, r0, #0
 	adds r0, #0x60
-	bl FUN_0822a4e0
+	bl AuxSprite_Remove
 	adds r4, #0x1c
 	adds r0, r4, #0
 	bl FUN_0823b284
@@ -279,7 +279,7 @@ FUN_080cb6d4: @ 0x080CB6D4
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822a470
+	bl AuxSprite_Add
 	adds r0, r6, #0
 	adds r0, #0x1c
 	adds r1, r5, #0

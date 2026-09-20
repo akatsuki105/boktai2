@@ -11,7 +11,7 @@ typedef struct {
   u32 unk_18;           // 0x18, マップと対応する何かの値, サンミゲル(屋外や鍛冶屋内)や暗黒街: 0xD23E, n番街: 0x56CB
   u16 unk_1c;           // 0x1C
   u16 unk_1e;           // 0x1E
-  EntityMsgBox unk_20;  // 0x20
+  EntityMsgBox msgbox;  // 0x20
   u16 moveMode;         // 0x54, 0: プレイヤー追従, 1: destPos へ即座に移動, 2以上: destPos へ moveTimer フレームかけて補間, 根拠: FUN_0823c450 の分岐
   u16 moveTimer;        // 0x56, pos を destPos へ寄せる補間の残りフレーム数, 根拠: FUN_0823c450 が Div の除数に使い毎フレーム減算する
   Vec3 pos;             // 0x58, カメラ自身の現在位置, 根拠: Camera_Update が gCameraWorldCoords にそのまま代入し、Camera_Init が gStat->playerPos から初期化する
