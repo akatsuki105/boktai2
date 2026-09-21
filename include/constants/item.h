@@ -103,4 +103,11 @@
 #define IET_UNK14 14
 #define IET_UNK15 15
 
+// ItemCategory16, ItemCategory32
+#define ITEM_CATEGORY_USABLE 0  // 消費アイテム, 貴重品 (名前は後でもっといいものにする)
+#define ITEM_CATEGORY_WEAPON 1
+#define ITEM_CATEGORY_ARMOR 2
+#define ITEM_CATEGORY_UNK3 3
+#define ITEM_CATEGORY_UNK4 4
+
 #endif  // __INCLUDE_CONSTANTS_ITEM_H__

@@ -4,6 +4,20 @@
 	
 	.text
 
+	thumb_func_start FUN_0801b5a0
+FUN_0801b5a0: @ 0x0801B5A0
+	push {lr}
+	adds r1, r0, #0
+	ldr r0, _0801B5B4 @ =0x03004250
+	adds r1, #0x20
+	ldr r2, _0801B5B8 @ =0x04000080
+	bl CpuSet
+	pop {r0}
+	bx r0
+	.align 2, 0
+_0801B5B4: .4byte 0x03004250
+_0801B5B8: .4byte 0x04000080
+
 	thumb_func_start EntityD9D3_Update
 EntityD9D3_Update: @ 0x0801B5BC
 	push {r4, lr}

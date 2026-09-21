@@ -1653,7 +1653,7 @@ _0816302E:
 	adds r0, #0x20
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -1807,7 +1807,7 @@ _08163164:
 	lsrs r2, r2, #0x10
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r6, #8]
 	movs r1, #5
 	rsbs r1, r1, #0

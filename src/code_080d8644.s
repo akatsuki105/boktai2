@@ -5468,7 +5468,7 @@ _080DAED6:
 	bne _080DAEE4
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_0822a340
+	bl Video_AddAuxSpriteIntoDrawList
 _080DAEE4:
 	ldrh r1, [r5]
 	movs r0, #4
@@ -5525,7 +5525,7 @@ _080DAF3E:
 	bne _080DAF54
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_0822a340
+	bl Video_AddAuxSpriteIntoDrawList
 _080DAF54:
 	ldrh r1, [r5]
 	movs r0, #4
@@ -5598,7 +5598,7 @@ _080DAFD0:
 	bne _080DAFF6
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_0822a340
+	bl Video_AddAuxSpriteIntoDrawList
 	b _080DAFF6
 	.align 2, 0
 _080DAFE0: .4byte 0x030046A0
@@ -5609,7 +5609,7 @@ _080DAFE8:
 	beq _080DAFF6
 	adds r0, r7, #0
 	movs r1, #0
-	bl AuxSprite_RemoveUnsafe
+	bl Video_RemoveAuxSpriteFromDrawList
 _080DAFF6:
 	ldrh r1, [r5]
 	movs r6, #2
@@ -5622,7 +5622,7 @@ _080DAFF6:
 	bne _080DB010
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_0822a340
+	bl Video_AddAuxSpriteIntoDrawList
 _080DB010:
 	movs r0, #0
 	strh r0, [r4, #0x3c]
@@ -5662,7 +5662,7 @@ FUN_080db040: @ 0x080DB040
 	bne _080DB056
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_0822a340
+	bl Video_AddAuxSpriteIntoDrawList
 _080DB056:
 	movs r1, #0x3c
 	ldrsh r0, [r5, r1]
@@ -5732,7 +5732,7 @@ _080DB0AC:
 	bl FUN_08236424
 	adds r0, r7, #0
 	movs r1, #0
-	bl AuxSprite_RemoveUnsafe
+	bl Video_RemoveAuxSpriteFromDrawList
 	ldr r0, _080DB0E8 @ =0x0000FFFF
 	strh r0, [r6]
 	adds r0, r5, #0

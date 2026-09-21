@@ -139,7 +139,7 @@ _08217B1E:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #2
 	rsbs r1, r1, #0

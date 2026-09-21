@@ -3707,7 +3707,7 @@ _08116ED4:
 	str r2, [sp]
 	movs r2, #2
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -3811,7 +3811,7 @@ _08116FA4:
 	str r2, [sp]
 	movs r2, #3
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -3869,7 +3869,7 @@ _0811701C:
 	str r2, [sp]
 	movs r2, #3
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #4
 	orrs r0, r1
@@ -3924,7 +3924,7 @@ _08117090:
 	str r2, [sp]
 	movs r2, #4
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -3999,7 +3999,7 @@ _0811712E:
 	adds r0, #0x20
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -4077,7 +4077,7 @@ _081171C8:
 	adds r0, #0x20
 	str r4, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r7, #8]
 	orrs r0, r4
 	str r0, [r7, #8]
@@ -5210,7 +5210,7 @@ _08117A84:
 	mov r2, ip
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -5478,7 +5478,7 @@ _08117C98:
 	mov r2, ip
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -5722,7 +5722,7 @@ _08117E80:
 	adds r0, #0x20
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -5947,7 +5947,7 @@ _0811803E:
 	mov r2, sb
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -6531,7 +6531,7 @@ _081184CC:
 	mov r2, ip
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -7321,7 +7321,7 @@ _08118B12:
 	mov r2, ip
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -7779,7 +7779,7 @@ _08118E94:
 	mov r2, ip
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0

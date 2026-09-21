@@ -69,7 +69,7 @@ _08216C42:
 	str r2, [sp]
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	add sp, #0x10
 	pop {r4}
 	pop {r0}

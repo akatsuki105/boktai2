@@ -2296,7 +2296,7 @@ _080C1E84:
 	adds r1, r4, #0
 	movs r2, #4
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r1, #0xac
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -2440,7 +2440,7 @@ _080C1FAE:
 	movs r1, #0
 	adds r2, r5, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	movs r0, #0
 	adds r1, r5, #0
 	adds r2, r6, #0
@@ -2741,7 +2741,7 @@ _080C2234:
 	adds r1, r6, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r2, #0x80
 	lsls r2, r2, #1
 	adds r1, r7, r2
@@ -2754,7 +2754,7 @@ _080C2234:
 	adds r1, r6, #0
 	movs r2, #2
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0xe0
 	lsls r0, r0, #1
 	adds r1, r7, r0
@@ -2768,7 +2768,7 @@ _080C2234:
 	adds r1, r6, #0
 	movs r2, #3
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0xb0
 	lsls r0, r0, #1
 	adds r2, r7, r0
@@ -2800,7 +2800,7 @@ _080C22B0:
 	adds r1, r6, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0x80
 	lsls r0, r0, #1
 	adds r1, r7, r0
@@ -2813,7 +2813,7 @@ _080C22B0:
 	adds r1, r6, #0
 	movs r2, #2
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r2, #0xe0
 	lsls r2, r2, #1
 	adds r1, r7, r2
@@ -2827,7 +2827,7 @@ _080C22B0:
 	adds r1, r6, #0
 	movs r2, #3
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r2, #0xb0
 	lsls r2, r2, #1
 	adds r1, r7, r2
@@ -2865,7 +2865,7 @@ _080C2338:
 	adds r1, r6, #0
 	movs r2, #1
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0x80
 	lsls r0, r0, #1
 	adds r1, r7, r0
@@ -2878,7 +2878,7 @@ _080C2338:
 	adds r1, r6, #0
 	movs r2, #2
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r2, #0xe0
 	lsls r2, r2, #1
 	adds r1, r7, r2
@@ -2892,7 +2892,7 @@ _080C2338:
 	adds r1, r6, #0
 	movs r2, #3
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0xb0
 	lsls r0, r0, #1
 	adds r2, r7, r0
@@ -2924,7 +2924,7 @@ _080C23B4:
 	adds r1, r6, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0x80
 	lsls r0, r0, #1
 	adds r1, r7, r0
@@ -2937,7 +2937,7 @@ _080C23B4:
 	adds r1, r6, #0
 	movs r2, #2
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r2, #0xe0
 	lsls r2, r2, #1
 	adds r1, r7, r2
@@ -2951,7 +2951,7 @@ _080C23B4:
 	adds r1, r6, #0
 	movs r2, #3
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0xb0
 	lsls r0, r0, #1
 	adds r2, r7, r0
@@ -2983,7 +2983,7 @@ _080C2430:
 	adds r1, r5, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	adds r1, r7, #0
 	adds r1, #0xb8
 	movs r0, #0x3c

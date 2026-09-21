@@ -18403,7 +18403,7 @@ _0810BCB4:
 _0810BCC6:
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -18562,7 +18562,7 @@ _0810BDF4:
 	lsrs r2, r2, #0x10
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #4
 	orrs r0, r1
@@ -18676,7 +18676,7 @@ _0810BEEA:
 _0810BEF4:
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -18756,7 +18756,7 @@ _0810BF88:
 	lsrs r2, r2, #0x10
 	str r4, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r7, #8]
 	orrs r0, r4
 	str r0, [r7, #8]
@@ -24646,7 +24646,7 @@ _0810EDC6:
 	adds r0, #0x20
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -24755,7 +24755,7 @@ _0810EEA2:
 	adds r0, #0x20
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -24880,7 +24880,7 @@ _0810EF9E:
 	adds r0, #0x20
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0

@@ -4,7 +4,7 @@
 	ldr r2, _081DFC4C @ =FUN_0822aaac
 	ldr r3, _081DFC50 @ =FUN_0822f204
 	movs r0, #0
-	bl FUN_0822a448
+	bl Video_SetDrawPasses
 	ldr r0, _081DFC54 @ =0x030044D0
 	movs r3, #0
 	str r3, [r0]

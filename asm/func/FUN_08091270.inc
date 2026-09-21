@@ -17,7 +17,7 @@
 	movs r0, #6
 	movs r1, #2
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	ldr r6, _0809152C @ =0x085ACE3C
 	ldr r0, _08091530 @ =0x030046A0
 	ldr r2, [r0]

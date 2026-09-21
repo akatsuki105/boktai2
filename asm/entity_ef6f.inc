@@ -64,7 +64,7 @@ FUN_0801e2a8: @ 0x0801E2A8
 	movs r0, #1
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	movs r0, #2
 	movs r1, #2
 	bl SetBGPrioDirect
@@ -120,7 +120,7 @@ FUN_0801e328: @ 0x0801E328
 	movs r0, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	movs r0, #0x18
 	rsbs r0, r0, #0
 	str r0, [sp]
@@ -506,7 +506,7 @@ _0801E50C:
 	adds r0, r7, #0
 	adds r1, r5, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	mov r0, r8
 	strb r0, [r7, #0x1a]
 	ldr r0, [r7, #8]
@@ -683,7 +683,7 @@ _0801E770:
 	movs r2, #1
 _0801E792:
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	b _0801E7BA
 _0801E79A:
 	adds r1, r7, #0
@@ -700,7 +700,7 @@ _0801E79A:
 	adds r1, r6, #0
 	movs r2, #2
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 _0801E7BA:
 	movs r0, #0x20
 	adds r0, r0, r7
@@ -2693,7 +2693,7 @@ _0801F642:
 	adds r1, r6, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0xaa
 	bl sound_08240264
 	movs r0, #0

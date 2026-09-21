@@ -66,13 +66,13 @@ NAKED s32 FUN_08233d50(s32 param_1, unknown* param_2, unknown* param_3) { INCFUN
 
 NAKED s32 FUN_082340c8(unknown* param_1, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_082340c8.inc"); }
 
-NAKED void FUN_08234208(q_MapNode* p, u16 tileIdx, u32 param_3, u32 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_08234208.inc"); }
+NAKED void FUN_08234208(MapTileOverride* p, u16 tileIdx, u32 param_3, u32 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_08234208.inc"); }
 
-NAKED q_MapNode* FUN_08234224(u32 tileIdx, u32 mask) { INCFUNC("asm/func/FUN_08234224.inc"); }
+NAKED MapTileOverride* FUN_08234224(u32 tileIdx, u32 mask) { INCFUNC("asm/func/FUN_08234224.inc"); }
 
-NAKED s32 FUN_08234270(q_MapNode* p, u16 tileIdx, u32 param_3, u32 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_08234270.inc"); }
+NAKED s32 FUN_08234270(MapTileOverride* p, u16 tileIdx, u32 param_3, u32 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_08234270.inc"); }
 
-NAKED void FUN_082342a8(q_MapNode* p) { INCFUNC("asm/func/FUN_082342a8.inc"); }
+NAKED void FUN_082342a8(MapTileOverride* p) { INCFUNC("asm/func/FUN_082342a8.inc"); }
 
 NAKED s32 FUN_082342cc(unknown* param_1, unknown* param_2) { INCFUNC("asm/func/FUN_082342cc.inc"); }
 

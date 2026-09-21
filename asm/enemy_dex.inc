@@ -1374,7 +1374,7 @@ FUN_0820dae4: @ 0x0820DAE4
 	movs r0, #1
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	movs r0, #2
 	movs r1, #0
 	bl SetBGPrioDirect

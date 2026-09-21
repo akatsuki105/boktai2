@@ -6,7 +6,15 @@
 #include "types.h"
 
 typedef u16 MainAnimPlayFlags16;
-#define MAIN_ANIM_REVERSE (1 << 1)  // 逆再生?, 根拠: MainSprite_AdvanceAnim
+#define MAIN_ANIM_KEEP_FRAME (1 << 0)  // 0x0001, 頭出しせずに今のコマ番号から続ける, 根拠: MainSprite_SetAnim が animCmdIdx と animCmdTimer を初期化しない
+#define MAIN_ANIM_REVERSE (1 << 1)     // 0x0002, 逆再生, 根拠: MainSprite_SetAnim が末尾のコマから始め、MainSprite_AdvanceAnim が animCmdIdx を減らして 0 で終端とみなす
+#define MAIN_ANIM_FORCE_POSE (1 << 2)  // 0x0004, 同じアニメを指定してもポーズを当て直す, 根拠: MainSprite_SetAnim
+
+// MainSprite.animEvents。MainSprite_AdvanceAnim が毎フレーム先頭でクリアしてから立て直す
+typedef u8 MainAnimEvents8;
+#define MAIN_ANIM_EVENT_WILL_END (1 << 0)  // 0x01, 次のコマで終わる
+#define MAIN_ANIM_EVENT_ENDED (1 << 1)     // 0x02, 今終わった
+#define MAIN_ANIM_EVENT_ADVANCED (1 << 2)  // 0x04, コマが進んだ
 
 typedef struct {
   u16 palStart;            // 0x00, palette start index in the sprite palettes file
@@ -105,7 +113,7 @@ typedef struct MainSprite {
   u8 priority;                    // 0x1A
   u8 playMode;                    // 0x1B, 0=停止, 2=1回再生して停止, 3=1回再生して非表示, その他=ループ, 根拠: MainSprite_AdvanceAnim
   u8 listIdx;                     // 0x1C, MainSprite_Remove
-  u8 animEvents;                  // 0x1D, MainSprite_AdvanceAnim が毎フレーム先頭でクリアする通知ビット, bit0=次で終わる, bit1=今終わった, bit2=コマが進んだ
+  MainAnimEvents8 animEvents;     // 0x1D, see MainAnimEvents8
   u8 unk_1e[2];                   // 0x1E
   Vec3 pos;                       // 0x20, ワールド座標. flags bit4 が立っていればスクリーン座標としてそのまま使われる, 根拠: FUN_08230134 のアイソメトリック投影と MainSprite_Load の Vec3 コピー
   u16 offsetX;                    // 0x28, 投影後のスクリーン座標に加算される, MainSpritePose.unk_4
@@ -141,5 +149,6 @@ s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* src, u16 param_3, u8 playMo
 s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
 bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* src);
 void MainSprite_Remove(MainSprite* p);
+void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 playMode, MainAnimPlayFlags16 flags);
 
 #endif  // __INCLUDE_SPRITE_MAIN_H__

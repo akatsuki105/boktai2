@@ -3,6 +3,7 @@
 
 #include "gba/gba.h"
 #include "sprite_common.h"
+#include "types.h"
 
 // Particle Group ID
 #define PTCL_GROUP_0 0x1C1A
@@ -34,7 +35,7 @@ typedef struct {
 // --------------------------------------------
 
 typedef struct Particle {
-  u32 flags;              // 0x00
+  SpriteFlags flags;      // 0x00
   u8 active;              // 0x04
   s8 scaleX;              // 0x05
   s8 scaleY;              // 0x06
@@ -54,7 +55,7 @@ typedef struct Particle {
   struct Particle* prev;  // 0x20
   struct Particle* next;  // 0x24
 } Particle;
-static_assert(sizeof(Particle) == 40);  // 　Particle_RemoveDrawList から 40バイト以上は確定 で 0x0805fdfe のループでは 40バイトずつアドレスが増えていくので、 40バイトで確定と思われる
+static_assert(sizeof(Particle) == 40);  // 　Video_RemoveParticleFromDrawList から 40バイト以上は確定 で 0x0805fdfe のループでは 40バイトずつアドレスが増えていくので、 40バイトで確定と思われる
 
 // --------------------------------------------
 
@@ -62,11 +63,12 @@ extern Particle* gParticleLists[2];
 
 void LoadParticleFile(ParticleFile* p);
 ParticleGroup* GetParticleGroup(u16 ptclgroupID);
-void Particle_RemoveDrawList(Particle* p, s32 idx);
+void Video_RemoveParticleFromDrawList(Particle* p, s32 idx);
 void FUN_0822d9f0(Particle* p, ParticleGroup* g, u32 flags);
 void FUN_0822da70(Particle* p, ParticleGroup* g, u32 flags);
 void Particle_Remove(Particle* p);
 void FUN_0822dadc(Particle* p, s32 plttID);
 void Particle_SetOffset(Particle* p, s32 offsetX, s32 offsetY);
+void FUN_0822dafc(Particle* p, ParticleGroup* g, u32 val);
 
 #endif  // __INCLUDE_PARTICLE_H__

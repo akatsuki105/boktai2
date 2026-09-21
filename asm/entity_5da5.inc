@@ -134,7 +134,7 @@ FUN_080089b8: @ 0x080089B8
 	adds r0, r5, #0
 	adds r1, r6, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	subs r5, #0x50
 	subs r0, r7, #1
 	cmp r0, #1
@@ -891,7 +891,7 @@ _08008F9E:
 	ldr r1, [sp, #0x10]
 	movs r2, #6
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r5, [sp, #0x14]
 	movs r4, #0
 _08008FEE:

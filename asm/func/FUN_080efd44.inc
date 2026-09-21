@@ -90,7 +90,7 @@ _080EFDF6:
 	adds r0, #0x20
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r5, r0
 	cmp r5, #0

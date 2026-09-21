@@ -619,7 +619,7 @@ _0820070C:
 	mov r1, sb
 	movs r2, #0xf
 	movs r3, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	mov r5, r8
 	orrs r0, r5

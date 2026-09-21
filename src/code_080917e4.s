@@ -6299,7 +6299,7 @@ FUN_080a0df4: @ 0x080A0DF4
 	movs r0, #3
 	movs r1, #2
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	movs r0, #1
 	movs r1, #1
 	bl SetBGPrioDirect
@@ -17059,7 +17059,7 @@ FUN_080a6048: @ 0x080A6048
 	adds r1, r7, #0
 	movs r2, #0
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	b _080A6108
 	.align 2, 0
 _080A60B4: .4byte 0x0000CB05
@@ -17099,7 +17099,7 @@ _080A60E0:
 	adds r1, r7, #0
 	movs r2, #0
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 _080A6108:
 	add sp, #0x18
 	pop {r4, r5, r6, r7}

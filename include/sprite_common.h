@@ -15,12 +15,14 @@ typedef u32 SpriteFlags;
 #define SPRFLAG_SCREEN_COORD (1 << 4)  // 0x00000010, スクリーン座標系
 #define SPRFLAG_OAM_DIRECT (1 << 5)    // 0x00000020, OAM直書き
 #define SPRFLAG_NO_CLIP (1 << 6)       // 0x00000040, クリップ省略
-#define SPRFLAG_UNK_7 (1 << 7)         // 0x00000080, ???
+#define SPRFLAG_DRAWLIST (1 << 7)      // 0x00000080, セットされていると描画リスト(gAuxSpriteLists, gMainSpriteLists, gParticleLists) の idx が 1の方に追加される
 #define SPRFLAG_BLINK_ODD (1 << 9)     // 0x00000200, 奇数フレームだけ描画しない (点滅), 根拠: FUN_0822aaac / FUN_08230134
 #define SPRFLAG_BLINK_EVEN (1 << 10)   // 0x00000400, 偶数フレームだけ描画しない (点滅), 根拠: 同上
 
 // 0..15
 // (OAM1.14-15 << 2) | (OAM0.14-15), ie. ((sizeidx << 2) | shape)
 typedef u8 SpriteShape;
+
+extern const u16 gSpriteSizeTable[16];  // SpriteShape が idx
 
 #endif  // __INCLUDE_SPRITE_COMMON_H__

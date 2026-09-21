@@ -532,7 +532,7 @@ _08045690:
 	str r0, [sp]
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r5]
 	cmp r1, #0
 	beq _080456B6
@@ -615,7 +615,7 @@ _08045730:
 	str r0, [sp]
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r5]
 	cmp r1, #0
 	beq _08045756
@@ -878,7 +878,7 @@ _08045920:
 	str r0, [sp]
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r5]
 	cmp r1, #0
 	beq _08045946
@@ -971,7 +971,7 @@ _080459D4:
 	str r0, [sp]
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r5]
 	cmp r1, #0
 	beq _080459FA
@@ -1290,7 +1290,7 @@ _08045C28:
 	str r0, [sp]
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r0, [r5]
 	cmp r0, #0
 	beq _08045C50
@@ -1564,7 +1564,7 @@ _08045E26:
 	str r0, [sp]
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r5]
 	cmp r1, #0
 	beq _08045E4E
@@ -1736,7 +1736,7 @@ _08045F72:
 	str r0, [sp]
 	adds r0, r5, #0
 	mov r1, ip
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r4]
 	cmp r1, #0
 	beq _08045F98
@@ -1820,7 +1820,7 @@ _08046018:
 	str r3, [sp]
 	adds r0, r5, #0
 	mov r1, ip
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r4]
 	cmp r1, #0
 	beq _0804603C
@@ -2195,7 +2195,7 @@ _080462CC:
 	str r0, [sp]
 	adds r0, r4, #0
 	adds r1, r7, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r0, [r6]
 	cmp r0, #0
 	beq _080462F2
@@ -2334,7 +2334,7 @@ _080463D0:
 	str r0, [sp]
 	adds r0, r5, #0
 	mov r1, ip
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r0, [r4]
 	cmp r0, #0
 	beq _080463F8
@@ -2544,7 +2544,7 @@ _0804656E:
 	str r0, [sp]
 	adds r0, r5, #0
 	adds r1, r7, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r4]
 	cmp r1, #0
 	beq _08046596
@@ -2667,7 +2667,7 @@ _08046654:
 	str r0, [sp]
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r0, [r4]
 	cmp r0, #0
 	beq _0804667C
@@ -3046,7 +3046,7 @@ _0804692E:
 	str r0, [sp]
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r4]
 	cmp r1, #0
 	beq _08046956
@@ -3160,7 +3160,7 @@ _08046A04:
 	str r0, [sp]
 	adds r0, r6, #0
 	mov r1, ip
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r0, [r4]
 	cmp r0, #0
 	beq _08046A2C
@@ -3471,7 +3471,7 @@ _08046C56:
 	str r0, [sp]
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r4]
 	cmp r1, #0
 	beq _08046C7E
@@ -4821,7 +4821,7 @@ _08047694:
 	ldr r0, [sp, #0x28]
 	adds r1, r4, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	mov r0, sl
 	bl FUN_08002a48
 	movs r0, #0x82
@@ -7003,7 +7003,7 @@ _080486F8:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r1, _08048804 @ =0x0000D27A
 	mov r0, sl
 	bl GetFile
@@ -7106,8 +7106,8 @@ _0804886A:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_08048870
-FUN_08048870: @ 0x08048870
+	thumb_func_start TextBox_GetRect
+TextBox_GetRect: @ 0x08048870
 	push {lr}
 	adds r2, r0, #0
 	ldr r0, _08048890 @ =0x030000C4
@@ -7133,8 +7133,8 @@ _08048898:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_0804889c
-FUN_0804889c: @ 0x0804889C
+	thumb_func_start TextBox_GetVarWidth
+TextBox_GetVarWidth: @ 0x0804889C
 	push {lr}
 	adds r1, r0, #0
 	ldr r0, _080488B0 @ =0x030000C4
@@ -7153,8 +7153,8 @@ _080488B6:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_080488bc
-FUN_080488bc: @ 0x080488BC
+	thumb_func_start TextBox_GetExtendWidth
+TextBox_GetExtendWidth: @ 0x080488BC
 	push {lr}
 	adds r1, r0, #0
 	ldr r0, _080488D0 @ =0x030000C4
@@ -7629,8 +7629,8 @@ _08048BDC:
 _08048BEC: .4byte 0x000186A0
 _08048BF0: .4byte 0x00002710
 
-	thumb_func_start FUN_08048bf4
-FUN_08048bf4: @ 0x08048BF4
+	thumb_func_start TextBox_StrNCmp
+TextBox_StrNCmp: @ 0x08048BF4
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	movs r3, #0
@@ -7665,8 +7665,8 @@ _08048C26:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_08048c2c
-FUN_08048c2c: @ 0x08048C2C
+	thumb_func_start TextBox_ParseDecimal
+TextBox_ParseDecimal: @ 0x08048C2C
 	push {r4, lr}
 	movs r4, #0
 	movs r3, #1
@@ -7760,8 +7760,8 @@ _08048CC0:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_08048cc8
-FUN_08048cc8: @ 0x08048CC8
+	thumb_func_start TextBox_FindChar
+TextBox_FindChar: @ 0x08048CC8
 	push {lr}
 	lsls r1, r1, #0x18
 	lsrs r1, r1, #0x18
@@ -7909,7 +7909,7 @@ _08048DB4:
 	ldr r1, _08048DC8 @ =0x08251B64
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048DCC
 	movs r0, #1
@@ -7920,7 +7920,7 @@ _08048DCC:
 	ldr r1, _08048DE0 @ =0x08251B6C
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048DE4
 	movs r0, #2
@@ -7931,7 +7931,7 @@ _08048DE4:
 	ldr r1, _08048DF8 @ =0x08251B74
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048DFC
 	movs r0, #2
@@ -7942,7 +7942,7 @@ _08048DFC:
 	ldr r1, _08048E2C @ =0x08251B7C
 	adds r0, r4, #0
 	movs r2, #4
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048E40
 	adds r0, r5, #0
@@ -7957,7 +7957,7 @@ _08048DFC:
 	beq _08048E30
 	adds r0, r5, #0
 	adds r0, #0x34
-	bl FUN_08048c2c
+	bl TextBox_ParseDecimal
 	strb r0, [r5, #9]
 	b _08049466
 	.align 2, 0
@@ -7975,7 +7975,7 @@ _08048E40:
 	ldr r1, _08048E70 @ =0x08251B84
 	adds r0, r4, #0
 	movs r2, #4
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048E90
 	adds r0, r5, #0
@@ -7990,7 +7990,7 @@ _08048E40:
 	beq _08048E74
 	adds r0, r5, #0
 	adds r0, #0x34
-	bl FUN_08048c2c
+	bl TextBox_ParseDecimal
 	adds r3, r0, #0
 	b _08048E76
 	.align 2, 0
@@ -8015,7 +8015,7 @@ _08048E90:
 	ldr r1, _08048EB0 @ =0x08251B8C
 	adds r0, r4, #0
 	movs r2, #4
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048EB4
 	bl FUN_0823cd38
@@ -8031,7 +8031,7 @@ _08048EB4:
 	ldr r1, _08048F14 @ =0x08251B94
 	adds r0, r4, #0
 	movs r2, #5
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	beq _08048EC4
 	b _080491D8
@@ -8055,7 +8055,7 @@ _08048EDE:
 	ldr r1, _08048F18 @ =0x08251B9C
 	adds r0, r4, #0
 	movs r2, #4
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048EF2
 	b _080491C4
@@ -8063,7 +8063,7 @@ _08048EF2:
 	ldr r1, _08048F1C @ =0x08251BA4
 	adds r0, r4, #0
 	movs r2, #8
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048F02
 	b _080491C6
@@ -8071,7 +8071,7 @@ _08048F02:
 	ldr r1, _08048F20 @ =0x08251BB0
 	adds r0, r4, #0
 	movs r2, #8
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048F24
 	movs r0, #1
@@ -8085,7 +8085,7 @@ _08048F24:
 	ldr r1, _08048F38 @ =0x08251BBC
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048F3C
 	movs r0, #2
@@ -8096,7 +8096,7 @@ _08048F3C:
 	ldr r1, _08048F50 @ =0x08251BC4
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048F54
 	movs r0, #3
@@ -8107,7 +8107,7 @@ _08048F54:
 	ldr r1, _08048F68 @ =0x08251BCC
 	adds r0, r4, #0
 	movs r2, #5
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048F6C
 	movs r0, #4
@@ -8118,7 +8118,7 @@ _08048F6C:
 	ldr r1, _08048F80 @ =0x08251BD4
 	adds r0, r4, #0
 	movs r2, #4
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048F84
 	movs r0, #5
@@ -8129,7 +8129,7 @@ _08048F84:
 	ldr r1, _08048F98 @ =0x08251BDC
 	adds r0, r4, #0
 	movs r2, #4
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048F9C
 	movs r0, #6
@@ -8140,7 +8140,7 @@ _08048F9C:
 	ldr r1, _08048FB0 @ =0x08251BE4
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048FB4
 	movs r0, #7
@@ -8151,7 +8151,7 @@ _08048FB4:
 	ldr r1, _08048FC8 @ =0x08251BEC
 	adds r0, r4, #0
 	movs r2, #8
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048FCC
 	movs r0, #0x1d
@@ -8162,7 +8162,7 @@ _08048FCC:
 	ldr r1, _08048FE0 @ =0x08251BF8
 	adds r0, r4, #0
 	movs r2, #4
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048FE4
 	movs r0, #8
@@ -8173,7 +8173,7 @@ _08048FE4:
 	ldr r1, _08048FF8 @ =0x08251C00
 	adds r0, r4, #0
 	movs r2, #3
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08048FFC
 	movs r0, #9
@@ -8184,7 +8184,7 @@ _08048FFC:
 	ldr r1, _08049010 @ =0x08251C04
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049014
 	movs r0, #0xa
@@ -8195,7 +8195,7 @@ _08049014:
 	ldr r1, _08049028 @ =0x08251C0C
 	adds r0, r4, #0
 	movs r2, #4
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _0804902C
 	movs r0, #0xb
@@ -8206,7 +8206,7 @@ _0804902C:
 	ldr r1, _08049040 @ =0x08251C14
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049044
 	movs r0, #0xc
@@ -8217,7 +8217,7 @@ _08049044:
 	ldr r1, _08049058 @ =0x08251C1C
 	adds r0, r4, #0
 	movs r2, #5
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _0804905C
 	movs r0, #0xd
@@ -8228,7 +8228,7 @@ _0804905C:
 	ldr r1, _08049070 @ =0x08251C24
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049074
 	movs r0, #0xe
@@ -8239,7 +8239,7 @@ _08049074:
 	ldr r1, _08049088 @ =0x08251C2C
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _0804908C
 	movs r0, #0xf
@@ -8250,7 +8250,7 @@ _0804908C:
 	ldr r1, _080490A0 @ =0x08251C34
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _080490A4
 	movs r0, #0x10
@@ -8261,7 +8261,7 @@ _080490A4:
 	ldr r1, _080490B8 @ =0x08251C3C
 	adds r0, r4, #0
 	movs r2, #5
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _080490BC
 	movs r0, #0x11
@@ -8272,7 +8272,7 @@ _080490BC:
 	ldr r1, _080490D0 @ =0x08251C44
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _080490D4
 	movs r0, #0x12
@@ -8283,7 +8283,7 @@ _080490D4:
 	ldr r1, _080490E8 @ =0x08251C4C
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _080490EC
 	movs r0, #0x13
@@ -8294,7 +8294,7 @@ _080490EC:
 	ldr r1, _08049100 @ =0x08251C54
 	adds r0, r4, #0
 	movs r2, #9
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049104
 	movs r0, #0x14
@@ -8305,7 +8305,7 @@ _08049104:
 	ldr r1, _08049118 @ =0x08251C60
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _0804911C
 	movs r0, #0x15
@@ -8316,7 +8316,7 @@ _0804911C:
 	ldr r1, _08049130 @ =0x08251C68
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049134
 	movs r0, #0x16
@@ -8327,7 +8327,7 @@ _08049134:
 	ldr r1, _08049148 @ =0x08251C70
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _0804914C
 	movs r0, #0x17
@@ -8338,7 +8338,7 @@ _0804914C:
 	ldr r1, _08049160 @ =0x08251C78
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049164
 	movs r0, #0x18
@@ -8349,7 +8349,7 @@ _08049164:
 	ldr r1, _08049178 @ =0x08251C80
 	adds r0, r4, #0
 	movs r2, #8
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _0804917C
 	movs r0, #0x19
@@ -8360,7 +8360,7 @@ _0804917C:
 	ldr r1, _08049190 @ =0x08251C8C
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049194
 	movs r0, #0x1a
@@ -8371,7 +8371,7 @@ _08049194:
 	ldr r1, _080491A8 @ =0x08251C94
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _080491AC
 	bl FUN_08048d78
@@ -8382,7 +8382,7 @@ _080491AC:
 	ldr r1, _080491C0 @ =0x08251C9C
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _080491C4
 	bl FUN_08048d40
@@ -8405,7 +8405,7 @@ _080491D8:
 	ldr r1, _080491EC @ =0x08251CA4
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _080491F0
 	movs r0, #0xff
@@ -8417,7 +8417,7 @@ _080491F0:
 	ldr r1, _08049220 @ =0x08251CAC
 	adds r0, r4, #0
 	movs r2, #4
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _0804922A
 	adds r0, r5, #0
@@ -8432,7 +8432,7 @@ _080491F0:
 	beq _08049224
 	adds r0, r5, #0
 	adds r0, #0x34
-	bl FUN_08048c2c
+	bl TextBox_ParseDecimal
 	b _08049226
 	.align 2, 0
 _08049220: .4byte 0x08251CAC
@@ -8445,7 +8445,7 @@ _0804922A:
 	ldr r1, _08049258 @ =0x08251CB4
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049272
 	adds r0, r5, #0
@@ -8460,7 +8460,7 @@ _0804922A:
 	beq _0804925C
 	adds r0, r5, #0
 	adds r0, #0x34
-	bl FUN_08048c2c
+	bl TextBox_ParseDecimal
 	b _0804925E
 	.align 2, 0
 _08049258: .4byte 0x08251CB4
@@ -8481,7 +8481,7 @@ _08049272:
 	ldr r1, _080492A0 @ =0x08251CBC
 	adds r0, r4, #0
 	movs r2, #5
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _080492AC
 	adds r0, r5, #0
@@ -8496,7 +8496,7 @@ _08049272:
 	beq _080492A4
 	adds r0, r5, #0
 	adds r0, #0x34
-	bl FUN_08048c2c
+	bl TextBox_ParseDecimal
 	b _080492A6
 	.align 2, 0
 _080492A0: .4byte 0x08251CBC
@@ -8509,7 +8509,7 @@ _080492AC:
 	ldr r1, _080492DC @ =0x08251CC4
 	adds r0, r4, #0
 	movs r2, #3
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049310
 	adds r0, r5, #0
@@ -8524,7 +8524,7 @@ _080492AC:
 	beq _080492E0
 	adds r0, r5, #0
 	adds r0, #0x34
-	bl FUN_08048c2c
+	bl TextBox_ParseDecimal
 	b _080492E2
 	.align 2, 0
 _080492DC: .4byte 0x08251CC4
@@ -8548,7 +8548,7 @@ _080492FC:
 	adds r0, r7, #0
 _08049302:
 	movs r1, #0x3e
-	bl FUN_08048cc8
+	bl TextBox_FindChar
 	adds r7, r0, #0
 	movs r0, #1
 	strb r0, [r5, #0xe]
@@ -8557,7 +8557,7 @@ _08049310:
 	ldr r1, _08049340 @ =0x08251CC8
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	adds r6, r0, #0
 	cmp r6, #0
 	bne _08049360
@@ -8570,7 +8570,7 @@ _08049310:
 	ldr r1, _08049344 @ =0x08251CD0
 	adds r0, r4, #0
 	movs r2, #0xd
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049348
 _0804933C:
@@ -8583,7 +8583,7 @@ _08049348:
 	ldr r1, _0804935C @ =0x08251CE0
 	adds r0, r4, #0
 	movs r2, #0xb
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _0804933C
 	movs r0, #1
@@ -8595,14 +8595,14 @@ _08049360:
 	ldr r1, _08049384 @ =0x08251CEC
 	adds r0, r4, #0
 	movs r2, #3
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049388
 	bl FUN_0823cd38
 	str r0, [r5, #0x20]
 	adds r0, r7, #0
 	movs r1, #0x3e
-	bl FUN_08048cc8
+	bl TextBox_FindChar
 	adds r7, r0, #0
 	movs r0, #1
 	strb r0, [r5, #0xf]
@@ -8613,7 +8613,7 @@ _08049388:
 	ldr r1, _080493B0 @ =0x08251CF0
 	adds r0, r4, #0
 	movs r2, #5
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _080493B4
 	ldrb r0, [r5, #0x10]
@@ -8634,7 +8634,7 @@ _080493B4:
 	ldr r1, _080493CC @ =0x08251CF8
 	adds r0, r4, #0
 	movs r2, #5
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049466
 	movs r0, #1
@@ -8647,25 +8647,25 @@ _080493D0:
 	ldr r1, _08049410 @ =0x08251D00
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	beq _0804945A
 	ldr r1, _08049414 @ =0x08251D08
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	beq _0804945A
 	ldr r1, _08049418 @ =0x08251D10
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	beq _0804945A
 	ldr r1, _0804941C @ =0x08251D18
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049420
 	strb r0, [r5, #0xb]
@@ -8681,7 +8681,7 @@ _08049420:
 	ldr r1, _08049448 @ =0x08251D20
 	adds r0, r4, #0
 	movs r2, #5
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _0804944C
 	ldrb r0, [r5, #0x10]
@@ -8700,7 +8700,7 @@ _0804944C:
 	ldr r1, _08049484 @ =0x08251D28
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049466
 _0804945A:
@@ -8709,7 +8709,7 @@ _0804945C:
 	adds r0, r4, #0
 _0804945E:
 	movs r1, #0x3e
-	bl FUN_08048cc8
+	bl TextBox_FindChar
 	adds r7, r0, #0
 _08049466:
 	ldrb r0, [r5, #0x14]
@@ -9190,7 +9190,7 @@ _0804979C:
 	ldr r1, _080497D0 @ =0x08251CC4
 	adds r0, r5, #0
 	movs r2, #3
-	bl FUN_08048bf4
+	bl TextBox_StrNCmp
 	cmp r0, #0
 	bne _08049824
 	movs r6, #0
@@ -9236,7 +9236,7 @@ _080497F6:
 	beq _08049810
 	adds r0, r3, #0
 	adds r1, r2, #0
-	bl FUN_08048c2c
+	bl TextBox_ParseDecimal
 	adds r1, r0, #0
 	b _08049812
 _08049810:
@@ -9247,12 +9247,12 @@ _08049812:
 	adds r7, r7, r0
 	adds r0, r4, #0
 	movs r1, #0x3e
-	bl FUN_08048cc8
+	bl TextBox_FindChar
 	b _0804982C
 _08049824:
 	adds r0, r5, #0
 	movs r1, #0x3e
-	bl FUN_08048cc8
+	bl TextBox_FindChar
 _0804982C:
 	ldrb r0, [r5]
 	cmp r0, #0
@@ -11724,7 +11724,7 @@ FUN_0804aa30: @ 0x0804AA30
 	movs r0, #1
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -11769,7 +11769,7 @@ FUN_0804aa98: @ 0x0804AA98
 	movs r0, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #0
@@ -12938,7 +12938,7 @@ FUN_0804b394: @ 0x0804B394
 	movs r0, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #0

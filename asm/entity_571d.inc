@@ -1139,7 +1139,7 @@ FUN_080bf3fc: @ 0x080BF3FC
 	movs r0, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	ldr r1, [r4]
 	movs r0, #0
 	movs r2, #3
@@ -1395,7 +1395,7 @@ _080BF59E:
 	ldr r1, [sp, #0x1c]
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r1, _080BF704 @ =0x00000C78
 	adds r0, r7, r1
 	str r4, [sp]

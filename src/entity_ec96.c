@@ -8,20 +8,20 @@
 #include "vm.h"
 
 typedef struct {
-  Entity e;             // 0x00, ENTITY_UNK_8
-  u16 subroutineID;     // 0x18, 常に 0xEC96
-  u8 q_breakable;       // 0x1A, script keyword 0x74, 1 なら q_hp を消費して破壊できる (パレットも別)
-  u8 q_broken;          // 0x1B, 1 になると消滅処理に入る
-  u16 q_hp;             // 0x1C, script keyword 0x6C (既定 0x32), 被弾で HitboxData.wear の分だけ減る
-  u8 q_damageTimer;     // 0x1E, 被弾時に 10 がセットされ毎フレーム減る (この間だけ点滅と振動をする)
-  u8 unk_1f;            // 0x1F
-  u32 q_timer;          // 0x20, 毎フレーム +1, 被弾して unk_1b が立つときに 0 に戻る
-  s32 scriptID;         // 0x24, script keyword 0x65, 消滅時に Script_ExecById に渡す
-  Vec3 pos;             // 0x28, script keyword 0x70 で読む
-  HitboxData hitbox;    // 0x30
-  q_MapNode q_mapNode;  // 0x80
-  AuxSpriteGfx sprite;  // 0x90
-  AuxSprite node;       // 0xAC
+  Entity e;                      // 0x00, ENTITY_UNK_8
+  u16 subroutineID;              // 0x18, 常に 0xEC96
+  u8 q_breakable;                // 0x1A, script keyword 0x74, 1 なら q_hp を消費して破壊できる (パレットも別)
+  u8 q_broken;                   // 0x1B, 1 になると消滅処理に入る
+  u16 q_hp;                      // 0x1C, script keyword 0x6C (既定 0x32), 被弾で HitboxData.wear の分だけ減る
+  u8 q_damageTimer;              // 0x1E, 被弾時に 10 がセットされ毎フレーム減る (この間だけ点滅と振動をする)
+  u8 unk_1f;                     // 0x1F
+  u32 q_timer;                   // 0x20, 毎フレーム +1, 被弾して unk_1b が立つときに 0 に戻る
+  s32 scriptID;                  // 0x24, script keyword 0x65, 消滅時に Script_ExecById に渡す
+  Vec3 pos;                      // 0x28, script keyword 0x70 で読む
+  HitboxData hitbox;             // 0x30
+  MapTileOverride tileOverride;  // 0x80
+  AuxSpriteGfx sprite;           // 0x90
+  AuxSprite node;                // 0xAC
 } EntityEC96;
 static_assert(sizeof(EntityEC96) == 216);
 
@@ -96,12 +96,12 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
 // 当たり判定・マップノード・描画ノードをそれぞれのリストから外す
 s32 EntityEC96_Destroy(EntityEC96* p) {
   FUN_08236424(&p->hitbox);
-  FUN_082342a8(&p->q_mapNode);
+  FUN_082342a8(&p->tileOverride);
   AuxSprite_Remove(&p->node);
   return 0;
 }
 
-void FUN_08234270(q_MapNode* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
+void FUN_08234270(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
 
 // スクリプトから位置と耐久を読み、スプライト・当たり判定・マップノードを用意する
 s32 EntityEC96_Init(EntityEC96* p, u32 id) {
@@ -158,7 +158,7 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
     idx = 0;
   } else {
-    idx = gCollisionMap->q_rowOffsets[bz] + bx;
+    idx = gCollisionMap->rowOffsets[bz] + bx;
   }
   tile = (u8*)FUN_08234224(idx, 1);
   if (tile != NULL) {
@@ -170,7 +170,7 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   if (h < 0xF) {
     h++;
   }
-  FUN_08234270(&p->q_mapNode, idx, 0, h, 0xFF, 0);
+  FUN_08234270(&p->tileOverride, idx, 0, h, 0xFF, 0);
   return 0;
 }
 

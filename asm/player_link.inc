@@ -72,7 +72,7 @@ _08080CC4:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r1, _08080D00 @ =0x000002E7
 	adds r0, r6, r1
 	ldrb r0, [r0]
@@ -1707,7 +1707,7 @@ _080818E6:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r3, _0808191C @ =0x000002E7
 	adds r0, r6, r3
 	ldrb r0, [r0]

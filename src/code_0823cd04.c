@@ -19,7 +19,7 @@ NAKED s32 FUN_0823ce10(unknown* param_1, unknown* param_2) { INCFUNC("asm/func/F
 
 NAKED void FUN_0823ce3c(unknown* param_1, unknown* param_2) { INCFUNC("asm/func/FUN_0823ce3c.inc"); }
 
-NAKED void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, unknown* param_7) { INCFUNC("asm/func/FUN_0823ce68.inc"); }
+NAKED void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7) { INCFUNC("asm/func/FUN_0823ce68.inc"); }
 
 NAKED s32 FUN_0823cecc(void) { INCFUNC("asm/func/FUN_0823cecc.inc"); }
 

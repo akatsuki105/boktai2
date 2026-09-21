@@ -33,19 +33,19 @@ _0804EA18: .4byte 0x030000E8
 FUN_0804ea1c: @ 0x0804EA1C
 	push {lr}
 	bl FUN_0804a5c8
-	bl FUN_08016f84
+	bl MosaicFader_Stop
 	ldr r2, _0804EA54 @ =0x03003E78
 	ldr r0, _0804EA58 @ =0xFFFFF9FF
 	ldrh r1, [r2]
 	ands r0, r1
 	strh r0, [r2]
 	movs r0, #1
-	bl FUN_0822b41c
+	bl Video_ResetFrameState
 	ldr r1, _0804EA5C @ =nop_0822e738
 	ldr r2, _0804EA60 @ =nop_0822b09c
 	ldr r3, _0804EA64 @ =FUN_0822f584
 	movs r0, #0
-	bl FUN_0822a448
+	bl Video_SetDrawPasses
 	movs r0, #7
 	bl FUN_0809c08c
 	movs r0, #0
@@ -79,7 +79,7 @@ FUN_0804ea68: @ 0x0804EA68
 	movs r0, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #0
@@ -125,7 +125,7 @@ FUN_0804ead0: @ 0x0804EAD0
 	movs r0, #1
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -333,7 +333,7 @@ _0804EC92:
 	ldr r2, _0804ECD0 @ =FUN_0822aaac
 	ldr r3, _0804ECD4 @ =FUN_0822f204
 	movs r0, #0
-	bl FUN_0822a448
+	bl Video_SetDrawPasses
 	ldr r0, [r4, #0x2c]
 	movs r1, #0
 	bl Script_ExecById
@@ -405,7 +405,7 @@ EntityD53D_Init: @ 0x0804ED30
 	adds r4, r0, #0
 	ldr r0, _0804ED58 @ =0x030000E8
 	str r4, [r0]
-	bl FUN_08016f84
+	bl MosaicFader_Stop
 	movs r0, #0x73
 	bl VM_SeekToKeyword
 	cmp r0, #0

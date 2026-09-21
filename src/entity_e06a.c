@@ -60,7 +60,7 @@ void EntityE06A_SetupSprite(EntityE06A* p) {
   if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
     idx = 0;
   } else {
-    idx = gCollisionMap->q_rowOffsets[bz] + bx;
+    idx = gCollisionMap->rowOffsets[bz] + bx;
   }
   tile = (u8*)FUN_08234224(idx, 1);
   if (tile != NULL) {

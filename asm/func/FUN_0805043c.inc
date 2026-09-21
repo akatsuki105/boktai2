@@ -8,7 +8,7 @@
 	beq _0805049C
 	movs r0, #0
 	strb r0, [r1]
-	bl FUN_08016f84
+	bl MosaicFader_Stop
 	adds r0, r4, #0
 	bl FUN_0804fb3c
 	adds r0, r4, #0

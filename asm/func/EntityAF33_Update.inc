@@ -13,7 +13,7 @@
 	ldr r2, _080507FC @ =FUN_0822aaac
 	ldr r3, _08050800 @ =FUN_0822f204
 	movs r0, #0
-	bl FUN_0822a448
+	bl Video_SetDrawPasses
 	adds r0, r4, #0
 	adds r0, #0xc4
 	ldr r0, [r0]

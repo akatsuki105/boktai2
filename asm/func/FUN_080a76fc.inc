@@ -29,7 +29,7 @@ _080A7722:
 	adds r1, r5, #0
 	adds r2, r6, #0
 	adds r3, r7, #0
-	bl FUN_0822a448
+	bl Video_SetDrawPasses
 	movs r0, #0xd0
 	lsls r0, r0, #2
 	adds r1, r4, r0

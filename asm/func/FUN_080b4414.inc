@@ -19,7 +19,7 @@
 	movs r0, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	add sp, #0x10
 	pop {r4}
 	pop {r0}

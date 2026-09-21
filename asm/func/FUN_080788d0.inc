@@ -238,7 +238,7 @@ _08078AD4:
 	beq _08078AF8
 	adds r0, r5, #0
 	adds r0, #0x24
-	bl FUN_08006194
+	bl MapItemManager_TryOpen
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08078AA8
@@ -312,7 +312,7 @@ _08078B64:
 _08078B80:
 	adds r0, r5, #0
 	adds r0, #0x24
-	bl FUN_08006194
+	bl MapItemManager_TryOpen
 	lsls r0, r0, #0x18
 	movs r4, #7
 	cmp r0, #0

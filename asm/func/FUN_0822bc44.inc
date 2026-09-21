@@ -37,7 +37,7 @@ _0822BC86:
 	add r0, sl
 	ldrh r1, [r0]
 	mov r0, sp
-	bl FUN_0822bc18
+	bl TileSet_FindPart
 	adds r4, r0, #0
 	ldr r1, [r4, #4]
 	ldr r0, [sp, #0x10]

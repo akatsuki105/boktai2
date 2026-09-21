@@ -8921,7 +8921,7 @@ FUN_081fea80: @ 0x081FEA80
 	adds r1, r6, #0
 	movs r2, #0xf
 	movs r3, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0xaf
 	lsls r0, r0, #2
 	adds r2, r7, r0
@@ -9070,7 +9070,7 @@ FUN_081febe4: @ 0x081FEBE4
 	str r2, [sp]
 	movs r2, #0xe
 	movs r3, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0xaf
 	lsls r0, r0, #2
 	adds r2, r4, r0
@@ -9135,7 +9135,7 @@ FUN_081fec60: @ 0x081FEC60
 	adds r0, r4, #0
 	movs r2, #0xe
 	movs r3, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0xaf
 	lsls r0, r0, #2
 	adds r2, r5, r0
@@ -9223,7 +9223,7 @@ FUN_081fed08: @ 0x081FED08
 	str r2, [sp]
 	movs r2, #0x10
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0xaf
 	lsls r0, r0, #2
 	adds r2, r5, r0
@@ -9287,7 +9287,7 @@ _081FED90:
 	adds r1, r6, #0
 	movs r2, #0x11
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	adds r1, r7, #0
 	adds r1, #0xa7
 	movs r0, #1
@@ -9381,7 +9381,7 @@ _081FEE5E:
 	movs r2, #0x32
 _081FEE6C:
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	b _081FEE88
 _081FEE74:
 	movs r2, #0xbf
@@ -9392,7 +9392,7 @@ _081FEE74:
 	adds r0, r6, #0
 	movs r2, #0x33
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 _081FEE88:
 	movs r1, #0xc7
 	lsls r1, r1, #2
@@ -9457,7 +9457,7 @@ _081FEEEE:
 	movs r2, #0xf9
 _081FEEFC:
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	b _081FEF18
 _081FEF04:
 	movs r0, #0xbf
@@ -9468,7 +9468,7 @@ _081FEF04:
 	adds r0, r6, #0
 	movs r2, #0xfa
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 _081FEF18:
 	movs r1, #0xc7
 	lsls r1, r1, #2
@@ -9509,7 +9509,7 @@ FUN_081fef30: @ 0x081FEF30
 	str r2, [sp]
 	movs r2, #0x12
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r7, #0xaf
 	lsls r7, r7, #2
 	adds r2, r5, r7
@@ -9778,7 +9778,7 @@ FUN_081ff148: @ 0x081FF148
 	str r2, [sp]
 	movs r2, #0x11
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r6, #0xaf
 	lsls r6, r6, #2
 	adds r2, r5, r6
@@ -10040,7 +10040,7 @@ FUN_081ff34c: @ 0x081FF34C
 	str r2, [sp]
 	movs r2, #0x10
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0xaf
 	lsls r0, r0, #2
 	adds r2, r5, r0
@@ -10419,7 +10419,7 @@ FUN_081ff658: @ 0x081FF658
 	str r2, [sp]
 	movs r2, #0xe
 	movs r3, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0xaf
 	lsls r0, r0, #2
 	adds r2, r4, r0

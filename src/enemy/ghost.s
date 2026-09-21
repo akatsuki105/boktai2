@@ -1182,7 +1182,7 @@ _0816B290:
 	lsrs r2, r2, #0x10
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -1429,7 +1429,7 @@ _0816B484:
 	lsrs r2, r2, #0x10
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -1576,7 +1576,7 @@ _0816B5A4:
 	lsrs r2, r2, #0x10
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -1908,7 +1908,7 @@ _0816B838:
 	lsrs r2, r2, #0x10
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -2041,7 +2041,7 @@ _0816B93C:
 	lsrs r2, r2, #0x10
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0
@@ -11719,7 +11719,7 @@ _081704D6:
 	lsrs r2, r2, #0x10
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0

@@ -1537,7 +1537,7 @@ gAuxSpritesFile0: @ 0x08A2291C
 		.incbin "data/actor_sprites/96C1.4bpp"                 @ 0x08B678F0, ActorID: 0x96C1, PlttID: 501
 		.incbin "data/actor_sprites/96C2.4bpp"                 @ 0x08B6A050, ActorID: 0x96C2, PlttID: 501
 		.incbin "data/actor_sprites/0D44.4bpp"                 @ 0x08B6AB90, ActorID: 0x0D44, PlttID: 83
-		.incbin "data/actor_sprites/mimic.4bpp"                @ 0x08B6D8D0, ActorID: 0x3876, PlttID: 650
+		.incbin "data/actor_sprites/mimic.4bpp"                @ 0x08B6D8D0, ActorID: 0x3876, PlttID: 650, 宝箱も兼ねる
 	ActorSpriteFile0_Metaprites:
 		Metaprite_0:
 			.byte 3, 40 @ subspriteCount, unk_01

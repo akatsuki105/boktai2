@@ -205,7 +205,7 @@ _080FBBDC:
 	movs r2, #9
 _080FBBF2:
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -341,7 +341,7 @@ _080FBCF0:
 	str r2, [sp]
 	movs r2, #0xa
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #4
 	orrs r0, r1
@@ -397,7 +397,7 @@ _080FBD64:
 	str r2, [sp]
 	movs r2, #0xb
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -471,7 +471,7 @@ _080FBE02:
 	adds r0, #0x20
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -549,7 +549,7 @@ _080FBE9C:
 	adds r0, #0x20
 	str r4, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r7, #8]
 	orrs r0, r4
 	str r0, [r7, #8]

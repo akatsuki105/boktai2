@@ -3,11 +3,11 @@
 #include "global.h"
 #include "msgbus.h"
 #include "random.h"
+#include "video.h"
 #include "vm.h"
 
 Entity2UnkData* FUN_0823b2d0(u16 id);
 void* FUN_08230e70(u16 id);
-void FUN_0822a448(s32 val, Procedure fn1, Procedure fn2, Procedure fn3);
 void FUN_0822db5c(void);
 void FUN_0822aaac(void);
 void FUN_0822f204(void);
@@ -23,7 +23,7 @@ void Camera_SetTilemapOffset(void) {
   s32 kw = VM_GetKeywordValue('v', 0);
   if (kw == 0) {
     Unk_0203b000* p = FUN_08230e70(0x56C2);
-    FUN_0822a448(0, FUN_0822db5c, FUN_0822aaac, FUN_0822f204);
+    Video_SetDrawPasses(0, FUN_0822db5c, FUN_0822aaac, FUN_0822f204);
     if (p != NULL) {
       if (p->unk_04 != NULL) {
         gCameraCoords.tilemapX = ((s16*)p->unk_04)[4] >> 4;
@@ -32,7 +32,7 @@ void Camera_SetTilemapOffset(void) {
       }
     }
   } else {
-    FUN_0822a448(kw, FUN_0822de64, FUN_0822ac90, FUN_0822f224);
+    Video_SetDrawPasses(kw, FUN_0822de64, FUN_0822ac90, FUN_0822f224);
   }
   gCameraCoords.tilemapX = 0;
   gCameraCoords.tilemapY = 0;
@@ -169,9 +169,7 @@ NON_MATCH void Camera_Translate(void) {
 }
 
 void FUN_0823baa8(void) {
-  Camera* cam;
-
-  cam = gCamera;
+  Camera* cam = gCamera;
   if (cam != NULL) {
     cam->unk_1c = 1;
     cam->lookMode = 0;
@@ -304,10 +302,10 @@ void FUN_0823bd98(Camera* cam) {
       s32 type, val;
       VM_DecodeValue(VM_GetPC(), &type, &val);
       cam->scriptID = val;
-      cam->unk_96 = 0;
+      cam->scriptIDType = 0;
     } else if (VM_SeekToKeyword('R')) {
       cam->scriptID = Script_GetValue();
-      cam->unk_96 = 1;
+      cam->scriptIDType = 1;
     } else {
       cam->scriptID = 0;
     }
@@ -427,7 +425,7 @@ NAKED void FUN_0823c0bc(Camera* cam) { INCFUNC("asm/func/FUN_0823c0bc.inc"); }
 void FUN_0823c1f8(Camera* cam) {
   s32 scriptID = cam->scriptID;
   if (scriptID != 0) {
-    if (cam->unk_96 == 0) {
+    if (cam->scriptIDType == 0) {
       cam->scriptID = 0;
       Script_ExecByPointer((u8*)scriptID, NULL);
     } else {

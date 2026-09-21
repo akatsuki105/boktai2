@@ -5015,7 +5015,7 @@ _081C8296:
 	adds r0, #0x20
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -5080,7 +5080,7 @@ _081C831A:
 	adds r0, #0x20
 	str r4, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r7, #8]
 	orrs r0, r4
 	str r0, [r7, #8]
@@ -5185,7 +5185,7 @@ _081C83EA:
 	adds r0, #0x20
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -5264,7 +5264,7 @@ _081C8484:
 	adds r0, #0x20
 	str r4, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r7, #8]
 	orrs r0, r4
 	str r0, [r7, #8]

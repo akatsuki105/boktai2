@@ -15,7 +15,7 @@ FUN_080070a8: @ 0x080070A8
 	adds r6, r1, #0
 	adds r7, r2, #0
 	mov r8, r3
-	bl FUN_0800708c
+	bl MapItemManager_Ensure
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _08007126
@@ -41,7 +41,7 @@ FUN_080070a8: @ 0x080070A8
 	str r1, [r5, #0x20]
 	str r1, [r5, #0x24]
 	str r1, [r5, #0x28]
-	ldr r0, _0800712C @ =FUN_080062d4
+	ldr r0, _0800712C @ =MapItem_UpdateFall
 	str r0, [r5, #0x44]
 	strb r2, [r5, #0xc]
 	ldr r0, [sp, #0x44]
@@ -70,7 +70,7 @@ _08007126:
 	rsbs r0, r0, #0
 	b _080071FC
 	.align 2, 0
-_0800712C: .4byte FUN_080062d4
+_0800712C: .4byte MapItem_UpdateFall
 _08007130:
 	movs r1, #0x28
 	bl ClearMemory
@@ -169,7 +169,7 @@ _080071C4:
 	movs r3, #0x18
 	bl AuxShadow_Init
 	adds r0, r5, #0
-	bl FUN_08005e30
+	bl MapItem_Link
 	movs r0, #0
 _080071FC:
 	add sp, #0x1c
@@ -316,7 +316,7 @@ FUN_08007310: @ 0x08007310
 	adds r4, r1, #0
 	adds r6, r2, #0
 	adds r7, r3, #0
-	bl FUN_0800708c
+	bl MapItemManager_Ensure
 	mov r8, r0
 	cmp r0, #0
 	bne _0800732E
@@ -348,7 +348,7 @@ _0800732E:
 	ldr r0, [sp, #0x38]
 	cmp r0, #0
 	beq _0800738C
-	ldr r0, _08007380 @ =FUN_08006488
+	ldr r0, _08007380 @ =MapItem_UpdateAppear
 	str r0, [r5, #0x44]
 	ldr r0, _08007384 @ =0x030047A4
 	ldr r0, [r0]
@@ -361,11 +361,11 @@ _0800732E:
 	bl PlaySound_082406e0
 	b _08007390
 	.align 2, 0
-_08007380: .4byte FUN_08006488
+_08007380: .4byte MapItem_UpdateAppear
 _08007384: .4byte 0x030047A4
 _08007388: .4byte 0x0000026F
 _0800738C:
-	ldr r0, _080073CC @ =FUN_08006678
+	ldr r0, _080073CC @ =MapItem_UpdateIdle
 	str r0, [r5, #0x44]
 _08007390:
 	ldr r0, [sp, #0x3c]
@@ -397,7 +397,7 @@ _080073A0:
 	ldr r0, [r5, #0x20]
 	b _0800741A
 	.align 2, 0
-_080073CC: .4byte FUN_08006678
+_080073CC: .4byte MapItem_UpdateIdle
 _080073D0:
 	movs r1, #0x1c
 	bl ClearMemory
@@ -701,7 +701,7 @@ _080075F4:
 	adds r0, r4, #0
 	bl AuxShadow_Hide
 	adds r0, r5, #0
-	bl FUN_08005e30
+	bl MapItem_Link
 	movs r0, #0
 _08007630:
 	add sp, #0x1c
@@ -860,7 +860,7 @@ _0800773A:
 FUN_08007770: @ 0x08007770
 	push {r4, r5, lr}
 	adds r5, r0, #0
-	bl FUN_0800708c
+	bl MapItemManager_Ensure
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _08007784
@@ -879,7 +879,7 @@ _0800778A:
 	cmp r1, r5
 	bne _0800779C
 	adds r0, r2, #0
-	bl FUN_08005e90
+	bl MapItem_Free
 _0800779C:
 	adds r2, r4, #0
 	cmp r2, #0
@@ -906,7 +906,7 @@ FUN_080077bc: @ 0x080077BC
 	adds r7, r0, #0
 	adds r6, r1, #0
 	adds r5, r2, #0
-	bl FUN_0800708c
+	bl MapItemManager_Ensure
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _080077D4
@@ -917,7 +917,7 @@ _080077D4:
 	ldr r2, [r1, #0x28]
 	cmp r2, #0
 	beq _08007816
-	ldr r1, _0800781C @ =FUN_08006640
+	ldr r1, _0800781C @ =MapItem_UpdateExpire
 	mov ip, r1
 _080077DE:
 	adds r1, r2, #0
@@ -954,7 +954,7 @@ _08007816:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_0800781C: .4byte FUN_08006640
+_0800781C: .4byte MapItem_UpdateExpire
 
 	thumb_func_start FUN_08007820
 FUN_08007820: @ 0x08007820

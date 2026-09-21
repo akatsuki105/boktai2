@@ -69,7 +69,7 @@ _08246566:
 	str r0, [r4]
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_0822a340
+	bl Video_AddAuxSpriteIntoDrawList
 	adds r6, #1
 	adds r4, #0x2c
 	cmp r6, #8

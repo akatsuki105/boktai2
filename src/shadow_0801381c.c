@@ -86,7 +86,7 @@ NON_MATCH void ParticleShadow_FollowGround(ParticleShadow* shadow) {
   if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
     idx = 0;
   } else {
-    idx = gCollisionMap->q_rowOffsets[bz] + bx;
+    idx = gCollisionMap->rowOffsets[bz] + bx;
   }
   if (shadow->q_flags & 1) {
     dst->y = pos->y;

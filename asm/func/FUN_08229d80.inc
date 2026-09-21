@@ -97,13 +97,13 @@
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0xf0
-	bl FUN_0822cdcc
+	bl Video_SetWindowRect
 	str r4, [sp]
 	movs r0, #1
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0xf0
-	bl FUN_0822cdcc
+	bl Video_SetWindowRect
 	movs r0, #0x3f
 	movs r1, #1
 	movs r2, #0
@@ -122,18 +122,18 @@
 	ldr r2, _08229F14 @ =FUN_0822aaac
 	ldr r3, _08229F18 @ =FUN_0822f204
 	movs r0, #0
-	bl FUN_0822a448
+	bl Video_SetDrawPasses
 	ldr r0, _08229F1C @ =0x03002CF0
 	str r6, [r0]
 	ldr r0, _08229F20 @ =0x03003504
 	str r6, [r0]
 	ldr r5, _08229F24 @ =0x03000258
-	ldr r1, _08229F28 @ =VideoManager_Update
+	ldr r1, _08229F28 @ =VideoCommit_Update
 	adds r0, r5, #0
 	movs r2, #0
 	bl SetEntityRoutine
 	ldr r4, _08229F2C @ =0x03000270
-	ldr r1, _08229F30 @ =EntityKind13_Update
+	ldr r1, _08229F30 @ =VideoRender_Update
 	adds r0, r4, #0
 	movs r2, #0
 	bl SetEntityRoutine
@@ -177,6 +177,6 @@ _08229F18: .4byte FUN_0822f204
 _08229F1C: .4byte 0x03002CF0
 _08229F20: .4byte 0x03003504
 _08229F24: .4byte 0x03000258
-_08229F28: .4byte VideoManager_Update
+_08229F28: .4byte VideoCommit_Update
 _08229F2C: .4byte 0x03000270
-_08229F30: .4byte EntityKind13_Update
+_08229F30: .4byte VideoRender_Update

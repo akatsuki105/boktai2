@@ -508,7 +508,7 @@ FUN_0804fb6c: @ 0x0804FB6C
 	movs r0, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #0
@@ -990,7 +990,7 @@ FUN_0804ff10: @ 0x0804FF10
 	beq _0804FF50
 	movs r4, #0
 	strb r4, [r6]
-	bl FUN_08016f84
+	bl MosaicFader_Stop
 	adds r0, r5, #0
 	movs r1, #1
 	bl FUN_0804fb04

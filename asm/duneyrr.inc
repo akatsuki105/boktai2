@@ -744,7 +744,7 @@ _080237A8:
 	adds r0, r4, #0
 	adds r1, r7, #0
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	adds r6, #1
 	adds r5, #0x6c
 	cmp r6, #4
@@ -817,7 +817,7 @@ _08023830:
 	str r0, [r5, #0x10]
 	adds r0, r4, #0
 	movs r1, #0
-	bl MainSprite_AddDrawList
+	bl Video_AddMainSpriteIntoDrawList
 	movs r0, #1
 	rsbs r0, r0, #0
 	add r8, r0

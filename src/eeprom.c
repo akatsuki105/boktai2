@@ -3,6 +3,7 @@
 #include "global.h"
 #include "solar.h"
 #include "sound.h"
+#include "video.h"
 
 // EEPROM アクセス中に退避しておく HBlank エフェクトの状態, EEPROM_BeginAccess が保存し EEPROM_EndAccess が戻す
 typedef struct {
@@ -16,10 +17,6 @@ static_assert(sizeof(SavedHBlankState) == 16);
 
 COMMON_DATA SavedHBlankState gSavedHBlankState = {};  // 0x03004880
 
-extern u16* gHBlankEffectBuffer;
-extern vu16* gHBlankEffectReg;
-extern u16 u16_03003510;
-extern u16 u16_03003514;
 extern u16 u16_0300351c;
 extern u32 u32_0300481c;
 extern u32 u32_0300170c;

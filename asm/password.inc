@@ -27,7 +27,7 @@ FUN_08012c74: @ 0x08012C74
 	movs r0, #1
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0

@@ -1,8 +1,8 @@
 #include "global.h"
 
 // 圧縮されたTilemapFileはここに展開して読み出す, 圧縮されてないならROMから直接読み込むのでここは使われない
-EWRAM_DATA u8 gTilemapFileBufferHead[4] = {};   // 0x02021400, 展開先の先頭4バイト, TilemapHeader より手前にある, 用途不明
-EWRAM_DATA u8 gTilemapFileBuffer[65532] = {};   // 0x02021404, 展開された TilemapHeader 本体, 根拠: GetTilemapFile がここを返す
+EWRAM_DATA u8 gTilemapFileBufferHead[4] = {};  // 0x02021400, 展開先の先頭4バイト, TilemapHeader より手前にある, 用途不明
+EWRAM_DATA u8 gTilemapFileBuffer[65532] = {};  // 0x02021404, 展開された TilemapHeader 本体, 根拠: GetTilemapFile がここを返す
 
 // CollisionMapFile が圧縮されている場合、ここに展開してファイル内容を読み込む, 圧縮されていないならROMから直接読み込むのでここは使われない
 EWRAM_DATA u8 gDecompressedCollisionMapHeader[4] = {};    // 0x02031400, 展開先の先頭4バイト, CollisionMapFile より手前にある, 用途不明
@@ -14,7 +14,7 @@ EWRAM_DATA u8 u8_02035c00[0x1000] = {};  // todo
 
 EWRAM_DATA u8 u8_ARRAY_02036c00[512] = {};  // 0x02036C00
 
-EWRAM_DATA rgb555 gSlowBgPlttBuffer[256] = {};  // 0x02036e00
+EWRAM_DATA rgb555 gBgPlttBlendBuffer[256] = {};  // 0x02036e00, gBgPlttBuffer に明るさとブレンド色を掛けた結果の置き場, 根拠: FUN_0822d630
 
 EWRAM_DATA u8 gTilemapBuffer[BG_SCREEN_SIZE * 4] = {};  // 0x02037000, BG0, BG1, BG2, BG3 のタイルマップのバッファ
 

@@ -501,7 +501,7 @@ _08152F64:
 	str r2, [sp]
 	movs r2, #1
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -597,7 +597,7 @@ _08153028:
 	str r2, [sp]
 	movs r2, #2
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -651,7 +651,7 @@ _0815309C:
 	str r2, [sp]
 	movs r2, #2
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #4
 	orrs r0, r1
@@ -702,7 +702,7 @@ _08153104:
 	str r2, [sp]
 	movs r2, #3
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -776,7 +776,7 @@ _081531A2:
 	adds r0, #0x20
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -851,7 +851,7 @@ _08153238:
 	adds r0, #0x20
 	str r4, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r7, #8]
 	orrs r0, r4
 	str r0, [r7, #8]
@@ -19272,7 +19272,7 @@ _0815C202:
 	lsrs r2, r2, #0x10
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r7, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -19340,7 +19340,7 @@ _0815C28E:
 	lsrs r2, r2, #0x10
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r7, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -19427,7 +19427,7 @@ _0815C342:
 	lsrs r2, r2, #0x10
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -19591,7 +19591,7 @@ _0815C490:
 	lsrs r2, r2, #0x10
 	str r4, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r7, #8]
 	orrs r0, r4
 _0815C4AA:

@@ -30,4 +30,17 @@ typedef struct {
 } TileSetFile;
 static_assert(sizeof(TileSetFile) == 1923116);
 
+// TileSetFile の先頭 0x18 バイトを、オフセットをポインタに直して積み直したもの
+// (MainSpriteFile に対する MainSpriteGfx と同じ関係), 根拠: FUN_0822bc44 が組み立て、TileSet_FindPart が読む
+typedef struct {
+  u16 partCount;       // 0x00, TileSetFile.partCount
+  u16 unk_2;           // 0x02, TileSetFile.unk_2
+  u32 tileRefCount;    // 0x04, TileSetFile.tileRefCount
+  u32 tileCount;       // 0x08, TileSetFile.tileCount
+  TileSetPart* parts;  // 0x0C, TileSetFile.offsetToPartList をアドレスにしたもの
+  u16* refs;           // 0x10, TileSetFile.offsetToTileRefs をアドレスにしたもの
+  u8* tiles;           // 0x14, TileSetFile.offsetToTiles をアドレスにしたもの
+} TileSet;
+static_assert(sizeof(TileSet) == 24);
+
 #endif  // __INCLUDE_TILESETS_H__

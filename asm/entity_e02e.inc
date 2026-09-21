@@ -5870,7 +5870,7 @@ FUN_080b8ac8: @ 0x080B8AC8
 	movs r0, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	ldr r1, [r4]
 	movs r0, #0
 	movs r2, #5
@@ -6234,7 +6234,7 @@ _080B8D8E:
 	mov r1, sl
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	add r0, sp, #0x10
 	strh r4, [r0]
 	strh r4, [r6, #2]

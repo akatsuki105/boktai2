@@ -3,8 +3,8 @@
 
 extern u16 u16_030044b8;
 
-s32 MainSprite_AddDrawList(MainSprite* p, s32 idx);
-void MainSprite_RemoveDrawList(MainSprite* p, s32 idx);
+s32 Video_AddMainSpriteIntoDrawList(MainSprite* p, s32 idx);
+void Video_RemoveMainSpriteFromDrawList(MainSprite* p, s32 idx);
 
 s32 FUN_0822f1b0(void) {
   u16_030044b8 = 0;
@@ -13,7 +13,7 @@ s32 FUN_0822f1b0(void) {
 
 void MainSprite_Remove(MainSprite* p) {
   if (p->active) {
-    MainSprite_RemoveDrawList(p, p->listIdx);
+    Video_RemoveMainSpriteFromDrawList(p, p->listIdx);
   }
 }
 
@@ -156,7 +156,7 @@ s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags
   }
   if (!p->active) {
     _MainSprite_Setup(p, gfx, spriteIdx, flags, prio, playMode, animCmdDuration, &v);
-    MainSprite_AddDrawList(p, (u32) - (flags & 0x80) >> 31);
+    Video_AddMainSpriteIntoDrawList(p, (u32) - (flags & 0x80) >> 31);
     return 0;
   }
   return -1;

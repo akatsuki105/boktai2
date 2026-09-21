@@ -34,8 +34,6 @@ typedef struct FreezeEffect {
 } FreezeEffect;
 static_assert(sizeof(FreezeEffect) == 524);
 
-void FUN_0822dafc(Particle* p, ParticleGroup* g, u32 val);
-
 void FreezeEffect_StateVanish(FreezeEffect* p);
 
 void FreezeEffect_SetState(FreezeEffect* p, void* fn) {
@@ -131,7 +129,7 @@ NON_MATCH void FreezeEffect_StateVanish(FreezeEffect* p) {
     if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
       idx = 0;
     } else {
-      idx = gCollisionMap->q_rowOffsets[bz] + bx;
+      idx = gCollisionMap->rowOffsets[bz] + bx;
     }
     tile = (u8*)FUN_08234224(idx, 1);
     if (tile != NULL) {

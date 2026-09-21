@@ -7819,7 +7819,7 @@ _081EEBC6:
 	beq _081EEC14
 	adds r0, r4, #0
 	movs r1, #0
-	bl AuxSprite_RemoveUnsafe
+	bl Video_RemoveAuxSpriteFromDrawList
 	b _081EEC14
 _081EEBE0:
 	ldrb r0, [r4, #4]
@@ -7827,7 +7827,7 @@ _081EEBE0:
 	bne _081EEBEE
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_0822a340
+	bl Video_AddAuxSpriteIntoDrawList
 _081EEBEE:
 	ldrh r2, [r5, #0x2c]
 	ldrh r1, [r5, #0x1c]

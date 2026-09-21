@@ -829,7 +829,7 @@ _08000A60:
 	adds r0, r3, #0
 	ldr r2, [sp, #0x10]
 	movs r3, #0
-	bl FUN_0822bfbc
+	bl Video_SetupBG
 _08000A82:
 	movs r0, #0
 	add sp, #0x14
@@ -1263,7 +1263,7 @@ _08000DBA:
 	mov r0, sl
 	movs r1, #0
 	adds r2, r6, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 _08000DE4:
 	add sp, #0x34
 	pop {r3, r4, r5}
@@ -2251,7 +2251,7 @@ _0800154A:
 	movs r1, #1
 	adds r2, r5, #0
 	movs r3, #0
-	bl FUN_0822bfbc
+	bl Video_SetupBG
 _08001568:
 	adds r0, r7, #0
 	adds r0, #0x4a

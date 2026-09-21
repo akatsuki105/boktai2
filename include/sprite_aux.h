@@ -80,7 +80,7 @@ static_assert(sizeof(AuxSpriteGfx) == 28);
 // グラフィックデータの小さい小道具的なスプライトは AuxSprite を使う
 typedef struct AuxSprite {
   SpriteFlags flags;       // 0x00, see SpriteFlags
-  bool8 active;            // 0x04, リストに繋がれていれば 1, FUN_0822a340 / AuxSprite_RemoveUnsafe
+  bool8 active;            // 0x04, リストに繋がれていれば 1, Video_AddAuxSpriteIntoDrawList / Video_RemoveAuxSpriteFromDrawList
   u8 unk_05;               // 0x05, AuxSprite_Add で 1 がセットされる
   u8 rotation;             // 0x06, gSineTable[-rotation & 0xFF] の索引として使われる
   u8 priority;             // 0x07, OAM attr2 bit10-11

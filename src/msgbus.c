@@ -4,32 +4,6 @@
 #include "global.h"
 #include "vm.h"
 
-// メッセージバス兼デモ再生機。シングルトン (gEntityMsgBus) で、これがいないとメッセージ機構そのものが動かない
-// 受け口: 全エンティティの EntityMsgBox を boxes のリストで持ち、登録・解除・ダブルバッファの面切り替えを一手に引き受ける
-// 再生: デモスクリプト (PTR_ARRAY_08dbd564) を demoID/step で読み進め、各 EntityMsg を宛先の受け口へ配る
-// 自身も targetClass 1 の宛先で、cmd 0=スクリプト実行 / 1=ウェイト / 2=外部待ち を Demo_HandleMsgs で処理する
-typedef struct {
-  Entity e;             // ENTITY_UNK_2
-  u16 demoID;           // 0x18, キーワード 'd'。DemoTable_GetMsg の第1添字
-  s16 step;             // 0x1A, キーワード 'c' - 1 から1ずつ進む。第2添字
-  u16 msgIdx;           // 0x1C, 第3添字。0件のステップに来たらデモ終了
-  u8 advanceReq;        // 0x1E, Demo_RequestNextStep が立て、Update が step を進めて落とす
-  u8 stepBegun;         // 0x1F, ステップが切り替わった回だけ 1。この回にメッセージを配る
-  u16 endScriptID;      // 0x20, キーワード 'e'。デモ終了時に実行する
-  u8 scriptCount;       // 0x22, scriptKeys/scriptIDs の件数
-  u8 running;           // 0x23, デモ再生中なら 1, 根拠: Demo_IsRunning
-  u8 bufIdx;            // 0x24, EntityMsgBox のダブルバッファの現在面
-  u8 unk_25[3];         // 0x25, ??
-  u16 scriptKeys[16];   // 0x28, Demo_FindScriptID で検索されるキー
-  u16 scriptIDs[16];    // 0x48, scriptKeys に対応するスクリプトID
-  s32 waitTimer;        // 0x68, cmd 1 の待ちフレーム数, 根拠: Demo_CmdWait
-  u32 unk_6c;           // 0x6C
-  u32 extWait;          // 0x70, cmd 2 で 1 になり、Demo_Resume が外部から解除する
-  EntityMsgBox* boxes;  // 0x74, 登録済みの受け口のリスト先頭
-  EntityMsgBox msgBox;  // 0x78, 自分宛て (targetClass 1) の受け口
-} EntityMsgBus;
-static_assert(sizeof(EntityMsgBus) == 172);
-
 COMMON_DATA s32 s32_03002b48 = 0;                // 0x03002B48, 多分こいつは msgbus.c のものじゃない
 COMMON_DATA EntityMsgBus* gEntityMsgBus = NULL;  // 0x03002B4C
 

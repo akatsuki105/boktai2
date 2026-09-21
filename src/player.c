@@ -162,15 +162,14 @@ s32 GetPlayerCoffinID(void) {
   return COFFIN_OAK;
 }
 
-void FUN_08060e90(Player* p, u32 r1) {
-  u32 scriptID = p->scriptID_9c4;
-  if (scriptID != 0) {
-    u32 arg;
+void FUN_08060e90(Player* p, u32 val) {
+  if (p->scriptID_9c4 != 0) {
     ScriptArgs args;
+    u32 argv;
     args.argc = 1;
-    arg = r1;
-    args.argv = &arg;
-    Script_ExecById(scriptID, &args);
+    argv = val;
+    args.argv = &argv;
+    Script_ExecById(p->scriptID_9c4, &args);
   }
 }
 

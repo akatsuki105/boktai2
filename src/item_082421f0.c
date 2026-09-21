@@ -6,7 +6,7 @@
 
 #define ITEM(slot) (*(gStat->items + slot))
 #define VALUABLES(slot) (*(gStat->valuables + slot))
-#define ROTCOUNT(slot) (*(gStat->rotTimer + slot))
+#define ROTCOUNT(slot) (*(gStat->rotTimer + slot))  // gStat->rotTimer[slot]
 
 s32 GetRotCount(s32 slot) { return ROTCOUNT(slot); }
 
@@ -23,12 +23,12 @@ void SetRotCount2(s32 slot, u32 value) {
 }
 
 void CoverChocolate(s32 slot) {
-  ROTCOUNT(slot) |= 0x8000;  // gStat->rotTimer[slot] |= 0x8000
+  ROTCOUNT(slot) |= 0x8000;
   return;
 }
 
 void UncoverChocolate(s32 slot) {
-  ROTCOUNT(slot) &= 0x7FFF;  // gStat->rotTimer[slot] &= 0x7FFF
+  ROTCOUNT(slot) &= 0x7FFF;
   return;
 }
 
@@ -272,10 +272,10 @@ NON_MATCH void item_082427e0(void) {
 #endif
 }
 
-bool32 CheckEmptySlotExist(s32 category, item32_t n) {
+bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t n) {
   s32 i;
   switch (category) {
-    case 0: {
+    case ITEM_CATEGORY_USABLE: {
       if (!IsValuable(n)) {
         for (i = 0; i < 16; i++) {
           if (GetNormalItemID(i) < 0) {
@@ -292,7 +292,7 @@ bool32 CheckEmptySlotExist(s32 category, item32_t n) {
       break;
     }
 
-    case 1: {
+    case ITEM_CATEGORY_WEAPON: {
       if (gStat->playerKind != PLAYER_SABATA) {
         for (i = 0; i < 16; i++) {
           if (GetWeaponID(i) == WEAPON_NONE) {
@@ -303,7 +303,7 @@ bool32 CheckEmptySlotExist(s32 category, item32_t n) {
       break;
     }
 
-    case 2: {
+    case ITEM_CATEGORY_ARMOR: {
       if (gStat->playerKind != PLAYER_SABATA) {
         for (i = 0; i < 16; i++) {
           if (gStat->armors[i] < 0) {
@@ -314,8 +314,8 @@ bool32 CheckEmptySlotExist(s32 category, item32_t n) {
       break;
     }
 
-    case 3:
-    case 4: {
+    case ITEM_CATEGORY_UNK3:
+    case ITEM_CATEGORY_UNK4: {
       if (gStat->playerKind != PLAYER_SABATA) {
         return TRUE;
       }

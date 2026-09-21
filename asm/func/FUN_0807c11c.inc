@@ -66,7 +66,7 @@ _0807C172:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	adds r0, r4, #0
 	adds r1, r5, #0
 	bl MainSprite_AdvanceAnim

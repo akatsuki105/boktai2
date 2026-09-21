@@ -152,7 +152,7 @@ _08063748:
 	movs r2, #0x1e
 	subs r7, #8
 	adds r3, r4, r7
-	bl FUN_08016e0c
+	bl MosaicFader_Start
 	b _080637C4
 	.align 2, 0
 _08063790: .4byte 0x0000043C

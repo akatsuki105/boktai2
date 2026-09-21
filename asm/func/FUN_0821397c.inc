@@ -15,7 +15,7 @@
 	str r1, [sp]
 	adds r1, r4, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r4, #0x28]
 	movs r1, #2
 	rsbs r1, r1, #0

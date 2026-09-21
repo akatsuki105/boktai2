@@ -333,7 +333,7 @@ FUN_08022c34: @ 0x08022C34
 	lsrs r4, r4, #0x10
 	str r4, [sp]
 	adds r0, r6, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	adds r0, r5, #0
 	adds r0, #0xa0
 	ldrb r0, [r0]
@@ -419,7 +419,7 @@ _08022CDE:
 	str r0, [sp]
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r0, [r5]
 	cmp r0, #0
 	beq _08022D12
@@ -490,7 +490,7 @@ _08022D64:
 	str r0, [sp]
 	adds r0, r4, #0
 	adds r1, r7, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r0, [r5]
 	cmp r0, #0
 	beq _08022D94
@@ -537,7 +537,7 @@ FUN_08022da8: @ 0x08022DA8
 	lsrs r4, r4, #0x10
 	str r4, [sp]
 	adds r0, r6, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r0, [r5]
 	cmp r0, #0
 	beq _08022DEA

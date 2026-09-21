@@ -53,7 +53,7 @@ _081EA8C4:
 	str r0, [sp]
 	adds r0, r5, #0
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	b _081EAA04
 	.align 2, 0
 _081EA8D4: .4byte 0x030001C0
@@ -181,7 +181,7 @@ _081EA9C4:
 	str r0, [sp]
 	adds r0, r5, #0
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	b _081EA9EA
 	.align 2, 0
 _081EA9DC: .4byte 0x085AE478
@@ -648,7 +648,7 @@ FUN_081eace8: @ 0x081EACE8
 	adds r0, r7, #0
 	adds r1, r5, #0
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	add sp, #0x10
 	pop {r4, r5, r6, r7}
 	pop {r0}

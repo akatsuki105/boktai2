@@ -125,7 +125,7 @@ _082165CE:
 	str r2, [sp]
 	movs r2, #8
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	add sp, #4
 	pop {r3}
 	mov r8, r3

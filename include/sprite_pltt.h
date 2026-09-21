@@ -18,5 +18,6 @@ static_assert(sizeof(ObjPlttFile) == 24580);
 extern const ObjPlttFile gObjPlttFile0;  // 0x08CB9244
 
 extern rgb555* gObjPlttData;
+s32 FUN_0822d12c(u32 plttID, rgb555* pltt);
 
 #endif  // __INCLUDE_SPRITE_PLTT_H__

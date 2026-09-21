@@ -137,19 +137,18 @@ bool32 VM_Ctrl_Return(u8* _) {
 
 // https://boktaihacking.net/wiki/Bytecode#Control_0xb96e_(TODO)
 bool32 VM_Ctrl_B96E(u8* pc) {
-  s32 type;
-  u8* val;
-  u8* p;
   u8 buf[512];
 
   while (pc != NULL) {
+    s32 type;
+    u8* val;
     pc = VM_DecodeValue(pc, &type, &val);
     if (type == 0) break;
 
     if (type == OP_STRING) {  // opcode7: string
       VM_ConvertEucJpToSjis(buf, val);
-    } else if (type == 0xE) {
-      p = val;
+    } else if (type == OP_STRING_REF) {
+      u8* p = val;
       while (*p != 0) p++;
     }
   }
@@ -159,7 +158,6 @@ bool32 VM_Ctrl_B96E(u8* pc) {
 // https://boktaihacking.net/wiki/Bytecode#Control_0x121f_(call_indirect)
 bool32 VM_Ctrl_CallIndirect(u8* _) {
   u32 argv[16];
-  s32 type, val;
   ScriptArgs args;
 
   u32 scriptID = Script_GetValue();
@@ -167,6 +165,7 @@ bool32 VM_Ctrl_CallIndirect(u8* _) {
   u32 count = 0;
 
   while (pc != NULL) {
+    s32 type, val;
     pc = VM_DecodeValue(pc, &type, &val);
     if (type == 0) {
       break;
@@ -175,8 +174,7 @@ bool32 VM_Ctrl_CallIndirect(u8* _) {
     count++;
   }
 
-  args.argc = count;
-  args.argv = argv;
+  args.argc = count, args.argv = argv;
   return Script_ExecById(scriptID, &args);
 }
 

@@ -64,7 +64,7 @@ _0823B650:
 	ldr r2, _0823B690 @ =FUN_0822aaac
 	ldr r3, _0823B694 @ =FUN_0822f204
 	movs r0, #0
-	bl FUN_0822a448
+	bl Video_SetDrawPasses
 	ldr r1, _0823B698 @ =0x03003540
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #0x10
@@ -84,7 +84,7 @@ _0823B69C:
 	ldr r1, _0823B6B4 @ =FUN_0822de64
 	ldr r2, _0823B6B8 @ =FUN_0822ac90
 	ldr r3, _0823B6BC @ =FUN_0822f224
-	bl FUN_0822a448
+	bl Video_SetDrawPasses
 	ldr r1, _0823B6C0 @ =0x03003540
 	movs r0, #0
 	strh r0, [r1, #8]

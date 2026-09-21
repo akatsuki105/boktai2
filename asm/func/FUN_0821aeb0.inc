@@ -93,7 +93,7 @@ _0821AEEC:
 	adds r1, r5, #0
 	movs r2, #5
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	adds r0, r7, #0
 	adds r0, #0x6c
 	mov r2, sb

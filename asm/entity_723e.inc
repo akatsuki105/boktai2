@@ -65,7 +65,7 @@ FUN_080522d0: @ 0x080522D0
 	movs r0, #1
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -1172,7 +1172,7 @@ _08052B5C:
 	ldr r2, _08052C40 @ =FUN_0822af38
 	ldr r3, _08052C44 @ =FUN_0822f264
 	movs r0, #0
-	bl FUN_0822a448
+	bl Video_SetDrawPasses
 	movs r0, #1
 	strb r0, [r5, #0x1c]
 	strb r0, [r5, #0x1d]

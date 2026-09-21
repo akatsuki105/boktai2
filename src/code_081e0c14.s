@@ -1979,7 +1979,7 @@ FUN_081e1a44: @ 0x081E1A44
 	movs r0, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #0
@@ -3779,7 +3779,7 @@ FUN_081e275c: @ 0x081E275C
 	movs r0, #2
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	movs r0, #3
 	str r0, [sp, #0xc]
 	ldr r2, [r6, #0x20]
@@ -3790,7 +3790,7 @@ FUN_081e275c: @ 0x081E275C
 	movs r0, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r5, [sp]
 	movs r0, #3
 	movs r1, #0
@@ -6766,7 +6766,7 @@ FUN_081e3ea8: @ 0x081E3EA8
 	adds r1, r1, r2
 	str r5, [sp]
 	movs r2, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	add sp, #4
 	pop {r4, r5}
 	pop {r0}
@@ -8138,7 +8138,7 @@ FUN_081e4948: @ 0x081E4948
 	ldrh r2, [r2]
 	str r3, [sp]
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, _081E49A4 @ =0x00001623
 	adds r4, r4, r0
 	strb r5, [r4]
@@ -10211,7 +10211,7 @@ _081E5AF8:
 	adds r0, r6, #0
 	mov r1, r8
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	strb r0, [r5]
 	movs r0, #0xdc
@@ -10303,7 +10303,7 @@ _081E5BD4:
 	adds r0, r6, #0
 	mov r1, r8
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	strb r4, [r5]
 	movs r0, #0xdc
 	bl PlaySound_082406e0

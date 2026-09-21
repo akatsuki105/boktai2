@@ -26,7 +26,7 @@ _08060A3C:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r1, _08060A78 @ =0x000002E7
 	adds r0, r6, r1
 	ldrb r0, [r0]

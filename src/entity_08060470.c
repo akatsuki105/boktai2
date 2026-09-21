@@ -33,6 +33,11 @@ NAKED void FUN_08060358(Entity08060470* p, Entity08060470Elem* elem, s32 idx) { 
 
 NAKED void Entity08060470_UpdateElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) { INCFUNC("asm/func/Entity08060470_UpdateElem.inc"); }
 
+void (*const PTR_ARRAY_085abaac[2])(Entity08060470*, Entity08060470Elem*, s32) = {
+    FUN_08060358,
+    Entity08060470_UpdateElem,
+};  // 0x085ABAAC
+
 NAKED s32 Entity08060470_Update(Entity08060470* p) { INCFUNC("asm/func/Entity08060470_Update.inc"); }
 
 NAKED s32 Entity08060470_Destroy(Entity08060470* p) { INCFUNC("asm/func/Entity08060470_Destroy.inc"); }

@@ -15,7 +15,7 @@
 	adds r0, r5, #0
 	movs r2, #7
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, _082158E0 @ =0x00000E7C
 	adds r4, r4, r0
 	ldr r1, [r4]

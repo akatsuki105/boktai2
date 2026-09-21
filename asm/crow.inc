@@ -1239,7 +1239,7 @@ _081431AE:
 	adds r0, #0x20
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, [r5, #8]
 	movs r1, #5
 	rsbs r1, r1, #0
@@ -1365,7 +1365,7 @@ _081432A4:
 	lsrs r2, r2, #0x10
 	str r3, [sp]
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	ands r4, r0
 	cmp r4, #0

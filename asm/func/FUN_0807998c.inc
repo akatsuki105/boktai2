@@ -79,7 +79,7 @@ _08079A04:
 	beq _08079A3C
 	adds r0, r4, #0
 	adds r0, #0x24
-	bl FUN_08006194
+	bl MapItemManager_TryOpen
 	lsls r0, r0, #0x18
 	movs r2, #4
 	cmp r0, #0

@@ -23,7 +23,7 @@ _0822A2C8:
 	bge _0822A2C8
 	bl Video_ResetObjTileAlloc
 	movs r0, #1
-	bl FUN_0822b41c
+	bl Video_ResetFrameState
 	pop {r4}
 	pop {r0}
 	bx r0

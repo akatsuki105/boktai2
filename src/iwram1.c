@@ -9,7 +9,6 @@
 #include "time.h"
 #include "vm.h"
 
-struct Entity8ECD;
 struct GameOverManager;
 struct LevelUpper;
 struct EntityB3D1;
@@ -22,12 +21,7 @@ struct Entity081d16ec;
 struct Entity081eaf6c;
 struct Entity081eb2f0;
 
-IWRAM_DATA u8 u8_03000074[0x80 - 0x74] = {};  // todo
-
-IWRAM_DATA s32 s32_03000080 = 0;                   // 0x03000080
-IWRAM_DATA struct Entity8ECD* gEntity8ECD = NULL;  // 0x03000084
-
-IWRAM_DATA u8 u8_03000088[0xA0 - 0x88] = {};  // todo
+IWRAM_DATA u8 u8_03000090[0xA0 - 0x90] = {};  // todo
 
 IWRAM_DATA void* gBossList[8] = {};  // 0x030000A0, idx is BossID
 

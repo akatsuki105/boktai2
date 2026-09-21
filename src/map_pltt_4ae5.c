@@ -2,6 +2,7 @@
 #include "file.h"
 #include "global.h"
 #include "time.h"
+#include "video.h"
 #include "vm.h"
 
 // マップ切り替え時に毎回生成される(時間帯によるマップのパレット処理と思われる)
@@ -18,7 +19,7 @@ typedef struct {
   u8 unk_21[0x24 - 0x21];     // 0x21
   const rgb555* srcPltt1;     // 0x24, PLTTファイルのRGB555データその1
   const rgb555* srcPltt2;     // 0x28, PLTTファイルのRGB555データその2
-  rgb555* dstPltt;            // 0x2C, gFastBgPlttBuffer
+  rgb555* dstPltt;            // 0x2C, gBgPlttBuffer
   rgb555* pltt_30;            // 0x030
   rgb555 pltt_34[256];        // 0x034
   rgb555 pltt_234[256];       // 0x234
@@ -55,8 +56,7 @@ typedef struct {
 static_assert(sizeof(Entity4AE5) == 1784);
 
 extern s32 s32_03004048;
-extern u16 u16_03004454;
-extern rgb555 gFastBgPlttBuffer[256];
+extern u16 gBgPlttFadeRowMask;
 
 COMMON_DATA u16 gMapInitScriptID = 0;        // 0x03002B28
 COMMON_DATA Entity4AE5* gEntity4AE5 = NULL;  // 0x03002B2C
@@ -391,7 +391,7 @@ void MapPltt_FadeIn(Entity4AE5* p) {
   }
 }
 
-extern u16 u16_03004494;
+extern u16 gBgPlttBlendColor;
 rgb555* FUN_0822d00c(void);
 
 // 明→暗のフェード: 進捗に応じて明るさを 0x40 に近づけ、終わったら暗転状態で止める
@@ -402,7 +402,7 @@ void MapPltt_FadeOut(Entity4AE5* p) {
   if ((p->unk_63c = p->unk_63c + 1) >= (1 << p->unk_63e)) {
     pltt = FUN_0822d00c();
     s32_03004040 = 0x40;
-    u16_03004494 = 0x1084;
+    gBgPlttBlendColor = 0x1084;
     *pltt = 0x1084;
     p->unk_1b = 0;
   }
@@ -533,8 +533,8 @@ NON_MATCH s32 Entity4AE5_Update(Entity4AE5* p) {
         p->unk_1b = cmd;
         p->unk_63c = 0;
         p->unk_63e = args[0];
-        u16_03004494 = (args[3] << 10) | (args[2] << 5) | args[1];
-        u16_03004454 = args[4];
+        gBgPlttBlendColor = (args[3] << 10) | (args[2] << 5) | args[1];
+        gBgPlttFadeRowMask = args[4];
       }
     } else {
       switch (cmd) {
@@ -556,8 +556,8 @@ NON_MATCH s32 Entity4AE5_Update(Entity4AE5* p) {
           }
           p->unk_63c = 0;
           p->unk_63e = args[0];
-          u16_03004494 = (args[3] << 10) | (args[2] << 5) | args[1];
-          u16_03004454 = args[4];
+          gBgPlttBlendColor = (args[3] << 10) | (args[2] << 5) | args[1];
+          gBgPlttFadeRowMask = args[4];
           break;
         }
         case 3:
@@ -569,8 +569,8 @@ NON_MATCH s32 Entity4AE5_Update(Entity4AE5* p) {
           }
           p->unk_63c = 0;
           p->unk_63e = args[0];
-          u16_03004494 = (args[3] << 10) | (args[2] << 5) | args[1];
-          u16_03004454 = args[4];
+          gBgPlttBlendColor = (args[3] << 10) | (args[2] << 5) | args[1];
+          gBgPlttFadeRowMask = args[4];
           break;
         }
         case 6: {
@@ -643,11 +643,11 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
 
   gEntity4AE5 = p;
   p->unk_18 = val;
-  p->dstPltt = gFastBgPlttBuffer;
+  p->dstPltt = gBgPlttBuffer;
   s32_03004040 = 0x40;
   s32_03004048 = 0x40;
-  u16_03004494 = 0x1084;
-  u16_03004454 = 0;
+  gBgPlttBlendColor = 0x1084;
+  gBgPlttFadeRowMask = 0;
   p->unk_1a = VM_GetKeywordValue('f', 0);
   p->unk_1d = 0;
   p->unk_648 = 0;

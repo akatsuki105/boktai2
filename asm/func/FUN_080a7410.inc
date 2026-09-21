@@ -6,7 +6,7 @@
 _080A741A:
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_0822a340
+	bl Video_AddAuxSpriteIntoDrawList
 	adds r4, #0x50
 	subs r5, #1
 	cmp r5, #0
@@ -15,7 +15,7 @@ _080A741A:
 	lsls r1, r1, #2
 	adds r0, r6, r1
 	movs r1, #0
-	bl MainSprite_AddDrawList
+	bl Video_AddMainSpriteIntoDrawList
 	ldr r0, _080A7444 @ =0x00000342
 	adds r1, r6, r0
 	movs r0, #1

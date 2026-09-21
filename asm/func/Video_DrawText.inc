@@ -22,7 +22,7 @@ _0821B2C8:
 	mov r8, r0
 	adds r0, r5, #0
 	movs r1, #0x3e
-	bl FUN_08048cc8
+	bl TextBox_FindChar
 	adds r5, r0, #0
 	b _0821B34A
 _0821B2EA:
@@ -69,7 +69,7 @@ _0821B326:
 	adds r5, #1
 	adds r0, r5, #0
 	movs r1, #0x3e
-	bl FUN_08048cc8
+	bl TextBox_FindChar
 	adds r5, r0, #0
 	movs r0, #0
 	mov r8, r0

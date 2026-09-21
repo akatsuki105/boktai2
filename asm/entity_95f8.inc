@@ -382,7 +382,7 @@ _08011036:
 	adds r0, r2, #0
 	adds r2, r4, #0
 	movs r3, #0
-	bl FUN_0822bfbc
+	bl Video_SetupBG
 _08011052:
 	movs r0, #0
 	str r0, [sp]

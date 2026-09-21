@@ -36,7 +36,7 @@ FUN_081dfe74: @ 0x081DFE74
 	movs r0, #2
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	movs r0, #0xc
 	str r0, [sp, #0xc]
 	ldr r2, [r6]
@@ -47,7 +47,7 @@ FUN_081dfe74: @ 0x081DFE74
 	movs r0, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #3
 	movs r1, #0

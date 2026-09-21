@@ -49,7 +49,7 @@ Three rules keep this file usable:
 
 ### A `switch` that starts with `cmp low / beq / cmp low / ble` has one more case than it looks
 
-- **Frequency**: `FUN_080f8abc`.
+- **Frequency**: `FUN_080f8abc`, `Video_SetBG23OFSDirect`.
 - `switch (x) { case 1: case 3: case 5: A; default: B; }` balances its three
   nodes into a tree rooted at the middle one: `cmp #3 / beq / cmp #3 / bgt`.
   A target that instead walks them in order — `cmp #1 / beq / cmp #1 / ble /
@@ -60,6 +60,7 @@ Three rules keep this file usable:
 - Corollary: the rightmost node is tested with `bne default` and no lower-bound
   check, so a missing `cmp` in the middle of the chain is not evidence of a
   missing case.
+- The same reading applies to a two-case switch. `Video_SetBG23OFSDirect` handles only `case 2` and `case 3`, and a bare two-case switch emits `cmp #2 / beq / cmp #3 / beq / b default` with no lower-bound test. The target's extra `cmp #2 / ble default` means the low values are spelled out: `case 0: case 1: default:` sharing the default's body.
 
 ### `pop {r1}; bx r1` means a non-void return type, even with nothing returned
 
@@ -162,7 +163,7 @@ Three rules keep this file usable:
 
 ### A `u16` local updated with `|=` truncates before a 16-bit store; writing the `|` into the store does not
 
-- **Frequency**: `Sio_StartParentTimer`, `Sio_ParentTimerIntr`, `Sio_ChildSerialIntr`, `Entity87FE_Update`, `Entity87FE_Init`, `FUN_08237098`, `FUN_08237064`.
+- **Frequency**: `Sio_StartParentTimer`, `Sio_ParentTimerIntr`, `Sio_ChildSerialIntr`, `Entity87FE_Update`, `Entity87FE_Init`, `FUN_08237098`, `FUN_08237064`, `SetBGPrioDirect`.
 - A `u16` local built up with `send |= ...` in `Sio_ParentTimerIntr` / `Sio_ChildSerialIntr` also left an extra `lsls #16` / `lsrs #16` before the store; the target has none, and declaring it `s32` matched. In the same functions, `u16 m2 = REG_SIOMULTI2;` added a register copy (`adds r6, r2, #0`) that the target lacks; `s32` locals for the three register reads removed it.
 - `u16 ie = REG_IE; ... REG_IE = ie | 0x40;` emits `orrs` then `strh` directly. The target has `orrs` / `lsls #16` / `lsrs #16` / `strh`, which `ie |= 0x40; REG_IE = ie;` reproduces: the assignment back to the `u16` local keeps its truncation even though the store would drop the upper half anyway.
 - The same truncation moves when a `u16` compound assignment feeds a comparison. In `Entity87FE_Update` the target stores the sum, reloads the pointer, loads the bound, and only then emits `lsls #16` / `lsrs #16` before the `cmp` — `if ((p->player->hp += step) >= p->player->maxHP)` places it there, because the conversion applies where the assignment's value is read. A `u16` local (`hp = a + b; ... if (hp >= max)`) truncates right after the `adds` instead, and a plain `+=` followed by re-reading the field drops the reuse entirely (6 fewer instructions). A `u8` field behaves the same way with a `lsls #0x18` — `if ((p->wait = (speed * p->duration) >> 6) == 0)` matched `FUN_08237098` first try.
@@ -230,11 +231,12 @@ Three rules keep this file usable:
 
 ### `(a * 2) * b` moves the doubling onto `b`; `(a << 1) * b` keeps it on `a`
 
-- **Frequency**: `FUN_0822bcf4`, `FUN_08089b48`, `BlendPlttToColor`, `FUN_0823c35c`.
+- **Frequency**: `FUN_0822bcf4`, `FUN_08089b48`, `BlendPlttToColor`, `FUN_0823c35c`, `LoadParticleFile`.
 - The target computed a row pitch as `ldrsh r0, [...]` / `lsls r0, r0, #1` / `muls r0, r2`. Both `y * (w * 2)` and `(w * 2) * y` emitted `lsls r2, r2, #1` instead, on the other operand, because agbcc reassociates a constant factor through a multiply. Writing the doubling as a shift, `(w << 1) * y`, is not reassociated and matched.
 - Operand order also decides which value is copied before `muls`. In `FUN_08089b48`, `t * g2` emitted `adds r1, r7, #0` / `muls r1, r2` (copy `t`). The target has `adds r1, r2, #0` / `muls r1, r7` (copy `g2`), and writing `g2 * t` matched.
 - Same in `BlendPlttToColor`: the target copies the channel (`adds r3, r0, #0` / `muls r3, r5`), so the channel comes first: `(*src & 0x1F) * ((1 << shift) - t)`.
 - `+` behaves the same way, and the order is the *reverse* of what you write. In `FUN_0823c35c`, `min->x + min->z - min->y` emitted `ldrh` of `z` before `x`; the target loads `x` first, which `min->z + min->x - min->y` produced. When two field loads feeding one `adds` are swapped, flip the written operand order.
+- A macro that divides its argument folds through a `*` but not through a `<<`. `DmaCopy32`'s size goes through `(size) / 4`, and `f->tileCount * 32` collapses to one `lsls #3` because the division is exact whatever the sign. `f->tileCount << 5` keeps both shifts (`lsls #5` / `asrs #2`) — for a negative operand `(x << 5) / 4` is not `x << 3`, so agbcc cannot fold it. In `LoadParticleFile` that one extra instruction also flipped the prologue from a leaf `bx lr` to `push {lr}` / `pop {r0}` / `bx r0`.
 
 ### `-y * 256` reuses a `-y` computed earlier; `y * -256` negates the product separately
 
@@ -250,6 +252,24 @@ Three rules keep this file usable:
 
 - **Frequency**: `GetFile`, `GetTilemapFile`.
 - `GetFile(FileID directoryID, FileID fileID)` rewrites `fileID` in each `case` and passes the original to `GetAssetFile` at the end. The target truncates the incoming `fileID` into `r1`, copies it to `r7` (`adds r7, r1, #0`), and at the call moves `r7` into `r2` first, before building the 4th argument. A copy declared `FileID file = fileID;` either swapped `r1`/`r7` or moved `r2` last. Declaring the copy as `u32 file = fileID;` (found by the permuter as `int`) matched.
+
+### A field copied into a local is loaded at the declaration; read directly it hoists with the rest
+
+- **Frequency**: `TextBoxChoice_Finish`, `MapItem_UpdateFall`, `EntityCF82_Init`, `RingoDemoAnim_Init`.
+- `TextBoxChoice_Finish` hoists both `&args` (`add r5, sp, #0x14`) and `p->scriptID` (`ldr r4, [r2, #0x54]`) above the argument-copy loop, in the order their *uses* appear after it. Opening the block with `u32 scriptID = p->scriptID;` pinned that load to the declaration, so it came out first and `r4`/`r5` stayed swapped for the rest of the function. Reading `p->scriptID` directly in the later `if` and call let agbcc hoist the load as a loop invariant and restored both the order and the registers.
+- The same pinning applies to a pointer local holding a global's address, so a declaration at the top of the function drags its `ldr` above everything before its first use. `EntityCF82_Init` writes two `strb`s and only then loads the palette address; wrapping the two pointer declarations and their one statement in a bare inner block put the `ldr` back after the stores.
+- Splitting the declaration from the assignment moves the computation to the assignment instead. `RingoDemoAnim_Init` computes `&p->pos` between `p->msgBox = msgBox;` and the `Vec3` copy; `Vec3* q = &p->pos;` put it at function entry, and `Vec3* q;` with `q = &p->pos;` placed after the first store matched.
+
+### A nested struct's field folds both offsets; a pointer to the inner struct keeps its base
+
+- **Frequency**: `RingoDemoAnim_Update`.
+- `p->sprite2.flags |= SPRFLAG_HIDDEN;` (`sprite2` at 0xA8, `flags` at +8) adds the sum: `adds r2, r6, #0` / `add r2, #0xb0` / `ldr r0, [r2]`. The target keeps the inner base and uses the load's immediate: `add r2, #0xa8` / `ldr r0, [r2, #0x8]`. A `MainSprite*` local pointing at the inner struct reproduces it. The instruction counts are equal, so this shows up as nothing but a wrong constant. Assign the local where the target computes the address, not at its declaration — see the entry above.
+
+### A countdown in the asm can be an upward loop agbcc reversed
+
+- **Frequency**: `FUN_0822d98c`, `ClockAlarm_Init`.
+- `for (j = 0; j < 16; j++)` over walking pointers comes out as a countdown (`movs rN, #0xf` / body / `subs rN, #1` / `cmp rN, #0` / `bge`), so the asm does not tell you which way the source counted. The two are not interchangeable: a hand-written `for (j = 15; j >= 0; j--)` gives the same loop body but keeps the counter as its own pseudo, while the reversed one is a compiler temp that can take the enclosing loop index's register. In `FUN_0822d98c` that decided whether the outer `i + 1` was computed at the top of the body and parked in a second register (`adds r4, r3, #1` … `adds r3, r4, #0`, the target) or folded into one `add r4, #1` — the same body, one instruction apart. When a countdown's body matches but the surrounding increment does not, write the loop counting up.
+- The reversal flips the walking pointer too, so even the direction of travel is not evidence. `ClockAlarm_Init` fills `p->armed[0..3]` with a pointer that starts at `&armed[3]` and runs down (`strb` / `subs r0, #1`); the source is the plain `for (i = 0; i < 4; i++) { p->armed[i] = 1; }`. Writing it downward — as a subscript, as a walking pointer, as a `do`/`while`, or with the two inits in either comma order — left the stored constant's `movs` one slot out of place every time.
 
 ### agbcc does not rotate loops: a guard plus `do/while` is a different shape from `while`
 
@@ -294,10 +314,27 @@ Three rules keep this file usable:
   `&ymd[0]` / `&ymd[1]` / `&ymd[2]`. Two arrays are laid out in declaration
   order; an array and loose scalars are not.
 
+### `*(a + i)` and `a[i]` schedule the index scaling differently
+
+- **Frequency**: `Entity92BE_Shake`.
+- `a[i]` on a `u16` array emits the base address first and the `lsls rN, rN, #1`
+  that scales the index after it. `*(a + i)` emits the `lsls` first, right after
+  whatever produced `i`, and loads the base second. Same instruction count, and
+  the two are the only difference when a streamdiff shows one `lsls` moved
+  across an `ldr =POOL`.
+- Splitting the index into its own local, or hoisting the base into a pointer
+  local (`u16* table = a;`), does not move it — only the subscript-vs-pointer
+  form does.
+
 ### Two loops sharing one counter variable shift the register allocation
 
 - **Frequency**: `LevelUpper_Update`.
 - `LevelUpper_Update` has an 8-iteration loop in one branch and a 5-iteration loop in the other. With one `s32 i` for both, every register was off by one (`p` in `r5` instead of `r4`, the counter and the stored 0 swapped). Giving the first loop its own counter (`s32 i, j;`, `for (j = 0; j < 8; j++)`) matched with no other change.
+
+### A loop index that starts at a parameter: reuse the parameter, save the start
+
+- **Frequency**: `FUN_0822eadc`, `FUN_0822ea60`.
+- A nested loop whose inner index starts at a parameter (`for (x = x8; x < right; x++)`) keeps both `x8` and `x` live to the end. With a separate `x`, agbcc parks `x8` in a callee-saved register and puts the hoisted `x8 * 2` in `ip`; the target does the opposite — `mov ip, rN` before the nest, `mov rN, ip` at the top of each outer iteration, and `x8 * 2` in a low register, so the row address adds two low registers instead of `add r0, r12`. Writing the parameter itself as the loop variable and saving its start in a local (`u32 left = x8; ... for (x8 = left; x8 < right; x8++)`) matched. The instruction count is identical either way, so this surfaces as nothing but a register permutation — seven other shapes (separate `x`/`y`, inline bounds, `w8 += x8`, row pointer, `*(map + i)`, declaration order, inner-scope `x`) all produced the same wrong permutation.
 
 ### An `|` chain accumulates left-to-right exactly as written
 
@@ -319,6 +356,7 @@ Three rules keep this file usable:
 - A walking pointer compared against `base + const` (`adds r0, r5, #0` / `adds r0, #0x14` / `cmp r4, r0`) with a **signed** loop exit (`ble`) and no pre-loop test is an `s32 i` index loop, not a pointer loop: loop strength reduction deletes `i` and rewrites `i == 10` and `i < 32` as compares on the pointer. In `FUN_0824082c`, writing the pointer loop (`p == &arr[10]`, `p <= &arr[31]`) gave a pre-loop `bhi`, unsigned `bls` and pool-loaded addresses; `for (i = 0; i < 32; i++) { if (arr[i]) { if (i == 10) ... } }` matched, including the second walking pointer used for the `arr[i]` call argument.
 - The same split decides whether a **member offset** is folded into the pointer. `f(&arr[i].member)` initialises one pointer at `&arr[0].member` and steps it by `sizeof(*arr)`; an explicit `T* p = arr; f(&p->member); p++;` keeps `p` at `arr` and pays an `adds r0, #offset` every iteration. `Entity0800a89c_ReleaseSwarm` (`Particle_Remove(&swarm->bugs[i].ptcl)`) needed the index form.
 - With an explicit walker **and** an index that the body still needs, both the init order and the increment order are visible. `Entity0800a89c_UpdateSwarm` matched only as `for (i = 0, bug = swarm->bugs; i < 4; i++) { ...; bug++; }`: putting `bug = ...` first swapped the two registers, and putting `bug++` in the `for` increment emitted it after `i++` instead of before.
+- `Video_ResetFrameState` clears 128 OAM entries. `*(u32*)&gOAMBuffer[i] = v;` in a `for (i = 0; i < 128; i++)` let agbcc fold the index and the counter into one pointer running **downward** from the last entry (`adds r0, r1, #0x3f8` / `subs r0, #8` / `cmp r0, r1`). The target keeps a separate countdown counter and an upward pointer, which an explicit `OamData* oam = gOAMBuffer; ... *(u32*)oam = v; oam++;` reproduces.
 
 ### `a = b = v` stores `b` first and evaluates `v` once
 
@@ -327,13 +365,22 @@ Three rules keep this file usable:
 
 ### Two addresses in one object share a base register; separate symbols get their own pool constants
 
-- **Frequency**: `OpenCollisionMapFile`, `GetTilemapFile`.
+- **Frequency**: `OpenCollisionMapFile`, `GetTilemapFile`, `EntityCF82_Init`.
 - Passing `arr` to a call and then returning `&arr[4]` held the base in a callee-saved register (`ldr r4, =arr` / `adds r1, r4, #0` / `adds r0, r4, #4`) and cost a `push {r4, lr}`. The target loads `=arr` and `=arr+4` as two independent pool constants and pushes only `lr` — agbcc shares a base only when both addresses come from the same object, so splitting the one `u8 arr[16384]` definition into two adjacent externs (a 4-byte head and the body) matched.
+- Two constant indices into one array pick their pool constant from how they are spelled. `a[0x20] = a[0x2F];` puts `=a` in the pool and adds both offsets; declaring them as pointer locals puts `=a+off` of the **first declared** one in the pool and derives the other with `adds rN, rM, #0` / `subs rN, #k`. `EntityCF82_Init` needed the source first (`rgb555* off = a + 0x2F; rgb555* pltt = a + 0x20;`); declaring the destination first instead collapsed to a single `ldrh rN, [rM, #0x1e]`.
 
 ### An intermediate result variable can block a store's cross-jump merge
 
-- **Frequency**: `VM_RunExpression`.
+- **Frequency**: `VM_RunExpression`, `TextBoxChoice_CreateFromScript`.
 - `if (c) { x = A; } else { x = B; } slot->f = x;` and `if (c) { slot->f = A; } else { slot->f = B; }` produce the same merged store, but not the same scheduling around it. In `VM_RunExpression` the `x` version delayed a later call's first-argument setup (`adds r0, r5, #0` emitted after the other two argument registers instead of before them); writing the store directly in both arms fixed it. If argument setup order is the only thing off near a two-armed store, try removing the intermediate variable.
+- The same rule the other way round: `MapItem_UpdateFall` loads `item->pos` *before* the clamp inside the `if` body, which only happens when the block opens with `Vec3* q = item->pos;`. Writing `item->pos->y -= n;` at the point of use put the load after the clamp instead.
+- A `adds rN, rM, #0` copy right before a clamp means the clamped value is its own variable (`s32 n = d; if (n > 0x20) { n = 0x20; }`); reusing the original (`if (d > 0x20) { d = 0x20; }`) is one instruction shorter.
+
+### Shared code after an if/else: inside the arms it can keep stepping an offset register, after the join it cannot
+
+- **Frequency**: `TextBoxChoice_SetCursor`.
+- Written once after the `if/else`, the four `pos` stores started a fresh offset (`movs r2, #0x93` / `lsls r2, #1` for 0x126); the target steps it (`add r2, #2`) from the 0x124 the arms left in `r2`. agbcc's CSE only knows an offset register inside the block that built it, and cross-jumping runs afterwards — so a *stepped* offset across the join means that code sat in **both** arms and was merged. Calling a `static inline` helper from each arm reproduces it without duplicating the source.
+- In a loop the same variable also costs a register: `u32 val = 0; if (VM_GetPC() != NULL) { val = Script_GetValue(); } args[i] = val;` hoisted the `movs #0` out of the loop and pushed three values into `r8`-`r10`. `if (VM_GetPC() != NULL) { args[i] = Script_GetValue(); } else { args[i] = 0; }` cross-jumps the store, and the `movs #0` disappears entirely because `r0` is already 0 on the `beq` path.
 
 ### A returned boolean built with one branch: initialise, then clear
 

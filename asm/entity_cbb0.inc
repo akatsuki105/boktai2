@@ -1657,7 +1657,7 @@ FUN_080ade88: @ 0x080ADE88
 	movs r0, #3
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	ldr r1, [r5]
 	movs r0, #1
 	movs r2, #0
@@ -4075,7 +4075,7 @@ _080AF1B8: .4byte 0x0000135C
 _080AF1BC: .4byte FUN_080aee18
 _080AF1C0:
 	movs r0, #0x5a
-	bl FUN_0805f2dc
+	bl Entity0805f2dc_Create
 	movs r2, #0x9b
 	lsls r2, r2, #5
 	adds r1, r4, r2

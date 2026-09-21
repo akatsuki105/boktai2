@@ -26,7 +26,7 @@ typedef struct {
   weapon8_t selected;         // 0x025, カーソル位置の武器, 図鑑登録されてなくても、カーソル位置に対応する武器のIDが入る
   u8 cursorX;                 // 0x026, 現在のカーソルのX位置 (0..4)
   u8 cursorY;                 // 0x027, 現在のカーソルのY位置 (0..3)
-  MainSpriteGfx spriteSet;    // 0x028
+  MainSpriteGfx gfx;          // 0x028
   MainSprite sprite_48;       // 0x048
   MainSprite cursor;          // 0x0A8, カーソルのスプライト
   MainSprite unk_108[5];      // 0x108

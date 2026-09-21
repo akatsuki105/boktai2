@@ -73,7 +73,7 @@ _08079CDC:
 	beq _08079CF2
 	adds r0, r5, #0
 	adds r0, #0x24
-	bl FUN_08006194
+	bl MapItemManager_TryOpen
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08079D18
@@ -114,7 +114,7 @@ _08079D20:
 	beq _08079D38
 	adds r0, r5, #0
 	adds r0, #0x24
-	bl FUN_08006194
+	bl MapItemManager_TryOpen
 _08079D38:
 	adds r0, r4, #0
 	pop {r4, r5, r6}

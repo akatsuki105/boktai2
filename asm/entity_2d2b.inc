@@ -131,7 +131,7 @@ FUN_08007f84: @ 0x08007F84
 	adds r0, r6, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	adds r5, r7, #0
 	adds r5, #0x94
 	ldr r2, _08008050 @ =0xFFFF0000
@@ -260,7 +260,7 @@ FUN_080080ac: @ 0x080080AC
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r1, _080080FC @ =0x085AA678
 	ldr r0, [r5, #0x18]
 	lsls r0, r0, #1
@@ -302,7 +302,7 @@ FUN_08008100: @ 0x08008100
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r1, _08008168 @ =0x085AA678
 	ldr r0, [r5, #0x18]
 	lsls r0, r0, #1
@@ -355,7 +355,7 @@ FUN_0800816c: @ 0x0800816C
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r1, _080081D8 @ =0x085AA678
 	ldr r0, [r5, #0x18]
 	lsls r0, r0, #1
@@ -415,7 +415,7 @@ _080081FA:
 	str r4, [sp]
 	adds r0, r5, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r1, _08008320 @ =0x085AA678
 	ldr r0, [r7, #0x18]
 	lsls r0, r0, #1
@@ -1170,7 +1170,7 @@ _080087D0:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r1, _08008820 @ =0x085AA678
 	ldr r0, [r6, #0x18]
 	lsls r0, r0, #1
@@ -1197,7 +1197,7 @@ _08008824:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r1, _0800886C @ =0x085AA678
 	ldr r0, [r6, #0x18]
 	lsls r0, r0, #1
@@ -1208,7 +1208,7 @@ _08008824:
 _08008852:
 	adds r0, r4, #0
 	movs r1, #0
-	bl MainSprite_AddDrawList
+	bl Video_AddMainSpriteIntoDrawList
 	movs r0, #1
 	strb r0, [r6]
 	movs r0, #0

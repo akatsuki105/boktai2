@@ -34,7 +34,7 @@
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	add sp, #0xc
 	pop {r4}
 	pop {r0}

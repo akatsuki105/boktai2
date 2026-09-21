@@ -65,7 +65,7 @@ _082143A6:
 	adds r0, r3, #0
 	adds r2, r4, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	add sp, #4
 	pop {r4}
 	pop {r0}

@@ -7,6 +7,10 @@
 typedef s16 item16_t;
 typedef s32 item32_t;
 
+// see "include/constants/item.h", item/weapon/armor を区別するものなので、 item.h にあるのは適切ではないけど、ここに置いておく
+typedef s16 ItemCategory16;
+typedef s32 ItemCategory32;
+
 // include/constants/armor.h
 typedef s16 armor16_t;
 typedef s32 armor32_t;

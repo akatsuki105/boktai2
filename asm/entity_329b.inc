@@ -2047,7 +2047,7 @@ _08010C46:
 	adds r0, r2, #0
 	adds r2, r4, #0
 	movs r3, #0
-	bl FUN_0822bfbc
+	bl Video_SetupBG
 _08010C62:
 	movs r1, #0xda
 	lsls r1, r1, #1

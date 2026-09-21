@@ -131,6 +131,7 @@ u8* VM_ReadContainerLength(u8* pc, u32* length);
 u32 Script_GetValue(void);
 u8* VM_DecodeValue(u8* pc, s32* type, void* val);
 void* VM_GetValueSafe2(void);
+s32 VM_ParseStringRef(u8* pc);
 
 s32 Script_ExecById(u32 scriptID, ScriptArgs* args);
 bool32 Script_ExecBlock(u8* pc, ScriptArgs* args, s32 varidx);

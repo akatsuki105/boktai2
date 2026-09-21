@@ -10,14 +10,12 @@ typedef struct {
   u32 offsetToWideChars;
 } FontHeader;
 
-extern FontHeader gFontFile0;  // 0x089ee090
-
 // FontHeader のオフセットをアドレスにしたもの
 typedef struct {
-  u16 narrowCharCount;  // 0x0, FontHeader.narrowCharCount
-  u16 wideCharCount;    // 0x2, FontHeader.wideCharCount
-  u8* narrowChars;
-  u8* wideChars;
+  u16 narrowCharCount;  // 0x0, FontHeader.narrowCharCount, 半角文字 (8x16px)
+  u16 wideCharCount;    // 0x2, FontHeader.wideCharCount, 全角文字 (16x16px)
+  u8* narrowChars;      // tiles
+  u8* wideChars;        // tiles
 } FontInfo;
 static_assert(sizeof(FontInfo) == 12);
 

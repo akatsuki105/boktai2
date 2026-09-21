@@ -113,7 +113,7 @@ _08022934:
 	str r0, [sp, #4]
 	mov r0, sp
 	adds r1, r5, #0
-	bl FUN_0805f68c
+	bl RingoDemoAnim_Create
 _0802295E:
 	adds r7, #1
 	ldr r0, _08022984 @ =0x03002B4C

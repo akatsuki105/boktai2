@@ -578,7 +578,7 @@ _08015A38:
 	bl FUN_08237098
 	mov r0, r8
 	movs r1, #0
-	bl FUN_0822a340
+	bl Video_AddAuxSpriteIntoDrawList
 	ldr r0, [sp, #0x10]
 	adds r2, r0, #0
 	adds r2, #1

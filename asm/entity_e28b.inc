@@ -165,7 +165,7 @@ _08002A8E:
 	bne _08002AA4
 	adds r0, r1, #0
 	movs r1, #0
-	bl FUN_0822a340
+	bl Video_AddAuxSpriteIntoDrawList
 _08002AA4:
 	adds r5, #1
 	ldr r2, [sp, #0x44]

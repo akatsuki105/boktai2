@@ -16,7 +16,7 @@
 	movs r0, #1
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	adds r0, r4, #0
 	bl FUN_08213880
 	add sp, #0x10

@@ -43,7 +43,7 @@
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	adds r1, r7, #0
 	adds r1, #0x76
 	movs r0, #0x26

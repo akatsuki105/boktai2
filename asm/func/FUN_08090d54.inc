@@ -65,7 +65,7 @@ _08090DC2:
 	movs r0, #6
 	movs r1, #2
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	ldr r1, _08090E7C @ =0x00004039
 	adds r0, r7, r1
 	ldrb r0, [r0]

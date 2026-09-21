@@ -184,8 +184,7 @@ void FUN_08009398(Entity83B2* p, Entity83B2Data* data, s32 scriptID) {
     for (i = 0; i <= 3; i++) {
       argv[i + 1] = (s16)data->unk_14[i];
     }
-    args.argc = 5;
-    args.argv = argv;
+    args.argc = 5, args.argv = argv;
     Script_ExecById(scriptID, &args);
   }
 }

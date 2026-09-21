@@ -706,7 +706,7 @@ _08018070:
 	str r0, [r6, #0x14]
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_0822a398
+	bl Video_AddParticleIntoDrawList
 	strb r4, [r6]
 	ldr r3, [sp, #0x18]
 	b _080180C0
@@ -1486,7 +1486,7 @@ Entity8ECD_Init: @ 0x08018698
 	movs r1, #1
 	adds r2, r5, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	b _0801870A
 	.align 2, 0
 _080186EC: .4byte 0x03000084
@@ -1501,7 +1501,7 @@ _080186F4:
 	movs r1, #1
 	adds r2, r5, #0
 	movs r3, #0
-	bl FUN_0822bfbc
+	bl Video_SetupBG
 _0801870A:
 	movs r0, #0x72
 	bl VM_SeekToKeyword

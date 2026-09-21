@@ -34,8 +34,8 @@ typedef struct {
   s16 unk_90;           // 0x90
   s16 unk_92;           // 0x92
   s16 unk_94;           // 0x94
-  u16 unk_96;           // 0x96, 根拠: FUN_0823c1f8 が ldrh で読む
-  s32 scriptID;         // 0x98
+  u16 scriptIDType;     // 0x96, scriptID の型 を示す, 0 ならポインタ、 それ以外なら ID(数値)
+  s32 scriptID;         // 0x98, scriptIDType が 0 ならポインタ(u8*)、それ以外なら ID(数値)
   Vec3* targetPos;      // 0x9C, lookMode が 7 のときの注視点, 根拠: FUN_0823c620 が指す先から8バイトを gCameraWorldCoords へコピーする
   s32* unk_a0;          // 0xA0, 0以外を指している間だけ targetPos が使われる, 根拠: FUN_0823c620
 } Camera;
@@ -44,8 +44,8 @@ static_assert(sizeof(Camera) == 164);
 extern Camera* gCamera;  // 0x030047D0
 
 // 0x03003540 から 0x03003554 の手前までが1つの構造体
-// 根拠: FUN_0822a2a8 / Camera_SetTilemapOffset / Map_LoadMapScripted / FUN_0822a448 がいずれも 0x03003540 を単一のプール定数から読み、そこからのオフセットで書く
-// 上限の根拠: FUN_0822a448 は同一関数内で 0x03003554 / 0x03003534 / 0x03003558 をそれぞれ別のプール定数から読んでいる
+// 根拠: FUN_0822a2a8 / Camera_SetTilemapOffset / Map_LoadMapScripted / Video_SetDrawPasses がいずれも 0x03003540 を単一のプール定数から読み、そこからのオフセットで書く
+// 上限の根拠: Video_SetDrawPasses は同一関数内で 0x03003554 / 0x03003534 / 0x03003558 をそれぞれ別のプール定数から読んでいる
 typedef struct {
   Vec3 worldPos;  // 0x00, カメラの注視点のワールド座標, 根拠: FUN_0822a2a8 が +0/+2/+4 をクリアする
   s16 tilemapX;   // 0x08, 根拠: Camera_SetTilemapOffset が strh [r1,#0x8] で書く
@@ -53,7 +53,7 @@ typedef struct {
   s16 unk_0c;     // 0x0C, FUN_0822a2a8 が 1 を書く, 読み手は未特定
   s16 unk_0e;     // 0x0E, 参照が見つかっていない (幅も未確定)
   s16 unk_10;     // 0x10, FUN_0822a2a8 が 0 を書く, 読み手は未特定
-  s16 unk_12;     // 0x12, 根拠: FUN_0822a448 が strh [r4,#0x12] で書き、FUN_0823b4b8 / Video_GenerateBackgroundMaps / FUN_0823c450 / FUN_0823c620 が読む
+  s16 unk_12;     // 0x12, 根拠: Video_SetDrawPasses が strh [r4,#0x12] で書き、FUN_0823b4b8 / Video_GenerateBackgroundMaps / FUN_0823c450 / FUN_0823c620 が読む
 } CameraCoords;
 static_assert(sizeof(CameraCoords) == 20);
 

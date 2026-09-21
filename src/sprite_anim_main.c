@@ -1,7 +1,7 @@
 #include "global.h"
 #include "sprite.h"
 
-NAKED void FUN_082370cc(MainSprite* p, MainSpriteGfx* gfx, u16 param_3, u16 param_4, u16 param_5) { INCFUNC("asm/func/FUN_082370cc.inc"); }
+NAKED void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 playMode, MainAnimPlayFlags16 flags) { INCFUNC("asm/func/MainSprite_SetAnim.inc"); }
 
 // 指定したアニメの cmdIdx 番目のコマに切り替え、表示時間と「次で終わる」通知を設定し直す
 NON_MATCH void MainSprite_SetAnimFrame(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 cmdIdx) {

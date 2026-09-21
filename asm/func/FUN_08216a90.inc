@@ -131,7 +131,7 @@ _08216B86:
 	adds r0, r4, #0
 	movs r2, #9
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	b _08216BC4
 	.align 2, 0
 _08216BA8: .4byte 0x00000978
@@ -146,7 +146,7 @@ _08216BAC:
 	adds r0, r4, #0
 	movs r2, #1
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 _08216BC4:
 	ldr r0, [r4, #8]
 	movs r1, #2

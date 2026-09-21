@@ -4191,7 +4191,7 @@ _0809393E:
 	movs r0, #4
 	str r0, [sp]
 	adds r0, r4, #0
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	adds r0, r4, #0
 	adds r1, r6, #0
 	bl FUN_0808ba0c
@@ -5954,7 +5954,7 @@ FUN_08094838: @ 0x08094838
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r5]
 	adds r0, r6, #0
 	bl FUN_080921e8
@@ -9475,7 +9475,7 @@ FUN_080964ac: @ 0x080964AC
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r5]
 	adds r0, r6, #0
 	bl FUN_080952f4
@@ -11970,7 +11970,7 @@ FUN_08097948: @ 0x08097948
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r5]
 	adds r0, r6, #0
 	bl FUN_08096af0
@@ -13885,7 +13885,7 @@ FUN_0809889c: @ 0x0809889C
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrb r1, [r5]
 	adds r0, r6, #0
 	bl FUN_08097ca0
@@ -15493,7 +15493,7 @@ FUN_080995b0: @ 0x080995B0
 	str r5, [sp]
 	movs r2, #2
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, _0809963C @ =0x000020AC
 	adds r1, r4, r0
 	ldr r0, [r1]
@@ -16762,7 +16762,7 @@ FUN_08099f58: @ 0x08099F58
 	mov r1, sl
 	movs r2, #3
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_08099c64
@@ -19236,7 +19236,7 @@ FUN_0809b468: @ 0x0809B468
 	adds r1, r6, #0
 	movs r2, #1
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	adds r0, r5, #0
 	adds r1, r6, #0
 	movs r2, #0x40
@@ -19260,7 +19260,7 @@ FUN_0809b468: @ 0x0809B468
 	adds r1, r6, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r1, _0809B86C @ =0x00002584
 	adds r0, r7, r1
 	str r4, [sp]
@@ -19474,7 +19474,7 @@ _0809B6C4:
 	adds r1, r6, #0
 	movs r2, #4
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r0, _0809B898 @ =0x00000B8C
 	adds r5, r7, r0
 	ldr r1, _0809B89C @ =0x0000DA6D
@@ -19527,7 +19527,7 @@ _0809B6C4:
 	adds r1, r6, #0
 	movs r2, #0xd
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	add r0, sp, #0x10
 	strh r4, [r0]
 	mov r0, r8
@@ -19784,7 +19784,7 @@ _0809B998:
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	cmp r5, #3
 	ble _0809B998
 	ldr r2, _0809BCAC @ =0x00002BE4

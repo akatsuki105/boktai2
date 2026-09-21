@@ -129,7 +129,7 @@ gSubroutineTable:
 	.4byte 0x34C2, FUN_080a4f90
 	.4byte 0x34EA, EnemyDexMenu_Create
 	.4byte 0x352D, TextBox_SetExtend
-	.4byte 0x3535, FUN_08016eac
+	.4byte 0x3535, MosaicFader_StartFromScript
 	.4byte 0x3613, Player_Lock
 	.4byte 0x364D, sound_08240344
 	.4byte 0x3699, FUN_0804b9f4
@@ -204,7 +204,7 @@ gSubroutineTable:
 	.4byte 0x4FD1, FUN_080ed8f0
 	.4byte 0x501B, Entity501B_Create
 	.4byte 0x515D, FUN_0808fc8c
-	.4byte 0x517B, FUN_08018d44
+	.4byte 0x517B, Entity517B_Create
 	.4byte 0x522C, EnemyFlameSnake_Create
 	.4byte 0x5276, FUN_08224b94
 	.4byte 0x5292, Entity5292_Create
@@ -237,7 +237,7 @@ gSubroutineTable:
 	.4byte 0x5CCC, VM_Sub5CCC
 	.4byte 0x5D74, FUN_081d5340
 	.4byte 0x5DA5, Entity5DA5_Create
-	.4byte 0x5E27, FUN_08019010
+	.4byte 0x5E27, Entity5E27_Create
 	.4byte 0x5F5F, FUN_080a6de4
 	.4byte 0x5FDA, FUN_0807b314
 	.4byte 0x6057, FUN_080a6f14
@@ -276,7 +276,7 @@ gSubroutineTable:
 	.4byte 0x7117, FUN_0807b6b8
 	.4byte 0x71BA, FUN_080a0730
 	.4byte 0x71C6, item_082427e0
-	.4byte 0x71E7, FUN_08005d1c
+	.4byte 0x71E7, TextBoxChoice_SetTextFromScript
 	.4byte 0x723E, Entity723E_Create
 	.4byte 0x727F, FUN_08047854
 	.4byte 0x7300, FUN_080bcd94
@@ -381,7 +381,7 @@ gSubroutineTable:
 	.4byte 0x94D9, EnemyBokuLink_Create
 	.4byte 0x94EB, FUN_0809c5f4
 	.4byte 0x9519, PasswordScreen_Create
-	.4byte 0x9531, Entity08005b54_Create
+	.4byte 0x9531, TextBoxChoice_CreateFromScript
 	.4byte 0x95A8, Entity95A8_Create
 	.4byte 0x95F8, Entity95F8_Create
 	.4byte 0x9700, FUN_080e16f4
@@ -437,7 +437,7 @@ gSubroutineTable:
 	.4byte 0xAB8E, FUN_081d1dec
 	.4byte 0xAB9C, FUN_08224248
 	.4byte 0xAC98, EnemyCockatrice_Create
-	.4byte 0xACE3, EntityACE3_Create
+	.4byte 0xACE3, ClockAlarm_Create
 	.4byte 0xAD03, EnemySkeleton_Create
 	.4byte 0xADB6, FUN_08240f94
 	.4byte 0xADD2, TextBox_EnableAutoAdvance
@@ -523,7 +523,7 @@ gSubroutineTable:
 	.4byte 0xCED9, FUN_081d54a8
 	.4byte 0xCF58, EntityCF58_Create
 	.4byte 0xCF79, Intro_Create
-	.4byte 0xCF82, FUN_08018ef4
+	.4byte 0xCF82, EntityCF82_Create
 	.4byte 0xD0C3, Demo_Stop
 	.4byte 0xD0C7, FUN_08240428
 	.4byte 0xD0CE, FUN_082246bc

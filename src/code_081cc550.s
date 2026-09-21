@@ -18063,7 +18063,7 @@ FUN_081d9f8c: @ 0x081D9F8C
 	movs r0, #2
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #3
 	movs r1, #0
@@ -20053,7 +20053,7 @@ FUN_081daeb8: @ 0x081DAEB8
 	movs r0, #2
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #3
 	movs r1, #0
@@ -21517,7 +21517,7 @@ FUN_081db9f4: @ 0x081DB9F4
 	movs r0, #2
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	ldr r0, _081DBA48 @ =0x000092B3
 	ldr r1, _081DBA4C @ =0x000026BB
 	bl GetFile
@@ -22401,7 +22401,7 @@ _081DC076:
 	lsls r3, r3, #2
 	adds r1, r6, r3
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldrh r0, [r4]
 	strh r0, [r5]
 _081DC0AE:
@@ -23199,7 +23199,7 @@ FUN_081dc6d0: @ 0x081DC6D0
 	movs r0, #2
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	movs r0, #3
 	str r0, [sp, #0xc]
 	mov r1, r8
@@ -23211,7 +23211,7 @@ FUN_081dc6d0: @ 0x081DC6D0
 	movs r0, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0822c0b8
+	bl Video_SetupBGLayout
 	str r4, [sp]
 	movs r0, #3
 	movs r1, #0
@@ -24969,7 +24969,7 @@ FUN_081dd434: @ 0x081DD434
 	ldrh r2, [r2]
 	str r5, [sp]
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 _081DD4E0:
 	ldr r0, _081DD52C @ =0x030044E0
 	ldrh r1, [r0, #2]
@@ -25035,7 +25035,7 @@ _081DD55C:
 	ldrh r2, [r4]
 	str r5, [sp]
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	b _081DD610
 	.align 2, 0
 _081DD570: .4byte 0x0000085A

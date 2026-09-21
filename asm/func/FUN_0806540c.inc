@@ -97,7 +97,7 @@ _080654C2:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r3, _080654F8 @ =0x000002E7
 	adds r0, r6, r3
 	ldrb r0, [r0]

@@ -34,7 +34,7 @@ _080CC200:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r1, _080CC23C @ =0x000002E7
 	adds r0, r6, r1
 	ldrb r0, [r0]
@@ -3947,7 +3947,7 @@ _080CDF4C:
 	movs r2, #0x1e
 	ldr r7, _080CDF88 @ =0x0000097C
 	adds r3, r4, r7
-	bl FUN_08016e0c
+	bl MosaicFader_Start
 	b _080CDFBC
 	.align 2, 0
 _080CDF84: .4byte 0x00000984
@@ -6346,7 +6346,7 @@ _080CF1DE:
 	adds r0, r5, #0
 	adds r1, r7, #0
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	ldr r2, _080CF22C @ =0x000002E7
 	adds r0, r6, r2
 	ldrb r0, [r0]
@@ -21650,7 +21650,7 @@ _080D699A:
 	beq _080D69B4
 	adds r0, r5, #0
 	adds r0, #0x24
-	bl FUN_08006194
+	bl MapItemManager_TryOpen
 	lsls r0, r0, #0x18
 	movs r4, #7
 	cmp r0, #0
@@ -22799,7 +22799,7 @@ _080D7248:
 	beq _080D7280
 	adds r0, r4, #0
 	adds r0, #0x24
-	bl FUN_08006194
+	bl MapItemManager_TryOpen
 	lsls r0, r0, #0x18
 	movs r2, #4
 	cmp r0, #0

@@ -558,7 +558,7 @@ _080608BC:
 	str r0, [r4]
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_0822a340
+	bl Video_AddAuxSpriteIntoDrawList
 	movs r0, #0
 	b _080608D4
 _080608CA:

@@ -264,7 +264,7 @@ FUN_080b3b74: @ 0x080B3B74
 	str r6, [sp]
 	movs r2, #0
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #0x90
 	lsls r0, r0, #1
 	adds r1, r4, r0
@@ -353,7 +353,7 @@ FUN_080b3c08: @ 0x080B3C08
 	str r5, [sp]
 	movs r2, #4
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #1
 	bl FUN_08047a28
 	ldr r1, _080B3C94 @ =FUN_080b3e80
@@ -401,7 +401,7 @@ FUN_080b3c98: @ 0x080B3C98
 	adds r1, r5, #0
 	movs r2, #1
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r3, #0xf0
 	lsls r3, r3, #1
 	adds r1, r7, r3
@@ -547,7 +547,7 @@ FUN_080b3dd0: @ 0x080B3DD0
 	str r5, [sp]
 	movs r2, #2
 	movs r3, #2
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	movs r0, #3
 	bl FUN_08047a28
 	ldr r1, _080B3E38 @ =FUN_080b4334
@@ -667,7 +667,7 @@ _080B3F04:
 	movs r2, #5
 _080B3F10:
 	movs r3, #1
-	bl FUN_082370cc
+	bl MainSprite_SetAnim
 	b _080B3F24
 _080B3F18:
 	adds r0, r4, #0

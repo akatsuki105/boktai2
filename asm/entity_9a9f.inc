@@ -1149,13 +1149,13 @@ _081DE182:
 	ands r0, r1
 	strh r0, [r2]
 	movs r0, #1
-	bl FUN_0822b41c
+	bl Video_ResetFrameState
 _081DE1D2:
 	ldr r1, _081DE204 @ =nop_0822e738
 	ldr r2, _081DE208 @ =nop_0822b09c
 	ldr r3, _081DE20C @ =FUN_0822f584
 	movs r0, #0
-	bl FUN_0822a448
+	bl Video_SetDrawPasses
 	ldr r0, [r5, #0x34]
 	cmp r0, #0x1d
 	bhi _081DE1EA
@@ -2900,7 +2900,7 @@ FUN_081deef8: @ 0x081DEEF8
 	ldr r0, [r1]
 	orrs r0, r2
 	str r0, [r1]
-	bl FUN_08016f84
+	bl MosaicFader_Stop
 	ldr r1, _081DEF70 @ =0x030044D0
 	movs r0, #0
 	str r0, [r1]

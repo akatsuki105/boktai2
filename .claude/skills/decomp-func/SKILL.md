@@ -169,6 +169,12 @@ spelling that path out in full — there is no `scripts/` directory at the repo
 root, so a bare `scripts/context.ts` just fails with "no such file or
 directory":
 
+`rm` and `cp` are interactive here, which matters because this workflow deletes
+the `.inc` on a match and shuffles candidate sources around. Use `rm -f` /
+`cp -f`: without the flag they stop on a confirmation prompt that never gets an
+answer, so the call hangs and every later command in the same invocation is
+silently skipped — including the `make compare` you were relying on.
+
 - `context.ts <FUNCTION_NAME> [SRC_FILE] [ASM_FILE]` — the assembly, the repo
   signature, a Ghidra decompile, the asm offsets mapped onto the struct
   declarations, the `bl` targets' declarations, and the current C.
