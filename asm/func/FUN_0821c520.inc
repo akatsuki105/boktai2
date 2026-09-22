@@ -46,7 +46,7 @@ _0821C56C:
 	adds r1, #0x50
 	adds r0, r3, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	movs r1, #0xed
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -85,7 +85,7 @@ _0821C5B8:
 	adds r1, #0x50
 	adds r0, r3, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 _0821C5CE:
 	pop {r4, r5}
 	pop {r0}

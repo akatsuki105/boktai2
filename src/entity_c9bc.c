@@ -64,7 +64,7 @@ void (*const PTR_ARRAY_085aa774[7])(EntityC9BC*, q_EntityC9BCElem*, u32) = {
 };  // 0x085aa774
 // clang-format on
 
-NAKED s32 FUN_0800ca58(void) { INCFUNC("asm/func/FUN_0800ca58.inc"); }
+NAKED s32 HazardManager_SpawnScripted(void) { INCFUNC("asm/func/HazardManager_SpawnScripted.inc"); }
 
 EntityC9BC* FUN_0800cb70(void) { return gEntityC9BC; }
 

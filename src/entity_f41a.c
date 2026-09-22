@@ -106,8 +106,8 @@ NON_MATCH void EntityF41A_UpdateWander(EntityF41A* p) {
   } else {
     p->turnTimer--;
   }
-  FUN_082364c4(&p->hitbox, &p->data.pos, 0);
-  FUN_08236400(&p->hitbox);
+  Hitbox_SetPos(&p->hitbox, &p->data.pos, 0);
+  Hitbox_Register(&p->hitbox);
   p->animIdx = 7;
 #else
   INCFUNC("asm/func/EntityF41A_UpdateWander.inc");
@@ -231,9 +231,9 @@ void EntityF41A_InitHitbox(EntityF41A* p) {
 
   size.x = 0x40, size.y = 100, size.z = 0x40;
   offset.x = 0, offset.y = 100, offset.z = 0;
-  FUN_0823646c(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
-  FUN_082364f8(hitbox, 10, 0x1E, 0, 0, 0x10);
-  FUN_0823651c(hitbox, NULL, p);
+  Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_SetAttack(hitbox, 10, 0x1E, 0, 0, 0x10);
+  Hitbox_SetHandler(hitbox, NULL, p);
 }
 
 s32 EntityF41A_Init(EntityF41A* p, u32 id, u32 param_3) {

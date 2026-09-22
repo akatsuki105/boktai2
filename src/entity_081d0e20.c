@@ -99,7 +99,7 @@ NON_MATCH Entity081d0e20Elem* Entity081d0e20_AllocElem(Entity081d0e20* p) {
   Entity081d0e20Elem* elem;
   s32 i;
 
-  for (i = 0; i <= 11; i++) {
+  for (i = 0; i < 12; i++) {
     bool32 used = (p->activeMask & (1 << i)) ? TRUE : FALSE;
 
     if (!used) {
@@ -420,7 +420,7 @@ NON_MATCH s32 Entity081d0e20_Destroy(Entity081d0e20* p) {
   bool32 used;
   s32 i;
 
-  for (i = 0; i <= 11; i++) {
+  for (i = 0; i < 12; i++) {
     used = (p->activeMask & (1 << i)) != 0;
     if (used) {
       elem = p->items[i];

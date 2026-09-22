@@ -119,13 +119,12 @@ NON_MATCH s32 MapItem_ExecScript(MapItem* item, u16 scriptID, s32 param_3) {
   argv[2] = item->pos->z;
   argv[3] = item->category;
   argv[4] = item->itemID;
-  for (i = 0; i <= 2; i++) {
+  for (i = 0; i < 3; i++) {
     argv[5 + i] = item->scriptArgs[i];
   }
   argv[8] = owner;
   argv[9] = param_3;
-  args.argc = 10;
-  args.argv = argv;
+  args.argc = 10, args.argv = argv;
   return Script_ExecById(scriptID, &args);
 #else
   INCFUNC("asm/func/MapItem_ExecScript.inc");
@@ -473,3 +472,5 @@ MapItemManager* MapItemManager_Ensure(void) {
   }
   return p;
 }
+
+INCASM("asm/map_item.inc");

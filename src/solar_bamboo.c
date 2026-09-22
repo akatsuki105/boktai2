@@ -33,25 +33,20 @@ typedef struct {
 } SolarBamboo;
 static_assert(sizeof(SolarBamboo) == 276);
 
-const u16 u16_ARRAY_085aa76c[4] = {
-    0x6F,
-    0x3,
-    0x3,
-    0x3,
-};  // 0x085aa76c
+const u16 u16_ARRAY_085aa76c[4] = {0x6F, 0x3, 0x3, 0x3};  // 0x085aa76c
 
 void Entity0800a89c_SpawnAt(u16 param_1, s32 param_2, u16 param_3, Vec3* pos, s32 param_5, s32 param_6, s32 param_7);
 
-static inline u32 TestHitboxUnk38(HitboxData* p, u32 flags) { return p->unk_38 & flags; }
+static inline u32 TestHitboxAttributes(HitboxData* p, u32 flags) { return p->attributes & flags; }
 
 // 被弾時に呼ばれる。点滅させて耐久を削り、0 以下になったら演出を出して耐久を戻す
 void FUN_0800c0b0(HitboxData* a, HitboxData* b, SolarBamboo* p) {
   s32 damage;
   Vec3 pos;
 
-  damage = a->wear;
+  damage = a->damage;
   if (damage == 0) {
-    damage = TestHitboxUnk38(a, 0x40) ? 0x32 : 0x1E;
+    damage = TestHitboxAttributes(a, 0x40) ? 50 : 30;
   }
   if (p->q_unk_28 == 0 && damage > 0) {
     p->q_unk_28 = 8;
@@ -61,7 +56,7 @@ void FUN_0800c0b0(HitboxData* a, HitboxData* b, SolarBamboo* p) {
       p->q_unk_24 = p->q_unk_26;
       pos = p->sprite.pos;
       pos.y += 0x40;
-      Entity0800a89c_SpawnAt(p->q_unk_36, 1, p->q_unk_38, &pos, 0, 0x258, 0x64);
+      Entity0800a89c_SpawnAt(p->q_unk_36, 1, p->q_unk_38, &pos, 0, 600, 0x64);
     }
   }
 }
@@ -73,11 +68,11 @@ NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
 
   active = (p->unk_20 == gStat->unk_248) ? TRUE : FALSE;
   if (!active) {
-    p->sprite.flags |= 1;
+    p->sprite.flags |= SPRFLAG_HIDDEN;
     p->hitbox.flags |= 4;
     ParticleShadow_Hide(&p->shadow);
   } else {
-    p->sprite.flags &= ~1;
+    p->sprite.flags &= ~SPRFLAG_HIDDEN;
     p->hitbox.flags &= ~4;
     ParticleShadow_Show(&p->shadow);
     if (p->q_unk_28 != 0) {
@@ -117,15 +112,15 @@ NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
 }
 
 s32 Entity95A8_Destroy(SolarBamboo* p) {
-  FUN_08236424(&p->hitbox);
+  Hitbox_Unregister(&p->hitbox);
   AuxSprite_Remove(&p->sprite);
   ParticleShadow_Remove(&p->shadow);
   return 0;
 }
 
 s32 FUN_08241574(Vec3* pos);
-void FUN_08236514(HitboxData* p, u32 val1, u32 val2, u32 val3);
-void FUN_08236400(HitboxData* p);
+void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 val1, u32 val2, u32 val3);
+void Hitbox_Register(HitboxData* p);
 
 // スクリプトから位置と耐久を読み、当たり判定・スプライト・影を用意する
 s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
@@ -159,10 +154,10 @@ s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
   size.x = 30, size.y = 320, size.z = 30;
   offset.x = 0, offset.y = 160, offset.z = 0;
   hitbox = &p->hitbox;
-  FUN_0823646c(hitbox, 0, 0x4001, 0, 0x10, &size, &offset);
-  FUN_0823651c(hitbox, FUN_0800c0b0, p);
-  FUN_082364c4(hitbox, &pos, 0);
-  FUN_08236400(hitbox);
+  Hitbox_Init(hitbox, 0, 0x4001, 0, 0x10, &size, &offset);
+  Hitbox_SetHandler(hitbox, FUN_0800c0b0, p);
+  Hitbox_SetPos(hitbox, &pos, 0);
+  Hitbox_Register(hitbox);
   gfx = &p->gfx;
   Video_GetAuxSprite(gfx, SPRITE_SOLAR_BAMBOO);
   spr = &p->sprite;

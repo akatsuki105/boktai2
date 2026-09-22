@@ -47,10 +47,19 @@ static_assert(sizeof(VM) == 240);
 
 // スクリプト呼び出し時に呼び出し元が積む引数の記述子(VM_CallScript が組み立て、VM_ParseParameter が読む)
 typedef struct {
-  u32 argc : 16;    // 0x00, 引数の個数
-  u32 unk_02 : 16;  // 0x02
-  u32* argv;        // 0x04, 引数配列の先頭
+  u16 argc;   // 0x00, 引数の個数
+  u32* argv;  // 0x04, 引数配列の先頭
 } ScriptArgs;
+
+// スクリプトが VM_Ctrl_22FF で登録するレコード. FUN_08230eec が u32_ARRAY_0203f400 のテーブルへ積み、FUN_08230f94 が id で引く
+// テーブルは 0x03000740 の深さで選ぶ 392 バイトのブロック単位 (先頭 word が件数、続けて 8 バイトのレコードが最大 48 件)
+typedef struct {
+  u16 id;
+  u8 unk_02;
+  u8 count;
+  u16* values;
+} ScriptRecord;
+static_assert(sizeof(ScriptRecord) == 8);
 
 // --------------------------------------------
 
@@ -132,6 +141,7 @@ u32 Script_GetValue(void);
 u8* VM_DecodeValue(u8* pc, s32* type, void* val);
 void* VM_GetValueSafe2(void);
 s32 VM_ParseStringRef(u8* pc);
+char* Textbox_LookupString(s32 stringID);
 
 s32 Script_ExecById(u32 scriptID, ScriptArgs* args);
 bool32 Script_ExecBlock(u8* pc, ScriptArgs* args, s32 varidx);

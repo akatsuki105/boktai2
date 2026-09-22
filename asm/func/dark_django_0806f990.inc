@@ -11,7 +11,7 @@ _0806F9A2:
 	ldr r6, [r7, #0x4c]
 	adds r0, r7, #0
 	adds r1, r5, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 	movs r4, #0
 _0806F9AE:
 	lsls r1, r4, #2

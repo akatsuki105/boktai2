@@ -16,7 +16,7 @@
 	movs r1, #0x96
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	ldrh r1, [r4, #0x28]
 	movs r0, #1
 	ands r0, r1

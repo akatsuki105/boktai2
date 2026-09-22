@@ -219,7 +219,7 @@ _0806457E:
 	adds r0, r6, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	ldr r2, _080645E8 @ =0x00000A7A
 	adds r0, r5, r2
 	ldrh r1, [r0]
@@ -234,11 +234,11 @@ _0806457E:
 	str r0, [sp, #4]
 	adds r0, r6, #0
 	adds r3, r4, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	ldr r1, _080645EC @ =dark_django_0806f990
 	adds r0, r6, #0
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	b _08064648
 	.align 2, 0
 _080645D0: .4byte 0xFFFF0000
@@ -277,7 +277,7 @@ _080645F0:
 	adds r0, r6, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	movs r0, #2
 	str r0, [sp]
 	movs r0, #0x14
@@ -286,11 +286,11 @@ _080645F0:
 	movs r1, #0x14
 	movs r2, #0x32
 	movs r3, #0x10
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	adds r0, r6, #0
 	movs r1, #0
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 _08064648:
 	add sp, #0x1c
 	pop {r4, r5, r6}

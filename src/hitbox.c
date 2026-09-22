@@ -3,91 +3,94 @@
 #include "entity.h"
 #include "global.h"
 
+// 当たり判定を2本のリストで持つ。attacks 側が攻撃する方 (a, attack の頭文字)、 targets 側が攻撃される方 (b, 防御をローマ字で書くと "bougyo" なので b　にした) で、
+// Hitbox_CheckAllPairs が attacks × targets の総当たりで重なりを見る
 typedef struct {
-  Entity e;            // 0x0, ENTITY_UNK_11
-  HitboxData* unk_18;  // 0x18
-  HitboxData* unk_1c;  // 0x1C
-  HitboxData* unk_20;  // 0x20
-  HitboxData* unk_24;  // 0x24
-  HitboxData data0;    // 0x28
-  HitboxData data1;    // 0x78
-  u16 unk_c8;          // 0xC8
-  u16 unk_ca;          // 0xCA
+  Entity e;                   // 0x0, ENTITY_UNK_11
+  HitboxData* targets;        // 0x18, &targetSentinel。Hitbox_Register が HBFLAG_UNK_13 なしの Hitbox をここへ繋ぐ。Hitbox_Unregister で外すまで残り続ける
+  HitboxData* attacks;        // 0x1C, &attackSentinel。Hitbox_Register が HBFLAG_UNK_13 付きの Hitbox をここへ繋ぐ。HitboxManager_Update が毎フレーム空にするので、攻撃側は毎フレーム登録し直す
+  HitboxData* targetsTail;    // 0x20, targets リストの末尾。Hitbox_LinkTarget がここに繋いで更新し、Hitbox_Unregister が末尾を外すときに戻す
+  HitboxData* attacksTail;    // 0x24, targetsTail と対になる attacks 側の末尾。Hitbox_LinkAttack が先頭挿入なので誰も読まない
+  HitboxData targetSentinel;  // 0x28, targets リストのダミー先頭ノード。next しか使われない
+  HitboxData attackSentinel;  // 0x78, attacks リストのダミー先頭ノード。next しか使われない
+  u16 targetCount;            // 0xC8
+  u16 attackCount;            // 0xCA, 0 なら HitboxManager_Update は判定を丸ごと飛ばす
 } HitboxManager;
 static_assert(sizeof(HitboxManager) == 204);
 
 IWRAM_DATA HitboxManager* gHitboxManager = NULL;  // 0x03000780
 
-// unk_18 のリストの末尾に p を繋ぐ。既に繋がっていれば何もしない
-void FUN_08236388(HitboxData* p) {
+// targets リストの末尾に p を繋ぐ。既に繋がっていれば何もしない
+void Hitbox_LinkTarget(HitboxData* p) {
   HitboxData* q;
 
   if (gHitboxManager == NULL) {
     return;
   }
-  q = gHitboxManager->unk_18;
+  q = gHitboxManager->targets;
   while ((q = q->next) != NULL) {
     if (q == p) {
       return;
     }
   }
-  gHitboxManager->unk_20->next = p;
+  gHitboxManager->targetsTail->next = p;
   p->next = NULL;
-  gHitboxManager->unk_20 = p;
-  gHitboxManager->unk_c8++;
+  gHitboxManager->targetsTail = p;
+  gHitboxManager->targetCount++;
 }
 
-// unk_1c のリストの先頭に p を繋ぐ。既に繋がっていれば何もしない
-NON_MATCH void FUN_082363c4(HitboxData* p) {
+// attacks リストの先頭に p を繋ぐ。既に繋がっていれば何もしない
+// ループに入る前のガード (cmp/beq) が出ない。agbcc が本体先頭の q == p 判定と末尾判定をまとめて rotate してしまう
+NON_MATCH void Hitbox_LinkAttack(HitboxData* p) {
 #ifdef NONMATCHING_C
-  HitboxData* head;
   HitboxData* q;
 
   if (gHitboxManager == NULL) {
     return;
   }
-  head = gHitboxManager->unk_1c;
-  for (q = head->next; q != NULL; q = q->next) {
+  q = gHitboxManager->attacks->next;
+  while (q != NULL) {
     if (q == p) {
       return;
     }
+    q = q->next;
   }
-  p->next = gHitboxManager->unk_1c->next;
-  gHitboxManager->unk_1c->next = p;
-  gHitboxManager->unk_ca++;
+  p->next = gHitboxManager->attacks->next;
+  gHitboxManager->attacks->next = p;
+  gHitboxManager->attackCount++;
 #else
-  INCFUNC("asm/func/FUN_082363c4.inc");
+  INCFUNC("asm/func/Hitbox_LinkAttack.inc");
 #endif
 }
 
-void FUN_08236400(HitboxData* p) {
+void Hitbox_Register(HitboxData* p) {
   if (p->flags & HBFLAG_UNK_13) {
-    FUN_082363c4(p);
+    Hitbox_LinkAttack(p);
   } else {
-    FUN_08236388(p);
+    Hitbox_LinkTarget(p);
   }
 }
 
-// unk_18 のリストから p を外す
-void FUN_08236424(HitboxData* p) {
+// targets リストから p を外す
+void Hitbox_Unregister(HitboxData* p) {
   HitboxData* prev;
   HitboxData* q;
 
   if (gHitboxManager == NULL) {
     return;
   }
-  prev = gHitboxManager->unk_18;
+  prev = gHitboxManager->targets;
   q = prev->next;
   if (q == NULL) {
     return;
   }
   do {
     if (q == p) {
-      if (q == gHitboxManager->unk_20) {
-        gHitboxManager->unk_20 = prev;
+      if (q == gHitboxManager->targetsTail) {
+        gHitboxManager->targetsTail = prev;
       }
       prev->next = q->next;
-      gHitboxManager->unk_c8--;
+      gHitboxManager->targetCount--;
       return;
     }
     prev = q;
@@ -95,131 +98,260 @@ void FUN_08236424(HitboxData* p) {
   } while (q != NULL);
 }
 
-NAKED void FUN_0823646c(HitboxData* p, u32 param_2, u32 param_3, u32 param_4, u16 param_5, Vec3* size, Vec3* offset) { INCFUNC("asm/func/FUN_0823646c.inc"); }
-
-void FUN_082364c4(HitboxData* p, Vec3* pos, u32 param_3) {
-  p->vec3_c.x = pos->x;
-  p->vec3_c.y = pos->y;
-  p->vec3_c.z = pos->z;
-  p->unk_8 = param_3;
+// 当たり判定1つを作る。属性やダメージ関係は全部 0 に戻す
+void Hitbox_Init(HitboxData* p, u32 id, u32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset) {
+  p->flags = flags;
+  p->unk_4 = id;
+  p->unk_8 = unk_8;
+  p->ignoreMask = ignoreMask;
+  p->halfSize = *halfSize;
+  p->offset = *offset;
+  p->hitResult = 0;
+  p->damage = 0;
+  p->weakness = 0;
+  p->attributes = 0;
+  p->unk_40 = 0;
+  p->fn = NULL;
+  p->unk_47 = 1;
 }
 
-void UNUSED FUN_082364d4(HitboxData* p, Vec3* param_2, Vec3* param_3, u32 param_4) {
-  p->vec3_c = *param_2;
-  p->vec3_14 = *param_3;
-  p->unk_8 = param_4;
+void Hitbox_SetPos(HitboxData* p, Vec3* pos, u32 unk_8) {
+  p->pos.x = pos->x;
+  p->pos.y = pos->y;
+  p->pos.z = pos->z;
+  p->unk_8 = unk_8;
 }
 
-void FUN_082364f0(HitboxData* p, u16 param_2, u16 param_3) {
-  p->unk_3c = param_2;
-  p->unk_40 = param_3;
+void UNUSED Hitbox_SetPosAndOffset(HitboxData* p, Vec3* pos, Vec3* offset, u32 unk_8) {
+  p->pos = *pos;
+  p->offset = *offset;
+  p->unk_8 = unk_8;
 }
 
-void FUN_082364f8(HitboxData* p, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6) {
-  p->unk_3c = param_2;
-  p->unk_40 = param_3;
-  p->unk_34 = param_4;
-  p->unk_38 = param_5;
-  p->unk_44 = param_6;
+void Hitbox_SetPower(HitboxData* p, u16 power, u16 unk_40) {
+  p->power = power;
+  p->unk_40 = unk_40;
 }
 
-void FUN_08236514(HitboxData* p, u32 val1, u32 val2, u32 val3) {
-  p->unk_3c = val1;
-  p->unk_38 = val2;
-  p->unk_34 = val3;
+void Hitbox_SetAttack(HitboxData* p, s32 power, s32 unk_40, s32 weakness, s32 attributes, s32 unk_44) {
+  p->power = power;
+  p->unk_40 = unk_40;
+  p->weakness = weakness;
+  p->attributes = attributes;
+  p->unk_44 = unk_44;
 }
 
-void FUN_0823651c(HitboxData* p, void* handler, void* owner) {
+void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 power, u32 attributes, u32 weakness) {
+  p->power = power;
+  p->attributes = attributes;
+  p->weakness = weakness;
+}
+
+void Hitbox_SetHandler(HitboxData* p, void* handler, void* owner) {
   p->fn = handler;
   p->owner = owner;
 }
 
-NAKED void FUN_08236524(HitboxData* a, HitboxData* b) { INCFUNC("asm/func/FUN_08236524.inc"); }
+// a が b に当たったときのダメージを b->damage に書き、効き具合を b->hitResult に残す
+// 命令列はあと1命令 (143 対 142) まで近いが、a->attributes のロード位置とレジスタ割り当てが違う
+NON_MATCH void Hitbox_ApplyDamage(HitboxData* a, HitboxData* b) {
+#ifdef NONMATCHING_C
+  s32 damage;
+  s32 atk;
+  s32 def;
+  s32 weak;
+  s32 diff;
 
-NAKED void FUN_08236640(unknown* a, unknown* b) { INCFUNC("asm/func/FUN_08236640.inc"); }
-
-NAKED void FUN_08236768(void* a, void* b, void* c) { INCFUNC("asm/func/FUN_08236768.inc"); }
-NAKED void FUN_082367e4(void* a, void* b, void* c) { INCFUNC("asm/func/FUN_082367e4.inc"); }
-NAKED bool32 FUN_082368d4(void* a, void* b, void* c, void* d, void* e) { INCFUNC("asm/func/FUN_082368d4.inc"); }
-NAKED bool32 FUN_082369cc(void* a, void* b, void* c, void* d, void* e) { INCFUNC("asm/func/FUN_082369cc.inc"); }
-NAKED bool32 Unused_FUN_08236ac4(void* a, void* b, void* c, void* d, void* e) { INCFUNC("asm/func/Unused_FUN_08236ac4.inc"); }
-NAKED bool32 Unused_FUN_08236bbc(void* a, void* b, void* c, void* d) { INCFUNC("asm/func/Unused_FUN_08236bbc.inc"); }
-NAKED bool32 Unused_FUN_08236c18(void* a, void* b) { INCFUNC("asm/func/Unused_FUN_08236c18.inc"); }
-
-// 各 Hitbox の判定範囲を vec3_c + vec3_14 で更新する。unk_18 側は HBFLAG_UNK_2 が立っていれば飛ばす
-void FUN_08236d10(void* unused1, void* unused2, HitboxData* unk_1c, HitboxData* unk_18) {
-  HitboxData* p;
-  HitboxData* q;
-  HitboxData* p2;
-  HitboxData* q2;
-
-  q = unk_1c->next;
-  if (q != NULL) {
-    do {
-      p = q;
-      q = q->next;
-      p->box.w = p->vec3_c.x + p->vec3_14.x;
-      p->box.h = p->vec3_c.y + p->vec3_14.y;
-      p->box.d = p->vec3_c.z + p->vec3_14.z;
-    } while (q != NULL);
+  if (b->damage != 0) {
+    return;
   }
-  q2 = unk_18->next;
-  if (q2 != NULL) {
-    do {
-      p2 = q2;
-      q2 = q2->next;
-      if (!(p2->flags & HBFLAG_UNK_2)) {
-        p2->box.w = p2->vec3_c.x + p2->vec3_14.x;
-        p2->box.h = p2->vec3_c.y + p2->vec3_14.y;
-        p2->box.d = p2->vec3_c.z + p2->vec3_14.z;
-      }
-    } while (q2 != NULL);
+  if (a->attributes & (1 << 12)) {
+    damage = a->power;
+  } else {
+    damage = a->power - b->power;
+  }
+  if (damage <= 0) {
+    damage = 1;
+  }
+  if (a->attributes & (1 << 13)) {
+    def = 0;
+  } else {
+    def = b->attributes & 0x7F;
+  }
+  weak = b->weakness & 0x7F;
+  atk = a->attributes & 0x7F;
+  if (atk == 0) {
+    b->damage = damage;
+    b->hitResult = HBRESULT_NORMAL;
+  } else if (def == 0) {
+    b->damage = damage * 5 >> 2;
+    b->hitResult = HBRESULT_NORMAL;
+  } else if (def == 0x40) {
+    b->damage = damage >> 2;
+    b->hitResult = HBRESULT_RESIST;
+  } else if (atk == 0x40) {
+    b->damage = damage * 5 >> 2;
+    b->hitResult = HBRESULT_NORMAL;
+  } else if (def & atk) {
+    b->damage = damage >> 2;
+    b->hitResult = HBRESULT_RESIST;
+  } else if (weak & atk) {
+    b->damage = damage * 4;
+    b->hitResult = HBRESULT_WEAK;
+  } else {
+    b->damage = damage * 5 >> 2;
+    b->hitResult = HBRESULT_NORMAL;
+  }
+  if ((b->flags & HBFLAG_UNK_8) && (a->flags & HBFLAG_UNK_8)) {
+    diff = b->angle - a->angle;
+    if (diff < 0) {
+      diff = -diff;
+    }
+    if (diff <= 0x20) {
+      b->damage = (u32)b->damage * 3 >> 1;
+      b->hitResult |= HBRESULT_BONUS;
+    }
+  }
+  if (b->damage == 0) {
+    b->damage = 1;
+  }
+#else
+  INCFUNC("asm/func/Hitbox_ApplyDamage.inc");
+#endif
+}
+
+// Hitbox_ApplyDamage とほぼ同じダメージ計算。gFlag030047a4 の bit11/bit14 が立っているときだけ使われる (FUN_0813e944)
+NAKED void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Hitbox_ApplyDamageAlt.inc"); }
+
+// a->angle の象限から、a を b の外へ押し出す方向を out に入れる
+void Hitbox_GetPushDir(HitboxData* a, HitboxData* b, Vec3* out) {
+  s32 quadrant = ((a->angle + 0x20) & 0xFF) >> 6;
+
+  if (quadrant == 0) {
+    out->x = (a->center.x + a->halfSize.x) + b->halfSize.x - b->center.x;
+    out->y = 0;
+    out->z = 0;
+  } else if (quadrant == 1) {
+    out->x = 0;
+    out->y = 0;
+    out->z = (a->center.z + a->halfSize.z) + b->halfSize.z - b->center.z;
+  } else if (quadrant == 2) {
+    out->x = a->center.x - a->halfSize.x - b->halfSize.x - b->center.x;
+    out->y = 0;
+    out->z = 0;
+  } else {
+    out->x = 0;
+    out->y = 0;
+    out->z = a->center.z - a->halfSize.z - b->halfSize.z - b->center.z;
   }
 }
 
-NAKED void Entity08236ed0_Update_Helper_08236d70(void* unused1, void* unused2, HitboxData* unk_1c, HitboxData* unk_18) { INCFUNC("asm/func/Entity08236ed0_Update_Helper_08236d70.inc"); }
+NAKED void FUN_082367e4(void* a, void* b, void* c) { INCFUNC("asm/func/FUN_082367e4.inc"); }
 
-NAKED s32 Entity08236ed0_Update(HitboxManager* p) { INCFUNC("asm/func/Entity08236ed0_Update.inc"); }
+NAKED bool32 FUN_082368d4(Vec3* a, Vec3* b, Vec3* center, Vec3* halfSize, Vec3* out) { INCFUNC("asm/func/FUN_082368d4.inc"); }
 
-s32 Entity08236ed0_Destroy(HitboxManager* p) {
+NAKED bool32 FUN_082369cc(Vec3* a, Vec3* b, Vec3* center, Vec3* halfSize, Vec3* out) { INCFUNC("asm/func/FUN_082369cc.inc"); }
+
+NAKED bool32 FUN_08236ac4(Vec3* a, Vec3* b, Vec3* center, Vec3* halfSize, Vec3* out) { INCFUNC("asm/func/FUN_08236ac4.inc"); }
+
+// 線分 a-b が p の判定の直方体と交わるかを3通りの向きで試す
+bool32 FUN_08236bbc(Vec3* a, Vec3* b, HitboxData* p, Vec3* out) {
+  Vec3* center = &p->center;
+  Vec3* halfSize = &p->halfSize;
+  if (FUN_082368d4(a, b, center, halfSize, out)) return TRUE;
+  if (FUN_082369cc(a, b, center, halfSize, out)) return TRUE;
+  if (FUN_08236ac4(a, b, center, halfSize, out)) return TRUE;
+  return FALSE;
+}
+
+NAKED bool32 UNUSED FUN_08236c18(void* a, void* b) { INCFUNC("asm/func/FUN_08236c18.inc"); }
+
+// 各 Hitbox の判定範囲を pos + offset で更新する。targets 側は HBFLAG_UNK_2 が立っていれば飛ばす
+void Hitbox_UpdateBoxes(u32 attackCount, u32 targetCount, HitboxData* attacks, HitboxData* targets) {
+  HitboxData *a, *b;
+
+  a = attacks->next;
+  while (a != NULL) {
+    HitboxData* p = a;
+    a = a->next;
+    p->center.x = p->pos.x + p->offset.x;
+    p->center.y = p->pos.y + p->offset.y;
+    p->center.z = p->pos.z + p->offset.z;
+  }
+
+  b = targets->next;
+  while (b != NULL) {
+    HitboxData* p = b;
+    b = b->next;
+    if (!(p->flags & HBFLAG_UNK_2)) {
+      p->center.x = p->pos.x + p->offset.x;
+      p->center.y = p->pos.y + p->offset.y;
+      p->center.z = p->pos.z + p->offset.z;
+    }
+  }
+}
+
+NAKED void Hitbox_CheckAllPairs(u32 attackCount, u32 targetCount, HitboxData* attacks, HitboxData* targets) { INCFUNC("asm/func/Hitbox_CheckAllPairs.inc"); }
+
+// 溜まっている攻撃側の Hitbox を targets 側と総当たりし、終わったら attacks リストを空に戻す
+s32 HitboxManager_Update(HitboxManager* p) {
+  if (p->attackCount != 0) {
+    if (gEntityDisableFlags != 0) {
+      p->attackCount = 0;
+      p->attacks->next = NULL;
+      p->attacksTail = p->attacks;
+    } else {
+      if (p->targetCount != 0) {
+        Hitbox_CheckAllPairs(p->attackCount, p->targetCount, p->attacks, p->targets);
+      }
+      p->attackCount = 0;
+      p->attacks->next = NULL;
+      p->attacksTail = p->attacks;
+    }
+  }
+  return 0;
+}
+
+s32 HitboxManager_Destroy(HitboxManager* p) {
   gHitboxManager = NULL;
   return 0;
 }
 
 // なぜかこの Entity だけ 他の Entity_Init 関数とシグネチャが違う
-void Entity08236ed0_Init(void) {
+void HitboxManager_Init(void) {
   HitboxManager* p = gHitboxManager;
 
   if (p != NULL) {
-    p->unk_18 = &p->data0;
-    p->unk_1c = &p->data1;
-    p->data0.next = NULL;
-    p->data1.next = NULL;
-    p->unk_20 = &p->data0;
-    p->unk_24 = &p->data1;
-    p->unk_c8 = 0;
-    p->unk_ca = 0;
+    p->targets = &p->targetSentinel;
+    p->attacks = &p->attackSentinel;
+    p->targetSentinel.next = NULL;
+    p->attackSentinel.next = NULL;
+    p->targetsTail = &p->targetSentinel;
+    p->attacksTail = &p->attackSentinel;
+    p->targetCount = 0;
+    p->attackCount = 0;
   }
 }
 
-HitboxManager* Entity08236ed0_Create(void) {
+HitboxManager* HitboxManager_Create(void) {
   HitboxManager* p;
 
   if (gHitboxManager == NULL) {
     p = CreateEntity(ENTITY_UNK_11, sizeof(HitboxManager));
     if (p != NULL) {
-      SetEntityRoutine(p, Entity08236ed0_Update, Entity08236ed0_Destroy);
+      SetEntityRoutine(p, HitboxManager_Update, HitboxManager_Destroy);
       gHitboxManager = p;
-      Entity08236ed0_Init();
+      HitboxManager_Init();
     }
     return p;
   }
   return gHitboxManager;
 }
 
-HitboxManager* FUN_08236f0c(void) { return gHitboxManager; }
+HitboxManager* GetHitboxManager(void) { return gHitboxManager; }
 
-// AABBのOverlapを判定する関数
+// 2つの判定の直方体が重なっているかを軸ごとに見る
+// 命令列は一致するがレジスタ割り当てだけが違う。b が r5 でなく r6 に、hit が r6 でなく r3 に入る
 NON_MATCH bool32 Hitbox_CheckOverlap(HitboxData* a, HitboxData* b) {
 #ifdef NONMATCHING_C
   bool32 ret;
@@ -227,21 +359,21 @@ NON_MATCH bool32 Hitbox_CheckOverlap(HitboxData* a, HitboxData* b) {
   s32 sum;
 
   ret = FALSE;
-  sum = (s16)(a->box.x + b->box.x);
   hit = FALSE;
-  if (a->box.w - sum <= b->box.w && b->box.w - sum <= a->box.w) {
+  sum = a->halfSize.x + b->halfSize.x;
+  if (a->center.x - (s16)sum <= b->center.x && b->center.x - (s16)sum <= a->center.x) {
     hit = TRUE;
   }
   if (hit) {
-    sum = (s16)(a->box.y + b->box.y);
     hit = FALSE;
-    if (a->box.h - sum <= b->box.h && b->box.h - sum <= a->box.h) {
+    sum = a->halfSize.y + b->halfSize.y;
+    if (a->center.y - (s16)sum <= b->center.y && b->center.y - (s16)sum <= a->center.y) {
       hit = TRUE;
     }
     if (hit) {
-      sum = (s16)(a->box.z + b->box.z);
       hit = FALSE;
-      if (a->box.d - sum <= b->box.d && b->box.d - sum <= a->box.d) {
+      sum = a->halfSize.z + b->halfSize.z;
+      if (a->center.z - (s16)sum <= b->center.z && b->center.z - (s16)sum <= a->center.z) {
         hit = TRUE;
       }
       if (hit) {

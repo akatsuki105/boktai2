@@ -120,7 +120,7 @@ NON_MATCH void FreezeEffect_StateVanish(FreezeEffect* p) {
   Vec3 spread, speed;
 
   FreezeEffect_GatherSubParticles(p);
-  FUN_08236400(&p->hitbox);
+  Hitbox_Register(&p->hitbox);
   if (++p->stateTimer > 15) {
     y = p->ptcl.pos.y;
     pos = &p->pos;
@@ -192,11 +192,11 @@ void FreezeEffect_InitHitbox(FreezeEffect* p, s32 param_2, s32 param_3, s32 para
   Vec3 size, offset;
   size.x = 100, size.y = 100, size.z = 100;
   offset.x = 0, offset.y = 0, offset.z = 0;
-  FUN_0823646c(hitbox, 0, 0x2100, 0, param_2, &size, &offset);
-  FUN_082364f8(hitbox, param_3, 0, 0x4000, 0, 0);
-  hitbox->unk_42 = param_4;
-  FUN_0823651c(hitbox, NULL, p);
-  FUN_082364c4(hitbox, &p->ptcl.pos, 0);
+  Hitbox_Init(hitbox, 0, 0x2100, 0, param_2, &size, &offset);
+  Hitbox_SetAttack(hitbox, param_3, 0, 0x4000, 0, 0);
+  hitbox->angle = param_4;
+  Hitbox_SetHandler(hitbox, NULL, p);
+  Hitbox_SetPos(hitbox, &p->ptcl.pos, 0);
 }
 
 // 中心の粒子を作る (最初は非表示, FreezeEffect_StateGather で表示される)

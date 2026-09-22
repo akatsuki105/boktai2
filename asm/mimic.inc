@@ -3105,12 +3105,12 @@ _08147F92:
 	beq _08147FA0
 	mov r0, r8
 	adds r1, r7, #0
-	bl FUN_08236640
+	bl Hitbox_ApplyDamageAlt
 	b _08147FA8
 _08147FA0:
 	mov r0, r8
 	adds r1, r7, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 _08147FA8:
 	mov r0, r8
 	adds r0, #0x44
@@ -4942,7 +4942,7 @@ _08148D82:
 	bl FUN_0823b284
 	adds r0, r4, #0
 	adds r0, #0xd8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	bl FUN_080ec6fc
 	movs r0, #0

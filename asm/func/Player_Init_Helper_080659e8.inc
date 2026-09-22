@@ -37,7 +37,7 @@
 	str r4, [sp, #8]
 	adds r0, r6, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -48,7 +48,7 @@
 	movs r1, #0x14
 	movs r2, #1
 	movs r3, #2
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 	b _08065A6C
 	.align 2, 0
 _08065A54: .4byte 0xFFFF0000
@@ -59,20 +59,20 @@ _08065A60:
 	movs r1, #0x14
 	movs r2, #2
 	movs r3, #1
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 _08065A6C:
 	ldr r1, _08065A94 @ =FUN_0807e784
 	adds r0, r6, #0
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	movs r0, #0x82
 	lsls r0, r0, #1
 	adds r1, r5, r0
 	adds r0, r6, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r6, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	add sp, #0x1c
 	pop {r4, r5, r6}
 	pop {r0}

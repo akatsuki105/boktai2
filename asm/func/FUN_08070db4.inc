@@ -308,10 +308,10 @@ _08070FFE:
 	adds r0, r6, r3
 	add r1, sp, #4
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r5, #0
 	adds r0, #0x48
-	bl FUN_08236400
+	bl Hitbox_Register
 	b _08070DDE
 	.align 2, 0
 _08071018: .4byte 0xFFFF0000
@@ -338,7 +338,7 @@ _08071040:
 	movs r1, #0xa1
 	lsls r1, r1, #4
 	adds r0, r6, r1
-	bl FUN_08236400
+	bl Hitbox_Register
 	b _08070DDE
 	.align 2, 0
 _0807104C: .4byte 0x00000A86

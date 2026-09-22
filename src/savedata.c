@@ -226,10 +226,10 @@ void UNUSED nop_08241420(void) {}
 s32 VM_BackupVars(UnkData6148* p) {
   q_VarDesc* desc = p->descs;
   u32* dst = p->values;
-  while (p->count <= 511 && VM_GetPC() != NULL) {
+  while (p->count < 512 && VM_GetPC() != NULL) {
     s32 i;
     FUN_0823167c(desc->desc);
-    for (i = 0; i < desc->count && p->count <= 511; i++) {
+    for (i = 0; i < desc->count && p->count < 512; i++) {
       *dst++ = FUN_082320e4(desc->desc, i);
       p->count++;
     }

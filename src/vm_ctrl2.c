@@ -4,7 +4,7 @@
 void FUN_08231780(void);
 void SetMapInitScriptID(u32 n);
 bool32 FUN_0823a8b0(void);
-void FUN_08230eec(Unk_0203f400*);
+void FUN_08230eec(ScriptRecord*);
 
 TaskFn VM_GetSubroutine(u32 subroutineID);
 
@@ -51,7 +51,7 @@ s32 VM_Ctrl_Call(void) {
 // スクリプトからIDと可変個のu16値を読み取り、1件のレコードとして FUN_08230eec のテーブルに登録する
 s32 VM_Ctrl_22FF(void) {
   u16 args[16];
-  Unk_0203f400 rec;
+  ScriptRecord rec;
   u16* p;
   s16 count;
 

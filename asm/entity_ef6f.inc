@@ -1203,7 +1203,7 @@ FUN_0801eb64: @ 0x0801EB64
 	cmp r0, #0
 	beq _0801EB7E
 	ldrb r0, [r4, #0x1e]
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	adds r1, r4, #0
 	adds r1, #0x22
 	movs r0, #0
@@ -2572,16 +2572,16 @@ _0801F5D8: .4byte 0x00005D04
 _0801F5DC: .4byte 0x000082F1
 _0801F5E0:
 	adds r0, r1, #0
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #1
 	movs r1, #1
 	movs r2, #0x1e
 	movs r3, #6
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	ldr r0, _0801F710 @ =0x0000A41A
-	bl FUN_08047dc0
+	bl TextBox_SetBgPltt
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	adds r0, r6, #0
 	movs r1, #1
 	bl FUN_0801e2a8

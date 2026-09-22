@@ -48,7 +48,7 @@ _0813E6E0:
 _0813E70E:
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 	movs r2, #0x90
 	lsls r2, r2, #3
 	adds r0, r5, r2
@@ -842,12 +842,12 @@ _0813ECF6:
 	beq _0813ED04
 	adds r0, r7, #0
 	mov r1, r8
-	bl FUN_08236640
+	bl Hitbox_ApplyDamageAlt
 	b _0813ED0C
 _0813ED04:
 	adds r0, r7, #0
 	mov r1, r8
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 _0813ED0C:
 	adds r0, r7, #0
 	adds r0, #0x44
@@ -6168,7 +6168,7 @@ _08141572:
 	bl FUN_0823b284
 	adds r0, r4, #0
 	adds r0, #0xd8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	bl FUN_080ec6fc
 	movs r0, #0

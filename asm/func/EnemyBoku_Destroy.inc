@@ -99,7 +99,7 @@ _08101CEA:
 	bl FUN_0823b284
 	adds r0, r4, #0
 	adds r0, #0xd8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	bl FUN_080ec6fc
 	movs r0, #0

@@ -12,7 +12,7 @@
 	bne _0821C708
 	adds r0, r5, #0
 	adds r1, r7, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 	ldrh r1, [r7, #0x3e]
 	movs r2, #0xfb
 	lsls r2, r2, #2

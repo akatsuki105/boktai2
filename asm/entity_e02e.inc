@@ -114,16 +114,16 @@ FUN_080b5b50: @ 0x080B5B50
 	lsls r0, r0, #5
 	adds r4, r4, r0
 	ldr r0, [r4]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #0
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	adds r0, r5, #0
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	pop {r4, r5}
 	pop {r0}
 	bx r0
@@ -170,7 +170,7 @@ _080B5BD2:
 	movs r2, #1
 	orrs r1, r2
 	str r1, [r0]
-	bl FUN_08047864
+	bl TextBox_Close
 	bl FUN_08049e5c
 	b _080B5CA4
 _080B5BEE:
@@ -193,16 +193,16 @@ _080B5BEE:
 	ldr r2, _080B5C60 @ =0x000013F4
 	adds r4, r6, r2
 	ldr r0, [r4]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	adds r0, r7, #0
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r0, [r4]
 	bl VM_ParseStringRef
 	ldr r0, [r4]
@@ -1690,7 +1690,7 @@ FUN_080b685c: @ 0x080B685C
 	ldr r1, [r0]
 	orrs r1, r2
 	str r1, [r0]
-	bl FUN_08047864
+	bl TextBox_Close
 	adds r0, r4, #0
 	bl FUN_080b6114
 	ldr r1, _080B68A0 @ =FUN_080b68bc
@@ -1875,7 +1875,7 @@ _080B69EE:
 	movs r2, #1
 	orrs r1, r2
 	str r1, [r0]
-	bl FUN_08047864
+	bl TextBox_Close
 	bl FUN_08049e5c
 	b _080B6A60
 _080B6A0E:
@@ -1901,12 +1901,12 @@ _080B6A0E:
 	ldr r2, _080B6A6C @ =0x000013F8
 	adds r4, r5, r2
 	ldr r0, [r4]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	ldr r0, _080B6A70 @ =0x00001404
 	adds r1, r5, r0
 	mov r0, sp
@@ -3533,7 +3533,7 @@ FUN_080b7794: @ 0x080B7794
 	ldr r1, [r0]
 	orrs r1, r2
 	str r1, [r0]
-	bl FUN_08047864
+	bl TextBox_Close
 	adds r0, r4, #0
 	bl FUN_080b6dc4
 	ldr r1, _080B77D8 @ =FUN_080b77f4
@@ -3729,7 +3729,7 @@ _080B7940:
 	movs r2, #1
 	orrs r1, r2
 	str r1, [r0]
-	bl FUN_08047864
+	bl TextBox_Close
 	bl FUN_08049e5c
 	b _080B79C6
 _080B795C:
@@ -3751,12 +3751,12 @@ _080B795C:
 	ldr r2, _080B79D0 @ =0x000013FC
 	adds r5, r5, r2
 	ldr r0, [r5]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	ldr r0, _080B79D4 @ =0x08DAA7B0
 	lsls r4, r6, #3
 	adds r4, r4, r0
@@ -3767,9 +3767,9 @@ _080B795C:
 	movs r0, #1
 	bl FUN_08049e6c
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	adds r0, r6, #0
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r0, [r5]
 	bl VM_ParseStringRef
 	adds r0, #0x25
@@ -5499,7 +5499,7 @@ FUN_080b87c4: @ 0x080B87C4
 	ldr r1, [r0]
 	orrs r1, r2
 	str r1, [r0]
-	bl FUN_08047864
+	bl TextBox_Close
 	adds r0, r4, #0
 	bl FUN_080b8044
 	ldr r1, _080B8808 @ =FUN_080b8824
@@ -6328,11 +6328,11 @@ _080B8ED6:
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	ldr r0, _080B8F04 @ =0x0000A41A
-	bl FUN_08047dc0
+	bl TextBox_SetBgPltt
 	pop {r4}
 	pop {r0}
 	bx r0

@@ -220,44 +220,44 @@ void (*const PTR_ARRAY_085ac044[8])(Entity28CB*) = {
 };
 
 s32 Entity28CB_Update(Entity28CB* p) {
-  AuxSprite* node;
+  AuxSprite* spr;
   s32 spread;
   s32 i;
   PTR_ARRAY_085ac044[p->state](p);
   if (p->state != 0) {
     for (i = 0; i < 5; i++) {
-      node = &p->sprites[i];
-      node->pos = p->pos;
+      spr = &p->sprites[i];
+      spr->pos = p->pos;
       spread = p->spread;
       switch (i) {
         case 0: {
-          node->pos.y += p->height;
-          node->scaleY = node->scaleX = p->scale >> 4;
+          spr->pos.y += p->height;
+          spr->scaleY = spr->scaleX = p->scale >> 4;
           break;
         }
         case 1: {
-          node->pos.x -= spread;
-          node->pos.z -= spread;
+          spr->pos.x -= spread;
+          spr->pos.z -= spread;
           break;
         }
         case 2: {
-          node->pos.x += spread;
-          node->pos.z += spread;
+          spr->pos.x += spread;
+          spr->pos.z += spread;
           break;
         }
         case 3: {
-          node->pos.x -= spread;
-          node->pos.z += spread;
+          spr->pos.x -= spread;
+          spr->pos.z += spread;
           break;
         }
         case 4: {
-          node->pos.x += spread;
-          node->pos.z -= spread;
+          spr->pos.x += spread;
+          spr->pos.z -= spread;
           break;
         }
       }
-      node->pos.x += p->shakeX;
-      node->pos.z += p->shakeZ;
+      spr->pos.x += p->shakeX;
+      spr->pos.z += p->shakeZ;
     }
   }
   return 0;

@@ -24,7 +24,7 @@
 	ldrsh r1, [r1, r4]
 	ldr r2, _08221628 @ =0x00000802
 	movs r3, #1
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 	b _08221642
 	.align 2, 0
 _08221624: .4byte 0x000003F2
@@ -39,7 +39,7 @@ _0822162C:
 	ldrsh r1, [r1, r3]
 	ldr r2, _08221700 @ =0x00000802
 	movs r3, #1
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 _08221642:
 	movs r2, #1
 	adds r1, r6, #0

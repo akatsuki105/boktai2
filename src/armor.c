@@ -113,7 +113,7 @@ bool32 IsSlotArmorEpuipped(slot32_t n) {
 bool32 FUN_08243380(void) {
   slot32_t slot;
   armor32_t a;
-  if (VM_SeekToKeyword(97) == 0) {
+  if (VM_SeekToKeyword('a') == 0) {
     return FALSE;
   }
 
@@ -133,10 +133,10 @@ NON_MATCH void armor_082433bc(void) {
   s32 i;
   s32 count;
 
-  for (i = 0; i <= 1; i++) {
+  for (i = 0; i < 2; i++) {
     gStat->armorDex[i] = 0;
   }
-  for (i = 0; i <= 31; i++) {
+  for (i = 0; i < 32; i++) {
     RemoveArmorFromInventory(i);
   }
   gStat->armor = -1;
@@ -162,11 +162,12 @@ NON_MATCH void armor_082433bc(void) {
 #endif
 }
 
+// 収集数を数える。ロックマン系のコラボ装備4つ (33..36) は数に入れない
 s32 CountFoundArmors(void) {
   s32 i;
   s32 count = 0;
   for (i = 0; i < ARMOR_NUM; i++) {
-    if (3 < (u32)(i - 33)) {
+    if (i < ARMOR_MEGA_POWER || i > ARMOR_TOAD_POWER) {
       if (IsArmorAlreadyFound(i)) {
         count++;
       }

@@ -92,7 +92,7 @@ NON_MATCH void FUN_08242c08(slot32_t n) {
 #ifdef NONMATCHING_C
   s32 i;
   FUN_08242b6c(n, &gWeaponDB[0]);
-  for (i = 0; i <= 3; i++) {
+  for (i = 0; i < 4; i++) {
     if (REGISTERED_WEAPON(i) == n) {
       REGISTERED_WEAPON(i) = -1;
     }
@@ -114,7 +114,7 @@ void SwapWeaponSlot(slot32_t slot1, slot32_t slot2) {
   *w1 = *w2;
   *w2 = tmp;
 
-  for (i = 0; i <= 3; i++) {
+  for (i = 0; i < 4; i++) {
     if (REGISTERED_WEAPON(i) == slot1) {
       REGISTERED_WEAPON(i) = slot2;
       FUN_08064658(gPlayerPtr[0], w2);
@@ -128,7 +128,7 @@ void SwapWeaponSlot(slot32_t slot1, slot32_t slot2) {
 NAKED void SortWeapons(slot32_t from) { INCFUNC("asm/func/SortWeapons.inc"); }
 
 bool32 IsSpecialWeapon(weapon32_t w) {
-  if ((u32)(w - 58) < 8) {
+  if (w >= WEAPON_BROKEN_GUN && w <= WEAPON_ASTRO_HAMMER) {
     return TRUE;
   }
   return FALSE;

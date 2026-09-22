@@ -23,12 +23,12 @@
 	adds r1, #0x50
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _0821C650 @ =0x0000023E
 	adds r0, r4, r1
 	strb r6, [r0]
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 _0821C616:
 	movs r1, #0x80
 	lsls r1, r1, #9
@@ -106,12 +106,12 @@ _0821C680:
 	adds r0, r5, #0
 	mov r1, sp
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r5, #0
 	adds r0, #0x42
 	strb r6, [r0]
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 _0821C6BA:
 	add sp, #8
 	pop {r4, r5, r6, r7}

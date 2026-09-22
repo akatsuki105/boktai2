@@ -112,9 +112,9 @@ _0805F168:
 _0805F1AE:
 	adds r0, r6, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r6, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	b _0805F206
 	.align 2, 0
 _0805F1C0: .4byte 0x03002BE0
@@ -409,7 +409,7 @@ _0805F3A8:
 	mov r1, sl
 	ldr r2, [sp, #0x28]
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	add r0, sp, #0x30
 	ldrb r0, [r0]
 	strb r0, [r5, #1]

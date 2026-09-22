@@ -9,7 +9,7 @@ import * as path from "@std/path";
 const main = () => {
   new Command()
     .name("census.ts")
-    .description("未一致関数 (NAKED / NON_MATCH) の関数をサイズ昇順で列挙する。出力は TSV: size<TAB>name<TAB>inc_path")
+    .description("未一致関数 (NAKED / NON_MATCH) の関数をサイズ昇順で列挙する。出力は TSV: size<TAB>level<TAB>name<TAB>inc_path")
     .argument("<files...:string>", "探索対象の .c のパス (glob で複数渡せる)")
     .action((_opts, ...targets: string[]) => {
       census(getRepoRoot(), targets);
@@ -39,9 +39,11 @@ const incRe = /INCFUNC\("(asm\/func\/[^"]+\.inc)"\)/;
 // 型は複数トークンになりうる (`NAKED EntityD854Node* Foo(`) ので、`(` の直前の識別子を関数名とする
 const defRe = /^(NAKED|NON_MATCH)\s+[^()]*?(\w+)\s*\(/;
 
-// 関数名 -> inc の相対パス
-const collectTargets = (files: string[]): Map<string, string> => {
-  const targets = new Map<string, string>();
+type Level = "NAKED" | "NON_MATCH";
+
+// 関数名 -> レベルと inc の相対パス
+const collectTargets = (files: string[]): Map<string, { level: Level; inc: string }> => {
+  const targets = new Map<string, { level: Level; inc: string }>();
 
   for (const file of files) {
     let pending: string | null = null; // #else の INCFUNC を待っている NON_MATCH 関数
@@ -55,7 +57,7 @@ const collectTargets = (files: string[]): Map<string, string> => {
         if (def[1] === "NAKED") {
           // NAKED は同じ行に INCFUNC がある
           const inc = s.match(incRe);
-          if (inc) targets.set(def[2], inc[1]);
+          if (inc) targets.set(def[2], { level: "NAKED", inc: inc[1] });
         } else {
           pending = def[2];
           inElse = false;
@@ -72,7 +74,7 @@ const collectTargets = (files: string[]): Map<string, string> => {
       } else if (inElse) {
         const inc = s.match(incRe);
         if (inc) {
-          targets.set(pending, inc[1]);
+          targets.set(pending, { level: "NON_MATCH", inc: inc[1] });
           pending = null;
           inElse = false;
         }
@@ -104,7 +106,7 @@ const census = (repo: string, targets: string[]) => {
   const found = collectTargets(files);
   if (found.size === 0) die("対象関数が見つかりませんでした");
 
-  const rows = [...found].map(([name, inc]) => {
+  const rows = [...found].map(([name, { level, inc }]) => {
     const incPath = path.join(repo, inc);
     let size = 0;
     try {
@@ -112,11 +114,11 @@ const census = (repo: string, targets: string[]) => {
     } catch {
       size = 0; // inc が無い場合
     }
-    return { size, name, inc };
+    return { size, level, name, inc };
   });
 
   rows.sort((a, b) => a.size - b.size || a.name.localeCompare(b.name));
-  for (const r of rows) console.log(`${r.size}\t${r.name}\t${r.inc}`);
+  for (const r of rows) console.log(`${r.size}\t${r.level}\t${r.name}\t${r.inc}`);
   console.error(`# ${rows.length} functions remaining`);
 };
 

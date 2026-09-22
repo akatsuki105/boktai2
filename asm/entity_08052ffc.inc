@@ -98,7 +98,7 @@ _08052F30:
 	movs r0, #8
 	str r0, [sp, #0x18]
 	movs r0, #7
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	b _08052F74
 	.align 2, 0
 _08052F6C: .4byte 0x085AB73C

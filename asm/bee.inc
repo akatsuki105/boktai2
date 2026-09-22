@@ -514,12 +514,12 @@ _08166CA6:
 	beq _08166CB4
 	adds r0, r7, #0
 	mov r1, r8
-	bl FUN_08236640
+	bl Hitbox_ApplyDamageAlt
 	b _08166CBC
 _08166CB4:
 	adds r0, r7, #0
 	mov r1, r8
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 _08166CBC:
 	adds r0, r7, #0
 	adds r0, #0x44
@@ -3953,7 +3953,7 @@ FUN_081686c4: @ 0x081686C4
 	ldrh r3, [r3]
 	str r3, [sp, #4]
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	b _08168746
 	.align 2, 0
 _08168710: .4byte 0x00000226
@@ -3980,7 +3980,7 @@ _08168718:
 	ldrh r3, [r3]
 	str r3, [sp, #4]
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 _08168746:
 	add sp, #8
 	pop {r4, r5}
@@ -6044,7 +6044,7 @@ _0816974A:
 	bl FUN_0823b284
 	adds r0, r4, #0
 	adds r0, #0xd8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	bl FUN_080ec6fc
 	movs r0, #0

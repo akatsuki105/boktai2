@@ -1064,7 +1064,7 @@ FUN_08103624: @ 0x08103624
 	str r1, [sp, #4]
 	adds r1, r5, #0
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	add sp, #8
 	pop {r4, r5}
 	pop {r0}
@@ -1171,7 +1171,7 @@ _08103728:
 	adds r0, r5, r1
 	mov r1, sp
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r2, _08103764 @ =0x085B0A08
 	ldrb r0, [r4, #5]
 	adds r0, #0x40
@@ -1325,13 +1325,13 @@ _08103848:
 	str r2, [r0, #0x20]
 	mov r1, sp
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	movs r1, #0xcb
 	lsls r1, r1, #3
 	adds r0, r5, r1
 	mov r1, sp
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 _0810387A:
 	add sp, #0x10
 	pop {r4, r5}
@@ -12332,12 +12332,12 @@ _08108DEE:
 	beq _08108DFC
 	mov r0, r8
 	adds r1, r7, #0
-	bl FUN_08236640
+	bl Hitbox_ApplyDamageAlt
 	b _08108E04
 _08108DFC:
 	mov r0, r8
 	adds r1, r7, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 _08108E04:
 	mov r0, r8
 	adds r0, #0x44
@@ -14685,7 +14685,7 @@ _08109FDA:
 	movs r1, #0xd5
 	lsls r1, r1, #3
 	adds r0, r6, r1
-	bl FUN_08236400
+	bl Hitbox_Register
 	ldrh r0, [r4, #0xc]
 	cmp r0, #0
 	bne _0810A000
@@ -14832,7 +14832,7 @@ _0810A0FC:
 	movs r1, #0xd5
 	lsls r1, r1, #3
 	adds r0, r5, r1
-	bl FUN_08236400
+	bl Hitbox_Register
 _0810A10C:
 	movs r2, #0x20
 	movs r0, #0xe6
@@ -15258,7 +15258,7 @@ _0810A41A:
 	ldrh r3, [r3]
 	str r3, [sp, #4]
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 _0810A464:
 	ldr r1, _0810A4AC @ =0x0000046E
 	adds r0, r5, r1
@@ -15732,7 +15732,7 @@ _0810A810:
 	movs r0, #0xd5
 	lsls r0, r0, #3
 	add r0, r8
-	bl FUN_08236400
+	bl Hitbox_Register
 	ldr r1, _0810A874 @ =0x0000046E
 	adds r0, r7, r1
 	ldrb r0, [r0]
@@ -15885,7 +15885,7 @@ _0810A944:
 	movs r1, #0xd5
 	lsls r1, r1, #3
 	adds r0, r6, r1
-	bl FUN_08236400
+	bl Hitbox_Register
 _0810A94E:
 	ldrh r0, [r4, #0x14]
 	cmp r0, #4
@@ -34899,7 +34899,7 @@ EnemySkeleton_Destroy: @ 0x08113DE0
 	movs r1, #0xcb
 	lsls r1, r1, #3
 	adds r0, r4, r1
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	ldr r2, _08113E00 @ =0x0000025D
 	adds r0, r4, r2
 	ldrb r0, [r0]
@@ -34999,7 +34999,7 @@ _08113EAA:
 	bl FUN_0823b284
 	adds r0, r4, #0
 	adds r0, #0xd8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	bl FUN_080ec6fc
 	movs r0, #0

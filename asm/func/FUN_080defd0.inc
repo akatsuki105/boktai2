@@ -37,7 +37,7 @@ _080DF006:
 _080DF01A:
 	adds r0, r5, #0
 	adds r0, #0x8c
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r1, r5, #0
 	adds r1, #0xf3
 	movs r0, #0

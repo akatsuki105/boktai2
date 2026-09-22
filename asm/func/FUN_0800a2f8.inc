@@ -91,7 +91,7 @@ _0800A3BA:
 	adds r0, #0x14
 	mov r1, sp
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r2, r6, #0
 	adds r2, #0x7c
 	ldr r0, [sp]

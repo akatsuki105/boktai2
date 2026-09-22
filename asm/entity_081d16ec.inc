@@ -1117,7 +1117,7 @@ _081D168A:
 	bl AuxSprite_Remove
 	adds r4, #0x60
 	adds r0, r4, #0
-	bl FUN_08236424
+	bl Hitbox_Unregister
 _081D16A6:
 	adds r5, #1
 	cmp r5, #0xb

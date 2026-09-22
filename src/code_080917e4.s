@@ -2792,7 +2792,7 @@ _0809F3B0:
 	movs r1, #0x80
 	lsls r1, r1, #2
 	adds r0, r6, r1
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	movs r0, #0
 	pop {r4, r5, r6}
 	pop {r1}
@@ -2984,23 +2984,23 @@ FUN_0809f4f0: @ 0x0809F4F0
 	str r3, [sp, #8]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 	adds r0, r5, #0
 	movs r1, #0
 	adds r2, r4, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r4, #0x34
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	add sp, #0x1c
 	pop {r4, r5}
 	pop {r1}
@@ -4138,18 +4138,18 @@ FUN_0809fd94: @ 0x0809FD94
 	str r3, [sp, #8]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	ldr r1, _0809FE18 @ =FUN_0809f75c
 	adds r0, r5, #0
 	adds r2, r4, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r4, #0x1c
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	movs r0, #0x96
 	lsls r0, r0, #2
 	strh r0, [r5, #0x3e]
@@ -4294,7 +4294,7 @@ _0809FF08:
 	bl AuxSprite_Remove
 	adds r4, #0x8c
 	adds r0, r4, #0
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r6, #1
 _0809FF1C:
 	ldrh r0, [r5, #0x18]
@@ -7984,7 +7984,7 @@ FUN_080a1b28: @ 0x080A1B28
 	bl AuxSprite_Remove
 	adds r0, r4, #0
 	adds r0, #0x60
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	adds r0, #0xb0
 	bl FUN_082342a8
@@ -8087,17 +8087,17 @@ FUN_080a1bbc: @ 0x080A1BBC
 	str r3, [sp, #8]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	ldr r1, _080A1C40 @ =FUN_080a19b4
 	adds r0, r5, #0
 	adds r2, r6, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r0, r5, #0
 	mov r1, r8
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	add sp, #0x1c
 	pop {r3}
 	mov r8, r3
@@ -14161,7 +14161,7 @@ _080A4A7C:
 	adds r0, r6, #0
 	bl AuxSprite_Remove
 	mov r0, r8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	ldrb r0, [r4, #0x12]
 	cmp r0, #0
 	beq _080A4A94
@@ -14234,18 +14234,18 @@ FUN_080a4ac8: @ 0x080A4AC8
 	str r3, [sp, #8]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	ldr r1, _080A4B48 @ =0x080A4621
 	adds r0, r5, #0
 	adds r2, r4, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r4, #0xdc
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	add sp, #0x1c
 	pop {r4, r5}
 	pop {r0}

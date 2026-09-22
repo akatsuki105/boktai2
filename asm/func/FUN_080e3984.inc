@@ -20,7 +20,7 @@
 	str r6, [sp, #8]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	lsls r3, r4, #1
 	movs r1, #0x89
 	lsls r1, r1, #2
@@ -47,16 +47,16 @@
 	str r0, [sp, #4]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	adds r1, r7, #0
 	adds r1, #8
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r5, #0
 	mov r1, sb
 	ldr r2, [sp, #0x2c]
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	add sp, #0xc
 	pop {r3, r4}
 	mov r8, r3

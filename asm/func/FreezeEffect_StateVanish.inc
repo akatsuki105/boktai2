@@ -8,7 +8,7 @@
 	bl FreezeEffect_GatherSubParticles
 	adds r0, r7, #0
 	adds r0, #0x20
-	bl FUN_08236400
+	bl Hitbox_Register
 	ldr r0, _080A7E28 @ =0x00000206
 	adds r1, r7, r0
 	ldrh r0, [r1]

@@ -440,7 +440,7 @@ FUN_080b4b04: @ 0x080B4B04
 	ands r0, r4
 	str r0, [r1]
 	movs r0, #0
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	movs r0, #4
 	str r0, [sp]
 	ldr r0, _080B4B9C @ =0x0000FFFF
@@ -531,7 +531,7 @@ FUN_080b4ba4: @ 0x080B4BA4
 	movs r3, #1
 	bl MainSprite_SetAnim
 	movs r0, #1
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _080B4C54 @ =0x0000082E
 	adds r0, r6, r1
 	strh r5, [r0]
@@ -662,7 +662,7 @@ _080B4D06:
 	ldr r1, _080B4D8C @ =0x00000143
 	bl Video_SetAuxSpritePltt
 	movs r0, #4
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _080B4D90 @ =0x0000083A
 	adds r0, r7, r1
 	strh r4, [r0]
@@ -730,7 +730,7 @@ FUN_080b4d98: @ 0x080B4D98
 	movs r3, #2
 	bl MainSprite_SetAnim
 	movs r0, #3
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _080B4E00 @ =FUN_080b539c
 	adds r0, r4, #0
 	bl FUN_080b4aec
@@ -777,7 +777,7 @@ FUN_080b4e04: @ 0x080B4E04
 	cmp r0, #3
 	bgt _080B4E58
 	movs r0, #9
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	b _080B4E76
 	.align 2, 0
 _080B4E54: .4byte 0x030046A0
@@ -785,17 +785,17 @@ _080B4E58:
 	cmp r0, #5
 	bgt _080B4E64
 	movs r0, #0xa
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	b _080B4E76
 _080B4E64:
 	cmp r0, #7
 	bgt _080B4E70
 	movs r0, #0xb
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	b _080B4E76
 _080B4E70:
 	movs r0, #0xc
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 _080B4E76:
 	ldr r1, _080B4E88 @ =FUN_080b54a0
 	adds r0, r4, #0
@@ -852,7 +852,7 @@ FUN_080b4e8c: @ 0x080B4E8C
 	movs r3, #4
 	bl FUN_0823ce68
 	movs r0, #0xd
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _080B4F04 @ =FUN_080b5528
 	adds r0, r4, #0
 	bl FUN_080b4aec
@@ -1357,7 +1357,7 @@ _080B52F4:
 	adds r0, r5, #0
 	bl dark_loans_080b48c8
 	movs r0, #4
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _080B5340 @ =0x0000084A
 	adds r0, r5, r1
 	strh r4, [r0]
@@ -1406,7 +1406,7 @@ _080B5362:
 	cmp r0, #0
 	bne _080B538C
 	movs r0, #6
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	movs r0, #1
 	strh r0, [r4]
 _080B538C:
@@ -1443,7 +1443,7 @@ FUN_080b539c: @ 0x080B539C
 	cmp r1, #0
 	beq _080B5404
 	movs r0, #5
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	movs r1, #0x83
 	lsls r1, r1, #4
 	adds r0, r4, r1
@@ -1459,7 +1459,7 @@ _080B53E8: .4byte 0x0000082E
 _080B53EC:
 	movs r0, #0
 	movs r1, #3
-	bl FUN_08047c40
+	bl TextBox_SetVarValue
 _080B53F4:
 	ldr r1, _080B5400 @ =FUN_080b5434
 	adds r0, r4, #0

@@ -15,7 +15,7 @@
 	beq _08245CEA
 	adds r0, r5, #0
 	adds r1, r7, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 	adds r0, r7, #0
 	adds r0, #0x43
 	ldrb r1, [r0]

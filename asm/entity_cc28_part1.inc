@@ -4388,14 +4388,14 @@ FUN_0808c510: @ 0x0808C510
 _0808C520:
 	bl FUN_08049e5c
 	adds r0, r4, #0
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #0
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	adds r0, r5, #0
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	pop {r4, r5}
 	pop {r0}
 	bx r0
@@ -9136,7 +9136,7 @@ _0808EA78:
 	adds r0, r6, #0
 	bl FUN_0808e5a8
 	movs r0, #4
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _0808EAC4 @ =0x00004026
 	adds r0, r6, r1
 	strh r4, [r0]
@@ -9180,7 +9180,7 @@ _0808EAE0:
 	cmp r0, #0
 	bne _0808EB0A
 	movs r0, #6
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	movs r0, #1
 	strh r0, [r4]
 _0808EB0A:
@@ -9260,7 +9260,7 @@ FUN_0808eb4c: @ 0x0808EB4C
 	adds r0, r4, r2
 	strh r1, [r0]
 	movs r0, #1
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _0808EBE4 @ =FUN_0808eeac
 	adds r0, r4, #0
 	bl FUN_0808a33c
@@ -9420,7 +9420,7 @@ _0808ECCA:
 	ldr r1, _0808ED6C @ =0x00000143
 	bl Video_SetAuxSpritePltt
 	movs r0, #4
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _0808ED70 @ =FUN_0808ef58
 	adds r0, r7, #0
 	bl FUN_0808a33c
@@ -9481,7 +9481,7 @@ FUN_0808ed74: @ 0x0808ED74
 	movs r3, #2
 	bl MainSprite_SetAnim
 	movs r0, #3
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r0, _0808EDDC @ =0x000002C1
 	bl PlaySound_082406e0
 	ldr r1, _0808EDE0 @ =FUN_0808f01c
@@ -9533,7 +9533,7 @@ FUN_0808ede4: @ 0x0808EDE4
 	movs r3, #2
 	bl MainSprite_SetAnim
 	movs r0, #0xd
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _0808EE4C @ =FUN_0808f0d8
 	adds r0, r4, #0
 	bl FUN_0808a33c
@@ -9792,7 +9792,7 @@ FUN_0808f01c: @ 0x0808F01C
 	cmp r0, #0
 	beq _0808F088
 	movs r0, #5
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _0808F06C @ =0x00004028
 	adds r0, r4, r1
 	ldr r0, [r0]
@@ -9809,7 +9809,7 @@ _0808F06C: .4byte 0x00004028
 _0808F070:
 	movs r0, #0
 	movs r1, #3
-	bl FUN_08047c40
+	bl TextBox_SetVarValue
 _0808F078:
 	ldr r1, _0808F084 @ =FUN_0808f09c
 	adds r0, r4, #0
@@ -9944,18 +9944,18 @@ _0808F16C:
 FUN_0808f170: @ 0x0808F170
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_08047864
+	bl TextBox_Close
 	bl FUN_08049e5c
 	bl FUN_08049f84
 	movs r0, #1
 	movs r1, #0xf
 	movs r2, #0x1c
 	movs r3, #4
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	ldr r0, [r4, #0x54]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	ldr r1, _0808F1AC @ =0x0000401F
 	adds r0, r4, r1
 	ldrb r0, [r0]
@@ -10025,18 +10025,18 @@ FUN_0808f21c: @ 0x0808F21C
 	push {r6}
 	sub sp, #4
 	adds r4, r0, #0
-	bl FUN_08047864
+	bl TextBox_Close
 	bl FUN_08049e5c
 	bl FUN_08049f84
 	movs r0, #1
 	movs r1, #1
 	movs r2, #0x1c
 	movs r3, #6
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	ldr r0, [r4, #0x54]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	ldr r1, [r4, #0x18]
 	ldr r0, [r4, #0x30]
 	str r0, [sp]
@@ -10088,7 +10088,7 @@ FUN_0808f21c: @ 0x0808F21C
 	movs r3, #1
 	bl MainSprite_SetAnim
 	movs r0, #0
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _0808F2EC @ =FUN_0808f520
 	adds r0, r4, #0
 	bl FUN_0808a33c
@@ -10112,18 +10112,18 @@ FUN_0808f2f0: @ 0x0808F2F0
 	push {r4, r5, r6, r7, lr}
 	sub sp, #4
 	adds r5, r0, #0
-	bl FUN_08047864
+	bl TextBox_Close
 	bl FUN_08049e5c
 	bl FUN_08049f84
 	movs r0, #1
 	movs r1, #1
 	movs r2, #0x1c
 	movs r3, #4
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	ldr r0, [r5, #0x54]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	ldr r1, [r5, #0x18]
 	ldr r0, [r5, #0x30]
 	str r0, [sp]
@@ -10200,7 +10200,7 @@ _0808F38C:
 	adds r0, r5, #0
 	bl FUN_0808f1bc
 	movs r0, #7
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _0808F3F4 @ =FUN_0808f604
 	adds r0, r5, #0
 	bl FUN_0808a33c
@@ -10279,7 +10279,7 @@ _0808F45C:
 	ldr r0, _0808F4A4 @ =0x000002C1
 	bl PlaySound_082406e0
 	movs r0, #3
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _0808F4A8 @ =FUN_0808f8bc
 	adds r0, r4, #0
 	bl FUN_0808a33c
@@ -10332,7 +10332,7 @@ FUN_0808f4ac: @ 0x0808F4AC
 	ldr r0, _0808F518 @ =0x000002C1
 	bl PlaySound_082406e0
 	movs r0, #3
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _0808F51C @ =FUN_0808f774
 	adds r0, r4, #0
 	bl FUN_0808a33c
@@ -10400,7 +10400,7 @@ _0808F572:
 	cmp r0, #0x74
 	bls _0808F5DA
 	movs r0, #7
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r0, _0808F5E8 @ =0x00003504
 	adds r1, r4, r0
 	ldr r0, _0808F5EC @ =0x0000FFE4
@@ -10543,7 +10543,7 @@ FUN_0808f670: @ 0x0808F670
 	cmp r0, #0
 	bne _0808F710
 	movs r0, #8
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r2, _0808F6FC @ =0x0000401E
 	adds r0, r4, r2
 	ldrb r0, [r0]
@@ -10551,7 +10551,7 @@ FUN_0808f670: @ 0x0808F670
 	movs r1, #0x32
 	muls r1, r0, r1
 	movs r0, #0
-	bl FUN_08047c40
+	bl TextBox_SetVarValue
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_0808b6fc
@@ -10726,7 +10726,7 @@ FUN_0808f81c: @ 0x0808F81C
 	movs r0, #0xde
 	bl PlaySound_082406e0
 	movs r0, #7
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _0808F854 @ =FUN_0808f670
 	adds r0, r4, #0
 	bl FUN_0808a33c
@@ -10801,7 +10801,7 @@ FUN_0808f8bc: @ 0x0808F8BC
 	cmp r0, #0x95
 	bls _0808F914
 	movs r0, #5
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _0808F900 @ =0x00004028
 	adds r0, r4, r1
 	ldr r0, [r0]
@@ -10817,7 +10817,7 @@ _0808F900: .4byte 0x00004028
 _0808F904:
 	movs r0, #0
 	movs r1, #3
-	bl FUN_08047c40
+	bl TextBox_SetVarValue
 _0808F90C:
 	ldr r1, _0808F91C @ =FUN_0808f920
 	adds r0, r4, #0
@@ -11244,7 +11244,7 @@ FUN_0808fbf4: @ 0x0808FBF4
 	lsls r1, r1, #4
 	adds r1, r1, r0
 	ldrb r0, [r1, #0xf]
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	pop {r0}
 	bx r0
 	.align 2, 0

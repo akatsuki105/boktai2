@@ -11,13 +11,12 @@ void VM_ClearScratchpad(void);
 void Save_BackupStatAndWorld(void);
 u32 VM_ParseParameter(u32 idx);
 u32 VM_GetVariable(u32 varidx);
-char* Textbox_LookupString(s32 stringID);
 u8* VM_ReadMemory(u8* pc, s32* op, void* out);
 u32 VM_RunExpression(u8* pc);
 s32 Script_Exec(u8* pc, ScriptArgs* args, s32 varIdx);
 u8* FUN_0823201c(u8* pc, u8* dst);
 
-static const ScriptArgs sEmptyArgs = {0, 0, NULL};  // 引数無しでスクリプトを呼ぶときに束縛されるデフォルトの引数記述子
+static const ScriptArgs sEmptyArgs = {0, NULL};  // 引数無しでスクリプトを呼ぶときに束縛されるデフォルトの引数記述子
 
 IWRAM_DATA ScriptTable gScriptTable = {};  // 0x03000748
 IWRAM_DATA StringTable gStringTable = {};  // 0x03000758
@@ -234,17 +233,16 @@ void VM_SetPC(u8* addr) { gVM.pc = addr; }
 // FUN_082314e4 でpushされた keywordSeekStackTop スタック最上位の pc から探索を始める
 bool32 VM_SeekToKeyword(u8 keyword) {
   u8* pc = *(u8**)(gVM.keywordSeekStackTop - 4);
-  s32 type;
-  u8* val;
 
   while (TRUE) {
+    s32 type, val;
     pc = VM_DecodeValue(pc, &type, &val);
     if (type == 0) {
       return 0;
     }
     if ((type & 0xF0) == OP_KEYWORD && (type >> 16) == keyword) {
-      gVM.pc = val;
-      return (bool32)val;
+      gVM.pc = (u8*)val;
+      return val;
     }
   }
 }
@@ -275,11 +273,10 @@ u32 VM_GetValueAt(u8* addr) {
 }
 
 s32 FUN_082315c0(u8* pc, s32* out) {
-  s32 type;
-  s32 val;
   s32 i;
 
   for (i = 0; i < 3; i++) {
+    s32 type, val;
     pc = VM_DecodeValue(pc, &type, &val);
     out[i] = val;
   }
@@ -290,17 +287,15 @@ s32 FUN_082315c0(u8* pc, s32* out) {
 NAKED s32 FUN_082315f4(u8* pc, unknown* r1) { INCFUNC("asm/func/FUN_082315f4.inc"); }
 
 void* VM_GetValueAtSafe(u8* addr) {
-  s32 type;
-  void* val;
-
-  if (addr == NULL) {
-    return NULL;
+  if (addr != NULL) {
+    s32 type, val;
+    gVM.pc = VM_DecodeValue(addr, &type, &val);
+    if (gVM.pc == NULL) {
+      return NULL;
+    }
+    return (void*)val;
   }
-  gVM.pc = VM_DecodeValue(addr, &type, &val);
-  if (gVM.pc == NULL) {
-    return NULL;
-  }
-  return val;
+  return NULL;
 }
 
 void* VM_GetValueAtSafe_Proxy(u8* addr) { return VM_GetValueAtSafe(addr); }
@@ -371,15 +366,13 @@ s32 VM_RemoveCtrlHandlers(SubroutineTable* p) {
 
   cur = gCtrlHandlers;
   prev = cur;
-  if (cur != NULL) {
-    do {
-      if (cur == p) {
-        prev->next = cur->next;
-        return 0;
-      }
-      prev = cur;
-      cur = cur->next;
-    } while (cur != NULL);
+  while (cur != NULL) {
+    if (cur == p) {
+      prev->next = cur->next;
+      return 0;
+    }
+    prev = cur;
+    cur = cur->next;
   }
   return -1;
 }
@@ -387,20 +380,15 @@ s32 VM_RemoveCtrlHandlers(SubroutineTable* p) {
 // gCtrlHandlers から subID に対応するハンドラを探す
 Subroutine* VM_GetControlHandler(u32 subID) {
   SubroutineTable* t = gCtrlHandlers;
-  const Subroutine* arr;
-  s32 i;
 
   while (t != NULL) {
-    arr = t->arr;
-    i = t->len;
-    if (i > 0) {
-      do {
-        if (arr->id == subID) {
-          return (Subroutine*)arr;
-        }
-        arr++;
-        i--;
-      } while (i > 0);
+    const Subroutine* arr = t->arr;
+    s32 i = t->len;
+    while (i > 0) {
+      if (arr->id == subID) {
+        return (Subroutine*)arr;
+      }
+      arr++, i--;
     }
     t = t->next;
   }
@@ -414,16 +402,17 @@ bool32 VM_RunControl(u8* pc) {
   u32 length;
   bool32 result;
   bool32 (*fn)(u8*);
-  u32 id;
 
-  id = (pc[1] << 8) | pc[0];
+  u32 id = (pc[1] << 8) | pc[0];
   pc += 2;
   h = VM_GetControlHandler(id);
   newPc = VM_ReadCtrlNextKeyword(pc, &length);
   FUN_082314e4(newPc + length);
   VM_SetPC(newPc);
+
   fn = (bool32 (*)(u8*))h->fn;
   result = fn(newPc);
+
   FUN_082314f4();
   return result;
 }
@@ -467,16 +456,15 @@ s32 Script_ExecById(u32 scriptID, ScriptArgs* args) {
 // 呼び出し先スクリプトIDと引数列を読み取り、引数記述子を組み立ててそのスクリプトを実行する
 s32 VM_CallScript(u8* pc) {
   u32 argv[16];
-  s32 type;
-  s32 val;
   ScriptArgs args;
-  s32 scriptID;
   u32 count;
 
-  scriptID = (s16)((pc[1] << 8) | pc[0]);
+  s32 scriptID = (s16)((pc[1] << 8) | pc[0]);
   pc += 2;
+
   count = 0;
   while (TRUE) {
+    s32 type, val;
     pc = VM_DecodeValue(pc, &type, &val);
     if (type == 0) {
       break;
@@ -485,8 +473,7 @@ s32 VM_CallScript(u8* pc) {
     count++;
   }
 
-  args.argc = count;
-  args.argv = argv;
+  args.argc = count, args.argv = argv;
   return Script_ExecById(scriptID, &args);
 }
 
@@ -785,14 +772,12 @@ void Script_StorePointerCore(u8* dst, s32 cmdAndArgs, s32 offset, u32 val) {
 NAKED u8* Script_StorePointer(u8* pc, u32 val) { INCFUNC("asm/func/Script_StorePointer.inc"); }
 
 u8* FUN_0823201c(u8* pc, u8* dst) {
-  s32 type;
-  s32 valA;
-  s32 valB;
   u8* newPc;
   s32 zero;
 
   CopyMemory(dst, pc, 4);
   if ((dst[0] & 0xF0) == OP_MEMORY_INDEXED) {
+    s32 type, valA, valB;
     newPc = VM_DecodeValue(pc + 4, &type, &valA);
     newPc = VM_DecodeValue(newPc, &type, &valB);
     *(s16*)(dst + 4) = valA;
@@ -855,14 +840,11 @@ u8* FUN_08232160(u8* pc) {
   u8 buf[8];
   u8* p = buf;
   s32 offset = 0;
-  u8* newPc;
-  u32 val;
   u8* dst;
-  u32 cmd;
 
-  newPc = FUN_0823201c(pc, buf);
-  val = FUN_082320e4(buf, 0);
-  cmd = (buf[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3];
+  u8* newPc = FUN_0823201c(pc, buf);
+  u32 val = FUN_082320e4(buf, 0);
+  u32 cmd = (buf[0] << 24) | (p[1] << 16) | (p[2] << 8) | p[3];
 
   if ((cmd & 0xF00000) == 0x800000) {
     dst = (u8*)gStatBackup;

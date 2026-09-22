@@ -278,7 +278,7 @@ FUN_080b3b74: @ 0x080B3B74
 	ands r0, r5
 	str r0, [r1]
 	movs r0, #0
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	movs r0, #4
 	str r0, [sp]
 	ldr r0, _080B3C00 @ =0x0000FFFF
@@ -355,7 +355,7 @@ FUN_080b3c08: @ 0x080B3C08
 	movs r3, #1
 	bl MainSprite_SetAnim
 	movs r0, #1
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _080B3C94 @ =FUN_080b3e80
 	adds r0, r4, #0
 	bl FUN_080b3b5c
@@ -480,7 +480,7 @@ _080B3D58:
 	lsls r1, r1, #1
 	bl Video_SetAuxSpritePltt
 	movs r0, #2
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _080B3DC4 @ =0x000005E2
 	adds r0, r7, r1
 	strh r4, [r0]
@@ -549,7 +549,7 @@ FUN_080b3dd0: @ 0x080B3DD0
 	movs r3, #2
 	bl MainSprite_SetAnim
 	movs r0, #3
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _080B3E38 @ =FUN_080b4334
 	adds r0, r4, #0
 	bl FUN_080b3b5c

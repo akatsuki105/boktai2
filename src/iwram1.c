@@ -21,14 +21,6 @@ struct Entity081d16ec;
 struct Entity081eaf6c;
 struct Entity081eb2f0;
 
-IWRAM_DATA u8 u8_03000090[0xA0 - 0x90] = {};  // todo
-
-IWRAM_DATA void* gBossList[8] = {};  // 0x030000A0, idx is BossID
-
-IWRAM_DATA u8 u8_030000c0[0xD0 - 0xC0] = {};  // todo
-
-IWRAM_DATA Entity* gCredits = NULL;  // 0x030000D0
-
 IWRAM_DATA u8 u8_030000d4[0xE4 - 0xD4] = {};
 
 IWRAM_DATA struct SignalStrengthIcon* gSignalStrengthIcon = NULL;  // 0x030000E4

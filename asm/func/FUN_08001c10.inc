@@ -3,7 +3,7 @@
 	push {r7}
 	sub sp, #8
 	adds r6, r0, #0
-	bl FUN_08017b70
+	bl WeatherManager_IsActive
 	cmp r0, #0
 	beq _08001C98
 	ldr r0, _08001CA4 @ =0x0000064A

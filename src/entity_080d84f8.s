@@ -40,7 +40,7 @@ _080D8368:
 	bhi _080D8376
 	adds r0, r4, #0
 	adds r0, #0x60
-	bl FUN_08236400
+	bl Hitbox_Register
 _080D8376:
 	ldrh r0, [r5]
 	adds r0, #1
@@ -155,18 +155,18 @@ FUN_080d8400: @ 0x080D8400
 	movs r1, #0
 	adds r2, r3, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	str r6, [sp]
 	str r7, [sp, #4]
 	adds r0, r5, #0
 	mov r1, r8
 	ldr r2, [sp, #0x38]
 	movs r3, #0x40
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	adds r0, r5, #0
 	movs r1, #0
 	mov r2, sb
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	add sp, #0x1c
 	pop {r3, r4}
 	mov r8, r3
@@ -213,7 +213,7 @@ Entity080d84f8_Init: @ 0x080D848C
 	adds r0, r4, #0
 	mov r1, r8
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r7, #0
 	adds r0, #0xb0
 	movs r1, #0

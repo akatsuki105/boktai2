@@ -41,7 +41,7 @@
 	adds r0, r4, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	mov r0, r8
 	str r0, [sp]
 	ldr r0, [sp, #0x3c]
@@ -50,18 +50,18 @@
 	mov r1, sl
 	adds r2, r7, #0
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	ldr r1, _080DE794 @ =FUN_080de3b4
 	adds r0, r4, #0
 	adds r2, r6, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	movs r0, #0x1c
 	adds r0, r0, r6
 	mov r8, r0
 	adds r0, r4, #0
 	mov r1, r8
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r4, #0x50
 	ldr r2, _080DE798 @ =0x00004001
 	mov r0, sb
@@ -72,22 +72,22 @@
 	adds r0, r4, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	adds r0, r4, #0
 	ldr r1, [sp, #0x40]
 	ldr r2, [sp, #0x44]
 	ldr r3, [sp, #0x48]
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 	adds r0, r4, #0
 	mov r1, r8
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _080DE79C @ =FUN_080de52c
 	adds r0, r4, #0
 	adds r2, r6, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	add sp, #0x1c
 	pop {r3, r4, r5}
 	mov r8, r3

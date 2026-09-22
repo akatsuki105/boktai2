@@ -364,7 +364,7 @@ _08070490:
 	ldr r1, [sp, #8]
 	ldr r2, [sp, #0xc]
 	movs r3, #2
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	mov r1, sl
 	ldrb r0, [r1]
 	adds r1, r4, #0

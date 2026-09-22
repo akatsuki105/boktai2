@@ -31,7 +31,7 @@ grep -n "^\(NAKED\|NON_MATCH\)\b.*\b<FUNCTION_NAME>\s*(" src/*.c
 
 ```sh
 # list the NAKED / NON_MATCH functions in those files, sorted by size
-.claude/skills/decomp-func/scripts/census.ts src/**/*.c   # TSV: size  name  inc
+.claude/skills/decomp-func/scripts/census.ts src/**/*.c   # TSV: size  level  name  inc
 ```
 
 The `.c` paths are required — pass only the files the request is about
@@ -42,15 +42,13 @@ Sort candidates by byte size (address delta between consecutive
 `thumb_func_start` labels, or `arm-none-eabi-objdump` on the built
 objects). Small functions teach the compiler's habits cheaply.
 
-Before committing to the smallest candidate, check whether its name
-already has an entry in `docs/for-ai-agent/stuck-points.md`
-(a prior session got stuck on it and paused/left it NON_MATCH). If it
-does, skip it and move to the next-smallest candidate, repeating until you
-reach one with no stuck-points.md entry — don't re-attempt a recently
-stuck function automatically just because it sorts first. This skip only
-applies to auto-picked targets; if the user explicitly names a stuck
-function as the argument, that's a deliberate retry and should proceed
-normally.
+**Prefer NAKED over NON_MATCH when picking automatically.** `census.ts`'s
+`level` column says which is which. A NON_MATCH function is by definition one
+that somebody already wrote C for and failed to match, so it is a retry, not a
+fresh target — take the smallest NAKED candidate first and only fall through to
+NON_MATCH when the request leaves nothing else. This ordering applies to
+auto-picked targets only; if the user explicitly names a NON_MATCH function as
+the argument, that is a deliberate retry and should proceed normally.
 
 Also skip a candidate whose `asm/func/FUNCNAME.inc` still contains raw
 `.byte` data instead of proper mnemonics (a disassembler failure, not a
@@ -60,8 +58,8 @@ it's counting garbled data). Check with a quick
 decompile task (the `.inc` itself needs to be regenerated with a proper
 disassembly first, which is out of scope for this skill) — move to the
 next-smallest candidate instead of trying to work around it inline. This
-skip applies to auto-picked targets only, same as the stuck-points skip
-above.
+skip applies to auto-picked targets only, same as the NAKED/NON_MATCH
+ordering above.
 
 ## The decompile workflow
 
@@ -124,13 +122,18 @@ void* DecompTargetFunc(void) {
     -> prints OK: goto Step 8
     -> prints FAILED: goto Step 6
 
-6. **On NON-MATCH, gather two independent signals** — never the ROM bytes (pool offsets shift):
+6. **On NON-MATCH, read the instruction-stream diff** — never the ROM bytes (pool offsets shift). The permuter score in (b) is a second opinion to reach for only when (a) leaves you unsure:
 
-    a. **Instruction-stream diff.** Diff your object against the original asm:
+    a. **Instruction-stream diff (every iteration).** Diff your object against the original asm:
        `.claude/skills/decomp-func/scripts/streamdiff.py BUILT_OBJECT SYMBOL ORIGINAL_INC` (keep a copy of the original inc via `git show HEAD:asm/... > <scratchpad>/orig.inc` before truncating it).
        Every surviving hunk is a real codegen difference; pool offsets, branch targets, and spelling variants are masked.
 
-    b. **Permuter score.** Regenerate the per-function work dir from the CURRENT `src/*.c` content (this picks up whatever C you just wrote, permuter-authored or not) and score it, without running a full random search:
+    b. **Permuter score (only when (a) is inconclusive).** Each run is two commands and two compiles, so it is not worth paying on an iteration where the streamdiff already names the difference — which is most of them. Reach for it when:
+       - the streamdiff hunks do not tell you *what kind* of difference you are looking at; or
+       - the instruction counts are equal and the hunks look like nothing but renamed registers, and you want the penalty breakdown to confirm it is register allocation rather than scheduling; or
+       - several iterations have gone by with no visible progress and you want a number to tell whether you are getting closer at all.
+
+       Otherwise skip it and go straight to Step 7. Regenerate the per-function work dir from the CURRENT `src/*.c` content (this picks up whatever C you just wrote, permuter-authored or not) and score it, without running a full random search:
        ```sh
        tools/permuter/setup.sh <FUNCTION_NAME> <SRC_FILE>
        (cd tmp && "$DECOMP_PERMUTER/permuter.py" /tmp/perm_<FUNCTION_NAME> --debug)
@@ -142,25 +145,17 @@ void* DecompTargetFunc(void) {
        or delete afterward.
        `--debug` only compiles and scores the current candidate (no search). Score 0 == instruction-stream match by the permuter's own metric; the penalty breakdown (stack/branch/regalloc/reordering/insertion/deletion) tells you what kind of difference dominates. Still not the ROM gate — treat it as a second, quantitative opinion alongside (a).
 
-7. Claude sees the diff and the score and proposes a fix. Go back to Step 3 (loop until match).
+7. Claude sees the diff (and the score, when (b) was run) and proposes a fix. Go back to Step 3 (loop until match).
     [parallel] decomp-permuter can also be run in the background with a full random search to explore (see below) — separate from the `--debug` score check in Step 6b.
-    Don't just let the background search run indefinitely hoping for score 0: launch it with `-j2 --stop-on-zero` (not more than `-j2` — higher pins all CPU cores and causes problems; `--stop-on-zero` makes it exit on its own the moment it finds a match instead of continuing to search past it). permuter.py has no time-based timeout flag, so still enforce the ~2 minute cap externally (a background timer + `pkill`) in case zero is never found — then stop it. If it hasn't found score 0 by then, take its best-scoring candidate (`nonmatchings/<dir>/output-<score>-*/source.c` under the perm dir) as feedback — read what structural/register-allocation change it made — and go back to Step 3 to write the next manual candidate informed by that, rather than treating the permuter as the final word or leaving it running unattended.
-    **Stop condition.** When you start on a function, note the remaining token count shown in the conversation (`N tokens left`). Whenever it is visible again, check how much has been consumed since then. If more than **30,000 tokens** have been consumed, or the loop has reached 10 iterations, leave the best candidate so far as NON_MATCH and stop: put its C inside `#ifdef NONMATCHING_C`, restore the `INCFUNC` in `#else` (restore the `.inc` from git if it was deleted), confirm `make compare` prints OK, and follow "Leaving a function unmatched" below.
-    Before checking siblings (Step 2) on a *different* function, check `docs/for-ai-agent/stuck-points.md` — the same function name showing up repeatedly, or several functions stuck in the same area, is a signal worth noticing.
+    Don't just let the background search run indefinitely hoping for score 0: launch it with `-j2 --stop-on-zero` (not more than `-j2` — higher pins all CPU cores and causes problems; `--stop-on-zero` makes it exit on its own the moment it finds a match instead of continuing to search past it). permuter.py has no time-based timeout flag, so still enforce the ~1 minute cap externally (a background timer + `pkill`) in case zero is never found — then stop it. If it hasn't found score 0 by then, take its best-scoring candidate (`nonmatchings/<dir>/output-<score>-*/source.c` under the perm dir) as feedback — read what structural/register-allocation change it made — and go back to Step 3 to write the next manual candidate informed by that, rather than treating the permuter as the final word or leaving it running unattended.
+    **Stop condition.** When you start on a function, note the remaining token count shown in the conversation (`N tokens left`). Whenever it is visible again, check how much has been consumed since then. If more than **20,000 tokens** have been consumed, or the loop has reached 5 iterations, leave the best candidate so far as NON_MATCH and stop: put its C inside `#ifdef NONMATCHING_C`, restore the `INCFUNC` in `#else` (restore the `.inc` from git if it was deleted), and confirm `make compare` prints OK. The `NON_MATCH` marker in the source is the record that it stalled — nothing else needs writing down.
+    Before checking siblings (Step 2) on a *different* function, count how many functions in that file are already NON_MATCH: `grep -c '^NON_MATCH' src/FILE.c`. Several stuck together in one file is a signal worth noticing — usually a wrong struct layout or a missing idiom rather than bad luck on each one.
 
 8. `make && sha1sum -c boktai2.sha1` to verify the entire ROM matches
     `./tools/refresh-expected.sh` to update the `expected/` baseline
     Once MATCHING, the `asm/func/FUNCNAME.inc` is no longer referenced by any `INCFUNC` — confirm with `grep -rn "FUNCNAME.inc" src` (expect no hits) and delete it.
     Add a one-line Japanese comment directly above the function signature summarizing what it does, for human readers (e.g. `// リンクリストからノードを削除する`). Keep it to one line; skip it if an equivalent comment is already present, or if the function's behavior is self-evident from the code itself (e.g. a bare `return 0;`, or a standard `CreateEntity`/`SetEntityRoutine`/init-or-kill entity-creation function). Never write a comment that's just a literal restatement of the code (e.g. "reads pc[1..2] as a little-endian s16 and advances pc by 3" for code that visibly does exactly that) — describe the *meaning*/*purpose*, not the mechanics; if you don't know the meaning, skip the comment rather than paraphrasing the code.
     **Record the lever.** If reaching MATCHING took a non-obvious C shape — anything you would not have written on the first try, or that you only found by iterating on a streamdiff hunk — write it into `docs/for-ai-agent/agbcc-quirks.md` before moving on. Follow that file's own "New entry, or extend an existing one?" rule: route by the **asm symptom**, so when an entry already covers that symptom, append a bullet and add the function to its Frequency instead of opening a near-duplicate entry. This step is not optional bookkeeping — a lever that stays in the transcript is a lever the next session pays to rediscover.
-
-## Leaving a function unmatched
-
-Whenever a function is left at NON_MATCH without reaching MATCHING — the
-stop condition in Step 7 was hit (30,000 tokens or 10 iterations), or the
-user paused it — add an entry to
-`docs/for-ai-agent/stuck-points.md` (format described there) before ending
-the session on that function. Not needed when it ends up MATCHING.
 
 ## Scripts
 
@@ -196,4 +191,3 @@ In `docs/for-ai-agent/` at the repo root (shared across skills):
 - `matching-idiom.md` — the two oracles and decomp-permuter recipes (tooling/process).
 - `agbcc-quirks.md` — compiler-level idioms (why a given C shape produces given bytes); read before inventing a lever, extend after discovering one.
 - `c-programmer-habits.md` — original-developer style patterns (not compiler behavior); add an entry once a pattern is corroborated across multiple matched functions.
-- `stuck-points.md` — log of where past functions got stuck without reaching MATCHING; check for a recurring symptom before a fresh manual iteration round on a similar-looking function, and add an entry whenever leaving a function at NON_MATCH.

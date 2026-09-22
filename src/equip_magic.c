@@ -26,7 +26,7 @@ magic32_t GetEquippedMagic(void) {
 NON_MATCH void RegisterMagic(s32 idx, magic32_t m) {
 #ifdef NONMATCHING_C
   s32 i;
-  for (i = 0; i <= 3; i++) {
+  for (i = 0; i < 4; i++) {
     if (REGISTERED_MAGIC(i) == m) {
       REGISTERED_MAGIC(i) = -1;
     }

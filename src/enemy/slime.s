@@ -822,12 +822,12 @@ _081629CE:
 	beq _081629DC
 	mov r0, sl
 	adds r1, r7, #0
-	bl FUN_08236640
+	bl Hitbox_ApplyDamageAlt
 	b _081629E4
 _081629DC:
 	mov r0, sl
 	adds r1, r7, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 _081629E4:
 	mov r0, sl
 	adds r0, #0x44
@@ -6529,7 +6529,7 @@ _08165636:
 	bl FUN_0823b284
 	adds r0, r4, #0
 	adds r0, #0xd8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	bl FUN_080ec6fc
 	movs r0, #0

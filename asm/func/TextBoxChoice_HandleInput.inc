@@ -227,7 +227,7 @@ _080054C8:
 	beq _08005522
 	movs r0, #0xde
 	bl PlaySound_082406e0
-	bl FUN_08047864
+	bl TextBox_Close
 	movs r1, #1
 	rsbs r1, r1, #0
 	adds r0, r5, #0
@@ -244,7 +244,7 @@ _08005500:
 	beq _08005522
 	movs r0, #0xdd
 	bl PlaySound_082406e0
-	bl FUN_08047864
+	bl TextBox_Close
 	movs r1, #0x18
 	ldrsb r1, [r5, r1]
 	adds r0, r5, #0

@@ -248,7 +248,7 @@ FUN_080aa23c: @ 0x080AA23C
 	bhi _080AA264
 	adds r0, r5, #0
 	adds r0, #0x94
-	bl FUN_08236400
+	bl Hitbox_Register
 	b _080AA274
 	.align 2, 0
 _080AA260: .4byte 0x0000034A
@@ -811,7 +811,7 @@ _080AA692:
 	bhi _080AA6B0
 	adds r0, r4, #0
 	adds r0, #0x94
-	bl FUN_08236400
+	bl Hitbox_Register
 	b _080AA6C0
 	.align 2, 0
 _080AA6A4: .4byte 0x0000034A
@@ -1420,7 +1420,7 @@ _080AAB4E:
 	adds r0, r6, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	str r7, [sp]
 	movs r0, #0x1e
 	str r0, [sp, #4]
@@ -1428,16 +1428,16 @@ _080AAB4E:
 	adds r1, r5, #0
 	movs r2, #0xa
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	adds r0, r6, #0
 	movs r1, #0
 	adds r2, r4, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	ldr r1, [r4, #0x18]
 	adds r1, #0x2c
 	adds r0, r6, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	add sp, #0x1c
 	pop {r4, r5, r6, r7}
 	pop {r0}

@@ -6,14 +6,16 @@ straight decompilation resists. For the *source-level idioms* that explain
 behavior) and `c-programmer-habits.md` (original developer style) next to
 this file.
 
-## 0. The two oracles + the permuter (use these, don't eyeball)
+## 0. The gate, the working diff, and the rest (use these, don't eyeball)
 
 | Tool | What it is | Use |
 | ---- | ---------- | --- |
-| `tools/diff.sh <Func>` | objdiff (Rust disassembler) vs `expected/` snapshot | **primary** % match + side-by-side |
-| `tools/diff2.sh <Func>` | devkitARM `objdump --disassemble=<Func>` vs `expected/`, reloc-folded | **independent second opinion** — two disassemblers agreeing is a strong signal; disagreement = tooling bug |
+| `make compare` | full-image SHA-1 of the rebuilt ROM | **the only gate.** Nothing else proves a match |
+| `.claude/skills/decomp-func/scripts/streamdiff.py` | canonicalized instruction diff, built object vs the original `.inc` | **the working diff** — `decomp-func` Step 6a, every NON-MATCH iteration |
+| `tools/diff.sh <Func>` | objdiff (Rust disassembler) vs `expected/` snapshot | % match + side-by-side, for when you want to *look at* both listings rather than read a canonicalized diff |
+| `tools/diff2.sh <Func>` | devkitARM `objdump --disassemble=<Func>` vs `expected/`, reloc-folded | independent second opinion on the above — two disassemblers agreeing is a strong signal; disagreement = tooling bug |
 | `tools/refresh-expected.sh <file>` | snapshot the matching `.o` into `expected/` | run after every matching build |
-| decomp-permuter | randomized source mutation, or `--debug` to just score one candidate | quick numeric score for any candidate (§1.1); the hammer for register-allocation/scheduling mismatches when run as a background search (§1.2) |
+| decomp-permuter | randomized source mutation, or `--debug` to just score one candidate | numeric second opinion when the streamdiff is inconclusive (§1.1); the hammer for register-allocation/scheduling mismatches as a background search (§1.2) |
 
 A residual whose **only** diff is a tail `.word <abs>` vs `.word .rodata` is a real match — those are table relocations resolved at link time.
 
@@ -27,9 +29,10 @@ found.
 
 ### 1.1 Quick score check (no search)
 
-Use this every NON-MATCH iteration in the decompile workflow (`decomp-func`'s SKILL.md Step 6b),
-right after editing the C, to get a numeric progress signal alongside
-`streamdiff.py`:
+Use this when `streamdiff.py` alone leaves you unsure what kind of difference
+you are looking at — `decomp-func`'s SKILL.md Step 6b lists the cases. It is
+two commands and two compiles, so it is not worth running on an iteration where
+the streamdiff already names the difference:
 
 ```bash
 # 1. (re)setup the per-function work directory from the CURRENT src/*.c
@@ -61,7 +64,7 @@ tools/permuter.sh /tmp/perm_FUN_08242b88 -j2 --stop-on-zero &
 
 **Don't leave it running unattended waiting for score 0.** `permuter.py`
 has no time-based timeout flag, so even with `--stop-on-zero` still cap it
-externally: let it run for about 2 minutes, then stop it
+externally: let it run for about 1 minute, then stop it
 (`pkill -f "permuter.py.*perm_FUN_08242b88"` or kill the background job).
 If it found score 0, adopt that C code directly. Otherwise, look at its
 best-scoring candidate under

@@ -26,7 +26,7 @@ _0807E3DC:
 	ble _0807E3F0
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 	b _0807E3F4
 	.align 2, 0
 _0807E3EC: .4byte 0x00000381

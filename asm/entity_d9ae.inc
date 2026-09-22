@@ -905,7 +905,7 @@ FUN_080036a0: @ 0x080036A0
 	bl FUN_082342a8
 	adds r0, r4, #0
 	adds r0, #0xc8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	ldrb r1, [r4, #1]
 	movs r0, #2
 	ands r0, r1
@@ -2138,9 +2138,9 @@ _08003FC0:
 	subs r1, #0x76
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	ldrb r0, [r5]
 	cmp r0, #1
 	beq _08003FF4
@@ -2783,7 +2783,7 @@ _08004492:
 	adds r1, r5, #0
 	adds r1, #0x34
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	b _080044B8
 	.align 2, 0
 _080044AC: .4byte 0x0000FFFB

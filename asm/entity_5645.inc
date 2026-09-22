@@ -2165,7 +2165,7 @@ FUN_08054054: @ 0x08054054
 	movs r0, #7
 	movs r1, #0x1a
 	movs r3, #0
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 _080540A2:
 	ldr r0, [r6, #0x28]
 	adds r0, #0x18

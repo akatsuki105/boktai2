@@ -421,7 +421,7 @@ _080B2B4C:
 	beq _080B2B60
 	adds r0, r5, #0
 	adds r0, #0x68
-	bl FUN_08236400
+	bl Hitbox_Register
 	adds r0, r5, #0
 	movs r1, #2
 	bl FUN_080b283c
@@ -1703,7 +1703,7 @@ Entity080b3898_Destroy: @ 0x080B34A0
 	bl AuxSprite_Remove
 	adds r0, r4, #0
 	adds r0, #0x68
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	movs r1, #0x80
 	lsls r1, r1, #1
 	adds r0, r4, r1
@@ -1750,21 +1750,21 @@ FUN_080b34c4: @ 0x080B34C4
 	adds r0, r4, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 	adds r1, r5, #0
 	adds r1, #0x60
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _080B3544 @ =FUN_080b29a4
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	add sp, #0x1c
 	pop {r4, r5, r6}
 	pop {r0}
@@ -2030,7 +2030,7 @@ _080B3718:
 _080B373C:
 	adds r0, r7, #0
 	adds r0, #0x68
-	bl FUN_08236400
+	bl Hitbox_Register
 	b _080B3854
 _080B3746:
 	mov r1, r8
@@ -2172,7 +2172,7 @@ _080B3828:
 _080B384C:
 	adds r0, r7, #0
 	adds r0, #0x68
-	bl FUN_08236400
+	bl Hitbox_Register
 _080B3854:
 	adds r0, r7, #0
 	adds r0, #0x44

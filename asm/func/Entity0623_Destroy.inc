@@ -8,7 +8,7 @@
 	movs r1, #0xae
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	bl FUN_08022b04
 	movs r0, #0

@@ -37,7 +37,7 @@ NON_MATCH void FUN_08242c08(slot32_t n) {
 #ifdef NONMATCHING_C
   s32 i;
   FUN_08242b6c(n, &gWeaponDB[0]);
-  for (i = 0; i <= 3; i++) {
+  for (i = 0; i < 4; i++) {
     if (REGISTERED_WEAPON(i) == n) {
       REGISTERED_WEAPON(i) = -1;
     }

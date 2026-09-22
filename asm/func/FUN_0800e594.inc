@@ -211,17 +211,17 @@ _0800E706:
 	str r3, [sp, #4]
 	str r5, [sp, #8]
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	ldr r0, [r6, #0x20]
 	ldr r1, _0800E75C @ =FUN_0800e4a8
 	adds r2, r6, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	ldr r0, [r6, #0x20]
-	bl FUN_08236400
+	bl Hitbox_Register
 	ldr r0, [r6, #0x20]
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	b _0800E762
 	.align 2, 0
 _0800E750: .4byte 0xFFFF0000
@@ -294,7 +294,7 @@ _0800E7CC:
 	str r3, [sp, #4]
 	str r5, [sp, #8]
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	ldr r0, [r6, #0x24]
 	movs r3, #0x80
 	lsls r3, r3, #6
@@ -303,15 +303,15 @@ _0800E7CC:
 	str r1, [sp, #4]
 	ldr r1, [sp, #0x50]
 	ldr r2, [sp, #0x54]
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	ldr r0, [r6, #0x24]
 	ldr r1, _0800E814 @ =FUN_0800e4d8
 	adds r2, r6, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	ldr r0, [r6, #0x24]
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	b _0800E81A
 	.align 2, 0
 _0800E80C: .4byte 0x00200004

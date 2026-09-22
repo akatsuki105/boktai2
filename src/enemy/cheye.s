@@ -6987,7 +6987,7 @@ FUN_0817ecdc: @ 0x0817ECDC
 	mov r0, sb
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	ldr r1, _0817EE58 @ =0x0000022A
 	adds r0, r5, r1
 	ldrh r1, [r0]
@@ -7005,17 +7005,17 @@ FUN_0817ecdc: @ 0x0817ECDC
 	str r0, [sp, #4]
 	mov r0, sb
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	adds r6, r5, #0
 	adds r6, #8
 	mov r0, sb
 	adds r1, r6, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _0817EE60 @ =FUN_0817eeb0
 	mov r0, sb
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	movs r1, #0x96
 	lsls r1, r1, #1
 	add r0, sp, #0xc
@@ -7038,7 +7038,7 @@ FUN_0817ecdc: @ 0x0817ECDC
 	mov r0, sl
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	movs r1, #0x8a
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -7058,15 +7058,15 @@ FUN_0817ecdc: @ 0x0817ECDC
 	str r0, [sp, #4]
 	mov r0, sl
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	mov r0, sl
 	adds r1, r6, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	mov r0, sl
 	ldr r1, _0817EE4C @ =FUN_0817efb4
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	add sp, #0x1c
 	pop {r3, r4, r5}
 	mov r8, r3
@@ -7797,12 +7797,12 @@ _0817F3B2:
 	beq _0817F3C0
 	mov r0, r8
 	mov r1, sb
-	bl FUN_08236640
+	bl Hitbox_ApplyDamageAlt
 	b _0817F3C8
 _0817F3C0:
 	mov r0, r8
 	mov r1, sb
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 _0817F3C8:
 	mov r0, r8
 	adds r0, #0x44
@@ -8846,9 +8846,9 @@ _0817FB9E:
 	adds r0, r4, #0
 	mov r1, sp
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 _0817FBB2:
 	ldr r1, _0817FBD8 @ =0x0000046E
 	adds r0, r5, r1
@@ -9756,9 +9756,9 @@ _081802B4:
 	adds r1, #8
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	ldr r1, _08180308 @ =0x0000046E
 	adds r0, r5, r1
 	ldrb r0, [r0]
@@ -16166,7 +16166,7 @@ _081834BA:
 	bl FUN_0823b284
 	adds r0, r4, #0
 	adds r0, #0xd8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	bl FUN_080ec6fc
 	movs r0, #0

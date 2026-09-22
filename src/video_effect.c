@@ -74,7 +74,7 @@ void Video_ResetHBlankEffect(void) {
 }
 
 // スキャンライン毎に I/O レジスタへ転送する値のテーブルを設定する
-void Video_SetHBlankEffect(s32 bg, s32 kind, unknown* table) {
+void Video_SetHBlankEffect(s32 bg, s32 kind, void* table) {
   gHBlankEffectBG = bg;
   gHBlankEffectKind = kind;
   gHBlankEffectTable = table;

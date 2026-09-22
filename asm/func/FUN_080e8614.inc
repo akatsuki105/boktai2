@@ -137,7 +137,7 @@ _080E86B8:
 	movs r1, #9
 	adds r2, r7, #0
 	mov r3, sl
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	ldr r1, _080E87D8 @ =0x030046B8
 	ldr r0, [r1]
 	adds r0, #1
@@ -177,7 +177,7 @@ _080E86B8:
 	movs r0, #3
 	movs r1, #9
 	adds r2, r7, #0
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	ldr r2, _080E87D8 @ =0x030046B8
 	ldr r1, [r2]
 	adds r1, #1
@@ -284,7 +284,7 @@ _080E87E8:
 	str r1, [sp, #0x18]
 	adds r2, r7, #0
 	mov r3, sl
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	ldr r1, _080E890C @ =0x030046B8
 	ldr r0, [r1]
 	adds r0, #1
@@ -324,7 +324,7 @@ _080E87E8:
 	movs r0, #3
 	movs r1, #0xa
 	adds r2, r7, #0
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	ldr r2, _080E890C @ =0x030046B8
 	ldr r1, [r2]
 	adds r1, #1
@@ -372,7 +372,7 @@ _080E87E8:
 	movs r1, #0xa
 _080E8904:
 	adds r2, r7, #0
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	b _080E8A40
 	.align 2, 0
 _080E890C: .4byte 0x030046B8
@@ -437,7 +437,7 @@ _080E891C:
 	movs r1, #0xb
 	adds r2, r7, #0
 	mov r3, sl
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	ldr r1, _080E8A50 @ =0x030046B8
 	ldr r0, [r1]
 	adds r0, #1
@@ -476,7 +476,7 @@ _080E891C:
 	movs r0, #3
 	movs r1, #0xb
 	adds r2, r7, #0
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	ldr r2, _080E8A50 @ =0x030046B8
 	ldr r1, [r2]
 	adds r1, #1
@@ -522,7 +522,7 @@ _080E891C:
 	str r1, [sp, #0x18]
 	movs r1, #0xb
 	adds r2, r7, #0
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 _080E8A40:
 	add sp, #0x40
 	pop {r3, r4, r5}

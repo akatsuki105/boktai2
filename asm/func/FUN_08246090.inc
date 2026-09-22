@@ -92,14 +92,14 @@ _08246116:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r6, #0
 	adds r0, #0xd4
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	adds r0, r6, #0
 	bl FUN_08245eac
 	ldrh r0, [r6, #6]

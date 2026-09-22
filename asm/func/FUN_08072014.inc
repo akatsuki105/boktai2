@@ -348,7 +348,7 @@ _080722D4:
 	str r2, [sp, #4]
 	movs r2, #0x20
 	movs r3, #0x10
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	ldr r0, _08072328 @ =0x00000202
 	bl PlaySound_082406e0
 	adds r0, r5, #0
@@ -640,12 +640,12 @@ _0807254E:
 	adds r0, r4, #0
 	adds r1, r3, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _08072604 @ =0x00000A52
 	adds r0, r5, r1
 	strb r6, [r0]
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	ldr r2, _08072608 @ =0x00000A8A
 	adds r0, r5, r2
 	ldrh r1, [r0]

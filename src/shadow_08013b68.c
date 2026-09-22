@@ -5,15 +5,15 @@
 #include "sprite_aux.h"
 
 typedef struct {
-  Entity e;            // 0x00, ENTITY_UNK_9
-  u8 unk_18[4];        // 0x18, 参照なし
-  AuxShadow* shadows;  // 0x1C, 影のリストの先頭, Init で 0, AuxShadowManager_Add / AuxShadowManager_Remove / Update
+  Entity e;         // 0x00, ENTITY_UNK_9
+  u8 unk_18[4];     // 0x18, 参照なし
+  AuxShadow* list;  // 0x1C, 影のリストの先頭, Init で 0, AuxShadowManager_Add / AuxShadowManager_Remove / Update
 } AuxShadowManager;
 static_assert(sizeof(AuxShadowManager) == 32);
 
 IWRAM_DATA AuxShadowManager* gAuxShadowManager = NULL;  // 0x03000054
 
-void AuxShadow_UpdateNone(void);
+void AuxShadow_UpdateNone(AuxShadow* _);
 void AuxShadow_FollowGround(AuxShadow* shadow);
 
 void FUN_08013920(void) { gAuxShadowManager = NULL; }
@@ -25,12 +25,12 @@ s32 AuxShadowManager_Add(AuxShadowManager* p, AuxShadow* shadow) {
   if (shadow->active != 0) return -1;
 
   shadow->prev = NULL;
-  head = p->shadows;
+  head = p->list;
   shadow->next = head;
   if (head != NULL) {
     head->prev = shadow;
   }
-  p->shadows = shadow;
+  p->list = shadow;
   shadow->active = 1;
   return 0;
 }
@@ -45,7 +45,7 @@ s32 AuxShadowManager_Remove(AuxShadowManager* p, AuxShadow* shadow) {
   if (prev != NULL) {
     prev->next = next;
   } else {
-    p->shadows = next;
+    p->list = next;
   }
   if (next != NULL) {
     next->prev = prev;
@@ -57,17 +57,17 @@ s32 AuxShadowManager_Remove(AuxShadowManager* p, AuxShadow* shadow) {
 // 影を表示し、床に追従する更新関数に切り替えてすぐ1回呼ぶ
 void AuxShadow_Show(AuxShadow* shadow) {
   shadow->sprite.flags &= ~SPRFLAG_HIDDEN;
-  shadow->fn = AuxShadow_FollowGround;
-  ((void (*)(AuxShadow*))shadow->fn)(shadow);
+  shadow->updateCallback = AuxShadow_FollowGround;
+  shadow->updateCallback(shadow);
 }
 
 // 影を非表示にし、何もしない更新関数に切り替える
 void AuxShadow_Hide(AuxShadow* shadow) {
   shadow->sprite.flags |= SPRFLAG_HIDDEN;
-  shadow->fn = AuxShadow_UpdateNone;
+  shadow->updateCallback = AuxShadow_UpdateNone;
 }
 
-void AuxShadow_UpdateNone(void) {}
+void AuxShadow_UpdateNone(AuxShadow* _) {}
 
 // 持ち主の足元の床の高さに影を置き、持ち主の高さに応じて縮め、床がない・持ち主より高い・特定の床なら非表示にする
 NON_MATCH void AuxShadow_FollowGround(AuxShadow* shadow) {
@@ -143,11 +143,11 @@ NON_MATCH void AuxShadow_FollowGround(AuxShadow* shadow) {
       goto show;
     }
   }
-  shadow->sprite.flags |= 1;
+  shadow->sprite.flags |= SPRFLAG_HIDDEN;
   return;
 
 show:
-  shadow->sprite.flags &= ~1;
+  shadow->sprite.flags &= ~SPRFLAG_HIDDEN;
 #else
   INCFUNC("asm/func/AuxShadow_FollowGround.inc");
 #endif
@@ -157,8 +157,8 @@ show:
 s32 AuxShadowManager_Update(AuxShadowManager* p) {
   AuxShadow* shadow;
 
-  for (shadow = p->shadows; shadow != NULL; shadow = shadow->next) {
-    ((void (*)(AuxShadow*))shadow->fn)(shadow);
+  for (shadow = p->list; shadow != NULL; shadow = shadow->next) {
+    shadow->updateCallback(shadow);
   }
   return 0;
 }
@@ -170,15 +170,15 @@ s32 AuxShadowManager_Destroy(AuxShadowManager* p) {
 
 s32 AuxShadowManager_Init(AuxShadowManager* p, u32 _) {
   gAuxShadowManager = p;
-  p->shadows = NULL;
+  p->list = NULL;
   return 0;
 }
 
-AuxShadowManager* AuxShadowManager_Create(u32 unused1, u32 unused2) {
+AuxShadowManager* AuxShadowManager_Create(u32 id, u32 _) {
   AuxShadowManager* p = CreateEntity(ENTITY_UNK_9, sizeof(AuxShadowManager));
   if (p != NULL) {
     SetEntityRoutine(p, AuxShadowManager_Update, AuxShadowManager_Destroy);
-    if (AuxShadowManager_Init(p, unused1) < 0) {
+    if (AuxShadowManager_Init(p, id) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
@@ -188,11 +188,16 @@ AuxShadowManager* AuxShadowManager_Create(u32 unused1, u32 unused2) {
 
 // 影を初期化して描画リストと影のリストに繋ぐ (管理エンティティがなければ作る)
 s32 AuxShadow_Init(AuxShadow* shadow, Vec3* pos, s32 scale, s32 farScale, s32 baseScale, s32 unk_57, s32 farHeight, s32 nearHeight, s32 farShift, s32 nearShift, s32 kind) {
-  AuxShadowManager* mgr = gAuxShadowManager;
   AuxSpriteGfx* gfx;
   AuxSprite* sprite;
 
-  if (mgr == NULL && (mgr = AuxShadowManager_Create(0, 0)) == NULL) return -1;
+  AuxShadowManager* mgr = gAuxShadowManager;
+  if (mgr == NULL) {
+    mgr = AuxShadowManager_Create(0, 0);
+    if (mgr == NULL) {
+      return -1;
+    }
+  }
 
   shadow->active = 0;
   shadow->pos = pos;
@@ -209,9 +214,9 @@ s32 AuxShadow_Init(AuxShadow* shadow, Vec3* pos, s32 scale, s32 farScale, s32 ba
   shadow->farShift = farShift;
   shadow->nearShift = nearShift;
   if (shadow->kind == 0) {
-    shadow->fn = AuxShadow_FollowGround;
+    shadow->updateCallback = AuxShadow_FollowGround;
   } else {
-    shadow->fn = AuxShadow_UpdateNone;
+    shadow->updateCallback = AuxShadow_UpdateNone;
   }
   gfx = &shadow->gfx;
   Video_GetAuxSprite(gfx, SPRITE_EFF_1C1B);

@@ -338,14 +338,14 @@ _08214042:
 	movs r2, #0
 	movs r3, #0
 	bl Video_GenerateBGMap
-	bl FUN_08047864
+	bl TextBox_Close
 	movs r0, #1
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	movs r0, #0x28
 	movs r1, #5
 	movs r2, #0x18
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	movs r0, #0xdd
 	b _082140C4
 _0821407C:
@@ -371,14 +371,14 @@ _0821408A:
 	movs r2, #0
 	movs r3, #0
 	bl Video_GenerateBGMap
-	bl FUN_08047864
+	bl TextBox_Close
 	movs r0, #2
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	movs r0, #0x26
 	movs r1, #5
 	movs r2, #0x18
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	movs r0, #0xc9
 	lsls r0, r0, #1
 _082140C4:
@@ -435,7 +435,7 @@ _08214108:
 	movs r2, #0
 	movs r3, #0
 	bl Video_GenerateBGMap
-	bl FUN_08047864
+	bl TextBox_Close
 _0821412C:
 	ldr r0, [r7, #8]
 	mov r3, r8

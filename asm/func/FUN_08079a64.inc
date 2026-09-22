@@ -33,7 +33,7 @@ _08079A94:
 	adds r1, r5, #0
 	adds r1, #0x2c
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 _08079AB2:
 	adds r0, r5, #0
 	movs r1, #1

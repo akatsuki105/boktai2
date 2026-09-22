@@ -34,14 +34,14 @@ FUN_0809cea8: @ 0x0809CEA8
 	cmp r0, #0
 	bne _0809CF0A
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	ldr r0, [r6, #0x24]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	ldr r0, _0809CEF8 @ =0x00000F4C
 	adds r4, r6, r0
 	adds r0, #0x2c
@@ -70,7 +70,7 @@ _0809CF0A:
 	movs r2, #1
 	orrs r1, r2
 	str r1, [r0]
-	bl FUN_08047864
+	bl TextBox_Close
 	bl FUN_08049e5c
 	b _0809CF8A
 	.align 2, 0
@@ -102,14 +102,14 @@ _0809CF28:
 	movs r3, #1
 	bl MainSprite_SetPose
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	ldr r0, [r6, #0x24]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	ldr r0, _0809CF94 @ =0x00000F78
 	adds r1, r6, r0
 	mov r0, sp
@@ -468,7 +468,7 @@ _0809D21E:
 	thumb_func_start FUN_0809d230
 FUN_0809d230: @ 0x0809D230
 	push {lr}
-	bl FUN_08047864
+	bl TextBox_Close
 	bl FUN_08049e5c
 	pop {r0}
 	bx r0

@@ -1,9 +1,7 @@
 #include "entity.h"
 #include "global.h"
+#include "video.h"
 #include "vm.h"
-
-void Video_SetMosaic(s32 size, s32 objEnabled, s32 targets);
-void Video_ClearMosaic(void);
 
 // モザイク (MOSAIC レジスタ) の強さを目標値まで1段ずつ動かす。4つのニブル (BG横/BG縦/OBJ横/OBJ縦) を別々に動かせる
 typedef struct {
@@ -37,7 +35,7 @@ void MosaicFader_UpdateIncrease(MosaicFader* p) {
   u16 value = 0;
   s32 i;
 
-  for (i = 0; i <= 3; i++) {
+  for (i = 0; i < 4; i++) {
     value = value | (p->size[i] << (i * 4));
     if ((p->activeMask >> i) & 1) {
       p->timer[i]++;
@@ -63,7 +61,7 @@ void MosaicFader_UpdateDecrease(MosaicFader* p) {
   u16 value = 0;
   s32 i;
 
-  for (i = 0; i <= 3; i++) {
+  for (i = 0; i < 4; i++) {
     value = value | (p->size[i] << (i * 4));
     if ((p->activeMask >> i) & 1) {
       p->timer[i]++;
@@ -104,7 +102,7 @@ s32 MosaicFader_Init(MosaicFader* p, u32 param_2) {
   p->objEnabled = 0;
   p->targets = 0;
   p->activeMask = 0;
-  for (i = 0; i <= 3; i++) {
+  for (i = 0; i < 4; i++) {
     p->timer[i] = 0;
     p->interval[i] = 0;
     p->size[i] = 0;
@@ -146,7 +144,7 @@ s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u
   p->objEnabled = objEnabled;
   p->targets = targets;
   p->activeMask = 0xF;
-  for (i = 0; i <= 3; i++) {
+  for (i = 0; i < 4; i++) {
     p->timer[i] = 0;
     p->interval[i] = interval[i];
     p->size[i] = from[i] & 0xF;
@@ -157,41 +155,37 @@ s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u
 
 // モザイクをかけるスクリプトコマンド。'c' が開始値、'a' が目標値、'i' が1段あたりのフレーム数
 s32 MosaicFader_StartFromScript(void) {
-  u8 from[4];
-  u8 to[4];
+  u8 from[4], to[4];
   u16 interval[4];
-  s32 mode;
-  s32 objEnabled;
-  s32 targets;
   s32 i;
+  s32 mode = VM_GetKeywordValue('m', 0);
+  s32 objEnabled = VM_GetKeywordValue('f', 0);
+  s32 targets = VM_GetKeywordValue('t', 0);
 
-  mode = VM_GetKeywordValue('m', 0);
-  objEnabled = VM_GetKeywordValue('f', 0);
-  targets = VM_GetKeywordValue('t', 0);
   if (VM_SeekToKeyword('c')) {
-    for (i = 0; i <= 3; i++) {
+    for (i = 0; i < 4; i++) {
       from[i] = Script_GetValue();
     }
   } else {
-    for (i = 0; i <= 3; i++) {
+    for (i = 0; i < 4; i++) {
       from[i] = 0;
     }
   }
   if (VM_SeekToKeyword('a')) {
-    for (i = 0; i <= 3; i++) {
+    for (i = 0; i < 4; i++) {
       to[i] = Script_GetValue();
     }
   } else {
-    for (i = 0; i <= 3; i++) {
+    for (i = 0; i < 4; i++) {
       to[i] = 0;
     }
   }
   if (VM_SeekToKeyword('i')) {
-    for (i = 0; i <= 3; i++) {
+    for (i = 0; i < 4; i++) {
       interval[i] = Script_GetValue();
     }
   } else {
-    for (i = 0; i <= 3; i++) {
+    for (i = 0; i < 4; i++) {
       interval[i] = 0;
     }
   }
@@ -209,7 +203,7 @@ void MosaicFader_Stop(void) {
     p->objEnabled = 0;
     p->targets = 0;
     p->activeMask = 0;
-    for (i = 0; i <= 3; i++) {
+    for (i = 0; i < 4; i++) {
       p->timer[i] = 0;
       p->interval[i] = 0;
       p->size[i] = 0;

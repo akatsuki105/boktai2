@@ -296,8 +296,6 @@ void nop_0822a4f8(void* _, s32 unused1, s32 unused2) {}
 
 // ノードに AuxSpriteGfx を割り当て、OAM属性のシェイプ/サイズを作り直す
 void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* gfx) {
-  u32 attr;
-
   if (gfx != NULL) {
     p->metaspriteIdx = 0;
     p->unk_12 = 0;
@@ -305,9 +303,8 @@ void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* gfx) {
     p->spriteWidth = gOAMWidthTable[gfx->shape];
     p->spriteHeight = gOAMHeightTable[gfx->shape];
     p->offsetX = 0, p->offsetY = 0;
-    attr = (p->oamAttr & 0x1C00) | (((gfx->shape & 3) << 14) | ((gfx->shape & 0xC) << 28));
-    p->oamAttr = attr;
-    if (gfx->flags & ASGFLAG_BPP8) p->oamAttr = attr | OAM0_8BPP;
+    p->oamAttr = (p->oamAttr & 0x1C00) | (((gfx->shape & 3) << 14) | ((gfx->shape & 0xC) << 28));
+    if (gfx->flags & ASGFLAG_BPP8) p->oamAttr |= OAM0_8BPP;
     p->gfx = gfx;
   }
 }
@@ -318,7 +315,7 @@ void FUN_0822a568(AuxSprite* p, AuxSpriteGfx* gfx) {
   }
 }
 
-NAKED void DrawSprite_0822a574(AuxSprite* p, s32 x, s32 y, s32 z) { INCFUNC("asm/func/DrawSprite_0822a574.inc"); }
+NAKED void AuxSprite_DrawInternal(AuxSprite* p, s32 x, s32 y, s32 z) { INCFUNC("asm/func/AuxSprite_DrawInternal.inc"); }
 
 NAKED void FUN_0822aaac(void) { INCFUNC("asm/func/FUN_0822aaac.inc"); }
 
@@ -329,6 +326,8 @@ NAKED void FUN_0822adac(void) { INCFUNC("asm/func/FUN_0822adac.inc"); }
 NAKED void FUN_0822af38(void) { INCFUNC("asm/func/FUN_0822af38.inc"); }
 
 void nop_0822b09c(void) {}
+
+// --------------------------------------------
 
 void InitPltt(void) {
   ObjPlttFile* f = GetFile(DIR_OBJPLTT, 0xC5E9);

@@ -34,5 +34,6 @@ void PlaySound_082406e0(SoundID32 id);
 void sound_08240740(SoundID32 id);
 void FUN_082407e0(void);
 void FUN_0824082c(void);
+void Sound_StopAll(void);
 
 #endif  // __INCLUDE_SOUND_H__

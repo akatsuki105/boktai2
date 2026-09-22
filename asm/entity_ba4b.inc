@@ -101,7 +101,7 @@ FUN_08027f5c: @ 0x08027F5C
 	bne _08027FDC
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 	ldrh r1, [r6, #0x3e]
 	movs r2, #0xc0
 	lsls r2, r2, #1
@@ -226,11 +226,11 @@ FUN_08028054: @ 0x08028054
 	movs r1, #0xf2
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	movs r1, #0xa1
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	pop {r4}
 	pop {r0}
 	bx r0
@@ -5839,17 +5839,17 @@ FUN_0802ab3c: @ 0x0802AB3C
 	adds r0, r5, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	movs r0, #0xc5
 	lsls r0, r0, #2
 	adds r1, r4, r0
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _0802ABD8 @ =0x08028051
 	adds r0, r5, #0
 	adds r2, r4, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	ldr r1, _0802ABDC @ =0x000008A8
 	adds r0, r4, r1
 	movs r2, #0
@@ -5867,7 +5867,7 @@ FUN_0802ab3c: @ 0x0802AB3C
 	str r0, [sp, #4]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	add sp, #0x1c
 	pop {r4, r5}
 	pop {r0}
@@ -5918,17 +5918,17 @@ FUN_0802abe8: @ 0x0802ABE8
 	adds r0, r5, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	movs r0, #0xc5
 	lsls r0, r0, #2
 	adds r1, r4, r0
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _0802AC88 @ =0x08028051
 	adds r0, r5, #0
 	adds r2, r4, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	ldr r1, _0802AC8C @ =0x000008AE
 	adds r0, r4, r1
 	movs r2, #0
@@ -5948,7 +5948,7 @@ FUN_0802abe8: @ 0x0802ABE8
 	str r0, [sp, #4]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	add sp, #0x1c
 	pop {r4, r5}
 	pop {r0}
@@ -5999,24 +5999,24 @@ FUN_0802ac94: @ 0x0802AC94
 	adds r0, r4, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	movs r0, #0xc5
 	lsls r0, r0, #2
 	adds r1, r5, r0
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _0802AD20 @ =FUN_08027f5c
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	ldr r2, _0802AD24 @ =0x00000802
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r3, #1
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	add sp, #0x1c
 	pop {r4, r5, r6}
 	pop {r0}
@@ -6066,24 +6066,24 @@ FUN_0802ad28: @ 0x0802AD28
 	adds r0, r4, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	movs r0, #0xc5
 	lsls r0, r0, #2
 	adds r1, r5, r0
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _0802ADB4 @ =0x0802802D
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	add sp, #0x1c
 	pop {r4, r5}
 	pop {r0}
@@ -6583,7 +6583,7 @@ _0802B16C:
 	adds r1, r6, r4
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	mov r0, sb
 	ldrb r1, [r0, #5]
 	ldr r2, _0802B1BC @ =0x00000226
@@ -6610,7 +6610,7 @@ _0802B18E:
 	adds r1, r6, r0
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	b _0802B1C8
 	.align 2, 0
 _0802B1BC: .4byte 0x00000226
@@ -6634,7 +6634,7 @@ _0802B1C8:
 	adds r1, r6, r3
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	mov r4, sb
 	ldrb r0, [r4, #5]
 	movs r2, #0xeb
@@ -6642,7 +6642,7 @@ _0802B1C8:
 	adds r1, r6, r2
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 _0802B1FA:
 	movs r3, #0x8d
 	lsls r3, r3, #2
@@ -6661,7 +6661,7 @@ _0802B1FA:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	mov r1, sb
 	ldrb r0, [r1, #5]
 	subs r0, #0x20
@@ -6673,7 +6673,7 @@ _0802B1FA:
 	adds r1, r6, r2
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 _0802B23C:
 	movs r1, #0x10
 	mov r3, r8

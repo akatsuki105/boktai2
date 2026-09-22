@@ -493,12 +493,12 @@ _08184972:
 	beq _08184980
 	mov r0, r8
 	adds r1, r7, #0
-	bl FUN_08236640
+	bl Hitbox_ApplyDamageAlt
 	b _08184988
 _08184980:
 	mov r0, r8
 	adds r1, r7, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 _08184988:
 	mov r0, r8
 	adds r0, #0x44
@@ -3936,7 +3936,7 @@ FUN_08186470: @ 0x08186470
 	adds r0, #0xd8
 	adds r1, #8
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	movs r0, #1
 	pop {r1}
 	bx r1
@@ -6319,7 +6319,7 @@ _081876B6:
 	bl FUN_0823b284
 	adds r0, r4, #0
 	adds r0, #0xd8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	bl FUN_080ec6fc
 	movs r0, #0

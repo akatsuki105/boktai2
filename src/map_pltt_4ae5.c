@@ -265,7 +265,7 @@ void (*const PTR_ARRAY_085aa624[4])(Entity4AE5*) = {
     MapPltt_LevelDecrease,
 };  // 0x085aa624
 
-bool32 FUN_08017b70(void);
+bool32 WeatherManager_IsActive(void);
 
 NON_MATCH void FUN_08001c10(Entity4AE5* p) {
 #ifdef NONMATCHING_C
@@ -273,7 +273,7 @@ NON_MATCH void FUN_08001c10(Entity4AE5* p) {
   u32 zero;
   u32 count;
 
-  if (FUN_08017b70()) {
+  if (WeatherManager_IsActive()) {
     flag = &p->unk_64a;
     if (*flag == 0) {
       PTR_ARRAY_085aa624[p->unk_644](p);

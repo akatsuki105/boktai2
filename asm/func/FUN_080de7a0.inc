@@ -48,13 +48,13 @@ _080DE7D6:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 _080DE814:
 	pop {r4, r5, r6}
 	pop {r0}

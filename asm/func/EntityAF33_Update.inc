@@ -11,7 +11,7 @@
 	bl FUN_0809c08c
 	ldr r1, _080507F8 @ =FUN_0822db5c
 	ldr r2, _080507FC @ =FUN_0822aaac
-	ldr r3, _08050800 @ =FUN_0822f204
+	ldr r3, _08050800 @ =MainSprite_DrawList
 	movs r0, #0
 	bl Video_SetDrawPasses
 	adds r0, r4, #0
@@ -28,7 +28,7 @@ _080507F0:
 	.align 2, 0
 _080507F8: .4byte FUN_0822db5c
 _080507FC: .4byte FUN_0822aaac
-_08050800: .4byte FUN_0822f204
+_08050800: .4byte MainSprite_DrawList
 _08050804:
 	bl FUN_0804e59c
 	adds r6, r0, #0

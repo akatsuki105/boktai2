@@ -56,23 +56,23 @@ _08080A8E:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	str r6, [sp]
 	str r7, [sp, #4]
 	adds r0, r5, #0
 	movs r1, #0
 	mov r2, r8
 	movs r3, #0x10
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	ldr r1, _08080AF0 @ =FUN_08080648
 	adds r0, r5, #0
 	adds r2, r4, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r1, r4, #0
 	adds r1, #0x38
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	add sp, #0x1c
 	pop {r3}
 	mov r8, r3

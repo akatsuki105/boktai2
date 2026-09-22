@@ -117,7 +117,7 @@ _08061272:
 	lsls r0, r0, #1
 	add r0, ip
 	adds r3, r6, #0
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0

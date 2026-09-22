@@ -84,11 +84,11 @@ _08246566:
 	mov r0, r8
 	mov r1, sl
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r7, #0
 	mov r1, sl
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldrh r1, [r7, #6]
 	movs r0, #4
 	orrs r0, r1
@@ -110,7 +110,7 @@ _08246566:
 	mov r0, r8
 	movs r2, #0x1e
 	movs r3, #0x10
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	ldrb r0, [r5, #2]
 	lsls r0, r0, #3
 	adds r1, r0, r4
@@ -120,7 +120,7 @@ _08246566:
 	ldr r3, [r0]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 	ldr r0, [sp, #8]
 	movs r1, #1
 	lsls r1, r0

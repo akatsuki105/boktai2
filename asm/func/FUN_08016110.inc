@@ -156,17 +156,17 @@ _0801620A:
 	str r3, [sp, #8]
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	ldr r0, [r4, #0x18]
 	ldr r1, _08016278 @ =FUN_0801606c
 	adds r2, r4, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	ldr r0, [r4, #0x18]
-	bl FUN_08236400
+	bl Hitbox_Register
 	ldr r0, [r4, #0x18]
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	b _0801627E
 	.align 2, 0
 _0801626C: .4byte 0xFFFF0000
@@ -209,21 +209,21 @@ _0801627E:
 	str r3, [sp, #8]
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	ldr r0, [r4, #0x1c]
 	ldr r1, _080162F4 @ =nop_08016090
 	adds r2, r4, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	ldr r0, [r4, #0x1c]
 	movs r1, #0x32
 	movs r2, #0x14
-	bl FUN_082364f0
+	bl Hitbox_SetPower
 	ldr r0, [r4, #0x1c]
-	bl FUN_08236400
+	bl Hitbox_Register
 	ldr r0, [r4, #0x1c]
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	b _080162FA
 	.align 2, 0
 _080162F0: .4byte 0x00002001

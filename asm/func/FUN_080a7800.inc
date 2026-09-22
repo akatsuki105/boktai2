@@ -41,7 +41,7 @@ _080A7844:
 	movs r4, #1
 	orrs r0, r4
 	str r0, [r1]
-	bl FUN_08047864
+	bl TextBox_Close
 	movs r0, #7
 	bl FUN_0809c08c
 	ldr r0, _080A788C @ =0x03002BE0
@@ -92,7 +92,7 @@ _080A78BA:
 	subs r2, #1
 	cmp r2, #0
 	bge _080A78BA
-	bl FUN_08047864
+	bl TextBox_Close
 	movs r0, #7
 	bl FUN_0809c08c
 	movs r1, #0xd4
@@ -195,7 +195,7 @@ _080A7988:
 	bl MainSprite_SetPose
 _080A799C:
 	adds r0, r5, #0
-	bl FUN_080a74fc
+	bl GameOverManager_UpdateMenuPltt
 _080A79A2:
 	add sp, #0xc
 	pop {r4, r5, r6}

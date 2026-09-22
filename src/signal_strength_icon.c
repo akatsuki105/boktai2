@@ -105,7 +105,7 @@ NON_MATCH void SignalStrengthIcon_Refresh(SignalStrengthIcon* p) {
       strength = gRfuLinkStatus->strength[i];
       SignalStrengthIcon_SetStrength(p, strength);
     } else {
-      for (i = 0; i <= 3; i++) {
+      for (i = 0; i < 4; i++) {
         if ((gRfuLinkStatus->connectSlot_flag >> i) & 1) {
           if (strength > gRfuLinkStatus->strength[i]) {
             strength = gRfuLinkStatus->strength[i];

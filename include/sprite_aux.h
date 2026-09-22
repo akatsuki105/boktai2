@@ -105,16 +105,20 @@ static_assert(sizeof(AuxSprite) == 44);
 
 // --------------------------------------------
 
+extern AuxSprite* gAuxSpriteLists[2];
+s32 Video_AddAuxSpriteIntoDrawList(AuxSprite* p, s32 idx);
+void Video_RemoveAuxSpriteFromDrawList(AuxSprite* p, s32 idx);
+
 extern AuxSpriteFile* gAuxSpriteFile;  // 0x030035A0
 extern u8* gAuxSpriteTiles;
 extern AuxSubsprite* gAuxSubsprites;
 extern u16 gAuxSpriteTileCount;
-extern AuxSprite* gAuxSpriteLists[2];
 
-void AuxSprite_Add(AuxSprite* p, AuxSpriteGfx* s, SpriteFlags flags);
+void AuxSprite_Add(AuxSprite* p, AuxSpriteGfx* gfx, SpriteFlags flags);
+void AuxSprite_Setup(AuxSprite* p, AuxSpriteGfx* gfx, SpriteFlags flags);
 void AuxSprite_Remove(AuxSprite* p);
-bool32 Video_GetAuxSprite(AuxSpriteGfx* p, SpriteID32 id);
-void Video_SetAuxSpritePltt(AuxSpriteGfx* p, s32 plttID);
+bool32 Video_GetAuxSprite(AuxSpriteGfx* gfx, SpriteID32 id);
+void Video_SetAuxSpritePltt(AuxSpriteGfx* gfx, s32 plttID);
 void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* gfx);
 
 #endif  // __INCLUDE_SPRITE_ACTOR_H__

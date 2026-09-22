@@ -483,12 +483,12 @@ _080FB1A6:
 	beq _080FB1B4
 	mov r0, r8
 	adds r1, r7, #0
-	bl FUN_08236640
+	bl Hitbox_ApplyDamageAlt
 	b _080FB1BC
 _080FB1B4:
 	mov r0, r8
 	adds r1, r7, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 _080FB1BC:
 	mov r0, r8
 	adds r0, #0x44

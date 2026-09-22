@@ -2,7 +2,7 @@
 	adds r5, r1, #0
 	adds r4, r2, #0
 	adds r6, r4, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 	ldrh r1, [r5, #0x3e]
 	cmp r1, #0
 	beq _080132E8

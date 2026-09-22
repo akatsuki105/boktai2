@@ -11,19 +11,19 @@
 	str r0, [r1]
 _080B475A:
 	ldr r0, _080B4784 @ =0x0000EAA8
-	bl FUN_08047dc0
+	bl TextBox_SetBgPltt
 	movs r1, #0xba
 	lsls r1, r1, #3
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #1
 	movs r1, #0xf
 	movs r2, #0x1c
 	movs r3, #4
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	pop {r4}
 	pop {r0}
 	bx r0

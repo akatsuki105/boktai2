@@ -995,7 +995,7 @@ _0807FDD6:
 	bhi _0807FDF8
 	adds r0, r4, #0
 	adds r0, #0x9c
-	bl FUN_08236400
+	bl Hitbox_Register
 	b _0807FDFE
 	.align 2, 0
 _0807FDF0: .4byte 0x030044BC

@@ -62,7 +62,7 @@ _0823B650:
 	bne _0823B69C
 	ldr r1, _0823B68C @ =FUN_0822db5c
 	ldr r2, _0823B690 @ =FUN_0822aaac
-	ldr r3, _0823B694 @ =FUN_0822f204
+	ldr r3, _0823B694 @ =MainSprite_DrawList
 	movs r0, #0
 	bl Video_SetDrawPasses
 	ldr r1, _0823B698 @ =0x03003540
@@ -78,12 +78,12 @@ _0823B650:
 _0823B688: .4byte 0x000056C2
 _0823B68C: .4byte FUN_0822db5c
 _0823B690: .4byte FUN_0822aaac
-_0823B694: .4byte FUN_0822f204
+_0823B694: .4byte MainSprite_DrawList
 _0823B698: .4byte 0x03003540
 _0823B69C:
 	ldr r1, _0823B6B4 @ =FUN_0822de64
 	ldr r2, _0823B6B8 @ =FUN_0822ac90
-	ldr r3, _0823B6BC @ =FUN_0822f224
+	ldr r3, _0823B6BC @ =MainSprite_DrawListScreen
 	bl Video_SetDrawPasses
 	ldr r1, _0823B6C0 @ =0x03003540
 	movs r0, #0
@@ -97,5 +97,5 @@ _0823B6AE:
 	.align 2, 0
 _0823B6B4: .4byte FUN_0822de64
 _0823B6B8: .4byte FUN_0822ac90
-_0823B6BC: .4byte FUN_0822f224
+_0823B6BC: .4byte MainSprite_DrawListScreen
 _0823B6C0: .4byte 0x03003540

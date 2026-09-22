@@ -8,7 +8,7 @@
 	movs r2, #0xbb
 	lsls r2, r2, #2
 	adds r0, r1, r2
-	bl FUN_08236400
+	bl Hitbox_Register
 	ldrb r0, [r4]
 	subs r0, #1
 	strb r0, [r4]

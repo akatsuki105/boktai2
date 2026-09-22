@@ -50,7 +50,7 @@ _0822114C:
 	ldrsh r3, [r3, r4]
 	str r3, [sp, #4]
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	b _08221188
 	.align 2, 0
 _08221178: .4byte 0x000003BE

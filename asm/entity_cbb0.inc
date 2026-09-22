@@ -7260,7 +7260,7 @@ _080B0A28:
 	ldr r2, _080B0AA0 @ =0x00001284
 	adds r1, r4, r2
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 _080B0A42:
 	ldr r3, _080B0AA4 @ =0x00000C0F
 	adds r0, r4, r3
@@ -7382,24 +7382,24 @@ FUN_080b0aec: @ 0x080B0AEC
 	adds r0, r4, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 	movs r0, #0xc3
 	lsls r0, r0, #3
 	adds r1, r5, r0
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _080B0B78 @ =FUN_080af200
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	add sp, #0x1c
 	pop {r4, r5, r6}
 	pop {r0}

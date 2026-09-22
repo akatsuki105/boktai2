@@ -210,18 +210,18 @@ _08008A58:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	ldr r1, _08008AE8 @ =FUN_08008940
 	adds r0, r5, #0
 	mov r2, r8
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	mov r1, sb
 	adds r1, #0x3c
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	movs r0, #0
 	add sp, #0x20
 	pop {r3, r4}
@@ -527,7 +527,7 @@ _08008CF8:
 	adds r0, #8
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldrb r1, [r4, #3]
 	cmp r1, #0
 	beq _08008D44
@@ -690,7 +690,7 @@ Entity5DA5_Destroy: @ 0x08008E40
 _08008E4E:
 	adds r0, r4, #0
 	adds r0, #8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	adds r0, #0x58
 	bl MainSprite_Remove

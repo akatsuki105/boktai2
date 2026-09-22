@@ -410,7 +410,7 @@ _0821F320:
 	ldrsh r3, [r3, r4]
 	str r3, [sp, #4]
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	ldr r0, _0821F42C @ =0x0000034A
 	bl PlaySound_082406e0
 _0821F3FC:
@@ -845,7 +845,7 @@ _0821F700:
 	ldrsh r3, [r3, r4]
 	str r3, [sp, #4]
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 _0821F754:
 	movs r1, #0xe9
 	lsls r1, r1, #2

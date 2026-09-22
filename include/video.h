@@ -27,4 +27,8 @@ extern u16 u16_03003514;
 void Video_SetDrawPasses(s32 val, Procedure ptclFn, Procedure auxsprFn, Procedure mainsprFn);
 u16* GetTilemapBuffer(s32 bg);
 
+void Video_SetHBlankEffect(s32 bg, s32 kind, void* table);
+void Video_SetMosaic(s32 size, s32 objEnabled, s32 targets);
+void Video_ClearMosaic(void);
+
 #endif  // __INCLUDE_VIDEO_H__

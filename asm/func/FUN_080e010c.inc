@@ -32,7 +32,7 @@ _080E0130:
 	movs r1, #0xa2
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	bl AuxSprite_Remove
 	movs r6, #0

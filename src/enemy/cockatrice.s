@@ -14372,7 +14372,7 @@ _08159BF0:
 	str r2, [r0, #0x20]
 	mov r1, sp
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 _08159C14:
 	add sp, #0x10
 	pop {r4, r5}
@@ -24322,7 +24322,7 @@ _0815E89E:
 	ldrh r0, [r0]
 	str r0, [sp, #4]
 	adds r0, r4, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	movs r0, #0x10
 	movs r5, #0
 	strh r0, [r4, #0xa]
@@ -24396,7 +24396,7 @@ _0815E93C:
 	str r0, [sp, #4]
 	adds r0, r4, #0
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	movs r0, #0x10
 	strh r0, [r4, #0xa]
 	movs r1, #0x40
@@ -25223,12 +25223,12 @@ _0815EFA6:
 	beq _0815EFB4
 	adds r0, r7, #0
 	mov r1, r8
-	bl FUN_08236640
+	bl Hitbox_ApplyDamageAlt
 	b _0815EFBC
 _0815EFB4:
 	adds r0, r7, #0
 	mov r1, r8
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 _0815EFBC:
 	adds r0, r7, #0
 	adds r0, #0x44
@@ -27969,7 +27969,7 @@ EnemyCockatrice_Destroy: @ 0x08160534
 	movs r1, #0xcb
 	lsls r1, r1, #3
 	adds r0, r4, r1
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	ldr r2, _08160554 @ =0x0000025D
 	adds r0, r4, r2
 	ldrb r0, [r0]
@@ -28069,7 +28069,7 @@ _081605FE:
 	bl FUN_0823b284
 	adds r0, r4, #0
 	adds r0, #0xd8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	bl FUN_080ec6fc
 	movs r0, #0

@@ -674,17 +674,17 @@ _0800DFD4:
 	str r4, [sp, #8]
 	adds r0, r6, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	adds r0, r6, #0
 	ldr r1, [sp, #0x4c]
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _0800E0E0 @ =FUN_0800cbd0
 	adds r0, r6, #0
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r0, r6, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	movs r1, #0x90
 	add r0, sp, #0x14
 	strh r1, [r0]
@@ -706,19 +706,19 @@ _0800DFD4:
 	str r3, [sp, #8]
 	adds r0, r6, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	adds r0, r6, #0
 	ldr r1, [sp, #0x4c]
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _0800E0E8 @ =FUN_0800cc04
 	adds r0, r6, #0
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r0, r6, #0
 	movs r1, #0x32
 	movs r2, #0
-	bl FUN_082364f0
+	bl Hitbox_SetPower
 	ldr r0, _0800E0EC @ =0x00010100
 	str r0, [r6, #0x34]
 	movs r0, #4
@@ -955,7 +955,7 @@ _0800E246:
 Entity55C2_Destroy: @ 0x0800E250
 	push {lr}
 	adds r0, #0x18
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	movs r0, #0
 	pop {r1}
 	bx r1
@@ -1113,22 +1113,22 @@ _0800E38A:
 	str r3, [sp, #8]
 	adds r0, r4, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	adds r0, r4, #0
 	add r1, sp, #0xc
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r1, _0800E3F4 @ =FUN_0800e0f0
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236514
+	bl Hitbox_SetPowerAndAttributes
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	movs r0, #0x66
 	movs r1, #0
 	bl VM_GetKeywordValue

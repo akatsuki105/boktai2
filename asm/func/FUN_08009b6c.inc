@@ -35,13 +35,13 @@
 	adds r0, r4, #0
 	movs r1, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	ldr r1, _08009C04 @ =FUN_08009b30
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	adds r4, #0x50
 	ldr r1, [r6, #0x1c]
 	adds r0, r4, #0

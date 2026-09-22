@@ -22,9 +22,9 @@ NAKED void* FUN_0823d85c(void* p) { INCFUNC("asm/func/FUN_0823d85c.inc"); }
 
 void Delay(s32 n) {
   if (n > 0) {
-    do {
-      n -= 1;
-    } while (n != 0);
+    while (n != 0) {
+      n--;
+    }
   }
 }
 
@@ -98,7 +98,6 @@ BCDDate GetBCDDate(s32 year, s32 month, s32 day) {
   return date;
 }
 
-// BCD
 // 0..99 の2進数を BCD に変換する
 u8 ToBCD(u8 val) {
   s32 ones = Mod(val, 10);
@@ -117,9 +116,13 @@ NAKED void FUN_0823df38(s32 hour, s32 minute) { INCFUNC("asm/func/FUN_0823df38.i
 NAKED bool32 SetGameDateTime(s32 year, s32 month, s32 day, s32 hour, s32 minute, s32 second, bool32 writeRTC) { INCFUNC("asm/func/SetGameDateTime.inc"); }
 
 u32 GetDate(void) { return gClock.date.val; }
+
 u32 GetHour(void) { return gClock.hour; }
+
 u32 GetMinute(void) { return gClock.minute; }
+
 u32 GetSecond(void) { return gClock.second; }
+
 u32 FUN_0823e1a4(void) { return gClock.daytime.hour; }
 
 // 0x0823E1B0
@@ -262,7 +265,7 @@ void FUN_0823e4ec(void) {
   s32 status = 0;
   s32 i;
 
-  for (i = 0; i <= 4; i++) {
+  for (i = 0; i < 5; i++) {
     status = FUN_0823e828();
     if (status != -1) {
       break;
@@ -291,7 +294,7 @@ bool32 FUN_0823e650(void) {
   u16 ie;
 
   FUN_08241704();
-  for (i = 0; i <= 4; i++) {
+  for (i = 0; i < 5; i++) {
     REG_IME = 0;
     ie = REG_IE;
     REG_IE = 0;

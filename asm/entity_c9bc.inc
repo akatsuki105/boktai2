@@ -1562,7 +1562,7 @@ _0800D738:
 	adds r1, #0x50
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r1, r5, #0
 	adds r1, #0x40
 	ldrb r0, [r1]
@@ -1640,9 +1640,9 @@ _0800D7C6:
 	adds r1, #0x50
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 _0800D7E4:
 	adds r0, r5, #0
 	adds r0, #0x45

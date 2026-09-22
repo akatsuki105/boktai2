@@ -90,9 +90,9 @@ _0807136E:
 	adds r1, r6, r0
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	movs r0, #0
 	b _080713A0
 _0807139A:

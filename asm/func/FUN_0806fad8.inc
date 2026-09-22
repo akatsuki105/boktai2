@@ -129,7 +129,7 @@ _0806FBD6:
 	str r7, [sp, #4]
 	mov r1, r8
 	movs r3, #1
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	adds r0, r6, #0
 	adds r0, #0xc4
 	ldrb r0, [r0]

@@ -68,7 +68,8 @@
 #define SPRITE_EFF_1C1B 0x1C1B
 #define SPRITE_PITFALL_A945 0xA945
 #define SPRITE_OJAMA_BAT 0x18A8
-#define SPRITE_MIMIC 0x3876  // 普通の宝箱も兼ねる
+#define SPRITE_MIMIC 0x3876    // 普通の宝箱も兼ねる
+#define SPRITE_KOMAINU 0xF680  // 大聖堂の狛犬
 
 // データが存在しないスプライトのID
 #define SPRITE_NODATA_9DA7 0x9DA7

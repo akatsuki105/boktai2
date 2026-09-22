@@ -7,15 +7,15 @@
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	movs r1, #0xa2
 	lsls r1, r1, #1
 	adds r0, r6, r1
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0

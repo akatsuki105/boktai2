@@ -51,7 +51,7 @@
 	str r1, [sp, #4]
 	adds r1, r5, #0
 	movs r3, #8
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	ldrb r1, [r6]
 	ldr r2, _080712CC @ =0x00000A52
 	adds r0, r4, r2

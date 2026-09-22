@@ -154,11 +154,11 @@ _08090E9C:
 	bl FUN_08090ca4
 _08090EA8:
 	ldr r0, [r7, #0x50]
-	bl FUN_080478f0
+	bl TextBox_Start
 	ldr r0, _08090ED8 @ =0x0000EFDA
-	bl FUN_08047dc0
+	bl TextBox_SetBgPltt
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	adds r0, r7, #0
 	bl FUN_0808fbf4
 	ldr r1, _08090EDC @ =FUN_080907f0

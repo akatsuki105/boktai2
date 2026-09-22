@@ -41,7 +41,7 @@ _0801649C:
 	adds r1, r4, #0
 	adds r1, #0xc
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 _080164AC:
 	ldr r0, [r4, #0x1c]
 	cmp r0, #0
@@ -49,9 +49,9 @@ _080164AC:
 	adds r1, r4, #0
 	adds r1, #0xc
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r0, [r4, #0x1c]
-	bl FUN_08236400
+	bl Hitbox_Register
 _080164C2:
 	ldrh r0, [r4, #6]
 	adds r0, #1

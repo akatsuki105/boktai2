@@ -32,10 +32,10 @@ compiler-forced one) in a function that just reached MATCHING:
 
 ### Entity `_Create` is fixed boilerplate: allocate, wire routines, init-or-kill
 
-- **Frequency**: 13 functions
-- **Seen in**: `Entity080de11c_Create` (entity_080ddf88.c), `GameOverManager_Create` (gameover.c), `EntityAF33_Create` (entity_af33.c), `Entity4DDF_Create` (entity_4ddf.c), `UnkSolarEntity_Create` (solar.c), `LevelUpper_Create` (level_upper.c), `Entity0866_Create` (entity_0866.c), `Entity6367_Create` (entity_6367.c), `Entity0800f110_Create` (entity_0800f110.c), `Duneyrr_Create` (boss/duneyrr.c), `Dvalinn_Create` (boss/dvalinn.c), `Entity0623_Create` (boss/entity_0623.c), `BossShadeMan_Create` (boss/shademan.c)
+- **Frequency**: 14 functions
+- **Seen in**: `Entity080de11c_Create` (entity_080ddf88.c), `GameOverManager_Create` (gameover.c), `EntityAF33_Create` (entity_af33.c), `Entity4DDF_Create` (entity_4ddf.c), `UnkSolarEntity_Create` (solar.c), `LevelUpper_Create` (level_upper.c), `Entity0866_Create` (entity_0866.c), `Entity6367_Create` (entity_6367.c), `Entity0800f110_Create` (entity_0800f110.c), `Duneyrr_Create` (boss/duneyrr.c), `Dvalinn_Create` (boss/dvalinn.c), `Entity0623_Create` (boss/entity_0623.c), `BossShadeMan_Create` (boss/shademan.c), `BreakableManager_Create` (breakable.c)
 - **Description**: every `X_Create` has the same body — `p = CreateEntity(ENTITY_KIND, sizeof(X));` then `if (p != NULL) { SetEntityRoutine(p, X_Update, X_Destroy); if (X_Init(p) < 0) { KillEntity((Entity*)p); return NULL; } }` then `return p;`. Write it verbatim from a matched sibling before analyzing the asm; the only per-function choices are the entity kind, the size argument (`sizeof(X)` vs a bare number — both appear), and whether `X_Init` takes extra arguments.
-- Singleton entities add a global guard, and the two spellings are NOT interchangeable — they differ in branch direction (see `agbcc-quirks.md`). `if (g == NULL) { ...body...; return p; } return g;` (`Entity080de11c_Create`, `UnkSolarEntity_Create`, `LevelUpper_Create`, `Entity0800f110_Create`) vs the early return `if (g != NULL) { return g; }` followed by the unindented body (`GameOverManager_Create`, and the boss files where the "existing instance" comes from `FUN_08022a2c(BOSS_*)` rather than a global: `Duneyrr_Create`, `Dvalinn_Create`, `BossShadeMan_Create`). Pick whichever puts the allocation on the fall-through path in the target.
+- Singleton entities add a global guard, and the two spellings are NOT interchangeable — they differ in branch direction (see `agbcc-quirks.md`). `if (g == NULL) { ...body...; return p; } return g;` (`Entity080de11c_Create`, `UnkSolarEntity_Create`, `LevelUpper_Create`, `Entity0800f110_Create`) vs the early return `if (g != NULL) { return g; }` followed by the unindented body (`GameOverManager_Create`, and the boss files where the "existing instance" comes from `FUN_08022a2c(BOSS_*)` rather than a global: `Duneyrr_Create`, `Dvalinn_Create`, `BossShadeMan_Create`, and `BreakableManager_Create`). Pick whichever puts the allocation on the fall-through path in the target.
 
 ### Bit set / clear / test goes through a `static inline` helper, never a bare `|=`
 
@@ -69,3 +69,11 @@ compiler-forced one) in a function that just reached MATCHING:
 - The read side exists too and comes in two flavours: returning the masked value
   (`TestHitboxUnk38`, `TestFlag030047a4`) and returning a `bool32`. Both match
   where the target simply branches on the test.
+
+### A fixed-point shift is written with an explicit round-toward-zero branch
+
+- **Frequency**: 2 functions
+- **Seen in**: `MainSprite_SetAnimSpeed` (sprite_anim_main.c), `Breakable_OnHit` ×2 (breakable.c)
+- **Description**: these developers never divided a signed fixed-point product by a power of two. They wrote `if (v >= 0) { n = v >> k; } else { n = -((-v) >> k); }` out in full, at every site, even twice in one function. In the asm it is `cmp #0` / `blt` / `asr #k` / `b` / `neg` / `asr #k` / `neg` — six instructions with two branches, which is how you tell it apart from a real `/`: agbcc compiles `v / (1 << k)` into the bias form (`add #(1<<k)-1` under a `bge`, then one `asr`).
+- The multiplier has to stay a shift. `gSineTable[i] * 32 / 4096` folds to `/ 128` before the idiom is reached; `gSineTable[i] << 5` keeps the `lsl #5`.
+- One local or two is not fixed — it decides which register the result lands in, so try both. `MainSprite_SetAnimSpeed` matched reusing one (`n = cmd->duration * p->animSpeed; n >>= 6;`). `Breakable_OnHit` needed two, the input staying where the `ldrsh` left it and the result going to a second register.

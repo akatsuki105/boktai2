@@ -1,10 +1,10 @@
-#include "constants/sprite.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "input.h"
 #include "sound.h"
-#include "sprite_main.h"
+#include "sprite.h"
+#include "text.h"
 #include "vm.h"
 
 // 選択肢1つ分の位置と大きさ。TextBoxChoice_ParseTag が <ALTER> を見つけるたびに埋める
@@ -56,21 +56,14 @@ IWRAM_DATA TextBoxChoice* gTextBoxChoice = NULL;  // 0x03000028
 
 u8* FUN_0823d340(void);
 
-s32 TextBox_StrNCmp(u8* s, const char* lit, s32 n);
 s32 TextBox_ParseDecimal(u8* s, s32 len);
 u8* TextBox_FindChar(u8* s, u8 c);
 s32 TextBox_GetExtendWidth(s32 idx);
 s32 TextBox_GetVarWidth(s32 idx);
 s32 TextBox_GetRect(s32* rect);
 s32 FUN_080488fc(void);
-void* FUN_08047864(void);
 u16 FUN_08048afc(u8* s);
-char* Textbox_LookupString(s32 stringID);
-s32 FUN_08048914(void);
-s32 FUN_08047b8c(s32 x, s32 y, s32 w, s32 h);
-s32 FUN_080477e4(s32 param_1);
-s32 FUN_080478f0(u8* pc);
-s32 FUN_08047a28(s32 stringBase);
+bool32 TextBox_IsFinished(void);
 
 const char s_ALTER_08251b3c[] = "ALTER";
 const char s_EXTEND_08251b44[] = "EXTEND";
@@ -87,7 +80,7 @@ void TextBoxChoice_Finish(TextBoxChoice* p, s32 selected) {
 
   if (p->fromScript != 0) {
     argv[0] = selected;
-    for (i = 0; i <= 3; i++) {
+    for (i = 0; i < 4; i++) {
       argv[i + 1] = p->scriptArgs[i];
     }
     args.argc = 5, args.argv = argv;
@@ -233,13 +226,13 @@ NON_MATCH void TextBoxChoice_HandleInput(TextBoxChoice* p) {
   if (gInput[0].pressed & B_BUTTON) {
     if (p->cancelable != 0) {
       PlaySound_082406e0(0xDE);
-      FUN_08047864();
+      TextBox_Close();
       TextBoxChoice_Finish(p, -1);
       KillEntity((Entity*)p);
     }
   } else if (gInput[0].pressed & A_BUTTON) {
     PlaySound_082406e0(0xDD);
-    FUN_08047864();
+    TextBox_Close();
     TextBoxChoice_Finish(p, p->selected);
     KillEntity((Entity*)p);
   }
@@ -249,7 +242,7 @@ NON_MATCH void TextBoxChoice_HandleInput(TextBoxChoice* p) {
 }
 
 s32 TextBoxChoice_Update(TextBoxChoice* p) {
-  if (p->textPC != NULL && FUN_08048914() != 0) {
+  if (p->textPC != NULL && TextBox_IsFinished() != 0) {
     if (p->startDelay == 0) {
       TextBoxChoice_HandleInput(p);
     } else {
@@ -270,10 +263,10 @@ s32 TextBoxChoice_Destroy(TextBoxChoice* p) {
 
 // 選択肢の矩形でテキストボックスを開き、選択肢の元になる文字列を流し込む
 void TextBoxChoice_OpenBox(TextBoxChoice* p) {
-  FUN_08047b8c(p->winX, p->winY, p->winW, p->winH);
-  FUN_080477e4(1);
-  FUN_080478f0(p->textPC);
-  FUN_08047a28(p->stringBase);
+  TextBox_SetRect(p->winX, p->winY, p->winW, p->winH);
+  TextBox_SetInstant(1);
+  TextBox_Start(p->textPC);
+  TextBox_ShowLine(p->stringBase);
 }
 
 // <ALTER> / </ALTER> / <EXTEND> / <VAR> を処理して、タグの次の位置を返す
@@ -432,7 +425,7 @@ NON_MATCH void TextBoxChoice_ScanChoices(TextBoxChoice* p, u8* pc) {
 
   p->choiceCount = 0;
   p->choiceWidth = 0;
-  for (i = 0; i <= 7; i++) {
+  for (i = 0; i < 8; i++) {
     p->lineFirst[i] = 0;
     p->lineLast[i] = 0;
     p->lineChoiceCount[i] = 0;
@@ -605,7 +598,7 @@ TextBoxChoice* TextBoxChoice_CreateFromScript(void) {
     settings[3] = 0, settings[4] = 0, settings[5] = 24, settings[6] = 3;
   }
   if (VM_SeekToKeyword('A')) {
-    for (i = 0; i <= 3; i++) {
+    for (i = 0; i < 4; i++) {
       if (VM_GetPC() != NULL) {
         args[i] = Script_GetValue();
       } else {
@@ -613,7 +606,7 @@ TextBoxChoice* TextBoxChoice_CreateFromScript(void) {
       }
     }
   } else {
-    for (i = 0; i <= 3; i++) {
+    for (i = 0; i < 4; i++) {
       args[i] = 0;
     }
   }
@@ -622,7 +615,7 @@ TextBoxChoice* TextBoxChoice_CreateFromScript(void) {
     SetEntityRoutine(p, TextBoxChoice_Update, TextBoxChoice_Destroy);
     p->fromScript = 1;
     p->scriptID = scriptID;
-    for (i = 0; i <= 3; i++) {
+    for (i = 0; i < 4; i++) {
       p->scriptArgs[i] = args[i];
     }
     if (TextBoxChoice_Init(p, textPC, stringBase, settings) < 0) {

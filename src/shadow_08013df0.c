@@ -151,17 +151,13 @@ s32 ScriptShadow_Create(u32 id, s32 mode, Vec3* pos) {
 s32 ScriptShadow_CreateFromScript(void) {
   s32 id = VM_GetKeywordValue('n', 0);
   s32 mode = VM_GetKeywordValue('m', 1);
-  struct {
-    u32 x : 16;
-    u32 y : 16;
-    u32 z : 16;
-  } pos;
+  Vec3 pos;
 
   if (VM_SeekToKeyword('p')) {
     pos.x = Script_GetValue();
     pos.y = Script_GetValue();
     pos.z = Script_GetValue();
-    return ScriptShadow_Create(id, mode, (Vec3*)&pos);
+    return ScriptShadow_Create(id, mode, &pos);
   }
   return -1;
 }
@@ -222,17 +218,13 @@ s32 ScriptShadow_Move(u32 id, Vec3* pos) {
 // スクリプト命令: n=ID, p=座標 で影を移す
 s32 ScriptShadow_MoveFromScript(void) {
   s32 id = VM_GetKeywordValue('n', 0);
-  struct {
-    u32 x : 16;
-    u32 y : 16;
-    u32 z : 16;
-  } pos;
+  Vec3 pos;
 
   if (VM_SeekToKeyword('p')) {
     pos.x = Script_GetValue();
     pos.y = Script_GetValue();
     pos.z = Script_GetValue();
-    return ScriptShadow_Move(id, (Vec3*)&pos);
+    return ScriptShadow_Move(id, &pos);
   }
   return -1;
 }

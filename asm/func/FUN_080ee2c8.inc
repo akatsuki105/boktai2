@@ -253,12 +253,12 @@ _080EE4B4:
 	adds r0, r7, r1
 	mov r1, r8
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r7, #0
 	adds r0, #0xd8
 	mov r1, r8
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r2, r7, #0
 	adds r2, #0xde
 	ldrh r1, [r2]

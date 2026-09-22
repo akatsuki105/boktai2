@@ -14,7 +14,7 @@ _0800E564:
 	ldr r0, [r4, #0x20]
 	cmp r0, #0
 	beq _0800E57A
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	ldr r0, [r4, #0x20]
 	bl Free
 _0800E57A:

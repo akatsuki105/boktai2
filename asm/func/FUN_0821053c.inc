@@ -9,16 +9,16 @@
 	ldr r0, _082105C8 @ =0x00000D8C
 	adds r5, r6, r0
 	ldr r0, [r5]
-	bl FUN_080478f0
+	bl TextBox_Start
 	ldr r1, _082105CC @ =0x00000D9C
 	adds r4, r6, r1
 	movs r0, #0
 	strb r0, [r4]
 	ldrb r0, [r7]
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	movs r0, #0
 	adds r1, r4, #0
-	bl FUN_08047c84
+	bl TextBox_SetExtendValue
 	bl FUN_08049e5c
 	ldrb r1, [r7]
 	lsls r0, r1, #3
@@ -70,11 +70,11 @@ _082105DC:
 	lsls r1, r1, #4
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #0
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	bl FUN_08049e5c
 	ldr r0, _0821060C @ =0x00000C8A
 	adds r2, r6, r0

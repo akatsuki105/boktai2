@@ -163,18 +163,18 @@ FUN_08007f84: @ 0x08007F84
 	str r3, [sp, #8]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_0823646c
+	bl Hitbox_Init
 	ldr r1, _0800805C @ =FUN_08007f4c
 	adds r0, r5, #0
 	adds r2, r7, #0
-	bl FUN_0823651c
+	bl Hitbox_SetHandler
 	adds r1, r7, #0
 	adds r1, #0x54
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r5, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	movs r0, #0
 	add sp, #0x2c
 	pop {r3, r4}
@@ -718,7 +718,7 @@ _0800845A:
 	adds r1, #0x54
 	adds r0, r6, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldrb r1, [r4, #5]
 	cmp r1, #0
 	beq _08008498
@@ -773,7 +773,7 @@ _080084C2:
 	beq _080084D8
 	adds r0, r4, #0
 	adds r0, #0x94
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	adds r0, #0x34
 	bl MainSprite_Remove

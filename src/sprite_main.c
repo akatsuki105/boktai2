@@ -3,9 +3,6 @@
 
 extern u16 u16_030044b8;
 
-s32 Video_AddMainSpriteIntoDrawList(MainSprite* p, s32 idx);
-void Video_RemoveMainSpriteFromDrawList(MainSprite* p, s32 idx);
-
 s32 FUN_0822f1b0(void) {
   u16_030044b8 = 0;
   return 0;
@@ -50,22 +47,23 @@ void UNUSED MainSprite_RemoveAll(void) {
 	bx lr\n\
  .syntax divided\n")
 
-NAKED void FUN_0822f204(void) { ARM_TRAMPOLINE(FUN_08230134); }
+NAKED void MainSprite_DrawList(void) { ARM_TRAMPOLINE(MainSprite_DrawListInternal); }
 
-NAKED void FUN_0822f224(void) { ARM_TRAMPOLINE(FUN_082302e8); }
+// カメラを使わない画面用の MainSprite 描画パス
+NAKED void MainSprite_DrawListScreen(void) { ARM_TRAMPOLINE(MainSprite_DrawListScreenInternal); }
 
 NAKED void FUN_0822f244(void) { ARM_TRAMPOLINE(FUN_082303c8); }
 
 NAKED void FUN_0822f264(void) { ARM_TRAMPOLINE(FUN_08230594); }
 
 // spriteset ファイルのヘッダをコピーし、各オフセットをファイル先頭からのポインタに変換する
-s32 OpenMainSpriteFile(MainSpriteGfx* data, MainSpriteFile* f) {
-  *data = *(MainSpriteGfx*)f;
-  data->sprites = (MainSpritePose*)((u32)data->sprites + (u32)f);
-  data->unk1 = (MainAnim*)((u32)data->unk1 + (u32)f);
-  data->subsprites = (MainSubsprite*)((u32)data->subsprites + (u32)f);
-  data->unk2 = (MainAnimCmd*)((u32)data->unk2 + (u32)f);
-  data->tiles = (u8*)((u32)data->tiles + (u32)f);
+s32 OpenMainSpriteFile(MainSpriteGfx* gfx, MainSpriteFile* f) {
+  *gfx = *(MainSpriteGfx*)f;
+  gfx->sprites = (MainSpritePose*)((u32)gfx->sprites + (u32)f);
+  gfx->unk1 = (MainAnim*)((u32)gfx->unk1 + (u32)f);
+  gfx->subsprites = (MainSubsprite*)((u32)gfx->subsprites + (u32)f);
+  gfx->unk2 = (MainAnimCmd*)((u32)gfx->unk2 + (u32)f);
+  gfx->tiles = (u8*)((u32)gfx->tiles + (u32)f);
   return 0;
 }
 

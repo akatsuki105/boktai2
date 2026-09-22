@@ -284,7 +284,7 @@ _082277C2:
 	movs r1, #3
 	mov r2, sb
 	movs r3, #0x20
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	str r4, [sp]
 	str r5, [sp, #4]
 	mov r0, r8
@@ -297,7 +297,7 @@ _082277C2:
 	movs r1, #3
 	mov r2, sb
 	movs r3, #0x40
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	str r4, [sp]
 	str r5, [sp, #4]
 	mov r1, r8
@@ -310,7 +310,7 @@ _082277C2:
 	movs r1, #3
 	mov r2, sb
 	movs r3, #0x60
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	str r4, [sp]
 	str r5, [sp, #4]
 	mov r2, r8
@@ -323,7 +323,7 @@ _082277C2:
 	movs r1, #3
 	mov r2, sb
 	movs r3, #0x80
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	str r4, [sp]
 	str r5, [sp, #4]
 	mov r0, r8
@@ -336,7 +336,7 @@ _082277C2:
 	movs r1, #3
 	mov r2, sb
 	movs r3, #0xa0
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	str r4, [sp]
 	str r5, [sp, #4]
 	mov r1, r8
@@ -349,7 +349,7 @@ _082277C2:
 	movs r1, #3
 	mov r2, sb
 	movs r3, #0xc0
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	str r4, [sp]
 	str r5, [sp, #4]
 	mov r2, r8
@@ -362,7 +362,7 @@ _082277C2:
 	movs r1, #3
 	mov r2, sb
 	movs r3, #0xe0
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	movs r3, #0x80
 	lsls r3, r3, #1
 	str r4, [sp]
@@ -376,7 +376,7 @@ _082277C2:
 	movs r0, #1
 	movs r1, #3
 	mov r2, sb
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	ldr r1, _082279C0 @ =0x00000DF4
 	adds r0, r7, r1
 	bl ParticleShadow_Hide

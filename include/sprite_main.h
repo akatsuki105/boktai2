@@ -28,12 +28,6 @@ typedef struct {
   u32 offsetToSubsprites;  // 0x14, この構造体の先頭から MainSubsprite[subspriteCount] 配列までのバイトオフセット
   u32 offset_unk2;         // 0x18, この構造体の先頭から MainAnimCmd[unk2Count] 配列までのバイトオフセット
   u32 offsetToTiles;       // 0x1C, この構造体の先頭から spriteset_tile[] 配列までのバイトオフセット
-  // body:
-  //   MainSpritePose sprites[spriteCount];
-  //   MainAnim unk1[unk1Count];
-  //   MainSubsprite subsprites[subspriteCount];
-  //   MainAnimCmd unk2[unk2Count];
-  //   u8 tiles[tileCount * 32];
 } MainSpriteFile;
 static_assert(sizeof(MainSpriteFile) == 32);
 
@@ -115,7 +109,7 @@ typedef struct MainSprite {
   u8 listIdx;                     // 0x1C, MainSprite_Remove
   MainAnimEvents8 animEvents;     // 0x1D, see MainAnimEvents8
   u8 unk_1e[2];                   // 0x1E
-  Vec3 pos;                       // 0x20, ワールド座標. flags bit4 が立っていればスクリーン座標としてそのまま使われる, 根拠: FUN_08230134 のアイソメトリック投影と MainSprite_Load の Vec3 コピー
+  Vec3 pos;                       // 0x20, ワールド座標. flags bit4 が立っていればスクリーン座標としてそのまま使われる, 根拠: MainSprite_DrawList のアイソメトリック投影と MainSprite_Load の Vec3 コピー
   u16 offsetX;                    // 0x28, 投影後のスクリーン座標に加算される, MainSpritePose.unk_4
   u16 offsetY;                    // 0x2A, MainSpritePose.unk_6
   s16 boxRight;                   // 0x2C, 画面外判定に使う矩形, MainSpritePose.unk_8
@@ -142,11 +136,14 @@ static_assert(sizeof(MainSprite) == 96);
 // --------------------------------------------
 
 extern MainSprite* gMainSpriteLists[2];
+s32 Video_AddMainSpriteIntoDrawList(MainSprite* p, s32 idx);
+void Video_RemoveMainSpriteFromDrawList(MainSprite* p, s32 idx);
 
 s32 OpenMainSpriteFile(MainSpriteGfx* data, MainSpriteFile* f);
-s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* src, u16 spriteIdx);
+s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* src, u16 poseIdx);
 s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* src, u16 param_3, u8 playMode);
-s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
+s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
+s32 MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
 bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* src);
 void MainSprite_Remove(MainSprite* p);
 void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 playMode, MainAnimPlayFlags16 flags);

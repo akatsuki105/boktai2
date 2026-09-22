@@ -29,7 +29,7 @@ s8 Rfu_FindPartnerRecord(u16 id, u8* dst, u8* buf, u8 flags) {
         u8* p;
         Rfu_UnpackPartnerInfo(buf, i);
         FUN_0824c0c4(i, name);
-        for (pos = 0; pos <= 15; pos += Rfu_GetRecordLength(p) + 2) {
+        for (pos = 0; pos < 16; pos += Rfu_GetRecordLength(p) + 2) {
           p = &name[pos];
           if (id == Rfu_GetRecordID(p)) {
             u8 len = Rfu_GetRecordLength(p + 1);

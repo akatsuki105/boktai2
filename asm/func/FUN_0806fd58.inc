@@ -151,9 +151,9 @@ _0806FE68:
 	adds r0, r4, #0
 	adds r1, r3, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	adds r2, r5, #0
 	adds r2, #0xc5
 	movs r0, #0

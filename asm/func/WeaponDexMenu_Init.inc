@@ -101,14 +101,14 @@ _08210FF4:
 	mov r0, r8
 	strb r0, [r7]
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	ldr r0, [r6]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	adds r0, r4, #0
 	bl FUN_0821053c
 	movs r0, #0

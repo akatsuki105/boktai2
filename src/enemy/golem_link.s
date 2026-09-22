@@ -2014,7 +2014,7 @@ _081B9312:
 	ldrh r3, [r3]
 	str r3, [sp, #4]
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	movs r0, #0x80
 	lsls r0, r0, #7
 	movs r1, #0xc1
@@ -2092,7 +2092,7 @@ _081B93A6:
 	str r1, [sp, #4]
 	adds r1, r4, #0
 	movs r3, #0x80
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 	adds r2, r6, #0
 	adds r2, #0x7c
 	movs r1, #1
@@ -2139,7 +2139,7 @@ _081B9424:
 	ldrh r3, [r3]
 	str r3, [sp, #4]
 	movs r3, #0
-	bl FUN_082364f8
+	bl Hitbox_SetAttack
 _081B9458:
 	add sp, #8
 	pop {r4, r5, r6}
@@ -3023,12 +3023,12 @@ _081B9ACE:
 	beq _081B9ADC
 	mov r0, r8
 	adds r1, r7, #0
-	bl FUN_08236640
+	bl Hitbox_ApplyDamageAlt
 	b _081B9AE4
 _081B9ADC:
 	mov r0, r8
 	adds r1, r7, #0
-	bl FUN_08236524
+	bl Hitbox_ApplyDamage
 _081B9AE4:
 	mov r0, r8
 	adds r0, #0x44
@@ -25693,7 +25693,7 @@ _081C4B62:
 	bl FUN_0823b284
 	adds r0, r4, #0
 	adds r0, #0xd8
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r4, #0
 	bl FUN_080ec6fc
 	movs r0, #0

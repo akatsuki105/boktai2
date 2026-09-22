@@ -18,9 +18,9 @@
 	adds r0, r4, #0
 	adds r1, r5, #0
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	adds r0, r4, #0
-	bl FUN_08236400
+	bl Hitbox_Register
 	ldr r2, [r6, #0x18]
 	ldr r1, _08080924 @ =0x00080002
 	ldr r0, [r2, #0x20]

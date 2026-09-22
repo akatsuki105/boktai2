@@ -305,7 +305,7 @@ void FUN_08064658(Player* p, Weapon* w) { p->weapon_a70 = w; }
 
 NAKED void weapon_08064664(Player* p, Weapon* w) { INCFUNC("asm/func/weapon_08064664.inc"); }
 
-// HitboxData.wear (Player.unk_a10.wear) が0以外なら Weapon.wear に加算して HitboxData.wear を 0にする, HitboxData.wear は ジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 の 0x0813EFFC で加算される (他の敵も同様と思われる)
+// HitboxData.damage (Player.unk_a10.damage) が0以外なら Weapon.wear に加算して HitboxData.damage を 0にする, ジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 の 0x0813EFFC で加算される (他の敵も同様と思われる)
 NAKED void Player_UpdateWeaponWear(Player* p) { INCFUNC("asm/func/Player_UpdateWeaponWear.inc"); }
 
 NAKED void FUN_0806483c(Player* p, const ArmorData* a) { INCFUNC("asm/func/FUN_0806483c.inc"); }

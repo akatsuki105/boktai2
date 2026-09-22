@@ -5,7 +5,7 @@
 	bl Particle_Remove
 	adds r0, r4, #0
 	adds r0, #0x14
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	movs r0, #0
 	strb r0, [r4, #5]
 	pop {r4}

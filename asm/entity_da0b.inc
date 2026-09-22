@@ -1274,7 +1274,7 @@ FUN_0801bf88: @ 0x0801BF88
 	ldr r3, _0801BFEC @ =0x00001308
 	adds r6, r4, r3
 	ldr r0, [r6]
-	bl FUN_080478f0
+	bl TextBox_Start
 	adds r1, r4, #0
 	adds r1, #0xbc
 	adds r0, r5, #0
@@ -2211,7 +2211,7 @@ _0801C676:
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	adds r0, r5, #0
 	movs r1, #0
 	bl FUN_0801bf88
@@ -2573,16 +2573,16 @@ _0801C968:
 	ldr r1, _0801C9D8 @ =0x00001308
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	ldr r0, _0801C9DC @ =0x0000EFDA
-	bl FUN_08047dc0
+	bl TextBox_SetBgPltt
 	ldr r1, _0801C9E0 @ =0x0000130C
 	adds r0, r5, r1
 	ldr r0, [r0]
@@ -3104,11 +3104,11 @@ _0801CD80:
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	ldr r1, _0801CDEC @ =0x0000130C
 	adds r0, r7, r1
 	ldr r0, [r0]
-	bl FUN_080478f0
+	bl TextBox_Start
 	mov r2, sl
 	cmp r2, #0
 	bne _0801CDDA
@@ -3123,7 +3123,7 @@ _0801CD80:
 	blt _0801CDF4
 _0801CDDA:
 	movs r0, #1
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	b _0801CDFA
 	.align 2, 0
 _0801CDE4: .4byte 0x00000BC4
@@ -3132,7 +3132,7 @@ _0801CDEC: .4byte 0x0000130C
 _0801CDF0: .4byte 0x030046A0
 _0801CDF4:
 	movs r0, #2
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 _0801CDFA:
 	ldr r1, _0801CE40 @ =0x00000DA4
 	adds r0, r7, r1
@@ -3299,13 +3299,13 @@ FUN_0801cf18: @ 0x0801CF18
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	ldr r1, _0801CFD4 @ =0x0000130C
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl FUN_080478f0
+	bl TextBox_Start
 	movs r0, #3
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	bl FUN_08049e5c
 	ldr r0, _0801CFD8 @ =0x00000DA4
 	adds r2, r5, r0
@@ -5327,7 +5327,7 @@ _0801DEEA:
 	lsls r1, r1, #2
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	adds r7, #0x58
 	subs r5, #1
 	cmp r5, #0
@@ -5370,7 +5370,7 @@ _0801DF48:
 	lsls r1, r1, #2
 	mov r2, sb
 	adds r3, r7, #0
-	bl FUN_080149dc
+	bl Entity080146e0_SpawnAtAngle
 	adds r7, #0x58
 	subs r5, #1
 	cmp r5, #0
@@ -5678,7 +5678,7 @@ _0801E1B0:
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl FUN_08047b8c
+	bl TextBox_SetRect
 	adds r0, r4, #0
 	bl FUN_0801c910
 	adds r0, r4, #0

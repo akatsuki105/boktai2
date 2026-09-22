@@ -311,11 +311,11 @@ _080914D8:
 	cmp r5, #7
 	ble _0809149A
 	ldr r0, [r7, #0x50]
-	bl FUN_080478f0
+	bl TextBox_Start
 	ldr r0, _08091590 @ =0x0000EFDA
-	bl FUN_08047dc0
+	bl TextBox_SetBgPltt
 	movs r0, #1
-	bl FUN_080477e4
+	bl TextBox_SetInstant
 	ldr r1, _0809152C @ =0x085ACE3C
 	ldr r0, _08091530 @ =0x030046A0
 	ldr r0, [r0]
@@ -327,7 +327,7 @@ _080914D8:
 	lsls r0, r0, #2
 	adds r0, r0, r1
 	ldrb r0, [r0, #3]
-	bl FUN_08047a28
+	bl TextBox_ShowLine
 	ldr r1, _08091594 @ =FUN_0809107c
 	adds r0, r7, #0
 	movs r2, #0

@@ -12,7 +12,7 @@ _080160E4:
 	ldr r0, [r4, #0x18]
 	cmp r0, #0
 	beq _080160F4
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	ldr r0, [r4, #0x18]
 	bl Free
 _080160F4:

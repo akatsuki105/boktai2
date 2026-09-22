@@ -14,7 +14,7 @@
 	bhi _080A907C
 	adds r0, r5, #0
 	adds r0, #0x24
-	bl FUN_08236400
+	bl Hitbox_Register
 _080A907C:
 	movs r2, #0xff
 	lsls r2, r2, #1

@@ -222,7 +222,7 @@ _080DFD84:
 	movs r1, #0xa2
 	lsls r1, r1, #1
 	adds r0, r5, r1
-	bl FUN_08236424
+	bl Hitbox_Unregister
 	adds r0, r5, #0
 	bl FUN_080df714
 	adds r0, r5, #0

@@ -129,7 +129,7 @@ Keep working files in the scratchpad. `G=http://127.0.0.1:8089`,
 6. **Edit through a script**, following `references/edit-recipes.md`
    (`replaceAtOffset`, `clearComponent`, `growStructure`; guards; size check
    before/after; idempotent). Never use `remove_struct_field`,
-   `recreate_struct` or `clone_data_type`.
+   `recreate_struct`, `clone_data_type` or `create_enum`.
 7. **Retype functions** with `/set_function_prototype`, writing the function's
    current name and `"calling_convention":"__stdcall"`. Entity `Init` /
    `Update` / `Destroy` return `s32` in this project.

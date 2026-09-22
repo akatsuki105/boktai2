@@ -96,7 +96,7 @@ _0800EA9C:
 	adds r1, r4, #0
 	adds r1, #0x18
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 _0800EAAC:
 	ldr r0, [r4, #0x24]
 	cmp r0, #0
@@ -104,9 +104,9 @@ _0800EAAC:
 	adds r1, r4, #0
 	adds r1, #0x18
 	movs r2, #0
-	bl FUN_082364c4
+	bl Hitbox_SetPos
 	ldr r0, [r4, #0x24]
-	bl FUN_08236400
+	bl Hitbox_Register
 _0800EAC2:
 	add sp, #4
 	pop {r4}

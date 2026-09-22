@@ -52,6 +52,12 @@ endpoints.
   hundreds of signatures.
 - **`create_struct` / `recreate_struct` ignore `offset`.** Fields are packed in
   list order, so gaps must be spelled out as `u8[N]` fillers.
+- **`create_enum` REPLACES an existing enum of the same name.** It does not
+  merge: every value already in the enum is dropped and only the ones in the
+  call survive. This destroyed 8 of `SpriteFlags`' values on this project. To
+  add a value, use a script with `Enum.add()` on the existing type; only use
+  `create_enum` for a name that does not exist yet, and check first with
+  `get_enum_values`.
 - **`clone_data_type` renames instead of copying.** The type and all of its
   pointer/array derivatives get the new name. If this happens, rename it back
   with `rename_data_type` at once.

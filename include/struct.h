@@ -39,15 +39,6 @@ typedef struct {
   void* unk_04;
 } Unk_0203b000;
 
-// FUN_08230eec が u32_ARRAY_0203f400 のテーブルに登録するレコード
-typedef struct {
-  u32 id : 16;
-  u32 unk_02 : 8;
-  u32 count : 8;
-  u16* values;
-} Unk_0203f400;
-static_assert(sizeof(Unk_0203f400) == 8);
-
 // --------------------------------------------
 
 // gEntity5941 の単方向リストのノード。敵は _Init で Entity5941_Register、_Destroy で FUN_0807f598 を呼んで出入りする

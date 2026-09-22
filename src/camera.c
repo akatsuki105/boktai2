@@ -10,10 +10,10 @@ Entity2UnkData* FUN_0823b2d0(u16 id);
 void* FUN_08230e70(u16 id);
 void FUN_0822db5c(void);
 void FUN_0822aaac(void);
-void FUN_0822f204(void);
+void MainSprite_DrawList(void);
 void FUN_0822de64(void);
 void FUN_0822ac90(void);
-void FUN_0822f224(void);
+void MainSprite_DrawListScreen(void);
 
 COMMON_DATA Vec3 gCameraVpCoords = {};  // 0x030047C8
 COMMON_DATA Camera* gCamera = NULL;     // 0x030047D0
@@ -23,7 +23,7 @@ void Camera_SetTilemapOffset(void) {
   s32 kw = VM_GetKeywordValue('v', 0);
   if (kw == 0) {
     Unk_0203b000* p = FUN_08230e70(0x56C2);
-    Video_SetDrawPasses(0, FUN_0822db5c, FUN_0822aaac, FUN_0822f204);
+    Video_SetDrawPasses(0, FUN_0822db5c, FUN_0822aaac, MainSprite_DrawList);
     if (p != NULL) {
       if (p->unk_04 != NULL) {
         gCameraCoords.tilemapX = ((s16*)p->unk_04)[4] >> 4;
@@ -32,7 +32,7 @@ void Camera_SetTilemapOffset(void) {
       }
     }
   } else {
-    Video_SetDrawPasses(kw, FUN_0822de64, FUN_0822ac90, FUN_0822f224);
+    Video_SetDrawPasses(kw, FUN_0822de64, FUN_0822ac90, MainSprite_DrawListScreen);
   }
   gCameraCoords.tilemapX = 0;
   gCameraCoords.tilemapY = 0;
