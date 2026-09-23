@@ -46,7 +46,7 @@
 	movs r1, #0xa
 	movs r2, #0x18
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	movs r5, #0x80
 	lsls r5, r5, #1
 	adds r1, r7, r5

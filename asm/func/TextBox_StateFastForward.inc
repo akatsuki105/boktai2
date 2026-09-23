@@ -63,7 +63,7 @@ _0804821C:
 	movs r0, #1
 	strb r0, [r4, #0x16]
 	adds r0, r4, #0
-	bl FUN_08049568
+	bl TextRenderer_Advance
 	cmp r0, #0
 	beq _0804823E
 	ldrb r0, [r4, #0xf]

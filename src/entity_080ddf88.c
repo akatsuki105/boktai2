@@ -17,9 +17,8 @@ s32 Entity080de11c_Update(Entity080de11c* p);
 s32 Entity080de11c_Destroy(Entity080de11c* p);
 
 Entity080de11c* Entity080de11c_Create(void) {
-  Entity080de11c* p;
   if (gEntity080de11c == NULL) {
-    p = CreateEntity(ENTITY_UNK_9, 3300);
+    Entity080de11c* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity080de11c));
     if (p != NULL) {
       SetEntityRoutine(p, Entity080de11c_Update, Entity080de11c_Destroy);
       if (Entity080de11c_Init(p) < 0) {

@@ -1,3 +1,4 @@
+#include "bg_pltt.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -135,12 +136,9 @@ NON_MATCH void ScalePltt(rgb555* dst, rgb555* src, u32 bytesize, u32 param_4, u3
 }
 
 void FUN_080019dc(Entity4AE5* p) {
-  const rgb555* src;
-  FileID id;
-
-  id = p->plttFileIDs[2];
-  src = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, id) + 0x14);
-  ScalePltt(p->pltt_434, (rgb555*)src, 0x32, 0, 0xD0);
+  FileID id = p->plttFileIDs[2];
+  rgb555* src = GetBgPlttFile(id)->body;
+  ScalePltt(p->pltt_434, src, 50, 0, 208);
 }
 
 void MapPltt_Fill(Entity4AE5* p, u32 rgb555val) {
@@ -391,9 +389,6 @@ void MapPltt_FadeIn(Entity4AE5* p) {
   }
 }
 
-extern u16 gBgPlttBlendColor;
-rgb555* FUN_0822d00c(void);
-
 // 明→暗のフェード: 進捗に応じて明るさを 0x40 に近づけ、終わったら暗転状態で止める
 void MapPltt_FadeOut(Entity4AE5* p) {
   rgb555* pltt;
@@ -411,52 +406,44 @@ void MapPltt_FadeOut(Entity4AE5* p) {
 s32 FUN_0823ce10(u16* a, u16* b);
 
 // スクリプトから指定されたPLTTファイルを登録し、時間帯に応じた2枚を読み直す
-NON_MATCH void MapPltt_SetFile(s32 kw_i, FileID plttFileID, s32 kw_f) {
+NON_MATCH void MapPltt_SetFile(s32 idx, FileID plttFileID, u32 kw_f) {
 #ifdef NONMATCHING_C
-  Entity4AE5* p;
-  u16 id0;
-  u16 id1;
-
-  p = gEntity4AE5;
-  if (p == NULL) {
-    return;
-  }
-  p->plttFileIDs[kw_i] = plttFileID;
-  if (kw_f & 1) {
-    if (p->unk_1a & 1) {
-      FUN_0823ce10(&id0, &id1);
-      p->srcPltt1 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->plttFileIDs[id0]) + 0x14);
-      p->srcPltt2 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->plttFileIDs[id1]) + 0x14);
-      if (id0 == 2 || id1 == 2) {
-        FUN_080019dc(p);
+  Entity4AE5* p = gEntity4AE5;
+  if (p != NULL) {
+    p->plttFileIDs[idx] = plttFileID;
+    if (kw_f & 1) {
+      if (p->unk_1a & 1) {
+        u16 id0, id1;
+        FUN_0823ce10(&id0, &id1);
+        p->srcPltt1 = GetBgPlttFile(p->plttFileIDs[id0])->body;
+        p->srcPltt2 = GetBgPlttFile(p->plttFileIDs[id1])->body;
+        if (id0 == 2 || id1 == 2) {
+          FUN_080019dc(p);
+        }
+        MapPltt_Rebuild(p);
+        p->unk_1d = 0;
+        p->bytesize_1c = 64;
+      } else {
+        p->srcPltt1 = GetBgPlttFile(p->plttFileIDs[idx])->body;
+        CpuCopy32(p->srcPltt1, p->dstPltt, 416);
+        p->unk_1d = 0;
+        p->bytesize_1c = 0;
       }
-      MapPltt_Rebuild(p);
-      p->unk_1d = 0;
-      p->bytesize_1c = 0x40;
-    } else {
-      p->srcPltt1 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->plttFileIDs[kw_i]) + 0x14);
-      CpuCopy32(p->srcPltt1, p->dstPltt, 416);
-      p->unk_1d = 0;
-      p->bytesize_1c = 0;
+      p->unk_1e = 7;
+      p->unk_1f = 4;
     }
-    p->unk_1e = 7;
-    p->unk_1f = 4;
+    p->unk_20 = 1;
   }
-  p->unk_20 = 1;
 #else
   INCFUNC("asm/func/MapPltt_SetFile.inc");
 #endif
 }
 
 void VM_SubCA7D(void) {
-  s32 kw_i;
-  FileID plttFileID;
-  s32 kw_f;
-
   if (gEntity4AE5 != NULL) {
-    kw_i = VM_GetKeywordValue('i', 0);
-    plttFileID = VM_GetKeywordValue('n', 0);
-    kw_f = VM_GetKeywordValue('f', 0);
+    s32 kw_i = VM_GetKeywordValue('i', 0);
+    FileID plttFileID = VM_GetKeywordValue('n', 0);
+    u32 kw_f = VM_GetKeywordValue('f', 0);
     MapPltt_SetFile(kw_i, plttFileID, kw_f);
   }
 }
@@ -484,17 +471,13 @@ NON_MATCH void MapPltt_PushCommand(s32 val, s32 count, u32* args) {
 }
 
 void FUN_080020bc(void) {
-  u32* dst;
-  s32 kw_r;
-  s32 count;
   u32 args[8];
 
-  kw_r = VM_GetKeywordValue('r', 0);
-  count = 0;
+  s32 kw_r = VM_GetKeywordValue('r', 0);
+  s32 count = 0;
   if (VM_SeekToKeyword('p')) {
-    dst = args;
-    while (VM_GetPC() != NULL && count <= 7) {
-      *dst++ = Script_GetValue();
+    while (VM_GetPC() != NULL && count < 8) {
+      args[count] = Script_GetValue();
       count++;
     }
   }
@@ -717,10 +700,8 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
 }
 
 Entity4AE5* Entity4AE5_Create(u32 val) {
-  Entity4AE5* p;
-
   if (gEntity4AE5 == NULL) {
-    p = CreateEntity(ENTITY_UNK_11, sizeof(Entity4AE5));
+    Entity4AE5* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity4AE5));
     if (p != NULL) {
       SetEntityRoutine(p, Entity4AE5_Update, Entity4AE5_Destroy);
       if (Entity4AE5_Init(p, val) < 0) {

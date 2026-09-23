@@ -12,7 +12,7 @@ _08047C98: .4byte 0x030000C4
 _08047C9C:
 	adds r0, #0x18
 	adds r1, r3, #0
-	bl FUN_080496cc
+	bl TextRenderer_SetExtend
 _08047CA4:
 	pop {r1}
 	bx r1

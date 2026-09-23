@@ -104,8 +104,8 @@ void LevelUpper_UpdateParticle(LevelUpParticle* p, ParticleGroup* g) {
 // レベルアップ演出のスプライトをプレイヤーの頭上に配置し、パーティクル8個を初期化する
 void LevelUpper_EmitLevelUpEffect(LevelUpper* p) {
   s32 i;
-  p->sprite.flags &= ~SPRFLAG_HIDDEN;
-  p->sprite.metaspriteIdx = 0;
+  AuxSprite_Show(&p->sprite);
+  AuxSprite_SetPoseIdx(&p->sprite, 0);
   p->sprite.pos = gPlayerPtr[0]->unk_24.pos;
   p->sprite.pos.y += 250;
   p->unk_64 = 0;
@@ -117,18 +117,14 @@ void LevelUpper_EmitLevelUpEffect(LevelUpper* p) {
 }
 
 // 武器レベルアップ演出のスプライトをプレイヤーの頭上に配置する
-NON_MATCH void LevelUpper_EmitWeaponLevelUpEffect(LevelUpper* p) {
-#ifdef NONMATCHING_C
-  p->sprite.flags &= ~SPRFLAG_HIDDEN;
-  p->sprite.metaspriteIdx = 3;
+void LevelUpper_EmitWeaponLevelUpEffect(LevelUpper* p) {
+  AuxSprite_Show(&p->sprite);
+  AuxSprite_SetPoseIdx(&p->sprite, 3);
   p->sprite.pos = gPlayerPtr[0]->unk_24.pos;
   p->sprite.pos.y += 250;
   p->unk_64 = 0;
   p->unk_62 = 1;
   p->unk_60 = 2;
-#else
-  INCFUNC("asm/func/LevelUpper_EmitWeaponLevelUpEffect.inc");
-#endif
 }
 
 NAKED void FUN_080a841c(LevelUpper* p) { INCFUNC("asm/func/FUN_080a841c.inc"); }

@@ -45,7 +45,7 @@ _080506B6:
 	bne _080506E4
 	ldr r0, [r5]
 	movs r1, #0xe
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, _080506E0 @ =0x000002AE
 	bl PlaySound_082406e0
 	b _080506F4
@@ -54,7 +54,7 @@ _080506E0: .4byte 0x000002AE
 _080506E4:
 	ldr r0, [r5]
 	movs r1, #0xf
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	movs r0, #0xc9
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -91,7 +91,7 @@ _08050716:
 _0805072C:
 	ldr r0, [r5]
 	movs r1, #0xb
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	movs r1, #0xa
 	adds r0, r4, #0
 	adds r0, #0x28

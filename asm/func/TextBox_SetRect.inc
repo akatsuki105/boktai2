@@ -52,7 +52,7 @@ _08047BB0:
 	ldrb r3, [r7]
 	ldrb r4, [r6]
 	str r4, [sp]
-	bl FUN_08049650
+	bl TextRenderer_SetRect
 _08047BFC:
 	add sp, #0xc
 	pop {r3, r4, r5}

@@ -13,12 +13,12 @@
 	lsls r2, r2, #4
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	ldrb r1, [r6]
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	bl FUN_08049e5c
 	ldr r1, _08211220 @ =0x00000874
 	adds r0, r5, r1
@@ -40,12 +40,12 @@ _08211224:
 	adds r2, #4
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #0x1b
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	bl FUN_08049e5c
 	ldr r1, _08211268 @ =0x00000878
 	adds r0, r5, r1

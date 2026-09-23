@@ -177,7 +177,7 @@ _08048126:
 	ldrb r0, [r6]
 	str r0, [sp]
 	mov r0, sb
-	bl FUN_08049650
+	bl TextRenderer_SetRect
 	adds r0, r5, #0
 	adds r0, #0x18
 	bl FUN_08049640

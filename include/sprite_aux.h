@@ -84,8 +84,8 @@ typedef struct AuxSprite {
   u8 unk_05;               // 0x05, AuxSprite_Add で 1 がセットされる
   u8 rotation;             // 0x06, gSineTable[-rotation & 0xFF] の索引として使われる
   u8 priority;             // 0x07, OAM attr2 bit10-11
-  s8 scaleX;               // 0x08, 6.6固定小数, 0x40 = 1.0
-  s8 scaleY;               // 0x09, 同上
+  s2_6 scaleX;             // 0x08
+  s2_6 scaleY;             // 0x09
   u8 listIdx;              // 0x0A, gAuxSpriteLists の添字
   u8 unk_0b;               // 0x0B
   AuxSpriteGfx* gfx;       // 0x0C, FUN_0822a4fc がセットする
@@ -120,5 +120,9 @@ void AuxSprite_Remove(AuxSprite* p);
 bool32 Video_GetAuxSprite(AuxSpriteGfx* gfx, SpriteID32 id);
 void Video_SetAuxSpritePltt(AuxSpriteGfx* gfx, s32 plttID);
 void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* gfx);
+
+static inline void AuxSprite_Show(AuxSprite* spr) { spr->flags &= ~SPRFLAG_HIDDEN; }
+static inline void AuxSprite_Hide(AuxSprite* spr) { spr->flags |= SPRFLAG_HIDDEN; }
+static inline void AuxSprite_SetPoseIdx(AuxSprite* spr, s32 val) { spr->metaspriteIdx = val; }
 
 #endif  // __INCLUDE_SPRITE_ACTOR_H__

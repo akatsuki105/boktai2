@@ -11,6 +11,7 @@ where it is:
 | Add undefined bytes at the end | `Structure.growStructure(n)` | yes |
 | Rename a field exactly | `DataTypeComponent.setFieldName(name)` | yes |
 | Create a new struct | `new StructureDataType(CategoryPath, name, size, dtm)` + `dtm.addDataType(sd, DataTypeConflictHandler.DEFAULT_HANDLER)` | — |
+| Create a function-pointer type | `new FunctionDefinitionDataType(CategoryPath, name)` + `setReturnType` + `setArguments` + `dtm.addDataType(...)`, then `dtm.getPointer(that)` | — |
 | Retype a function local | `Variable.setDataType(dt, SourceType.USER_DEFINED)` | — |
 | Delete a type | `dtm.remove(dt, monitor)` (retarget its users first) | — |
 
@@ -29,7 +30,26 @@ where it is:
    Before creating a type, reuse it if it already exists with the right size;
    after a failed run, read the current layout before re-running.
 6. **Put the evidence in the field comment** (which function, which access).
-7. **Make pointers with `dtm.getPointer(dt)`.** `new PointerDataType(dt, 4, dtm)`
+7. **`dtm.addDataType` returns a `*DB` type, not the class you passed in.**
+   Receive it as `DataType`, never as `StructureDataType` or
+   `FunctionDefinitionDataType` — the cast throws `ClassCastException`
+   (`FunctionDefinitionDB cannot be cast to FunctionDefinitionDataType`), and
+   by then every statement before it has already been committed. Build the new
+   type in a local of the concrete class, add it, and keep the result in a
+   `DataType`:
+
+   ```java
+   DataType fn = ft("DoorFunc");
+   if (fn == null) {
+     FunctionDefinitionDataType nd = new FunctionDefinitionDataType(new CategoryPath("/entity.h"), "DoorFunc");
+     nd.setReturnType(VoidDataType.dataType);
+     nd.setArguments(new ParameterDefinition[]{ new ParameterDefinitionImpl("p", doorPtr, null) });
+     fn = dtm.addDataType(nd, DataTypeConflictHandler.DEFAULT_HANDLER);
+   }
+   s.replaceAtOffset(0x30, dtm.getPointer(fn), 4, "fn", "...");
+   ```
+
+8. **Make pointers with `dtm.getPointer(dt)`.** `new PointerDataType(dt, 4, dtm)`
    has an explicit length, and Ghidra adds it as a separate type named
    `T *32` instead of reusing `T *`.
 

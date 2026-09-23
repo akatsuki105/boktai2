@@ -7,7 +7,7 @@
 	beq _08047C60
 	adds r0, #0x18
 	adds r1, r3, #0
-	bl FUN_080496c0
+	bl TextRenderer_SetVar
 	movs r0, #0
 	b _08047C64
 	.align 2, 0

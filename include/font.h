@@ -19,4 +19,6 @@ typedef struct {
 } FontInfo;
 static_assert(sizeof(FontInfo) == 12);
 
+void FUN_0822ea60(u32 x8, u32 y8, u32 w8, u32 h8);
+
 #endif  // __INCLUDE_FONT_H__

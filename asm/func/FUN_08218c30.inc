@@ -166,7 +166,7 @@ _08218D42:
 	movs r1, #7
 	movs r2, #0xc
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	movs r3, #0xe0
 	lsls r3, r3, #2
 	adds r1, r7, r3
@@ -175,7 +175,7 @@ _08218D42:
 	movs r1, #0xa
 	movs r2, #0x18
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	movs r5, #0xe1
 	lsls r5, r5, #2
 	adds r1, r7, r5

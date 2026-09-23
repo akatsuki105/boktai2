@@ -37,8 +37,8 @@ typedef struct {
 typedef struct Particle {
   SpriteFlags flags;      // 0x00
   u8 active;              // 0x04
-  s8 scaleX;              // 0x05
-  s8 scaleY;              // 0x06
+  s2_6 scaleX;            // 0x05
+  s2_6 scaleY;            // 0x06
   u8 rotation;            // 0x07
   u16 tileNum;            // 0x08
   u8 spriteWidth;         // 0x0A

@@ -104,8 +104,6 @@ void TitleCard_UpdateClose(TitleCard* p) {
   }
 }
 
-static inline void TitleCard_HideSprite(MainSprite* spr) { spr->flags |= SPRFLAG_HIDDEN; }
-
 // 202命令対202命令。スクラッチレジスタの番号だけがずれる
 NON_MATCH s32 TitleCard_Update(TitleCard* p) {
 #ifdef NONMATCHING_C
@@ -113,12 +111,12 @@ NON_MATCH s32 TitleCard_Update(TitleCard* p) {
     s32_0300445c = s32_03004040;
   }
   if (p->closable != 0 && (gInput[0].pressed & (A_BUTTON | B_BUTTON))) {
-    TitleCard_HideSprite(&p->sprites[0]);
-    TitleCard_HideSprite(&p->sprites[1]);
-    TitleCard_HideSprite(&p->sprites[2]);
-    TitleCard_HideSprite(&p->sprites[3]);
-    TitleCard_HideSprite(&p->sprites[4]);
-    TitleCard_HideSprite(&p->sprites[5]);
+    MainSprite_Hide(&p->sprites[0]);
+    MainSprite_Hide(&p->sprites[1]);
+    MainSprite_Hide(&p->sprites[2]);
+    MainSprite_Hide(&p->sprites[3]);
+    MainSprite_Hide(&p->sprites[4]);
+    MainSprite_Hide(&p->sprites[5]);
     if (p->unk_46 == 0) {
       s32_03004040 = 0;
       s32_0300445c = 0;

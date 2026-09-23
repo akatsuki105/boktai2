@@ -425,7 +425,7 @@ FUN_0804ad40: @ 0x0804AD40
 	movs r1, #7
 	movs r2, #0x1c
 	movs r3, #6
-	bl FUN_0804a084
+	bl TextPanel_Create
 	adds r2, r0, #0
 	str r2, [r5]
 	cmp r2, #0
@@ -435,12 +435,12 @@ FUN_0804ad40: @ 0x0804AD40
 	adds r0, r4, r1
 	ldr r1, [r0]
 	adds r0, r2, #0
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5]
 	movs r1, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r5]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 _0804AD90:
 	movs r0, #0xc9
 	lsls r0, r0, #1
@@ -799,7 +799,7 @@ _0804B03A:
 	lsls r1, r1, #2
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl FUN_0804a16c
+	bl TextPanel_Destroy
 	movs r0, #0
 	pop {r4, r5, r6}
 	pop {r1}
@@ -1272,7 +1272,7 @@ FUN_0804b3f8: @ 0x0804B3F8
 	movs r1, #7
 	movs r2, #0x1c
 	movs r3, #6
-	bl FUN_0804a084
+	bl TextPanel_Create
 	str r0, [r4, #0x30]
 	adds r0, r4, #0
 	bl FUN_0804b2dc
@@ -1287,12 +1287,12 @@ FUN_0804b3f8: @ 0x0804B3F8
 	cmp r0, #0
 	blt _0804B43E
 	ldr r1, [r4, #0x28]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4, #0x30]
 	movs r1, #2
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4, #0x30]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 _0804B43E:
 	bl rfu_REQ_startSearchParent
 	bl rfu_waitREQComplete
@@ -1307,12 +1307,12 @@ _0804B448:
 	cmp r0, #0
 	blt _0804B46C
 	ldr r1, [r4, #0x28]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4, #0x30]
 	movs r1, #1
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4, #0x30]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 _0804B46C:
 	pop {r4}
 	pop {r0}
@@ -1549,7 +1549,7 @@ _0804B602:
 	ldrb r1, [r0]
 	adds r1, #3
 	adds r0, r2, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _0804B61A:
 	ldr r0, _0804B648 @ =0x00000123
 	bl PlaySound_082406e0
@@ -1597,7 +1597,7 @@ FUN_0804b65c: @ 0x0804B65C
 	cmp r0, #0
 	blt _0804B676
 	movs r1, #7
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _0804B676:
 	adds r0, r4, #0
 	bl FUN_0804b344
@@ -1647,7 +1647,7 @@ FUN_0804b6bc: @ 0x0804B6BC
 	cmp r0, #0
 	blt _0804B6D6
 	movs r1, #7
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _0804B6D6:
 	adds r0, r4, #0
 	bl FUN_0804b344
@@ -1697,10 +1697,10 @@ FUN_0804b71c: @ 0x0804B71C
 	cmp r0, #0
 	blt _0804B73E
 	ldr r1, [r4, #0x2c]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4, #0x30]
 	movs r1, #0xb
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _0804B73E:
 	ldr r0, [r4, #0x24]
 	cmp r0, #0x3c
@@ -1745,10 +1745,10 @@ FUN_0804b774: @ 0x0804B774
 	cmp r0, #0
 	blt _0804B79C
 	ldr r1, [r4, #0x2c]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4, #0x30]
 	movs r1, #0xe
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, _0804B7BC @ =0x000002AE
 	bl PlaySound_082406e0
 _0804B79C:
@@ -1793,10 +1793,10 @@ FUN_0804b7d0: @ 0x0804B7D0
 	cmp r0, #0
 	blt _0804B7FA
 	ldr r1, [r4, #0x2c]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4, #0x30]
 	movs r1, #0xf
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	movs r0, #0xc9
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -1882,10 +1882,10 @@ FUN_0804b870: @ 0x0804B870
 	cmp r0, #0
 	blt _0804B892
 	ldr r1, [r4, #0x28]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4, #0x30]
 	movs r1, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _0804B892:
 	movs r0, #0xc9
 	lsls r0, r0, #1
@@ -1973,9 +1973,9 @@ FUN_0804b928: @ 0x0804B928
 	ldr r0, [r4, #0x30]
 	cmp r0, #0
 	blt _0804B940
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r0, [r4, #0x30]
-	bl FUN_0804a16c
+	bl TextPanel_Destroy
 _0804B940:
 	ldr r1, _0804B94C @ =0x030000D8
 	movs r0, #0

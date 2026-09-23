@@ -79,7 +79,7 @@ _08050604:
 	movs r1, #7
 	movs r2, #0x1c
 	movs r3, #6
-	bl FUN_0804a084
+	bl TextPanel_Create
 	adds r3, r0, #0
 	str r3, [r4]
 	cmp r3, #0
@@ -88,12 +88,12 @@ _08050604:
 	adds r0, #0xb8
 	ldr r1, [r0]
 	adds r0, r3, #0
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #0xb
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 _08050662:
 	add sp, #0xc
 	pop {r4, r5, r6}

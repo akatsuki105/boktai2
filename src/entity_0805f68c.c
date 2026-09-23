@@ -108,12 +108,12 @@ s32 RingoDemoAnim_Init(RingoDemoAnim* p, Vec3* pos, EntityMsgBox* msgBox) {
   }
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);
-  MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, 0, 0x3C, q);
-  MainSprite_Add(&p->sprite2, &p->gfx, 0, 0, 3, 0, 0x3C, q);
+  MainSprite_Add(&p->sprite, &p->gfx, 0, 0, 2, 0, 60, q);
+  MainSprite_Add(&p->sprite2, &p->gfx, 0, 0, 3, 0, 60, q);
   p->state = 0;
   p->timer = 0;
-  MainSprite_SetAnim(&p->sprite, &p->gfx, 0x2F, 2, MAIN_ANIM_FORCE_POSE);
-  MainSprite_SetAnim(&p->sprite2, &p->gfx, 0x30, 2, MAIN_ANIM_FORCE_POSE);
+  MainSprite_SetAnim(&p->sprite, &p->gfx, 47, 2, MAIN_ANIM_FORCE_POSE);
+  MainSprite_SetAnim(&p->sprite2, &p->gfx, 48, 2, MAIN_ANIM_FORCE_POSE);
   return 0;
 }
 

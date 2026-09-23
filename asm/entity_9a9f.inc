@@ -1105,7 +1105,7 @@ FUN_081de130: @ 0x081DE130
 	movs r1, #7
 	movs r2, #0x1c
 	movs r3, #6
-	bl FUN_0804a084
+	bl TextPanel_Create
 	movs r2, #0xb6
 	lsls r2, r2, #2
 	adds r1, r5, r2
@@ -1137,12 +1137,12 @@ _081DE182:
 	lsls r2, r2, #2
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #2
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	ldr r2, _081DE1FC @ =0x03003E78
 	ldr r0, _081DE200 @ =0xFFFFF1FF
 	ldrh r1, [r2]
@@ -3280,7 +3280,7 @@ _081DF1BC:
 	movs r1, #7
 	movs r2, #0x1c
 	movs r3, #6
-	bl FUN_0804a084
+	bl TextPanel_Create
 	movs r1, #0xb6
 	lsls r1, r1, #2
 	adds r4, r5, r1
@@ -3289,12 +3289,12 @@ _081DF1BC:
 	lsls r2, r2, #2
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #9
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	movs r1, #1
 	strb r1, [r6]
 _081DF222:
@@ -3532,7 +3532,7 @@ FUN_081df3f0: @ 0x081DF3F0
 	movs r1, #7
 	movs r2, #0x1c
 	movs r3, #6
-	bl FUN_0804a084
+	bl TextPanel_Create
 	movs r1, #0xb6
 	lsls r1, r1, #2
 	adds r4, r5, r1
@@ -3541,12 +3541,12 @@ FUN_081df3f0: @ 0x081DF3F0
 	lsls r2, r2, #2
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #0xa
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 _081DF42C:
 	adds r0, r5, #0
 	bl FUN_081ddab4

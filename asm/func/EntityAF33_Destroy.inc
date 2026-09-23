@@ -14,7 +14,7 @@ _08050852:
 	adds r0, r6, #0
 	adds r0, #0xbc
 	ldr r0, [r0]
-	bl FUN_0804a16c
+	bl TextPanel_Destroy
 	ldr r0, _08050878 @ =0x030000F0
 	str r4, [r0]
 	movs r0, #0

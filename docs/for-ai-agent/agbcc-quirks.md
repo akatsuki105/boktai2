@@ -25,7 +25,7 @@ Three rules keep this file usable:
 
 ### Which arm falls into the epilogue: the two spellings are not interchangeable
 
-- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `EntityMsgBus_Register`, `EntityMsgBus_Unregister`, `Demo_RequestNextStep`, `EntityMsg_Send`, `Demo_Resume`, `Demo_IsRunning`, `ArcTan2_8`, `FUN_082375c8`, `MainSprite_Add`, `ScriptShadow_Move`, `SignalStrengthIcon_Create`, `SignalStrengthIcon_Init`, `Entity081d0e20_Create`, `FUN_080eddf8`, `Breakable_TakeStateChanged`.
+- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `EntityMsgBus_Register`, `EntityMsgBus_Unregister`, `Demo_RequestNextStep`, `EntityMsg_Send`, `Demo_Resume`, `Demo_IsRunning`, `ArcTan2_8`, `FUN_082375c8`, `MainSprite_Add`, `ScriptShadow_Move`, `SignalStrengthIcon_Create`, `SignalStrengthIcon_Init`, `Entity081d0e20_Create`, `FUN_080eddf8`, `Breakable_TakeStateChanged`, `FUN_0804a3e4`, `FUN_0804a40c`.
 - **Symptom**: the two arms' bodies appear in the opposite order from the
   target, and one arm carries a `b` to the epilogue that the target puts on
   the other arm. Instruction counts are usually equal.
@@ -36,6 +36,13 @@ Three rules keep this file usable:
   (a 2-way dispatcher that needed the negated condition written first, matching
   its sibling `TryAddItem`), `FindFile` and `Video_GetHankakuTiles` (a `NULL`
   guard) all needed exactly that.
+- Two adjacent, near-identical functions can need opposite spellings.
+  `FUN_0804a3e4` and `FUN_0804a40c` (`src/text_panel.c`) share a body down to
+  the argument list; the only difference is that the first discards the
+  callee's result and returns 0, while the second returns it. The first needed
+  the guard written first (`if (p == NULL) { return -1; } f(...); return 0;`),
+  the second needed it inverted (`if (p != NULL) { return f(...); } return -1;`).
+  Do not carry a spelling over from the function next to it.
 - The common case is that **the if-body goes to the branch target and falls
   into the epilogue**, while the trailing statement sits inline and pays the
   `b`. This reproduces on a minimal probe and does not depend on how big
@@ -121,6 +128,22 @@ Three rules keep this file usable:
 - **Frequency**: `Rfu_FindPartnerRecord`.
 - Target: body, then `if (f(p) == 7) break;`, then `pos += f(p) + 2; cmp pos, #0xf; bls top` at the very end. `do { ...; if (...) break; pos += ...; } while (pos <= 15);` emitted the increment and test in the middle of the body behind an extra `b` (one insn longer). Moving the increment into a `for (pos = 0; pos <= 15; pos += f(p) + 2)` header, with `p` declared outside the loop, matched.
 - In the same loop, the target keeps `&buf[pos] + 1` in one register across the `== 7` test and the increment. Recomputing `&buf[pos + 1]` at each use rebuilt it every time; a pointer local (`p = &buf[pos]; ... p++;`) matched.
+
+### `break` and `return` are not interchangeable
+
+- **Frequency**: `TextPanel_StateTyping`.
+- **Symptom**: `break` and `return` produce different code even when the loop
+  is the last statement in the function and nothing follows it, so both reach
+  the same point.
+
+```c
+for (i = 0; i < N; i++) {          for (i = 0; i < N; i++) {
+  if (cond) {                        if (cond) {
+    // ...                             // ...
+    return;                            break;
+  }                                  }
+}                                  }
+```
 
 ## Comparisons & bit tests
 
@@ -251,32 +274,35 @@ Which side to pick, once the asm has told you what is wrong:
 ### A constant or global address materializes in the wrong place
 
 - **Frequency**: `Sprite_SetPlttID`, `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`, `FUN_08089d24`, `FUN_08089f38`, `FUN_0823a9f4`, `FUN_0823aa10`, `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`, `ParticleShadow_Init`, `Hazard_OnHit`.
-- **Symptom**: a streamdiff shows only a `movs rN, #k` or `ldr rN, =SYMBOL` sitting earlier or later than the target has it — usually with registers renamed, sometimes with one extra callee-saved register, and often with an identical instruction count. agbcc materializes each of these where the expression tree first needs it, so the lever is always *how the surrounding expression is split into statements*, never the arithmetic. The mask-hoisting bullets under "`(x & (1<<n)) != 0` auto-optimizes" are the same mechanism seen through a bit test.
+- **Symptom**: one `movs rN, #k` or `ldr rN, =SYMBOL` sits earlier or later than the target has it, usually with registers renamed and an identical instruction count.
+- The lever is how the expression is split into statements, never the arithmetic. The mask-hoisting bullets under "`(x & (1<<n)) != 0` auto-optimizes" are the same mechanism seen through a bit test.
 
-- The operand order of a `+` also moves a global's load. In `ParticleShadow_Init`, `... * 34 + gMgr->group0->tile` loaded the manager pointer after the multiply; writing the global term first, `gMgr->group0->tile + ... * 34`, loaded it before the two `ldrb`s as the target does.
+**Splitting a value into its own statement — or into an inlined helper's argument — makes it materialize earlier.** A helper's constant argument materializes at the call site, ahead of the body's loads.
 
-**Splitting a value out into its own statement makes it materialize earlier.**
-
-- A store's constant. The target loads `movs r0, #2` *before* computing the store address (`subs r1, #0xe`), but `p->state = 2;` computes the address first. The permuter found a temporary (`v = 2; p->state = v;`) for `FUN_08089d24`; the natural form that gives the same code is a helper — `static inline void Entity28CB_SetState(Entity28CB* p, u16 state) { p->state = state; p->stateTimer = 0; }` — and since every state change in that entity also resets `stateTimer`, the original probably had one. In `FUN_08089f38`, eight rewrites (direct stores, a merged `timer` local, both statement orders) all left the two registers swapped, and `Entity28CB_SetState(p, 6)` matched on the first try, merged timer store included.
-- A read-modify-write of a global. `gEntityDisableFlags &= ~2;` (and `= ~2 & g`) emitted `ldr r1, [r0]` before building `~2`; the target builds the mask first (`movs r1, #3` / `rsbs r1, r1, #0` / `ldr r0, [r2]`), which `static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }` called as `EnableEntityFlags(2)` reproduces (`FUN_0823a9f4`).
-- A mask in a condition. `if (!((gFlag030047a4 | u32_030047a0) & 1))` built `movs r1, #1` right before the `ands`; the target builds it first, before both loads. A helper `static inline u32 TestFlag030047a4(u32 flags) { return (gFlag030047a4 | u32_030047a0) & flags; }` matched (`FUN_0823aa10`, which also needed `DisableEntityFlags(2)` for its `|= 2`). The same applies to a plain field test: `if (!(a->weakness & 4))` emits `ldr` then `movs r1, #4`, while the target builds the mask first, which `static inline bool32 Hitbox_HasWeakness(HitboxData* p, u32 mask) { return p->weakness & mask; }` called as `Hitbox_HasWeakness(a, 4)` matched (`Hazard_OnHit`) — the inlined helper's constant argument materializes at the call site, ahead of the body's loads. Spelling the test as `(x & 4) == 0`, `4 & x` or an inverted `if`/`else` changes nothing.
-- A table's base address. `u16* table = gRandomTable;` loads `=gRandomTable` before `=gRandTableIdx`; a global struct's address declared first as a pointer local (`SavedHBlankState* s = &gSavedHBlankState;`) is loaded at function entry and kept in a callee-saved register across calls, where writing `gSavedHBlankState.field` at each use loaded it late and needed one less saved register.
-- A field re-read. `p->plttID = id; p->pltt = &gObjPlttData[p->plttID * 16];` emitted `ldr rN, =gObjPlttData` before `ldrh r2, [r0, #0x3a]` — as did `gObjPlttData + ...`, `<< 4`, and `index + gObjPlttData`. The target reloads the field first, which a `u16` local in its own statement (`u16 i; p->plttID = id; i = p->plttID; p->pltt = &gObjPlttData[i * 16];`) matched (`Sprite_SetPlttID`).
-- An inner call used as an argument. `f(0, (T*)gPtr, g(0x28))` loaded `=gPtr` and its value into a callee-saved register before calling `g`; the target calls `g` first and loads `gPtr` right before `f`, which `s32 len = g(0x28); f(0, (T*)gPtr, len);` matched.
-- An argument shared by several calls. `FreezeEffect_GatherSubParticles` divides three times by `n + 1`; writing `Div(..., n + 1)` at each call computed it just before the first `Div`, while the target computes it once right after `n` (`adds r6, r4, #1`) — a local `d = n + 1;` placed directly after `n = 8 - frame;` matched.
-- A field compared against a call result. `if (p->weaponLv[i] != GetWeaponSkillLevel(i))` kept the field's address in a callee-saved register and loaded it after the call; the target loads the value first (`ldrh r4, [r0]` before the `bl`), which `lv = p->weaponLv[i]; if (lv != GetWeaponSkillLevel(i))` matched (`IsWeaponLevelChanged`).
-- A global read in both a guard and the body. `if (g[10] != 0) { id = g[10]; ... }` costs an extra `adds rN, r0, #0`, because the compare uses the loaded value and the body's copy gets its own register; hoisting the read above the `if` removes that move.
+| you wrote | write this instead | function |
+|---|---|---|
+| `p->state = 2;` | `T_SetState(p, 2)` — the helper also resets `stateTimer`, which every state change in that entity does | `FUN_08089d24`, `FUN_08089f38` |
+| `gEntityDisableFlags &= ~2;` | `EnableEntityFlags(2)` taking `u32 flags` | `FUN_0823a9f4` |
+| `if (!((gA \| gB) & 1))` | a helper taking the mask as `flags` | `FUN_0823aa10` |
+| `if (!(a->weakness & 4))` | `Hitbox_HasWeakness(a, 4)` taking `u32 mask`. `(x & 4) == 0`, `4 & x` and an inverted `if`/`else` change nothing | `Hazard_OnHit` |
+| `p->plttID = id; p->pltt = &g[p->plttID * 16];` | reload the field in its own statement: `i = p->plttID;` | `Sprite_SetPlttID` |
+| `f(0, (T*)gPtr, g(0x28))` | `len = g(0x28);` first | |
+| `Div(..., n + 1)` at each of three calls | `d = n + 1;` directly after `n`'s assignment | `FreezeEffect_GatherSubParticles` |
+| `if (p->weaponLv[i] != GetWeaponSkillLevel(i))` | `lv = p->weaponLv[i];` first | `IsWeaponLevelChanged` |
+| `if (g[10] != 0) { id = g[10]; ... }` — costs an extra `adds rN, r0, #0` | hoist the read above the `if` | |
+| `... * 34 + gMgr->group0->tile` | put the global term first | `ParticleShadow_Init` |
+| `gX.field` at each use | a pointer local (`T* s = &gX;`) is loaded at entry and kept in a callee-saved register across calls | |
 
 **Merging it back into one expression makes it materialize later.**
 
-- Two draws from the random table (`gRandomTable[(gRandTableIdx + 1) & 0x3FF]`) in `FUN_08089d50` needed the *first* index kept in a local with only the second stored — storing `gRandTableIdx` twice kept the first `str` — alongside the table pointer local above and a `u16` local for each value before `& 0x1F` (which keeps the mask in its own register, `ands r0, r4`). The permuter found the last two. A `static inline` returning `gRandomTable[++idx]` still stored the first index; the original RNG macro or inline is not known yet.
-- After a call, `u16 ms = gSongTable[id].ms; f(gMPlayTable[ms].info); gSoundIDs[ms] = id;` loaded `=gSongTable` first and `=gMPlayTable` just before its use. The target loads `=gMPlayTable` **before** `=gSongTable`, which writing the index inline — `f(gMPlayTable[gSongTable[id].ms].info); gSoundIDs[gSongTable[id].ms] = id;` — matched (CSE still reuses the `ms*2` for the second subscript).
+- `ms = gSongTable[id].ms; f(gMPlayTable[ms].info); gSoundIDs[ms] = id;` loads `=gSongTable` first; the target loads `=gMPlayTable` first, which writing the index inline at both uses matched (CSE still reuses the `ms*2`).
+- `FUN_08089d50` draws twice from `gRandomTable[(gRandTableIdx + 1) & 0x3FF]`: only the *second* index may be stored back, and each value needs a `u16` local before `& 0x1F` so the mask keeps its own register. The original RNG macro or inline is not known.
 
 **Both directions occur for the same code shape, so try both.**
 
-- The nested-subscript case above cuts the other way too: written as one expression, `gMPlayTable[gSongTable[id].ms].info` hoists the outer table's pool `ldr` *before* the inner subscript is read, and splitting the inner index into its own statement (`u16 ms = gSongTable[id].ms;`) emits that `ldr` after it. One function needed the merged form and another the split form, so when only a pool `ldr` sits in the wrong place, try splitting *and* merging before looking elsewhere.
-- The choice can also decide only *which* callee-saved registers a parameter and a base address get, with no instruction-count difference at all. `FUN_082405c0` needed `SoundID16 id = g[12];` above the `if`, while testing `g[12] != 0` directly gave the identical 32 instructions with `r6`/`r7` swapped — and its slot-10 twin `Sound_FadeOutBGM` matched with the opposite shape, so don't assume a copy-pasted sibling used the same one.
-- Which shape the target used is readable from the asm: hoisting the read leaves the array's base address in a scratch register (`ldr r0, =g` / `ldrh r0, [r0, #N]`), while testing the global directly and indexing it again keeps the base in its own register across the guard. `Sound_SetBGMTempo` needed the hoisted form for exactly that reason, and `Sprite_LoadSprite` writes `Sprite_SetPlttID`'s two lines inline and matches with the global first — so check the target's order before choosing.
+- The nested subscript above cuts the other way too: as one expression the outer table's pool `ldr` hoists above the inner subscript, split into `u16 ms = ...;` it lands after. One function needed each. When only a pool `ldr` is misplaced, try splitting *and* merging first.
+- The choice can decide only which callee-saved registers a parameter and a base address get, at an identical instruction count. `FUN_082405c0` needed `id = g[12];` above the `if` where testing `g[12] != 0` gave the same 32 instructions with `r6`/`r7` swapped — and its twin `Sound_FadeOutBGM` matched with the opposite shape.
+- Which one the target used is readable: hoisting the read leaves the base in a scratch register (`ldr r0, =g` / `ldrh r0, [r0, #N]`), testing the global directly keeps the base in its own register across the guard. `Sound_SetBGMTempo` needed the hoisted form, `Sprite_LoadSprite` the other.
 
 ### A zero stored from a reused local takes that local's register
 

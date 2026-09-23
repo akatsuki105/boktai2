@@ -66,14 +66,11 @@ bool32 FUN_080091d0(Entity83B2Data* p) {
 
 // list の1要素にアクタースプライトを割り当てて描画リストに繋ぐ
 s32 FUN_080091e8(Entity83B2* p, Entity83B2Data* data, s32 idx) {
-  AuxSprite* sprite;
-
   if (!Video_GetAuxSprite(&data->gfx, SPRITE_HINT_PANEL)) {
     return -1;
   }
-  sprite = &data->sprite;
-  AuxSprite_Add(sprite, &data->gfx, 1);
-  sprite->metaspriteIdx = 1;
+  AuxSprite_Add(&data->sprite, &data->gfx, 1);
+  AuxSprite_SetPoseIdx(&data->sprite, 1);
   data->sprite.priority = 2;
   return 0;
 }
@@ -98,16 +95,13 @@ Entity83B2Data* FUN_0800922c(Entity83B2* p, u32 n, s32* outIdx) {
   return NULL;
 }
 
-// スプライトのパレットを切り替える (plttID 0/1/2 に 0x4C を足したものが実際のパレットID)
-NON_MATCH void FUN_08009278(Entity83B2Data* p, s32 plttID) {
-#ifdef NONMATCHING_C
+// スプライトのパレットを切り替える (plttID 0/1/2 に 76 を足したものが実際のパレットID)
+s32 FUN_08009278(Entity83B2Data* p, s32 plttID) {
   AuxSpriteGfx* gfx = &p->gfx;
   if (p->unk_4 == 0) {
-    Video_SetAuxSpritePltt(gfx, plttID + 0x4C);
+    Video_SetAuxSpritePltt(gfx, plttID + 76);
   }
-#else
-  INCFUNC("asm/func/FUN_08009278.inc");
-#endif
+  // 返り値は s32 だが実際には何も返さない
 }
 
 // 対象の座標を設定する, unk_2 で判定用の座標と描画位置のどちらをずらすかが変わる
@@ -423,20 +417,18 @@ s32 Entity83B2_Init(Entity83B2* p, void* _) {
 }
 
 Entity83B2* Entity83B2_Create(void* _) {
-  Entity83B2* p;
-
-  if (gEntity83B2 != NULL) {
-    return gEntity83B2;
-  }
-  p = CreateEntity(ENTITY_UNK_8, sizeof(Entity83B2));
-  if (p != NULL) {
-    SetEntityRoutine(p, Entity83B2_Update, Entity83B2_Destroy);
-    if (Entity83B2_Init(p, _) < 0) {
-      KillEntity((Entity*)p);
-      return NULL;
+  if (gEntity83B2 == NULL) {
+    Entity83B2* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity83B2));
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity83B2_Update, Entity83B2_Destroy);
+      if (Entity83B2_Init(p, _) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
     }
+    return p;
   }
-  return p;
+  return gEntity83B2;
 }
 
 // マップ切り替わり時に (多分 Entity83B2 の数だけ)　呼ばれた (銀行に入ると3回呼ばれた, 多分 ヒントパネル1個 + ATM2個 で3回と思われる)

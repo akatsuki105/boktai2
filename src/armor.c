@@ -113,7 +113,7 @@ bool32 IsSlotArmorEpuipped(slot32_t n) {
 bool32 FUN_08243380(void) {
   slot32_t slot;
   armor32_t a;
-  if (VM_SeekToKeyword('a') == 0) {
+  if (!VM_SeekToKeyword('a')) {
     return FALSE;
   }
 
@@ -124,7 +124,6 @@ bool32 FUN_08243380(void) {
       return TRUE;
     }
   }
-
   return FALSE;
 }
 

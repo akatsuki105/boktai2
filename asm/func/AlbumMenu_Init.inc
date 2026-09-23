@@ -79,7 +79,7 @@ _08211B04:
 	movs r1, #0x10
 	movs r2, #0x1d
 	movs r3, #4
-	bl FUN_0804a084
+	bl TextPanel_Create
 	ldr r2, _08211B60 @ =0x0000086C
 	adds r1, r4, r2
 	str r0, [r1]

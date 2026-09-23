@@ -17,7 +17,7 @@ static_assert(sizeof(Entity0800f110Data) == 244);
 
 typedef struct {
   Entity e;                  // ENTITY_UNK_8
-  AuxAnimFile* anim;       // 0x18
+  AuxAnimFile* anim;         // 0x18
   Entity0800f110Data* list;  // 0x1C
 } Entity0800f110;
 static_assert(sizeof(Entity0800f110) == 32);
@@ -60,9 +60,8 @@ s32 Entity0800f110_Init(Entity0800f110* p, u32 _) {
 }
 
 Entity0800f110* Entity0800f110_Create(u32 _) {
-  Entity0800f110* p;
   if (gEntity0800f110 == NULL) {
-    p = CreateEntity(ENTITY_UNK_8, sizeof(Entity0800f110));
+    Entity0800f110* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity0800f110));
     if (p != NULL) {
       SetEntityRoutine(p, Entity0800f110_Update, Entity0800f110_Destroy);
       if (Entity0800f110_Init(p, _) < 0) {

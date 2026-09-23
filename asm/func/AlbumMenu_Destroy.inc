@@ -49,7 +49,7 @@ _08211A16:
 	ldr r1, _08211A58 @ =0x0000086C
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	bl FUN_08049fa8
 	movs r0, #0
 	movs r1, #0

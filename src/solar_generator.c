@@ -1,7 +1,7 @@
 #include "entity.h"
 #include "global.h"
 
-// パイルドライバーのジェネレータ(1つ分)
+// パイルドライバーのジェネレータ?
 typedef struct {
   Entity e;  // 0x0, ENTITY_UNK_8
   u8 unk_18[572 - 0x18];

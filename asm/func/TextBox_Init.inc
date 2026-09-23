@@ -82,7 +82,7 @@ _080485D4:
 	ldrb r0, [r0]
 	str r0, [sp]
 	adds r0, r5, #0
-	bl FUN_0804967c
+	bl TextRenderer_Init
 	movs r1, #0xbf
 	lsls r1, r1, #1
 	adds r0, r6, r1

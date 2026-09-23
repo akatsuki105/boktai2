@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "global.h"
 #include "msgbus.h"
+#include "save.h"
 #include "sound.h"
 #include "vm.h"
 

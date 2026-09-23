@@ -41,7 +41,7 @@
 	ldrb r0, [r6]
 	str r0, [sp]
 	mov r0, sb
-	bl FUN_08049650
+	bl TextRenderer_SetRect
 	movs r1, #0xbe
 	lsls r1, r1, #1
 	adds r0, r5, r1

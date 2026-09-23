@@ -4,7 +4,7 @@
 	movs r4, #2
 _08013064:
 	ldm r5!, {r0}
-	bl FUN_0804a16c
+	bl TextPanel_Destroy
 	subs r4, #1
 	cmp r4, #0
 	bge _08013064

@@ -8,9 +8,9 @@ typedef struct SignalStrengthIcon {
   Entity e;           // 0x00, ENTITY_UNK_11
   u32 updateCounter;  // 0x18, SignalStrengthIcon_Update が毎フレーム +1 するだけ。読み手は見つかっていない
   u32 animCounter;    // 0x1C, SignalStrengthIcon_SetStrength が呼ばれるたびに +1。& 0x1F の値で同じ強度内の点滅段を選ぶ
-  s32 spriteIdx;      // 0x20, 現在表示しているアイコン番号 (0x3E..0x42)。変化したときだけ MainSprite_SetPose を呼ぶ
-  MainSpriteGfx gfx;  // 0x24, Init が OpenMainSpriteFile(&gfx, GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK)) で作る
-  MainSprite sprite;  // 0x44, Init が MainSprite_Add(&sprite, &gfx, 0x3F, 0x11, 0, 0, 0x3C, NULL) で登録する
+  s32 poseIdx;        // 0x20, 現在表示しているアイコン番号 (62..66)。変化したときだけ MainSprite_SetPose を呼ぶ
+  MainSpriteGfx gfx;  // 0x24, SPRITE_UI_LINK
+  MainSprite sprite;  // 0x44
 } SignalStrengthIcon;
 static_assert(sizeof(SignalStrengthIcon) == 164);
 
@@ -20,59 +20,53 @@ u32 FUN_0804e59c(void);
 bool32 FUN_0804e3ec(void);
 s32 FUN_0804e3c0(void);
 
-SignalStrengthIcon* SignalStrengthIcon_Get(void) { return gSignalStrengthIcon; }
+static SignalStrengthIcon* SignalStrengthIcon_Get(void) { return gSignalStrengthIcon; }
 
 // 電波強度からアイコンのコマを決めて、変わったときだけ差し替える
 NON_MATCH void SignalStrengthIcon_SetStrength(SignalStrengthIcon* p, s32 strength) {
 #ifdef NONMATCHING_C
-  s32 counter;
-  s32 phase;
   s32 idx;
 
   if (strength > RFU_LINK_ICON_LEVEL3_MAX) {
-    counter = p->animCounter;
-    phase = counter & 0x1F;
+    s32 phase = p->animCounter & 0x1F;
     if (phase <= 7) {
-      idx = 0x3F;
-    } else if (phase <= 0xF) {
-      idx = 0x40;
-    } else if (phase <= 0x17) {
-      idx = 0x41;
+      idx = 63;
+    } else if (phase <= 15) {
+      idx = 64;
+    } else if (phase <= 23) {
+      idx = 65;
     } else {
-      idx = 0x42;
+      idx = 66;
     }
   } else if (strength > RFU_LINK_ICON_LEVEL2_MAX) {
-    counter = p->animCounter;
-    phase = counter & 0x1F;
+    s32 phase = p->animCounter & 0x1F;
     if (phase <= 9) {
-      idx = 0x3F;
-    } else if (phase <= 0x13) {
-      idx = 0x40;
+      idx = 63;
+    } else if (phase <= 19) {
+      idx = 64;
     } else {
-      idx = 0x41;
+      idx = 65;
     }
   } else if (strength > RFU_LINK_ICON_LEVEL1_MAX) {
-    counter = p->animCounter;
-    phase = counter & 0x1F;
+    s32 phase = p->animCounter & 0x1F;
     if (phase <= 9) {
-      idx = 0x3E;
-    } else if (phase <= 0x13) {
-      idx = 0x3F;
+      idx = 62;
+    } else if (phase <= 19) {
+      idx = 63;
     } else {
-      idx = 0x40;
+      idx = 64;
     }
   } else {
-    counter = p->animCounter;
-    phase = counter & 0x1F;
-    if (phase > 0xF) {
-      idx = 0x3E;
+    s32 phase = p->animCounter & 0x1F;
+    if (phase > 15) {
+      idx = 62;
     } else {
-      idx = 0x3F;
+      idx = 63;
     }
   }
-  p->animCounter = counter + 1;
-  if (p->spriteIdx != idx) {
-    p->spriteIdx = idx;
+  p->animCounter++;
+  if (idx != p->poseIdx) {
+    p->poseIdx = idx;
     MainSprite_SetPose(&p->sprite, &p->gfx, idx, 0);
   }
 #else
@@ -90,41 +84,35 @@ void FUN_0804e84c(SignalStrengthIcon* p) {
   }
 }
 
-NON_MATCH void SignalStrengthIcon_Refresh(SignalStrengthIcon* p) {
-#ifdef NONMATCHING_C
-  s32 strength;
-  s32 i;
-
-  if (FUN_0804e59c() != 0) {
-    return;
-  }
-  strength = 0xFF;
-  if (FUN_0804e3ec()) {
-    if (gRfuLinkStatus->parent_child == MODE_CHILD) {
-      i = FUN_0804e3c0();  // 元は添字に直接書かれていて、この一時変数のぶん adds r1, r0, #0 が余計に出る
-      strength = gRfuLinkStatus->strength[i];
-      SignalStrengthIcon_SetStrength(p, strength);
-    } else {
-      for (i = 0; i < 4; i++) {
-        if ((gRfuLinkStatus->connectSlot_flag >> i) & 1) {
-          if (strength > gRfuLinkStatus->strength[i]) {
-            strength = gRfuLinkStatus->strength[i];
+// 電波強度を取り直してアイコンに反映する。 リンクしていないときはアイコンを隠す
+void SignalStrengthIcon_Refresh(SignalStrengthIcon* p) {
+  if (FUN_0804e59c() == 0) {
+    s32 strength = 0xFF;
+    if (FUN_0804e3ec()) {
+      if (gRfuLinkStatus->parent_child == MODE_CHILD) {
+        s32 i = FUN_0804e3c0();
+        strength = gRfuLinkStatus->strength[i];
+        SignalStrengthIcon_SetStrength(p, strength);
+      } else {
+        s32 i;
+        for (i = 0; i < 4; i++) {
+          if (gRfuLinkStatus->connectSlot_flag & (1 << i)) {
+            if (strength > gRfuLinkStatus->strength[i]) {
+              strength = gRfuLinkStatus->strength[i];
+            }
           }
         }
+        if (gRfuLinkStatus->connectSlot_flag == 0) {
+          SignalStrengthIcon_SetStrength(p, 0);
+        } else {
+          SignalStrengthIcon_SetStrength(p, strength);
+        }
       }
-      if (gRfuLinkStatus->connectSlot_flag == 0) {
-        SignalStrengthIcon_SetStrength(p, 0);
-      } else {
-        SignalStrengthIcon_SetStrength(p, strength);
-      }
+      p->sprite.flags &= ~SPRFLAG_HIDDEN;
+    } else {
+      p->sprite.flags |= SPRFLAG_HIDDEN;
     }
-    p->sprite.flags &= ~SPRFLAG_HIDDEN;
-  } else {
-    p->sprite.flags |= SPRFLAG_HIDDEN;
   }
-#else
-  INCFUNC("asm/func/SignalStrengthIcon_Refresh.inc");
-#endif
 }
 
 s32 SignalStrengthIcon_Update(SignalStrengthIcon* p) {
@@ -150,16 +138,16 @@ s32 SignalStrengthIcon_Init(SignalStrengthIcon* p) {
   }
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);
-  MainSprite_Add(&p->sprite, &p->gfx, 0x3F, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, 0, 0x3C, NULL);
+  MainSprite_Add(&p->sprite, &p->gfx, 63, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, 0, 60, NULL);
   return 0;
 }
 
 SignalStrengthIcon* SignalStrengthIcon_Create(void) {
   SignalStrengthIcon* p = SignalStrengthIcon_Get();
-
   if (p != NULL) {
     return p;
   }
+
   p = CreateEntity(ENTITY_UNK_11, sizeof(SignalStrengthIcon));
   if (p != NULL) {
     SetEntityRoutine(p, SignalStrengthIcon_Update, SignalStrengthIcon_Destroy);

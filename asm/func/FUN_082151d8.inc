@@ -41,7 +41,7 @@
 	movs r4, #4
 _08215230:
 	ldm r6!, {r0}
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	subs r4, #1
 	cmp r4, #0
 	bge _08215230

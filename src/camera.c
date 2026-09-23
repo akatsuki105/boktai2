@@ -8,12 +8,6 @@
 
 Entity2UnkData* FUN_0823b2d0(u16 id);
 void* FUN_08230e70(u16 id);
-void FUN_0822db5c(void);
-void FUN_0822aaac(void);
-void MainSprite_DrawList(void);
-void FUN_0822de64(void);
-void FUN_0822ac90(void);
-void MainSprite_DrawListScreen(void);
 
 COMMON_DATA Vec3 gCameraVpCoords = {};  // 0x030047C8
 COMMON_DATA Camera* gCamera = NULL;     // 0x030047D0
@@ -61,8 +55,7 @@ void Camera_ApplyBounds1(Camera* cam, Vec3* pos) {
 }
 
 void Camera_ApplyBounds2(Camera* cam, Vec3* pos) {
-  s32 v;
-  s32 d;
+  s32 v, d;
 
   v = pos->z - pos->x;
   if (v < cam->unk_8e) {
@@ -101,13 +94,12 @@ void FUN_0823b864(void) {
 }
 
 void FUN_0823b880(s32 n) {
-  Camera* cam = gCamera;
-  if (cam != NULL) {
+  if (gCamera != NULL) {
     if (n < 2) {
-      cam->moveMode = 0;
+      gCamera->moveMode = 0;
     } else {
-      cam->moveTimer = n;
-      cam->moveMode = 3;
+      gCamera->moveTimer = n;
+      gCamera->moveMode = 3;
     }
   }
 }
@@ -115,25 +107,23 @@ void FUN_0823b880(s32 n) {
 NAKED void FUN_0823b8ac(Vec3* pos) { INCFUNC("asm/func/FUN_0823b8ac.inc"); }
 
 void FUN_0823b980(s32 n, Vec3* pos) {
-  Camera* cam = gCamera;
-  if (cam != NULL) {
-    cam->destPos.x = pos->x;
-    cam->destPos.y = pos->y;
-    cam->destPos.z = pos->z;
+  if (gCamera != NULL) {
+    gCamera->destPos.x = pos->x;
+    gCamera->destPos.y = pos->y;
+    gCamera->destPos.z = pos->z;
     if (n < 2) {
-      cam->moveMode = 1;
+      gCamera->moveMode = 1;
     } else {
-      cam->moveTimer = n;
-      cam->moveMode = 2;
+      gCamera->moveTimer = n;
+      gCamera->moveMode = 2;
     }
   }
 }
 
 void FUN_0823b9cc(s32 n) {
-  Camera* cam = gCamera;
-  if (cam != NULL && (gFlag030047a4 & FLAG030047A4_UNK_11) == 0) {
-    if (n > cam->shakeAmplitude) {
-      cam->shakeAmplitude = n;
+  if (gCamera != NULL && !(gFlag030047a4 & FLAG030047A4_UNK_11)) {
+    if (n > gCamera->shakeAmplitude) {
+      gCamera->shakeAmplitude = n;
     }
   }
 }
@@ -169,62 +159,54 @@ NON_MATCH void Camera_Translate(void) {
 }
 
 void FUN_0823baa8(void) {
-  Camera* cam = gCamera;
-  if (cam != NULL) {
-    cam->unk_1c = 1;
-    cam->lookMode = 0;
-    cam->unk_1e = 0;
+  if (gCamera != NULL) {
+    gCamera->unk_1c = 1;
+    gCamera->lookMode = 0;
+    gCamera->unk_1e = 0;
   }
 }
 
 NAKED void FUN_0823bac8(Vec3* pos) { INCFUNC("asm/func/FUN_0823bac8.inc"); }
 
 void FUN_0823bb7c(s32 n, Vec3* pos) {
-  Camera* cam = gCamera;
-  if (cam != NULL) {
-    cam->pos_6c.x = pos->x;
-    cam->pos_6c.y = pos->y;
-    cam->pos_6c.z = pos->z;
-    cam->unk_1c = 1;
+  if (gCamera != NULL) {
+    gCamera->pos_6c.x = pos->x;
+    gCamera->pos_6c.y = pos->y;
+    gCamera->pos_6c.z = pos->z;
+    gCamera->unk_1c = 1;
     if (n < 2) {
-      cam->lookMode = 1;
+      gCamera->lookMode = 1;
     } else {
-      cam->lookTimer = n;
-      cam->lookMode = 2;
+      gCamera->lookTimer = n;
+      gCamera->lookMode = 2;
     }
     gCamera->unk_1e = 0;
   }
 }
 
 void FUN_0823bbd4(u32 targetID, Vec3* pos) {
-  Camera* cam;
-
   if (gCamera != NULL) {
     gCamera->lookTargetID = targetID;
     if (FUN_0823b2d0(gCamera->lookTargetID) != NULL) {
-      cam = gCamera;
-      cam->unk_1c = 1;
-      cam->pos_74 = *pos;
-      cam->lookMode = 3;
-      cam->unk_1e = 0;
+      gCamera->unk_1c = 1;
+      gCamera->pos_74 = *pos;
+      gCamera->lookMode = 3;
+      gCamera->unk_1e = 0;
     }
   }
 }
 
 void FUN_0823bc14(u32 targetID, s32 n, Vec3* pos) {
-  Camera* cam;
-
   if (gCamera != NULL) {
     gCamera->lookTargetID = targetID;
     if (FUN_0823b2d0(gCamera->lookTargetID) != NULL) {
-      cam = gCamera;
-      cam->unk_1c = 1;
-      cam->pos_74 = *pos;
+      gCamera->unk_1c = 1;
+      gCamera->pos_74 = *pos;
       if (n < 2) {
-        cam->lookMode = 3;
+        gCamera->lookMode = 3;
       } else {
-        cam->lookTimer = n;
-        cam->lookMode = 4;
+        gCamera->lookTimer = n;
+        gCamera->lookMode = 4;
       }
       gCamera->unk_1e = 0;
     }
@@ -232,28 +214,26 @@ void FUN_0823bc14(u32 targetID, s32 n, Vec3* pos) {
 }
 
 void FUN_0823bc70(s32 n) {
-  Camera* cam = gCamera;
-  if (cam != NULL) {
-    cam->unk_1c = 1;
+  if (gCamera != NULL) {
+    gCamera->unk_1c = 1;
     if (n < 2) {
-      cam->lookMode = 0;
+      gCamera->lookMode = 0;
     } else {
-      cam->lookTimer = n;
-      cam->lookMode = 5;
+      gCamera->lookTimer = n;
+      gCamera->lookMode = 5;
     }
     gCamera->unk_1e = 0;
   }
 }
 
 void FUN_0823bca8(s32 n) {
-  Camera* cam = gCamera;
-  if (cam != NULL) {
+  if (gCamera != NULL) {
     if (n < 2) {
-      cam->unk_1c = 0;
+      gCamera->unk_1c = 0;
     } else {
-      cam->unk_1c = 1;
-      cam->lookMode = 6;
-      cam->lookTimer = n;
+      gCamera->unk_1c = 1;
+      gCamera->lookMode = 6;
+      gCamera->lookTimer = n;
     }
     gCamera->unk_1e = 0;
   }
@@ -261,13 +241,12 @@ void FUN_0823bca8(s32 n) {
 
 // Unused?
 void FUN_0823bce4(Vec3* pos, s32* enabled) {
-  Camera* cam = gCamera;
-  if (cam != NULL) {
-    cam->targetPos = pos;
-    cam->unk_a0 = enabled;
-    cam->unk_1c = 1;
-    cam->lookMode = 7;
-    cam->unk_1e = 0;
+  if (gCamera != NULL) {
+    gCamera->targetPos = pos;
+    gCamera->unk_a0 = enabled;
+    gCamera->unk_1c = 1;
+    gCamera->lookMode = 7;
+    gCamera->unk_1e = 0;
   }
 }
 
@@ -275,12 +254,12 @@ NON_MATCH void FUN_0823bd14(u32 amplitude, u32 frames, s32 stopOnEnd) {
 #ifdef NONMATCHING_C
   if (gCamera != NULL && (gFlag030047a4 & FLAG030047A4_UNK_11) == 0) {
     if (frames == 0 && stopOnEnd == 1) {
-      gCamera->shakeActive = 0;
-      gCamera->shakeStopOnEnd = 0;
+      gCamera->shakeActive = FALSE;
+      gCamera->shakeStopOnEnd = FALSE;
       gCamera->shakeCurrent = 0;
       gCamera->shakeTarget = 0;
     } else {
-      gCamera->shakeActive = 1;
+      gCamera->shakeActive = TRUE;
       gCamera->shakeTarget = amplitude;
       gCamera->shakeTimer = frames;
       if ((u16)frames == 0) {
@@ -318,9 +297,8 @@ void FUN_0823bdf8(void) {
 }
 
 void FUN_0823be10(void) {
-  Vec3 pos;
-
   if (VM_SeekToKeyword('p')) {
+    Vec3 pos;
     pos.x = Script_GetValue();
     pos.y = Script_GetValue();
     pos.z = Script_GetValue();
@@ -360,14 +338,11 @@ void FUN_0823bee8(void) {
 }
 
 void FUN_0823bf70(void) {
-  Vec3 pos;
-  s32 n;
-  s32 targetID;
-
   if (VM_SeekToKeyword('f')) {
-    n = Script_GetValue();
+    s32 n = Script_GetValue();
     if (VM_SeekToKeyword('n')) {
-      targetID = Script_GetValue();
+      Vec3 pos;
+      s32 targetID = Script_GetValue();
       if (VM_SeekToKeyword('o')) {
         pos.x = Script_GetValue();
         pos.y = Script_GetValue();
@@ -396,21 +371,10 @@ void Camera_Reset(void) {
 }
 
 void FUN_0823c050(void) {
-  s32 frames;
-  s32 stopOnEnd;
-
   if (VM_SeekToKeyword('w')) {
     s32 amplitude = Script_GetValue();
-    if (VM_SeekToKeyword('f')) {
-      frames = Script_GetValue();
-    } else {
-      frames = 1;
-    }
-    if (VM_SeekToKeyword('N')) {
-      stopOnEnd = Script_GetValue();
-    } else {
-      stopOnEnd = 0;
-    }
+    s32 frames = VM_SeekToKeyword('f') ? Script_GetValue() : 1;
+    s32 stopOnEnd = VM_SeekToKeyword('N') ? Script_GetValue() : 0;
     FUN_0823bd14(amplitude, frames, stopOnEnd);
     FUN_0823bd98(gCamera);
   }
@@ -450,54 +414,44 @@ void FUN_0823c244(void) {
 }
 
 void FUN_0823c260(Vec3* min, Vec3* max) {
-  Camera* cam = gCamera;
-  if (cam != NULL) {
-    cam->unk_8e = min->x - (min->y >> 1);
-    cam->unk_90 = min->z - (min->y >> 1);
-    cam->unk_92 = max->x - (max->y >> 1);
-    cam->unk_94 = max->z - (max->y >> 1);
-    cam->unk_8c = 1;
-    Camera_ApplyBounds(cam, &gCameraCoords.worldPos);
+  if (gCamera != NULL) {
+    gCamera->unk_8e = min->x - (min->y >> 1);
+    gCamera->unk_90 = min->z - (min->y >> 1);
+    gCamera->unk_92 = max->x - (max->y >> 1);
+    gCamera->unk_94 = max->z - (max->y >> 1);
+    gCamera->unk_8c = 1;
+    Camera_ApplyBounds(gCamera, &gCameraCoords.worldPos);
   }
 }
 
 void Camera_ConnectToTilemap(void) {
-  Vec3 min, max;
   if (VM_SeekToKeyword('I')) {
-    min.x = Script_GetValue();
-    min.y = Script_GetValue();
-    min.z = Script_GetValue();
+    Vec3 min, max;
+    min.x = Script_GetValue(), min.y = Script_GetValue(), min.z = Script_GetValue();
     if (VM_SeekToKeyword('A')) {
-      max.x = Script_GetValue();
-      max.y = Script_GetValue();
-      max.z = Script_GetValue();
+      max.x = Script_GetValue(), max.y = Script_GetValue(), max.z = Script_GetValue();
       FUN_0823c260(&min, &max);
     }
   }
 }
 
 void FUN_0823c35c(Vec3* min, Vec3* max) {
-  Camera* cam = gCamera;
-  if (cam != NULL) {
-    cam->unk_8e = min->z - min->x;
-    cam->unk_90 = min->z + min->x - min->y;
-    cam->unk_92 = max->z - max->x;
-    cam->unk_94 = max->z + max->x - max->y;
-    cam->unk_8c = 2;
-    Camera_ApplyBounds(cam, &gCameraCoords.worldPos);
+  if (gCamera != NULL) {
+    gCamera->unk_8e = min->z - min->x;
+    gCamera->unk_90 = min->z + min->x - min->y;
+    gCamera->unk_92 = max->z - max->x;
+    gCamera->unk_94 = max->z + max->x - max->y;
+    gCamera->unk_8c = 2;
+    Camera_ApplyBounds(gCamera, &gCameraCoords.worldPos);
   }
 }
 
 void Camera_SetBoundsType2Scripted(void) {
-  Vec3 min, max;
   if (VM_SeekToKeyword('I')) {
-    min.x = Script_GetValue();
-    min.y = Script_GetValue();
-    min.z = Script_GetValue();
+    Vec3 min, max;
+    min.x = Script_GetValue(), min.y = Script_GetValue(), min.z = Script_GetValue();
     if (VM_SeekToKeyword('A')) {
-      max.x = Script_GetValue();
-      max.y = Script_GetValue();
-      max.z = Script_GetValue();
+      max.x = Script_GetValue(), max.y = Script_GetValue(), max.z = Script_GetValue();
       FUN_0823c35c(&min, &max);
     }
   }
@@ -510,17 +464,15 @@ NAKED void FUN_0823c620(Camera* cam) { INCFUNC("asm/func/FUN_0823c620.inc"); }
 // 画面揺れを1フレーム進め、worldPos に揺れのオフセットを足す
 NON_MATCH void* FUN_0823c928(Camera* cam) {
 #ifdef NONMATCHING_C
-  s32 v;
-
-  if (cam->shakeActive != 0) {
+  if (cam->shakeActive) {
     if (cam->shakeTimer != 0) {
-      v = Div(cam->shakeTimer * cam->shakeCurrent + cam->shakeTarget, cam->shakeTimer + 1);
+      s32 v = Div(cam->shakeTimer * cam->shakeCurrent + cam->shakeTarget, cam->shakeTimer + 1);
       cam->shakeCurrent = v;
       cam->shakeAmplitude = v;
       if (--cam->shakeTimer == 0) {
-        if (cam->shakeStopOnEnd != 0) {
-          cam->shakeActive = 0;
-          cam->shakeStopOnEnd = 0;
+        if (cam->shakeStopOnEnd) {
+          cam->shakeActive = FALSE;
+          cam->shakeStopOnEnd = FALSE;
           cam->shakeCurrent = 0;
           cam->shakeTarget = 0;
         } else {
@@ -552,7 +504,7 @@ NON_MATCH void* FUN_0823c928(Camera* cam) {
 NAKED s32 Camera_Update(Camera* cam) { INCFUNC("asm/func/Camera_Update.inc"); }
 
 s32 Camera_Destroy(Camera* cam) {
-  if ((gFlag030047a4 & FLAG030047A4_UNK_11) == 0) {
+  if (!(gFlag030047a4 & FLAG030047A4_UNK_11)) {
     EntityMsgBus_Unregister(&cam->msgbox);
   }
   gCamera = NULL;
@@ -562,9 +514,8 @@ s32 Camera_Destroy(Camera* cam) {
 NAKED s32 Camera_Init(Camera* cam, u32 val) { INCFUNC("asm/func/Camera_Init.inc"); }
 
 Camera* Camera_Create(u32 val) {
-  Camera* cam;
   if (gCamera == NULL) {
-    cam = CreateEntity(ENTITY_CAMERA, sizeof(Camera));
+    Camera* cam = CreateEntity(ENTITY_CAMERA, sizeof(Camera));
     if (cam != NULL) {
       SetEntityRoutine(cam, Camera_Update, Camera_Destroy);
       if (Camera_Init(cam, val) < 0) {

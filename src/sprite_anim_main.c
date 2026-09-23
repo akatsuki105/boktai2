@@ -23,9 +23,9 @@ NON_MATCH void MainSprite_SetAnimFrame(MainSprite* p, MainSpriteGfx* gfx, u16 an
   p->animCmdLength = anim->cmdCount;
   n = cmd->duration * p->animSpeed;
   if (n >= 0) {
-    n >>= 6;
+    n >>= FRACBITS_6;
   } else {
-    n = -((-n) >> 6);
+    n = -((-n) >> FRACBITS_6);
   }
   if ((p->animCmdDuration = n) == 0) {
     p->animCmdDuration = 1;
@@ -54,9 +54,9 @@ s32 MainSprite_SetAnimSpeed(MainSprite* p, u32 speed) {
   p->animSpeed = speed;
   n = cmd->duration * p->animSpeed;
   if (n >= 0) {
-    n >>= 6;
+    n >>= FRACBITS_6;
   } else {
-    n = -((-n) >> 6);
+    n = -((-n) >> FRACBITS_6);
   }
   if ((p->animCmdDuration = n) == 0) {
     p->animCmdDuration = 1;
@@ -135,9 +135,9 @@ NON_MATCH bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx) {
     p->animCmdTimer = 0;
     n = frame->duration * p->animSpeed;
     if (n >= 0) {
-      n >>= 6;
+      n >>= FRACBITS_6;
     } else {
-      n = -((-n) >> 6);
+      n = -((-n) >> FRACBITS_6);
     }
     if ((p->animCmdDuration = n) == 0) {
       p->animCmdDuration = 1;

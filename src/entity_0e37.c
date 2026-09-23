@@ -10,7 +10,7 @@ typedef void (*TextBoxFunc)(struct TextBox* p);
 typedef struct TextBox {
   Entity e;                // 0x000, ENTITY_UNK_12
   TextRenderer renderer;   // 0x018
-  u8 rectX;                // 0x178, script keyword 'r' の1番目, FUN_08049650 と FUN_0822ea60 に渡す
+  u8 rectX;                // 0x178, script keyword 'r' の1番目, TextRenderer_SetRect と FUN_0822ea60 に渡す
   u8 rectY;                // 0x179, script keyword 'r' の2番目
   u8 rectW;                // 0x17A, script keyword 'r' の3番目
   u8 rectH;                // 0x17B, script keyword 'r' の4番目

@@ -254,8 +254,8 @@ NON_MATCH void Entity0800a89c_PurifyDarkBugs(void) {
       for (j = 0; j < 4; j++) {
         if (swarm->bugs[j].state != 0) {
           FUN_08236fac(&swarm->bugs[j].anim, p->anim, u16_ARRAY_085aa6d0[(p->isSabata * 3 + swarm->kind) * 2], 0, 0);
-          if (swarm->bugs[j].state <= 2 && swarm->bugs[j].timer <= 0xB3) {
-            swarm->bugs[j].timer = 0xB4;
+          if (swarm->bugs[j].state < 3 && swarm->bugs[j].timer < 180) {
+            swarm->bugs[j].timer = 180;
           }
         }
       }

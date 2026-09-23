@@ -21,8 +21,7 @@ void FUN_08013634(void) { gParticleShadowManager = NULL; }
 // リネーム案: ShadowList_Add
 s32 ParticleShadowManager_Add(ParticleShadowManager* p, ParticleShadow* shadow) {
   ParticleShadow* head;
-
-  if (shadow->active != 0) return -1;
+  if (shadow->active) return -1;
 
   shadow->prev = NULL;
   head = p->head;
@@ -31,7 +30,7 @@ s32 ParticleShadowManager_Add(ParticleShadowManager* p, ParticleShadow* shadow) 
     head->prev = shadow;
   }
   p->head = shadow;
-  shadow->active = 1;
+  shadow->active = TRUE;
   return 0;
 }
 
@@ -40,7 +39,7 @@ s32 ParticleShadowManager_Remove(ParticleShadowManager* p, ParticleShadow* shado
   ParticleShadow* prev = shadow->prev;
   ParticleShadow* next = shadow->next;
 
-  if (shadow->active == 0) return -1;
+  if (!shadow->active) return -1;
 
   if (prev != NULL) {
     prev->next = next;
@@ -50,7 +49,7 @@ s32 ParticleShadowManager_Remove(ParticleShadowManager* p, ParticleShadow* shado
   if (next != NULL) {
     next->prev = prev;
   }
-  shadow->active = 0;
+  shadow->active = FALSE;
   return 0;
 }
 
@@ -88,7 +87,7 @@ NON_MATCH void ParticleShadow_FollowGround(ParticleShadow* shadow) {
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  if (shadow->q_flags & 1) {
+  if (shadow->flags & 1) {
     dst->y = pos->y;
   } else {
     tile = (u8*)FUN_08234224(idx, 1);
@@ -171,15 +170,17 @@ ParticleShadowManager* ParticleShadowManager_Create(void* data, u32 _) {
 
 // 影を初期化して描画リストと影のリストに繋ぐ (管理エンティティがなければ作る), リネーム案: Shadow_Init
 s32 ParticleShadow_Init(ParticleShadow* shadow, Vec3* ownerPos, s32 kind) {
-  if (gParticleShadowManager == NULL && ParticleShadowManager_Create(NULL, 0) == NULL) return -1;
+  if (gParticleShadowManager == NULL && ParticleShadowManager_Create(NULL, 0) == NULL) {
+    return -1;
+  }
 
-  shadow->active = 0;
+  shadow->active = FALSE;
   shadow->pos = ownerPos;
-  shadow->q_kind = kind;
-  shadow->q_flags = 0;
+  shadow->kind = kind;
+  shadow->flags = 0;
   shadow->unk_04 = 0;
   shadow->unk_06 = 0;
-  if ((u8)kind == 0) {
+  if (shadow->kind == 0) {
     shadow->updateCallback = ParticleShadow_FollowGround;
   } else {
     shadow->updateCallback = ParticleShadow_UpdateNone;

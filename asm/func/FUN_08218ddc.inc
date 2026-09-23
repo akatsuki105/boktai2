@@ -29,11 +29,11 @@ _08218E0A:
 	ldr r1, _08218E44 @ =0x00001648
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl FUN_0804a16c
+	bl TextPanel_Destroy
 	ldr r1, _08218E48 @ =0x0000164C
 	adds r0, r6, r1
 	ldr r0, [r0]
-	bl FUN_0804a16c
+	bl TextPanel_Destroy
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0

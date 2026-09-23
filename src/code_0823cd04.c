@@ -1,4 +1,5 @@
 #include "global.h"
+#include "save.h"
 #include "vm.h"
 #include "weapon.h"
 
@@ -57,10 +58,7 @@ NAKED void FUN_0823d358(void) { INCFUNC("asm/func/FUN_0823d358.inc"); }
 
 NAKED void FUN_0823d37c(void) { INCFUNC("asm/func/FUN_0823d37c.inc"); }
 
-void FUN_0823d3ec(void) {
-  u8 val = 1;
-  gSystemSaveData->unk_09 = val;
-}
+void FUN_0823d3ec(void) { SystemSave_SetUnk09(1); }
 
 u32 FUN_0823d3fc(void) { return gSystemSaveData->unk_09; }
 

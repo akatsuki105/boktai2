@@ -18,7 +18,11 @@
 #define min(a, b) ((a) < (b) ? (a) : (b))
 #define max(a, b) ((a) >= (b) ? (a) : (b))
 
-#define abs(x) ((x) < 0 ? -(x) : (x))
+#define Q_4_12(n) ((s16)((n) * 4096))  // Converts a number to Q4.12 fixed-point format
+
+// 1.0 に相当する値は小数部のビット数だけで決まり、整数部の幅にも符号にも依存しない
+#define FRACBITS_6 6                  // u2_6 / s2_6 / u10_6 / s10_6 の小数部
+#define FRACUNIT_6 (1 << FRACBITS_6)  // 64
 
 // NAKED void funcXXX(void) {
 //  INCFUNC("asm/funcXXX.inc");
@@ -30,26 +34,8 @@
     .align 2, 0\n    \
  .syntax divided\n");
 
-typedef struct {
-  s32 frameCounter;   // 0x00
-  s32 calibration;    // 0x04, 太陽センサーのキャリブレーション値
-  u8 currentSlot;     // 0x08
-  u8 unk_09;          // 0x09
-  u8 unk_0a;          // 0x0A
-  bool8 summerTime;   // 0x0B, サマータイム
-  s32 unk_c;          // 0x0C, 根拠: FUN_0823d6bc
-  u32 unk_10;         // 0x10, 根拠: FUN_0823d68c
-  u16 unk_14;         // 0x14, 根拠: FUN_0823d700
-  u16 unk_16;         // 0x16, 根拠: FUN_0823d700
-  u16 eventFlags[4];  // 0x18, 0: BB3 (BlindBoxLv3), 1: BB4, 2: BB5 & バレンタイン, 3: なんか
-  u32 timezone;       // 0x20, タイムゾーン, u32 の根拠: FUN_0823d680
-  u8 unk_24[4];       // 0x24
-} SystemSaveData;
-static_assert(sizeof(SystemSaveData) == 40);
-
 extern u32 gScriptDirectoryBuildTime;  // 0x03004594
 extern Unk_0203b000 gUnk_0203b000[128];
-extern SystemSaveData* gSystemSaveData;
 extern u32 gFrameCounter;
 extern s32 gMapBlockW;
 extern s32 gMapBlockH;

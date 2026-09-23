@@ -2,6 +2,7 @@
 #include "solar.h"
 
 #include "global.h"
+#include "save.h"
 #include "solar_sensor.h"
 #include "time.h"
 

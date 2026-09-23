@@ -503,20 +503,18 @@ s32 EntityD854_Init(EntityD854* p, u16 id) {
 }
 
 EntityD854* EntityD854_Create(u16 id) {
-  EntityD854* p;
-
-  if (gEntityD854 != NULL) {
-    return gEntityD854;
-  }
-  p = CreateEntity(ENTITY_UNK_8, sizeof(EntityD854));
-  if (p != NULL) {
-    SetEntityRoutine(p, EntityD854_Update, EntityD854_Destroy);
-    if (EntityD854_Init(p, id) < 0) {
-      KillEntity((Entity*)p);
-      return NULL;
+  if (gEntityD854 == NULL) {
+    EntityD854* p = CreateEntity(ENTITY_UNK_8, sizeof(EntityD854));
+    if (p != NULL) {
+      SetEntityRoutine(p, EntityD854_Update, EntityD854_Destroy);
+      if (EntityD854_Init(p, id) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
     }
+    return p;
   }
-  return p;
+  return gEntityD854;
 }
 
 void FUN_080f9bec(void) { gEntityD854 = NULL; }

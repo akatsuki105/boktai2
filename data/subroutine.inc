@@ -21,7 +21,7 @@ gSubroutineTable:
 	.4byte 0x0740, FUN_080ef55c
 	.4byte 0x075C, FUN_080a94c0
 	.4byte 0x0866, FUN_0800a2f8
-	.4byte 0x08F4, FUN_081db9b4
+	.4byte 0x08F4, Entity08F4_Create
 	.4byte 0x0955, FUN_0800720c
 	.4byte 0x09EA, FUN_080ca430
 	.4byte 0x0AC7, EnemyCentipede_Create
@@ -137,7 +137,7 @@ gSubroutineTable:
 	.4byte 0x3757, FUN_08242d90
 	.4byte 0x377D, FUN_081d7ca8
 	.4byte 0x3A5D, FUN_08242450
-	.4byte 0x3A89, FUN_0801924c
+	.4byte 0x3A89, BgPlttBlender_AddSlotFromScript
 	.4byte 0x3C3E, FUN_0807dbe0
 	.4byte 0x3C47, FUN_0823e394
 	.4byte 0x3C48, FUN_0823d3fc
@@ -247,7 +247,7 @@ gSubroutineTable:
 	.4byte 0x619C, FUN_0823bee8
 	.4byte 0x61A0, SolarBank_CalcInterestRate
 	.4byte 0x6206, FUN_080a6ec0
-	.4byte 0x6273, Entity6273_Create
+	.4byte 0x6273, TextPanelManager_Create
 	.4byte 0x62AA, FUN_080ed834
 	.4byte 0x62BC, FUN_080020bc
 	.4byte 0x6367, Entity6367_Create
@@ -268,7 +268,7 @@ gSubroutineTable:
 	.4byte 0x6AFF, FUN_08240498
 	.4byte 0x6B24, FUN_08086638
 	.4byte 0x6CBE, FUN_08205dec
-	.4byte 0x6D69, Entity6D69_Create
+	.4byte 0x6D69, DoorManager_Create
 	.4byte 0x6E7D, FUN_0807d300
 	.4byte 0x6F85, FUN_0807d240
 	.4byte 0x7017, FUN_0807b0c0
@@ -300,7 +300,7 @@ gSubroutineTable:
 	.4byte 0x7935, EngineCall_InitArray
 	.4byte 0x794C, Entity794C_Create
 	.4byte 0x7974, TextBox_SetWaitScripted
-	.4byte 0x7999, FUN_081dae34
+	.4byte 0x7999, Entity7999_Create
 	.4byte 0x79B7, FUN_080a641c
 	.4byte 0x79EC, FUN_08240fdc
 	.4byte 0x7A0A, FUN_08086d7c
@@ -450,7 +450,7 @@ gSubroutineTable:
 	.4byte 0xAF8E, FUN_080a94dc
 	.4byte 0xB005, FUN_080a12d8
 	.4byte 0xB0B4, FUN_08009124
-	.4byte 0xB0BC, EntityB0BC_Create
+	.4byte 0xB0BC, SaveSequence_Create
 	.4byte 0xB164, LevelUpper_Create
 	.4byte 0xB189, FUN_08207ed0
 	.4byte 0xB1C4, Elevator_Shake
@@ -499,11 +499,11 @@ gSubroutineTable:
 	.4byte 0xC46E, FUN_080a4e1c
 	.4byte 0xC556, TextBox_CloseScripted
 	.4byte 0xC5D8, FUN_0803c9b8
-	.4byte 0xC60F, FUN_081d817c
+	.4byte 0xC60F, EntityC60F_Create
 	.4byte 0xC673, FUN_08011608
 	.4byte 0xC6AA, Textbox_CloseBox
 	.4byte 0xC765, FUN_080a4f54
-	.4byte 0xC783, FUN_081dc63c
+	.4byte 0xC783, EntityC783_Create
 	.4byte 0xC7DC, FUN_080ef048
 	.4byte 0xC814, EntityC814_Create
 	.4byte 0xC946, EntityC946_Create
@@ -552,7 +552,7 @@ gSubroutineTable:
 	.4byte 0xD935, FUN_0804e2c0
 	.4byte 0xD9AE, EntityD9AE_Create
 	.4byte 0xD9B7, FUN_0807b528
-	.4byte 0xD9D3, EntityD9D3_Create
+	.4byte 0xD9D3, BgPlttAnimator_Create
 	.4byte 0xDA0B, EntityDA0B_Create
 	.4byte 0xDA19, FUN_08090ee0
 	.4byte 0xDA5A, FUN_08234be4

@@ -32,7 +32,7 @@ _0804EA18: .4byte 0x030000E8
 	thumb_func_start FUN_0804ea1c
 FUN_0804ea1c: @ 0x0804EA1C
 	push {lr}
-	bl FUN_0804a5c8
+	bl TextPanelManager_DestroyAll
 	bl MosaicFader_Stop
 	ldr r2, _0804EA54 @ =0x03003E78
 	ldr r0, _0804EA58 @ =0xFFFFF9FF
@@ -200,17 +200,17 @@ _0804EB6C:
 	movs r1, #7
 	movs r2, #0x1c
 	movs r3, #6
-	bl FUN_0804a084
+	bl TextPanel_Create
 	str r0, [r4, #0x20]
 	cmp r0, #0
 	blt _0804EBB4
 	ldr r1, [r4, #0x28]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4, #0x20]
 	movs r1, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4, #0x20]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 _0804EBB4:
 	ldr r0, [r4, #0x1c]
 	adds r0, #1
@@ -247,17 +247,17 @@ FUN_0804ebc4: @ 0x0804EBC4
 	movs r1, #0xe
 	movs r2, #0x1c
 	movs r3, #6
-	bl FUN_0804a084
+	bl TextPanel_Create
 	str r0, [r4, #0x20]
 	cmp r0, #0
 	blt _0804EC1A
 	ldr r1, [r4, #0x28]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4, #0x20]
 	movs r1, #1
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4, #0x20]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 _0804EC1A:
 	movs r0, #0xc9
 	lsls r0, r0, #1
@@ -390,7 +390,7 @@ _0804ED14: .4byte 0x085AB664
 EntityD53D_Destroy: @ 0x0804ED18
 	push {lr}
 	ldr r0, [r0, #0x20]
-	bl FUN_0804a16c
+	bl TextPanel_Destroy
 	ldr r1, _0804ED2C @ =0x030000E8
 	movs r0, #0
 	str r0, [r1]

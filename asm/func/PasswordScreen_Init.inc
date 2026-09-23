@@ -109,7 +109,7 @@ _08013136:
 	movs r1, #5
 	movs r2, #0x1c
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	str r0, [r6]
 	cmp r0, #0
 	blt _08013238
@@ -132,12 +132,12 @@ _0801316A:
 	lsls r2, r2, #3
 	adds r4, r7, r2
 	ldr r1, [r4]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r6]
 	movs r1, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r6]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	movs r3, #0x8a
 	lsls r3, r3, #3
 	adds r6, r7, r3
@@ -145,34 +145,34 @@ _0801316A:
 	movs r1, #0x11
 	movs r2, #0x1c
 	movs r3, #1
-	bl FUN_0804a084
+	bl TextPanel_Create
 	str r0, [r6]
 	cmp r0, #0
 	blt _08013238
 	ldr r1, [r4]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r6]
 	movs r1, #1
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r6]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	ldr r0, _08013224 @ =0x00000454
 	adds r6, r7, r0
 	movs r0, #2
 	movs r1, #0xb
 	movs r2, #0x1c
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	str r0, [r6]
 	cmp r0, #0
 	blt _08013238
 	ldr r1, [r4]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r6]
 	movs r1, #2
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r6]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	ldr r0, _08013228 @ =0x000092B3
 	ldr r1, _0801322C @ =0x0000519C
 	bl GetFile

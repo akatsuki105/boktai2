@@ -10,4 +10,6 @@ typedef struct {
 } BgPlttFile;
 static_assert(sizeof(BgPlttFile) == 532);
 
+#define GetBgPlttFile(fileID) ((BgPlttFile*)GetFile(DIR_BGPLTT, fileID))
+
 #endif  // __INCLUDE_BG_PLTT_H__

@@ -826,7 +826,7 @@ FUN_0805364c: @ 0x0805364C
 	str r0, [sp, #4]
 	movs r0, #0
 	add r3, sp, #8
-	bl FUN_080607ec
+	bl ExplosionManager_Spawn
 	adds r0, r6, #0
 	bl FUN_0805359c
 	adds r0, r6, #0

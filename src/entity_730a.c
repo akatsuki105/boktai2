@@ -21,7 +21,6 @@ void RingoDemoAnim_Create(Vec3* pos, EntityMsgBox* box);
 
 void FUN_08022668(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
   Vec3 pos;
-
   pos.x = data->args[0];
   pos.y = data->args[1];
   pos.z = data->args[2];
@@ -29,10 +28,10 @@ void FUN_08022668(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
 }
 
 void FUN_080226a8(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
-  Vec3 pos;
   Entity2UnkData* target = FUN_0823b2d0(data->args[0]);
 
   if (target != NULL) {
+    Vec3 pos;
     pos.x = target->pos.x;
     pos.y = target->pos.y;
     pos.z = target->pos.z;
@@ -47,7 +46,7 @@ NON_MATCH void FUN_08022704(Entity730A* p, EntityMsgBox* node, EntityMsg* data) 
   s32 kind;
 
   if (args[5] != 0) {
-    flags = 0xFFF;
+    flags = 0x0FFF;
   }
   if (args[6] != 0) {
     flags |= 0x1000;
@@ -73,7 +72,7 @@ NON_MATCH void FUN_08022770(Entity730A* p, EntityMsgBox* node, EntityMsg* data) 
   s32 kind;
 
   if (args[5] != 0) {
-    flags = 0xFFF;
+    flags = 0x0FFF;
   }
   if (args[6] != 0) {
     flags |= 0x1000;
@@ -142,7 +141,6 @@ NON_MATCH s32 Entity730A_Update_Helper_08022864(Entity730A* p) {
 #ifdef NONMATCHING_C
   EntityMsgBox* box = &p->msgbox;
   EntityMsg* data;
-  Vec3 pos;
   s32 i;
 
   for (i = 0; i < box->count[gEntityMsgBus->bufIdx]; i++) {
@@ -178,6 +176,7 @@ NON_MATCH s32 Entity730A_Update_Helper_08022864(Entity730A* p) {
         break;
       }
       case 7: {
+        Vec3 pos;
         pos.x = data->args[0];
         pos.y = data->args[1];
         pos.z = data->args[2];

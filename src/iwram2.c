@@ -5,6 +5,7 @@
 #include "global.h"
 #include "input.h"
 #include "particle.h"
+#include "save.h"
 #include "solar_sensor.h"
 #include "sound.h"
 #include "sprite.h"
@@ -37,11 +38,10 @@ IWRAM_DATA u8 u8_03002bfc[0x03002C58 - 0x03002bfc] = {};  // todo
 
 IWRAM_DATA struct EntityCBB0* gEntityCBB0 = NULL;  // 0x03002C58
 
-IWRAM_DATA struct EnemyManager* gEnemyManager = NULL;     // 0x03002C5C
-IWRAM_DATA struct EnemyListNode* gEnemyListHead = NULL;   // 0x03002C60, 生存中のエネミーの単方向リスト. EnemyManager.list と同じ値
-IWRAM_DATA u8 u8_03002c64[0x03002C68 - 0x03002C64] = {};  // todo
-
-IWRAM_DATA struct Entity9A9F* gEntity9A9F = NULL;  // 0x03002C68
+IWRAM_DATA struct EnemyManager* gEnemyManager = NULL;      // 0x03002C5C
+IWRAM_DATA struct EnemyListNode* gEnemyListHead = NULL;    // 0x03002C60, 生存中のエネミーの単方向リスト. EnemyManager.list と同じ値
+IWRAM_DATA struct Entity081d9d38* gEntity081d9d38 = NULL;  // 0x03002C64
+IWRAM_DATA struct Entity9A9F* gEntity9A9F = NULL;          // 0x03002C68
 
 IWRAM_DATA u8 u8_03002c6c[0x03002C80 - 0x03002C6C] = {};  // todo
 
@@ -243,8 +243,8 @@ IWRAM_DATA s32 gMapBlockW = 0;                             // 0x030046A8
 IWRAM_DATA s32 gMapBlockH = 0;                             // 0x030046AC
 IWRAM_DATA u32 u32_030046b0 = 0;                           // 0x030046B0
 
-IWRAM_DATA u32 u32_030046b4 = 0;   // 0x030046B4
-IWRAM_DATA u32 gRandTableIdx = 0;  // 0x030046B8
+IWRAM_DATA u32 gRandTableIdx2 = 0;  // 0x030046B4
+IWRAM_DATA u32 gRandTableIdx = 0;   // 0x030046B8
 
 IWRAM_DATA u16 gSioParentRecv = 0;       // 0x030046BC, 親が受け取った子のデータ (SIOMULTI1)
 IWRAM_DATA s32 gSioTimerIntrCount = 0;   // 0x030046C0, 親のタイマー3割り込み回数
@@ -267,6 +267,9 @@ IWRAM_DATA u32 u32_030047a0 = 0;
 IWRAM_DATA u32 gFlag030047a4 = 0;
 
 IWRAM_DATA SystemSaveData* gSystemSaveData = NULL;
-IWRAM_DATA u8 u8_030047ac[8] = {};   // todo
-IWRAM_DATA u32 u32_030047b4 = 0;     // 0x030047B4, Save_WriteCore でセーブ成功時に 1 がセットされる
-IWRAM_DATA u8 u8_030047b8[16] = {};  // todo
+IWRAM_DATA u8 u8_030047ac[8] = {};            // todo
+IWRAM_DATA u32 u32_030047b4 = 0;              // 0x030047B4, Save_WriteCore でセーブ成功時に 1 がセットされる
+IWRAM_DATA bool32 gSoftResetInhibit = FALSE;  // 0x030047B8, 立てたフレームはソフトリセットのコマンド判定を飛ばす。Entity0823acbc_Update が読んで 0 に戻す
+IWRAM_DATA u32 u32_030047bc = 0;              // 0x030047BC, Entity0823acbc_Update が ENTITY_DISABLE_1 が落ちている間だけ毎フレーム +1 する。読み手は未発見
+IWRAM_DATA u32 u32_030047c0 = 0;              // 0x030047C0, FUN_0823ACBC と FUN_0823CD04 の一括クリアでしか触られない。読み手も本来の書き手も未発見
+IWRAM_DATA u32 u32_030047c4 = 0;              // 0x030047C4, Entity0823acbc_Update が 0 を書くほかは一括クリアのみ。読み手は未発見

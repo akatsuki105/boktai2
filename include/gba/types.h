@@ -33,6 +33,10 @@ typedef u32 bool32;
 
 typedef s16 s8_8;   // a signed 8.8 fixed-point number
 typedef s16 s4_12;  // a signed 4.12 fixed-point number
+typedef u8 u2_6;    // an unsigned 2.6 fixed-point number
+typedef s8 s2_6;    // a signed 2.6 fixed-point number
+typedef u16 u10_6;  // an unsigned 10.6 fixed-point number
+typedef s16 s10_6;  // a signed 10.6 fixed-point number
 
 struct __attribute__((packed, aligned(2))) BgCnt {
   u16 priority : 2;

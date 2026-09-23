@@ -86,7 +86,7 @@ FUN_081dff1c: @ 0x081DFF1C
 	movs r1, #5
 	movs r2, #0x1a
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	movs r2, #0xf8
 	lsls r2, r2, #2
 	adds r1, r6, r2
@@ -95,7 +95,7 @@ FUN_081dff1c: @ 0x081DFF1C
 	movs r1, #0xc
 	movs r2, #0x1a
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	movs r2, #0xf9
 	lsls r2, r2, #2
 	adds r1, r6, r2
@@ -112,12 +112,12 @@ _081DFF4A:
 	lsls r2, r2, #2
 	adds r1, r6, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	adds r1, r5, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	adds r5, #1
 	cmp r5, #1
 	ble _081DFF4A
@@ -134,7 +134,7 @@ FUN_081dff7c: @ 0x081DFF7C
 	movs r4, #1
 _081DFF86:
 	ldm r5!, {r0}
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	subs r4, #1
 	cmp r4, #0
 	bge _081DFF86
@@ -757,25 +757,25 @@ FUN_081e03d8: @ 0x081E03D8
 	lsls r3, r3, #2
 	adds r4, r6, r3
 	ldr r0, [r4]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r0, [r4]
 	movs r1, #6
 	str r1, [sp]
 	movs r1, #1
 	movs r2, #7
 	movs r3, #0x1c
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r4]
 	movs r2, #0xf5
 	lsls r2, r2, #2
 	adds r1, r6, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #6
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	bl FUN_081df908
 	strb r5, [r7]
 _081E0466:
@@ -830,12 +830,12 @@ FUN_081e04a8: @ 0x081E04A8
 	lsls r2, r2, #2
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #6
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	ldr r3, _081E0504 @ =0x000003EA
 	adds r1, r5, r3
 	movs r2, #0
@@ -980,10 +980,10 @@ FUN_081e05cc: @ 0x081E05CC
 	lsls r2, r2, #2
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #7
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, _081E0634 @ =0x000002AE
 	bl PlaySound_082406e0
 	ldr r0, _081E0638 @ =0x000003EA
@@ -1051,10 +1051,10 @@ FUN_081e0660: @ 0x081E0660
 	subs r2, #8
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #5
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	movs r0, #0xc9
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -1168,19 +1168,19 @@ _081E073E:
 	movs r1, #1
 	movs r2, #0xb
 	movs r3, #0x1c
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r4]
 	movs r3, #0xf5
 	lsls r3, r3, #2
 	adds r1, r5, r3
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r6]
 	cmp r0, #0
 	bne _081E07A0
 	ldr r0, [r4]
 	movs r1, #4
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	b _081E07B6
 	.align 2, 0
 _081E0794: .4byte 0x000003E9
@@ -1191,12 +1191,12 @@ _081E07A0:
 	ble _081E07AE
 	ldr r0, [r4]
 	movs r1, #2
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	b _081E07B6
 _081E07AE:
 	ldr r0, [r4]
 	movs r1, #3
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _081E07B6:
 	movs r0, #0xf8
 	lsls r0, r0, #2
@@ -1214,7 +1214,7 @@ _081E07CC:
 	movs r1, #0
 	bl FUN_0804a3e4
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	ldr r3, _081E07FC @ =0x000003EA
 	adds r1, r5, r3
 	movs r2, #0

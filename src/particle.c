@@ -18,7 +18,7 @@ void FUN_0822d9f0(Particle* p, ParticleGroup* g, SpriteFlags flags) {
     p->priority = 2;
     p->offsetZ = 0;
     p->rotation = 0;
-    p->scaleX = 0x40, p->scaleY = 0x40;
+    p->scaleX = FRACUNIT_6, p->scaleY = FRACUNIT_6;
     Particle_SetOffset(p, 0, 0);
     FUN_0822dafc(p, g, 0);
     p->plttSlot = FUN_0822d12c(g->plttID, &gObjPlttData[g->plttID * 16]);

@@ -64,11 +64,11 @@ _082192B0:
 	ldr r1, _082192EC @ =0x00001648
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r1, _082192F0 @ =0x0000164C
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	add sp, #4
 	pop {r4, r5}
 	pop {r0}

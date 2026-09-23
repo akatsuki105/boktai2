@@ -449,20 +449,18 @@ s32 Entity081d0e20_Init(Entity081d0e20* p) {
 }
 
 Entity081d0e20* Entity081d0e20_Create(void) {
-  Entity081d0e20* p;
-
-  if (gEntity081d0e20 != NULL) {
-    return gEntity081d0e20;
-  }
-  p = CreateEntity(ENTITY_UNK_8, sizeof(Entity081d0e20));
-  if (p != NULL) {
-    SetEntityRoutine(p, Entity081d0e20_Update, Entity081d0e20_Destroy);
-    if (Entity081d0e20_Init(p) < 0) {
-      KillEntity((Entity*)p);
-      return NULL;
+  if (gEntity081d0e20 == NULL) {
+    Entity081d0e20* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity081d0e20));
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity081d0e20_Update, Entity081d0e20_Destroy);
+      if (Entity081d0e20_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
     }
+    return p;
   }
-  return p;
+  return gEntity081d0e20;
 }
 
 void Entity081d0e20_ClearGlobal(void) { gEntity081d0e20 = NULL; }

@@ -63,7 +63,7 @@ _08215166:
 	adds r1, r5, #0
 	movs r2, #0x10
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	lsls r2, r4, #2
 	movs r3, #0xdb
 	lsls r3, r3, #3

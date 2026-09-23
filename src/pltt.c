@@ -18,7 +18,6 @@ extern s32 s32_0300445c;
 extern s32 s32_03004460;
 extern u16 u16_03004464;
 extern u16 u16_03004490;
-extern u16 gBgPlttBlendColor;
 
 rgb555* FUN_0822d00c(void) { return gBgPlttBlendBuffer; }
 

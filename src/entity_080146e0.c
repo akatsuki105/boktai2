@@ -143,9 +143,9 @@ s32 Entity080146e0_Init(Entity080146e0* p, u32 _) {
   gEntity080146e0 = p;
   p->group1 = GetParticleGroup(PTCL_GROUP_1);
   p->group2 = GetParticleGroup(PTCL_GROUP_2);
-  for (i = 0; i <= 5; i++) {
+  for (i = 0; i < 6; i++) {
     p->data[i].active = FALSE;
-    for (j = 0; j <= 7; j++) {
+    for (j = 0; j < 8; j++) {
       FUN_0822da70(&p->data[i].ptcls[j].ptcl, p->group1, 1);
       Particle_SetOffset(&p->data[i].ptcls[j].ptcl, -4, -4);
     }
@@ -155,20 +155,18 @@ s32 Entity080146e0_Init(Entity080146e0* p, u32 _) {
 }
 
 Entity080146e0* Entity080146e0_Create(u32 unused1, u32 unused2) {
-  Entity080146e0* p;
-
-  if (gEntity080146e0 != NULL) {
-    return gEntity080146e0;
-  }
-  p = CreateEntity(ENTITY_UNK_10, sizeof(Entity080146e0));
-  if (p != NULL) {
-    SetEntityRoutine(p, Entity080146e0_Update, Entity080146e0_Destroy);
-    if (Entity080146e0_Init(p, unused1) < 0) {
-      KillEntity((Entity*)p);
-      return NULL;
+  if (gEntity080146e0 == NULL) {
+    Entity080146e0* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity080146e0));
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity080146e0_Update, Entity080146e0_Destroy);
+      if (Entity080146e0_Init(p, unused1) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
     }
+    return p;
   }
-  return p;
+  return gEntity080146e0;
 }
 
 NAKED s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask) { INCFUNC("asm/func/FUN_08014730.inc"); }

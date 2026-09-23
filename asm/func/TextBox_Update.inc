@@ -13,7 +13,7 @@
 	str r0, [r5, #0x18]
 _0804844A:
 	adds r0, r5, #0
-	bl FUN_08049884
+	bl TextRenderer_ClearPending
 	movs r0, #0xc9
 	lsls r0, r0, #1
 	adds r1, r4, r0
@@ -115,7 +115,7 @@ _080484F8:
 	strb r0, [r3]
 _0804851C:
 	adds r0, r5, #0
-	bl FUN_08049890
+	bl TextRenderer_RunPending
 	movs r0, #0
 	pop {r4, r5}
 	pop {r1}

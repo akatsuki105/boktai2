@@ -22,7 +22,7 @@ _080483EA:
 	movs r0, #0
 	strb r0, [r4, #8]
 	adds r0, r4, #0
-	bl FUN_08049568
+	bl TextRenderer_Advance
 	cmp r0, #0
 	beq _08048420
 	movs r0, #1

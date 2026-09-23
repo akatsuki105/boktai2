@@ -18,13 +18,23 @@ static_assert(sizeof(BgState) == 48);
 
 extern BgState gBgStates[4];
 extern rgb555 gBgPlttBuffer[256];
+extern u16 gBgPlttBlendColor;
 
 extern u16* gHBlankEffectBuffer;
 extern vu16* gHBlankEffectReg;
 extern u16 u16_03003510;
 extern u16 u16_03003514;
 
+rgb555* FUN_0822d00c(void);
+
 void Video_SetDrawPasses(s32 val, Procedure ptclFn, Procedure auxsprFn, Procedure mainsprFn);
+void MainSprite_DrawList(void);
+void MainSprite_DrawListScreen(void);
+void FUN_0822aaac(void);
+void FUN_0822ac90(void);
+void FUN_0822db5c(void);
+void FUN_0822de64(void);
+
 u16* GetTilemapBuffer(s32 bg);
 
 void Video_SetHBlankEffect(s32 bg, s32 kind, void* table);

@@ -303,7 +303,7 @@ FUN_0820d21c: @ 0x0820D21C
 	movs r4, #7
 _0820D226:
 	ldm r5!, {r0}
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	subs r4, #1
 	cmp r4, #0
 	bge _0820D226
@@ -340,31 +340,31 @@ FUN_0820d250: @ 0x0820D250
 	ldr r2, _0820D2A0 @ =0x00001110
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x28]
 	movs r1, #2
 	str r1, [sp]
 	movs r1, #8
 	movs r2, #3
 	movs r3, #0x14
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldrb r0, [r4]
 	bl FUN_0820d00c
 	cmp r0, #0
 	beq _0820D2A4
 	ldr r0, [r5, #0x28]
 	ldrb r1, [r4]
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	b _0820D2AC
 	.align 2, 0
 _0820D2A0: .4byte 0x00001110
 _0820D2A4:
 	ldr r0, [r5, #0x28]
 	movs r1, #0x39
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _0820D2AC:
 	ldr r0, [r5, #0x28]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	adds r0, r5, #0
 	adds r0, #0x27
 	ldrb r0, [r0]
@@ -395,19 +395,19 @@ _0820D2D6:
 	ldr r3, _0820D310 @ =0x00001254
 	adds r1, r5, r3
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x2c]
 	movs r1, #4
 	str r1, [sp]
 	movs r1, #1
 	movs r2, #0x10
 	movs r3, #0x1e
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r5, #0x2c]
 	adds r1, r4, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r5, #0x2c]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	b _0820D5E4
 	.align 2, 0
 _0820D310: .4byte 0x00001254
@@ -420,14 +420,14 @@ _0820D31A:
 	ldr r2, _0820D354 @ =0x00001248
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x30]
 	movs r1, #4
 	str r1, [sp]
 	movs r1, #1
 	movs r2, #0x10
 	movs r3, #0x1e
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r5, #0x30]
 	adds r2, r5, #0
 	adds r2, #0x26
@@ -436,9 +436,9 @@ _0820D31A:
 	ldrb r2, [r2]
 	adds r1, r1, r2
 	ldrb r1, [r1]
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r5, #0x30]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	b _0820D5E4
 	.align 2, 0
 _0820D354: .4byte 0x00001248
@@ -488,19 +488,19 @@ _0820D39E:
 	adds r2, #0xe8
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x40]
 	movs r7, #2
 	str r7, [sp]
 	movs r1, #1
 	movs r2, #0x10
 	movs r3, #6
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r5, #0x40]
 	movs r1, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r5, #0x40]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	ldrb r0, [r6, #1]
 	mov sb, r4
 	cmp r0, #0xff
@@ -509,13 +509,13 @@ _0820D39E:
 	ldr r3, _0820D408 @ =0x0000123C
 	adds r1, r5, r3
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x38]
 	str r7, [sp]
 	movs r1, #6
 	movs r2, #0x10
 	movs r3, #0x14
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r5, #0x38]
 	movs r1, #0
 	b _0820D490
@@ -556,16 +556,16 @@ _0820D440:
 	lsls r3, r3, #5
 	adds r1, r5, r3
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x38]
 	str r7, [sp]
 	movs r1, #6
 	movs r2, #0x10
 	movs r3, #0x14
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r5, #0x38]
 	ldrb r1, [r6, #1]
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r5, #0x38]
 	adds r2, r5, #0
 	adds r2, #0x49
@@ -578,20 +578,20 @@ _0820D472:
 _0820D476:
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x38]
 	str r7, [sp]
 	movs r1, #6
 	movs r2, #0x10
 	movs r3, #0x14
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r5, #0x38]
 	ldrb r1, [r6, #1]
 _0820D490:
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _0820D494:
 	ldr r0, [r5, #0x38]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	b _0820D4C8
 	.align 2, 0
 _0820D49C: .4byte 0x00001244
@@ -600,18 +600,18 @@ _0820D4A0:
 	ldr r3, _0820D51C @ =0x00001110
 	adds r1, r5, r3
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x38]
 	str r7, [sp]
 	movs r1, #6
 	movs r2, #0x10
 	movs r3, #0x14
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r5, #0x38]
 	movs r1, #0x39
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r5, #0x38]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 _0820D4C8:
 	movs r0, #2
 	add r8, r0
@@ -619,19 +619,19 @@ _0820D4C8:
 	ldr r2, _0820D520 @ =0x00001238
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x44]
 	movs r4, #2
 	str r4, [sp]
 	movs r1, #1
 	mov r2, r8
 	movs r3, #6
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r5, #0x44]
 	movs r1, #1
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r5, #0x44]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	ldrb r0, [r6, #3]
 	cmp r0, #0xff
 	bne _0820D528
@@ -639,13 +639,13 @@ _0820D4C8:
 	ldr r3, _0820D524 @ =0x0000123C
 	adds r1, r5, r3
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x3c]
 	str r4, [sp]
 	movs r1, #6
 	mov r2, r8
 	movs r3, #0x1e
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r5, #0x3c]
 	movs r1, #0
 	b _0820D5AC
@@ -687,16 +687,16 @@ _0820D55C:
 	lsls r3, r3, #5
 	adds r1, r5, r3
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x3c]
 	str r4, [sp]
 	movs r1, #6
 	mov r2, r8
 	movs r3, #0x1e
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r5, #0x3c]
 	ldrb r1, [r6, #3]
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r5, #0x3c]
 	adds r2, r5, #0
 	adds r2, #0x49
@@ -709,20 +709,20 @@ _0820D58E:
 _0820D592:
 	adds r1, r5, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x3c]
 	str r4, [sp]
 	movs r1, #6
 	mov r2, r8
 	movs r3, #0x1e
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r5, #0x3c]
 	ldrb r1, [r6, #3]
 _0820D5AC:
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _0820D5B0:
 	ldr r0, [r5, #0x3c]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	b _0820D5E4
 	.align 2, 0
 _0820D5B8: .4byte 0x00001244
@@ -731,18 +731,18 @@ _0820D5BC:
 	ldr r3, _0820D5F4 @ =0x00001110
 	adds r1, r5, r3
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5, #0x3c]
 	str r4, [sp]
 	movs r1, #6
 	mov r2, r8
 	movs r3, #0x1e
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r5, #0x3c]
 	movs r1, #0x39
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r5, #0x3c]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 _0820D5E4:
 	add sp, #4
 	pop {r3, r4}
@@ -1540,14 +1540,14 @@ _0820DC64:
 	ldr r2, _0820DCBC @ =0x00001110
 	adds r1, r7, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r6]
 	movs r1, #2
 	str r1, [sp]
 	movs r1, #6
 	adds r2, r4, #0
 	movs r3, #0x14
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r5, [sp, #0x14]
 	add r5, r8
 	adds r0, r5, #0
@@ -1556,7 +1556,7 @@ _0820DC64:
 	beq _0820DCC0
 	ldr r0, [r6]
 	adds r1, r5, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	b _0820DCC8
 	.align 2, 0
 _0820DC98: .4byte 0x00000494
@@ -1572,10 +1572,10 @@ _0820DCBC: .4byte 0x00001110
 _0820DCC0:
 	ldr r0, [r6]
 	movs r1, #0x39
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _0820DCC8:
 	ldm r6!, {r0}
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	adds r4, #2
 	movs r3, #1
 	add r8, r3
@@ -2208,14 +2208,14 @@ _0820E1B6:
 	ldr r2, _0820E204 @ =0x00001110
 	adds r1, r7, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #2
 	str r1, [sp]
 	movs r1, #6
 	adds r2, r5, #0
 	movs r3, #0x14
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	mov r6, sl
 	add r6, r8
 	adds r0, r6, #0
@@ -2224,7 +2224,7 @@ _0820E1B6:
 	beq _0820E208
 	ldr r0, [r4]
 	adds r1, r6, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	b _0820E210
 	.align 2, 0
 _0820E1EC: .4byte 0x00000854
@@ -2237,10 +2237,10 @@ _0820E204: .4byte 0x00001110
 _0820E208:
 	ldr r0, [r4]
 	movs r1, #0x39
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _0820E210:
 	ldm r4!, {r0}
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	adds r5, #2
 	movs r3, #1
 	add r8, r3
@@ -3105,17 +3105,17 @@ _0820E8F8:
 	adds r1, r7, #0
 	movs r2, #0x17
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	str r0, [r4]
 	ldr r2, _0820EAB0 @ =0x00001110
 	adds r1, r6, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	adds r1, r5, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldm r4!, {r0}
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	adds r7, #2
 	adds r5, #1
 	cmp r5, #7
@@ -3731,14 +3731,14 @@ _0820EE1C:
 	ldr r2, _0820EE50 @ =0x00001110
 	adds r1, r7, r2
 	ldr r1, [r1]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r5]
 	movs r1, #2
 	str r1, [sp]
 	movs r1, #6
 	mov r2, sb
 	movs r3, #0x14
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	mov r0, sl
 	adds r4, r0, r6
 	adds r0, r4, #0
@@ -3747,17 +3747,17 @@ _0820EE1C:
 	beq _0820EE54
 	ldr r0, [r5]
 	adds r1, r4, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	b _0820EE5C
 	.align 2, 0
 _0820EE50: .4byte 0x00001110
 _0820EE54:
 	ldr r0, [r5]
 	movs r1, #0x39
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _0820EE5C:
 	ldm r5!, {r0}
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	movs r2, #2
 	add sb, r2
 	adds r6, #1

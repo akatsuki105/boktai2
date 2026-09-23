@@ -258,7 +258,7 @@ static inline void _AuxSprite_Setup(AuxSprite* p, AuxSpriteGfx* gfx, SpriteFlags
   p->flags = flags;
   p->unk_05 = 1;
   p->oamAttr = 0;
-  p->scaleX = 0x40, p->scaleY = 0x40;
+  p->scaleX = FRACUNIT_6, p->scaleY = FRACUNIT_6;
   p->rotation = 0;
   p->priority = 2;
   FUN_0822a4fc(p, gfx);

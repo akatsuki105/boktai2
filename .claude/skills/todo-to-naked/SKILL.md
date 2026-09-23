@@ -127,6 +127,21 @@ Spending the time here only pays off when the answer is one xref away.
   order). If it still gets the order wrong it prints a `警告:` line naming the
   two functions; move the line by hand, or `make compare` fails with no other
   clue.
+- **Emptying a whole blob scrambles that order, and silently.** With a file
+  argument you promote from the highest address down, so the `.c` starts with
+  no markers at all and every line is placed against lines inserted moments
+  earlier. Seen twice: `ExplosionManager` (3 of 9 lines out of order) and the
+  message-box blob (about 10 of 28), **neither of which printed `警告:`**. The
+  only symptom is `make compare` printing FAILED with no message.
+  So after a file-wide run, check the order before trusting the build:
+
+  ```sh
+  grep -n '^NAKED' src/FOO.c        # ファイル順
+  ```
+
+  Compare that against the addresses the promotions used — the order you fed
+  `prepare_asm.ts`, reversed. If they differ, rewrite the block in ascending
+  address order (keep everything else in the file untouched) and rebuild.
 - A candidate whose body is just a few instructions ending in `pop`/`bx`, sitting
   right after the previous function, is probably not a function at all but that
   function's shared epilogue, split off because Ghidra read a long `bl` branch as

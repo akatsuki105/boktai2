@@ -4812,17 +4812,17 @@ FUN_08093e4c: @ 0x08093E4C
 	movs r1, #0
 	movs r2, #0x10
 	movs r3, #0x1e
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r4]
 	ldr r1, [r5, #0x44]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	ldr r1, _08093F20 @ =0x000009E4
 	adds r2, r5, r1
 	add r1, sp, #4
 	bl FUN_08094d30
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 _08093EB6:
 	ldrh r0, [r6]
 	cmp r0, #8
@@ -4854,7 +4854,7 @@ _08093EEE:
 	ldr r2, _08093F1C @ =0x00004018
 	adds r0, r5, r2
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	movs r0, #0
 	movs r1, #0x10
 	movs r2, #0x1e
@@ -5981,11 +5981,11 @@ FUN_080948ac: @ 0x080948AC
 	ldr r1, _08094970 @ =0x00004014
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r1, _08094974 @ =0x00004018
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1c
@@ -6089,11 +6089,11 @@ FUN_080949b0: @ 0x080949B0
 	ldr r1, _08094A74 @ =0x00004014
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r1, _08094A78 @ =0x00004018
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r0, _08094A7C @ =0x00003F9C
 	adds r1, r4, r0
 	movs r0, #1
@@ -6509,7 +6509,7 @@ FUN_08094cdc: @ 0x08094CDC
 	beq _08094D06
 	ldrb r1, [r5]
 	adds r0, r7, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	adds r0, r7, #0
 	movs r1, #0
 	adds r2, r6, #0
@@ -9498,11 +9498,11 @@ FUN_0809651c: @ 0x0809651C
 	ldr r1, _08096614 @ =0x00004014
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r1, _08096618 @ =0x00004018
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1c
@@ -11993,11 +11993,11 @@ FUN_080979b8: @ 0x080979B8
 	ldr r1, _08097A9C @ =0x00004014
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r1, _08097AA0 @ =0x00004018
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	adds r0, r4, #0
 	bl FUN_0809673c
 	movs r0, #2
@@ -14017,11 +14017,11 @@ FUN_080989c4: @ 0x080989C4
 	ldr r1, _08098A84 @ =0x00004014
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r1, _08098A88 @ =0x00004018
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	adds r0, r4, #0
 	bl FUN_080987a4
 	movs r0, #0
@@ -15587,12 +15587,12 @@ _08099690:
 	adds r4, r5, r0
 	ldr r0, [r4]
 	ldr r1, [r5, #0x58]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	cmp r6, #2
 	bne _080996C4
 	ldr r0, [r4]
 	movs r1, #1
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	b _080996CC
 	.align 2, 0
 _080996BC: .4byte 0x085ACFB8
@@ -15600,12 +15600,12 @@ _080996C0: .4byte 0x00004014
 _080996C4:
 	ldr r0, [r4]
 	movs r1, #0
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 _080996CC:
 	ldr r1, _080996DC @ =0x00004014
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0
@@ -15939,11 +15939,11 @@ FUN_08099968: @ 0x08099968
 	ldr r1, _080999F4 @ =0x00004014
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r2, _080999F8 @ =0x00004018
 	adds r0, r4, r2
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r1, [r4, #0x18]
 	ldr r0, [r4, #0x30]
 	str r0, [sp]
@@ -16799,11 +16799,11 @@ FUN_0809a084: @ 0x0809A084
 	ldr r1, _0809A11C @ =0x00004014
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r1, _0809A120 @ =0x00004018
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	movs r0, #0
 	movs r1, #0x10
 	movs r2, #0x1e
@@ -16888,15 +16888,15 @@ FUN_0809a130: @ 0x0809A130
 	movs r1, #4
 	movs r2, #6
 	movs r3, #0x16
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r4]
 	ldr r1, [r5, #0x58]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #0x10
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 _0809A190:
 	add sp, #4
 	pop {r4, r5}
@@ -16921,7 +16921,7 @@ FUN_0809a1a4: @ 0x0809A1A4
 	ldr r1, _0809A1E0 @ =0x00004018
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	movs r2, #1
 	rsbs r2, r2, #0
 	adds r0, r4, #0
@@ -16974,7 +16974,7 @@ FUN_0809a20c: @ 0x0809A20C
 	ldr r1, _0809A268 @ =0x00004018
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	movs r2, #1
 	rsbs r2, r2, #0
 	adds r0, r4, #0
@@ -17011,11 +17011,11 @@ FUN_0809a274: @ 0x0809A274
 	ldr r1, _0809A30C @ =0x00004014
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r1, _0809A310 @ =0x00004018
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	movs r0, #0
 	movs r1, #0x10
 	movs r2, #0x1e
@@ -17224,15 +17224,15 @@ FUN_0809a448: @ 0x0809A448
 	movs r1, #2
 	movs r2, #6
 	movs r3, #0x1a
-	bl FUN_0804a38c
+	bl TextPanel_SetRect
 	ldr r0, [r4]
 	ldr r1, [r6, #0x58]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #0xd
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	movs r0, #0xc
 	bl FUN_08099b3c
 _0809A48E:
@@ -17310,7 +17310,7 @@ FUN_0809a510: @ 0x0809A510
 	ldr r1, _0809A56C @ =0x00004018
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	movs r0, #0xe
 	bl FUN_08099b3c
 _0809A534:
@@ -17357,7 +17357,7 @@ FUN_0809a574: @ 0x0809A574
 	ldr r1, _0809A5D0 @ =0x00004018
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	movs r0, #0xf
 	bl FUN_08099b3c
 _0809A59A:
@@ -17399,11 +17399,11 @@ FUN_0809a5d8: @ 0x0809A5D8
 	ldr r1, _0809A668 @ =0x00004014
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	ldr r1, _0809A66C @ =0x00004018
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	movs r0, #0
 	movs r1, #0x10
 	movs r2, #0x1e
@@ -17708,7 +17708,7 @@ FUN_0809a81c: @ 0x0809A81C
 	movs r4, #1
 _0809A8AE:
 	ldm r6!, {r0}
-	bl FUN_0804a210
+	bl TextPanel_Hide
 	subs r4, #1
 	cmp r4, #0
 	bge _0809A8AE
@@ -22163,7 +22163,7 @@ _0809CD52:
 	movs r1, #4
 	movs r2, #0xa
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	ldr r2, _0809CDA0 @ =0x00004014
 	adds r1, r4, r2
 	str r0, [r1]
@@ -22171,7 +22171,7 @@ _0809CD52:
 	movs r1, #6
 	movs r2, #0x16
 	movs r3, #6
-	bl FUN_0804a084
+	bl TextPanel_Create
 	ldr r2, _0809CDA4 @ =0x00004018
 	adds r1, r4, r2
 	str r0, [r1]

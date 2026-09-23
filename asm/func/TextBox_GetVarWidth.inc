@@ -5,7 +5,7 @@
 	cmp r0, #0
 	beq _080488B4
 	adds r0, #0x18
-	bl FUN_08049708
+	bl TextRenderer_GetVarWidth
 	b _080488B6
 	.align 2, 0
 _080488B0: .4byte 0x030000C4

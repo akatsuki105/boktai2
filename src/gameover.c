@@ -26,8 +26,8 @@ typedef struct GameOverManager {
   MainSprite menu;            // 0x2B8, コンティニューの選択肢。cursor に応じてポーズ 135 / 136 を貼る。 flags に SPRFLAG_GAMEOVER を含む
   rgb555 menuPltt[16];        // 0x318, GameOverManager_SetupMenu が gObjPlttData[0x2A90] から CpuSet でコピーし、menu.pltt をここに向ける。GameOverManager_UpdateMenuPltt が最後の1色 (index 15) を点滅させる
   u8* script;                 // 0x338, kw: '.r', GameOverManager_StateOpenMenu が TextBox_Start に渡す
-  s16 scaleX;                 // 0x33C, 6.6固定小数 (0x40 = 等倍)。GameOverManager_UpdateLetters が毎フレーム全 letters の sprite.scaleX へコピーする
-  s16 scaleY;                 // 0x33E, 同上で sprite.scaleY
+  s10_6 scaleX;               // 0x33C, GameOverManager_UpdateLetters が毎フレーム全 letters の sprite.scaleX へコピーする
+  s10_6 scaleY;               // 0x33E, 同上で sprite.scaleY
   u8 state;                   // 0x340, GameOverManager_Update が呼ぶ PTR_ARRAY_085ad034 の添字 (0..4)
   u8 animState;               // 0x341, GameOverManager_UpdateAnim が呼ぶ PTR_ARRAY_085ad014 の添字 (0..8)。ロゴの拡大縮小の段階
   bool8 spritesAdded;         // 0x342, GameOverManager_AddSprites が描画リストへ登録したら 1。GameOverManager_Destroy はこれが立っているときだけ外す
@@ -68,7 +68,7 @@ void GameOverManager_AnimStart(GameOverManager* p) {
   PlaySound_082406e0(0x2);
   PlaySound_082406e0(0x12C);
   p->scaleX = 0x0A;
-  p->scaleY = 0x40;
+  p->scaleY = FRACUNIT_6;
   p->animState = 1;
 }
 
@@ -96,8 +96,8 @@ void GameOverManager_AnimShrinkY1(GameOverManager* p) {
 void GameOverManager_AnimShrinkY2(GameOverManager* p) {
   p->scaleX += 0x02;
   p->scaleY -= 0x03;
-  if (p->scaleY <= 0x40) {
-    p->scaleY = 0x40;
+  if (p->scaleY <= FRACUNIT_6) {
+    p->scaleY = FRACUNIT_6;
     p->animState = 4;
   }
 }
@@ -106,7 +106,7 @@ void GameOverManager_AnimShrinkY2(GameOverManager* p) {
 void GameOverManager_AnimGrowX(GameOverManager* p) {
   p->scaleX += 0x03;
   if (p->scaleX > 0x3F) {
-    p->scaleX = 0x40;
+    p->scaleX = FRACUNIT_6;
     p->animState = 5;
     p->timer = 0;
   }

@@ -28899,7 +28899,7 @@ _080359D0:
 	adds r1, #0x10
 	movs r2, #0x10
 	add r3, sp, #8
-	bl FUN_080604ec
+	bl Entity08060470_Spawn
 _08035A2A:
 	add sp, #0x10
 	pop {r4, r5, r6, r7}

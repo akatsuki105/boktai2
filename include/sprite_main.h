@@ -66,7 +66,7 @@ static_assert(sizeof(MainSubsprite) == 8);
 // アニメーションの1コマ, 根拠: MainSprite_AdvanceAnim が MainSprite.animCmds を idx*4 で進めて +0 と +2 を ldrh している
 typedef struct {
   u16 spriteIdx;  // 0x00, MainSprite_SetPose に渡すスプライト番号
-  u16 duration;   // 0x02, このコマの表示フレーム数, MainSprite.animSpeed を掛けて 6.6 固定小数として扱う
+  u16 duration;   // 0x02, このコマの表示フレーム数, MainSprite.animSpeed を掛けて 64 で割ったものが実際の長さになる
 } MainAnimCmd;
 static_assert(sizeof(MainAnimCmd) == 4);
 
@@ -99,7 +99,7 @@ typedef struct MainSprite {
   SpriteFlags flags;              // 0x08, see SpriteFlags, FUN_08060a24
   u16 animCmdTimer;               // 0x0C, 現在のコマの経過フレーム数, 根拠: MainSprite_AdvanceAnim が毎フレーム +1 してコマ切り替えで 0 に戻す
   u16 animCmdDuration;            // 0x0E, 現在のコマの表示フレーム数, MainAnimCmd.duration * animSpeed / 64 (0 なら 1)
-  u16 animSpeed;                  // 0x10, 再生速度, 6.6固定小数 (MainSprite_Load が 0x40 = 等速をセット)
+  u10_6 animSpeed;                // 0x10, 再生速度 (MainSprite_Load が 1.0 = 等速をセット)
   u16 unk_12;                     // 0x12
   u16 animCmdIdx;                 // 0x14, 現在のコマ番号, animCmds の添字
   u16 animCmdLength;              // 0x16, コマ総数, 根拠: MainSprite_AdvanceAnim の animCmdIdx の上限
@@ -108,7 +108,7 @@ typedef struct MainSprite {
   u8 playMode;                    // 0x1B, 0=停止, 2=1回再生して停止, 3=1回再生して非表示, その他=ループ, 根拠: MainSprite_AdvanceAnim
   u8 listIdx;                     // 0x1C, MainSprite_Remove
   MainAnimEvents8 animEvents;     // 0x1D, see MainAnimEvents8
-  u8 unk_1e[2];                   // 0x1E
+  u8 unk_1e[2];                   // 0x1E, padding?
   Vec3 pos;                       // 0x20, ワールド座標. flags bit4 が立っていればスクリーン座標としてそのまま使われる, 根拠: MainSprite_DrawList のアイソメトリック投影と MainSprite_Load の Vec3 コピー
   u16 offsetX;                    // 0x28, 投影後のスクリーン座標に加算される, MainSpritePose.unk_4
   u16 offsetY;                    // 0x2A, MainSpritePose.unk_6
@@ -116,8 +116,8 @@ typedef struct MainSprite {
   s16 boxBottom;                  // 0x2E, MainSpritePose.unk_a
   s16 boxLeft;                    // 0x30, MainSpritePose.unk_c
   s16 boxTop;                     // 0x32, MainSpritePose.unk_e
-  u8 scaleX;                      // 0x34, 6.6固定小数, MainSprite_LoadPose で 0x40 (= 1.0) がセットされる
-  u8 scaleY;                      // 0x35, 同上
+  u2_6 scaleX;                    // 0x34, MainSprite_LoadPose で 1.0 がセットされる
+  u2_6 scaleY;                    // 0x35, 同上
   u16 rotation;                   // 0x36, gSineTable の索引として使われる
   u16 subspriteCount;             // 0x38, MainSpritePose.subspriteCount
   u16 plttID;                     // 0x3A, &gObjPlttData[plttID*16]
@@ -132,6 +132,9 @@ typedef struct MainSprite {
   struct MainSprite* next;        // 0x5C
 } MainSprite;
 static_assert(sizeof(MainSprite) == 96);
+
+static inline void MainSprite_Show(MainSprite* spr) { spr->flags &= ~SPRFLAG_HIDDEN; }
+static inline void MainSprite_Hide(MainSprite* spr) { spr->flags |= SPRFLAG_HIDDEN; }
 
 // --------------------------------------------
 

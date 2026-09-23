@@ -71,15 +71,15 @@ s32 OpenMainSpriteFile(MainSpriteGfx* gfx, MainSpriteFile* f) {
 NAKED unknown* FUN_0822f2bc(unknown* a, unknown* b) { INCFUNC("asm/func/FUN_0822f2bc.inc"); }
 
 // MainSpriteGfx の spriteIdx 番目のメタスプライトを MainSprite に読み込む (パレットは未設定のときだけ設定する)
-s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx) {
-  MainSpritePose* m = &gfx->sprites[spriteIdx];
+s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx) {
+  MainSpritePose* m = &gfx->sprites[poseIdx];
 
   if (m == NULL) return -1;
 
   p->unk_0 = m->unk_0;
   p->offsetX = m->offsetX, p->offsetY = m->offsetY;
   p->boxRight = m->boxRight, p->boxBottom = m->boxBottom, p->boxLeft = m->boxLeft, p->boxTop = m->boxTop;
-  p->scaleX = 0x40, p->scaleY = 0x40;
+  p->scaleX = FRACUNIT_6, p->scaleY = FRACUNIT_6;
   p->rotation = 0;
   if (p->pltt == NULL) {
     p->plttID = gfx->palStart;
@@ -92,14 +92,14 @@ s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx) {
 }
 
 // ポーズ読み込み＋フラグ・優先度・座標の設定
-NON_MATCH s32 MainSprite_Load(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos) {
+NON_MATCH s32 MainSprite_Load(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos) {
 #ifdef NONMATCHING_C
-  if (MainSprite_LoadPose(p, gfx, spriteIdx) < 0) return -1;
+  if (MainSprite_LoadPose(p, gfx, poseIdx) < 0) return -1;
 
   *(u16*)&p->unk_2 = u16_030044b8;  // unk_2, unk_3 をまとめて書く (MainSprite_SetPose と同じ)
   p->flags |= flags;
   p->animCmdTimer = 0;  // 元は movs r1, #0 が unk_2 の strh より前に来て、flags の OR は r2 を使う
-  p->animSpeed = 0x40;
+  p->animSpeed = FRACUNIT_6;
   p->animCmdDuration = animCmdDuration;
   p->priority = prio;
   p->playMode = playMode;
@@ -110,15 +110,15 @@ NON_MATCH s32 MainSprite_Load(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, 
 #endif
 }
 
-s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, u8 playMode) {
-  if (MainSprite_LoadPose(p, gfx, spriteIdx) < 0) return -1;
+s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, u8 playMode) {
+  if (MainSprite_LoadPose(p, gfx, poseIdx) < 0) return -1;
 
   *(u16*)&p->unk_2 = u16_030044b8;  // unk_2, unk_3 をまとめて書く (FUN_080609dc は 1 バイトずつ書く)
   p->playMode = playMode;
   return 0;
 }
 
-static inline void _MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos) {
+static inline void _MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos) {
   p->unk_0 = 0;
   p->unk_12 = 0;
   p->animCmdIdx = 0;
@@ -134,7 +134,7 @@ static inline void _MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 spri
   p->pltt = NULL;
   p->subsprites = NULL;
   p->tiles = NULL;
-  MainSprite_Load(p, gfx, spriteIdx, flags, prio, playMode, animCmdDuration, pos);
+  MainSprite_Load(p, gfx, poseIdx, flags, prio, playMode, animCmdDuration, pos);
   if (++u16_030044b8 == 0xFFFF) {
     u16_030044b8 = 0;
   }
@@ -144,7 +144,7 @@ static inline void _MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 spri
 }
 
 // MainSprite を初期化してスプライトを読み込み、描画リストに繋ぐ (pos が NULL なら原点に置く)
-s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos) {
+s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos) {
   Vec3 v;
 
   if (pos == NULL) {
@@ -153,17 +153,17 @@ s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags
     v = *pos;
   }
   if (!p->active) {
-    _MainSprite_Setup(p, gfx, spriteIdx, flags, prio, playMode, animCmdDuration, &v);
-    Video_AddMainSpriteIntoDrawList(p, (u32) - (flags & 0x80) >> 31);
+    _MainSprite_Setup(p, gfx, poseIdx, flags, prio, playMode, animCmdDuration, &v);
+    Video_AddMainSpriteIntoDrawList(p, (u32) - (flags & SPRFLAG_DRAWLIST) >> 31);
     return 0;
   }
   return -1;
 }
 
 // MainSprite を初期化してスプライトを読み込む (MainSprite_Add と違い描画リストには繋がない)
-s32 MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 spriteIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos) {
+s32 MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos) {
   if (p->active != 0) return -1;
-  _MainSprite_Setup(p, gfx, spriteIdx, flags, prio, playMode, animCmdDuration, pos);
+  _MainSprite_Setup(p, gfx, poseIdx, flags, prio, playMode, animCmdDuration, pos);
   return 0;
 }
 

@@ -14,21 +14,21 @@ typedef void (*BreakableUpdate)(struct BreakableManager*, struct Breakable*);
 // マップに置かれた壊せるオブジェクト1個。スクリプトコマンド 0x2D8F (Breakable_Spawn) が1個ずつ置く
 // 大聖堂の狛犬(壊すと宝箱が出現するやつ)で使っているが、他の壊せるオブジェクトでも流用可能っぽい(実際に流用されているかは不明)
 typedef struct Breakable {
-  u16 id;                  // 0x00, VM '.n'。hitbox の ID になり、壊れたときのスクリプトの argv[0] にもなる
+  u16 id;                  // 0x00, kw: '.n', hitbox の ID になり、壊れたときのスクリプトの argv[0] にもなる
   bool8 active;            // 0x02, BreakableManager_FindFreeSlot が 0 のスロットを空きとして返す。Update は 0 のものを飛ばす
-  u8 stateChanged;         // 0x03, Breakable_SetUpdate が 1 にし、Breakable_TakeStateChanged が読んで 0 に戻す
-  s16 hp;                  // 0x04, VM '.l' (既定 10)。Breakable_OnHit が相手の HitboxData.damage を引き、1 未満で Breakable_UpdateAlive が破壊処理へ進む
+  bool8 stateChanged;      // 0x03, Breakable_SetUpdate が 1 にし、Breakable_TakeStateChanged が読んで 0 に戻す
+  s16 hp;                  // 0x04, kw: '.l' (default: 10), Breakable_OnHit が相手の HitboxData.damage を引き、1 未満で Breakable_UpdateAlive が破壊処理へ進む
   u16 unk_6;               // 0x06, Breakable_Spawn が 0 を書くだけ
-  u8 unk_8;                // 0x08, VM '.k'。読み手が見つかっていない
-  u8 flashTimer;           // 0x09, 被弾で 4。0 になったら Video_SetAuxSpritePltt でパレットを戻す
-  u8 brokenPose;           // 0x0A, VM '.P' + 1。壊れたときに sprite.metaspriteIdx へ入る
+  u8 unk_8;                // 0x08, kw: '.k', 読み手が見つかっていない
+  u8 flashTimer;           // 0x09, 被弾で 4, 0 になったら Video_SetAuxSpritePltt でパレットを戻す
+  u8 brokenPose;           // 0x0A, kw: '.P' + 1。壊れたときに sprite.metaspriteIdx へ入る
   u8 shakeTimer;           // 0x0B, 被弾で 10。0 でない間は hitbox.flags の bit2 を立てて当たらなくし、sprite.pos を乱数で揺らす
-  u16 scriptOnBreak;       // 0x0C, VM '.d'。壊れたとき Script_ExecById に渡す
+  u16 scriptOnBreak;       // 0x0C, kw: '.d', 壊れたとき Script_ExecById に渡す
   u16 unk_e;               // 0x0E, padding?
-  Vec3 pos;                // 0x10, VM '.p'。Hitbox_SetPos で hitbox の座標として登録され、sprite.pos の基準にもなる
+  Vec3 pos;                // 0x10, kw: '.p', Hitbox_SetPos で hitbox の座標として登録され、sprite.pos の基準にもなる
   u32 unk_18;              // 0x18, Breakable_SetUpdate が 0 にする。読み手が見つかっていない
   BreakableUpdate update;  // 0x1C, BreakableManager_Update が毎フレーム呼ぶ
-  AuxSpriteGfx gfx;        // 0x20, Video_GetAuxSprite(&gfx, VM '.t' 既定 SPRITE_KOMAINU)
+  AuxSpriteGfx gfx;        // 0x20, kw: '.t' (default: SPRITE_KOMAINU)
   AuxSprite sprite;        // 0x3C
   HitboxData hitbox;       // 0x68, Hitbox_SetHandler が Breakable_OnHit を被弾コールバックに設定する
 } Breakable;
@@ -37,7 +37,7 @@ static_assert(sizeof(Breakable) == 184);
 // 壊せるオブジェクトのプールを持ち、毎フレーム各オブジェクトの update を呼ぶ
 typedef struct BreakableManager {
   Entity e;          // 0x00, ENTITY_UNK_8
-  s32 count;         // 0x18, VM_GetKeywordValue('n', 4)
+  s32 count;         // 0x18, kw: '.n' (default: 4)
   Breakable* items;  // 0x1C, BreakableManager_Init が Malloc(count * sizeof(Breakable)) したもの
 } BreakableManager;
 static_assert(sizeof(BreakableManager) == 32);
@@ -55,13 +55,13 @@ IWRAM_DATA BreakableManager* gBreakableManager = NULL;  // 0x03000030
 void Breakable_SetUpdate(Breakable* item, BreakableUpdate update) {
   item->update = update;
   item->unk_18 = 0;
-  item->stateChanged = 1;
+  item->stateChanged = TRUE;
 }
 
 // update が切り替わった直後かどうかを返し、フラグを下ろす
 bool32 Breakable_TakeStateChanged(Breakable* item) {
-  if (item->stateChanged != 0) {
-    item->stateChanged = 0;
+  if (item->stateChanged) {
+    item->stateChanged = FALSE;
     return TRUE;
   }
   return FALSE;
@@ -83,7 +83,7 @@ void Breakable_OnHit(HitboxData* a, HitboxData* b, Breakable* item) {
     PlaySound_082406e0(0x14E);
   }
   item->flashTimer = 4;
-  Video_SetAuxSpritePltt(&item->gfx, 0x132);
+  Video_SetAuxSpritePltt(&item->gfx, 306);
   pos = item->pos;
   pos.x -= 0x80;
   pos.y += 0x80;
@@ -103,17 +103,14 @@ void Breakable_OnHit(HitboxData* a, HitboxData* b, Breakable* item) {
     offset = -((-sin) >> 12);
   }
   pos.z += offset;
-  Entity080146e0_SpawnAtAngle(4, 3, &pos, angle, 0xA4, 0x10, 4, 8, 3, 0x1E, 0xF);
+  Entity080146e0_SpawnAtAngle(4, 3, &pos, angle, 0xA4, 16, 4, 8, 3, 30, 0xF);
   item->shakeTimer = 10;
 }
 
 // スロット1つ分のスプライトを確保し、非表示の空きスロットとして寝かせておく
 s32 Breakable_Setup(BreakableManager* p, Breakable* item) {
-  AuxSpriteGfx* gfx = &item->gfx;
-  if (!Video_GetAuxSprite(gfx, SPRITE_KOMAINU)) {
-    return -1;
-  }
-  AuxSprite_Add(&item->sprite, gfx, SPRFLAG_HIDDEN);
+  if (!Video_GetAuxSprite(&item->gfx, SPRITE_KOMAINU)) return -1;
+  AuxSprite_Add(&item->sprite, &item->gfx, SPRFLAG_HIDDEN);
   Breakable_SetUpdate(item, Breakable_UpdateIdle);
   item->active = FALSE;
   return 0;
@@ -192,7 +189,7 @@ s32 BreakableManager_Update(BreakableManager* p) {
     Breakable* item = p->items;
     s32 i;
     for (i = 0; i < p->count; i++, item++) {
-      if (item->active != 0 && item->update != NULL) {
+      if (item->active && item->update != NULL) {
         item->update(p, item);
       }
     }
@@ -241,20 +238,18 @@ s32 BreakableManager_Init(BreakableManager* p) {
 }
 
 BreakableManager* BreakableManager_Create(void) {
-  BreakableManager* p;
-
-  if (gBreakableManager != NULL) {
-    return gBreakableManager;
-  }
-  p = CreateEntity(ENTITY_UNK_8, sizeof(BreakableManager));
-  if (p != NULL) {
-    SetEntityRoutine(p, BreakableManager_Update, BreakableManager_Destroy);
-    if (BreakableManager_Init(p) < 0) {
-      KillEntity((Entity*)p);
-      return NULL;
+  if (gBreakableManager == NULL) {
+    BreakableManager* p = CreateEntity(ENTITY_UNK_8, sizeof(BreakableManager));
+    if (p != NULL) {
+      SetEntityRoutine(p, BreakableManager_Update, BreakableManager_Destroy);
+      if (BreakableManager_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
     }
+    return p;
   }
-  return p;
+  return gBreakableManager;
 }
 
 // まだ使われていないスロットを1つ返す。空きがなければ NULL
@@ -262,7 +257,7 @@ Breakable* BreakableManager_FindFreeSlot(BreakableManager* p) {
   Breakable* item = p->items;
   s32 i;
   for (i = 0; i < p->count; i++, item++) {
-    if (item->active == 0) {
+    if (!item->active) {
       return item;
     }
   }

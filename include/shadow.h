@@ -9,10 +9,10 @@
 // 持ち主の足元に置く影, ParticleShadowManager がリストで管理して毎フレーム fn を呼ぶ
 // AuxShadow と違って"しょぼい"影
 typedef struct ParticleShadow {
-  u8 active;                                       // 0x00, ParticleShadowManager_Add でリストに入れると 1, ParticleShadowManager_Remove で外すと 0
-  u8 q_kind;                                       // 0x01, 0 なら fn = ParticleShadow_FollowGround (床に追従), それ以外は ParticleShadow_UpdateNone (何もしない)
-  u8 q_flags;                                      // 0x02, bit0: ParticleShadow_FollowGround で当たり判定マップでなく pos->y を高さに使う
-  u8 unk_03;                                       // 0x03
+  bool8 active;                                    // 0x00, ParticleShadowManager_Add でリストに入れると 1, ParticleShadowManager_Remove で外すと 0
+  u8 kind;                                         // 0x01, 0 なら fn = ParticleShadow_FollowGround (床に追従), それ以外は ParticleShadow_UpdateNone (何もしない)
+  u8 flags;                                        // 0x02, bit0: ParticleShadow_FollowGround で当たり判定マップでなく pos->y を高さに使う
+  u8 unk_03;                                       // 0x03, padding?
   u16 unk_04;                                      // 0x04, ParticleShadow_Init で 0
   u16 unk_06;                                      // 0x06, ParticleShadow_Init で 0
   Vec3* pos;                                       // 0x08, 持ち主の座標
@@ -26,7 +26,7 @@ static_assert(sizeof(ParticleShadow) == 64);  // ScriptShadowManager の要素 (
 // 持ち主の足元に置く影 (AuxSprite 版), AuxShadowManager がリストで管理して毎フレーム fn を呼ぶ
 // 高さが増えるほど scale を小さくする, ParticleShadow と違った"高級"な影
 typedef struct AuxShadow {
-  u8 active;                                  // 0x00, AuxShadowManager_Add でリストに入れると 1, AuxShadowManager_Remove で外すと 0
+  bool8 active;                               // 0x00, AuxShadowManager_Add でリストに入れると 1, AuxShadowManager_Remove で外すと 0
   u8 kind;                                    // 0x01, 0 なら fn = AuxShadow_FollowGround (床に追従), それ以外は AuxShadow_UpdateNone
   u8 flags;                                   // 0x02, bit0: AuxShadow_FollowGround で当たり判定マップでなく pos->y を高さに使う
   u8 unk_03;                                  // 0x03

@@ -2,13 +2,13 @@
 #include "global.h"
 #include "particle.h"
 
-// Entity08060470 が持つ粒子1個。生成元 (FUN_080604ec) が角度と速度から vel を作り、
+// Entity08060470 が持つ粒子1個。生成元 (Entity08060470_Spawn) が角度と速度から vel を作り、
 // 以降は Entity08060470_UpdateElem が毎フレーム ptcl.pos に vel を足すだけ
 typedef struct Entity08060470Elem {
   u8 state;       // 0x00, PTR_ARRAY_085abaac の添字 (0 = 何もしない, 1 = 飛行中), 根拠: Entity08060470_Update
   u8 unk_1;       // 0x01, 生成時に1、最初の更新で0にされる。読み手は未発見, 根拠: Entity08060470_UpdateElem
   u16 timer;      // 0x02, 毎フレーム +1, 根拠: Entity08060470_Update
-  u16 lifetime;   // 0x04, timer がこれ以上になると消える。生成時は配置半径としても使われる, 根拠: Entity08060470_UpdateElem / FUN_080604ec
+  u16 lifetime;   // 0x04, timer がこれ以上になると消える。生成時は配置半径としても使われる, 根拠: Entity08060470_UpdateElem / Entity08060470_Spawn
   u8 unk_6[2];    // 0x06, 読み書きとも未発見
   Particle ptcl;  // 0x08, 根拠: FUN_0822da70 / Particle_Remove に渡される
   Vec3 vel;       // 0x30, 毎フレーム ptcl.pos に加算される, 根拠: Entity08060470_UpdateElem
@@ -45,3 +45,7 @@ NAKED s32 Entity08060470_Destroy(Entity08060470* p) { INCFUNC("asm/func/Entity08
 NAKED s32 Entity08060470_Init(Entity08060470* p) { INCFUNC("asm/func/Entity08060470_Init.inc"); }
 
 NAKED Entity08060470* Entity08060470_Create(void) { INCFUNC("asm/func/Entity08060470_Create.inc"); }
+
+NAKED Entity08060470Elem* Entity08060470_FindFreeElem(Entity08060470* p, u32* outIdx) { INCFUNC("asm/func/Entity08060470_FindFreeElem.inc"); }
+
+NAKED s32 Entity08060470_Spawn(u8 angle, s32 speed, u16 radius, Vec3* pos) { INCFUNC("asm/func/Entity08060470_Spawn.inc"); }

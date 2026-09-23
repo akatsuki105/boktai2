@@ -61,11 +61,7 @@ s32 Entity92BE_Init(Entity92BE* p) {
   }
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);
-  if (VM_SeekToKeyword('t')) {
-    idx = Script_GetValue();
-  } else {
-    idx = 0;
-  }
+  idx = VM_SeekToKeyword('t') ? Script_GetValue() : 0;
   if (VM_SeekToKeyword('I')) {
     p->lifetime = Script_GetValue();
   } else {

@@ -880,7 +880,7 @@ Entity723E_Update: @ 0x0805291C
 	movs r4, #3
 _0805292E:
 	ldm r6!, {r0}
-	bl FUN_0804a16c
+	bl TextPanel_Destroy
 	subs r4, #1
 	cmp r4, #0
 	bge _0805292E
@@ -929,7 +929,7 @@ _0805296E:
 	movs r5, #3
 _0805298E:
 	ldm r4!, {r0}
-	bl FUN_0804a16c
+	bl TextPanel_Destroy
 	subs r5, #1
 	cmp r5, #0
 	bge _0805298E
@@ -1414,14 +1414,14 @@ _08052D7E:
 	movs r1, #4
 	movs r2, #0xa
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	str r0, [r4]
 	cmp r0, #0
 	blt _08052EA4
 	ldr r1, _08052E90 @ =0x000008B4
 	adds r6, r5, r1
 	ldr r1, [r6]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	ldr r1, _08052E94 @ =0x000008C8
 	adds r2, r5, r1
@@ -1429,21 +1429,21 @@ _08052D7E:
 	bl FUN_0804a40c
 	ldr r0, [r4]
 	movs r1, #3
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	ldr r0, _08052E98 @ =0x000008BC
 	adds r4, r5, r0
 	movs r0, #0xa
 	movs r1, #7
 	movs r2, #0xa
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	str r0, [r4]
 	cmp r0, #0
 	blt _08052EA4
 	ldr r1, [r6]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	ldr r1, _08052E9C @ =0x000008D8
 	adds r2, r5, r1
@@ -1451,9 +1451,9 @@ _08052D7E:
 	bl FUN_0804a40c
 	ldr r0, [r4]
 	movs r1, #4
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	movs r0, #0x8c
 	lsls r0, r0, #4
 	adds r4, r5, r0
@@ -1461,34 +1461,34 @@ _08052D7E:
 	movs r1, #0xa
 	movs r2, #0x1c
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	str r0, [r4]
 	cmp r0, #0
 	blt _08052EA4
 	ldr r1, [r6]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #0xb
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	ldr r1, _08052EA0 @ =0x000008C4
 	adds r4, r5, r1
 	movs r0, #1
 	movs r1, #0xf
 	movs r2, #0x1c
 	movs r3, #2
-	bl FUN_0804a084
+	bl TextPanel_Create
 	str r0, [r4]
 	cmp r0, #0
 	blt _08052EA4
 	ldr r1, [r6]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4]
 	movs r1, #0xc
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	movs r0, #0x85
 	lsls r0, r0, #4
 	adds r7, r5, r0

@@ -715,8 +715,8 @@ _0801165A:
 	.align 2, 0
 _08011660: .4byte 0x030046A0
 
-	thumb_func_start EntityB0BC_Update
-EntityB0BC_Update: @ 0x08011664
+	thumb_func_start SaveSequence_Update
+SaveSequence_Update: @ 0x08011664
 	push {r4, lr}
 	sub sp, #0xc
 	adds r4, r0, #0
@@ -741,7 +741,7 @@ _08011676:
 	bne _080116A8
 	ldr r0, [r4, #0x18]
 	movs r1, #0xe
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, _080116A4 @ =0x000002AE
 	bl PlaySound_082406e0
 	b _080116B8
@@ -751,7 +751,7 @@ _080116A4: .4byte 0x000002AE
 _080116A8:
 	ldr r0, [r4, #0x18]
 	movs r1, #0xf
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	movs r0, #0xc9
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -812,18 +812,18 @@ _0801171C: .4byte 0x030044E0
 _08011720: .4byte 0x0000012B
 _08011724: .4byte 0xFFFF0000
 
-	thumb_func_start EntityB0BC_Destroy
-EntityB0BC_Destroy: @ 0x08011728
+	thumb_func_start SaveSequence_Destroy
+SaveSequence_Destroy: @ 0x08011728
 	push {lr}
 	ldr r0, [r0, #0x18]
-	bl FUN_0804a16c
+	bl TextPanel_Destroy
 	movs r0, #0
 	pop {r1}
 	bx r1
 	.align 2, 0
 
-	thumb_func_start EntityB0BC_Init
-EntityB0BC_Init: @ 0x08011738
+	thumb_func_start SaveSequence_Init
+SaveSequence_Init: @ 0x08011738
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	movs r0, #3
@@ -849,17 +849,17 @@ EntityB0BC_Init: @ 0x08011738
 	movs r1, #0xd
 	movs r2, #0x1c
 	movs r3, #6
-	bl FUN_0804a084
+	bl TextPanel_Create
 	str r0, [r4, #0x18]
 	cmp r0, #0
 	blt _08011794
 	ldr r1, [r4, #0x28]
-	bl FUN_0804a240
+	bl TextPanel_SetScript
 	ldr r0, [r4, #0x18]
 	movs r1, #0xb
-	bl FUN_0804a2f8
+	bl TextPanel_SetMessage
 	ldr r0, [r4, #0x18]
-	bl FUN_0804a1f0
+	bl TextPanel_Start
 	movs r0, #0
 	b _08011796
 _08011794:
@@ -869,8 +869,8 @@ _08011796:
 	pop {r1}
 	bx r1
 
-	thumb_func_start EntityB0BC_Create
-EntityB0BC_Create: @ 0x0801179C
+	thumb_func_start SaveSequence_Create
+SaveSequence_Create: @ 0x0801179C
 	push {r4, lr}
 	movs r0, #0xb
 	movs r1, #0x2c
@@ -878,11 +878,11 @@ EntityB0BC_Create: @ 0x0801179C
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080117D0
-	ldr r1, _080117C8 @ =EntityB0BC_Update
-	ldr r2, _080117CC @ =EntityB0BC_Destroy
+	ldr r1, _080117C8 @ =SaveSequence_Update
+	ldr r2, _080117CC @ =SaveSequence_Destroy
 	bl SetEntityRoutine
 	adds r0, r4, #0
-	bl EntityB0BC_Init
+	bl SaveSequence_Init
 	cmp r0, #0
 	bge _080117D0
 	adds r0, r4, #0
@@ -890,8 +890,8 @@ EntityB0BC_Create: @ 0x0801179C
 	movs r0, #0
 	b _080117D2
 	.align 2, 0
-_080117C8: .4byte EntityB0BC_Update
-_080117CC: .4byte EntityB0BC_Destroy
+_080117C8: .4byte SaveSequence_Update
+_080117CC: .4byte SaveSequence_Destroy
 _080117D0:
 	adds r0, r4, #0
 _080117D2:

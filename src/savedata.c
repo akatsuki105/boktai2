@@ -2,6 +2,7 @@
 #include "game.h"
 #include "global.h"
 #include "malloc.h"
+#include "save.h"
 #include "vm.h"
 
 extern u32 u32_03004860;
