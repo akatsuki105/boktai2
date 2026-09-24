@@ -151,6 +151,9 @@ void FUN_0823167c(u8* dst);
 void FUN_0823206c(u8* pc, s32 offset, u32 val);
 u32 FUN_082320e4(u8* pc, s32 offset);
 
+u8* FUN_0823d340(void);
+void* FUN_0823d34c(void);
+
 // keywordChar は ASCII 文字で書いてください。 例えば  VM_SeekToKeyword(0x64)  は  VM_SeekToKeyword('d') と書いてください。
 bool32 VM_SeekToKeyword(u8 keywordChar);
 s32 VM_GetKeywordValue(u8 keywordChar, s32 fallback);

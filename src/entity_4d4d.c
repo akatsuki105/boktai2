@@ -11,7 +11,7 @@ NAKED void FUN_0800f9b4(Entity4D4D* p, unknown* data) { INCFUNC("asm/func/FUN_08
 
 NAKED s32 Entity4D4D_Update(Entity4D4D* p) { INCFUNC("asm/func/Entity4D4D_Update.inc"); }
 
-NAKED s32 Entity4D4D_Destroy(Entity4D4D* p) { INCFUNC("asm/func/Entity4D4D_Destroy.inc"); }
+s32 Entity4D4D_Destroy(Entity4D4D* p) { return 0; }
 
 NAKED s32 Entity4D4D_Init(Entity4D4D* p, u32 val) { INCFUNC("asm/func/Entity4D4D_Init.inc"); }
 

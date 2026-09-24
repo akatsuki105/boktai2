@@ -15,14 +15,14 @@ typedef struct Entity081d0e20Elem {
   Entity2UnkData unk_2c;  // 0x2C, 根拠: FUN_08002a58 / FUN_0823b284 に渡される (Entity081d0e20_Destroy)
   AuxAnimState anim;      // 0x70, 根拠: FUN_08236fac に渡される (FUN_081d0864)
   Vec3 pos;               // 0x80, 8バイトまとめて sprite.pos にコピーされる, 根拠: FUN_081d0864
-  s16 id;                 // 0x88, Entity081d0e20_FindElem が引数と比較する (ldrsh)。VM_GetKeywordValue('i', 0)
-  u16 scriptID_8a;        // 0x8A, VM_GetKeywordValue('R', 0)。flags bit7 が立つと Script_ExecById に渡して0クリアする, 根拠: FUN_081cf944
-  u16 scriptID_8c;        // 0x8C, VM_GetKeywordValue('C', 0)。flags bit8 が立つと Script_ExecById に渡して0クリアする, 根拠: FUN_081cf944
-  u8 unk_8e[2];           // 0x8E, 未解析
+  s16 id;                 // 0x88, '.i=0', Entity081d0e20_FindElem が引数と比較する (ldrsh)
+  u16 scriptID_8a;        // 0x8A, '.R=0', flags bit7 が立つと Script_ExecById に渡して0クリアする, 根拠: FUN_081cf944
+  u16 scriptID_8c;        // 0x8C, '.C=0', flags bit8 が立つと Script_ExecById に渡して0クリアする, 根拠: FUN_081cf944
+  u8 unk_8e[2];           // 0x8E, padding?
   u32 unk_90[6];          // 0x90, キーワード 'G' の後ろから6個読む
   u32 unk_a8[2];          // 0xA8, キーワード 'A' の後ろから2個読む
-  u16 unk_b0;             // 0xB0, VM_GetKeywordValue('T', 0) を4で頭打ち。アニメの variant とパレット選択に使う (ldrh)
-  u16 unk_b2;             // 0xB2, VM_GetKeywordValue('o', 0x3C) (ldrh)
+  u16 unk_b0;             // 0xB0, '.T=0' を4で頭打ち。アニメの variant とパレット選択に使う (ldrh)
+  u16 unk_b2;             // 0xB2, '.o=60',
   s16 slotIdx;            // 0xB4, Entity081d0e20_AllocElem が確保時にスロット番号を書く
   s16 state;              // 0xB6, PTR_ARRAY_085ae098 の添字, 根拠: Entity081d0e20_Update (ldrsh)
   u16 flags;              // 0xB8, bit9 で Update をスキップ、bit3 で unk_2c を後始末する, 根拠: Entity081d0e20_Update / _Destroy
@@ -35,7 +35,7 @@ static_assert(sizeof(Entity081d0e20Elem) == 192);
 // 要素を12個まで抱えるエンティティ。空きスロットは activeMask のビットで管理する
 typedef struct Entity081d0e20 {
   Entity e;                       // 0x00, ENTITY_UNK_8
-  AuxAnimFile* anim;              // 0x18, GetFile(DIR_ANIMATION, 0xAE9)
+  AuxAnimFile* anim;              // 0x18, GetFile(DIR_ANIMATION, 0x0AE9)
   AuxSpriteGfx gfx;               // 0x1C, SPRITE_PITFALL_A945
   Entity081d0e20Elem* items[12];  // 0x38, 根拠: Entity081d0e20_AllocElem が確保したものを入れる
   u32 activeMask;                 // 0x68, 1 << i で items[i] が使用中, 根拠: Entity081d0e20_AllocElem / _Update / _Destroy
@@ -282,9 +282,9 @@ NON_MATCH void FUN_081d0864(void) {
     elem->sprite.pos = elem->pos;
     elem->sprite.pos.x -= 0x100;
     if (elem->unk_b0 == 0) {
-      Video_SetAuxSpritePltt(gfx, 0x282);
+      Video_SetAuxSpritePltt(gfx, 642);
     } else if (elem->unk_b0 == 1) {
-      Video_SetAuxSpritePltt(gfx, 0x283);
+      Video_SetAuxSpritePltt(gfx, 643);
     }
     AuxSprite_Add(&elem->sprite, gfx, 0);
     FUN_08236fac(anim, p->anim, 0, elem->unk_b0, 0);
@@ -325,7 +325,7 @@ NON_MATCH void FUN_081d0864(void) {
     elem->unk_bb = 0;
     elem->unk_ba = 0;
     elem->flags = 1;
-    elem->unk_b2 = VM_GetKeywordValue('o', 0x3C);
+    elem->unk_b2 = VM_GetKeywordValue('o', 60);
     if (VM_GetKeywordValue('m', 0) != 0) {
       elem->flags |= 0x10;
       val = VM_GetKeywordValue('S', 0);
@@ -442,7 +442,7 @@ NON_MATCH s32 Entity081d0e20_Destroy(Entity081d0e20* p) {
 
 s32 Entity081d0e20_Init(Entity081d0e20* p) {
   Video_GetAuxSprite(&p->gfx, SPRITE_PITFALL_A945);
-  p->anim = GetFile(DIR_ANIMATION, 0xAE9);
+  p->anim = GetFile(DIR_ANIMATION, 0x0AE9);
   gEntity081d0e20 = p;
   p->activeMask = 0;
   return 0;

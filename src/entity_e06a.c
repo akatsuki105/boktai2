@@ -3,16 +3,15 @@
 #include "global.h"
 #include "hitbox.h"
 #include "sprite.h"
-#include "sprite_aux.h"
 #include "vm.h"
 
-// スクリプトから置かれる当たり判定付きのオブジェクト。位置はマップのタイル座標から決まる
+// 未使用っぽい, スクリプトから置かれる当たり判定付きのオブジェクト。位置はマップのタイル座標から決まる
 typedef struct {
   Entity e;            // 0x00, ENTITY_UNK_8
   u16 id;              // 0x18, EntityE06A_Init の引数。ヒットボックスの所有者IDとして Hitbox_Init に渡る
-  u8 unk_1a[2];        // 0x1A, 読み書きとも未発見 (sprite の4バイト境界合わせ)
+  u8 unk_1a[2];        // 0x1A, padding?
   AuxSprite sprite;    // 0x1C, 根拠: AuxSprite_Add / AuxSprite_Remove に渡される
-  AuxSpriteGfx gfx;    // 0x48, 根拠: Video_GetAuxSprite(&gfx, 0x9DA7) / AuxSprite_Add に渡される
+  AuxSpriteGfx gfx;    // 0x48, SPRITE_NODATA_9DA7
   HitboxData hitbox;   // 0x64, 根拠: EntityE06A_SetupHitbox が組み立て、EntityE06A_Update が毎フレーム更新する
   HitboxData hitbox2;  // 0xB4, 組み立てるのは EntityE06A_SetupHitbox2 だが、その呼び出し元は未発見
 } EntityE06A;
@@ -89,7 +88,7 @@ void EntityE06A_SetupHitbox(EntityE06A* p) {
   Vec3 size;
   Vec3 offset;
 
-  size.x = 0x32, size.y = 100, size.z = 0x32;
+  size.x = 50, size.y = 100, size.z = 50;
   offset.x = 0, offset.y = 100, offset.z = 0;
   Hitbox_Init(hitbox, p->id, HBFLAG_UNK_13 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetAttack(hitbox, 100, 0x78, 0, 0x40002, 0x1E);
@@ -104,7 +103,7 @@ void EntityE06A_SetupHitbox2(EntityE06A* p) {
   Vec3 size;
   Vec3 offset;
 
-  size.x = 0x32, size.y = 100, size.z = 0x32;
+  size.x = 50, size.y = 100, size.z = 50;
   offset.x = 0, offset.y = 100, offset.z = 0;
   Hitbox_Init(hitbox, p->id, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetPowerAndAttributes(hitbox, 10, 2, 1);

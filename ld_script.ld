@@ -66,8 +66,8 @@ SECTIONS {
       . = ALIGN(8);
       src/boss.o(iwram_data);
       src/entity_ab4e.o(iwram_data);
-      src/entity_0e37.o(iwram_data);
-      src/entity_dfc6.o(iwram_data);
+      src/text_0e37.o(iwram_data);
+      src/text_dfc6.o(iwram_data);
       src/text_panel.o(iwram_data);
       src/credits.o(iwram_data);
       src/iwram1.o(iwram_data);
@@ -195,8 +195,8 @@ SECTIONS {
 			src/boss/shademan.o (.text);
 			src/entity_286f.o (.text);
 			src/entity_ab4e.o (.text);
-			src/entity_0e37.o (.text);
-			src/entity_dfc6.o (.text);
+			src/text_0e37.o (.text);
+			src/text_dfc6.o (.text);
 			src/text_panel.o (.text);
 			src/credits.o (.text);
 			src/code_0803c1bc.o (.text);
@@ -300,7 +300,7 @@ SECTIONS {
 			src/entity_c60f.o (.text);
 			src/entity_7b9f.o (.text);
 			src/entity_8cc7.o (.text);
-			src/entity_081d9d38.o (.text);
+			src/link_connect.o (.text);
 			src/entity_7999.o (.text);
 			src/entity_08f4.o (.text);
 			src/entity_c783.o (.text);
@@ -308,7 +308,7 @@ SECTIONS {
 			src/entity_9a9f.o (.text);
 			src/entity_501b.o (.text);
 			src/code_081e0c14.o (.text);
-			src/entity_081eaf6c.o (.text);
+			src/flamethrower.o (.text);
 			src/entity_081eb2f0.o (.text);
 			src/code_081eafbc.o (.text);
 			src/boss/dvalinn.o (.text);

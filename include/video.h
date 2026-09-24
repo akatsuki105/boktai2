@@ -19,6 +19,7 @@ static_assert(sizeof(BgState) == 48);
 extern BgState gBgStates[4];
 extern rgb555 gBgPlttBuffer[256];
 extern u16 gBgPlttBlendColor;
+extern u16 gStagedDISPCNT;
 
 extern u16* gHBlankEffectBuffer;
 extern vu16* gHBlankEffectReg;
@@ -35,10 +36,16 @@ void FUN_0822ac90(void);
 void FUN_0822db5c(void);
 void FUN_0822de64(void);
 
+void SetBGPrioDirect(s32 bg, u32 prio);
+void Video_GenerateBGMap(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs);
+void Video_SetupBGLayout(s32 layout, u32 param_2, unknown* f, u32 param_4, u32 param_5, s32 count, s32* indices);
+
 u16* GetTilemapBuffer(s32 bg);
 
 void Video_SetHBlankEffect(s32 bg, s32 kind, void* table);
 void Video_SetMosaic(s32 size, s32 objEnabled, s32 targets);
 void Video_ClearMosaic(void);
+
+void Video_SetWindowRect(s32 win, s32 left, s32 top, s32 right, s32 bottom);
 
 #endif  // __INCLUDE_VIDEO_H__

@@ -29,7 +29,7 @@ typedef struct {
   s32 count;             // 0x1C, head のリストの登録数. 6件以上だと FUN_080f8c58 が登録を拒否する
   u32 unk_20;            // 0x20, EntityD854_Update が毎フレーム +1. FUN_080f8da4 は30フレームに1回だけ走る
   u16 unk_24;            // 0x24, EntityD854_Init が引数をそのまま書く
-  u16 unk_26;            // 0x26, 読み手も書き手も未発見
+  u16 unk_26;            // 0x26, 読み手も書き手も未発見, padding?
   EntityD854Node* head;  // 0x28, 単方向リストの先頭
 } EntityD854;
 static_assert(sizeof(EntityD854) == 44);
@@ -336,12 +336,8 @@ void FUN_080f8c10(void) {
 }
 
 bool32 FUN_080f8c2c(EntityD854Node* node) {
-  if ((node->flags & D854NODEFLAG_LINKED) != 0) {
-    return FALSE;
-  }
-  if (node->timer != 0) {
-    return FALSE;
-  }
+  if (node->flags & D854NODEFLAG_LINKED) return FALSE;
+  if (node->timer != 0) return FALSE;
   if (node->kindMask == 1) {
     if (FUN_0808672c() == 0) {
       return FALSE;
@@ -382,9 +378,7 @@ EntityD854Node* FUN_080f8cf0(u32 kindMask) {
   EntityD854* p = gEntityD854;
   EntityD854Node* node;
 
-  if (p == NULL) {
-    return NULL;
-  }
+  if (p == NULL) return NULL;
   node = p->head;
   if (node != NULL) {
     do {
@@ -401,12 +395,7 @@ bool32 FUN_080f8d20(EntityD854Node* node) {
   EntityD854* p = gEntityD854;
   EntityD854Node* cur;
 
-  if (p == NULL) {
-    return FALSE;
-  }
-  if (node == NULL) {
-    return FALSE;
-  }
+  if (p == NULL || node == NULL) return FALSE;
   cur = p->head;
   if (cur != NULL) {
     do {
@@ -425,12 +414,7 @@ Entity2UnkData* FUN_080f8d60(u16 id) {
   EntityD854* p = gEntityD854;
   EntityD854Node* cur;
 
-  if (p == NULL) {
-    return NULL;
-  }
-  if (id == 0) {
-    return NULL;
-  }
+  if (p == NULL || id == 0) return NULL;
   cur = p->head;
   if (cur != NULL) {
     do {
@@ -455,10 +439,10 @@ void FUN_080f8e3c(EntityD854Node* node) {
     EntityD854Node* cur = p->head;
 
     while (cur != NULL) {
-      if ((cur == node) && ((cur->flags & D854NODEFLAG_REGISTERED) != 0)) {
+      if ((cur == node) && (cur->flags & D854NODEFLAG_REGISTERED)) {
         cur->flags &= ~D854NODEFLAG_LINKED;
         cur->enemy = NULL;
-        cur->timer = 0xF0;
+        cur->timer = 240;
         FUN_080f8cec();
         return;
       }
@@ -535,9 +519,7 @@ NAKED void FUN_080f9e34(Enemy* p) { INCFUNC("asm/func/FUN_080f9e34.inc"); }
 void FUN_080f9ee0(Enemy* p) {
   bool8 (*fn)(Enemy* p);
 
-  if (p->unk_46c != 0) {
-    p->unk_46c = 0;
-  }
+  if (p->unk_46c != 0) p->unk_46c = 0;
   fn = p->unk_608;
   if (fn(p) == 0) {
     p->unk_484++;
@@ -561,7 +543,7 @@ NAKED s32 FUN_080fa384(Enemy* p) { INCFUNC("asm/func/FUN_080fa384.inc"); }
 
 void FUN_080fa77c(Enemy* p) {
   if (p->unk_220 != 0) {
-    p->unk_220 = p->unk_220 - 1;
+    p->unk_220--;
   } else {
     p->unk_21e = 0;
   }

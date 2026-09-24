@@ -154,7 +154,7 @@ s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
   size.x = 30, size.y = 320, size.z = 30;
   offset.x = 0, offset.y = 160, offset.z = 0;
   hitbox = &p->hitbox;
-  Hitbox_Init(hitbox, 0, 0x4001, 0, 0x10, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetHandler(hitbox, FUN_0800c0b0, p);
   Hitbox_SetPos(hitbox, &pos, 0);
   Hitbox_Register(hitbox);

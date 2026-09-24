@@ -1,6 +1,5 @@
 #include "entity.h"
 #include "global.h"
-#include "constants/sprite.h"
 #include "sprite.h"
 
 // 爆発 1 個。飛びながら 24 フレームで消える

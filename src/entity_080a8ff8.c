@@ -12,11 +12,11 @@ typedef struct {
 } Entity080a8ff8Particle;
 static_assert(sizeof(Entity080a8ff8Particle) == 44);
 
-typedef struct {
+typedef struct Entity080a8ff8 {
   Entity e;                             // 0x000, ENTITY_UNK_8
   Player* owner;                        // 0x018, Init の第2引数。owner->unk_3fb がこのエンティティの生存数カウンタ
-  AuxSprite sprite;                     // 0x01C, 根拠: AuxSprite_Add に AuxSprite* として渡る
-  AuxSpriteGfx gfx;                     // 0x048, 根拠: Video_GetActorSprite(&gfx, BOMB)
+  AuxSprite sprite;                     // 0x01C
+  AuxSpriteGfx gfx;                     // 0x048, SPRITE_BOMB
   Vec3 pos;                             // 0x064, Init が引数の Vec3 をまるごと写す
   Entity080a8ff8Particle particles[8];  // 0x06C, 根拠: FUN_080a8dd8 の i=0..7 / stride 0x2C のループ
   ParticleGroup* group;                 // 0x1CC, GetParticleGroup(GROUP_2) の戻り値
@@ -26,7 +26,7 @@ typedef struct {
   u16 timeoutTimer;                     // 0x1D6, Init が 900。mode == 0 のときだけ減り、0 で爆発せずに KillEntity
   u8 unk_1d8[2];                        // 0x1D8, 読み書きするコードが見つかっていない
   u16 stateTimer;                       // 0x1DA, Entity080a8ff8_SetState が 0 に戻し、各状態が毎フレーム +1 する
-  void* fn;                             // 0x1DC, Entity080a8ff8_Update が p->fn(p) として呼ぶ状態関数
+  void (*fn)(struct Entity080a8ff8*);   // 0x1DC, Entity080a8ff8_Update が p->fn(p) として呼ぶ状態関数
 } Entity080a8ff8;
 static_assert(sizeof(Entity080a8ff8) == 480);
 
@@ -38,7 +38,10 @@ NAKED void FUN_080a8950(Entity080a8ff8* p) { INCFUNC("asm/func/FUN_080a8950.inc"
 
 NAKED void FUN_080a8cfc(Entity080a8ff8* p) { INCFUNC("asm/func/FUN_080a8cfc.inc"); }
 
-NAKED s32 Entity080a8ff8_Update(Entity080a8ff8* p) { INCFUNC("asm/func/Entity080a8ff8_Update.inc"); }
+s32 Entity080a8ff8_Update(Entity080a8ff8* p) {
+  p->fn(p);
+  return 0;
+}
 
 NAKED s32 Entity080a8ff8_Destroy(Entity080a8ff8* p) { INCFUNC("asm/func/Entity080a8ff8_Destroy.inc"); }
 

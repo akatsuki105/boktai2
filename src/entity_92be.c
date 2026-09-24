@@ -1,22 +1,21 @@
-#include "constants/sprite.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "random.h"
-#include "sprite_main.h"
+#include "sprite.h"
 #include "vm.h"
 
 // スクリプトが出すマーカーのスプライト。寿命が尽きるとスクリプトを起動して自分を消す
 typedef struct Entity92BE {
   Entity e;                                    // 0x00, ENTITY_UNK_9
-  MainSpriteGfx gfx;                           // 0x18, SPRITE_SETS の MARKERS を読み込む
+  MainSpriteGfx gfx;                           // 0x18, SPRITE_MARKERS
   MainSprite sprite;                           // 0x38
   u8 unk_98[0x9A - 0x98];                      // 0x98
   u16 timer;                                   // 0x9A, Entity92BE_Update が毎フレーム +1 して lifetime と比べる
-  u16 lifetime;                                // 0x9C, VM キーワード 'I' の値。既定は 60
+  u16 lifetime;                                // 0x9C, '.I=60'
   u8 unk_9e[0xA0 - 0x9E];                      // 0x9E
   Vec3 pos;                                    // 0xA0, MainSprite_Add に渡す位置。Init が x/y/z を 0 で埋める
-  u32 scriptID;                                // 0xA8, VM キーワード 'p' の値。寿命が尽きたときに起動する
+  u32 scriptID;                                // 0xA8, '.p'
   void (*updateCallback)(struct Entity92BE*);  // 0xAC, Entity92BE_Update が毎フレーム呼ぶ。Init は Entity92BE_Shake を入れる
 } Entity92BE;
 static_assert(sizeof(Entity92BE) == 176);

@@ -25,7 +25,7 @@ Three rules keep this file usable:
 
 ### Which arm falls into the epilogue: the two spellings are not interchangeable
 
-- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `EntityMsgBus_Register`, `EntityMsgBus_Unregister`, `Demo_RequestNextStep`, `EntityMsg_Send`, `Demo_Resume`, `Demo_IsRunning`, `ArcTan2_8`, `FUN_082375c8`, `MainSprite_Add`, `ScriptShadow_Move`, `SignalStrengthIcon_Create`, `SignalStrengthIcon_Init`, `Entity081d0e20_Create`, `FUN_080eddf8`, `Breakable_TakeStateChanged`, `FUN_0804a3e4`, `FUN_0804a40c`.
+- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `EntityMsgBus_Register`, `EntityMsgBus_Unregister`, `Demo_RequestNextStep`, `EntityMsg_Send`, `Demo_Resume`, `Demo_IsRunning`, `ArcTan2_8`, `FUN_082375c8`, `MainSprite_Add`, `ScriptShadow_Move`, `SignalStrengthIcon_Create`, `SignalStrengthIcon_Init`, `Entity081d0e20_Create`, `FUN_080eddf8`, `Breakable_TakeStateChanged`, `FUN_0804a3e4`, `FUN_0804a40c`, `TextBox_Open`, `FUN_080488dc`, `TextBox_SetExtendValue`, `FUN_08049eb0`.
 - **Symptom**: the two arms' bodies appear in the opposite order from the
   target, and one arm carries a `b` to the epilogue that the target puts on
   the other arm. Instruction counts are usually equal.
@@ -85,6 +85,21 @@ Three rules keep this file usable:
 - When the returned value is still in `r0` from the call just made, an early `return x;` beats falling through to the function's shared `return x;`: the target branches *past* the join's `adds r0, rN, #0` instead of into it. `SignalStrengthIcon_Create` (`p = Get(); if (p != NULL) return p;`) showed up as a streamdiff with equal instruction counts and only a branch target one instruction off.
 - The same applies when the value comes from a **global** rather than a call, and there the fix is to name it twice. `Entity081d0e20_Create` matched only as `if (gEntity081d0e20 != NULL) { return gEntity081d0e20; }`; assigning it to the local that the rest of the function reuses (`p = gEntity081d0e20; if (p != NULL) return p;`) put it in a callee-saved register and branched *into* the join instead of past it.
 - The guard form also decides whether a saved pointer is reloaded afterwards. `SignalStrengthIcon_Init` nested as `if (f != NULL) { ... } return -1;` put `-1` inline *and* emitted `adds r0, r2, #0` before the struct copy; the early-return `if (f == NULL) return -1;` fixed both at once, letting the copy read the call result still in `r0`.
+
+### A ternary argument shares the call's other arguments; two calls duplicate them
+
+- **Frequency**: `Entity12C4_Create`.
+- **Symptom**: the arm-independent argument is set up once before the branch, where the target sets it up inside both arms. The `bl` itself stays single either way — cross-jumping merges it.
+
+```c
+p = CreateEntity(cond ? A : B, SIZE);   // SIZE set once, kind branches around it
+// ↓
+if (cond) {                             // both arms set SIZE, then the kind
+  p = CreateEntity(A, SIZE);
+} else {
+  p = CreateEntity(B, SIZE);
+}
+```
 
 ### A `switch` that starts with `cmp low / beq / cmp low / ble` has one more case than it looks
 
@@ -168,6 +183,8 @@ for (i = 0; i < N; i++) {          for (i = 0; i < N; i++) {
 | `if (s32val >= 58 && s32val <= 65) {` | `if ((u32)(s32val - 58) < 8) {` |
 | `if (u8val >= 28 && u8val <= 29) {` | `if ((u8)(u8val - 28) <= 1) {` |
 
+- **Two *signed* compares are a `switch`, not a range test.** `cmp rN, #hi` / `bgt` then `cmp rN, #lo` / `blt` — no subtraction, no shifts — is the range check agbcc puts in front of a `switch` whose cases are contiguous. An `if` never produces it: the fold above always wins. `WeatherManager_StopScripted` needed `switch (p->state) { case 1: case 2: case 3: ... }`.
+
 ### Two bit tests on one load: the masked-value helper folds, the `bool32` one does not
 
 - **Frequency**: `FUN_080f09a4`.
@@ -195,9 +212,15 @@ for (i = 0; i < N; i++) {          for (i = 0; i < N; i++) {
 
 ## Integer width & sign extension
 
+### A signed field narrowed on assignment loses its `ldrsh`
+
+- **Frequency**: `FUN_08049668`.
+- **Symptom**: your build has `ldrh rN, [rB, #off]` where the target has `movs rT, #off` / `ldrsh rN, [rB, rT]`.
+- Assigning an `s16` field straight into a narrower field (`p->speed = gStat->messageSpeed;` with `speed` a `u8`) lets agbcc drop the sign extension — only the low byte survives either way. Reading it through something typed `s32` keeps the `ldrsh`; a `static inline s32 GetMessageSpeed(void) { return gStat->messageSpeed; }` was what the original had.
+
 ### A declared type narrower than the value produces an `lsls`/`lsrs` pair — move it by changing the declaration
 
-- **Frequency**: `FUN_082402c8`, `FUN_082402e0`, `FUN_08240428`, `sound_082403b8`, `sound_08240728`, `Entity6978_Create`, `ParticleShadow_Init`, `AuxShadow_Init`, `AuxShadow_SetScaleParams`.
+- **Frequency**: `FUN_082402c8`, `FUN_082402e0`, `FUN_08240428`, `sound_082403b8`, `sound_08240728`, `Entity6978_Create`, `ParticleShadow_Init`, `AuxShadow_Init`, `AuxShadow_SetScaleParams`, `TextRenderer_SetRect`.
 - **Symptom**: an `lsls rN, #k` / `lsrs rN, #k` pair your build has and the target does not, or vice versa (`#0x10` for a `u16`, `#0x18` for a `u8`). agbcc emits it wherever a value has to be narrowed to a declared type, so **where it sits says which declaration is wrong** — never the arithmetic.
 
 | you emit the pair | the target has it | write this |
@@ -303,6 +326,7 @@ Which side to pick, once the asm has told you what is wrong:
 - The nested subscript above cuts the other way too: as one expression the outer table's pool `ldr` hoists above the inner subscript, split into `u16 ms = ...;` it lands after. One function needed each. When only a pool `ldr` is misplaced, try splitting *and* merging first.
 - The choice can decide only which callee-saved registers a parameter and a base address get, at an identical instruction count. `FUN_082405c0` needed `id = g[12];` above the `if` where testing `g[12] != 0` gave the same 32 instructions with `r6`/`r7` swapped — and its twin `Sound_FadeOutBGM` matched with the opposite shape.
 - Which one the target used is readable: hoisting the read leaves the base in a scratch register (`ldr r0, =g` / `ldrh r0, [r0, #N]`), testing the global directly keeps the base in its own register across the guard. `Sound_SetBGMTempo` needed the hoisted form, `Sprite_LoadSprite` the other.
+- A local's initializer materializes at function entry, not at the use. `u32 mask = 1 << 2;` put the `movs` ahead of everything; declaring it bare and assigning `mask = 1 << 2;` on the line before the `if` put it where the target has it (`Entity08202cd8_Update`). The inline constant `& 4` materializes one instruction later still.
 
 ### A zero stored from a reused local takes that local's register
 

@@ -9,7 +9,7 @@ NAKED bool32 FUN_082409a0(u32 val) { INCFUNC("asm/func/FUN_082409a0.inc"); }
 
 NAKED bool32 FUN_082409d0(u32 param) { INCFUNC("asm/func/FUN_082409d0.inc"); }
 
-NAKED s32 Entity08240a54_Update(Entity08240a54* p) { INCFUNC("asm/func/Entity08240a54_Update.inc"); }
+s32 Entity08240a54_Update(Entity08240a54* p) { return 0; }
 
 NAKED s32 Entity08240a54_Destroy(Entity08240a54* p) { INCFUNC("asm/func/Entity08240a54_Destroy.inc"); }
 

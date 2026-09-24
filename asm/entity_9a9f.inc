@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_081dd9b8
-FUN_081dd9b8: @ 0x081DD9B8
+	thumb_func_start Entity9A9F_SetState
+Entity9A9F_SetState: @ 0x081DD9B8
 	push {r4, lr}
 	movs r3, #0
 	strb r1, [r0, #0x1c]
@@ -339,7 +339,7 @@ FUN_081ddbdc: @ 0x081DDBDC
 	strb r2, [r1]
 	ldr r2, _081DDC00 @ =FUN_081de130
 	movs r1, #0
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	bl FUN_080a5e4c
 	bl FUN_08238bf4
 	pop {r0}
@@ -1199,7 +1199,7 @@ _081DE22C:
 	ldr r2, _081DE24C @ =FUN_081de250
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	movs r0, #0
 	strb r0, [r5]
 _081DE244:
@@ -1247,7 +1247,7 @@ _081DE280:
 	ldr r2, _081DE2A0 @ =FUN_081de2dc
 	adds r0, r4, #0
 	movs r1, #3
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	movs r0, #0
 	b _081DE2D2
 	.align 2, 0
@@ -1263,7 +1263,7 @@ _081DE2A4:
 	ldr r2, _081DE2D8 @ =FUN_081de250
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	bl FUN_08238bf4
 	adds r2, r4, #0
 	adds r2, #0x68
@@ -1311,7 +1311,7 @@ _081DE2F0:
 	ldr r2, _081DE320 @ =FUN_081de360
 	adds r0, r4, #0
 	movs r1, #4
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	b _081DE352
 	.align 2, 0
 _081DE31C: .4byte 0x0000FFFF
@@ -1327,7 +1327,7 @@ _081DE324:
 	ldr r2, _081DE35C @ =FUN_081de250
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	bl FUN_08238bf4
 	adds r1, r4, #0
 	adds r1, #0x68
@@ -1406,7 +1406,7 @@ _081DE3C6:
 	ldr r2, _081DE3DC @ =FUN_081de250
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	bl FUN_08238bf4
 	b _081DE6D4
 	.align 2, 0
@@ -1751,7 +1751,7 @@ _081DE628:
 	ldr r2, _081DE650 @ =FUN_081de6f0
 	adds r0, r4, #0
 	movs r1, #5
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	adds r0, r4, #0
 	bl FUN_081dd9f0
 	movs r0, #0xdd
@@ -1825,7 +1825,7 @@ _081DE6C0:
 	ldr r2, _081DE6EC @ =FUN_081de214
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 _081DE6D4:
 	movs r0, #0
 	add sp, #0x14
@@ -1895,7 +1895,7 @@ _081DE752:
 	ldr r2, _081DE76C @ =FUN_081de7e8
 	adds r0, r5, #0
 	movs r1, #6
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	movs r0, #0
 	b _081DE7E2
 	.align 2, 0
@@ -1990,7 +1990,7 @@ _081DE800:
 	ldr r2, _081DE828 @ =FUN_081de844
 	adds r0, r4, #0
 	movs r1, #7
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	b _081DE836
 	.align 2, 0
 _081DE824: .4byte 0x03002C68
@@ -1999,7 +1999,7 @@ _081DE82C:
 	ldr r2, _081DE840 @ =FUN_081de960
 	adds r0, r4, #0
 	movs r1, #8
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 _081DE836:
 	movs r0, #0
 _081DE838:
@@ -2066,7 +2066,7 @@ _081DE8B0:
 	ldr r2, _081DE8C0 @ =FUN_081de9d8
 	adds r0, r4, #0
 	movs r1, #9
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	b _081DE958
 	.align 2, 0
 _081DE8C0: .4byte FUN_081de9d8
@@ -2089,7 +2089,7 @@ _081DE8DA:
 	ldr r2, _081DE900 @ =FUN_081de360
 	adds r0, r4, #0
 	movs r1, #4
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	ldr r0, _081DE904 @ =0x03002C68
 	ldr r0, [r0]
 	cmp r0, #0
@@ -2185,7 +2185,7 @@ _081DE992:
 	ldr r2, _081DE9A4 @ =FUN_081de9d8
 	adds r0, r4, #0
 	movs r1, #9
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	movs r0, #0
 	b _081DE9CE
 	.align 2, 0
@@ -2209,7 +2209,7 @@ _081DE9BE:
 	ldr r2, _081DE9D4 @ =FUN_081de360
 	adds r0, r4, #0
 	movs r1, #4
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	movs r0, #0
 _081DE9CE:
 	pop {r4}
@@ -2292,7 +2292,7 @@ _081DEA4A:
 	ldr r2, _081DEADC @ =FUN_081deaf4
 	adds r0, r4, #0
 	movs r1, #0xa
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	bl FUN_08049fa8
 	movs r0, #0
 	bl ClearBGTilemapBuffer
@@ -2430,7 +2430,7 @@ _081DEB82:
 	ldr r2, _081DEB94 @ =FUN_081debd4
 	adds r0, r4, #0
 	movs r1, #0xb
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	movs r0, #0
 	b _081DEBB4
 	.align 2, 0
@@ -2462,7 +2462,7 @@ FUN_081debc0: @ 0x081DEBC0
 	push {lr}
 	ldr r2, _081DEBD0 @ =FUN_081dec1c
 	movs r1, #0xc
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	pop {r0}
 	bx r0
 	.align 2, 0
@@ -2791,7 +2791,7 @@ _081DEE34:
 	ldr r2, _081DEE5C @ =FUN_081deef8
 	adds r0, r4, #0
 	movs r1, #0xd
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	b _081DEEEA
 	.align 2, 0
 _081DEE54: .4byte 0x030046A0
@@ -2838,7 +2838,7 @@ _081DEEA4:
 	ldr r2, _081DEEB0 @ =FUN_081deef8
 	adds r0, r4, #0
 	movs r1, #0xd
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	b _081DEEEA
 	.align 2, 0
 _081DEEB0: .4byte FUN_081deef8
@@ -2997,7 +2997,7 @@ _081DEFD0:
 	ldr r2, _081DEFF8 @ =FUN_081df014
 	adds r0, r5, #0
 	movs r1, #0xe
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	adds r1, r5, #0
 	adds r1, #0x21
 	movs r0, #0
@@ -3112,7 +3112,7 @@ _081DF0A6:
 	ldr r2, _081DF0BC @ =FUN_081df0f8
 	adds r0, r4, #0
 	movs r1, #0x11
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	b _081DF0EE
 	.align 2, 0
 _081DF0BC: .4byte FUN_081df0f8
@@ -3120,7 +3120,7 @@ _081DF0C0:
 	ldr r2, _081DF0CC @ =FUN_081df3f0
 	adds r0, r4, #0
 	movs r1, #0x14
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	b _081DF0EE
 	.align 2, 0
 _081DF0CC: .4byte FUN_081df3f0
@@ -3246,7 +3246,7 @@ _081DF1A4:
 	ldr r2, _081DF1B8 @ =FUN_081df23c
 	adds r0, r5, #0
 	movs r1, #0x12
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	movs r0, #0
 	b _081DF22A
 	.align 2, 0
@@ -3414,7 +3414,7 @@ _081DF308:
 	ldr r2, _081DF320 @ =FUN_081df398
 	adds r0, r5, #0
 	movs r1, #0x13
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	movs r0, #0
 	b _081DF38C
 	.align 2, 0
@@ -3512,7 +3512,7 @@ _081DF3B8:
 	ldr r2, _081DF3EC @ =FUN_081deaf4
 	adds r0, r4, #0
 	movs r1, #0xa
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 _081DF3E4:
 	pop {r4}
 	pop {r1}
@@ -3565,7 +3565,7 @@ _081DF444:
 	ldr r2, _081DF45C @ =FUN_081df460
 	adds r0, r5, #0
 	movs r1, #0x15
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 _081DF454:
 	pop {r4, r5}
 	pop {r1}
@@ -3663,7 +3663,7 @@ _081DF4FC:
 	ldr r2, _081DF528 @ =FUN_081df540
 	adds r0, r4, #0
 	movs r1, #0x16
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 _081DF50A:
 	mov r2, r8
 	ldrb r1, [r2]
@@ -3706,7 +3706,7 @@ FUN_081df540: @ 0x081DF540
 	ldr r2, _081DF564 @ =FUN_081df568
 	adds r0, r4, #0
 	movs r1, #0x17
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 _081DF55C:
 	pop {r4}
 	pop {r1}
@@ -3771,7 +3771,7 @@ _081DF5C0:
 	ldr r2, _081DF5D4 @ =FUN_081df604
 	adds r0, r4, #0
 	movs r1, #0x18
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	b _081DF5F2
 	.align 2, 0
 _081DF5D4: .4byte FUN_081df604
@@ -3814,7 +3814,7 @@ FUN_081df604: @ 0x081DF604
 	ldr r2, _081DF628 @ =FUN_081df62c
 	adds r0, r4, #0
 	movs r1, #0x19
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 _081DF620:
 	pop {r4}
 	pop {r1}

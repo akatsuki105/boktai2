@@ -1,13 +1,11 @@
 #include "animation.h"
 #include "collision_map.h"
-#include "constants/sprite.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
 #include "random.h"
-#include "sprite_aux.h"
-#include "struct.h"
+#include "sprite.h"
 #include "vm.h"
 
 // SPRITE_BOKU_0 の姿でうろつく生き物。叩かれると点滅してノックバックし、また歩き出す
@@ -17,7 +15,7 @@ typedef struct EntityF41A {
   u16 unk_1a;                          // 0x01A
   Entity2UnkData data;                 // 0x01C, 位置と向きはここが持つ。data.unk_5 が向き、data.delta が移動量
   AuxSprite sprite;                    // 0x060
-  AuxSpriteGfx gfx;                    // 0x08C, Video_GetAuxSprite(SPRITE_BOKU_0)
+  AuxSpriteGfx gfx;                    // 0x08C, SPRITE_BOKU_0
   u8 tile[16];                         // 0x0A8, FUN_0823280c が足元のタイル情報を埋める。data.unk_18 がここを指す
   HitboxData hitbox;                   // 0x0B8
   AuxAnimState anim;                   // 0x108

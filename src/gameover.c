@@ -25,7 +25,7 @@ typedef struct GameOverManager {
   MainSpriteGfx menuGfx;      // 0x298, GameOverManager_SetupMenu の GetFile(SPRITE_SETS, UI_START_MENU) を OpenSpriteSetFile したもの
   MainSprite menu;            // 0x2B8, コンティニューの選択肢。cursor に応じてポーズ 135 / 136 を貼る。 flags に SPRFLAG_GAMEOVER を含む
   rgb555 menuPltt[16];        // 0x318, GameOverManager_SetupMenu が gObjPlttData[0x2A90] から CpuSet でコピーし、menu.pltt をここに向ける。GameOverManager_UpdateMenuPltt が最後の1色 (index 15) を点滅させる
-  u8* script;                 // 0x338, kw: '.r', GameOverManager_StateOpenMenu が TextBox_Start に渡す
+  u8* script;                 // 0x338, '.r', GameOverManager_StateOpenMenu が TextBox_Start に渡す
   s10_6 scaleX;               // 0x33C, GameOverManager_UpdateLetters が毎フレーム全 letters の sprite.scaleX へコピーする
   s10_6 scaleY;               // 0x33E, 同上で sprite.scaleY
   u8 state;                   // 0x340, GameOverManager_Update が呼ぶ PTR_ARRAY_085ad034 の添字 (0..4)
@@ -34,10 +34,10 @@ typedef struct GameOverManager {
   u8 cursor;                  // 0x343, 選択肢のカーソル。0 で menu のポーズ 135、 1 で 136
   u16 plttTimer;              // 0x344, 0..49 を回り、GameOverManager_UpdateMenuPltt が menuPltt[15] の明度を切り替える
   u16 timer;                  // 0x346, 各 state / animState で 0 から数え直す汎用カウンタ
-  u16 cost[2];                // 0x348, kw: '.c' (default: 500,250), コンティニューに必要な太陽エネルギー量で gStat->solarBank と比較する
+  u16 cost[2];                // 0x348, '.c=500,250', コンティニューに必要な太陽エネルギー量で gStat->solarBank と比較する
   u8 costIdx;                 // 0x34C, cost の添字。GameOverManager_StateWaitFlag が gPlayerPtr[0]->unk_37c が 28 か 29 のとき 1 にする
   u8 unk_34d[3];              // 0x34D, padding?
-  s32 scriptId;               // 0x350, kw: '.p', コンティニューを選ばずに終わるとき cost[costIdx] を引数にして Script_ExecById へ渡す
+  s32 scriptId;               // 0x350, '.p', コンティニューを選ばずに終わるとき cost[costIdx] を引数にして Script_ExecById へ渡す
 } GameOverManager;
 static_assert(sizeof(GameOverManager) == 852);
 
@@ -60,7 +60,6 @@ void FUN_0822adac(void);
 void FUN_0822f244(void);
 s32 FUN_0809c08c(s32 mode);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
-u8* FUN_0823d340(void);
 
 // animState 0。BGM を切り替えて、横に潰れた状態からロゴのアニメーションを始める
 void GameOverManager_AnimStart(GameOverManager* p) {
@@ -105,7 +104,7 @@ void GameOverManager_AnimShrinkY2(GameOverManager* p) {
 // animState 4。横も等倍 (0x40) まで広げて、そこでロゴが完成する
 void GameOverManager_AnimGrowX(GameOverManager* p) {
   p->scaleX += 0x03;
-  if (p->scaleX > 0x3F) {
+  if (p->scaleX >= FRACUNIT_6) {
     p->scaleX = FRACUNIT_6;
     p->animState = 5;
     p->timer = 0;
@@ -121,7 +120,7 @@ void GameOverManager_AnimHold(GameOverManager* p) {
   }
 }
 
-// animState 6。オテンコの声を挟んでから、ロゴを横に引き伸ばして潰し、8文字を非表示にする
+// animState 6, 声を挟んでから、ロゴを横に引き伸ばして潰し、8文字を非表示にする
 void GameOverManager_AnimClose(GameOverManager* p) {
   p->timer++;
   if (p->timer == 30) {
@@ -139,8 +138,7 @@ void GameOverManager_AnimClose(GameOverManager* p) {
   if (p->scaleX > 0x7F) {
     s32 i;
 
-    p->scaleX = 0x01;
-    p->scaleY = 0x01;
+    p->scaleX = 0x01, p->scaleY = 0x01;
     for (i = 0; i < 8; i++) {
       p->letters[i].sprite.flags |= SPRFLAG_HIDDEN;
     }
@@ -149,12 +147,10 @@ void GameOverManager_AnimClose(GameOverManager* p) {
   }
 }
 
-// animState 7。90 フレーム待ってから animState を 8 (終了) にする
+// animState 7, 90 フレーム待ってから animState を 8 (終了) にする
 void GameOverManager_AnimEnd(GameOverManager* p) {
   p->timer++;
-  if (p->timer > 89) {
-    p->animState = 8;
-  }
+  if (p->timer >= 90) p->animState = 8;
 }
 
 // 現在の拡大率を8文字に配り、等倍を超えた分だけ中央から左右へ文字間を開く
@@ -208,12 +204,12 @@ NON_MATCH void GameOverManager_UpdateAnim(GameOverManager* p) {
 
 // ロゴの8文字と選択肢のスプライトを描画リストへ入れる
 void GameOverManager_AddSprites(GameOverManager* p) {
-  AuxSprite* sprite = &p->letters[0].sprite;
+  GameOverLetter* letter = &p->letters[0];
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    Video_AddAuxSpriteIntoDrawList(sprite, 0);
-    sprite = (AuxSprite*)((u8*)sprite + sizeof(GameOverLetter));
+    Video_AddAuxSpriteIntoDrawList((AuxSprite*)letter, 0);
+    letter++;
   }
   Video_AddMainSpriteIntoDrawList(&p->menu, 0);
   p->spritesAdded = TRUE;
@@ -225,15 +221,14 @@ NON_MATCH void GameOverManager_SetupLetters(GameOverManager* p) {
   s32 i;
   s32 x = 56;
 
-  p->scaleX = 0x01;
-  p->scaleY = 0x01;
+  p->scaleX = 0x01, p->scaleY = 0x01;
   for (i = 0; i < 8; i++) {
     p->letters[i].baseX = x;
     p->letters[i].baseY = 72;
     if (i > 3) {
       p->letters[i].baseX = x + 16;
     }
-    Video_GetAuxSprite(&p->letters[i].gfx, 0x654B);
+    Video_GetAuxSprite(&p->letters[i].gfx, SPRITE_GAMEOVER);
     AuxSprite_Setup(&p->letters[i].sprite, &p->letters[i].gfx, 0);
     p->letters[i].sprite.priority = 0;
     p->letters[i].sprite.flags = SPRFLAG_GAMEOVER | SPRFLAG_OAM_DIRECT | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE | SPRFLAG_HIDDEN;
@@ -254,23 +249,19 @@ void GameOverManager_UpdateMenuPltt(GameOverManager* p) {
   rgb555 color;
 
   if (p->plttTimer <= 9) {
-    color = 0x1F;
+    color = 31;
   } else if (p->plttTimer <= 17) {
-    color = 0x1B;
+    color = 27;
   } else if (p->plttTimer <= 25) {
-    color = 0x12;
+    color = 18;
   } else if (p->plttTimer <= 33) {
-    color = 0x0A;
+    color = 10;
   } else {
-    color = 0x1B;
-    if (p->plttTimer <= 41) {
-      color = 0x12;
-    }
+    color = 27;
+    if (p->plttTimer <= 41) color = 18;
   }
   p->plttTimer++;
-  if (p->plttTimer > 49) {
-    p->plttTimer = 0;
-  }
+  if (p->plttTimer > 49) p->plttTimer = 0;
   p->menuPltt[15] = color;
 }
 
@@ -328,21 +319,20 @@ void GameOverManager_StateShowLogo(GameOverManager* p) {
 // state 2。ロゴが完成したらメッセージ枠を開き、コンティニューに必要な太陽エネルギーが足りるかで表示行を変える
 void GameOverManager_StateOpenMenu(GameOverManager* p) {
   GameOverManager_UpdateAnim(p);
-  if (p->animState != 6) {
-    return;
+  if (p->animState == 6) {
+    p->menu.flags &= ~SPRFLAG_HIDDEN;
+    FUN_0809c08c(3);
+    TextBox_SetRect(1, 13, 28, 4);
+    TextBox_SetInstant(1);
+    TextBox_Start(p->script);
+    TextBox_SetVarValue(0, p->cost[p->costIdx]);
+    if ((s16)gStat->solarBank >= p->cost[p->costIdx]) {
+      TextBox_ShowLine(0);
+    } else {
+      TextBox_ShowLine(1);
+    }
+    p->state = 3;
   }
-  p->menu.flags &= ~SPRFLAG_HIDDEN;
-  FUN_0809c08c(3);
-  TextBox_SetRect(1, 13, 28, 4);
-  TextBox_SetInstant(1);
-  TextBox_Start(p->script);
-  TextBox_SetVarValue(0, p->cost[p->costIdx]);
-  if ((s16)gStat->solarBank >= p->cost[p->costIdx]) {
-    TextBox_ShowLine(0);
-  } else {
-    TextBox_ShowLine(1);
-  }
-  p->state = 3;
 }
 
 NAKED void FUN_080a7800(GameOverManager* p) { INCFUNC("asm/func/FUN_080a7800.inc"); }
@@ -369,12 +359,12 @@ NON_MATCH s32 GameOverManager_Update(GameOverManager* p) {
 
 s32 GameOverManager_Destroy(GameOverManager* p) {
   if (p->spritesAdded) {
-    AuxSprite* sprite = &p->letters[0].sprite;
+    GameOverLetter* sprite = &p->letters[0];
     s32 i;
 
     for (i = 0; i < 8; i++) {
-      AuxSprite_Remove(sprite);
-      sprite = (AuxSprite*)((u8*)sprite + sizeof(GameOverLetter));
+      AuxSprite_Remove((AuxSprite*)sprite);
+      sprite++;
     }
     MainSprite_Remove(&p->menu);
   }
@@ -389,9 +379,7 @@ s32 GameOverManager_Init(GameOverManager* p) {
   p->animState = 0;
   p->timer = 0;
   p->spritesAdded = FALSE;
-  if (VM_SeekToKeyword('r')) {
-    p->script = FUN_0823d340();
-  }
+  if (VM_SeekToKeyword('r')) p->script = FUN_0823d340();
   if (VM_SeekToKeyword('c')) {
     p->cost[0] = Script_GetValue();
     p->cost[1] = Script_GetValue();

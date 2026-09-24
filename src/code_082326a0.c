@@ -76,7 +76,7 @@ NAKED void FUN_082342a8(MapTileOverride* p) { INCFUNC("asm/func/FUN_082342a8.inc
 
 NAKED s32 FUN_082342cc(unknown* param_1, unknown* param_2) { INCFUNC("asm/func/FUN_082342cc.inc"); }
 
-NAKED bool32 FUN_082345ec(void) { INCFUNC("asm/func/FUN_082345ec.inc"); }
+bool32 FUN_082345ec(void) { return bool32_0300077c; }
 
 NAKED s32 FUN_082345f8(FileID id) { INCFUNC("asm/func/FUN_082345f8.inc"); }
 
@@ -110,7 +110,7 @@ NAKED void FUN_08234d50(u16 param_1, Vec3* pos) { INCFUNC("asm/func/FUN_08234d50
 
 NAKED s32 FUN_08234db8(FileID id) { INCFUNC("asm/func/FUN_08234db8.inc"); }
 
-NAKED void FUN_08234ddc(PathData* paths) { INCFUNC("asm/func/FUN_08234ddc.inc"); }
+void FUN_08234ddc(PathData* paths) { gCollisionMap->paths = paths; }
 
 NAKED bool32 FUN_08234de8(unknown* p, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_08234de8.inc"); }
 
@@ -120,9 +120,18 @@ NAKED s32 FUN_08234e78(unknown* param_1, s32 param_2, unknown* param_3, s32 para
 
 NAKED Path* FUN_08234f44(u8 idx) { INCFUNC("asm/func/FUN_08234f44.inc"); }
 
-NAKED PathNode* FUN_08234f6c(Path* path) { INCFUNC("asm/func/FUN_08234f6c.inc"); }
+// その経路の先頭ノードを指す
+PathNode* FUN_08234f6c(Path* path) {
+  u8* base = (u8*)gCollisionMap->paths;
 
-NAKED void FUN_08234f80(Vec3* dst, PathNode* nodes, u8 idx) { INCFUNC("asm/func/FUN_08234f80.inc"); }
+  return (PathNode*)(base + path->nodeOffset);
+}
+
+// 経路ノードの座標を Vec3 の X/Z に取り出す
+void FUN_08234f80(Vec3* dst, PathNode* nodes, u8 idx) {
+  dst->x = nodes[idx].x;
+  dst->z = nodes[idx].y;
+}
 
 NAKED s32 FUN_08234f90(Vec3* dst, u8 pathIdx, u8 nodeIdx) { INCFUNC("asm/func/FUN_08234f90.inc"); }
 
@@ -146,7 +155,7 @@ NAKED s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 param_4, s32 param_5)
 
 NAKED s32 FUN_082358f4(FileID id) { INCFUNC("asm/func/FUN_082358f4.inc"); }
 
-NAKED void FUN_08235918(NavMesh* navMesh) { INCFUNC("asm/func/FUN_08235918.inc"); }
+void FUN_08235918(NavMesh* navMesh) { gCollisionMap->navMesh = navMesh; }
 
 NAKED bool32 FUN_08235924(struct NavRect* rects, Vec3* pos, u32 idx) { INCFUNC("asm/func/FUN_08235924.inc"); }
 
@@ -158,7 +167,7 @@ NAKED s32 FUN_08235a84(unknown* param_1, Vec3* param_2, Vec3* param_3) { INCFUNC
 
 NAKED s32 FUN_08235f40(unknown* param_1, Vec3* param_2, Vec3* param_3) { INCFUNC("asm/func/FUN_08235f40.inc"); }
 
-NAKED void FUN_08235fd0(unknown* p) { INCFUNC("asm/func/FUN_08235fd0.inc"); }
+void FUN_08235fd0(u16* p) { *p = 0; }
 
 NAKED bool32 FUN_08235fd8(unknown* p) { INCFUNC("asm/func/FUN_08235fd8.inc"); }
 

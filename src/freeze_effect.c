@@ -44,16 +44,15 @@ void FreezeEffect_SetState(FreezeEffect* p, void* fn) {
 // 出ている周りの粒子を中心の粒子へ近づけ、6 フレームで消す
 void FreezeEffect_GatherSubParticles(FreezeEffect* p) {
   s32 i;
-  s32 n, d;
 
   for (i = 0; i < 8; i++) {
     if (p->subPtcls[i].active) {
       if (++p->subPtcls[i].frame > 5) {
-        p->subPtcls[i].base.flags |= 1;
-        p->subPtcls[i].active = 0;
+        p->subPtcls[i].base.flags |= SPRFLAG_HIDDEN;
+        p->subPtcls[i].active = FALSE;
       } else {
-        n = 8 - p->subPtcls[i].frame;
-        d = n + 1;
+        s32 n = 8 - p->subPtcls[i].frame;
+        s32 d = n + 1;
         p->subPtcls[i].base.pos.x = Div(p->subPtcls[i].base.pos.x * n + p->ptcl.pos.x, d);
         p->subPtcls[i].base.pos.y = Div(p->subPtcls[i].base.pos.y * n + p->ptcl.pos.y, d);
         p->subPtcls[i].base.pos.z = Div(p->subPtcls[i].base.pos.z * n + p->ptcl.pos.z, d);
@@ -72,7 +71,7 @@ NON_MATCH void FreezeEffect_SpawnSubParticle(FreezeEffect* p) {
   u32 idx;
 
   if (++p->spawnTimer > 1) {
-    p->subPtcls[p->spawnIdx].base.flags &= ~1;
+    p->subPtcls[p->spawnIdx].base.flags &= ~SPRFLAG_HIDDEN;
     p->subPtcls[p->spawnIdx].base.pos = p->ptcl.pos;
     table = gRandomTable;
     idx = (gRandTableIdx + 1) & 0x3FF;
@@ -81,7 +80,7 @@ NON_MATCH void FreezeEffect_SpawnSubParticle(FreezeEffect* p) {
     p->subPtcls[p->spawnIdx].base.pos.y += (u8)table[idx] - 127;
     gRandTableIdx = (idx + 1) & 0x3FF;
     p->subPtcls[p->spawnIdx].base.pos.z += (u8)table[gRandTableIdx] - 127;
-    p->subPtcls[p->spawnIdx].active = 1;
+    p->subPtcls[p->spawnIdx].active = TRUE;
     p->subPtcls[p->spawnIdx].frame = 0;
     if (++p->spawnIdx > 7) {
       p->spawnIdx = 0;
@@ -98,7 +97,7 @@ void FreezeEffect_StateGather(FreezeEffect* p) {
   FreezeEffect_GatherSubParticles(p);
   FreezeEffect_SpawnSubParticle(p);
   if (++p->stateTimer > 31) {
-    p->ptcl.flags &= ~1;
+    p->ptcl.flags &= ~SPRFLAG_HIDDEN;
     PlaySound_082406e0(0x133);
     FreezeEffect_SetState(p, FreezeEffect_StateVanish);
   }
@@ -192,7 +191,7 @@ void FreezeEffect_InitHitbox(FreezeEffect* p, s32 param_2, s32 param_3, s32 para
   Vec3 size, offset;
   size.x = 100, size.y = 100, size.z = 100;
   offset.x = 0, offset.y = 0, offset.z = 0;
-  Hitbox_Init(hitbox, 0, 0x2100, 0, param_2, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_8, 0, param_2, &size, &offset);
   Hitbox_SetAttack(hitbox, param_3, 0, 0x4000, 0, 0);
   hitbox->angle = param_4;
   Hitbox_SetHandler(hitbox, NULL, p);
@@ -226,7 +225,7 @@ void FreezeEffect_InitSubParticles(FreezeEffect* p) {
     FUN_0822dadc(ptcl, 1);
     ptcl->priority = 2;
     ptcl->offsetZ = 0xEC;
-    p->subPtcls[i].active = 0;
+    p->subPtcls[i].active = FALSE;
     p->subPtcls[i].frame = 0;
   }
 }

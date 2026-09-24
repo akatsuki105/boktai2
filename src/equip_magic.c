@@ -56,7 +56,7 @@ void magic_082434f0(magic32_t n) {
 }
 
 void FUN_08243558(void) {
-  if (VM_SeekToKeyword(109)) {
+  if (VM_SeekToKeyword('m')) {
     magic_082434f0(Script_GetValue());
   }
 }
@@ -67,7 +67,7 @@ bool32 IsMagicUnlocked(magic32_t n) {
 }
 
 bool32 FUN_08243584(void) {
-  if (VM_SeekToKeyword(109)) {
+  if (VM_SeekToKeyword('m')) {
     return IsMagicUnlocked(Script_GetValue());
   }
 }

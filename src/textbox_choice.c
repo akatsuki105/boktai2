@@ -27,26 +27,26 @@ typedef struct {
   u8 lineLast[8];                  // 0x24, 各行の末尾の選択肢番号
   u8 lineChoiceCount[8];           // 0x2C, 各行の選択肢の数。0 の行は上下移動で飛ばす
   u8 lineCount;                    // 0x34, winH を超えない
-  u8 fromScript;                   // 0x35, 0 なら callback、1 なら scriptID で結果を返す
-  u8 winX;                         // 0x36, 以下4つはテキストボックスの矩形 (タイル単位)。VM キーワード 'a'
+  bool8 fromScript;                // 0x35, 0 なら callback、1 なら scriptID で結果を返す
+  u8 winX;                         // 0x36, kw: '.a', 以下4つはテキストボックスの矩形 (タイル単位)
   u8 winY;                         // 0x37
   u8 winW;                         // 0x38
   u8 winH;                         // 0x39, 行数の上限でもある
   u8 choiceWidth;                  // 0x3A, <ALTER> からの文字数
   u8 col;                          // 0x3B, 行頭からの文字数
-  u8 cancelable;                   // 0x3C, VM キーワード 'c'。0 以外なら B でキャンセルできる
+  bool8 cancelable;                // 0x3C, kw: '.c', 0 以外なら B でキャンセルできる
   u8 cursorDelay;                  // 0x3D, Init が 10 を入れる。0 になるかキーが押されるまでカーソルを出さない
   u8 repeatDelay;                  // 0x3E, 移動のたびに 30。同じキーを押し続けている間だけ減る
   u8 widthOverride;                // 0x3F, <ALTER=n> の n
   u32 heldKeys;                    // 0x40, 前のフレームに押されていた十字キー
-  u32 scriptArgs[4];               // 0x44, VM キーワード 'A'。scriptID に argv[1..4] として渡す
-  u32 scriptID;                    // 0x54, VM キーワード 'p'
+  u32 scriptArgs[4];               // 0x44, kw: '.A', scriptID に argv[1..4] として渡す
+  u32 scriptID;                    // 0x54, kw: '.p'
   void (*callback)(s32 selected);  // 0x58, fromScript が 0 のときに選択結果を渡して呼ぶ
-  u8* textPC;                      // 0x5C, VM キーワード 'r' の位置。選択肢の元になる文字列への参照がここにある
-  s32 stringBase;                  // 0x60, VM キーワード 'i'。Textbox_LookupString に渡す前に足す
+  u8* textPC;                      // 0x5C, kw: '.r' の位置, 選択肢の元になる文字列への参照がここにある
+  s32 stringBase;                  // 0x60, kw: '.i', Textbox_LookupString に渡す前に足す
   TextBoxChoiceEntry entries[16];  // 0x64
   u8 tagValue[64];                 // 0xA4, <TAG=...> の = 以降を詰める作業用バッファ
-  MainSpriteGfx gfx;               // 0xE4, SPRITE_UI_START_MENU を読み込む
+  MainSpriteGfx gfx;               // 0xE4, SPRITE_UI_START_MENU
   MainSprite cursorL;              // 0x104, 選択肢の左に付く
   MainSprite cursorR;              // 0x164, 選択肢の右に付く
 } TextBoxChoice;
@@ -55,38 +55,35 @@ static_assert(sizeof(TextBoxChoice) == 452);
 IWRAM_DATA TextBoxChoice* gTextBoxChoice = NULL;  // 0x03000028
 
 u8* FUN_0823d340(void);
-
-s32 TextBox_ParseDecimal(u8* s, s32 len);
-u8* TextBox_FindChar(u8* s, u8 c);
-s32 TextBox_GetExtendWidth(s32 idx);
-s32 TextBox_GetVarWidth(s32 idx);
-s32 TextBox_GetRect(s32* rect);
 s32 FUN_080488fc(void);
 u16 FUN_08048afc(u8* s);
-bool32 TextBox_IsFinished(void);
 
 const char s_ALTER_08251b3c[] = "ALTER";
 const char s_EXTEND_08251b44[] = "EXTEND";
 const char s_VAR_08251b4c[] = "VAR";
 const char s_ALTER_08251b50[] = "/ALTER";
 
+// 文字を n 個ぶん進める
+static inline void TextBoxChoice_AdvanceCol(TextBoxChoice* p, s32 n) {
+  p->choiceWidth += n;
+  p->col += n;
+}
+
 void TextBoxChoice_ClearGlobal(void) { gTextBoxChoice = NULL; }
 
 // 選んだ結果を呼び出し元へ返す。argv[0] が選択番号、argv[1..4] は 'A' で渡された引数
 void TextBoxChoice_Finish(TextBoxChoice* p, s32 selected) {
-  u32 argv[5];
-  ScriptArgs args;
-  s32 i;
+  if (p->fromScript) {
+    u32 argv[5];
+    ScriptArgs args;
+    s32 i;
 
-  if (p->fromScript != 0) {
     argv[0] = selected;
     for (i = 0; i < 4; i++) {
       argv[i + 1] = p->scriptArgs[i];
     }
     args.argc = 5, args.argv = argv;
-    if (p->scriptID != 0) {
-      Script_ExecById(p->scriptID, &args);
-    }
+    if (p->scriptID != 0) Script_ExecById(p->scriptID, &args);
   } else {
     p->callback(selected);
   }
@@ -411,12 +408,6 @@ NON_MATCH u8* TextBoxChoice_ParseTag(TextBoxChoice* p, u8* s) {
 #endif
 }
 
-// 文字を n 個ぶん進める
-static inline void TextBoxChoice_AdvanceCol(TextBoxChoice* p, s32 n) {
-  p->choiceWidth += n;
-  p->col += n;
-}
-
 // 文字列を頭から走査して行ごとの選択肢の範囲を数え直す
 NON_MATCH void TextBoxChoice_ScanChoices(TextBoxChoice* p, u8* pc) {
 #ifdef NONMATCHING_C
@@ -550,7 +541,7 @@ TextBoxChoice* TextBoxChoice_Create(u8* textPC, s32 stringBase, void (*callback)
   p = CreateEntity(ENTITY_UNK_11, sizeof(TextBoxChoice));
   if (p != NULL) {
     SetEntityRoutine(p, TextBoxChoice_Update, TextBoxChoice_Destroy);
-    p->fromScript = 0;
+    p->fromScript = FALSE;
     p->callback = callback;
     if (TextBoxChoice_Init(p, textPC, stringBase, settings) < 0) {
       KillEntity((Entity*)p);
@@ -574,11 +565,7 @@ TextBoxChoice* TextBoxChoice_CreateFromScript(void) {
   if (gTextBoxChoice != NULL) {
     return NULL;
   }
-  if (VM_SeekToKeyword('r')) {
-    textPC = FUN_0823d340();
-  } else {
-    textPC = NULL;
-  }
+  textPC = VM_SeekToKeyword('r') ? FUN_0823d340() : NULL;
   stringBase = VM_GetKeywordValue('i', 0);
   scriptID = 0;
   if (VM_SeekToKeyword('p')) {
@@ -610,10 +597,11 @@ TextBoxChoice* TextBoxChoice_CreateFromScript(void) {
       args[i] = 0;
     }
   }
+
   p = CreateEntity(ENTITY_UNK_11, sizeof(TextBoxChoice));
   if (p != NULL) {
     SetEntityRoutine(p, TextBoxChoice_Update, TextBoxChoice_Destroy);
-    p->fromScript = 1;
+    p->fromScript = TRUE;
     p->scriptID = scriptID;
     for (i = 0; i < 4; i++) {
       p->scriptArgs[i] = args[i];

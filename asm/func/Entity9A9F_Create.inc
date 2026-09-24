@@ -77,7 +77,7 @@ _081DFCE8:
 	ldr r2, _081DFDD0 @ =FUN_081de214
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_081dd9b8
+	bl Entity9A9F_SetState
 	adds r1, r6, #0
 	adds r1, #0x20
 	movs r0, #3

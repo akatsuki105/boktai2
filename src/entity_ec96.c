@@ -9,15 +9,15 @@
 
 typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_8
-  u16 id;                        // 0x18, 常に 0xEC96
-  u8 breakable;                  // 0x1A, script keyword 0x74, 1 なら hp を消費して破壊できる (パレットも別)
-  u8 broken;                     // 0x1B, 1 になると消滅処理に入る
-  u16 hp;                        // 0x1C, script keyword 0x6C (既定 0x32), 被弾で HitboxData.damage の分だけ減る
+  u16 id;                        // 0x18
+  bool8 breakable;               // 0x1A, '.t', 1 なら hp を消費して破壊できる (パレットも別)
+  bool8 broken;                  // 0x1B, 1 になると消滅処理に入る
+  u16 hp;                        // 0x1C, '.l' (default: 50), 被弾で HitboxData.damage の分だけ減る
   u8 damageTimer;                // 0x1E, 被弾時に 10 がセットされ毎フレーム減る (この間だけ点滅と振動をする)
   u8 unk_1f;                     // 0x1F, padding?
   u32 timer;                     // 0x20, 毎フレーム +1, 被弾して unk_1b が立つときに 0 に戻る
-  s32 scriptID;                  // 0x24, script keyword 0x65, 消滅時に Script_ExecById に渡す
-  Vec3 pos;                      // 0x28, script keyword 0x70 で読む
+  s32 scriptID;                  // 0x24, '.e', 消滅時に Script_ExecById に渡す
+  Vec3 pos;                      // 0x28, '.p'
   HitboxData hitbox;             // 0x30
   MapTileOverride tileOverride;  // 0x80
   AuxSpriteGfx gfx;              // 0x90
@@ -30,12 +30,12 @@ NON_MATCH void FUN_08013288(HitboxData* a, HitboxData* b, EntityEC96* p) {
 #ifdef NONMATCHING_C
   Hitbox_ApplyDamage(a, b);
   if (b->damage != 0) {
-    if (p->breakable == 0) {
+    if (!p->breakable) {
       p->damageTimer = 10;
       PlaySound_082406e0(0x13E);
     } else {
       if ((s16)(p->hp -= b->damage) < 0) {
-        p->broken = 1;
+        p->broken = TRUE;
         p->timer = 0;
         PlaySound_082406e0(0x14A);
       } else {
@@ -53,8 +53,6 @@ NON_MATCH void FUN_08013288(HitboxData* a, HitboxData* b, EntityEC96* p) {
 
 s32 FUN_08014da0(s32 param_1, s32 param_2, Vec3* pos, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
-static inline void ClearHitboxFlags(HitboxData* p, HitboxFlags flags) { p->flags &= ~flags; }
-
 // 被弾中は描画位置を揺らし、壊れたら破片を出してスクリプトを実行してから自身を消す
 NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
 #ifdef NONMATCHING_C
@@ -64,10 +62,8 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
     if (p->damageTimer != 0) {
       p->sprite.pos = p->pos;
       if (--p->damageTimer == 0) {
-        if (p->breakable == 1) {
-          Video_SetAuxSpritePltt(&p->gfx, 0x288);
-        }
-        ClearHitboxFlags(&p->hitbox, HBFLAG_UNK_2);
+        if (p->breakable) Video_SetAuxSpritePltt(&p->gfx, 0x288);
+        Hitbox_ClearFlags(&p->hitbox, HBFLAG_UNK_2);
       } else {
         idx = (gRandTableIdx + 1) & 0x3FF;
         p->sprite.pos.x = p->sprite.pos.x - 8 + (gRandomTable[idx] & 0xF);
@@ -79,9 +75,7 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
   } else {
     FUN_08014da0(3, 4, &p->pos, 0x3C, 0x1E, 0x10, 8, 8, 0, 0x100, 0x18, 0x10);
     FUN_08014da0(8, 8, &p->pos, 0x3C, 0x1E, 0x16, 8, 8, 0, 0x100, 0x18, 0x10);
-    if (p->scriptID != 0) {
-      Script_ExecById(p->scriptID, NULL);
-    }
+    if (p->scriptID != 0) Script_ExecById(p->scriptID, NULL);
     KillEntity((Entity*)p);
   }
   p->timer++;
@@ -139,13 +133,9 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
     Video_SetAuxSpritePltt(gfx, 0x287);
   }
   hitbox = &p->hitbox;
-  size.x = 0x82;
-  size.y = 0x80;
-  size.z = 0x82;
-  offset.x = 0;
-  offset.y = 0x80;
-  offset.z = 0;
-  Hitbox_Init(hitbox, p->id, 0x4001, 0, 0x10, &size, &offset);
+  size.x = 0x82, size.y = 0x80, size.z = 0x82;
+  offset.x = 0, offset.y = 0x80, offset.z = 0;
+  Hitbox_Init(hitbox, p->id, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   pos = &p->pos;
   Hitbox_SetPos(hitbox, pos, 0);
   Hitbox_SetPowerAndAttributes(hitbox, 0, 0, 0);

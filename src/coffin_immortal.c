@@ -14,22 +14,22 @@
 typedef struct {
   Entity e;              // ENTITY_UNK_8
   EntityMsgBox msgbox;   // 0x18
-  bool16 linked;         // 0x4C, 0 以外なら Init で msgbox を EntityMsgBus に登録し、Destroy で外す (script keyword 0x4F)
+  bool16 linked;         // 0x4C, '.o', 0 以外なら Init で msgbox を EntityMsgBus に登録し、Destroy で外す
   u16 state;             // 0x4E, PTR_ARRAY_085ac044 の添字, 変更時に stateTimer を 0 に戻す
-  u16 coffinID;          // 0x50, GetOwnedCoffinID() の結果, metasprite 番号 (x*7) とパレット行 (x+0x207) を選ぶ
+  u16 coffinID;          // 0x50, GetOwnedCoffinID() の結果, metasprite 番号 (x*7) とパレット行 (x+519) を選ぶ
   u16 scale;             // 0x52, Init で 0x7F0, >>4 して sprites[0] の拡縮に使う
   u32 scriptDelay;       // 0x54, stateTimer がこの値になったら scriptID を実行する (FUN_08089ff0)
-  u16 height;            // 0x58, script keyword 0x68 (既定 0x400), sprites[0].pos.y に加算
+  u16 height;            // 0x58, '.h=0x400', sprites[0].pos.y に加算
   u16 heightInit;        // 0x5A, Init で height と同じ値, 書き込みのみ
-  s16 spread;            // 0x5C, script keyword 0x6D (既定 0x200), sprites[1..4] の x/z に ± する
+  s16 spread;            // 0x5C, '.m=0x200', sprites[1..4] の x/z に ± する
   s16 spreadInit;        // 0x5E, Init で spread と同じ値, 書き込みのみ
   u16 shakeX;            // 0x60, 棺桶の中の敵が暴れたときの揺れ, (rand & 0x1F) - 0x10, pos.x に加算
   u16 shakeZ;            // 0x62, 同上, pos.z に加算
   u32 stateTimer;        // 0x64
-  u32 scriptID;          // 0x68, Script_ExecById に渡す (script keyword 0x65)
-  Vec3 pos;              // 0x6C, 既定は gStat->playerPos (script keyword 0x70), 各ノードの pos にコピーされる
+  u32 scriptID;          // 0x68, '.e', Script_ExecById に渡す
+  Vec3 pos;              // 0x6C, '.p=gStat->playerPos', 各ノードの pos にコピーされる
   AuxSprite sprites[5];  // 0x74
-  AuxSpriteGfx gfx;      // 0x150, Video_GetAuxSprite(&gfx, SPRITE_COFFIN), sprites が共有
+  AuxSpriteGfx gfx;      // 0x150, SPRITE_COFFIN
   rgb555* pltt;          // 0x16C, plttBuf か gObjPlttData のパレット行を指す (FUN_08089b48)
   rgb555 plttBuf[16];    // 0x170, FUN_08089b48 で2つのパレットをブレンドした結果
 } Entity28CB;
@@ -37,8 +37,8 @@ static_assert(sizeof(Entity28CB) == 400);
 
 // パレット行 from と to を t/64 の割合でブレンドして pltt にする (t が 0 か 64 ならブレンドせずにそのパレットを指す)
 void FUN_08089b48(Entity28CB* p, s32 from, s32 to, s32 t) {
-  rgb555* src1 = &gObjPlttData[(from + 0x207) * 16];
-  rgb555* src2 = &gObjPlttData[(to + 0x207) * 16];
+  rgb555* src1 = &gObjPlttData[(from + 519) * 16];
+  rgb555* src2 = &gObjPlttData[(to + 519) * 16];
   rgb555* dst;
   s32 r1, g1, b1, r2, g2, b2;
   s32 i;

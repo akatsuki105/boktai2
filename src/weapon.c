@@ -138,11 +138,10 @@ NAKED bool32 FUN_08242d90(void) { INCFUNC("asm/func/FUN_08242d90.inc"); }
 
 bool32 FUN_08242eb0(void) {
   s32 i, slot;
-  weapon32_t w;
 
-  if (VM_SeekToKeyword(102) != 0) {
-    w = Script_GetValue();
-    if (VM_SeekToKeyword(116) == 0) {
+  if (VM_SeekToKeyword('f')) {
+    weapon32_t w = Script_GetValue();
+    if (!VM_SeekToKeyword('t')) {
       return FALSE;
     }
 
@@ -185,12 +184,10 @@ void FUN_08242f84(s32 n) {
 }
 
 bool32 FUN_08242f9c(void) {
-  s32 len, i;
-  weapon32_t w;
-
-  if (VM_SeekToKeyword(119) != 0) {
-    w = Script_GetValue();
-    if (VM_SeekToKeyword(100) != 0) {
+  if (VM_SeekToKeyword('w')) {
+    s32 len, i;
+    weapon32_t w = Script_GetValue();
+    if (VM_SeekToKeyword('d')) {
       len = Script_GetValue() ? 48 : 16;
     } else {
       len = 16;

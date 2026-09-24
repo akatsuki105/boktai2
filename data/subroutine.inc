@@ -422,7 +422,7 @@ gSubroutineTable:
 	.4byte 0xA4FC, Elevator_Create
 	.4byte 0xA61C, FUN_080a62a0
 	.4byte 0xA628, FUN_080a0fac
-	.4byte 0xA687, EntityA687_Create
+	.4byte 0xA687, BgPlttDimmer_Create
 	.4byte 0xA76D, FUN_0820cf6c
 	.4byte 0xA7CE, FUN_0820d124
 	.4byte 0xA864, FUN_080c008c

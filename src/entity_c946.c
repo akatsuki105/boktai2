@@ -22,8 +22,10 @@ typedef struct {
 typedef struct EntityC946 {
   Entity e;  // 0x0, ENTITY_UNK_8
   u8 unk_18[0x1c - 0x18];
-  u32 unk_1c;  // 0x01C
-  u8 unk_20[0x30c - 0x20];
+  u32 unk_1c;    // 0x01C
+  u8 unk_20[6];  // 0x020
+  u16 unk_26;    // 0x026
+  u8 unk_28[0x30c - 0x28];
   AuxSprite node_30c;       // 0x30C
   AuxSpriteGfx sprite_338;  // 0x338
   u16 x_354;                // 0x354
@@ -58,6 +60,6 @@ EntityC946* EntityC946_Create(u32 arg, u32 _) {
   return p;
 }
 
-NAKED void FUN_0820fe94(EntityC946* p, u32 val) { INCFUNC("asm/func/FUN_0820fe94.inc"); }
+void FUN_0820fe94(EntityC946* p, u32 val) { p->unk_26 = val; }
 
 INCBIN(".rodata", "data/entity_c946.bin");  // ./tmp/bin.sh ./baserom.gba 0x085af0ec 0x085af9ac ./data/entity_c946.bin

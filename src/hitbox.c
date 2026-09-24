@@ -99,7 +99,7 @@ void Hitbox_Unregister(HitboxData* p) {
 }
 
 // 当たり判定1つを作る。属性やダメージ関係は全部 0 に戻す
-void Hitbox_Init(HitboxData* p, u32 id, u32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset) {
+void Hitbox_Init(HitboxData* p, u32 id, HitboxFlags32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset) {
   p->flags = flags;
   p->unk_4 = id;
   p->unk_8 = unk_8;

@@ -44,7 +44,7 @@
 	bl FUN_081dc688
 	bl FUN_081e0c14
 	bl FUN_081fa1b0
-	bl FUN_081d9a60
+	bl LinkConnect_ClearGlobal
 	bl FUN_081dd9ac
 	pop {r0}
 	bx r0

@@ -12,6 +12,7 @@ typedef u32 HitboxFlags32;
 #define HBFLAG_UNK_8 (1 << 8)    // 0x100
 #define HBFLAG_UNK_9 (1 << 9)    // 0x200, 立っていると相手の hitState bit0 を消費する (FUN_0807e784)
 #define HBFLAG_UNK_10 (1 << 10)  // 0x400, 立っていると相手の hitState bit1 で1回だけに制限する (FUN_0807e784)
+#define HBFLAG_UNK_12 (1 << 12)  // 0x1000
 #define HBFLAG_UNK_13 (1 << 13)  // 0x2000
 #define HBFLAG_UNK_14 (1 << 14)  // 0x4000
 
@@ -63,8 +64,11 @@ typedef struct HitboxData {
 } HitboxData;
 static_assert(sizeof(HitboxData) == 80);
 
+static inline void Hitbox_SetFlags(HitboxData* p, HitboxFlags flags) { p->flags |= flags; }
+static inline void Hitbox_ClearFlags(HitboxData* p, HitboxFlags flags) { p->flags &= ~flags; }
+
 void Hitbox_Register(HitboxData* p);
-void Hitbox_Init(HitboxData* p, u32 id, u32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset);
+void Hitbox_Init(HitboxData* p, u32 id, HitboxFlags32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset);
 void Hitbox_SetPos(HitboxData* p, Vec3* pos, u32 unk_8);
 void Hitbox_SetAttack(HitboxData* p, s32 power, s32 unk_40, s32 weakness, s32 attributes, s32 unk_44);
 void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 power, u32 attributes, u32 weakness);

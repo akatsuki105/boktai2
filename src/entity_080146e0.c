@@ -11,11 +11,8 @@ typedef struct {
   u8 lifetime;    // 0x03, FUN_08014730 で lifeBase + (rand & lifeRandMask)
   u16 mapIdx;     // 0x04, 当たり判定マップのブロック番号, FUN_08014148 が前フレームの値と比べて跳ね返る向きを決める
   s16 height;     // 0x06, 毎フレーム velY を加算, 床の高さと比較
-  s16 velX;       // 0x08, 毎フレーム ptcl.pos.x に加算
-  s16 velY;       // 0x0A, 毎フレーム -1 (重力)
-  s16 velZ;       // 0x0C, 毎フレーム ptcl.pos.z に加算
-  u8 unk_0e[2];   // 0x0E, padding?
-  Particle ptcl;  // 0x10, 根拠: FUN_0822da70 / Particle_SetOffset / FUN_0822da50 / Particle_Remove
+  Vec3 vel;       // 0x08, 速度
+  Particle ptcl;  // 0x10
 } ScatterParticle;
 static_assert(sizeof(ScatterParticle) == 56);  // 根拠: Init / Destroy / FUN_0801442c のストライド 0x38
 
@@ -57,15 +54,15 @@ NON_MATCH void Entity080146e0_UpdateFlying(Entity080146e0* p, Entity080146e0Data
   alive = 0;
   for (i = 0; i < data->count; i++) {
     if (data->ptcls[i].active) {
-      if (data->kind < 0x15) {
+      if (data->kind < 21) {
         group = p->group1;
       } else {
         group = p->group2;
       }
-      data->ptcls[i].ptcl.pos.x += data->ptcls[i].velX;
-      data->ptcls[i].ptcl.pos.z += data->ptcls[i].velZ;
-      data->ptcls[i].height += data->ptcls[i].velY;
-      data->ptcls[i].velY--;
+      data->ptcls[i].ptcl.pos.x += data->ptcls[i].vel.x;
+      data->ptcls[i].ptcl.pos.z += data->ptcls[i].vel.z;
+      data->ptcls[i].height += data->ptcls[i].vel.y;
+      data->ptcls[i].vel.y--;
       data->ptcls[i].ptcl.pos.y = data->ptcls[i].height;
       data->ptcls[i].ptcl.tileNum = group->tile + u32_ARRAY_085aa850[data->kind];
       data->ptcls[i].ptcl.priority = data->priority;
@@ -96,7 +93,7 @@ s32 Entity080146e0_Update(Entity080146e0* p) {
 
   if (gEntityDisableFlags != 0) {
     data = p->data;
-    for (i = 0; i <= 5; i++) {
+    for (i = 0; i < 6; i++) {
       if (data->active) {
         FUN_0801442c(p, data);
       }
@@ -104,7 +101,7 @@ s32 Entity080146e0_Update(Entity080146e0* p) {
     }
   } else {
     data = p->data;
-    for (i = 0; i <= 5; i++) {
+    for (i = 0; i < 6; i++) {
       if (data->active) {
         if (data->kind < 9) {
           FUN_08014148(p, data);
@@ -120,13 +117,12 @@ s32 Entity080146e0_Update(Entity080146e0* p) {
 }
 
 s32 Entity080146e0_Destroy(Entity080146e0* p) {
-  Entity080146e0Data* data;
   s32 i, j;
 
-  for (i = 0; i <= 5; i++) {
-    data = &p->data[i];
+  for (i = 0; i < 6; i++) {
+    Entity080146e0Data* data = &p->data[i];
     if (data->active) {
-      for (j = 0; j <= 7; j++) {
+      for (j = 0; j < 8; j++) {
         if (data->ptcls[j].active) {
           Particle_Remove(&data->ptcls[j].ptcl);
         }
@@ -183,10 +179,10 @@ NON_MATCH void Entity080146e0_RemoveAll(void) {
   if (p == NULL) {
     return;
   }
-  for (i = 0; i <= 5; i++) {
+  for (i = 0; i < 6; i++) {
     data = &p->data[i];
     if (data->active) {
-      for (j = 0; j <= 7; j++) {
+      for (j = 0; j < 8; j++) {
         if (data->ptcls[j].active) {
           Particle_Remove(&data->ptcls[j].ptcl);
           data->ptcls[j].active = FALSE;

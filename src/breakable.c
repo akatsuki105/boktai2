@@ -14,21 +14,21 @@ typedef void (*BreakableUpdate)(struct BreakableManager*, struct Breakable*);
 // マップに置かれた壊せるオブジェクト1個。スクリプトコマンド 0x2D8F (Breakable_Spawn) が1個ずつ置く
 // 大聖堂の狛犬(壊すと宝箱が出現するやつ)で使っているが、他の壊せるオブジェクトでも流用可能っぽい(実際に流用されているかは不明)
 typedef struct Breakable {
-  u16 id;                  // 0x00, kw: '.n', hitbox の ID になり、壊れたときのスクリプトの argv[0] にもなる
+  u16 id;                  // 0x00, '.n', hitbox の ID になり、壊れたときのスクリプトの argv[0] にもなる
   bool8 active;            // 0x02, BreakableManager_FindFreeSlot が 0 のスロットを空きとして返す。Update は 0 のものを飛ばす
   bool8 stateChanged;      // 0x03, Breakable_SetUpdate が 1 にし、Breakable_TakeStateChanged が読んで 0 に戻す
-  s16 hp;                  // 0x04, kw: '.l' (default: 10), Breakable_OnHit が相手の HitboxData.damage を引き、1 未満で Breakable_UpdateAlive が破壊処理へ進む
+  s16 hp;                  // 0x04, '.l=10', Breakable_OnHit が相手の HitboxData.damage を引き、1 未満で Breakable_UpdateAlive が破壊処理へ進む
   u16 unk_6;               // 0x06, Breakable_Spawn が 0 を書くだけ
-  u8 unk_8;                // 0x08, kw: '.k', 読み手が見つかっていない
+  u8 unk_8;                // 0x08, '.k', 読み手が見つかっていない
   u8 flashTimer;           // 0x09, 被弾で 4, 0 になったら Video_SetAuxSpritePltt でパレットを戻す
-  u8 brokenPose;           // 0x0A, kw: '.P' + 1。壊れたときに sprite.metaspriteIdx へ入る
+  u8 brokenPose;           // 0x0A, '.P'+1, 壊れたときに sprite.metaspriteIdx へ入る
   u8 shakeTimer;           // 0x0B, 被弾で 10。0 でない間は hitbox.flags の bit2 を立てて当たらなくし、sprite.pos を乱数で揺らす
-  u16 scriptOnBreak;       // 0x0C, kw: '.d', 壊れたとき Script_ExecById に渡す
+  u16 scriptOnBreak;       // 0x0C, '.d', 壊れたとき Script_ExecById に渡す
   u16 unk_e;               // 0x0E, padding?
-  Vec3 pos;                // 0x10, kw: '.p', Hitbox_SetPos で hitbox の座標として登録され、sprite.pos の基準にもなる
+  Vec3 pos;                // 0x10, '.p', Hitbox_SetPos で hitbox の座標として登録され、sprite.pos の基準にもなる
   u32 unk_18;              // 0x18, Breakable_SetUpdate が 0 にする。読み手が見つかっていない
   BreakableUpdate update;  // 0x1C, BreakableManager_Update が毎フレーム呼ぶ
-  AuxSpriteGfx gfx;        // 0x20, kw: '.t' (default: SPRITE_KOMAINU)
+  AuxSpriteGfx gfx;        // 0x20, '.t=SPRITE_KOMAINU'
   AuxSprite sprite;        // 0x3C
   HitboxData hitbox;       // 0x68, Hitbox_SetHandler が Breakable_OnHit を被弾コールバックに設定する
 } Breakable;
@@ -37,7 +37,7 @@ static_assert(sizeof(Breakable) == 184);
 // 壊せるオブジェクトのプールを持ち、毎フレーム各オブジェクトの update を呼ぶ
 typedef struct BreakableManager {
   Entity e;          // 0x00, ENTITY_UNK_8
-  s32 count;         // 0x18, kw: '.n' (default: 4)
+  s32 count;         // 0x18, '.n=4'
   Breakable* items;  // 0x1C, BreakableManager_Init が Malloc(count * sizeof(Breakable)) したもの
 } BreakableManager;
 static_assert(sizeof(BreakableManager) == 32);
@@ -132,8 +132,7 @@ NON_MATCH void Breakable_UpdateAlive(BreakableManager* p, Breakable* item) {
   if (item->hp <= 0) {
     if (item->scriptOnBreak != 0) {
       arg = item->id;
-      sa.argc = 1;
-      sa.argv = &arg;
+      sa.argc = 1, sa.argv = &arg;
       Script_ExecById(item->scriptOnBreak, &sa);
     }
     item->sprite.metaspriteIdx = item->brokenPose;
@@ -146,7 +145,7 @@ NON_MATCH void Breakable_UpdateAlive(BreakableManager* p, Breakable* item) {
     pos.z += 0x80;
     FUN_08015ce0(4, 1, 0x2000, 0x40, 0, 0x100, 2, 3, 0xC, 6, &pos);
     FUN_08015ce0(6, 1, 0x2000, 0x40, 0, 0x100, 4, 4, 0xA, 4, &pos);
-    Entity080146e0_SpawnAtAngle(4, 3, &pos, 0, 0x100, 0x10, 4, 0xC, 3, 0x1E, 0xF);
+    Entity080146e0_SpawnAtAngle(4, 3, &pos, 0, 0x100, 0x10, 4, 0xC, 3, 30, 0xF);
     FUN_08014da0(4, 6, &pos, 0, 0x14, 4, 0xA, 6, 0, 0x100, 0x14, 4);
   } else {
     if (item->flashTimer != 0) {
@@ -306,7 +305,7 @@ s32 Breakable_Spawn(void) {
   hitbox = &item->hitbox;
   size.x = 0x80, size.y = 0x100, size.z = 0x80;
   offset.x = -0x80, offset.y = 0x80, offset.z = 0x80;
-  Hitbox_Init(hitbox, item->id, 0x4001, 0, 0x10, &size, &offset);
+  Hitbox_Init(hitbox, item->id, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetHandler(hitbox, Breakable_OnHit, item);
   Hitbox_SetPos(hitbox, &item->pos, 0);
   Hitbox_Register(hitbox);

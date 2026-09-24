@@ -3010,7 +3010,7 @@ _081E2200:
 	strh r0, [r1]
 	ldr r0, _081E2224 @ =0x00001770
 	movs r1, #1
-	bl Entity081d9d38_Create
+	bl LinkConnect_Create
 	cmp r0, #0
 	bne _081E2228
 _081E221C:
@@ -3023,7 +3023,7 @@ _081E2228:
 	ldr r1, _081E2270 @ =FUN_081e1a90
 	ldr r2, _081E2274 @ =FUN_081e1b40
 	adds r0, r4, #0
-	bl FUN_081d9d88
+	bl LinkConnect_SetCallbacks
 	adds r0, r4, #0
 	bl FUN_081e1a44
 	adds r0, r4, #0
@@ -11179,7 +11179,7 @@ _081E6330:
 	movs r0, #0x96
 	lsls r0, r0, #2
 	movs r1, #0
-	bl Entity081d9d38_Create
+	bl LinkConnect_Create
 	cmp r0, #0
 	bne _081E6360
 	ldr r0, _081E6354 @ =FUN_081e6458
@@ -11201,7 +11201,7 @@ _081E6360:
 	ldr r1, _081E637C @ =FUN_081e4b68
 	ldr r2, _081E6380 @ =FUN_081e4bb8
 	adds r0, r6, #0
-	bl FUN_081d9d88
+	bl LinkConnect_SetCallbacks
 _081E636A:
 	ldr r0, _081E6384 @ =0x0000162A
 	adds r1, r6, r0
@@ -11289,7 +11289,7 @@ _081E6410:
 	movs r0, #0xc8
 	lsls r0, r0, #1
 	movs r1, #0
-	bl Entity081d9d38_Create
+	bl LinkConnect_Create
 	cmp r0, #0
 	bne _081E6438
 	adds r0, r5, #0
@@ -11303,7 +11303,7 @@ _081E6438:
 	ldr r1, _081E6450 @ =FUN_081e4bdc
 	ldr r2, _081E6454 @ =FUN_081e4c40
 	adds r0, r5, #0
-	bl FUN_081d9d88
+	bl LinkConnect_SetCallbacks
 	ldrh r0, [r4]
 	adds r0, #1
 	strh r0, [r4]

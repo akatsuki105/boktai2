@@ -662,7 +662,7 @@ NON_MATCH void Video_RestoreWindowRect(u32 win) {
 }
 
 // ウィンドウの矩形を WINnH / WINnV に設定し、同じ値を控えにも残す
-void Video_SetWindowRect(u32 win, u32 left, u32 top, u32 right, u32 bottom) {
+void Video_SetWindowRect(s32 win, s32 left, s32 top, s32 right, s32 bottom) {
   if (win == 0) {
     gWIN0H = (left << 8) | right;
     REG_WIN0H = gWIN0H;

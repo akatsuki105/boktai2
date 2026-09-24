@@ -1,20 +1,19 @@
-#include "constants/sprite.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "msgbus.h"
-#include "sprite_main.h"
+#include "sprite.h"
 
-// デモのメッセージ cmd 7 で呼び出され、リンゴを 6 段のアニメーションで見せてからデモの待ちを解く
+// デモのメッセージ cmd 7 で呼び出され、リンゴ を 6段のアニメーションで見せてからデモの待ちを解く
 typedef struct {
   Entity e;              // 0x000, ENTITY_UNK_8
-  u32 state;             // 0x018, 0..5 の switch。5 フレームごとに次へ進む
-  u32 timer;             // 0x01C, Update の先頭と末尾で +1 されるので毎フレーム +2。4 を超えると state を進めて 0 に戻す
-  Vec3 pos;              // 0x020, Init の第2引数。両方の MainSprite が指す
+  u32 state;             // 0x018, 0..5 の switch, 5 フレームごとに次へ進む
+  u32 timer;             // 0x01C, Update の先頭と末尾で +1 されるので毎フレーム +2, 4 を超えると state を進めて 0 に戻す
+  Vec3 pos;              // 0x020, Init の第2引数, 両方の MainSprite が指す
   MainSpriteGfx gfx;     // 0x028, SPRITE_RINGO
-  MainSprite sprite;     // 0x048, prio 2。state 5 で animEvents の bit1 を見て終了を待つ
-  MainSprite sprite2;    // 0x0A8, prio 3。state 3 で SPRFLAG_HIDDEN を立てて消す
-  EntityMsgBox* msgBox;  // 0x108, Init の第3引数。終わったら EntityMsgBox_EndWait(msgBox, 1)
+  MainSprite sprite;     // 0x048, prio2, state 5 で animEvents の bit1 を見て終了を待つ
+  MainSprite sprite2;    // 0x0A8, prio3, state 3 で SPRFLAG_HIDDEN を立てて消す
+  EntityMsgBox* msgBox;  // 0x108, Init の第3引数, 終わったら EntityMsgBox_EndWait(msgBox, 1)
 } RingoDemoAnim;
 static_assert(sizeof(RingoDemoAnim) == 268);
 
@@ -24,8 +23,8 @@ s32 RingoDemoAnim_Update(RingoDemoAnim* p) {
     case 0: {
       p->timer++;
       if (p->timer > 4) {
-        MainSprite_SetAnim(&p->sprite, &p->gfx, 0x31, 2, MAIN_ANIM_FORCE_POSE);
-        MainSprite_SetAnim(&p->sprite2, &p->gfx, 0x32, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite, &p->gfx, 49, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite2, &p->gfx, 50, 2, MAIN_ANIM_FORCE_POSE);
         p->state++;
         p->timer = 0;
       }
@@ -34,8 +33,8 @@ s32 RingoDemoAnim_Update(RingoDemoAnim* p) {
     case 1: {
       p->timer++;
       if (p->timer > 4) {
-        MainSprite_SetAnim(&p->sprite, &p->gfx, 0x33, 2, MAIN_ANIM_FORCE_POSE);
-        MainSprite_SetAnim(&p->sprite2, &p->gfx, 0x34, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite, &p->gfx, 51, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite2, &p->gfx, 52, 2, MAIN_ANIM_FORCE_POSE);
         p->state++;
         p->timer = 0;
       }
@@ -44,21 +43,18 @@ s32 RingoDemoAnim_Update(RingoDemoAnim* p) {
     case 2: {
       p->timer++;
       if (p->timer > 4) {
-        MainSprite_SetAnim(&p->sprite, &p->gfx, 0x35, 2, MAIN_ANIM_FORCE_POSE);
-        MainSprite_SetAnim(&p->sprite2, &p->gfx, 0x36, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite, &p->gfx, 53, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite2, &p->gfx, 54, 2, MAIN_ANIM_FORCE_POSE);
         p->state++;
         p->timer = 0;
       }
       break;
     }
     case 3: {
-      MainSprite* sprite2;
-
       p->timer++;
       if (p->timer > 4) {
-        MainSprite_SetAnim(&p->sprite, &p->gfx, 0x37, 2, MAIN_ANIM_FORCE_POSE);
-        sprite2 = &p->sprite2;
-        sprite2->flags |= SPRFLAG_HIDDEN;
+        MainSprite_SetAnim(&p->sprite, &p->gfx, 55, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_Hide(&p->sprite2);
         p->state++;
         p->timer = 0;
       }
@@ -67,7 +63,7 @@ s32 RingoDemoAnim_Update(RingoDemoAnim* p) {
     case 4: {
       p->timer++;
       if (p->timer > 4) {
-        MainSprite_SetAnim(&p->sprite, &p->gfx, 0x38, 2, MAIN_ANIM_FORCE_POSE);
+        MainSprite_SetAnim(&p->sprite, &p->gfx, 56, 2, MAIN_ANIM_FORCE_POSE);
         p->state++;
         p->timer = 0;
       }

@@ -40,6 +40,7 @@ extern const WeaponData gWeaponDB[66];
 
 Weapon* GetWeapon(s32 slot);
 weapon32_t GetWeaponID(s32 slot);
+u32 GetWeaponKind(s32 slot);
 void SetWeaponFoundFlag(weapon32_t n);
 void FUN_08064658(struct Player* p, Weapon* w);
 void weapon_08064664(struct Player* p, Weapon* w);

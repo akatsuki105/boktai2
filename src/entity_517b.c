@@ -9,13 +9,13 @@ bool32 FUN_0800271c(void);
 // 下地は savedPltt (バンク2の退避), 行き先は gBgPlttBuffer[0x30 + i] で、level がその配合比になる
 typedef struct {
   Entity e;              // 0x00, ENTITY_UNK_12
-  u16 litMask;           // 0x18, VM '.f', bit i が i 番目のグループ。mode 1 ではそのグループを 0x20 固定 (バンク3の色そのもの) にし、mode 0/2 では level に従わせる
-  u16 fadeMask;          // 0x1A, VM '.n', mode 1 と mode 2 でだけ見る。litMask に入っていないグループのうち level に従わせるもの
-  u8 mode;               // 0x1C, VM '.m', 0 = level を 0x10..0x20 で往復, 1 = 0 から 0x20 へ上げる, 2 = 0x20 から 0 へ下げる
-  u8 unk_1d[3];          // 0x1D
-  s16 level;             // 0x20, 0x00..0x20 のブレンド量。0 で savedPltt の色、0x20 でバンク3の色
-  s16 step;              // 0x22, VM '.a' (mode 1 の既定 2, mode 2 の既定 1)。16フレームごとに level へ足す。mode 0 では往復のため ±1 が入る
-  s32 timer;             // 0x24, BgPlttGroupFader_Update が毎フレーム +1。下位4bitが0のフレームだけ level を動かす
+  u16 litMask;           // 0x18, '.f', bit i が i 番目のグループ, mode 1 ではそのグループを 0x20 固定 (バンク3の色そのもの) にし、mode 0/2 では level に従わせる
+  u16 fadeMask;          // 0x1A, '.n', mode 1 と mode 2 でだけ見る, litMask に入っていないグループのうち level に従わせるもの
+  u8 mode;               // 0x1C, '.m', 0 = level を 0x10..0x20 で往復, 1 = 0 から 0x20 へ上げる, 2 = 0x20 から 0 へ下げる
+  u8 unk_1d[3];          // 0x1D, padding?
+  s16 level;             // 0x20, 0x00..0x20 のブレンド量, 0 で savedPltt の色, 0x20 でバンク3の色
+  s16 step;              // 0x22, '.a' (mode 1 の既定 2, mode 2 の既定 1)。16フレームごとに level へ足す, mode 0 では往復のため ±1 が入る
+  s32 timer;             // 0x24, BgPlttGroupFader_Update が毎フレーム +1, 下位4bitが0のフレームだけ level を動かす
   rgb555 savedPltt[16];  // 0x28, BgPlttGroupFader_SavePltt が gBgPlttBuffer[0x20..0x2F] を CpuSet で退避したもの
 } BgPlttGroupFader;
 static_assert(sizeof(BgPlttGroupFader) == 72);

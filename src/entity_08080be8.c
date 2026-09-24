@@ -13,6 +13,8 @@ typedef struct Entity08080be8 {
 } Entity08080be8;
 static_assert(sizeof(Entity08080be8) == 408);
 
+void FUN_0808094c(Entity08080be8* p);
+
 NAKED void FUN_080801f4(Entity08080be8* p, void (*fn)(Entity08080be8*)) { INCFUNC("asm/func/FUN_080801f4.inc"); }
 
 NAKED void FUN_08080204(Entity08080be8* p) { INCFUNC("asm/func/FUN_08080204.inc"); }
@@ -23,7 +25,7 @@ NAKED void FUN_080804a0(Entity08080be8* p) { INCFUNC("asm/func/FUN_080804a0.inc"
 
 NAKED void FUN_08080620(Entity08080be8* p) { INCFUNC("asm/func/FUN_08080620.inc"); }
 
-NAKED void FUN_08080648(HitboxData* a, HitboxData* b, Entity08080be8* p) { INCFUNC("asm/func/FUN_08080648.inc"); }
+void FUN_08080648(HitboxData* a, HitboxData* b, Entity08080be8* p) { FUN_080801f4(p, FUN_0808094c); }
 
 NAKED void FUN_0808065c(Entity08080be8* p) { INCFUNC("asm/func/FUN_0808065c.inc"); }
 
@@ -37,7 +39,10 @@ NAKED void FUN_080808cc(Entity08080be8* p) { INCFUNC("asm/func/FUN_080808cc.inc"
 
 NAKED void FUN_0808094c(Entity08080be8* p) { INCFUNC("asm/func/FUN_0808094c.inc"); }
 
-NAKED s32 Entity08080be8_Update(Entity08080be8* p) { INCFUNC("asm/func/Entity08080be8_Update.inc"); }
+s32 Entity08080be8_Update(Entity08080be8* p) {
+  p->updateCallback(p);
+  return 0;
+}
 
 NAKED s32 Entity08080be8_Destroy(Entity08080be8* p) { INCFUNC("asm/func/Entity08080be8_Destroy.inc"); }
 

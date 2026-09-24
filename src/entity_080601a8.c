@@ -37,7 +37,7 @@ NAKED void FUN_0805ff04(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) { 
 
 NAKED void FUN_0805ff34(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) { INCFUNC("asm/func/FUN_0805ff34.inc"); }
 
-NAKED void FUN_0805ff54(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) { INCFUNC("asm/func/FUN_0805ff54.inc"); }
+void FUN_0805ff54(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) {}
 
 NAKED void FUN_0805ff58(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) { INCFUNC("asm/func/FUN_0805ff58.inc"); }
 

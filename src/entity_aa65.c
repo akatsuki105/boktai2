@@ -84,10 +84,6 @@ void Hazard_EmitBreakEffect(Hazard* p) {
   FUN_08014da0(8, 7, &p->pos, 0x3C, 0x1E, 0x16, 8, 8, 0, 0x100, 0x18, 0x10);
 }
 
-static inline void SetHitboxFlags(HitboxData* p, HitboxFlags flags) { p->flags |= flags; }
-
-static inline void ClearHitboxFlags(HitboxData* p, HitboxFlags flags) { p->flags &= ~flags; }
-
 static inline bool32 Hazard_ContainsPoint(Hazard* p, Vec3* pos) { return pos->x >= p->min.x && pos->x <= p->max.x && pos->y >= p->min.y && pos->y <= p->max.y && pos->z >= p->min.z && pos->z <= p->max.z; }
 
 // hp が尽きた Hazard を片付け、生きているものは点滅を進めつつ、プレイヤーが範囲に入った最初の1個に攻撃判定を置く
@@ -130,12 +126,12 @@ NON_MATCH s32 HazardManager_Update(HazardManager* p) {
         Hazard_Remove(p, hazard, i);
       } else {
         if (hazard->damageTimer != 0) {
-          SetHitboxFlags(&hazard->hitbox, HBFLAG_UNK_2);
+          Hitbox_SetFlags(&hazard->hitbox, HBFLAG_UNK_2);
           if (--hazard->damageTimer == 0) {
             Video_SetAuxSpritePltt(&hazard->sprite, 0x11B);
           }
         } else {
-          ClearHitboxFlags(&hazard->hitbox, HBFLAG_UNK_2);
+          Hitbox_ClearFlags(&hazard->hitbox, HBFLAG_UNK_2);
         }
         if (playerPos != NULL && !registered) {
           if (Hazard_ContainsPoint(hazard, playerPos)) {

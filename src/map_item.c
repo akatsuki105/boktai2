@@ -1,6 +1,5 @@
 #include "animation.h"
 #include "collision_map.h"
-#include "constants/sprite.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -9,7 +8,7 @@
 #include "player.h"
 #include "random.h"
 #include "shadow.h"
-#include "sprite_aux.h"
+#include "sprite.h"
 #include "vm.h"
 
 extern u32 u32_03002bc0[];  // 0x03002BC0, プレイヤーごとのフラグ

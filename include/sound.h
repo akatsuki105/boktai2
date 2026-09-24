@@ -30,6 +30,7 @@ extern SoundID16 gSoundIDs[MUSIC_PLAYER_LENGTH];  // 0x3004820
 
 // --------------------------------------------
 
+void sound_08240264(SoundID32 id);
 void PlaySound_082406e0(SoundID32 id);
 void sound_08240740(SoundID32 id);
 void FUN_082407e0(void);

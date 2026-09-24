@@ -1,14 +1,7 @@
+#include "entity_9a9f.h"
+
 #include "entity.h"
 #include "global.h"
-
-typedef struct Entity9A9F {
-  Entity e;        // ENTITY_UNK_1
-  s16 playerIdx;   // 0x18, gPlayerPtr の添字 (-1 は該当なし), 根拠: Entity9A9F_Create が 0xFFFF で初期化し、FUN_0823c450 が負を弾いて gPlayerPtr[playerIdx] を引く
-  u8 unk_1a[730];  // 0x1A
-} Entity9A9F;
-static_assert(sizeof(Entity9A9F) == 756);
-
-extern Entity9A9F* gEntity9A9F;  // 0x03002C68
 
 Entity9A9F* FUN_081dd9a0(void) { return gEntity9A9F; }
 

@@ -11,7 +11,7 @@
 typedef struct {
   u32 magicNumber;            // 0x000, gScriptDirectoryBuildTime = 0x40A8186C がセットされる, ロード時にチェックしてそう
   u8 unk_004[14];             // 0x004
-  u16 unk_012;                // 0x012
+  s16 messageSpeed;           // 0x012, メッセージ速度設定, FUN_08049668 が TextRenderer.speed に入れる
   u8 unk_14[4];               // 0x014
   u16 stats[STAT_KINDS * 2];  // 0x018, ステータスポイントの割り振り と (多分タロットカードの)ドーピングボーナス, ステータス画面には合計値が表示される
   u16 savedHP;                // 0x028, コンティニュー用？
@@ -103,7 +103,7 @@ typedef struct {
   u16 solarBank;                 // 0x910
   u8 unk_912[2];                 // 0x912
   u16 linkBattles;               // 0x914, 根拠: bokpass
-  u8 unk_916[2];                 // 0x916
+  s16 unk_916;                   // 0x916, FUN_081dd25c が通信参加のたびに 1 増やす (9999 で頭打ち)。linkBattles の隣
   u8 unk_918[8];                 // 0x918, bokpass に記述があるが、用途も型も不明
   u32 weaponDex[2];              // 0x920
   //
@@ -111,12 +111,15 @@ typedef struct {
   // これ以降はセーブデータには含まれない(太陽ゲージなどのtmpデータ?)
   u8 unk_928[12];  // 0x928
   u16 unk_934;     // 0x934, UpdateOverheat
-  u8 unk_936[4];   // 0x936
+  u8 unk_936[2];   // 0x936
+  s16 unk_938;     // 0x938, FUN_080488fc がそのまま返す
   s16 unk_93a;     // 0x93A
   u8 unk_93c[4];   // 0x93C
   u16 lx;          // 0x940, 太陽光の強さ(ルクス), ライジングサンの効果も反映される,
   s16 sunGauge;    // 0x942, 現在の太陽ゲージ ライジングサンによる太陽ゲージも反映される, ゲームと同じく 0..10
-  u8 unk_944[20];  // 0x944
+  u8 unk_944[2];   // 0x944
+  s16 unk_946;     // 0x946, WeatherManager_Update が state 3 で 0x7FFF にし、それ以外では 0 まで減らす
+  u8 unk_948[16];  // 0x948
 } GameInfo;
 static_assert(sizeof(GameInfo) == 2392);
 

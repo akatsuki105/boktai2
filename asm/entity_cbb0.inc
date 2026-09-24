@@ -4502,7 +4502,7 @@ FUN_080af4d4: @ 0x080AF4D4
 	adds r0, r0, r1
 	ldr r0, [r0]
 	adds r1, r2, #0
-	bl FUN_080b283c
+	bl Generator_SetState
 	pop {r0}
 	bx r0
 	.align 2, 0
@@ -8373,7 +8373,7 @@ _080B1304:
 _080B131A:
 	ldm r5!, {r0}
 	movs r1, #1
-	bl FUN_080b283c
+	bl Generator_SetState
 	adds r4, #1
 	ldrb r0, [r7, #0x1e]
 	cmp r4, r0
@@ -8794,7 +8794,7 @@ _080B167A:
 	bne _080B1696
 	adds r0, r1, #0
 	movs r1, #5
-	bl FUN_080b283c
+	bl Generator_SetState
 _080B1696:
 	adds r4, #1
 	ldrb r0, [r5, #0x1e]
@@ -9638,7 +9638,7 @@ _080B1D10:
 	adds r0, r1, #0
 	mov r1, ip
 	adds r2, r6, #0
-	bl Entity080b3898_Create
+	bl Generator_Create
 	ldr r1, _080B1D58 @ =0x00000BE8
 	add r1, r8
 	adds r1, r1, r4

@@ -45,7 +45,6 @@ void TextPanel_StateDone(TextPanelManager* mgr, TextPanel* p);
 void TextPanel_StateIdle(TextPanelManager* mgr, TextPanel* p);
 void TextPanel_StateTyping(TextPanelManager* mgr, TextPanel* p);
 
-// エンティティを消さずにシングルトンの参照だけ手放す
 void TextPanelManager_ClearGlobal(void) { gTextPanelManager = NULL; }
 
 bool32 TextPanelManager_Exists(void) { return gTextPanelManager != NULL; }
@@ -117,18 +116,15 @@ s32 TextPanel_Create(s32 x, s32 y, s32 width, s32 height) {
     Free(p);
     return -1;
   }
-  p->x = x;
-  p->y = y;
-  p->width = width;
-  p->height = height;
+  p->x = x, p->y = y;
+  p->width = width, p->height = height;
   p->unk_08 = 0;
   p->msgIdx = 0;
   p->pendingMsgIdx = -1;
   p->scriptPc = NULL;
   p->unk_14 = 0;
   p->unk_16 = 1;
-  p->prev = NULL;
-  p->next = NULL;
+  p->prev = NULL, p->next = NULL;
   p->fn = TextPanel_StateIdle;
   r = &p->renderer;
   TextRenderer_Init(r, p->x, p->y, p->width, p->height);
@@ -289,10 +285,8 @@ s32 TextPanel_SetRect(s32 id, s32 x, s32 y, s32 width, s32 height) {
   }
   r = &p->renderer;
   FUN_0822ea60(p->x, p->y, p->width, p->height);
-  p->x = x;
-  p->y = y;
-  p->width = width;
-  p->height = height;
+  p->x = x, p->y = y;
+  p->width = width, p->height = height;
   TextRenderer_SetRect(r, p->x, p->y, p->width, p->height);
 }
 

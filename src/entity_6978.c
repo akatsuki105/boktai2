@@ -13,7 +13,7 @@ INCASM("asm/entity_6978.inc");
 
 NAKED s32 Entity6978_Update(Entity6978* p) { INCFUNC("asm/func/Entity6978_Update.inc"); }
 
-NAKED s32 Entity6978_Destroy(Entity6978* p) { INCFUNC("asm/func/Entity6978_Destroy.inc"); }
+s32 Entity6978_Destroy(Entity6978* p) { gEntity6978 = NULL; }
 
 NAKED s32 Entity6978_Init(Entity6978* p, u16 id) { INCFUNC("asm/func/Entity6978_Init.inc"); }
 
