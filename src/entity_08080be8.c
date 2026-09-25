@@ -1,3 +1,4 @@
+#include "definition.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
@@ -47,6 +48,10 @@ static_assert(sizeof(Entity08080be8) == 408);
 
 void FUN_0808094c(Entity08080be8* p);
 
+// src/player.c
+s32 FUN_0806f900(Player* player);
+s32 FUN_080d1b04(Player* player);
+
 // 状態関数を差し替えて経過フレームを 0 に戻す
 void Entity08080be8_SetState(Entity08080be8* p, Entity08080be8Func fn) {
   p->updateCallback = fn;
@@ -73,7 +78,20 @@ void FUN_08080648(HitboxData* a, HitboxData* b, Entity08080be8* p) { Entity08080
 
 NAKED void FUN_0808065c(Entity08080be8* p) { INCFUNC("asm/func/FUN_0808065c.inc"); }
 
-NAKED u32 FUN_080806a4(Entity08080be8* p) { INCFUNC("asm/func/FUN_080806a4.inc"); }
+// チャージ量に応じた威力を出す
+s32 Entity08080be8_GetDamage(Entity08080be8* p) {
+  s32 dmg;
+
+  if (p->unk_cd != 0) {
+    return 8;
+  }
+  if (gFlag030047a4 & FLAG030047A4_UNK_11) {
+    dmg = FUN_080d1b04(p->player);
+  } else {
+    dmg = FUN_0806f900(p->player);
+  }
+  return dmg + ((dmg * p->charge) >> 1);
+}
 
 NAKED void FUN_080806ec(Entity08080be8* p) { INCFUNC("asm/func/FUN_080806ec.inc"); }
 

@@ -31,7 +31,7 @@ _08080706:
 	ldrb r0, [r0]
 	strh r0, [r4, #0x2c]
 	adds r0, r4, #0
-	bl FUN_080806a4
+	bl Entity08080be8_GetDamage
 	adds r1, r4, #0
 	adds r1, #0x64
 	strh r0, [r1, #0x3c]
