@@ -16,7 +16,13 @@ void FUN_0807ddbc(Player* p);
 
 void FUN_08064a64(Player* p, const ArmorData* a);
 
-NAKED void FUN_08065200(Player* p) { INCFUNC("asm/func/FUN_08065200.inc"); }
+void FUN_08065200(Player* p) {
+  if (VM_SeekToKeyword('i') != 0) {
+    p->unk_18 = Script_GetValue();
+  } else {
+    p->unk_18 = 0;
+  }
+}
 
 NAKED void FUN_0806521c(Player* p) { INCFUNC("asm/func/FUN_0806521c.inc"); }
 
@@ -546,7 +552,12 @@ NAKED void FUN_0807adc0(Player* p) { INCFUNC("asm/func/FUN_0807adc0.inc"); }
 
 NAKED void FUN_0807ae6c(Player* p) { INCFUNC("asm/func/FUN_0807ae6c.inc"); }
 
-NAKED s32 FUN_0807afe8(Player* p) { INCFUNC("asm/func/FUN_0807afe8.inc"); }
+u32 FUN_0807afe8(void) {
+  if (VM_SeekToKeyword('i')) {
+    return Script_GetValue();
+  }
+  return 0;
+}
 
 NAKED s32 FUN_0807b000(Player* p) { INCFUNC("asm/func/FUN_0807b000.inc"); }
 
@@ -606,9 +617,9 @@ NAKED s32 FUN_0807b6b8(Player* p) { INCFUNC("asm/func/FUN_0807b6b8.inc"); }
 
 NAKED void FUN_0807b7a4(Player* p) { INCFUNC("asm/func/FUN_0807b7a4.inc"); }
 
-NAKED void FUN_0807b890(Player* p) { INCFUNC("asm/func/FUN_0807b890.inc"); }
+NAKED void FUN_0807b890(Player* p, u16 val) { INCFUNC("asm/func/FUN_0807b890.inc"); }
 
-NAKED void FUN_0807b8a8(Player* p) { INCFUNC("asm/func/FUN_0807b8a8.inc"); }
+NAKED void FUN_0807b8a8(Player* p, u16 val) { INCFUNC("asm/func/FUN_0807b8a8.inc"); }
 
 void FUN_0807b8c0(Player* p) { p->unk_96c = 0; }
 
@@ -716,7 +727,12 @@ NAKED void FUN_0807d118(Player* p) { INCFUNC("asm/func/FUN_0807d118.inc"); }
 
 NAKED s32 FUN_0807d164(Player* p) { INCFUNC("asm/func/FUN_0807d164.inc"); }
 
-NAKED s32 FUN_0807d180(Player* p) { INCFUNC("asm/func/FUN_0807d180.inc"); }
+u32 FUN_0807d180(void) {
+  if (VM_SeekToKeyword('e')) {
+    return Script_GetValue();
+  }
+  return 0;
+}
 
 NAKED void FUN_0807d198(Player* p) { INCFUNC("asm/func/FUN_0807d198.inc"); }
 
@@ -806,7 +822,7 @@ NAKED void Player_Unlock(Player* p) { INCFUNC("asm/func/Player_Unlock.inc"); }
 
 NAKED void FUN_0807dcec(Player* p) { INCFUNC("asm/func/FUN_0807dcec.inc"); }
 
-NAKED void FUN_0807ddbc(Player* p) { INCFUNC("asm/func/FUN_0807ddbc.inc"); }
+void FUN_0807ddbc(Player* p) { EntityMsgBus_Register(&p->msgbox, p->unk_24.id, 2); }
 
 void FUN_0807ddd4(Player* p) { EntityMsgBus_Unregister(&p->msgbox); }
 
