@@ -80,7 +80,15 @@ s32 Entity08080be8_Update(Entity08080be8* p) {
   return 0;
 }
 
-NAKED s32 Entity08080be8_Destroy(Entity08080be8* p) { INCFUNC("asm/func/Entity08080be8_Destroy.inc"); }
+s32 Entity08080be8_Destroy(Entity08080be8* p) {
+  s32 i;
+
+  AuxSprite_Remove(&p->sprite);
+  for (i = 0; i < 4; i++) {
+    Particle_Remove(&p->ptcls[i].base);
+  }
+  return 0;
+}
 
 NAKED void FUN_08080a10(Entity08080be8* p, s32 plttID) { INCFUNC("asm/func/FUN_08080a10.inc"); }
 
