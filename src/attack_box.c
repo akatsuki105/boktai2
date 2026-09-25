@@ -59,7 +59,11 @@ s32 AttackBoxManager_Destroy(AttackBoxManager* p) {
 
 void FUN_080ddab4(AttackBoxManager* p) {}
 
-NAKED s32 AttackBoxManager_Init(AttackBoxManager* p, u32 unused1) { INCFUNC("asm/func/AttackBoxManager_Init.inc"); }
+s32 AttackBoxManager_Init(AttackBoxManager* p, u32 unused1) {
+  FUN_080ddab4(p);
+  gAttackBoxManager = p;
+  return 0;
+}
 
 NAKED AttackBoxManager* AttackBoxManager_Create(void) { INCFUNC("asm/func/AttackBoxManager_Create.inc"); }
 
