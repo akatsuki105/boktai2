@@ -100,7 +100,7 @@ gSubroutineTable:
 	.4byte 0x2B8C, FUN_0800e908
 	.4byte 0x2D2B, Entity2D2B_Create
 	.4byte 0x2D30, EnemyAx_Create
-	.4byte 0x2D36, UnkSolarEntity_Create
+	.4byte 0x2D36, SunlightEntity_Create
 	.4byte 0x2D8F, Breakable_Spawn
 	.4byte 0x2E1C, FUN_080085f8
 	.4byte 0x2F01, Time_GetType

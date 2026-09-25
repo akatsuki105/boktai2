@@ -5,24 +5,25 @@
 #include "solar_sensor.h"
 #include "time.h"
 
-typedef struct UnkSolarEntity {
-  Entity e;  // 0x00, ENTITY_UNK_5
-  u8 unk_18;
-  u8 unk_19;
-  u16 unk_1a;
-  s16 lx;        // 0x1C, 太陽光の強さ
-  s16 sunGauge;  // 0x1E, lx を 10段階に分けたもの
-  u16 unk_20;
-  u16 unk_22;
-  u16 unk_24;
-  u16 unk_26;
-  u16 unk_28;
-  u16 unk_2a;
-  void (*updateCallback)(struct UnkSolarEntity*);  // 0x2C
-} UnkSolarEntity;
-static_assert(sizeof(UnkSolarEntity) == 48);
+// 太陽センサーを毎フレーム読んで lx と太陽ゲージを作り、その結果を gStat に流し込むシングルトン
+typedef struct SunlightEntity {
+  Entity e;                                        // 0x00, ENTITY_UNK_5
+  u8 unk_18;                                       // 0x18, FUN_08241f28 が 1 を書く。読み手は見つかっていない
+  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む。FUN_08241cf4 / FUN_08241e40 が回し、FUN_08241690 / FUN_082416d4 / FUN_08241704 / FUN_0824172c が見る
+  u16 unk_1a;                                      // 0x1A, このモジュールは触らない
+  s16 lx;                                          // 0x1C, 太陽光の強さ
+  s16 sunGauge;                                    // 0x1E, lx を 10段階に分けたもの
+  u16 stateTimer;                                  // 0x20, FUN_08241cf4 のフレーム数。state 0 で 29 を超えるとセンサーを有効化し、state 1 で 59 を超えると計測に入る。state が変わるたび 0
+  u16 adjustTimer;                                 // 0x22, FUN_08241da8 が A+L / A+R を押している間 +1 し、1フレームおきに u16_03004868 を増減させる
+  u16 tickCounter;                                 // 0x24, solar_08241ac0 が毎フレーム +1。(tickCounter & 0x3F) == 0 と (& 0x7F) == 0 で処理を間引く
+  u16 idleTimer;                                   // 0x26, solar_08241ac0 が入力のたび 0 に戻し、無操作なら 900 まで数える。900 に達すると太陽の恵みが止まる
+  u16 solarStandFrac;                              // 0x28, solar_08241ac0 が sunGauge/2 + 5 をここに貯め、>> 4 した繰り上がりを gStat->solarStand に足す
+  u16 unk_2a;                                      // 0x2A, padding?
+  void (*updateCallback)(struct SunlightEntity*);  // 0x2C
+} SunlightEntity;
+static_assert(sizeof(SunlightEntity) == 48);
 
-IWRAM_DATA UnkSolarEntity* gUnkSolarEntity = NULL;  // 0x03001708
+IWRAM_DATA SunlightEntity* gSunlightEntity = NULL;  // 0x03001708
 IWRAM_DATA u32 u32_0300170c = 0;                    // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
 
 COMMON_DATA u16 u16_03004864 = 0;
@@ -31,8 +32,18 @@ COMMON_DATA ALIGNED(4) u16 u16_0300486c = 0;
 COMMON_DATA ALIGNED(4) u16 u16_03004870 = 0;
 COMMON_DATA ALIGNED(4) u16 u16_ARRAY_03004874[6] = {};
 
-u32 FUN_0823d9ec(u32 y0, u32 m0, u32 d0, u32 y1, u32 m1, u32 d1);
-void Sensor_Enable(void);
+const u8 u8_ARRAY_ARRAY_08dbd798[6][2] = {
+    {2, 2},
+    {2, 0},
+    {0, 0},
+    {0, 1},
+    {1, 2},
+    {2, 2},
+};  // 0x08DBD798
+
+const u16 u16_ARRAY_08dbd7a4[11] = {0, 5, 12, 22, 34, 49, 66, 86, 109, 139, 140};  // 0x08DBD7A4
+
+const u16 u16_ARRAY_08dbd7ba[11] = {0, 1, 6, 13, 23, 35, 50, 67, 87, 110, 140};  // 0x08DBD7BA
 
 NAKED void FUN_08241650(void) { INCFUNC("asm/func/FUN_08241650.inc"); }
 
@@ -47,10 +58,10 @@ NAKED bool32 FUN_082416d4(void) { INCFUNC("asm/func/FUN_082416d4.inc"); }
 NAKED void FUN_08241704(void) { INCFUNC("asm/func/FUN_08241704.inc"); }
 
 void FUN_0824172c(void) {
-  if (gUnkSolarEntity != NULL) {
-    if (gUnkSolarEntity->unk_19 != 0) {
-      gUnkSolarEntity->unk_19 = 1;
-      gUnkSolarEntity->unk_20 = 0;
+  if (gSunlightEntity != NULL) {
+    if (gSunlightEntity->state != 0) {
+      gSunlightEntity->state = 1;
+      gSunlightEntity->stateTimer = 0;
       Sensor_Enable();
     }
     u16_0300486c = 0;
@@ -114,7 +125,7 @@ bool32 IsGunCooled(void) {
     if (FUN_0823d9ec(y0, m0, d0, y1, m1, d1) > 1) {
       return TRUE;
     }
-    elapsed = 86400;
+    elapsed = 86400;  // 1日分の秒数
   }
 
   curH = GetHour();
@@ -122,13 +133,13 @@ bool32 IsGunCooled(void) {
   curS = GetSecond();
   elapsed += (curH * 60 + curM) * 60 + curS - ((gStat->overheatTime.hour * 60 + gStat->overheatTime.minute) * 60 + gStat->overheatTime.second);
 
-  if (elapsed >= 180) {
+  if (elapsed >= 180) {  // 3分経ったらクールダウン
     return TRUE;
   }
   return FALSE;
 }
 
-NON_MATCH void UpdateOverheat(UnkSolarEntity* _ UNUSED) {
+NON_MATCH void UpdateOverheat(SunlightEntity* _ UNUSED) {
 #ifdef NONMATCHING_C
   if (gStat->thermal > 29999) {
     if ((gStat->sunGauge < 3) || (gStat->unk_934 & 0x4200)) {
@@ -150,35 +161,35 @@ NON_MATCH void UpdateOverheat(UnkSolarEntity* _ UNUSED) {
 #endif
 }
 
-NAKED void solar_08241ac0(UnkSolarEntity* p) { INCFUNC("asm/func/solar_08241ac0.inc"); }
+NAKED void solar_08241ac0(SunlightEntity* p) { INCFUNC("asm/func/solar_08241ac0.inc"); }
 
-NAKED void FUN_08241cf4(UnkSolarEntity* p) { INCFUNC("asm/func/FUN_08241cf4.inc"); }
+NAKED void FUN_08241cf4(SunlightEntity* p) { INCFUNC("asm/func/FUN_08241cf4.inc"); }
 
-NAKED u32 FUN_08241da8(UnkSolarEntity* p) { INCFUNC("asm/func/FUN_08241da8.inc"); }
+NAKED u32 FUN_08241da8(SunlightEntity* p) { INCFUNC("asm/func/FUN_08241da8.inc"); }
 
-NAKED void FUN_08241e40(UnkSolarEntity* p) { INCFUNC("asm/func/FUN_08241e40.inc"); }
+NAKED void FUN_08241e40(SunlightEntity* p) { INCFUNC("asm/func/FUN_08241e40.inc"); }
 
-s32 UnkSolarEntity_Update(UnkSolarEntity* p) {
+s32 SunlightEntity_Update(SunlightEntity* p) {
   if (u16_0300486c == 0) {
     p->updateCallback(p);
   }
   return 0;
 }
 
-s32 UnkSolarEntity_Destroy(UnkSolarEntity* _) {
+s32 SunlightEntity_Destroy(SunlightEntity* _) {
   Sensor_Disable();
-  gUnkSolarEntity = NULL;
+  gSunlightEntity = NULL;
   return 0;
 }
 
-NON_MATCH void FUN_08241f28(UnkSolarEntity* p) {
+NON_MATCH void FUN_08241f28(SunlightEntity* p) {
 #ifdef NONMATCHING_C
   u16 tmp;
   p->unk_18 = 1;
   p->updateCallback = FUN_08241cf4;
-  p->unk_19 = 0;
-  p->unk_20 = 0;
-  p->unk_22 = 0;
+  p->state = 0;
+  p->stateTimer = 0;
+  p->adjustTimer = 0;
   gStat->lx = u16_03004870;
   tmp = u16_ARRAY_03004874[0];
   gStat->sunGauge = tmp;
@@ -189,26 +200,26 @@ NON_MATCH void FUN_08241f28(UnkSolarEntity* p) {
 
 NAKED u32 ReflectClock(void) { INCFUNC("asm/func/ReflectClock.inc"); }
 
-NAKED void clock_08241fd0(UnkSolarEntity* p) { INCFUNC("asm/func/clock_08241fd0.inc"); }
+NAKED void clock_08241fd0(SunlightEntity* p) { INCFUNC("asm/func/clock_08241fd0.inc"); }
 
-s32 UnkSolarEntity_Init(UnkSolarEntity* p) {
+s32 SunlightEntity_Init(SunlightEntity* p) {
   FUN_08241f28(p);
   clock_08241fd0(p);
-  gUnkSolarEntity = p;
+  gSunlightEntity = p;
   return 0;
 }
 
-UnkSolarEntity* UnkSolarEntity_Create(void) {
-  if (gUnkSolarEntity == NULL) {
-    UnkSolarEntity* p = CreateEntity(ENTITY_UNK_5, 48);
+SunlightEntity* SunlightEntity_Create(void) {
+  if (gSunlightEntity == NULL) {
+    SunlightEntity* p = CreateEntity(ENTITY_UNK_5, 48);
     if (p != NULL) {
-      SetEntityRoutine(p, UnkSolarEntity_Update, UnkSolarEntity_Destroy);
-      if (UnkSolarEntity_Init(p) < 0) {
+      SetEntityRoutine(p, SunlightEntity_Update, SunlightEntity_Destroy);
+      if (SunlightEntity_Init(p) < 0) {
         KillEntity((Entity*)p);
         return NULL;
       }
     }
     return p;
   }
-  return gUnkSolarEntity;
+  return gSunlightEntity;
 }

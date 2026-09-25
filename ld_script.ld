@@ -525,6 +525,7 @@ SECTIONS {
     src/data/item.o (.rodata);
     src/demo.o (.rodata);
     src/vm_ctrl2.o (.rodata);
+    src/solar.o (.rodata);
     src/data5.o (.rodata);
     src/solar_sensor.o (.rodata);
     src/code_0823cd04.o (.rodata);

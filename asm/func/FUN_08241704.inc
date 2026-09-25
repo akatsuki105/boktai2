@@ -1,5 +1,5 @@
 	push {lr}
-	ldr r0, _08241724 @ =gUnkSolarEntity
+	ldr r0, _08241724 @ =gSunlightEntity
 	ldr r0, [r0]
 	cmp r0, #0
 	beq _0824171E
@@ -15,5 +15,5 @@ _0824171E:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08241724: .4byte gUnkSolarEntity
+_08241724: .4byte gSunlightEntity
 _08241728: .4byte 0x0300486C

@@ -63,7 +63,7 @@ s32 GetDaysInMonth(s32 year, s32 month) {
   }
 }
 
-NAKED s32 FUN_0823d9ec(s32 year1, s32 month1, s32 day1, s32 year2, s32 month2, s32 day2) { INCFUNC("asm/func/FUN_0823d9ec.inc"); }
+NAKED u32 FUN_0823d9ec(s32 year1, s32 month1, s32 day1, s32 year2, s32 month2, s32 day2) { INCFUNC("asm/func/FUN_0823d9ec.inc"); }
 
 // ツェラーの公式。0=日曜 .. 6=土曜
 s32 GetDayOfWeek(s32 year, s32 month, s32 day) {

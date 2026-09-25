@@ -76,6 +76,7 @@ extern SolarSensorManager gSolarSensorManager;  // 0x030057B0
 
 // --------------------------------------------
 
+void Sensor_Enable(void);
 void Sensor_Disable(void);
 s32 Sensor_GetRawLevel(void);
 
