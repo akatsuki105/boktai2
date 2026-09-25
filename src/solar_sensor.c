@@ -39,7 +39,20 @@ NAKED void FUN_08246660(void) { INCFUNC("asm/func/FUN_08246660.inc"); }
 // kind 0 の更新。何もしない
 void SSEEmitter_UpdateIdle(SolarSensorEntity* e, SSEEmitter* p) {}
 
-NAKED s32 SSEEmitter_Register(SolarSensorEntity* e, SSEEmitter* p) { INCFUNC("asm/func/SSEEmitter_Register.inc"); }
+// エミッタをリストの先頭に繋ぐ。既に繋がっていれば -1
+s32 SSEEmitter_Register(SolarSensorEntity* e, SSEEmitter* p) {
+  if (p->isRegistered != 0) {
+    return -1;
+  }
+  p->prev = NULL;
+  p->next = e->unk_20;
+  if (p->next != NULL) {
+    p->next->prev = p;
+  }
+  e->unk_20 = p;
+  p->isRegistered = 1;
+  return 0;
+}
 
 NAKED s32 SSEEmitter_Unregister(SolarSensorEntity* e, SSEEmitter* p) { INCFUNC("asm/func/SSEEmitter_Unregister.inc"); }
 
