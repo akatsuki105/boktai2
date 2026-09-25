@@ -4,6 +4,7 @@
 #include "entity_9a9f.h"
 #include "global.h"
 #include "input.h"
+#include "player.h"
 #include "save.h"
 #include "solar_sensor.h"
 #include "time.h"
@@ -27,7 +28,9 @@ typedef struct SunlightEntity {
 static_assert(sizeof(SunlightEntity) == 48);
 
 IWRAM_DATA SunlightEntity* gSunlightEntity = NULL;  // 0x03001708
-IWRAM_DATA u32 u32_0300170c = 0;                    // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
+extern u16 u16_03002b80;                            // 0x03002B80, FUN_0807e854 が 0 に戻す。1 で太陽レベル +4、2 で日光なし
+
+IWRAM_DATA u32 u32_0300170c = 0;  // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
 
 COMMON_DATA u16 u16_03004864 = 0;
 COMMON_DATA ALIGNED(4) u16 gDebugLx = 0;
@@ -136,7 +139,41 @@ s32 GetSunLevelMaxLx(Sunlevel slv) { return gSunLevelMaxLx[slv]; }
 // その太陽レベルに収まる lx の下限
 s32 GetSunLevelMinLx(Sunlevel slv) { return gSunLevelMinLx[slv]; }
 
-NAKED s32 FUN_082417ec(s32 lx) { INCFUNC("asm/func/FUN_082417ec.inc"); }
+// 生の lx に環境要因を掛ける。ライジングサン、天候、屋内判定でここが最終的な明るさを決める
+NON_MATCH s32 ApplyLxModifiers(s32 lx) {
+#ifdef NONMATCHING_C
+  if ((gFlag030047a4 & FLAG030047A4_UNK_11) == 0) {
+    s32 slv;
+
+    if (gPlayerPtr[0] != NULL && (gPlayerPtr[0]->flag378 & FLAG378_RISING_SUN)) {
+      slv = GetSunLevel(lx) * 2;
+      if (slv > 10) {
+        slv = 10;
+      }
+      lx = GetSunLevelMaxLx(slv);
+    }
+    if (gStat->unk_2b0[0] == 0) {
+      if (gStat->unk_2b0[1] != 0 && GetSunLevel(lx) > 2) {
+        lx = GetSunLevelMaxLx(2);
+      }
+    } else if (GetSunLevel(lx) < 2) {
+      lx = GetSunLevelMinLx(2);
+    }
+    if (u16_03002b80 == 1) {
+      slv = GetSunLevel(lx) + 4;
+      if (slv > 10) {
+        slv = 10;
+      }
+      lx = GetSunLevelMaxLx(slv);
+    } else if (u16_03002b80 == 2) {
+      lx = 0;
+    }
+  }
+  return lx;
+#else
+  INCFUNC("asm/func/ApplyLxModifiers.inc");
+#endif
+}
 
 s32 FUN_082418c0(void) {
   s32 n = Sensor_GetRawLevel();
@@ -234,7 +271,7 @@ NON_MATCH void UpdateSunlight(SunlightEntity* p) {
     case 2: {
       p->lx = FUN_082418c0();
       p->sunGauge = GetSunLevel(p->lx);
-      gStat->lx = FUN_082417ec(p->lx);
+      gStat->lx = ApplyLxModifiers(p->lx);
       gStat->sunGauge = GetSunLevel(gStat->lx);
       solar_08241ac0(p);
       gSavedLx = gStat->lx;
@@ -302,7 +339,7 @@ NON_MATCH void UpdateSunlightDebug(SunlightEntity* p) {
     case 2: {
       p->lx = UpdateDebugLx(p);
       p->sunGauge = GetSunLevel(p->lx);
-      gStat->lx = FUN_082417ec(p->lx);
+      gStat->lx = ApplyLxModifiers(p->lx);
       gStat->sunGauge = GetSunLevel(gStat->lx);
       solar_08241ac0(p);
       gSavedLx = gStat->lx;

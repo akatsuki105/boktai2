@@ -48,7 +48,7 @@ _08241E8C:
 	strh r0, [r7, #0x1e]
 	movs r1, #0x1c
 	ldrsh r0, [r7, r1]
-	bl FUN_082417ec
+	bl ApplyLxModifiers
 	ldr r5, _08241EE4 @ =0x030046A0
 	ldr r1, [r5]
 	movs r4, #0x94
