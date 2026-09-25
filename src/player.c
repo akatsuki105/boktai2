@@ -383,7 +383,14 @@ NAKED u32 Player_WeaponEffectKillCount(Player* p, HitboxData* a, HitboxData* b) 
 
 NAKED u32 Player_WeaponEffectRandom(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectRandom.inc"); }
 
-NAKED u32 Player_WeaponEffectAntiBeast(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiBeast.inc"); }
+u32 Player_WeaponEffectAntiBeast(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0080;
+
+  if (b->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
 
 NAKED u32 Player_WeaponEffectAntiThing(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiThing.inc"); }
 
