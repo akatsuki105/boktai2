@@ -30,4 +30,32 @@ typedef struct {
 } Entity080ac374;
 static_assert(sizeof(Entity080ac374) == 644);
 
-INCASM("asm/entity_080ac374.inc");
+NAKED void FUN_080abd74(Entity080ac374* p) { INCFUNC("asm/func/FUN_080abd74.inc"); }
+
+NAKED void FUN_080abe48(Entity080ac374* p, u32 param_2) { INCFUNC("asm/func/FUN_080abe48.inc"); }
+
+NAKED void FUN_080abf9c(Entity080ac374* p) { INCFUNC("asm/func/FUN_080abf9c.inc"); }
+
+NAKED void FUN_080abfec(Entity080ac374* p) { INCFUNC("asm/func/FUN_080abfec.inc"); }
+
+NAKED void FUN_080ac008(Entity080ac374* p) { INCFUNC("asm/func/FUN_080ac008.inc"); }
+
+NAKED void FUN_080ac090(Entity080ac374* p) { INCFUNC("asm/func/FUN_080ac090.inc"); }
+
+NAKED void FUN_080ac100(Entity080ac374* p) { INCFUNC("asm/func/FUN_080ac100.inc"); }
+
+NAKED void FUN_080ac13c(Entity080ac374* p) { INCFUNC("asm/func/FUN_080ac13c.inc"); }
+
+NAKED void FUN_080ac18c(Entity080ac374* p) { INCFUNC("asm/func/FUN_080ac18c.inc"); }
+
+NAKED void FUN_080ac21c(Entity080ac374* p) { INCFUNC("asm/func/FUN_080ac21c.inc"); }
+
+NAKED void FUN_080ac228(Entity080ac374* p, Vec3* pos) { INCFUNC("asm/func/FUN_080ac228.inc"); }
+
+NAKED s32 Entity080ac374_Update(Entity080ac374* p) { INCFUNC("asm/func/Entity080ac374_Update.inc"); }
+
+NAKED s32 Entity080ac374_Destroy(Entity080ac374* p) { INCFUNC("asm/func/Entity080ac374_Destroy.inc"); }
+
+NAKED s32 Entity080ac374_Init(Entity080ac374* p, Player* player, u8 param_3, Vec3* pos, u16 param_5, u16 param_6) { INCFUNC("asm/func/Entity080ac374_Init.inc"); }
+
+NAKED Entity080ac374* Entity080ac374_Create(Player* player, u8 param_2, Vec3* pos, u16 param_4, u16 param_5) { INCFUNC("asm/func/Entity080ac374_Create.inc"); }
