@@ -344,7 +344,7 @@ NAKED void FUN_08063248(Player* p) { INCFUNC("asm/func/FUN_08063248.inc"); }
 
 NAKED void FUN_08063288(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_08063288.inc"); }
 
-NAKED u32 FUN_08063478(Player* p) { INCFUNC("asm/func/FUN_08063478.inc"); }
+u32 FUN_08063478(Player* p) { return (p->angle_400 - p->angle_401 + 0x100) & 0xFF; }
 
 NAKED u32 FUN_08063498(Player* p, u32 n) { INCFUNC("asm/func/FUN_08063498.inc"); }
 
