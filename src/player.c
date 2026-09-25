@@ -401,7 +401,14 @@ u32 Player_WeaponEffectAntiThing(Player* p, HitboxData* a, HitboxData* b) {
   return 0;
 }
 
-NAKED u32 Player_WeaponEffectAntiPhantom(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiPhantom.inc"); }
+u32 Player_WeaponEffectAntiPhantom(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0200;
+
+  if (b->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
 
 NAKED u32 Player_WeaponEffectAntiUndead(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiUndead.inc"); }
 
