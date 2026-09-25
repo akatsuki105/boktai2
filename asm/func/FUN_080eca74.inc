@@ -113,7 +113,7 @@ _080ECB3E:
 	bne _080ECB50
 	movs r0, #0
 	movs r1, #0
-	bl FUN_080dbe54
+	bl Entity080dbe54_Create
 _080ECB50:
 	ldrb r0, [r5]
 	cmp r0, #0xe
