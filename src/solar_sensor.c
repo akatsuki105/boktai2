@@ -5,6 +5,8 @@
 #include "interrupts.h"
 #include "player.h"
 
+s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
+
 // 0x030026B0 から 0x030026C4 までの6つ。以前は SolarSensorInterface という1つの構造体として書いていたが、
 // Sensor_GetState が =0x030026B4 を直接読む (構造体なら =gSSI + [r0,#4] になる) ので、原典では個別のグローバルだった
 // ゲームが太陽センサーとやり取りするための(高レベルな)インターフェース。SolarSensorManager との違いはまだ不明
@@ -94,7 +96,28 @@ NON_MATCH s32 SSEEmitter_FadeParticle(SSEEmitter* p) {
 #endif
 }
 
-NAKED s32 FUN_08246728(SSEEmitter* p, s32 param_2, Vec3* param_3, Vec3* param_4, Vec3* param_5, s32 param_6, s32 param_7) { INCFUNC("asm/func/FUN_08246728.inc"); }
+// 生きている枠をひとつ解放して、その場に粒子を撒き散らす
+s32 SSEEmitter_BurstParticle(SSEEmitter* p, s32 count, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask) {
+  bool32 found = FALSE;
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    if (p->ptcls[i].unk_0 == 1) {
+      Particle_Hide(&p->ptcls[i].ptcl);
+      p->ptcls[i].unk_0 = 0;
+      p->ptcls[i].unk_1 = 10;
+      p->ptcls[i].unk_2 = 0;
+      found = TRUE;
+      FUN_08014730(count, p->kind, pos, vel, velRange, lifeBase, lifeRandMask);
+      break;
+    }
+  }
+  if (found) {
+    p->unk_3--;
+    p->activeCount--;
+  }
+  return 0;
+}
 
 // エミッタを待機状態に戻す。枠は全部空きにして粒子も隠す
 void* SSEEmitter_Reset(SSEEmitter* p) {

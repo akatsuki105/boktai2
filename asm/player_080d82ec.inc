@@ -3678,7 +3678,7 @@ _080CDCB6:
 	str r1, [sp, #8]
 	movs r1, #3
 	add r2, sp, #0xc
-	bl FUN_08246728
+	bl SSEEmitter_BurstParticle
 _080CDD7A:
 	add sp, #0x24
 	pop {r3, r4, r5}

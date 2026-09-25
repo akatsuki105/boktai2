@@ -306,7 +306,7 @@ _080F5DC6:
 	str r1, [sp, #8]
 	movs r1, #3
 	add r3, sp, #0xc
-	bl FUN_08246728
+	bl SSEEmitter_BurstParticle
 	movs r0, #0x20
 	movs r1, #0xc1
 	lsls r1, r1, #1
