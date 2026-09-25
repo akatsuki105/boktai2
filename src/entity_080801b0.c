@@ -44,7 +44,27 @@ typedef struct DarkDjangoEffect {
 } DarkDjangoEffect;
 static_assert(sizeof(DarkDjangoEffect) == 1220);
 
-INCASM("asm/entity_080801b0.inc");
+NAKED void DarkDjangoEffect_SetState(DarkDjangoEffect* p, DarkDjangoEffectFunc fn) { INCFUNC("asm/func/DarkDjangoEffect_SetState.inc"); }
+
+NAKED void FUN_0807f650(DarkDjangoEffect* p, DarkDjangoEffectParticle* ptcl) { INCFUNC("asm/func/FUN_0807f650.inc"); }
+
+NAKED void FUN_0807f750(DarkDjangoEffect* p, DarkDjangoEffectParticle* ptcl) { INCFUNC("asm/func/FUN_0807f750.inc"); }
+
+NAKED void FUN_0807f78c(DarkDjangoEffect* p, Vec3* pos, u32 angle) { INCFUNC("asm/func/FUN_0807f78c.inc"); }
+
+NAKED void FUN_0807f8d0(DarkDjangoEffect* p) { INCFUNC("asm/func/FUN_0807f8d0.inc"); }
+
+NAKED void FUN_0807f94c(DarkDjangoEffect* p) { INCFUNC("asm/func/FUN_0807f94c.inc"); }
+
+NAKED void FUN_0807f9d8(DarkDjangoEffect* p) { INCFUNC("asm/func/FUN_0807f9d8.inc"); }
+
+NAKED void FUN_0807fd1c(DarkDjangoEffect* p) { INCFUNC("asm/func/FUN_0807fd1c.inc"); }
+
+NAKED void FUN_0807fdac(DarkDjangoEffect* p) { INCFUNC("asm/func/FUN_0807fdac.inc"); }
+
+NAKED s32 DarkDjangoEffect_Update(DarkDjangoEffect* p) { INCFUNC("asm/func/DarkDjangoEffect_Update.inc"); }
+
+NAKED s32 DarkDjangoEffect_Destroy(DarkDjangoEffect* p) { INCFUNC("asm/func/DarkDjangoEffect_Destroy.inc"); }
 
 NAKED void LoadPlayerSprite_0807fe48(DarkDjangoEffect* p) { INCFUNC("asm/func/LoadPlayerSprite_0807fe48.inc"); }
 
