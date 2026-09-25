@@ -208,12 +208,12 @@ s32 SSE_Init(SolarSensorEntity* p, u32 _) {
   return 0;
 }
 
-SolarSensorEntity* SSE_Create(u32 _) {
+SolarSensorEntity* SSE_Create(u32 unused1, u32 unused2) {
   if (gSensorEntity == NULL) {
     SolarSensorEntity* p = CreateEntity(ENTITY_UNK_9, sizeof(SolarSensorEntity));
     if (p != NULL) {
       SetEntityRoutine(p, SSE_Update, SSE_Destroy);
-      if (SSE_Init(p, _) < 0) {
+      if (SSE_Init(p, unused1) < 0) {
         KillEntity((Entity*)p);
         return NULL;
       }
@@ -223,7 +223,37 @@ SolarSensorEntity* SSE_Create(u32 _) {
   return gSensorEntity;
 }
 
-NAKED s32 FUN_0824742c(SSEEmitter* e, u32 unk_8, s32 unk_1, s32 unk_4, s32 unk_5) { INCFUNC("asm/func/FUN_0824742c.inc"); }
+// エミッタを初期化して SolarSensorEntity に登録する。エンティティがまだ無ければ先に作る
+s32 SSEEmitter_Init(SSEEmitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5) {
+  SolarSensorEntity* p = gSensorEntity;
+  s32 i;
+
+  if (p == NULL) {
+    p = SSE_Create(0, 0);
+    if (p == NULL) {
+      return -1;
+    }
+  }
+  e->isRegistered = 0;
+  e->pos = pos;
+  e->activeCount = 0;
+  e->unk_3 = 0;
+  e->kind = kind;
+  e->unk_4 = unk_4;
+  e->unk_5 = unk_5;
+  e->fn_12c = SSEEmitter_UpdateIdle;
+  for (i = 0; i < 4; i++) {
+    e->ptcls[i].unk_0 = 0;
+    e->ptcls[i].unk_2 = 0;
+    e->ptcls[i].pos.x = 0, e->ptcls[i].pos.y = 0, e->ptcls[i].pos.z = 0;
+    FUN_0822d9f0(&e->ptcls[i].ptcl, gSensorEntity->group, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
+    Particle_SetOffset(&e->ptcls[i].ptcl, -8, -8);
+    e->ptcls[i].ptcl.priority = 2;
+    FUN_08236fac(&e->ptcls[i].anim, gSensorEntity->anim, 0, 0, 0);
+  }
+  SSEEmitter_Register(p, e);
+  return 0;
+}
 
 // エミッタの後始末。粒子を消してリストから外す
 s32 SSEEmitter_Destroy(SSEEmitter* p) {

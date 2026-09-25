@@ -14,7 +14,7 @@
 	str r2, [sp]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0824742c
+	bl SSEEmitter_Init
 	adds r4, r5, #0
 	adds r4, #0xa8
 	b _08063BB6
@@ -31,7 +31,7 @@ _08063BA0:
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0824742c
+	bl SSEEmitter_Init
 _08063BB6:
 	ldr r2, _08063CC0 @ =0x000005FC
 	adds r1, r5, r2

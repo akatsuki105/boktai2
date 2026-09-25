@@ -414,7 +414,7 @@ _080B3854:
 	adds r1, #0x34
 	str r2, [sp]
 	movs r3, #0
-	bl FUN_0824742c
+	bl SSEEmitter_Init
 	adds r0, r7, #0
 	adds r0, #0xea
 	strb r4, [r0]
