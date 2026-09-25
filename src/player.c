@@ -362,7 +362,7 @@ NAKED u32 Player_WeaponEffectNight(Player* p) { INCFUNC("asm/func/Player_WeaponE
 
 NAKED u32 Player_WeaponEffectAgility(Player* p) { INCFUNC("asm/func/Player_WeaponEffectAgility.inc"); }
 
-NAKED u32 Player_WeaponEffectVitality(Player* p) { INCFUNC("asm/func/Player_WeaponEffectVitality.inc"); }
+u32 Player_WeaponEffectVitality(Player* p) { return p->stats[STAT_VITALITY] >> 3; }
 
 NAKED u32 Player_WeaponEffectSpirit(Player* p) { INCFUNC("asm/func/Player_WeaponEffectSpirit.inc"); }
 
