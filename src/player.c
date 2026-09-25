@@ -308,7 +308,13 @@ NAKED void FUN_08061f6c(Player* p) { INCFUNC("asm/func/FUN_08061f6c.inc"); }
 
 NAKED void FUN_080620f0(Player* p) { INCFUNC("asm/func/FUN_080620f0.inc"); }
 
-NAKED void FUN_08062258(Player* p) { INCFUNC("asm/func/FUN_08062258.inc"); }
+void FUN_08062258(Player* p) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    Particle_Remove(&p->ptcl_858.ptcls[i].base);
+  }
+}
 
 NAKED void FUN_08062278(Player* p) { INCFUNC("asm/func/FUN_08062278.inc"); }
 
