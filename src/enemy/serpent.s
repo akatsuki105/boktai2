@@ -26535,7 +26535,7 @@ _0819549E:
 _081954B4: .4byte 0x030046A0
 _081954B8:
 	ldr r0, [sp, #0x188]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldr r5, [sp, #0x4c]
 	strh r0, [r5]
 _081954C2:

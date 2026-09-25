@@ -14,7 +14,7 @@
 typedef struct {
   u16 id;             // 0x00, hitbox の id になる, script keyword 'n'
   s16 hp;             // 0x02, script keyword 'l' (既定 100), Hazard_OnHit が HitboxData.damage の分だけ減らし 0 以下で破壊される
-  s32 areaId;         // 0x04, script keyword 'm' が 0 以外のときだけ FUN_08241574(pos) の戻り値が入る。負なら生成を中止する。書くだけで読み手はいない
+  s32 areaId;         // 0x04, script keyword 'm' が 0 以外のときだけ GetMapAreaAt(pos) の戻り値が入る。負なら生成を中止する。書くだけで読み手はいない
   u16 scriptId;       // 0x08, script keyword 'b', 破壊時に Script_ExecById へ渡してから 0 に戻す
   u8 damageTimer;     // 0x0A, 被弾時に 10 がセットされ毎フレーム減る。0 でない間だけ hitbox.flags に HBFLAG_UNK_2 が立つ
   u8 unk_0b;          // 0x0B
@@ -226,7 +226,7 @@ s32 HazardManager_FindFreeSlot(HazardManager* p) {
   return -1;
 }
 
-s32 FUN_08241574(Vec3* pos);
+s32 GetMapAreaAt(Vec3* pos);
 void FUN_08234270(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
 
 // 空きスロットに Hazard を1個置く。当たり判定・地形の高さ・スプライトを用意して使用中にする
@@ -257,7 +257,7 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   hazard->id = id;
   hazard->hp = hp;
   if (requireArea != 0) {
-    hazard->areaId = FUN_08241574(pos);
+    hazard->areaId = GetMapAreaAt(pos);
   } else {
     hazard->areaId = 0;
   }

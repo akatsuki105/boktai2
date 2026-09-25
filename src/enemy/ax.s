@@ -26609,7 +26609,7 @@ _081A288A:
 _081A28A0: .4byte 0x030046A0
 _081A28A4:
 	ldr r0, [sp, #0x168]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldr r6, [sp, #0x30]
 	strh r0, [r6]
 _081A28AE:

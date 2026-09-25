@@ -19864,7 +19864,7 @@ _081CF632:
 _081CF648: .4byte 0x030046A0
 _081CF64C:
 	ldr r0, [sp, #0x30]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldr r6, [sp, #0x60]
 	strh r0, [r6]
 _081CF656:

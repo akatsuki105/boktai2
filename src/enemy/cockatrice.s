@@ -30018,7 +30018,7 @@ _0816160E:
 _08161624: .4byte 0x030046A0
 _08161628:
 	ldr r0, [sp, #0x30]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldr r6, [sp, #0x68]
 	strh r0, [r6]
 _08161632:

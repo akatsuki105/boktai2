@@ -457,7 +457,7 @@ FUN_0809e22c: @ 0x0809E22C
 	mov r3, sb
 	bl FUN_0809e198
 	adds r0, r7, #0
-	bl FUN_08241574
+	bl GetMapAreaAt
 	adds r1, r7, #0
 	adds r1, #0x9e
 	strh r0, [r1]
@@ -553,7 +553,7 @@ _0809E30C:
 	orrs r0, r1
 	str r0, [sp, #4]
 	mov r0, sp
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldrb r1, [r5]
 	muls r1, r4, r1
 	adds r1, r6, r1
@@ -4038,7 +4038,7 @@ FUN_0809fce4: @ 0x0809FCE4
 	cmp r2, #0
 	beq _0809FD22
 	adds r0, r6, #0
-	bl FUN_08241574
+	bl GetMapAreaAt
 	adds r1, r7, #0
 	adds r1, #0xe8
 	strh r0, [r1]

@@ -8503,7 +8503,7 @@ _08131F2E:
 _08131F44: .4byte 0x030046A0
 _08131F48:
 	ldr r0, [sp, #0x44]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldr r3, [sp, #0x7c]
 	strh r0, [r3]
 _08131F52:

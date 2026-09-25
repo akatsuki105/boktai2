@@ -331,7 +331,7 @@ _08229632:
 	movs r0, #1
 	str r0, [r7, #0xc]
 	mov r0, sp
-	bl FUN_08241574
+	bl GetMapAreaAt
 	str r0, [r7, #0x10]
 	mov r5, sl
 	adds r5, #0xb4

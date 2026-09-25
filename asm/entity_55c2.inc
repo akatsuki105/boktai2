@@ -397,7 +397,7 @@ _0800DDEC:
 	cmp r0, #0
 	beq _0800DE12
 	add r0, sp, #0xc
-	bl FUN_08241574
+	bl GetMapAreaAt
 _0800DE12:
 	strh r0, [r5, #0x2c]
 	ldrb r0, [r5, #2]

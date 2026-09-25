@@ -15960,7 +15960,7 @@ _081AE11A:
 _081AE130: .4byte 0x030046A0
 _081AE134:
 	ldr r0, [sp, #0x15c]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldr r5, [sp, #0x1a0]
 	strh r0, [r5]
 _081AE13E:

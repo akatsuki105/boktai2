@@ -6741,7 +6741,7 @@ _08149C26:
 _08149C3C: .4byte 0x030046A0
 _08149C40:
 	ldr r0, [sp, #0x134]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldr r6, [sp, #0x164]
 	strh r0, [r6]
 _08149C4A:

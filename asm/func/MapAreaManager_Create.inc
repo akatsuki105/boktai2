@@ -7,13 +7,13 @@
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _08241648
-	ldr r1, _08241640 @ =EntityB639_Update
-	ldr r2, _08241644 @ =EntityB639_Destroy
+	ldr r1, _08241640 @ =MapAreaManager_Update
+	ldr r2, _08241644 @ =MapAreaManager_Destroy
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
 	adds r2, r6, #0
-	bl EntityB639_Init
+	bl MapAreaManager_Init
 	cmp r0, #0
 	bge _08241648
 	adds r0, r4, #0
@@ -21,8 +21,8 @@
 	movs r0, #0
 	b _0824164A
 	.align 2, 0
-_08241640: .4byte EntityB639_Update
-_08241644: .4byte EntityB639_Destroy
+_08241640: .4byte MapAreaManager_Update
+_08241644: .4byte MapAreaManager_Destroy
 _08241648:
 	adds r0, r4, #0
 _0824164A:

@@ -118,7 +118,7 @@ s32 Entity95A8_Destroy(SolarBamboo* p) {
   return 0;
 }
 
-s32 FUN_08241574(Vec3* pos);
+s32 GetMapAreaAt(Vec3* pos);
 void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 val1, u32 val2, u32 val3);
 void Hitbox_Register(HitboxData* p);
 
@@ -147,7 +147,7 @@ s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
   } else {
     pos.x = 0, pos.y = 0, pos.z = 0;
   }
-  p->unk_20 = FUN_08241574(&pos);
+  p->unk_20 = GetMapAreaAt(&pos);
   p->q_unk_30 = 0;
   p->q_unk_32 = pos.y;
   p->q_unk_34 = 0;

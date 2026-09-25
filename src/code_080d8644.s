@@ -5996,7 +5996,7 @@ _080DB2B0:
 	str r0, [r4]
 	str r1, [r4, #4]
 	adds r0, r4, #0
-	bl FUN_08241574
+	bl GetMapAreaAt
 	movs r1, #0x46
 	adds r1, r1, r7
 	mov sl, r1
@@ -6434,7 +6434,7 @@ _080DB614:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	adds r0, r5, #0
-	bl FUN_08241574
+	bl GetMapAreaAt
 	movs r1, #0x46
 	adds r1, r1, r7
 	mov r8, r1

@@ -464,7 +464,7 @@ gSubroutineTable:
 	.4byte 0xB50D, FUN_08224d28
 	.4byte 0xB55A, FUN_0823e298
 	.4byte 0xB603, FUN_0807b4b8
-	.4byte 0xB639, EntityB639_Create
+	.4byte 0xB639, MapAreaManager_Create
 	.4byte 0xB683, FUN_0807d9a8
 	.4byte 0xB6CE, FUN_0809f6ec
 	.4byte 0xB6FF, EntityB6FF_Create

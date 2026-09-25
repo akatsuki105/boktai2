@@ -17750,7 +17750,7 @@ _081528CE:
 _081528E4: .4byte 0x030046A0
 _081528E8:
 	ldr r0, [sp, #0x198]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldr r1, [sp, #0x5c]
 	strh r0, [r1]
 _081528F2:
