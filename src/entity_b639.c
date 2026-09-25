@@ -23,4 +23,15 @@ s32 MapAreaManager_Destroy(MapAreaManager* p) {
 
 NAKED s32 MapAreaManager_Init(MapAreaManager* p, u32 unused1, void* unused2) { INCFUNC("asm/func/MapAreaManager_Init.inc"); }
 
-NAKED MapAreaManager* MapAreaManager_Create(u32 unused1, void* unused2) { INCFUNC("asm/func/MapAreaManager_Create.inc"); }
+MapAreaManager* MapAreaManager_Create(u32 unused1, void* unused2) {
+  MapAreaManager* p = CreateEntity(ENTITY_UNK_4, sizeof(MapAreaManager));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, MapAreaManager_Update, MapAreaManager_Destroy);
+    if (MapAreaManager_Init(p, unused1, unused2) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
