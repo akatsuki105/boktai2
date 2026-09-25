@@ -3,19 +3,6 @@
 #include "global.h"
 #include "player.h"
 
-// SolarSensorManager との違いはまだ不明
-// Entityを持っているのでゲームが太陽センサーとやり取りするための(高レベルな)インターフェースの可能性が高い
-// ただ、 agbrtc と IWRAM が隣接していて、 agbrtc が 0x030026c8 から始まる、つまり16バイトアラインされていないので、 GBA SDKのライブラリ由来の可能性もある (わからん)
-typedef struct {
-  SolarSensorEntity* e;  // 0x00
-  s32 state;             // 0x04, 0: measuring, 1: resetting, 2: idle
-  s32 counter;           // 0x08, 0-511, counts half-cycles of the 74LV4040 counter chip
-  s32 unk_0c;            // 0x0C
-  s32 nextWrite;         // 0x10, next value to be written to GPIO_DATA
-  bool32 unk_14;         // 0x14
-} SolarSensorInterface;
-static_assert(sizeof(SolarSensorInterface) == 24);
-
 // SolarSensorInterface が高レベルなインターフェースだったなら、こっちは低レベルなインターフェース(ドライバ)だと思われる (まだ調査が不十分なので間違ってる可能性もある)
 typedef struct {
   u32 unk_00;        // 0x00
@@ -29,7 +16,16 @@ typedef struct {
 } SolarSensorManager;
 static_assert(sizeof(SolarSensorManager) == 32);
 
-IWRAM_DATA SolarSensorInterface gSSI = {};                // .bss, 0x030026B0
+// 0x030026B0 から 0x030026C4 までの6つ。以前は SolarSensorInterface という1つの構造体として書いていたが、
+// Sensor_GetState が =0x030026B4 を直接読む (構造体なら =gSSI + [r0,#4] になる) ので、原典では個別のグローバルだった
+// ゲームが太陽センサーとやり取りするための(高レベルな)インターフェース。SolarSensorManager との違いはまだ不明
+// agbrtc と IWRAM が隣接していて、 agbrtc が 0x030026c8 から始まる、つまり16バイトアラインされていないので、 GBA SDKのライブラリ由来の可能性もある (わからん)
+IWRAM_DATA SolarSensorEntity* gSensorEntity = NULL;       // .bss, 0x030026B0
+IWRAM_DATA s32 gSensorState = 0;                          // 0x030026B4, 0: measuring, 1: resetting, 2: idle
+IWRAM_DATA s32 gSensorCounter = 0;                        // 0x030026B8, 0-511, counts half-cycles of the 74LV4040 counter chip
+IWRAM_DATA s32 gSensorUnk0c = 0;                          // 0x030026BC
+IWRAM_DATA s32 gSensorNextWrite = 0;                      // 0x030026C0, next value to be written to GPIO_DATA
+IWRAM_DATA bool32 gSensorUnk14 = 0;                       // 0x030026C4
 COMMON_DATA SolarSensorManager gSolarSensorManager = {};  // 0x030057B0
 
 const u16 u16_ARRAY_08dbd810[4] = {3, 3, 1, 2};  // 0x08DBD810
@@ -143,7 +139,7 @@ s32 SSE_Update(SolarSensorEntity* p) {
 }
 
 s32 SSE_Destroy(SolarSensorEntity* _) {
-  gSSI.e = NULL;
+  gSensorEntity = NULL;
   return 0;
 }
 
@@ -173,6 +169,6 @@ NAKED s32 Sensor_GetRawLevel(void) { INCFUNC("asm/func/Sensor_GetRawLevel.inc");
 
 NAKED bool32 FUN_08247800(void) { INCFUNC("asm/func/FUN_08247800.inc"); }
 
-NAKED s32 Sensor_GetState(void) { INCFUNC("asm/func/Sensor_GetState.inc"); }
+s32 Sensor_GetState(void) { return gSensorState; }
 
 NAKED s32 FUN_08247818(void) { INCFUNC("asm/func/FUN_08247818.inc"); }
