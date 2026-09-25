@@ -40,7 +40,7 @@ _08241E74:
 	b _08241EDE
 _08241E8C:
 	adds r0, r7, #0
-	bl FUN_08241da8
+	bl UpdateDebugLx
 	strh r0, [r7, #0x1c]
 	movs r1, #0x1c
 	ldrsh r0, [r7, r1]

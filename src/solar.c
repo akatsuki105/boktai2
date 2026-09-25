@@ -1,6 +1,9 @@
 
+#include "definition.h"
 #include "entity.h"
+#include "entity_9a9f.h"
 #include "global.h"
+#include "input.h"
 #include "save.h"
 #include "solar_sensor.h"
 #include "time.h"
@@ -14,7 +17,7 @@ typedef struct SunlightEntity {
   s16 lx;                                          // 0x1C, 太陽光の強さ
   s16 sunGauge;                                    // 0x1E, lx を 10段階に分けたもの
   u16 stateTimer;                                  // 0x20, FUN_08241cf4 のフレーム数。state 0 で 29 を超えるとセンサーを有効化し、state 1 で 59 を超えると計測に入る。state が変わるたび 0
-  u16 adjustTimer;                                 // 0x22, FUN_08241da8 が A+L / A+R を押している間 +1 し、1フレームおきに u16_03004868 を増減させる
+  u16 adjustTimer;                                 // 0x22, UpdateDebugLx が A+L / A+R を押している間 +1 し、1フレームおきに gDebugLx を増減させる
   u16 tickCounter;                                 // 0x24, solar_08241ac0 が毎フレーム +1。(tickCounter & 0x3F) == 0 と (& 0x7F) == 0 で処理を間引く
   u16 idleTimer;                                   // 0x26, solar_08241ac0 が入力のたび 0 に戻し、無操作なら 900 まで数える。900 に達すると太陽の恵みが止まる
   u16 solarStandFrac;                              // 0x28, solar_08241ac0 が sunGauge/2 + 5 をここに貯め、>> 4 した繰り上がりを gStat->solarStand に足す
@@ -27,7 +30,7 @@ IWRAM_DATA SunlightEntity* gSunlightEntity = NULL;  // 0x03001708
 IWRAM_DATA u32 u32_0300170c = 0;                    // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
 
 COMMON_DATA u16 u16_03004864 = 0;
-COMMON_DATA ALIGNED(4) u16 u16_03004868 = 0;
+COMMON_DATA ALIGNED(4) u16 gDebugLx = 0;
 COMMON_DATA ALIGNED(4) u16 gSunlightSuspended = 0;
 COMMON_DATA ALIGNED(4) u16 gSavedLx = 0;
 COMMON_DATA ALIGNED(4) u16 gSavedSunGauge[6] = {};
@@ -209,7 +212,36 @@ NAKED void solar_08241ac0(SunlightEntity* p) { INCFUNC("asm/func/solar_08241ac0.
 
 NAKED void FUN_08241cf4(SunlightEntity* p) { INCFUNC("asm/func/FUN_08241cf4.inc"); }
 
-NAKED u32 FUN_08241da8(SunlightEntity* p) { INCFUNC("asm/func/FUN_08241da8.inc"); }
+// デバッグ用。A+L / A+R で lx を手動で上下させ、その値を返す
+NON_MATCH u32 UpdateDebugLx(SunlightEntity* p) {
+#ifdef NONMATCHING_C
+  Keys16 down;
+
+  if (gFlag030047a4 & FLAG030047A4_UNK_11) {
+    s32 idx = Entity9A9F_GetPlayerIdx();
+
+    down = gInput[idx].down;
+  } else {
+    down = gInput->down;
+  }
+  if (down & A_BUTTON) {
+    if (down & L_BUTTON) {
+      p->adjustTimer++;
+      if ((p->adjustTimer & 1) == 0 && gDebugLx <= 139) {
+        gDebugLx++;
+      }
+    } else if (down & R_BUTTON) {
+      p->adjustTimer++;
+      if ((p->adjustTimer & 1) == 0 && gDebugLx != 0) {
+        gDebugLx--;
+      }
+    }
+  }
+  return gDebugLx;
+#else
+  INCFUNC("asm/func/UpdateDebugLx.inc");
+#endif
+}
 
 NAKED void FUN_08241e40(SunlightEntity* p) { INCFUNC("asm/func/FUN_08241e40.inc"); }
 
