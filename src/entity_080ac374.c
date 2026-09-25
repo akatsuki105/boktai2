@@ -48,7 +48,7 @@ NAKED void FUN_080ac13c(Entity080ac374* p) { INCFUNC("asm/func/FUN_080ac13c.inc"
 
 NAKED void FUN_080ac18c(Entity080ac374* p) { INCFUNC("asm/func/FUN_080ac18c.inc"); }
 
-NAKED void FUN_080ac21c(Entity080ac374* p) { INCFUNC("asm/func/FUN_080ac21c.inc"); }
+void FUN_080ac21c(Entity080ac374* p) { AuxSprite_Remove(&p->spr); }
 
 NAKED void FUN_080ac228(Entity080ac374* p, Vec3* pos) { INCFUNC("asm/func/FUN_080ac228.inc"); }
 
