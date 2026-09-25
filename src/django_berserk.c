@@ -66,7 +66,11 @@ NAKED void FUN_0807fd1c(DjangoBerserk* p) { INCFUNC("asm/func/FUN_0807fd1c.inc")
 
 NAKED void FUN_0807fdac(DjangoBerserk* p) { INCFUNC("asm/func/FUN_0807fdac.inc"); }
 
-NAKED s32 DjangoBerserk_Update(DjangoBerserk* p) { INCFUNC("asm/func/DjangoBerserk_Update.inc"); }
+s32 DjangoBerserk_Update(DjangoBerserk* p) {
+  FUN_0807f8d0(p);
+  p->updateCallback(p);
+  return 0;
+}
 
 NAKED s32 DjangoBerserk_Destroy(DjangoBerserk* p) { INCFUNC("asm/func/DjangoBerserk_Destroy.inc"); }
 
