@@ -160,7 +160,13 @@ NAKED void Sensor_DisableIO(void) { INCFUNC("asm/func/Sensor_DisableIO.inc"); }
 
 NAKED void Sensor_Enable(void) { INCFUNC("asm/func/Sensor_Enable.inc"); }
 
-NAKED void Sensor_Disable(void) { INCFUNC("asm/func/Sensor_Disable.inc"); }
+void Sensor_Disable(void) {
+  if (gSensorUnk14 == 1) {
+    Sensor_DisableIO();
+  }
+  gSensorEnabled = FALSE;
+  gSensorRawLevel = -1;
+}
 
 NAKED s32 Sensor_GetRawLevel(void) { INCFUNC("asm/func/Sensor_GetRawLevel.inc"); }
 
