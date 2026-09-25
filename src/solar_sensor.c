@@ -27,7 +27,8 @@ COMMON_DATA s32 gSensorDrvUnk1c = 0;    // 0x030057CC, おそらく Sensor_Tick 
 
 const u16 u16_ARRAY_08dbd810[4] = {3, 3, 1, 2};  // 0x08DBD810
 
-NAKED void FUN_08246660(void) { INCFUNC("asm/func/FUN_08246660.inc"); }
+// エンティティを消さずにシングルトンの参照だけ手放す
+void SSE_ClearGlobal(void) { gSensorEntity = NULL; }
 
 // kind 0 の更新。何もしない
 void SSEEmitter_UpdateIdle(SolarSensorEntity* e, SSEEmitter* p) {}
