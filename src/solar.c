@@ -456,18 +456,16 @@ NON_MATCH void FUN_08241f28(SunlightEntity* p) {
 
 // RTC の現在時刻を gStat に写し、まだ日没前かどうかを控える
 u32 ReflectClock(void) {
-  s32 minute;
   s32 sunsetHour, sunsetMinute;
   bool32 beforeSunset;
 
   gStat->date.val = GetDate();
   gStat->hour = GetHour();
-  minute = GetMinute();
-  gStat->minute = minute;
+  gStat->minute = GetMinute();
   sunsetHour = gClock.sunset.hour;
   sunsetMinute = gClock.sunset.minute;
   beforeSunset = FALSE;
-  if (gStat->hour < sunsetHour || (gStat->hour == sunsetHour && minute < sunsetMinute)) {
+  if (gStat->hour < sunsetHour || (gStat->hour == sunsetHour && gStat->minute < sunsetMinute)) {
     beforeSunset = TRUE;
   }
   gStat->isBeforeSunset = beforeSunset;
