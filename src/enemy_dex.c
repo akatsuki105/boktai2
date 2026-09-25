@@ -139,7 +139,18 @@ NAKED s32 EnemyDexMenu_Destroy(EnemyDexMenu* p) { INCFUNC("asm/func/EnemyDexMenu
 
 NAKED s32 EnemyDexMenu_Init(EnemyDexMenu* p, u32 val) { INCFUNC("asm/func/EnemyDexMenu_Init.inc"); }
 
-NAKED EnemyDexMenu* EnemyDexMenu_Create(u32 val) { INCFUNC("asm/func/EnemyDexMenu_Create.inc"); }
+EnemyDexMenu* EnemyDexMenu_Create(u32 val) {
+  EnemyDexMenu* p = CreateEntity(ENTITY_UNK_8, sizeof(EnemyDexMenu));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, EnemyDexMenu_Update, EnemyDexMenu_Destroy);
+    if (EnemyDexMenu_Init(p, val) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
 
 NAKED void FUN_0820eb38(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820eb38.inc"); }
 
