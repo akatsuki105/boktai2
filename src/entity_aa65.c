@@ -58,7 +58,7 @@ void Hazard_OnHit(HitboxData* a, HitboxData* b, void* owner) {
       p->hp = 0;
     } else {
       p->damageTimer = 10;
-      Video_SetAuxSpritePltt(&p->sprite, 0x132);
+      Video_SetAuxSpritePltt(&p->sprite, 306);
       if (!Hitbox_HasWeakness(a, 4)) {
         PlaySound_082406e0(0x13E);
       }

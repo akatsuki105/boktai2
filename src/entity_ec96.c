@@ -40,7 +40,7 @@ NON_MATCH void FUN_08013288(HitboxData* a, HitboxData* b, EntityEC96* p) {
         PlaySound_082406e0(0x14A);
       } else {
         p->damageTimer = 10;
-        Video_SetAuxSpritePltt(&p->gfx, 0x132);
+        Video_SetAuxSpritePltt(&p->gfx, 306);
         PlaySound_082406e0(0x13E);
       }
     }

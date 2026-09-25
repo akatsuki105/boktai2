@@ -4,6 +4,7 @@
 #include "gba/gba.h"
 #include "types.h"
 
+// HitboxData.flags
 typedef u16 HitboxFlags;
 typedef u32 HitboxFlags32;
 #define HBFLAG_UNK_0 (1 << 0)    // 0x1

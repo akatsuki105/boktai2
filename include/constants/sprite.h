@@ -83,6 +83,7 @@
 #define SPRITE_DOOR_7AF3 0x7AF3        // 扉, どこの扉か忘れた
 #define SPRITE_GUN_SPREAD 0x2110       // ガンデルヘルのスプレッド攻撃
 #define SPRITE_MELEE_SHOCKWAVE 0x8F5D  // 近接攻撃の衝撃波(黒ジャンゴの追加の衝撃波のエフェクト, 武器自体は SPRITE_DJANGO_SABATA が担う), あと太陽鍛治の水桶も一緒に入っている
+#define SPRITE_GENERATOR 0xC038        // パイルドライバーのジェネレータ
 
 // データが存在しないスプライトのID
 #define SPRITE_NODATA_9DA7 0x9DA7

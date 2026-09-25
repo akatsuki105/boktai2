@@ -13,8 +13,8 @@ typedef struct {
   u16 unk_18;              // 0x18
   u8 unk_1a[0x20 - 0x1A];  // 0x1A
   u32 unk_20;              // 0x20
-  u16 q_unk_24;            // 0x24
-  u16 q_unk_26;            // 0x26
+  u16 hp;                  // 0x24
+  u16 maxHP;               // 0x26, '.l=200'
   u16 q_unk_28;            // 0x28
   u16 q_unk_2a;            // 0x2A
   u16 q_unk_2c;            // 0x2C
@@ -23,9 +23,9 @@ typedef struct {
   u8 unk_31;               // 0x31
   u16 q_unk_32;            // 0x32
   u16 q_unk_34;            // 0x34
-  u16 q_unk_36;            // 0x36
-  u16 q_unk_38;            // 0x38
-  u8 unk_3a[2];            // 0x3A
+  u16 q_unk_36;            // 0x36, '.n=4'
+  u16 q_unk_38;            // 0x38, '.e=50'
+  u8 unk_3a[2];            // 0x3A, padding?
   AuxSpriteGfx gfx;        // 0x3C
   AuxSprite sprite;        // 0x58, gfx を指す描画ノード
   ParticleShadow shadow;   // 0x84, 根拠: Entity95A8_Destroy が ParticleShadow_Remove に渡している
@@ -50,10 +50,10 @@ void FUN_0800c0b0(HitboxData* a, HitboxData* b, SolarBamboo* p) {
   }
   if (p->q_unk_28 == 0 && damage > 0) {
     p->q_unk_28 = 8;
-    Video_SetAuxSpritePltt(&p->gfx, 0x16A);
+    Video_SetAuxSpritePltt(&p->gfx, 362);
     p->q_unk_2e = 8;
-    if ((s16)(p->q_unk_24 -= damage) <= 0) {
-      p->q_unk_24 = p->q_unk_26;
+    if ((s16)(p->hp -= damage) <= 0) {
+      p->hp = p->maxHP;
       pos = p->sprite.pos;
       pos.y += 0x40;
       Entity0800a89c_SpawnAt(p->q_unk_36, 1, p->q_unk_38, &pos, 0, 600, 0x64);
@@ -69,18 +69,18 @@ NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
   active = (p->unk_20 == gStat->unk_248) ? TRUE : FALSE;
   if (!active) {
     p->sprite.flags |= SPRFLAG_HIDDEN;
-    p->hitbox.flags |= 4;
+    p->hitbox.flags |= HBFLAG_UNK_2;
     ParticleShadow_Hide(&p->shadow);
   } else {
     p->sprite.flags &= ~SPRFLAG_HIDDEN;
-    p->hitbox.flags &= ~4;
+    p->hitbox.flags &= ~HBFLAG_UNK_2;
     ParticleShadow_Show(&p->shadow);
     if (p->q_unk_28 != 0) {
       p->q_unk_28--;
     }
     if (p->q_unk_2e != 0) {
       if (--p->q_unk_2e == 0) {
-        Video_SetAuxSpritePltt(&p->gfx, 0x169);
+        Video_SetAuxSpritePltt(&p->gfx, 361);
       }
     }
     if (++p->q_unk_2c >= u16_ARRAY_085aa76c[p->q_unk_2a]) {
@@ -132,11 +132,11 @@ s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
   Vec3 offset;
 
   p->unk_18 = param;
-  p->q_unk_26 = VM_GetKeywordValue('l', 0xC8);
-  p->q_unk_24 = 1;
+  p->maxHP = VM_GetKeywordValue('l', 200);
+  p->hp = 1;
   p->q_unk_28 = 0;
   p->q_unk_36 = VM_GetKeywordValue('n', 4);
-  p->q_unk_38 = VM_GetKeywordValue('e', 0x32);
+  p->q_unk_38 = VM_GetKeywordValue('e', 50);
   p->q_unk_2a = 0;
   p->q_unk_2c = 0;
   p->q_unk_2e = 0;
@@ -163,7 +163,7 @@ s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
   spr = &p->sprite;
   AuxSprite_Add(spr, gfx, 0);
   spr->metaspriteIdx = 0;
-  Video_SetAuxSpritePltt(gfx, 0x169);
+  Video_SetAuxSpritePltt(gfx, 361);
   p->sprite.pos = pos;
   ParticleShadow_Init(&p->shadow, &p->sprite.pos, 0);
   return 0;
