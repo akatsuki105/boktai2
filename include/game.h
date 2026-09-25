@@ -44,7 +44,7 @@ typedef struct {
   BCDDate date;                  // 0x198
   s32 hour;                      // 0x19C, ReflectClock / ApplyDayRollover が gClock.sunset と符号付きで比べる
   s32 minute;                    // 0x1A0, 同上
-  bool32 isClockTowerBellDone;   // 0x1A4, すでに夕方か(時計塔の鐘の音がなったか)
+  bool32 isBeforeSunset;         // 0x1A4, ReflectClock が現在時刻 < gClock.sunset のとき立てる。ApplyDayRollover が日付をまたいだ判定に使う
   Datetime overheatTime;         // 0x1A8
   s16 unk_1b8;                   // 0x1B8
   s16 heatstroke;                // 0x1BA, オーバーヒート時に太陽ゲージが3以上あると増える, 5000を超えると気絶

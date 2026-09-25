@@ -477,7 +477,7 @@ u32 ReflectClock(void) {
   if (gStat->hour < sunsetHour || (gStat->hour == sunsetHour && minute < sunsetMinute)) {
     beforeSunset = TRUE;
   }
-  gStat->isClockTowerBellDone = beforeSunset;
+  gStat->isBeforeSunset = beforeSunset;
 }
 
 // 日付をまたいだか、最後に起動してから日没を越えたかを見て、熱と天候の状態を1日ぶん巻き戻す
@@ -503,7 +503,7 @@ NON_MATCH void ApplyDayRollover(SunlightEntity* _ UNUSED) {
   if (days >= 2) {
     reset = TRUE;
   } else if (days == 1) {
-    if (gStat->isClockTowerBellDone != 0 || sunsetHour < curHour || (curHour == sunsetHour && sunsetMinute <= curMinute)) {
+    if (gStat->isBeforeSunset != 0 || sunsetHour < curHour || (curHour == sunsetHour && sunsetMinute <= curMinute)) {
       reset = TRUE;
     }
   } else {
