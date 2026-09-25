@@ -9,20 +9,6 @@
 s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
 void Sensor_Tick(void);
 
-// ワールド座標を画面座標に落とす (アイソメトリック投影)
-static inline void WorldToScreen(Vec3* screen, Vec3* world) {
-  s32 x = world->x >> 1;
-  s32 z = world->z >> 1;
-  s32 a, b;
-
-  screen->x = Div256((x - z) * 48);
-  a = Div256((x + z) * 48);
-  b = Div256(world->y * 24);
-  screen->x = screen->x - gCameraVpCoords.x + 120;
-  screen->y = (a - b) - gCameraVpCoords.y + 90;
-  screen->z = (a + b) - gCameraVpCoords.z;
-}
-
 // 0x030026B0 から 0x030026C4 までの6つ。以前は SolarSensorInterface という1つの構造体として書いていたが、
 // Sensor_GetState が =0x030026B4 を直接読む (構造体なら =gSSI + [r0,#4] になる) ので、原典では個別のグローバルだった
 // ゲームが太陽センサーとやり取りするための(高レベルな)インターフェース。SolarSensorManager との違いはまだ不明
@@ -187,11 +173,19 @@ NON_MATCH void FUN_082470a8(SolarSensorEntity* p, SSEEmitter* e) {
 #ifdef NONMATCHING_C
   SSEEmitterParticle* q;
   Vec3 screen;
+  s32 x, z, a, b;
   s32 i;
 
-  WorldToScreen(&screen, e->pos);
+  x = e->pos->x >> 1;
+  z = e->pos->z >> 1;
+  screen.x = Div256((x - z) * 48);
+  a = Div256((x + z) * 48);
+  b = Div256(e->pos->y * 24);
+  screen.x = screen.x - gCameraVpCoords.x + 120;
+  screen.y = (a - b) - gCameraVpCoords.y + 90;
+  screen.z = (a + b) - gCameraVpCoords.z;
   for (i = 0, q = e->ptcls; i < 4; i++, q++) {
-    PTR_ARRAY_08dbd818[q->state](p, e, q);
+    PTR_ARRAY_08dbd818[e->ptcls[i].state](p, e, q);
     if (e->ptcls[i].state != 0) {
       e->ptcls[i].ptcl.pos.x = screen.x + e->ptcls[i].pos.x;
       e->ptcls[i].ptcl.pos.y = screen.y + e->ptcls[i].pos.y;

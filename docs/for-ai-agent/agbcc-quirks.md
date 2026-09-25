@@ -176,7 +176,7 @@ for (i = 0; i < N; i++) {          for (i = 0; i < N; i++) {
 - **Frequency**: `Camera_Translate` (matched), `FUN_082470a8`, and the same block in `Camera_Init`, `FUN_0823bac8`, `FUN_0823b8ac`, `MapItemManager_Init`.
 - `v / 256` compiles to `cmp #0` / `bge` / `add #0xff` / `asr #8`. The target's `cmp #0` / `blt` / `asr #8` / `b` / `rsb` / `asr #8` / `rsb` is the same value computed a different way, and agbcc only emits it for the ternary spelled out: `v >= 0 ? (v >> 8) : -((-v) >> 8)`. Writing `v < 0 ? -((-v) >> 8) : (v >> 8)` puts the negate arm first, so the operand order still matters.
 - The project has this as `Div256` in `include/types.h`. The isometric projection uses it three times per call, so a function doing the projection is 9 instructions short without it.
-- The projection itself is a `static inline` taking `(Vec3* out, Vec3* world)`: the target materializes both pointers (the `ldr =dest` pool load and the source's base copy) as an adjacent pair **before** the arithmetic, which is the inlined call's entry. Written flat in the caller, the pool load slides down to the first store instead. `Camera_Translate` has it as `WorldToVp` (no camera offset); `FUN_082470a8` needs the `- gCameraVpCoords + 120/90` variant.
+- In `Camera_Translate` the projection is a `static inline` taking `(Vec3* out, Vec3* world)` (`WorldToVp` in `src/camera.c`): the target materializes both pointers — the `ldr =dest` pool load and the source's base copy — as an adjacent pair **before** the arithmetic, which is the inlined call's entry. Written flat in the caller, the pool load slides down to the first store instead.
 
 ### A range test becomes `(unsigned)(x - lo) <= hi - lo`
 
