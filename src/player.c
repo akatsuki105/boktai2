@@ -272,10 +272,10 @@ NAKED void FUN_080617dc(u32 idx, s32* result1, s32* result2) { INCFUNC("asm/func
 
 NAKED void FUN_0806181c(Player* p) { INCFUNC("asm/func/FUN_0806181c.inc"); }
 
-// 黒ジャンゴが剣で攻撃する時に1回呼ばれる, idx はプレイヤーの向きで変わる
+// 黒ジャンゴが剣で攻撃する時に1回呼ばれる, idx はプレイヤーの向きで変わる (多分、 衝撃波 を出す処理)
 NAKED void Player_DarkDjangoSword_0806185c(Player* p, u32 idx, Vec3* pos) { INCFUNC("asm/func/Player_DarkDjangoSword_0806185c.inc"); }
 
-// 黒ジャンゴが槍で攻撃する時に1回呼ばれる, idx はプレイヤーの向きで変わる
+// 黒ジャンゴが槍で攻撃する時に1回呼ばれる, idx はプレイヤーの向きで変わる (多分、 衝撃波 を出す処理)
 NAKED void Player_DarkDjangoSpear_08061970(Player* p, u32 idx, Vec3* pos, s32 n) { INCFUNC("asm/func/Player_DarkDjangoSpear_08061970.inc"); }
 
 // Player_DarkDjangoSword_0806185c のような関数だが、いつ呼ばれるか不明 (武器の攻撃ではない)
@@ -284,7 +284,7 @@ NAKED void FUN_08061a98(Player* p, u32 idx, Vec3* pos) { INCFUNC("asm/func/FUN_0
 // 多分、サバタが攻撃する時に呼ばれる
 NAKED void FUN_08061b48(Player* p, u32 _, Vec3* pos) { INCFUNC("asm/func/FUN_08061b48.inc"); }
 
-void FUN_08061b98(Player* p) { AuxSprite_Remove(&p->node_6ac); }
+void FUN_08061b98(Player* p) { AuxSprite_Remove(&(p->meleeShockwave).sprite); }
 
 NAKED void Player_Init_Anim_08061bac(Player* p) { INCFUNC("asm/func/Player_Init_Anim_08061bac.inc"); }
 

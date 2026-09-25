@@ -195,8 +195,10 @@ typedef struct Player {
   u8 unk_5f4[0x64C - 0x5F4];
   PlayerParticleGroup1 ptcl_64c;  // 0x64C, FUN_08061458
   PlayerParticleGroup1 ptcl_67c;  // 0x67C, FUN_0806161c
-  AuxSprite node_6ac;             // 0x6AC, 直後の sprite_6d8 を指すノード, 根拠: AuxSprite_Remove に渡している
-  AuxSpriteGfx sprite_6d8;        // 0x6D8, Player_Init_Anim_08061bac
+  struct {
+    AuxSprite sprite;
+    AuxSpriteGfx gfx;  // ジャンゴ: SPRITE_MELEE_SHOCKWAVE, サバタ: SPRITE_GUN_SPREAD
+  } meleeShockwave;    // 0x6AC
   u8 unk_6f0[0x704 - 0x6F4];
   AuxAnimFile* anim_704;  // 0x704
   u8 unk_708[8];
