@@ -36,7 +36,7 @@ typedef struct Entity08080be8 {
   u16 offsetRadius;                   // 0x0C2, Init の第6引数。offset.x と offset.z の大きさ
   u16 eneCost;                        // 0x0C4, Init の第12引数。Entity08080be8_PayENE が Player_ReduceENE_0807aa60 に渡す
   u8 unk_c6[2];                       // 0x0C6
-  u8 dir;                             // 0x0C8, プレイヤーの向きから作る 0..7 の方向。8bit角度の基準になる
+  Facing8 dir;                        // 0x0C8, プレイヤーの向きから作る 0..7 の方向。8bit角度の基準になる
   u8 charge;                          // 0x0C9, player の 0xA8F の写し。damage を 1 + charge/2 倍にし、sprite.metaspriteIdx にも入る
   u16 timer;                          // 0x0CA, Entity08080be8_SetState が状態を変えるたび 0 に戻し、各状態が毎フレーム +1 する
   u8 ptclIdx;                         // 0x0CC, 次に撒く ptcls の添字。4 で 0 に戻る

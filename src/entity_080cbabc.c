@@ -1,7 +1,8 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
-#include "sprite_aux.h"
+#include "player.h"
+#include "sprite.h"
 
 // 角度と速度で飛ぶ攻撃判定つきのエフェクト。地形より低くなるか 60 フレームで消える
 typedef struct {
@@ -14,7 +15,7 @@ typedef struct {
   s16 velZ;           // 0xB4, gSineTable[angle & 0xFF] * speed >> 12 (0方向への丸め)
   u8 unk_b6[2];       // 0xB6, 読み書きとも無し, padding?
   s32 state;          // 0xB8, 0 の間は飛行、それ以外は着弾処理
-  u16 dir;            // 0xBC, ((angle + 0x10 & 0xFF) >> 5) + 3 & 7 の8方向
+  Facing16 dir;       // 0xBC, ((angle + 0x10 & 0xFF) >> 5) + 3 & 7
   u16 timer;          // 0xBE, 飛行中は 60 で、着弾後は 6 で終わる
 } Entity080cbabc;
 static_assert(sizeof(Entity080cbabc) == 192);

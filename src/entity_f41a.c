@@ -1,4 +1,3 @@
-#include "animation.h"
 #include "collision_map.h"
 #include "entity.h"
 #include "file.h"

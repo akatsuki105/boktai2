@@ -1,4 +1,3 @@
-#include "animation.h"
 #include "entity.h"
 #include "entity_cbb0.h"
 #include "global.h"

@@ -1,7 +1,6 @@
 #ifndef GUARD_ZOKTAI_PLAYER_H
 #define GUARD_ZOKTAI_PLAYER_H
 
-#include "animation.h"
 #include "constants/constants.h"
 #include "entity.h"
 #include "gba/gba.h"
@@ -26,6 +25,19 @@ typedef u32 PlayerFlag378;               // Player.flag378
 #define FLAG378_UNK_8 (1 << 8)           // 0x00000100, ???
 #define FLAG378_HEART (1 << 28)          // 0x10000000, ハートの紋章所持
 #define FLAG378_JOKER (1 << 29)          // 0x20000000, ジョーカーの紋章所持
+
+// プレイヤーの向き
+typedef u8 Facing8;
+typedef u16 Facing16;
+typedef u32 Facing32;
+#define FACE_UP 0          // 上
+#define FACE_UP_RIGHT 1    // 右上
+#define FACE_RIGHT 2       // 右
+#define FACE_DOWN_RIGHT 3  // 右下
+#define FACE_DOWN 4        // 下
+#define FACE_DOWN_LEFT 5   // 左下
+#define FACE_LEFT 6        // 左
+#define FACE_UP_LEFT 7     // 左上
 
 typedef void (*PlayerFunc)(struct Player*);
 

@@ -1,11 +1,9 @@
-#include "animation.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "malloc.h"
 #include "sound.h"
 #include "sprite_aux.h"
-#include "struct.h"
 #include "vm.h"
 
 // Entity081d0e20 が抱える要素。Malloc(0xC0) で個別に確保され、先頭が AuxSprite になっている, 根拠: Entity081d0e20_AllocElem
