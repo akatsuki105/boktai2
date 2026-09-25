@@ -46,7 +46,15 @@ NAKED void FUN_080a9808(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a980
 
 NAKED void FUN_080a9840(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a9840.inc"); }
 
-NAKED void FUN_080a98c0(Judgement* p) { INCFUNC("asm/func/FUN_080a98c0.inc"); }
+void FUN_080a98c0(Judgement* p) {
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    if (p->ptcls[i].active != 0) {
+      p->ptcls[i].fn(&p->ptcls[i]);
+    }
+  }
+}
 
 NAKED void FUN_080a98f0(Judgement* p) { INCFUNC("asm/func/FUN_080a98f0.inc"); }
 
