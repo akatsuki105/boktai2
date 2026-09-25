@@ -60,6 +60,20 @@ s32 Entity080dbe54_Init(Entity080dbe54* p, u32 param_2) {
   return 0;
 }
 
-NAKED Entity080dbe54* Entity080dbe54_Create(void) { INCFUNC("asm/func/Entity080dbe54_Create.inc"); }
+Entity080dbe54* Entity080dbe54_Create(void) {
+  if (gEntity080dbe54 == NULL) {
+    Entity080dbe54* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity080dbe54));
+    gEntity080dbe54 = p;
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity080dbe54_Update, Entity080dbe54_Destroy);
+      if (Entity080dbe54_Init(p, 0) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity080dbe54;
+}
 
 void FUN_080dbea4(void) { gEntity080dbe54 = NULL; }
