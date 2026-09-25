@@ -15,8 +15,8 @@ static_assert(sizeof(Entity080db520Elem) == 164);
 
 typedef struct Entity080db520 {
   Entity e;                     // 0x000, ENTITY_UNK_10
-  AuxSpriteGfx sprite_18;       // 0x018
-  AuxAnimFile* anim_34;         // 0x034
+  AuxSpriteGfx gfx;             // 0x018
+  AuxAnimFile* anim;            // 0x034
   u32 activeMask;               // 0x038, 使用中の elems のビットマスク
   Entity080db520Elem elems[8];  // 0x03C, 根拠: _Destroy の stride 0xA4 × 8
 } Entity080db520;
