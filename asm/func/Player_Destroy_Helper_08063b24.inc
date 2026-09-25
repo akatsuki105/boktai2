@@ -2,7 +2,7 @@
 	adds r4, r0, #0
 	ldr r1, _08063B64 @ =0x000004C4
 	adds r0, r4, r1
-	bl FUN_08247504
+	bl SSEEmitter_Destroy
 	ldr r1, _08063B68 @ =0x0000060C
 	adds r0, r4, r1
 	bl ParticleShadow_Remove

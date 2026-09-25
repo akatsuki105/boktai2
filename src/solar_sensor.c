@@ -154,7 +154,18 @@ NAKED SolarSensorEntity* SSE_Create(u32 _) { INCFUNC("asm/func/SSE_Create.inc");
 
 NAKED s32 FUN_0824742c(SSEEmitter* e, u32 unk_8, s32 unk_1, s32 unk_4, s32 unk_5) { INCFUNC("asm/func/FUN_0824742c.inc"); }
 
-NAKED s32 FUN_08247504(unknown* p) { INCFUNC("asm/func/FUN_08247504.inc"); }
+// エミッタの後始末。粒子を消してリストから外す
+s32 SSEEmitter_Destroy(SSEEmitter* p) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    Particle_Remove(&p->ptcls[i].ptcl);
+  }
+  if (gSensorEntity != NULL) {
+    SSEEmitter_Unregister(gSensorEntity, p);
+  }
+  return 0;
+}
 
 NAKED void Sensor_DoEnableIO(void) { INCFUNC("asm/func/Sensor_DoEnableIO.inc"); }
 

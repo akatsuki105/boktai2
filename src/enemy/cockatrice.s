@@ -28029,7 +28029,7 @@ _081605A6:
 	movs r1, #0xc5
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_08247504
+	bl SSEEmitter_Destroy
 	movs r0, #1
 	strb r0, [r5]
 _081605BE:
