@@ -69,7 +69,29 @@ s32 SSEEmitter_Unregister(SolarSensorEntity* e, SSEEmitter* p) {
   return 0;
 }
 
-NAKED s32 FUN_082466ec(SSEEmitter* p) { INCFUNC("asm/func/FUN_082466ec.inc"); }
+// 生きている枠をひとつだけ消えかけ (state 2) にする
+NON_MATCH s32 SSEEmitter_FadeParticle(SSEEmitter* p) {
+#ifdef NONMATCHING_C
+  bool32 found = FALSE;
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    if (p->ptcls[i].unk_0 == 1) {
+      p->ptcls[i].unk_0 = 2;
+      p->ptcls[i].unk_1 = 10;
+      p->ptcls[i].unk_2 = 0;
+      found = TRUE;
+      break;
+    }
+  }
+  if (found) {
+    p->unk_3--;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/SSEEmitter_FadeParticle.inc");
+#endif
+}
 
 NAKED s32 FUN_08246728(SSEEmitter* p, s32 param_2, Vec3* param_3, Vec3* param_4, Vec3* param_5, s32 param_6, s32 param_7) { INCFUNC("asm/func/FUN_08246728.inc"); }
 

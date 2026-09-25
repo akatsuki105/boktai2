@@ -12,7 +12,7 @@ _080E64C8:
 	movs r1, #0xc5
 	lsls r1, r1, #2
 	adds r0, r5, r1
-	bl FUN_082466ec
+	bl SSEEmitter_FadeParticle
 	subs r4, #1
 	cmp r4, #0
 	bne _080E64C8

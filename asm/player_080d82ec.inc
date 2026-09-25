@@ -3561,7 +3561,7 @@ FUN_080cdc6c: @ 0x080CDC6C
 	bne _080CDC98
 	ldr r2, _080CDC94 @ =0x000004C4
 	adds r0, r7, r2
-	bl FUN_082466ec
+	bl SSEEmitter_FadeParticle
 	b _080CDD7A
 	.align 2, 0
 _080CDC90: .4byte 0x000004C5

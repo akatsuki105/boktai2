@@ -12,7 +12,7 @@
 	bne _08063114
 	ldr r2, _08063110 @ =0x000004C4
 	adds r0, r7, r2
-	bl FUN_082466ec
+	bl SSEEmitter_FadeParticle
 	b _080631F2
 	.align 2, 0
 _0806310C: .4byte 0x000004C5

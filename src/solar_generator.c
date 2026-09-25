@@ -52,7 +52,7 @@ typedef struct {
 static_assert(sizeof(Generator) == 572);
 
 void* FUN_08246790(SSEEmitter* p);
-void* FUN_082466ec(SSEEmitter* p);
+void* SSEEmitter_FadeParticle(SSEEmitter* p);
 
 NAKED void Generator_SetState(Generator* p, s32 state) { INCFUNC("asm/func/Generator_SetState.inc"); }
 
@@ -139,7 +139,7 @@ void FUN_080b32e0(Generator* p) {
     p->plttID = p->unk_f0;
     p->unk_f2--;
     if (p->unk_f2 < p->unk_f4) {
-      FUN_082466ec(&p->unk_100);
+      SSEEmitter_FadeParticle(&p->unk_100);
       p->unk_f4 -= 250;
     }
   }
