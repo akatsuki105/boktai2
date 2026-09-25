@@ -10,6 +10,7 @@
 struct GameOverManager;
 struct LevelUpper;
 struct EntityB3D1;
+struct Entity080da848;
 struct SignalStrengthIcon;
 struct EntityD53D;
 struct ExplosionManager;
@@ -40,8 +41,9 @@ IWRAM_DATA u8 u8_0300013c[20] = {};
 IWRAM_DATA struct GameOverManager* gGameOverManager = NULL;  // 0x03000150
 IWRAM_DATA struct LevelUpper* gLevelUpper = NULL;            // 0x03000154
 IWRAM_DATA struct EntityB3D1* gEntityB3D1 = NULL;            // 0x03000158
+IWRAM_DATA struct Entity080da848* gEntity080da848 = NULL;    // 0x0300015C
 
-IWRAM_DATA u8 u8_0300015c[24] = {};
+IWRAM_DATA u8 u8_03000160[20] = {};
 
 IWRAM_DATA struct Entity080de11c* gEntity080de11c = NULL;  // 0x03000174
 

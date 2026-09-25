@@ -92,7 +92,7 @@ _080ECB1C:
 _080ECB1E:
 	cmp r0, #0
 	bne _080ECB3E
-	bl FUN_080da848
+	bl Entity080da848_Create
 	adds r2, r0, #0
 	str r2, [r4, #0x3c]
 	cmp r2, #0
