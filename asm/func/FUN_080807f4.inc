@@ -33,7 +33,7 @@
 	adds r1, #0x64
 	strh r0, [r1, #0x3c]
 	adds r0, r4, #0
-	bl FUN_0808065c
+	bl Entity08080be8_PayENE
 	ldr r1, _08080854 @ =FUN_080808cc
 	adds r0, r4, #0
 	bl Entity08080be8_SetState
@@ -47,7 +47,7 @@ _08080858:
 	adds r0, r4, #0
 	bl Entity08080be8_ClearParticles
 	adds r0, r4, #0
-	bl FUN_0808065c
+	bl Entity08080be8_PayENE
 _08080868:
 	adds r0, r4, #0
 	bl KillEntity

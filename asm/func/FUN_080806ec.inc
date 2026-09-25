@@ -36,7 +36,7 @@ _08080706:
 	adds r1, #0x64
 	strh r0, [r1, #0x3c]
 	adds r0, r4, #0
-	bl FUN_0808065c
+	bl Entity08080be8_PayENE
 	ldr r1, _08080750 @ =FUN_080808cc
 	adds r0, r4, #0
 	bl Entity08080be8_SetState

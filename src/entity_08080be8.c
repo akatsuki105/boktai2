@@ -1,5 +1,6 @@
 #include "definition.h"
 #include "entity.h"
+#include "entity_9a9f.h"
 #include "global.h"
 #include "hitbox.h"
 #include "particle.h"
@@ -32,7 +33,7 @@ typedef struct Entity08080be8 {
   u16 unk_be;                         // 0x0BE, Init の第4引数。FUN_08080204 で gSineTable に掛ける
   u16 unk_c0;                         // 0x0C0, Init の第5引数。unk_be と対で使う
   u16 offsetRadius;                   // 0x0C2, Init の第6引数。offset.x と offset.z の大きさ
-  u16 eneCost;                        // 0x0C4, Init の第12引数。FUN_0808065c が Player_ReduceENE_0807aa60 に渡す
+  u16 eneCost;                        // 0x0C4, Init の第12引数。Entity08080be8_PayENE が Player_ReduceENE_0807aa60 に渡す
   u8 unk_c6[2];                       // 0x0C6
   u8 dir;                             // 0x0C8, プレイヤーの向きから作る 0..7 の方向。8bit角度の基準になる
   u8 charge;                          // 0x0C9, player の 0xA8F の写し。damage を 1 + charge/2 倍にし、sprite.metaspriteIdx にも入る
@@ -51,6 +52,7 @@ void FUN_0808094c(Entity08080be8* p);
 // src/player.c
 s32 FUN_0806f900(Player* player);
 s32 FUN_080d1b04(Player* player);
+void Player_ReduceENE_0807aa60(Player* player, s32 amount);
 
 // 状態関数を差し替えて経過フレームを 0 に戻す
 void Entity08080be8_SetState(Entity08080be8* p, Entity08080be8Func fn) {
@@ -76,7 +78,17 @@ void Entity08080be8_ClearParticles(Entity08080be8* p) {
 
 void FUN_08080648(HitboxData* a, HitboxData* b, Entity08080be8* p) { Entity08080be8_SetState(p, FUN_0808094c); }
 
-NAKED void FUN_0808065c(Entity08080be8* p) { INCFUNC("asm/func/FUN_0808065c.inc"); }
+// 発動時に ENE を払う
+void Entity08080be8_PayENE(Entity08080be8* p) {
+  if (gFlag030047a4 & FLAG030047A4_UNK_11) {
+    s32 cost = p->eneCost;
+
+    if (gEntity9A9F != NULL) {
+      gEntity9A9F->unk_140 += cost;
+    }
+  }
+  Player_ReduceENE_0807aa60(p->player, p->eneCost);
+}
 
 // チャージ量に応じた威力を出す
 s32 Entity08080be8_GetDamage(Entity08080be8* p) {
