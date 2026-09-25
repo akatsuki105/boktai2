@@ -9,7 +9,7 @@
 typedef struct SunlightEntity {
   Entity e;                                        // 0x00, ENTITY_UNK_5
   u8 unk_18;                                       // 0x18, FUN_08241f28 が 1 を書く。読み手は見つかっていない
-  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む。FUN_08241cf4 / FUN_08241e40 が回し、FUN_08241690 / FUN_082416d4 / SuspendSunlight / FUN_0824172c が見る
+  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む。FUN_08241cf4 / FUN_08241e40 が回し、IsSunlightActive / FUN_082416d4 / SuspendSunlight / FUN_0824172c が見る
   u16 unk_1a;                                      // 0x1A, このモジュールは触らない
   s16 lx;                                          // 0x1C, 太陽光の強さ
   s16 sunGauge;                                    // 0x1E, lx を 10段階に分けたもの
@@ -47,7 +47,13 @@ const u16 gSunLevelMinLx[11] = {0, 1, 6, 13, 23, 35, 50, 67, 87, 110, 140};  // 
 
 NAKED void FUN_08241650(void) { INCFUNC("asm/func/FUN_08241650.inc"); }
 
-NAKED bool32 FUN_08241690(void) { INCFUNC("asm/func/FUN_08241690.inc"); }
+// センサーの値が今そのまま使えるか。state 2 が計測中
+bool32 IsSunlightActive(void) {
+  if (gSunlightEntity != NULL && gSunlightSuspended == 0 && gSunlightEntity->state == 2) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 void FUN_082416bc(void) { u16_03004864 = 1; }
 
