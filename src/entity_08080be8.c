@@ -13,7 +13,7 @@ typedef void (*Entity08080be8Func)(struct Entity08080be8* p);
 // FUN_080804a0 が1個ずつ撒く粒子。4個を順に使い回す
 typedef struct {
   Particle base;   // 0x00, FUN_0822d9f0 や Particle_Remove に Particle* として渡る
-  bool8 active;    // 0x28, FUN_080804a0 が 1 にし、FUN_080803b4 が寿命で 0 に戻す。0 の間は動かさない
+  bool8 active;    // 0x28, FUN_080804a0 が 1 にし、Entity08080be8_UpdateParticles が寿命で 0 に戻す。0 の間は動かさない
   s8 angleOffset;  // 0x29, Mod(rand, 0x60) - 0x30。dir から作る8bit角度に足してばらつかせる
   u16 radius;      // 0x2A, (rand >> 3 & 0x7F) + 0x40。gSineTable に掛けて >> 12 したものが base.pos のずれになる
   u16 timer;       // 0x2C, 毎フレーム +1 し 15 で寿命。距離が radius * (0x10 - timer) >> 3 なので中心へ寄っていく
@@ -66,7 +66,32 @@ void Entity08080be8_SetState(Entity08080be8* p, Entity08080be8Func fn) {
 
 NAKED void FUN_08080204(Entity08080be8* p) { INCFUNC("asm/func/FUN_08080204.inc"); }
 
-NAKED void FUN_080803b4(Entity08080be8* p) { INCFUNC("asm/func/FUN_080803b4.inc"); }
+// 撒いた粒子を寿命まで動かす。距離が毎フレーム縮むので中心へ吸い込まれていく
+NON_MATCH void Entity08080be8_UpdateParticles(Entity08080be8* p) {
+#ifdef NONMATCHING_C
+  s32 dirBase = ((p->dir + 5) & 7) * 32;
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    if (p->ptcls[i].active != 0) {
+      p->ptcls[i].timer++;
+      if (p->ptcls[i].timer > 14) {
+        p->ptcls[i].active = 0;
+        p->ptcls[i].base.flags |= SPRFLAG_HIDDEN;
+      } else {
+        s32 dist = p->ptcls[i].radius * (16 - p->ptcls[i].timer) >> 3;
+        s32 angle = (dirBase + p->ptcls[i].angleOffset + 0x100) & 0xFF;
+
+        p->ptcls[i].base.pos = p->sprite.pos;
+        p->ptcls[i].base.pos.x += dist * gSineTable[(angle + 0x40) & 0xFF] / 4096;
+        p->ptcls[i].base.pos.z += dist * gSineTable[angle] / 4096;
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/Entity08080be8_UpdateParticles.inc");
+#endif
+}
 
 NAKED void FUN_080804a0(Entity08080be8* p) { INCFUNC("asm/func/FUN_080804a0.inc"); }
 
@@ -132,7 +157,7 @@ NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
       Entity08080be8_ClearParticles(p);
       Entity08080be8_PayENE(p);
     } else {
-      FUN_080803b4(p);
+      Entity08080be8_UpdateParticles(p);
       state = p->player->unk_37d;
       if (state == 2) {
         if ((p->timer & 3) == 3) {

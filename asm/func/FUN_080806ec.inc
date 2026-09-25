@@ -46,7 +46,7 @@ _0808074C: .4byte 0x0000037D
 _08080750: .4byte Entity08080be8_StateFly
 _08080754:
 	adds r0, r4, #0
-	bl FUN_080803b4
+	bl Entity08080be8_UpdateParticles
 	ldr r0, [r4, #0x18]
 	ldr r1, _0808077C @ =0x0000037D
 	adds r0, r0, r1

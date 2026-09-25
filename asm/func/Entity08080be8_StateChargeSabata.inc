@@ -54,7 +54,7 @@ _08080868:
 	b _080808C0
 _08080870:
 	adds r0, r4, #0
-	bl FUN_080803b4
+	bl Entity08080be8_UpdateParticles
 	ldr r0, [r4, #0x18]
 	adds r0, r0, r5
 	ldrb r1, [r0]
