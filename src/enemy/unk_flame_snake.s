@@ -3438,7 +3438,7 @@ _081A80B4:
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0x80
-	bl FUN_080dd8d4
+	bl SpawnAttackBox
 	ldr r0, _081A81D4 @ =0x0000046D
 	adds r0, r5, r0
 	str r0, [sp, #0x40]

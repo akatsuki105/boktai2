@@ -536,8 +536,8 @@ _080DD748: .4byte 0x000003FF
 _080DD74C: .4byte 0x0203B400
 _080DD750: .4byte 0x00000339
 
-	thumb_func_start FUN_080dd754
-FUN_080dd754: @ 0x080DD754
+	thumb_func_start AttackBox_Setup
+AttackBox_Setup: @ 0x080DD754
 	push {r4, r5, r6, r7, lr}
 	mov r7, sb
 	mov r6, r8
@@ -631,13 +631,13 @@ _080DD7EC:
 	.align 2, 0
 _080DD814: .4byte 0x00003246
 
-	thumb_func_start FUN_080dd818
-FUN_080dd818: @ 0x080DD818
+	thumb_func_start AttackBox_Idle
+AttackBox_Idle: @ 0x080DD818
 	bx lr
 	.align 2, 0
 
-	thumb_func_start FUN_080dd81c
-FUN_080dd81c: @ 0x080DD81C
+	thumb_func_start AttackBox_Update
+AttackBox_Update: @ 0x080DD81C
 	push {r4, r5, lr}
 	adds r4, r1, #0
 	adds r0, r4, #0
@@ -671,8 +671,8 @@ _080DD856:
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_080dd85c
-FUN_080dd85c: @ 0x080DD85C
+	thumb_func_start AttackBox_Free
+AttackBox_Free: @ 0x080DD85C
 	push {lr}
 	adds r3, r1, #0
 	adds r3, #0x5d
@@ -699,8 +699,8 @@ FUN_080dd85c: @ 0x080DD85C
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_080dd890
-FUN_080dd890: @ 0x080DD890
+	thumb_func_start AttackBoxManager_Alloc
+AttackBoxManager_Alloc: @ 0x080DD890
 	push {r4, lr}
 	adds r3, r0, #0
 	movs r4, #0
@@ -741,8 +741,8 @@ _080DD8CE:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_080dd8d4
-FUN_080dd8d4: @ 0x080DD8D4
+	thumb_func_start SpawnAttackBox
+SpawnAttackBox: @ 0x080DD8D4
 	push {r4, r5, r6, r7, lr}
 	sub sp, #4
 	adds r4, r0, #0
@@ -755,11 +755,11 @@ FUN_080dd8d4: @ 0x080DD8D4
 	ldr r0, [r0]
 	cmp r0, #0
 	bne _080DD8F4
-	bl Entity080ddad0_Create
+	bl AttackBoxManager_Create
 	cmp r0, #0
 	beq _080DD92C
 _080DD8F4:
-	bl FUN_080dd890
+	bl AttackBoxManager_Alloc
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _080DD92C
@@ -784,7 +784,7 @@ _080DD8F4:
 	adds r1, r7, #0
 	ldr r2, [sp, #0x18]
 	ldr r3, [sp, #0x1c]
-	bl FUN_080dd754
+	bl AttackBox_Setup
 _080DD92C:
 	movs r0, #0
 	add sp, #4
@@ -804,11 +804,11 @@ FUN_080dd93c: @ 0x080DD93C
 	ldr r0, [r0]
 	cmp r0, #0
 	bne _080DD954
-	bl Entity080ddad0_Create
+	bl AttackBoxManager_Create
 	cmp r0, #0
 	beq _080DDA46
 _080DD954:
-	bl FUN_080dd890
+	bl AttackBoxManager_Alloc
 	adds r5, r0, #0
 	cmp r5, #0
 	beq _080DDA46
@@ -925,7 +925,7 @@ _080DDA16:
 	mov r1, r8
 	adds r2, r7, #0
 	adds r3, r6, #0
-	bl FUN_080dd754
+	bl AttackBox_Setup
 _080DDA46:
 	add sp, #4
 	pop {r3}
@@ -935,8 +935,8 @@ _080DDA46:
 	bx r0
 	.align 2, 0
 
-	thumb_func_start Entity080ddad0_Update
-Entity080ddad0_Update: @ 0x080DDA54
+	thumb_func_start AttackBoxManager_Update
+AttackBoxManager_Update: @ 0x080DDA54
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	ldr r0, [r4, #0x18]
@@ -983,8 +983,8 @@ _080DDAA0:
 	pop {r1}
 	bx r1
 
-	thumb_func_start Entity080ddad0_Destroy
-Entity080ddad0_Destroy: @ 0x080DDAA8
+	thumb_func_start AttackBoxManager_Destroy
+AttackBoxManager_Destroy: @ 0x080DDAA8
 	ldr r1, _080DDAB0 @ =0x03000170
 	movs r0, #0
 	str r0, [r1]
@@ -997,8 +997,8 @@ FUN_080ddab4: @ 0x080DDAB4
 	bx lr
 	.align 2, 0
 
-	thumb_func_start Entity080ddad0_Init
-Entity080ddad0_Init: @ 0x080DDAB8
+	thumb_func_start AttackBoxManager_Init
+AttackBoxManager_Init: @ 0x080DDAB8
 	push {r4, lr}
 	adds r4, r0, #0
 	bl FUN_080ddab4
@@ -1011,8 +1011,8 @@ Entity080ddad0_Init: @ 0x080DDAB8
 	.align 2, 0
 _080DDACC: .4byte 0x03000170
 
-	thumb_func_start Entity080ddad0_Create
-Entity080ddad0_Create: @ 0x080DDAD0
+	thumb_func_start AttackBoxManager_Create
+AttackBoxManager_Create: @ 0x080DDAD0
 	push {r4, lr}
 	ldr r0, _080DDB08 @ =0x03000170
 	ldr r0, [r0]
@@ -1025,12 +1025,12 @@ Entity080ddad0_Create: @ 0x080DDAD0
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080DDB14
-	ldr r1, _080DDB0C @ =Entity080ddad0_Update
-	ldr r2, _080DDB10 @ =Entity080ddad0_Destroy
+	ldr r1, _080DDB0C @ =AttackBoxManager_Update
+	ldr r2, _080DDB10 @ =AttackBoxManager_Destroy
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	movs r1, #0
-	bl Entity080ddad0_Init
+	bl AttackBoxManager_Init
 	cmp r0, #0
 	bge _080DDB14
 	adds r0, r4, #0
@@ -1039,8 +1039,8 @@ Entity080ddad0_Create: @ 0x080DDAD0
 	b _080DDB16
 	.align 2, 0
 _080DDB08: .4byte 0x03000170
-_080DDB0C: .4byte Entity080ddad0_Update
-_080DDB10: .4byte Entity080ddad0_Destroy
+_080DDB0C: .4byte AttackBoxManager_Update
+_080DDB10: .4byte AttackBoxManager_Destroy
 _080DDB14:
 	adds r0, r4, #0
 _080DDB16:

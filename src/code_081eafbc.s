@@ -28528,7 +28528,7 @@ FUN_081f8620: @ 0x081F8620
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0x80
-	bl FUN_080dd8d4
+	bl SpawnAttackBox
 	movs r0, #0x90
 	lsls r0, r0, #1
 	adds r1, r4, r0

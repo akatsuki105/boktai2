@@ -19884,7 +19884,7 @@ _081C1DCA:
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0x80
-	bl FUN_080dd8d4
+	bl SpawnAttackBox
 	ldr r2, _081C1E58 @ =FUN_080e48d0
 	movs r1, #0x10
 	ldr r3, _081C1E5C @ =0x0000046D
