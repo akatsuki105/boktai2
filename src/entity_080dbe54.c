@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "file.h"
 #include "animation.h"
 #include "particle.h"
 #include "global.h"
@@ -44,7 +45,10 @@ NAKED s32 Entity080dbe54_Update(Entity080dbe54* p) { INCFUNC("asm/func/Entity080
 
 NAKED s32 Entity080dbe54_Destroy(Entity080dbe54* p) { INCFUNC("asm/func/Entity080dbe54_Destroy.inc"); }
 
-NAKED void FUN_080dbe14(Entity080dbe54* p) { INCFUNC("asm/func/FUN_080dbe14.inc"); }
+void FUN_080dbe14(Entity080dbe54* p) {
+  p->group = GetParticleGroup(PTCL_GROUP_0);
+  p->anim = GetFile(DIR_ANIMATION, 0xD1B8);
+}
 
 s32 Entity080dbe54_Init(Entity080dbe54* p, u32 param_2) {
   p->unk_724 = param_2;
