@@ -113,6 +113,17 @@ NAKED Entity080da848* Entity080da848_Create(void) { INCFUNC("asm/func/Entity080d
 
 void FUN_080da894(void) { gEntity080da848 = NULL; }
 
-NAKED bool32 FUN_080da8a0(Entity080da848Elem* elem) { INCFUNC("asm/func/FUN_080da8a0.inc"); }
+bool32 FUN_080da8a0(Entity080da848Elem* elem) {
+  if (gEntity080da848 == NULL) {
+    return TRUE;
+  }
+  if (elem == NULL) {
+    return TRUE;
+  }
+  if (elem->unk_2d == 0) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED void FUN_080da8cc(void) { INCFUNC("asm/func/FUN_080da8cc.inc"); }
