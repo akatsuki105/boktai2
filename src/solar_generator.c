@@ -46,14 +46,14 @@ typedef struct {
   u8 unk_f6[3];           // 0x0F6
   u8 unk_f9;              // 0x0F9, 0 まで減らすだけのカウンタ
   u8 unk_fa[6];           // 0x0FA
-  Player4c4 unk_100;      // 0x100, Init が FUN_0824742c(&unk_100, &sprite.pos, 0, 0, 0)、_Destroy が FUN_08247504 する
+  SSEEmitter unk_100;      // 0x100, Init が FUN_0824742c(&unk_100, &sprite.pos, 0, 0, 0)、_Destroy が FUN_08247504 する
   u8 unk_230[8];          // 0x230
   EntityFunc fn;          // 0x238, _Update が毎フレーム呼ぶ,Generator_SetState が state と一緒に書く
 } Generator;
 static_assert(sizeof(Generator) == 572);
 
-void* FUN_08246790(Player4c4* p);
-void* FUN_082466ec(Player4c4* p);
+void* FUN_08246790(SSEEmitter* p);
+void* FUN_082466ec(SSEEmitter* p);
 
 NAKED void Generator_SetState(Generator* p, s32 state) { INCFUNC("asm/func/Generator_SetState.inc"); }
 

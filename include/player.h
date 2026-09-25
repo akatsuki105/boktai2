@@ -6,13 +6,13 @@
 #include "gba/gba.h"
 #include "hitbox.h"
 #include "particle.h"
+#include "solar_sensor.h"
 #include "sprite.h"
 #include "struct.h"
 #include "types.h"
 #include "weapon.h"
 
 struct Player;
-struct SolarSensorEntity;
 struct Input;
 
 typedef u32 PlayerFlag378;               // Player.flag378
@@ -70,24 +70,6 @@ typedef struct {
   s16 hpBonus;            // 0x10 (Player: 0x274), 鎧のHP補正値(赤なら+, 黒なら-)
   s16 eneBonus;           // 0x12 (Player: 0x276), 鎧のEne補正値(赤なら+, 黒なら-)
 } PlayerArmor;
-
-typedef struct {
-  u8 unk_0[72];  // 0x0
-} Player4c4_0c;
-
-typedef struct Player4c4 {
-  u8 unk_0;  // 0x000
-  u8 unk_1;  // 0x001
-  u8 unk_2;  // 0x002
-  u8 unk_3;  // 0x003
-  u8 unk_4;  // 0x004
-  u8 unk_5;  // 0x005
-  u8 unk_6[2];
-  u32 unk_8;                                                     // 0x008
-  Player4c4_0c unk_c[4];                                         // 0x00C
-  void (*fn_12c)(struct SolarSensorEntity*, struct Player4c4*);  // 0x12C, SSE_Update(0x0824736c)　で実行
-  // 304バイト, これ以上続くのかは不明, Generator (in solar_generator.c) のレイアウト的に、304~312バイト
-} Player4c4;
 
 typedef struct {
   Particle base;         // 0x00
@@ -191,7 +173,7 @@ typedef struct Player {
   u8 unk_4ab[0x4b0 - 0x4ab];
   s32 scriptID_4b0;  // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4c4 - 0x4b4];
-  Player4c4 unk_4c4;  // 0x4C4
+  SSEEmitter unk_4c4;  // 0x4C4
   u8 unk_5f4[0x64C - 0x5F4];
   PlayerParticleGroup1 ptcl_64c;  // 0x64C, FUN_08061458
   PlayerParticleGroup1 ptcl_67c;  // 0x67C, FUN_0806161c
