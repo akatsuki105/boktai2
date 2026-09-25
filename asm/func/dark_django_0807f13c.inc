@@ -55,7 +55,7 @@
 	movs r1, #2
 	bl FUN_08060e90
 	adds r0, r5, #0
-	bl FUN_080801b0
+	bl DarkDjangoEffect_Create
 	b _0807F1FA
 	.align 2, 0
 _0807F1B8: .4byte 0x030046A0

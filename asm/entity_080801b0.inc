@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_0807f640
-FUN_0807f640: @ 0x0807F640
+	thumb_func_start DarkDjangoEffect_SetState
+DarkDjangoEffect_SetState: @ 0x0807F640
 	movs r3, #0x98
 	lsls r3, r3, #3
 	adds r2, r0, r3
@@ -474,7 +474,7 @@ _0807F972:
 	strb r6, [r0]
 	ldr r1, _0807F9D4 @ =FUN_0807f9d8
 	adds r0, r4, #0
-	bl FUN_0807f640
+	bl DarkDjangoEffect_SetState
 _0807F9C2:
 	pop {r4, r5, r6, r7}
 	pop {r0}
@@ -880,7 +880,7 @@ _0807FCDA:
 	strh r1, [r0]
 	ldr r1, _0807FD18 @ =FUN_0807fd1c
 	adds r0, r4, #0
-	bl FUN_0807f640
+	bl DarkDjangoEffect_SetState
 _0807FD06:
 	add sp, #4
 	pop {r3, r4, r5}
@@ -950,7 +950,7 @@ _0807FD38:
 	strb r6, [r0]
 	ldr r1, _0807FDA8 @ =FUN_0807fdac
 	adds r0, r5, #0
-	bl FUN_0807f640
+	bl DarkDjangoEffect_SetState
 _0807FD92:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -1008,8 +1008,8 @@ _0807FDFE:
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_0807fe04
-FUN_0807fe04: @ 0x0807FE04
+	thumb_func_start DarkDjangoEffect_Update
+DarkDjangoEffect_Update: @ 0x0807FE04
 	push {r4, lr}
 	adds r4, r0, #0
 	bl FUN_0807f8d0
@@ -1025,8 +1025,8 @@ FUN_0807fe04: @ 0x0807FE04
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_0807fe24
-FUN_0807fe24: @ 0x0807FE24
+	thumb_func_start DarkDjangoEffect_Destroy
+DarkDjangoEffect_Destroy: @ 0x0807FE24
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	adds r0, #0x3c
