@@ -5,6 +5,11 @@
 
 struct EntityC946;
 
+s32 TextPanel_Hide(s32 id);
+void ClearBGTilemapBuffer(s32 bg);
+s32 FUN_0820cbfc(u32 param_1);
+s32 FUN_0820cc0c(u32 param_1);
+
 // _Init がスクリプトキーワード 't' から4バイトずつ57件読む
 typedef struct {
   u8 unk_0;  // 0x00
@@ -54,9 +59,32 @@ NAKED s32 FUN_0820d00c(u32 param_1) { INCFUNC("asm/func/FUN_0820d00c.inc"); }
 
 NAKED s32 FUN_0820d04c(u32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_0820d04c.inc"); }
 
-NAKED s32 FUN_0820d084(u32 param_1) { INCFUNC("asm/func/FUN_0820d084.inc"); }
+bool32 FUN_0820d084(u32 param_1) {
+  s32 n = FUN_0820cbfc(param_1);
+  s32 base = FUN_0820cc0c(param_1);
+  s32 i;
 
-NAKED s32 FUN_0820d0b8(u32 param_1) { INCFUNC("asm/func/FUN_0820d0b8.inc"); }
+  for (i = 0; i < n; i++) {
+    if (!FUN_0820d00c(base + i)) {
+      return FALSE;
+    }
+  }
+  return TRUE;
+}
+
+s32 FUN_0820d0b8(u32 param_1) {
+  s32 n = FUN_0820cbfc(param_1);
+  s32 base = FUN_0820cc0c(param_1);
+  s32 count = 0;
+  s32 i;
+
+  for (i = 0; i < n; i++) {
+    if (FUN_0820d00c(base + i) == 1) {
+      count++;
+    }
+  }
+  return count;
+}
 
 NAKED bool32 FUN_0820d0ec(void) { INCFUNC("asm/func/FUN_0820d0ec.inc"); }
 
@@ -70,7 +98,15 @@ NAKED void FUN_0820d138(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d138.inc");
 
 NAKED void FUN_0820d188(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d188.inc"); }
 
-NAKED void FUN_0820d21c(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d21c.inc"); }
+void FUN_0820d21c(EnemyDexMenu* p) {
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    TextPanel_Hide(p->panels[i]);
+  }
+  p->unk_110e |= 1;
+  ClearBGTilemapBuffer(0);
+}
 
 NAKED void FUN_0820d250(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d250.inc"); }
 
