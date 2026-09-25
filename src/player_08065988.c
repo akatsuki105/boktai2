@@ -512,7 +512,7 @@ NAKED void FUN_0807a91c(Player* p) { INCFUNC("asm/func/FUN_0807a91c.inc"); }
 
 NAKED s32 FUN_0807a954(Player* p) { INCFUNC("asm/func/FUN_0807a954.inc"); }
 
-NAKED void FUN_0807a970(Player* p) { INCFUNC("asm/func/FUN_0807a970.inc"); }
+NAKED u32 FUN_0807a970(Player* p) { INCFUNC("asm/func/FUN_0807a970.inc"); }
 
 NAKED void FUN_0807a97c(Player* p) { INCFUNC("asm/func/FUN_0807a97c.inc"); }
 
@@ -610,9 +610,9 @@ NAKED void FUN_0807b890(Player* p) { INCFUNC("asm/func/FUN_0807b890.inc"); }
 
 NAKED void FUN_0807b8a8(Player* p) { INCFUNC("asm/func/FUN_0807b8a8.inc"); }
 
-NAKED void FUN_0807b8c0(Player* p) { INCFUNC("asm/func/FUN_0807b8c0.inc"); }
+void FUN_0807b8c0(Player* p) { p->unk_96c = 0; }
 
-NAKED void FUN_0807b8d0(Player* p) { INCFUNC("asm/func/FUN_0807b8d0.inc"); }
+NAKED void FUN_0807b8d0(Player* p, Vec3* src) { INCFUNC("asm/func/FUN_0807b8d0.inc"); }
 
 NAKED void FUN_0807b8dc(Player* p) { INCFUNC("asm/func/FUN_0807b8dc.inc"); }
 
