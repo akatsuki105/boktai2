@@ -134,7 +134,7 @@ _08246BF2:
 	cmp r2, #0
 	beq _08246C04
 	adds r0, r7, #0
-	bl FUN_082469bc
+	bl SSEEmitterParticle_Clear
 	mov r1, r8
 	ldrb r0, [r1, #2]
 	subs r0, #1

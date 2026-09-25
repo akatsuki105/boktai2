@@ -51,7 +51,13 @@ NAKED void* FUN_08246790(SSEEmitter* e) { INCFUNC("asm/func/FUN_08246790.inc"); 
 
 NAKED s32 FUN_082467d0(SSEEmitter* e, u32 unk_1, u32 param_3, u32* param_4) { INCFUNC("asm/func/FUN_082467d0.inc"); }
 
-NAKED void FUN_082469bc(SSEEmitterParticle* ptcl) { INCFUNC("asm/func/FUN_082469bc.inc"); }
+// 枠を空きに戻して粒子を隠す
+void SSEEmitterParticle_Clear(SSEEmitterParticle* ptcl) {
+  ptcl->unk_0 = 0;
+  ptcl->unk_2 = 0;
+  ptcl->unk_1 = 10;
+  ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
+}
 
 void FUN_082469d0(SolarSensorEntity* p, SSEEmitter* e, SSEEmitterParticle* ptcl) {}
 
