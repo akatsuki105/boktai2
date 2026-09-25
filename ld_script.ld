@@ -95,6 +95,7 @@ SECTIONS {
       src/entity_b639.o(iwram_data);
       src/solar.o(iwram_data);
       src/sound.o(iwram_data);
+      src/eff_082473e0.o(iwram_data);
       src/solar_sensor.o(iwram_data);
       src/lib/libagbrtc.o(.bss);
       *libgcc.a:dp-bit.o(.bss);
@@ -381,6 +382,7 @@ SECTIONS {
       src/lib/m4a_1.o (.text);
 			src/lib/m4a.o (.text);
 			src/code_08245c4c.o (.text);
+			src/eff_082473e0.o (.text);
 			src/solar_sensor.o (.text);
 			src/lib/librfu_stwi.o (.text);
       src/lib/librfu_intr.o (.text);
@@ -527,6 +529,7 @@ SECTIONS {
     src/vm_ctrl2.o (.rodata);
     src/solar.o (.rodata);
     src/data5.o (.rodata);
+    src/eff_082473e0.o (.rodata);
     src/solar_sensor.o (.rodata);
     src/code_0823cd04.o (.rodata);
 

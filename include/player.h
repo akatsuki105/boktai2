@@ -2,11 +2,11 @@
 #define GUARD_ZOKTAI_PLAYER_H
 
 #include "constants/constants.h"
+#include "eff_082473e0.h"
 #include "entity.h"
 #include "gba/gba.h"
 #include "hitbox.h"
 #include "particle.h"
-#include "solar_sensor.h"
 #include "sprite.h"
 #include "struct.h"
 #include "types.h"
