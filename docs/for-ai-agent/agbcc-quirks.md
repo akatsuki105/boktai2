@@ -219,6 +219,8 @@ for (i = 0; i < N; i++) {          for (i = 0; i < N; i++) {
 - The same applies to a loop-variable shift. `BgPlttGroupFader_Update` tests `p->litMask & (1 << i)` inside a `for`; written inline it became `asrs r0, r6` on the field, and a `s32 mask = 1 << i;` at the top of the loop body restored `movs r1, #1` / `lsls r1, r6` / `ands r0, r1`. The same variable then feeds the second test on another field, which is what the target reuses it for.
 
 ## Integer width & sign extension
+- `Player_WeaponEffect*` (14個) が同じ形。目標は **マスクを先に材料化してから** フィールドを読む (`movs r2, #4` → `ldr r0, [r1, #0x38]` → `ands`)。`if (a->attributes & 0x4)` と直に書くと順序が逆になり、使うレジスタも1つずれる。`u32 mask = 0x0004;` とローカルに置くと目標と一致する。
+- 同じ族で **分岐の向き** も決まっている。`cmp` の直後が `bne` で「非0側」へ飛ぶなら、ソースは `if (x & mask) { return 10; } return 0;`。`if (!(x & mask)) { return 0; } return 10;` は等価でも `beq` になり、2つのアームが入れ替わる。
 
 ### A signed field narrowed on assignment loses its `ldrsh`
 
