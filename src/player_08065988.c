@@ -127,7 +127,11 @@ NAKED void FUN_08066d7c(Player* p, s32 val) { INCFUNC("asm/func/FUN_08066d7c.inc
 
 NAKED void FUN_08066df8(Player* p) { INCFUNC("asm/func/FUN_08066df8.inc"); }
 
-NAKED void FUN_08066e84(void) { INCFUNC("asm/func/FUN_08066e84.inc"); }
+void FUN_08066e84(void) {
+  u16 payload = 6;
+
+  FUN_080ec79c(0x11, &payload);
+}
 
 NAKED void FUN_08066e9c(Player* p) { INCFUNC("asm/func/FUN_08066e9c.inc"); }
 
