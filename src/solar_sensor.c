@@ -187,7 +187,20 @@ s32 SSE_Init(SolarSensorEntity* p, u32 _) {
   return 0;
 }
 
-NAKED SolarSensorEntity* SSE_Create(u32 _) { INCFUNC("asm/func/SSE_Create.inc"); }
+SolarSensorEntity* SSE_Create(u32 _) {
+  if (gSensorEntity == NULL) {
+    SolarSensorEntity* p = CreateEntity(ENTITY_UNK_9, sizeof(SolarSensorEntity));
+    if (p != NULL) {
+      SetEntityRoutine(p, SSE_Update, SSE_Destroy);
+      if (SSE_Init(p, _) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gSensorEntity;
+}
 
 NAKED s32 FUN_0824742c(SSEEmitter* e, u32 unk_8, s32 unk_1, s32 unk_4, s32 unk_5) { INCFUNC("asm/func/FUN_0824742c.inc"); }
 
