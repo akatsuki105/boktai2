@@ -23,7 +23,7 @@
 	strb r6, [r0]
 	adds r0, r7, #0
 	ldr r1, [sp, #0x1c]
-	bl FUN_08080a10
+	bl Entity08080be8_SetupSprite
 	adds r0, r7, #0
 	ldr r1, [sp, #0x20]
 	ldr r2, [sp, #0x24]

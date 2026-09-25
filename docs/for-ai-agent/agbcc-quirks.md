@@ -296,7 +296,7 @@ Which side to pick, once the asm has told you what is wrong:
 
 ### A constant or global address materializes in the wrong place
 
-- **Frequency**: `Sprite_SetPlttID`, `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`, `FUN_08089d24`, `FUN_08089f38`, `FUN_0823a9f4`, `FUN_0823aa10`, `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`, `ParticleShadow_Init`, `Hazard_OnHit`.
+- **Frequency**: `Sprite_SetPlttID`, `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`, `FUN_08089d24`, `FUN_08089f38`, `FUN_0823a9f4`, `FUN_0823aa10`, `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`, `ParticleShadow_Init`, `Hazard_OnHit`, `Entity08080be8_SetupSprite`.
 - **Symptom**: one `movs rN, #k` or `ldr rN, =SYMBOL` sits earlier or later than the target has it, usually with registers renamed and an identical instruction count.
 - The lever is how the expression is split into statements, never the arithmetic. The mask-hoisting bullets under "`(x & (1<<n)) != 0` auto-optimizes" are the same mechanism seen through a bit test.
 
@@ -308,6 +308,7 @@ Which side to pick, once the asm has told you what is wrong:
 | `gEntityDisableFlags &= ~2;` | `EnableEntityFlags(2)` taking `u32 flags` | `FUN_0823a9f4` |
 | `if (!((gA \| gB) & 1))` | a helper taking the mask as `flags` | `FUN_0823aa10` |
 | `if (!(a->weakness & 4))` | `Hitbox_HasWeakness(a, 4)` taking `u32 mask`. `(x & 4) == 0`, `4 & x` and an inverted `if`/`else` change nothing | `Hazard_OnHit` |
+| `p->sprite.metaspriteIdx = 0;` right after `AuxSprite_Add(&p->sprite, ...)` | `AuxSprite_SetPoseIdx(&p->sprite, 0)` — the helper's argument re-materializes `&p->sprite` after the call, so agbcc reuses the register that held `p` instead of keeping a second one live across it | `Entity08080be8_SetupSprite` |
 | `p->plttID = id; p->pltt = &g[p->plttID * 16];` | reload the field in its own statement: `i = p->plttID;` | `Sprite_SetPlttID` |
 | `f(0, (T*)gPtr, g(0x28))` | `len = g(0x28);` first | |
 | `Div(..., n + 1)` at each of three calls | `d = n + 1;` directly after `n`'s assignment | `FreezeEffect_GatherSubParticles` |

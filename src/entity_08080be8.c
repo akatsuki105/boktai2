@@ -98,7 +98,15 @@ s32 Entity08080be8_Destroy(Entity08080be8* p) {
   return 0;
 }
 
-NAKED void FUN_08080a10(Entity08080be8* p, s32 plttID) { INCFUNC("asm/func/FUN_08080a10.inc"); }
+// スプライトを用意して隠したまま登録する
+void Entity08080be8_SetupSprite(Entity08080be8* p, s32 plttID) {
+  AuxSpriteGfx* gfx = &p->gfx;
+
+  Video_GetAuxSprite(gfx, SPRITE_210E);
+  AuxSprite_Add(&p->sprite, gfx, SPRFLAG_HIDDEN);
+  AuxSprite_SetPoseIdx(&p->sprite, 0);
+  Video_SetAuxSpritePltt(gfx, plttID);
+}
 
 NAKED void FUN_08080a44(Entity08080be8* p, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_08080a44.inc"); }
 
