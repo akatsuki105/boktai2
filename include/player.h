@@ -158,7 +158,10 @@ typedef struct Player {
   u8 unk_38f;
   u16 unk_390;
   u16 unk_392;
-  u8 unk_394[56];
+  u8 unk_394;  // 0x394, FUN_0807a9b8 が 1 を書く
+  u8 unk_395[3];
+  void* ptr_398;  // 0x398, FUN_0807a9b8 の第2引数
+  u8 unk_39c[0x3CC - 0x39C];
   u16 unk_3cc;
   u16 unk_3ce;
   u8 unk_3d0;
@@ -171,7 +174,8 @@ typedef struct Player {
   u8 unk_3fc[4];
   u8 angle_400;      // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
   u8 angle_401;      // 0x401, 同上
-  u8 unk_402[0x43C - 0x402];
+  u8 unk_402;  // 0x402, FUN_0807a904 が +1 する
+  u8 unk_403[0x43C - 0x403];
   u16 unk_43c[3];  // 0x43C, 多分状態異常の残り時間
   u8 unk_442[86];
   PlayerFunc fn_498;  // 0x498, FUN_08078d5c
