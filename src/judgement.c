@@ -34,4 +34,36 @@ typedef struct Judgement {
 } Judgement;
 static_assert(sizeof(Judgement) == 632);
 
-INCASM("asm/judgement.inc");
+NAKED void FUN_080a95d4(Judgement* p) { INCFUNC("asm/func/FUN_080a95d4.inc"); }
+
+NAKED void FUN_080a962c(Judgement* p) { INCFUNC("asm/func/FUN_080a962c.inc"); }
+
+NAKED void FUN_080a971c(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a971c.inc"); }
+
+NAKED void FUN_080a975c(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a975c.inc"); }
+
+NAKED void FUN_080a9808(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a9808.inc"); }
+
+NAKED void FUN_080a9840(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a9840.inc"); }
+
+NAKED void FUN_080a98c0(Judgement* p) { INCFUNC("asm/func/FUN_080a98c0.inc"); }
+
+NAKED void FUN_080a98f0(Judgement* p) { INCFUNC("asm/func/FUN_080a98f0.inc"); }
+
+NAKED void FUN_080a9954(Judgement* p) { INCFUNC("asm/func/FUN_080a9954.inc"); }
+
+NAKED void FUN_080a9ac8(Judgement* p) { INCFUNC("asm/func/FUN_080a9ac8.inc"); }
+
+NAKED void FUN_080a9b84(Judgement* p) { INCFUNC("asm/func/FUN_080a9b84.inc"); }
+
+NAKED s32 Judgement_Update(Judgement* p) { INCFUNC("asm/func/Judgement_Update.inc"); }
+
+NAKED s32 Judgement_Destroy(Judgement* p) { INCFUNC("asm/func/Judgement_Destroy.inc"); }
+
+NAKED void FUN_080a9ccc(Judgement* p) { INCFUNC("asm/func/FUN_080a9ccc.inc"); }
+
+NAKED void FUN_080a9d30(Judgement* p) { INCFUNC("asm/func/FUN_080a9d30.inc"); }
+
+NAKED s32 Judgement_Init(Judgement* p, Player* player) { INCFUNC("asm/func/Judgement_Init.inc"); }
+
+NAKED Judgement* Judgement_Create(Player* player) { INCFUNC("asm/func/Judgement_Create.inc"); }
