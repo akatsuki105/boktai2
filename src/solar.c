@@ -9,6 +9,9 @@
 #include "solar_sensor.h"
 #include "time.h"
 
+// src/item_082421f0.c
+void RotItem(s32 rotDelta);
+
 // 太陽センサーを毎フレーム読んで lx と太陽ゲージを作り、その結果を gStat に流し込むシングルトン
 typedef struct SunlightEntity {
   Entity e;                                        // 0x00, ENTITY_UNK_5
@@ -19,9 +22,9 @@ typedef struct SunlightEntity {
   s16 sunGauge;                                    // 0x1E, lx を 10段階に分けたもの
   u16 stateTimer;                                  // 0x20, UpdateSunlight のフレーム数。state 0 で 29 を超えるとセンサーを有効化し、state 1 で 59 を超えると計測に入る。state が変わるたび 0
   u16 adjustTimer;                                 // 0x22, UpdateDebugLx が A+L / A+R を押している間 +1 し、1フレームおきに gDebugLx を増減させる
-  u16 tickCounter;                                 // 0x24, solar_08241ac0 が毎フレーム +1。(tickCounter & 0x3F) == 0 と (& 0x7F) == 0 で処理を間引く
-  u16 idleTimer;                                   // 0x26, solar_08241ac0 が入力のたび 0 に戻し、無操作なら 900 まで数える。900 に達すると太陽の恵みが止まる
-  u16 solarStandFrac;                              // 0x28, solar_08241ac0 が sunGauge/2 + 5 をここに貯め、>> 4 した繰り上がりを gStat->solarStand に足す
+  u16 tickCounter;                                 // 0x24, ApplySunlightGain が毎フレーム +1。(tickCounter & 0x3F) == 0 と (& 0x7F) == 0 で処理を間引く
+  u16 idleTimer;                                   // 0x26, ApplySunlightGain が入力のたび 0 に戻し、無操作なら 900 まで数える。900 に達すると太陽の恵みが止まる
+  u16 solarStandFrac;                              // 0x28, ApplySunlightGain が sunGauge/2 + 5 をここに貯め、>> 4 した繰り上がりを gStat->solarStand に足す
   u16 unk_2a;                                      // 0x2A, padding?
   void (*updateCallback)(struct SunlightEntity*);  // 0x2C
 } SunlightEntity;
@@ -245,7 +248,83 @@ NON_MATCH void UpdateOverheat(SunlightEntity* _ UNUSED) {
 #endif
 }
 
-NAKED void solar_08241ac0(SunlightEntity* p) { INCFUNC("asm/func/solar_08241ac0.inc"); }
+// 日なたにいる間の毎フレームの取り分。樹の経験値・ソーラースタンド・熱量を進める
+NON_MATCH void ApplySunlightGain(SunlightEntity* p) {
+#ifdef NONMATCHING_C
+  if (gPlayerPtr[0] != NULL && (gFlag030047a4 & (FLAG030047A4_UNK_11 | FLAG030047A4_UNK_12)) == 0) {
+    if ((gFlag030047a4 & FLAG030047A4_UNK_9) == 0 && gPlayerPtr[0]->unk_1c != 2) {
+      if (gInput[0].down == 0) {
+        if (p->idleTimer < 900) {
+          p->idleTimer++;
+        }
+      } else {
+        p->idleTimer = 0;
+      }
+      if (gStat->lx > 0 && (p->tickCounter & 0x3F) == 0) {
+        if (p->idleTimer < 900) {
+          u32 exp = gStat->treeExp;
+
+          if (exp != 0x7FFFFFFF) {
+            exp += gStat->sunGauge;
+            if ((s32)exp < 0) {
+              exp = 0x7FFFFFFF;
+            }
+            gStat->treeExp = exp;
+          }
+          if ((s32)gStat->solarStand < 9999) {
+            u16 carry;
+
+            if (gPlayerPtr[0]->flag378 & FLAG378_UNK_14) {
+              p->solarStandFrac += ((gStat->sunGauge >> 1) + 5) * 2;
+            } else {
+              p->solarStandFrac += (gStat->sunGauge >> 1) + 5;
+            }
+            carry = p->solarStandFrac >> 4;
+            p->solarStandFrac -= carry * 16;
+            gStat->solarStand += carry;
+            if ((s32)gStat->solarStand > 9999) {
+              gStat->solarStand = 9999;
+            }
+          }
+          if (gStat->unk_1e0 != 0x7FFFFFFF) {
+            s32 n = gStat->unk_1e0 + gStat->sunGauge;
+
+            if (n < 0) {
+              n = 0x7FFFFFFF;
+            }
+            gStat->unk_1e0 = n;
+            gStat->unk_1e4++;
+          }
+          if ((p->tickCounter & 0x7F) == 0) {
+            RotItem(gStat->sunGauge);
+          }
+        }
+        if (gStat->thermal < 30000) {
+          gStat->thermal += (u16)p->sunGauge;
+          if (gStat->thermal > 29999) {
+            gStat->thermal = 30000;
+            SetOverheatTime();
+          }
+        }
+      }
+      UpdateOverheat(p);
+    } else if (gStat->thermal < 30000) {
+      if (gStat->lx > 0 && (p->tickCounter & 0x3F) == 0) {
+        gStat->thermal += (u16)p->sunGauge;
+        if (gStat->thermal > 29999) {
+          gStat->thermal = 30000;
+          SetOverheatTime();
+        }
+      }
+    } else if (gStat->sunGauge > 2) {
+      SetOverheatTime();
+    }
+    p->tickCounter++;
+  }
+#else
+  INCFUNC("asm/func/ApplySunlightGain.inc");
+#endif
+}
 
 // 毎フレームの本体。センサーを温めてから計測に入り、結果を gStat に流す
 NON_MATCH void UpdateSunlight(SunlightEntity* p) {
@@ -273,7 +352,7 @@ NON_MATCH void UpdateSunlight(SunlightEntity* p) {
       p->sunGauge = GetSunLevel(p->lx);
       gStat->lx = ApplyLxModifiers(p->lx);
       gStat->sunGauge = GetSunLevel(gStat->lx);
-      solar_08241ac0(p);
+      ApplySunlightGain(p);
       gSavedLx = gStat->lx;
       gSavedSunGauge[0] = gStat->sunGauge;
       break;
@@ -341,7 +420,7 @@ NON_MATCH void UpdateSunlightDebug(SunlightEntity* p) {
       p->sunGauge = GetSunLevel(p->lx);
       gStat->lx = ApplyLxModifiers(p->lx);
       gStat->sunGauge = GetSunLevel(gStat->lx);
-      solar_08241ac0(p);
+      ApplySunlightGain(p);
       gSavedLx = gStat->lx;
       gSavedSunGauge[0] = gStat->sunGauge;
       break;

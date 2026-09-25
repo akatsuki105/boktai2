@@ -54,7 +54,10 @@ typedef struct {
   u8 unk_1c8[12];                // 0x1C8
   u32 loan_1d4;                  // 0x1D4
   u32 treeExp;                   // 0x1D8, リザルト画面の "ENERGY" でもある
-  u8 unk_1dc[18];                // 0x1DC
+  u8 unk_1dc[4];                 // 0x1DC
+  s32 unk_1e0;                   // 0x1E0, ApplySunlightGain が sunGauge を足し続ける。treeExp と同じ 0x7FFFFFFF 飽和
+  s32 unk_1e4;                   // 0x1E4, unk_1e0 を更新した回数
+  u8 unk_1e8[6];                 // 0x1E8
   u16 titles;                    // 0x1EE, 獲得した称号のビットマスク
   s16 totalEnemyKillCount;       // 0x1F0
   s16 enemyKillCount[24];        // 0x1F2, idx: include/constants/enemy.h の EnemyCategoryID?

@@ -65,7 +65,7 @@ _08241E8C:
 	adds r1, r1, r6
 	strh r0, [r1]
 	adds r0, r7, #0
-	bl solar_08241ac0
+	bl ApplySunlightGain
 	ldr r2, _08241EEC @ =0x03004870
 	ldr r1, [r5]
 	adds r4, r1, r4

@@ -23,6 +23,7 @@ typedef u32 PlayerFlag378;               // Player.flag378
 #define FLAG378_WEAPONGUARD (1 << 6)     // 0x00000040, ウェポンガード〃
 #define FLAG378_FAIRY (1 << 7)           // 0x00000080, 精霊の衣〃
 #define FLAG378_UNK_8 (1 << 8)           // 0x00000100, ???
+#define FLAG378_UNK_14 (1 << 14)         // 0x00004000, 立っていると ApplySunlightGain のソーラースタンド加算が2倍になる
 #define FLAG378_RISING_SUN (1 << 13)     // 0x00002000, ライジングサンの効果中。ApplyLxModifiers が太陽レベルを2倍にする
 #define FLAG378_HEART (1 << 28)          // 0x10000000, ハートの紋章所持
 #define FLAG378_JOKER (1 << 29)          // 0x20000000, ジョーカーの紋章所持
