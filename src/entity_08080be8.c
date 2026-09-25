@@ -155,6 +155,17 @@ void Entity08080be8_SetupParticles(Entity08080be8* p, s32 val) {
   }
 }
 
-NAKED s32 Entity08080be8_Init(Entity08080be8* p, Player* player, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8, u32 param_9, u32 param_10, u32 param_11, u32 param_12, u32 param_13) { INCFUNC("asm/func/Entity08080be8_Init.inc"); }
+NAKED s32 Entity08080be8_Init(Entity08080be8* p, Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44, u32 ptclVal, u32 eneCost, u32 unk_cd) { INCFUNC("asm/func/Entity08080be8_Init.inc"); }
 
-NAKED Entity08080be8* Entity08080be8_Create(Player* player, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8, u32 param_9, u32 param_10, u32 param_11, u32 param_12) { INCFUNC("asm/func/Entity08080be8_Create.inc"); }
+Entity08080be8* Entity08080be8_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44, u32 ptclVal, u32 eneCost, u32 unk_cd) {
+  Entity08080be8* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity08080be8));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity08080be8_Update, Entity08080be8_Destroy);
+    if (Entity08080be8_Init(p, player, heightOffset, unk_be, unk_c0, offsetRadius, plttID, hitboxUnk40, attributes, hitboxUnk44, ptclVal, eneCost, unk_cd) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
