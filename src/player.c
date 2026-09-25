@@ -373,7 +373,7 @@ u32 Player_WeaponEffectSpirit(Player* p) { return p->stats[STAT_SPIRIT] >> 3; }
 
 NAKED u32 Player_WeaponEffectENE(Player* p) { INCFUNC("asm/func/Player_WeaponEffectENE.inc"); }
 
-NAKED u32 Player_WeaponEffectHP(Player* p) { INCFUNC("asm/func/Player_WeaponEffectHP.inc"); }
+u32 Player_WeaponEffectHP(Player* p) { return Div(p->hp * 10, p->maxHP); }
 
 NAKED u32 Player_WeaponEffectKajiba(Player* p) { INCFUNC("asm/func/Player_WeaponEffectKajiba.inc"); }
 
