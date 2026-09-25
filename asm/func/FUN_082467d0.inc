@@ -13,7 +13,7 @@
 	cmp r1, #0
 	bne _082467F8
 	adds r0, r5, #0
-	bl FUN_08246790
+	bl SSEEmitter_Reset
 	b _082469A8
 	.align 2, 0
 _082467F4: .4byte 0x030026B0

@@ -51,7 +51,7 @@ typedef struct {
 } Generator;
 static_assert(sizeof(Generator) == 572);
 
-void* FUN_08246790(SSEEmitter* p);
+void* SSEEmitter_Reset(SSEEmitter* p);
 void* SSEEmitter_FadeParticle(SSEEmitter* p);
 
 NAKED void Generator_SetState(Generator* p, s32 state) { INCFUNC("asm/func/Generator_SetState.inc"); }
@@ -123,7 +123,7 @@ void FUN_080b32e0(Generator* p) {
   }
   if (p->unk_f2 == 0) {
     if (p->stateTimer == 0) {
-      FUN_08246790(&p->unk_100);
+      SSEEmitter_Reset(&p->unk_100);
     }
     p->stateTimer++;
     if (p->stateTimer > 15) {

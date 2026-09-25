@@ -95,7 +95,21 @@ NON_MATCH s32 SSEEmitter_FadeParticle(SSEEmitter* p) {
 
 NAKED s32 FUN_08246728(SSEEmitter* p, s32 param_2, Vec3* param_3, Vec3* param_4, Vec3* param_5, s32 param_6, s32 param_7) { INCFUNC("asm/func/FUN_08246728.inc"); }
 
-NAKED void* FUN_08246790(SSEEmitter* e) { INCFUNC("asm/func/FUN_08246790.inc"); }
+// エミッタを待機状態に戻す。枠は全部空きにして粒子も隠す
+void* SSEEmitter_Reset(SSEEmitter* p) {
+  s32 i;
+
+  p->activeCount = 0;
+  p->unk_3 = 0;
+  p->kind = 0;
+  p->fn_12c = SSEEmitter_UpdateIdle;
+  for (i = 0; i < 4; i++) {
+    p->ptcls[i].unk_0 = 0;
+    p->ptcls[i].unk_2 = 0;
+    p->ptcls[i].unk_1 = 10;
+    Particle_Hide(&p->ptcls[i].ptcl);
+  }
+}
 
 NAKED s32 FUN_082467d0(SSEEmitter* e, u32 unk_1, u32 param_3, u32* param_4) { INCFUNC("asm/func/FUN_082467d0.inc"); }
 

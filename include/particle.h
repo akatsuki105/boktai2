@@ -71,4 +71,6 @@ void FUN_0822dadc(Particle* p, s32 plttID);
 void Particle_SetOffset(Particle* p, s32 offsetX, s32 offsetY);
 void FUN_0822dafc(Particle* p, ParticleGroup* g, u32 val);
 
+static inline void Particle_Hide(Particle* p) { p->flags |= SPRFLAG_HIDDEN; }
+
 #endif  // __INCLUDE_PARTICLE_H__

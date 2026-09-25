@@ -39,8 +39,8 @@ compiler-forced one) in a function that just reached MATCHING:
 
 ### Bit set / clear / test goes through a `static inline` helper, never a bare `|=`
 
-- **Frequency**: 6 files define such helpers; 8 functions verified to need the shape
-- **Seen in**: `EnableEntityFlags` / `DisableEntityFlags` / `TestFlag030047a4` (entity_0823acbc.c), `Hitbox_ClearFlags` (entity_ec96.c), `TestHitboxUnk38` (solar_bamboo.c), `Entity28CB_SetState` (coffin_immortal.c), `Enemy_SetFlag` / `Enemy_SetFlag2` / `Enemy_ClearFlag2` / `Enemy_SetFlag4` (include/enemy.h) used by `FUN_080ef4e4`, `Enemy_Sleep`, `FUN_080ec92c`, `FUN_080ed068`, plus `Stat_SetFlag934` / `Stat_ClearFlag934` and `EnemyManager_ClearFlags` used by `FUN_080ec900`, `FUN_080ee9d4`, `EnemyManager_Update` (all enemy_manager.c), and `Player_SetFlag20` (include/player.h) used by `Entity08080be8_StateFly`
+- **Frequency**: 7 files define such helpers; 9 functions verified to need the shape
+- **Seen in**: `EnableEntityFlags` / `DisableEntityFlags` / `TestFlag030047a4` (entity_0823acbc.c), `Hitbox_ClearFlags` (entity_ec96.c), `TestHitboxUnk38` (solar_bamboo.c), `Entity28CB_SetState` (coffin_immortal.c), `Enemy_SetFlag` / `Enemy_SetFlag2` / `Enemy_ClearFlag2` / `Enemy_SetFlag4` (include/enemy.h) used by `FUN_080ef4e4`, `Enemy_Sleep`, `FUN_080ec92c`, `FUN_080ed068`, plus `Stat_SetFlag934` / `Stat_ClearFlag934` and `EnemyManager_ClearFlags` used by `FUN_080ec900`, `FUN_080ee9d4`, `EnemyManager_Update` (all enemy_manager.c), `Player_SetFlag20` (include/player.h) used by `Entity08080be8_StateFly`, and `Particle_Hide` (include/particle.h) used by `SSEEmitter_Reset`
 - **Description**: these developers did not write `p->flags |= BIT;` at the call
   site. They wrote a one-line `static inline` taking the struct pointer and the
   mask, and called that. `data.c` contains the string

@@ -7,7 +7,7 @@
 	bne _08063264
 	subs r1, #1
 	adds r0, r5, r1
-	bl FUN_08246790
+	bl SSEEmitter_Reset
 	b _0806327C
 	.align 2, 0
 _08063260: .4byte 0x000004C5

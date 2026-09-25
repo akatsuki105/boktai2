@@ -122,7 +122,7 @@ _080F5CD2:
 	movs r1, #0xc5
 	lsls r1, r1, #2
 	adds r0, r7, r1
-	bl FUN_08246790
+	bl SSEEmitter_Reset
 	movs r0, #0x14
 	str r0, [sp]
 	movs r0, #0xe1
