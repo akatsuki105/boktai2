@@ -175,7 +175,7 @@ typedef struct Player {
   u8 unk_4ab[0x4b0 - 0x4ab];
   s32 scriptID_4b0;  // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4c4 - 0x4b4];
-  SSEEmitter unk_4c4;  // 0x4C4
+  Eff082473e0Emitter unk_4c4;  // 0x4C4
   u8 unk_5fc[0x64C - 0x5FC];
   PlayerParticleGroup1 ptcl_64c;  // 0x64C, FUN_08061458
   PlayerParticleGroup1 ptcl_67c;  // 0x67C, FUN_0806161c
