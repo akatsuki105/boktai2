@@ -211,7 +211,9 @@ typedef struct Player {
   Weapon* weapon_a70;
   weapon8_t weaponID_a74;  // 武器ID
   u8 weaponKind_a75;       // 0xA75, 武器種
-  u8 unk_a76[34];
+  u8 unk_a76[25];
+  u8 unk_a8f;  // 0xA8F, Entity08080be8 が毎フレーム charge に写す。威力を 1 + n/2 倍にし、スプライトの絵も選ぶ
+  u8 unk_a90[8];
   PlayerFunc attackCB;  // 0xA98, gPlayerAttackUpdates
 
   // 武器の特殊効果のコールバック関数の配列

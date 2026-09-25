@@ -47,6 +47,7 @@ typedef struct Entity08080be8 {
 } Entity08080be8;
 static_assert(sizeof(Entity08080be8) == 408);
 
+void Entity08080be8_StateFly(Entity08080be8* p);
 void Entity08080be8_StateImpact(Entity08080be8* p);
 
 // src/player.c
@@ -110,7 +111,46 @@ s32 Entity08080be8_GetDamage(Entity08080be8* p) {
 
 NAKED void FUN_080806ec(Entity08080be8* p) { INCFUNC("asm/func/FUN_080806ec.inc"); }
 
-NAKED void FUN_080807f4(Entity08080be8* p) { INCFUNC("asm/func/FUN_080807f4.inc"); }
+// サバタ側の溜め状態。溜め中は粒子を出し、発射で StateFly へ、中断なら消える
+NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
+#ifdef NONMATCHING_C
+  if (p->player->unk_37c == 3) {
+    u8 state;
+
+    FUN_08080204(p);
+    state = p->player->unk_37d;
+    if (state == 5) {
+      Entity08080be8_ClearParticles(p);
+      AuxSprite_Show(&p->sprite);
+      p->sprite.metaspriteIdx = p->charge + 1;
+      p->hitbox.power = Entity08080be8_GetDamage(p);
+      Entity08080be8_PayENE(p);
+      Entity08080be8_SetState(p, Entity08080be8_StateFly);
+      return;
+    }
+    if (state == 8) {
+      Entity08080be8_ClearParticles(p);
+      Entity08080be8_PayENE(p);
+    } else {
+      FUN_080803b4(p);
+      state = p->player->unk_37d;
+      if (state == 2) {
+        if ((p->timer & 3) == 3) {
+          FUN_080804a0(p);
+        }
+      } else if (state == 3 && (p->timer & 3) == 3) {
+        FUN_080804a0(p);
+      }
+      p->charge = p->player->unk_a8f;
+      p->timer++;
+      return;
+    }
+  }
+  KillEntity(&p->e);
+#else
+  INCFUNC("asm/func/Entity08080be8_StateChargeSabata.inc");
+#endif
+}
 
 // 前へ進めながら当たり判定を出し、地面より下に潜ったら次の状態へ
 void Entity08080be8_StateFly(Entity08080be8* p) {
@@ -246,7 +286,7 @@ s32 Entity08080be8_Init(Entity08080be8* p, Player* player, u32 heightOffset, u32
   if (p->player->kind != PLAYER_SABATA) {
     Entity08080be8_SetState(p, FUN_080806ec);
   } else {
-    Entity08080be8_SetState(p, FUN_080807f4);
+    Entity08080be8_SetState(p, Entity08080be8_StateChargeSabata);
   }
   return 0;
 }
