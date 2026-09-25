@@ -290,7 +290,111 @@ NAKED void Player_Init_Anim_08061bac(Player* p) { INCFUNC("asm/func/Player_Init_
 
 NAKED void FUN_08061c68(Player* p) { INCFUNC("asm/func/FUN_08061c68.inc"); }
 
-INCASM("asm/player.inc");
+NAKED void FUN_08061d20(Player* p, s32* param_2, s32* param_3, s32 param_4) { INCFUNC("asm/func/FUN_08061d20.inc"); }
+
+NAKED void FUN_08061db4(Player* p) { INCFUNC("asm/func/FUN_08061db4.inc"); }
+
+NAKED void FUN_08061dd4(Player* p) { INCFUNC("asm/func/FUN_08061dd4.inc"); }
+
+NAKED void FUN_08061e2c(Player* p) { INCFUNC("asm/func/FUN_08061e2c.inc"); }
+
+NAKED void FUN_08061f6c(Player* p) { INCFUNC("asm/func/FUN_08061f6c.inc"); }
+
+NAKED void FUN_080620f0(Player* p) { INCFUNC("asm/func/FUN_080620f0.inc"); }
+
+NAKED void FUN_08062258(Player* p) { INCFUNC("asm/func/FUN_08062258.inc"); }
+
+NAKED void FUN_08062278(Player* p) { INCFUNC("asm/func/FUN_08062278.inc"); }
+
+NAKED void FUN_080622d0(Player* p) { INCFUNC("asm/func/FUN_080622d0.inc"); }
+
+NAKED u32 FUN_0806241c(Player* p) { INCFUNC("asm/func/FUN_0806241c.inc"); }
+
+NAKED void FUN_08062468(Player* p) { INCFUNC("asm/func/FUN_08062468.inc"); }
+
+NAKED void FUN_080624b0(Player* p, u16* param_2, s32 param_3, s32 param_4, u32 param_5) { INCFUNC("asm/func/FUN_080624b0.inc"); }
+
+NAKED void FUN_08062688(Player* p, u32 n) { INCFUNC("asm/func/FUN_08062688.inc"); }
+
+NAKED void FUN_080628ec(Player* p, u32 n) { INCFUNC("asm/func/FUN_080628ec.inc"); }
+
+NAKED void FUN_08062c14(Player* p) { INCFUNC("asm/func/FUN_08062c14.inc"); }
+
+NAKED void FUN_08062c3c(Player* p) { INCFUNC("asm/func/FUN_08062c3c.inc"); }
+
+NAKED void FUN_08063084(Player* p) { INCFUNC("asm/func/FUN_08063084.inc"); }
+
+NAKED void FUN_080630e8(Player* p) { INCFUNC("asm/func/FUN_080630e8.inc"); }
+
+NAKED void FUN_08063220(Player* p) { INCFUNC("asm/func/FUN_08063220.inc"); }
+
+NAKED void FUN_08063248(Player* p) { INCFUNC("asm/func/FUN_08063248.inc"); }
+
+NAKED void FUN_08063288(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_08063288.inc"); }
+
+NAKED u32 FUN_08063478(Player* p) { INCFUNC("asm/func/FUN_08063478.inc"); }
+
+NAKED u32 FUN_08063498(Player* p, u32 n) { INCFUNC("asm/func/FUN_08063498.inc"); }
+
+NAKED void FUN_08063574(Player* p, s32 badcondID, s32 frames) { INCFUNC("asm/func/FUN_08063574.inc"); }
+
+NAKED void FUN_08063634(Player* p, s32 n) { INCFUNC("asm/func/FUN_08063634.inc"); }
+
+NAKED u32 FUN_08063668(Player* p, u32 n) { INCFUNC("asm/func/FUN_08063668.inc"); }
+
+NAKED u32 FUN_080637dc(Player* p, u32 n) { INCFUNC("asm/func/FUN_080637dc.inc"); }
+
+NAKED void FUN_08063814(Player* p) { INCFUNC("asm/func/FUN_08063814.inc"); }
+
+NAKED void FUN_080639d0(Player* p) { INCFUNC("asm/func/FUN_080639d0.inc"); }
+
+NAKED void Player_Update_Helper_080639f8(Player* p) { INCFUNC("asm/func/Player_Update_Helper_080639f8.inc"); }
+
+NAKED void Player_Destroy_Helper_08063b24(Player* p) { INCFUNC("asm/func/Player_Destroy_Helper_08063b24.inc"); }
+
+NAKED void Player_Init_Helper_08063b6c(Player* p) { INCFUNC("asm/func/Player_Init_Helper_08063b6c.inc"); }
+
+NAKED u32 Player_WeaponEffectSol(Player* p) { INCFUNC("asm/func/Player_WeaponEffectSol.inc"); }
+
+NAKED u32 Player_WeaponEffectStatCond(Player* p) { INCFUNC("asm/func/Player_WeaponEffectStatCond.inc"); }
+
+NAKED u32 Player_WeaponEffectNight(Player* p) { INCFUNC("asm/func/Player_WeaponEffectNight.inc"); }
+
+NAKED u32 Player_WeaponEffectAgility(Player* p) { INCFUNC("asm/func/Player_WeaponEffectAgility.inc"); }
+
+NAKED u32 Player_WeaponEffectVitality(Player* p) { INCFUNC("asm/func/Player_WeaponEffectVitality.inc"); }
+
+NAKED u32 Player_WeaponEffectSpirit(Player* p) { INCFUNC("asm/func/Player_WeaponEffectSpirit.inc"); }
+
+NAKED u32 Player_WeaponEffectENE(Player* p) { INCFUNC("asm/func/Player_WeaponEffectENE.inc"); }
+
+NAKED u32 Player_WeaponEffectHP(Player* p) { INCFUNC("asm/func/Player_WeaponEffectHP.inc"); }
+
+NAKED u32 Player_WeaponEffectKajiba(Player* p) { INCFUNC("asm/func/Player_WeaponEffectKajiba.inc"); }
+
+NAKED u32 Player_WeaponEffectGyakuKajiba(Player* p) { INCFUNC("asm/func/Player_WeaponEffectGyakuKajiba.inc"); }
+
+NAKED u32 Player_WeaponEffectKillCount(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectKillCount.inc"); }
+
+NAKED u32 Player_WeaponEffectRandom(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectRandom.inc"); }
+
+NAKED u32 Player_WeaponEffectAntiBeast(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiBeast.inc"); }
+
+NAKED u32 Player_WeaponEffectAntiThing(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiThing.inc"); }
+
+NAKED u32 Player_WeaponEffectAntiPhantom(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiPhantom.inc"); }
+
+NAKED u32 Player_WeaponEffectAntiUndead(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiUndead.inc"); }
+
+NAKED u32 Player_WeaponEffectAntiImmortal(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiImmortal.inc"); }
+
+NAKED u32 Player_WeaponEffectFlame(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectFlame.inc"); }
+
+NAKED u32 Player_WeaponEffectFrost(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectFrost.inc"); }
+
+NAKED u32 Player_WeaponEffectCloud(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectCloud.inc"); }
+
+NAKED u32 Player_WeaponEffectEarth(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectEarth.inc"); }
 
 // 一定確率で防御無視(なまくら系の特殊効果)
 u32 CheckNamakuraProc(void) {

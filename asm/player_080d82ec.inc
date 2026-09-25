@@ -4826,12 +4826,12 @@ _080CE684:
 	ldr r1, _080CE690 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE694 @ =FUN_08063d18
+	ldr r1, _080CE694 @ =Player_WeaponEffectStatCond
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE690: .4byte 0x00000A9C
-_080CE694: .4byte FUN_08063d18
+_080CE694: .4byte Player_WeaponEffectStatCond
 _080CE698:
 	ldr r1, _080CE6A4 @ =0x00000A9C
 	adds r0, r3, r1
@@ -4846,72 +4846,72 @@ _080CE6AC:
 	ldr r1, _080CE6B8 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE6BC @ =FUN_08063d84
+	ldr r1, _080CE6BC @ =Player_WeaponEffectAgility
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE6B8: .4byte 0x00000A9C
-_080CE6BC: .4byte FUN_08063d84
+_080CE6BC: .4byte Player_WeaponEffectAgility
 _080CE6C0:
 	ldr r1, _080CE6CC @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE6D0 @ =FUN_08063d94
+	ldr r1, _080CE6D0 @ =Player_WeaponEffectVitality
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE6CC: .4byte 0x00000A9C
-_080CE6D0: .4byte FUN_08063d94
+_080CE6D0: .4byte Player_WeaponEffectVitality
 _080CE6D4:
 	ldr r1, _080CE6E0 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE6E4 @ =FUN_08063da0
+	ldr r1, _080CE6E4 @ =Player_WeaponEffectSpirit
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE6E0: .4byte 0x00000A9C
-_080CE6E4: .4byte FUN_08063da0
+_080CE6E4: .4byte Player_WeaponEffectSpirit
 _080CE6E8:
 	ldr r1, _080CE6F4 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE6F8 @ =FUN_08063db0
+	ldr r1, _080CE6F8 @ =Player_WeaponEffectENE
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE6F4: .4byte 0x00000A9C
-_080CE6F8: .4byte FUN_08063db0
+_080CE6F8: .4byte Player_WeaponEffectENE
 _080CE6FC:
 	ldr r1, _080CE708 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE70C @ =FUN_08063dd4
+	ldr r1, _080CE70C @ =Player_WeaponEffectHP
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE708: .4byte 0x00000A9C
-_080CE70C: .4byte FUN_08063dd4
+_080CE70C: .4byte Player_WeaponEffectHP
 _080CE710:
 	ldr r1, _080CE71C @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE720 @ =FUN_08063df8
+	ldr r1, _080CE720 @ =Player_WeaponEffectKajiba
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE71C: .4byte 0x00000A9C
-_080CE720: .4byte FUN_08063df8
+_080CE720: .4byte Player_WeaponEffectKajiba
 _080CE724:
 	ldr r1, _080CE730 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE734 @ =FUN_08063e1c
+	ldr r1, _080CE734 @ =Player_WeaponEffectGyakuKajiba
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE730: .4byte 0x00000A9C
-_080CE734: .4byte FUN_08063e1c
+_080CE734: .4byte Player_WeaponEffectGyakuKajiba
 _080CE738:
 	ldr r1, _080CE744 @ =0x00000AB4
 	adds r0, r3, r1
@@ -4926,102 +4926,102 @@ _080CE74C:
 	ldr r1, _080CE758 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE75C @ =FUN_08063ed8
+	ldr r1, _080CE75C @ =Player_WeaponEffectRandom
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE758: .4byte 0x00000AB4
-_080CE75C: .4byte FUN_08063ed8
+_080CE75C: .4byte Player_WeaponEffectRandom
 _080CE760:
 	ldr r1, _080CE76C @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE770 @ =FUN_08063f10
+	ldr r1, _080CE770 @ =Player_WeaponEffectAntiBeast
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE76C: .4byte 0x00000AB4
-_080CE770: .4byte FUN_08063f10
+_080CE770: .4byte Player_WeaponEffectAntiBeast
 _080CE774:
 	ldr r1, _080CE780 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE784 @ =FUN_08063f28
+	ldr r1, _080CE784 @ =Player_WeaponEffectAntiThing
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE780: .4byte 0x00000AB4
-_080CE784: .4byte FUN_08063f28
+_080CE784: .4byte Player_WeaponEffectAntiThing
 _080CE788:
 	ldr r1, _080CE794 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE798 @ =FUN_08063f40
+	ldr r1, _080CE798 @ =Player_WeaponEffectAntiPhantom
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE794: .4byte 0x00000AB4
-_080CE798: .4byte FUN_08063f40
+_080CE798: .4byte Player_WeaponEffectAntiPhantom
 _080CE79C:
 	ldr r1, _080CE7A8 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE7AC @ =FUN_08063f58
+	ldr r1, _080CE7AC @ =Player_WeaponEffectAntiUndead
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE7A8: .4byte 0x00000AB4
-_080CE7AC: .4byte FUN_08063f58
+_080CE7AC: .4byte Player_WeaponEffectAntiUndead
 _080CE7B0:
 	ldr r1, _080CE7BC @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE7C0 @ =FUN_08063f70
+	ldr r1, _080CE7C0 @ =Player_WeaponEffectAntiImmortal
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE7BC: .4byte 0x00000AB4
-_080CE7C0: .4byte FUN_08063f70
+_080CE7C0: .4byte Player_WeaponEffectAntiImmortal
 _080CE7C4:
 	ldr r1, _080CE7D0 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE7D4 @ =FUN_08063f88
+	ldr r1, _080CE7D4 @ =Player_WeaponEffectFlame
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE7D0: .4byte 0x00000AB4
-_080CE7D4: .4byte FUN_08063f88
+_080CE7D4: .4byte Player_WeaponEffectFlame
 _080CE7D8:
 	ldr r1, _080CE7E4 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE7E8 @ =FUN_08063fa0
+	ldr r1, _080CE7E8 @ =Player_WeaponEffectFrost
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE7E4: .4byte 0x00000AB4
-_080CE7E8: .4byte FUN_08063fa0
+_080CE7E8: .4byte Player_WeaponEffectFrost
 _080CE7EC:
 	ldr r1, _080CE7F8 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE7FC @ =FUN_08063fb8
+	ldr r1, _080CE7FC @ =Player_WeaponEffectCloud
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE7F8: .4byte 0x00000AB4
-_080CE7FC: .4byte FUN_08063fb8
+_080CE7FC: .4byte Player_WeaponEffectCloud
 _080CE800:
 	ldr r1, _080CE80C @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080CE810 @ =FUN_08063fd0
+	ldr r1, _080CE810 @ =Player_WeaponEffectEarth
 	str r1, [r0]
 	b _080CE858
 	.align 2, 0
 _080CE80C: .4byte 0x00000AB4
-_080CE810: .4byte FUN_08063fd0
+_080CE810: .4byte Player_WeaponEffectEarth
 _080CE814:
 	ldr r1, _080CE820 @ =0x00000AA8
 	adds r0, r3, r1
