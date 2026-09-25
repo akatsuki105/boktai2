@@ -3,30 +3,27 @@
 #include "global.h"
 #include "player.h"
 
-// SolarSensorInterface が高レベルなインターフェースだったなら、こっちは低レベルなインターフェース(ドライバ)だと思われる (まだ調査が不十分なので間違ってる可能性もある)
-typedef struct {
-  u32 unk_00;        // 0x00
-  u32 unk_04;        // 0x04
-  bool32 isEnabled;  // 0x08
-  u32 gpiodata;      // 0x0C, last read GPIO data (GPIO_DATA & 8)
-  s32 unk_10;        // 0x10
-  s32 unk_14;        // 0x14
-  s32 rawLevel;      // 0x18, light level (0: Max brightness, 0xFF: Dark)
-  s32 unk_1c;        // 0x1C, おそらく Sensor_Tick の周期
-} SolarSensorManager;
-static_assert(sizeof(SolarSensorManager) == 32);
-
 // 0x030026B0 から 0x030026C4 までの6つ。以前は SolarSensorInterface という1つの構造体として書いていたが、
 // Sensor_GetState が =0x030026B4 を直接読む (構造体なら =gSSI + [r0,#4] になる) ので、原典では個別のグローバルだった
 // ゲームが太陽センサーとやり取りするための(高レベルな)インターフェース。SolarSensorManager との違いはまだ不明
 // agbrtc と IWRAM が隣接していて、 agbrtc が 0x030026c8 から始まる、つまり16バイトアラインされていないので、 GBA SDKのライブラリ由来の可能性もある (わからん)
-IWRAM_DATA SolarSensorEntity* gSensorEntity = NULL;       // .bss, 0x030026B0
-IWRAM_DATA s32 gSensorState = 0;                          // 0x030026B4, 0: measuring, 1: resetting, 2: idle
-IWRAM_DATA s32 gSensorCounter = 0;                        // 0x030026B8, 0-511, counts half-cycles of the 74LV4040 counter chip
-IWRAM_DATA s32 gSensorUnk0c = 0;                          // 0x030026BC
-IWRAM_DATA s32 gSensorNextWrite = 0;                      // 0x030026C0, next value to be written to GPIO_DATA
-IWRAM_DATA bool32 gSensorUnk14 = 0;                       // 0x030026C4
-COMMON_DATA SolarSensorManager gSolarSensorManager = {};  // 0x030057B0
+IWRAM_DATA SolarSensorEntity* gSensorEntity = NULL;  // .bss, 0x030026B0
+IWRAM_DATA s32 gSensorState = 0;                     // 0x030026B4, 0: measuring, 1: resetting, 2: idle
+IWRAM_DATA s32 gSensorCounter = 0;                   // 0x030026B8, 0-511, counts half-cycles of the 74LV4040 counter chip
+IWRAM_DATA s32 gSensorUnk0c = 0;                     // 0x030026BC
+IWRAM_DATA s32 gSensorNextWrite = 0;                 // 0x030026C0, next value to be written to GPIO_DATA
+IWRAM_DATA bool32 gSensorUnk14 = 0;                  // 0x030026C4
+// 0x030057B0 から 0x030057CC までの8つ。上のグローバル群が高レベルなら、こちらは低レベルなドライバ側だと思われる
+// これも以前は SolarSensorManager という1つの構造体だったが、Sensor_Disable が 0x030057B8 と 0x030057C8 を
+// 別々のプール定数として読む (構造体なら1回のロード + オフセットになる) ので、原典では個別のグローバル
+COMMON_DATA u32 gSensorDrvUnk00 = 0;    // 0x030057B0
+COMMON_DATA u32 gSensorDrvUnk04 = 0;    // 0x030057B4
+COMMON_DATA bool32 gSensorEnabled = 0;  // 0x030057B8
+COMMON_DATA u32 gSensorGpioData = 0;    // 0x030057BC, last read GPIO data (GPIO_DATA & 8)
+COMMON_DATA s32 gSensorDrvUnk10 = 0;    // 0x030057C0
+COMMON_DATA s32 gSensorDrvUnk14 = 0;    // 0x030057C4
+COMMON_DATA s32 gSensorRawLevel = 0;    // 0x030057C8, light level (0: Max brightness, 0xFF: Dark)
+COMMON_DATA s32 gSensorDrvUnk1c = 0;    // 0x030057CC, おそらく Sensor_Tick の周期
 
 const u16 u16_ARRAY_08dbd810[4] = {3, 3, 1, 2};  // 0x08DBD810
 
