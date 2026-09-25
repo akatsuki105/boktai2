@@ -29,8 +29,8 @@ IWRAM_DATA u32 u32_0300170c = 0;                    // 0x0300170C, EEPROM_BeginA
 COMMON_DATA u16 u16_03004864 = 0;
 COMMON_DATA ALIGNED(4) u16 u16_03004868 = 0;
 COMMON_DATA ALIGNED(4) u16 gSunlightSuspended = 0;
-COMMON_DATA ALIGNED(4) u16 u16_03004870 = 0;
-COMMON_DATA ALIGNED(4) u16 u16_ARRAY_03004874[6] = {};
+COMMON_DATA ALIGNED(4) u16 gSavedLx = 0;
+COMMON_DATA ALIGNED(4) u16 gSavedSunGauge[6] = {};
 
 const u8 u8_ARRAY_ARRAY_08dbd798[6][2] = {
     {2, 2},
@@ -45,7 +45,19 @@ const u16 gSunLevelMaxLx[11] = {0, 5, 12, 22, 34, 49, 66, 86, 109, 139, 140};  /
 
 const u16 gSunLevelMinLx[11] = {0, 1, 6, 13, 23, 35, 50, 67, 87, 110, 140};  // 0x08DBD7BA
 
-NAKED void FUN_08241650(void) { INCFUNC("asm/func/FUN_08241650.inc"); }
+// 太陽光まわりを初期状態に戻す
+NON_MATCH void ResetSunlight(void) {
+#ifdef NONMATCHING_C
+  gSunlightEntity = NULL;
+  gStat->lx = 0;
+  gStat->sunGauge = 0;
+  gSavedLx = 0;
+  gSavedSunGauge[0] = 0;
+  gSunlightSuspended = 0;
+#else
+  INCFUNC("asm/func/ResetSunlight.inc");
+#endif
+}
 
 // センサーの値が今そのまま使えるか。state 2 が計測中
 bool32 IsSunlightActive(void) {
@@ -222,8 +234,8 @@ NON_MATCH void FUN_08241f28(SunlightEntity* p) {
   p->state = 0;
   p->stateTimer = 0;
   p->adjustTimer = 0;
-  gStat->lx = u16_03004870;
-  tmp = u16_ARRAY_03004874[0];
+  gStat->lx = gSavedLx;
+  tmp = gSavedSunGauge[0];
   gStat->sunGauge = tmp;
 #else
   INCFUNC("asm/func/FUN_08241f28.inc");
