@@ -12,7 +12,7 @@
 typedef struct SunlightEntity {
   Entity e;                                        // 0x00, ENTITY_UNK_5
   u8 unk_18;                                       // 0x18, FUN_08241f28 が 1 を書く。読み手は見つかっていない
-  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む。UpdateSunlight / FUN_08241e40 が回し、IsSunlightActive / CalibrateSunSensor / SuspendSunlight / FUN_0824172c が見る
+  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む。UpdateSunlight / UpdateSunlightDebug が回し、IsSunlightActive / CalibrateSunSensor / SuspendSunlight / FUN_0824172c が見る
   u16 unk_1a;                                      // 0x1A, このモジュールは触らない
   s16 lx;                                          // 0x1C, 太陽光の強さ
   s16 sunGauge;                                    // 0x1E, lx を 10段階に分けたもの
@@ -278,7 +278,42 @@ NON_MATCH u32 UpdateDebugLx(SunlightEntity* p) {
 #endif
 }
 
-NAKED void FUN_08241e40(SunlightEntity* p) { INCFUNC("asm/func/FUN_08241e40.inc"); }
+// UpdateSunlight のデバッグ版。lx をセンサーでなく手動値から取る。呼び出し元は見つかっていない
+NON_MATCH void UpdateSunlightDebug(SunlightEntity* p) {
+#ifdef NONMATCHING_C
+  switch (p->state) {
+    case 0: {
+      p->stateTimer++;
+      if (p->stateTimer > 29) {
+        Sensor_Enable();
+        p->state = 1;
+        p->stateTimer = 0;
+      }
+      break;
+    }
+    case 1: {
+      p->stateTimer++;
+      if (p->stateTimer > 59) {
+        p->state = 2;
+        p->stateTimer = 0;
+      }
+      break;
+    }
+    case 2: {
+      p->lx = UpdateDebugLx(p);
+      p->sunGauge = GetSunLevel(p->lx);
+      gStat->lx = FUN_082417ec(p->lx);
+      gStat->sunGauge = GetSunLevel(gStat->lx);
+      solar_08241ac0(p);
+      gSavedLx = gStat->lx;
+      gSavedSunGauge[0] = gStat->sunGauge;
+      break;
+    }
+  }
+#else
+  INCFUNC("asm/func/UpdateSunlightDebug.inc");
+#endif
+}
 
 s32 SunlightEntity_Update(SunlightEntity* p) {
   if (gSunlightSuspended == 0) {
