@@ -1,5 +1,7 @@
 #include "entity.h"
 #include "hitbox.h"
+
+struct Entity080de11c;
 #include "global.h"
 
 // 持ち主のいない単発の攻撃判定。AttackBoxManager が5個を貸し出す
@@ -26,4 +28,42 @@ static_assert(sizeof(AttackBoxManager) == 528);
 
 extern AttackBoxManager* gAttackBoxManager;  // 0x03000170
 
-INCASM("asm/entity_080ddad0.inc");
+NAKED s32 FUN_080dd324(unknown* p) { INCFUNC("asm/func/FUN_080dd324.inc"); }
+
+NAKED void FUN_080dd364(void) { INCFUNC("asm/func/FUN_080dd364.inc"); }
+
+NAKED void FUN_080dd4fc(AttackBox* box) { INCFUNC("asm/func/FUN_080dd4fc.inc"); }
+
+NAKED void FUN_080dd6f4(AttackBox* box) { INCFUNC("asm/func/FUN_080dd6f4.inc"); }
+
+NAKED void AttackBox_Setup(AttackBox* box, s32 power, s32 unk_40, s32 unk_44, u16 ignoreMask) { INCFUNC("asm/func/AttackBox_Setup.inc"); }
+
+NAKED void AttackBox_Idle(AttackBoxManager* p, AttackBox* box) { INCFUNC("asm/func/AttackBox_Idle.inc"); }
+
+NAKED void AttackBox_Update(AttackBoxManager* p, AttackBox* box) { INCFUNC("asm/func/AttackBox_Update.inc"); }
+
+NAKED void AttackBox_Free(AttackBoxManager* p, AttackBox* box) { INCFUNC("asm/func/AttackBox_Free.inc"); }
+
+NAKED AttackBox* AttackBoxManager_Alloc(AttackBoxManager* p) { INCFUNC("asm/func/AttackBoxManager_Alloc.inc"); }
+
+NAKED s32 SpawnAttackBox(Vec3* pos, u8 kind, u32 unk_60, s32 power, s32 unk_40, s32 unk_44, u16 ignoreMask) { INCFUNC("asm/func/SpawnAttackBox.inc"); }
+
+NAKED void FUN_080dd93c(void) { INCFUNC("asm/func/FUN_080dd93c.inc"); }
+
+NAKED s32 AttackBoxManager_Update(AttackBoxManager* p) { INCFUNC("asm/func/AttackBoxManager_Update.inc"); }
+
+NAKED s32 AttackBoxManager_Destroy(AttackBoxManager* p) { INCFUNC("asm/func/AttackBoxManager_Destroy.inc"); }
+
+NAKED void FUN_080ddab4(AttackBoxManager* p) { INCFUNC("asm/func/FUN_080ddab4.inc"); }
+
+NAKED s32 AttackBoxManager_Init(AttackBoxManager* p, u32 unused1) { INCFUNC("asm/func/AttackBoxManager_Init.inc"); }
+
+NAKED AttackBoxManager* AttackBoxManager_Create(void) { INCFUNC("asm/func/AttackBoxManager_Create.inc"); }
+
+NAKED void FUN_080ddb1c(void) { INCFUNC("asm/func/FUN_080ddb1c.inc"); }
+
+NAKED s32 Entity080de11c_Update(struct Entity080de11c* p) { INCFUNC("asm/func/Entity080de11c_Update.inc"); }
+
+NAKED s32 Entity080de11c_Destroy(struct Entity080de11c* p) { INCFUNC("asm/func/Entity080de11c_Destroy.inc"); }
+
+NAKED s32 FUN_080ddcc8(unknown* p, u8 param_2, unknown* param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_080ddcc8.inc"); }
