@@ -36,7 +36,15 @@ const u16 u16_ARRAY_08dbd810[4] = {3, 3, 1, 2};  // 0x08DBD810
 
 NAKED void FUN_08246660(void) { INCFUNC("asm/func/FUN_08246660.inc"); }
 
-INCASM("asm/solar_sensor1.inc");
+NAKED void SSEEmitter_UpdateIdle(SolarSensorEntity* e, SSEEmitter* p) { INCFUNC("asm/func/SSEEmitter_UpdateIdle.inc"); }
+
+NAKED s32 SSEEmitter_Register(SolarSensorEntity* e, SSEEmitter* p) { INCFUNC("asm/func/SSEEmitter_Register.inc"); }
+
+NAKED s32 SSEEmitter_Unregister(SolarSensorEntity* e, SSEEmitter* p) { INCFUNC("asm/func/SSEEmitter_Unregister.inc"); }
+
+NAKED s32 FUN_082466ec(SSEEmitter* p) { INCFUNC("asm/func/FUN_082466ec.inc"); }
+
+NAKED s32 FUN_08246728(SSEEmitter* p, s32 param_2, Vec3* param_3, Vec3* param_4, Vec3* param_5, s32 param_6, s32 param_7) { INCFUNC("asm/func/FUN_08246728.inc"); }
 
 NAKED void* FUN_08246790(SSEEmitter* e) { INCFUNC("asm/func/FUN_08246790.inc"); }
 
@@ -103,6 +111,22 @@ NAKED s32 FUN_08247504(unknown* p) { INCFUNC("asm/func/FUN_08247504.inc"); }
 
 NAKED void Sensor_DoEnableIO(void) { INCFUNC("asm/func/Sensor_DoEnableIO.inc"); }
 
-INCASM("asm/solar_sensor.inc");
+NAKED void Sensor_DoDisableIO(void) { INCFUNC("asm/func/Sensor_DoDisableIO.inc"); }
+
+NAKED void Sensor_Tick(void) { INCFUNC("asm/func/Sensor_Tick.inc"); }
+
+NAKED void Sensor_EnableIO(void) { INCFUNC("asm/func/Sensor_EnableIO.inc"); }
+
+NAKED void Sensor_DisableIO(void) { INCFUNC("asm/func/Sensor_DisableIO.inc"); }
+
+NAKED void Sensor_Enable(void) { INCFUNC("asm/func/Sensor_Enable.inc"); }
+
+NAKED void Sensor_Disable(void) { INCFUNC("asm/func/Sensor_Disable.inc"); }
+
+NAKED s32 Sensor_GetRawLevel(void) { INCFUNC("asm/func/Sensor_GetRawLevel.inc"); }
+
+NAKED bool32 FUN_08247800(void) { INCFUNC("asm/func/FUN_08247800.inc"); }
+
+NAKED s32 Sensor_GetState(void) { INCFUNC("asm/func/Sensor_GetState.inc"); }
 
 NAKED s32 FUN_08247818(void) { INCFUNC("asm/func/FUN_08247818.inc"); }

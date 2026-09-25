@@ -54,10 +54,10 @@ _08246830:
 	movs r0, #0x96
 	lsls r0, r0, #1
 	adds r1, r5, r0
-	ldr r0, _0824683C @ =FUN_0824666c
+	ldr r0, _0824683C @ =SSEEmitter_UpdateIdle
 	b _08246868
 	.align 2, 0
-_0824683C: .4byte FUN_0824666c
+_0824683C: .4byte SSEEmitter_UpdateIdle
 _08246840:
 	movs r2, #0x96
 	lsls r2, r2, #1

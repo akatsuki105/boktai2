@@ -37,7 +37,7 @@ _08247464:
 	movs r0, #0x96
 	lsls r0, r0, #1
 	adds r1, r6, r0
-	ldr r0, _082474FC @ =FUN_0824666c
+	ldr r0, _082474FC @ =SSEEmitter_UpdateIdle
 	str r0, [r1]
 	movs r7, #0
 	movs r1, #0x44
@@ -88,7 +88,7 @@ _08247494:
 	bge _08247494
 	mov r0, sl
 	adds r1, r6, #0
-	bl FUN_08246670
+	bl SSEEmitter_Register
 	movs r0, #0
 _082474EC:
 	add sp, #4
@@ -100,5 +100,5 @@ _082474EC:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_082474FC: .4byte FUN_0824666c
+_082474FC: .4byte SSEEmitter_UpdateIdle
 _08247500: .4byte 0x030026B0

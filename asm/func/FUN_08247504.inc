@@ -15,7 +15,7 @@ _0824750E:
 	cmp r0, #0
 	beq _0824752A
 	adds r1, r6, #0
-	bl FUN_082466a8
+	bl SSEEmitter_Unregister
 _0824752A:
 	movs r0, #0
 	pop {r4, r5, r6}

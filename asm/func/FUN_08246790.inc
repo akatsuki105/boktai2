@@ -7,7 +7,7 @@
 	movs r1, #0x96
 	lsls r1, r1, #1
 	adds r3, r2, r1
-	ldr r1, _082467CC @ =FUN_0824666c
+	ldr r1, _082467CC @ =SSEEmitter_UpdateIdle
 	str r1, [r3]
 	movs r4, #0
 	movs r6, #0xa
@@ -29,4 +29,4 @@ _082467B0:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_082467CC: .4byte FUN_0824666c
+_082467CC: .4byte SSEEmitter_UpdateIdle
