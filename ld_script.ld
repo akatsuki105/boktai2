@@ -235,7 +235,7 @@ SECTIONS {
 			src/entity_080a8ff8.o (.text);
 			src/healing_effect.o (.text);
 			src/entity_4063.o (.text);
-			src/entity_080a9e88.o (.text);
+			src/judgement.o (.text);
 			src/entity_87fe.o (.text);
 			src/entity_080aace8.o (.text);
 			src/entity_c438.o (.text);
