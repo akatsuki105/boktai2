@@ -86,7 +86,7 @@ typedef struct Player4c4 {
   u32 unk_8;                                                     // 0x008
   Player4c4_0c unk_c[4];                                         // 0x00C
   void (*fn_12c)(struct SolarSensorEntity*, struct Player4c4*);  // 0x12C, SSE_Update(0x0824736c)　で実行
-  // 304バイト, これ以上続くのかは不明
+  // 304バイト, これ以上続くのかは不明, Generator (in solar_generator.c) のレイアウト的に、304~312バイト
 } Player4c4;
 
 typedef struct {
