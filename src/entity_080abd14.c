@@ -34,4 +34,52 @@ typedef struct {
 } Entity080abd14;
 static_assert(sizeof(Entity080abd14) == 1136);
 
-INCASM("asm/entity_080abd14.inc");
+NAKED void FUN_080ab018(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab018.inc"); }
+
+NAKED void FUN_080ab074(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab074.inc"); }
+
+NAKED void FUN_080ab134(Entity080abd14* p, u32 param_2) { INCFUNC("asm/func/FUN_080ab134.inc"); }
+
+NAKED void FUN_080ab278(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab278.inc"); }
+
+NAKED void FUN_080ab3a0(Entity080abd14* p, u32 param_2) { INCFUNC("asm/func/FUN_080ab3a0.inc"); }
+
+NAKED void FUN_080ab4e8(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab4e8.inc"); }
+
+NAKED void FUN_080ab540(Entity080abd14* p, u32 param_2) { INCFUNC("asm/func/FUN_080ab540.inc"); }
+
+NAKED void FUN_080ab67c(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab67c.inc"); }
+
+NAKED void FUN_080ab6d8(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab6d8.inc"); }
+
+NAKED void FUN_080ab6f8(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab6f8.inc"); }
+
+NAKED void FUN_080ab780(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab780.inc"); }
+
+NAKED void FUN_080ab7f0(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab7f0.inc"); }
+
+NAKED void FUN_080ab848(AuxSprite* spr) { INCFUNC("asm/func/FUN_080ab848.inc"); }
+
+NAKED void FUN_080ab898(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab898.inc"); }
+
+NAKED void FUN_080ab8ec(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab8ec.inc"); }
+
+NAKED void FUN_080ab8f8(Entity080abd14* p, u32 param_2) { INCFUNC("asm/func/FUN_080ab8f8.inc"); }
+
+NAKED void FUN_080ab99c(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab99c.inc"); }
+
+NAKED void FUN_080ab9e0(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab9e0.inc"); }
+
+NAKED void FUN_080abac8(Entity080abd14* p) { INCFUNC("asm/func/FUN_080abac8.inc"); }
+
+NAKED void FUN_080abb08(Entity080abd14* p) { INCFUNC("asm/func/FUN_080abb08.inc"); }
+
+NAKED void FUN_080abb20(Entity080abd14* p, u32 param_2) { INCFUNC("asm/func/FUN_080abb20.inc"); }
+
+NAKED s32 Entity080abd14_Update(Entity080abd14* p) { INCFUNC("asm/func/Entity080abd14_Update.inc"); }
+
+NAKED s32 Entity080abd14_Destroy(Entity080abd14* p) { INCFUNC("asm/func/Entity080abd14_Destroy.inc"); }
+
+NAKED s32 Entity080abd14_Init(Entity080abd14* p, void* owner, u32 param_3, u32 param_4, u8 param_5, u8 param_6) { INCFUNC("asm/func/Entity080abd14_Init.inc"); }
+
+NAKED Entity080abd14* Entity080abd14_Create(void* owner, u32 param_2, u32 param_3, u32 param_4, u8 param_5, u8 param_6) { INCFUNC("asm/func/Entity080abd14_Create.inc"); }
