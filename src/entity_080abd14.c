@@ -62,7 +62,7 @@ NAKED void FUN_080ab848(AuxSprite* spr) { INCFUNC("asm/func/FUN_080ab848.inc"); 
 
 NAKED void FUN_080ab898(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab898.inc"); }
 
-NAKED void FUN_080ab8ec(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab8ec.inc"); }
+void FUN_080ab8ec(Entity080abd14* p) { AuxSprite_Remove(&p->spr2); }
 
 NAKED void FUN_080ab8f8(Entity080abd14* p, u32 param_2) { INCFUNC("asm/func/FUN_080ab8f8.inc"); }
 
