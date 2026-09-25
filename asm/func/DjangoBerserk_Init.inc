@@ -8,7 +8,7 @@
 	bl FUN_0807ff78
 	ldr r1, _080801A8 @ =FUN_0807f94c
 	adds r0, r4, #0
-	bl DarkDjangoEffect_SetState
+	bl DjangoBerserk_SetState
 	ldr r1, _080801AC @ =0x030047A4
 	ldr r0, [r1]
 	movs r3, #1

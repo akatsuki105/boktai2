@@ -5,8 +5,8 @@
 #include "player.h"
 #include "sprite.h"
 
-struct DarkDjangoEffect;
-typedef void (*DarkDjangoEffectFunc)(struct DarkDjangoEffect* p);
+struct DjangoBerserk;
+typedef void (*DjangoBerserkFunc)(struct DjangoBerserk* p);
 
 // プレイヤーの周りを旋回する粒子1個ぶんの枠,16個を使い回す
 typedef struct {
@@ -22,56 +22,56 @@ typedef struct {
   u16 radius;     // 0x30, 旋回半径,startDelay 経過後は毎フレーム +6、手前は +1
   u8 unk_32[2];   // 0x32, padding?
   Vec3 vel;       // 0x34, FUN_0807f750 が ptcl.pos.x と .z に足す (y は読まれない)
-} DarkDjangoEffectParticle;
-static_assert(sizeof(DarkDjangoEffectParticle) == 60);
+} DjangoBerserkParticle;
+static_assert(sizeof(DjangoBerserkParticle) == 60);
 
 // 黒ジャンゴが暴走する処理(暴走: プレイヤーのHPが半分になるが、画面上の全ての敵にダメージ)
-typedef struct DarkDjangoEffect {
-  Entity e;                             // 0x000, ENTITY_UNK_11
-  Player* player;                       // 0x018, Init の第1引数
-  MainSpriteGfx gfx;                    // 0x01C
-  MainSprite sprite;                    // 0x03C
-  HitboxData hitbox;                    // 0x09C, FUN_0807fdac が Hitbox_Register に渡す
-  u8 unk_ec[2];                         // 0x0EC
-  u16 timer;                            // 0x0EE, SetState が状態を差し替えるたび 0 に戻す
-  u16 hpDrainStep;                      // 0x0F0, Init: (player->hp - hpTarget) / 0x48 + 1,毎フレーム player->hp から引く量
-  u16 hpTarget;                         // 0x0F2, Init: player->hp >> 1 (0 なら 1),ここまで削って止める
-  ParticleGroup* group;                 // 0x0F4, FUN_0822dafc の第2引数
-  DarkDjangoEffectParticle ptcls[16];   // 0x0F8, 根拠: _Destroy が stride 0x3C で 16回 Particle_Remove する
-  u16 frameCounter;                     // 0x4B8, FUN_0807f8d0 が毎フレーム +1,リセットされない,ptcls[].startDelay と比較される
-  u8 unk_4ba[6];                        // 0x4BA
-  DarkDjangoEffectFunc updateCallback;  // 0x4C0, _Update が毎フレーム呼ぶ状態関数
-} DarkDjangoEffect;
-static_assert(sizeof(DarkDjangoEffect) == 1220);
+typedef struct DjangoBerserk {
+  Entity e;                          // 0x000, ENTITY_UNK_11
+  Player* player;                    // 0x018, Init の第1引数
+  MainSpriteGfx gfx;                 // 0x01C
+  MainSprite sprite;                 // 0x03C
+  HitboxData hitbox;                 // 0x09C, FUN_0807fdac が Hitbox_Register に渡す
+  u8 unk_ec[2];                      // 0x0EC
+  u16 timer;                         // 0x0EE, SetState が状態を差し替えるたび 0 に戻す
+  u16 hpDrainStep;                   // 0x0F0, Init: (player->hp - hpTarget) / 0x48 + 1,毎フレーム player->hp から引く量
+  u16 hpTarget;                      // 0x0F2, Init: player->hp >> 1 (0 なら 1),ここまで削って止める
+  ParticleGroup* group;              // 0x0F4, FUN_0822dafc の第2引数
+  DjangoBerserkParticle ptcls[16];   // 0x0F8, 根拠: _Destroy が stride 0x3C で 16回 Particle_Remove する
+  u16 frameCounter;                  // 0x4B8, FUN_0807f8d0 が毎フレーム +1,リセットされない,ptcls[].startDelay と比較される
+  u8 unk_4ba[6];                     // 0x4BA
+  DjangoBerserkFunc updateCallback;  // 0x4C0, _Update が毎フレーム呼ぶ状態関数
+} DjangoBerserk;
+static_assert(sizeof(DjangoBerserk) == 1220);
 
-NAKED void DarkDjangoEffect_SetState(DarkDjangoEffect* p, DarkDjangoEffectFunc fn) { INCFUNC("asm/func/DarkDjangoEffect_SetState.inc"); }
+NAKED void DjangoBerserk_SetState(DjangoBerserk* p, DjangoBerserkFunc fn) { INCFUNC("asm/func/DjangoBerserk_SetState.inc"); }
 
-NAKED void FUN_0807f650(DarkDjangoEffect* p, DarkDjangoEffectParticle* ptcl) { INCFUNC("asm/func/FUN_0807f650.inc"); }
+NAKED void FUN_0807f650(DjangoBerserk* p, DjangoBerserkParticle* ptcl) { INCFUNC("asm/func/FUN_0807f650.inc"); }
 
-NAKED void FUN_0807f750(DarkDjangoEffect* p, DarkDjangoEffectParticle* ptcl) { INCFUNC("asm/func/FUN_0807f750.inc"); }
+NAKED void FUN_0807f750(DjangoBerserk* p, DjangoBerserkParticle* ptcl) { INCFUNC("asm/func/FUN_0807f750.inc"); }
 
-NAKED void FUN_0807f78c(DarkDjangoEffect* p, Vec3* pos, u32 angle) { INCFUNC("asm/func/FUN_0807f78c.inc"); }
+NAKED void FUN_0807f78c(DjangoBerserk* p, Vec3* pos, u32 angle) { INCFUNC("asm/func/FUN_0807f78c.inc"); }
 
-NAKED void FUN_0807f8d0(DarkDjangoEffect* p) { INCFUNC("asm/func/FUN_0807f8d0.inc"); }
+NAKED void FUN_0807f8d0(DjangoBerserk* p) { INCFUNC("asm/func/FUN_0807f8d0.inc"); }
 
-NAKED void FUN_0807f94c(DarkDjangoEffect* p) { INCFUNC("asm/func/FUN_0807f94c.inc"); }
+NAKED void FUN_0807f94c(DjangoBerserk* p) { INCFUNC("asm/func/FUN_0807f94c.inc"); }
 
-NAKED void FUN_0807f9d8(DarkDjangoEffect* p) { INCFUNC("asm/func/FUN_0807f9d8.inc"); }
+NAKED void FUN_0807f9d8(DjangoBerserk* p) { INCFUNC("asm/func/FUN_0807f9d8.inc"); }
 
-NAKED void FUN_0807fd1c(DarkDjangoEffect* p) { INCFUNC("asm/func/FUN_0807fd1c.inc"); }
+NAKED void FUN_0807fd1c(DjangoBerserk* p) { INCFUNC("asm/func/FUN_0807fd1c.inc"); }
 
-NAKED void FUN_0807fdac(DarkDjangoEffect* p) { INCFUNC("asm/func/FUN_0807fdac.inc"); }
+NAKED void FUN_0807fdac(DjangoBerserk* p) { INCFUNC("asm/func/FUN_0807fdac.inc"); }
 
-NAKED s32 DarkDjangoEffect_Update(DarkDjangoEffect* p) { INCFUNC("asm/func/DarkDjangoEffect_Update.inc"); }
+NAKED s32 DjangoBerserk_Update(DjangoBerserk* p) { INCFUNC("asm/func/DjangoBerserk_Update.inc"); }
 
-NAKED s32 DarkDjangoEffect_Destroy(DarkDjangoEffect* p) { INCFUNC("asm/func/DarkDjangoEffect_Destroy.inc"); }
+NAKED s32 DjangoBerserk_Destroy(DjangoBerserk* p) { INCFUNC("asm/func/DjangoBerserk_Destroy.inc"); }
 
-NAKED void LoadPlayerSprite_0807fe48(DarkDjangoEffect* p) { INCFUNC("asm/func/LoadPlayerSprite_0807fe48.inc"); }
+NAKED void LoadPlayerSprite_0807fe48(DjangoBerserk* p) { INCFUNC("asm/func/LoadPlayerSprite_0807fe48.inc"); }
 
-NAKED void FUN_0807fed0(DarkDjangoEffect* p) { INCFUNC("asm/func/FUN_0807fed0.inc"); }
+NAKED void FUN_0807fed0(DjangoBerserk* p) { INCFUNC("asm/func/FUN_0807fed0.inc"); }
 
-NAKED void FUN_0807ff78(DarkDjangoEffect* p) { INCFUNC("asm/func/FUN_0807ff78.inc"); }
+NAKED void FUN_0807ff78(DjangoBerserk* p) { INCFUNC("asm/func/FUN_0807ff78.inc"); }
 
-NAKED s32 DarkDjangoEffect_Init(DarkDjangoEffect* p, Player* player) { INCFUNC("asm/func/DarkDjangoEffect_Init.inc"); }
+NAKED s32 DjangoBerserk_Init(DjangoBerserk* p, Player* player) { INCFUNC("asm/func/DjangoBerserk_Init.inc"); }
 
-NAKED DarkDjangoEffect* DarkDjangoEffect_Create(Player* player) { INCFUNC("asm/func/DarkDjangoEffect_Create.inc"); }
+NAKED DjangoBerserk* DjangoBerserk_Create(Player* player) { INCFUNC("asm/func/DjangoBerserk_Create.inc"); }

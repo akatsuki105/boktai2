@@ -53,7 +53,7 @@ _0807FD38:
 	strb r6, [r0]
 	ldr r1, _0807FDA8 @ =FUN_0807fdac
 	adds r0, r5, #0
-	bl DarkDjangoEffect_SetState
+	bl DjangoBerserk_SetState
 _0807FD92:
 	pop {r4, r5, r6}
 	pop {r0}
