@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "sprite.h"
 #include "global.h"
 #include "vm.h"
 
@@ -82,11 +83,20 @@ NAKED s32 FUN_0820dae4(EnemyDexMenu* p, u32 param_2) { INCFUNC("asm/func/FUN_082
 
 NAKED void FUN_0820db9c(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820db9c.inc"); }
 
-NAKED void FUN_0820e080(EnemyDexMenu* p, u8 param_2) { INCFUNC("asm/func/FUN_0820e080.inc"); }
+void FUN_0820e080(EnemyDexMenu* p, u8 param_2) {
+  p->unk_24 = param_2;
+  p->unk_114d[0] = 0;
+  FUN_0820dae4(p, p->unk_24);
+  FUN_0820db9c(p);
+}
 
 NAKED s32 EnemyDexMenu_Update(EnemyDexMenu* p) { INCFUNC("asm/func/EnemyDexMenu_Update.inc"); }
 
-NAKED void FUN_0820e75c(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820e75c.inc"); }
+void FUN_0820e75c(MainSprite* spr) {
+  if (spr->active) {
+    MainSprite_Remove(spr);
+  }
+}
 
 NAKED s32 EnemyDexMenu_Destroy(EnemyDexMenu* p) { INCFUNC("asm/func/EnemyDexMenu_Destroy.inc"); }
 
