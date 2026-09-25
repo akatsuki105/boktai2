@@ -101,7 +101,15 @@ void (*const PTR_ARRAY_08dbd830[3])(SolarSensorEntity*, SSEEmitter*, SSEEmitterP
 
 NAKED void FUN_08247280(SolarSensorEntity* p, SSEEmitter* e) { INCFUNC("asm/func/FUN_08247280.inc"); }
 
-NAKED s32 SSE_Update(SolarSensorEntity* p) { INCFUNC("asm/func/SSE_Update.inc"); }
+s32 SSE_Update(SolarSensorEntity* p) {
+  SSEEmitter* e = p->unk_20;
+
+  while (e != NULL) {
+    e->fn_12c(p, e);
+    e = e->next;
+  }
+  return 0;
+}
 
 s32 SSE_Destroy(SolarSensorEntity* _) {
   gSSI.e = NULL;
