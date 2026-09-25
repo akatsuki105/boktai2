@@ -3,7 +3,6 @@
 #include "global.h"
 #include "vm.h"
 
-struct TextPanel;
 struct EntityC946;
 
 // _Init がスクリプトキーワード 't' から4バイトずつ57件読む
@@ -24,7 +23,7 @@ typedef struct {
   u8 unk_25;                       // 0x0025, _Init が 0
   u8 unk_26;                       // 0x0026, _Init が 0
   u8 unk_27;                       // 0x0027
-  struct TextPanel* panels[8];     // 0x0028, _Init が TextPanel_Create を8回まわして詰める
+  s32 panels[8];                   // 0x0028, TextPanel_Create の戻り値 (ID)。TextPanel_Hide などに渡す
   u8 unk_48;                       // 0x0048, _Init が 0
   u8 unk_49;                       // 0x0049, _Init が 0x20
   u8 unk_4a;                       // 0x004A, _Init が 0
