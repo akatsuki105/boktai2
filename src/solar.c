@@ -43,7 +43,7 @@ const u8 u8_ARRAY_ARRAY_08dbd798[6][2] = {
 
 const u16 gSunLevelMaxLx[11] = {0, 5, 12, 22, 34, 49, 66, 86, 109, 139, 140};  // 0x08DBD7A4
 
-const u16 u16_ARRAY_08dbd7ba[11] = {0, 1, 6, 13, 23, 35, 50, 67, 87, 110, 140};  // 0x08DBD7BA
+const u16 gSunLevelMinLx[11] = {0, 1, 6, 13, 23, 35, 50, 67, 87, 110, 140};  // 0x08DBD7BA
 
 NAKED void FUN_08241650(void) { INCFUNC("asm/func/FUN_08241650.inc"); }
 
@@ -88,7 +88,8 @@ Sunlevel GetSunLevel(s32 lx) {
 // その太陽レベルに収まる lx の上限
 s32 GetSunLevelMaxLx(Sunlevel slv) { return gSunLevelMaxLx[slv]; }
 
-NAKED s32 FUN_082417dc(Sunlevel slv) { INCFUNC("asm/func/FUN_082417dc.inc"); }
+// その太陽レベルに収まる lx の下限
+s32 GetSunLevelMinLx(Sunlevel slv) { return gSunLevelMinLx[slv]; }
 
 NAKED s32 FUN_082417ec(s32 lx) { INCFUNC("asm/func/FUN_082417ec.inc"); }
 

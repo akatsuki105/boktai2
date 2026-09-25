@@ -44,7 +44,7 @@ _0824182C:
 	cmp r0, #1
 	bgt _0824187A
 	movs r0, #2
-	bl FUN_082417dc
+	bl GetSunLevelMinLx
 	b _08241878
 	.align 2, 0
 _08241850: .4byte 0x030047A4
