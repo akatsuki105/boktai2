@@ -16,7 +16,7 @@
 	cmp r0, #5
 	bne _08080858
 	adds r0, r4, #0
-	bl FUN_08080620
+	bl Entity08080be8_ClearParticles
 	ldr r0, [r4, #0x1c]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -45,7 +45,7 @@ _08080858:
 	cmp r0, #8
 	bne _08080870
 	adds r0, r4, #0
-	bl FUN_08080620
+	bl Entity08080be8_ClearParticles
 	adds r0, r4, #0
 	bl FUN_0808065c
 _08080868:

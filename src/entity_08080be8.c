@@ -40,7 +40,7 @@ typedef struct Entity08080be8 {
   u8 unk_cd;                          // 0x0CD, Init の第13引数。hitbox のオフセットを変え、0 以外なら damage が 8 固定になる
   u8 unk_ce[2];                       // 0x0CE
   ParticleGroup* group;               // 0x0D0, PTCL_GROUP_2
-  Entity08080be8Particle ptcls[4];    // 0x0D4, 根拠: FUN_08080af4 / FUN_08080620 / _Destroy の stride 0x30 × 4 のループ
+  Entity08080be8Particle ptcls[4];    // 0x0D4, 根拠: FUN_08080af4 / Entity08080be8_ClearParticles / _Destroy の stride 0x30 × 4 のループ
   Entity08080be8Func updateCallback;  // 0x194, _Update が毎フレーム呼ぶ状態関数
 } Entity08080be8;
 static_assert(sizeof(Entity08080be8) == 408);
@@ -59,7 +59,15 @@ NAKED void FUN_080803b4(Entity08080be8* p) { INCFUNC("asm/func/FUN_080803b4.inc"
 
 NAKED void FUN_080804a0(Entity08080be8* p) { INCFUNC("asm/func/FUN_080804a0.inc"); }
 
-NAKED void FUN_08080620(Entity08080be8* p) { INCFUNC("asm/func/FUN_08080620.inc"); }
+// 撒いた粒子を全部止めて消す
+void Entity08080be8_ClearParticles(Entity08080be8* p) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    p->ptcls[i].active = 0;
+    p->ptcls[i].base.flags |= SPRFLAG_HIDDEN;
+  }
+}
 
 void FUN_08080648(HitboxData* a, HitboxData* b, Entity08080be8* p) { Entity08080be8_SetState(p, FUN_0808094c); }
 
