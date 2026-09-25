@@ -12,16 +12,16 @@
 // スクリプトコマンド 0x2306 (HazardManager_SpawnScripted) が1個ずつ生成する
 typedef struct {
   u16 id;                        // 0x00, '.n', hitbox の id になる
-  s16 hp;                        // 0x02, '.l=100', Hazard_OnHit が HitboxData.damage の分だけ減らし 0 以下で破壊される
-  s32 areaId;                    // 0x04, '.m' が 0 以外のときだけ GetMapAreaAt(pos) の戻り値が入る。負なら生成を中止する。書くだけで読み手はいない
+  s16 hp;                        // 0x02, '.l=100', Cactus_OnHit が HitboxData.damage の分だけ減らし 0 以下で破壊される
+  s32 areaId;                    // 0x04, '.m' が 0 以外のときだけ GetMapAreaAt(pos) の戻り値が入る,負なら生成を中止する,書くだけで読み手はいない
   u16 scriptId;                  // 0x08, '.b', 破壊時に Script_ExecById へ渡してから 0 に戻す
-  u8 damageTimer;                // 0x0A, 被弾時に 10 がセットされ毎フレーム減る。0 でない間だけ hitbox.flags に HBFLAG_UNK_2 が立つ
+  u8 damageTimer;                // 0x0A, 被弾時に 10 がセットされ毎フレーム減る,0 でない間だけ hitbox.flags に HBFLAG_UNK_2 が立つ
   u8 unk_0b;                     // 0x0B, padding?
   s16 scriptArgs[4];             // 0x0C, '.a' の4要素, 破壊時の Script_ExecById の argv[4..7] になる
   Vec3 pos;                      // 0x14, HazardManager_Spawn の第1引数のコピー
   Vec3 min;                      // 0x1C, pos - (0xA4, 0x80, 0xA4)
   Vec3 max;                      // 0x24, pos + (0xA4, 0x80, 0xA4), プレイヤーが min..max に入ると CactusManager.hitbox が攻撃側として登録される
-  HitboxData hitbox;             // 0x2C, 被弾用 (flags 0x4001), fn は Hazard_OnHit で owner はこの Cactus
+  HitboxData hitbox;             // 0x2C, 被弾用 (flags 0x4001), fn は Cactus_OnHit で owner はこの Cactus
   MapTileOverride tileOverride;  // 0x7C, 足元のタイルの高さを +1 して通れなくする
   AuxSprite sprite;              // 0x8C
   AuxSpriteGfx gfx;              // 0xB8, SPRITE_CACTUS
@@ -47,8 +47,8 @@ void FUN_08234270(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 
 
 static inline bool32 Hitbox_HasWeakness(HitboxData* p, u32 mask) { return p->weakness & mask; }
 
-// 被弾時に呼ばれる。hp を削り、0 以下になったら破壊待ちにし、そうでなければ点滅させる
-void Hazard_OnHit(HitboxData* a, HitboxData* b, void* owner) {
+// 被弾時に呼ばれる,hp を削り、0 以下になったら破壊待ちにし、そうでなければ点滅させる
+void Cactus_OnHit(HitboxData* a, HitboxData* b, void* owner) {
   Cactus* p = owner;
 
   Hitbox_ApplyDamage(a, b);
@@ -214,7 +214,7 @@ CactusManager* HazardManager_Create(u32 _) {
   return p;
 }
 
-// 空いている list の添字を返す。空きがなければ -1
+// 空いている list の添字を返す,空きがなければ -1
 s32 HazardManager_FindFreeSlot(CactusManager* p) {
   s32 i;
 
@@ -226,7 +226,7 @@ s32 HazardManager_FindFreeSlot(CactusManager* p) {
   return -1;
 }
 
-// 空きスロットに Cactus を1個置く。当たり判定・地形の高さ・スプライトを用意して使用中にする
+// 空きスロットに Cactus を1個置く,当たり判定・地形の高さ・スプライトを用意して使用中にする
 NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, s32 requireArea, s32 scriptId, s32* args) {
 #ifdef NONMATCHING_C
   CactusManager* p = gCactusManager;
@@ -277,7 +277,7 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   Hitbox_Init(hitbox, hazard->id, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetPos(hitbox, hazardPos, 0);
   Hitbox_SetPowerAndAttributes(hitbox, 0, 0, 0);
-  Hitbox_SetHandler(hitbox, Hazard_OnHit, hazard);
+  Hitbox_SetHandler(hitbox, Cactus_OnHit, hazard);
   Hitbox_Register(hitbox);
   hazard->min.x = -0xA4;
   hazard->min.y = -0x80;
