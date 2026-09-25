@@ -2,6 +2,7 @@
 
 #include "file.h"
 #include "global.h"
+#include "interrupts.h"
 #include "player.h"
 
 // 0x030026B0 から 0x030026C4 までの6つ。以前は SolarSensorInterface という1つの構造体として書いていたが、
@@ -205,7 +206,21 @@ s32 SSEEmitter_Destroy(SSEEmitter* p) {
 
 NAKED void Sensor_DoEnableIO(void) { INCFUNC("asm/func/Sensor_DoEnableIO.inc"); }
 
-NAKED void Sensor_DoDisableIO(void) { INCFUNC("asm/func/Sensor_DoDisableIO.inc"); }
+// センサー用のタイマー3割り込みを止め、GPIO の読み出しを無効に戻す
+void Sensor_DoDisableIO(void) {
+  u16 ie;
+
+  REG_IME = 0;
+  ie = REG_IE;
+  REG_IE = 0;
+  REG_TM3CNT_H = 0;
+  REG_TM3CNT_L = 0;
+  gIntrTable[2] = IntrDummy;
+  GPIO_PORT_READ_ENABLE = 0;
+  ie &= ~INTR_FLAG_TIMER3;
+  REG_IE = ie;
+  REG_IME = 1;
+}
 
 NAKED void Sensor_Tick(void) { INCFUNC("asm/func/Sensor_Tick.inc"); }
 
