@@ -9,7 +9,7 @@
 typedef struct SunlightEntity {
   Entity e;                                        // 0x00, ENTITY_UNK_5
   u8 unk_18;                                       // 0x18, FUN_08241f28 が 1 を書く。読み手は見つかっていない
-  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む。FUN_08241cf4 / FUN_08241e40 が回し、FUN_08241690 / FUN_082416d4 / FUN_08241704 / FUN_0824172c が見る
+  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む。FUN_08241cf4 / FUN_08241e40 が回し、FUN_08241690 / FUN_082416d4 / SuspendSunlight / FUN_0824172c が見る
   u16 unk_1a;                                      // 0x1A, このモジュールは触らない
   s16 lx;                                          // 0x1C, 太陽光の強さ
   s16 sunGauge;                                    // 0x1E, lx を 10段階に分けたもの
@@ -28,7 +28,7 @@ IWRAM_DATA u32 u32_0300170c = 0;                    // 0x0300170C, EEPROM_BeginA
 
 COMMON_DATA u16 u16_03004864 = 0;
 COMMON_DATA ALIGNED(4) u16 u16_03004868 = 0;
-COMMON_DATA ALIGNED(4) u16 u16_0300486c = 0;
+COMMON_DATA ALIGNED(4) u16 gSunlightSuspended = 0;
 COMMON_DATA ALIGNED(4) u16 u16_03004870 = 0;
 COMMON_DATA ALIGNED(4) u16 u16_ARRAY_03004874[6] = {};
 
@@ -55,7 +55,15 @@ void FUN_082416c8(void) { u16_03004864 = 0; }
 
 NAKED bool32 FUN_082416d4(void) { INCFUNC("asm/func/FUN_082416d4.inc"); }
 
-NAKED void FUN_08241704(void) { INCFUNC("asm/func/FUN_08241704.inc"); }
+// 太陽光の更新を止める。センサーも切る
+void SuspendSunlight(void) {
+  if (gSunlightEntity != NULL) {
+    if (gSunlightEntity->state != 0) {
+      Sensor_Disable();
+    }
+    gSunlightSuspended = 1;
+  }
+}
 
 void FUN_0824172c(void) {
   if (gSunlightEntity != NULL) {
@@ -64,7 +72,7 @@ void FUN_0824172c(void) {
       gSunlightEntity->stateTimer = 0;
       Sensor_Enable();
     }
-    u16_0300486c = 0;
+    gSunlightSuspended = 0;
   }
 }
 
@@ -172,7 +180,7 @@ NAKED u32 FUN_08241da8(SunlightEntity* p) { INCFUNC("asm/func/FUN_08241da8.inc")
 NAKED void FUN_08241e40(SunlightEntity* p) { INCFUNC("asm/func/FUN_08241e40.inc"); }
 
 s32 SunlightEntity_Update(SunlightEntity* p) {
-  if (u16_0300486c == 0) {
+  if (gSunlightSuspended == 0) {
     p->updateCallback(p);
   }
   return 0;

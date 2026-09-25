@@ -4,7 +4,7 @@
 	adds r6, r2, #0
 	ldr r0, _081D9CE0 @ =0x03002C64
 	str r4, [r0]
-	bl FUN_08241704
+	bl SuspendSunlight
 	ldr r1, _081D9CE4 @ =0x0300481C
 	movs r0, #1
 	str r0, [r1]

@@ -51,7 +51,7 @@ void CopyMemory(u8* dst, u8* src, s32 bytesize);
 extern const s16 gSineTable[320];
 s32 ArcTan2_8(s32 x, s32 y);
 
-void FUN_08241704(void);
+void SuspendSunlight(void);
 void FUN_0824172c(void);
 
 #endif  // GUARD_ZOKTAI_GLOBAL_H

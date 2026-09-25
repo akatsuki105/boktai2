@@ -292,7 +292,7 @@ bool32 FUN_0823e650(void) {
   s32 i;
   u16 ie;
 
-  FUN_08241704();
+  SuspendSunlight();
   for (i = 0; i < 5; i++) {
     REG_IME = 0;
     ie = REG_IE;

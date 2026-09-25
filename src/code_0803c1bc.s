@@ -1924,7 +1924,7 @@ _0804B8C8:
 FUN_0804b8d0: @ 0x0804B8D0
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_08241704
+	bl SuspendSunlight
 	ldr r0, _0804B920 @ =0x03002B54
 	ldr r0, [r0]
 	cmp r0, #0
@@ -1995,7 +1995,7 @@ FUN_0804b950: @ 0x0804B950
 	str r0, [r1]
 	ldr r0, _0804B994 @ =0x030000D8
 	str r4, [r0]
-	bl FUN_08241704
+	bl SuspendSunlight
 	movs r0, #0x6d
 	bl VM_SeekToKeyword
 	cmp r0, #0
@@ -7446,7 +7446,7 @@ _0804E160: .4byte 0x085AB5E0
 FUN_0804e164: @ 0x0804E164
 	push {r4, r5, lr}
 	adds r5, r0, #0
-	bl FUN_08241704
+	bl SuspendSunlight
 	ldr r0, _0804E18C @ =0x030000E0
 	adds r1, r5, #0
 	adds r1, #0x33
@@ -7629,7 +7629,7 @@ FUN_0804e2c0: @ 0x0804E2C0
 	.align 2, 0
 _0804E2D0: .4byte 0x03002B58
 _0804E2D4:
-	bl FUN_08241704
+	bl SuspendSunlight
 	movs r4, #0xe3
 	lsls r4, r4, #2
 	adds r0, r4, #0
