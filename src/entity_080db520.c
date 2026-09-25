@@ -24,4 +24,46 @@ static_assert(sizeof(Entity080db520) == 1372);
 
 extern Entity080db520* gEntity080db520;  // 0x03000160
 
-INCASM("asm/entity_080db520.inc");
+NAKED s32 FUN_080da9c4(Entity080db520* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080da9c4.inc"); }
+
+NAKED void FUN_080dab9c(Entity080db520* p) { INCFUNC("asm/func/FUN_080dab9c.inc"); }
+
+NAKED void FUN_080dabe4(Entity080db520* p) { INCFUNC("asm/func/FUN_080dabe4.inc"); }
+
+NAKED void FUN_080dac20(void) { INCFUNC("asm/func/FUN_080dac20.inc"); }
+
+NAKED void FUN_080dac24(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080dac24.inc"); }
+
+NAKED void FUN_080dacac(Entity080db520* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080dacac.inc"); }
+
+NAKED void FUN_080dacc4(Entity080db520* p) { INCFUNC("asm/func/FUN_080dacc4.inc"); }
+
+NAKED s32 FUN_080dad4c(Entity080db520* p) { INCFUNC("asm/func/FUN_080dad4c.inc"); }
+
+NAKED s32 FUN_080dad94(Entity080db520* p) { INCFUNC("asm/func/FUN_080dad94.inc"); }
+
+NAKED void FUN_080dadec(Entity080db520* p) { INCFUNC("asm/func/FUN_080dadec.inc"); }
+
+NAKED void FUN_080dae60(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080dae60.inc"); }
+
+NAKED void FUN_080db040(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080db040.inc"); }
+
+NAKED void FUN_080db0f8(Entity080db520* p) { INCFUNC("asm/func/FUN_080db0f8.inc"); }
+
+NAKED void FUN_080db260(Entity080db520* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080db260.inc"); }
+
+NAKED s32 FUN_080db290(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080db290.inc"); }
+
+NAKED s32 Entity080db520_Update(Entity080db520* p) { INCFUNC("asm/func/Entity080db520_Update.inc"); }
+
+NAKED s32 Entity080db520_Destroy(Entity080db520* p) { INCFUNC("asm/func/Entity080db520_Destroy.inc"); }
+
+NAKED s32 Entity080db520_Init(Entity080db520* p) { INCFUNC("asm/func/Entity080db520_Init.inc"); }
+
+NAKED s32 Entity080db520_Create(void) { INCFUNC("asm/func/Entity080db520_Create.inc"); }
+
+NAKED void FUN_080db56c(void) { INCFUNC("asm/func/FUN_080db56c.inc"); }
+
+NAKED void FUN_080db578(void) { INCFUNC("asm/func/FUN_080db578.inc"); }
+
+NAKED void FUN_080db780(void) { INCFUNC("asm/func/FUN_080db780.inc"); }
