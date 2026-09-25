@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "vm.h"
 
 // スクリプトのキーワード 'm' が並べるマップエリアの一覧を持つだけのエンティティ
 typedef struct {
@@ -21,7 +22,18 @@ s32 MapAreaManager_Destroy(MapAreaManager* p) {
   return 0;
 }
 
-NAKED s32 MapAreaManager_Init(MapAreaManager* p, u32 unused1, void* unused2) { INCFUNC("asm/func/MapAreaManager_Init.inc"); }
+// スクリプトのキーワード 'm' が並べるエリアIDを areas に詰める。要素数の上限は見ていない
+s32 MapAreaManager_Init(MapAreaManager* p, u32 unused1, void* unused2) {
+  if (VM_SeekToKeyword('m')) {
+    s32* area = p->areas;
+
+    while (VM_GetPC() != NULL) {
+      *area++ = Script_GetValue();
+    }
+  }
+  gMapAreaManager = p;
+  return 0;
+}
 
 MapAreaManager* MapAreaManager_Create(u32 unused1, void* unused2) {
   MapAreaManager* p = CreateEntity(ENTITY_UNK_4, sizeof(MapAreaManager));
