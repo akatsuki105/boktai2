@@ -1,7 +1,6 @@
 #include "entity.h"
 #include "hitbox.h"
 
-struct Entity080de11c;
 #include "global.h"
 
 // 持ち主のいない単発の攻撃判定。AttackBoxManager が5個を貸し出す
@@ -62,8 +61,3 @@ NAKED AttackBoxManager* AttackBoxManager_Create(void) { INCFUNC("asm/func/Attack
 
 NAKED void FUN_080ddb1c(void) { INCFUNC("asm/func/FUN_080ddb1c.inc"); }
 
-NAKED s32 Entity080de11c_Update(struct Entity080de11c* p) { INCFUNC("asm/func/Entity080de11c_Update.inc"); }
-
-NAKED s32 Entity080de11c_Destroy(struct Entity080de11c* p) { INCFUNC("asm/func/Entity080de11c_Destroy.inc"); }
-
-NAKED s32 FUN_080ddcc8(unknown* p, u8 param_2, unknown* param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_080ddcc8.inc"); }
