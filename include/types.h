@@ -39,6 +39,10 @@ typedef void unknown;  // まだ型が不明なときは unknown* で一応 void
 
 typedef s32 Sunlevel;  // 0..10, (digital) sunlight level
 
+// 2^8 での符号付き除算。/ 256 と結果は同じだが、原典はこの形 (符号を見て shift) を使っている。
+// アイソメトリック投影の計算に繰り返し現れる
+static inline s32 Div256(s32 v) { return v >= 0 ? (v >> 8) : -((-v) >> 8); }
+
 typedef struct {
   s8_8 x;
   s8_8 y;  // 高さ

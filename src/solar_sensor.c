@@ -1,5 +1,6 @@
 #include "solar_sensor.h"
 
+#include "camera.h"
 #include "file.h"
 #include "global.h"
 #include "interrupts.h"
@@ -7,6 +8,20 @@
 
 s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
 void Sensor_Tick(void);
+
+// ワールド座標を画面座標に落とす (アイソメトリック投影)
+static inline void WorldToScreen(Vec3* screen, Vec3* world) {
+  s32 x = world->x >> 1;
+  s32 z = world->z >> 1;
+  s32 a, b;
+
+  screen->x = Div256((x - z) * 48);
+  a = Div256((x + z) * 48);
+  b = Div256(world->y * 24);
+  screen->x = screen->x - gCameraVpCoords.x + 120;
+  screen->y = (a - b) - gCameraVpCoords.y + 90;
+  screen->z = (a + b) - gCameraVpCoords.z;
+}
 
 // 0x030026B0 から 0x030026C4 までの6つ。以前は SolarSensorInterface という1つの構造体として書いていたが、
 // Sensor_GetState が =0x030026B4 を直接読む (構造体なら =gSSI + [r0,#4] になる) ので、原典では個別のグローバルだった
@@ -167,7 +182,27 @@ void (*const PTR_ARRAY_08dbd818[3])(SolarSensorEntity*, SSEEmitter*, SSEEmitterP
     FUN_08246afc,
 };  // 0x08DBD818
 
-NAKED void FUN_082470a8(SolarSensorEntity* p, SSEEmitter* e) { INCFUNC("asm/func/FUN_082470a8.inc"); }
+// kind 1 の更新。エミッタの座標を画面座標に落として、生きている枠の粒子をそこにぶら下げる
+NON_MATCH void FUN_082470a8(SolarSensorEntity* p, SSEEmitter* e) {
+#ifdef NONMATCHING_C
+  SSEEmitterParticle* q;
+  Vec3 screen;
+  s32 i;
+
+  WorldToScreen(&screen, e->pos);
+  for (i = 0, q = e->ptcls; i < 4; i++, q++) {
+    PTR_ARRAY_08dbd818[q->unk_0](p, e, q);
+    if (e->ptcls[i].unk_0 != 0) {
+      e->ptcls[i].ptcl.pos.x = screen.x + e->ptcls[i].pos.x;
+      e->ptcls[i].ptcl.pos.y = screen.y + e->ptcls[i].pos.y;
+      e->ptcls[i].ptcl.pos.z = screen.z + e->ptcls[i].pos.z;
+      e->ptcls[i].unk_2++;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_082470a8.inc");
+#endif
+}
 
 void (*const PTR_ARRAY_08dbd824[3])(SolarSensorEntity*, SSEEmitter*, SSEEmitterParticle*) = {
     FUN_08246c10,

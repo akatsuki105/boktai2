@@ -171,6 +171,12 @@ for (i = 0; i < N; i++) {          for (i = 0; i < N; i++) {
 - **The "prefer the natural form" advice has an exception: position.** In `AuxSprite_Add` the target computes the 0/1 value *before* two unrelated stores and only then sets up the call (`movs`/`ands`/`rsbs`/`lsrs`, `str`, `str`, `bl`). Written naturally as a call argument (`f(p, (flags & mask) != 0)`) the trick is emitted correctly but stays anchored at the call, after the stores; assigning it to a local first (`idx = (flags & mask) != 0;`) moves it early but switches agbcc to a *branch-based* setcc (`cmp`/`beq`/`movs #1`, one insn longer). Hand-rolling the trick into the assignment — `idx = (u32)(0 - (flags & mask)) >> 31;` — is the only form that is both early and branchless, and it matched. So: use the natural form when the trick lands where you need it, and hand-roll only when the target evaluates it earlier than the call site would.
 - Two-operand `a != b` (both `s32`) generalizes the same trick via XOR first: `return a != b;` compiles as if written `return ((u32)(-(a ^ b) | (a ^ b))) >> 31;` — i.e. agbcc reduces `a != b` to `(a^b) != 0` then applies the same negate/OR/shift sequence.
 
+### `/ 256` on a signed value is a 3-instruction bias, not the 6-instruction abs form
+
+- **Frequency**: `FUN_082470a8` (投影), and the same block in `Camera_Translate`, `Camera_Init`, `FUN_0823bac8`, `FUN_0823b8ac`, `MapItemManager_Init` — all still NON_MATCH on this.
+- `v / 256` compiles to `cmp #0` / `bge` / `add #0xff` / `asr #8`. The target's `cmp #0` / `blt` / `asr #8` / `b` / `rsb` / `asr #8` / `rsb` is the same value computed a different way, and agbcc only emits it for the ternary spelled out: `v >= 0 ? (v >> 8) : -((-v) >> 8)`. Writing `v < 0 ? -((-v) >> 8) : (v >> 8)` puts the negate arm first, so the operand order still matters.
+- The project has this as `Div256` in `include/types.h`. The isometric projection uses it three times per call, so a function doing the projection is 9 instructions short without it.
+
 ### A range test becomes `(unsigned)(x - lo) <= hi - lo`
 
 - **Frequency**: `GameOverManager_StateWaitFlag`, `IsSpecialWeapon`, `CountFoundArmors`.
