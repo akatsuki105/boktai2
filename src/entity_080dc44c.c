@@ -44,7 +44,10 @@ NAKED s32 Entity080dc44c_Destroy(Entity080dc44c* p) { INCFUNC("asm/func/Entity08
 
 NAKED void FUN_080dc418(Entity080dc44c* p) { INCFUNC("asm/func/FUN_080dc418.inc"); }
 
-NAKED s32 Entity080dc44c_Init(Entity080dc44c* p) { INCFUNC("asm/func/Entity080dc44c_Init.inc"); }
+s32 Entity080dc44c_Init(Entity080dc44c* p) {
+  FUN_080dc418(p);
+  return 0;
+}
 
 NAKED Entity080dc44c* Entity080dc44c_Create(void) { INCFUNC("asm/func/Entity080dc44c_Create.inc"); }
 
