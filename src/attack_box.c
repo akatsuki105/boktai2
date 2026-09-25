@@ -11,7 +11,7 @@ typedef struct {
   u8 unk_5a[2];       // 0x5A
   u8 kind;            // 0x5C, SpawnAttackBox の第2引数。FUN_080dd93c は 2 を入れる
   u8 state;           // 0x5D, PTR_ARRAY_085AD348 の添字。0: 空き, 1: 判定中, 2: 解放
-  u8 slot;            // 0x5E, 自分の添字。Alloc が書き、解放時に activeMask の該当ビットを落として 0xFF にする
+  s8 slot;            // 0x5E, 自分の添字。Alloc が書き、解放時に activeMask の該当ビットを落として 0xFF にする
   u8 unk_5f;          // 0x5F
   u32 unk_60;         // 0x60, SpawnAttackBox の第3引数。0 かどうかで Hitbox_SetAttack の flags が変わる
 } AttackBox;
@@ -42,7 +42,13 @@ void AttackBox_Idle(AttackBoxManager* p, AttackBox* box) {}
 
 NAKED void AttackBox_Update(AttackBoxManager* p, AttackBox* box) { INCFUNC("asm/func/AttackBox_Update.inc"); }
 
-NAKED void AttackBox_Free(AttackBoxManager* p, AttackBox* box) { INCFUNC("asm/func/AttackBox_Free.inc"); }
+// 枠を返却する。activeMask のビットを落として中身を消す
+void AttackBox_Free(AttackBoxManager* p, AttackBox* box) {
+  box->state = 0;
+  p->activeMask &= ~(1 << box->slot);
+  box->slot = 0xFF;
+  ClearMemory(box, sizeof(AttackBox));
+}
 
 NAKED AttackBox* AttackBoxManager_Alloc(AttackBoxManager* p) { INCFUNC("asm/func/AttackBoxManager_Alloc.inc"); }
 
