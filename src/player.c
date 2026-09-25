@@ -392,7 +392,14 @@ u32 Player_WeaponEffectAntiBeast(Player* p, HitboxData* a, HitboxData* b) {
   return 0;
 }
 
-NAKED u32 Player_WeaponEffectAntiThing(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiThing.inc"); }
+u32 Player_WeaponEffectAntiThing(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0100;
+
+  if (b->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
 
 NAKED u32 Player_WeaponEffectAntiPhantom(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiPhantom.inc"); }
 
