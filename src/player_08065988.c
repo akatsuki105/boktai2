@@ -808,7 +808,7 @@ NAKED void FUN_0807dcec(Player* p) { INCFUNC("asm/func/FUN_0807dcec.inc"); }
 
 NAKED void FUN_0807ddbc(Player* p) { INCFUNC("asm/func/FUN_0807ddbc.inc"); }
 
-NAKED void FUN_0807ddd4(Player* p) { INCFUNC("asm/func/FUN_0807ddd4.inc"); }
+void FUN_0807ddd4(Player* p) { EntityMsgBus_Unregister(&p->msgbox); }
 
 NAKED void Player_Update_Helper_0807dde4(Player* p) { INCFUNC("asm/func/Player_Update_Helper_0807dde4.inc"); }
 
