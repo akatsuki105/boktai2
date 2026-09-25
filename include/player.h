@@ -6,6 +6,7 @@
 #include "entity.h"
 #include "gba/gba.h"
 #include "hitbox.h"
+#include "msgbus.h"
 #include "particle.h"
 #include "sprite.h"
 #include "struct.h"
@@ -116,7 +117,8 @@ typedef struct Player {
   u8 unk_e8[0x16C - 0xE8];
   HitboxData unk_16c;  // 0x16C
   u8 unk_1bc;          // 0x1BC, Entity2UnkData.unk_18 が &Player.unk_1bc
-  u8 unk_1bd[167];
+  u8 unk_1bd[0x230 - 0x1BD];
+  EntityMsgBox msgbox;  // 0x230, FUN_0807ddd4 が EntityMsgBus_Unregister に渡す
   PlayerArmor armor;  // 0x264
   u16 unk_278;
   s16 unk_27a;
@@ -201,7 +203,9 @@ typedef struct Player {
   u8 unk_94e;      // 0x94E, FUN_08062688
   u8 unk_94f;      // 0x94F
   u8 unk_950;      // 0x950, FUN_08063084
-  u8 unk_951[0x9bc - 0x951];
+  u8 unk_951[0x96C - 0x951];
+  u16 unk_96c;  // 0x96C, FUN_0807b8c0 が 0 を書く
+  u8 unk_96e[0x9BC - 0x96E];
   u16 unk_9bc;  // 0x9BC
   u16 pad_9be;
   s32 scriptID_9c0;  // 0x9C0
