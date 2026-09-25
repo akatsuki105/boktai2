@@ -33,7 +33,7 @@
 	bl FUN_08080204
 	adds r0, r7, #0
 	ldr r1, [sp, #0x2c]
-	bl FUN_08080af4
+	bl Entity08080be8_SetupParticles
 	ldr r0, [r7, #0x18]
 	movs r3, #0xd6
 	lsls r3, r3, #2
