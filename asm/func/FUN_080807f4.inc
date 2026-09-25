@@ -34,13 +34,13 @@
 	strh r0, [r1, #0x3c]
 	adds r0, r4, #0
 	bl Entity08080be8_PayENE
-	ldr r1, _08080854 @ =FUN_080808cc
+	ldr r1, _08080854 @ =Entity08080be8_StateFly
 	adds r0, r4, #0
 	bl Entity08080be8_SetState
 	b _080808C0
 	.align 2, 0
 _08080850: .4byte 0x0000037D
-_08080854: .4byte FUN_080808cc
+_08080854: .4byte Entity08080be8_StateFly
 _08080858:
 	cmp r0, #8
 	bne _08080870

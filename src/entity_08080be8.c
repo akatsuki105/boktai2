@@ -54,6 +54,9 @@ s32 FUN_0806f900(Player* player);
 s32 FUN_080d1b04(Player* player);
 void Player_ReduceENE_0807aa60(Player* player, s32 amount);
 
+// src/code_082326a0.c
+u16 FUN_082328ec(Vec3* pos);
+
 // 状態関数を差し替えて経過フレームを 0 に戻す
 void Entity08080be8_SetState(Entity08080be8* p, Entity08080be8Func fn) {
   p->updateCallback = fn;
@@ -109,7 +112,29 @@ NAKED void FUN_080806ec(Entity08080be8* p) { INCFUNC("asm/func/FUN_080806ec.inc"
 
 NAKED void FUN_080807f4(Entity08080be8* p) { INCFUNC("asm/func/FUN_080807f4.inc"); }
 
-NAKED void FUN_080808cc(Entity08080be8* p) { INCFUNC("asm/func/FUN_080808cc.inc"); }
+// 前へ進めながら当たり判定を出し、地面より下に潜ったら次の状態へ
+void Entity08080be8_StateFly(Entity08080be8* p) {
+  HitboxData* hitbox;
+  Vec3* pos;
+  u16 groundY;
+
+  p->sprite.pos.x += p->offset.x;
+  p->sprite.pos.z += p->offset.z;
+  hitbox = &p->hitbox;
+  pos = &p->sprite.pos;
+  Hitbox_SetPos(hitbox, pos, 0);
+  Hitbox_Register(hitbox);
+  Player_SetFlag20(p->player, 0x80002);
+  groundY = FUN_082328ec(pos);
+  if (groundY > p->sprite.pos.y) {
+    Entity08080be8_SetState(p, FUN_0808094c);
+  } else {
+    p->timer++;
+    if (p->timer > 59) {
+      KillEntity(&p->e);
+    }
+  }
+}
 
 NAKED void FUN_0808094c(Entity08080be8* p) { INCFUNC("asm/func/FUN_0808094c.inc"); }
 

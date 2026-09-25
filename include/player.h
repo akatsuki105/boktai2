@@ -233,4 +233,6 @@ extern const PlayerFunc gPlayerAttackUpdates[5];  // 0: 剣, 1: 槍, 2: ハン�
 
 Player* CreatePlayer(u32 n, void* _);
 
+static inline void Player_SetFlag20(Player* p, u32 bit) { p->unk_20 |= bit; }
+
 #endif  // GUARD_ZOKTAI_PLAYER_H

@@ -37,13 +37,13 @@ _08080706:
 	strh r0, [r1, #0x3c]
 	adds r0, r4, #0
 	bl Entity08080be8_PayENE
-	ldr r1, _08080750 @ =FUN_080808cc
+	ldr r1, _08080750 @ =Entity08080be8_StateFly
 	adds r0, r4, #0
 	bl Entity08080be8_SetState
 	b _080807EE
 	.align 2, 0
 _0808074C: .4byte 0x0000037D
-_08080750: .4byte FUN_080808cc
+_08080750: .4byte Entity08080be8_StateFly
 _08080754:
 	adds r0, r4, #0
 	bl FUN_080803b4
