@@ -25,7 +25,7 @@ typedef struct {
 } DarkDjangoEffectParticle;
 static_assert(sizeof(DarkDjangoEffectParticle) == 60);
 
-// ダーク・ジャンゴへの変身エフェクト。プレイヤーの HP を半分まで削りながら粒子を旋回させる
+// 黒ジャンゴへの変身エフェクト。プレイヤーの HP を半分まで削りながら粒子を旋回させる
 typedef struct DarkDjangoEffect {
   Entity e;                             // 0x000, ENTITY_UNK_11
   Player* player;                       // 0x018, Init の第1引数
