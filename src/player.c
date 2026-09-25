@@ -420,7 +420,14 @@ u32 Player_WeaponEffectCloud(Player* p, HitboxData* a, HitboxData* b) {
   return 0;
 }
 
-NAKED u32 Player_WeaponEffectEarth(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectEarth.inc"); }
+u32 Player_WeaponEffectEarth(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0020;
+
+  if (a->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
 
 // 一定確率で防御無視(なまくら系の特殊効果)
 u32 CheckNamakuraProc(void) {
