@@ -106,7 +106,7 @@ NAKED void FUN_08234cf8(u16 param_1, u16* param_2) { INCFUNC("asm/func/FUN_08234
 
 NAKED void FUN_08234d24(u16 param_1, u16* param_2) { INCFUNC("asm/func/FUN_08234d24.inc"); }
 
-NAKED void FUN_08234d50(u16 param_1, Vec3* pos) { INCFUNC("asm/func/FUN_08234d50.inc"); }
+NAKED bool8 FUN_08234d50(u16 areaFileId, Vec3* pos) { INCFUNC("asm/func/FUN_08234d50.inc"); }
 
 NAKED s32 FUN_08234db8(FileID id) { INCFUNC("asm/func/FUN_08234db8.inc"); }
 

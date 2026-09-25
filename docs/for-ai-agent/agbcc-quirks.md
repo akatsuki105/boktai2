@@ -373,13 +373,14 @@ Which side to pick, once the asm has told you what is wrong:
 
 ### agbcc does not rotate loops: a guard plus `do/while` is a different shape from `while`
 
-- **Frequency**: `FUN_080ed068`.
+- **Frequency**: `FUN_080ed068`, `GetMapAreaAt`.
 - `while (p != NULL) { ... }` and `for (node = head; (p = node->enemy) != NULL; node = node->next)`
   both compile to a `b` into the test at the bottom — the test is never peeled.
   When the target instead evaluates the condition once before the loop
   (`ldr` / `cmp` / `beq end`) and ends with `bne` back to the top, the source was
   an explicit guard around a `do/while`:
   `p = node->enemy; if (p != NULL) { do { ... } while (p != NULL); }`.
+- A `break` as the **first** statement of the body is the one thing that does get rotated: `for (i = 0; i < 16; i++) { if (arr[i] <= 0) break; ... }` peels that test into the preheader and duplicates it in the latch, costing 1-2 instructions. Writing the same exit as `return` instead leaves the test at the top of the body, where the target has it (`GetMapAreaAt`); the two `return -1`s cross-jump into one, so nothing is duplicated. With the `break` in place, an explicit walker looked necessary to get the `adds r4, #4` — once it was a `return`, plain `arr[i]` produced the walker and the counter on its own.
 - This also decides where a loop-invariant constant lands. Inside the guard,
   `flag = 0x1000;` is emitted between the `beq` and the loop head, which is
   where the target has it; initialising it at the declaration hoists it to

@@ -9,10 +9,29 @@ typedef struct {
 } MapAreaManager;
 static_assert(sizeof(MapAreaManager) == 88);
 
+bool8 FUN_08234d50(u16 areaFileId, Vec3* pos);
+
 IWRAM_DATA MapAreaManager* gMapAreaManager = NULL;  // 0x03001704
 COMMON_DATA u32 u32_03004860 = 0;                   // 0x03004860
 
-NAKED s32 GetMapAreaAt(Vec3* pos) { INCFUNC("asm/func/GetMapAreaAt.inc"); }
+// pos がどのマップエリアの矩形群に入っているかを調べ、そのエリアIDを返す
+s32 GetMapAreaAt(Vec3* pos) {
+  MapAreaManager* p = gMapAreaManager;
+  s32 i;
+
+  if (p == NULL) {
+    return -1;
+  }
+  for (i = 0; i < 16; i++) {
+    if (p->areas[i] <= 0) {
+      return -1;
+    }
+    if (FUN_08234d50(p->areas[i], pos)) {
+      return p->areas[i];
+    }
+  }
+  return -1;
+}
 
 s32 MapAreaManager_Update(MapAreaManager* p) { return 0; }
 
