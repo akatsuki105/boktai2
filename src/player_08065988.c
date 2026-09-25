@@ -739,7 +739,12 @@ NAKED void FUN_0807cec4(Player* p) { INCFUNC("asm/func/FUN_0807cec4.inc"); }
 
 NAKED void FUN_0807d118(Player* p) { INCFUNC("asm/func/FUN_0807d118.inc"); }
 
-NAKED s32 FUN_0807d164(Player* p) { INCFUNC("asm/func/FUN_0807d164.inc"); }
+s32 FUN_0807d164(void) {
+  if (VM_SeekToKeyword('d')) {
+    return Script_GetValue();
+  }
+  return -1;
+}
 
 u32 FUN_0807d180(void) {
   if (VM_SeekToKeyword('e')) {
