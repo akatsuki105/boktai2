@@ -62,7 +62,7 @@ NAKED s32 Entity080db520_Init(Entity080db520* p) { INCFUNC("asm/func/Entity080db
 
 NAKED s32 Entity080db520_Create(void) { INCFUNC("asm/func/Entity080db520_Create.inc"); }
 
-NAKED void FUN_080db56c(void) { INCFUNC("asm/func/FUN_080db56c.inc"); }
+void FUN_080db56c(void) { gEntity080db520 = NULL; }
 
 NAKED void FUN_080db578(void) { INCFUNC("asm/func/FUN_080db578.inc"); }
 
