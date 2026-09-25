@@ -1,5 +1,6 @@
 #include "solar_sensor.h"
 
+#include "file.h"
 #include "global.h"
 #include "player.h"
 
@@ -39,11 +40,11 @@ s32 SSEEmitter_Register(SolarSensorEntity* e, SSEEmitter* p) {
     return -1;
   }
   p->prev = NULL;
-  p->next = e->unk_20;
+  p->next = e->emitters;
   if (p->next != NULL) {
     p->next->prev = p;
   }
-  e->unk_20 = p;
+  e->emitters = p;
   p->isRegistered = 1;
   return 0;
 }
@@ -59,7 +60,7 @@ s32 SSEEmitter_Unregister(SolarSensorEntity* e, SSEEmitter* p) {
   if (prev != NULL) {
     prev->next = next;
   } else {
-    e->unk_20 = next;
+    e->emitters = next;
   }
   if (next != NULL) {
     next->prev = prev;
@@ -127,7 +128,7 @@ void (*const PTR_ARRAY_08dbd830[3])(SolarSensorEntity*, SSEEmitter*, SSEEmitterP
 NAKED void FUN_08247280(SolarSensorEntity* p, SSEEmitter* e) { INCFUNC("asm/func/FUN_08247280.inc"); }
 
 s32 SSE_Update(SolarSensorEntity* p) {
-  SSEEmitter* e = p->unk_20;
+  SSEEmitter* e = p->emitters;
 
   while (e != NULL) {
     e->fn_12c(p, e);
@@ -141,7 +142,13 @@ s32 SSE_Destroy(SolarSensorEntity* _) {
   return 0;
 }
 
-NAKED s32 SSE_Init(SolarSensorEntity* p, u32 _) { INCFUNC("asm/func/SSE_Init.inc"); }
+s32 SSE_Init(SolarSensorEntity* p, u32 _) {
+  gSensorEntity = p;
+  p->emitters = NULL;
+  p->group = GetParticleGroup(PTCL_GROUP_0);
+  p->anim = GetFile(DIR_ANIMATION, 0xD1B8);
+  return 0;
+}
 
 NAKED SolarSensorEntity* SSE_Create(u32 _) { INCFUNC("asm/func/SSE_Create.inc"); }
 

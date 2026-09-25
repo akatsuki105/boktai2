@@ -35,16 +35,16 @@ typedef struct SSEEmitter {
   Vec3* pos;                                                      // 0x008, 追いかけるワールド座標。FUN_0824742c の第2引数 (Generator は &sprite.pos を渡す)
   SSEEmitterParticle ptcls[4];                                    // 0x00C
   void (*fn_12c)(struct SolarSensorEntity*, struct SSEEmitter*);  // 0x12C, SSE_Update(0x0824736c) で実行
-  struct SSEEmitter* prev;                                        // 0x130, SolarSensorEntity.unk_20 を先頭とする双方向リスト
+  struct SSEEmitter* prev;                                        // 0x130, SolarSensorEntity.emitters を先頭とする双方向リスト
   struct SSEEmitter* next;                                        // 0x134
 } SSEEmitter;
 static_assert(sizeof(SSEEmitter) == 312);
 
 typedef struct SolarSensorEntity {
-  Entity e;            // 0x00
-  u32 unk_18;          // 0x18
-  void* anim;          // 0x1C
-  SSEEmitter* unk_20;  // 0x20
+  Entity e;              // 0x00
+  ParticleGroup* group;  // 0x18, SSE_Init が GetParticleGroup(PTCL_GROUP_0) を入れる。エミッタの粒子はここから取る
+  AuxAnimFile* anim;     // 0x1C, SSE_Init が GetFile(DIR_ANIMATION, 0xD1B8) を入れる
+  SSEEmitter* emitters;  // 0x20, 登録されているエミッタの双方向リストの先頭
 } SolarSensorEntity;
 static_assert(sizeof(SolarSensorEntity) == 36);
 
