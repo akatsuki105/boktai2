@@ -104,7 +104,7 @@ SECTIONS {
       src/lib/m4a.o(.bss.code);
       src/map_pltt_4ae5.o(COMMON);
       src/entity_6978.o(COMMON);
-      src/entity_aa65.o(COMMON);
+      src/cactus.o(COMMON);
       src/entity_c9bc.o(COMMON);
       src/entity_0800f110.o(COMMON);
       src/shadow_08013df0.o(COMMON);
@@ -151,7 +151,7 @@ SECTIONS {
 			src/entity_0866.o (.text);
 			src/spirit_bugs.o (.text);
 			src/solar_bamboo.o (.text);
-			src/entity_aa65.o (.text);
+			src/cactus.o (.text);
 			src/entity_c9bc.o (.text);
 			src/entity_55c2.o (.text);
 			src/entity_0800f110.o (.text);
