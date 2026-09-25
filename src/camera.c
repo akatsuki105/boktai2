@@ -128,6 +128,10 @@ void FUN_0823b9cc(s32 n) {
   }
 }
 
+// 2^8 での符号付き除算。/ 256 と結果は同じだが、原典はこの形 (符号を見て shift) を使っている。
+// アイソメトリック投影の計算に繰り返し現れる
+static inline s32 Div256(s32 v) { return v >= 0 ? (v >> 8) : -((-v) >> 8); }
+
 // ワールド座標をアイソメトリック投影して視点座標にする
 static inline void WorldToVp(Vec3* vp, Vec3* world) {
   s32 hx = world->x >> 1;

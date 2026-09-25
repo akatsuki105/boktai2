@@ -178,9 +178,9 @@ NON_MATCH void FUN_082470a8(SolarSensorEntity* p, SSEEmitter* e) {
 
   x = e->pos->x >> 1;
   z = e->pos->z >> 1;
-  screen.x = Div256((x - z) * 48);
-  a = Div256((x + z) * 48);
-  b = Div256(e->pos->y * 24);
+  screen.x = ((x - z) * 48) / 256;
+  a = ((x + z) * 48) / 256;
+  b = (e->pos->y * 24) / 256;
   screen.x = screen.x - gCameraVpCoords.x + 120;
   screen.y = (a - b) - gCameraVpCoords.y + 90;
   screen.z = (a + b) - gCameraVpCoords.z;
