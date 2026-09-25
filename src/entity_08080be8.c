@@ -28,7 +28,7 @@ typedef struct Entity08080be8 {
   AuxSprite sprite;                   // 0x01C
   AuxSpriteGfx gfx;                   // 0x048, SPRITE_210E
   HitboxData hitbox;                  // 0x064, FUN_08080a44 が組み立て、位置は sprite.pos を見る
-  Vec3 offset;                        // 0x0B4, FUN_08080204 が offsetRadius から x と z を作り、FUN_0808094c が sprite.pos に足す
+  Vec3 offset;                        // 0x0B4, FUN_08080204 が offsetRadius から x と z を作り、Entity08080be8_StateImpact が sprite.pos に足す
   u16 heightOffset;                   // 0x0BC, Init の第3引数。FUN_08080204 が sprite.pos.y に足す
   u16 unk_be;                         // 0x0BE, Init の第4引数。FUN_08080204 で gSineTable に掛ける
   u16 unk_c0;                         // 0x0C0, Init の第5引数。unk_be と対で使う
@@ -47,7 +47,7 @@ typedef struct Entity08080be8 {
 } Entity08080be8;
 static_assert(sizeof(Entity08080be8) == 408);
 
-void FUN_0808094c(Entity08080be8* p);
+void Entity08080be8_StateImpact(Entity08080be8* p);
 
 // src/player.c
 s32 FUN_0806f900(Player* player);
@@ -79,7 +79,7 @@ void Entity08080be8_ClearParticles(Entity08080be8* p) {
   }
 }
 
-void FUN_08080648(HitboxData* a, HitboxData* b, Entity08080be8* p) { Entity08080be8_SetState(p, FUN_0808094c); }
+void FUN_08080648(HitboxData* a, HitboxData* b, Entity08080be8* p) { Entity08080be8_SetState(p, Entity08080be8_StateImpact); }
 
 // 発動時に ENE を払う
 void Entity08080be8_PayENE(Entity08080be8* p) {
@@ -127,7 +127,7 @@ void Entity08080be8_StateFly(Entity08080be8* p) {
   Player_SetFlag20(p->player, 0x80002);
   groundY = FUN_082328ec(pos);
   if (groundY > p->sprite.pos.y) {
-    Entity08080be8_SetState(p, FUN_0808094c);
+    Entity08080be8_SetState(p, Entity08080be8_StateImpact);
   } else {
     p->timer++;
     if (p->timer > 59) {
@@ -136,7 +136,41 @@ void Entity08080be8_StateFly(Entity08080be8* p) {
   }
 }
 
-NAKED void FUN_0808094c(Entity08080be8* p) { INCFUNC("asm/func/FUN_0808094c.inc"); }
+// 着弾の短い演出。4フレーム目に向きに合わせた絵と反転を決め、7フレーム目で消える
+NON_MATCH void Entity08080be8_StateImpact(Entity08080be8* p) {
+#ifdef NONMATCHING_C
+  p->timer++;
+  if (p->timer == 1) {
+    p->sprite.metaspriteIdx = 4;
+    return;
+  }
+  if (p->timer == 4) {
+    s32 dir = p->dir;
+    AuxSprite* spr = &p->sprite;
+
+    if (dir & 1) {
+      spr->metaspriteIdx = 7;
+    } else if ((dir >> 1) & 1) {
+      spr->metaspriteIdx = 8;
+    } else {
+      spr->metaspriteIdx = 6;
+    }
+    if (dir <= 2) {
+      spr->flags &= ~(SPRFLAG_XFLIP | SPRFLAG_YFLIP);
+    } else if (dir <= 4) {
+      spr->flags = (spr->flags & ~SPRFLAG_XFLIP) | SPRFLAG_YFLIP;
+    } else if (dir <= 5) {
+      spr->flags |= SPRFLAG_XFLIP | SPRFLAG_YFLIP;
+    } else {
+      spr->flags = (spr->flags | SPRFLAG_XFLIP) & ~SPRFLAG_YFLIP;
+    }
+  } else if (p->timer > 6) {
+    KillEntity(&p->e);
+  }
+#else
+  INCFUNC("asm/func/Entity08080be8_StateImpact.inc");
+#endif
+}
 
 s32 Entity08080be8_Update(Entity08080be8* p) {
   p->updateCallback(p);
