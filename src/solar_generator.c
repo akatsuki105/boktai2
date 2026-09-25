@@ -7,7 +7,7 @@
 #include "sound.h"
 #include "sprite_aux.h"
 
-s32 SSEEmitter_Destroy(unknown* p);
+s32 Eff082473e0Emitter_Destroy(unknown* p);
 
 // 触れたプレイヤーを押し返す, state で Generator_SetState が fn を差し替える
 typedef struct {
@@ -46,13 +46,13 @@ typedef struct {
   u8 unk_f6[3];                // 0x0F6
   u8 unk_f9;                   // 0x0F9, 0 まで減らすだけのカウンタ
   u8 unk_fa[6];                // 0x0FA
-  Eff082473e0Emitter unk_100;  // 0x100, Init が SSEEmitter_Init(&unk_100, &sprite.pos, 0, 0, 0)、_Destroy が SSEEmitter_Destroy する
+  Eff082473e0Emitter unk_100;  // 0x100, Init が Eff082473e0Emitter_Init(&unk_100, &sprite.pos, 0, 0, 0)、_Destroy が Eff082473e0Emitter_Destroy する
   EntityFunc fn;               // 0x238, _Update が毎フレーム呼ぶ,Generator_SetState が state と一緒に書く
 } Generator;
 static_assert(sizeof(Generator) == 572);
 
-void* SSEEmitter_Reset(Eff082473e0Emitter* p);
-void* SSEEmitter_FadeParticle(Eff082473e0Emitter* p);
+void* Eff082473e0Emitter_Reset(Eff082473e0Emitter* p);
+void* Eff082473e0Emitter_FadeParticle(Eff082473e0Emitter* p);
 
 NAKED void Generator_SetState(Generator* p, s32 state) { INCFUNC("asm/func/Generator_SetState.inc"); }
 
@@ -123,7 +123,7 @@ void FUN_080b32e0(Generator* p) {
   }
   if (p->unk_f2 == 0) {
     if (p->stateTimer == 0) {
-      SSEEmitter_Reset(&p->unk_100);
+      Eff082473e0Emitter_Reset(&p->unk_100);
     }
     p->stateTimer++;
     if (p->stateTimer > 15) {
@@ -139,7 +139,7 @@ void FUN_080b32e0(Generator* p) {
     p->plttID = p->unk_f0;
     p->unk_f2--;
     if (p->unk_f2 < p->unk_f4) {
-      SSEEmitter_FadeParticle(&p->unk_100);
+      Eff082473e0Emitter_FadeParticle(&p->unk_100);
       p->unk_f4 -= 250;
     }
   }
@@ -197,7 +197,7 @@ s32 Generator_Update(Generator* p) {
 s32 Generator_Destroy(Generator* p) {
   AuxSprite_Remove(&p->sprite);
   Hitbox_Unregister(&p->hitbox);
-  SSEEmitter_Destroy(&p->unk_100);
+  Eff082473e0Emitter_Destroy(&p->unk_100);
   return 0;
 }
 

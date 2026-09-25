@@ -148,7 +148,7 @@ _08247088:
 	cmp r0, #0
 	bne _0824709C
 	adds r0, r5, #0
-	bl SSEEmitterParticle_Clear
+	bl Eff082473e0Particle_Clear
 	mov r2, r8
 	ldrb r0, [r2, #2]
 	subs r0, #1

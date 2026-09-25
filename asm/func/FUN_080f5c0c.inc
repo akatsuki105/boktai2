@@ -122,7 +122,7 @@ _080F5CD2:
 	movs r1, #0xc5
 	lsls r1, r1, #2
 	adds r0, r7, r1
-	bl SSEEmitter_Reset
+	bl Eff082473e0Emitter_Reset
 	movs r0, #0x14
 	str r0, [sp]
 	movs r0, #0xe1
@@ -306,7 +306,7 @@ _080F5DC6:
 	str r1, [sp, #8]
 	movs r1, #3
 	add r3, sp, #0xc
-	bl SSEEmitter_BurstParticle
+	bl Eff082473e0Emitter_BurstParticle
 	movs r0, #0x20
 	movs r1, #0xc1
 	lsls r1, r1, #1

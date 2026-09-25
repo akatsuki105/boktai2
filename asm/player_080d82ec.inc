@@ -3561,7 +3561,7 @@ FUN_080cdc6c: @ 0x080CDC6C
 	bne _080CDC98
 	ldr r2, _080CDC94 @ =0x000004C4
 	adds r0, r7, r2
-	bl SSEEmitter_FadeParticle
+	bl Eff082473e0Emitter_FadeParticle
 	b _080CDD7A
 	.align 2, 0
 _080CDC90: .4byte 0x000004C5
@@ -3678,7 +3678,7 @@ _080CDCB6:
 	str r1, [sp, #8]
 	movs r1, #3
 	add r2, sp, #0xc
-	bl SSEEmitter_BurstParticle
+	bl Eff082473e0Emitter_BurstParticle
 _080CDD7A:
 	add sp, #0x24
 	pop {r3, r4, r5}
@@ -4429,7 +4429,7 @@ FUN_080ce330: @ 0x080CE330
 	adds r4, r0, #0
 	ldr r1, _080CE370 @ =0x000004C4
 	adds r0, r4, r1
-	bl SSEEmitter_Destroy
+	bl Eff082473e0Emitter_Destroy
 	ldr r1, _080CE374 @ =0x0000060C
 	adds r0, r4, r1
 	bl ParticleShadow_Remove
@@ -4468,7 +4468,7 @@ FUN_080ce378: @ 0x080CE378
 	adds r1, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl SSEEmitter_Init
+	bl Eff082473e0Emitter_Init
 	ldr r2, _080CE444 @ =0x000005FC
 	adds r1, r5, r2
 	ldr r2, [r4]

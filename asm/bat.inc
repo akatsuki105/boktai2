@@ -6128,7 +6128,7 @@ _0814151A:
 	movs r1, #0xc5
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl SSEEmitter_Destroy
+	bl Eff082473e0Emitter_Destroy
 	movs r0, #1
 	strb r0, [r5]
 _08141532:

@@ -7,8 +7,8 @@
 
 typedef struct Eff082473e0 {
   Entity e;                      // 0x00
-  ParticleGroup* group;          // 0x18, SSE_Init が GetParticleGroup(PTCL_GROUP_0) を入れる。エミッタの粒子はここから取る
-  AuxAnimFile* anim;             // 0x1C, SSE_Init が GetFile(DIR_ANIMATION, 0xD1B8) を入れる
+  ParticleGroup* group;          // 0x18, Eff082473e0_Init が GetParticleGroup(PTCL_GROUP_0) を入れる。エミッタの粒子はここから取る
+  AuxAnimFile* anim;             // 0x1C, Eff082473e0_Init が GetFile(DIR_ANIMATION, 0xD1B8) を入れる
   Eff082473e0Emitter* emitters;  // 0x20, 登録されているエミッタの双方向リストの先頭
 } Eff082473e0;
 static_assert(sizeof(Eff082473e0) == 36);
@@ -19,13 +19,13 @@ const u16 u16_ARRAY_08dbd810[4] = {3, 3, 1, 2};  // 0x08DBD810
 
 s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
 
-void SSE_ClearGlobal(void) { gEff082473e0 = NULL; }
+void Eff082473e0_ClearGlobal(void) { gEff082473e0 = NULL; }
 
 // kind 0 の更新。何もしない
-void SSEEmitter_UpdateIdle(Eff082473e0* p, Eff082473e0Emitter* e) {}
+void Eff082473e0Emitter_UpdateIdle(Eff082473e0* p, Eff082473e0Emitter* e) {}
 
 // エミッタをリストの先頭に繋ぐ。既に繋がっていれば -1
-s32 SSEEmitter_Register(Eff082473e0* p, Eff082473e0Emitter* e) {
+s32 Eff082473e0Emitter_Register(Eff082473e0* p, Eff082473e0Emitter* e) {
   if (e->isRegistered) return -1;
   e->prev = NULL;
   e->next = p->emitters;
@@ -38,7 +38,7 @@ s32 SSEEmitter_Register(Eff082473e0* p, Eff082473e0Emitter* e) {
 }
 
 // エミッタをリストから外す。繋がっていなければ -1
-s32 SSEEmitter_Unregister(Eff082473e0* p, Eff082473e0Emitter* e) {
+s32 Eff082473e0Emitter_Unregister(Eff082473e0* p, Eff082473e0Emitter* e) {
   Eff082473e0Emitter* prev = e->prev;
   Eff082473e0Emitter* next = e->next;
 
@@ -56,7 +56,7 @@ s32 SSEEmitter_Unregister(Eff082473e0* p, Eff082473e0Emitter* e) {
 }
 
 // 生きている枠をひとつだけ消えかけ (state 2) にする
-s32 SSEEmitter_FadeParticle(Eff082473e0Emitter* e) {
+s32 Eff082473e0Emitter_FadeParticle(Eff082473e0Emitter* e) {
   bool32 found = FALSE;
   s32 i;
 
@@ -77,7 +77,7 @@ s32 SSEEmitter_FadeParticle(Eff082473e0Emitter* e) {
 }
 
 // 生きている枠をひとつ解放して、その場に粒子を撒き散らす
-s32 SSEEmitter_BurstParticle(Eff082473e0Emitter* e, s32 count, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask) {
+s32 Eff082473e0Emitter_BurstParticle(Eff082473e0Emitter* e, s32 count, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask) {
   bool32 found = FALSE;
   s32 i;
 
@@ -100,13 +100,13 @@ s32 SSEEmitter_BurstParticle(Eff082473e0Emitter* e, s32 count, Vec3* pos, Vec3* 
 }
 
 // エミッタを待機状態に戻す。枠は全部空きにして粒子も隠す
-void* SSEEmitter_Reset(Eff082473e0Emitter* e) {
+void* Eff082473e0Emitter_Reset(Eff082473e0Emitter* e) {
   s32 i;
 
   e->activeCount = 0;
   e->unk_3 = 0;
   e->kind = 0;
-  e->fn_12c = SSEEmitter_UpdateIdle;
+  e->fn_12c = Eff082473e0Emitter_UpdateIdle;
   for (i = 0; i < 4; i++) {
     e->ptcls[i].state = 0;
     e->ptcls[i].unk_2 = 0;
@@ -118,7 +118,7 @@ void* SSEEmitter_Reset(Eff082473e0Emitter* e) {
 NAKED s32 FUN_082467d0(Eff082473e0Emitter* e, u32 unk_1, u32 param_3, u32* param_4) { INCFUNC("asm/func/FUN_082467d0.inc"); }
 
 // 枠を空きに戻して粒子を隠す
-void SSEEmitterParticle_Clear(Eff082473e0Particle* ptcl) {
+void Eff082473e0Particle_Clear(Eff082473e0Particle* ptcl) {
   ptcl->state = 0;
   ptcl->unk_2 = 0;
   ptcl->unk_1 = 10;
@@ -195,7 +195,7 @@ void (*const PTR_ARRAY_08dbd830[3])(Eff082473e0*, Eff082473e0Emitter*, Eff082473
 
 NAKED void FUN_08247280(Eff082473e0* p, Eff082473e0Emitter* e) { INCFUNC("asm/func/FUN_08247280.inc"); }
 
-s32 SSE_Update(Eff082473e0* p) {
+s32 Eff082473e0_Update(Eff082473e0* p) {
   Eff082473e0Emitter* e = p->emitters;
 
   while (e != NULL) {
@@ -205,12 +205,12 @@ s32 SSE_Update(Eff082473e0* p) {
   return 0;
 }
 
-s32 SSE_Destroy(Eff082473e0* _) {
+s32 Eff082473e0_Destroy(Eff082473e0* _) {
   gEff082473e0 = NULL;
   return 0;
 }
 
-s32 SSE_Init(Eff082473e0* p, u32 _) {
+s32 Eff082473e0_Init(Eff082473e0* p, u32 _) {
   gEff082473e0 = p;
   p->emitters = NULL;
   p->group = GetParticleGroup(PTCL_GROUP_0);
@@ -218,12 +218,12 @@ s32 SSE_Init(Eff082473e0* p, u32 _) {
   return 0;
 }
 
-Eff082473e0* SSE_Create(u32 unused1, u32 unused2) {
+Eff082473e0* Eff082473e0_Create(u32 unused1, u32 unused2) {
   if (gEff082473e0 == NULL) {
     Eff082473e0* p = CreateEntity(ENTITY_UNK_9, sizeof(Eff082473e0));
     if (p != NULL) {
-      SetEntityRoutine(p, SSE_Update, SSE_Destroy);
-      if (SSE_Init(p, unused1) < 0) {
+      SetEntityRoutine(p, Eff082473e0_Update, Eff082473e0_Destroy);
+      if (Eff082473e0_Init(p, unused1) < 0) {
         KillEntity((Entity*)p);
         return NULL;
       }
@@ -234,12 +234,12 @@ Eff082473e0* SSE_Create(u32 unused1, u32 unused2) {
 }
 
 // エミッタを初期化して Eff082473e0 に登録する。エンティティがまだ無ければ先に作る
-s32 SSEEmitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5) {
+s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5) {
   Eff082473e0* p = gEff082473e0;
   s32 i;
 
   if (p == NULL) {
-    p = SSE_Create(0, 0);
+    p = Eff082473e0_Create(0, 0);
     if (p == NULL) {
       return -1;
     }
@@ -251,7 +251,7 @@ s32 SSEEmitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 u
   e->kind = kind;
   e->unk_4 = unk_4;
   e->unk_5 = unk_5;
-  e->fn_12c = SSEEmitter_UpdateIdle;
+  e->fn_12c = Eff082473e0Emitter_UpdateIdle;
   for (i = 0; i < 4; i++) {
     e->ptcls[i].state = 0;
     e->ptcls[i].unk_2 = 0;
@@ -261,19 +261,19 @@ s32 SSEEmitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 u
     e->ptcls[i].ptcl.priority = 2;
     FUN_08236fac(&e->ptcls[i].anim, gEff082473e0->anim, 0, 0, 0);
   }
-  SSEEmitter_Register(p, e);
+  Eff082473e0Emitter_Register(p, e);
   return 0;
 }
 
 // エミッタの後始末。粒子を消してリストから外す
-s32 SSEEmitter_Destroy(Eff082473e0Emitter* e) {
+s32 Eff082473e0Emitter_Destroy(Eff082473e0Emitter* e) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
     Particle_Remove(&e->ptcls[i].ptcl);
   }
   if (gEff082473e0 != NULL) {
-    SSEEmitter_Unregister(gEff082473e0, e);
+    Eff082473e0Emitter_Unregister(gEff082473e0, e);
   }
   return 0;
 }

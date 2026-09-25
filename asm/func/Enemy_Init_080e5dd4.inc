@@ -73,7 +73,7 @@ _080E5E54:
 	str r4, [sp]
 	movs r2, #0
 	movs r3, #0
-	bl SSEEmitter_Init
+	bl Eff082473e0Emitter_Init
 	ldr r1, _080E5E7C @ =0x0000044D
 	adds r0, r5, r1
 	strb r4, [r0]
