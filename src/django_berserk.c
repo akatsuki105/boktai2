@@ -104,4 +104,15 @@ s32 DjangoBerserk_Init(DjangoBerserk* p, Player* player) {
   return 0;
 }
 
-NAKED DjangoBerserk* DjangoBerserk_Create(Player* player) { INCFUNC("asm/func/DjangoBerserk_Create.inc"); }
+DjangoBerserk* DjangoBerserk_Create(Player* player) {
+  DjangoBerserk* p = CreateEntity(ENTITY_UNK_11, sizeof(DjangoBerserk));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, DjangoBerserk_Update, DjangoBerserk_Destroy);
+    if (DjangoBerserk_Init(p, player) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
