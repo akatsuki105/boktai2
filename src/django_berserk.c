@@ -44,7 +44,11 @@ typedef struct DjangoBerserk {
 } DjangoBerserk;
 static_assert(sizeof(DjangoBerserk) == 1220);
 
-NAKED void DjangoBerserk_SetState(DjangoBerserk* p, DjangoBerserkFunc fn) { INCFUNC("asm/func/DjangoBerserk_SetState.inc"); }
+// 状態関数を差し替えて経過フレームを 0 に戻す
+void DjangoBerserk_SetState(DjangoBerserk* p, DjangoBerserkFunc fn) {
+  p->updateCallback = fn;
+  p->timer = 0;
+}
 
 NAKED void FUN_0807f650(DjangoBerserk* p, DjangoBerserkParticle* ptcl) { INCFUNC("asm/func/FUN_0807f650.inc"); }
 
