@@ -11,7 +11,7 @@ struct SolarSensorEntity;
 
 // SSEEmitter が抱える粒子1個ぶんの枠。4個を使い回す
 typedef struct {
-  u8 unk_0;           // 0x00, 使用中フラグ。FUN_082467d0 が 0 の枠を探して 1 を立てる
+  u8 state;           // 0x00, 0: 空き, 1: 生存, 2: 消えかけ。PTR_ARRAY_08dbd818 などの添字になり、各 kind の更新関数を選ぶ
   u8 unk_1;           // 0x01, SSEEmitter_Reset が枠を全部リセットするとき 10 を書く
   u16 unk_2;          // 0x02, 出現時に 0 に戻るタイマ
   s16 unk_4;          // 0x04, FUN_082467d0 の第3引数

@@ -95,8 +95,8 @@ s32 SSEEmitter_FadeParticle(SSEEmitter* p) {
 
   for (i = 0; i < 4; i++) {
     SSEEmitterParticle* ptcl = &p->ptcls[i];
-    if (ptcl->unk_0 == 1) {
-      ptcl->unk_0 = 2;
+    if (ptcl->state == 1) {
+      ptcl->state = 2;
       ptcl->unk_1 = 10;
       ptcl->unk_2 = 0;
       found = TRUE;
@@ -115,9 +115,9 @@ s32 SSEEmitter_BurstParticle(SSEEmitter* p, s32 count, Vec3* pos, Vec3* vel, Vec
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    if (p->ptcls[i].unk_0 == 1) {
+    if (p->ptcls[i].state == 1) {
       Particle_Hide(&p->ptcls[i].ptcl);
-      p->ptcls[i].unk_0 = 0;
+      p->ptcls[i].state = 0;
       p->ptcls[i].unk_1 = 10;
       p->ptcls[i].unk_2 = 0;
       found = TRUE;
@@ -141,7 +141,7 @@ void* SSEEmitter_Reset(SSEEmitter* p) {
   p->kind = 0;
   p->fn_12c = SSEEmitter_UpdateIdle;
   for (i = 0; i < 4; i++) {
-    p->ptcls[i].unk_0 = 0;
+    p->ptcls[i].state = 0;
     p->ptcls[i].unk_2 = 0;
     p->ptcls[i].unk_1 = 10;
     Particle_Hide(&p->ptcls[i].ptcl);
@@ -152,7 +152,7 @@ NAKED s32 FUN_082467d0(SSEEmitter* e, u32 unk_1, u32 param_3, u32* param_4) { IN
 
 // 枠を空きに戻して粒子を隠す
 void SSEEmitterParticle_Clear(SSEEmitterParticle* ptcl) {
-  ptcl->unk_0 = 0;
+  ptcl->state = 0;
   ptcl->unk_2 = 0;
   ptcl->unk_1 = 10;
   ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
@@ -191,8 +191,8 @@ NON_MATCH void FUN_082470a8(SolarSensorEntity* p, SSEEmitter* e) {
 
   WorldToScreen(&screen, e->pos);
   for (i = 0, q = e->ptcls; i < 4; i++, q++) {
-    PTR_ARRAY_08dbd818[q->unk_0](p, e, q);
-    if (e->ptcls[i].unk_0 != 0) {
+    PTR_ARRAY_08dbd818[q->state](p, e, q);
+    if (e->ptcls[i].state != 0) {
       e->ptcls[i].ptcl.pos.x = screen.x + e->ptcls[i].pos.x;
       e->ptcls[i].ptcl.pos.y = screen.y + e->ptcls[i].pos.y;
       e->ptcls[i].ptcl.pos.z = screen.z + e->ptcls[i].pos.z;
@@ -278,7 +278,7 @@ s32 SSEEmitter_Init(SSEEmitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5) {
   e->unk_5 = unk_5;
   e->fn_12c = SSEEmitter_UpdateIdle;
   for (i = 0; i < 4; i++) {
-    e->ptcls[i].unk_0 = 0;
+    e->ptcls[i].state = 0;
     e->ptcls[i].unk_2 = 0;
     e->ptcls[i].pos.x = 0, e->ptcls[i].pos.y = 0, e->ptcls[i].pos.z = 0;
     FUN_0822d9f0(&e->ptcls[i].ptcl, gSensorEntity->group, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
