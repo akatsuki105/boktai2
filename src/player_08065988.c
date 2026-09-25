@@ -8,6 +8,7 @@
 
 void FUN_08065164(Player* p);
 void FUN_08063220(Player* p);
+void FUN_080ec79c(u8 kind, void* payload);
 void FUN_08060c40(Player* p, u32 val);
 void CheckHeartJokerEmblem(Player* p);
 void FUN_08061294(Player* p);
@@ -126,7 +127,7 @@ NAKED void FUN_08066d7c(Player* p, s32 val) { INCFUNC("asm/func/FUN_08066d7c.inc
 
 NAKED void FUN_08066df8(Player* p) { INCFUNC("asm/func/FUN_08066df8.inc"); }
 
-NAKED void FUN_08066e84(Player* p) { INCFUNC("asm/func/FUN_08066e84.inc"); }
+NAKED void FUN_08066e84(void) { INCFUNC("asm/func/FUN_08066e84.inc"); }
 
 NAKED void FUN_08066e9c(Player* p) { INCFUNC("asm/func/FUN_08066e9c.inc"); }
 
@@ -340,7 +341,10 @@ void FUN_08072640(Player* p) { p->unk_4aa = 1; }
 
 NAKED void FUN_08072650(Player* p) { INCFUNC("asm/func/FUN_08072650.inc"); }
 
-NAKED void FUN_08072670(Player* p) { INCFUNC("asm/func/FUN_08072670.inc"); }
+void FUN_08072670(Player* p) {
+  p->unk_4aa = 2;
+  p->unk_4ab = 1;
+}
 
 NAKED void FUN_0807268c(Player* p) { INCFUNC("asm/func/FUN_0807268c.inc"); }
 
