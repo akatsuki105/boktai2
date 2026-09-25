@@ -186,7 +186,15 @@ void Sensor_DisableIO(void) {
   }
 }
 
-NAKED void Sensor_Enable(void) { INCFUNC("asm/func/Sensor_Enable.inc"); }
+void Sensor_Enable(void) {
+  if (gSensorIoEnabled == 0) {
+    Sensor_EnableIO();
+  }
+  gSensorEnabled = TRUE;
+  gSensorState = 0;
+  gSensorCounter = 0;
+  gSensorRawLevel = -1;
+}
 
 void Sensor_Disable(void) {
   if (gSensorIoEnabled == 1) {
