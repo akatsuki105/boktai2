@@ -52,7 +52,10 @@ NAKED void FUN_080dd93c(void) { INCFUNC("asm/func/FUN_080dd93c.inc"); }
 
 NAKED s32 AttackBoxManager_Update(AttackBoxManager* p) { INCFUNC("asm/func/AttackBoxManager_Update.inc"); }
 
-NAKED s32 AttackBoxManager_Destroy(AttackBoxManager* p) { INCFUNC("asm/func/AttackBoxManager_Destroy.inc"); }
+s32 AttackBoxManager_Destroy(AttackBoxManager* p) {
+  gAttackBoxManager = NULL;
+  return 0;
+}
 
 void FUN_080ddab4(AttackBoxManager* p) {}
 
