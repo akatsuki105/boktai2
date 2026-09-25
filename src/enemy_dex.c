@@ -47,4 +47,80 @@ typedef struct {
 } EnemyDexMenu;
 static_assert(sizeof(EnemyDexMenu) == 4704);
 
-INCASM("asm/enemy_dex.inc");
+NAKED s32 FUN_0820d00c(u32 param_1) { INCFUNC("asm/func/FUN_0820d00c.inc"); }
+
+NAKED s32 FUN_0820d04c(u32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_0820d04c.inc"); }
+
+NAKED s32 FUN_0820d084(u32 param_1) { INCFUNC("asm/func/FUN_0820d084.inc"); }
+
+NAKED s32 FUN_0820d0b8(u32 param_1) { INCFUNC("asm/func/FUN_0820d0b8.inc"); }
+
+NAKED bool32 FUN_0820d0ec(void) { INCFUNC("asm/func/FUN_0820d0ec.inc"); }
+
+NAKED void FUN_0820d124(void) { INCFUNC("asm/func/FUN_0820d124.inc"); }
+
+NAKED void FUN_0820d138(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d138.inc"); }
+
+NAKED void FUN_0820d188(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d188.inc"); }
+
+NAKED void FUN_0820d21c(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d21c.inc"); }
+
+NAKED void FUN_0820d250(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d250.inc"); }
+
+NAKED void FUN_0820d5f8(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d5f8.inc"); }
+
+NAKED void FUN_0820d690(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d690.inc"); }
+
+NAKED s32 FUN_0820d6e4(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d6e4.inc"); }
+
+NAKED s32 FUN_0820dae4(EnemyDexMenu* p, u32 param_2) { INCFUNC("asm/func/FUN_0820dae4.inc"); }
+
+NAKED void FUN_0820db9c(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820db9c.inc"); }
+
+NAKED void FUN_0820e080(EnemyDexMenu* p, u8 param_2) { INCFUNC("asm/func/FUN_0820e080.inc"); }
+
+NAKED s32 EnemyDexMenu_Update(EnemyDexMenu* p) { INCFUNC("asm/func/EnemyDexMenu_Update.inc"); }
+
+NAKED void FUN_0820e75c(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820e75c.inc"); }
+
+NAKED s32 EnemyDexMenu_Destroy(EnemyDexMenu* p) { INCFUNC("asm/func/EnemyDexMenu_Destroy.inc"); }
+
+NAKED s32 EnemyDexMenu_Init(EnemyDexMenu* p, u32 val) { INCFUNC("asm/func/EnemyDexMenu_Init.inc"); }
+
+NAKED EnemyDexMenu* EnemyDexMenu_Create(u32 val) { INCFUNC("asm/func/EnemyDexMenu_Create.inc"); }
+
+NAKED void FUN_0820eb38(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820eb38.inc"); }
+
+NAKED void FUN_0820eb84(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820eb84.inc"); }
+
+NAKED void FUN_0820ec6c(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ec6c.inc"); }
+
+NAKED void FUN_0820ed04(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ed04.inc"); }
+
+NAKED void FUN_0820ed38(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ed38.inc"); }
+
+NAKED void FUN_0820ed48(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ed48.inc"); }
+
+NAKED void FUN_0820ede8(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ede8.inc"); }
+
+NAKED void FUN_0820ee7c(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ee7c.inc"); }
+
+NAKED void FUN_0820eeb8(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820eeb8.inc"); }
+
+NAKED void FUN_0820efc4(u8 param_1, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0820efc4.inc"); }
+
+NAKED void FUN_0820f020(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f020.inc"); }
+
+NAKED void FUN_0820f130(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f130.inc"); }
+
+NAKED void FUN_0820f1e0(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f1e0.inc"); }
+
+NAKED void FUN_0820f310(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f310.inc"); }
+
+NAKED void FUN_0820f3e4(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f3e4.inc"); }
+
+NAKED void FUN_0820f4b4(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f4b4.inc"); }
+
+NAKED void FUN_0820f630(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f630.inc"); }
+
+NAKED void FUN_0820f700(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f700.inc"); }
