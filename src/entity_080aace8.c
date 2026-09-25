@@ -62,7 +62,20 @@ s32 Entity080aace8_Update(Entity080aace8* p) {
   return 0;
 }
 
-NAKED s32 Entity080aace8_Destroy(Entity080aace8* p) { INCFUNC("asm/func/Entity080aace8_Destroy.inc"); }
+s32 Entity080aace8_Destroy(Entity080aace8* p) {
+  s32 i;
+
+  MainSprite_Remove(&p->sprite);
+  for (i = 0; i < 8; i++) {
+    Particle_Remove(&p->ptcls[i].ptcl);
+  }
+  if (p->unk_348 == 0) {
+    for (i = 0; i < 2; i++) {
+      AuxSprite_Remove(&p->auxSprites[i]);
+    }
+  }
+  return 0;
+}
 
 NAKED void FUN_080aa940(Entity080aace8* p) { INCFUNC("asm/func/FUN_080aa940.inc"); }
 
