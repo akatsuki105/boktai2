@@ -622,7 +622,10 @@ void FUN_0807b890(Player* p, u16 val) {
   p->unk_95e = val;
 }
 
-NAKED void FUN_0807b8a8(Player* p, u16 val) { INCFUNC("asm/func/FUN_0807b8a8.inc"); }
+void FUN_0807b8a8(Player* p, u16 val) {
+  p->unk_96c = 2;
+  p->unk_95e = val;
+}
 
 void FUN_0807b8c0(Player* p) { p->unk_96c = 0; }
 
