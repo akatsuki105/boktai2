@@ -50,7 +50,13 @@ NAKED void FUN_080ab540(Entity080abd14* p, u32 param_2) { INCFUNC("asm/func/FUN_
 
 NAKED void FUN_080ab67c(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab67c.inc"); }
 
-NAKED void FUN_080ab6d8(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab6d8.inc"); }
+void FUN_080ab6d8(Entity080abd14* p) {
+  s32 i;
+
+  for (i = 0; i < 12; i++) {
+    Particle_Remove(&p->ptcls[i].ptcl);
+  }
+}
 
 NAKED void FUN_080ab6f8(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab6f8.inc"); }
 
