@@ -15,6 +15,7 @@
 
 struct Dvalinn;
 struct Entity5941;
+struct Entity080acd4c;
 struct EntityCBB0;
 struct EnemyManager;
 struct Entity9A9F;
@@ -36,9 +37,10 @@ IWRAM_DATA u8 u8_03002bf0[8] = {};             // todo
 
 IWRAM_DATA struct Entity5941* gEntity5941 = NULL;  // 0x03002BF8
 
-IWRAM_DATA u8 u8_03002bfc[0x03002C58 - 0x03002bfc] = {};  // todo
+IWRAM_DATA u8 u8_03002bfc[0x03002C54 - 0x03002bfc] = {};  // todo
 
-IWRAM_DATA struct EntityCBB0* gEntityCBB0 = NULL;  // 0x03002C58
+IWRAM_DATA struct Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
+IWRAM_DATA struct EntityCBB0* gEntityCBB0 = NULL;          // 0x03002C58
 
 IWRAM_DATA struct EnemyManager* gEnemyManager = NULL;    // 0x03002C5C
 IWRAM_DATA struct EnemyListNode* gEnemyListHead = NULL;  // 0x03002C60, 生存中のエネミーの単方向リスト. EnemyManager.list と同じ値
