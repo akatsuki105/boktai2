@@ -54,7 +54,11 @@ NAKED void FUN_080ac228(Entity080ac374* p, Vec3* pos) { INCFUNC("asm/func/FUN_08
 
 NAKED s32 Entity080ac374_Update(Entity080ac374* p) { INCFUNC("asm/func/Entity080ac374_Update.inc"); }
 
-NAKED s32 Entity080ac374_Destroy(Entity080ac374* p) { INCFUNC("asm/func/Entity080ac374_Destroy.inc"); }
+// 戻り値は FUN_080abfec が r0 に残した値をそのまま使う (return 文を書くと1命令増える)
+s32 Entity080ac374_Destroy(Entity080ac374* p) {
+  FUN_080ac21c(p);
+  FUN_080abfec(p);
+}
 
 NAKED s32 Entity080ac374_Init(Entity080ac374* p, Player* player, u8 param_3, Vec3* pos, u16 param_5, u16 param_6) { INCFUNC("asm/func/Entity080ac374_Init.inc"); }
 
