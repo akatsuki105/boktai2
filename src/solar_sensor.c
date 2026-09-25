@@ -12,7 +12,7 @@ IWRAM_DATA s32 gSensorState = 0;                     // 0x030026B4, 0: measuring
 IWRAM_DATA s32 gSensorCounter = 0;                   // 0x030026B8, 0-511, counts half-cycles of the 74LV4040 counter chip
 IWRAM_DATA s32 gSensorUnk0c = 0;                     // 0x030026BC
 IWRAM_DATA s32 gSensorNextWrite = 0;                 // 0x030026C0, next value to be written to GPIO_DATA
-IWRAM_DATA bool32 gSensorUnk14 = 0;                  // 0x030026C4
+IWRAM_DATA bool32 gSensorIoEnabled = 0;              // 0x030026C4
 // 0x030057B0 から 0x030057CC までの8つ。上のグローバル群が高レベルなら、こちらは低レベルなドライバ側だと思われる
 // これも以前は SolarSensorManager という1つの構造体だったが、Sensor_Disable が 0x030057B8 と 0x030057C8 を
 // 別々のプール定数として読む (構造体なら1回のロード + オフセットになる) ので、原典では個別のグローバル
@@ -161,7 +161,7 @@ NAKED void Sensor_DisableIO(void) { INCFUNC("asm/func/Sensor_DisableIO.inc"); }
 NAKED void Sensor_Enable(void) { INCFUNC("asm/func/Sensor_Enable.inc"); }
 
 void Sensor_Disable(void) {
-  if (gSensorUnk14 == 1) {
+  if (gSensorIoEnabled == 1) {
     Sensor_DisableIO();
   }
   gSensorEnabled = FALSE;
@@ -170,7 +170,7 @@ void Sensor_Disable(void) {
 
 NAKED s32 Sensor_GetRawLevel(void) { INCFUNC("asm/func/Sensor_GetRawLevel.inc"); }
 
-NAKED bool32 FUN_08247800(void) { INCFUNC("asm/func/FUN_08247800.inc"); }
+bool32 Sensor_IsIoEnabled(void) { return gSensorIoEnabled; }
 
 s32 Sensor_GetState(void) { return gSensorState; }
 
