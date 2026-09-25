@@ -27,7 +27,7 @@ typedef struct Entity08080be8 {
   Player* player;                     // 0x018, Init の第1引数
   AuxSprite sprite;                   // 0x01C
   AuxSpriteGfx gfx;                   // 0x048, SPRITE_210E
-  HitboxData hitbox;                  // 0x064, FUN_08080a44 が組み立て、位置は sprite.pos を見る
+  HitboxData hitbox;                  // 0x064, Entity08080be8_SetupHitbox が組み立て、位置は sprite.pos を見る
   Vec3 offset;                        // 0x0B4, FUN_08080204 が offsetRadius から x と z を作り、Entity08080be8_StateImpact が sprite.pos に足す
   u16 heightOffset;                   // 0x0BC, Init の第3引数。FUN_08080204 が sprite.pos.y に足す
   u16 unk_be;                         // 0x0BE, Init の第4引数。FUN_08080204 で gSineTable に掛ける
@@ -197,7 +197,23 @@ void Entity08080be8_SetupSprite(Entity08080be8* p, s32 plttID) {
   Video_SetAuxSpritePltt(gfx, plttID);
 }
 
-NAKED void FUN_08080a44(Entity08080be8* p, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_08080a44.inc"); }
+// 当たり判定を組み立てる。unk_cd が立っているときだけ判定を一段高い位置に置く
+void Entity08080be8_SetupHitbox(Entity08080be8* p, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44) {
+  HitboxData* hitbox = &p->hitbox;
+  Vec3 offset;
+  Vec3 halfSize;
+
+  halfSize.x = 30, halfSize.y = 30, halfSize.z = 30;
+  if (p->unk_cd != 0) {
+    offset.x = 0, offset.y = 30, offset.z = 0;
+  } else {
+    offset.x = 0, offset.y = 0, offset.z = 0;
+  }
+  Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_8 | HBFLAG_UNK_0, 0, 1 << p->player->unk_24.unk_4, &halfSize, &offset);
+  Hitbox_SetAttack(hitbox, 0, hitboxUnk40, 0x10, attributes, hitboxUnk44);
+  Hitbox_SetHandler(hitbox, FUN_08080648, p);
+  Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
+}
 
 // 撒く粒子4個をまとめて用意する
 void Entity08080be8_SetupParticles(Entity08080be8* p, s32 val) {
@@ -224,7 +240,7 @@ s32 Entity08080be8_Init(Entity08080be8* p, Player* player, u32 heightOffset, u32
   p->charge = 0;
   p->unk_cd = unk_cd;
   Entity08080be8_SetupSprite(p, plttID);
-  FUN_08080a44(p, hitboxUnk40, attributes, hitboxUnk44);
+  Entity08080be8_SetupHitbox(p, hitboxUnk40, attributes, hitboxUnk44);
   FUN_08080204(p);
   Entity08080be8_SetupParticles(p, ptclVal);
   if (p->player->kind != PLAYER_SABATA) {

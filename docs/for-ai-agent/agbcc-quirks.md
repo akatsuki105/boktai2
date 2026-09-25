@@ -438,8 +438,9 @@ Which side to pick, once the asm has told you what is wrong:
 
 ### Shared code after an if/else: inside the arms it can keep stepping an offset register, after the join it cannot
 
-- **Frequency**: `TextBoxChoice_SetCursor`.
+- **Frequency**: `TextBoxChoice_SetCursor`, `Entity08080be8_SetupHitbox`.
 - Written once after the `if/else`, the four `pos` stores started a fresh offset (`movs r2, #0x93` / `lsls r2, #1` for 0x126); the target steps it (`add r2, #2`) from the 0x124 the arms left in `r2`. agbcc's CSE only knows an offset register inside the block that built it, and cross-jumping runs afterwards — so a *stepped* offset across the join means that code sat in **both** arms and was merged. Calling a `static inline` helper from each arm reproduces it without duplicating the source.
+- The same applies to a field the arms leave alone. `Entity08080be8_SetupHitbox` sets a `Vec3` differently per arm and then `offset.z = 0`; factored out after the join it reloaded the `0xFFFF0000` half-word mask from the pool, while the target keeps it live in a register. Writing the whole vector in each arm (`offset.x = 0, offset.y = 30, offset.z = 0;`) lets cross-jumping merge the identical `z` store and keeps the mask where the target has it.
 - In a loop the same variable also costs a register: `u32 val = 0; if (VM_GetPC() != NULL) { val = Script_GetValue(); } args[i] = val;` hoisted the `movs #0` out of the loop and pushed three values into `r8`-`r10`. `if (VM_GetPC() != NULL) { args[i] = Script_GetValue(); } else { args[i] = 0; }` cross-jumps the store, and the `movs #0` disappears entirely because `r0` is already 0 on the `beq` path.
 
 ### A returned boolean built with one branch: initialise, then clear
