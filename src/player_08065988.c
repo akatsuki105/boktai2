@@ -520,7 +520,11 @@ NAKED s32 GetWeaponSkillLevel(Player* p) { INCFUNC("asm/func/GetWeaponSkillLevel
 
 NAKED void FUN_0807a8e0(Player* p) { INCFUNC("asm/func/FUN_0807a8e0.inc"); }
 
-NAKED void FUN_0807a904(Player* p) { INCFUNC("asm/func/FUN_0807a904.inc"); }
+void FUN_0807a904(Player* p, u32 flag) {
+  if (flag == 0) {
+    p->unk_402++;
+  }
+}
 
 NAKED void FUN_0807a91c(Player* p) { INCFUNC("asm/func/FUN_0807a91c.inc"); }
 
@@ -532,7 +536,7 @@ NAKED void FUN_0807a97c(Player* p) { INCFUNC("asm/func/FUN_0807a97c.inc"); }
 
 NAKED void FUN_0807a99c(Player* p) { INCFUNC("asm/func/FUN_0807a99c.inc"); }
 
-NAKED void FUN_0807a9b8(Player* p) { INCFUNC("asm/func/FUN_0807a9b8.inc"); }
+NAKED void FUN_0807a9b8(Player* p, void* val) { INCFUNC("asm/func/FUN_0807a9b8.inc"); }
 
 NAKED s32 FUN_0807a9d0(Player* p) { INCFUNC("asm/func/FUN_0807a9d0.inc"); }
 
