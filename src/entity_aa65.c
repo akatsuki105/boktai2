@@ -23,7 +23,7 @@ typedef struct {
   Vec3 max;                      // 0x24, pos + (0xA4, 0x80, 0xA4), プレイヤーが min..max に入ると HazardManager.hitbox が攻撃側として登録される
   HitboxData hitbox;             // 0x2C, 被弾用 (flags 0x4001), fn は Hazard_OnHit で owner はこの Hazard
   MapTileOverride tileOverride;  // 0x7C, 足元のタイルの高さを +1 して通れなくする
-  AuxSprite node;                // 0x8C
+  AuxSprite sprite;              // 0x8C
   AuxSpriteGfx gfx;              // 0xB8, SPRITE_CACTUS
 } Hazard;
 static_assert(sizeof(Hazard) == 212);
@@ -41,6 +41,9 @@ typedef struct {
 static_assert(sizeof(HazardManager) == 116);
 
 COMMON_DATA HazardManager* gHazardManager = NULL;  // 0x03002B34
+
+s32 GetMapAreaAt(Vec3* pos);
+void FUN_08234270(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
 
 static inline bool32 Hitbox_HasWeakness(HitboxData* p, u32 mask) { return p->weakness & mask; }
 
@@ -67,7 +70,7 @@ void Hazard_OnHit(HitboxData* a, HitboxData* b, void* owner) {
 // Hazard 1個を当たり判定・描画・地形の各リストから外し、スロットを空きに戻す
 s32 Hazard_Remove(HazardManager* p, Hazard* hazard, u32 idx) {
   Hitbox_Unregister(&hazard->hitbox);
-  AuxSprite_Remove(&hazard->node);
+  AuxSprite_Remove(&hazard->sprite);
   FUN_082342a8(&hazard->tileOverride);
   p->activeMask &= ~(1 << idx);
 }
@@ -223,9 +226,6 @@ s32 HazardManager_FindFreeSlot(HazardManager* p) {
   return -1;
 }
 
-s32 GetMapAreaAt(Vec3* pos);
-void FUN_08234270(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
-
 // 空きスロットに Hazard を1個置く。当たり判定・地形の高さ・スプライトを用意して使用中にする
 NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, s32 requireArea, s32 scriptId, s32* args) {
 #ifdef NONMATCHING_C
@@ -312,9 +312,9 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   if (!Video_GetAuxSprite(gfx, SPRITE_CACTUS)) {
     return -1;
   }
-  AuxSprite_Add(&hazard->node, gfx, 0);
-  hazard->node.metaspriteIdx = metaspriteIdx;
-  hazard->node.pos = hazard->pos;
+  AuxSprite_Add(&hazard->sprite, gfx, 0);
+  hazard->sprite.metaspriteIdx = metaspriteIdx;
+  hazard->sprite.pos = hazard->pos;
   p->activeMask |= 1 << slot;
 #else
   INCFUNC("asm/func/HazardManager_Spawn.inc");
