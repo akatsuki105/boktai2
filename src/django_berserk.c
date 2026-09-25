@@ -88,6 +88,20 @@ NAKED void FUN_0807fed0(DjangoBerserk* p) { INCFUNC("asm/func/FUN_0807fed0.inc")
 
 NAKED void FUN_0807ff78(DjangoBerserk* p) { INCFUNC("asm/func/FUN_0807ff78.inc"); }
 
-NAKED s32 DjangoBerserk_Init(DjangoBerserk* p, Player* player) { INCFUNC("asm/func/DjangoBerserk_Init.inc"); }
+// HP を半分まで削る演出を開始する。hpTarget が下限、hpDrainStep が毎フレーム引く量
+s32 DjangoBerserk_Init(DjangoBerserk* p, Player* player) {
+  p->player = player;
+  LoadPlayerSprite_0807fe48(p);
+  FUN_0807fed0(p);
+  FUN_0807ff78(p);
+  DjangoBerserk_SetState(p, FUN_0807f94c);
+  gFlag030047a4 |= FLAG030047A4_UNK_0;
+  p->hpTarget = p->player->hp >> 1;
+  if (p->hpTarget == 0) {
+    p->hpTarget = 1;
+  }
+  p->hpDrainStep = Div(p->player->hp - p->hpTarget, 0x48) + 1;
+  return 0;
+}
 
 NAKED DjangoBerserk* DjangoBerserk_Create(Player* player) { INCFUNC("asm/func/DjangoBerserk_Create.inc"); }
