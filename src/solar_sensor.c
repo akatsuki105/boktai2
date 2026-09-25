@@ -13,18 +13,18 @@ IWRAM_DATA s32 gSensorState = 0;                     // 0x030026B4, 0: measuring
 IWRAM_DATA s32 gSensorCounter = 0;                   // 0x030026B8, 0-511, counts half-cycles of the 74LV4040 counter chip
 IWRAM_DATA s32 gSensorUnk0c = 0;                     // 0x030026BC
 IWRAM_DATA s32 gSensorNextWrite = 0;                 // 0x030026C0, next value to be written to GPIO_DATA
-IWRAM_DATA bool32 gSensorIoEnabled = 0;              // 0x030026C4
+IWRAM_DATA bool32 gSensorIoEnabled = FALSE;          // 0x030026C4
 // 0x030057B0 から 0x030057CC までの8つ。上のグローバル群が高レベルなら、こちらは低レベルなドライバ側だと思われる
 // これも以前は SolarSensorManager という1つの構造体だったが、Sensor_Disable が 0x030057B8 と 0x030057C8 を
 // 別々のプール定数として読む (構造体なら1回のロード + オフセットになる) ので、原典では個別のグローバル
-COMMON_DATA u32 gSensorDrvUnk00 = 0;    // 0x030057B0
-COMMON_DATA u32 gSensorDrvUnk04 = 0;    // 0x030057B4
-COMMON_DATA bool32 gSensorEnabled = 0;  // 0x030057B8
-COMMON_DATA u32 gSensorGpioData = 0;    // 0x030057BC, last read GPIO data (GPIO_DATA & 8)
-COMMON_DATA s32 gSensorDrvUnk10 = 0;    // 0x030057C0
-COMMON_DATA s32 gSensorDrvUnk14 = 0;    // 0x030057C4
-COMMON_DATA s32 gSensorRawLevel = 0;    // 0x030057C8, light level (0: Max brightness, 0xFF: Dark)
-COMMON_DATA s32 gSensorDrvUnk1c = 0;    // 0x030057CC, おそらく Sensor_Tick の周期
+COMMON_DATA u32 gSensorDrvUnk00 = 0;        // 0x030057B0
+COMMON_DATA u32 gSensorDrvUnk04 = 0;        // 0x030057B4
+COMMON_DATA bool32 gSensorEnabled = FALSE;  // 0x030057B8
+COMMON_DATA u32 gSensorGpioData = 0;        // 0x030057BC, last read GPIO data (GPIO_DATA & 8)
+COMMON_DATA s32 gSensorDrvUnk10 = 0;        // 0x030057C0
+COMMON_DATA s32 gSensorDrvUnk14 = 0;        // 0x030057C4
+COMMON_DATA s32 gSensorRawLevel = 0;        // 0x030057C8, light level (0: Max brightness, 0xFF: Dark)
+COMMON_DATA s32 gSensorDrvUnk1c = 0;        // 0x030057CC, おそらく Sensor_Tick の周期
 
 const u16 u16_ARRAY_08dbd810[4] = {3, 3, 1, 2};  // 0x08DBD810
 
@@ -211,21 +211,19 @@ NAKED void Sensor_Tick(void) { INCFUNC("asm/func/Sensor_Tick.inc"); }
 
 void Sensor_EnableIO(void) {
   gSensorDrvUnk04 = 0;
-  gSensorIoEnabled = 1;
+  gSensorIoEnabled = TRUE;
   Sensor_DoEnableIO();
 }
 
 void Sensor_DisableIO(void) {
-  if (gSensorIoEnabled != 0) {
-    gSensorIoEnabled = 0;
+  if (gSensorIoEnabled) {
+    gSensorIoEnabled = FALSE;
     Sensor_DoDisableIO();
   }
 }
 
 void Sensor_Enable(void) {
-  if (gSensorIoEnabled == 0) {
-    Sensor_EnableIO();
-  }
+  if (!gSensorIoEnabled) Sensor_EnableIO();
   gSensorEnabled = TRUE;
   gSensorState = 0;
   gSensorCounter = 0;
@@ -233,17 +231,13 @@ void Sensor_Enable(void) {
 }
 
 void Sensor_Disable(void) {
-  if (gSensorIoEnabled == 1) {
-    Sensor_DisableIO();
-  }
+  if (gSensorIoEnabled == TRUE) Sensor_DisableIO();
   gSensorEnabled = FALSE;
   gSensorRawLevel = -1;
 }
 
 s32 Sensor_GetRawLevel(void) {
-  if (gSensorEnabled == 0) {
-    return -1;
-  }
+  if (!gSensorEnabled) return -1;
   return gSensorRawLevel;
 }
 
