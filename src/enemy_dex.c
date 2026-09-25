@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "vm.h"
 
 struct TextPanel;
 struct EntityC946;
@@ -57,7 +58,11 @@ NAKED s32 FUN_0820d0b8(u32 param_1) { INCFUNC("asm/func/FUN_0820d0b8.inc"); }
 
 NAKED bool32 FUN_0820d0ec(void) { INCFUNC("asm/func/FUN_0820d0ec.inc"); }
 
-NAKED void FUN_0820d124(void) { INCFUNC("asm/func/FUN_0820d124.inc"); }
+void FUN_0820d124(void) {
+  if (VM_SeekToKeyword('k')) {
+    Script_GetValue();
+  }
+}
 
 NAKED void FUN_0820d138(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d138.inc"); }
 
