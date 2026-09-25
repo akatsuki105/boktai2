@@ -56,7 +56,11 @@ NAKED void FUN_080aa708(Entity080aace8* p) { INCFUNC("asm/func/FUN_080aa708.inc"
 
 NAKED void FUN_080aa834(Entity080aace8* p) { INCFUNC("asm/func/FUN_080aa834.inc"); }
 
-NAKED s32 Entity080aace8_Update(Entity080aace8* p) { INCFUNC("asm/func/Entity080aace8_Update.inc"); }
+s32 Entity080aace8_Update(Entity080aace8* p) {
+  FUN_080aa208(p);
+  p->updateCallback(p);
+  return 0;
+}
 
 NAKED s32 Entity080aace8_Destroy(Entity080aace8* p) { INCFUNC("asm/func/Entity080aace8_Destroy.inc"); }
 
