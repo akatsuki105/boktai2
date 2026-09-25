@@ -25,7 +25,14 @@ NAKED void FUN_080ac46c(Entity080ac574Particle* ptcl) { INCFUNC("asm/func/FUN_08
 
 NAKED s32 Entity080ac574_Update(Entity080ac574* p) { INCFUNC("asm/func/Entity080ac574_Update.inc"); }
 
-NAKED s32 Entity080ac574_Destroy(Entity080ac574* p) { INCFUNC("asm/func/Entity080ac574_Destroy.inc"); }
+s32 Entity080ac574_Destroy(Entity080ac574* p) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    Particle_Remove(&p->ptcls[i].ptcl);
+  }
+  return 0;
+}
 
 NAKED s32 Entity080ac574_Init(Entity080ac574* p) { INCFUNC("asm/func/Entity080ac574_Init.inc"); }
 
