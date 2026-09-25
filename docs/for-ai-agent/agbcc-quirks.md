@@ -118,8 +118,9 @@ if (cond) {                             // both arms set SIZE, then the kind
 
 ### `pop {r1}; bx r1` means a non-void return type, even with nothing returned
 
-- **Frequency**: `AuxShadow_SetSprite`, `AuxShadow_SetAffine`.
+- **Frequency**: `AuxShadow_SetSprite`, `AuxShadow_SetAffine`, `Eff082473e0Emitter_Reset`, `Entity080ac374_Destroy`, `Entity080ac374_Update`.
 - A `void` function restores the return address into `r0` (`pop {r0}` / `bx r0`). A function declared to return a value uses `r1`, so `r0` survives. `AuxShadow_SetSprite` ends with `pop {r1}` but never sets `r0` after its last call. Declaring it `s32` with no `return` statement matched; `void` gave `pop {r0}`.
+- This bites hardest on entity `_Update` / `_Destroy`, which the project declares `s32` even when they only ever return 0. If the last thing the function does is call something, the target usually has **no `movs r0, #0`** — it lets the callee's return value fall through. Writing `return 0;` costs exactly one instruction, and the streamdiff shows it as a lone extra `movs r0, #0` right before the epilogue. Drop the `return` and add a one-line comment saying the value comes from the last call.
 - The return type also shifts every scratch register up by one, because `r0` is no longer free. `AuxShadow_SetAffine` as `void` used `r0`/`r1`/`r2` for the flag update and `pop {r0}`; as `s32` it used `r1`/`r2`/`r3` and `pop {r1}`, which matched. So a register-renamed diff that also has `pop {r0}` vs `pop {r1}` is this lever, not a register-allocation problem.
 
 ### Guards chained with `&&` (or nested `if`s) drop the `adds r0, rN, #0` reload before the next call
