@@ -118,7 +118,709 @@ NAKED void FUN_08066d7c(Player* p, s32 val) { INCFUNC("asm/func/FUN_08066d7c.inc
 
 NAKED void FUN_08066df8(Player* p) { INCFUNC("asm/func/FUN_08066df8.inc"); }
 
-INCASM("asm/player_08065988.inc");
+NAKED void FUN_08066e84(Player* p) { INCFUNC("asm/func/FUN_08066e84.inc"); }
+
+NAKED void FUN_08066e9c(Player* p) { INCFUNC("asm/func/FUN_08066e9c.inc"); }
+
+NAKED s32 FUN_08066ee4(Player* p) { INCFUNC("asm/func/FUN_08066ee4.inc"); }
+
+NAKED s32 FUN_08066f18(Player* p) { INCFUNC("asm/func/FUN_08066f18.inc"); }
+
+NAKED void FUN_08066f7c(Player* p) { INCFUNC("asm/func/FUN_08066f7c.inc"); }
+
+NAKED s32 FUN_08066fd4(Player* p) { INCFUNC("asm/func/FUN_08066fd4.inc"); }
+
+NAKED s32 FUN_08067068(Player* p) { INCFUNC("asm/func/FUN_08067068.inc"); }
+
+NAKED s32 FUN_080670d4(Player* p) { INCFUNC("asm/func/FUN_080670d4.inc"); }
+
+NAKED void FUN_080670fc(Player* p) { INCFUNC("asm/func/FUN_080670fc.inc"); }
+
+NAKED void FUN_080672b0(Player* p) { INCFUNC("asm/func/FUN_080672b0.inc"); }
+
+NAKED void MagicDash_0806734c(Player* p) { INCFUNC("asm/func/MagicDash_0806734c.inc"); }
+
+NAKED void FUN_080674dc(Player* p) { INCFUNC("asm/func/FUN_080674dc.inc"); }
+
+NAKED void FUN_08067510(Player* p) { INCFUNC("asm/func/FUN_08067510.inc"); }
+
+NAKED void FUN_08067de8(Player* p) { INCFUNC("asm/func/FUN_08067de8.inc"); }
+
+NAKED void FUN_08067f58(Player* p) { INCFUNC("asm/func/FUN_08067f58.inc"); }
+
+NAKED void FUN_08067f88(Player* p) { INCFUNC("asm/func/FUN_08067f88.inc"); }
+
+NAKED void FUN_08067ffc(Player* p) { INCFUNC("asm/func/FUN_08067ffc.inc"); }
+
+NAKED void FUN_080682dc(Player* p) { INCFUNC("asm/func/FUN_080682dc.inc"); }
+
+NAKED void FUN_0806830c(Player* p) { INCFUNC("asm/func/FUN_0806830c.inc"); }
+
+NAKED void FUN_08068624(Player* p) { INCFUNC("asm/func/FUN_08068624.inc"); }
+
+NAKED void MagicRisingSun_08068944(Player* p) { INCFUNC("asm/func/MagicRisingSun_08068944.inc"); }
+
+NAKED s32 FUN_08068c6c(Player* p) { INCFUNC("asm/func/FUN_08068c6c.inc"); }
+
+NAKED s32 FUN_08068d18(Player* p) { INCFUNC("asm/func/FUN_08068d18.inc"); }
+
+NAKED void FUN_08068e94(Player* p) { INCFUNC("asm/func/FUN_08068e94.inc"); }
+
+NAKED void FUN_08069218(Player* p) { INCFUNC("asm/func/FUN_08069218.inc"); }
+
+NAKED void FUN_080695ec(Player* p) { INCFUNC("asm/func/FUN_080695ec.inc"); }
+
+NAKED void FUN_0806961c(Player* p) { INCFUNC("asm/func/FUN_0806961c.inc"); }
+
+NAKED void FUN_08069648(Player* p) { INCFUNC("asm/func/FUN_08069648.inc"); }
+
+NAKED void MagicFreeze_08069710(Player* p) { INCFUNC("asm/func/MagicFreeze_08069710.inc"); }
+
+NAKED void MagicHealing_08069928(Player* p) { INCFUNC("asm/func/MagicHealing_08069928.inc"); }
+
+NAKED void MagicDynamite_08069b18(Player* p) { INCFUNC("asm/func/MagicDynamite_08069b18.inc"); }
+
+NAKED void FUN_08069c8c(Player* p) { INCFUNC("asm/func/FUN_08069c8c.inc"); }
+
+NAKED void FUN_08069d70(Player* p) { INCFUNC("asm/func/FUN_08069d70.inc"); }
+
+NAKED void FUN_08069f60(Player* p) { INCFUNC("asm/func/FUN_08069f60.inc"); }
+
+NAKED void FUN_0806a050(Player* p) { INCFUNC("asm/func/FUN_0806a050.inc"); }
+
+NAKED void FUN_0806a084(Player* p) { INCFUNC("asm/func/FUN_0806a084.inc"); }
+
+NAKED void FUN_0806a32c(Player* p) { INCFUNC("asm/func/FUN_0806a32c.inc"); }
+
+NAKED void FUN_0806a628(Player* p) { INCFUNC("asm/func/FUN_0806a628.inc"); }
+
+NAKED void FUN_0806a88c(Player* p) { INCFUNC("asm/func/FUN_0806a88c.inc"); }
+
+NAKED void FUN_0806abd4(Player* p) { INCFUNC("asm/func/FUN_0806abd4.inc"); }
+
+NAKED void FUN_0806adc8(Player* p) { INCFUNC("asm/func/FUN_0806adc8.inc"); }
+
+NAKED void FUN_0806af70(Player* p) { INCFUNC("asm/func/FUN_0806af70.inc"); }
+
+NAKED void FUN_0806b06c(Player* p) { INCFUNC("asm/func/FUN_0806b06c.inc"); }
+
+NAKED void FUN_0806b374(Player* p) { INCFUNC("asm/func/FUN_0806b374.inc"); }
+
+NAKED void Sabata_BlackSun(Player* p) { INCFUNC("asm/func/Sabata_BlackSun.inc"); }
+
+NAKED void FUN_0806b758(Player* p) { INCFUNC("asm/func/FUN_0806b758.inc"); }
+
+NAKED void MagicTransform_0806b92c(Player* p) { INCFUNC("asm/func/MagicTransform_0806b92c.inc"); }
+
+NAKED void MagicChangeBat_0806bc74(Player* p) { INCFUNC("asm/func/MagicChangeBat_0806bc74.inc"); }
+
+NAKED void MagicChangeMouse_0806bf18(Player* p) { INCFUNC("asm/func/MagicChangeMouse_0806bf18.inc"); }
+
+NAKED void MagicSleeping_0806c124(Player* p) { INCFUNC("asm/func/MagicSleeping_0806c124.inc"); }
+
+NAKED void FUN_0806c2dc(Player* p) { INCFUNC("asm/func/FUN_0806c2dc.inc"); }
+
+NAKED void FUN_0806c400(Player* p) { INCFUNC("asm/func/FUN_0806c400.inc"); }
+
+NAKED void FUN_0806c6d4(Player* p) { INCFUNC("asm/func/FUN_0806c6d4.inc"); }
+
+NAKED void FUN_0806c868(Player* p) { INCFUNC("asm/func/FUN_0806c868.inc"); }
+
+NAKED void FUN_0806c9bc(Player* p) { INCFUNC("asm/func/FUN_0806c9bc.inc"); }
+
+NAKED void FUN_0806cbe8(Player* p) { INCFUNC("asm/func/FUN_0806cbe8.inc"); }
+
+NAKED void FUN_0806ceb0(Player* p) { INCFUNC("asm/func/FUN_0806ceb0.inc"); }
+
+NAKED s32 FUN_0806cfd4(Player* p) { INCFUNC("asm/func/FUN_0806cfd4.inc"); }
+
+NAKED void FUN_0806d014(Player* p) { INCFUNC("asm/func/FUN_0806d014.inc"); }
+
+NAKED void FUN_0806d22c(Player* p) { INCFUNC("asm/func/FUN_0806d22c.inc"); }
+
+NAKED void FUN_0806d420(Player* p) { INCFUNC("asm/func/FUN_0806d420.inc"); }
+
+NAKED void FUN_0806d5b0(Player* p) { INCFUNC("asm/func/FUN_0806d5b0.inc"); }
+
+NAKED void FUN_0806d74c(Player* p) { INCFUNC("asm/func/FUN_0806d74c.inc"); }
+
+NAKED void FUN_0806da18(Player* p) { INCFUNC("asm/func/FUN_0806da18.inc"); }
+
+NAKED void FUN_0806dd7c(Player* p) { INCFUNC("asm/func/FUN_0806dd7c.inc"); }
+
+NAKED void FUN_0806df84(Player* p) { INCFUNC("asm/func/FUN_0806df84.inc"); }
+
+NAKED void FUN_0806e15c(Player* p) { INCFUNC("asm/func/FUN_0806e15c.inc"); }
+
+NAKED void FUN_0806e404(Player* p) { INCFUNC("asm/func/FUN_0806e404.inc"); }
+
+NAKED void FUN_0806e4b4(Player* p) { INCFUNC("asm/func/FUN_0806e4b4.inc"); }
+
+NAKED void FUN_0806e674(Player* p) { INCFUNC("asm/func/FUN_0806e674.inc"); }
+
+NAKED void FUN_0806e7dc(Player* p) { INCFUNC("asm/func/FUN_0806e7dc.inc"); }
+
+NAKED s32 FUN_0806ea98(Player* p) { INCFUNC("asm/func/FUN_0806ea98.inc"); }
+
+NAKED void MagicChangeWolf_0806eb40(Player* p) { INCFUNC("asm/func/MagicChangeWolf_0806eb40.inc"); }
+
+NAKED void FUN_0806f1ec(Player* p) { INCFUNC("asm/func/FUN_0806f1ec.inc"); }
+
+NAKED void FUN_0806f284(Player* p) { INCFUNC("asm/func/FUN_0806f284.inc"); }
+
+NAKED void MagicHealing_0806f3a0(Player* p) { INCFUNC("asm/func/MagicHealing_0806f3a0.inc"); }
+
+NAKED void FUN_0806f5d8(Player* p) { INCFUNC("asm/func/FUN_0806f5d8.inc"); }
+
+NAKED s32 FUN_0806f738(Player* p) { INCFUNC("asm/func/FUN_0806f738.inc"); }
+
+NAKED void FUN_0806f780(Player* p) { INCFUNC("asm/func/FUN_0806f780.inc"); }
+
+NAKED s32 FUN_0806f7bc(Player* p) { INCFUNC("asm/func/FUN_0806f7bc.inc"); }
+
+NAKED s32 FUN_0806f900(Player* p) { INCFUNC("asm/func/FUN_0806f900.inc"); }
+
+NAKED s32 FUN_0806f960(Player* p) { INCFUNC("asm/func/FUN_0806f960.inc"); }
+
+NAKED void dark_django_0806f990(Player* p) { INCFUNC("asm/func/dark_django_0806f990.inc"); }
+
+NAKED void FUN_0806fad8(Player* p) { INCFUNC("asm/func/FUN_0806fad8.inc"); }
+
+NAKED void FUN_0806fc20(Player* p) { INCFUNC("asm/func/FUN_0806fc20.inc"); }
+
+NAKED s32 FUN_0806fd58(Player* p) { INCFUNC("asm/func/FUN_0806fd58.inc"); }
+
+NAKED void FUN_0806fedc(Player* p) { INCFUNC("asm/func/FUN_0806fedc.inc"); }
+
+NAKED void FUN_080700a4(Player* p) { INCFUNC("asm/func/FUN_080700a4.inc"); }
+
+NAKED s32 FUN_08070104(Player* p) { INCFUNC("asm/func/FUN_08070104.inc"); }
+
+NAKED s32 FUN_0807012c(Player* p) { INCFUNC("asm/func/FUN_0807012c.inc"); }
+
+NAKED void FUN_080701e0(Player* p) { INCFUNC("asm/func/FUN_080701e0.inc"); }
+
+NAKED void FUN_080704d8(Player* p) { INCFUNC("asm/func/FUN_080704d8.inc"); }
+
+NAKED s32 FUN_08070604(Player* p) { INCFUNC("asm/func/FUN_08070604.inc"); }
+
+NAKED void FUN_08070844(Player* p) { INCFUNC("asm/func/FUN_08070844.inc"); }
+
+NAKED void FUN_08070adc(Player* p) { INCFUNC("asm/func/FUN_08070adc.inc"); }
+
+NAKED void FUN_08070c2c(Player* p) { INCFUNC("asm/func/FUN_08070c2c.inc"); }
+
+NAKED s32 FUN_08070db4(Player* p) { INCFUNC("asm/func/FUN_08070db4.inc"); }
+
+NAKED void FUN_0807106c(Player* p) { INCFUNC("asm/func/FUN_0807106c.inc"); }
+
+NAKED void FUN_08071218(Player* p) { INCFUNC("asm/func/FUN_08071218.inc"); }
+
+NAKED s32 FUN_080712d4(Player* p) { INCFUNC("asm/func/FUN_080712d4.inc"); }
+
+NAKED void FUN_080713a8(Player* p) { INCFUNC("asm/func/FUN_080713a8.inc"); }
+
+NAKED void gun_080715a0(Player* p) { INCFUNC("asm/func/gun_080715a0.inc"); }
+
+NAKED void FUN_08071b14(Player* p) { INCFUNC("asm/func/FUN_08071b14.inc"); }
+
+NAKED void FUN_08072014(Player* p) { INCFUNC("asm/func/FUN_08072014.inc"); }
+
+NAKED void FUN_08072620(Player* p) { INCFUNC("asm/func/FUN_08072620.inc"); }
+
+NAKED void FUN_08072640(Player* p) { INCFUNC("asm/func/FUN_08072640.inc"); }
+
+NAKED void FUN_08072650(Player* p) { INCFUNC("asm/func/FUN_08072650.inc"); }
+
+NAKED void FUN_08072670(Player* p) { INCFUNC("asm/func/FUN_08072670.inc"); }
+
+NAKED void FUN_0807268c(Player* p) { INCFUNC("asm/func/FUN_0807268c.inc"); }
+
+NAKED void FUN_080726b4(Player* p) { INCFUNC("asm/func/FUN_080726b4.inc"); }
+
+NAKED void FUN_080726e0(Player* p) { INCFUNC("asm/func/FUN_080726e0.inc"); }
+
+NAKED void FUN_080726ec(Player* p) { INCFUNC("asm/func/FUN_080726ec.inc"); }
+
+NAKED void FUN_08072724(Player* p) { INCFUNC("asm/func/FUN_08072724.inc"); }
+
+NAKED void FUN_080727d4(Player* p) { INCFUNC("asm/func/FUN_080727d4.inc"); }
+
+NAKED void FUN_080728a8(Player* p) { INCFUNC("asm/func/FUN_080728a8.inc"); }
+
+NAKED void FUN_080729e0(Player* p) { INCFUNC("asm/func/FUN_080729e0.inc"); }
+
+NAKED void FUN_08072a0c(Player* p) { INCFUNC("asm/func/FUN_08072a0c.inc"); }
+
+NAKED void FUN_08072a38(Player* p) { INCFUNC("asm/func/FUN_08072a38.inc"); }
+
+NAKED void FUN_08072d48(Player* p) { INCFUNC("asm/func/FUN_08072d48.inc"); }
+
+NAKED void FUN_0807304c(Player* p) { INCFUNC("asm/func/FUN_0807304c.inc"); }
+
+NAKED void FUN_0807317c(Player* p) { INCFUNC("asm/func/FUN_0807317c.inc"); }
+
+NAKED void FUN_08073574(Player* p) { INCFUNC("asm/func/FUN_08073574.inc"); }
+
+NAKED void FUN_080736b8(Player* p) { INCFUNC("asm/func/FUN_080736b8.inc"); }
+
+NAKED void FUN_080738b4(Player* p) { INCFUNC("asm/func/FUN_080738b4.inc"); }
+
+NAKED void FUN_080739e0(Player* p) { INCFUNC("asm/func/FUN_080739e0.inc"); }
+
+NAKED void FUN_08073b3c(Player* p) { INCFUNC("asm/func/FUN_08073b3c.inc"); }
+
+NAKED void FUN_08073e18(Player* p) { INCFUNC("asm/func/FUN_08073e18.inc"); }
+
+NAKED void FUN_08073f88(Player* p) { INCFUNC("asm/func/FUN_08073f88.inc"); }
+
+NAKED void FUN_080740b0(Player* p) { INCFUNC("asm/func/FUN_080740b0.inc"); }
+
+NAKED void FUN_08074244(Player* p) { INCFUNC("asm/func/FUN_08074244.inc"); }
+
+NAKED void FUN_08074350(Player* p) { INCFUNC("asm/func/FUN_08074350.inc"); }
+
+NAKED void FUN_080744bc(Player* p) { INCFUNC("asm/func/FUN_080744bc.inc"); }
+
+NAKED void FUN_080746ec(Player* p) { INCFUNC("asm/func/FUN_080746ec.inc"); }
+
+NAKED void FUN_08074994(Player* p) { INCFUNC("asm/func/FUN_08074994.inc"); }
+
+NAKED void FUN_080749b0(Player* p) { INCFUNC("asm/func/FUN_080749b0.inc"); }
+
+NAKED void FUN_08074a40(Player* p) { INCFUNC("asm/func/FUN_08074a40.inc"); }
+
+NAKED void FUN_08074d90(Player* p) { INCFUNC("asm/func/FUN_08074d90.inc"); }
+
+NAKED void FUN_08074e98(Player* p) { INCFUNC("asm/func/FUN_08074e98.inc"); }
+
+NAKED void FUN_08075134(Player* p) { INCFUNC("asm/func/FUN_08075134.inc"); }
+
+NAKED void FUN_08075980(Player* p) { INCFUNC("asm/func/FUN_08075980.inc"); }
+
+NAKED void FUN_08075b4c(Player* p) { INCFUNC("asm/func/FUN_08075b4c.inc"); }
+
+NAKED void FUN_08075df8(Player* p) { INCFUNC("asm/func/FUN_08075df8.inc"); }
+
+NAKED void FUN_08075f00(Player* p) { INCFUNC("asm/func/FUN_08075f00.inc"); }
+
+NAKED void FUN_080762fc(Player* p) { INCFUNC("asm/func/FUN_080762fc.inc"); }
+
+NAKED void FUN_080765a0(Player* p) { INCFUNC("asm/func/FUN_080765a0.inc"); }
+
+NAKED void FUN_0807688c(Player* p) { INCFUNC("asm/func/FUN_0807688c.inc"); }
+
+NAKED void FUN_08076f2c(Player* p) { INCFUNC("asm/func/FUN_08076f2c.inc"); }
+
+NAKED void FUN_08077100(Player* p) { INCFUNC("asm/func/FUN_08077100.inc"); }
+
+NAKED void FUN_080772ec(Player* p) { INCFUNC("asm/func/FUN_080772ec.inc"); }
+
+NAKED void FUN_080773f0(Player* p) { INCFUNC("asm/func/FUN_080773f0.inc"); }
+
+NAKED void FUN_08077a5c(Player* p) { INCFUNC("asm/func/FUN_08077a5c.inc"); }
+
+NAKED void FUN_08077cbc(Player* p) { INCFUNC("asm/func/FUN_08077cbc.inc"); }
+
+NAKED void FUN_08078060(Player* p) { INCFUNC("asm/func/FUN_08078060.inc"); }
+
+NAKED s32 FUN_0807849c(Player* p) { INCFUNC("asm/func/FUN_0807849c.inc"); }
+
+NAKED void FUN_080784fc(Player* p) { INCFUNC("asm/func/FUN_080784fc.inc"); }
+
+NAKED void FUN_08078548(Player* p) { INCFUNC("asm/func/FUN_08078548.inc"); }
+
+NAKED void FUN_0807856c(Player* p) { INCFUNC("asm/func/FUN_0807856c.inc"); }
+
+NAKED void FUN_0807858c(Player* p) { INCFUNC("asm/func/FUN_0807858c.inc"); }
+
+NAKED s32 FUN_0807868c(Player* p) { INCFUNC("asm/func/FUN_0807868c.inc"); }
+
+NAKED s32 FUN_08078844(Player* p) { INCFUNC("asm/func/FUN_08078844.inc"); }
+
+NAKED s32 FUN_080788b0(Player* p) { INCFUNC("asm/func/FUN_080788b0.inc"); }
+
+NAKED s32 FUN_080788d0(Player* p) { INCFUNC("asm/func/FUN_080788d0.inc"); }
+
+NAKED void FUN_08078bc0(Player* p) { INCFUNC("asm/func/FUN_08078bc0.inc"); }
+
+NAKED void FUN_08078d5c(Player* p) { INCFUNC("asm/func/FUN_08078d5c.inc"); }
+
+NAKED void FUN_08079138(Player* p) { INCFUNC("asm/func/FUN_08079138.inc"); }
+
+NAKED s32 FUN_080794e0(Player* p) { INCFUNC("asm/func/FUN_080794e0.inc"); }
+
+NAKED s32 FUN_080795bc(Player* p) { INCFUNC("asm/func/FUN_080795bc.inc"); }
+
+NAKED void FUN_08079644(Player* p) { INCFUNC("asm/func/FUN_08079644.inc"); }
+
+NAKED void FUN_0807972c(Player* p) { INCFUNC("asm/func/FUN_0807972c.inc"); }
+
+NAKED void FUN_080798a4(Player* p) { INCFUNC("asm/func/FUN_080798a4.inc"); }
+
+NAKED s32 FUN_0807998c(Player* p) { INCFUNC("asm/func/FUN_0807998c.inc"); }
+
+NAKED void FUN_08079a64(Player* p) { INCFUNC("asm/func/FUN_08079a64.inc"); }
+
+NAKED void FUN_08079b64(Player* p) { INCFUNC("asm/func/FUN_08079b64.inc"); }
+
+NAKED s32 FUN_08079c50(Player* p) { INCFUNC("asm/func/FUN_08079c50.inc"); }
+
+NAKED void FUN_08079d40(Player* p) { INCFUNC("asm/func/FUN_08079d40.inc"); }
+
+NAKED void FUN_08079e4c(Player* p) { INCFUNC("asm/func/FUN_08079e4c.inc"); }
+
+NAKED void FUN_08079f1c(Player* p) { INCFUNC("asm/func/FUN_08079f1c.inc"); }
+
+NAKED void FUN_0807a270(Player* p) { INCFUNC("asm/func/FUN_0807a270.inc"); }
+
+NAKED void FUN_0807a334(Player* p) { INCFUNC("asm/func/FUN_0807a334.inc"); }
+
+NAKED void FUN_0807a44c(Player* p) { INCFUNC("asm/func/FUN_0807a44c.inc"); }
+
+NAKED s32 FUN_0807a4c4(Player* p) { INCFUNC("asm/func/FUN_0807a4c4.inc"); }
+
+NAKED void FUN_0807a524(Player* p) { INCFUNC("asm/func/FUN_0807a524.inc"); }
+
+NAKED void FUN_0807a528(Player* p) { INCFUNC("asm/func/FUN_0807a528.inc"); }
+
+NAKED s32 FUN_0807a570(Player* p) { INCFUNC("asm/func/FUN_0807a570.inc"); }
+
+NAKED s32 FUN_0807a5d8(Player* p) { INCFUNC("asm/func/FUN_0807a5d8.inc"); }
+
+NAKED s32 FUN_0807a6cc(Player* p) { INCFUNC("asm/func/FUN_0807a6cc.inc"); }
+
+NAKED s32 FUN_0807a70c(Player* p) { INCFUNC("asm/func/FUN_0807a70c.inc"); }
+
+NAKED void FUN_0807a798(Player* p) { INCFUNC("asm/func/FUN_0807a798.inc"); }
+
+NAKED void FUN_0807a7f8(Player* p) { INCFUNC("asm/func/FUN_0807a7f8.inc"); }
+
+NAKED void FUN_0807a840(Player* p) { INCFUNC("asm/func/FUN_0807a840.inc"); }
+
+NAKED void FUN_0807a8ac(Player* p) { INCFUNC("asm/func/FUN_0807a8ac.inc"); }
+
+NAKED s32 GetWeaponSkillLevel(Player* p) { INCFUNC("asm/func/GetWeaponSkillLevel.inc"); }
+
+NAKED void FUN_0807a8e0(Player* p) { INCFUNC("asm/func/FUN_0807a8e0.inc"); }
+
+NAKED void FUN_0807a904(Player* p) { INCFUNC("asm/func/FUN_0807a904.inc"); }
+
+NAKED void FUN_0807a91c(Player* p) { INCFUNC("asm/func/FUN_0807a91c.inc"); }
+
+NAKED s32 FUN_0807a954(Player* p) { INCFUNC("asm/func/FUN_0807a954.inc"); }
+
+NAKED void FUN_0807a970(Player* p) { INCFUNC("asm/func/FUN_0807a970.inc"); }
+
+NAKED void FUN_0807a97c(Player* p) { INCFUNC("asm/func/FUN_0807a97c.inc"); }
+
+NAKED void FUN_0807a99c(Player* p) { INCFUNC("asm/func/FUN_0807a99c.inc"); }
+
+NAKED void FUN_0807a9b8(Player* p) { INCFUNC("asm/func/FUN_0807a9b8.inc"); }
+
+NAKED s32 FUN_0807a9d0(Player* p) { INCFUNC("asm/func/FUN_0807a9d0.inc"); }
+
+NAKED void FUN_0807aa00(Player* p) { INCFUNC("asm/func/FUN_0807aa00.inc"); }
+
+NAKED void FUN_0807aa30(Player* p) { INCFUNC("asm/func/FUN_0807aa30.inc"); }
+
+NAKED void Player_ReduceENE_0807aa60(Player* player, s32 amount) { INCFUNC("asm/func/Player_ReduceENE_0807aa60.inc"); }
+
+NAKED void ApplyLunaBug(Player* p) { INCFUNC("asm/func/ApplyLunaBug.inc"); }
+
+NAKED void ApplySolBug(Player* p) { INCFUNC("asm/func/ApplySolBug.inc"); }
+
+NAKED void ApplyDarkBug(Player* p) { INCFUNC("asm/func/ApplyDarkBug.inc"); }
+
+NAKED void FUN_0807ab14(Player* p) { INCFUNC("asm/func/FUN_0807ab14.inc"); }
+
+NAKED s32 FUN_0807ab64(Player* p) { INCFUNC("asm/func/FUN_0807ab64.inc"); }
+
+NAKED s32 FUN_0807ac74(Player* p) { INCFUNC("asm/func/FUN_0807ac74.inc"); }
+
+NAKED s32 FUN_0807ad60(Player* p) { INCFUNC("asm/func/FUN_0807ad60.inc"); }
+
+NAKED void FUN_0807adc0(Player* p) { INCFUNC("asm/func/FUN_0807adc0.inc"); }
+
+NAKED void FUN_0807ae6c(Player* p) { INCFUNC("asm/func/FUN_0807ae6c.inc"); }
+
+NAKED s32 FUN_0807afe8(Player* p) { INCFUNC("asm/func/FUN_0807afe8.inc"); }
+
+NAKED s32 FUN_0807b000(Player* p) { INCFUNC("asm/func/FUN_0807b000.inc"); }
+
+NAKED void FUN_0807b02c(Player* p) { INCFUNC("asm/func/FUN_0807b02c.inc"); }
+
+NAKED s32 FUN_0807b0c0(Player* p) { INCFUNC("asm/func/FUN_0807b0c0.inc"); }
+
+NAKED s32 FUN_0807b118(Player* p) { INCFUNC("asm/func/FUN_0807b118.inc"); }
+
+NAKED s32 FUN_0807b138(Player* p) { INCFUNC("asm/func/FUN_0807b138.inc"); }
+
+NAKED void FUN_0807b15c(Player* p) { INCFUNC("asm/func/FUN_0807b15c.inc"); }
+
+NAKED void FUN_0807b174(Player* p) { INCFUNC("asm/func/FUN_0807b174.inc"); }
+
+NAKED s32 FUN_0807b1a4(Player* p) { INCFUNC("asm/func/FUN_0807b1a4.inc"); }
+
+NAKED void item_0807b1e4(Player* p) { INCFUNC("asm/func/item_0807b1e4.inc"); }
+
+NAKED s32 FUN_0807b2dc(Player* p) { INCFUNC("asm/func/FUN_0807b2dc.inc"); }
+
+NAKED void FUN_0807b314(Player* p) { INCFUNC("asm/func/FUN_0807b314.inc"); }
+
+NAKED void FUN_0807b34c(Player* p) { INCFUNC("asm/func/FUN_0807b34c.inc"); }
+
+NAKED void FUN_0807b3c0(Player* p) { INCFUNC("asm/func/FUN_0807b3c0.inc"); }
+
+NAKED s32 FUN_0807b3e0(Player* p) { INCFUNC("asm/func/FUN_0807b3e0.inc"); }
+
+NAKED void FUN_0807b428(Player* p) { INCFUNC("asm/func/FUN_0807b428.inc"); }
+
+NAKED void FUN_0807b484(Player* p) { INCFUNC("asm/func/FUN_0807b484.inc"); }
+
+NAKED void FUN_0807b4b8(Player* p) { INCFUNC("asm/func/FUN_0807b4b8.inc"); }
+
+NAKED s32 FUN_0807b4e4(Player* p) { INCFUNC("asm/func/FUN_0807b4e4.inc"); }
+
+NAKED void FUN_0807b528(Player* p) { INCFUNC("asm/func/FUN_0807b528.inc"); }
+
+NAKED void FUN_0807b564(Player* p) { INCFUNC("asm/func/FUN_0807b564.inc"); }
+
+NAKED void FUN_0807b580(Player* p) { INCFUNC("asm/func/FUN_0807b580.inc"); }
+
+NAKED void FUN_0807b5a8(Player* p) { INCFUNC("asm/func/FUN_0807b5a8.inc"); }
+
+NAKED void FUN_0807b5d0(Player* p) { INCFUNC("asm/func/FUN_0807b5d0.inc"); }
+
+NAKED void FUN_0807b5f8(Player* p) { INCFUNC("asm/func/FUN_0807b5f8.inc"); }
+
+NAKED s32 FUN_0807b620(Player* p) { INCFUNC("asm/func/FUN_0807b620.inc"); }
+
+NAKED void FUN_0807b64c(Player* p) { INCFUNC("asm/func/FUN_0807b64c.inc"); }
+
+NAKED void FUN_0807b66c(Player* p) { INCFUNC("asm/func/FUN_0807b66c.inc"); }
+
+NAKED s32 FUN_0807b6b8(Player* p) { INCFUNC("asm/func/FUN_0807b6b8.inc"); }
+
+NAKED void FUN_0807b7a4(Player* p) { INCFUNC("asm/func/FUN_0807b7a4.inc"); }
+
+NAKED void FUN_0807b890(Player* p) { INCFUNC("asm/func/FUN_0807b890.inc"); }
+
+NAKED void FUN_0807b8a8(Player* p) { INCFUNC("asm/func/FUN_0807b8a8.inc"); }
+
+NAKED void FUN_0807b8c0(Player* p) { INCFUNC("asm/func/FUN_0807b8c0.inc"); }
+
+NAKED void FUN_0807b8d0(Player* p) { INCFUNC("asm/func/FUN_0807b8d0.inc"); }
+
+NAKED void FUN_0807b8dc(Player* p) { INCFUNC("asm/func/FUN_0807b8dc.inc"); }
+
+NAKED void FUN_0807b910(Player* p) { INCFUNC("asm/func/FUN_0807b910.inc"); }
+
+NAKED void FUN_0807b9dc(Player* p) { INCFUNC("asm/func/FUN_0807b9dc.inc"); }
+
+NAKED void FUN_0807ba14(Player* p) { INCFUNC("asm/func/FUN_0807ba14.inc"); }
+
+NAKED void FUN_0807ba50(Player* p) { INCFUNC("asm/func/FUN_0807ba50.inc"); }
+
+NAKED void FUN_0807ba94(Player* p) { INCFUNC("asm/func/FUN_0807ba94.inc"); }
+
+NAKED void FUN_0807bb3c(Player* p) { INCFUNC("asm/func/FUN_0807bb3c.inc"); }
+
+NAKED void FUN_0807bbb0(Player* p) { INCFUNC("asm/func/FUN_0807bbb0.inc"); }
+
+NAKED void FUN_0807bc14(Player* p) { INCFUNC("asm/func/FUN_0807bc14.inc"); }
+
+NAKED void FUN_0807bc64(Player* p) { INCFUNC("asm/func/FUN_0807bc64.inc"); }
+
+NAKED void FUN_0807bcb0(Player* p) { INCFUNC("asm/func/FUN_0807bcb0.inc"); }
+
+NAKED void FUN_0807bcfc(Player* p) { INCFUNC("asm/func/FUN_0807bcfc.inc"); }
+
+NAKED void FUN_0807bd44(Player* p) { INCFUNC("asm/func/FUN_0807bd44.inc"); }
+
+NAKED void FUN_0807bd84(Player* p) { INCFUNC("asm/func/FUN_0807bd84.inc"); }
+
+NAKED void FUN_0807bdc8(Player* p) { INCFUNC("asm/func/FUN_0807bdc8.inc"); }
+
+NAKED void FUN_0807be58(Player* p) { INCFUNC("asm/func/FUN_0807be58.inc"); }
+
+NAKED void FUN_0807bee0(Player* p) { INCFUNC("asm/func/FUN_0807bee0.inc"); }
+
+NAKED void FUN_0807bfa4(Player* p) { INCFUNC("asm/func/FUN_0807bfa4.inc"); }
+
+NAKED void FUN_0807c048(Player* p) { INCFUNC("asm/func/FUN_0807c048.inc"); }
+
+NAKED void FUN_0807c084(Player* p) { INCFUNC("asm/func/FUN_0807c084.inc"); }
+
+NAKED void FUN_0807c11c(Player* p) { INCFUNC("asm/func/FUN_0807c11c.inc"); }
+
+NAKED void FUN_0807c200(Player* p) { INCFUNC("asm/func/FUN_0807c200.inc"); }
+
+NAKED void FUN_0807c30c(Player* p) { INCFUNC("asm/func/FUN_0807c30c.inc"); }
+
+NAKED void FUN_0807c36c(Player* p) { INCFUNC("asm/func/FUN_0807c36c.inc"); }
+
+NAKED void FUN_0807c458(Player* p) { INCFUNC("asm/func/FUN_0807c458.inc"); }
+
+NAKED void FUN_0807c49c(Player* p) { INCFUNC("asm/func/FUN_0807c49c.inc"); }
+
+NAKED void FUN_0807c4e0(Player* p) { INCFUNC("asm/func/FUN_0807c4e0.inc"); }
+
+NAKED void FUN_0807c524(Player* p) { INCFUNC("asm/func/FUN_0807c524.inc"); }
+
+NAKED void FUN_0807c568(Player* p) { INCFUNC("asm/func/FUN_0807c568.inc"); }
+
+NAKED void FUN_0807c5ac(Player* p) { INCFUNC("asm/func/FUN_0807c5ac.inc"); }
+
+NAKED void FUN_0807c5f0(Player* p) { INCFUNC("asm/func/FUN_0807c5f0.inc"); }
+
+NAKED void FUN_0807c634(Player* p) { INCFUNC("asm/func/FUN_0807c634.inc"); }
+
+NAKED void FUN_0807c748(Player* p) { INCFUNC("asm/func/FUN_0807c748.inc"); }
+
+NAKED void FUN_0807c798(Player* p) { INCFUNC("asm/func/FUN_0807c798.inc"); }
+
+NAKED void FUN_0807c7c8(Player* p) { INCFUNC("asm/func/FUN_0807c7c8.inc"); }
+
+NAKED void FUN_0807c88c(Player* p) { INCFUNC("asm/func/FUN_0807c88c.inc"); }
+
+NAKED void FUN_0807c8d4(Player* p) { INCFUNC("asm/func/FUN_0807c8d4.inc"); }
+
+NAKED void FUN_0807c928(Player* p) { INCFUNC("asm/func/FUN_0807c928.inc"); }
+
+NAKED void FUN_0807c968(Player* p) { INCFUNC("asm/func/FUN_0807c968.inc"); }
+
+NAKED void FUN_0807c9ac(Player* p) { INCFUNC("asm/func/FUN_0807c9ac.inc"); }
+
+NAKED void FUN_0807ca24(Player* p) { INCFUNC("asm/func/FUN_0807ca24.inc"); }
+
+NAKED void FUN_0807ca9c(Player* p) { INCFUNC("asm/func/FUN_0807ca9c.inc"); }
+
+NAKED void FUN_0807cb14(Player* p) { INCFUNC("asm/func/FUN_0807cb14.inc"); }
+
+NAKED void FUN_0807cb8c(Player* p) { INCFUNC("asm/func/FUN_0807cb8c.inc"); }
+
+NAKED void FUN_0807cc14(Player* p) { INCFUNC("asm/func/FUN_0807cc14.inc"); }
+
+NAKED s32 FUN_0807cc84(Player* p) { INCFUNC("asm/func/FUN_0807cc84.inc"); }
+
+NAKED void FUN_0807cd24(Player* p) { INCFUNC("asm/func/FUN_0807cd24.inc"); }
+
+NAKED void FUN_0807ceb8(Player* p) { INCFUNC("asm/func/FUN_0807ceb8.inc"); }
+
+NAKED void FUN_0807cec4(Player* p) { INCFUNC("asm/func/FUN_0807cec4.inc"); }
+
+NAKED void FUN_0807d118(Player* p) { INCFUNC("asm/func/FUN_0807d118.inc"); }
+
+NAKED s32 FUN_0807d164(Player* p) { INCFUNC("asm/func/FUN_0807d164.inc"); }
+
+NAKED s32 FUN_0807d180(Player* p) { INCFUNC("asm/func/FUN_0807d180.inc"); }
+
+NAKED void FUN_0807d198(Player* p) { INCFUNC("asm/func/FUN_0807d198.inc"); }
+
+NAKED void FUN_0807d1c0(Player* p) { INCFUNC("asm/func/FUN_0807d1c0.inc"); }
+
+NAKED void FUN_0807d200(Player* p) { INCFUNC("asm/func/FUN_0807d200.inc"); }
+
+NAKED void FUN_0807d240(Player* p) { INCFUNC("asm/func/FUN_0807d240.inc"); }
+
+NAKED void Player_Lock(Player* p) { INCFUNC("asm/func/Player_Lock.inc"); }
+
+NAKED void FUN_0807d298(Player* p) { INCFUNC("asm/func/FUN_0807d298.inc"); }
+
+NAKED void FUN_0807d2d0(Player* p) { INCFUNC("asm/func/FUN_0807d2d0.inc"); }
+
+NAKED void FUN_0807d300(Player* p) { INCFUNC("asm/func/FUN_0807d300.inc"); }
+
+NAKED void Player_MoveTo(Player* p) { INCFUNC("asm/func/Player_MoveTo.inc"); }
+
+NAKED void FUN_0807d3b8(Player* p) { INCFUNC("asm/func/FUN_0807d3b8.inc"); }
+
+NAKED void FUN_0807d438(Player* p) { INCFUNC("asm/func/FUN_0807d438.inc"); }
+
+NAKED void FUN_0807d4ec(Player* p) { INCFUNC("asm/func/FUN_0807d4ec.inc"); }
+
+NAKED void FUN_0807d560(Player* p) { INCFUNC("asm/func/FUN_0807d560.inc"); }
+
+NAKED void FUN_0807d590(Player* p) { INCFUNC("asm/func/FUN_0807d590.inc"); }
+
+NAKED void FUN_0807d5c8(Player* p) { INCFUNC("asm/func/FUN_0807d5c8.inc"); }
+
+NAKED void FUN_0807d5f8(Player* p) { INCFUNC("asm/func/FUN_0807d5f8.inc"); }
+
+NAKED void FUN_0807d628(Player* p) { INCFUNC("asm/func/FUN_0807d628.inc"); }
+
+NAKED void FUN_0807d660(Player* p) { INCFUNC("asm/func/FUN_0807d660.inc"); }
+
+NAKED void FUN_0807d6a8(Player* p) { INCFUNC("asm/func/FUN_0807d6a8.inc"); }
+
+NAKED void FUN_0807d6f8(Player* p) { INCFUNC("asm/func/FUN_0807d6f8.inc"); }
+
+NAKED void FUN_0807d744(Player* p) { INCFUNC("asm/func/FUN_0807d744.inc"); }
+
+NAKED void FUN_0807d7ac(Player* p) { INCFUNC("asm/func/FUN_0807d7ac.inc"); }
+
+NAKED void FUN_0807d7dc(Player* p) { INCFUNC("asm/func/FUN_0807d7dc.inc"); }
+
+NAKED void FUN_0807d828(Player* p) { INCFUNC("asm/func/FUN_0807d828.inc"); }
+
+NAKED void FUN_0807d858(Player* p) { INCFUNC("asm/func/FUN_0807d858.inc"); }
+
+NAKED void FUN_0807d890(Player* p) { INCFUNC("asm/func/FUN_0807d890.inc"); }
+
+NAKED void FUN_0807d8c8(Player* p) { INCFUNC("asm/func/FUN_0807d8c8.inc"); }
+
+NAKED void FUN_0807d900(Player* p) { INCFUNC("asm/func/FUN_0807d900.inc"); }
+
+NAKED void FUN_0807d938(Player* p) { INCFUNC("asm/func/FUN_0807d938.inc"); }
+
+NAKED void FUN_0807d970(Player* p) { INCFUNC("asm/func/FUN_0807d970.inc"); }
+
+NAKED void FUN_0807d9a8(Player* p) { INCFUNC("asm/func/FUN_0807d9a8.inc"); }
+
+NAKED void FUN_0807d9e0(Player* p) { INCFUNC("asm/func/FUN_0807d9e0.inc"); }
+
+NAKED void FUN_0807da18(Player* p) { INCFUNC("asm/func/FUN_0807da18.inc"); }
+
+NAKED void FUN_0807da50(Player* p) { INCFUNC("asm/func/FUN_0807da50.inc"); }
+
+NAKED void FUN_0807da94(Player* p) { INCFUNC("asm/func/FUN_0807da94.inc"); }
+
+NAKED void FUN_0807dad0(Player* p) { INCFUNC("asm/func/FUN_0807dad0.inc"); }
+
+NAKED void FUN_0807db14(Player* p) { INCFUNC("asm/func/FUN_0807db14.inc"); }
+
+NAKED void FUN_0807db58(Player* p) { INCFUNC("asm/func/FUN_0807db58.inc"); }
+
+NAKED void FUN_0807db9c(Player* p) { INCFUNC("asm/func/FUN_0807db9c.inc"); }
+
+NAKED void FUN_0807dbe0(Player* p) { INCFUNC("asm/func/FUN_0807dbe0.inc"); }
+
+NAKED void FUN_0807dc24(Player* p) { INCFUNC("asm/func/FUN_0807dc24.inc"); }
+
+NAKED void FUN_0807dc60(Player* p) { INCFUNC("asm/func/FUN_0807dc60.inc"); }
+
+NAKED void Player_Unlock(Player* p) { INCFUNC("asm/func/Player_Unlock.inc"); }
+
+NAKED void FUN_0807dcec(Player* p) { INCFUNC("asm/func/FUN_0807dcec.inc"); }
+
+NAKED void FUN_0807ddbc(Player* p) { INCFUNC("asm/func/FUN_0807ddbc.inc"); }
+
+NAKED void FUN_0807ddd4(Player* p) { INCFUNC("asm/func/FUN_0807ddd4.inc"); }
+
+NAKED void Player_Update_Helper_0807dde4(Player* p) { INCFUNC("asm/func/Player_Update_Helper_0807dde4.inc"); }
+
+NAKED void FUN_0807e278(Player* p) { INCFUNC("asm/func/FUN_0807e278.inc"); }
+
+NAKED void FUN_0807e2cc(Player* p) { INCFUNC("asm/func/FUN_0807e2cc.inc"); }
+
+NAKED void FUN_0807e388(Player* p) { INCFUNC("asm/func/FUN_0807e388.inc"); }
+
+NAKED s32 FUN_0807e3b0(Player* p) { INCFUNC("asm/func/FUN_0807e3b0.inc"); }
+
+NAKED void FUN_0807e784(Player* p) { INCFUNC("asm/func/FUN_0807e784.inc"); }
+
+NAKED s32 FUN_0807e7fc(Player* p) { INCFUNC("asm/func/FUN_0807e7fc.inc"); }
 
 NAKED void FUN_0807e854(Player* p) { INCFUNC("asm/func/FUN_0807e854.inc"); }
 
