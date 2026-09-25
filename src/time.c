@@ -1,7 +1,6 @@
 #include "time.h"
 
 #include "global.h"
-#include "solar.h"
 #include "vm.h"
 
 COMMON_DATA Clock gClock = {};  // 0x030047E0

@@ -1,7 +1,6 @@
 #include "eeprom.h"
 
 #include "global.h"
-#include "solar.h"
 #include "sound.h"
 #include "video.h"
 

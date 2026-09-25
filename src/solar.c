@@ -1,10 +1,26 @@
 
-#include "solar.h"
-
+#include "entity.h"
 #include "global.h"
 #include "save.h"
 #include "solar_sensor.h"
 #include "time.h"
+
+typedef struct UnkSolarEntity {
+  Entity e;  // 0x00, ENTITY_UNK_5
+  u8 unk_18;
+  u8 unk_19;
+  u16 unk_1a;
+  s16 lx;        // 0x1C, 太陽光の強さ
+  s16 sunGauge;  // 0x1E, lx を 10段階に分けたもの
+  u16 unk_20;
+  u16 unk_22;
+  u16 unk_24;
+  u16 unk_26;
+  u16 unk_28;
+  u16 unk_2a;
+  void (*updateCallback)(struct UnkSolarEntity*);  // 0x2C
+} UnkSolarEntity;
+static_assert(sizeof(UnkSolarEntity) == 48);
 
 IWRAM_DATA UnkSolarEntity* gUnkSolarEntity = NULL;  // 0x03001708
 IWRAM_DATA u32 u32_0300170c = 0;                    // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
@@ -45,16 +61,16 @@ s32 FUN_0824175c(void) { return gStat->sunGauge; }
 
 // 照度(lx)を 0〜10 の太陽レベルに変換する
 Sunlevel GetSunLevel(s32 lx) {
-  if (lx == 0x0) return 0;
-  if (lx <= 0x5) return 1;
-  if (lx <= 0xC) return 2;
-  if (lx <= 0x16) return 3;
-  if (lx <= 0x22) return 4;
-  if (lx <= 0x31) return 5;
-  if (lx <= 0x42) return 6;
-  if (lx <= 0x56) return 7;
-  if (lx <= 0x6D) return 8;
-  if (lx <= 0x8B) return 9;
+  if (lx == 0) return 0;
+  if (lx <= 5) return 1;
+  if (lx <= 12) return 2;
+  if (lx <= 22) return 3;
+  if (lx <= 34) return 4;
+  if (lx <= 49) return 5;
+  if (lx <= 66) return 6;
+  if (lx <= 86) return 7;
+  if (lx <= 109) return 8;
+  if (lx < 140) return 9;
   return 10;
 }
 
@@ -71,8 +87,8 @@ s32 FUN_082418c0(void) {
   }
 
   n = gSystemSaveData->calibration - n;
-  if (n > 0x8B) {
-    return 0x8C;
+  if (n >= 140) {
+    return 140;
   }
   return n;
 }
@@ -142,24 +158,24 @@ NAKED u32 FUN_08241da8(UnkSolarEntity* p) { INCFUNC("asm/func/FUN_08241da8.inc")
 
 NAKED void FUN_08241e40(UnkSolarEntity* p) { INCFUNC("asm/func/FUN_08241e40.inc"); }
 
-UnkSolarEntity* FUN_08241ef4(UnkSolarEntity* p) {
+s32 UnkSolarEntity_Update(UnkSolarEntity* p) {
   if (u16_0300486c == 0) {
-    p->unk_2c((Entity*)p);
+    p->updateCallback(p);
   }
-  return NULL;
+  return 0;
 }
 
-Entity* FUN_08241f14(Entity* _) {
+s32 UnkSolarEntity_Destroy(UnkSolarEntity* _) {
   Sensor_Disable();
   gUnkSolarEntity = NULL;
-  return NULL;
+  return 0;
 }
 
 NON_MATCH void FUN_08241f28(UnkSolarEntity* p) {
 #ifdef NONMATCHING_C
   u16 tmp;
   p->unk_18 = 1;
-  p->unk_2c = (EntityFunc)FUN_08241cf4;
+  p->updateCallback = FUN_08241cf4;
   p->unk_19 = 0;
   p->unk_20 = 0;
   p->unk_22 = 0;
@@ -186,7 +202,7 @@ UnkSolarEntity* UnkSolarEntity_Create(void) {
   if (gUnkSolarEntity == NULL) {
     UnkSolarEntity* p = CreateEntity(ENTITY_UNK_5, 48);
     if (p != NULL) {
-      SetEntityRoutine(p, FUN_08241ef4, FUN_08241f14);
+      SetEntityRoutine(p, UnkSolarEntity_Update, UnkSolarEntity_Destroy);
       if (UnkSolarEntity_Init(p) < 0) {
         KillEntity((Entity*)p);
         return NULL;
