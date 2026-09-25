@@ -36,7 +36,8 @@ const u16 u16_ARRAY_08dbd810[4] = {3, 3, 1, 2};  // 0x08DBD810
 
 NAKED void FUN_08246660(void) { INCFUNC("asm/func/FUN_08246660.inc"); }
 
-NAKED void SSEEmitter_UpdateIdle(SolarSensorEntity* e, SSEEmitter* p) { INCFUNC("asm/func/SSEEmitter_UpdateIdle.inc"); }
+// kind 0 の更新。何もしない
+void SSEEmitter_UpdateIdle(SolarSensorEntity* e, SSEEmitter* p) {}
 
 NAKED s32 SSEEmitter_Register(SolarSensorEntity* e, SSEEmitter* p) { INCFUNC("asm/func/SSEEmitter_Register.inc"); }
 
