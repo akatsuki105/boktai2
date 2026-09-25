@@ -130,7 +130,6 @@ NAKED u32 FUN_0823e1b0(void) { INCFUNC("asm/func/FUN_0823e1b0.inc"); }
 u32 FUN_0823e28c(void) { return gClock.daytime.minute; }
 
 // 現在の年月日と時分秒をスクリプトへ返す
-// 現在の年月日と時分秒をスクリプトへ返す
 void FUN_0823e298(void) {
   s32 ymd[3];
   u8 buf[8];
