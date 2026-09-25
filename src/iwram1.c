@@ -18,6 +18,7 @@ struct Entity080dd1f8;
 struct SignalStrengthIcon;
 struct EntityD53D;
 struct ExplosionManager;
+struct Entity080ddad0;
 struct Entity080de11c;
 struct Entity081d0e20;
 struct Entity081d16ec;
@@ -50,10 +51,8 @@ IWRAM_DATA struct Entity080db520* gEntity080db520 = NULL;    // 0x03000160
 IWRAM_DATA struct Entity080dbe54* gEntity080dbe54 = NULL;    // 0x03000164
 IWRAM_DATA struct Entity080dc44c* gEntity080dc44c = NULL;    // 0x03000168
 IWRAM_DATA struct Entity080dd1f8* gEntity080dd1f8 = NULL;    // 0x0300016C
-
-IWRAM_DATA u8 u8_03000170[4] = {};
-
-IWRAM_DATA struct Entity080de11c* gEntity080de11c = NULL;  // 0x03000174
+IWRAM_DATA struct Entity080ddad0* gEntity080ddad0 = NULL;    // 0x03000170
+IWRAM_DATA struct Entity080de11c* gEntity080de11c = NULL;    // 0x03000174
 
 IWRAM_DATA u8 u8_03000178[0x184 - 0x178] = {};
 IWRAM_DATA struct EntityD854* gEntityD854 = NULL;  // 0x03000184
