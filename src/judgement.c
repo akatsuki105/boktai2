@@ -56,7 +56,11 @@ NAKED void FUN_080a9ac8(Judgement* p) { INCFUNC("asm/func/FUN_080a9ac8.inc"); }
 
 NAKED void FUN_080a9b84(Judgement* p) { INCFUNC("asm/func/FUN_080a9b84.inc"); }
 
-NAKED s32 Judgement_Update(Judgement* p) { INCFUNC("asm/func/Judgement_Update.inc"); }
+s32 Judgement_Update(Judgement* p) {
+  FUN_080a98c0(p);
+  p->updateCallback(p);
+  return 0;
+}
 
 NAKED s32 Judgement_Destroy(Judgement* p) { INCFUNC("asm/func/Judgement_Destroy.inc"); }
 
