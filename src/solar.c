@@ -9,7 +9,7 @@
 typedef struct SunlightEntity {
   Entity e;                                        // 0x00, ENTITY_UNK_5
   u8 unk_18;                                       // 0x18, FUN_08241f28 が 1 を書く。読み手は見つかっていない
-  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む。FUN_08241cf4 / FUN_08241e40 が回し、IsSunlightActive / FUN_082416d4 / SuspendSunlight / FUN_0824172c が見る
+  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む。FUN_08241cf4 / FUN_08241e40 が回し、IsSunlightActive / CalibrateSunSensor / SuspendSunlight / FUN_0824172c が見る
   u16 unk_1a;                                      // 0x1A, このモジュールは触らない
   s16 lx;                                          // 0x1C, 太陽光の強さ
   s16 sunGauge;                                    // 0x1E, lx を 10段階に分けたもの
@@ -59,7 +59,23 @@ void FUN_082416bc(void) { u16_03004864 = 1; }
 
 void FUN_082416c8(void) { u16_03004864 = 0; }
 
-NAKED bool32 FUN_082416d4(void) { INCFUNC("asm/func/FUN_082416d4.inc"); }
+// 今のセンサー値を暗所の基準として控える。以降 lx は calibration からの差で出る
+NON_MATCH bool32 CalibrateSunSensor(void) {
+#ifdef NONMATCHING_C
+  s32 raw;
+
+  if (gSunlightEntity->state == 2) {
+    raw = Sensor_GetRawLevel();
+    if (raw >= 0) {
+      gSystemSaveData->calibration = raw - 2;
+      return TRUE;
+    }
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/CalibrateSunSensor.inc");
+#endif
+}
 
 // 太陽光の更新を止める。センサーも切る
 void SuspendSunlight(void) {

@@ -301,7 +301,7 @@ _08214014:
 	ldr r0, [r6, #0x60]
 	cmp r0, #0x3b
 	bgt _08214032
-	bl FUN_082416d4
+	bl CalibrateSunSensor
 	cmp r0, #0
 	bne _08214024
 	b _08214152
