@@ -54,7 +54,25 @@ s32 SSEEmitter_Register(SolarSensorEntity* e, SSEEmitter* p) {
   return 0;
 }
 
-NAKED s32 SSEEmitter_Unregister(SolarSensorEntity* e, SSEEmitter* p) { INCFUNC("asm/func/SSEEmitter_Unregister.inc"); }
+// エミッタをリストから外す。繋がっていなければ -1
+s32 SSEEmitter_Unregister(SolarSensorEntity* e, SSEEmitter* p) {
+  SSEEmitter* prev = p->prev;
+  SSEEmitter* next = p->next;
+
+  if (p->isRegistered == 0) {
+    return -1;
+  }
+  if (prev != NULL) {
+    prev->next = next;
+  } else {
+    e->unk_20 = next;
+  }
+  if (next != NULL) {
+    next->prev = prev;
+  }
+  p->isRegistered = 0;
+  return 0;
+}
 
 NAKED s32 FUN_082466ec(SSEEmitter* p) { INCFUNC("asm/func/FUN_082466ec.inc"); }
 
