@@ -58,7 +58,16 @@ void FUN_080ac21c(Entity080ac374* p) { AuxSprite_Remove(&p->spr); }
 
 NAKED void FUN_080ac228(Entity080ac374* p, Vec3* pos) { INCFUNC("asm/func/FUN_080ac228.inc"); }
 
-NAKED s32 Entity080ac374_Update(Entity080ac374* p) { INCFUNC("asm/func/Entity080ac374_Update.inc"); }
+// 戻り値は呼んだ先が r0 に残した値をそのまま使う (return 文を書くと1命令増える)
+s32 Entity080ac374_Update(Entity080ac374* p) {
+  FUN_080ac18c(p);
+  FUN_080abf9c(p);
+  if (p->unk_98 == 0) {
+    if (p->unk_9e == 0) {
+      KillEntity((Entity*)p);
+    }
+  }
+}
 
 // 戻り値は FUN_080abfec が r0 に残した値をそのまま使う (return 文を書くと1命令増える)
 s32 Entity080ac374_Destroy(Entity080ac374* p) {
