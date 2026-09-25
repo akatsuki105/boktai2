@@ -242,7 +242,25 @@ NON_MATCH void FUN_08241f28(SunlightEntity* p) {
 #endif
 }
 
-NAKED u32 ReflectClock(void) { INCFUNC("asm/func/ReflectClock.inc"); }
+// RTC の現在時刻を gStat に写し、まだ日没前かどうかを控える
+u32 ReflectClock(void) {
+  s32 minute;
+  s32 sunsetHour;
+  s32 sunsetMinute;
+  bool32 beforeSunset;
+
+  gStat->date.val = GetDate();
+  gStat->hour = GetHour();
+  minute = GetMinute();
+  gStat->minute = minute;
+  sunsetHour = gClock.sunset.hour;
+  sunsetMinute = gClock.sunset.minute;
+  beforeSunset = FALSE;
+  if (gStat->hour < sunsetHour || (gStat->hour == sunsetHour && minute < sunsetMinute)) {
+    beforeSunset = TRUE;
+  }
+  gStat->isClockTowerBellDone = beforeSunset;
+}
 
 NAKED void clock_08241fd0(SunlightEntity* p) { INCFUNC("asm/func/clock_08241fd0.inc"); }
 

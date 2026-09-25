@@ -42,8 +42,8 @@ typedef struct {
   armor16_t armors[16];          // 0x150
   u8 unk_170[40];                // 0x170
   BCDDate date;                  // 0x198
-  u32 hour;                      // 0x19C
-  u32 minute;                    // 0x1A0
+  s32 hour;                      // 0x19C, ReflectClock / clock_08241fd0 が gClock.sunset と符号付きで比べる
+  s32 minute;                    // 0x1A0, 同上
   bool32 isClockTowerBellDone;   // 0x1A4, すでに夕方か(時計塔の鐘の音がなったか)
   Datetime overheatTime;         // 0x1A8
   s16 unk_1b8;                   // 0x1B8
