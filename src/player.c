@@ -371,7 +371,7 @@ u32 Player_WeaponEffectVitality(Player* p) { return p->stats[STAT_VITALITY] >> 3
 
 u32 Player_WeaponEffectSpirit(Player* p) { return p->stats[STAT_SPIRIT] >> 3; }
 
-NAKED u32 Player_WeaponEffectENE(Player* p) { INCFUNC("asm/func/Player_WeaponEffectENE.inc"); }
+u32 Player_WeaponEffectENE(Player* p) { return Div(p->ene * 10, p->maxEne); }
 
 u32 Player_WeaponEffectHP(Player* p) { return Div(p->hp * 10, p->maxHP); }
 
