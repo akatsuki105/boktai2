@@ -7,6 +7,8 @@
 // player.c とファイルを分けてるのは、ファイルサイズが大きくなりすぎてコードを把握しにくいからで、解析が進んだら整理する予定
 
 void FUN_08065164(Player* p);
+void FUN_08063220(Player* p);
+void FUN_08060c40(Player* p, u32 val);
 void CheckHeartJokerEmblem(Player* p);
 void FUN_08061294(Player* p);
 void Player_Init_Helper_08063b6c(Player* p);
@@ -706,7 +708,7 @@ NAKED s32 FUN_0807cc84(Player* p) { INCFUNC("asm/func/FUN_0807cc84.inc"); }
 
 NAKED void FUN_0807cd24(Player* p) { INCFUNC("asm/func/FUN_0807cd24.inc"); }
 
-NAKED void FUN_0807ceb8(Player* p) { INCFUNC("asm/func/FUN_0807ceb8.inc"); }
+void FUN_0807ceb8(Player* p) { FUN_08063220(p); }
 
 NAKED void FUN_0807cec4(Player* p) { INCFUNC("asm/func/FUN_0807cec4.inc"); }
 
