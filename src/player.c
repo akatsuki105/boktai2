@@ -358,7 +358,12 @@ u32 Player_WeaponEffectSol(Player* p) { return gStat->sunGauge; }
 
 NAKED u32 Player_WeaponEffectStatCond(Player* p) { INCFUNC("asm/func/Player_WeaponEffectStatCond.inc"); }
 
-NAKED u32 Player_WeaponEffectNight(Player* p) { INCFUNC("asm/func/Player_WeaponEffectNight.inc"); }
+u32 Player_WeaponEffectNight(Player* p) {
+  if (FUN_08060e1c(p)) {
+    return 10;
+  }
+  return 0;
+}
 
 u32 Player_WeaponEffectAgility(Player* p) { return p->stats[STAT_AGILITY] >> 3; }
 
