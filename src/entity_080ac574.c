@@ -23,7 +23,16 @@ NAKED void FUN_080ac3d4(Entity080ac574Particle* ptcl) { INCFUNC("asm/func/FUN_08
 
 NAKED void FUN_080ac46c(Entity080ac574Particle* ptcl) { INCFUNC("asm/func/FUN_080ac46c.inc"); }
 
-NAKED s32 Entity080ac574_Update(Entity080ac574* p) { INCFUNC("asm/func/Entity080ac574_Update.inc"); }
+s32 Entity080ac574_Update(Entity080ac574* p) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    if (p->ptcls[i].active != 0) {
+      FUN_080ac46c(&p->ptcls[i]);
+    }
+  }
+  return 0;
+}
 
 s32 Entity080ac574_Destroy(Entity080ac574* p) {
   s32 i;
