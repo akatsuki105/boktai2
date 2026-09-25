@@ -177,7 +177,8 @@ typedef struct Player {
   PlayerFunc fn_498;  // 0x498, FUN_08078d5c
   u8 unk_49c[0x4aa - 0x49c];
   u8 unk_4aa;  // 0x4AA, FUN_080726b4
-  u8 unk_4ab[0x4b0 - 0x4ab];
+  u8 unk_4ab;  // 0x4AB, FUN_08072670 が 1 を書く
+  u8 unk_4ac[0x4B0 - 0x4AC];
   s32 scriptID_4b0;  // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4c4 - 0x4b4];
   Eff082473e0Emitter unk_4c4;  // 0x4C4
