@@ -402,7 +402,14 @@ u32 Player_WeaponEffectFlame(Player* p, HitboxData* a, HitboxData* b) {
   return 0;
 }
 
-NAKED u32 Player_WeaponEffectFrost(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectFrost.inc"); }
+u32 Player_WeaponEffectFrost(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0008;
+
+  if (a->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
 
 NAKED u32 Player_WeaponEffectCloud(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectCloud.inc"); }
 
