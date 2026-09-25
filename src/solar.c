@@ -49,7 +49,7 @@ NAKED void FUN_08241650(void) { INCFUNC("asm/func/FUN_08241650.inc"); }
 
 NAKED bool32 FUN_08241690(void) { INCFUNC("asm/func/FUN_08241690.inc"); }
 
-NAKED void FUN_082416bc(void) { INCFUNC("asm/func/FUN_082416bc.inc"); }
+void FUN_082416bc(void) { u16_03004864 = 1; }
 
 void FUN_082416c8(void) { u16_03004864 = 0; }
 
