@@ -26,4 +26,28 @@ static_assert(sizeof(Entity080dbe54) == 2600);
 
 extern Entity080dbe54* gEntity080dbe54;  // 0x03000164
 
-INCASM("asm/entity_080dbe54.inc");
+NAKED void FUN_080db7e4(void) { INCFUNC("asm/func/FUN_080db7e4.inc"); }
+
+NAKED void FUN_080db7e8(Entity080dbe54* p, u32 param_2) { INCFUNC("asm/func/FUN_080db7e8.inc"); }
+
+NAKED void FUN_080db970(Entity080dbe54* p, u32 param_2) { INCFUNC("asm/func/FUN_080db970.inc"); }
+
+NAKED s32 FUN_080db9b4(Entity080dbe54* p) { INCFUNC("asm/func/FUN_080db9b4.inc"); }
+
+NAKED s32 FUN_080dba00(Entity080dbe54* p, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_080dba00.inc"); }
+
+NAKED s32 FUN_080dbcec(Entity080dbe54* p, u32 param_2) { INCFUNC("asm/func/FUN_080dbcec.inc"); }
+
+NAKED s32 FUN_080dbd08(Entity080dbe54* p, u32 param_2) { INCFUNC("asm/func/FUN_080dbd08.inc"); }
+
+NAKED s32 Entity080dbe54_Update(Entity080dbe54* p) { INCFUNC("asm/func/Entity080dbe54_Update.inc"); }
+
+NAKED s32 Entity080dbe54_Destroy(Entity080dbe54* p) { INCFUNC("asm/func/Entity080dbe54_Destroy.inc"); }
+
+NAKED void FUN_080dbe14(Entity080dbe54* p) { INCFUNC("asm/func/FUN_080dbe14.inc"); }
+
+NAKED s32 Entity080dbe54_Init(Entity080dbe54* p, u32 param_2) { INCFUNC("asm/func/Entity080dbe54_Init.inc"); }
+
+NAKED Entity080dbe54* Entity080dbe54_Create(void) { INCFUNC("asm/func/Entity080dbe54_Create.inc"); }
+
+NAKED void FUN_080dbea4(void) { INCFUNC("asm/func/FUN_080dbea4.inc"); }
