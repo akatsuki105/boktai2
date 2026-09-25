@@ -263,6 +263,7 @@ SECTIONS {
 			src/player_080d82ec.o (.text);
 			src/entity_080d84f8.o (.text);
 			src/entity_080da848.o (.text);
+			src/entity_080db520.o (.text);
 			src/code_080d8644.o (.text);
 			src/entity_080ddf88.o (.text);
 			src/entity_080df420.o (.text);
