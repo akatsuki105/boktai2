@@ -157,7 +157,12 @@ NAKED void Sensor_Tick(void) { INCFUNC("asm/func/Sensor_Tick.inc"); }
 
 NAKED void Sensor_EnableIO(void) { INCFUNC("asm/func/Sensor_EnableIO.inc"); }
 
-NAKED void Sensor_DisableIO(void) { INCFUNC("asm/func/Sensor_DisableIO.inc"); }
+void Sensor_DisableIO(void) {
+  if (gSensorIoEnabled != 0) {
+    gSensorIoEnabled = 0;
+    Sensor_DoDisableIO();
+  }
+}
 
 NAKED void Sensor_Enable(void) { INCFUNC("asm/func/Sensor_Enable.inc"); }
 
