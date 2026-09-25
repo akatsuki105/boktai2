@@ -203,7 +203,9 @@ typedef struct Player {
   u8 unk_94e;      // 0x94E, FUN_08062688
   u8 unk_94f;      // 0x94F
   u8 unk_950;      // 0x950, FUN_08063084
-  u8 unk_951[0x96C - 0x951];
+  u8 unk_951[0x95E - 0x951];
+  u16 unk_95e;  // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
+  u8 unk_960[0x96C - 0x960];
   u16 unk_96c;  // 0x96C, FUN_0807b8c0 が 0 を書く
   u8 unk_96e[0x9BC - 0x96E];
   u16 unk_9bc;  // 0x9BC
