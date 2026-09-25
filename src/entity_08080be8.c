@@ -155,7 +155,26 @@ void Entity08080be8_SetupParticles(Entity08080be8* p, s32 val) {
   }
 }
 
-NAKED s32 Entity08080be8_Init(Entity08080be8* p, Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44, u32 ptclVal, u32 eneCost, u32 unk_cd) { INCFUNC("asm/func/Entity08080be8_Init.inc"); }
+s32 Entity08080be8_Init(Entity08080be8* p, Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44, u32 ptclVal, u32 eneCost, u32 unk_cd) {
+  p->player = player;
+  p->heightOffset = heightOffset;
+  p->unk_be = unk_be;
+  p->unk_c0 = unk_c0;
+  p->offsetRadius = offsetRadius;
+  p->eneCost = eneCost;
+  p->charge = 0;
+  p->unk_cd = unk_cd;
+  Entity08080be8_SetupSprite(p, plttID);
+  FUN_08080a44(p, hitboxUnk40, attributes, hitboxUnk44);
+  FUN_08080204(p);
+  Entity08080be8_SetupParticles(p, ptclVal);
+  if (p->player->kind != PLAYER_SABATA) {
+    Entity08080be8_SetState(p, FUN_080806ec);
+  } else {
+    Entity08080be8_SetState(p, FUN_080807f4);
+  }
+  return 0;
+}
 
 Entity08080be8* Entity08080be8_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44, u32 ptclVal, u32 eneCost, u32 unk_cd) {
   Entity08080be8* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity08080be8));
