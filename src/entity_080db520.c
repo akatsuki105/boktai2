@@ -1,5 +1,6 @@
 #include "animation.h"
 #include "entity.h"
+#include "file.h"
 #include "hitbox.h"
 #include "sprite.h"
 #include "global.h"
@@ -58,7 +59,13 @@ NAKED s32 Entity080db520_Update(Entity080db520* p) { INCFUNC("asm/func/Entity080
 
 NAKED s32 Entity080db520_Destroy(Entity080db520* p) { INCFUNC("asm/func/Entity080db520_Destroy.inc"); }
 
-NAKED s32 Entity080db520_Init(Entity080db520* p) { INCFUNC("asm/func/Entity080db520_Init.inc"); }
+s32 Entity080db520_Init(Entity080db520* p) {
+  Video_GetAuxSprite(&p->gfx, SPRITE_EFF_1C1B);
+  p->activeMask = 0;
+  p->anim = GetFile(DIR_ANIMATION, 0x3DC2);
+  gEntity080db520 = p;
+  return 0;
+}
 
 NAKED s32 Entity080db520_Create(void) { INCFUNC("asm/func/Entity080db520_Create.inc"); }
 
