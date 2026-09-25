@@ -48,4 +48,4 @@ NAKED s32 Entity080dc44c_Init(Entity080dc44c* p) { INCFUNC("asm/func/Entity080dc
 
 NAKED Entity080dc44c* Entity080dc44c_Create(void) { INCFUNC("asm/func/Entity080dc44c_Create.inc"); }
 
-NAKED void FUN_080dc498(void) { INCFUNC("asm/func/FUN_080dc498.inc"); }
+void FUN_080dc498(void) { gEntity080dc44c = NULL; }
