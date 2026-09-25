@@ -71,7 +71,20 @@ s32 AttackBoxManager_Init(AttackBoxManager* p, u32 unused1) {
   return 0;
 }
 
-NAKED AttackBoxManager* AttackBoxManager_Create(void) { INCFUNC("asm/func/AttackBoxManager_Create.inc"); }
+AttackBoxManager* AttackBoxManager_Create(void) {
+  if (gAttackBoxManager == NULL) {
+    AttackBoxManager* p = CreateEntity(ENTITY_UNK_10, sizeof(AttackBoxManager));
+    if (p != NULL) {
+      SetEntityRoutine(p, AttackBoxManager_Update, AttackBoxManager_Destroy);
+      if (AttackBoxManager_Init(p, 0) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gAttackBoxManager;
+}
 
 void FUN_080ddb1c(void) { gAttackBoxManager = NULL; }
 
