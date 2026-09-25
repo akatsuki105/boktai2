@@ -166,7 +166,10 @@ typedef struct Player {
   u8 unk_3f8[2];
   u8 magicFired;     // 0x3FA, 魔法の発動フレームに FUN_08064d6c (太陽ゲージ判定) の結果が入る。1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
   u8 dynamiteCount;  // 0x3FB, 生存中の Entity080a8ff8 の数。Entity080a8ff8_Init が +1、消滅時に -1。MAGIC_DYNAMITE は 0 でないと再発動できない (FUN_08064db0)
-  u8 unk_3fc[64];
+  u8 unk_3fc[4];
+  u8 angle_400;      // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
+  u8 angle_401;      // 0x401, 同上
+  u8 unk_402[0x43C - 0x402];
   u16 unk_43c[3];  // 0x43C, 多分状態異常の残り時間
   u8 unk_442[86];
   PlayerFunc fn_498;  // 0x498, FUN_08078d5c
