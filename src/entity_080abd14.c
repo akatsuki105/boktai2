@@ -13,7 +13,7 @@ typedef struct {
 static_assert(sizeof(Entity080abd14Particle) == 68);
 
 typedef struct {
-  Entity e;                          // 0x000, ENTITY_UNK_11
+  Entity e;                          // 0x000, ENTITY_UNK_8
   u8 unk_18;                         // 0x018, _Init の第5引数。0 かどうかで鳴らす SE が変わる
   u8 unk_19;                         // 0x019, _Update が 0 以外なら 0x03002BF0 を1減らして 0 に戻す
   u8 unk_1a;                         // 0x01A, _Init の第6引数
@@ -89,6 +89,17 @@ NAKED s32 Entity080abd14_Update(Entity080abd14* p) { INCFUNC("asm/func/Entity080
 
 NAKED s32 Entity080abd14_Destroy(Entity080abd14* p) { INCFUNC("asm/func/Entity080abd14_Destroy.inc"); }
 
-NAKED s32 Entity080abd14_Init(Entity080abd14* p, void* owner, u32 param_3, u32 param_4, u8 param_5, u8 param_6) { INCFUNC("asm/func/Entity080abd14_Init.inc"); }
+NAKED s32 Entity080abd14_Init(Entity080abd14* p, void* owner, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/Entity080abd14_Init.inc"); }
 
-NAKED Entity080abd14* Entity080abd14_Create(void* owner, u32 param_2, u32 param_3, u32 param_4, u8 param_5, u8 param_6) { INCFUNC("asm/func/Entity080abd14_Create.inc"); }
+Entity080abd14* Entity080abd14_Create(void* owner, u32 param_2, u32 param_3, u32 param_4, u32 param_5) {
+  Entity080abd14* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity080abd14));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity080abd14_Update, Entity080abd14_Destroy);
+    if (Entity080abd14_Init(p, owner, param_2, param_3, param_4, param_5) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
