@@ -73,16 +73,16 @@ s32 SSEEmitter_Unregister(SolarSensorEntity* e, SSEEmitter* p) {
 }
 
 // 生きている枠をひとつだけ消えかけ (state 2) にする
-NON_MATCH s32 SSEEmitter_FadeParticle(SSEEmitter* p) {
-#ifdef NONMATCHING_C
+s32 SSEEmitter_FadeParticle(SSEEmitter* p) {
   bool32 found = FALSE;
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    if (p->ptcls[i].unk_0 == 1) {
-      p->ptcls[i].unk_0 = 2;
-      p->ptcls[i].unk_1 = 10;
-      p->ptcls[i].unk_2 = 0;
+    SSEEmitterParticle* ptcl = &p->ptcls[i];
+    if (ptcl->unk_0 == 1) {
+      ptcl->unk_0 = 2;
+      ptcl->unk_1 = 10;
+      ptcl->unk_2 = 0;
       found = TRUE;
       break;
     }
@@ -91,9 +91,6 @@ NON_MATCH s32 SSEEmitter_FadeParticle(SSEEmitter* p) {
     p->unk_3--;
   }
   return 0;
-#else
-  INCFUNC("asm/func/SSEEmitter_FadeParticle.inc");
-#endif
 }
 
 // 生きている枠をひとつ解放して、その場に粒子を撒き散らす
