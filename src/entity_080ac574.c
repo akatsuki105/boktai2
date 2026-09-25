@@ -19,4 +19,14 @@ typedef struct {
 } Entity080ac574;
 static_assert(sizeof(Entity080ac574) == 280);
 
-INCASM("asm/entity_080ac574.inc");
+NAKED void FUN_080ac3d4(Entity080ac574Particle* ptcl) { INCFUNC("asm/func/FUN_080ac3d4.inc"); }
+
+NAKED void FUN_080ac46c(Entity080ac574Particle* ptcl) { INCFUNC("asm/func/FUN_080ac46c.inc"); }
+
+NAKED s32 Entity080ac574_Update(Entity080ac574* p) { INCFUNC("asm/func/Entity080ac574_Update.inc"); }
+
+NAKED s32 Entity080ac574_Destroy(Entity080ac574* p) { INCFUNC("asm/func/Entity080ac574_Destroy.inc"); }
+
+NAKED s32 Entity080ac574_Init(Entity080ac574* p) { INCFUNC("asm/func/Entity080ac574_Init.inc"); }
+
+NAKED Entity080ac574* Entity080ac574_Create(void) { INCFUNC("asm/func/Entity080ac574_Create.inc"); }
