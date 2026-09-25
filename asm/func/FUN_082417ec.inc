@@ -27,7 +27,7 @@
 	ble _08241826
 	movs r0, #0xa
 _08241826:
-	bl FUN_082417cc
+	bl GetSunLevelMaxLx
 	adds r4, r0, #0
 _0824182C:
 	ldr r0, _08241858 @ =0x030046A0
@@ -62,7 +62,7 @@ _0824185C:
 	cmp r0, #2
 	ble _0824187A
 	movs r0, #2
-	bl FUN_082417cc
+	bl GetSunLevelMaxLx
 _08241878:
 	adds r4, r0, #0
 _0824187A:
@@ -82,7 +82,7 @@ _08241886:
 	ble _08241898
 	movs r0, #0xa
 _08241898:
-	bl FUN_082417cc
+	bl GetSunLevelMaxLx
 	adds r4, r0, #0
 	b _082418B6
 	.align 2, 0
