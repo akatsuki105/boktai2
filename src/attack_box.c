@@ -37,7 +37,8 @@ NAKED void FUN_080dd6f4(AttackBox* box) { INCFUNC("asm/func/FUN_080dd6f4.inc"); 
 
 NAKED void AttackBox_Setup(AttackBox* box, s32 power, s32 unk_40, s32 unk_44, u16 ignoreMask) { INCFUNC("asm/func/AttackBox_Setup.inc"); }
 
-NAKED void AttackBox_Idle(AttackBoxManager* p, AttackBox* box) { INCFUNC("asm/func/AttackBox_Idle.inc"); }
+// state 0 (空き枠) の更新。何もしない
+void AttackBox_Idle(AttackBoxManager* p, AttackBox* box) {}
 
 NAKED void AttackBox_Update(AttackBoxManager* p, AttackBox* box) { INCFUNC("asm/func/AttackBox_Update.inc"); }
 
