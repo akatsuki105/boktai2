@@ -30,7 +30,7 @@ NAKED void FUN_080dab9c(Entity080db520* p) { INCFUNC("asm/func/FUN_080dab9c.inc"
 
 NAKED void FUN_080dabe4(Entity080db520* p) { INCFUNC("asm/func/FUN_080dabe4.inc"); }
 
-NAKED void FUN_080dac20(void) { INCFUNC("asm/func/FUN_080dac20.inc"); }
+void FUN_080dac20(void) {}
 
 NAKED void FUN_080dac24(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080dac24.inc"); }
 
