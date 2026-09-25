@@ -4,16 +4,13 @@
 #include "vm.h"
 #include "weapon.h"
 
-#define ITEM(slot) (*(gStat->items + slot))
-#define VALUABLES(slot) (*(gStat->valuables + slot))
-#define ROTCOUNT(slot) (*(gStat->rotTimer + slot))  // gStat->rotTimer[slot]
+#define ITEM(slot) (*(gStat->items + slot))           // gStat->items[slot]
+#define VALUABLES(slot) (*(gStat->valuables + slot))  // gStat->valuables[slot]
+#define ROTCOUNT(slot) (*(gStat->rotTimer + slot))    // gStat->rotTimer[slot]
 
 s32 GetRotCount(s32 slot) { return ROTCOUNT(slot); }
 
-void SetRotCount(s32 slot, u32 value) {
-  ROTCOUNT(slot) = value;
-  return;
-}
+void SetRotCount(s32 slot, u32 value) { ROTCOUNT(slot) = value; }
 
 s32 GetRotCount2(s32 slot) { return ROTCOUNT(slot) & 0x7FFF; }
 

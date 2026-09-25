@@ -1,9 +1,9 @@
-#include "animation.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "particle.h"
 #include "player.h"
+#include "sprite_aux.h"
 
 // 精霊虫1匹。state で PTR_ARRAY_085aa730[kind * 5 + state] のハンドラに分岐する, 根拠: Entity0800a89c_UpdateSwarm
 typedef struct SpiritBug {

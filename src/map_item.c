@@ -1,4 +1,3 @@
-#include "animation.h"
 #include "collision_map.h"
 #include "entity.h"
 #include "file.h"
@@ -46,7 +45,7 @@ typedef struct MapItem {
   s16 shakeBaseZ;                                           // 0x12, 同じく pos->z
   u8 unk_14;                                                // 0x14, FUN_080070a8 の第8引数
   u8 unk_15;                                                // 0x15, FUN_08007310 の第11引数。パレットの選択と、サバタが開けられるかの判定に使う
-  s16 mapArea;                                              // 0x16, FUN_08241574(pos) の結果。gStat->unk_248 と一致しないと隠す
+  s16 mapArea;                                              // 0x16, GetMapAreaAt(pos) の結果。gStat->unk_248 と一致しないと隠す
   u32 stateTimer;                                           // 0x18, update が毎フレーム +1 し、状態が変わると 0 に戻す
   Particle* ptcl;                                           // 0x1C, Malloc(0x28) = sizeof(Particle)
   AuxSprite* sprite;                                        // 0x20, Malloc(0x2C) = sizeof(AuxSprite)

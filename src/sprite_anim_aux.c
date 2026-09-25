@@ -1,5 +1,5 @@
-#include "animation.h"
 #include "global.h"
+#include "sprite_aux.h"
 
 // TODO: いろんな用途のデータが区別されてないのであとで分ける
 IWRAM_DATA u8 u8_03000784[4] = {};

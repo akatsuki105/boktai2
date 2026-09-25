@@ -1,4 +1,3 @@
-#include "animation.h"
 #include "collision_map.h"
 #include "entity.h"
 #include "file.h"
@@ -115,9 +114,9 @@ NON_MATCH void EntityF41A_UpdateWander(EntityF41A* p) {
 // 被弾中。6フレームだけ明るいパレットにして点滅させる
 void EntityF41A_UpdateHit(EntityF41A* p) {
   if (p->stateTimer <= 5) {
-    Video_SetAuxSpritePltt(&p->gfx, 0x132);
+    Video_SetAuxSpritePltt(&p->gfx, 306);
   } else {
-    Video_SetAuxSpritePltt(&p->gfx, 0x133);
+    Video_SetAuxSpritePltt(&p->gfx, 307);
   }
   p->animIdx = 2;
   p->stateTimer++;
@@ -216,7 +215,7 @@ void EntityF41A_InitSprite(EntityF41A* p) {
   Video_GetAuxSprite(&p->gfx, SPRITE_BOKU_0);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   FUN_0823b46c(&p->data, &p->sprite);
-  Video_SetAuxSpritePltt(&p->gfx, 0x133);
+  Video_SetAuxSpritePltt(&p->gfx, 307);
   p->sprite.pos = p->data.pos;
   p->animFile = GetFile(DIR_ANIMATION, 0x1DF8);
   p->animIdx = 7;
@@ -227,7 +226,7 @@ void EntityF41A_InitHitbox(EntityF41A* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 size, offset;
 
-  size.x = 0x40, size.y = 100, size.z = 0x40;
+  size.x = 64, size.y = 100, size.z = 64;
   offset.x = 0, offset.y = 100, offset.z = 0;
   Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetAttack(hitbox, 10, 0x1E, 0, 0, 0x10);

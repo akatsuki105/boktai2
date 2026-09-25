@@ -69,5 +69,6 @@ u32 GetMinute(void);
 u32 GetSecond(void);
 
 void ParseBCDDate(s32* year, s32* month, s32* day, BCDDate date);
+u32 FUN_0823d9ec(s32 year1, s32 month1, s32 day1, s32 year2, s32 month2, s32 day2);
 
 #endif  // GUARD_ZOKTAI_TIME_H

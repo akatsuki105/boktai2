@@ -24,7 +24,9 @@ struct CollisionMapData;
 IWRAM_DATA u32 u32_03002b54 = 0;                    // gUnkEntity1Ptr_03002b58 と同じ場所っぽい, rfu_syncVBlank の戻り値が入る
 IWRAM_DATA Entity* gUnkEntity1Ptr_03002b58 = NULL;  // 0x03002B58, Malloc(908) で確保したバッファを指すポインタ, RFU関連? (FUN_0804e2c0)
 
-IWRAM_DATA u8 u8_03002b5c[60] = {};            // todo
+IWRAM_DATA u8 u8_03002b5c[36] = {};            // todo
+IWRAM_DATA u16 u16_03002b80 = 0;               // 0x03002B80, ApplyLxModifiers が 1 なら太陽レベル +4、2 なら日光なしにする
+IWRAM_DATA u8 u8_03002b82[22] = {};            // todo
 IWRAM_DATA u16 gPlayerCount = 0;               // Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
 IWRAM_DATA u8 u8_03002b9a[38] = {};            // todo
 IWRAM_DATA u32 u32_03002bc0 = 0;               // 0x03002BC0, ビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る

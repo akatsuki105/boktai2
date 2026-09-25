@@ -35,7 +35,7 @@ _0800C850:
 	cmp r7, #0
 	beq _0800C874
 	ldr r0, [sp, #0x1c]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	str r0, [r5, #4]
 	b _0800C876
 	.align 2, 0
@@ -121,7 +121,7 @@ _0800C8AC:
 	movs r2, #0
 	movs r3, #0
 	bl Hitbox_SetPowerAndAttributes
-	ldr r1, _0800C99C @ =Hazard_OnHit
+	ldr r1, _0800C99C @ =Cactus_OnHit
 	adds r0, r6, #0
 	adds r2, r5, #0
 	bl Hitbox_SetHandler
@@ -186,7 +186,7 @@ _0800C98C:
 _0800C990: .4byte 0xFFFF0000
 _0800C994: .4byte 0x0000FFFF
 _0800C998: .4byte 0x00004001
-_0800C99C: .4byte Hazard_OnHit
+_0800C99C: .4byte Cactus_OnHit
 _0800C9A0: .4byte 0x0000FF5C
 _0800C9A4: .4byte 0x0000FF80
 _0800C9A8: .4byte 0x030046A8

@@ -42,7 +42,7 @@ static_assert(sizeof(Entity83B2) == 48);
 
 IWRAM_DATA Entity83B2* gEntity83B2 = NULL;  // 0x0300003C
 
-s32 FUN_08241574(Vec3* pos);
+s32 GetMapAreaAt(Vec3* pos);
 
 extern s32 (*const PTR_ARRAY_085aa6ac[3])(Entity83B2*, Entity83B2Data*, s32);
 
@@ -491,7 +491,7 @@ NON_MATCH s32 VM_Sub883A(void) {
       }
       FUN_08009298(p, data, &pos);
       if (kind != 0) {
-        data->id_8 = FUN_08241574(&data->pos);
+        data->id_8 = GetMapAreaAt(&data->pos);
       } else {
         data->id_8 = -1;
       }
@@ -543,7 +543,7 @@ s32 VM_Sub1F65(void) {
   }
   FUN_08009298(p, data, &pos);
   if (data->id_8 >= 0) {
-    data->id_8 = FUN_08241574(&data->pos);
+    data->id_8 = GetMapAreaAt(&data->pos);
   }
 }
 

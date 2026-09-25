@@ -128,34 +128,33 @@ void FUN_0823b9cc(s32 n) {
   }
 }
 
-NON_MATCH void Camera_Translate(void) {
-#ifdef NONMATCHING_C
-  Camera* cam;
-  s32 hx;
-  s32 hz;
-  s32 a;
-  s32 b;
+// 2^8 での符号付き除算。/ 256 と結果は同じだが、原典はこの形 (符号を見て shift) を使っている。
+// アイソメトリック投影の計算に繰り返し現れる
+static inline s32 Div256(s32 v) { return v >= 0 ? (v >> 8) : -((-v) >> 8); }
 
-  cam = gCamera;
-  if (cam != NULL) {
-    gCameraCoords.worldPos.x -= cam->shakeOffsetX;
-    gCameraCoords.worldPos.z -= cam->shakeOffsetZ;
-    // このアイソメトリック投影のブロックは FUN_0823bac8 / FUN_0823b8ac / Camera_Update / Camera_Init にも同じ形で現れる
-    hx = gCameraCoords.worldPos.x >> 1;
-    hz = gCameraCoords.worldPos.z >> 1;
-    gCameraVpCoords.x = ((hx - hz) * 48) / 256;
-    a = ((hx + hz) * 48) / 256;
-    b = (gCameraCoords.worldPos.y * 24) / 256;
-    gCameraVpCoords.y = a - b;
-    gCameraVpCoords.z = a + b;
-    cam = gCamera;
-    cam->shakeAmplitude = 0;
-    cam->shakeOffsetX = 0;
-    cam->shakeOffsetZ = 0;
+// ワールド座標をアイソメトリック投影して視点座標にする
+static inline void WorldToVp(Vec3* vp, Vec3* world) {
+  s32 hx = world->x >> 1;
+  s32 hz = world->z >> 1;
+  s32 a, b;
+
+  vp->x = Div256((hx - hz) * 48);
+  a = Div256((hx + hz) * 48);
+  b = Div256(world->y * 24);
+  vp->y = a - b;
+  vp->z = a + b;
+}
+
+// カメラのワールド座標に画面ゆれを反映して、投影しなおす
+void Camera_Translate(void) {
+  if (gCamera != NULL) {
+    gCameraCoords.worldPos.x -= gCamera->shakeOffsetX;
+    gCameraCoords.worldPos.z -= gCamera->shakeOffsetZ;
+    WorldToVp(&gCameraVpCoords, &gCameraCoords.worldPos);
+    gCamera->shakeAmplitude = 0;
+    gCamera->shakeOffsetX = 0;
+    gCamera->shakeOffsetZ = 0;
   }
-#else
-  INCFUNC("asm/func/Camera_Translate.inc");
-#endif
 }
 
 void FUN_0823baa8(void) {

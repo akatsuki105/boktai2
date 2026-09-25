@@ -49,10 +49,10 @@ NON_MATCH void FUN_081d5cac(EntityF1F9Item* item) {
     item->hitbox.flags &= ~HBFLAG_UNK_2;
   }
   if (item->unk_153 != 0) {
-    Video_SetAuxSpritePltt(item->sprite.gfx, 0x132);
+    Video_SetAuxSpritePltt(item->sprite.gfx, 306);
     item->unk_153--;
   } else {
-    Video_SetAuxSpritePltt(item->sprite.gfx, 0x17C);
+    Video_SetAuxSpritePltt(item->sprite.gfx, 380);
   }
 #else
   INCFUNC("asm/func/FUN_081d5cac.inc");

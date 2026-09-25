@@ -12,7 +12,7 @@
 	bne _08063114
 	ldr r2, _08063110 @ =0x000004C4
 	adds r0, r7, r2
-	bl FUN_082466ec
+	bl Eff082473e0Emitter_FadeParticle
 	b _080631F2
 	.align 2, 0
 _0806310C: .4byte 0x000004C5
@@ -127,7 +127,7 @@ _0806312E:
 	str r1, [sp, #8]
 	movs r1, #3
 	add r2, sp, #0xc
-	bl FUN_08246728
+	bl Eff082473e0Emitter_BurstParticle
 _080631F2:
 	add sp, #0x24
 	pop {r3, r4, r5}

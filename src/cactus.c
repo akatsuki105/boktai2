@@ -6,51 +6,51 @@
 #include "player.h"
 #include "sound.h"
 #include "sprite.h"
-#include "sprite_aux.h"
 #include "vm.h"
 
-// HazardManager がまとめて管理する、触れるとダメージを受ける破壊可能な設置物
+// CactusManager がまとめて管理する、触れるとダメージを受ける破壊可能な設置物
 // スクリプトコマンド 0x2306 (HazardManager_SpawnScripted) が1個ずつ生成する
 typedef struct {
-  u16 id;             // 0x00, hitbox の id になる, script keyword 'n'
-  s16 hp;             // 0x02, script keyword 'l' (既定 100), Hazard_OnHit が HitboxData.damage の分だけ減らし 0 以下で破壊される
-  s32 areaId;         // 0x04, script keyword 'm' が 0 以外のときだけ FUN_08241574(pos) の戻り値が入る。負なら生成を中止する。書くだけで読み手はいない
-  u16 scriptId;       // 0x08, script keyword 'b', 破壊時に Script_ExecById へ渡してから 0 に戻す
-  u8 damageTimer;     // 0x0A, 被弾時に 10 がセットされ毎フレーム減る。0 でない間だけ hitbox.flags に HBFLAG_UNK_2 が立つ
-  u8 unk_0b;          // 0x0B
-  s16 scriptArgs[4];  // 0x0C, script keyword 'a' の4要素, 破壊時の Script_ExecById の argv[4..7] になる
-
-  Vec3 pos;  // 0x14, HazardManager_Spawn の第1引数のコピー
-  Vec3 min;  // 0x1C, pos - (0xA4, 0x80, 0xA4)
-  Vec3 max;  // 0x24, pos + (0xA4, 0x80, 0xA4), プレイヤーが min..max に入ると HazardManager.hitbox が攻撃側として登録される
-
-  HitboxData hitbox;             // 0x2C, 被弾用 (flags 0x4001), fn は Hazard_OnHit で owner はこの Hazard
+  u16 id;                        // 0x00, '.n', hitbox の id になる
+  s16 hp;                        // 0x02, '.l=100', Cactus_OnHit が HitboxData.damage の分だけ減らし 0 以下で破壊される
+  s32 areaId;                    // 0x04, '.m' が 0 以外のときだけ GetMapAreaAt(pos) の戻り値が入る,負なら生成を中止する,書くだけで読み手はいない
+  u16 scriptId;                  // 0x08, '.b', 破壊時に Script_ExecById へ渡してから 0 に戻す
+  u8 damageTimer;                // 0x0A, 被弾時に 10 がセットされ毎フレーム減る,0 でない間だけ hitbox.flags に HBFLAG_UNK_2 が立つ
+  u8 unk_0b;                     // 0x0B, padding?
+  s16 scriptArgs[4];             // 0x0C, '.a' の4要素, 破壊時の Script_ExecById の argv[4..7] になる
+  Vec3 pos;                      // 0x14, HazardManager_Spawn の第1引数のコピー
+  Vec3 min;                      // 0x1C, pos - (0xA4, 0x80, 0xA4)
+  Vec3 max;                      // 0x24, pos + (0xA4, 0x80, 0xA4), プレイヤーが min..max に入ると CactusManager.hitbox が攻撃側として登録される
+  HitboxData hitbox;             // 0x2C, 被弾用 (flags 0x4001), fn は Cactus_OnHit で owner はこの Cactus
   MapTileOverride tileOverride;  // 0x7C, 足元のタイルの高さを +1 して通れなくする
-  AuxSprite node;                // 0x8C
-  AuxSpriteGfx sprite;           // 0xB8, Video_GetAuxSprite(&sprite, 0x4B3)
-} Hazard;
-static_assert(sizeof(Hazard) == 212);
+  AuxSprite sprite;              // 0x8C
+  AuxSpriteGfx gfx;              // 0xB8, SPRITE_CACTUS
+} Cactus;
+static_assert(sizeof(Cactus) == 212);
 
-// 触れるとダメージを受ける破壊可能な設置物をまとめて管理する
-// 攻撃判定は Hazard ごとには持たず、プレイヤーが近付いた Hazard の位置へ hitbox を移して1フレームだけ登録する
+// サボテンの管理構造体
+// 攻撃判定は Cactus ごとには持たず、プレイヤーが近付いた Cactus の位置へ hitbox を移して1フレームだけ登録する
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_8
-  u8 count;           // 0x18, script keyword 'm' (既定 8)
-  u8 unk_19[3];       // 0x19
-  u32 activeMask;     // 0x1C, bit i が hazards[i] 使用中
-  Hazard* hazards;    // 0x20, Malloc(count * sizeof(Hazard))
-  HitboxData hitbox;  // 0x24, プレイヤーへの攻撃判定 (flags 0x2001), 威力は script keyword 'p'/'f'/'i'
-} HazardManager;
-static_assert(sizeof(HazardManager) == 116);
+  u8 count;           // 0x18, '.m=8'
+  u8 unk_19[3];       // 0x19, padding?
+  u32 activeMask;     // 0x1C, bit i が list[i] 使用中
+  Cactus* list;       // 0x20, Malloc(count * sizeof(Cactus))
+  HitboxData hitbox;  // 0x24, プレイヤーへの攻撃判定 (flags 0x2001), 威力は '.p'/'.f'/'.i'
+} CactusManager;
+static_assert(sizeof(CactusManager) == 116);
 
-COMMON_DATA HazardManager* gHazardManager = NULL;  // 0x03002B34
+COMMON_DATA CactusManager* gCactusManager = NULL;  // 0x03002B34
+
+s32 GetMapAreaAt(Vec3* pos);
+void FUN_08234270(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
+s32 FUN_08014da0(s32 param_1, s32 param_2, Vec3* pos, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
 static inline bool32 Hitbox_HasWeakness(HitboxData* p, u32 mask) { return p->weakness & mask; }
 
-// 被弾時に呼ばれる。hp を削り、0 以下になったら破壊待ちにし、そうでなければ点滅させる
-void Hazard_OnHit(HitboxData* a, HitboxData* b, void* owner) {
-  Hazard* p = owner;
-
+// 被弾時に呼ばれる,hp を削り、0 以下になったら破壊待ちにし、そうでなければ点滅させる
+void Cactus_OnHit(HitboxData* a, HitboxData* b, Cactus* owner) {
+  Cactus* p = owner;  // これを入れないと一致しない, でも不自然なので後で自然な書き方に直せるか試す
   Hitbox_ApplyDamage(a, b);
   if (b->damage != 0) {
     p->hp -= b->damage;
@@ -58,38 +58,34 @@ void Hazard_OnHit(HitboxData* a, HitboxData* b, void* owner) {
       p->hp = 0;
     } else {
       p->damageTimer = 10;
-      Video_SetAuxSpritePltt(&p->sprite, 0x132);
-      if (!Hitbox_HasWeakness(a, 4)) {
-        PlaySound_082406e0(0x13E);
-      }
+      Video_SetAuxSpritePltt(&p->gfx, 306);
+      if (!Hitbox_HasWeakness(a, (1 << 2))) PlaySound_082406e0(0x13E);
     }
     b->damage = 0;
   }
 }
 
-// Hazard 1個を当たり判定・描画・地形の各リストから外し、スロットを空きに戻す
-s32 Hazard_Remove(HazardManager* p, Hazard* hazard, u32 idx) {
+// Cactus 1個を当たり判定・描画・地形の各リストから外し、スロットを空きに戻す
+s32 Hazard_Remove(CactusManager* p, Cactus* hazard, u32 idx) {
   Hitbox_Unregister(&hazard->hitbox);
-  AuxSprite_Remove(&hazard->node);
+  AuxSprite_Remove(&hazard->sprite);
   FUN_082342a8(&hazard->tileOverride);
   p->activeMask &= ~(1 << idx);
 }
 
-s32 FUN_08014da0(s32 param_1, s32 param_2, Vec3* pos, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
-
 // 破壊音を鳴らし、破片のパーティクルを2種類まき散らす
-void Hazard_EmitBreakEffect(Hazard* p) {
+void Hazard_EmitBreakEffect(Cactus* p) {
   PlaySound_082406e0(0x14A);
   FUN_08014da0(3, 3, &p->pos, 0x3C, 0x1E, 0x10, 8, 8, 0, 0x100, 0x18, 0x10);
   FUN_08014da0(8, 7, &p->pos, 0x3C, 0x1E, 0x16, 8, 8, 0, 0x100, 0x18, 0x10);
 }
 
-static inline bool32 Hazard_ContainsPoint(Hazard* p, Vec3* pos) { return pos->x >= p->min.x && pos->x <= p->max.x && pos->y >= p->min.y && pos->y <= p->max.y && pos->z >= p->min.z && pos->z <= p->max.z; }
+static inline bool32 Hazard_ContainsPoint(Cactus* p, Vec3* pos) { return pos->x >= p->min.x && pos->x <= p->max.x && pos->y >= p->min.y && pos->y <= p->max.y && pos->z >= p->min.z && pos->z <= p->max.z; }
 
-// hp が尽きた Hazard を片付け、生きているものは点滅を進めつつ、プレイヤーが範囲に入った最初の1個に攻撃判定を置く
-NON_MATCH s32 HazardManager_Update(HazardManager* p) {
+// hp が尽きた Cactus を片付け、生きているものは点滅を進めつつ、プレイヤーが範囲に入った最初の1個に攻撃判定を置く
+NON_MATCH s32 HazardManager_Update(CactusManager* p) {
 #ifdef NONMATCHING_C
-  Hazard* hazard;
+  Cactus* hazard;
   s32 slot;
   Player* player;
   Vec3* playerPos;
@@ -104,7 +100,7 @@ NON_MATCH s32 HazardManager_Update(HazardManager* p) {
     playerPos = &player->unk_24.pos;
   }
   registered = FALSE;
-  hazard = p->hazards;
+  hazard = p->list;
   for (i = 0; i < p->count; i++, hazard++) {
     if (p->activeMask & (1 << i)) {
       if (hazard->hp <= 0) {
@@ -128,7 +124,7 @@ NON_MATCH s32 HazardManager_Update(HazardManager* p) {
         if (hazard->damageTimer != 0) {
           Hitbox_SetFlags(&hazard->hitbox, HBFLAG_UNK_2);
           if (--hazard->damageTimer == 0) {
-            Video_SetAuxSpritePltt(&hazard->sprite, 0x11B);
+            Video_SetAuxSpritePltt(&hazard->gfx, 0x11B);
           }
         } else {
           Hitbox_ClearFlags(&hazard->hitbox, HBFLAG_UNK_2);
@@ -149,34 +145,34 @@ NON_MATCH s32 HazardManager_Update(HazardManager* p) {
 #endif
 }
 
-s32 HazardManager_Destroy(HazardManager* p) {
-  Hazard* hazard;
+s32 HazardManager_Destroy(CactusManager* p) {
+  Cactus* hazard;
   s32 i;
 
-  if (p->hazards != NULL) {
-    hazard = p->hazards;
+  if (p->list != NULL) {
+    hazard = p->list;
     for (i = 0; i < p->count; i++, hazard++) {
       if (p->activeMask & (1 << i)) {
         Hazard_Remove(p, hazard, i);
       }
     }
-    Free(p->hazards);
-    p->hazards = NULL;
+    Free(p->list);
+    p->list = NULL;
   }
-  gHazardManager = NULL;
+  gCactusManager = NULL;
   return 0;
 }
 
 // プレイヤーへの攻撃判定を1個だけ用意し、Hazard の配列を確保する
-s32 HazardManager_Init(HazardManager* p) {
+s32 HazardManager_Init(CactusManager* p) {
   HitboxData* hitbox;
-  Hazard* hazards;
+  Cactus* list;
   s32 power;
   s32 unk_40;
   s32 unk_44;
   Vec3 halfSize, offset;
 
-  gHazardManager = p;
+  gCactusManager = p;
   p->count = VM_GetKeywordValue('m', 8);
   p->activeMask = 0;
   power = VM_GetKeywordValue('p', 5);
@@ -188,22 +184,22 @@ s32 HazardManager_Init(HazardManager* p) {
   Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetAttack(hitbox, power, unk_40, 0, 0, unk_44);
-  hazards = Malloc(p->count * sizeof(Hazard));
-  p->hazards = hazards;
-  if (hazards == NULL) {
+  list = Malloc(p->count * sizeof(Cactus));
+  p->list = list;
+  if (list == NULL) {
     return -1;
   }
-  ClearMemory(hazards, p->count * sizeof(Hazard));
+  ClearMemory(list, p->count * sizeof(Cactus));
   return 0;
 }
 
-HazardManager* HazardManager_Create(u32 _) {
-  HazardManager* p;
+CactusManager* HazardManager_Create(u32 _) {
+  CactusManager* p;
 
-  if (gHazardManager != NULL) {
-    return gHazardManager;
+  if (gCactusManager != NULL) {
+    return gCactusManager;
   }
-  p = CreateEntity(ENTITY_UNK_8, sizeof(HazardManager));
+  p = CreateEntity(ENTITY_UNK_8, sizeof(CactusManager));
   if (p != NULL) {
     SetEntityRoutine(p, HazardManager_Update, HazardManager_Destroy);
     if (HazardManager_Init(p) < 0) {
@@ -214,8 +210,8 @@ HazardManager* HazardManager_Create(u32 _) {
   return p;
 }
 
-// 空いている hazards の添字を返す。空きがなければ -1
-s32 HazardManager_FindFreeSlot(HazardManager* p) {
+// 空いている list の添字を返す,空きがなければ -1
+s32 HazardManager_FindFreeSlot(CactusManager* p) {
   s32 i;
 
   for (i = 0; i < p->count; i++) {
@@ -226,16 +222,13 @@ s32 HazardManager_FindFreeSlot(HazardManager* p) {
   return -1;
 }
 
-s32 FUN_08241574(Vec3* pos);
-void FUN_08234270(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
-
-// 空きスロットに Hazard を1個置く。当たり判定・地形の高さ・スプライトを用意して使用中にする
+// 空きスロットに Cactus を1個置く,当たり判定・地形の高さ・スプライトを用意して使用中にする
 NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, s32 requireArea, s32 scriptId, s32* args) {
 #ifdef NONMATCHING_C
-  HazardManager* p = gHazardManager;
-  Hazard* hazard;
+  CactusManager* p = gCactusManager;
+  Cactus* hazard;
   HitboxData* hitbox;
-  AuxSpriteGfx* sprite;
+  AuxSpriteGfx* gfx;
   Vec3* hazardPos;
   Vec3* min;
   Vec3* max;
@@ -253,11 +246,11 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   if (slot < 0) {
     return -1;
   }
-  hazard = &p->hazards[slot];
+  hazard = &p->list[slot];
   hazard->id = id;
   hazard->hp = hp;
   if (requireArea != 0) {
-    hazard->areaId = FUN_08241574(pos);
+    hazard->areaId = GetMapAreaAt(pos);
   } else {
     hazard->areaId = 0;
   }
@@ -270,7 +263,7 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   min = &hazard->min;
   max = &hazard->max;
   tileOverride = &hazard->tileOverride;
-  sprite = &hazard->sprite;
+  gfx = &hazard->gfx;
   for (i = 0; i < 4; i++) {
     hazard->scriptArgs[i] = args[i];
   }
@@ -280,7 +273,7 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   Hitbox_Init(hitbox, hazard->id, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetPos(hitbox, hazardPos, 0);
   Hitbox_SetPowerAndAttributes(hitbox, 0, 0, 0);
-  Hitbox_SetHandler(hitbox, Hazard_OnHit, hazard);
+  Hitbox_SetHandler(hitbox, Cactus_OnHit, hazard);
   Hitbox_Register(hitbox);
   hazard->min.x = -0xA4;
   hazard->min.y = -0x80;
@@ -312,12 +305,12 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
     h++;
   }
   FUN_08234270(tileOverride, idx, 0, h, 0xFF, 2);
-  if (!Video_GetAuxSprite(sprite, 0x4B3)) {
+  if (!Video_GetAuxSprite(gfx, SPRITE_CACTUS)) {
     return -1;
   }
-  AuxSprite_Add(&hazard->node, sprite, 0);
-  hazard->node.metaspriteIdx = metaspriteIdx;
-  hazard->node.pos = hazard->pos;
+  AuxSprite_Add(&hazard->sprite, gfx, 0);
+  hazard->sprite.metaspriteIdx = metaspriteIdx;
+  hazard->sprite.pos = hazard->pos;
   p->activeMask |= 1 << slot;
 #else
   INCFUNC("asm/func/HazardManager_Spawn.inc");

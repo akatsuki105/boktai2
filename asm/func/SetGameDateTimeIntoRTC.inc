@@ -47,7 +47,7 @@
 	strb r0, [r4, #6]
 	strb r7, [r4, #7]
 	movs r6, #0
-	bl FUN_08241704
+	bl SuspendSunlight
 	ldr r0, _0823E5FC @ =0x04000208
 	mov sb, r0
 	movs r1, #0

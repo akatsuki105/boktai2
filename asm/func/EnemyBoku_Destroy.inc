@@ -59,7 +59,7 @@ _08101C92:
 	movs r1, #0xc5
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_08247504
+	bl Eff082473e0Emitter_Destroy
 	movs r0, #1
 	strb r0, [r5]
 _08101CAA:

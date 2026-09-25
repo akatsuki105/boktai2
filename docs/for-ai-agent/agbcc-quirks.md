@@ -171,6 +171,13 @@ for (i = 0; i < N; i++) {          for (i = 0; i < N; i++) {
 - **The "prefer the natural form" advice has an exception: position.** In `AuxSprite_Add` the target computes the 0/1 value *before* two unrelated stores and only then sets up the call (`movs`/`ands`/`rsbs`/`lsrs`, `str`, `str`, `bl`). Written naturally as a call argument (`f(p, (flags & mask) != 0)`) the trick is emitted correctly but stays anchored at the call, after the stores; assigning it to a local first (`idx = (flags & mask) != 0;`) moves it early but switches agbcc to a *branch-based* setcc (`cmp`/`beq`/`movs #1`, one insn longer). Hand-rolling the trick into the assignment — `idx = (u32)(0 - (flags & mask)) >> 31;` — is the only form that is both early and branchless, and it matched. So: use the natural form when the trick lands where you need it, and hand-roll only when the target evaluates it earlier than the call site would.
 - Two-operand `a != b` (both `s32`) generalizes the same trick via XOR first: `return a != b;` compiles as if written `return ((u32)(-(a ^ b) | (a ^ b))) >> 31;` — i.e. agbcc reduces `a != b` to `(a^b) != 0` then applies the same negate/OR/shift sequence.
 
+### `/ 256` on a signed value is a 3-instruction bias, not the 6-instruction abs form
+
+- **Frequency**: `Camera_Translate` (matched), `FUN_082470a8`, and the same block in `Camera_Init`, `FUN_0823bac8`, `FUN_0823b8ac`, `MapItemManager_Init`.
+- `v / 256` compiles to `cmp #0` / `bge` / `add #0xff` / `asr #8`. The target's `cmp #0` / `blt` / `asr #8` / `b` / `rsb` / `asr #8` / `rsb` is the same value computed a different way, and agbcc only emits it for the ternary spelled out: `v >= 0 ? (v >> 8) : -((-v) >> 8)`. Writing `v < 0 ? -((-v) >> 8) : (v >> 8)` puts the negate arm first, so the operand order still matters.
+- The project has this as `Div256` in `src/camera.c`. The isometric projection uses it three times per call, so a function doing the projection is 9 instructions short without it.
+- In `Camera_Translate` the projection is a `static inline` taking `(Vec3* out, Vec3* world)` (`WorldToVp` in `src/camera.c`): the target materializes both pointers — the `ldr =dest` pool load and the source's base copy — as an adjacent pair **before** the arithmetic, which is the inlined call's entry. Written flat in the caller, the pool load slides down to the first store instead.
+
 ### A range test becomes `(unsigned)(x - lo) <= hi - lo`
 
 - **Frequency**: `GameOverManager_StateWaitFlag`, `IsSpecialWeapon`, `CountFoundArmors`.
@@ -289,6 +296,7 @@ Which side to pick, once the asm has told you what is wrong:
 - The `for` increment's comma order is the order of the two `adds`.
 - Reading the **low byte first** keeps both loads (`ldrh` + `ldrb`); reading the high half first lets CSE collapse them into one `ldrh` plus shifts.
 - A **struct-field** store lets agbcc keep a global pointer live across it; a **cast** store forces it to be reloaded.
+- Caching a global pointer in a local (`cam = gCamera;`) keeps the **value** in a callee-saved register; writing `gCamera->field` at each use keeps the **address** there (`adds r6, r0, #0`) and reloads the value (`ldr r2, [r6]`) after anything that needs the registers. `Camera_Translate` reloads once after the projection — with the local, that reload has to be written out as a second `cam = gCamera;`, which is the tell that the local does not belong there.
 - `-n * 256` lets agbcc reuse a `-n` computed for a nearby compare, overwriting `n`; `n * -256` negates after the shift and keeps `n` alive.
 - An `s16` local sign-extends at **every use**; `s32 x = (s16)n;` sign-extends **once at the assignment**.
 - A `u16` counter adds then truncates; an `s16` counter additionally sign-extends where it is read.
@@ -296,7 +304,7 @@ Which side to pick, once the asm has told you what is wrong:
 
 ### A constant or global address materializes in the wrong place
 
-- **Frequency**: `Sprite_SetPlttID`, `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`, `FUN_08089d24`, `FUN_08089f38`, `FUN_0823a9f4`, `FUN_0823aa10`, `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`, `ParticleShadow_Init`, `Hazard_OnHit`.
+- **Frequency**: `Sprite_SetPlttID`, `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`, `FUN_08089d24`, `FUN_08089f38`, `FUN_0823a9f4`, `FUN_0823aa10`, `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`, `ParticleShadow_Init`, `Cactus_OnHit`, `Entity08080be8_SetupSprite`, `CheckNamakuraProc`, `CheckParalyzeProc`.
 - **Symptom**: one `movs rN, #k` or `ldr rN, =SYMBOL` sits earlier or later than the target has it, usually with registers renamed and an identical instruction count.
 - The lever is how the expression is split into statements, never the arithmetic. The mask-hoisting bullets under "`(x & (1<<n)) != 0` auto-optimizes" are the same mechanism seen through a bit test.
 
@@ -307,7 +315,9 @@ Which side to pick, once the asm has told you what is wrong:
 | `p->state = 2;` | `T_SetState(p, 2)` — the helper also resets `stateTimer`, which every state change in that entity does | `FUN_08089d24`, `FUN_08089f38` |
 | `gEntityDisableFlags &= ~2;` | `EnableEntityFlags(2)` taking `u32 flags` | `FUN_0823a9f4` |
 | `if (!((gA \| gB) & 1))` | a helper taking the mask as `flags` | `FUN_0823aa10` |
-| `if (!(a->weakness & 4))` | `Hitbox_HasWeakness(a, 4)` taking `u32 mask`. `(x & 4) == 0`, `4 & x` and an inverted `if`/`else` change nothing | `Hazard_OnHit` |
+| `if (!(a->weakness & 4))` | `Hitbox_HasWeakness(a, 4)` taking `u32 mask`. `(x & 4) == 0`, `4 & x` and an inverted `if`/`else` change nothing | `Cactus_OnHit` |
+| `arr[i]` on a **global array** | `*(arr + i)` — different tree in the front end (`ARRAY_REF` vs `INDIRECT_REF` of a `PLUS_EXPR`), so the base's pool load moves relative to the index's `lsls`. No `-f` option controls it; pick the spelling off the target | `CheckNamakuraProc`, `CheckParalyzeProc` |
+| `p->sprite.metaspriteIdx = 0;` right after `AuxSprite_Add(&p->sprite, ...)` | `AuxSprite_SetPoseIdx(&p->sprite, 0)` — the helper's argument re-materializes `&p->sprite` after the call, so agbcc reuses the register that held `p` instead of keeping a second one live across it | `Entity08080be8_SetupSprite` |
 | `p->plttID = id; p->pltt = &g[p->plttID * 16];` | reload the field in its own statement: `i = p->plttID;` | `Sprite_SetPlttID` |
 | `f(0, (T*)gPtr, g(0x28))` | `len = g(0x28);` first | |
 | `Div(..., n + 1)` at each of three calls | `d = n + 1;` directly after `n`'s assignment | `FreezeEffect_GatherSubParticles` |
@@ -330,15 +340,17 @@ Which side to pick, once the asm has told you what is wrong:
 
 ### A zero stored from a reused local takes that local's register
 
-- **Frequency**: `ReadKeyInput`.
+- **Frequency**: `ReadKeyInput`, `FindZonesByID`.
 - In `ReadKeyInput`, the loop that clears players 1-4 stores 0 twice (`strh r3, [r1]` / `strh r3, [r1, #2]`), with the 0 in `r3`, the register that held `keys` a moment earlier. Writing `gInput[i].down = 0; gInput[i].pressed = 0;` (or a chained `= 0`) put the 0 in a fresh `r0`. Setting the existing local once, `keys = 0;` before the loop, and storing `keys` (`down = keys; pressed = keys;`) matched. Going further and reusing the full update formula (`pressed = keys & ~prev`) with `keys = 0` did not fold and added four instructions.
+
+- The reverse also happens: **initialising a local at its declaration lets agbcc reuse a zero it materialised for something else.** `FindZonesByID` starts with `*count = 0;` and a `Zone* first` that stays NULL until a match. Declaring `Zone* first = NULL;` made agbcc store that same register through `*count`, one `movs` short of the target; the target materialises three separate zeros (`*count`, `first`, the index), which `*count = 0; first = NULL;` as two plain statements reproduces. The source order is visible: whichever zero is written first gets the `strh`.
 
 ### A parameter copied into a local is not coalesced; the copy's declared type decides which one is the working variable
 
-- **Frequency**: `GetFile`, `GetTilemapFile`, `Hazard_OnHit`.
+- **Frequency**: `GetFile`, `GetTilemapFile`, `Cactus_OnHit`.
 - **Symptom**: two callee-saved registers hold the same incoming value, and the uses are split between them — often with the register pair swapped relative to the target, at an identical instruction count.
 - `GetFile(FileID directoryID, FileID fileID)` rewrites `fileID` in each `case` and passes the original to `GetAssetFile` at the end. The target truncates the incoming `fileID` into `r1`, copies it to `r7` (`adds r7, r1, #0`), and at the call moves `r7` into `r2` first, before building the 4th argument. A copy declared `FileID file = fileID;` either swapped `r1`/`r7` or moved `r2` last. Declaring the copy as `u32 file = fileID;` (found by the permuter as `int`) matched.
-- The type does not have to be a width change: a `void*` parameter assigned to a typed local is not coalesced either, so the two live in separate callee-saved registers. `Hazard_OnHit` keeps `p->hp` on the parameter's register and `p->damageTimer` / `&p->sprite` on the copy's; declaring the third parameter as `Hazard* p` gives one register and one fewer, and `void* owner` with `Hazard* p = owner;` — the shape `HitboxData.fn` actually has — matched.
+- The type does not have to be a width change: a `void*` parameter assigned to a typed local is not coalesced either, so the two live in separate callee-saved registers. `Cactus_OnHit` keeps `p->hp` on the parameter's register and `p->damageTimer` / `&p->sprite` on the copy's; declaring the third parameter as `Cactus* p` gives one register and one fewer, and `void* owner` with `Cactus* p = owner;` — the shape `HitboxData.fn` actually has — matched.
 
 ### A field copied into a local is loaded at the declaration; read directly it hoists with the rest
 
@@ -363,13 +375,14 @@ Which side to pick, once the asm has told you what is wrong:
 
 ### agbcc does not rotate loops: a guard plus `do/while` is a different shape from `while`
 
-- **Frequency**: `FUN_080ed068`.
+- **Frequency**: `FUN_080ed068`, `GetMapAreaAt`.
 - `while (p != NULL) { ... }` and `for (node = head; (p = node->enemy) != NULL; node = node->next)`
   both compile to a `b` into the test at the bottom — the test is never peeled.
   When the target instead evaluates the condition once before the loop
   (`ldr` / `cmp` / `beq end`) and ends with `bne` back to the top, the source was
   an explicit guard around a `do/while`:
   `p = node->enemy; if (p != NULL) { do { ... } while (p != NULL); }`.
+- A `break` as the **first** statement of the body is the one thing that does get rotated: `for (i = 0; i < 16; i++) { if (arr[i] <= 0) break; ... }` peels that test into the preheader and duplicates it in the latch, costing 1-2 instructions. Writing the same exit as `return` instead leaves the test at the top of the body, where the target has it (`GetMapAreaAt`); the two `return -1`s cross-jump into one, so nothing is duplicated. With the `break` in place, an explicit walker looked necessary to get the `adds r4, #4` — once it was a `return`, plain `arr[i]` produced the walker and the counter on its own.
 - This also decides where a loop-invariant constant lands. Inside the guard,
   `flag = 0x1000;` is emitted between the `beq` and the loop head, which is
   where the target has it; initialising it at the declaration hoists it to
@@ -416,11 +429,12 @@ Which side to pick, once the asm has told you what is wrong:
 
 ### `arr[i]` vs `*p++` change where the walking pointer is initialized
 
-- **Frequency**: `FUN_082315c0`, `FUN_0824082c`, `FUN_08089ce0`, `Entity0800a89c_ReleaseSwarm`, `Entity0800a89c_UpdateSwarm`, `Entity080146e0_Destroy`.
+- **Frequency**: `FUN_082315c0`, `FUN_0824082c`, `FUN_08089ce0`, `Entity0800a89c_ReleaseSwarm`, `Entity0800a89c_UpdateSwarm`, `Entity080146e0_Destroy`, `Eff082473e0Emitter_FadeParticle`.
 - Both compile to the same `stm rN!, {r0}` walking store, but the init of that pointer lands in a different place. `*out++ = v;` modifies the parameter, so agbcc copies it to a callee-saved register in the **entry block**, before any loop-invariant hoists. `out[i] = v;` leaves the parameter alone and lets loop strength reduction create the pointer, so its init goes in the **preheader**, after the hoists — swapping the order of the two setup instructions. (Strength reduction also frees `i` to be reversed into a down-counter while the pointer still walks up.)
 - A walking pointer compared against `base + const` (`adds r0, r5, #0` / `adds r0, #0x14` / `cmp r4, r0`) with a **signed** loop exit (`ble`) and no pre-loop test is an `s32 i` index loop, not a pointer loop: loop strength reduction deletes `i` and rewrites `i == 10` and `i < 32` as compares on the pointer. In `FUN_0824082c`, writing the pointer loop (`p == &arr[10]`, `p <= &arr[31]`) gave a pre-loop `bhi`, unsigned `bls` and pool-loaded addresses; `for (i = 0; i < 32; i++) { if (arr[i]) { if (i == 10) ... } }` matched, including the second walking pointer used for the `arr[i]` call argument.
 - The same split decides whether a **member offset** is folded into the pointer. `f(&arr[i].member)` initialises one pointer at `&arr[0].member` and steps it by `sizeof(*arr)`; an explicit `T* p = arr; f(&p->member); p++;` keeps `p` at `arr` and pays an `adds r0, #offset` every iteration. `Entity0800a89c_ReleaseSwarm` (`Particle_Remove(&swarm->bugs[i].ptcl)`) needed the index form. When the body reads a field **and** takes the address of another one, the index form creates **two** induction variables stepping the element size side by side, which a single walker can never produce: `Entity080146e0_Destroy` (`if (data->ptcls[j].active) Particle_Remove(&data->ptcls[j].ptcl);`) went from 35 to 43 instructions — exactly the target — just by dropping the walker. Two registers stepping by the same `sizeof` in the target asm is the tell.
 - With an explicit walker **and** an index that the body still needs, both the init order and the increment order are visible. `Entity0800a89c_UpdateSwarm` matched only as `for (i = 0, bug = swarm->bugs; i < 4; i++) { ...; bug++; }`: putting `bug = ...` first swapped the two registers, and putting `bug++` in the `for` increment emitted it after `i++` instead of before.
+- A `T* e = &arr[i];` declared **inside** the loop body splits the constant hoists around the pointer's init, where `arr[i]` spelled out at each use emits them adjacently. `Eff082473e0Emitter_FadeParticle` stores three constants into one element; indexing gave `movs 2` / `movs 10` back to back before the pointer setup, the inner declaration gave `movs 2` / pointer setup / `movs 10` — the target's order, and it swapped the two registers as well. Same 29 instructions either way, so the streamdiff hunk is only the hoist order.
 - `Video_ResetFrameState` clears 128 OAM entries. `*(u32*)&gOAMBuffer[i] = v;` in a `for (i = 0; i < 128; i++)` let agbcc fold the index and the counter into one pointer running **downward** from the last entry (`adds r0, r1, #0x3f8` / `subs r0, #8` / `cmp r0, r1`). The target keeps a separate countdown counter and an upward pointer, which an explicit `OamData* oam = gOAMBuffer; ... *(u32*)oam = v; oam++;` reproduces.
 
 ### Two addresses in one object share a base register; separate symbols get their own pool constants
@@ -437,8 +451,9 @@ Which side to pick, once the asm has told you what is wrong:
 
 ### Shared code after an if/else: inside the arms it can keep stepping an offset register, after the join it cannot
 
-- **Frequency**: `TextBoxChoice_SetCursor`.
+- **Frequency**: `TextBoxChoice_SetCursor`, `Entity08080be8_SetupHitbox`.
 - Written once after the `if/else`, the four `pos` stores started a fresh offset (`movs r2, #0x93` / `lsls r2, #1` for 0x126); the target steps it (`add r2, #2`) from the 0x124 the arms left in `r2`. agbcc's CSE only knows an offset register inside the block that built it, and cross-jumping runs afterwards — so a *stepped* offset across the join means that code sat in **both** arms and was merged. Calling a `static inline` helper from each arm reproduces it without duplicating the source.
+- The same applies to a field the arms leave alone. `Entity08080be8_SetupHitbox` sets a `Vec3` differently per arm and then `offset.z = 0`; factored out after the join it reloaded the `0xFFFF0000` half-word mask from the pool, while the target keeps it live in a register. Writing the whole vector in each arm (`offset.x = 0, offset.y = 30, offset.z = 0;`) lets cross-jumping merge the identical `z` store and keeps the mask where the target has it.
 - In a loop the same variable also costs a register: `u32 val = 0; if (VM_GetPC() != NULL) { val = Script_GetValue(); } args[i] = val;` hoisted the `movs #0` out of the loop and pushed three values into `r8`-`r10`. `if (VM_GetPC() != NULL) { args[i] = Script_GetValue(); } else { args[i] = 0; }` cross-jumps the store, and the `movs #0` disappears entirely because `r0` is already 0 on the `beq` path.
 
 ### A returned boolean built with one branch: initialise, then clear

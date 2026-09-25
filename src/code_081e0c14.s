@@ -2859,7 +2859,7 @@ _081E20E8:
 FUN_081e20ec: @ 0x081E20EC
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_08241704
+	bl SuspendSunlight
 	ldr r1, _081E210C @ =0x0300481C
 	movs r0, #1
 	str r0, [r1]

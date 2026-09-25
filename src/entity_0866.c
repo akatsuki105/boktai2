@@ -1,8 +1,8 @@
-#include "animation.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
 #include "particle.h"
+#include "sprite.h"
 
 typedef struct {
   Entity e;   // 0x0, ENTITY_UNK_10

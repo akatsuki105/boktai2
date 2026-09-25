@@ -32,6 +32,7 @@ typedef u32 SpriteFlags;
 // (OAM1.14-15 << 2) | (OAM0.14-15), ie. ((sizeidx << 2) | shape)
 typedef u8 SpriteShape;
 
+extern u32 gSpriteListIdx;
 extern const u16 gSpriteSizeTable[16];  // SpriteShape が idx
 
 #endif  // __INCLUDE_SPRITE_COMMON_H__

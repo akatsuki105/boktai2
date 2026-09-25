@@ -18228,7 +18228,7 @@ _081B72BA:
 	movs r1, #0xc5
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_08247504
+	bl Eff082473e0Emitter_Destroy
 	movs r0, #1
 	strb r0, [r5]
 _081B72D2:
@@ -20017,7 +20017,7 @@ _081B8176:
 _081B818C: .4byte 0x030046A0
 _081B8190:
 	ldr r0, [sp, #0x190]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldr r1, [sp, #0x70]
 	strh r0, [r1]
 _081B819A:

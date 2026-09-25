@@ -93,7 +93,7 @@ _08004718:
 	beq _08004798
 	subs r4, #0x58
 	adds r0, r4, #0
-	bl FUN_08241574
+	bl GetMapAreaAt
 	str r0, [r7, #8]
 	mov sl, r4
 	b _080047A0

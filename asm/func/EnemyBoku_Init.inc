@@ -1745,7 +1745,7 @@ _08102B5E:
 _08102B74: .4byte 0x030046A0
 _08102B78:
 	ldr r0, [sp, #0x190]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldr r5, [sp, #0x68]
 	strh r0, [r5]
 _08102B82:

@@ -119,7 +119,6 @@ s32 Entity1B24_Destroy(Entity1B24* p) {
 }
 
 // タイルマップ上の (x, y) のセルを指す
-// タイルマップ上の (x, y) のセルを指す
 u16* FUN_0809d858(s32 bg, s32 x, s32 y) {
   BgState* state = &gBgStates[bg];
   u16* tilemap = state->tilemap;

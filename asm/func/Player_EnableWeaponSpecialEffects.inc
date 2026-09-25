@@ -77,212 +77,212 @@ _080641AC:
 	ldr r1, _080641B8 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080641BC @ =FUN_08063d00
+	ldr r1, _080641BC @ =Player_WeaponEffectSol
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _080641B8: .4byte 0x00000A9C
-_080641BC: .4byte FUN_08063d00
+_080641BC: .4byte Player_WeaponEffectSol
 _080641C0:
 	ldr r1, _080641CC @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080641D0 @ =FUN_08063d18
+	ldr r1, _080641D0 @ =Player_WeaponEffectStatCond
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _080641CC: .4byte 0x00000A9C
-_080641D0: .4byte FUN_08063d18
+_080641D0: .4byte Player_WeaponEffectStatCond
 _080641D4:
 	ldr r1, _080641E0 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080641E4 @ =FUN_08063d70
+	ldr r1, _080641E4 @ =Player_WeaponEffectNight
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _080641E0: .4byte 0x00000A9C
-_080641E4: .4byte FUN_08063d70
+_080641E4: .4byte Player_WeaponEffectNight
 _080641E8:
 	ldr r1, _080641F4 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080641F8 @ =FUN_08063d84
+	ldr r1, _080641F8 @ =Player_WeaponEffectAgility
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _080641F4: .4byte 0x00000A9C
-_080641F8: .4byte FUN_08063d84
+_080641F8: .4byte Player_WeaponEffectAgility
 _080641FC:
 	ldr r1, _08064208 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _0806420C @ =FUN_08063d94
+	ldr r1, _0806420C @ =Player_WeaponEffectVitality
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _08064208: .4byte 0x00000A9C
-_0806420C: .4byte FUN_08063d94
+_0806420C: .4byte Player_WeaponEffectVitality
 _08064210:
 	ldr r1, _0806421C @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _08064220 @ =FUN_08063da0
+	ldr r1, _08064220 @ =Player_WeaponEffectSpirit
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _0806421C: .4byte 0x00000A9C
-_08064220: .4byte FUN_08063da0
+_08064220: .4byte Player_WeaponEffectSpirit
 _08064224:
 	ldr r1, _08064230 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _08064234 @ =FUN_08063db0
+	ldr r1, _08064234 @ =Player_WeaponEffectENE
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _08064230: .4byte 0x00000A9C
-_08064234: .4byte FUN_08063db0
+_08064234: .4byte Player_WeaponEffectENE
 _08064238:
 	ldr r1, _08064244 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _08064248 @ =FUN_08063dd4
+	ldr r1, _08064248 @ =Player_WeaponEffectHP
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _08064244: .4byte 0x00000A9C
-_08064248: .4byte FUN_08063dd4
+_08064248: .4byte Player_WeaponEffectHP
 _0806424C:
 	ldr r1, _08064258 @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _0806425C @ =FUN_08063df8
+	ldr r1, _0806425C @ =Player_WeaponEffectKajiba
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _08064258: .4byte 0x00000A9C
-_0806425C: .4byte FUN_08063df8
+_0806425C: .4byte Player_WeaponEffectKajiba
 _08064260:
 	ldr r1, _0806426C @ =0x00000A9C
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _08064270 @ =FUN_08063e1c
+	ldr r1, _08064270 @ =Player_WeaponEffectGyakuKajiba
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _0806426C: .4byte 0x00000A9C
-_08064270: .4byte FUN_08063e1c
+_08064270: .4byte Player_WeaponEffectGyakuKajiba
 _08064274:
 	ldr r1, _08064280 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _08064284 @ =FUN_08063e40
+	ldr r1, _08064284 @ =Player_WeaponEffectKillCount
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _08064280: .4byte 0x00000AB4
-_08064284: .4byte FUN_08063e40
+_08064284: .4byte Player_WeaponEffectKillCount
 _08064288:
 	ldr r1, _08064294 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _08064298 @ =FUN_08063ed8
+	ldr r1, _08064298 @ =Player_WeaponEffectRandom
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _08064294: .4byte 0x00000AB4
-_08064298: .4byte FUN_08063ed8
+_08064298: .4byte Player_WeaponEffectRandom
 _0806429C:
 	ldr r1, _080642A8 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080642AC @ =FUN_08063f10
+	ldr r1, _080642AC @ =Player_WeaponEffectAntiBeast
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _080642A8: .4byte 0x00000AB4
-_080642AC: .4byte FUN_08063f10
+_080642AC: .4byte Player_WeaponEffectAntiBeast
 _080642B0:
 	ldr r1, _080642BC @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080642C0 @ =FUN_08063f28
+	ldr r1, _080642C0 @ =Player_WeaponEffectAntiThing
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _080642BC: .4byte 0x00000AB4
-_080642C0: .4byte FUN_08063f28
+_080642C0: .4byte Player_WeaponEffectAntiThing
 _080642C4:
 	ldr r1, _080642D0 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080642D4 @ =FUN_08063f40
+	ldr r1, _080642D4 @ =Player_WeaponEffectAntiPhantom
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _080642D0: .4byte 0x00000AB4
-_080642D4: .4byte FUN_08063f40
+_080642D4: .4byte Player_WeaponEffectAntiPhantom
 _080642D8:
 	ldr r1, _080642E4 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080642E8 @ =FUN_08063f58
+	ldr r1, _080642E8 @ =Player_WeaponEffectAntiUndead
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _080642E4: .4byte 0x00000AB4
-_080642E8: .4byte FUN_08063f58
+_080642E8: .4byte Player_WeaponEffectAntiUndead
 _080642EC:
 	ldr r1, _080642F8 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _080642FC @ =FUN_08063f70
+	ldr r1, _080642FC @ =Player_WeaponEffectAntiImmortal
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _080642F8: .4byte 0x00000AB4
-_080642FC: .4byte FUN_08063f70
+_080642FC: .4byte Player_WeaponEffectAntiImmortal
 _08064300:
 	ldr r1, _0806430C @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _08064310 @ =FUN_08063f88
+	ldr r1, _08064310 @ =Player_WeaponEffectFlame
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _0806430C: .4byte 0x00000AB4
-_08064310: .4byte FUN_08063f88
+_08064310: .4byte Player_WeaponEffectFlame
 _08064314:
 	ldr r1, _08064320 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _08064324 @ =FUN_08063fa0
+	ldr r1, _08064324 @ =Player_WeaponEffectFrost
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _08064320: .4byte 0x00000AB4
-_08064324: .4byte FUN_08063fa0
+_08064324: .4byte Player_WeaponEffectFrost
 _08064328:
 	ldr r1, _08064334 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _08064338 @ =FUN_08063fb8
+	ldr r1, _08064338 @ =Player_WeaponEffectCloud
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _08064334: .4byte 0x00000AB4
-_08064338: .4byte FUN_08063fb8
+_08064338: .4byte Player_WeaponEffectCloud
 _0806433C:
 	ldr r1, _08064348 @ =0x00000AB4
 	adds r0, r3, r1
 	adds r0, r0, r2
-	ldr r1, _0806434C @ =FUN_08063fd0
+	ldr r1, _0806434C @ =Player_WeaponEffectEarth
 	str r1, [r0]
 	b _080643C2
 	.align 2, 0
 _08064348: .4byte 0x00000AB4
-_0806434C: .4byte FUN_08063fd0
+_0806434C: .4byte Player_WeaponEffectEarth
 _08064350:
 	ldr r1, _0806435C @ =0x00000AA8
 	adds r0, r3, r1

@@ -1,7 +1,6 @@
 #include "time.h"
 
 #include "global.h"
-#include "solar.h"
 #include "vm.h"
 
 COMMON_DATA Clock gClock = {};  // 0x030047E0
@@ -64,7 +63,7 @@ s32 GetDaysInMonth(s32 year, s32 month) {
   }
 }
 
-NAKED s32 FUN_0823d9ec(s32 year1, s32 month1, s32 day1, s32 year2, s32 month2, s32 day2) { INCFUNC("asm/func/FUN_0823d9ec.inc"); }
+NAKED u32 FUN_0823d9ec(s32 year1, s32 month1, s32 day1, s32 year2, s32 month2, s32 day2) { INCFUNC("asm/func/FUN_0823d9ec.inc"); }
 
 // ツェラーの公式。0=日曜 .. 6=土曜
 s32 GetDayOfWeek(s32 year, s32 month, s32 day) {
@@ -130,7 +129,6 @@ NAKED u32 FUN_0823e1b0(void) { INCFUNC("asm/func/FUN_0823e1b0.inc"); }
 
 u32 FUN_0823e28c(void) { return gClock.daytime.minute; }
 
-// 現在の年月日と時分秒をスクリプトへ返す
 // 現在の年月日と時分秒をスクリプトへ返す
 void FUN_0823e298(void) {
   s32 ymd[3];
@@ -293,7 +291,7 @@ bool32 FUN_0823e650(void) {
   s32 i;
   u16 ie;
 
-  FUN_08241704();
+  SuspendSunlight();
   for (i = 0; i < 5; i++) {
     REG_IME = 0;
     ie = REG_IE;

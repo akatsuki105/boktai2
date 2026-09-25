@@ -137,7 +137,7 @@ _08007196:
 	ldr r1, [sp, #0x3c]
 	cmp r1, #0
 	beq _080071BE
-	bl FUN_08241574
+	bl GetMapAreaAt
 	strh r0, [r5, #0x16]
 	b _080071C4
 _080071BE:
@@ -668,7 +668,7 @@ _080075CA:
 	beq _080075EE
 	ldr r0, [r5, #0x20]
 	adds r0, #0x1c
-	bl FUN_08241574
+	bl GetMapAreaAt
 	strh r0, [r5, #0x16]
 	b _080075F4
 _080075EE:

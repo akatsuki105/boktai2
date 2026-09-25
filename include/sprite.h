@@ -7,6 +7,4 @@
 #include "sprite_main.h"
 #include "sprite_pltt.h"
 
-extern u32 gSpriteListIdx;
-
 #endif  // __INCLUDE_SPRITE_H__

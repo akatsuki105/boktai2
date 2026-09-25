@@ -3,7 +3,6 @@
 #include "game.h"
 #include "gba/m4a_internal.h"
 #include "global.h"
-#include "solar.h"
 #include "solar_sensor.h"
 #include "time.h"
 #include "vm.h"

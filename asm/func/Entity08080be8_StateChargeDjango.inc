@@ -12,7 +12,7 @@
 	b _080807EE
 _08080706:
 	adds r0, r4, #0
-	bl FUN_08080204
+	bl Entity08080be8_Reposition
 	ldr r0, [r4, #0x18]
 	ldr r1, _0808074C @ =0x0000037D
 	adds r0, r0, r1
@@ -20,7 +20,7 @@ _08080706:
 	cmp r0, #5
 	bne _08080754
 	adds r0, r4, #0
-	bl FUN_08080620
+	bl Entity08080be8_ClearParticles
 	ldr r0, [r4, #0x1c]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -31,22 +31,22 @@ _08080706:
 	ldrb r0, [r0]
 	strh r0, [r4, #0x2c]
 	adds r0, r4, #0
-	bl FUN_080806a4
+	bl Entity08080be8_GetDamage
 	adds r1, r4, #0
 	adds r1, #0x64
 	strh r0, [r1, #0x3c]
 	adds r0, r4, #0
-	bl FUN_0808065c
-	ldr r1, _08080750 @ =FUN_080808cc
+	bl Entity08080be8_PayENE
+	ldr r1, _08080750 @ =Entity08080be8_StateFly
 	adds r0, r4, #0
-	bl FUN_080801f4
+	bl Entity08080be8_SetState
 	b _080807EE
 	.align 2, 0
 _0808074C: .4byte 0x0000037D
-_08080750: .4byte FUN_080808cc
+_08080750: .4byte Entity08080be8_StateFly
 _08080754:
 	adds r0, r4, #0
-	bl FUN_080803b4
+	bl Entity08080be8_UpdateParticles
 	ldr r0, [r4, #0x18]
 	ldr r1, _0808077C @ =0x0000037D
 	adds r0, r0, r1
@@ -84,7 +84,7 @@ _08080780:
 	bne _080807C2
 _080807A0:
 	adds r0, r4, #0
-	bl FUN_080804a0
+	bl Entity08080be8_SpawnParticle
 	b _080807C2
 _080807A8:
 	adds r1, r4, #0

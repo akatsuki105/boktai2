@@ -123,7 +123,7 @@ _080E6524:
 	movs r1, #3
 	adds r2, r6, #0
 	add r3, sp, #0xc
-	bl FUN_08246728
+	bl Eff082473e0Emitter_BurstParticle
 	movs r1, #1
 	rsbs r1, r1, #0
 	add sl, r1

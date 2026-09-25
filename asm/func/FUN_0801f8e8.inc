@@ -77,7 +77,7 @@
 	adds r0, #0x80
 	strh r3, [r0]
 	adds r0, r6, #0
-	bl FUN_08241574
+	bl GetMapAreaAt
 	adds r1, r4, #0
 	adds r1, #0x42
 	strh r0, [r1]

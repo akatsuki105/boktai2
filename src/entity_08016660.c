@@ -1,7 +1,7 @@
-#include "animation.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "sprite_aux.h"
 
 typedef struct {
   Entity e;           // ENTITY_UNK_8

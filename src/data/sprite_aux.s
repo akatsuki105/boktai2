@@ -1295,7 +1295,7 @@ gAuxSpritesFile0: @ 0x08A2291C
     .incbin "data/actor_sprites/mummy_1.4bpp"              @ 0x08A29710, ActorID: 0xD4EE, PlttID: 23, マミー
     .incbin "data/actor_sprites/mummy_2.4bpp"              @ 0x08A2AE30, ActorID: 0x924B, PlttID: 23, マミー
     .incbin "data/actor_sprites/grating.4bpp"              @ 0x08A2C2F0, ActorID: 0x2C12, PlttID: 28, 鳴り床(上を歩くと音が鳴る床)
-    .incbin "data/actor_sprites/8F5D.4bpp"                 @ 0x08A2CE70, ActorID: 0x8F5D, PlttID: 29, 斬撃っぽいエフェクト と 太陽鍛治で使う水桶
+    .incbin "data/actor_sprites/melee_shockwave.4bpp"      @ 0x08A2CE70, ActorID: 0x8F5D, PlttID: 29, 斬撃っぽいエフェクト と 太陽鍛治で使う水桶
     .incbin "data/actor_sprites/7AEE.4bpp"                 @ 0x08A2DE70, ActorID: 0x7AEE, PlttID: 42, 扉
     .incbin "data/actor_sprites/7AEF.4bpp"                 @ 0x08A2EB70, ActorID: 0x7AEF, PlttID: 42, 扉
     .incbin "data/actor_sprites/7AF0.4bpp"                 @ 0x08A2F430, ActorID: 0x7AF0, PlttID: 42, 扉
@@ -1489,7 +1489,7 @@ gAuxSpritesFile0: @ 0x08A2291C
 		.incbin "data/actor_sprites/cube_wood_debris_l.4bpp"   @ 0x08B23630, ActorID: 0xA874, PlttID: 509, 木ブロックの破片(大)
 		.incbin "data/actor_sprites/cube_wood_debris_s.4bpp"   @ 0x08B23830, ActorID: 0xA875, PlttID: 509, 木ブロックの破片(小)
 		.incbin "data/actor_sprites/golem.4bpp"                @ 0x08B23850, ActorID: 0x5290, PlttID: 513, ゴーレム
-		.incbin "data/actor_sprites/2110.4bpp"                 @ 0x08B2A1B0, ActorID: 0x2110, PlttID: 44, ガンデルソルのエフェクト?
+		.incbin "data/actor_sprites/gun_spread.4bpp"           @ 0x08B2A1B0, ActorID: 0x2110, PlttID: 44, ガンデルヘルのスプレッド
 		.incbin "data/actor_sprites/2111.4bpp"                 @ 0x08B2B9B0, ActorID: 0x2111, PlttID: 44, ガンデルソルのエフェクト?
 		.incbin "data/actor_sprites/coffin.4bpp"               @ 0x08B2BB30, ActorID: 0x2499, PlttID: 519, 全ての棺桶(エレファン含む), TODO: 画像を棺桶ごとに分けてパレットをちゃんと適用する
 		.incbin "data/actor_sprites/elefan.4bpp"               @ 0x08B358F0, ActorID: 0x249A, PlttID: 524, 棺桶獣エレファン(自走時?)

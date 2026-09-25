@@ -1,6 +1,6 @@
 	movs r1, #1
 	strb r1, [r0, #0x18]
-	ldr r1, _08241F58 @ =FUN_08241cf4
+	ldr r1, _08241F58 @ =UpdateSunlight
 	str r1, [r0, #0x2c]
 	movs r1, #0
 	strb r1, [r0, #0x19]
@@ -22,7 +22,7 @@
 	strh r1, [r0]
 	bx lr
 	.align 2, 0
-_08241F58: .4byte FUN_08241cf4
+_08241F58: .4byte UpdateSunlight
 _08241F5C: .4byte 0x030046A0
 _08241F60: .4byte 0x03004870
 _08241F64: .4byte 0x00000942

@@ -300,7 +300,7 @@ _081D203C:
 	ldr r3, [sp, #0x10]
 	strh r1, [r3]
 	ldr r0, [sp, #0x18]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldr r5, [sp, #0x1c]
 	strh r0, [r5]
 	ldr r0, _081D2070 @ =0x030046A0

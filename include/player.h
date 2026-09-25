@@ -1,8 +1,8 @@
 #ifndef GUARD_ZOKTAI_PLAYER_H
 #define GUARD_ZOKTAI_PLAYER_H
 
-#include "animation.h"
 #include "constants/constants.h"
+#include "eff_082473e0.h"
 #include "entity.h"
 #include "gba/gba.h"
 #include "hitbox.h"
@@ -13,7 +13,6 @@
 #include "weapon.h"
 
 struct Player;
-struct SolarSensorEntity;
 struct Input;
 
 typedef u32 PlayerFlag378;               // Player.flag378
@@ -24,8 +23,23 @@ typedef u32 PlayerFlag378;               // Player.flag378
 #define FLAG378_WEAPONGUARD (1 << 6)     // 0x00000040, ウェポンガード〃
 #define FLAG378_FAIRY (1 << 7)           // 0x00000080, 精霊の衣〃
 #define FLAG378_UNK_8 (1 << 8)           // 0x00000100, ???
+#define FLAG378_AET_SUNLIGHT (1 << 13)   // 0x00002000, 光のガーブ装備時, ApplyLxModifiers が太陽レベルを2倍にする
+#define FLAG378_AET_RES_SOL (1 << 14)    // 0x00004000, メイルオブソル装備時, 立っていると ApplySunlightGain の太陽スタンド加算が2倍になる
 #define FLAG378_HEART (1 << 28)          // 0x10000000, ハートの紋章所持
 #define FLAG378_JOKER (1 << 29)          // 0x20000000, ジョーカーの紋章所持
+
+// プレイヤーの向き
+typedef u8 Facing8;
+typedef u16 Facing16;
+typedef u32 Facing32;
+#define FACE_UP 0          // 上
+#define FACE_UP_RIGHT 1    // 右上
+#define FACE_RIGHT 2       // 右
+#define FACE_DOWN_RIGHT 3  // 右下
+#define FACE_DOWN 4        // 下
+#define FACE_DOWN_LEFT 5   // 左下
+#define FACE_LEFT 6        // 左
+#define FACE_UP_LEFT 7     // 左上
 
 typedef void (*PlayerFunc)(struct Player*);
 
@@ -58,24 +72,6 @@ typedef struct {
   s16 hpBonus;            // 0x10 (Player: 0x274), 鎧のHP補正値(赤なら+, 黒なら-)
   s16 eneBonus;           // 0x12 (Player: 0x276), 鎧のEne補正値(赤なら+, 黒なら-)
 } PlayerArmor;
-
-typedef struct {
-  u8 unk_0[72];  // 0x0
-} Player4c4_0c;
-
-typedef struct Player4c4 {
-  u8 unk_0;  // 0x000
-  u8 unk_1;  // 0x001
-  u8 unk_2;  // 0x002
-  u8 unk_3;  // 0x003
-  u8 unk_4;  // 0x004
-  u8 unk_5;  // 0x005
-  u8 unk_6[2];
-  u32 unk_8;                                                     // 0x008
-  Player4c4_0c unk_c[4];                                         // 0x00C
-  void (*fn_12c)(struct SolarSensorEntity*, struct Player4c4*);  // 0x12C, SSE_Update(0x0824736c)　で実行
-  // 304バイト, これ以上続くのかは不明
-} Player4c4;
 
 typedef struct {
   Particle base;         // 0x00
@@ -179,12 +175,14 @@ typedef struct Player {
   u8 unk_4ab[0x4b0 - 0x4ab];
   s32 scriptID_4b0;  // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4c4 - 0x4b4];
-  Player4c4 unk_4c4;  // 0x4C4
-  u8 unk_5f4[0x64C - 0x5F4];
+  Eff082473e0Emitter unk_4c4;  // 0x4C4
+  u8 unk_5fc[0x64C - 0x5FC];
   PlayerParticleGroup1 ptcl_64c;  // 0x64C, FUN_08061458
   PlayerParticleGroup1 ptcl_67c;  // 0x67C, FUN_0806161c
-  AuxSprite node_6ac;             // 0x6AC, 直後の sprite_6d8 を指すノード, 根拠: AuxSprite_Remove に渡している
-  AuxSpriteGfx sprite_6d8;        // 0x6D8, Player_Init_Anim_08061bac
+  struct {
+    AuxSprite sprite;
+    AuxSpriteGfx gfx;  // ジャンゴ: SPRITE_MELEE_SHOCKWAVE, サバタ: SPRITE_GUN_SPREAD
+  } meleeShockwave;    // 0x6AC
   u8 unk_6f0[0x704 - 0x6F4];
   AuxAnimFile* anim_704;  // 0x704
   u8 unk_708[8];
@@ -211,7 +209,9 @@ typedef struct Player {
   Weapon* weapon_a70;
   weapon8_t weaponID_a74;  // 武器ID
   u8 weaponKind_a75;       // 0xA75, 武器種
-  u8 unk_a76[34];
+  u8 unk_a76[25];
+  u8 unk_a8f;  // 0xA8F, Entity08080be8 が毎フレーム charge に写す。威力を 1 + n/2 倍にし、スプライトの絵も選ぶ
+  u8 unk_a90[8];
   PlayerFunc attackCB;  // 0xA98, gPlayerAttackUpdates
 
   // 武器の特殊効果のコールバック関数の配列
@@ -232,5 +232,10 @@ extern Player* gPlayerPtr[4];
 extern const PlayerFunc gPlayerAttackUpdates[5];  // 0: 剣, 1: 槍, 2: ハンマー, 3: 拳, 4: 銃
 
 Player* CreatePlayer(u32 n, void* _);
+s32 FUN_0806f900(Player* player);
+s32 FUN_080d1b04(Player* player);
+void Player_ReduceENE_0807aa60(Player* player, s32 amount);
+
+static inline void Player_SetFlag20(Player* p, u32 bit) { p->unk_20 |= bit; }
 
 #endif  // GUARD_ZOKTAI_PLAYER_H

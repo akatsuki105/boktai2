@@ -353,7 +353,7 @@ _081D7F3A:
 	str r0, [r4]
 _081D7F70:
 	ldr r0, [sp, #0x14]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	movs r2, #0x85
 	lsls r2, r2, #1
 	adds r1, r7, r2

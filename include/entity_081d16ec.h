@@ -1,7 +1,6 @@
 #ifndef __INCLUDE_ENTITY_081D16EC_H__
 #define __INCLUDE_ENTITY_081D16EC_H__
 
-#include "animation.h"
 #include "gba/gba.h"
 #include "hitbox.h"
 #include "sprite_aux.h"

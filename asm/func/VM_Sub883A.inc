@@ -151,7 +151,7 @@ _0800997A:
 	beq _08009998
 	adds r0, r5, #0
 	adds r0, #0x1c
-	bl FUN_08241574
+	bl GetMapAreaAt
 	b _0800999C
 	.align 2, 0
 _08009994: .4byte 0xFFFF0000

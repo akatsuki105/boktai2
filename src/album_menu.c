@@ -49,16 +49,19 @@ const u16 u16_ARRAY_085af9b4[54] = {
     0x0, 0x0, 0x1, 0x0, 0x2, 0x0, 0x3, 0x0, 0x5, 0x0, 0x6, 0x0, 0x4, 0x0, 0x7, 0x0, 0x8, 0x0, 0x1D, 0x0, 0x9, 0x0, 0xA, 0x0, 0xB, 0x0, 0xC, 0x0, 0xD, 0x0, 0xE, 0x0, 0xF, 0x0, 0x10, 0x0, 0x15, 0x0, 0x16, 0x0, 0x17, 0x0, 0x11, 0x0, 0x12, 0x0, 0x14, 0x0, 0x13, 0x0, 0x18, 0x0, 0x19, 0x0,
 };  // 0x085af9b4
 
-// 使われてなさそう (代わりに VM_UnlockPhoto を使っている)
-void Unused_UnlockPhoto(u32 photoIdx) { gStat->photo |= (1 << photoIdx); }
+static inline void UnlockPhoto(u32 photoIdx) { gStat->photo |= (1 << photoIdx); }
+
+// 使われていない、多分 non-static な inline として定義されていた
+// こっちを inline として定義すれば static inline UnlockPhoto は不要になるのだが、non-static な inline関数の定義は GCC2.95 ではTUの末尾に強制的に配置されてしまうため、コンパイル結果が一致しない。
+// この関数を別ファイルに切り出して定義すれば回避できるが、木端なファイルを増やすよりはこの形の方が無難
+void Unused_UnlockPhoto(u32 photoIdx) { UnlockPhoto(photoIdx); }
 
 u32 CheckPhotoUnlocked(u32 photoIdx) { return gStat->photo & (1 << photoIdx); }
 
 // スクリプトの 'i' が指すブロマイドを取得済みにする
 void VM_UnlockPhoto(void) {
   if (VM_SeekToKeyword('i')) {
-    s32 idx = Script_GetValue();
-    gStat->photo |= 1 << idx;
+    UnlockPhoto(Script_GetValue());  // 本来は Unused_UnlockPhoto をインライン展開していると思われる
   }
 }
 

@@ -1,7 +1,6 @@
 #include "eeprom.h"
 
 #include "global.h"
-#include "solar.h"
 #include "sound.h"
 #include "video.h"
 
@@ -46,7 +45,7 @@ s32 EEPROM_BeginAccess(void) {
   u32_0300170c = u32_0300481c;
   u32_0300481c = 1;
   REG_IME = 1;
-  FUN_08241704();
+  SuspendSunlight();
   return 0;
 }
 

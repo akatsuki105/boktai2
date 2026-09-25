@@ -1876,7 +1876,7 @@ _0816A6B2:
 _0816A6C8: .4byte 0x030046A0
 _0816A6CC:
 	ldr r0, [sp, #0x30]
-	bl FUN_08241574
+	bl GetMapAreaAt
 	ldr r5, [sp, #0x70]
 	strh r0, [r5]
 _0816A6D6:
