@@ -174,4 +174,4 @@ bool32 Sensor_IsIoEnabled(void) { return gSensorIoEnabled; }
 
 s32 Sensor_GetState(void) { return gSensorState; }
 
-NAKED s32 FUN_08247818(void) { INCFUNC("asm/func/FUN_08247818.inc"); }
+s32 Sensor_GetCounter(void) { return gSensorCounter; }
