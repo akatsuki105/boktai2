@@ -62,7 +62,15 @@ s32 Judgement_Update(Judgement* p) {
   return 0;
 }
 
-NAKED s32 Judgement_Destroy(Judgement* p) { INCFUNC("asm/func/Judgement_Destroy.inc"); }
+s32 Judgement_Destroy(Judgement* p) {
+  s32 i;
+
+  MainSprite_Remove(&p->sprite);
+  for (i = 0; i < 8; i++) {
+    Particle_Remove(&p->ptcls[i].ptcl);
+  }
+  return 0;
+}
 
 NAKED void FUN_080a9ccc(Judgement* p) { INCFUNC("asm/func/FUN_080a9ccc.inc"); }
 
