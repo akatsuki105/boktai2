@@ -375,7 +375,8 @@ u32 Player_WeaponEffectENE(Player* p) { return Div(p->ene * 10, p->maxEne); }
 
 u32 Player_WeaponEffectHP(Player* p) { return Div(p->hp * 10, p->maxHP); }
 
-NAKED u32 Player_WeaponEffectKajiba(Player* p) { INCFUNC("asm/func/Player_WeaponEffectKajiba.inc"); }
+// 火事場: HP が減っているほど強くなる
+u32 Player_WeaponEffectKajiba(Player* p) { return Div((p->maxHP - p->hp) * 20, p->maxHP); }
 
 NAKED u32 Player_WeaponEffectGyakuKajiba(Player* p) { INCFUNC("asm/func/Player_WeaponEffectGyakuKajiba.inc"); }
 
