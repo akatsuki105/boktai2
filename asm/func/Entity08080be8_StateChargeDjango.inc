@@ -84,7 +84,7 @@ _08080780:
 	bne _080807C2
 _080807A0:
 	adds r0, r4, #0
-	bl FUN_080804a0
+	bl Entity08080be8_SpawnParticle
 	b _080807C2
 _080807A8:
 	adds r1, r4, #0

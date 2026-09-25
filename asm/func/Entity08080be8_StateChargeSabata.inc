@@ -68,7 +68,7 @@ _08080870:
 	cmp r6, #3
 	bne _080808AC
 	adds r0, r4, #0
-	bl FUN_080804a0
+	bl Entity08080be8_SpawnParticle
 	b _080808AC
 _08080896:
 	adds r5, r4, #0
@@ -80,7 +80,7 @@ _08080896:
 	cmp r1, #3
 	bne _080808AC
 	adds r0, r4, #0
-	bl FUN_080804a0
+	bl Entity08080be8_SpawnParticle
 _080808AC:
 	ldr r0, [r4, #0x18]
 	ldr r1, _080808C8 @ =0x00000A8F

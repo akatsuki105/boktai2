@@ -5,15 +5,16 @@
 #include "hitbox.h"
 #include "particle.h"
 #include "player.h"
+#include "random.h"
 #include "sprite.h"
 
 struct Entity08080be8;
 typedef void (*Entity08080be8Func)(struct Entity08080be8* p);
 
-// FUN_080804a0 が1個ずつ撒く粒子。4個を順に使い回す
+// Entity08080be8_SpawnParticle が1個ずつ撒く粒子。4個を順に使い回す
 typedef struct {
   Particle base;   // 0x00, FUN_0822d9f0 や Particle_Remove に Particle* として渡る
-  bool8 active;    // 0x28, FUN_080804a0 が 1 にし、Entity08080be8_UpdateParticles が寿命で 0 に戻す。0 の間は動かさない
+  bool8 active;    // 0x28, Entity08080be8_SpawnParticle が 1 にし、Entity08080be8_UpdateParticles が寿命で 0 に戻す。0 の間は動かさない
   s8 angleOffset;  // 0x29, Mod(rand, 0x60) - 0x30。dir から作る8bit角度に足してばらつかせる
   u16 radius;      // 0x2A, (rand >> 3 & 0x7F) + 0x40。gSineTable に掛けて >> 12 したものが base.pos のずれになる
   u16 timer;       // 0x2C, 毎フレーム +1 し 15 で寿命。距離が radius * (0x10 - timer) >> 3 なので中心へ寄っていく
@@ -93,7 +94,30 @@ NON_MATCH void Entity08080be8_UpdateParticles(Entity08080be8* p) {
 #endif
 }
 
-NAKED void FUN_080804a0(Entity08080be8* p) { INCFUNC("asm/func/FUN_080804a0.inc"); }
+// 粒子を1個、向きと距離をばらつかせて撒く
+NON_MATCH void Entity08080be8_SpawnParticle(Entity08080be8* p) {
+#ifdef NONMATCHING_C
+  s32 angle;
+
+  p->ptcls[p->ptclIdx].active = 1;
+  p->ptcls[p->ptclIdx].base.flags &= ~SPRFLAG_HIDDEN;
+  p->ptcls[p->ptclIdx].timer = 0;
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  p->ptcls[p->ptclIdx].radius = ((gRandomTable[gRandTableIdx] >> 3) & 0x7F) + 0x40;
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  p->ptcls[p->ptclIdx].angleOffset = Mod(gRandomTable[gRandTableIdx], 0x60) - 0x30;
+  angle = (((p->dir + 5) & 7) * 32 + p->ptcls[p->ptclIdx].angleOffset + 0x100) & 0xFF;
+  p->ptcls[p->ptclIdx].base.pos = p->sprite.pos;
+  p->ptcls[p->ptclIdx].base.pos.x += p->ptcls[p->ptclIdx].radius * gSineTable[(angle + 0x40) & 0xFF] / 4096;
+  p->ptcls[p->ptclIdx].base.pos.z += p->ptcls[p->ptclIdx].radius * gSineTable[angle] / 4096;
+  p->ptclIdx++;
+  if (p->ptclIdx > 3) {
+    p->ptclIdx = 0;
+  }
+#else
+  INCFUNC("asm/func/Entity08080be8_SpawnParticle.inc");
+#endif
+}
 
 // 撒いた粒子を全部止めて消す
 void Entity08080be8_ClearParticles(Entity08080be8* p) {
@@ -157,12 +181,12 @@ NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
   state = p->player->unk_37d;
   if (state == 2) {
     if ((p->timer & 3) == 3) {
-      FUN_080804a0(p);
+      Entity08080be8_SpawnParticle(p);
     }
   } else if (state == 3) {
     AuxSprite_Show(&p->sprite);
     if ((p->timer & 3) == 3) {
-      FUN_080804a0(p);
+      Entity08080be8_SpawnParticle(p);
     }
   } else if (p->charge != 0) {
     AuxSprite_Show(&p->sprite);
@@ -200,10 +224,10 @@ NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
       state = p->player->unk_37d;
       if (state == 2) {
         if ((p->timer & 3) == 3) {
-          FUN_080804a0(p);
+          Entity08080be8_SpawnParticle(p);
         }
       } else if (state == 3 && (p->timer & 3) == 3) {
-        FUN_080804a0(p);
+        Entity08080be8_SpawnParticle(p);
       }
       p->charge = p->player->unk_a8f;
       p->timer++;
