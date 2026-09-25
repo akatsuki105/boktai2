@@ -37,7 +37,10 @@ void FUN_080dac20(void) {}
 
 NAKED void FUN_080dac24(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080dac24.inc"); }
 
-NAKED void FUN_080dacac(Entity080db520* p, u32 param_2, Entity080db520Elem* elem) { INCFUNC("asm/func/FUN_080dacac.inc"); }
+void FUN_080dacac(Entity080db520* p, u32 param_2, Entity080db520Elem* elem) {
+  elem->unk_40 |= 2;
+  elem->hitbox.flags |= 4;
+}
 
 NAKED void FUN_080dacc4(Entity080db520* p) { INCFUNC("asm/func/FUN_080dacc4.inc"); }
 
