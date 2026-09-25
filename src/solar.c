@@ -9,9 +9,6 @@
 #include "solar_sensor.h"
 #include "time.h"
 
-// src/item_082421f0.c
-void RotItem(s32 rotDelta);
-
 // 太陽センサーを毎フレーム読んで lx と太陽ゲージを作り、その結果を gStat に流し込むシングルトン
 typedef struct SunlightEntity {
   Entity e;                                        // 0x00, ENTITY_UNK_5
