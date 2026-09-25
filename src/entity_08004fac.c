@@ -12,7 +12,7 @@ typedef struct Entity08004facNode {
   u8 unk_5;                         // 0x05, FUN_08234270 の第4引数
   u16 unk_6;                        // 0x06, FUN_08234270 の第6引数
   u16 tileIdx;                      // 0x08, gCollisionMap->rowOffsets[y] + x
-  u8 unk_a[0x0C - 0x0A];            // 0x0A
+  u8 unk_a[0x0C - 0x0A];            // 0x0A, padding?
   MapTileOverride tileOverride;     // 0x0C, FUN_08234270 / FUN_082342a8 に渡す
   struct Entity08004facNode* prev;  // 0x1C
   struct Entity08004facNode* next;  // 0x20
