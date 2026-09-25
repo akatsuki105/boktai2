@@ -86,4 +86,15 @@ NAKED void FUN_080a9d30(Judgement* p) { INCFUNC("asm/func/FUN_080a9d30.inc"); }
 
 NAKED s32 Judgement_Init(Judgement* p, Player* player) { INCFUNC("asm/func/Judgement_Init.inc"); }
 
-NAKED Judgement* Judgement_Create(Player* player) { INCFUNC("asm/func/Judgement_Create.inc"); }
+Judgement* Judgement_Create(Player* player) {
+  Judgement* p = CreateEntity(ENTITY_UNK_11, sizeof(Judgement));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Judgement_Update, Judgement_Destroy);
+    if (Judgement_Init(p, player) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
