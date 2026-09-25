@@ -178,7 +178,12 @@ void Sensor_Disable(void) {
   gSensorRawLevel = -1;
 }
 
-NAKED s32 Sensor_GetRawLevel(void) { INCFUNC("asm/func/Sensor_GetRawLevel.inc"); }
+s32 Sensor_GetRawLevel(void) {
+  if (gSensorEnabled == 0) {
+    return -1;
+  }
+  return gSensorRawLevel;
+}
 
 bool32 Sensor_IsIoEnabled(void) { return gSensorIoEnabled; }
 
