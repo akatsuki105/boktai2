@@ -44,13 +44,13 @@ COMMON_DATA CactusManager* gCactusManager = NULL;  // 0x03002B34
 
 s32 GetMapAreaAt(Vec3* pos);
 void FUN_08234270(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
+s32 FUN_08014da0(s32 param_1, s32 param_2, Vec3* pos, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
 static inline bool32 Hitbox_HasWeakness(HitboxData* p, u32 mask) { return p->weakness & mask; }
 
 // 被弾時に呼ばれる,hp を削り、0 以下になったら破壊待ちにし、そうでなければ点滅させる
-void Cactus_OnHit(HitboxData* a, HitboxData* b, void* owner) {
-  Cactus* p = owner;
-
+void Cactus_OnHit(HitboxData* a, HitboxData* b, Cactus* owner) {
+  Cactus* p = owner;  // これを入れないと一致しない, でも不自然なので後で自然な書き方に直せるか試す
   Hitbox_ApplyDamage(a, b);
   if (b->damage != 0) {
     p->hp -= b->damage;
@@ -59,9 +59,7 @@ void Cactus_OnHit(HitboxData* a, HitboxData* b, void* owner) {
     } else {
       p->damageTimer = 10;
       Video_SetAuxSpritePltt(&p->gfx, 306);
-      if (!Hitbox_HasWeakness(a, 4)) {
-        PlaySound_082406e0(0x13E);
-      }
+      if (!Hitbox_HasWeakness(a, (1 << 2))) PlaySound_082406e0(0x13E);
     }
     b->damage = 0;
   }
@@ -74,8 +72,6 @@ s32 Hazard_Remove(CactusManager* p, Cactus* hazard, u32 idx) {
   FUN_082342a8(&hazard->tileOverride);
   p->activeMask &= ~(1 << idx);
 }
-
-s32 FUN_08014da0(s32 param_1, s32 param_2, Vec3* pos, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
 // 破壊音を鳴らし、破片のパーティクルを2種類まき散らす
 void Hazard_EmitBreakEffect(Cactus* p) {
