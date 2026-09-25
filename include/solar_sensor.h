@@ -25,7 +25,7 @@ static_assert(sizeof(SSEEmitterParticle) == 72);
 // ワールド座標を1つ追いかけて、画面座標系の粒子を最大4個出すエミッタ。SolarSensorEntity が毎フレーム駆動する
 // 持ち主は (今のところ) Player (0x4C4) と Generator (0x100) の2つ
 typedef struct SSEEmitter {
-  u8 isRegistered;                                                // 0x000, SSEEmitter_Register が 1 にし、SSEEmitter_Unregister が 0 に戻す。既にその状態なら両者とも -1 を返す
+  bool8 isRegistered;                                             // 0x000, SSEEmitter_Register が 1 にし、SSEEmitter_Unregister が 0 に戻す。既にその状態なら両者とも -1 を返す
   u8 kind;                                                        // 0x001, 0..3。FUN_082467d0 がこれで fn_12c と アニメ番号 を選ぶ
   u8 activeCount;                                                 // 0x002, 埋まっている枠の数。FUN_082467d0 は 3 を超えると -1 を返す
   u8 unk_3;                                                       // 0x003, activeCount と一緒に増える別のカウンタ
@@ -46,7 +46,7 @@ typedef struct SolarSensorEntity {
   void* anim;          // 0x1C
   SSEEmitter* unk_20;  // 0x20
 } SolarSensorEntity;
-static_assert(sizeof(SolarSensorEntity) == 36);  // 0x082473e0 で 36バイトで作っている
+static_assert(sizeof(SolarSensorEntity) == 36);
 
 // --------------------------------------------
 
