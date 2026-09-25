@@ -134,7 +134,46 @@ s32 Entity08080be8_GetDamage(Entity08080be8* p) {
   return dmg + ((dmg * p->charge) >> 1);
 }
 
-NAKED void FUN_080806ec(Entity08080be8* p) { INCFUNC("asm/func/FUN_080806ec.inc"); }
+// ジャンゴ側の溜め状態。溜め中は粒子を出しつつ4フレームおきに絵を切り替え、発射で StateFly へ
+NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
+#ifdef NONMATCHING_C
+  u8 state;
+
+  if (p->player->unk_37c != 3) {
+    KillEntity(&p->e);
+    return;
+  }
+  FUN_08080204(p);
+  if (p->player->unk_37d == 5) {
+    Entity08080be8_ClearParticles(p);
+    AuxSprite_Show(&p->sprite);
+    p->sprite.metaspriteIdx = p->charge;
+    p->hitbox.power = Entity08080be8_GetDamage(p);
+    Entity08080be8_PayENE(p);
+    Entity08080be8_SetState(p, Entity08080be8_StateFly);
+    return;
+  }
+  Entity08080be8_UpdateParticles(p);
+  state = p->player->unk_37d;
+  if (state == 2) {
+    if ((p->timer & 3) == 3) {
+      FUN_080804a0(p);
+    }
+  } else if (state == 3) {
+    AuxSprite_Show(&p->sprite);
+    if ((p->timer & 3) == 3) {
+      FUN_080804a0(p);
+    }
+  } else if (p->charge != 0) {
+    AuxSprite_Show(&p->sprite);
+  }
+  p->charge = p->player->unk_a8f;
+  p->sprite.metaspriteIdx = ((p->timer >> 2) & 1) ? p->charge + 1 : p->charge;
+  p->timer++;
+#else
+  INCFUNC("asm/func/Entity08080be8_StateChargeDjango.inc");
+#endif
+}
 
 // サバタ側の溜め状態。溜め中は粒子を出し、発射で StateFly へ、中断なら消える
 NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
@@ -309,7 +348,7 @@ s32 Entity08080be8_Init(Entity08080be8* p, Player* player, u32 heightOffset, u32
   FUN_08080204(p);
   Entity08080be8_SetupParticles(p, ptclVal);
   if (p->player->kind != PLAYER_SABATA) {
-    Entity08080be8_SetState(p, FUN_080806ec);
+    Entity08080be8_SetState(p, Entity08080be8_StateChargeDjango);
   } else {
     Entity08080be8_SetState(p, Entity08080be8_StateChargeSabata);
   }
