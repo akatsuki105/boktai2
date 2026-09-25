@@ -1,5 +1,4 @@
 
-#include "definition.h"
 #include "entity.h"
 #include "entity_9a9f.h"
 #include "global.h"
@@ -33,10 +32,10 @@ extern u16 u16_03002b80;                            // 0x03002B80, FUN_0807e854 
 IWRAM_DATA u32 u32_0300170c = 0;  // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
 
 COMMON_DATA u16 u16_03004864 = 0;
-COMMON_DATA ALIGNED(4) u16 gDebugLx = 0;
-COMMON_DATA ALIGNED(4) u16 gSunlightSuspended = 0;
-COMMON_DATA ALIGNED(4) u16 gSavedLx = 0;
-COMMON_DATA ALIGNED(4) u16 gSavedSunGauge[6] = {};
+COMMON_DATA ALIGNED(4) u16 gDebugLx = 0;                   // 0x03004868
+COMMON_DATA ALIGNED(4) bool16 gSunlightSuspended = FALSE;  // 0x0300486C
+COMMON_DATA ALIGNED(4) u16 gSavedLx = 0;                   // 0x03004870
+COMMON_DATA ALIGNED(4) u16 gSavedSunGauge[6] = {};         // 0x03004874
 
 const u8 u8_ARRAY_ARRAY_08dbd798[6][2] = {
     {2, 2},
@@ -59,7 +58,7 @@ NON_MATCH void ResetSunlight(void) {
   gStat->sunGauge = 0;
   gSavedLx = 0;
   gSavedSunGauge[0] = 0;
-  gSunlightSuspended = 0;
+  gSunlightSuspended = FALSE;
 #else
   INCFUNC("asm/func/ResetSunlight.inc");
 #endif
@@ -67,7 +66,7 @@ NON_MATCH void ResetSunlight(void) {
 
 // センサーの値が今そのまま使えるか。state 2 が計測中
 bool32 IsSunlightActive(void) {
-  if (gSunlightEntity != NULL && gSunlightSuspended == 0 && gSunlightEntity->state == 2) {
+  if (gSunlightEntity != NULL && !gSunlightSuspended && gSunlightEntity->state == 2) {
     return TRUE;
   }
   return FALSE;
@@ -101,7 +100,7 @@ void SuspendSunlight(void) {
     if (gSunlightEntity->state != 0) {
       Sensor_Disable();
     }
-    gSunlightSuspended = 1;
+    gSunlightSuspended = TRUE;
   }
 }
 
@@ -112,7 +111,7 @@ void FUN_0824172c(void) {
       gSunlightEntity->stateTimer = 0;
       Sensor_Enable();
     }
-    gSunlightSuspended = 0;
+    gSunlightSuspended = FALSE;
   }
 }
 
@@ -145,8 +144,8 @@ NON_MATCH s32 ApplyLxModifiers(s32 lx) {
   if ((gFlag030047a4 & FLAG030047A4_UNK_11) == 0) {
     s32 slv;
 
-    if (gPlayerPtr[0] != NULL && (gPlayerPtr[0]->flag378 & FLAG378_RISING_SUN)) {
-      slv = GetSunLevel(lx) * 2;
+    if (gPlayerPtr[0] != NULL && (gPlayerPtr[0]->flag378 & FLAG378_AET_SUNLIGHT)) {
+      slv = GetSunLevel(lx) * 2;  // 光のガーブ装備時は(太陽センサー由来の)太陽ゲージを2倍にする
       if (slv > 10) {
         slv = 10;
       }
@@ -271,8 +270,8 @@ NON_MATCH void ApplySunlightGain(SunlightEntity* p) {
           if ((s32)gStat->solarStand < 9999) {
             u16 carry;
 
-            if (gPlayerPtr[0]->flag378 & FLAG378_UNK_14) {
-              p->solarStandFrac += ((gStat->sunGauge >> 1) + 5) * 2;
+            if (gPlayerPtr[0]->flag378 & FLAG378_AET_RES_SOL) {
+              p->solarStandFrac += ((gStat->sunGauge >> 1) + 5) * 2;  // メイルオブソル装備時
             } else {
               p->solarStandFrac += (gStat->sunGauge >> 1) + 5;
             }
@@ -429,9 +428,7 @@ NON_MATCH void UpdateSunlightDebug(SunlightEntity* p) {
 }
 
 s32 SunlightEntity_Update(SunlightEntity* p) {
-  if (gSunlightSuspended == 0) {
-    p->updateCallback(p);
-  }
+  if (!gSunlightSuspended) p->updateCallback(p);
   return 0;
 }
 
@@ -460,8 +457,7 @@ NON_MATCH void FUN_08241f28(SunlightEntity* p) {
 // RTC の現在時刻を gStat に写し、まだ日没前かどうかを控える
 u32 ReflectClock(void) {
   s32 minute;
-  s32 sunsetHour;
-  s32 sunsetMinute;
+  s32 sunsetHour, sunsetMinute;
   bool32 beforeSunset;
 
   gStat->date.val = GetDate();
