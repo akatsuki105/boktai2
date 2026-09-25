@@ -52,7 +52,7 @@ NAKED void FUN_080d8c70(Entity080da848* p, u32 param_2, u32 param_3) { INCFUNC("
 
 NAKED void FUN_080d8cc0(Entity080da848* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5) { INCFUNC("asm/func/FUN_080d8cc0.inc"); }
 
-NAKED void FUN_080d8ddc(void) { INCFUNC("asm/func/FUN_080d8ddc.inc"); }
+void FUN_080d8ddc(void) {}
 
 NAKED void FUN_080d8de0(Entity080da848* p, u32 param_2) { INCFUNC("asm/func/FUN_080d8de0.inc"); }
 
