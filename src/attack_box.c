@@ -54,7 +54,7 @@ NAKED s32 AttackBoxManager_Update(AttackBoxManager* p) { INCFUNC("asm/func/Attac
 
 NAKED s32 AttackBoxManager_Destroy(AttackBoxManager* p) { INCFUNC("asm/func/AttackBoxManager_Destroy.inc"); }
 
-NAKED void FUN_080ddab4(AttackBoxManager* p) { INCFUNC("asm/func/FUN_080ddab4.inc"); }
+void FUN_080ddab4(AttackBoxManager* p) {}
 
 NAKED s32 AttackBoxManager_Init(AttackBoxManager* p, u32 unused1) { INCFUNC("asm/func/AttackBoxManager_Init.inc"); }
 
