@@ -302,7 +302,13 @@ u32 CheckNamakuraProc(void) {
 }
 
 // 一定確率で麻痺
-NAKED u32 CheckParalyzeProc(void) { INCFUNC("asm/func/CheckParalyzeProc.inc"); }
+u32 CheckParalyzeProc(void) {
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  if (Mod(*(gRandomTable + gRandTableIdx), 100) <= 10) {
+    return 1 << 19;
+  }
+  return 0;
+}
 
 NAKED void FUN_08064058(Player* p) { INCFUNC("asm/func/FUN_08064058.inc"); }
 
