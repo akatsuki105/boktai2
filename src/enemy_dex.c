@@ -114,7 +114,9 @@ NAKED void FUN_0820ec6c(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ec6c.inc");
 
 NAKED void FUN_0820ed04(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ed04.inc"); }
 
-NAKED void FUN_0820ed38(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ed38.inc"); }
+void FUN_0820ed38(EnemyDexMenu* p) {
+  p->unk_8e = p->unk_48 * 16 + 8;
+}
 
 NAKED void FUN_0820ed48(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ed48.inc"); }
 
