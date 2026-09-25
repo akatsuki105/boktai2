@@ -5,7 +5,9 @@
 
 // 8枠ぶんの演出要素。activeMask のビットが立っている枠だけ生きている
 typedef struct {
-  u8 unk_0[0x38];     // 0x000
+  u8 unk_0[0x2D];     // 0x000
+  u8 unk_2d;          // 0x02D, FUN_080da8a0 が 0 かどうかを見る
+  u8 unk_2e[10];      // 0x02E
   u8 ptclMask;        // 0x038, bit0..2 が立っている枠だけ _Destroy が Particle_Remove する
   u8 unk_39[11];      // 0x039
   u8 hasSprite;       // 0x044, 0 以外なら _Destroy が spr を AuxSprite_Remove する
@@ -111,6 +113,6 @@ NAKED Entity080da848* Entity080da848_Create(void) { INCFUNC("asm/func/Entity080d
 
 void FUN_080da894(void) { gEntity080da848 = NULL; }
 
-NAKED s32 FUN_080da8a0(Entity080da848* p) { INCFUNC("asm/func/FUN_080da8a0.inc"); }
+NAKED bool32 FUN_080da8a0(Entity080da848Elem* elem) { INCFUNC("asm/func/FUN_080da8a0.inc"); }
 
 NAKED void FUN_080da8cc(void) { INCFUNC("asm/func/FUN_080da8cc.inc"); }

@@ -28,7 +28,9 @@ typedef struct {
   u8 unk_48;                       // 0x0048, _Init が 0
   u8 unk_49;                       // 0x0049, _Init が 0x20
   u8 unk_4a;                       // 0x004A, _Init が 0
-  u8 unk_4b[0x110C - 0x4B];        // 0x004B
+  u8 unk_4b[0x8E - 0x4B];          // 0x004B
+  u16 unk_8e;                      // 0x008E, FUN_0820ed38 が unk_48 * 16 + 8 を書く
+  u8 unk_90[0x110C - 0x90];        // 0x0090
   u16 unk_110c;                    // 0x110C, _Init が 0
   u16 unk_110e;                    // 0x110E, _Init が 5
   void* scriptN;                   // 0x1110, キーワード 'n'。TextPanel_SetScript に渡す

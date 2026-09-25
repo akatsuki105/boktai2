@@ -8,7 +8,9 @@
 // 8枠ぶんの要素。activeMask のビットが立っている枠だけ生きている
 typedef struct {
   AuxSprite spr;      // 0x00, _Destroy が AuxSprite_Remove に渡す
-  u8 unk_2c[0x20];    // 0x2C
+  u8 unk_2c[0x14];    // 0x2C
+  u16 unk_40;         // 0x40, FUN_080dacac が bit1 を立てる
+  u8 unk_42[10];      // 0x42
   HitboxData hitbox;  // 0x4C, _Destroy が Hitbox_Unregister に渡す
   u8 unk_9c[8];       // 0x9C
 } Entity080db520Elem;
@@ -35,7 +37,7 @@ void FUN_080dac20(void) {}
 
 NAKED void FUN_080dac24(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080dac24.inc"); }
 
-NAKED void FUN_080dacac(Entity080db520* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080dacac.inc"); }
+NAKED void FUN_080dacac(Entity080db520* p, u32 param_2, Entity080db520Elem* elem) { INCFUNC("asm/func/FUN_080dacac.inc"); }
 
 NAKED void FUN_080dacc4(Entity080db520* p) { INCFUNC("asm/func/FUN_080dacc4.inc"); }
 
