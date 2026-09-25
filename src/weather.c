@@ -130,7 +130,7 @@ s32 WeatherManager_InitParticles(WeatherManager* p) {
   WeatherParticle* ptcl;
   s32 i;
 
-  p->group = GetParticleGroup(0x1C1C);
+  p->group = GetParticleGroup(PTCL_GROUP_1);
   p->unk_60 = 0;
   p->unk_62 = 0;
   ptcl = p->ptcls;
