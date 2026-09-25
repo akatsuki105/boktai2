@@ -93,6 +93,17 @@ NAKED void FUN_080aaa2c(Entity080aace8* p) { INCFUNC("asm/func/FUN_080aaa2c.inc"
 
 NAKED void FUN_080aaaa8(Entity080aace8* p) { INCFUNC("asm/func/FUN_080aaaa8.inc"); }
 
-NAKED s32 Entity080aace8_Init(Entity080aace8* p, Player* player, u16 param_3) { INCFUNC("asm/func/Entity080aace8_Init.inc"); }
+NAKED s32 Entity080aace8_Init(Entity080aace8* p, Player* player, u32 param_3) { INCFUNC("asm/func/Entity080aace8_Init.inc"); }
 
-NAKED Entity080aace8* Entity080aace8_Create(Player* player, u16 param_2) { INCFUNC("asm/func/Entity080aace8_Create.inc"); }
+Entity080aace8* Entity080aace8_Create(Player* player, u32 param_2) {
+  Entity080aace8* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity080aace8));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity080aace8_Update, Entity080aace8_Destroy);
+    if (Entity080aace8_Init(p, player, param_2) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
