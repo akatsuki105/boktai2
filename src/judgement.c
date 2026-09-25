@@ -12,9 +12,10 @@ typedef void (*JudgementFunc)(struct Judgement* p);
 // 演出で飛ばす粒子1個ぶんの枠。8個を使い回す
 typedef struct JudgementParticle {
   Particle ptcl;           // 0x00, _Destroy が Particle_Remove に渡す
-  u8 unk_28[2];            // 0x28
+  u16 timer;               // 0x28, FUN_080a9808 が毎フレーム +1。7 を超えると枠を畳む
   u16 active;              // 0x2A, FUN_080a98c0 が 0 の枠を飛ばす
-  u8 unk_2c[12];           // 0x2C
+  u8 unk_2c[8];            // 0x2C
+  ParticleGroup* group;    // 0x34, FUN_0822dafc の第2引数
   JudgementParticleFunc fn;  // 0x38, FUN_080a98c0 が active な枠について呼ぶ
 } JudgementParticle;
 static_assert(sizeof(JudgementParticle) == 60);

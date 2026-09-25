@@ -21,7 +21,9 @@ typedef struct {
   u16 unk_28;                       // 0x028, _Init の第5引数
   u16 unk_2a;                       // 0x02A, _Init の第6引数
   AuxSprite spr;                    // 0x02C, FUN_080ac21c が AuxSprite_Remove に渡す
-  u8 unk_58[0x98 - 0x58];           // 0x058
+  u8 unk_58[0x6D - 0x58];           // 0x058
+  u8 unk_6d;                        // 0x06D, FUN_080ac100 が 5 以下かを見て、0xF 未満なら +1 する
+  u8 unk_6e[0x98 - 0x6E];           // 0x06E
   u8 unk_98;                        // 0x098, _Update が 0 かを見る。unk_9e と揃って 0 なら KillEntity
   u8 unk_99[5];                     // 0x099
   u8 unk_9e;                        // 0x09E, _Update が 0 かを見る
