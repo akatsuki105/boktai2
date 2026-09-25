@@ -480,11 +480,67 @@ u32 ReflectClock(void) {
   gStat->isClockTowerBellDone = beforeSunset;
 }
 
-NAKED void clock_08241fd0(SunlightEntity* p) { INCFUNC("asm/func/clock_08241fd0.inc"); }
+// 日付をまたいだか、最後に起動してから日没を越えたかを見て、熱と天候の状態を1日ぶん巻き戻す
+NON_MATCH void ApplyDayRollover(SunlightEntity* _ UNUSED) {
+#ifdef NONMATCHING_C
+  u32 y0, m0, d0;
+  u32 y1, m1, d1;
+  s32 curHour, curMinute;
+  s32 sunsetHour, sunsetMinute;
+  u32 days;
+  bool32 reset;
+  BCDDate date;
+
+  date.val = GetDate();
+  curHour = GetHour();
+  curMinute = GetMinute();
+  sunsetHour = gClock.sunset.hour;
+  sunsetMinute = gClock.sunset.minute;
+  ParseBCDDate(&y0, &m0, &d0, date);
+  ParseBCDDate(&y1, &m1, &d1, gStat->date);
+  days = FUN_0823d9ec(y0, m0, d0, y1, m1, d1);
+  reset = FALSE;
+  if (days >= 2) {
+    reset = TRUE;
+  } else if (days == 1) {
+    if (gStat->isClockTowerBellDone != 0 || sunsetHour < curHour || (curHour == sunsetHour && sunsetMinute <= curMinute)) {
+      reset = TRUE;
+    }
+  } else {
+    bool32 wasBeforeSunset = FALSE;
+    bool32 isAfterSunset = FALSE;
+
+    if (gStat->hour < sunsetHour || (gStat->hour == sunsetHour && gStat->minute < sunsetMinute)) {
+      wasBeforeSunset = TRUE;
+    }
+    if (sunsetHour < curHour || (curHour == sunsetHour && sunsetMinute <= curMinute)) {
+      isAfterSunset = TRUE;
+    }
+    if (wasBeforeSunset && isAfterSunset) {
+      reset = TRUE;
+    }
+  }
+  if (reset) {
+    gStat->unk_1b8 = 0;
+    gStat->heatstroke = 0;
+    gStat->thermal = 0;
+    gStat->unk_1c0 = 0;
+    gStat->unk_2b0[0] = 0;
+    gStat->unk_2b0[1] = 0;
+  }
+  if (gStat->thermal > 29999 && IsGunCooled()) {
+    gStat->thermal = 0;
+    gStat->heatstroke = 0;
+  }
+  ReflectClock();
+#else
+  INCFUNC("asm/func/ApplyDayRollover.inc");
+#endif
+}
 
 s32 SunlightEntity_Init(SunlightEntity* p) {
   FUN_08241f28(p);
-  clock_08241fd0(p);
+  ApplyDayRollover(p);
   gSunlightEntity = p;
   return 0;
 }

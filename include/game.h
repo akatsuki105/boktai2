@@ -42,14 +42,14 @@ typedef struct {
   armor16_t armors[16];          // 0x150
   u8 unk_170[40];                // 0x170
   BCDDate date;                  // 0x198
-  s32 hour;                      // 0x19C, ReflectClock / clock_08241fd0 が gClock.sunset と符号付きで比べる
+  s32 hour;                      // 0x19C, ReflectClock / ApplyDayRollover が gClock.sunset と符号付きで比べる
   s32 minute;                    // 0x1A0, 同上
   bool32 isClockTowerBellDone;   // 0x1A4, すでに夕方か(時計塔の鐘の音がなったか)
   Datetime overheatTime;         // 0x1A8
   s16 unk_1b8;                   // 0x1B8
   s16 heatstroke;                // 0x1BA, オーバーヒート時に太陽ゲージが3以上あると増える, 5000を超えると気絶
   s32 thermal;                   // 0x1BC, 30000に到達したらオーバーヒート
-  u8 unk_1c0[4];                 // 0x1C0
+  s32 unk_1c0;                   // 0x1C0, ApplyDayRollover が日付をまたいだとき 0 に戻す
   u32 darkDebts;                 // 0x1C4, 実際に返す必要のある額
   u8 unk_1c8[12];                // 0x1C8
   u32 loan_1d4;                  // 0x1D4
