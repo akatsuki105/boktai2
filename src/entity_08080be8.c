@@ -35,7 +35,7 @@ typedef struct Entity08080be8 {
   u8 unk_c6[2];                       // 0x0C6
   u8 dir;                             // 0x0C8, プレイヤーの向きから作る 0..7 の方向。8bit角度の基準になる
   u8 charge;                          // 0x0C9, player の 0xA8F の写し。damage を 1 + charge/2 倍にし、sprite.metaspriteIdx にも入る
-  u16 timer;                          // 0x0CA, FUN_080801f4 が状態を変えるたび 0 に戻し、各状態が毎フレーム +1 する
+  u16 timer;                          // 0x0CA, Entity08080be8_SetState が状態を変えるたび 0 に戻し、各状態が毎フレーム +1 する
   u8 ptclIdx;                         // 0x0CC, 次に撒く ptcls の添字。4 で 0 に戻る
   u8 unk_cd;                          // 0x0CD, Init の第13引数。hitbox のオフセットを変え、0 以外なら damage が 8 固定になる
   u8 unk_ce[2];                       // 0x0CE
@@ -47,7 +47,11 @@ static_assert(sizeof(Entity08080be8) == 408);
 
 void FUN_0808094c(Entity08080be8* p);
 
-NAKED void FUN_080801f4(Entity08080be8* p, Entity08080be8Func fn) { INCFUNC("asm/func/FUN_080801f4.inc"); }
+// 状態関数を差し替えて経過フレームを 0 に戻す
+void Entity08080be8_SetState(Entity08080be8* p, Entity08080be8Func fn) {
+  p->updateCallback = fn;
+  p->timer = 0;
+}
 
 NAKED void FUN_08080204(Entity08080be8* p) { INCFUNC("asm/func/FUN_08080204.inc"); }
 
@@ -57,7 +61,7 @@ NAKED void FUN_080804a0(Entity08080be8* p) { INCFUNC("asm/func/FUN_080804a0.inc"
 
 NAKED void FUN_08080620(Entity08080be8* p) { INCFUNC("asm/func/FUN_08080620.inc"); }
 
-void FUN_08080648(HitboxData* a, HitboxData* b, Entity08080be8* p) { FUN_080801f4(p, FUN_0808094c); }
+void FUN_08080648(HitboxData* a, HitboxData* b, Entity08080be8* p) { Entity08080be8_SetState(p, FUN_0808094c); }
 
 NAKED void FUN_0808065c(Entity08080be8* p) { INCFUNC("asm/func/FUN_0808065c.inc"); }
 

@@ -36,7 +36,7 @@
 	ble _0808092C
 	ldr r1, _08080928 @ =FUN_0808094c
 	adds r0, r6, #0
-	bl FUN_080801f4
+	bl Entity08080be8_SetState
 	b _08080944
 	.align 2, 0
 _08080924: .4byte 0x00080002

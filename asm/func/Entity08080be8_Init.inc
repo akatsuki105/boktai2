@@ -43,14 +43,14 @@
 	beq _08080BD4
 	ldr r1, _08080BD0 @ =FUN_080806ec
 	adds r0, r7, #0
-	bl FUN_080801f4
+	bl Entity08080be8_SetState
 	b _08080BDC
 	.align 2, 0
 _08080BD0: .4byte FUN_080806ec
 _08080BD4:
 	ldr r1, _08080BE4 @ =FUN_080807f4
 	adds r0, r7, #0
-	bl FUN_080801f4
+	bl Entity08080be8_SetState
 _08080BDC:
 	movs r0, #0
 	pop {r4, r5, r6, r7}
