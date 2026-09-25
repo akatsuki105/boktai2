@@ -85,3 +85,17 @@ anything:
   structural insight — don't adopt it just because the score dropped.
   Treat it as a dead end for that candidate, not as feedback.
 
+## streamdiff が「一致」でも ROM が壊れることがある
+
+`Entity080ac374_Create` は streamdiff が 39 対 39 で "stream identical" と言ったのに、`make compare` が
+FAILED になり、ROM は 1000 万バイト以上食い違った。原因は**関数の長さ**で、余分に確保した高位レジスタ
+(`push {r7}` が `push {r6, r7}` になり、エピローグも 2 命令増える) のぶん後続のコードが全部ずれていた。
+streamdiff は命令列を正規化して比べるので、プロローグ/エピローグのレジスタ本数の違いを差分として
+見せないことがある。
+
+- **必ず `make compare` を通すこと。** streamdiff の "identical" は途中経過でしかない。
+- 大量のバイトが食い違う (ROM の頭のほうから) ときは、関数の**サイズ**が変わっていて後続が
+  ずれていると考える。中身の間違いではない。
+- 原因が高位レジスタの本数なら、**引数の型を狭めすぎていないか**を疑う。`u16 param` は入口で
+  `lsls`/`lsrs` に展開されてレジスタを 1 本余計に生かす。目標が入口で narrowing していなければ
+  `u32` が正しい (`Entity080abd14_Create` / `Entity080ac374_Create` の両方でこれだった)。
