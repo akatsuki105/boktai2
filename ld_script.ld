@@ -267,7 +267,7 @@ SECTIONS {
 			src/entity_080dbe54.o (.text);
 			src/entity_080dc44c.o (.text);
 			src/entity_080dd1f8.o (.text);
-			src/entity_080ddad0.o (.text);
+			src/attack_box.o (.text);
 			src/entity_080ddf88.o (.text);
 			src/entity_080df420.o (.text);
 			src/code_080df46c.o (.text);
