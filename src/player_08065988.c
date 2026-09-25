@@ -612,7 +612,7 @@ NAKED void FUN_0807b8a8(Player* p) { INCFUNC("asm/func/FUN_0807b8a8.inc"); }
 
 void FUN_0807b8c0(Player* p) { p->unk_96c = 0; }
 
-NAKED void FUN_0807b8d0(Player* p, Vec3* src) { INCFUNC("asm/func/FUN_0807b8d0.inc"); }
+void FUN_0807b8d0(Player* p, Vec3* src) { p->unk_24.pos = *src; }
 
 NAKED void FUN_0807b8dc(Player* p) { INCFUNC("asm/func/FUN_0807b8dc.inc"); }
 
