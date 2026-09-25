@@ -33,11 +33,11 @@ NAKED void FUN_080dc00c(Entity080dc44c* p, u32 param_2) { INCFUNC("asm/func/FUN_
 
 NAKED s32 FUN_080dc050(Entity080dc44c* p) { INCFUNC("asm/func/FUN_080dc050.inc"); }
 
-NAKED s32 FUN_080dc0a0(Entity080dc44c* p, u32 param_2) { INCFUNC("asm/func/FUN_080dc0a0.inc"); }
+NAKED s32 FUN_080dc0a0(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/FUN_080dc0a0.inc"); }
 
-NAKED s32 FUN_080dc0b8(Entity080dc44c* p) { INCFUNC("asm/func/FUN_080dc0b8.inc"); }
+NAKED s32 FUN_080dc0b8(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5) { INCFUNC("asm/func/FUN_080dc0b8.inc"); }
 
-NAKED s32 FUN_080dc0d0(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5) { INCFUNC("asm/func/FUN_080dc0d0.inc"); }
+NAKED s32 FUN_080dc0d0(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/FUN_080dc0d0.inc"); }
 
 NAKED s32 Entity080dc44c_Update(Entity080dc44c* p) { INCFUNC("asm/func/Entity080dc44c_Update.inc"); }
 
