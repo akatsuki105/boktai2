@@ -24,7 +24,7 @@ static_assert(sizeof(Entity080dd1f8) == 3948);
 
 extern Entity080dd1f8* gEntity080dd1f8;  // 0x0300016C
 
-NAKED void FUN_080dc4a4(void) { INCFUNC("asm/func/FUN_080dc4a4.inc"); }
+void FUN_080dc4a4(void) {}
 
 NAKED void FUN_080dc4a8(Entity080dd1f8* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080dc4a8.inc"); }
 
