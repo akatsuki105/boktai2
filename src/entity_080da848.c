@@ -100,7 +100,12 @@ NAKED s32 Entity080da848_Destroy(Entity080da848* p) { INCFUNC("asm/func/Entity08
 
 NAKED void FUN_080da7cc(Entity080da848* p) { INCFUNC("asm/func/FUN_080da7cc.inc"); }
 
-NAKED s32 Entity080da848_Init(Entity080da848* p) { INCFUNC("asm/func/Entity080da848_Init.inc"); }
+s32 Entity080da848_Init(Entity080da848* p) {
+  p->activeMask = 0;
+  FUN_080da7cc(p);
+  gEntity080da848 = p;
+  return 0;
+}
 
 NAKED Entity080da848* Entity080da848_Create(void) { INCFUNC("asm/func/Entity080da848_Create.inc"); }
 
