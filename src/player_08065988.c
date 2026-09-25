@@ -617,7 +617,10 @@ NAKED s32 FUN_0807b6b8(Player* p) { INCFUNC("asm/func/FUN_0807b6b8.inc"); }
 
 NAKED void FUN_0807b7a4(Player* p) { INCFUNC("asm/func/FUN_0807b7a4.inc"); }
 
-NAKED void FUN_0807b890(Player* p, u16 val) { INCFUNC("asm/func/FUN_0807b890.inc"); }
+void FUN_0807b890(Player* p, u16 val) {
+  p->unk_96c = 1;
+  p->unk_95e = val;
+}
 
 NAKED void FUN_0807b8a8(Player* p, u16 val) { INCFUNC("asm/func/FUN_0807b8a8.inc"); }
 
