@@ -234,6 +234,9 @@ extern Player* gPlayerPtr[4];
 extern const PlayerFunc gPlayerAttackUpdates[5];  // 0: 剣, 1: 槍, 2: ハンマー, 3: 拳, 4: 銃
 
 Player* CreatePlayer(u32 n, void* _);
+s32 FUN_0806f900(Player* player);
+s32 FUN_080d1b04(Player* player);
+void Player_ReduceENE_0807aa60(Player* player, s32 amount);
 
 static inline void Player_SetFlag20(Player* p, u32 bit) { p->unk_20 |= bit; }
 

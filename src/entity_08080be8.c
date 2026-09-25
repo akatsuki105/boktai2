@@ -1,4 +1,4 @@
-#include "definition.h"
+#include "collision_map.h"
 #include "entity.h"
 #include "entity_9a9f.h"
 #include "global.h"
@@ -14,10 +14,10 @@ typedef void (*Entity08080be8Func)(struct Entity08080be8* p);
 // Entity08080be8_SpawnParticle が1個ずつ撒く粒子。4個を順に使い回す
 typedef struct {
   Particle base;   // 0x00, FUN_0822d9f0 や Particle_Remove に Particle* として渡る
-  bool8 active;    // 0x28, Entity08080be8_SpawnParticle が 1 にし、Entity08080be8_UpdateParticles が寿命で 0 に戻す。0 の間は動かさない
-  s8 angleOffset;  // 0x29, Mod(rand, 0x60) - 0x30。dir から作る8bit角度に足してばらつかせる
-  u16 radius;      // 0x2A, (rand >> 3 & 0x7F) + 0x40。gSineTable に掛けて >> 12 したものが base.pos のずれになる
-  u16 timer;       // 0x2C, 毎フレーム +1 し 15 で寿命。距離が radius * (0x10 - timer) >> 3 なので中心へ寄っていく
+  bool8 active;    // 0x28, Entity08080be8_SpawnParticle が 1 にし、Entity08080be8_UpdateParticles が寿命で 0 に戻す, 0 の間は動かさない
+  s8 angleOffset;  // 0x29, Mod(rand, 0x60) - 0x30, dir から作る8bit角度に足してばらつかせる
+  u16 radius;      // 0x2A, (rand >> 3 & 0x7F) + 0x40, gSineTable に掛けて >> 12 したものが base.pos のずれになる
+  u16 timer;       // 0x2C, 毎フレーム +1 し 15 で寿命, 距離が radius * (0x10 - timer) >> 3 なので中心へ寄っていく
   u8 unk_2e[2];    // 0x2E, padding?
 } Entity08080be8Particle;
 static_assert(sizeof(Entity08080be8Particle) == 48);
@@ -41,7 +41,7 @@ typedef struct Entity08080be8 {
   u16 timer;                          // 0x0CA, Entity08080be8_SetState が状態を変えるたび 0 に戻し、各状態が毎フレーム +1 する
   u8 ptclIdx;                         // 0x0CC, 次に撒く ptcls の添字。4 で 0 に戻る
   u8 unk_cd;                          // 0x0CD, Init の第13引数。hitbox のオフセットを変え、0 以外なら damage が 8 固定になる
-  u8 unk_ce[2];                       // 0x0CE
+  u8 unk_ce[2];                       // 0x0CE, padding?
   ParticleGroup* group;               // 0x0D0, PTCL_GROUP_2
   Entity08080be8Particle ptcls[4];    // 0x0D4, 根拠: Entity08080be8_SetupParticles / Entity08080be8_ClearParticles / _Destroy の stride 0x30 × 4 のループ
   Entity08080be8Func updateCallback;  // 0x194, _Update が毎フレーム呼ぶ状態関数
@@ -50,14 +50,6 @@ static_assert(sizeof(Entity08080be8) == 408);
 
 void Entity08080be8_StateFly(Entity08080be8* p);
 void Entity08080be8_StateImpact(Entity08080be8* p);
-
-// src/player.c
-s32 FUN_0806f900(Player* player);
-s32 FUN_080d1b04(Player* player);
-void Player_ReduceENE_0807aa60(Player* player, s32 amount);
-
-// src/code_082326a0.c
-u16 FUN_082328ec(Vec3* pos);
 
 // 状態関数を差し替えて経過フレームを 0 に戻す
 void Entity08080be8_SetState(Entity08080be8* p, Entity08080be8Func fn) {
@@ -103,10 +95,10 @@ NON_MATCH void Entity08080be8_UpdateParticles(Entity08080be8* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    if (p->ptcls[i].active != 0) {
+    if (p->ptcls[i].active) {
       p->ptcls[i].timer++;
       if (p->ptcls[i].timer > 14) {
-        p->ptcls[i].active = 0;
+        p->ptcls[i].active = FALSE;
         p->ptcls[i].base.flags |= SPRFLAG_HIDDEN;
       } else {
         s32 dist = p->ptcls[i].radius * (16 - p->ptcls[i].timer) >> 3;
@@ -128,7 +120,7 @@ NON_MATCH void Entity08080be8_SpawnParticle(Entity08080be8* p) {
 #ifdef NONMATCHING_C
   s32 angle;
 
-  p->ptcls[p->ptclIdx].active = 1;
+  p->ptcls[p->ptclIdx].active = TRUE;
   p->ptcls[p->ptclIdx].base.flags &= ~SPRFLAG_HIDDEN;
   p->ptcls[p->ptclIdx].timer = 0;
   gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
@@ -153,7 +145,7 @@ void Entity08080be8_ClearParticles(Entity08080be8* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    p->ptcls[i].active = 0;
+    p->ptcls[i].active = FALSE;
     p->ptcls[i].base.flags |= SPRFLAG_HIDDEN;
   }
 }
@@ -346,19 +338,16 @@ s32 Entity08080be8_Destroy(Entity08080be8* p) {
 
 // スプライトを用意して隠したまま登録する
 void Entity08080be8_SetupSprite(Entity08080be8* p, s32 plttID) {
-  AuxSpriteGfx* gfx = &p->gfx;
-
-  Video_GetAuxSprite(gfx, SPRITE_210E);
-  AuxSprite_Add(&p->sprite, gfx, SPRFLAG_HIDDEN);
+  Video_GetAuxSprite(&p->gfx, SPRITE_210E);
+  AuxSprite_Add(&p->sprite, &p->gfx, SPRFLAG_HIDDEN);
   AuxSprite_SetPoseIdx(&p->sprite, 0);
-  Video_SetAuxSpritePltt(gfx, plttID);
+  Video_SetAuxSpritePltt(&p->gfx, plttID);
 }
 
 // 当たり判定を組み立てる。unk_cd が立っているときだけ判定を一段高い位置に置く
 void Entity08080be8_SetupHitbox(Entity08080be8* p, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44) {
   HitboxData* hitbox = &p->hitbox;
-  Vec3 offset;
-  Vec3 halfSize;
+  Vec3 offset, halfSize;
 
   halfSize.x = 30, halfSize.y = 30, halfSize.z = 30;
   if (p->unk_cd != 0) {
@@ -383,7 +372,7 @@ void Entity08080be8_SetupParticles(Entity08080be8* p, s32 val) {
     Particle_SetOffset(&p->ptcls[i].base, -4, -4);
     FUN_0822dafc(&p->ptcls[i].base, p->group, val);
     FUN_0822dadc(&p->ptcls[i].base, 1);
-    p->ptcls[i].active = 0;
+    p->ptcls[i].active = FALSE;
   }
 }
 
