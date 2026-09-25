@@ -90,7 +90,25 @@ NAKED void FUN_08234868(unknown* param_1, CollisionMapEvent* ev, u32 param_3) { 
 
 NAKED bool32 FUN_082348f8(u16 zoneID) { INCFUNC("asm/func/FUN_082348f8.inc"); }
 
-NAKED Zone* FUN_0823492c(u16 zoneID, u16* count) { INCFUNC("asm/func/FUN_0823492c.inc"); }
+// zoneID を持つゾーンのうち最初の1つを返し、同じIDのゾーンの数を count に書く
+Zone* FindZonesByID(u16 zoneID, u16* count) {
+  Zone* first;
+  s32 i;
+
+  *count = 0;
+  first = NULL;
+  for (i = 0; i < gCollisionMap->zones->count; i++) {
+    Zone* zone = &gCollisionMap->zones->zones[i];
+
+    if (zone->id == zoneID) {
+      if (first == NULL) {
+        first = zone;
+      }
+      (*count)++;
+    }
+  }
+  return first;
+}
 
 NAKED CollisionMapEvent* FUN_08234980(u32 id) { INCFUNC("asm/func/FUN_08234980.inc"); }
 

@@ -340,8 +340,10 @@ Which side to pick, once the asm has told you what is wrong:
 
 ### A zero stored from a reused local takes that local's register
 
-- **Frequency**: `ReadKeyInput`.
+- **Frequency**: `ReadKeyInput`, `FindZonesByID`.
 - In `ReadKeyInput`, the loop that clears players 1-4 stores 0 twice (`strh r3, [r1]` / `strh r3, [r1, #2]`), with the 0 in `r3`, the register that held `keys` a moment earlier. Writing `gInput[i].down = 0; gInput[i].pressed = 0;` (or a chained `= 0`) put the 0 in a fresh `r0`. Setting the existing local once, `keys = 0;` before the loop, and storing `keys` (`down = keys; pressed = keys;`) matched. Going further and reusing the full update formula (`pressed = keys & ~prev`) with `keys = 0` did not fold and added four instructions.
+
+- The reverse also happens: **initialising a local at its declaration lets agbcc reuse a zero it materialised for something else.** `FindZonesByID` starts with `*count = 0;` and a `Zone* first` that stays NULL until a match. Declaring `Zone* first = NULL;` made agbcc store that same register through `*count`, one `movs` short of the target; the target materialises three separate zeros (`*count`, `first`, the index), which `*count = 0; first = NULL;` as two plain statements reproduces. The source order is visible: whichever zero is written first gets the `strh`.
 
 ### A parameter copied into a local is not coalesced; the copy's declared type decides which one is the working variable
 

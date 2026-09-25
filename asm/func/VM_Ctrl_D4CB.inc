@@ -165,7 +165,7 @@ _0823B0B4:
 	strh r1, [r0, #0xe]
 	ldrh r0, [r0, #8]
 	adds r1, r7, #0
-	bl FUN_0823492c
+	bl FindZonesByID
 	str r0, [sp, #0x28]
 	cmp r0, #0
 	beq _0823B0DC

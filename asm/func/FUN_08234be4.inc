@@ -7,7 +7,7 @@
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	mov r1, sp
-	bl FUN_0823492c
+	bl FindZonesByID
 	adds r5, r0, #0
 	cmp r5, #0
 	bne _08234C0A
