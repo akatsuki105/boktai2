@@ -6,6 +6,7 @@
 #include "player.h"
 
 s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
+void Sensor_Tick(void);
 
 // 0x030026B0 から 0x030026C4 までの6つ。以前は SolarSensorInterface という1つの構造体として書いていたが、
 // Sensor_GetState が =0x030026B4 を直接読む (構造体なら =gSSI + [r0,#4] になる) ので、原典では個別のグローバルだった
@@ -237,7 +238,32 @@ s32 SSEEmitter_Destroy(SSEEmitter* p) {
   return 0;
 }
 
-NAKED void Sensor_DoEnableIO(void) { INCFUNC("asm/func/Sensor_DoEnableIO.inc"); }
+// GPIO をセンサー読み出し用に開き、タイマー3 の割り込みで Sensor_Tick を回し始める
+void Sensor_DoEnableIO(void) {
+  u16 ie;
+
+  gSensorNextWrite = (gSensorNextWrite & ~2) | 1;
+  gSensorState = 0;
+  gSensorCounter = 0;
+  gSensorEnabled = FALSE;
+  gSensorDrvUnk1c = 0x3128;
+  gSensorDrvUnk10 = 1;
+  gSensorDrvUnk00 = 0xFF;
+  gSensorDrvUnk14 = 4;
+  gSensorRawLevel = -1;
+  REG_IME = 0;
+  ie = REG_IE;
+  REG_IE = 0;
+  REG_TM3CNT_L = 0;
+  REG_TM3CNT_H = TIMER_ENABLE | TIMER_INTR_ENABLE;
+  gIntrTable[2] = Sensor_Tick;
+  gSensorDrvUnk04 = GPIO_PORT_DATA;
+  GPIO_PORT_DIRECTION = 7;
+  GPIO_PORT_READ_ENABLE = 1;
+  ie |= INTR_FLAG_TIMER3;
+  REG_IE = ie;
+  REG_IME = 1;
+}
 
 // センサー用のタイマー3割り込みを止め、GPIO の読み出しを無効に戻す
 void Sensor_DoDisableIO(void) {
