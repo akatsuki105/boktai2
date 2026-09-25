@@ -46,8 +46,7 @@ typedef struct {
   u8 unk_f6[3];           // 0x0F6
   u8 unk_f9;              // 0x0F9, 0 まで減らすだけのカウンタ
   u8 unk_fa[6];           // 0x0FA
-  SSEEmitter unk_100;      // 0x100, Init が FUN_0824742c(&unk_100, &sprite.pos, 0, 0, 0)、_Destroy が FUN_08247504 する
-  u8 unk_230[8];          // 0x230
+  SSEEmitter unk_100;     // 0x100, Init が FUN_0824742c(&unk_100, &sprite.pos, 0, 0, 0)、_Destroy が FUN_08247504 する
   EntityFunc fn;          // 0x238, _Update が毎フレーム呼ぶ,Generator_SetState が state と一緒に書く
 } Generator;
 static_assert(sizeof(Generator) == 572);
