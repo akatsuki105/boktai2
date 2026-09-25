@@ -499,6 +499,10 @@
 
 #define REG_WAITCNT (*(vu16*)REG_ADDR_WAITCNT)
 
+#define GPIO_PORT_DATA (*(vu16*)0x080000C4)
+#define GPIO_PORT_DIRECTION (*(vu16*)0x080000C6)
+#define GPIO_PORT_READ_ENABLE (*(vu16*)0x080000C8)
+
 // I/O register fields
 
 // DISPCNT
