@@ -219,7 +219,7 @@ SECTIONS {
 			src/player.o (.text);
 			src/player_08065988.o (.text);
 			src/enemy_entity_5941.o (.text);
-			src/entity_080801b0.o (.text);
+			src/django_berserk.o (.text);
 			src/entity_08080be8.o (.text);
 			src/player_link.o (.text);
 			src/code_080801f4.o (.text);
