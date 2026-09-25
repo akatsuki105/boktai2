@@ -29,9 +29,9 @@ typedef struct Entity08080be8 {
   AuxSprite sprite;                   // 0x01C
   AuxSpriteGfx gfx;                   // 0x048, SPRITE_210E
   HitboxData hitbox;                  // 0x064, Entity08080be8_SetupHitbox が組み立て、位置は sprite.pos を見る
-  Vec3 offset;                        // 0x0B4, FUN_08080204 が offsetRadius から x と z を作り、Entity08080be8_StateImpact が sprite.pos に足す
-  u16 heightOffset;                   // 0x0BC, Init の第3引数。FUN_08080204 が sprite.pos.y に足す
-  u16 unk_be;                         // 0x0BE, Init の第4引数。FUN_08080204 で gSineTable に掛ける
+  Vec3 offset;                        // 0x0B4, Entity08080be8_Reposition が offsetRadius から x と z を作り、Entity08080be8_StateImpact が sprite.pos に足す
+  u16 heightOffset;                   // 0x0BC, Init の第3引数。Entity08080be8_Reposition が sprite.pos.y に足す
+  u16 unk_be;                         // 0x0BE, Init の第4引数。Entity08080be8_Reposition で gSineTable に掛ける
   u16 unk_c0;                         // 0x0C0, Init の第5引数。unk_be と対で使う
   u16 offsetRadius;                   // 0x0C2, Init の第6引数。offset.x と offset.z の大きさ
   u16 eneCost;                        // 0x0C4, Init の第12引数。Entity08080be8_PayENE が Player_ReduceENE_0807aa60 に渡す
@@ -65,7 +65,36 @@ void Entity08080be8_SetState(Entity08080be8* p, Entity08080be8Func fn) {
   p->timer = 0;
 }
 
-NAKED void FUN_08080204(Entity08080be8* p) { INCFUNC("asm/func/FUN_08080204.inc"); }
+// プレイヤーの位置と向きから、スプライト・当たり判定・毎フレームの進み幅を作り直す
+NON_MATCH void Entity08080be8_Reposition(Entity08080be8* p) {
+#ifdef NONMATCHING_C
+  Player* player = p->player;
+  s32 dir;
+  s32 angle;
+  s32 cosv;
+  s32 sinv;
+
+  p->sprite.pos = player->unk_24.pos;
+  p->sprite.pos.y += p->heightOffset;
+  dir = (player->sprite_2e4.active + 5) & 7;
+  angle = dir * 32;
+  cosv = gSineTable[(angle + 0x40) & 0xFF];
+  sinv = gSineTable[angle & 0xFF];
+  if (player->sprite_2e4.unk_3 == 0) {
+    p->sprite.pos.x += cosv * p->unk_be / 4096 - sinv * p->unk_c0 / 4096;
+    p->sprite.pos.z += sinv * p->unk_be / 4096 + cosv * p->unk_c0 / 4096;
+  } else {
+    p->sprite.pos.x += cosv * p->unk_be / 4096 + sinv * p->unk_c0 / 4096;
+    p->sprite.pos.z += sinv * p->unk_be / 4096 - cosv * p->unk_c0 / 4096;
+  }
+  p->dir = (dir + 3) & 7;
+  p->offset.x = gSineTable[(angle + 0x40) & 0xFF] * p->offsetRadius / 4096;
+  p->offset.z = gSineTable[angle & 0xFF] * p->offsetRadius / 4096;
+  p->hitbox.angle = angle;
+#else
+  INCFUNC("asm/func/Entity08080be8_Reposition.inc");
+#endif
+}
 
 // 撒いた粒子を寿命まで動かす。距離が毎フレーム縮むので中心へ吸い込まれていく
 NON_MATCH void Entity08080be8_UpdateParticles(Entity08080be8* p) {
@@ -167,7 +196,7 @@ NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
     KillEntity(&p->e);
     return;
   }
-  FUN_08080204(p);
+  Entity08080be8_Reposition(p);
   if (p->player->unk_37d == 5) {
     Entity08080be8_ClearParticles(p);
     AuxSprite_Show(&p->sprite);
@@ -205,7 +234,7 @@ NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
   if (p->player->unk_37c == 3) {
     u8 state;
 
-    FUN_08080204(p);
+    Entity08080be8_Reposition(p);
     state = p->player->unk_37d;
     if (state == 5) {
       Entity08080be8_ClearParticles(p);
@@ -369,7 +398,7 @@ s32 Entity08080be8_Init(Entity08080be8* p, Player* player, u32 heightOffset, u32
   p->unk_cd = unk_cd;
   Entity08080be8_SetupSprite(p, plttID);
   Entity08080be8_SetupHitbox(p, hitboxUnk40, attributes, hitboxUnk44);
-  FUN_08080204(p);
+  Entity08080be8_Reposition(p);
   Entity08080be8_SetupParticles(p, ptclVal);
   if (p->player->kind != PLAYER_SABATA) {
     Entity08080be8_SetState(p, Entity08080be8_StateChargeDjango);

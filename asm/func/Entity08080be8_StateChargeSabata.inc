@@ -8,7 +8,7 @@
 	cmp r6, #3
 	bne _08080868
 	adds r0, r4, #0
-	bl FUN_08080204
+	bl Entity08080be8_Reposition
 	ldr r0, [r4, #0x18]
 	ldr r5, _08080850 @ =0x0000037D
 	adds r0, r0, r5

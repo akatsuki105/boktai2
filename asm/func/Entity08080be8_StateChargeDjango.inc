@@ -12,7 +12,7 @@
 	b _080807EE
 _08080706:
 	adds r0, r4, #0
-	bl FUN_08080204
+	bl Entity08080be8_Reposition
 	ldr r0, [r4, #0x18]
 	ldr r1, _0808074C @ =0x0000037D
 	adds r0, r0, r1
