@@ -3,6 +3,7 @@
 #include "armor.h"
 #include "global.h"
 #include "item.h"
+#include "random.h"
 #include "sound.h"
 #include "sprite.h"
 #include "vm.h"
@@ -292,7 +293,13 @@ NAKED void FUN_08061c68(Player* p) { INCFUNC("asm/func/FUN_08061c68.inc"); }
 INCASM("asm/player.inc");
 
 // 一定確率で防御無視(なまくら系の特殊効果)
-NAKED u32 CheckNamakuraProc(void) { INCFUNC("asm/func/CheckNamakuraProc.inc"); }
+u32 CheckNamakuraProc(void) {
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  if (Mod(*(gRandomTable + gRandTableIdx), 100) <= 10) {
+    return 1 << 12;
+  }
+  return 0;
+}
 
 // 一定確率で麻痺
 NAKED u32 CheckParalyzeProc(void) { INCFUNC("asm/func/CheckParalyzeProc.inc"); }
