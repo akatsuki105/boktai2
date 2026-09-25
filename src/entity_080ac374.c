@@ -12,7 +12,7 @@ typedef struct {
 static_assert(sizeof(Entity080ac374Particle) == 60);
 
 typedef struct {
-  Entity e;                         // 0x000, ENTITY_UNK_11
+  Entity e;                         // 0x000, ENTITY_UNK_8
   Player* player;                   // 0x018, _Init の第2引数
   Vec3 pos;                         // 0x01C, _Init の第4引数を8バイトまるごと写す。NULL なら x/y/z を 0 にする
   u8 unk_24;                        // 0x024, _Init の第3引数
@@ -77,4 +77,15 @@ s32 Entity080ac374_Destroy(Entity080ac374* p) {
 
 NAKED s32 Entity080ac374_Init(Entity080ac374* p, Player* player, u8 param_3, Vec3* pos, u16 param_5, u16 param_6) { INCFUNC("asm/func/Entity080ac374_Init.inc"); }
 
-NAKED Entity080ac374* Entity080ac374_Create(Player* player, u8 param_2, Vec3* pos, u16 param_4, u16 param_5) { INCFUNC("asm/func/Entity080ac374_Create.inc"); }
+Entity080ac374* Entity080ac374_Create(Player* player, u8 param_2, Vec3* pos, u16 param_4, u16 param_5) {
+  Entity080ac374* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity080ac374));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity080ac374_Update, Entity080ac374_Destroy);
+    if (Entity080ac374_Init(p, player, param_2, pos, param_4, param_5) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
