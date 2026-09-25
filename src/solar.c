@@ -12,11 +12,11 @@
 typedef struct SunlightEntity {
   Entity e;                                        // 0x00, ENTITY_UNK_5
   u8 unk_18;                                       // 0x18, FUN_08241f28 が 1 を書く。読み手は見つかっていない
-  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む。FUN_08241cf4 / FUN_08241e40 が回し、IsSunlightActive / CalibrateSunSensor / SuspendSunlight / FUN_0824172c が見る
+  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む。UpdateSunlight / FUN_08241e40 が回し、IsSunlightActive / CalibrateSunSensor / SuspendSunlight / FUN_0824172c が見る
   u16 unk_1a;                                      // 0x1A, このモジュールは触らない
   s16 lx;                                          // 0x1C, 太陽光の強さ
   s16 sunGauge;                                    // 0x1E, lx を 10段階に分けたもの
-  u16 stateTimer;                                  // 0x20, FUN_08241cf4 のフレーム数。state 0 で 29 を超えるとセンサーを有効化し、state 1 で 59 を超えると計測に入る。state が変わるたび 0
+  u16 stateTimer;                                  // 0x20, UpdateSunlight のフレーム数。state 0 で 29 を超えるとセンサーを有効化し、state 1 で 59 を超えると計測に入る。state が変わるたび 0
   u16 adjustTimer;                                 // 0x22, UpdateDebugLx が A+L / A+R を押している間 +1 し、1フレームおきに gDebugLx を増減させる
   u16 tickCounter;                                 // 0x24, solar_08241ac0 が毎フレーム +1。(tickCounter & 0x3F) == 0 と (& 0x7F) == 0 で処理を間引く
   u16 idleTimer;                                   // 0x26, solar_08241ac0 が入力のたび 0 に戻し、無操作なら 900 まで数える。900 に達すると太陽の恵みが止まる
@@ -210,7 +210,42 @@ NON_MATCH void UpdateOverheat(SunlightEntity* _ UNUSED) {
 
 NAKED void solar_08241ac0(SunlightEntity* p) { INCFUNC("asm/func/solar_08241ac0.inc"); }
 
-NAKED void FUN_08241cf4(SunlightEntity* p) { INCFUNC("asm/func/FUN_08241cf4.inc"); }
+// 毎フレームの本体。センサーを温めてから計測に入り、結果を gStat に流す
+NON_MATCH void UpdateSunlight(SunlightEntity* p) {
+#ifdef NONMATCHING_C
+  switch (p->state) {
+    case 0: {
+      p->stateTimer++;
+      if (p->stateTimer > 29) {
+        Sensor_Enable();
+        p->state = 1;
+        p->stateTimer = 0;
+      }
+      break;
+    }
+    case 1: {
+      p->stateTimer++;
+      if (p->stateTimer > 59) {
+        p->state = 2;
+        p->stateTimer = 0;
+      }
+      break;
+    }
+    case 2: {
+      p->lx = FUN_082418c0();
+      p->sunGauge = GetSunLevel(p->lx);
+      gStat->lx = FUN_082417ec(p->lx);
+      gStat->sunGauge = GetSunLevel(gStat->lx);
+      solar_08241ac0(p);
+      gSavedLx = gStat->lx;
+      gSavedSunGauge[0] = gStat->sunGauge;
+      break;
+    }
+  }
+#else
+  INCFUNC("asm/func/UpdateSunlight.inc");
+#endif
+}
 
 // デバッグ用。A+L / A+R で lx を手動で上下させ、その値を返す
 NON_MATCH u32 UpdateDebugLx(SunlightEntity* p) {
@@ -262,7 +297,7 @@ NON_MATCH void FUN_08241f28(SunlightEntity* p) {
 #ifdef NONMATCHING_C
   u16 tmp;
   p->unk_18 = 1;
-  p->updateCallback = FUN_08241cf4;
+  p->updateCallback = UpdateSunlight;
   p->state = 0;
   p->stateTimer = 0;
   p->adjustTimer = 0;
