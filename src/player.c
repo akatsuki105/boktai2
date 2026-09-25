@@ -354,7 +354,7 @@ NAKED void Player_Destroy_Helper_08063b24(Player* p) { INCFUNC("asm/func/Player_
 
 NAKED void Player_Init_Helper_08063b6c(Player* p) { INCFUNC("asm/func/Player_Init_Helper_08063b6c.inc"); }
 
-NAKED u32 Player_WeaponEffectSol(Player* p) { INCFUNC("asm/func/Player_WeaponEffectSol.inc"); }
+u32 Player_WeaponEffectSol(Player* p) { return gStat->sunGauge; }
 
 NAKED u32 Player_WeaponEffectStatCond(Player* p) { INCFUNC("asm/func/Player_WeaponEffectStatCond.inc"); }
 
