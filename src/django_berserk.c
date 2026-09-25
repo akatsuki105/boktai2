@@ -72,7 +72,15 @@ s32 DjangoBerserk_Update(DjangoBerserk* p) {
   return 0;
 }
 
-NAKED s32 DjangoBerserk_Destroy(DjangoBerserk* p) { INCFUNC("asm/func/DjangoBerserk_Destroy.inc"); }
+s32 DjangoBerserk_Destroy(DjangoBerserk* p) {
+  s32 i;
+
+  MainSprite_Remove(&p->sprite);
+  for (i = 0; i < 16; i++) {
+    Particle_Remove(&p->ptcls[i].ptcl);
+  }
+  return 0;
+}
 
 NAKED void LoadPlayerSprite_0807fe48(DjangoBerserk* p) { INCFUNC("asm/func/LoadPlayerSprite_0807fe48.inc"); }
 
