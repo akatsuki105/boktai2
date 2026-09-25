@@ -291,8 +291,10 @@ NAKED void FUN_08061c68(Player* p) { INCFUNC("asm/func/FUN_08061c68.inc"); }
 
 INCASM("asm/player.inc");
 
+// 一定確率で防御無視(なまくら系の特殊効果)
 NAKED u32 CheckNamakuraProc(void) { INCFUNC("asm/func/CheckNamakuraProc.inc"); }
 
+// 一定確率で麻痺
 NAKED u32 CheckParalyzeProc(void) { INCFUNC("asm/func/CheckParalyzeProc.inc"); }
 
 NAKED void FUN_08064058(Player* p) { INCFUNC("asm/func/FUN_08064058.inc"); }
