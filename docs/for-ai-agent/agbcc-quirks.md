@@ -173,9 +173,10 @@ for (i = 0; i < N; i++) {          for (i = 0; i < N; i++) {
 
 ### `/ 256` on a signed value is a 3-instruction bias, not the 6-instruction abs form
 
-- **Frequency**: `FUN_082470a8` (投影), and the same block in `Camera_Translate`, `Camera_Init`, `FUN_0823bac8`, `FUN_0823b8ac`, `MapItemManager_Init` — all still NON_MATCH on this.
+- **Frequency**: `Camera_Translate` (matched), `FUN_082470a8`, and the same block in `Camera_Init`, `FUN_0823bac8`, `FUN_0823b8ac`, `MapItemManager_Init`.
 - `v / 256` compiles to `cmp #0` / `bge` / `add #0xff` / `asr #8`. The target's `cmp #0` / `blt` / `asr #8` / `b` / `rsb` / `asr #8` / `rsb` is the same value computed a different way, and agbcc only emits it for the ternary spelled out: `v >= 0 ? (v >> 8) : -((-v) >> 8)`. Writing `v < 0 ? -((-v) >> 8) : (v >> 8)` puts the negate arm first, so the operand order still matters.
 - The project has this as `Div256` in `include/types.h`. The isometric projection uses it three times per call, so a function doing the projection is 9 instructions short without it.
+- The projection itself is a `static inline` taking `(Vec3* out, Vec3* world)`: the target materializes both pointers (the `ldr =dest` pool load and the source's base copy) as an adjacent pair **before** the arithmetic, which is the inlined call's entry. Written flat in the caller, the pool load slides down to the first store instead. `Camera_Translate` has it as `WorldToVp` (no camera offset); `FUN_082470a8` needs the `- gCameraVpCoords + 120/90` variant.
 
 ### A range test becomes `(unsigned)(x - lo) <= hi - lo`
 
@@ -295,6 +296,7 @@ Which side to pick, once the asm has told you what is wrong:
 - The `for` increment's comma order is the order of the two `adds`.
 - Reading the **low byte first** keeps both loads (`ldrh` + `ldrb`); reading the high half first lets CSE collapse them into one `ldrh` plus shifts.
 - A **struct-field** store lets agbcc keep a global pointer live across it; a **cast** store forces it to be reloaded.
+- Caching a global pointer in a local (`cam = gCamera;`) keeps the **value** in a callee-saved register; writing `gCamera->field` at each use keeps the **address** there (`adds r6, r0, #0`) and reloads the value (`ldr r2, [r6]`) after anything that needs the registers. `Camera_Translate` reloads once after the projection — with the local, that reload has to be written out as a second `cam = gCamera;`, which is the tell that the local does not belong there.
 - `-n * 256` lets agbcc reuse a `-n` computed for a nearby compare, overwriting `n`; `n * -256` negates after the shift and keeps `n` alive.
 - An `s16` local sign-extends at **every use**; `s32 x = (s16)n;` sign-extends **once at the assignment**.
 - A `u16` counter adds then truncates; an `s16` counter additionally sign-extends where it is read.
