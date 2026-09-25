@@ -75,6 +75,17 @@ s32 Entity080ac374_Destroy(Entity080ac374* p) {
   FUN_080abfec(p);
 }
 
-NAKED s32 Entity080ac374_Init(Entity080ac374* p, Player* player, u8 param_3, Vec3* pos, u16 param_5, u16 param_6) { INCFUNC("asm/func/Entity080ac374_Init.inc"); }
+NAKED s32 Entity080ac374_Init(Entity080ac374* p, Player* player, u32 param_3, Vec3* pos, u32 param_5, u32 param_6) { INCFUNC("asm/func/Entity080ac374_Init.inc"); }
 
-NAKED Entity080ac374* Entity080ac374_Create(Player* player, u8 param_2, Vec3* pos, u16 param_4, u16 param_5) { INCFUNC("asm/func/Entity080ac374_Create.inc"); }
+Entity080ac374* Entity080ac374_Create(Player* player, u32 param_2, Vec3* pos, u32 param_4, u32 param_5) {
+  Entity080ac374* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity080ac374));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity080ac374_Update, Entity080ac374_Destroy);
+    if (Entity080ac374_Init(p, player, param_2, pos, param_4, param_5) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
