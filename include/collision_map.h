@@ -71,15 +71,18 @@ typedef struct {
 
 // --------------------------------------------
 
-// イベント（カットシーン、ロードゾーンなど）のトリガー
+typedef u16 ZoneID16;
+typedef s32 ZoneID32;
+
+// ID付きの範囲情報 (イベント（カットシーン、ロードゾーンなど）のトリガー に使われる？)
 typedef struct {
-  s16 x1;  // 0x00, X/Y coordinates: 1 tile = 256 units
-  s16 y1;  // 0x02
-  s16 x2;  // 0x04
-  s16 y2;  // 0x06
-  s8 z1;   // 0x08, Z coordinate: 1 tile = 16 units
-  s8 z2;   // 0x09
-  u16 id;  // 0x0A, Used by scripts to link behaviour to a specific zone using its ID
+  s16 x1;       // 0x00, X/Y coordinates: 1 tile = 256 units
+  s16 y1;       // 0x02
+  s16 x2;       // 0x04
+  s16 y2;       // 0x06
+  s8 z1;        // 0x08, Z coordinate: 1 tile = 16 units
+  s8 z2;        // 0x09
+  ZoneID16 id;  // 0x0A, スクリプトが特定のゾーンに処理をアタッチする際に使うID
 } Zone;
 static_assert(sizeof(Zone) == 12);
 
@@ -149,7 +152,7 @@ typedef struct {
 // スクリプトから登録されるイベント, VM_Ctrl_D4CB が 44バイトを組み立て FUN_082349b8 が unk_8 をキーに挿入する
 typedef struct CollisionMapEvent {
   u32 id;        // 0x00, FUN_082349b8 が u32_030046b0 の連番を書く
-  u16 unk_4;     // 0x04, FUN_08234660 が 0xDD2/0x14C9/0x1516/0x1517/0xA5BF と比較する (VM のキーワード 'm', 既定 0xDD2)
+  u16 unk_4;     // 0x04, '.m=0x0DD2', FUN_08234660 が 0xDD2/0x14C9/0x1516/0x1517/0xA5BF と比較する
   s16 unk_6;     // 0x06, VM_Ctrl_D4CB の Script_GetValue 2番目
   s16 unk_8;     // 0x08, 挿入時のソートキー, 根拠: FUN_082349b8
   s16 unk_a;     // 0x0A

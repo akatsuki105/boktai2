@@ -88,10 +88,10 @@ NAKED void FUN_08234660(unknown* p) { INCFUNC("asm/func/FUN_08234660.inc"); }
 
 NAKED void FUN_08234868(unknown* param_1, CollisionMapEvent* ev, u32 param_3) { INCFUNC("asm/func/FUN_08234868.inc"); }
 
-NAKED bool32 FUN_082348f8(u16 zoneID) { INCFUNC("asm/func/FUN_082348f8.inc"); }
+NAKED bool32 FUN_082348f8(ZoneID16 id) { INCFUNC("asm/func/FUN_082348f8.inc"); }
 
-// zoneID を持つゾーンのうち最初の1つを返し、同じIDのゾーンの数を count に書く
-Zone* FindZonesByID(u16 zoneID, u16* count) {
+// id を持つゾーンのうち最初の1つを返し、同じIDのゾーンの数を count に書く
+Zone* FindZonesByID(ZoneID16 id, u16* count) {
   Zone* first;
   s32 i;
 
@@ -100,7 +100,7 @@ Zone* FindZonesByID(u16 zoneID, u16* count) {
   for (i = 0; i < gCollisionMap->zones->count; i++) {
     Zone* zone = &gCollisionMap->zones->zones[i];
 
-    if (zone->id == zoneID) {
+    if (zone->id == id) {
       if (first == NULL) {
         first = zone;
       }

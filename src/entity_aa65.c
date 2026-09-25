@@ -6,28 +6,25 @@
 #include "player.h"
 #include "sound.h"
 #include "sprite.h"
-#include "sprite_aux.h"
 #include "vm.h"
 
 // HazardManager がまとめて管理する、触れるとダメージを受ける破壊可能な設置物
 // スクリプトコマンド 0x2306 (HazardManager_SpawnScripted) が1個ずつ生成する
 typedef struct {
-  u16 id;             // 0x00, hitbox の id になる, script keyword 'n'
-  s16 hp;             // 0x02, script keyword 'l' (既定 100), Hazard_OnHit が HitboxData.damage の分だけ減らし 0 以下で破壊される
-  s32 areaId;         // 0x04, script keyword 'm' が 0 以外のときだけ GetMapAreaAt(pos) の戻り値が入る。負なら生成を中止する。書くだけで読み手はいない
-  u16 scriptId;       // 0x08, script keyword 'b', 破壊時に Script_ExecById へ渡してから 0 に戻す
-  u8 damageTimer;     // 0x0A, 被弾時に 10 がセットされ毎フレーム減る。0 でない間だけ hitbox.flags に HBFLAG_UNK_2 が立つ
-  u8 unk_0b;          // 0x0B
-  s16 scriptArgs[4];  // 0x0C, script keyword 'a' の4要素, 破壊時の Script_ExecById の argv[4..7] になる
-
-  Vec3 pos;  // 0x14, HazardManager_Spawn の第1引数のコピー
-  Vec3 min;  // 0x1C, pos - (0xA4, 0x80, 0xA4)
-  Vec3 max;  // 0x24, pos + (0xA4, 0x80, 0xA4), プレイヤーが min..max に入ると HazardManager.hitbox が攻撃側として登録される
-
+  u16 id;                        // 0x00, '.n', hitbox の id になる
+  s16 hp;                        // 0x02, '.l=100', Hazard_OnHit が HitboxData.damage の分だけ減らし 0 以下で破壊される
+  s32 areaId;                    // 0x04, '.m' が 0 以外のときだけ GetMapAreaAt(pos) の戻り値が入る。負なら生成を中止する。書くだけで読み手はいない
+  u16 scriptId;                  // 0x08, '.b', 破壊時に Script_ExecById へ渡してから 0 に戻す
+  u8 damageTimer;                // 0x0A, 被弾時に 10 がセットされ毎フレーム減る。0 でない間だけ hitbox.flags に HBFLAG_UNK_2 が立つ
+  u8 unk_0b;                     // 0x0B, padding?
+  s16 scriptArgs[4];             // 0x0C, '.a' の4要素, 破壊時の Script_ExecById の argv[4..7] になる
+  Vec3 pos;                      // 0x14, HazardManager_Spawn の第1引数のコピー
+  Vec3 min;                      // 0x1C, pos - (0xA4, 0x80, 0xA4)
+  Vec3 max;                      // 0x24, pos + (0xA4, 0x80, 0xA4), プレイヤーが min..max に入ると HazardManager.hitbox が攻撃側として登録される
   HitboxData hitbox;             // 0x2C, 被弾用 (flags 0x4001), fn は Hazard_OnHit で owner はこの Hazard
   MapTileOverride tileOverride;  // 0x7C, 足元のタイルの高さを +1 して通れなくする
   AuxSprite node;                // 0x8C
-  AuxSpriteGfx sprite;           // 0xB8, Video_GetAuxSprite(&sprite, 0x4B3)
+  AuxSpriteGfx gfx;              // 0xB8, SPRITE_CACTUS
 } Hazard;
 static_assert(sizeof(Hazard) == 212);
 
@@ -35,11 +32,11 @@ static_assert(sizeof(Hazard) == 212);
 // 攻撃判定は Hazard ごとには持たず、プレイヤーが近付いた Hazard の位置へ hitbox を移して1フレームだけ登録する
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_8
-  u8 count;           // 0x18, script keyword 'm' (既定 8)
-  u8 unk_19[3];       // 0x19
+  u8 count;           // 0x18, '.m=8'
+  u8 unk_19[3];       // 0x19, padding?
   u32 activeMask;     // 0x1C, bit i が hazards[i] 使用中
   Hazard* hazards;    // 0x20, Malloc(count * sizeof(Hazard))
-  HitboxData hitbox;  // 0x24, プレイヤーへの攻撃判定 (flags 0x2001), 威力は script keyword 'p'/'f'/'i'
+  HitboxData hitbox;  // 0x24, プレイヤーへの攻撃判定 (flags 0x2001), 威力は '.p'/'.f'/'.i'
 } HazardManager;
 static_assert(sizeof(HazardManager) == 116);
 
@@ -58,7 +55,7 @@ void Hazard_OnHit(HitboxData* a, HitboxData* b, void* owner) {
       p->hp = 0;
     } else {
       p->damageTimer = 10;
-      Video_SetAuxSpritePltt(&p->sprite, 306);
+      Video_SetAuxSpritePltt(&p->gfx, 306);
       if (!Hitbox_HasWeakness(a, 4)) {
         PlaySound_082406e0(0x13E);
       }
@@ -128,7 +125,7 @@ NON_MATCH s32 HazardManager_Update(HazardManager* p) {
         if (hazard->damageTimer != 0) {
           Hitbox_SetFlags(&hazard->hitbox, HBFLAG_UNK_2);
           if (--hazard->damageTimer == 0) {
-            Video_SetAuxSpritePltt(&hazard->sprite, 0x11B);
+            Video_SetAuxSpritePltt(&hazard->gfx, 0x11B);
           }
         } else {
           Hitbox_ClearFlags(&hazard->hitbox, HBFLAG_UNK_2);
@@ -235,7 +232,7 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   HazardManager* p = gHazardManager;
   Hazard* hazard;
   HitboxData* hitbox;
-  AuxSpriteGfx* sprite;
+  AuxSpriteGfx* gfx;
   Vec3* hazardPos;
   Vec3* min;
   Vec3* max;
@@ -270,7 +267,7 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   min = &hazard->min;
   max = &hazard->max;
   tileOverride = &hazard->tileOverride;
-  sprite = &hazard->sprite;
+  gfx = &hazard->gfx;
   for (i = 0; i < 4; i++) {
     hazard->scriptArgs[i] = args[i];
   }
@@ -312,10 +309,10 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
     h++;
   }
   FUN_08234270(tileOverride, idx, 0, h, 0xFF, 2);
-  if (!Video_GetAuxSprite(sprite, 0x4B3)) {
+  if (!Video_GetAuxSprite(gfx, SPRITE_CACTUS)) {
     return -1;
   }
-  AuxSprite_Add(&hazard->node, sprite, 0);
+  AuxSprite_Add(&hazard->node, gfx, 0);
   hazard->node.metaspriteIdx = metaspriteIdx;
   hazard->node.pos = hazard->pos;
   p->activeMask |= 1 << slot;
