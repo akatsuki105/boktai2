@@ -378,7 +378,8 @@ u32 Player_WeaponEffectHP(Player* p) { return Div(p->hp * 10, p->maxHP); }
 // 火事場: HP が減っているほど強くなる
 u32 Player_WeaponEffectKajiba(Player* p) { return Div((p->maxHP - p->hp) * 20, p->maxHP); }
 
-NAKED u32 Player_WeaponEffectGyakuKajiba(Player* p) { INCFUNC("asm/func/Player_WeaponEffectGyakuKajiba.inc"); }
+// 逆火事場: HP が減っているほど弱くなる
+u32 Player_WeaponEffectGyakuKajiba(Player* p) { return -Div((p->maxHP - p->hp) * 40, p->maxHP); }
 
 NAKED u32 Player_WeaponEffectKillCount(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectKillCount.inc"); }
 
