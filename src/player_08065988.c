@@ -545,7 +545,12 @@ void FUN_0807a904(Player* p, u32 flag) {
 
 NAKED void FUN_0807a91c(Player* p) { INCFUNC("asm/func/FUN_0807a91c.inc"); }
 
-NAKED s32 FUN_0807a954(Player* p) { INCFUNC("asm/func/FUN_0807a954.inc"); }
+bool32 FUN_0807a954(Player* p, u32 mask) {
+  if (p->unk_390 & mask) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 u32 FUN_0807a970(Player* p) { return p->unk_392; }
 
