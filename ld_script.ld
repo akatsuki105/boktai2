@@ -309,7 +309,7 @@ SECTIONS {
 			src/link_connect.o (.text);
 			src/entity_7999.o (.text);
 			src/entity_08f4.o (.text);
-			src/entity_c783.o (.text);
+			src/link_battle_lobby.o (.text);
 			src/link_battle_result.o (.text);
 			src/entity_9a9f.o (.text);
 			src/entity_501b.o (.text);

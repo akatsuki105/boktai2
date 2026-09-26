@@ -503,7 +503,7 @@ gSubroutineTable:
 	.4byte 0xC673, FUN_08011608
 	.4byte 0xC6AA, Textbox_CloseBox
 	.4byte 0xC765, FUN_080a4f54
-	.4byte 0xC783, EntityC783_Create
+	.4byte 0xC783, LinkBattleLobby_Create
 	.4byte 0xC7DC, FUN_080ef048
 	.4byte 0xC814, EntityC814_Create
 	.4byte 0xC946, EntityC946_Create
