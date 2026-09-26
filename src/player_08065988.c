@@ -33,7 +33,13 @@ void FUN_08065200(Player* p) {
   }
 }
 
-NAKED void FUN_0806521c(Player* p) { INCFUNC("asm/func/FUN_0806521c.inc"); }
+void FUN_0806521c(Player* p) {
+  s32 i;
+
+  for (i = 0; i < 10; i++) {
+    p->unk_290[i] |= 0xFFFF;
+  }
+}
 
 void FUN_08065240(Player* p) {
   if (VM_SeekToKeyword('R') != 0) {
