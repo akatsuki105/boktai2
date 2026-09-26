@@ -8,6 +8,7 @@
 
 void FUN_08065164(Player* p);
 void FUN_080612d8(Player* p);
+s32 FUN_08086294(Vec3* pos, u32 a, u32 b);
 void Player_StopEneChargeSound(Player* p);
 void FUN_08060b84(Player* p, u8 a, u8 b);
 void FUN_08072724(Player* p);
@@ -489,7 +490,7 @@ NAKED s32 FUN_0807868c(Player* p) { INCFUNC("asm/func/FUN_0807868c.inc"); }
 
 NAKED s32 FUN_08078844(Player* p) { INCFUNC("asm/func/FUN_08078844.inc"); }
 
-NAKED s32 FUN_080788b0(Player* p) { INCFUNC("asm/func/FUN_080788b0.inc"); }
+s32 FUN_080788b0(Player* p) { return FUN_08086294(&p->unk_24.pos, p->unk_392, p->unk_390); }
 
 NAKED s32 FUN_080788d0(Player* p) { INCFUNC("asm/func/FUN_080788d0.inc"); }
 
