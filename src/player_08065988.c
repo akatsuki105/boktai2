@@ -537,7 +537,10 @@ void FUN_0807a97c(Player* p, u32 flags, u32 value) {
   p->unk_392 = value;
 }
 
-NAKED void FUN_0807a99c(Player* p) { INCFUNC("asm/func/FUN_0807a99c.inc"); }
+void FUN_0807a99c(Player* p, u32 flags) {
+  p->unk_390 &= ~flags;
+  p->unk_392 = 0;
+}
 
 void FUN_0807a9b8(Player* p, void* val) {
   p->ptr_398 = val;
