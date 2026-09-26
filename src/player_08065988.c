@@ -8,6 +8,8 @@
 
 void FUN_08065164(Player* p);
 void FUN_080612d8(Player* p);
+void FUN_08060b84(Player* p, u8 a, u8 b);
+void FUN_08072724(Player* p);
 void FUN_0823bca8(s32 n);
 void FUN_0807e854(Player* p);
 void FUN_0807d118(Player* p);
@@ -349,7 +351,10 @@ NAKED void FUN_08071b14(Player* p) { INCFUNC("asm/func/FUN_08071b14.inc"); }
 
 NAKED void FUN_08072014(Player* p) { INCFUNC("asm/func/FUN_08072014.inc"); }
 
-NAKED void FUN_08072620(Player* p) { INCFUNC("asm/func/FUN_08072620.inc"); }
+void FUN_08072620(Player* p) {
+  FUN_08060b84(p, 0, 0);
+  p->fn_498 = FUN_08072724;
+}
 
 void FUN_08072640(Player* p) { p->unk_4aa = 1; }
 
