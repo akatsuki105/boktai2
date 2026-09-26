@@ -60,9 +60,9 @@ NAKED void FUN_0822f264(void) { ARM_TRAMPOLINE(FUN_08230594); }
 s32 OpenMainSpriteFile(MainSpriteGfx* gfx, MainSpriteFile* f) {
   *gfx = *(MainSpriteGfx*)f;
   gfx->sprites = (MainSpritePose*)((u32)gfx->sprites + (u32)f);
-  gfx->unk1 = (MainAnim*)((u32)gfx->unk1 + (u32)f);
+  gfx->anims = (MainAnim*)((u32)gfx->anims + (u32)f);
   gfx->subsprites = (MainSubsprite*)((u32)gfx->subsprites + (u32)f);
-  gfx->unk2 = (MainAnimCmd*)((u32)gfx->unk2 + (u32)f);
+  gfx->cmds = (MainAnimCmd*)((u32)gfx->cmds + (u32)f);
   gfx->tiles = (u8*)((u32)gfx->tiles + (u32)f);
   return 0;
 }
@@ -70,7 +70,7 @@ s32 OpenMainSpriteFile(MainSpriteGfx* gfx, MainSpriteFile* f) {
 // Unused?
 NAKED unknown* FUN_0822f2bc(unknown* a, unknown* b) { INCFUNC("asm/func/FUN_0822f2bc.inc"); }
 
-// MainSpriteGfx の spriteIdx 番目のメタスプライトを MainSprite に読み込む (パレットは未設定のときだけ設定する)
+// MainSpriteGfx の poseIdx 番目のメタスプライトを MainSprite に読み込む (パレットは未設定のときだけ設定する)
 s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx) {
   MainSpritePose* m = &gfx->sprites[poseIdx];
 
@@ -138,8 +138,8 @@ static inline void _MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 pose
   if (++u16_030044b8 == 0xFFFF) {
     u16_030044b8 = 0;
   }
-  p->q_unk_40 = -1;
-  p->q_unk_44 = -1;
+  p->unk_40 = -1;
+  p->unk_44 = -1;
   p->prev = NULL, p->next = NULL;
 }
 

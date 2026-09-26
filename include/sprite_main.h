@@ -10,7 +10,7 @@ typedef u16 MainAnimPlayFlags16;
 #define MAIN_ANIM_REVERSE (1 << 1)     // 0x0002, 逆再生, 根拠: MainSprite_SetAnim が末尾のコマから始め、MainSprite_AdvanceAnim が animCmdIdx を減らして 0 で終端とみなす
 #define MAIN_ANIM_FORCE_POSE (1 << 2)  // 0x0004, 同じアニメを指定してもポーズを当て直す, 根拠: MainSprite_SetAnim
 
-// MainSprite.animEvents。MainSprite_AdvanceAnim が毎フレーム先頭でクリアしてから立て直す
+// MainSprite.animEvents, MainSprite_AdvanceAnim が毎フレーム先頭でクリアしてから立て直す
 typedef u8 MainAnimEvents8;
 #define MAIN_ANIM_EVENT_WILL_END (1 << 0)  // 0x01, 次のコマで終わる
 #define MAIN_ANIM_EVENT_ENDED (1 << 1)     // 0x02, 今終わった
@@ -19,14 +19,14 @@ typedef u8 MainAnimEvents8;
 typedef struct {
   u16 palStart;            // 0x00, palette start index in the sprite palettes file
   u16 spriteCount;         // 0x02, number of sprites in this sprite set
-  u16 unk1Count;           // 0x04, このファイルの MainAnim の数
+  u16 animationCount;      // 0x04, このファイルの MainAnim の数
   u16 subspriteCount;      // 0x06, このファイルの MainSubsprite の数
-  u16 unk2Count;           // 0x08, このファイルの MainAnimCmd の数
+  u16 cmdCount;            // 0x08, このファイルの MainAnimCmd の数
   u16 tileCount;           // 0x0A, このファイルのタイル枚数
   u32 offsetToSprites;     // 0x0C, この構造体の先頭から MainSpritePose[spriteCount] 配列までのバイトオフセット
-  u32 offset_unk1;         // 0x10, この構造体の先頭から MainAnim[unk1Count] 配列までのバイトオフセット
+  u32 offsetToAnimations;  // 0x10, この構造体の先頭から MainAnim[animationCount] 配列までのバイトオフセット
   u32 offsetToSubsprites;  // 0x14, この構造体の先頭から MainSubsprite[subspriteCount] 配列までのバイトオフセット
-  u32 offset_unk2;         // 0x18, この構造体の先頭から MainAnimCmd[unk2Count] 配列までのバイトオフセット
+  u32 offsetToCmds;        // 0x18, この構造体の先頭から MainAnimCmd[cmdCount] 配列までのバイトオフセット
   u32 offsetToTiles;       // 0x1C, この構造体の先頭から spriteset_tile[] 配列までのバイトオフセット
 } MainSpriteFile;
 static_assert(sizeof(MainSpriteFile) == 32);
@@ -48,7 +48,7 @@ static_assert(sizeof(MainSpritePose) == 20);
 typedef struct {
   u16 unk_0;      // 0x00
   u16 cmdCount;   // 0x02, MainAnimCmd の数
-  u32 cmdOffset;  // 0x04, unk2 の先頭からこのアニメの最初のコマ (MainAnimCmd) までのバイトオフセット, 根拠: MainSprite_SetAnimFrame
+  u32 cmdOffset;  // 0x04, cmds の先頭からこのアニメの最初のコマ (MainAnimCmd) までのバイトオフセット, 根拠: MainSprite_SetAnimFrame
 } MainAnim;
 static_assert(sizeof(MainAnim) == 8);
 
@@ -65,31 +65,31 @@ static_assert(sizeof(MainSubsprite) == 8);
 
 // アニメーションの1コマ, 根拠: MainSprite_AdvanceAnim が MainSprite.animCmds を idx*4 で進めて +0 と +2 を ldrh している
 typedef struct {
-  u16 spriteIdx;  // 0x00, MainSprite_SetPose に渡すスプライト番号
-  u16 duration;   // 0x02, このコマの表示フレーム数, MainSprite.animSpeed を掛けて 64 で割ったものが実際の長さになる
+  u16 poseIdx;   // 0x00, MainSprite_SetPose に渡すスプライト番号
+  u16 duration;  // 0x02, このコマの表示フレーム数, MainSprite.animSpeed を掛けて 64 で割ったものが実際の長さになる
 } MainAnimCmd;
 static_assert(sizeof(MainAnimCmd) == 4);
 
-// MainSpriteGfx: MainSpriteFile のオフセットをポインタに直したもの。1キャラ分の絵 (タイル・パレット・ポーズ配列) の所在を持つ
+// MainSpriteGfx: MainSpriteFile のオフセットをポインタに直したもの, 1キャラ分の絵 (タイル・パレット・ポーズ配列) の所在を持つ
 // MainSprite が読み込み時にここからグラフィックを取り出す
 typedef struct {
   u16 palStart;               // 0x00, MainSprite_LoadPose で MainSprite.plttID にセットされる, gObjPlttData[(MainSpriteGfx.palStart + MainSubsprite.paletteNum) * 16] が実際のパレットデータ
   u16 spriteCount;            // 0x02, number of sprites in this sprite set
-  u16 unk1Count;              // 0x04, このファイルの MainAnim の数
+  u16 animationCount;         // 0x04, このファイルの MainAnim の数
   u16 subspriteCount;         // 0x06, このファイルの MainSubsprite の数
-  u16 unk2Count;              // 0x08, このファイルの MainAnimCmd の数
+  u16 cmdCount;               // 0x08, このファイルの MainAnimCmd の数
   u16 tileCount;              // 0x0A, このファイルのタイル枚数
   MainSpritePose* sprites;    // 0x0C, MainSpritePose[spriteCount]
-  MainAnim* unk1;             // 0x10, MainAnim[unk1Count]
+  MainAnim* anims;            // 0x10, MainAnim[animationCount]
   MainSubsprite* subsprites;  // 0x14, MainSubsprite[subspriteCount]
-  MainAnimCmd* unk2;          // 0x18, MainAnimCmd[unk2Count]
+  MainAnimCmd* cmds;          // 0x18, MainAnimCmd[cmdCount]
   u8* tiles;                  // 0x1C, tiles[tileCount * 32]
 } MainSpriteGfx;
 static_assert(sizeof(MainSpriteGfx) == 32);
 
 // --------------------------------------------
 
-// MainSprite: Player やボスなどが使うスプライト。 MainSpriteGfx から絵の場所をコピーし、アニメの再生位置と座標もあわせて1つに持つオールインワンなスプライト
+// MainSprite: Player やボスなどが使うスプライト,  MainSpriteGfx から絵の場所をコピーし、アニメの再生位置と座標もあわせて1つに持つオールインワンなスプライト
 // 主人公やメインのNPC、ボスなどのたくさんグラフィックのある主要キャラクターを扱う時はこれを使っている
 typedef struct MainSprite {
   u16 unk_0;                      // 0x00, MainSpritePose.unk_0
@@ -122,8 +122,8 @@ typedef struct MainSprite {
   u16 subspriteCount;             // 0x38, MainSpritePose.subspriteCount
   u16 plttID;                     // 0x3A, &gObjPlttData[plttID*16]
   u32 oamAttr;                    // 0x3C, OAM attr0 | attr1<<16 のベース値, AuxSprite.oamAttr と同じ役割
-  s32 q_unk_40;                   // 0x40, MainSprite_Add で -1 が入る
-  s32 q_unk_44;                   // 0x44, 同上
+  s32 unk_40;                     // 0x40, MainSprite_Add で -1 が入る
+  s32 unk_44;                     // 0x44, 同上
   rgb555* pltt;                   // 0x48, &gObjPlttData[plttID*16]
   MainSubsprite* subsprites;      // 0x4C, MainSpriteGfx.subsprites[MainSpritePose.subspriteOffset/sizeof(MainSubsprite)]
   u8* tiles;                      // 0x50, MainSpriteGfx.tiles

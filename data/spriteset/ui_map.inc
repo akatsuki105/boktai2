@@ -1,9 +1,9 @@
 MainSpriteFile0: @ 0x08B79A44
 	.2byte 711 @ palStart
 	.2byte 24 @ metaspriteCount
-	.2byte 5 @ unk1Count
+	.2byte 5 @ animationCount
 	.2byte 28 @ subspriteCount
-	.2byte 12 @ unk2Count
+	.2byte 12 @ cmdCount
 	.2byte 256 @ tileCount
 	.4byte 0x00000020, 0x00000200, 0x00000228, 0x00000308, 0x00000338
 	@ Metasprites

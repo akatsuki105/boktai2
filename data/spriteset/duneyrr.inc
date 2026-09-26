@@ -1,9 +1,9 @@
 SpriteSetFile19: @ 0x08C029A0
 	.2byte 547 @ palStart
 	.2byte 49 @ metaspriteCount
-	.2byte 20 @ unk1Count
+	.2byte 20 @ animationCount
 	.2byte 429 @ subspriteCount
-	.2byte 64 @ unk2Count
+	.2byte 64 @ cmdCount
 	.2byte 1280 @ tileCount
 	.4byte 0x00000020, 0x000003F4, 0x00000494, 0x000011FC, 0x000012FC
 	@ Metasprites

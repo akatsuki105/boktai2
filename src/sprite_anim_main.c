@@ -6,20 +6,20 @@ NAKED void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u1
 // 指定したアニメの cmdIdx 番目のコマに切り替え、表示時間と「次で終わる」通知を設定し直す
 NON_MATCH void MainSprite_SetAnimFrame(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 cmdIdx) {
 #ifdef NONMATCHING_C
-  MainAnim* table = gfx->unk1;
+  MainAnim* table = gfx->anims;
   MainAnim* anim;
   MainAnimCmd* cmds;
   MainAnimCmd* cmd;
   s32 n;
 
   anim = table + animIdx;  // 元は adds r6, r2, r0 (添字が先)。この形だと adds r6, r0, r2 になる
-  cmds = (MainAnimCmd*)((u8*)gfx->unk2 + anim->cmdOffset);
+  cmds = (MainAnimCmd*)((u8*)gfx->cmds + anim->cmdOffset);
   p->animCmdIdx = cmdIdx;
   if (cmdIdx >= anim->cmdCount) {
     p->animCmdIdx = anim->cmdCount - 1;
   }
   cmd = &cmds[p->animCmdIdx];
-  MainSprite_SetPose(p, gfx, cmd->spriteIdx, p->playMode);
+  MainSprite_SetPose(p, gfx, cmd->poseIdx, p->playMode);
   p->animCmdLength = anim->cmdCount;
   n = cmd->duration * p->animSpeed;
   if (n >= 0) {
@@ -96,7 +96,7 @@ NON_MATCH bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx) {
   p->animEvents = 0;
   if (p->animCmdTimer == 0) {
     frame = &p->animCmds[p->animCmdIdx];
-    MainSprite_SetPose(p, gfx, frame->spriteIdx, p->playMode);
+    MainSprite_SetPose(p, gfx, frame->poseIdx, p->playMode);
   }
   p->animCmdTimer++;
   if (p->animCmdTimer >= p->animCmdDuration) {
@@ -160,8 +160,8 @@ NON_MATCH bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx) {
 // アニメ animIdx の全コマの表示時間の合計を返す (未使用)
 NON_MATCH s32 MainSprite_GetAnimDuration(MainSprite* _, MainSpriteGfx* gfx, u32 animIdx) {
 #ifdef NONMATCHING_C
-  MainAnim* anim = (MainAnim*)((animIdx << 3) + (u32)gfx->unk1);  // 元は gfx->unk1 のロードがシフトより前に来る
-  MainAnimCmd* cmd = (MainAnimCmd*)((u8*)gfx->unk2 + anim->cmdOffset);
+  MainAnim* anim = (MainAnim*)((animIdx << 3) + (u32)gfx->anims);  // 元は gfx->anims のロードがシフトより前に来る
+  MainAnimCmd* cmd = (MainAnimCmd*)((u8*)gfx->cmds + anim->cmdOffset);
   s32 total = 0;
   s32 i;
 

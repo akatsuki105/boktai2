@@ -1,9 +1,9 @@
 SpriteSetFile28: @ 0x08C93384
 	.2byte 749 @ palStart
 	.2byte 37 @ metaspriteCount
-	.2byte 23 @ unk1Count
+	.2byte 23 @ animationCount
 	.2byte 224 @ subspriteCount
-	.2byte 46 @ unk2Count
+	.2byte 46 @ cmdCount
 	.2byte 256 @ tileCount
 	.4byte 0x00000020, 0x00000304, 0x000003BC, 0x00000ABC, 0x00000B74
 	@ Metasprites
