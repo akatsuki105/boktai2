@@ -117,7 +117,7 @@ NON_MATCH void FUN_0820ff98(WeaponDexMenu* p, s32 kind) {
   p->pltt_d68[5] = src[0];
   p->pltt_d68[6] = src[1];
   p->pltt_d68[13] = src[2];
-  p->preview.sprite.pltt = p->pltt_d68;
+  p->preview.u.main.sprite.pltt = p->pltt_d68;
 #else
   INCFUNC("asm/func/FUN_0820ff98.inc");
 #endif
