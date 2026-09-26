@@ -652,7 +652,13 @@ NAKED void FUN_0807b5f8(Player* p) { INCFUNC("asm/func/FUN_0807b5f8.inc"); }
 
 NAKED s32 FUN_0807b620(Player* p) { INCFUNC("asm/func/FUN_0807b620.inc"); }
 
-NAKED void FUN_0807b64c(Player* p) { INCFUNC("asm/func/FUN_0807b64c.inc"); }
+void FUN_0807b64c(void) {
+  s32 i = FUN_0807afe8();
+
+  if (gPlayerPtr[i] != NULL) {
+    FUN_0807e854(gPlayerPtr[i]);
+  }
+}
 
 NAKED void FUN_0807b66c(Player* p) { INCFUNC("asm/func/FUN_0807b66c.inc"); }
 
