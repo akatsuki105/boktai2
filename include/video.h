@@ -42,6 +42,7 @@ void Video_SetupBGLayout(s32 layout, u32 param_2, unknown* f, u32 param_4, u32 p
 
 u16* GetTilemapBuffer(s32 bg);
 
+void FUN_0822f0d8(void);
 void Video_SetHBlankEffect(s32 bg, s32 kind, void* table);
 void Video_SetMosaic(s32 size, s32 objEnabled, s32 targets);
 void Video_ClearMosaic(void);

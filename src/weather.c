@@ -7,9 +7,9 @@
 #include "video.h"
 #include "vm.h"
 
-// 雨粒1つ。ptcl を1個ずつ持ち、pos[2] を毎フレーム入れ替えながら ptcl.pos へ写す
+// 雨粒1つ, ptcl を1個ずつ持ち、pos[2] を毎フレーム入れ替えながら ptcl.pos へ写す
 typedef struct {
-  bool8 active;   // 0x00, WeatherManager_UpdateParticles と WeatherManager_RemoveParticles が 0 以外の要素だけ処理する。WeatherManager_SpawnParticles が空きスロットを探すのにも使う
+  bool8 active;   // 0x00, WeatherManager_UpdateParticles と WeatherManager_RemoveParticles が 0 以外の要素だけ処理する, WeatherManager_SpawnParticles が空きスロットを探すのにも使う
   u8 timer;       // 0x01, WeatherManager_UpdateParticles が毎フレーム +1 し、3 以上で phase を進める
   u8 phase;       // 0x02, 0 で出現待ち、1 で消滅待ち
   u8 posIdx;      // 0x03, 0 と 1 を毎フレーム反転させ、pos[posIdx] を ptcl.pos へ写す
@@ -23,33 +23,33 @@ static_assert(sizeof(WeatherParticle) == 60);
 typedef struct {
   Entity e;                   // 0x00, ENTITY_UNK_9
   u8 unk_18;                  // 0x18, WeatherManager_SetState が state を変えるときに 1 にする
-  u8 state;                   // 0x19, PTR_ARRAY_085aa948[5] の添字。2 以上で WeatherManager_ScrollClouds (BGスクロール) が回り、3 で gStat の 0x946 が 0x7FFF になる
+  u8 state;                   // 0x19, PTR_ARRAY_085aa948[5] の添字, 2 以上で WeatherManager_ScrollClouds (BGスクロール) が回り、3 で gStat の 0x946 が 0x7FFF になる
   u8 unk_1a[2];               // 0x1A
   u32 stateTimer;             // 0x1C, WeatherManager_SetState が state を変えるときに 0 に戻す
   u16 timer;                  // 0x20, FUN_08018324 が 0 になるまで毎フレーム減らし、0 で WeatherManager_ResetTimer が詰め直す
-  u8 unk_22;                  // 0x22, VM '.a' (既定 1)
+  u8 unk_22;                  // 0x22, '.a=1'
   u8 unk_23;                  // 0x23
-  u16 sunAccum;               // 0x24, 状態に入るとき 0 にし、以降 gStat->sunGauge を毎フレーム足す。0x3C 以上で天候を切り上げる
+  u16 sunAccum;               // 0x24, 状態に入るとき 0 にし、以降 gStat->sunGauge を毎フレーム足す, 60 以上で天候を切り上げる
   u16 unk_26;                 // 0x26
-  u16 unk_28;                 // 0x28, VM '.i' の1つ目 (既定 0x1C20 = 7200フレーム)。s32_03000080 の下限に使う
-  u16 unk_2a;                 // 0x2A, VM '.i' の2つ目 (既定 0xE10 = 3600)。0 でなければ rand % これを s32_03000080 に足す
-  u16 timerBase;              // 0x2C, VM '.t' の1つ目 (既定 300)。WeatherManager_ResetTimer が timer に入れる基準値
-  u16 timerRand;              // 0x2E, VM '.t' の2つ目。timer に足す乱数の範囲。合計が 10 未満なら 10 にする
-  s16 unk_30;                 // 0x30, VM '.r' の1つ目 (既定 0x40)。WeatherManager_GetChance が unk_32 * unk_30 >> 6 を作る
-  s16 unk_32;                 // 0x32, VM '.r' の2つ目
-  s32 scrollX[2];             // 0x34, WeatherManager_ScrollClouds が [0] に 3 + drift、[1] に 6 + drift を毎フレーム足す。Video_GenerateBGMap の X オフセット
+  u16 unk_28;                 // 0x28, '.i[0]=7200', s32_03000080 の下限に使う
+  u16 unk_2a;                 // 0x2A, '.i[1]=3600', 0 でなければ rand % これを s32_03000080 に足す
+  u16 timerBase;              // 0x2C, '.t[0]=300', WeatherManager_ResetTimer が timer に入れる基準値
+  u16 timerRand;              // 0x2E, '.t[1]', timer に足す乱数の範囲, 合計が 10 未満なら 10 にする
+  s16 unk_30;                 // 0x30, '.r[0]=0x40', WeatherManager_GetChance が unk_32 * unk_30 >> 6 を作る
+  s16 unk_32;                 // 0x32, '.r[1]'
+  s32 scrollX[2];             // 0x34, WeatherManager_ScrollClouds が [0] に 3 + drift、[1] に 6 + drift を毎フレーム足す, Video_GenerateBGMap の X オフセット
   s32 scrollY[2];             // 0x3C, WeatherManager_ScrollClouds が [0] から 8 + drift、[1] から 0x10 + drift を毎フレーム引く
-  s32 drift;                  // 0x44, 16フレームごとに driftTarget へ1ずつ寄せる。スクロール速度の揺らぎ
+  s32 drift;                  // 0x44, 16フレームごとに driftTarget へ1ずつ寄せる, スクロール速度の揺らぎ
   s32 driftTarget;            // 0x48, 乱数 -4..3 (Init) / -1..6 (WeatherManager_ScrollClouds)
-  s32 driftTimer;             // 0x4C, 0 になったら driftTarget を引き直す。乱数 0x80..0xFF
+  s32 driftTimer;             // 0x4C, 0 になったら driftTarget を引き直す, 乱数 0x80..0xFF
   s32 layer;                  // 0x50, scrollX / scrollY のどちらの組を Video_GenerateBGMap に渡すかの添字
-  s32 unk_54;                 // 0x54, VM '.C' (既定 0)
-  s32 unk_58;                 // 0x58, VM '.O' (既定 0)
-  s32 frameCounter;           // 0x5C, WeatherManager_Update が毎フレーム +1。WeatherManager_ScrollClouds が下位4bitと下位1bitで分岐する
-  s16 unk_60;                 // 0x60, WeatherManager_InitParticles が 0 にする。WeatherManager_SpawnParticles は 0 のときだけ要素を作る
+  s32 unk_54;                 // 0x54, '.C=0'
+  s32 unk_58;                 // 0x58, '.O=0'
+  s32 frameCounter;           // 0x5C, WeatherManager_Update が毎フレーム +1, WeatherManager_ScrollClouds が下位4bitと下位1bitで分岐する
+  s16 unk_60;                 // 0x60, WeatherManager_InitParticles が 0 にする, WeatherManager_SpawnParticles は 0 のときだけ要素を作る
   s16 unk_62;                 // 0x62, WeatherManager_InitParticles が 0 にする
   u8 unk_64[0x164 - 0x64];    // 0x64, この 256 バイトに触る関数が見つかっていない
-  ParticleGroup* group;       // 0x164, GetParticleGroup(GROUP_1)
+  ParticleGroup* group;       // 0x164, PTCL_GROUP_1
   WeatherParticle ptcls[32];  // 0x168
 } WeatherManager;
 static_assert(sizeof(WeatherManager) == 2280);
@@ -92,9 +92,7 @@ NON_MATCH void WeatherManager_ResetTimer(WeatherManager* p) {
     gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
     p->timer += Mod(gRandomTable[gRandTableIdx], p->timerRand);
   }
-  if (p->timer <= 9) {
-    p->timer = 10;
-  }
+  if (p->timer < 10) p->timer = 10;
 #else
   INCFUNC("asm/func/WeatherManager_ResetTimer.inc");
 #endif
@@ -106,7 +104,7 @@ void WeatherManager_SetState(WeatherManager* p, u8 state) {
   p->unk_18 = 1;
 }
 
-// 天候が発生する確率。ゲーム内時間によっては半減する
+// 天候が発生する確率, ゲーム内時間によっては半減する
 s32 WeatherManager_GetChance(WeatherManager* p) {
   s32 chance;
   u32 hour;
@@ -161,7 +159,7 @@ s32 WeatherManager_RemoveParticles(WeatherManager* p) {
   }
 }
 
-// 雨粒を1フレーム進める。pos[2] を交互に使って残像のように見せる
+// 雨粒を1フレーム進める, pos[2] を交互に使って残像のように見せる
 NON_MATCH s32 WeatherManager_UpdateParticles(WeatherManager* p) {
 #ifdef NONMATCHING_C
   WeatherParticle* ptcl = p->ptcls;
@@ -216,7 +214,7 @@ bool32 FUN_08018250(WeatherManager* p) {
   return FALSE;
 }
 
-// 本降り。BG1 の表示を周期的に間引きながら雨粒を撒く
+// 本降り, BG1 の表示を周期的に間引きながら雨粒を撒く
 NON_MATCH bool32 FUN_08018284(WeatherManager* p) {
 #ifdef NONMATCHING_C
   if (p->unk_18 != 0) {
