@@ -627,7 +627,18 @@ NAKED void FUN_0807aa00(Player* p, s32 amount) { INCFUNC("asm/func/FUN_0807aa00.
 
 NAKED void FUN_0807aa30(Player* p, s32 amount) { INCFUNC("asm/func/FUN_0807aa30.inc"); }
 
-NAKED void Player_ReduceENE_0807aa60(Player* player, s32 amount) { INCFUNC("asm/func/Player_ReduceENE_0807aa60.inc"); }
+// ENE を減らす。0 未満にはならない
+void Player_ReduceENE_0807aa60(Player* player, s32 amount) {
+  if (player->unk_1c == 1) {
+    u16* ene = &player->ene;
+
+    if (*ene < amount) {
+      *ene = 0;
+    } else {
+      *ene -= amount;
+    }
+  }
+}
 
 // 月光虫取得時に呼ばれる(HP回復)
 NAKED void Player_ApplyMoonbug(Player* p, s32 amount) { INCFUNC("asm/func/Player_ApplyMoonbug.inc"); }
