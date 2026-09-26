@@ -555,7 +555,7 @@ NAKED void FUN_0807a8ac(Player* p) { INCFUNC("asm/func/FUN_0807a8ac.inc"); }
 // 武器の経験値をレベルに直す。100 たまると1レベル
 s32 GetWeaponSkillLevel(s32 kind) { return Div(*(gStat->weaponExp + kind), 100); }
 
-NAKED void FUN_0807a8e0(Player* p) { INCFUNC("asm/func/FUN_0807a8e0.inc"); }
+void FUN_0807a8e0(Player* p) { *(gStat->unk_2c8 + p->isSabata) = 0; }
 
 void FUN_0807a904(Player* p, u32 flag) {
   if (flag == 0) {
