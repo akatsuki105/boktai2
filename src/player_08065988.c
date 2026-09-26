@@ -35,7 +35,7 @@ void FUN_08065240(Player* p) {
   }
 }
 
-NAKED void* Player_Init_Helper_08065270(Player* p) { INCFUNC("asm/func/Player_Init_Helper_08065270.inc"); }
+NAKED s32 Player_Init_Helper_08065270(Player* p) { INCFUNC("asm/func/Player_Init_Helper_08065270.inc"); }
 
 NAKED void FUN_0806540c(Player* p) { INCFUNC("asm/func/FUN_0806540c.inc"); }
 NAKED void FUN_08065514(Player* p) { INCFUNC("asm/func/FUN_08065514.inc"); }
@@ -133,21 +133,21 @@ void FUN_08066e84(void) {
   FUN_080ec79c(0x11, &payload);
 }
 
-NAKED void FUN_08066e9c(Player* p) { INCFUNC("asm/func/FUN_08066e9c.inc"); }
+NAKED void FUN_08066e9c(Player* p, Vec3* pos1, s16 param_3, u8 param_4, Vec3* pos2, s32 param_6, u16 id) { INCFUNC("asm/func/FUN_08066e9c.inc"); }
 
-NAKED s32 FUN_08066ee4(Player* p) { INCFUNC("asm/func/FUN_08066ee4.inc"); }
+NAKED u32 FUN_08066ee4(s32 kind, s32 idx) { INCFUNC("asm/func/FUN_08066ee4.inc"); }
 
-NAKED s32 FUN_08066f18(Player* p) { INCFUNC("asm/func/FUN_08066f18.inc"); }
+NAKED u32 FUN_08066f18(Player* p) { INCFUNC("asm/func/FUN_08066f18.inc"); }
 
 NAKED void FUN_08066f7c(Player* p) { INCFUNC("asm/func/FUN_08066f7c.inc"); }
 
 NAKED s32 FUN_08066fd4(Player* p) { INCFUNC("asm/func/FUN_08066fd4.inc"); }
 
-NAKED s32 FUN_08067068(Player* p) { INCFUNC("asm/func/FUN_08067068.inc"); }
+NAKED u32 FUN_08067068(Player* p) { INCFUNC("asm/func/FUN_08067068.inc"); }
 
-NAKED s32 FUN_080670d4(Player* p) { INCFUNC("asm/func/FUN_080670d4.inc"); }
+NAKED s32 FUN_080670d4(s32 val) { INCFUNC("asm/func/FUN_080670d4.inc"); }
 
-NAKED void FUN_080670fc(Player* p) { INCFUNC("asm/func/FUN_080670fc.inc"); }
+NAKED void FUN_080670fc(Player* p, u32 val) { INCFUNC("asm/func/FUN_080670fc.inc"); }
 
 NAKED void FUN_080672b0(Player* p) { INCFUNC("asm/func/FUN_080672b0.inc"); }
 
@@ -175,9 +175,9 @@ NAKED void MagicRisingSun_08068944(Player* p) { INCFUNC("asm/func/MagicRisingSun
 
 NAKED s32 FUN_08068c6c(Player* p) { INCFUNC("asm/func/FUN_08068c6c.inc"); }
 
-NAKED s32 FUN_08068d18(Player* p) { INCFUNC("asm/func/FUN_08068d18.inc"); }
+NAKED bool32 FUN_08068d18(Player* p, void* param_2) { INCFUNC("asm/func/FUN_08068d18.inc"); }
 
-NAKED void FUN_08068e94(Player* p) { INCFUNC("asm/func/FUN_08068e94.inc"); }
+NAKED void FUN_08068e94(Player* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_08068e94.inc"); }
 
 NAKED void FUN_08069218(Player* p) { INCFUNC("asm/func/FUN_08069218.inc"); }
 
@@ -273,7 +273,7 @@ NAKED void FUN_0806e674(Player* p) { INCFUNC("asm/func/FUN_0806e674.inc"); }
 
 NAKED void FUN_0806e7dc(Player* p) { INCFUNC("asm/func/FUN_0806e7dc.inc"); }
 
-NAKED s32 FUN_0806ea98(Player* p) { INCFUNC("asm/func/FUN_0806ea98.inc"); }
+NAKED void* FUN_0806ea98(Player* p) { INCFUNC("asm/func/FUN_0806ea98.inc"); }
 
 NAKED void MagicChangeWolf_0806eb40(Player* p) { INCFUNC("asm/func/MagicChangeWolf_0806eb40.inc"); }
 
@@ -285,23 +285,23 @@ NAKED void MagicHealing_0806f3a0(Player* p) { INCFUNC("asm/func/MagicHealing_080
 
 NAKED void FUN_0806f5d8(Player* p) { INCFUNC("asm/func/FUN_0806f5d8.inc"); }
 
-NAKED s32 FUN_0806f738(Player* p) { INCFUNC("asm/func/FUN_0806f738.inc"); }
+NAKED u32 FUN_0806f738(Player* p) { INCFUNC("asm/func/FUN_0806f738.inc"); }
 
 NAKED void FUN_0806f780(Player* p) { INCFUNC("asm/func/FUN_0806f780.inc"); }
 
-NAKED s32 FUN_0806f7bc(Player* p) { INCFUNC("asm/func/FUN_0806f7bc.inc"); }
+NAKED void* FUN_0806f7bc(Player* p) { INCFUNC("asm/func/FUN_0806f7bc.inc"); }
 
 NAKED s32 FUN_0806f900(Player* p) { INCFUNC("asm/func/FUN_0806f900.inc"); }
 
 NAKED s32 FUN_0806f960(Player* p) { INCFUNC("asm/func/FUN_0806f960.inc"); }
 
-NAKED void dark_django_0806f990(Player* p) { INCFUNC("asm/func/dark_django_0806f990.inc"); }
+NAKED void dark_django_0806f990(HitboxData* a, HitboxData* b, void* _) { INCFUNC("asm/func/dark_django_0806f990.inc"); }
 
 NAKED void FUN_0806fad8(Player* p) { INCFUNC("asm/func/FUN_0806fad8.inc"); }
 
-NAKED void FUN_0806fc20(Player* p) { INCFUNC("asm/func/FUN_0806fc20.inc"); }
+NAKED void FUN_0806fc20(Player* p, u16* param_2, u32 param_3, s32 param_4, u32 param_5) { INCFUNC("asm/func/FUN_0806fc20.inc"); }
 
-NAKED s32 FUN_0806fd58(Player* p) { INCFUNC("asm/func/FUN_0806fd58.inc"); }
+NAKED bool32 FUN_0806fd58(Player* p) { INCFUNC("asm/func/FUN_0806fd58.inc"); }
 
 NAKED void FUN_0806fedc(Player* p) { INCFUNC("asm/func/FUN_0806fedc.inc"); }
 
@@ -313,7 +313,7 @@ NAKED s32 FUN_0807012c(Player* p) { INCFUNC("asm/func/FUN_0807012c.inc"); }
 
 NAKED void FUN_080701e0(Player* p) { INCFUNC("asm/func/FUN_080701e0.inc"); }
 
-NAKED void FUN_080704d8(Player* p) { INCFUNC("asm/func/FUN_080704d8.inc"); }
+NAKED void FUN_080704d8(Player* p, u16* param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_080704d8.inc"); }
 
 NAKED s32 FUN_08070604(Player* p) { INCFUNC("asm/func/FUN_08070604.inc"); }
 
@@ -440,7 +440,7 @@ NAKED void FUN_08077cbc(Player* p) { INCFUNC("asm/func/FUN_08077cbc.inc"); }
 
 NAKED void FUN_08078060(Player* p) { INCFUNC("asm/func/FUN_08078060.inc"); }
 
-NAKED s32 FUN_0807849c(Player* p) { INCFUNC("asm/func/FUN_0807849c.inc"); }
+NAKED void* FUN_0807849c(Player* p) { INCFUNC("asm/func/FUN_0807849c.inc"); }
 
 NAKED void FUN_080784fc(Player* p) { INCFUNC("asm/func/FUN_080784fc.inc"); }
 
@@ -502,11 +502,11 @@ NAKED void FUN_0807a528(Player* p) { INCFUNC("asm/func/FUN_0807a528.inc"); }
 
 NAKED s32 FUN_0807a570(Player* p) { INCFUNC("asm/func/FUN_0807a570.inc"); }
 
-NAKED s32 FUN_0807a5d8(Player* p) { INCFUNC("asm/func/FUN_0807a5d8.inc"); }
+NAKED s32 FUN_0807a5d8(WeaponData* w, ArmorData* armor) { INCFUNC("asm/func/FUN_0807a5d8.inc"); }
 
-NAKED s32 FUN_0807a6cc(Player* p) { INCFUNC("asm/func/FUN_0807a6cc.inc"); }
+NAKED void* FUN_0807a6cc(WeaponData* w) { INCFUNC("asm/func/FUN_0807a6cc.inc"); }
 
-NAKED s32 FUN_0807a70c(Player* p) { INCFUNC("asm/func/FUN_0807a70c.inc"); }
+NAKED s32 FUN_0807a70c(ArmorData* data) { INCFUNC("asm/func/FUN_0807a70c.inc"); }
 
 NAKED void FUN_0807a798(Player* p) { INCFUNC("asm/func/FUN_0807a798.inc"); }
 
@@ -516,7 +516,7 @@ NAKED void FUN_0807a840(Player* p) { INCFUNC("asm/func/FUN_0807a840.inc"); }
 
 NAKED void FUN_0807a8ac(Player* p) { INCFUNC("asm/func/FUN_0807a8ac.inc"); }
 
-NAKED s32 GetWeaponSkillLevel(Player* p) { INCFUNC("asm/func/GetWeaponSkillLevel.inc"); }
+NAKED s32 GetWeaponSkillLevel(s32 kind) { INCFUNC("asm/func/GetWeaponSkillLevel.inc"); }
 
 NAKED void FUN_0807a8e0(Player* p) { INCFUNC("asm/func/FUN_0807a8e0.inc"); }
 
@@ -549,32 +549,32 @@ void FUN_0807a9b8(Player* p, void* val) {
 
 NAKED s32 FUN_0807a9d0(Player* p) { INCFUNC("asm/func/FUN_0807a9d0.inc"); }
 
-NAKED void FUN_0807aa00(Player* p) { INCFUNC("asm/func/FUN_0807aa00.inc"); }
+NAKED void FUN_0807aa00(Player* p, s32 amount) { INCFUNC("asm/func/FUN_0807aa00.inc"); }
 
-NAKED void FUN_0807aa30(Player* p) { INCFUNC("asm/func/FUN_0807aa30.inc"); }
+NAKED void FUN_0807aa30(Player* p, s32 amount) { INCFUNC("asm/func/FUN_0807aa30.inc"); }
 
 NAKED void Player_ReduceENE_0807aa60(Player* player, s32 amount) { INCFUNC("asm/func/Player_ReduceENE_0807aa60.inc"); }
 
 // 月光虫取得時に呼ばれる(HP回復)
-NAKED void Player_ApplyMoonbug(Player* p) { INCFUNC("asm/func/Player_ApplyMoonbug.inc"); }
+NAKED void Player_ApplyMoonbug(Player* p, s32 amount) { INCFUNC("asm/func/Player_ApplyMoonbug.inc"); }
 
 // 太陽虫取得時に呼ばれる(Ene回復)
-NAKED void Player_ApplySolarbug(Player* p) { INCFUNC("asm/func/Player_ApplySolarbug.inc"); }
+NAKED void Player_ApplySolarbug(Player* p, s32 amount) { INCFUNC("asm/func/Player_ApplySolarbug.inc"); }
 
 // 暗黒虫取得時に呼ばれる(Eneが減る)
-NAKED void Player_ApplyDarkbug(Player* p) { INCFUNC("asm/func/Player_ApplyDarkbug.inc"); }
+NAKED void Player_ApplyDarkbug(Player* p, s32 amount) { INCFUNC("asm/func/Player_ApplyDarkbug.inc"); }
 
 NAKED void FUN_0807ab14(Player* p) { INCFUNC("asm/func/FUN_0807ab14.inc"); }
 
-NAKED s32 FUN_0807ab64(Player* p) { INCFUNC("asm/func/FUN_0807ab64.inc"); }
+NAKED s32 FUN_0807ab64(Player* param_1, PlayerFunc** param_2, unknown* param_3, s32 param_4, u8 param_5, s32 param_6, s32 param_7, s32 param_8, u32 param_9) { INCFUNC("asm/func/FUN_0807ab64.inc"); }
 
-NAKED s32 FUN_0807ac74(Player* p) { INCFUNC("asm/func/FUN_0807ac74.inc"); }
+NAKED u32 FUN_0807ac74(Player* p, unknown* param_2, u16 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_0807ac74.inc"); }
 
 NAKED s32 FUN_0807ad60(Player* p) { INCFUNC("asm/func/FUN_0807ad60.inc"); }
 
 NAKED void FUN_0807adc0(Player* p) { INCFUNC("asm/func/FUN_0807adc0.inc"); }
 
-NAKED void FUN_0807ae6c(Player* p) { INCFUNC("asm/func/FUN_0807ae6c.inc"); }
+NAKED void FUN_0807ae6c(Player* p, u32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0807ae6c.inc"); }
 
 u32 FUN_0807afe8(void) {
   if (VM_SeekToKeyword('i')) {
@@ -657,15 +657,15 @@ void FUN_0807b8d0(Player* p, Vec3* src) { p->unk_24.pos = *src; }
 
 NAKED void FUN_0807b8dc(Player* p) { INCFUNC("asm/func/FUN_0807b8dc.inc"); }
 
-NAKED void FUN_0807b910(Player* p) { INCFUNC("asm/func/FUN_0807b910.inc"); }
+NAKED void FUN_0807b910(Player* p, s32 val) { INCFUNC("asm/func/FUN_0807b910.inc"); }
 
 NAKED void FUN_0807b9dc(Player* p) { INCFUNC("asm/func/FUN_0807b9dc.inc"); }
 
-NAKED void FUN_0807ba14(Player* p) { INCFUNC("asm/func/FUN_0807ba14.inc"); }
+NAKED void FUN_0807ba14(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_0807ba14.inc"); }
 
-NAKED void FUN_0807ba50(Player* p) { INCFUNC("asm/func/FUN_0807ba50.inc"); }
+NAKED void FUN_0807ba50(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807ba50.inc"); }
 
-NAKED void FUN_0807ba94(Player* p) { INCFUNC("asm/func/FUN_0807ba94.inc"); }
+NAKED void FUN_0807ba94(Player* p, unknown* param_2, u32 param_3, u8 param_4) { INCFUNC("asm/func/FUN_0807ba94.inc"); }
 
 NAKED void FUN_0807bb3c(Player* p) { INCFUNC("asm/func/FUN_0807bb3c.inc"); }
 
@@ -729,9 +729,9 @@ NAKED void FUN_0807c88c(Player* p) { INCFUNC("asm/func/FUN_0807c88c.inc"); }
 
 NAKED void FUN_0807c8d4(Player* p) { INCFUNC("asm/func/FUN_0807c8d4.inc"); }
 
-NAKED void FUN_0807c928(Player* p) { INCFUNC("asm/func/FUN_0807c928.inc"); }
+NAKED void FUN_0807c928(Player* p, s32 val) { INCFUNC("asm/func/FUN_0807c928.inc"); }
 
-NAKED void FUN_0807c968(Player* p) { INCFUNC("asm/func/FUN_0807c968.inc"); }
+NAKED void FUN_0807c968(Player* p, s32 val) { INCFUNC("asm/func/FUN_0807c968.inc"); }
 
 NAKED void FUN_0807c9ac(Player* p) { INCFUNC("asm/func/FUN_0807c9ac.inc"); }
 
@@ -745,9 +745,9 @@ NAKED void FUN_0807cb8c(Player* p) { INCFUNC("asm/func/FUN_0807cb8c.inc"); }
 
 NAKED void FUN_0807cc14(Player* p) { INCFUNC("asm/func/FUN_0807cc14.inc"); }
 
-NAKED s32 FUN_0807cc84(Player* p) { INCFUNC("asm/func/FUN_0807cc84.inc"); }
+NAKED bool32 FUN_0807cc84(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_0807cc84.inc"); }
 
-NAKED void FUN_0807cd24(Player* p) { INCFUNC("asm/func/FUN_0807cd24.inc"); }
+NAKED void FUN_0807cd24(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_0807cd24.inc"); }
 
 void FUN_0807ceb8(Player* p) { FUN_08063220(p); }
 
@@ -869,11 +869,11 @@ NAKED void FUN_0807e2cc(Player* p) { INCFUNC("asm/func/FUN_0807e2cc.inc"); }
 
 NAKED void FUN_0807e388(Player* p) { INCFUNC("asm/func/FUN_0807e388.inc"); }
 
-NAKED s32 FUN_0807e3b0(Player* p) { INCFUNC("asm/func/FUN_0807e3b0.inc"); }
+NAKED u32 FUN_0807e3b0(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/FUN_0807e3b0.inc"); }
 
-NAKED void FUN_0807e784(Player* p) { INCFUNC("asm/func/FUN_0807e784.inc"); }
+NAKED void FUN_0807e784(HitboxData* a, HitboxData* b, Player* p) { INCFUNC("asm/func/FUN_0807e784.inc"); }
 
-NAKED s32 FUN_0807e7fc(Player* p) { INCFUNC("asm/func/FUN_0807e7fc.inc"); }
+NAKED s32 FUN_0807e7fc(Player* p, u32 param_2, u16 param_3, u8 param_4, u16 param_5, u32 param_6) { INCFUNC("asm/func/FUN_0807e7fc.inc"); }
 
 NAKED void FUN_0807e854(Player* p) { INCFUNC("asm/func/FUN_0807e854.inc"); }
 
