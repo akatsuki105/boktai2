@@ -16,8 +16,7 @@ typedef struct {
   s8 unk_14;     // 0x014
   s8 unk_15;     // 0x015
   u8 unk_16[6];  // 0x016
-  // TODO: まだ下にたくさんメンバがある
-} Unk_085af0ec;
+} Unk_085af0ec;  // TODO: サイズがまだ未確定
 
 typedef struct EntityC946 {
   Entity e;  // 0x0, ENTITY_UNK_8
@@ -26,10 +25,10 @@ typedef struct EntityC946 {
   u8 unk_20[6];  // 0x020
   u16 unk_26;    // 0x026
   u8 unk_28[0x30c - 0x28];
-  AuxSprite node_30c;       // 0x30C
-  AuxSpriteGfx sprite_338;  // 0x338
-  u16 x_354;                // 0x354
-  u16 y_356;                // 0x356
+  AuxSprite spr_30c;     // 0x30C
+  AuxSpriteGfx gfx_338;  // 0x338
+  u16 x_354;             // 0x354
+  u16 y_356;             // 0x356
   u8 unk_358[884 - 0x358];
 } EntityC946;
 static_assert(sizeof(EntityC946) == 884);

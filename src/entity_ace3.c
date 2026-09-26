@@ -9,11 +9,11 @@ typedef struct {
   s16 hour;          // 0x18, GetHour()
   s16 minute;        // 0x1A, GetMinute()
   s16 second;        // 0x1C, GetSecond()
-  s16 frameCounter;  // 0x1E, 毎フレーム +1。60 になったフレームだけ判定を飛ばして 0 に戻す
+  s16 frameCounter;  // 0x1E, 毎フレーム +1, 60 になったフレームだけ判定を飛ばして 0 に戻す
   s32 secondOfDay;   // 0x20, hour * 3600 + minute * 60 + second
-  s32 window;        // 0x24, VM_GetKeywordValue('d', 60)。夜明け・日没と一致とみなす秒数の幅
-  s32 scriptID;      // 0x28, VM_GetKeywordValue('p', 0)。0 以外なら Script_ExecById で実行する
-  u8 armed[4];       // 0x2C, Init が4つとも 1。0=正午 1=夜明け 2=日没。窓に入った回に1度だけ発火して 0 になる。[3] は読み手なし
+  s32 window;        // 0x24, '.d=60', 夜明け・日没と一致とみなす秒数の幅
+  s32 scriptID;      // 0x28, '.p=0', 0 以外なら Script_ExecById で実行する
+  u8 armed[4];       // 0x2C, Init が4つとも 1, 0=正午 1=夜明け 2=日没, 窓に入った回に1度だけ発火して 0 になる, [3] は読み手なし
 } ClockAlarm;
 static_assert(sizeof(ClockAlarm) == 48);
 
@@ -26,7 +26,7 @@ void ClockAlarm_Fire(ClockAlarm* p, u32 kind) {
   }
 }
 
-// 真夜中をまたいだぶんを畳んだ秒差。符号はどちら向きに離れているかを表す
+// 真夜中をまたいだぶんを畳んだ秒差, 符号はどちら向きに離れているかを表す
 static inline s32 ClockAlarm_Diff(s32 t, s32 target) {
   s32 d = t - target;
 

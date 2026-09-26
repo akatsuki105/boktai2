@@ -6,7 +6,7 @@
 #include "sprite_aux.h"
 #include "vm.h"
 
-// Entity081d0e20 が抱える要素。Malloc(0xC0) で個別に確保され、先頭が AuxSprite になっている, 根拠: Entity081d0e20_AllocElem
+// Entity081d0e20 が抱える要素, Malloc(0xC0) で個別に確保され、先頭が AuxSprite になっている, 根拠: Entity081d0e20_AllocElem
 // 中身のほとんどは FUN_081d0864 がスクリプトのキーワードから埋める
 typedef struct Entity081d0e20Elem {
   AuxSprite sprite;       // 0x00, 根拠: AuxSprite_Remove に渡される (Entity081d0e20_Destroy)
@@ -19,18 +19,18 @@ typedef struct Entity081d0e20Elem {
   u8 unk_8e[2];           // 0x8E, padding?
   u32 unk_90[6];          // 0x90, '.G' の後ろから6個読む
   u32 unk_a8[2];          // 0xA8, '.A' の後ろから2個読む
-  u16 unk_b0;             // 0xB0, '.T=0' を4で頭打ち。アニメの variant とパレット選択に使う (ldrh)
+  u16 unk_b0;             // 0xB0, '.T=0' を4で頭打ち, アニメの variant とパレット選択に使う (ldrh)
   u16 unk_b2;             // 0xB2, '.o=60',
   s16 slotIdx;            // 0xB4, Entity081d0e20_AllocElem が確保時にスロット番号を書く
   s16 state;              // 0xB6, PTR_ARRAY_085ae098 の添字, 根拠: Entity081d0e20_Update (ldrsh)
   u16 flags;              // 0xB8, bit9 で Update をスキップ、bit3 で unk_2c を後始末する, 根拠: Entity081d0e20_Update / _Destroy
   u8 unk_ba;              // 0xBA, 生成時に0
-  u8 unk_bb;              // 0xBB, 生成時に0。FUN_081d006c が unk_b2 と比較する
+  u8 unk_bb;              // 0xBB, 生成時に0, FUN_081d006c が unk_b2 と比較する
   u32 unk_bc;             // 0xBC, FUN_081d0838 が str で0を書く
 } Entity081d0e20Elem;
 static_assert(sizeof(Entity081d0e20Elem) == 192);
 
-// 要素を12個まで抱えるエンティティ。空きスロットは activeMask のビットで管理する
+// 要素を12個まで抱えるエンティティ, 空きスロットは activeMask のビットで管理する
 typedef struct Entity081d0e20 {
   Entity e;                       // 0x00, ENTITY_UNK_8
   AuxAnimFile* anim;              // 0x18, GetFile(DIR_ANIMATION, 0x0AE9)
