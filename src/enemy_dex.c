@@ -15,7 +15,7 @@ typedef struct {
 } EnemyDexEntry;
 static_assert(sizeof(EnemyDexEntry) == 4);
 
-// モンスター図鑑のメニュー, スクリプトのキーワードから表示内容を組み立てる
+// 魔物図鑑のメニュー, スクリプトのキーワードから表示内容を組み立てる
 typedef struct {
   Entity e;                   // 0x0000, ENTITY_UNK_8
   u8 unk_18[8];               // 0x0018
