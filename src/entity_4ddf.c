@@ -4,7 +4,7 @@
 struct EntityC946;
 
 // スライド1枚ぶん, '.t' が holdTime / fadeInTime / fadeOutTime を、'.c' が x / y / previewID を同じ添字に書き込む
-typedef struct {
+typedef struct Entity4DDFData {
   s16 holdTime;     // 0x0, 絵を出したまま待つフレーム数, Init で -1 ならリストの終端
   u16 fadeInTime;   // 0x2, 明るさを 0 から 64 まで上げるフレーム数
   u16 fadeOutTime;  // 0x4, 明るさを 64 から 0 まで下げるフレーム数
@@ -21,15 +21,23 @@ typedef struct Entity4DDF {
   struct EntityC946* preview;  // 0x318, 絵を出す担当, _Init が EntityC946_Create(arg, 0) で作る
   s32 lastSlide;               // 0x31C, 最後のスライドの添字 (件数 - 1), _Update はここを超えたら何もしない
   s16 curSlide;                // 0x320, 再生中のスライドの添字
-  u16 timer;                   // 0x322, step に入ってからのフレーム数, FUN_08211bac が 0 に戻す
+  u16 timer;                   // 0x322, step に入ってからのフレーム数, Entity4DDF_SetStep が 0 に戻す
   u8 step;                     // 0x324, 0: フェードイン, 1: 表示待ち, 2: フェードアウト, 3: 絵なしで待つ, 4: 終了
   u8 unk_325[3];               // 0x325, 読み手も書き手も見つかっていない, padding?
 } Entity4DDF;
 static_assert(sizeof(Entity4DDF) == 808);
 
-INCASM("asm/entity_4ddf.inc");
+NAKED void Entity4DDF_SetStep(Entity4DDF* p, u32 step) { INCFUNC("asm/func/Entity4DDF_SetStep.inc"); }
 
-NAKED void FUN_08211d7c(Entity4DDF* p, Entity4DDFData* preview) { INCFUNC("asm/func/FUN_08211d7c.inc"); }
+NAKED void Entity4DDF_StepFadeIn(Entity4DDF* p, Entity4DDFData* slide) { INCFUNC("asm/func/Entity4DDF_StepFadeIn.inc"); }
+
+NAKED void Entity4DDF_StepHold(Entity4DDF* p, Entity4DDFData* slide) { INCFUNC("asm/func/Entity4DDF_StepHold.inc"); }
+
+NAKED void Entity4DDF_StepFadeOut(Entity4DDF* p, Entity4DDFData* slide) { INCFUNC("asm/func/Entity4DDF_StepFadeOut.inc"); }
+
+NAKED void Entity4DDF_StepBlank(Entity4DDF* p, Entity4DDFData* slide) { INCFUNC("asm/func/Entity4DDF_StepBlank.inc"); }
+
+NAKED void Entity4DDF_StepEnd(Entity4DDF* p, Entity4DDFData* slide) { INCFUNC("asm/func/Entity4DDF_StepEnd.inc"); }
 
 NAKED s32 Entity4DDF_Update(Entity4DDF* p) { INCFUNC("asm/func/Entity4DDF_Update.inc"); }
 

@@ -22,7 +22,7 @@ _08211CD2:
 	blt _08211D10
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_08211bac
+	bl Entity4DDF_SetStep
 	movs r0, #0xc8
 	lsls r0, r0, #2
 	adds r1, r4, r0

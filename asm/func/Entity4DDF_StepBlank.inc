@@ -23,7 +23,7 @@
 	ble _08211D70
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_08211bac
+	bl Entity4DDF_SetStep
 	movs r0, #0xc8
 	lsls r0, r0, #2
 	adds r1, r5, r0

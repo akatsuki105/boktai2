@@ -13,7 +13,7 @@
 	bne _08211BF4
 	adds r0, r5, #0
 	movs r1, #3
-	bl FUN_08211bac
+	bl Entity4DDF_SetStep
 	movs r1, #0xc6
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -27,7 +27,7 @@ _08211BF4:
 	bne _08211C12
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_08211bac
+	bl Entity4DDF_SetStep
 	movs r2, #0xc6
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -71,7 +71,7 @@ _08211C3E:
 	str r0, [r1]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08211bac
+	bl Entity4DDF_SetStep
 	b _08211C82
 	.align 2, 0
 _08211C64: .4byte 0x0300445C

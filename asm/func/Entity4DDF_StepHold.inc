@@ -13,7 +13,7 @@
 	blt _08211CAE
 	adds r0, r3, #0
 	movs r1, #2
-	bl FUN_08211bac
+	bl Entity4DDF_SetStep
 _08211CAE:
 	pop {r0}
 	bx r0

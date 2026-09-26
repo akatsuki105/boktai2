@@ -105,19 +105,21 @@ const ALIGNED(4) char gString_082526c0[] = "../../skoba/enemy/system/eneinline.h
 const ALIGNED(4) char gString_082526e8[] = "../../skoba/enemy/system/eneinline.h";
 const ALIGNED(4) char gString_08252710[] = "../../skoba/enemy/system/eneinline.h";
 
-void FUN_08211bc4(void* r0, void* r1);
-void FUN_08211c8c(void* r0, void* r1);
-void FUN_08211cb8(void* r0, void* r1);
-void FUN_08211d2c(void* r0, void* r1);
-void FUN_08211d7c(void* r0, void* r1);
+struct Entity4DDF;
+struct Entity4DDFData;
+void Entity4DDF_StepFadeIn(struct Entity4DDF* p, struct Entity4DDFData* slide);
+void Entity4DDF_StepHold(struct Entity4DDF* p, struct Entity4DDFData* slide);
+void Entity4DDF_StepFadeOut(struct Entity4DDF* p, struct Entity4DDFData* slide);
+void Entity4DDF_StepBlank(struct Entity4DDF* p, struct Entity4DDFData* slide);
+void Entity4DDF_StepEnd(struct Entity4DDF* p, struct Entity4DDFData* slide);
 
 // clang-format off
 const void* const PTR_ARRAY_08252738[6] = {
-    (void*)FUN_08211bc4,
-    (void*)FUN_08211c8c,
-    (void*)FUN_08211cb8,
-    (void*)FUN_08211d2c,
-    (void*)FUN_08211d7c,
+    (void*)Entity4DDF_StepFadeIn,
+    (void*)Entity4DDF_StepHold,
+    (void*)Entity4DDF_StepFadeOut,
+    (void*)Entity4DDF_StepBlank,
+    (void*)Entity4DDF_StepEnd,
     (void*)NULL,
 };
 // clang-format on
