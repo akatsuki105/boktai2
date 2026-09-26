@@ -319,7 +319,7 @@ Which side to pick, once the asm has told you what is wrong:
 | `gEntityDisableFlags &= ~2;` | `EnableEntityFlags(2)` taking `u32 flags` | `FUN_0823a9f4` |
 | `if (!((gA \| gB) & 1))` | a helper taking the mask as `flags` | `FUN_0823aa10` |
 | `if (!(a->weakness & 4))` | `Hitbox_HasWeakness(a, 4)` taking `u32 mask`. `(x & 4) == 0`, `4 & x` and an inverted `if`/`else` change nothing | `Cactus_OnHit` |
-| `arr[i]` on a **global array** | `*(arr + i)` — different tree in the front end (`ARRAY_REF` vs `INDIRECT_REF` of a `PLUS_EXPR`), so the base's pool load moves relative to the index's `lsls`. No `-f` option controls it; pick the spelling off the target | `CheckNamakuraProc`, `CheckParalyzeProc` |
+| `arr[i]` on a **global array**, or on an array member reached through a global pointer (`gStat->weaponExp[i]`) | `*(arr + i)` — different tree in the front end (`ARRAY_REF` vs `INDIRECT_REF` of a `PLUS_EXPR`), so the base's pool load moves relative to the index's `lsls`. No `-f` option controls it; pick the spelling off the target | `CheckNamakuraProc`, `CheckParalyzeProc`, `GetWeaponSkillLevel` |
 | `p->sprite.metaspriteIdx = 0;` right after `AuxSprite_Add(&p->sprite, ...)` | `AuxSprite_SetPoseIdx(&p->sprite, 0)` — the helper's argument re-materializes `&p->sprite` after the call, so agbcc reuses the register that held `p` instead of keeping a second one live across it | `Entity08080be8_SetupSprite` |
 | `p->plttID = id; p->pltt = &g[p->plttID * 16];` | reload the field in its own statement: `i = p->plttID;` | `Sprite_SetPlttID` |
 | `f(0, (T*)gPtr, g(0x28))` | `len = g(0x28);` first | |
