@@ -18,7 +18,7 @@ typedef struct {
   u16 unk_c;         // 0x0C
   u16 unk_e;         // 0x0E
   u32 unk_10;        // 0x10, 反応範囲の半径の2乗, 根拠: FUN_080093f8 がプレイヤーとの距離の2乗と符号なしで比較する
-  u16 unk_14[4];     // 0x14, script keyword 0x61 の値, 根拠: VM_Sub883A
+  u16 unk_14[4];     // 0x14, '.a'
   Vec3 pos;          // 0x1C
   AuxSprite sprite;  // 0x24, gfx を指す描画ノード
   AuxSpriteGfx gfx;  // 0x50
@@ -43,8 +43,6 @@ static_assert(sizeof(Entity83B2) == 48);
 IWRAM_DATA Entity83B2* gEntity83B2 = NULL;  // 0x0300003C
 
 s32 GetMapAreaAt(Vec3* pos);
-
-extern s32 (*const PTR_ARRAY_085aa6ac[3])(Entity83B2*, Entity83B2Data*, s32);
 
 static inline bool32 IsCurrentObject(s32 id) { return gStat->unk_248 == id; }
 
@@ -325,6 +323,12 @@ s32 FUN_0800959c(Entity83B2* p, Entity83B2Data* data, s32 idx) {
   return 0;
 }
 
+s32 (*const PTR_ARRAY_085aa6ac[3])(Entity83B2*, Entity83B2Data*, s32) = {
+    FUN_080093f8,
+    FUN_080094ac,
+    FUN_0800959c,
+};  // 0x085aa6ac
+
 NON_MATCH s32 Entity83B2_Update(Entity83B2* p) {
 #ifdef NONMATCHING_C
   Entity83B2Data* data;
@@ -546,9 +550,3 @@ s32 VM_Sub1F65(void) {
     data->id_8 = GetMapAreaAt(&data->pos);
   }
 }
-
-s32 (*const PTR_ARRAY_085aa6ac[3])(Entity83B2*, Entity83B2Data*, s32) = {
-    FUN_080093f8,
-    FUN_080094ac,
-    FUN_0800959c,
-};  // 0x085aa6ac
