@@ -2,6 +2,7 @@
 #include "game.h"
 #include "global.h"
 #include "sprite.h"
+#include "text.h"
 #include "video.h"
 #include "vm.h"
 
@@ -34,10 +35,6 @@ typedef struct {
 } AlbumMenu;
 static_assert(sizeof(AlbumMenu) == 2176);
 
-s32 TextPanel_Hide(s32 id);
-s32 TextPanel_Start(s32 id);
-s32 TextPanel_SetScript(s32 id, u8* scriptPc);
-s32 TextPanel_SetMessage(s32 id, s32 msgIdx);
 s32 FUN_08049fa8(void);
 s32 FUN_08049e5c(void);
 void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, s32 zeroSuppress);

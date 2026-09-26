@@ -5,22 +5,15 @@
 #include "input.h"
 #include "random.h"
 #include "sound.h"
-#include "sprite_main.h"
+#include "sprite.h"
+#include "text.h"
+#include "tilemap.h"
 #include "video.h"
-
-s32 TextPanel_Hide(s32 id);
-s32 TextPanel_Create(s32 x, s32 y, s32 width, s32 height);
-s32 TextPanel_Start(s32 id);
-s32 TextPanel_SetScript(s32 id, u8* scriptPc);
-s32 TextPanel_SetMessage(s32 id, s32 msgIdx);
-s32 FUN_0804a40c(s32 id, s32 idx, u32 str);
-s32 FUN_081dfa04(void);
-void FUN_081df8f0(s32 n);
 
 struct EntityB85F;
 typedef void (*EntityB85FFunc)(struct EntityB85F* p);
 
-// 通信の参加者一覧画面。16枚のスプライトと4枚のテキストパネルを持ち、16色パレットをクロスフェードさせる
+// 通信の参加者一覧画面, 16枚のスプライトと4枚のテキストパネルを持ち、16色パレットをクロスフェードさせる
 typedef struct EntityB85F {
   Entity e;                     // 0x000, ENTITY_UNK_11
   MainSprite sprites[16];       // 0x018, FUN_081dc9dc が MainSprite_Add(&sprites[i], &gfx0, poseIdx[i], ...) で16枚登録する
@@ -38,33 +31,37 @@ typedef struct EntityB85F {
   u8 unk_6fc[4];                // 0x6FC, FUN_081dd2dc が 0, 1, 2, 3 を入れる
   u8 unk_700[4];                // 0x700
   u16 unk_704;                  // 0x704, FUN_081dcd50 が 0 を入れる
-  s16 fadeSteps;                // 0x706, FUN_081dce14 の第2引数 (_Init は 0x20)。1歩あたりの差分をこれで割る
-  rgb555 plttCur[16];           // 0x708, bgPltt+0x40 の複写。gBgPlttBuffer+0x20 へ流し、フェードの始点になる
-  rgb555 plttA[16];             // 0x728, 同じ複写。fadeTarget が 0 以外のときの目標
-  rgb555 plttB[16];             // 0x748, 同じ複写。fadeTarget が 0 のときの目標。自分のスロットに 0x7FFF が入る
+  s16 fadeSteps;                // 0x706, FUN_081dce14 の第2引数 (_Init は 0x20), 1歩あたりの差分をこれで割る
+  rgb555 plttCur[16];           // 0x708, bgPltt+0x40 の複写, gBgPlttBuffer+0x20 へ流し、フェードの始点になる
+  rgb555 plttA[16];             // 0x728, 同じ複写, fadeTarget が 0 以外のときの目標
+  rgb555 plttB[16];             // 0x748, 同じ複写, fadeTarget が 0 のときの目標, 自分のスロットに 0x7FFF が入る
   s16 fadeR[16];                // 0x768, plttCur の赤成分を 5 ビット左シフトしたもの
   s16 fadeG[16];                // 0x788, 同じく緑
   s16 fadeB[16];                // 0x7A8, 同じく青
   s16 stepR[16];                // 0x7C8, (目標 - plttCur) の赤を 5 ビット左シフトして fadeSteps で割ったもの
   s16 stepG[16];                // 0x7E8, 同じく緑
   s16 stepB[16];                // 0x808, 同じく青
-  u16 fadeTarget;               // 0x828, 0 なら plttB、それ以外なら plttA へ寄せる。FUN_081dce14 が毎回反転する
+  u16 fadeTarget;               // 0x828, 0 なら plttB、それ以外なら plttA へ寄せる, FUN_081dce14 が毎回反転する
   u16 unk_82a;                  // 0x82A, FUN_081dcd50 が 0 を入れる
-  void* tilemapFile0;           // 0x82C, GetFile(DIR_TILE_MAP, 0xCD91)。BG2 に敷く
-  void* tilemapFile1;           // 0x830, GetFile(DIR_TILE_MAP, 0xA413)。BG0 に敷く
+  TilemapHeader* tilemap0;      // 0x82C, GetFile(DIR_TILE_MAP, 0xCD91), BG2 に敷く
+  TilemapHeader* tilemap1;      // 0x830, GetFile(DIR_TILE_MAP, 0xA413), BG0 に敷く
   rgb555* bgPltt;               // 0x834, GetFile(DIR_BGPLTT, 0x26BB) + 0x14
-  EntityB85FFunc fn;            // 0x838, _Update が毎フレーム呼ぶ。_Init が 0x081DD774 を入れる
-  u8* scriptPc;                 // 0x83C, script keyword 's' の後の FUN_0823d340()。TextPanel_SetScript に渡す
+  EntityB85FFunc fn;            // 0x838, _Update が毎フレーム呼ぶ, _Init が 0x081DD774 を入れる
+  u8* scriptPc;                 // 0x83C, '.s' の後の FUN_0823d340(), TextPanel_SetScript に渡す
   u8 unk_840[4];                // 0x840
   s32 panelID[4];               // 0x844, TextPanel_Create(0xC, 4 + i*4, 10, 2) の戻り値を4つ
   u8 unk_854;                   // 0x854, _Init が 0 を入れる
   u8 unk_855;                   // 0x855, _Init が 1 を入れる
   u16 unk_856;                  // 0x856, 偶数フレームごとに効果音を鳴らすためのカウンタ
   u8 unk_858;                   // 0x858, _Init が 0 を入れる
-  s8 playerCount;               // 0x859, gEntity9A9F->recordCount。符号つきで負なら _Init は失敗する
+  s8 playerCount;               // 0x859, gEntity9A9F->recordCount, 符号つきで負なら _Init は失敗する
   u8 unk_85a[2];                // 0x85A
 } EntityB85F;
 static_assert(sizeof(EntityB85F) == 2140);
+
+s32 FUN_0804a40c(s32 id, s32 idx, u32 str);
+s32 FUN_081dfa04(void);
+void FUN_081df8f0(s32 n);
 
 void FUN_081dd628(EntityB85F* p);
 void FUN_081dd434(EntityB85F* p);
@@ -81,12 +78,12 @@ static inline void EntityB85F_SetState(EntityB85F* p, EntityB85FFunc fn, u8 stat
 void FUN_081dc6d0(EntityB85F* p) {
   s32 bgIndices[1];
 
-  p->tilemapFile0 = GetFile(DIR_TILE_MAP, 0xCD91);
-  p->tilemapFile1 = GetFile(DIR_TILE_MAP, 0xA413);
+  p->tilemap0 = GetFile(DIR_TILE_MAP, 0xCD91);
+  p->tilemap1 = GetFile(DIR_TILE_MAP, 0xA413);
   bgIndices[0] = 9;
-  Video_SetupBGLayout(2, 0, p->tilemapFile0, 0, 0, 1, bgIndices);
+  Video_SetupBGLayout(2, 0, p->tilemap0, 0, 0, 1, bgIndices);
   bgIndices[0] = 3;
-  Video_SetupBGLayout(0, 0, p->tilemapFile1, 0, 0, 1, bgIndices);
+  Video_SetupBGLayout(0, 0, p->tilemap1, 0, 0, 1, bgIndices);
   Video_GenerateBGMap(3, 0, 0, 0, 0);
   p->bgPltt = (rgb555*)((u8*)GetFile(DIR_BGPLTT, 0x26BB) + 0x14);
   CpuCopy16(p->bgPltt, gBgPlttBuffer, 512);
@@ -460,7 +457,7 @@ void FUN_081dd628(EntityB85F* p) {
   }
 }
 
-// 結果表示中。ボタンが押されたら残り時間を詰め、全員出そろったら次の状態へ
+// 結果表示中, ボタンが押されたら残り時間を詰め、全員出そろったら次の状態へ
 void FUN_081dd6ac(EntityB85F* p) {
   s32 i;
 
@@ -484,7 +481,7 @@ void FUN_081dd6ac(EntityB85F* p) {
   }
 }
 
-// 集計の演出中。ボタンで飛ばすか、64フレーム経ったら結果表示へ
+// 集計の演出中, ボタンで飛ばすか、64フレーム経ったら結果表示へ
 void FUN_081dd774(EntityB85F* p) {
   s32 i;
 
