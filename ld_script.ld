@@ -310,7 +310,7 @@ SECTIONS {
 			src/entity_7999.o (.text);
 			src/entity_08f4.o (.text);
 			src/entity_c783.o (.text);
-			src/entity_b85f.o (.text);
+			src/link_battle_result.o (.text);
 			src/entity_9a9f.o (.text);
 			src/entity_501b.o (.text);
 			src/code_081e0c14.o (.text);

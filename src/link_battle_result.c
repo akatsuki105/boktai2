@@ -1,3 +1,4 @@
+#include "bg_pltt.h"
 #include "entity.h"
 #include "entity_9a9f.h"
 #include "file.h"
@@ -10,11 +11,11 @@
 #include "tilemap.h"
 #include "video.h"
 
-struct EntityB85F;
-typedef void (*EntityB85FFunc)(struct EntityB85F* p);
+struct LinkBattleResult;
+typedef void (*EntityB85FFunc)(struct LinkBattleResult* p);
 
-// 通信の参加者一覧画面, 16枚のスプライトと4枚のテキストパネルを持ち、16色パレットをクロスフェードさせる
-typedef struct EntityB85F {
+// 通信対戦終了後のリザルト画面(+再戦確認), 16枚のスプライトと4枚のテキストパネルを持ち、16色パレットをクロスフェードさせる
+typedef struct LinkBattleResult {
   Entity e;                     // 0x000, ENTITY_UNK_11
   MainSprite sprites[16];       // 0x018, FUN_081dc9dc が MainSprite_Add(&sprites[i], &gfx0, poseIdx[i], ...) で16枚登録する
   MainSprite cursorSprite;      // 0x618, MainSprite_Add(&cursorSprite, &gfx1, 4, ...)
@@ -56,26 +57,26 @@ typedef struct EntityB85F {
   u8 unk_858;                   // 0x858, _Init が 0 を入れる
   s8 playerCount;               // 0x859, gEntity9A9F->recordCount, 符号つきで負なら _Init は失敗する
   u8 unk_85a[2];                // 0x85A
-} EntityB85F;
-static_assert(sizeof(EntityB85F) == 2140);
+} LinkBattleResult;
+static_assert(sizeof(LinkBattleResult) == 2140);
 
 s32 FUN_0804a40c(s32 id, s32 idx, u32 str);
 s32 FUN_081dfa04(void);
 void FUN_081df8f0(s32 n);
 
-void FUN_081dd628(EntityB85F* p);
-void FUN_081dd434(EntityB85F* p);
-s32 FUN_081dcf34(EntityB85F* p);
+void FUN_081dd628(LinkBattleResult* p);
+void FUN_081dd434(LinkBattleResult* p);
+s32 FUN_081dcf34(LinkBattleResult* p);
 
 // 状態関数を差し替えて、切り替え直後の1フレームだけ立つフラグを付ける
-static inline void EntityB85F_SetState(EntityB85F* p, EntityB85FFunc fn, u8 state) {
+static inline void EntityB85F_SetState(LinkBattleResult* p, EntityB85FFunc fn, u8 state) {
   p->fn = fn;
   p->unk_855 = 1;
   p->unk_854 = state;
 }
 
 // BG2 と BG0 にタイルマップを敷き、背景パレットを作業用バッファへ流す
-void FUN_081dc6d0(EntityB85F* p) {
+void FUN_081dc6d0(LinkBattleResult* p) {
   s32 bgIndices[1];
 
   p->tilemap0 = GetFile(DIR_TILE_MAP, 0xCD91);
@@ -85,12 +86,12 @@ void FUN_081dc6d0(EntityB85F* p) {
   bgIndices[0] = 3;
   Video_SetupBGLayout(0, 0, p->tilemap1, 0, 0, 1, bgIndices);
   Video_GenerateBGMap(3, 0, 0, 0, 0);
-  p->bgPltt = (rgb555*)((u8*)GetFile(DIR_BGPLTT, 0x26BB) + 0x14);
+  p->bgPltt = GetBgPlttFile(0x26BB)->body;
   CpuCopy16(p->bgPltt, gBgPlttBuffer, 512);
 }
 
 // 参加者4人分のテキストパネルを縦に並べて作り、最初は隠しておく
-void FUN_081dc788(EntityB85F* p) {
+void FUN_081dc788(LinkBattleResult* p) {
   s32 i;
 
   p->panelID[0] = TextPanel_Create(12, 4, 10, 2);
@@ -105,7 +106,7 @@ void FUN_081dc788(EntityB85F* p) {
 }
 
 // idx 番目のテキストパネルに、その参加者の記録を差し込んで表示する
-void FUN_081dc818(EntityB85F* p, s32 idx) {
+void FUN_081dc818(LinkBattleResult* p, s32 idx) {
   Entity9A9FRecord* rec = Entity9A9F_GetRecord(p->unk_6fc[idx]);
 
   if (rec != NULL) {
@@ -117,7 +118,7 @@ void FUN_081dc818(EntityB85F* p, s32 idx) {
 }
 
 // 4枚のテキストパネルをすべて隠す
-void FUN_081dc880(EntityB85F* p) {
+void FUN_081dc880(LinkBattleResult* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
@@ -133,12 +134,12 @@ u16* FUN_081dc8a0(s32 bg, s32 x, s32 y) {
   return tilemap + (x & 31) + (y & 31) * 32;
 }
 
-NAKED void FUN_081dc8c0(EntityB85F* p, s32 idx) { INCFUNC("asm/func/FUN_081dc8c0.inc"); }
+NAKED void FUN_081dc8c0(LinkBattleResult* p, s32 idx) { INCFUNC("asm/func/FUN_081dc8c0.inc"); }
 
-NAKED void FUN_081dc9dc(EntityB85F* p) { INCFUNC("asm/func/FUN_081dc9dc.inc"); }
+NAKED void FUN_081dc9dc(LinkBattleResult* p) { INCFUNC("asm/func/FUN_081dc9dc.inc"); }
 
 // 4人×4枚のスプライトを格子状に並べ、参加していない行は隠す
-NON_MATCH void FUN_081dcaa4(EntityB85F* p) {
+NON_MATCH void FUN_081dcaa4(LinkBattleResult* p) {
 #ifdef NONMATCHING_C
   s32 i;
   s32 x;
@@ -168,7 +169,7 @@ NON_MATCH void FUN_081dcaa4(EntityB85F* p) {
 }
 
 // 17枚のスプライトをすべて隠す
-void FUN_081dcb54(EntityB85F* p) {
+void FUN_081dcb54(LinkBattleResult* p) {
   s32 i;
 
   for (i = 0; i < 17; i++) {
@@ -177,7 +178,7 @@ void FUN_081dcb54(EntityB85F* p) {
 }
 
 // 17枚のスプライトをすべて描画リストから外す
-void FUN_081dcb70(EntityB85F* p) {
+void FUN_081dcb70(LinkBattleResult* p) {
   s32 i;
 
   for (i = 0; i < 17; i++) {
@@ -186,7 +187,7 @@ void FUN_081dcb70(EntityB85F* p) {
 }
 
 // スコアを4桁に分解して、その参加者の行のスプライトに並べる
-void FUN_081dcb8c(EntityB85F* p, s32 idx) {
+void FUN_081dcb8c(LinkBattleResult* p, s32 idx) {
   s32 v = p->unk_6e4[idx];
   s32 n = idx * 4;
   s32 d;
@@ -218,7 +219,7 @@ void FUN_081dcb8c(EntityB85F* p, s32 idx) {
 }
 
 // 経過時間と乱数からその参加者のスコアを決め、桁を並べ直す
-NON_MATCH void FUN_081dcc48(EntityB85F* p, s32 idx) {
+NON_MATCH void FUN_081dcc48(LinkBattleResult* p, s32 idx) {
 #ifdef NONMATCHING_C
   s32 score = p->unk_856 * p->unk_856 >> 2;
 
@@ -239,7 +240,7 @@ NON_MATCH void FUN_081dcc48(EntityB85F* p, s32 idx) {
 }
 
 // 1フレームおきに効果音を鳴らしつつ、参加者ごとのスロットを更新する
-void FUN_081dccec(EntityB85F* p) {
+void FUN_081dccec(LinkBattleResult* p) {
   s32 i;
 
   if (Mod(p->unk_856, 2) == 0) {
@@ -253,7 +254,7 @@ void FUN_081dccec(EntityB85F* p) {
 }
 
 // パレットを3面ぶん初期化し、自分のスロットだけ白にする
-NON_MATCH void FUN_081dcd50(EntityB85F* p) {
+NON_MATCH void FUN_081dcd50(LinkBattleResult* p) {
 #ifdef NONMATCHING_C
   rgb555* slot;
   s32 playerIdx;
@@ -294,12 +295,12 @@ NON_MATCH void FUN_081dcd50(EntityB85F* p) {
 #endif
 }
 
-NAKED void FUN_081dce14(EntityB85F* p, s32 steps) { INCFUNC("asm/func/FUN_081dce14.inc"); }
+NAKED void FUN_081dce14(LinkBattleResult* p, s32 steps) { INCFUNC("asm/func/FUN_081dce14.inc"); }
 
-NAKED s32 FUN_081dcf34(EntityB85F* p) { INCFUNC("asm/func/FUN_081dcf34.inc"); }
+NAKED s32 FUN_081dcf34(LinkBattleResult* p) { INCFUNC("asm/func/FUN_081dcf34.inc"); }
 
 // i 番目と j 番目の並びを入れ替える
-NON_MATCH void FUN_081dd074(EntityB85F* p, s32 i, s32 j) {
+NON_MATCH void FUN_081dd074(LinkBattleResult* p, s32 i, s32 j) {
 #ifdef NONMATCHING_C
   u16 tmp = p->unk_6f4[i];
   u8 tmp2 = p->unk_6fc[i];
@@ -314,7 +315,7 @@ NON_MATCH void FUN_081dd074(EntityB85F* p, s32 i, s32 j) {
 }
 
 // スコアの降順になるまで隣同士を入れ替える
-void FUN_081dd0b8(EntityB85F* p) {
+void FUN_081dd0b8(LinkBattleResult* p) {
   s32 i;
   s32 j;
 
@@ -327,10 +328,10 @@ void FUN_081dd0b8(EntityB85F* p) {
   }
 }
 
-NAKED void FUN_081dd124(EntityB85F* p) { INCFUNC("asm/func/FUN_081dd124.inc"); }
+NAKED void FUN_081dd124(LinkBattleResult* p) { INCFUNC("asm/func/FUN_081dd124.inc"); }
 
 // 参加者ごとの待ち時間が切れたら、その枠を開いて効果音を鳴らす
-void FUN_081dd1d8(EntityB85F* p) {
+void FUN_081dd1d8(LinkBattleResult* p) {
   s32 i;
 
   for (i = 0; i < p->playerCount; i++) {
@@ -348,7 +349,7 @@ void FUN_081dd1d8(EntityB85F* p) {
 }
 
 // 自分の枠がまだ開いていなければ通信参加の回数を1つ増やす
-void FUN_081dd25c(EntityB85F* p) {
+void FUN_081dd25c(LinkBattleResult* p) {
   s32 playerIdx = Entity9A9F_GetPlayerIdx();
   s32 i;
 
@@ -367,7 +368,7 @@ void FUN_081dd25c(EntityB85F* p) {
 }
 
 // 参加者のスコアを取り込み、並び順を初期化して整列させる
-NON_MATCH void FUN_081dd2dc(EntityB85F* p) {
+NON_MATCH void FUN_081dd2dc(LinkBattleResult* p) {
 #ifdef NONMATCHING_C
   s32 i;
 
@@ -391,7 +392,7 @@ NON_MATCH void FUN_081dd2dc(EntityB85F* p) {
 }
 
 // 自分のスロットがまだ未確定なら効果音を鳴らす
-NON_MATCH void FUN_081dd36c(EntityB85F* p) {
+NON_MATCH void FUN_081dd36c(LinkBattleResult* p) {
 #ifdef NONMATCHING_C
   Entity9A9F* mgr = gEntity9A9F;
   s32 playerIdx;
@@ -418,7 +419,7 @@ NON_MATCH void FUN_081dd36c(EntityB85F* p) {
 }
 
 // 開いた直後に効果音を鳴らし、10フレーム後に案内メッセージへ差し替える
-void FUN_081dd3c8(EntityB85F* p) {
+void FUN_081dd3c8(LinkBattleResult* p) {
   s32 state;
 
   if (p->unk_855 != 0) {
@@ -439,10 +440,10 @@ void FUN_081dd3c8(EntityB85F* p) {
   }
 }
 
-NAKED void FUN_081dd434(EntityB85F* p) { INCFUNC("asm/func/FUN_081dd434.inc"); }
+NAKED void FUN_081dd434(LinkBattleResult* p) { INCFUNC("asm/func/FUN_081dd434.inc"); }
 
 // 結果を出し終えたら A / START で次の画面へ進む
-void FUN_081dd628(EntityB85F* p) {
+void FUN_081dd628(LinkBattleResult* p) {
   if (p->unk_855 != 0) {
     FUN_081dd36c(p);
     p->unk_856 = 0;
@@ -458,7 +459,7 @@ void FUN_081dd628(EntityB85F* p) {
 }
 
 // 結果表示中, ボタンが押されたら残り時間を詰め、全員出そろったら次の状態へ
-void FUN_081dd6ac(EntityB85F* p) {
+void FUN_081dd6ac(LinkBattleResult* p) {
   s32 i;
 
   if (p->unk_855 != 0) {
@@ -482,7 +483,7 @@ void FUN_081dd6ac(EntityB85F* p) {
 }
 
 // 集計の演出中, ボタンで飛ばすか、64フレーム経ったら結果表示へ
-void FUN_081dd774(EntityB85F* p) {
+void FUN_081dd774(LinkBattleResult* p) {
   s32 i;
 
   if (p->unk_855 != 0) {
@@ -502,7 +503,7 @@ void FUN_081dd774(EntityB85F* p) {
   }
 }
 
-s32 EntityB85F_Update(EntityB85F* p) {
+s32 EntityB85F_Update(LinkBattleResult* p) {
   if (!FUN_081dfa04()) {
     KillEntity((Entity*)p);
     return -1;
@@ -513,16 +514,16 @@ s32 EntityB85F_Update(EntityB85F* p) {
   return 1;
 }
 
-s32 EntityB85F_Destroy(EntityB85F* p) {
+s32 EntityB85F_Destroy(LinkBattleResult* p) {
   FUN_081dc880(p);
   FUN_081dcb70(p);
   return 1;
 }
 
-NAKED s32 EntityB85F_Init(EntityB85F* p) { INCFUNC("asm/func/EntityB85F_Init.inc"); }
+NAKED s32 EntityB85F_Init(LinkBattleResult* p) { INCFUNC("asm/func/EntityB85F_Init.inc"); }
 
-EntityB85F* EntityB85F_Create(void) {
-  EntityB85F* p = CreateEntity(ENTITY_UNK_11, sizeof(EntityB85F));
+LinkBattleResult* EntityB85F_Create(void) {
+  LinkBattleResult* p = CreateEntity(ENTITY_UNK_11, sizeof(LinkBattleResult));
 
   if (p != NULL) {
     SetEntityRoutine(p, EntityB85F_Update, EntityB85F_Destroy);
