@@ -1,5 +1,5 @@
 	push {r4, r5, lr}
-	bl FUN_0807afe8
+	bl VM_GetPlayerIdx
 	ldr r1, _0807B3B4 @ =0x03002BE0
 	lsls r0, r0, #2
 	adds r0, r0, r1

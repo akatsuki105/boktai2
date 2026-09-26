@@ -659,7 +659,8 @@ NAKED void FUN_0807adc0(Player* p) { INCFUNC("asm/func/FUN_0807adc0.inc"); }
 
 NAKED void FUN_0807ae6c(Player* p, u32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0807ae6c.inc"); }
 
-u32 FUN_0807afe8(void) {
+// '.i' から gPlayerPtr の idx を取得する
+u32 VM_GetPlayerIdx(void) {
   if (VM_SeekToKeyword('i')) {
     return Script_GetValue();
   }
@@ -680,7 +681,7 @@ bool32 FUN_0807b118(void) {
 }
 
 s32 FUN_0807b138(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] == NULL) {
     return 0;
@@ -707,7 +708,7 @@ NAKED void FUN_0807b314(Player* p) { INCFUNC("asm/func/FUN_0807b314.inc"); }
 NAKED void FUN_0807b34c(Player* p) { INCFUNC("asm/func/FUN_0807b34c.inc"); }
 
 void FUN_0807b3c0(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
     FUN_08063220(gPlayerPtr[i]);
@@ -733,7 +734,7 @@ void FUN_0807b564(void) {
 }
 
 void FUN_0807b580(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
     gPlayerPtr[i]->unk_43a = 1;
@@ -741,7 +742,7 @@ void FUN_0807b580(void) {
 }
 
 void FUN_0807b5a8(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
     gPlayerPtr[i]->unk_3ba = 1;
@@ -749,7 +750,7 @@ void FUN_0807b5a8(void) {
 }
 
 void FUN_0807b5d0(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
     gPlayerPtr[i]->unk_285 = 1;
@@ -757,7 +758,7 @@ void FUN_0807b5d0(void) {
 }
 
 void FUN_0807b5f8(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
     gPlayerPtr[i]->unk_285 = 0;
@@ -766,7 +767,7 @@ void FUN_0807b5f8(void) {
 
 // スクリプトが指すプレイヤーの武器種を返す
 s32 FUN_0807b620(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] == NULL) {
     return 0;
@@ -775,7 +776,7 @@ s32 FUN_0807b620(void) {
 }
 
 void FUN_0807b64c(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
     FUN_0807e854(gPlayerPtr[i]);
@@ -917,7 +918,7 @@ u32 FUN_0807d180(void) {
 }
 
 void FUN_0807d198(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
@@ -931,7 +932,7 @@ NAKED void FUN_0807d1c0(Player* p) { INCFUNC("asm/func/FUN_0807d1c0.inc"); }
 NAKED void FUN_0807d200(Player* p) { INCFUNC("asm/func/FUN_0807d200.inc"); }
 
 void FUN_0807d240(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
@@ -941,7 +942,7 @@ void FUN_0807d240(void) {
 }
 
 void Player_Lock(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
@@ -1009,7 +1010,7 @@ NAKED void FUN_0807da18(Player* p) { INCFUNC("asm/func/FUN_0807da18.inc"); }
 NAKED void FUN_0807da50(Player* p) { INCFUNC("asm/func/FUN_0807da50.inc"); }
 
 void FUN_0807da94(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
@@ -1037,7 +1038,7 @@ NAKED void FUN_0807dc24(Player* p) { INCFUNC("asm/func/FUN_0807dc24.inc"); }
 NAKED void FUN_0807dc60(Player* p) { INCFUNC("asm/func/FUN_0807dc60.inc"); }
 
 void Player_Unlock(void) {
-  s32 i = FUN_0807afe8();
+  s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
     FUN_0807d118(gPlayerPtr[i]);

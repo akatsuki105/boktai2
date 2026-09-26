@@ -328,7 +328,7 @@ Which side to pick, once the asm has told you what is wrong:
 | `if (g[10] != 0) { id = g[10]; ... }` — costs an extra `adds rN, r0, #0` | hoist the read above the `if` | |
 | `... * 34 + gMgr->group0->tile` | put the global term first | `ParticleShadow_Init` |
 | `gX.field` at each use | a pointer local (`T* s = &gX;`) is loaded at entry and kept in a callee-saved register across calls | |
-| `gArr[f()]` — the base's pool `ldr` hoists **above** the `bl`, so it needs a callee-saved register and the function grows a `push {r4}` | `i = f();` first, then `gArr[i]`. The base then materializes after the call and stays in a scratch register | `FUN_0807b3c0` and the 14 other `gPlayerPtr[FUN_0807afe8()]` wrappers |
+| `gArr[f()]` — the base's pool `ldr` hoists **above** the `bl`, so it needs a callee-saved register and the function grows a `push {r4}` | `i = f();` first, then `gArr[i]`. The base then materializes after the call and stays in a scratch register | `FUN_0807b3c0` and the 14 other `gPlayerPtr[VM_GetPlayerIdx()]` wrappers |
 
 **Merging it back into one expression makes it materialize later.**
 

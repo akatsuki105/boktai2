@@ -2,7 +2,7 @@
 	mov r7, sb
 	mov r6, r8
 	push {r6, r7}
-	bl FUN_0807afe8
+	bl VM_GetPlayerIdx
 	ldr r1, _0807B784 @ =0x03002BE0
 	lsls r0, r0, #2
 	adds r0, r0, r1
