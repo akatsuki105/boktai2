@@ -544,7 +544,7 @@ NAKED void* FUN_0807a6cc(WeaponData* w) { INCFUNC("asm/func/FUN_0807a6cc.inc"); 
 
 NAKED s32 FUN_0807a70c(ArmorData* data) { INCFUNC("asm/func/FUN_0807a70c.inc"); }
 
-NAKED void FUN_0807a798(Player* p) { INCFUNC("asm/func/FUN_0807a798.inc"); }
+NAKED void FUN_0807a798(s32 amount) { INCFUNC("asm/func/FUN_0807a798.inc"); }
 
 NAKED void FUN_0807a7f8(Player* p) { INCFUNC("asm/func/FUN_0807a7f8.inc"); }
 
@@ -648,7 +648,11 @@ s32 FUN_0807b138(void) {
   return FUN_0807a9d0(gPlayerPtr[i]);
 }
 
-NAKED void FUN_0807b15c(Player* p) { INCFUNC("asm/func/FUN_0807b15c.inc"); }
+void FUN_0807b15c(void) {
+  if (VM_SeekToKeyword('e')) {
+    FUN_0807a798(Script_GetValue());
+  }
+}
 
 NAKED void FUN_0807b174(Player* p) { INCFUNC("asm/func/FUN_0807b174.inc"); }
 
