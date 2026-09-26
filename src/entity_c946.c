@@ -2,18 +2,27 @@
 #include "global.h"
 #include "sprite.h"
 
+struct EnemyDexModel;
+
 typedef struct EntityC946 {
-  Entity e;  // 0x0, ENTITY_UNK_8
-  u8 unk_18[0x1c - 0x18];
-  u32 unk_1c;    // 0x01C
-  u8 unk_20[6];  // 0x020
-  u16 unk_26;    // 0x026
-  u8 unk_28[0x30c - 0x28];
-  AuxSprite spr_30c;     // 0x30C
-  AuxSpriteGfx gfx_338;  // 0x338
-  u16 x_354;             // 0x354
-  u16 y_356;             // 0x356
-  u8 unk_358[884 - 0x358];
+  Entity e;                           // 0x000, ENTITY_UNK_8
+  s32 swayAngle;                      // 0x018, EntityC946_Update が毎フレーム model->swaySpeed を足し、>>5 して sin テーブルの角度にする
+  u32 modelID;                        // 0x01C, sEnemyDexModels の添字。FUN_0820fe98 が入れる。_Init は 0x38 を超えていたら 0 に戻す
+  u32 stateTimer;                     // 0x020, state に入ってからのフレーム数。FUN_0820f84c などが数え、state が変わると 0 に戻る
+  u8 state;                           // 0x024, onLoad / onUpdate を持つ魔物だけが使う演出の段階 (FUN_0820f84c は 0..3)
+  bool8 hidden;                       // 0x025, 1 の間は _Update が parts と subSprite を全部隠して何もしない。FUN_0820fea8 が 1、FUN_0820feb0 が 0
+  u16 posOverridden;                  // 0x026, 非0なら pos を model->x / model->y で上書きしない。FUN_0820fe94 が入れる
+  DexPreview parts[5];                // 0x028, スプライトの器。単体の魔物は [0] だけ、多関節の魔物は sEnemyDexSegments に沿って5つ使う
+  AuxSprite subSprite;                // 0x30C, model->subSprite が非0のときだけ出す重ね絵 (メタスプライト 5/6/7)
+  AuxSpriteGfx subSpriteGfx;          // 0x338, _Init が Video_GetAuxSprite(EFF_1C1B) で作る
+  Vec3 pos;                           // 0x354, model->x + 64, model->y + 88。FUN_0820feb8 が直接入れることもある
+  u8 unk_35c[0x364 - 0x35C];          // 0x35C, 読み手も書き手も見つかっていない
+  u16 poseBase;                       // 0x364, model->poseBase の写し。FUN_08055b5c の第2引数になる
+  u8 frameIdx;                        // 0x366, FUN_0820efc4 が model->direction から作るコマ番号
+  u8 hFlip;                           // 0x367, 同上の左右反転
+  bool8 reloadRequested;              // 0x368, FUN_0820fe98 が立て、_Update が読み込み直して 0 に戻す
+  u8 unk_369[0x370 - 0x369];          // 0x369, 読み手も書き手も見つかっていない
+  const struct EnemyDexModel* model;  // 0x370, &sEnemyDexModels[modelID]。毎フレーム入れ直す
 } EntityC946;
 static_assert(sizeof(EntityC946) == 884);
 
@@ -43,11 +52,11 @@ EntityC946* EntityC946_Create(u32 arg, u32 _) {
   return p;
 }
 
-void FUN_0820fe94(EntityC946* p, u32 val) { p->unk_26 = val; }
+void FUN_0820fe94(EntityC946* p, u32 val) { p->posOverridden = val; }
 
 // 多関節の魔物1体ぶんの、5枚のスプライトの並べ方
 typedef struct {
-  s8 offset[5][2];  // 0x00, [i][0] を x_354 に、[i][1] を 0x356 に足して i 番目の器の座標にする
+  s8 offset[5][2];  // 0x00, [i][0] を pos.x に、[i][1] を pos.y に足して i 番目の器の座標にする
   u16 pose[5];      // 0x0A, i 番目の器に渡す FUN_08055b5c の第2引数, i == 0 だけ direction 由来の向きを伴う
 } EnemyDexSegments;
 static_assert(sizeof(EnemyDexSegments) == 20);
@@ -93,20 +102,20 @@ void FUN_0820f840(EntityC946* p);
 void FUN_0820f84c(EntityC946* p);
 
 // 魔物図鑑に1体を表示するための定義, EntityC946 が unk_1c 番目を引く
-typedef struct {
+typedef struct EnemyDexModel {
   SpriteID16 id;                // 0x00
   u16 animFileID;               // 0x02, FUN_08055dac の第3引数, kind == 2 では常に 0 (MainSprite は 自身にアニメーションを持つので、animFileID は不要)
   u16 kind;                     // 0x04, 1: AuxSprite+AuxAnimState, 2: MainSprite
-  u16 poseBase;                 // 0x06, EntityC946 の 0x364 に控え、FUN_08055b5c の第2引数になる
+  u16 poseBase;                 // 0x06, EntityC946.poseBase に控え、FUN_08055b5c の第2引数になる
   u16 animID;                   // 0x08, FUN_08055fbc に渡す
   u8 direction;                 // 0x0A, FUN_0820efc4 が (コマ番号, 左右反転) に展開する向き
   EnemyDexModelFlags flags;     // 0x0B, see EnemyDexModelFlags
   EnemyDexModelFunc* onLoad;    // 0x0C, 非0なら既定のロード (FUN_0820f9dc) の代わりに呼ぶ
   EnemyDexModelFunc* onUpdate;  // 0x10, 非0なら毎フレーム呼ぶ
-  s8 x;                         // 0x14, 表示位置, +64 して x_354 に入る
-  s8 y;                         // 0x15, 表示位置, +88 して y_356 に入る
+  s8 x;                         // 0x14, 表示位置, +64 して pos.x に入る
+  s8 y;                         // 0x15, 表示位置, +88 して pos.y に入る
   u8 swayAmplitude;             // 0x16, ゆれの振幅, sin テーブルとの積を >>13 して y に足す
-  u8 swaySpeed;                 // 0x17, ゆれの角速度, 毎フレーム 0x18 に積算し >>5 して角度にする
+  u8 swaySpeed;                 // 0x17, ゆれの角速度, 毎フレーム swayAngle に積算し >>5 して角度にする
   s8 subX;                      // 0x18, 追加スプライトの x ずらし, FUN_0820fa80 のみ読む
   s8 subY;                      // 0x19, 追加スプライトの y ずらし, 同上
   u2_6 scaleX;                  // 0x1A, 2.6 固定小数 (64 が等倍)

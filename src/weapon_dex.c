@@ -9,16 +9,6 @@ typedef struct {
 } WeaponIconSprites;
 
 typedef struct {
-  u32 unk_0;  // 0x00
-  u8 unk_4[8];
-  MainSpriteGfx gfx;   // 0x0C
-  MainSprite sprite;   // 0x2C
-  Vec3* pos;           // 0x8C
-  SpriteFlags* flags;  // 0x90
-} WeaponDexData;
-static_assert(sizeof(WeaponDexData) == 148);  // 根拠: 0x08055e54
-
-typedef struct {
   Entity e;                   // 0x000, ENTITY_UNK_8
   void* p_18;                 // 0x018,  0x08653534 固定?
   rgb555* pltt_1c;            // 0x01C, 根拠: 0x08210b06
@@ -44,7 +34,7 @@ typedef struct {
   u8 unk_c8b;                 // 0xC8B
   AuxSprite node_c8c;         // 0xC8C, 根拠: 0x08210ef8
   AuxSpriteGfx sprite_cb8;    // 0xCB8, 根拠: 0x08210a2e
-  WeaponDexData data_cd4;     // 0xCD4, 根拠: FUN_08055e34
+  DexPreview preview;         // 0xCD4, 根拠: FUN_08055e34
   rgb555 pltt_d68[16];        // 0xD68, 根拠: 0x08210a20
   u8 unk_d88;                 // 0xD88, FUN_082110a4 が 1 増やすカウンタ
   u8 unk_d89;                 // 0xD89, FUN_082110a4 が 0 に戻す
@@ -60,7 +50,7 @@ static const u8 sWeaponDexItemCounts[4] = {19, 19, 19, 3};  // 0x085af9ac, 武�
 bool32 IsWeaponAlreadyFound(weapon32_t n);
 void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, s32 zeroSuppress);
 s32 FUN_08049fa8(void);
-void FUN_08055d7c(WeaponDexData* p);
+void FUN_08055d7c(DexPreview* p);
 
 INCASM("asm/weapon_dex.inc");
 
@@ -127,7 +117,7 @@ NON_MATCH void FUN_0820ff98(WeaponDexMenu* p, s32 kind) {
   p->pltt_d68[5] = src[0];
   p->pltt_d68[6] = src[1];
   p->pltt_d68[13] = src[2];
-  p->data_cd4.sprite.pltt = p->pltt_d68;
+  p->preview.sprite.pltt = p->pltt_d68;
 #else
   INCFUNC("asm/func/FUN_0820ff98.inc");
 #endif
@@ -268,7 +258,7 @@ s32 WeaponDexMenu_Destroy(WeaponDexMenu* p) {
   AuxSprite_Remove(&p->node_c8c);
   MainSprite_Remove(&p->sprite_3a8);
   MainSprite_Remove(&p->sprite_408);
-  FUN_08055d7c(&p->data_cd4);
+  FUN_08055d7c(&p->preview);
   MainSprite_Remove(&p->sprite_c08);
   SetBGPrioDirect(0, 0);
   FUN_08049fa8();
