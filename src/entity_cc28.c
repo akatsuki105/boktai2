@@ -14,7 +14,7 @@ const u16 u16_ARRAY_085ac064[16] = {
 };
 
 // TODO: 他のEntityのrodataもまだ混ざってるのでちゃんと分ける
-INCBIN(".rodata", "data/rodata3.bin");  // ./tmp/bin.sh ./baserom.gba 0x085ac084 0x085af0ec ./data/rodata3.bin
+INCBIN(".rodata", "data/rodata3.bin");  // ./tools/bin.ts ./baserom.gba 0x085ac084 0x085AF034 ./data/rodata3.bin
 
 INCASM("asm/entity_cc28_part1.inc");
 
