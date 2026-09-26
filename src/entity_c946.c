@@ -2,22 +2,6 @@
 #include "global.h"
 #include "sprite.h"
 
-// 0x085af0ec
-typedef struct {
-  u16 unk_0;     // 0x000
-  u16 unk_2;     // 0x002
-  u16 unk_4;     // 0x004
-  u16 unk_6;     // 0x006
-  u16 unk_8;     // 0x008
-  u8 unk_9;      // 0x009
-  u8 unk_a;      // 0x00a
-  u32 unk_c;     // 0x00c
-  u32 unk_10;    // 0x010
-  s8 unk_14;     // 0x014
-  s8 unk_15;     // 0x015
-  u8 unk_16[6];  // 0x016
-} Unk_085af0ec;  // TODO: サイズがまだ未確定
-
 typedef struct EntityC946 {
   Entity e;  // 0x0, ENTITY_UNK_8
   u8 unk_18[0x1c - 0x18];
