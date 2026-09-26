@@ -549,11 +549,14 @@ NAKED void FUN_0807aa30(Player* p) { INCFUNC("asm/func/FUN_0807aa30.inc"); }
 
 NAKED void Player_ReduceENE_0807aa60(Player* player, s32 amount) { INCFUNC("asm/func/Player_ReduceENE_0807aa60.inc"); }
 
-NAKED void ApplyLunaBug(Player* p) { INCFUNC("asm/func/ApplyLunaBug.inc"); }
+// 月光虫取得時に呼ばれる(HP回復)
+NAKED void Player_ApplyMoonbug(Player* p) { INCFUNC("asm/func/Player_ApplyMoonbug.inc"); }
 
-NAKED void ApplySolBug(Player* p) { INCFUNC("asm/func/ApplySolBug.inc"); }
+// 太陽虫取得時に呼ばれる(Ene回復)
+NAKED void Player_ApplySolarbug(Player* p) { INCFUNC("asm/func/Player_ApplySolarbug.inc"); }
 
-NAKED void ApplyDarkBug(Player* p) { INCFUNC("asm/func/ApplyDarkBug.inc"); }
+// 暗黒虫取得時に呼ばれる(Eneが減る)
+NAKED void Player_ApplyDarkbug(Player* p) { INCFUNC("asm/func/Player_ApplyDarkbug.inc"); }
 
 NAKED void FUN_0807ab14(Player* p) { INCFUNC("asm/func/FUN_0807ab14.inc"); }
 

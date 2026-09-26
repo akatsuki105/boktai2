@@ -56,14 +56,14 @@ const u32 u32_ARRAY_085aa700[3] = {10, 10, 120};
 // --------------------------------------------
 
 // 精霊虫の効果
-void ApplySolBug(Player* p, s32 amount);
-void ApplyLunaBug(Player* p, s32 amount);
-void ApplyDarkBug(Player* p, s32 amount);
+void Player_ApplySolarbug(Player* p, s32 amount);
+void Player_ApplyMoonbug(Player* p, s32 amount);
+void Player_ApplyDarkbug(Player* p, s32 amount);
 
 void (*const PTR_ARRAY_085aa70c[3])(Player*, s32) = {
-    ApplySolBug,   // 太陽虫 (Ene回復)
-    ApplyLunaBug,  // 月光虫 (HP回復)
-    ApplyDarkBug,  // 暗黒虫 (Eneが減る)
+    Player_ApplySolarbug,  // 太陽虫 (Ene回復)
+    Player_ApplyMoonbug,   // 月光虫 (HP回復)
+    Player_ApplyDarkbug,   // 暗黒虫 (Eneが減る)
 };  // 0x085AA70C
 
 // --------------------------------------------
