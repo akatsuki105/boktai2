@@ -7,11 +7,11 @@
 #include "text.h"
 #include "vm.h"
 
-// 選択肢1つ分の位置と大きさ。TextBoxChoice_ParseTag が <ALTER> を見つけるたびに埋める
+// 選択肢1つ分の位置と大きさ, TextBoxChoice_ParseTag が <ALTER> を見つけるたびに埋める
 typedef struct {
   u8 x;      // 0x00, (col + winX) * 8
   u8 y;      // 0x01, winY * 8 + line * 16
-  u8 width;  // 0x02, 文字数。<ALTER=n> なら n
+  u8 width;  // 0x02, 文字数, <ALTER=n> なら n
   u8 line;   // 0x03
 } TextBoxChoiceEntry;
 static_assert(sizeof(TextBoxChoiceEntry) == 4);
@@ -19,31 +19,31 @@ static_assert(sizeof(TextBoxChoiceEntry) == 4);
 // テキストボックスの文字列から <ALTER> で囲まれた部分を選択肢として拾い、左右にカーソルのスプライトを付けて選ばせる
 typedef struct {
   Entity e;                        // 0x00, ENTITY_UNK_11
-  s8 selected;                     // 0x18, 今カーソルが乗っている選択肢。負ならまだどれも選んでいない
+  s8 selected;                     // 0x18, 今カーソルが乗っている選択肢, 負ならまだどれも選んでいない
   s8 defaultIndex;                 // 0x19, 未選択の状態からカーソルを出すときに乗せる選択肢
-  u8 startDelay;                   // 0x1A, Init が 2 を入れ、Update が減らす。0 になるまで入力を読まない
+  u8 startDelay;                   // 0x1A, Init が 2 を入れ、Update が減らす, 0 になるまで入力を読まない
   u8 choiceCount;                  // 0x1B
   u8 lineFirst[8];                 // 0x1C, 各行の先頭の選択肢番号
   u8 lineLast[8];                  // 0x24, 各行の末尾の選択肢番号
-  u8 lineChoiceCount[8];           // 0x2C, 各行の選択肢の数。0 の行は上下移動で飛ばす
+  u8 lineChoiceCount[8];           // 0x2C, 各行の選択肢の数, 0 の行は上下移動で飛ばす
   u8 lineCount;                    // 0x34, winH を超えない
   bool8 fromScript;                // 0x35, 0 なら callback、1 なら scriptID で結果を返す
-  u8 winX;                         // 0x36, kw: '.a', 以下4つはテキストボックスの矩形 (タイル単位)
+  u8 winX;                         // 0x36, '.a', 以下4つはテキストボックスの矩形 (タイル単位)
   u8 winY;                         // 0x37
   u8 winW;                         // 0x38
   u8 winH;                         // 0x39, 行数の上限でもある
   u8 choiceWidth;                  // 0x3A, <ALTER> からの文字数
   u8 col;                          // 0x3B, 行頭からの文字数
-  bool8 cancelable;                // 0x3C, kw: '.c', 0 以外なら B でキャンセルできる
-  u8 cursorDelay;                  // 0x3D, Init が 10 を入れる。0 になるかキーが押されるまでカーソルを出さない
-  u8 repeatDelay;                  // 0x3E, 移動のたびに 30。同じキーを押し続けている間だけ減る
+  bool8 cancelable;                // 0x3C, '.c', 0 以外なら B でキャンセルできる
+  u8 cursorDelay;                  // 0x3D, Init が 10 を入れる, 0 になるかキーが押されるまでカーソルを出さない
+  u8 repeatDelay;                  // 0x3E, 移動のたびに 30, 同じキーを押し続けている間だけ減る
   u8 widthOverride;                // 0x3F, <ALTER=n> の n
   u32 heldKeys;                    // 0x40, 前のフレームに押されていた十字キー
-  u32 scriptArgs[4];               // 0x44, kw: '.A', scriptID に argv[1..4] として渡す
-  u32 scriptID;                    // 0x54, kw: '.p'
+  u32 scriptArgs[4];               // 0x44, '.A', scriptID に argv[1..4] として渡す
+  u32 scriptID;                    // 0x54, '.p'
   void (*callback)(s32 selected);  // 0x58, fromScript が 0 のときに選択結果を渡して呼ぶ
-  u8* textPC;                      // 0x5C, kw: '.r' の位置, 選択肢の元になる文字列への参照がここにある
-  s32 stringBase;                  // 0x60, kw: '.i', Textbox_LookupString に渡す前に足す
+  u8* textPC;                      // 0x5C, '.r' の位置, 選択肢の元になる文字列への参照がここにある
+  s32 stringBase;                  // 0x60, '.i', Textbox_LookupString に渡す前に足す
   TextBoxChoiceEntry entries[16];  // 0x64
   u8 tagValue[64];                 // 0xA4, <TAG=...> の = 以降を詰める作業用バッファ
   MainSpriteGfx gfx;               // 0xE4, SPRITE_UI_START_MENU
@@ -71,7 +71,7 @@ static inline void TextBoxChoice_AdvanceCol(TextBoxChoice* p, s32 n) {
 
 void TextBoxChoice_ClearGlobal(void) { gTextBoxChoice = NULL; }
 
-// 選んだ結果を呼び出し元へ返す。argv[0] が選択番号、argv[1..4] は 'A' で渡された引数
+// 選んだ結果を呼び出し元へ返す, argv[0] が選択番号、argv[1..4] は '.A' で渡された引数
 void TextBoxChoice_Finish(TextBoxChoice* p, s32 selected) {
   if (p->fromScript) {
     u32 argv[5];
@@ -97,7 +97,7 @@ static inline void TextBoxChoice_PlaceCursors(TextBoxChoice* p, TextBoxChoiceEnt
   p->cursorR.pos.y = e->y;
 }
 
-// idx の選択肢にカーソルを合わせる。idx が負なら defaultIndex の位置で点滅させる
+// idx の選択肢にカーソルを合わせる, idx が負なら defaultIndex の位置で点滅させる
 void TextBoxChoice_SetCursor(TextBoxChoice* p, s32 idx) {
   TextBoxChoiceEntry* e;
 
@@ -121,7 +121,7 @@ void TextBoxChoice_SetCursor(TextBoxChoice* p, s32 idx) {
   p->selected = idx;
 }
 
-// line から step ずつ動かして、選択肢のある行を探す。見つからなければ line のまま
+// line から step ずつ動かして、選択肢のある行を探す, 見つからなければ line のまま
 s32 TextBoxChoice_FindLine(TextBoxChoice* p, s32 line, s32 step) {
   s32 cur = line;
   s32 i;
@@ -140,7 +140,7 @@ s32 TextBoxChoice_FindLine(TextBoxChoice* p, s32 line, s32 step) {
   return line;
 }
 
-// 行をまたいでカーソルを動かす。行内での位置はできるだけ保つ
+// 行をまたいでカーソルを動かす, 行内での位置はできるだけ保つ
 static inline s32 TextBoxChoice_MoveLine(TextBoxChoice* p, TextBoxChoiceEntry* e, s32 idx, s32 step) {
   s32 offset = idx - p->lineFirst[e->line];
   s32 line = TextBoxChoice_FindLine(p, e->line, step);
@@ -551,7 +551,7 @@ TextBoxChoice* TextBoxChoice_Create(u8* textPC, s32 stringBase, void (*callback)
   return p;
 }
 
-// 選択肢を出すスクリプトコマンド。'a' が無ければ今のテキストボックスの矩形を使う
+// 選択肢を出すスクリプトコマンド, 'a' が無ければ今のテキストボックスの矩形を使う
 TextBoxChoice* TextBoxChoice_CreateFromScript(void) {
   TextBoxChoice* p;
   s32 settings[7];
