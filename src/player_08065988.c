@@ -31,7 +31,7 @@ void FUN_0807ddbc(Player* p);
 void FUN_08064a64(Player* p, const ArmorData* a);
 
 void FUN_08065200(Player* p) {
-  if (VM_SeekToKeyword('i') != 0) {
+  if (VM_SeekToKeyword('i')) {
     p->unk_18 = Script_GetValue();
   } else {
     p->unk_18 = 0;
@@ -47,7 +47,7 @@ void FUN_0806521c(Player* p) {
 }
 
 void FUN_08065240(Player* p) {
-  if (VM_SeekToKeyword('R') != 0) {
+  if (VM_SeekToKeyword('R')) {
     p->scriptID_9c4 = Script_GetValue();
   } else {
     p->scriptID_9c4 = 0;
@@ -62,8 +62,6 @@ NAKED void FUN_08065514(Player* p) { INCFUNC("asm/func/FUN_08065514.inc"); }
 NAKED bool32 FUN_08065744(Player* p, u32 n) { INCFUNC("asm/func/FUN_08065744.inc"); }
 
 void Player_InitWeapon(Player* p) {
-  Weapon* w;
-
   if (p->kind != PLAYER_SABATA) {
     if (REGISTERED_WEAPON(gStat->equippedWeaponIdx) >= 0) {
       weapon_08064664(p, GetWeapon(REGISTERED_WEAPON(gStat->equippedWeaponIdx)));
@@ -411,7 +409,7 @@ NAKED void FUN_080727d4(Player* p) { INCFUNC("asm/func/FUN_080727d4.inc"); }
 NAKED void FUN_080728a8(Player* p) { INCFUNC("asm/func/FUN_080728a8.inc"); }
 
 void FUN_080729e0(Player* p) {
-  if (FUN_08060a24(p, 0x213, 64)) {
+  if (FUN_08060a24(p, 531, FRACUNIT_6)) {
     FUN_080609dc(p);
     FUN_08072620(p);
     FUN_080726b4(p);
@@ -419,7 +417,7 @@ void FUN_080729e0(Player* p) {
 }
 
 void FUN_08072a0c(Player* p) {
-  FUN_08060a24(p, FUN_08066ee4(p->kind, 0x33), 64);
+  FUN_08060a24(p, FUN_08066ee4(p->kind, 51), FRACUNIT_6);
   FUN_08060c40(p, 4);
 }
 

@@ -119,7 +119,7 @@ const s16 s16_ARRAY_085abc8a[17] = {
 
 NAKED void FUN_080609dc(Player* p) { INCFUNC("asm/func/FUN_080609dc.inc"); }
 
-NAKED bool32 FUN_08060a24(Player* p, u32 val1, s32 val2) { INCFUNC("asm/func/FUN_08060a24.inc"); }
+NAKED bool32 FUN_08060a24(Player* p, u32 animIdx, s32 animSpeed) { INCFUNC("asm/func/FUN_08060a24.inc"); }
 
 NAKED void FUN_08060aa4(Player* p, s32 val) { INCFUNC("asm/func/FUN_08060aa4.inc"); }
 
