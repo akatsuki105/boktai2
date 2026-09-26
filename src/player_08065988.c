@@ -392,7 +392,13 @@ void FUN_0807268c(Player* p) {
   }
 }
 
-NAKED void FUN_080726b4(Player* p) { INCFUNC("asm/func/FUN_080726b4.inc"); }
+void FUN_080726b4(Player* p) {
+  if (p->unk_4aa == 1) {
+    FUN_08072650(p);
+  } else if (p->unk_4aa == 2) {
+    FUN_0807268c(p);
+  }
+}
 
 void FUN_080726e0(Player* p) { FUN_08060c40(p, 5); }
 
