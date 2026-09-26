@@ -7,6 +7,9 @@
 // player.c とファイルを分けてるのは、ファイルサイズが大きくなりすぎてコードを把握しにくいからで、解析が進んだら整理する予定
 
 void FUN_08065164(Player* p);
+void FUN_080612d8(Player* p);
+void FUN_0807e854(Player* p);
+void FUN_0807d118(Player* p);
 void FUN_08063220(Player* p);
 void FUN_080ec79c(u8 kind, void* payload);
 void FUN_08060c40(Player* p, u32 val);
@@ -103,7 +106,10 @@ NAKED void FUN_0806623c(Player* p) { INCFUNC("asm/func/FUN_0806623c.inc"); }
 
 NAKED void FUN_08066408(Player* p) { INCFUNC("asm/func/FUN_08066408.inc"); }
 
-NAKED void FUN_08066794(Player* p) { INCFUNC("asm/func/FUN_08066794.inc"); }
+void FUN_08066794(Player* p) {
+  FUN_080612d8(p);
+  p->unk_376++;
+}
 
 NAKED void FUN_080667b0(Player* p, s32 sungauge) { INCFUNC("asm/func/FUN_080667b0.inc"); }
 
