@@ -8,6 +8,7 @@
 
 void FUN_08065164(Player* p);
 void FUN_080612d8(Player* p);
+void Player_StopEneChargeSound(Player* p);
 void FUN_08060b84(Player* p, u8 a, u8 b);
 void FUN_08072724(Player* p);
 void FUN_0823bca8(s32 n);
@@ -469,7 +470,12 @@ NAKED void* FUN_0807849c(Player* p) { INCFUNC("asm/func/FUN_0807849c.inc"); }
 
 NAKED void FUN_080784fc(Player* p) { INCFUNC("asm/func/FUN_080784fc.inc"); }
 
-NAKED void FUN_08078548(Player* p) { INCFUNC("asm/func/FUN_08078548.inc"); }
+void FUN_08078548(Player* p) {
+  Player_StopEneChargeSound(p);
+  if (p->unk_3ce != 0) {
+    FUN_08066d10(p);
+  }
+}
 
 void FUN_0807856c(Player* p) {
   if (p->unk_3ce != 0) {
