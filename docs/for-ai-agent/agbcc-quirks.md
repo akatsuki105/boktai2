@@ -25,7 +25,7 @@ Three rules keep this file usable:
 
 ### Which arm falls into the epilogue: the two spellings are not interchangeable
 
-- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `EntityMsgBus_Register`, `EntityMsgBus_Unregister`, `Demo_RequestNextStep`, `EntityMsg_Send`, `Demo_Resume`, `Demo_IsRunning`, `ArcTan2_8`, `FUN_082375c8`, `MainSprite_Add`, `ScriptShadow_Move`, `SignalStrengthIcon_Create`, `SignalStrengthIcon_Init`, `Entity081d0e20_Create`, `FUN_080eddf8`, `Breakable_TakeStateChanged`, `FUN_0804a3e4`, `FUN_0804a40c`, `TextBox_Open`, `FUN_080488dc`, `TextBox_SetExtendValue`, `FUN_08049eb0`.
+- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `EntityMsgBus_Register`, `EntityMsgBus_Unregister`, `Demo_RequestNextStep`, `EntityMsg_Send`, `Demo_Resume`, `Demo_IsRunning`, `ArcTan2_8`, `FUN_082375c8`, `MainSprite_Add`, `ScriptShadow_Move`, `SignalStrengthIcon_Create`, `SignalStrengthIcon_Init`, `Entity081d0e20_Create`, `FUN_080eddf8`, `Breakable_TakeStateChanged`, `FUN_0804a3e4`, `FUN_0804a40c`, `TextBox_Open`, `FUN_080488dc`, `TextBox_SetExtendValue`, `FUN_08049eb0`, `FUN_0807b118`.
 - **Symptom**: the two arms' bodies appear in the opposite order from the
   target, and one arm carries a `b` to the epilogue that the target puts on
   the other arm. Instruction counts are usually equal.
