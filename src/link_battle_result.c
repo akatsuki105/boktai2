@@ -12,7 +12,7 @@
 #include "video.h"
 
 struct LinkBattleResult;
-typedef void (*EntityB85FFunc)(struct LinkBattleResult* p);
+typedef void (*LinkBattleResultFunc)(struct LinkBattleResult* p);
 
 // 通信対戦終了後のリザルト画面(+再戦確認), 16枚のスプライトと4枚のテキストパネルを持ち、16色パレットをクロスフェードさせる
 typedef struct LinkBattleResult {
@@ -47,7 +47,7 @@ typedef struct LinkBattleResult {
   TilemapHeader* tilemap0;      // 0x82C, GetFile(DIR_TILE_MAP, 0xCD91), BG2 に敷く
   TilemapHeader* tilemap1;      // 0x830, GetFile(DIR_TILE_MAP, 0xA413), BG0 に敷く
   rgb555* bgPltt;               // 0x834, GetFile(DIR_BGPLTT, 0x26BB) + 0x14
-  EntityB85FFunc fn;            // 0x838, _Update が毎フレーム呼ぶ, _Init が 0x081DD774 を入れる
+  LinkBattleResultFunc fn;      // 0x838, _Update が毎フレーム呼ぶ, _Init が 0x081DD774 を入れる
   u8* scriptPc;                 // 0x83C, '.s' の後の FUN_0823d340(), TextPanel_SetScript に渡す
   u8 unk_840[4];                // 0x840
   s32 panelID[4];               // 0x844, TextPanel_Create(0xC, 4 + i*4, 10, 2) の戻り値を4つ
@@ -69,7 +69,7 @@ void FUN_081dd434(LinkBattleResult* p);
 s32 FUN_081dcf34(LinkBattleResult* p);
 
 // 状態関数を差し替えて、切り替え直後の1フレームだけ立つフラグを付ける
-static inline void EntityB85F_SetState(LinkBattleResult* p, EntityB85FFunc fn, u8 state) {
+static inline void LinkBattleResult_SetState(LinkBattleResult* p, LinkBattleResultFunc fn, u8 state) {
   p->fn = fn;
   p->unk_855 = 1;
   p->unk_854 = state;
@@ -454,7 +454,7 @@ void FUN_081dd628(LinkBattleResult* p) {
     p->unk_856++;
   } else if (gInput[0].pressed & (A_BUTTON | START_BUTTON)) {
     PlaySound_082406e0(0xDD);
-    EntityB85F_SetState(p, FUN_081dd434, 3);
+    LinkBattleResult_SetState(p, FUN_081dd434, 3);
   }
 }
 
@@ -476,7 +476,7 @@ void FUN_081dd6ac(LinkBattleResult* p) {
   FUN_081dccec(p);
   FUN_081dd1d8(p);
   if (p->unk_858 >= p->playerCount) {
-    EntityB85F_SetState(p, FUN_081dd628, 2);
+    LinkBattleResult_SetState(p, FUN_081dd628, 2);
   } else {
     p->unk_856++;
   }
@@ -494,16 +494,16 @@ void FUN_081dd774(LinkBattleResult* p) {
     for (i = 0; i < p->playerCount; i++) {
       p->unk_6ec[i] = 1;
     }
-    EntityB85F_SetState(p, FUN_081dd6ac, 1);
+    LinkBattleResult_SetState(p, FUN_081dd6ac, 1);
   } else if (p->unk_856 > 64) {
-    EntityB85F_SetState(p, FUN_081dd6ac, 1);
+    LinkBattleResult_SetState(p, FUN_081dd6ac, 1);
   } else {
     FUN_081dccec(p);
     p->unk_856++;
   }
 }
 
-s32 EntityB85F_Update(LinkBattleResult* p) {
+s32 LinkBattleResult_Update(LinkBattleResult* p) {
   if (!FUN_081dfa04()) {
     KillEntity((Entity*)p);
     return -1;
@@ -514,20 +514,20 @@ s32 EntityB85F_Update(LinkBattleResult* p) {
   return 1;
 }
 
-s32 EntityB85F_Destroy(LinkBattleResult* p) {
+s32 LinkBattleResult_Destroy(LinkBattleResult* p) {
   FUN_081dc880(p);
   FUN_081dcb70(p);
   return 1;
 }
 
-NAKED s32 EntityB85F_Init(LinkBattleResult* p) { INCFUNC("asm/func/EntityB85F_Init.inc"); }
+NAKED s32 LinkBattleResult_Init(LinkBattleResult* p) { INCFUNC("asm/func/LinkBattleResult_Init.inc"); }
 
-LinkBattleResult* EntityB85F_Create(void) {
+LinkBattleResult* LinkBattleResult_Create(void) {
   LinkBattleResult* p = CreateEntity(ENTITY_UNK_11, sizeof(LinkBattleResult));
 
   if (p != NULL) {
-    SetEntityRoutine(p, EntityB85F_Update, EntityB85F_Destroy);
-    if (EntityB85F_Init(p) < 0) {
+    SetEntityRoutine(p, LinkBattleResult_Update, LinkBattleResult_Destroy);
+    if (LinkBattleResult_Init(p) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

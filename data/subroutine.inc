@@ -471,7 +471,7 @@ gSubroutineTable:
 	.4byte 0xB76C, FUN_08004ba4
 	.4byte 0xB838, FUN_08224074
 	.4byte 0xB83E, FUN_0807d560
-	.4byte 0xB85F, EntityB85F_Create
+	.4byte 0xB85F, LinkBattleResult_Create
 	.4byte 0xB87B, FUN_080c2640
 	.4byte 0xB88C, FUN_0804b220
 	.4byte 0xB8B9, EntityB8B9_Create
