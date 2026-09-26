@@ -550,7 +550,8 @@ NAKED void FUN_0807a7f8(Player* p) { INCFUNC("asm/func/FUN_0807a7f8.inc"); }
 
 NAKED void FUN_0807a840(Player* p) { INCFUNC("asm/func/FUN_0807a840.inc"); }
 
-NAKED void FUN_0807a8ac(Player* p) { INCFUNC("asm/func/FUN_0807a8ac.inc"); }
+// 武器の経験値をそのまま返す
+s32 FUN_0807a8ac(s32 kind) { return *(gStat->weaponExp + kind); }
 
 // 武器の経験値をレベルに直す。100 たまると1レベル
 s32 GetWeaponSkillLevel(s32 kind) { return Div(*(gStat->weaponExp + kind), 100); }
