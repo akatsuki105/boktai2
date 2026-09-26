@@ -29,7 +29,7 @@ static_assert(sizeof(Entity4DDF) == 808);
 
 INCASM("asm/entity_4ddf.inc");
 
-NAKED void FUN_08211d7c(Entity4DDF* p, Entity4DDFData* q) { INCFUNC("asm/func/FUN_08211d7c.inc"); }
+NAKED void FUN_08211d7c(Entity4DDF* p, Entity4DDFData* preview) { INCFUNC("asm/func/FUN_08211d7c.inc"); }
 
 NAKED s32 Entity4DDF_Update(Entity4DDF* p) { INCFUNC("asm/func/Entity4DDF_Update.inc"); }
 
