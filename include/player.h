@@ -128,7 +128,8 @@ typedef struct Player {
   bool8 isEquippedMagicAvailableForm;  // 0x282, 現在のプレイヤーのフォームで装備している魔法が使用可能かどうか (例えば、赤ジャンゴならエンチャントソルならtrue, チェンジウルフならfalse), フォームと魔法の組み合わせのみで決まる(MPコストや太陽ゲージとかは関係ない), TODO: もっと短い名前を考える
   bool8 isEnchanted;                   // 0x283, エンチャント○○ がアクティブかどうか(プレイヤーが対応する色に光っているかどうか)
   u8 equippedMagicBasicCost;           // 0x284, 装備している魔法の消費MP(マジックローブなどの影響を抜いた元々の消費MP)
-  u8 unk_285[0x28C - 0x285];
+  u8 unk_285;  // 0x285, FUN_0807b5d0 が 1 を、FUN_0807b5f8 が 0 を書く
+  u8 unk_286[0x28C - 0x286];
   struct Input* input_28c;  // 0x28C, &gInput[n]
   Keys16 unk_290[10];       // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
   rgb555 pltt_2a4[32];      // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
@@ -161,7 +162,9 @@ typedef struct Player {
   u8 unk_394;  // 0x394, FUN_0807a9b8 が 1 を書く
   u8 unk_395[3];
   void* ptr_398;  // 0x398, FUN_0807a9b8 の第2引数
-  u8 unk_39c[0x3CC - 0x39C];
+  u8 unk_39c[0x3BA - 0x39C];
+  u16 unk_3ba;  // 0x3BA, FUN_0807b5a8 が 1 を書く
+  u8 unk_3bc[0x3CC - 0x3BC];
   u16 unk_3cc;
   s16 unk_3ce;  // 0x3CE, FUN_0807856c が ldrsh で読む
   u8 unk_3d0;
@@ -175,7 +178,8 @@ typedef struct Player {
   u8 angle_400;      // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
   u8 angle_401;      // 0x401, 同上
   u8 unk_402;  // 0x402, FUN_0807a904 が +1 する
-  u8 unk_403[0x43C - 0x403];
+  u8 unk_403[0x43A - 0x403];
+  u16 unk_43a;  // 0x43A, FUN_0807b580 が 1 を書く
   u16 unk_43c[3];  // 0x43C, 多分状態異常の残り時間
   u8 unk_442[86];
   PlayerFunc fn_498;  // 0x498, FUN_08078d5c
