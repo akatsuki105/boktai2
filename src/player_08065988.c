@@ -714,7 +714,15 @@ void FUN_0807b5f8(void) {
   }
 }
 
-NAKED s32 FUN_0807b620(Player* p) { INCFUNC("asm/func/FUN_0807b620.inc"); }
+// スクリプトが指すプレイヤーの武器種を返す
+s32 FUN_0807b620(void) {
+  s32 i = FUN_0807afe8();
+
+  if (gPlayerPtr[i] == NULL) {
+    return 0;
+  }
+  return gPlayerPtr[i]->weaponKind_a75;
+}
 
 void FUN_0807b64c(void) {
   s32 i = FUN_0807afe8();
