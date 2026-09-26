@@ -418,7 +418,10 @@ void FUN_080729e0(Player* p) {
   }
 }
 
-NAKED void FUN_08072a0c(Player* p) { INCFUNC("asm/func/FUN_08072a0c.inc"); }
+void FUN_08072a0c(Player* p) {
+  FUN_08060a24(p, FUN_08066ee4(p->kind, 0x33), 64);
+  FUN_08060c40(p, 4);
+}
 
 NAKED void FUN_08072a38(Player* p) { INCFUNC("asm/func/FUN_08072a38.inc"); }
 
