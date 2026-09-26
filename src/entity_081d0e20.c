@@ -17,8 +17,8 @@ typedef struct Entity081d0e20Elem {
   u16 scriptID_8a;        // 0x8A, '.R=0', flags bit7 が立つと Script_ExecById に渡して0クリアする, 根拠: FUN_081cf944
   u16 scriptID_8c;        // 0x8C, '.C=0', flags bit8 が立つと Script_ExecById に渡して0クリアする, 根拠: FUN_081cf944
   u8 unk_8e[2];           // 0x8E, padding?
-  u32 unk_90[6];          // 0x90, キーワード 'G' の後ろから6個読む
-  u32 unk_a8[2];          // 0xA8, キーワード 'A' の後ろから2個読む
+  u32 unk_90[6];          // 0x90, '.G' の後ろから6個読む
+  u32 unk_a8[2];          // 0xA8, '.A' の後ろから2個読む
   u16 unk_b0;             // 0xB0, '.T=0' を4で頭打ち。アニメの variant とパレット選択に使う (ldrh)
   u16 unk_b2;             // 0xB2, '.o=60',
   s16 slotIdx;            // 0xB4, Entity081d0e20_AllocElem が確保時にスロット番号を書く

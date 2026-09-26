@@ -7,8 +7,6 @@
 COMMON_DATA s32 s32_03002b48 = 0;                // 0x03002B48, 多分こいつは msgbus.c のものじゃない
 COMMON_DATA EntityMsgBus* gEntityMsgBus = NULL;  // 0x03002B4C
 
-bool32 EntityMsgBox_BeginWait(EntityMsgBox* p, EntityMsg* data);
-bool32 EntityMsgBox_EndWait(EntityMsgBox* p, u32 val);
 u16 Demo_FindScriptID(u32 id);
 EntityMsg* DemoTable_GetMsg(s32 idx1, s32 idx2, s32 idx3);
 
@@ -50,10 +48,8 @@ s32 EntityMsgBus_UnlinkBox(EntityMsgBus* p, EntityMsgBox* data) {
 
 // data の targetID/targetClass に一致するノードを探し、その現在と逆側の面に data を追加する (1面あたり最大4件)
 s32 EntityMsgBus_Post(EntityMsgBus* p, EntityMsg* data) {
-  EntityMsgBox* node;
-  s32 side;
-  node = EntityMsgBus_FindBox(p, data->targetID, data->targetClass);
-  side = 1 - p->bufIdx;
+  EntityMsgBox* node = EntityMsgBus_FindBox(p, data->targetID, data->targetClass);
+  s32 side = 1 - p->bufIdx;
   if (node != NULL && node->count[side] < 4) {
     node->msgs[side][node->count[side]] = data;
     node->count[side]++;
@@ -132,10 +128,10 @@ s32 EntityMsgBus_Update(EntityMsgBus* p) {
   EntityMsg* data;
   if (p->running == 1) {
     p->stepBegun = 0;
-    if (p->advanceReq != 0) {
+    if (p->advanceReq) {
       p->step++;
       p->msgIdx = 0;
-      p->advanceReq = 0;
+      p->advanceReq = FALSE;
       p->stepBegun = 1;
     }
     if (p->stepBegun != 0) {
@@ -179,7 +175,7 @@ s32 EntityMsgBus_Init(EntityMsgBus* p, u32 subroutineID) {
   p->demoID = 0xFFFF;
   p->step = -1;
   p->msgIdx = 0;
-  p->advanceReq = 0;
+  p->advanceReq = FALSE;
   p->stepBegun = 0;
   p->endScriptID = 0;
   p->scriptCount = 0;
@@ -227,18 +223,14 @@ s32 EntityMsgBus_Unregister(EntityMsgBox* p) {
 }
 
 s32 Demo_RequestNextStep(void) {
-  if (gEntityMsgBus == NULL) {
-    return -1;
-  }
-  if (gEntityMsgBus->advanceReq != 0) {
-    return -2;
-  }
-  gEntityMsgBus->advanceReq = 1;
+  if (gEntityMsgBus == NULL) return -1;
+  if (gEntityMsgBus->advanceReq) return -2;
+  gEntityMsgBus->advanceReq = TRUE;
   return 0;
 }
 
 bool32 EntityMsgBox_BeginWait(EntityMsgBox* p, EntityMsg* data) {
-  if (data->waitFlag != 0) {
+  if (data->waitFlag) {
     p->waitFlag = data->waitFlag;
     return TRUE;
   }
@@ -289,7 +281,7 @@ s32 Demo_Start(void) {
   p->demoID = VM_GetKeywordValue('d', -1);
   p->step = VM_GetKeywordValue('c', -1) - 1;
   p->msgIdx = 0;
-  p->advanceReq = 1;
+  p->advanceReq = TRUE;
   p->stepBegun = 0;
   p->endScriptID = VM_GetKeywordValue('e', 0);
   p->scriptCount = 0;
@@ -323,7 +315,7 @@ s32 Demo_Stop(void) {
   p->demoID = 0xFFFF;
   p->step = -1;
   p->msgIdx = 0;
-  p->advanceReq = 0;
+  p->advanceReq = FALSE;
   p->stepBegun = 0;
   p->endScriptID = 0;
   p->scriptCount = 0;

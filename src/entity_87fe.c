@@ -41,7 +41,7 @@ s32 Entity87FE_Update(Entity87FE* p) {
 
 s32 Entity87FE_Destroy(Entity87FE* p) { return 0; }
 
-// 'l'/'e' キーワードで hp/ene それぞれの回復可否を決め、90 フレームで最大値に届く毎フレームの加算量を求める
+// '.l', '.e' で hp/ene それぞれの回復可否を決め、90 フレームで最大値に届く毎フレームの加算量を求める
 s32 Entity87FE_Init(Entity87FE* p) {
   s32 hpArg, eneArg;
 
@@ -49,8 +49,10 @@ s32 Entity87FE_Init(Entity87FE* p) {
   if (p->player == NULL) {
     return -1;
   }
+
   hpArg = VM_SeekToKeyword('l') ? Script_GetValue() : 0;
   eneArg = VM_SeekToKeyword('e') ? Script_GetValue() : 0;
+
   if (hpArg != 0 && p->player->hp < p->player->maxHP) {
     if ((p->hpStep = Div(p->player->maxHP, 90)) == 0) {
       p->hpStep = 1;
@@ -59,6 +61,7 @@ s32 Entity87FE_Init(Entity87FE* p) {
   } else {
     p->hpDone = TRUE;
   }
+
   if (eneArg != 0 && p->player->ene < p->player->maxEne) {
     if ((p->eneStep = Div(p->player->maxEne, 90)) == 0) {
       p->eneStep = 1;
@@ -67,9 +70,8 @@ s32 Entity87FE_Init(Entity87FE* p) {
   } else {
     p->eneDone = TRUE;
   }
-  if (!p->hpDone || !p->eneDone) {
-    PlaySound_082406e0(0x259);
-  }
+  if (!p->hpDone || !p->eneDone) PlaySound_082406e0(0x259);
+
   if (VM_SeekToKeyword('p')) {
     p->scriptID = Script_GetValue();
   } else {
