@@ -307,7 +307,7 @@ Which side to pick, once the asm has told you what is wrong:
 
 ### A constant or global address materializes in the wrong place
 
-- **Frequency**: `Sprite_SetPlttID`, `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`, `FUN_08089d24`, `FUN_08089f38`, `FUN_0823a9f4`, `FUN_0823aa10`, `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`, `ParticleShadow_Init`, `Cactus_OnHit`, `Entity08080be8_SetupSprite`, `CheckNamakuraProc`, `CheckParalyzeProc`.
+- **Frequency**: `FUN_0807b3c0`, `Sprite_SetPlttID`, `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`, `FUN_08089d24`, `FUN_08089f38`, `FUN_0823a9f4`, `FUN_0823aa10`, `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`, `ParticleShadow_Init`, `Cactus_OnHit`, `Entity08080be8_SetupSprite`, `CheckNamakuraProc`, `CheckParalyzeProc`.
 - **Symptom**: one `movs rN, #k` or `ldr rN, =SYMBOL` sits earlier or later than the target has it, usually with registers renamed and an identical instruction count.
 - The lever is how the expression is split into statements, never the arithmetic. The mask-hoisting bullets under "`(x & (1<<n)) != 0` auto-optimizes" are the same mechanism seen through a bit test.
 
@@ -328,6 +328,7 @@ Which side to pick, once the asm has told you what is wrong:
 | `if (g[10] != 0) { id = g[10]; ... }` — costs an extra `adds rN, r0, #0` | hoist the read above the `if` | |
 | `... * 34 + gMgr->group0->tile` | put the global term first | `ParticleShadow_Init` |
 | `gX.field` at each use | a pointer local (`T* s = &gX;`) is loaded at entry and kept in a callee-saved register across calls | |
+| `gArr[f()]` — the base's pool `ldr` hoists **above** the `bl`, so it needs a callee-saved register and the function grows a `push {r4}` | `i = f();` first, then `gArr[i]`. The base then materializes after the call and stays in a scratch register | `FUN_0807b3c0` and the 14 other `gPlayerPtr[FUN_0807afe8()]` wrappers |
 
 **Merging it back into one expression makes it materialize later.**
 
