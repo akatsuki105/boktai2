@@ -13,17 +13,17 @@
 #define SPRITE_6893 0x6893
 #define SPRITE_MARKERS 0x82F1  // "Undead", "Immortal", "TRAP" といった画面上に表示されるマーカー
 #define SPRITE_92F0 0x92F0
-#define SPRITE_JORMUNGANDR 0x9524
+#define SPRITE_JORMUNGANDR 0x9524  // ヨルムンガンド
 #define SPRITE_SKELETONS 0xAE52
 #define SPRITE_MEGAMAN 0xAF82
 #define SPRITE_UI_START_MENU 0xB343
 #define SPRITE_CANDLE_BOX 0xB991
 #define SPRITE_PORTRAITS 0xD27A
 #define SPRITE_D353 0xD353
-#define SPRITE_DUNEYRR 0xD3CA
-#define SPRITE_RINGO 0xD3DA  // 紅のリンゴ (キャラクター)
-#define SPRITE_SHAIAN 0xD3EA
-#define SPRITE_DURATHROR 0xD3FA
+#define SPRITE_DUNEYRR 0xD3CA    // ドゥネイル
+#define SPRITE_RINGO 0xD3DA      // 紅のリンゴ (キャラクター)
+#define SPRITE_SHAIAN 0xD3EA     // シャイアン
+#define SPRITE_DURATHROR 0xD3FA  // ドゥラスロール
 #define SPRITE_DVALINN 0xD40A
 #define SPRITE_UI_LINK 0xDCC1
 #define SPRITE_DJANGO_SABATA 0xDE23
@@ -41,15 +41,23 @@
 #define SPRITE_DAINN 0xE349
 #define SPRITE_E89F 0xE89F
 #define SPRITE_CHANDELIER 0xF099  // actor_sprite の 0x2AF0 にもシャンデリアがある
-
-// GetFile のファイルIDとして使うが、存在しないスプライトセットのファイル, actor_sprite に同じActorIDのものがあり、actor_spriteと同じ箇所で読み込むので、元々 spriteset と actor_sprite の両方ともあったのかもしれない
-#define SPRITE_GOLEM 0x5290     // 0x081c4c40
-#define SPRITE_SWORD_AX 0x5291  // 0x081a1a78
-#define SPRITE_BOKU_0 0x9247    // 0x081b73f0
-#define SPRITE_OCTOPUS 0xD291   // 0x0818778c
-#define SPRITE_DOG_0 0xD635     // 0x081ce84c
-#define SPRITE_WORM_0 0xD636    // 0x081ad228
-
+#define SPRITE_GOLEM 0x5290       // 0x081c4c40
+#define SPRITE_SWORD_AX 0x5291    // ソード(敵)、アックス(敵)
+#define SPRITE_BOKU 0x9247        // 0x081b73f0
+#define SPRITE_OCTOPUS 0xD291     // 0x0818778c
+#define SPRITE_DOG 0xD635         // 0x081ce84c
+#define SPRITE_WORM 0xD636        // 0x081ad228
+#define SPRITE_ROD 0xD638         // Root of Darkness (暗黒の根)
+#define SPRITE_SPIDER 0x528F
+#define SPRITE_BEE 0x9506
+#define SPRITE_BAT 0xDA6D
+#define SPRITE_CROW 0x5A6E
+#define SPRITE_CROW_B 0x5A6F
+#define SPRITE_COCKATRICE 0x41CF
+#define SPRITE_MUMMY 0x48DE
+#define SPRITE_CURORO 0xD28E  // クロロホルルン
+#define SPRITE_SLIME 0xB96C
+#define SPRITE_GHOST 0xD637
 #define SPRITE_COFFIN 0x2499
 #define SPRITE_863A 0x863A
 #define SPRITE_9D3F 0x9D3F
@@ -85,6 +93,7 @@
 #define SPRITE_MELEE_SHOCKWAVE 0x8F5D  // 近接攻撃の衝撃波(黒ジャンゴの追加の衝撃波のエフェクト, 武器自体は SPRITE_DJANGO_SABATA が担う), あと太陽鍛治の水桶も一緒に入っている
 #define SPRITE_GENERATOR 0xC038        // パイルドライバーのジェネレータ
 #define SPRITE_CACTUS 0x04B3           // サボテン(攻撃で破壊できる小物オブジェ)
+#define SPRITE_OTNK 0x97D3             // おてんこさま
 
 // データが存在しないスプライトのID
 #define SPRITE_NODATA_9DA7 0x9DA7

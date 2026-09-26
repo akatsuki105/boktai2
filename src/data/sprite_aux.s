@@ -1419,8 +1419,8 @@ gAuxSpritesFile0: @ 0x08A2291C
     .incbin "data/actor_sprites/DDE7.4bpp"                 @ 0x08AA0090, ActorID: 0xDDE7, PlttID: 326, 天窓の光
     .incbin "data/actor_sprites/9E08.4bpp"                 @ 0x08AA0510, ActorID: 0x9E08, PlttID: 329, 天窓の光
     .incbin "data/actor_sprites/A8E7.4bpp"                 @ 0x08AA0990, ActorID: 0xA8E7, PlttID: 0, "25", "10", "BONUS!" などの文字
-    .incbin "data/actor_sprites/5A6E.4bpp"                 @ 0x08AA0AF0, ActorID: 0x5A6E, PlttID: 332, クロウ
-    .incbin "data/actor_sprites/5A6F.4bpp"                 @ 0x08AA25B0, ActorID: 0x5A6F, PlttID: 332, クロウ
+    .incbin "data/actor_sprites/crow_0.4bpp"               @ 0x08AA0AF0, ActorID: 0x5A6E, PlttID: 332, クロウ
+    .incbin "data/actor_sprites/crow_1.4bpp"               @ 0x08AA25B0, ActorID: 0x5A6F, PlttID: 332, クロウ
     .incbin "data/actor_sprites/44EE.4bpp"                 @ 0x08AA32D0, ActorID: 0x44EE, PlttID: 337, なんかのブロックor柱
     .incbin "data/actor_sprites/5D7C.4bpp"                 @ 0x08AA38D0, ActorID: 0x5D7C, PlttID: 338, 瓦礫
     .incbin "data/actor_sprites/B837.4bpp"                 @ 0x08AA40D0, ActorID: 0xB837, PlttID: 339, わからん(ふしぎのぼうしのチュチュみたいな形)
@@ -1439,7 +1439,7 @@ gAuxSpritesFile0: @ 0x08A2291C
     .incbin "data/actor_sprites/D0A3.4bpp"                 @ 0x08AB17D0, ActorID: 0xD0A3, PlttID: 379
     .incbin "data/actor_sprites/beenest_broken.4bpp"       @ 0x08AB1A10, ActorID: 0x9385, PlttID: 380
     .incbin "data/actor_sprites/beenest.4bpp"              @ 0x08AB1E90, ActorID: 0xB626, PlttID: 380
-    .incbin "data/actor_sprites/D637.4bpp"                 @ 0x08AB20F0, ActorID: 0xD637, PlttID: 381
+    .incbin "data/actor_sprites/ghost.4bpp"                @ 0x08AB20F0, ActorID: 0xD637, PlttID: 381, ゴースト, レイス
     .incbin "data/actor_sprites/E7EA.4bpp"                 @ 0x08AB49B0, ActorID: 0xE7EA, PlttID: 386
     .incbin "data/actor_sprites/DFCF.4bpp"                 @ 0x08AB4A50, ActorID: 0xDFCF, PlttID: 387
     .incbin "data/actor_sprites/0E48.4bpp"                 @ 0x08AB60D0, ActorID: 0x0E48, PlttID: 388

@@ -172,18 +172,18 @@ NAKED void FUN_0820eeb8(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820eeb8.inc");
 
 NAKED void FUN_0820efc4(u8 param_1, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0820efc4.inc"); }
 
-NAKED void FUN_0820f020(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f020.inc"); }
+NAKED void FUN_0820f020(struct EntityC946* p) { INCFUNC("asm/func/FUN_0820f020.inc"); }
 
-NAKED void FUN_0820f130(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f130.inc"); }
+NAKED void FUN_0820f130(struct EntityC946* p) { INCFUNC("asm/func/FUN_0820f130.inc"); }
 
-NAKED void FUN_0820f1e0(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f1e0.inc"); }
+NAKED void FUN_0820f1e0(struct EntityC946* p) { INCFUNC("asm/func/FUN_0820f1e0.inc"); }
 
-NAKED void FUN_0820f310(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f310.inc"); }
+NAKED void FUN_0820f310(struct EntityC946* p) { INCFUNC("asm/func/FUN_0820f310.inc"); }
 
-NAKED void FUN_0820f3e4(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f3e4.inc"); }
+NAKED void FUN_0820f3e4(struct EntityC946* p) { INCFUNC("asm/func/FUN_0820f3e4.inc"); }
 
-NAKED void FUN_0820f4b4(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f4b4.inc"); }
+NAKED void FUN_0820f4b4(struct EntityC946* p) { INCFUNC("asm/func/FUN_0820f4b4.inc"); }
 
-NAKED void FUN_0820f630(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f630.inc"); }
+NAKED void FUN_0820f630(struct EntityC946* p) { INCFUNC("asm/func/FUN_0820f630.inc"); }
 
-NAKED void FUN_0820f700(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820f700.inc"); }
+NAKED void FUN_0820f700(struct EntityC946* p) { INCFUNC("asm/func/FUN_0820f700.inc"); }

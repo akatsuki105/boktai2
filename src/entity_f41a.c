@@ -7,14 +7,14 @@
 #include "sprite.h"
 #include "vm.h"
 
-// SPRITE_BOKU_0 の姿でうろつく生き物。叩かれると点滅してノックバックし、また歩き出す
+// SPRITE_BOKU の姿でうろつく生き物。叩かれると点滅してノックバックし、また歩き出す
 typedef struct EntityF41A {
   Entity e;                            // 0x000, ENTITY_UNK_8
   u16 id;                              // 0x018, Init の第2引数。FUN_0823b400 に渡して data に入れる
   u16 unk_1a;                          // 0x01A
   Entity2UnkData data;                 // 0x01C, 位置と向きはここが持つ。data.unk_5 が向き、data.delta が移動量
   AuxSprite sprite;                    // 0x060
-  AuxSpriteGfx gfx;                    // 0x08C, SPRITE_BOKU_0
+  AuxSpriteGfx gfx;                    // 0x08C, SPRITE_BOKU
   u8 tile[16];                         // 0x0A8, FUN_0823280c が足元のタイル情報を埋める。data.unk_18 がここを指す
   HitboxData hitbox;                   // 0x0B8
   AuxAnimState anim;                   // 0x108
@@ -212,7 +212,7 @@ void EntityF41A_InitTile(EntityF41A* p) {
 
 // AuxSprite を用意して data に結びつけ、アニメファイルを読む
 void EntityF41A_InitSprite(EntityF41A* p) {
-  Video_GetAuxSprite(&p->gfx, SPRITE_BOKU_0);
+  Video_GetAuxSprite(&p->gfx, SPRITE_BOKU);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   FUN_0823b46c(&p->data, &p->sprite);
   Video_SetAuxSpritePltt(&p->gfx, 307);
