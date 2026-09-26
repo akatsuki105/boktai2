@@ -15,12 +15,12 @@ typedef struct {
   u8 cursor;                      // 0x025, 現在のカーソルの位置番号,  = (cursorY * 5) + cursorX
   u8 cursorX;                     // 0x026, 現在のカーソルのX位置 (0..4)
   u8 cursorY;                     // 0x027, 現在のカーソルのY位置 (0..1)
-  MainSpriteGfx spriteSet_28;     // 0x028
+  MainSpriteGfx gfx1;             // 0x028
   MainSprite sprites_48[2];       // 0x048
   MainSprite sprites_108[5];      // 0x108
   MainSprite sprites_2e8[2];      // 0x2E8
   MainSprite sprites_3a8[2];      // 0x3A8
-  MainSpriteGfx spriteSet_468;    // 0x468
+  MainSpriteGfx gfx2;             // 0x468
   MainSprite sprites_488[5 * 2];  // 0x488
   u8 unk_848[24];                 // 0x848
   s16 unk_860;                    // 0x860, unk_868 の位相から決まる値
@@ -127,14 +127,14 @@ NON_MATCH void FUN_082111cc(AlbumMenu* p) {
 #endif
 }
 
-// 「取得数 / 27」の数字を並べる
+// 取得数 "n/27" の数字を並べる
 void FUN_0821126c(AlbumMenu* p) {
-  FUN_082376a4(&p->sprites_108[0], &p->spriteSet_28, CountUnlockedPhotos(), 2, 0, 176, 104, 8, 0);
-  MainSprite_SetPose(&p->sprites_108[2], &p->spriteSet_28, 11, 0);
+  FUN_082376a4(&p->sprites_108[0], &p->gfx1, CountUnlockedPhotos(), 2, 0, 176, 104, 8, 0);
+  MainSprite_SetPose(&p->sprites_108[2], &p->gfx1, 11, 0);
   p->sprites_108[2].pos.x = 192;
   p->sprites_108[2].pos.y = 104;
   p->sprites_108[2].flags &= ~SPRFLAG_HIDDEN;
-  FUN_082376a4(&p->sprites_108[3], &p->spriteSet_28, 27, 2, 0, 200, 104, 8, 0);
+  FUN_082376a4(&p->sprites_108[3], &p->gfx1, 27, 2, 0, 200, 104, 8, 0);
 }
 
 // カーソルのスプライトをマス目に合わせて置き直す
@@ -173,7 +173,7 @@ void FUN_08211324(AlbumMenu* p) {
 void FUN_08211378(AlbumMenu* p) {
   s32 i;
 
-  MainSprite_SetPose(&p->sprites_48[0], &p->spriteSet_28, p->page + 30, 0);
+  MainSprite_SetPose(&p->sprites_48[0], &p->gfx1, p->page + 30, 0);
   if (FUN_082111b8()) {
     for (i = 0; i < 2; i++) {
       MainSprite_Show(&p->sprites_2e8[i]);
@@ -201,7 +201,7 @@ NON_MATCH void FUN_08211730(AlbumMenu* p) {
     s32 idx = first + i;
 
     if (CheckPhotoUnlocked(idx)) {
-      MainSprite_SetPose(photo, &p->spriteSet_468, u16_ARRAY_085af9b4[idx * 2], 0);
+      MainSprite_SetPose(photo, &p->gfx2, u16_ARRAY_085af9b4[idx * 2], 0);
       photo->flags &= ~SPRFLAG_HIDDEN;
     } else {
       photo->flags |= SPRFLAG_HIDDEN;
