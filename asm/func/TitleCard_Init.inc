@@ -109,11 +109,11 @@ _0800F662:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0800F694
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r7, _0800F690 @ =0x000002DA
 	adds r1, r5, r7
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xb7
 	lsls r2, r2, #2
 	adds r1, r5, r2

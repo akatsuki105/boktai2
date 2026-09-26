@@ -154,9 +154,9 @@ s32 ScriptShadow_CreateFromScript(void) {
   Vec3 pos;
 
   if (VM_SeekToKeyword('p')) {
-    pos.x = Script_GetValue();
-    pos.y = Script_GetValue();
-    pos.z = Script_GetValue();
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
     return ScriptShadow_Create(id, mode, &pos);
   }
   return -1;
@@ -221,9 +221,9 @@ s32 ScriptShadow_MoveFromScript(void) {
   Vec3 pos;
 
   if (VM_SeekToKeyword('p')) {
-    pos.x = Script_GetValue();
-    pos.y = Script_GetValue();
-    pos.z = Script_GetValue();
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
     return ScriptShadow_Move(id, &pos);
   }
   return -1;

@@ -9,7 +9,7 @@
 	ldr r0, [r0]
 	cmp r0, #0
 	beq _08047B3A
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xc9
 	lsls r2, r2, #1
 	adds r1, r4, r2

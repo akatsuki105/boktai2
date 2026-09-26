@@ -138,7 +138,7 @@ _08072E58:
 	beq _08072E6E
 	str r7, [r1]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _08072E6E:
 	strb r7, [r6]
 	b _08073016
@@ -154,7 +154,7 @@ _08072E72:
 _08072E82:
 	str r7, [r1]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	b _08073016
 _08072E8C:
 	movs r1, #0xd6

@@ -29,7 +29,7 @@ typedef u32 EnemyFlags2;
 #define ENEFLAG2_UNK_21 (1 << 21)  // 0x00200000, FUN_080edebc がパレット転送の向きとして反転させる
 #define ENEFLAG2_UNK_24 (1 << 24)  // 0x01000000, FUN_080ef5a8 が落とす
 #define ENEFLAG2_UNK_25 (1 << 25)  // 0x02000000, Enemy_Init_080ec640 が見る
-#define ENEFLAG2_UNK_26 (1 << 26)  // 0x04000000, FUN_080ef4e4 が VM キーワード 0x66 で立て下げする
+#define ENEFLAG2_UNK_26 (1 << 26)  // 0x04000000, FUN_080ef4e4 が '.f' で立て下げする
 
 // Enemy.flags3 (0x180)
 typedef u16 EnemyFlags3;

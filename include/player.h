@@ -6,6 +6,7 @@
 #include "entity.h"
 #include "gba/gba.h"
 #include "hitbox.h"
+#include "msgbus.h"
 #include "particle.h"
 #include "sprite.h"
 #include "struct.h"
@@ -116,7 +117,8 @@ typedef struct Player {
   u8 unk_e8[0x16C - 0xE8];
   HitboxData unk_16c;  // 0x16C
   u8 unk_1bc;          // 0x1BC, Entity2UnkData.unk_18 が &Player.unk_1bc
-  u8 unk_1bd[167];
+  u8 unk_1bd[0x230 - 0x1BD];
+  EntityMsgBox msgbox;  // 0x230, FUN_0807ddd4 が EntityMsgBus_Unregister に渡す
   PlayerArmor armor;  // 0x264
   u16 unk_278;
   s16 unk_27a;
@@ -126,7 +128,8 @@ typedef struct Player {
   bool8 isEquippedMagicAvailableForm;  // 0x282, 現在のプレイヤーのフォームで装備している魔法が使用可能かどうか (例えば、赤ジャンゴならエンチャントソルならtrue, チェンジウルフならfalse), フォームと魔法の組み合わせのみで決まる(MPコストや太陽ゲージとかは関係ない), TODO: もっと短い名前を考える
   bool8 isEnchanted;                   // 0x283, エンチャント○○ がアクティブかどうか(プレイヤーが対応する色に光っているかどうか)
   u8 equippedMagicBasicCost;           // 0x284, 装備している魔法の消費MP(マジックローブなどの影響を抜いた元々の消費MP)
-  u8 unk_285[0x28C - 0x285];
+  u8 unk_285;  // 0x285, FUN_0807b5d0 が 1 を、FUN_0807b5f8 が 0 を書く
+  u8 unk_286[0x28C - 0x286];
   struct Input* input_28c;  // 0x28C, &gInput[n]
   Keys16 unk_290[10];       // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
   rgb555 pltt_2a4[32];      // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
@@ -156,9 +159,14 @@ typedef struct Player {
   u8 unk_38f;
   u16 unk_390;
   u16 unk_392;
-  u8 unk_394[56];
+  u8 unk_394;  // 0x394, FUN_0807a9b8 が 1 を書く
+  u8 unk_395[3];
+  void* ptr_398;  // 0x398, FUN_0807a9b8 の第2引数
+  u8 unk_39c[0x3BA - 0x39C];
+  u16 unk_3ba;  // 0x3BA, FUN_0807b5a8 が 1 を書く
+  u8 unk_3bc[0x3CC - 0x3BC];
   u16 unk_3cc;
-  u16 unk_3ce;
+  s16 unk_3ce;  // 0x3CE, FUN_0807856c が ldrsh で読む
   u8 unk_3d0;
   u8 unk_3d1;
   u8 unk_3d2[36];
@@ -166,13 +174,19 @@ typedef struct Player {
   u8 unk_3f8[2];
   u8 magicFired;     // 0x3FA, 魔法の発動フレームに FUN_08064d6c (太陽ゲージ判定) の結果が入る。1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
   u8 dynamiteCount;  // 0x3FB, 生存中の Entity080a8ff8 の数。Entity080a8ff8_Init が +1、消滅時に -1。MAGIC_DYNAMITE は 0 でないと再発動できない (FUN_08064db0)
-  u8 unk_3fc[64];
+  u8 unk_3fc[4];
+  u8 angle_400;      // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
+  u8 angle_401;      // 0x401, 同上
+  u8 unk_402;  // 0x402, FUN_0807a904 が +1 する
+  u8 unk_403[0x43A - 0x403];
+  u16 unk_43a;  // 0x43A, FUN_0807b580 が 1 を書く
   u16 unk_43c[3];  // 0x43C, 多分状態異常の残り時間
   u8 unk_442[86];
   PlayerFunc fn_498;  // 0x498, FUN_08078d5c
   u8 unk_49c[0x4aa - 0x49c];
   u8 unk_4aa;  // 0x4AA, FUN_080726b4
-  u8 unk_4ab[0x4b0 - 0x4ab];
+  u8 unk_4ab;  // 0x4AB, FUN_08072670 が 1 を書く
+  u8 unk_4ac[0x4B0 - 0x4AC];
   s32 scriptID_4b0;  // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4c4 - 0x4b4];
   Eff082473e0Emitter unk_4c4;  // 0x4C4
@@ -198,7 +212,12 @@ typedef struct Player {
   u8 unk_94e;      // 0x94E, FUN_08062688
   u8 unk_94f;      // 0x94F
   u8 unk_950;      // 0x950, FUN_08063084
-  u8 unk_951[0x9bc - 0x951];
+  u8 unk_951[0x95E - 0x951];
+  u16 unk_95e;  // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
+  u16 unk_960;  // 0x960, FUN_08074994 が unk_95e と対で書く
+  u8 unk_962[0x96C - 0x962];
+  u16 unk_96c;  // 0x96C, FUN_0807b8c0 が 0 を書く
+  u8 unk_96e[0x9BC - 0x96E];
   u16 unk_9bc;  // 0x9BC
   u16 pad_9be;
   s32 scriptID_9c0;  // 0x9C0

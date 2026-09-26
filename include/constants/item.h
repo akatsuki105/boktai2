@@ -50,7 +50,7 @@
 #define ITEM_THE_STAR 45            // 星のカード
 #define ITEM_THE_MOON 46            // 月のカード
 #define ITEM_THE_SUN 47             // 太陽のカード
-#define ITEM_JUDGEMENT 48           // 審判のカード
+#define ITEM_JUDGEMENT 48           // 審判のカード, 所持しているとライフが0になったときに全回復して復活 (もちろんこのアイテムは消費される)
 #define ITEM_DARK_CARD 49           // 暗黒カード
 #define ITEM_PET 50                 // PET
 #define ITEM_SPADE_EMBLEM 51        // スペードの紋章

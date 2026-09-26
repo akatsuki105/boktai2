@@ -6,7 +6,7 @@
 	cmp r0, #0
 	beq _080E6764
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080E6764:
 	pop {r0}
 	bx r0

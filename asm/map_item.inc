@@ -193,7 +193,7 @@ FUN_0800720c: @ 0x0800720C
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08007260
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _08007258 @ =0xFFFF0000
@@ -201,14 +201,14 @@ FUN_0800720c: @ 0x0800720C
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #0x1c]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0800725C @ =0x0000FFFF
 	ldr r1, [sp, #0x1c]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #0x1c]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	add r2, sp, #0x1c
@@ -232,9 +232,9 @@ _0800726C:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08007288
-	bl Script_GetValue
+	bl VM_GetValue
 	mov sb, r0
-	bl Script_GetValue
+	bl VM_GetValue
 	b _0800728C
 	.align 2, 0
 _08007284: .4byte 0xFFFF0000
@@ -275,7 +275,7 @@ _080072BA:
 	add r5, sp, #0x10
 	b _080072DC
 _080072D4:
-	bl Script_GetValue
+	bl VM_GetValue
 	stm r5!, {r0}
 	adds r4, #1
 _080072DC:
@@ -725,7 +725,7 @@ FUN_08007640: @ 0x08007640
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08007694
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _0800768C @ =0xFFFF0000
@@ -733,14 +733,14 @@ FUN_08007640: @ 0x08007640
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #0x28]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _08007690 @ =0x0000FFFF
 	ldr r1, [sp, #0x28]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #0x28]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	add r2, sp, #0x28
@@ -764,9 +764,9 @@ _080076A0:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080076BC
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [sp, #0x34]
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080076C0
 	.align 2, 0
 _080076B8: .4byte 0xFFFF0000
@@ -819,7 +819,7 @@ _0800770C:
 	add r5, sp, #0x1c
 	b _0800772E
 _08007726:
-	bl Script_GetValue
+	bl VM_GetValue
 	stm r5!, {r0}
 	adds r4, #1
 _0800772E:
@@ -972,7 +972,7 @@ FUN_08007820: @ 0x08007820
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08007874
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _08007888 @ =0xFFFF0000
@@ -980,14 +980,14 @@ FUN_08007820: @ 0x08007820
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0800788C @ =0x0000FFFF
 	ldr r1, [sp]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #4]

@@ -9,6 +9,12 @@ typedef struct {
 } Jormungandr;
 static_assert(sizeof(Jormungandr) == 9744);
 
+const u16 u16_ARRAY_085ad0d8[3] = {341, 345, 349};  // 0x085AD0D8
+
+const u16 u16_ARRAY_085ad0de[14] = {0, 2, 5, 9, 13, 17, 21, 24, 27, 29, 31, 33, 35, 37};  // 0x085AD0DE
+
+const SoundID16 u16_ARRAY_085ad0fa[3] = {0x2FB, 0x2FD, 0x2FF};  // 0x085AD0FA
+
 INCASM("asm/jormungandr.inc");
 
 NAKED s32 Jormungandr_Update(Jormungandr* p) { INCFUNC("asm/func/Jormungandr_Update.inc"); }

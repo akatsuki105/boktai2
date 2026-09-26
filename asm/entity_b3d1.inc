@@ -835,7 +835,7 @@ FUN_080c0014: @ 0x080C0014
 	ldrh r0, [r0]
 	str r0, [sp]
 	adds r0, r3, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080C0044:
 	add sp, #0xc
 	pop {r4}
@@ -866,7 +866,7 @@ FUN_080c0058: @ 0x080C0058
 	mov r0, sp
 	str r0, [r1, #4]
 	adds r0, r2, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080C0080:
 	add sp, #0xc
 	pop {r0}
@@ -964,7 +964,7 @@ _080C0106:
 	str r0, [r1, #4]
 	str r5, [sp]
 	adds r0, r2, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080C013E:
 	strh r5, [r6]
 	adds r0, r4, #0
@@ -1816,7 +1816,7 @@ EntityB3D1_Init: @ 0x080C0810
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080C0832
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xaf
 	lsls r2, r2, #3
 	adds r1, r7, r2
@@ -1879,7 +1879,7 @@ _080C083A:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080C08E0
-	bl Script_GetValue
+	bl VM_GetValue
 	cmp r0, #3
 	beq _080C08D0
 	cmp r0, #3
@@ -1956,7 +1956,7 @@ _080C08E6:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080C096C
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080C0968 @ =0x000005B2
 	adds r1, r7, r2
 	b _080C0974
@@ -1976,15 +1976,15 @@ _080C0974:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080C09B0
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080C09A4 @ =0x0000058A
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080C09A8 @ =0x0000058C
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080C09AC @ =0x0000058E
 	adds r1, r7, r2
 	b _080C09C8
@@ -2013,7 +2013,7 @@ _080C09C8:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080C09F4
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080C09F0 @ =0x000005A4
 	adds r1, r7, r2
 	str r0, [r1]
@@ -2042,7 +2042,7 @@ _080C09FA:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080C0A22
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080C0A80 @ =0x000005AC
 	adds r1, r7, r2
 	str r0, [r1]
@@ -2051,17 +2051,17 @@ _080C0A22:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080C0A50
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xb3
 	lsls r2, r2, #3
 	adds r1, r7, r2
 	str r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xb4
 	lsls r2, r2, #3
 	adds r1, r7, r2
 	str r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xb5
 	lsls r2, r2, #3
 	adds r1, r7, r2

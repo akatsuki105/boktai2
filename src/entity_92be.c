@@ -39,7 +39,7 @@ s32 Entity92BE_Update(Entity92BE* p) {
   p->timer++;
   if (p->timer >= p->lifetime) {
     if (p->scriptID != 0) {
-      Script_ExecById(p->scriptID, NULL);
+      VM_ExecByID(p->scriptID, NULL);
     }
     KillEntity(&p->e);
   }
@@ -60,9 +60,9 @@ s32 Entity92BE_Init(Entity92BE* p) {
   }
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);
-  idx = VM_SeekToKeyword('t') ? Script_GetValue() : 0;
+  idx = VM_SeekToKeyword('t') ? VM_GetValue() : 0;
   if (VM_SeekToKeyword('I')) {
-    p->lifetime = Script_GetValue();
+    p->lifetime = VM_GetValue();
   } else {
     p->lifetime = 60;
   }
@@ -70,7 +70,7 @@ s32 Entity92BE_Init(Entity92BE* p) {
   p->pos.x = 0, p->pos.y = 0, p->pos.z = 0;
   MainSprite_Add(&p->sprite, &p->gfx, idx + 11, SPRFLAG_SCREEN_COORD, 1, 0, 60, &p->pos);
   if (VM_SeekToKeyword('p')) {
-    p->scriptID = Script_GetValue();
+    p->scriptID = VM_GetValue();
   } else {
     p->scriptID = 0;
   }

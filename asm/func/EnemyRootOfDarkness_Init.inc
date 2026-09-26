@@ -166,7 +166,7 @@ _081A56FC:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5728
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081A572A
 	.align 2, 0
@@ -193,7 +193,7 @@ _081A572A:
 	str r4, [sp, #0xf4]
 	cmp r0, #0
 	beq _081A5754
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081A5756
 	.align 2, 0
@@ -223,7 +223,7 @@ _081A5756:
 	str r4, [sp, #0xf8]
 	cmp r0, #0
 	beq _081A5794
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A5798
 	.align 2, 0
 _081A578C: .4byte 0x00000252
@@ -376,7 +376,7 @@ _081A5898:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A58C8
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	b _081A58CA
 	.align 2, 0
@@ -389,7 +389,7 @@ _081A58CA:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A58DC
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x18
 	lsrs r5, r0, #0x18
 	b _081A58DE
@@ -410,7 +410,7 @@ _081A58E8:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5902
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
 	b _081A5904
 _081A5902:
@@ -419,7 +419,7 @@ _081A5904:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5914
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081A5916
 _081A5914:
@@ -746,7 +746,7 @@ _081A5B8C:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5C30
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A5C32
 	.align 2, 0
 _081A5B9C: .4byte 0x0000025D
@@ -794,7 +794,7 @@ _081A5C32:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5C44
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A5C46
 _081A5C44:
 	movs r0, #0x18
@@ -804,7 +804,7 @@ _081A5C46:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5C58
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A5C5A
 _081A5C58:
 	movs r0, #0
@@ -814,7 +814,7 @@ _081A5C5A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5C6C
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A5C6E
 _081A5C6C:
 	movs r0, #0
@@ -839,7 +839,7 @@ _081A5C86:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5CA0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	b _081A5CA4
 _081A5CA0:
@@ -849,7 +849,7 @@ _081A5CA4:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5CB4
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
 	b _081A5CB8
 _081A5CB4:
@@ -859,7 +859,7 @@ _081A5CB8:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5CC6
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A5CCC
 _081A5CC6:
 	movs r3, #0x96
@@ -904,7 +904,7 @@ _081A5CF2:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5D22
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A5D24
 _081A5D22:
 	movs r0, #0
@@ -927,7 +927,7 @@ _081A5D38:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5D50
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A5D52
 	.align 2, 0
 _081A5D4C: .4byte 0x00000546
@@ -941,7 +941,7 @@ _081A5D52:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5D68
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A5D6A
 _081A5D68:
 	movs r0, #0
@@ -952,7 +952,7 @@ _081A5D6A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5D84
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081A5D86
 	.align 2, 0
@@ -967,7 +967,7 @@ _081A5D86:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5D9C
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A5D9E
 _081A5D9C:
 	movs r0, #0
@@ -979,7 +979,7 @@ _081A5D9E:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5DB6
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081A5DB8
 _081A5DB6:
@@ -1019,7 +1019,7 @@ _081A5DC0:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5E08
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A5E0A
 _081A5E08:
 	movs r0, #0
@@ -1028,7 +1028,7 @@ _081A5E0A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5E1A
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A5E1C
 _081A5E1A:
 	movs r0, #0
@@ -1221,7 +1221,7 @@ _081A5F7E:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5F98
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081A5F9A
 _081A5F98:
@@ -1234,7 +1234,7 @@ _081A5F9A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5FB8
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081A5FBA
 	.align 2, 0
@@ -1249,7 +1249,7 @@ _081A5FBA:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A5FD8
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081A5FDA
 	.align 2, 0
@@ -1565,7 +1565,7 @@ _081A6248:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081A62C4
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081A62C6
 	.align 2, 0
 _081A6258: .4byte 0x00000674

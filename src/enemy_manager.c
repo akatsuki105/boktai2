@@ -27,10 +27,10 @@ typedef struct EnemyManager {
   u16 unk_28;                   // 0x28, 読み手も書き手も未発見
   u16 frameCounter;             // 0x2A, EnemyManager_Update が毎フレーム +1
   EnemyManagerFlags flags;      // 0x2C, bit3/4/5/11/12=sharedEntity の生成済みフラグ, bit13=パレット遷移中, bit14/15/16=種族 0x0B/0x17/0x1B を今フレーム更新済み(Updateで毎回クリア), bit17=遷移でなく即時差し替え
-  u8 unk_30;                    // 0x30, EnemyManager_Init が 3、FUN_080ef584 が VM_GetKeywordValue('l', 3) を代入. FUN_080ec5b4 がレコードの3語目へコピーする
+  u8 unk_30;                    // 0x30, EnemyManager_Init が 3、FUN_080ef584 が '.l=3' を代入. FUN_080ec5b4 がレコードの3語目へコピーする
   u8 unk_31;                    // 0x31, 読み手も書き手も未発見
   s16 enemyCount;               // 0x32, Enemy_Init_080ec640 で +1 / FUN_080ec6fc で -1. 0x13 を超えると新規生成を拒否する
-  Entity* sharedEntity[8];      // 0x34, FUN_080eca74 が種族に応じて生成する共有エンティティのキャッシュ. [0]=Entity080db520, [1]=FUN_081e8d0c, [2]=FUN_080da848, [6]=FUN_081ea120, [7]=FUN_081ea820
+  Entity* sharedEntity[8];      // 0x34, FUN_080eca74 が種族に応じて生成する共有エンティティのキャッシュ. [0]=Entity080db520, [1]=FUN_081e8d0c, [2]=Entity080da848_Create, [6]=FUN_081ea120, [7]=FUN_081ea820
   u16 sharedEntityId[8];        // 0x54, FUN_080eca74 が sharedEntity[i]->e.id を控える
   EnemyPaletteFade palFade[3];  // 0x64, FUN_080eeb14 が種族 0x0B/0x17/0x1B の順に添字 0/1/2 を選ぶ
 } EnemyManager;
@@ -403,7 +403,7 @@ Enemy* FindEnemyById(u32 id) {
 
 // スクリプトが指定した敵が生存している (unk_184 > 0) かを返す
 bool32 FUN_080eddc8(void) {
-  u32 id = Script_GetValue();
+  u32 id = VM_GetValue();
   Enemy* p;
   bool32 alive;
   s32 hp;
@@ -424,7 +424,7 @@ bool32 FUN_080eddc8(void) {
 }
 
 bool32 FUN_080eddf8(void) {
-  u32 id = Script_GetValue();
+  u32 id = VM_GetValue();
 
   if ((id != 0) && (FindEnemyById(id) != NULL)) {
     return TRUE;
@@ -505,7 +505,7 @@ s32 EnemyManager_Destroy(EnemyManager* p) {
   return 0;
 }
 
-// 戻り値を設定しないまま返る。呼び出し元の EnemyManager_Create は戻り値が負かどうかを見ている
+// 戻り値を設定しないまま返る, 呼び出し元の EnemyManager_Create は戻り値が負かどうかを見ている
 s32 EnemyManager_Init(EnemyManager* p, u16 msgRecordID, u32 _) {
   p->msgRecordID = msgRecordID;
   p->frameCounter = 0;

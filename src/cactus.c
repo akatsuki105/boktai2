@@ -14,10 +14,10 @@ typedef struct {
   u16 id;                        // 0x00, '.n', hitbox の id になる
   s16 hp;                        // 0x02, '.l=100', Cactus_OnHit が HitboxData.damage の分だけ減らし 0 以下で破壊される
   s32 areaId;                    // 0x04, '.m' が 0 以外のときだけ GetMapAreaAt(pos) の戻り値が入る,負なら生成を中止する,書くだけで読み手はいない
-  u16 scriptId;                  // 0x08, '.b', 破壊時に Script_ExecById へ渡してから 0 に戻す
+  u16 scriptId;                  // 0x08, '.b', 破壊時に VM_ExecByID へ渡してから 0 に戻す
   u8 damageTimer;                // 0x0A, 被弾時に 10 がセットされ毎フレーム減る,0 でない間だけ hitbox.flags に HBFLAG_UNK_2 が立つ
   u8 unk_0b;                     // 0x0B, padding?
-  s16 scriptArgs[4];             // 0x0C, '.a' の4要素, 破壊時の Script_ExecById の argv[4..7] になる
+  s16 scriptArgs[4];             // 0x0C, '.a' の4要素, 破壊時の VM_ExecByID の argv[4..7] になる
   Vec3 pos;                      // 0x14, HazardManager_Spawn の第1引数のコピー
   Vec3 min;                      // 0x1C, pos - (0xA4, 0x80, 0xA4)
   Vec3 max;                      // 0x24, pos + (0xA4, 0x80, 0xA4), プレイヤーが min..max に入ると CactusManager.hitbox が攻撃側として登録される
@@ -115,7 +115,7 @@ NON_MATCH s32 HazardManager_Update(CactusManager* p) {
           argv[7] = hazard->scriptArgs[3];
           sa.argc = 8;
           sa.argv = argv;
-          Script_ExecById(hazard->scriptId, &sa);
+          VM_ExecByID(hazard->scriptId, &sa);
           hazard->scriptId = 0;
         }
         Hazard_EmitBreakEffect(hazard);

@@ -62,7 +62,7 @@ NAKED s32 TextBox_RefreshFace(TextBox* p) { INCFUNC("asm/func/TextBox_RefreshFac
 
 NAKED s32 TextBox_SetInstant(s32 instant) { INCFUNC("asm/func/TextBox_SetInstant.inc"); }
 
-s32 TextBox_SetInstantScripted(void) { return TextBox_SetInstant(Script_GetValue()); }
+s32 TextBox_SetInstantScripted(void) { return TextBox_SetInstant(VM_GetValue()); }
 
 NAKED s32 TextBox_Close(void) { INCFUNC("asm/func/TextBox_Close.inc"); }
 
@@ -84,18 +84,18 @@ NAKED s32 TextBox_SetText(char* text) { INCFUNC("asm/func/TextBox_SetText.inc");
 NAKED s32 TextBox_SetRect(s32 x, s32 y, s32 w, s32 h) { INCFUNC("asm/func/TextBox_SetRect.inc"); }
 
 s32 TextBox_SetRectScripted(void) {
-  s32 x = Script_GetValue();
-  s32 y = Script_GetValue();
-  s32 w = Script_GetValue();
+  s32 x = VM_GetValue();
+  s32 y = VM_GetValue();
+  s32 w = VM_GetValue();
 
-  return TextBox_SetRect(x, y, w, Script_GetValue());
+  return TextBox_SetRect(x, y, w, VM_GetValue());
 }
 
 NAKED s32 TextBox_SetVarValue(s32 idx, s32 value) { INCFUNC("asm/func/TextBox_SetVarValue.inc"); }
 
 s32 TextBox_SetVar(void) {
-  s32 idx = Script_GetValue();
-  return TextBox_SetVarValue(idx, Script_GetValue());
+  s32 idx = VM_GetValue();
+  return TextBox_SetVarValue(idx, VM_GetValue());
 }
 
 s32 TextBox_SetExtendValue(s32 idx, char* text) {
@@ -110,7 +110,7 @@ s32 TextBox_SetExtendValue(s32 idx, char* text) {
 NAKED s32 TextBox_SetExtendStringScripted(void) { INCFUNC("asm/func/TextBox_SetExtendStringScripted.inc"); }
 
 s32 TextBox_SetExtend(void) {
-  s32 idx = Script_GetValue();
+  s32 idx = VM_GetValue();
   return TextBox_SetExtendValue(idx, FUN_0823d34c());
 }
 
@@ -122,13 +122,13 @@ NAKED s32 TextBox_EnableAutoAdvance(void) { INCFUNC("asm/func/TextBox_EnableAuto
 
 NAKED s32 TextBox_SetBgPltt(s32 fileID) { INCFUNC("asm/func/TextBox_SetBgPltt.inc"); }
 
-s32 TextBox_SetBgPlttScripted(void) { return TextBox_SetBgPltt(Script_GetValue()); }
+s32 TextBox_SetBgPlttScripted(void) { return TextBox_SetBgPltt(VM_GetValue()); }
 
 NAKED s32 TextBox_ConfigureScripted(void) { INCFUNC("asm/func/TextBox_ConfigureScripted.inc"); }
 
 NAKED s32 TextBox_SetWait(s32 frames) { INCFUNC("asm/func/TextBox_SetWait.inc"); }
 
-s32 TextBox_SetWaitScripted(void) { return TextBox_SetWait(Script_GetValue()); }
+s32 TextBox_SetWaitScripted(void) { return TextBox_SetWait(VM_GetValue()); }
 
 s32 FUN_08047fbc(void) {
   if (gTextBox == NULL) {

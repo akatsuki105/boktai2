@@ -336,7 +336,7 @@ _0804EC92:
 	bl Video_SetDrawPasses
 	ldr r0, [r4, #0x2c]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _0804ECBA:
 	ldr r0, [r4, #0x1c]
 	adds r0, #1

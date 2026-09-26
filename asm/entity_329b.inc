@@ -638,7 +638,7 @@ _08010138:
 	ldr r0, [r0]
 	adds r2, #0x1c
 	adds r1, r4, r2
-	bl Script_ExecById
+	bl VM_ExecByID
 	adds r0, r4, #0
 	bl KillEntity
 	ldr r2, _08010190 @ =0x03003E78
@@ -1154,7 +1154,7 @@ _080104F6:
 	movs r2, #0xb7
 	lsls r2, r2, #2
 	adds r1, r7, r2
-	bl Script_ExecById
+	bl VM_ExecByID
 	adds r0, r7, #0
 	bl KillEntity
 	b _0801057C
@@ -1913,7 +1913,7 @@ _08010B48: .4byte 0xFFFFFEFF
 _08010B4C: .4byte 0x0000596F
 _08010B50: .4byte 0x030043F0
 _08010B54:
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r3, #0xb8
 	lsls r3, r3, #2
 	adds r1, r6, r3
@@ -1947,7 +1947,7 @@ _08010B86:
 	movs r4, #0
 	b _08010BB4
 _08010B94:
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r2, r4, #1
 	ldr r3, _08010BDC @ =0x000002B6
 	adds r1, r6, r3

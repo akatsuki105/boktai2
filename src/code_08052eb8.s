@@ -380,7 +380,7 @@ _08055804:
 	beq _0805581C
 	ldr r0, [r5, #0x20]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	adds r0, r5, #0
 	bl KillEntity
 _0805581C:
@@ -4111,7 +4111,7 @@ FUN_08057354: @ 0x08057354
 	mov r3, sp
 	str r3, [r1, #4]
 	adds r0, r2, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _08057394:
 	add sp, #0x14
 	pop {r0}

@@ -9799,7 +9799,7 @@ FUN_0808f01c: @ 0x0808F01C
 	cmp r0, #0
 	beq _0808F070
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	b _0808F078
 	.align 2, 0
 _0808F060: .4byte 0x000034E4
@@ -10808,7 +10808,7 @@ FUN_0808f8bc: @ 0x0808F8BC
 	cmp r0, #0
 	beq _0808F904
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	b _0808F90C
 	.align 2, 0
 _0808F8F8: .4byte 0x000034E4
@@ -11301,7 +11301,7 @@ FUN_0808fc68: @ 0x0808FC68
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0808FC84
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, _0808FC88 @ =0x030046A0
 	ldr r1, [r1]
 	movs r2, #0x95
@@ -11321,7 +11321,7 @@ FUN_0808fc8c: @ 0x0808FC8C
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0808FCA6
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, _0808FCAC @ =0x030046A0
 	ldr r1, [r1]
 	ldr r2, _0808FCB0 @ =0x00000256
@@ -11341,7 +11341,7 @@ FUN_0808fcb4: @ 0x0808FCB4
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0808FCD0
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, _0808FCD4 @ =0x030046A0
 	ldr r1, [r1]
 	movs r2, #0x96
@@ -11361,7 +11361,7 @@ FUN_0808fcd8: @ 0x0808FCD8
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0808FCF2
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, _0808FCF8 @ =0x030046A0
 	ldr r1, [r1]
 	ldr r2, _0808FCFC @ =0x0000025A
@@ -11381,7 +11381,7 @@ FUN_0808fd00: @ 0x0808FD00
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0808FD24
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, _0808FD28 @ =0x030046A0
 	ldr r2, [r1]
 	movs r1, #0x98
@@ -11436,7 +11436,7 @@ FUN_0808fd44: @ 0x0808FD44
 	.align 2, 0
 _0808FD6C: .4byte 0x030046A0
 _0808FD70:
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, _0808FD88 @ =0x030046A0
 	ldr r1, [r1]
 	lsls r0, r0, #2
@@ -11458,7 +11458,7 @@ FUN_0808fd8c: @ 0x0808FD8C
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0808FDA0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r2, r0, #0
 	b _0808FDAE
 _0808FDA0:
@@ -11491,7 +11491,7 @@ FUN_0808fdc8: @ 0x0808FDC8
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0808FDDC
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	b _0808FDEA
 _0808FDDC:
@@ -11507,7 +11507,7 @@ _0808FDEA:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0808FE10
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, _0808FE18 @ =0x030046A0
 	ldr r1, [r1]
 	lsls r2, r4, #2
@@ -11534,7 +11534,7 @@ FUN_0808fe1c: @ 0x0808FE1C
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0808FE30
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	b _0808FE3E
 _0808FE30:
@@ -11550,7 +11550,7 @@ _0808FE3E:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0808FE64
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, _0808FE6C @ =0x030046A0
 	ldr r1, [r1]
 	lsls r2, r4, #2

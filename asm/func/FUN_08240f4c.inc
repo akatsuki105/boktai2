@@ -11,7 +11,7 @@
 	.align 2, 0
 _08240F64: .4byte 0x03001700
 _08240F68:
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	adds r0, r5, #0
 	adds r1, r4, #0

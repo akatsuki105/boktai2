@@ -26,7 +26,7 @@ _08013022:
 	cmp r0, #0
 	beq _0801304A
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	strh r0, [r4, #0x28]
 _0801304A:

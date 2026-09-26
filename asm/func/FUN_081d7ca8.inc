@@ -29,14 +29,14 @@ _081D7CCC:
 	str r2, [sp, #0x14]
 	cmp r0, #0
 	beq _081D7D02
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, [sp, #0x14]
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r7, #0
 	adds r1, #0x9e
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r7, #0
 	adds r1, #0xa0
 	strh r0, [r1]
@@ -45,9 +45,9 @@ _081D7D02:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _081D7D1C
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [sp, #8]
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081D7D22
 	.align 2, 0
 _081D7D18: .4byte 0x0300019C

@@ -151,7 +151,7 @@ _081DFCE8:
 	adds r4, r6, r0
 	movs r5, #3
 _081DFDB4:
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4]
 	adds r4, #2
 	subs r5, #1

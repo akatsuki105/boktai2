@@ -2228,7 +2228,7 @@ _08054102:
 	cmp r0, #0
 	beq _0805411E
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	str r0, [r5, #0x1c]
 _0805411E:
@@ -4314,15 +4314,15 @@ _080550B0:
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _08055120
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r4, r8
 	adds r4, #0x60
 	strh r0, [r4]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, r8
 	adds r1, #0x62
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, r8
 	adds r1, #0x64
 	strh r0, [r1]
@@ -4367,7 +4367,7 @@ _08055132:
 	add r4, sp, #0x10
 	movs r5, #4
 _08055156:
-	bl Script_GetValue
+	bl VM_GetValue
 	stm r4!, {r0}
 	subs r5, #1
 	cmp r5, #0

@@ -6,7 +6,7 @@
 #include "sprite_aux.h"
 #include "vm.h"
 
-// Entity081d0e20 が抱える要素。Malloc(0xC0) で個別に確保され、先頭が AuxSprite になっている, 根拠: Entity081d0e20_AllocElem
+// Entity081d0e20 が抱える要素, Malloc(0xC0) で個別に確保され、先頭が AuxSprite になっている, 根拠: Entity081d0e20_AllocElem
 // 中身のほとんどは FUN_081d0864 がスクリプトのキーワードから埋める
 typedef struct Entity081d0e20Elem {
   AuxSprite sprite;       // 0x00, 根拠: AuxSprite_Remove に渡される (Entity081d0e20_Destroy)
@@ -14,23 +14,23 @@ typedef struct Entity081d0e20Elem {
   AuxAnimState anim;      // 0x70, 根拠: FUN_08236fac に渡される (FUN_081d0864)
   Vec3 pos;               // 0x80, 8バイトまとめて sprite.pos にコピーされる, 根拠: FUN_081d0864
   s16 id;                 // 0x88, '.i=0', Entity081d0e20_FindElem が引数と比較する (ldrsh)
-  u16 scriptID_8a;        // 0x8A, '.R=0', flags bit7 が立つと Script_ExecById に渡して0クリアする, 根拠: FUN_081cf944
-  u16 scriptID_8c;        // 0x8C, '.C=0', flags bit8 が立つと Script_ExecById に渡して0クリアする, 根拠: FUN_081cf944
+  u16 scriptID_8a;        // 0x8A, '.R=0', flags bit7 が立つと VM_ExecByID に渡して0クリアする, 根拠: FUN_081cf944
+  u16 scriptID_8c;        // 0x8C, '.C=0', flags bit8 が立つと VM_ExecByID に渡して0クリアする, 根拠: FUN_081cf944
   u8 unk_8e[2];           // 0x8E, padding?
-  u32 unk_90[6];          // 0x90, キーワード 'G' の後ろから6個読む
-  u32 unk_a8[2];          // 0xA8, キーワード 'A' の後ろから2個読む
-  u16 unk_b0;             // 0xB0, '.T=0' を4で頭打ち。アニメの variant とパレット選択に使う (ldrh)
+  u32 unk_90[6];          // 0x90, '.G' の後ろから6個読む
+  u32 unk_a8[2];          // 0xA8, '.A' の後ろから2個読む
+  u16 unk_b0;             // 0xB0, '.T=0' を4で頭打ち, アニメの variant とパレット選択に使う (ldrh)
   u16 unk_b2;             // 0xB2, '.o=60',
   s16 slotIdx;            // 0xB4, Entity081d0e20_AllocElem が確保時にスロット番号を書く
   s16 state;              // 0xB6, PTR_ARRAY_085ae098 の添字, 根拠: Entity081d0e20_Update (ldrsh)
   u16 flags;              // 0xB8, bit9 で Update をスキップ、bit3 で unk_2c を後始末する, 根拠: Entity081d0e20_Update / _Destroy
   u8 unk_ba;              // 0xBA, 生成時に0
-  u8 unk_bb;              // 0xBB, 生成時に0。FUN_081d006c が unk_b2 と比較する
+  u8 unk_bb;              // 0xBB, 生成時に0, FUN_081d006c が unk_b2 と比較する
   u32 unk_bc;             // 0xBC, FUN_081d0838 が str で0を書く
 } Entity081d0e20Elem;
 static_assert(sizeof(Entity081d0e20Elem) == 192);
 
-// 要素を12個まで抱えるエンティティ。空きスロットは activeMask のビットで管理する
+// 要素を12個まで抱えるエンティティ, 空きスロットは activeMask のビットで管理する
 typedef struct Entity081d0e20 {
   Entity e;                       // 0x00, ENTITY_UNK_8
   AuxAnimFile* anim;              // 0x18, GetFile(DIR_ANIMATION, 0x0AE9)
@@ -65,7 +65,7 @@ void FUN_081cf944(Entity081d0e20Elem* p) {
       args[0] = p->id;
       sa.argc = 1;
       sa.argv = args;
-      Script_ExecById(p->scriptID_8c, &sa);
+      VM_ExecByID(p->scriptID_8c, &sa);
       p->scriptID_8c = 0;
     }
   }
@@ -82,7 +82,7 @@ void FUN_081cf944(Entity081d0e20Elem* p) {
       args[7] = (p->flags >> 10) & 1;
       sa.argc = 8;
       sa.argv = args;
-      Script_ExecById(p->scriptID_8a, &sa);
+      VM_ExecByID(p->scriptID_8a, &sa);
       p->scriptID_8a = 0;
     }
   }
@@ -249,16 +249,16 @@ NON_MATCH void FUN_081d0864(void) {
   if ((p != NULL || (p = Entity081d0e20_Create()) != NULL) && (elem = Entity081d0e20_AllocElem(p)) != NULL) {
     elem->state = 1;
     if (VM_SeekToKeyword('p')) {
-      elem->pos.x = Script_GetValue();
-      elem->pos.y = Script_GetValue();
-      elem->pos.z = Script_GetValue();
+      elem->pos.x = VM_GetValue();
+      elem->pos.y = VM_GetValue();
+      elem->pos.z = VM_GetValue();
     }
     elem->id = VM_GetKeywordValue('i', 0);
     elem->scriptID_8a = VM_GetKeywordValue('R', 0);
     if (VM_SeekToKeyword('G')) {
       dst = elem->unk_90;
       for (i = 5; i >= 0; i--) {
-        *dst = (VM_GetPC() == NULL) ? 0 : Script_GetValue();
+        *dst = (VM_GetPC() == NULL) ? 0 : VM_GetValue();
         dst++;
       }
     }
@@ -266,7 +266,7 @@ NON_MATCH void FUN_081d0864(void) {
     if (VM_SeekToKeyword('A')) {
       dst = elem->unk_a8;
       for (i = 1; i >= 0; i--) {
-        *dst = (VM_GetPC() == NULL) ? 0 : Script_GetValue();
+        *dst = (VM_GetPC() == NULL) ? 0 : VM_GetValue();
         dst++;
       }
     }

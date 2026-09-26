@@ -52,7 +52,7 @@ _08063BB6:
 	adds r4, #6
 	adds r0, r5, r4
 	bl ParticleShadow_Init
-	bl FUN_080dc44c
+	bl Entity080dc44c_Create
 	ldr r1, _08063CCC @ =0x00000446
 	adds r0, r5, r1
 	ldrh r0, [r0]

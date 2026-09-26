@@ -19,9 +19,9 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08017A74
-	bl Script_GetValue
+	bl VM_GetValue
 	strb r0, [r5, #0x1e]
-	bl Script_GetValue
+	bl VM_GetValue
 	b _08017A7A
 	.align 2, 0
 _08017A70: .4byte 0x03000070

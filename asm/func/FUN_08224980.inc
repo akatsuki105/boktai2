@@ -10,7 +10,7 @@
 	cmp r4, #0
 	beq _08224A14
 _08224998:
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _08224A24 @ =0x00000F46
 	adds r1, r4, r2
 	strh r0, [r1]

@@ -80,7 +80,7 @@ _08005DFE:
 	str r0, [r2, #4]
 	adds r0, r6, #0
 	adds r1, r2, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _08005E24:
 	add sp, #0x30
 	pop {r4, r5, r6, r7}

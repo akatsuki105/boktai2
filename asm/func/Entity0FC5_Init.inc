@@ -14,13 +14,13 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821B148
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0x86
 	lsls r2, r2, #1
 	adds r1, r4, r2
 	lsls r0, r0, #0x10
 	str r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r3, #0x88
 	lsls r3, r3, #1
 	adds r1, r4, r3
@@ -31,7 +31,7 @@ _0821B148:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821B15E
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0x92
 	lsls r2, r2, #1
 	adds r1, r4, r2

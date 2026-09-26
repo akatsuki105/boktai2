@@ -13,8 +13,8 @@ const u16 u16_ARRAY_085ac064[16] = {
     0xD01B, 0xD000, 0xD000, 0xD41B, 0xD02B, 0xD000, 0xD000, 0xD42B, 0xD02B, 0xD000, 0xD000, 0xD42B, 0xD81B, 0xD000, 0xD000, 0xDC1B,
 };
 
-// TODO: 他のEntityのrodataもまだ混ざってるのでちゃんと分ける
-INCBIN(".rodata", "data/rodata3.bin");  // ./tmp/bin.sh ./baserom.gba 0x085ac084 0x085af0ec ./data/rodata3.bin
+// TODO: 他のEntityのrodataもまだ混ざってるかもしれない
+INCBIN(".rodata", "data/rodata3.bin");  // ./tools/bin.ts ./baserom.gba 0x085ac084 0x085ad014 ./data/rodata3.bin
 
 INCASM("asm/entity_cc28_part1.inc");
 

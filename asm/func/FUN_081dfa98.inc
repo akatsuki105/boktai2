@@ -167,7 +167,7 @@ _081DFBE4:
 	str r0, [r5]
 	ldrh r0, [r1]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	b _081DFC08
 	.align 2, 0
 _081DFBFC: .4byte 0x000002E6

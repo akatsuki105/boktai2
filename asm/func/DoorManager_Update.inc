@@ -460,7 +460,7 @@ _08021400:
 	add r1, sp, #0x10
 	str r0, [r1, #4]
 	ldr r0, [r7, #0x48]
-	bl Script_ExecById
+	bl VM_ExecByID
 	b _0802147E
 	.align 2, 0
 _08021454: .4byte 0x030046A0
@@ -1134,7 +1134,7 @@ _08021950:
 	add r1, sp, #0x38
 	str r0, [r1, #4]
 	ldr r0, [r7, #0x48]
-	bl Script_ExecById
+	bl VM_ExecByID
 	b _080219CE
 	.align 2, 0
 _080219A4: .4byte 0x030046A0

@@ -16,7 +16,7 @@ typedef struct {
   u8 damageTimer;                // 0x1E, 被弾時に 10 がセットされ毎フレーム減る (この間だけ点滅と振動をする)
   u8 unk_1f;                     // 0x1F, padding?
   u32 timer;                     // 0x20, 毎フレーム +1, 被弾して unk_1b が立つときに 0 に戻る
-  s32 scriptID;                  // 0x24, '.e', 消滅時に Script_ExecById に渡す
+  s32 scriptID;                  // 0x24, '.e', 消滅時に VM_ExecByID に渡す
   Vec3 pos;                      // 0x28, '.p'
   HitboxData hitbox;             // 0x30
   MapTileOverride tileOverride;  // 0x80
@@ -75,7 +75,7 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
   } else {
     FUN_08014da0(3, 4, &p->pos, 0x3C, 0x1E, 0x10, 8, 8, 0, 0x100, 0x18, 0x10);
     FUN_08014da0(8, 8, &p->pos, 0x3C, 0x1E, 0x16, 8, 8, 0, 0x100, 0x18, 0x10);
-    if (p->scriptID != 0) Script_ExecById(p->scriptID, NULL);
+    if (p->scriptID != 0) VM_ExecByID(p->scriptID, NULL);
     KillEntity((Entity*)p);
   }
   p->timer++;
@@ -112,9 +112,9 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   p->hp = VM_GetKeywordValue('l', 50);
   z = VM_SeekToKeyword('p');
   if (z != 0) {
-    p->pos.x = Script_GetValue();
-    p->pos.y = Script_GetValue();
-    z = Script_GetValue();
+    p->pos.x = VM_GetValue();
+    p->pos.y = VM_GetValue();
+    z = VM_GetValue();
   } else {
     p->pos.x = 0;
     p->pos.y = 0;

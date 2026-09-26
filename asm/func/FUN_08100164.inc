@@ -11,7 +11,7 @@
 	bl VM_GetPC
 	cmp r0, #0
 	beq _0810018A
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _0810018C
 _0810018A:
@@ -24,7 +24,7 @@ _0810018C:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081001A4
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r2, r0, #0
 	b _081001A6
 _081001A4:

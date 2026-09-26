@@ -1970,7 +1970,7 @@ _08167760:
 	mov r0, sp
 	str r0, [r1, #4]
 	ldrh r0, [r2]
-	bl Script_ExecById
+	bl VM_ExecByID
 _081677CA:
 	ldr r1, _08167808 @ =0x000001DF
 	adds r0, r6, r1

@@ -1,4 +1,5 @@
 import { ControlType, DataType, InsnType, Instruction, KeywordType, MEM_SCRATCH, MEM_STAT, MEM_WORLD } from "./instruction.ts";
+import { encodeChar } from "./eucjp.ts";
 
 // ---------------------------------------------------------------------------
 // 字句解析
@@ -43,8 +44,12 @@ const lex = (input: string): Token[] => {
           bytes.push(parseInt(input.slice(j + 2, j + 4), 16));
           j += 4;
         } else {
-          bytes.push(input.charCodeAt(j));
-          j += 1;
+          // 生の文字は EUC-JP にして入れる(ソースは UTF-8 で読まれている)
+          const c = String.fromCodePoint(input.codePointAt(j)!);
+          const enc = encodeChar(c);
+          if (!enc) throw new Error(`EUC-JP で表せない文字 ${JSON.stringify(c)} at ${j}`);
+          for (const b of enc) bytes.push(b);
+          j += c.length;
         }
       }
       if (j >= input.length) throw new Error(`Unterminated string at ${i}`);
@@ -259,6 +264,8 @@ class Parser {
     if (t.text === "NativeCall_9906") tag = ControlType.NativeCall_9906;
     else if (t.text === "NativeCall_B745") tag = ControlType.NativeCall_B745;
     else if (t.text === "LoadMap") tag = ControlType.LoadMap;
+    else if (t.text === "DebugPrint") tag = ControlType.DebugPrint;
+    else if (t.text === "SetZoneCallback") tag = ControlType.SetZoneCallback;
     else {
       const m = /^Ctrl_([0-9A-Fa-f]{1,4})$/.exec(t.text);
       if (!m) return null;
@@ -413,7 +420,11 @@ class Parser {
     if (t.type === "STRING") {
       this.next();
       const instr = new Instruction(InsnType.String);
-      instr.bytes = new Uint8Array((t as Token & { bytes: number[] }).bytes);
+      // 0x00 終端はリテラルに書かない約束なのでここで付ける(instruction.ts の stringLiteral と対)。
+      // 終端を明示した古い表記を黙って二重終端にしないよう、\x00 を含むリテラルは弾く
+      const raw = (t as Token & { bytes: number[] }).bytes;
+      if (raw.includes(0x00)) throw new Error(`文字列リテラルに \\x00 は書かない(終端は自動で付く) at ${t.pos}`);
+      instr.bytes = new Uint8Array([...raw, 0x00]);
       return instr;
     }
     if (this.at("{")) return this.parseBlock();

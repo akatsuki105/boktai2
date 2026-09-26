@@ -8,7 +8,7 @@
 	b _08242EA6
 _08242DA2:
 	ldr r4, _08242E54 @ =gWeaponDB
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r1, r0, #3
 	adds r1, r1, r0
 	lsls r1, r1, #2
@@ -24,7 +24,7 @@ _08242DA2:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08242DD0
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #8]
 _08242DD0:
@@ -38,7 +38,7 @@ _08242DD0:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08242DEE
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 _08242DEE:
 	cmp r4, #0
@@ -53,7 +53,7 @@ _08242DF6:
 	add r4, sp, #4
 	movs r5, #1
 _08242E04:
-	bl Script_GetValue
+	bl VM_GetValue
 	cmp r0, #0
 	ble _08242E0E
 	strb r0, [r4, #0x18]
@@ -67,7 +67,7 @@ _08242E16:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08242EA0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _08242E5C

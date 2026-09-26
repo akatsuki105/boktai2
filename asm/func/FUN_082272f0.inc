@@ -199,7 +199,7 @@ _08227458:
 	str r0, [r1]
 	adds r0, r2, #0
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _0822747A:
 	ldrb r0, [r4]
 	cmp r0, #0

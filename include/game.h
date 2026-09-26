@@ -65,7 +65,7 @@ typedef struct {
   u8 unk_224[22];                // 0x224
   s16 solarBankInterestRate;     // 0x23A, Solar bank interest rate (stored as (1+r)*64, e.g. 14.0625% = 73). Defaults to 65 when starting a new game.
   u8 unk_23c[4];                 // 0x23C
-  s16 unk_240;                   // 0x240
+  s16 lap;                       // 0x240, 現在のゲーム周回数
   u8 unk_242[4];                 // 0x242
   u16 unk_246;                   // 0x246, FUN_08231ca8
   s32 unk_248;                   // 0x248, Entity83B2_Update で何かのIDとして使う? これをいじると Entity83B2 が機能しなくなる (戻すと機能する)
@@ -82,7 +82,9 @@ typedef struct {
   s16 unk_2b0[2];                // 0x2B0
   u32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒)
   u8 unk_2b8[8];                 // 0x2B8
-  u8 unk_2c0[32];                // 0x2C0
+  u8 unk_2c0[8];                 // 0x2C0
+  u32 unk_2c8[2];                // 0x2C8, FUN_0807a8e0 が isSabata で引いて 0 を書く
+  u8 unk_2d0[16];                // 0x2D0
   u32 weaponFrames[5];           // 0x2E0, 剣槍槌拳銃 の使用フレーム数, これを元に style が決まる (攻撃時のみでなく、その武器で歩いているだけでもカウントされる)
   u8 unk_2f4[4];                 // 0x2F4
   u16 side;                      // 0x2F8, 赤(Solar)寄りか黒(Dark)寄りか, 次の3つのどれかを取る, 0: 赤, 1: 中立, 2: 黒
@@ -134,7 +136,7 @@ static_assert(sizeof(World) == 1024);
 typedef struct {
   u8 unk_000[1024];  // 0x000
 } UnkGameStruct;
-static_assert(sizeof(UnkGameStruct) == 1024);  // Script_StorePointer で World と別扱いしているので World とはサイズが同じだけの別の構造体として定義しておく
+static_assert(sizeof(UnkGameStruct) == 1024);  // VM_StorePointer で World と別扱いしているので World とはサイズが同じだけの別の構造体として定義しておく
 
 // --------------------------------------------
 

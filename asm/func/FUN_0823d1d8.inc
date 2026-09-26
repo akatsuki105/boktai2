@@ -1,5 +1,5 @@
 	push {lr}
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	movs r1, #0x80

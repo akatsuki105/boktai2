@@ -16,7 +16,7 @@
 	mov r5, sp
 	b _08001858
 _08001850:
-	bl Script_GetValue
+	bl VM_GetValue
 	stm r5!, {r0}
 	adds r4, #1
 _08001858:

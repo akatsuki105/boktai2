@@ -2869,7 +2869,7 @@ _081A4180:
 	add r1, sp, #0x5c
 	str r0, [r1, #4]
 	ldrh r0, [r5]
-	bl Script_ExecById
+	bl VM_ExecByID
 	strh r4, [r5]
 _081A41A8:
 	mov r2, sl
@@ -3238,7 +3238,7 @@ _081A442E:
 	add r1, sp, #0x6c
 	str r0, [r1, #4]
 	ldrh r0, [r2]
-	bl Script_ExecById
+	bl VM_ExecByID
 _081A44A0:
 	ldrb r0, [r5]
 	movs r2, #0x90

@@ -117,7 +117,7 @@ bool32 FUN_08243380(void) {
     return FALSE;
   }
 
-  a = Script_GetValue();
+  a = VM_GetValue();
   for (slot = 0; slot < 16; slot++) {
     if (GetInventoryArmor(slot) < 0) {
       SetArmorIntoInventory(slot, a);
@@ -141,7 +141,7 @@ NON_MATCH void armor_082433bc(void) {
   gStat->armor = -1;
 
   if (VM_SeekToKeyword('n')) {
-    count = Script_GetValue();
+    count = VM_GetValue();
   } else {
     count = 0;
   }
@@ -149,11 +149,11 @@ NON_MATCH void armor_082433bc(void) {
   if (count > 0) {
     if (VM_SeekToKeyword('a')) {
       for (i = 0; i < count; i++) {
-        SetArmorIntoInventory(i, Script_GetValue());
+        SetArmorIntoInventory(i, VM_GetValue());
       }
     }
     if (VM_SeekToKeyword('e')) {
-      gStat->armor = Script_GetValue();
+      gStat->armor = VM_GetValue();
     }
   }
 #else

@@ -44,11 +44,11 @@ _081D0F94:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _081D0FD8
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0x1c]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0x1e]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0x20]
 _081D0FD8:
 	ldr r0, [r6, #0x1c]

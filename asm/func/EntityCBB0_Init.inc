@@ -5,7 +5,7 @@
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B2750
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080B274C @ =0x00000C0F
 	adds r1, r4, r2
 	strb r0, [r1]
@@ -36,7 +36,7 @@ _080B2756:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080B2798
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080B279A
 	.align 2, 0
 _080B2788: .4byte 0x00000C0F

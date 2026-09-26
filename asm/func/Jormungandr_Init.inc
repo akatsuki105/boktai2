@@ -52,17 +52,17 @@ _080CAD90:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080CADE0
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [sp, #0xc]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r4, _080CADDC @ =0x00001916
 	adds r1, r5, r4
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r7, r0, #0
 	b _080CADF2
 	.align 2, 0
@@ -94,33 +94,33 @@ _080CADF2:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080CAE78
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r7, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [sp, #0x10]
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [sp, #0x14]
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [sp, #0x18]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov sb, r0
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [sp, #0x1c]
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [sp, #0x20]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080CAE70 @ =0x00001928
 	adds r1, r5, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080CAE74 @ =0x0000192A
 	adds r1, r5, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov sl, r0
 	b _080CAEA6
 	.align 2, 0
@@ -423,7 +423,7 @@ _080CB0F8:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080CB134
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080CB130 @ =0x000025CC
 	adds r1, r5, r2
 	b _080CB13A
@@ -448,7 +448,7 @@ _080CB13A:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080CB158
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r6, _080CB154 @ =0x000025CE
 	adds r1, r5, r6
 	b _080CB15E
@@ -483,9 +483,9 @@ _080CB15E:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080CB1B0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r2, r0, #0
 	mov r0, r8
 	adds r1, r4, #0
@@ -509,7 +509,7 @@ _080CB1BA:
 	adds r6, #0xe8
 	b _080CB1D4
 _080CB1CC:
-	bl Script_GetValue
+	bl VM_GetValue
 	stm r6!, {r0}
 	adds r4, #1
 _080CB1D4:

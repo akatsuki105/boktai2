@@ -33,14 +33,14 @@ _081D0894:
 	str r1, [sp, #0x10]
 	cmp r0, #0
 	beq _081D08C8
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, [sp, #0x10]
 	strh r0, [r2]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r5, #0
 	adds r1, #0x82
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r5, #0
 	adds r1, #0x84
 	strh r0, [r1]
@@ -89,7 +89,7 @@ _081D091E:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081D0930
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081D0932
 	.align 2, 0
 _081D092C: .4byte 0x03000188
@@ -116,7 +116,7 @@ _081D0954:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081D0962
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081D0964
 _081D0962:
 	movs r0, #0

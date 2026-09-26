@@ -24,7 +24,7 @@ FUN_080b39dc: @ 0x080B39DC
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080B3A02
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	ldr r0, _080B3A08 @ =0x0000270F
 	cmp r1, r0
@@ -1256,7 +1256,7 @@ FUN_080b438c: @ 0x080B438C
 	cmp r0, #0
 	beq _080B43B8
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	adds r0, r4, #0
 	bl KillEntity
 _080B43B8:

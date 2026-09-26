@@ -24,7 +24,7 @@ _08234B3C:
 	movs r7, #0
 	mov sb, r7
 	str r1, [sp]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r8, r0
 	ldr r1, [sp]
 	cmp sb, r5

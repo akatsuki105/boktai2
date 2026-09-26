@@ -15,7 +15,7 @@
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF078
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080EF07A
 _080EF078:
 	movs r0, #0
@@ -24,7 +24,7 @@ _080EF07A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF08A
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080EF08C
 _080EF08A:
 	movs r0, #0
@@ -33,7 +33,7 @@ _080EF08C:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF09C
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080EF09E
 _080EF09C:
 	movs r0, #0

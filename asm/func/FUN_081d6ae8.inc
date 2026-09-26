@@ -82,7 +82,7 @@ _081D6B32:
 	ldrh r0, [r0]
 	mov r1, sl
 	str r3, [sp, #0x18]
-	bl Script_ExecById
+	bl VM_ExecByID
 	ldrb r0, [r5]
 	adds r0, #1
 	strb r0, [r5]

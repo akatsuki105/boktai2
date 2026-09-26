@@ -19,14 +19,14 @@
 	lsls r2, r2, #1
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5]
 _0821A9A8:
 	movs r0, #0x74
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A9BE
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0x96
 	lsls r2, r2, #1
 	adds r1, r4, r2

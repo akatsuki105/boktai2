@@ -123,7 +123,7 @@ NON_MATCH s32 MapItem_ExecScript(MapItem* item, u16 scriptID, s32 param_3) {
   argv[8] = owner;
   argv[9] = param_3;
   args.argc = 10, args.argv = argv;
-  return Script_ExecById(scriptID, &args);
+  return VM_ExecByID(scriptID, &args);
 #else
   INCFUNC("asm/func/MapItem_ExecScript.inc");
 #endif

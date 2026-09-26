@@ -73,7 +73,7 @@ typedef struct {
 // 0x08CBF248
 typedef struct {
   u32 build_data;                  // 0x00000, seconds since unix epoch
-  s32 script_entries[11539 + 1];   // 0x00004, bytecode[script_entries[idx]], 各エントリの上位8bit は用途不明, Script_ExecById で渡すスクリプトID から -1 することに注意
+  s32 script_entries[11539 + 1];   // 0x00004, bytecode[script_entries[idx]], 各エントリの上位8bit は用途不明, VM_ExecByID で渡すスクリプトID から -1 することに注意
   ScriptDirectoryOffsets offsets;  // 0x0B454
   u32 string_index[7141];          // 0x0B464
   u8 string_data[269792];          // 0x123F8
@@ -137,15 +137,15 @@ extern VM gVM;                // 0x030045A0
 u8* VM_GetPC(void);
 void VM_SetPC(u8* addr);
 u8* VM_ReadContainerLength(u8* pc, u32* length);
-u32 Script_GetValue(void);
+u32 VM_GetValue(void);
 u8* VM_DecodeValue(u8* pc, s32* type, void* val);
 void* VM_GetValueSafe2(void);
 s32 VM_ParseStringRef(u8* pc);
 char* Textbox_LookupString(s32 stringID);
 
-s32 Script_ExecById(u32 scriptID, ScriptArgs* args);
-bool32 Script_ExecBlock(u8* pc, ScriptArgs* args, s32 varidx);
-s32 Script_ExecByPointer(u8* pc, ScriptArgs* args);
+s32 VM_ExecByID(u32 scriptID, ScriptArgs* args);
+bool32 VM_ExecBlock(u8* pc, ScriptArgs* args, s32 varidx);
+s32 VM_ExecByPointer(u8* pc, ScriptArgs* args);
 
 void FUN_0823167c(u8* dst);
 void FUN_0823206c(u8* pc, s32 offset, u32 val);
@@ -154,7 +154,7 @@ u32 FUN_082320e4(u8* pc, s32 offset);
 u8* FUN_0823d340(void);
 void* FUN_0823d34c(void);
 
-// keywordChar は ASCII 文字で書いてください。 例えば  VM_SeekToKeyword(0x64)  は  VM_SeekToKeyword('d') と書いてください。
+// keywordChar は ASCII 文字で書いてください, 例えば  VM_SeekToKeyword(0x64)  は  VM_SeekToKeyword('d') と書いてください
 bool32 VM_SeekToKeyword(u8 keywordChar);
 s32 VM_GetKeywordValue(u8 keywordChar, s32 fallback);
 

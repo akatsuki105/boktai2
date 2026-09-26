@@ -15,7 +15,7 @@
 	.align 2, 0
 _08047D24: .4byte 0x030000C4
 _08047D28:
-	bl Script_GetValue
+	bl VM_GetValue
 	ldrb r2, [r4, #0xd]
 	lsls r2, r2, #2
 	adds r1, r4, #0

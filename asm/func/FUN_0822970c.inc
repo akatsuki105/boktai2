@@ -21,7 +21,7 @@ _08229720:
 	ldr r3, _082297AC @ =0x00000F28
 	adds r0, r4, r3
 	strb r1, [r0]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _082297B0 @ =0x00000F46
 	adds r1, r4, r2
 	strh r0, [r1]
@@ -41,17 +41,17 @@ _08229720:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _082297C4
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r3, _082297BC @ =0x00000E9C
 	adds r1, r4, r3
 	strh r0, [r1]
 	strh r0, [r5, #0x1c]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _082297C0 @ =0x00000E9E
 	adds r1, r4, r2
 	strh r0, [r1]
 	strh r0, [r5, #0x1e]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r3, #0xea
 	lsls r3, r3, #4
 	adds r1, r4, r3
@@ -97,7 +97,7 @@ _082297EC:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08229802
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _0822982C @ =0x00000F0C
 	adds r1, r4, r2
 	str r0, [r1]

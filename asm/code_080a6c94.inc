@@ -14,7 +14,7 @@ EngineCall_InitArray: @ 0x080A6C94
 	movs r4, #0
 	b _080A6CB2
 _080A6CA2:
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r2, r0, #0
 	mov r0, sp
 	adds r1, r4, #0
@@ -45,11 +45,11 @@ EngineCall_Loop: @ 0x080A6CC4
 	str r0, [r7, #0xc]
 	movs r0, #0x61
 	bl VM_SeekToKeyword
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r8, r0
 	movs r0, #0x72
 	bl VM_SeekToKeyword
-	bl Script_GetValue
+	bl VM_GetValue
 	mov sb, r0
 	mov r1, r8
 	lsls r0, r1, #5
@@ -73,7 +73,7 @@ EngineCall_Loop: @ 0x080A6CC4
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A6D66
-	bl Script_GetValue
+	bl VM_GetValue
 	mov sl, r0
 	movs r0, #0x64
 	bl VM_SeekToKeyword
@@ -102,7 +102,7 @@ _080A6D44:
 _080A6D58:
 	mov r0, sl
 	adds r1, r7, #0
-	bl Script_ExecByPointer
+	bl VM_ExecByPointer
 	ldr r0, [r7, #0x10]
 	cmp r0, sb
 	blt _080A6D36
@@ -129,7 +129,7 @@ EngineCall_Rand: @ 0x080A6D80
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A6DC0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	cmp r3, #0
 	ble _080A6DC0
@@ -224,7 +224,7 @@ FUN_080a6e30: @ 0x080A6E30
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A6E5C
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	movs r0, #0x73
 	bl VM_SeekToKeyword
@@ -235,7 +235,7 @@ _080A6E5C:
 	rsbs r0, r0, #0
 	b _080A6E80
 _080A6E62:
-	bl Script_GetValue
+	bl VM_GetValue
 	cmp r0, #0
 	bne _080A6E70
 	adds r0, r5, r4
@@ -294,7 +294,7 @@ FUN_080a6ec0: @ 0x080A6EC0
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A6ED2
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080A6ED4
 _080A6ED2:
 	movs r0, #0

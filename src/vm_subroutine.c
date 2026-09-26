@@ -49,7 +49,6 @@ TaskFn VM_GetSubroutine_Internal(u32 subID, Subroutine* arr, s32 start, s32 len)
   return NULL;
 }
 
-// Script_FindEngineCall
 TaskFn VM_GetSubroutine(u32 subroutineID) {
   TaskFn fn = VM_GetSubroutine_Internal(subroutineID, gSubroutineTable, 0, gSubroutineCount);
   return fn;

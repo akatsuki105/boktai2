@@ -10937,7 +10937,7 @@ FUN_081f02f0: @ 0x081F02F0
 	cmp r0, #0
 	beq _081F0304
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _081F0304:
 	pop {r0}
 	bx r0
@@ -17472,7 +17472,7 @@ FUN_081f337c: @ 0x081F337C
 	cmp r0, #0
 	beq _081F3390
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _081F3390:
 	pop {r0}
 	bx r0
@@ -28528,7 +28528,7 @@ FUN_081f8620: @ 0x081F8620
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0x80
-	bl FUN_080dd8d4
+	bl SpawnAttackBox
 	movs r0, #0x90
 	lsls r0, r0, #1
 	adds r1, r4, r0
@@ -32477,7 +32477,7 @@ FUN_081fa378: @ 0x081FA378
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _081FA3DC
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r5, _081FA3D4 @ =0xFFFF0000
@@ -32486,13 +32486,13 @@ FUN_081fa378: @ 0x081FA378
 	ands r4, r1
 	orrs r4, r0
 	str r4, [sp, #4]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r1, _081FA3D8 @ =0x0000FFFF
 	ands r4, r1
 	orrs r4, r0
 	str r4, [sp, #4]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r2, [sp, #8]

@@ -13,7 +13,7 @@ u32 VM_ParseParameter(u32 idx);
 u32 VM_GetVariable(u32 varidx);
 u8* VM_ReadMemory(u8* pc, s32* op, void* out);
 u32 VM_RunExpression(u8* pc);
-s32 Script_Exec(u8* pc, ScriptArgs* args, s32 varIdx);
+s32 VM_Exec(u8* pc, ScriptArgs* args, s32 varIdx);
 u8* FUN_0823201c(u8* pc, u8* dst);
 
 static const ScriptArgs sEmptyArgs = {0, NULL};  // 引数無しでスクリプトを呼ぶときに束縛されるデフォルトの引数記述子
@@ -320,7 +320,7 @@ u8* VM_GetPC(void) {
 }
 
 // 現在のスクリプトPC位置の値を読む
-u32 Script_GetValue(void) { return VM_GetValueAt(VM_GetPC()); }
+u32 VM_GetValue(void) { return VM_GetValueAt(VM_GetPC()); }
 
 s32 FUN_082316f4(s32* out) { return FUN_082315c0(VM_GetPC(), out); }
 
@@ -439,18 +439,18 @@ void* VM_Parse_ScriptDirectory_ScriptEntries(s32* offsets, s32* length) {
  * @param scriptID スクリプトID, gScriptTable.entries のインデックスに変換する際に -1 することに注意
  * @param unk ScriptDirectory.script_entries のエントリの bit24..31 をここに書き込む (用途不明)
  */
-u8* Script_LookupById(u32 scriptID, u32* unk) {
+u8* VM_LookupByID(u32 scriptID, u32* unk) {
   u32 idx = (scriptID & 0x7FFFFFFF) - 1;
   u8* ptr = (u8*)&gScriptTable.entries[idx];
   *unk = ptr[3];
   return &gScriptTable.bytecode[(*(s32*)ptr) & 0x00FFFFFF];
 }
 
-s32 Script_ExecById(u32 scriptID, ScriptArgs* args) {
+s32 VM_ExecByID(u32 scriptID, ScriptArgs* args) {
   u32 unk, length;
-  u8* pc = Script_LookupById(scriptID, &unk);
+  u8* pc = VM_LookupByID(scriptID, &unk);
   pc = VM_ReadContainerLength(pc, &length);
-  return Script_Exec(pc, args, unk);
+  return VM_Exec(pc, args, unk);
 }
 
 // 呼び出し先スクリプトIDと引数列を読み取り、引数記述子を組み立ててそのスクリプトを実行する
@@ -474,7 +474,7 @@ s32 VM_CallScript(u8* pc) {
   }
 
   args.argc = count, args.argv = argv;
-  return Script_ExecById(scriptID, &args);
+  return VM_ExecByID(scriptID, &args);
 }
 
 NAKED void* UNUSED FUN_0823193c(void* p, u32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0823193c.inc"); }
@@ -551,7 +551,7 @@ void VM_RestoreScriptTable(u8* src) {
 }
 
 // ブロック内の文(式/control/呼び出し)を順に実行する。controlがreturnを表す場合(戻り値1)そこで打ち切る
-bool32 Script_ExecBlock(u8* pc, ScriptArgs* args, s32 idx) {
+bool32 VM_ExecBlock(u8* pc, ScriptArgs* args, s32 idx) {
   void* frame;
   u32 length;
   s32 nibble;
@@ -597,8 +597,8 @@ done:
   return result;
 }
 
-s32 Script_ExecByPointer(u8* pc, ScriptArgs* args) {
-  if (Script_ExecBlock(pc, args, 0) == 1) {
+s32 VM_ExecByPointer(u8* pc, ScriptArgs* args) {
+  if (VM_ExecBlock(pc, args, 0) == 1) {
     return (s32)gVM.result;
   }
   gVM.result = NULL;
@@ -610,11 +610,11 @@ s32 Script_ExecByPointer(u8* pc, ScriptArgs* args) {
  * @param args ブロック内から変数varIdxとして読める値。NULLなら引数無しを表す sEmptyArgs がデフォルト値として束縛される
  * @param varIdx valを束縛する変数スロット番号(VM_GetVariableのvaridxに対応)
  */
-s32 Script_Exec(u8* pc, ScriptArgs* args, s32 varIdx) {
+s32 VM_Exec(u8* pc, ScriptArgs* args, s32 varIdx) {
   if (args == NULL) {
     args = (ScriptArgs*)&sEmptyArgs;
   }
-  if (Script_ExecBlock(pc, args, varIdx) == 1) {
+  if (VM_ExecBlock(pc, args, varIdx) == 1) {
     return (s32)gVM.result;
   }
   gVM.result = NULL;
@@ -624,12 +624,13 @@ s32 Script_Exec(u8* pc, ScriptArgs* args, s32 varIdx) {
 void VM_ExecSpecial(void) {
   u32 length;
   u8* pc = VM_ReadContainerLength(gScriptTable.special_script_data, &length);
-  Script_ExecByPointer(pc, (ScriptArgs*)&sEmptyArgs);
+  VM_ExecByPointer(pc, (ScriptArgs*)&sEmptyArgs);
 }
 
-s32 FUN_08231bcc(void) {
-  if (Script_GetValue() == 0) {
-    VM_GetValueSafe1();
+// デバッグ用の assert, SubroutineID: 0xEC1F
+s32 VM_DebugAssert(void) {
+  if (!VM_GetValue()) {
+    VM_GetValueSafe1();  // 何もせず握り潰す, 開発環境では何かしらのエラー表示や停止処理が行われていたと思われる
   }
   return 0;
 }
@@ -687,7 +688,7 @@ void* FUN_08231d80(void* statFieldPtr) {
 
 void VM_ClearScratchpad(void) { ClearMemory(gScratch, sizeof(UnkGameStruct)); }
 
-void Script_LoadPointer(u8* src, s32 cmdAndArgs, s32 offset, u32* out) {
+void VM_LoadPointer(u8* src, s32 cmdAndArgs, s32 offset, u32* out) {
   switch ((cmdAndArgs >> 0x18) & 0xF) {
     case OP_S32: {
       src += offset * 4;
@@ -727,7 +728,7 @@ void Script_LoadPointer(u8* src, s32 cmdAndArgs, s32 offset, u32* out) {
 
 NAKED u8* VM_ReadMemory(u8* pc, s32* op, void* out) { INCFUNC("asm/func/VM_ReadMemory.inc"); }
 
-void Script_StorePointerCore(u8* dst, s32 cmdAndArgs, s32 offset, u32 val) {
+void VM_StorePointerCore(u8* dst, s32 cmdAndArgs, s32 offset, u32 val) {
   switch (((cmdAndArgs >> 0x18) & 0xF)) {
     case OP_S32: {
       u32* q = (u32*)(dst + offset * 4);
@@ -769,7 +770,7 @@ void Script_StorePointerCore(u8* dst, s32 cmdAndArgs, s32 offset, u32 val) {
   }
 }
 
-NAKED u8* Script_StorePointer(u8* pc, u32 val) { INCFUNC("asm/func/Script_StorePointer.inc"); }
+NAKED u8* VM_StorePointer(u8* pc, u32 val) { INCFUNC("asm/func/VM_StorePointer.inc"); }
 
 u8* FUN_0823201c(u8* pc, u8* dst) {
   u8* newPc;
@@ -809,7 +810,7 @@ void FUN_0823206c(u8* pc, s32 offset, u32 val) {
     offset += *(u16*)(pc + 6);
   }
 
-  Script_StorePointerCore(dst, cmd, offset, val);
+  VM_StorePointerCore(dst, cmd, offset, val);
 }
 
 // pc上の4バイトのPointer/Indexed Pointer記述子を読み、対象領域(gStat/gScratch/gWorld)内のアドレスを解決してその値を読む
@@ -831,7 +832,7 @@ u32 FUN_082320e4(u8* pc, s32 offset) {
     offset += *(u16*)(pc + 6);
   }
 
-  Script_LoadPointer(src, cmd, offset, &out);
+  VM_LoadPointer(src, cmd, offset, &out);
   return out;
 }
 
@@ -857,7 +858,7 @@ u8* FUN_08232160(u8* pc) {
     offset += *(u16*)(p + 6);
   }
 
-  Script_StorePointerCore(dst, cmd, offset, val);
+  VM_StorePointerCore(dst, cmd, offset, val);
   return newPc;
 }
 
@@ -884,7 +885,7 @@ u32 FUN_082321e0(u8* pc) {
     offset += *(u16*)(p + 6);
   }
 
-  Script_LoadPointer(src, cmd, offset, &out);
+  VM_LoadPointer(src, cmd, offset, &out);
   return out;
 }
 

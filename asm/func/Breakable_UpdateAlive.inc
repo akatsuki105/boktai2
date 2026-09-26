@@ -30,7 +30,7 @@ _08007A60:
 	str r0, [r1, #4]
 	mov r2, sb
 	ldrh r0, [r2, #0xc]
-	bl Script_ExecById
+	bl VM_ExecByID
 _08007A84:
 	mov r0, sb
 	ldrb r1, [r0, #0xa]

@@ -938,7 +938,7 @@
 	} else if (p0 == 1) {
 		ScriptCall(0x13EE);
 	} else {
-		NativeCall_B745((u16)0xEC1F, 0, "\xA4\xBD\xA4\xF3\xA4\xCA\xBB\xE0\xA4\xCB\xCA\xFD\xCA\xB9\xA4\xA4\xA4\xC6\xA4\xCA\xA4\xA4\x21\x21\x21\x00");
+		NativeCall_B745((u16)0xEC1F, 0, "そんな死に方聞いてない!!!");
 	}
 }
 
@@ -1410,7 +1410,7 @@
 
 // Script_002E at 0x08D160E2
 {
-	Ctrl_D4CB(p0, (u16)2896, .m = (u16)3538, .w = [p1, p2, p3, p5], .s = p4, .e = {
+	SetZoneCallback(p0, (u16)2896, .m = (u16)3538, .w = [p1, p2, p3, p5], .s = p4, .e = {
 		if (p9 != (s16)999) {
 			*((s16 *)(world + 0x30)) = p9;
 		} else {}
@@ -3711,7 +3711,7 @@
 
 // Script_009C at 0x08D19EF5
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .w = [p4, p5, p2, p3], .s = [p1, p6], .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .w = [p4, p5, p2, p3], .s = [p1, p6], .e = {
 		if (BIT(world + 0xC, 4) == 0) {
 			if (p7 == 5) {
 				BIT(world + 0x40, 2) = 1;
@@ -3796,7 +3796,7 @@
 	if (p0 == -1) {
 		BIT(scratch + 0x14, 1) = 1;
 	} else {
-		Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .e = {
 			BIT(scratch + 0x14, 1) = 1;
 		});
 	}
@@ -3871,7 +3871,7 @@
 
 // Script_00A7 at 0x08D1A2B1
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)5399, .w = [p4, p5, p2, p3], .s = p1, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)5399, .w = [p4, p5, p2, p3], .s = p1, .e = {
 		*((s16 *)(scratch + 0x1C)) = (p6 << 8) - *((s16 *)(stat + 0x32));
 		if (*((s16 *)(scratch + 0x1C)) < 0) {
 			*((s16 *)(scratch + 0x1C)) = *((s16 *)(scratch + 0x1C)) * -1;
@@ -3896,7 +3896,7 @@
 	} else {
 		BIT(scratch + 0x17, 5) = 0;
 	}
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)5321, .w = [p4, p2, p3], .s = p1, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)5321, .w = [p4, p2, p3], .s = p1, .e = {
 		if (BIT(world + 0xC, 4) == 0 && BIT(scratch + 0x17, 5) == 0 && p2 == (u16)3538) {
 			ScriptCall(0x007B);
 			*((s16 *)(world + 0x56)) = *((s16 *)(world + 0x54));
@@ -3910,7 +3910,7 @@
 
 // Script_00A9 at 0x08D1A424
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)5321, .w = [p1, p2, p3, p4], .s = [p5, p6, p7], .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)5321, .w = [p1, p2, p3, p4], .s = [p5, p6, p7], .e = {
 		*((u16 *)(scratch + 0x3C)) = p10;
 		if (p2 == (u16)3538) {
 			if (BIT(scratch + 0x17, 5) == 1 && BIT(world + 0x4C, 0) == 0) {
@@ -3956,7 +3956,7 @@
 {
 	ScriptCall(0x0082, p0);
 	ScriptCall(0x0082, p1);
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)5321, .s = [p0, p1, p2], .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)5321, .s = [p0, p1, p2], .e = {
 		if (p2 == (u16)3538 && BIT(scratch + 0x17, 6) == 0) {
 			ScriptCall(0x00B4, p1);
 			ScriptCall(0x00AE, p10, p11, *((s16 *)(scratch + 0x3A)), 0, p3, p4, p5, p12);
@@ -3964,7 +3964,7 @@
 			BIT(scratch + 0x17, 6) = 0;
 		}
 	});
-	Ctrl_D4CB(p1, (u16)62955, .m = (u16)5321, .s = [p0, p1, p3], .e = {
+	SetZoneCallback(p1, (u16)62955, .m = (u16)5321, .s = [p0, p1, p3], .e = {
 		if (p2 == (u16)3538 && BIT(scratch + 0x17, 6) == 0) {
 			ScriptCall(0x00B4, p1);
 			ScriptCall(0x00AE, p11, p10, *((s16 *)(scratch + 0x3A)), 0, p3, p4, p5, p12);
@@ -4334,7 +4334,7 @@
 
 // Script_00C0 at 0x08D1B291
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .w = p1, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .w = p1, .e = {
 		NativeCall_B745((u16)0x40F8, p1);
 		NativeCall_B745((u16)0x515D, .f = p6);
 		NativeCall_B745((u16)0x5C9E, *((s16 *)(stat + 0x254)));
@@ -4350,14 +4350,14 @@
 
 // Script_00C1 at 0x08D1B32A
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .e = {
 		NativeCall_B745((u16)0x40F8, p1);
 	});
 }
 
 // Script_00C2 at 0x08D1B349
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .w = p1, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .w = p1, .e = {
 		NativeCall_B745((u16)0x515D, .f = p6);
 		NativeCall_B745((u16)0x5C9E, *((s16 *)(stat + 0x254)));
 		NativeCall_B745((u16)0x5C9E, *((s16 *)(stat + 0x256)));
@@ -4457,7 +4457,7 @@
 	NativeCall_9906((u16)0x4AE5, (u16)12667, .f = 2, .c = v1, .m = v1, .p = [p2, p4, p6], .a = [0, 0, 8, 0, 0, 0]);
 	BIT(scratch + 0x4E, 0) = 0;
 	BIT(scratch + 0x4E, 1) = 0;
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)5399, .w = v1, .s = [p1, p2, p3, p4], .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)5399, .w = v1, .s = [p1, p2, p3, p4], .e = {
 		if ({ NativeCall_B745((u16)0x31FF); } < 1) {
 			if (BIT(scratch + 0x4E, 0) == 1) {
 				BIT(scratch + 0x4E, 0) = 0;
@@ -4480,7 +4480,7 @@
 			}
 		}
 	});
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)5399, .s = [p5, p6], .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)5399, .s = [p5, p6], .e = {
 		if ({ NativeCall_B745((u16)0x31FF); } < 1) {
 			if (BIT(scratch + 0x4E, 1) == 1) {
 				BIT(scratch + 0x4E, 1) = 0;
@@ -4597,7 +4597,7 @@
 	if (!(({ NativeCall_B745((u16)0x31FF); } > 0 && { NativeCall_B745((u16)0x31FF); } < 9))) {
 		NativeCall_B745((u16)0xF661, .n = *((u16 *)(scratch + 0x50)));
 	}
-	Ctrl_D4CB(p1, (u16)5321, .m = (u16)5398, .w = (*((u16 *)(scratch + 0x50))), .e = {
+	SetZoneCallback(p1, (u16)5321, .m = (u16)5398, .w = (*((u16 *)(scratch + 0x50))), .e = {
 		ScriptCall(0x00B6, p1);
 		if (p2 == (u16)3538) {
 			if ({ NativeCall_B745((u16)0x31FF); } > 0 && { NativeCall_B745((u16)0x31FF); } < 9) {
@@ -4841,7 +4841,7 @@
 	if (p9 == 1) {
 		NativeCall_B745((u16)0xB76C, .n = p0, .s = 1, .S = 0);
 	}
-	Ctrl_D4CB(p6, p0, .m = (u16)5321, .s = [p7, p8, p10], .e = {
+	SetZoneCallback(p6, p0, .m = (u16)5321, .s = [p7, p8, p10], .e = {
 		if (p2 == (u16)3538) {
 			ScriptCall(p10, p0);
 			ScriptCall(p12, 0);
@@ -5010,7 +5010,7 @@
 	if ((*((u8 *)(scratch + 0x45)) >= 5 || *((u8 *)(scratch + 0x45)) < 1) && { NativeCall_B745((u16)0x5933); } == 4) {
 		NativeCall_B745((u16)0x34C2, .n = p10);
 	} else {
-		Ctrl_D4CB(p0, (u16)62955, .m = (u16)5399, .s = p1, .e = {
+		SetZoneCallback(p0, (u16)62955, .m = (u16)5399, .s = p1, .e = {
 			if ({ NativeCall_B745((u16)0x31FF); } < 1) {
 				NativeCall_B745((u16)0xF661, .n = p10);
 			} else {
@@ -5023,7 +5023,7 @@
 // Script_00EF at 0x08D1C777
 {
 	*((u8 *)(scratch + 0x5C)) = *((u8 *)(scratch + 0x5C)) + 1;
-	NativeCall_B745((u16)0xEC1F, (*((u8 *)(scratch + 0x5C)) < 12), "\xA5\xAA\xA5\xD6\xA5\xB8\xA5\xA7\xC5\xB7\xC1\xEB\x6D\x61\x78\x20\x6F\x76\x65\x72\x2E\x20\x63\x61\x6C\x6C\x20\x6D\x65\x2C\x59\x41\x4E\x4F\x21\x21\x00");
+	NativeCall_B745((u16)0xEC1F, (*((u8 *)(scratch + 0x5C)) < 12), "オブジェ天窓max over. call me,YANO!!");
 	if (*((u8 *)(scratch + 0x5C)) < 10) {
 		v1 = (u16)44606;
 		v1 = v1 + *((u8 *)(scratch + 0x5C));
@@ -5207,7 +5207,7 @@
 	if (p1 > 7 || p1 == 6 || p1 == 4 || p1 == 2 || p1 <= 0) {
 		return;
 	}
-	Ctrl_D4CB(p0, (u16)62955, .b = 1, .w = [p2, p3, p4, p1], .m = (u16)5399, .e = {
+	SetZoneCallback(p0, (u16)62955, .b = 1, .w = [p2, p3, p4, p1], .m = (u16)5399, .e = {
 		BIT(scratch + 0x4E, 6) = 0;
 		switch (p9) {
 			case 1: {
@@ -5513,12 +5513,12 @@
 // Script_011B at 0x08D1D515
 {
 	ScriptCall(0x00B6, p2);
-	NativeCall_B745((u16)0xEC1F, (p1 < 32), "\x73\x77\x68\x69\x63\x68\x20\x6E\x75\x6D\x20\x6F\x76\x65\x72\x21\x21\x00");
+	NativeCall_B745((u16)0xEC1F, (p1 < 32), "swhich num over!!");
 	BIT(world + 0x36, 0, 32, (p1)) = p6;
 	NativeCall_B745((u16)0x8337, .n = p0, .t = p3, .i = BIT(world + 0x36, 0, 32, (p1)), .p = [*((s16 *)(scratch + 0x26)), (*((s16 *)(scratch + 0x46))), *((s16 *)(scratch + 0x2A))], .R = 3);
 	NativeCall_B745((u16)0xD7F4, .n = p0, .s = BIT(world + 0x36, 0, 32, (p1)), .e = BIT(world + 0x36, 0, 32, (p1)), .f = 0);
 	*((u8 *)(scratch + 0x5D)) = *((s16 *)(stat + 0x250));
-	Ctrl_D4CB(p2, (u16)62955, .m = (u16)5398, .w = [p1, p7], .s = [p0, p4, p5], .e = {
+	SetZoneCallback(p2, (u16)62955, .m = (u16)5398, .w = [p1, p7], .s = [p0, p4, p5], .e = {
 		if (p2 == (u16)3538) {
 			if (p7 == 0) {
 				ScriptCall(0x011C, p10, 0, 1, p6, 1, p11);
@@ -5559,11 +5559,11 @@
 // Script_011D at 0x08D1D6F8
 {
 	ScriptCall(0x00B6, p2);
-	NativeCall_B745((u16)0xEC1F, (p1 < 32), "\x73\x77\x68\x69\x63\x68\x20\x6E\x75\x6D\x20\x6F\x76\x65\x72\x21\x21\x00");
+	NativeCall_B745((u16)0xEC1F, (p1 < 32), "swhich num over!!");
 	BIT(world + 0x36, 0, 32, (p1)) = p6;
 	NativeCall_B745((u16)0x8337, .n = p0, .t = p3, .i = 0, .p = [*((s16 *)(scratch + 0x22)), (*((s16 *)(scratch + 0x4A))), *((s16 *)(scratch + 0x24))], .R = 2, .s = 1);
 	NativeCall_B745((u16)0xD7F4, .n = p0, .s = 0, .e = BIT(world + 0x36, 0, 32, (p1)), .f = 0);
-	Ctrl_D4CB(p2, (u16)5321, .m = (u16)5321, .w = [p1, p7], .s = [p0, p4, p5], .e = {
+	SetZoneCallback(p2, (u16)5321, .m = (u16)5321, .w = [p1, p7], .s = [p0, p4, p5], .e = {
 		if (p2 == (u16)3538) {
 			if (p7 == 0) {
 				BIT(world + 0x36, 0, 32, (p6)) = 1;
@@ -5694,7 +5694,7 @@
 {
 	v1 = { NativeCall_B745((u16)0x3469, .p = (s16)3328); } >> 8;
 	if (v1 >= 13) {
-		NativeCall_B745((u16)0xEC1F, 0, "\x63\x61\x72\x64\x20\x6E\x75\x6D\x20\x6F\x76\x65\x72\x00");
+		NativeCall_B745((u16)0xEC1F, 0, "card num over");
 		v1 = 47;
 	}
 	v1 = { NativeCall_B745((u16)0x43A0, .r = StringRef(0x189A), .i = v1, .s = 0); };
@@ -6111,7 +6111,7 @@
 	BIT(scratch + 0x4E, 7) = 0;
 	if (p2 == 0) {
 		BIT(scratch + 0x4E, 7) = 1;
-		Ctrl_D4CB(p1, (u16)62955, .m = (u16)5399, .e = {
+		SetZoneCallback(p1, (u16)62955, .m = (u16)5399, .e = {
 			if ({ NativeCall_B745((u16)0x31FF); } < 1) {
 				if (BIT(scratch + 0x4E, 7) == 0) {
 					BIT(scratch + 0x4E, 7) = 1;
@@ -6125,17 +6125,17 @@
 			}
 		});
 	} else if (p2 == 1) {
-		Ctrl_D4CB(p1, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback(p1, (u16)62955, .m = (u16)3538, .e = {
 			BIT(scratch + 0x4E, 7) = 0;
 			NativeCall_B745((u16)0x554B);
 		});
 	} else if (p2 == 2) {
-		Ctrl_D4CB(p1, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback(p1, (u16)62955, .m = (u16)3538, .e = {
 			BIT(scratch + 0x4E, 7) = 1;
 			NativeCall_B745((u16)0xEF19);
 		});
 	} else if (p2 == 4) {
-		Ctrl_D4CB(p1, (u16)62955, .m = (u16)5399, .w = p0, .e = {
+		SetZoneCallback(p1, (u16)62955, .m = (u16)5399, .w = p0, .e = {
 			if (!(BIT(world + 0x19B, 0, 32, (p6)))) {
 				if (BIT(scratch + 0x4E, 7) == 0) {
 					BIT(scratch + 0x4E, 7) = 1;
@@ -6167,7 +6167,7 @@
 {
 	*((u8 *)(scratch + 0x6D)) = 0;
 	if (p2 == 0) {
-		Ctrl_D4CB(p1, (u16)62955, .m = (u16)5399, .s = [p3, p4], .e = {
+		SetZoneCallback(p1, (u16)62955, .m = (u16)5399, .s = [p3, p4], .e = {
 			if ({ NativeCall_B745((u16)0x31FF); } < 1) {
 				if (*((u8 *)(scratch + 0x6D)) == 0 || *((u8 *)(scratch + 0x6D)) == 2) {
 					*((u8 *)(scratch + 0x6D)) = 1;
@@ -6183,17 +6183,17 @@
 			}
 		});
 	} else if (p2 == 1) {
-		Ctrl_D4CB(p1, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback(p1, (u16)62955, .m = (u16)3538, .e = {
 			*((u8 *)(scratch + 0x6D)) = 1;
 			NativeCall_B745((u16)0x554B);
 		});
 	} else if (p2 == 2) {
-		Ctrl_D4CB(p1, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback(p1, (u16)62955, .m = (u16)3538, .e = {
 			*((u8 *)(scratch + 0x6D)) = 2;
 			NativeCall_B745((u16)0xEF19);
 		});
 	} else if (p2 == 4) {
-		Ctrl_D4CB(p1, (u16)62955, .m = (u16)5399, .w = p0, .s = [p3, p4], .e = {
+		SetZoneCallback(p1, (u16)62955, .m = (u16)5399, .w = p0, .s = [p3, p4], .e = {
 			if (!(BIT(world + 0x19B, 0, 32, (p6)))) {
 				if (*((u8 *)(scratch + 0x6D)) == 0 || *((u8 *)(scratch + 0x6D)) == 2) {
 					*((u8 *)(scratch + 0x6D)) = 1;
@@ -6246,7 +6246,7 @@
 
 // Script_0149 at 0x08D1EDC5
 {
-	NativeCall_B745((u16)0xEC1F, (p1 < 32), "\x63\x61\x6E\x64\x6C\x65\x73\x74\x69\x63\x6B\x20\x6E\x75\x6D\x20\x6F\x76\x65\x72\x21\x21\x00");
+	NativeCall_B745((u16)0xEC1F, (p1 < 32), "candlestick num over!!");
 	if (p0 & 2) {
 		BIT(world + 0x19B, 0, 32, (p1)) = 1;
 	} else if (p0 & 1) {
@@ -6369,7 +6369,7 @@
 	*((u8 *)(scratch + 0x6F)) = p5;
 	*((u8 *)(scratch + 0x70)) = p6;
 	BIT(scratch + 0x71, 0) = 0;
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)5398, .w = [p1, p2, p3], .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)5398, .w = [p1, p2, p3], .e = {
 		if (p2 == (u16)3538) {
 			ScriptCall(0x00B4, p1);
 			ScriptCall(0x007E, 0);
@@ -6526,7 +6526,7 @@
 // Script_0164 at 0x08D1F5B0
 {
 	BIT(scratch + 0x71, 1) = 0;
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)5321, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)5321, .e = {
 		if (p2 == (u16)3538) {
 			if (BIT(scratch + 0x71, 1) == 0) {
 				*((s16 *)(stat + 0x934)) = *((s16 *)(stat + 0x934)) | (s16)1024;
@@ -6867,7 +6867,7 @@
 		BIT(scratch + 0x71, 2) = 1;
 		NativeCall_B745((u16)0xBB01, .e = (u24)375);
 	} else {
-		NativeCall_B745((u16)0xEC1F, 0, "\xA4\xBD\xA4\xCE\xA5\xEF\xA1\xBC\xA5\xD7\xA5\xA2\xA5\xA4\xA5\xC6\xA5\xE0\xA4\xCB\xA4\xCF\xC2\xD0\xB1\xFE\xA4\xB7\xA4\xC6\xA4\xCA\xA4\xA4\x21\x21\x21\x00");
+		NativeCall_B745((u16)0xEC1F, 0, "そのワープアイテムには対応してない!!!");
 	}
 }
 
@@ -7681,7 +7681,7 @@
 // Script_01AA at 0x08D2196F
 {
 	if (BIT(world + 0xC, 5) == 0) {
-		Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .w = [p1, p2, p3, p4], .e = {
+		SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .w = [p1, p2, p3, p4], .e = {
 			NativeCall_B745((u16)0x184B, .I = [p6, 0, p7], .A = [p8, 0, p9]);
 		});
 	}
@@ -7690,7 +7690,7 @@
 // Script_01AB at 0x08D219B1
 {
 	if (BIT(world + 0xC, 5) == 0) {
-		Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .w = [p1, p2, p3, p4], .e = {
+		SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .w = [p1, p2, p3, p4], .e = {
 			NativeCall_B745((u16)0x180B, .I = [p6, 0, p7], .A = [p8, 0, p9]);
 		});
 	}
@@ -7722,7 +7722,7 @@
 
 // Script_01AF at 0x08D21A61
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)42431, .w = [p4, p5, p2, p3], .s = p1, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)42431, .w = [p4, p5, p2, p3], .s = p1, .e = {
 		if (p7 == 0 && { ScriptCall(0x01AC); } == 1 || p7 == 1 && *((s16 *)(stat + 0x250)) == 2) {
 			if (BIT(world + 0xC, 4) == 0 && { ScriptCall(0x01B6, p6); }) {
 				ScriptCall(0x0022);
@@ -7738,7 +7738,7 @@
 
 // Script_01B0 at 0x08D21AF4
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)42431, .w = [p2, p3, p4, p5], .s = p1, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)42431, .w = [p2, p3, p4, p5], .s = p1, .e = {
 		if (p9 == 0 && { ScriptCall(0x01AC); } == 1 || p9 == 1 && *((s16 *)(stat + 0x250)) == 2) {
 			if (BIT(world + 0xC, 4) == 0 && { ScriptCall(0x01B6, p6); }) {
 				if (p8 == 0) {
@@ -8936,7 +8936,7 @@
 
 // Script_01FC at 0x08D24136
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .w = p1, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .w = p1, .e = {
 		if (BIT(world + 0xC, 4) == 0) {
 			ScriptCall(0x007B);
 			BIT(scratch + 0x14, 4) = 0;
@@ -9001,7 +9001,7 @@
 	ScriptCall(0x00C6, (u16)59843, 0, 0);
 	v1 = p0 - 7;
 	if (v1 > 14 || v1 < 0) {
-		NativeCall_B745((u16)0xEC1F, 0, "\x6D\x69\x6E\x69\x20\x64\x75\x6E\x67\x65\x6F\x6E\x20\x74\x69\x74\x6C\x65\x20\x6F\x6B\x61\x73\x69\x69\x20\x79\x6F\x21\x21\x21\x00");
+		NativeCall_B745((u16)0xEC1F, 0, "mini dungeon title okasii yo!!!");
 	}
 	NativeCall_B745((u16)0xC6AA, .m = 7);
 	NativeCall_9906((u16)0xB426, (u16)47213, .C = 1, .i = v1, .r = StringRef(0x189C), .y = [0, (u8)160], .e = (u24)514, .s = v1);
@@ -9023,7 +9023,7 @@
 	ScriptCall(0x001E, 1);
 	ScriptCall(0x00C6, (u16)59843, 0, 0);
 	if (p0 >= 14) {
-		NativeCall_B745((u16)0xEC1F, 0, "\x62\x6F\x73\x73\x20\x72\x75\x73\x68\x20\x74\x69\x74\x6C\x65\x20\x6F\x6B\x61\x73\x69\x69\x20\x79\x6F\x21\x21\x21\x00");
+		NativeCall_B745((u16)0xEC1F, 0, "boss rush title okasii yo!!!");
 	}
 	NativeCall_B745((u16)0xC6AA, .m = 7);
 	NativeCall_9906((u16)0xB426, (u16)47213, .C = 1, .i = p0, .r = StringRef(0x18AA), .e = (u24)516);
@@ -12353,7 +12353,7 @@
 
 // Script_02CA at 0x08D2B8A6
 {
-	Ctrl_D4CB((u16)52514, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52514, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(world + 0xC, 4) == 0) {
 			ScriptCall(0x007B);
 			if (*((s16 *)(world + 0x0)) < 12) {
@@ -12582,7 +12582,7 @@
 		NativeCall_B745((u16)0xFEBB, .n = (u16)41059, .t = 0, .e = 11, .p = [(*((s16 *)(scratch + 0x26)) - (u8)128), (*((s16 *)(scratch + 0x1C))), (*((s16 *)(scratch + 0x2A)) - (u8)128)]);
 	} else {
 		ScriptCall(0x011F, (u16)6090, (u16)54840, 0, 0, 3, *((s16 *)(scratch + 0x26)), *((s16 *)(scratch + 0x1C)), *((s16 *)(scratch + 0x2A)), (u16)39389, 8, 0);
-		Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 			if (*((s16 *)(world + 0x0)) < 29) {
 				*((u8 *)(scratch + 0x126)) = 0;
 				ScriptCall(0x02DE);
@@ -12861,11 +12861,11 @@
 	ScriptCall(0x023D, (u16)52517, 1, 0);
 	if (*((s16 *)(world + 0x0)) >= 49 && *((s16 *)(world + 0x0)) < 51) {
 		if (*((s16 *)(world + 0x186)) == (u8)136) {
-			Ctrl_D4CB((u16)40891, (u16)62955, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)40891, (u16)62955, .m = (u16)3538, .e = {
 				ScriptCall(0x02EF);
 			});
 		}
-		Ctrl_D4CB((u16)40892, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)40892, (u16)62955, .m = (u16)3538, .e = {
 			ScriptCall(0x02F0);
 		});
 		NativeCall_9906((u16)0x286F, (u16)10351);
@@ -13386,7 +13386,7 @@
 // Script_030D at 0x08D2DA36
 {
 	ScriptCall(0x0317);
-	Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 		if (*((s16 *)(world + 0x0)) < 2) {
 			*((u8 *)(scratch + 0x2E)) = 0;
 			ScriptCall(0x0316);
@@ -13427,7 +13427,7 @@
 
 // Script_030F at 0x08D2DBA7
 {
-	Ctrl_D4CB((u16)52518, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52518, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(world + 0xC, 4) == 0) {
 			ScriptCall(0x007B);
 			ScriptCall(0x0232);
@@ -14248,7 +14248,7 @@
 	ScriptCall(0x018F, (u16)61618, 0, 0, (u24)834, (s16)9472, (s16)5376);
 	ScriptCall(0x018F, (u16)25663, 1, 0, (u24)835, (s16)512, (s16)1280);
 	ScriptCall(0x0317);
-	Ctrl_D4CB((u16)42617, (u16)62955, .m = (u16)5321, .e = {
+	SetZoneCallback((u16)42617, (u16)62955, .m = (u16)5321, .e = {
 		if (p2 == (u16)3538) {
 			if (BIT(world + 0x155, 7) == 0) {
 				*((s16 *)(stat + 0x934)) = *((s16 *)(stat + 0x934)) | (s16)1024;
@@ -14754,7 +14754,7 @@
 
 // Script_0358 at 0x08D3038B
 {
-	Ctrl_B96E("\xB3\xAB\xBB\xCF\x70\x72\x6F\x63\x00");
+	DebugPrint("開始proc");
 	ScriptCall(0x00D7, 16);
 	ScriptCall(0x00D4, 4, *((u8 *)(scratch + 0x52)), 20, 20, 20, (s16)8191);
 	NativeCall_B745((u16)0x554B);
@@ -14762,13 +14762,13 @@
 
 // Script_0359 at 0x08D303BC
 {
-	Ctrl_B96E("\xBD\xAA\xCE\xBB\x70\x72\x6F\x63\x00");
+	DebugPrint("終了proc");
 	NativeCall_B745((u16)0xEF19);
 }
 
 // Script_035A at 0x08D303D8
 {
-	Ctrl_B96E("\xBE\xA4\xB4\xAD\x31\x00");
+	DebugPrint("召喚1");
 	switch (*((u8 *)(scratch + 0x129))) {
 		case 0: {
 			*((u8 *)(scratch + 0x129)) = *((u8 *)(scratch + 0x129)) + 1;
@@ -14788,7 +14788,7 @@
 
 // Script_035B at 0x08D30453
 {
-	Ctrl_B96E("\xBE\xA4\xB4\xAD\x32\x00");
+	DebugPrint("召喚2");
 	switch (*((u8 *)(scratch + 0x12A))) {
 		case 0: {
 			*((u8 *)(scratch + 0x12A)) = *((u8 *)(scratch + 0x12A)) + 1;
@@ -14808,7 +14808,7 @@
 
 // Script_035C at 0x08D304CE
 {
-	Ctrl_B96E("\xBE\xA4\xB4\xAD\x33\x00");
+	DebugPrint("召喚3");
 	switch (*((u8 *)(scratch + 0x12B))) {
 		case 0: {
 			*((u8 *)(scratch + 0x12B)) = *((u8 *)(scratch + 0x12B)) + 1;
@@ -14883,7 +14883,7 @@
 
 // Script_0363 at 0x08D30782
 {
-	Ctrl_B96E("\xA5\xBF\xA5\xA4\xA5\xE0\xA5\xA2\xA5\xC3\xA5\xD7\xA5\xD7\xA5\xED\xA5\xC3\xA5\xAF\x00");
+	DebugPrint("タイムアッププロック");
 	*((u8 *)(scratch + 0x12C)) = 0;
 	ScriptCall(0x0364);
 }
@@ -14943,7 +14943,7 @@
 
 // Script_0365 at 0x08D30992
 {
-	Ctrl_B96E("\xA4\xAA\xA4\xB7\xA4\xAA\xA4\xAD\xBD\xAA\xCE\xBB\x00");
+	DebugPrint("おしおき終了");
 	switch (*((u8 *)(scratch + 0x12C))) {
 		case 0: {
 			Ctrl_22FF((u16)553, (u16)65535);
@@ -15044,7 +15044,7 @@
 			ScriptCall(0x007E, 0);
 			ScriptCall(0x00C6, (u16)55676, 0, 0);
 			ScriptCall(0x00D1, 4, 0, 16);
-			Ctrl_B96E("\x24\x69\x3A\xB0\xC5\xB9\xF5\xA5\xED\xA1\xBC\xA5\xF3\xBB\xC4\xCE\xCC\x00", *((s32 *)(stat + 0x1C4)));
+			DebugPrint("$i:暗黒ローン残量", *((s32 *)(stat + 0x1C4)));
 			if (*((s32 *)(stat + 0x1C4)) < (s16)1000) {
 				BIT(scratch + 0xB9, 6) = 1;
 				BIT(scratch + 0xB9, 7) = 0;
@@ -15262,10 +15262,10 @@
 // Script_036A at 0x08D31431
 {
 	if (p0 == 1) {
-		Ctrl_B96E("\xC5\xFE\xC3\xE5\xA1\xAA\xA1\xAA\xA1\xAA\x00");
+		DebugPrint("到着！！！");
 		ScriptCall(0x0367);
 	} else if (p0 == 2) {
-		Ctrl_B96E("\xB5\xA2\xA4\xC3\xA4\xC6\xA4\xAD\xA4\xBF\xA4\xC7\xA1\xAA\xA1\xAA\xA1\xAA\x00");
+		DebugPrint("帰ってきたで！！！");
 		NativeCall_B745((u16)0x5D74, .n = (u16)31275, .r = [0, 0]);
 	}
 }
@@ -15288,8 +15288,8 @@
 	NativeCall_B745((u16)0xE6F2, .f = 1);
 	ScriptCall(0x0172, 1, (u8)163);
 	NativeCall_B745((u16)0xB55A, *((s16 *)(scratch + 0xC)), *((s16 *)(scratch + 0xE)), *((s16 *)(scratch + 0x10)), *((s16 *)(scratch + 0x0)), *((s16 *)(scratch + 0x2)), *((s16 *)(scratch + 0x4)));
-	Ctrl_B96E("\xBA\xA3\xC6\xFC\xA4\xCF\x00", *((s16 *)(scratch + 0xC)), "\xC7\xAF\x00", *((s16 *)(scratch + 0xE)), "\xB7\xEE\x00", *((s16 *)(scratch + 0x10)), "\xC6\xFC\xA4\xC7\xA4\xB9\xA1\xA3\x00");
-	Ctrl_B96E("\xB8\xBD\xBA\xDF\xA4\xCF\x00", *((s16 *)(scratch + 0x0)), "\xBB\xFE\x00", *((s16 *)(scratch + 0x2)), "\xCA\xAC\xA4\xC7\xA4\xB9\xA1\xA3\x00");
+	DebugPrint("今日は", *((s16 *)(scratch + 0xC)), "年", *((s16 *)(scratch + 0xE)), "月", *((s16 *)(scratch + 0x10)), "日です。");
+	DebugPrint("現在は", *((s16 *)(scratch + 0x0)), "時", *((s16 *)(scratch + 0x2)), "分です。");
 	NativeCall_B745((u16)0xFBC1, *((s16 *)(scratch + 0xC)), *((s16 *)(scratch + 0xE)), *((s16 *)(scratch + 0x10)), *((s16 *)(world + 0x1BA)), *((s16 *)(world + 0x1BC)), *((s16 *)(world + 0x1BE)), *((s16 *)(scratch + 0x12)));
 	ScriptCall(0x00D1, 4, 0, 16);
 	NativeCall_9906((u16)0x430D, (u16)9149, .t = 16, .e = {
@@ -15630,16 +15630,16 @@
 	NativeCall_9906((u16)0x83B2, (u16)33714, .n = 1);
 	ScriptCall(0x018F, (u16)56849, 1, 0, (u24)901, (s16)4352, (s16)3072);
 	ScriptCall(0x018C, 3, 2, (s16)768, (s16)4096, (s16)512, 4);
-	Ctrl_D4CB((u16)52411, (u16)32144, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)32144, .m = (u16)3538, .e = {
 		BIT(world + 0x157, 1) = 1;
 	});
-	Ctrl_D4CB((u16)52412, (u16)15852, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52412, (u16)15852, .m = (u16)3538, .e = {
 		BIT(world + 0x157, 2) = 1;
 	});
-	Ctrl_D4CB((u16)52413, (u16)32145, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52413, (u16)32145, .m = (u16)3538, .e = {
 		BIT(world + 0x157, 4) = 1;
 	});
-	Ctrl_D4CB((u16)52414, (u16)32147, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52414, (u16)32147, .m = (u16)3538, .e = {
 		BIT(world + 0x157, 5) = 1;
 	});
 	NativeCall_9906((u16)0xD9AE, (u16)19293, .m = 9);
@@ -15968,7 +15968,7 @@
 		}
 		ScriptCall(0x0131, 1, 39, (s16)7936, (s16)3072, 0, 0, 0, 1, 6, (u24)928, 0);
 		ScriptCall(0x00DD, (u16)32142, 0, 0, (s16)8448, 2, (s16)4864);
-		Ctrl_D4CB((u16)52411, (u16)32144, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)32144, .m = (u16)3538, .e = {
 			BIT(world + 0x157, 6) = 1;
 		});
 		if (BIT(world + 0x157, 6) == 0) {
@@ -16254,15 +16254,15 @@
 	NativeCall_B745((u16)0xFEBB, .n = (u16)31183, .t = 0, .e = 3, .p = [(s16)3328, (s16)1024, (s16)2304]);
 	NativeCall_B745((u16)0xFEBB, .n = (u16)31183, .t = 0, .e = 3, .p = [(s16)3328, (s16)1024, (s16)3328]);
 	if (BIT(world + 0x159, 0) == 0) {
-		Ctrl_D4CB((u16)52447, (u16)4552, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52447, (u16)4552, .m = (u16)3538, .e = {
 			*((u8 *)(scratch + 0x126)) = *((u8 *)(scratch + 0x126)) | 1;
 			ScriptCall(0x03AE);
 		});
-		Ctrl_D4CB((u16)52475, (u16)4554, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52475, (u16)4554, .m = (u16)3538, .e = {
 			*((u8 *)(scratch + 0x126)) = *((u8 *)(scratch + 0x126)) | 2;
 			ScriptCall(0x03AE);
 		});
-		Ctrl_D4CB((u16)52479, (u16)4556, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52479, (u16)4556, .m = (u16)3538, .e = {
 			*((u8 *)(scratch + 0x126)) = *((u8 *)(scratch + 0x126)) | 4;
 			ScriptCall(0x03AE);
 		});
@@ -16272,31 +16272,31 @@
 		ScriptCall(0x00DD, (u16)4556, 5, 34, (s16)3328, 3, (s16)2816);
 		NativeCall_B745((u16)0x8337, .n = (u16)52435, .t = (u16)54839, .i = 0, .p = [(s16)1408, (s16)768, (s16)3456], .f = 0, .R = 2, .m = [(u16)10747, 3, 1]);
 		NativeCall_B745((u16)0xF661, .n = (u16)52435);
-		Ctrl_D4CB((u16)52413, (u16)62955, .m = (u16)5399, .e = {
+		SetZoneCallback((u16)52413, (u16)62955, .m = (u16)5399, .e = {
 			ScriptCall(0x03AA, p1);
 		});
-		Ctrl_D4CB((u16)52414, (u16)62955, .m = (u16)5399, .e = {
+		SetZoneCallback((u16)52414, (u16)62955, .m = (u16)5399, .e = {
 			ScriptCall(0x03AA, p1);
 		});
-		Ctrl_D4CB((u16)52416, (u16)62955, .m = (u16)5399, .e = {
+		SetZoneCallback((u16)52416, (u16)62955, .m = (u16)5399, .e = {
 			ScriptCall(0x03AA, p1);
 		});
-		Ctrl_D4CB((u16)52418, (u16)62955, .m = (u16)5399, .e = {
+		SetZoneCallback((u16)52418, (u16)62955, .m = (u16)5399, .e = {
 			ScriptCall(0x03AA, p1);
 		});
-		Ctrl_D4CB((u16)52419, (u16)62955, .m = (u16)5399, .e = {
+		SetZoneCallback((u16)52419, (u16)62955, .m = (u16)5399, .e = {
 			ScriptCall(0x03AA, p1);
 		});
-		Ctrl_D4CB((u16)52420, (u16)62955, .m = (u16)5399, .e = {
+		SetZoneCallback((u16)52420, (u16)62955, .m = (u16)5399, .e = {
 			ScriptCall(0x03AA, p1);
 		});
-		Ctrl_D4CB((u16)52445, (u16)62955, .m = (u16)5399, .e = {
+		SetZoneCallback((u16)52445, (u16)62955, .m = (u16)5399, .e = {
 			ScriptCall(0x03AA, p1);
 		});
-		Ctrl_D4CB((u16)52446, (u16)62955, .m = (u16)5399, .e = {
+		SetZoneCallback((u16)52446, (u16)62955, .m = (u16)5399, .e = {
 			ScriptCall(0x03AA, p1);
 		});
-		Ctrl_D4CB((u16)52448, (u16)62955, .m = (u16)5399, .e = {
+		SetZoneCallback((u16)52448, (u16)62955, .m = (u16)5399, .e = {
 			ScriptCall(0x03AA, p1);
 		});
 	} else {
@@ -18372,7 +18372,7 @@
 		ScriptCall(0x0179, (u16)52411, 5, (s16)256);
 		ScriptCall(0x0179, (u16)52412, 0, (s16)256);
 		ScriptCall(0x0096, (u24)1013, (u8)64, 26);
-		Ctrl_D4CB((u16)52413, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52413, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(world + 0x15A, 2) == 0) {
 				BIT(world + 0x15A, 2) = 1;
 				ScriptCall(0x0260, 1);
@@ -18831,7 +18831,7 @@
 		}
 		NativeCall_9906((u16)0xD9AE, (u16)19293, .m = 3);
 		ScriptCall(0x043D);
-		Ctrl_D4CB((u16)52516, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52516, (u16)62955, .m = (u16)3538, .e = {
 			ScriptCall(0x043D);
 		});
 	}
@@ -19396,7 +19396,7 @@
 	ScriptCall(0x0152, (u16)5143, 3, 0, 1, 2, 1, 2, 1, 0, 10, 0, 0, 0, (u8)120, (u8)153);
 	ScriptCall(0x0155, (u16)5143, (u8)153);
 	NativeCall_B745((u16)0xA4FC, .r = [0, 0], .Y = [(s16)512, 0, 0], .n = (u16)18073, .k = 1, .R = (u24)1120, .s = 4);
-	Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(scratch + 0x13F, 7) == 0) {
 			BIT(scratch + 0x13F, 7) = 1;
 			if (BIT(world + 0x15D, 1) == 0) {
@@ -19407,19 +19407,19 @@
 			}
 		}
 	});
-	Ctrl_D4CB((u16)52413, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52413, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(scratch + 0x13F, 7) == 0) {
 			BIT(scratch + 0x13F, 7) = 1;
 			NativeCall_B745((u16)0x5D74, .n = (u16)18073, .r = [2, 2]);
 		}
 	});
-	Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52412, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(scratch + 0x13F, 7) == 1) {
 			BIT(scratch + 0x13F, 7) = 0;
 			NativeCall_B745((u16)0x5D74, .n = (u16)18073, .r = [0, 0]);
 		}
 	});
-	Ctrl_D4CB((u16)52414, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52414, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(scratch + 0x13F, 7) == 1) {
 			BIT(scratch + 0x13F, 7) = 0;
 			NativeCall_B745((u16)0x5D74, .n = (u16)18073, .r = [4, 0]);
@@ -19479,7 +19479,7 @@
 // Script_045B at 0x08D3A3AE
 {
 	ScriptCall(0x00B6, p2);
-	NativeCall_B745((u16)0xEC1F, (p1 < 32), "\x73\x77\x68\x69\x63\x68\x20\x6E\x75\x6D\x20\x6F\x76\x65\x72\x21\x21\x00");
+	NativeCall_B745((u16)0xEC1F, (p1 < 32), "swhich num over!!");
 	if (BIT(world + 0x15D, 0) == 0) {
 		BIT(world + 0x36, 0, 32, (p1)) = 0;
 		v1 = (s16)1024;
@@ -19489,7 +19489,7 @@
 	}
 	NativeCall_B745((u16)0x8337, .n = p0, .t = p3, .i = 0, .p = [*((s16 *)(scratch + 0x22)), v1, *((s16 *)(scratch + 0x24))], .R = 2, .s = 1);
 	NativeCall_B745((u16)0xD7F4, .n = p0, .s = 0, .e = BIT(world + 0x36, 0, 32, (p1)), .f = 0);
-	Ctrl_D4CB(p2, (u16)62955, .m = (u16)3538, .w = [p1, p5], .s = [p0, p4], .e = {
+	SetZoneCallback(p2, (u16)62955, .m = (u16)3538, .w = [p1, p5], .s = [p0, p4], .e = {
 		if (BIT(world + 0x32, 0, 32, 7) == 1 && BIT(world + 0x36, 0, 32, (p6)) == 0) {
 			BIT(world + 0x36, 0, 32, (p6)) = 1;
 			NativeCall_B745((u16)0xD7F4, .n = p10, .s = 0, .e = 1, .f = 10);
@@ -19936,7 +19936,7 @@
 
 // Script_047A at 0x08D3B3B4
 {
-	Ctrl_D4CB((u16)52514, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52514, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(world + 0xC, 4) == 0) {
 			ScriptCall(0x007B);
 			ScriptCall(0x0232);
@@ -20202,16 +20202,16 @@
 {
 	ScriptCall(0x018C, 3, 2, (s16)6912, (s16)1280, (s16)512, 4);
 	ScriptCall(0x052F);
-	Ctrl_D4CB((u16)42618, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)42618, (u16)62955, .m = (u16)3538, .e = {
 		ScriptCall(0x13E9);
 	});
-	Ctrl_D4CB((u16)52516, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52516, (u16)62955, .m = (u16)3538, .e = {
 		*((s16 *)(world + 0x15E)) = 0;
 	});
 	NativeCall_9906((u16)0x3117, (u16)12567, .m = 1);
 	NativeCall_9906((u16)0x83B2, (u16)3882, .n = 1);
 	ScriptCall(0x0494, (u16)52411, (s16)8448, (s16)1024);
-	Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(world + 0x162, 4) == 0) {
 			BIT(world + 0x162, 4) = 1;
 			ScriptCall(0x007B);
@@ -20248,7 +20248,7 @@
 
 // Script_0494 at 0x08D3BD71
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .b = 1, .w = [p1, p2], .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .b = 1, .w = [p1, p2], .e = {
 		if ({ ScriptCall(0x0497, (p6 + (u8)128), (p7 + (u8)128)); } == 1 && *((s16 *)(stat + 0x938)) == 0) {
 			ScriptCall(0x0495);
 		}
@@ -20528,20 +20528,20 @@
 	} else {
 		ScriptCall(0x00DD, (u16)32142, 0, 0, (s16)768, 4, (s16)1536);
 	}
-	Ctrl_D4CB((u16)52411, (u16)32141, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)32141, .m = (u16)3538, .e = {
 		if (BIT(world + 0x160, 1) == 0) {
 			BIT(world + 0x15D, 7) = 1;
 		}
 	});
-	Ctrl_D4CB((u16)52412, (u16)32141, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52412, (u16)32141, .m = (u16)3538, .e = {
 		BIT(world + 0x160, 1) = 1;
 	});
-	Ctrl_D4CB((u16)52413, (u16)32142, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52413, (u16)32142, .m = (u16)3538, .e = {
 		if (BIT(world + 0x160, 2) == 0) {
 			BIT(world + 0x160, 0) = 1;
 		}
 	});
-	Ctrl_D4CB((u16)52414, (u16)32142, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52414, (u16)32142, .m = (u16)3538, .e = {
 		BIT(world + 0x160, 2) = 1;
 	});
 }
@@ -20646,7 +20646,7 @@
 // Script_04AA at 0x08D3CA33
 {
 	BIT(scratch + 0x142, 2) = 0;
-	Ctrl_D4CB((u16)52347, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52347, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(world + 0x161, 2) == 1 && BIT(scratch + 0x142, 2) == 0 && *((s16 *)(world + 0x186)) == 33) {
 			BIT(scratch + 0x142, 2) = 1;
 			ScriptCall(0x0291, (u16)18848, (u24)604, (s16)5888, (s16)2048, (s16)3584, 0, 0, (u24)655, (u16)27195);
@@ -20654,7 +20654,7 @@
 		}
 	});
 	ScriptCall(0x0130, 0, 18, (s16)768, (s16)3840, 18, (u24)604, 0);
-	Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(world + 0x161, 2) == 0) {
 			ScriptCall(0x017A, 0, 48);
 			ScriptCall(0x017C);
@@ -20739,14 +20739,14 @@
 		ScriptCall(0x014C, (u16)27468, 1, 0, 1, 1, 10, (u24)334, (u24)335, 0);
 	}
 	if (BIT(world + 0x164, 5) == 1) {
-		Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52412, (u16)62955, .m = (u16)3538, .e = {
 			if (*((u8 *)(scratch + 0x3E)) == 0) {
 				ScriptCall(0x04B4, 5);
 			} else if (*((u8 *)(scratch + 0x3E)) == 7) {
 				ScriptCall(0x04B4, 0);
 			}
 		});
-		Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 			if (*((u8 *)(scratch + 0x3E)) == 6) {
 				ScriptCall(0x04B4, 7);
 			} else if (*((u8 *)(scratch + 0x3E)) == 5) {
@@ -21218,7 +21218,7 @@
 		NativeCall_9906((u16)0xD9AE, (u16)19293, .m = 2);
 		ScriptCall(0x00DD, (u16)32142, 0, 0, (s16)768, 1, (s16)1024);
 		ScriptCall(0x00DD, (u16)32143, 0, 0, (s16)1024, 1, (s16)1536);
-		Ctrl_D4CB((u16)42617, (u16)62955, .m = (u16)42431, .e = {
+		SetZoneCallback((u16)42617, (u16)62955, .m = (u16)42431, .e = {
 			if (BIT(world + 0x161, 4) == 0) {
 				if ({ NativeCall_B745((u16)0xE019, (u16)18848); } == 0 && { NativeCall_B745((u16)0xE019, (u16)18849); } == 0 && { NativeCall_B745((u16)0xE019, (u16)27195); } == 0 && { NativeCall_B745((u16)0xE019, (u16)27196); } == 0) {
 					BIT(world + 0x161, 4) = 1;
@@ -21235,7 +21235,7 @@
 		} else {
 			ScriptCall(0x00DD, (u16)32141, 0, 0, (s16)4864, 1, (s16)4096);
 		}
-		Ctrl_D4CB((u16)52411, (u16)32141, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)32141, .m = (u16)3538, .e = {
 			BIT(world + 0x160, 4) = 1;
 		});
 		ScriptCall(0x012F, 0, (u8)66, (s16)4864, (s16)3840, 1, 1, 23);
@@ -21531,22 +21531,22 @@
 		}
 	}
 	if (BIT(world + 0x162, 0) == 0) {
-		Ctrl_D4CB((u16)52516, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52516, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x142, 3) == 1) {
 				BIT(world + 0x162, 0) = 1;
 			}
 		});
-		Ctrl_D4CB((u16)52517, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52517, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x142, 3) == 1) {
 				BIT(world + 0x162, 0) = 1;
 			}
 		});
-		Ctrl_D4CB((u16)52518, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52518, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x142, 3) == 1) {
 				BIT(world + 0x162, 0) = 1;
 			}
 		});
-		Ctrl_D4CB((u16)52519, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52519, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x142, 3) == 1) {
 				BIT(world + 0x162, 0) = 1;
 			}
@@ -21572,7 +21572,7 @@
 		} else {
 			ScriptCall(0x00DE, (u16)13429, 0, 0, (s16)768, 0, (s16)4608, 0, 0, 40, (u24)604);
 		}
-		Ctrl_D4CB((u16)52411, (u16)13429, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)13429, .m = (u16)3538, .e = {
 			if (BIT(world + 0x162, 1) == 0) {
 				BIT(world + 0x162, 1) = 1;
 			}
@@ -21911,11 +21911,11 @@
 		} else {
 			ScriptCall(0x00DD, (u16)32141, 0, 0, (s16)1024, 1, (s16)5632);
 		}
-		Ctrl_D4CB((u16)52411, (u16)32141, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)32141, .m = (u16)3538, .e = {
 			BIT(world + 0x160, 3) = 1;
 		});
 		ScriptCall(0x0161, (s16)512, (s16)6400, 1);
-		Ctrl_D4CB((u16)42617, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)42617, (u16)62955, .m = (u16)3538, .e = {
 			NativeCall_9906((u16)0x778B, (u16)40387);
 			if (BIT(world + 0x161, 0) == 0) {
 				ScriptCall(0x0169, (u16)60669, (s16)1152, (s16)384, (s16)768, 0, 10, 2, 60, 61, 10, (u8)200, 10);
@@ -22592,7 +22592,7 @@
 
 // Script_052A at 0x08D40CD6
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(world + 0xC, 4) == 0) {
 			ScriptCall(0x0022);
 			ScriptCall(0x00B4, p1);
@@ -22945,7 +22945,7 @@
 
 // Script_0535 at 0x08D41D59
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)5321, .w = p1, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)5321, .w = p1, .e = {
 		if (p2 == (u16)3538) {
 			if (BIT(world + 0x167, 1, 9, (p6)) == 0 && BIT(world + 0x168, 2, 9, (p6)) == 1) {
 				ScriptCall(0x00B6, p1);
@@ -23058,7 +23058,7 @@
 	NativeCall_9906((u16)0x83B2, (u16)3882, .n = 2);
 	ScriptCall(0x018F, (u16)15326, 0, 1, (u24)1342, (s16)1792, (s16)2816);
 	ScriptCall(0x13E9);
-	Ctrl_D4CB((u16)52518, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52518, (u16)62955, .m = (u16)3538, .e = {
 		*((s16 *)(world + 0x15E)) = 0;
 	});
 	NativeCall_9906((u16)0x3117, (u16)12567, .m = 2);
@@ -23472,7 +23472,7 @@
 			*((u8 *)(scratch + 0x14D)) = *((u8 *)(scratch + 0x14D)) + 1;
 			ScriptCall(0x0559);
 		} else {
-			NativeCall_B745((u16)0xEC1F, 0, "\x73\x79\x6F\x6B\x75\x64\x61\x69\x20\x69\x6E\x64\x65\x78\x20\x6F\x6B\x61\x73\x69\x69\x20\x79\x6F\x20\x21\x21\x21\x00");
+			NativeCall_B745((u16)0xEC1F, 0, "syokudai index okasii yo !!!");
 		}
 	} else if (p1 == 0 && BIT(world + 0x161, 1) == 0) {
 		*((u8 *)(scratch + 0x14D)) = *((u8 *)(scratch + 0x14D)) - 1;
@@ -24025,7 +24025,7 @@
 	ScriptCall(0x0099, (u16)52515, (u24)1371, (u8)85, 55);
 	ScriptCall(0x0099, (u16)52516, (u24)1371, (u8)86, 55);
 	ScriptCall(0x0099, (u16)52517, (u24)1371, (u8)87, 55);
-	Ctrl_D4CB((u16)52517, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52517, (u16)62955, .m = (u16)3538, .e = {
 		NativeCall_B745((u16)0xE6F2, .f = 4);
 	});
 }
@@ -24365,7 +24365,7 @@
 // Script_0582 at 0x08D44E3D
 {
 	ScriptCall(0x018E, (u16)38312, (s16)512, (s16)7136, 20, 2, 10);
-	Ctrl_D4CB((u16)52516, (u16)62955, .m = (u16)54732, .e = {
+	SetZoneCallback((u16)52516, (u16)62955, .m = (u16)54732, .e = {
 		if (BIT(world + 0x167, 0) == 0) {
 			ScriptCall(0x0163, (u16)64508, 0, 7, 0, (s16)1920, (s16)512, (s16)2944);
 			ScriptCall(0x0163, (u16)64508, 0, 7, 0, (s16)1920, (s16)512, (s16)896);
@@ -24696,7 +24696,7 @@
 		NativeCall_9906((u16)0xD9AE, (u16)65515, .m = 1);
 		if (BIT(world + 0x169, 3) == 0) {
 			ScriptCall(0x00DD, (u16)27388, 2, 0, (s16)256, 2, (s16)1536);
-			Ctrl_D4CB((u16)52411, (u16)27388, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52411, (u16)27388, .m = (u16)3538, .e = {
 				BIT(world + 0x169, 3) = 1;
 			});
 		} else {
@@ -24709,7 +24709,7 @@
 		NativeCall_9906((u16)0xD9AE, (u16)65515, .m = 1);
 		if (BIT(world + 0x169, 4) == 0) {
 			ScriptCall(0x00DD, (u16)27257, 0, 0, (s16)3840, 2, (s16)3584);
-			Ctrl_D4CB((u16)52412, (u16)27257, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52412, (u16)27257, .m = (u16)3538, .e = {
 				BIT(world + 0x169, 4) = 1;
 			});
 		} else {
@@ -24952,7 +24952,7 @@
 	if (BIT(world + 0x169, 5) == 0) {
 		ScriptCall(0x00DD, (u16)60156, 2, 0, (s16)1536, 3, (s16)2816);
 		ScriptCall(0x00DE, (u16)60025, 7, 0, (s16)1536, 3, (s16)3072, (u16)57545, 0, 40, (u24)604);
-		Ctrl_D4CB((u16)52411, (u16)60025, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)60025, .m = (u16)3538, .e = {
 			BIT(world + 0x169, 5) = 1;
 		});
 	} else {
@@ -24978,7 +24978,7 @@
 // Script_05B9 at 0x08D45F57
 {
 	if (*((s16 *)(world + 0x0)) < 39) {
-		Ctrl_D4CB((u16)19623, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)19623, (u16)62955, .m = (u16)3538, .e = {
 			if (*((s16 *)(world + 0x0)) < 39) {
 				ScriptCall(0x105A);
 			}
@@ -25465,7 +25465,7 @@
 {
 	if (*((s16 *)(world + 0x0)) < 42) {
 		if (BIT(world + 0x170, 3) == 0 && *((s16 *)(stat + 0x250)) != 3) {
-			Ctrl_D4CB((u16)19623, (u16)62955, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)19623, (u16)62955, .m = (u16)3538, .e = {
 				if (BIT(world + 0x170, 3) == 0 && *((s16 *)(stat + 0x250)) != 3) {
 					ScriptCall(0x0172, 4, 62);
 					ScriptCall(0x007B);
@@ -25800,7 +25800,7 @@
 {
 	if (*((s16 *)(world + 0x0)) < 42) {
 		if (BIT(world + 0x170, 6) == 0 && *((s16 *)(stat + 0x250)) != 2) {
-			Ctrl_D4CB((u16)19623, (u16)62955, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)19623, (u16)62955, .m = (u16)3538, .e = {
 				if (BIT(world + 0x170, 6) == 0 && *((s16 *)(stat + 0x250)) != 2) {
 					ScriptCall(0x0172, 4, 62);
 					ScriptCall(0x007B);
@@ -25935,7 +25935,7 @@
 		ScriptCall(0x0158, 0, 0, (*((u8 *)(scratch + 0x154))), 10, 0);
 		ScriptCall(0x0159, (u16)52411, 2, 6, 10, 3, 1, 7);
 		if (BIT(world + 0x16F, 4) == 0) {
-			Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 				BIT(world + 0x16F, 4) = 1;
 			});
 		}
@@ -26206,37 +26206,37 @@
 		ScriptCall(0x00DE, (u16)10882, 7, 0, (s16)768, 10, (s16)768, (u16)57545, 0, 40, (u24)604);
 		ScriptCall(0x00DE, (u16)10883, 7, 0, (s16)1024, 6, (s16)1280, (u16)57545, 0, 40, (u24)604);
 		ScriptCall(0x00DE, (u16)10884, 7, 0, (s16)1280, 6, (s16)1024, (u16)57545, 0, 40, (u24)604);
-		Ctrl_D4CB((u16)52411, (u16)10882, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)10882, .m = (u16)3538, .e = {
 			*((u8 *)(scratch + 0x155)) = 1;
 			if (*((u8 *)(scratch + 0x155)) >= 1 && *((u8 *)(scratch + 0x156)) >= 1) {
 				BIT(world + 0x169, 6) = 1;
 			}
 		});
-		Ctrl_D4CB((u16)52411, (u16)10883, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)10883, .m = (u16)3538, .e = {
 			*((u8 *)(scratch + 0x155)) = 1;
 			if (*((u8 *)(scratch + 0x155)) >= 1 && *((u8 *)(scratch + 0x156)) >= 1) {
 				BIT(world + 0x169, 6) = 1;
 			}
 		});
-		Ctrl_D4CB((u16)52411, (u16)10884, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)10884, .m = (u16)3538, .e = {
 			*((u8 *)(scratch + 0x155)) = 1;
 			if (*((u8 *)(scratch + 0x155)) >= 1 && *((u8 *)(scratch + 0x156)) >= 1) {
 				BIT(world + 0x169, 6) = 1;
 			}
 		});
-		Ctrl_D4CB((u16)52413, (u16)10882, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52413, (u16)10882, .m = (u16)3538, .e = {
 			*((u8 *)(scratch + 0x156)) = 1;
 			if (*((u8 *)(scratch + 0x155)) >= 1 && *((u8 *)(scratch + 0x156)) >= 1) {
 				BIT(world + 0x169, 6) = 1;
 			}
 		});
-		Ctrl_D4CB((u16)52413, (u16)10883, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52413, (u16)10883, .m = (u16)3538, .e = {
 			*((u8 *)(scratch + 0x156)) = 1;
 			if (*((u8 *)(scratch + 0x155)) >= 1 && *((u8 *)(scratch + 0x156)) >= 1) {
 				BIT(world + 0x169, 6) = 1;
 			}
 		});
-		Ctrl_D4CB((u16)52413, (u16)10884, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52413, (u16)10884, .m = (u16)3538, .e = {
 			*((u8 *)(scratch + 0x156)) = 1;
 			if (*((u8 *)(scratch + 0x155)) >= 1 && *((u8 *)(scratch + 0x156)) >= 1) {
 				BIT(world + 0x169, 6) = 1;
@@ -26489,7 +26489,7 @@
 			ScriptCall(0x0155, (u16)60251, 39);
 		}
 		if (BIT(world + 0x16F, 5) == 0) {
-			Ctrl_D4CB((u16)52520, (u16)62955, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52520, (u16)62955, .m = (u16)3538, .e = {
 				BIT(world + 0x16F, 5) = 1;
 			});
 		}
@@ -26724,7 +26724,7 @@
 		NativeCall_9906((u16)0xD9AE, (u16)65515, .m = 1);
 		if (BIT(world + 0x169, 7) == 0) {
 			ScriptCall(0x00DD, (u16)11014, 2, 0, (s16)4096, 2, (s16)3840);
-			Ctrl_D4CB((u16)52411, (u16)11014, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52411, (u16)11014, .m = (u16)3538, .e = {
 				BIT(world + 0x169, 7) = 1;
 			});
 		} else {
@@ -26839,7 +26839,7 @@
 	if (BIT(world + 0x16E, 0) == 0) {
 		if (*((s16 *)(world + 0x186)) == 39) {
 			ScriptCall(0x00DD, (u16)27398, 2, 0, (s16)768, 6, (s16)3584);
-			Ctrl_D4CB((u16)52411, (u16)27398, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52411, (u16)27398, .m = (u16)3538, .e = {
 				BIT(world + 0x16E, 0) = 1;
 			});
 		} else {
@@ -26851,7 +26851,7 @@
 	if (BIT(world + 0x16E, 1) == 0) {
 		if (*((s16 *)(world + 0x186)) == 45) {
 			ScriptCall(0x00DD, (u16)27399, 2, 0, (s16)1024, 6, (s16)1280);
-			Ctrl_D4CB((u16)52412, (u16)27399, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52412, (u16)27399, .m = (u16)3538, .e = {
 				BIT(world + 0x16E, 1) = 1;
 			});
 		} else {
@@ -26878,7 +26878,7 @@
 {
 	if (*((s16 *)(world + 0x0)) < 42) {
 		if (BIT(world + 0x170, 7) == 0 && *((s16 *)(stat + 0x250)) != 2) {
-			Ctrl_D4CB((u16)52413, (u16)62955, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52413, (u16)62955, .m = (u16)3538, .e = {
 				if (BIT(world + 0x170, 7) == 0 && *((s16 *)(stat + 0x250)) != 2) {
 					ScriptCall(0x0172, 4, 62);
 					ScriptCall(0x007B);
@@ -26996,7 +26996,7 @@
 		NativeCall_9906((u16)0xD9AE, (u16)19293, .m = 1);
 		if (BIT(world + 0x16E, 2) == 0) {
 			ScriptCall(0x00DD, (u16)11020, 2, 0, (s16)5120, 2, (s16)512);
-			Ctrl_D4CB((u16)52411, (u16)11020, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52411, (u16)11020, .m = (u16)3538, .e = {
 				BIT(world + 0x16E, 2) = 1;
 			});
 		} else {
@@ -27094,7 +27094,7 @@
 	if (BIT(world + 0x16E, 3) == 0) {
 		if (*((s16 *)(world + 0x186)) == 39) {
 			ScriptCall(0x00DD, (u16)27404, 2, 0, (s16)512, 6, (s16)4864);
-			Ctrl_D4CB((u16)52411, (u16)27404, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52411, (u16)27404, .m = (u16)3538, .e = {
 				BIT(world + 0x16E, 3) = 1;
 			});
 		} else {
@@ -27106,7 +27106,7 @@
 	if (BIT(world + 0x16E, 4) == 0) {
 		if (*((s16 *)(world + 0x186)) == 45) {
 			ScriptCall(0x00DD, (u16)27405, 2, 0, (s16)768, 6, (s16)2560);
-			Ctrl_D4CB((u16)52412, (u16)27405, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52412, (u16)27405, .m = (u16)3538, .e = {
 				BIT(world + 0x16E, 4) = 1;
 			});
 		} else {
@@ -27430,7 +27430,7 @@
 		NativeCall_9906((u16)0xD9AE, (u16)19293, .m = 1);
 		if (BIT(world + 0x16E, 5) == 0) {
 			ScriptCall(0x00DD, (u16)11021, 2, 0, (s16)3072, 6, (s16)1280);
-			Ctrl_D4CB((u16)52411, (u16)11021, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52411, (u16)11021, .m = (u16)3538, .e = {
 				BIT(world + 0x16E, 5) = 1;
 			});
 		} else {
@@ -27444,34 +27444,34 @@
 
 // Script_0665 at 0x08D4B4AC
 {
-	Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52412, (u16)62955, .m = (u16)3538, .e = {
 		NativeCall_B745((u16)0x41D3);
 	});
-	Ctrl_D4CB((u16)52413, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52413, (u16)62955, .m = (u16)3538, .e = {
 		NativeCall_B745((u16)0x41D3);
 	});
-	Ctrl_D4CB((u16)52414, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52414, (u16)62955, .m = (u16)3538, .e = {
 		NativeCall_B745((u16)0x41D3);
 	});
-	Ctrl_D4CB((u16)52415, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52415, (u16)62955, .m = (u16)3538, .e = {
 		NativeCall_B745((u16)0x41D3);
 	});
-	Ctrl_D4CB((u16)52417, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52417, (u16)62955, .m = (u16)3538, .e = {
 		NativeCall_B745((u16)0x41D3);
 	});
-	Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)54732, .e = {
+	SetZoneCallback((u16)52412, (u16)62955, .m = (u16)54732, .e = {
 		NativeCall_B745((u16)0x8CFE);
 	});
-	Ctrl_D4CB((u16)52413, (u16)62955, .m = (u16)54732, .e = {
+	SetZoneCallback((u16)52413, (u16)62955, .m = (u16)54732, .e = {
 		NativeCall_B745((u16)0x8CFE);
 	});
-	Ctrl_D4CB((u16)52414, (u16)62955, .m = (u16)54732, .e = {
+	SetZoneCallback((u16)52414, (u16)62955, .m = (u16)54732, .e = {
 		NativeCall_B745((u16)0x8CFE);
 	});
-	Ctrl_D4CB((u16)52415, (u16)62955, .m = (u16)54732, .e = {
+	SetZoneCallback((u16)52415, (u16)62955, .m = (u16)54732, .e = {
 		NativeCall_B745((u16)0x8CFE);
 	});
-	Ctrl_D4CB((u16)52417, (u16)62955, .m = (u16)54732, .e = {
+	SetZoneCallback((u16)52417, (u16)62955, .m = (u16)54732, .e = {
 		NativeCall_B745((u16)0x8CFE);
 	});
 }
@@ -27728,7 +27728,7 @@
 // Script_0676 at 0x08D4BEDE
 {
 	if (*((s16 *)(world + 0x0)) < 41 && *((s16 *)(world + 0x186)) == 18) {
-		Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 			ScriptCall(0x0677);
 		});
 	}
@@ -27817,7 +27817,7 @@
 		NativeCall_9906((u16)0xD9AE, (u16)19293, .m = 2);
 		if (BIT(world + 0x16E, 6) == 0) {
 			ScriptCall(0x00DD, (u16)18398, 0, 0, (s16)256, 2, (s16)1280);
-			Ctrl_D4CB((u16)52411, (u16)18398, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52411, (u16)18398, .m = (u16)3538, .e = {
 				BIT(world + 0x16E, 6) = 1;
 			});
 		} else {
@@ -27836,7 +27836,7 @@
 		NativeCall_9906((u16)0xD9AE, (u16)19293, .m = 1);
 		if (BIT(world + 0x16E, 7) == 0) {
 			ScriptCall(0x00DD, (u16)18400, 0, 0, (s16)3840, 3, (s16)2560);
-			Ctrl_D4CB((u16)52412, (u16)18400, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52412, (u16)18400, .m = (u16)3538, .e = {
 				BIT(world + 0x16E, 7) = 1;
 			});
 		} else {
@@ -27861,7 +27861,7 @@
 		NativeCall_9906((u16)0xD9AE, (u16)19293, .m = 4);
 		if (BIT(world + 0x16F, 0) == 0) {
 			ScriptCall(0x00DD, (u16)18401, 0, 0, (s16)1024, 2, (s16)5376);
-			Ctrl_D4CB((u16)52413, (u16)18401, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52413, (u16)18401, .m = (u16)3538, .e = {
 				BIT(world + 0x16F, 0) = 1;
 			});
 		} else {
@@ -27870,7 +27870,7 @@
 		if (BIT(world + 0x16F, 1) == 0) {
 			ScriptCall(0x00DD, (u16)18402, 2, 0, (s16)768, 2, (s16)6144);
 			ScriptCall(0x00DD, (u16)18403, 2, 0, (s16)768, 2, (s16)6400);
-			Ctrl_D4CB((u16)52414, (u16)62955, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52414, (u16)62955, .m = (u16)3538, .e = {
 				BIT(world + 0x16F, 1) = 1;
 			});
 		} else {
@@ -28054,7 +28054,7 @@
 			ScriptCall(0x00E6, (u16)30546, 1, (u24)604, 0, 0, 0, (s16)512, (s16)1024);
 			ScriptCall(0x011A, (u16)39168, 6, (s16)256, 2, (s16)256, (u16)45244, (u24)1681, (u24)1682, 0, 0, 0, 0, 0);
 			ScriptCall(0x011A, (u16)39169, 7, (s16)512, 2, (s16)256, (u16)6090, (u24)1683, (u24)1684, 0, 0, 0, 0, 0);
-			Ctrl_D4CB((u16)52411, (u16)20853, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52411, (u16)20853, .m = (u16)3538, .e = {
 				*((u8 *)(scratch + 0x156)) = 1;
 				ScriptCall(0x0695);
 			});
@@ -28951,7 +28951,7 @@
 {
 	if (*((s16 *)(world + 0x0)) >= 51 && *((s16 *)(world + 0x0)) < 52) {
 		NativeCall_B745((u16)0xDA19, .i = 3);
-		Ctrl_D4CB((u16)19623, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)19623, (u16)62955, .m = (u16)3538, .e = {
 			if (*((s16 *)(world + 0x0)) < 52) {
 				ScriptCall(0x1065);
 			}
@@ -29499,25 +29499,25 @@
 		ScriptCall(0x00C4, (s16)8192);
 		NativeCall_9906((u16)0xA16F, (u16)41327);
 		NativeCall_B745((u16)0xA4FC, .r = [v1, 0], .Y = [(s16)512, 0, 0], .n = (u16)18073, .k = 3, .s = 4);
-		Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x13F, 7) == 0) {
 				BIT(scratch + 0x13F, 7) = 1;
 				NativeCall_B745((u16)0x5D74, .n = (u16)18073, .r = [1, 0]);
 			}
 		});
-		Ctrl_D4CB((u16)52413, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52413, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x13F, 7) == 0) {
 				BIT(scratch + 0x13F, 7) = 1;
 				NativeCall_B745((u16)0x5D74, .n = (u16)18073, .r = [1, 1]);
 			}
 		});
-		Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52412, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x13F, 7) == 1) {
 				BIT(scratch + 0x13F, 7) = 0;
 				NativeCall_B745((u16)0x5D74, .n = (u16)18073, .r = [0, 0]);
 			}
 		});
-		Ctrl_D4CB((u16)52414, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52414, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x13F, 7) == 1) {
 				BIT(scratch + 0x13F, 7) = 0;
 				NativeCall_B745((u16)0x5D74, .n = (u16)18073, .r = [2, 0]);
@@ -29618,7 +29618,7 @@
 	ScriptCall(0x00B6, p1);
 	NativeCall_B745((u16)0xFEBB, .n = (u16)31713, .t = 0, .e = 2, .p = [*((s16 *)(scratch + 0x26)), *((s16 *)(scratch + 0x1C)), *((s16 *)(scratch + 0x2A))]);
 	ScriptCall(0x070A, p0, *((s16 *)(scratch + 0x26)), *((s16 *)(scratch + 0x2A)));
-	Ctrl_D4CB(p1, (u16)62955, .m = (u16)5321, .s = [p1, p0], .e = {
+	SetZoneCallback(p1, (u16)62955, .m = (u16)5321, .s = [p1, p0], .e = {
 		if (p2 == (u16)3538) {
 			NativeCall_B745((u16)0xE7CA, .i = (s16)691);
 			ScriptCall(0x00B6, p10);
@@ -30349,7 +30349,7 @@
 	}
 	ScriptCall(0x0163, (u16)50156, 0, 3, 0, (s16)2560, (s16)256, (s16)3072);
 	if (BIT(world + 0x17A, 3) == 0) {
-		Ctrl_D4CB((u16)52517, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52517, (u16)62955, .m = (u16)3538, .e = {
 			ScriptCall(0x0753);
 		});
 	}
@@ -30370,26 +30370,26 @@
 			ScriptCall(0x074D);
 		}
 	}
-	Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 		if (*((s16 *)(world + 0x186)) == (u8)141) {
 			if (*((s16 *)(world + 0x2)) < 2 && *((s16 *)(world + 0x2)) >= 1) {
 				ScriptCall(0x1089);
 			}
 		}
 	});
-	Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 		if ({ ScriptCall(0x0747); } == 1) {
 			ScriptCall(0x108B);
 		}
 	});
-	Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52412, (u16)62955, .m = (u16)3538, .e = {
 		if (*((s16 *)(world + 0x186)) == (u8)141) {
 			if (*((s16 *)(world + 0x2)) < 2 && *((s16 *)(world + 0x2)) >= 1) {
 				ScriptCall(0x108A);
 			}
 		}
 	});
-	Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52412, (u16)62955, .m = (u16)3538, .e = {
 		if ({ ScriptCall(0x0747); } == 1) {
 			ScriptCall(0x108C);
 		}
@@ -31064,10 +31064,10 @@
 
 // Script_0768 at 0x08D52925
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .e = {
 		ScriptCall(0x0079, 5, 39, 0, 0, -1);
 	});
-	Ctrl_D4CB(p1, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback(p1, (u16)62955, .m = (u16)3538, .e = {
 		ScriptCall(0x0079, 5, 37, 0, 0, -1);
 	});
 }
@@ -31103,7 +31103,7 @@
 	ScriptCall(0x0099, (u16)52515, (u24)1910, 21, (u8)104);
 	ScriptCall(0x0099, (u16)52517, (u24)1910, 22, (u8)104);
 	if (*((s16 *)(stat + 0x250)) == 5) {
-		Ctrl_D4CB((u16)52516, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52516, (u16)62955, .m = (u16)3538, .e = {
 			if (*((u8 *)(world + 0x17C)) == 31) {
 				ScriptCall(0x076C);
 			} else if (BIT(world + 0xC, 4) == 0) {
@@ -31172,12 +31172,12 @@
 			ScriptCall(0x00DD, (u16)32142, 0, 0, (s16)2304, 0, (s16)2048);
 		}
 	}
-	Ctrl_D4CB((u16)52411, (u16)32141, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)32141, .m = (u16)3538, .e = {
 		if (BIT(world + 0x172, 2) == 0) {
 			BIT(world + 0x172, 2) = 1;
 		}
 	});
-	Ctrl_D4CB((u16)52412, (u16)32142, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52412, (u16)32142, .m = (u16)3538, .e = {
 		if (BIT(world + 0x172, 3) == 0) {
 			BIT(world + 0x172, 3) = 1;
 		}
@@ -31374,7 +31374,7 @@
 			ScriptCall(0x00DD, (u16)32141, 0, 0, (s16)7424, 1, (s16)1792);
 		}
 	}
-	Ctrl_D4CB((u16)52411, (u16)32141, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)32141, .m = (u16)3538, .e = {
 		if (BIT(world + 0x172, 6) == 0) {
 			BIT(world + 0x172, 6) = 1;
 		}
@@ -31824,7 +31824,7 @@
 		} else {
 			ScriptCall(0x00DD, (u16)32141, 0, 0, (s16)8704, 2, (s16)2304);
 		}
-		Ctrl_D4CB((u16)52411, (u16)32141, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)32141, .m = (u16)3538, .e = {
 			if (BIT(world + 0x17A, 5) == 0) {
 				BIT(world + 0x17A, 5) = 1;
 			}
@@ -33128,14 +33128,14 @@
 		ScriptCall(0x00DE, (u16)32141, 7, 0, (s16)3328, 1, (s16)2048, (u16)57545, 0, 40, (u24)604);
 		ScriptCall(0x00DE, (u16)32142, 7, 0, (s16)9216, 1, (s16)2048, (u16)57545, 0, 40, (u24)604);
 	}
-	Ctrl_D4CB((u16)52411, (u16)32141, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)32141, .m = (u16)3538, .e = {
 		if (BIT(world + 0x174, 4) == 0) {
 			BIT(world + 0x174, 4) = 1;
 			NativeCall_B745((u16)0x0E76, .n = (u16)32142);
 			ScriptCall(0x00DE, (u16)32142, 7, 0, (s16)9216, 1, (s16)2048, (u16)57545, 0, 40, (u24)604);
 		}
 	});
-	Ctrl_D4CB((u16)52411, (u16)32142, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)32142, .m = (u16)3538, .e = {
 		if (BIT(world + 0x174, 4) == 0) {
 			BIT(world + 0x174, 4) = 1;
 			NativeCall_B745((u16)0x0E76, .n = (u16)32141);
@@ -33565,7 +33565,7 @@
 {
 	ScriptCall(0x0132, 0, 30, (s16)512, (s16)1280, 1, 11);
 	ScriptCall(0x0132, 0, 15, (s16)512, (s16)1536, 1, 12);
-	Ctrl_D4CB((u16)52517, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52517, (u16)62955, .m = (u16)3538, .e = {
 		BIT(world + 0x174, 6) = 1;
 	});
 	NativeCall_9906((u16)0xD9AE, (u16)19293, .m = 7);
@@ -33664,7 +33664,7 @@
 	*((u8 *)(scratch + 0x167)) = 5;
 	BIT(scratch + 0x158, 6) = 0;
 	ScriptCall(0x014C, (u16)27467, *((u8 *)(scratch + 0x3E)), 0, 1, 1, 10, (u24)334, (u24)335, 0);
-	Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)5321, .e = {
+	SetZoneCallback((u16)52411, (u16)62955, .m = (u16)5321, .e = {
 		if (p2 == (u16)3538) {
 			if (*((u8 *)(scratch + 0x3E)) == 5 && BIT(scratch + 0x158, 6) == 0) {
 				ScriptCall(0x0821, 9);
@@ -33673,7 +33673,7 @@
 			}
 		} else if (p2 == (u16)54732) {}
 	});
-	Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)5321, .e = {
+	SetZoneCallback((u16)52412, (u16)62955, .m = (u16)5321, .e = {
 		if (p2 == (u16)3538) {
 			if (*((u8 *)(scratch + 0x3E)) == 6 && BIT(scratch + 0x158, 6) == 1) {
 				ScriptCall(0x0821, 8);
@@ -33682,13 +33682,13 @@
 			}
 		} else if (p2 == (u16)54732) {}
 	});
-	Ctrl_D4CB((u16)52413, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52413, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(scratch + 0x158, 6) == 1) {
 			ScriptCall(0x0821, 5);
 			BIT(scratch + 0x158, 6) = 0;
 		}
 	});
-	Ctrl_D4CB((u16)52414, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52414, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(scratch + 0x158, 6) == 0) {
 			ScriptCall(0x0821, 6);
 			BIT(scratch + 0x158, 6) = 1;
@@ -34439,17 +34439,17 @@
 	NativeCall_9906((u16)0x2D2B, (u16)11563, .n = 2);
 	ScriptCall(0x0147, (u16)45249, 1, -1, (u24)2120, 0, (u16)54418, 2, 0);
 	if (BIT(world + 0x179, 3) == 0) {
-		Ctrl_D4CB((u16)52514, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52514, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x168, 4) == 1) {
 				BIT(world + 0x179, 3) = 1;
 			}
 		});
-		Ctrl_D4CB((u16)52515, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52515, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x168, 4) == 1) {
 				BIT(world + 0x179, 3) = 1;
 			}
 		});
-		Ctrl_D4CB((u16)52516, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52516, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x168, 4) == 1) {
 				BIT(world + 0x179, 3) = 1;
 			}
@@ -34615,8 +34615,8 @@
 	if (BIT(world + 0x17A, 1) == 0) {
 		ScriptCall(0x0163, (u16)28538, 0, 7, 0, (s16)2560, (s16)512, (s16)1536);
 	}
-	Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {});
-	Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {});
+	SetZoneCallback((u16)52412, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(world + 0x17A, 1) == 0) {} else if (BIT(world + 0x17A, 3) == 0) {
 			ScriptCall(0x007B);
 			NativeCall_B745((u16)0x1C64, .r = StringRef(0x0478));
@@ -34626,7 +34626,7 @@
 	if (BIT(world + 0x17A, 1) == 1 && BIT(world + 0x17A, 3) == 0) {
 		ScriptCall(0x07B5, (u16)11014, 5, (s16)2688, (s16)256, (s16)1920, 5);
 	}
-	Ctrl_D4CB((u16)52413, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52413, (u16)62955, .m = (u16)3538, .e = {
 		if (*((s16 *)(stat + 0x250)) != 5 && BIT(world + 0x17A, 1) == 1 && BIT(world + 0x17A, 3) == 0) {
 			NativeCall_9906((u16)0x430D, (u16)42444, .t = (u8)64, .e = {
 				ScriptCall(0x00D1, 5, 0, 16);
@@ -34889,7 +34889,7 @@
 	} else {
 		ScriptCall(0x00DD, (u16)32141, 0, 0, (s16)768, 1, (s16)2816);
 	}
-	Ctrl_D4CB((u16)52413, (u16)32141, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52413, (u16)32141, .m = (u16)3538, .e = {
 		if (BIT(world + 0x17A, 2) == 0) {
 			BIT(world + 0x17A, 2) = 1;
 		}
@@ -35300,7 +35300,7 @@
 
 // Script_0882 at 0x08D5B600
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(world + 0xC, 4) == 0) {
 			ScriptCall(0x0022);
 			*((s16 *)(world + 0x56)) = *((s16 *)(world + 0x54));
@@ -35334,7 +35334,7 @@
 	BIT(scratch + 0x16B, 1) = 0;
 	ScriptCall(0x0117, (u16)7726, (s16)768, 7, (s16)768, 0, v1, 0, 2, (u24)2182, 0);
 	ScriptCall(0x0163, (u16)27128, 0, 3, 0, (s16)768, (s16)1792, (s16)768);
-	Ctrl_D4CB((u16)42617, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)42617, (u16)62955, .m = (u16)3538, .e = {
 		if (*((s16 *)(world + 0x18E)) == *((s16 *)(stat + 0x242))) {
 			if (*((s16 *)(world + 0x186)) == 39) {
 				NativeCall_B745((u16)0xAA62, .f = 14);
@@ -35733,7 +35733,7 @@
 	} else {
 		ScriptCall(0x00DD, (u16)32141, 0, 0, (s16)4864, 0, (s16)6400);
 	}
-	Ctrl_D4CB((u16)52411, (u16)32141, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)32141, .m = (u16)3538, .e = {
 		if (BIT(world + 0x17E, 1) == 0) {
 			BIT(world + 0x17E, 1) = 1;
 		}
@@ -35979,7 +35979,7 @@
 		ScriptCall(0x00E5, (u16)8962, (u24)604, 0, (s16)1792, (s16)1792);
 	}
 	ScriptCall(0x011A, (u16)33410, 0, (s16)2304, 1, (s16)2048, (u16)6088, (u24)2235, (u24)274, 0, 0, 0, (u16)13131, (u16)52515);
-	Ctrl_D4CB((u16)52515, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52515, (u16)62955, .m = (u16)3538, .e = {
 		BIT(world + 0x17E, 4) = 1;
 	});
 }
@@ -36336,7 +36336,7 @@
 	} else {
 		ScriptCall(0x00DD, (u16)32141, 2, 0, (s16)1536, 2, (s16)1280);
 	}
-	Ctrl_D4CB((u16)52411, (u16)32141, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)32141, .m = (u16)3538, .e = {
 		if (BIT(world + 0x17F, 1) == 0) {
 			BIT(world + 0x17F, 1) = 1;
 		}
@@ -36475,7 +36475,7 @@
 
 // Script_08DE at 0x08D5DB68
 {
-	Ctrl_D4CB((u16)42617, (u16)62955, .m = (u16)5399, .e = {
+	SetZoneCallback((u16)42617, (u16)62955, .m = (u16)5399, .e = {
 		if (*((u8 *)(scratch + 0x6C)) >= 4 && BIT(world + 0x17E, 7) == 0) {
 			BIT(world + 0x17E, 7) = 1;
 			ScriptCall(0x0148, (u16)12133, -1);
@@ -36749,14 +36749,14 @@
 		}
 		ScriptCall(0x012F, 0, 13, (s16)5120, (s16)768, 1, 0, 6);
 		ScriptCall(0x012F, 2, 20, (s16)2816, (s16)4096, 0, 1, (u8)81);
-		Ctrl_D4CB((u16)52414, (u16)5321, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52414, (u16)5321, .m = (u16)3538, .e = {
 			if (p0 != (u16)62955 && p0 != (u16)8007) {
 				if (BIT(world + 0x17F, 3) == 0) {
 					BIT(world + 0x17F, 3) = 1;
 				}
 			}
 		});
-		Ctrl_D4CB((u16)52415, (u16)5321, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52415, (u16)5321, .m = (u16)3538, .e = {
 			if (p0 != (u16)62955 && p0 != (u16)8007) {
 				if (BIT(world + 0x17F, 2) == 0) {
 					BIT(world + 0x17F, 2) = 1;
@@ -38670,7 +38670,7 @@
 
 // Script_0986 at 0x08D62130
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .w = [p1, p2], .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .w = [p1, p2], .e = {
 		if (BIT(world + 0xC, 4) == 0) {
 			ScriptCall(0x0160, p6, p7, (u24)125);
 		}
@@ -39008,7 +39008,7 @@
 	ScriptCall(0x00CE, (u16)52411);
 	ScriptCall(0x00CE, (u16)52412);
 	ScriptCall(0x00CE, (u16)52413);
-	Ctrl_D4CB((u16)52414, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52414, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(world + 0xC, 4) == 0 && { NativeCall_B745((u16)0x1320); } == 0) {
 			*((u8 *)(scratch + 0x2F)) = 0;
 			ScriptCall(0x09AB);
@@ -39399,19 +39399,19 @@
 			*((s16 *)(scratch + 0x162)) = (u8)192;
 		} else {
 			if (*((s16 *)(stat + 0x932)) == (u8)192) {
-				Ctrl_B96E("\xA4\xAA\xA4\xC6\xA4\xF3\xA4\xB3\xC0\xDF\xC4\xEA\xA1\xA1\xCA\xFD\xB8\xFE\x20\xCB\xCC\x00");
+				DebugPrint("おてんこ設定　方向 北");
 				*((s16 *)(scratch + 0x15C)) = *((s16 *)(stat + 0x30));
 				*((s16 *)(scratch + 0x160)) = *((s16 *)(stat + 0x34)) + (u8)128;
 			} else if (*((s16 *)(stat + 0x932)) == 0) {
-				Ctrl_B96E("\xA4\xAA\xA4\xC6\xA4\xF3\xA4\xB3\xC0\xDF\xC4\xEA\xA1\xA1\xCA\xFD\xB8\xFE\x20\xC5\xEC\x00");
+				DebugPrint("おてんこ設定　方向 東");
 				*((s16 *)(scratch + 0x15C)) = *((s16 *)(stat + 0x30)) - (u8)128;
 				*((s16 *)(scratch + 0x160)) = *((s16 *)(stat + 0x34));
 			} else if (*((s16 *)(stat + 0x932)) == (u8)64) {
-				Ctrl_B96E("\xA4\xAA\xA4\xC6\xA4\xF3\xA4\xB3\xC0\xDF\xC4\xEA\xA1\xA1\xCA\xFD\xB8\xFE\x20\xC6\xEE\x00");
+				DebugPrint("おてんこ設定　方向 南");
 				*((s16 *)(scratch + 0x15C)) = *((s16 *)(stat + 0x30));
 				*((s16 *)(scratch + 0x160)) = *((s16 *)(stat + 0x34)) - (u8)128;
 			} else if (*((s16 *)(stat + 0x932)) == (u8)128) {
-				Ctrl_B96E("\xA4\xAA\xA4\xC6\xA4\xF3\xA4\xB3\xC0\xDF\xC4\xEA\xA1\xA1\xCA\xFD\xB8\xFE\x20\xC0\xBE\x00");
+				DebugPrint("おてんこ設定　方向 西");
 				*((s16 *)(scratch + 0x15C)) = *((s16 *)(stat + 0x30)) + (u8)128;
 				*((s16 *)(scratch + 0x160)) = *((s16 *)(stat + 0x34));
 			} else {
@@ -39591,7 +39591,7 @@
 // Script_09CC at 0x08D63E76
 {
 	*((u8 *)(scratch + 0x17B)) = { NativeCall_B745((u16)0xDAA4); };
-	Ctrl_B96E("\xA4\xC1\xA4\xA4\xA4\xAD\xA4\xD0\xA4\xF3\xA4\xB4\xA4\xA6\x00", *((u8 *)(scratch + 0x17B)));
+	DebugPrint("ちいきばんごう", *((u8 *)(scratch + 0x17B)));
 	NativeCall_B745((u16)0x2575, 0, StringRef(0x18BD), .i = (*((u8 *)(scratch + 0x17B))));
 }
 
@@ -39962,17 +39962,17 @@
 {
 	if (*((u8 *)(world + 0x59)) == 0) {
 		if (*((s16 *)(world + 0x0)) >= 23 && *((s16 *)(world + 0x0)) < 36) {
-			Ctrl_B96E("\xC1\xD2\xB8\xCB\xA4\xCE\xC1\xB0\xA4\xC7\xA5\xAD\xA5\xB7\xA5\xE3\xA1\xBC\x00");
+			DebugPrint("倉庫の前でキシャー");
 			return 1;
 		} else if (*((s16 *)(world + 0x0)) >= 48 && *((s16 *)(world + 0x0)) < 50 && *((u8 *)(world + 0x5B)) <= 1) {
-			Ctrl_B96E("\xCA\xF1\xC2\xD3\xB4\xAC\xA4\xA4\xA4\xC6\xA5\xAD\xA5\xB7\xA5\xE3\xA1\xBC\x00");
+			DebugPrint("包帯巻いてキシャー");
 			return 2;
 		} else {
-			Ctrl_B96E("\xB2\xC8\xBD\xD0\xC3\xE6\x00");
+			DebugPrint("家出中");
 			return 0;
 		}
 	} else {
-		Ctrl_B96E("\xA5\xAF\xA5\xED\xC1\xD2\xB8\xCB\xA4\xC7\xA5\xDE\xA5\xEB\xA5\xAF\xA4\xCA\xA4\xEB\x00");
+		DebugPrint("クロ倉庫でマルクなる");
 		return 0;
 	}
 }
@@ -40040,7 +40040,7 @@
 
 // Script_09E6 at 0x08D64C4D
 {
-	Ctrl_B96E("\xA4\xAF\xA4\xED\xB2\xF1\xCF\xC3\x00");
+	DebugPrint("くろ会話");
 	ScriptCall(0x007B);
 	if (*((s16 *)(world + 0x0)) >= 48 && *((s16 *)(world + 0x0)) < 51 && *((u8 *)(world + 0x5B)) == 0) {
 		NativeCall_B745((u16)0x1C64, .r = StringRef(0x0673));
@@ -40058,7 +40058,7 @@
 
 // Script_09E7 at 0x08D64CFA
 {
-	Ctrl_B96E("\xA4\xDB\xA4\xA6\xA4\xBF\xA4\xA4\xA4\xAF\xA4\xED\xB2\xF1\xCF\xC3\x00");
+	DebugPrint("ほうたいくろ会話");
 	ScriptCall(0x007B);
 	if (*((s16 *)(world + 0x0)) >= 48 && *((s16 *)(world + 0x0)) < 51 && *((u8 *)(world + 0x5B)) == 0) {
 		NativeCall_B745((u16)0x1C64, .r = StringRef(0x067B));
@@ -40185,17 +40185,17 @@
 	if (*((s16 *)(world + 0x18E)) == (u8)162 && BIT(scratch + 0x16B, 3) == 0) {
 		BIT(scratch + 0x16B, 5) = 1;
 	}
-	Ctrl_B96E("\xB4\xBD\xB2\xB3\xA5\xA8\xA5\xEA\xA5\xA2\x00", *((s16 *)(world + 0x18E)));
-	Ctrl_B96E("\xB4\xBD\xB2\xB3\xA5\xED\xA1\xBC\xA5\xC9\x00", BIT(scratch + 0x16B, 3));
-	Ctrl_B96E("\xB4\xBD\xB2\xB3\xA5\xD5\xA5\xE9\xA5\xB0\x00", BIT(scratch + 0x16B, 5));
+	DebugPrint("棺桶エリア", *((s16 *)(world + 0x18E)));
+	DebugPrint("棺桶ロード", BIT(scratch + 0x16B, 3));
+	DebugPrint("棺桶フラグ", BIT(scratch + 0x16B, 5));
 	*((s16 *)(scratch + 0x182)) = *((s16 *)(scratch + 0x0)) * 60 + *((s16 *)(scratch + 0x2));
 	NativeCall_B745((u16)0x3C47, *((s16 *)(scratch + 0x9A)), *((s16 *)(scratch + 0x9C)), *((s16 *)(scratch + 0x9E)), *((s16 *)(scratch + 0xA0)));
 	NativeCall_B745((u16)0x5365, *((s16 *)(scratch + 0xA2)), *((s16 *)(scratch + 0xA4)), *((s16 *)(scratch + 0xA6)), *((s16 *)(scratch + 0xA8)));
 	*((s16 *)(scratch + 0x184)) = *((s16 *)(scratch + 0x9A)) * 60 + *((s16 *)(scratch + 0x9C));
 	*((s16 *)(scratch + 0x186)) = *((s16 *)(scratch + 0xA2)) * 60 + *((s16 *)(scratch + 0xA4));
-	Ctrl_B96E("\xB8\xBD\xBA\xDF\xBB\xFE\xB9\xEF\xCA\xAC\xC9\xBD\xB5\xAD\x00", *((s16 *)(scratch + 0x182)));
-	Ctrl_B96E("\xC6\xFC\xA4\xCE\xBD\xD0\xBB\xFE\xB4\xD6\x5F\xCA\xAC\xC9\xBD\xB5\xAD\x00", *((s16 *)(scratch + 0x184)));
-	Ctrl_B96E("\xC6\xFC\xA4\xCE\xC6\xFE\xBB\xFE\xB4\xD6\x5F\xCA\xAC\xC9\xBD\xB5\xAD\x00", *((s16 *)(scratch + 0x186)));
+	DebugPrint("現在時刻分表記", *((s16 *)(scratch + 0x182)));
+	DebugPrint("日の出時間_分表記", *((s16 *)(scratch + 0x184)));
+	DebugPrint("日の入時間_分表記", *((s16 *)(scratch + 0x186)));
 	if (BIT(world + 0x83, 7) == 1) {
 		if (*((s16 *)(scratch + 0x184)) <= *((s16 *)(scratch + 0x182)) && *((s16 *)(scratch + 0x186)) >= *((s16 *)(scratch + 0x182))) {
 			if (BIT(scratch + 0x16B, 4) == 0 && BIT(scratch + 0x16B, 5) == 0) {
@@ -40213,7 +40213,7 @@
 	if (BIT(world + 0x86, 2) == 1) {
 		if (*((s16 *)(scratch + 0x184)) > *((s16 *)(scratch + 0x182)) || *((s16 *)(scratch + 0x186)) < *((s16 *)(scratch + 0x182))) {
 			if (BIT(scratch + 0x16B, 4) == 0 && BIT(scratch + 0x16B, 5) == 0) {
-				Ctrl_B96E("\xA5\xCF\xA5\xC6\xA5\xCA\xC0\xDF\xC3\xD6\x00");
+				DebugPrint("ハテナ設置");
 				NativeCall_B745((u16)0x8EA3, .n = (u16)1201, .c = (u16)57406, .p = [(s16)5760, (s16)512, (s16)3456], .r = [4, 0, 0], .T = [*((s16 *)(scratch + 0xA2)), *((s16 *)(scratch + 0xA4)), *((s16 *)(scratch + 0x9A)), *((s16 *)(scratch + 0x9C))], .s = [16, 24], .h = [(s16)1152, (s16)768, (s16)384], .d = 0, .H = [*((s16 *)(scratch + 0x176)), *((s16 *)(scratch + 0x178))], .i = 2, .t = (u24)3029, .F = 0);
 			}
 		}
@@ -40315,7 +40315,7 @@
 // Script_09F9 at 0x08D65686
 {
 	if (*((s16 *)(world + 0x0)) < 12) {
-		Ctrl_D4CB((u16)19623, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)19623, (u16)62955, .m = (u16)3538, .e = {
 			if (*((s16 *)(world + 0x0)) < 12) {
 				ScriptCall(0x1091);
 			}
@@ -40330,19 +40330,19 @@
 				*((u8 *)(world + 0x5B)) = 4;
 			}
 		}
-		Ctrl_D4CB((u16)19623, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)19623, (u16)62955, .m = (u16)3538, .e = {
 			if (*((u8 *)(world + 0x5B)) == 2) {
 				*((u8 *)(world + 0x5B)) = 3;
 				ScriptCall(0x10C1);
 			}
 		});
-		Ctrl_D4CB((u16)19624, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)19624, (u16)62955, .m = (u16)3538, .e = {
 			if (*((u8 *)(world + 0x5B)) == 2) {
 				*((u8 *)(world + 0x5B)) = 3;
 				ScriptCall(0x10C1);
 			}
 		});
-		Ctrl_D4CB((u16)19625, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)19625, (u16)62955, .m = (u16)3538, .e = {
 			if (*((u8 *)(world + 0x5B)) == 3) {
 				*((u8 *)(world + 0x5B)) = 4;
 				ScriptCall(0x10C2);
@@ -40654,8 +40654,8 @@
 		}
 	}
 	if (*((u8 *)(scratch + 0x181)) >= 1) {
-		Ctrl_B96E("\xA5\xB9\xA5\xDF\xA5\xEC\xBB\xFE\xB4\xD6\xB3\xB0\xB6\xAF\xC0\xA9\xC0\xDF\xC3\xD6\xA5\xD5\xA5\xE9\xA5\xB0\x00", BIT(world + 0x20B, 0));
-		Ctrl_B96E("\xA5\xA2\xA5\xF3\xA5\xB8\xA5\xA7\xA5\xEC\xA5\xC3\xA5\xBF\xBB\xFE\xB4\xD6\xB3\xB0\xB6\xAF\xC0\xA9\xC0\xDF\xC3\xD6\xA5\xD5\xA5\xE9\xA5\xB0\x00", BIT(world + 0x20B, 4));
+		DebugPrint("スミレ時間外強制設置フラグ", BIT(world + 0x20B, 0));
+		DebugPrint("アンジェレッタ時間外強制設置フラグ", BIT(world + 0x20B, 4));
 		if (BIT(world + 0x20B, 4) == 1) {
 			BIT(scratch + 0x16B, 6) = 0;
 		} else {
@@ -40789,7 +40789,7 @@
 		*((u8 *)(scratch + 0x188)) = *((u8 *)(scratch + 0x188)) + 1;
 	}
 	if (*((s16 *)(world + 0x0)) < 30) {
-		Ctrl_B96E("\xA5\xAD\xA5\xC3\xA5\xC9\xB5\xDF\xBD\xD0\xC1\xB0\xA5\xA2\xA5\xA4\xA5\xC6\xA5\xE0\xA5\xBB\xA5\xC3\xA5\xC8\x00");
+		DebugPrint("キッド救出前アイテムセット");
 		NativeCall_B745((u16)0x7636, .a = 0, .r = 6, .d = 0, .e = {
 			if (*((u8 *)(scratch + 0x188)) < 6) {
 				((u8 *)(world + 0x87))[6, (*((u8 *)(scratch + 0x188)))] = { NativeCall_B745((u16)0x3469, .p = (s16)512); } >> 8;
@@ -40797,7 +40797,7 @@
 			}
 		});
 	} else if (*((s16 *)(world + 0x0)) < 46) {
-		Ctrl_B96E("\xA5\xAD\xA5\xC3\xA5\xC9\xB5\xDF\xBD\xD0\xB8\xE5\xA3\xF3\xA3\xF4\xA3\xB0\xA3\xB3\xA5\xAF\xA5\xEA\xA5\xA2\xC1\xB0\xA5\xA2\xA5\xA4\xA5\xC6\xA5\xE0\xA5\xBB\xA5\xC3\xA5\xC8\x00");
+		DebugPrint("キッド救出後ｓｔ０３クリア前アイテムセット");
 		NativeCall_B745((u16)0x7636, .a = 0, .r = 6, .d = 0, .e = {
 			if (*((u8 *)(scratch + 0x188)) < 6) {
 				((u8 *)(world + 0x87))[6, (*((u8 *)(scratch + 0x188)))] = { NativeCall_B745((u16)0x3469, .p = (s16)768); } >> 8;
@@ -40805,7 +40805,7 @@
 			}
 		});
 	} else if (*((s16 *)(world + 0x0)) < 58) {
-		Ctrl_B96E("\xA3\xF3\xA3\xF4\xA3\xB0\xA3\xB3\xA5\xAF\xA5\xEA\xA5\xA2\xB8\xE5\xA3\xF3\xA3\xF4\xA3\xB0\xA3\xB4\xA5\xAF\xA5\xEA\xA5\xA2\xC1\xB0\xA5\xA2\xA5\xA4\xA5\xC6\xA5\xE0\xA5\xBB\xA5\xC3\xA5\xC8\x00");
+		DebugPrint("ｓｔ０３クリア後ｓｔ０４クリア前アイテムセット");
 		NativeCall_B745((u16)0x7636, .a = 0, .r = 6, .d = 0, .e = {
 			if (*((u8 *)(scratch + 0x188)) < 6) {
 				((u8 *)(world + 0x87))[6, (*((u8 *)(scratch + 0x188)))] = { NativeCall_B745((u16)0x3469, .p = (s16)1280); } >> 8;
@@ -40813,7 +40813,7 @@
 			}
 		});
 	} else if (*((s16 *)(world + 0x0)) < 62) {
-		Ctrl_B96E("\xA3\xF3\xA3\xF4\xA3\xB0\xA3\xB4\xA5\xAF\xA5\xEA\xA5\xA2\xB8\xE5\xA3\xF3\xA3\xF4\xA3\xB0\xA3\xB5\xA5\xAF\xA5\xEA\xA5\xA2\xC1\xB0\xA5\xA2\xA5\xA4\xA5\xC6\xA5\xE0\xA5\xBB\xA5\xC3\xA5\xC8\x00");
+		DebugPrint("ｓｔ０４クリア後ｓｔ０５クリア前アイテムセット");
 		NativeCall_B745((u16)0x7636, .a = 0, .r = 6, .d = 0, .e = {
 			if (*((u8 *)(scratch + 0x188)) < 6) {
 				((u8 *)(world + 0x87))[6, (*((u8 *)(scratch + 0x188)))] = { NativeCall_B745((u16)0x3469, .p = (s16)1792); } >> 8;
@@ -40821,7 +40821,7 @@
 			}
 		});
 	} else if (*((s16 *)(stat + 0x240)) == 0) {
-		Ctrl_B96E("\xA3\xF3\xA3\xF4\xA3\xB0\xA3\xB5\xA5\xAF\xA5\xEA\xA5\xA2\xB8\xE5\xA3\xF3\xA3\xF4\xA3\xB0\xA3\xB6\xA5\xAF\xA5\xEA\xA5\xA2\xC1\xB0\xA5\xA2\xA5\xA4\xA5\xC6\xA5\xE0\xA5\xBB\xA5\xC3\xA5\xC8\x00");
+		DebugPrint("ｓｔ０５クリア後ｓｔ０６クリア前アイテムセット");
 		NativeCall_B745((u16)0x7636, .a = 0, .r = 6, .d = 0, .e = {
 			if (*((u8 *)(scratch + 0x188)) < 6) {
 				((u8 *)(world + 0x87))[6, (*((u8 *)(scratch + 0x188)))] = { NativeCall_B745((u16)0x3469, .p = (s16)2048); } >> 8;
@@ -40829,9 +40829,9 @@
 			}
 		});
 	} else {
-		Ctrl_B96E("\xCB\xDC\xCA\xD4\xA5\xAF\xA5\xEA\xA5\xA2\xB8\xE5\xA5\xA2\xA5\xA4\xA5\xC6\xA5\xE0\xA5\xBB\xA5\xC3\xA5\xC8\x00");
+		DebugPrint("本編クリア後アイテムセット");
 		ScriptCall(0x024F);
-		Ctrl_B96E("\xBC\xE8\xC6\xC0\xBA\xD1\xA4\xDF\xA4\xCE\xCB\xC9\xB6\xF1\xA4\xCE\xBF\xF4\x00", *((u8 *)(scratch + 0xAE)));
+		DebugPrint("取得済みの防具の数", *((u8 *)(scratch + 0xAE)));
 		*((u8 *)(scratch + 0x189)) = { NativeCall_B745((u16)0x3469, .p = (*((u8 *)(scratch + 0xAE)) << 8)); } >> 8;
 		ScriptCall(0x0A0D, ({ ScriptCall(0x0A0E); }));
 		*((u8 *)(scratch + 0x189)) = { NativeCall_B745((u16)0x3469, .p = (*((u8 *)(scratch + 0xAE)) << 8)); } >> 8;
@@ -40900,11 +40900,11 @@
 		ScriptCall(0x0A0A);
 	} else if (p0 == 0) {
 		if ({ NativeCall_B745((u16)0x4D88, .k = 2, .i = 0); } == 1) {
-			Ctrl_B96E("\xA5\xD0\xA5\xC3\xA5\xB0\xA4\xCB\xB6\xF5\xA4\xAD\xA4\xAC\xA4\xA2\xA4\xEB\xA4\xCE\xA4\xC7\xA5\xA2\xA5\xA4\xA5\xC6\xA5\xE0\xC5\xCF\xA4\xB9\x00");
+			DebugPrint("バッグに空きがあるのでアイテム渡す");
 			*((u8 *)(scratch + 0x2F)) = 0;
 			ScriptCall(0x0A12);
 		} else {
-			Ctrl_B96E("\xA5\xD0\xA5\xC3\xA5\xB0\xA4\xCB\xB6\xF5\xA4\xAD\xA4\xAC\xA4\xCA\xA4\xA4\xA4\xC7\xA4\xB9\x00");
+			DebugPrint("バッグに空きがないです");
 			NativeCall_B745((u16)0x1C64, .r = StringRef(0x0650));
 			ScriptCall(0x00F7, 3, (u24)2570, 0);
 		}
@@ -40982,7 +40982,7 @@
 
 // Script_0A14 at 0x08D6753A
 {
-	Ctrl_B96E("\xC4\xCC\xBE\xEF\xA5\xAF\xA5\xED\xB2\xF1\xCF\xC3\x00");
+	DebugPrint("通常クロ会話");
 	if ({ ScriptCall(0x01C2); } == 0) {
 		ScriptCall(0x007B);
 		if (*((s16 *)(stat + 0x240)) >= 2) {
@@ -41018,7 +41018,7 @@
 
 // Script_0A15 at 0x08D676BA
 {
-	Ctrl_B96E("\xCA\xF1\xC2\xD3\xA5\xAF\xA5\xED\xB2\xF1\xCF\xC3\x00");
+	DebugPrint("包帯クロ会話");
 	if ({ ScriptCall(0x01C2); } == 0) {
 		ScriptCall(0x007B);
 		if (*((s16 *)(stat + 0x240)) >= 2) {
@@ -41095,7 +41095,7 @@
 
 // Script_1405 at 0x08D67941
 {
-	Ctrl_B96E("\xC5\xD0\xBE\xEC\xA5\xDD\xA5\xA4\xA5\xF3\xA5\xC8\x00", *((s16 *)(world + 0x186)));
+	DebugPrint("登場ポイント", *((s16 *)(world + 0x186)));
 	ScriptCall(0x001D, 4);
 	NativeCall_B745((u16)0xD0C7, .f = 1);
 	NativeCall_B745((u16)0xC6AA, .m = 7);
@@ -41120,7 +41120,7 @@
 
 // Script_0A19 at 0x08D679FC
 {
-	Ctrl_B96E("\xA5\xD6\xA5\xE9\xA5\xC3\xA5\xAF\xA5\xD1\xA5\xF3\xA5\xB5\xA1\xBC\xA5\xDD\xA5\xA4\xA5\xF3\xA5\xC8\x20\x20\x00", *((s16 *)(stat + 0x3B0)));
+	DebugPrint("ブラックパンサーポイント  ", *((s16 *)(stat + 0x3B0)));
 	BIT(world + 0x5C, 0) = 1;
 	ScriptCall(0x0A1A, 1);
 }
@@ -41177,10 +41177,10 @@
 		return;
 	}
 	if (*((s16 *)(world + 0x0)) < 48) {
-		Ctrl_B96E("\xA4\xAF\xA4\xED\xA1\xA1\xA4\xCE\xA1\xBC\xA4\xDE\xA4\xEB\x00");
+		DebugPrint("くろ　のーまる");
 		NativeCall_B745((u16)0xDDD0, .n = (u16)20962, .k = 5, .a = 24);
 	} else {
-		Ctrl_B96E("\xA4\xAF\xA4\xED\xA1\xA1\xA4\xDB\xA4\xA6\xA4\xBF\xA4\xA4\x00");
+		DebugPrint("くろ　ほうたい");
 		NativeCall_B745((u16)0xDDD0, .n = (u16)10656, .k = 5, .a = 24);
 	}
 	BIT(scratch + 0x16B, 7) = 1;
@@ -41192,10 +41192,10 @@
 		return;
 	}
 	if (*((s16 *)(world + 0x0)) < 48) {
-		Ctrl_B96E("\xA4\xAF\xA4\xED\xA1\xA1\xA4\xCE\xA1\xBC\xA4\xDE\xA4\xEB\x00");
+		DebugPrint("くろ　のーまる");
 		NativeCall_B745((u16)0xDDD0, .n = (u16)20962, .k = 5, .a = 23);
 	} else {
-		Ctrl_B96E("\xA4\xAF\xA4\xED\xA1\xA1\xA4\xDB\xA4\xA6\xA4\xBF\xA4\xA4\x00");
+		DebugPrint("くろ　ほうたい");
 		NativeCall_B745((u16)0xDDD0, .n = (u16)10656, .k = 5, .a = 23);
 	}
 	BIT(scratch + 0x16B, 7) = 0;
@@ -41364,7 +41364,7 @@
 
 // Script_0A26 at 0x08D684E5
 {
-	Ctrl_B96E("\xA5\xAD\xA5\xC3\xA5\xC9\xB2\xF1\xCF\xC3\xC4\xBE\xC0\xDC\xB3\xAB\xBB\xCF\x00");
+	DebugPrint("キッド会話直接開始");
 	BIT(scratch + 0x18F, 0) = 0;
 	ScriptCall(0x0A27);
 }
@@ -41674,7 +41674,7 @@
 
 // Script_0A40 at 0x08D68CEC
 {
-	Ctrl_B96E("\xA5\xAD\xA5\xC3\xA5\xC9\xB2\xF1\xCF\xC3\xC4\xBE\xC0\xDC\xB3\xAB\xBB\xCF\x00");
+	DebugPrint("キッド会話直接開始");
 	BIT(scratch + 0x18F, 2) = 0;
 	ScriptCall(0x0A41);
 }
@@ -41682,7 +41682,7 @@
 // Script_0A41 at 0x08D68D16
 {
 	BIT(scratch + 0x18F, 3) = BIT(scratch + 0x18F, 3) ^ 1;
-	Ctrl_B96E("\xA5\xAD\xA5\xC3\xA5\xC9\xC6\xBB\xB6\xF1\xB2\xB0\x5F\xB2\xF1\xCF\xC3\xA5\xEB\xA1\xBC\xA5\xD7\xA5\xD5\xA5\xE9\xA5\xB0\x5F\x5F\x5F\x5F\x5F\x5F\x5F\x5F\x5F\x00", BIT(scratch + 0x18F, 3));
+	DebugPrint("キッド道具屋_会話ループフラグ_________", BIT(scratch + 0x18F, 3));
 	ScriptCall(0x007B);
 	if (*((s16 *)(world + 0x0)) >= 35 && *((s16 *)(world + 0x0)) < 46 && BIT(world + 0x6B, 7) == 0) {
 		NativeCall_B745((u16)0x1C64, .r = StringRef(0x0F3A));
@@ -42061,7 +42061,7 @@
 // Script_0A5F at 0x08D6979A
 {
 	*((u8 *)(scratch + 0x193)) = { ScriptCall(0x172A); };
-	Ctrl_B96E("\xB2\xF1\xCF\xC3\xA5\xEB\xA1\xBC\xA5\xD7\xBF\xF4\x00", *((u8 *)(scratch + 0x193)));
+	DebugPrint("会話ループ数", *((u8 *)(scratch + 0x193)));
 	if (*((s16 *)(world + 0x0)) < 32) {
 		if (*((u8 *)(scratch + 0x194)) % *((u8 *)(scratch + 0x193)) == 0) {
 			NativeCall_B745((u16)0x1C64, .r = StringRef(0x1228));
@@ -42170,11 +42170,11 @@
 
 // Script_0A60 at 0x08D69C17
 {
-	Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)42431, .e = {
+	SetZoneCallback((u16)52411, (u16)62955, .m = (u16)42431, .e = {
 		if (BIT(scratch + 0x18F, 4) == 1) {
-			Ctrl_B96E("\xA2\xE3\xA5\xA6\xA5\xEB\xA5\xD5\xA5\xA4\xA5\xD9\xA5\xF3\xA5\xC8\xA2\xE4\xA5\xEA\xA5\xBF\xB3\xD0\xB8\xE7\xA4\xCF\xA4\xC7\xA4\xAD\xA4\xC6\xA4\xA4\xA4\xDE\xA4\xB9\x28\x2A\x2D\x5F\x2D\x29\x00");
+			DebugPrint("≪ウルフイベント≫リタ覚悟はできています(*-_-)");
 			if ({ NativeCall_B745((u16)0x7117, .p = [(s16)3200, (s16)256, (s16)640], .d = (u8)192); } > 0) {
-				Ctrl_B96E("\xA2\xE3\xA5\xA6\xA5\xEB\xA5\xD5\xA5\xA4\xA5\xD9\xA5\xF3\xA5\xC8\xA2\xE4\xB3\xFA\xA4\xDF\xA4\xDE\xA4\xB7\xA4\xBF\xA4\xCD\xA1\xA6\xA1\xA6\xA1\xA6\x28\x3B\x8E\xDF\xA6\xD8\x8E\xDF\x29\x00");
+				DebugPrint("≪ウルフイベント≫噛みましたね・・・(;ﾟωﾟ)");
 				ScriptCall(0x007E, 1);
 				NativeCall_B745((u16)0xC6AA, .m = 7);
 				NativeCall_B745((u16)0xD8DF);
@@ -42822,7 +42822,7 @@
 		NativeCall_9906((u16)0x4AE5, (u16)42382, .f = 0, .c = 0, .m = 0, .p = [(u16)60072, (u16)60072, (u16)60072]);
 		ScriptCall(0x01D0);
 		v1 = { ScriptCall(0x01CF); };
-		Ctrl_B96E("\xB0\xC5\xB9\xF5\xA5\xED\xA1\xBC\xA5\xF3\xBC\xDA\xA4\xEA\xA4\xE9\xA4\xEC\xA4\xEB\xA4\xAB\xA1\xA9\x20\x30\x3D\x6F\x6B\x20\x31\x3D\x6E\x67\x00", v1);
+		DebugPrint("暗黒ローン借りられるか？ 0=ok 1=ng", v1);
 		NativeCall_9906((u16)0xE9D3, (u16)42752, .r = StringRef(0x053B), .d = (u24)466, .o = v1, .e = (u24)2793);
 		ScriptCall(0x0172, 1, (u8)161);
 	}
@@ -43720,17 +43720,17 @@
 
 // Script_0AD4 at 0x08D6CBA5
 {
-	Ctrl_B96E("\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x00");
-	Ctrl_B96E("\x6E\x61\x6D\x65\x00", p0);
-	Ctrl_B96E("\x74\x79\x70\x65\x00", p1);
-	Ctrl_B96E("\x72\x61\x6E\x6B\x00", p2);
-	Ctrl_B96E("\x6C\x65\x76\x65\x6C\x00", p3);
-	Ctrl_B96E("\x71\x75\x61\x6C\x69\x74\x79\x00", p4);
-	Ctrl_B96E("\x73\x70\x65\x63\x69\x61\x6C\x00", p5);
-	Ctrl_B96E("\x67\x72\x65\x61\x74\x00", p6);
-	Ctrl_B96E("\x67\x6F\x6F\x64\x00", p7);
-	Ctrl_B96E("\x62\x61\x64\x00", p8);
-	Ctrl_B96E("\x73\x6B\x69\x6C\x6C\x00", p9);
+	DebugPrint("---------------------------------------------------------------------------------------------------");
+	DebugPrint("name", p0);
+	DebugPrint("type", p1);
+	DebugPrint("rank", p2);
+	DebugPrint("level", p3);
+	DebugPrint("quality", p4);
+	DebugPrint("special", p5);
+	DebugPrint("great", p6);
+	DebugPrint("good", p7);
+	DebugPrint("bad", p8);
+	DebugPrint("skill", p9);
 	*((u8 *)(world + 0x6A)) = p5;
 	*((s16 *)(world + 0x6C)) = p4;
 	*((s16 *)(world + 0x6E)) = p6;
@@ -44027,7 +44027,7 @@
 	NativeCall_9906((u16)0x430D, (u16)6382, .t = 2, .e = {
 		NativeCall_B745((u16)0x53BF, .i = (u8)160);
 		NativeCall_9906((u16)0x430D, (u16)6572, .t = 18, .e = {
-			Ctrl_B96E("\xB3\xAB\xBB\xCF\xA5\xB5\xA5\xA6\xA5\xF3\xA5\xC9\xA5\xC7\xA5\xA3\xA5\xEC\xA5\xA4\x00");
+			DebugPrint("開始サウンドディレイ");
 			if (BIT(world + 0x5E, 1) == 0) {
 				if (BIT(world + 0x5E, 2) == 0 && *((s16 *)(stat + 0xE)) == 10 && *((s16 *)(stat + 0x250)) != 5) {
 					ScriptCall(0x0AEC);
@@ -44094,7 +44094,7 @@
 	ScriptCall(0x0172, 1, *((s16 *)(world + 0x1B8)));
 	NativeCall_B745((u16)0xC6AA, .m = 0);
 	NativeCall_9906((u16)0x430D, (u16)6530, .t = 20, .e = {
-		Ctrl_B96E("\xC1\xEB\xB8\xFD\xA5\xB5\xA5\xA6\xA5\xF3\xA5\xC9\xA5\xC7\xA5\xA3\xA5\xEC\xA5\xA4\x00");
+		DebugPrint("窓口サウンドディレイ");
 		NativeCall_B745((u16)0xEBFF, .n = (u16)16637);
 		NativeCall_B745((u16)0xEBFF, .n = (u16)63232);
 		ScriptCall(0x0192);
@@ -44259,8 +44259,8 @@
 		ScriptCall(0x0B05, 2, *((s16 *)(scratch + 0x1A0)), 9);
 		*((s16 *)(scratch + 0x1A2)) = *((s32 *)(stat + 0x2B4)) / 60 / 60 / 60;
 		*((s16 *)(scratch + 0x1A4)) = *((s32 *)(stat + 0x2B4)) / 60 / 60 % 60;
-		Ctrl_B96E("\xA5\xD7\xA5\xEC\xA5\xA4\xA5\xBF\xA5\xA4\xA5\xE0\xBB\xFE\x00", *((s16 *)(scratch + 0x1A2)));
-		Ctrl_B96E("\xA5\xD7\xA5\xEC\xA5\xA4\xA5\xBF\xA5\xA4\xA5\xE0\xCA\xAC\x00", *((s16 *)(scratch + 0x1A4)));
+		DebugPrint("プレイタイム時", *((s16 *)(scratch + 0x1A2)));
+		DebugPrint("プレイタイム分", *((s16 *)(scratch + 0x1A4)));
 		if (*((s16 *)(scratch + 0x1A2)) >= (u8)100) {
 			*((s16 *)(scratch + 0x1A2)) = (u8)99;
 			*((s16 *)(scratch + 0x1A4)) = 59;
@@ -44369,11 +44369,11 @@
 	*((s32 *)(scratch + 0x1B4)) = p0;
 	if (*((s32 *)(scratch + 0x1B4)) < 0) {
 		*((s32 *)(scratch + 0x1B4)) = 0;
-		Ctrl_B96E("\x30\xA5\xDE\xA1\xBC\xA5\xB8\xA4\xA2\xA4\xBF\xA4\xA4\x00", *((s32 *)(scratch + 0x1B4)));
+		DebugPrint("0マージあたい", *((s32 *)(scratch + 0x1B4)));
 	}
 	if (*((s32 *)(scratch + 0x1B4)) > p1) {
 		*((s32 *)(scratch + 0x1B4)) = p1;
-		Ctrl_B96E("\x31\xA5\xDE\xA1\xBC\xA5\xB8\xA4\xA2\xA4\xBF\xA4\xA4\x00", *((s32 *)(scratch + 0x1B4)));
+		DebugPrint("1マージあたい", *((s32 *)(scratch + 0x1B4)));
 	}
 	return *((s32 *)(scratch + 0x1B4));
 }
@@ -45232,8 +45232,8 @@
 
 // Script_0B1F at 0x08D6FCE7
 {
-	Ctrl_B96E("\xA4\xA4\xA4\xE9\xA4\xA4\xA4\xD0\xA4\xB7\xA4\xE7\x00", *((u8 *)(scratch + 0x1BC)));
-	Ctrl_B96E("\xA4\xA4\xA4\xE9\xA4\xA4\xA4\xCA\xA4\xF3\xA4\xD0\xA1\xBC\x00", *((u8 *)(scratch + 0x1BD)));
+	DebugPrint("いらいばしょ", *((u8 *)(scratch + 0x1BC)));
+	DebugPrint("いらいなんばー", *((u8 *)(scratch + 0x1BD)));
 	switch (*((u8 *)(scratch + 0x1BC))) {
 		case 0: {
 			if (*((u8 *)(scratch + 0x1BD)) == 0) {
@@ -45875,7 +45875,7 @@
 {
 	NativeCall_B745((u16)0xB55A, *((s16 *)(scratch + 0xC)), *((s16 *)(scratch + 0xE)), *((s16 *)(scratch + 0x10)), *((s16 *)(scratch + 0x0)), *((s16 *)(scratch + 0x2)), *((s16 *)(scratch + 0x4)));
 	*((s16 *)(scratch + 0x1CA)) = { ScriptCall(0x01CC, *((s16 *)(scratch + 0xC)), *((s16 *)(scratch + 0xE)), *((s16 *)(scratch + 0x10)), *((s16 *)(world + 0x60)), *((s16 *)(world + 0x62)), *((s16 *)(world + 0x64))); };
-	Ctrl_B96E("\xC6\xFC\xBF\xF4\x00", *((s16 *)(scratch + 0x1CA)));
+	DebugPrint("日数", *((s16 *)(scratch + 0x1CA)));
 	if (BIT(world + 0x5E, 0) == 0 || *((s16 *)(scratch + 0x1CA)) >= 2) {
 		NativeCall_B745((u16)0x1C64, .r = StringRef(0x0EFF));
 		ScriptCall(0x00F8, 3, (u24)2889, 0);
@@ -45988,7 +45988,7 @@
 
 // Script_0B51 at 0x08D71226
 {
-	Ctrl_B96E("\xA4\xC8\xA4\xB1\xA4\xA4\xA4\xC8\xA4\xA6\xA5\xBB\xA1\xBC\xA5\xD6\x00");
+	DebugPrint("とけいとうセーブ");
 	ScriptCall(0x007C);
 	NativeCall_9906((u16)0x430D, (u16)10823, .t = 16, .e = {
 		NativeCall_B745((u16)0x1C64, .r = StringRef(0x0F12));
@@ -46303,7 +46303,7 @@
 
 // Script_0B66 at 0x08D71D12
 {
-	Ctrl_B96E("\xA5\xAB\xA5\xA6\xA5\xF3\xA5\xBF\x00", *((u8 *)(scratch + 0x2E)));
+	DebugPrint("カウンタ", *((u8 *)(scratch + 0x2E)));
 	switch (*((u8 *)(scratch + 0x2E))) {
 		case 0: {
 			*((u8 *)(scratch + 0x2E)) = *((u8 *)(scratch + 0x2E)) + 1;
@@ -46314,7 +46314,7 @@
 		}
 		case 1: {
 			*((u8 *)(scratch + 0x2E)) = *((u8 *)(scratch + 0x2E)) + 1;
-			Ctrl_B96E("\xA5\xD7\xA5\xEC\xA5\xA4\xA5\xE4\xA1\xBC\xA5\xAB\xA1\xBC\xA5\xE2\xA5\xB9\xBE\xF5\xC2\xD6\x00", ({ NativeCall_B745((u16)0x4A8D); }));
+			DebugPrint("プレイヤーカーモス状態", ({ NativeCall_B745((u16)0x4A8D); }));
 			BIT(scratch + 0x18F, 6) = { NativeCall_B745((u16)0x4A8D); };
 			ScriptCall(0x00FD);
 			NativeCall_9906((u16)0x4F5C, (u16)50926, .e = (u24)2918);
@@ -46326,9 +46326,9 @@
 			ScriptCall(0x00F8, 3, (u24)2918, 0);
 		}
 		case 3: {
-			Ctrl_B96E("\x09\x09\x09\x09\x09\x09\x09\xA1\xFC\xB2\xF3\xC9\xFC\x00");
+			DebugPrint("\x09\x09\x09\x09\x09\x09\x09●回復");
 			NativeCall_B745((u16)0x3613);
-			Ctrl_B96E("\xA5\xD7\xA5\xEC\xA5\xA4\xA5\xE4\xA1\xBC\xA5\xAB\xA1\xBC\xA5\xE2\xA5\xB9\xBE\xF5\xC2\xD6\x00", ({ NativeCall_B745((u16)0x4A8D); }));
+			DebugPrint("プレイヤーカーモス状態", ({ NativeCall_B745((u16)0x4A8D); }));
 			if (BIT(scratch + 0x18F, 6) != 0) {
 				*((u8 *)(scratch + 0x2E)) = 4;
 			} else if ({ NativeCall_B745((u16)0x814C, .i = 28); } != 0) {
@@ -46342,7 +46342,7 @@
 			ScriptCall(0x00F8, 3, (u24)2918, 0);
 		}
 		case 4: {
-			Ctrl_B96E("\x09\x09\x09\x09\x09\x09\x09\xA1\xFC\xB2\xF2\xBC\xF6\x00");
+			DebugPrint("\x09\x09\x09\x09\x09\x09\x09●解呪");
 			if ({ NativeCall_B745((u16)0x814C, .i = 28); } != 0) {
 				*((u8 *)(scratch + 0x2E)) = *((u8 *)(scratch + 0x2E)) + 1;
 			} else {
@@ -46355,7 +46355,7 @@
 		}
 		case 5: {
 			*((u8 *)(scratch + 0x2E)) = *((u8 *)(scratch + 0x2E)) + 1;
-			Ctrl_B96E("\x09\x09\x09\x09\x09\x09\x09\xA1\xFC\xBE\xF4\xB2\xBD\x00");
+			DebugPrint("\x09\x09\x09\x09\x09\x09\x09●浄化");
 			NativeCall_B745((u16)0x3A5D, .i = 28);
 			NativeCall_B745((u16)0x305A, .i = 27);
 			NativeCall_B745((u16)0xE7CA, .i = (s16)291);
@@ -46572,7 +46572,7 @@
 // Script_0B76 at 0x08D72610
 {
 	if (*((s16 *)(world + 0x0)) < 13) {
-		Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 			if (*((s16 *)(world + 0x0)) < 13) {
 				ScriptCall(0x1095);
 			}
@@ -46778,10 +46778,10 @@
 			ScriptCall(0x0042);
 		}
 		ScriptCall(0x0047, 0, 0);
-		Ctrl_D4CB((u16)52514, (u16)62955, .m = (u16)3538, .p = (u24)73);
-		Ctrl_D4CB((u16)52515, (u16)62955, .m = (u16)3538, .p = (u24)73);
-		Ctrl_D4CB((u16)52516, (u16)62955, .m = (u16)3538, .p = (u24)73);
-		Ctrl_D4CB((u16)52517, (u16)62955, .m = (u16)3538, .p = (u24)73);
+		SetZoneCallback((u16)52514, (u16)62955, .m = (u16)3538, .p = (u24)73);
+		SetZoneCallback((u16)52515, (u16)62955, .m = (u16)3538, .p = (u24)73);
+		SetZoneCallback((u16)52516, (u16)62955, .m = (u16)3538, .p = (u24)73);
+		SetZoneCallback((u16)52517, (u16)62955, .m = (u16)3538, .p = (u24)73);
 	}
 }
 
@@ -46849,10 +46849,10 @@
 		*((s16 *)(scratch + 0x160)) = (s16)2688;
 		*((s16 *)(scratch + 0x162)) = (u8)128;
 		if (*((s16 *)(world + 0x0)) == 34) {
-			Ctrl_B96E("\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\xA5\xB6\xA5\xB8\xC6\xC3\xCA\xCC\xC7\xDB\xC3\xD6\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x00");
+			DebugPrint("----------------------------------------ザジ特別配置--------------------------------------------------------");
 			*((s16 *)(scratch + 0x164)) = 2;
 		} else {
-			Ctrl_B96E("\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\xA5\xB6\xA5\xB8\xA5\xC7\xA5\xE2\xC7\xDB\xC3\xD6\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x00");
+			DebugPrint("----------------------------------------ザジデモ配置--------------------------------------------------------");
 			*((s16 *)(scratch + 0x164)) = 0;
 		}
 		v1 = 1;
@@ -46924,7 +46924,7 @@
 		*((s16 *)(scratch + 0x160)) = (s16)2432;
 		*((s16 *)(scratch + 0x162)) = (u8)128;
 		if (*((s16 *)(world + 0x0)) >= 34) {
-			Ctrl_B96E("\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\xA5\xEA\xA5\xBF\xC6\xC3\xCA\xCC\xC7\xDB\xC3\xD6\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x00");
+			DebugPrint("--------------------------------------リタ特別配置--------------------------------------------------");
 			*((s16 *)(scratch + 0x164)) = 2;
 			NativeCall_B745((u16)0xC347, .n = (u16)15797, .p = [*((s16 *)(scratch + 0x15C)), *((s16 *)(scratch + 0x15E)), *((s16 *)(scratch + 0x160))], .d = *((s16 *)(scratch + 0x162)), .w = [(s16)256, (s16)256, (s16)512], .H = [4, 4], .i = 3, .t = (u24)2954);
 		} else {
@@ -46956,7 +46956,7 @@
 
 // Script_0B89 at 0x08D73548
 {
-	Ctrl_B96E("\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x62\x30\x30\x5F\x30\x34\x5F\x74\x6F\x77\x6E\x5F\xA5\xEA\xA5\xBF\xC0\xDF\xC4\xEA\x5F\xA5\xB8\xA5\xE3\xA5\xF3\xA5\xB4\xC0\xEF\xB3\xB9\xA5\xE2\xA1\xBC\xA5\xC9\xCC\xE1\xA4\xB7\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x2D\x00");
+	DebugPrint("----------------------------b00_04_town_リタ設定_ジャンゴ戦街モード戻し----------------------------------------");
 	NativeCall_B745((u16)0x8894, .n = (u16)15797);
 }
 
@@ -47147,13 +47147,13 @@
 {
 	BIT(scratch + 0x18F, 7) = 0;
 	if ((*((s16 *)(world + 0x18E)) == (u8)166 || BIT(world + 0x182, 5) == 1) && *((s16 *)(world + 0x0)) < 25) {
-		Ctrl_D4CB((u16)52415, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52415, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x18F, 7) == 0) {
 				BIT(scratch + 0x18F, 7) = 1;
 				ScriptCall(0x10C5);
 			}
 		});
-		Ctrl_D4CB((u16)52416, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52416, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(scratch + 0x18F, 7) == 0) {
 				BIT(scratch + 0x18F, 7) = 1;
 				ScriptCall(0x10C5);
@@ -47216,7 +47216,7 @@
 				LoadMap((u24)0x02F5);
 			}
 			default: {
-				Ctrl_B96E("\xA4\xA2\xA4\xEA\xA4\xA8\xA4\xCD\xA4\xA8\x00");
+				DebugPrint("ありえねえ");
 				LoadMap((u24)0x0B5A);
 			}
 		}
@@ -47376,7 +47376,7 @@
 	}
 	BIT(scratch + 0x16B, 5) = 0;
 	if (*((s16 *)(world + 0x18E)) == (u8)162) {
-		Ctrl_B96E("\xB4\xBD\xB2\xB3\xA4\xA2\xA4\xEA\x00");
+		DebugPrint("棺桶あり");
 		BIT(scratch + 0x16B, 5) = 1;
 	}
 	NativeCall_B745((u16)0xB55A, *((s16 *)(scratch + 0xC)), *((s16 *)(scratch + 0xE)), *((s16 *)(scratch + 0x10)), *((s16 *)(scratch + 0x0)), *((s16 *)(scratch + 0x2)), *((s16 *)(scratch + 0x4)));
@@ -47385,13 +47385,13 @@
 	NativeCall_B745((u16)0x5365, *((s16 *)(scratch + 0xA2)), *((s16 *)(scratch + 0xA4)), *((s16 *)(scratch + 0xA6)), *((s16 *)(scratch + 0xA8)));
 	*((s16 *)(scratch + 0x184)) = *((s16 *)(scratch + 0x9A)) * 60 + *((s16 *)(scratch + 0x9C));
 	*((s16 *)(scratch + 0x186)) = *((s16 *)(scratch + 0xA2)) * 60 + *((s16 *)(scratch + 0xA4));
-	Ctrl_B96E("\xB8\xBD\xBA\xDF\xBB\xFE\xB9\xEF\xCA\xAC\xC9\xBD\xB5\xAD\x00", *((s16 *)(scratch + 0x182)));
-	Ctrl_B96E("\xC6\xFC\xA4\xCE\xBD\xD0\xBB\xFE\xB4\xD6\x5F\xCA\xAC\xC9\xBD\xB5\xAD\x00", *((s16 *)(scratch + 0x184)));
-	Ctrl_B96E("\xC6\xFC\xA4\xCE\xC6\xFE\xBB\xFE\xB4\xD6\x5F\xCA\xAC\xC9\xBD\xB5\xAD\x00", *((s16 *)(scratch + 0x186)));
+	DebugPrint("現在時刻分表記", *((s16 *)(scratch + 0x182)));
+	DebugPrint("日の出時間_分表記", *((s16 *)(scratch + 0x184)));
+	DebugPrint("日の入時間_分表記", *((s16 *)(scratch + 0x186)));
 	if (*((s16 *)(world + 0x186)) == 48) {
 		if (BIT(world + 0x83, 7) == 1) {
 			if (BIT(scratch + 0x16B, 4) == 1 || BIT(scratch + 0x16B, 5) == 1) {
-				Ctrl_B96E("\xA4\xA2\xA4\xE1\xA4\xD5\xA4\xC3\xA4\xC6\xA4\xEB\xA4\xD0\xA1\xBC\xA4\xB8\xA4\xE7\xA4\xF3\x00");
+				DebugPrint("あめふってるばーじょん");
 				NativeCall_B745((u16)0x8EA3, .n = (u16)32351, .c = (u16)57422, .p = [(s16)640, (s16)256, (s16)896], .r = [0, 0, 0], .s = [8, 16], .d = (u8)64, .i = 2, .H = [*((s16 *)(scratch + 0x176)), *((s16 *)(scratch + 0x178))], .t = (u24)3024);
 			} else {
 				if (*((s16 *)(scratch + 0x184)) > *((s16 *)(scratch + 0x182)) || *((s16 *)(scratch + 0x186)) < *((s16 *)(scratch + 0x182))) {
@@ -47402,7 +47402,7 @@
 	} else if (*((s16 *)(world + 0x186)) == 52) {
 		if (BIT(world + 0x80, 7) == 1) {
 			if (BIT(scratch + 0x16B, 4) == 1 || BIT(scratch + 0x16B, 5) == 1) {
-				Ctrl_B96E("\xA4\xA2\xA4\xE1\xA4\xD5\xA4\xC3\xA4\xC6\xA4\xEB\xA4\xD0\xA1\xBC\xA4\xB8\xA4\xE7\xA4\xF3\x00");
+				DebugPrint("あめふってるばーじょん");
 				NativeCall_B745((u16)0x8EA3, .n = (u16)52075, .c = (u16)57294, .p = [(s16)3968, (s16)256, (s16)896], .r = [1, 0, 0], .s = [10, 20], .d = (u8)64, .i = 2, .H = [*((s16 *)(scratch + 0x176)), *((s16 *)(scratch + 0x178))], .t = (u24)3026);
 			} else {
 				if (*((s16 *)(scratch + 0x184)) > *((s16 *)(scratch + 0x182)) || *((s16 *)(scratch + 0x186)) < *((s16 *)(scratch + 0x182))) {
@@ -47413,7 +47413,7 @@
 	} else if (*((s16 *)(world + 0x186)) == 54) {
 		if (BIT(world + 0x86, 2) == 1) {
 			if (BIT(scratch + 0x16B, 4) == 1 || BIT(scratch + 0x16B, 5) == 1) {
-				Ctrl_B96E("\xA4\xA2\xA4\xE1\xA4\xD5\xA4\xC3\xA4\xC6\xA4\xEB\xA4\xD0\xA1\xBC\xA4\xB8\xA4\xE7\xA4\xF3\x00");
+				DebugPrint("あめふってるばーじょん");
 				NativeCall_B745((u16)0x8EA3, .n = (u16)1201, .c = (u16)57406, .p = [(s16)7296, (s16)256, (s16)2688], .r = [2, 0, 0], .s = [16, 24], .d = (u8)64, .i = 2, .H = [*((s16 *)(scratch + 0x176)), *((s16 *)(scratch + 0x178))], .t = (u24)3029);
 			} else {
 				if (*((s16 *)(scratch + 0x184)) <= *((s16 *)(scratch + 0x182)) && *((s16 *)(scratch + 0x186)) >= *((s16 *)(scratch + 0x182))) {
@@ -47840,14 +47840,14 @@
 		NativeCall_B745((u16)0xEDE2, 2);
 		NativeCall_B745((u16)0xEDE2, 3);
 		NativeCall_B745((u16)0xDF85);
-		Ctrl_B96E("\xC0\xB1\xC6\xC9\xA4\xDF\xB3\xAB\xBB\xCF\xA4\xE4\xA5\xC7\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\x00");
+		DebugPrint("星読み開始やデーーーーーーーーーーーーーーーーーーーーーーー");
 		NativeCall_9906((u16)0x3DF7, (u16)24523, .p = 0, .s = StringRef(0x14F0), .t = StringRef(0x1B44), .f = 1, .e = (u24)3005);
 	});
 }
 
 // Script_0BBD at 0x08D754CA
 {
-	Ctrl_B96E("\xC0\xB1\xC6\xC9\xA4\xDF\xC1\xB4\xCA\xB8\xBA\xC6\xC0\xB8\xBD\xAA\xCE\xBB\xA4\xE4\xA4\xC7\xA1\xBC\xA1\xBC\xA1\xBC\xA1\xBC\x00");
+	DebugPrint("星読み全文再生終了やでーーーー");
 	NativeCall_9906((u16)0x430D, (u16)53921, .t = (u8)66, .e = {
 		NativeCall_B745((u16)0xCCD9);
 		NativeCall_B745((u16)0x1500, 3);
@@ -48120,13 +48120,13 @@
 		NativeCall_B745((u16)0x1C64, .r = StringRef(0x1399));
 		ScriptCall(0x00F8, 3, (u24)254, 0);
 	} else if (BIT(world + 0x7A, 3) == 0) {
-		Ctrl_B96E("\xA4\xCF\xA4\xC6\xA4\xCA\xA4\xB7\xA4\xE7\xA4\xAB\xA4\xA4\xA4\xAB\xA4\xA4\xA4\xEF\x00");
+		DebugPrint("はてなしょかいかいわ");
 		NativeCall_B745((u16)0x1C64, .r = StringRef(0x134D));
 		NativeCall_B745((u16)0xAB3C, 1, (u8)200);
 		ScriptCall(0x00F8, 3, (u24)254, 0);
 		BIT(world + 0x7A, 3) = 1;
 	} else if ({ NativeCall_B745((u16)0x6688, .n = (u16)1201); } == 1) {
-		Ctrl_B96E("\xA4\xCF\xA4\xC6\xA4\xCA\xA1\xA1\xA4\xAD\xA4\xBF\xA4\xAF\xA4\xC1\xA4\xE5\xA4\xA6\x00");
+		DebugPrint("はてな　きたくちゅう");
 		NativeCall_B745((u16)0x1C64, .r = StringRef(0x139C));
 		ScriptCall(0x00F8, 3, (u24)254, 0);
 	} else if ({ ScriptCall(0x0BD6); } == 1) {
@@ -48300,7 +48300,7 @@
 
 // Script_0BE5 at 0x08D761E1
 {
-	Ctrl_B96E("\xA4\xCF\xA4\xC6\xA4\xCA\xA1\xA1\xC1\xAA\xC2\xF2\xBB\xE8\x00");
+	DebugPrint("はてな　選択肢");
 	NativeCall_9906((u16)0x430D, (u16)24357, .t = 10, .e = {
 		ScriptCall(0x00F9, (u16)26164, (u24)3046, 0, 0);
 		NativeCall_B745((u16)0x71E7, .r = StringRef(0x13A1));
@@ -48372,8 +48372,8 @@
 
 // Script_0BE8 at 0x08D7642E
 {
-	Ctrl_B96E("\xA5\xD6\xA5\xE9\xA5\xA4\xA5\xF3\xA5\xC9\xA5\xDC\xA5\xC3\xA5\xAF\xA5\xB9\xB8\xBD\xBA\xDF\xB0\xCC\xC3\xD6\x00", *((u8 *)(world + 0x1F5)));
-	Ctrl_B96E("\xA5\xD6\xA5\xE9\xA5\xA4\xA5\xF3\xA5\xC9\xA5\xDC\xA5\xC3\xA5\xAF\xA5\xB9\xC0\xDF\xC4\xEA\xB0\xCC\xC3\xD6\x00", *((u8 *)(world + 0x7B)));
+	DebugPrint("ブラインドボックス現在位置", *((u8 *)(world + 0x1F5)));
+	DebugPrint("ブラインドボックス設定位置", *((u8 *)(world + 0x7B)));
 	if (BIT(world + 0x7A, 6) != 1) {
 		return 0;
 	}
@@ -48556,7 +48556,7 @@
 			}
 		}
 	}
-	Ctrl_B96E("\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\x2A\xA5\xD6\xA5\xE9\xA5\xA4\xA5\xF3\xA5\xC9\xA5\xDC\xA5\xC3\xA5\xAF\xA5\xB9\xCA\xF5\xC8\xA2\xA4\xCA\xA4\xAB\xA4\xDF\x20\x20\x00", *((u8 *)(scratch + 0x1E6)));
+	DebugPrint("******************ブラインドボックス宝箱なかみ  ", *((u8 *)(scratch + 0x1E6)));
 	if (v1 < 6) {
 		ScriptCall(0x0131, 0, *((u8 *)(scratch + 0x1E6)), *((s16 *)(scratch + 0x1E2)), *((s16 *)(scratch + 0x1E4)), 1, p0, 0, 0, -1, (u24)3050, 0);
 	} else {
@@ -48642,13 +48642,13 @@
 		*((u8 *)(scratch + 0x2E)) = *((u8 *)(scratch + 0x2E)) + 1;
 	});
 	if (BIT(scratch + 0x1D8, 1) == 1) {
-		Ctrl_B96E("\xA4\xA2\xA4\xC8\xA4\xCF\xA4\xC3\xA4\xB1\xA4\xF3\x00");
+		DebugPrint("あとはっけん");
 		*((u8 *)(world + 0x1F4)) = *((u8 *)(scratch + 0x1E7));
 	} else {
-		Ctrl_B96E("\xA4\xA2\xA4\xBF\xA4\xDE\xA4\xAB\xA4\xE9\x00");
+		DebugPrint("あたまから");
 		*((u8 *)(world + 0x1F4)) = *((u8 *)(scratch + 0x1E8));
 	}
-	Ctrl_B96E("\xA5\xCF\xA5\xC6\xA5\xCA\x5F\xBE\xCE\xB9\xE6\xB2\xF1\xCF\xC3\xA5\xAB\xA5\xA6\xA5\xF3\xA5\xBF\x20\x20\x20\x20\x20\x20\x00", *((u8 *)(world + 0x1F4)));
+	DebugPrint("ハテナ_称号会話カウンタ      ", *((u8 *)(world + 0x1F4)));
 	switch (*((u8 *)(world + 0x1F4))) {
 		case 0: {
 			NativeCall_B745((u16)0x1C64, .r = StringRef(0x13BB));
@@ -48857,7 +48857,7 @@
 {
 	if (*((s16 *)(world + 0x186)) != (u8)170) {
 		if (*((s16 *)(world + 0x0)) == 45 && BIT(world + 0x78, 5) == 0) {
-			Ctrl_B96E("\xB9\xF5\xA5\xB8\xA5\xE3\xA5\xF3\xA5\xB4\xC5\xDD\xA4\xEC\xA4\xEB\xA5\xC7\xA5\xE2\xA1\xA7\xA5\xD1\xA5\xA4\xA5\xEB\xA5\xC9\xA5\xE9\xA5\xA4\xA5\xD0\xA1\xBC\xA4\xE2\xA5\xC7\xA5\xE2\xBE\xF5\xC2\xD6\xA4\xC7\xA4\xB9\x00");
+			DebugPrint("黒ジャンゴ倒れるデモ：パイルドライバーもデモ状態です");
 			ScriptCall(0x0047, 1, 1);
 		} else {
 			ScriptCall(0x0047, 1, 0);
@@ -49057,7 +49057,7 @@
 	if (BIT(world + 0x1C0, 0, 40, (p5)) == 0) {
 		BIT(world + 0x1C0, 0, 40, (p5)) = 1;
 	} else {
-		NativeCall_B745((u16)0xEC1F, 0, "\x65\x6E\x65\x6D\x79\x20\x6E\x75\x6D\x62\x65\x72\x20\x4B\x41\x42\x55\x54\x54\x45\x52\x55\x21\x21\x21\x00");
+		NativeCall_B745((u16)0xEC1F, 0, "enemy number KABUTTERU!!!");
 	}
 	*((u8 *)(scratch + 0xAB)) = 0;
 	BIT(scratch + 0x1D8, 3) = 0;
@@ -50921,7 +50921,7 @@
 		ScriptCall(0x0178, 3, 0);
 		ScriptCall(0x0179, (u16)52411, 0, (s16)256);
 		ScriptCall(0x0179, (u16)52522, 2, (s16)256);
-		Ctrl_D4CB((u16)52413, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52413, (u16)62955, .m = (u16)3538, .e = {
 			if (BIT(world + 0x197, 0, 32, 12) == 0) {
 				BIT(world + 0x197, 0, 32, 12) = 1;
 				Ctrl_22FF((u16)15479, (u16)2, 5, 6);
@@ -51227,7 +51227,7 @@
 	if (BIT(world + 0x1C0, 0, 40, (p5)) == 0) {
 		BIT(world + 0x1C0, 0, 40, (p5)) = 1;
 	} else {
-		NativeCall_B745((u16)0xEC1F, 0, "\x65\x6E\x65\x6D\x79\x20\x6E\x75\x6D\x62\x65\x72\x20\x4B\x41\x42\x55\x54\x54\x45\x52\x55\x21\x21\x21\x00");
+		NativeCall_B745((u16)0xEC1F, 0, "enemy number KABUTTERU!!!");
 	}
 	if (p5 == 19 || p5 == 20) {
 		if (BIT(world + 0x1C0, 0, 40, 19) == 1 && BIT(world + 0x1C0, 0, 40, 20) == 1) {
@@ -51575,7 +51575,7 @@
 {
 	*((u8 *)(scratch + 0x1EA)) = *((u8 *)(scratch + 0x1EA)) - 1;
 	if (*((u8 *)(scratch + 0x1EA)) < 0) {
-		NativeCall_B745((u16)0xEC1F, -1, "\xA5\xD0\xA5\xC3\xA5\xC8\xBD\xD0\xB8\xBD\xBF\xF4\xA5\xA8\xA5\xE9\xA1\xBC\x21\x21\x21\xA1\xDF\xA1\xDF\xA1\xDF\xA1\xDF\xA1\xDF\xA1\xDF\xA1\xDF\xA1\xDF\xA1\xDF\x00");
+		NativeCall_B745((u16)0xEC1F, -1, "バット出現数エラー!!!×××××××××");
 	}
 }
 
@@ -51790,7 +51790,7 @@
 	} else {
 		ScriptCall(0x00DD, (u16)32141, 0, 0, (s16)1280, 2, (s16)3840);
 	}
-	Ctrl_D4CB((u16)52411, (u16)32141, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52411, (u16)32141, .m = (u16)3538, .e = {
 		BIT(world + 0x197, 0, 32, 0) = 1;
 	});
 	if (*((s16 *)(world + 0x186)) == 31 || *((s16 *)(world + 0x186)) == 39 || *((s16 *)(world + 0x186)) == (u8)108) {
@@ -51912,7 +51912,7 @@
 	}
 	NativeCall_9906((u16)0xA16F, (u16)41327);
 	NativeCall_B745((u16)0xA4FC, .r = [0, 0], .Y = [(s16)768, 0, 0], .n = (u16)18073, .k = 1, .R = (u24)3256, .s = 10);
-	Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)52412, (u16)62955, .m = (u16)3538, .e = {
 		if (BIT(scratch + 0x13F, 7) == 0) {
 			BIT(scratch + 0x13F, 7) = 1;
 			ScriptCall(0x007E, 0);
@@ -52342,7 +52342,7 @@
 	ScriptCall(0x00EF, (u16)54637, 0, 0, 1, 4, (s16)1280, (s16)1536);
 	ScriptCall(0x00F0);
 	ScriptCall(0x012F, 0, (u8)67, (s16)256, (s16)5632, 1, 2, 7);
-	Ctrl_D4CB((u16)46106, (u16)62955, .m = (u16)3538, .e = {
+	SetZoneCallback((u16)46106, (u16)62955, .m = (u16)3538, .e = {
 		BIT(world + 0x197, 0, 32, 10) = 1;
 	});
 }
@@ -52504,17 +52504,17 @@
 		ScriptCall(0x010F, (u16)985, (u16)52521, 0, v2, (s16)256);
 		ScriptCall(0x00EF, (u16)54637, 1, 2, 3, 5, (s16)5120, (s16)768);
 		NativeCall_B745((u16)0x1422, .a = (u16)47978);
-		Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)5399, .b = 1, .e = {
+		SetZoneCallback((u16)52411, (u16)62955, .m = (u16)5399, .b = 1, .e = {
 			if (*((s16 *)(stat + 0x930)) == 4) {
 				NativeCall_B745((u16)0x1693, .p = [(s16)5440, (s16)1600], .r = (s16)1280);
 			}
 		});
-		Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)5399, .b = 1, .e = {
+		SetZoneCallback((u16)52412, (u16)62955, .m = (u16)5399, .b = 1, .e = {
 			if (*((s16 *)(stat + 0x930)) == 4) {
 				NativeCall_B745((u16)0x1693, .p = [(s16)5696, (s16)1344], .r = (s16)1280);
 			}
 		});
-		Ctrl_D4CB((u16)52413, (u16)62955, .m = (u16)5399, .b = 1, .e = {
+		SetZoneCallback((u16)52413, (u16)62955, .m = (u16)5399, .b = 1, .e = {
 			if (*((s16 *)(stat + 0x930)) == 4) {
 				NativeCall_B745((u16)0x1693, .p = [(s16)5952, (s16)1088], .r = (s16)1280);
 			}
@@ -52741,7 +52741,7 @@
 	NativeCall_9906((u16)0x3117, (u16)10883, .m = 9);
 	ScriptCall(0x018B, 2);
 	if ((BIT(world + 0x151, 4, 12, 4) || BIT(world + 0x151, 4, 12, 5) || BIT(world + 0x151, 4, 12, 3)) == 0 || BIT(world + 0x151, 4, 12, 5) == 1 || BIT(world + 0x151, 4, 12, 3) == 1) {
-		Ctrl_D4CB((u16)52411, (u16)62955, .m = (u16)3538, .e = {
+		SetZoneCallback((u16)52411, (u16)62955, .m = (u16)3538, .e = {
 			Ctrl_22FF((u16)15479, (u16)2, 5, 6);
 		});
 	} else {
@@ -53571,10 +53571,10 @@
 // Script_0D0D at 0x08D81A3B
 {
 	ScriptCall(0x00B6, p2);
-	NativeCall_B745((u16)0xEC1F, (p1 < 32), "\x73\x77\x68\x69\x63\x68\x20\x6E\x75\x6D\x20\x6F\x76\x65\x72\x21\x21\x00");
+	NativeCall_B745((u16)0xEC1F, (p1 < 32), "swhich num over!!");
 	NativeCall_B745((u16)0x8337, .n = p0, .t = p3, .i = 0, .p = [*((s16 *)(scratch + 0x22)), (s16)256, *((s16 *)(scratch + 0x24))], .R = 2);
 	NativeCall_B745((u16)0xD7F4, .n = p0, .s = 0, .e = BIT(world + 0x36, 0, 32, (p1)), .f = 0);
-	Ctrl_D4CB(p2, (u16)62955, .m = (u16)5398, .w = [p1, p5], .s = [p0, p4], .e = {
+	SetZoneCallback(p2, (u16)62955, .m = (u16)5398, .w = [p1, p5], .s = [p0, p4], .e = {
 		if (p2 == (u16)3538 || p2 == (u16)54732) {
 			BIT(scratch + 0x1D8, 6, 2, (p6)) = 0;
 		}
@@ -55524,7 +55524,7 @@
 	if (BIT(world + 0x1C0, 0, 40, (p5)) == 0) {
 		BIT(world + 0x1C0, 0, 40, (p5)) = 1;
 	} else {
-		NativeCall_B745((u16)0xEC1F, 0, "\x65\x6E\x65\x6D\x79\x20\x6E\x75\x6D\x62\x65\x72\x20\x4B\x41\x42\x55\x54\x54\x45\x52\x55\x21\x21\x21\x00");
+		NativeCall_B745((u16)0xEC1F, 0, "enemy number KABUTTERU!!!");
 	}
 	*((u8 *)(scratch + 0xAB)) = 0;
 	BIT(scratch + 0x1D8, 3) = 0;
@@ -55696,7 +55696,7 @@
 			ScriptCall(0x0280, (u16)6161, (s16)512, (s16)7424, 2, 1, 1, 1, 1);
 			ScriptCall(0x0280, (u16)6162, (s16)1280, (s16)7680, 1, 1, 0, 1, 1);
 			ScriptCall(0x026E, (u16)58763, 0, 0, (u24)604, 0, 1);
-			Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)52412, (u16)62955, .m = (u16)3538, .e = {
 				Ctrl_22FF((u16)15479, (u16)2, 5, 6);
 			});
 		} else {
@@ -56391,7 +56391,7 @@
 					NativeCall_B745((u16)0x8EA3, .n = (u16)1201, .c = (u16)57406, .p = [(s16)384, (s16)512, (s16)4736], .d = 32);
 				}
 			}
-			Ctrl_D4CB((u16)19623, (u16)62955, .m = (u16)3538, .e = {
+			SetZoneCallback((u16)19623, (u16)62955, .m = (u16)3538, .e = {
 				ScriptCall(0x0DAA);
 			});
 		}
@@ -57148,7 +57148,7 @@
 		ScriptCall(0x026E, (u16)50087, 3, 0, (u24)604, 4, 1);
 		ScriptCall(0x029B, (u16)21860, (u24)604, 4, 2, 1, 0);
 	} else {
-		Ctrl_D4CB((u16)52443, (u16)62955, .m = (u16)3538, .o = 1, .e = {
+		SetZoneCallback((u16)52443, (u16)62955, .m = (u16)3538, .o = 1, .e = {
 			if (BIT(scratch + 0x1EE, 4) == 0) {
 				BIT(scratch + 0x1EE, 4) = 1;
 				if (*((s16 *)(world + 0x186)) == (u8)119) {
@@ -57158,7 +57158,7 @@
 				}
 			}
 		});
-		Ctrl_D4CB((u16)52444, (u16)62955, .m = (u16)3538, .o = 1, .e = {
+		SetZoneCallback((u16)52444, (u16)62955, .m = (u16)3538, .o = 1, .e = {
 			if (BIT(scratch + 0x1EE, 5) == 0) {
 				BIT(scratch + 0x1EE, 5) = 1;
 				if (*((s16 *)(world + 0x186)) == (u8)119) {
@@ -57168,7 +57168,7 @@
 				}
 			}
 		});
-		Ctrl_D4CB((u16)52445, (u16)62955, .m = (u16)3538, .o = 1, .e = {
+		SetZoneCallback((u16)52445, (u16)62955, .m = (u16)3538, .o = 1, .e = {
 			if (BIT(scratch + 0x1EE, 6) == 0) {
 				BIT(scratch + 0x1EE, 6) = 1;
 				if (*((s16 *)(world + 0x186)) == (u8)119) {
@@ -57256,7 +57256,7 @@
 			if (BIT(world + 0x197, 0, 32, 0) == 1) {
 				ScriptCall(0x011E, (u16)693, (u16)52651, 0, 1, 3, (s16)4864, (s16)512, (s16)5248);
 				ScriptCall(0x011E, (u16)694, (u16)52651, 0, 1, 3, (s16)5120, (s16)512, (s16)5248);
-				Ctrl_D4CB((u16)52412, (u16)62955, .m = (u16)5399, .b = 1, .e = {
+				SetZoneCallback((u16)52412, (u16)62955, .m = (u16)5399, .b = 1, .e = {
 					BIT(world + 0x197, 0, 32, 29) = 1;
 					ScriptCall(0x00A4, (u24)3522, 2, (u8)219, (u24)3549);
 				});
@@ -58475,7 +58475,7 @@
 // Script_0E11 at 0x08D8C7BB
 {
 	BIT(scratch + 0x71, 0) = 0;
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)5321, .w = [p1, p2, p3], .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)5321, .w = [p1, p2, p3], .e = {
 		if (p2 == (u16)3538) {
 			ScriptCall(0x00B4, p1);
 			ScriptCall(0x007E, 0);
@@ -60189,11 +60189,11 @@
 {
 	v1 = p1 + (u8)200;
 	ScriptCall(0x00B6, p2);
-	NativeCall_B745((u16)0xEC1F, (p1 < 32), "\x73\x77\x68\x69\x63\x68\x20\x6E\x75\x6D\x20\x6F\x76\x65\x72\x21\x21\x00");
+	NativeCall_B745((u16)0xEC1F, (p1 < 32), "swhich num over!!");
 	BIT(world + 0x1FA, 0, 12, (p1)) = p4;
 	NativeCall_B745((u16)0x8337, .n = v1, .t = p3, .i = BIT(world + 0x1FA, 0, 12, (p1)), .p = [*((s16 *)(scratch + 0x26)), (*((s16 *)(scratch + 0x46))), *((s16 *)(scratch + 0x2A))], .R = 3);
 	NativeCall_B745((u16)0xD7F4, .n = v1, .s = BIT(world + 0x1FA, 0, 12, (p1)), .e = BIT(world + 0x1FA, 0, 12, (p1)), .f = 0);
-	Ctrl_D4CB(p2, (u16)62955, .m = (u16)3538, .b = 1, .w = p1, .s = [v1, p5, p6], .e = {
+	SetZoneCallback(p2, (u16)62955, .m = (u16)3538, .b = 1, .w = p1, .s = [v1, p5, p6], .e = {
 		if (p2 == (u16)3538) {
 			NativeCall_B745((u16)0xE7CA, .i = (s16)341);
 			if (BIT(world + 0x1FA, 0, 12, (p6)) == 0 && { NativeCall_B745((u16)0x1320); } == 0) {
@@ -60323,7 +60323,7 @@
 	ScriptCall(0x0EB7, (u16)16163, 6, (u16)19874, (u16)45244, 0, (u24)3763, (u24)3764);
 	ScriptCall(0x0EB7, (u16)16164, 7, (u16)19875, (u16)45244, 0, (u24)3763, (u24)3764);
 	ScriptCall(0x0EB7, (u16)16165, 8, (u16)19876, (u16)45244, 0, (u24)3763, (u24)3764);
-	Ctrl_D4CB((u16)52514, (u16)62955, .m = (u16)54732, .e = {
+	SetZoneCallback((u16)52514, (u16)62955, .m = (u16)54732, .e = {
 		NativeCall_B745((u16)0xD6F7, .n = (u16)13633);
 		NativeCall_B745((u16)0xD6F7, .n = (u16)13634);
 	});
@@ -60397,7 +60397,7 @@
 	ScriptCall(0x0EB7, (u16)16163, 6, (u16)19874, (u16)45244, 1, (u24)3763, (u24)3764);
 	ScriptCall(0x0EB7, (u16)16164, 7, (u16)19875, (u16)45244, 0, (u24)3763, (u24)3764);
 	ScriptCall(0x0EB7, (u16)16165, 8, (u16)19876, (u16)45244, 1, (u24)3763, (u24)3764);
-	Ctrl_D4CB((u16)52514, (u16)62955, .m = (u16)54732, .e = {
+	SetZoneCallback((u16)52514, (u16)62955, .m = (u16)54732, .e = {
 		NativeCall_B745((u16)0xD6F7, .n = (u16)13633);
 		NativeCall_B745((u16)0xD6F7, .n = (u16)13634);
 	});
@@ -60471,7 +60471,7 @@
 	ScriptCall(0x0EB7, (u16)16163, 6, (u16)19874, (u16)45244, 1, (u24)3763, (u24)3764);
 	ScriptCall(0x0EB7, (u16)16164, 7, (u16)19875, (u16)45244, 1, (u24)3763, (u24)3764);
 	ScriptCall(0x0EB7, (u16)16165, 8, (u16)19876, (u16)45244, 1, (u24)3763, (u24)3764);
-	Ctrl_D4CB((u16)52514, (u16)62955, .m = (u16)54732, .e = {
+	SetZoneCallback((u16)52514, (u16)62955, .m = (u16)54732, .e = {
 		NativeCall_B745((u16)0xD6F7, .n = (u16)13633);
 		NativeCall_B745((u16)0xD6F7, .n = (u16)13634);
 	});
@@ -60545,7 +60545,7 @@
 	ScriptCall(0x0EB7, (u16)16163, 6, (u16)19874, (u16)45244, 0, (u24)3763, (u24)3764);
 	ScriptCall(0x0EB7, (u16)16164, 7, (u16)19875, (u16)45244, 0, (u24)3763, (u24)3764);
 	ScriptCall(0x0EB7, (u16)16165, 8, (u16)19876, (u16)45244, 0, (u24)3763, (u24)3764);
-	Ctrl_D4CB((u16)52514, (u16)62955, .m = (u16)54732, .e = {
+	SetZoneCallback((u16)52514, (u16)62955, .m = (u16)54732, .e = {
 		NativeCall_B745((u16)0xD6F7, .n = (u16)13633);
 		NativeCall_B745((u16)0xD6F7, .n = (u16)13634);
 	});
@@ -61583,7 +61583,7 @@
 
 // Script_0F03 at 0x08D92CA8
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .w = [(u8)250, 0, p2], .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .w = [(u8)250, 0, p2], .e = {
 		if (BIT(world + 0xC, 4) == 0) {
 			ScriptCall(0x00B4, p1);
 			if (*((s16 *)(scratch + 0x3A)) == 1) {
@@ -61746,7 +61746,7 @@
 
 // Script_0F11 at 0x08D9311B
 {
-	Ctrl_D4CB(p0, (u16)62955, .m = (u16)3538, .w = [(u8)250, 0, p2, p3], .s = p1, .e = {
+	SetZoneCallback(p0, (u16)62955, .m = (u16)3538, .w = [(u8)250, 0, p2, p3], .s = p1, .e = {
 		if (BIT(world + 0xC, 4) == 0) {
 			*((s16 *)(world + 0x56)) = *((s16 *)(world + 0x54));
 			*((s16 *)(world + 0x54)) = *((s16 *)(stat + 0x242));
@@ -61954,7 +61954,7 @@
 
 // Script_0F19 at 0x08D93962
 {
-	NativeCall_B745((u16)0xEC1F, (*((u8 *)(world + 0x92)) * 4 + *((u8 *)(world + 0x93)) < 36), "\x6B\x6F\x62\x65\x79\x61\x20\x69\x74\x69\x20\x67\x61\x20\x6F\x6B\x61\x73\x69\x69\x20\x79\x6F\x21\x00");
+	NativeCall_B745((u16)0xEC1F, (*((u8 *)(world + 0x92)) * 4 + *((u8 *)(world + 0x93)) < 36), "kobeya iti ga okasii yo!");
 	if (((u8 *)(world + 0xA9))[36, (*((u8 *)(world + 0x92)) * 4 + *((u8 *)(world + 0x93)))] == 7) {
 		if (*((u8 *)(world + 0x93)) == 1) {
 			ScriptCall(0x0F03, (u16)52518, (u24)3806, (u8)160, (u8)250);
@@ -64502,7 +64502,7 @@
 // Script_0FC7 at 0x08D98027
 {
 	ScriptCall(0x018E, (u16)38312, (s16)512, (s16)7136, 20, 2, 10);
-	Ctrl_D4CB((u16)52516, (u16)62955, .m = (u16)54732, .e = {
+	SetZoneCallback((u16)52516, (u16)62955, .m = (u16)54732, .e = {
 		if (BIT(world + 0x167, 0) == 0) {
 			ScriptCall(0x0163, (u16)64508, 0, 7, 0, (s16)1920, (s16)512, (s16)2944);
 			ScriptCall(0x0163, (u16)64508, 0, 7, 0, (s16)1920, (s16)512, (s16)896);

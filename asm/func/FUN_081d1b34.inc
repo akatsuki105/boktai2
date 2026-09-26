@@ -46,7 +46,7 @@
 	mov r0, sp
 	str r0, [r1, #4]
 	ldrh r0, [r2]
-	bl Script_ExecById
+	bl VM_ExecByID
 	b _081D1BF2
 	.align 2, 0
 _081D1B9C: .4byte 0xFFFF0000
@@ -90,7 +90,7 @@ _081D1BA0:
 	mov r0, sp
 	str r0, [r1, #4]
 	ldrh r0, [r2]
-	bl Script_ExecById
+	bl VM_ExecByID
 _081D1BF2:
 	add sp, #0x30
 	pop {r0}

@@ -160,12 +160,12 @@ void FUN_0823e318(void) {
 // スクリプトから2つの日付を受け取り、その間の日数をスクリプトへ返す
 void FUN_0823e338(void) {
   u8 buf[8];
-  s32 year1 = Script_GetValue();
-  s32 month1 = Script_GetValue();
-  s32 day1 = Script_GetValue();
-  s32 year2 = Script_GetValue();
-  s32 month2 = Script_GetValue();
-  s32 day2 = Script_GetValue();
+  s32 year1 = VM_GetValue();
+  s32 month1 = VM_GetValue();
+  s32 day1 = VM_GetValue();
+  s32 year2 = VM_GetValue();
+  s32 month2 = VM_GetValue();
+  s32 day2 = VM_GetValue();
   s32 days = FUN_0823d9ec(year1, month1, day1, year2, month2, day2);
 
   FUN_0823167c(buf);

@@ -14,7 +14,7 @@ _08049898:
 	adds r0, r0, r1
 	ldr r0, [r0]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	adds r5, #1
 _080498B4:
 	movs r1, #0xa6

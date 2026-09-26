@@ -18,7 +18,7 @@
 	cmp r0, #0
 	beq _080182B0
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080182B0:
 	movs r5, #0x80
 	lsls r5, r5, #2

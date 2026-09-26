@@ -25,7 +25,7 @@ Three rules keep this file usable:
 
 ### Which arm falls into the epilogue: the two spellings are not interchangeable
 
-- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `EntityMsgBus_Register`, `EntityMsgBus_Unregister`, `Demo_RequestNextStep`, `EntityMsg_Send`, `Demo_Resume`, `Demo_IsRunning`, `ArcTan2_8`, `FUN_082375c8`, `MainSprite_Add`, `ScriptShadow_Move`, `SignalStrengthIcon_Create`, `SignalStrengthIcon_Init`, `Entity081d0e20_Create`, `FUN_080eddf8`, `Breakable_TakeStateChanged`, `FUN_0804a3e4`, `FUN_0804a40c`, `TextBox_Open`, `FUN_080488dc`, `TextBox_SetExtendValue`, `FUN_08049eb0`.
+- **Frequency**: `RemoveSpecifiedItem`, `FindFile`, `Video_GetHankakuTiles`, `Video_GetZenkakuTiles`, `Save_GetCoreAddr`, `EntityMsgBus_Register`, `EntityMsgBus_Unregister`, `Demo_RequestNextStep`, `EntityMsg_Send`, `Demo_Resume`, `Demo_IsRunning`, `ArcTan2_8`, `FUN_082375c8`, `MainSprite_Add`, `ScriptShadow_Move`, `SignalStrengthIcon_Create`, `SignalStrengthIcon_Init`, `Entity081d0e20_Create`, `FUN_080eddf8`, `Breakable_TakeStateChanged`, `FUN_0804a3e4`, `FUN_0804a40c`, `TextBox_Open`, `FUN_080488dc`, `TextBox_SetExtendValue`, `FUN_08049eb0`, `FUN_0807b118`.
 - **Symptom**: the two arms' bodies appear in the opposite order from the
   target, and one arm carries a `b` to the epilogue that the target puts on
   the other arm. Instruction counts are usually equal.
@@ -118,8 +118,9 @@ if (cond) {                             // both arms set SIZE, then the kind
 
 ### `pop {r1}; bx r1` means a non-void return type, even with nothing returned
 
-- **Frequency**: `AuxShadow_SetSprite`, `AuxShadow_SetAffine`.
+- **Frequency**: `AuxShadow_SetSprite`, `AuxShadow_SetAffine`, `Eff082473e0Emitter_Reset`, `Entity080ac374_Destroy`, `Entity080ac374_Update`.
 - A `void` function restores the return address into `r0` (`pop {r0}` / `bx r0`). A function declared to return a value uses `r1`, so `r0` survives. `AuxShadow_SetSprite` ends with `pop {r1}` but never sets `r0` after its last call. Declaring it `s32` with no `return` statement matched; `void` gave `pop {r0}`.
+- This bites hardest on entity `_Update` / `_Destroy`, which the project declares `s32` even when they only ever return 0. If the last thing the function does is call something, the target usually has **no `movs r0, #0`** — it lets the callee's return value fall through. Writing `return 0;` costs exactly one instruction, and the streamdiff shows it as a lone extra `movs r0, #0` right before the epilogue. Drop the `return` and add a one-line comment saying the value comes from the last call.
 - The return type also shifts every scratch register up by one, because `r0` is no longer free. `AuxShadow_SetAffine` as `void` used `r0`/`r1`/`r2` for the flag update and `pop {r0}`; as `s32` it used `r1`/`r2`/`r3` and `pop {r1}`, which matched. So a register-renamed diff that also has `pop {r0}` vs `pop {r1}` is this lever, not a register-allocation problem.
 
 ### Guards chained with `&&` (or nested `if`s) drop the `adds r0, rN, #0` reload before the next call
@@ -164,7 +165,7 @@ for (i = 0; i < N; i++) {          for (i = 0; i < N; i++) {
 
 ### `x != 0` (and `a != b`) materialized as a 0/1 int normalize via `(0-x)|x >> 31`
 
-- **Frequency**: `Script_LoadPointer`, `AuxSprite_Add`, `FUN_0822d9f0`.
+- **Frequency**: `VM_LoadPointer`, `AuxSprite_Add`, `FUN_0822d9f0`.
 - **Routing.** This entry and "`(x & (1<<n)) != 0` auto-optimizes to `(x>>n)&1`" below are the same expression seen through two different symptoms, and the same three functions confirm both — read them together. `rsbs` / `orrs` / `lsrs #0x1f` (the general form) is this entry; `lsrs #n` / `ands #1` (the single-bit form) is that one, which also says how to force one form or the other.
 - Only applies when the comparison's result must become an actual 0/1 integer VALUE — assigned, stored, or `return`ed (equivalently, `x != 0 ? 1 : 0` written out explicitly) — not when it's used purely as an `if`/`while` condition (those just branch, no materialization needed).
 - `flag != 0` materialized this way compiles to `rsbs r0, r1, #0` / `orrs r0, r1` / `lsrs r0, r0, #0x1f` — negate, OR with the original, then shift the sign bit down to bit 0. Writing the raw bit trick by hand (`(u32)((0 - flag) | flag) >> 0x1F`) produces byte-identical output to writing the natural `flag != 0`, so prefer the natural form; no need to hand-roll the trick.
@@ -208,7 +209,7 @@ for (i = 0; i < N; i++) {          for (i = 0; i < N; i++) {
 
 ### `(x & (1<<n)) != 0` auto-optimizes to `(x>>n)&1` unless the mask is precomputed
 
-- **Frequency**: `Script_LoadPointer`, `AuxSprite_Add`, `PlaySound_0824078c`, `FUN_0822da50`, `FUN_0822d9f0`, `MainSprite_Add`, `BgPlttGroupFader_Update`.
+- **Frequency**: `VM_LoadPointer`, `AuxSprite_Add`, `PlaySound_0824078c`, `FUN_0822da50`, `FUN_0822d9f0`, `MainSprite_Add`, `BgPlttGroupFader_Update`.
 - The fallback this entry keeps talking about is the general 0/1 trick in "`x != 0` (and `a != b`) materialized as a 0/1 int" above; read that entry first for what the trick is and where it lands.
 - Hoisting the mask also moves *where* the constant is built. In `PlaySound_0824078c`, `if (!((a | b) & 0x400))` built `movs #0x80` / `lsls #3` right before the `ands`; the target builds it first, before both loads. Swapping the `&` operands changed nothing; `u32 mask = 0x400;` as its own statement before the `if` matched.
 - Writing a single-bit test as one fused expression — `(byte & (1 << bit)) != 0` — lets agbcc's combiner recognize the "extract one bit" idiom and emit the cheaper `asrs`/`ands` (shift the target bit to position 0, mask with 1) instead of the general nonzero-materialize trick above. If the target's real assembly uses the general `rsbs`/`orrs`/`lsrs` trick instead (i.e. the shift-based optimization did NOT happen), the mask must be computed in its own prior statement — `s32 mask = 1 << bit; ... (byte & mask) != 0;` — splitting it into a separate pseudo-register apparently hides the "single bit" shape from the combiner and falls back to the general path.
@@ -218,6 +219,8 @@ for (i = 0; i < N; i++) {          for (i = 0; i < N; i++) {
 - The same applies to a loop-variable shift. `BgPlttGroupFader_Update` tests `p->litMask & (1 << i)` inside a `for`; written inline it became `asrs r0, r6` on the field, and a `s32 mask = 1 << i;` at the top of the loop body restored `movs r1, #1` / `lsls r1, r6` / `ands r0, r1`. The same variable then feeds the second test on another field, which is what the target reuses it for.
 
 ## Integer width & sign extension
+- `Player_WeaponEffect*` (14個) が同じ形。目標は **マスクを先に材料化してから** フィールドを読む (`movs r2, #4` → `ldr r0, [r1, #0x38]` → `ands`)。`if (a->attributes & 0x4)` と直に書くと順序が逆になり、使うレジスタも1つずれる。`u32 mask = 0x0004;` とローカルに置くと目標と一致する。
+- 同じ族で **分岐の向き** も決まっている。`cmp` の直後が `bne` で「非0側」へ飛ぶなら、ソースは `if (x & mask) { return 10; } return 0;`。`if (!(x & mask)) { return 0; } return 10;` は等価でも `beq` になり、2つのアームが入れ替わる。
 
 ### A signed field narrowed on assignment loses its `ldrsh`
 
@@ -257,7 +260,7 @@ for (i = 0; i < N; i++) {          for (i = 0; i < N; i++) {
 
 ### Equivalent spellings agbcc does not canonicalize
 
-- **Frequency**: `Script_StorePointerCore`, `FUN_0822ea10`, `EntityMsgBus_Post`, `sound_08240740`, `Save_WriteCore`, `Hitbox_GetPushDir`, `FUN_0823c35c`, `FUN_0822bcf4`, `FUN_08089b48`, `BlendPlttToColor`, `BlendPltt`, `LoadParticleFile`, `FUN_0822a4fc`, `Entity92BE_Shake`, `FUN_08237834`, `FUN_08237848`, `Video_GetActorSprite`, `Video_CreateSpriteLUT`, `OpenCollisionMapFile`, `GetTilemapFile`, `VM_CallScript`, `Entity28CB_Update`, `VM_Ctrl_22FF`, `ArcTan2_8`.
+- **Frequency**: `VM_StorePointerCore`, `FUN_0822ea10`, `EntityMsgBus_Post`, `sound_08240740`, `Save_WriteCore`, `Hitbox_GetPushDir`, `FUN_0823c35c`, `FUN_0822bcf4`, `FUN_08089b48`, `BlendPlttToColor`, `BlendPltt`, `LoadParticleFile`, `FUN_0822a4fc`, `Entity92BE_Shake`, `FUN_08237834`, `FUN_08237848`, `Video_GetActorSprite`, `Video_CreateSpriteLUT`, `OpenCollisionMapFile`, `GetTilemapFile`, `VM_CallScript`, `Entity28CB_Update`, `VM_Ctrl_22FF`, `ArcTan2_8`.
 - The order you write, the way you group it, the form you choose and the type you declare all survive into the asm. When a function is close but will not match, try the other side of a pair below — the difference is usually one swapped operand pair, one moved `lsls`, or one extra callee-saved register.
 - Below: `p` is a pointer and `i` an index, `q` a local holding a derived address, `a` and `b` two struct pointers with fields `x` and `y`, `n` and `m` scalars, `k` a constant addend, `s` a shift amount, `M1`–`M3` mask constants.
 
@@ -304,7 +307,7 @@ Which side to pick, once the asm has told you what is wrong:
 
 ### A constant or global address materializes in the wrong place
 
-- **Frequency**: `Sprite_SetPlttID`, `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`, `FUN_08089d24`, `FUN_08089f38`, `FUN_0823a9f4`, `FUN_0823aa10`, `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`, `ParticleShadow_Init`, `Cactus_OnHit`, `Entity08080be8_SetupSprite`, `CheckNamakuraProc`, `CheckParalyzeProc`.
+- **Frequency**: `FUN_0807b3c0`, `Sprite_SetPlttID`, `sound_08240264`, `FUN_082436dc`, `FUN_08089d50`, `FUN_08089e98`, `FUN_08089f58`, `FUN_08089d24`, `FUN_08089f38`, `FUN_0823a9f4`, `FUN_0823aa10`, `FUN_08240360`, `FUN_082405c0`, `Sound_SetBGMTempo`, `FUN_082410e8`, `FreezeEffect_GatherSubParticles`, `IsWeaponLevelChanged`, `ParticleShadow_Init`, `Cactus_OnHit`, `Entity08080be8_SetupSprite`, `CheckNamakuraProc`, `CheckParalyzeProc`.
 - **Symptom**: one `movs rN, #k` or `ldr rN, =SYMBOL` sits earlier or later than the target has it, usually with registers renamed and an identical instruction count.
 - The lever is how the expression is split into statements, never the arithmetic. The mask-hoisting bullets under "`(x & (1<<n)) != 0` auto-optimizes" are the same mechanism seen through a bit test.
 
@@ -316,7 +319,7 @@ Which side to pick, once the asm has told you what is wrong:
 | `gEntityDisableFlags &= ~2;` | `EnableEntityFlags(2)` taking `u32 flags` | `FUN_0823a9f4` |
 | `if (!((gA \| gB) & 1))` | a helper taking the mask as `flags` | `FUN_0823aa10` |
 | `if (!(a->weakness & 4))` | `Hitbox_HasWeakness(a, 4)` taking `u32 mask`. `(x & 4) == 0`, `4 & x` and an inverted `if`/`else` change nothing | `Cactus_OnHit` |
-| `arr[i]` on a **global array** | `*(arr + i)` — different tree in the front end (`ARRAY_REF` vs `INDIRECT_REF` of a `PLUS_EXPR`), so the base's pool load moves relative to the index's `lsls`. No `-f` option controls it; pick the spelling off the target | `CheckNamakuraProc`, `CheckParalyzeProc` |
+| `arr[i]` on a **global array**, or on an array member reached through a global pointer (`gStat->weaponExp[i]`) | `*(arr + i)` — different tree in the front end (`ARRAY_REF` vs `INDIRECT_REF` of a `PLUS_EXPR`), so the base's pool load moves relative to the index's `lsls`. No `-f` option controls it; pick the spelling off the target | `CheckNamakuraProc`, `CheckParalyzeProc`, `GetWeaponSkillLevel` |
 | `p->sprite.metaspriteIdx = 0;` right after `AuxSprite_Add(&p->sprite, ...)` | `AuxSprite_SetPoseIdx(&p->sprite, 0)` — the helper's argument re-materializes `&p->sprite` after the call, so agbcc reuses the register that held `p` instead of keeping a second one live across it | `Entity08080be8_SetupSprite` |
 | `p->plttID = id; p->pltt = &g[p->plttID * 16];` | reload the field in its own statement: `i = p->plttID;` | `Sprite_SetPlttID` |
 | `f(0, (T*)gPtr, g(0x28))` | `len = g(0x28);` first | |
@@ -325,6 +328,7 @@ Which side to pick, once the asm has told you what is wrong:
 | `if (g[10] != 0) { id = g[10]; ... }` — costs an extra `adds rN, r0, #0` | hoist the read above the `if` | |
 | `... * 34 + gMgr->group0->tile` | put the global term first | `ParticleShadow_Init` |
 | `gX.field` at each use | a pointer local (`T* s = &gX;`) is loaded at entry and kept in a callee-saved register across calls | |
+| `gArr[f()]` — the base's pool `ldr` hoists **above** the `bl`, so it needs a callee-saved register and the function grows a `push {r4}` | `i = f();` first, then `gArr[i]`. The base then materializes after the call and stays in a scratch register | `FUN_0807b3c0` and the 14 other `gPlayerPtr[VM_GetPlayerIdx()]` wrappers |
 
 **Merging it back into one expression makes it materialize later.**
 
@@ -354,7 +358,8 @@ Which side to pick, once the asm has told you what is wrong:
 
 ### A field copied into a local is loaded at the declaration; read directly it hoists with the rest
 
-- **Frequency**: `TextBoxChoice_Finish`, `MapItem_UpdateFall`, `EntityCF82_Init`, `RingoDemoAnim_Init`, `BreakableManager_Update`.
+- **Frequency**: `TextBoxChoice_Finish`, `MapItem_UpdateFall`, `EntityCF82_Init`, `RingoDemoAnim_Init`, `BreakableManager_Update`, `Player_ReduceENE_0807aa60`.
+- A field read **and** written in the same statement, at an offset too large for the load's immediate, rebuilds the address on each side: `movs r3, #0xDA` / `lsls` / `adds` before the `ldrh`, and the same three again before the `strh`, which also splits a ternary into two stores. A `u16*` local to that field collapses both onto one base (`adds r2, r2, r0`), and then the two arms must be an `if`/`else` — as a ternary agbcc keeps the arms in the other order and no spelling of the condition swaps them back (`Player_ReduceENE_0807aa60`).
 - `TextBoxChoice_Finish` hoists both `&args` (`add r5, sp, #0x14`) and `p->scriptID` (`ldr r4, [r2, #0x54]`) above the argument-copy loop, in the order their *uses* appear after it. Opening the block with `u32 scriptID = p->scriptID;` pinned that load to the declaration, so it came out first and `r4`/`r5` stayed swapped for the rest of the function. Reading `p->scriptID` directly in the later `if` and call let agbcc hoist the load as a loop invariant and restored both the order and the registers.
 - The same pinning applies to a pointer local holding a global's address, so a declaration at the top of the function drags its `ldr` above everything before its first use. `EntityCF82_Init` writes two `strb`s and only then loads the palette address; wrapping the two pointer declarations and their one statement in a bare inner block put the `ldr` back after the stores.
 - Splitting the declaration from the assignment moves the computation to the assignment instead. `RingoDemoAnim_Init` computes `&p->pos` between `p->msgBox = msgBox;` and the `Vec3` copy; `Vec3* q = &p->pos;` put it at function entry, and `Vec3* q;` with `q = &p->pos;` placed after the first store matched.
@@ -454,7 +459,7 @@ Which side to pick, once the asm has told you what is wrong:
 - **Frequency**: `TextBoxChoice_SetCursor`, `Entity08080be8_SetupHitbox`.
 - Written once after the `if/else`, the four `pos` stores started a fresh offset (`movs r2, #0x93` / `lsls r2, #1` for 0x126); the target steps it (`add r2, #2`) from the 0x124 the arms left in `r2`. agbcc's CSE only knows an offset register inside the block that built it, and cross-jumping runs afterwards — so a *stepped* offset across the join means that code sat in **both** arms and was merged. Calling a `static inline` helper from each arm reproduces it without duplicating the source.
 - The same applies to a field the arms leave alone. `Entity08080be8_SetupHitbox` sets a `Vec3` differently per arm and then `offset.z = 0`; factored out after the join it reloaded the `0xFFFF0000` half-word mask from the pool, while the target keeps it live in a register. Writing the whole vector in each arm (`offset.x = 0, offset.y = 30, offset.z = 0;`) lets cross-jumping merge the identical `z` store and keeps the mask where the target has it.
-- In a loop the same variable also costs a register: `u32 val = 0; if (VM_GetPC() != NULL) { val = Script_GetValue(); } args[i] = val;` hoisted the `movs #0` out of the loop and pushed three values into `r8`-`r10`. `if (VM_GetPC() != NULL) { args[i] = Script_GetValue(); } else { args[i] = 0; }` cross-jumps the store, and the `movs #0` disappears entirely because `r0` is already 0 on the `beq` path.
+- In a loop the same variable also costs a register: `u32 val = 0; if (VM_GetPC() != NULL) { val = VM_GetValue(); } args[i] = val;` hoisted the `movs #0` out of the loop and pushed three values into `r8`-`r10`. `if (VM_GetPC() != NULL) { args[i] = VM_GetValue(); } else { args[i] = 0; }` cross-jumps the store, and the `movs #0` disappears entirely because `r0` is already 0 on the `beq` path.
 
 ### A returned boolean built with one branch: initialise, then clear
 

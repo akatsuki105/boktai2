@@ -129,7 +129,7 @@ _080F5282:
 	mov r0, sp
 	str r0, [r1, #4]
 	ldrh r0, [r2]
-	bl Script_ExecById
+	bl VM_ExecByID
 _080F5318:
 	ldr r1, _080F5348 @ =0x000001DF
 	adds r0, r6, r1

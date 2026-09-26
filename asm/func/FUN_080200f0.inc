@@ -20,7 +20,7 @@ _08020112:
 	.align 2, 0
 _08020118: .4byte 0x000085E6
 _0802011C:
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r8, r0
 	movs r4, #0
 	ldrh r0, [r5, #0x1a]

@@ -10,7 +10,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080B3930
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	cmp r4, #0xa
 	ble _080B3932

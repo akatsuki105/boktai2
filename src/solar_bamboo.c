@@ -141,9 +141,9 @@ s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
   p->q_unk_2c = 0;
   p->q_unk_2e = 0;
   if (VM_SeekToKeyword('p')) {
-    pos.x = Script_GetValue();
-    pos.y = Script_GetValue() + 0x64;
-    pos.z = Script_GetValue();
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue() + 0x64;
+    pos.z = VM_GetValue();
   } else {
     pos.x = 0, pos.y = 0, pos.z = 0;
   }

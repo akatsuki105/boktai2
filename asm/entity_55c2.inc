@@ -135,7 +135,7 @@ _0800DBF0:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800DC40
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _0800DC38 @ =0xFFFF0000
@@ -143,14 +143,14 @@ _0800DBF0:
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #0xc]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0800DC3C @ =0x0000FFFF
 	ldr r1, [sp, #0xc]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #0xc]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #0x10]
@@ -321,7 +321,7 @@ _0800DD70:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _0800DD7C
-	bl Script_GetValue
+	bl VM_GetValue
 _0800DD7C:
 	str r0, [r4]
 	adds r4, #4
@@ -897,7 +897,7 @@ _0800E19A:
 	str r0, [sp, #8]
 	ldrh r0, [r1]
 	add r1, sp, #0xc
-	bl Script_ExecById
+	bl VM_ExecByID
 _0800E1EE:
 	adds r0, r4, #0
 	adds r0, #0x6e
@@ -940,7 +940,7 @@ _0800E212:
 	str r0, [sp, #8]
 	ldrh r0, [r1]
 	add r1, sp, #0x14
-	bl Script_ExecById
+	bl VM_ExecByID
 _0800E242:
 	movs r0, #0
 	strh r0, [r6, #0x3e]
@@ -985,7 +985,7 @@ Entity55C2_Init: @ 0x0800E260
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800E2D0
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _0800E2C8 @ =0xFFFF0000
@@ -993,14 +993,14 @@ Entity55C2_Init: @ 0x0800E260
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #0xc]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0800E2CC @ =0x0000FFFF
 	ldr r1, [sp, #0xc]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #0xc]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #0x10]
@@ -1022,7 +1022,7 @@ _0800E2DA:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800E324
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _0800E31C @ =0xFFFF0000
@@ -1030,14 +1030,14 @@ _0800E2DA:
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #0x14]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0800E320 @ =0x0000FFFF
 	ldr r1, [sp, #0x14]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #0x14]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	add r2, sp, #0x14
@@ -1063,7 +1063,7 @@ _0800E332:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800E37C
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _0800E374 @ =0xFFFF0000
@@ -1071,14 +1071,14 @@ _0800E332:
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #0x1c]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0800E378 @ =0x0000FFFF
 	ldr r1, [sp, #0x1c]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #0x1c]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	add r2, sp, #0x1c
@@ -1138,7 +1138,7 @@ _0800E38A:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800E3F8
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [r5, #0x70]
 	b _0800E402
 	.align 2, 0
@@ -1156,7 +1156,7 @@ _0800E402:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800E414
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [r5, #0x74]
 	b _0800E41E
 _0800E414:

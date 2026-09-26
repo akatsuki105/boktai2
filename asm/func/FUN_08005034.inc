@@ -24,7 +24,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800510A
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _080050D0 @ =0xFFFF0000
@@ -32,14 +32,14 @@
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #8]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _080050D4 @ =0x0000FFFF
 	ldr r1, [sp, #8]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #8]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	add r2, sp, #8

@@ -471,7 +471,7 @@ gSubroutineTable:
 	.4byte 0xB76C, FUN_08004ba4
 	.4byte 0xB838, FUN_08224074
 	.4byte 0xB83E, FUN_0807d560
-	.4byte 0xB85F, EntityB85F_Create
+	.4byte 0xB85F, LinkBattleResult_Create
 	.4byte 0xB87B, FUN_080c2640
 	.4byte 0xB88C, FUN_0804b220
 	.4byte 0xB8B9, EntityB8B9_Create
@@ -503,10 +503,10 @@ gSubroutineTable:
 	.4byte 0xC673, FUN_08011608
 	.4byte 0xC6AA, Textbox_CloseBox
 	.4byte 0xC765, FUN_080a4f54
-	.4byte 0xC783, EntityC783_Create
+	.4byte 0xC783, LinkBattleLobby_Create
 	.4byte 0xC7DC, FUN_080ef048
 	.4byte 0xC814, EntityC814_Create
-	.4byte 0xC946, EntityC946_Create
+	.4byte 0xC946, PreviewStage_Create
 	.4byte 0xC9BC, EntityC9BC_Create
 	.4byte 0xCA3D, FUN_082408b8
 	.4byte 0xCA73, EnemyDogLink_Create
@@ -602,7 +602,7 @@ gSubroutineTable:
 	.4byte 0xEAB4, FUN_080a5c04
 	.4byte 0xEB42, FUN_0809e54c
 	.4byte 0xEBFF, FUN_080a5a18
-	.4byte 0xEC1F, FUN_08231bcc
+	.4byte 0xEC1F, VM_DebugAssert
 	.4byte 0xEC2A, EnemyManager_Create
 	.4byte 0xEC5B, FUN_0823a910
 	.4byte 0xEC96, EntityEC96_Create

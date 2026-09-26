@@ -183,7 +183,7 @@ _0809D528:
 	b _0809D762
 _0809D542:
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	b _0809D762
 	.align 2, 0
 _0809D54C: .4byte 0x00000F4C
@@ -433,7 +433,7 @@ _0809D71A:
 	cmp r0, #0
 	beq _0809D74E
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _0809D74E:
 	movs r3, #1
 	mov r1, r8

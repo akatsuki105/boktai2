@@ -180,7 +180,7 @@ _08215AB4:
 	adds r0, #4
 	ldr r0, [r0]
 	add r1, sp, #4
-	bl Script_ExecById
+	bl VM_ExecByID
 	ldr r0, [r7, #8]
 	orrs r0, r5
 	str r0, [r7, #8]
@@ -406,7 +406,7 @@ _08215C6E:
 	str r0, [r7, #0x68]
 	ldr r0, [r6, #0x50]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 	movs r4, #0

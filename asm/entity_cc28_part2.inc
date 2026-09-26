@@ -18579,7 +18579,7 @@ _0809AF94:
 	add r0, sp, #0xc
 	str r0, [r1, #4]
 	adds r0, r2, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _0809AFC8:
 	ldr r1, _0809B108 @ =0x00003FB1
 	adds r0, r6, r1
@@ -18701,7 +18701,7 @@ _0809B082:
 	ldr r2, _0809B128 @ =0x00003FBC
 	adds r0, r6, r2
 	ldr r0, [r0]
-	bl Script_ExecById
+	bl VM_ExecByID
 _0809B0B8:
 	movs r0, #0
 	strb r0, [r4]
@@ -20421,7 +20421,7 @@ _0809BF5C:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809BF78
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _0809BF74 @ =0x00003FA0
 	adds r1, r4, r2
 	strb r0, [r1]
@@ -20451,7 +20451,7 @@ FUN_0809bf88: @ 0x0809BF88
 	ldr r0, _0809BFAC @ =0x00000F58
 	adds r5, r6, r0
 _0809BF9C:
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r5, r4
 	strb r0, [r1]
 	adds r4, #1
@@ -20521,7 +20521,7 @@ FUN_0809c010: @ 0x0809C010
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809C02C
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _0809C028 @ =0x00000F3D
 	adds r1, r4, r2
 	b _0809C032
@@ -20790,7 +20790,7 @@ Textbox_CloseBox: @ 0x0809C22C
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809C240
-	bl Script_GetValue
+	bl VM_GetValue
 	bl FUN_0809c08c
 _0809C240:
 	pop {r0}
@@ -20912,7 +20912,7 @@ FUN_0809c314: @ 0x0809C314
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809C334
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, [r4]
 	ldr r2, _0809C340 @ =0x00000F3D
 	adds r1, r1, r2
@@ -21313,7 +21313,7 @@ FUN_0809c63c: @ 0x0809C63C
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0809C65A
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _0809C664 @ =0x00003FA0
 	adds r1, r4, r2
 	strb r0, [r1]
@@ -22088,7 +22088,7 @@ FUN_0809cc48: @ 0x0809CC48
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809CCD4
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _0809CCD0 @ =0x00004028
 	adds r1, r4, r2
 	str r0, [r1]
@@ -22110,7 +22110,7 @@ _0809CCDA:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809CCFC
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _0809CCF8 @ =0x0000401F
 	adds r1, r4, r2
 	strb r0, [r1]
@@ -22128,7 +22128,7 @@ _0809CD02:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809CD24
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _0809CD20 @ =0x00003FB4
 	adds r1, r4, r2
 	str r0, [r1]
@@ -22146,7 +22146,7 @@ _0809CD2A:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809CD4C
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _0809CD48 @ =0x00003FBC
 	adds r1, r4, r2
 	str r0, [r1]

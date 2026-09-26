@@ -3,7 +3,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807B478
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	cmp r4, #2
 	bgt _0807B478
@@ -11,7 +11,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807B450
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r2, r0, #0
 	b _0807B458
 _0807B450:

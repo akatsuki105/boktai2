@@ -2720,7 +2720,7 @@ FUN_080c6500: @ 0x080C6500
 	mov r0, sp
 	str r0, [r1, #4]
 	adds r0, r2, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080C652A:
 	add sp, #0xc
 	pop {r0}
@@ -3472,7 +3472,7 @@ _080C6AD4:
 	add r0, sp, #0xc
 	str r0, [r1, #4]
 	adds r0, r4, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080C6B2A:
 	add sp, #0x18
 	pop {r3}
@@ -10781,7 +10781,7 @@ FUN_080ca430: @ 0x080CA430
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080CA458
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080CA454 @ =0x00002606
 	adds r1, r4, r2
 	b _080CA460
@@ -10798,7 +10798,7 @@ _080CA460:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080CA480
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080CA47C @ =0x00002604
 	adds r1, r4, r2
 	b _080CA486
@@ -10816,7 +10816,7 @@ _080CA486:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080CA4A8
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080CA4A4 @ =0x00002608
 	adds r1, r4, r2
 	str r0, [r1]

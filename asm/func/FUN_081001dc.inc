@@ -23,7 +23,7 @@
 	blo _0810021C
 	ldrh r0, [r5]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r1, #0
 	movs r0, #0
 	strh r0, [r5]

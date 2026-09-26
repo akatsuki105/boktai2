@@ -21,7 +21,7 @@
 	mov r8, r2
 	b _0800FB6E
 _0800FB62:
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r1, r6, #1
 	add r1, sp
 	strh r0, [r1]
@@ -72,7 +72,7 @@ _0800FBA6:
 	.align 2, 0
 _0800FBC0: .4byte 0x03003584
 _0800FBC4:
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4]
 	ldrh r0, [r4]
 	bl FUN_0823cdf8

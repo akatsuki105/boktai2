@@ -14,7 +14,7 @@ _080D7BF0:
 	bne _080D7BFC
 	b _080D7F3C
 _080D7BFC:
-	bl Script_GetValue
+	bl VM_GetValue
 	subs r0, #2
 	cmp r0, #0x15
 	bls _080D7C08

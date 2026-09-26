@@ -158,8 +158,8 @@ NAKED s32 FUN_08049e5c(void) { INCFUNC("asm/func/FUN_08049e5c.inc"); }
 NAKED s32 FUN_08049e6c(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_08049e6c.inc"); }
 
 s32 FUN_08049e94(void) {
-  s32 n = Script_GetValue();
-  return FUN_08049e6c(n, Script_GetValue());
+  s32 n = VM_GetValue();
+  return FUN_08049e6c(n, VM_GetValue());
 }
 
 s32 FUN_08049eb0(s32 idx, void* str) {
@@ -172,12 +172,12 @@ s32 FUN_08049eb0(s32 idx, void* str) {
 }
 
 s32 FUN_08049ed4(void) {
-  s32 n = Script_GetValue();
+  s32 n = VM_GetValue();
   return FUN_08049eb0(n, FUN_0823d340());
 }
 
 s32 FUN_08049ef0(void) {
-  s32 n = Script_GetValue();
+  s32 n = VM_GetValue();
   return FUN_08049eb0(n, FUN_0823d34c());
 }
 

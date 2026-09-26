@@ -15,7 +15,7 @@ _08232368:
 _08232374:
 	cmp r0, #0x63
 	bne _08232390
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, [sp, #4]
 	cmp r0, r1
 	bne _08232368
@@ -35,7 +35,7 @@ _082323A0:
 	ldr r0, [sp, #8]
 	movs r1, #0
 	movs r2, #0
-	bl Script_ExecBlock
+	bl VM_ExecBlock
 _082323AA:
 	add sp, #0xc
 	pop {r1}

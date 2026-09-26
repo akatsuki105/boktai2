@@ -121,7 +121,7 @@ _080A78BA:
 	mov r0, sp
 	str r0, [r1, #4]
 	adds r0, r2, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080A790A:
 	adds r0, r5, #0
 	bl KillEntity

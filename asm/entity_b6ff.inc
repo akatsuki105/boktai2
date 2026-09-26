@@ -47,7 +47,7 @@ FUN_080ac5f4: @ 0x080AC5F4
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080AC608
-	bl Script_GetValue
+	bl VM_GetValue
 	bl FUN_080ac5b4
 _080AC608:
 	pop {r0}
@@ -135,7 +135,7 @@ FUN_080ac698: @ 0x080AC698
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080AC6AE
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r5, r0, #0
 	b _080AC6B0
 _080AC6AE:
@@ -145,7 +145,7 @@ _080AC6B0:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080AC6F8
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _080AC6F0 @ =0xFFFF0000
@@ -153,14 +153,14 @@ _080AC6B0:
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _080AC6F4 @ =0x0000FFFF
 	ldr r1, [sp]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #4]
@@ -182,9 +182,9 @@ _080AC702:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080AC720
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080AC724
 	.align 2, 0
@@ -697,11 +697,11 @@ EntityB6FF_Init: @ 0x080ACAE4
 	adds r4, #0x1c
 	movs r5, #2
 _080ACAF8:
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4, #2]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4, #4]
 	adds r4, #0xc
 	subs r5, #1
@@ -731,7 +731,7 @@ _080ACB2A:
 	adds r4, #0x24
 	movs r5, #2
 _080ACB3C:
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4]
 	ldr r0, [r6]
 	adds r0, #1

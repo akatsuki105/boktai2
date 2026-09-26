@@ -3,7 +3,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08090F04
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, _08090F08 @ =0x030046A0
 	ldr r2, [r1]
 	movs r1, #0x99

@@ -67,7 +67,7 @@ _08200298:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08200380
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r5, _0820032C @ =0xFFFF0000
@@ -75,14 +75,14 @@ _08200298:
 	ands r1, r5
 	orrs r1, r0
 	str r1, [sp, #0x14]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _08200330 @ =0x0000FFFF
 	ldr r1, [sp, #0x14]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #0x14]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	add r4, sp, #0x14
@@ -90,7 +90,7 @@ _08200298:
 	ands r1, r5
 	orrs r1, r0
 	str r1, [r4, #4]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov sb, r0
 	ldrh r0, [r4]
 	lsls r0, r0, #0x10
@@ -172,11 +172,11 @@ _08200396:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _082003B8
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r5, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r8, r0
-	bl Script_GetValue
+	bl VM_GetValue
 	b _082003C2
 	.align 2, 0
 _082003B4: .4byte 0x030046A0
@@ -192,37 +192,37 @@ _082003C2:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0820043C
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _08200428 @ =0x000007E2
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r4, _0820042C @ =0x000007E4
 	adds r1, r7, r4
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _08200430 @ =0x000007E6
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [sp, #0x20]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, #4
 	adds r1, r7, r4
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _08200434 @ =0x000007EA
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, #4
 	adds r1, r7, r4
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _08200438 @ =0x000007EE
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, #4
 	adds r1, r7, r4
 	strh r0, [r1]
@@ -281,7 +281,7 @@ _0820048A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _082004B8
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _082004BA
 	.align 2, 0
@@ -300,7 +300,7 @@ _082004BA:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _082004D8
-	bl Script_GetValue
+	bl VM_GetValue
 	subs r1, r4, r0
 	b _082004DA
 	.align 2, 0
@@ -314,7 +314,7 @@ _082004DA:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _082004F4
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _082004F6
 	.align 2, 0
@@ -328,7 +328,7 @@ _082004F6:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08200510
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _08200512
 	.align 2, 0
@@ -399,9 +399,9 @@ _08200538:
 	str r4, [sp, #0x2c]
 	cmp r0, #0
 	beq _082005C4
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r2, r0, #0
 	adds r0, r6, #0
 	adds r1, r4, #0
@@ -429,7 +429,7 @@ _082005CE:
 	movs r4, #0
 	b _082005F2
 _082005E2:
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r2, r4, #2
 	adds r1, r6, #0
 	adds r1, #0xe8
@@ -453,11 +453,11 @@ _082005FE:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08200638
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _08200630 @ =0x000007FA
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r4, _08200634 @ =0x000007FE
 	adds r1, r7, r4
 	b _08200646

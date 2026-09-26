@@ -140,7 +140,7 @@ FUN_080027bc: @ 0x080027BC
 	.align 2, 0
 _080027E0: .4byte 0x03002B30
 _080027E4:
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4]
 	adds r4, #2
 	adds r5, #1

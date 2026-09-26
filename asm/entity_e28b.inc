@@ -726,7 +726,7 @@ EntityE28B_Init: @ 0x08002E90
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08002EB8
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	adds r4, r6, #0
 	adds r4, #0x6c
@@ -816,7 +816,7 @@ EntityE28B_Create: @ 0x08002F40
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08002F68
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r5, r0, #0
 	b _08002F6A
 _08002F68:

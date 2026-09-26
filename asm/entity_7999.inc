@@ -221,7 +221,7 @@ FUN_081d9ef4: @ 0x081D9EF4
 	cmp r0, #0
 	beq _081D9F36
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	adds r0, r4, #0
 	bl KillEntity
 _081D9F36:
@@ -253,7 +253,7 @@ FUN_081d9f3c: @ 0x081D9F3C
 	cmp r0, #0
 	beq _081D9F82
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	adds r0, r4, #0
 	bl KillEntity
 _081D9F82:

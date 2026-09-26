@@ -1520,7 +1520,7 @@ FUN_080bf754: @ 0x080BF754
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080BF76A
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r5, r0, #0
 	b _080BF76C
 _080BF76A:
@@ -1537,7 +1537,7 @@ _080BF76C:
 	cmp r4, r5
 	bge _080BF7A8
 _080BF786:
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	ldr r2, _080BF7EC @ =0x00000ECC
 	adds r0, r6, r2
@@ -1606,7 +1606,7 @@ FUN_080bf7f8: @ 0x080BF7F8
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080BF818
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080BF814 @ =0x000010E4
 	adds r1, r4, r2
 	str r0, [r1]
@@ -1737,7 +1737,7 @@ FUN_080bf8c4: @ 0x080BF8C4
 	mov r0, sp
 	str r0, [r1, #4]
 	adds r0, r2, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080BF90E:
 	adds r0, r4, #0
 	bl KillEntity

@@ -277,7 +277,7 @@ _08225378:
 	str r4, [r0]
 	adds r0, r1, #0
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _082253B0:
 	add sp, #4
 	pop {r4, r5, r6, r7}

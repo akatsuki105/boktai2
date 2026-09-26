@@ -2,7 +2,7 @@
 #include "global.h"
 #include "vm.h"
 
-// スクリプトのキーワード 'm' が並べるマップエリアの一覧を持つだけのエンティティ
+// '.m' が並べるマップエリアの一覧を持つだけのエンティティ
 typedef struct {
   Entity e;       // 0x0, ENTITY_UNK_4
   s32 areas[16];  // 0x18, エリアIDの一覧。GetMapAreaAt が先頭から走査し 0 以下で打ち切る。下位16bitがZoneID
@@ -47,7 +47,7 @@ s32 MapAreaManager_Init(MapAreaManager* p, u32 unused1, u32 unused2) {
     s32* area = p->areas;
 
     while (VM_GetPC() != NULL) {
-      *area++ = Script_GetValue();
+      *area++ = VM_GetValue();
     }
   }
   gMapAreaManager = p;

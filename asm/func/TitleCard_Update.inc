@@ -70,7 +70,7 @@ _0800F3C8:
 	cmp r0, #0
 	beq _0800F3D4
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _0800F3D4:
 	adds r0, r5, #0
 	bl KillEntity

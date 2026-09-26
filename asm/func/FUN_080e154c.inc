@@ -28,33 +28,33 @@ _080E157C:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080E1598
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5, #2]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5, #4]
 _080E1598:
 	movs r0, #0x61
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080E15B4
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5, #8]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5, #0xa]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5, #0xc]
 _080E15B4:
 	movs r0, #0x66
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080E1602
-	bl Script_GetValue
+	bl VM_GetValue
 	strb r0, [r5, #0x19]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	subs r3, r0, r4
 	cmp r3, #0
 	bne _080E15E4

@@ -3,10 +3,10 @@
 #include "video.h"
 #include "vm.h"
 
-// プレイヤーを中心にした円形ワイプ。走査線ごとの WIN0H を2面バッファに焼いて流す
+// プレイヤーを中心にした円形ワイプ, 走査線ごとの WIN0H を2面バッファに焼いて流す
 typedef struct {
   Entity e;          // 0x000, ENTITY_UNK_9 または ENTITY_UNK_11
-  s16 radius;        // 0x018, '.r=250' << 4 (4000 で頭打ち)。使うときは >> 4
+  s16 radius;        // 0x018, '.r=250' << 4 (4000 で頭打ち), 使うときは >> 4
   s16 unk_1a;        // 0x01A, '.m=0'
   s16 radiusStep;    // 0x01C, '.s=8' << 4
   s8 unk_1e;         // 0x01E, '.d=0'
@@ -16,7 +16,7 @@ typedef struct {
   u16 winH[2][180];  // 0x024, FUN_0801ad78(p, i) が 0x24 + i*0x168 に走査線1本ぶんの WIN0H (左<<8 | 右) を Sqrt(r*r - dy*dy) で焼く
   s16 centerX;       // 0x2F4, プレイヤーを投影して 0..0xF0 に丸めたもの, これ以降は Vec3?
   s16 centerY;       // 0x2F6, 同じく 0..0xB4
-  s16 unk_2f8;       // 0x2F8, 投影した奥行き。読み手が見つかっていない
+  s16 unk_2f8;       // 0x2F8, 投影した奥行き, 読み手が見つかっていない
   u8 unk_2fa[6];     // 0x2FA, padding?
 } Entity12C4;
 static_assert(sizeof(Entity12C4) == 768);

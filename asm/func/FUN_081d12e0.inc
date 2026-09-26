@@ -193,7 +193,7 @@ _081D1424:
 	adds r0, r5, #0
 	adds r0, #0xb2
 	ldrh r0, [r0]
-	bl Script_ExecById
+	bl VM_ExecByID
 _081D145E:
 	add sp, #0x14
 	pop {r4, r5, r6, r7}

@@ -169,7 +169,7 @@ _08101E78:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08101EA4
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _08101EA6
 	.align 2, 0
@@ -196,7 +196,7 @@ _08101EA6:
 	str r4, [sp, #0xc4]
 	cmp r0, #0
 	beq _08101ED0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _08101ED2
 	.align 2, 0
@@ -226,7 +226,7 @@ _08101ED2:
 	str r4, [sp, #0xc8]
 	cmp r0, #0
 	beq _08101F10
-	bl Script_GetValue
+	bl VM_GetValue
 	b _08101F14
 	.align 2, 0
 _08101F08: .4byte 0x00000252
@@ -379,7 +379,7 @@ _08102014:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102044
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	b _08102046
 	.align 2, 0
@@ -392,7 +392,7 @@ _08102046:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102058
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x18
 	lsrs r5, r0, #0x18
 	b _0810205A
@@ -413,7 +413,7 @@ _08102064:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _0810207E
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
 	b _08102080
 _0810207E:
@@ -422,7 +422,7 @@ _08102080:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102090
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _08102092
 _08102090:
@@ -762,7 +762,7 @@ _08102322:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081023C8
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081023CA
 	.align 2, 0
 _08102330: .4byte 0x0000025D
@@ -811,7 +811,7 @@ _081023CA:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081023DC
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081023DE
 _081023DC:
 	movs r0, #0x18
@@ -821,7 +821,7 @@ _081023DE:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081023F0
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081023F2
 _081023F0:
 	movs r0, #0
@@ -831,7 +831,7 @@ _081023F2:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102404
-	bl Script_GetValue
+	bl VM_GetValue
 	b _08102406
 _08102404:
 	movs r0, #0
@@ -857,7 +857,7 @@ _08102420:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _0810243A
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	b _0810243E
 _0810243A:
@@ -867,7 +867,7 @@ _0810243E:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _0810244E
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
 	b _08102452
 _0810244E:
@@ -877,7 +877,7 @@ _08102452:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102460
-	bl Script_GetValue
+	bl VM_GetValue
 	b _08102466
 _08102460:
 	movs r1, #0x96
@@ -922,7 +922,7 @@ _0810248C:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081024BC
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081024BE
 _081024BC:
 	movs r0, #0
@@ -945,7 +945,7 @@ _081024D2:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081024EC
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081024EE
 	.align 2, 0
 _081024E8: .4byte 0x00000546
@@ -959,7 +959,7 @@ _081024EE:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102504
-	bl Script_GetValue
+	bl VM_GetValue
 	b _08102506
 _08102504:
 	movs r0, #0
@@ -970,7 +970,7 @@ _08102506:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102520
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _08102522
 	.align 2, 0
@@ -985,7 +985,7 @@ _08102522:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102538
-	bl Script_GetValue
+	bl VM_GetValue
 	b _0810253A
 _08102538:
 	movs r0, #0
@@ -997,7 +997,7 @@ _0810253A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102552
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _08102554
 _08102552:
@@ -1037,7 +1037,7 @@ _0810255C:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081025A4
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081025A6
 _081025A4:
 	movs r0, #0
@@ -1046,7 +1046,7 @@ _081025A6:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081025B6
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081025B8
 _081025B6:
 	movs r0, #0
@@ -1239,7 +1239,7 @@ _0810271A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102734
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _08102736
 _08102734:
@@ -1252,7 +1252,7 @@ _08102736:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102754
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _08102756
 	.align 2, 0
@@ -1267,7 +1267,7 @@ _08102756:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102774
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _08102776
 	.align 2, 0
@@ -1581,7 +1581,7 @@ _081029E4:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08102A94
-	bl Script_GetValue
+	bl VM_GetValue
 	b _08102A96
 	.align 2, 0
 _081029F4: .4byte 0x000006A4

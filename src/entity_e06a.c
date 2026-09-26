@@ -32,7 +32,7 @@ s32 EntityE06A_Destroy(EntityE06A* p) {
   return 0;
 }
 
-// スクリプトのキーワード 'p' から位置を読み、足元のタイルの高さと階段の向きで y を補正する
+// '.p' から位置を読み、足元のタイルの高さと階段の向きで y を補正する
 void EntityE06A_SetupSprite(EntityE06A* p) {
   Vec3* pos;
   u8* tile;
@@ -45,9 +45,9 @@ void EntityE06A_SetupSprite(EntityE06A* p) {
   AuxSprite_Add(&p->sprite, gfx, 0);
   z = VM_SeekToKeyword('p');
   if (z != 0) {
-    p->sprite.pos.x = Script_GetValue();
-    p->sprite.pos.y = Script_GetValue();
-    z = Script_GetValue();
+    p->sprite.pos.x = VM_GetValue();
+    p->sprite.pos.y = VM_GetValue();
+    z = VM_GetValue();
   } else {
     p->sprite.pos.x = 0;
     p->sprite.pos.y = 0;

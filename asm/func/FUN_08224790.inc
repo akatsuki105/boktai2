@@ -21,11 +21,11 @@ _082247A8:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _082247EC
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _082247E4 @ =0x00000E8C
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _082247E8 @ =0x00000E8E
 	adds r1, r4, r2
 	strh r0, [r1]

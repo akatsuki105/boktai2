@@ -128,7 +128,7 @@ void FUN_0823b9cc(s32 n) {
   }
 }
 
-// 2^8 での符号付き除算。/ 256 と結果は同じだが、原典はこの形 (符号を見て shift) を使っている。
+// 2^8 での符号付き除算, / 256 と結果は同じだが、原典はこの形 (符号を見て shift) を使っている
 // アイソメトリック投影の計算に繰り返し現れる
 static inline s32 Div256(s32 v) { return v >= 0 ? (v >> 8) : -((-v) >> 8); }
 
@@ -282,7 +282,7 @@ void FUN_0823bd98(Camera* cam) {
       cam->scriptID = val;
       cam->scriptIDType = 0;
     } else if (VM_SeekToKeyword('R')) {
-      cam->scriptID = Script_GetValue();
+      cam->scriptID = VM_GetValue();
       cam->scriptIDType = 1;
     } else {
       cam->scriptID = 0;
@@ -298,9 +298,9 @@ void FUN_0823bdf8(void) {
 void FUN_0823be10(void) {
   if (VM_SeekToKeyword('p')) {
     Vec3 pos;
-    pos.x = Script_GetValue();
-    pos.y = Script_GetValue();
-    pos.z = Script_GetValue();
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
     FUN_0823bac8(&pos);
     FUN_0823bd98(gCamera);
   }
@@ -309,11 +309,11 @@ void FUN_0823be10(void) {
 void Camera_PanTo(void) {
   if (VM_SeekToKeyword('f')) {
     Vec3 pos;
-    s32 n = Script_GetValue();
+    s32 n = VM_GetValue();
     if (VM_SeekToKeyword('p')) {
-      pos.x = Script_GetValue();
-      pos.y = Script_GetValue();
-      pos.z = Script_GetValue();
+      pos.x = VM_GetValue();
+      pos.y = VM_GetValue();
+      pos.z = VM_GetValue();
       FUN_0823bb7c(n, &pos);
       FUN_0823bd98(gCamera);
     }
@@ -323,11 +323,11 @@ void Camera_PanTo(void) {
 void FUN_0823bee8(void) {
   if (VM_SeekToKeyword('n')) {
     Vec3 pos;
-    s32 targetID = Script_GetValue();
+    s32 targetID = VM_GetValue();
     if (VM_SeekToKeyword('o')) {
-      pos.x = Script_GetValue();
-      pos.y = Script_GetValue();
-      pos.z = Script_GetValue();
+      pos.x = VM_GetValue();
+      pos.y = VM_GetValue();
+      pos.z = VM_GetValue();
     } else {
       pos.x = 0, pos.y = 0, pos.z = 0;
     }
@@ -338,14 +338,14 @@ void FUN_0823bee8(void) {
 
 void FUN_0823bf70(void) {
   if (VM_SeekToKeyword('f')) {
-    s32 n = Script_GetValue();
+    s32 n = VM_GetValue();
     if (VM_SeekToKeyword('n')) {
       Vec3 pos;
-      s32 targetID = Script_GetValue();
+      s32 targetID = VM_GetValue();
       if (VM_SeekToKeyword('o')) {
-        pos.x = Script_GetValue();
-        pos.y = Script_GetValue();
-        pos.z = Script_GetValue();
+        pos.x = VM_GetValue();
+        pos.y = VM_GetValue();
+        pos.z = VM_GetValue();
       } else {
         pos.x = 0, pos.y = 0, pos.z = 0;
       }
@@ -357,23 +357,23 @@ void FUN_0823bf70(void) {
 
 void FUN_0823c008(void) {
   if (VM_SeekToKeyword('f')) {
-    FUN_0823bc70(Script_GetValue());
+    FUN_0823bc70(VM_GetValue());
     FUN_0823bd98(gCamera);
   }
 }
 
 void Camera_Reset(void) {
   if (VM_SeekToKeyword('f')) {
-    FUN_0823bca8(Script_GetValue());
+    FUN_0823bca8(VM_GetValue());
     FUN_0823bd98(gCamera);
   }
 }
 
 void FUN_0823c050(void) {
   if (VM_SeekToKeyword('w')) {
-    s32 amplitude = Script_GetValue();
-    s32 frames = VM_SeekToKeyword('f') ? Script_GetValue() : 1;
-    s32 stopOnEnd = VM_SeekToKeyword('N') ? Script_GetValue() : 0;
+    s32 amplitude = VM_GetValue();
+    s32 frames = VM_SeekToKeyword('f') ? VM_GetValue() : 1;
+    s32 stopOnEnd = VM_SeekToKeyword('N') ? VM_GetValue() : 0;
     FUN_0823bd14(amplitude, frames, stopOnEnd);
     FUN_0823bd98(gCamera);
   }
@@ -390,10 +390,10 @@ void FUN_0823c1f8(Camera* cam) {
   if (scriptID != 0) {
     if (cam->scriptIDType == 0) {
       cam->scriptID = 0;
-      Script_ExecByPointer((u8*)scriptID, NULL);
+      VM_ExecByPointer((u8*)scriptID, NULL);
     } else {
       cam->scriptID = 0;
-      Script_ExecById(scriptID, NULL);
+      VM_ExecByID(scriptID, NULL);
     }
   }
 }
@@ -426,9 +426,9 @@ void FUN_0823c260(Vec3* min, Vec3* max) {
 void Camera_ConnectToTilemap(void) {
   if (VM_SeekToKeyword('I')) {
     Vec3 min, max;
-    min.x = Script_GetValue(), min.y = Script_GetValue(), min.z = Script_GetValue();
+    min.x = VM_GetValue(), min.y = VM_GetValue(), min.z = VM_GetValue();
     if (VM_SeekToKeyword('A')) {
-      max.x = Script_GetValue(), max.y = Script_GetValue(), max.z = Script_GetValue();
+      max.x = VM_GetValue(), max.y = VM_GetValue(), max.z = VM_GetValue();
       FUN_0823c260(&min, &max);
     }
   }
@@ -448,9 +448,9 @@ void FUN_0823c35c(Vec3* min, Vec3* max) {
 void Camera_SetBoundsType2Scripted(void) {
   if (VM_SeekToKeyword('I')) {
     Vec3 min, max;
-    min.x = Script_GetValue(), min.y = Script_GetValue(), min.z = Script_GetValue();
+    min.x = VM_GetValue(), min.y = VM_GetValue(), min.z = VM_GetValue();
     if (VM_SeekToKeyword('A')) {
-      max.x = Script_GetValue(), max.y = Script_GetValue(), max.z = Script_GetValue();
+      max.x = VM_GetValue(), max.y = VM_GetValue(), max.z = VM_GetValue();
       FUN_0823c35c(&min, &max);
     }
   }

@@ -4490,7 +4490,7 @@ FUN_080ce378: @ 0x080CE378
 	adds r0, r5, r2
 	movs r2, #0
 	bl ParticleShadow_Init
-	bl FUN_080dc44c
+	bl Entity080dc44c_Create
 	adds r0, r5, #0
 	bl FUN_080cdc10
 	adds r0, r5, #0
@@ -5966,7 +5966,7 @@ FUN_080cef14: @ 0x080CEF14
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080CEF26
-	bl Script_GetValue
+	bl VM_GetValue
 _080CEF26:
 	str r0, [r4, #0x18]
 	pop {r4}
@@ -6311,7 +6311,7 @@ FUN_080cf15c: @ 0x080CF15C
 	adds r7, r4, #0
 	cmp r1, #0
 	beq _080CF1D8
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080CF1D4 @ =0x00000454
 	adds r1, r6, r2
 	strb r0, [r1]
@@ -6577,15 +6577,15 @@ FUN_080cf3c0: @ 0x080CF3C0
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080CF400
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080CF3F8 @ =0x0000044C
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080CF3FC @ =0x0000044E
 	adds r1, r7, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0x8a
 	lsls r2, r2, #3
 	adds r1, r7, r2
@@ -24023,7 +24023,7 @@ FUN_080d7bac: @ 0x080D7BAC
 	movs r0, #0
 	b _080D7BC0
 _080D7BBC:
-	bl Script_GetValue
+	bl VM_GetValue
 _080D7BC0:
 	pop {r1}
 	bx r1

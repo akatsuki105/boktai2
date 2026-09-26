@@ -11,12 +11,12 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A8B2
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0x8a
 	lsls r2, r2, #1
 	adds r1, r6, r2
 	str r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0x8c
 	lsls r2, r2, #1
 	adds r1, r6, r2
@@ -27,7 +27,7 @@ _0821A8B2:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0821A8D0
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0x9c
 	lsls r2, r2, #1
 	adds r1, r6, r2

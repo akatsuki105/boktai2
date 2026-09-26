@@ -55,9 +55,9 @@ _0801870A:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08018720
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0x30]
-	bl Script_GetValue
+	bl VM_GetValue
 	b _08018724
 _08018720:
 	movs r0, #0x40
@@ -68,9 +68,9 @@ _08018724:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0801873C
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0x28]
-	bl Script_GetValue
+	bl VM_GetValue
 	b _08018746
 _0801873C:
 	movs r0, #0xe1
@@ -109,7 +109,7 @@ _0801877A:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08018794
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, _080187BC @ =0x030046A0
 	ldr r1, [r1]
 	movs r2, #0xb4
@@ -121,9 +121,9 @@ _08018794:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080187C0
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0x2c]
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080187C6
 	.align 2, 0
 _080187AC: .4byte 0x03000080

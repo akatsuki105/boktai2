@@ -1140,7 +1140,7 @@ _0821352C:
 	ldr r0, [r5, #0x58]
 _08213548:
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0x63
 _08213550:
 	str r0, [r5, #0x64]

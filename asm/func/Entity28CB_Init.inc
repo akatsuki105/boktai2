@@ -10,7 +10,7 @@
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0808A164
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r6, #0
 	adds r1, #0x4c
 	strh r0, [r1]
@@ -53,15 +53,15 @@ _0808A1A2:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0808A1CC
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r6, #0
 	adds r1, #0x6c
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r6, #0
 	adds r1, #0x6e
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r6, #0
 	adds r1, #0x70
 	strh r0, [r1]
@@ -115,9 +115,9 @@ _0808A1E8:
 	mov sb, r4
 	cmp r0, #0
 	beq _0808A244
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [r6, #0x68]
-	bl Script_GetValue
+	bl VM_GetValue
 	b _0808A246
 	.align 2, 0
 _0808A240: .4byte 0x030046A0

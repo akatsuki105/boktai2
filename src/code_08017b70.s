@@ -677,7 +677,7 @@ FUN_08019874: @ 0x08019874
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080198D4
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _080198CC @ =0xFFFF0000
@@ -685,14 +685,14 @@ FUN_08019874: @ 0x08019874
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #8]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _080198D0 @ =0x0000FFFF
 	ldr r1, [sp, #8]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #8]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #0xc]
@@ -841,7 +841,7 @@ _080199E4:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080199F0
-	bl Script_GetValue
+	bl VM_GetValue
 _080199F0:
 	strb r0, [r4]
 	adds r4, #1
@@ -875,7 +875,7 @@ _08019A24:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08019A36
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r7, r6
 	ldrb r1, [r1]
 	subs r0, r0, r1
@@ -2411,7 +2411,7 @@ _0801A582:
 	cmp r0, #0
 	beq _0801A59E
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	strh r0, [r5, #0x1a]
 _0801A59E:
@@ -2857,7 +2857,7 @@ _0801A8E2:
 	cmp r0, #0
 	beq _0801A912
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	b _0801A912
 _0801A900:
 	adds r0, r4, #0
@@ -2935,7 +2935,7 @@ _0801A970:
 	adds r7, r4, #0
 	cmp r0, #0
 	beq _0801A9CC
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _0801A9C4 @ =0xFFFF0000
@@ -2943,7 +2943,7 @@ _0801A970:
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #0x24]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0801A9C8 @ =0x0000FFFF
 	ldr r1, [sp, #0x24]

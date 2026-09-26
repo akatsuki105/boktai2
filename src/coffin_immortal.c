@@ -26,7 +26,7 @@ typedef struct {
   u16 shakeX;            // 0x60, 棺桶の中の敵が暴れたときの揺れ, (rand & 0x1F) - 0x10, pos.x に加算
   u16 shakeZ;            // 0x62, 同上, pos.z に加算
   u32 stateTimer;        // 0x64
-  u32 scriptID;          // 0x68, '.e', Script_ExecById に渡す
+  u32 scriptID;          // 0x68, '.e', VM_ExecByID に渡す
   Vec3 pos;              // 0x6C, '.p=gStat->playerPos', 各ノードの pos にコピーされる
   AuxSprite sprites[5];  // 0x74
   AuxSpriteGfx gfx;      // 0x150, SPRITE_COFFIN
@@ -209,7 +209,7 @@ void FUN_08089f58(Entity28CB* p) {
 // stateTimer が scriptDelay に達したら scriptID のスクリプトを1回だけ実行する
 void FUN_08089ff0(Entity28CB* p) {
   if (p->stateTimer == p->scriptDelay && p->scriptID != 0) {
-    Script_ExecById(p->scriptID, NULL);
+    VM_ExecByID(p->scriptID, NULL);
     p->scriptID = 0;
   }
   p->stateTimer++;

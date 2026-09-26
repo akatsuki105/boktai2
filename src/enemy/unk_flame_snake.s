@@ -3438,7 +3438,7 @@ _081A80B4:
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0x80
-	bl FUN_080dd8d4
+	bl SpawnAttackBox
 	ldr r0, _081A81D4 @ =0x0000046D
 	adds r0, r5, r0
 	str r0, [sp, #0x40]
@@ -3540,7 +3540,7 @@ _081A8132:
 	add r3, sp, #0xc
 	str r3, [r1, #4]
 	ldrh r0, [r7]
-	bl Script_ExecById
+	bl VM_ExecByID
 _081A81A0:
 	mov r4, sb
 	ldrb r0, [r4]
@@ -13043,7 +13043,7 @@ FUN_081ac97c: @ 0x081AC97C
 	cmp r0, #0
 	beq _081AC99C
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	strh r0, [r4]
 _081AC99C:
@@ -14217,7 +14217,7 @@ _081AD2D8:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD308
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081AD30A
 	.align 2, 0
@@ -14245,7 +14245,7 @@ _081AD30A:
 	str r4, [sp, #0xf8]
 	cmp r0, #0
 	beq _081AD334
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081AD336
 	.align 2, 0
@@ -14275,7 +14275,7 @@ _081AD336:
 	str r4, [sp, #0x100]
 	cmp r0, #0
 	beq _081AD374
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081AD378
 	.align 2, 0
 _081AD36C: .4byte 0x00000252
@@ -14428,7 +14428,7 @@ _081AD478:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD4A8
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	b _081AD4AA
 	.align 2, 0
@@ -14441,7 +14441,7 @@ _081AD4AA:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD4BC
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x18
 	lsrs r5, r0, #0x18
 	b _081AD4BE
@@ -14462,7 +14462,7 @@ _081AD4C8:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD4E2
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
 	b _081AD4E4
 _081AD4E2:
@@ -14471,7 +14471,7 @@ _081AD4E4:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD4F4
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081AD4F6
 _081AD4F4:
@@ -14839,7 +14839,7 @@ _081AD7BE:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD87C
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081AD87E
 	.align 2, 0
 _081AD7CC: .4byte 0x0000025D
@@ -14894,7 +14894,7 @@ _081AD87E:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD890
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081AD892
 _081AD890:
 	movs r0, #0x18
@@ -14904,7 +14904,7 @@ _081AD892:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD8A4
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081AD8A6
 _081AD8A4:
 	movs r0, #0
@@ -14914,7 +14914,7 @@ _081AD8A6:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD8B8
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081AD8BA
 _081AD8B8:
 	movs r0, #0
@@ -14940,7 +14940,7 @@ _081AD8D4:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD8EE
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	b _081AD8F2
 _081AD8EE:
@@ -14950,7 +14950,7 @@ _081AD8F2:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD902
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
 	b _081AD906
 _081AD902:
@@ -14960,7 +14960,7 @@ _081AD906:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD914
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081AD91A
 _081AD914:
 	movs r5, #0x96
@@ -15005,7 +15005,7 @@ _081AD940:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD970
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081AD972
 _081AD970:
 	movs r0, #0
@@ -15028,7 +15028,7 @@ _081AD986:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD9A0
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081AD9A2
 	.align 2, 0
 _081AD99C: .4byte 0x00000546
@@ -15042,7 +15042,7 @@ _081AD9A2:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD9B8
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081AD9BA
 _081AD9B8:
 	movs r0, #0
@@ -15053,7 +15053,7 @@ _081AD9BA:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD9D4
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081AD9D6
 	.align 2, 0
@@ -15068,7 +15068,7 @@ _081AD9D6:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AD9EC
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081AD9EE
 _081AD9EC:
 	movs r0, #0
@@ -15080,7 +15080,7 @@ _081AD9EE:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081ADA06
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081ADA08
 _081ADA06:
@@ -15120,7 +15120,7 @@ _081ADA10:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081ADA58
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081ADA5A
 _081ADA58:
 	movs r0, #0
@@ -15129,7 +15129,7 @@ _081ADA5A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081ADA6A
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081ADA6C
 _081ADA6A:
 	movs r0, #0
@@ -15322,7 +15322,7 @@ _081ADBCE:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081ADBE6
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081ADBE8
 _081ADBE6:
 	movs r0, #0
@@ -15331,7 +15331,7 @@ _081ADBE8:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081ADBF8
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081ADBFA
 _081ADBF8:
 	movs r0, #0
@@ -15340,7 +15340,7 @@ _081ADBFA:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081ADC0A
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081ADC0C
 _081ADC0A:
 	movs r0, #0
@@ -15449,7 +15449,7 @@ _081ADCC0:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081ADCE4
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081ADCEA
 	.align 2, 0
@@ -15803,7 +15803,7 @@ _081ADFAE:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081AE06C
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081AE06E
 	.align 2, 0
 _081ADFBC: .4byte 0x00000CC4

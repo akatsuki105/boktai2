@@ -22913,7 +22913,7 @@ _08032C96:
 	bne _08032CD2
 	ldrh r0, [r2]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _08032CD2:
 	mov r6, sl
 	adds r6, #8
@@ -23068,7 +23068,7 @@ _08032DC2:
 	bne _08032DFE
 	ldrh r0, [r2]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _08032DFE:
 	add sp, #0x14
 	pop {r3, r4, r5}

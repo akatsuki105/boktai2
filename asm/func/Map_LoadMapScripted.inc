@@ -57,7 +57,7 @@ _0823B650:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0823B6AE
-	bl Script_GetValue
+	bl VM_GetValue
 	cmp r0, #0
 	bne _0823B69C
 	ldr r1, _0823B68C @ =FUN_0822db5c

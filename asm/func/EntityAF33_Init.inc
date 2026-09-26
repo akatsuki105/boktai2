@@ -48,7 +48,7 @@ _080508DC:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080508F8
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4]
 	ldr r0, [r6, #0x68]
 	adds r0, #1
@@ -174,7 +174,7 @@ _080509D0:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080509F8
-	bl Script_GetValue
+	bl VM_GetValue
 	strb r0, [r4]
 	ldr r0, [r6, #0x6c]
 	adds r0, #1
@@ -401,7 +401,7 @@ _08050B84:
 	movs r7, #3
 	mov r8, r7
 _08050BB0:
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4]
 	adds r4, #2
 	movs r0, #1

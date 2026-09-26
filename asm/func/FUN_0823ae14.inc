@@ -11,7 +11,7 @@
 	beq _0823AE3A
 	adds r0, r4, #0
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	cmp r4, #0
 	bne _0823AE3E
 _0823AE3A:

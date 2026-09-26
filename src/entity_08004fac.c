@@ -3,11 +3,11 @@
 #include "global.h"
 #include "vm.h"
 
-// 衝突マップのノード (MapTileOverride) を id 付きで持つラッパ。id を指定して一括で消したり、 登録を外したり (Entity08004fac_DisableNodesById) 戻したり (同 Enable) できる
+// 衝突マップのノード (MapTileOverride) を id 付きで持つラッパ, id を指定して一括で消したり、 登録を外したり (Entity08004fac_DisableNodesById) 戻したり (同 Enable) できる
 typedef struct Entity08004facNode {
   u16 id;                           // 0x00, 一括で操作するためのキー
   bool8 active;                     // 0x02, 1 なら tileOverride を衝突マップへ登録済み
-  u8 unk_3;                         // 0x03, Entity08004fac_AddNode の第3引数。SetNodeParamsById が書き換える
+  u8 unk_3;                         // 0x03, Entity08004fac_AddNode の第3引数, SetNodeParamsById が書き換える
   u8 unk_4;                         // 0x04, FUN_08234270 の第3引数
   u8 unk_5;                         // 0x05, FUN_08234270 の第4引数
   u16 unk_6;                        // 0x06, FUN_08234270 の第6引数
@@ -21,7 +21,7 @@ static_assert(sizeof(Entity08004facNode) == 36);
 
 typedef struct {
   Entity e;                  // 0x00, ENTITY_UNK_8
-  Entity08004facNode* head;  // 0x18, ノードの双方向リストの先頭。Init が NULL、LinkNode が先頭挿入する
+  Entity08004facNode* head;  // 0x18, ノードの双方向リストの先頭, Init が NULL、LinkNode が先頭挿入する
 } Entity08004fac;
 static_assert(sizeof(Entity08004fac) == 28);
 
@@ -75,10 +75,10 @@ NAKED Entity08004fac* Entity08004fac_Create(u32 param_1) { INCFUNC("asm/func/Ent
 
 NAKED s32 VM_Sub3E1F(void) { INCFUNC("asm/func/VM_Sub3E1F.inc"); }
 
-// スクリプトの 'n' が指すノードを衝突マップから外す
+// '.n' が指すノードを衝突マップから外す
 s32 FUN_08005004(void) { return Entity08004fac_DisableNodesById(VM_GetKeywordValue('n', 0)); }
 
-// スクリプトの 'n' が指すノードを衝突マップへ戻す
+// '.n' が指すノードを衝突マップへ戻す
 s32 FUN_0800501c(void) { return Entity08004fac_EnableNodesById(VM_GetKeywordValue('n', 0)); }
 
 NAKED s32 FUN_08005034(void) { INCFUNC("asm/func/FUN_08005034.inc"); }

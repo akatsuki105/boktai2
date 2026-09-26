@@ -142,26 +142,26 @@ _081D8ABE:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _081D8B0A
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5, #0x1c]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5, #0x1e]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5, #0x20]
 _081D8B0A:
 	movs r0, #0x72
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _081D8B40
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r5, #0
 	adds r1, #0x60
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r5, #0
 	adds r1, #0x62
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r5, #0
 	adds r1, #0x64
 	strh r0, [r1]

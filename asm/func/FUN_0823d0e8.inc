@@ -1,6 +1,6 @@
 	push {r4, r5, r6, r7, lr}
 	sub sp, #0x10
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
 	ldr r7, _0823D118 @ =0x030046A4
 	ldr r0, [r7]

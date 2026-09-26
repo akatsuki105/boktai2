@@ -140,12 +140,12 @@ bool32 FUN_08242eb0(void) {
   s32 i, slot;
 
   if (VM_SeekToKeyword('f')) {
-    weapon32_t w = Script_GetValue();
+    weapon32_t w = VM_GetValue();
     if (!VM_SeekToKeyword('t')) {
       return FALSE;
     }
 
-    slot = (s32)Script_GetValue();
+    slot = (s32)VM_GetValue();
     for (i = 0; i < 16; i++) {
       if (GetWeaponID(i) == w) {
         FUN_08242b6c(i, &gWeaponDB[slot]);
@@ -186,9 +186,9 @@ void FUN_08242f84(s32 n) {
 bool32 FUN_08242f9c(void) {
   if (VM_SeekToKeyword('w')) {
     s32 len, i;
-    weapon32_t w = Script_GetValue();
+    weapon32_t w = VM_GetValue();
     if (VM_SeekToKeyword('d')) {
-      len = Script_GetValue() ? 48 : 16;
+      len = VM_GetValue() ? 48 : 16;
     } else {
       len = 16;
     }

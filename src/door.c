@@ -31,7 +31,7 @@ typedef struct Door {
   u8 unk_41;                // 0x41, FUN_0801fc88 が 1 を入れる
   u8 unk_42[30];            // 0x42
   s32 unk_60;               // 0x60, FUN_08020CD8 / FUN_08020D10 が読み書きする
-  s32 scriptID;             // 0x64, FUN_08020D10 が Script_ExecById に渡してから 0 を入れる
+  s32 scriptID;             // 0x64, FUN_08020D10 が VM_ExecByID に渡してから 0 を入れる
   u8 unk_68[24];            // 0x68, 0x72 の strh と 0x7A の ldrh がある
   u16 unk_80;               // 0x80, FUN_08020B88 が +0xF、FUN_08020C1C が -0xF する
   s16 unk_82;               // 0x82, FUN_08020D10 が ldrsh で読んで減らす
@@ -237,13 +237,13 @@ s32 FUN_0801fedc(void) {
   if (!VM_SeekToKeyword('n')) {
     return 0;
   }
-  id = Script_GetValue();
+  id = VM_GetValue();
   for (i = 0; i < p->unk_1a; i++) {
     Door* door = &p->doors[i];
 
     if (door->unk_34 == id) {
       if (VM_SeekToKeyword('p')) {
-        door->unk_60 = Script_GetValue();
+        door->unk_60 = VM_GetValue();
       }
       if (door->unk_37 == 1 || door->unk_37 == 3) {
         door->unk_37 = 2;
@@ -269,13 +269,13 @@ s32 FUN_0801ff78(void) {
   if (!VM_SeekToKeyword('n')) {
     return -1;
   }
-  id = Script_GetValue();
+  id = VM_GetValue();
   for (i = 0; i < p->unk_1a; i++) {
     Door* door = &p->doors[i];
 
     if (door->unk_34 == id) {
       if (VM_SeekToKeyword('p')) {
-        door->scriptID = Script_GetValue();
+        door->scriptID = VM_GetValue();
       }
       if (door->unk_37 == 0 || door->unk_37 == 2) {
         door->unk_37 = 3;
@@ -296,7 +296,7 @@ void FUN_080201c8(void) {
   DoorManager* p = FUN_08230e70(0x85E6);
 
   if (p != NULL && VM_SeekToKeyword('n')) {
-    s32 id = Script_GetValue();
+    s32 id = VM_GetValue();
     s32 i;
 
     for (i = 0; i < p->unk_1a; i++) {
@@ -320,7 +320,7 @@ NON_MATCH void FUN_08020260(void) {
   DoorManager* p = FUN_08230e70(0x85E6);
 
   if (p != NULL && VM_SeekToKeyword('n')) {
-    s32 id = Script_GetValue();
+    s32 id = VM_GetValue();
     s32 i = 0;
     s32 count = 0;
     s32 found = 0;
@@ -349,7 +349,7 @@ NON_MATCH void FUN_08020260(void) {
 void FUN_08020314(void) {
   DoorManager* p = FUN_08230e70(0x85E6);
   if (p != NULL && VM_SeekToKeyword('n')) {
-    p->unk_2e = Script_GetValue();
+    p->unk_2e = VM_GetValue();
   }
 }
 
@@ -427,7 +427,7 @@ NON_MATCH void FUN_08020cd8(Door* door) {
     FUN_0823b9cc(remain);
     door->unk_82--;
   } else if (door->unk_60 != 0) {
-    Script_ExecById(door->unk_60, NULL);
+    VM_ExecByID(door->unk_60, NULL);
     door->unk_60 = remain;
   }
   door->sprite.priority = 2;
@@ -445,7 +445,7 @@ NON_MATCH void FUN_08020d10(Door* door) {
     FUN_0823b9cc(remain);
     door->unk_82--;
   } else if (door->scriptID != 0) {
-    Script_ExecById(door->scriptID, NULL);
+    VM_ExecByID(door->scriptID, NULL);
     door->scriptID = remain;
   }
 #else

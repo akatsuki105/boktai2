@@ -1,5 +1,5 @@
 	push {lr}
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, _0823D760 @ =0x030046A0
 	ldr r1, [r1]
 	movs r2, #0x93

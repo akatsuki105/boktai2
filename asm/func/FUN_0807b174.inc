@@ -3,13 +3,13 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807B19C
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	movs r0, #0x70
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807B19C
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	adds r0, r4, #0
 	bl FUN_0807a7f8

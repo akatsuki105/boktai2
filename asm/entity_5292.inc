@@ -457,7 +457,7 @@ Entity5292_Init: @ 0x080AD158
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080AD170
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080AD172
 _080AD170:
 	movs r0, #6

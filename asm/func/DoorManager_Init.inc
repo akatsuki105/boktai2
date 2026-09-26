@@ -152,7 +152,7 @@ _08021D2C:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08021D3E
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r1, r0, #0x10
 	b _08021D40
@@ -199,7 +199,7 @@ _08021D88:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08021DA0
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r4, r0, #0x10
 	b _08021DA2
@@ -302,7 +302,7 @@ _08021E5E:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08021E80
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r6, r0, #0x10
 	b _08021E82
@@ -362,7 +362,7 @@ _08021EDA:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08021EF0
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r4, r0, #0x10
 	b _08021EF2
@@ -435,7 +435,7 @@ _08021F66:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08021F7C
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r1, r0, #0x10
 	b _08021F7E
@@ -487,7 +487,7 @@ _08021FC8:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08021FE0
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r1, r0, #0x10
 	b _08021FE2

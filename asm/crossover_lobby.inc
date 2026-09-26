@@ -885,7 +885,7 @@ _0804F4F0:
 	cmp r0, #0
 	beq _0804F510
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _0804F510:
 	ldr r0, [r4, #0x20]
 	adds r0, #1

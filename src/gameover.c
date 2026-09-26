@@ -8,11 +8,11 @@
 #include "video.h"
 #include "vm.h"
 
-// "GAME OVER" の1文字ぶん。8個並べて1つのロゴになる
+// "GAME OVER" の1文字ぶん, 8個並べて1つのロゴになる
 typedef struct {
-  AuxSprite sprite;  // 0x00, GameOverManager_SetupLetters が AuxSprite_Setup に渡す。flags は 0x1033 = SPRFLAG_GAMEOVER|SPRFLAG_OAM_DIRECT|SPRFLAG_SCREEN_COORD|SPRFLAG_AFFINE|SPRFLAG_HIDDEN で、metaspriteIdx に 0..7 が入る
+  AuxSprite sprite;  // 0x00, GameOverManager_SetupLetters が AuxSprite_Setup に渡す, flags は 0x1033 = SPRFLAG_GAMEOVER|SPRFLAG_OAM_DIRECT|SPRFLAG_SCREEN_COORD|SPRFLAG_AFFINE|SPRFLAG_HIDDEN で、metaspriteIdx に 0..7 が入る
   AuxSpriteGfx gfx;  // 0x2C, GameOverManager_SetupLetters の Video_GetAuxSprite(&gfx, SPRITE_GAMEOVER)
-  s16 baseX;         // 0x48, GameOverManager_SetupLetters が 56 + i * 16 (i >= 4 ならさらに +16) を入れる。 GameOverManager_UpdateLetters がここから sprite.pos.x を作る
+  s16 baseX;         // 0x48, GameOverManager_SetupLetters が 56 + i * 16 (i >= 4 ならさらに +16) を入れる,  GameOverManager_UpdateLetters がここから sprite.pos.x を作る
   s16 baseY;         // 0x4A, GameOverManager_SetupLetters が 72 を入れる
   u8 unk_4c[4];      // 0x4C
 } GameOverLetter;
@@ -21,47 +21,36 @@ static_assert(sizeof(GameOverLetter) == 80);
 // 常駐して、ゲームオーバー条件を満たしたらゲームオーバー処理を行う
 typedef struct GameOverManager {
   Entity e;                   // 0x000, ENTITY_UNK_11
-  GameOverLetter letters[8];  // 0x018, "GAME OVER" の8文字。GameOverManager_SetupLetters が組み立て、GameOverManager_UpdateLetters が毎フレーム拡大率と位置を書き直す
+  GameOverLetter letters[8];  // 0x018, "GAME OVER" の8文字, GameOverManager_SetupLetters が組み立て、GameOverManager_UpdateLetters が毎フレーム拡大率と位置を書き直す
   MainSpriteGfx menuGfx;      // 0x298, GameOverManager_SetupMenu の GetFile(SPRITE_SETS, UI_START_MENU) を OpenSpriteSetFile したもの
-  MainSprite menu;            // 0x2B8, コンティニューの選択肢。cursor に応じてポーズ 135 / 136 を貼る。 flags に SPRFLAG_GAMEOVER を含む
-  rgb555 menuPltt[16];        // 0x318, GameOverManager_SetupMenu が gObjPlttData[0x2A90] から CpuSet でコピーし、menu.pltt をここに向ける。GameOverManager_UpdateMenuPltt が最後の1色 (index 15) を点滅させる
+  MainSprite menu;            // 0x2B8, コンティニューの選択肢, cursor に応じてポーズ 135 / 136 を貼る,  flags に SPRFLAG_GAMEOVER を含む
+  rgb555 menuPltt[16];        // 0x318, GameOverManager_SetupMenu が gObjPlttData[0x2A90] から CpuSet でコピーし、menu.pltt をここに向ける, GameOverManager_UpdateMenuPltt が最後の1色 (index 15) を点滅させる
   u8* script;                 // 0x338, '.r', GameOverManager_StateOpenMenu が TextBox_Start に渡す
   s10_6 scaleX;               // 0x33C, GameOverManager_UpdateLetters が毎フレーム全 letters の sprite.scaleX へコピーする
   s10_6 scaleY;               // 0x33E, 同上で sprite.scaleY
   u8 state;                   // 0x340, GameOverManager_Update が呼ぶ PTR_ARRAY_085ad034 の添字 (0..4)
-  u8 animState;               // 0x341, GameOverManager_UpdateAnim が呼ぶ PTR_ARRAY_085ad014 の添字 (0..8)。ロゴの拡大縮小の段階
-  bool8 spritesAdded;         // 0x342, GameOverManager_AddSprites が描画リストへ登録したら 1。GameOverManager_Destroy はこれが立っているときだけ外す
-  u8 cursor;                  // 0x343, 選択肢のカーソル。0 で menu のポーズ 135、 1 で 136
+  u8 animState;               // 0x341, GameOverManager_UpdateAnim が呼ぶ PTR_ARRAY_085ad014 の添字 (0..8), ロゴの拡大縮小の段階
+  bool8 spritesAdded;         // 0x342, GameOverManager_AddSprites が描画リストへ登録したら 1, GameOverManager_Destroy はこれが立っているときだけ外す
+  u8 cursor;                  // 0x343, 選択肢のカーソル, 0 で menu のポーズ 135、 1 で 136
   u16 plttTimer;              // 0x344, 0..49 を回り、GameOverManager_UpdateMenuPltt が menuPltt[15] の明度を切り替える
   u16 timer;                  // 0x346, 各 state / animState で 0 から数え直す汎用カウンタ
   u16 cost[2];                // 0x348, '.c=500,250', コンティニューに必要な太陽エネルギー量で gStat->solarBank と比較する
-  u8 costIdx;                 // 0x34C, cost の添字。GameOverManager_StateWaitFlag が gPlayerPtr[0]->unk_37c が 28 か 29 のとき 1 にする
+  u8 costIdx;                 // 0x34C, cost の添字, GameOverManager_StateWaitFlag が gPlayerPtr[0]->unk_37c が 28 か 29 のとき 1 にする
   u8 unk_34d[3];              // 0x34D, padding?
-  s32 scriptId;               // 0x350, '.p', コンティニューを選ばずに終わるとき cost[costIdx] を引数にして Script_ExecById へ渡す
+  s32 scriptId;               // 0x350, '.p', コンティニューを選ばずに終わるとき cost[costIdx] を引数にして VM_ExecByID へ渡す
 } GameOverManager;
 static_assert(sizeof(GameOverManager) == 852);
 
 extern GameOverManager* gGameOverManager;  // 0x03000150
 
-typedef void (*GameOverFunc)(GameOverManager* p);
-
-// ロゴの拡大縮小の段階ごとの処理。animState が添字
-#define gGameOverAnimFns ((GameOverFunc*)0x085AD014)
-
-// ゲームオーバー進行の段階ごとの処理。state が添字
-#define gGameOverStateFns ((GameOverFunc*)0x085AD034)
-
 void FUN_0823a8f4(u32 val);
 
 static inline u32 TestFlag030047a4(u32 flags) { return (gFlag030047a4 | u32_030047a0) & flags; }
 
-void FUN_0822e110(void);
-void FUN_0822adac(void);
-void FUN_0822f244(void);
 s32 FUN_0809c08c(s32 mode);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
-// animState 0。BGM を切り替えて、横に潰れた状態からロゴのアニメーションを始める
+// animState 0, BGM を切り替えて、横に潰れた状態からロゴのアニメーションを始める
 void GameOverManager_AnimStart(GameOverManager* p) {
   Sound_StopAll();
   PlaySound_082406e0(0x2);
@@ -71,7 +60,7 @@ void GameOverManager_AnimStart(GameOverManager* p) {
   p->animState = 1;
 }
 
-// animState 1。縦を一気に引き伸ばす
+// animState 1, 縦を一気に引き伸ばす
 void GameOverManager_AnimStretchY(GameOverManager* p) {
   p->scaleX++;
   p->scaleY += 0x1E;
@@ -81,7 +70,7 @@ void GameOverManager_AnimStretchY(GameOverManager* p) {
   }
 }
 
-// animState 2。伸びきった縦を 0x60 まで戻す
+// animState 2, 伸びきった縦を 0x60 まで戻す
 void GameOverManager_AnimShrinkY1(GameOverManager* p) {
   p->scaleX++;
   p->scaleY -= 0x03;
@@ -91,7 +80,7 @@ void GameOverManager_AnimShrinkY1(GameOverManager* p) {
   }
 }
 
-// animState 3。縦を等倍 (0x40) まで戻しつつ横を少し速く広げる
+// animState 3, 縦を等倍 (0x40) まで戻しつつ横を少し速く広げる
 void GameOverManager_AnimShrinkY2(GameOverManager* p) {
   p->scaleX += 0x02;
   p->scaleY -= 0x03;
@@ -101,7 +90,7 @@ void GameOverManager_AnimShrinkY2(GameOverManager* p) {
   }
 }
 
-// animState 4。横も等倍 (0x40) まで広げて、そこでロゴが完成する
+// animState 4, 横も等倍 (0x40) まで広げて、そこでロゴが完成する
 void GameOverManager_AnimGrowX(GameOverManager* p) {
   p->scaleX += 0x03;
   if (p->scaleX >= FRACUNIT_6) {
@@ -111,7 +100,7 @@ void GameOverManager_AnimGrowX(GameOverManager* p) {
   }
 }
 
-// animState 5。等倍のロゴを 20 フレーム見せてから次へ進む
+// animState 5, 等倍のロゴを 20 フレーム見せてから次へ進む
 void GameOverManager_AnimHold(GameOverManager* p) {
   p->timer++;
   if (p->timer > 19) {
@@ -185,17 +174,22 @@ NON_MATCH void GameOverManager_UpdateLetters(GameOverManager* p) {
 #endif
 }
 
-// スクリプトコマンド 0xF04A。ゲームオーバー状態を解除して BGM を止める
+// スクリプトコマンド 0xF04A, ゲームオーバー状態を解除して BGM を止める
 void GameOver_CancelScripted(void) {
   gFlag030047a4 &= ~FLAG030047A4_GAMEOVER;
   sound_08240740(0x2);
   FUN_0823a8f4(0);
 }
 
+// ロゴの拡大縮小の段階ごとの処理, animState が添字
+void (*const sGameOverAnimFns[8])(GameOverManager*) = {
+    GameOverManager_AnimStart, GameOverManager_AnimStretchY, GameOverManager_AnimShrinkY1, GameOverManager_AnimShrinkY2, GameOverManager_AnimGrowX, GameOverManager_AnimHold, GameOverManager_AnimClose, GameOverManager_AnimEnd,
+};  // 0x085AD014
+
 // 現在の animState の処理を呼んでから、その結果の拡大率を letters へ反映する
 NON_MATCH void GameOverManager_UpdateAnim(GameOverManager* p) {
 #ifdef NONMATCHING_C
-  gGameOverAnimFns[p->animState](p);
+  sGameOverAnimFns[p->animState](p);
   GameOverManager_UpdateLetters(p);
 #else
   INCFUNC("asm/func/GameOverManager_UpdateAnim.inc");
@@ -215,7 +209,7 @@ void GameOverManager_AddSprites(GameOverManager* p) {
   p->spritesAdded = TRUE;
 }
 
-// "GAME OVER" の8文字を横一列に並べる。4文字目の後に1文字分の隙間を空ける
+// "GAME OVER" の8文字を横一列に並べる, 4文字目の後に1文字分の隙間を空ける
 NON_MATCH void GameOverManager_SetupLetters(GameOverManager* p) {
 #ifdef NONMATCHING_C
   s32 i;
@@ -267,7 +261,7 @@ void GameOverManager_UpdateMenuPltt(GameOverManager* p) {
 
 NAKED void GameOverManager_SetupMenu(GameOverManager* p) { INCFUNC("asm/func/GameOverManager_SetupMenu.inc"); }
 
-// スクリプトコマンド 0xDED5。ゲームオーバー演出を今すぐ始める
+// スクリプトコマンド 0xDED5, ゲームオーバー演出を今すぐ始める
 void GameOverManager_StartScripted(void) {
   GameOverManager* p = gGameOverManager;
 
@@ -280,13 +274,13 @@ void GameOverManager_StartScripted(void) {
   if (!VM_SeekToKeyword('f')) {
     return;
   }
-  if (Script_GetValue() == 0) {
+  if (VM_GetValue() == 0) {
     return;
   }
   FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 2);
 }
 
-// state 0。ゲームオーバーのフラグが立つまで何もせず待つ
+// state 0, ゲームオーバーのフラグが立つまで何もせず待つ
 void GameOverManager_StateWaitFlag(GameOverManager* p) {
   if (!TestFlag030047a4(FLAG030047A4_GAMEOVER)) {
     return;
@@ -301,7 +295,7 @@ void GameOverManager_StateWaitFlag(GameOverManager* p) {
   p->state = 1;
 }
 
-// state 1。32 フレーム待ってからロゴを表示し、bit12 付きのスプライトだけを描くパスへ切り替える
+// state 1, 32 フレーム待ってからロゴを表示し、bit12 付きのスプライトだけを描くパスへ切り替える
 void GameOverManager_StateShowLogo(GameOverManager* p) {
   s32 i;
 
@@ -316,7 +310,7 @@ void GameOverManager_StateShowLogo(GameOverManager* p) {
   p->state = 2;
 }
 
-// state 2。ロゴが完成したらメッセージ枠を開き、コンティニューに必要な太陽エネルギーが足りるかで表示行を変える
+// state 2, ロゴが完成したらメッセージ枠を開き、コンティニューに必要な太陽エネルギーが足りるかで表示行を変える
 void GameOverManager_StateOpenMenu(GameOverManager* p) {
   GameOverManager_UpdateAnim(p);
   if (p->animState == 6) {
@@ -337,7 +331,7 @@ void GameOverManager_StateOpenMenu(GameOverManager* p) {
 
 NAKED void FUN_080a7800(GameOverManager* p) { INCFUNC("asm/func/FUN_080a7800.inc"); }
 
-// state 4。ロゴが消えるまで待ってから、ゲームオーバー状態を解除して自分を消す
+// state 4, ロゴが消えるまで待ってから、ゲームオーバー状態を解除して自分を消す
 void GameOverManager_StateFinish(GameOverManager* p) {
   GameOverManager_UpdateAnim(p);
   if (p->animState == 8) {
@@ -348,13 +342,12 @@ void GameOverManager_StateFinish(GameOverManager* p) {
   }
 }
 
-NON_MATCH s32 GameOverManager_Update(GameOverManager* p) {
-#ifdef NONMATCHING_C
-  gGameOverStateFns[p->state](p);
+s32 GameOverManager_Update(GameOverManager* p) {
+  static void (*const sGameOverStateFns[5])(GameOverManager*) = {
+      GameOverManager_StateWaitFlag, GameOverManager_StateShowLogo, GameOverManager_StateOpenMenu, FUN_080a7800, GameOverManager_StateFinish,
+  };  // 0x085AD034
+  sGameOverStateFns[p->state](p);
   return 0;
-#else
-  INCFUNC("asm/func/GameOverManager_Update.inc");
-#endif
 }
 
 s32 GameOverManager_Destroy(GameOverManager* p) {
@@ -381,15 +374,15 @@ s32 GameOverManager_Init(GameOverManager* p) {
   p->spritesAdded = FALSE;
   if (VM_SeekToKeyword('r')) p->script = FUN_0823d340();
   if (VM_SeekToKeyword('c')) {
-    p->cost[0] = Script_GetValue();
-    p->cost[1] = Script_GetValue();
+    p->cost[0] = VM_GetValue();
+    p->cost[1] = VM_GetValue();
   } else {
     p->cost[0] = 500;
     p->cost[1] = 250;
   }
   p->costIdx = 0;
   if (VM_SeekToKeyword('p')) {
-    p->scriptId = Script_GetValue();
+    p->scriptId = VM_GetValue();
   } else {
     p->scriptId = 0;
   }

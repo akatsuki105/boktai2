@@ -1,5 +1,5 @@
 	push {r4, lr}
-	bl FUN_0807afe8
+	bl VM_GetPlayerIdx
 	ldr r1, _0807B1C8 @ =0x03002BE0
 	lsls r0, r0, #2
 	adds r0, r0, r1
@@ -17,7 +17,7 @@ _0807B1C2:
 	.align 2, 0
 _0807B1C8: .4byte 0x03002BE0
 _0807B1CC:
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xde
 	lsls r2, r2, #2
 	adds r1, r4, r2

@@ -88,7 +88,7 @@ loop1:
 bool32 VM_Ctrl_If(u8* pc) {
   u8* block = VM_Ctrl_If_Internal(pc);
   if (block != NULL) {
-    return Script_ExecBlock(block, NULL, 0);
+    return VM_ExecBlock(block, NULL, 0);
   }
   return FALSE;
 }
@@ -108,7 +108,7 @@ NON_MATCH bool32 VM_Ctrl_Switch(u8* pc) {
     if (kw == 0) {
       return 0;
     } else if (kw == KW_CASE) {
-      if (Script_GetValue() == switchVal) {
+      if (VM_GetValue() == switchVal) {
         VM_DecodeValue(VM_GetPC(), &type, &blockPc);
         break;
       }
@@ -117,7 +117,7 @@ NON_MATCH bool32 VM_Ctrl_Switch(u8* pc) {
       break;
     }
   }
-  return Script_ExecBlock(blockPc, 0, 0);
+  return VM_ExecBlock(blockPc, 0, 0);
 #else
   INCFUNC("asm/func/VM_Ctrl_Switch.inc");
 #endif
@@ -128,15 +128,15 @@ NAKED bool32 VM_Ctrl_Unused_64C0(u8* pc) { INCFUNC("asm/func/VM_Ctrl_Unused_64C0
 // 0xCD3A: 現在実行中のスクリプトを終了(オプションで戻り値を返す)
 bool32 VM_Ctrl_Return(u8* _) {
   if (VM_GetPC() != NULL) {
-    gVM.result = (void*)Script_GetValue();
+    gVM.result = (void*)VM_GetValue();
   } else {
     gVM.result = NULL;
   }
   return TRUE;
 }
 
-// https://boktaihacking.net/wiki/Bytecode#Control_0xb96e_(TODO)
-bool32 VM_Ctrl_B96E(u8* pc) {
+// 0xB96E: デバッグ用, EUC-JP 文字列 を受け取る
+bool32 VM_Ctrl_DebugPrint(u8* pc) {
   u8 buf[512];
 
   while (pc != NULL) {
@@ -160,7 +160,7 @@ bool32 VM_Ctrl_CallIndirect(u8* _) {
   u32 argv[16];
   ScriptArgs args;
 
-  u32 scriptID = Script_GetValue();
+  u32 scriptID = VM_GetValue();
   u8* pc = VM_GetPC();
   u32 count = 0;
 
@@ -175,7 +175,7 @@ bool32 VM_Ctrl_CallIndirect(u8* _) {
   }
 
   args.argc = count, args.argv = argv;
-  return Script_ExecById(scriptID, &args);
+  return VM_ExecByID(scriptID, &args);
 }
 
 // clang-format off
@@ -185,7 +185,7 @@ static const Subroutine sCtrlHandlers1[6] = {
     {.id = 0x64C0, .fn = (void*)VM_Ctrl_Unused_64C0},
     {.id = 0x121F, .fn = (void*)VM_Ctrl_CallIndirect},
     {.id = 0xCD3A, .fn = (void*)VM_Ctrl_Return},
-    {.id = 0xB96E, .fn = (void*)VM_Ctrl_B96E},
+    {.id = 0xB96E, .fn = (void*)VM_Ctrl_DebugPrint},
 }; // 0x085B01D0
 // clang-format on
 

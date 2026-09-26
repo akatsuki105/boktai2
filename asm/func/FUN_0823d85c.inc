@@ -7,7 +7,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0823D876
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r7, r0, #0
 _0823D876:
 	movs r6, #0
@@ -27,7 +27,7 @@ _0823D892:
 	cmp r0, #0
 	beq _0823D8A4
 	movs r6, #1
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 _0823D8A4:
 	adds r0, r4, #0
@@ -49,7 +49,7 @@ _0823D8A4:
 	movs r5, #0
 	b _0823D8DA
 _0823D8CC:
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, [r4, #0x20]
 	lsls r1, r5, #2
 	adds r1, r1, r2

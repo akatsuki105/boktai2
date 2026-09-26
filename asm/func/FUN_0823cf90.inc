@@ -1,11 +1,11 @@
 	push {r4, r5, lr}
 	sub sp, #0x10
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r4, _0823CFDC @ =0xFFFF0000
 	lsrs r0, r0, #0x10
 	str r0, [sp]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	mov r2, sp

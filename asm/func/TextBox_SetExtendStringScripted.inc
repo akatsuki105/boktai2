@@ -1,5 +1,5 @@
 	push {r4, r5, r6, lr}
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
 	bl FUN_0823d340
 	adds r5, r0, #0

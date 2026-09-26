@@ -1743,7 +1743,7 @@ _0800D88A:
 	str r0, [r4, #4]
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _0800D8AC:
 	ldr r0, [r5, #4]
 	adds r0, #1

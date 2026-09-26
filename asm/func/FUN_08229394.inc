@@ -226,7 +226,7 @@ _0822953A:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08229580
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	mov r1, sp
@@ -245,12 +245,12 @@ _08229580:
 	bne _0822958C
 	b _082296FC
 _0822958C:
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5]
-	bl Script_GetValue
+	bl VM_GetValue
 	subs r0, #0x40
 	strh r0, [r5, #2]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5, #4]
 _082295A0:
 	mov r1, r8
@@ -313,7 +313,7 @@ _082295DE:
 	mov r8, r2
 	b _08229628
 _08229614:
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, [r5]
 	lsls r1, r1, #2
 	ldr r2, [sp, #0xc]
@@ -346,7 +346,7 @@ _0822964C:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08229664
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, [sp, #8]
 	adds r1, r4, r2
 	str r0, [r1]
@@ -361,7 +361,7 @@ _0822966A:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08229682
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r1, [sp, #8]
 	add r1, r8
 	str r0, [r1]

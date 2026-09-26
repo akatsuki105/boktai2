@@ -26,7 +26,7 @@ static_assert(sizeof(Entity081d2180Item) == 136);
 typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_8
   Entity081d2180Item items[8];  // 0x018, _Update と _Destroy が 0x88 刻みで8個走査する
-  u32 activeMask;               // 0x458, bit i が立っていれば items[i] が使用中。_Init が 0 にする
+  u32 activeMask;               // 0x458, bit i が立っていれば items[i] が使用中, _Init が 0 にする
 } Entity081d2180;
 
 extern Entity081d2180* gEntity081d2180;  // 0x03000190
@@ -131,7 +131,7 @@ void FUN_081d1a7c(void) {
 
 NAKED s32 FUN_081d1a9c(unknown* p) { INCFUNC("asm/func/FUN_081d1a9c.inc"); }
 
-// state 0 のハンドラ。何もしない
+// state 0 のハンドラ, 何もしない
 void FUN_081d1ae8(Entity081d2180Item* item) {}
 
 #ifdef NONMATCHING_C

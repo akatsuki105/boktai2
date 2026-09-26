@@ -1,6 +1,6 @@
 	push {r4, r5, r6, r7, lr}
 	sub sp, #4
-	bl FUN_0807afe8
+	bl VM_GetPlayerIdx
 	ldr r1, _0807D76C @ =0x03002BE0
 	lsls r0, r0, #2
 	adds r0, r0, r1
@@ -11,7 +11,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807D770
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r7, r0, #0
 	b _0807D772
 	.align 2, 0
@@ -23,7 +23,7 @@ _0807D772:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807D784
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
 	b _0807D786
 _0807D784:

@@ -63,8 +63,8 @@ const fmtAnimCmd = (cmd: number): string => {
   const duration = cmd & 0xF;
   const xflip = (cmd >> 4) & 0x1;
   const yflip = (cmd >> 5) & 0x1;
-  const spriteIdx = (cmd >> 6) & 0x3FF;
-  let result = `animcmd ${spriteIdx}, ${duration}`;
+  const poseIdx = (cmd >> 6) & 0x3FF;
+  let result = `animcmd ${poseIdx}, ${duration}`;
   if (xflip) result += `, xflip=1`;
   if (yflip) result += `, yflip=1`;
   return result;

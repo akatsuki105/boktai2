@@ -11,7 +11,7 @@
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080E02B0
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080E02B2
 _080E02B0:
 	movs r0, #0
@@ -26,7 +26,7 @@ _080E02B2:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080E02D4
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080E02D6
 	.align 2, 0
 _080E02D0: .4byte 0xFFFF0000
@@ -42,7 +42,7 @@ _080E02D6:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080E02F4
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080E02F6
 	.align 2, 0
 _080E02F0: .4byte 0x0000FFFF
@@ -85,7 +85,7 @@ _080E0316:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080E0350
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080E0352
 	.align 2, 0
 _080E034C: .4byte 0xFFFF0000
@@ -96,7 +96,7 @@ _080E0352:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080E0364
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r8, r0
 	b _080E0368
 _080E0364:
@@ -106,7 +106,7 @@ _080E0368:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080E037E
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r7, r0, #0
 	b _080E0380
 _080E0378:
@@ -123,7 +123,7 @@ _080E0380:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080E039A
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
 	b _080E039C
 _080E039A:
@@ -132,7 +132,7 @@ _080E039C:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080E03AC
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r5, r0, #0
 	b _080E03AE
 _080E03AC:
@@ -141,7 +141,7 @@ _080E03AE:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080E03BE
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	b _080E03C0
 _080E03BE:
@@ -150,7 +150,7 @@ _080E03C0:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080E03D4
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080E03D6
 _080E03CE:
 	movs r6, #0

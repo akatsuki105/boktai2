@@ -8,7 +8,7 @@
 	adds r4, #0x98
 	b _08240E42
 _08240E3C:
-	bl Script_GetValue
+	bl VM_GetValue
 	stm r4!, {r0}
 _08240E42:
 	bl VM_GetPC

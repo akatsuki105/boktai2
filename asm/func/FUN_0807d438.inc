@@ -2,7 +2,7 @@
 	mov r7, r8
 	push {r7}
 	sub sp, #0xc
-	bl FUN_0807afe8
+	bl VM_GetPlayerIdx
 	ldr r1, _0807D464 @ =0x03002BE0
 	lsls r0, r0, #2
 	adds r0, r0, r1
@@ -13,7 +13,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807D468
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r5, r0, #0
 	b _0807D46A
 	.align 2, 0
@@ -29,7 +29,7 @@ _0807D46A:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0807D4CC
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _0807D4C4 @ =0xFFFF0000
@@ -37,14 +37,14 @@ _0807D46A:
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #4]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0807D4C8 @ =0x0000FFFF
 	ldr r1, [sp, #4]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #4]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #8]

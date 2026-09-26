@@ -149,11 +149,11 @@ typedef struct {
 
 // --------------------------------------------
 
-// スクリプトから登録されるイベント, VM_Ctrl_D4CB が 44バイトを組み立て FUN_082349b8 が unk_8 をキーに挿入する
+// スクリプトから登録されるイベント, VM_Ctrl_SetZoneCallback が 44バイトを組み立て FUN_082349b8 が unk_8 をキーに挿入する
 typedef struct CollisionMapEvent {
   u32 id;        // 0x00, FUN_082349b8 が u32_030046b0 の連番を書く
   u16 unk_4;     // 0x04, '.m=0x0DD2', FUN_08234660 が 0xDD2/0x14C9/0x1516/0x1517/0xA5BF と比較する
-  s16 unk_6;     // 0x06, VM_Ctrl_D4CB の Script_GetValue 2番目
+  s16 unk_6;     // 0x06, VM_Ctrl_SetZoneCallback の VM_GetValue 2番目
   s16 unk_8;     // 0x08, 挿入時のソートキー, 根拠: FUN_082349b8
   s16 unk_a;     // 0x0A
   u16 unk_c;     // 0x0C

@@ -844,7 +844,7 @@ _08022FF2:
 	str r0, [r4, #4]
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _08023014:
 	add sp, #0x28
 	pop {r4, r5}
@@ -901,7 +901,7 @@ _0802305E:
 	str r0, [r4, #4]
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _08023080:
 	add sp, #0x28
 	pop {r4, r5}

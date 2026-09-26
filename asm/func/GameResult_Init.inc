@@ -6,7 +6,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08222AE4
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [r7, #0x44]
 _08222AE4:
 	movs r0, #0

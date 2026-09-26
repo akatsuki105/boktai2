@@ -1,9 +1,9 @@
 SpriteSetFile13: @ 0x08BCBFF4
 	.2byte 247 @ palStart
 	.2byte 424 @ metaspriteCount
-	.2byte 144 @ unk1Count
+	.2byte 144 @ animationCount
 	.2byte 2627 @ subspriteCount
-	.2byte 490 @ unk2Count
+	.2byte 490 @ cmdCount
 	.2byte 3328 @ tileCount
 	.4byte 0x00000020, 0x00002140, 0x000025C0, 0x000077D8, 0x00007F80
 	@ Metasprites

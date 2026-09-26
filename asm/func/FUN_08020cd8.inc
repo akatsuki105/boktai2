@@ -17,7 +17,7 @@ _08020CF6:
 	cmp r0, #0
 	beq _08020D04
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	str r6, [r5, #0x60]
 _08020D04:
 	movs r0, #2

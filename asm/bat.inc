@@ -2387,7 +2387,7 @@ _0813F84C:
 	mov r0, sp
 	str r0, [r1, #4]
 	ldrh r0, [r2]
-	bl Script_ExecById
+	bl VM_ExecByID
 _0813F8B6:
 	ldr r1, _0813F8F4 @ =0x000001DF
 	adds r0, r6, r1

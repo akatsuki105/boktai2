@@ -9,6 +9,12 @@ static_assert(sizeof(Entity080de11c) == 3300);
 
 extern Entity080de11c* gEntity080de11c;  // 0x03000174
 
+NAKED s32 Entity080de11c_Update(Entity080de11c* p) { INCFUNC("asm/func/Entity080de11c_Update.inc"); }
+
+NAKED s32 Entity080de11c_Destroy(Entity080de11c* p) { INCFUNC("asm/func/Entity080de11c_Destroy.inc"); }
+
+NAKED s32 FUN_080ddcc8(unknown* p, u8 param_2, unknown* param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_080ddcc8.inc"); }
+
 NAKED void FUN_080ddf88(void) { INCFUNC("asm/func/FUN_080ddf88.inc"); }
 
 NAKED s32 Entity080de11c_Init(Entity080de11c* p) { INCFUNC("asm/func/Entity080de11c_Init.inc"); }

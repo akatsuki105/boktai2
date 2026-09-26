@@ -267,7 +267,7 @@ _08077EE0:
 	movs r0, #0
 	str r0, [r2]
 	adds r0, r3, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	b _08077FF2
 	.align 2, 0
 _08077F00: .4byte 0x030046A0
@@ -420,7 +420,7 @@ _08077FF2:
 	str r5, [sp, #0xc]
 	str r5, [r2]
 	adds r0, r3, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _0807804C:
 	add sp, #0x18
 	pop {r4, r5, r6}

@@ -14,7 +14,7 @@ typedef struct {
   u8 mode;               // 0x1C, '.m', 0 = level を 0x10..0x20 で往復, 1 = 0 から 0x20 へ上げる, 2 = 0x20 から 0 へ下げる
   u8 unk_1d[3];          // 0x1D, padding?
   s16 level;             // 0x20, 0x00..0x20 のブレンド量, 0 で savedPltt の色, 0x20 でバンク3の色
-  s16 step;              // 0x22, '.a' (mode 1 の既定 2, mode 2 の既定 1)。16フレームごとに level へ足す, mode 0 では往復のため ±1 が入る
+  s16 step;              // 0x22, '.a' (mode 1 の既定 2, mode 2 の既定 1), 16フレームごとに level へ足す, mode 0 では往復のため ±1 が入る
   s32 timer;             // 0x24, BgPlttGroupFader_Update が毎フレーム +1, 下位4bitが0のフレームだけ level を動かす
   rgb555 savedPltt[16];  // 0x28, BgPlttGroupFader_SavePltt が gBgPlttBuffer[0x20..0x2F] を CpuSet で退避したもの
 } BgPlttGroupFader;
@@ -23,7 +23,7 @@ static_assert(sizeof(BgPlttGroupFader) == 72);
 IWRAM_DATA BgPlttGroupFader* gBgPlttGroupFader = NULL;  // 0x03000088
 
 // グループ1つを savedPltt とバンク3の色の間で level:0x20-level に混ぜてバンク2へ書く
-// src がスタックに溢れて 3命令多い。ターゲットは ip に載せている
+// src がスタックに溢れて 3命令多い, ターゲットは ip に載せている
 NON_MATCH s32 BgPlttGroupFader_BlendGroup(BgPlttGroupFader* p, s32 start, s32 end, s32 level) {
 #ifdef NONMATCHING_C
   rgb555* dst = &gBgPlttBuffer[32 + start];
@@ -211,7 +211,7 @@ BgPlttGroupFader* BgPlttGroupFader_Create(void) {
   return p;
 }
 
-// スクリプトコマンド 0x800C。動いているフェーダの mode を差し替える
+// スクリプトコマンド 0x800C, 動いているフェーダの mode を差し替える
 void BgPlttGroupFader_SetModeScripted(void) {
   BgPlttGroupFader* p = gBgPlttGroupFader;
   if (p != NULL) {

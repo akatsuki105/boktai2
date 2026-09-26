@@ -14,15 +14,15 @@ _08224BAC:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08224BEC
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _08224BE0 @ =0x00000DB8
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _08224BE4 @ =0x00000DBA
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _08224BE8 @ =0x00000DBC
 	adds r1, r4, r2
 	strh r0, [r1]

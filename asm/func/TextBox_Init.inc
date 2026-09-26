@@ -16,21 +16,21 @@
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080485B8
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xbc
 	lsls r2, r2, #1
 	adds r1, r6, r2
 	strb r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r3, _080485B0 @ =0x00000179
 	adds r1, r6, r3
 	strb r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r7, #0xbd
 	lsls r7, r7, #1
 	adds r1, r6, r7
 	strb r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080485B4 @ =0x0000017B
 	adds r1, r6, r2
 	strb r0, [r1]
@@ -171,7 +171,7 @@ _080486C4: .4byte 0x00000181
 _080486C8: .4byte 0x00000183
 _080486CC: .4byte 0x0000017F
 _080486D0:
-	bl Script_GetValue
+	bl VM_GetValue
 	ldrb r2, [r5, #0xd]
 	lsls r2, r2, #2
 	adds r1, r5, #0

@@ -17,7 +17,7 @@
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B59F8
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0x83
 	lsls r2, r2, #4
 	adds r1, r4, r2
@@ -36,7 +36,7 @@ _080B5A00:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B5A1C
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080B5A18 @ =0x00000834
 	adds r1, r4, r2
 	str r0, [r1]
@@ -53,7 +53,7 @@ _080B5A22:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B5A44
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080B5A40 @ =0x00000846
 	adds r1, r4, r2
 	strh r0, [r1]

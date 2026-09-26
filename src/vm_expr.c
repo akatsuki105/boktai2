@@ -2,7 +2,7 @@
 #include "vm.h"
 
 void VM_StoreVariable(u32 varidx, u32 val);
-u8* Script_StorePointer(u8* pc, u32 val);
+u8* VM_StorePointer(u8* pc, u32 val);
 
 /**
  * @param opcode 0xA1..0xBF, https://boktaihacking.net/wiki/Bytecode#Opcode_0xa0-0xbf_(operator)
@@ -121,7 +121,7 @@ u32 VM_RunExpression(u8* pc) {
         if (masked == 0x90) {
           VM_StoreVariable(tag & 0xF, top[1].value);
         } else {
-          Script_StorePointer(lhsPc, top[1].value);
+          VM_StorePointer(lhsPc, top[1].value);
         }
         dst->value = top[1].value;
       } else {
@@ -133,7 +133,7 @@ u32 VM_RunExpression(u8* pc) {
       top[1].lvaluePc = pc;
       pc = VM_DecodeValue(pc, &type, &val);
       if (type == OP_BLOCK) {
-        Script_ExecBlock((u8*)val, NULL, 0);
+        VM_ExecBlock((u8*)val, NULL, 0);
         top[1].value = (s32)gVM.result;
       } else {
         top[1].value = val;

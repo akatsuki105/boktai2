@@ -8,6 +8,7 @@
 #include "constants/magic.h"
 #include "constants/map.h"
 #include "constants/miscs.h"
+#include "constants/script.h"
 #include "constants/size.h"
 #include "constants/songs.h"
 #include "constants/sprite.h"

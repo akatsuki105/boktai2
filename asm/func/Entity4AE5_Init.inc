@@ -49,7 +49,7 @@ _08002450: .4byte 0x03004494
 _08002454: .4byte 0x00001084
 _08002458: .4byte 0x03004454
 _0800245C:
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r2, r4, #1
 	ldr r3, _080024F4 @ =0x00000634
 	adds r1, r6, r3
@@ -170,28 +170,28 @@ _0800251C:
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080025C4
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r3, _080025B0 @ =0x00000652
 	adds r1, r6, r3
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080025B4 @ =0x00000656
 	adds r1, r6, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r3, _080025B8 @ =0x00000659
 	adds r1, r6, r3
 	strb r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080025BC @ =0x0000065C
 	adds r1, r6, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r3, #0xcc
 	lsls r3, r3, #3
 	adds r1, r6, r3
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080025C0 @ =0x00000662
 	adds r1, r6, r2
 	strh r0, [r1]

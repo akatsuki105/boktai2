@@ -164,7 +164,7 @@ s32 MosaicFader_StartFromScript(void) {
 
   if (VM_SeekToKeyword('c')) {
     for (i = 0; i < 4; i++) {
-      from[i] = Script_GetValue();
+      from[i] = VM_GetValue();
     }
   } else {
     for (i = 0; i < 4; i++) {
@@ -173,7 +173,7 @@ s32 MosaicFader_StartFromScript(void) {
   }
   if (VM_SeekToKeyword('a')) {
     for (i = 0; i < 4; i++) {
-      to[i] = Script_GetValue();
+      to[i] = VM_GetValue();
     }
   } else {
     for (i = 0; i < 4; i++) {
@@ -182,7 +182,7 @@ s32 MosaicFader_StartFromScript(void) {
   }
   if (VM_SeekToKeyword('i')) {
     for (i = 0; i < 4; i++) {
-      interval[i] = Script_GetValue();
+      interval[i] = VM_GetValue();
     }
   } else {
     for (i = 0; i < 4; i++) {

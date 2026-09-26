@@ -82,7 +82,7 @@ _0821AC62:
 	ldr r0, [r0]
 	cmp r0, #0
 	beq _0821ACA8
-	bl Script_ExecById
+	bl VM_ExecByID
 _0821ACA8:
 	movs r0, #0x9b
 	lsls r0, r0, #1

@@ -351,7 +351,7 @@ export class InstructionReader {
   }
 
   // 制御命令もキーワードと同じで、続く値がいくつ並ぶかは呼び出し先が決める
-  // (0xB745 は呼ばれたエンジン関数が自分で Script_GetValue() する)。コンテナ長で読む。
+  // (0xB745 は呼ばれたエンジン関数が自分で VM_GetValue() する)。コンテナ長で読む。
   protected readControl(): Instruction {
     const end = this.containerStart + this.containerLen;
     const tag = this.stream.readByte() | (this.stream.readByte() << 8);

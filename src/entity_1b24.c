@@ -144,12 +144,12 @@ void FUN_0809dd68(Entity1B24* p) {
 
 void FUN_0809dd88(Entity1B24* p) {
   if (VM_SeekToKeyword('p')) {
-    p->unk_f84 = (void*)Script_GetValue();
+    p->unk_f84 = (void*)VM_GetValue();
   } else {
     p->unk_f84 = NULL;
   }
   if (VM_SeekToKeyword('n')) {
-    p->unk_f88 = (void*)Script_GetValue();
+    p->unk_f88 = (void*)VM_GetValue();
   } else {
     p->unk_f88 = NULL;
   }

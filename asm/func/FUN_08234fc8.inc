@@ -1,8 +1,8 @@
 	push {r4, r5, lr}
 	sub sp, #0x10
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r2, r0, #0
 	mov r5, sp
 	lsls r4, r4, #0x18

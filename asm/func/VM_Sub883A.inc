@@ -79,7 +79,7 @@ _080098F2:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080098FE
-	bl Script_GetValue
+	bl VM_GetValue
 _080098FE:
 	strh r0, [r4]
 	adds r4, #2
@@ -105,7 +105,7 @@ _08009922:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800996C
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp]
@@ -113,14 +113,14 @@ _08009922:
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _08009968 @ =0x0000FFFF
 	ldr r1, [sp]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	mov r3, sb

@@ -9,7 +9,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08219FFE
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [r7, #0x40]
 _08219FFE:
 	movs r0, #0x73
@@ -51,9 +51,9 @@ _0821A028:
 	lsls r4, r4, #3
 	adds r6, r7, r4
 _0821A054:
-	bl Script_GetValue
+	bl VM_GetValue
 	strb r0, [r6]
-	bl Script_GetValue
+	bl VM_GetValue
 	strb r0, [r6, #1]
 	movs r0, #0
 	mov sb, r0
@@ -70,12 +70,12 @@ _0821A074:
 	adds r1, #0xc2
 	adds r1, r1, r5
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, r8
 	adds r1, #0xcc
 	adds r1, r1, r4
 	str r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, r8
 	adds r1, #0xe0
 	adds r1, r1, r4
@@ -220,7 +220,7 @@ _0821A1B8:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A1CC
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r4, _0821A274 @ =0x00000E88
 	adds r1, r7, r4
 	str r0, [r1]
@@ -229,21 +229,21 @@ _0821A1CC:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A1DC
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [r7, #0x48]
 _0821A1DC:
 	movs r0, #0x6c
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A1EC
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [r7, #0x4c]
 _0821A1EC:
 	movs r0, #0x65
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821A1FC
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [r7, #0x50]
 _0821A1FC:
 	movs r1, #0

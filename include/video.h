@@ -35,6 +35,9 @@ void FUN_0822aaac(void);
 void FUN_0822ac90(void);
 void FUN_0822db5c(void);
 void FUN_0822de64(void);
+void FUN_0822adac(void);
+void FUN_0822e110(void);
+void FUN_0822f244(void);
 
 void SetBGPrioDirect(s32 bg, u32 prio);
 void Video_GenerateBGMap(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs);
@@ -42,6 +45,7 @@ void Video_SetupBGLayout(s32 layout, u32 param_2, unknown* f, u32 param_4, u32 p
 
 u16* GetTilemapBuffer(s32 bg);
 
+void FUN_0822f0d8(void);
 void Video_SetHBlankEffect(s32 bg, s32 kind, void* table);
 void Video_SetMosaic(s32 size, s32 objEnabled, s32 targets);
 void Video_ClearMosaic(void);

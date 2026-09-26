@@ -1,3 +1,5 @@
+import { readChar } from "./eucjp.ts";
+
 export enum InsnType {
   Invalid,
   Constant,
@@ -24,6 +26,8 @@ export enum ControlType {
   LoadMap = 0xC8BB,
   NativeCall_9906 = 0x9906,
   NativeCall_B745 = 0xB745,
+  DebugPrint = 0xB96E,
+  SetZoneCallback = 0xD4CB,
 }
 
 // キーワードは1文字の名前付き引数で、意味は呼び出し先のエンジン関数ごとに異なる。
@@ -54,6 +58,37 @@ export enum DataType {
 }
 
 export const toHex = (n: number, minDigits = 0): string => n.toString(16).toUpperCase().padStart(minDigits, "0");
+
+// String(opcode 7)のバイト列を文字列リテラルに描画する。EUC-JP として読めて元のバイト列に戻せる文字だけを
+// そのまま出し、それ以外は \xNN のまま残す(コンパイルし直したときにバイト列が変わらないことを優先する)。
+// 引用符とバックスラッシュも、字句解析を単純に保つためにエスケープせず \xNN で出す。
+const stringLiteral = (bytes: Uint8Array): string => {
+  // opcode 7 の文字列は必ず 0x00 終端(ROM内の130件すべてがそうで、途中に 0x00 を含むものは無い)。
+  // 終端は自明なのでリテラルには出さず、コンパイル時に parser が付け直す。
+  if (bytes.length === 0 || bytes[bytes.length - 1] !== 0x00) {
+    throw new Error("String(opcode 7) が 0x00 終端ではない: " + [...bytes].map((b) => toHex(b, 2)).join(" "));
+  }
+  const body = bytes.subarray(0, bytes.length - 1);
+
+  let s = "";
+  for (let i = 0; i < body.length;) {
+    const b = body[i];
+    if (b >= 0x20 && b <= 0x7E && b !== 0x22 && b !== 0x5C) {
+      s += String.fromCharCode(b);
+      i += 1;
+      continue;
+    }
+    const ch = readChar(body, i);
+    if (ch) {
+      s += ch.ch;
+      i += ch.len;
+      continue;
+    }
+    s += "\\x" + toHex(b, 2);
+    i += 1;
+  }
+  return s;
+};
 
 // Memory の3つのアドレス領域ベース(bokasm 側の world/scratch/stat と同じ命名)。
 export const MEM_STAT = 0x0203D800;
@@ -280,9 +315,7 @@ export class Instruction {
         break;
       }
       case InsnType.String: {
-        s = '"';
-        for (const b of this.bytes!) s += "\\x" + toHex(b, 2);
-        s += '"';
+        s = '"' + stringLiteral(this.bytes!) + '"';
         break;
       }
       case InsnType.StringRef: {
@@ -452,6 +485,15 @@ export class Instruction {
       case ControlType.NativeCall_9906:
       case ControlType.NativeCall_B745: {
         s = "NativeCall_" + toHex(this.value) + "(" + operands[0].idToString() + this.paramsToString(1, ", ") + ")";
+        break;
+      }
+      // EUC-JP の文字列をデバッグ出力する。ハンドラは src/vm.c の VM_Ctrl_DebugPrint
+      case ControlType.DebugPrint: {
+        s = "DebugPrint(" + this.paramsToString(0) + ")";
+        break;
+      }
+      case ControlType.SetZoneCallback: {
+        s = "SetZoneCallback(" + this.paramsToString(0) + ")";
         break;
       }
       // 挙動が未解明の制御命令は opcode をそのまま名前にして保留する。

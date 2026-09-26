@@ -75,7 +75,7 @@ _0800C54E:
 	mov r0, sp
 	str r0, [r1, #4]
 	ldrh r0, [r5, #8]
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	strh r0, [r5, #8]
 _0800C5A6:

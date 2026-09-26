@@ -967,7 +967,7 @@ _081E1300:
 	mov r0, sp
 	str r0, [r1, #4]
 	ldrh r0, [r5, #0x1c]
-	bl Script_ExecById
+	bl VM_ExecByID
 _081E1338:
 	add sp, #0x18
 	pop {r4, r5}
@@ -2825,7 +2825,7 @@ _081E20A0:
 	cmp r0, #0
 	beq _081E20BA
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _081E20BA:
 	adds r0, r5, #0
 	bl KillEntity
@@ -9201,7 +9201,7 @@ FUN_081e5290: @ 0x081E5290
 	cmp r0, #0
 	beq _081E52A2
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _081E52A2:
 	pop {r0}
 	bx r0
@@ -15230,7 +15230,7 @@ FUN_081e8468: @ 0x081E8468
 	cmp r0, #0
 	beq _081E84AC
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _081E84AC:
 	movs r0, #1
 	pop {r4, r5}

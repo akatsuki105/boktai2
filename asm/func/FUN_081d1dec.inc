@@ -28,11 +28,11 @@ _081D1E16:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _081D1E3C
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0x1c]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0x1e]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0x20]
 _081D1E3C:
 	movs r0, #0x6e
@@ -48,7 +48,7 @@ _081D1E3C:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081D1E68
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	b _081D1E6A
 	.align 2, 0
@@ -62,7 +62,7 @@ _081D1E6A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081D1E7E
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081D1E80
 _081D1E7E:
 	movs r0, #0
@@ -105,7 +105,7 @@ _081D1EC4:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081D1ED2
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081D1ED4
 _081D1ED2:
 	movs r0, #0
@@ -126,7 +126,7 @@ _081D1EEC:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _081D1EFA
-	bl Script_GetValue
+	bl VM_GetValue
 	b _081D1EFC
 _081D1EFA:
 	movs r0, #0

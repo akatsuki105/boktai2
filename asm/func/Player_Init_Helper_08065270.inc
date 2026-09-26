@@ -6,7 +6,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08065290
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xd6
 	lsls r2, r2, #2
 	adds r1, r4, r2

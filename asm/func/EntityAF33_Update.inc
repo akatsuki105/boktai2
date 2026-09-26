@@ -20,7 +20,7 @@
 	cmp r0, #0
 	beq _080507F0
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080507F0:
 	adds r0, r4, #0
 	bl KillEntity

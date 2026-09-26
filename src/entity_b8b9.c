@@ -98,7 +98,7 @@ Entity2UnkData* FUN_0823b2e0(Entity2UnkData* p) { return FUN_0823b258(p); }
 // スクリプトから ID を受け取り、そのノードの pos.x/y/z をスクリプト側へ返す
 s32 FUN_0823b2ec(void) {
   u8 buf[8];
-  Entity2UnkData* p = FindUnk0200865c(Script_GetValue());
+  Entity2UnkData* p = FindUnk0200865c(VM_GetValue());
 
   if (p == NULL) {
     FUN_0823167c(buf);

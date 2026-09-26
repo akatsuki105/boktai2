@@ -1422,7 +1422,7 @@ _0801C0A6:
 	adds r0, #0xba
 	ldrh r0, [r0]
 	adds r1, r4, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	add sp, #0x30
 	pop {r4, r5}
 	pop {r0}
@@ -3260,7 +3260,7 @@ _0801CEE6:
 	cmp r0, #0
 	beq _0801CF10
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	b _0801CF10
 	.align 2, 0
 _0801CF00: .4byte 0x0000FFFF
@@ -5600,11 +5600,11 @@ _0801E09E:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0801E15C
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4, #0x18]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4, #0x1a]
-	bl Script_GetValue
+	bl VM_GetValue
 	b _0801E160
 	.align 2, 0
 _0801E13C: .4byte 0x03000098

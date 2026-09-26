@@ -10,7 +10,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080D7FB4
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
 	ldr r0, _080D7F9C @ =0x00000455
 	adds r4, r5, r0

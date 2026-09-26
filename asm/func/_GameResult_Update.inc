@@ -760,7 +760,7 @@ _0822293C:
 	ble _0822299C
 	ldr r0, [r7, #0x44]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 	movs r4, #0

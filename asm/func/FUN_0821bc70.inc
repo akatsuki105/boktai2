@@ -14,11 +14,11 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0821BCA8
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [r4, #0x58]
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [r4, #0x5c]
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [r4, #0x60]
 _0821BCA8:
 	movs r0, #0x6c

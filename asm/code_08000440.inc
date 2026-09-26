@@ -1458,7 +1458,7 @@ _08000F68:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08000F8C
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	bl GetTilemapFile
@@ -1556,7 +1556,7 @@ FUN_08001004: @ 0x08001004
 	mov r5, sp
 	b _08001034
 _0800102C:
-	bl Script_GetValue
+	bl VM_GetValue
 	stm r5!, {r0}
 	adds r4, #1
 _08001034:

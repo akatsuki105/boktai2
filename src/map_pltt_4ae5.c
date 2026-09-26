@@ -39,17 +39,17 @@ typedef struct {
   u16 spanOfTime;             // 0x64C
   u16 unk_64e;                // 0x64E, gClock.unk_0f
   u16 unk_650;                // 0x650, Entity4AE5_Update のフレームカウンタ, unk_656 に達すると混合を進める
-  u16 unk_652;                // 0x652, script keyword 0x61 の1番目 (既定 4)
+  u16 unk_652;                // 0x652, '.a[0]=4'
   u16 unk_654;                // 0x654, MapPltt_BlendRows が s16 として読み >>1 して混合比に使う
-  u16 unk_656;                // 0x656, script keyword 0x61 の2番目 (既定 2), unk_650 の上限
+  u16 unk_656;                // 0x656, '.a[1]=2', unk_650 の上限
   u8 unk_658;                 // 0x658, MapPltt_BlendRows の開始インデックス
-  u8 unk_659;                 // 0x659, script keyword 0x61 の3番目 (既定 8), MapPltt_BlendRows の加算数
-  u8 unk_65a;                 // 0x65A, 0 以外なら Entity4AE5_Update が MapPltt_BlendRows を呼ぶ
+  u8 unk_659;                 // 0x659, '.a[2]=8', MapPltt_BlendRows の加算数
+  bool8 unk_65a;              // 0x65A, 0 以外なら Entity4AE5_Update が MapPltt_BlendRows を呼ぶ
   u8 unk_65b;                 // 0x65B
-  u16 unk_65c;                // 0x65C, script keyword 0x61 の4番目 (既定 0xFFFF), MapPltt_BlendRows のビットマスク
+  u16 unk_65c;                // 0x65C, '.a[3]=0xFFFF', MapPltt_BlendRows のビットマスク
   u16 unk_65e;                // 0x65E, 混合を止めている間のカウントダウン
-  u16 unk_660;                // 0x660, script keyword 0x61 の5番目 (既定 0x20), unk_654 の増分
-  u16 unk_662;                // 0x662, script keyword 0x61 の6番目 (既定 0), 折り返し時の待ち時間
+  u16 unk_660;                // 0x660, '.a[4]=0x20', unk_654 の増分
+  u16 unk_662;                // 0x662, '.a[5]=0', 折り返し時の待ち時間
   s32 unk_664;                // 0x664, MapPltt_PushCommand
   u16 unk_668[64];            // 0x668, MapPltt_PushCommand
   u8 unk_6e8[16];             // 0x6E8
@@ -477,7 +477,7 @@ void FUN_080020bc(void) {
   s32 count = 0;
   if (VM_SeekToKeyword('p')) {
     while (VM_GetPC() != NULL && count < 8) {
-      args[count] = Script_GetValue();
+      args[count] = VM_GetValue();
       count++;
     }
   }
@@ -640,7 +640,7 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
   i = 0;
   if (VM_SeekToKeyword('p')) {
     while (VM_GetPC() != NULL && i <= 3) {
-      p->plttFileIDs[i] = Script_GetValue();
+      p->plttFileIDs[i] = VM_GetValue();
       i++;
     }
   }
@@ -664,12 +664,12 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
     p->srcPltt1 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->plttFileIDs[id0]) + 0x14);
     p->srcPltt2 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->plttFileIDs[id1]) + 0x14);
     if (VM_SeekToKeyword('a')) {
-      p->unk_652 = Script_GetValue();
-      p->unk_656 = Script_GetValue();
-      p->unk_659 = Script_GetValue();
-      p->unk_65c = Script_GetValue();
-      p->unk_660 = Script_GetValue();
-      p->unk_662 = Script_GetValue();
+      p->unk_652 = VM_GetValue();
+      p->unk_656 = VM_GetValue();
+      p->unk_659 = VM_GetValue();
+      p->unk_65c = VM_GetValue();
+      p->unk_660 = VM_GetValue();
+      p->unk_662 = VM_GetValue();
     } else {
       p->unk_652 = 4;
       p->unk_656 = 2;

@@ -2275,7 +2275,7 @@ _0801F354:
 	strh r0, [r2]
 	adds r0, r3, #0
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	str r0, [r4]
 _0801F378:
@@ -2340,7 +2340,7 @@ _0801F3C6:
 	bl FUN_0801e708
 	ldr r0, [r4]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	str r0, [r4]
 _0801F3FE:

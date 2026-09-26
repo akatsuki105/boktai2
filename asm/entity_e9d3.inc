@@ -1451,7 +1451,7 @@ FUN_080b539c: @ 0x080B539C
 	cmp r0, #0
 	beq _080B53EC
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	b _080B53F4
 	.align 2, 0
 _080B53E4: .4byte 0x00000844
@@ -1599,7 +1599,7 @@ FUN_080b54ec: @ 0x080B54EC
 	cmp r0, #0
 	beq _080B5518
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	adds r0, r4, #0
 	bl KillEntity
 _080B5518:
@@ -1647,7 +1647,7 @@ _080B555A:
 	adds r0, r5, r1
 	ldr r0, [r0]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	adds r0, r5, #0
 	bl KillEntity
 _080B557A:

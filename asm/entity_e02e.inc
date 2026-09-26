@@ -5659,7 +5659,7 @@ FUN_080b8920: @ 0x080B8920
 	bne _080B8938
 	b _080B8ABE
 _080B8938:
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080B897C @ =0x00001411
 	adds r6, r4, r2
 	strb r0, [r6]
@@ -5678,7 +5678,7 @@ _080B894E:
 	ldr r1, _080B897C @ =0x00001411
 	adds r6, r4, r1
 _080B895E:
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r7, r5
 	strb r0, [r1]
 	adds r5, #1
@@ -5826,7 +5826,7 @@ _080B8A8C:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B8AB8
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080B8AB4 @ =0x00001490
 	adds r1, r4, r2
 	str r0, [r1]
@@ -6777,7 +6777,7 @@ FUN_080b9248: @ 0x080B9248
 	cmp r0, #0
 	beq _080B926E
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080B926E:
 	adds r0, r4, #0
 	bl KillEntity

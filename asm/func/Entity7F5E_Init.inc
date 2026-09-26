@@ -12,7 +12,7 @@
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B47C0
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080B47BC @ =0x000005DC
 	adds r1, r4, r2
 	str r0, [r1]

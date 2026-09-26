@@ -7,7 +7,7 @@
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08240EC4
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	b _08240EC6
@@ -18,7 +18,7 @@ _08240EC6:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08240EDA
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	b _08240EDC

@@ -709,7 +709,7 @@ _0804AF8A:
 	cmp r0, #0
 	beq _0804AFAA
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _0804AFAA:
 	ldr r0, [r4, #0x34]
 	adds r0, #1
@@ -837,7 +837,7 @@ _0804B08C:
 	adds r4, #0x18
 	movs r5, #3
 _0804B09C:
-	bl Script_GetValue
+	bl VM_GetValue
 	stm r4!, {r0}
 	subs r5, #1
 	cmp r5, #0
@@ -1856,7 +1856,7 @@ _0804B84A:
 	cmp r0, #0
 	beq _0804B864
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	adds r0, r4, #0
 	bl KillEntity
 	b _0804B868
@@ -2068,7 +2068,7 @@ _0804B9EE:
 	thumb_func_start FUN_0804b9f4
 FUN_0804b9f4: @ 0x0804B9F4
 	push {r4, r5, r6, lr}
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r1, r0, #1
 	movs r4, #0
 	movs r3, #0
@@ -6329,7 +6329,7 @@ _0804D8CE:
 	cmp r0, #0
 	beq _0804D8F8
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _0804D8F8:
 	movs r0, #4
 	bl Sound_FadeOutBGM
@@ -6807,7 +6807,7 @@ _0804DC1C:
 	cmp r0, #0
 	beq _0804DC7E
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _0804DC7E:
 	pop {r4, r5, r6}
 	pop {r0}

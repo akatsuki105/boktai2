@@ -22,7 +22,7 @@ _08020030:
 	movs r0, #0
 	b _080200D6
 _08020040:
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r8, r0
 	movs r4, #0
 	ldrh r0, [r5, #0x1a]

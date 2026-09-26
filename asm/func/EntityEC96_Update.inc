@@ -134,7 +134,7 @@ _0801339C:
 	cmp r0, #0
 	beq _08013406
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _08013406:
 	adds r0, r7, #0
 	bl KillEntity

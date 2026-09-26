@@ -1083,7 +1083,7 @@ _08219C58:
 	cmp r0, #0
 	beq _08219C70
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _08219C70:
 	ldr r0, _08219C90 @ =0x030044BC
 	str r4, [r0]
@@ -1121,7 +1121,7 @@ _08219CA4:
 	movs r1, #0
 	str r1, [r0]
 	ldr r0, [r6, #0x48]
-	bl Script_ExecById
+	bl VM_ExecByID
 _08219CC2:
 	ldr r0, [r6, #0x60]
 	cmp r0, #0x1e
@@ -1166,7 +1166,7 @@ _08219D14:
 	str r1, [r6, #0x44]
 	ldr r0, [r6, #0x50]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 	movs r4, #0

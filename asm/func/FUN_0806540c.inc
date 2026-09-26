@@ -42,7 +42,7 @@
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08065484
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xba
 	lsls r2, r2, #2
 	adds r1, r6, r2

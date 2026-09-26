@@ -54,7 +54,7 @@ _0800A328:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800A3B0
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _0800A3A8 @ =0xFFFF0000
@@ -62,14 +62,14 @@ _0800A328:
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _0800A3AC @ =0x0000FFFF
 	ldr r1, [sp]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #4]
@@ -107,11 +107,11 @@ _0800A3BA:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800A3FC
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0xe]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0x10]
-	bl Script_GetValue
+	bl VM_GetValue
 	b _0800A408
 	.align 2, 0
 _0800A3F8: .4byte 0xFFFF0000

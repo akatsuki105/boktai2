@@ -345,7 +345,7 @@ _0821642E:
 	bl Sound_StopAll
 	ldr r0, [r6, #0x50]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 	str r4, [sp]

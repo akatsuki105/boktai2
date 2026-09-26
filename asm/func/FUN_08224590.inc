@@ -10,7 +10,7 @@
 	cmp r4, #0
 	beq _08224694
 _082245A8:
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _082245E8 @ =0x00000F46
 	adds r1, r4, r2
 	strh r0, [r1]
@@ -18,16 +18,16 @@ _082245A8:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _082245F4
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _082245EC @ =0x00000E8C
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r0, #0xa0
 	ldr r2, _082245F0 @ =0x00000E8E
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xe9
 	lsls r2, r2, #4
 	adds r1, r4, r2

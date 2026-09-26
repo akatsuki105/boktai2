@@ -224,7 +224,7 @@ _08008082:
 	mov r0, sp
 	str r0, [r1, #4]
 	ldrh r0, [r2, #0x12]
-	bl Script_ExecById
+	bl VM_ExecByID
 _0800809E:
 	add sp, #0x14
 	pop {r0}
@@ -941,11 +941,11 @@ FUN_080085f8: @ 0x080085F8
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800866A
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r5, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	adds r0, r6, #0
 	adds r0, #0x28
@@ -962,9 +962,9 @@ FUN_080085f8: @ 0x080085F8
 	ldr r0, _080086CC @ =0x00000FFF
 	ands r0, r1
 	strh r0, [r6, #0xa]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0x24]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #0x26]
 	ldr r1, [r6, #0x30]
 	add r0, sp, #4
@@ -976,9 +976,9 @@ _0800866A:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0800869C
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r6, #6]
 	adds r0, r4, #0
 	bl FUN_081d553c
@@ -998,13 +998,13 @@ _0800869C:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080086BE
-	bl Script_GetValue
+	bl VM_GetValue
 	add r1, sp, #4
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	add r4, sp, #4
 	strh r0, [r4, #2]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4, #4]
 	movs r4, #1
 _080086BE:

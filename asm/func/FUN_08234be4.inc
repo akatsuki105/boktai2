@@ -3,7 +3,7 @@
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08234C04
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	mov r1, sp

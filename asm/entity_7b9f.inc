@@ -1014,11 +1014,11 @@ _081D895A:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _081D8986
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5, #0x1c]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5, #0x1e]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r5, #0x20]
 _081D8986:
 	movs r0, #0x6e
@@ -1031,9 +1031,9 @@ _081D8986:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _081D89B0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r7, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r6, r0, #0
 	b _081D89B4
 	.align 2, 0

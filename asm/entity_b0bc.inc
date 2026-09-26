@@ -792,7 +792,7 @@ _080116D8:
 	mov r0, sp
 	str r0, [r1, #4]
 	adds r0, r2, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	str r0, [r4, #0x1c]
 _08011704:

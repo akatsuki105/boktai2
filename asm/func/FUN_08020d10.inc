@@ -17,7 +17,7 @@ _08020D2E:
 	cmp r0, #0
 	beq _08020D3C
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	str r6, [r5, #0x64]
 _08020D3C:
 	pop {r4, r5, r6}

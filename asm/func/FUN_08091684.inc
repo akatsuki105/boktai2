@@ -9,7 +9,7 @@
 	movs r4, #0
 	movs r6, #1
 _0809169A:
-	bl Script_GetValue
+	bl VM_GetValue
 	cmp r0, #0
 	beq _080916AC
 	adds r0, r6, #0

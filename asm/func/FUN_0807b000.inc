@@ -7,11 +7,11 @@
 	movs r0, #0
 	b _0807B026
 _0807B012:
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4, #2]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r4, #4]
 	movs r0, #1
 _0807B026:

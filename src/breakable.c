@@ -23,7 +23,7 @@ typedef struct Breakable {
   u8 flashTimer;           // 0x09, 被弾で 4, 0 になったら Video_SetAuxSpritePltt でパレットを戻す
   u8 brokenPose;           // 0x0A, '.P'+1, 壊れたときに sprite.metaspriteIdx へ入る
   u8 shakeTimer;           // 0x0B, 被弾で 10。0 でない間は hitbox.flags の bit2 を立てて当たらなくし、sprite.pos を乱数で揺らす
-  u16 scriptOnBreak;       // 0x0C, '.d', 壊れたとき Script_ExecById に渡す
+  u16 scriptOnBreak;       // 0x0C, '.d', 壊れたとき VM_ExecByID に渡す
   u16 unk_e;               // 0x0E, padding?
   Vec3 pos;                // 0x10, '.p', Hitbox_SetPos で hitbox の座標として登録され、sprite.pos の基準にもなる
   u32 unk_18;              // 0x18, Breakable_SetUpdate が 0 にする。読み手が見つかっていない
@@ -133,7 +133,7 @@ NON_MATCH void Breakable_UpdateAlive(BreakableManager* p, Breakable* item) {
     if (item->scriptOnBreak != 0) {
       arg = item->id;
       sa.argc = 1, sa.argv = &arg;
-      Script_ExecById(item->scriptOnBreak, &sa);
+      VM_ExecByID(item->scriptOnBreak, &sa);
     }
     item->sprite.metaspriteIdx = item->brokenPose;
     item->hitbox.flags |= HBFLAG_UNK_2;
@@ -282,9 +282,9 @@ s32 Breakable_Spawn(void) {
   item->hp = VM_GetKeywordValue('l', 10);
   item->unk_6 = 0;
   if (VM_SeekToKeyword('p')) {
-    item->pos.x = Script_GetValue();
-    item->pos.y = Script_GetValue();
-    item->pos.z = Script_GetValue();
+    item->pos.x = VM_GetValue();
+    item->pos.y = VM_GetValue();
+    item->pos.z = VM_GetValue();
   }
   spriteID = VM_GetKeywordValue('t', SPRITE_KOMAINU);
   pose = VM_GetKeywordValue('P', 0);

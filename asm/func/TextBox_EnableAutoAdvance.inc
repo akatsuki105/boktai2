@@ -1,7 +1,7 @@
 	push {r4, r5, lr}
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r5, r0, #0
 	rsbs r1, r4, #0
 	orrs r1, r4

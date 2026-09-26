@@ -3,6 +3,8 @@
 
 // 通信対戦で対戦相手のプレイヤー?
 
+INCBIN(".rodata", "data/rodata4.bin");  // ./tools/bin.ts ./baserom.gba 0x085ad100 0x085AF034 ./data/rodata4.bin
+
 NAKED void FUN_080cc1a0(Player* p) { INCFUNC("asm/func/FUN_080cc1a0.inc"); }
 
 INCASM("asm/player_080d82ec.inc");

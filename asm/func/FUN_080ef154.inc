@@ -19,7 +19,7 @@ _080EF170:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF18A
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF18E
 _080EF18A:
@@ -51,7 +51,7 @@ _080EF1B8:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF1C8
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF1CC
 _080EF1C8:
@@ -74,7 +74,7 @@ _080EF1E4:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF1F8
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF1FC
 	.align 2, 0
@@ -94,7 +94,7 @@ _080EF20A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF21A
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF21E
 _080EF21A:
@@ -112,7 +112,7 @@ _080EF22C:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF23C
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF240
 _080EF23C:
@@ -131,7 +131,7 @@ _080EF250:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF260
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF264
 _080EF260:
@@ -158,7 +158,7 @@ _080EF27A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF294
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF298
 _080EF294:
@@ -185,7 +185,7 @@ _080EF2B8:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF2CC
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF2D0
 	.align 2, 0
@@ -204,7 +204,7 @@ _080EF2DC:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF2EC
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF2F0
 _080EF2EC:
@@ -220,7 +220,7 @@ _080EF2FA:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF310
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF314
 	.align 2, 0
@@ -239,7 +239,7 @@ _080EF320:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF330
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF334
 _080EF330:
@@ -256,7 +256,7 @@ _080EF340:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF350
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF354
 _080EF350:
@@ -277,7 +277,7 @@ _080EF360:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF37A
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF37E
 _080EF37A:
@@ -294,7 +294,7 @@ _080EF38A:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF39A
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF39E
 _080EF39A:
@@ -311,7 +311,7 @@ _080EF3AA:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF3BA
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF3BE
 _080EF3BA:
@@ -332,7 +332,7 @@ _080EF3CA:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF3E4
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF3E8
 _080EF3E4:
@@ -357,7 +357,7 @@ _080EF404:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF414
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF418
 _080EF414:
@@ -428,7 +428,7 @@ _080EF498:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _080EF4A8
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080EF4AC
 _080EF4A8:

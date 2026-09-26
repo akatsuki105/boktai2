@@ -60,7 +60,7 @@ _080A950A:
 	cmp r0, #0
 	beq _080A9526
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080A9526:
 	adds r0, r4, #0
 	bl KillEntity
@@ -87,7 +87,7 @@ Entity4063_Init: @ 0x080A9540
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A9554
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080A9558
 _080A9554:
 	movs r0, #0xe1
@@ -98,7 +98,7 @@ _080A9558:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080A9568
-	bl Script_GetValue
+	bl VM_GetValue
 _080A9568:
 	str r0, [r4, #0x1c]
 	adds r0, r4, #0

@@ -227,7 +227,7 @@ _08211982:
 	cmp r0, #0
 	beq _0821199E
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _0821199E:
 	ldr r0, _082119C8 @ =0x00000119
 	bl PlaySound_082406e0

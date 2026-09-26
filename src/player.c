@@ -119,7 +119,7 @@ const s16 s16_ARRAY_085abc8a[17] = {
 
 NAKED void FUN_080609dc(Player* p) { INCFUNC("asm/func/FUN_080609dc.inc"); }
 
-NAKED bool32 FUN_08060a24(Player* p, u32 val1, s32 val2) { INCFUNC("asm/func/FUN_08060a24.inc"); }
+NAKED bool32 FUN_08060a24(Player* p, u32 animIdx, s32 animSpeed) { INCFUNC("asm/func/FUN_08060a24.inc"); }
 
 NAKED void FUN_08060aa4(Player* p, s32 val) { INCFUNC("asm/func/FUN_08060aa4.inc"); }
 
@@ -170,7 +170,7 @@ void FUN_08060e90(Player* p, u32 val) {
     args.argc = 1;
     argv = val;
     args.argv = &argv;
-    Script_ExecById(p->scriptID_9c4, &args);
+    VM_ExecByID(p->scriptID_9c4, &args);
   }
 }
 
@@ -180,7 +180,7 @@ u32 FUN_08060ed8(Player* p, u32 r1) { return p->unk_9bc & r1; }
 
 void FUN_08060ee8(Player* p) {
   if (p->scriptID_9c0 != 0) {
-    Script_ExecById(p->scriptID_9c0, NULL);
+    VM_ExecByID(p->scriptID_9c0, NULL);
   }
 }
 
@@ -292,7 +292,13 @@ NAKED void FUN_08061c68(Player* p) { INCFUNC("asm/func/FUN_08061c68.inc"); }
 
 NAKED void FUN_08061d20(Player* p, s32* param_2, s32* param_3, s32 param_4) { INCFUNC("asm/func/FUN_08061d20.inc"); }
 
-NAKED void FUN_08061db4(Player* p) { INCFUNC("asm/func/FUN_08061db4.inc"); }
+void FUN_08061db4(Player* p) {
+  s32 i;
+
+  for (i = 0; i < 6; i++) {
+    Particle_Remove(&p->ptcl_718.ptcls[i].base);
+  }
+}
 
 NAKED void FUN_08061dd4(Player* p) { INCFUNC("asm/func/FUN_08061dd4.inc"); }
 
@@ -302,7 +308,13 @@ NAKED void FUN_08061f6c(Player* p) { INCFUNC("asm/func/FUN_08061f6c.inc"); }
 
 NAKED void FUN_080620f0(Player* p) { INCFUNC("asm/func/FUN_080620f0.inc"); }
 
-NAKED void FUN_08062258(Player* p) { INCFUNC("asm/func/FUN_08062258.inc"); }
+void FUN_08062258(Player* p) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    Particle_Remove(&p->ptcl_858.ptcls[i].base);
+  }
+}
 
 NAKED void FUN_08062278(Player* p) { INCFUNC("asm/func/FUN_08062278.inc"); }
 
@@ -332,7 +344,7 @@ NAKED void FUN_08063248(Player* p) { INCFUNC("asm/func/FUN_08063248.inc"); }
 
 NAKED void FUN_08063288(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_08063288.inc"); }
 
-NAKED u32 FUN_08063478(Player* p) { INCFUNC("asm/func/FUN_08063478.inc"); }
+u32 FUN_08063478(Player* p) { return (p->angle_400 - p->angle_401 + 0x100) & 0xFF; }
 
 NAKED u32 FUN_08063498(Player* p, u32 n) { INCFUNC("asm/func/FUN_08063498.inc"); }
 
@@ -354,47 +366,117 @@ NAKED void Player_Destroy_Helper_08063b24(Player* p) { INCFUNC("asm/func/Player_
 
 NAKED void Player_Init_Helper_08063b6c(Player* p) { INCFUNC("asm/func/Player_Init_Helper_08063b6c.inc"); }
 
-NAKED u32 Player_WeaponEffectSol(Player* p) { INCFUNC("asm/func/Player_WeaponEffectSol.inc"); }
+u32 Player_WeaponEffectSol(Player* p) { return gStat->sunGauge; }
 
 NAKED u32 Player_WeaponEffectStatCond(Player* p) { INCFUNC("asm/func/Player_WeaponEffectStatCond.inc"); }
 
-NAKED u32 Player_WeaponEffectNight(Player* p) { INCFUNC("asm/func/Player_WeaponEffectNight.inc"); }
+u32 Player_WeaponEffectNight(Player* p) {
+  if (FUN_08060e1c(p)) {
+    return 10;
+  }
+  return 0;
+}
 
-NAKED u32 Player_WeaponEffectAgility(Player* p) { INCFUNC("asm/func/Player_WeaponEffectAgility.inc"); }
+u32 Player_WeaponEffectAgility(Player* p) { return p->stats[STAT_AGILITY] >> 3; }
 
-NAKED u32 Player_WeaponEffectVitality(Player* p) { INCFUNC("asm/func/Player_WeaponEffectVitality.inc"); }
+u32 Player_WeaponEffectVitality(Player* p) { return p->stats[STAT_VITALITY] >> 3; }
 
-NAKED u32 Player_WeaponEffectSpirit(Player* p) { INCFUNC("asm/func/Player_WeaponEffectSpirit.inc"); }
+u32 Player_WeaponEffectSpirit(Player* p) { return p->stats[STAT_SPIRIT] >> 3; }
 
-NAKED u32 Player_WeaponEffectENE(Player* p) { INCFUNC("asm/func/Player_WeaponEffectENE.inc"); }
+u32 Player_WeaponEffectENE(Player* p) { return Div(p->ene * 10, p->maxEne); }
 
-NAKED u32 Player_WeaponEffectHP(Player* p) { INCFUNC("asm/func/Player_WeaponEffectHP.inc"); }
+u32 Player_WeaponEffectHP(Player* p) { return Div(p->hp * 10, p->maxHP); }
 
-NAKED u32 Player_WeaponEffectKajiba(Player* p) { INCFUNC("asm/func/Player_WeaponEffectKajiba.inc"); }
+// 火事場: HP が減っているほど強くなる
+u32 Player_WeaponEffectKajiba(Player* p) { return Div((p->maxHP - p->hp) * 20, p->maxHP); }
 
-NAKED u32 Player_WeaponEffectGyakuKajiba(Player* p) { INCFUNC("asm/func/Player_WeaponEffectGyakuKajiba.inc"); }
+// 逆火事場: HP が減っているほど弱くなる
+u32 Player_WeaponEffectGyakuKajiba(Player* p) { return -Div((p->maxHP - p->hp) * 40, p->maxHP); }
 
 NAKED u32 Player_WeaponEffectKillCount(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectKillCount.inc"); }
 
 NAKED u32 Player_WeaponEffectRandom(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectRandom.inc"); }
 
-NAKED u32 Player_WeaponEffectAntiBeast(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiBeast.inc"); }
+u32 Player_WeaponEffectAntiBeast(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0080;
 
-NAKED u32 Player_WeaponEffectAntiThing(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiThing.inc"); }
+  if (b->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
 
-NAKED u32 Player_WeaponEffectAntiPhantom(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiPhantom.inc"); }
+u32 Player_WeaponEffectAntiThing(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0100;
 
-NAKED u32 Player_WeaponEffectAntiUndead(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiUndead.inc"); }
+  if (b->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
 
-NAKED u32 Player_WeaponEffectAntiImmortal(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectAntiImmortal.inc"); }
+u32 Player_WeaponEffectAntiPhantom(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0200;
 
-NAKED u32 Player_WeaponEffectFlame(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectFlame.inc"); }
+  if (b->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
 
-NAKED u32 Player_WeaponEffectFrost(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectFrost.inc"); }
+u32 Player_WeaponEffectAntiUndead(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0400;
 
-NAKED u32 Player_WeaponEffectCloud(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectCloud.inc"); }
+  if (b->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
 
-NAKED u32 Player_WeaponEffectEarth(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectEarth.inc"); }
+u32 Player_WeaponEffectAntiImmortal(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0800;
+
+  if (b->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
+
+u32 Player_WeaponEffectFlame(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0004;
+
+  if (a->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
+
+u32 Player_WeaponEffectFrost(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0008;
+
+  if (a->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
+
+u32 Player_WeaponEffectCloud(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0010;
+
+  if (a->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
+
+u32 Player_WeaponEffectEarth(Player* p, HitboxData* a, HitboxData* b) {
+  u32 mask = 0x0020;
+
+  if (a->attributes & mask) {
+    return 10;
+  }
+  return 0;
+}
 
 // 一定確率で防御無視(なまくら系の特殊効果)
 u32 CheckNamakuraProc(void) {

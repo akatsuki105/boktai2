@@ -864,7 +864,7 @@ FUN_08036df8: @ 0x08036DF8
 	cmp r0, #0
 	beq _08036E0C
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _08036E0C:
 	pop {r0}
 	bx r0
@@ -954,7 +954,7 @@ FUN_08036e4c: @ 0x08036E4C
 	orrs r0, r2
 	str r0, [r3]
 	ldr r0, [r7]
-	bl Script_ExecById
+	bl VM_ExecByID
 _08036EAE:
 	add sp, #0x18
 	pop {r4, r5, r6, r7}
@@ -4140,7 +4140,7 @@ _08038720:
 	cmp r0, #0
 	beq _08038744
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r5, #0xe0
 	lsls r5, r5, #4
 	adds r1, r7, r5

@@ -8,7 +8,7 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08015F44
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _08015F3C @ =0xFFFF0000
@@ -16,14 +16,14 @@
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #0x28]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _08015F40 @ =0x0000FFFF
 	ldr r1, [sp, #0x28]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #0x28]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	add r2, sp, #0x28
@@ -65,16 +65,16 @@ _08015F52:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08015FA8
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #8]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0xa]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0xc]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0xe]
 	b _08015FB2
@@ -92,16 +92,16 @@ _08015FB2:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08015FE0
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0x10]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0x12]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0x14]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0x16]
 	b _08015FEA
@@ -117,28 +117,28 @@ _08015FEA:
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _08016038
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0x18]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0x1a]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0x1c]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0x1e]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0x20]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0x22]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0x24]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, sp
 	strh r0, [r1, #0x26]
 	b _0801604C

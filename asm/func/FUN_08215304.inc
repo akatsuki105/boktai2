@@ -400,7 +400,7 @@ _08215608:
 	bne _08215694
 	ldr r0, [r6, #0x50]
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 	str r4, [sp]

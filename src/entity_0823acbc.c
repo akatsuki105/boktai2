@@ -52,13 +52,13 @@ EntityMsg* DemoTable_GetMsg(s32 demoID, s32 step, s32 idx) {
 
 void FUN_0823a870(void) { gSystemSaveData = &gSystemSaveDataBuffer; }
 
-s32 FUN_0823a880(u8* pc, ScriptArgs* args) { return Script_ExecByPointer(pc, args); }
+s32 FUN_0823a880(u8* pc, ScriptArgs* args) { return VM_ExecByPointer(pc, args); }
 
-s32 FUN_0823a88c(u8* pc, ScriptArgs* args) { return Script_ExecByPointer(pc, args); }
+s32 FUN_0823a88c(u8* pc, ScriptArgs* args) { return VM_ExecByPointer(pc, args); }
 
-static s32 FUN_0823a898(u32 scriptID, ScriptArgs* args) { return Script_ExecById(scriptID, args); }
+static s32 FUN_0823a898(u32 scriptID, ScriptArgs* args) { return VM_ExecByID(scriptID, args); }
 
-s32 Script_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args) { return Script_ExecById(scriptID, args); }
+s32 VM_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args) { return VM_ExecByID(scriptID, args); }
 
 NAKED bool32 FUN_0823a8b0(void) { INCFUNC("asm/func/FUN_0823a8b0.inc"); }
 

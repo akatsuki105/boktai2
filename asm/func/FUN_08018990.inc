@@ -3,9 +3,9 @@
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080189AA
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r5, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
 	b _080189B0
 _080189AA:
@@ -18,7 +18,7 @@ _080189B0:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080189C2
-	bl Script_GetValue
+	bl VM_GetValue
 	b _080189E4
 _080189C2:
 	ldr r1, _080189F4 @ =0x03000078

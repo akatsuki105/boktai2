@@ -143,7 +143,7 @@ FUN_080cb5d4: @ 0x080CB5D4
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080CB620
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r4, _080CB618 @ =0xFFFF0000
@@ -151,14 +151,14 @@ FUN_080cb5d4: @ 0x080CB5D4
 	ands r1, r4
 	orrs r1, r0
 	str r1, [sp, #8]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r2, _080CB61C @ =0x0000FFFF
 	ldr r1, [sp, #8]
 	ands r1, r2
 	orrs r1, r0
 	str r1, [sp, #8]
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #0xc]

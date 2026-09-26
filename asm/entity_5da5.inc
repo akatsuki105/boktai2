@@ -297,7 +297,7 @@ _08008B2A:
 	mov r0, sp
 	str r0, [r1, #4]
 	ldrh r0, [r3, #0x1a]
-	bl Script_ExecById
+	bl VM_ExecByID
 _08008B5C:
 	add sp, #0x28
 	pop {r4}
@@ -783,7 +783,7 @@ _08008F0E:
 	bl VM_GetPC
 	cmp r0, #0
 	beq _08008F1C
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [r5]
 _08008F1C:
 	adds r5, #4
@@ -795,11 +795,11 @@ _08008F24:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08008F40
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r7, #0x3c]
-	bl Script_GetValue
+	bl VM_GetValue
 	strh r0, [r7, #0x3e]
-	bl Script_GetValue
+	bl VM_GetValue
 	b _08008F44
 _08008F40:
 	strh r0, [r7, #0x3c]

@@ -27,11 +27,11 @@ _0801926E:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0801929A
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r7, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r4, r0, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	mov sl, r0
 	b _080192A0
 _0801929A:
@@ -43,11 +43,11 @@ _080192A0:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080192BE
-	bl Script_GetValue
+	bl VM_GetValue
 	mov sb, r0
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r8, r0
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [sp]
 	b _080192C8
 _080192BE:
@@ -61,9 +61,9 @@ _080192C8:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _080192E0
-	bl Script_GetValue
+	bl VM_GetValue
 	str r0, [sp, #4]
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r3, r0, #0
 	b _080192E6
 _080192E0:

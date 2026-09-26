@@ -1507,7 +1507,7 @@ EntityBD74_Init: @ 0x080851E8
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08085240
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, _08085238 @ =0xFFFF0000
@@ -1517,14 +1517,14 @@ EntityBD74_Init: @ 0x080851E8
 	orrs r2, r0
 	str r2, [sp]
 	adds r6, r2, #0
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	ldr r1, _0808523C @ =0x0000FFFF
 	adds r2, r6, #0
 	ands r2, r1
 	adds r6, r2, #0
 	orrs r6, r0
-	bl Script_GetValue
+	bl VM_GetValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	mov r1, sb
@@ -1569,11 +1569,11 @@ _08085246:
 	str r1, [sp, #0xc]
 	cmp r0, #0
 	beq _0808529C
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, r8
 	adds r1, #0xae
 	strb r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	mov r1, r8
 	adds r1, #0xaf
 	b _080852A8
@@ -4218,16 +4218,16 @@ FUN_08086638: @ 0x08086638
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _0808666E
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xea
 	lsls r2, r2, #2
 	adds r1, r5, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r2, _080866CC @ =0x000003AA
 	adds r1, r5, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xeb
 	lsls r2, r2, #2
 	adds r1, r5, r2
@@ -4237,7 +4237,7 @@ _0808666E:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08086684
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xec
 	lsls r2, r2, #2
 	adds r1, r5, r2
@@ -5036,17 +5036,17 @@ _08086C5C:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08086D40
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r1, #0xfc
 	lsls r1, r1, #1
 	adds r4, r5, r1
 	strh r0, [r4]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xfd
 	lsls r2, r2, #1
 	adds r1, r5, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xfe
 	lsls r2, r2, #1
 	adds r1, r5, r2
@@ -5152,7 +5152,7 @@ _08086D40:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08086D56
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0x80
 	lsls r2, r2, #2
 	adds r1, r5, r2
@@ -5267,7 +5267,7 @@ Entity0B50_Init_Helper_08086df8: @ 0x08086DF8
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08086E22
-	bl Script_GetValue
+	bl VM_GetValue
 _08086E22:
 	strh r0, [r4, #0x1c]
 	ldr r1, _08086E50 @ =0x085ABFE8
@@ -5280,7 +5280,7 @@ _08086E22:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08086E54
-	bl Script_GetValue
+	bl VM_GetValue
 	adds r1, r0, #0
 	adds r0, r4, #0
 	bl FUN_08085ee0
@@ -5308,16 +5308,16 @@ Entity0B50_Init_Helper_08086e64: @ 0x08086E64
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08086E9C
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xea
 	lsls r2, r2, #2
 	adds r1, r4, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	ldr r3, _08086E98 @ =0x000003AA
 	adds r1, r4, r3
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xeb
 	lsls r2, r2, #2
 	adds r1, r4, r2
@@ -5342,7 +5342,7 @@ _08086EB0:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08086ED0
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xec
 	lsls r2, r2, #2
 	adds r1, r4, r2
@@ -5493,7 +5493,7 @@ _08086FD6:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08087010
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0x80
 	lsls r2, r2, #2
 	adds r1, r6, r2
@@ -5548,17 +5548,17 @@ FUN_08087058: @ 0x08087058
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08087090
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xfc
 	lsls r2, r2, #1
 	adds r1, r5, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xfd
 	lsls r2, r2, #1
 	adds r1, r5, r2
 	strh r0, [r1]
-	bl Script_GetValue
+	bl VM_GetValue
 	movs r2, #0xfe
 	lsls r2, r2, #1
 	adds r1, r5, r2
@@ -8497,7 +8497,7 @@ _08088690:
 	cmp r0, #0
 	beq _080886BE
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 _080886BE:
 	movs r3, #0xee
 	lsls r3, r3, #2
@@ -9622,7 +9622,7 @@ _08088F32:
 	str r0, [r1]
 	adds r0, r2, #0
 	movs r1, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	ldr r1, _08088F90 @ =0x0000040B
 	adds r0, r4, r1
 	ldrb r0, [r0]
@@ -11068,7 +11068,7 @@ _08089AC4:
 	bl VM_SeekToKeyword
 	cmp r0, #0
 	beq _08089AD8
-	bl Script_GetValue
+	bl VM_GetValue
 	b _08089ADA
 	.align 2, 0
 _08089AD4: .4byte 0x030046A0

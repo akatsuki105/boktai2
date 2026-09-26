@@ -2441,7 +2441,7 @@ FUN_080041c4: @ 0x080041C4
 	mov r0, sp
 	str r0, [r1, #4]
 	adds r0, r2, #0
-	bl Script_ExecById
+	bl VM_ExecByID
 	str r5, [r4, #0x28]
 _0800422C:
 	adds r2, r4, #0
@@ -2645,7 +2645,7 @@ _0800436E:
 	add r0, sp, #4
 	str r0, [r1, #4]
 	ldr r0, [r4, #0x10]
-	bl Script_ExecById
+	bl VM_ExecByID
 	mov r1, sb
 	str r1, [r4, #0x10]
 _080043AA:
