@@ -163,7 +163,7 @@ typedef struct Player {
   void* ptr_398;  // 0x398, FUN_0807a9b8 の第2引数
   u8 unk_39c[0x3CC - 0x39C];
   u16 unk_3cc;
-  u16 unk_3ce;
+  s16 unk_3ce;  // 0x3CE, FUN_0807856c が ldrsh で読む
   u8 unk_3d0;
   u8 unk_3d1;
   u8 unk_3d2[36];
