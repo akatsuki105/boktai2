@@ -4,7 +4,7 @@
 
 typedef struct {
   Entity e;  // 0x0, ENTITY_UNK_11
-  u8 unk_18[80 - sizeof(Entity)];
+  u8 unk_18[80 - 0x18];
 } EntityD3A9;
 static_assert(sizeof(EntityD3A9) == 80);
 
