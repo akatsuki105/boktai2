@@ -659,13 +659,8 @@ NAKED void FUN_0807adc0(Player* p) { INCFUNC("asm/func/FUN_0807adc0.inc"); }
 
 NAKED void FUN_0807ae6c(Player* p, u32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0807ae6c.inc"); }
 
-// '.i' から gPlayerPtr の idx を取得する
-u32 VM_GetPlayerIdx(void) {
-  if (VM_SeekToKeyword('i')) {
-    return Script_GetValue();
-  }
-  return 0;
-}
+// '.i' から gPlayerPtr の idx を取得する, なかったら 0 (1P) を返すので、 実質的な '.i=0'
+u32 VM_GetPlayerIdx(void) { return (VM_SeekToKeyword('i')) ? Script_GetValue() : 0; }
 
 NAKED s32 FUN_0807b000(Player* p) { INCFUNC("asm/func/FUN_0807b000.inc"); }
 
