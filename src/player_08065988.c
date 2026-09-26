@@ -7,6 +7,9 @@
 // player.c とファイルを分けてるのは、ファイルサイズが大きくなりすぎてコードを把握しにくいからで、解析が進んだら整理する予定
 
 void FUN_08065164(Player* p);
+extern u16 u16_03002b78;
+extern u16 u16_03002b80;
+extern u16 u16_03002bd0;
 void FUN_080612d8(Player* p);
 s32 FUN_08086294(Vec3* pos, u32 a, u32 b);
 void Player_StopEneChargeSound(Player* p);
@@ -692,7 +695,11 @@ NAKED s32 FUN_0807b4e4(Player* p) { INCFUNC("asm/func/FUN_0807b4e4.inc"); }
 
 NAKED void FUN_0807b528(Player* p) { INCFUNC("asm/func/FUN_0807b528.inc"); }
 
-NAKED void FUN_0807b564(Player* p) { INCFUNC("asm/func/FUN_0807b564.inc"); }
+void FUN_0807b564(void) {
+  u16_03002bd0 = 0;
+  u16_03002b80 = 0;
+  u16_03002b78 = 0;
+}
 
 void FUN_0807b580(void) {
   s32 i = FUN_0807afe8();
