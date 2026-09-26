@@ -353,7 +353,14 @@ NAKED void FUN_08072620(Player* p) { INCFUNC("asm/func/FUN_08072620.inc"); }
 
 void FUN_08072640(Player* p) { p->unk_4aa = 1; }
 
-NAKED void FUN_08072650(Player* p) { INCFUNC("asm/func/FUN_08072650.inc"); }
+void FUN_08072650(Player* p) {
+  if (p->scriptID_4b0 != 0) {
+    s32 id = p->scriptID_4b0;
+
+    p->scriptID_4b0 = 0;
+    Script_ExecById(id, NULL);
+  }
+}
 
 void FUN_08072670(Player* p) {
   p->unk_4aa = 2;
