@@ -11,6 +11,8 @@ extern u16 u16_03002b78;
 extern u16 u16_03002b80;
 extern u16 u16_03002bd0;
 void FUN_080612d8(Player* p);
+bool32 FUN_08060a24(Player* p, u32 animID, s32 param_3);
+void FUN_080609dc(Player* p);
 s32 FUN_08086294(Vec3* pos, u32 a, u32 b);
 void Player_StopEneChargeSound(Player* p);
 void FUN_08060b84(Player* p, u8 a, u8 b);
@@ -383,7 +385,12 @@ void FUN_08072670(Player* p) {
   p->unk_4ab = 1;
 }
 
-NAKED void FUN_0807268c(Player* p) { INCFUNC("asm/func/FUN_0807268c.inc"); }
+void FUN_0807268c(Player* p) {
+  if (p->unk_4ab != 0) {
+    EntityMsgBox_EndWait(&p->msgbox, 1);
+    p->unk_4ab = 0;
+  }
+}
 
 NAKED void FUN_080726b4(Player* p) { INCFUNC("asm/func/FUN_080726b4.inc"); }
 
