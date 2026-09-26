@@ -20,8 +20,8 @@ typedef struct EntityB85F {
   MainSprite cursorSprite;      // 0x618, MainSprite_Add(&cursorSprite, &gfx1, 4, ...)
   MainSpriteGfx gfx0;           // 0x678, OpenMainSpriteFile(&gfx0, spriteFile0)
   MainSpriteGfx gfx1;           // 0x698, OpenMainSpriteFile(&gfx1, spriteFile1)
-  MainSpriteFile* spriteFile0;  // 0x6B8, GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK)
-  MainSpriteFile* spriteFile1;  // 0x6BC, GetFile(DIR_MAIN_SPRITE, UI_START_MENU)
+  MainSpriteFile* spriteFile0;  // 0x6B8, SPRITE_UI_LINK
+  MainSpriteFile* spriteFile1;  // 0x6BC, SPRITE_UI_START_MENU
   u16 poseIdx[16];              // 0x6C0, FUN_081dc9dc が 0 を入れて MainSprite_Add に渡す
   u16 cursorPose;               // 0x6E0, FUN_081dc9dc が 4 を入れる
   u16 unk_6e2;                  // 0x6E2
