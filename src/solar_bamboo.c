@@ -37,8 +37,6 @@ const u16 u16_ARRAY_085aa76c[4] = {0x6F, 0x3, 0x3, 0x3};  // 0x085aa76c
 
 void Entity0800a89c_SpawnAt(u16 param_1, s32 param_2, u16 param_3, Vec3* pos, s32 param_5, s32 param_6, s32 param_7);
 
-static inline u32 TestHitboxAttributes(HitboxData* p, u32 flags) { return p->attributes & flags; }
-
 // 被弾時に呼ばれる。点滅させて耐久を削り、0 以下になったら演出を出して耐久を戻す
 void FUN_0800c0b0(HitboxData* a, HitboxData* b, SolarBamboo* p) {
   s32 damage;
@@ -46,7 +44,7 @@ void FUN_0800c0b0(HitboxData* a, HitboxData* b, SolarBamboo* p) {
 
   damage = a->damage;
   if (damage == 0) {
-    damage = TestHitboxAttributes(a, 0x40) ? 50 : 30;
+    damage = Hitbox_TestAttribute(a, HBATTR_6) ? 50 : 30;
   }
   if (p->q_unk_28 == 0 && damage > 0) {
     p->q_unk_28 = 8;

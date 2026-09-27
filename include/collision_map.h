@@ -80,8 +80,8 @@ typedef struct {
   s16 y1;       // 0x02
   s16 x2;       // 0x04
   s16 y2;       // 0x06
-  s8 z1;        // 0x08, Z coordinate: 1 tile = 16 units
-  s8 z2;        // 0x09
+  u8 z1;        // 0x08, Z coordinate: 1 tile = 16 units
+  u8 z2;        // 0x09
   ZoneID16 id;  // 0x0A, スクリプトが特定のゾーンに処理をアタッチする際に使うID
 } Zone;
 static_assert(sizeof(Zone) == 12);

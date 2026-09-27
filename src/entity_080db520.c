@@ -1,9 +1,8 @@
-#include "animation.h"
 #include "entity.h"
 #include "file.h"
+#include "global.h"
 #include "hitbox.h"
 #include "sprite.h"
-#include "global.h"
 
 // 8枠ぶんの要素。activeMask のビットが立っている枠だけ生きている
 typedef struct {

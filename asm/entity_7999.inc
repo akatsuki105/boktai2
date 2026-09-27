@@ -263,8 +263,8 @@ _081D9F82:
 	.align 2, 0
 _081D9F88: .4byte 0x000002A2
 
-	thumb_func_start FUN_081d9f8c
-FUN_081d9f8c: @ 0x081D9F8C
+	thumb_func_start Entity7999_InitBG
+Entity7999_InitBG: @ 0x081D9F8C
 	push {r4, r5, lr}
 	sub sp, #0x10
 	adds r5, r0, #0
@@ -723,8 +723,8 @@ _081DA2D2:
 	.align 2, 0
 _081DA308: .4byte 0x0000029A
 
-	thumb_func_start FUN_081da30c
-FUN_081da30c: @ 0x081DA30C
+	thumb_func_start Entity7999_InitPanels
+Entity7999_InitPanels: @ 0x081DA30C
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x12
@@ -794,8 +794,8 @@ FUN_081da370: @ 0x081DA370
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_081da3a0
-FUN_081da3a0: @ 0x081DA3A0
+	thumb_func_start Entity7999_InitSprites
+Entity7999_InitSprites: @ 0x081DA3A0
 	push {r4, r5, lr}
 	sub sp, #0x10
 	adds r5, r0, #0
@@ -1114,8 +1114,8 @@ _081DA5F4:
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_081da608
-FUN_081da608: @ 0x081DA608
+	thumb_func_start Entity7999_SavePltt
+Entity7999_SavePltt: @ 0x081DA608
 	push {lr}
 	mov ip, r0
 	ldr r0, _081DA644 @ =0x03003584
@@ -2076,15 +2076,15 @@ _081DAD1E:
 	adds r1, r5, r2
 	strh r0, [r1]
 	adds r0, r5, #0
-	bl FUN_081d9f8c
+	bl Entity7999_InitBG
 	adds r0, r5, #0
-	bl FUN_081da30c
+	bl Entity7999_InitPanels
 	adds r0, r5, #0
-	bl FUN_081da3a0
+	bl Entity7999_InitSprites
 	adds r0, r5, #0
 	bl FUN_081da468
 	adds r0, r5, #0
-	bl FUN_081da608
+	bl Entity7999_SavePltt
 	ldr r3, _081DAE1C @ =0x0000029B
 	adds r1, r5, r3
 	movs r0, #0xff

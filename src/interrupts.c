@@ -4,6 +4,8 @@
 
 IWRAM_DATA bool32 bool32_03000250 = FALSE;  // 0x03000250
 
+extern vu32 gVblankFlag;  // 0x03002CB4
+
 void VCountIntr(void);
 void HBlankIntr(void);
 void FUN_0822a188(void);
@@ -31,7 +33,12 @@ NAKED void InitIntrHandlers(void) { INCFUNC("asm/func/InitIntrHandlers.inc"); }
 
 NAKED void FUN_08229d80(void) { INCFUNC("asm/func/FUN_08229d80.inc"); }
 
-NAKED void WaitForVBlank(void) { INCFUNC("asm/func/WaitForVBlank.inc"); }
+void WaitForVBlank(void) {
+  gVblankFlag = FALSE;
+
+  while (!gVblankFlag) {
+  }
+}
 
 NAKED void FUN_08229f4c(u32 n) { INCFUNC("asm/func/FUN_08229f4c.inc"); }
 

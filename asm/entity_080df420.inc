@@ -52,17 +52,17 @@ FUN_080defd0: @ 0x080DEFD0
 FUN_080df148: @ 0x080DF148
   .include "asm/func/FUN_080df148.inc"
 
-	thumb_func_start FUN_080df31c
-FUN_080df31c: @ 0x080DF31C
-  .include "asm/func/FUN_080df31c.inc"
+	thumb_func_start Entity080df420_Update
+Entity080df420_Update: @ 0x080DF31C
+  .include "asm/func/Entity080df420_Update.inc"
 
-	thumb_func_start FUN_080df3b4
-FUN_080df3b4: @ 0x080DF3B4
-  .include "asm/func/FUN_080df3b4.inc"
+	thumb_func_start Entity080df420_Destroy
+Entity080df420_Destroy: @ 0x080DF3B4
+  .include "asm/func/Entity080df420_Destroy.inc"
 
-	thumb_func_start FUN_080df3f4
-FUN_080df3f4: @ 0x080DF3F4
-  .include "asm/func/FUN_080df3f4.inc"
+	thumb_func_start Entity080df420_Init
+Entity080df420_Init: @ 0x080DF3F4
+  .include "asm/func/Entity080df420_Init.inc"
 
 	thumb_func_start Entity080df420_Create
 Entity080df420_Create: @ 0x080DF420

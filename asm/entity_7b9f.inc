@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_081d81c4
-FUN_081d81c4: @ 0x081D81C4
+	thumb_func_start Entity7B9F_AllocElem
+Entity7B9F_AllocElem: @ 0x081D81C4
 	push {r4, r5, r6, r7, lr}
 	adds r2, r0, #0
 	movs r5, #0
@@ -1004,7 +1004,7 @@ FUN_081d8948: @ 0x081D8948
 	cmp r0, #0
 	beq _081D89EC
 _081D895A:
-	bl FUN_081d81c4
+	bl Entity7B9F_AllocElem
 	adds r5, r0, #0
 	cmp r5, #0
 	beq _081D89EC

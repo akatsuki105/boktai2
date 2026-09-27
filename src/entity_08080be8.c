@@ -345,7 +345,7 @@ void Entity08080be8_SetupSprite(Entity08080be8* p, s32 plttID) {
 }
 
 // 当たり判定を組み立てる。unk_cd が立っているときだけ判定を一段高い位置に置く
-void Entity08080be8_SetupHitbox(Entity08080be8* p, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44) {
+void Entity08080be8_SetupHitbox(Entity08080be8* p, u32 hitboxUnk40, HitboxAttributes attrs, u32 hitboxUnk44) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 offset, halfSize;
 
@@ -356,7 +356,7 @@ void Entity08080be8_SetupHitbox(Entity08080be8* p, u32 hitboxUnk40, u32 attribut
     offset.x = 0, offset.y = 0, offset.z = 0;
   }
   Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_8 | HBFLAG_UNK_0, 0, 1 << p->player->unk_24.unk_4, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, 0, hitboxUnk40, 0x10, attributes, hitboxUnk44);
+  Hitbox_SetAttack(hitbox, 0, hitboxUnk40, 0x10, attrs, hitboxUnk44);
   Hitbox_SetHandler(hitbox, FUN_08080648, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
 }

@@ -1,9 +1,10 @@
 #include "entity.h"
 #include "global.h"
+#include "malloc.h"
 
 typedef Entity Entity08240a54;  // ENTITY_UNK_3, サイズは Entity と同じ
 
-IWRAM_DATA u32 DAT_030016fc = 0;
+IWRAM_DATA void* DAT_030016fc = NULL;  // 0x030016FC
 
 NAKED bool32 FUN_082409a0(u32 val) { INCFUNC("asm/func/FUN_082409a0.inc"); }
 
@@ -11,7 +12,11 @@ NAKED bool32 FUN_082409d0(u32 param) { INCFUNC("asm/func/FUN_082409d0.inc"); }
 
 s32 Entity08240a54_Update(Entity08240a54* p) { return 0; }
 
-NAKED s32 Entity08240a54_Destroy(Entity08240a54* p) { INCFUNC("asm/func/Entity08240a54_Destroy.inc"); }
+s32 Entity08240a54_Destroy(Entity08240a54* p) {
+  Free(DAT_030016fc);
+  DAT_030016fc = NULL;
+  return 0;
+}
 
 NAKED s32 Entity08240a54_Init(Entity08240a54* p) { INCFUNC("asm/func/Entity08240a54_Init.inc"); }
 

@@ -201,14 +201,14 @@ ifeq ($(MODERN),1)
 # TODO: MODERN
 else
 	@$(CPP) $(CPPFLAGS) $< -o $(BUILD_DIR)/$(subst .c,.i,$<)
-	$(PREPROC) $(BUILD_DIR)/$(subst .c,.i,$<) charmap.txt | $(CC1) $(CFLAGS) -o $(BUILD_DIR)/$(subst .c,.s,$<)
+	@$(PREPROC) $(BUILD_DIR)/$(subst .c,.i,$<) charmap.txt | $(CC1) $(CFLAGS) -o $(BUILD_DIR)/$(subst .c,.s,$<)
 # 	@$(CPP) $(CPPFLAGS) $< | $(PREPROC) -i $< charmap.txt | $(CC1) $(CFLAGS) -o $(BUILD_DIR)/$(subst .c,.s,$<) -
 	@echo -e ".text\n\t.align\t2, 0\n" >> $(BUILD_DIR)/$(subst .c,.s,$<)
-	@$(AS) $(ASFLAGS) $(BUILD_DIR)/$(subst .c,.s,$<) -o $@ 
+	$(AS) $(ASFLAGS) $(BUILD_DIR)/$(subst .c,.s,$<) -o $@ 
 endif
 
 $(C_DEPS): $(BUILD_DIR)/%.d: %.c
-	$(SCANINC) -M $@ -I include $<
+	@$(SCANINC) -M $@ -I include $<
 
 # NODEP が 1 のときは依存関係ファイルを読み込まない、これをしないと make clean とかのときに不要な .dファイルを作ろうとしてしまう
 ifneq ($(NODEP),1)
@@ -219,7 +219,7 @@ $(BUILD_DIR)/%.o: %.s
 	@$(AS) $(ASFLAGS) $< -o $@
 
 $(ASM_OBJS:.o=.d): $(BUILD_DIR)/%.d: %.s
-	$(SCANINC) -M $@ -I include $<
+	@$(SCANINC) -M $@ -I include $<
 
 ifneq ($(NODEP),1)
 -include $(ASM_DEPS)

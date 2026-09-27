@@ -393,86 +393,69 @@ u32 Player_WeaponEffectKajiba(Player* p) { return Div((p->maxHP - p->hp) * 20, p
 // 逆火事場: HP が減っているほど弱くなる
 u32 Player_WeaponEffectGyakuKajiba(Player* p) { return -Div((p->maxHP - p->hp) * 40, p->maxHP); }
 
+// 同じ種族の敵をたくさん倒しているほど威力が上がる
 NAKED u32 Player_WeaponEffectKillCount(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectKillCount.inc"); }
 
 NAKED u32 Player_WeaponEffectRandom(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectRandom.inc"); }
 
 u32 Player_WeaponEffectAntiBeast(Player* p, HitboxData* a, HitboxData* b) {
-  u32 mask = 0x0080;
-
-  if (b->attributes & mask) {
+  if (Hitbox_TestAttribute(b, HBATTR_BEAST)) {
     return 10;
   }
   return 0;
 }
 
 u32 Player_WeaponEffectAntiThing(Player* p, HitboxData* a, HitboxData* b) {
-  u32 mask = 0x0100;
-
-  if (b->attributes & mask) {
+  if (Hitbox_TestAttribute(b, HBATTR_THING)) {
     return 10;
   }
   return 0;
 }
 
 u32 Player_WeaponEffectAntiPhantom(Player* p, HitboxData* a, HitboxData* b) {
-  u32 mask = 0x0200;
-
-  if (b->attributes & mask) {
+  if (Hitbox_TestAttribute(b, HBATTR_PHANTOM)) {
     return 10;
   }
   return 0;
 }
 
 u32 Player_WeaponEffectAntiUndead(Player* p, HitboxData* a, HitboxData* b) {
-  u32 mask = 0x0400;
-
-  if (b->attributes & mask) {
+  if (Hitbox_TestAttribute(b, HBATTR_UNDEAD)) {
     return 10;
   }
   return 0;
 }
 
 u32 Player_WeaponEffectAntiImmortal(Player* p, HitboxData* a, HitboxData* b) {
-  u32 mask = 0x0800;
-
-  if (b->attributes & mask) {
+  if (Hitbox_TestAttribute(b, HBATTR_IMMORTAL)) {
     return 10;
   }
   return 0;
 }
 
 u32 Player_WeaponEffectFlame(Player* p, HitboxData* a, HitboxData* b) {
-  u32 mask = 0x0004;
-
-  if (a->attributes & mask) {
+  if (Hitbox_TestAttribute(a, HBATTR_FLAME)) {
     return 10;
   }
   return 0;
 }
 
 u32 Player_WeaponEffectFrost(Player* p, HitboxData* a, HitboxData* b) {
-  u32 mask = 0x0008;
-
-  if (a->attributes & mask) {
+  if (Hitbox_TestAttribute(a, HBATTR_FROST)) {
     return 10;
   }
   return 0;
 }
 
 u32 Player_WeaponEffectCloud(Player* p, HitboxData* a, HitboxData* b) {
-  u32 mask = 0x0010;
-
-  if (a->attributes & mask) {
+  if (Hitbox_TestAttribute(a, HBATTR_CLOUD)) {
     return 10;
   }
   return 0;
 }
 
 u32 Player_WeaponEffectEarth(Player* p, HitboxData* a, HitboxData* b) {
-  u32 mask = 0x0020;
-
-  if (a->attributes & mask) {
+  if (Hitbox_TestAttribute(a, HBATTR_EARTH)) {
     return 10;
   }
   return 0;

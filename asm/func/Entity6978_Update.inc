@@ -80,11 +80,11 @@ _080028B0:
 	b _080028C8
 _080028BA:
 	adds r0, r4, #0
-	bl FUN_08002788
+	bl Entity6978_StepUp
 	b _080028C8
 _080028C2:
 	adds r0, r4, #0
-	bl FUN_08002744
+	bl Entity6978_StepDown
 _080028C8:
 	movs r1, #0
 	strh r1, [r4, #0x24]

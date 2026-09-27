@@ -101,7 +101,7 @@ $(COLLISION_MAPS_LZ): GFX_OPTS := -search 1
 
 .PHONY: clean-graphics clean-collisionmap
 clean-graphics:
-	rm -f data/font_narrow.4bpp data/font_wide.4bpp data/particle_group_*.4bpp data/spriteset/*.4bpp data/tilesets.4bpp data/actor_sprites/*.4bpp data/bgp/*.gbapal
+	@rm -f data/font_narrow.4bpp data/font_wide.4bpp data/particle_group_*.4bpp data/spriteset/*.4bpp data/tilesets.4bpp data/actor_sprites/*.4bpp data/bgp/*.gbapal
 
 clean-collisionmap:
-	rm -f $(COLLISION_MAPS_LZ)
+	@rm -f $(COLLISION_MAPS_LZ)

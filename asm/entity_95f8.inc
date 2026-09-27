@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_08010d78
-FUN_08010d78: @ 0x08010D78
+	thumb_func_start Entity95F8_ClearPtr
+Entity95F8_ClearPtr: @ 0x08010D78
 	ldr r1, _08010D80 @ =0x0300004C
 	movs r0, #0
 	str r0, [r1]
@@ -13,8 +13,8 @@ FUN_08010d78: @ 0x08010D78
 	.align 2, 0
 _08010D80: .4byte 0x0300004C
 
-	thumb_func_start FUN_08010d84
-FUN_08010d84: @ 0x08010D84
+	thumb_func_start Entity95F8_GetTilePtr
+Entity95F8_GetTilePtr: @ 0x08010D84
 	push {r4, lr}
 	lsls r3, r0, #1
 	adds r3, r3, r0
@@ -36,8 +36,8 @@ FUN_08010d84: @ 0x08010D84
 	.align 2, 0
 _08010DA8: .4byte 0x03003ED0
 
-	thumb_func_start FUN_08010dac
-FUN_08010dac: @ 0x08010DAC
+	thumb_func_start Entity95F8_DrawClock
+Entity95F8_DrawClock: @ 0x08010DAC
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -60,7 +60,7 @@ _08010DCE:
 	movs r0, #0
 	movs r1, #4
 	movs r2, #0xf
-	bl FUN_08010d84
+	bl Entity95F8_GetTilePtr
 	adds r5, r0, #0
 	ldr r1, _08010DE8 @ =gClock
 	ldrb r1, [r1, #0x12]
@@ -75,7 +75,7 @@ _08010DEC:
 	movs r0, #0
 	movs r1, #4
 	movs r2, #0xf
-	bl FUN_08010d84
+	bl Entity95F8_GetTilePtr
 	adds r5, r0, #0
 	ldr r7, _08010E5C @ =gClock
 	ldrb r7, [r7, #0x10]
@@ -115,7 +115,7 @@ _08010E16:
 	movs r0, #0
 	movs r1, #8
 	movs r2, #0xf
-	bl FUN_08010d84
+	bl Entity95F8_GetTilePtr
 	adds r5, r0, #0
 	ldr r7, _08010E5C @ =gClock
 	ldrb r0, [r7, #0xe]
@@ -182,7 +182,7 @@ _08010E92:
 	movs r0, #0
 	movs r1, #0x10
 	movs r2, #0xf
-	bl FUN_08010d84
+	bl Entity95F8_GetTilePtr
 	adds r5, r0, #0
 	movs r4, #0
 	mov ip, sp
@@ -226,7 +226,7 @@ _08010EDA:
 	movs r0, #0
 	movs r1, #0x16
 	movs r2, #0xf
-	bl FUN_08010d84
+	bl Entity95F8_GetTilePtr
 	adds r5, r0, #0
 	movs r4, #0
 	mov ip, sp
@@ -271,8 +271,8 @@ _08010F56:
 _08010F68: .4byte 0x03003ED0
 _08010F6C: .4byte 0xFFFFD000
 
-	thumb_func_start FUN_08010f70
-FUN_08010f70: @ 0x08010F70
+	thumb_func_start Entity95F8_Redraw
+Entity95F8_Redraw: @ 0x08010F70
 	push {r4, r5, r6, lr}
 	sub sp, #0xc
 	adds r4, r0, #0
@@ -288,7 +288,7 @@ FUN_08010f70: @ 0x08010F70
 	movs r0, #0xf
 	strh r0, [r4, #0x28]
 	adds r0, r4, #0
-	bl FUN_08010dac
+	bl Entity95F8_DrawClock
 	strh r5, [r4, #0x28]
 	add sp, #0xc
 	pop {r4, r5, r6}
@@ -298,7 +298,7 @@ FUN_08010f70: @ 0x08010F70
 	thumb_func_start Entity95F8_Update
 Entity95F8_Update: @ 0x08010FA0
 	push {lr}
-	bl FUN_08010f70
+	bl Entity95F8_Redraw
 	pop {r1}
 	bx r1
 	.align 2, 0
@@ -393,7 +393,7 @@ _08011052:
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08010d84
+	bl Entity95F8_GetTilePtr
 	adds r2, r0, #0
 	movs r4, #0
 	ldr r0, _080110C4 @ =0x03003ED0

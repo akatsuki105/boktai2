@@ -1,0 +1,14 @@
+{
+	"Create entity_xxxx.c boilerplate": {
+		"scope": "c",
+		"prefix": "tmplentity",
+		"body": [
+      "#include \"entity.h\"",
+      "#include \"global.h\"",
+      "",
+      "INCASM(\"asm/$TM_FILENAME_BASE.inc\");",
+      ""
+    ],
+		"description": "entity_xxxx.c の雛形"
+	}
+}

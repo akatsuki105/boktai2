@@ -16,6 +16,7 @@ static_assert(sizeof(Entity0823acbc) == 32);
 IWRAM_DATA Entity0823acbc gEntity0823acbc = {};        // 0x030016A0
 IWRAM_DATA SystemSaveData gSystemSaveDataBuffer = {};  // 0x030016C0
 
+u32 FUN_082321e0(u8* pc);
 void FUN_0822d0e4(void);
 void FUN_08230dc4(bool32 val);
 void FUN_0823b1ec(void);
@@ -127,7 +128,7 @@ NAKED void FUN_0823acbc(void) { INCFUNC("asm/func/FUN_0823acbc.inc"); }
 
 NAKED s32 FUN_0823ad98(void) { INCFUNC("asm/func/FUN_0823ad98.inc"); }
 
-NAKED unknown* FUN_0823adc0(void) { INCFUNC("asm/func/FUN_0823adc0.inc"); }
+u32 FUN_0823adc0(void) { return FUN_082321e0(VM_GetPC()); }
 
 NAKED bool32 FUN_0823add0(void) { INCFUNC("asm/func/FUN_0823add0.inc"); }
 

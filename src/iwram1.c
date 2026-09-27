@@ -17,9 +17,15 @@ struct Entity080dc44c;
 struct Entity080dd1f8;
 struct SignalStrengthIcon;
 struct EntityD53D;
+struct Entity723E;
+struct Entity0805fe30;
 struct ExplosionManager;
+struct EntityCC28;
+struct Entity5CCC;
+struct Entity1DBE;
 struct AttackBoxManager;
 struct Entity080de11c;
+struct Entity080df420;
 struct Entity081d0e20;
 struct Entity081d16ec;
 struct Entity081d2180;
@@ -38,11 +44,20 @@ IWRAM_DATA u8 u8_030000d4[0xE4 - 0xD4] = {};
 IWRAM_DATA struct SignalStrengthIcon* gSignalStrengthIcon = NULL;  // 0x030000E4
 IWRAM_DATA struct EntityD53D* gEntityD53D = NULL;                  // 0x030000E8
 
-IWRAM_DATA u8 u8_030000ec[0x138 - 0x0EC] = {};
+IWRAM_DATA u8 u8_030000ec[0x11C - 0x0EC] = {};
 
+IWRAM_DATA struct Entity723E* gEntity723E = NULL;  // 0x0300011C
+
+IWRAM_DATA u8 u8_03000120[0x130 - 0x120] = {};
+
+IWRAM_DATA struct Entity0805fe30* gEntity0805fe30 = NULL;      // 0x03000130
+IWRAM_DATA void* gEntity08060470 = NULL;                       // 0x03000134
 IWRAM_DATA struct ExplosionManager* gExplosionManager = NULL;  // 0x03000138
+IWRAM_DATA struct EntityCC28* gEntityCC28 = NULL;              // 0x0300013C
+IWRAM_DATA struct Entity5CCC* gEntity5CCC = NULL;              // 0x03000140
+IWRAM_DATA struct Entity1DBE* gEntity1DBE = NULL;              // 0x03000144
 
-IWRAM_DATA u8 u8_0300013c[20] = {};
+IWRAM_DATA u8 u8_03000148[8] = {};
 
 IWRAM_DATA struct GameOverManager* gGameOverManager = NULL;    // 0x03000150
 IWRAM_DATA struct LevelUpper* gLevelUpper = NULL;              // 0x03000154
@@ -54,8 +69,9 @@ IWRAM_DATA struct Entity080dc44c* gEntity080dc44c = NULL;      // 0x03000168
 IWRAM_DATA struct Entity080dd1f8* gEntity080dd1f8 = NULL;      // 0x0300016C
 IWRAM_DATA struct AttackBoxManager* gAttackBoxManager = NULL;  // 0x03000170
 IWRAM_DATA struct Entity080de11c* gEntity080de11c = NULL;      // 0x03000174
+IWRAM_DATA struct Entity080df420* gEntity080df420 = NULL;      // 0x03000178
 
-IWRAM_DATA u8 u8_03000178[0x184 - 0x178] = {};
+IWRAM_DATA u8 u8_0300017c[0x184 - 0x17c] = {};
 IWRAM_DATA struct EntityD854* gEntityD854 = NULL;  // 0x03000184
 
 IWRAM_DATA struct Entity081d0e20* gEntity081d0e20 = NULL;    // 0x03000188

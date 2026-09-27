@@ -3018,7 +3018,7 @@ _0801A9E8:
 	movs r0, #3
 	movs r1, #5
 	add r2, sp, #0x10
-	bl FUN_08002800
+	bl Entity6978_SetRequest
 	movs r2, #0
 	adds r4, r6, #0
 	adds r4, #0xa0

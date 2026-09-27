@@ -35,7 +35,10 @@ static_assert(sizeof(Entity080601a8) == 1988);
 
 NAKED void FUN_0805ff04(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) { INCFUNC("asm/func/FUN_0805ff04.inc"); }
 
-NAKED void FUN_0805ff34(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) { INCFUNC("asm/func/FUN_0805ff34.inc"); }
+void FUN_0805ff34(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) {
+  AuxSprite_Remove(&elem->sprite);
+  p->activeMask &= ~(1 << idx);
+}
 
 void FUN_0805ff54(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) {}
 

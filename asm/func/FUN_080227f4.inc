@@ -37,7 +37,7 @@ _08022838:
 	adds r0, r1, #0
 	movs r1, #5
 	mov r2, sp
-	bl FUN_08002800
+	bl Entity6978_SetRequest
 	add sp, #0x14
 	pop {r4, r5}
 	pop {r0}

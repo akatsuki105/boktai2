@@ -19,7 +19,7 @@ _080494A8:
 	cmp r0, #0xa
 	bne _080494B6
 	adds r0, r6, #0
-	bl FUN_0804898c
+	bl TextRenderer_NewLine
 	b _08049544
 _080494B6:
 	cmp r0, #0x1f

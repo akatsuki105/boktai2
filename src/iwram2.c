@@ -15,6 +15,7 @@
 
 struct Dvalinn;
 struct Entity5941;
+struct Entity4063;
 struct Entity080acd4c;
 struct EntityCBB0;
 struct EnemyManager;
@@ -41,8 +42,11 @@ IWRAM_DATA u8 u8_03002bf0[8] = {};             // todo
 
 IWRAM_DATA struct Entity5941* gEntity5941 = NULL;  // 0x03002BF8
 
-IWRAM_DATA u8 u8_03002bfc[0x03002C54 - 0x03002bfc] = {};  // todo
+IWRAM_DATA u8 u8_03002bfc[0x03002C10 - 0x03002BFC] = {};  // todo
+IWRAM_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
+IWRAM_DATA u8 u8_03002c12[0x03002C50 - 0x03002C12] = {};  // todo
 
+IWRAM_DATA struct Entity4063* gEntity4063 = NULL;          // 0x03002C50
 IWRAM_DATA struct Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
 IWRAM_DATA struct EntityCBB0* gEntityCBB0 = NULL;          // 0x03002C58
 
@@ -84,7 +88,9 @@ IWRAM_DATA u8 u8_03003516[2] = {};           // todo
 IWRAM_DATA u16* gHBlankEffectBuffer = NULL;  // 0x03003518, スキャンライン毎(160 ライン)の値のバッファ (= u8_ARRAY_02036c00), 根拠: FUN_0822f0d8, FUN_0822eef4
 
 IWRAM_DATA u16 u16_0300351c = 0;                          // 0x0300351C, EEPROM_BeginAccess (EEPROM アクセス前) が 0、EEPROM_EndAccess (アクセス後) が 1 を書く
-IWRAM_DATA u8 u8_0300351e[0x03003530 - 0x0300351E] = {};  // todo
+IWRAM_DATA u8 u8_0300351e[0x03003520 - 0x0300351E] = {};  // todo
+IWRAM_DATA u32 u32_03003520 = 0;                          // 0x03003520, EntityDFC6 の表示中フラグと対で立つ
+IWRAM_DATA u8 u8_03003524[0x03003530 - 0x03003524] = {};  // todo
 
 IWRAM_DATA u32 gSpriteListIdx = 0;  // 0x03003530, 描画リストの選択 (0: 通常, 1: スタートメニュー中)
 

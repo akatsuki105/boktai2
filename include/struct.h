@@ -9,7 +9,7 @@
 struct MainSprite;
 struct AuxSprite;
 
-// Collision or 座標計算 or スクリプト生成管理 のデータ?(まだわからない)
+// Hitbox系 or 座標計算 or スクリプト生成管理 のデータ?(まだわからない)
 typedef struct Entity2UnkData {
   u16 id;                       // 0x00, EntityのID?
   u16 unk_2;                    // 0x02, フラグっぽい

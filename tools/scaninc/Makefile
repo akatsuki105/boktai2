@@ -1,10 +1,10 @@
 CXX ?= g++
 
-CXXFLAGS = -Wall -Werror -std=c++11 -O2
+CXXFLAGS = -Wall -Werror -std=c++20 -O2
 
 SRCS = scaninc.cpp c_file.cpp asm_file.cpp source_file.cpp
 
-HEADERS := scaninc.h asm_file.h c_file.h source_file.h
+HEADERS := scaninc.hpp asm_file.hpp c_file.hpp source_file.hpp
 
 .PHONY: all clean
 

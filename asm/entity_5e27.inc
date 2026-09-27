@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_08018f30
-FUN_08018f30: @ 0x08018F30
+	thumb_func_start Entity5E27_TestSlot
+Entity5E27_TestSlot: @ 0x08018F30
 	ldrh r0, [r0, #0x18]
 	movs r2, #1
 	lsls r2, r1
@@ -13,8 +13,8 @@ FUN_08018f30: @ 0x08018F30
 	bx lr
 	.align 2, 0
 
-	thumb_func_start FUN_08018f3c
-FUN_08018f3c: @ 0x08018F3C
+	thumb_func_start Entity5E27_SavePltt
+Entity5E27_SavePltt: @ 0x08018F3C
 	push {r4, lr}
 	ldr r4, _08018F64 @ =0x03004250
 	movs r2, #0
@@ -39,8 +39,8 @@ _08018F48:
 _08018F64: .4byte 0x03004250
 _08018F68: .4byte 0x085AA964
 
-	thumb_func_start FUN_08018f6c
-FUN_08018f6c: @ 0x08018F6C
+	thumb_func_start Entity5E27_ApplyPltt
+Entity5E27_ApplyPltt: @ 0x08018F6C
 	push {r4, r5, r6, r7, lr}
 	adds r6, r0, #0
 	ldr r7, _08018F94 @ =0x03004250
@@ -49,7 +49,7 @@ FUN_08018f6c: @ 0x08018F6C
 _08018F76:
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_08018f30
+	bl Entity5E27_TestSlot
 	cmp r0, #0
 	beq _08018F9C
 	ldrb r0, [r5]
@@ -98,9 +98,9 @@ Entity5E27_Update: @ 0x08018FBC
 	bne _08018FE4
 _08018FD8:
 	adds r0, r4, #0
-	bl FUN_08018f3c
+	bl Entity5E27_SavePltt
 	adds r0, r4, #0
-	bl FUN_08018f6c
+	bl Entity5E27_ApplyPltt
 _08018FE4:
 	movs r0, #0
 	pop {r4}
@@ -121,7 +121,7 @@ Entity5E27_Init: @ 0x08018FF0
 	bl VM_GetKeywordValue
 	strh r0, [r4, #0x18]
 	adds r0, r4, #0
-	bl FUN_08018f3c
+	bl Entity5E27_SavePltt
 	movs r0, #0
 	pop {r4}
 	pop {r1}

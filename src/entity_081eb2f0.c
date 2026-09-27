@@ -1,10 +1,14 @@
+#include "animation.h"
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "particle.h"
 
 typedef struct Entity081eb2f0 {
-  Entity e;  // ENTITY_UNK_10
-  u8 unk_18[2340 - 0x18];
+  Entity e;                 // 0x000, ENTITY_UNK_10
+  AuxAnimFile* anim;        // 0x018, FUN_081eb2b0 が GetFile(DIR_ANIMATION, 0xD1B8)
+  ParticleGroup* group;     // 0x01C, FUN_081eb2b0 が GetParticleGroup(0x1C1A)
+  u8 unk_20[2340 - 0x020];  // 0x020
 } Entity081eb2f0;
 static_assert(sizeof(Entity081eb2f0) == 2340);
 
@@ -24,9 +28,16 @@ NAKED s32 Entity081eb2f0_Update(Entity081eb2f0* p) { INCFUNC("asm/func/Entity081
 
 NAKED s32 Entity081eb2f0_Destroy(Entity081eb2f0* p) { INCFUNC("asm/func/Entity081eb2f0_Destroy.inc"); }
 
-NAKED void FUN_081eb2b0(Entity081eb2f0* p) { INCFUNC("asm/func/FUN_081eb2b0.inc"); }
+void FUN_081eb2b0(Entity081eb2f0* p) {
+  p->group = GetParticleGroup(0x1C1A);
+  p->anim = GetFile(DIR_ANIMATION, 0xD1B8);
+}
 
-NAKED s32 Entity081eb2f0_Init(Entity081eb2f0* p) { INCFUNC("asm/func/Entity081eb2f0_Init.inc"); }
+s32 Entity081eb2f0_Init(Entity081eb2f0* p) {
+  FUN_081eb2b0(p);
+  gEntity081eb2f0 = p;
+  return 0;
+}
 
 NAKED Entity081eb2f0* Entity081eb2f0_Create(void) { INCFUNC("asm/func/Entity081eb2f0_Create.inc"); }
 

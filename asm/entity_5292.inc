@@ -219,8 +219,8 @@ _080ACF7C:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_080acf94
-FUN_080acf94: @ 0x080ACF94
+	thumb_func_start Entity5292_InitElems
+Entity5292_InitElems: @ 0x080ACF94
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -464,7 +464,7 @@ _080AD170:
 _080AD172:
 	strh r0, [r4, #0x2a]
 	adds r0, r4, #0
-	bl FUN_080acf94
+	bl Entity5292_InitElems
 	ldr r2, _080AD19C @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1

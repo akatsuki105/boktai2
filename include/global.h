@@ -24,9 +24,7 @@
 #define FRACBITS_6 6                  // u2_6 / s2_6 / u10_6 / s10_6 の小数部
 #define FRACUNIT_6 (1 << FRACBITS_6)  // 64
 
-// NAKED void funcXXX(void) {
-//  INCFUNC("asm/funcXXX.inc");
-// }
+// NAKED void funcXXX(void) { INCFUNC("asm/funcXXX.inc"); }
 #define INCFUNC(file) \
   asm(".syntax unified\n\
   .include \"" file   \

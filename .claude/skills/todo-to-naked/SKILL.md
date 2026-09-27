@@ -1,6 +1,7 @@
 ---
 name: todo-to-naked
 description: Promote boktai2 functions from the TODO level to the NAKED level — pull one function's assembly out of a bulk INCASM file into asm/func/NAME.inc, give it a C signature in src/, and (when the evidence is solid) a real name. Use when the user invokes /todo-to-naked, or asks to move functions out of an asm/*.inc / src/*.s blob into C stubs.
+argument-hint: <function-name>... | <asm-file>
 ---
 
 # todo-to-naked

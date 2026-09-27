@@ -14,7 +14,7 @@
     "editor.formatOnSave": true
   },
 
-  "[c]": {
+  "[c][cpp]": {
     "editor.wordBasedSuggestions": "off",
     "editor.suggest.insertMode": "replace",
     "editor.quickSuggestions": {

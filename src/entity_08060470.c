@@ -27,7 +27,10 @@ static_assert(sizeof(Entity08060470) == 932);
 
 NAKED void Entity08060470_InitElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) { INCFUNC("asm/func/Entity08060470_InitElem.inc"); }
 
-NAKED void Entity08060470_ReleaseElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) { INCFUNC("asm/func/Entity08060470_ReleaseElem.inc"); }
+void Entity08060470_ReleaseElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {
+  Particle_Remove(&elem->ptcl);
+  p->activeMask &= ~(1 << idx);
+}
 
 void FUN_08060358(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {}
 

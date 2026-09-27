@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "video.h"
 
 // BG パレットを丸ごと控えておき、控えたバンク 0..6 を 4 フレームごとに順にバンク 0 へ書き戻す (7 フレームのパレットアニメ)
 typedef struct {
@@ -10,7 +11,7 @@ typedef struct {
 } BgPlttAnimator;
 static_assert(sizeof(BgPlttAnimator) == 544);
 
-NAKED void BgPlttAnimator_SavePltt(BgPlttAnimator* p) { INCFUNC("asm/func/BgPlttAnimator_SavePltt.inc"); }
+void BgPlttAnimator_SavePltt(BgPlttAnimator* p) { CpuCopy32(gBgPlttBuffer, p->savedPltt, sizeof(p->savedPltt)); }
 
 NAKED s32 BgPlttAnimator_Update(BgPlttAnimator* p) { INCFUNC("asm/func/BgPlttAnimator_Update.inc"); }
 

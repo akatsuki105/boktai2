@@ -1,11 +1,19 @@
 ---
 name: decomp-func
 description: Decompile boktai2 function into C code that generates matching builds.
+argument-hint: [function-name]
 ---
 
 ## The one rule
 
 **Only the ROM proves a match.** A function is done when `make compare` prints the OK line for `boktai2.gba` (full-image SHA-1 against a verified retail dump). Compiling proves nothing about bytes; assembling nothing about layout; linking nothing about the image.
+
+Two things follow from that, and they are what this skill is really about:
+
+- **Write code that produces the same machine code — not code that merely "works."** A correct C rendering of the function that assembles differently is a failed attempt, not a partial success.
+- **Learn the compiler's quirks and write to them deliberately.** agbcc (and the wider legacy ARM family, mwcc included) has habits that plain C does not reveal. The lever that makes a function match is usually a property of the compiler, not of the algorithm — which is why `docs/for-ai-agent/agbcc-quirks.md` is read before inventing one and extended after finding one.
+
+Neither licenses unnatural C. The original was written by a person, so a shape you would not defend to a colleague is more likely a wrong guess about the compiler than a discovery about it.
 
 ## Picking a target
 
@@ -94,15 +102,15 @@ ordering above.
    dictionary — most "mysterious" codegen (staged dead zeros, merged flag
    stores, shared constants) falls out of plain porter-style statements.
 
-3. Claude proposes draft C code for the target function. The draft may not be perfect, but it should be a good starting point.
+3. **Draft the C.** It need not be perfect — a good starting point is enough, and the streamdiff loop below is what sharpens it.
 
-4. Modify src/*.c: Replace NAKED stubs / NON_MATCH #else INCFUNC blocks with Claude's C code (also remove NON_MATCH/#ifdef NONMATCHING_C wrappers)
+4. **Put the draft into `src/*.c`**, replacing the `NAKED` stub or the NON_MATCH `#else INCFUNC` block. Remove the `NON_MATCH` marker and the `#ifdef NONMATCHING_C` wrapper along with it.
 
 ```c
 NAKED void* DecompTargetFunc(void) { INCFUNC("asm/xxx.inc"); }
 // ↓
 void* DecompTargetFunc(void) {
-  // Claude's C code here
+  // the draft goes here
 }
 
 NON_MATCH void* DecompTargetFunc(void) {
@@ -114,13 +122,13 @@ NON_MATCH void* DecompTargetFunc(void) {
 }
 // ↓
 void* DecompTargetFunc(void) {
-  // Claude's C code here
+  // the draft goes here
 }
 ```
 
-5. `make compare`
-    -> prints OK: goto Step 8
-    -> prints FAILED: goto Step 6
+5. **Build.** `make compare`, or `make clean-code && make compare` when the work also touched `include/` or anything else shared — a stale object file will happily report a match that isn't there.
+    -> the output contains the `boktai2.gba: OK` line: goto Step 8
+    -> it does not: goto Step 6
 
 6. **On NON-MATCH, read the instruction-stream diff** — never the ROM bytes (pool offsets shift). The permuter score in (b) is a second opinion to reach for only when (a) leaves you unsure:
 
@@ -148,11 +156,10 @@ void* DecompTargetFunc(void) {
 7. Claude sees the diff (and the score, when (b) was run) and proposes a fix. Go back to Step 3 (loop until match).
     [parallel] decomp-permuter can also be run in the background with a full random search to explore (see below) — separate from the `--debug` score check in Step 6b.
     Don't just let the background search run indefinitely hoping for score 0: launch it with `-j2 --stop-on-zero` (not more than `-j2` — higher pins all CPU cores and causes problems; `--stop-on-zero` makes it exit on its own the moment it finds a match instead of continuing to search past it). permuter.py has no time-based timeout flag, so still enforce the ~1 minute cap externally (a background timer + `pkill`) in case zero is never found — then stop it. If it hasn't found score 0 by then, take its best-scoring candidate (`nonmatchings/<dir>/output-<score>-*/source.c` under the perm dir) as feedback — read what structural/register-allocation change it made — and go back to Step 3 to write the next manual candidate informed by that, rather than treating the permuter as the final word or leaving it running unattended.
-    **Stop condition.** When you start on a function, note the remaining token count shown in the conversation (`N tokens left`). Whenever it is visible again, check how much has been consumed since then. If more than **20,000 tokens** have been consumed, or the loop has reached 5 iterations, leave the best candidate so far as NON_MATCH and stop: put its C inside `#ifdef NONMATCHING_C`, restore the `INCFUNC` in `#else` (restore the `.inc` from git if it was deleted), and confirm `make compare` prints OK. The `NON_MATCH` marker in the source is the record that it stalled — nothing else needs writing down.
+    **Stop condition.** Stop after **4 iterations** of the 3-7 loop, whichever candidate is best at that point. If the remaining token count (`N tokens left`) happens to be visible, also stop once **20,000 tokens** have gone into this one function — but the iteration count is the rule that actually holds, because the token figure is not always on screen and resets across a compaction. On stopping, leave the best candidate as NON_MATCH: put its C inside `#ifdef NONMATCHING_C`, restore the `INCFUNC` in `#else` (restore the `.inc` from git if it was deleted), and confirm `make compare` prints OK. The `NON_MATCH` marker in the source is the record that it stalled — nothing else needs writing down.
     Before checking siblings (Step 2) on a *different* function, count how many functions in that file are already NON_MATCH: `grep -c '^NON_MATCH' src/FILE.c`. Several stuck together in one file is a signal worth noticing — usually a wrong struct layout or a missing idiom rather than bad luck on each one.
 
-8. `make && sha1sum -c boktai2.sha1` to verify the entire ROM matches
-    `./tools/refresh-expected.sh` to update the `expected/` baseline
+8. **Finish up.** The `make compare` from step 5 already ran `sha1sum -c` over the whole image and refreshed the `expected/` baseline, so there is nothing more to build.
     Once MATCHING, the `asm/func/FUNCNAME.inc` is no longer referenced by any `INCFUNC` — confirm with `grep -rn "FUNCNAME.inc" src` (expect no hits) and delete it.
     Add a one-line Japanese comment directly above the function signature summarizing what it does, for human readers (e.g. `// リンクリストからノードを削除する`). Keep it to one line; skip it if an equivalent comment is already present, or if the function's behavior is self-evident from the code itself (e.g. a bare `return 0;`, or a standard `CreateEntity`/`SetEntityRoutine`/init-or-kill entity-creation function). Never write a comment that's just a literal restatement of the code (e.g. "reads pc[1..2] as a little-endian s16 and advances pc by 3" for code that visibly does exactly that) — describe the *meaning*/*purpose*, not the mechanics; if you don't know the meaning, skip the comment rather than paraphrasing the code.
     **Record the lever.** If reaching MATCHING took a non-obvious C shape — anything you would not have written on the first try, or that you only found by iterating on a streamdiff hunk — write it into `docs/for-ai-agent/agbcc-quirks.md` before moving on. Follow that file's own "New entry, or extend an existing one?" rule: route by the **asm symptom**, so when an entry already covers that symptom, append a bullet and add the function to its Frequency instead of opening a near-duplicate entry. This step is not optional bookkeeping — a lever that stays in the transcript is a lever the next session pays to rediscover.
@@ -176,15 +183,8 @@ silently skipped — including the `make compare` you were relying on.
   `--brief` / `--no-ghidra` trim it.
 - `census.ts <file.c>...` — remaining-function census over the given `.c` files, smallest-first TSV with sizes and inc paths.
 - `streamdiff.py` — canonicalized instruction diff, object vs inc.
-- `microtest.sh` — single-file compile probe with the repo flags.
-- `corpus-grep.sh` — search the 17-repo corpus for an asm shape (`-c` for C idioms). Grep the corpus BEFORE inventing a lever.
 
 ## Resources (read when you reach that phase)
-
-In `resources/` next to this file:
-
-- `decomp-corpus.md` — the 17-repo corpus list and search discipline.
-- `fe8j-playbook.md` — what the fireemblem8j project's techniques transfer (same compiler family).
 
 In `docs/for-ai-agent/` at the repo root (shared across skills):
 

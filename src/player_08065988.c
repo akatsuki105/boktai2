@@ -21,6 +21,7 @@ void FUN_0823bca8(s32 n);
 void FUN_0807e854(Player* p);
 void FUN_0807d118(Player* p);
 void FUN_08063220(Player* p);
+void FUN_08063634(Player* p, s32 n);
 void FUN_080ec79c(u8 kind, void* payload);
 void FUN_08060c40(Player* p, u32 val);
 void CheckHeartJokerEmblem(Player* p);
@@ -519,7 +520,7 @@ NAKED s32 FUN_0807868c(Player* p) { INCFUNC("asm/func/FUN_0807868c.inc"); }
 
 NAKED s32 FUN_08078844(Player* p) { INCFUNC("asm/func/FUN_08078844.inc"); }
 
-s32 FUN_080788b0(Player* p) { return FUN_08086294(&p->unk_24.pos, p->unk_392, p->unk_390); }
+s32 FUN_080788b0(Player* p) { return FUN_08086294(&p->unk_24.pos, p->elevatorID, p->unk_390); }
 
 NAKED s32 FUN_080788d0(Player* p) { INCFUNC("asm/func/FUN_080788d0.inc"); }
 
@@ -575,7 +576,7 @@ NAKED s32 FUN_0807a70c(ArmorData* data) { INCFUNC("asm/func/FUN_0807a70c.inc"); 
 
 NAKED void FUN_0807a798(s32 amount) { INCFUNC("asm/func/FUN_0807a798.inc"); }
 
-NAKED void FUN_0807a7f8(Player* p) { INCFUNC("asm/func/FUN_0807a7f8.inc"); }
+NAKED void FUN_0807a7f8(s32 kind, s32 amount) { INCFUNC("asm/func/FUN_0807a7f8.inc"); }
 
 NAKED void FUN_0807a840(Player* p) { INCFUNC("asm/func/FUN_0807a840.inc"); }
 
@@ -593,7 +594,7 @@ void FUN_0807a904(Player* p, u32 flag) {
   }
 }
 
-NAKED void FUN_0807a91c(Player* p) { INCFUNC("asm/func/FUN_0807a91c.inc"); }
+NAKED void FUN_0807a91c(Player* p, Vec3* pos) { INCFUNC("asm/func/FUN_0807a91c.inc"); }
 
 bool32 FUN_0807a954(Player* p, u32 mask) {
   if (p->unk_390 & mask) {
@@ -602,16 +603,16 @@ bool32 FUN_0807a954(Player* p, u32 mask) {
   return FALSE;
 }
 
-u32 FUN_0807a970(Player* p) { return p->unk_392; }
+u32 Player_GetElevatorID(Player* p) { return p->elevatorID; }
 
 void FUN_0807a97c(Player* p, u32 flags, u32 value) {
   p->unk_390 |= flags;
-  p->unk_392 = value;
+  p->elevatorID = value;
 }
 
 void FUN_0807a99c(Player* p, u32 flags) {
   p->unk_390 &= ~flags;
-  p->unk_392 = 0;
+  p->elevatorID = 0;
 }
 
 void FUN_0807a9b8(Player* p, void* val) {
@@ -639,13 +640,40 @@ void Player_ReduceENE_0807aa60(Player* player, s32 amount) {
 }
 
 // 月光虫取得時に呼ばれる(HP回復)
-NAKED void Player_ApplyMoonbug(Player* p, s32 amount) { INCFUNC("asm/func/Player_ApplyMoonbug.inc"); }
+// 精霊の衣を着ていると効果が2倍になる
+void Player_ApplyMoonbug(Player* p, s32 amount) {
+  PlayerFlag378 mask = FLAG378_FAIRY;
+
+  if (p->flag378 & mask) {
+    FUN_0807aa00(p, amount * 2);
+  } else {
+    FUN_0807aa00(p, amount);
+  }
+}
 
 // 太陽虫取得時に呼ばれる(Ene回復)
-NAKED void Player_ApplySolarbug(Player* p, s32 amount) { INCFUNC("asm/func/Player_ApplySolarbug.inc"); }
+// 精霊の衣を着ていると効果が2倍になる
+void Player_ApplySolarbug(Player* p, s32 amount) {
+  PlayerFlag378 mask = FLAG378_FAIRY;
+
+  if (p->flag378 & mask) {
+    FUN_0807aa30(p, amount * 2);
+  } else {
+    FUN_0807aa30(p, amount);
+  }
+}
 
 // 暗黒虫取得時に呼ばれる(Eneが減る)
-NAKED void Player_ApplyDarkbug(Player* p, s32 amount) { INCFUNC("asm/func/Player_ApplyDarkbug.inc"); }
+// 精霊の衣を着ていると効果が2倍になる
+void Player_ApplyDarkbug(Player* p, s32 amount) {
+  PlayerFlag378 mask = FLAG378_FAIRY;
+
+  if (p->flag378 & mask) {
+    Player_ReduceENE_0807aa60(p, amount * 2);
+  } else {
+    Player_ReduceENE_0807aa60(p, amount);
+  }
+}
 
 NAKED void FUN_0807ab14(Player* p) { INCFUNC("asm/func/FUN_0807ab14.inc"); }
 
@@ -662,7 +690,16 @@ NAKED void FUN_0807ae6c(Player* p, u32 param_2, s32 param_3) { INCFUNC("asm/func
 // '.i' から gPlayerPtr の idx を取得する, なかったら 0 (1P) を返すので、 実質的な '.i=0'
 u32 VM_GetPlayerIdx(void) { return VM_SeekToKeyword('i') ? VM_GetValue() : 0; }
 
-NAKED s32 FUN_0807b000(Player* p) { INCFUNC("asm/func/FUN_0807b000.inc"); }
+s32 FUN_0807b000(Vec3* pos) {
+  if (VM_SeekToKeyword('p')) {
+    pos->x = VM_GetValue();
+    pos->y = VM_GetValue();
+    pos->z = VM_GetValue();
+    return 1;
+  }
+
+  return 0;
+}
 
 NAKED void FUN_0807b02c(Player* p) { INCFUNC("asm/func/FUN_0807b02c.inc"); }
 
@@ -690,7 +727,15 @@ void FUN_0807b15c(void) {
   }
 }
 
-NAKED void FUN_0807b174(Player* p) { INCFUNC("asm/func/FUN_0807b174.inc"); }
+void FUN_0807b174(void) {
+  if (VM_SeekToKeyword('t')) {
+    s32 kind = VM_GetValue();
+
+    if (VM_SeekToKeyword('p')) {
+      FUN_0807a7f8(kind, VM_GetValue());
+    }
+  }
+}
 
 NAKED s32 FUN_0807b1a4(Player* p) { INCFUNC("asm/func/FUN_0807b1a4.inc"); }
 
@@ -716,7 +761,18 @@ NAKED void FUN_0807b428(Player* p) { INCFUNC("asm/func/FUN_0807b428.inc"); }
 
 NAKED void FUN_0807b484(Player* p) { INCFUNC("asm/func/FUN_0807b484.inc"); }
 
-NAKED void FUN_0807b4b8(Player* p) { INCFUNC("asm/func/FUN_0807b4b8.inc"); }
+void FUN_0807b4b8(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    s32 j;
+
+    for (j = 0; j < 3; j++) {
+      FUN_08063634(p, j);
+    }
+  }
+}
 
 NAKED s32 FUN_0807b4e4(Player* p) { INCFUNC("asm/func/FUN_0807b4e4.inc"); }
 
@@ -802,7 +858,7 @@ NAKED void FUN_0807b8dc(Player* p) { INCFUNC("asm/func/FUN_0807b8dc.inc"); }
 
 NAKED void FUN_0807b910(Player* p, s32 val) { INCFUNC("asm/func/FUN_0807b910.inc"); }
 
-NAKED void FUN_0807b9dc(Player* p) { INCFUNC("asm/func/FUN_0807b9dc.inc"); }
+NAKED void FUN_0807b9dc(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807b9dc.inc"); }
 
 NAKED void FUN_0807ba14(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_0807ba14.inc"); }
 
@@ -816,15 +872,15 @@ NAKED void FUN_0807bbb0(Player* p) { INCFUNC("asm/func/FUN_0807bbb0.inc"); }
 
 NAKED void FUN_0807bc14(Player* p) { INCFUNC("asm/func/FUN_0807bc14.inc"); }
 
-NAKED void FUN_0807bc64(Player* p) { INCFUNC("asm/func/FUN_0807bc64.inc"); }
+NAKED void FUN_0807bc64(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_0807bc64.inc"); }
 
-NAKED void FUN_0807bcb0(Player* p) { INCFUNC("asm/func/FUN_0807bcb0.inc"); }
+NAKED void FUN_0807bcb0(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807bcb0.inc"); }
 
-NAKED void FUN_0807bcfc(Player* p) { INCFUNC("asm/func/FUN_0807bcfc.inc"); }
+NAKED void FUN_0807bcfc(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_0807bcfc.inc"); }
 
-NAKED void FUN_0807bd44(Player* p) { INCFUNC("asm/func/FUN_0807bd44.inc"); }
+NAKED void FUN_0807bd44(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_0807bd44.inc"); }
 
-NAKED void FUN_0807bd84(Player* p) { INCFUNC("asm/func/FUN_0807bd84.inc"); }
+NAKED void FUN_0807bd84(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807bd84.inc"); }
 
 NAKED void FUN_0807bdc8(Player* p) { INCFUNC("asm/func/FUN_0807bdc8.inc"); }
 
@@ -834,31 +890,31 @@ NAKED void FUN_0807bee0(Player* p) { INCFUNC("asm/func/FUN_0807bee0.inc"); }
 
 NAKED void FUN_0807bfa4(Player* p) { INCFUNC("asm/func/FUN_0807bfa4.inc"); }
 
-NAKED void FUN_0807c048(Player* p) { INCFUNC("asm/func/FUN_0807c048.inc"); }
+NAKED void FUN_0807c048(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_0807c048.inc"); }
 
 NAKED void FUN_0807c084(Player* p) { INCFUNC("asm/func/FUN_0807c084.inc"); }
 
-NAKED void FUN_0807c11c(Player* p) { INCFUNC("asm/func/FUN_0807c11c.inc"); }
+NAKED void FUN_0807c11c(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_0807c11c.inc"); }
 
-NAKED void FUN_0807c200(Player* p) { INCFUNC("asm/func/FUN_0807c200.inc"); }
+NAKED void FUN_0807c200(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c200.inc"); }
 
 NAKED void FUN_0807c30c(Player* p) { INCFUNC("asm/func/FUN_0807c30c.inc"); }
 
-NAKED void FUN_0807c36c(Player* p) { INCFUNC("asm/func/FUN_0807c36c.inc"); }
+NAKED void FUN_0807c36c(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c36c.inc"); }
 
-NAKED void FUN_0807c458(Player* p) { INCFUNC("asm/func/FUN_0807c458.inc"); }
+NAKED void FUN_0807c458(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c458.inc"); }
 
-NAKED void FUN_0807c49c(Player* p) { INCFUNC("asm/func/FUN_0807c49c.inc"); }
+NAKED void FUN_0807c49c(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c49c.inc"); }
 
-NAKED void FUN_0807c4e0(Player* p) { INCFUNC("asm/func/FUN_0807c4e0.inc"); }
+NAKED void FUN_0807c4e0(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c4e0.inc"); }
 
-NAKED void FUN_0807c524(Player* p) { INCFUNC("asm/func/FUN_0807c524.inc"); }
+NAKED void FUN_0807c524(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c524.inc"); }
 
-NAKED void FUN_0807c568(Player* p) { INCFUNC("asm/func/FUN_0807c568.inc"); }
+NAKED void FUN_0807c568(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c568.inc"); }
 
-NAKED void FUN_0807c5ac(Player* p) { INCFUNC("asm/func/FUN_0807c5ac.inc"); }
+NAKED void FUN_0807c5ac(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c5ac.inc"); }
 
-NAKED void FUN_0807c5f0(Player* p) { INCFUNC("asm/func/FUN_0807c5f0.inc"); }
+NAKED void FUN_0807c5f0(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c5f0.inc"); }
 
 NAKED void FUN_0807c634(Player* p) { INCFUNC("asm/func/FUN_0807c634.inc"); }
 
@@ -941,11 +997,35 @@ void Player_Lock(void) {
   }
 }
 
-NAKED void FUN_0807d298(Player* p) { INCFUNC("asm/func/FUN_0807d298.inc"); }
+void FUN_0807d298(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807d2d0(Player* p) { INCFUNC("asm/func/FUN_0807d2d0.inc"); }
+  if (p != NULL) {
+    FUN_0807b9dc(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
-NAKED void FUN_0807d300(Player* p) { INCFUNC("asm/func/FUN_0807d300.inc"); }
+void FUN_0807d2d0(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807ba14(p, FUN_0807d164());
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807d300(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807ba50(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
 NAKED void Player_MoveTo(Player* p) { INCFUNC("asm/func/Player_MoveTo.inc"); }
 
@@ -955,15 +1035,55 @@ NAKED void FUN_0807d438(Player* p) { INCFUNC("asm/func/FUN_0807d438.inc"); }
 
 NAKED void FUN_0807d4ec(Player* p) { INCFUNC("asm/func/FUN_0807d4ec.inc"); }
 
-NAKED void FUN_0807d560(Player* p) { INCFUNC("asm/func/FUN_0807d560.inc"); }
+void FUN_0807d560(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807d590(Player* p) { INCFUNC("asm/func/FUN_0807d590.inc"); }
+  if (p != NULL) {
+    FUN_0807bc64(p, FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
-NAKED void FUN_0807d5c8(Player* p) { INCFUNC("asm/func/FUN_0807d5c8.inc"); }
+void FUN_0807d590(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807d5f8(Player* p) { INCFUNC("asm/func/FUN_0807d5f8.inc"); }
+  if (p != NULL) {
+    FUN_0807bcb0(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
-NAKED void FUN_0807d628(Player* p) { INCFUNC("asm/func/FUN_0807d628.inc"); }
+void FUN_0807d5c8(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807bcfc(p, FUN_0807d164());
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807d5f8(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807bd44(p, FUN_0807d164());
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807d628(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807bd84(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
 NAKED void FUN_0807d660(Player* p) { INCFUNC("asm/func/FUN_0807d660.inc"); }
 
@@ -973,29 +1093,117 @@ NAKED void FUN_0807d6f8(Player* p) { INCFUNC("asm/func/FUN_0807d6f8.inc"); }
 
 NAKED void FUN_0807d744(Player* p) { INCFUNC("asm/func/FUN_0807d744.inc"); }
 
-NAKED void FUN_0807d7ac(Player* p) { INCFUNC("asm/func/FUN_0807d7ac.inc"); }
+void FUN_0807d7ac(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807c048(p, FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
 NAKED void FUN_0807d7dc(Player* p) { INCFUNC("asm/func/FUN_0807d7dc.inc"); }
 
-NAKED void FUN_0807d828(Player* p) { INCFUNC("asm/func/FUN_0807d828.inc"); }
+void FUN_0807d828(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807d858(Player* p) { INCFUNC("asm/func/FUN_0807d858.inc"); }
+  if (p != NULL) {
+    FUN_0807c11c(p, FUN_0807d164());
+    FUN_08072640(p);
+  }
+}
 
-NAKED void FUN_0807d890(Player* p) { INCFUNC("asm/func/FUN_0807d890.inc"); }
+void FUN_0807d858(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807d8c8(Player* p) { INCFUNC("asm/func/FUN_0807d8c8.inc"); }
+  if (p != NULL) {
+    FUN_0807c200(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
-NAKED void FUN_0807d900(Player* p) { INCFUNC("asm/func/FUN_0807d900.inc"); }
+void FUN_0807d890(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807d938(Player* p) { INCFUNC("asm/func/FUN_0807d938.inc"); }
+  if (p != NULL) {
+    FUN_0807c36c(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
-NAKED void FUN_0807d970(Player* p) { INCFUNC("asm/func/FUN_0807d970.inc"); }
+void FUN_0807d8c8(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807d9a8(Player* p) { INCFUNC("asm/func/FUN_0807d9a8.inc"); }
+  if (p != NULL) {
+    FUN_0807c458(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
-NAKED void FUN_0807d9e0(Player* p) { INCFUNC("asm/func/FUN_0807d9e0.inc"); }
+void FUN_0807d900(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807da18(Player* p) { INCFUNC("asm/func/FUN_0807da18.inc"); }
+  if (p != NULL) {
+    FUN_0807c49c(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807d938(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807c4e0(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807d970(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807c524(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807d9a8(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807c568(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807d9e0(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807c5ac(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807da18(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807c5f0(p, FUN_0807d164(), FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
 NAKED void FUN_0807da50(Player* p) { INCFUNC("asm/func/FUN_0807da50.inc"); }
 

@@ -758,8 +758,8 @@ _0800E0E4: .4byte 0x00002801
 _0800E0E8: .4byte FUN_0800cc04
 _0800E0EC: .4byte 0x00010100
 
-	thumb_func_start FUN_0800e0f0
-FUN_0800e0f0: @ 0x0800E0F0
+	thumb_func_start Entity55C2_OnHit
+Entity55C2_OnHit: @ 0x0800E0F0
 	push {r4, r5, r6, lr}
 	adds r3, r0, #0
 	adds r6, r1, #0
@@ -1118,7 +1118,7 @@ _0800E38A:
 	add r1, sp, #0xc
 	movs r2, #0
 	bl Hitbox_SetPos
-	ldr r1, _0800E3F4 @ =FUN_0800e0f0
+	ldr r1, _0800E3F4 @ =Entity55C2_OnHit
 	adds r0, r4, #0
 	adds r2, r5, #0
 	bl Hitbox_SetHandler
@@ -1144,7 +1144,7 @@ _0800E38A:
 	.align 2, 0
 _0800E3EC: .4byte 0xFFFF0000
 _0800E3F0: .4byte 0x00004001
-_0800E3F4: .4byte FUN_0800e0f0
+_0800E3F4: .4byte Entity55C2_OnHit
 _0800E3F8:
 	str r0, [r5, #0x70]
 	ldrh r0, [r4]

@@ -85,13 +85,12 @@ void EntityE06A_SetupSprite(EntityE06A* p) {
 // hitbox を組み立てて登録する
 void EntityE06A_SetupHitbox(EntityE06A* p) {
   HitboxData* hitbox = &p->hitbox;
-  Vec3 size;
-  Vec3 offset;
+  Vec3 size, offset;
 
   size.x = 50, size.y = 100, size.z = 50;
   offset.x = 0, offset.y = 100, offset.z = 0;
   Hitbox_Init(hitbox, p->id, HBFLAG_UNK_13 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
-  Hitbox_SetAttack(hitbox, 100, 0x78, 0, 0x40002, 0x1E);
+  Hitbox_SetAttack(hitbox, 100, 0x78, 0, HBATTR_18 | HBATTR_1, 0x1E);
   Hitbox_SetHandler(hitbox, nop_080cb254, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   Hitbox_Register(hitbox);
@@ -100,13 +99,12 @@ void EntityE06A_SetupHitbox(EntityE06A* p) {
 // hitbox2 を組み立てて登録する。呼び出し元は未発見
 void EntityE06A_SetupHitbox2(EntityE06A* p) {
   HitboxData* hitbox = &p->hitbox2;
-  Vec3 size;
-  Vec3 offset;
+  Vec3 size, offset;
 
   size.x = 50, size.y = 100, size.z = 50;
   offset.x = 0, offset.y = 100, offset.z = 0;
   Hitbox_Init(hitbox, p->id, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
-  Hitbox_SetPowerAndAttributes(hitbox, 10, 2, 1);
+  Hitbox_SetPowerAndAttributes(hitbox, 10, HBATTR_1, 1);
   Hitbox_SetHandler(hitbox, nop_080cb258, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   Hitbox_Register(hitbox);

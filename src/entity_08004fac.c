@@ -39,9 +39,34 @@ NAKED s32 FUN_08004ba4(void) { INCFUNC("asm/func/FUN_08004ba4.inc"); }
 
 void FUN_08004c78(void) { gEntity08004fac = NULL; }
 
-NAKED s32 Entity08004fac_LinkNode(Entity08004facNode* node) { INCFUNC("asm/func/Entity08004fac_LinkNode.inc"); }
+s32 Entity08004fac_LinkNode(Entity08004facNode* node) {
+  node->prev = NULL;
+  node->next = gEntity08004fac->head;
 
-NAKED s32 Entity08004fac_UnlinkNode(Entity08004facNode* node) { INCFUNC("asm/func/Entity08004fac_UnlinkNode.inc"); }
+  if (node->next != NULL) {
+    node->next->prev = node;
+  }
+
+  gEntity08004fac->head = node;
+  return 0;
+}
+
+s32 Entity08004fac_UnlinkNode(Entity08004facNode* node) {
+  Entity08004facNode* prev = node->prev;
+  Entity08004facNode* next = node->next;
+
+  if (prev != NULL) {
+    prev->next = next;
+  } else {
+    gEntity08004fac->head = next;
+  }
+
+  if (next != NULL) {
+    next->prev = prev;
+  }
+
+  return 0;
+}
 
 NAKED s32 Entity08004fac_AddNode(u16 id, s16* pos, u8 param_3, u8 param_4, u16 param_5) { INCFUNC("asm/func/Entity08004fac_AddNode.inc"); }
 
@@ -73,7 +98,7 @@ s32 Entity08004fac_Init(Entity08004fac* p, u32 param_2) {
 
 NAKED Entity08004fac* Entity08004fac_Create(u32 param_1) { INCFUNC("asm/func/Entity08004fac_Create.inc"); }
 
-NAKED s32 VM_Sub3E1F(void) { INCFUNC("asm/func/VM_Sub3E1F.inc"); }
+s32 VM_Sub3E1F(void) { return Entity08004fac_FreeNodesById(VM_GetKeywordValue('n', 0)); }
 
 // '.n' が指すノードを衝突マップから外す
 s32 FUN_08005004(void) { return Entity08004fac_DisableNodesById(VM_GetKeywordValue('n', 0)); }

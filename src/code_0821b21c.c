@@ -1,8 +1,12 @@
+#include "font.h"
 #include "global.h"
 
 NAKED bool32 FUN_0821b21c(unknown* param_1, s32 val1, s32 val2, u16 val3) { INCFUNC("asm/func/FUN_0821b21c.inc"); }
 
-NAKED void FUN_0821b28c(u32 x8, u32 y8, u32 w8, u32 h8) { INCFUNC("asm/func/FUN_0821b28c.inc"); }
+void FUN_0821b28c(u32 x8, u32 y8, u32 w8, u32 h8) {
+  FUN_0822ea60(x8, y8, w8, h8);
+  FUN_0822eadc(x8, y8, w8, h8);
+}
 
 /**
  * @brief 文字列を描画する(セーブデータ選択画面で使用されているが、NPCなどとの会話やメニュー画面では使用されていない)

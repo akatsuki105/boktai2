@@ -1,9 +1,63 @@
+#include "animation.h"
 #include "entity.h"
 #include "global.h"
+#include "player.h"
+#include "shadow.h"
+#include "sprite_aux.h"
+#include "struct.h"
+#include "video.h"
 
 typedef struct {
-  Entity e;  // 0x0, ENTITY_UNK_11
-  u8 unk_18[3936 - 0x18];
+  AuxSprite sprite;       // 0x00, Entity8AAB_Destroy が AuxSprite_Remove に渡す
+  AuxSpriteGfx gfx;       // 0x2C, Video_GetAuxSprite(HINT_PANEL)
+  u8 unk_48[216 - 0x48];  // 0x48, まだ未解析
+} Entity8AABElem;
+static_assert(sizeof(Entity8AABElem) == 216);
+
+typedef struct {
+  Entity e;                   // 0x000, ENTITY_UNK_11
+  Player* player;             // 0x018, _Init が gPlayerPtr[0] を入れる
+  Entity8AABElem elems[16];   // 0x01C, _Init が16個ぶん Video_GetAuxSprite / AuxSprite_Add する
+  AuxSprite sprite;           // 0xD9C, _Destroy が AuxSprite_Remove に渡す
+  AuxSpriteGfx gfx;           // 0xDC8, Video_GetAuxSprite(OTNK_97D3)
+  u8 unk_de4[0xDF4 - 0xDE4];  // 0xDE4, まだ未解析
+  ParticleShadow shadow;      // 0xDF4, ParticleShadow_Init(&shadow, &sprite.pos, 0) のあと Hide する
+  AuxAnimFile* anim;          // 0xE34, GetFile(DIR_ANIMATION, 0xC6A0)
+  u16 unk_e38;                // 0xE38, _Init が 0 を入れる
+  u8 unk_e3a;                 // 0xE3A, _Init が 1 を入れる
+  u8 unk_e3b;                 // 0xE3B, まだ未解析
+  u16 unk_e3c;                // 0xE3C, _Init が 0 を入れる
+  u8 unk_e3e[2];              // 0xE3E, まだ未解析
+  Entity2UnkData unk_e40;     // 0xE40, _Destroy が FUN_0823b284 に渡す
+  u16 unk_e84;                // 0xE84, _Init が書き込む
+  u16 unk_e86;                // 0xE86, _Init が書き込む
+  u16 unk_e88;                // 0xE88, _Init が書き込む
+  u8 unk_e8a[2];              // 0xE8A, まだ未解析
+  u16 unk_e8c;                // 0xE8C, _Init が 0x19 を入れる
+  u16 unk_e8e;                // 0xE8E, _Init が 0x66 を入れる
+  u16 unk_e90;                // 0xE90, _Init が 0 を入れる
+  u8 unk_e92[0xE9C - 0xE92];  // 0xE92, まだ未解析
+  u16 unk_e9c;                // 0xE9C, _Init が書き込む
+  u8 unk_e9e[0xEA4 - 0xE9E];  // 0xE9E, まだ未解析
+  rgb555 pltt0[16];           // 0xEA4, _Init が gfx.pltt の 0x10..0x1F 番を写す
+  rgb555 pltt1[32];           // 0xEC4, _Init が gfx.pltt の 0x00..0x0F 番を2組ぶん写す
+  rgb555* plttSrc;            // 0xF04, gfx.pltt の写し
+  u8 unk_f08[0xF1A - 0xF08];  // 0xF08, まだ未解析
+  u16 unk_f1a;                // 0xF1A, _Init が 200 を入れる
+  u16 unk_f1c;                // 0xF1C, _Init が 0 を入れる
+  u8 unk_f1e[4];              // 0xF1E, まだ未解析
+  u8 unk_f22;                 // 0xF22, _Init が 0 を入れる
+  u8 unk_f23[4];              // 0xF23, まだ未解析
+  u8 unk_f27;                 // 0xF27, _Init が 0 を入れる
+  u8 unk_f28[0xF36 - 0xF28];  // 0xF28, まだ未解析
+  u16 unk_f36;                // 0xF36, _Init が 0 を入れる
+  u8 unk_f38[0xF46 - 0xF38];  // 0xF38, まだ未解析
+  u16 unk_f46;                // 0xF46, _Destroy が FUN_0823b2d0 に渡す ID
+  u8 unk_f48[0xF50 - 0xF48];  // 0xF48, まだ未解析
+  u32 unk_f50;                // 0xF50, _Init が 0 を入れる
+  u32 unk_f54;                // 0xF54, _Init が 0 を入れる
+  u8 unk_f58[4];              // 0xF58, まだ未解析
+  u32 unk_f5c;                // 0xF5C, _Init が 0 を入れる
 } Entity8AAB;
 static_assert(sizeof(Entity8AAB) == 3936);
 

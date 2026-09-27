@@ -16,6 +16,15 @@ gSpriteSetFile25 = 0x08C5A80C;
 
 gItemEffectHandlers = 0x085ACF7C;
 
+/* data/rodata.bin の中にある " " (0x20 0x00), FUN_08049e5c が空文字として渡す */
+gBlankText = 0x085AB548;
+
+/* data/rodata4.bin の中にある Vec3 3つ組, エレベータが乗り手との距離を測るときの許容範囲 (±) */
+gElevatorRanges = 0x085AE0D0;
+
+/* data/*.bin にまだ入っている u8[][2], gClock.spanOfTime で引く (FUN_0823ce10 / FUN_0823ce3c) */
+u8_ARRAY_08dbd798 = 0x08DBD798;
+
 /* gba-mus-ripper が出したやつ(意味はわからない) */
 voicegroup000 = 0x08252fc0;
 voicegroup019 = 0x0825a280;
@@ -209,6 +218,7 @@ SECTIONS {
 			src/entity_723e.o (.text);
 			src/entity_08052ffc.o (.text);
 			src/entity_5645.o (.text);
+			src/entity_56dc.o (.text);
 			src/code_08052eb8.o (.text);
 			src/entity_0805f2dc.o (.text);
 			src/entity_0805f68c.o (.text);
@@ -226,6 +236,10 @@ SECTIONS {
 			src/coffin_immortal.o (.text);
 			src/entity_cc28.o (.text);
 			src/entity_1b24.o (.text);
+			src/entity_5ccc.o (.text);
+			src/entity_dc21.o (.text);
+			src/entity_1dbe.o (.text);
+			src/entity_71ba.o (.text);
 			src/code_080917e4.o (.text);
 			src/code_080a6c94.o (.text);
 			src/entity_92be.o (.text);

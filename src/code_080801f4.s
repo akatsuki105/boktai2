@@ -8144,7 +8144,7 @@ _08088414:
 	cmp r0, #0x32
 	bgt _08088426
 	adds r0, r6, #0
-	bl FUN_081d2230
+	bl Elevator_FindAtPos
 	cmp r0, #0
 	bne _08088426
 	movs r0, #1

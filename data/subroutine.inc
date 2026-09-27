@@ -19,7 +19,7 @@ gSubroutineTable:
 	.4byte 0x0623, Entity0623_Create
 	.4byte 0x064E, FUN_081df784
 	.4byte 0x0740, FUN_080ef55c
-	.4byte 0x075C, FUN_080a94c0
+	.4byte 0x075C, Entity4063_GetRemaining
 	.4byte 0x0866, FUN_0800a2f8
 	.4byte 0x08F4, Entity08F4_Create
 	.4byte 0x0955, FUN_0800720c
@@ -149,7 +149,7 @@ gSubroutineTable:
 	.4byte 0x3DF7, Credits_Create
 	.4byte 0x3E17, FUN_082241ac
 	.4byte 0x3E1F, VM_Sub3E1F
-	.4byte 0x3E91, FUN_081d52a0
+	.4byte 0x3E91, Elevator_Destroy
 	.4byte 0x3E93, FUN_0823d408
 	.4byte 0x3EA2, FUN_08240550
 	.4byte 0x3ED0, FUN_08240680
@@ -215,14 +215,14 @@ gSubroutineTable:
 	.4byte 0x546C, FUN_0807db58
 	.4byte 0x5470, FUN_08209fc8
 	.4byte 0x54C1, FUN_0808fd00
-	.4byte 0x54DF, FUN_081d53cc
+	.4byte 0x54DF, Elevator_SetPltt
 	.4byte 0x5517, FUN_08041bd4
 	.4byte 0x554B, FUN_080a07f0
 	.4byte 0x55C2, Entity55C2_Create
 	.4byte 0x55C5, FUN_080ac5f4
 	.4byte 0x5645, Entity5645_Create
 	.4byte 0x56AD, FUN_0820c3e0
-	.4byte 0x56DC, FUN_08055704
+	.4byte 0x56DC, Entity56DC_Create
 	.4byte 0x571D, Entity571D_Create
 	.4byte 0x5844, FUN_081d5450
 	.4byte 0x58D7, FUN_0807d660
@@ -274,7 +274,7 @@ gSubroutineTable:
 	.4byte 0x7017, FUN_0807b0c0
 	.4byte 0x706D, EnemySandWorm_Create
 	.4byte 0x7117, FUN_0807b6b8
-	.4byte 0x71BA, FUN_080a0730
+	.4byte 0x71BA, Entity71BA_Create
 	.4byte 0x71C6, item_082427e0
 	.4byte 0x71E7, TextBoxChoice_SetTextFromScript
 	.4byte 0x723E, Entity723E_Create
@@ -402,7 +402,7 @@ gSubroutineTable:
 	.4byte 0x9DFE, FUN_082097f4
 	.4byte 0x9E8B, FUN_080b39c8
 	.4byte 0x9E8D, EnemyCrow_Create
-	.4byte 0x9EC0, FUN_080027bc
+	.4byte 0x9EC0, Entity6978_SetRequestScripted
 	.4byte 0x9FB7, FUN_08091684
 	.4byte 0x9FFD, FUN_0807d298
 	.4byte 0xA062, FUN_0800db80
@@ -447,7 +447,7 @@ gSubroutineTable:
 	.4byte 0xAEB2, FUN_080e18e0
 	.4byte 0xAF33, EntityAF33_Create
 	.4byte 0xAF43, FUN_0807d900
-	.4byte 0xAF8E, FUN_080a94dc
+	.4byte 0xAF8E, Entity4063_Cancel
 	.4byte 0xB005, FUN_080a12d8
 	.4byte 0xB0B4, FUN_08009124
 	.4byte 0xB0BC, SaveSequence_Create
@@ -625,7 +625,7 @@ gSubroutineTable:
 	.4byte 0xF200, FUN_080ef154
 	.4byte 0xF33F, FUN_082077f8
 	.4byte 0xF341, Camera_Reset
-	.4byte 0xF404, FUN_080036e0
+	.4byte 0xF404, EntityD9AE_ReleaseAll
 	.4byte 0xF41A, EntityF41A_Create
 	.4byte 0xF5EB, CreatePlayer
 	.4byte 0xF661, FUN_080a4f78

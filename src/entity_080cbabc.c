@@ -33,16 +33,16 @@ s32 Entity080cbabc_Destroy(Entity080cbabc* p) {
   return 0;
 }
 
-void FUN_080cb8f8(Entity080cbabc* p, Vec3* pos, s32 metaspriteIdx, s32 plttID) {
+void FUN_080cb8f8(Entity080cbabc* p, Vec3* pos, s32 poseIdx, s32 plttID) {
   Video_GetAuxSprite(&p->gfx, SPRITE_210E);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
-  AuxSprite_SetPoseIdx(&p->sprite, metaspriteIdx);
+  AuxSprite_SetPoseIdx(&p->sprite, poseIdx);
   Video_SetAuxSpritePltt(&p->gfx, plttID + 44);
   p->sprite.pos = *pos;
 }
 
 // 弾の当たり判定を作って登録する
-void FUN_080cb94c(Entity080cbabc* p, s32 angle, s32 power, s32 unk_40, s32 attributes, s32 unk_44) {
+void FUN_080cb94c(Entity080cbabc* p, s32 angle, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 halfSize;
   Vec3 offset;
@@ -50,21 +50,21 @@ void FUN_080cb94c(Entity080cbabc* p, s32 angle, s32 power, s32 unk_40, s32 attri
   halfSize.x = 30, halfSize.y = 30, halfSize.z = 30;
   offset.x = 0, offset.y = 0, offset.z = 0;
   Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_8 | HBFLAG_UNK_0, 0, 1, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, unk_40, 0x10, attributes, unk_44);
+  Hitbox_SetAttack(hitbox, power, unk_40, 0x10, attrs, unk_44);
   Hitbox_SetHandler(hitbox, FUN_080cb7b4, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   hitbox->angle = angle;
   Hitbox_Register(hitbox);
 }
 
-NAKED s32 Entity080cbabc_Init(Entity080cbabc* p, Vec3* pos, s32 metaspriteIdx, s32 angle, s32 speed, s32 plttID, s32 param_7, s32 param_8, s32 param_9, u32 param_10) { INCFUNC("asm/func/Entity080cbabc_Init.inc"); }
+NAKED s32 Entity080cbabc_Init(Entity080cbabc* p, Vec3* pos, s32 poseIdx, s32 angle, s32 speed, s32 plttID, s32 param_7, s32 param_8, s32 param_9, u32 param_10) { INCFUNC("asm/func/Entity080cbabc_Init.inc"); }
 
-Entity080cbabc* Entity080cbabc_Create(Vec3* pos, s32 metaspriteIdx, s32 angle, s32 speed, s32 plttID, s32 param_6, s32 param_7, s32 param_8, u32 param_9) {
+Entity080cbabc* Entity080cbabc_Create(Vec3* pos, s32 poseIdx, s32 angle, s32 speed, s32 plttID, s32 param_6, s32 param_7, s32 param_8, u32 param_9) {
   Entity080cbabc* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity080cbabc));
 
   if (p != NULL) {
     SetEntityRoutine(p, Entity080cbabc_Update, Entity080cbabc_Destroy);
-    if (Entity080cbabc_Init(p, pos, metaspriteIdx, angle, speed, plttID, param_6, param_7, param_8, param_9) < 0) {
+    if (Entity080cbabc_Init(p, pos, poseIdx, angle, speed, plttID, param_6, param_7, param_8, param_9) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

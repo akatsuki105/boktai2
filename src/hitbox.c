@@ -133,17 +133,17 @@ void Hitbox_SetPower(HitboxData* p, u16 power, u16 unk_40) {
   p->unk_40 = unk_40;
 }
 
-void Hitbox_SetAttack(HitboxData* p, s32 power, s32 unk_40, s32 weakness, s32 attributes, s32 unk_44) {
+void Hitbox_SetAttack(HitboxData* p, s32 power, s32 unk_40, s32 weakness, HitboxAttributes attrs, s32 unk_44) {
   p->power = power;
   p->unk_40 = unk_40;
   p->weakness = weakness;
-  p->attributes = attributes;
+  p->attributes = attrs;
   p->unk_44 = unk_44;
 }
 
-void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 power, u32 attributes, u32 weakness) {
+void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 power, HitboxAttributes attrs, u32 weakness) {
   p->power = power;
-  p->attributes = attributes;
+  p->attributes = attrs;
   p->weakness = weakness;
 }
 
@@ -165,7 +165,7 @@ NON_MATCH void Hitbox_ApplyDamage(HitboxData* a, HitboxData* b) {
   if (b->damage != 0) {
     return;
   }
-  if (a->attributes & (1 << 12)) {
+  if (a->attributes & HBATTR_12) {
     damage = a->power;
   } else {
     damage = a->power - b->power;
@@ -173,7 +173,7 @@ NON_MATCH void Hitbox_ApplyDamage(HitboxData* a, HitboxData* b) {
   if (damage <= 0) {
     damage = 1;
   }
-  if (a->attributes & (1 << 13)) {
+  if (a->attributes & HBATTR_13) {
     def = 0;
   } else {
     def = b->attributes & 0x7F;

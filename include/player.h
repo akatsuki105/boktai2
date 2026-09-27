@@ -119,7 +119,7 @@ typedef struct Player {
   u8 unk_1bc;          // 0x1BC, Entity2UnkData.unk_18 が &Player.unk_1bc
   u8 unk_1bd[0x230 - 0x1BD];
   EntityMsgBox msgbox;  // 0x230, FUN_0807ddd4 が EntityMsgBus_Unregister に渡す
-  PlayerArmor armor;  // 0x264
+  PlayerArmor armor;    // 0x264
   u16 unk_278;
   s16 unk_27a;
   u32 unk_27c;
@@ -128,7 +128,7 @@ typedef struct Player {
   bool8 isEquippedMagicAvailableForm;  // 0x282, 現在のプレイヤーのフォームで装備している魔法が使用可能かどうか (例えば、赤ジャンゴならエンチャントソルならtrue, チェンジウルフならfalse), フォームと魔法の組み合わせのみで決まる(MPコストや太陽ゲージとかは関係ない), TODO: もっと短い名前を考える
   bool8 isEnchanted;                   // 0x283, エンチャント○○ がアクティブかどうか(プレイヤーが対応する色に光っているかどうか)
   u8 equippedMagicBasicCost;           // 0x284, 装備している魔法の消費MP(マジックローブなどの影響を抜いた元々の消費MP)
-  u8 unk_285;  // 0x285, FUN_0807b5d0 が 1 を、FUN_0807b5f8 が 0 を書く
+  u8 unk_285;                          // 0x285, FUN_0807b5d0 が 1 を、FUN_0807b5f8 が 0 を書く
   u8 unk_286[0x28C - 0x286];
   struct Input* input_28c;  // 0x28C, &gInput[n]
   Keys16 unk_290[10];       // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
@@ -158,8 +158,8 @@ typedef struct Player {
   bool8 isSabata;  // 0x38E, 根拠: Player_Init_Helper_08065270
   u8 unk_38f;
   u16 unk_390;
-  u16 unk_392;
-  u8 unk_394;  // 0x394, FUN_0807a9b8 が 1 を書く
+  u16 elevatorID;  // 0x392, 搭乗中のエレベータのID
+  u8 unk_394;      // 0x394, FUN_0807a9b8 が 1 を書く
   u8 unk_395[3];
   void* ptr_398;  // 0x398, FUN_0807a9b8 の第2引数
   u8 unk_39c[0x3BA - 0x39C];
@@ -175,11 +175,11 @@ typedef struct Player {
   u8 magicFired;     // 0x3FA, 魔法の発動フレームに FUN_08064d6c (太陽ゲージ判定) の結果が入る。1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
   u8 dynamiteCount;  // 0x3FB, 生存中の Entity080a8ff8 の数。Entity080a8ff8_Init が +1、消滅時に -1。MAGIC_DYNAMITE は 0 でないと再発動できない (FUN_08064db0)
   u8 unk_3fc[4];
-  u8 angle_400;      // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
-  u8 angle_401;      // 0x401, 同上
-  u8 unk_402;  // 0x402, FUN_0807a904 が +1 する
+  u8 angle_400;  // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
+  u8 angle_401;  // 0x401, 同上
+  u8 unk_402;    // 0x402, FUN_0807a904 が +1 する
   u8 unk_403[0x43A - 0x403];
-  u16 unk_43a;  // 0x43A, FUN_0807b580 が 1 を書く
+  u16 unk_43a;     // 0x43A, FUN_0807b580 が 1 を書く
   u16 unk_43c[3];  // 0x43C, 多分状態異常の残り時間
   u8 unk_442[86];
   PlayerFunc fn_498;  // 0x498, FUN_08078d5c
@@ -190,7 +190,9 @@ typedef struct Player {
   s32 scriptID_4b0;  // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4c4 - 0x4b4];
   Eff082473e0Emitter unk_4c4;  // 0x4C4
-  u8 unk_5fc[0x64C - 0x5FC];
+  u8 unk_5fc[0x60E - 0x5FC];
+  u8 unk_60e;  // 0x60E, FUN_081d40b4 がエレベータ搭乗中に bit0 を立てる
+  u8 unk_60f[0x64C - 0x60F];
   PlayerParticleGroup1 ptcl_64c;  // 0x64C, FUN_08061458
   PlayerParticleGroup1 ptcl_67c;  // 0x67C, FUN_0806161c
   struct {

@@ -925,8 +925,8 @@ _080036CC:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_080036e0
-FUN_080036e0: @ 0x080036E0
+	thumb_func_start EntityD9AE_ReleaseAll
+EntityD9AE_ReleaseAll: @ 0x080036E0
 	push {r4, r5, r6, lr}
 	ldr r0, _080036F0 @ =0x03000020
 	ldr r6, [r0]
@@ -2887,7 +2887,7 @@ _0800454E:
 EntityD9AE_Destroy: @ 0x08004568
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_080036e0
+	bl EntityD9AE_ReleaseAll
 	ldr r0, [r4, #0x70]
 	bl Free
 	ldr r1, _08004584 @ =0x03000020

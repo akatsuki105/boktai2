@@ -1,9 +1,13 @@
 #include "global.h"
 #include "save.h"
+#include "time.h"
+#include "video.h"
 #include "vm.h"
 #include "weapon.h"
 
 extern s32 s32_0300446c;
+extern u32 gSentinel02020400;
+extern const u8 u8_ARRAY_08dbd798[][2];  // 0x08DBD798
 static const u8 u8_ARRAY_08dbd83c[684];
 
 NAKED void FUN_0823cd04(void) { INCFUNC("asm/func/FUN_0823cd04.inc"); }
@@ -16,9 +20,16 @@ NAKED unknown* FUN_0823cdc0(u32 param_1, unknown* param_2, s32 param_3, s32 para
 
 NAKED unknown* FUN_0823cdf8(u16 param_1) { INCFUNC("asm/func/FUN_0823cdf8.inc"); }
 
-NAKED s32 FUN_0823ce10(unknown* param_1, unknown* param_2) { INCFUNC("asm/func/FUN_0823ce10.inc"); }
+s32 FUN_0823ce10(u16* param_1, u16* param_2) {
+  *param_1 = u8_ARRAY_08dbd798[gClock.spanOfTime][0];
+  *param_2 = u8_ARRAY_08dbd798[gClock.spanOfTime][1];
+  return 0;
+}
 
-NAKED void FUN_0823ce3c(unknown* param_1, unknown* param_2) { INCFUNC("asm/func/FUN_0823ce3c.inc"); }
+void FUN_0823ce3c(u16* param_1, u16* param_2) {
+  *param_1 = u8_ARRAY_08dbd798[gClock.spanOfTime][0];
+  *param_2 = u8_ARRAY_08dbd798[gClock.spanOfTime][1];
+}
 
 NAKED void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7) { INCFUNC("asm/func/FUN_0823ce68.inc"); }
 
@@ -30,9 +41,19 @@ NAKED s32 FUN_0823d03c(void) { INCFUNC("asm/func/FUN_0823d03c.inc"); }
 
 NAKED s32 FUN_0823d0e8(void) { INCFUNC("asm/func/FUN_0823d0e8.inc"); }
 
-NAKED void FUN_0823d1d8(void) { INCFUNC("asm/func/FUN_0823d1d8.inc"); }
+// VM: 指定した BG を隠す
+void FUN_0823d1d8(void) {
+  u16 mask = DISPCNT_BG0_ON << (u16)VM_GetValue();
 
-NAKED void FUN_0823d1fc(void) { INCFUNC("asm/func/FUN_0823d1fc.inc"); }
+  gStagedDISPCNT &= ~mask;
+}
+
+// VM: 指定した BG を表示する
+void FUN_0823d1fc(void) {
+  u16 mask = DISPCNT_BG0_ON << (u16)VM_GetValue();
+
+  gStagedDISPCNT |= mask;
+}
 
 void FUN_0823d220(void) { SoftReset_0823a928(); }
 
@@ -68,9 +89,19 @@ const WeaponData* FUN_0823d414(s32 idx) { return &gWeaponDB[idx]; }
 
 NAKED void FUN_0823d428(void) { INCFUNC("asm/func/FUN_0823d428.inc"); }
 
-NAKED void FUN_0823d4ac(void) { INCFUNC("asm/func/FUN_0823d4ac.inc"); }
+void FUN_0823d4ac(void) {
+  if (gSentinel02020400 != 0x516B92EE) {
+    gSentinel02020400 = 0x516B92EE;
+  }
+}
 
-NAKED bool32 FUN_0823d4c8(void) { INCFUNC("asm/func/FUN_0823d4c8.inc"); }
+bool32 FUN_0823d4c8(void) {
+  if (gSentinel02020400 == 0x516B92EE) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
 
 NAKED s32 UpdateSolDarkSide(void) { INCFUNC("asm/func/UpdateSolDarkSide.inc"); }
 
@@ -99,7 +130,7 @@ u16 FUN_0823d700(void) { return gSystemSaveData->unk_16; }
 
 NAKED void FUN_0823d70c(void) { INCFUNC("asm/func/FUN_0823d70c.inc"); }
 
-NAKED void FUN_0823d748(void) { INCFUNC("asm/func/FUN_0823d748.inc"); }
+void FUN_0823d748(void) { gStat->mapInitScriptID = VM_GetValue(); }
 
 // なんかのデータですがレイアウト不明なのでバイト配列として定義
 static const u8 u8_ARRAY_08dbd83c[684] = {

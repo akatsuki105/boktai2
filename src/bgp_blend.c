@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "video.h"
 
 typedef u8 BgPlttBlendFlags;                    // BgPlttBlend.flags
 #define BGP_BLEND_INTERPOLATE (1 << 0)          // セットされているなら、書き出し時に補間する, クリアされている場合は単純コピーする
@@ -32,7 +33,7 @@ static_assert(sizeof(BgPlttBlender) == 860);
 
 IWRAM_DATA BgPlttBlender* gBgPlttBlender = NULL;  // 0x0300008C
 
-NAKED void BgPlttBlender_SavePltt(BgPlttBlender* p) { INCFUNC("asm/func/BgPlttBlender_SavePltt.inc"); }
+void BgPlttBlender_SavePltt(BgPlttBlender* p) { CpuCopy32(gBgPlttBuffer, p->savedPltt, sizeof(p->savedPltt)); }
 
 NAKED s32 BgPlttBlender_UpdateSlot(BgPlttBlender* p, BgPlttBlend* slot) { INCFUNC("asm/func/BgPlttBlender_UpdateSlot.inc"); }
 

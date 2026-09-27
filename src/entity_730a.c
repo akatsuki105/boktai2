@@ -16,7 +16,7 @@ Entity2UnkData* FUN_0823b2d0(u16 id);
 void FUN_08019814(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void MapPltt_PushCommand(s32 val, s32 count, u32* args);
-void FUN_08002800(s32 val, s32 count, s32* args);
+void Entity6978_SetRequest(s32 val, s32 count, s32* args);
 void RingoDemoAnim_Create(Vec3* pos, EntityMsgBox* box);
 
 void FUN_08022668(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
@@ -120,7 +120,7 @@ NON_MATCH void FUN_080227f4(Entity730A* p, EntityMsgBox* node, EntityMsg* data) 
   if (args[0] == 0) {
     kind = 1;
   }
-  FUN_08002800(kind, 5, cmd);
+  Entity6978_SetRequest(kind, 5, cmd);
 #else
   INCFUNC("asm/func/FUN_080227f4.inc");
 #endif

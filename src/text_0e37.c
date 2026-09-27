@@ -53,7 +53,7 @@ void TextBox_ClearGlobal(void) { gTextBox = NULL; }
 
 bool32 TextBox_IsOpen(void) { return gTextBox != NULL; }
 
-NAKED s32 TextBox_LoadBgPltt(TextBox* p, u16 fileID) { INCFUNC("asm/func/TextBox_LoadBgPltt.inc"); }
+NAKED s32 TextBox_LoadBgPltt(TextBox* p, s32 fileID) { INCFUNC("asm/func/TextBox_LoadBgPltt.inc"); }
 
 // パレットファイルの 500 バイト目から 16色を BG パレットの最終ブロックへ送る
 void TextBox_UploadBgPltt(TextBox* p) { CpuCopy32((u8*)p->bgPltt + 500, &gBgPlttBuffer[240], 16 * sizeof(rgb555)); }
@@ -77,7 +77,15 @@ s32 TextBox_Open(void) { return TextBox_Start(!VM_SeekToKeyword('r') ? VM_GetPC(
 
 NAKED s32 TextBox_ShowLine(s32 line) { INCFUNC("asm/func/TextBox_ShowLine.inc"); }
 
-NAKED s32 TextBox_SetPendingLineScripted(void) { INCFUNC("asm/func/TextBox_SetPendingLineScripted.inc"); }
+s32 TextBox_SetPendingLineScripted(void) {
+  TextBox* p = gTextBox;
+
+  if (p != NULL && p->scriptPc != NULL) {
+    p->pendingLine = VM_GetValue();
+  }
+
+  return 0;
+}
 
 NAKED s32 TextBox_SetText(char* text) { INCFUNC("asm/func/TextBox_SetText.inc"); }
 
@@ -91,7 +99,14 @@ s32 TextBox_SetRectScripted(void) {
   return TextBox_SetRect(x, y, w, VM_GetValue());
 }
 
-NAKED s32 TextBox_SetVarValue(s32 idx, s32 value) { INCFUNC("asm/func/TextBox_SetVarValue.inc"); }
+s32 TextBox_SetVarValue(s32 idx, s32 value) {
+  if (gTextBox == NULL) {
+    return -1;
+  }
+
+  TextRenderer_SetVar(&gTextBox->renderer, idx, value);
+  return 0;
+}
 
 s32 TextBox_SetVar(void) {
   s32 idx = VM_GetValue();
@@ -120,13 +135,36 @@ NAKED s32 TextBox_SetAutoAdvance(s32 enable, u16 delay, u32 unk_194) { INCFUNC("
 
 NAKED s32 TextBox_EnableAutoAdvance(void) { INCFUNC("asm/func/TextBox_EnableAutoAdvance.inc"); }
 
-NAKED s32 TextBox_SetBgPltt(s32 fileID) { INCFUNC("asm/func/TextBox_SetBgPltt.inc"); }
+s32 TextBox_SetBgPltt(s32 fileID) {
+  TextBox* p = gTextBox;
+
+  if (p == NULL) {
+    return -1;
+  }
+
+  if (TextBox_LoadBgPltt(p, fileID) < 0) {
+    return -1;
+  }
+
+  TextBox_UploadBgPltt(p);
+  return 0;
+}
 
 s32 TextBox_SetBgPlttScripted(void) { return TextBox_SetBgPltt(VM_GetValue()); }
 
 NAKED s32 TextBox_ConfigureScripted(void) { INCFUNC("asm/func/TextBox_ConfigureScripted.inc"); }
 
-NAKED s32 TextBox_SetWait(s32 frames) { INCFUNC("asm/func/TextBox_SetWait.inc"); }
+s32 TextBox_SetWait(s32 frames) {
+  TextBox* p = gTextBox;
+
+  if (p == NULL) {
+    return -1;
+  }
+
+  p->waitFrames = frames;
+  p->waitTimer = 0;
+  return 0;
+}
 
 s32 TextBox_SetWaitScripted(void) { return TextBox_SetWait(VM_GetValue()); }
 
@@ -154,13 +192,30 @@ NAKED void TextBox_StateRenderAll(TextBox* p) { INCFUNC("asm/func/TextBox_StateR
 
 NAKED s32 TextBox_Update(TextBox* p) { INCFUNC("asm/func/TextBox_Update.inc"); }
 
-NAKED s32 TextBox_Destroy(TextBox* p) { INCFUNC("asm/func/TextBox_Destroy.inc"); }
+s32 TextBox_Destroy(TextBox* p) {
+  MainSprite_Remove(&p->arrow);
+  MainSprite_Remove(&p->face);
+  gTextBox = NULL;
+  return 0;
+}
 
 NAKED s32 TextBox_Init(TextBox* p, u32 _) { INCFUNC("asm/func/TextBox_Init.inc"); }
 
 NAKED TextBox* TextBox_Create(u32 _) { INCFUNC("asm/func/TextBox_Create.inc"); }
 
-NAKED s32 TextBox_GetRect(s32* rect) { INCFUNC("asm/func/TextBox_GetRect.inc"); }
+s32 TextBox_GetRect(s32* rect) {
+  TextBox* p = gTextBox;
+
+  if (p == NULL) {
+    return -1;
+  }
+
+  rect[0] = p->renderer.rectX;
+  rect[1] = p->renderer.rectY;
+  rect[2] = p->renderer.rectW;
+  rect[3] = p->renderer.rectH;
+  return 0;
+}
 
 s32 TextBox_GetVarWidth(s32 idx) {
   TextBox* p = gTextBox;

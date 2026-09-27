@@ -1,7 +1,7 @@
 ---
 name: ghidra-struct
-description: Recover C struct layouts in Ghidra for GBA decompilation through the GhidraMCP HTTP server (http://127.0.0.1:8089) — find every function and struct that uses a type, gather evidence from the code (callee parameter types, allocation sizes, loop strides, load/store width and signedness, GBA hardware semantics), check existing types before inventing new ones, and edit Ghidra data types without packing fields or wiping function signatures. Use this whenever the user asks to analyze / 解析 / 調べる a struct or type in Ghidra, fill unknown fields (unk_XX, field_0x...), determine or verify a struct's size, split or merge struct types, retype function signatures around a struct, or otherwise mentions Ghidra together with 構造体 / 型 / フィールド / サイズ — even if they don't name this skill. Invoked as `/ghidra-struct TypeName` to run one full analysis pass on that type.
-argument-hint: <TypeName> [--reflect]
+description: Recover C struct layouts in Ghidra for GBA decompilation through the GhidraMCP HTTP server (http://127.0.0.1:8089) — find every function and struct that uses a type, gather evidence from the code (callee parameter types, allocation sizes, loop strides, load/store width and signedness, GBA hardware semantics), check existing types before inventing new ones, and edit Ghidra data types without packing fields or wiping function signatures. Use this whenever the user asks to analyze / 解析 / 調べる a struct or type in Ghidra, fill unknown fields (unk_XX, field_0x...), determine or verify a struct's size, split or merge struct types, retype function signatures around a struct, or otherwise mentions Ghidra together with 構造体 / 型 / フィールド / サイズ — even if they don't name this skill. Invoked as `/ghidra-struct TypeName` to run one full analysis pass on that type; `-r`/`--reflect` also mirrors the result into the repository, `-n`/`--name` renames the type and its functions where the evidence is solid, `-p`/`--push` verifies the build and commits+pushes, and the short forms bundle (`-rp`, `-rnp`).
+argument-hint: <TypeName> [-r|--reflect] [-n|--name] [-p|--push]
 ---
 
 # Ghidra struct analysis
@@ -17,22 +17,36 @@ works even when the MCP connection is down. Endpoint cheat sheet and the API
 behaviors that have caused damage: `references/http-api.md` — read it before
 the first write.
 
-## Invocation: `/ghidra-struct <TypeName> [--reflect]`
+## Invocation: `/ghidra-struct <TypeName> [-r] [-n] [-p]`
 
 The text after the command arrives as `ARGUMENTS:` at the end of this skill.
 
 - **The first word is the type** to analyse, by its exact Ghidra name
   (`FreezeEffect`).
-- **Options are matched as exact tokens.** Nothing parses or validates them, so
-  read the argument string literally and apply these two rules before anything
-  else:
-  - `--reflect` present verbatim → do step 10 at the end. Absent → this skill
-    does not touch the repository at all.
-  - Any other `--token` → an option this skill does not have, or a typo of one
-    it does. **Stop and ask.** Do not guess, and do not silently ignore it; a
+- **Options.** Nothing parses or validates them, so read the argument string
+  literally and resolve them yourself before anything else:
+
+  | long | short | step | effect |
+  |---|---|---|---|
+  | `--name` | `-n` | 10 | rename the type and its functions where the evidence is solid |
+  | `--reflect` | `-r` | 11 | mirror the saved Ghidra layout into the repository |
+  | `--push` | `-p` | 12 | verify the build, then commit and push what steps 10/11 changed |
+
+  - **Short options bundle.** One leading `-` followed by any combination of
+    `r`, `n`, `p` in any order: `-rp`, `-rnp`, `-pr`, `-n`. Long options are
+    written out separately (`--reflect --push`). The two styles may be mixed.
+  - **`--push` implies `--reflect`.** Pushing is about getting the analysis into
+    the repository, so `-p` alone means `-rp`.
+  - With **none** of them, this skill does not touch the repository at all and
+    renames nothing.
+  - **Anything else starting with `-`** — an option this skill does not have, a
+    typo of one it does (`--reflct`, `-rq`), or a bundle containing an unknown
+    letter. **Stop and ask.** Do not guess, and do not silently ignore it; a
     mistyped `--reflct` must not quietly skip the reflection.
-  A plain-language request ("終わったらリポジトリにも反映して") also turns step 10
-  on, but `--reflect` is the form to prefer.
+  - A plain-language request turns the same switches on, but the flags are the
+    form to prefer: 「終わったらリポジトリにも反映して」→ `-r`,
+    「自信があったらリネームして」→ `-n`,
+    「終わったらコミットしてpushして」→ `-p`.
 - **With only a type name, do one complete pass on that type** — the same
   thing that was done for `FreezeEffect`:
   1. current layout and its undefined ranges;
@@ -65,8 +79,9 @@ These come from the user's corrections; follow them unless told otherwise.
 
 - **Ghidra first, repository last.** Do not edit the repository (headers,
   `src/`) while the analysis is running — the layout is not settled until it is
-  saved in Ghidra. Reflecting it into the repo happens only when the user asked
-  for it, and only in step 10, after the Ghidra side is saved.
+  saved in Ghidra. Renaming (10), reflecting (11) and committing (12) happen
+  only when the invocation asked for them, and only after the Ghidra side is
+  saved — in that order.
 - **The repository's file split is not evidence.** Functions sit in files by
   link order, and neighbours from other modules leak in.
 - **Start from functions.** Collect accesses first; don't propose a layout and
@@ -98,6 +113,13 @@ What still differs is how much evidence a name needs:
 - Width known, meaning unknown: `unk_XX` (offset in hex) with the right type.
   Do not invent a name for a field whose meaning you cannot back with
   evidence — `unk_XX` is the honest answer there.
+
+Field names are part of every pass. **Renaming the type itself and its
+functions is not** — that happens only with `--name` (step 10), and the bar
+there is higher than for a field: the user has cancelled work over a wrong
+type name, so propose nothing speculative and rename nothing you would not
+defend in one sentence. Without `--name`, do not even suggest renames in the
+report unless the user asked what to call something.
 
 ## Workflow
 
@@ -141,15 +163,43 @@ Keep working files in the scratchpad. `G=http://127.0.0.1:8089`,
      types. Hits can belong to other structs used in the same function (e.g. `gCollisionMap->field_0x24`); only those on the struct under analysis matter. It cannot see offsets hidden in temporaries (`iVar3 = p + 0x2c`
      then `*(u8 *)(iVar3 + 200)`), so skim the decompile too.
 9. **Save** (`POST $G/save_program`) and report.
-10. **Reflect into the repository** — only when the invocation asked for it.
+10. **Rename** — only with `--name`. Rename the type and its functions where the
+    analysis settled what they are; leave `FUN_xxxxxxxx` and `unk_XX` where it
+    did not. `tools/rename_with_ghidra.sh --quiet OLD NEW` renames the
+    repository and Ghidra together (and `asm/func/OLD.inc`), so use it rather
+    than editing either side by hand. Follow the neighbours: `Owner_Verb`, and
+    the `T_Create` / `_Init` / `_Update` / `_Destroy` family for entities. The
+    rename can reach files outside `src`/`include`/`asm` — `data/*.inc` script
+    tables reference these symbols — so check `git status` afterwards. One
+    wrong name is worse than no name: if you cannot say in one sentence what
+    the function does, it keeps its address name.
+11. **Reflect into the repository** — only with `--reflect` (or `--push`).
     Mirror the saved Ghidra layout into the header or `.c` that declares the
     type, field names and comments included, plus any function signature this
     pass changed. Ghidra's category path tells you which file. Then
-    `make clean-code && make compare` must print the OK line; a struct edit can
-    change `sizeof` and break a `static_assert`, so never report it as done
-    without that. Do not commit unless the user asked. Keep the two sides
-    spelled the same — the repo's field-name style is `unk_1c`, not `unk_1C`
-    or `unk_01c`.
+    `make clean-code && make compare` must print the `boktai2.gba: OK` line; a
+    struct edit can change `sizeof` and break a `static_assert`, so never report
+    it as done without that. Keep the two sides spelled the same — the repo's
+    field-name style is `unk_1c`, not `unk_1C` or `unk_01c`.
+    A new sub-type starts in the `.c` that needs it; move it out to a header in
+    `include/` as soon as a second file needs it, rather than duplicating the
+    declaration.
+12. **Commit and push** — only with `--push`. Without it, stop after step 11 and
+    leave the working tree dirty for the user.
+    - Confirm the ROM first: `make clean-code && make compare` printing
+      `boktai2.gba: OK`, and `cmp -l boktai2.gba baserom.gba | wc -l` printing
+      `0`. A failing ROM is never committed — report it and stop.
+    - `./tools/refresh-expected.sh`, then stage what this pass touched:
+      `git add -A -- src include asm docs` plus any other path `git status`
+      shows (a rename reaches `data/`). Never stage `expected/`, `build/` or
+      `tmp/`.
+    - **`git add` and `git commit` must be separate tool calls** — the
+      clang-format hook runs on `git commit` and would see nothing staged
+      otherwise.
+    - Message: one line naming the type, e.g. `Entity56DC のレイアウトを埋める`.
+      No body.
+    - `git push`. If it is rejected, stop and tell the user; never force-push
+      and never rewrite history.
 
 ## Evidence catalog
 
@@ -202,6 +252,10 @@ Strongest first. Most of these produced a confirmed field on this project.
 - Mistakes and how they were rolled back — state them plainly.
 - Hints for other types found on the way (e.g. an undefined byte in
   `HitboxData` that this struct writes to).
+- With `--name`: an old → new table with the evidence for each name, and the
+  ones you deliberately left as `FUN_xxxxxxxx`.
+- With `--push`: the commit hash, and that `make compare` printed the OK line
+  with a zero-byte diff against `baserom.gba`.
 
 ## When something goes wrong
 

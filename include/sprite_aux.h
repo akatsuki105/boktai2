@@ -72,7 +72,7 @@ typedef struct {
   rgb555* pltt;                // 0x0C, &gObjPlttData[plttID*16]
   u8* tiles;                   // 0x10
   AuxSpritePose* metasprites;  // 0x14
-  u32 q_unk_18;                // 0x18
+  u32 unk_18;                  // 0x18
 } AuxSpriteGfx;
 static_assert(sizeof(AuxSpriteGfx) == 28);
 

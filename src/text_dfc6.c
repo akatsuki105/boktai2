@@ -19,19 +19,34 @@ typedef struct {
   u32 unk_188;            // 0x188, _Init と FUN_0804990C が 0 を入れる
   u32 unk_18c;            // 0x18C, 同上
   u32 unk_190;            // 0x190, FUN_0804990C が 0 を入れる
-  u32* unk_194;           // 0x194, _Init が u32_ARRAY_085AB548 を入れ、FUN_0804990C が renderer+0x1C へ複写する
+  char* unk_194;          // 0x194, _Init が u32_ARRAY_085AB548 を入れ、FUN_0804990C が renderer+0x1C へ複写する
 } EntityDFC6;
 static_assert(sizeof(EntityDFC6) == 408);
 
 IWRAM_DATA EntityDFC6* gEntityDFC6 = NULL;  // 0x030000C8
 
+extern u8 u8_03002ce8[8];  // 0x03002CE8
+extern u32 u32_03003520;   // 0x03003520
+
+s32 FUN_08049e5c(void);
+
 static inline s32 GetMessageSpeed(void) { return gStat->messageSpeed; }  // 本体設定のメッセージ速度
 
 NAKED void FUN_08048934(unknown* param_1, u8 param_2) { INCFUNC("asm/func/FUN_08048934.inc"); }
 
-NAKED void FUN_08048964(unknown* param_1) { INCFUNC("asm/func/FUN_08048964.inc"); }
+// 退避しておいた mode を1つ取り出して戻す
+void FUN_08048964(TextRenderer* p) {
+  if (p->stackDepth != 0) {
+    p->stackDepth--;
+    p->mode = p->stack[p->stackDepth];
+  }
+}
 
-NAKED void FUN_0804898c(unknown* param_1) { INCFUNC("asm/func/FUN_0804898c.inc"); }
+// 改行: 描画位置を矩形の左端に戻して2行ぶん下げる
+void TextRenderer_NewLine(TextRenderer* p) {
+  p->cursorX = p->rectX;
+  p->cursorY += 2;
+}
 
 NAKED s32 FUN_08048998(u8* param_1, s32 param_2) { INCFUNC("asm/func/FUN_08048998.inc"); }
 
@@ -121,7 +136,15 @@ NON_MATCH void TextRenderer_SetVar(TextRenderer* p, s32 idx, u32 val) {
 
 s32 TextRenderer_SetExtend(TextRenderer* p, s32 idx, u32 str) { p->extends[idx] = (char*)str; }
 
-NAKED s32 TextRenderer_SetScriptIds(TextRenderer* p, s32 param_2, u32* param_3) { INCFUNC("asm/func/TextRenderer_SetScriptIds.inc"); }
+s32 TextRenderer_SetScriptIds(TextRenderer* p, s32 count, u32* ids) {
+  s32 i;
+
+  for (i = 0; i < count; i++) {
+    p->scriptIds[i] = ids[i];
+  }
+
+  p->scriptIdCount = count;
+}
 
 NAKED s32 TextRenderer_GetVarWidth(TextRenderer* p, s32 param_2) { INCFUNC("asm/func/TextRenderer_GetVarWidth.inc"); }
 
@@ -141,21 +164,55 @@ NAKED void FUN_0804996c(EntityDFC6* p) { INCFUNC("asm/func/FUN_0804996c.inc"); }
 
 NAKED s32 FUN_08049c3c(EntityDFC6* p) { INCFUNC("asm/func/FUN_08049c3c.inc"); }
 
-NAKED s32 FUN_08049c78(EntityDFC6* p) { INCFUNC("asm/func/FUN_08049c78.inc"); }
+s32 FUN_08049c78(EntityDFC6* p) {
+  if (!p->active) {
+    return -1;
+  }
+
+  FUN_08049e5c();
+  u32_03003520 = 0;
+  p->active = FALSE;
+  return 0;
+}
 
 NAKED s32 EntityDFC6_Update(EntityDFC6* p) { INCFUNC("asm/func/EntityDFC6_Update.inc"); }
 
-NAKED s32 EntityDFC6_Destroy(EntityDFC6* p) { INCFUNC("asm/func/EntityDFC6_Destroy.inc"); }
+s32 EntityDFC6_Destroy(EntityDFC6* p) {
+  if (p->active) {
+    p->active = FALSE;
+  }
+
+  *(u32*)u8_03002ce8 = 0;
+  gEntityDFC6 = NULL;
+  return 0;
+}
 
 NAKED s32 EntityDFC6_Init(EntityDFC6* p) { INCFUNC("asm/func/EntityDFC6_Init.inc"); }
 
 NAKED EntityDFC6* EntityDFC6_Create(void) { INCFUNC("asm/func/EntityDFC6_Create.inc"); }
 
-NAKED s32 FUN_08049e30(char* str) { INCFUNC("asm/func/FUN_08049e30.inc"); }
+extern char gBlankText[];  // " ", data/rodata.bin の 0x085AB548
 
-NAKED s32 FUN_08049e5c(void) { INCFUNC("asm/func/FUN_08049e5c.inc"); }
+s32 FUN_08049e30(char* str) {
+  if (gEntityDFC6 == NULL) {
+    return -1;
+  }
 
-NAKED s32 FUN_08049e6c(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_08049e6c.inc"); }
+  gEntityDFC6->unk_194 = str;
+  FUN_0804990c(gEntityDFC6, 1);
+  return 0;
+}
+
+s32 FUN_08049e5c(void) { return FUN_08049e30(gBlankText); }
+
+s32 FUN_08049e6c(s32 idx, s32 value) {
+  if (gEntityDFC6 == NULL) {
+    return -1;
+  }
+
+  TextRenderer_SetVar(&gEntityDFC6->renderer, idx, value);
+  return 0;
+}
 
 s32 FUN_08049e94(void) {
   s32 n = VM_GetValue();
@@ -183,9 +240,23 @@ s32 FUN_08049ef0(void) {
 
 NAKED s32 FUN_08049f0c(void) { INCFUNC("asm/func/FUN_08049f0c.inc"); }
 
-NAKED s32 FUN_08049f5c(void) { INCFUNC("asm/func/FUN_08049f5c.inc"); }
+s32 FUN_08049f5c(void) {
+  if (gEntityDFC6 == NULL) {
+    return -1;
+  }
 
-NAKED s32 FUN_08049f84(void) { INCFUNC("asm/func/FUN_08049f84.inc"); }
+  gEntityDFC6->openReq = TRUE;
+  return 0;
+}
+
+s32 FUN_08049f84(void) {
+  if (gEntityDFC6 == NULL) {
+    return -1;
+  }
+
+  gEntityDFC6->closeReq = TRUE;
+  return 0;
+}
 
 s32 FUN_08049fa8(void) {
   EntityDFC6* p = gEntityDFC6;

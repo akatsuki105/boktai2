@@ -30,7 +30,10 @@ typedef struct Entity080a8ff8 {
 } Entity080a8ff8;
 static_assert(sizeof(Entity080a8ff8) == 480);
 
-NAKED void Entity080a8ff8_SetState(Entity080a8ff8* p, void* fn) { INCFUNC("asm/func/Entity080a8ff8_SetState.inc"); }
+void Entity080a8ff8_SetState(Entity080a8ff8* p, void* fn) {
+  p->fn = fn;
+  p->stateTimer = 0;
+}
 
 NAKED void FUN_080a881c(Entity080a8ff8* p) { INCFUNC("asm/func/FUN_080a881c.inc"); }
 
@@ -43,7 +46,17 @@ s32 Entity080a8ff8_Update(Entity080a8ff8* p) {
   return 0;
 }
 
-NAKED s32 Entity080a8ff8_Destroy(Entity080a8ff8* p) { INCFUNC("asm/func/Entity080a8ff8_Destroy.inc"); }
+s32 Entity080a8ff8_Destroy(Entity080a8ff8* p) {
+  s32 i;
+
+  AuxSprite_Remove(&p->sprite);
+
+  for (i = 0; i < 8; i++) {
+    Particle_Remove(&p->particles[i].base);
+  }
+
+  return 0;
+}
 
 NAKED void FUN_080a8d78(Entity080a8ff8* p) { INCFUNC("asm/func/FUN_080a8d78.inc"); }
 

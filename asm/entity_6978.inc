@@ -41,8 +41,8 @@ _08002732:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_08002738
-FUN_08002738: @ 0x08002738
+	thumb_func_start Entity6978_ClearPtr
+Entity6978_ClearPtr: @ 0x08002738
 	ldr r1, _08002740 @ =0x03002B30
 	movs r0, #0
 	str r0, [r1]
@@ -50,8 +50,8 @@ FUN_08002738: @ 0x08002738
 	.align 2, 0
 _08002740: .4byte 0x03002B30
 
-	thumb_func_start FUN_08002744
-FUN_08002744: @ 0x08002744
+	thumb_func_start Entity6978_StepDown
+Entity6978_StepDown: @ 0x08002744
 	push {r4, r5, lr}
 	adds r2, r0, #0
 	ldr r4, _08002778 @ =0x0300445C
@@ -89,8 +89,8 @@ _08002780:
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_08002788
-FUN_08002788: @ 0x08002788
+	thumb_func_start Entity6978_StepUp
+Entity6978_StepUp: @ 0x08002788
 	push {r4, lr}
 	adds r2, r0, #0
 	ldr r3, _080027B8 @ =0x0300445C
@@ -119,8 +119,8 @@ _080027B2:
 	.align 2, 0
 _080027B8: .4byte 0x0300445C
 
-	thumb_func_start FUN_080027bc
-FUN_080027bc: @ 0x080027BC
+	thumb_func_start Entity6978_SetRequestScripted
+Entity6978_SetRequestScripted: @ 0x080027BC
 	push {r4, r5, lr}
 	ldr r0, _080027E0 @ =0x03002B30
 	ldr r4, [r0]
@@ -155,8 +155,8 @@ _080027FA:
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_08002800
-FUN_08002800: @ 0x08002800
+	thumb_func_start Entity6978_SetRequest
+Entity6978_SetRequest: @ 0x08002800
 	push {lr}
 	adds r3, r0, #0
 	ldr r0, _08002828 @ =0x03002B30

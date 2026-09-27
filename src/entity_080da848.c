@@ -1,7 +1,7 @@
 #include "entity.h"
+#include "global.h"
 #include "particle.h"
 #include "sprite.h"
-#include "global.h"
 
 // 8枠ぶんの演出要素。activeMask のビットが立っている枠だけ生きている
 typedef struct {
@@ -74,7 +74,15 @@ NAKED void FUN_080d98d4(Entity080da848* p) { INCFUNC("asm/func/FUN_080d98d4.inc"
 
 NAKED s32 FUN_080d9974(Entity080da848* p) { INCFUNC("asm/func/FUN_080d9974.inc"); }
 
-NAKED s32 FUN_080d99c4(void) { INCFUNC("asm/func/FUN_080d99c4.inc"); }
+s32 FUN_080d99c4(Entity080da848* p) {
+  s32 v = FUN_080d9974(p);
+
+  if (v == 0) {
+    return 0;
+  }
+
+  return v;
+}
 
 NAKED s32 FUN_080d99d4(Entity080da848* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080d99d4.inc"); }
 

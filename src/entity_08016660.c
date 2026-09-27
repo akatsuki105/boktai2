@@ -1,4 +1,6 @@
+#include "animation.h"
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "hitbox.h"
 #include "sprite_aux.h"
@@ -44,6 +46,11 @@ NAKED s32 Entity08016660_Update(Entity08016660* p) { INCFUNC("asm/func/Entity080
 
 NAKED s32 Entity08016660_Destroy(Entity08016660* p) { INCFUNC("asm/func/Entity08016660_Destroy.inc"); }
 
-NAKED s32 Entity08016660_Init(Entity08016660* p, u32 id) { INCFUNC("asm/func/Entity08016660_Init.inc"); }
+s32 Entity08016660_Init(Entity08016660* p, u32 id) {
+  gEntity08016660 = p;
+  p->anim = GetFile(DIR_ANIMATION, 0x931E);
+  p->unk_1c = NULL;
+  return 0;
+}
 
 NAKED Entity08016660* Entity08016660_Create(u32 id, u32 _) { INCFUNC("asm/func/Entity08016660_Create.inc"); }

@@ -34,6 +34,10 @@ tmp/output.o: include/gba/agb_sram.h include/gba/defines.h include/gba/gba.h inc
 tmp/output.d: include/gba/agb_sram.h include/gba/defines.h include/gba/gba.h include/gba/io_reg.h include/gba/macro.h include/gba/syscall.h include/gba/types.h 
 ```
 
+`scaninc` では `#include` だけでなく、`INCBIN_U8` と `INCASM`, `INCFUNC` で指定されたファイルも依存関係として認識される
+`INCBIN_U8` 自体の処理は `preproc` で行われる, `scaninc` はあくまで `INCBIN_U8(<path>)` というパターンを認識して、依存関係として記録するだけ
+`INCASM`, `INCFUNC` はただのCプリプロセッサのマクロ (Akatsuki105 が定義し、`scaninc` が依存関係として認識するように加えた)
+
 ## Note
 
 アセンブリファイルに対しての`scaninc`で`.include`, `.incbin` の前に、タブ、スペース以外の文字がある場合は、依存関係として認識されない

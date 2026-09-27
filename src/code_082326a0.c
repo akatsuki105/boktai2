@@ -18,7 +18,15 @@ void FUN_082326a0(void) {
 
 NAKED bool32 FUN_082326d8(void) { INCFUNC("asm/func/FUN_082326d8.inc"); }
 
-NAKED void FUN_0823273c(void) { INCFUNC("asm/func/FUN_0823273c.inc"); }
+// 隣接タイルへの索引差分を -w / 1 / w / -1 で埋める
+void FUN_0823273c(void) {
+  CollisionMapTileData* tiledata = gCollisionMap->tiledata;
+
+  gCollisionMap->neighborOffsets[0] = -tiledata->width;
+  gCollisionMap->neighborOffsets[1] = 1;
+  gCollisionMap->neighborOffsets[2] = tiledata->width;
+  gCollisionMap->neighborOffsets[3] = -1;
+}
 
 NAKED void FUN_08232760(void) { INCFUNC("asm/func/FUN_08232760.inc"); }
 
@@ -66,21 +74,48 @@ NAKED s32 FUN_08233d50(s32 param_1, unknown* param_2, unknown* param_3) { INCFUN
 
 NAKED s32 FUN_082340c8(unknown* param_1, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_082340c8.inc"); }
 
-NAKED void FUN_08234208(MapTileOverride* p, u16 tileIdx, u32 param_3, u32 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_08234208.inc"); }
+void FUN_08234208(MapTileOverride* p, u16 tileIdx, u32 param_3, u32 param_4, u8 param_5, u16 param_6) {
+  p->tileIdx = tileIdx;
+  p->unk_0 = 0;
+  p->height = (param_3 << 4) | param_4;
+  p->unk_5 = param_5;
+  p->unk_6 = param_6;
+}
 
 NAKED MapTileOverride* FUN_08234224(u32 tileIdx, u32 mask) { INCFUNC("asm/func/FUN_08234224.inc"); }
 
 NAKED s32 FUN_08234270(MapTileOverride* p, u16 tileIdx, u32 param_3, u32 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_08234270.inc"); }
 
-NAKED void FUN_082342a8(MapTileOverride* p) { INCFUNC("asm/func/FUN_082342a8.inc"); }
+// 衝突マップのタイル上書きリストからノードを外す
+void FUN_082342a8(MapTileOverride* p) {
+  MapTileOverride* prev = p->prev;
+  MapTileOverride* next = p->next;
+
+  if (prev != NULL) {
+    prev->next = next;
+  } else {
+    gCollisionMap->tileOverrides = next;
+  }
+
+  if (next != NULL) {
+    next->prev = prev;
+  }
+}
 
 NAKED s32 FUN_082342cc(unknown* param_1, unknown* param_2) { INCFUNC("asm/func/FUN_082342cc.inc"); }
 
 bool32 FUN_082345ec(void) { return bool32_0300077c; }
 
-NAKED s32 FUN_082345f8(FileID id) { INCFUNC("asm/func/FUN_082345f8.inc"); }
+s32 FUN_082345f8(FileID id) {
+  gCollisionMap->zones = GetFile(0xDCFB, id);
+  bool32_0300077c = FALSE;
+  return 0;
+}
 
-NAKED void FUN_08234624(ZoneData* zones) { INCFUNC("asm/func/FUN_08234624.inc"); }
+void FUN_08234624(ZoneData* zones) {
+  gCollisionMap->zones = zones;
+  bool32_0300077c = FALSE;
+}
 
 NAKED void FUN_0823463c(unknown* p) { INCFUNC("asm/func/FUN_0823463c.inc"); }
 
@@ -120,13 +155,36 @@ void FUN_08234bd8(CollisionMapEvent* ev) { ClearMemory(ev, sizeof(CollisionMapEv
 
 NAKED s32 FUN_08234be4(void) { INCFUNC("asm/func/FUN_08234be4.inc"); }
 
-NAKED void FUN_08234cf8(u16 param_1, u16* param_2) { INCFUNC("asm/func/FUN_08234cf8.inc"); }
+// ゾーンの左上隅を Vec3 の単位 (z は 16 倍) で取り出す
+void FUN_08234cf8(u16 id, u16* out) {
+  u16 count;
+  Zone* zone = FindZonesByID(id, &count);
 
-NAKED void FUN_08234d24(u16 param_1, u16* param_2) { INCFUNC("asm/func/FUN_08234d24.inc"); }
+  if (zone != NULL) {
+    out[0] = zone->x1;
+    out[1] = zone->z1 << 4;
+    out[2] = zone->y1;
+  }
+}
+
+// ゾーンの右下隅を Vec3 の単位 (z は 16 倍) で取り出す
+void FUN_08234d24(u16 id, u16* out) {
+  u16 count;
+  Zone* zone = FindZonesByID(id, &count);
+
+  if (zone != NULL) {
+    out[0] = zone->x2;
+    out[1] = zone->z2 << 4;
+    out[2] = zone->y2;
+  }
+}
 
 NAKED bool8 FUN_08234d50(u16 areaFileId, Vec3* pos) { INCFUNC("asm/func/FUN_08234d50.inc"); }
 
-NAKED s32 FUN_08234db8(FileID id) { INCFUNC("asm/func/FUN_08234db8.inc"); }
+s32 FUN_08234db8(FileID id) {
+  gCollisionMap->paths = GetFile(0xD4FB, id);
+  return 0;
+}
 
 void FUN_08234ddc(PathData* paths) { gCollisionMap->paths = paths; }
 
@@ -187,7 +245,14 @@ NAKED s32 FUN_08235f40(unknown* param_1, Vec3* param_2, Vec3* param_3) { INCFUNC
 
 void FUN_08235fd0(u16* p) { *p = 0; }
 
-NAKED bool32 FUN_08235fd8(unknown* p) { INCFUNC("asm/func/FUN_08235fd8.inc"); }
+bool32 FUN_08235fd8(u16* p) {
+  if (*p & 2) {
+    *p &= ~2;
+    return TRUE;
+  }
+
+  return FALSE;
+}
 
 NAKED void FUN_08235ffc(NavMesh* navMesh, unknown* param_2, Vec3* pos) { INCFUNC("asm/func/FUN_08235ffc.inc"); }
 

@@ -5,7 +5,7 @@
 #define SPRITE_EVENT_SUN_RAY 0x0C23
 #define SPRITE_DJANGO_LARGE 0x1774
 #define SPRITE_FLAMETHROWER 0x1BC7
-#define SPRITE_UI_MISC 0x414C
+#define SPRITE_UI_MISC 0x414C  // 太陽鍛治, ショップ名, "時の家"の暗証番号入力端末 など、メニューUIのうち、用途が限定的でサイズの小さいものをここにまとめている
 #define SPRITE_42E2 0x42E2
 #define SPRITE_INVENTORY_ICONS 0x5D04
 #define SPRITE_SHADEMAN 0x5D36
@@ -96,8 +96,10 @@
 #define SPRITE_OTNK 0x97D3             // おてんこさま
 #define SPRITE_COMBO_SCORE 0xA5BD      // ブラックパンサー(ミニゲーム)の"COMBO:", "SCORE:" の文字
 #define SPRITE_PANTHER_BONUS 0xA8E7    // ブラックパンサー(ミニゲーム)のボーナス表示
+#define SPRITE_EFF_F422 0xF422         // 砂のエフェクト
 
 // データが存在しないスプライトのID
+#define SPRITE_2117 0x2117  // 多分デバッグ用
 #define SPRITE_NODATA_9DA7 0x9DA7
 
 #endif  // __INCLUDE_CONSTANTS_SPRITE_H__

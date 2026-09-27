@@ -7817,7 +7817,7 @@ _080CFD14:
 	bne _080CFDE4
 	adds r0, r7, #0
 	adds r0, #0x2c
-	bl FUN_081d2230
+	bl Elevator_FindAtPos
 	cmp r0, #0
 	bne _080CFDE4
 	movs r5, #0xe0

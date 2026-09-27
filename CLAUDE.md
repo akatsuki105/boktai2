@@ -9,14 +9,27 @@ NEVER PRINT YOUR OWN SCAFFOLDING TO THE CONSOLE — PLANS, STEP ANNOUNCEMENTS, R
 
 ## Project Overview
 
-- **Target title**: Zoku Bokura no Taiyou: Taiyou Shounen Django (the Japanese title corresponding to Boktai 2: Solar Boy Django, ID: `AGB-U32J-1`)
+- **Target title**: Zoku Bokura no Taiyou: Taiyou Shounen Django (ID: `AGB-U32J-1`, the Japanese title corresponding to Boktai 2: Solar Boy Django)
 - **Platform**: Game Boy Advance (ARM7TDMI, ARMv4T)
-- **Goal**: Produce decompiled output that, when rebuilt, is **byte-identical** to the original ROM
+- **Goal**: Produce decompiled output that, when rebuilt, is **binary-identical** to the original ROM
 
-Core principles of matching decompilation:
-1. **Binary identity with the original ROM always takes priority.** Never sacrifice a match for readability or modern style.
-2. Understand the compiler's quirks (legacy ARM compilers such as mwcc / agbcc) and deliberately write code that conforms to them.
-3. Write code that produces the same machine code — not merely code that "works."
+---
+
+## Validation
+
+**Binary identity with the original ROM always takes priority.**
+
+```sh
+make compare -j$(nproc)
+```
+
+It passes only when the output contains the `boktai2.gba: OK` line. Read that line — do not infer a match from the command finishing.
+
+When headers, linker scripts, data, build rules, shared declarations, or configuration changed, clean the build cache and rebuild.
+
+```sh
+make clean-code && make compare -j$(nproc)
+```
 
 ---
 

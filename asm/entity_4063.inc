@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_080a94c0
-FUN_080a94c0: @ 0x080A94C0
+	thumb_func_start Entity4063_GetRemaining
+Entity4063_GetRemaining: @ 0x080A94C0
 	push {lr}
 	ldr r0, _080A94D0 @ =0x03002C50
 	ldr r0, [r0]
@@ -22,8 +22,8 @@ _080A94D6:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_080a94dc
-FUN_080a94dc: @ 0x080A94DC
+	thumb_func_start Entity4063_Cancel
+Entity4063_Cancel: @ 0x080A94DC
 	push {lr}
 	ldr r0, _080A94F0 @ =0x03002C50
 	ldr r1, [r0]

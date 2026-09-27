@@ -981,7 +981,7 @@ _0800866A:
 	bl VM_GetValue
 	strh r0, [r6, #6]
 	adds r0, r4, #0
-	bl FUN_081d553c
+	bl Elevator_GetPosByID
 	adds r1, r0, #0
 	str r1, [r6, #0x20]
 	cmp r1, #0

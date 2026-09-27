@@ -123,7 +123,14 @@ NON_MATCH bool32 VM_Ctrl_Switch(u8* pc) {
 #endif
 }
 
-NAKED bool32 VM_Ctrl_Unused_64C0(u8* pc) { INCFUNC("asm/func/VM_Ctrl_Unused_64C0.inc"); }
+bool32 VM_Ctrl_Unused_64C0(u8* pc) {
+  s32 type;
+  void* val;
+
+  VM_DecodeValue(pc, &type, &val);
+  gVM.result = val;
+  return FALSE;
+}
 
 // 0xCD3A: 現在実行中のスクリプトを終了(オプションで戻り値を返す)
 bool32 VM_Ctrl_Return(u8* _) {

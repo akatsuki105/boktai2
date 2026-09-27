@@ -2,7 +2,6 @@
 #include "entity.h"
 #include "global.h"
 #include "sprite.h"
-#include "sprite_aux.h"
 #include "vm.h"
 
 typedef struct {
@@ -28,9 +27,8 @@ void FUN_0823b1f8(Entity2UnkData* p) {
       p->prev = NULL;
       p->next = NULL;
     } else {
-      Entity2UnkData* tmp = gEntityB8B9->tail;
-      tmp->next = p;
-      p->prev = tmp;
+      gEntityB8B9->tail->next = p;
+      p->prev = gEntityB8B9->tail;
       p->next = NULL;
       gEntityB8B9->tail = p;
     }
@@ -39,30 +37,30 @@ void FUN_0823b1f8(Entity2UnkData* p) {
 
 Entity2UnkData* FindUnk0200865c(u16 id) {
   Entity2UnkData* p;
-  if (gEntityB8B9 == NULL) {
-    return NULL;
-  } else {
-    for (p = gEntityB8B9->head; p != NULL; p = p->next) {
-      if (p->id == id) {
-        return p;
-      }
+  if (gEntityB8B9 == NULL) return NULL;
+
+  p = gEntityB8B9->head;
+  while (p != NULL) {
+    if (p->id == id) {
+      return p;
     }
-    return NULL;
+    p = p->next;
   }
+  return NULL;
 }
 
-Entity2UnkData* FUN_0823b258(Entity2UnkData* p) {
-  Entity2UnkData* q;
-  if (gEntityB8B9 == NULL) {
-    return NULL;
-  } else {
-    for (q = gEntityB8B9->head; q != NULL; q = q->next) {
-      if (q == p) {
-        return q;
-      }
+Entity2UnkData* FUN_0823b258(Entity2UnkData* target) {
+  Entity2UnkData* p;
+  if (gEntityB8B9 == NULL) return NULL;
+
+  p = gEntityB8B9->head;
+  while (p != NULL) {
+    if (p == target) {
+      return p;
     }
-    return NULL;
+    p = p->next;
   }
+  return NULL;
 }
 
 // リンクリストから指定ノードを削除する
@@ -125,27 +123,25 @@ s32 EntityB8B9_Destroy(EntityB8B9* _) {
   return 0;
 }
 
-s32 EntityB8B9_Init(EntityB8B9* p, unknown* a, unknown* b) {
+s32 EntityB8B9_Init(EntityB8B9* p, u32 id, u32 _) {
   gEntityB8B9 = p;
   p->head = NULL, p->tail = NULL;
   return 0;
 }
 
-EntityB8B9* EntityB8B9_Create(unknown* a, unknown* b) {
-  EntityB8B9* p;
-
-  if (gEntityB8B9 != NULL) {
-    return gEntityB8B9;
-  }
-  p = CreateEntity(ENTITY_UNK_2, sizeof(EntityB8B9));
-  if (p != NULL) {
-    SetEntityRoutine(p, EntityB8B9_Update, EntityB8B9_Destroy);
-    if (EntityB8B9_Init(p, a, b) < 0) {
-      KillEntity((Entity*)p);
-      return NULL;
+EntityB8B9* EntityB8B9_Create(u32 id, u32 _) {
+  if (gEntityB8B9 == NULL) {
+    EntityB8B9* p = CreateEntity(ENTITY_UNK_2, sizeof(EntityB8B9));
+    if (p != NULL) {
+      SetEntityRoutine(p, EntityB8B9_Update, EntityB8B9_Destroy);
+      if (EntityB8B9_Init(p, id, _) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
     }
+    return p;
   }
-  return p;
+  return gEntityB8B9;
 }
 
 EntityB8B9* FUN_0823b3ec(void) {

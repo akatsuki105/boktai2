@@ -1,11 +1,36 @@
+#include "animation.h"
 #include "entity.h"
 #include "global.h"
 #include "msgbus.h"
+#include "shadow.h"
+#include "sprite_aux.h"
+#include "video.h"
 
 typedef struct {
-  Entity e;  // ENTITY_UNK_11
-  u8 unk_18[0xCD4 - 24];
-  EntityMsgBox unk_cd4;  // 0xCD4, 根拠: 0x08012bfc
+  u8 active;               // 0x00, FUN_080117d8 が 1 を入れる
+  u8 unk_01;               // 0x01, FUN_080117d8 が 0 を入れる
+  u8 unk_02[2];            // 0x02, まだ未解析
+  u16 unk_04;              // 0x04, FUN_080117d8 が 0 を入れる
+  u8 unk_06;               // 0x06, FUN_080117d8 が 0 を入れる
+  u8 unk_07[0x40 - 0x07];  // 0x07, まだ未解析
+  AuxSprite sprite;        // 0x40, AuxSprite_Add で登録する
+  AuxSpriteGfx gfx;        // 0x6C, Video_GetAuxSprite(0xDA6D) / Video_SetAuxSpritePltt(0x263)
+  ParticleShadow shadow;   // 0x88, ParticleShadow_Init(&shadow, &sprite.pos, 0) のあと Hide する
+} EntityE534Elem;
+static_assert(sizeof(EntityE534Elem) == 200);
+
+typedef struct {
+  Entity e;                   // 0x000, ENTITY_UNK_11
+  u32 unk_18;                 // 0x018, _Init が 0 を入れる
+  u8 unk_1c[4];               // 0x01C, まだ未解析
+  AuxAnimFile* anim;          // 0x020, GetFile(DIR_ANIMATION, 0x5BB7)
+  EntityE534Elem elems[16];   // 0x024, _Init が FUN_080117d8 で16個初期化し、_Destroy が FUN_08011854 で片付ける
+  u8 unk_ca4[2];              // 0xCA4, まだ未解析
+  u16 unk_ca6;                // 0xCA6, _Init が 0 を入れる
+  rgb555 pltt[16];            // 0xCA8, BlendPltt(&pltt, gObjPlttData+0x2630, gObjPlttData+0x2650, 0x40, 6). elems[i].gfx.pltt がここを指す
+  u32 unk_cc8;                // 0xCC8, _Init が 0 を入れる
+  u8 unk_ccc[0xCD4 - 0xCCC];  // 0xCCC, まだ未解析
+  EntityMsgBox msgbox;        // 0xCD4, _Destroy が EntityMsgBus_Unregister に渡す
 } EntityE534;
 static_assert(sizeof(EntityE534) == 3336);
 

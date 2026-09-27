@@ -33,7 +33,7 @@
 	ldr r1, _080796AC @ =0x00000392
 	adds r0, r5, r1
 	ldrh r0, [r0]
-	bl FUN_081d553c
+	bl Elevator_GetPosByID
 	adds r3, r0, #0
 	mov r0, sp
 	movs r1, #0
