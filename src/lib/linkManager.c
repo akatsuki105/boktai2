@@ -69,7 +69,7 @@ u32 rfu_LMAN_REQBN_softReset_and_checkID() {
   lman.pcswitch_flag = 0;
   lman.acceptSlot_flag = lman.acceptCount = lman.reserveDisconnectSlot_flag = 0;
   lman.parent_child = MODE_NEUTRAL;
-  rfu_LMAN_managerChangeAgbClockMaster();  // 子機でクロックスレーブ時はクロックマスターに戻す。
+  rfu_LMAN_managerChangeAgbClockMaster();  // 子機でクロックスレーブ時はクロックマスターに戻す
   return id;
 }
 
@@ -78,10 +78,10 @@ void rfu_LMAN_REQ_sendData(u8 clockChange_flag) {
     if (lman.childClockSlave_flag == RFU_CHILD_CLOCK_SLAVE_ON) {
       clockChange_flag = 1;
     } else {
-      clockChange_flag = 0;  // 子機はAGBクロックスレーブフラグがONではない時は、再クロックスレーブ化は行わない。
+      clockChange_flag = 0;  // 子機はAGBクロックスレーブフラグがONではない時は、再クロックスレーブ化は行わない
     }
   } else {                    // if(gRfuLinkStatus->parent_child==MODE_PARENT)
-    lman.parentAck_flag = 0;  // 親機は新規のデータ送信ごとにACKフラグをクリアする。
+    lman.parentAck_flag = 0;  // 親機は新規のデータ送信ごとにACKフラグをクリアする
   }
   rfu_REQ_sendData(clockChange_flag);
 }
@@ -93,8 +93,8 @@ u8 rfu_LMAN_initializeManager(void (*LMAN_callback_p)(u8, u8), void (*MSC_callba
   lman.LMAN_callback = LMAN_callback_p;  // ユーザー定義のLMANコールバック関数を定義
   lman.MSC_callback = MSC_callback_p;    // ユーザー定義のMSCコールバック関数を設定
 
-  rfu_setMSCCallback(rfu_LMAN_MSC_callback);  // リンクマネージャー用MSCコールバックルーチンのセット ※リンクマネージャー使用時は、本MSCコールバックを経由してユーザー定義のMSCコールバックに分岐します。
-  rfu_setREQCallback(rfu_LMAN_REQ_callback);  // リンクマネージャー用REQコールバックルーチンのセット ※リンクマネージャー使用時は、ユーザー定義のREQコールバックは発生しません。
+  rfu_setMSCCallback(rfu_LMAN_MSC_callback);  // リンクマネージャー用MSCコールバックルーチンのセット ※リンクマネージャー使用時は、本MSCコールバックを経由してユーザー定義のMSCコールバックに分岐します
+  rfu_setREQCallback(rfu_LMAN_REQ_callback);  // リンクマネージャー用REQコールバックルーチンのセット ※リンクマネージャー使用時は、ユーザー定義のREQコールバックは発生しません
   return 0;
 }
 
@@ -197,7 +197,7 @@ u8 rfu_LMAN_CHILD_connectParent(u16 pid, u16 connect_period) {
   // エラーチェック
   if (lman.state != LMAN_STATE_READY) {
     if ((lman.state < LMAN_STATE_START_SEARCH_PARENT) || (lman.state > LMAN_STATE_END_SEARCH_PARENT)) {  // ver.1.0.9sp
-                                                                                                         // 2003.10.29変更。fastSearchとの兼ね合いで、すべてのSP実行中にはOKとする。
+                                                                                                         // 2003.10.29変更, fastSearchとの兼ね合いで、すべてのSP実行中にはOKとする
       lman.param[0] = LMAN_ERROR_MANAGER_BUSY;
       rfu_LMAN_occureCallback(LMAN_MSG_LMAN_API_ERROR_RETURN, 1);
       return LMAN_ERROR_MANAGER_BUSY;  // リンクマネージャーが親機サーチ以外の動作中ならエラー
@@ -230,7 +230,7 @@ u8 rfu_LMAN_CHILD_connectParent(u16 pid, u16 connect_period) {
   lman.connect_period = connect_period;
 
   if (lman.pcswitch_flag)              // ver.1.0.10sp追加
-    lman.pcswitch_flag = PCSWITCH_CP;  // 親子切り替えONの時には、一時停止する。
+    lman.pcswitch_flag = PCSWITCH_CP;  // 親子切り替えONの時には、一時停止する
 
   return 0;
 }
@@ -260,7 +260,7 @@ void rfu_LMAN_stopManager(u8 forced_stop_and_RFU_reset_flag) {
   u8 msg = 0;
 
   lman.pcswitch_flag = 0;  // ver.1.0.10  2003.10.30追加
-                           // 本関数コールで、親子切り替えサーチは停止します。
+                           // 本関数コールで、親子切り替えサーチは停止します
   if (forced_stop_and_RFU_reset_flag) {
     rfu_LMAN_clearVariables();
     lman.state = LMAN_FORCED_STOP_AND_RFU_RESET;
@@ -280,7 +280,7 @@ void rfu_LMAN_stopManager(u8 forced_stop_and_RFU_reset_flag) {
       lman.state = LMAN_STATE_END_SEARCH_CHILD;
       lman.next_state = LMAN_STATE_WAIT_RECV_CHILD_NAME;
       break;
-    case LMAN_STATE_WAIT_RECV_CHILD_NAME:  // ver.1.0.12sp追加。名前受信待ちの時は即停止しない。
+    case LMAN_STATE_WAIT_RECV_CHILD_NAME:  // ver.1.0.12sp追加, 名前受信待ちの時は即停止しない
       break;
       // SearchParent
     case LMAN_STATE_START_SEARCH_PARENT:
@@ -302,15 +302,15 @@ void rfu_LMAN_stopManager(u8 forced_stop_and_RFU_reset_flag) {
     case LMAN_STATE_END_CONNECT_PARENT:
       lman.state = LMAN_STATE_END_CONNECT_PARENT;
       break;
-    case LMAN_STATE_SEND_CHILD_NAME:  // ver.1.0.12sp追加。名前送信待ちの時は即停止しない。
+    case LMAN_STATE_SEND_CHILD_NAME:  // ver.1.0.12sp追加, 名前送信待ちの時は即停止しない
       break;
 
       // LinkRecovery
-    case LMAN_STATE_START_LINK_RECOVERY:  // ※ここは特殊な挙動をする。
+    case LMAN_STATE_START_LINK_RECOVERY:  // ※ここは特殊な挙動をする
       lman.state = lman.state_bak[0];     // リンク復旧が開始される前にリンクマネージャーが停止されたなら、DISCONNECTしてリンク復旧失敗＆DISCONNECTを通知
       lman.next_state = lman.state_bak[1];
 
-      rfu_LMAN_disconnect(gRfuLinkStatus->linkLossSlot_flag);  // ここは子機による実行で、実際にREQコマンドはRFUに出されない。
+      rfu_LMAN_disconnect(gRfuLinkStatus->linkLossSlot_flag);  // ここは子機による実行で、実際にREQコマンドはRFUに出されない
 
       lman.param[0] = gRfuLinkStatus->linkLossSlot_flag;
       rfu_LMAN_occureCallback(LMAN_MSG_LINK_RECOVERY_FAILED_AND_DISCONNECTED, 1);
@@ -328,7 +328,7 @@ void rfu_LMAN_stopManager(u8 forced_stop_and_RFU_reset_flag) {
       break;
   }
 
-  if (lman.state == LMAN_STATE_READY) {  // リンクマネージャーが即停止可能な場合は、停止後にLMANコールバック発生。
+  if (lman.state == LMAN_STATE_READY) {  // リンクマネージャーが即停止可能な場合は、停止後にLMANコールバック発生
     rfu_LMAN_occureCallback(msg, 0);     // LMANコールバック発生
   }
 }
@@ -350,10 +350,10 @@ static u8 rfu_LMAN_linkWatcher(u16 REQ_commandID) {
     lman.param[1] = reason;
 
     // リンク復旧がONの時
-    if (lman.linkRecovery_enable) {                        // リンク復旧がONの時は、リンク復旧処理を開始する。
+    if (lman.linkRecovery_enable) {                        // リンク復旧がONの時は、リンク復旧処理を開始する
       lman.linkRecovery_start_flag = LINK_RECOVERY_START;  // 基本はリンク復旧スタート
       if ((lman.parent_child == MODE_CHILD) && (reason == REASON_DISCONNECTED)) {
-        lman.linkRecovery_start_flag = LINK_RECOVERY_IMPOSSIBLE;  // 子機でかつリンク切れ原因が「切断」の時は、リンク復旧不可能なので、DISCONNECTする。
+        lman.linkRecovery_start_flag = LINK_RECOVERY_IMPOSSIBLE;  // 子機でかつリンク切れ原因が「切断」の時は、リンク復旧不可能なので、DISCONNECTする
       }
       // リンク復旧可能か？
       if (lman.linkRecovery_start_flag == LINK_RECOVERY_START) {
@@ -367,19 +367,19 @@ static u8 rfu_LMAN_linkWatcher(u16 REQ_commandID) {
                                 1);  // LMANコールバック発生 param0=bm_linkLossSlot
       } else {                       // LINK_RECOVERY_IMPOSSIBLE
         lman.linkRecovery_start_flag = LINK_RECOVERY_OFF;
-        rfu_LMAN_disconnect(bm_linkLossSlot);  // リンク復旧不可能な場合は、DISCONNECTしてリンク復旧失敗を通知する。
+        rfu_LMAN_disconnect(bm_linkLossSlot);  // リンク復旧不可能な場合は、DISCONNECTしてリンク復旧失敗を通知する
         disconnect_occure_flag = 1;
         rfu_LMAN_occureCallback(LMAN_MSG_LINK_RECOVERY_FAILED_AND_DISCONNECTED,
                                 1);  // LMANコールバック発生 param0=bm_linkLossSlot
       }
     } else {
-      // リンク復旧がOFFの時は、完全にDISCONNECTする。
+      // リンク復旧がOFFの時は、完全にDISCONNECTする
       rfu_LMAN_disconnect(bm_linkLossSlot);
       disconnect_occure_flag = 1;
       rfu_LMAN_occureCallback(LMAN_MSG_LINK_LOSS_DETECTED_AND_DISCONNECTED, 2);
     }
 
-    rfu_LMAN_managerChangeAgbClockMaster();  // 子機がAGBクロックスレーブの時はAGBクロックマスターに戻す。
+    rfu_LMAN_managerChangeAgbClockMaster();  // 子機がAGBクロックスレーブの時はAGBクロックマスターに戻す
   }
 
   //------------------------------
@@ -402,7 +402,7 @@ static u8 rfu_LMAN_linkWatcher(u16 REQ_commandID) {
       bm_disconnectSlot = 0;
       for (i = 0; i < RFU_CHILD_MAX; i++) {
         if (lman.linkRecoveryTimer.active & (0x01 << i)) {
-          if (lman.linkRecoveryTimer.count[i]) {  // count値が"0"の時は無限にリンク復旧を待つ。
+          if (lman.linkRecoveryTimer.count[i]) {  // count値が"0"の時は無限にリンク復旧を待つ
             if (--lman.linkRecoveryTimer.count[i] == 0) {
               lman.linkRecoveryTimer.active &= ~(0x01 << i);
               bm_disconnectSlot |= 0x01 << i;
@@ -410,7 +410,7 @@ static u8 rfu_LMAN_linkWatcher(u16 REQ_commandID) {
           }
         }
       }
-      if (bm_disconnectSlot) {  // リンク復旧待ちタイマー期限切れのスロットはDISCONNECTする。
+      if (bm_disconnectSlot) {  // リンク復旧待ちタイマー期限切れのスロットはDISCONNECTする
         rfu_LMAN_disconnect(bm_disconnectSlot);
         disconnect_occure_flag = 1;
         lman.param[0] = bm_disconnectSlot;
@@ -424,13 +424,13 @@ static u8 rfu_LMAN_linkWatcher(u16 REQ_commandID) {
     }
   }
 
-  return disconnect_occure_flag;  // 切断を行った場合は、その旨をリターンする。（リンクマネージャー側で、それ以降のREQ-API実行を行わない。）
+  return disconnect_occure_flag;  // 切断を行った場合は、その旨をリターンする, （リンクマネージャー側で、それ以降のREQ-API実行を行わない, ）
 }
 
 void rfu_LMAN_syncVBlank() {
-  if (rfu_syncVBlank()) {  // rfu_LMAN_syncVBlankで検出したウォッチドッグタイマーエラーをここでユーザーに通知する。
+  if (rfu_syncVBlank()) {  // rfu_LMAN_syncVBlankで検出したウォッチドッグタイマーエラーをここでユーザーに通知する
     rfu_LMAN_occureCallback(LMAN_MSG_WATCH_DOG_TIMER_ERROR, 0);
-    rfu_LMAN_managerChangeAgbClockMaster();  // ver.1.0.12sp追加　クロックスレーブ時はクロックマスターに戻す。
+    rfu_LMAN_managerChangeAgbClockMaster();  // ver.1.0.12sp追加　クロックスレーブ時はクロックマスターに戻す
   }
 }
 
@@ -438,7 +438,7 @@ void rfu_LMAN_manager_entity(u32 rand) {
   u8 msg;
 
   if (((u32)lman.LMAN_callback == 0x00000000) && (lman.state)) {
-    lman.state = LMAN_STATE_READY;  // ※ver.1.0.11sp追加　リンクマネージャーの初期設定が終了していないのに、リンクマネージャーを動作した時は、リンクマネージャーを停止してリターンする。
+    lman.state = LMAN_STATE_READY;  // ※ver.1.0.11sp追加　リンクマネージャーの初期設定が終了していないのに、リンクマネージャーを動作した時は、リンクマネージャーを停止してリターンする
     return;
   }
 
@@ -447,9 +447,9 @@ void rfu_LMAN_manager_entity(u32 rand) {
 
   while (1) {  // ※2003.07.22 ver.1.0.5追加
     if (lman.state != LMAN_STATE_READY) {
-      rfu_waitREQComplete();  // 現在他のREQコマンドが実行中の場合はその終了を待つ。
+      rfu_waitREQComplete();  // 現在他のREQコマンドが実行中の場合はその終了を待つ
 
-      lman.active = 1;  // activeフラグを１にしてREQコマンドを実行することで、通常のユーザー発行のREQコマンドの実行と区別する。
+      lman.active = 1;  // activeフラグを１にしてREQコマンドを実行することで、通常のユーザー発行のREQコマンドの実行と区別する
 
       switch (lman.state) {
         case LMAN_FORCED_STOP_AND_RFU_RESET:
@@ -522,31 +522,31 @@ void rfu_LMAN_manager_entity(u32 rand) {
         case LMAN_STATE_STOP_MODE:
           rfu_REQ_stopMode();
           break;
-        default:  // リンクマネージャーがREQコマンドを実行する状態でない時はアクティブフラグを０にする。
+        default:  // リンクマネージャーがREQコマンドを実行する状態でない時はアクティブフラグを０にする
           break;
       }
       rfu_waitREQComplete();
 
-      lman.active = 0;  // リンクマネージャー内のREQコマンド実行完了でactiveフラグを０にする。
+      lman.active = 0;  // リンクマネージャー内のREQコマンド実行完了でactiveフラグを０にする
     }
 
     if ((lman.state == LMAN_STATE_END_LINK_RECOVERY) || (lman.state == LMAN_STATE_MS_CHANGE)) {
-      // ※2003.07.22 ver.1.0.5追加　リンク復旧終了とAGBクロックスレーブ化だけは一気に実行する。
+      // ※2003.07.22 ver.1.0.5追加　リンク復旧終了とAGBクロックスレーブ化だけは一気に実行する
     } else {
       break;
     }
   }
   // ver.1.0.8
-  // entity最後部に移動。rfu_LMAN_linkWatcherもしくはrfu_LMAN_PARENT_checkRecvChildNameによる子機切断直後にSC_POLLが実行されると、RFUの処理が追いつかずにACK_REJECTIONエラーになってします。
-  if (gRfuLinkStatus->parent_child == MODE_PARENT) {  // ver.1.0.8追加	リンク監視をリンクマネージャー内に取り込み。
+  // entity最後部に移動, rfu_LMAN_linkWatcherもしくはrfu_LMAN_PARENT_checkRecvChildNameによる子機切断直後にSC_POLLが実行されると、RFUの処理が追いつかずにACK_REJECTIONエラーになってします
+  if (gRfuLinkStatus->parent_child == MODE_PARENT) {  // ver.1.0.8追加	リンク監視をリンクマネージャー内に取り込み
     if (rfu_LMAN_linkWatcher(0x0000))                 // ver.1.0.12sp変更
-                                                      // リンクマネージャーで切断を行った際には、その後の処理を行わずにリターンする。
+                                                      // リンクマネージャーで切断を行った際には、その後の処理を行わずにリターンする
       return;
   }
   rfu_LMAN_PARENT_checkRecvChildName();  // 親機動作における、子機からのゲーム識別情報の受信判定
   rfu_LMAN_CHILD_checkSendChildName();   // 子機動作における、親機へのゲーム識別情報の送信判定
-  rfu_LMAN_CHILD_linkRecoveryProcess();  // 子機におけるリンク復旧処理の起動をここでチェックする。
-  rfu_LMAN_checkNICommunicateStatus();   // NI送受信ステータスを参照して、通信対象の絞り込みを行う。 ver.1.0.4追加
+  rfu_LMAN_CHILD_linkRecoveryProcess();  // 子機におけるリンク復旧処理の起動をここでチェックする
+  rfu_LMAN_checkNICommunicateStatus();   // NI送受信ステータスを参照して、通信対象の絞り込みを行う, ver.1.0.4追加
 }
 
 static void rfu_LMAN_settingPCSWITCH(u32 rand) {
@@ -555,7 +555,7 @@ static void rfu_LMAN_settingPCSWITCH(u32 rand) {
     lman.parent_child = MODE_PARENT;
     lman.state = LMAN_STATE_START_SEARCH_CHILD;
     lman.connect_period = lman.pcswitch_period_bak;
-    //		lman.pcswitch_period_bak=0;			// 4TH_SPの追加で、ここが０クリアされるとまずい。
+    //		lman.pcswitch_period_bak=0;			// 4TH_SPの追加で、ここが０クリアされるとまずい
 
     if (lman.connect_period) {
       lman.pcswitch_flag = PCSWITCH_3RD_SC;
@@ -577,7 +577,7 @@ static void rfu_LMAN_settingPCSWITCH(u32 rand) {
     }
   }
   // 第2SP期間の開始設定
-  if (lman.pcswitch_flag == PCSWITCH_2ND_SP_START) {  // 第2SP期間は固定期間。
+  if (lman.pcswitch_flag == PCSWITCH_2ND_SP_START) {  // 第2SP期間は固定期間
     lman.parent_child = MODE_CHILD;
     lman.connect_period = PCSWITCH_SP_PERIOD;
     lman.pcswitch_flag = PCSWITCH_2ND_SP;
@@ -592,14 +592,14 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
   // リンクマネージャーが実行したREQ-APIの結果処理
   //----------------------------------------------
   if (lman.active) {
-    lman.active = 0;  // LMANコールバック中でユーザーがDISCONNECTした時にLMAN_MSG_LINK_DISCONNECTED_BY_USERがきちんと発生するように一時的にlman.activeを０にする。
+    lman.active = 0;  // LMANコールバック中でユーザーがDISCONNECTした時にLMAN_MSG_LINK_DISCONNECTED_BY_USERがきちんと発生するように一時的にlman.activeを０にする
 
-    switch (REQ_commandID) {  // ※このswitchの中で直接returnしては駄目。lman.activeの復帰が行われない
+    switch (REQ_commandID) {  // ※このswitchの中で直接returnしては駄目, lman.activeの復帰が行われない
 
         // INITIALIZE
 
       case ID_RESET_REQ:
-        if (REQ_result == 0) {  // lman.acceptSlot_flagとlman.childClockSlave_flagのクリアは後ろのif(REQ_result==0){}の中で行っている。
+        if (REQ_result == 0) {  // lman.acceptSlot_flagとlman.childClockSlave_flagのクリアは後ろのif(REQ_result==0){}の中で行っている
           lman.state = lman.next_state;
           lman.next_state = LMAN_STATE_CONFIG_GAME_DATA;
         }
@@ -640,8 +640,8 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
       case ID_SC_END_REQ:
         if (REQ_result == 0) {
           lman.state = lman.next_state;
-          lman.next_state = LMAN_STATE_READY;                                  // connect_period経過、もしくはリンクマネージャー停止によりサーチ動作が終了したら、REQコールバックを発生させる。
-          if (lman.pcswitch_flag == 0) {                                       // 親子切り替えサーチモードでないときのみ、コールバック発生。
+          lman.next_state = LMAN_STATE_READY;                                  // connect_period経過、もしくはリンクマネージャー停止によりサーチ動作が終了したら、REQコールバックを発生させる
+          if (lman.pcswitch_flag == 0) {                                       // 親子切り替えサーチモードでないときのみ、コールバック発生
             rfu_LMAN_occureCallback(LMAN_MSG_SEARCH_CHILD_PERIOD_EXPIRED, 0);  // LMANコールバック発生
           }
         }
@@ -664,11 +664,11 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
           status = rfu_LMAN_CHILD_checkEnableParentCandidate();
           lman.param[0] = status;
           //				if(gRfuLinkStatus->findParentCount)
-          if (status) {                                         // ver.1.0.7変更　有効な（所望するゲームシリアル№である）親機が存在する時のみLMANメッセージ通知を行う。
+          if (status) {                                         // ver.1.0.7変更　有効な（所望するゲームシリアル№である）親機が存在する時のみLMANメッセージ通知を行う
             rfu_LMAN_occureCallback(LMAN_MSG_PARENT_FOUND, 1);  // LMANコールバック発生 param0=enable_parent_slot (specified bit)
           }
-          if ((lman.fastSearchParent_flag) && (lman.connect_period != 1)) {  // ver.1.0.81sp追加　lman.connect_period==1の時はSPを終了させない。
-            if (gRfuLinkStatus->findParentCount == RFU_CHILD_MAX) {          // ファーストサーチONの時は、今回発見した親機が４台だったら、一旦サーチを終了して、サーチを再度やり直す。
+          if ((lman.fastSearchParent_flag) && (lman.connect_period != 1)) {  // ver.1.0.81sp追加　lman.connect_period==1の時はSPを終了させない
+            if (gRfuLinkStatus->findParentCount == RFU_CHILD_MAX) {          // ファーストサーチONの時は、今回発見した親機が４台だったら、一旦サーチを終了して、サーチを再度やり直す
               rfu_REQ_endSearchParent();
               rfu_waitREQComplete();
               lman.state = LMAN_STATE_START_SEARCH_PARENT;
@@ -686,9 +686,9 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
 
       case ID_SP_END_REQ:
         if (REQ_result == 0) {
-          lman.state = lman.next_state;  // 次のステートへ。	通常：STATE_READYへ, rfu_LMAN_startConnectParent実行時：STATE_START_CONNECT_PARENTへ。
+          lman.state = lman.next_state;  // 次のステートへ, 	通常：STATE_READYへ, rfu_LMAN_startConnectParent実行時：STATE_START_CONNECT_PARENTへ
           if (lman.pcswitch_flag == 0) {
-            if (lman.state == LMAN_STATE_READY)                                   // connect_period経過、もしくはリンクマネージャー停止によりサーチ動作が終了したら、REQコールバックを発生させる。
+            if (lman.state == LMAN_STATE_READY)                                   // connect_period経過、もしくはリンクマネージャー停止によりサーチ動作が終了したら、REQコールバックを発生させる
               rfu_LMAN_occureCallback(LMAN_MSG_SEARCH_PARENT_PERIOD_EXPIRED, 0);  // LMANコールバック発生
           } else if (lman.pcswitch_flag != PCSWITCH_CP) {
             lman.state = LMAN_STATE_START_SEARCH_CHILD;
@@ -732,7 +732,7 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
               lman.param[0] = status;
 
               if (lman.pcswitch_flag) {                      // ver.1.0.12sp変更（子機状態に戻る）
-                lman.pcswitch_flag = PCSWITCH_2ND_SP_START;  // 親子切り替えモード時の時は、接続失敗後は再度親子切り替えモードに戻る。
+                lman.pcswitch_flag = PCSWITCH_2ND_SP_START;  // 親子切り替えモード時の時は、接続失敗後は再度親子切り替えモードに戻る
                 lman.state = LMAN_STATE_START_SEARCH_PARENT;
               }
             }
@@ -746,10 +746,10 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
 
       case ID_CPR_START_REQ:
         if (REQ_result == 0) {
-          lman.param[0] = gRfuLinkStatus->linkLossSlot_flag;  // lman.param[0]にリンク復旧を開始したスロットを格納する。
+          lman.param[0] = gRfuLinkStatus->linkLossSlot_flag;  // lman.param[0]にリンク復旧を開始したスロットを格納する
           lman.state = lman.next_state = LMAN_STATE_POLL_LINK_RECOVERY;
           for (lman.child_slot = 0; lman.child_slot < RFU_CHILD_MAX; lman.child_slot++)  // child_slotの再算出
-            if (gRfuLinkStatus->linkLossSlot_flag & (0x01 << lman.child_slot))           // 一台の子機が複数スロットの接続を持っていた場合のリンク復旧タイマーは、接続スロット番号の最小のものが使用される。
+            if (gRfuLinkStatus->linkLossSlot_flag & (0x01 << lman.child_slot))           // 一台の子機が複数スロットの接続を持っていた場合のリンク復旧タイマーは、接続スロット番号の最小のものが使用される
               break;
         }
         break;
@@ -770,12 +770,12 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
         if (REQ_result == 0) {
           if (rfu_CHILD_getConnectRecoveryStatus(&status) == 0) {
             if (status == RC_STATUS_DONE) {       // リンク復旧成功
-              lman.state = LMAN_STATE_MS_CHANGE;  // リンク復旧に成功したら、AGBをクロックスレーブにした後に、元のステートに復帰する。
+              lman.state = LMAN_STATE_MS_CHANGE;  // リンク復旧に成功したら、AGBをクロックスレーブにした後に、元のステートに復帰する
               lman.next_state = LMAN_STATE_BACK_STATE;
               lman.work = LMAN_MSG_LINK_RECOVERY_SUCCESSED;
             } else {
-              lman.state = lman.next_state = LMAN_STATE_READY;         // リンク復旧に失敗した時は、元のステートに復帰する。
-              rfu_LMAN_disconnect(gRfuLinkStatus->linkLossSlot_flag);  // リンク復旧に失敗したスロットを切断。
+              lman.state = lman.next_state = LMAN_STATE_READY;         // リンク復旧に失敗した時は、元のステートに復帰する
+              rfu_LMAN_disconnect(gRfuLinkStatus->linkLossSlot_flag);  // リンク復旧に失敗したスロットを切断
               lman.work = LMAN_MSG_LINK_RECOVERY_FAILED_AND_DISCONNECTED;
             }
 
@@ -802,14 +802,14 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
             lman.childClockSlave_flag = RFU_CHILD_CLOCK_SLAVE_ON;
             rfu_LMAN_occureCallback(LMAN_MSG_CHANGE_AGB_CLOCK_SLAVE, 0);  // LMANコールバック発生
 
-            // 子機のゲームネーム送信設定を行う。
+            // 子機のゲームネーム送信設定を行う
             lman.nameAcceptTimer.active |= 0x01 << lman.child_slot;
             lman.nameAcceptTimer.count[lman.child_slot] = lman.nameAcceptTimer.count_max;
             rfu_clearSlot(TYPE_NI_SEND, lman.child_slot);
             status = rfu_NI_CHILD_setSendGameName(lman.child_slot, 14);
             if (status) {
-              lman.state = lman.next_state = LMAN_STATE_READY;  // ver.1.0.10sp変更　名前送信失敗時には切断する。
-              rfu_LMAN_managerChangeAgbClockMaster();           // AGBクロックマスターに戻す。
+              lman.state = lman.next_state = LMAN_STATE_READY;  // ver.1.0.10sp変更　名前送信失敗時には切断する
+              rfu_LMAN_managerChangeAgbClockMaster();           // AGBクロックマスターに戻す
               rfu_LMAN_disconnect(gRfuLinkStatus->connectSlot_flag | gRfuLinkStatus->linkLossSlot_flag);
               lman.param[0] = status;
               rfu_LMAN_occureCallback(LMAN_MSG_CHILD_NAME_SEND_FAILED_AND_DISCONNECTED, 1);
@@ -823,7 +823,7 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
         break;
 
       case ID_STOP_MODE_REQ:
-        if (REQ_result == 0) {  // lman.acceptSlot_flagとlman.childClockSlave_flagのクリアは後ろのif(REQ_result==0){}の中で行っている。
+        if (REQ_result == 0) {  // lman.acceptSlot_flagとlman.childClockSlave_flagのクリアは後ろのif(REQ_result==0){}の中で行っている
           lman.state = lman.next_state = LMAN_STATE_READY;
           rfu_LMAN_occureCallback(LMAN_MSG_RFU_POWER_DOWN, 0);  // LMANコールバック発生
         }
@@ -837,16 +837,16 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
 
   } else {                                                                                                                  // lman.active==0
     if ((REQ_result == ERR_REQ_CMD_ACK_REJECTION) && (lman.msc_exe_flag)) {                                                 // ver.1.0.3追加 MSCコールバック内でRFUがリンク切れと判断した場合のエラー検出を追加
-      if ((REQ_commandID == ID_DATA_TX_REQ) || (REQ_commandID == ID_DATA_RX_REQ) || (REQ_commandID == ID_MS_CHANGE_REQ)) {  // MSCコールバック内で実行される可能性のある上記REQ-APIがACK_REJECTIONなら、RFUのステートを確認して、NEUTRALステートだったら「リンク切れ」と判定する。
+      if ((REQ_commandID == ID_DATA_TX_REQ) || (REQ_commandID == ID_DATA_RX_REQ) || (REQ_commandID == ID_MS_CHANGE_REQ)) {  // MSCコールバック内で実行される可能性のある上記REQ-APIがACK_REJECTIONなら、RFUのステートを確認して、NEUTRALステートだったら「リンク切れ」と判定する
         rfu_REQ_RFUStatus();                                                                                                // RFUステータスの取得
         rfu_waitREQComplete();
         rfu_getRFUStatus(&status);
         if ((status == 0) && (gRfuLinkStatus->parent_child == MODE_CHILD)) {  // RFUステータスがNEUTRALで、かつAGB側がRFUはまだCHILDだと判断しているならリンク切れとさせる
           STWI_buffp = rfu_getSTWIRecvBuffer() + 4;
-          *STWI_buffp++ = gRfuLinkStatus->connectSlot_flag;  // ※強制的にリンク切れと判断させるために、かなり無茶をしている。
+          *STWI_buffp++ = gRfuLinkStatus->connectSlot_flag;  // ※強制的にリンク切れと判断させるために、かなり無茶をしている
           *STWI_buffp = REASON_LINK_LOSS;                    // （RFUからID_DISCONNECTED_AND_CHANGE_REQがあったかのように見せかけている）
           rfu_LMAN_linkWatcher(ID_DISCONNECTED_AND_CHANGE_REQ);
-          REQ_result = 0;  // REQ-APIエラーを消す。
+          REQ_result = 0;  // REQ-APIエラーを消す
         }
       }
     }
@@ -858,10 +858,10 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
   switch (REQ_commandID) {
     case ID_DISCONNECT_REQ:
       if (REQ_result == 0) {                                 // ver.1.0.10sp変更
-        lman.param[0] = *(rfu_getSTWIRecvBuffer() + 8);      // rfu_REQ_disconnect実行時にこのアドレスに切断されたスロットが格納されている。
-        rfu_LMAN_reflectCommunicationStatus(lman.param[0]);  // 切断スロットをNI,UNI通信ステータスに反映させる。
+        lman.param[0] = *(rfu_getSTWIRecvBuffer() + 8);      // rfu_REQ_disconnect実行時にこのアドレスに切断されたスロットが格納されている
+        rfu_LMAN_reflectCommunicationStatus(lman.param[0]);  // 切断スロットをNI,UNI通信ステータスに反映させる
 
-        // リンク復旧中のスロットがDISCONNECTされた場合は、それを停止する。
+        // リンク復旧中のスロットがDISCONNECTされた場合は、それを停止する
         if (lman.linkRecoveryTimer.active) {  // ver.1.0.11sp追加
           lman.linkRecoveryTimer.active &= ~lman.param[0];
           for (i = 0; i < RFU_CHILD_MAX; i++) {
@@ -869,37 +869,37 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
               lman.linkRecoveryTimer.count[i] = 0;
             }
           }
-          if (lman.parent_child == MODE_CHILD) {  // 子機の場合はリンクマネージャーも停止する。
+          if (lman.parent_child == MODE_CHILD) {  // 子機の場合はリンクマネージャーも停止する
             lman.state = lman.next_state = LMAN_STATE_READY;
           }
         }
 
-        // 接続認証子機スロットのクリア。（lman.acceptSlot_flagとacceptCountを落とす。）
+        // 接続認証子機スロットのクリア, （lman.acceptSlot_flagとacceptCountを落とす, ）
         status = lman.acceptSlot_flag & lman.param[0];
         for (i = 0; i < RFU_CHILD_MAX; i++) {
-          if ((status & (0x01 << i)) && (lman.acceptCount > 0)) {  // acceptされているスロットが切断されていたら、acceptCountを減らす。
+          if ((status & (0x01 << i)) && (lman.acceptCount > 0)) {  // acceptされているスロットが切断されていたら、acceptCountを減らす
             lman.acceptCount--;
           }
         }
         lman.acceptSlot_flag &= ~lman.param[0];
 
-        // pcswitch_flagがONの時は親子切り替えサーチを再開する。
+        // pcswitch_flagがONの時は親子切り替えサーチを再開する
         if (lman.pcswitch_flag) {  // ver.1.0.12sp追加
           if (gRfuLinkStatus->parent_child == MODE_NEUTRAL) {
-            if (lman.pcswitch_flag == PCSWITCH_SC_LOCK) {  // 親子切り替えがSC_LOCKの場合はSC_POLLから再開。
+            if (lman.pcswitch_flag == PCSWITCH_SC_LOCK) {  // 親子切り替えがSC_LOCKの場合はSC_POLLから再開
               lman.connect_period = lman.pcswitch_period_bak;
               lman.pcswitch_flag = PCSWITCH_3RD_SC;
               lman.state = LMAN_STATE_POLL_SEARCH_CHILD;
             } else {
               if ((lman.state != LMAN_STATE_POLL_SEARCH_CHILD) && (lman.state != LMAN_STATE_END_SEARCH_CHILD)) {
-                lman.pcswitch_flag = PCSWITCH_1ST_SC_START;  // そうでない場合は、SC状態でなければ親子切り替えの最初から動作させる。
+                lman.pcswitch_flag = PCSWITCH_1ST_SC_START;  // そうでない場合は、SC状態でなければ親子切り替えの最初から動作させる
                 lman.state = LMAN_STATE_START_SEARCH_CHILD;
               }
             }
           }
         }
 
-        if ((gRfuLinkStatus->parent_child == MODE_NEUTRAL) && (lman.state == 0)) {  // RFUがニュートラルに戻って、リンクマネージャーも停止していたら、リンクマネージャーもニュートラルへ。
+        if ((gRfuLinkStatus->parent_child == MODE_NEUTRAL) && (lman.state == 0)) {  // RFUがニュートラルに戻って、リンクマネージャーも停止していたら、リンクマネージャーもニュートラルへ
           lman.parent_child = MODE_NEUTRAL;
         }
 
@@ -910,10 +910,10 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
       break;
 
     case ID_DATA_RX_REQ:                     // ※2003.09.09 ver.1.0.6追加 データ受信コマンド完了時にLMANコールバック発生
-      rfu_LMAN_CHILD_checkSendChildName2();  // ver.1.0.12sp追加　子機のゲーム識別情報送信結果の判定を行う。
+      rfu_LMAN_CHILD_checkSendChildName2();  // ver.1.0.12sp追加　子機のゲーム識別情報送信結果の判定を行う
 
-      if (gRfuLinkStatus->parent_child != MODE_NEUTRAL) {              // これは上の名前送信成功通知コールバックの中で切断が行われた場合に受信成功コールバックを発生させないことで、次に続くrfu_REQ_sendDataを実行させないようにしたもの。
-        rfu_LMAN_occureCallback(LMAN_MSG_RECV_DATA_REQ_COMPLETED, 0);  // データ受信成功通知を行う。
+      if (gRfuLinkStatus->parent_child != MODE_NEUTRAL) {              // これは上の名前送信成功通知コールバックの中で切断が行われた場合に受信成功コールバックを発生させないことで、次に続くrfu_REQ_sendDataを実行させないようにしたもの
+        rfu_LMAN_occureCallback(LMAN_MSG_RECV_DATA_REQ_COMPLETED, 0);  // データ受信成功通知を行う
       }
       break;
 
@@ -923,9 +923,9 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
       if (REQ_result == 0) {
         lman.acceptSlot_flag = lman.acceptCount = lman.reserveDisconnectSlot_flag = 0;
         lman.parent_child = MODE_NEUTRAL;
-        rfu_LMAN_managerChangeAgbClockMaster();  // クロックスレーブ時はクロックマスターに戻す。
+        rfu_LMAN_managerChangeAgbClockMaster();  // クロックスレーブ時はクロックマスターに戻す
 
-        if (REQ_commandID == ID_STOP_MODE_REQ) {  // ver.1.0.11sp追加 RFUをパワーダウンしたら、マネージャーを全クリアして終了する。
+        if (REQ_commandID == ID_STOP_MODE_REQ) {  // ver.1.0.11sp追加 RFUをパワーダウンしたら、マネージャーを全クリアして終了する
           rfu_LMAN_endManager();
         }
       }
@@ -938,11 +938,11 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
   //----------------------------------------------
   // REQ-API実行エラー通知
   //----------------------------------------------
-  if (REQ_result) {  // リンクマネージャーもしくはユーザーによるREQ-API実行でエラーが発生した時は、その旨を通知する。
+  if (REQ_result) {  // リンクマネージャーもしくはユーザーによるREQ-API実行でエラーが発生した時は、その旨を通知する
     // REQ-API実行エラー通知
     if ((REQ_commandID == ID_SP_START_REQ) && (REQ_result)) {  // ver.1.0.12sp RFUのハードバグ対策
-      if (lman.pcswitch_flag == PCSWITCH_2ND_SP) {             // 親子切り替えサーチ字のSC_END時に「子機接続なし」とRFUが返していても、実はRFU内部ではPARENTになっている時がある。
-        gRfuLinkStatus->parent_child = MODE_PARENT;            // このままSP_STARTを実行すると、ERR_CMD_ACK_REJECTIONになるので、内部でこれを検出したら全スロット切断を行ってそのまま進行させる。
+      if (lman.pcswitch_flag == PCSWITCH_2ND_SP) {             // 親子切り替えサーチ字のSC_END時に「子機接続なし」とRFUが返していても、実はRFU内部ではPARENTになっている時がある
+        gRfuLinkStatus->parent_child = MODE_PARENT;            // このままSP_STARTを実行すると、ERR_CMD_ACK_REJECTIONになるので、内部でこれを検出したら全スロット切断を行ってそのまま進行させる
         gRfuLinkStatus->connectSlot_flag = 0x0f;
         rfu_LMAN_disconnect(0x0f);
         rfu_waitREQComplete();
@@ -955,7 +955,7 @@ static void rfu_LMAN_REQ_callback(u16 REQ_commandID, u16 REQ_result) {
     if (lman.active) lman.state = lman.next_state = LMAN_STATE_READY;  // ver.1.0.5追加　LinkManagerが実行したREQ-APIエラー時はリンクマネージャー停止
 
     rfu_LMAN_occureCallback(LMAN_MSG_REQ_API_ERROR, 2);  // LMANコールバック発生	param0=REQ_commandID	param1=REQ_result
-    rfu_LMAN_managerChangeAgbClockMaster();              // 子機でクロックスレーブ時はクロックマスターに戻す。
+    rfu_LMAN_managerChangeAgbClockMaster();              // 子機でクロックスレーブ時はクロックマスターに戻す
   }
   // 自動起動DMAによるRFUエラー発生の通知
   if (REQ_commandID == ID_CLOCK_SLAVE_MS_CHANGE_ERROR_BY_DMA_REQ) {  // ver.1.0.7追加　H-DMA、サウンドDMA等の自動起動DMAによって
@@ -968,33 +968,33 @@ static void rfu_LMAN_MSC_callback(u16 REQ_commandID) {
   u8 active_bak, thisAck_flag;
 
   active_bak = lman.active;
-  lman.active = 0;  // rfu_LMAN_sequencer_entity上でMSCコールバックが発生した場合を考慮して、MSCコールバック上ではリンクマネージャーは有効でないとする。
+  lman.active = 0;  // rfu_LMAN_sequencer_entity上でMSCコールバックが発生した場合を考慮して、MSCコールバック上ではリンクマネージャーは有効でないとする
   lman.msc_exe_flag = 1;
 
-  // 子機の場合は、リンクウォッチを行い、AGBクロックスレーブOFF要求にも応える。
-  if (gRfuLinkStatus->parent_child == MODE_CHILD) {  // ※2003.10.24 ver.1.0.8追加	リンク監視をリンクマネージャー内に取り込み。
+  // 子機の場合は、リンクウォッチを行い、AGBクロックスレーブOFF要求にも応える
+  if (gRfuLinkStatus->parent_child == MODE_CHILD) {  // ※2003.10.24 ver.1.0.8追加	リンク監視をリンクマネージャー内に取り込み
     rfu_LMAN_linkWatcher(REQ_commandID);
 
     if (lman.childClockSlave_flag != RFU_CHILD_CLOCK_SLAVE_ON) {
-      rfu_LMAN_managerChangeAgbClockMaster();  // RFU_CHILD_CLOCK_SLAVE_OFF_REQの時は、OFFにしてコールバック通知。
+      rfu_LMAN_managerChangeAgbClockMaster();  // RFU_CHILD_CLOCK_SLAVE_OFF_REQの時は、OFFにしてコールバック通知
       lman.msc_exe_flag = 0;
       lman.active = active_bak;
       return;
     }
   } else {  // if(gRfuLinkStatus->parent_child==MODE_PARENT)
     if (rfu_UNI_PARENT_getDRAC_ACK(&thisAck_flag) == 0) {
-      lman.parentAck_flag |= thisAck_flag;  // ACKフラグをlman変数に保持する。
+      lman.parentAck_flag |= thisAck_flag;  // ACKフラグをlman変数に保持する
     }
   }
 
-  // MSCコールバックは登録されている時しか動作しない。
+  // MSCコールバックは登録されている時しか動作しない
   if ((u32)lman.MSC_callback) {
     lman.MSC_callback(REQ_commandID);
     rfu_waitREQComplete();
 
-    // MSCコールバック内でAGBクロックスレーブOFF要求がきた場合はここで応える。
+    // MSCコールバック内でAGBクロックスレーブOFF要求がきた場合はここで応える
     if (lman.childClockSlave_flag == RFU_CHILD_CLOCK_SLAVE_OFF_REQ) {
-      rfu_LMAN_managerChangeAgbClockMaster();  // RFU_CHILD_CLOCK_SLAVE_OFF_REQの時は、OFFにしてコールバック通知。
+      rfu_LMAN_managerChangeAgbClockMaster();  // RFU_CHILD_CLOCK_SLAVE_OFF_REQの時は、OFFにしてコールバック通知
     }
   }
 
@@ -1006,12 +1006,12 @@ static void rfu_LMAN_PARENT_checkRecvChildName() {
   u8 i, tgtSlot, newConnectSlot, flags, newAcceptSlot;
   u16* acceptableSerialNo;
 
-  // 親機による子機サーチ状態でなければリターン。
+  // 親機による子機サーチ状態でなければリターン
   if ((lman.state < LMAN_STATE_START_SEARCH_CHILD) || (lman.state > LMAN_STATE_WAIT_RECV_CHILD_NAME)) return;
 
   // 新しいRFUレベルの接続の検出
   newConnectSlot = (gRfuLinkStatus->connectSlot_flag ^ lman.connectSlot_flag_old) & gRfuLinkStatus->connectSlot_flag;
-  newConnectSlot &= ~gRfuLinkStatus->getName_flag;  // ~getName_flagでマスクしないと、リンク復旧した子機も新しい接続として検出してしまう。
+  newConnectSlot &= ~gRfuLinkStatus->getName_flag;  // ~getName_flagでマスクしないと、リンク復旧した子機も新しい接続として検出してしまう
   lman.connectSlot_flag_old = gRfuLinkStatus->connectSlot_flag;
   if (newConnectSlot) {  // 新しいRFUレベルでの接続を検出したらLMANコールバック発生
     lman.param[0] = newConnectSlot;
@@ -1057,7 +1057,7 @@ static void rfu_LMAN_PARENT_checkRecvChildName() {
       if (flags & RN_NAME_TIMER_CLEAR) {
         lman.nameAcceptTimer.active &= ~tgtSlot;
         lman.nameAcceptTimer.count[i] = 0;
-        rfu_clearSlot(TYPE_NI_RECV, i);  // 通信スロットをクリアする。
+        rfu_clearSlot(TYPE_NI_RECV, i);  // 通信スロットをクリアする
       }
       if (flags & RN_DISCONNECT) {
         lman.reserveDisconnectSlot_flag |= tgtSlot;
@@ -1065,16 +1065,16 @@ static void rfu_LMAN_PARENT_checkRecvChildName() {
     }
   }
 
-  // 接続を受け入れた子機を通知する。
+  // 接続を受け入れた子機を通知する
   if (newAcceptSlot) {
     lman.param[0] = newAcceptSlot;
     rfu_LMAN_occureCallback(LMAN_MSG_NEW_CHILD_CONNECT_ACCEPTED, 1);  // LMANコールバック発生	param0=newAcceptSlot (specified bit)
   }
 
-  // 接続を拒否した子機を強制切断する。								// ver.1.0.17変更
+  // 接続を拒否した子機を強制切断する, 								// ver.1.0.17変更
   if (lman.reserveDisconnectSlot_flag) {  // 接続を拒否してDISCONNECTした子機をLMANコールバックで通知
     flags = 1;
-    if (gRfuLinkStatus->sendSlot_UNI_flag) {  // UNIデータ送信中は、有効な全メンバーからのACKを取得している時のみDISCONNECT可能とする。
+    if (gRfuLinkStatus->sendSlot_UNI_flag) {  // UNIデータ送信中は、有効な全メンバーからのACKを取得している時のみDISCONNECT可能とする
       if ((lman.parentAck_flag & lman.acceptSlot_flag) != lman.acceptSlot_flag) {
         flags = 0;
       }
@@ -1087,13 +1087,13 @@ static void rfu_LMAN_PARENT_checkRecvChildName() {
     }
   }
 
-  // 子機サーチ終了後の名前受信猶予期間が終了したかどうかのチェックを行い、その後の動作に移行する。
+  // 子機サーチ終了後の名前受信猶予期間が終了したかどうかのチェックを行い、その後の動作に移行する
   if ((lman.nameAcceptTimer.active == 0) && (lman.state == LMAN_STATE_WAIT_RECV_CHILD_NAME)) {
     // ver.1.0.10sp 2003.10.30追加 親子切り替えサーチ動作の追加
     if (lman.pcswitch_flag == 0) {  // 親子切り替えがOFFなら、マネージャー停止
       lman.state = lman.next_state = LMAN_STATE_READY;
       rfu_LMAN_occureCallback(LMAN_MSG_END_WAIT_CHILD_NAME, 0);
-    } else {                                        // 親子切り替えがONなら、サーチモードを切り替える。
+    } else {                                        // 親子切り替えがONなら、サーチモードを切り替える
       if (lman.pcswitch_flag == PCSWITCH_1ST_SC) {  // 第1SC期間終了時は、第2SP期間へ
         lman.pcswitch_flag = PCSWITCH_2ND_SP_START;
         lman.state = LMAN_STATE_START_SEARCH_PARENT;
@@ -1102,8 +1102,8 @@ static void rfu_LMAN_PARENT_checkRecvChildName() {
         lman.state = LMAN_STATE_START_SEARCH_CHILD;
       }
 
-      if (lman.acceptSlot_flag) {  // サーチ切り替え時に、親機状態になっていたならば、親子切り替えを停止し、無期限で子機サーチを行うよう変化する。
-        lman.connect_period = 0;   // ver.1.0.12sp　if文をrfuLinkStatus->parent_child==MODE_PARENTから今の形に変更。
+      if (lman.acceptSlot_flag) {  // サーチ切り替え時に、親機状態になっていたならば、親子切り替えを停止し、無期限で子機サーチを行うよう変化する
+        lman.connect_period = 0;   // ver.1.0.12sp　if文をrfuLinkStatus->parent_child==MODE_PARENTから今の形に変更
         lman.pcswitch_flag = PCSWITCH_SC_LOCK;
         lman.state = LMAN_STATE_START_SEARCH_CHILD;
       }
@@ -1138,7 +1138,7 @@ static void rfu_LMAN_CHILD_checkSendChildName(void) {
 }
 
 static void rfu_LMAN_CHILD_checkSendChildName2() {
-  // ゲーム識別情報の送信成功判定およびその通知。
+  // ゲーム識別情報の送信成功判定およびその通知
   if (lman.state == LMAN_STATE_SEND_CHILD_NAME) {
     if (gRfuSlotStatusNI[lman.child_slot]->send.state == SLOT_STATE_SEND_SUCCESS) {
       lman.state = lman.next_state = LMAN_STATE_READY;
@@ -1153,7 +1153,7 @@ static void rfu_LMAN_CHILD_checkSendChildName2() {
 static void rfu_LMAN_CHILD_linkRecoveryProcess() {
   if (lman.parent_child != MODE_CHILD) return;
   if (lman.linkRecovery_start_flag == LINK_RECOVERY_START) {
-    lman.state_bak[0] = lman.state;  // ※MSCコールバック内でlman.stateを変えると、メインループ上の関数との整合性がとれなくなるので、変更はリンクマネージャーentity上で行うようにする。
+    lman.state_bak[0] = lman.state;  // ※MSCコールバック内でlman.stateを変えると、メインループ上の関数との整合性がとれなくなるので、変更はリンクマネージャーentity上で行うようにする
     lman.state_bak[1] = lman.next_state;
     lman.state = LMAN_STATE_START_LINK_RECOVERY;
     lman.next_state = LMAN_STATE_POLL_LINK_RECOVERY;
@@ -1165,7 +1165,7 @@ static u8 rfu_LMAN_CHILD_checkEnableParentCandidate() {
   u8 i, enableParentSlot;
   u16* serialNo;
 
-  // lman.accaptable_serialNo_listに一致する親機候補をビットで返す。
+  // lman.accaptable_serialNo_listに一致する親機候補をビットで返す
   enableParentSlot = 0;
   for (i = 0; i < gRfuLinkStatus->findParentCount; i++) {
     serialNo = lman.acceptable_serialNo_list;
@@ -1251,22 +1251,22 @@ void rfu_LMAN_checkNICommunicateStatus() {
   if (gRfuLinkStatus->recvSlot_NI_flag) {
     for (i = 0; i < RFU_CHILD_MAX; i++) {
       if (gRfuSlotStatusNI[i]->recv.state & SLOT_BUSY_FLAG) {
-        if (gRfuSlotStatusNI[i]->recv.failCounter > lman.NI_failCounter_limit) rfu_NI_stopReceivingData(i);  // 受信の場合は対象が１台だけなので即受信停止。
+        if (gRfuSlotStatusNI[i]->recv.failCounter > lman.NI_failCounter_limit) rfu_NI_stopReceivingData(i);  // 受信の場合は対象が１台だけなので即受信停止
       }
     }
   }
 }
 
-// リンクマネージャー使用時のMSCコールバックの設定を行います。MSCコールバックの指定は、rfu_LMAN_initializeManagerでも行えますので、本関数は再設定を行いたい場合に使用します。
+// リンクマネージャー使用時のMSCコールバックの設定を行います, MSCコールバックの指定は、rfu_LMAN_initializeManagerでも行えますので、本関数は再設定を行いたい場合に使用します
 void rfu_LMAN_setMSCCallback(void (*MSC_callback_p)(u16)) {
   lman.MSC_callback = MSC_callback_p;         // ユーザー定義のMSCコールバック関数を設定
   rfu_setMSCCallback(rfu_LMAN_MSC_callback);  // リンクマネージャー用MSCコールバックルーチンのセット
 }
 
-// リンクマネージャー使用時のLMANコールバックの設定を行います。LMANコールバックの指定は、rfu_LMAN_initializeManagerでも行えますので、本関数は再設定を行いたい場合に使用します。
+// リンクマネージャー使用時のLMANコールバックの設定を行います, LMANコールバックの指定は、rfu_LMAN_initializeManagerでも行えますので、本関数は再設定を行いたい場合に使用します
 void rfu_LMAN_setLMANCallback(void (*LMAN_callback_p)(u8, u8)) { lman.LMAN_callback = LMAN_callback_p; }
 
-// リンクマネージャー使用時のリンク復旧動作の設定を行います。リンク復旧動作の設定は、rfu_LMAN_initializeRFUのinit_parameters内でも行えますので、本関数は再設定を行いたい場合に使用します。
+// リンクマネージャー使用時のリンク復旧動作の設定を行います, リンク復旧動作の設定は、rfu_LMAN_initializeRFUのinit_parameters内でも行えますので、本関数は再設定を行いたい場合に使用します
 u8 rfu_LMAN_setLinkRecovery(u8 enable_flag, u16 recovery_period) {
   u16 imeBak;
   if (lman.linkRecovery_enable && enable_flag == 0 && lman.linkRecoveryTimer.active) {
@@ -1280,9 +1280,9 @@ u8 rfu_LMAN_setLinkRecovery(u8 enable_flag, u16 recovery_period) {
   return 0;
 }
 
-// リンクマネージャー使用時のNIデータ通信のfailCounter期限を再設定します。NI通信時に通信ステータスのfailCounter値が本関数で設定された値に達すると、その通信対象は通信から除外されます。なお、NIデータ通信のfailCounter期限の設定は、rfu_LMAN_initializeRFUのinit_parameters内でも行えますので、本関数は再設定を行いたい場合に使用します。
+// リンクマネージャー使用時のNIデータ通信のfailCounter期限を再設定します, NI通信時に通信ステータスのfailCounter値が本関数で設定された値に達すると、その通信対象は通信から除外されます, なお、NIデータ通信のfailCounter期限の設定は、rfu_LMAN_initializeRFUのinit_parameters内でも行えますので、本関数は再設定を行いたい場合に使用します
 u8 rfu_LMAN_setNIFailCounterLimit(u16 NI_failCounter_limit) {
-  if (gRfuLinkStatus->sendSlot_NI_flag | gRfuLinkStatus->recvSlot_NI_flag) {  // 現在通信中なら、エラー通知して再設定は行わない。
+  if (gRfuLinkStatus->sendSlot_NI_flag | gRfuLinkStatus->recvSlot_NI_flag) {  // 現在通信中なら、エラー通知して再設定は行わない
     lman.param[0] = LMAN_ERROR_NOW_COMMUNICATION;
     rfu_LMAN_occureCallback(LMAN_MSG_LMAN_API_ERROR_RETURN, 1);
     return LMAN_ERROR_NOW_COMMUNICATION;
@@ -1291,9 +1291,9 @@ u8 rfu_LMAN_setNIFailCounterLimit(u16 NI_failCounter_limit) {
   return 0;
 }
 
-// リンクマネージャー使用時の子機による親機サーチ時のファーストサーチ動作のON/OFF設定を行います。本動作の設定は、rfu_LMAN_initializeRFUのinit_parameters内でも行えますので、本関数は再設定を行いたい場合に使用します。
+// リンクマネージャー使用時の子機による親機サーチ時のファーストサーチ動作のON/OFF設定を行います, 本動作の設定は、rfu_LMAN_initializeRFUのinit_parameters内でも行えますので、本関数は再設定を行いたい場合に使用します
 u8 rfu_LMAN_setFastSearchParent(u8 enable_flag) {
-  if ((lman.state == LMAN_STATE_START_SEARCH_PARENT) || (lman.state == LMAN_STATE_POLL_SEARCH_PARENT) || (lman.state == LMAN_STATE_END_SEARCH_PARENT)) {  // 現在SearchParent中なら、エラーを返して設定は行わない。
+  if ((lman.state == LMAN_STATE_START_SEARCH_PARENT) || (lman.state == LMAN_STATE_POLL_SEARCH_PARENT) || (lman.state == LMAN_STATE_END_SEARCH_PARENT)) {  // 現在SearchParent中なら、エラーを返して設定は行わない
     lman.param[0] = LMAN_ERROR_NOW_SEARCH_PARENT;
     rfu_LMAN_occureCallback(LMAN_MSG_LMAN_API_ERROR_RETURN, 1);
     return LMAN_ERROR_NOW_SEARCH_PARENT;
@@ -1306,15 +1306,15 @@ u8 rfu_LMAN_setFastSearchParent(u8 enable_flag) {
   return 0;
 }
 
-// リンクマネージャー使用時に、リンク切れ等によって、子機がAGBクロックスレーブを継続できなくなった際に、AGBをクロックマスターに切り替えて、メッセージを通知する。
+// リンクマネージャー使用時に、リンク切れ等によって、子機がAGBクロックスレーブを継続できなくなった際に、AGBをクロックマスターに切り替えて、メッセージを通知する
 static void rfu_LMAN_managerChangeAgbClockMaster() {
-  if (lman.childClockSlave_flag != RFU_CHILD_CLOCK_SLAVE_OFF) {  // 子機でクロックスレーブ時はクロックマスターに戻す。
+  if (lman.childClockSlave_flag != RFU_CHILD_CLOCK_SLAVE_OFF) {  // 子機でクロックスレーブ時はクロックマスターに戻す
     lman.childClockSlave_flag = RFU_CHILD_CLOCK_SLAVE_OFF;
     rfu_LMAN_occureCallback(LMAN_MSG_CHANGE_AGB_CLOCK_MASTER, 0);
   }
 }
 
-// リンクマネージャー使用時に、子機がAGBクロックスレーブになっている時に、AGBクロックマスターに戻るよう要求。
+// リンクマネージャー使用時に、子機がAGBクロックスレーブになっている時に、AGBクロックマスターに戻るよう要求
 void rfu_LMAN_requestChangeAgbClockMaster() {
   if (lman.childClockSlave_flag == RFU_CHILD_CLOCK_SLAVE_OFF) {
     rfu_LMAN_occureCallback(LMAN_MSG_CHANGE_AGB_CLOCK_MASTER, 0);

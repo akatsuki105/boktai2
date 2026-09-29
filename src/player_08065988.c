@@ -583,7 +583,7 @@ NAKED void FUN_0807a840(Player* p) { INCFUNC("asm/func/FUN_0807a840.inc"); }
 // 武器の経験値をそのまま返す
 s32 FUN_0807a8ac(s32 kind) { return *(gStat->weaponExp + kind); }
 
-// 武器の経験値をレベルに直す。100 たまると1レベル
+// 武器の経験値をレベルに直す, 100 たまると1レベル
 s32 GetWeaponSkillLevel(s32 kind) { return Div(*(gStat->weaponExp + kind), 100); }
 
 void FUN_0807a8e0(Player* p) { *(gStat->unk_2c8 + p->isSabata) = 0; }
@@ -626,7 +626,7 @@ NAKED void FUN_0807aa00(Player* p, s32 amount) { INCFUNC("asm/func/FUN_0807aa00.
 
 NAKED void FUN_0807aa30(Player* p, s32 amount) { INCFUNC("asm/func/FUN_0807aa30.inc"); }
 
-// ENE を減らす。0 未満にはならない
+// ENE を減らす, 0 未満にはならない
 void Player_ReduceENE_0807aa60(Player* player, s32 amount) {
   if (player->unk_1c == 1) {
     u16* ene = &player->ene;

@@ -9,22 +9,22 @@ struct TextPanel;
 struct TextPanelManager;
 typedef void (*TextPanelFunc)(struct TextPanelManager* mgr, struct TextPanel* p);
 
-// メッセージ枠1つ。TextPanel_Create が Malloc(0x1C4) して TextPanelManager のリストに繋ぐ
+// メッセージ枠1つ, TextPanel_Create が Malloc(0x1C4) して TextPanelManager のリストに繋ぐ
 typedef struct TextPanel {
-  s32 id;                  // 0x00, TextPanelManager_AllocID が 1..999999 で配る。TextPanelManager_FindByID の検索キー
-  u8 x;                    // 0x04, TextPanel_SetRect の第2引数。FUN_0822EA60 と TextRenderer_SetRect に渡す
+  s32 id;                  // 0x00, TextPanelManager_AllocID が 1..999999 で配る, TextPanelManager_FindByID の検索キー
+  u8 x;                    // 0x04, TextPanel_SetRect の第2引数, FUN_0822EA60 と TextRenderer_SetRect に渡す
   u8 y;                    // 0x05, TextPanel_SetRect の第3引数
   u8 width;                // 0x06, TextPanel_SetRect の第4引数
   u8 height;               // 0x07, TextPanel_SetRect の第5引数
   u16 unk_08;              // 0x08, TextPanel_Create が 0 を入れる
-  u16 msgIdx;              // 0x0A, TextPanel_SetMessage の引数。FUN_08049FE8 に渡す
-  s16 pendingMsgIdx;       // 0x0C, 0 以上の間 TextPanelManager_Update が TextPanel_SetMessage に流す。適用後は -1 に戻る
+  u16 msgIdx;              // 0x0A, TextPanel_SetMessage の引数, FUN_08049FE8 に渡す
+  s16 pendingMsgIdx;       // 0x0C, 0 以上の間 TextPanelManager_Update が TextPanel_SetMessage に流す, 適用後は -1 に戻る
   u16 unk_0e;              // 0x0E, 読み手も書き手も見つかっていない
-  u8* scriptPc;            // 0x10, TextPanel_SetScript の第2引数。本文のあるスクリプト位置
+  u8* scriptPc;            // 0x10, TextPanel_SetScript の第2引数, 本文のあるスクリプト位置
   u16 unk_14;              // 0x14, TextPanel_Create と TextPanel_SetScript が 0 を入れる
   u16 unk_16;              // 0x16, TextPanel_Create と TextPanel_SetScript が 1 を入れる
   u16 unk_18[32];          // 0x18, FUN_0804a27c が選択肢ごとのメッセージ番号を unk_16 個だけ書き込む
-  TextPanelFunc fn;        // 0x58, TextPanelManager_Update が fn(mgr, box) で呼ぶ。0x0804A4A0 が待機、0x0804A4A8 が表示中
+  TextPanelFunc fn;        // 0x58, TextPanelManager_Update が fn(mgr, box) で呼ぶ, 0x0804A4A0 が待機、0x0804A4A8 が表示中
   TextRenderer renderer;   // 0x5C, FUN_0804967C / FUN_08049640 / TextRenderer_SetRect / TextRenderer_Advance がこのアドレスを取る
   struct TextPanel* prev;  // 0x1BC, TextPanel_Create が繋ぎ TextPanel_Destroy が外す
   struct TextPanel* next;  // 0x1C0
@@ -34,7 +34,7 @@ static_assert(sizeof(TextPanel) == 452);
 // 開いているメッセージ枠を双方向リストで抱えるシングルトン
 typedef struct TextPanelManager {
   Entity e;         // 0x00, ENTITY_UNK_12
-  s32 nextID;       // 0x18, TextPanelManager_AllocID が +1 する。999999 を超えたら 1 に戻す
+  s32 nextID;       // 0x18, TextPanelManager_AllocID が +1 する, 999999 を超えたら 1 に戻す
   TextPanel* head;  // 0x1C, リストの先頭
 } TextPanelManager;
 static_assert(sizeof(TextPanelManager) == 32);
@@ -49,7 +49,7 @@ void TextPanelManager_ClearGlobal(void) { gTextPanelManager = NULL; }
 
 bool32 TextPanelManager_Exists(void) { return gTextPanelManager != NULL; }
 
-// 枠のスクリプト位置から文字列テーブルを引く。offset は同じ参照内での何番目かを指す
+// 枠のスクリプト位置から文字列テーブルを引く, offset は同じ参照内での何番目かを指す
 char* TextPanel_LookupText(TextPanel* p, s32 offset) { return Textbox_LookupString(VM_ParseStringRef(p->scriptPc) + offset); }
 
 TextPanel* TextPanelManager_FindByID(TextPanelManager* mgr, s32 id) {
@@ -72,7 +72,7 @@ TextPanel* TextPanel_FindByID(s32 id) {
   return TextPanelManager_FindByID(gTextPanelManager, id);
 }
 
-// 未使用の枠 ID を探して返す。4回試して空きがなければ -1
+// 未使用の枠 ID を探して返す, 4回試して空きがなければ -1
 s32 TextPanelManager_AllocID(TextPanelManager* mgr) {
   s32 i;
 
@@ -97,7 +97,7 @@ static inline void TextPanelManager_Link(TextPanelManager* mgr, TextPanel* p) {
   mgr->head = p;
 }
 
-// 枠を1つ確保してマネージャのリストの先頭に繋ぐ。戻り値は割り当てた id
+// 枠を1つ確保してマネージャのリストの先頭に繋ぐ, 戻り値は割り当てた id
 s32 TextPanel_Create(s32 x, s32 y, s32 width, s32 height) {
   TextPanelManager* mgr = gTextPanelManager;
   TextPanel* p;
@@ -147,7 +147,7 @@ static inline void TextPanelManager_Unlink(TextPanelManager* mgr, TextPanel* p) 
   p->next = NULL;
 }
 
-// 枠をリストから外して解放する。戻り値は消した枠の id
+// 枠をリストから外して解放する, 戻り値は消した枠の id
 s32 TextPanel_Destroy(s32 id) {
   TextPanelManager* mgr = gTextPanelManager;
   TextPanel* p;
@@ -177,7 +177,7 @@ s32 TextPanel_Start(s32 id) {
   return 0;
 }
 
-// 枠の中身を消して待機状態に戻す。枠自体は残る
+// 枠の中身を消して待機状態に戻す, 枠自体は残る
 s32 TextPanel_Hide(s32 id) {
   TextPanel* p = TextPanel_FindByID(id);
 
@@ -275,7 +275,7 @@ s32 TextPanel_SetText(s32 id, char* text) {
   return 0;
 }
 
-// 枠の位置と大きさを変える。元の矩形は消してから書き直す
+// 枠の位置と大きさを変える, 元の矩形は消してから書き直す
 s32 TextPanel_SetRect(s32 id, s32 x, s32 y, s32 width, s32 height) {
   TextPanel* p = TextPanel_FindByID(id);
   TextRenderer* r;
@@ -338,10 +338,10 @@ s32 FUN_0804a480(s32 id, s32 idx) {
   return TextRenderer_GetExtendWidth(&p->renderer, idx);
 }
 
-// 表示前の待機状態。本文送りが止まったままになるよう毎フレーム終了フラグを落とす
+// 表示前の待機状態, 本文送りが止まったままになるよう毎フレーム終了フラグを落とす
 void TextPanel_StateIdle(TextPanelManager* mgr, TextPanel* p) { TextRenderer_SetFinished(&p->renderer, FALSE); }
 
-// 本文送り中の状態。1フレームに1歩だけ進め、送り切ったら次の状態へ移す
+// 本文送り中の状態, 1フレームに1歩だけ進め、送り切ったら次の状態へ移す
 void TextPanel_StateTyping(TextPanelManager* mgr, TextPanel* p) {
   TextRenderer* r = &p->renderer;
   s32 i;
@@ -361,7 +361,7 @@ void TextPanel_StateTyping(TextPanelManager* mgr, TextPanel* p) {
   }
 }
 
-// 表示し終えた枠の待機状態。TextPanelManager_Update から毎フレーム呼ばれるが何もしない
+// 表示し終えた枠の待機状態, TextPanelManager_Update から毎フレーム呼ばれるが何もしない
 void TextPanel_StateDone(TextPanelManager* mgr, TextPanel* p) {}
 
 s32 TextPanelManager_Update(TextPanelManager* mgr) {
@@ -419,7 +419,7 @@ TextPanelManager* TextPanelManager_Create(void) {
   return p;
 }
 
-// 開いている枠を全部閉じる。マネージャ自体は残る
+// 開いている枠を全部閉じる, マネージャ自体は残る
 void TextPanelManager_DestroyAll(void) {
   if (gTextPanelManager != NULL) {
     TextPanel* p = gTextPanelManager->head;

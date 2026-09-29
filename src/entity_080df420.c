@@ -21,7 +21,7 @@ typedef struct Entity080df420 {
   Entity e;                      // 0x0000, ENTITY_UNK_10
   AuxSpriteGfx gfx;              // 0x0018, Video_GetAuxSprite(&gfx, 0xF422)
   u8 unk_34[4];                  // 0x0034, まだ未解析
-  u32 usedMask;                  // 0x0038, elems のどのスロットが使用中か. FUN_080de174 が立てる
+  u32 usedMask;                  // 0x0038, elems のどのスロットが使用中か, FUN_080de174 が立てる
   s16 frame;                     // 0x003C, _Update が毎フレーム 1 足す
   s16 count;                     // 0x003E, FUN_080de174 が確保のたびに 1 足す
   Entity080df420Elem elems[24];  // 0x0040

@@ -1,14 +1,14 @@
+#include "animation.h"
 #include "entity.h"
 #include "file.h"
-#include "animation.h"
-#include "particle.h"
 #include "global.h"
+#include "particle.h"
 
-// 32枠ぶんの演出要素。activeMask のビットが立っている枠だけ生きている
+// 32枠ぶんの演出要素, activeMask のビットが立っている枠だけ生きている
 typedef struct {
   u8 unk_0[0x12];  // 0x00
   u8 unk_12;       // 0x12, FUN_080db970 が解放時に 0 にする
-  s8 idx;          // 0x13, 自分の添字。ptcls と activeMask のビットを指す。解放後は 0xFF
+  s8 idx;          // 0x13, 自分の添字, ptcls と activeMask のビットを指す, 解放後は 0xFF
   u8 unk_14[4];    // 0x14
 } Entity080dbe54Slot;
 static_assert(sizeof(Entity080dbe54Slot) == 24);
@@ -37,13 +37,9 @@ NAKED s32 FUN_080db9b4(Entity080dbe54* p) { INCFUNC("asm/func/FUN_080db9b4.inc")
 
 NAKED s32 FUN_080dba00(Entity080dbe54* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080dba00.inc"); }
 
-s32 FUN_080dbcec(Entity080dbe54* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) {
-  return FUN_080dba00(p, param_2, param_3, param_4, param_5, param_6, 1);
-}
+s32 FUN_080dbcec(Entity080dbe54* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return FUN_080dba00(p, param_2, param_3, param_4, param_5, param_6, 1); }
 
-s32 FUN_080dbd08(Entity080dbe54* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) {
-  return FUN_080dba00(p, param_2, param_3, param_4, param_5, param_6, 0);
-}
+s32 FUN_080dbd08(Entity080dbe54* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return FUN_080dba00(p, param_2, param_3, param_4, param_5, param_6, 0); }
 
 NAKED s32 Entity080dbe54_Update(Entity080dbe54* p) { INCFUNC("asm/func/Entity080dbe54_Update.inc"); }
 

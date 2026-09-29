@@ -58,13 +58,13 @@ typedef u32 EnemyFlags6;
 typedef u16 EnemyFlags5;
 #define ENEFLAG5_UNK_8 (1 << 8)  // 0x0100, FUN_080ed834 / FUN_080ed8f0 / FUN_080ed9d0 が見る
 
-// handlerUpdate / handlerDestroy の型. 引数は unk_1cc ひとつで、戻り値は誰も使っていない
+// handlerUpdate / handlerDestroy の型, 引数は unk_1cc ひとつで、戻り値は誰も使っていない
 typedef void (*EnemyHandler)(void* p);
 
-// handlerMsg の型. FUN_080ec758 / FUN_080ec79c / FUN_080ec848 が (enemy, payload) で呼ぶ
+// handlerMsg の型, FUN_080ec758 / FUN_080ec79c / FUN_080ec848 が (enemy, payload) で呼ぶ
 typedef void (*EnemyMsgHandler)(void* p, void* payload);
 
-// 各エネミー共通部. 最小のエネミー(Mimic)が1684バイトなのに対しここは0x654=1620バイトあり、構造体のほとんどが共通部分だとわかる
+// 各エネミー共通部, 最小のエネミー(Mimic)が1684バイトなのに対しここは0x654=1620バイトあり、構造体のほとんどが共通部分だとわかる
 // サイズの根拠: Enemy_Init_080f3680 が 0x62C から 0x650 まで10本のテーブルポインタを書き込む
 #define ENEMY_HDR                                                                                                     \
   Entity2UnkData unk_0;        /* 0x000 */                                                                            \
@@ -84,12 +84,12 @@ typedef void (*EnemyMsgHandler)(void* p, void* payload);
   u8 unk_194[0x1C8 - 0x194];   /* 0x194 */                                                                            \
   u16 unk_1c8;                 /* 0x1C8, 状態を切り替えるときに 0 でクリアされる */                                   \
   u8 unk_1ca[0x1CC - 0x1CA];   /* 0x1CA */                                                                            \
-  void* unk_1cc;               /* 0x1CC, handlerUpdate/handlerDestroy の唯一の引数. 破棄時にこれが Free される */     \
+  void* unk_1cc;               /* 0x1CC, handlerUpdate/handlerDestroy の唯一の引数, 破棄時にこれが Free される */     \
   u8 unk_1d0[0x1D4 - 0x1D0];   /* 0x1D0 */                                                                            \
   u32 unk_1d4;                 /* 0x1D4, FUN_080fadd4 が EntityMsg.unk_4 を書く */                                    \
   Entity2UnkData* unk_1d8;     /* 0x1D8, FUN_080faa98 が gPlayerPtr[n]->unk_24 を書く */                              \
   u8 unk_1dc[0x1DF - 0x1DC];   /* 0x1DC */                                                                            \
-  u8 kind;                     /* 0x1DF, 種族. 0x02/0x03/0x0B/0x0E/0x17/0x1B で分岐する */                            \
+  u8 kind;                     /* 0x1DF, 種族, 0x02/0x03/0x0B/0x0E/0x17/0x1B で分岐する */                            \
   u8 unk_1e0[0x202 - 0x1E0];   /* 0x1E0 */                                                                            \
   u16 unk_202;                 /* 0x202, FUN_080f9bfc が 0 でクリアする */                                            \
   u8 unk_204[0x21E - 0x204];   /* 0x204 */                                                                            \
@@ -104,7 +104,7 @@ typedef void (*EnemyMsgHandler)(void* p, void* payload);
   u8 unk_468;                  /* 0x468, FUN_080f34ec 系が 2 か 3 を書く */                                           \
   u8 unk_469;                  /* 0x469, handlerTables[1] [5] [7] [9] の添字 (ldrb) */                                \
   u8 unk_46a;                  /* 0x46A, handlerTables[2] [3] [4] [6] [8] の添字 (ldrb) */                            \
-  u8 unk_46b;                  /* 0x46B, 0 が書かれる。読み手は FUN_080fa384 ほか */                                  \
+  u8 unk_46b;                  /* 0x46B, 0 が書かれる, 読み手は FUN_080fa384 ほか */                                  \
   u8 unk_46c;                  /* 0x46C, FUN_080f2644 が非0を条件にして 0 に戻す */                                   \
   u8 unk_46d;                  /* 0x46D, FUN_080f54e4 が非0を条件にして 0 に戻す */                                   \
   u8 unk_46e;                  /* 0x46E */                                                                            \
@@ -112,7 +112,7 @@ typedef void (*EnemyMsgHandler)(void* p, void* payload);
   u8 unk_470[0x474 - 0x470];   /* 0x470 */                                                                            \
   EnemyFlags5 flags5;          /* 0x474 */                                                                            \
   u8 unk_476[0x478 - 0x476];   /* 0x476 */                                                                            \
-  u16 unk_478;                 /* 0x478, パレット番号. EnemySpriteData の +0x32 / +0x5A に書かれる */                 \
+  u16 unk_478;                 /* 0x478, パレット番号, EnemySpriteData の +0x32 / +0x5A に書かれる */                 \
   u16 unk_47a;                 /* 0x47A, unk_480 と足して遷移先パレット番号になる */                                  \
   u8 unk_47c[0x480 - 0x47C];   /* 0x47C */                                                                            \
   u16 unk_480;                 /* 0x480, FUN_080eca74 が 1 と比較 */                                                  \
@@ -129,38 +129,38 @@ typedef void (*EnemyMsgHandler)(void* p, void* payload);
   u8 unk_4a4[0x4BE - 0x4A4];   /* 0x4A4 */                                                                            \
   u16 unk_4be;                 /* 0x4BE, FUN_080edebc が 0 を書く */                                                  \
   u8 unk_4c0[0x553 - 0x4C0];   /* 0x4C0 */                                                                            \
-  u8 state;                    /* 0x553, 状態番号. handlerState と同時に書き換えられる */                             \
+  u8 state;                    /* 0x553, 状態番号, handlerState と同時に書き換えられる */                             \
   u8 unk_554[0x55C - 0x554];   /* 0x554 */                                                                            \
-  u32 unk_55c;                 /* 0x55C, flags の初期値. FUN_080ee738 が flags へそのままコピーする */                \
-  u32 unk_560;                 /* 0x560, flags2 の初期値. 同じく flags2 へコピーされる */                             \
+  u32 unk_55c;                 /* 0x55C, flags の初期値, FUN_080ee738 が flags へそのままコピーする */                \
+  u32 unk_560;                 /* 0x560, flags2 の初期値, 同じく flags2 へコピーされる */                             \
   u8 unk_564[0x578 - 0x564];   /* 0x564 */                                                                            \
-  void* handlerState;          /* 0x578, 状態ハンドラ. Thumb のコードアドレスが入る */                                \
+  void* handlerState;          /* 0x578, 状態ハンドラ, Thumb のコードアドレスが入る */                                \
   EnemyMsgHandler handlerMsg;  /* 0x57C, FUN_080ec758/080ec79c/080ec848 が (enemy, payload) で呼ぶ */                 \
   u8 unk_580[0x594 - 0x580];   /* 0x580 */                                                                            \
   void* unk_594;               /* 0x594, Enemy_Sleep が非NULLのときだけ動く */                                        \
   u8 unk_598[0x5C0 - 0x598];   /* 0x598 */                                                                            \
-  void* unk_5c0;               /* 0x5C0, 既定の状態ハンドラ. FUN_080ed724 が handlerState へコピーする */             \
-  EnemyHandler unk_5c4;        /* 0x5C4, fn(p)。FUN_080faa98 が座標の検索に失敗したときだけ呼ぶ */                    \
+  void* unk_5c0;               /* 0x5C0, 既定の状態ハンドラ, FUN_080ed724 が handlerState へコピーする */             \
+  EnemyHandler unk_5c4;        /* 0x5C4, fn(p), FUN_080faa98 が座標の検索に失敗したときだけ呼ぶ */                    \
   u8 unk_5c8[0x600 - 0x5C8];   /* 0x5C8 */                                                                            \
-  void* unk_600;               /* 0x600, EnemyBat_Init がアドレスを取る。呼び出しは未発見 */                          \
+  void* unk_600;               /* 0x600, EnemyBat_Init がアドレスを取る, 呼び出しは未発見 */                          \
   u8 unk_604[0x608 - 0x604];   /* 0x604 */                                                                            \
-  void* unk_608;               /* 0x608, fn(p) として呼ばれる。FUN_080f22c4 ほか19関数が使う */                       \
-  void* unk_60c;               /* 0x60C, 関数ポインタ表。FUN_080f09e0 が fn = unk_60c[arg[0]] を fn(p, arg) で呼ぶ */ \
+  void* unk_608;               /* 0x608, fn(p) として呼ばれる, FUN_080f22c4 ほか19関数が使う */                       \
+  void* unk_60c;               /* 0x60C, 関数ポインタ表, FUN_080f09e0 が fn = unk_60c[arg[0]] を fn(p, arg) で呼ぶ */ \
   u8 unk_610[0x614 - 0x610];   /* 0x610 */                                                                            \
-  void* unk_614;               /* 0x614, fn(p)。FUN_080fa384 が NULL でないときだけ呼ぶ */                            \
-  void* unk_618;               /* 0x618, fn(p)。FUN_080f2364 / FUN_080f0430 */                                        \
+  void* unk_614;               /* 0x614, fn(p), FUN_080fa384 が NULL でないときだけ呼ぶ */                            \
+  void* unk_618;               /* 0x618, fn(p), FUN_080f2364 / FUN_080f0430 */                                        \
   EnemyHandler handlerUpdate;  /* 0x61C, FUN_080edebc が (unk_1cc) で毎フレーム呼ぶ */                                \
   EnemyHandler handlerDestroy; /* 0x620, FUN_080ee218 が (unk_1cc) で呼び、その後 unk_1cc を Free する */             \
-  void* unk_624;               /* 0x624, fn(p)。FUN_080f06b0 が戻り値の下位1バイトを見る */                           \
-  void* unk_628;               /* 0x628, fn(p)。FUN_080f06b0 が unk_624 の戻り値が 0 のときだけ呼ぶ */                \
-  void* handlerTables[10];     /* 0x62C, 状態ごとの関数ポインタ表を10本。Enemy_Init_080f3680 が 0x62C から順にまとめて書き込む */
+  void* unk_624;               /* 0x624, fn(p), FUN_080f06b0 が戻り値の下位1バイトを見る */                           \
+  void* unk_628;               /* 0x628, fn(p), FUN_080f06b0 が unk_624 の戻り値が 0 のときだけ呼ぶ */                \
+  void* handlerTables[10];     /* 0x62C, 状態ごとの関数ポインタ表を10本, Enemy_Init_080f3680 が 0x62C から順にまとめて書き込む */
 
 typedef struct {
   ENEMY_HDR;  // 共通部分
 } Enemy;
 static_assert(sizeof(Enemy) == 1620);
 
-// ビットのセット/クリアはこのヘルパー経由で書く。フィールドごとに専用のものが要る
+// ビットのセット/クリアはこのヘルパー経由で書く, フィールドごとに専用のものが要る
 // (幅で共通化して u32* を渡す形にすると、if/else の両腕が同じ形になって str が1つに畳まれ一致しない)
 static inline void Enemy_SetFlag(Enemy* p, EnemyFlags bit) { p->flags |= bit; }
 static inline void Enemy_SetFlag2(Enemy* p, EnemyFlags2 bit) { p->flags2 |= bit; }
@@ -179,12 +179,12 @@ typedef struct EnemyListNode {
 } EnemyListNode;
 static_assert(sizeof(EnemyListNode) == 8);
 
-// 16色パレットのクロスフェード. FUN_080eeb14 が開始し、FUN_080eec74 が毎フレーム1段進める
+// 16色パレットのクロスフェード, FUN_080eeb14 が開始し、FUN_080eec74 が毎フレーム1段進める
 typedef struct {
-  u16 pltt[16];  // 0x00, r/g/b から合成した BGR555 の出力. EnemySpriteData のパレットポインタに直接繋がれる
+  u16 pltt[16];  // 0x00, r/g/b から合成した BGR555 の出力, EnemySpriteData のパレットポインタに直接繋がれる
   u16 timer;     // 0x20, FUN_080eeb14 が 0x20 をセットし FUN_080eec74 が毎フレーム -1
   u16 plttID;    // 0x22, 遷移先のパレット番号
-  s16 r[16];     // 0x24, 5.5固定小数の現在値. 毎フレーム stepR が加算される
+  s16 r[16];     // 0x24, 5.5固定小数の現在値, 毎フレーム stepR が加算される
   s16 g[16];     // 0x44
   s16 b[16];     // 0x64
   s8 stepR[16];  // 0x84, FUN_080eeb14 が (遷移先 - 現在) を書く

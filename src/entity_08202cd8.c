@@ -36,8 +36,8 @@ typedef struct {
   u8 unk_6dc;             // 0x6DC, _Init が 0 を入れる
   u8 unk_6dd;             // 0x6DD, _Init が 0 を入れる
   u8 unk_6de[2];          // 0x6DE
-  u16 unk_6e0;            // 0x6E0, Create の第3引数。Hitbox_SetAttack に渡す
-  u16 unk_6e2;            // 0x6E2, Create の第2引数。Hitbox_SetPowerAndAttributes に渡す
+  u16 unk_6e0;            // 0x6E0, Create の第3引数, Hitbox_SetAttack に渡す
+  u16 unk_6e2;            // 0x6E2, Create の第2引数, Hitbox_SetPowerAndAttributes に渡す
   u8 unk_6e4[8];          // 0x6E4
   s32 unk_6ec;            // 0x6EC, _Init が 0 の4バイトを書く
 } Entity08202cd8;
@@ -204,10 +204,10 @@ s32 Entity08202cd8_Destroy(Entity08202cd8* p) {
   return 0;
 }
 
-// hitboxA の被弾コールバック。何もしない
+// hitboxA の被弾コールバック, 何もしない
 void FUN_082029b8(HitboxData* a, HitboxData* b, Entity08202cd8* p) {}
 
-// 被弾時のハンドラ。全スプライトを赤くしてダメージを適用する
+// 被弾時のハンドラ, 全スプライトを赤くしてダメージを適用する
 void FUN_082029bc(HitboxData* a, HitboxData* b, Entity08202cd8* p) {
   s32 i;
 

@@ -9,24 +9,24 @@
 // EntityD854Node.flags (0x04)
 typedef u8 EntityD854NodeFlags;
 #define D854NODEFLAG_REGISTERED (1 << 0)  // FUN_080f8c58 が立てる
-#define D854NODEFLAG_LINKED (1 << 1)      // enemy と紐付き中. FUN_080f8da4 が落とす
+#define D854NODEFLAG_LINKED (1 << 1)      // enemy と紐付き中, FUN_080f8da4 が落とす
 
-// EntityD854 のリストにぶら下がるノード。登録側 (Player など) の構造体に埋め込まれている
+// EntityD854 のリストにぶら下がるノード, 登録側 (Player など) の構造体に埋め込まれている
 typedef struct EntityD854Node {
-  Entity2UnkData* owner;        // 0x00, FUN_080f8c58 の第2引数. FUN_080f8d60 が owner->id で検索する
+  Entity2UnkData* owner;        // 0x00, FUN_080f8c58 の第2引数, FUN_080f8d60 が owner->id で検索する
   EntityD854NodeFlags flags;    // 0x04
-  u8 kindMask;                  // 0x05, FUN_080f8c58 の第3引数. FUN_080f9a38 は & で、FUN_080f8cf0 は == で引く
+  u8 kindMask;                  // 0x05, FUN_080f8c58 の第3引数, FUN_080f9a38 は & で、FUN_080f8cf0 は == で引く
   u16 timer;                    // 0x06, FUN_080f9b34 が毎フレーム -1. FUN_080f8da4 が 0x78、FUN_080f8e3c が 0xF0 をセット
-  Enemy* enemy;                 // 0x08, 紐付いた敵. FUN_080f8da4 が解除時に NULL にする
+  Enemy* enemy;                 // 0x08, 紐付いた敵, FUN_080f8da4 が解除時に NULL にする
   struct EntityD854Node* next;  // 0x0C
 } EntityD854Node;
 static_assert(sizeof(EntityD854Node) == 16);
 
-// gSubroutineTable の 0xD854 から生成されるシングルトン. 実体のポインタは gEntityD854 (0x03000184)
+// gSubroutineTable の 0xD854 から生成されるシングルトン, 実体のポインタは gEntityD854 (0x03000184)
 typedef struct {
   Entity e;              // 0x00, ENTITY_UNK_8
   u32 unk_18;            // 0x18, FUN_080f8c10 が 0 でクリアする
-  s32 count;             // 0x1C, head のリストの登録数. 6件以上だと FUN_080f8c58 が登録を拒否する
+  s32 count;             // 0x1C, head のリストの登録数, 6件以上だと FUN_080f8c58 が登録を拒否する
   u32 unk_20;            // 0x20, EntityD854_Update が毎フレーム +1. FUN_080f8da4 は30フレームに1回だけ走る
   u16 unk_24;            // 0x24, EntityD854_Init が引数をそのまま書く
   u16 unk_26;            // 0x26, 読み手も書き手も未発見, padding?

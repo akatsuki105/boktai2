@@ -4,14 +4,14 @@
 #include "player.h"
 #include "sprite.h"
 
-// 角度と速度で飛ぶ攻撃判定つきのエフェクト。地形より低くなるか 60 フレームで消える
+// 角度と速度で飛ぶ攻撃判定つきのエフェクト, 地形より低くなるか 60 フレームで消える
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_8
-  AuxSprite sprite;   // 0x18, AuxSprite_Add(&sprite, &gfx, 0)。Hitbox_SetPos は &sprite.pos を取る
+  AuxSprite sprite;   // 0x18, AuxSprite_Add(&sprite, &gfx, 0), Hitbox_SetPos は &sprite.pos を取る
   AuxSpriteGfx gfx;   // 0x44, SPRITE_210E
   HitboxData hitbox;  // 0x60, FUN_080cb94c が Hitbox_Init / _SetAttack / _SetHandler / _SetPos / _Register する
   s16 velX;           // 0xB0, gSineTable[(angle + 0x40) & 0xFF] * speed >> 12 (0方向への丸め)
-  u16 unk_b2;         // 0xB2, _Init が 0 を入れる。読み手が見つかっていない
+  u16 unk_b2;         // 0xB2, _Init が 0 を入れる, 読み手が見つかっていない
   s16 velZ;           // 0xB4, gSineTable[angle & 0xFF] * speed >> 12 (0方向への丸め)
   u8 unk_b6[2];       // 0xB6, 読み書きとも無し, padding?
   s32 state;          // 0xB8, 0 の間は飛行、それ以外は着弾処理
@@ -20,7 +20,7 @@ typedef struct {
 } Entity080cbabc;
 static_assert(sizeof(Entity080cbabc) == 192);
 
-// 被弾コールバック。着弾処理へ移る
+// 被弾コールバック, 着弾処理へ移る
 void FUN_080cb7b4(HitboxData* a, HitboxData* b, Entity080cbabc* p) {
   p->state = 1;
   p->timer = 0;

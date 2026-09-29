@@ -11,15 +11,15 @@
 // 太陽センサーを毎フレーム読んで lx と太陽ゲージを作り、その結果を gStat に流し込むシングルトン
 typedef struct SunlightEntity {
   Entity e;                                        // 0x00, ENTITY_UNK_5
-  u8 unk_18;                                       // 0x18, FUN_08241f28 が 1 を書く。読み手は見つかっていない
-  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む。UpdateSunlight / UpdateSunlightDebug が回し、IsSunlightActive / CalibrateSunSensor / SuspendSunlight / FUN_0824172c が見る
+  u8 unk_18;                                       // 0x18, FUN_08241f28 が 1 を書く, 読み手は見つかっていない
+  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む, UpdateSunlight / UpdateSunlightDebug が回し、IsSunlightActive / CalibrateSunSensor / SuspendSunlight / FUN_0824172c が見る
   u16 unk_1a;                                      // 0x1A, このモジュールは触らない
   s16 lx;                                          // 0x1C, 太陽光の強さ
   s16 sunGauge;                                    // 0x1E, lx を 10段階に分けたもの
-  u16 stateTimer;                                  // 0x20, UpdateSunlight のフレーム数。state 0 で 29 を超えるとセンサーを有効化し、state 1 で 59 を超えると計測に入る。state が変わるたび 0
+  u16 stateTimer;                                  // 0x20, UpdateSunlight のフレーム数, state 0 で 29 を超えるとセンサーを有効化し、state 1 で 59 を超えると計測に入る, state が変わるたび 0
   u16 adjustTimer;                                 // 0x22, UpdateDebugLx が A+L / A+R を押している間 +1 し、1フレームおきに gDebugLx を増減させる
-  u16 tickCounter;                                 // 0x24, ApplySunlightGain が毎フレーム +1。(tickCounter & 0x3F) == 0 と (& 0x7F) == 0 で処理を間引く
-  u16 idleTimer;                                   // 0x26, ApplySunlightGain が入力のたび 0 に戻し、無操作なら 900 まで数える。900 に達すると太陽の恵みが止まる
+  u16 tickCounter;                                 // 0x24, ApplySunlightGain が毎フレーム +1, (tickCounter & 0x3F) == 0 と (& 0x7F) == 0 で処理を間引く
+  u16 idleTimer;                                   // 0x26, ApplySunlightGain が入力のたび 0 に戻し、無操作なら 900 まで数える, 900 に達すると太陽の恵みが止まる
   u16 solarStandFrac;                              // 0x28, ApplySunlightGain が sunGauge/2 + 5 をここに貯め、>> 4 した繰り上がりを gStat->solarStand に足す
   u16 unk_2a;                                      // 0x2A, padding?
   void (*updateCallback)(struct SunlightEntity*);  // 0x2C
@@ -27,7 +27,7 @@ typedef struct SunlightEntity {
 static_assert(sizeof(SunlightEntity) == 48);
 
 IWRAM_DATA SunlightEntity* gSunlightEntity = NULL;  // 0x03001708
-extern u16 u16_03002b80;                            // 0x03002B80, FUN_0807e854 が 0 に戻す。1 で太陽レベル +4、2 で日光なし
+extern u16 u16_03002b80;                            // 0x03002B80, FUN_0807e854 が 0 に戻す, 1 で太陽レベル +4、2 で日光なし
 
 IWRAM_DATA u32 u32_0300170c = 0;  // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
 
@@ -64,7 +64,7 @@ NON_MATCH void ResetSunlight(void) {
 #endif
 }
 
-// センサーの値が今そのまま使えるか。state 2 が計測中
+// センサーの値が今そのまま使えるか, state 2 が計測中
 bool32 IsSunlightActive(void) {
   if (gSunlightEntity != NULL && !gSunlightSuspended && gSunlightEntity->state == 2) {
     return TRUE;
@@ -76,7 +76,7 @@ void FUN_082416bc(void) { u16_03004864 = 1; }
 
 void FUN_082416c8(void) { u16_03004864 = 0; }
 
-// 今のセンサー値を暗所の基準として控える。以降 lx は calibration からの差で出る
+// 今のセンサー値を暗所の基準として控える, 以降 lx は calibration からの差で出る
 NON_MATCH bool32 CalibrateSunSensor(void) {
 #ifdef NONMATCHING_C
   s32 raw;
@@ -94,7 +94,7 @@ NON_MATCH bool32 CalibrateSunSensor(void) {
 #endif
 }
 
-// 太陽光の更新を止める。センサーも切る
+// 太陽光の更新を止める, センサーも切る
 void SuspendSunlight(void) {
   if (gSunlightEntity != NULL) {
     if (gSunlightEntity->state != 0) {
@@ -138,7 +138,7 @@ s32 GetSunLevelMaxLx(Sunlevel slv) { return gSunLevelMaxLx[slv]; }
 // その太陽レベルに収まる lx の下限
 s32 GetSunLevelMinLx(Sunlevel slv) { return gSunLevelMinLx[slv]; }
 
-// 生の lx に環境要因を掛ける。ライジングサン、天候、屋内判定でここが最終的な明るさを決める
+// 生の lx に環境要因を掛ける, ライジングサン、天候、屋内判定でここが最終的な明るさを決める
 NON_MATCH s32 ApplyLxModifiers(s32 lx) {
 #ifdef NONMATCHING_C
   if ((gFlag030047a4 & FLAG030047A4_UNK_11) == 0) {
@@ -244,7 +244,7 @@ NON_MATCH void UpdateOverheat(SunlightEntity* _ UNUSED) {
 #endif
 }
 
-// 日なたにいる間の毎フレームの取り分。樹の経験値・ソーラースタンド・熱量を進める
+// 日なたにいる間の毎フレームの取り分, 樹の経験値・ソーラースタンド・熱量を進める
 NON_MATCH void ApplySunlightGain(SunlightEntity* p) {
 #ifdef NONMATCHING_C
   if (gPlayerPtr[0] != NULL && (gFlag030047a4 & (FLAG030047A4_UNK_11 | FLAG030047A4_UNK_12)) == 0) {
@@ -322,7 +322,7 @@ NON_MATCH void ApplySunlightGain(SunlightEntity* p) {
 #endif
 }
 
-// 毎フレームの本体。センサーを温めてから計測に入り、結果を gStat に流す
+// 毎フレームの本体, センサーを温めてから計測に入り、結果を gStat に流す
 NON_MATCH void UpdateSunlight(SunlightEntity* p) {
 #ifdef NONMATCHING_C
   switch (p->state) {
@@ -359,7 +359,7 @@ NON_MATCH void UpdateSunlight(SunlightEntity* p) {
 #endif
 }
 
-// デバッグ用。A+L / A+R で lx を手動で上下させ、その値を返す
+// デバッグ用, A+L / A+R で lx を手動で上下させ、その値を返す
 NON_MATCH u32 UpdateDebugLx(SunlightEntity* p) {
 #ifdef NONMATCHING_C
   Keys16 down;
@@ -390,7 +390,7 @@ NON_MATCH u32 UpdateDebugLx(SunlightEntity* p) {
 #endif
 }
 
-// UpdateSunlight のデバッグ版。lx をセンサーでなく手動値から取る。呼び出し元は見つかっていない
+// UpdateSunlight のデバッグ版, lx をセンサーでなく手動値から取る, 呼び出し元は見つかっていない
 NON_MATCH void UpdateSunlightDebug(SunlightEntity* p) {
 #ifdef NONMATCHING_C
   switch (p->state) {

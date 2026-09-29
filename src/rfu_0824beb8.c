@@ -49,7 +49,7 @@ s8 Rfu_FindPartnerRecord(u16 id, u8* dst, u8* buf, u8 flags) {
 }
 
 // Unused?
-// 条件に合う接続相手に指定 ID のレコードがあれば、相手の id を *partnerid に書き出し、-3（slot == 0xFF のとき）か -4 を返す。レコードが無ければ -2、相手が見つからなければ -1 を返す
+// 条件に合う接続相手に指定 ID のレコードがあれば、相手の id を *partnerid に書き出し、-3（slot == 0xFF のとき）か -4 を返す, レコードが無ければ -2、相手が見つからなければ -1 を返す
 NON_MATCH s32 Rfu_FindPartnerByRecord(u16 id, u8 flags, u16* partnerid) {
 #ifdef NONMATCHING_C
   u8 name[20];

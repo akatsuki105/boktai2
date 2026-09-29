@@ -17,8 +17,8 @@ typedef struct {
 } LevelUpParticle;
 static_assert(sizeof(LevelUpParticle) == 60);  // 根拠: LevelUpper_EmitLevelUpEffect
 
-// 現在の経験値を確認して、レベルアップする場合はレベルアップ処理を行う。
-// またその際のパーティクルやSEなどの演出処理も行う。
+// 現在の経験値を確認して、レベルアップする場合はレベルアップ処理を行う
+// またその際のパーティクルやSEなどの演出処理も行う
 typedef struct LevelUpper {
   Entity e;                  // 0x00, ENTITY_UNK_9
   AuxSprite sprite;          // 0x18, gfx を指す描画ノード, 根拠: LevelUpper_InitSprite / LevelUpper_Destroy

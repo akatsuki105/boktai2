@@ -97,6 +97,7 @@
 #define SPRITE_COMBO_SCORE 0xA5BD      // ブラックパンサー(ミニゲーム)の"COMBO:", "SCORE:" の文字
 #define SPRITE_PANTHER_BONUS 0xA8E7    // ブラックパンサー(ミニゲーム)のボーナス表示
 #define SPRITE_EFF_F422 0xF422         // 砂のエフェクト
+#define SPRITE_SOLAR_STATION 0xA47C    // 太陽スタンド
 
 // データが存在しないスプライトのID
 #define SPRITE_2117 0x2117  // 多分デバッグ用

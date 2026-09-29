@@ -5,10 +5,10 @@
 #include "sprite.h"
 #include "vm.h"
 
-// 未使用っぽい, スクリプトから置かれる当たり判定付きのオブジェクト。位置はマップのタイル座標から決まる
+// 未使用っぽい, スクリプトから置かれる当たり判定付きのオブジェクト, 位置はマップのタイル座標から決まる
 typedef struct {
   Entity e;            // 0x00, ENTITY_UNK_8
-  u16 id;              // 0x18, EntityE06A_Init の引数。ヒットボックスの所有者IDとして Hitbox_Init に渡る
+  u16 id;              // 0x18, EntityE06A_Init の引数, ヒットボックスの所有者IDとして Hitbox_Init に渡る
   u8 unk_1a[2];        // 0x1A, padding?
   AuxSprite sprite;    // 0x1C, 根拠: AuxSprite_Add / AuxSprite_Remove に渡される
   AuxSpriteGfx gfx;    // 0x48, SPRITE_NODATA_9DA7
@@ -96,7 +96,7 @@ void EntityE06A_SetupHitbox(EntityE06A* p) {
   Hitbox_Register(hitbox);
 }
 
-// hitbox2 を組み立てて登録する。呼び出し元は未発見
+// hitbox2 を組み立てて登録する, 呼び出し元は未発見
 void EntityE06A_SetupHitbox2(EntityE06A* p) {
   HitboxData* hitbox = &p->hitbox2;
   Vec3 size, offset;

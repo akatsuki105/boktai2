@@ -6,13 +6,13 @@
 #include "sprite_aux.h"
 #include "types.h"
 
-// EntityF1F9 が抱える要素。スプライト・ヒットボックス・影を1つずつ持つ
+// EntityF1F9 が抱える要素, スプライト・ヒットボックス・影を1つずつ持つ
 typedef struct EntityF1F9Item {
   AuxSprite sprite;   // 0x000, EntityF1F9_Destroy が要素そのものを AuxSprite_Remove に渡す
   u8 unk_2c[44];      // 0x02C
   HitboxData hitbox;  // 0x058, _Destroy が Hitbox_Unregister に渡す
   AuxShadow shadow;   // 0x0A8, shadowId が -1 でなければ _Destroy が AuxShadow_Remove に渡す
-  Vec3 basePos;       // 0x114, 揺れの基準位置。sprite.pos へ複写する
+  Vec3 basePos;       // 0x114, 揺れの基準位置, sprite.pos へ複写する
   u8 unk_11c[16];     // 0x11C
   s32 unk_12c;        // 0x12C, 1フレーム前の距離の2乗
   s32 unk_130;        // 0x130, プレイヤーとの距離の2乗
@@ -28,7 +28,7 @@ typedef struct EntityF1F9Item {
   u16 state;          // 0x148, _Update が PTR_FUN_081D5D14_085AE104[state](p, item) を呼ぶ
   u8 unk_14a[2];      // 0x14A
   u16 flags;          // 0x14C, FUN_081d5820 が立て、FUN_081d5834 が落とし、FUN_081d5848 が読む
-  s8 shadowId;        // 0x14E, -1 なら影なし。_Destroy が影を外して -1 を書き戻す
+  s8 shadowId;        // 0x14E, -1 なら影なし, _Destroy が影を外して -1 を書き戻す
   u8 unk_14f;         // 0x14F
   u16 unk_150;        // 0x150, ヒットボックスの unk_4 に入れる
   u8 unk_152;         // 0x152

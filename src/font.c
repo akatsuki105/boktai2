@@ -21,7 +21,7 @@ void FUN_0822e7cc(void) { gFontInfo = NULL; }
 
 FontInfo* FUN_0822e7d8(void) { return gFontInfo; }
 
-// フォントファイルを読んで gFontInfo を作る。ヘッダのオフセットは実アドレスに直して持つ
+// フォントファイルを読んで gFontInfo を作る, ヘッダのオフセットは実アドレスに直して持つ
 s32 FUN_0822e7e4(void) {
   FontHeader* f;
 

@@ -65,7 +65,7 @@ NON_MATCH void MainSprite_DrawListInternal(void) {
 }
 
 // MainSprite_DrawListInternal と同じくリストを走査して MainSprite を描くが、カメラを見ず pos をそのままスクリーン座標として扱う
-// SPRFLAG_SCREEN_COORD も参照しないので、全てのスプライトがスクリーン座標で置かれる。Camera_SetTilemapOffset が script keyword 'v' で本家と排他に差し替える
+// SPRFLAG_SCREEN_COORD も参照しないので、全てのスプライトがスクリーン座標で置かれる, Camera_SetTilemapOffset が '.v' で本家と排他に差し替える
 NON_MATCH void MainSprite_DrawListScreenInternal(void) {
 #ifdef NONMATCHING_C
   MainSprite* p;

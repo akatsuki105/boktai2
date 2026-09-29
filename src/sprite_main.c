@@ -42,7 +42,7 @@ void UNUSED MainSprite_RemoveAll(void) {
 	adds r3, #0\n\
 	pop {r0}\n\
 	bx r0\n\
-  /* トランポリンの間にある4バイト。何もせずに戻るだけで、呼び出し元も見つかっていない */ \
+  /* トランポリンの間にある4バイト, 何もせずに戻るだけで、呼び出し元も見つかっていない */ \
 	movs r0, r0\n\
 	bx lr\n\
  .syntax divided\n")

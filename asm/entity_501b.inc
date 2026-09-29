@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_081dfe74
-FUN_081dfe74: @ 0x081DFE74
+	thumb_func_start Entity501B_InitBg
+Entity501B_InitBg: @ 0x081DFE74
 	push {r4, r5, r6, r7, lr}
 	sub sp, #0x10
 	adds r7, r0, #0
@@ -78,8 +78,8 @@ _081DFF10: .4byte 0x000092B3
 _081DFF14: .4byte 0x000026BB
 _081DFF18: .4byte 0x03004250
 
-	thumb_func_start FUN_081dff1c
-FUN_081dff1c: @ 0x081DFF1C
+	thumb_func_start Entity501B_InitTextPanels
+Entity501B_InitTextPanels: @ 0x081DFF1C
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
 	movs r0, #2
@@ -125,8 +125,8 @@ _081DFF4A:
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_081dff7c
-FUN_081dff7c: @ 0x081DFF7C
+	thumb_func_start Entity501B_HideTextPanels
+Entity501B_HideTextPanels: @ 0x081DFF7C
 	push {r4, r5, lr}
 	movs r1, #0xf8
 	lsls r1, r1, #2
@@ -201,8 +201,8 @@ _081DFFFC:
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_081e0004
-FUN_081e0004: @ 0x081E0004
+	thumb_func_start Entity501B_InitAuxSprite
+Entity501B_InitAuxSprite: @ 0x081E0004
 	push {r4, r5, r6, lr}
 	sub sp, #4
 	adds r5, r0, #0
@@ -253,8 +253,8 @@ _081E0068: .4byte 0x00000377
 _081E006C: .4byte 0x05000002
 _081E0070: .4byte 0x0000038E
 
-	thumb_func_start FUN_081e0074
-FUN_081e0074: @ 0x081E0074
+	thumb_func_start Entity501B_RemoveAuxSprite
+Entity501B_RemoveAuxSprite: @ 0x081E0074
 	push {lr}
 	movs r1, #0xdc
 	lsls r1, r1, #2
@@ -263,8 +263,8 @@ FUN_081e0074: @ 0x081E0074
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_081e0084
-FUN_081e0084: @ 0x081E0084
+	thumb_func_start Entity501B_InitSprites
+Entity501B_InitSprites: @ 0x081E0084
 	push {r4, r5, r6, r7, lr}
 	sub sp, #0x10
 	adds r5, r0, #0
@@ -317,8 +317,8 @@ _081E00DE:
 _081E00E8: .4byte 0x0000CB05
 _081E00EC: .4byte 0x0000DCC1
 
-	thumb_func_start FUN_081e00f0
-FUN_081e00f0: @ 0x081E00F0
+	thumb_func_start Entity501B_InitSpritePos
+Entity501B_InitSpritePos: @ 0x081E00F0
 	push {r4, lr}
 	adds r3, r0, #0
 	movs r4, #0x40
@@ -370,8 +370,8 @@ _081E0136:
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_081e0148
-FUN_081e0148: @ 0x081E0148
+	thumb_func_start Entity501B_RemoveSprites
+Entity501B_RemoveSprites: @ 0x081E0148
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	adds r4, #0x18
@@ -387,8 +387,8 @@ _081E0150:
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_081e0164
-FUN_081e0164: @ 0x081E0164
+	thumb_func_start Entity501B_SetNumber
+Entity501B_SetNumber: @ 0x081E0164
 	push {r4, r5, r6, r7, lr}
 	adds r6, r0, #0
 	adds r5, r2, #0
@@ -481,8 +481,8 @@ _081E01F0:
 _081E020C: .4byte 0x000003E7
 _081E0210: .4byte 0xFFFFFC18
 
-	thumb_func_start FUN_081e0214
-FUN_081e0214: @ 0x081E0214
+	thumb_func_start Entity501B_SpinNumber
+Entity501B_SpinNumber: @ 0x081E0214
 	push {r4, r5, r6, r7, lr}
 	mov r7, r8
 	push {r7}
@@ -542,7 +542,7 @@ _081E0282:
 	mov r0, ip
 	mov r1, r8
 	adds r2, r7, #0
-	bl FUN_081e0164
+	bl Entity501B_SetNumber
 	pop {r3}
 	mov r8, r3
 	pop {r4, r5, r6, r7}
@@ -576,7 +576,7 @@ _081E02C6:
 	beq _081E02D8
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_081e0214
+	bl Entity501B_SpinNumber
 _081E02D8:
 	pop {r4}
 	pop {r0}
@@ -606,7 +606,7 @@ FUN_081e02ec: @ 0x081E02EC
 	ldrh r2, [r0]
 	adds r0, r1, #0
 	movs r1, #0
-	bl FUN_081e0164
+	bl Entity501B_SetNumber
 	ldr r0, _081E0324 @ =0x00000167
 	bl PlaySound_082406e0
 _081E031A:
@@ -616,8 +616,8 @@ _081E031A:
 _081E0320: .4byte 0x000003BA
 _081E0324: .4byte 0x00000167
 
-	thumb_func_start FUN_081e0328
-FUN_081e0328: @ 0x081E0328
+	thumb_func_start Entity501B_LoadScore
+Entity501B_LoadScore: @ 0x081E0328
 	push {r4, lr}
 	adds r3, r0, #0
 	ldr r0, _081E033C @ =0x03002C68
@@ -1105,7 +1105,7 @@ FUN_081e06d8: @ 0x081E06D8
 	b _081E07EA
 _081E06EA:
 	adds r0, r5, #0
-	bl FUN_081dff7c
+	bl Entity501B_HideTextPanels
 	adds r0, r5, #0
 	bl FUN_081e012c
 	movs r0, #0
@@ -1465,7 +1465,7 @@ _081E09CA:
 	ldrh r2, [r0]
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_081e0164
+	bl Entity501B_SetNumber
 	ldr r0, _081E0A0C @ =0x030046A0
 	ldr r0, [r0]
 	ldr r3, _081E0A10 @ =0x00000912
@@ -1474,7 +1474,7 @@ _081E09CA:
 	ldrsh r2, [r0, r4]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_081e0164
+	bl Entity501B_SetNumber
 	ldr r0, _081E0A14 @ =0x000003EA
 	adds r1, r5, r0
 	ldrh r0, [r1]
@@ -1591,11 +1591,11 @@ _081E0AC8:
 Entity501B_Destroy: @ 0x081E0AD0
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_081dff7c
+	bl Entity501B_HideTextPanels
 	adds r0, r4, #0
-	bl FUN_081e0148
+	bl Entity501B_RemoveSprites
 	adds r0, r4, #0
-	bl FUN_081e0074
+	bl Entity501B_RemoveAuxSprite
 	movs r0, #1
 	pop {r4}
 	pop {r1}
@@ -1645,13 +1645,13 @@ _081E0B2C:
 	movs r0, #3
 	bl ClearBGTilemapBuffer
 	adds r0, r4, #0
-	bl FUN_081dfe74
+	bl Entity501B_InitBg
 	adds r0, r4, #0
-	bl FUN_081dff1c
+	bl Entity501B_InitTextPanels
 	adds r0, r4, #0
-	bl FUN_081e0084
+	bl Entity501B_InitSprites
 	adds r0, r4, #0
-	bl FUN_081e00f0
+	bl Entity501B_InitSpritePos
 	ldr r0, _081E0BC0 @ =0x030046A0
 	ldr r0, [r0]
 	ldr r1, _081E0BC4 @ =0x00000912
@@ -1660,11 +1660,11 @@ _081E0B2C:
 	ldrsh r2, [r0, r3]
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_081e0164
+	bl Entity501B_SetNumber
 	adds r0, r4, #0
-	bl FUN_081e0004
+	bl Entity501B_InitAuxSprite
 	adds r0, r4, #0
-	bl FUN_081e0328
+	bl Entity501B_LoadScore
 	ldr r1, _081E0BC8 @ =FUN_081e0a18
 	movs r2, #0
 	movs r3, #0xf4

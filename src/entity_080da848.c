@@ -3,7 +3,7 @@
 #include "particle.h"
 #include "sprite.h"
 
-// 8枠ぶんの演出要素。activeMask のビットが立っている枠だけ生きている
+// 8枠ぶんの演出要素, activeMask のビットが立っている枠だけ生きている
 typedef struct {
   u8 unk_0[0x2D];     // 0x000
   u8 unk_2d;          // 0x02D, FUN_080da8a0 が 0 かどうかを見る

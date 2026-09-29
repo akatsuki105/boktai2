@@ -14,7 +14,6 @@ tools/tmp/
 *.gbapal
 *.lz
 
-objdiff-*
 expected/
 tools/.venv-ghidra/
 .mcp.json
@@ -23,3 +22,13 @@ data/scripts/*.bin
 
 **/.claude/settings.local.json
 __pycache__/
+
+.DS_Store
+
+# 事故防止. git add -A でツリーに紛れ込んだものを拾わないように
+.env*
+*.pem
+*.key
+*.bak
+*.orig
+*.rej

@@ -7,7 +7,7 @@
 
 typedef struct Eff082473e0 {
   Entity e;                      // 0x00
-  ParticleGroup* group;          // 0x18, Eff082473e0_Init が GetParticleGroup(PTCL_GROUP_0) を入れる。エミッタの粒子はここから取る
+  ParticleGroup* group;          // 0x18, Eff082473e0_Init が GetParticleGroup(PTCL_GROUP_0) を入れる, エミッタの粒子はここから取る
   AuxAnimFile* anim;             // 0x1C, Eff082473e0_Init が GetFile(DIR_ANIMATION, 0xD1B8) を入れる
   Eff082473e0Emitter* emitters;  // 0x20, 登録されているエミッタの双方向リストの先頭
 } Eff082473e0;
@@ -21,10 +21,10 @@ s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 
 
 void Eff082473e0_ClearGlobal(void) { gEff082473e0 = NULL; }
 
-// kind 0 の更新。何もしない
+// kind 0 の更新, 何もしない
 void Eff082473e0Emitter_UpdateIdle(Eff082473e0* p, Eff082473e0Emitter* e) {}
 
-// エミッタをリストの先頭に繋ぐ。既に繋がっていれば -1
+// エミッタをリストの先頭に繋ぐ, 既に繋がっていれば -1
 s32 Eff082473e0Emitter_Register(Eff082473e0* p, Eff082473e0Emitter* e) {
   if (e->isRegistered) return -1;
   e->prev = NULL;
@@ -37,7 +37,7 @@ s32 Eff082473e0Emitter_Register(Eff082473e0* p, Eff082473e0Emitter* e) {
   return 0;
 }
 
-// エミッタをリストから外す。繋がっていなければ -1
+// エミッタをリストから外す, 繋がっていなければ -1
 s32 Eff082473e0Emitter_Unregister(Eff082473e0* p, Eff082473e0Emitter* e) {
   Eff082473e0Emitter* prev = e->prev;
   Eff082473e0Emitter* next = e->next;
@@ -99,7 +99,7 @@ s32 Eff082473e0Emitter_BurstParticle(Eff082473e0Emitter* e, s32 count, Vec3* pos
   return 0;
 }
 
-// エミッタを待機状態に戻す。枠は全部空きにして粒子も隠す
+// エミッタを待機状態に戻す, 枠は全部空きにして粒子も隠す
 void* Eff082473e0Emitter_Reset(Eff082473e0Emitter* e) {
   s32 i;
 
@@ -149,7 +149,7 @@ void (*const PTR_ARRAY_08dbd818[3])(Eff082473e0*, Eff082473e0Emitter*, Eff082473
     FUN_08246afc,
 };  // 0x08DBD818
 
-// kind 1 の更新。エミッタの座標を画面座標に落として、生きている枠の粒子をそこにぶら下げる
+// kind 1 の更新, エミッタの座標を画面座標に落として、生きている枠の粒子をそこにぶら下げる
 NON_MATCH void FUN_082470a8(Eff082473e0* p, Eff082473e0Emitter* e) {
 #ifdef NONMATCHING_C
   Eff082473e0Particle* q;
@@ -233,7 +233,7 @@ Eff082473e0* Eff082473e0_Create(u32 unused1, u32 unused2) {
   return gEff082473e0;
 }
 
-// エミッタを初期化して Eff082473e0 に登録する。エンティティがまだ無ければ先に作る
+// エミッタを初期化して Eff082473e0 に登録する, エンティティがまだ無ければ先に作る
 s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5) {
   Eff082473e0* p = gEff082473e0;
   s32 i;
@@ -265,7 +265,7 @@ s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_
   return 0;
 }
 
-// エミッタの後始末。粒子を消してリストから外す
+// エミッタの後始末, 粒子を消してリストから外す
 s32 Eff082473e0Emitter_Destroy(Eff082473e0Emitter* e) {
   s32 i;
 

@@ -168,7 +168,8 @@ SECTIONS {
 			src/entity_4d4d.o (.text);
 			src/entity_329b.o (.text);
 			src/entity_95f8.o (.text);
-			src/entity_b0bc.o (.text);
+			src/password_decoder.o (.text);
+			src/save_sequence.o (.text);
 			src/entity_e534.o (.text);
 			src/password.o (.text);
 			src/entity_ec96.o (.text);

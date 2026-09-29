@@ -23,8 +23,8 @@ magic32_t GetEquippedMagic(void) {
   return REGISTERED_MAGIC(idx);
 }
 
-NON_MATCH void RegisterMagic(s32 idx, magic32_t m) {
-#ifdef NONMATCHING_C
+// 同じ魔法が他のスロットに入っていれば外してから idx のスロットに登録する
+void RegisterMagic(s32 idx, magic32_t m) {
   s32 i;
   for (i = 0; i < 4; i++) {
     if (REGISTERED_MAGIC(i) == m) {
@@ -32,9 +32,6 @@ NON_MATCH void RegisterMagic(s32 idx, magic32_t m) {
     }
   }
   REGISTERED_MAGIC(idx) = m;
-#else
-  INCFUNC("asm/func/RegisterMagic.inc");
-#endif
 }
 
 void magic_082434f0(magic32_t n) {

@@ -41,10 +41,10 @@ const u32 u32_ARRAY_085aa850[40] = {
     0x0, 0x0, 0x8, 0x9, 0xF, 0xC, 0xD, 0xE, 0x10, 0x1C, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x12, 0x11, 0x1B, 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF, 0x5, 0x12, 0xA,
 };
 
-// gEntity080146e0 を NULL に戻すだけ。呼び出し元は見つかっていない
+// gEntity080146e0 を NULL に戻すだけ, 呼び出し元は見つかっていない
 void Entity080146e0_ClearGlobal(void) { gEntity080146e0 = NULL; }
 
-// kind 9 以上の粒子の更新。床を見ずに速度と重力だけで飛び、寿命が来たものから消える
+// kind 9 以上の粒子の更新, 床を見ずに速度と重力だけで飛び、寿命が来たものから消える
 NON_MATCH void Entity080146e0_UpdateFlying(Entity080146e0* p, Entity080146e0Data* data) {
 #ifdef NONMATCHING_C
   ParticleGroup* group;
@@ -169,7 +169,7 @@ NAKED s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange
 
 NAKED s32 Entity080146e0_SpawnAtAngle(s32 count, s32 kind, Vec3* pos, s32 angle, s32 angleRange, s32 speed, s32 speedRange, s32 velY, s32 velYRange, s32 lifeBase, s32 lifeRandMask) { INCFUNC("asm/func/Entity080146e0_SpawnAtAngle.inc"); }
 
-// 出ている粒子を全部消して、まとまりも空きに戻す。呼び出し元は見つかっていない
+// 出ている粒子を全部消して、まとまりも空きに戻す, 呼び出し元は見つかっていない
 NON_MATCH void Entity080146e0_RemoveAll(void) {
 #ifdef NONMATCHING_C
   Entity080146e0* p = gEntity080146e0;

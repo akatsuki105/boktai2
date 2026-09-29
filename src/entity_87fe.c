@@ -17,7 +17,7 @@ typedef struct {
 } Entity87FE;
 static_assert(sizeof(Entity87FE) == 40);
 
-// hp/ene を毎フレーム加算し、最大値に達した側から打ち止める。両方揃ったら SE とスクリプトを実行して自身を消す
+// hp/ene を毎フレーム加算し、最大値に達した側から打ち止める, 両方揃ったら SE とスクリプトを実行して自身を消す
 s32 Entity87FE_Update(Entity87FE* p) {
   if (!p->hpDone) {
     if ((p->player->hp += p->hpStep) >= p->player->maxHP) {

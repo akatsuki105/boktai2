@@ -3,12 +3,12 @@
 #include "global.h"
 #include "sprite_main.h"
 
-// ワイヤレス通信(RFU)の電波強度インジケータ。 gRfuLinkStatus->strength を見てアイコンを差し替える
+// ワイヤレス通信(RFU)の電波強度インジケータ, gRfuLinkStatus->strength を見てアイコンを差し替える
 typedef struct SignalStrengthIcon {
   Entity e;           // 0x00, ENTITY_UNK_11
-  u32 updateCounter;  // 0x18, SignalStrengthIcon_Update が毎フレーム +1 するだけ。読み手は見つかっていない
-  u32 animCounter;    // 0x1C, SignalStrengthIcon_SetStrength が呼ばれるたびに +1。& 0x1F の値で同じ強度内の点滅段を選ぶ
-  s32 poseIdx;        // 0x20, 現在表示しているアイコン番号 (62..66)。変化したときだけ MainSprite_SetPose を呼ぶ
+  u32 updateCounter;  // 0x18, SignalStrengthIcon_Update が毎フレーム +1 するだけ, 読み手は見つかっていない
+  u32 animCounter;    // 0x1C, SignalStrengthIcon_SetStrength が呼ばれるたびに +1, & 0x1F の値で同じ強度内の点滅段を選ぶ
+  s32 poseIdx;        // 0x20, 現在表示しているアイコン番号 (62..66), 変化したときだけ MainSprite_SetPose を呼ぶ
   MainSpriteGfx gfx;  // 0x24, SPRITE_UI_LINK
   MainSprite sprite;  // 0x44
 } SignalStrengthIcon;
@@ -74,7 +74,7 @@ NON_MATCH void SignalStrengthIcon_SetStrength(SignalStrengthIcon* p, s32 strengt
 #endif
 }
 
-// 未使用. 子機のときだけ親との強度を表示する (SignalStrengthIcon_Refresh の子機側だけを取り出した形)
+// 未使用, 子機のときだけ親との強度を表示する (SignalStrengthIcon_Refresh の子機側だけを取り出した形)
 void FUN_0804e84c(SignalStrengthIcon* p) {
   if (gRfuLinkStatus->parent_child == MODE_CHILD) {
     SignalStrengthIcon_SetStrength(p, gRfuLinkStatus->strength[0]);
@@ -84,7 +84,7 @@ void FUN_0804e84c(SignalStrengthIcon* p) {
   }
 }
 
-// 電波強度を取り直してアイコンに反映する。 リンクしていないときはアイコンを隠す
+// 電波強度を取り直してアイコンに反映する, リンクしていないときはアイコンを隠す
 void SignalStrengthIcon_Refresh(SignalStrengthIcon* p) {
   if (FUN_0804e59c() == 0) {
     s32 strength = 0xFF;

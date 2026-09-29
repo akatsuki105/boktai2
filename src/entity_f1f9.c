@@ -12,7 +12,7 @@ typedef struct EntityF1F9 {
   Entity e;                 // 0x000, ENTITY_UNK_10
   void* animFile;           // 0x018, GetFile(DIR_ANIMATION, 0x74C9)
   EntityF1F9Item items[4];  // 0x01C, _Update と _Destroy が 0x1C + i*0x158 で引く
-  u32 activeMask;           // 0x57C, bit i が立っていれば items[i] が使用中。_Init が 0 にする
+  u32 activeMask;           // 0x57C, bit i が立っていれば items[i] が使用中, _Init が 0 にする
 } EntityF1F9;
 static_assert(sizeof(EntityF1F9) == 1408);
 
@@ -59,7 +59,7 @@ NON_MATCH void FUN_081d5cac(EntityF1F9Item* item) {
 #endif
 }
 
-// state 0 のハンドラ。何もしない
+// state 0 のハンドラ, 何もしない
 void FUN_081d5d14(EntityF1F9* p, EntityF1F9Item* item) {}
 
 // state 1 のハンドラ

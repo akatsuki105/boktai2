@@ -29,7 +29,7 @@
 #define ID_DATA_TX_REQ 0x0024
 #define ID_DATA_TX_AND_CHANGE_REQ 0x0025
 #define ID_DATA_RX_REQ 0x0026
-#define ID_MS_CHANGE_REQ 0x0027  // 本IDは、REQコールバックで返される時は、rfu_REQ_changeMasterSlaveの実行完了を意味します。
+#define ID_MS_CHANGE_REQ 0x0027  // 本IDは、REQコールバックで返される時は、rfu_REQ_changeMasterSlaveの実行完了を意味します
 #define ID_DISCONNECT_REQ 0x0030
 #define ID_TEST_MODE_REQ 0x0031  // not defined in SDK header
 #define ID_CPR_START_REQ 0x0032
@@ -39,7 +39,7 @@
 #define ID_UNK36_REQ 0x0036  // not defined in SDK header
 #define ID_RESUME_RETRANSMIT_AND_CHANGE_REQ 0x0037
 #define ID_STOP_MODE_REQ 0x003d
-#define ID_CLOCK_SLAVE_MS_CHANGE_ERROR_BY_DMA_REQ 0x00ff  // 本IDは、AGBがクロックスレーブの時に、RFUが情報通知と共にAGBをクロックマスターに戻そうとした瞬間にHDMA等の自動起動DMAが発生して、その情報（REQコマンド）のやりとりに失敗した時にREQコールバックで通知されます。
+#define ID_CLOCK_SLAVE_MS_CHANGE_ERROR_BY_DMA_REQ 0x00ff  // 本IDは、AGBがクロックスレーブの時に、RFUが情報通知と共にAGBをクロックマスターに戻そうとした瞬間にHDMA等の自動起動DMAが発生して、その情報（REQコマンド）のやりとりに失敗した時にREQコールバックで通知されます
 
 // MSCコールバックで返されるREQコマンドID
 #define ID_DISCONNECTED_AND_CHANGE_REQ 0x0029
@@ -166,9 +166,9 @@
 
 // rfu_REQ_recvDataで返される（NI型、UNI型データ受信時）のエラーコード
 #define ERR_DATA_RECV \
-  0x0700  // エラー発生の通知は、下記形式で行われます。
+  0x0700  // エラー発生の通知は、下記形式で行われます
           // 「ERR_DATA_RECV | (0x0010<<UNIでエラーが発生したスロット№)｜(0x0001<<NIでエラーが発生したスロット№)」
-          // そして実際のエラーコードはrfuSlotStatus_NI or _UNI[x]->recv.errorCodeに格納されます。
+          // そして実際のエラーコードはrfuSlotStatus_NI or _UNI[x]->recv.errorCodeに格納されます
 
 // NI型通信時のエラーコード（rfuSlotStatus_NI[x]->recv.errorCodeに入るコード）
 #define ERR_RECV_BUFF_OVER (ERR_DATA_RECV | 0x0001)            // 受信データサイズが受信バッファより大きい（※このエラーはNI,UNI共通）
@@ -350,13 +350,13 @@ typedef struct RFU_linkStatus_Tag {
                                           // 子：そのスロットに接続されている親に自分のゲーム識別情報を送信済みかどうかをビットで示すフラグ（〃） (pret: getNameFlag)
   u8 findParentCount;                     // 子機の場合のみ有効な、rfu_REQ_xxxSearchParentで発見した親候補の数
   u8 watchInterval;                       // リンク監視実行間隔（AGBのピクチャーフレーム16.7ms単位）
-  u8 strength[RFU_CHILD_MAX];             // リンク強度の値（0x00～0xff,  0x00でリンク切れ。rfu_REQBN_watchLinkが更新する）
-  vu8 llf_ready_flag;                     // 次に送信するリンク層フレームが構築されているか。（rfu_constructLLFrameをコール時にこのフラグが立ち、rfu_REQ_sendDataで送信が行われるとクリアされる。） (pret: LLFReadyFlag)
+  u8 strength[RFU_CHILD_MAX];             // リンク強度の値（0x00～0xff, 0x00でリンク切れ, rfu_REQBN_watchLinkが更新する）
+  vu8 llf_ready_flag;                     // 次に送信するリンク層フレームが構築されているか, （rfu_constructLLFrameをコール時にこのフラグが立ち、rfu_REQ_sendDataで送信が行われるとクリアされる, ） (pret: LLFReadyFlag)
   u8 remainLLFrameSize_P;                 // 親機の時のリンク層通信フレームの残りサイズ (pret: remainLLFrameSizeParent)
   u8 remainLLFrameSize_C[RFU_CHILD_MAX];  // 子機の時の各スロット毎のリンク層通信フレームの残りサイズ (pret: remainLLFrameSizeChild)
 
-  rfuTgtData partner[RFU_CHILD_MAX];  // 親、子：接続が存在する時は、接続したスロット番号に対応した配列要素に接続相手のゲーム識別情報が格納される。
-                                      // 子    ：rfu_REQ_xxxxSearchParent実行時に発見した親候補のゲーム識別情報が格納される。
+  rfuTgtData partner[RFU_CHILD_MAX];  // 親、子：接続が存在する時は、接続したスロット番号に対応した配列要素に接続相手のゲーム識別情報が格納される
+                                      // 子    ：rfu_REQ_xxxxSearchParent実行時に発見した親候補のゲーム識別情報が格納される
   rfuTgtData my;                      // 自分のゲーム識別情報（要素slotの値は関係なし）
 } RFU_LINK_STATUS;                    // 180 Bytes
 
@@ -367,8 +367,8 @@ typedef struct NIComm {
   // 現在の通信状態を示すパラメータ
   u16 state;  // スロットの通信状態
 
-  u16 failCounter;               // 送受信失敗カウンタ（1PF=16.7ms中にデータ送受信が成功しなかった場合に、カウントアップします。）
-  const u8* nowp[WINDOW_COUNT];  // 現在の送受信中アドレス（データ全体をWINDOW_COUNT分のブロックに分割して、それをpayloadSize単位で送信します。）
+  u16 failCounter;               // 送受信失敗カウンタ（1PF=16.7ms中にデータ送受信が成功しなかった場合に、カウントアップします, ）
+  const u8* nowp[WINDOW_COUNT];  // 現在の送受信中アドレス（データ全体をWINDOW_COUNT分のブロックに分割して、それをpayloadSize単位で送信します, ）
   u32 remainSize;                // 残り通信データサイズ
   u16 errorCode;                 // エラーコード
   u8 bmSlot;                     // 現在の通信先スロットをビットで表現（親の送信時は、bmSlotで複数の子を指定できるため、各子機のfailCounterをもとに通信打ち切りを行う）
@@ -390,9 +390,9 @@ typedef struct NIComm {
 // UNI型データ送信用データ構造, (pret: UNISend)
 typedef struct UNI_SEND_Tag {
   u16 state;          // スロットの通信状態（SLOT_STATE_READY、SLOT_STATE_SEND_UNI）
-  u8 dataReady_flag;  // 送信データ準備OKフラグ（0:データ送信済み、1:送信データready）, セットはrfu_UNI_re_setSendData, rfu_UNI_readySendDataで行い、クリアはrfu_REQ_sendDataによってデータが送信された際に行われる。 (pret: dataReadyFlag)
+  u8 dataReady_flag;  // 送信データ準備OKフラグ（0:データ送信済み、1:送信データready）, セットはrfu_UNI_re_setSendData, rfu_UNI_readySendDataで行い、クリアはrfu_REQ_sendDataによってデータが送信された際に行われる, (pret: dataReadyFlag)
   u8 bmSlot;          // 送信先スロットをビットで表現
-  u16 payloadSize;    // １回の送信のペイロードサイズ。rfu_UNI_setSendData, rfu_UNI_re_setSendDataで指定したsizeが入る
+  u16 payloadSize;    // １回の送信のペイロードサイズ, rfu_UNI_setSendData, rfu_UNI_re_setSendDataで指定したsizeが入る
   const u8* src;      // 送信データ先頭アドレス
 } UNI_SEND;
 
@@ -401,7 +401,7 @@ typedef struct UNI_RECV_Tag {
   u16 state;          // スロットの通信状態（SLOT_STATE_READY、SLOT_STATE_RECEIVING、SLOT_STATE_RECV_IGNORE）
   u16 errorCode;      // 受信時のエラーコード
   u16 dataSize;       // 受信データのサイズ
-  u8 newData_flag;    // 新着受信データあり／なしフラグ（0:新着データなし、1:新着データあり）, フラグのクリアはrfu_UNI_clearRecvNewDataFlagで行い、セットはrfu_REQ_recvDataによってデータが受信された際に行われる。 (pret: newDataFlag)
+  u8 newData_flag;    // 新着受信データあり／なしフラグ（0:新着データなし、1:新着データあり）, フラグのクリアはrfu_UNI_clearRecvNewDataFlagで行い、セットはrfu_REQ_recvDataによってデータが受信された際に行われる, (pret: newDataFlag)
   u8 dataBlock_flag;  // 未参照受信データ上書きブロックフラグ（デフォルト0  ※未使用） (pret: dataBlockFlag)
 } UNI_RECV;
 

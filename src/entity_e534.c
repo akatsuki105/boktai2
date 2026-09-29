@@ -27,7 +27,7 @@ typedef struct {
   EntityE534Elem elems[16];   // 0x024, _Init が FUN_080117d8 で16個初期化し、_Destroy が FUN_08011854 で片付ける
   u8 unk_ca4[2];              // 0xCA4, まだ未解析
   u16 unk_ca6;                // 0xCA6, _Init が 0 を入れる
-  rgb555 pltt[16];            // 0xCA8, BlendPltt(&pltt, gObjPlttData+0x2630, gObjPlttData+0x2650, 0x40, 6). elems[i].gfx.pltt がここを指す
+  rgb555 pltt[16];            // 0xCA8, BlendPltt(&pltt, gObjPlttData+0x2630, gObjPlttData+0x2650, 0x40, 6), elems[i].gfx.pltt がここを指す
   u32 unk_cc8;                // 0xCC8, _Init が 0 を入れる
   u8 unk_ccc[0xCD4 - 0xCCC];  // 0xCCC, まだ未解析
   EntityMsgBox msgbox;        // 0xCD4, _Destroy が EntityMsgBus_Unregister に渡す

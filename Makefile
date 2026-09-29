@@ -77,12 +77,16 @@ ifeq ($(MODERN),0)
   # TODO: このゲームには katam とコード構造が似ている部分がある
   #   https://github.com/jiangzhengwenjz/katam/pull/329 
   #   > There are certain functions that are (almost) identical to static inlines in other files, so it is possible that these could actually be non-static inlines that indicate TU-boundaries. Later when restructuring the files, should I try to set the boundaries in a way that would enable rewriting these functions to non-static inlines, or is it alright to just have functions that are never called and and duplicated as static inlines in other files? I like the second approach more out of flexibility, and I think __attribute__((unused)) can be used to convey this. Also, should I then try to make the emitted functions call the static inline of the different file, or is it alright if I just leave it as is (and this thus looks like duplicated code)?
-  # TODO: thumb_patch03-OCT-03 を適用したコンパイラでビルドされているか調査する, このパッチと同じものが katam/agbcc (pret/agbccのフォーク) に f2003-patch オプションとして提供されているっぽいのでそれも調査する
-  # TODO: thumb_patch03-OCT-03 に関しては boktai1 (発売日的にパッチが適用されていない) に共通の処理があれば、それと比較することでパッチの影響を確認できるかもー？
-  # undef: 組み込みマクロ無効, std は 指定しなくても gnu89 っぽい？
+  # undef: 組み込みマクロ無効, std は 指定しなくても gnu89 がデフォルトだが明示しておく
   CPPFLAGS := -I tools/agbcc -I tools/agbcc/include -iquote include -nostdinc -undef -std=gnu89 -DMODERN=$(MODERN)
+  # 調査用フック, 既定では空 (例: make EXTRA_CPPFLAGS=-DNONMATCHING_C)
+  CPPFLAGS += $(EXTRA_CPPFLAGS)
+  # agbcc is akatsuki105/agbcc (pret/agbcc + thumb_patch03-OCT-03)
   CC1 := tools/agbcc/bin/agbcc$(EXE)
   override CFLAGS += -mthumb-interwork -Wimplicit -Wparentheses -Werror -O$(O_LEVEL) -fhex-asm
+  # フラグの影響範囲を測るためのフック, 既定では空, tools/flag_blast.sh が使う
+  # 末尾に足すので -O1 のような既定値の上書きもできる (例: make EXTRA_CFLAGS=-fno-gcse)
+  override CFLAGS += $(EXTRA_CFLAGS)
   LIBPATH := -L ../../tools/agbcc/lib
 else
   # TODO: Modern

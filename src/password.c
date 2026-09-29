@@ -29,4 +29,15 @@ s32 PasswordScreen_Destroy(PasswordScreen* p) {
 
 NAKED s32 PasswordScreen_Init(PasswordScreen* p) { INCFUNC("asm/func/PasswordScreen_Init.inc"); }
 
-NAKED PasswordScreen* PasswordScreen_Create(void) { INCFUNC("asm/func/PasswordScreen_Create.inc"); }
+PasswordScreen* PasswordScreen_Create(void) {
+  PasswordScreen* p = CreateEntity(ENTITY_UNK_11, sizeof(PasswordScreen));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, PasswordScreen_Update, PasswordScreen_Destroy);
+    if (PasswordScreen_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

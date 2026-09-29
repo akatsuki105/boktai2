@@ -178,7 +178,7 @@ typedef struct CollisionMapData {
   PathData* paths;                 // 0x010
   NavMesh* navMesh;                // 0x014
   MapTileOverride* tileOverrides;  // 0x018, FUN_08234270 がここを先頭とする双方向リストにノードを繋ぐ
-  s16 neighborOffsets[4];          // 0x01C, 隣接タイルへの索引差分 -w/1/w/-1, 根拠: FUN_0823273c。読み手は (dir & 3) で引く
+  s16 neighborOffsets[4];          // 0x01C, 隣接タイルへの索引差分 -w/1/w/-1, 根拠: FUN_0823273c, 読み手は (dir & 3) で引く
   u16 rowOffsets[256];             // 0x024, 行ごとのタイル索引オフセット表, rowOffsets[blockZ] + blockX がタイル索引
   CollisionMapEvent events[64];    // 0x224, 根拠: FUN_082326d8 が i=0..63 で 44バイトずつクリアする
   u32 unk_d24[64];                 // 0xD24, events と同じ添字の並列配列, FUN_082349b8 の第2引数が入る

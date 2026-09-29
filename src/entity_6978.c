@@ -5,7 +5,7 @@
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_11
   u16 unk_18;         // 0x18, _Create の引数, 書き込むだけで読み手が見つかっていない
-  u16 unk_1a;         // 0x1A, _Init が VM キーワード 'f' を入れる, 読み手が見つかっていない
+  u16 unk_1a;         // 0x1A, _Init が '.f' を入れる, 読み手が見つかっていない
   u16 unk_1c;         // 0x1C, _Init が 0 を入れるだけ
   u16 state;          // 0x1E, 0:停止, 1/3:係数を 0x40 へ上げる (_StepUp), 2/4:0 へ下げる (_StepDown)
   u16 timer;          // 0x20, state に入ってからのステップ数, (timer << 6) >> durationShift が係数

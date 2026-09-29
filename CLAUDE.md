@@ -66,3 +66,10 @@ NON_MATCH void FUN_08242c08(slot32_t n) {
 Assembly for a not-yet-matching function lives in `asm/func/FUNCNAME.inc` (e.g. `FUN_08242c08` -> `asm/func/FUN_08242c08.inc`).
 
 ---
+
+## C Code Style
+
+- Refer to existing code and follow its conventions.
+- Write comments in Japanese, but use commas `,` instead of sentence-ending punctuation `。`
+
+---

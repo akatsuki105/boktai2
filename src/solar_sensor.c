@@ -5,19 +5,19 @@
 
 // 太陽センサーのドライバ
 
-IWRAM_DATA s32 gSensorState = 0;             // 0x030026B4, Sensor_Tick の状態。0: リセット中, 1: 計測中, 2: 待機
+IWRAM_DATA s32 gSensorState = 0;             // 0x030026B4, Sensor_Tick の状態, 0: リセット中, 1: 計測中, 2: 待機
 IWRAM_DATA s32 gSensorCounter = 0;           // 0x030026B8, 0-511, counts half-cycles of the 74LV4040 counter chip
-IWRAM_DATA s32 gSensorUnk0c = 0;             // 0x030026BC, 計測中のセンサー出力の最後の値。ROM 内に読む箇所なし
+IWRAM_DATA s32 gSensorUnk0c = 0;             // 0x030026BC, 計測中のセンサー出力の最後の値, ROM 内に読む箇所なし
 IWRAM_DATA s32 gSensorNextWrite = 0;         // 0x030026C0, next value to be written to GPIO_DATA
 IWRAM_DATA bool32 gSensorIoEnabled = FALSE;  // 0x030026C4
 COMMON_DATA u32 gSensorDrvUnk00 = 0;         // 0x030057B0, Sensor_DoEnableIO が 0xFF を書くだけで読む箇所なし
-COMMON_DATA u32 gSensorDrvUnk04 = 0;         // 0x030057B4, 有効化時の GPIO_PORT_DATA の控え。読む箇所なし
+COMMON_DATA u32 gSensorDrvUnk04 = 0;         // 0x030057B4, 有効化時の GPIO_PORT_DATA の控え, 読む箇所なし
 COMMON_DATA bool32 gSensorEnabled = FALSE;   // 0x030057B8
 COMMON_DATA u32 gSensorGpioData = 0;         // 0x030057BC, last read GPIO data (GPIO_DATA & 8)
 COMMON_DATA s32 gSensorDrvUnk10 = 0;         // 0x030057C0, Sensor_DoEnableIO が 1 を書くだけで読む箇所なし
 COMMON_DATA s32 gSensorDrvUnk14 = 0;         // 0x030057C4, Sensor_DoEnableIO が 4 を書くだけで読む箇所なし
 COMMON_DATA s32 gSensorRawLevel = 0;         // 0x030057C8, light level (0: Max brightness, 0xFF: Dark)
-COMMON_DATA s32 gSensorTickPeriod = 0;       // 0x030057CC, Sensor_Tick の周期。タイマー3 に -gSensorTickPeriod を再装填する
+COMMON_DATA s32 gSensorTickPeriod = 0;       // 0x030057CC, Sensor_Tick の周期, タイマー3 に -gSensorTickPeriod を再装填する
 
 void Sensor_Tick(void);
 
@@ -64,7 +64,7 @@ void Sensor_DoDisableIO(void) {
   REG_IME = 1;
 }
 
-// タイマー3 割り込み。GPIO を1段進めて、リセット -> 計測 -> 待機 を回しながら明るさを読む
+// タイマー3 割り込み, GPIO を1段進めて、リセット -> 計測 -> 待機 を回しながら明るさを読む
 void Sensor_Tick(void) {
   u32 data = GPIO_PORT_DATA;
   u32 gpio;

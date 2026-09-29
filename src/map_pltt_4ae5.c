@@ -64,7 +64,7 @@ COMMON_DATA Entity4AE5* gEntity4AE5 = NULL;  // 0x03002B2C
 
 void FUN_08001878(void) { gEntity4AE5 = NULL; }
 
-// src1 と src2 を (0x20-scale):scale の比で混ぜて dst に書く。scale が 0x20 以上なら src2 をそのままコピーする
+// src1 と src2 を (0x20-scale):scale の比で混ぜて dst に書く, scale が 0x20 以上なら src2 をそのままコピーする
 NON_MATCH void BlendPltt2(rgb555* dst, const rgb555* src1, const rgb555* src2, u32 bytesize, u32 param_5, u32 param_6) {
 #ifdef NONMATCHING_C
   const rgb555* s1;
@@ -102,7 +102,7 @@ NON_MATCH void BlendPltt2(rgb555* dst, const rgb555* src1, const rgb555* src2, u
 #endif
 }
 
-// src を bytesize/2 倍(5bit精度)して dst に書く。等倍以上ならそのままコピーする
+// src を bytesize/2 倍(5bit精度)して dst に書く, 等倍以上ならそのままコピーする
 NON_MATCH void ScalePltt(rgb555* dst, rgb555* src, u32 bytesize, u32 param_4, u32 param_5) {
 #ifdef NONMATCHING_C
   const rgb555* s;
@@ -343,7 +343,7 @@ NON_MATCH void MapPltt_BlendRows(Entity4AE5* p) {
 #endif
 }
 
-// パレットを 13 段階ずつ送りながら合成する。1周したら送り元を切り替えて終了する
+// パレットを 13 段階ずつ送りながら合成する, 1周したら送り元を切り替えて終了する
 void MapPltt_StepCrossfade(Entity4AE5* p) {
   const rgb555* src;
   u32 step;
@@ -616,7 +616,7 @@ NON_MATCH s32 Entity4AE5_Update(Entity4AE5* p) {
 
 s32 Entity4AE5_Destroy(Entity4AE5* p) { gEntity4AE5 = NULL; }
 
-// パレット処理の初期化。unk_1a のビットで、時間帯連動・2枚合成・単純転送のどれかを選ぶ
+// パレット処理の初期化, unk_1a のビットで、時間帯連動・2枚合成・単純転送のどれかを選ぶ
 NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
 #ifdef NONMATCHING_C
   const rgb555* src;

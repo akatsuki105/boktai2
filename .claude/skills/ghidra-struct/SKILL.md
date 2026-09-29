@@ -186,20 +186,14 @@ Keep working files in the scratchpad. `G=http://127.0.0.1:8089`,
     declaration.
 12. **Commit and push** — only with `--push`. Without it, stop after step 11 and
     leave the working tree dirty for the user.
-    - Confirm the ROM first: `make clean-code && make compare` printing
-      `boktai2.gba: OK`, and `cmp -l boktai2.gba baserom.gba | wc -l` printing
-      `0`. A failing ROM is never committed — report it and stop.
-    - `./tools/refresh-expected.sh`, then stage what this pass touched:
-      `git add -A -- src include asm docs` plus any other path `git status`
-      shows (a rename reaches `data/`). Never stage `expected/`, `build/` or
-      `tmp/`.
-    - **`git add` and `git commit` must be separate tool calls** — the
-      clang-format hook runs on `git commit` and would see nothing staged
-      otherwise.
-    - Message: one line naming the type, e.g. `Entity56DC のレイアウトを埋める`.
-      No body.
-    - `git push`. If it is rejected, stop and tell the user; never force-push
-      and never rewrite history.
+
+    ```sh
+    tools/git_push.sh "Entity56DC のレイアウトを埋める"
+    ```
+
+    The script owns the ROM check, the staging and the clang-format pass, and
+    refuses to commit if the ROM does not match. Pass **one line naming the
+    type** as the message; no body.
 
 ## Evidence catalog
 
@@ -233,9 +227,9 @@ Strongest first. Most of these produced a confirmed field on this project.
 - **List operations.** Insert/remove functions give `active`, the list index,
   `prev` and `next` in one go, and type the list-head global.
 - **GBA hardware.** A value OR'd into an OAM word or written to an I/O
-  register is identified by the spec: OAM attr0 bits 0-7 Y, 8-9 affine/double,
-  10-11 mode (01 semi-transparent, 10 OBJ window), 12 mosaic, 13 8bpp, 14-15
-  shape; attr1 bits 0-8 X, 9-13 affine index, 12/13 H/V flip, 14-15 size;
+  register is identified by the spec: OAM attr0 bits 0-7 Y, 8-9 object mode
+  (00 normal, 01 affine, 10 hidden, 11 affine double-size), 10-11 gfx mode
+  (01 semi-transparent, 10 OBJ window), 12 mosaic, 13 8bpp, 14-15 shape; attr1 bits 0-8 X, 9-13 affine index, 12/13 H/V flip, 14-15 size;
   attr2 bits 0-9 tile, 10-11 priority, 12-15 palette. `BGnCNT` bit 6 mosaic;
   `MOSAIC` low byte BG, high byte OBJ.
 - **Recognisable math.** Isometric projection `(x - z) * k`, `(x + z) * k`,
@@ -254,8 +248,7 @@ Strongest first. Most of these produced a confirmed field on this project.
   `HitboxData` that this struct writes to).
 - With `--name`: an old → new table with the evidence for each name, and the
   ones you deliberately left as `FUN_xxxxxxxx`.
-- With `--push`: the commit hash, and that `make compare` printed the OK line
-  with a zero-byte diff against `baserom.gba`.
+- With `--push`: the commit hash, and that `make compare` printed the OK line.
 
 ## When something goes wrong
 

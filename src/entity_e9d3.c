@@ -12,10 +12,10 @@ typedef struct {
   u8* script;                 // 0x828, TextBox_Start に渡す本文
   u16 unk_82c;                // 0x82C, _Init が書き込む
   u8 unk_82e[2];              // 0x82E, まだ未解析
-  u32 unk_830;                // 0x830, _Init が VM キーワード 'd' を入れる (無ければ 0)
-  u32 unk_834;                // 0x834, _Init が VM キーワード 'e' を入れる (無ければ 0)
+  u32 unk_830;                // 0x830, _Init が '.d' を入れる (無ければ 0)
+  u32 unk_834;                // 0x834, _Init が '.e' を入れる (無ければ 0)
   u8 unk_838[0x846 - 0x838];  // 0x838, まだ未解析
-  u16 unk_846;                // 0x846, _Init が VM キーワード 'o' を入れる. 0 なら FUN_080b4b04、それ以外は FUN_080b4e8c を呼ぶ
+  u16 unk_846;                // 0x846, _Init が '.o' を入れる, 0 なら FUN_080b4b04、それ以外は FUN_080b4e8c を呼ぶ
   u8 unk_848[2128 - 0x848];   // 0x848, まだ未解析
 } EntityE9D3;
 static_assert(sizeof(EntityE9D3) == 2128);

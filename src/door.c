@@ -12,12 +12,12 @@ void* FUN_08230e70(u16 id);
 struct Door;
 typedef void (*DoorFunc)(struct Door* p);
 
-// 扉1体。DoorManager.doors が doorMax 体ぶん並べて持つ
+// 扉1体, DoorManager.doors が doorMax 体ぶん並べて持つ
 typedef struct Door {
   AuxSprite sprite;         // 0x00, DoorManager_Destroy が AuxSprite_Remove に渡す
   MapTileOverride* unk_2c;  // 0x2C, DoorManager_Destroy が NULL でなければ Free する
   DoorFunc fn;              // 0x30, FUN_08020AF8 が FUN_08020B88 を、FUN_08020B24 が別のハンドラを入れる
-  u16 unk_34;               // 0x34, 扉のID。FUN_0801fe58 が一致する扉に unk_36 の bit0 を立てる
+  u16 unk_34;               // 0x34, 扉のID, FUN_0801fe58 が一致する扉に unk_36 の bit0 を立てる
   u8 unk_36;                // 0x36
   u8 unk_37;                // 0x37, FUN_08020af8 が 2 を入れる
   u8 unk_38;                // 0x38, ここから 0x40 にかけては 32bit の ldr とバイト単位の strb が重なっていて境界が決まらない
@@ -39,7 +39,7 @@ typedef struct Door {
 } Door;
 static_assert(sizeof(Door) == 140);
 
-// '.k' の扉の絵一式を複製して入れる置き場。DoorManager_Init が Malloc(140) で7個作る
+// '.k' の扉の絵一式を複製して入れる置き場, DoorManager_Init が Malloc(140) で7個作る
 typedef struct {
   AuxSpriteGfx gfx[5];
 } DoorSpriteSet;
@@ -51,14 +51,14 @@ typedef struct {
   Entity e;                     // 0x00, ENTITY_UNK_9
   u16 subroutineID;             // 0x18, DoorManager_Update が FUN_08230F94 の検索キーに使う
   u16 unk_1a;                   // 0x1A, DoorManager_Destroy が doors を走査する件数
-  u8 unk_1c;                    // 0x1C, DoorManager_Update が unk_1e を走査する件数。走査後 unk_1d へ移して 0 に戻す
+  u8 unk_1c;                    // 0x1C, DoorManager_Update が unk_1e を走査する件数, 走査後 unk_1d へ移して 0 に戻す
   u8 unk_1d;                    // 0x1D, 前フレームの unk_1c
-  u16 unk_1e[4];                // 0x1E, _Init が 0x24 から 0x1E へ順に 0 で埋める。_Update が unk_1c 件ぶん走査する
-  u16 unk_26[4];                // 0x26, 前フレームぶんの unk_1e。FUN_0801fad8 が unk_1d 件ぶん走査する
+  u16 unk_1e[4];                // 0x1E, _Init が 0x24 から 0x1E へ順に 0 で埋める, _Update が unk_1c 件ぶん走査する
+  u16 unk_26[4];                // 0x26, 前フレームぶんの unk_1e, FUN_0801fad8 が unk_1d 件ぶん走査する
   u16 unk_2e;                   // 0x2E, _Init が 0 を入れる
   s32 doorMax;                  // 0x30, '.m=16', doors の要素数
   s32 unk_34;                   // 0x34, '.e=1', 0 でなければ 0x410..0x428 も確保する
-  ScriptRecord* records;        // 0x38, FUN_08230F94(subroutineID, &records) の出力。_Update が values[0] を命令として分岐する
+  ScriptRecord* records;        // 0x38, FUN_08230F94(subroutineID, &records) の出力, _Update が values[0] を命令として分岐する
   AuxSpriteGfx sprites_3c[5];   // 0x3C, '.d=SPRITE_DOOR_7ACD'
   AuxSpriteGfx sprites_c8[5];   // 0xC8, '.S=SPRITE_DOOR_IRON'
   AuxSpriteGfx sprites_154[5];  // 0x154, '.k=SPRITE_DOOR_LOCKED'
@@ -66,7 +66,7 @@ typedef struct {
   AuxSpriteGfx sprites_26c[5];  // 0x26C, '.b=SPRITE_DOOR_7AEE'
   AuxSpriteGfx sprites_2f8[5];  // 0x2F8, '.s=SPRITE_DOOR_7AF3'
   AuxSpriteGfx sprites_384[5];  // 0x384, '.u=SPRITE_DOOR_7AF3'
-  DoorSpriteSet* unk_410;       // 0x410, unk_34 が 0 でなければ Malloc(0x8C)。script 'k' の絵を複製して入れる
+  DoorSpriteSet* unk_410;       // 0x410, unk_34 が 0 でなければ Malloc(0x8C), '.k' の絵を複製して入れる
   DoorSpriteSet* unk_414;       // 0x414
   DoorSpriteSet* unk_418;       // 0x418
   DoorSpriteSet* unk_41c;       // 0x41C
@@ -223,7 +223,7 @@ void FUN_0801fe98(DoorManager* p, u16 id) {
   }
 }
 
-// スクリプトの 'n' が指す扉を開かせる。1体でも見つかれば 1 を返す
+// スクリプトの 'n' が指す扉を開かせる, 1体でも見つかれば 1 を返す
 s32 FUN_0801fedc(void) {
   DoorManager* p = FUN_08230e70(0x85E6);
   s32 found;
@@ -255,7 +255,7 @@ s32 FUN_0801fedc(void) {
   return found;
 }
 
-// スクリプトの 'n' が指す扉を閉じさせる。1体でも見つかれば 1 を返す
+// スクリプトの 'n' が指す扉を閉じさせる, 1体でも見つかれば 1 を返す
 s32 FUN_0801ff78(void) {
   DoorManager* p = FUN_08230e70(0x85E6);
   s32 found;

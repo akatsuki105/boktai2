@@ -51,7 +51,7 @@ typedef struct {
   u32* argv;  // 0x04, 引数配列の先頭
 } ScriptArgs;
 
-// スクリプトが VM_Ctrl_22FF で登録するレコード. FUN_08230eec が u32_ARRAY_0203f400 のテーブルへ積み、FUN_08230f94 が id で引く
+// スクリプトが VM_Ctrl_22FF で登録するレコード, FUN_08230eec が u32_ARRAY_0203f400 のテーブルへ積み、FUN_08230f94 が id で引く
 // テーブルは 0x03000740 の深さで選ぶ 392 バイトのブロック単位 (先頭 word が件数、続けて 8 バイトのレコードが最大 48 件)
 typedef struct {
   u16 id;

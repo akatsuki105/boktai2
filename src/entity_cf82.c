@@ -5,8 +5,8 @@
 // BG パレット 2 の色 8-11 を 1 色ずつ消したり点けたりして光が寄せては返すように見せる
 typedef struct {
   Entity e;  // 0x00, ENTITY_UNK_12
-  u8 step;   // 0x18, 0..7。点灯している色数を決める。0-3 が消していく側、4-7 が点けていく側
-  u8 timer;  // 0x19, 毎フレーム +1。sEntityCF82StepDurations[step] に達したら step を進めて 0 に戻す
+  u8 step;   // 0x18, 0..7, 点灯している色数を決める, 0-3 が消していく側、4-7 が点けていく側
+  u8 timer;  // 0x19, 毎フレーム +1, sEntityCF82StepDurations[step] に達したら step を進めて 0 に戻す
 } EntityCF82;
 static_assert(sizeof(EntityCF82) == 28);
 

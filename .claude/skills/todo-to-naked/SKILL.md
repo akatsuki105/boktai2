@@ -1,7 +1,7 @@
 ---
 name: todo-to-naked
-description: Promote boktai2 functions from the TODO level to the NAKED level — pull one function's assembly out of a bulk INCASM file into asm/func/NAME.inc, give it a C signature in src/, and (when the evidence is solid) a real name. Use when the user invokes /todo-to-naked, or asks to move functions out of an asm/*.inc / src/*.s blob into C stubs.
-argument-hint: <function-name>... | <asm-file>
+description: Promote boktai2 functions from the TODO level to the NAKED level — pull one function's assembly out of a bulk INCASM file into asm/func/NAME.inc, give it a C signature in src/, and (when the evidence is solid) a real name. Use when the user invokes /todo-to-naked, or asks to move functions out of an asm/*.inc / src/*.s blob into C stubs. `-p`/`--push` verifies the build and commits+pushes the promotions.
+argument-hint: <function-name>... | <asm-file> [-p|--push]
 ---
 
 # todo-to-naked
@@ -20,6 +20,16 @@ sits after the `INCASM`, so a function cannot leave the blob while a
 higher-addressed one is still in it. `prepare_asm.ts` refuses and names the
 blockers when you get this backwards. Do them one at a time, all the way
 through, before starting the next.
+
+**`-p` / `--push`** — after step 4 passes, commit and push the whole promotion
+(step 6). Without it this skill leaves the working tree dirty for the user.
+Nothing parses the arguments, so read the argument string literally and resolve
+the flag yourself before anything else. `--push` is the only option here;
+**anything else starting with `-`** — an option this skill does not have, or a
+typo of this one (`--psuh`, `-q`) — means **stop and ask**. Do not guess and do
+not silently ignore it. A plain-language request turns it on too
+(「終わったらコミットしてpushして」→ `-p`), but the flag is the form to prefer.
+
 
 ## The two states a TODO function can be in
 
@@ -82,12 +92,44 @@ unstubbed, the second only unstubbed.
    naming: `Owner_Verb` (`HealingParticles_InitHitbox`), and the
    `XXX_Create` / `_Init` / `_Update` / `_Destroy` family for entities.
 
-4. **Verify.** `make clean-code && make compare` must print the `boktai2.gba: OK`
-   line. A stale object file will happily report a match that isn't there, so do
-   not skip `clean-code`.
+4. **Verify.**
+
+   **After a file-wide run, check the `NAKED` line order first.** Promoting from
+   the highest address down means every line was placed against lines inserted
+   moments earlier, and that order has come out wrong twice without
+   `prepare_asm.ts` printing its `警告:` — see the pitfall below for both cases.
+   The only symptom is a FAILED build with no message, so do not skip this:
+
+   ```sh
+   grep -n '^NAKED' src/FOO.c        # ファイル順
+   ```
+
+   Compare it against the addresses you promoted (the order you fed
+   `prepare_asm.ts`, reversed). If they differ, rewrite the block in ascending
+   address order — leave everything else in the file untouched — before building.
+
+   Then `make clean-code && make compare` must print the `boktai2.gba: OK` line.
+   A stale object file will happily report a match that isn't there, so do not
+   skip `clean-code`.
 
 5. **Report** what was promoted, the signature, and the evidence for the name.
-   Do not commit unless the user asked.
+
+6. **Commit and push** — only with `--push`. Without it, stop after step 5 and
+   leave the working tree dirty.
+
+   ```sh
+   tools/git_push.sh "asm/elevator.inc の関数を NAKED にする"
+   ```
+
+   One line naming what was promoted — the blob for a file-wide run, the
+   function names for a short explicit list. No body. Renaming reaches
+   `data/*.inc`, which `git add -A` picks up; mention those files in the report
+   so the user knows the commit is wider than `src`/`asm`.
+
+   The script owns the ROM check, the staging and the clang-format pass, and
+   refuses to commit unless `boktai2.gba: OK`. That repeats step 4's build — the
+   cost is one extra clean build, and it is what makes the commit safe. If the
+   script refuses, report that and stop; do not commit by hand.
 
 ## Signature evidence
 
@@ -100,7 +142,7 @@ connection is down (see `.claude/skills/ghidra-struct/references/http-api.md`).
   strongest evidence — its own types are settled.
 - **Return type** comes from the epilogue. `pop {r0}` / `bx r0` means `void`;
   `pop {r1}` / `bx r1` means the function is declared to return a value (see
-  the `pop {r1}` entry in `docs/for-ai-agent/agbcc-quirks.md`). An entity's
+  `AuxShadow_SetSprite` and `Entity080ac374_Update` in `src/` for the shape). An entity's
   `Init` / `Update` / `Destroy` returns `s32` in this project even when the
   body only returns 0.
 - **The pointer's type** comes from what the body touches. If it indexes fields
@@ -129,20 +171,10 @@ Spending the time here only pays off when the answer is one xref away.
   two functions; move the line by hand, or `make compare` fails with no other
   clue.
 - **Emptying a whole blob scrambles that order, and silently.** With a file
-  argument you promote from the highest address down, so the `.c` starts with
-  no markers at all and every line is placed against lines inserted moments
-  earlier. Seen twice: `ExplosionManager` (3 of 9 lines out of order) and the
-  message-box blob (about 10 of 28), **neither of which printed `警告:`**. The
-  only symptom is `make compare` printing FAILED with no message.
-  So after a file-wide run, check the order before trusting the build:
-
-  ```sh
-  grep -n '^NAKED' src/FOO.c        # ファイル順
-  ```
-
-  Compare that against the addresses the promotions used — the order you fed
-  `prepare_asm.ts`, reversed. If they differ, rewrite the block in ascending
-  address order (keep everything else in the file untouched) and rebuild.
+  argument the `.c` starts with no markers at all, so every line is placed
+  against lines inserted moments earlier. Seen twice: `ExplosionManager` (3 of 9
+  lines out of order) and the message-box blob (about 10 of 28), **neither of
+  which printed `警告:`**. Step 4 opens with the check that catches it.
 - A candidate whose body is just a few instructions ending in `pop`/`bx`, sitting
   right after the previous function, is probably not a function at all but that
   function's shared epilogue, split off because Ghidra read a long `bl` branch as
@@ -163,3 +195,10 @@ Spending the time here only pays off when the answer is one xref away.
 | Script | Use |
 |---|---|
 | `scripts/prepare_asm.ts <FUNCTION_NAME> [ASM_FILE] [--sig SIG]` | Extract if needed, remove the stub from the bulk asm file, and with `--sig` add the `NAKED` line to the `.c` in address order. Deletes the blob and its `INCASM` line when it empties out. Refuses when a higher-addressed function is still in the blob. |
+
+Repo tools this skill calls:
+
+| Tool | Use |
+|---|---|
+| `tools/extract_func.ts <FUNCTION_NAME>` | Extract the body into `asm/func/NAME.inc` and leave the stub in place — for a function staying at the TODO level. `prepare_asm.ts` calls it internally. |
+| `tools/rename_with_ghidra.sh --quiet OLD NEW` | Rename the repository and Ghidra together, including `asm/func/OLD.inc`. Ghidra's GUI must be open. Reaches `data/*.inc` too, so check `git status` afterwards. |

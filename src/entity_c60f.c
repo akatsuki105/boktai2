@@ -15,10 +15,10 @@ bool8 FUN_081d5848(EntityF1F9Item* item, u16 n);
 
 // EntityC60FItem.flags
 typedef u32 EntityC60FItemFlags;
-#define C60FITEM_TILE_OVERRIDE (1 << 5)  // 衝突タイルの上書きを持っている。落とすときに FUN_082342a8 で取り消す
+#define C60FITEM_TILE_OVERRIDE (1 << 5)  // 衝突タイルの上書きを持っている, 落とすときに FUN_082342a8 で取り消す
 #define C60FITEM_FIXED_AREA (1 << 7)     // state を回さず unk_10a を gStat->unk_248 と比べる
 
-// EntityC60F が抱える要素。Malloc(0x11C) で確保され、空きスロットに入る
+// EntityC60F が抱える要素, Malloc(0x11C) で確保され、空きスロットに入る
 typedef struct EntityC60FItem {
   AuxSprite sprite;              // 0x000, EntityC60F_Destroy が要素そのものを AuxSprite_Remove に渡す
   u8 unk_2c[28];                 // 0x02C
@@ -45,7 +45,7 @@ typedef struct EntityC60F {
   void* animFile1;            // 0x1C, GetFile(DIR_ANIMATION, 0x931E)
   EntityC60FItem* items[32];  // 0x20, _Update と _Destroy が32スロットを走査する
   u32 activeMask;             // 0xA0, bit i が立っていれば items[i] が確保済み
-  u8 unk_a4;                  // 0xA4, _Init と _Update が 0xFF を書く。読み手が見つかっていない
+  u8 unk_a4;                  // 0xA4, _Init と _Update が 0xFF を書く, 読み手が見つかっていない
   u8 unk_a5[3];               // 0xA5
 } EntityC60F;
 static_assert(sizeof(EntityC60F) == 168);
@@ -179,7 +179,7 @@ NON_MATCH void FUN_081d6eb8(EntityC60FItem* p) {
 #endif
 }
 
-// state 0 のハンドラ。何もしない
+// state 0 のハンドラ, 何もしない
 void FUN_081d6f60(EntityC60FItem* p) {}
 
 NAKED s32 FUN_081d6f64(unknown* p) { INCFUNC("asm/func/FUN_081d6f64.inc"); }

@@ -13,8 +13,8 @@ typedef struct {
   s16 phase;           // 0x022, _Update が (BG の vofs + phase) & 0x7F で waveTable を引く
   u16 tickInterval;    // 0x024, '.i=5', tickTimer と比べる
   u16 tickTimer;       // 0x026, _Update が数え上げ、tickInterval で 0 に戻る
-  bool32 enabled;      // 0x028, _Init が 1 を入れる。0 の間 _Update は何もしない
-  u16 tableIdx;        // 0x02C, waveTable を tableIdx * 0x240 だけずらす。_Init が 0 を入れるが書き手が見つかっていない
+  bool32 enabled;      // 0x028, _Init が 1 を入れる, 0 の間 _Update は何もしない
+  u16 tableIdx;        // 0x02C, waveTable を tableIdx * 0x240 だけずらす, _Init が 0 を入れるが書き手が見つかっていない
   s16 waveTable[288];  // 0x02E, '.s' * gSineTable[i & 0x7F] >> 12  を288個
   u8 unk_26e[6];       // 0x26E, 読み書きとも無し
 } EntityE435;

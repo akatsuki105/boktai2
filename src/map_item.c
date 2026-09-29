@@ -14,7 +14,7 @@ extern u32 u32_03002bc0[];  // 0x03002BC0, プレイヤーごとのフラグ
 
 bool8 FUN_082375c8(u32* flags, s32 t, s32 t1, s32 t2);
 
-// プレイヤーの位置をアイソメトリック投影したもの。MapItem_TryAutoPickup が拾える距離の判定に使う
+// プレイヤーの位置をアイソメトリック投影したもの, MapItem_TryAutoPickup が拾える距離の判定に使う
 typedef struct {
   s16 x;      // 0x00, (px - pz) * 0x30 >> 8
   s16 y;      // 0x02, ((px + pz) * 0x30 >> 8) - (py * 0x18 >> 8)
@@ -25,27 +25,27 @@ static_assert(sizeof(PlayerScreenPos) == 8);
 
 struct MapItemManager;
 
-// マップに置かれたアイテム1個。歩いて近づくと拾え (MapItem_TryAutoPickup)、宝箱は調べて開ける (MapItemManager_TryOpen)
+// マップに置かれたアイテム1個, 歩いて近づくと拾え (MapItem_TryAutoPickup)、宝箱は調べて開ける (MapItemManager_TryOpen)
 typedef struct MapItem {
   ItemCategory16 category;                                  // 0x00, CheckEmptySlotExist の第1引数
   s16 itemID;                                               // 0x02, CheckEmptySlotExist の第2引数
-  s8 owner;                                                 // 0x04, 生成時は -1。拾ったプレイヤーの番号が入る
+  s8 owner;                                                 // 0x04, 生成時は -1, 拾ったプレイヤーの番号が入る
   u8 kind;                                                  // 0x05, 0 = パーティクル表示 (FUN_080070a8), 1 = AuxSprite 表示 (FUN_08007310)
   u8 flags;                                                 // 0x06, bit0 が立つと MapItemManager_Update が解放する
-  u8 unk_7;                                                 // 0x07, FUN_08007310 の第4引数。0 以外なら AuxSprite の flags に 4 を立てる
-  u8 permanent;                                             // 0x08, 0 以外なら MapItem_UpdateOnGround の 900F の寿命を無視する。FUN_080070a8 の第7引数
-  u8 unk_9;                                                 // 0x09, FUN_08007310 の第10引数。点滅させるかどうか
+  u8 unk_7;                                                 // 0x07, FUN_08007310 の第4引数, 0 以外なら AuxSprite の flags に 4 を立てる
+  u8 permanent;                                             // 0x08, 0 以外なら MapItem_UpdateOnGround の 900F の寿命を無視する, FUN_080070a8 の第7引数
+  u8 unk_9;                                                 // 0x09, FUN_08007310 の第10引数, 点滅させるかどうか
   u8 unk_a;                                                 // 0x0A, MapItemManager_Update の点滅ステート
   u8 blinkTimer;                                            // 0x0B, MapItemManager_Update が減らし、bit3 で表示と非表示を切り替える
-  u8 unk_c;                                                 // 0x0C, 点滅のカウンタ。0x30 未満で表示、0x48 で折り返す
+  u8 unk_c;                                                 // 0x0C, 点滅のカウンタ, 0x30 未満で表示、0x48 で折り返す
   u8 retryDelay;                                            // 0x0D, MapItem_TryAutoPickup で持ちきれなかったとき 0x24
-  u8 unk_e;                                                 // 0x0E, MapItem_TryAutoPickup が毎フレーム書く。誰も範囲内にいなければ 1
+  u8 unk_e;                                                 // 0x0E, MapItem_TryAutoPickup が毎フレーム書く, 誰も範囲内にいなければ 1
   u8 shakeTimer;                                            // 0x0F, 0 でない間 MapItem_UpdateShake が pos を揺らす
   s16 shakeBaseX;                                           // 0x10, 揺らし終わりに pos->x へ戻す値
   s16 shakeBaseZ;                                           // 0x12, 同じく pos->z
   u8 unk_14;                                                // 0x14, FUN_080070a8 の第8引数
-  u8 unk_15;                                                // 0x15, FUN_08007310 の第11引数。パレットの選択と、サバタが開けられるかの判定に使う
-  s16 mapArea;                                              // 0x16, GetMapAreaAt(pos) の結果。gStat->unk_248 と一致しないと隠す
+  u8 unk_15;                                                // 0x15, FUN_08007310 の第11引数, パレットの選択と、サバタが開けられるかの判定に使う
+  s16 mapArea;                                              // 0x16, GetMapAreaAt(pos) の結果, gStat->unk_248 と一致しないと隠す
   u32 stateTimer;                                           // 0x18, update が毎フレーム +1 し、状態が変わると 0 に戻す
   Particle* ptcl;                                           // 0x1C, Malloc(0x28) = sizeof(Particle)
   AuxSprite* sprite;                                        // 0x20, Malloc(0x2C) = sizeof(AuxSprite)
@@ -69,9 +69,9 @@ typedef struct MapItemManager {
   AuxAnimFile* anim;                // 0x1C, GetFile(DIR_ANIMATION, 0x9AF2)
   SpriteID16 spriteID;              // 0x20, SPRITE_MIMIC (このスプライトはミミックと普通の宝箱を兼ねる), Video_GetAuxSprite に渡す
   u16 unk_22;                       // 0x22
-  u8 ngDelay;                       // 0x24, MapItemManager_TryOpen が SE_NG を鳴らすと 0xF。Update が減らす
+  u8 ngDelay;                       // 0x24, MapItemManager_TryOpen が SE_NG を鳴らすと 0xF, Update が減らす
   u8 unk_25[3];                     // 0x25
-  MapItem* items;                   // 0x28, 双方向リストの先頭。MapItem_Link が先頭挿入する
+  MapItem* items;                   // 0x28, 双方向リストの先頭, MapItem_Link が先頭挿入する
   Player* players[4];               // 0x2C, Init / Update が gPlayerPtr を毎フレーム写す
   PlayerScreenPos playerScreen[4];  // 0x3C, players の位置を投影したもの
 } MapItemManager;
@@ -201,7 +201,7 @@ NAKED s32 MapItem_TryAutoPickup(MapItemManager* p, MapItem* item) { INCFUNC("asm
 
 NAKED bool32 MapItemManager_TryOpen(unknown* param_1) { INCFUNC("asm/func/MapItemManager_TryOpen.inc"); }
 
-// 当たり判定マップの地面まで落ちる。着地したら跳ねる状態へ移る
+// 当たり判定マップの地面まで落ちる, 着地したら跳ねる状態へ移る
 void MapItem_UpdateFall(MapItemManager* p, MapItem* item) {
   s32 y = item->pos->y;
   Vec3* pos = item->pos;
@@ -254,7 +254,7 @@ void MapItem_UpdateFall(MapItemManager* p, MapItem* item) {
   }
 }
 
-// 着地したあと一度だけ跳ねる。跳ね終わりに影を消して待機状態へ移る
+// 着地したあと一度だけ跳ねる, 跳ね終わりに影を消して待機状態へ移る
 void MapItem_UpdateBounce(MapItemManager* p, MapItem* item) {
   Vec3* pos = item->pos;
   s32 bx = pos->x >> 8;
@@ -305,7 +305,7 @@ void MapItem_UpdateBounce(MapItemManager* p, MapItem* item) {
 
 NAKED void MapItem_UpdateAppear(MapItemManager* p, MapItem* item) { INCFUNC("asm/func/MapItem_UpdateAppear.inc"); }
 
-// 地面で揺れながら拾われるのを待つ。900F 経つか、タイルに上書きが入ると消えにいく
+// 地面で揺れながら拾われるのを待つ, 900F 経つか、タイルに上書きが入ると消えにいく
 void MapItem_UpdateOnGround(MapItemManager* p, MapItem* item) {
   if (item->permanent == 0 && item->stateTimer > 899) {
     item->update = MapItem_UpdateExpire;

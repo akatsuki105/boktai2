@@ -82,7 +82,7 @@ bool32 EntityMsgBox_EndWait(EntityMsgBox* p, u32 val);
 extern const EntityMsg* const* const* const gDemoTable[125];
 EntityMsg* DemoTable_GetMsg(s32 demoID, s32 step, s32 idx);
 
-s32 Demo_Start(void);         // 実行中のスクリプトのキーワード 'd'/'c'/'e'/'p' からデモを開始する
+s32 Demo_Start(void);         // 実行中のスクリプトの'.d'/'.c'/'.e'/'.p' からデモを開始する
 s32 Demo_Stop(void);          // 再生状態を全部クリアする
 s32 Demo_Resume(void);        // cmd 2 (Demo_CmdWaitExternal) で止まっているデモを外部から再開する
 bool32 Demo_IsRunning(void);  // 再生中なら TRUE

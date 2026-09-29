@@ -3,16 +3,16 @@
 #include "entity.h"
 #include "global.h"
 
-// 当たり判定を2本のリストで持つ。attacks 側が攻撃する方 (a, attack の頭文字)、 targets 側が攻撃される方 (b, 防御をローマ字で書くと "bougyo" なので b　にした) で、
+// 当たり判定を2本のリストで持つ, attacks 側が攻撃する方 (a, attack の頭文字)、 targets 側が攻撃される方 (b, 防御をローマ字で書くと "bougyo" なので b　にした) で、
 // Hitbox_CheckAllPairs が attacks × targets の総当たりで重なりを見る
 typedef struct {
   Entity e;                   // 0x0, ENTITY_UNK_11
-  HitboxData* targets;        // 0x18, &targetSentinel。Hitbox_Register が HBFLAG_UNK_13 なしの Hitbox をここへ繋ぐ。Hitbox_Unregister で外すまで残り続ける
-  HitboxData* attacks;        // 0x1C, &attackSentinel。Hitbox_Register が HBFLAG_UNK_13 付きの Hitbox をここへ繋ぐ。HitboxManager_Update が毎フレーム空にするので、攻撃側は毎フレーム登録し直す
-  HitboxData* targetsTail;    // 0x20, targets リストの末尾。Hitbox_LinkTarget がここに繋いで更新し、Hitbox_Unregister が末尾を外すときに戻す
-  HitboxData* attacksTail;    // 0x24, targetsTail と対になる attacks 側の末尾。Hitbox_LinkAttack が先頭挿入なので誰も読まない
-  HitboxData targetSentinel;  // 0x28, targets リストのダミー先頭ノード。next しか使われない
-  HitboxData attackSentinel;  // 0x78, attacks リストのダミー先頭ノード。next しか使われない
+  HitboxData* targets;        // 0x18, &targetSentinel, Hitbox_Register が HBFLAG_UNK_13 なしの Hitbox をここへ繋ぐ, Hitbox_Unregister で外すまで残り続ける
+  HitboxData* attacks;        // 0x1C, &attackSentinel, Hitbox_Register が HBFLAG_UNK_13 付きの Hitbox をここへ繋ぐ, HitboxManager_Update が毎フレーム空にするので、攻撃側は毎フレーム登録し直す
+  HitboxData* targetsTail;    // 0x20, targets リストの末尾, Hitbox_LinkTarget がここに繋いで更新し、Hitbox_Unregister が末尾を外すときに戻す
+  HitboxData* attacksTail;    // 0x24, targetsTail と対になる attacks 側の末尾, Hitbox_LinkAttack が先頭挿入なので誰も読まない
+  HitboxData targetSentinel;  // 0x28, targets リストのダミー先頭ノード, next しか使われない
+  HitboxData attackSentinel;  // 0x78, attacks リストのダミー先頭ノード, next しか使われない
   u16 targetCount;            // 0xC8
   u16 attackCount;            // 0xCA, 0 なら HitboxManager_Update は判定を丸ごと飛ばす
 } HitboxManager;
@@ -20,7 +20,7 @@ static_assert(sizeof(HitboxManager) == 204);
 
 IWRAM_DATA HitboxManager* gHitboxManager = NULL;  // 0x03000780
 
-// targets リストの末尾に p を繋ぐ。既に繋がっていれば何もしない
+// targets リストの末尾に p を繋ぐ, 既に繋がっていれば何もしない
 void Hitbox_LinkTarget(HitboxData* p) {
   HitboxData* q;
 
@@ -39,8 +39,8 @@ void Hitbox_LinkTarget(HitboxData* p) {
   gHitboxManager->targetCount++;
 }
 
-// attacks リストの先頭に p を繋ぐ。既に繋がっていれば何もしない
-// ループに入る前のガード (cmp/beq) が出ない。agbcc が本体先頭の q == p 判定と末尾判定をまとめて rotate してしまう
+// attacks リストの先頭に p を繋ぐ, 既に繋がっていれば何もしない
+// ループに入る前のガード (cmp/beq) が出ない, agbcc が本体先頭の q == p 判定と末尾判定をまとめて rotate してしまう
 NON_MATCH void Hitbox_LinkAttack(HitboxData* p) {
 #ifdef NONMATCHING_C
   HitboxData* q;
@@ -98,7 +98,7 @@ void Hitbox_Unregister(HitboxData* p) {
   } while (q != NULL);
 }
 
-// 当たり判定1つを作る。属性やダメージ関係は全部 0 に戻す
+// 当たり判定1つを作る, 属性やダメージ関係は全部 0 に戻す
 void Hitbox_Init(HitboxData* p, u32 id, HitboxFlags32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset) {
   p->flags = flags;
   p->unk_4 = id;
@@ -220,7 +220,7 @@ NON_MATCH void Hitbox_ApplyDamage(HitboxData* a, HitboxData* b) {
 #endif
 }
 
-// Hitbox_ApplyDamage とほぼ同じダメージ計算。gFlag030047a4 の bit11/bit14 が立っているときだけ使われる (FUN_0813e944)
+// Hitbox_ApplyDamage とほぼ同じダメージ計算, gFlag030047a4 の bit11/bit14 が立っているときだけ使われる (FUN_0813e944)
 NAKED void Hitbox_ApplyDamageAlt(HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Hitbox_ApplyDamageAlt.inc"); }
 
 // a->angle の象限から、a を b の外へ押し出す方向を out に入れる
@@ -266,7 +266,7 @@ bool32 FUN_08236bbc(Vec3* a, Vec3* b, HitboxData* p, Vec3* out) {
 
 NAKED bool32 UNUSED FUN_08236c18(void* a, void* b) { INCFUNC("asm/func/FUN_08236c18.inc"); }
 
-// 各 Hitbox の判定範囲を pos + offset で更新する。targets 側は HBFLAG_UNK_2 が立っていれば飛ばす
+// 各 Hitbox の判定範囲を pos + offset で更新する, targets 側は HBFLAG_UNK_2 が立っていれば飛ばす
 void Hitbox_UpdateBoxes(u32 attackCount, u32 targetCount, HitboxData* attacks, HitboxData* targets) {
   HitboxData *a, *b;
 
@@ -351,7 +351,7 @@ HitboxManager* HitboxManager_Create(void) {
 HitboxManager* GetHitboxManager(void) { return gHitboxManager; }
 
 // 2つの判定の直方体が重なっているかを軸ごとに見る
-// 命令列は一致するがレジスタ割り当てだけが違う。b が r5 でなく r6 に、hit が r6 でなく r3 に入る
+// 命令列は一致するがレジスタ割り当てだけが違う, b が r5 でなく r6 に、hit が r6 でなく r3 に入る
 NON_MATCH bool32 Hitbox_CheckOverlap(HitboxData* a, HitboxData* b) {
 #ifdef NONMATCHING_C
   bool32 ret;

@@ -5,39 +5,39 @@
 #include "player.h"
 #include "sprite_aux.h"
 
-// 精霊虫1匹。state で PTR_ARRAY_085aa730[kind * 5 + state] のハンドラに分岐する, 根拠: Entity0800a89c_UpdateSwarm
+// 精霊虫1匹, state で PTR_ARRAY_085aa730[kind * 5 + state] のハンドラに分岐する, 根拠: Entity0800a89c_UpdateSwarm
 typedef struct SpiritBug {
-  u8 state;           // 0x00, ハンドラの添字。0 は未使用
+  u8 state;           // 0x00, ハンドラの添字, 0 は未使用
   u8 speed;           // 0x01, gSineTable との積が速度になる, 根拠: FUN_0800b068
   u8 angle;           // 0x02, gSineTable の添字 (向き)
-  s8 turnTimer;       // 0x03, 符号が旋回方向。0 になると gRandomTable から引き直す, 根拠: FUN_0800b068 の ldrsb
-  u16 timer;          // 0x04, 状態ごとのカウンタ。生成時は寿命, 根拠: Entity0800a89c_Spawn / FUN_0800b068
-  u16 unk_6;          // 0x06, 状態遷移用の第2カウンタ (点滅回数など)。生成時は u32_ARRAY_085aa700[kind], 根拠: FUN_0800b7a0
+  s8 turnTimer;       // 0x03, 符号が旋回方向, 0 になると gRandomTable から引き直す, 根拠: FUN_0800b068 の ldrsb
+  u16 timer;          // 0x04, 状態ごとのカウンタ, 生成時は寿命, 根拠: Entity0800a89c_Spawn / FUN_0800b068
+  u16 unk_6;          // 0x06, 状態遷移用の第2カウンタ (点滅回数など), 生成時は u32_ARRAY_085aa700[kind], 根拠: FUN_0800b7a0
   Vec3 vel;           // 0x08, 毎フレーム ptcl.pos に加算される, 根拠: FUN_0800b068
-  Vec3 target;        // 0x10, 向かう先。生成時は ptcl.pos のコピー, 根拠: Entity0800a89c_Spawn / ArcTan2_8 の入力
+  Vec3 target;        // 0x10, 向かう先, 生成時は ptcl.pos のコピー, 根拠: Entity0800a89c_Spawn / ArcTan2_8 の入力
   AuxAnimState anim;  // 0x18, 根拠: FUN_08236fac に渡される
   Particle ptcl;      // 0x28, 根拠: FUN_0822da70 / Particle_Remove に渡される
 } SpiritBug;
 static_assert(sizeof(SpiritBug) == 80);
 
-// 1回の発生でまとめて出る精霊虫の群れ。Entity0800a89c_Spawn が空きスロットを探して作る
+// 1回の発生でまとめて出る精霊虫の群れ, Entity0800a89c_Spawn が空きスロットを探して作る
 typedef struct SpiritBugSwarm {
   bool8 active;       // 0x00
-  u8 aliveCount;      // 0x01, 生存中の bugs の数 (最大4)。0 になると Entity0800a89c_ReleaseSwarm で解放, 根拠: FUN_0800be38
-  u8 kind;            // 0x02, 0..2 (Sol/Luna/Dark)。PTR_ARRAY_085aa70c や gSpiritBugsSoundIDs の添字
+  u8 aliveCount;      // 0x01, 生存中の bugs の数 (最大4), 0 になると Entity0800a89c_ReleaseSwarm で解放, 根拠: FUN_0800be38
+  u8 kind;            // 0x02, 0..2 (Sol/Luna/Dark), PTR_ARRAY_085aa70c や gSpiritBugsSoundIDs の添字
   u8 amount;          // 0x03, PTR_ARRAY_085aa70c[kind](Player*, s32) の第2引数, 根拠: FUN_0800b068
   u8 soundDelay;      // 0x04, 0 になった瞬間に gSoundIDs_085aa724[kind] を鳴らす, 根拠: Entity0800a89c_Update
   u8 unk_5;           // 0x05, 読み手も書き手も未発見, padding?
-  u16 timer;          // 0x06, 生成時 40。0 になるまでプレイヤーに回収されない, 根拠: Entity0800a89c_Spawn / FUN_0800b068
+  u16 timer;          // 0x06, 生成時 40, 0 になるまでプレイヤーに回収されない, 根拠: Entity0800a89c_Spawn / FUN_0800b068
   SpiritBug bugs[4];  // 0x08
 } SpiritBugSwarm;
 static_assert(sizeof(SpiritBugSwarm) == 328);
 
-// 精霊虫 (太陽虫/月光虫/暗黒虫) をまとめて管理するエンティティ。群れを6つまで同時に持てる
+// 精霊虫 (太陽虫/月光虫/暗黒虫) をまとめて管理するエンティティ, 群れを6つまで同時に持てる
 typedef struct {
   Entity e;                  // 0x0, ENTITY_UNK_8
   bool32 isSabata;           // 0x18
-  u32 unk_1c;                // 0x1C, 毎フレーム +1。下位ビットで虫の更新を間引く, 根拠: Entity0800a89c_UpdateSwarm
+  u32 unk_1c;                // 0x1C, 毎フレーム +1, 下位ビットで虫の更新を間引く, 根拠: Entity0800a89c_UpdateSwarm
   ParticleGroup* group0;     // 0x20, PTCL_GROUP_0
   AuxAnimFile* anim;         // 0x24
   SpiritBugSwarm swarms[6];  // 0x28, 根拠: Entity0800a89c_Init / _Destroy が stride 0x148 で6回まわす
@@ -74,10 +74,10 @@ const SoundID32 gSoundIDs_085aa724[3] = {0x293, 0x292, 0x291};
 
 // --------------------------------------------
 
-// PTR_ARRAY_085aa730 の中身。frameBit/framePhase は SpiritBugsManager.unk_1c の下位ビットで、
-// screenBox は Entity0800a89c_Update がスタックに組む回収判定用の枠 (未解析)。
-// 表は kind * 5 + SpiritBug.state で引くので、横1行が1つの kind、列が state 0..4 に対応する。
-// state 1 が徘徊+回収待ち、2 がプレイヤーへの吸い寄せ、3 が点滅して消滅、4 が回収成立。state 0 は空きスロットで何もしない
+// PTR_ARRAY_085aa730 の中身, frameBit/framePhase は SpiritBugsManager.unk_1c の下位ビットで、
+// screenBox は Entity0800a89c_Update がスタックに組む回収判定用の枠 (未解析)
+// 表は kind * 5 + SpiritBug.state で引くので、横1行が1つの kind、列が state 0..4 に対応する
+// state 1 が徘徊+回収待ち、2 がプレイヤーへの吸い寄せ、3 が点滅して消滅、4 が回収成立, state 0 は空きスロットで何もしない
 typedef void (*SpiritBugHandler)(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox);
 
 void FUN_0800b064(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox);
@@ -266,7 +266,7 @@ NON_MATCH void Entity0800a89c_PurifyDarkBugs(void) {
 #endif
 }
 
-// state 0 (空きスロット) のハンドラ。何もしない
+// state 0 (空きスロット) のハンドラ, 何もしない
 void FUN_0800b064(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) {}
 
 NAKED void FUN_0800b068(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) { INCFUNC("asm/func/FUN_0800b068.inc"); }
@@ -277,7 +277,7 @@ NAKED void FUN_0800b7a0(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx,
 
 NAKED void FUN_0800ba78(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) { INCFUNC("asm/func/FUN_0800ba78.inc"); }
 
-// state 4 (プレイヤーに回収された) のハンドラ。アニメを1コマ進め、一巡したら虫を消す
+// state 4 (プレイヤーに回収された) のハンドラ, アニメを1コマ進め、一巡したら虫を消す
 NON_MATCH void Entity0800a89c_UpdateCollectedBug(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox) {
 #ifdef NONMATCHING_C
   SpiritBug* bug = &swarm->bugs[bugIdx];

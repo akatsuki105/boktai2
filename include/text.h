@@ -30,7 +30,7 @@ typedef struct {
   u8 rectW;          // 0x004, TextRenderer_SetRect の第4引数
   u8 rectH;          // 0x005, TextRenderer_SetRect の第5引数
   u8 unk_06;         // 0x006, FUN_08049640 が stackDepth と一緒に 0 を入れる
-  u8 mode;           // 0x007, TextRenderer_Advance がこれで分岐する,  0 なら text、 1 なら textAlt を進める
+  u8 mode;           // 0x007, TextRenderer_Advance がこれで分岐する, 0 なら text、 1 なら textAlt を進める
   u8 unk_08;         // 0x008, FUN_08049668 が速度を読む直前に 0 を入れる
   u8 speed;          // 0x009, FUN_08049668 が gStat->unk_12 (メッセージ速度設定) を入れる, 0x0C にも同じ値を複製する
   u8 unk_0a;         // 0x00A, TextRenderer_Init が 0 を入れる

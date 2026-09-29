@@ -16,7 +16,7 @@ IWRAM_DATA u8 gSioSendBuf[64] = {};   // 0x030007E0
 
 IWRAM_DATA u8 u8_03000820[0x030016A0 - 0x03000820] = {};
 
-// アニメーションの再生を開始する。同じアニメを同じ向きで再生中なら flags だけ更新して FALSE を返す, リネーム案: Anim_Play
+// アニメーションの再生を開始する, 同じアニメを同じ向きで再生中なら flags だけ更新して FALSE を返す, リネーム案: Anim_Play
 NON_MATCH bool32 FUN_08236fac(AuxAnimState* p, AuxAnimFile* files, u16 animIdx, u8 variant, AuxAnimPlayFlags flags) {
 #ifdef NONMATCHING_C
   AuxAnim* a;
@@ -56,13 +56,13 @@ playing:
 #endif
 }
 
-// 同じアニメでも必ず先頭から再生し直す。cmdCount を 0 にして FUN_08236fac の「再生中なら再開しない」判定を外す, リネーム案: Anim_Restart
+// 同じアニメでも必ず先頭から再生し直す, cmdCount を 0 にして FUN_08236fac の「再生中なら再開しない」判定を外す, リネーム案: Anim_Restart
 bool32 FUN_08237040(AuxAnimState* p, AuxAnimFile* files, u16 animIdx, u8 variant, AuxAnimPlayFlags flags) {
   p->cmdCount = 0;
   return FUN_08236fac(p, files, animIdx, variant, flags);
 }
 
-// 1コマの表示時間を変更する。経過 tick を新旧の比率で配分し直すので進行の割合は保たれる, リネーム案: Anim_SetWait
+// 1コマの表示時間を変更する, 経過 tick を新旧の比率で配分し直すので進行の割合は保たれる, リネーム案: Anim_SetWait
 bool32 FUN_08237064(AuxAnimState* p, u16 val) {
   if (p->wait == 0) {
     p->wait = 1;

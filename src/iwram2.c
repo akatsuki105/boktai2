@@ -51,7 +51,7 @@ IWRAM_DATA struct Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
 IWRAM_DATA struct EntityCBB0* gEntityCBB0 = NULL;          // 0x03002C58
 
 IWRAM_DATA struct EnemyManager* gEnemyManager = NULL;    // 0x03002C5C
-IWRAM_DATA struct EnemyListNode* gEnemyListHead = NULL;  // 0x03002C60, 生存中のエネミーの単方向リスト. EnemyManager.list と同じ値
+IWRAM_DATA struct EnemyListNode* gEnemyListHead = NULL;  // 0x03002C60, 生存中のエネミーの単方向リスト, EnemyManager.list と同じ値
 IWRAM_DATA struct LinkConnect* gLinkConnect = NULL;      // 0x03002C64
 IWRAM_DATA struct Entity9A9F* gEntity9A9F = NULL;        // 0x03002C68
 
@@ -63,7 +63,7 @@ IWRAM_DATA u8 u8_03002c84[0x03002CA0 - 0x03002C84] = {};  // todo
 
 IWRAM_DATA vu16* gHBlankEffectReg = NULL;  // 0x03002CA0, HBlank 毎に gHBlankEffectBuffer の値を書き込む I/O レジスタ, 根拠: FUN_0822f0d8, FUN_0822eef4
 
-IWRAM_DATA s32 gOamDirty = 0;  // 0x03002CA4, MainSprite_DrawInternal / FUN_0822db5c が bit0 を立て、VideoCommit_Update が gOAMBuffer を OAM へ転送して落とす。bit0 以外は使われていない
+IWRAM_DATA s32 gOamDirty = 0;  // 0x03002CA4, MainSprite_DrawInternal / FUN_0822db5c が bit0 を立て、VideoCommit_Update が gOAMBuffer を OAM へ転送して落とす, bit0 以外は使われていない
 
 IWRAM_DATA s32 s32_03002ca8 = 0;  // 0x03002CA8, 0 以外だと VideoCommit_Update が DISPCNT の表示ビットを組み直さない
 
@@ -94,13 +94,13 @@ IWRAM_DATA u8 u8_03003524[0x03003530 - 0x03003524] = {};  // todo
 
 IWRAM_DATA u32 gSpriteListIdx = 0;  // 0x03003530, 描画リストの選択 (0: 通常, 1: スタートメニュー中)
 
-IWRAM_DATA Procedure gDrawAuxSprites = NULL;  // 0x03003534, VideoRender_Update が1番目に呼ぶ描画パス。gAuxSpriteLists を辿る。場面ごとに Video_SetDrawPasses が差し替え、止めるときは nop_0822b09c が入る
+IWRAM_DATA Procedure gDrawAuxSprites = NULL;  // 0x03003534, VideoRender_Update が1番目に呼ぶ描画パス, gAuxSpriteLists を辿る, 場面ごとに Video_SetDrawPasses が差し替え、止めるときは nop_0822b09c が入る
 IWRAM_DATA u8 u8_03003538[8] = {};            // 16byte alignment padding?
 
 IWRAM_DATA CameraCoords gCameraCoords = {};  // 0x03003540
 
-IWRAM_DATA Procedure gDrawParticles = NULL;    // 0x03003554, VideoRender_Update が3番目に呼ぶ描画パス。gParticleLists を辿る。止めるときは nop_0822e738 が入る
-IWRAM_DATA Procedure gDrawMainSprites = NULL;  // 0x03003558, VideoRender_Update が2番目に呼ぶ描画パス。gMainSpriteLists を辿る
+IWRAM_DATA Procedure gDrawParticles = NULL;    // 0x03003554, VideoRender_Update が3番目に呼ぶ描画パス, gParticleLists を辿る, 止めるときは nop_0822e738 が入る
+IWRAM_DATA Procedure gDrawMainSprites = NULL;  // 0x03003558, VideoRender_Update が2番目に呼ぶ描画パス, gMainSpriteLists を辿る
 IWRAM_DATA u8 u8_0300355c[4] = {};             // 16byte alignment padding?
 
 IWRAM_DATA AuxSprite* gAuxSpriteLists[2] = {};    // 0x03003560
@@ -115,7 +115,7 @@ IWRAM_DATA u16 u16_0300357e = 0;         // todo
 IWRAM_DATA u16 gObjPlttLen = 0;          // 0x03003580, = ObjPlttFile.length
 IWRAM_DATA rgb555* gObjPlttData = NULL;  // 0x03003584, = ObjPlttFile.body
 
-IWRAM_DATA s16 gObjTileCursor = 0;  // 0x03003588, 次に確保する OBJ VRAM のタイル番号 (上限 0x400). Video_ResetObjTileAlloc で gParticleFileTileCount に戻される
+IWRAM_DATA s16 gObjTileCursor = 0;  // 0x03003588, 次に確保する OBJ VRAM のタイル番号 (上限 0x400), Video_ResetObjTileAlloc で gParticleFileTileCount に戻される
 
 IWRAM_DATA ParticleFile* gParticleFile = NULL;         // 0x0300358C, 現在ロードされているParticleFileへのポインタ, ParticleFile は ParticleFile0 しかないので NULL or &ParticleFile0 になるはず
 IWRAM_DATA u16 gParticle_03003590 = 0;                 // 0x03003590, まだ不明
@@ -184,12 +184,12 @@ IWRAM_DATA u32 gOAMShapeSizeAttrTable[16] = {};  // 0x03003FF0, OAM0.14-15(shape
 IWRAM_DATA u8 gOAMWidthTable[16] = {};           // 0x03004030, ピクセル単位
 
 IWRAM_DATA s32 s32_03004040 = 0;        // 0x03004040, MapPltt_FadeIn / MapPltt_FadeOut が明るさとして書く
-IWRAM_DATA s32 gObjPlttSlotCursor = 0;  // 0x03004044, gObjPlttSlotIDs の確保位置 (最大 16)。FUN_0822d114 が毎フレーム s32_03004450 + 2 に戻す, 根拠: FUN_0822d190 (FUN_0822d12c は gObjPlttSlotCount の方を使う)
+IWRAM_DATA s32 gObjPlttSlotCursor = 0;  // 0x03004044, gObjPlttSlotIDs の確保位置 (最大 16), FUN_0822d114 が毎フレーム s32_03004450 + 2 に戻す, 根拠: FUN_0822d190 (FUN_0822d12c は gObjPlttSlotCount の方を使う)
 IWRAM_DATA s32 s32_03004048 = 0;        // 0x03004048, Entity4AE5_Init が 0x40 を書く
 IWRAM_DATA s32 s32_0300404c = 0;        // 0x0300404C, FUN_0822d014 が 0x40 を書く
 
 IWRAM_DATA rgb555 gObjectPlttBuffer[256] = {};  // 0x03004050, CommitPalette で OBJ_PLTT にコピーされる
-IWRAM_DATA rgb555 gBgPlttBuffer[256] = {};      // 0x03004250, BG パレットの作業用バッファ。ゲーム側はここに書き、加工が要らなければこのまま CommitPalette の転送元になる
+IWRAM_DATA rgb555 gBgPlttBuffer[256] = {};      // 0x03004250, BG パレットの作業用バッファ, ゲーム側はここに書き、加工が要らなければこのまま CommitPalette の転送元になる
 
 IWRAM_DATA s32 s32_03004450 = 0;        // 0x03004450, FUN_0822d114 が gObjPlttSlotCursor = これ + 2 として 0 に戻す
 IWRAM_DATA u16 gBgPlttFadeRowMask = 0;  // 0x03004454, bit i が立っているパレット行だけ FUN_0822d630 が明るさ・ブレンドを掛ける, 書き手: Entity4AE5_Init/Update
@@ -214,7 +214,7 @@ IWRAM_DATA u16 gObjPlttSlotIDs[16] = {};  // 0x03004470, 各 OBJ パレットス
 IWRAM_DATA u16 u16_03004490 = 0;  // 0x03004490, FUN_0822d014 が 0 を書く
 
 IWRAM_DATA u8 u8_03004492[2] = {};     // todo
-IWRAM_DATA u16 gBgPlttBlendColor = 0;  // 0x03004494, FUN_0822d630 が各色をこの色へ寄せる。0 なら明るさだけ掛ける, 書き手: MapPltt_FadeOut (明転の完了時に 0x1084), FUN_0822d014
+IWRAM_DATA u16 gBgPlttBlendColor = 0;  // 0x03004494, FUN_0822d630 が各色をこの色へ寄せる, 0 なら明るさだけ掛ける, 書き手: MapPltt_FadeOut (明転の完了時に 0x1084), FUN_0822d014
 IWRAM_DATA u8 u8_03004496[2] = {};     // todo
 
 IWRAM_DATA u8 gMosaicTargets = 0;                       // 0x03004498, bit0-3: BG0-3 の BGnCNT.6 を立てる, bit4: MOSAIC の OBJ 側(bit8-15)も書く, 根拠: Video_ApplyMosaic
@@ -283,7 +283,7 @@ IWRAM_DATA u32 gFlag030047a4 = 0;
 IWRAM_DATA SystemSaveData* gSystemSaveData = NULL;
 IWRAM_DATA u8 u8_030047ac[8] = {};            // todo
 IWRAM_DATA u32 u32_030047b4 = 0;              // 0x030047B4, Save_WriteCore でセーブ成功時に 1 がセットされる
-IWRAM_DATA bool32 gSoftResetInhibit = FALSE;  // 0x030047B8, 立てたフレームはソフトリセットのコマンド判定を飛ばす。Entity0823acbc_Update が読んで 0 に戻す
-IWRAM_DATA u32 u32_030047bc = 0;              // 0x030047BC, Entity0823acbc_Update が ENTITY_DISABLE_1 が落ちている間だけ毎フレーム +1 する。読み手は未発見
-IWRAM_DATA u32 u32_030047c0 = 0;              // 0x030047C0, FUN_0823ACBC と FUN_0823CD04 の一括クリアでしか触られない。読み手も本来の書き手も未発見
-IWRAM_DATA u32 u32_030047c4 = 0;              // 0x030047C4, Entity0823acbc_Update が 0 を書くほかは一括クリアのみ。読み手は未発見
+IWRAM_DATA bool32 gSoftResetInhibit = FALSE;  // 0x030047B8, 立てたフレームはソフトリセットのコマンド判定を飛ばす, Entity0823acbc_Update が読んで 0 に戻す
+IWRAM_DATA u32 u32_030047bc = 0;              // 0x030047BC, Entity0823acbc_Update が ENTITY_DISABLE_1 が落ちている間だけ毎フレーム +1 する, 読み手は未発見
+IWRAM_DATA u32 u32_030047c0 = 0;              // 0x030047C0, FUN_0823ACBC と FUN_0823CD04 の一括クリアでしか触られない, 読み手も本来の書き手も未発見
+IWRAM_DATA u32 u32_030047c4 = 0;              // 0x030047C4, Entity0823acbc_Update が 0 を書くほかは一括クリアのみ, 読み手は未発見

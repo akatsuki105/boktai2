@@ -29,14 +29,14 @@ typedef struct {
   u8 unk_e28[48];          // 0xE28
   u8 unk_e58[244];         // 0xE58, _Init が FUN_080b99a0(&unk_e58), _Destroy が FUN_080b9a0c(&unk_e58) に渡す
   WeaponData weaponData;   // 0xF4C, record[0x40] が 2 なら GUN_DEL_HELL を直接書き、そうでなければ FUN_08242b14(slot, &weaponData)
-  s8 slot;                 // 0xF70, record[0x17]。負なら武器を読まない
+  s8 slot;                 // 0xF70, record[0x17], 負なら武器を読まない
   u8 weaponKindMask;       // 0xF71, GetWeaponKind(slot) を16スロット分見て bit0..3 を立てる, record[0x40] が 2 なら 0xF
   u16 unk_f72;             // 0xF72, FUN_0809ce90 が状態遷移のたびに 0 を入れる
   u32 unk_f74;             // 0xF74, _Init が 0x1E を入れる
   u8 unk_f78[12];          // 0xF78
   void* unk_f84;           // 0xF84, FUN_0809ce90 が GetFile の戻り値か 0 を入れる
   void* unk_f88;           // 0xF88, 同上
-  EntityFunc fn;           // 0xF8C, _Update が毎フレーム呼ぶ。_Init が 0x0809D3D0 を入れる
+  EntityFunc fn;           // 0xF8C, _Update が毎フレーム呼ぶ, _Init が 0x0809D3D0 を入れる
 } Entity1B24;
 static_assert(sizeof(Entity1B24) == 3984);
 

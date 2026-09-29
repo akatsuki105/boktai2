@@ -16,7 +16,7 @@ typedef struct {
   u16 unk_6;        // 0x6
 } EepromTrailer;
 
-// EEPROM (64Kbit = 8192 バイト) 上のセーブデータの配置。ドキュメント用でビルドには使わない
+// EEPROM (64Kbit = 8192 バイト) 上のセーブデータの配置, ドキュメント用でビルドには使わない
 // EEPROM のアドレスは 8 バイト単位のブロック番号で、各データは 8 の倍数に切り上げた長さ + トレーラーで書かれる
 // Core / Extra はスロット 0/1 の 2 つずつあり、gSystemSaveData->currentSlot が今のスロットを指す
 typedef struct {
@@ -106,7 +106,7 @@ bool8 Save_WriteSystemData(void) {
   return TRUE;
 }
 
-// EEPROM の先頭から gSystemSaveData を読み込む。読めなければゼロクリアする
+// EEPROM の先頭から gSystemSaveData を読み込む, 読めなければゼロクリアする
 bool8 Save_ReadSystemData(void) {
   s32 len = FUN_08243648(sizeof(SystemSaveData));
   if (EEPROM_ReadRetry(0, gSystemSaveData, len) < 0) {

@@ -18,9 +18,9 @@ typedef struct TextBox {
   u8 rectY;                // 0x179, '.r' の2番目
   u8 rectW;                // 0x17A, '.r' の3番目
   u8 rectH;                // 0x17B, '.r' の4番目
-  s16 lineIdx;             // 0x17C, '.i', TextBox_GetLine(p, lineIdx) が行頭ポインタを返す。次の行へ進むとき +1
+  s16 lineIdx;             // 0x17C, '.i', TextBox_GetLine(p, lineIdx) が行頭ポインタを返す, 次の行へ進むとき +1
   bool8 unk_17e;           // 0x17E, 0 なら fn = TextBox_StateType (1文字ずつ表示), 0 以外なら unk_198 を 0 にして fn = TextBox_StateRenderAll
-  u8 unk_17f;              // 0x17F, 入力待ちのフラグらしい。キー状態の bit1 が入る
+  u8 unk_17f;              // 0x17F, 入力待ちのフラグらしい, キー状態の bit1 が入る
   s8 shownFace;            // 0x180, 顔スプライトに実際に反映済みの renderer.face, 食い違うと TextBox_RefreshFace が貼り直す
   u8 unk_181;              // 0x181, TextBox_Init が 0 を入れるだけ
   u8 autoAdvance;          // 0x182, TextBox_EnableAutoAdvance (TextBox_SetAutoAdvance) の第1引数
@@ -28,9 +28,9 @@ typedef struct TextBox {
   u16 autoAdvanceDelay;    // 0x184, TextBox_SetAutoAdvance の第2引数, autoAdvanceTimer がこれ以上になると次へ進む
   u16 autoAdvanceTimer;    // 0x186, 毎フレーム +1
   s32 waitFrames;          // 0x188, 次の行へ進む前に待つフレーム数, '.l' で初期化し、TextBox_Update が毎フレーム renderer.unk_18 で上書きする
-  u32 waitTimer;           // 0x18C, waitFrames の経過フレーム数。TextBox_StateWaitInput が waitFrames に達するまで +1 し、達したら両方 0 に戻す
+  u32 waitTimer;           // 0x18C, waitFrames の経過フレーム数, TextBox_StateWaitInput が waitFrames に達するまで +1 し、達したら両方 0 に戻す
   FileID bgPlttFileID;     // 0x190, '.c=0x519C', TextBox_LoadBgPltt が GetFile(BGPLTT, id) に渡した ID
-  s16 pendingLine;         // 0x192, 次に表示する行。-1 なら何もしない。TextBox_Update がこれを TextBox_ShowLine に渡す
+  s16 pendingLine;         // 0x192, 次に表示する行, -1 なら何もしない, TextBox_Update がこれを TextBox_ShowLine に渡す
   u32 unk_194;             // 0x194, '.m', TextBox_SetAutoAdvance の第3引数
   u32 unk_198;             // 0x198, 表示が終わると 1 になり TextBox_IsFinished が返す
   u8 unk_19c[4];           // 0x19C

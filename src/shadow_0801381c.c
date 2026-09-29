@@ -72,7 +72,7 @@ void ParticleShadow_UpdateNone(ParticleShadow* shadow) {}
 // 持ち主の足元の床の高さに影を置き、床がない・持ち主より高い・特定の床なら非表示にする, リネーム案: Shadow_FollowGround
 NON_MATCH void ParticleShadow_FollowGround(ParticleShadow* shadow) {
 #ifdef NONMATCHING_C
-  s32 idx;  // 元は idx が r7、ptcl が r6。この形だと逆になる
+  s32 idx;  // 元は idx が r7、ptcl が r6, この形だと逆になる
   Particle* ptcl = &shadow->particle;
   Vec3* dst = &shadow->particle.pos;
   Vec3* pos = shadow->pos;

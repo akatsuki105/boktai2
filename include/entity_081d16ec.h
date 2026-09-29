@@ -13,7 +13,7 @@ typedef u16 Entity081d16ecItemFlags;  // Entity081d16ecItem.flags
 #define E081D16EC_FLAG_3 (1 << 3)     // まだ不明
 #define E081D16EC_FLAG_4 (1 << 4)     // まだ不明
 
-// Entity081d16ec が抱える要素。スプライトとヒットボックスを1つずつ持つ
+// Entity081d16ec が抱える要素, スプライトとヒットボックスを1つずつ持つ
 typedef struct Entity081d16ecItem {
   AuxSprite sprite;               // 0x00, Entity081d16ec_Destroy が要素そのものを AuxSprite_Remove に渡す
   AuxAnimState anim;              // 0x2C, FUN_08236fac で再生する

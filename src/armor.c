@@ -161,7 +161,7 @@ NON_MATCH void armor_082433bc(void) {
 #endif
 }
 
-// 収集数を数える。ロックマン系のコラボ装備4つ (33..36) は数に入れない
+// 収集数を数える, ロックマン系のコラボ装備4つ (33..36) は数に入れない
 s32 CountFoundArmors(void) {
   s32 i;
   s32 count = 0;

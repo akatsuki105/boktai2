@@ -11,7 +11,7 @@
 struct Entity08080be8;
 typedef void (*Entity08080be8Func)(struct Entity08080be8* p);
 
-// Entity08080be8_SpawnParticle が1個ずつ撒く粒子。4個を順に使い回す
+// Entity08080be8_SpawnParticle が1個ずつ撒く粒子, 4個を順に使い回す
 typedef struct {
   Particle base;   // 0x00, FUN_0822d9f0 や Particle_Remove に Particle* として渡る
   bool8 active;    // 0x28, Entity08080be8_SpawnParticle が 1 にし、Entity08080be8_UpdateParticles が寿命で 0 に戻す, 0 の間は動かさない
@@ -22,7 +22,7 @@ typedef struct {
 } Entity08080be8Particle;
 static_assert(sizeof(Entity08080be8Particle) == 48);
 
-// プレイヤーの周りに粒子を撒きながら当たり判定を出すエフェクト。ENE を消費し、チャージ量で威力と絵が変わる
+// プレイヤーの周りに粒子を撒きながら当たり判定を出すエフェクト, ENE を消費し、チャージ量で威力と絵が変わる
 typedef struct Entity08080be8 {
   Entity e;                           // 0x000, ENTITY_UNK_8
   Player* player;                     // 0x018, Init の第1引数
@@ -30,17 +30,17 @@ typedef struct Entity08080be8 {
   AuxSpriteGfx gfx;                   // 0x048, SPRITE_210E
   HitboxData hitbox;                  // 0x064, Entity08080be8_SetupHitbox が組み立て、位置は sprite.pos を見る
   Vec3 offset;                        // 0x0B4, Entity08080be8_Reposition が offsetRadius から x と z を作り、Entity08080be8_StateImpact が sprite.pos に足す
-  u16 heightOffset;                   // 0x0BC, Init の第3引数。Entity08080be8_Reposition が sprite.pos.y に足す
-  u16 unk_be;                         // 0x0BE, Init の第4引数。Entity08080be8_Reposition で gSineTable に掛ける
-  u16 unk_c0;                         // 0x0C0, Init の第5引数。unk_be と対で使う
-  u16 offsetRadius;                   // 0x0C2, Init の第6引数。offset.x と offset.z の大きさ
-  u16 eneCost;                        // 0x0C4, Init の第12引数。Entity08080be8_PayENE が Player_ReduceENE_0807aa60 に渡す
+  u16 heightOffset;                   // 0x0BC, Init の第3引数, Entity08080be8_Reposition が sprite.pos.y に足す
+  u16 unk_be;                         // 0x0BE, Init の第4引数, Entity08080be8_Reposition で gSineTable に掛ける
+  u16 unk_c0;                         // 0x0C0, Init の第5引数, unk_be と対で使う
+  u16 offsetRadius;                   // 0x0C2, Init の第6引数, offset.x と offset.z の大きさ
+  u16 eneCost;                        // 0x0C4, Init の第12引数, Entity08080be8_PayENE が Player_ReduceENE_0807aa60 に渡す
   u8 unk_c6[2];                       // 0x0C6
-  Facing8 dir;                        // 0x0C8, プレイヤーの向きから作る 0..7 の方向。8bit角度の基準になる
-  u8 charge;                          // 0x0C9, player の 0xA8F の写し。damage を 1 + charge/2 倍にし、sprite.metaspriteIdx にも入る
+  Facing8 dir;                        // 0x0C8, プレイヤーの向きから作る 0..7 の方向, 8bit角度の基準になる
+  u8 charge;                          // 0x0C9, player の 0xA8F の写し, damage を 1 + charge/2 倍にし、sprite.metaspriteIdx にも入る
   u16 timer;                          // 0x0CA, Entity08080be8_SetState が状態を変えるたび 0 に戻し、各状態が毎フレーム +1 する
-  u8 ptclIdx;                         // 0x0CC, 次に撒く ptcls の添字。4 で 0 に戻る
-  u8 unk_cd;                          // 0x0CD, Init の第13引数。hitbox のオフセットを変え、0 以外なら damage が 8 固定になる
+  u8 ptclIdx;                         // 0x0CC, 次に撒く ptcls の添字, 4 で 0 に戻る
+  u8 unk_cd;                          // 0x0CD, Init の第13引数, hitbox のオフセットを変え、0 以外なら damage が 8 固定になる
   u8 unk_ce[2];                       // 0x0CE, padding?
   ParticleGroup* group;               // 0x0D0, PTCL_GROUP_2
   Entity08080be8Particle ptcls[4];    // 0x0D4, 根拠: Entity08080be8_SetupParticles / Entity08080be8_ClearParticles / _Destroy の stride 0x30 × 4 のループ
@@ -88,7 +88,7 @@ NON_MATCH void Entity08080be8_Reposition(Entity08080be8* p) {
 #endif
 }
 
-// 撒いた粒子を寿命まで動かす。距離が毎フレーム縮むので中心へ吸い込まれていく
+// 撒いた粒子を寿命まで動かす, 距離が毎フレーム縮むので中心へ吸い込まれていく
 NON_MATCH void Entity08080be8_UpdateParticles(Entity08080be8* p) {
 #ifdef NONMATCHING_C
   s32 dirBase = ((p->dir + 5) & 7) * 32;
@@ -179,7 +179,7 @@ s32 Entity08080be8_GetDamage(Entity08080be8* p) {
   return dmg + ((dmg * p->charge) >> 1);
 }
 
-// ジャンゴ側の溜め状態。溜め中は粒子を出しつつ4フレームおきに絵を切り替え、発射で StateFly へ
+// ジャンゴ側の溜め状態, 溜め中は粒子を出しつつ4フレームおきに絵を切り替え、発射で StateFly へ
 NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
 #ifdef NONMATCHING_C
   u8 state;
@@ -220,7 +220,7 @@ NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
 #endif
 }
 
-// サバタ側の溜め状態。溜め中は粒子を出し、発射で StateFly へ、中断なら消える
+// サバタ側の溜め状態, 溜め中は粒子を出し、発射で StateFly へ、中断なら消える
 NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
 #ifdef NONMATCHING_C
   if (p->player->unk_37c == 3) {
@@ -285,7 +285,7 @@ void Entity08080be8_StateFly(Entity08080be8* p) {
   }
 }
 
-// 着弾の短い演出。4フレーム目に向きに合わせた絵と反転を決め、7フレーム目で消える
+// 着弾の短い演出, 4フレーム目に向きに合わせた絵と反転を決め、7フレーム目で消える
 NON_MATCH void Entity08080be8_StateImpact(Entity08080be8* p) {
 #ifdef NONMATCHING_C
   p->timer++;
@@ -344,7 +344,7 @@ void Entity08080be8_SetupSprite(Entity08080be8* p, s32 plttID) {
   Video_SetAuxSpritePltt(&p->gfx, plttID);
 }
 
-// 当たり判定を組み立てる。unk_cd が立っているときだけ判定を一段高い位置に置く
+// 当たり判定を組み立てる, unk_cd が立っているときだけ判定を一段高い位置に置く
 void Entity08080be8_SetupHitbox(Entity08080be8* p, u32 hitboxUnk40, HitboxAttributes attrs, u32 hitboxUnk44) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 offset, halfSize;

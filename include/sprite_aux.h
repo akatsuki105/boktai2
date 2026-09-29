@@ -97,7 +97,7 @@ typedef struct AuxSprite {
   u8 spriteHeight;         // 0x15, gOAMHeightTable[AuxSpriteGfx.unk_1]
   s8 offsetX;              // 0x16, フリップ時に符号反転して座標に加算される
   s8 offsetY;              // 0x17, 同上
-  u32 oamAttr;             // 0x18, OAM attr0 | attr1<<16 のベース値. MainSprite.oamAttr(0x3C) と同じ役割
+  u32 oamAttr;             // 0x18, OAM attr0 | attr1<<16 のベース値, MainSprite.oamAttr(0x3C) と同じ役割
   Vec3 pos;                // 0x1C, MainSprite.pos と同じアイソメトリック投影にかけられる
   struct AuxSprite* prev;  // 0x24
   struct AuxSprite* next;  // 0x28

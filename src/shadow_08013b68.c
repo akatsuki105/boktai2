@@ -139,7 +139,7 @@ NON_MATCH void AuxShadow_FollowGround(AuxShadow* shadow) {
     } else {
       tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
     }
-    if (!(((u16*)tile)[1] & 0x20)) {  // 元は読んだ値が r0、0x20 が r1。この形だと逆になる
+    if (!(((u16*)tile)[1] & 0x20)) {  // 元は読んだ値が r0、0x20 が r1, この形だと逆になる
       goto show;
     }
   }

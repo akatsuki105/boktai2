@@ -21,7 +21,7 @@ extern u16 u16_03004490;
 
 rgb555* FUN_0822d00c(void) { return gBgPlttBlendBuffer; }
 
-// パレット系の状態を初期化する。OBJ パレットバッファとスロット表を空にし、
+// パレット系の状態を初期化する, OBJ パレットバッファとスロット表を空にし、
 // BG パレットの転送元を gBgPlttBuffer に戻して明るさとブレンド色を既定値に戻す
 // 引数はどちらも使っていない
 NON_MATCH void FUN_0822d014(rgb555* pltt, s32 val) {

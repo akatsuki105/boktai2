@@ -3,7 +3,7 @@
 
 #include "gba/gba.h"
 
-// このゲームのすべてのものはEntityで表される。
+// このゲームのすべてのものはEntityで表される
 
 // idx for gEntityManager, 0x03004520
 typedef u8 EntityKind;

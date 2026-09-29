@@ -25,7 +25,7 @@ typedef struct {
 } EntityEC96;
 static_assert(sizeof(EntityEC96) == 216);
 
-// 被弾時に呼ばれる。破壊できる相手なら hp を削って 0 未満で壊し、そうでなければ点滅させるだけ
+// 被弾時に呼ばれる, 破壊できる相手なら hp を削って 0 未満で壊し、そうでなければ点滅させるだけ
 NON_MATCH void FUN_08013288(HitboxData* a, HitboxData* b, EntityEC96* p) {
 #ifdef NONMATCHING_C
   Hitbox_ApplyDamage(a, b);

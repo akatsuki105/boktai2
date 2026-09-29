@@ -7,10 +7,10 @@
 typedef struct {
   Entity e;               // 0x000, ENTITY_UNK_3
   TextRenderer renderer;  // 0x018, EntityDFC6_Init が FUN_0804967C(&renderer, 0, 0x12, 2, 2) で初期化する
-  bool8 active;           // 0x178, FUN_08049C3C が立てて DAT_03003520 も 1 にする。FUN_08049C78 が両方戻す
+  bool8 active;           // 0x178, FUN_08049C3C が立てて DAT_03003520 も 1 にする, FUN_08049C78 が両方戻す
   bool8 openReq;          // 0x179, _Update が FUN_08049C3C を呼んでから 0 に戻す
   bool8 closeReq;         // 0x17A, _Update が FUN_08049C78 を呼んでから 0 に戻す
-  bool8 manualScroll;     // 0x17B, 0 なら offset を 8 単位で進める。0 以外なら delay と SELECT で進める
+  bool8 manualScroll;     // 0x17B, 0 なら offset を 8 単位で進める, 0 以外なら delay と SELECT で進める
   u8 delay;               // 0x17C, FUN_0804990C が 30 を入れ、FUN_0804996C が手動側で減らす
   u8 unk_17d;             // 0x17D, FUN_0804990C が 0 を入れる
   u8 unk_17e[2];          // 0x17E, 読み手も書き手も見つかっていない

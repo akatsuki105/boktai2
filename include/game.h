@@ -44,7 +44,7 @@ typedef struct {
   BCDDate date;                  // 0x198
   s32 hour;                      // 0x19C, ReflectClock / ApplyDayRollover が gClock.sunset と符号付きで比べる
   s32 minute;                    // 0x1A0, 同上
-  bool32 isBeforeSunset;         // 0x1A4, ReflectClock が現在時刻 < gClock.sunset のとき立てる。ApplyDayRollover が日付をまたいだ判定に使う
+  bool32 isBeforeSunset;         // 0x1A4, ReflectClock が現在時刻 < gClock.sunset のとき立てる, ApplyDayRollover が日付をまたいだ判定に使う
   Datetime overheatTime;         // 0x1A8
   s16 unk_1b8;                   // 0x1B8
   s16 heatstroke;                // 0x1BA, オーバーヒート時に太陽ゲージが3以上あると増える, 5000を超えると気絶
@@ -55,7 +55,7 @@ typedef struct {
   u32 loan_1d4;                  // 0x1D4
   u32 treeExp;                   // 0x1D8, リザルト画面の "ENERGY" でもある
   u8 unk_1dc[4];                 // 0x1DC
-  s32 unk_1e0;                   // 0x1E0, ApplySunlightGain が sunGauge を足し続ける。treeExp と同じ 0x7FFFFFFF 飽和
+  s32 unk_1e0;                   // 0x1E0, ApplySunlightGain が sunGauge を足し続ける, treeExp と同じ 0x7FFFFFFF 飽和
   s32 unk_1e4;                   // 0x1E4, unk_1e0 を更新した回数
   u8 unk_1e8[6];                 // 0x1E8
   u16 titles;                    // 0x1EE, 獲得した称号のビットマスク
@@ -108,7 +108,7 @@ typedef struct {
   u16 solarBank;                 // 0x910
   u8 unk_912[2];                 // 0x912
   u16 linkBattles;               // 0x914, 根拠: bokpass
-  s16 unk_916;                   // 0x916, FUN_081dd25c が通信参加のたびに 1 増やす (9999 で頭打ち)。linkBattles の隣
+  s16 unk_916;                   // 0x916, FUN_081dd25c が通信参加のたびに 1 増やす (9999 で頭打ち), linkBattles の隣
   u8 unk_918[8];                 // 0x918, bokpass に記述があるが、用途も型も不明
   u32 weaponDex[2];              // 0x920
   //

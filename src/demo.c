@@ -1,18 +1,18 @@
 #include "global.h"
 #include "msgbus.h"
 
-// デモ(イベント/カットシーン)スクリプト。EntityMsgBus がこれを読んで各エンティティにメッセージを配る。
-// 構造は デモ表[demoID] -> デモ[step] -> ステップ[i] -> メッセージ の4段で、DemoTable_GetMsg が引く。
+// デモ(イベント/カットシーン)スクリプト, EntityMsgBus がこれを読んで各エンティティにメッセージを配る
+// 構造は デモ表[demoID] -> デモ[step] -> ステップ[i] -> メッセージ の4段で、DemoTable_GetMsg が引く
 //
 // ROM の並びが 段ごとのまとまり (メッセージ本体 -> ステップ -> デモ -> デモ表) なので、
-// 1つのデモのデータはこのファイルの4箇所に分かれている。タイムラインとして読めるのは
-// 最初の「メッセージ本体」の領域で、そこはデモ順・ステップ順に並んでいる。
+// 1つのデモのデータはこのファイルの4箇所に分かれている, タイムラインとして読めるのは
+// 最初の「メッセージ本体」の領域で、そこはデモ順・ステップ順に並んでいる
 //
-// tools/dumper/demo_script.ts が baserom.gba から生成したもの。以降は手で名前を育ててよい。
+// tools/dumper/demo_script.ts が baserom.gba から生成したもの, 以降は手で名前を育ててよい
 
 // ---- メッセージの実体 ----
-// 可変長で、実体サイズは 8 + ceil(argc/2)*4。argc を偶数に丸めた6種を使い分ける。
-// 実行時に見るときは EntityMsg* にキャストする。余りスロットは常に 0。
+// 可変長で、実体サイズは 8 + ceil(argc/2)*4, argc を偶数に丸めた6種を使い分ける
+// 実行時に見るときは EntityMsg* にキャストする, 余りスロットは常に 0,
 
 // clang-format off
 typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u8 argc; }                DemoMsg0;
@@ -27,7 +27,7 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define NOWAIT 0
 #define WAIT 1
 
-// targetClass: 宛先の種別。EntityMsgBus_Register の第3引数と照合される
+// targetClass: 宛先の種別, EntityMsgBus_Register の第3引数と照合される
 #define CLS_BUS 1
 #define CLS_PLAYER 2
 #define CLS_ENEMY 3
@@ -39,7 +39,7 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define CLS_CBB0 9
 #define CLS_ETC 10
 
-// cmd の意味は targetClass ごとに別物。ハンドラを読んで確定したものだけ名前を付けてある
+// cmd の意味は targetClass ごとに別物, ハンドラを読んで確定したものだけ名前を付けてある
 #define BUS_EXEC_SCRIPT 0  // Demo_CmdExecScript
 #define BUS_WAIT 1         // Demo_CmdWait
 #define BUS_WAIT_EXT 2     // Demo_CmdWaitExternal

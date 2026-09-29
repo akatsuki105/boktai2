@@ -4,7 +4,7 @@
 #include "hitbox.h"
 #include "sprite.h"
 
-// 8枠ぶんの要素。activeMask のビットが立っている枠だけ生きている
+// 8枠ぶんの要素, activeMask のビットが立っている枠だけ生きている
 typedef struct {
   AuxSprite spr;      // 0x00, _Destroy が AuxSprite_Remove に渡す
   u8 unk_2c[0x14];    // 0x2C

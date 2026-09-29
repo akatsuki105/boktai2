@@ -130,6 +130,5 @@ EOF
 echo ""
 echo "セットアップ完了: $OUT"
 echo ""
-echo "実行例:"
-echo "  tools/permuter.sh $OUT        # 1スレッド"
-echo "  tools/permuter.sh $OUT -j4    # 4スレッド（推奨）"
+echo "実行例 (採点のみ, 探索はこのプロジェクトでは使わない):"
+echo "  (cd $REPO/tmp && \"\$DECOMP_PERMUTER/permuter.py\" $OUT --debug)"

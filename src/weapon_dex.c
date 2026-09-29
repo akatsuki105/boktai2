@@ -10,7 +10,7 @@ typedef struct {
 
 typedef struct {
   Entity e;                   // 0x000, ENTITY_UNK_8
-  void* p_18;                 // 0x018,  0x08653534 固定?
+  void* p_18;                 // 0x018, 0x08653534 固定?
   rgb555* pltt_1c;            // 0x01C, 根拠: 0x08210b06
   u32 frameCounter;           // 0x020, フレームカウンタ (多分カーソルの点滅とかで使う)
   u8 page;                    // 0x024, 武器図鑑のページ (0: 剣, 1: 槍, 2: ハンマー, 3: 銃)

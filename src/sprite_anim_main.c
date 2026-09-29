@@ -12,7 +12,7 @@ NON_MATCH void MainSprite_SetAnimFrame(MainSprite* p, MainSpriteGfx* gfx, u16 an
   MainAnimCmd* cmd;
   s32 n;
 
-  anim = table + animIdx;  // 元は adds r6, r2, r0 (添字が先)。この形だと adds r6, r0, r2 になる
+  anim = table + animIdx;  // 元は adds r6, r2, r0 (添字が先), この形だと adds r6, r0, r2 になる
   cmds = (MainAnimCmd*)((u8*)gfx->cmds + anim->cmdOffset);
   p->animCmdIdx = cmdIdx;
   if (cmdIdx >= anim->cmdCount) {
@@ -74,7 +74,7 @@ s32 MainSprite_SetAnimSpeed(MainSprite* p, u32 speed) {
   return 0;
 }
 
-// 1コマの表示フレーム数を変更する。経過タイマーを新旧の比率で配分し直すので進行の割合は保たれる
+// 1コマの表示フレーム数を変更する, 経過タイマーを新旧の比率で配分し直すので進行の割合は保たれる
 bool32 MainSprite_SetFrameDuration(MainSprite* p, u16 val) {
   p->animCmdTimer = DivArm(p->animCmdDuration, val * p->animCmdTimer);
   p->animCmdDuration = val;

@@ -107,7 +107,7 @@ NON_MATCH s32 ClockAlarm_Update(ClockAlarm* p) {
 
 s32 ClockAlarm_Destroy(ClockAlarm* p) { return 0; }
 
-// 現在時刻を取り込んで、スクリプトIDと一致幅をキーワードから読む
+// 現在時刻を取り込んで、スクリプトIDと一致幅を'.d','.p'から読む
 s32 ClockAlarm_Init(ClockAlarm* p) {
   s32 i;
 

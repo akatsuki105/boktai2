@@ -247,7 +247,7 @@ bool32 VM_SeekToKeyword(u8 keyword) {
   }
 }
 
-// 現在位置から次のキーワード(case/default等)まで読み進め、そのキーワード種別を返す。見つからなければ0
+// 現在位置から次のキーワード(case/default等)まで読み進め、そのキーワード種別を返す, 見つからなければ0
 s32 VM_Ctrl_Switch_Internal(void) {
   u8* pc = gVM.pc;
   if ((pc == NULL) || (*pc == 0)) return 0;
@@ -550,7 +550,7 @@ void VM_RestoreScriptTable(u8* src) {
   gStringTable = *((StringTable*)src);
 }
 
-// ブロック内の文(式/control/呼び出し)を順に実行する。controlがreturnを表す場合(戻り値1)そこで打ち切る
+// ブロック内の文(式/control/呼び出し)を順に実行する, controlがreturnを表す場合(戻り値1)そこで打ち切る
 bool32 VM_ExecBlock(u8* pc, ScriptArgs* args, s32 idx) {
   void* frame;
   u32 length;
@@ -607,7 +607,7 @@ s32 VM_ExecByPointer(u8* pc, ScriptArgs* args) {
 
 /**
  * @param pc 実行するブロックの先頭アドレス
- * @param args ブロック内から変数varIdxとして読める値。NULLなら引数無しを表す sEmptyArgs がデフォルト値として束縛される
+ * @param args ブロック内から変数varIdxとして読める値, NULLなら引数無しを表す sEmptyArgs がデフォルト値として束縛される
  * @param varIdx valを束縛する変数スロット番号(VM_GetVariableのvaridxに対応)
  */
 s32 VM_Exec(u8* pc, ScriptArgs* args, s32 varIdx) {

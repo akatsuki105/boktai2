@@ -11,8 +11,8 @@ struct ElevatorUnkData;
 typedef void ElevatorUnkDataFunc(struct ElevatorUnkData* p);
 
 typedef u16 ElevatorFlags;               // ElevatorUnkData.flags
-#define ELEVATOR_PLAYER_RIDING (1 << 3)  // プレイヤーが乗っている。Elevator.ridingID と対
-#define ELEVATOR_SHAKE (1 << 5)          // 揺らす。Elevator_Shake が立てて Elevator_UpdateShake が落とす
+#define ELEVATOR_PLAYER_RIDING (1 << 3)  // プレイヤーが乗っている, Elevator.ridingID と対
+#define ELEVATOR_SHAKE (1 << 5)          // 揺らす, Elevator_Shake が立てて Elevator_UpdateShake が落とす
 #define ELEVATOR_FLAG_12 (1 << 12)       // まだ不明
 
 typedef struct ElevatorUnkData {
@@ -23,12 +23,12 @@ typedef struct ElevatorUnkData {
   s16 state;                         // 0x0B2, ElevatorController_Update が 0x085AE0E8 の関数テーブルを引く, 6 はスキップ
   ElevatorFlags flags;               // 0x0B4, bit0=tileOverride登録済, bit5=Elevator_Shake, bit11=tileOverrides登録済
   u8 unk_b6[0x0BA - 0x0B6];          // 0x0B6
-  s16 unk_ba;                        // 0x0BA, FUN_081d5414 が VM キーワード 's' (既定 6) を入れる
+  s16 unk_ba;                        // 0x0BA, FUN_081d5414 が '.s=6' を入れる
   u8 unk_bc[0x0C8 - 0x0BC];          // 0x0BC
   u16 unk_c8;                        // 0x0C8, FUN_081d21d8 が 0〜3 と比較して効果音を選ぶ
   u8 unk_ca[0x0CC - 0x0CA];          // 0x0CA
-  s32 unk_cc;                        // 0x0CC, FUN_081d54a8 が VM キーワード 'l' の値 (正のときだけ) を入れる
-  s32 unk_d0;                        // 0x0D0, FUN_081d54a8 が VM キーワード 'h' の値 (正のときだけ) を入れる
+  s32 unk_cc;                        // 0x0CC, FUN_081d54a8 が '.l' の値 (正のときだけ) を入れる
+  s32 unk_d0;                        // 0x0D0, FUN_081d54a8 が '.h' の値 (正のときだけ) を入れる
   u16 id;                            // 0x0D4, Elevator_FindByID が Player.elevatorID や '.n' の値と比較して探す
   u16 unk_d6;                        // 0x0D6, FUN_081d21d8 / FUN_081d2a64 が bit2,bit5 を見る
   ElevatorUnkDataFunc* unk_d8;       // 0x0D8, ElevatorController_Update が毎フレーム呼ぶ
@@ -52,7 +52,7 @@ typedef struct Elevator {
   ElevatorUnkData unk_1c[12];    // 0x001C
   u32 usedMask;                  // 0x12AC, スロット i を確保すると bit i が立つ
   u16 ridingID;                  // 0x12B0, 搭乗中のエレベータの id, 降りると 0
-  u16 unk_12b2;                  // 0x12B2, ridingID と同じ作り. FUN_081d4704 / FUN_081d42c4 が 0x03002C00 の乗り手について持つ
+  u16 unk_12b2;                  // 0x12B2, ridingID と同じ作り, FUN_081d4704 / FUN_081d42c4 が 0x03002C00 の乗り手について持つ
   bool8 soundPlaying;            // 0x12B4, 走行音を鳴らしているか
   u8 unk_12b5[0x12B8 - 0x12B5];  // 0x12B5
 } Elevator;

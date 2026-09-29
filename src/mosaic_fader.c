@@ -3,16 +3,16 @@
 #include "video.h"
 #include "vm.h"
 
-// モザイク (MOSAIC レジスタ) の強さを目標値まで1段ずつ動かす。4つのニブル (BG横/BG縦/OBJ横/OBJ縦) を別々に動かせる
+// モザイク (MOSAIC レジスタ) の強さを目標値まで1段ずつ動かす, 4つのニブル (BG横/BG縦/OBJ横/OBJ縦) を別々に動かせる
 typedef struct {
   Entity e;         // 0x00, ENTITY_UNK_9
-  u8 mode;          // 0x18, sMosaicFaderUpdates の添字。1 = 増やす, 2 = 減らす, 0 = 停止
+  u8 mode;          // 0x18, sMosaicFaderUpdates の添字, 1 = 増やす, 2 = 減らす, 0 = 停止
   u8 objEnabled;    // 0x19, Video_SetMosaic の第2引数
   u8 targets;       // 0x1A, Video_SetMosaic の第3引数
-  u8 activeMask;    // 0x1B, bit0-3。まだ goalSize に届いていないニブル。0 になると mode を 0 に戻す
-  u16 timer[4];     // 0x1C, ニブルごとの経過フレーム。interval に達すると size を1段進める
+  u8 activeMask;    // 0x1B, bit0-3, まだ goalSize に届いていないニブル, 0 になると mode を 0 に戻す
+  u16 timer[4];     // 0x1C, ニブルごとの経過フレーム, interval に達すると size を1段進める
   u16 interval[4];  // 0x24, 1段あたりのフレーム数
-  s8 size[4];       // 0x2C, 現在のモザイク量。size[i] << (i * 4) を Video_SetMosaic に渡す
+  s8 size[4];       // 0x2C, 現在のモザイク量, size[i] << (i * 4) を Video_SetMosaic に渡す
   u8 goalSize[4];   // 0x30, 目標のモザイク量
 } MosaicFader;
 static_assert(sizeof(MosaicFader) == 52);
@@ -153,7 +153,7 @@ s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u
   return 0;
 }
 
-// モザイクをかけるスクリプトコマンド。'c' が開始値、'a' が目標値、'i' が1段あたりのフレーム数
+// モザイクをかけるスクリプトコマンド, 'c' が開始値、'a' が目標値、'i' が1段あたりのフレーム数
 s32 MosaicFader_StartFromScript(void) {
   u8 from[4], to[4];
   u16 interval[4];

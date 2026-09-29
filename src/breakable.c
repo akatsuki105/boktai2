@@ -11,22 +11,22 @@ struct Breakable;
 struct BreakableManager;
 typedef void (*BreakableUpdate)(struct BreakableManager*, struct Breakable*);
 
-// マップに置かれた壊せるオブジェクト1個。スクリプトコマンド 0x2D8F (Breakable_Spawn) が1個ずつ置く
+// マップに置かれた壊せるオブジェクト1個, スクリプトコマンド 0x2D8F (Breakable_Spawn) が1個ずつ置く
 // 大聖堂の狛犬(壊すと宝箱が出現するやつ)で使っているが、他の壊せるオブジェクトでも流用可能っぽい(実際に流用されているかは不明)
 typedef struct Breakable {
   u16 id;                  // 0x00, '.n', hitbox の ID になり、壊れたときのスクリプトの argv[0] にもなる
-  bool8 active;            // 0x02, BreakableManager_FindFreeSlot が 0 のスロットを空きとして返す。Update は 0 のものを飛ばす
+  bool8 active;            // 0x02, BreakableManager_FindFreeSlot が 0 のスロットを空きとして返す, Update は 0 のものを飛ばす
   bool8 stateChanged;      // 0x03, Breakable_SetUpdate が 1 にし、Breakable_TakeStateChanged が読んで 0 に戻す
   s16 hp;                  // 0x04, '.l=10', Breakable_OnHit が相手の HitboxData.damage を引き、1 未満で Breakable_UpdateAlive が破壊処理へ進む
   u16 unk_6;               // 0x06, Breakable_Spawn が 0 を書くだけ
   u8 unk_8;                // 0x08, '.k', 読み手が見つかっていない
   u8 flashTimer;           // 0x09, 被弾で 4, 0 になったら Video_SetAuxSpritePltt でパレットを戻す
   u8 brokenPose;           // 0x0A, '.P'+1, 壊れたときに sprite.metaspriteIdx へ入る
-  u8 shakeTimer;           // 0x0B, 被弾で 10。0 でない間は hitbox.flags の bit2 を立てて当たらなくし、sprite.pos を乱数で揺らす
+  u8 shakeTimer;           // 0x0B, 被弾で 10, 0 でない間は hitbox.flags の bit2 を立てて当たらなくし、sprite.pos を乱数で揺らす
   u16 scriptOnBreak;       // 0x0C, '.d', 壊れたとき VM_ExecByID に渡す
   u16 unk_e;               // 0x0E, padding?
   Vec3 pos;                // 0x10, '.p', Hitbox_SetPos で hitbox の座標として登録され、sprite.pos の基準にもなる
-  u32 unk_18;              // 0x18, Breakable_SetUpdate が 0 にする。読み手が見つかっていない
+  u32 unk_18;              // 0x18, Breakable_SetUpdate が 0 にする, 読み手が見つかっていない
   BreakableUpdate update;  // 0x1C, BreakableManager_Update が毎フレーム呼ぶ
   AuxSpriteGfx gfx;        // 0x20, '.t=SPRITE_KOMAINU'
   AuxSprite sprite;        // 0x3C
@@ -67,7 +67,7 @@ bool32 Breakable_TakeStateChanged(Breakable* item) {
   return FALSE;
 }
 
-// 攻撃が当たったときの処理。耐久値を削り、当たった向きへ火花を飛ばして少しのけぞらせる
+// 攻撃が当たったときの処理, 耐久値を削り、当たった向きへ火花を飛ばして少しのけぞらせる
 void Breakable_OnHit(HitboxData* a, HitboxData* b, Breakable* item) {
   Vec3 pos;
   s32 angle;
@@ -119,7 +119,7 @@ s32 Breakable_Setup(BreakableManager* p, Breakable* item) {
 // スロットを用意した直後と壊れたあとに入る、何もしない update
 void Breakable_UpdateIdle(BreakableManager* p, Breakable* item) { Breakable_TakeStateChanged(item); }
 
-// 立っている間の update。耐久値が尽きたら壊れた姿に変え、当たり判定を切って破片を撒く
+// 立っている間の update, 耐久値が尽きたら壊れた姿に変え、当たり判定を切って破片を撒く
 NON_MATCH void Breakable_UpdateAlive(BreakableManager* p, Breakable* item) {
 #ifdef NONMATCHING_C
   Vec3 pos;
@@ -251,7 +251,7 @@ BreakableManager* BreakableManager_Create(void) {
   return gBreakableManager;
 }
 
-// まだ使われていないスロットを1つ返す。空きがなければ NULL
+// まだ使われていないスロットを1つ返す, 空きがなければ NULL
 Breakable* BreakableManager_FindFreeSlot(BreakableManager* p) {
   Breakable* item = p->items;
   s32 i;
@@ -263,7 +263,7 @@ Breakable* BreakableManager_FindFreeSlot(BreakableManager* p) {
   return NULL;
 }
 
-// スクリプトコマンド 0x2D8F。空きスロットに壊せるオブジェクトを1つ置く
+// スクリプトコマンド 0x2D8F, 空きスロットに壊せるオブジェクトを1つ置く
 s32 Breakable_Spawn(void) {
   Breakable* item;
   AuxSprite* sprite;

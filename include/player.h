@@ -172,8 +172,8 @@ typedef struct Player {
   u8 unk_3d2[36];
   s16 unk_3f6;
   u8 unk_3f8[2];
-  u8 magicFired;     // 0x3FA, 魔法の発動フレームに FUN_08064d6c (太陽ゲージ判定) の結果が入る。1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
-  u8 dynamiteCount;  // 0x3FB, 生存中の Entity080a8ff8 の数。Entity080a8ff8_Init が +1、消滅時に -1。MAGIC_DYNAMITE は 0 でないと再発動できない (FUN_08064db0)
+  u8 magicFired;     // 0x3FA, 魔法の発動フレームに FUN_08064d6c (太陽ゲージ判定) の結果が入る, 1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
+  u8 dynamiteCount;  // 0x3FB, 生存中の Entity080a8ff8 の数, Entity080a8ff8_Init が +1、消滅時に -1, MAGIC_DYNAMITE は 0 でないと再発動できない (FUN_08064db0)
   u8 unk_3fc[4];
   u8 angle_400;  // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
   u8 angle_401;  // 0x401, 同上
@@ -231,7 +231,7 @@ typedef struct Player {
   weapon8_t weaponID_a74;  // 武器ID
   u8 weaponKind_a75;       // 0xA75, 武器種
   u8 unk_a76[25];
-  u8 unk_a8f;  // 0xA8F, Entity08080be8 が毎フレーム charge に写す。威力を 1 + n/2 倍にし、スプライトの絵も選ぶ
+  u8 unk_a8f;  // 0xA8F, Entity08080be8 が毎フレーム charge に写す, 威力を 1 + n/2 倍にし、スプライトの絵も選ぶ
   u8 unk_a90[8];
   PlayerFunc attackCB;  // 0xA98, gPlayerAttackUpdates
 

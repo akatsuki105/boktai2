@@ -151,6 +151,27 @@ const extractBlock = (srcFile: string, fn: string): string => {
 
 type Asm = { code: string[]; pool: string[]; callees: string[]; offsets: number[] };
 
+// `movs rN, #imm` (+ `lsls`) で作った値が、このあとアドレスの一部として使われるか。
+// `ldrsh r0, [r5, r3]` のレジスタオフセット形式や `adds r0, r0, r3` のベース加算が
+// 見つかれば構造体オフセット、レジスタが別の値で上書きされたら違う。
+const usedAsAddress = (lines: string[], from: number, reg: string): boolean => {
+  const asIndex = new RegExp(`\\[\\w+,\\s*${reg}\\]`);
+  const intoBase = new RegExp(`^adds?\\s+r\\d+,\\s*(r\\d+,\\s*)?${reg}$`);
+  const baseInto = new RegExp(`^adds?\\s+${reg},\\s*(${reg},\\s*)?r\\d+$`);
+  const redefined = new RegExp(
+    `^(movs?|mvns|negs|ldr|ldrb|ldrh|ldrsb|ldrsh|adds?|subs?|lsls|lsrs|asrs|ands|orrs|eors|muls)\\s+${reg}\\b`,
+  );
+  let seen = 0;
+  for (let j = from; j < lines.length && seen < 8; j++) {
+    const t = lines[j].trim();
+    if (!t || t.startsWith("_") || t.startsWith(".")) continue;
+    seen++;
+    if (asIndex.test(t) || intoBase.test(t) || baseInto.test(t)) return true;
+    if (redefined.test(t)) return false;
+  }
+  return false;
+};
+
 const readAsm = (asmFile: string): Asm => {
   const lines = Deno.readTextFileSync(asmFile).split("\n");
   const code: string[] = [];
@@ -177,12 +198,22 @@ const readAsm = (asmFile: string): Asm => {
     const adds = s.match(/^adds\s+r\d+,\s*#(0x[0-9a-fA-F]+|\d+)$/);
     if (adds) offsets.add(Number(adds[1]));
 
-    // `movs rN, #imm` + `lsls rN, rN, #k` の組で作る大きめのオフセット
+    // レジスタに作った即値をオフセットとして拾うのは、そのレジスタが実際に
+    // アドレスの一部として使われたときだけ。CreateEntity のサイズ引数のような
+    // ただの定数を構造体オフセットと誤認しないため
     const movs = s.match(/^movs\s+(r\d+),\s*#(0x[0-9a-fA-F]+|\d+)$/);
     if (movs) {
-      const next = (lines[i + 1] ?? "").trim();
-      const lsls = next.match(new RegExp(`^lsls\\s+${movs[1]},\\s*${movs[1]},\\s*#(0x[0-9a-fA-F]+|\\d+)$`));
-      if (lsls) offsets.add(Number(movs[2]) << Number(lsls[1]));
+      const reg = movs[1];
+      let value = Number(movs[2]);
+      let after = i + 1;
+      // `lsls rN, rN, #k` が続くなら、それも含めて1つの値と見る
+      const lsls = (lines[after] ?? "").trim()
+        .match(new RegExp(`^lsls\\s+${reg},\\s*${reg},\\s*#(0x[0-9a-fA-F]+|\\d+)$`));
+      if (lsls) {
+        value <<= Number(lsls[1]);
+        after++;
+      }
+      if (usedAsAddress(lines, after, reg)) offsets.add(value);
     }
   }
 

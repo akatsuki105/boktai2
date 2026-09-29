@@ -8,11 +8,11 @@
 
 typedef struct {
   Entity e;    // 0x0, ENTITY_UNK_8
-  void* p_18;  // 0x18,  0x08653534 固定?
+  void* p_18;  // 0x18, 0x08653534 固定?
   u8 unk_1c[4];
   u32 frameCounter;               // 0x020, フレームカウンタ (多分カーソルの点滅とかで使う)
   u8 page;                        // 0x024, 現在のページ (0: ページ1, 1: ページ2, 2: ページ3)
-  u8 cursor;                      // 0x025, 現在のカーソルの位置番号,  = (cursorY * 5) + cursorX
+  u8 cursor;                      // 0x025, 現在のカーソルの位置番号, = (cursorY * 5) + cursorX
   u8 cursorX;                     // 0x026, 現在のカーソルのX位置 (0..4)
   u8 cursorY;                     // 0x027, 現在のカーソルのY位置 (0..1)
   MainSpriteGfx gfx1;             // 0x028
@@ -27,7 +27,7 @@ typedef struct {
   u8 unk_862[6];                  // 0x862
   s16 unk_868;                    // 0x868, 0..49 を回るカウンタ
   u8 unk_86a[2];                  // 0x86A
-  s32 panelID;                    // 0x86C, TextPanel_Create の戻り値。_Destroy が TextPanel_Hide に渡す
+  s32 panelID;                    // 0x86C, TextPanel_Create の戻り値, _Destroy が TextPanel_Hide に渡す
   u8* scriptPc;                   // 0x870, TextPanel_SetScript に渡す本文の位置
   u8* unk_874;                    // 0x874, 取得済みの写真の説明文
   u8* unk_878;                    // 0x878, 未取得の写真の説明文
@@ -49,7 +49,7 @@ const u16 u16_ARRAY_085af9b4[54] = {
 static inline void UnlockPhoto(u32 photoIdx) { gStat->photo |= (1 << photoIdx); }
 
 // 使われていない、多分 non-static な inline として定義されていた
-// こっちを inline として定義すれば static inline UnlockPhoto は不要になるのだが、non-static な inline関数の定義は GCC2.95 ではTUの末尾に強制的に配置されてしまうため、コンパイル結果が一致しない。
+// こっちを inline として定義すれば static inline UnlockPhoto は不要になるのだが、non-static な inline関数の定義は GCC2.95 ではTUの末尾に強制的に配置されてしまうため、コンパイル結果が一致しない
 // この関数を別ファイルに切り出して定義すれば回避できるが、木端なファイルを増やすよりはこの形の方が無難
 void Unused_UnlockPhoto(u32 photoIdx) { UnlockPhoto(photoIdx); }
 

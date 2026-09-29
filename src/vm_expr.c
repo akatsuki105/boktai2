@@ -70,11 +70,7 @@ s32 VM_RunOperator(u32 opcode, s32 a, s32 b) {
       return ((a != 0) || (b != 0));
     }
     case 20: {
-      bool32 result = FALSE;
-      if (a != 0) {
-        result = ((u32)((-b) | b)) >> 31;
-      }
-      return result;
+      return ((a != 0) && (b != 0));
     }
     case 22: {
       return b;

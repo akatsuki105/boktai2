@@ -9,7 +9,7 @@ typedef struct {
   ParticleShadow shadow;   // 0x8C, unk_d2 が -1 でなければ _Destroy が ParticleShadow_Remove に渡す
   u8 unk_cc[4];            // 0xCC, まだ未解析
   s16 slotIdx;             // 0xD0, _AllocElem が確保したスロット番号
-  s16 unk_d2;              // 0xD2, _AllocElem が -1 を入れる. -1 でなければ shadow が生きている
+  s16 unk_d2;              // 0xD2, _AllocElem が -1 を入れる, -1 でなければ shadow が生きている
   u8 unk_d4[220 - 0xD4];   // 0xD4, まだ未解析
 } Entity7B9FElem;
 static_assert(sizeof(Entity7B9FElem) == 220);

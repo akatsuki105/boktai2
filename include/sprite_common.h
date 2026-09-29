@@ -20,7 +20,7 @@ typedef u32 SpriteFlags;
 #define SPRFLAG_BLINK_EVEN (1 << 10)   // 0x00000400, 偶数フレームだけ描画しない (点滅), 根拠: 同上
 #define SPRFLAG_UNK_11 (1 << 11)       // 0x00000800, 不明
 
-// 0x00001000, ゲームオーバー画面に残すスプライト。
+// 0x00001000, ゲームオーバー画面に残すスプライト
 // ゲームオーバー中は Video_SetDrawPasses がこのビットだけを描くパス (Particle: FUN_0822e110 / AuxSprite: FUN_0822adac / MainSprite: FUN_082303c8) に差し替えるので、立っていないものは一斉に消える
 #define SPRFLAG_GAMEOVER (1 << 12)
 

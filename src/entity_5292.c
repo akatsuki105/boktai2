@@ -15,7 +15,7 @@ typedef struct {
   u16 unk_24;                // 0x024, _Init が gRandomTable から 0..31 の乱数を入れる
   u16 unk_26;                // 0x026, _Init が 0x60 を入れる
   u8 unk_28[2];              // 0x028, まだ未解析
-  u16 unk_2a;                // 0x02A, _Init が VM キーワード 'p' (既定 6) を入れる
+  u16 unk_2a;                // 0x02A, _Init が '.p=6' を入れる
   Entity5292Elem elems[16];  // 0x02C, _Destroy が stride 0x64 で16枚 AuxSprite_Remove する
 } Entity5292;
 static_assert(sizeof(Entity5292) == 1644);

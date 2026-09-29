@@ -7,25 +7,25 @@
 #include "sprite.h"
 #include "vm.h"
 
-// SPRITE_BOKU の姿でうろつく生き物。叩かれると点滅してノックバックし、また歩き出す
+// SPRITE_BOKU の姿でうろつく生き物, 叩かれると点滅してノックバックし、また歩き出す
 typedef struct EntityF41A {
   Entity e;                            // 0x000, ENTITY_UNK_8
-  u16 id;                              // 0x018, Init の第2引数。FUN_0823b400 に渡して data に入れる
+  u16 id;                              // 0x018, Init の第2引数, FUN_0823b400 に渡して data に入れる
   u16 unk_1a;                          // 0x01A
-  Entity2UnkData data;                 // 0x01C, 位置と向きはここが持つ。data.unk_5 が向き、data.delta が移動量
+  Entity2UnkData data;                 // 0x01C, 位置と向きはここが持つ, data.unk_5 が向き、data.delta が移動量
   AuxSprite sprite;                    // 0x060
   AuxSpriteGfx gfx;                    // 0x08C, SPRITE_BOKU
-  u8 tile[16];                         // 0x0A8, FUN_0823280c が足元のタイル情報を埋める。data.unk_18 がここを指す
+  u8 tile[16];                         // 0x0A8, FUN_0823280c が足元のタイル情報を埋める, data.unk_18 がここを指す
   HitboxData hitbox;                   // 0x0B8
   AuxAnimState anim;                   // 0x108
   AuxAnimFile* animFile;               // 0x118, GetFile(DIR_ANIMATION, 0x1DF8)
   Entity5941Node detectNode;           // 0x11C, Entity5941_Register / FUN_0807f598
-  u16 targetAngle;                     // 0x12C, 乱数で決める向き。data.unk_5 がここへ4ずつ近づく
+  u16 targetAngle;                     // 0x12C, 乱数で決める向き, data.unk_5 がここへ4ずつ近づく
   u16 turnTimer;                       // 0x12E, 0 になると targetAngle を引き直す (0x78..0xB7 フレーム)
   u16 animIdx;                         // 0x130, FUN_08236fac に渡すアニメ番号
-  u16 pushSpeed;                       // 0x132, ノックバックの速さ。毎フレーム 3/4 になる
+  u16 pushSpeed;                       // 0x132, ノックバックの速さ, 毎フレーム 3/4 になる
   u16 state;                           // 0x134, 0 = うろつく, 1 = 被弾, 2 = ノックバック
-  u16 stateTimer;                      // 0x136, state を変えると 0。被弾中のパレット切り替えに使う
+  u16 stateTimer;                      // 0x136, state を変えると 0, 被弾中のパレット切り替えに使う
   void (*update)(struct EntityF41A*);  // 0x138, state に対応する更新関数
 } EntityF41A;
 static_assert(sizeof(EntityF41A) == 316);
@@ -57,7 +57,7 @@ void EntityF41A_SetState(EntityF41A* p, s32 state) {
   p->update = handlers[p->state];
 }
 
-// Entity5941 から届く通知。0 = 攻撃が当たった, 1 = 吹き飛ばし開始
+// Entity5941 から届く通知, 0 = 攻撃が当たった, 1 = 吹き飛ばし開始
 NON_MATCH bool32 EntityF41A_OnMessage(Entity2UnkData* data, s32 msg, s32 value) {
 #ifdef NONMATCHING_C
   EntityF41A* p = data->p_38;
@@ -83,7 +83,7 @@ NON_MATCH bool32 EntityF41A_OnMessage(Entity2UnkData* data, s32 msg, s32 value) 
 #endif
 }
 
-// targetAngle へ向きを4ずつ寄せながらうろつく。turnTimer が切れたら向きを引き直す
+// targetAngle へ向きを4ずつ寄せながらうろつく, turnTimer が切れたら向きを引き直す
 NON_MATCH void EntityF41A_UpdateWander(EntityF41A* p) {
 #ifdef NONMATCHING_C
   if (p->data.unk_5 != p->targetAngle) {
@@ -111,7 +111,7 @@ NON_MATCH void EntityF41A_UpdateWander(EntityF41A* p) {
 #endif
 }
 
-// 被弾中。6フレームだけ明るいパレットにして点滅させる
+// 被弾中, 6フレームだけ明るいパレットにして点滅させる
 void EntityF41A_UpdateHit(EntityF41A* p) {
   if (p->stateTimer <= 5) {
     Video_SetAuxSpritePltt(&p->gfx, 306);
@@ -122,7 +122,7 @@ void EntityF41A_UpdateHit(EntityF41A* p) {
   p->stateTimer++;
 }
 
-// 吹き飛ばされている間。speed を 3/4 ずつ減らし、0 になったら向きを反転してうろつきに戻る
+// 吹き飛ばされている間, speed を 3/4 ずつ減らし、0 になったら向きを反転してうろつきに戻る
 NON_MATCH void EntityF41A_UpdateKnockback(EntityF41A* p) {
 #ifdef NONMATCHING_C
   p->animIdx = 2;

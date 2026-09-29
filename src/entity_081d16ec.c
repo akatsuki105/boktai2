@@ -12,7 +12,7 @@ typedef struct Entity081d16ec {
   Entity e;                      // 0x000, ENTITY_UNK_9
   AuxAnimFile* animFile;         // 0x018, GetFile(DIR_ANIMATION, 0xB952)
   Entity081d16ecItem items[12];  // 0x01C, _Update と _Destroy が 0x1C + i*200 で引く
-  u32 activeMask;                // 0x97C, bit i が立っていれば items[i] が使用中。_Init が 0 にする
+  u32 activeMask;                // 0x97C, bit i が立っていれば items[i] が使用中, _Init が 0 にする
 } Entity081d16ec;
 static_assert(sizeof(Entity081d16ec) == 2432);
 
@@ -54,7 +54,7 @@ NAKED Entity081d16ecItem* FUN_081d0f08(s32 id) { INCFUNC("asm/func/FUN_081d0f08.
 
 NAKED void FUN_081d0f64(unknown* p) { INCFUNC("asm/func/FUN_081d0f64.inc"); }
 
-// 開閉アニメーションを折り返す。まだ再生していなければ頭から始める
+// 開閉アニメーションを折り返す, まだ再生していなければ頭から始める
 void FUN_081d11b8(Entity081d16ecItem* item) {
   Entity081d16ec* p = gEntity081d16ec;
 
@@ -109,7 +109,7 @@ NON_MATCH void FUN_081d1260(Entity081d16ecItem* item) {
 
 NAKED void FUN_081d12e0(Entity081d16ec* p, Entity081d16ecItem* item) { INCFUNC("asm/func/FUN_081d12e0.inc"); }
 
-// state 0 のハンドラ。何もしない
+// state 0 のハンドラ, 何もしない
 void FUN_081d146c(Entity081d16ec* p, Entity081d16ecItem* item) {}
 
 // 条件が揃っていれば無敵時間を置いて開閉を始める
@@ -140,7 +140,7 @@ NON_MATCH void FUN_081d1470(Entity081d16ecItem* item) {
 
 NAKED void FUN_081d14e0(Entity081d16ec* p, Entity081d16ecItem* item) { INCFUNC("asm/func/FUN_081d14e0.inc"); }
 
-// state 3 のハンドラ。何もしない
+// state 3 のハンドラ, 何もしない
 void FUN_081d15f8(Entity081d16ec* p, Entity081d16ecItem* item) {}
 
 NAKED s32 Entity081d16ec_Update(Entity081d16ec* p) { INCFUNC("asm/func/Entity081d16ec_Update.inc"); }

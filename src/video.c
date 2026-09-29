@@ -120,7 +120,7 @@ s32 VideoCommit_Update(VideoCommit* p) {
 }
 
 typedef Entity VideoRender;  // Entity と同じサイズ, 他のEntityにある Create, Init, Destroy 関数 はなく Update (VideoRender_Update) のみ
-// 1 フレーム分の描画処理。登録された 3 つのコールバックを回し、パレットを組み立ててフレーム数を進める
+// 1 フレーム分の描画処理, 登録された 3 つのコールバックを回し、パレットを組み立ててフレーム数を進める
 s32 VideoRender_Update(VideoRender* p) {
   FUN_0822d114();
   Video_ResetObjTileAlloc();
@@ -246,7 +246,7 @@ void Video_RemoveMainSpriteFromDrawList(MainSprite* p, s32 idx) {
   }
 }
 
-// この場面で使う3つの描画パスを差し替える。引数の順は実行順ではないので注意
+// この場面で使う3つの描画パスを差し替える, 引数の順は実行順ではないので注意
 void Video_SetDrawPasses(s32 val, Procedure ptclFn, Procedure auxsprFn, Procedure mainsprFn) {
   gCameraCoords.unk_12 = val;
   gDrawParticles = ptclFn;
@@ -433,7 +433,7 @@ NAKED void FUN_0822b308(void) { INCFUNC("asm/func/FUN_0822b308.inc"); }
 
 NAKED void FUN_0822b38c(s32 tileIdx) { INCFUNC("asm/func/FUN_0822b38c.inc"); }
 
-// 1 フレーム分の描画状態を空にする。clearOam が 0 以外なら OAM バッファのスプライトも全部隠す
+// 1 フレーム分の描画状態を空にする, clearOam が 0 以外なら OAM バッファのスプライトも全部隠す
 void Video_ResetFrameState(u32 clearOam) {
   s32 i;
 
