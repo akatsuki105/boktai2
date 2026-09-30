@@ -7,7 +7,7 @@
 
 // MainSpriteGfx ひとつと、そこから作った MainSprite 2枚をまとめた表示部品, メニュー系のエンティティが共通で持つ
 typedef struct {
-  MainSpriteGfx gfx;      // 0x00, FUN_080b99a0 / FUN_080b9814 が OpenSpriteSetFile で作る
+  MainSpriteGfx gfx;      // 0x00, FUN_080b99a0 / FUN_080b9814 が OpenMainSpriteFile で作る
   MainSprite sprites[2];  // 0x20, FUN_080b9a0c / FUN_080b9894 が MainSprite_Remove する
 } MenuSpritePair;
 static_assert(sizeof(MenuSpritePair) == 224);

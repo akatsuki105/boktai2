@@ -15,6 +15,8 @@
 
 struct Dvalinn;
 struct Entity5941;
+struct EntityBD74;
+struct Entity0B50;
 struct Entity4063;
 struct Entity080acd4c;
 struct EntityCBB0;
@@ -32,7 +34,9 @@ IWRAM_DATA u8 u8_03002b7a[6] = {};             // todo
 IWRAM_DATA u16 u16_03002b80 = 0;               // 0x03002B80, ApplyLxModifiers が 1 なら太陽レベル +4、2 なら日光なしにする
 IWRAM_DATA u8 u8_03002b82[22] = {};            // todo
 IWRAM_DATA u16 gPlayerCount = 0;               // Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
-IWRAM_DATA u8 u8_03002b9a[38] = {};            // todo
+IWRAM_DATA u8 u8_03002b9a[6] = {};             // todo
+IWRAM_DATA u16 u16_ARRAY_03002ba0[3] = {};     // 0x03002BA0, Player がいないときに FUN_0807b428 が書き込む退避先
+IWRAM_DATA u8 u8_03002ba6[26] = {};            // todo
 IWRAM_DATA u32 u32_03002bc0 = 0;               // 0x03002BC0, ビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る
 IWRAM_DATA u8 u8_03002bc4[12] = {};            // todo
 IWRAM_DATA u16 u16_03002bd0 = 0;               // 0x03002BD0, FUN_0807b564 が 0 に戻す
@@ -41,8 +45,11 @@ IWRAM_DATA struct Player* gPlayerPtr[4] = {};  // 0x03002BE0, 通信対戦時に
 IWRAM_DATA u8 u8_03002bf0[8] = {};             // todo
 
 IWRAM_DATA struct Entity5941* gEntity5941 = NULL;  // 0x03002BF8
+IWRAM_DATA struct EntityBD74* gEntityBD74 = NULL;  // 0x03002BFC
 
-IWRAM_DATA u8 u8_03002bfc[0x03002C10 - 0x03002BFC] = {};  // todo
+IWRAM_DATA struct Entity0B50* gEntity0B50 = NULL;         // 0x03002C00
+IWRAM_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
+
 IWRAM_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
 IWRAM_DATA u8 u8_03002c12[0x03002C50 - 0x03002C12] = {};  // todo
 
@@ -63,7 +70,7 @@ IWRAM_DATA u8 u8_03002c84[0x03002CA0 - 0x03002C84] = {};  // todo
 
 IWRAM_DATA vu16* gHBlankEffectReg = NULL;  // 0x03002CA0, HBlank 毎に gHBlankEffectBuffer の値を書き込む I/O レジスタ, 根拠: FUN_0822f0d8, FUN_0822eef4
 
-IWRAM_DATA s32 gOamDirty = 0;  // 0x03002CA4, MainSprite_DrawInternal / FUN_0822db5c が bit0 を立て、VideoCommit_Update が gOAMBuffer を OAM へ転送して落とす, bit0 以外は使われていない
+IWRAM_DATA u32 gOamDirty = 0;  // 0x03002CA4, MainSprite_DrawInternal / Particle_DrawList が bit0 を立て、VideoCommit_Update が gOAMBuffer を OAM へ転送して落とす, bit0 以外は使われていない
 
 IWRAM_DATA s32 s32_03002ca8 = 0;  // 0x03002CA8, 0 以外だと VideoCommit_Update が DISPCNT の表示ビットを組み直さない
 
@@ -183,10 +190,10 @@ IWRAM_DATA u8 gOAMTileWidthTable[16] = {};       // 0x03003FE0, タイル(8px)�
 IWRAM_DATA u32 gOAMShapeSizeAttrTable[16] = {};  // 0x03003FF0, OAM0.14-15(shape) と OAM1.14-15(size) のビットを attr0|attr1<<16 形式で格納, AuxSprite_DrawInternal / MainSprite_DrawInternal が OR する
 IWRAM_DATA u8 gOAMWidthTable[16] = {};           // 0x03004030, ピクセル単位
 
-IWRAM_DATA s32 s32_03004040 = 0;        // 0x03004040, MapPltt_FadeIn / MapPltt_FadeOut が明るさとして書く
-IWRAM_DATA s32 gObjPlttSlotCursor = 0;  // 0x03004044, gObjPlttSlotIDs の確保位置 (最大 16), FUN_0822d114 が毎フレーム s32_03004450 + 2 に戻す, 根拠: FUN_0822d190 (FUN_0822d12c は gObjPlttSlotCount の方を使う)
-IWRAM_DATA s32 s32_03004048 = 0;        // 0x03004048, Entity4AE5_Init が 0x40 を書く
-IWRAM_DATA s32 s32_0300404c = 0;        // 0x0300404C, FUN_0822d014 が 0x40 を書く
+IWRAM_DATA s32 gBgBrightness = 0;          // 0x03004040, BG の明るさ, FRACUNIT_6 (64) が等倍で 0 なら gBgPlttBlendColor 一色, FUN_0822d630 が gBgBrightness2 と掛けて BG パレットに適用する, data3d.c も色のスケールに使う
+IWRAM_DATA s32 gObjPlttSlotCursor = 0;     // 0x03004044, gObjPlttSlotIDs の確保位置 (最大 16), FUN_0822d114 が毎フレーム s32_03004450 + 2 に戻す, 根拠: FUN_0822d190 (FUN_0822d12c は gObjPlttSlotCount の方を使う)
+IWRAM_DATA s32 s32_03004048 = 0;           // 0x03004048, Entity4AE5_Init が 0x40 を書く
+IWRAM_DATA s32 gObjBrightnessApplied = 0;  // 0x0300404C, FUN_0822d248 が最後に適用した gObjBrightness, 等倍のまま変わっていなければ加工を省くための控え
 
 IWRAM_DATA rgb555 gObjectPlttBuffer[256] = {};  // 0x03004050, CommitPalette で OBJ_PLTT にコピーされる
 IWRAM_DATA rgb555 gBgPlttBuffer[256] = {};      // 0x03004250, BG パレットの作業用バッファ, ゲーム側はここに書き、加工が要らなければこのまま CommitPalette の転送元になる
@@ -197,11 +204,11 @@ IWRAM_DATA u8 u8_03004456[2] = {};      // todo
 
 IWRAM_DATA s32 gObjPlttSlotCount = 0;  // 0x03004458, 確保済みの OBJ パレットスロット数 (最大 2), 根拠: FUN_0822d12c
 
-IWRAM_DATA s32 s32_0300445c = 0;  // 0x0300445C, FUN_0822d014 が 0x40 を書く
+IWRAM_DATA s32 gObjBrightness = 0;  // 0x0300445C, OBJ の明るさ, FRACUNIT_6 (64) が等倍で 0 なら gObjPlttBlendColor 一色, FUN_0822d248 が OBJ パレットに適用する, 掛ける相手はなく1本だけ
 
-IWRAM_DATA s32 s32_03004460 = 0;  // 0x03004460, FUN_0822d630 が明るさ係数の一方として読む
+IWRAM_DATA s32 gBgBrightness2 = 0;  // 0x03004460, BG の明るさのもう一方の係数, gBgBrightness と独立に暗くしたい演出 (BgPlttDimmer 等) が使う
 
-IWRAM_DATA u16 u16_03004464 = 0;  // 0x03004464, FUN_0822d014 が 0x1084 を書く
+IWRAM_DATA u16 gObjPlttBlendColor = 0;  // 0x03004464, FUN_0822d248 が OBJ の各色をこの色へ寄せる, gBgPlttBlendColor の OBJ 版, 書き手: Entity6978 / Entity4DDF などのフェード
 
 IWRAM_DATA u8 u8_03004466[2] = {};  // todo
 
@@ -211,7 +218,7 @@ IWRAM_DATA s32 s32_0300446c = 0;  // 0x0300446C
 
 IWRAM_DATA u16 gObjPlttSlotIDs[16] = {};  // 0x03004470, 各 OBJ パレットスロットに割り当てたパレット ID, 根拠: FUN_0822d12c (2 個まで), FUN_0822d190 (16 個まで)
 
-IWRAM_DATA u16 u16_03004490 = 0;  // 0x03004490, FUN_0822d014 が 0 を書く
+IWRAM_DATA u16 gObjPlttFadeSkipMask = 0;  // 0x03004490, FUN_0822d248 のフェードから除外する OBJ パレットを選ぶ, bit0 で ID 0x1D/0x26/0x27/0x117, bit1 で 0x2A9/0x27A を素通しにする, 書き手: Entity6978 ('.params[4]')
 
 IWRAM_DATA u8 u8_03004492[2] = {};     // todo
 IWRAM_DATA u16 gBgPlttBlendColor = 0;  // 0x03004494, FUN_0822d630 が各色をこの色へ寄せる, 0 なら明るさだけ掛ける, 書き手: MapPltt_FadeOut (明転の完了時に 0x1084), FUN_0822d014

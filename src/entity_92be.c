@@ -52,7 +52,7 @@ s32 Entity92BE_Destroy(Entity92BE* p) {
 
 // マーカーのスプライトを読み込み、スクリプトの指定に従って表示する
 s32 Entity92BE_Init(Entity92BE* p) {
-  MainSpriteFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_MARKERS);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_MARKERS);
   s32 idx;
 
   if (f == NULL) {

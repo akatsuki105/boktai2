@@ -75,12 +75,12 @@ s32 Entity56DC_Destroy(Entity56DC* p) { return 0; }
 
 s32 Entity56DC_Init(Entity56DC* p, unknown* param_2, unknown* param_3) {
   Vec3 pos;
-  MainSpriteFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_2117);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_2117);
 
   if (f == NULL) {
     return -1;
   }
-  p->gfx = *(MainSpriteGfx*)f;
+  p->gfx = *f;
   OpenMainSpriteFile(&p->gfx, f);
   p->frameCounter = 0;
   p->unk_24 = 0;

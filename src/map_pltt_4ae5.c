@@ -374,13 +374,13 @@ void MapPltt_StepCrossfade(Entity4AE5* p) {
   p->unk_20 = 1;
 }
 
-extern s32 s32_03004040;
+extern s32 gBgBrightness;
 
 // 暗→明のフェード: 進捗に応じて明るさを 0 に近づけ、終わったら次の処理へ移る
 void MapPltt_FadeIn(Entity4AE5* p) {
-  s32_03004040 = 0x40 - ((p->unk_63c << 6) >> p->unk_63e);
+  gBgBrightness = 0x40 - ((p->unk_63c << 6) >> p->unk_63e);
   if ((p->unk_63c = p->unk_63c + 1) >= (1 << p->unk_63e)) {
-    s32_03004040 = 0;
+    gBgBrightness = 0;
     if (p->unk_1b == 3) {
       p->unk_1b = 0;
     } else {
@@ -393,10 +393,10 @@ void MapPltt_FadeIn(Entity4AE5* p) {
 void MapPltt_FadeOut(Entity4AE5* p) {
   rgb555* pltt;
 
-  s32_03004040 = (p->unk_63c << 6) >> p->unk_63e;
+  gBgBrightness = (p->unk_63c << 6) >> p->unk_63e;
   if ((p->unk_63c = p->unk_63c + 1) >= (1 << p->unk_63e)) {
     pltt = FUN_0822d00c();
-    s32_03004040 = 0x40;
+    gBgBrightness = 0x40;
     gBgPlttBlendColor = 0x1084;
     *pltt = 0x1084;
     p->unk_1b = 0;
@@ -627,7 +627,7 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
   gEntity4AE5 = p;
   p->unk_18 = val;
   p->dstPltt = gBgPlttBuffer;
-  s32_03004040 = 0x40;
+  gBgBrightness = 0x40;
   s32_03004048 = 0x40;
   gBgPlttBlendColor = 0x1084;
   gBgPlttFadeRowMask = 0;

@@ -5874,7 +5874,7 @@ FUN_080b8ac8: @ 0x080B8AC8
 	ldr r1, [r4]
 	movs r0, #0
 	movs r2, #5
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r5, [sp]
 	movs r0, #0
 	movs r1, #0

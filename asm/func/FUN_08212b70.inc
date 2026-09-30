@@ -67,7 +67,7 @@ _08212BAC:
 	ldr r1, [r5, #0x38]
 	movs r0, #2
 	movs r2, #0
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0

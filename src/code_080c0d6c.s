@@ -2444,7 +2444,7 @@ _080C1FAE:
 	movs r0, #0
 	adds r1, r5, #0
 	adds r2, r6, #0
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #0

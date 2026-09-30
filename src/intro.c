@@ -33,4 +33,15 @@ s32 Intro_Destroy(Intro* p) {
 
 NAKED s32 Intro_Init(Intro* p) { INCFUNC("asm/func/Intro_Init.inc"); }
 
-NAKED Intro* Intro_Create(void) { INCFUNC("asm/func/Intro_Create.inc"); }
+Intro* Intro_Create(void) {
+  Intro* p = CreateEntity(ENTITY_UNK_11, sizeof(Intro));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Intro_Update, Intro_Destroy);
+    if (Intro_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

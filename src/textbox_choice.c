@@ -486,7 +486,7 @@ NON_MATCH void TextBoxChoice_ScanChoices(TextBoxChoice* p, u8* pc) {
 
 // スタートメニューのスプライトからカーソルを2つ出し、settings の内容を写して選択肢を組み立てる
 s32 TextBoxChoice_Init(TextBoxChoice* p, u8* textPC, s32 stringBase, s32* settings) {
-  MainSpriteFile* f;
+  MainSpriteGfxFile* f;
   Vec3 pos;
   s32 idx;
 

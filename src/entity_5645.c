@@ -33,10 +33,10 @@ typedef struct {
   u32 unk_4c;                    // 0x004C, _Init が 0
   u32 unk_50;                    // 0x0050, _Update が 30 と 100 と比べて unk_44 を決める
   u32 unk_54;                    // 0x0054, _Update が下位16bitを gStat+0x3B2 へ写す
-  u32 unk_58;                    // 0x0058, 1 で画面を明転, 2 で暗転 (s32_0300445c を 4 ずつ動かす), 終わると 0 に戻る
+  u32 unk_58;                    // 0x0058, 1 で画面を明転, 2 で暗転 (gObjBrightness を 4 ずつ動かす), 終わると 0 に戻る
   u32 unk_5c;                    // 0x005C, _Init が 0
   Vec3 pos;                      // 0x0060, '.c', FUN_0823b8ac に渡す
-  MainSpriteGfx gfx[7];          // 0x0068, sDAT_085ab750 が 2 の要素だけ OpenSpriteSetFile する
+  MainSpriteGfx gfx[7];          // 0x0068, sDAT_085ab750 が 2 の要素だけ
   Entity5645Elem elems[5];       // 0x0148
   u8 unk_8dc[0x17DC - 0x8DC];    // 0x08DC, この family が触らない領域, 残り63関数の担当
   AuxAnimFile* animFiles[4];     // 0x17DC, GetFile(DIR_ANIMATION, 0x871C / 0x5BB7 / 0x62C7 / 0x6830)
@@ -60,5 +60,9 @@ typedef struct {
 static_assert(sizeof(Entity5645) == 7712);
 
 void FUN_08055d7c(DexPreview* p);
+
+INCRODATA(".rodata", "data/entity_5645.bin");  // ./tools/bin.ts ./baserom.gba 0x085ab748 0x085ab990 ./data/entity_5645.bin
+
+INCRODATA(".rodata", "data/rodata.bin");  // ./tools/bin.ts ./baserom.gba 0x085ab990 0x085ABA70 ./data/rodata.bin
 
 INCASM("asm/entity_5645.inc");

@@ -16,22 +16,7 @@ typedef u8 MainAnimEvents8;
 #define MAIN_ANIM_EVENT_ENDED (1 << 1)     // 0x02, 今終わった
 #define MAIN_ANIM_EVENT_ADVANCED (1 << 2)  // 0x04, コマが進んだ
 
-typedef struct {
-  u16 palStart;            // 0x00, palette start index in the sprite palettes file
-  u16 spriteCount;         // 0x02, number of sprites in this sprite set
-  u16 animationCount;      // 0x04, このファイルの MainAnim の数
-  u16 subspriteCount;      // 0x06, このファイルの MainSubsprite の数
-  u16 cmdCount;            // 0x08, このファイルの MainAnimCmd の数
-  u16 tileCount;           // 0x0A, このファイルのタイル枚数
-  u32 offsetToSprites;     // 0x0C, この構造体の先頭から MainSpritePose[spriteCount] 配列までのバイトオフセット
-  u32 offsetToAnimations;  // 0x10, この構造体の先頭から MainAnim[animationCount] 配列までのバイトオフセット
-  u32 offsetToSubsprites;  // 0x14, この構造体の先頭から MainSubsprite[subspriteCount] 配列までのバイトオフセット
-  u32 offsetToCmds;        // 0x18, この構造体の先頭から MainAnimCmd[cmdCount] 配列までのバイトオフセット
-  u32 offsetToTiles;       // 0x1C, この構造体の先頭から spriteset_tile[] 配列までのバイトオフセット
-} MainSpriteFile;
-static_assert(sizeof(MainSpriteFile) == 32);
-
-// 所謂メタスプライト, a.k.a. spriteset_sprite
+// 所謂メタスプライト
 typedef struct {
   u16 unk_0;            // 0x00
   u16 subspriteCount;   // 0x02, このメタスプライトを構成する MainSubsprite の数
@@ -52,7 +37,7 @@ typedef struct {
 } MainAnim;
 static_assert(sizeof(MainAnim) == 8);
 
-// これがGBAスプライトに対応, a.k.a. spriteset_obj
+// これがGBAスプライトに対応
 typedef struct {
   u8 flip;             // 0x00, bit2: xflip, bit3: yflip, TODO: other bits?
   u8 shape;            // 0x01, (OAM1.14-15 << 2) | (OAM0.14-15); (size << 2) | shape
@@ -70,15 +55,15 @@ typedef struct {
 } MainAnimCmd;
 static_assert(sizeof(MainAnimCmd) == 4);
 
-// MainSpriteGfx: MainSpriteFile のオフセットをポインタに直したもの, 1キャラ分の絵 (タイル・パレット・ポーズ配列) の所在を持つ
-// MainSprite が読み込み時にここからグラフィックを取り出す
+// 1キャラ分の絵 (タイル・パレット・ポーズ配列) の所在を持つ, MainSprite が読み込み時にここからグラフィックを取り出す
 typedef struct {
-  u16 palStart;               // 0x00, MainSprite_LoadPose で MainSprite.plttID にセットされる, gObjPlttData[(MainSpriteGfx.palStart + MainSubsprite.paletteNum) * 16] が実際のパレットデータ
-  u16 spriteCount;            // 0x02, number of sprites in this sprite set
-  u16 animationCount;         // 0x04, このファイルの MainAnim の数
-  u16 subspriteCount;         // 0x06, このファイルの MainSubsprite の数
-  u16 cmdCount;               // 0x08, このファイルの MainAnimCmd の数
-  u16 tileCount;              // 0x0A, このファイルのタイル枚数
+  u16 palStart;        // 0x00, MainSprite_LoadPose で MainSprite.plttID にセットされる, gObjPlttData[(MainSpriteGfx.palStart + MainSubsprite.paletteNum) * 16] が実際のパレットデータ
+  u16 spriteCount;     // 0x02, number of sprites in this sprite set
+  u16 animationCount;  // 0x04, このファイルの MainAnim の数
+  u16 subspriteCount;  // 0x06, このファイルの MainSubsprite の数
+  u16 cmdCount;        // 0x08, このファイルの MainAnimCmd の数
+  u16 tileCount;       // 0x0A, このファイルのタイル枚数
+  // これらのメンバは、 ROMでは &MainSpriteGfxFile からのオフセットでRAM読み込み時にポインタに変換される
   MainSpritePose* sprites;    // 0x0C, MainSpritePose[spriteCount]
   MainAnim* anims;            // 0x10, MainAnim[animationCount]
   MainSubsprite* subsprites;  // 0x14, MainSubsprite[subspriteCount]
@@ -86,6 +71,8 @@ typedef struct {
   u8* tiles;                  // 0x1C, tiles[tileCount * 32]
 } MainSpriteGfx;
 static_assert(sizeof(MainSpriteGfx) == 32);
+
+typedef MainSpriteGfx MainSpriteGfxFile;  // ROM内のスプライトグラフィックであることを示すためのエイリアス
 
 // --------------------------------------------
 
@@ -133,6 +120,8 @@ typedef struct MainSprite {
 } MainSprite;
 static_assert(sizeof(MainSprite) == 96);
 
+static inline void MainSprite_SetFlags(MainSprite* p, SpriteFlags bits) { p->flags |= bits; }
+static inline void MainSprite_ClearFlags(MainSprite* p, SpriteFlags bits) { p->flags &= ~bits; }
 static inline void MainSprite_Show(MainSprite* spr) { spr->flags &= ~SPRFLAG_HIDDEN; }
 static inline void MainSprite_Hide(MainSprite* spr) { spr->flags |= SPRFLAG_HIDDEN; }
 
@@ -142,12 +131,12 @@ extern MainSprite* gMainSpriteLists[2];
 s32 Video_AddMainSpriteIntoDrawList(MainSprite* p, s32 idx);
 void Video_RemoveMainSpriteFromDrawList(MainSprite* p, s32 idx);
 
-s32 OpenMainSpriteFile(MainSpriteGfx* data, MainSpriteFile* f);
-s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* src, u16 poseIdx);
-s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* src, u16 param_3, u8 playMode);
+s32 OpenMainSpriteFile(MainSpriteGfx* gfx, MainSpriteGfxFile* f);
+s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx);
+s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* gfx, u16 param_3, u8 playMode);
 s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
 s32 MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
-bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* src);
+bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx);
 void MainSprite_Remove(MainSprite* p);
 void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 playMode, MainAnimPlayFlags16 flags);
 

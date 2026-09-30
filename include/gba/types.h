@@ -38,6 +38,12 @@ typedef s8 s2_6;    // a signed 2.6 fixed-point number
 typedef u16 u10_6;  // an unsigned 10.6 fixed-point number
 typedef s16 s10_6;  // a signed 10.6 fixed-point number
 
+// bit0-9:    tile number
+// bit10:     x-flip
+// bit11:     y-flip
+// bit12-15:  palette number (0..15, 4bpp only)
+typedef u16 BgMapEntry;
+
 struct __attribute__((packed, aligned(2))) BgCnt {
   u16 priority : 2;
   u16 charBaseBlock : 2;

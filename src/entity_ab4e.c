@@ -1,17 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "player.h"
-#include "sprite_main.h"
-#include "struct.h"
-
-// '.h' / 's' で指定されるマップ上の一点
-typedef struct {
-  s16 x;       // 0x0, VM から読む
-  s16 height;  // 0x2, 地形の attr から算出する
-  s16 z;       // 0x4, VM から読む
-  s16 unk_6;   // 0x6, まだ未解析
-} EntityAB4EPoint;
-static_assert(sizeof(EntityAB4EPoint) == 8);
+#include "sprite.h"
 
 typedef struct {
   u8 unk_0[4];                // 0x000, まだ未解析
@@ -37,27 +27,41 @@ typedef struct {
 static_assert(sizeof(EntityAB4EElem) == 384);
 
 typedef struct {
-  Entity e;                     // 0x0000, ENTITY_UNK_5
-  Vec3* playerPos;              // 0x0018, &gPlayerPtr[0]->unk_24.pos
-  s16 unk_1c;                   // 0x001C, '.t' の値
-  bool8 minuteChanged;          // 0x001E, 分が変わったフレームだけ立つ
-  u8 prevMinute;                // 0x001F, 前フレームの GetMinute
-  u8 hour;                      // 0x0020, GetHour
-  u8 minute;                    // 0x0021, GetMinute
-  u8 unk_22;                    // 0x0022, まだ未解析
-  u8 count1;                    // 0x0023, '.h' で読めた points1 の個数
-  u8 count2;                    // 0x0024, '.s' で読めた points2 の個数
-  u8 unk_25;                    // 0x0025, _Update が FUN_08018a08 の戻り値を入れる
-  u8 unk_26[2];                 // 0x0026, まだ未解析
-  u32 unk_28;                   // 0x0028, _Init が 0 を入れる
-  EntityAB4EPoint points1[16];  // 0x002C, '.h'
-  EntityAB4EPoint points2[16];  // 0x00AC, '.s'
-  EntityAB4EElem elems[16];     // 0x012C
-  MainSpriteGfx gfx[8];         // 0x192C, '.d' の8個の ID から作る
-  Player* player;               // 0x1A2C, gPlayerPtr[0]
+  Entity e;                  // 0x0000, ENTITY_UNK_5
+  Vec3* playerPos;           // 0x0018, &gPlayerPtr[0]->unk_24.pos
+  s16 unk_1c;                // 0x001C, '.t'
+  bool8 minuteChanged;       // 0x001E, 分が変わったフレームだけ立つ
+  u8 prevMinute;             // 0x001F, 前フレームの GetMinute
+  u8 hour;                   // 0x0020, GetHour
+  u8 minute;                 // 0x0021, GetMinute
+  u8 unk_22;                 // 0x0022, まだ未解析
+  u8 count1;                 // 0x0023, points1 の要素数
+  u8 count2;                 // 0x0024, points2 の要素数
+  u8 unk_25;                 // 0x0025, _Update が FUN_08018a08 の戻り値を入れる
+  u8 unk_26[2];              // 0x0026, まだ未解析
+  u32 unk_28;                // 0x0028, _Init が 0 を入れる
+  Vec3 points1[16];          // 0x002C, '.h'
+  Vec3 points2[16];          // 0x00AC, '.s'
+  EntityAB4EElem elems[16];  // 0x012C
+  MainSpriteGfx gfx[8];      // 0x192C, '.d' の8個の ID から作る
+  Player* player;            // 0x1A2C, gPlayerPtr[0]
 } EntityAB4E;
 static_assert(sizeof(EntityAB4E) == 6704);
 
 IWRAM_DATA EntityAB4E* gEntityAB4E = NULL;  // 0x030000C0
+
+void FUN_080455fc(EntityAB4E*, EntityAB4EElem*, s32);
+void FUN_08045890(EntityAB4E*, EntityAB4EElem*, s32);
+void FUN_08045b6c(EntityAB4E*, EntityAB4EElem*, s32);
+void FUN_08045e68(EntityAB4E*, EntityAB4EElem*, s32);
+void FUN_08046254(EntityAB4E*, EntityAB4EElem*, s32);
+void FUN_08046340(EntityAB4E*, EntityAB4EElem*, s32);
+void FUN_08046970(EntityAB4E*, EntityAB4EElem*, s32);
+void FUN_080465b0(EntityAB4E*, EntityAB4EElem*, s32);
+void FUN_08046c98(EntityAB4E*, EntityAB4EElem*, s32);
+
+void (*const PTR_ARRAY_085ab434[9])(EntityAB4E*, EntityAB4EElem*, s32) = {
+    FUN_080455fc, FUN_08045890, FUN_08045b6c, FUN_08045e68, FUN_08046254, FUN_08046340, FUN_08046970, FUN_080465b0, FUN_08046c98,
+};  // 0x085AB434
 
 INCASM("asm/entity_ab4e.inc");

@@ -173,11 +173,11 @@ void FUN_08210718(WeaponDexMenu* p) {
   MainSprite_SetPose(&p->sprite_48, &p->gfx, p->page + 25, 0);
   if (WeaponDexMenu_IsPageComplete(p->page)) {
     for (i = 0; i < 2; i++) {
-      MainSprite_Show(&p->unk_2e8[i]);
+      MainSprite_ClearFlags(&p->unk_2e8[i], SPRFLAG_HIDDEN);
     }
   } else {
     for (i = 0; i < 2; i++) {
-      MainSprite_Hide(&p->unk_2e8[i]);
+      MainSprite_SetFlags(&p->unk_2e8[i], SPRFLAG_HIDDEN);
     }
   }
 }

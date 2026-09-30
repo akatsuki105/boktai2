@@ -93,7 +93,7 @@ s32 RingoDemoAnim_Destroy(RingoDemoAnim* p) {
 // リンゴの絵を読んで 2 枚のスプライトを同じ座標に重ね、1 段目のアニメーションを当てる
 s32 RingoDemoAnim_Init(RingoDemoAnim* p, Vec3* pos, EntityMsgBox* msgBox) {
   Vec3* q;
-  MainSpriteFile* f;
+  MainSpriteGfxFile* f;
 
   p->msgBox = msgBox;
   q = &p->pos;

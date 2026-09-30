@@ -20650,7 +20650,7 @@ _0809C11C:
 	ldr r1, [r4, #0x18]
 	movs r0, #0
 	movs r2, #0
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	ldrb r0, [r5]
 	cmp r0, #1
 	bne _0809C18A
@@ -20691,7 +20691,7 @@ _0809C14C:
 	ldrb r2, [r5]
 	subs r2, #2
 	movs r0, #0
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	ldr r0, _0809C1B4 @ =0x0000EFDA
 	bl TextBox_SetBgPltt
 	ldr r1, _0809C1B8 @ =0x00000A31

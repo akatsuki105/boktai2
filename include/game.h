@@ -83,7 +83,7 @@ typedef struct {
   u32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒)
   u8 unk_2b8[8];                 // 0x2B8
   u8 unk_2c0[8];                 // 0x2C0
-  u32 unk_2c8[2];                // 0x2C8, FUN_0807a8e0 が isSabata で引いて 0 を書く
+  s32 unk_2c8[2];                // 0x2C8, FUN_0807a8e0 が isSabata で引いて 0 を書く
   u8 unk_2d0[16];                // 0x2D0
   u32 weaponFrames[5];           // 0x2E0, 剣槍槌拳銃 の使用フレーム数, これを元に style が決まる (攻撃時のみでなく、その武器で歩いているだけでもカウントされる)
   u8 unk_2f4[4];                 // 0x2F4

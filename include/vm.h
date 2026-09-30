@@ -61,6 +61,9 @@ typedef struct {
 } ScriptRecord;
 static_assert(sizeof(ScriptRecord) == 8);
 
+// id で引いたレコードの先頭を *out に入れ、件数を返す
+s32 FUN_08230f94(u32 id, ScriptRecord** out);
+
 // --------------------------------------------
 
 typedef struct {
@@ -137,6 +140,7 @@ extern VM gVM;                // 0x030045A0
 u8* VM_GetPC(void);
 void VM_SetPC(u8* addr);
 u8* VM_ReadContainerLength(u8* pc, u32* length);
+u32 VM_GetValueAt(u8* addr);
 u32 VM_GetValue(void);
 u8* VM_DecodeValue(u8* pc, s32* type, void* val);
 void* VM_GetValueSafe2(void);

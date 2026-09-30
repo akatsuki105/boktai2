@@ -27,8 +27,9 @@ typedef struct {
   u8 kind;                                         // 0x01, see WeaponKind in "include/constants/weapon.h"
   u8 rank;                                         // 0x02, 武器のランク, [C, B, A, S, R]
   u8 lv;                                           // 0x03
-  u16 durability;                                  // 0x04, 武器の耐久値, これが大きいほど壊れにくい
-  u16 wear;                                        // 0x06, これが .durability を超えると武器が壊れる
+  u8 atk;                                          // 0x04, 武器の攻撃力
+  u8 durability;                                   // 0x05, 武器の耐久値?
+  u16 wear;                                        // 0x06, これが .durability を超えると武器が壊れる?
   u16 quality;                                     // 0x08
   u16 price;                                       // 0x0A, FUN_08243104
   char PS[12];                                     // 0x0C, 武器の説明欄に対する追記, e.g. "ジャンゴ作"

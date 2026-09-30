@@ -52,8 +52,8 @@ typedef struct mft_directory {
 //   DIR_SCRIPT          -> return &ScriptDirectory
 //   DIR_AUX_SPRITE      -> return &AuxSpriteFile
 //   DIR_COLLISION_MAP   -> return &CollisionMapFile
-//   DIR_TILE_MAP        -> return &TilemapHeader
-//   DIR_MAIN_SPRITE     -> return &MainSpriteFile
+//   DIR_TILE_MAP        -> return &TilemapFile
+//   DIR_MAIN_SPRITE     -> return &MainSpriteGfxFile
 //   DIR_TILESET         -> return &TileSetFile
 //   DIR_PARTICLE        -> return &ParticleFile
 void* GetFile(FileID directoryID, FileID fileID);

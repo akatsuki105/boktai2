@@ -15,35 +15,35 @@
 #define SPRITE_92F0 0x92F0
 #define SPRITE_JORMUNGANDR 0x9524  // ヨルムンガンド
 #define SPRITE_SKELETONS 0xAE52
-#define SPRITE_MEGAMAN 0xAF82
+#define SPRITE_MEGAMAN 0xAF82  // ロックマン(EXE)
 #define SPRITE_UI_START_MENU 0xB343
 #define SPRITE_CANDLE_BOX 0xB991
-#define SPRITE_PORTRAITS 0xD27A
+#define SPRITE_PORTRAITS 0xD27A  // 会話などで使う顔アイコン
 #define SPRITE_D353 0xD353
 #define SPRITE_DUNEYRR 0xD3CA    // ドゥネイル
 #define SPRITE_RINGO 0xD3DA      // 紅のリンゴ (キャラクター)
 #define SPRITE_SHAIAN 0xD3EA     // シャイアン
 #define SPRITE_DURATHROR 0xD3FA  // ドゥラスロール
-#define SPRITE_DVALINN 0xD40A
+#define SPRITE_DVALINN 0xD40A    // ドヴァリン
 #define SPRITE_UI_LINK 0xDCC1
 #define SPRITE_DJANGO_SABATA 0xDE23
 #define SPRITE_UI_SOLAR_SENSOR_HELP 0xDF11
-#define SPRITE_SMITH_MARCELLO 0xDFCE  // 0x08045180
-#define SPRITE_RITA 0xDFDE
-#define SPRITE_ZAJI 0xDFEE
-#define SPRITE_SUMIRE 0xDFFE
-#define SPRITE_KURO 0xE00E
-#define SPRITE_KID 0xE01E
-#define SPRITE_LADY 0xE02E
-#define SPRITE_COFFINSELLER_UNKNOWN 0xE03E
-#define SPRITE_ENNIO_LUIS 0xE04E
-#define SPRITE_CARMILLA 0xE2DE
-#define SPRITE_DAINN 0xE349
+#define SPRITE_SMITH_MARCELLO 0xDFCE        // スミス, マルチェロ
+#define SPRITE_RITA 0xDFDE                  // リタ
+#define SPRITE_ZAJI 0xDFEE                  // ザジ
+#define SPRITE_SUMIRE 0xDFFE                // スミレ
+#define SPRITE_KURO 0xE00E                  // クロ
+#define SPRITE_KID 0xE01E                   // キッド
+#define SPRITE_LADY 0xE02E                  // レディ
+#define SPRITE_COFFINSELLER_UNKNOWN 0xE03E  // 棺桶屋, "???"(ゲーム内での名前)
+#define SPRITE_ENNIO_LUIS 0xE04E            // エンニオ, ルイス
+#define SPRITE_CARMILLA 0xE2DE              // カーミラ(恋人のカード のエフェクト)
+#define SPRITE_DAINN 0xE349                 // ダーイン
 #define SPRITE_E89F 0xE89F
-#define SPRITE_CHANDELIER 0xF099  // actor_sprite の 0x2AF0 にもシャンデリアがある
-#define SPRITE_GOLEM 0x5290       // 0x081c4c40
+#define SPRITE_CHANDELIER 0xF099  // 0x2AF0 にもシャンデリアがある
+#define SPRITE_GOLEM 0x5290       // ゴーレム
 #define SPRITE_SWORD_AX 0x5291    // ソード(敵)、アックス(敵)
-#define SPRITE_BOKU 0x9247        // 0x081b73f0
+#define SPRITE_BOKU 0x9247        // ボク(今作では グール)
 #define SPRITE_OCTOPUS 0xD291     // 0x0818778c
 #define SPRITE_DOG 0xD635         // 0x081ce84c
 #define SPRITE_WORM 0xD636        // 0x081ad228
@@ -98,6 +98,7 @@
 #define SPRITE_PANTHER_BONUS 0xA8E7    // ブラックパンサー(ミニゲーム)のボーナス表示
 #define SPRITE_EFF_F422 0xF422         // 砂のエフェクト
 #define SPRITE_SOLAR_STATION 0xA47C    // 太陽スタンド
+#define SPRITE_MOUSE 0xD495            // チェンジマウスで変身するネズミ
 
 // データが存在しないスプライトのID
 #define SPRITE_2117 0x2117  // 多分デバッグ用

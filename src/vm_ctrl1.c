@@ -56,32 +56,28 @@ NON_MATCH void VM_ConvertEucJpToSjis(u8* dst, u8* src) {
 // if/elseif チェーンを辿り、条件が真になった最初の分岐のブロック先頭を返す(見つからなければNULL)
 u8* VM_Ctrl_If_Internal(u8* pc) {
   s32 type;
-  u32 valA;
-  u32 valB;
-  s32 shifted;
+  u32 cond;
+  u32 block;
 
-loop1:
-  pc = VM_DecodeValue(pc, &type, &valA);
   do {
-    pc = VM_DecodeValue(pc, &type, &valB);
-    if (valA != 0) {
-      return (u8*)valB;
-    }
-    pc = VM_DecodeValue(pc, &type, &valA);
-    if (pc == NULL) {
-      return NULL;
-    }
-    shifted = type >> 16;
-    type = shifted;
-    pc = (u8*)valA;
-    if (shifted == KW_ELSE) {
-      valA = 1;
-    }
-  } while (shifted == KW_ELSE);
-  if (shifted != KW_ELIF) {
-    return NULL;
-  }
-  goto loop1;
+    pc = VM_DecodeValue(pc, &type, &cond);
+    do {
+      pc = VM_DecodeValue(pc, &type, &block);
+      if (cond != 0) {
+        return (u8*)block;
+      }
+      pc = VM_DecodeValue(pc, &type, &cond);
+      if (pc == NULL) {
+        return NULL;
+      }
+      type >>= 16;
+      pc = (u8*)cond;
+      if (type == KW_ELSE) {
+        cond = 1;
+      }
+    } while (type == KW_ELSE);
+  } while (type == KW_ELIF);
+  return NULL;
 }
 
 // 0x0D86
@@ -94,6 +90,8 @@ bool32 VM_Ctrl_If(u8* pc) {
 }
 
 // 0x4A6F
+// 残差1命令: 命令の中身は同じで、KW_DEFAULT の節がループの手前に配置され、そこを飛び越す b が増える
+// Tier A は試済 (else if を独立した if に分解, continue の明示, 最後の節の極性反転), 未: Tier B-C
 NON_MATCH bool32 VM_Ctrl_Switch(u8* pc) {
 #ifdef NONMATCHING_C
   u8* blockPc = NULL;

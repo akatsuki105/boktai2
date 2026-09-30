@@ -135,7 +135,7 @@ _080ECB6E:
 	bne _080ECB94
 	movs r0, #0
 	movs r1, #0
-	bl FUN_081ea120
+	bl Entity081ea120_Create
 	adds r2, r0, #0
 	str r2, [r4, #0x4c]
 	cmp r2, #0
@@ -168,7 +168,7 @@ _080ECBAE:
 _080ECBB0:
 	cmp r0, #0
 	bne _080ECBD2
-	bl FUN_081ea820
+	bl Entity081ea820_Create
 	adds r2, r0, #0
 	str r2, [r4, #0x50]
 	cmp r2, #0

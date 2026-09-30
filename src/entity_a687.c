@@ -8,7 +8,7 @@ typedef struct {
   s32 timer;          // 0x18, state 1 で数え上げ holdFrames と比べる, 状態が変わるたびに 0 に戻る
   s32 minBrightness;  // 0x1C, '.r=32', state 0 が brightness をここまで 2 ずつ下げる
   s32 holdFrames;     // 0x20, '.e=120', state 1 が保つ長さ
-  s32 brightness;     // 0x24, 毎フレーム s32_03004460 と s32_0300445c へ書く, FRACUNIT_6 (64) が等倍
+  s32 brightness;     // 0x24, 毎フレーム gBgBrightness2 と gObjBrightness へ書く, FRACUNIT_6 (64) が等倍
   s32 state;          // 0x28, 0 で暗転、1 で保持、2 で 64 まで戻して KillEntity する
 } BgPlttDimmer;
 static_assert(sizeof(BgPlttDimmer) == 44);

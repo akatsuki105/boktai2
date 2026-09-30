@@ -157,7 +157,7 @@ s32 EntityF41A_Destroy(EntityF41A* p) {
   return 0;
 }
 
-// スクリプトの 'p' で位置をもらい、その足元の高さに吸着させてから data を登録する
+// '.p' で位置をもらい、その足元の高さに吸着させてから data を登録する
 void EntityF41A_InitData(EntityF41A* p) {
   Vec3 pos;
   Vec3* q;

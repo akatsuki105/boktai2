@@ -60,8 +60,8 @@ _0823B650:
 	bl VM_GetValue
 	cmp r0, #0
 	bne _0823B69C
-	ldr r1, _0823B68C @ =FUN_0822db5c
-	ldr r2, _0823B690 @ =FUN_0822aaac
+	ldr r1, _0823B68C @ =Particle_DrawList
+	ldr r2, _0823B690 @ =AuxSprite_DrawList
 	ldr r3, _0823B694 @ =MainSprite_DrawList
 	movs r0, #0
 	bl Video_SetDrawPasses
@@ -76,8 +76,8 @@ _0823B650:
 	b _0823B6AC
 	.align 2, 0
 _0823B688: .4byte 0x000056C2
-_0823B68C: .4byte FUN_0822db5c
-_0823B690: .4byte FUN_0822aaac
+_0823B68C: .4byte Particle_DrawList
+_0823B690: .4byte AuxSprite_DrawList
 _0823B694: .4byte MainSprite_DrawList
 _0823B698: .4byte 0x03003540
 _0823B69C:

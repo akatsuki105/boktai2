@@ -111,7 +111,7 @@ _08090DC2:
 	adds r0, r0, r2
 	ldrb r2, [r0, #1]
 	movs r0, #1
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	movs r0, #0
 	ldrsh r3, [r5, r0]
 	mov r1, r8

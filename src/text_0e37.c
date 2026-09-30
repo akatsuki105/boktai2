@@ -72,7 +72,7 @@ NAKED s32 TextBox_Start(u8* pc) { INCFUNC("asm/func/TextBox_Start.inc"); }
 
 NAKED s32 TextBox_StartWithLabels(u8* pc, u16 labelCount, u16 labelIdx, u16* labels) { INCFUNC("asm/func/TextBox_StartWithLabels.inc"); }
 
-// スクリプトの 'r' があればそこを、なければ現在位置を本文の先頭にする
+// '.r' があればそこを、なければ現在位置を本文の先頭にする
 s32 TextBox_Open(void) { return TextBox_Start(!VM_SeekToKeyword('r') ? VM_GetPC() : FUN_0823d340()); }
 
 NAKED s32 TextBox_ShowLine(s32 line) { INCFUNC("asm/func/TextBox_ShowLine.inc"); }
@@ -117,7 +117,7 @@ s32 TextBox_SetExtendValue(s32 idx, char* text) {
   TextBox* p = gTextBox;
 
   if (p != NULL) {
-    return TextRenderer_SetExtend(&p->renderer, idx, (u32)text);
+    return TextRenderer_SetExtend(&p->renderer, idx, text);
   }
   return 0;
 }

@@ -125,7 +125,7 @@ gSubroutineTable:
 	.4byte 0x3361, FUN_080c13a4
 	.4byte 0x33AA, FUN_08001004
 	.4byte 0x33C4, FUN_081df814
-	.4byte 0x3469, EngineCall_Rand
+	.4byte 0x3469, VM_Random
 	.4byte 0x34C2, FUN_080a4f90
 	.4byte 0x34EA, EnemyDexMenu_Create
 	.4byte 0x352D, TextBox_SetExtend
@@ -146,7 +146,7 @@ gSubroutineTable:
 	.4byte 0x3D17, FUN_08224590
 	.4byte 0x3DB0, FUN_080a1de4
 	.4byte 0x3DB8, FUN_08234fc8
-	.4byte 0x3DF7, Credits_Create
+	.4byte 0x3DF7, TextSlideshow_Create
 	.4byte 0x3E17, FUN_082241ac
 	.4byte 0x3E1F, VM_Sub3E1F
 	.4byte 0x3E91, Elevator_Destroy
@@ -170,7 +170,7 @@ gSubroutineTable:
 	.4byte 0x430D, FUN_0823d85c
 	.4byte 0x435E, ScriptShadow_DeleteFromScript
 	.4byte 0x4383, VM_Sub4383
-	.4byte 0x43A0, FUN_080a6e30
+	.4byte 0x43A0, VM_ReadTable
 	.4byte 0x43D6, FUN_08041d60
 	.4byte 0x440F, FUN_0807b1a4
 	.4byte 0x44BF, FUN_080b2334
@@ -238,7 +238,7 @@ gSubroutineTable:
 	.4byte 0x5D74, FUN_081d5340
 	.4byte 0x5DA5, Entity5DA5_Create
 	.4byte 0x5E27, Entity5E27_Create
-	.4byte 0x5F5F, FUN_080a6de4
+	.4byte 0x5F5F, VM_GetKeys
 	.4byte 0x5FDA, FUN_0807b314
 	.4byte 0x6057, FUN_080a6f14
 	.4byte 0x60FB, FUN_080ed9d0
@@ -289,7 +289,7 @@ gSubroutineTable:
 	.4byte 0x75AF, TextBox_SetScriptIdsScripted
 	.4byte 0x75B7, FUN_0823c244
 	.4byte 0x75B9, FUN_0807db9c
-	.4byte 0x7636, EngineCall_Loop
+	.4byte 0x7636, VM_Loop
 	.4byte 0x7659, FUN_080ed724
 	.4byte 0x778B, Entity778B_Create
 	.4byte 0x779F, FUN_081d0c6c
@@ -297,7 +297,7 @@ gSubroutineTable:
 	.4byte 0x7843, FUN_0807d590
 	.4byte 0x78C9, Entity78C9_Create
 	.4byte 0x78EE, VM_Sub78EE
-	.4byte 0x7935, EngineCall_InitArray
+	.4byte 0x7935, VM_InitArray
 	.4byte 0x794C, Entity794C_Create
 	.4byte 0x7974, TextBox_SetWaitScripted
 	.4byte 0x7999, Entity7999_Create
@@ -383,7 +383,7 @@ gSubroutineTable:
 	.4byte 0x9519, PasswordScreen_Create
 	.4byte 0x9531, TextBoxChoice_CreateFromScript
 	.4byte 0x95A8, Entity95A8_Create
-	.4byte 0x95F8, Entity95F8_Create
+	.4byte 0x95F8, SunCountdown_Create
 	.4byte 0x9700, FUN_080e16f4
 	.4byte 0x9763, FUN_0807d438
 	.4byte 0x9769, FUN_0823be10
@@ -473,7 +473,7 @@ gSubroutineTable:
 	.4byte 0xB83E, FUN_0807d560
 	.4byte 0xB85F, LinkBattleResult_Create
 	.4byte 0xB87B, FUN_080c2640
-	.4byte 0xB88C, FUN_0804b220
+	.4byte 0xB88C, EntityB88C_Create
 	.4byte 0xB8B9, EntityB8B9_Create
 	.4byte 0xB8C7, FUN_08005034
 	.4byte 0xBA36, FUN_080a1168
@@ -635,7 +635,7 @@ gSubroutineTable:
 	.4byte 0xF993, FUN_080b2314
 	.4byte 0xF9F1, CountFoundArmors
 	.4byte 0xFA5D, FUN_08223fd8
-	.4byte 0xFB53, FUN_0804b9b8
+	.4byte 0xFB53, EntityFB53_Create
 	.4byte 0xFB8C, GameOverManager_Create
 	.4byte 0xFBC1, FUN_0823e338
 	.4byte 0xFBE5, EntityFBE5_Create

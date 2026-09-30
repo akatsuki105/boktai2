@@ -8,8 +8,8 @@ typedef struct {
   void* tilemapFile;           // 0x018, FUN_081daeb8 が GetFile(DIR_TILE_MAP, 0xCD91) を入れ、Video_SetupBGLayout に渡す
   rgb555* bgPltt;              // 0x01C, FUN_081daeb8 が GetFile(DIR_BGPLTT, 0x26BB) + 0x14 を入れ、gBgPlttBuffer へ転送する
   MainSprite sprites[7];       // 0x020, FUN_081db14c が MainSprite_Add(&sprites[i], &gfx, ...) で7枚登録する
-  MainSpriteGfx gfx;           // 0x2C0, FUN_081db14c が OpenMainSpriteFile(&gfx, spriteFile) で作る
-  MainSpriteFile* spriteFile;  // 0x2E0, GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK)
+  MainSpriteGfx gfx;           // 0x2C0, SPRITE_UI_LINK
+  MainSpriteGfxFile* gfxFile;  // 0x2E0, SPRITE_UI_LINK
   rgb555 objPltt[16];          // 0x2E4, FUN_081db32c が gObjPlttData+0x2930 から16色複写し、sprites[0].pltt をここへ向ける
   u16 unk_304;                 // 0x304, FUN_081db32c が 0 を入れるだけ
   u16 unk_306;                 // 0x306, 読み手も書き手も見つかっていない

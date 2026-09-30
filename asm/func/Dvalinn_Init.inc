@@ -912,7 +912,7 @@ _08200964:
 	str r0, [r1]
 	movs r0, #0
 	movs r1, #0
-	bl FUN_081ea120
+	bl Entity081ea120_Create
 	movs r0, #0
 _082009DA:
 	add sp, #0x34

@@ -971,7 +971,7 @@ FUN_081dc38c: @ 0x081DC38C
 	ldr r1, [r5, #0x18]
 	movs r0, #3
 	movs r2, #7
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	movs r0, #0
 	str r0, [sp]
 	movs r0, #3

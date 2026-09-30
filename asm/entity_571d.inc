@@ -1143,7 +1143,7 @@ FUN_080bf3fc: @ 0x080BF3FC
 	ldr r1, [r4]
 	movs r0, #0
 	movs r2, #3
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r5, [sp]
 	movs r0, #0
 	movs r1, #0

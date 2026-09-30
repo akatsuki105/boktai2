@@ -66,7 +66,7 @@ _0822236E:
 	ldr r1, [r7, #0x38]
 	movs r0, #2
 	movs r2, #0xb
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0

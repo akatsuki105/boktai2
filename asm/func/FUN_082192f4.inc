@@ -300,7 +300,7 @@ _08219616:
 	ldr r1, [r6, #0x38]
 	movs r0, #2
 	movs r2, #4
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	movs r5, #0
 	str r5, [sp]
 	movs r0, #2
@@ -601,7 +601,7 @@ _08219848:
 	ldr r1, [r6, #0x38]
 	movs r0, #2
 	movs r2, #8
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0
@@ -878,7 +878,7 @@ _08219A90:
 	ldr r1, [r6, #0x38]
 	movs r0, #2
 	movs r2, #5
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r4, [sp]
 	movs r0, #2
 	movs r1, #0

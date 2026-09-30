@@ -118,8 +118,8 @@
 	bl FUN_0822f1b0
 	bl Video_ResetHBlankEffect
 	bl FUN_0822e7e4
-	ldr r1, _08229F10 @ =FUN_0822db5c
-	ldr r2, _08229F14 @ =FUN_0822aaac
+	ldr r1, _08229F10 @ =Particle_DrawList
+	ldr r2, _08229F14 @ =AuxSprite_DrawList
 	ldr r3, _08229F18 @ =MainSprite_DrawList
 	movs r0, #0
 	bl Video_SetDrawPasses
@@ -171,8 +171,8 @@ _08229F00: .4byte 0x04000132
 _08229F04: .4byte 0x030044AC
 _08229F08: .4byte 0x03003590
 _08229F0C: .4byte 0x03002CA8
-_08229F10: .4byte FUN_0822db5c
-_08229F14: .4byte FUN_0822aaac
+_08229F10: .4byte Particle_DrawList
+_08229F14: .4byte AuxSprite_DrawList
 _08229F18: .4byte MainSprite_DrawList
 _08229F1C: .4byte 0x03002CF0
 _08229F20: .4byte 0x03003504

@@ -1,7 +1,7 @@
 	push {lr}
 	bl FUN_08238bf4
-	ldr r1, _081DFC48 @ =FUN_0822db5c
-	ldr r2, _081DFC4C @ =FUN_0822aaac
+	ldr r1, _081DFC48 @ =Particle_DrawList
+	ldr r2, _081DFC4C @ =AuxSprite_DrawList
 	ldr r3, _081DFC50 @ =MainSprite_DrawList
 	movs r0, #0
 	bl Video_SetDrawPasses
@@ -19,8 +19,8 @@
 	pop {r1}
 	bx r1
 	.align 2, 0
-_081DFC48: .4byte FUN_0822db5c
-_081DFC4C: .4byte FUN_0822aaac
+_081DFC48: .4byte Particle_DrawList
+_081DFC4C: .4byte AuxSprite_DrawList
 _081DFC50: .4byte MainSprite_DrawList
 _081DFC54: .4byte 0x030044D0
 _081DFC58: .4byte 0x030047A4

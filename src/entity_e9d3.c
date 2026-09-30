@@ -4,8 +4,8 @@
 
 typedef struct {
   Entity e;                   // 0x000, ENTITY_UNK_11
-  MainSpriteGfx gfx0;         // 0x018, OpenSpriteSetFile(GetFile(DIR_SPRITE_SETS, 0x92F0))
-  MainSpriteGfx gfx1;         // 0x038, OpenSpriteSetFile で開くスプライトセット
+  MainSpriteGfx gfx0;         // 0x018, SPRITE_92F0
+  MainSpriteGfx gfx1;         // 0x038
   MainSprite sprites[20];     // 0x058, _Destroy が stride 0x60 で20枚 MainSprite_Remove する
   AuxSprite auxSprite;        // 0x7D8, _Destroy が AuxSprite_Remove に渡す
   u8 unk_804[36];             // 0x804, _Init が CopyMemory の転送先に使う

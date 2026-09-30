@@ -100,7 +100,7 @@ s32 DjangoBerserk_Init(DjangoBerserk* p, Player* player) {
   if (p->hpTarget == 0) {
     p->hpTarget = 1;
   }
-  p->hpDrainStep = Div(p->player->hp - p->hpTarget, 0x48) + 1;
+  p->hpDrainStep = Div(p->player->hp - p->hpTarget, 72) + 1;
   return 0;
 }
 

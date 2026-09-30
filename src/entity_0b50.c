@@ -1,8 +1,13 @@
+#include "entity.h"
 #include "global.h"
 
-typedef void Entity0B50;  // TODO: define the actual structure
+typedef struct Entity0B50 {
+  Entity e;  // ENTITY_UNK_9
+  u8 unk_18[1052 - 0x18];
+} Entity0B50;
+static_assert(sizeof(Entity0B50) == 1052);
 
-// --------------------------------------------
+extern Entity0B50* gEntity0B50;  // 0x03002C00
 
 void FUN_08084c58(unknown* p);
 void FUN_08084c9c(unknown* p);
@@ -50,3 +55,5 @@ void FUN_08089720(Entity0B50* p);
 void (*const PTR_ARRAY_085ac000[17])(Entity0B50*) = {
     FUN_08087c04, FUN_08088148, FUN_0808890c, FUN_08088514, FUN_08088718, FUN_08088d44, FUN_08088fbc, FUN_08089088, FUN_08089144, FUN_08088bbc, FUN_08088c54, FUN_080892a8, FUN_08089344, FUN_080892f8, FUN_080893c0, FUN_08089548, FUN_08089720,
 };  // 0x085ac000
+
+INCASM("asm/entity_0b50.inc");

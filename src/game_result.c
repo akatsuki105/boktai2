@@ -3,13 +3,14 @@
 #include "file.h"
 #include "global.h"
 #include "sprite.h"
+#include "tilemap.h"
 #include "video.h"
 
 // ゲームクリア時のリザルト画面
 typedef struct GameResult {
   Entity e;           // 0x000, ENTITY_UNK_11
   MainSpriteGfx gfx;  // 0x018, SPRITE_42E2
-  void* tilemapfile;  // 0x038
+  Tilemaps* tilemap;  // 0x038
   rgb555* pltt;       // 0x03C
   u32 unk_40;         // 0x040, なんかのbitfield?
   u32 scriptID_44;    // 0x044, 0x08222954
@@ -57,7 +58,7 @@ void FUN_0822230c(GameResult* p) {
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    MainSprite_Hide(&p->sprites[i]);
+    MainSprite_SetFlags(&p->sprites[i], SPRFLAG_HIDDEN);
   }
 }
 
@@ -66,9 +67,9 @@ NAKED static void _GameResult_Update(GameResult* p) { INCFUNC("asm/func/_GameRes
 // BG11 にリザルト画面のタイルマップを敷く
 void FUN_082229ac(GameResult* p) {
   s32 bgIndices[1];
-  p->tilemapfile = GetFile(DIR_TILE_MAP, 0x33B2);
+  p->tilemap = GetFile(DIR_TILE_MAP, 0x33B2);
   bgIndices[0] = 11;
-  Video_SetupBGLayout(1, 0, p->tilemapfile, 0, 0, 1, bgIndices);
+  Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, bgIndices);
 }
 
 // 背景パレットを読み込んで作業用バッファへ流す
@@ -79,7 +80,7 @@ void FUN_082229e8(GameResult* p) {
 
 // リザルト画面のスプライトファイルを開く
 void FUN_08222a18(GameResult* p) {
-  MainSpriteFile* file = GetFile(DIR_MAIN_SPRITE, SPRITE_42E2);
+  MainSpriteGfxFile* file = GetFile(DIR_MAIN_SPRITE, SPRITE_42E2);
 
   p->gfx = *(MainSpriteGfx*)file;
   OpenMainSpriteFile(&p->gfx, file);

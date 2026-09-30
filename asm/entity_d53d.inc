@@ -329,8 +329,8 @@ _0804EC92:
 	ldr r0, [r4, #0x2c]
 	cmp r0, #0
 	beq _0804ECBA
-	ldr r1, _0804ECCC @ =FUN_0822db5c
-	ldr r2, _0804ECD0 @ =FUN_0822aaac
+	ldr r1, _0804ECCC @ =Particle_DrawList
+	ldr r2, _0804ECD0 @ =AuxSprite_DrawList
 	ldr r3, _0804ECD4 @ =MainSprite_DrawList
 	movs r0, #0
 	bl Video_SetDrawPasses
@@ -347,8 +347,8 @@ _0804ECBA:
 	bx r0
 	.align 2, 0
 _0804ECC8: .4byte 0x0000FFFF
-_0804ECCC: .4byte FUN_0822db5c
-_0804ECD0: .4byte FUN_0822aaac
+_0804ECCC: .4byte Particle_DrawList
+_0804ECD0: .4byte AuxSprite_DrawList
 _0804ECD4: .4byte MainSprite_DrawList
 
 	thumb_func_start EntityD53D_Update

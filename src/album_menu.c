@@ -55,7 +55,7 @@ void Unused_UnlockPhoto(u32 photoIdx) { UnlockPhoto(photoIdx); }
 
 u32 CheckPhotoUnlocked(u32 photoIdx) { return gStat->photo & (1 << photoIdx); }
 
-// スクリプトの 'i' が指すブロマイドを取得済みにする
+// '.i' が指すブロマイドを取得済みにする
 void VM_UnlockPhoto(void) {
   if (VM_SeekToKeyword('i')) {
     UnlockPhoto(VM_GetValue());  // 本来は Unused_UnlockPhoto をインライン展開していると思われる
@@ -176,11 +176,11 @@ void FUN_08211378(AlbumMenu* p) {
   MainSprite_SetPose(&p->sprites_48[0], &p->gfx1, p->page + 30, 0);
   if (FUN_082111b8()) {
     for (i = 0; i < 2; i++) {
-      MainSprite_Show(&p->sprites_2e8[i]);
+      MainSprite_ClearFlags(&p->sprites_2e8[i], SPRFLAG_HIDDEN);
     }
   } else {
     for (i = 0; i < 2; i++) {
-      MainSprite_Hide(&p->sprites_2e8[i]);
+      MainSprite_SetFlags(&p->sprites_2e8[i], SPRFLAG_HIDDEN);
     }
   }
 }

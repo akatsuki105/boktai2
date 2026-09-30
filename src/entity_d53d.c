@@ -17,4 +17,16 @@ static_assert(sizeof(EntityD53D) == 48);
 
 extern EntityD53D* gEntityD53D;  // 0x030000E8
 
+void FUN_0804eb38(EntityD53D*);
+void FUN_0804eb50(EntityD53D*);
+void FUN_0804ebc4(EntityD53D*);
+void FUN_0804ec58(EntityD53D*);
+
+void (*const PTR_ARRAY_085ab664[4])(EntityD53D*) = {
+    FUN_0804eb38,
+    FUN_0804eb50,
+    FUN_0804ebc4,
+    FUN_0804ec58,
+};  // 0x085AB664
+
 INCASM("asm/entity_d53d.inc");

@@ -269,7 +269,7 @@ s32 EntityMsg_Send(EntityMsg* p) {
   return EntityMsgBus_Post(gEntityMsgBus, p);
 }
 
-// スクリプトのキーワード引数から設定を読み込み、scriptKeys/scriptIDs のテーブルを作る
+// '.d'/'.c'/'.e'/'.p' から設定を読み込み、scriptKeys/scriptIDs のテーブルを作る
 s32 Demo_Start(void) {
   EntityMsgBus* p = gEntityMsgBus;
   EntityMsgBox* node;

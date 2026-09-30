@@ -13,7 +13,7 @@ struct Entity501B {
   MainSprite digits[8];        // 0x018, [0..3] が上段 (y=0x40), [4..7] が下段 (y=0x78), 各段とも [0] が1の位
   MainSpriteGfx gfx;           // 0x318, GetFile(DIR_SPRITE_SETS, UI_LINK)
   u8 unk_338[0x358 - 0x338];   // 0x338, まだ未解析
-  MainSpriteFile* file;        // 0x358, SPRITE_SOLAR_STATION
+  MainSpriteGfxFile* file;     // 0x358, SPRITE_SOLAR_STATION
   u8 unk_35c[4];               // 0x35C, まだ未解析
   u16 poses[8];                // 0x360, digits ごとの MainSprite_Add のポーズ番号
   AuxSprite solarStandSpr;     // 0x370

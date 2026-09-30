@@ -13,6 +13,13 @@
 #if defined(__APPLE__) || defined(__CYGWIN__) || defined(__INTELLISENSE__)
 #define _(x) {x}   // _("string") is converted to charmap.txt by tools/preproc
 #define __(x) {x}  //  __("string") is converted to charmap.txt by tools/preproc, but without a null terminator
+#define INCBIN(...) {0}
+#define INCBIN_U8 INCBIN
+#define INCBIN_U16 INCBIN
+#define INCBIN_U32 INCBIN
+#define INCBIN_S8 INCBIN
+#define INCBIN_S16 INCBIN
+#define INCBIN_S32 INCBIN
 #endif
 
 #define min(a, b) ((a) < (b) ? (a) : (b))

@@ -86,6 +86,14 @@ void FUN_080206b8(Door* door);
 void FUN_08020734(Door* door);
 void FUN_080206b4(Door* door);
 
+const u32 u32_ARRAY_085aa9cc[12] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};  // 0x085AA9CC
+
+const u32 u32_ARRAY_085aa9fc[24] = {3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2};  // 0x085AA9FC
+
+const u32 u32_ARRAY_085aaa5c[12] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};  // 0x085AAA5C
+
+const u32 u32_ARRAY_085aaa8c[12] = {0, 6, 7, 0, 1, 2, 2, 3, 4, 4, 5, 6};  // 0x085AAA8C
+
 static inline void Door_SetPhase(Door* door, u32 phase) { door->unk_37 = phase; }
 
 static inline void Door_SetStep(Door* door, u32 step) {
@@ -223,7 +231,7 @@ void FUN_0801fe98(DoorManager* p, u16 id) {
   }
 }
 
-// スクリプトの 'n' が指す扉を開かせる, 1体でも見つかれば 1 を返す
+// '.n' が指す扉を開かせる, 1体でも見つかれば 1 を返す
 s32 FUN_0801fedc(void) {
   DoorManager* p = FUN_08230e70(0x85E6);
   s32 found;
@@ -255,7 +263,7 @@ s32 FUN_0801fedc(void) {
   return found;
 }
 
-// スクリプトの 'n' が指す扉を閉じさせる, 1体でも見つかれば 1 を返す
+// '.n' が指す扉を閉じさせる, 1体でも見つかれば 1 を返す
 s32 FUN_0801ff78(void) {
   DoorManager* p = FUN_08230e70(0x85E6);
   s32 found;
@@ -291,7 +299,7 @@ NAKED s32 FUN_08020010(void) { INCFUNC("asm/func/FUN_08020010.inc"); }
 
 NAKED s32 FUN_080200f0(void) { INCFUNC("asm/func/FUN_080200f0.inc"); }
 
-// スクリプトの 'n' が指す扉を開き始めさせる
+// '.n' が指す扉を開き始めさせる
 void FUN_080201c8(void) {
   DoorManager* p = FUN_08230e70(0x85E6);
 
@@ -314,7 +322,7 @@ void FUN_080201c8(void) {
   }
 }
 
-// スクリプトの 'n' が1体だけ該当するとき、その扉の座標を 'p' の変数へ返す
+// '.n' が1体だけ該当するとき、その扉の座標を '.p' の変数へ返す
 NON_MATCH void FUN_08020260(void) {
 #ifdef NONMATCHING_C
   DoorManager* p = FUN_08230e70(0x85E6);
@@ -389,10 +397,8 @@ void FUN_08020680(DoorManager* p) {
   }
 }
 
-// 何もしないハンドラ
 void FUN_080206b0(Door* door) {}
 
-// 何もしないハンドラ
 void FUN_080206b4(Door* door) {}
 
 NAKED void FUN_080206b8(Door* door) { INCFUNC("asm/func/FUN_080206b8.inc"); }

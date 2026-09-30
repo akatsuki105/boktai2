@@ -348,8 +348,8 @@ _08050B10:
 	bl FUN_0804fb04
 	movs r0, #0
 	movs r1, #0
-	bl FUN_08051b70
-	bl FUN_08052250
+	bl Entity08051b70_Create
+	bl Entity08052250_Create
 	str r0, [r6, #0x60]
 	bl Entity08052ffc_Create
 	str r0, [r6, #0x64]

@@ -1338,7 +1338,7 @@ _08000E78:
 	adds r0, r6, #0
 	adds r1, r5, #0
 	adds r2, r4, #0
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	adds r0, r4, #0
 	add sp, #0x18
 	pop {r4, r5, r6}
@@ -1385,7 +1385,7 @@ _08000ED4:
 	mov r0, r8
 	adds r1, r5, #0
 	adds r2, r6, #0
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	adds r0, r6, #0
 	add sp, #0x18
 	pop {r3}

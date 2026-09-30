@@ -300,7 +300,7 @@ s32 FUN_0804a3e4(s32 id, s32 idx, u32 value) {
   return 0;
 }
 
-s32 FUN_0804a40c(s32 id, s32 idx, u32 str) {
+s32 FUN_0804a40c(s32 id, s32 idx, char* str) {
   TextPanel* p = TextPanel_FindByID(id);
 
   if (p != NULL) {

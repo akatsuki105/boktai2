@@ -99,6 +99,6 @@ NON_MATCH void MainSprite_DrawListScreenInternal(void) {
 #endif
 }
 
-NAKED void FUN_082303c8(void) { INCFUNC("asm/func/FUN_082303c8.inc"); }
+NAKED void MainSprite_DrawListGameoverInternal(void) { INCFUNC("asm/func/MainSprite_DrawListGameoverInternal.inc"); }
 
 NAKED void FUN_08230594(void) { INCFUNC("asm/func/FUN_08230594.inc"); }

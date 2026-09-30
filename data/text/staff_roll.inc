@@ -35,7 +35,7 @@ String_14CE:: @ 0x08D08E37, ID: 5326
 String_14CF:: @ 0x08D08E7E, ID: 5327
   .string "<WEIGHT>キャラクタ―デザイン</WEIGHT>\n斎藤淳太郎$"
 String_14D0:: @ 0x08D08EAF, ID: 5328
-  .string "<WEIGHT>スクリプトユニット</WEIGHT>\n上原偏利\n山田昌孝$"
+  .string "<WEIGHT>スクリプトユニット</WEIGHT>\n上原倫利\n山田昌孝$"
 String_14D1:: @ 0x08D08EE5, ID: 5329
   .string "<WEIGHT>スクリプトユニット</WEIGHT>\n矢野悠子\n吉冨賢介$"
 String_14D2:: @ 0x08D08F1B, ID: 5330

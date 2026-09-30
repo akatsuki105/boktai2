@@ -8,16 +8,16 @@ extern rgb555* gObjPlttData;
 extern s32 gObjPlttSlotCount;
 extern u16 gObjPlttSlotIDs[16];
 
-extern s32 s32_03004040;
+extern s32 gBgBrightness;
 extern s32 gObjPlttSlotCursor;
 extern s32 s32_03004048;
-extern s32 s32_0300404c;
+extern s32 gObjBrightnessApplied;
 extern s32 s32_03004450;
 extern u16 gBgPlttFadeRowMask;
-extern s32 s32_0300445c;
-extern s32 s32_03004460;
-extern u16 u16_03004464;
-extern u16 u16_03004490;
+extern s32 gObjBrightness;
+extern s32 gBgBrightness2;
+extern u16 gObjPlttBlendColor;
+extern u16 gObjPlttFadeSkipMask;
 
 rgb555* FUN_0822d00c(void) { return gBgPlttBlendBuffer; }
 
@@ -40,15 +40,15 @@ NON_MATCH void FUN_0822d014(rgb555* pltt, s32 val) {
     gObjPlttSlotIDs[i] = 0;
   }
   gBGPlttBufferPointer = gBgPlttBuffer;
-  s32_03004040 = 0x40;
+  gBgBrightness = 0x40;
   s32_03004048 = 0x40;
-  s32_03004460 = 0x40;
+  gBgBrightness2 = 0x40;
   gBgPlttBlendColor = 0x1084;
   gBgPlttFadeRowMask = 0;
-  s32_0300445c = 0x40;
-  s32_0300404c = 0x40;
-  u16_03004464 = 0x1084;
-  u16_03004490 = 0;
+  gObjBrightness = 0x40;
+  gObjBrightnessApplied = 0x40;
+  gObjPlttBlendColor = 0x1084;
+  gObjPlttFadeSkipMask = 0;
 #else
   INCFUNC("asm/func/FUN_0822d014.inc");
 #endif
@@ -113,7 +113,7 @@ NAKED void FUN_0822d248(void) { INCFUNC("asm/func/FUN_0822d248.inc"); }
 NON_MATCH void FUN_0822d630(void) {
 #ifdef NONMATCHING_C
   rgb555* buf = FUN_0822d00c();
-  s32 level = s32_03004040 * s32_03004460 >> 6;
+  s32 level = gBgBrightness * gBgBrightness2 >> 6;
   rgb555* dst;
   rgb555* src;
   s32 half, inv;
@@ -141,7 +141,7 @@ NON_MATCH void FUN_0822d630(void) {
     return;
   }
 
-  half = s32_03004040 * s32_03004460 >> 7;
+  half = gBgBrightness * gBgBrightness2 >> 7;
   inv = 0x20 - half;
   gBGPlttBufferPointer = buf;
   src = gBgPlttBuffer;

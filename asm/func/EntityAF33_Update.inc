@@ -9,8 +9,8 @@
 	str r0, [r1]
 	movs r0, #7
 	bl FUN_0809c08c
-	ldr r1, _080507F8 @ =FUN_0822db5c
-	ldr r2, _080507FC @ =FUN_0822aaac
+	ldr r1, _080507F8 @ =Particle_DrawList
+	ldr r2, _080507FC @ =AuxSprite_DrawList
 	ldr r3, _08050800 @ =MainSprite_DrawList
 	movs r0, #0
 	bl Video_SetDrawPasses
@@ -26,8 +26,8 @@ _080507F0:
 	bl KillEntity
 	b _0805083A
 	.align 2, 0
-_080507F8: .4byte FUN_0822db5c
-_080507FC: .4byte FUN_0822aaac
+_080507F8: .4byte Particle_DrawList
+_080507FC: .4byte AuxSprite_DrawList
 _08050800: .4byte MainSprite_DrawList
 _08050804:
 	bl FUN_0804e59c

@@ -14,7 +14,7 @@
 	ldr r1, [r7, #0x38]
 	movs r0, #2
 	adds r2, r6, #0
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r5, [sp]
 	movs r0, #2
 	movs r1, #0

@@ -64,7 +64,7 @@ void FUN_081d1924(Entity081d16ecItem* item) {
   Hitbox_Register(hitbox);
 }
 
-// スクリプトの 'n' が指す要素のフラグを返す
+// '.n' が指す要素のフラグを返す
 s32 FUN_081d19a8(void) {
   s32 id = VM_GetKeywordValue('n', 0);
 
@@ -90,7 +90,7 @@ void FUN_081d19cc(void) {
   }
 }
 
-// スクリプトの 'n' が指す要素を 'c' のビットに応じて開閉させる
+// '.n' が指す要素を '.c' のビットに応じて開閉させる
 void FUN_081d19f8(void) {
   s32 id = VM_GetKeywordValue('n', 0);
 

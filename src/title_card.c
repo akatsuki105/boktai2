@@ -7,8 +7,8 @@
 #include "video.h"
 #include "vm.h"
 
-extern s32 s32_03004040;
-extern s32 s32_0300445c;
+extern s32 gBgBrightness;
+extern s32 gObjBrightness;
 
 struct TitleCard;
 typedef void (*TitleCardFunc)(struct TitleCard*);
@@ -17,13 +17,13 @@ typedef void (*TitleCardFunc)(struct TitleCard*);
 // 文字とアイコンをスプライトで並べ、HBlank テーブルでノイズの帯をかけながら開閉する
 typedef struct TitleCard {
   Entity e;                  // 0x000, ENTITY_UNK_8
-  MainSpriteGfx gfx;         // 0x018, TitleCard_Init が OpenSpriteSetFile でスプライトセット 0xE89F を展開する先
+  MainSpriteGfx gfx;         // 0x018, SPRITE_E89F
   u16 state;                 // 0x038, 0 = 開くまでの待ち, 1 = 開く, 2 = 開いたまま, 3 = 閉じる
   u16 stateTimer;            // 0x03A, state 0 と 2 で毎フレーム +1, openDelay / closeDelay を超えたら次の state へ
   s32 frameCounter;          // 0x03C, TitleCard_Update が毎フレーム +1, 読み手が見つかっていない
   s32 scriptOnClose;         // 0x040, '.e', 閉じるときに VM_ExecByID へ渡す
   s16 closable;              // 0x044, '.C', 0 以外なら A/B で閉じられる
-  s16 unk_46;                // 0x046, '.n', 0 なら DAT_03004040 と s32_0300445c を進行度に連動させ、パレットのフェード設定もする
+  s16 unk_46;                // 0x046, '.n', 0 なら DAT_03004040 と gObjBrightness を進行度に連動させ、パレットのフェード設定もする
   s16 progress;              // 0x048, 0..progressMax, DAT_03004040 = progress * 64 / progressMax
   s16 openDelay;             // 0x04A, unk_46 が 0 なら 0x40、そうでなければ 0, state 0 の長さ
   s16 closeDelay;            // 0x04C, '.d=0x80', state 2 の長さ
@@ -77,7 +77,7 @@ NON_MATCH void TitleCard_BuildHBlankTable(TitleCard* p) {
 // 開くほうの進行, progress を上げきったら自分を外す
 void TitleCard_UpdateOpen(TitleCard* p) {
   if (p->unk_46 == 0) {
-    s32_03004040 = Div(p->progress << 6, p->progressMax);
+    gBgBrightness = Div(p->progress << 6, p->progressMax);
   }
   p->progress++;
   if (p->progress > p->progressMax) {
@@ -89,7 +89,7 @@ void TitleCard_UpdateOpen(TitleCard* p) {
 // 閉じるほうの進行, progress が 0 を切ったらスクリプトを走らせて自分を消す
 void TitleCard_UpdateClose(TitleCard* p) {
   if (p->unk_46 == 0) {
-    s32_03004040 = Div(p->progress << 6, p->progressMax);
+    gBgBrightness = Div(p->progress << 6, p->progressMax);
   }
   p->progress--;
   if (p->progress < 0) {
@@ -106,18 +106,18 @@ void TitleCard_UpdateClose(TitleCard* p) {
 NON_MATCH s32 TitleCard_Update(TitleCard* p) {
 #ifdef NONMATCHING_C
   if (p->unk_46 == 0) {
-    s32_0300445c = s32_03004040;
+    gObjBrightness = gBgBrightness;
   }
   if (p->closable != 0 && (gInput[0].pressed & (A_BUTTON | B_BUTTON))) {
-    MainSprite_Hide(&p->sprites[0]);
-    MainSprite_Hide(&p->sprites[1]);
-    MainSprite_Hide(&p->sprites[2]);
-    MainSprite_Hide(&p->sprites[3]);
-    MainSprite_Hide(&p->sprites[4]);
-    MainSprite_Hide(&p->sprites[5]);
+    MainSprite_SetFlags(&p->sprites[0], SPRFLAG_HIDDEN);
+    MainSprite_SetFlags(&p->sprites[1], SPRFLAG_HIDDEN);
+    MainSprite_SetFlags(&p->sprites[2], SPRFLAG_HIDDEN);
+    MainSprite_SetFlags(&p->sprites[3], SPRFLAG_HIDDEN);
+    MainSprite_SetFlags(&p->sprites[4], SPRFLAG_HIDDEN);
+    MainSprite_SetFlags(&p->sprites[5], SPRFLAG_HIDDEN);
     if (p->unk_46 == 0) {
-      s32_03004040 = 0;
-      s32_0300445c = 0;
+      gBgBrightness = 0;
+      gObjBrightness = 0;
     }
     if (p->scriptOnClose != 0) {
       VM_ExecByID(p->scriptOnClose, NULL);

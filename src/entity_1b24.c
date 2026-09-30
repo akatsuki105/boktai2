@@ -24,7 +24,7 @@ typedef struct {
   void* tilemapFile;       // 0x01C, GetFile(DIR_TILE_MAP, 0xCD91), BG2 に敷く
   rgb555* bgPltt;          // 0x020, GetFile(DIR_BGPLTT, "bg_link_col_arr") + 0x14
   void* unk_24;            // 0x024, ワードとして読まれるが用途不明
-  MainSpriteGfx gfx[4];    // 0x028, OpenMainSpriteFile(&gfx[i], file) を 0x28 / 0x48 / 0x68 / 0x88 で行う
+  MainSpriteGfx gfx[4];    // 0x028
   MainSprite sprites[36];  // 0x0A8, Entity1B24_Destroy がまとめて外す
   u8 unk_e28[48];          // 0xE28
   u8 unk_e58[244];         // 0xE58, _Init が FUN_080b99a0(&unk_e58), _Destroy が FUN_080b9a0c(&unk_e58) に渡す

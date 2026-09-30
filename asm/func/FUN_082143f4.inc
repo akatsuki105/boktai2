@@ -72,7 +72,7 @@ _08214442:
 	ldr r1, [r7, #0x38]
 	movs r0, #2
 	movs r2, #2
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r6, [sp]
 	movs r0, #2
 	movs r1, #0

@@ -114,7 +114,9 @@ typedef struct Player {
   Entity2UnkData unk_24;       // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Entity2UnkData
   MainSpriteGfx spriteSet_68;  // 0x068, 根拠： FUN_08060a24
   MainSprite sprite_88;        // 0x088, 根拠： FUN_08060a24
-  u8 unk_e8[0x16C - 0xE8];
+  u8 unk_e8[0x104 - 0xE8];
+  Vec3 unk_104;  // 0x104, FUN_0807a91c が unk_24.pos / sprite_88.pos と一緒に同じ座標を書く
+  u8 unk_10c[0x16C - 0x10C];
   HitboxData unk_16c;  // 0x16C
   u8 unk_1bc;          // 0x1BC, Entity2UnkData.unk_18 が &Player.unk_1bc
   u8 unk_1bd[0x230 - 0x1BD];
@@ -160,11 +162,16 @@ typedef struct Player {
   u16 unk_390;
   u16 elevatorID;  // 0x392, 搭乗中のエレベータのID
   u8 unk_394;      // 0x394, FUN_0807a9b8 が 1 を書く
-  u8 unk_395[3];
+  u8 unk_395;      // 0x395, FUN_0807d118 が 0 を入れる
+  u8 unk_396[2];
   void* ptr_398;  // 0x398, FUN_0807a9b8 の第2引数
-  u8 unk_39c[0x3BA - 0x39C];
-  u16 unk_3ba;  // 0x3BA, FUN_0807b5a8 が 1 を書く
-  u8 unk_3bc[0x3CC - 0x3BC];
+  u8 unk_39c[0x3B0 - 0x39C];
+  Vec3 unk_3b0;  // 0x3B0, FUN_0807a528 が引数の座標をそのまま写す
+  u16 unk_3b8;   // 0x3B8, FUN_0807a528 の第3引数
+  u16 unk_3ba;   // 0x3BA, FUN_0807b5a8 が 1 を書く
+  u8 unk_3bc;    // 0x3BC, FUN_08066d2c が見る
+  u8 unk_3bd;    // 0x3BD, FUN_080674dc / FUN_0807b0c0 が見る
+  u8 unk_3be[0x3CC - 0x3BE];
   u16 unk_3cc;
   s16 unk_3ce;  // 0x3CE, FUN_0807856c が ldrsh で読む
   u8 unk_3d0;
@@ -174,19 +181,34 @@ typedef struct Player {
   u8 unk_3f8[2];
   u8 magicFired;     // 0x3FA, 魔法の発動フレームに FUN_08064d6c (太陽ゲージ判定) の結果が入る, 1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
   u8 dynamiteCount;  // 0x3FB, 生存中の Entity080a8ff8 の数, Entity080a8ff8_Init が +1、消滅時に -1, MAGIC_DYNAMITE は 0 でないと再発動できない (FUN_08064db0)
-  u8 unk_3fc[4];
+  u8 unk_3fc[2];
+  u8 unk_3fe;  // 0x3FE, FUN_0806a050 が見て FUN_08060c40 に渡す番号を選ぶ
+  u8 unk_3ff;
   u8 angle_400;  // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
   u8 angle_401;  // 0x401, 同上
   u8 unk_402;    // 0x402, FUN_0807a904 が +1 する
   u8 unk_403[0x43A - 0x403];
   u16 unk_43a;     // 0x43A, FUN_0807b580 が 1 を書く
   u16 unk_43c[3];  // 0x43C, 多分状態異常の残り時間
-  u8 unk_442[86];
+  u16 unk_442;     // 0x442, FUN_0807b2dc が unk_446 が 0 でないときに返す値
+  u16 unk_444;
+  u16 unk_446;  // 0x446, 0 でなければ unk_442 が有効
+  u8 unk_448[0x456 - 0x448];
+  s8 unk_456;  // 0x456, FUN_080784fc が unk_290[0] の補正に足す
+  u8 unk_457[0x498 - 0x457];
   PlayerFunc fn_498;  // 0x498, FUN_08078d5c
-  u8 unk_49c[0x4aa - 0x49c];
+  Vec3 unk_49c;       // 0x49C, FUN_0807c88c が引数の座標をそのまま写す
+  u8 unk_4a4[0x4A6 - 0x4A4];
+  u8 unk_4a6;  // 0x4A6, FUN_0807bc14 の第2引数
+  u8 unk_4a7;  // 0x4A7, FUN_0807c748 の第3引数
+  u8 unk_4a8;
+  u8 unk_4a9;  // 0x4A9, FUN_0807b9dc の第2引数
   u8 unk_4aa;  // 0x4AA, FUN_080726b4
   u8 unk_4ab;  // 0x4AB, FUN_08072670 が 1 を書く
-  u8 unk_4ac[0x4B0 - 0x4AC];
+  u8 unk_4ac;
+  u8 unk_4ad;  // 0x4AD, 0 以外なら FUN_080726ec が unk_4ae を数える
+  u8 unk_4ae;  // 0x4AE, 8 フレームごとに FUN_080612d8 を呼ぶためのカウンタ
+  u8 unk_4af;
   s32 scriptID_4b0;  // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4c4 - 0x4b4];
   Eff082473e0Emitter unk_4c4;  // 0x4C4
@@ -214,7 +236,8 @@ typedef struct Player {
   u8 unk_94e;      // 0x94E, FUN_08062688
   u8 unk_94f;      // 0x94F
   u8 unk_950;      // 0x950, FUN_08063084
-  u8 unk_951[0x95E - 0x951];
+  u8 unk_951;      // 0x951, FUN_0806f780 が unk_a8d + 1 (負なら 0) を入れる
+  u8 unk_952[0x95E - 0x952];
   u16 unk_95e;  // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
   u16 unk_960;  // 0x960, FUN_08074994 が unk_95e と対で書く
   u8 unk_962[0x96C - 0x962];
@@ -230,14 +253,16 @@ typedef struct Player {
   Weapon* weapon_a70;
   weapon8_t weaponID_a74;  // 武器ID
   u8 weaponKind_a75;       // 0xA75, 武器種
-  u8 unk_a76[25];
+  u8 unk_a76[0xA8D - 0xA76];
+  s8 unk_a8d;  // 0xA8D, FUN_0806f780 が Player_CheckMagicEnchant の結果を入れる, 負ならエンチャントなし
+  u8 unk_a8e;
   u8 unk_a8f;  // 0xA8F, Entity08080be8 が毎フレーム charge に写す, 威力を 1 + n/2 倍にし、スプライトの絵も選ぶ
   u8 unk_a90[8];
   PlayerFunc attackCB;  // 0xA98, gPlayerAttackUpdates
 
   // 武器の特殊効果のコールバック関数の配列
   u32 (*weaponExDamageCb[WEAPON_EFFECT_SLOT_COUNT])(struct Player*);  // 0xA9C, プレイヤーの状態を参照する武器の特殊効果コールバック
-  u32 (*weaponEffectCb2[WEAPON_EFFECT_SLOT_COUNT])(void);             // 0xAA8, 状態を参照しない武器の特殊効果コールバック, 防御無視効果と麻痺のハンドラはここ
+  u32 (*weaponEffectCb2[WEAPON_EFFECT_SLOT_COUNT])(struct Player*);   // 0xAA8, 状態を参照しない武器の特殊効果コールバック, 防御無視効果と麻痺のハンドラはここ
   void* weaponEffectCb3[WEAPON_EFFECT_SLOT_COUNT];                    // 0xAB4,　敵の状態を参照する武器の特殊効果コールバック, xx特効系のハンドラはここ, シグネチャはまだ不明
 
   // 0xAC0, onUpdate (Player_Update) で毎フレーム呼ばれる
@@ -258,5 +283,6 @@ s32 FUN_080d1b04(Player* player);
 void Player_ReduceENE_0807aa60(Player* player, s32 amount);
 
 static inline void Player_SetFlag20(Player* p, u32 bit) { p->unk_20 |= bit; }
+static inline bool32 Player_TestFlag20(Player* p, u32 bit) { return p->unk_20 & bit; }
 
 #endif  // GUARD_ZOKTAI_PLAYER_H

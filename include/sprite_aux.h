@@ -88,7 +88,7 @@ typedef struct AuxSprite {
   s2_6 scaleX;             // 0x08
   s2_6 scaleY;             // 0x09
   u8 listIdx;              // 0x0A, gAuxSpriteLists の添字
-  u8 unk_0b;               // 0x0B
+  u8 unk_0b;               // 0x0B, padding?
   AuxSpriteGfx* gfx;       // 0x0C, FUN_0822a4fc がセットする
   s16 metaspriteIdx;       // 0x10, gfx->metasprites の添字
   u8 unk_12;               // 0x12

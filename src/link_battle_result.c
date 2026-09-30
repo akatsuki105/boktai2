@@ -16,51 +16,51 @@ typedef void (*LinkBattleResultFunc)(struct LinkBattleResult* p);
 
 // 通信対戦終了後のリザルト画面(+再戦確認), 16枚のスプライトと4枚のテキストパネルを持ち、16色パレットをクロスフェードさせる
 typedef struct LinkBattleResult {
-  Entity e;                     // 0x000, ENTITY_UNK_11
-  MainSprite sprites[16];       // 0x018, FUN_081dc9dc が MainSprite_Add(&sprites[i], &gfx0, poseIdx[i], ...) で16枚登録する
-  MainSprite cursorSprite;      // 0x618, MainSprite_Add(&cursorSprite, &gfx1, 4, ...)
-  MainSpriteGfx gfx0;           // 0x678, OpenMainSpriteFile(&gfx0, spriteFile0)
-  MainSpriteGfx gfx1;           // 0x698, OpenMainSpriteFile(&gfx1, spriteFile1)
-  MainSpriteFile* spriteFile0;  // 0x6B8, SPRITE_UI_LINK
-  MainSpriteFile* spriteFile1;  // 0x6BC, SPRITE_UI_START_MENU
-  u16 poseIdx[16];              // 0x6C0, FUN_081dc9dc が 0 を入れて MainSprite_Add に渡す
-  u16 cursorPose;               // 0x6E0, FUN_081dc9dc が 4 を入れる
-  u16 unk_6e2;                  // 0x6E2
-  u16 unk_6e4[4];               // 0x6E4, タイマーが切れたときに unk_6f4 の値を取り込む
-  u16 unk_6ec[4];               // 0x6EC, 0 でないスロットだけ FUN_081dcc48 が処理する
-  u16 unk_6f4[4];               // 0x6F4, FUN_081dd2dc が u16 として走査する
-  u8 unk_6fc[4];                // 0x6FC, FUN_081dd2dc が 0, 1, 2, 3 を入れる
-  u8 unk_700[4];                // 0x700
-  u16 unk_704;                  // 0x704, FUN_081dcd50 が 0 を入れる
-  s16 fadeSteps;                // 0x706, FUN_081dce14 の第2引数 (_Init は 0x20), 1歩あたりの差分をこれで割る
-  rgb555 plttCur[16];           // 0x708, bgPltt+0x40 の複写, gBgPlttBuffer+0x20 へ流し、フェードの始点になる
-  rgb555 plttA[16];             // 0x728, 同じ複写, fadeTarget が 0 以外のときの目標
-  rgb555 plttB[16];             // 0x748, 同じ複写, fadeTarget が 0 のときの目標, 自分のスロットに 0x7FFF が入る
-  s16 fadeR[16];                // 0x768, plttCur の赤成分を 5 ビット左シフトしたもの
-  s16 fadeG[16];                // 0x788, 同じく緑
-  s16 fadeB[16];                // 0x7A8, 同じく青
-  s16 stepR[16];                // 0x7C8, (目標 - plttCur) の赤を 5 ビット左シフトして fadeSteps で割ったもの
-  s16 stepG[16];                // 0x7E8, 同じく緑
-  s16 stepB[16];                // 0x808, 同じく青
-  u16 fadeTarget;               // 0x828, 0 なら plttB、それ以外なら plttA へ寄せる, FUN_081dce14 が毎回反転する
-  u16 unk_82a;                  // 0x82A, FUN_081dcd50 が 0 を入れる
-  TilemapHeader* tilemap0;      // 0x82C, GetFile(DIR_TILE_MAP, 0xCD91), BG2 に敷く
-  TilemapHeader* tilemap1;      // 0x830, GetFile(DIR_TILE_MAP, 0xA413), BG0 に敷く
-  rgb555* bgPltt;               // 0x834, GetFile(DIR_BGPLTT, 0x26BB) + 0x14
-  LinkBattleResultFunc fn;      // 0x838, _Update が毎フレーム呼ぶ, _Init が 0x081DD774 を入れる
-  u8* scriptPc;                 // 0x83C, '.s' の後の FUN_0823d340(), TextPanel_SetScript に渡す
-  u8 unk_840[4];                // 0x840
-  s32 panelID[4];               // 0x844, TextPanel_Create(0xC, 4 + i*4, 10, 2) の戻り値を4つ
-  u8 unk_854;                   // 0x854, _Init が 0 を入れる
-  u8 unk_855;                   // 0x855, _Init が 1 を入れる
-  u16 unk_856;                  // 0x856, 偶数フレームごとに効果音を鳴らすためのカウンタ
-  u8 unk_858;                   // 0x858, _Init が 0 を入れる
-  s8 playerCount;               // 0x859, gEntity9A9F->recordCount, 符号つきで負なら _Init は失敗する
-  u8 unk_85a[2];                // 0x85A
+  Entity e;                        // 0x000, ENTITY_UNK_11
+  MainSprite sprites[16];          // 0x018, FUN_081dc9dc が MainSprite_Add(&sprites[i], &gfx0, poseIdx[i], ...) で16枚登録する
+  MainSprite cursorSprite;         // 0x618, MainSprite_Add(&cursorSprite, &gfx1, 4, ...)
+  MainSpriteGfx gfx0;              // 0x678, SPRITE_UI_LINK
+  MainSpriteGfx gfx1;              // 0x698, SPRITE_UI_START_MENU
+  MainSpriteGfxFile* spriteFile0;  // 0x6B8, SPRITE_UI_LINK
+  MainSpriteGfxFile* spriteFile1;  // 0x6BC, SPRITE_UI_START_MENU
+  u16 poseIdx[16];                 // 0x6C0, FUN_081dc9dc が 0 を入れて MainSprite_Add に渡す
+  u16 cursorPose;                  // 0x6E0, FUN_081dc9dc が 4 を入れる
+  u16 unk_6e2;                     // 0x6E2
+  u16 unk_6e4[4];                  // 0x6E4, タイマーが切れたときに unk_6f4 の値を取り込む
+  u16 unk_6ec[4];                  // 0x6EC, 0 でないスロットだけ FUN_081dcc48 が処理する
+  u16 unk_6f4[4];                  // 0x6F4, FUN_081dd2dc が u16 として走査する
+  u8 unk_6fc[4];                   // 0x6FC, FUN_081dd2dc が 0, 1, 2, 3 を入れる
+  u8 unk_700[4];                   // 0x700
+  u16 unk_704;                     // 0x704, FUN_081dcd50 が 0 を入れる
+  s16 fadeSteps;                   // 0x706, FUN_081dce14 の第2引数 (_Init は 0x20), 1歩あたりの差分をこれで割る
+  rgb555 plttCur[16];              // 0x708, bgPltt+0x40 の複写, gBgPlttBuffer+0x20 へ流し、フェードの始点になる
+  rgb555 plttA[16];                // 0x728, 同じ複写, fadeTarget が 0 以外のときの目標
+  rgb555 plttB[16];                // 0x748, 同じ複写, fadeTarget が 0 のときの目標, 自分のスロットに 0x7FFF が入る
+  s16 fadeR[16];                   // 0x768, plttCur の赤成分を 5 ビット左シフトしたもの
+  s16 fadeG[16];                   // 0x788, 同じく緑
+  s16 fadeB[16];                   // 0x7A8, 同じく青
+  s16 stepR[16];                   // 0x7C8, (目標 - plttCur) の赤を 5 ビット左シフトして fadeSteps で割ったもの
+  s16 stepG[16];                   // 0x7E8, 同じく緑
+  s16 stepB[16];                   // 0x808, 同じく青
+  u16 fadeTarget;                  // 0x828, 0 なら plttB、それ以外なら plttA へ寄せる, FUN_081dce14 が毎回反転する
+  u16 unk_82a;                     // 0x82A, FUN_081dcd50 が 0 を入れる
+  Tilemaps* tilemap0;              // 0x82C, GetFile(DIR_TILE_MAP, 0xCD91), BG2 に敷く
+  Tilemaps* tilemap1;              // 0x830, GetFile(DIR_TILE_MAP, 0xA413), BG0 に敷く
+  rgb555* bgPltt;                  // 0x834, GetFile(DIR_BGPLTT, 0x26BB) + 0x14
+  LinkBattleResultFunc fn;         // 0x838, _Update が毎フレーム呼ぶ, _Init が 0x081DD774 を入れる
+  u8* scriptPc;                    // 0x83C, '.s' の後の FUN_0823d340(), TextPanel_SetScript に渡す
+  u8 unk_840[4];                   // 0x840
+  s32 panelID[4];                  // 0x844, TextPanel_Create(12, 4 + i*4, 10, 2) の戻り値を4つ
+  u8 unk_854;                      // 0x854, _Init が 0 を入れる
+  u8 unk_855;                      // 0x855, _Init が 1 を入れる
+  u16 unk_856;                     // 0x856, 偶数フレームごとに効果音を鳴らすためのカウンタ
+  u8 unk_858;                      // 0x858, _Init が 0 を入れる
+  s8 playerCount;                  // 0x859, gEntity9A9F->recordCount, 符号つきで負なら _Init は失敗する
+  u8 unk_85a[2];                   // 0x85A
 } LinkBattleResult;
 static_assert(sizeof(LinkBattleResult) == 2140);
 
-s32 FUN_0804a40c(s32 id, s32 idx, u32 str);
+s32 FUN_0804a40c(s32 id, s32 idx, char* str);
 s32 FUN_081dfa04(void);
 void FUN_081df8f0(s32 n);
 
@@ -112,7 +112,7 @@ void FUN_081dc818(LinkBattleResult* p, s32 idx) {
   if (rec != NULL) {
     TextPanel_SetScript(p->panelID[idx], p->scriptPc);
     TextPanel_SetMessage(p->panelID[idx], idx);
-    FUN_0804a40c(p->panelID[idx], idx, (u32)rec);
+    FUN_0804a40c(p->panelID[idx], idx, (char*)rec);
     TextPanel_Start(p->panelID[idx]);
   }
 }

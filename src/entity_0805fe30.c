@@ -9,6 +9,8 @@ static_assert(sizeof(Entity0805fe30) == 752);
 
 extern Entity0805fe30* gEntity0805fe30;  // 0x03000130
 
+const s32 s32_ARRAY_085aba88[5] = {0, 0, -3, -6, -9};  // 0x085ABA88
+
 void FUN_0805fb20(unknown*, unknown*, s32);
 void FUN_0805fc38(unknown*, unknown*, s32);
 

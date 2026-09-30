@@ -14,10 +14,10 @@ COMMON_DATA Camera* gCamera = NULL;     // 0x030047D0
 COMMON_DATA u8 u8_030047d4[12] = {};    // todo
 
 void Camera_SetTilemapOffset(void) {
-  s32 kw = VM_GetKeywordValue('v', 0);
-  if (kw == 0) {
+  s32 val = VM_GetKeywordValue('v', 0);
+  if (val == 0) {
     Unk_0203b000* p = FUN_08230e70(0x56C2);
-    Video_SetDrawPasses(0, FUN_0822db5c, FUN_0822aaac, MainSprite_DrawList);
+    Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
     if (p != NULL) {
       if (p->unk_04 != NULL) {
         gCameraCoords.tilemapX = ((s16*)p->unk_04)[4] >> 4;
@@ -26,7 +26,7 @@ void Camera_SetTilemapOffset(void) {
       }
     }
   } else {
-    Video_SetDrawPasses(kw, FUN_0822de64, FUN_0822ac90, MainSprite_DrawListScreen);
+    Video_SetDrawPasses(val, FUN_0822de64, FUN_0822ac90, MainSprite_DrawListScreen);
   }
   gCameraCoords.tilemapX = 0;
   gCameraCoords.tilemapY = 0;

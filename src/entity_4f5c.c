@@ -1,7 +1,13 @@
 #include "entity.h"
 #include "global.h"
 
-// まだ .text 部分を取り出してない
+typedef struct {
+  Entity e;  // ENTITY_UNK_10
+  u8 unk_18[480 - 0x18];
+} Entity4F5C;
+static_assert(sizeof(Entity4F5C) == 480);
+
+INCASM("asm/entity_4f5c.inc");
 
 const u16 u16_ARRAY_085aa970[2] = {3, 3};  // 0x085AA970
 

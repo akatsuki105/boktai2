@@ -15,7 +15,7 @@ typedef struct {
 } EnemyDexEntry;
 static_assert(sizeof(EnemyDexEntry) == 4);
 
-// 魔物図鑑のメニュー, スクリプトのキーワードから表示内容を組み立てる
+// 魔物図鑑のメニュー
 typedef struct {
   Entity e;                   // 0x0000, ENTITY_UNK_8
   u8 unk_18[8];               // 0x0018
@@ -47,7 +47,7 @@ typedef struct {
   void* scriptU;              // 0x1250, '.u'
   void* scriptT_upper;        // 0x1254, '.T'
   u32 unk_1258;               // 0x1258, '.e=0'
-  struct PreviewStage* sub;     // 0x125C, PreviewStage_Create(0, 0) の戻り値
+  struct PreviewStage* sub;   // 0x125C, PreviewStage_Create(0, 0) の戻り値
 } EnemyDexMenu;
 static_assert(sizeof(EnemyDexMenu) == 4704);
 

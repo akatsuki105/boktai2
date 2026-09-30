@@ -22,7 +22,7 @@ static_assert(sizeof(GameOverLetter) == 80);
 typedef struct GameOverManager {
   Entity e;                   // 0x000, ENTITY_UNK_11
   GameOverLetter letters[8];  // 0x018, "GAME OVER" の8文字, GameOverManager_SetupLetters が組み立て、GameOverManager_UpdateLetters が毎フレーム拡大率と位置を書き直す
-  MainSpriteGfx menuGfx;      // 0x298, GameOverManager_SetupMenu の GetFile(SPRITE_SETS, UI_START_MENU) を OpenSpriteSetFile したもの
+  MainSpriteGfx menuGfx;      // 0x298, GameOverManager_SetupMenu の GetFile(SPRITE_SETS, UI_START_MENU) を OpenMainSpriteFile したもの
   MainSprite menu;            // 0x2B8, コンティニューの選択肢, cursor に応じてポーズ 135 / 136 を貼る, flags に SPRFLAG_GAMEOVER を含む
   rgb555 menuPltt[16];        // 0x318, GameOverManager_SetupMenu が gObjPlttData[0x2A90] から CpuSet でコピーし、menu.pltt をここに向ける, GameOverManager_UpdateMenuPltt が最後の1色 (index 15) を点滅させる
   u8* script;                 // 0x338, '.r', GameOverManager_StateOpenMenu が TextBox_Start に渡す
@@ -306,7 +306,7 @@ void GameOverManager_StateShowLogo(GameOverManager* p) {
   for (i = 0; i < 8; i++) {
     p->letters[i].sprite.flags &= ~SPRFLAG_HIDDEN;
   }
-  Video_SetDrawPasses(0, FUN_0822e110, FUN_0822adac, FUN_0822f244);
+  Video_SetDrawPasses(0, Particle_DrawListGameover, AuxSprite_DrawListGameover, MainSprite_DrawListGameover);
   p->state = 2;
 }
 

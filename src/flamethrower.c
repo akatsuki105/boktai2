@@ -24,11 +24,11 @@ static_assert(sizeof(Entity081eaf6cItem) == 316);
 // 火炎放射のスプライトを最大4個、ビットマスクで管理するシングルトン
 // ゲーム中に火炎放射のギミックが登場するところは色々あるが、これが 汎用の火炎放射管理構造体 なのか 特定のギミック専用のもの なのかはまだ不明
 typedef struct Entity081eaf6c {
-  Entity e;                     // 0x000, ENTITY_UNK_10
-  MainSpriteGfx gfx;            // 0x018, SPRITE_FLAMETHROWER
-  MainSpriteFile* spriteFile;   // 0x038, SPRITE_FLAMETHROWER
-  Entity081eaf6cItem items[4];  // 0x03C, _Init と _Destroy が 0x13C 刻みで4個走査する
-  u32 activeMask;               // 0x52C, bit i が立っていれば items[i] が使用中, _Init が 0 にする
+  Entity e;                       // 0x000, ENTITY_UNK_10
+  MainSpriteGfx gfx;              // 0x018, SPRITE_FLAMETHROWER
+  MainSpriteGfxFile* spriteFile;  // 0x038, SPRITE_FLAMETHROWER
+  Entity081eaf6cItem items[4];    // 0x03C, _Init と _Destroy が 0x13C 刻みで4個走査する
+  u32 activeMask;                 // 0x52C, bit i が立っていれば items[i] が使用中, _Init が 0 にする
 } Entity081eaf6c;
 static_assert(sizeof(Entity081eaf6c) == 1328);
 

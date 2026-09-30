@@ -317,7 +317,7 @@ bool32 sound_08240960(SoundID32 id) {
 // --------------------------------------------
 // data
 
-INCBIN(".rodata", "data/sound.bin");  // ./tmp/bin.sh ./baserom.gba 0x08252c00 0x0825e3ec ./data/sound.bin
+INCRODATA(".rodata", "data/sound.bin");  // ./tmp/bin.sh ./baserom.gba 0x08252c00 0x0825e3ec ./data/sound.bin
 
 // clang-format off
 const struct MusicPlayer gMPlayTable[MUSIC_PLAYER_LENGTH] = {

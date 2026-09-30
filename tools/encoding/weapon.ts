@@ -1,5 +1,5 @@
 import { Parser } from "@binary-parser";
-import * as ConstHeader from "../encoding/constants_header.ts";
+import * as ConstHeader from "./constants_header.ts";
 
 type WeaponData = {
   id: number;
@@ -7,6 +7,7 @@ type WeaponData = {
   rank: number;
   lv: number;
   durability: number;
+  atk: number;
   wear: number;
   quality: number;
   price: number;
@@ -20,7 +21,8 @@ const parser = new Parser().endianness("little")
   .uint8("kind") // 武器種
   .uint8("rank")
   .uint8("lv") // 武器レベル
-  .uint16("durability") // 耐久値
+  .uint8("atk") // 攻撃力
+  .uint8("durability") // 耐久値
   .uint16("wear")
   .uint16("quality") // 品質(+X や SP)
   .uint16("price")
@@ -79,5 +81,5 @@ export const Stringify = (data: WeaponData): string => {
     return result;
   };
 
-  return `id: ${fmtName(data.id)}, kind: ${fmtKind(data.kind)}, rank: ${data.rank}, lv: ${data.lv}, durability: ${data.durability}, price: ${data.price}, effects: {${fmtEffects(data.effects)}}`;
+  return `id: ${fmtName(data.id)}, kind: ${fmtKind(data.kind)}, rank: ${data.rank}, lv: ${data.lv}, atk: ${data.atk}, durability: ${data.durability}, price: ${data.price}, effects: {${fmtEffects(data.effects)}}`;
 };

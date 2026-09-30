@@ -17,7 +17,7 @@ sOffsets: @ 0x08CCA69C
   .4byte Bytecode - sOffsets
   .4byte StringIndex - sOffsets
   .4byte StringData - sOffsets
-  .4byte Unknown - sOffsets
+  .4byte unk08D13420 - sOffsets
 
 StringIndex: @ 0x08CCA6AC
   .incbin "data/string_index.bin" @ ./tmp/bin.sh ./baserom.gba 0x08CCA6AC 0x08CD1640 ./data/string_index.bin
@@ -34,19 +34,5 @@ StringData: @ 0x08CD1640
   .include "data/text/text_6297.inc" @ ID: 6297..
   .balign 4, 0 @ ここで4バイトアラインメントされてるし、内容も通信対戦のテキストになるのでここでファイルが分かれている気がする
   .include "data/text/link_battle.inc" @ ID: 6996..
-
-Unknown: @ 0x08D13420
-  .byte 0xD8, 0x0E, 0x0A, 0x61 @ unknown
-
-Bytecode: @ 0x08d13424
-  .4byte Bytecode_end - Bytecode_start @ bytecode.bin bytesize
-Bytecode_start:
-  .incbin "data/scripts/scripts.bin"
-Bytecode_end:
-
-SpecialScript: @ 0x08da9e5c
-  .4byte SpecialScript_end - (. + 4) @ special.bin bytesize
-  .incbin "data/scripts/special.bin"
-SpecialScript_end:
 
 .balign 4, 0

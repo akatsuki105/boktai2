@@ -3,6 +3,7 @@
 #include "camera.h"
 #include "entity.h"
 #include "file.h"
+#include "font.h"
 #include "global.h"
 #include "particle.h"
 #include "sprite.h"
@@ -16,7 +17,6 @@ extern u16 u16_ARRAY_03003a30[4];
 extern s32 s32_03003a38;
 extern s32 s32_03003a3c;
 extern s32 s32_03003e40;
-extern s32 gOamDirty;
 extern s32 s32_03002ca8;
 extern s32 s32_03003500;
 extern u16 gStagedDISPCNT;
@@ -76,7 +76,6 @@ const u16 gSpriteSizeTable[16] = {
 
 #undef SPRITE_SIZE
 
-void FUN_0822e8b4(void);
 void FUN_0822d014(rgb555* pltt, s32 val);
 void Video_GenerateBGMapCore(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs, unknown* param_6);
 void Video_ResetObjTileAlloc(void);
@@ -97,6 +96,7 @@ void Video_ApplyMosaic(void);
 void CommitPalette(void);
 
 typedef Entity VideoCommit;  // Entity と同じサイズ, 他のEntityにある Create, Init, Destroy 関数 はなく Update (VideoCommit_Update) のみ
+
 // VBlank を待って、この 1 フレーム分の OAM・パレット・タイル・レジスタをまとめてハードへ反映する
 s32 VideoCommit_Update(VideoCommit* p) {
   StageBGRegs();
@@ -120,6 +120,7 @@ s32 VideoCommit_Update(VideoCommit* p) {
 }
 
 typedef Entity VideoRender;  // Entity と同じサイズ, 他のEntityにある Create, Init, Destroy 関数 はなく Update (VideoRender_Update) のみ
+
 // 1 フレーム分の描画処理, 登録された 3 つのコールバックを回し、パレットを組み立ててフレーム数を進める
 s32 VideoRender_Update(VideoRender* p) {
   FUN_0822d114();
@@ -317,11 +318,13 @@ void FUN_0822a568(AuxSprite* p, AuxSpriteGfx* gfx) {
 
 NAKED void AuxSprite_DrawInternal(AuxSprite* p, s32 x, s32 y, s32 z) { INCFUNC("asm/func/AuxSprite_DrawInternal.inc"); }
 
-NAKED void FUN_0822aaac(void) { INCFUNC("asm/func/FUN_0822aaac.inc"); }
+// 汎用の AuxSprite 描画パス (ほとんどの場面で使われる)
+NAKED void AuxSprite_DrawList(void) { INCFUNC("asm/func/AuxSprite_DrawList.inc"); }
 
 NAKED void FUN_0822ac90(void) { INCFUNC("asm/func/FUN_0822ac90.inc"); }
 
-NAKED void FUN_0822adac(void) { INCFUNC("asm/func/FUN_0822adac.inc"); }
+// ゲームオーバー時の AuxSprite 描画パス (SPRFLAG_GAMEOVER がセットされた AuxSprite のみ描画)
+NAKED void AuxSprite_DrawListGameover(void) { INCFUNC("asm/func/AuxSprite_DrawListGameover.inc"); }
 
 NAKED void FUN_0822af38(void) { INCFUNC("asm/func/FUN_0822af38.inc"); }
 
@@ -597,16 +600,46 @@ NAKED void* UNUSED FUN_0822bf80(void* dst, u32 val) { INCFUNC("asm/func/FUN_0822
 
 NAKED void Video_SetupBG(s32 bg, u32 param_2, unknown* f, u32 unused, s16 param_5, s16 param_6, u32 prio, u16* tilemap) { INCFUNC("asm/func/Video_SetupBG.inc"); }
 
-NAKED void Video_SetupBGLayout(s32 layout, u32 param_2, unknown* f, u32 param_4, u32 param_5, s32 count, s32* indices) { INCFUNC("asm/func/Video_SetupBGLayout.inc"); }
+NAKED void Video_SetupBGLayout(s32 layout, u32 param_2, TilemapFile* f, u32 param_4, u32 param_5, s32 count, s32* indices) { INCFUNC("asm/func/Video_SetupBGLayout.inc"); }
 
-NAKED void FUN_0822c398(s32 bg, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0822c398.inc"); }
+// タイルマップファイルの指定レイヤを (オフセットをアドレスに直してから) gBgStates に割り当てる
+void Video_SetBGLayer(s32 bg, TilemapFile* f, s32 layerIdx) {
+  Tilemaps hdr;
+  TilemapLayer layer;
+  BgState* s;
+  u16 w, h;
+
+  if (bg == 0) {
+    FUN_0822e8b4();
+  }
+
+  // 相対オフセットをROMアドレスに変換する
+  hdr = *f;
+  hdr.layers = (TilemapLayer*)((u32)hdr.layers + (u32)f);
+  hdr.tiles = (u8*)((u32)hdr.tiles + (u32)f);
+  hdr.metatiles = (BgMapEntry*)((u32)hdr.metatiles + (u32)f);
+
+  s = &gBgStates[bg];
+  layer = hdr.layers[layerIdx];
+  layer.mtmap = (u16*)((u32)layer.mtmap + (u32)f);
+
+  s->unk_10 = 0x1000;
+  s->unk_12 = 0x1000;
+  s->mtmap = layer.mtmap;
+  w = layer.width;
+  s->unk_18 = w;
+  h = layer.height;
+  s->unk_1a = h;
+  s->unk_1c = w;
+  s->unk_1e = h;
+}
 
 void Video_GenerateBGMap(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs) { Video_GenerateBGMapCore(bg, param_2, param_3, hofs, vofs, NULL); }
 
 NAKED void Video_GenerateBGMapCore(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs, unknown* param_6) { INCFUNC("asm/func/Video_GenerateBGMapCore.inc"); }
 
 // TilemapFile が圧縮されてたら展開して返す、圧縮されてなかったらそのまま返す
-TilemapHeader* GetTilemapFile(FileID id) {
+TilemapFile* GetTilemapFile(FileID id) {
   u32 fileID = id;
 
   u8* file = GetFile(DIR_TILE_MAP, fileID);
@@ -614,13 +647,13 @@ TilemapHeader* GetTilemapFile(FileID id) {
     return NULL;
   }
   if ((file[0] == 'M' && file[1] == 'P') || *(u32*)file == 0x005E8CC5) {  // "MP"
-    return (TilemapHeader*)file;
+    return (TilemapFile*)file;
   }
   if (gCachedTilemapFileID != fileID) {
     gCachedTilemapFileID = fileID;
     LZ77UnCompWram(file, gTilemapFileBufferHead);
   }
-  return (TilemapHeader*)gTilemapFileBuffer;
+  return (TilemapFile*)gTilemapFileBuffer;
 }
 
 // ウィンドウ矩形の控えを退避する

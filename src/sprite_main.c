@@ -47,17 +47,19 @@ void UNUSED MainSprite_RemoveAll(void) {
 	bx lr\n\
  .syntax divided\n")
 
+// 汎用の MainSprite 描画パス (ほとんどの場面で使われる)
 NAKED void MainSprite_DrawList(void) { ARM_TRAMPOLINE(MainSprite_DrawListInternal); }
 
 // カメラを使わない画面用の MainSprite 描画パス
 NAKED void MainSprite_DrawListScreen(void) { ARM_TRAMPOLINE(MainSprite_DrawListScreenInternal); }
 
-NAKED void FUN_0822f244(void) { ARM_TRAMPOLINE(FUN_082303c8); }
+// ゲームオーバー時の MainSprite 描画パス
+NAKED void MainSprite_DrawListGameover(void) { ARM_TRAMPOLINE(MainSprite_DrawListGameoverInternal); }
 
 NAKED void FUN_0822f264(void) { ARM_TRAMPOLINE(FUN_08230594); }
 
 // spriteset ファイルのヘッダをコピーし、各オフセットをファイル先頭からのポインタに変換する
-s32 OpenMainSpriteFile(MainSpriteGfx* gfx, MainSpriteFile* f) {
+s32 OpenMainSpriteFile(MainSpriteGfx* gfx, MainSpriteGfxFile* f) {
   *gfx = *(MainSpriteGfx*)f;
   gfx->sprites = (MainSpritePose*)((u32)gfx->sprites + (u32)f);
   gfx->anims = (MainAnim*)((u32)gfx->anims + (u32)f);

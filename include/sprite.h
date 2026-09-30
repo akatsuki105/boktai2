@@ -20,7 +20,7 @@ typedef struct {
       AuxAnimFile* animFile;  // 0x64, FUN_08055dac が GetFile(DIR_ANIMATION, animFileID), 0 ならアニメーションなし
     } aux;
     struct {
-      MainSpriteGfx gfx;  // 0x0C, FUN_08055e34 が OpenSpriteSetFile で作る
+      MainSpriteGfx gfx;  // 0x0C, FUN_08055e34 が OpenMainSpriteFile で作る
       MainSprite sprite;  // 0x2C, MainSprite は自身にアニメーションを持つので animFile はいらない
     } main;
   } u;                 // 0x0C

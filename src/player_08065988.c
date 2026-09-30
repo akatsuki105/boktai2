@@ -1,12 +1,15 @@
 #include "armor.h"
 #include "global.h"
 #include "player.h"
+#include "sound.h"
 #include "vm.h"
 #include "weapon.h"
 
 // player.c とファイルを分けてるのは、ファイルサイズが大きくなりすぎてコードを把握しにくいからで、解析が進んだら整理する予定
 
 void FUN_08065164(Player* p);
+extern const u16 u16_ARRAY_085abf4c[3];
+extern u16 u16_ARRAY_03002ba0[3];
 extern u16 u16_03002b78;
 extern u16 u16_03002b80;
 extern u16 u16_03002bd0;
@@ -15,12 +18,14 @@ bool32 FUN_08060a24(Player* p, u32 animID, s32 param_3);
 void FUN_080609dc(Player* p);
 s32 FUN_08086294(Vec3* pos, u32 a, u32 b);
 void Player_StopEneChargeSound(Player* p);
+magic32_t Player_CheckMagicEnchant(Player* p);
 void FUN_08060b84(Player* p, u8 a, u8 b);
 void FUN_08072724(Player* p);
 void FUN_0823bca8(s32 n);
 void FUN_0807e854(Player* p);
 void FUN_0807d118(Player* p);
 void FUN_08063220(Player* p);
+void FUN_08063574(Player* p, s32 badcondID, s32 frames);
 void FUN_08063634(Player* p, s32 n);
 void FUN_080ec79c(u8 kind, void* payload);
 void FUN_08060c40(Player* p, u32 val);
@@ -145,7 +150,30 @@ void FUN_08066d10(Player* p) {
   p->unk_3ce = 0;
 }
 
-NAKED bool32 FUN_08066d2c(Player* p, s32 val) { INCFUNC("asm/func/FUN_08066d2c.inc"); }
+// 残差1命令: 原典は TRUE を返す経路を全部まとめて後ろへ飛ばすが、こちらは途中で合流する
+NON_MATCH bool32 FUN_08066d2c(Player* p, s32 val) {
+#ifdef NONMATCHING_C
+  if (p->kind <= 1 || p->kind == 5) {
+    if (val == 0 || val == 3 || val == 6) {
+      return TRUE;
+    }
+    if (val == 4 && p->unk_3bc != 0) {
+      return TRUE;
+    }
+  } else if (p->kind == 4) {
+    if (val == 0) {
+      return TRUE;
+    }
+  } else {
+    if (val == 0 || val == 4) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_08066d2c.inc");
+#endif
+}
 
 NAKED void FUN_08066d7c(Player* p, s32 val) { INCFUNC("asm/func/FUN_08066d7c.inc"); }
 
@@ -163,13 +191,30 @@ NAKED u32 FUN_08066ee4(s32 kind, s32 idx) { INCFUNC("asm/func/FUN_08066ee4.inc")
 
 NAKED u32 FUN_08066f18(Player* p) { INCFUNC("asm/func/FUN_08066f18.inc"); }
 
-NAKED void FUN_08066f7c(Player* p) { INCFUNC("asm/func/FUN_08066f7c.inc"); }
+void FUN_08066f7c(Player* p) {
+  if (p->unk_37c != 0) {
+    FUN_08060b84(p, 0, 0);
+    p->sprite_2e4.active = FUN_08066f18(p);
+    FUN_080609dc(p);
+  }
+  p->unk_20 &= ~1;
+  FUN_08060a24(p, FUN_08066ee4(p->kind, 0), 0x40);
+}
 
 NAKED s32 FUN_08066fd4(Player* p) { INCFUNC("asm/func/FUN_08066fd4.inc"); }
 
 NAKED u32 FUN_08067068(Player* p) { INCFUNC("asm/func/FUN_08067068.inc"); }
 
-NAKED s32 FUN_080670d4(s32 val) { INCFUNC("asm/func/FUN_080670d4.inc"); }
+s32 FUN_080670d4(s32 val) {
+  if (val == 12) {
+    return 64;
+  }
+  if (val <= 11) {
+    return (12 - val) * 8 + 64;
+  } else {
+    return 64 - (val - 12) * 4;
+  }
+}
 
 NAKED void FUN_080670fc(Player* p, u32 val) { INCFUNC("asm/func/FUN_080670fc.inc"); }
 
@@ -183,13 +228,23 @@ NAKED void FUN_08067510(Player* p) { INCFUNC("asm/func/FUN_08067510.inc"); }
 
 NAKED void FUN_08067de8(Player* p) { INCFUNC("asm/func/FUN_08067de8.inc"); }
 
-NAKED void FUN_08067f58(Player* p) { INCFUNC("asm/func/FUN_08067f58.inc"); }
+bool32 FUN_08067f58(Player* p) {
+  if (Player_TestFlag20(p, 0x10) && p->ene < p->maxEne) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED void FUN_08067f88(Player* p) { INCFUNC("asm/func/FUN_08067f88.inc"); }
 
 NAKED void FUN_08067ffc(Player* p) { INCFUNC("asm/func/FUN_08067ffc.inc"); }
 
-NAKED void FUN_080682dc(Player* p) { INCFUNC("asm/func/FUN_080682dc.inc"); }
+bool32 FUN_080682dc(Player* p) {
+  if (!Player_TestFlag20(p, 0x10) && p->ene < p->maxEne) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED void FUN_0806830c(Player* p) { INCFUNC("asm/func/FUN_0806830c.inc"); }
 
@@ -205,9 +260,19 @@ NAKED void FUN_08068e94(Player* p, s32 param_2, s32 param_3, s32 param_4) { INCF
 
 NAKED void FUN_08069218(Player* p) { INCFUNC("asm/func/FUN_08069218.inc"); }
 
-NAKED void FUN_080695ec(Player* p) { INCFUNC("asm/func/FUN_080695ec.inc"); }
+void FUN_080695ec(Player* p) {
+  if (p->unk_37c != 3) {
+    FUN_08060b84(p, 3, 0);
+  }
+  p->attackCB(p);
+}
 
-NAKED void FUN_0806961c(Player* p) { INCFUNC("asm/func/FUN_0806961c.inc"); }
+void FUN_0806961c(Player* p) {
+  p->unk_20 &= ~1;
+  if (p->unk_4c4.unk_3 == 0) {
+    FUN_08060b84(p, 0, 0);
+  }
+}
 
 NAKED void FUN_08069648(Player* p) { INCFUNC("asm/func/FUN_08069648.inc"); }
 
@@ -223,7 +288,14 @@ NAKED void FUN_08069d70(Player* p) { INCFUNC("asm/func/FUN_08069d70.inc"); }
 
 NAKED void FUN_08069f60(Player* p) { INCFUNC("asm/func/FUN_08069f60.inc"); }
 
-NAKED void FUN_0806a050(Player* p) { INCFUNC("asm/func/FUN_0806a050.inc"); }
+void FUN_0806a050(Player* p) {
+  if (p->unk_3fe != 0) {
+    FUN_08060c40(p, 0x1C);
+  } else {
+    FUN_08060c40(p, 0x1D);
+  }
+  Player_SetFlag20(p, 0x1100);
+}
 
 NAKED void FUN_0806a084(Player* p) { INCFUNC("asm/func/FUN_0806a084.inc"); }
 
@@ -269,7 +341,21 @@ NAKED void FUN_0806cbe8(Player* p) { INCFUNC("asm/func/FUN_0806cbe8.inc"); }
 
 NAKED void FUN_0806ceb0(Player* p) { INCFUNC("asm/func/FUN_0806ceb0.inc"); }
 
-NAKED s32 FUN_0806cfd4(Player* p) { INCFUNC("asm/func/FUN_0806cfd4.inc"); }
+s32 FUN_0806cfd4(Player* p) {
+  s32 n = 12;
+
+  if (p->unk_4c4.kind == 2 && p->unk_4c4.unk_3 != 0) {
+    n = 8;
+  }
+  if (p->unk_402 != 0) {
+    n -= p->unk_402;
+  }
+  if (n <= 1) {
+    return 2;
+  } else {
+    return n;
+  }
+}
 
 NAKED void FUN_0806d014(Player* p) { INCFUNC("asm/func/FUN_0806d014.inc"); }
 
@@ -311,13 +397,30 @@ NAKED void FUN_0806f5d8(Player* p) { INCFUNC("asm/func/FUN_0806f5d8.inc"); }
 
 NAKED u32 FUN_0806f738(Player* p) { INCFUNC("asm/func/FUN_0806f738.inc"); }
 
-NAKED void FUN_0806f780(Player* p) { INCFUNC("asm/func/FUN_0806f780.inc"); }
+void FUN_0806f780(Player* p) {
+  p->unk_a8d = Player_CheckMagicEnchant(p);
+  if (p->unk_a8d >= 0) {
+    p->unk_951 = p->unk_a8d + 1;
+  } else {
+    p->unk_951 = 0;
+  }
+}
 
 NAKED void* FUN_0806f7bc(Player* p) { INCFUNC("asm/func/FUN_0806f7bc.inc"); }
 
 NAKED s32 FUN_0806f900(Player* p) { INCFUNC("asm/func/FUN_0806f900.inc"); }
 
-NAKED s32 FUN_0806f960(Player* p) { INCFUNC("asm/func/FUN_0806f960.inc"); }
+s32 FUN_0806f960(Player* p) {
+  s32 result = 0;
+  s32 i;
+
+  for (i = 0; i < 3; i++) {
+    if (p->weaponEffectCb2[i] != NULL) {
+      result |= p->weaponEffectCb2[i](p);
+    }
+  }
+  return result;
+}
 
 NAKED void dark_django_0806f990(HitboxData* a, HitboxData* b, void* _) { INCFUNC("asm/func/dark_django_0806f990.inc"); }
 
@@ -331,7 +434,21 @@ NAKED void FUN_0806fedc(Player* p) { INCFUNC("asm/func/FUN_0806fedc.inc"); }
 
 NAKED void FUN_080700a4(Player* p) { INCFUNC("asm/func/FUN_080700a4.inc"); }
 
-NAKED s32 FUN_08070104(Player* p) { INCFUNC("asm/func/FUN_08070104.inc"); }
+s32 FUN_08070104(u8* src, u8* base) {
+  s32 v = (*src & 0xF) << 8;
+
+  switch (*src >> 4) {
+    case 1: {
+      v -= base[4];
+      break;
+    }
+    case 2: {
+      v -= base[0];
+      break;
+    }
+  }
+  return v;
+}
 
 NAKED s32 FUN_0807012c(Player* p) { INCFUNC("asm/func/FUN_0807012c.inc"); }
 
@@ -401,7 +518,15 @@ void FUN_080726b4(Player* p) {
 
 void FUN_080726e0(Player* p) { FUN_08060c40(p, 5); }
 
-NAKED void FUN_080726ec(Player* p) { INCFUNC("asm/func/FUN_080726ec.inc"); }
+void FUN_080726ec(Player* p) {
+  if (p->unk_4ad != 0) {
+    p->unk_4ae++;
+    if (p->unk_4ae > 7) {
+      FUN_080612d8(p);
+      p->unk_4ae = 0;
+    }
+  }
+}
 
 NAKED void FUN_08072724(Player* p) { INCFUNC("asm/func/FUN_08072724.inc"); }
 
@@ -497,9 +622,20 @@ NAKED void FUN_08077cbc(Player* p) { INCFUNC("asm/func/FUN_08077cbc.inc"); }
 
 NAKED void FUN_08078060(Player* p) { INCFUNC("asm/func/FUN_08078060.inc"); }
 
-NAKED void* FUN_0807849c(Player* p) { INCFUNC("asm/func/FUN_0807849c.inc"); }
+NAKED s32 FUN_0807849c(Player* p) { INCFUNC("asm/func/FUN_0807849c.inc"); }
 
-NAKED void FUN_080784fc(Player* p) { INCFUNC("asm/func/FUN_080784fc.inc"); }
+void FUN_080784fc(Player* p) {
+  s32 i;
+
+  for (i = 9; i > 0; i--) {
+    p->unk_290[i] = p->unk_290[i - 1];
+  }
+
+  p->unk_290[0] = FUN_0807849c(p);
+  if ((s16)p->unk_290[0] >= 0) {
+    p->unk_290[0] = ((s16)p->unk_290[0] + p->unk_456 + 7) & 7;
+  }
+}
 
 void FUN_08078548(Player* p) {
   Player_StopEneChargeSound(p);
@@ -564,7 +700,14 @@ NAKED s32 FUN_0807a4c4(Player* p) { INCFUNC("asm/func/FUN_0807a4c4.inc"); }
 
 void FUN_0807a524(Player* p) {}
 
-NAKED void FUN_0807a528(Player* p) { INCFUNC("asm/func/FUN_0807a528.inc"); }
+void FUN_0807a528(Player* p, Vec3* pos, u16 param_3) {
+  p->unk_37c = 8;
+  p->unk_37e = 0;
+  p->unk_37d = 0;
+  p->unk_3f6 = 0;
+  p->unk_3b0 = *pos;
+  p->unk_3b8 = param_3;
+}
 
 NAKED s32 FUN_0807a570(Player* p) { INCFUNC("asm/func/FUN_0807a570.inc"); }
 
@@ -576,7 +719,19 @@ NAKED s32 FUN_0807a70c(ArmorData* data) { INCFUNC("asm/func/FUN_0807a70c.inc"); 
 
 NAKED void FUN_0807a798(s32 amount) { INCFUNC("asm/func/FUN_0807a798.inc"); }
 
-NAKED void FUN_0807a7f8(s32 kind, s32 amount) { INCFUNC("asm/func/FUN_0807a7f8.inc"); }
+// 残差はレジスタの割り当てのみ (命令数 30 対 30): 原典は kind を退避するが、こちらは amount を退避する
+NON_MATCH void FUN_0807a7f8(s32 kind, s32 amount) {
+#ifdef NONMATCHING_C
+  if (gStat->playerKind != 5 && kind <= 4) {
+    gStat->weaponExp[kind] += amount;
+    if (gStat->weaponExp[kind] > 0x26AB) {
+      gStat->weaponExp[kind] = 0x26AC;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0807a7f8.inc");
+#endif
+}
 
 NAKED void FUN_0807a840(Player* p) { INCFUNC("asm/func/FUN_0807a840.inc"); }
 
@@ -594,7 +749,19 @@ void FUN_0807a904(Player* p, u32 flag) {
   }
 }
 
-NAKED void FUN_0807a91c(Player* p, Vec3* pos) { INCFUNC("asm/func/FUN_0807a91c.inc"); }
+// 残差2命令: 原典は gStat->playerPos への3つの代入ごとに gStat を読み直すが、こちらは1回に畳まれる
+NON_MATCH void FUN_0807a91c(Player* p, Vec3* pos) {
+#ifdef NONMATCHING_C
+  p->unk_24.pos = *pos;
+  p->unk_104 = *pos;
+  p->sprite_88.pos = *pos;
+  gStat->playerPos.x = pos->x;
+  gStat->playerPos.y = pos->y;
+  gStat->playerPos.z = pos->z;
+#else
+  INCFUNC("asm/func/FUN_0807a91c.inc");
+#endif
+}
 
 bool32 FUN_0807a954(Player* p, u32 mask) {
   if (p->unk_390 & mask) {
@@ -622,9 +789,23 @@ void FUN_0807a9b8(Player* p, void* val) {
 
 NAKED s32 FUN_0807a9d0(Player* p) { INCFUNC("asm/func/FUN_0807a9d0.inc"); }
 
-NAKED void FUN_0807aa00(Player* p, s32 amount) { INCFUNC("asm/func/FUN_0807aa00.inc"); }
+void FUN_0807aa00(Player* p, s32 amount) {
+  if (p->unk_1c == 1) {
+    p->hp += amount;
+    if (p->hp >= p->maxHP) {
+      p->hp = p->maxHP;
+    }
+  }
+}
 
-NAKED void FUN_0807aa30(Player* p, s32 amount) { INCFUNC("asm/func/FUN_0807aa30.inc"); }
+void FUN_0807aa30(Player* p, s32 amount) {
+  if (p->unk_1c == 1) {
+    p->ene += amount;
+    if (p->ene >= p->maxEne) {
+      p->ene = p->maxEne;
+    }
+  }
+}
 
 // ENE を減らす, 0 未満にはならない
 void Player_ReduceENE_0807aa60(Player* player, s32 amount) {
@@ -675,7 +856,16 @@ void Player_ApplyDarkbug(Player* p, s32 amount) {
   }
 }
 
-NAKED void FUN_0807ab14(Player* p) { INCFUNC("asm/func/FUN_0807ab14.inc"); }
+void FUN_0807ab14(Player* p) {
+  Player_SetFlag20(p, 0x1000);
+  p->unk_380[0] = 0;
+  p->sprite_2e4.unk_2 = 0;
+  FUN_08063220(p);
+  p->unk_16c.flags |= HBFLAG_UNK_2;
+  p->unk_16c.unk_40 = 0;
+  p->unk_16c.unk_44 = 0;
+  FUN_08060b84(p, 0x15, 0);
+}
 
 NAKED s32 FUN_0807ab64(Player* param_1, PlayerFunc** param_2, unknown* param_3, s32 param_4, u8 param_5, s32 param_6, s32 param_7, s32 param_8, u32 param_9) { INCFUNC("asm/func/FUN_0807ab64.inc"); }
 
@@ -737,13 +927,48 @@ void FUN_0807b174(void) {
   }
 }
 
-NAKED s32 FUN_0807b1a4(Player* p) { INCFUNC("asm/func/FUN_0807b1a4.inc"); }
+// 残差1命令: 原典は gPlayerPtr[i] を読んだレジスタから写しを作る, FUN_0807b2dc / FUN_0807b66c と同じ類
+NON_MATCH s32 FUN_0807b1a4(void) {
+#ifdef NONMATCHING_C
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p == NULL || !VM_SeekToKeyword('f')) {
+    return 0;
+  }
+  return p->flag378 & VM_GetValue();
+#else
+  INCFUNC("asm/func/FUN_0807b1a4.inc");
+#endif
+}
 
 NAKED void item_0807b1e4(Player* p) { INCFUNC("asm/func/item_0807b1e4.inc"); }
 
-NAKED s32 FUN_0807b2dc(Player* p) { INCFUNC("asm/func/FUN_0807b2dc.inc"); }
+// 残差1命令: 原典は gPlayerPtr[i] を読んだレジスタから別のレジスタへ写してから使う
+// ローカルの有無・宣言と代入の分離・gPlayerPtr[i] の直接参照のどれでも写しが出ない
+NON_MATCH s32 FUN_0807b2dc(void) {
+#ifdef NONMATCHING_C
+  s32 i = VM_GetPlayerIdx();
 
-NAKED void FUN_0807b314(Player* p) { INCFUNC("asm/func/FUN_0807b314.inc"); }
+  if (gPlayerPtr[i] != NULL && gPlayerPtr[i]->unk_446 != 0) {
+    return gPlayerPtr[i]->unk_442;
+  }
+  return -1;
+#else
+  INCFUNC("asm/func/FUN_0807b2dc.inc");
+#endif
+}
+
+void FUN_0807b314(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    p->unk_442 = 0;
+    p->unk_446 = 0;
+    p->unk_444 = 0;
+  }
+}
 
 NAKED void FUN_0807b34c(Player* p) { INCFUNC("asm/func/FUN_0807b34c.inc"); }
 
@@ -755,11 +980,49 @@ void FUN_0807b3c0(void) {
   }
 }
 
-NAKED s32 FUN_0807b3e0(Player* p) { INCFUNC("asm/func/FUN_0807b3e0.inc"); }
+// 残差は分岐の配置のみ (命令数 28 対 28): 原典は return 0 のブロックが先に出て、成功側が後ろに置かれる
+NON_MATCH s32 FUN_0807b3e0(void) {
+#ifdef NONMATCHING_C
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807b428(Player* p) { INCFUNC("asm/func/FUN_0807b428.inc"); }
+  if (p != NULL && VM_SeekToKeyword('s')) {
+    s32 n = VM_GetValue();
 
-NAKED void FUN_0807b484(Player* p) { INCFUNC("asm/func/FUN_0807b484.inc"); }
+    if (n <= 2 && p->unk_43c[n] != 0) {
+      return 1;
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_0807b3e0.inc");
+#endif
+}
+
+void FUN_0807b428(void) {
+  if (VM_SeekToKeyword('s')) {
+    s32 n = VM_GetValue();
+
+    if (n <= 2) {
+      s32 val = VM_SeekToKeyword('t') ? VM_GetValue() : u16_ARRAY_085abf4c[n];
+
+      if (gPlayerPtr[0] != NULL) {
+        FUN_08063574(gPlayerPtr[0], n, val);
+      } else {
+        u16_ARRAY_03002ba0[n] = val;
+      }
+    }
+  }
+}
+
+void FUN_0807b484(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL && VM_SeekToKeyword('s')) {
+    FUN_08063634(p, VM_GetValue());
+  }
+}
 
 void FUN_0807b4b8(void) {
   s32 i = VM_GetPlayerIdx();
@@ -774,9 +1037,30 @@ void FUN_0807b4b8(void) {
   }
 }
 
-NAKED s32 FUN_0807b4e4(Player* p) { INCFUNC("asm/func/FUN_0807b4e4.inc"); }
+// 残差1命令: 2つ目の判定の分岐極性が逆 (原典は bgt で 1 を返す側へ飛び、0 を返す側が直列)
+// if/return, else 明示, && の直接 return をいずれも試したが極性が変わらない
+NON_MATCH s32 FUN_0807b4e4(void) {
+#ifdef NONMATCHING_C
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807b528(Player* p) { INCFUNC("asm/func/FUN_0807b528.inc"); }
+  if (p != NULL && *(gStat->unk_2c8 + p->isSabata) > 0) {
+    return 1;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_0807b4e4.inc");
+#endif
+}
+
+void FUN_0807b528(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    *(gStat->unk_2c8 + p->isSabata) = 0;
+  }
+}
 
 void FUN_0807b564(void) {
   u16_03002bd0 = 0;
@@ -834,18 +1118,36 @@ void FUN_0807b64c(void) {
   }
 }
 
-NAKED void FUN_0807b66c(Player* p) { INCFUNC("asm/func/FUN_0807b66c.inc"); }
+// 残差1命令: 原典は gPlayerPtr[i] を読んだあと別レジスタへ写し、後半の呼び出しはそちらを使う
+// FUN_0807b2dc と同じ「読んだポインタの写し」が出ない類, ローカル1個・gPlayerPtr[i] 直接・両者の混在を試済
+NON_MATCH void FUN_0807b66c(void) {
+#ifdef NONMATCHING_C
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807e854(p);
+    if (VM_SeekToKeyword('d')) {
+      p->sprite_2e4.active = VM_GetValue();
+    }
+    FUN_080609dc(p);
+    FUN_08060b84(p, 0x1F, 0);
+  }
+#else
+  INCFUNC("asm/func/FUN_0807b66c.inc");
+#endif
+}
 
 NAKED s32 FUN_0807b6b8(Player* p) { INCFUNC("asm/func/FUN_0807b6b8.inc"); }
 
 NAKED void FUN_0807b7a4(Player* p) { INCFUNC("asm/func/FUN_0807b7a4.inc"); }
 
-void FUN_0807b890(Player* p, u16 val) {
+void FUN_0807b890(Player* p, s32 val) {
   p->unk_96c = 1;
   p->unk_95e = val;
 }
 
-void FUN_0807b8a8(Player* p, u16 val) {
+void FUN_0807b8a8(Player* p, s32 val) {
   p->unk_96c = 2;
   p->unk_95e = val;
 }
@@ -854,15 +1156,43 @@ void FUN_0807b8c0(Player* p) { p->unk_96c = 0; }
 
 void FUN_0807b8d0(Player* p, Vec3* src) { p->unk_24.pos = *src; }
 
-NAKED void FUN_0807b8dc(Player* p) { INCFUNC("asm/func/FUN_0807b8dc.inc"); }
+void FUN_0807b8dc(Player* p) {
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 0, 0);
+  p->sprite_88.flags |= SPRFLAG_HIDDEN;
+  p->fn_498 = FUN_080726e0;
+}
 
 NAKED void FUN_0807b910(Player* p, s32 val) { INCFUNC("asm/func/FUN_0807b910.inc"); }
 
-NAKED void FUN_0807b9dc(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807b9dc.inc"); }
+void FUN_0807b9dc(Player* p, s32 param_2, u32 param_3) {
+  p->unk_4a9 = param_2;
+  p->scriptID_4b0 = param_3;
+  p->fn_498 = FUN_080727d4;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 0, 0);
+}
 
-NAKED void FUN_0807ba14(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_0807ba14.inc"); }
+void FUN_0807ba14(Player* p, s32 param_2) {
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 0, 1);
+  p->fn_498 = FUN_08072724;
+}
 
-NAKED void FUN_0807ba50(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807ba50.inc"); }
+void FUN_0807ba50(Player* p, s32 param_2, u32 param_3) {
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  p->scriptID_4b0 = param_3;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 0, 2);
+  p->fn_498 = FUN_08072724;
+}
 
 NAKED void FUN_0807ba94(Player* p, unknown* param_2, u32 param_3, u8 param_4) { INCFUNC("asm/func/FUN_0807ba94.inc"); }
 
@@ -870,29 +1200,83 @@ NAKED void FUN_0807bb3c(Player* p) { INCFUNC("asm/func/FUN_0807bb3c.inc"); }
 
 NAKED void FUN_0807bbb0(Player* p) { INCFUNC("asm/func/FUN_0807bbb0.inc"); }
 
-NAKED void FUN_0807bc14(Player* p) { INCFUNC("asm/func/FUN_0807bc14.inc"); }
+void FUN_0807bc14(Player* p, s32 param_2, u32 param_3) {
+  p->unk_4a6 = param_2;
+  p->scriptID_4b0 = param_3;
+  p->sprite_2e4.active = 0;
+  p->sprite_2e4.unk_2 = 0;
+  p->sprite_2e4.unk_3 = 0;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 7, 0);
+  p->fn_498 = FUN_0807304c;
+}
 
-NAKED void FUN_0807bc64(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_0807bc64.inc"); }
+void FUN_0807bc64(Player* p, u32 param_2) {
+  if (p->unk_1c == 2 && p->unk_37c == 7 && p->unk_37d != 0) {
+    p->scriptID_4b0 = param_2;
+    FUN_0807b7a4(p);
+    FUN_08060b84(p, 7, 3);
+    p->fn_498 = FUN_0807304c;
+  }
+}
 
-NAKED void FUN_0807bcb0(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807bcb0.inc"); }
+void FUN_0807bcb0(Player* p, s32 param_2, u32 param_3) {
+  FUN_0807b7a4(p);
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  p->scriptID_4b0 = param_3;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 0x12, 0);
+  p->fn_498 = FUN_08073574;
+}
 
-NAKED void FUN_0807bcfc(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_0807bcfc.inc"); }
+void FUN_0807bcfc(Player* p, s32 param_2) {
+  FUN_0807b7a4(p);
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  PlaySound_082406e0(0xC6);
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 0x12, 2);
+  p->fn_498 = FUN_08073574;
+}
 
-NAKED void FUN_0807bd44(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_0807bd44.inc"); }
+void FUN_0807bd44(Player* p, s32 param_2) {
+  FUN_0807b7a4(p);
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 0x12, 1);
+  p->fn_498 = FUN_08073574;
+}
 
-NAKED void FUN_0807bd84(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807bd84.inc"); }
+void FUN_0807bd84(Player* p, s32 param_2, u32 param_3) {
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  p->scriptID_4b0 = param_3;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 0x12, 3);
+  p->fn_498 = FUN_08073574;
+}
 
-NAKED void FUN_0807bdc8(Player* p) { INCFUNC("asm/func/FUN_0807bdc8.inc"); }
+NAKED void FUN_0807bdc8(Player* p, s32 param_2, s32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_0807bdc8.inc"); }
 
-NAKED void FUN_0807be58(Player* p) { INCFUNC("asm/func/FUN_0807be58.inc"); }
+NAKED void FUN_0807be58(Player* p, s32 param_2, s32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_0807be58.inc"); }
 
-NAKED void FUN_0807bee0(Player* p) { INCFUNC("asm/func/FUN_0807bee0.inc"); }
+NAKED void FUN_0807bee0(Player* p, s32 param_2, s32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_0807bee0.inc"); }
 
 NAKED void FUN_0807bfa4(Player* p) { INCFUNC("asm/func/FUN_0807bfa4.inc"); }
 
 NAKED void FUN_0807c048(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_0807c048.inc"); }
 
-NAKED void FUN_0807c084(Player* p) { INCFUNC("asm/func/FUN_0807c084.inc"); }
+NAKED void FUN_0807c084(Player* p, s32 param_2, s32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_0807c084.inc"); }
 
 NAKED void FUN_0807c11c(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_0807c11c.inc"); }
 
@@ -902,47 +1286,155 @@ NAKED void FUN_0807c30c(Player* p) { INCFUNC("asm/func/FUN_0807c30c.inc"); }
 
 NAKED void FUN_0807c36c(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c36c.inc"); }
 
-NAKED void FUN_0807c458(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c458.inc"); }
+void FUN_0807c458(Player* p, s32 param_2, u32 param_3) {
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  p->scriptID_4b0 = param_3;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 3, 0);
+  p->fn_498 = FUN_08073f88;
+}
 
-NAKED void FUN_0807c49c(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c49c.inc"); }
+void FUN_0807c49c(Player* p, s32 param_2, u32 param_3) {
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  p->scriptID_4b0 = param_3;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 3, 2);
+  p->fn_498 = FUN_08073f88;
+}
 
-NAKED void FUN_0807c4e0(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c4e0.inc"); }
+void FUN_0807c4e0(Player* p, s32 param_2, u32 param_3) {
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  p->scriptID_4b0 = param_3;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 3, 0);
+  p->fn_498 = FUN_080740b0;
+}
 
-NAKED void FUN_0807c524(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c524.inc"); }
+void FUN_0807c524(Player* p, s32 param_2, u32 param_3) {
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  p->scriptID_4b0 = param_3;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 3, 2);
+  p->fn_498 = FUN_080740b0;
+}
 
-NAKED void FUN_0807c568(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c568.inc"); }
+void FUN_0807c568(Player* p, s32 param_2, u32 param_3) {
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  p->scriptID_4b0 = param_3;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 3, 0);
+  p->fn_498 = FUN_08074244;
+}
 
-NAKED void FUN_0807c5ac(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c5ac.inc"); }
+void FUN_0807c5ac(Player* p, s32 param_2, u32 param_3) {
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  p->scriptID_4b0 = param_3;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 3, 2);
+  p->fn_498 = FUN_08074244;
+}
 
-NAKED void FUN_0807c5f0(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c5f0.inc"); }
+void FUN_0807c5f0(Player* p, s32 param_2, u32 param_3) {
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  p->scriptID_4b0 = param_3;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 3, 0);
+  p->fn_498 = FUN_08074350;
+}
 
-NAKED void FUN_0807c634(Player* p) { INCFUNC("asm/func/FUN_0807c634.inc"); }
+NAKED void FUN_0807c634(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c634.inc"); }
 
-NAKED void FUN_0807c748(Player* p) { INCFUNC("asm/func/FUN_0807c748.inc"); }
+void FUN_0807c748(Player* p, s32 param_2, s32 param_3, u32 param_4) {
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  p->scriptID_4b0 = param_4;
+  p->unk_4a7 = param_3;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 3, 0);
+  p->fn_498 = FUN_080744bc;
+}
 
-NAKED void FUN_0807c798(Player* p) { INCFUNC("asm/func/FUN_0807c798.inc"); }
+void FUN_0807c798(Player* p, s32 scriptID) {
+  p->scriptID_4b0 = scriptID;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 3, 5);
+  p->fn_498 = FUN_080744bc;
+}
 
 NAKED void FUN_0807c7c8(Player* p) { INCFUNC("asm/func/FUN_0807c7c8.inc"); }
 
-NAKED void FUN_0807c88c(Player* p) { INCFUNC("asm/func/FUN_0807c88c.inc"); }
+void FUN_0807c88c(Player* p, Vec3* pos, u8 param_3, u32 param_4) {
+  p->unk_49c = *pos;
+  p->scriptID_4b0 = param_4;
+  p->unk_4a9 = param_3;
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 2, 0);
+  p->fn_498 = FUN_080746ec;
+}
 
-NAKED void FUN_0807c8d4(Player* p) { INCFUNC("asm/func/FUN_0807c8d4.inc"); }
+void FUN_0807c8d4(Player* p, s32 param_2) {
+  if (param_2 >= 0) {
+    p->sprite_2e4.active = param_2;
+  }
+  FUN_080609dc(p);
+  FUN_08060a24(p, FUN_08066ee4(p->kind, 1), 0x20);
+  FUN_0807b7a4(p);
+  FUN_08060b84(p, 2, 0);
+  p->fn_498 = FUN_08074994;
+}
 
-NAKED void FUN_0807c928(Player* p, s32 val) { INCFUNC("asm/func/FUN_0807c928.inc"); }
+void FUN_0807c928(Player* p, s32 val) {
+  FUN_0807b7a4(p);
+  p->sprite_2e4.active = 1;
+  p->sprite_2e4.unk_2 = 0;
+  p->sprite_2e4.unk_3 = 0;
+  FUN_08060b84(p, 0x10, 0);
+  p->fn_498 = FUN_080749b0;
+}
 
-NAKED void FUN_0807c968(Player* p, s32 val) { INCFUNC("asm/func/FUN_0807c968.inc"); }
+void FUN_0807c968(Player* p, s32 val) {
+  FUN_0807b7a4(p);
+  p->sprite_2e4.active = 1;
+  p->sprite_2e4.unk_2 = 0;
+  p->sprite_2e4.unk_3 = 0;
+  FUN_08060b84(p, 0x10, 2);
+  p->fn_498 = FUN_080749b0;
+}
 
-NAKED void FUN_0807c9ac(Player* p) { INCFUNC("asm/func/FUN_0807c9ac.inc"); }
+NAKED void FUN_0807c9ac(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c9ac.inc"); }
 
-NAKED void FUN_0807ca24(Player* p) { INCFUNC("asm/func/FUN_0807ca24.inc"); }
+NAKED void FUN_0807ca24(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807ca24.inc"); }
 
-NAKED void FUN_0807ca9c(Player* p) { INCFUNC("asm/func/FUN_0807ca9c.inc"); }
+NAKED void FUN_0807ca9c(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807ca9c.inc"); }
 
-NAKED void FUN_0807cb14(Player* p) { INCFUNC("asm/func/FUN_0807cb14.inc"); }
+NAKED void FUN_0807cb14(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807cb14.inc"); }
 
-NAKED void FUN_0807cb8c(Player* p) { INCFUNC("asm/func/FUN_0807cb8c.inc"); }
+NAKED void FUN_0807cb8c(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807cb8c.inc"); }
 
-NAKED void FUN_0807cc14(Player* p) { INCFUNC("asm/func/FUN_0807cc14.inc"); }
+NAKED void FUN_0807cc14(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_0807cc14.inc"); }
 
 NAKED bool32 FUN_0807cc84(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_0807cc84.inc"); }
 
@@ -952,7 +1444,18 @@ void FUN_0807ceb8(Player* p) { FUN_08063220(p); }
 
 NAKED void FUN_0807cec4(Player* p) { INCFUNC("asm/func/FUN_0807cec4.inc"); }
 
-NAKED void FUN_0807d118(Player* p) { INCFUNC("asm/func/FUN_0807d118.inc"); }
+void FUN_0807d118(Player* p) {
+  if (p->unk_37c != 6) {
+    p->unk_37c = 0;
+  }
+  p->unk_37d = 0;
+  p->unk_37e = 0;
+  if (p->unk_4a8 != 0) {
+    p->unk_4a8 = 0;
+  }
+  p->unk_1c = 1;
+  p->unk_395 = 0;
+}
 
 s32 FUN_0807d164(void) {
   if (VM_SeekToKeyword('d')) {
@@ -973,9 +1476,25 @@ void FUN_0807d198(void) {
   }
 }
 
-NAKED void FUN_0807d1c0(Player* p) { INCFUNC("asm/func/FUN_0807d1c0.inc"); }
+void FUN_0807d1c0(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807d200(Player* p) { INCFUNC("asm/func/FUN_0807d200.inc"); }
+  if (p != NULL && VM_SeekToKeyword('p')) {
+    FUN_0807b890(p, VM_GetValue() + 0x121);
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807d200(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL && VM_SeekToKeyword('p')) {
+    FUN_0807b8a8(p, VM_GetValue() + 0x121);
+    FUN_08072640(p);
+  }
+}
 
 void FUN_0807d240(void) {
   s32 i = VM_GetPlayerIdx();
@@ -1085,11 +1604,42 @@ void FUN_0807d628(void) {
   }
 }
 
-NAKED void FUN_0807d660(Player* p) { INCFUNC("asm/func/FUN_0807d660.inc"); }
+void FUN_0807d660(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807d6a8(Player* p) { INCFUNC("asm/func/FUN_0807d6a8.inc"); }
+  if (p != NULL) {
+    s32 a = FUN_0807d164();
+    u32 b = FUN_0807d180();
 
-NAKED void FUN_0807d6f8(Player* p) { INCFUNC("asm/func/FUN_0807d6f8.inc"); }
+    FUN_0807bdc8(p, a, VM_SeekToKeyword('f') ? VM_GetValue() : 0, b);
+  }
+}
+
+void FUN_0807d6a8(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    s32 a = FUN_0807d164();
+    u32 b = FUN_0807d180();
+
+    FUN_0807be58(p, a, VM_SeekToKeyword('h') ? VM_GetValue() : 1500, b);
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807d6f8(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    s32 n = VM_SeekToKeyword('f') ? VM_GetValue() : 30;
+
+    FUN_0807bee0(p, FUN_0807d164(), n, FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
 NAKED void FUN_0807d744(Player* p) { INCFUNC("asm/func/FUN_0807d744.inc"); }
 
@@ -1103,7 +1653,17 @@ void FUN_0807d7ac(void) {
   }
 }
 
-NAKED void FUN_0807d7dc(Player* p) { INCFUNC("asm/func/FUN_0807d7dc.inc"); }
+void FUN_0807d7dc(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    s32 n = VM_SeekToKeyword('f') ? VM_GetValue() : 50;
+
+    FUN_0807c084(p, FUN_0807d164(), n, FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
 void FUN_0807d828(void) {
   s32 i = VM_GetPlayerIdx();
@@ -1205,7 +1765,17 @@ void FUN_0807da18(void) {
   }
 }
 
-NAKED void FUN_0807da50(Player* p) { INCFUNC("asm/func/FUN_0807da50.inc"); }
+void FUN_0807da50(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    s32 n = VM_SeekToKeyword('l') ? VM_GetValue() : 32;
+
+    FUN_0807c634(p, n, FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
 void FUN_0807da94(void) {
   s32 i = VM_GetPlayerIdx();
@@ -1221,17 +1791,75 @@ void FUN_0807da94(void) {
   }
 }
 
-NAKED void FUN_0807dad0(Player* p) { INCFUNC("asm/func/FUN_0807dad0.inc"); }
+void FUN_0807dad0(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807db14(Player* p) { INCFUNC("asm/func/FUN_0807db14.inc"); }
+  if (p != NULL) {
+    s32 n = VM_SeekToKeyword('r') ? VM_GetValue() : 0;
 
-NAKED void FUN_0807db58(Player* p) { INCFUNC("asm/func/FUN_0807db58.inc"); }
+    FUN_0807c9ac(p, n, FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
 
-NAKED void FUN_0807db9c(Player* p) { INCFUNC("asm/func/FUN_0807db9c.inc"); }
+void FUN_0807db14(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
 
-NAKED void FUN_0807dbe0(Player* p) { INCFUNC("asm/func/FUN_0807dbe0.inc"); }
+  if (p != NULL) {
+    s32 n = VM_SeekToKeyword('r') ? VM_GetValue() : 0;
 
-NAKED void FUN_0807dc24(Player* p) { INCFUNC("asm/func/FUN_0807dc24.inc"); }
+    FUN_0807ca24(p, n, FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807db58(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    s32 n = VM_SeekToKeyword('r') ? VM_GetValue() : 0;
+
+    FUN_0807ca9c(p, n, FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807db9c(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    s32 n = VM_SeekToKeyword('r') ? VM_GetValue() : 0;
+
+    FUN_0807cb14(p, n, FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807dbe0(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    s32 n = VM_SeekToKeyword('d') ? VM_GetValue() : 0;
+
+    FUN_0807cb8c(p, n, FUN_0807d180());
+    FUN_08072640(p);
+  }
+}
+
+void FUN_0807dc24(void) {
+  s32 i = VM_GetPlayerIdx();
+  Player* p = gPlayerPtr[i];
+
+  if (p != NULL) {
+    FUN_0807cc14(p, VM_SeekToKeyword('r') ? VM_GetValue() : 0);
+    FUN_08072640(p);
+  }
+}
 
 NAKED void FUN_0807dc60(Player* p) { INCFUNC("asm/func/FUN_0807dc60.inc"); }
 
@@ -1326,10 +1954,10 @@ void MagicDash_0806734c(Player* p);
 void FUN_080674dc(Player* p);
 void FUN_08067510(Player* p);
 void FUN_08067de8(Player* p);
-void FUN_08067f58(Player* p);
+bool32 FUN_08067f58(Player* p);
 void FUN_08067f88(Player* p);
 void FUN_08067ffc(Player* p);
-void FUN_080682dc(Player* p);
+bool32 FUN_080682dc(Player* p);
 void FUN_0806830c(Player* p);
 void FUN_08068624(Player* p);
 void MagicRisingSun_08068944(Player* p);

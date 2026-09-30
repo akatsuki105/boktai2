@@ -1,7 +1,7 @@
 #include "entity.h"
 #include "global.h"
 
-// 画面全体のフェード (ブレンド係数 s32_0300445c と フェード色 u16_03004464) を動かすシングルトン
+// 画面全体のフェード (ブレンド係数 gObjBrightness と フェード色 gObjPlttBlendColor) を動かすシングルトン
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_11
   u16 unk_18;         // 0x18, _Create の引数, 書き込むだけで読み手が見つかっていない
@@ -11,7 +11,7 @@ typedef struct {
   u16 timer;          // 0x20, state に入ってからのステップ数, (timer << 6) >> durationShift が係数
   u16 durationShift;  // 0x22, params[0] の写し, 1 << durationShift ステップで終わる
   u16 request;        // 0x24, 1..4 の要求, _Update が state に移して毎フレーム 0 に戻す
-  u16 params[7];      // 0x26, [0]=durationShift, [1..3]=フェード色の R/G/B (u16_03004464 へ rgb555 で合成), [4]=u16_03004490
+  u16 params[7];      // 0x26, [0]=durationShift, [1..3]=フェード色の R/G/B (gObjPlttBlendColor へ rgb555 で合成), [4]=gObjPlttFadeSkipMask
 } Entity6978;
 static_assert(sizeof(Entity6978) == 52);
 

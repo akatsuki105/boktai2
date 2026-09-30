@@ -3879,7 +3879,7 @@ FUN_080bb160: @ 0x080BB160
 	ldr r1, [r0]
 	movs r0, #0
 	movs r2, #2
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r5, [sp]
 	movs r0, #0
 	movs r1, #0
@@ -6056,7 +6056,7 @@ FUN_080bc350: @ 0x080BC350
 	ldr r1, [r0]
 	movs r0, #0
 	movs r2, #2
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r5, [sp]
 	movs r0, #0
 	movs r1, #0
@@ -6134,7 +6134,7 @@ FUN_080bc400: @ 0x080BC400
 	ldr r1, [r4]
 	movs r0, #0
 	movs r2, #2
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r5, [sp]
 	movs r0, #0
 	movs r1, #0
@@ -9740,7 +9740,7 @@ FUN_080be144: @ 0x080BE144
 	ldr r1, [r4]
 	movs r0, #0
 	movs r2, #4
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	str r5, [sp]
 	movs r0, #0
 	movs r1, #0

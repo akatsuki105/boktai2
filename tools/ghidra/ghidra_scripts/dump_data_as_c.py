@@ -163,7 +163,7 @@ def format_data(data, indent):
             fname = dtc.getFieldName()
             if not fname:
                 fname = f"field_0x{dtc.getOffset():X}"
-            lines.append(INDENT_UNIT * (indent + 1) + f".{fname} = {comp_str}")
+            lines.append(INDENT_UNIT * (indent + 1) + f"{fname}: {comp_str}")
         else:
             lines.append(INDENT_UNIT * (indent + 1) + comp_str)
     if is_struct:
@@ -177,7 +177,7 @@ def format_data(data, indent):
                 inner += ", "
             if (i + 1) % 16 == 0:
                 inner += "\n" + INDENT_UNIT * (indent + 1)
-    return "{\n" + inner + ",\n" + INDENT_UNIT * indent + "}"
+    return "{\n" + inner + "\n" + INDENT_UNIT * indent + "}"
 
 
 def get_c_declaration(data):

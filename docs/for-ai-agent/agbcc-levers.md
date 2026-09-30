@@ -89,6 +89,14 @@ plausible.
 - **`&local` forces a stack home.** A frame larger than your locals justify, or
   a stack slot for something that could live in a register, means the source
   took an address you did not.
+- **`lsls #5` / `lsrs #3` on a count, then `sub sp`, is a variable-length
+  array.** agbcc sizes a VLA in bits and divides by 8, so `u32 argv[n]` becomes
+  `n << 5 >> 3`. The base address gets its own stack slot, the old `sp` another,
+  and both are restored in the epilogue (`VM_Loop`).
+- **Index the array, do not walk a pointer.** `argv[j] = ...` lets strength
+  reduction create the walking pointer in the loop's preheader, i.e. *after* the
+  entry guard; `u32* dst = argv;` above the loop materializes it before the
+  guard and takes a different register (`VM_Loop`).
 
 ---
 
@@ -102,6 +110,17 @@ Still source-level, still defensible.
   is an `asr` unless re-cast.
 - **Signed `/` by a power of two is not `>>`**, and `/2` does not look like
   `/4` (§5.3). Signed `% 2^n` is not `& mask`.
+- **A 32-bit mask narrows to 16 bits over a `u16` operand.**
+  `gStagedDISPCNT & ~(DISPCNT_BG1_ON | …)` puts `0x0000F1FF` in the pool, because
+  the `ldrh` tells gcc the high bits are zero. The target's `0xFFFFF1FF` means
+  the operand reached the `and` as a plain register: route it through a
+  `static inline` with a `u32` parameter (`ShowOnlyBG0(u32 hide)`,
+  `HideBG(u32 bits)`) and the full mask survives (`TextSlideshow_Init`).
+- **A `u16` read shifted in place still gives `lsr`**, because the value's range
+  is known where it is loaded. Route it through an `s32` local
+  (`r = *(gRandomTable + i); ... r >> 3`) to get the `asr` the target has
+  (`VM_Random`). Passing the value through a `static inline`'s return does the
+  same thing, so an `asr` is not by itself evidence of a helper.
 - **Widen once at entry.** When the target sign-extends a narrow parameter or
   field once at the top and reuses the wide value, write `int v = narrowThing;`
   instead of letting each use re-extend.
@@ -141,6 +160,48 @@ reference count, live range length, and — only on a tie — creation order.
   destination field live across several phases, assign it once and read through
   that local rather than re-spelling an equivalent expression. Re-spelling
   creates a second pseudo with a different role.
+
+### Materialization order: where a constant or address is set up
+
+A residual of one or two instructions where **the opcodes and registers agree
+but a `movs`/`ldr =pool`/`add rN, sp` sits one slot earlier or later** is not
+an allocation problem. It is a question of *when* the operand became a pseudo,
+and the answer is almost always the shape of the source, not a compiler flag.
+Four positions, cheapest first:
+
+- **A declaration with an initializer materializes at block entry.**
+  `MainSprite* spr = &p->sprites[5];` at the top of a block emits the address
+  computation before the block's first statement; `MainSprite* spr;` followed
+  by `spr = ...` emits it where the assignment is. Same for `Vec3* dst = &pos;`.
+- **A `static inline` helper materializes its arguments before its body.**
+  `HideBG(DISPCNT_BG1_ON)` with `static inline void HideBG(u32 bits) {
+  gStagedDISPCNT &= ~bits; }` emits the folded mask **before** the `ldrh` of
+  the global; the same statement written out in full emits it after. This one
+  lever closed `FUN_0801f214`, `FUN_0801f328` and `FUN_0801f38c`, each of which
+  had sat at a one-instruction residual.
+- **So the converse is a lever too.** If the target loads the memory operand
+  *first* and only then materializes the constant, the original did **not**
+  route that constant through an inline parameter — write the statement out
+  against a pointer local (`spr->flags |= SPRFLAG_HIDDEN;`) instead. A
+  two-argument `XXX_SetFlags(&p->sprites[5], SPRFLAG_HIDDEN)` puts the bits
+  before the load and will not match; a bit computed inside the body
+  (`p->flags &= ~bits;`) is folded and stays after it, which is why the
+  `ClearFlags` form can match where `SetFlags` does not.
+- **`arr[i]` and `*(arr + i)` are not interchangeable.** The subscript form
+  materializes the array's base address *before* the scaled index; the pointer
+  form emits the `lsl` first and loads the base from the pool between it and the
+  `add`. `VM_Random` only closed on the pointer form, which is also what the
+  rest of `src/` uses for `gRandomTable`.
+- **A local copy of a field suppresses re-reads and their side effects.**
+  Reading `p->unk_24` twice is not the same as caching it in a local: the
+  repeated read lets CSE keep one pseudo and copy it, and for a `u16` it keeps
+  the `lsl #16` truncation that a local's known-zero-extended value removes.
+  `FUN_0801e6a0` and `FUN_0801ed18` both closed by *deleting* the local.
+
+Two paired field writes that always travel together (`p->state = n;
+p->timer = 0;`) belong in a `static inline` for the same reason: the callee's
+argument is set up first, which is what puts a `movs r0, #4` ahead of the
+`movs r1, #0` that the written-out form emits in the other order.
 
 A zero-instruction `do { } while (0);` between two statements creates a basic
 block boundary and can change emission order without emitting anything. It is

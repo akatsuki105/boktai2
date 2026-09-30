@@ -1661,7 +1661,7 @@ FUN_080ade88: @ 0x080ADE88
 	ldr r1, [r5]
 	movs r0, #1
 	movs r2, #0
-	bl FUN_0822c398
+	bl Video_SetBGLayer
 	ldr r2, _080ADF2C @ =0x03003E78
 	ldr r0, _080ADF30 @ =0xFFFFFDFF
 	ldrh r1, [r2]

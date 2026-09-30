@@ -129,7 +129,7 @@ s32 SignalStrengthIcon_Destroy(SignalStrengthIcon* p) {
 
 // アイコンのスプライトファイルを読み込み、非表示のまま描画リストに繋ぐ
 s32 SignalStrengthIcon_Init(SignalStrengthIcon* p) {
-  MainSpriteFile* f;
+  MainSpriteGfxFile* f;
 
   gSignalStrengthIcon = p;
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);

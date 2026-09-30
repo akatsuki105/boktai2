@@ -567,12 +567,12 @@ _08222176:
 	adds r2, #7
 	adds r0, r7, r2
 	str r4, [r0]
-	bl FUN_0805e67c
+	bl Entity0805e67c_Create
 	ldr r2, _08222224 @ =0x00000BF8
 	adds r1, r7, r2
 	str r0, [r1]
 	movs r0, #0x78
-	bl FUN_0805ee80
+	bl Entity0805ee80_Create
 	ldr r2, _08222228 @ =0x00000BFC
 	adds r1, r7, r2
 	str r0, [r1]

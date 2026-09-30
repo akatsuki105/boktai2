@@ -75,11 +75,13 @@ void FUN_0822dafc(Particle* p, ParticleGroup* g, u32 val) {
   p->tileNum = val * ((p->spriteWidth >> 3) * (p->spriteHeight >> 3)) + g->tile;
 }
 
-NAKED void FUN_0822db5c(void) { INCFUNC("asm/func/FUN_0822db5c.inc"); }
+// 汎用の Particle 描画パス (ほとんどの場面で使われる)
+NAKED void Particle_DrawList(void) { INCFUNC("asm/func/Particle_DrawList.inc"); }
 
 NAKED void FUN_0822de64(void) { INCFUNC("asm/func/FUN_0822de64.inc"); }
 
-NAKED void FUN_0822e110(void) { INCFUNC("asm/func/FUN_0822e110.inc"); }
+// ゲームオーバー時の Particle 描画パス
+NAKED void Particle_DrawListGameover(void) { INCFUNC("asm/func/Particle_DrawListGameover.inc"); }
 
 NAKED void FUN_0822e424(void) { INCFUNC("asm/func/FUN_0822e424.inc"); }
 

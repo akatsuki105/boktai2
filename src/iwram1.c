@@ -18,6 +18,7 @@ struct Entity080dd1f8;
 struct SignalStrengthIcon;
 struct EntityD53D;
 struct Entity723E;
+struct Entity08051b70;
 struct Entity0805fe30;
 struct ExplosionManager;
 struct EntityCC28;
@@ -35,18 +36,21 @@ struct EntityC60F;
 struct Entity7B9F;
 struct Entity8CC7;
 struct LinkBattleLobby;
+struct Entity150F;
+struct Entity081ea120;
+struct Entity081ea820;
 struct Entity081eaf6c;
 struct Entity081eb2f0;
-struct Entity08204cb8;
 
-IWRAM_DATA u8 u8_030000d4[0xE4 - 0xD4] = {};
+IWRAM_DATA u8 u8_030000e0[0xE4 - 0xE0] = {};
 
 IWRAM_DATA struct SignalStrengthIcon* gSignalStrengthIcon = NULL;  // 0x030000E4
 IWRAM_DATA struct EntityD53D* gEntityD53D = NULL;                  // 0x030000E8
 
-IWRAM_DATA u8 u8_030000ec[0x11C - 0x0EC] = {};
+IWRAM_DATA u8 u8_030000ec[0x118 - 0x0EC] = {};
 
-IWRAM_DATA struct Entity723E* gEntity723E = NULL;  // 0x0300011C
+IWRAM_DATA struct Entity08051b70* gEntity08051b70 = NULL;  // 0x03000118
+IWRAM_DATA struct Entity723E* gEntity723E = NULL;          // 0x0300011C
 
 IWRAM_DATA u8 u8_03000120[0x130 - 0x120] = {};
 
@@ -83,14 +87,14 @@ IWRAM_DATA struct EntityC60F* gEntityC60F = NULL;            // 0x0300019C
 IWRAM_DATA struct Entity7B9F* gEntity7B9F = NULL;            // 0x030001A0
 IWRAM_DATA struct Entity8CC7* gEntity8CC7 = NULL;            // 0x030001A4
 IWRAM_DATA struct LinkBattleLobby* gLinkBattleLobby = NULL;  // 0x030001A8
+IWRAM_DATA u32 bool32_030001ac = FALSE;                      // 0x030001AC
+IWRAM_DATA struct Entity150F* gEntity150F = NULL;            // 0x030001B0
 
-IWRAM_DATA u8 u8_030001ac[0x1C0 - 0x1AC] = {};
+IWRAM_DATA u8 u8_030001b4[0x1B8 - 0x1B4] = {};
 
+IWRAM_DATA struct Entity081ea120* gEntity081ea120 = NULL;  // 0x030001B8
+IWRAM_DATA struct Entity081ea820* gEntity081ea820 = NULL;  // 0x030001BC
 IWRAM_DATA struct Entity081eaf6c* gEntity081eaf6c = NULL;  // 0x030001C0
 IWRAM_DATA struct Entity081eb2f0* gEntity081eb2f0 = NULL;  // 0x030001C4
 
-IWRAM_DATA u8 u8_030001c8[0x220 - 0x1c8] = {};
-
-IWRAM_DATA struct Entity08204cb8* gEntity08204cb8 = NULL;  // 0x03000220
-
-IWRAM_DATA u8 u8_03000224[0x248 - 0x224] = {};
+IWRAM_DATA u8 u8_030001c8[0x21C - 0x1c8] = {};
