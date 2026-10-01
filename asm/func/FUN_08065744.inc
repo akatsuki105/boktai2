@@ -3,7 +3,7 @@
 	adds r5, r0, #0
 	adds r7, r1, #0
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08065794
 	bl VM_GetValue
@@ -140,7 +140,7 @@ _0806584C:
 	adds r0, r4, #0
 	add r2, sp, #8
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	adds r0, r5, #0
 	bl FUN_0806540c
 	adds r0, r5, #0
@@ -164,7 +164,7 @@ _0806588A:
 	adds r1, r5, #0
 	adds r1, #0x88
 	adds r0, r6, #0
-	bl FUN_0823b474
+	bl Mover_SetMainSprite
 	b _080658B6
 	.align 2, 0
 _080658A0: .4byte 0x00000359
@@ -176,7 +176,7 @@ _080658A4:
 	adds r1, r5, #0
 	adds r1, #0xe8
 	adds r0, r6, #0
-	bl FUN_0823b46c
+	bl Mover_SetAuxSprite
 _080658B6:
 	movs r2, #0xde
 	lsls r2, r2, #1
@@ -188,7 +188,7 @@ _080658B6:
 	adds r1, r4, #0
 	movs r2, #0x1e
 	movs r3, #0x1e
-	bl FUN_0823b43c
+	bl Mover_SetCollision
 	ldr r2, _0806591C @ =0xFFFF0000
 	movs r0, #0x96
 	lsls r0, r0, #0x11

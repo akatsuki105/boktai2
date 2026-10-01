@@ -196,7 +196,7 @@ _08229B0E:
 	ldr r1, _08229C60 @ =0x00000F46
 	adds r4, r7, r1
 	ldrh r0, [r4]
-	bl FUN_0823b2d0
+	bl Mover_FindByID_Proxy
 	cmp r0, #0
 	bne _08229BE0
 	movs r2, #0xe4
@@ -209,7 +209,7 @@ _08229B0E:
 	str r3, [sp]
 	str r7, [sp, #4]
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 _08229BE0:
 	ldr r1, _08229C68 @ =0x00000F5C
 	adds r0, r7, r1

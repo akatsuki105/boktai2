@@ -2047,7 +2047,7 @@ Entity7999_Init: @ 0x081DACF8
 	sub sp, #0xc
 	adds r5, r0, #0
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081DAD1E
 	bl FUN_0823d340
@@ -2063,7 +2063,7 @@ Entity7999_Init: @ 0x081DACF8
 _081DAD1E:
 	movs r0, #0x6c
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	movs r3, #0xa8
 	lsls r3, r3, #2
 	adds r1, r5, r3
@@ -2071,7 +2071,7 @@ _081DAD1E:
 	strh r0, [r1]
 	movs r0, #0x65
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r2, _081DAE18 @ =0x000002A2
 	adds r1, r5, r2
 	strh r0, [r1]
@@ -2115,7 +2115,7 @@ _081DAD1E:
 	strb r4, [r0]
 	movs r0, #0x66
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081DADB8
 	movs r0, #4

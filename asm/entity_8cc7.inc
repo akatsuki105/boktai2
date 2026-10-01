@@ -139,7 +139,7 @@ _081D8ABE:
 	adds r0, #0x74
 	strb r2, [r0]
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081D8B0A
 	bl VM_GetValue
@@ -150,7 +150,7 @@ _081D8ABE:
 	strh r0, [r5, #0x20]
 _081D8B0A:
 	movs r0, #0x72
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081D8B40
 	bl VM_GetValue

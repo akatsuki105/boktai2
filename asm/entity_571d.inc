@@ -1487,7 +1487,7 @@ FUN_080bf714: @ 0x080BF714
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BF72E
 	bl FUN_0823d340
@@ -1517,7 +1517,7 @@ FUN_080bf754: @ 0x080BF754
 	push {r4, r5, r6, r7, lr}
 	adds r6, r0, #0
 	movs r0, #0x43
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BF76A
 	bl VM_GetValue
@@ -1530,7 +1530,7 @@ _080BF76C:
 	bl GetValuableItemID
 	adds r7, r0, #0
 	movs r0, #0x4f
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BF7D2
 	movs r4, #0
@@ -1581,7 +1581,7 @@ _080BF7C6:
 	bge _080BF7C6
 _080BF7D2:
 	movs r0, #0x69
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BF7E6
 	bl FUN_0823d340
@@ -1602,7 +1602,7 @@ FUN_080bf7f8: @ 0x080BF7F8
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x65
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080BF818

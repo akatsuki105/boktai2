@@ -22,6 +22,7 @@ extern const ItemData gItemDB[ITEM_NUM];
 item32_t GetItemID(bool32 isValuable, s32 slot);
 item32_t GetNormalItemID(s32 slot);
 item32_t GetValuableItemID(s32 slot);
+bool32 CheckItemOwn(item32_t id);
 bool32 RemoveSpecifiedItem(item32_t id);
 void RotItem(s32 rotDelta);
 

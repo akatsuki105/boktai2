@@ -6,7 +6,7 @@
 	bne _08017B6A
 	movs r0, #0x61
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _08017B2C
 	movs r1, #0x9d

@@ -3279,7 +3279,7 @@ FUN_08054848: @ 0x08054848
 	str r4, [sp, #4]
 	mov r0, sb
 	add r2, sp, #0xc
-	bl FUN_0823b400
+	bl Mover_Init
 	ldr r0, [sp, #0x14]
 	ands r0, r6
 	str r0, [sp, #0x14]
@@ -3352,7 +3352,7 @@ FUN_08054930: @ 0x08054930
 	bl FUN_08055d7c
 	adds r0, r4, #0
 	adds r0, #0x30
-	bl FUN_0823b284
+	bl Mover_Unlink
 	pop {r4}
 	pop {r0}
 	bx r0
@@ -3532,7 +3532,7 @@ _08054AAC:
 _08054AB4:
 	adds r0, r6, #0
 	adds r0, #0x30
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 	ldr r0, [r6, #0x74]
 	ldr r1, [r6, #0x78]
 	str r0, [r6, #0x38]
@@ -4310,7 +4310,7 @@ _080550B0:
 	cmp r5, #6
 	ble _08055078
 	movs r0, #0x63
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _08055120
@@ -4354,11 +4354,11 @@ _08055132:
 	bl FUN_0823b8ac
 	movs r0, #0x70
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	mov r2, r8
 	str r0, [r2, #0x1c]
 	movs r0, #0x43
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08055164
 	mov r3, r8

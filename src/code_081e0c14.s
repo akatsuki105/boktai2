@@ -1100,7 +1100,7 @@ FUN_081e21dc: @ 0x081E21DC
 	rsbs r5, r5, #0
 	str r5, [r4, #0x50]
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081E2200
 	bl FUN_0823d340
@@ -1110,7 +1110,7 @@ FUN_081e21dc: @ 0x081E21DC
 _081E2200:
 	movs r0, #0x65
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r4, #0
 	adds r1, #0x6e
 	movs r5, #0
@@ -1210,7 +1210,7 @@ FUN_081e22c8: @ 0x081E22C8
 	rsbs r4, r4, #0
 	str r4, [r5, #0x50]
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081E22EA
 	bl FUN_0823d340
@@ -1222,7 +1222,7 @@ FUN_081e22c8: @ 0x081E22C8
 _081E22EA:
 	movs r0, #0x65
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r5, #0
 	adds r1, #0x6e
 	movs r4, #0
@@ -2799,7 +2799,7 @@ FUN_081e2e84: @ 0x081E2E84
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081E2EA0
 	bl FUN_0823d340
@@ -2810,7 +2810,7 @@ FUN_081e2e84: @ 0x081E2E84
 	beq _081E2ED0
 _081E2EA0:
 	movs r0, #0x77
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081E2EB8
 	bl FUN_0823d340
@@ -2821,7 +2821,7 @@ _081E2EA0:
 	beq _081E2ED0
 _081E2EB8:
 	movs r0, #0x59
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081E2EE0
 	bl FUN_0823d340
@@ -13377,13 +13377,13 @@ FUN_081e84bc: @ 0x081E84BC
 	bl FUN_081e2e84
 	movs r0, #0x6c
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r2, _081E855C @ =0x00001628
 	adds r1, r4, r2
 	strh r0, [r1]
 	movs r0, #0x65
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r2, _081E8560 @ =0x00001626
 	adds r1, r4, r2
 	strh r0, [r1]

@@ -7,7 +7,7 @@
 	cmp r4, #0
 	beq _0807DDB2
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0807DD1C
 	bl VM_GetValue
@@ -28,7 +28,7 @@ _0807DD24:
 	adds r0, r4, r1
 	bl FUN_0809c544
 	movs r0, #0x63
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0807DD48
 	bl VM_GetValue

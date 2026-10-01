@@ -6189,7 +6189,7 @@ FUN_0802ae4c: @ 0x0802AE4C
 	strb r1, [r0]
 _0802AE78:
 	adds r0, r4, #0
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 	movs r5, #0xbd
 	lsls r5, r5, #2
 	adds r1, r7, r5

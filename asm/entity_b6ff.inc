@@ -9,7 +9,7 @@ FUN_080ac5b4: @ 0x080AC5B4
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	ldr r0, _080AC5F0 @ =0x0000A854
-	bl FUN_08230e70
+	bl Registry_Find
 	cmp r0, #0
 	beq _080AC5E8
 	movs r5, #1
@@ -44,7 +44,7 @@ _080AC5F0: .4byte 0x0000A854
 FUN_080ac5f4: @ 0x080AC5F4
 	push {lr}
 	movs r0, #0x6e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080AC608
 	bl VM_GetValue
@@ -63,7 +63,7 @@ FUN_080ac60c: @ 0x080AC60C
 	adds r7, r2, #0
 	mov r8, r3
 	ldr r0, _080AC634 @ =0x0000A854
-	bl FUN_08230e70
+	bl Registry_Find
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _080AC62C
@@ -132,7 +132,7 @@ FUN_080ac698: @ 0x080AC698
 	push {r4, r5, lr}
 	sub sp, #8
 	movs r0, #0x6e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080AC6AE
 	bl VM_GetValue
@@ -142,7 +142,7 @@ _080AC6AE:
 	movs r5, #0
 _080AC6B0:
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080AC6F8
 	bl VM_GetValue
@@ -179,7 +179,7 @@ _080AC6F8:
 	str r0, [sp, #4]
 _080AC702:
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080AC720
 	bl VM_GetValue
@@ -690,7 +690,7 @@ EntityB6FF_Init: @ 0x080ACAE4
 	push {r4, r5, r6, r7, lr}
 	adds r7, r0, #0
 	movs r0, #0x63
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080ACB14
 	adds r4, r7, #0
@@ -723,7 +723,7 @@ _080ACB1C:
 	bge _080ACB1C
 _080ACB2A:
 	movs r0, #0x72
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080ACB70
 	ldr r6, _080ACB64 @ =0x030046B8
@@ -791,7 +791,7 @@ _080ACBA2:
 	ldr r0, _080ACBCC @ =0x00003969
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_08230e30
+	bl Registry_Add
 	movs r0, #0
 	pop {r4, r5, r6, r7}
 	pop {r1}

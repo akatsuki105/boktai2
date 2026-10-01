@@ -44,7 +44,7 @@ _080AC512:
 	ldr r0, _080AC570 @ =0x0000A854
 	mov r1, sb
 	movs r2, #0
-	bl FUN_08230e30
+	bl Registry_Add
 	movs r0, #0
 	pop {r3, r4}
 	mov r8, r3

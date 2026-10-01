@@ -22,5 +22,7 @@ static_assert(sizeof(FontInfo) == 12);
 void FUN_0822ea60(u32 x8, u32 y8, u32 w8, u32 h8);
 void FUN_0822eadc(u32 x8, u32 y8, u32 w8, u32 h8);
 void FUN_0822e8b4(void);
+void Video_DrawCharNarrow(u16 charcode, s32 x8, s32 y8, s32 param_4);
+void Video_DrawCharWide(u16 charcode, s32 x8, s32 y8, s32 param_4);
 
 #endif  // __INCLUDE_FONT_H__

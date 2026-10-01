@@ -121,7 +121,7 @@ void FUN_0801e290(EntityEF6F* p, u8 a, u8 b) {
 s32 FUN_0801e2a8(EntityEF6F* p, s32 bgIndex) {
   void* plttFile;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, 0x9F57);
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_9F57);
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &bgIndex);
   SetBGPrioDirect(2, 2);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
@@ -134,7 +134,7 @@ s32 FUN_0801e2a8(EntityEF6F* p, s32 bgIndex) {
 s32 FUN_0801e328(EntityEF6F* p) {
   s32 bgIndex;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, 0xA413);
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_A413);
   bgIndex = 2;
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(0, 0, 0, 0, -24);

@@ -117,7 +117,7 @@ Entity162E_Init: @ 0x08089AAC
 	str r0, [r1]
 _08089AC4:
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08089AD8
 	bl VM_GetValue

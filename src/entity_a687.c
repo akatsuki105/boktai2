@@ -18,9 +18,21 @@ NAKED s32 BgPlttDimmer_Update(BgPlttDimmer* p) { INCFUNC("asm/func/BgPlttDimmer_
 NAKED s32 BgPlttDimmer_Destroy(BgPlttDimmer* p) { INCFUNC("asm/func/BgPlttDimmer_Destroy.inc"); }
 
 s32 BgPlttDimmer_Init(BgPlttDimmer* p) {
-  p->minBrightness = VM_GetKeywordValue('r', 32);
-  p->holdFrames = VM_GetKeywordValue('e', 120);
+  p->minBrightness = VM_GetNamedArgValue('r', 32);
+  p->holdFrames = VM_GetNamedArgValue('e', 120);
   return 0;
 }
 
-NAKED BgPlttDimmer* BgPlttDimmer_Create(void) { INCFUNC("asm/func/BgPlttDimmer_Create.inc"); }
+BgPlttDimmer* BgPlttDimmer_Create(void) {
+  BgPlttDimmer* p = CreateEntity(ENTITY_UNK_9, sizeof(BgPlttDimmer));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, BgPlttDimmer_Update, BgPlttDimmer_Destroy);
+    if (BgPlttDimmer_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}

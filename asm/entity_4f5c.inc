@@ -4,13 +4,13 @@
 	
 	.text
 
-	thumb_func_start FUN_0801a170
-FUN_0801a170: @ 0x0801A170
+	thumb_func_start nop_0801a170
+nop_0801a170: @ 0x0801A170
 	bx lr
 	.align 2, 0
 
-	thumb_func_start FUN_0801a174
-FUN_0801a174: @ 0x0801A174
+	thumb_func_start Entity4F5C_ElemFall
+Entity4F5C_ElemFall: @ 0x0801A174
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -306,8 +306,8 @@ _0801A3BC: .4byte 0x000003FF
 _0801A3C0: .4byte 0x0203B400
 _0801A3C4: .4byte 0x03002BE0
 
-	thumb_func_start FUN_0801a3c8
-FUN_0801a3c8: @ 0x0801A3C8
+	thumb_func_start Entity4F5C_ElemScatter
+Entity4F5C_ElemScatter: @ 0x0801A3C8
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -614,7 +614,7 @@ _0801A604: .4byte 0x03002BE0
 _0801A608:
 	movs r0, #0x65
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	movs r4, #0
 	strh r0, [r7, #0x1a]
 	ldr r3, [r5]

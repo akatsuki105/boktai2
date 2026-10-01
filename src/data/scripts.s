@@ -16,23 +16,8 @@ ScriptEntries: @ 0x08CBF24C
 sOffsets: @ 0x08CCA69C
   .4byte Bytecode - sOffsets
   .4byte StringIndex - sOffsets
-  .4byte StringData - sOffsets
+  .4byte String_0000 - sOffsets
   .4byte unk08D13420 - sOffsets
 
 StringIndex: @ 0x08CCA6AC
   .incbin "data/string_index.bin" @ ./tmp/bin.sh ./baserom.gba 0x08CCA6AC 0x08CD1640 ./data/string_index.bin
-
-StringData: @ 0x08CD1640
-  .include "data/text/strings.inc"
-  .include "data/text/chat_unknown.inc" @ ID: 4941..
-  .include "data/text/chat_zaji.inc" @ ID: 5092..
-  .include "data/text/staff_roll.inc" @ ID: 5310..
-  .balign 4, 0
-  .include "data/text/text_5368.inc"
-  .include "data/text/start_menu.inc" @ ID: 5640..
-  .balign 4, 0
-  .include "data/text/text_6297.inc" @ ID: 6297..
-  .balign 4, 0 @ ここで4バイトアラインメントされてるし、内容も通信対戦のテキストになるのでここでファイルが分かれている気がする
-  .include "data/text/link_battle.inc" @ ID: 6996..
-
-.balign 4, 0

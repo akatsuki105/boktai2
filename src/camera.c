@@ -1,27 +1,29 @@
 #include "camera.h"
 
+#include "collision_map.h"
 #include "global.h"
+#include "mover.h"
 #include "msgbus.h"
 #include "random.h"
+#include "registry.h"
 #include "video.h"
 #include "vm.h"
 
-Entity2UnkData* FUN_0823b2d0(u16 id);
-void* FUN_08230e70(u16 id);
-
 COMMON_DATA Vec3 gCameraVpCoords = {};  // 0x030047C8
 COMMON_DATA Camera* gCamera = NULL;     // 0x030047D0
-COMMON_DATA u8 u8_030047d4[12] = {};    // todo
+COMMON_DATA u8 u8_030047d4[4] = {};     // todo
+COMMON_DATA u16 u16_030047d8 = 0;       // 0x030047D8, FUN_080489c4 がこのIDのメッセージでは音を鳴らさない
+COMMON_DATA u8 u8_030047da[6] = {};     // todo
 
 void Camera_SetTilemapOffset(void) {
-  s32 val = VM_GetKeywordValue('v', 0);
+  s32 val = VM_GetNamedArgValue('v', 0);
   if (val == 0) {
-    Unk_0203b000* p = FUN_08230e70(0x56C2);
+    CollisionMapData* p = Registry_Find(0x56C2);
     Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
     if (p != NULL) {
-      if (p->unk_04 != NULL) {
-        gCameraCoords.tilemapX = ((s16*)p->unk_04)[4] >> 4;
-        gCameraCoords.tilemapY = ((s16*)p->unk_04)[5] >> 4;
+      if (p->tiledata != NULL) {
+        gCameraCoords.tilemapX = p->tiledata->tilemap_offset_x >> 4;
+        gCameraCoords.tilemapY = p->tiledata->tilemap_offset_y >> 4;
         return;
       }
     }
@@ -186,7 +188,7 @@ void FUN_0823bb7c(s32 n, Vec3* pos) {
 void FUN_0823bbd4(u32 targetID, Vec3* pos) {
   if (gCamera != NULL) {
     gCamera->lookTargetID = targetID;
-    if (FUN_0823b2d0(gCamera->lookTargetID) != NULL) {
+    if (Mover_FindByID_Proxy(gCamera->lookTargetID) != NULL) {
       gCamera->unk_1c = 1;
       gCamera->pos_74 = *pos;
       gCamera->lookMode = 3;
@@ -198,7 +200,7 @@ void FUN_0823bbd4(u32 targetID, Vec3* pos) {
 void FUN_0823bc14(u32 targetID, s32 n, Vec3* pos) {
   if (gCamera != NULL) {
     gCamera->lookTargetID = targetID;
-    if (FUN_0823b2d0(gCamera->lookTargetID) != NULL) {
+    if (Mover_FindByID_Proxy(gCamera->lookTargetID) != NULL) {
       gCamera->unk_1c = 1;
       gCamera->pos_74 = *pos;
       if (n < 2) {
@@ -276,12 +278,12 @@ NON_MATCH void FUN_0823bd14(u32 amplitude, u32 frames, s32 stopOnEnd) {
 void FUN_0823bd98(Camera* cam) {
   if (cam != NULL) {
     cam->unk_1e = 1;
-    if (VM_SeekToKeyword('e')) {
+    if (VM_SeekToNamedArg('e')) {
       s32 type, val;
       VM_DecodeValue(VM_GetPC(), &type, &val);
       cam->scriptID = val;
       cam->scriptIDType = 0;
-    } else if (VM_SeekToKeyword('R')) {
+    } else if (VM_SeekToNamedArg('R')) {
       cam->scriptID = VM_GetValue();
       cam->scriptIDType = 1;
     } else {
@@ -296,7 +298,7 @@ void FUN_0823bdf8(void) {
 }
 
 void FUN_0823be10(void) {
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     Vec3 pos;
     pos.x = VM_GetValue();
     pos.y = VM_GetValue();
@@ -307,10 +309,10 @@ void FUN_0823be10(void) {
 }
 
 void Camera_PanTo(void) {
-  if (VM_SeekToKeyword('f')) {
+  if (VM_SeekToNamedArg('f')) {
     Vec3 pos;
     s32 n = VM_GetValue();
-    if (VM_SeekToKeyword('p')) {
+    if (VM_SeekToNamedArg('p')) {
       pos.x = VM_GetValue();
       pos.y = VM_GetValue();
       pos.z = VM_GetValue();
@@ -321,10 +323,10 @@ void Camera_PanTo(void) {
 }
 
 void FUN_0823bee8(void) {
-  if (VM_SeekToKeyword('n')) {
+  if (VM_SeekToNamedArg('n')) {
     Vec3 pos;
     s32 targetID = VM_GetValue();
-    if (VM_SeekToKeyword('o')) {
+    if (VM_SeekToNamedArg('o')) {
       pos.x = VM_GetValue();
       pos.y = VM_GetValue();
       pos.z = VM_GetValue();
@@ -337,12 +339,12 @@ void FUN_0823bee8(void) {
 }
 
 void FUN_0823bf70(void) {
-  if (VM_SeekToKeyword('f')) {
+  if (VM_SeekToNamedArg('f')) {
     s32 n = VM_GetValue();
-    if (VM_SeekToKeyword('n')) {
+    if (VM_SeekToNamedArg('n')) {
       Vec3 pos;
       s32 targetID = VM_GetValue();
-      if (VM_SeekToKeyword('o')) {
+      if (VM_SeekToNamedArg('o')) {
         pos.x = VM_GetValue();
         pos.y = VM_GetValue();
         pos.z = VM_GetValue();
@@ -356,24 +358,24 @@ void FUN_0823bf70(void) {
 }
 
 void FUN_0823c008(void) {
-  if (VM_SeekToKeyword('f')) {
+  if (VM_SeekToNamedArg('f')) {
     FUN_0823bc70(VM_GetValue());
     FUN_0823bd98(gCamera);
   }
 }
 
 void Camera_Reset(void) {
-  if (VM_SeekToKeyword('f')) {
+  if (VM_SeekToNamedArg('f')) {
     FUN_0823bca8(VM_GetValue());
     FUN_0823bd98(gCamera);
   }
 }
 
 void FUN_0823c050(void) {
-  if (VM_SeekToKeyword('w')) {
+  if (VM_SeekToNamedArg('w')) {
     s32 amplitude = VM_GetValue();
-    s32 frames = VM_SeekToKeyword('f') ? VM_GetValue() : 1;
-    s32 stopOnEnd = VM_SeekToKeyword('N') ? VM_GetValue() : 0;
+    s32 frames = VM_SeekToNamedArg('f') ? VM_GetValue() : 1;
+    s32 stopOnEnd = VM_SeekToNamedArg('N') ? VM_GetValue() : 0;
     FUN_0823bd14(amplitude, frames, stopOnEnd);
     FUN_0823bd98(gCamera);
   }
@@ -424,10 +426,10 @@ void FUN_0823c260(Vec3* min, Vec3* max) {
 }
 
 void Camera_ConnectToTilemap(void) {
-  if (VM_SeekToKeyword('I')) {
+  if (VM_SeekToNamedArg('I')) {
     Vec3 min, max;
     min.x = VM_GetValue(), min.y = VM_GetValue(), min.z = VM_GetValue();
-    if (VM_SeekToKeyword('A')) {
+    if (VM_SeekToNamedArg('A')) {
       max.x = VM_GetValue(), max.y = VM_GetValue(), max.z = VM_GetValue();
       FUN_0823c260(&min, &max);
     }
@@ -446,10 +448,10 @@ void FUN_0823c35c(Vec3* min, Vec3* max) {
 }
 
 void Camera_SetBoundsType2Scripted(void) {
-  if (VM_SeekToKeyword('I')) {
+  if (VM_SeekToNamedArg('I')) {
     Vec3 min, max;
     min.x = VM_GetValue(), min.y = VM_GetValue(), min.z = VM_GetValue();
-    if (VM_SeekToKeyword('A')) {
+    if (VM_SeekToNamedArg('A')) {
       max.x = VM_GetValue(), max.y = VM_GetValue(), max.z = VM_GetValue();
       FUN_0823c35c(&min, &max);
     }

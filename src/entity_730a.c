@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "entity.h"
 #include "global.h"
+#include "mover.h"
 #include "msgbus.h"
 
 typedef struct {
@@ -12,7 +13,6 @@ typedef struct {
 } Entity730A;
 static_assert(sizeof(Entity730A) == 88);
 
-Entity2UnkData* FUN_0823b2d0(u16 id);
 void FUN_08019814(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void MapPltt_PushCommand(s32 val, s32 count, u32* args);
@@ -28,7 +28,7 @@ void FUN_08022668(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
 }
 
 void FUN_080226a8(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
-  Entity2UnkData* target = FUN_0823b2d0(data->args[0]);
+  Mover* target = Mover_FindByID_Proxy(data->args[0]);
 
   if (target != NULL) {
     Vec3 pos;

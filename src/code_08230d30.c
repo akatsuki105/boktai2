@@ -1,58 +1,57 @@
 #include "global.h"
+#include "registry.h"
 
-// Affineスプライトかな..？
-
-Unk_0203b000* CreateUnkStruct_08230d30(void) {
+RegistryEntry* Registry_AllocEntry(void) {
   s32 i;
-  Unk_0203b000* p = &gUnk_0203b000[0];
-  for (i = 0; i < gCount_Unk_0203b000; i++, p++) {
-    if (!(p->unk_02 & (1 << 7))) {
+  RegistryEntry* p = &gRegistry[0];
+  for (i = 0; i < gRegistryCount; i++, p++) {
+    if (!(p->flags & REG_ACTIVE)) {
       return p;
     }
   }
 
-  gCount_Unk_0203b000++;
-  if (gCount_Unk_0203b000 > 31) {
+  gRegistryCount++;
+  if (gRegistryCount > 31) {
     return NULL;
   }
   return p;
 }
 
-Unk_0203b000* FindUnkStruct_08230d74(u16 id) {
+RegistryEntry* Registry_FindEntry(u16 id) {
   s32 i;
-  Unk_0203b000* p = &gUnk_0203b000[0];
-  for (i = 0; i < gCount_Unk_0203b000; i++, p++) {
-    if ((p->unk_02 & (1 << 7)) && (p->id == id)) {
+  RegistryEntry* p = &gRegistry[0];
+  for (i = 0; i < gRegistryCount; i++, p++) {
+    if ((p->flags & REG_ACTIVE) && (p->id == id)) {
       return p;
     }
   }
   return NULL;
 }
 
-void FUN_08230db8(void) { gCount_Unk_0203b000 = 0; }
+void Registry_Reset(void) { gRegistryCount = 0; }
 
-NAKED void FUN_08230dc4(bool32 val) { INCFUNC("asm/func/FUN_08230dc4.inc"); }
+NAKED void Registry_Sweep(bool32 clearAll) { INCFUNC("asm/func/Registry_Sweep.inc"); }
 
-void FUN_08230e30(u16 id, void* r1, s32 r2) {
-  Unk_0203b000* p = CreateUnkStruct_08230d30();
+void Registry_Add(u16 id, void* ptr, s32 flags) {
+  RegistryEntry* p = Registry_AllocEntry();
   if (p != NULL) {
     p->id = id;
-    p->unk_04 = r1;
-    p->unk_02 = (1 << 7) | r2;
+    p->ptr = ptr;
+    p->flags = REG_ACTIVE | flags;
   }
 }
 
-void FUN_08230e58(u16 id) {
-  Unk_0203b000* p = FindUnkStruct_08230d74(id);
+void Registry_Remove(u16 id) {
+  RegistryEntry* p = Registry_FindEntry(id);
   if (p != NULL) {
-    p->unk_02 = 0;
+    p->flags = 0;
   }
 }
 
-void* FUN_08230e70(u16 id) {
-  Unk_0203b000* p = FindUnkStruct_08230d74(id);
+void* Registry_Find(u16 id) {
+  RegistryEntry* p = Registry_FindEntry(id);
   if (p == NULL) {
     return NULL;
   }
-  return p->unk_04;
+  return p->ptr;
 }

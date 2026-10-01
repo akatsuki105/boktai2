@@ -1648,7 +1648,7 @@ _08081846:
 	movs r2, #0
 	bl MainSprite_Add
 	movs r0, #0x64
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080818A8
@@ -1812,7 +1812,7 @@ _08081994:
 	adds r0, r6, r3
 	strb r1, [r0]
 	movs r0, #0x72
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080819E8
 	bl VM_GetValue
@@ -1836,7 +1836,7 @@ _080819EE:
 	movs r1, #0
 	strb r1, [r0]
 	movs r0, #0x62
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08081A18
 	bl VM_GetValue
@@ -1862,7 +1862,7 @@ _08081A20:
 	adds r0, r6, r5
 	strh r1, [r0]
 	movs r0, #0x47
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08081A60
 	bl VM_GetValue
@@ -1893,7 +1893,7 @@ _08081A6E:
 	movs r1, #0
 	strb r1, [r0]
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08081A9C
 	bl VM_GetValue
@@ -1928,7 +1928,7 @@ FUN_08081ab0: @ 0x08081AB0
 	movs r0, #1
 	str r0, [r6, #0x18]
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08081B04
 	bl VM_GetValue
@@ -2049,13 +2049,13 @@ _08081B98:
 	adds r0, r5, #0
 	add r2, sp, #8
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	adds r0, r6, #0
 	bl FUN_08081830
 	adds r1, r6, #0
 	adds r1, #0x88
 	adds r0, r5, #0
-	bl FUN_0823b474
+	bl Mover_SetMainSprite
 	movs r0, #0xde
 	lsls r0, r0, #1
 	adds r4, r6, r0
@@ -2066,7 +2066,7 @@ _08081B98:
 	adds r1, r4, #0
 	movs r2, #0x1e
 	movs r3, #0x1e
-	bl FUN_0823b43c
+	bl Mover_SetCollision
 	movs r1, #0xfe
 	lsls r1, r1, #1
 	adds r0, r6, r1
@@ -2095,7 +2095,7 @@ FUN_08081c04: @ 0x08081C04
 	ldr r0, _08081C30 @ =0x000009C8
 	adds r6, r7, r0
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08081C38
 	bl VM_GetValue
@@ -6780,7 +6780,7 @@ _0808411C:
 	str r0, [r5, #0x3c]
 	adds r0, r5, #0
 	adds r0, #0x24
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 	adds r6, r5, #0
 	adds r6, #0x2c
 	ldrh r0, [r5, #0x2c]
@@ -6871,7 +6871,7 @@ _080841C0:
 _080841D8:
 	adds r0, r5, #0
 	adds r0, #0x24
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 _080841E0:
 	adds r0, r5, #0
 	movs r1, #8

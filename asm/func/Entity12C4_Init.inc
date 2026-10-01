@@ -7,11 +7,11 @@
 	strh r0, [r5, #0x22]
 	movs r0, #0x6d
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r5, #0x1a]
 	movs r0, #0x72
 	movs r1, #0xfa
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	lsls r1, r0, #4
 	strh r1, [r5, #0x18]
 	lsls r0, r0, #0x14
@@ -24,12 +24,12 @@
 _0801B092:
 	movs r0, #0x73
 	movs r1, #8
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	lsls r0, r0, #4
 	strh r0, [r5, #0x1c]
 	movs r0, #0x64
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strb r0, [r5, #0x1e]
 	ldr r0, _0801B0E0 @ =0x03002BE0
 	ldr r0, [r0]

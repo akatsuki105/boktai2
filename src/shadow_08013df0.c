@@ -149,11 +149,11 @@ s32 ScriptShadow_Create(u32 id, s32 mode, Vec3* pos) {
 
 // スクリプト命令: n=ID, m=モード, p=座標 で影を作る
 s32 ScriptShadow_CreateFromScript(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
-  s32 mode = VM_GetKeywordValue('m', 1);
+  s32 id = VM_GetNamedArgValue('n', 0);
+  s32 mode = VM_GetNamedArgValue('m', 1);
   Vec3 pos;
 
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     pos.x = VM_GetValue();
     pos.y = VM_GetValue();
     pos.z = VM_GetValue();
@@ -178,7 +178,7 @@ s32 ScriptShadow_Delete(u32 id) {
   return 0;
 }
 
-s32 ScriptShadow_DeleteFromScript(void) { return ScriptShadow_Delete(VM_GetKeywordValue('n', 0)); }
+s32 ScriptShadow_DeleteFromScript(void) { return ScriptShadow_Delete(VM_GetNamedArgValue('n', 0)); }
 
 // ID の影のモードを変える (1 なら表示、2 なら非表示)
 s32 ScriptShadow_SetMode(u32 id, s32 mode) {
@@ -198,8 +198,8 @@ s32 ScriptShadow_SetMode(u32 id, s32 mode) {
 
 // スクリプト命令: n=ID, m=モード で影のモードを変える
 s32 ScriptShadow_SetModeFromScript(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
-  s32 mode = VM_GetKeywordValue('m', 1);
+  s32 id = VM_GetNamedArgValue('n', 0);
+  s32 mode = VM_GetNamedArgValue('m', 1);
   return ScriptShadow_SetMode(id, mode);
 }
 
@@ -217,10 +217,10 @@ s32 ScriptShadow_Move(u32 id, Vec3* pos) {
 
 // スクリプト命令: n=ID, p=座標 で影を移す
 s32 ScriptShadow_MoveFromScript(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
   Vec3 pos;
 
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     pos.x = VM_GetValue();
     pos.y = VM_GetValue();
     pos.z = VM_GetValue();

@@ -33,7 +33,20 @@ typedef struct Entity080601a8 {
 } Entity080601a8;
 static_assert(sizeof(Entity080601a8) == 1988);
 
-NAKED void FUN_0805ff04(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) { INCFUNC("asm/func/FUN_0805ff04.inc"); }
+// スロットを飛行前の状態に戻す
+void FUN_0805ff04(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) {
+  AuxSprite* sprite = &elem->sprite;
+
+  elem->state = 0;
+  elem->unk_1 = 1;
+  elem->timer = 0;
+  elem->angle = 0;
+  elem->speed = 0;
+  elem->velY = 0;
+  elem->angleStep = 0;
+  AuxSprite_Setup(sprite, &p->gfx, 0);
+  sprite->metaspriteIdx = 54;
+}
 
 void FUN_0805ff34(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) {
   AuxSprite_Remove(&elem->sprite);
@@ -51,12 +64,49 @@ void (*const PTR_ARRAY_085abaa4[2])(Entity080601a8*, Entity080601a8Elem*, s32) =
 
 NAKED s32 Entity080601a8_Update(Entity080601a8* p) { INCFUNC("asm/func/Entity080601a8_Update.inc"); }
 
-NAKED s32 Entity080601a8_Destroy(Entity080601a8* p) { INCFUNC("asm/func/Entity080601a8_Destroy.inc"); }
+s32 Entity080601a8_Destroy(Entity080601a8* p) {
+  Entity080601a8Elem* e = p->elems;
+  s32 i;
 
-NAKED s32 Entity080601a8_Init(Entity080601a8* p, u16 plttID, rgb555* pltt) { INCFUNC("asm/func/Entity080601a8_Init.inc"); }
+  for (i = 0; i < 32; i++, e++) {
+    if (p->activeMask & (1 << i)) {
+      FUN_0805ff34(p, e, i);
+    }
+  }
 
-NAKED Entity080601a8* Entity080601a8_Create(u16 plttID, rgb555* pltt) { INCFUNC("asm/func/Entity080601a8_Create.inc"); }
+  return 0;
+}
 
-NAKED Entity080601a8Elem* FUN_080601f0(Entity080601a8* p, u32* outIdx) { INCFUNC("asm/func/FUN_080601f0.inc"); }
+NAKED s32 Entity080601a8_Init(Entity080601a8* p, s32 plttID, rgb555* pltt) { INCFUNC("asm/func/Entity080601a8_Init.inc"); }
+
+Entity080601a8* Entity080601a8_Create(s32 plttID, rgb555* pltt) {
+  Entity080601a8* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity080601a8));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity080601a8_Update, Entity080601a8_Destroy);
+    if (Entity080601a8_Init(p, plttID, pltt) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}
+
+// 空きスロットを探して添字を *outIdx に入れて返す
+Entity080601a8Elem* FUN_080601f0(Entity080601a8* p, u32* outIdx) {
+  Entity080601a8Elem* elem = p->elems;
+  s32 i;
+
+  for (i = 0; i < 32; i++, elem++) {
+    if (!(p->activeMask & (1 << i))) {
+      *outIdx = i;
+      return elem;
+    }
+  }
+
+  *outIdx = 0;
+  return NULL;
+}
 
 NAKED s32 FUN_08060220(Entity080601a8* p, s8 angle, s16 speed, s16 velY, u16 lifetime, u8 unk_d, Vec3* pos) { INCFUNC("asm/func/FUN_08060220.inc"); }

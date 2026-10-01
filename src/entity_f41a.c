@@ -3,6 +3,7 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "mover.h"
 #include "random.h"
 #include "sprite.h"
 #include "vm.h"
@@ -10,12 +11,12 @@
 // SPRITE_BOKU の姿でうろつく生き物, 叩かれると点滅してノックバックし、また歩き出す
 typedef struct EntityF41A {
   Entity e;                            // 0x000, ENTITY_UNK_8
-  u16 id;                              // 0x018, Init の第2引数, FUN_0823b400 に渡して data に入れる
+  u16 id;                              // 0x018, Init の第2引数, Mover_Init に渡して data に入れる
   u16 unk_1a;                          // 0x01A
-  Entity2UnkData data;                 // 0x01C, 位置と向きはここが持つ, data.unk_5 が向き、data.delta が移動量
+  Mover data;                          // 0x01C, 位置と向きはここが持つ, data.unk_5 が向き、data.delta が移動量
   AuxSprite sprite;                    // 0x060
   AuxSpriteGfx gfx;                    // 0x08C, SPRITE_BOKU
-  u8 tile[16];                         // 0x0A8, FUN_0823280c が足元のタイル情報を埋める, data.unk_18 がここを指す
+  MoverTile tile;                      // 0x0A8, data.tile がここを指す
   HitboxData hitbox;                   // 0x0B8
   AuxAnimState anim;                   // 0x108
   AuxAnimFile* animFile;               // 0x118, GetFile(DIR_ANIMATION, 0x1DF8)
@@ -30,14 +31,7 @@ typedef struct EntityF41A {
 } EntityF41A;
 static_assert(sizeof(EntityF41A) == 316);
 
-s32 FUN_0823b400(Entity2UnkData* p, u16 id, Vec3* pos, u32 unk_5, u32 unk_4, void* owner);
-
-void FUN_0823280c(unknown* p, Vec3* pos);
-void FUN_0823b4b8(Entity2UnkData* p);
-bool32 FUN_0823b46c(Entity2UnkData* p, AuxSprite* unk_28);
 s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
-s32 FUN_0823b284(Entity2UnkData* p);
-bool32 FUN_0823b43c(Entity2UnkData* p, void* unk_18, u16 unk_1c, u16 unk_1e);
 void FUN_0807f598(void* p);
 
 void EntityF41A_UpdateWander(EntityF41A* p);
@@ -58,7 +52,7 @@ void EntityF41A_SetState(EntityF41A* p, s32 state) {
 }
 
 // Entity5941 から届く通知, 0 = 攻撃が当たった, 1 = 吹き飛ばし開始
-NON_MATCH bool32 EntityF41A_OnMessage(Entity2UnkData* data, s32 msg, s32 value) {
+NON_MATCH bool32 EntityF41A_OnMessage(Mover* data, s32 msg, s32 value) {
 #ifdef NONMATCHING_C
   EntityF41A* p = data->p_38;
 
@@ -146,13 +140,13 @@ NAKED void EntityF41A_UpdateAnim(EntityF41A* p) { INCFUNC("asm/func/EntityF41A_U
 s32 EntityF41A_Update(EntityF41A* p) {
   p->update(p);
   EntityF41A_UpdateAnim(p);
-  FUN_0823b4b8(&p->data);
+  Mover_ApplyMove(&p->data);
   return 0;
 }
 
 s32 EntityF41A_Destroy(EntityF41A* p) {
   AuxSprite_Remove(&p->sprite);
-  FUN_0823b284(&p->data);
+  Mover_Unlink(&p->data);
   FUN_0807f598(&p->detectNode);
   return 0;
 }
@@ -167,7 +161,7 @@ void EntityF41A_InitData(EntityF41A* p) {
   s32 ground;
   s32 stairs;
 
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     pos.x = VM_GetValue();
     pos.y = VM_GetValue();
     pos.z = VM_GetValue();
@@ -201,20 +195,20 @@ void EntityF41A_InitData(EntityF41A* p) {
     }
   }
   pos.y = ground;
-  FUN_0823b400(&p->data, p->id, &pos, 0, 7, p);
+  Mover_Init(&p->data, p->id, &pos, 0, 7, p);
 }
 
 // 足元のタイル情報を取って data に結びつける
 void EntityF41A_InitTile(EntityF41A* p) {
-  FUN_0823280c(p->tile, &p->data.pos);
-  FUN_0823b43c(&p->data, p->tile, 30, 30);
+  FUN_0823280c(&p->tile, &p->data.pos);
+  Mover_SetCollision(&p->data, &p->tile, 30, 30);
 }
 
 // AuxSprite を用意して data に結びつけ、アニメファイルを読む
 void EntityF41A_InitSprite(EntityF41A* p) {
   Video_GetAuxSprite(&p->gfx, SPRITE_BOKU);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
-  FUN_0823b46c(&p->data, &p->sprite);
+  Mover_SetAuxSprite(&p->data, &p->sprite);
   Video_SetAuxSpritePltt(&p->gfx, 307);
   p->sprite.pos = p->data.pos;
   p->animFile = GetFile(DIR_ANIMATION, 0x1DF8);

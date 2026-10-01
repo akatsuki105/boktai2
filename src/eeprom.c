@@ -16,7 +16,7 @@ static_assert(sizeof(SavedHBlankState) == 16);
 
 COMMON_DATA SavedHBlankState gSavedHBlankState = {};  // 0x03004880
 
-extern u16 u16_0300351c;
+extern bool16 gEepromIdle;
 extern u32 u32_0300481c;
 extern u32 u32_0300170c;
 
@@ -38,7 +38,7 @@ s32 EEPROM_BeginAccess(void) {
   u16_03003514 = 0;
   FUN_082407e0();
   WaitForVBlank();
-  u16_0300351c = 0;
+  gEepromIdle = FALSE;
   m4aSoundVSyncOff();
   WaitForVBlank();
   REG_IME = 0;
@@ -54,7 +54,7 @@ u32 EEPROM_EndAccess(void) {
   SavedHBlankState* s = &gSavedHBlankState;
 
   REG_IF = 1;
-  u16_0300351c = 1;
+  gEepromIdle = TRUE;
   m4aSoundVSyncOn();
   WaitForVBlank();
   REG_IME = 0;

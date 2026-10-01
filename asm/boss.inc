@@ -89,7 +89,7 @@ Boss_Init_08022a70: @ 0x08022A70
 	str r7, [sp, #4]
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	ldr r1, _08022B00 @ =0xFFFF0000
 	movs r0, #0x80
 	lsls r0, r0, #0x11
@@ -150,7 +150,7 @@ FUN_08022b04: @ 0x08022B04
 	bl EntityMsgBus_Unregister
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl FUN_0823b284
+	bl Mover_Unlink
 	adds r0, r4, #0
 	adds r0, #0x97
 	ldrb r0, [r0]

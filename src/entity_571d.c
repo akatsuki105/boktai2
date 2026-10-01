@@ -14,7 +14,7 @@ struct Entity571D {
   MainSpriteGfx gfx1;         // 0x0038, SPRITE_INVENTORY_ICONS
   MainSpriteGfx gfx2;         // 0x0058, SPRITE_UI_MISC
   MainSprite sprites[38];     // 0x0078, _Destroy が 38枚まとめて MainSprite_Remove する, [1..16] と [17..28] がアイテム枠2面, [30] がカーソル
-  u32* tilemap;               // 0x0EB8, GetFile(DIR_TILE_MAP, 0x9F57)
+  u32* tilemap;               // 0x0EB8, TILEMAP_9F57
   rgb555* bgPltt;             // 0x0EBC, GetFile(DIR_BGPLTT, 0xA41A) + 0x1B4
   u8* unk_ec0;                // 0x0EC0, '.s' があれば FUN_0823d340 の戻り値
   u8* unk_ec4;                // 0x0EC4, '.i' があれば FUN_0823d340 の戻り値
@@ -35,12 +35,44 @@ struct Entity571D {
 };
 static_assert(sizeof(Entity571D) == 4336);
 
+void FUN_080b94cc(s32 kind);
+void FUN_080b9400(s32 kind);
+void FUN_080b9a0c(MenuSpritePair* p);
+void FUN_080b9894(MenuSpritePair* p);
+
 INCASM("asm/entity_571d.inc");
 
-NAKED s32 Entity571D_Update(Entity571D* p) { INCFUNC("asm/func/Entity571D_Update.inc"); }
+s32 Entity571D_Update(Entity571D* p) {
+  FUN_080b94cc(p->kind);
+  FUN_080b9400(p->kind);
+  p->fn(p);
+  return 0;
+}
 
-NAKED s32 Entity571D_Destroy(Entity571D* p) { INCFUNC("asm/func/Entity571D_Destroy.inc"); }
+s32 Entity571D_Destroy(Entity571D* p) {
+  s32 i;
+
+  for (i = 0; i < 38; i++) {
+    MainSprite_Remove(&p->sprites[i]);
+  }
+
+  FUN_080b9a0c(&p->pair0);
+  FUN_080b9894(&p->pair1);
+  return 0;
+}
 
 NAKED s32 Entity571D_Init(Entity571D* p) { INCFUNC("asm/func/Entity571D_Init.inc"); }
 
-NAKED Entity571D* Entity571D_Create(void) { INCFUNC("asm/func/Entity571D_Create.inc"); }
+Entity571D* Entity571D_Create(void) {
+  Entity571D* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity571D));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity571D_Update, Entity571D_Destroy);
+    if (Entity571D_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}

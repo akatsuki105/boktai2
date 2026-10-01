@@ -66,4 +66,22 @@ NAKED s32 EntityCBB0_Destroy(EntityCBB0* p) { INCFUNC("asm/func/EntityCBB0_Destr
 
 NAKED s32 EntityCBB0_Init(EntityCBB0* p) { INCFUNC("asm/func/EntityCBB0_Init.inc"); }
 
-NAKED EntityCBB0* EntityCBB0_Create(u32 subroutineID) { INCFUNC("asm/func/EntityCBB0_Create.inc"); }
+EntityCBB0* EntityCBB0_Create(u32 subroutineID) {
+  EntityCBB0* p;
+
+  if (gEntityCBB0 != NULL) {
+    return gEntityCBB0;
+  }
+
+  p = CreateEntity(ENTITY_UNK_9, sizeof(EntityCBB0));
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityCBB0_Update, EntityCBB0_Destroy);
+    p->subroutineID = subroutineID;
+    if (EntityCBB0_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}

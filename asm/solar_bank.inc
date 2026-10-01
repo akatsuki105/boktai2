@@ -21,7 +21,7 @@ _080B39D8: .4byte 0x030046A0
 FUN_080b39dc: @ 0x080B39DC
 	push {lr}
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080B3A02
 	bl VM_GetValue

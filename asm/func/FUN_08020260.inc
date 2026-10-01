@@ -1,12 +1,12 @@
 	push {r4, r5, r6, r7, lr}
 	sub sp, #8
 	ldr r0, _0802030C @ =0x000085E6
-	bl FUN_08230e70
+	bl Registry_Find
 	adds r5, r0, #0
 	cmp r5, #0
 	beq _08020302
 	movs r0, #0x6e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08020302
 	bl VM_GetValue
@@ -37,7 +37,7 @@ _080202A4:
 	cmp r4, #1
 	bgt _08020302
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08020302
 	mov r0, sp

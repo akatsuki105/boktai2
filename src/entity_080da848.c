@@ -94,15 +94,15 @@ NAKED s32 FUN_080d9cec(Entity080da848* p, u32 param_2, u32 param_3, u32 param_4,
 
 NAKED s32 FUN_080d9f5c(Entity080da848* p, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_080d9f5c.inc"); }
 
-NAKED s32 FUN_080da110(Entity080da848* p, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_080da110.inc"); }
+NAKED s32 FUN_080da110(u8 param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8, u32 param_9, u32 param_10) { INCFUNC("asm/func/FUN_080da110.inc"); }
 
 NAKED s32 FUN_080da358(Entity080da848* p, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_080da358.inc"); }
 
 NAKED s32 FUN_080da4f8(Entity080da848* p, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_080da4f8.inc"); }
 
-NAKED void FUN_080da698(u8 param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8, u32 param_9) { INCFUNC("asm/func/FUN_080da698.inc"); }
+s32 FUN_080da698(u8 param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8, u32 param_9) { return FUN_080da110(param_1, param_2, param_3, param_4, param_5, param_6, param_7, 3, param_8, param_9); }
 
-NAKED void FUN_080da6c4(u8 param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8, u32 param_9, u32 param_10) { INCFUNC("asm/func/FUN_080da6c4.inc"); }
+s32 FUN_080da6c4(u8 param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8, u32 param_9, u32 param_10) { return FUN_080da110(param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, param_9, param_10); }
 
 NAKED s32 Entity080da848_Update(Entity080da848* p) { INCFUNC("asm/func/Entity080da848_Update.inc"); }
 

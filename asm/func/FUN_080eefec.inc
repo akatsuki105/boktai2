@@ -1,7 +1,7 @@
 	push {r4, r5, lr}
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _080EF040
 	bl FindEnemyById
@@ -9,7 +9,7 @@
 	cmp r4, #0
 	beq _080EF040
 	movs r0, #0x72
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080EF040
 	bl VM_GetPC

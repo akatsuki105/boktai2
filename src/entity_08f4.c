@@ -5,7 +5,7 @@
 // 3行の選択肢を持つ通信メニュー, 各行は values[i] を counts[i] で巻き戻しながら左右で切り替える
 typedef struct {
   Entity e;                    // 0x000, ENTITY_UNK_11
-  void* tilemapFile;           // 0x018, FUN_081daeb8 が GetFile(DIR_TILE_MAP, 0xCD91) を入れ、Video_SetupBGLayout に渡す
+  void* tilemapFile;           // 0x018, FUN_081daeb8 が TILEMAP_CD91 を入れ、Video_SetupBGLayout に渡す
   rgb555* bgPltt;              // 0x01C, FUN_081daeb8 が GetFile(DIR_BGPLTT, 0x26BB) + 0x14 を入れ、gBgPlttBuffer へ転送する
   MainSprite sprites[7];       // 0x020, FUN_081db14c が MainSprite_Add(&sprites[i], &gfx, ...) で7枚登録する
   MainSpriteGfx gfx;           // 0x2C0, SPRITE_UI_LINK

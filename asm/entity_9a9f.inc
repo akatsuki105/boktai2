@@ -4109,7 +4109,7 @@ FUN_081df814: @ 0x081DF814
 	push {r4, lr}
 	sub sp, #8
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081DF860
 	bl VM_GetValue
@@ -4147,11 +4147,11 @@ _081DF860:
 _081DF86A:
 	movs r0, #0x74
 	movs r1, #4
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r0, #0
 	movs r0, #0x6d
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	bne _081DF890
 	mov r0, sp

@@ -10,7 +10,7 @@
 	ldrh r0, [r1]
 	cmp r0, #0
 	beq _08012A80
-	bl FUN_0823b2d0
+	bl Mover_FindByID_Proxy
 	ldr r2, _08012AA8 @ =0x00000CC8
 	adds r1, r6, r2
 	str r0, [r1]

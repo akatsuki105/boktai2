@@ -1686,7 +1686,7 @@ Entity150F_Init: @ 0x081E1838
 	str r0, [r7, #0x18]
 	movs r0, #0x70
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r7, #0x1c]
 	adds r0, r7, #0
 	adds r0, #0x20

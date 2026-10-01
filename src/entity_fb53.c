@@ -1,9 +1,29 @@
 #include "entity.h"
 #include "global.h"
 
+// GBAワイヤレスアダプタで相手を探して接続するエンティティ
 typedef struct {
-  Entity e;  // ENTITY_UNK_2
-  u8 unk_18[76 - 0x18];
+  Entity e;             // 0x00, ENTITY_UNK_2
+  u8 state;             // 0x18, PTR_ARRAY_085ab5b8 の添字
+  bool8 stateChanged;   // 0x19, 各ハンドラが入り口で1回だけ処理して 0 に戻す
+  u8 linkError;         // 0x1A, EntityFB53_WatchLink が bit0、EntityFB53_SetLinkError が 理由 | 0xF0 を立てる, 非0 なら state が 9 になる
+  bool8 partnerFound;   // 0x1B, Rfu_FindPartnerRecord が見つけたら 1
+  u16 watchLinkResult;  // 0x1C, rfu_REQBN_watchLink の戻り値
+  u8 retryCount;        // 0x1E, 3 未満なら state 5 へ戻し、以上なら state 8 へ進める
+  u8 saveResult;        // 0x1F, Save_WriteSystemData の戻り値
+  u8 partnerGameIdx;    // 0x20, EntityFB53_FindGameIdx の戻り値, TextPanel_SetMessage の添字として +3 される
+  u8 unk_21[3];         // 0x21, まだ未解析
+  u32 timer;            // 0x24, 毎フレーム +1, state を変えるとき 0 に戻る
+  u8* scriptM;          // 0x28, '.m'
+  u8* scriptS;          // 0x2C, '.s'
+  s32 panelID;          // 0x30, TextPanel_Create(1, 7, 0x1C, 6) の戻り値, 負なら未作成
+  s32 scriptID;         // 0x34, '.e' の値, 読み手は未発見
+  u8 unk_38;            // 0x38, まだ未解析
+  u8 linkLossSlot;      // 0x39, rfu_REQBN_watchLink の bmLinkLossSlot
+  u8 linkLossReason;    // 0x3A, rfu_REQBN_watchLink の linkLossReason
+  u8 linkRecoverySlot;  // 0x3B, rfu_REQBN_watchLink の parentBmLinkRecoverySlot
+  u8 partnerRecord[8];  // 0x3C, Rfu_FindPartnerRecord の dst, 先頭2バイトを EntityFB53_FindGameIdx が u8_ARRAY_085ab5b0 の4つのIDと比べる
+  u8 unk_44[8];         // 0x44, Rfu_FindPartnerRecord の buf
 } EntityFB53;
 static_assert(sizeof(EntityFB53) == 76);
 

@@ -110,11 +110,11 @@ bool32 TryAddItem(item32_t n, s32 rotCount) {
 bool32 FUN_082423a8(void) {
   item32_t n;
   s32 rotCount;
-  if (!VM_SeekToKeyword('i')) {
+  if (!VM_SeekToNamedArg('i')) {
     return FALSE;
   }
   n = VM_GetValue();
-  rotCount = VM_SeekToKeyword('p') ? VM_GetValue() : 0;
+  rotCount = VM_SeekToNamedArg('p') ? VM_GetValue() : 0;
   return TryAddItem(n, rotCount);
 }
 
@@ -148,7 +148,7 @@ bool32 RemoveSpecifiedItem(item32_t id) {
 }
 
 bool32 FUN_08242450(void) {
-  if (VM_SeekToKeyword('i') != 0) {
+  if (VM_SeekToNamedArg('i') != 0) {
     return RemoveSpecifiedItem(VM_GetValue());
   }
   return FALSE;
@@ -183,7 +183,7 @@ bool32 CheckItemOwn(item32_t id) {
 }
 
 bool32 FUN_082424d4(void) {
-  if (VM_SeekToKeyword('i') != 0) {
+  if (VM_SeekToNamedArg('i') != 0) {
     return CheckItemOwn(VM_GetValue());
   }
   return FALSE;
@@ -256,9 +256,9 @@ NON_MATCH void item_082427e0(void) {
     SetValuable(i, ITEM_NONE);
   }
 
-  val = VM_SeekToKeyword('n') ? VM_GetValue() : 0;
+  val = VM_SeekToNamedArg('n') ? VM_GetValue() : 0;
   if (val > 0) {
-    if (VM_SeekToKeyword('i')) {
+    if (VM_SeekToNamedArg('i')) {
       for (; val != 0; val--) {
         TryAddItem(VM_GetValue(), 0);
       }
@@ -324,11 +324,11 @@ bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t n) {
 }
 
 bool32 item_0824292c(void) {
-  if (VM_SeekToKeyword('k') == 0) {
+  if (VM_SeekToNamedArg('k') == 0) {
     return FALSE;
   } else {
     u32 category = VM_GetValue();
-    if (VM_SeekToKeyword('i')) {
+    if (VM_SeekToNamedArg('i')) {
       item32_t n = VM_GetValue();
       return CheckEmptySlotExist(category, n);
     }

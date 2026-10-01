@@ -38,4 +38,6 @@ typedef struct Eff082473e0Emitter {
 } Eff082473e0Emitter;
 static_assert(sizeof(Eff082473e0Emitter) == 312);
 
+void* Eff082473e0Emitter_Reset(Eff082473e0Emitter* e);
+
 #endif  // __INCLUDE_EFF_082473E0_H__

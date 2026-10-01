@@ -6,7 +6,7 @@
 #include "vm.h"
 
 extern u32 u32_03004860;
-extern u32 u32_030047b4;
+extern bool32 gSaveSucceeded;
 
 // EEPROM_WriteOnce が各データの末尾に付ける 8 バイトのトレーラー (EEPROM_ReadOnce が検証する)
 typedef struct {
@@ -129,7 +129,7 @@ bool8 Save_WriteCore(u32 val) {
   len = FUN_08243648(Save_GetExtraOffset());
   ret = EEPROM_WriteRetry(Save_GetCoreAddr(val, 1), FUN_08232254(), len);
   if (ret != len + 8) return FALSE;
-  u32_030047b4 = TRUE;
+  gSaveSucceeded = TRUE;
   return TRUE;
 }
 
@@ -140,7 +140,7 @@ bool8 Save_ReadCore(u32 val) {
   len = FUN_08243648(Save_GetExtraOffset());
   if (EEPROM_ReadRetry(Save_GetCoreAddr(val, 1), gStat, len) < 0) return FALSE;
   if (gStat->magicNumber != gScriptDirectoryBuildTime) return FALSE;
-  u32_030047b4 = TRUE;
+  gSaveSucceeded = TRUE;
   return TRUE;
 }
 

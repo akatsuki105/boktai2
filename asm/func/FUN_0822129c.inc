@@ -7,7 +7,7 @@
 	bl FUN_08221ae0
 	adds r0, r7, #0
 	adds r0, #0x48
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 	adds r0, r7, #0
 	bl FUN_0821c140
 	movs r0, #0xe3

@@ -168,14 +168,14 @@ s32 TextSlideshow_Start(TextSlideshow* p) {
   p->step = 0;
   p->stepChanged = FALSE;
   p->timer = 0;
-  p->curLine = VM_GetKeywordValue('p', 0);
+  p->curLine = VM_GetNamedArgValue('p', 0);
   p->unk_1c = 0;
 
-  if (!VM_SeekToKeyword('s')) return -1;
+  if (!VM_SeekToNamedArg('s')) return -1;
   p->scriptS = FUN_0823d340();
   if (p->scriptS == NULL) return -1;
 
-  if (VM_SeekToKeyword('t')) {
+  if (VM_SeekToNamedArg('t')) {
     s32 i;
 
     p->scriptT = FUN_0823d34c();
@@ -195,8 +195,8 @@ s32 TextSlideshow_Start(TextSlideshow* p) {
     }
   }
 
-  p->exitScriptID = VM_GetKeywordValue('e', 0);
-  p->skipScriptID = VM_GetKeywordValue('c', 0);
+  p->exitScriptID = VM_GetNamedArgValue('e', 0);
+  p->skipScriptID = VM_GetNamedArgValue('c', 0);
   TextBox_Start(p->scriptS);
   TextBox_SetInstant(TRUE);
   TextBox_SetBgPltt(0x539C);
@@ -215,7 +215,7 @@ static inline void ShowOnlyBG0(u32 hide) { gStagedDISPCNT = (gStagedDISPCNT & ~h
 NON_MATCH s32 TextSlideshow_Init(TextSlideshow* p) {
 #ifdef NONMATCHING_C
   gTextSlideshow = p;
-  p->flags = VM_GetKeywordValue('f', 0);
+  p->flags = VM_GetNamedArgValue('f', 0);
   if (p->flags & TEXTSLIDESHOW_TAKE_OVER_BG) {
     p->savedDispcnt = gStagedDISPCNT;
     ShowOnlyBG0(DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON);

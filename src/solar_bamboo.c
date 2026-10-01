@@ -130,15 +130,15 @@ s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
   Vec3 offset;
 
   p->unk_18 = param;
-  p->maxHP = VM_GetKeywordValue('l', 200);
+  p->maxHP = VM_GetNamedArgValue('l', 200);
   p->hp = 1;
   p->q_unk_28 = 0;
-  p->q_unk_36 = VM_GetKeywordValue('n', 4);
-  p->q_unk_38 = VM_GetKeywordValue('e', 50);
+  p->q_unk_36 = VM_GetNamedArgValue('n', 4);
+  p->q_unk_38 = VM_GetNamedArgValue('e', 50);
   p->q_unk_2a = 0;
   p->q_unk_2c = 0;
   p->q_unk_2e = 0;
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     pos.x = VM_GetValue();
     pos.y = VM_GetValue() + 0x64;
     pos.z = VM_GetValue();

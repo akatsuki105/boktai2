@@ -28,17 +28,17 @@ _0800A328:
 	bl ClearMemory
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	movs r4, #0
 	movs r5, #0
 	strh r0, [r6]
 	movs r0, #0x74
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strb r0, [r6, #3]
 	movs r0, #0x62
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strb r0, [r6, #4]
 	strb r4, [r6, #8]
 	strb r4, [r6, #2]
@@ -51,7 +51,7 @@ _0800A328:
 	adds r1, r6, #0
 	bl FUN_08009b6c
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0800A3B0
 	bl VM_GetValue
@@ -104,7 +104,7 @@ _0800A3BA:
 	adds r0, #0xe6
 	strh r0, [r1]
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0800A3FC
 	bl VM_GetValue

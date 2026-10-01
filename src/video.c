@@ -17,8 +17,8 @@ extern u16 u16_ARRAY_03003a30[4];
 extern s32 s32_03003a38;
 extern s32 s32_03003a3c;
 extern s32 s32_03003e40;
-extern s32 s32_03002ca8;
-extern s32 s32_03003500;
+extern bool32 gDispcntLocked;
+extern bool32 gVBlankDone;
 extern u16 gStagedDISPCNT;
 extern s32 s32_0300446c;
 extern u16 gWIN0H;
@@ -37,7 +37,7 @@ extern u8 gOAMTileHeightTable[16];
 extern u8 gOAMTileCounts[16];
 extern u32 gOAMShapeSizeAttrTable[16];
 
-extern u16 u16_0300357c;
+extern u16 gMainSpriteTileCount;
 extern s16 gObjTileCursor;
 extern s16 gParticleFileTileCount;
 extern ParticleFile* gParticleFile;  // 0x0300358C
@@ -111,11 +111,11 @@ s32 VideoCommit_Update(VideoCommit* p) {
   FUN_0822e73c();
   CopyBGTileDataAndTilemapToVram();
   REG_DISPCNT &= ~(DISPCNT_BG_ALL_ON | DISPCNT_OBJ_ON);
-  if (s32_03002ca8 == 0) {
+  if (gDispcntLocked == 0) {
     REG_DISPCNT |= gStagedDISPCNT | DISPCNT_OBJ_ON;
   }
   Video_ApplyMosaic();
-  s32_03003500 = 0;
+  gVBlankDone = FALSE;
   return 0;
 }
 
@@ -423,7 +423,7 @@ void FUN_0822b234(AuxSpriteGfx* gfx, u32 val) { gfx->unk_2 = val; }
 // OBJ VRAM のタイル確保状態をフレーム先頭に戻す (パーティクル分のタイルは常駐なのでその後ろから再開する)
 void Video_ResetObjTileAlloc(void) {
   gAuxSpriteTileCount = 0;
-  u16_0300357c = 0;
+  gMainSpriteTileCount = 0;
   gObjTileCursor = 0;
   if (gParticleFile != NULL) {
     gObjTileCursor = gParticleFileTileCount;

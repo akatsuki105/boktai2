@@ -10,7 +10,7 @@
 typedef struct GameResult {
   Entity e;           // 0x000, ENTITY_UNK_11
   MainSpriteGfx gfx;  // 0x018, SPRITE_42E2
-  Tilemaps* tilemap;  // 0x038
+  Tilemaps* tilemap;  // 0x038, TILEMAP_33B2
   rgb555* pltt;       // 0x03C
   u32 unk_40;         // 0x040, なんかのbitfield?
   u32 scriptID_44;    // 0x044, 0x08222954
@@ -67,7 +67,7 @@ NAKED static void _GameResult_Update(GameResult* p) { INCFUNC("asm/func/_GameRes
 // BG11 にリザルト画面のタイルマップを敷く
 void FUN_082229ac(GameResult* p) {
   s32 bgIndices[1];
-  p->tilemap = GetFile(DIR_TILE_MAP, 0x33B2);
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_33B2);
   bgIndices[0] = 11;
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, bgIndices);
 }

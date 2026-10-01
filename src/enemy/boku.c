@@ -3,7 +3,7 @@
 #include "malloc.h"
 
 typedef struct {
-  Entity2UnkData unk_0;     // 0x000
+  Mover unk_0;              // 0x000
   EnemySpriteData* sprite;  // 0x044
   EntityMsgBox msgbox;      // 0x048, 0x08102d1e
   u8 unk_7c[0x25D - 0x7C];

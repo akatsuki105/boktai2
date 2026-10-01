@@ -955,7 +955,7 @@ Entity723E_Init: @ 0x080529B0
 	ldr r0, _080529E0 @ =0x0300011C
 	str r7, [r0]
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080529DA
 	bl FUN_0823d340

@@ -75,8 +75,8 @@ export class InstructionReader {
   private stream: ByteStream;
   private alreadyReadInstructions: Instruction[];
   // 直近に readScriptOffset で読んだコンテナ長と、その本体が始まる位置。
-  // キーワード/制御命令の本体の終端はこの長さだけが決めるので、
-  // 「どのキーワードが子を何個取るか」を知らなくても読める。
+  // ラベル/制御命令の本体の終端はこの長さだけが決めるので、
+  // 「どのラベルが子を何個取るか」を知らなくても読める。
   private containerLen = 0;
   private containerStart = 0;
 
@@ -147,7 +147,7 @@ export class InstructionReader {
       }
       case 0x50: {
         this.readScriptOffset(cmd);
-        instr = this.readKeyword();
+        instr = this.readLabel();
         break;
       }
       case 0x60: {
@@ -339,23 +339,23 @@ export class InstructionReader {
     return instr;
   }
 
-  // キーワードは「1文字 + 本体」。本体に何が何個入るかは呼び出し先のエンジン関数次第なので、
+  // ラベルは「1文字 + 本体」。本体に何が何個入るかは呼び出し先のエンジン関数次第なので、
   // 個数は決め打ちせずコンテナ長が尽きるまで読む。
-  protected readKeyword(): Instruction {
+  protected readLabel(): Instruction {
     const end = this.containerStart + this.containerLen;
-    const instr = new Instruction(InsnType.Keyword, this.stream.readByte());
+    const instr = new Instruction(InsnType.Label, this.stream.readByte());
     while (this.stream.position < end) {
       instr.children.push(this.readInstruction());
     }
     return instr;
   }
 
-  // 制御命令もキーワードと同じで、続く値がいくつ並ぶかは呼び出し先が決める
+  // 制御命令もラベルと同じで、続く値がいくつ並ぶかは呼び出し先が決める
   // (0xB745 は呼ばれたエンジン関数が自分で VM_GetValue() する)。コンテナ長で読む。
   protected readControl(): Instruction {
     const end = this.containerStart + this.containerLen;
     const tag = this.stream.readByte() | (this.stream.readByte() << 8);
-    // 次のキーワードまでのバイト数。構造から導けるので値は使わない。
+    // 最初のラベルまでのバイト数。構造から導けるので値は使わない。
     if ((this.stream.readByte() & 0x80) !== 0) {
       this.stream.readByte();
     }

@@ -171,7 +171,7 @@ s32 MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags
 
 void FUN_0822f584(void) {}
 
-NAKED void FUN_0822f588(MainSprite* p, unknown* data, u32 val) { INCFUNC("asm/func/FUN_0822f588.inc"); }
+NAKED void FUN_0822f588(MainSprite* p, MainSprite* src, u32 val) { INCFUNC("asm/func/FUN_0822f588.inc"); }
 
 void MainSprite_SetPlttID(MainSprite* p, u32 plttID) {
   u16 id;

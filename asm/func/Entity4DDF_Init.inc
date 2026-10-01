@@ -7,7 +7,7 @@
 	adds r4, r6, #0
 	adds r4, #0x18
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08211E54
 	bl FUN_0823d34c
@@ -46,7 +46,7 @@ _08211E54:
 	adds r4, r6, #0
 	adds r4, #0x18
 	movs r0, #0x63
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08211E92
 	bl FUN_0823d34c

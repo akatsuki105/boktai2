@@ -35,7 +35,7 @@ _081D80BC:
 	adds r0, r4, #0
 	bl FUN_08002a58
 	adds r0, r4, #0
-	bl FUN_0823b284
+	bl Mover_Unlink
 _081D80EC:
 	movs r2, #0x20
 	movs r0, #0x80

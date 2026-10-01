@@ -19,14 +19,14 @@ _0822934E:
 	ldr r1, _0822938C @ =0x00000F46
 	adds r0, r6, r1
 	ldrh r0, [r0]
-	bl FUN_0823b2d0
+	bl Mover_FindByID_Proxy
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08229376
 	movs r1, #0xe4
 	lsls r1, r1, #4
 	adds r0, r6, r1
-	bl FUN_0823b284
+	bl Mover_Unlink
 _08229376:
 	ldr r2, _08229390 @ =0x03000248
 	movs r1, #0

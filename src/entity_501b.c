@@ -23,8 +23,8 @@ struct Entity501B {
   u16 score;                   // 0x3BC, gEntity9A9F->unk_138[playerIdx] (9999 で頭打ち), 精算で減っていく
   s16 step;                    // 0x3BE, 1フレームに score から gStat->field_0x912 へ移す量, 初期 2, ボタンで <<3
   s32 unk_3c0;                 // 0x3C0, gEntity9A9F->unk_144[playerIdx] (±9999 で頭打ち)
-  u32* tilemap0;               // 0x3C4, GetFile(DIR_TILE_MAP, 0xCD91) を BG2 に敷く
-  u32* tilemap1;               // 0x3C8, GetFile(DIR_TILE_MAP, 0xA413) を BG0 に敷く
+  u32* tilemap0;               // 0x3C4, TILEMAP_CD91 を BG2 に敷く
+  u32* tilemap1;               // 0x3C8, TILEMAP_A413 を BG0 に敷く
   rgb555* bgPltt;              // 0x3CC, GetFile(DIR_BGPLTT, 0x26BB) + 0x14
   Entity501BFunc* fn;          // 0x3D0, _Update が毎フレーム呼ぶ状態関数
   u8* unk_3d4;                 // 0x3D4, '.s', TextPanel_SetScript に渡す

@@ -465,7 +465,7 @@ FUN_080ad544: @ 0x080AD544
 	sub sp, #0xc
 	adds r7, r0, #0
 	movs r0, #0x41
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080AD56A
 	mov r4, sp
@@ -7851,7 +7851,7 @@ FUN_080b0e98: @ 0x080B0E98
 	adds r0, r6, #0
 	bl FUN_080b0e3c
 	movs r0, #0x4c
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080B0F38
 	bl VM_GetValue
@@ -9424,7 +9424,7 @@ FUN_080b1b74: @ 0x080B1B74
 	str r2, [sp, #0x30]
 _080B1B90:
 	movs r0, #0x67
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	bne _080B1BA4
 	movs r3, #0x64
@@ -9439,7 +9439,7 @@ _080B1BA4:
 	str r0, [sp, #0x2c]
 _080B1BB0:
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	bne _080B1BE0
 	movs r7, #0
@@ -9666,7 +9666,7 @@ FUN_080b1d5c: @ 0x080B1D5C
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	movs r0, #0x63
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080B1D8A
 	bl VM_GetValue
@@ -9733,7 +9733,7 @@ FUN_080b1de8: @ 0x080B1DE8
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B1E08
@@ -9760,7 +9760,7 @@ FUN_080b1e18: @ 0x080B1E18
 	push {r4, r5, lr}
 	adds r5, r0, #0
 	movs r0, #0x62
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B1E5C
@@ -9993,7 +9993,7 @@ _080B2020:
 	strh r0, [r1]
 _080B2022:
 	movs r0, #0x54
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080B2048
 	bl VM_GetValue
@@ -10074,7 +10074,7 @@ _080B20A4:
 	b _080B21CE
 _080B20BE:
 	movs r0, #0x4f
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080B20CE
 	bl VM_GetValue
@@ -10216,7 +10216,7 @@ FUN_080b21d8: @ 0x080B21D8
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x6d
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080B21EA
 	bl VM_GetValue

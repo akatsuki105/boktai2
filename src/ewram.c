@@ -1,4 +1,5 @@
 #include "global.h"
+#include "registry.h"
 
 // 圧縮されたTilemapFileはここに展開して読み出す, 圧縮されてないならROMから直接読み込むのでここは使われない
 EWRAM_DATA u8 gTilemapFileBufferHead[4] = {};  // 0x02021400, 展開先の先頭4バイト, TilemapFile より手前にある, 圧縮のメタデータ(使わない?)
@@ -19,7 +20,7 @@ EWRAM_DATA rgb555 gBgPlttBlendBuffer[256] = {};  // 0x02036e00, gBgPlttBuffer �
 EWRAM_DATA u8 gTilemapBuffer[BG_SCREEN_SIZE * 4] = {};  // 0x02037000, BG0, BG1, BG2, BG3 のタイルマップのバッファ
 
 EWRAM_DATA u8 u8_02039000[0x2000] = {};  // todo
-EWRAM_DATA Unk_0203b000 gUnk_0203b000[128] = {};
+EWRAM_DATA RegistryEntry gRegistry[128] = {};
 EWRAM_DATA u16 gRandomTable[1024] = {};  // 0x0203B400
 EWRAM_DATA u16 sUnused_0203bc00[1024] = {};
 

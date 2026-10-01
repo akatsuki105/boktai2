@@ -22,7 +22,7 @@ typedef u32 EntityC60FItemFlags;
 typedef struct EntityC60FItem {
   AuxSprite sprite;              // 0x000, EntityC60F_Destroy が要素そのものを AuxSprite_Remove に渡す
   u8 unk_2c[28];                 // 0x02C
-  Entity2UnkData unk_48;         // 0x048, _Destroy が FUN_08002a58(&unk_48) と FUN_0823b284(&unk_48) に渡す
+  Mover unk_48;                  // 0x048, _Destroy が FUN_08002a58(&unk_48) と Mover_Unlink(&unk_48) に渡す
   u8 unk_8c[16];                 // 0x08C
   Vec3 pos;                      // 0x09C, Hitbox_SetPos に渡す
   HitboxData hitbox;             // 0x0A4, FUN_081d6eb8 が組み立てる
@@ -31,7 +31,7 @@ typedef struct EntityC60FItem {
   s16 state;                     // 0x0FE, _Update が PTR_FUN_081D6F60_085AE118[state](item) を呼ぶ
   EntityC60FItemFlags flags;     // 0x100
   u8 unk_104[4];                 // 0x104
-  u8 unk_108;                    // 0x108, 0 でないときだけ _Destroy が FUN_08002a58 / FUN_0823b284 を呼ぶ
+  u8 unk_108;                    // 0x108, 0 でないときだけ _Destroy が FUN_08002a58 / Mover_Unlink を呼ぶ
   u8 unk_109;                    // 0x109
   u16 unk_10a;                   // 0x10A, unk_100 の bit7 が立っているとき gStat->unk_248 と比較される
   MapTileOverride tileOverride;  // 0x10C, unk_100 の bit5 が立っているとき _Destroy が FUN_082342a8 に渡す

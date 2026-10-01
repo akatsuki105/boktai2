@@ -138,6 +138,9 @@ s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags f
 s32 MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
 bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx);
 void MainSprite_Remove(MainSprite* p);
+
+extern u32 gObjBlendEnabled;  // 0 以外なら flags bit14 のスプライトを半透明にする
+void FUN_0822f588(MainSprite* p, MainSprite* src, u32 val);
 void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 playMode, MainAnimPlayFlags16 flags);
 
 #endif  // __INCLUDE_SPRITE_MAIN_H__

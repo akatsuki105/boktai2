@@ -1,6 +1,7 @@
 #include "collision_map.h"
 #include "entity.h"
 #include "global.h"
+#include "malloc.h"
 #include "vm.h"
 
 // 衝突マップのノード (MapTileOverride) を id 付きで持つラッパ, id を指定して一括で消したり、 登録を外したり (Entity08004fac_DisableNodesById) 戻したり (同 Enable) できる
@@ -70,9 +71,36 @@ s32 Entity08004fac_UnlinkNode(Entity08004facNode* node) {
 
 NAKED s32 Entity08004fac_AddNode(u16 id, s16* pos, u8 param_3, u8 param_4, u16 param_5) { INCFUNC("asm/func/Entity08004fac_AddNode.inc"); }
 
-NAKED s32 Entity08004fac_FreeNode(Entity08004facNode* node) { INCFUNC("asm/func/Entity08004fac_FreeNode.inc"); }
+// 衝突マップから外してリストから抜き、ノードを解放する
+s32 Entity08004fac_FreeNode(Entity08004facNode* node) {
+  if (node->active) {
+    FUN_082342a8(&node->tileOverride);
+    node->active = FALSE;
+  }
 
-NAKED s32 Entity08004fac_FreeAllNodes(void) { INCFUNC("asm/func/Entity08004fac_FreeAllNodes.inc"); }
+  if (gEntity08004fac != NULL) {
+    Entity08004fac_UnlinkNode(node);
+  }
+
+  Free(node);
+  return 0;
+}
+
+s32 Entity08004fac_FreeAllNodes(void) {
+  Entity08004facNode* node;
+
+  if (gEntity08004fac == NULL) return -1;
+
+  node = gEntity08004fac->head;
+  while (node != NULL) {
+    Entity08004facNode* next = node->next;
+
+    Entity08004fac_FreeNode(node);
+    node = next;
+  }
+
+  return 0;
+}
 
 NAKED s32 Entity08004fac_FreeNodesById(u16 id) { INCFUNC("asm/func/Entity08004fac_FreeNodesById.inc"); }
 
@@ -96,15 +124,27 @@ s32 Entity08004fac_Init(Entity08004fac* p, u32 param_2) {
   return 0;
 }
 
-NAKED Entity08004fac* Entity08004fac_Create(u32 param_1) { INCFUNC("asm/func/Entity08004fac_Create.inc"); }
+Entity08004fac* Entity08004fac_Create(u32 param_1) {
+  Entity08004fac* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity08004fac));
 
-s32 VM_Sub3E1F(void) { return Entity08004fac_FreeNodesById(VM_GetKeywordValue('n', 0)); }
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity08004fac_Update, Entity08004fac_Destroy);
+    if (Entity08004fac_Init(p, param_1) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}
+
+s32 VM_Sub3E1F(void) { return Entity08004fac_FreeNodesById(VM_GetNamedArgValue('n', 0)); }
 
 // '.n' が指すノードを衝突マップから外す
-s32 FUN_08005004(void) { return Entity08004fac_DisableNodesById(VM_GetKeywordValue('n', 0)); }
+s32 FUN_08005004(void) { return Entity08004fac_DisableNodesById(VM_GetNamedArgValue('n', 0)); }
 
 // '.n' が指すノードを衝突マップへ戻す
-s32 FUN_0800501c(void) { return Entity08004fac_EnableNodesById(VM_GetKeywordValue('n', 0)); }
+s32 FUN_0800501c(void) { return Entity08004fac_EnableNodesById(VM_GetNamedArgValue('n', 0)); }
 
 NAKED s32 FUN_08005034(void) { INCFUNC("asm/func/FUN_08005034.inc"); }
 

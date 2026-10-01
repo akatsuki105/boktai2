@@ -158,11 +158,11 @@ s32 MosaicFader_StartFromScript(void) {
   u8 from[4], to[4];
   u16 interval[4];
   s32 i;
-  s32 mode = VM_GetKeywordValue('m', 0);
-  s32 objEnabled = VM_GetKeywordValue('f', 0);
-  s32 targets = VM_GetKeywordValue('t', 0);
+  s32 mode = VM_GetNamedArgValue('m', 0);
+  s32 objEnabled = VM_GetNamedArgValue('f', 0);
+  s32 targets = VM_GetNamedArgValue('t', 0);
 
-  if (VM_SeekToKeyword('c')) {
+  if (VM_SeekToNamedArg('c')) {
     for (i = 0; i < 4; i++) {
       from[i] = VM_GetValue();
     }
@@ -171,7 +171,7 @@ s32 MosaicFader_StartFromScript(void) {
       from[i] = 0;
     }
   }
-  if (VM_SeekToKeyword('a')) {
+  if (VM_SeekToNamedArg('a')) {
     for (i = 0; i < 4; i++) {
       to[i] = VM_GetValue();
     }
@@ -180,7 +180,7 @@ s32 MosaicFader_StartFromScript(void) {
       to[i] = 0;
     }
   }
-  if (VM_SeekToKeyword('i')) {
+  if (VM_SeekToNamedArg('i')) {
     for (i = 0; i < 4; i++) {
       interval[i] = VM_GetValue();
     }

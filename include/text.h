@@ -49,8 +49,8 @@ typedef struct {
   u32 unk_18;        // 0x018, TextBox_Update が毎フレーム TextBox.waitFrames へ移してから 0 に戻す
   char* text;        // 0x01C, TextRenderer_Init が NULL を入れ、TextBox_Init / TextBox_ShowLine が TextBox_GetLine の戻り値 (行頭ポインタ) を入れる
   char* textAlt;     // 0x020, mode が 1 のとき TextRenderer_Advance が進めるもう一方の文字列
-  u32 unk_24;        // 0x024, TextRenderer_Init が 0 を入れる
-  u32 unk_28;        // 0x028, TextRenderer_Init が 0 を入れる
+  char* unk_24;      // 0x024, TextRenderer_Init が NULL を入れる, mode が 2 のとき FUN_0804960c が返す
+  char* unk_28;      // 0x028, TextRenderer_Init が NULL を入れる, mode が 3 のとき FUN_0804960c が返す
   u8 unk_2c[0x84 - 0x2C];
   s32 vars[16];       // 0x084, TextRenderer_SetVar が書き、TextRenderer_GetVarWidth が符号つき10進の桁数を数える, TextBox_SetVarValue の格納先
   s32 scriptIds[16];  // 0x0C4, '.p' で積まれたスクリプトID, 0x104 の直前までで16個
@@ -79,7 +79,7 @@ s32 TextBox_GetExtendWidth(s32 idx);
 s32 TextBox_GetVarWidth(s32 idx);
 s32 TextBox_GetRect(s32* rect);
 
-void TextRenderer_Init(TextRenderer* p, u8 x, u8 y, u8 width, u8 height);
+void TextRenderer_Init(TextRenderer* p, s32 x, s32 y, s32 width, s32 height);
 void TextRenderer_SetRect(TextRenderer* p, s32 x, s32 y, s32 width, s32 height);
 void TextRenderer_ClearPending(TextRenderer* p);
 void TextRenderer_RunPending(TextRenderer* p);

@@ -2,7 +2,7 @@
 	adds r5, r0, #0
 	movs r0, #0x74
 	movs r1, #1
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	bl FUN_08022a2c
 	adds r4, r0, #0
 	cmp r4, #0

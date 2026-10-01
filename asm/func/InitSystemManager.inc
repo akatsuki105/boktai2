@@ -1,8 +1,8 @@
 	push {r4, r5, r6, lr}
 	bl InitHeap
 	bl ResetEntityManager
-	bl FUN_08230db8
-	bl FUN_08230e90
+	bl Registry_Reset
+	bl ScriptRecord_ResetAll
 	ldr r1, _08230788 @ =gRngValue
 	ldr r0, _0823078C @ =0x0001E240
 	str r0, [r1]

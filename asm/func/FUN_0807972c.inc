@@ -4,7 +4,7 @@
 	adds r4, r5, #0
 	adds r4, #0x24
 	adds r0, r4, #0
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 	adds r0, r4, #0
 	bl FUN_080417dc
 	movs r1, #0xdf

@@ -13,6 +13,18 @@ NAKED s32 Entity4D4D_Update(Entity4D4D* p) { INCFUNC("asm/func/Entity4D4D_Update
 
 s32 Entity4D4D_Destroy(Entity4D4D* p) { return 0; }
 
-NAKED s32 Entity4D4D_Init(Entity4D4D* p, u32 val) { INCFUNC("asm/func/Entity4D4D_Init.inc"); }
+NAKED s32 Entity4D4D_Init(Entity4D4D* p, u16 val) { INCFUNC("asm/func/Entity4D4D_Init.inc"); }
 
-NAKED Entity4D4D* Entity4D4D_Create(u32 val) { INCFUNC("asm/func/Entity4D4D_Create.inc"); }
+Entity4D4D* Entity4D4D_Create(u32 val) {
+  Entity4D4D* p = CreateEntity(ENTITY_UNK_12, sizeof(Entity4D4D));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity4D4D_Update, Entity4D4D_Destroy);
+    if (Entity4D4D_Init(p, val) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}

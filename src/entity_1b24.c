@@ -21,7 +21,7 @@ void FUN_080b9ff8(unknown* p, s32 a, s32 b, s32 c, s32 d);
 typedef struct {
   Entity e;                // 0x000, ENTITY_UNK_8
   u8* record;              // 0x018, &gEntity9A9F->unk_15c, セッションが無ければ NULL で _Init は失敗する
-  void* tilemapFile;       // 0x01C, GetFile(DIR_TILE_MAP, 0xCD91), BG2 に敷く
+  void* tilemapFile;       // 0x01C, TILEMAP_CD91, BG2 に敷く
   rgb555* bgPltt;          // 0x020, GetFile(DIR_BGPLTT, "bg_link_col_arr") + 0x14
   void* unk_24;            // 0x024, ワードとして読まれるが用途不明
   MainSpriteGfx gfx[4];    // 0x028
@@ -136,19 +136,19 @@ void FUN_0809dd34(Entity1B24* p) {
 }
 
 void FUN_0809dd68(Entity1B24* p) {
-  if (VM_SeekToKeyword('w')) {
+  if (VM_SeekToNamedArg('w')) {
     p->unk_24 = FUN_0823d340();
   }
   FUN_0809cea8(p);
 }
 
 void FUN_0809dd88(Entity1B24* p) {
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     p->unk_f84 = (void*)VM_GetValue();
   } else {
     p->unk_f84 = NULL;
   }
-  if (VM_SeekToKeyword('n')) {
+  if (VM_SeekToNamedArg('n')) {
     p->unk_f88 = (void*)VM_GetValue();
   } else {
     p->unk_f88 = NULL;

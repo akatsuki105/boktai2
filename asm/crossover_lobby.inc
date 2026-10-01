@@ -1074,7 +1074,7 @@ _0804F67A:
 	adds r1, r3, #0
 	bl OpenMainSpriteFile
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	bne _0804F6A0
 	b _0804F7C8
@@ -1087,7 +1087,7 @@ _0804F6A0:
 _0804F6AC:
 	movs r0, #0x72
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	movs r7, #0xac
 	lsls r7, r7, #3
 	adds r1, r6, r7

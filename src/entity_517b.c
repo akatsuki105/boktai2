@@ -169,11 +169,11 @@ s32 BgPlttGroupFader_Init(BgPlttGroupFader* p) {
   s32 fade;
 
   gBgPlttGroupFader = p;
-  lit = VM_GetKeywordValue('f', 0);
-  fade = VM_GetKeywordValue('n', 0);
+  lit = VM_GetNamedArgValue('f', 0);
+  fade = VM_GetNamedArgValue('n', 0);
   p->litMask |= lit;
   p->fadeMask |= fade;
-  p->mode = VM_GetKeywordValue('m', 0);
+  p->mode = VM_GetNamedArgValue('m', 0);
   switch (p->mode) {
     case 0: {
       p->level = 0x10;
@@ -182,12 +182,12 @@ s32 BgPlttGroupFader_Init(BgPlttGroupFader* p) {
     }
     case 1: {
       p->level = 0;
-      p->step = VM_GetKeywordValue('a', 2);
+      p->step = VM_GetNamedArgValue('a', 2);
       break;
     }
     case 2: {
       p->level = 0x20;
-      p->step = VM_GetKeywordValue('a', 2);
+      p->step = VM_GetNamedArgValue('a', 2);
       break;
     }
     default: {
@@ -215,7 +215,7 @@ BgPlttGroupFader* BgPlttGroupFader_Create(void) {
 void BgPlttGroupFader_SetModeScripted(void) {
   BgPlttGroupFader* p = gBgPlttGroupFader;
   if (p != NULL) {
-    p->mode = VM_GetKeywordValue('m', 0);
+    p->mode = VM_GetNamedArgValue('m', 0);
     switch (p->mode) {
       case 0: {
         p->level = 0x10;
@@ -224,11 +224,11 @@ void BgPlttGroupFader_SetModeScripted(void) {
       }
       case 1: {
         p->level = 0;
-        p->step = VM_GetKeywordValue('a', 2);
+        p->step = VM_GetNamedArgValue('a', 2);
         break;
       }
       case 2: {
-        p->step = VM_GetKeywordValue('a', 1);
+        p->step = VM_GetNamedArgValue('a', 1);
         break;
       }
       default: {

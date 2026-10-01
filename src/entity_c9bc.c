@@ -1,8 +1,10 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "mover.h"
 #include "sprite.h"
 #include "struct.h"
+#include "vm.h"
 
 // EntityC9BC が count 個まとめて管理する要素
 typedef struct {
@@ -12,9 +14,9 @@ typedef struct {
   u8 unk_04[0x44 - 0x04];
   bool8 releaseReq;  // 0x44, 0 以外なら EntityC9BC_Update が FUN_0800cb7c で解放する
   u8 unk_45[0x48 - 0x45];
-  Entity2UnkData obj;  // 0x48, 根拠: FUN_0800cb7c, obj.id は FUN_0800db48 の検索キー
-  AuxSpriteGfx gfx;    // 0x8C, 根拠: FUN_0800ccd0 が Video_SetAuxSpritePltt に渡す
-  AuxSprite spr_a8;    // 0xA8, 根拠: FUN_0800cb7c
+  Mover obj;         // 0x48, 根拠: FUN_0800cb7c, obj.id は FUN_0800db48 の検索キー
+  AuxSpriteGfx gfx;  // 0x8C, 根拠: FUN_0800ccd0 が Video_SetAuxSpritePltt に渡す
+  AuxSprite spr_a8;  // 0xA8, 根拠: FUN_0800cb7c
   u8 unk_d4[0xF0 - 0xD4];
   AuxSprite spr_f0;  // 0xF0, 根拠: FUN_0800cb7c
   u8 unk_11c[0x12C - 0x11C];
@@ -78,4 +80,22 @@ NAKED s32 EntityC9BC_Destroy(EntityC9BC* p) { INCFUNC("asm/func/EntityC9BC_Destr
 
 NAKED s32 EntityC9BC_Init(EntityC9BC* p, u32 _) { INCFUNC("asm/func/EntityC9BC_Init.inc"); }
 
-NAKED EntityC9BC* EntityC9BC_Create(u32 val) { INCFUNC("asm/func/EntityC9BC_Create.inc"); }
+EntityC9BC* EntityC9BC_Create(u32 val) {
+  EntityC9BC* p = FUN_0800cb70();
+
+  if (p != NULL) {
+    return p;
+  }
+
+  p = CreateEntity(ENTITY_UNK_9, sizeof(EntityC9BC));
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityC9BC_Update, EntityC9BC_Destroy);
+    p->count = VM_GetNamedArgValue('m', 4);
+    if (EntityC9BC_Init(p, val) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}

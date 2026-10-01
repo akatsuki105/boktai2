@@ -6,26 +6,26 @@
 	sub sp, #0x24
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	mov sl, r0
 	movs r0, #0x6c
 	movs r1, #0x64
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	mov sb, r0
 	movs r0, #0x74
 	movs r1, #1
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	mov r8, r0
 	movs r0, #0x6d
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r7, r0, #0
 	movs r0, #0x62
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r6, r0, #0
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0800CABC
 	add r5, sp, #0x1c
@@ -54,7 +54,7 @@ _0800CAC2:
 	bge _0800CAC2
 _0800CACC:
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0800CB14
 	bl VM_GetValue

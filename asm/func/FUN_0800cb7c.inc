@@ -28,7 +28,7 @@
 	bl FUN_08002a58
 _0800CBBE:
 	adds r0, r5, #0
-	bl FUN_0823b284
+	bl Mover_Unlink
 	movs r0, #0
 	strb r0, [r4]
 _0800CBC8:

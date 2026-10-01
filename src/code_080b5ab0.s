@@ -6679,7 +6679,7 @@ FUN_080bc8c8: @ 0x080BC8C8
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BC8E2
 	bl FUN_0823d340
@@ -6709,7 +6709,7 @@ FUN_080bc908: @ 0x080BC908
 	push {r4, r5, r6, r7, lr}
 	adds r7, r0, #0
 	movs r0, #0x49
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BC91E
 	bl VM_GetValue
@@ -6719,7 +6719,7 @@ _080BC91E:
 	movs r5, #0
 _080BC920:
 	movs r0, #0x54
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BC96C
 	movs r4, #0
@@ -6761,7 +6761,7 @@ _080BC960:
 	bge _080BC960
 _080BC96C:
 	movs r0, #0x69
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BC980
 	bl FUN_0823d340
@@ -6782,7 +6782,7 @@ FUN_080bc994: @ 0x080BC994
 	push {r4, r5, r6, r7, lr}
 	adds r7, r0, #0
 	movs r0, #0x41
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BC9AA
 	bl VM_GetValue
@@ -6792,7 +6792,7 @@ _080BC9AA:
 	movs r5, #0
 _080BC9AC:
 	movs r0, #0x52
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BC9F8
 	movs r4, #0
@@ -6834,7 +6834,7 @@ _080BC9EC:
 	bge _080BC9EC
 _080BC9F8:
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BCA0C
 	bl FUN_0823d340
@@ -6855,7 +6855,7 @@ FUN_080bca20: @ 0x080BCA20
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x65
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080BCA40
@@ -10320,7 +10320,7 @@ FUN_080be650: @ 0x080BE650
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BE66A
 	bl FUN_0823d340
@@ -10353,7 +10353,7 @@ FUN_080be690: @ 0x080BE690
 	push {r6, r7}
 	mov r8, r0
 	movs r0, #0x57
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BE6AC
 	bl VM_GetValue
@@ -10363,7 +10363,7 @@ _080BE6AC:
 	movs r5, #0
 _080BE6AE:
 	movs r0, #0x50
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BE75C
 	movs r4, #0
@@ -10460,7 +10460,7 @@ _080BE752:
 	ble _080BE752
 _080BE75C:
 	movs r0, #0x77
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BE770
 	bl FUN_0823d340
@@ -10469,7 +10469,7 @@ _080BE75C:
 	str r0, [r1]
 _080BE770:
 	movs r0, #0x63
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BE794
 	bl FUN_0823d340
@@ -10501,7 +10501,7 @@ FUN_080be7b4: @ 0x080BE7B4
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x65
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080BE7D4

@@ -8,7 +8,7 @@
 	mov sb, r0
 	mov sl, r0
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	add r1, sp, #0x10
 	mov r8, r1
 	cmp r0, #0
@@ -65,7 +65,7 @@ _080DD3D6:
 	mov r8, r1
 _080DD3E8:
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080DD41C
 	bl VM_GetPC
@@ -90,7 +90,7 @@ _080DD418:
 	mov sb, r1
 _080DD41C:
 	movs r0, #0x76
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080DD490
 	bl VM_GetPC
@@ -155,11 +155,11 @@ _080DD49A:
 	adds r7, r1, #0
 	movs r0, #0x6c
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r6, r0, #0
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r5, r0, #0
 	add r4, sp, #0x20
 	movs r0, #0

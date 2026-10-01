@@ -1,11 +1,11 @@
 	push {r4, r5, r6, lr}
 	movs r0, #0x6d
 	movs r1, #1
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r0, #0
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	ldr r0, _081D5238 @ =0x03000194
 	ldr r0, [r0]

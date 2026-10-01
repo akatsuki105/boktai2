@@ -197,7 +197,7 @@ void LevelUpper_InitParticles(LevelUpper* p) {
 s32 LevelUpper_Init(LevelUpper* p) {
   s32 i;
 
-  if (VM_SeekToKeyword('e')) {
+  if (VM_SeekToNamedArg('e')) {
     p->expTable = VM_GetValueSafe2();
   }
   if (gStat->lv <= 98) {

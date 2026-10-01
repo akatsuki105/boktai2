@@ -27,7 +27,7 @@ typedef struct SunlightEntity {
 static_assert(sizeof(SunlightEntity) == 48);
 
 IWRAM_DATA SunlightEntity* gSunlightEntity = NULL;  // 0x03001708
-extern u16 u16_03002b80;                            // 0x03002B80, FUN_0807e854 が 0 に戻す, 1 で太陽レベル +4、2 で日光なし
+extern u16 gSunlightOverride;                       // 0x03002B80, FUN_0807e854 が 0 に戻す, 1 で太陽レベル +4、2 で日光なし
 
 IWRAM_DATA u32 u32_0300170c = 0;  // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
 
@@ -158,13 +158,13 @@ NON_MATCH s32 ApplyLxModifiers(s32 lx) {
     } else if (GetSunLevel(lx) < 2) {
       lx = GetSunLevelMinLx(2);
     }
-    if (u16_03002b80 == 1) {
+    if (gSunlightOverride == 1) {
       slv = GetSunLevel(lx) + 4;
       if (slv > 10) {
         slv = 10;
       }
       lx = GetSunLevelMaxLx(slv);
-    } else if (u16_03002b80 == 2) {
+    } else if (gSunlightOverride == 2) {
       lx = 0;
     }
   }

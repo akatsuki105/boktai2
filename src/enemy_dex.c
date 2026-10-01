@@ -89,7 +89,7 @@ s32 FUN_0820d0b8(u32 param_1) {
 NAKED bool32 FUN_0820d0ec(void) { INCFUNC("asm/func/FUN_0820d0ec.inc"); }
 
 void FUN_0820d124(void) {
-  if (VM_SeekToKeyword('k')) {
+  if (VM_SeekToNamedArg('k')) {
     VM_GetValue();
   }
 }

@@ -28,7 +28,7 @@ typedef struct {
   u8 unk_e3b;                 // 0xE3B, まだ未解析
   u16 unk_e3c;                // 0xE3C, _Init が 0 を入れる
   u8 unk_e3e[2];              // 0xE3E, まだ未解析
-  Entity2UnkData unk_e40;     // 0xE40, _Destroy が FUN_0823b284 に渡す
+  Mover unk_e40;              // 0xE40, _Destroy が Mover_Unlink に渡す
   u16 unk_e84;                // 0xE84, _Init が書き込む
   u16 unk_e86;                // 0xE86, _Init が書き込む
   u16 unk_e88;                // 0xE88, _Init が書き込む
@@ -52,7 +52,7 @@ typedef struct {
   u8 unk_f28[0xF36 - 0xF28];  // 0xF28, まだ未解析
   u16 unk_f36;                // 0xF36, _Init が 0 を入れる
   u8 unk_f38[0xF46 - 0xF38];  // 0xF38, まだ未解析
-  u16 unk_f46;                // 0xF46, _Destroy が FUN_0823b2d0 に渡す ID
+  u16 unk_f46;                // 0xF46, _Destroy が Mover_FindByID_Proxy に渡す ID
   u8 unk_f48[0xF50 - 0xF48];  // 0xF48, まだ未解析
   u32 unk_f50;                // 0xF50, _Init が 0 を入れる
   u32 unk_f54;                // 0xF54, _Init が 0 を入れる
@@ -77,7 +77,25 @@ NAKED void FUN_0822970c(void) { INCFUNC("asm/func/FUN_0822970c.inc"); }
 
 NAKED s32 Entity8AAB_Init(Entity8AAB* p) { INCFUNC("asm/func/Entity8AAB_Init.inc"); }
 
-NAKED Entity8AAB* Entity8AAB_Create(u32 val) { INCFUNC("asm/func/Entity8AAB_Create.inc"); }
+Entity8AAB* Entity8AAB_Create(u32 val) {
+  Entity8AAB* p;
+
+  if (gEntity8AAB != NULL) {
+    return gEntity8AAB;
+  }
+
+  p = CreateEntity(ENTITY_UNK_11, sizeof(Entity8AAB));
+  if (p != NULL) {
+    p->unk_f46 = val;
+    SetEntityRoutine(p, Entity8AAB_Update, Entity8AAB_Destroy);
+    if (Entity8AAB_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}
 
 void FUN_08224fb8(void*);
 void FUN_0822517c(void*);

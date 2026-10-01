@@ -96,7 +96,7 @@ _08101CDE:
 	bl FUN_0807f598
 _08101CEA:
 	adds r0, r4, #0
-	bl FUN_0823b284
+	bl Mover_Unlink
 	adds r0, r4, #0
 	adds r0, #0xd8
 	bl Hitbox_Unregister

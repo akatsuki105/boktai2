@@ -95,7 +95,7 @@ FUN_08023318: @ 0x08023318
 	cmp r4, #0
 	beq _08023378
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0802333E
 	movs r1, #0xaa
@@ -107,7 +107,7 @@ FUN_08023318: @ 0x08023318
 	bl PlaySound_082406e0
 _0802333E:
 	movs r0, #0x65
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08023352
 	movs r0, #0xaa
@@ -117,7 +117,7 @@ _0802333E:
 	strb r0, [r1]
 _08023352:
 	movs r0, #0x62
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08023364
 	ldr r0, _08023384 @ =0x00000155
@@ -126,7 +126,7 @@ _08023352:
 	strb r0, [r1]
 _08023364:
 	movs r0, #0x69
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08023378
 	movs r0, #0xab
@@ -2447,7 +2447,7 @@ FUN_08024500: @ 0x08024500
 	adds r7, #0x48
 	bl FUN_08024350
 	adds r0, r7, #0
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 	adds r0, r6, #0
 	bl FUN_08023d7c
 	movs r0, #0x96

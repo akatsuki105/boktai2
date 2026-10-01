@@ -12,7 +12,7 @@
 	bl nop_0822ec58
 	bl FUN_0822ec5c
 	movs r0, #0x72
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080485B8
@@ -62,7 +62,7 @@ _080485D4:
 	str r4, [r0]
 	movs r0, #0x6c
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	movs r2, #0xc4
 	lsls r2, r2, #1
 	adds r1, r6, r2
@@ -88,7 +88,7 @@ _080485D4:
 	adds r0, r6, r1
 	strb r4, [r0]
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08048650
@@ -120,7 +120,7 @@ _08048650:
 _0804865A:
 	ldr r1, _080486C0 @ =0x0000519C
 	movs r0, #0x63
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	adds r0, r6, #0
 	bl TextBox_LoadBgPltt
@@ -137,7 +137,7 @@ _08048670:
 	strb r4, [r0]
 	movs r0, #0x69
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	movs r2, #0xbe
 	lsls r2, r2, #1
 	adds r1, r6, r2
@@ -158,7 +158,7 @@ _08048670:
 	strh r4, [r0]
 	strb r7, [r5, #0xd]
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080486F0
 	movs r7, #0xbb

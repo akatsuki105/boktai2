@@ -1212,7 +1212,7 @@ LinkBattleLobby_Init: @ 0x081DC57C
 	sub sp, #0xc
 	adds r5, r0, #0
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081DC5A2
 	bl FUN_0823d340
@@ -1228,7 +1228,7 @@ LinkBattleLobby_Init: @ 0x081DC57C
 _081DC5A2:
 	movs r0, #0x65
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r2, _081DC62C @ =0x000003DA
 	adds r1, r5, r2
 	movs r4, #0
@@ -1263,7 +1263,7 @@ _081DC5A2:
 	strb r4, [r0]
 	movs r0, #0x66
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081DC61C
 	movs r0, #4

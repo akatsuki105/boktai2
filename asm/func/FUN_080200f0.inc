@@ -4,13 +4,13 @@
 	mov r5, r8
 	push {r5, r6, r7}
 	ldr r0, _08020118 @ =0x000085E6
-	bl FUN_08230e70
+	bl Registry_Find
 	adds r5, r0, #0
 	cmp r5, #0
 	beq _08020112
 	movs r6, #0
 	movs r0, #0x6e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	bne _0802011C
 _08020112:

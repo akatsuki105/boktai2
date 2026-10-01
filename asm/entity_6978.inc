@@ -128,10 +128,10 @@ Entity6978_SetRequestScripted: @ 0x080027BC
 	beq _080027FA
 	movs r0, #0x72
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r4, #0x24]
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080027FA
 	movs r5, #0

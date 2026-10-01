@@ -1,26 +1,26 @@
 	push {r4, r5, r6, r7, lr}
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	movs r0, #0x68
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r0, #0
 	movs r0, #0x74
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r5, r0, #0
 	movs r0, #0x72
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r6, r0, #0
 	movs r0, #0x7a
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r7, r0, #0
 	movs r0, #0x70
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _0823B620
 	bl Map_LoadCollisionMapFile
@@ -51,10 +51,10 @@ _0823B644:
 	bl FUN_082358f4
 _0823B650:
 	ldr r0, _0823B688 @ =0x000056C2
-	bl FUN_08230e70
+	bl Registry_Find
 	ldr r4, [r0, #4]
 	movs r0, #0x76
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0823B6AE
 	bl VM_GetValue

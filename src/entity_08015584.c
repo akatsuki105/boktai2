@@ -47,7 +47,18 @@ void FUN_08015264(void) { gEntity08015584 = NULL; }
 
 NAKED s32 Entity08015584_Update(Entity08015584* p) { INCFUNC("asm/func/Entity08015584_Update.inc"); }
 
-NAKED s32 Entity08015584_Destroy(Entity08015584* p) { INCFUNC("asm/func/Entity08015584_Destroy.inc"); }
+s32 Entity08015584_Destroy(Entity08015584* p) {
+  s32 i;
+
+  for (i = 0; i < 32; i++) {
+    if (p->elems[i].active) {
+      AuxSprite_Remove(&p->elems[i].sprite);
+    }
+  }
+
+  gEntity08015584 = NULL;
+  return 0;
+}
 
 NAKED s32 Entity08015584_Init(Entity08015584* p, u32 _) { INCFUNC("asm/func/Entity08015584_Init.inc"); }
 
@@ -63,7 +74,15 @@ Entity08015584* Entity08015584_Create(u32 val, u32 _) {
   return p;
 }
 
-NAKED u32 FUN_080155c8(u32 flags) { INCFUNC("asm/func/FUN_080155c8.inc"); }
+NON_MATCH u32 FUN_080155c8(s32 flags) {
+#ifdef NONMATCHING_C
+  u32 v = ((flags & 0xF000) >> 12) - 1;
+
+  return (v <= 3) ? v : 2;
+#else
+  INCFUNC("asm/func/FUN_080155c8.inc");
+#endif
+}
 
 INCASM("asm/entity_08015584.inc");
 

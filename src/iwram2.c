@@ -5,6 +5,7 @@
 #include "global.h"
 #include "input.h"
 #include "particle.h"
+#include "registry.h"
 #include "save.h"
 #include "solar_sensor.h"
 #include "sound.h"
@@ -14,6 +15,7 @@
 #include "vm.h"
 
 struct Dvalinn;
+struct Entity0FC5;
 struct Entity5941;
 struct EntityBD74;
 struct Entity0B50;
@@ -31,12 +33,14 @@ IWRAM_DATA Entity* gUnkEntity1Ptr_03002b58 = NULL;  // 0x03002B58, Malloc(908) �
 IWRAM_DATA u8 u8_03002b5c[28] = {};            // todo
 IWRAM_DATA u16 u16_03002b78 = 0;               // 0x03002B78, FUN_0807b564 が 0 に戻す
 IWRAM_DATA u8 u8_03002b7a[6] = {};             // todo
-IWRAM_DATA u16 u16_03002b80 = 0;               // 0x03002B80, ApplyLxModifiers が 1 なら太陽レベル +4、2 なら日光なしにする
+IWRAM_DATA u16 gSunlightOverride = 0;          // 0x03002B80, ApplyLxModifiers が 1 なら太陽レベル +4、2 なら日光なしにする
 IWRAM_DATA u8 u8_03002b82[22] = {};            // todo
 IWRAM_DATA u16 gPlayerCount = 0;               // Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
 IWRAM_DATA u8 u8_03002b9a[6] = {};             // todo
 IWRAM_DATA u16 u16_ARRAY_03002ba0[3] = {};     // 0x03002BA0, Player がいないときに FUN_0807b428 が書き込む退避先
-IWRAM_DATA u8 u8_03002ba6[26] = {};            // todo
+IWRAM_DATA u8 u8_03002ba6[10] = {};            // todo
+IWRAM_DATA u16 u16_03002bb0 = 0;               // 0x03002BB0, FUN_08065110 がサバタのとき 0 に戻す
+IWRAM_DATA u8 u8_03002bb2[14] = {};            // todo
 IWRAM_DATA u32 u32_03002bc0 = 0;               // 0x03002BC0, ビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る
 IWRAM_DATA u8 u8_03002bc4[12] = {};            // todo
 IWRAM_DATA u16 u16_03002bd0 = 0;               // 0x03002BD0, FUN_0807b564 が 0 に戻す
@@ -66,13 +70,15 @@ IWRAM_DATA u8 u8_03002c6c[0x03002C80 - 0x03002C6C] = {};  // todo
 
 IWRAM_DATA struct Dvalinn* gDvalinn = NULL;  // 0x03002C80
 
-IWRAM_DATA u8 u8_03002c84[0x03002CA0 - 0x03002C84] = {};  // todo
+IWRAM_DATA u8 u8_03002c84[0x03002C98 - 0x03002C84] = {};  // todo
+
+IWRAM_DATA struct Entity0FC5* gEntity0FC5s[2] = {};  // 0x03002C98, '.k' の値を添字にして Entity0FC5 が自分を登録する
 
 IWRAM_DATA vu16* gHBlankEffectReg = NULL;  // 0x03002CA0, HBlank 毎に gHBlankEffectBuffer の値を書き込む I/O レジスタ, 根拠: FUN_0822f0d8, FUN_0822eef4
 
 IWRAM_DATA u32 gOamDirty = 0;  // 0x03002CA4, MainSprite_DrawInternal / Particle_DrawList が bit0 を立て、VideoCommit_Update が gOAMBuffer を OAM へ転送して落とす, bit0 以外は使われていない
 
-IWRAM_DATA s32 s32_03002ca8 = 0;  // 0x03002CA8, 0 以外だと VideoCommit_Update が DISPCNT の表示ビットを組み直さない
+IWRAM_DATA bool32 gDispcntLocked = FALSE;  // 0x03002CA8, 0 以外だと VideoCommit_Update が DISPCNT の表示ビットを組み直さない
 
 IWRAM_DATA u8 u8_03002cac[0x03002CB0 - 0x03002CAC] = {};  // todo
 
@@ -84,9 +90,11 @@ IWRAM_DATA u8 u8_03002cf4[12] = {};       // todo
 
 IWRAM_DATA u32 IntrMain_Buffer[0x200] = {0};  // 0x03002D00, INTR_MAIN のRAMコード
 
-IWRAM_DATA s32 s32_03003500 = 0;  // 0x03003500, VBlankIntr が書き、VideoCommit_Update が 0 に戻す
+IWRAM_DATA bool32 gVBlankDone = FALSE;  // 0x03003500, VBlankIntr が立て、VideoCommit_Update が落とす
 
-IWRAM_DATA u8 u8_03003504[0x03003510 - 0x03003504] = {};  // todo
+IWRAM_DATA u32 gVBlankCount = 0;  // 0x03003504, VBlankIntr が毎フレーム +1 する
+
+IWRAM_DATA u8 u8_03003508[0x03003510 - 0x03003508] = {};  // todo
 
 IWRAM_DATA u16 u16_03003510 = 0;             // 0x03003510, FUN_0822f0d8, FUN_0822eef4 が 1 を書く
 IWRAM_DATA u8 u8_03003512[2] = {};           // todo
@@ -94,9 +102,9 @@ IWRAM_DATA u16 u16_03003514 = 0;             // 0x03003514, FUN_0822f0d8 は 0�
 IWRAM_DATA u8 u8_03003516[2] = {};           // todo
 IWRAM_DATA u16* gHBlankEffectBuffer = NULL;  // 0x03003518, スキャンライン毎(160 ライン)の値のバッファ (= u8_ARRAY_02036c00), 根拠: FUN_0822f0d8, FUN_0822eef4
 
-IWRAM_DATA u16 u16_0300351c = 0;                          // 0x0300351C, EEPROM_BeginAccess (EEPROM アクセス前) が 0、EEPROM_EndAccess (アクセス後) が 1 を書く
+IWRAM_DATA bool16 gEepromIdle = FALSE;                    // 0x0300351C, EEPROM_BeginAccess (EEPROM アクセス前) が 0、EEPROM_EndAccess (アクセス後) が 1 を書く
 IWRAM_DATA u8 u8_0300351e[0x03003520 - 0x0300351E] = {};  // todo
-IWRAM_DATA u32 u32_03003520 = 0;                          // 0x03003520, EntityDFC6 の表示中フラグと対で立つ
+IWRAM_DATA bool32 gTextRendererActive = FALSE;            // 0x03003520, EntityDFC6 の表示中フラグと対で立つ
 IWRAM_DATA u8 u8_03003524[0x03003530 - 0x03003524] = {};  // todo
 
 IWRAM_DATA u32 gSpriteListIdx = 0;  // 0x03003530, 描画リストの選択 (0: 通常, 1: スタートメニュー中)
@@ -114,10 +122,10 @@ IWRAM_DATA AuxSprite* gAuxSpriteLists[2] = {};    // 0x03003560
 IWRAM_DATA MainSprite* gMainSpriteLists[2] = {};  // 0x03003568
 IWRAM_DATA Particle* gParticleLists[2] = {};      // 0x03003570, 根拠: Video_AddParticleIntoDrawList
 
-IWRAM_DATA u16 gAuxSpriteTileCount = 0;  // 0x03003578, このフレームに FUN_0822b270 が積んだアクタースプライトのタイル数, 根拠: FUN_0822b308 が DMA 先の起点計算に使う
-IWRAM_DATA u16 u16_0300357a = 0;         // todo
-IWRAM_DATA u16 u16_0300357c = 0;         // 0x0300357C, MainSprite_DrawInternal が積んだタイル数を加算していくが、読み出す箇所が見つかっていない
-IWRAM_DATA u16 u16_0300357e = 0;         // todo
+IWRAM_DATA u16 gAuxSpriteTileCount = 0;   // 0x03003578, このフレームに FUN_0822b270 が積んだアクタースプライトのタイル数, 根拠: FUN_0822b308 が DMA 先の起点計算に使う
+IWRAM_DATA u16 u16_0300357a = 0;          // todo
+IWRAM_DATA u16 gMainSpriteTileCount = 0;  // 0x0300357C, MainSprite_DrawInternal が積んだタイル数を加算していくが、読み出す箇所が見つかっていない
+IWRAM_DATA u16 u16_0300357e = 0;          // todo
 
 IWRAM_DATA u16 gObjPlttLen = 0;          // 0x03003580, = ObjPlttFile.length
 IWRAM_DATA rgb555* gObjPlttData = NULL;  // 0x03003584, = ObjPlttFile.body
@@ -191,16 +199,16 @@ IWRAM_DATA u32 gOAMShapeSizeAttrTable[16] = {};  // 0x03003FF0, OAM0.14-15(shape
 IWRAM_DATA u8 gOAMWidthTable[16] = {};           // 0x03004030, ピクセル単位
 
 IWRAM_DATA s32 gBgBrightness = 0;          // 0x03004040, BG の明るさ, FRACUNIT_6 (64) が等倍で 0 なら gBgPlttBlendColor 一色, FUN_0822d630 が gBgBrightness2 と掛けて BG パレットに適用する, data3d.c も色のスケールに使う
-IWRAM_DATA s32 gObjPlttSlotCursor = 0;     // 0x03004044, gObjPlttSlotIDs の確保位置 (最大 16), FUN_0822d114 が毎フレーム s32_03004450 + 2 に戻す, 根拠: FUN_0822d190 (FUN_0822d12c は gObjPlttSlotCount の方を使う)
-IWRAM_DATA s32 s32_03004048 = 0;           // 0x03004048, Entity4AE5_Init が 0x40 を書く
+IWRAM_DATA s32 gObjPlttSlotCursor = 0;     // 0x03004044, gObjPlttSlotIDs の確保位置 (最大 16), FUN_0822d114 が毎フレーム gObjPlttSlotReserved + 2 に戻す, 根拠: FUN_0822d190 (FUN_0822d12c は gObjPlttSlotCount の方を使う)
+IWRAM_DATA s32 gBgBrightnessApplied = 0;   // 0x03004048, FUN_0822d630 が最後に適用した BG の明るさ, gObjBrightnessApplied の BG 版
 IWRAM_DATA s32 gObjBrightnessApplied = 0;  // 0x0300404C, FUN_0822d248 が最後に適用した gObjBrightness, 等倍のまま変わっていなければ加工を省くための控え
 
 IWRAM_DATA rgb555 gObjectPlttBuffer[256] = {};  // 0x03004050, CommitPalette で OBJ_PLTT にコピーされる
 IWRAM_DATA rgb555 gBgPlttBuffer[256] = {};      // 0x03004250, BG パレットの作業用バッファ, ゲーム側はここに書き、加工が要らなければこのまま CommitPalette の転送元になる
 
-IWRAM_DATA s32 s32_03004450 = 0;        // 0x03004450, FUN_0822d114 が gObjPlttSlotCursor = これ + 2 として 0 に戻す
-IWRAM_DATA u16 gBgPlttFadeRowMask = 0;  // 0x03004454, bit i が立っているパレット行だけ FUN_0822d630 が明るさ・ブレンドを掛ける, 書き手: Entity4AE5_Init/Update
-IWRAM_DATA u8 u8_03004456[2] = {};      // todo
+IWRAM_DATA s32 gObjPlttSlotReserved = 0;  // 0x03004450, FUN_0822d114 が gObjPlttSlotCursor = これ + 2 として 0 に戻す
+IWRAM_DATA u16 gBgPlttFadeRowMask = 0;    // 0x03004454, bit i が立っているパレット行だけ FUN_0822d630 が明るさ・ブレンドを掛ける, 書き手: Entity4AE5_Init/Update
+IWRAM_DATA u8 u8_03004456[2] = {};        // todo
 
 IWRAM_DATA s32 gObjPlttSlotCount = 0;  // 0x03004458, 確保済みの OBJ パレットスロット数 (最大 2), 根拠: FUN_0822d12c
 
@@ -221,7 +229,7 @@ IWRAM_DATA u16 gObjPlttSlotIDs[16] = {};  // 0x03004470, 各 OBJ パレットス
 IWRAM_DATA u16 gObjPlttFadeSkipMask = 0;  // 0x03004490, FUN_0822d248 のフェードから除外する OBJ パレットを選ぶ, bit0 で ID 0x1D/0x26/0x27/0x117, bit1 で 0x2A9/0x27A を素通しにする, 書き手: Entity6978 ('.params[4]')
 
 IWRAM_DATA u8 u8_03004492[2] = {};     // todo
-IWRAM_DATA u16 gBgPlttBlendColor = 0;  // 0x03004494, FUN_0822d630 が各色をこの色へ寄せる, 0 なら明るさだけ掛ける, 書き手: MapPltt_FadeOut (明転の完了時に 0x1084), FUN_0822d014
+IWRAM_DATA u16 gBgPlttBlendColor = 0;  // 0x03004494, FUN_0822d630 が各色をこの色へ寄せる, 0 なら明るさだけ掛ける, 書き手: MapPltt_FadeOut (明転の完了時に RGB(4, 4, 4)), FUN_0822d014
 IWRAM_DATA u8 u8_03004496[2] = {};     // todo
 
 IWRAM_DATA u8 gMosaicTargets = 0;                       // 0x03004498, bit0-3: BG0-3 の BGnCNT.6 を立てる, bit4: MOSAIC の OBJ 側(bit8-15)も書く, 根拠: Video_ApplyMosaic
@@ -248,7 +256,7 @@ IWRAM_DATA u8 padding_0300450a[0x4510 - 0x450A] = {};     // padding (Unused)
 IWRAM_DATA Keys16 gLinkKeyInput[5] = {};                  // 0x03004510, 通信で受け取った各プレイヤーのキー (KEYINPUT と同じ active low), 0xFFFF はデータなし
 IWRAM_DATA u32 gRngValue = 0;                             // 0x0300451C
 IWRAM_DATA EntityList gEntityManager[ENTITY_KINDS] = {};  // 0x03004520
-IWRAM_DATA s32 gCount_Unk_0203b000 = 0;
+IWRAM_DATA s32 gRegistryCount = 0;
 IWRAM_DATA u32 gScriptDirectoryBuildTime = 0;  // 0x03004594, ScriptDirectory.buildTime
 IWRAM_DATA u8 u8_03004598[8] = {};             // todo
 IWRAM_DATA VM gVM = {};                        // 0x030045A0
@@ -281,7 +289,8 @@ IWRAM_DATA LINK_MANAGER lman = {};  // 0x03004740
 
 IWRAM_DATA bool32 bool32_03004788 = FALSE;  // 0x03004788
 
-IWRAM_DATA u8 u8_0300478c[12] = {};
+IWRAM_DATA u32 u32_0300478c = 0;  // 0x0300478C, FUN_0823cd04 の一括クリアで 0 になる
+IWRAM_DATA u8 u8_03004790[8] = {};
 IWRAM_DATA u32 u32_03004798 = 0;
 IWRAM_DATA u32 u32_0300479c = 0;
 IWRAM_DATA u32 u32_030047a0 = 0;
@@ -289,7 +298,7 @@ IWRAM_DATA u32 gFlag030047a4 = 0;
 
 IWRAM_DATA SystemSaveData* gSystemSaveData = NULL;
 IWRAM_DATA u8 u8_030047ac[8] = {};            // todo
-IWRAM_DATA u32 u32_030047b4 = 0;              // 0x030047B4, Save_WriteCore でセーブ成功時に 1 がセットされる
+IWRAM_DATA bool32 gSaveSucceeded = FALSE;     // 0x030047B4, Save_WriteCore でセーブ成功時に 1 がセットされる
 IWRAM_DATA bool32 gSoftResetInhibit = FALSE;  // 0x030047B8, 立てたフレームはソフトリセットのコマンド判定を飛ばす, Entity0823acbc_Update が読んで 0 に戻す
 IWRAM_DATA u32 u32_030047bc = 0;              // 0x030047BC, Entity0823acbc_Update が ENTITY_DISABLE_1 が落ちている間だけ毎フレーム +1 する, 読み手は未発見
 IWRAM_DATA u32 u32_030047c0 = 0;              // 0x030047C0, FUN_0823ACBC と FUN_0823CD04 の一括クリアでしか触られない, 読み手も本来の書き手も未発見

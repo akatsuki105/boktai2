@@ -6,7 +6,7 @@
 	strh r1, [r4, #0x18]
 	movs r0, #0x66
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r4, #0x1a]
 	strh r5, [r4, #0x1c]
 	strh r5, [r4, #0x1e]

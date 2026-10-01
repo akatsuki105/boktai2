@@ -49,7 +49,21 @@ NAKED void FUN_0800ef08(Entity0800f110Data* p) { INCFUNC("asm/func/FUN_0800ef08.
 
 NAKED s32 Entity0800f110_Update(Entity0800f110* p) { INCFUNC("asm/func/Entity0800f110_Update.inc"); }
 
-NAKED s32 Entity0800f110_Destroy(Entity0800f110* p) { INCFUNC("asm/func/Entity0800f110_Destroy.inc"); }
+void FUN_0800e54c(Entity0800f110Data* node);
+
+s32 Entity0800f110_Destroy(Entity0800f110* p) {
+  Entity0800f110Data* node = p->list;
+
+  while (node != NULL) {
+    Entity0800f110Data* next = node->next;
+
+    FUN_0800e54c(node);
+    node = next;
+  }
+
+  gEntity0800f110 = NULL;
+  return 0;
+}
 
 s32 Entity0800f110_Init(Entity0800f110* p, u32 _) {
   gEntity0800f110 = p;

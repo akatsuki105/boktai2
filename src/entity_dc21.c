@@ -93,7 +93,7 @@ void EntityDC21_InitSprite(EntityDC21* p) {
   AuxSprite_Add(sprite, gfx, 0);
   sprite->metaspriteIdx = 0;
 
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     sprite->pos.x = VM_GetValue();
     sprite->pos.y = VM_GetValue();
     sprite->pos.z = VM_GetValue();
@@ -101,7 +101,7 @@ void EntityDC21_InitSprite(EntityDC21* p) {
     sprite->pos.x = 0, sprite->pos.y = 0, sprite->pos.z = 0;
   }
 
-  flags = VM_SeekToKeyword('f');
+  flags = VM_SeekToNamedArg('f');
   if (flags) {
     flags = VM_GetValue();
     if (flags) {

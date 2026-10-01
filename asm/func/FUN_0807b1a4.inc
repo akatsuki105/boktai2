@@ -8,7 +8,7 @@
 	cmp r4, #0
 	beq _0807B1C2
 	movs r0, #0x66
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	bne _0807B1CC
 _0807B1C2:

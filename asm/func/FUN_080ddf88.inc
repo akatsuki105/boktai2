@@ -5,13 +5,13 @@
 	sub sp, #0x24
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	lsls r0, r0, #0x18
 	lsrs r7, r0, #0x18
 	cmp r7, #0
 	beq _080DE074
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080DE074
 	bl VM_GetValue
@@ -38,7 +38,7 @@
 	orrs r1, r0
 	str r1, [r4, #4]
 	movs r0, #0x6f
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	mov sb, r4
 	cmp r0, #0
 	beq _080DE028
@@ -79,19 +79,19 @@ _080DE028:
 _080DE038:
 	movs r0, #0x64
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r6, r0, #0
 	movs r0, #0x73
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r5, r0, #0
 	movs r0, #0x6b
 	movs r1, #1
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r0, #0
 	movs r0, #0x72
 	movs r1, #2
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r5, [sp]
 	movs r1, #0
 	str r1, [sp, #4]

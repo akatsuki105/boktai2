@@ -4,7 +4,7 @@
 	adds r0, r0, r1
 	ldr r4, [r0]
 	movs r0, #0x78
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _081001BC

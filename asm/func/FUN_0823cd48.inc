@@ -9,7 +9,7 @@
 	adds r1, r4, #0
 	bl CpuSet
 	movs r0, #0x6e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0823CD9C
 	bl VM_GetPC

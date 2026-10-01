@@ -4489,42 +4489,42 @@ FUN_0814089c: @ 0x0814089C
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #1
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #0xf
 	movs r2, #2
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #0x10
 	movs r2, #3
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #0x11
 	movs r2, #4
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #0x12
 	movs r2, #5
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #0xa
 	movs r2, #1
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	pop {r4}
 	pop {r0}
 	bx r0
@@ -6165,7 +6165,7 @@ _08141566:
 	bl FUN_0807f598
 _08141572:
 	adds r0, r4, #0
-	bl FUN_0823b284
+	bl Mover_Unlink
 	adds r0, r4, #0
 	adds r0, #0xd8
 	bl Hitbox_Unregister

@@ -44,7 +44,7 @@ _081EAA92:
 _081EAAAC:
 	adds r0, r4, #0
 	adds r0, #0x60
-	bl FUN_0823b284
+	bl Mover_Unlink
 _081EAAB4:
 	movs r0, #0x9e
 	lsls r0, r0, #1

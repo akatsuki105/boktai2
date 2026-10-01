@@ -1,7 +1,7 @@
 #include "entity.h"
 #include "global.h"
-#include "sprite_main.h"
-#include "sprite_pltt.h"
+#include "sprite.h"
+#include "tilemap.h"
 
 typedef struct EntityA288 EntityA288;
 typedef void(EntityA288Func)(EntityA288* p);
@@ -18,14 +18,14 @@ static_assert(sizeof(EntityA288Entry) == 52);
 
 struct EntityA288 {
   Entity e;                      // 0x0000, ENTITY_UNK_11
-  MainSpriteGfx gfx;             // 0x0018, GetFile(DIR_SPRITE_SETS, 0x42E2)
-  u32* tilemap;                  // 0x0038, GetFile(DIR_TILE_MAP, 0x33B2)
+  MainSpriteGfx gfx;             // 0x0018, SPRITE_42E2
+  Tilemaps* tilemap;             // 0x0038, TILEMAP_33B2
   rgb555* bgPltt;                // 0x003C, GetFile(DIR_BGPLTT, 0xE9C3) + 0x14
-  s32 kind;                      // 0x0040, '.t' の値, 初期 state を選ぶ
+  s32 kind;                      // 0x0040, '.t', 初期 state を選ぶ
   u32 flags;                     // 0x0044, bit0 / bit1 が立っている間は timer1 / timer2 を止める
-  u32 unk_48;                    // 0x0048, '.f' の値
-  u32 unk_4c;                    // 0x004C, '.l' の値
-  u32 unk_50;                    // 0x0050, '.e' の値
+  u32 unk_48;                    // 0x0048, '.f'
+  u32 unk_4c;                    // 0x004C, '.l'
+  u32 unk_50;                    // 0x0050, '.e'
   s32 state;                     // 0x0054, 0x085AFF84 の関数表の添字
   s32 timer1;                    // 0x0058, flags bit0 が落ちている間 _Update が 1 足す
   u32 unk_5c;                    // 0x005C, FUN_08219f34 が 0 に戻す
@@ -44,7 +44,7 @@ struct EntityA288 {
   u8 unk_db8[0xE80 - 0xDB8];     // 0x0DB8, まだ未解析
   u8* unk_e80;                   // 0x0E80, '.X'
   u8 unk_e84[4];                 // 0x0E84, まだ未解析
-  u32 unk_e88;                   // 0x0E88, '.E' の値
+  u32 unk_e88;                   // 0x0E88, '.E'
   u8 unk_e8c[0x12AC - 0xE8C];    // 0x0E8C, まだ未解析
   u8* unk_12ac;                  // 0x12AC, '.b'
   u8 unk_12b0[0x1650 - 0x12B0];  // 0x12B0, まだ未解析

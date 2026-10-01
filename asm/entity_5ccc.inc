@@ -376,7 +376,7 @@ FUN_0809e1f8: @ 0x0809E1F8
 	cmp r4, #0
 	beq _0809E226
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0809E220
@@ -485,7 +485,7 @@ FUN_0809e2c4: @ 0x0809E2C4
 	cmp r1, #0xf
 	bhi _0809E392
 	movs r0, #0x6e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _0809E300
@@ -508,7 +508,7 @@ _0809E300:
 	strh r2, [r0]
 _0809E30C:
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809E392
 	bl VM_GetValue
@@ -597,7 +597,7 @@ _0809E3B2:
 	b _0809E53E
 _0809E3C0:
 	movs r0, #0x6e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _0809E3E4
@@ -622,7 +622,7 @@ _0809E3E4:
 	strh r2, [r0]
 _0809E3F2:
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809E438
 	bl VM_GetValue
@@ -734,7 +734,7 @@ _0809E4CC:
 	add r0, sp, #4
 	strh r1, [r0, #2]
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809E4E2
 	bl VM_GetValue
@@ -744,7 +744,7 @@ _0809E4E2:
 	movs r7, #0
 _0809E4E4:
 	movs r0, #0x72
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809E4F6
 	bl VM_GetValue
@@ -805,7 +805,7 @@ FUN_0809e54c: @ 0x0809E54C
 	cmp r4, #0
 	beq _0809E5BE
 	movs r0, #0x6e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809E5BE
 	bl VM_GetValue
@@ -870,7 +870,7 @@ FUN_0809e5c4: @ 0x0809E5C4
 	cmp r6, #0
 	beq _0809E62A
 	movs r0, #0x6e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809E62A
 	bl VM_GetValue

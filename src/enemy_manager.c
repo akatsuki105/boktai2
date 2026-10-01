@@ -295,7 +295,7 @@ NAKED void FUN_080ed564(void) { INCFUNC("asm/func/FUN_080ed564.inc"); }
 NAKED void FUN_080ed724(void) { INCFUNC("asm/func/FUN_080ed724.inc"); }
 
 void Enemy_Sleep(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
   if (id != 0) {
     Enemy* p = FindEnemyById(id);
     if (p != NULL && p->unk_594 != NULL) {
@@ -316,8 +316,8 @@ static inline bool32 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) { return TestBit
 
 NON_MATCH void FUN_080ed9d0(void) {
 #ifdef NONMATCHING_C
-  s32 id = VM_GetKeywordValue('n', 0);
-  s32 val = VM_GetKeywordValue('d', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
+  s32 val = VM_GetNamedArgValue('d', 0);
   if (id != 0) {
     Enemy* p = FindEnemyById(id);
     if (p != NULL) {
@@ -340,7 +340,7 @@ void FUN_080eda24(void) {
   if (GetEnemyManager() != NULL) {
     node = gEnemyListHead;
     p = node->enemy;
-    val = VM_GetKeywordValue('d', 0);
+    val = VM_GetNamedArgValue('d', 0);
     if (p != NULL) {
       mask = ENEFLAG3_UNK_14;
       do {
@@ -549,11 +549,11 @@ NAKED void FUN_080ef048(void) { INCFUNC("asm/func/FUN_080ef048.inc"); }
 NAKED void FUN_080ef154(void) { INCFUNC("asm/func/FUN_080ef154.inc"); }
 
 void FUN_080ef4e4(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
   if (id != 0) {
     Enemy* p = FindEnemyById(id);
     if (p != NULL) {
-      if (VM_GetKeywordValue('f', 0) == 0) {
+      if (VM_GetNamedArgValue('f', 0) == 0) {
         Enemy_ClearFlag2(p, ENEFLAG2_UNK_26);
       } else {
         Enemy_SetFlag2(p, ENEFLAG2_UNK_26);
@@ -566,7 +566,7 @@ void FUN_080ef534(void) {
   EnemyManager* p = gEnemyManager;
 
   if (p != NULL) {
-    p->flags |= (u16)VM_GetKeywordValue('s', 0);
+    p->flags |= (u16)VM_GetNamedArgValue('s', 0);
   }
 }
 
@@ -574,7 +574,7 @@ void FUN_080ef55c(void) {
   EnemyManager* p = gEnemyManager;
 
   if (p != NULL) {
-    p->flags &= ~(u16)VM_GetKeywordValue('s', 0);
+    p->flags &= ~(u16)VM_GetNamedArgValue('s', 0);
   }
 }
 
@@ -582,7 +582,7 @@ void FUN_080ef584(void) {
   EnemyManager* p = gEnemyManager;
 
   if (p != NULL) {
-    p->unk_30 = VM_GetKeywordValue('l', 3);
+    p->unk_30 = VM_GetNamedArgValue('l', 3);
   }
 }
 

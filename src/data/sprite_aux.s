@@ -1333,7 +1333,7 @@ gAuxSpritesFile0: @ 0x08A2291C
     .incbin "data/actor_sprites/363D.4bpp"                 @ 0x08A49430, ActorID: 0x363D, PlttID: 0, emotion bubbles
     .incbin "data/actor_sprites/1FBD.4bpp"                 @ 0x08A49B30, ActorID: 0x1FBD, PlttID: 112, なんかの壁
     .incbin "data/actor_sprites/shop_samurai_armor.4bpp"   @ 0x08A49E30, ActorID: 0x6AF7, PlttID: 89, キッドの店の内装(武者鎧)
-    .incbin "data/actor_sprites/1B59.4bpp"                 @ 0x08A4A0B0, ActorID: 0x1B59, PlttID: 115, 倉庫の扉?
+    .incbin "data/actor_sprites/1B59.4bpp"                 @ 0x08A4A0B0, ActorID: 0x1B59, PlttID: 115, 扉(鉄格子)
     .incbin "data/actor_sprites/sunflower.4bpp"            @ 0x08A4ACB0, ActorID: 0x7E82, PlttID: 116, ひまわり
     .incbin "data/actor_sprites/BCA8.4bpp"                 @ 0x08A4B0B0, ActorID: 0xBCA8, PlttID: 120, 属性キューブ
     .incbin "data/actor_sprites/4384.4bpp"                 @ 0x08A4B970, ActorID: 0x4384, PlttID: 125, エフェクト(地下水路の滝とかの水飛沫?)

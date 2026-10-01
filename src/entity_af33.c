@@ -1,8 +1,9 @@
 #include "entity.h"
 #include "global.h"
 #include "sprite_main.h"
+#include "text.h"
 
-typedef struct {
+typedef struct EntityAF33 {
   Entity e;               // 0x000, ENTITY_UNK_2
   u32 unk_18;             // 0x018, _Init が 0 を入れる
   u16 unk_1c;             // 0x01C, _Init が 0 を入れる
@@ -33,6 +34,8 @@ typedef struct {
 } EntityAF33;
 static_assert(sizeof(EntityAF33) == 444);
 
+extern EntityAF33* gEntityAF33;  // 0x030000F0
+
 void FUN_0804ff10(EntityAF33*);
 void FUN_0804ffa8(EntityAF33*);
 void FUN_08050070(EntityAF33*);
@@ -61,7 +64,17 @@ void (*const PTR_ARRAY_085ab6a4[12])(EntityAF33*) = {
 
 NAKED s32 EntityAF33_Update(EntityAF33* p) { INCFUNC("asm/func/EntityAF33_Update.inc"); }
 
-NAKED s32 EntityAF33_Destroy(EntityAF33* p) { INCFUNC("asm/func/EntityAF33_Destroy.inc"); }
+s32 EntityAF33_Destroy(EntityAF33* p) {
+  s32 i;
+
+  for (i = 0; i < 2; i++) {
+    MainSprite_Remove(&p->sprites[i]);
+  }
+
+  TextPanel_Destroy(p->windowID);
+  gEntityAF33 = NULL;
+  return 0;
+}
 
 NAKED s32 EntityAF33_Init(EntityAF33* p) { INCFUNC("asm/func/EntityAF33_Init.inc"); }
 

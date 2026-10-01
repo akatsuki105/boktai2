@@ -109,7 +109,8 @@ typedef struct {
 } Path;
 
 typedef struct {
-  u32 pathCount;      // 0x00, number of Path
+  u16 pathCount;      // 0x00, number of Path, 根拠: FUN_08234f44 が ldrh で読む
+  u16 unk_02;         // 0x02
   Path paths[1];      // 0x04, Path[pathCount]
   PathNode nodes[1];  // 要素数は Path[Path.nodeCount] の合計?
 } PathData;

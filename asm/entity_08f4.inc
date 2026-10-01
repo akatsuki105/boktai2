@@ -1421,7 +1421,7 @@ Entity08F4_Init: @ 0x081DB930
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081DB954
 	bl FUN_0823d340

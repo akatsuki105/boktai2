@@ -2308,7 +2308,7 @@ _08167A66:
 	movs r7, #0
 	strh r1, [r0]
 	ldrh r0, [r0]
-	bl FUN_0823b2d0
+	bl Mover_FindByID_Proxy
 	ldr r1, _08167B10 @ =0x000006C4
 	adds r3, r4, r1
 	str r0, [r3]
@@ -3449,32 +3449,32 @@ FUN_08168330: @ 0x08168330
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #3
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #0xa
 	movs r2, #3
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #0xe
 	movs r2, #1
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #5
 	movs r2, #2
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	pop {r4}
 	pop {r0}
 	bx r0
@@ -6041,7 +6041,7 @@ _0816973E:
 	bl FUN_0807f598
 _0816974A:
 	adds r0, r4, #0
-	bl FUN_0823b284
+	bl Mover_Unlink
 	adds r0, r4, #0
 	adds r0, #0xd8
 	bl Hitbox_Unregister

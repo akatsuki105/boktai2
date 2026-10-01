@@ -3,7 +3,7 @@
 	movs r0, #0
 	strh r0, [r5]
 	movs r0, #0x66
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080916B2
 	movs r4, #0

@@ -135,7 +135,7 @@ _081A5690:
 	strh r0, [r1]
 	movs r0, #0x4d
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r1, _081A5720 @ =0x00000474
 	adds r6, r7, r1
 	strh r0, [r6]
@@ -151,7 +151,7 @@ _081A5690:
 	strb r4, [r2]
 	movs r0, #0x72
 	str r2, [sp, #0x198]
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	mov r1, sb
 	str r1, [sp, #0x6c]
 	mov r3, r8
@@ -367,10 +367,10 @@ _081A5858:
 _081A5898:
 	movs r0, #0x4e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	mov sb, r0
 	movs r0, #0x65
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081A58E2
 	bl VM_GetPC
@@ -404,7 +404,7 @@ _081A58E2:
 	movs r5, #0x40
 _081A58E8:
 	movs r0, #0x6e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081A5920
 	bl VM_GetPC
@@ -438,7 +438,7 @@ _081A5920:
 	strh r6, [r0]
 _081A592A:
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	ldr r1, _081A5B9C @ =0x0000025D
 	adds r1, r7, r1
 	str r1, [sp, #0x10c]
@@ -833,7 +833,7 @@ _081A5C6E:
 	ble _081A5B8C
 _081A5C86:
 	movs r0, #0x6c
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081A5CD2
 	bl VM_GetPC
@@ -877,7 +877,7 @@ _081A5CD2:
 _081A5CDA:
 	movs r0, #0x62
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081A5CF2
 	movs r1, #0x80
@@ -889,16 +889,16 @@ _081A5CDA:
 _081A5CF2:
 	movs r0, #0x46
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r3, [sp, #0x80]
 	strh r0, [r3]
 	movs r0, #0x52
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r5, [sp, #0x7c]
 	strh r0, [r5]
 	movs r0, #0x41
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081A5DC0
 	bl VM_GetPC
@@ -1010,7 +1010,7 @@ _081A5DC0:
 	movs r1, #0
 	bl FUN_080e3a90
 	movs r0, #0x58
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081A5E22
 	movs r0, #0xe8
@@ -1039,12 +1039,12 @@ _081A5E1C:
 _081A5E22:
 	movs r0, #0x4b
 	movs r1, #2
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r3, [sp, #0x104]
 	strh r0, [r3]
 	movs r0, #0x48
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081A5E46
 	movs r1, #0x80
@@ -1056,7 +1056,7 @@ _081A5E22:
 _081A5E46:
 	movs r0, #0x4c
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081A5E5E
 	movs r1, #0x80
@@ -1074,7 +1074,7 @@ _081A5E5E:
 	ldr r0, [sp, #0x28]
 	add r2, sp, #0x1c
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	movs r1, #0x80
 	lsls r1, r1, #2
 	ldr r2, [sp, #0x50]
@@ -1105,7 +1105,7 @@ _081A5E9A:
 	ldr r1, [r7, #0x44]
 _081A5EA6:
 	ldr r0, [sp, #0x28]
-	bl FUN_0823b46c
+	bl Mover_SetAuxSprite
 	ldr r4, [sp, #0xa8]
 	ldrb r0, [r4]
 	cmp r0, #0x15
@@ -1114,7 +1114,7 @@ _081A5EA6:
 	ldr r1, [sp, #0x38]
 	movs r2, #0x3c
 	movs r3, #0x3c
-	bl FUN_0823b43c
+	bl Mover_SetCollision
 	b _081A5ED4
 	.align 2, 0
 _081A5EC4: .4byte FUN_080f48ac
@@ -1123,7 +1123,7 @@ _081A5EC8:
 	ldr r1, [sp, #0x38]
 	movs r2, #0x40
 	movs r3, #0x40
-	bl FUN_0823b43c
+	bl Mover_SetCollision
 _081A5ED4:
 	ldr r5, [sp, #0xa8]
 	ldrb r1, [r5]
@@ -1162,7 +1162,7 @@ _081A5ED4:
 	ldrb r0, [r4]
 	str r0, [sp]
 	ldr r0, [sp, #0x28]
-	bl FUN_0823b490
+	bl Mover_SetPath
 _081A5F22:
 	movs r1, #8
 	ldr r5, [sp, #0x50]
@@ -1215,7 +1215,7 @@ _081A5F54:
 	strb r0, [r1, #5]
 _081A5F7E:
 	movs r0, #0x50
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081A5FE2
 	bl VM_GetPC
@@ -1264,7 +1264,7 @@ _081A5FDA:
 _081A5FE2:
 	movs r0, #0x64
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r3, [sp, #0x24]
 	ldr r4, _081A6018 @ =0x0000066C
 	adds r1, r3, r4
@@ -1300,7 +1300,7 @@ _081A6026:
 	lsls r5, r5, #1
 	movs r0, #0x43
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r6, [sp, #0x60]
 	strh r0, [r6]
 	ldr r0, [sp, #0x54]
@@ -1538,7 +1538,7 @@ _081A60C0:
 	strh r0, [r4]
 	movs r0, #0x45
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081A622A
 	movs r1, #0x80
@@ -1550,11 +1550,11 @@ _081A60C0:
 _081A622A:
 	movs r0, #0x49
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r6, [sp, #0x84]
 	strh r0, [r6]
 	movs r0, #0x47
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081A62CE
 	movs r0, #0xce
@@ -1605,12 +1605,12 @@ _081A62C6:
 _081A62CE:
 	movs r0, #0x44
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r1, [sp, #0x88]
 	strh r0, [r1]
 	movs r0, #0x75
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r2, r0, #0
 	movs r0, #0x21
 	ldr r3, [sp, #0x68]
@@ -1740,7 +1740,7 @@ _081A63BC:
 _081A63CC:
 	movs r0, #0x53
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	bne _081A63FE
 	ldr r0, _081A63F4 @ =0x030046A0

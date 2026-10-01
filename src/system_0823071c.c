@@ -56,7 +56,7 @@ void ReadKeyInput(void) {
   }
 }
 
-u16 FUN_08230860(char* s) {
+u16 FUN_08230860(const char* s) {
   u16 hash = 0;
   while (*s != 0) {
     s32 lo = hash << 5;

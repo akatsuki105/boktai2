@@ -65,7 +65,7 @@ _081D5062:
 	bl Elevator_RemoveTileOverrides
 	adds r0, r4, #0
 	adds r0, #0xf4
-	bl FUN_0823b284
+	bl Mover_Unlink
 	adds r0, r4, #0
 	bl AuxSprite_Remove
 _081D5076:

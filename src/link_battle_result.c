@@ -44,8 +44,8 @@ typedef struct LinkBattleResult {
   s16 stepB[16];                   // 0x808, 同じく青
   u16 fadeTarget;                  // 0x828, 0 なら plttB、それ以外なら plttA へ寄せる, FUN_081dce14 が毎回反転する
   u16 unk_82a;                     // 0x82A, FUN_081dcd50 が 0 を入れる
-  Tilemaps* tilemap0;              // 0x82C, GetFile(DIR_TILE_MAP, 0xCD91), BG2 に敷く
-  Tilemaps* tilemap1;              // 0x830, GetFile(DIR_TILE_MAP, 0xA413), BG0 に敷く
+  Tilemaps* tilemap0;              // 0x82C, TILEMAP_CD91, BG2 に敷く
+  Tilemaps* tilemap1;              // 0x830, TILEMAP_A413, BG0 に敷く
   rgb555* bgPltt;                  // 0x834, GetFile(DIR_BGPLTT, 0x26BB) + 0x14
   LinkBattleResultFunc fn;         // 0x838, _Update が毎フレーム呼ぶ, _Init が 0x081DD774 を入れる
   u8* scriptPc;                    // 0x83C, '.s' の後の FUN_0823d340(), TextPanel_SetScript に渡す
@@ -79,8 +79,8 @@ static inline void LinkBattleResult_SetState(LinkBattleResult* p, LinkBattleResu
 void FUN_081dc6d0(LinkBattleResult* p) {
   s32 bgIndices[1];
 
-  p->tilemap0 = GetFile(DIR_TILE_MAP, 0xCD91);
-  p->tilemap1 = GetFile(DIR_TILE_MAP, 0xA413);
+  p->tilemap0 = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  p->tilemap1 = GetFile(DIR_TILE_MAP, TILEMAP_A413);
   bgIndices[0] = 9;
   Video_SetupBGLayout(2, 0, p->tilemap0, 0, 0, 1, bgIndices);
   bgIndices[0] = 3;

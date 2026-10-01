@@ -252,7 +252,7 @@ _080F6A3E:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #0
-	bl FUN_0823b490
+	bl Mover_SetPath
 	ldr r5, _080F6A98 @ =0x00000464
 	adds r1, r4, r5
 	movs r0, #0x96

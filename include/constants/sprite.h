@@ -84,7 +84,7 @@
 #define SPRITE_DVALIN_2E7B 0x2E7B
 #define SPRITE_210E 0x210E             // 弾に見えるが、エフェクトかもしれない
 #define SPRITE_BOMB 0xE74B             // 丸い爆弾, エフェクト(煙?), ダイナマイト
-#define SPRITE_DOOR_7ACD 0x7ACD        // ドア(木)
+#define SPRITE_DOOR_WOOD 0x7ACD        // ドア(木)
 #define SPRITE_DOOR_IRON 0x7AD2        // ドア(鉄格子)
 #define SPRITE_DOOR_LOCKED 0x7AD3      // 鍵のかかった青い扉
 #define SPRITE_DOOR_7AEE 0x7AEE        // 扉, どこの扉か忘れた

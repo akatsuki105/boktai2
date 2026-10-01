@@ -26,7 +26,12 @@ NAKED s32 PasswordDecoder_IsIllegalName(unknown* p) { INCFUNC("asm/func/Password
 
 NAKED s32 PasswordDecoder_Parse(unknown* p) { INCFUNC("asm/func/PasswordDecoder_Parse.inc"); }
 
-NAKED void PasswordDecoder_NOP(unknown* p) { INCFUNC("asm/func/PasswordDecoder_NOP.inc"); }
+void PasswordDecoder_NOP(unknown* p) {
+  s32 i;
+
+  for (i = 4; i >= 0; i--) {
+  }
+}
 
 NAKED void PasswordDecoder_SaveChanges(unknown* p, char* name) { INCFUNC("asm/func/PasswordDecoder_SaveChanges.inc"); }
 
@@ -36,13 +41,13 @@ NAKED s32 FUN_08011584(char* password, u8* charTablePc, u8* nameTablePc, u8* nam
 
 // '.c' と '.n' の文字テーブルと '.d' のパスワード文字列で FUN_08011584 を呼ぶ
 void FUN_08011608(void) {
-  if (VM_SeekToKeyword('c')) {
+  if (VM_SeekToNamedArg('c')) {
     u8* charTablePc = VM_GetPC();
 
-    if (VM_SeekToKeyword('n')) {
+    if (VM_SeekToNamedArg('n')) {
       u8* nameTablePc = VM_GetPC();
 
-      if (nameTablePc != NULL && VM_SeekToKeyword('d')) {
+      if (nameTablePc != NULL && VM_SeekToNamedArg('d')) {
         u8* passwordPc = VM_GetPC();
 
         if (passwordPc != NULL) {

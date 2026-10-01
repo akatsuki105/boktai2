@@ -147,7 +147,10 @@ Keep working files in the scratchpad. `G=http://127.0.0.1:8089`,
    Compare layout and users, not just size.
 5. **Snapshot.** Save the current layouts of every struct you will touch (and
    of the embedding structs if the size can change) to the scratchpad, and
-   the signatures of functions you will retype.
+   the signatures of functions you will retype. The signature comes from
+   `curl -s "$G/get_function_by_address?address=0x..."`; `get_function_signature`
+   is the wrong endpoint here — it returns instruction and basic-block counts,
+   not a prototype.
 6. **Edit through a script**, following `references/edit-recipes.md`
    (`replaceAtOffset`, `clearComponent`, `growStructure`; guards; size check
    before/after; idempotent). Never use `remove_struct_field`,

@@ -1,7 +1,7 @@
 	push {r4, r5, lr}
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	ldr r5, _081D52D4 @ =0x03000194
 	ldr r0, [r5]
@@ -44,7 +44,7 @@ _081D52F6:
 	bl Elevator_RemoveTileOverrides
 	adds r0, r4, #0
 	adds r0, #0xf4
-	bl FUN_0823b284
+	bl Mover_Unlink
 	adds r1, r4, #0
 	adds r1, #0xd4
 	movs r0, #0

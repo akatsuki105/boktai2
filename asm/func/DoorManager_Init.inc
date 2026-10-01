@@ -11,7 +11,7 @@
 	strh r0, [r7, #0x1a]
 	movs r0, #0x65
 	movs r1, #1
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	str r1, [r7, #0x34]
 	cmp r1, #0
@@ -142,7 +142,7 @@ _08021CF0:
 	str r1, [r0]
 _08021D1C:
 	movs r0, #0x64
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08021D58
 	movs r5, #0
@@ -186,7 +186,7 @@ _08021D5E:
 	ble _08021D5E
 _08021D72:
 	movs r0, #0x6b
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08021E40
 	movs r5, #0
@@ -296,7 +296,7 @@ _08021E56:
 	ble _08021E48
 _08021E5E:
 	movs r0, #0x53
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08021EA4
 	bl VM_GetPC
@@ -347,7 +347,7 @@ _08021EB8:
 	ble _08021EAA
 _08021EC0:
 	movs r0, #0x62
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08021F20
 	movs r5, #0
@@ -424,7 +424,7 @@ _08021F4A:
 	ble _08021F2E
 _08021F54:
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08021F98
 	movs r5, #0
@@ -476,7 +476,7 @@ _08021FAE:
 	ble _08021FA0
 _08021FB6:
 	movs r0, #0x75
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08021FFC
 	movs r5, #0
@@ -529,7 +529,7 @@ _08022012:
 _0802201A:
 	movs r0, #0x6d
 	movs r1, #0x10
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r0, [r7, #0x30]
 	movs r4, #0x8c
 	muls r0, r4, r0
@@ -553,7 +553,7 @@ _08022044:
 	ldr r0, _08022070 @ =0x000085E6
 	adds r1, r7, #0
 	movs r2, #0
-	bl FUN_08230e30
+	bl Registry_Add
 	movs r0, #0
 _08022058:
 	add sp, #4

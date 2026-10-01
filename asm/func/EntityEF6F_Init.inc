@@ -92,12 +92,12 @@
 	bl OpenMainSpriteFile
 	movs r0, #0x65
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r6, #0
 	adds r1, #0x90
 	str r0, [r1]
 	movs r0, #0x45
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0801F5C0
 	bl FUN_0823d340

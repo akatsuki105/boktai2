@@ -34,7 +34,7 @@ _081D0D9C:
 	adds r0, r4, #0
 	bl FUN_08002a58
 	adds r0, r4, #0
-	bl FUN_0823b284
+	bl Mover_Unlink
 _081D0DCE:
 	adds r0, r5, #0
 	bl Free

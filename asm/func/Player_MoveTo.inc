@@ -8,7 +8,7 @@
 	cmp r5, #0
 	beq _0807D3A4
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0807D3A4
 	bl VM_GetValue

@@ -69,7 +69,7 @@
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #0
-	bl FUN_0823b490
+	bl Mover_SetPath
 	adds r0, r4, #0
 	bl FUN_080ffda8
 	ldrh r0, [r5]

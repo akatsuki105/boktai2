@@ -2,16 +2,17 @@
 #include "file.h"
 #include "global.h"
 #include "malloc.h"
+#include "mover.h"
+#include "registry.h"
 
 IWRAM_DATA bool32 bool32_0300077c = FALSE;  // 0x0300077C
 
-void FUN_08230e30(u16 id, void* r1, s32 r2);
 bool32 FUN_082326d8(void);
 
 void FUN_082326a0(void) {
   CollisionMapData* p = Malloc(sizeof(CollisionMapData));
   ClearMemory(p, sizeof(CollisionMapData));
-  FUN_08230e30(0x56C2, p, 1);
+  Registry_Add(0x56C2, p, 1);
   gCollisionMap = p;
   FUN_082326d8();
 }
@@ -50,7 +51,7 @@ void FUN_082327f0(CollisionMapTileData* tiledata) {
   UpdateMapSize_0823279c();
 }
 
-NAKED void FUN_0823280c(unknown* p, Vec3* pos) { INCFUNC("asm/func/FUN_0823280c.inc"); }
+NAKED void FUN_0823280c(MoverTile* p, Vec3* pos) { INCFUNC("asm/func/FUN_0823280c.inc"); }
 
 NAKED s32 FUN_08232888(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_08232888.inc"); }
 
@@ -68,7 +69,7 @@ NAKED void FUN_082332f8(unknown* param_1, s32 param_2, unknown* param_3) { INCFU
 
 NAKED void FUN_08233428(unknown* param_1, unknown* param_2, unknown* param_3, s32 param_4, u8 param_5) { INCFUNC("asm/func/FUN_08233428.inc"); }
 
-NAKED void FUN_0823349c(void* param_1, Vec3* pos, Vec3* delta, u16 unk_1c, u16 unk_1e, u8 unk_4) { INCFUNC("asm/func/FUN_0823349c.inc"); }
+NAKED void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16 sizeZ, u8 unk_4) { INCFUNC("asm/func/FUN_0823349c.inc"); }
 
 NAKED s32 FUN_08233d50(s32 param_1, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/FUN_08233d50.inc"); }
 
@@ -194,7 +195,13 @@ NAKED bool32 FUN_08234e3c(unknown* p) { INCFUNC("asm/func/FUN_08234e3c.inc"); }
 
 NAKED s32 FUN_08234e78(unknown* param_1, s32 param_2, unknown* param_3, s32 param_4) { INCFUNC("asm/func/FUN_08234e78.inc"); }
 
-NAKED Path* FUN_08234f44(u8 idx) { INCFUNC("asm/func/FUN_08234f44.inc"); }
+Path* FUN_08234f44(u8 idx) {
+  PathData* d = gCollisionMap->paths;
+
+  if (idx >= d->pathCount) return NULL;
+
+  return &d->paths[idx];
+}
 
 // その経路の先頭ノードを指す
 PathNode* FUN_08234f6c(Path* path) {
@@ -209,7 +216,19 @@ void FUN_08234f80(Vec3* dst, PathNode* nodes, u8 idx) {
   dst->z = nodes[idx].y;
 }
 
-NAKED s32 FUN_08234f90(Vec3* dst, u8 pathIdx, u8 nodeIdx) { INCFUNC("asm/func/FUN_08234f90.inc"); }
+// パス pathIdx の nodeIdx 番目のノードの座標を *dst に入れる
+s32 FUN_08234f90(Vec3* dst, u8 pathIdx, u8 nodeIdx) {
+  PathNode* nodes = FUN_08234f6c(FUN_08234f44(pathIdx));
+
+  if (nodes == NULL) {
+    dst->x = 0;
+    dst->z = 0;
+    return -1;
+  }
+
+  FUN_08234f80(dst, nodes, nodeIdx);
+  return 0;
+}
 
 NAKED s32 FUN_08234fc8(void) { INCFUNC("asm/func/FUN_08234fc8.inc"); }
 
@@ -229,7 +248,14 @@ NAKED s32 FUN_082356c4(Vec3* dst, s32 param_2, s32 param_3, s32 param_4) { INCFU
 
 NAKED s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_0823585c.inc"); }
 
-NAKED s32 FUN_082358f4(FileID id) { INCFUNC("asm/func/FUN_082358f4.inc"); }
+NON_MATCH s32 FUN_082358f4(FileID id) {
+#ifdef NONMATCHING_C
+  gCollisionMap->navMesh = GetFile(0xF63B, id);
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_082358f4.inc");
+#endif
+}
 
 void FUN_08235918(NavMesh* navMesh) { gCollisionMap->navMesh = navMesh; }
 

@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_0804b260
-FUN_0804b260: @ 0x0804B260
+	thumb_func_start EntityFB53_IsActive
+EntityFB53_IsActive: @ 0x0804B260
 	push {lr}
 	ldr r0, _0804B270 @ =0x030000D8
 	ldr r0, [r0]
@@ -22,8 +22,8 @@ _0804B276:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_0804b27c
-FUN_0804b27c: @ 0x0804B27C
+	thumb_func_start EntityFB53_WatchLink
+EntityFB53_WatchLink: @ 0x0804B27C
 	push {r4, lr}
 	ldr r0, _0804B2B4 @ =0x030000D8
 	ldr r4, [r0]
@@ -54,8 +54,8 @@ _0804B2AC:
 	.align 2, 0
 _0804B2B4: .4byte 0x030000D8
 
-	thumb_func_start FUN_0804b2b8
-FUN_0804b2b8: @ 0x0804B2B8
+	thumb_func_start EntityFB53_SetLinkError
+EntityFB53_SetLinkError: @ 0x0804B2B8
 	push {lr}
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
@@ -82,7 +82,7 @@ FUN_0804b2dc: @ 0x0804B2DC
 	bl FUN_0823a6c0
 	cmp r0, #0
 	blt _0804B33C
-	ldr r0, _0804B328 @ =FUN_0804b2b8
+	ldr r0, _0804B328 @ =EntityFB53_SetLinkError
 	bl rfu_setREQCallback
 	bl rfu_REQBN_softReset_and_checkID
 	ldr r1, _0804B32C @ =0x00008001
@@ -101,16 +101,16 @@ FUN_0804b2dc: @ 0x0804B2DC
 	movs r1, #0x10
 	bl rfu_REQ_configGameData
 	bl rfu_waitREQComplete
-	ldr r0, _0804B338 @ =FUN_0804b27c
+	ldr r0, _0804B338 @ =EntityFB53_WatchLink
 	bl rfu_setMSCCallback
 	movs r0, #0
 	b _0804B340
 	.align 2, 0
-_0804B328: .4byte FUN_0804b2b8
+_0804B328: .4byte EntityFB53_SetLinkError
 _0804B32C: .4byte 0x00008001
 _0804B330: .4byte 0x08251D30
 _0804B334: .4byte 0x08251D38
-_0804B338: .4byte FUN_0804b27c
+_0804B338: .4byte EntityFB53_WatchLink
 _0804B33C:
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -118,8 +118,8 @@ _0804B340:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_0804b344
-FUN_0804b344: @ 0x0804B344
+	thumb_func_start EntityFB53_Disconnect
+EntityFB53_Disconnect: @ 0x0804B344
 	push {lr}
 	movs r2, #0
 	ldr r3, _0804B354 @ =0x03005800
@@ -157,8 +157,8 @@ _0804B36E:
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_0804b394
-FUN_0804b394: @ 0x0804B394
+	thumb_func_start EntityFB53_SetupBG
+EntityFB53_SetupBG: @ 0x0804B394
 	push {r4, lr}
 	sub sp, #0x10
 	str r1, [sp, #0xc]
@@ -206,7 +206,7 @@ FUN_0804b3f8: @ 0x0804B3F8
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r1, #3
-	bl FUN_0804b394
+	bl EntityFB53_SetupBG
 	movs r0, #1
 	movs r1, #7
 	movs r2, #0x1c
@@ -300,8 +300,8 @@ _0804B4B8:
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_0804b4c0
-FUN_0804b4c0: @ 0x0804B4C0
+	thumb_func_start EntityFB53_FindGameIdx
+EntityFB53_FindGameIdx: @ 0x0804B4C0
 	push {r4, r5, r6, r7, lr}
 	adds r5, r0, #0
 	movs r4, #0
@@ -392,7 +392,7 @@ _0804B540:
 	cmp r1, #0
 	blt _0804B58C
 	adds r0, r4, #0
-	bl FUN_0804b4c0
+	bl EntityFB53_FindGameIdx
 	adds r1, r0, #0
 	cmp r1, #0
 	blt _0804B588
@@ -443,7 +443,7 @@ _0804B5B4:
 	cmp r0, #0
 	beq _0804B5E4
 	adds r0, r5, #0
-	bl FUN_0804b344
+	bl EntityFB53_Disconnect
 	movs r0, #0xde
 	bl PlaySound_082406e0
 	movs r0, #8
@@ -493,7 +493,7 @@ _0804B61A:
 	ldr r0, _0804B648 @ =0x00000123
 	bl PlaySound_082406e0
 	adds r0, r4, #0
-	bl FUN_0804b344
+	bl EntityFB53_Disconnect
 _0804B626:
 	ldr r2, [r4, #0x24]
 	cmp r2, #0x1d
@@ -539,7 +539,7 @@ FUN_0804b65c: @ 0x0804B65C
 	bl TextPanel_SetMessage
 _0804B676:
 	adds r0, r4, #0
-	bl FUN_0804b344
+	bl EntityFB53_Disconnect
 	movs r0, #0xc9
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -589,7 +589,7 @@ FUN_0804b6bc: @ 0x0804B6BC
 	bl TextPanel_SetMessage
 _0804B6D6:
 	adds r0, r4, #0
-	bl FUN_0804b344
+	bl EntityFB53_Disconnect
 	movs r0, #0xc9
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -936,7 +936,7 @@ EntityFB53_Init: @ 0x0804B950
 	str r4, [r0]
 	bl SuspendSunlight
 	movs r0, #0x6d
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0804B98A
 	bl FUN_0823d340
@@ -944,7 +944,7 @@ EntityFB53_Init: @ 0x0804B950
 	cmp r0, #0
 	beq _0804B98A
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0804B98A
 	bl FUN_0823d340
@@ -961,7 +961,7 @@ _0804B994: .4byte 0x030000D8
 _0804B998:
 	movs r0, #0x65
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r0, [r4, #0x34]
 	adds r0, r4, #0
 	bl FUN_0804b3f8
@@ -6530,10 +6530,10 @@ FUN_0804e25c: @ 0x0804E25C
 	strb r1, [r0]
 	movs r0, #0x70
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r0, [r4, #0x4c]
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0804E2AE
 	bl FUN_0823d340
@@ -7223,7 +7223,7 @@ Crossover_LoadMappingBuf: @ 0x0804E72C
 	mov r7, r8
 	push {r7}
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0804E744
 	bl VM_GetPC

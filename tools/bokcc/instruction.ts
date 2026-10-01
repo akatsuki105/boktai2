@@ -7,7 +7,7 @@ export enum InsnType {
   MemoryIndexed,
   Expression,
   Parameter,
-  Keyword,
+  Label,
   Control,
   Call,
   Block,
@@ -30,9 +30,9 @@ export enum ControlType {
   SetZoneCallback = 0xD4CB,
 }
 
-// キーワードは1文字の名前付き引数で、意味は呼び出し先のエンジン関数ごとに異なる。
-// ここに挙げるのは if/switch の内側でだけ現れる、意味が確定しているものだけ。
-export enum KeywordType {
+// ラベル(0x50)のうち if/switch の節として現れるもの。これ以外のラベルは名前付き引数で、
+// 1文字の意味は呼び出し先のエンジン関数ごとに異なる。
+export enum ClauseType {
   Case = 0x63,
   Default = 0x64,
   Else = 0x65,
@@ -322,8 +322,8 @@ export class Instruction {
         s = "StringRef(0x" + toHex(this.value, 4) + ")";
         break;
       }
-      case InsnType.Keyword: {
-        s = this.keywordToString();
+      case InsnType.Label: {
+        s = this.labelToString();
         break;
       }
       case InsnType.Control: {
@@ -424,9 +424,9 @@ export class Instruction {
     return dataStack.pop()!;
   }
 
-  // 名前付き引数としてのキーワード。1文字はそのまま残す(意味は呼び出し先ごとに違うため)。
+  // 名前付き引数としてのラベル。1文字はそのまま残す(意味は呼び出し先ごとに違うため)。
   // if/switch の内側に現れるものは controlToString 側で else / case として描画する。
-  private keywordToString(): string {
+  private labelToString(): string {
     const name = "." + String.fromCharCode(this.value);
     if (this.children.length === 0) return name;
     for (const c of this.children) c.indent = this.indent;
@@ -436,18 +436,18 @@ export class Instruction {
 
   private controlToString(): string {
     let s: string;
-    const operands = this.children.filter((c) => c.insnType !== InsnType.Keyword);
-    const keywords = this.children.filter((c) => c.insnType === InsnType.Keyword);
+    const operands = this.children.filter((c) => c.insnType !== InsnType.Label);
+    const clauses = this.children.filter((c) => c.insnType === InsnType.Label);
     for (const c of this.children) c.indent = this.indent;
 
     switch (this.value) {
       case ControlType.If: {
         s = "if (" + operands[0].conditionString() + ") " + operands[1].toString();
-        for (const k of keywords) {
+        for (const k of clauses) {
           k.children[k.children.length - 1].indent = this.indent;
-          if (k.value === KeywordType.ElseIf) {
+          if (k.value === ClauseType.ElseIf) {
             s += " else if (" + k.children[0].conditionString() + ") " + k.children[1].toString();
-          } else if (k.value === KeywordType.Else) {
+          } else if (k.value === ClauseType.Else) {
             s += " else " + k.children[0].toString();
           }
         }
@@ -456,12 +456,12 @@ export class Instruction {
       case ControlType.Switch: {
         const pad = "\t".repeat(this.indent + 1);
         s = "switch (" + operands[0].conditionString() + ") {";
-        for (const k of keywords) {
+        for (const k of clauses) {
           const body = k.children[k.children.length - 1];
           body.indent = this.indent + 1;
-          if (k.value === KeywordType.Case) {
+          if (k.value === ClauseType.Case) {
             s += "\n" + pad + "case " + k.children[0].toString() + ": " + body.toString();
-          } else if (k.value === KeywordType.Default) {
+          } else if (k.value === ClauseType.Default) {
             s += "\n" + pad + "default: " + body.toString();
           }
         }
@@ -544,7 +544,7 @@ export class Instruction {
     let s = "";
     let doNewLine = false;
     for (const subInstr of this.children.slice(skip)) {
-      if (this.insnType === InsnType.Control || this.insnType === InsnType.Keyword) {
+      if (this.insnType === InsnType.Control || this.insnType === InsnType.Label) {
         subInstr.indent = this.indent;
       } else {
         subInstr.indent = this.indent + 1;

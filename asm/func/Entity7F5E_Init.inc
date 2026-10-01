@@ -8,7 +8,7 @@
 	adds r0, r4, #0
 	bl FUN_080b4740
 	movs r0, #0x65
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080B47C0

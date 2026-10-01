@@ -1252,7 +1252,7 @@ _0800D4E2:
 	bl FUN_08234224
 	adds r0, r5, #0
 	adds r0, #0x48
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 	ldrh r1, [r5, #0x28]
 	movs r0, #2
 	ands r0, r1

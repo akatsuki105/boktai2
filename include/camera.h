@@ -20,7 +20,7 @@ typedef struct {
   u16 lookTimer;         // 0x6A, 注視点補間の残りフレーム数, 根拠: FUN_0823c620 が Div の除数に使い毎フレーム減算する
   Vec3 pos_6c;           // 0x6C, lookMode が 1/2 のときの注視点
   Vec3 pos_74;           // 0x74, lookMode が 3/4 のときの注視対象からのオフセット
-  u16 lookTargetID;      // 0x7C, 注視対象の ID, 根拠: FUN_0823c620 が FUN_0823b2d0(lookTargetID) に渡して Entity2UnkData* を得る
+  u16 lookTargetID;      // 0x7C, 注視対象の ID, 根拠: FUN_0823c620 が Mover_FindByID_Proxy(lookTargetID) に渡して Mover* を得る
   u16 shakeAmplitude;    // 0x7E, 今フレームの画面揺れの振幅, 根拠: FUN_0823c928 が shakeCurrent から取って毎回0に戻す
   s16 shakeOffsetX;      // 0x80, 画面揺れの X オフセット, 根拠: FUN_0823c928 が gCameraWorldCoords.x に加算する
   s16 shakeOffsetZ;      // 0x82, 画面揺れの Z オフセット, 根拠: FUN_0823c928 が gCameraWorldCoords.z に加算する
@@ -53,7 +53,7 @@ typedef struct {
   s16 unk_0c;     // 0x0C, FUN_0822a2a8 が 1 を書く, 読み手は未特定
   s16 unk_0e;     // 0x0E, 参照が見つかっていない (幅も未確定)
   s16 unk_10;     // 0x10, FUN_0822a2a8 が 0 を書く, 読み手は未特定
-  s16 unk_12;     // 0x12, 根拠: Video_SetDrawPasses が strh [r4,#0x12] で書き、FUN_0823b4b8 / Video_GenerateBackgroundMaps / FUN_0823c450 / FUN_0823c620 が読む
+  s16 unk_12;     // 0x12, 根拠: Video_SetDrawPasses が strh [r4,#0x12] で書き、Mover_ApplyMove / Video_GenerateBackgroundMaps / FUN_0823c450 / FUN_0823c620 が読む
 } CameraCoords;
 static_assert(sizeof(CameraCoords) == 20);
 
@@ -61,6 +61,7 @@ extern CameraCoords gCameraCoords;  // 0x03003540
 extern Vec3 gCameraVpCoords;        // 0x030047C8
 
 void Camera_0823b744(void);
+void FUN_0823b8ac(Vec3* pos);
 void FUN_0823b9cc(s32 n);
 
 #endif  // __INCLUDE_CAMERA_H__

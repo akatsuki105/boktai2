@@ -3,7 +3,7 @@
 
 // クロロホルルン
 typedef struct {
-  Entity2UnkData unk_0;     // 0x000
+  Mover unk_0;              // 0x000
   EnemySpriteData* sprite;  // 0x044
   EntityMsgBox msgbox;      // 0x048, 0x0813e5ba
   u8 unk_7c[1712 - 0x7C];   // 0x07C

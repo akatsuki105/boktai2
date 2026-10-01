@@ -43,7 +43,7 @@ void EntityE06A_SetupSprite(EntityE06A* p) {
   AuxSpriteGfx* gfx = &p->gfx;
   Video_GetAuxSprite(gfx, SPRITE_NODATA_9DA7);
   AuxSprite_Add(&p->sprite, gfx, 0);
-  z = VM_SeekToKeyword('p');
+  z = VM_SeekToNamedArg('p');
   if (z != 0) {
     p->sprite.pos.x = VM_GetValue();
     p->sprite.pos.y = VM_GetValue();

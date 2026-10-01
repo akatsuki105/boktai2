@@ -1875,25 +1875,25 @@ Entity329B_Init: @ 0x08010AE0
 	strh r1, [r6, #0x18]
 	movs r0, #0x66
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strb r0, [r6, #0x1a]
 	ldr r0, _08010B4C @ =0x0000596F
 	strh r0, [r6, #0x1c]
 	movs r0, #0x70
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r6, #0x1e]
 	ldr r0, _08010B50 @ =0x030043F0
 	str r0, [r6, #0x20]
 	movs r0, #0x65
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	movs r2, #0xc1
 	lsls r2, r2, #2
 	adds r1, r6, r2
 	str r0, [r1]
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08010B7E
@@ -1941,7 +1941,7 @@ _08010B7E:
 	strh r1, [r0]
 _08010B86:
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08010BE4
 	movs r4, #0
@@ -2066,7 +2066,7 @@ _08010C62:
 	strh r0, [r2]
 	movs r0, #0x77
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r6, #0x2a]
 	ldr r1, _08010D1C @ =FUN_0801058c
 	movs r2, #0xb3

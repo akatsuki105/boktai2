@@ -60,8 +60,8 @@ s32 Entity92BE_Init(Entity92BE* p) {
   }
   p->gfx = *(MainSpriteGfx*)f;
   OpenMainSpriteFile(&p->gfx, f);
-  idx = VM_SeekToKeyword('t') ? VM_GetValue() : 0;
-  if (VM_SeekToKeyword('I')) {
+  idx = VM_SeekToNamedArg('t') ? VM_GetValue() : 0;
+  if (VM_SeekToNamedArg('I')) {
     p->lifetime = VM_GetValue();
   } else {
     p->lifetime = 60;
@@ -69,7 +69,7 @@ s32 Entity92BE_Init(Entity92BE* p) {
   p->updateCallback = Entity92BE_Shake;
   p->pos.x = 0, p->pos.y = 0, p->pos.z = 0;
   MainSprite_Add(&p->sprite, &p->gfx, idx + 11, SPRFLAG_SCREEN_COORD, 1, 0, 60, &p->pos);
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     p->scriptID = VM_GetValue();
   } else {
     p->scriptID = 0;

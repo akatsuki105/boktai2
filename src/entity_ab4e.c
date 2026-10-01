@@ -15,7 +15,7 @@ typedef struct {
   u8 unk_14[0x37 - 0x14];     // 0x014, まだ未解析
   bool8 unk_37;               // 0x037, _Update が毎フレーム 0 に戻し, state のハンドラが立てる
   u8 unk_38[0x60 - 0x38];     // 0x038, まだ未解析
-  Entity2UnkData unk_60;      // 0x060, _Update が FUN_0823b4b8 に渡す
+  Mover unk_60;               // 0x060, _Update が Mover_ApplyMove に渡す
   MainSprite sprite;          // 0x0A4, _Update が MainSprite_AdvanceAnim に渡す
   u8 unk_104[0x174 - 0x104];  // 0x104, まだ未解析
   s16 unk_174;                // 0x174, 0/1 で FUN_080da9c4 の呼び分けをする

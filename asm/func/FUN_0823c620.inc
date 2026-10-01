@@ -131,7 +131,7 @@ _0823C72C:
 	adds r0, r6, #0
 	adds r0, #0x7c
 	ldrh r0, [r0]
-	bl FUN_0823b2d0
+	bl Mover_FindByID_Proxy
 	adds r5, r0, #0
 	cmp r5, #0
 	bne _0823C73E
@@ -163,7 +163,7 @@ _0823C76C:
 	adds r0, r6, #0
 	adds r0, #0x7c
 	ldrh r0, [r0]
-	bl FUN_0823b2d0
+	bl Mover_FindByID_Proxy
 	adds r5, r0, #0
 	cmp r5, #0
 	bne _0823C77E

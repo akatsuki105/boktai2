@@ -52,7 +52,7 @@ _080186F4:
 	bl Video_SetupBG
 _0801870A:
 	movs r0, #0x72
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08018720
 	bl VM_GetValue
@@ -65,7 +65,7 @@ _08018720:
 _08018724:
 	strh r0, [r6, #0x32]
 	movs r0, #0x69
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0801873C
 	bl VM_GetValue
@@ -106,7 +106,7 @@ _08018746:
 	str r1, [r4]
 _0801877A:
 	movs r0, #0x63
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08018794
 	bl VM_GetValue
@@ -118,7 +118,7 @@ _0801877A:
 	str r0, [r1]
 _08018794:
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080187C0
 	bl VM_GetValue
@@ -141,7 +141,7 @@ _080187C6:
 	bl WeatherManager_ResetTimer
 	movs r0, #0x61
 	movs r1, #1
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r6, #0
 	adds r1, #0x22
 	strb r0, [r1]
@@ -215,17 +215,17 @@ _08018862:
 _08018864:
 	movs r0, #0x6d
 	adds r1, r5, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	adds r0, r6, #0
 	bl WeatherManager_SetState
 	movs r0, #0x43
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r0, [r6, #0x54]
 	movs r0, #0x4f
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r0, [r6, #0x58]
 	ldr r4, _080188E0 @ =0x0203B400
 	ldr r5, _080188D8 @ =0x030046B8

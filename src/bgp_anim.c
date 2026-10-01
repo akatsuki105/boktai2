@@ -22,4 +22,16 @@ s32 BgPlttAnimator_Init(BgPlttAnimator* p) {
   return 0;
 }
 
-NAKED BgPlttAnimator* BgPlttAnimator_Create(void) { INCFUNC("asm/func/BgPlttAnimator_Create.inc"); }
+BgPlttAnimator* BgPlttAnimator_Create(void) {
+  BgPlttAnimator* p = CreateEntity(ENTITY_UNK_12, sizeof(BgPlttAnimator));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, BgPlttAnimator_Update, BgPlttAnimator_Destroy);
+    if (BgPlttAnimator_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}

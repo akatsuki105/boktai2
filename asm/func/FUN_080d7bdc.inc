@@ -9,7 +9,7 @@
 	b _080D7F3C
 _080D7BF0:
 	movs r0, #0x54
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	bne _080D7BFC
 	b _080D7F3C

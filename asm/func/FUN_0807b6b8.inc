@@ -18,7 +18,7 @@
 	cmp r0, #0xb
 	bne _0807B794
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0807B794
 	bl VM_GetValue
@@ -81,7 +81,7 @@
 	cmp r0, #0xbe
 	bls _0807B794
 	movs r0, #0x64
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0807B794
 	bl VM_GetValue

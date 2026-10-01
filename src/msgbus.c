@@ -278,14 +278,14 @@ s32 Demo_Start(void) {
     return -1;
   }
   p->running = 1;
-  p->demoID = VM_GetKeywordValue('d', -1);
-  p->step = VM_GetKeywordValue('c', -1) - 1;
+  p->demoID = VM_GetNamedArgValue('d', -1);
+  p->step = VM_GetNamedArgValue('c', -1) - 1;
   p->msgIdx = 0;
   p->advanceReq = TRUE;
   p->stepBegun = 0;
-  p->endScriptID = VM_GetKeywordValue('e', 0);
+  p->endScriptID = VM_GetNamedArgValue('e', 0);
   p->scriptCount = 0;
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     for (i = 0; i < 16; i++) {
       if (VM_GetPC() == NULL) {
         break;

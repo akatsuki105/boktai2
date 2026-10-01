@@ -5,7 +5,7 @@
 	push {r5, r6, r7}
 	sub sp, #0x58
 	ldr r0, _0801FB68 @ =0x000085E6
-	bl FUN_08230e70
+	bl Registry_Find
 	str r0, [sp, #0x3c]
 	cmp r0, #0
 	bne _0801FB6C
@@ -17,49 +17,49 @@ _0801FB68: .4byte 0x000085E6
 _0801FB6C:
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	str r0, [sp, #0x40]
 	movs r0, #0x64
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r0, [sp, #0x44]
 	movs r0, #0x66
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	str r0, [sp, #0x48]
 	movs r0, #0x73
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	str r0, [sp, #0x4c]
 	movs r0, #0x72
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	str r0, [sp, #0x50]
 	movs r0, #0x76
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r0, [sp, #0x54]
 	movs r1, #0xc8
 	lsls r1, r1, #1
 	movs r0, #0x68
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	mov sl, r0
 	movs r0, #0x6d
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	mov sb, r0
 	movs r0, #0x6b
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0801FBFC
 	bl VM_GetValue
@@ -83,7 +83,7 @@ _0801FBFC:
 	add r6, sp, #0x34
 _0801FC04:
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0801FC1E
 	bl VM_GetValue
@@ -94,7 +94,7 @@ _0801FC04:
 	b _0801FC48
 _0801FC1E:
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0801FC40

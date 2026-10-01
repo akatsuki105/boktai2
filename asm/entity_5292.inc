@@ -454,7 +454,7 @@ Entity5292_Init: @ 0x080AD158
 	movs r0, #0x60
 	strh r0, [r4, #0x26]
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080AD170
 	bl VM_GetValue

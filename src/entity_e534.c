@@ -50,7 +50,19 @@ INCASM("asm/entity_e534.inc");
 
 NAKED s32 EntityE534_Update(EntityE534* p) { INCFUNC("asm/func/EntityE534_Update.inc"); }
 
-NAKED s32 EntityE534_Destroy(EntityE534* p) { INCFUNC("asm/func/EntityE534_Destroy.inc"); }
+void FUN_08011854(EntityE534* p, EntityE534Elem* e, s32 idx);
+
+s32 EntityE534_Destroy(EntityE534* p) {
+  EntityE534Elem* e = p->elems;
+  s32 i;
+
+  for (i = 0; i < 16; i++, e++) {
+    FUN_08011854(p, e, i);
+  }
+
+  EntityMsgBus_Unregister(&p->msgbox);
+  return 0;
+}
 
 NAKED s32 EntityE534_Init(EntityE534* p, u32 id) { INCFUNC("asm/func/EntityE534_Init.inc"); }
 

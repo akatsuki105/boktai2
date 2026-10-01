@@ -1,6 +1,6 @@
 	push {r4, r5, lr}
 	movs r0, #0x63
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080189AA
 	bl VM_GetValue
@@ -14,7 +14,7 @@ _080189AA:
 	adds r5, r4, #0
 _080189B0:
 	movs r0, #0x69
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080189C2

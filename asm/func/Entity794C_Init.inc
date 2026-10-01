@@ -1,7 +1,7 @@
 	push {r4, r5, lr}
 	adds r5, r0, #0
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08240E4A
 	adds r4, r5, #0

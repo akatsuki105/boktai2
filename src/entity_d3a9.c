@@ -83,4 +83,16 @@ s32 EntityD3A9_Init(EntityD3A9* p, u32 n) {
   return 0;
 }
 
-NAKED EntityD3A9* EntityD3A9_Create(u32 n) { INCFUNC("asm/func/EntityD3A9_Create.inc"); }
+EntityD3A9* EntityD3A9_Create(u32 n) {
+  EntityD3A9* p = CreateEntity(ENTITY_UNK_11, sizeof(EntityD3A9));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityD3A9_Update, EntityD3A9_Destroy);
+    if (EntityD3A9_Init(p, n) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}

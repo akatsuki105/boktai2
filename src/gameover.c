@@ -271,7 +271,7 @@ void GameOverManager_StartScripted(void) {
   GameOverManager_AddSprites(p);
   FUN_0809c08c(7);
   p->state = 1;
-  if (!VM_SeekToKeyword('f')) {
+  if (!VM_SeekToNamedArg('f')) {
     return;
   }
   if (VM_GetValue() == 0) {
@@ -372,8 +372,8 @@ s32 GameOverManager_Init(GameOverManager* p) {
   p->animState = 0;
   p->timer = 0;
   p->spritesAdded = FALSE;
-  if (VM_SeekToKeyword('r')) p->script = FUN_0823d340();
-  if (VM_SeekToKeyword('c')) {
+  if (VM_SeekToNamedArg('r')) p->script = FUN_0823d340();
+  if (VM_SeekToNamedArg('c')) {
     p->cost[0] = VM_GetValue();
     p->cost[1] = VM_GetValue();
   } else {
@@ -381,7 +381,7 @@ s32 GameOverManager_Init(GameOverManager* p) {
     p->cost[1] = 250;
   }
   p->costIdx = 0;
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     p->scriptId = VM_GetValue();
   } else {
     p->scriptId = 0;

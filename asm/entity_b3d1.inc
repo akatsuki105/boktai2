@@ -1812,7 +1812,7 @@ EntityB3D1_Init: @ 0x080C0810
 	push {r7}
 	adds r7, r0, #0
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080C0832
@@ -1876,7 +1876,7 @@ _080C083A:
 	adds r0, r0, r2
 	strh r0, [r1]
 	movs r0, #0x4e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080C08E0
 	bl VM_GetValue
@@ -1953,7 +1953,7 @@ _080C08E6:
 	adds r0, r7, #0
 	bl FUN_080bffcc
 	movs r0, #0x72
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080C096C
 	bl VM_GetValue
@@ -1973,7 +1973,7 @@ _080C096C:
 _080C0974:
 	strh r0, [r1]
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080C09B0
 	bl VM_GetValue
@@ -2009,7 +2009,7 @@ _080C09B0:
 _080C09C8:
 	strh r0, [r1]
 	movs r0, #0x62
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080C09F4
@@ -2039,7 +2039,7 @@ _080C09FA:
 	adds r0, r7, r1
 	strh r5, [r0]
 	movs r0, #0x65
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080C0A22
 	bl VM_GetValue
@@ -2048,7 +2048,7 @@ _080C09FA:
 	str r0, [r1]
 _080C0A22:
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080C0A50
 	bl VM_GetValue

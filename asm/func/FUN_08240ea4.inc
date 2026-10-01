@@ -1,7 +1,7 @@
 	push {r4, r5, r6, lr}
 	sub sp, #8
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08240EE0
 	bl VM_GetPC
@@ -33,13 +33,13 @@ _08240EE0:
 _08240EE4:
 	movs r0, #0x72
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r0, #0
 	lsls r4, r4, #0x10
 	lsrs r4, r4, #0x10
 	movs r0, #0x66
 	movs r1, #1
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	movs r3, #0

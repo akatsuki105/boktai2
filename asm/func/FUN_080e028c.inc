@@ -5,7 +5,7 @@
 	push {r5, r6, r7}
 	sub sp, #0x2c
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080E030C
 	bl VM_GetPC
@@ -68,18 +68,18 @@ _080E030C:
 _080E0316:
 	movs r0, #0x64
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r0, [sp, #0x24]
 	movs r0, #0x73
 	movs r1, #0x14
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r0, [sp, #0x28]
 	movs r0, #0x61
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	mov sl, r0
 	movs r0, #0x68
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080E0378
 	bl VM_GetPC
@@ -117,7 +117,7 @@ _080E037E:
 	movs r7, #0
 _080E0380:
 	movs r0, #0x50
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080E03CE
 	bl VM_GetPC

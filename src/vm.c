@@ -51,15 +51,15 @@ u8* VM_ReadContainerLength(u8* pc, u32* length) {
   }
 }
 
-// 次のキーワード命令または終了命令（いずれか先に出現する方）までのバイト数 を取得
+// 最初のラベル命令, 無ければ終端命令までのバイト数を取得
 // https://boktaihacking.net/wiki/Bytecode#Opcode_0x60_(control)
-u8* VM_ReadCtrlNextKeyword(u8* pc, u32* length) {
+u8* VM_ReadCtrlLabelOffset(u8* pc, u32* offset) {
   if (pc[0] & 0x80) {
     u32 hi = pc[1] << 8;
-    *length = (pc[0] | hi) & 0x7FFF;
+    *offset = (pc[0] | hi) & 0x7FFF;
     return pc + 2;
   }
-  *length = pc[0];
+  *offset = pc[0];
   return pc + 1;
 }
 
@@ -164,7 +164,7 @@ NON_MATCH u8* VM_DecodeValue(u8* pc, s32* type, void* val) {
         p += length;
         break;
       }
-      case OP_KEYWORD: {
+      case OP_LABEL: {
         p = VM_ReadContainerLength(p, &length);
         *type |= *p << 16;
         *(s32*)val = (s32)(p + 1);
@@ -179,25 +179,25 @@ NON_MATCH u8* VM_DecodeValue(u8* pc, s32* type, void* val) {
 #endif
 }
 
-void FUN_08231438(void) { gVM.framePointer = &gVM.frameStack[0]; }
+void VM_ResetScriptStack(void) { gVM.scriptStackTop = &gVM.scriptStack[0]; }
 
-void* VM_BindFrameBuffer(ScriptArgs* args, s32 idx) {
+u32* VM_PushScriptFrame(ScriptArgs* args, s32 idx) {
   u32* base;
   u32* p;
 
   if (args == NULL) {
     return NULL;
   }
-  base = (u32*)gVM.framePointer;
+  base = gVM.scriptStackTop;
   p = base + idx;
   *p = (u32)args;
-  gVM.framePointer = (u8*)(p + 1);
-  return (void*)base;
+  gVM.scriptStackTop = p + 1;
+  return base;
 }
 
-void VM_UnbindFrameBuffer(void* ptr) {
+void VM_PopScriptFrame(u32* ptr) {
   if (ptr != NULL) {
-    gVM.framePointer = ptr;
+    gVM.scriptStackTop = ptr;
   }
 }
 
@@ -207,32 +207,31 @@ u32 VM_ParseParameter(u32 idx) {
   if (idx == 0) {
     return (u32)gVM.result;
   }
-  args = *(ScriptArgs**)((u32*)gVM.framePointer - 1);
+  args = *(ScriptArgs**)(gVM.scriptStackTop - 1);
   return args->argv[idx - 1];
 }
 
-// パラメータスタックの framePointer を先頭として、varidx 番目の変数を読む
-u32 VM_GetVariable(u32 varidx) { return *((u32*)gVM.framePointer - (varidx + 1)); }
+// scriptStackTop から手前に varidx + 1 語目にある変数を読む, スクリプトの v1 が varidx 1 に当たる
+u32 VM_GetVariable(u32 varidx) { return *(gVM.scriptStackTop - (varidx + 1)); }
 
-// パラメータスタックの framePointer を先頭として、varidx 番目の変数に書き込む
-void VM_StoreVariable(u32 varidx, u32 val) { *((u32*)gVM.framePointer - (varidx + 1)) = val; }
+// scriptStackTop から手前に varidx + 1 語目にある変数へ書き込む
+void VM_StoreVariable(u32 varidx, u32 val) { *(gVM.scriptStackTop - (varidx + 1)) = val; }
 
-void FUN_082314d4(void) { gVM.keywordSeekStackTop = (u8*)gVM.keywordSeekStack; }
+void VM_ResetSubroutineStack(void) { gVM.subroutineStackTop = gVM.subroutineStack; }
 
-// FUN_082314f4(unk_08を4バイト戻す)と対になっており、push相当の操作と思われる
-void FUN_082314e4(u8* pc) {
-  u8** p = (u8**)gVM.keywordSeekStackTop;
+void VM_PushSubroutineStack(u8* pc) {
+  u8** p = gVM.subroutineStackTop;
   *p++ = pc;
-  gVM.keywordSeekStackTop = (u8*)p;
+  gVM.subroutineStackTop = p;
 }
 
-void FUN_082314f4(void) { gVM.keywordSeekStackTop -= 4; }
+void VM_PopSubroutineStack(void) { gVM.subroutineStackTop -= 1; }
 
 void VM_SetPC(u8* addr) { gVM.pc = addr; }
 
-// FUN_082314e4 でpushされた keywordSeekStackTop スタック最上位の pc から探索を始める
-bool32 VM_SeekToKeyword(u8 keyword) {
-  u8* pc = *(u8**)(gVM.keywordSeekStackTop - 4);
+// subroutineStack の最上位に積まれた位置から探索を始める
+bool32 VM_SeekToNamedArg(u8 name) {
+  u8* pc = *(gVM.subroutineStackTop - 1);
 
   while (TRUE) {
     s32 type, val;
@@ -240,14 +239,14 @@ bool32 VM_SeekToKeyword(u8 keyword) {
     if (type == 0) {
       return 0;
     }
-    if ((type & 0xF0) == OP_KEYWORD && (type >> 16) == keyword) {
+    if ((type & 0xF0) == OP_LABEL && (type >> 16) == name) {
       gVM.pc = (u8*)val;
       return val;
     }
   }
 }
 
-// 現在位置から次のキーワード(case/default等)まで読み進め、そのキーワード種別を返す, 見つからなければ0
+// 現在位置から次のラベルまで読み進め、その文字を返す, 見つからなければ0
 s32 VM_Ctrl_Switch_Internal(void) {
   u8* pc = gVM.pc;
   if ((pc == NULL) || (*pc == 0)) return 0;
@@ -259,7 +258,7 @@ s32 VM_Ctrl_Switch_Internal(void) {
     if (type == 0) {
       return 0;
     }
-    if ((type & 0xF0) == OP_KEYWORD) {
+    if ((type & 0xF0) == OP_LABEL) {
       gVM.pc = val;
       return type >> 16;
     }
@@ -309,11 +308,26 @@ s32 VM_ParseStringRef(u8* pc) {
 
 void FUN_0823167c(u8* dst) { gVM.pc = FUN_0823201c(VM_GetPC(), dst); }
 
-NAKED u8* FUN_08231698(u8* pc) { INCFUNC("asm/func/FUN_08231698.inc"); }
+NON_MATCH u8* FUN_08231698(u8* pc) {
+#ifdef NONMATCHING_C
+  VM* vm = &gVM;
+  s32 type;
+  s32 val;
+
+  do {
+    pc = VM_DecodeValue(pc, &type, &val);
+  } while (type != 0);
+
+  vm->pc = NULL;
+  return pc;
+#else
+  INCFUNC("asm/func/FUN_08231698.inc");
+#endif
+}
 
 u8* VM_GetPC(void) {
   u8* pc = gVM.pc;
-  if (pc == NULL || *pc == OP_END || (*pc & 0xF0) == OP_KEYWORD) {
+  if (pc == NULL || *pc == OP_END || (*pc & 0xF0) == OP_LABEL) {
     return NULL;
   }
   return pc;
@@ -334,17 +348,17 @@ void* VM_GetValueSafe2(void) { return VM_GetValueAtSafe(VM_GetPC()); }
 
 static s32 UNUSED FUN_0823173c(void) { return VM_ParseStringRef(VM_GetPC()); }
 
-// 指定キーワード(例: case/default)が見つかればその値を、見つからなければ fallback を返す
-s32 VM_GetKeywordValue(u8 val, s32 fallback) {
-  if (VM_SeekToKeyword(val) != 0) {
+// 指定した名前付き引数が書かれていればその値を, 無ければ fallback を返す
+s32 VM_GetNamedArgValue(u8 name, s32 fallback) {
+  if (VM_SeekToNamedArg(name) != 0) {
     return (s32)VM_GetValueAt(VM_GetPC());
   }
   return fallback;
 }
 
-void FUN_08231770(void) {
-  FUN_08231438();
-  FUN_082314d4();
+void VM_ResetStacks(void) {
+  VM_ResetScriptStack();
+  VM_ResetSubroutineStack();
 }
 
 void FUN_08231780(void) { gCtrlHandlers = NULL; }
@@ -395,25 +409,25 @@ Subroutine* VM_GetControlHandler(u32 subID) {
   return NULL;
 }
 
-// control命令(id)をIDで解決し、その範囲末尾をunk_08スタックにpushした状態でハンドラを実行する
+// 制御命令をIDで解決し、ラベルの開始位置を subroutineStack にpushした状態でハンドラを実行する
 bool32 VM_RunControl(u8* pc) {
   Subroutine* h;
   u8* newPc;
-  u32 length;
+  u32 offset;
   bool32 result;
   bool32 (*fn)(u8*);
 
   u32 id = (pc[1] << 8) | pc[0];
   pc += 2;
   h = VM_GetControlHandler(id);
-  newPc = VM_ReadCtrlNextKeyword(pc, &length);
-  FUN_082314e4(newPc + length);
+  newPc = VM_ReadCtrlLabelOffset(pc, &offset);
+  VM_PushSubroutineStack(newPc + offset);
   VM_SetPC(newPc);
 
   fn = (bool32 (*)(u8*))h->fn;
   result = fn(newPc);
 
-  FUN_082314f4();
+  VM_PopSubroutineStack();
   return result;
 }
 
@@ -552,12 +566,12 @@ void VM_RestoreScriptTable(u8* src) {
 
 // ブロック内の文(式/control/呼び出し)を順に実行する, controlがreturnを表す場合(戻り値1)そこで打ち切る
 bool32 VM_ExecBlock(u8* pc, ScriptArgs* args, s32 idx) {
-  void* frame;
+  u32* frame;
   u32 length;
   s32 nibble;
   bool32 result;
 
-  frame = VM_BindFrameBuffer(args, idx);
+  frame = VM_PushScriptFrame(args, idx);
   while (pc != NULL) {
     nibble = *pc & 0xF0;
     switch (nibble) {
@@ -593,7 +607,7 @@ bool32 VM_ExecBlock(u8* pc, ScriptArgs* args, s32 idx) {
 fail:
   result = 0;
 done:
-  VM_UnbindFrameBuffer(frame);
+  VM_PopScriptFrame(frame);
   return result;
 }
 
@@ -638,7 +652,7 @@ s32 VM_DebugAssert(void) {
 void SetMapInitScriptID(u32 scriptID) { gMapInitScriptID = scriptID; }
 
 void FUN_08231bec(void) {
-  FUN_08231770();
+  VM_ResetStacks();
   FUN_08231c80();
   FUN_08231780();
   FUN_082324b0();

@@ -67,9 +67,9 @@ NON_MATCH s32 SunCountdown_Init(SunCountdown* p, u16 n) {
 
   gSunCountdown = p;
   p->unk_18 = n;
-  p->unk_1a = VM_GetKeywordValue('f', 0);
+  p->unk_1a = VM_GetNamedArgValue('f', 0);
   p->tilemapFileID = 0x596F;
-  p->plttFileID = VM_GetKeywordValue('p', 0);
+  p->plttFileID = VM_GetNamedArgValue('p', 0);
   p->pltt = &gBgPlttBuffer[0xD0];
   p->bgNum = 0;
   tilemap = GetFile(DIR_TILE_MAP, p->tilemapFileID);

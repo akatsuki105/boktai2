@@ -1,7 +1,7 @@
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	movs r0, #0x59
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _082136D8
 	bl VM_GetValue
@@ -9,10 +9,10 @@
 _082136D8:
 	movs r0, #0x44
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r5, r0, #0
 	movs r0, #0x4b
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08213700
 	bl VM_GetValue
@@ -25,7 +25,7 @@ _082136D8:
 	strh r0, [r1]
 _08213700:
 	movs r0, #0x6b
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08213728
 	bl VM_GetValue
@@ -42,7 +42,7 @@ _08213700:
 	strh r0, [r1]
 _08213728:
 	movs r0, #0x6a
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08213750
 	bl VM_GetValue
@@ -59,7 +59,7 @@ _08213728:
 	strh r0, [r1]
 _08213750:
 	movs r0, #0x77
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08213778
 	bl VM_GetValue
@@ -76,7 +76,7 @@ _08213750:
 	strh r0, [r1]
 _08213778:
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _082137A0
 	bl VM_GetValue
@@ -93,35 +93,35 @@ _08213778:
 	strh r0, [r1]
 _082137A0:
 	movs r0, #0x67
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _082137B0
 	bl VM_GetValue
 	str r0, [r4, #0x48]
 _082137B0:
 	movs r0, #0x6f
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _082137C0
 	bl VM_GetValue
 	str r0, [r4, #0x4c]
 _082137C0:
 	movs r0, #0x6c
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _082137D0
 	bl VM_GetValue
 	str r0, [r4, #0x50]
 _082137D0:
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _082137E0
 	bl VM_GetValue
 	str r0, [r4, #0x54]
 _082137E0:
 	movs r0, #0x64
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _082137F0
 	bl VM_GetValue

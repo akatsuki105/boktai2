@@ -1,23 +1,45 @@
 #include "entity.h"
 #include "global.h"
 
-typedef struct {
+typedef struct Entity0FC5 {
   Entity e;  // 0x0, ENTITY_UNK_8
-  u8 unk_18[392 - 0x18];
+  u8 unk_18[0xF4 - 0x18];
+  s32 unk_f4;  // 0xF4, gEntity0FC5s での自分の添字, '.k' の値
+  u8 unk_f8[392 - 0xF8];
 } Entity0FC5;
 static_assert(sizeof(Entity0FC5) == 392);
 
+extern Entity0FC5* gEntity0FC5s[2];  // 0x03002C98
+
 void FUN_0821abfc(Entity0FC5*);
+void FUN_0821b06c(Entity0FC5*);
 
 INCASM("asm/entity_0fc5.inc");
 
 NAKED s32 Entity0FC5_Update(Entity0FC5* p) { INCFUNC("asm/func/Entity0FC5_Update.inc"); }
 
-NAKED s32 Entity0FC5_Destroy(Entity0FC5* p) { INCFUNC("asm/func/Entity0FC5_Destroy.inc"); }
+// 描画を畳んで gEntity0FC5s の登録枠を空ける
+s32 Entity0FC5_Destroy(Entity0FC5* p) {
+  FUN_0821b06c(p);
+  gEntity0FC5s[p->unk_f4] = NULL;
+  return 0;
+}
 
 NAKED s32 Entity0FC5_Init(Entity0FC5* p) { INCFUNC("asm/func/Entity0FC5_Init.inc"); }
 
-NAKED Entity0FC5* Entity0FC5_Create(void) { INCFUNC("asm/func/Entity0FC5_Create.inc"); }
+Entity0FC5* Entity0FC5_Create(void) {
+  Entity0FC5* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity0FC5));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity0FC5_Update, Entity0FC5_Destroy);
+    if (Entity0FC5_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}
 
 void (*const PTR_ARRAY_085affa4[1])(Entity0FC5*) = {
     FUN_0821abfc,

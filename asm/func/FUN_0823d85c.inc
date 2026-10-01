@@ -4,7 +4,7 @@
 	movs r7, #0
 	movs r4, #0
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0823D876
 	bl VM_GetValue
@@ -12,7 +12,7 @@
 _0823D876:
 	movs r6, #0
 	movs r0, #0x65
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0823D892
 	bl VM_GetPC
@@ -23,7 +23,7 @@ _0823D876:
 	b _0823D8A4
 _0823D892:
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0823D8A4
 	movs r6, #1
@@ -40,7 +40,7 @@ _0823D8A4:
 	str r5, [r4, #0x18]
 	strh r6, [r4, #0x2e]
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0823D8E8
 	adds r0, r4, #0

@@ -2503,7 +2503,7 @@ FUN_08086638: @ 0x08086638
 	cmp r5, #0
 	beq _080866DC
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0808666E
 	bl VM_GetValue
@@ -2522,7 +2522,7 @@ FUN_08086638: @ 0x08086638
 	strh r0, [r1]
 _0808666E:
 	movs r0, #0x52
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08086684
 	bl VM_GetValue
@@ -3321,7 +3321,7 @@ FUN_08086c50: @ 0x08086C50
 	b _08086D56
 _08086C5C:
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08086D40
 	bl VM_GetValue
@@ -3437,7 +3437,7 @@ _08086D10:
 	str r1, [r3, #4]
 _08086D40:
 	movs r0, #0x64
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08086D56
 	bl VM_GetValue
@@ -3552,7 +3552,7 @@ Entity0B50_Init_Helper_08086df8: @ 0x08086DF8
 	ldrh r0, [r0]
 	strb r0, [r4, #0x1a]
 	movs r0, #0x63
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08086E22
 	bl VM_GetValue
@@ -3565,7 +3565,7 @@ _08086E22:
 	ldrh r0, [r0]
 	strh r0, [r4, #0x1e]
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08086E54
 	bl VM_GetValue
@@ -3592,7 +3592,7 @@ Entity0B50_Init_Helper_08086e64: @ 0x08086E64
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x72
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08086E9C
@@ -3626,7 +3626,7 @@ _08086E9C:
 	strh r1, [r0]
 _08086EB0:
 	movs r0, #0x4f
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08086ED0
@@ -3777,7 +3777,7 @@ _08086FD6:
 	adds r0, #0xbc
 	str r4, [r0]
 	movs r0, #0x64
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08087010
@@ -3832,7 +3832,7 @@ FUN_08087058: @ 0x08087058
 	sub sp, #8
 	adds r5, r0, #0
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08087090
@@ -3972,11 +3972,11 @@ _0808712C:
 	str r5, [sp, #4]
 	adds r0, r4, #0
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	adds r1, r5, #0
 	adds r1, #0x84
 	adds r0, r4, #0
-	bl FUN_0823b46c
+	bl Mover_SetAuxSprite
 	movs r1, #0x80
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -9126,7 +9126,7 @@ Entity0B50_Destroy: @ 0x080898D8
 _080898F0:
 	adds r0, r4, #0
 	adds r0, #0x40
-	bl FUN_0823b284
+	bl Mover_Unlink
 	adds r0, r4, #0
 	adds r0, #0x84
 	bl AuxSprite_Remove

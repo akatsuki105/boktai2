@@ -118,7 +118,7 @@ Entity5E27_Init: @ 0x08018FF0
 	adds r4, r0, #0
 	ldr r1, _0801900C @ =0x0000FFFF
 	movs r0, #0x66
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r4, #0x18]
 	adds r0, r4, #0
 	bl Entity5E27_SavePltt

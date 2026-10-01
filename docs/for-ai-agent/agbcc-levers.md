@@ -75,6 +75,11 @@ plausible.
 - **Loop form.** A constant positive bound folds to a bottom-tested loop with
   no entry guard; a runtime bound keeps the guard. If the target has a guard
   and you do not, the bound is not the constant you assumed.
+- **`if (a && b) return X; return Y;` and `if (!a) return Y; if (b) return X; return Y;`
+  put different arms on the fallthrough.** The `&&` chain emits the `X` block
+  first and branches over it; the split form emits `Y` right after the second
+  compare and puts `X` last, cross-jumping the two `Y` returns into one.
+  `FUN_08084710` only closed on the split form.
 - **Do not collapse a duplicated body into `||`.** `if (a) {X} else if (b) {X}`
   and `if (a || b) {X}` emit different condition tests; the shared tails are
   cross-jumped but the branches stay distinct. Write the structure the target
@@ -187,11 +192,20 @@ Four positions, cheapest first:
   before the load and will not match; a bit computed inside the body
   (`p->flags &= ~bits;`) is folded and stays after it, which is why the
   `ClearFlags` form can match where `SetFlags` does not.
-- **`arr[i]` and `*(arr + i)` are not interchangeable.** The subscript form
-  materializes the array's base address *before* the scaled index; the pointer
-  form emits the `lsl` first and loads the base from the pool between it and the
-  `add`. `VM_Random` only closed on the pointer form, which is also what the
-  rest of `src/` uses for `gRandomTable`.
+- **`arr[i]`, `*(arr + i)` and `*(i + arr)` are not interchangeable.** The tree
+  keeps the source's operand order, so the subscript form materializes the base
+  *before* the scaled index, and only `*(i + arr)` emits the index first and
+  brings the base in between it and the `add`. Both `VM_Random`
+  (`*(gRandTableIdx + gRandomTable)`) and `Player_WeaponEffectStatCond`
+  (`*(p->isSabata + gStat->unk_2c8)`, where the target reads the index before
+  loading `gStat`) only closed on the index-first spelling, which is also what
+  the rest of `src/` uses for `gRandomTable`.
+- **Mixing a walked pointer and an indexed access in one loop creates a second
+  induction variable.** `elem->field` alone strength-reduces to one register;
+  writing `p->elems[i].other` in the same body makes gcc keep a separate byte
+  offset and compute `p + constant + offset` for it. `FUN_08084b5c` needed
+  exactly that mix — the test through the walked `elem`, the call through
+  `p->elems[i].fn`.
 - **A local copy of a field suppresses re-reads and their side effects.**
   Reading `p->unk_24` twice is not the same as caching it in a local: the
   repeated read lets CSE keep one pseudo and copy it, and for a `u16` it keeps

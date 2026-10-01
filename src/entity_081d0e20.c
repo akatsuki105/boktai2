@@ -2,6 +2,7 @@
 #include "file.h"
 #include "global.h"
 #include "malloc.h"
+#include "mover.h"
 #include "sound.h"
 #include "sprite_aux.h"
 #include "vm.h"
@@ -9,24 +10,24 @@
 // Entity081d0e20 が抱える要素, Malloc(0xC0) で個別に確保され、先頭が AuxSprite になっている, 根拠: Entity081d0e20_AllocElem
 // 中身のほとんどは FUN_081d0864 がスクリプトのキーワードから埋める
 typedef struct Entity081d0e20Elem {
-  AuxSprite sprite;       // 0x00, 根拠: AuxSprite_Remove に渡される (Entity081d0e20_Destroy)
-  Entity2UnkData unk_2c;  // 0x2C, 根拠: FUN_08002a58 / FUN_0823b284 に渡される (Entity081d0e20_Destroy)
-  AuxAnimState anim;      // 0x70, 根拠: FUN_08236fac に渡される (FUN_081d0864)
-  Vec3 pos;               // 0x80, 8バイトまとめて sprite.pos にコピーされる, 根拠: FUN_081d0864
-  s16 id;                 // 0x88, '.i=0', Entity081d0e20_FindElem が引数と比較する (ldrsh)
-  u16 scriptID_8a;        // 0x8A, '.R=0', flags bit7 が立つと VM_ExecByID に渡して0クリアする, 根拠: FUN_081cf944
-  u16 scriptID_8c;        // 0x8C, '.C=0', flags bit8 が立つと VM_ExecByID に渡して0クリアする, 根拠: FUN_081cf944
-  u8 unk_8e[2];           // 0x8E, padding?
-  u32 unk_90[6];          // 0x90, '.G' の後ろから6個読む
-  u32 unk_a8[2];          // 0xA8, '.A' の後ろから2個読む
-  u16 unk_b0;             // 0xB0, '.T=0' を4で頭打ち, アニメの variant とパレット選択に使う (ldrh)
-  u16 unk_b2;             // 0xB2, '.o=60',
-  s16 slotIdx;            // 0xB4, Entity081d0e20_AllocElem が確保時にスロット番号を書く
-  s16 state;              // 0xB6, PTR_ARRAY_085ae098 の添字, 根拠: Entity081d0e20_Update (ldrsh)
-  u16 flags;              // 0xB8, bit9 で Update をスキップ、bit3 で unk_2c を後始末する, 根拠: Entity081d0e20_Update / _Destroy
-  u8 unk_ba;              // 0xBA, 生成時に0
-  u8 unk_bb;              // 0xBB, 生成時に0, FUN_081d006c が unk_b2 と比較する
-  u32 unk_bc;             // 0xBC, FUN_081d0838 が str で0を書く
+  AuxSprite sprite;   // 0x00, 根拠: AuxSprite_Remove に渡される (Entity081d0e20_Destroy)
+  Mover unk_2c;       // 0x2C, 根拠: FUN_08002a58 / Mover_Unlink に渡される (Entity081d0e20_Destroy)
+  AuxAnimState anim;  // 0x70, 根拠: FUN_08236fac に渡される (FUN_081d0864)
+  Vec3 pos;           // 0x80, 8バイトまとめて sprite.pos にコピーされる, 根拠: FUN_081d0864
+  s16 id;             // 0x88, '.i=0', Entity081d0e20_FindElem が引数と比較する (ldrsh)
+  u16 scriptID_8a;    // 0x8A, '.R=0', flags bit7 が立つと VM_ExecByID に渡して0クリアする, 根拠: FUN_081cf944
+  u16 scriptID_8c;    // 0x8C, '.C=0', flags bit8 が立つと VM_ExecByID に渡して0クリアする, 根拠: FUN_081cf944
+  u8 unk_8e[2];       // 0x8E, padding?
+  u32 unk_90[6];      // 0x90, '.G' の後ろから6個読む
+  u32 unk_a8[2];      // 0xA8, '.A' の後ろから2個読む
+  u16 unk_b0;         // 0xB0, '.T=0' を4で頭打ち, アニメの variant とパレット選択に使う (ldrh)
+  u16 unk_b2;         // 0xB2, '.o=60',
+  s16 slotIdx;        // 0xB4, Entity081d0e20_AllocElem が確保時にスロット番号を書く
+  s16 state;          // 0xB6, PTR_ARRAY_085ae098 の添字, 根拠: Entity081d0e20_Update (ldrsh)
+  u16 flags;          // 0xB8, bit9 で Update をスキップ、bit3 で unk_2c を後始末する, 根拠: Entity081d0e20_Update / _Destroy
+  u8 unk_ba;          // 0xBA, 生成時に0
+  u8 unk_bb;          // 0xBB, 生成時に0, FUN_081d006c が unk_b2 と比較する
+  u32 unk_bc;         // 0xBC, FUN_081d0838 が str で0を書く
 } Entity081d0e20Elem;
 static_assert(sizeof(Entity081d0e20Elem) == 192);
 
@@ -42,13 +43,9 @@ static_assert(sizeof(Entity081d0e20) == 108);
 
 extern Entity081d0e20* gEntity081d0e20;  // 0x03000188
 
-// ヘッダのない外部関数 (実体は src/entity_b8b9.c ほか)
-s32 FUN_0823b400(Entity2UnkData* p, u16 id, Vec3* pos, u32 unk_5, u32 unk_4, void* owner);
-bool32 FUN_0823b46c(Entity2UnkData* p, AuxSprite* unk_28);
-s32 FUN_08002a48(Entity2UnkData* p);
+s32 FUN_08002a48(Mover* p);
 unknown* FUN_081ee9bc(Vec3* pos);
-s32 FUN_08002a58(Entity2UnkData* p);
-s32 FUN_0823b284(Entity2UnkData* p);
+s32 FUN_08002a58(Mover* p);
 s32 FUN_080e11a8(Vec3* pos, Vec3* size, s32 idx);
 s32 FUN_080e1100(Vec3* pos, Vec3* size, u32* out);
 
@@ -248,22 +245,22 @@ NON_MATCH void FUN_081d0864(void) {
 
   if ((p != NULL || (p = Entity081d0e20_Create()) != NULL) && (elem = Entity081d0e20_AllocElem(p)) != NULL) {
     elem->state = 1;
-    if (VM_SeekToKeyword('p')) {
+    if (VM_SeekToNamedArg('p')) {
       elem->pos.x = VM_GetValue();
       elem->pos.y = VM_GetValue();
       elem->pos.z = VM_GetValue();
     }
-    elem->id = VM_GetKeywordValue('i', 0);
-    elem->scriptID_8a = VM_GetKeywordValue('R', 0);
-    if (VM_SeekToKeyword('G')) {
+    elem->id = VM_GetNamedArgValue('i', 0);
+    elem->scriptID_8a = VM_GetNamedArgValue('R', 0);
+    if (VM_SeekToNamedArg('G')) {
       dst = elem->unk_90;
       for (i = 5; i >= 0; i--) {
         *dst = (VM_GetPC() == NULL) ? 0 : VM_GetValue();
         dst++;
       }
     }
-    elem->scriptID_8c = VM_GetKeywordValue('C', 0);
-    if (VM_SeekToKeyword('A')) {
+    elem->scriptID_8c = VM_GetNamedArgValue('C', 0);
+    if (VM_SeekToNamedArg('A')) {
       dst = elem->unk_a8;
       for (i = 1; i >= 0; i--) {
         *dst = (VM_GetPC() == NULL) ? 0 : VM_GetValue();
@@ -272,7 +269,7 @@ NON_MATCH void FUN_081d0864(void) {
     }
     gfx = &p->gfx;
     anim = &elem->anim;
-    t = VM_GetKeywordValue('T', 0);
+    t = VM_GetNamedArgValue('T', 0);
     elem->unk_b0 = t;
     if ((u16)t > 4) {
       elem->unk_b0 = 4;
@@ -323,10 +320,10 @@ NON_MATCH void FUN_081d0864(void) {
     elem->unk_bb = 0;
     elem->unk_ba = 0;
     elem->flags = 1;
-    elem->unk_b2 = VM_GetKeywordValue('o', 60);
-    if (VM_GetKeywordValue('m', 0) != 0) {
+    elem->unk_b2 = VM_GetNamedArgValue('o', 60);
+    if (VM_GetNamedArgValue('m', 0) != 0) {
       elem->flags |= 0x10;
-      val = VM_GetKeywordValue('S', 0);
+      val = VM_GetNamedArgValue('S', 0);
       if (val == 0) {
         FUN_081d0838(p, elem);
       } else if (val == 1) {
@@ -335,10 +332,10 @@ NON_MATCH void FUN_081d0864(void) {
     }
     pos = elem->pos;
     FUN_081ee9bc(&pos);
-    if (VM_GetKeywordValue('s', 0) != 0) {
+    if (VM_GetNamedArgValue('s', 0) != 0) {
       elem->flags |= 8;
-      FUN_0823b400(&elem->unk_2c, elem->id, &elem->pos, 0, 7, elem);
-      FUN_0823b46c(&elem->unk_2c, &elem->sprite);
+      Mover_Init(&elem->unk_2c, elem->id, &elem->pos, 0, 7, elem);
+      Mover_SetAuxSprite(&elem->unk_2c, &elem->sprite);
       FUN_08002a48(&elem->unk_2c);
     }
   }
@@ -350,12 +347,12 @@ NON_MATCH void FUN_081d0864(void) {
 NAKED Entity081d0e20Elem* Entity081d0e20_FindElem(s32 key) { INCFUNC("asm/func/Entity081d0e20_FindElem.inc"); }
 
 void FUN_081d0bd4(void) {
-  s32 key = VM_GetKeywordValue('i', -1);
+  s32 key = VM_GetNamedArgValue('i', -1);
   s32 val;
   Entity081d0e20Elem* elem;
 
   if (key >= 0) {
-    val = VM_GetKeywordValue('s', 0);
+    val = VM_GetNamedArgValue('s', 0);
     elem = Entity081d0e20_FindElem(key);
     if (elem != NULL) {
       if (val == 1) {
@@ -370,7 +367,7 @@ void FUN_081d0bd4(void) {
 }
 
 s32 FUN_081d0c38(void) {
-  s32 key = VM_GetKeywordValue('i', -1);
+  s32 key = VM_GetNamedArgValue('i', -1);
   Entity081d0e20Elem* elem;
 
   if (key < 0 || (elem = Entity081d0e20_FindElem(key)) == NULL || (elem->flags & 0x180) != 0x180) {
@@ -381,8 +378,8 @@ s32 FUN_081d0c38(void) {
 
 NON_MATCH void FUN_081d0c6c(void) {
 #ifdef NONMATCHING_C
-  s32 val = VM_GetKeywordValue('s', 0);
-  Entity081d0e20Elem* elem = Entity081d0e20_FindElem(VM_GetKeywordValue('i', 0));
+  s32 val = VM_GetNamedArgValue('s', 0);
+  Entity081d0e20Elem* elem = Entity081d0e20_FindElem(VM_GetNamedArgValue('i', 0));
 
   if (elem != NULL) {
     switch (val) {
@@ -414,7 +411,7 @@ NAKED s32 Entity081d0e20_Update(Entity081d0e20* p) { INCFUNC("asm/func/Entity081
 NON_MATCH s32 Entity081d0e20_Destroy(Entity081d0e20* p) {
 #ifdef NONMATCHING_C
   Entity081d0e20Elem* elem;
-  Entity2UnkData* unk;
+  Mover* unk;
   bool32 used;
   s32 i;
 
@@ -426,7 +423,7 @@ NON_MATCH s32 Entity081d0e20_Destroy(Entity081d0e20* p) {
       if (elem->flags & 8) {
         unk = &elem->unk_2c;
         FUN_08002a58(unk);
-        FUN_0823b284(unk);
+        Mover_Unlink(unk);
       }
       Free(elem);
     }

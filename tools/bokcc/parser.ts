@@ -1,4 +1,4 @@
-import { ControlType, DataType, InsnType, Instruction, KeywordType, MEM_SCRATCH, MEM_STAT, MEM_WORLD } from "./instruction.ts";
+import { ClauseType, ControlType, DataType, InsnType, Instruction, MEM_SCRATCH, MEM_STAT, MEM_WORLD } from "./instruction.ts";
 import { encodeChar } from "./eucjp.ts";
 
 // ---------------------------------------------------------------------------
@@ -201,13 +201,13 @@ class Parser {
       if (this.at("if")) {
         this.expect("if");
         this.expect("(");
-        const kw = new Instruction(InsnType.Keyword, KeywordType.ElseIf);
+        const kw = new Instruction(InsnType.Label, ClauseType.ElseIf);
         kw.children.push(this.parseBareExpression());
         this.expect(")");
         kw.children.push(this.parseBlock());
         instr.children.push(kw);
       } else {
-        const kw = new Instruction(InsnType.Keyword, KeywordType.Else);
+        const kw = new Instruction(InsnType.Label, ClauseType.Else);
         kw.children.push(this.parseBlock());
         instr.children.push(kw);
         break;
@@ -225,7 +225,7 @@ class Parser {
     this.expect("{");
     while (!this.at("}")) {
       if (this.accept("case")) {
-        const kw = new Instruction(InsnType.Keyword, KeywordType.Case);
+        const kw = new Instruction(InsnType.Label, ClauseType.Case);
         kw.children.push(this.parseExpressionNode());
         this.expect(":");
         kw.children.push(this.parseBlock());
@@ -233,7 +233,7 @@ class Parser {
       } else {
         this.expect("default");
         this.expect(":");
-        const kw = new Instruction(InsnType.Keyword, KeywordType.Default);
+        const kw = new Instruction(InsnType.Label, ClauseType.Default);
         kw.children.push(this.parseBlock());
         instr.children.push(kw);
       }
@@ -307,16 +307,16 @@ class Parser {
     this.expect(")");
   }
 
-  // 引数は通常の値か、キーワード引数 .x = 値 / .x = (値, 値, ...)
+  // 引数は通常の値か、名前付き引数 .x = 値 / .x = (値, 値, ...)
   private parseArg(): Instruction {
     if (!this.at(".")) return this.parseExpressionNode();
     this.expect(".");
     const name = this.next();
     if (name.type !== "IDENT" || name.text.length !== 1) {
-      throw new Error(`Expected a one-letter keyword but got '${name.text}' at position ${name.pos}`);
+      throw new Error(`Expected a one-letter name but got '${name.text}' at position ${name.pos}`);
     }
-    const kw = new Instruction(InsnType.Keyword, name.text.charCodeAt(0));
-    if (!this.accept("=")) return kw; // 値を持たないキーワード
+    const kw = new Instruction(InsnType.Label, name.text.charCodeAt(0));
+    if (!this.accept("=")) return kw; // 値を持たない名前付き引数
     if (this.accept("[")) {
       kw.children.push(this.parseExpressionNode());
       while (this.accept(",")) kw.children.push(this.parseExpressionNode());

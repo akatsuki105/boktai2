@@ -43,7 +43,7 @@ s32 MapAreaManager_Destroy(MapAreaManager* p) {
 
 // '.m' が並べるエリアIDを areas に詰める, 要素数の上限は見ていない
 s32 MapAreaManager_Init(MapAreaManager* p, u32 unused1, u32 unused2) {
-  if (VM_SeekToKeyword('m')) {
+  if (VM_SeekToNamedArg('m')) {
     s32* area = p->areas;
 
     while (VM_GetPC() != NULL) {

@@ -34,9 +34,12 @@ extern u16 u16_03003510;
 extern u16 u16_03003514;
 
 extern u32 gOamDirty;
+extern u32 gVBlankCount;
 
 rgb555* FUN_0822d00c(void);
 
+void Video_SetBLDCNTDirect(u32 effect, u32 target1, u32 target2);
+void Video_SetBLDALPHADirect(u32 target1, u32 target2);
 void Video_SetDrawPasses(s32 val, Procedure ptclFn, Procedure auxsprFn, Procedure mainsprFn);
 void Particle_DrawList(void);
 void AuxSprite_DrawList(void);
@@ -54,6 +57,7 @@ void Video_SetupBGLayout(s32 layout, u32 param_2, TilemapFile* tilemap, u32 para
 void Video_SetupBG(s32 bg, u32 param_2, unknown* f, u32 unused, s16 param_5, s16 param_6, u32 prio, u16* tilemap);
 void Video_SetBGLayer(s32 bg, TilemapFile* tilemap, s32 layerIdx);
 void ClearBGTilemapBuffer(s32 bg);
+void vram_0822b778(void);
 
 u16* GetTilemapBuffer(s32 bg);
 

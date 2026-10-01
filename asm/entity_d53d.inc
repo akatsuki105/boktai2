@@ -407,7 +407,7 @@ EntityD53D_Init: @ 0x0804ED30
 	str r4, [r0]
 	bl MosaicFader_Stop
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0804ED50
 	bl FUN_0823d340
@@ -423,7 +423,7 @@ _0804ED58: .4byte 0x030000E8
 _0804ED5C:
 	movs r0, #0x72
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r0, [r4, #0x2c]
 	movs r0, #1
 	rsbs r0, r0, #0

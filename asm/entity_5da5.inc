@@ -753,14 +753,14 @@ _08008EAC:
 	strh r0, [r7, #0x18]
 	movs r0, #0x70
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r7, #0x1a]
 	strh r5, [r7, #0x1c]
 	strb r4, [r7, #0x1e]
 	strb r4, [r7, #0x1f]
 	str r5, [r7, #0x20]
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	str r6, [sp, #0x10]
 	subs r6, #0xc
 	movs r1, #0x44
@@ -792,7 +792,7 @@ _08008F1C:
 	bge _08008F0E
 _08008F24:
 	movs r0, #0x50
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08008F40
 	bl VM_GetValue
@@ -1065,15 +1065,15 @@ FUN_08009124: @ 0x08009124
 	movs r1, #1
 	rsbs r1, r1, #0
 	movs r0, #0x69
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r5, r0, #0
 	movs r0, #0x6d
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r0, #0
 	movs r0, #0x64
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r2, r0, #0
 	adds r0, r5, #0
 	adds r1, r4, #0

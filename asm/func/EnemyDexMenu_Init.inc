@@ -23,7 +23,7 @@
 	adds r0, #0x4a
 	strb r2, [r0]
 	movs r0, #0x6e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E8E0
 	bl FUN_0823d340
@@ -65,7 +65,7 @@ _0820E8F8:
 	cmp r5, #7
 	ble _0820E8F8
 	movs r0, #0x64
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E94C
 	bl FUN_0823d34c
@@ -82,7 +82,7 @@ _0820E93E:
 	ble _0820E93E
 _0820E94C:
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E996
 	bl FUN_0823d34c
@@ -119,7 +119,7 @@ _0820E96A:
 	bge _0820E96A
 _0820E996:
 	movs r0, #0x69
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E9AA
 	bl FUN_0823d340
@@ -128,7 +128,7 @@ _0820E996:
 	str r0, [r1]
 _0820E9AA:
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E9BE
 	bl FUN_0823d340
@@ -137,7 +137,7 @@ _0820E9AA:
 	str r0, [r1]
 _0820E9BE:
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E9D2
 	bl FUN_0823d340
@@ -146,7 +146,7 @@ _0820E9BE:
 	str r0, [r1]
 _0820E9D2:
 	movs r0, #0x77
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E9E8
 	bl FUN_0823d340
@@ -156,7 +156,7 @@ _0820E9D2:
 	str r0, [r1]
 _0820E9E8:
 	movs r0, #0x41
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E9FC
 	bl FUN_0823d340
@@ -165,7 +165,7 @@ _0820E9E8:
 	str r0, [r1]
 _0820E9FC:
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820EA10
 	bl FUN_0823d340
@@ -174,7 +174,7 @@ _0820E9FC:
 	str r0, [r1]
 _0820EA10:
 	movs r0, #0x6d
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820EA24
 	bl FUN_0823d340
@@ -183,7 +183,7 @@ _0820EA10:
 	str r0, [r1]
 _0820EA24:
 	movs r0, #0x75
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820EA38
 	bl FUN_0823d340
@@ -192,7 +192,7 @@ _0820EA24:
 	str r0, [r1]
 _0820EA38:
 	movs r0, #0x54
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820EA4C
 	bl FUN_0823d340
@@ -202,7 +202,7 @@ _0820EA38:
 _0820EA4C:
 	movs r0, #0x65
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r7, _0820EAE4 @ =0x00001258
 	adds r1, r6, r7
 	str r0, [r1]

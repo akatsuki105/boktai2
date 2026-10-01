@@ -1,11 +1,11 @@
 	push {r4, lr}
 	movs r0, #0x73
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r0, #0
 	movs r0, #0x69
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	bl Entity081d0e20_FindElem
 	adds r2, r0, #0
 	cmp r2, #0

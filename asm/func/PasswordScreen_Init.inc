@@ -7,7 +7,7 @@
 	ldr r0, _08013210 @ =0x000B8E6E
 	str r0, [r7, #0x24]
 	movs r0, #0x63
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	bne _08013098
 	b _08013238
@@ -19,7 +19,7 @@ _08013098:
 	adds r4, r7, r1
 	str r0, [r4]
 	movs r0, #0x64
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	bne _080130B6
 	b _08013238
@@ -35,7 +35,7 @@ _080130B6:
 _080130C8:
 	movs r0, #0x65
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r7, #0x28]
 	adds r0, r7, #0
 	bl PasswordScreen_EncodeBits

@@ -50,8 +50,8 @@ s32 Entity87FE_Init(Entity87FE* p) {
     return -1;
   }
 
-  hpArg = VM_SeekToKeyword('l') ? VM_GetValue() : 0;
-  eneArg = VM_SeekToKeyword('e') ? VM_GetValue() : 0;
+  hpArg = VM_SeekToNamedArg('l') ? VM_GetValue() : 0;
+  eneArg = VM_SeekToNamedArg('e') ? VM_GetValue() : 0;
 
   if (hpArg != 0 && p->player->hp < p->player->maxHP) {
     if ((p->hpStep = Div(p->player->maxHP, 90)) == 0) {
@@ -72,7 +72,7 @@ s32 Entity87FE_Init(Entity87FE* p) {
   }
   if (!p->hpDone || !p->eneDone) PlaySound_082406e0(0x259);
 
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     p->scriptID = VM_GetValue();
   } else {
     p->scriptID = 0;

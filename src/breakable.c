@@ -219,7 +219,7 @@ s32 BreakableManager_Init(BreakableManager* p) {
 
   gBreakableManager = p;
 
-  p->count = VM_GetKeywordValue('n', 4);
+  p->count = VM_GetNamedArgValue('n', 4);
   size = p->count * sizeof(Breakable);
   p->items = Malloc(size);
   if (p->items == NULL) {
@@ -277,19 +277,19 @@ s32 Breakable_Spawn(void) {
     return -1;
   }
   item = BreakableManager_FindFreeSlot(gBreakableManager);
-  item->id = VM_GetKeywordValue('n', 0);
+  item->id = VM_GetNamedArgValue('n', 0);
   item->flashTimer = 0;
-  item->hp = VM_GetKeywordValue('l', 10);
+  item->hp = VM_GetNamedArgValue('l', 10);
   item->unk_6 = 0;
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     item->pos.x = VM_GetValue();
     item->pos.y = VM_GetValue();
     item->pos.z = VM_GetValue();
   }
-  spriteID = VM_GetKeywordValue('t', SPRITE_KOMAINU);
-  pose = VM_GetKeywordValue('P', 0);
-  item->unk_8 = VM_GetKeywordValue('k', 0);
-  item->scriptOnBreak = VM_GetKeywordValue('d', 0);
+  spriteID = VM_GetNamedArgValue('t', SPRITE_KOMAINU);
+  pose = VM_GetNamedArgValue('P', 0);
+  item->unk_8 = VM_GetNamedArgValue('k', 0);
+  item->scriptOnBreak = VM_GetNamedArgValue('d', 0);
   sprite = &item->sprite;
   sprite->flags &= ~SPRFLAG_HIDDEN;
   sprite->pos = item->pos;

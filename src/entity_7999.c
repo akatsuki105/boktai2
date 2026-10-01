@@ -10,7 +10,7 @@ typedef void Entity7999Func(struct Entity7999* p);
 
 typedef struct Entity7999 {
   Entity e;                     // 0x000, ENTITY_UNK_11
-  Tilemaps* tilemap;            // 0x018, GetFile(DIR_TILE_MAP, 0xCD91)
+  Tilemaps* tilemap;            // 0x018, TILEMAP_CD91
   rgb555* pltt;                 // 0x01C, GetFile(DIR_BGPLTT, 0x26BB) + 0x14. gBgPlttBuffer へ 0x100 ワード転送する
   MainSprite sprites[5];        // 0x020, FUN_081da468 が stride 0x60 で pos を書き換える5枚
   MainSpriteGfx gfxLink;        // 0x200, SPRITE_UI_LINK

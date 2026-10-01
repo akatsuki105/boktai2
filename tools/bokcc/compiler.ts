@@ -128,9 +128,9 @@ class Writer {
         });
         break;
       }
-      case InsnType.Keyword: {
+      case InsnType.Label: {
         this.container(0x50, () => {
-          this.u8(instr.value); // キーワードの1文字
+          this.u8(instr.value); // ラベルの1文字
           for (const child of instr.children) this.writeInstruction(child);
         });
         break;
@@ -185,7 +185,7 @@ class Writer {
     }
   }
 
-  // 制御命令は tag の後に「次のキーワード命令(無ければ終端)までのバイト数」が入る。
+  // 制御命令は tag の後に「最初のラベル命令(無ければ終端)までのバイト数」が入る。
   // 中身を書かないと分からないので、いったん1バイトで仮置きし、後から埋める
   // (0x80以上になる場合は2バイト形式に差し替える)。
   private writeControlBody(instr: Instruction): void {
@@ -194,10 +194,10 @@ class Writer {
     const bodyStart = this.bytes.length;
     let distance = -1;
     for (const child of instr.children) {
-      if (distance < 0 && child.insnType === InsnType.Keyword) distance = this.bytes.length - bodyStart;
+      if (distance < 0 && child.insnType === InsnType.Label) distance = this.bytes.length - bodyStart;
       this.writeInstruction(child);
     }
-    // 距離は「次のキーワード、または終端命令の位置まで」(終端命令の手前まで)
+    // 距離は「最初のラベル、または終端命令の位置まで」(終端命令の手前まで)
     if (distance < 0) distance = this.bytes.length - bodyStart;
     this.u8(0x00); // End
     // 0x80未満なら1バイト、そうでなければ2バイト(ビッグエンディアン、上位バイトに 0x80 を立てる)

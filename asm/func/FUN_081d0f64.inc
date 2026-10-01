@@ -41,7 +41,7 @@ _081D0F94:
 	adds r0, #0xc6
 	strb r2, [r0]
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081D0FD8
 	bl VM_GetValue
@@ -57,41 +57,41 @@ _081D0FD8:
 	str r1, [r6, #0x5c]
 	movs r0, #0x52
 	movs r1, #2
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strb r0, [r6, #7]
 	movs r0, #0x72
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r5, r6, #0
 	adds r5, #0xbc
 	strb r0, [r5]
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r6, #0
 	adds r1, #0xbe
 	strh r0, [r1]
 	movs r0, #0x43
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r6, #0
 	adds r1, #0xb2
 	strh r0, [r1]
 	movs r0, #0x73
 	movs r1, #1
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r6, #0
 	adds r4, #0xb6
 	strh r0, [r4]
 	movs r0, #0x6b
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r7, r6, #0
 	adds r7, #0xba
 	strh r0, [r7]
 	movs r0, #0x74
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r6, #0
 	adds r1, #0xc2
 	strh r0, [r1]

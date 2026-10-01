@@ -3,11 +3,10 @@
 #include "entity.h"
 #include "global.h"
 #include "malloc.h"
+#include "registry.h"
 #include "sound.h"
 #include "sprite.h"
 #include "vm.h"
-
-void* FUN_08230e70(u16 id);
 
 struct Door;
 typedef void (*DoorFunc)(struct Door* p);
@@ -59,7 +58,7 @@ typedef struct {
   s32 doorMax;                  // 0x30, '.m=16', doors の要素数
   s32 unk_34;                   // 0x34, '.e=1', 0 でなければ 0x410..0x428 も確保する
   ScriptRecord* records;        // 0x38, FUN_08230F94(subroutineID, &records) の出力, _Update が values[0] を命令として分岐する
-  AuxSpriteGfx sprites_3c[5];   // 0x3C, '.d=SPRITE_DOOR_7ACD'
+  AuxSpriteGfx sprites_3c[5];   // 0x3C, '.d=SPRITE_DOOR_WOOD'
   AuxSpriteGfx sprites_c8[5];   // 0xC8, '.S=SPRITE_DOOR_IRON'
   AuxSpriteGfx sprites_154[5];  // 0x154, '.k=SPRITE_DOOR_LOCKED'
   AuxSpriteGfx sprites_1e0[5];  // 0x1E0, '.b=SPRITE_DOOR_LOCKED', sprites_26c と対で埋める, 鍵で開けた後と開ける前で2つあるのかも？
@@ -80,7 +79,6 @@ static_assert(sizeof(DoorManager) == 1076);
 
 void FUN_080206b0(Door* door);
 void FUN_08020af8(Door* door);
-void FUN_08230e58(u16 id);
 void FUN_08020b24(Door* door);
 void FUN_080206b8(Door* door);
 void FUN_08020734(Door* door);
@@ -233,7 +231,7 @@ void FUN_0801fe98(DoorManager* p, u16 id) {
 
 // '.n' が指す扉を開かせる, 1体でも見つかれば 1 を返す
 s32 FUN_0801fedc(void) {
-  DoorManager* p = FUN_08230e70(0x85E6);
+  DoorManager* p = Registry_Find(0x85E6);
   s32 found;
   s32 id;
   s32 i;
@@ -242,7 +240,7 @@ s32 FUN_0801fedc(void) {
     return -1;
   }
   found = 0;
-  if (!VM_SeekToKeyword('n')) {
+  if (!VM_SeekToNamedArg('n')) {
     return 0;
   }
   id = VM_GetValue();
@@ -250,7 +248,7 @@ s32 FUN_0801fedc(void) {
     Door* door = &p->doors[i];
 
     if (door->unk_34 == id) {
-      if (VM_SeekToKeyword('p')) {
+      if (VM_SeekToNamedArg('p')) {
         door->unk_60 = VM_GetValue();
       }
       if (door->unk_37 == 1 || door->unk_37 == 3) {
@@ -265,7 +263,7 @@ s32 FUN_0801fedc(void) {
 
 // '.n' が指す扉を閉じさせる, 1体でも見つかれば 1 を返す
 s32 FUN_0801ff78(void) {
-  DoorManager* p = FUN_08230e70(0x85E6);
+  DoorManager* p = Registry_Find(0x85E6);
   s32 found;
   s32 id;
   s32 i;
@@ -274,7 +272,7 @@ s32 FUN_0801ff78(void) {
     return -1;
   }
   found = 0;
-  if (!VM_SeekToKeyword('n')) {
+  if (!VM_SeekToNamedArg('n')) {
     return -1;
   }
   id = VM_GetValue();
@@ -282,7 +280,7 @@ s32 FUN_0801ff78(void) {
     Door* door = &p->doors[i];
 
     if (door->unk_34 == id) {
-      if (VM_SeekToKeyword('p')) {
+      if (VM_SeekToNamedArg('p')) {
         door->scriptID = VM_GetValue();
       }
       if (door->unk_37 == 0 || door->unk_37 == 2) {
@@ -301,9 +299,9 @@ NAKED s32 FUN_080200f0(void) { INCFUNC("asm/func/FUN_080200f0.inc"); }
 
 // '.n' が指す扉を開き始めさせる
 void FUN_080201c8(void) {
-  DoorManager* p = FUN_08230e70(0x85E6);
+  DoorManager* p = Registry_Find(0x85E6);
 
-  if (p != NULL && VM_SeekToKeyword('n')) {
+  if (p != NULL && VM_SeekToNamedArg('n')) {
     s32 id = VM_GetValue();
     s32 i;
 
@@ -325,9 +323,9 @@ void FUN_080201c8(void) {
 // '.n' が1体だけ該当するとき、その扉の座標を '.p' の変数へ返す
 NON_MATCH void FUN_08020260(void) {
 #ifdef NONMATCHING_C
-  DoorManager* p = FUN_08230e70(0x85E6);
+  DoorManager* p = Registry_Find(0x85E6);
 
-  if (p != NULL && VM_SeekToKeyword('n')) {
+  if (p != NULL && VM_SeekToNamedArg('n')) {
     s32 id = VM_GetValue();
     s32 i = 0;
     s32 count = 0;
@@ -340,7 +338,7 @@ NON_MATCH void FUN_08020260(void) {
         found = i;
       }
     }
-    if (count == 1 && VM_SeekToKeyword('p')) {
+    if (count == 1 && VM_SeekToNamedArg('p')) {
       FUN_0823167c(out);
       FUN_0823206c(out, 0, p->doors[found].sprite.pos.x);
       FUN_0823167c(out);
@@ -355,14 +353,14 @@ NON_MATCH void FUN_08020260(void) {
 }
 
 void FUN_08020314(void) {
-  DoorManager* p = FUN_08230e70(0x85E6);
-  if (p != NULL && VM_SeekToKeyword('n')) {
+  DoorManager* p = Registry_Find(0x85E6);
+  if (p != NULL && VM_SeekToNamedArg('n')) {
     p->unk_2e = VM_GetValue();
   }
 }
 
 void FUN_0802033c(void) {
-  DoorManager* p = FUN_08230e70(0x85E6);
+  DoorManager* p = Registry_Find(0x85E6);
   if (p != NULL) {
     p->unk_2e = 0;
   }
@@ -370,7 +368,7 @@ void FUN_0802033c(void) {
 
 // そのIDの扉が開いているか
 s32 FUN_08020358(u32 id) {
-  DoorManager* p = FUN_08230e70(0x85E6);
+  DoorManager* p = Registry_Find(0x85E6);
 
   s32 i;
 
@@ -489,7 +487,7 @@ s32 DoorManager_Destroy(DoorManager* p) {
     Free(p->unk_428);
   }
   Free(p->doors);
-  FUN_08230e58(0x85E6);
+  Registry_Remove(0x85E6);
   return 0;
 }
 

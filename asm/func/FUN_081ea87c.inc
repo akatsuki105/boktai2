@@ -145,7 +145,7 @@ _081EA940:
 	bl FUN_08002a58
 _081EA9A4:
 	adds r0, r6, #0
-	bl FUN_0823b284
+	bl Mover_Unlink
 	ldr r0, _081EA9C0 @ =0x0000FFFF
 	strh r0, [r7]
 	movs r2, #0x99

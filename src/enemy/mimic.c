@@ -2,7 +2,7 @@
 #include "global.h"
 
 typedef struct {
-  Entity2UnkData unk_0;     // 0x000
+  Mover unk_0;              // 0x000
   EnemySpriteData* sprite;  // 0x044
   EntityMsgBox msgbox;      // 0x048, 0x08149de6
   u8 unk_7c[1684 - 0x7C];   // 0x07C

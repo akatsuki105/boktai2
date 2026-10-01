@@ -2,11 +2,16 @@
 
 #include "armor.h"
 #include "global.h"
+#include "input.h"
 #include "item.h"
 #include "random.h"
 #include "sound.h"
 #include "sprite.h"
 #include "vm.h"
+
+extern u16 u16_03002bb0;
+
+u32 FUN_0823e1b0(void);
 
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
 
@@ -117,7 +122,17 @@ const s16 s16_ARRAY_085abc8a[17] = {
     -0x1, 0x0, 0x4, -0x1, 0x6, 0x7, 0x5, -0x1, 0x2, 0x1, 0x3, -0x1, -0x1, -0x1, -0x1, -0x1, 0x0,
 };  // 0x085abc8a
 
-NAKED void FUN_080609dc(Player* p) { INCFUNC("asm/func/FUN_080609dc.inc"); }
+void FUN_080609dc(Player* p) {
+  u8 v = p->sprite_2e4.active;
+
+  if (v > 4) {
+    p->sprite_2e4.unk_2 = 8 - v;
+    p->sprite_2e4.unk_3 = 1;
+  } else {
+    p->sprite_2e4.unk_2 = v;
+    p->sprite_2e4.unk_3 = 0;
+  }
+}
 
 NAKED bool32 FUN_08060a24(Player* p, u32 animIdx, s32 animSpeed) { INCFUNC("asm/func/FUN_08060a24.inc"); }
 
@@ -150,7 +165,18 @@ NAKED u32 FUN_08060c98(unknown* r1, unknown* r2) { INCFUNC("asm/func/FUN_08060c9
 
 NAKED void FUN_08060cf8(Player* p, unknown* r1, unknown* r2) { INCFUNC("asm/func/FUN_08060cf8.inc"); }
 
-NAKED bool32 FUN_08060e1c(Player* p) { INCFUNC("asm/func/FUN_08060e1c.inc"); }
+bool32 FUN_08060e1c(Player* p) {
+  u32 t;
+
+  if (*(p->isSabata + gStat->unk_2c8) > 0) return TRUE;
+  if (Player_TestFlag378(p, FLAG378_UNK_10)) return TRUE;
+
+  t = FUN_0823e1b0();
+  if (t - 4 <= 1) return TRUE;
+  if (t != 0) return FALSE;
+
+  return TRUE;
+}
 
 s32 GetPlayerCoffinID(void) {
   s32 slot;
@@ -268,9 +294,54 @@ NAKED void FUN_08061680(unknown* p) { INCFUNC("asm/func/FUN_08061680.inc"); }
 // Player.fn_714
 NAKED void FUN_080617bc(unknown* p) { INCFUNC("asm/func/FUN_080617bc.inc"); }
 
-NAKED void FUN_080617dc(u32 idx, s32* result1, s32* result2) { INCFUNC("asm/func/FUN_080617dc.inc"); }
+NON_MATCH void FUN_080617dc(u32 idx, s32* result1, s32* result2) {
+#ifdef NONMATCHING_C
+  s32 v = idx & 3;
 
-NAKED void FUN_0806181c(Player* p) { INCFUNC("asm/func/FUN_0806181c.inc"); }
+  switch (v) {
+    case 0: {
+      v = 0;
+      break;
+    }
+    case 1: {
+      v = 1;
+      break;
+    }
+    case 2: {
+      v = 2;
+      break;
+    }
+    default: {
+      v = 1;
+      break;
+    }
+  }
+
+  *result1 = v;
+
+  if (idx <= 2) {
+    v = 0;
+  } else if (idx <= 4) {
+    v = 2;
+  } else if (idx == 5) {
+    v = 3;
+  } else {
+    v = 1;
+  }
+
+  *result2 = v;
+#else
+  INCFUNC("asm/func/FUN_080617dc.inc");
+#endif
+}
+
+// 衝撃波のスプライトに本体と同じパレットを渡して表示する
+void FUN_0806181c(Player* p) {
+  p->meleeShockwave.gfx.plttID = p->sprite_88.plttID;
+  p->meleeShockwave.gfx.pltt = p->sprite_88.pltt;
+  AuxSprite_Show(&p->meleeShockwave.sprite);
+  p->unk_710 = 1;
+}
 
 // 黒ジャンゴが剣で攻撃する時に1回呼ばれる, idx はプレイヤーの向きで変わる (多分、 衝撃波 を出す処理)
 NAKED void Player_DarkDjangoSword_0806185c(Player* p, u32 idx, Vec3* pos) { INCFUNC("asm/func/Player_DarkDjangoSword_0806185c.inc"); }
@@ -322,7 +393,16 @@ NAKED void FUN_080622d0(Player* p) { INCFUNC("asm/func/FUN_080622d0.inc"); }
 
 NAKED u32 FUN_0806241c(Player* p) { INCFUNC("asm/func/FUN_0806241c.inc"); }
 
-NAKED void FUN_08062468(Player* p) { INCFUNC("asm/func/FUN_08062468.inc"); }
+// unk_950 ごとに3色ずつ並んだ表から、パレットの5,6,13番を差し替える
+void FUN_08062468(Player* p) {
+  rgb555* src = &gObjPlttData[0x280];
+
+  src += p->unk_950 * 3;
+
+  p->pltt_2a4[5] = *src++;
+  p->pltt_2a4[6] = src[0];
+  p->pltt_2a4[13] = src[1];
+}
 
 NAKED void FUN_080624b0(Player* p, u16* param_2, s32 param_3, s32 param_4, u32 param_5) { INCFUNC("asm/func/FUN_080624b0.inc"); }
 
@@ -330,7 +410,13 @@ NAKED void FUN_08062688(Player* p, u32 n) { INCFUNC("asm/func/FUN_08062688.inc")
 
 NAKED void FUN_080628ec(Player* p, u32 n) { INCFUNC("asm/func/FUN_080628ec.inc"); }
 
-NAKED void FUN_08062c14(Player* p) { INCFUNC("asm/func/FUN_08062c14.inc"); }
+void FUN_08062c14(Player* p) {
+  if (p->unk_18 == 0) {
+    p->plttID_94a = 0x1D;
+  } else {
+    p->plttID_94a = 0x28;
+  }
+}
 
 NAKED void FUN_08062c3c(Player* p) { INCFUNC("asm/func/FUN_08062c3c.inc"); }
 
@@ -338,9 +424,27 @@ NAKED void FUN_08063084(Player* p) { INCFUNC("asm/func/FUN_08063084.inc"); }
 
 NAKED void FUN_080630e8(Player* p) { INCFUNC("asm/func/FUN_080630e8.inc"); }
 
-NAKED void FUN_08063220(Player* p) { INCFUNC("asm/func/FUN_08063220.inc"); }
+void FUN_08063220(Player* p) {
+  s32 count = p->unk_4c4.unk_3;
+  s32 i;
 
-NAKED void FUN_08063248(Player* p) { INCFUNC("asm/func/FUN_08063248.inc"); }
+  for (i = 0; i < count; i++) {
+    FUN_080630e8(p);
+  }
+}
+
+void FUN_08063248(Player* p) {
+  if (p->unk_4c4.kind == 1) {
+    Eff082473e0Emitter_Reset(&p->unk_4c4);
+  } else {
+    s32 count = p->unk_4c4.unk_3;
+    s32 i;
+
+    for (i = 0; i < count; i++) {
+      FUN_080630e8(p);
+    }
+  }
+}
 
 NAKED void FUN_08063288(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_08063288.inc"); }
 
@@ -350,15 +454,37 @@ NAKED u32 FUN_08063498(Player* p, u32 n) { INCFUNC("asm/func/FUN_08063498.inc");
 
 NAKED void FUN_08063574(Player* p, s32 badcondID, s32 frames) { INCFUNC("asm/func/FUN_08063574.inc"); }
 
-NAKED void FUN_08063634(Player* p, s32 n) { INCFUNC("asm/func/FUN_08063634.inc"); }
+void FUN_08063634(Player* p, s32 n) {
+  p->unk_43c[n] = 0;
+  if (n == 2) {
+    p->unk_456 = gStat->unk_010;
+  }
+}
 
 NAKED u32 FUN_08063668(Player* p, u32 n) { INCFUNC("asm/func/FUN_08063668.inc"); }
 
-NAKED u32 FUN_080637dc(Player* p, u32 n) { INCFUNC("asm/func/FUN_080637dc.inc"); }
+NON_MATCH u32 FUN_080637dc(Player* p, u32 n) {
+#ifdef NONMATCHING_C
+  if (p->unk_95c != 0) {
+    p->unk_95c--;
+    if ((p->unk_95c >> 2) & 1) {
+      return p->unk_95a;
+    }
+  }
+
+  return n;
+#else
+  INCFUNC("asm/func/FUN_080637dc.inc");
+#endif
+}
 
 NAKED void FUN_08063814(Player* p) { INCFUNC("asm/func/FUN_08063814.inc"); }
 
-NAKED void FUN_080639d0(Player* p) { INCFUNC("asm/func/FUN_080639d0.inc"); }
+void FUN_080639d0(Player* p) {
+  if (p->input_28c->pressed & (A_BUTTON | B_BUTTON | DPAD_RIGHT | DPAD_LEFT | DPAD_UP | DPAD_DOWN)) {
+    p->angle_400++;
+  }
+}
 
 NAKED void Player_Update_Helper_080639f8(Player* p) { INCFUNC("asm/func/Player_Update_Helper_080639f8.inc"); }
 
@@ -368,7 +494,19 @@ NAKED void Player_Init_Helper_08063b6c(Player* p) { INCFUNC("asm/func/Player_Ini
 
 u32 Player_WeaponEffectSol(Player* p) { return gStat->sunGauge; }
 
-NAKED u32 Player_WeaponEffectStatCond(Player* p) { INCFUNC("asm/func/Player_WeaponEffectStatCond.inc"); }
+// 状態異常中や太陽光を浴びている間だけ追加ダメージ 10
+u32 Player_WeaponEffectStatCond(Player* p) {
+  s32 i;
+
+  for (i = 0; i < 3; i++) {
+    if (p->unk_43c[i] != 0) return 10;
+  }
+
+  if (*(p->isSabata + gStat->unk_2c8) != 0) return 10;
+  if (p->unk_4c4.unk_3 != 0) return 10;
+
+  return 0;
+}
 
 u32 Player_WeaponEffectNight(Player* p) {
   if (FUN_08060e1c(p)) {
@@ -396,7 +534,15 @@ u32 Player_WeaponEffectGyakuKajiba(Player* p) { return -Div((p->maxHP - p->hp) *
 // 同じ種族の敵をたくさん倒しているほど威力が上がる
 NAKED u32 Player_WeaponEffectKillCount(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectKillCount.inc"); }
 
-NAKED u32 Player_WeaponEffectRandom(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectRandom.inc"); }
+// 一定確率で追加ダメージ 10
+u32 Player_WeaponEffectRandom(Player* p, HitboxData* a, HitboxData* b) {
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  if (Mod(*(gRandomTable + gRandTableIdx), 100) <= 10) {
+    return 10;
+  }
+
+  return 0;
+}
 
 u32 Player_WeaponEffectAntiBeast(Player* p, HitboxData* a, HitboxData* b) {
   if (Hitbox_TestAttribute(b, HBATTR_BEAST)) {
@@ -496,7 +642,15 @@ NAKED void FUN_0806483c(Player* p, const ArmorData* a) { INCFUNC("asm/func/FUN_0
 
 NAKED void FUN_08064a64(Player* p, const ArmorData* a) { INCFUNC("asm/func/FUN_08064a64.inc"); }
 
-NAKED void CheckHeartJokerEmblem(Player* p) { INCFUNC("asm/func/CheckHeartJokerEmblem.inc"); }
+void CheckHeartJokerEmblem(Player* p) {
+  if (CheckItemOwn(ITEM_HEART_EMBLEM)) {
+    Player_SetFlag378(p, FLAG378_HEART);
+  }
+
+  if (CheckItemOwn(ITEM_JOKER_EMBLEM)) {
+    Player_SetFlag378(p, FLAG378_JOKER);
+  }
+}
 
 s32 FUN_08064b00(magic32_t id) {
   if (gFlag030047a4 & FLAG030047A4_UNK_12) {
@@ -508,25 +662,63 @@ s32 FUN_08064b00(magic32_t id) {
 
 NAKED s32 CalcMagicCost(Player* p) { INCFUNC("asm/func/CalcMagicCost.inc"); }
 
-NAKED bool32 Player_CheckMagicCost(Player* p) { INCFUNC("asm/func/Player_CheckMagicCost.inc"); }
+// 装備中の魔法のコストを払えるか, アストロ武器なら太陽スタンドから、そうでなければ ENE から払う
+bool32 Player_CheckMagicCost(Player* p) {
+  s32 cost = CalcMagicCost(p);
+  s32 avail;
+
+  if (p->equippedMagic <= 5 && Player_TestFlag378(p, FLAG378_ASTRO)) {
+    avail = gStat->solarStand;
+  } else {
+    avail = p->ene;
+  }
+
+  if (avail >= cost) return TRUE;
+
+  return FALSE;
+}
 
 NAKED void Player_PayMagicCost(Player* p) { INCFUNC("asm/func/Player_PayMagicCost.inc"); }
 
 NAKED bool32 FUN_08064c48(Player* p, magic32_t id) { INCFUNC("asm/func/FUN_08064c48.inc"); }
 
-NAKED magic32_t Player_CheckMagicEnchant(Player* p) { INCFUNC("asm/func/Player_CheckMagicEnchant.inc"); }
+// エンチャント中で、コストも払えて、武器種が銃でも拳でもなければ その魔法の ID を返す
+magic32_t Player_CheckMagicEnchant(Player* p) {
+  if (p->isEnchanted && p->equippedMagic <= 5 && Player_CheckMagicCost(p)) {
+    if ((u8)(p->weaponKind_a75 - STYLE_GUN) > 1) {
+      return p->equippedMagic;
+    }
+  }
+
+  return -1;
+}
 
 bool32 Player_HasEnoughEne(Player* p, s32 ene) {
   if (p->ene < ene) return FALSE;
   return TRUE;
 }
 
-NAKED bool32 FUN_08064d6c(Player* p, s32 val) { INCFUNC("asm/func/FUN_08064d6c.inc"); }
+bool32 FUN_08064d6c(Player* p, s32 val) {
+  if (*(p->isSabata + gStat->unk_2c8) > 0) return FALSE;
+  if (gStat->sunGauge < val) return FALSE;
+
+  return TRUE;
+}
 
 NAKED unknown* FUN_08064db0(Player* p) { INCFUNC("asm/func/FUN_08064db0.inc"); }
 
 NAKED void FUN_08064fd8(Player* p, magic32_t n) { INCFUNC("asm/func/FUN_08064fd8.inc"); }
 
-NAKED s32 FUN_08065110(Player* p) { INCFUNC("asm/func/FUN_08065110.inc"); }
+// 使う魔法の番号を返す, サバタは固定の2種から選び、それ以外は登録魔法から引く
+s32 FUN_08065110(Player* p) {
+  if (p->kind != PLAYER_SABATA) {
+    return *(gStat->equippedMagicIdx + gStat->registeredMagic);
+  }
+
+  u16_03002bb0 = 0;
+  if (gStat->unk_5e == 0) return 8;
+
+  return 9;
+}
 
 NAKED void FUN_08065164(Player* p) { INCFUNC("asm/func/FUN_08065164.inc"); }

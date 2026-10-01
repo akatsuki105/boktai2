@@ -6,6 +6,7 @@
 #include "entity.h"
 #include "gba/gba.h"
 #include "hitbox.h"
+#include "mover.h"
 #include "msgbus.h"
 #include "particle.h"
 #include "sprite.h"
@@ -24,6 +25,7 @@ typedef u32 PlayerFlag378;               // Player.flag378
 #define FLAG378_WEAPONGUARD (1 << 6)     // 0x00000040, ウェポンガード〃
 #define FLAG378_FAIRY (1 << 7)           // 0x00000080, 精霊の衣〃
 #define FLAG378_UNK_8 (1 << 8)           // 0x00000100, ???
+#define FLAG378_UNK_10 (1 << 10)         // 0x00000400, ???
 #define FLAG378_AET_SUNLIGHT (1 << 13)   // 0x00002000, 光のガーブ装備時, ApplyLxModifiers が太陽レベルを2倍にする
 #define FLAG378_AET_RES_SOL (1 << 14)    // 0x00004000, メイルオブソル装備時, 立っていると ApplySunlightGain の太陽スタンド加算が2倍になる
 #define FLAG378_HEART (1 << 28)          // 0x10000000, ハートの紋章所持
@@ -111,15 +113,15 @@ typedef struct Player {
   u32 unk_18;                  // 0x18, 0 or 1 他にもあるか不明
   u32 unk_1c;                  // 0x1C, ステート?, (0: ??, 1: 通常状態, 2: マップ移動などの操作できない状態?, 3: ???, 4: HP0, 5: ???, ...)
   u32 unk_20;                  // 0x20, bitfield
-  Entity2UnkData unk_24;       // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Entity2UnkData
+  Mover unk_24;                // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Mover
   MainSpriteGfx spriteSet_68;  // 0x068, 根拠： FUN_08060a24
   MainSprite sprite_88;        // 0x088, 根拠： FUN_08060a24
   u8 unk_e8[0x104 - 0xE8];
   Vec3 unk_104;  // 0x104, FUN_0807a91c が unk_24.pos / sprite_88.pos と一緒に同じ座標を書く
   u8 unk_10c[0x16C - 0x10C];
   HitboxData unk_16c;  // 0x16C
-  u8 unk_1bc;          // 0x1BC, Entity2UnkData.unk_18 が &Player.unk_1bc
-  u8 unk_1bd[0x230 - 0x1BD];
+  MoverTile tile;      // 0x1BC, unk_24.tile がここを指す
+  u8 unk_1cc[0x230 - 0x1CC];
   EntityMsgBox msgbox;  // 0x230, FUN_0807ddd4 が EntityMsgBus_Unregister に渡す
   PlayerArmor armor;    // 0x264
   u16 unk_278;
@@ -237,7 +239,9 @@ typedef struct Player {
   u8 unk_94f;      // 0x94F
   u8 unk_950;      // 0x950, FUN_08063084
   u8 unk_951;      // 0x951, FUN_0806f780 が unk_a8d + 1 (負なら 0) を入れる
-  u8 unk_952[0x95E - 0x952];
+  u8 unk_952[0x95A - 0x952];
+  u16 unk_95a;  // 0x95A, FUN_080637dc が unk_95c の bit2 が立っている間だけ返す値
+  u16 unk_95c;  // 0x95C, FUN_080637dc が毎回 1 減らすタイマ
   u16 unk_95e;  // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
   u16 unk_960;  // 0x960, FUN_08074994 が unk_95e と対で書く
   u8 unk_962[0x96C - 0x962];
@@ -283,6 +287,8 @@ s32 FUN_080d1b04(Player* player);
 void Player_ReduceENE_0807aa60(Player* player, s32 amount);
 
 static inline void Player_SetFlag20(Player* p, u32 bit) { p->unk_20 |= bit; }
+static inline void Player_SetFlag378(Player* p, PlayerFlag378 bits) { p->flag378 |= bits; }
+static inline bool32 Player_TestFlag378(Player* p, PlayerFlag378 bits) { return p->flag378 & bits; }
 static inline bool32 Player_TestFlag20(Player* p, u32 bit) { return p->unk_20 & bit; }
 
 #endif  // GUARD_ZOKTAI_PLAYER_H

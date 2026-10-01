@@ -1,12 +1,15 @@
 #include "entity.h"
 #include "global.h"
 #include "item.h"
+#include "player.h"
 #include "vm.h"
 
 // メニューのインベントリ操作に関係してそう
 typedef struct EntityCC28 {
   Entity e;  // 0x0, ENTITY_UNK_12
-  u8 unk_18[16476 - 0x18];
+  u8 unk_18[0x9E0 - 0x18];
+  struct Player* player;  // 0x9E0
+  u8 unk_9e4[16476 - 0x9E4];
 } EntityCC28;
 static_assert(sizeof(EntityCC28) == 16476);
 
@@ -27,7 +30,14 @@ NAKED void FUN_080907f0(EntityCC28* p) { INCFUNC("asm/func/FUN_080907f0.inc"); }
 
 NAKED void FUN_08090a00(EntityCC28* p) { INCFUNC("asm/func/FUN_08090a00.inc"); }
 
-NAKED s32 FUN_08090b10(EntityCC28* p) { INCFUNC("asm/func/FUN_08090b10.inc"); }
+s32 FUN_08090b10(EntityCC28* p) {
+  u8 kind = p->player->kind;
+
+  if (kind == PLAYER_SOLAR_DJANGO) return 0;
+  if (kind == PLAYER_SABATA) return 2;
+
+  return 1;
+}
 
 NAKED void FUN_08090b38(EntityCC28* p) { INCFUNC("asm/func/FUN_08090b38.inc"); }
 
@@ -36,7 +46,7 @@ NAKED void FUN_08090ca4(EntityCC28* p) { INCFUNC("asm/func/FUN_08090ca4.inc"); }
 NAKED void FUN_08090d54(EntityCC28* p) { INCFUNC("asm/func/FUN_08090d54.inc"); }
 
 void FUN_08090ee0(void) {
-  if (VM_SeekToKeyword('i')) {
+  if (VM_SeekToNamedArg('i')) {
     s32 bitidx = VM_GetValue();
 
     gStat->unk_264 |= 1 << bitidx;

@@ -125,7 +125,7 @@ Entity8D5C_Init: @ 0x08055828
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08055874
 	bl VM_GetPC

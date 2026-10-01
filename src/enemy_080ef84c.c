@@ -13,7 +13,7 @@ typedef u8 EntityD854NodeFlags;
 
 // EntityD854 のリストにぶら下がるノード, 登録側 (Player など) の構造体に埋め込まれている
 typedef struct EntityD854Node {
-  Entity2UnkData* owner;        // 0x00, FUN_080f8c58 の第2引数, FUN_080f8d60 が owner->id で検索する
+  Mover* owner;                 // 0x00, FUN_080f8c58 の第2引数, FUN_080f8d60 が owner->id で検索する
   EntityD854NodeFlags flags;    // 0x04
   u8 kindMask;                  // 0x05, FUN_080f8c58 の第3引数, FUN_080f9a38 は & で、FUN_080f8cf0 は == で引く
   u16 timer;                    // 0x06, FUN_080f9b34 が毎フレーム -1. FUN_080f8da4 が 0x78、FUN_080f8e3c が 0xF0 をセット
@@ -43,7 +43,11 @@ bool8 FUN_080f3718(Enemy* p);
 s32 FUN_08240b98(u32 param_1, s8 param_2);
 void FUN_080e8ae4(unknown* param_1, u32 param_2, u32 param_3);
 
-NAKED void FUN_080ef84c(Enemy* p, s32 val1, s32 val2, s32 val3) { INCFUNC("asm/func/FUN_080ef84c.inc"); }
+// 動作の種類ごとのアニメ番号を登録する
+void Enemy_SetAnimEntry(Enemy* p, s32 idx, s32 anim, s32 val3) {
+  p->animTable[idx].anim = anim;
+  p->animTable[idx].unk_1 = val3;
+}
 
 NAKED void FUN_080ef86c(Enemy* p, s32 val1) { INCFUNC("asm/func/FUN_080ef86c.inc"); }
 
@@ -322,7 +326,7 @@ s32 FUN_080f8abc(Enemy* p) {
 
 NAKED void FUN_080f8ae0(Enemy* p) { INCFUNC("asm/func/FUN_080f8ae0.inc"); }
 
-NAKED void FUN_080f8bb8(Entity2UnkData* owner) { INCFUNC("asm/func/FUN_080f8bb8.inc"); }
+NAKED void FUN_080f8bb8(Mover* owner) { INCFUNC("asm/func/FUN_080f8bb8.inc"); }
 
 // 登録リストを空にする
 void FUN_080f8c10(void) {
@@ -346,7 +350,7 @@ bool32 FUN_080f8c2c(EntityD854Node* node) {
   return TRUE;
 }
 
-NAKED bool32 FUN_080f8c58(EntityD854Node* node, Entity2UnkData* owner, u8 kindMask) { INCFUNC("asm/func/FUN_080f8c58.inc"); }
+NAKED bool32 FUN_080f8c58(EntityD854Node* node, Mover* owner, u8 kindMask) { INCFUNC("asm/func/FUN_080f8c58.inc"); }
 
 // 登録リストからノードを外す
 void FUN_080f8cac(EntityD854Node* node) {
@@ -410,7 +414,7 @@ bool32 FUN_080f8d20(EntityD854Node* node) {
   return FALSE;
 }
 
-Entity2UnkData* FUN_080f8d60(u16 id) {
+Mover* FUN_080f8d60(u16 id) {
   EntityD854* p = gEntityD854;
   EntityD854Node* cur;
 
@@ -451,7 +455,7 @@ void FUN_080f8e3c(EntityD854Node* node) {
   }
 }
 
-NAKED bool32 FUN_080f8e84(Entity2UnkData* owner, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080f8e84.inc"); }
+NAKED bool32 FUN_080f8e84(Mover* owner, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080f8e84.inc"); }
 
 NAKED bool32 FUN_080f8f04(EntityD854Node* node, Enemy* enemy, unknown* param_3) { INCFUNC("asm/func/FUN_080f8f04.inc"); }
 

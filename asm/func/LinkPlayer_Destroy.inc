@@ -8,7 +8,7 @@
 	bl Hitbox_Unregister
 	adds r0, r4, #0
 	adds r0, #0x24
-	bl FUN_0823b284
+	bl Mover_Unlink
 	adds r0, r4, #0
 	bl FUN_0808168c
 	ldr r1, _08084620 @ =0x000009C8

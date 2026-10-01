@@ -23,9 +23,9 @@ s32 VM_Loop(void) {
   s32 count;
   s32 repeat;
 
-  VM_SeekToKeyword('a');
+  VM_SeekToNamedArg('a');
   count = VM_GetValue();
-  VM_SeekToKeyword('r');
+  VM_SeekToNamedArg('r');
   repeat = VM_GetValue();
   {
     u32 argv[count];
@@ -34,9 +34,9 @@ s32 VM_Loop(void) {
     s32 i;
 
     args.argc = count, args.argv = argv;
-    if (!VM_SeekToKeyword('e')) return 0;
+    if (!VM_SeekToNamedArg('e')) return 0;
     script = (u8*)VM_GetValue();
-    VM_SeekToKeyword('d');
+    VM_SeekToNamedArg('d');
     pc = VM_GetPC();
     for (i = 0; i < repeat; i++) {
       s32 j;
@@ -55,7 +55,7 @@ s32 VM_Loop(void) {
 s32 VM_Random(void) {
   s32 r;
 
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     s32 n = VM_GetValue();
 
     if (n > 0) {
@@ -70,9 +70,9 @@ s32 VM_Random(void) {
 
 // スクリプトへ1Pのキー入力を返す, 既定は押された瞬間のボタン
 s32 VM_GetKeys(void) {
-  if (VM_SeekToKeyword('p')) return gInput[0].pressed;
-  if (VM_SeekToKeyword('s')) return gInput[0].down;
-  if (VM_SeekToKeyword('r')) return gInput[0].released;
+  if (VM_SeekToNamedArg('p')) return gInput[0].pressed;
+  if (VM_SeekToNamedArg('s')) return gInput[0].down;
+  if (VM_SeekToNamedArg('r')) return gInput[0].released;
   return gInput[0].pressed;
 }
 
@@ -82,13 +82,13 @@ s32 VM_ReadTable(void) {
   s32 idx;     // .i: テーブルのインデックス
   s32 size;    // .s: 要素のサイズ規約 (0: u8[idx], 1: s16[idx], それ以外: s16[idx*2])
 
-  if (!VM_SeekToKeyword('r')) return -1;
+  if (!VM_SeekToNamedArg('r')) return -1;
   base = VM_GetValueSafe2();
 
-  if (!VM_SeekToKeyword('i')) return -1;
+  if (!VM_SeekToNamedArg('i')) return -1;
   idx = VM_GetValue();
 
-  if (!VM_SeekToKeyword('s')) return -1;
+  if (!VM_SeekToNamedArg('s')) return -1;
   size = VM_GetValue();
 
   if (size == 0) return ((u8*)base)[idx];
@@ -104,7 +104,7 @@ void FUN_080a6e88(bool32 stopSound) {
   }
 }
 
-void FUN_080a6ec0(void) { FUN_080a6e88(VM_SeekToKeyword('p') ? VM_GetValue() : 0); }
+void FUN_080a6ec0(void) { FUN_080a6e88(VM_SeekToNamedArg('p') ? VM_GetValue() : 0); }
 
 static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
 

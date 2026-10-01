@@ -4,7 +4,7 @@
 	push {r6, r7}
 	sub sp, #8
 	adds r6, r0, #0
-	bl FUN_0823b3ec
+	bl MoverList_Get
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _081D1DDC

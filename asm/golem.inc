@@ -1368,52 +1368,52 @@ FUN_08115d58: @ 0x08115D58
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #0xb
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #1
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #2
 	movs r2, #2
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #3
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #6
 	movs r2, #4
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #5
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #0xa
 	movs r2, #6
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #0xf
 	movs r2, #7
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	adds r0, r4, #0
 	movs r1, #0x10
 	movs r2, #8
 	movs r3, #0
-	bl FUN_080ef84c
+	bl Enemy_SetAnimEntry
 	pop {r4}
 	pop {r0}
 	bx r0
@@ -23617,7 +23617,7 @@ _081209D6:
 	bl FUN_0807f598
 _081209E2:
 	adds r0, r4, #0
-	bl FUN_0823b284
+	bl Mover_Unlink
 	adds r0, r4, #0
 	adds r0, #0xd8
 	bl Hitbox_Unregister
@@ -23772,7 +23772,7 @@ _08120B04:
 	strh r0, [r1]
 	movs r0, #0x4d
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r1, _08120B98 @ =0x00000474
 	adds r6, r7, r1
 	strh r0, [r6]
@@ -23788,7 +23788,7 @@ _08120B04:
 	strb r4, [r2]
 	movs r0, #0x72
 	str r2, [sp, #0x1ac]
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	mov r1, sb
 	str r1, [sp, #0x5c]
 	mov r3, r8
@@ -24005,10 +24005,10 @@ _08120CD0:
 _08120D10:
 	movs r0, #0x4e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	mov sb, r0
 	movs r0, #0x65
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08120D5A
 	bl VM_GetPC
@@ -24042,7 +24042,7 @@ _08120D5A:
 	movs r5, #0x40
 _08120D60:
 	movs r0, #0x6e
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08120D98
 	bl VM_GetPC
@@ -24076,7 +24076,7 @@ _08120D98:
 	strh r6, [r0]
 _08120DA2:
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	ldr r1, _08121030 @ =0x0000025D
 	adds r1, r7, r1
 	str r1, [sp, #0xe4]
@@ -24487,7 +24487,7 @@ _08121106:
 	b _08121020
 _08121120:
 	movs r0, #0x6c
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0812116C
 	bl VM_GetPC
@@ -24531,7 +24531,7 @@ _0812116C:
 _08121174:
 	movs r0, #0x62
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _0812118C
 	movs r1, #0x80
@@ -24543,16 +24543,16 @@ _08121174:
 _0812118C:
 	movs r0, #0x46
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r1, [sp, #0x7c]
 	strh r0, [r1]
 	movs r0, #0x52
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r2, [sp, #0x78]
 	strh r0, [r2]
 	movs r0, #0x41
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0812125C
 	bl VM_GetPC
@@ -24664,7 +24664,7 @@ _0812125C:
 	movs r1, #0
 	bl FUN_080e3a90
 	movs r0, #0x58
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081212BE
 	movs r5, #0xe8
@@ -24693,12 +24693,12 @@ _081212B8:
 _081212BE:
 	movs r0, #0x4b
 	movs r1, #2
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r1, [sp, #0xe0]
 	strh r0, [r1]
 	movs r0, #0x48
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081212E2
 	movs r1, #0x80
@@ -24710,7 +24710,7 @@ _081212BE:
 _081212E2:
 	movs r0, #0x4c
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081212FA
 	movs r1, #0x80
@@ -24728,7 +24728,7 @@ _081212FA:
 	ldr r0, [sp, #0x28]
 	add r2, sp, #0x1c
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	movs r1, #0x80
 	lsls r1, r1, #2
 	ldr r5, [sp, #0x4c]
@@ -24759,7 +24759,7 @@ _08121336:
 	ldr r1, [r7, #0x44]
 _08121342:
 	ldr r0, [sp, #0x28]
-	bl FUN_0823b46c
+	bl Mover_SetAuxSprite
 	ldr r1, [sp, #0xac]
 	ldrb r0, [r1]
 	cmp r0, #0x15
@@ -24768,7 +24768,7 @@ _08121342:
 	ldr r1, [sp, #0x30]
 	movs r2, #0x3c
 	movs r3, #0x3c
-	bl FUN_0823b43c
+	bl Mover_SetCollision
 	b _08121370
 	.align 2, 0
 _08121360: .4byte FUN_080f48ac
@@ -24777,7 +24777,7 @@ _08121364:
 	ldr r1, [sp, #0x30]
 	movs r2, #0x40
 	movs r3, #0x40
-	bl FUN_0823b43c
+	bl Mover_SetCollision
 _08121370:
 	ldr r2, [sp, #0xac]
 	ldrb r1, [r2]
@@ -24816,7 +24816,7 @@ _08121370:
 	ldrb r0, [r5]
 	str r0, [sp]
 	ldr r0, [sp, #0x28]
-	bl FUN_0823b490
+	bl Mover_SetPath
 _081213BE:
 	movs r1, #8
 	ldr r6, [sp, #0x4c]
@@ -24873,7 +24873,7 @@ _0812141A:
 	lsls r5, r5, #1
 	movs r0, #0x43
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r3, [sp, #0x6c]
 	strh r0, [r3]
 	ldr r6, [sp, #0x58]
@@ -25141,11 +25141,11 @@ _081214B4:
 	bl Enemy_Init_080e5dd4
 	movs r0, #0x49
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r5, [sp, #0x80]
 	strh r0, [r5]
 	movs r0, #0x47
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0812171A
 	subs r6, #0x20
@@ -25208,12 +25208,12 @@ _08121712:
 _0812171A:
 	movs r0, #0x44
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r1, [sp, #0x84]
 	strh r0, [r1]
 	movs r0, #0x75
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r2, r0, #0
 	movs r0, #0x21
 	ldr r3, [sp, #0x74]
@@ -25342,7 +25342,7 @@ _08121808:
 _08121816:
 	movs r0, #0x53
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	bne _0812184A
 	ldr r0, _08121840 @ =0x030046A0

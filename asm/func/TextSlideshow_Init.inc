@@ -4,7 +4,7 @@
 	str r4, [r0]
 	movs r0, #0x66
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r4, #0x24]
 	movs r1, #1
 	ands r1, r0

@@ -15,7 +15,7 @@ _080DD954:
 	cmp r5, #0
 	beq _080DDA46
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080DD9B2
 	bl VM_GetPC
@@ -57,7 +57,7 @@ _080DD9AC:
 	strh r1, [r0]
 _080DD9B2:
 	movs r0, #0x50
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080DDA0C
 	bl VM_GetPC
@@ -108,7 +108,7 @@ _080DDA14:
 _080DDA16:
 	movs r0, #0x63
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r0, [r5, #0x60]
 	adds r2, r5, #0
 	adds r2, #0x5d

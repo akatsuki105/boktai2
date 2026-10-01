@@ -81,7 +81,7 @@ _080CB55E:
 _080CB562:
 	adds r0, r4, #0
 	adds r0, #0x1c
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 	adds r5, r4, #0
 	adds r5, #0xb8
 	adds r4, #0x24
@@ -127,7 +127,7 @@ EntityC814_Destroy: @ 0x080CB5B8
 	bl AuxSprite_Remove
 	adds r4, #0x1c
 	adds r0, r4, #0
-	bl FUN_0823b284
+	bl Mover_Unlink
 	movs r0, #0
 	pop {r4}
 	pop {r1}
@@ -140,7 +140,7 @@ FUN_080cb5d4: @ 0x080CB5D4
 	sub sp, #0x10
 	adds r6, r0, #0
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080CB620
 	bl VM_GetValue
@@ -259,7 +259,7 @@ _080CB6B4:
 	str r6, [sp, #4]
 	add r2, sp, #8
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	add sp, #0x10
 	pop {r4, r5, r6}
 	pop {r0}
@@ -283,7 +283,7 @@ FUN_080cb6d4: @ 0x080CB6D4
 	adds r0, r6, #0
 	adds r0, #0x1c
 	adds r1, r5, #0
-	bl FUN_0823b46c
+	bl Mover_SetAuxSprite
 	adds r2, r6, #0
 	adds r2, #0x7c
 	ldr r0, [r6, #0x24]
@@ -311,7 +311,7 @@ FUN_080cb714: @ 0x080CB714
 	adds r1, r4, #0
 	movs r2, #0x1e
 	movs r3, #0x1e
-	bl FUN_0823b43c
+	bl Mover_SetCollision
 	pop {r4, r5}
 	pop {r0}
 	bx r0

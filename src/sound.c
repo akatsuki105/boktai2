@@ -20,13 +20,13 @@ void sound_08240264(SoundID32 id) {
 }
 
 void FUN_082402c8(void) {
-  if (VM_SeekToKeyword('i') != 0) {
+  if (VM_SeekToNamedArg('i') != 0) {
     sound_08240264(VM_GetValue());
   }
 }
 
 void FUN_082402e0(void) {
-  if (VM_SeekToKeyword('i') != 0) {
+  if (VM_SeekToNamedArg('i') != 0) {
     sound_08240264(VM_GetValue());
   }
 }
@@ -43,7 +43,7 @@ void sound_082402f8(SoundID32 id) {
   }
 }
 
-void sound_08240344(void) { sound_082402f8(VM_SeekToKeyword('i') ? VM_GetValue() : 0); }
+void sound_08240344(void) { sound_082402f8(VM_SeekToNamedArg('i') ? VM_GetValue() : 0); }
 
 // 再生中のBGMを最小音量から指定速度でフェードインさせ直す
 void Sound_FadeInBGM(u32 speed) {
@@ -59,7 +59,7 @@ void Sound_FadeInBGM(u32 speed) {
 }
 
 void sound_082403b8(void) {
-  if (VM_SeekToKeyword('f') != 0) {
+  if (VM_SeekToNamedArg('f') != 0) {
     Sound_FadeInBGM(VM_GetValue());
   }
 }
@@ -77,7 +77,7 @@ void Sound_FadeOutBGMTemporarily(u32 speed) {
 }
 
 void FUN_08240428(void) {
-  if (VM_SeekToKeyword('f') != 0) {
+  if (VM_SeekToNamedArg('f') != 0) {
     Sound_FadeOutBGMTemporarily(VM_GetValue());
   }
 }
@@ -95,7 +95,7 @@ void Sound_FadeOutBGM(u32 speed) {
 }
 
 void FUN_08240498(void) {
-  if (VM_SeekToKeyword('f') != 0) {
+  if (VM_SeekToNamedArg('f') != 0) {
     Sound_FadeOutBGM(VM_GetValue());
   }
 }
@@ -122,7 +122,7 @@ void FUN_082404fc(u32 speed) {
 }
 
 void FUN_08240550(void) {
-  if (VM_SeekToKeyword('f') != 0) {
+  if (VM_SeekToNamedArg('f') != 0) {
     FUN_082404fc(VM_GetValue());
   }
 }
@@ -136,7 +136,7 @@ void FUN_08240568(u32 speed) {
 }
 
 void FUN_082405a8(void) {
-  if (VM_SeekToKeyword('f') != 0) {
+  if (VM_SeekToNamedArg('f') != 0) {
     FUN_08240568(VM_GetValue());
   }
 }
@@ -155,7 +155,7 @@ void FUN_082405c0(u32 speed) {
 }
 
 void FUN_08240618(void) {
-  if (VM_SeekToKeyword('f') != 0) {
+  if (VM_SeekToNamedArg('f') != 0) {
     FUN_082405c0(VM_GetValue());
   }
 }
@@ -170,7 +170,7 @@ void Sound_SetBGMTempo(u32 tempo) {
 }
 
 void FUN_08240668(void) {
-  if (VM_SeekToKeyword('t') != 0) {
+  if (VM_SeekToNamedArg('t') != 0) {
     Sound_SetBGMTempo(VM_GetValue());
   }
 }
@@ -180,9 +180,9 @@ void FUN_08240680(void) {
   u32 volume, trackBits;
   SoundID16 id;
 
-  if (VM_SeekToKeyword('v') != 0) {
+  if (VM_SeekToNamedArg('v') != 0) {
     volume = VM_GetValue();
-    if (VM_SeekToKeyword('t') != 0) {
+    if (VM_SeekToNamedArg('t') != 0) {
       trackBits = VM_GetValue();
     } else {
       trackBits = 0xFF;
@@ -204,7 +204,7 @@ void PlaySound_082406e0(SoundID32 id) {
 void PlaySound_08240718(SoundID32 id) { m4aSongNumStart(id); }
 
 void sound_08240728(void) {
-  if (VM_SeekToKeyword('i') != 0) {
+  if (VM_SeekToNamedArg('i') != 0) {
     PlaySound_08240718(VM_GetValue());
   }
 }

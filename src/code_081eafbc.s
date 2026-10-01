@@ -5461,7 +5461,7 @@ FUN_081eda54: @ 0x081EDA54
 	adds r0, r4, #0
 	bl FUN_08002a58
 	adds r0, r4, #0
-	bl FUN_0823b284
+	bl Mover_Unlink
 	adds r0, r4, #0
 	movs r1, #0xdc
 	bl ClearMemory
@@ -5669,11 +5669,11 @@ _081EDBE4:
 	adds r0, r5, #0
 	adds r2, r4, #0
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	adds r1, r5, #0
 	adds r1, #0x44
 	adds r0, r5, #0
-	bl FUN_0823b46c
+	bl Mover_SetAuxSprite
 	adds r0, r5, #0
 	bl FUN_08002a48
 	movs r0, #0
@@ -32474,7 +32474,7 @@ FUN_081fa378: @ 0x081FA378
 	lsls r6, r6, #1
 	add r6, r8
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081FA3DC
 	bl VM_GetValue

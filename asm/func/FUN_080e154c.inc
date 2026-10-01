@@ -25,7 +25,7 @@ _080E1570:
 	b _080E16D2
 _080E157C:
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080E1598
 	bl VM_GetValue
@@ -36,7 +36,7 @@ _080E157C:
 	strh r0, [r5, #4]
 _080E1598:
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080E15B4
 	bl VM_GetValue
@@ -47,7 +47,7 @@ _080E1598:
 	strh r0, [r5, #0xc]
 _080E15B4:
 	movs r0, #0x66
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080E1602
 	bl VM_GetValue
@@ -82,21 +82,21 @@ _080E15E4:
 _080E1602:
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	movs r4, #0
 	strh r0, [r5, #0x14]
 	movs r0, #0x64
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strb r0, [r5, #0x18]
 	movs r0, #0x74
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r5, #0x12]
 	strh r4, [r5, #0x16]
 	movs r0, #0x73
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _080E1634
 	movs r0, #1

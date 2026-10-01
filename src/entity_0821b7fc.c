@@ -39,7 +39,19 @@ s32 Entity0821b7fc_Destroy(Entity0821b7fc* p) {
 
 NAKED s32 Entity0821b7fc_Init(Entity0821b7fc* p, unknown* param_2) { INCFUNC("asm/func/Entity0821b7fc_Init.inc"); }
 
-NAKED Entity0821b7fc* Entity0821b7fc_Create(unknown* p) { INCFUNC("asm/func/Entity0821b7fc_Create.inc"); }
+Entity0821b7fc* Entity0821b7fc_Create(unknown* arg) {
+  Entity0821b7fc* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity0821b7fc));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity0821b7fc_Update, Entity0821b7fc_Destroy);
+    if (Entity0821b7fc_Init(p, arg) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}
 
 void FUN_0821b840(Entity0821b7fc* p) { KillEntity((void*)p); }
 

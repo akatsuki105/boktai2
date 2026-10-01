@@ -1,9 +1,8 @@
 #ifndef __INCLUDE_TILEMAP_H__
 #define __INCLUDE_TILEMAP_H__
 
+#include "constants/tilemap.h"
 #include "gba/gba.h"
-
-// https://boktaihacking.net/wiki/Tile_map_file
 
 struct TilemapLayer;
 

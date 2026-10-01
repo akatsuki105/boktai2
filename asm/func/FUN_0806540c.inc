@@ -38,7 +38,7 @@
 	movs r2, #0
 	bl MainSprite_Add
 	movs r0, #0x64
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08065484

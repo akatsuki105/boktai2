@@ -1,5 +1,5 @@
 	push {r4, lr}
-	bl FUN_08230e88
+	bl ScriptRecord_GetBlocks
 	adds r4, r0, #0
 	ldr r0, _08230EE4 @ =0x030044BC
 	ldr r3, [r0]

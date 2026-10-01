@@ -565,16 +565,16 @@ TextBoxChoice* TextBoxChoice_CreateFromScript(void) {
   if (gTextBoxChoice != NULL) {
     return NULL;
   }
-  textPC = VM_SeekToKeyword('r') ? FUN_0823d340() : NULL;
-  stringBase = VM_GetKeywordValue('i', 0);
+  textPC = VM_SeekToNamedArg('r') ? FUN_0823d340() : NULL;
+  stringBase = VM_GetNamedArgValue('i', 0);
   scriptID = 0;
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     scriptID = VM_GetValue();
   }
-  settings[1] = VM_GetKeywordValue('l', 0);
-  settings[0] = VM_GetKeywordValue('w', 0);
-  settings[2] = VM_GetKeywordValue('c', 0);
-  if (VM_SeekToKeyword('a')) {
+  settings[1] = VM_GetNamedArgValue('l', 0);
+  settings[0] = VM_GetNamedArgValue('w', 0);
+  settings[2] = VM_GetNamedArgValue('c', 0);
+  if (VM_SeekToNamedArg('a')) {
     settings[3] = VM_GetValue();
     settings[4] = VM_GetValue();
     settings[5] = VM_GetValue();
@@ -584,7 +584,7 @@ TextBoxChoice* TextBoxChoice_CreateFromScript(void) {
   } else {
     settings[3] = 0, settings[4] = 0, settings[5] = 24, settings[6] = 3;
   }
-  if (VM_SeekToKeyword('A')) {
+  if (VM_SeekToNamedArg('A')) {
     for (i = 0; i < 4; i++) {
       if (VM_GetPC() != NULL) {
         args[i] = VM_GetValue();
@@ -618,10 +618,10 @@ TextBoxChoice* TextBoxChoice_CreateFromScript(void) {
 void TextBoxChoice_SetTextFromScript(void) {
   TextBoxChoice* p = gTextBoxChoice;
 
-  if (p != NULL && VM_SeekToKeyword('r')) {
+  if (p != NULL && VM_SeekToNamedArg('r')) {
     p->textPC = FUN_0823d340();
-    p->stringBase = VM_GetKeywordValue('i', 0);
-    if (VM_SeekToKeyword('w')) p->selected = VM_GetValue();
+    p->stringBase = VM_GetNamedArgValue('i', 0);
+    if (VM_SeekToNamedArg('w')) p->selected = VM_GetValue();
     if (p->textPC != NULL) {
       TextBoxChoice_ScanChoices(p, p->textPC);
       TextBoxChoice_SetCursor(p, p->selected);

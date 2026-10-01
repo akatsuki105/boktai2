@@ -17,12 +17,13 @@ import type { addr } from "../common/gba/gba.ts";
 const main = () => {
   new Command()
     .name("decode_string_batch.ts")
-    .description("tmp/string_addr.txt 由来の文字列アドレスを使って、指定した ID 範囲を string.ts と同じロジックでバッチデコードする。")
+    .description("tmp/string_addr.txt 由来の文字列アドレスを使って、指定した ID 範囲を string.ts と同じロジックでバッチデコードする")
     .argument("<rom:string>", "Path to a GBA ROM file.")
     .argument("<charmap:string>", "Path to the charmap.txt file.")
-    .argument("<start:number>", "開始ID。")
-    .argument("[end:number]", "終了ID(含まない)。省略時は start + 1。")
-    .action((_, romPath, charmapPath, startID, endID) => {
+    .argument("<start:number>", "開始ID")
+    .argument("[end:number]", "終了ID(含まない)。省略時は start + 1")
+    .option("--asm", "dump asm format")
+    .action((opts, romPath, charmapPath, startID, endID) => {
       const endIndex = endID ?? startID + 1;
 
       const rom = new DataView((Deno.readFileSync(romPath)).buffer);
@@ -43,19 +44,32 @@ const main = () => {
 
         const body = decode(window, charmap);
         if (body !== null) {
-          console.log(`String_${gba.toHex16(idx)}:: @ 0x${gba.toHex32(addr)}, ID: ${idx}`);
-          console.log(`  .string "${body}"`);
+          if (opts.asm) {
+            console.log(`String_${gba.toHex16(idx)}:: @ 0x${gba.toHex32(addr)}, ID: ${idx}`);
+            console.log(`  .string "${body}"`);
+          } else {
+            // 終端の "$" を除く
+            console.log(`const u8 String_${gba.toHex16(idx)}[] = _("${body.replace(/\$$/, "")}");`);
+          }
           continue;
         }
 
         const termEnd = indexOfSeq(window, termSeq);
         if (termEnd === -1) {
-          console.error(`@ Binary_${gba.toHex16(idx)} @ 0x${gba.toHex32(addr)}, ID: ${idx}: 終端が見つからないためスキップ`);
+          if (opts.asm) {
+            console.error(`@ Binary_${gba.toHex16(idx)} @ 0x${gba.toHex32(addr)}, ID: ${idx}: 終端が見つからないためスキップ`);
+          } else {
+            console.error(`const u8 Binary_${gba.toHex16(idx)}[] = {${Array.from(window.subarray(0, termEnd + termSeq.length)).map((b) => `0x${b.toString(16).padStart(2, "0")}`).join(", ")}}; // 0x${gba.toHex32(addr)}, ID: ${idx}: 終端が見つからないためスキップ`);
+          }
           continue;
         }
 
-        console.log(`Binary_${gba.toHex16(idx)}:: @ 0x${gba.toHex32(addr)}, ID: ${idx}`);
-        console.log(formatByteDump(window.subarray(0, termEnd + termSeq.length)));
+        if (opts.asm) {
+          console.log(`Binary_${gba.toHex16(idx)}:: @ 0x${gba.toHex32(addr)}, ID: ${idx}`);
+          console.log(formatByteDump(window.subarray(0, termEnd + termSeq.length)));
+        } else {
+          console.log(`const u8 Binary_${gba.toHex16(idx)}[] = {${Array.from(window.subarray(0, termEnd + termSeq.length)).map((b) => `0x${b.toString(16).padStart(2, "0")}`).join(", ")}}; // 0x${gba.toHex32(addr)}, ID: ${idx}`);
+        }
       }
     })
     .parse(Deno.args);

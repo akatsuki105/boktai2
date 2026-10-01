@@ -9,7 +9,7 @@
 	strh r1, [r5, #0x18]
 	strh r0, [r5, #0x1a]
 	movs r0, #0x6f
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0800FB8C
 	movs r6, #0
@@ -59,7 +59,7 @@ _0800FB9E:
 	bge _0800FB9E
 _0800FBA6:
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0800FC02
 	movs r6, #0

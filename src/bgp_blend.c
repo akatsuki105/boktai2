@@ -51,6 +51,23 @@ s32 BgPlttBlender_Init(BgPlttBlender* p) {
   return 0;
 }
 
-NAKED BgPlttBlender* BgPlttBlender_Create(void) { INCFUNC("asm/func/BgPlttBlender_Create.inc"); }
+BgPlttBlender* BgPlttBlender_Create(void) {
+  BgPlttBlender* p;
+
+  if (gBgPlttBlender != NULL) {
+    return gBgPlttBlender;
+  }
+
+  p = CreateEntity(ENTITY_UNK_12, sizeof(BgPlttBlender));
+  if (p != NULL) {
+    SetEntityRoutine(p, BgPlttBlender_Update, BgPlttBlender_Destroy);
+    if (BgPlttBlender_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}
 
 NAKED s32 BgPlttBlender_AddSlotFromScript(void) { INCFUNC("asm/func/BgPlttBlender_AddSlotFromScript.inc"); }

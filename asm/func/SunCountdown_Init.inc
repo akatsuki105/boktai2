@@ -10,13 +10,13 @@
 	strh r1, [r6, #0x18]
 	movs r0, #0x66
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strb r0, [r6, #0x1a]
 	ldr r0, _08011010 @ =0x0000596F
 	strh r0, [r6, #0x1c]
 	movs r0, #0x70
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r6, #0x1e]
 	ldr r0, _08011014 @ =0x030043F0
 	str r0, [r6, #0x20]

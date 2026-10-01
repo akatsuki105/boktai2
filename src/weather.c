@@ -343,14 +343,14 @@ NON_MATCH s32 FUN_08018990(void) {
   s32 a;
   s32 b;
 
-  if (VM_SeekToKeyword('c')) {
+  if (VM_SeekToNamedArg('c')) {
     a = VM_GetValue();
     b = VM_GetValue();
   } else {
     b = 1200;
     a = b;
   }
-  if (VM_SeekToKeyword('i')) {
+  if (VM_SeekToNamedArg('i')) {
     VM_GetValue();
   } else if (s32_03000078 > 0) {
     gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;

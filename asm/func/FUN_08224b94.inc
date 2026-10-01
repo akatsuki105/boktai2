@@ -11,7 +11,7 @@
 	beq _08224C6E
 _08224BAC:
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08224BEC
 	bl VM_GetValue

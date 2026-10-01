@@ -92,7 +92,7 @@ NAKED s32 Entity12C4_Init(Entity12C4* p, u16 param_2) { INCFUNC("asm/func/Entity
 // '.a' で所属する更新リストを切り替える
 Entity12C4* Entity12C4_Create(s32 param_1) {
   Entity12C4* p;
-  s32 useAltList = VM_GetKeywordValue('a', 0);
+  s32 useAltList = VM_GetNamedArgValue('a', 0);
 
   if (gEntity12C4 != NULL) {
     return gEntity12C4;

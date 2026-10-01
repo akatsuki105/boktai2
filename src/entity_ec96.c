@@ -107,10 +107,10 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   Vec3 size, offset;
 
   p->id = id;
-  p->breakable = VM_GetKeywordValue('t', 0);
+  p->breakable = VM_GetNamedArgValue('t', 0);
   p->broken = 0;
-  p->hp = VM_GetKeywordValue('l', 50);
-  z = VM_SeekToKeyword('p');
+  p->hp = VM_GetNamedArgValue('l', 50);
+  z = VM_SeekToNamedArg('p');
   if (z != 0) {
     p->pos.x = VM_GetValue();
     p->pos.y = VM_GetValue();
@@ -120,7 +120,7 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
     p->pos.y = 0;
   }
   p->pos.z = z;
-  p->scriptID = VM_GetKeywordValue('e', 0);
+  p->scriptID = VM_GetNamedArgValue('e', 0);
   gfx = &p->gfx;
   if (!Video_GetAuxSprite(gfx, SPRITE_PLANT_2567)) {
     return -1;

@@ -299,7 +299,7 @@ _080E1B46:
 	cmp r0, #0
 	beq _080E1B50
 	adds r0, r5, #0
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 _080E1B50:
 	ldr r3, _080E1B8C @ =0x00000256
 	adds r0, r5, r3

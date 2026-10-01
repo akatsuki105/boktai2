@@ -8,10 +8,13 @@
 // player.c とファイルを分けてるのは、ファイルサイズが大きくなりすぎてコードを把握しにくいからで、解析が進んだら整理する予定
 
 void FUN_08065164(Player* p);
+extern const u16 u16_ARRAY_085abb2c[57];
+extern const u16 u16_ARRAY_085abb9e[57];
+extern const u16 u16_ARRAY_085abc10[57];
 extern const u16 u16_ARRAY_085abf4c[3];
 extern u16 u16_ARRAY_03002ba0[3];
 extern u16 u16_03002b78;
-extern u16 u16_03002b80;
+extern u16 gSunlightOverride;
 extern u16 u16_03002bd0;
 void FUN_080612d8(Player* p);
 bool32 FUN_08060a24(Player* p, u32 animID, s32 param_3);
@@ -37,7 +40,7 @@ void FUN_0807ddbc(Player* p);
 void FUN_08064a64(Player* p, const ArmorData* a);
 
 void FUN_08065200(Player* p) {
-  if (VM_SeekToKeyword('i')) {
+  if (VM_SeekToNamedArg('i')) {
     p->unk_18 = VM_GetValue();
   } else {
     p->unk_18 = 0;
@@ -53,7 +56,7 @@ void FUN_0806521c(Player* p) {
 }
 
 void FUN_08065240(Player* p) {
-  if (VM_SeekToKeyword('R')) {
+  if (VM_SeekToNamedArg('R')) {
     p->scriptID_9c4 = VM_GetValue();
   } else {
     p->scriptID_9c4 = 0;
@@ -187,7 +190,21 @@ void FUN_08066e84(void) {
 
 NAKED void FUN_08066e9c(Player* p, Vec3* pos1, s16 param_3, u8 param_4, Vec3* pos2, s32 param_6, u16 id) { INCFUNC("asm/func/FUN_08066e9c.inc"); }
 
-NAKED u32 FUN_08066ee4(s32 kind, s32 idx) { INCFUNC("asm/func/FUN_08066ee4.inc"); }
+u32 FUN_08066ee4(s32 kind, s32 idx) {
+  if (kind == 0) {
+    return u16_ARRAY_085abb2c[idx];
+  }
+
+  if (kind == 1) {
+    return u16_ARRAY_085abb9e[idx];
+  }
+
+  if (kind == 5) {
+    return u16_ARRAY_085abc10[idx];
+  }
+
+  return 0;
+}
 
 NAKED u32 FUN_08066f18(Player* p) { INCFUNC("asm/func/FUN_08066f18.inc"); }
 
@@ -878,10 +895,10 @@ NAKED void FUN_0807adc0(Player* p) { INCFUNC("asm/func/FUN_0807adc0.inc"); }
 NAKED void FUN_0807ae6c(Player* p, u32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0807ae6c.inc"); }
 
 // '.i' から gPlayerPtr の idx を取得する, なかったら 0 (1P) を返すので、 実質的な '.i=0'
-u32 VM_GetPlayerIdx(void) { return VM_SeekToKeyword('i') ? VM_GetValue() : 0; }
+u32 VM_GetPlayerIdx(void) { return VM_SeekToNamedArg('i') ? VM_GetValue() : 0; }
 
 s32 FUN_0807b000(Vec3* pos) {
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     pos->x = VM_GetValue();
     pos->y = VM_GetValue();
     pos->z = VM_GetValue();
@@ -912,16 +929,16 @@ s32 FUN_0807b138(void) {
 }
 
 void FUN_0807b15c(void) {
-  if (VM_SeekToKeyword('e')) {
+  if (VM_SeekToNamedArg('e')) {
     FUN_0807a798(VM_GetValue());
   }
 }
 
 void FUN_0807b174(void) {
-  if (VM_SeekToKeyword('t')) {
+  if (VM_SeekToNamedArg('t')) {
     s32 kind = VM_GetValue();
 
-    if (VM_SeekToKeyword('p')) {
+    if (VM_SeekToNamedArg('p')) {
       FUN_0807a7f8(kind, VM_GetValue());
     }
   }
@@ -933,7 +950,7 @@ NON_MATCH s32 FUN_0807b1a4(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
-  if (p == NULL || !VM_SeekToKeyword('f')) {
+  if (p == NULL || !VM_SeekToNamedArg('f')) {
     return 0;
   }
   return p->flag378 & VM_GetValue();
@@ -986,7 +1003,7 @@ NON_MATCH s32 FUN_0807b3e0(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
-  if (p != NULL && VM_SeekToKeyword('s')) {
+  if (p != NULL && VM_SeekToNamedArg('s')) {
     s32 n = VM_GetValue();
 
     if (n <= 2 && p->unk_43c[n] != 0) {
@@ -1000,11 +1017,11 @@ NON_MATCH s32 FUN_0807b3e0(void) {
 }
 
 void FUN_0807b428(void) {
-  if (VM_SeekToKeyword('s')) {
+  if (VM_SeekToNamedArg('s')) {
     s32 n = VM_GetValue();
 
     if (n <= 2) {
-      s32 val = VM_SeekToKeyword('t') ? VM_GetValue() : u16_ARRAY_085abf4c[n];
+      s32 val = VM_SeekToNamedArg('t') ? VM_GetValue() : u16_ARRAY_085abf4c[n];
 
       if (gPlayerPtr[0] != NULL) {
         FUN_08063574(gPlayerPtr[0], n, val);
@@ -1019,7 +1036,7 @@ void FUN_0807b484(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
-  if (p != NULL && VM_SeekToKeyword('s')) {
+  if (p != NULL && VM_SeekToNamedArg('s')) {
     FUN_08063634(p, VM_GetValue());
   }
 }
@@ -1064,7 +1081,7 @@ void FUN_0807b528(void) {
 
 void FUN_0807b564(void) {
   u16_03002bd0 = 0;
-  u16_03002b80 = 0;
+  gSunlightOverride = 0;
   u16_03002b78 = 0;
 }
 
@@ -1127,7 +1144,7 @@ NON_MATCH void FUN_0807b66c(void) {
 
   if (p != NULL) {
     FUN_0807e854(p);
-    if (VM_SeekToKeyword('d')) {
+    if (VM_SeekToNamedArg('d')) {
       p->sprite_2e4.active = VM_GetValue();
     }
     FUN_080609dc(p);
@@ -1458,13 +1475,13 @@ void FUN_0807d118(Player* p) {
 }
 
 s32 FUN_0807d164(void) {
-  if (VM_SeekToKeyword('d')) {
+  if (VM_SeekToNamedArg('d')) {
     return VM_GetValue();
   }
   return -1;
 }
 
-u32 FUN_0807d180(void) { return VM_SeekToKeyword('e') ? VM_GetValue() : 0; }
+u32 FUN_0807d180(void) { return VM_SeekToNamedArg('e') ? VM_GetValue() : 0; }
 
 void FUN_0807d198(void) {
   s32 i = VM_GetPlayerIdx();
@@ -1480,7 +1497,7 @@ void FUN_0807d1c0(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
-  if (p != NULL && VM_SeekToKeyword('p')) {
+  if (p != NULL && VM_SeekToNamedArg('p')) {
     FUN_0807b890(p, VM_GetValue() + 0x121);
     FUN_08072640(p);
   }
@@ -1490,7 +1507,7 @@ void FUN_0807d200(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
-  if (p != NULL && VM_SeekToKeyword('p')) {
+  if (p != NULL && VM_SeekToNamedArg('p')) {
     FUN_0807b8a8(p, VM_GetValue() + 0x121);
     FUN_08072640(p);
   }
@@ -1612,7 +1629,7 @@ void FUN_0807d660(void) {
     s32 a = FUN_0807d164();
     u32 b = FUN_0807d180();
 
-    FUN_0807bdc8(p, a, VM_SeekToKeyword('f') ? VM_GetValue() : 0, b);
+    FUN_0807bdc8(p, a, VM_SeekToNamedArg('f') ? VM_GetValue() : 0, b);
   }
 }
 
@@ -1624,7 +1641,7 @@ void FUN_0807d6a8(void) {
     s32 a = FUN_0807d164();
     u32 b = FUN_0807d180();
 
-    FUN_0807be58(p, a, VM_SeekToKeyword('h') ? VM_GetValue() : 1500, b);
+    FUN_0807be58(p, a, VM_SeekToNamedArg('h') ? VM_GetValue() : 1500, b);
     FUN_08072640(p);
   }
 }
@@ -1634,7 +1651,7 @@ void FUN_0807d6f8(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    s32 n = VM_SeekToKeyword('f') ? VM_GetValue() : 30;
+    s32 n = VM_SeekToNamedArg('f') ? VM_GetValue() : 30;
 
     FUN_0807bee0(p, FUN_0807d164(), n, FUN_0807d180());
     FUN_08072640(p);
@@ -1658,7 +1675,7 @@ void FUN_0807d7dc(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    s32 n = VM_SeekToKeyword('f') ? VM_GetValue() : 50;
+    s32 n = VM_SeekToNamedArg('f') ? VM_GetValue() : 50;
 
     FUN_0807c084(p, FUN_0807d164(), n, FUN_0807d180());
     FUN_08072640(p);
@@ -1770,7 +1787,7 @@ void FUN_0807da50(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    s32 n = VM_SeekToKeyword('l') ? VM_GetValue() : 32;
+    s32 n = VM_SeekToNamedArg('l') ? VM_GetValue() : 32;
 
     FUN_0807c634(p, n, FUN_0807d180());
     FUN_08072640(p);
@@ -1796,7 +1813,7 @@ void FUN_0807dad0(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    s32 n = VM_SeekToKeyword('r') ? VM_GetValue() : 0;
+    s32 n = VM_SeekToNamedArg('r') ? VM_GetValue() : 0;
 
     FUN_0807c9ac(p, n, FUN_0807d180());
     FUN_08072640(p);
@@ -1808,7 +1825,7 @@ void FUN_0807db14(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    s32 n = VM_SeekToKeyword('r') ? VM_GetValue() : 0;
+    s32 n = VM_SeekToNamedArg('r') ? VM_GetValue() : 0;
 
     FUN_0807ca24(p, n, FUN_0807d180());
     FUN_08072640(p);
@@ -1820,7 +1837,7 @@ void FUN_0807db58(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    s32 n = VM_SeekToKeyword('r') ? VM_GetValue() : 0;
+    s32 n = VM_SeekToNamedArg('r') ? VM_GetValue() : 0;
 
     FUN_0807ca9c(p, n, FUN_0807d180());
     FUN_08072640(p);
@@ -1832,7 +1849,7 @@ void FUN_0807db9c(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    s32 n = VM_SeekToKeyword('r') ? VM_GetValue() : 0;
+    s32 n = VM_SeekToNamedArg('r') ? VM_GetValue() : 0;
 
     FUN_0807cb14(p, n, FUN_0807d180());
     FUN_08072640(p);
@@ -1844,7 +1861,7 @@ void FUN_0807dbe0(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    s32 n = VM_SeekToKeyword('d') ? VM_GetValue() : 0;
+    s32 n = VM_SeekToNamedArg('d') ? VM_GetValue() : 0;
 
     FUN_0807cb8c(p, n, FUN_0807d180());
     FUN_08072640(p);
@@ -1856,7 +1873,7 @@ void FUN_0807dc24(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807cc14(p, VM_SeekToKeyword('r') ? VM_GetValue() : 0);
+    FUN_0807cc14(p, VM_SeekToNamedArg('r') ? VM_GetValue() : 0);
     FUN_08072640(p);
   }
 }

@@ -1607,7 +1607,7 @@ Entity501B_Init: @ 0x081E0AEC
 	sub sp, #0xc
 	adds r4, r0, #0
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081E0B0C
 	bl FUN_0823d340
@@ -1619,7 +1619,7 @@ Entity501B_Init: @ 0x081E0AEC
 	beq _081E0B26
 _081E0B0C:
 	movs r0, #0x65
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081E0B2C
 	bl FUN_0823d340

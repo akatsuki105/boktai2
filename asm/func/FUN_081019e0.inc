@@ -155,7 +155,7 @@ _08101A58:
 	ldrb r0, [r0]
 	str r0, [sp]
 	adds r0, r6, #0
-	bl FUN_0823b490
+	bl Mover_SetPath
 	ldr r5, [r5]
 	adds r4, r6, #0
 	adds r4, #8

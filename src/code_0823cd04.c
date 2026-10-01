@@ -6,19 +6,32 @@
 #include "weapon.h"
 
 extern s32 s32_0300446c;
+extern u32 u32_0300478c;
+extern u32 u32_0300479c;
+extern u32 u32_030047a0;
+extern u32 u32_030047c0;
+extern u32 u32_030047c4;
+extern u16 u16_030047d8;
 extern u32 gSentinel02020400;
 extern const u8 u8_ARRAY_08dbd798[][2];  // 0x08DBD798
 static const u8 u8_ARRAY_08dbd83c[684];
 
-NAKED void FUN_0823cd04(void) { INCFUNC("asm/func/FUN_0823cd04.inc"); }
+void FUN_0823cd04(void) {
+  gFlag030047a4 = 0;
+  u32_030047a0 = 0;
+  u32_0300479c = 0;
+  u32_030047c0 = 0;
+  u32_0300478c = 0;
+  u32_030047c4 = 0;
+}
 
 char* FUN_0823cd38(void) { return gStat->name; }
 
 NAKED void FUN_0823cd48(void) { INCFUNC("asm/func/FUN_0823cd48.inc"); }
 
-NAKED unknown* FUN_0823cdc0(u32 param_1, unknown* param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_0823cdc0.inc"); }
+NAKED unknown* FUN_0823cdc0(u32 param_1, const u8* param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_0823cdc0.inc"); }
 
-NAKED unknown* FUN_0823cdf8(u16 param_1) { INCFUNC("asm/func/FUN_0823cdf8.inc"); }
+unknown* FUN_0823cdf8(u16 param_1) { return FUN_0823cdc0(param_1, u8_ARRAY_08dbd83c, 0, 0xAA); }
 
 s32 FUN_0823ce10(u16* param_1, u16* param_2) {
   *param_1 = u8_ARRAY_08dbd798[gClock.spanOfTime][0];
@@ -61,13 +74,21 @@ NAKED void FUN_0823d22c(void) { INCFUNC("asm/func/FUN_0823d22c.inc"); }
 
 NAKED void FUN_0823d280(void) { INCFUNC("asm/func/FUN_0823d280.inc"); }
 
-void FUN_0823d2bc(void) { s32_0300446c = VM_GetKeywordValue('t', 0); }
+void FUN_0823d2bc(void) { s32_0300446c = VM_GetNamedArgValue('t', 0); }
 
 void FUN_0823d2d4(void) { s32_0300446c = 0; }
 
-NAKED void FUN_0823d2e0(s32 val) { INCFUNC("asm/func/FUN_0823d2e0.inc"); }
+void FUN_0823d2e0(s32 idx) {
+  if (*(idx + gStat->unk_948) < 9999) {
+    (*(idx + gStat->unk_948))++;
+  }
+}
 
-NAKED void FUN_0823d310(s32 val) { INCFUNC("asm/func/FUN_0823d310.inc"); }
+void FUN_0823d310(s32 idx) {
+  if (*(idx + gStat->unk_950) < 9999) {
+    (*(idx + gStat->unk_950))++;
+  }
+}
 
 void UNUSED nop_0823d33c(void) {}
 
@@ -75,7 +96,13 @@ u8* FUN_0823d340(void) { return VM_GetPC(); }
 
 void* FUN_0823d34c(void) { return VM_GetValueSafe2(); }
 
-NAKED void FUN_0823d358(void) { INCFUNC("asm/func/FUN_0823d358.inc"); }
+// スクリプトの変数へフレームカウンタを書き出す
+void FUN_0823d358(void) {
+  u8 desc[8];
+
+  FUN_0823167c(desc);
+  FUN_0823206c(desc, 0, gSystemSaveData->frameCounter);
+}
 
 NAKED void FUN_0823d37c(void) { INCFUNC("asm/func/FUN_0823d37c.inc"); }
 
@@ -99,7 +126,6 @@ bool32 FUN_0823d4c8(void) {
   if (gSentinel02020400 == 0x516B92EE) {
     return TRUE;
   }
-
   return FALSE;
 }
 
@@ -107,7 +133,21 @@ NAKED s32 UpdateSolDarkSide(void) { INCFUNC("asm/func/UpdateSolDarkSide.inc"); }
 
 NAKED s32 UpdateWeaponStyle(void) { INCFUNC("asm/func/UpdateWeaponStyle.inc"); }
 
-NAKED s32 FUN_0823d5b8(void) { INCFUNC("asm/func/FUN_0823d5b8.inc"); }
+// unk_2fe が一番大きい添字を返す
+s32 FUN_0823d5b8(void) {
+  s32 best = 0;
+  s32 bestVal = -100;
+  s32 i;
+
+  for (i = 0; i < 5; i++) {
+    if (gStat->unk_2fe[i] > bestVal) {
+      bestVal = gStat->unk_2fe[i];
+      best = i;
+    }
+  }
+
+  return best;
+}
 
 NAKED bool32 FUN_0823d5f0(void) { INCFUNC("asm/func/FUN_0823d5f0.inc"); }
 
@@ -122,13 +162,35 @@ bool32 FUN_0823d68c(void) {
 
 s32 FUN_0823d6b0(void) { return gSystemSaveData->unk_c; }
 
-NAKED s32 FUN_0823d6bc(void) { INCFUNC("asm/func/FUN_0823d6bc.inc"); }
+s32 FUN_0823d6bc(void) {
+  s32 v = VM_GetNamedArgValue('p', gSystemSaveData->unk_c);
+
+  if (v < 0) {
+    v = 0;
+  } else if (v > 9999) {
+    v = 9999;
+  }
+
+  gSystemSaveData->unk_c = v;
+  return v;
+}
 
 u16 FUN_0823d6f4(void) { return gSystemSaveData->unk_14; }
 
 u16 FUN_0823d700(void) { return gSystemSaveData->unk_16; }
 
-NAKED void FUN_0823d70c(void) { INCFUNC("asm/func/FUN_0823d70c.inc"); }
+// '.s' の文字列のIDを覚えておく
+void FUN_0823d70c(void) {
+  if (VM_SeekToNamedArg('s')) {
+    u8* pc = VM_GetPC();
+
+    if (pc != NULL) {
+      char* str = Textbox_LookupString(VM_ParseStringRef(pc));
+
+      u16_030047d8 = (str[1] | (str[0] << 8)) & 0xFFF;
+    }
+  }
+}
 
 void FUN_0823d748(void) { gStat->mapInitScriptID = VM_GetValue(); }
 

@@ -9,7 +9,7 @@
 	adds r6, r7, #0
 	movs r0, #0x74
 	movs r1, #3
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	mov sl, r0
 	adds r0, r7, #0
 	mov r1, sl
@@ -64,7 +64,7 @@ _08200298:
 	adds r1, r3, #0
 	bl OpenMainSpriteFile
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08200380
 	bl VM_GetValue
@@ -169,7 +169,7 @@ _08200380:
 	mov sb, r2
 _08200396:
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _082003B8
 	bl VM_GetValue
@@ -189,7 +189,7 @@ _082003B8:
 _082003C2:
 	str r0, [sp, #0x24]
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820043C
 	bl VM_GetValue
@@ -275,7 +275,7 @@ _0820043C:
 	strh r1, [r0]
 _0820048A:
 	movs r0, #0x77
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820051A
 	bl VM_GetPC
@@ -371,7 +371,7 @@ _08200538:
 	strb r4, [r0]
 	movs r0, #0x69
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r6, #0
 	adds r4, #0xab
 	strb r0, [r4]
@@ -395,7 +395,7 @@ _08200538:
 	adds r0, r7, #0
 	bl FUN_081ff7fc
 	movs r0, #0x63
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	str r4, [sp, #0x2c]
 	cmp r0, #0
 	beq _082005C4
@@ -420,7 +420,7 @@ _082005C4:
 	bl FUN_08022fac
 _082005CE:
 	movs r0, #0x41
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r4, r6, #0
 	adds r4, #0x98
 	str r4, [sp, #0x28]
@@ -445,12 +445,12 @@ _082005F2:
 _082005FE:
 	movs r0, #0x4b
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r5, _0820062C @ =0x00000844
 	adds r1, r7, r5
 	str r0, [r1]
 	movs r0, #0x6a
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08200638
 	bl VM_GetValue
@@ -630,7 +630,7 @@ _0820070C:
 	beq _0820081C
 	movs r0, #0x44
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _082007AA

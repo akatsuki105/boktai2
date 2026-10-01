@@ -3,7 +3,7 @@
 	push {r7}
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	ldr r0, _081D5388 @ =0x03000194
 	ldr r0, [r0]
@@ -19,7 +19,7 @@
 	mov r8, r0
 	movs r5, #0
 	movs r0, #0x72
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081D53AA
 	bl VM_GetPC

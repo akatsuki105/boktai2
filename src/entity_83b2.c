@@ -396,7 +396,7 @@ s32 Entity83B2_Init(Entity83B2* p, void* _) {
   s32 i;
 
   gEntity83B2 = p;
-  p->length = VM_GetKeywordValue('n', 1);
+  p->length = VM_GetNamedArgValue('n', 1);
   p->unk_19 = 0xFF;
   p->unk_1a = -1;
   p->unk_1c = 0;
@@ -436,7 +436,7 @@ Entity83B2* Entity83B2_Create(void* _) {
 }
 
 // マップ切り替わり時に (多分 Entity83B2 の数だけ)　呼ばれた (銀行に入ると3回呼ばれた, 多分 ヒントパネル1個 + ATM2個 で3回と思われる)
-// マップ切り替え時に呼ばれ、スクリプトの keyword から list の各要素を作る
+// マップ切り替え時に呼ばれ、スクリプトの名前付き引数から list の各要素を作る
 NON_MATCH s32 VM_Sub883A(void) {
 #ifdef NONMATCHING_C
   Vec3 pos;
@@ -454,7 +454,7 @@ NON_MATCH s32 VM_Sub883A(void) {
   if (p == NULL) {
     return -1;
   }
-  n = VM_GetKeywordValue('n', 0);
+  n = VM_GetNamedArgValue('n', 0);
   data = p->list;
   for (i = 0; i < p->length; i++) {
     if (p->unk_1c & (1 << i)) {
@@ -462,15 +462,15 @@ NON_MATCH s32 VM_Sub883A(void) {
     } else {
       sprite = &data->sprite;
       data->unk_0 = n;
-      data->unk_2 = VM_GetKeywordValue('d', 0);
+      data->unk_2 = VM_GetNamedArgValue('d', 0);
       data->unk_3 = 0;
-      data->unk_4 = VM_GetKeywordValue('t', 0);
-      kind = VM_GetKeywordValue('m', 0);
-      data->unk_c = VM_GetKeywordValue('b', 0);
-      data->unk_e = VM_GetKeywordValue('e', 0);
-      scriptID = VM_GetKeywordValue('D', 0xE6);
+      data->unk_4 = VM_GetNamedArgValue('t', 0);
+      kind = VM_GetNamedArgValue('m', 0);
+      data->unk_c = VM_GetNamedArgValue('b', 0);
+      data->unk_e = VM_GetNamedArgValue('e', 0);
+      scriptID = VM_GetNamedArgValue('D', 0xE6);
       data->unk_10 = scriptID * scriptID;
-      if (VM_SeekToKeyword('a')) {
+      if (VM_SeekToNamedArg('a')) {
         arg = data->unk_14;
         do {
           if (VM_GetPC() != NULL) {
@@ -486,7 +486,7 @@ NON_MATCH s32 VM_Sub883A(void) {
           arg--;
         } while (arg >= data->unk_14);
       }
-      if (VM_SeekToKeyword('p')) {
+      if (VM_SeekToNamedArg('p')) {
         pos.x = VM_GetValue();
         pos.y = VM_GetValue();
         pos.z = VM_GetValue();
@@ -534,11 +534,11 @@ s32 VM_Sub1F65(void) {
   if (p == NULL) {
     return -1;
   }
-  data = FUN_0800922c(p, VM_GetKeywordValue('n', 0), NULL);
+  data = FUN_0800922c(p, VM_GetNamedArgValue('n', 0), NULL);
   if (data == NULL) {
     return -1;
   }
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     pos.x = VM_GetValue();
     pos.y = VM_GetValue();
     pos.z = VM_GetValue();

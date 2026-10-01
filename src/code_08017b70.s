@@ -674,7 +674,7 @@ FUN_08019874: @ 0x08019874
 	cmp r7, #0
 	beq _08019940
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080198D4
 	bl VM_GetValue
@@ -714,19 +714,19 @@ _080198DE:
 	lsls r4, r4, #1
 	movs r0, #0x64
 	adds r1, r4, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	mov r8, r0
 	movs r0, #0x74
 	adds r1, r4, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r6, r0, #0
 	movs r0, #0x6e
 	movs r1, #8
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r5, r0, #0
 	movs r0, #0x54
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r0, #0
 	ldr r1, _08019938 @ =FUN_08019464
 	ldr r2, _0801993C @ =FUN_08019574
@@ -825,10 +825,10 @@ Entity82B7_Init: @ 0x080199BC
 	adds r5, r0, #0
 	movs r0, #0x6d
 	movs r1, #1
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strb r0, [r5, #0x18]
 	movs r0, #0x69
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080199FC
 	adds r7, r5, #0
@@ -866,7 +866,7 @@ _08019A0E:
 	bge _08019A0E
 _08019A16:
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08019A42
 	movs r6, #0
@@ -898,16 +898,16 @@ _08019A48:
 _08019A50:
 	movs r0, #0x73
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	movs r4, #0
 	strh r0, [r5, #0x20]
 	movs r0, #0x64
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r5, #0x22]
 	movs r0, #0x74
 	movs r1, #0x3c
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	str r0, [r5, #0x28]
 	str r4, [r5, #0x24]
 	cmp r0, #0

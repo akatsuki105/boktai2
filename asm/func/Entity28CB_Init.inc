@@ -6,7 +6,7 @@
 	adds r6, r0, #0
 	adds r4, r1, #0
 	movs r0, #0x4f
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0808A164
@@ -50,7 +50,7 @@ _0808A18C:
 	bl PlaySound_082406e0
 _0808A1A2:
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0808A1CC
 	bl VM_GetValue
@@ -89,7 +89,7 @@ _0808A1E8:
 	movs r1, #0x80
 	lsls r1, r1, #3
 	movs r0, #0x68
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r6, #0
 	adds r4, #0x58
 	strh r0, [r4]
@@ -99,7 +99,7 @@ _0808A1E8:
 	movs r1, #0x80
 	lsls r1, r1, #2
 	movs r0, #0x6d
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r6, #0
 	adds r1, #0x5c
 	strh r0, [r1]
@@ -110,7 +110,7 @@ _0808A1E8:
 	lsls r0, r0, #3
 	strh r0, [r1]
 	movs r0, #0x65
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	mov r8, r5
 	mov sb, r4
 	cmp r0, #0

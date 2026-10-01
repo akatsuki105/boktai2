@@ -47,8 +47,41 @@ NAKED s32 Entity08060470_Destroy(Entity08060470* p) { INCFUNC("asm/func/Entity08
 
 NAKED s32 Entity08060470_Init(Entity08060470* p) { INCFUNC("asm/func/Entity08060470_Init.inc"); }
 
-NAKED Entity08060470* Entity08060470_Create(void) { INCFUNC("asm/func/Entity08060470_Create.inc"); }
+extern void* gEntity08060470;
 
-NAKED Entity08060470Elem* Entity08060470_FindFreeElem(Entity08060470* p, u32* outIdx) { INCFUNC("asm/func/Entity08060470_FindFreeElem.inc"); }
+Entity08060470* Entity08060470_Create(void) {
+  Entity08060470* p = gEntity08060470;
+
+  if (p != NULL) {
+    return p;
+  }
+
+  p = CreateEntity(ENTITY_UNK_10, sizeof(Entity08060470));
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity08060470_Update, Entity08060470_Destroy);
+    if (Entity08060470_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}
+
+// 空きスロットを探して添字を *outIdx に入れて返す
+Entity08060470Elem* Entity08060470_FindFreeElem(Entity08060470* p, u32* outIdx) {
+  Entity08060470Elem* elem = p->ptcls;
+  s32 i;
+
+  for (i = 0; i < 16; i++, elem++) {
+    if (!(p->activeMask & (1 << i))) {
+      *outIdx = i;
+      return elem;
+    }
+  }
+
+  *outIdx = 0;
+  return NULL;
+}
 
 NAKED s32 Entity08060470_Spawn(u8 angle, s32 speed, u16 radius, Vec3* pos) { INCFUNC("asm/func/Entity08060470_Spawn.inc"); }

@@ -10,9 +10,9 @@ extern u16 gObjPlttSlotIDs[16];
 
 extern s32 gBgBrightness;
 extern s32 gObjPlttSlotCursor;
-extern s32 s32_03004048;
+extern s32 gBgBrightnessApplied;
 extern s32 gObjBrightnessApplied;
-extern s32 s32_03004450;
+extern s32 gObjPlttSlotReserved;
 extern u16 gBgPlttFadeRowMask;
 extern s32 gObjBrightness;
 extern s32 gBgBrightness2;
@@ -31,7 +31,7 @@ NON_MATCH void FUN_0822d014(rgb555* pltt, s32 val) {
 
   gObjPlttSlotCursor = 0;
   gObjPlttSlotCount = 0;
-  s32_03004450 = 0;
+  gObjPlttSlotReserved = 0;
   p = gObjectPlttBuffer;
   for (i = 0; i < 16; i++) {
     for (j = 0; j < 16; j++) {
@@ -41,13 +41,13 @@ NON_MATCH void FUN_0822d014(rgb555* pltt, s32 val) {
   }
   gBGPlttBufferPointer = gBgPlttBuffer;
   gBgBrightness = 0x40;
-  s32_03004048 = 0x40;
+  gBgBrightnessApplied = 0x40;
   gBgBrightness2 = 0x40;
-  gBgPlttBlendColor = 0x1084;
+  gBgPlttBlendColor = RGB(4, 4, 4);
   gBgPlttFadeRowMask = 0;
   gObjBrightness = 0x40;
   gObjBrightnessApplied = 0x40;
-  gObjPlttBlendColor = 0x1084;
+  gObjPlttBlendColor = RGB(4, 4, 4);
   gObjPlttFadeSkipMask = 0;
 #else
   INCFUNC("asm/func/FUN_0822d014.inc");
@@ -65,8 +65,8 @@ void FUN_0822d0e4(void) {
 }
 
 void FUN_0822d114(void) {
-  gObjPlttSlotCursor = s32_03004450 + 2;
-  s32_03004450 = 0;
+  gObjPlttSlotCursor = gObjPlttSlotReserved + 2;
+  gObjPlttSlotReserved = 0;
 }
 
 // パレット ID に OBJ パレットスロットを割り当てて番号を返す (登録済みならそのスロット、空きがなければ 0)
@@ -178,7 +178,7 @@ NON_MATCH void FUN_0822d630(void) {
       }
     }
   }
-  s32_03004048 = level;
+  gBgBrightnessApplied = level;
 #else
   INCFUNC("asm/func/FUN_0822d630.inc");
 #endif

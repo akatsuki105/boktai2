@@ -24,7 +24,7 @@ _080DB5A6:
 	movs r0, #1
 	strh r0, [r7, #0x3e]
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _080DB602
@@ -79,7 +79,7 @@ _080DB602:
 _080DB614:
 	movs r0, #0x72
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r0, #0
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18

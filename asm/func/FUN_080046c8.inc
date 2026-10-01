@@ -73,10 +73,10 @@ _08004718:
 	str r7, [sp, #4]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0823b46c
+	bl Mover_SetAuxSprite
 	mov r2, r8
 	ldr r0, [r2]
 	ldr r1, [r2, #4]

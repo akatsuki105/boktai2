@@ -66,7 +66,7 @@ void FUN_081d1924(Entity081d16ecItem* item) {
 
 // '.n' が指す要素のフラグを返す
 s32 FUN_081d19a8(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {
     Entity081d16ecItem* item = FUN_081d0f08(id);
@@ -78,7 +78,7 @@ s32 FUN_081d19a8(void) {
 }
 
 void FUN_081d19cc(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {
     Entity081d16ecItem* item = FUN_081d0f08(id);
@@ -92,13 +92,13 @@ void FUN_081d19cc(void) {
 
 // '.n' が指す要素を '.c' のビットに応じて開閉させる
 void FUN_081d19f8(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {
     Entity081d16ecItem* item = FUN_081d0f08(id);
 
     if (item != NULL) {
-      s32 mode = VM_GetKeywordValue('c', 0);
+      s32 mode = VM_GetNamedArgValue('c', 0);
 
       if (mode & 1) {
         if (!FUN_081d0e94(item, E081D16EC_FLAG_0)) {
@@ -118,7 +118,7 @@ void FUN_081d19f8(void) {
 }
 
 void FUN_081d1a7c(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
 
   if (id != 0) {
     Entity081d16ecItem* item = FUN_081d0f08(id);

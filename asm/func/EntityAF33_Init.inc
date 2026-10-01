@@ -9,7 +9,7 @@
 	str r6, [r0]
 	movs r0, #0x65
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r6, #0
 	adds r1, #0xc4
 	str r0, [r1]
@@ -17,7 +17,7 @@
 	str r0, [r6, #0x68]
 	str r0, [r6, #0x70]
 	movs r0, #0x77
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08050906
 	adds r7, r6, #0
@@ -166,7 +166,7 @@ _080509BE:
 	str r0, [r6, #0x6c]
 	str r0, [r6, #0x74]
 	movs r0, #0x6d
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08050A08
 	add r4, sp, #0x10
@@ -357,7 +357,7 @@ _08050B10:
 	movs r1, #0x18
 	bl FUN_0804e9f4
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08050B5C
 	bl FUN_0823d340
@@ -386,13 +386,13 @@ _08050B84:
 	str r0, [r1]
 	movs r0, #0x4d
 	movs r1, #0xb
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	movs r3, #0xd6
 	lsls r3, r3, #1
 	adds r1, r6, r3
 	strh r0, [r1]
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08050B5C
 	movs r5, #0xd7

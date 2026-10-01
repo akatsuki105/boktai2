@@ -102,7 +102,7 @@ SECTIONS {
       src/entity_0823acbc.o(iwram_data);
       src/vm_ctrl2.o(iwram_data);
       src/vm_subroutine.o(iwram_data);
-      src/entity_b8b9.o(iwram_data);
+      src/mover.o(iwram_data);
       src/entity_08240a54.o(iwram_data);
       src/entity_794c.o(iwram_data);
       src/entity_b639.o(iwram_data);
@@ -199,7 +199,7 @@ SECTIONS {
 			src/entity_78c9.o (.text);
 			src/entity_12c4.o (.text);
 			src/entity_a687.o (.text);
-			src/entity_ace3.o (.text);
+			src/clock_alarm.o (.text);
 			src/bgp_anim.o (.text);
 			src/entity_da0b.o (.text);
 			src/entity_ef6f.o (.text);
@@ -398,7 +398,7 @@ SECTIONS {
 			src/entity_0823acbc.o (.text);
 			src/vm_ctrl2.o (.text);
 			src/vm_subroutine.o (.text);
-			src/entity_b8b9.o (.text);
+			src/mover.o (.text);
 			src/code_0823b540.o (.text);
 			src/camera.o (.text);
 			src/code_0823cd04.o (.text);
@@ -591,6 +591,18 @@ SECTIONS {
     src/data/sprite_main.o (.rodata);
     src/data/obp.o (.rodata);
     src/data/scripts.o (.rodata);
+    src/data/text/strings.o (.rodata);
+    src/data/text/string_3307.o (.rodata);
+    src/data/text/library.o (.rodata);
+    src/data/text/string_3790.o (.rodata);
+    src/data/text/chat_luis.o (.rodata);
+    src/data/text/chat_marcello.o (.rodata);
+    src/data/text/chat_unknown.o (.rodata);
+    src/data/text/chat_zaji.o (.rodata);
+    src/data/text/staff_roll.o (.rodata);
+    src/data/text/map_codename.o (.rodata);
+    src/data/text/continue.o (.rodata);
+    src/data/start_menu.o (.rodata);
     src/data/scripts2.o (.rodata);
     src/data/item.o (.rodata);
     src/demo.o (.rodata);

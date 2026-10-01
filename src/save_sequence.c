@@ -62,10 +62,10 @@ s32 SaveSequence_Init(SaveSequence* p) {
   s32 err;
 
   FUN_0809c08c(3);
-  p->scriptID = VM_GetKeywordValue('e', 0);
+  p->scriptID = VM_GetNamedArgValue('e', 0);
   p->timer = 0;
   p->result = err = -1;
-  if (VM_SeekToKeyword('s')) {
+  if (VM_SeekToNamedArg('s')) {
     p->msgPc = FUN_0823d340();
     if (p->msgPc != NULL) {
       p->windowID = TextPanel_Create(1, 13, 28, 6);

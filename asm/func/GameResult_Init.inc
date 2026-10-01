@@ -3,7 +3,7 @@
 	push {r7}
 	adds r7, r0, #0
 	movs r0, #0x65
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08222AE4
 	bl VM_GetValue

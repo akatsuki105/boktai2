@@ -5963,7 +5963,7 @@ FUN_080cef14: @ 0x080CEF14
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x69
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080CEF26
 	bl VM_GetValue
@@ -6306,7 +6306,7 @@ FUN_080cf15c: @ 0x080CF15C
 	movs r2, #0
 	bl MainSprite_Add
 	movs r0, #0x64
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	adds r7, r4, #0
 	cmp r1, #0
@@ -6573,7 +6573,7 @@ FUN_080cf3c0: @ 0x080CF3C0
 	adds r7, r0, #0
 	adds r6, r1, #0
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080CF400
@@ -6694,7 +6694,7 @@ _080CF49C:
 	adds r0, r5, #0
 	adds r2, r6, #0
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	adds r0, r7, #0
 	bl FUN_080cf15c
 	adds r0, r7, #0
@@ -6705,7 +6705,7 @@ _080CF49C:
 	adds r1, r7, #0
 	adds r1, #0x88
 	adds r0, r5, #0
-	bl FUN_0823b474
+	bl Mover_SetMainSprite
 	movs r2, #0xde
 	lsls r2, r2, #1
 	adds r4, r7, r2
@@ -6716,7 +6716,7 @@ _080CF49C:
 	adds r1, r4, #0
 	movs r2, #0x1e
 	movs r3, #0x1e
-	bl FUN_0823b43c
+	bl Mover_SetCollision
 	ldr r1, _080CF544 @ =0xFFFF0000
 	movs r0, #0x96
 	lsls r0, r0, #0x11
@@ -21710,7 +21710,7 @@ _080D6A0E:
 _080D6A10:
 	adds r0, r5, #0
 	adds r0, #0x24
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 	adds r0, r5, #0
 	movs r1, #8
 	bl FUN_080cc3d4
@@ -22835,7 +22835,7 @@ FUN_080d72a8: @ 0x080D72A8
 	push {r4, lr}
 	adds r4, r0, #0
 	adds r0, #0x24
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 	adds r0, r4, #0
 	movs r1, #8
 	bl FUN_080cc3d4
@@ -24017,7 +24017,7 @@ _080D7BA4:
 FUN_080d7bac: @ 0x080D7BAC
 	push {lr}
 	movs r0, #0x69
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	bne _080D7BBC
 	movs r0, #0

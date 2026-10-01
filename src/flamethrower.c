@@ -2,22 +2,23 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "mover.h"
 #include "sprite.h"
 
 // Entity081eaf6c が抱える要素
 typedef struct Entity081eaf6cItem {
-  MainSprite sprite;      // 0x000, Entity081eaf6c_Destroy が要素そのものを MainSprite_Remove に渡す
-  Entity2UnkData unk_60;  // 0x060, flags の bit0 が立っていれば _Destroy が FUN_08002a58 に、その後 FUN_0823b284 に渡す
-  u8 unk_a4[44];          // 0x0A4
-  Vec3 hitboxPos;         // 0x0D0, Hitbox_SetPos に渡す位置
-  HitboxData hitbox;      // 0x0D8, FUN_081eaa10 が unk_128 が 1 のときだけ登録する
-  s16 unk_128;            // 0x128, 1 のときだけヒットボックスを登録する
-  u8 unk_12a[8];          // 0x12A
-  s16 unk_132;            // 0x132, _Update が s16 として読む
-  u16 unk_134;            // 0x134, FUN_081eaa10 が毎フレーム +1 する
-  u16 unk_136;            // 0x136, _Init が全要素に 0xFFFF を入れる
-  u16 flags;              // 0x138, bit0 が立っていると _Destroy が FUN_08002a58 を呼ぶ
-  u8 unk_13a[2];          // 0x13A, padding?
+  MainSprite sprite;  // 0x000, Entity081eaf6c_Destroy が要素そのものを MainSprite_Remove に渡す
+  Mover unk_60;       // 0x060, flags の bit0 が立っていれば _Destroy が FUN_08002a58 に、その後 Mover_Unlink に渡す
+  u8 unk_a4[44];      // 0x0A4
+  Vec3 hitboxPos;     // 0x0D0, Hitbox_SetPos に渡す位置
+  HitboxData hitbox;  // 0x0D8, FUN_081eaa10 が unk_128 が 1 のときだけ登録する
+  s16 unk_128;        // 0x128, 1 のときだけヒットボックスを登録する
+  u8 unk_12a[8];      // 0x12A
+  s16 unk_132;        // 0x132, _Update が s16 として読む
+  u16 unk_134;        // 0x134, FUN_081eaa10 が毎フレーム +1 する
+  u16 unk_136;        // 0x136, _Init が全要素に 0xFFFF を入れる
+  u16 flags;          // 0x138, bit0 が立っていると _Destroy が FUN_08002a58 を呼ぶ
+  u8 unk_13a[2];      // 0x13A, padding?
 } Entity081eaf6cItem;
 static_assert(sizeof(Entity081eaf6cItem) == 316);
 

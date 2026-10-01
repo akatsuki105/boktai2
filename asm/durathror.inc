@@ -1333,7 +1333,7 @@ FUN_08037174: @ 0x08037174
 	bne _080371C8
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r7, r0, #0
 	movs r3, #0
 	ldr r0, _080371D0 @ =0x00000DFC
@@ -5401,7 +5401,7 @@ FUN_080390f8: @ 0x080390F8
 	adds r4, #0x48
 	bl FUN_08038f04
 	adds r0, r4, #0
-	bl FUN_0823b4b8
+	bl Mover_ApplyMove
 	adds r0, r6, #0
 	adds r0, #0xab
 	ldrb r0, [r0]

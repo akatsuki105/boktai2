@@ -7,7 +7,7 @@
 	beq _08004BD2
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08004BD2
@@ -30,11 +30,11 @@ _08004BDC:
 	adds r6, #0x8c
 	movs r0, #0x73
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r0, #0
 	movs r0, #0x53
 	movs r1, #1
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	mov r8, r0
 	cmp r4, #0
 	bne _08004C24

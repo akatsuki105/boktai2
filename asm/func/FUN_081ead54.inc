@@ -81,12 +81,12 @@ _081EADB4:
 	str r7, [sp, #4]
 	adds r0, r6, #0
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	adds r4, r7, #0
 	adds r4, #0xa4
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_0823b46c
+	bl Mover_SetAuxSprite
 	ldr r0, [r4]
 	movs r1, #2
 	rsbs r1, r1, #0

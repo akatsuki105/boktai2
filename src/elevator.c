@@ -39,7 +39,7 @@ typedef struct ElevatorUnkData {
   u8 unk_e6;                         // 0x0E6, Elevator_Create が VM 値を入れて FUN_08234f90 に渡す
   u8 unk_e7;                         // 0x0E7, FUN_081d2a64 が 0/1/3 で走行音を出し分ける
   u8 unk_e8[0x0F4 - 0x0E8];          // 0x0E8
-  Entity2UnkData hitbox;             // 0x0F4, pos を x-0x100 して sprite.pos にコピーする
+  Mover hitbox;                      // 0x0F4, pos を x-0x100 して sprite.pos にコピーする
   MapTileOverride tileOverride;      // 0x138, flags bit0 が立っているときだけ有効
   MapTileOverride tileOverrides[4];  // 0x148, flags bit11 が立っているときだけ有効
   bool8 tileOverrideActive[4];       // 0x188, tileOverrides[i] の登録有無
@@ -88,7 +88,7 @@ NAKED void FUN_081d2368(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d2368.inc
 
 NAKED bool32 FUN_081d2660(unknown* q, Vec3* pos, s32 dx, s32 dy) { INCFUNC("asm/func/FUN_081d2660.inc"); }
 
-NAKED bool32 FUN_081d2698(Entity2UnkData* hitbox, unknown* q, Vec3* out, s32 dx, s32 dz, s32 d) { INCFUNC("asm/func/FUN_081d2698.inc"); }
+NAKED bool32 FUN_081d2698(Mover* hitbox, unknown* q, Vec3* out, s32 dx, s32 dz, s32 d) { INCFUNC("asm/func/FUN_081d2698.inc"); }
 
 void FUN_081d276c(ElevatorUnkData* p) {
   Elevator* q = gElevator;
@@ -98,7 +98,7 @@ void FUN_081d276c(ElevatorUnkData* p) {
     Player* player = gPlayerPtr[i];
 
     if (player != NULL && p->id == q->ridingID) {
-      player->unk_24.unk_18 = (p->state == 3 || p->state == 4) ? &player->unk_1bc : NULL;
+      player->unk_24.tile = (p->state == 3 || p->state == 4) ? &player->tile : NULL;
     }
   }
 }
@@ -266,7 +266,7 @@ void ElevatorController_ClearPtr(void) { gElevator = NULL; }
 
 // VM: 指定した id のエレベータを揺らす
 void Elevator_Shake(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevator != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
@@ -282,12 +282,12 @@ NAKED s32 FUN_081d515c(void) { INCFUNC("asm/func/FUN_081d515c.inc"); }
 NAKED void Elevator_Start(void) { INCFUNC("asm/func/Elevator_Start.inc"); }
 
 void FUN_081d5268(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevator != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
 
-    p->unk_d6 = VM_GetKeywordValue('m', -1);
+    p->unk_d6 = VM_GetNamedArgValue('m', -1);
   }
 }
 
@@ -297,13 +297,13 @@ NAKED void FUN_081d5340(void) { INCFUNC("asm/func/FUN_081d5340.inc"); }
 
 // VM: 指定した id のエレベータのパレットを差し替える
 void Elevator_SetPltt(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevator != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
 
     if (p != NULL) {
-      s32 plttID = VM_GetKeywordValue('c', 0);
+      s32 plttID = VM_GetNamedArgValue('c', 0);
 
       Video_SetAuxSpritePltt(&p->gfx, plttID + 0x1B7);
     }
@@ -311,13 +311,13 @@ void Elevator_SetPltt(void) {
 }
 
 void FUN_081d5414(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevator != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
 
     if (p != NULL) {
-      p->unk_ba = VM_GetKeywordValue('s', 6);
+      p->unk_ba = VM_GetNamedArgValue('s', 6);
     }
   }
 }
@@ -328,21 +328,21 @@ void FUN_081d5450(void) {
   ElevatorUnkData* p = Elevator_FindRiding();
 
   q->ridingID = 0;
-  gPlayerPtr[0]->unk_24.unk_18 = &gPlayerPtr[0]->unk_1bc;
+  gPlayerPtr[0]->unk_24.tile = &gPlayerPtr[0]->tile;
   FUN_0807a99c(gPlayerPtr[0], 1);
   Elevator_ClearFlags(p, ELEVATOR_PLAYER_RIDING);
   gPlayerPtr[0]->unk_60e &= ~1;
 }
 
 void FUN_081d54a8(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevator != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
 
     if (p != NULL) {
-      s32 h = VM_GetKeywordValue('h', -1);
-      s32 l = VM_GetKeywordValue('l', -1);
+      s32 h = VM_GetNamedArgValue('h', -1);
+      s32 l = VM_GetNamedArgValue('l', -1);
 
       if (h > 0) {
         p->unk_d0 = h;
@@ -356,7 +356,7 @@ void FUN_081d54a8(void) {
 }
 
 void FUN_081d5504(void) {
-  s32 id = VM_GetKeywordValue('n', 0);
+  s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevator != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);

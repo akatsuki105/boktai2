@@ -23,7 +23,7 @@ _081D7CCC:
 	movs r1, #1
 	str r1, [r0]
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r2, r7, #0
 	adds r2, #0x9c
 	str r2, [sp, #0x14]
@@ -42,7 +42,7 @@ _081D7CCC:
 	strh r0, [r1]
 _081D7D02:
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081D7D1C
 	bl VM_GetValue
@@ -59,7 +59,7 @@ _081D7D22:
 	str r0, [sp, #0xc]
 	movs r0, #0x68
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	movs r1, #0xf4
 	adds r1, r1, r7
 	mov sb, r1
@@ -206,7 +206,7 @@ _081D7E34:
 	str r0, [r1]
 	movs r0, #0x6d
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r2, _081D7E60 @ =0x00000109
 	adds r1, r7, r2
 	movs r6, #0
@@ -345,7 +345,7 @@ _081D7F3A:
 	str r0, [r4]
 	movs r0, #0x50
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081D7F70
 	ldr r0, [r4]
@@ -360,7 +360,7 @@ _081D7F70:
 	strh r0, [r1]
 	movs r0, #0x73
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081D7FC8
 	movs r0, #0x84
@@ -382,10 +382,10 @@ _081D7F70:
 	adds r0, r4, #0
 	ldr r2, [sp, #0x14]
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	adds r0, r4, #0
 	adds r1, r7, #0
-	bl FUN_0823b46c
+	bl Mover_SetAuxSprite
 	adds r0, r4, #0
 	bl FUN_08002a48
 	b _081D7FD2

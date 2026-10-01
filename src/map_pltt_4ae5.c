@@ -56,7 +56,7 @@ typedef struct {
 } Entity4AE5;
 static_assert(sizeof(Entity4AE5) == 1784);
 
-extern s32 s32_03004048;
+extern s32 gBgBrightnessApplied;
 extern u16 gBgPlttFadeRowMask;
 
 COMMON_DATA u16 gMapInitScriptID = 0;        // 0x03002B28
@@ -397,8 +397,8 @@ void MapPltt_FadeOut(Entity4AE5* p) {
   if ((p->unk_63c = p->unk_63c + 1) >= (1 << p->unk_63e)) {
     pltt = FUN_0822d00c();
     gBgBrightness = 0x40;
-    gBgPlttBlendColor = 0x1084;
-    *pltt = 0x1084;
+    gBgPlttBlendColor = RGB(4, 4, 4);
+    *pltt = RGB(4, 4, 4);
     p->unk_1b = 0;
   }
 }
@@ -441,9 +441,9 @@ NON_MATCH void MapPltt_SetFile(s32 idx, FileID plttFileID, u32 kw_f) {
 
 void VM_SubCA7D(void) {
   if (gEntity4AE5 != NULL) {
-    s32 kw_i = VM_GetKeywordValue('i', 0);
-    FileID plttFileID = VM_GetKeywordValue('n', 0);
-    u32 kw_f = VM_GetKeywordValue('f', 0);
+    s32 kw_i = VM_GetNamedArgValue('i', 0);
+    FileID plttFileID = VM_GetNamedArgValue('n', 0);
+    u32 kw_f = VM_GetNamedArgValue('f', 0);
     MapPltt_SetFile(kw_i, plttFileID, kw_f);
   }
 }
@@ -473,9 +473,9 @@ NON_MATCH void MapPltt_PushCommand(s32 val, s32 count, u32* args) {
 void FUN_080020bc(void) {
   u32 args[8];
 
-  s32 kw_r = VM_GetKeywordValue('r', 0);
+  s32 kw_r = VM_GetNamedArgValue('r', 0);
   s32 count = 0;
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     while (VM_GetPC() != NULL && count < 8) {
       args[count] = VM_GetValue();
       count++;
@@ -628,17 +628,17 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
   p->unk_18 = val;
   p->dstPltt = gBgPlttBuffer;
   gBgBrightness = 0x40;
-  s32_03004048 = 0x40;
-  gBgPlttBlendColor = 0x1084;
+  gBgBrightnessApplied = 0x40;
+  gBgPlttBlendColor = RGB(4, 4, 4);
   gBgPlttFadeRowMask = 0;
-  p->unk_1a = VM_GetKeywordValue('f', 0);
+  p->unk_1a = VM_GetNamedArgValue('f', 0);
   p->unk_1d = 0;
   p->unk_648 = 0;
   p->unk_1b = 0;
   p->unk_1e = 7;
   p->unk_1f = 4;
   i = 0;
-  if (VM_SeekToKeyword('p')) {
+  if (VM_SeekToNamedArg('p')) {
     while (VM_GetPC() != NULL && i <= 3) {
       p->plttFileIDs[i] = VM_GetValue();
       i++;
@@ -659,11 +659,11 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
     p->spanOfTime = gClock.spanOfTime;
     src = p->pltt_234;
   } else if (p->unk_1a & 2) {
-    id0 = VM_GetKeywordValue('c', 0);
-    id1 = VM_GetKeywordValue('m', 0);
+    id0 = VM_GetNamedArgValue('c', 0);
+    id1 = VM_GetNamedArgValue('m', 0);
     p->srcPltt1 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->plttFileIDs[id0]) + 0x14);
     p->srcPltt2 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->plttFileIDs[id1]) + 0x14);
-    if (VM_SeekToKeyword('a')) {
+    if (VM_SeekToNamedArg('a')) {
       p->unk_652 = VM_GetValue();
       p->unk_656 = VM_GetValue();
       p->unk_659 = VM_GetValue();
@@ -684,8 +684,8 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
     p->unk_65a = 0;
     src = p->srcPltt1;
   } else {
-    id0 = VM_GetKeywordValue('c', 0);
-    id1 = VM_GetKeywordValue('m', 0);
+    id0 = VM_GetNamedArgValue('c', 0);
+    id1 = VM_GetNamedArgValue('m', 0);
     p->srcPltt1 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->plttFileIDs[id0]) + 0x14);
     p->srcPltt2 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->plttFileIDs[id1]) + 0x14);
     src = p->srcPltt1;

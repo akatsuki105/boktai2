@@ -26,8 +26,31 @@ NAKED void EntityE9D3_Init_Helper_080b5650(EntityE9D3* p) { INCFUNC("asm/func/En
 
 NAKED void EntityE9D3_Init_Helper_080b593c(EntityE9D3* p) { INCFUNC("asm/func/EntityE9D3_Init_Helper_080b593c.inc"); }
 
-NAKED s32 EntityE9D3_Init_Helper_080b5984(void) { INCFUNC("asm/func/EntityE9D3_Init_Helper_080b5984.inc"); }
+// 太陽ゲージが低いほど大きい値を返す
+s32 EntityE9D3_Init_Helper_080b5984(void) {
+  s32 sun = gStat->sunGauge;
+
+  if (sun <= 1) return 9;
+  if (sun > 9) return 2;
+
+  return 11 - sun;
+}
 
 NAKED s32 EntityE9D3_Init(EntityE9D3* p) { INCFUNC("asm/func/EntityE9D3_Init.inc"); }
 
-NAKED EntityE9D3* EntityE9D3_Create(void) { INCFUNC("asm/func/EntityE9D3_Create.inc"); }
+s32 EntityE9D3_Update(EntityE9D3* p);
+s32 EntityE9D3_Destroy(EntityE9D3* p);
+
+EntityE9D3* EntityE9D3_Create(void) {
+  EntityE9D3* p = CreateEntity(ENTITY_UNK_11, sizeof(EntityE9D3));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityE9D3_Update, EntityE9D3_Destroy);
+    if (EntityE9D3_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}

@@ -173,9 +173,9 @@ void FUN_0822eadc(u32 x8, u32 y8, u32 w8, u32 h8) {
   }
 }
 
-NAKED void Video_DrawCharNarrow(u16 charcode, s32 x8, s32 y8, unknown* param_4) { INCFUNC("asm/func/Video_DrawCharNarrow.inc"); }
+NAKED void Video_DrawCharNarrow(u16 charcode, s32 x8, s32 y8, s32 param_4) { INCFUNC("asm/func/Video_DrawCharNarrow.inc"); }
 
-NAKED void Video_DrawCharWide(u16 charcode, s32 x8, s32 y8, unknown* param_4) { INCFUNC("asm/func/Video_DrawCharWide.inc"); }
+NAKED void Video_DrawCharWide(u16 charcode, s32 x8, s32 y8, s32 param_4) { INCFUNC("asm/func/Video_DrawCharWide.inc"); }
 
 void nop_0822ec58(void) {}
 

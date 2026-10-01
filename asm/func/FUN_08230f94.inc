@@ -1,7 +1,7 @@
 	push {r4, r5, r6, lr}
 	adds r6, r0, #0
 	adds r4, r1, #0
-	bl FUN_08230e88
+	bl ScriptRecord_GetBlocks
 	ldr r1, _08230FBC @ =0x03000740
 	ldr r1, [r1]
 	movs r2, #1

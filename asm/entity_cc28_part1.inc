@@ -11298,7 +11298,7 @@ _0808FC62:
 FUN_0808fc68: @ 0x0808FC68
 	push {lr}
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0808FC84
 	bl VM_GetValue
@@ -11318,7 +11318,7 @@ _0808FC88: .4byte 0x030046A0
 FUN_0808fc8c: @ 0x0808FC8C
 	push {lr}
 	movs r0, #0x66
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0808FCA6
 	bl VM_GetValue
@@ -11338,7 +11338,7 @@ _0808FCB0: .4byte 0x00000256
 FUN_0808fcb4: @ 0x0808FCB4
 	push {lr}
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0808FCD0
 	bl VM_GetValue
@@ -11358,7 +11358,7 @@ _0808FCD4: .4byte 0x030046A0
 FUN_0808fcd8: @ 0x0808FCD8
 	push {lr}
 	movs r0, #0x66
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0808FCF2
 	bl VM_GetValue
@@ -11378,7 +11378,7 @@ _0808FCFC: .4byte 0x0000025A
 FUN_0808fd00: @ 0x0808FD00
 	push {lr}
 	movs r0, #0x69
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0808FD24
 	bl VM_GetValue
@@ -11417,7 +11417,7 @@ _0808FD40: .4byte 0x030046A0
 FUN_0808fd44: @ 0x0808FD44
 	push {lr}
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	bne _0808FD70
 	ldr r0, _0808FD6C @ =0x030046A0
@@ -11455,7 +11455,7 @@ _0808FD88: .4byte 0x030046A0
 FUN_0808fd8c: @ 0x0808FD8C
 	push {lr}
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0808FDA0
 	bl VM_GetValue
@@ -11488,7 +11488,7 @@ _0808FDC4: .4byte 0x030046A0
 FUN_0808fdc8: @ 0x0808FDC8
 	push {r4, lr}
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0808FDDC
 	bl VM_GetValue
@@ -11504,7 +11504,7 @@ _0808FDDC:
 	ldrsh r4, [r0, r1]
 _0808FDEA:
 	movs r0, #0x69
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0808FE10
 	bl VM_GetValue
@@ -11531,7 +11531,7 @@ _0808FE18: .4byte 0x030046A0
 FUN_0808fe1c: @ 0x0808FE1C
 	push {r4, lr}
 	movs r0, #0x73
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0808FE30
 	bl VM_GetValue
@@ -11547,7 +11547,7 @@ _0808FE30:
 	ldrsh r4, [r0, r1]
 _0808FE3E:
 	movs r0, #0x69
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0808FE64
 	bl VM_GetValue

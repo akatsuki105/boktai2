@@ -27,7 +27,7 @@ _081D0894:
 	movs r0, #1
 	strh r0, [r1]
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	adds r1, r5, #0
 	adds r1, #0x80
 	str r1, [sp, #0x10]
@@ -47,18 +47,18 @@ _081D0894:
 _081D08C8:
 	movs r0, #0x69
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r4, r5, #0
 	adds r4, #0x88
 	strh r0, [r4]
 	movs r0, #0x52
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r5, #0
 	adds r1, #0x8a
 	strh r0, [r1]
 	movs r0, #0x47
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	str r4, [sp, #0x14]
 	adds r7, r5, #0
 	adds r7, #0x8c
@@ -103,10 +103,10 @@ _081D0932:
 _081D093A:
 	movs r0, #0x43
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	strh r0, [r7]
 	movs r0, #0x41
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081D096C
 	adds r6, r5, #0
@@ -128,7 +128,7 @@ _081D0964:
 _081D096C:
 	movs r0, #0x54
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	mov r2, r8
 	strh r0, [r2]
 	adds r1, r0, #0
@@ -314,12 +314,12 @@ _081D0ABC:
 	strh r2, [r1]
 	movs r0, #0x6f
 	movs r1, #0x3c
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	ldr r2, [sp, #0x18]
 	strh r0, [r2]
 	movs r0, #0x6d
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081D0B1E
 	ldr r1, [sp, #0x1c]
@@ -330,7 +330,7 @@ _081D0ABC:
 	strh r0, [r2]
 	movs r0, #0x53
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081D0B0C
 	cmp r0, #1
@@ -355,7 +355,7 @@ _081D0B1E:
 	bl FUN_081ee9bc
 	movs r0, #0x73
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	cmp r0, #0
 	beq _081D0B6C
 	ldr r0, [sp, #0x1c]
@@ -374,10 +374,10 @@ _081D0B1E:
 	adds r0, r4, #0
 	ldr r2, [sp, #0x10]
 	movs r3, #0
-	bl FUN_0823b400
+	bl Mover_Init
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_0823b46c
+	bl Mover_SetAuxSprite
 	adds r0, r4, #0
 	bl FUN_08002a48
 _081D0B6C:

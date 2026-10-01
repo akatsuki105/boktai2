@@ -84,7 +84,7 @@ Entity4063_Init: @ 0x080A9540
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080A9554
 	bl VM_GetValue
@@ -95,7 +95,7 @@ _080A9554:
 _080A9558:
 	strh r0, [r4, #0x18]
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080A9568
 	bl VM_GetValue

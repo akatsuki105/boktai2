@@ -764,7 +764,7 @@ Entity71BA_Init: @ 0x080A0620
 	strh r1, [r5, #0x18]
 	strb r0, [r5, #0x1d]
 	movs r0, #0x74
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080A063C
 	bl VM_GetValue
@@ -774,7 +774,7 @@ _080A063C:
 _080A063E:
 	strb r0, [r5, #0x1c]
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080A0688
 	bl VM_GetValue
@@ -853,7 +853,7 @@ _080A06DA:
 	asrs r0, r0, #0x18
 	strh r0, [r5, #0x20]
 	movs r0, #0x52
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080A06F4
 	bl VM_GetValue

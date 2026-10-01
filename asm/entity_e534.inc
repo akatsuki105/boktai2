@@ -960,7 +960,7 @@ FUN_08011f2c: @ 0x08011F2C
 	adds r0, r5, r2
 	strh r1, [r0]
 	ldrh r0, [r0]
-	bl FUN_0823b2d0
+	bl Mover_FindByID_Proxy
 	cmp r0, #0
 	bne _08011F58
 	movs r0, #1

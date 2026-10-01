@@ -1011,7 +1011,7 @@ _081D895A:
 	movs r1, #2
 	bl FUN_081d8714
 	movs r0, #0x70
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081D8986
 	bl VM_GetValue
@@ -1023,12 +1023,12 @@ _081D895A:
 _081D8986:
 	movs r0, #0x6e
 	movs r1, #0
-	bl VM_GetKeywordValue
+	bl VM_GetNamedArgValue
 	adds r1, r5, #0
 	adds r1, #0xcc
 	strh r0, [r1]
 	movs r0, #0x61
-	bl VM_SeekToKeyword
+	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081D89B0
 	bl VM_GetValue

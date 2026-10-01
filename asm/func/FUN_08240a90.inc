@@ -1,7 +1,7 @@
 	push {r4, r5, lr}
 	ldr r5, _08240AC4 @ =0x0000757B
 	adds r0, r5, #0
-	bl FUN_08230e70
+	bl Registry_Find
 	cmp r0, #0
 	bne _08240ACC
 	movs r0, #0xc
@@ -12,7 +12,7 @@
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_08230e30
+	bl Registry_Add
 	ldr r0, _08240AC8 @ =0x030016FC
 	str r4, [r0]
 	bl Entity08240a54_Create

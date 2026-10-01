@@ -72,11 +72,11 @@ u8* VM_Ctrl_If_Internal(u8* pc) {
       }
       type >>= 16;
       pc = (u8*)cond;
-      if (type == KW_ELSE) {
+      if (type == CLAUSE_ELSE) {
         cond = 1;
       }
-    } while (type == KW_ELSE);
-  } while (type == KW_ELIF);
+    } while (type == CLAUSE_ELSE);
+  } while (type == CLAUSE_ELIF);
   return NULL;
 }
 
@@ -90,7 +90,7 @@ bool32 VM_Ctrl_If(u8* pc) {
 }
 
 // 0x4A6F
-// 残差1命令: 命令の中身は同じで、KW_DEFAULT の節がループの手前に配置され、そこを飛び越す b が増える
+// 残差1命令: 命令の中身は同じで、CLAUSE_DEFAULT の節がループの手前に配置され、そこを飛び越す b が増える
 // Tier A は試済 (else if を独立した if に分解, continue の明示, 最後の節の極性反転), 未: Tier B-C
 NON_MATCH bool32 VM_Ctrl_Switch(u8* pc) {
 #ifdef NONMATCHING_C
@@ -105,12 +105,12 @@ NON_MATCH bool32 VM_Ctrl_Switch(u8* pc) {
     kw = VM_Ctrl_Switch_Internal();
     if (kw == 0) {
       return 0;
-    } else if (kw == KW_CASE) {
+    } else if (kw == CLAUSE_CASE) {
       if (VM_GetValue() == switchVal) {
         VM_DecodeValue(VM_GetPC(), &type, &blockPc);
         break;
       }
-    } else if (kw == KW_DEFAULT) {
+    } else if (kw == CLAUSE_DEFAULT) {
       VM_DecodeValue(VM_GetPC(), &type, &blockPc);
       break;
     }

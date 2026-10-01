@@ -171,11 +171,11 @@ s32 HazardManager_Init(CactusManager* p) {
   Vec3 halfSize, offset;
 
   gCactusManager = p;
-  p->count = VM_GetKeywordValue('m', 8);
+  p->count = VM_GetNamedArgValue('m', 8);
   p->activeMask = 0;
-  power = VM_GetKeywordValue('p', 5);
-  unk_40 = VM_GetKeywordValue('f', 10);
-  unk_44 = VM_GetKeywordValue('i', 10);
+  power = VM_GetNamedArgValue('p', 5);
+  unk_40 = VM_GetNamedArgValue('f', 10);
+  unk_44 = VM_GetNamedArgValue('i', 10);
   hitbox = &p->hitbox;
   halfSize.x = 0xA4, halfSize.y = 0x80, halfSize.z = 0xA4;
   offset.x = 0, offset.y = 0x80, offset.z = 0;

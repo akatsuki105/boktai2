@@ -10,7 +10,8 @@
 // 0x0203C400 (ハードリセット時, ソフトリセット時は配置先が変動する)
 typedef struct {
   u32 magicNumber;            // 0x000, gScriptDirectoryBuildTime = 0x40A8186C がセットされる, ロード時にチェックしてそう
-  u8 unk_004[14];             // 0x004
+  u8 unk_004[12];             // 0x004
+  u16 unk_010;                // 0x010, FUN_08063634 が Player.unk_456 へ写す
   s16 messageSpeed;           // 0x012, メッセージ速度設定, FUN_08049668 が TextRenderer.speed に入れる
   u8 unk_14[4];               // 0x014
   u16 stats[STAT_KINDS * 2];  // 0x018, ステータスポイントの割り振り と (多分タロットカードの)ドーピングボーナス, ステータス画面には合計値が表示される
@@ -33,7 +34,7 @@ typedef struct {
   s16 equippedWeaponIdx;         // 0x058
   s16 equippedMagicIdx;          // 0x05A, 登録された4つの魔法のうち、フィールドで選択している魔法のインデックス(0~3)
   slot16_t armor;                // 0x05C
-  u8 unk_5e[2];                  // 0x05E
+  s16 unk_5e;                    // 0x05E, FUN_08065110 がサバタの魔法番号を選ぶときに 0 かどうかを見る
   slot16_t registeredWeapon[4];  // 0x060, 剣槍槌銃, 登録武器のIDではなく、武器インベントリのどこにある武器を登録しているかのインデックス(0~15)が入る
   magic16_t registeredMagic[4];  // 0x068
   item16_t items[16 + 16 + 16];  // 0x070
@@ -124,7 +125,8 @@ typedef struct {
   s16 sunGauge;    // 0x942, 現在の太陽ゲージ ライジングサンによる太陽ゲージも反映される, ゲームと同じく 0..10
   u8 unk_944[2];   // 0x944
   s16 unk_946;     // 0x946, WeatherManager_Update が state 3 で 0x7FFF にし、それ以外では 0 まで減らす
-  u8 unk_948[16];  // 0x948
+  s16 unk_948[4];  // 0x948, FUN_0823d2e0 が 9998 を上限に +1 する
+  s16 unk_950[4];  // 0x950, FUN_0823d310 が 9998 を上限に +1 する
 } GameInfo;
 static_assert(sizeof(GameInfo) == 2392);
 

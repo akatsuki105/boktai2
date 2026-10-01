@@ -301,7 +301,7 @@ gSubroutineTable:
 	.4byte 0x794C, Entity794C_Create
 	.4byte 0x7974, TextBox_SetWaitScripted
 	.4byte 0x7999, Entity7999_Create
-	.4byte 0x79B7, FUN_080a641c
+	.4byte 0x79B7, Map_AddLoadingZoneIndicatorScripted
 	.4byte 0x79EC, FUN_08240fdc
 	.4byte 0x7A0A, FUN_08086d7c
 	.4byte 0x7A25, FUN_0807d6f8
@@ -420,7 +420,7 @@ gSubroutineTable:
 	.4byte 0xA3AA, FUN_08229394
 	.4byte 0xA3B3, FUN_08224af8
 	.4byte 0xA4FC, Elevator_Create
-	.4byte 0xA61C, FUN_080a62a0
+	.4byte 0xA61C, Map_SetLoadingZoneIndicatorMode
 	.4byte 0xA628, FUN_080a0fac
 	.4byte 0xA687, BgPlttDimmer_Create
 	.4byte 0xA76D, FUN_0820cf6c
@@ -474,7 +474,7 @@ gSubroutineTable:
 	.4byte 0xB85F, LinkBattleResult_Create
 	.4byte 0xB87B, FUN_080c2640
 	.4byte 0xB88C, EntityB88C_Create
-	.4byte 0xB8B9, EntityB8B9_Create
+	.4byte 0xB8B9, MoverList_Create
 	.4byte 0xB8C7, FUN_08005034
 	.4byte 0xBA36, FUN_080a1168
 	.4byte 0xBA4B, EntityBA4B_Create
@@ -483,7 +483,7 @@ gSubroutineTable:
 	.4byte 0xBBAA, FUN_0823c008
 	.4byte 0xBD74, EntityBD74_Create
 	.4byte 0xBE46, FUN_081df75c
-	.4byte 0xBEC2, FUN_0823b2ec
+	.4byte 0xBEC2, Mover_GetPosScripted
 	.4byte 0xBEF5, EnemyMimic_Create
 	.4byte 0xC015, Crossover_LoadMappingBuf
 	.4byte 0xC0B0, Camera_Create
