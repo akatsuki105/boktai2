@@ -9,7 +9,7 @@
 // 8個で使い回す当たり判定つきエフェクトの枠, FUN_0820372c が ttl == 0 かつ非表示のものを空きとして拾う
 typedef struct {
   AuxSprite sprite;   // 0x00, AuxSprite_Add / AuxSprite_Remove に渡る
-  AuxAnimState anim;  // 0x2C, FUN_08236fac の第1引数, _Update がコマを進める
+  AuxAnimState anim;  // 0x2C, AuxAnim_SetAnim の第1引数, _Update がコマを進める
   HitboxData hitbox;  // 0x3C, FUN_08203690 が Hitbox_Init / Hitbox_SetAttack に渡す
   Vec3 pos;           // 0x8C, Hitbox_SetPos の第2引数, FUN_08203770 が引数の Vec3 を写す
   u16 ttl;            // 0x94, 残りフレーム数, _Update が毎フレーム -1 して 0 で FUN_08203860 が解放する, 60未満でフェードに入る
@@ -197,7 +197,7 @@ s32 FUN_08203a0c(Entity08203ad0* p) {
   slot = p->slots;
   for (i = 0; i < 8; slot++, i++) {
     AuxSprite_Add(&slot->sprite, &p->gfx, 0);
-    FUN_08236fac(&slot->anim, files, 1, 0, 0);
+    AuxAnim_SetAnim(&slot->anim, files, 1, 0, 0);
     slot->sprite.flags |= SPRFLAG_HIDDEN;
     FUN_08203690(slot, 0, 0, 0, 0);
     slot->ttl = 0;

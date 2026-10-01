@@ -16,7 +16,7 @@ typedef u16 Entity081d16ecItemFlags;  // Entity081d16ecItem.flags
 // Entity081d16ec が抱える要素, スプライトとヒットボックスを1つずつ持つ
 typedef struct Entity081d16ecItem {
   AuxSprite sprite;               // 0x00, Entity081d16ec_Destroy が要素そのものを AuxSprite_Remove に渡す
-  AuxAnimState anim;              // 0x2C, FUN_08236fac で再生する
+  AuxAnimState anim;              // 0x2C, AuxAnim_SetAnim で再生する
   u8 unk_3c[28];                  // 0x3C
   Vec3 basePos;                   // 0x58, 揺れの基準位置, sprite.pos へ複写する
   HitboxData hitbox;              // 0x60, _Destroy が Hitbox_Unregister に渡す

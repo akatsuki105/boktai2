@@ -112,7 +112,7 @@ _080F2554:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _080F2598
 	.align 2, 0
 _080F2578: .4byte 0x00000482

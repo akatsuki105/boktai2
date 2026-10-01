@@ -37,7 +37,7 @@ _081EB196:
 	ldr r1, [r5, #0x18]
 	str r2, [sp]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r4]
 	movs r1, #1
 	orrs r0, r1

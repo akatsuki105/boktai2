@@ -1399,7 +1399,7 @@ _080CCBEA:
 	lsrs r2, r2, #0x18
 	str r2, [sp]
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r4, #0
 	bl FUN_080ccae0
 	add sp, #0xc
@@ -1554,7 +1554,7 @@ _080CCD12:
 	lsrs r2, r2, #0x18
 	str r2, [sp]
 	movs r2, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r5, #0
 	bl FUN_080ccae0
 	add sp, #0xc
@@ -1645,7 +1645,7 @@ _080CCDCA:
 	str r2, [sp]
 	movs r2, #2
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r4, #0
 	bl FUN_080ccae0
 	add sp, #4
@@ -5864,7 +5864,7 @@ _080CEE10:
 	str r4, [sp]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	str r4, [r5]
 	adds r0, r6, #0
 	bl FUN_080cec18
@@ -6440,7 +6440,7 @@ FUN_080cf248: @ 0x080CF248
 	adds r0, r4, #0
 	mov r1, r8
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1
 	ldr r1, [r4]
@@ -19169,7 +19169,7 @@ _080D568E:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, r6, #0
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]
@@ -19362,7 +19362,7 @@ _080D580A:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1
@@ -19572,7 +19572,7 @@ _080D596C:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, r6, #0
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]
@@ -19846,7 +19846,7 @@ _080D5BAA:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, r7, #0
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]
@@ -20060,7 +20060,7 @@ _080D5D44:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #2
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, r6, #0
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]
@@ -20273,7 +20273,7 @@ _080D5EE0:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #2
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, r7, #0
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]
@@ -20430,7 +20430,7 @@ _080D600E:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #3
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, r7, #0
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]
@@ -20649,7 +20649,7 @@ _080D61B0:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #2
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r6, r5, #0
 	adds r6, #0xe8
 	ldrh r0, [r4, #8]
@@ -21023,7 +21023,7 @@ _080D6474:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, r6, #0
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]

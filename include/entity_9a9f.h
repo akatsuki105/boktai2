@@ -93,6 +93,16 @@ static inline s32 Entity9A9F_GetPlayerIdx(void) {
   return p->playerIdx;
 }
 
+// まだセッションが無ければ 0
+static inline u16 Entity9A9F_GetUnk66(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return 0;
+  }
+  return p->unk_66;
+}
+
 // 通信相手の記録を1件引く, まだセッションが無ければ NULL
 static inline Entity9A9FRecord* Entity9A9F_GetRecord(s32 idx) {
   Entity9A9F* p = gEntity9A9F;

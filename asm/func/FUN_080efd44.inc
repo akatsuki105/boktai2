@@ -35,7 +35,7 @@
 	ldr r1, [r1, #0x58]
 	str r5, [sp]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _080EFDA8 @ =0x0000046E
 	adds r7, r6, r0
 	b _080EFE26

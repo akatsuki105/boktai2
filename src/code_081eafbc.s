@@ -6669,7 +6669,7 @@ _081EE348:
 	adds r0, #0x68
 	ldrh r1, [r0]
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	movs r0, #0x5e
 	adds r0, r0, r5
 	mov ip, r0
@@ -7061,7 +7061,7 @@ _081EE5F6:
 	lsls r3, r3, #0x18
 	lsrs r3, r3, #0x18
 	str r5, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r4, #0
 	ldr r1, [sp, #0x58]
 	bl Video_SetAuxSpritePltt
@@ -9447,7 +9447,7 @@ _081EF7BC:
 	lsrs r0, r0, #0x18
 	str r0, [sp]
 	adds r0, r5, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r6, #0xc]
 	ldr r1, [sp, #0x38]
 	bl Video_SetAuxSpritePltt
@@ -10039,7 +10039,7 @@ _081EFC64:
 	ldrb r2, [r4]
 	str r2, [sp]
 	movs r2, #0x13
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r1, r5, #0
 	adds r1, #0x98
 	movs r2, #0
@@ -10703,7 +10703,7 @@ _081F013A:
 	ldrb r2, [r4]
 	str r2, [sp]
 	movs r2, #0x12
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, [sp, #8]
 	ldr r0, [r2]
 	ldr r1, [r2, #4]
@@ -11148,7 +11148,7 @@ _081F047A:
 	adds r0, r6, #0
 	movs r2, #0x10
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r4]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -11929,7 +11929,7 @@ _081F0A26:
 	adds r0, r5, #0
 	movs r2, #0xf
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov r3, sb
 	ldr r0, [r3]
 	adds r0, #1
@@ -12388,7 +12388,7 @@ _081F0D84:
 	str r0, [sp]
 	adds r0, r7, #0
 	movs r2, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r1, r6, #0
 	adds r1, #0x8e
 	movs r0, #2
@@ -13429,7 +13429,7 @@ _081F154E:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r6, #0xc]
 	movs r1, #0xfc
 	lsls r1, r1, #1
@@ -15363,7 +15363,7 @@ _081F238E:
 	str r0, [sp]
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r5, #0xc]
 	ldr r1, [sp, #0x38]
 	bl Video_SetAuxSpritePltt
@@ -15539,7 +15539,7 @@ _081F24C8:
 	str r0, [sp]
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r5]
 	mov r2, sb
 	orrs r0, r2
@@ -16168,7 +16168,7 @@ FUN_081f29b4: @ 0x081F29B4
 	str r2, [sp]
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r0, #2
 	strb r0, [r5, #7]
 	strb r4, [r6]
@@ -17202,7 +17202,7 @@ _081F3146:
 	str r4, [sp]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r5, #0xc]
 	movs r1, #1
 	bl Video_SetAuxSpritePltt
@@ -17501,7 +17501,7 @@ FUN_081f3398: @ 0x081F3398
 	str r2, [sp]
 	movs r2, #0x17
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r0, #0
 	strb r0, [r4]
 _081F33C2:
@@ -18445,7 +18445,7 @@ FUN_081f3aa0: @ 0x081F3AA0
 	mov r0, r8
 	movs r2, #0xe
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r1, #0xb5
 	lsls r1, r1, #1
 	adds r0, r6, r1
@@ -18938,7 +18938,7 @@ FUN_081f3e64: @ 0x081F3E64
 	adds r0, r5, #0
 	movs r2, #0xe
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r1, #0xaa
 	lsls r1, r1, #1
 	adds r0, r6, r1
@@ -19171,7 +19171,7 @@ FUN_081f4010: @ 0x081F4010
 	adds r0, r6, #0
 	movs r2, #0xe
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r1, #0xaa
 	lsls r1, r1, #1
 	adds r0, r7, r1
@@ -19666,7 +19666,7 @@ _081F4300:
 	str r2, [sp]
 	movs r2, #0x17
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r4, #0xc]
 	movs r1, #0xfb
 	bl Video_SetAuxSpritePltt
@@ -20305,7 +20305,7 @@ FUN_081f48b0: @ 0x081F48B0
 	str r4, [sp]
 	movs r2, #0x18
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	strb r4, [r6]
 _081F48D8:
 	adds r4, r5, #0
@@ -21004,7 +21004,7 @@ _081F4DFC:
 	movs r2, #0x16
 _081F4E0A:
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _081F4E22
 _081F4E12:
 	ldr r1, [r4, #0x18]
@@ -21013,7 +21013,7 @@ _081F4E12:
 	adds r0, r6, #0
 	movs r2, #0x14
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _081F4E22:
 	movs r3, #0xba
 	lsls r3, r3, #1
@@ -21575,7 +21575,7 @@ _081F51D2:
 	str r2, [sp]
 	movs r2, #0x14
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r7, #0xc]
 	movs r1, #0xfa
 	bl Video_SetAuxSpritePltt
@@ -21896,7 +21896,7 @@ _081F5482:
 	adds r0, r6, #0
 	movs r2, #7
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _081F54E6
 	.align 2, 0
 _081F54CC: .4byte 0x0000922E
@@ -21911,7 +21911,7 @@ _081F54DA:
 	str r2, [sp]
 	adds r0, r6, #0
 	movs r2, #6
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _081F54E6:
 	adds r1, r7, #0
 	adds r1, #0xe8
@@ -26321,7 +26321,7 @@ _081F7602:
 	str r2, [sp]
 	movs r2, #1
 	movs r3, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r1, r4, #0
 	adds r1, #0x46
 	movs r0, #3
@@ -26546,7 +26546,7 @@ _081F7772:
 	adds r0, r4, #0
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1
 	ldr r1, [r5, #0x2c]
@@ -27145,7 +27145,7 @@ _081F7BBE:
 	adds r0, r5, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r7, #0xc]
 	ldr r1, _081F7C54 @ =0x00000275
 	bl Video_SetAuxSpritePltt
@@ -28700,7 +28700,7 @@ _081F86EA:
 	adds r0, r5, #0
 	movs r2, #7
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r7, #0xc]
 	movs r1, #0xd9
 	bl Video_SetAuxSpritePltt
@@ -30305,7 +30305,7 @@ _081F9374:
 	adds r0, r5, #0
 	movs r2, #7
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov r1, r8
 	ldr r0, [r1, #0xc]
 	movs r1, #0xd9
@@ -31384,7 +31384,7 @@ _081F9B6E:
 	str r5, [sp]
 	movs r2, #6
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r7, #0xc]
 	movs r1, #0xd9
 	bl Video_SetAuxSpritePltt
@@ -32530,7 +32530,7 @@ _081FA3EE:
 	adds r0, r6, #0
 	movs r2, #6
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r5, #1
 	movs r4, #7
 	movs r3, #2

@@ -44,8 +44,6 @@ IWRAM_DATA Entity83B2* gEntity83B2 = NULL;  // 0x0300003C
 
 s32 GetMapAreaAt(Vec3* pos);
 
-static inline bool32 IsCurrentObject(s32 id) { return gStat->unk_248 == id; }
-
 extern u32 u32_03002bc0;
 
 s32 FUN_080091c4(Entity83B2Data* p, u32 n) {
@@ -205,12 +203,12 @@ s32 FUN_080093f8(Entity83B2* p, Entity83B2Data* data, s32 idx) {
       if (dist2 < data->unk_10) {
         s32 a, b, c;
         if (data->unk_2 != 0) {
-          a = 0, b = 1, c = 2;
+          a = FACE_UP, b = FACE_UP_RIGHT, c = FACE_RIGHT;
         } else {
-          a = 6, b = 7, c = 0;
+          a = FACE_LEFT, b = FACE_UP_LEFT, c = FACE_UP;
         }
         if (a == dir || b == dir || c == dir) {
-          s32 facing = ((p->player)->sprite_2e4).active;
+          s32 facing = ((p->player)->facing);
           bool32 ok = TRUE;
           if (a != facing && b != facing && c != facing) {
             ok = FALSE;
@@ -246,12 +244,12 @@ s32 FUN_080094ac(Entity83B2* p, Entity83B2Data* data, s32 idx) {
       dir &= 7;
       if (dist2 < data->unk_10) {
         if (data->unk_2 != 0) {
-          a = 0, b = 1, c = 2;
+          a = FACE_UP, b = FACE_UP_RIGHT, c = FACE_RIGHT;
         } else {
-          a = 6, b = 7, c = 0;
+          a = FACE_LEFT, b = FACE_UP_LEFT, c = FACE_UP;
         }
         if (a == dir || b == dir || c == dir) {
-          facing = p->player->sprite_2e4.active;
+          facing = p->player->facing;
           ok = TRUE;
           if (a != facing && b != facing && c != facing) {
             ok = FALSE;
@@ -302,12 +300,12 @@ s32 FUN_0800959c(Entity83B2* p, Entity83B2Data* data, s32 idx) {
       dir &= 7;
       if (dist2 < data->unk_10) {
         if (data->unk_2 != 0) {
-          a = 0, b = 1, c = 2;
+          a = FACE_UP, b = FACE_UP_RIGHT, c = FACE_RIGHT;
         } else {
-          a = 6, b = 7, c = 0;
+          a = FACE_LEFT, b = FACE_UP_LEFT, c = FACE_UP;
         }
         if (a == dir || b == dir || c == dir) {
-          facing = p->player->sprite_2e4.active;
+          facing = p->player->facing;
           ok = TRUE;
           if (a != facing && b != facing && c != facing) {
             ok = FALSE;
@@ -336,13 +334,13 @@ NON_MATCH s32 Entity83B2_Update(Entity83B2* p) {
   bool32 alive;
 
   if (p->player != NULL) {
-    p->pos = p->player->unk_24.pos;
+    p->pos = p->player->mover.pos;
   }
   data = p->list;
   for (i = 0; i < p->length; i++, data++) {
     if (p->unk_1c & (1 << i)) {
       if (data->id_8 >= 0) {
-        alive = IsCurrentObject(data->id_8);
+        alive = gStat->unk_248 == data->id_8;
         if (!alive) {
           if (data->unk_4 != 1) {
             data->sprite.flags |= SPRFLAG_HIDDEN;
@@ -413,7 +411,7 @@ s32 Entity83B2_Init(Entity83B2* p, void* _) {
   }
   p->player = gPlayerPtr[0];
   if (p->player != NULL) {
-    p->pos = p->player->unk_24.pos;
+    p->pos = p->player->mover.pos;
   } else {
     p->pos.x = 0, p->pos.y = 0, p->pos.z = 0;
   }

@@ -10,7 +10,7 @@
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _08072030:
 	ldr r2, _08072048 @ =0x0000037D
 	adds r0, r5, r2
@@ -60,7 +60,7 @@ _08072092:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #1
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _080725EE
 _080720A8:
 	ldr r0, _08072100 @ =0x0000037E
@@ -123,7 +123,7 @@ _0807210C:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #5
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0807213E
 	.align 2, 0
 _08072130: .4byte 0x00000203
@@ -131,7 +131,7 @@ _08072134:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #2
-	bl FUN_08060b84
+	bl Player_SetAction
 _0807213E:
 	movs r1, #0x20
 	str r1, [sp]
@@ -190,7 +190,7 @@ _080721AC:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #5
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _080725EE
 	.align 2, 0
 _080721BC: .4byte 0x0000037E
@@ -229,7 +229,7 @@ _080721DC:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #3
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _080725EE
 	.align 2, 0
 _0807220C: .4byte 0x00000A8F
@@ -291,7 +291,7 @@ _08072262:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #4
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _080725EE
 	.align 2, 0
 _08072290: .4byte 0x0000037E
@@ -354,7 +354,7 @@ _080722D4:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #8
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _080725EE
 	.align 2, 0
 _08072320: .4byte 0x000002E9
@@ -399,7 +399,7 @@ _08072372:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #6
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _080725EE
 	.align 2, 0
 _08072380: .4byte 0x00000A76
@@ -461,7 +461,7 @@ _080723F0:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #7
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _080725EE
 	.align 2, 0
 _08072400: .4byte 0x0000037E
@@ -490,7 +490,7 @@ _08072430:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _080725EE
 	.align 2, 0
 _0807243C: .4byte 0x0000037E
@@ -505,7 +505,7 @@ _08072440:
 	beq _0807245A
 	adds r0, r5, #0
 	movs r1, #6
-	bl FUN_08060aa4
+	bl Player_SetMoveDelta
 _0807245A:
 	ldr r2, _080724EC @ =0x0000037E
 	adds r0, r5, r2
@@ -697,7 +697,7 @@ _080725C8:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #6
-	bl FUN_08060b84
+	bl Player_SetAction
 _080725EE:
 	ldr r0, _0807261C @ =0x00000951
 	adds r1, r5, r0

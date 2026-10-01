@@ -187,7 +187,7 @@ _08068E74:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _08068E84:
 	ldr r0, [r4]
 	ldr r1, [r4, #4]

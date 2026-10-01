@@ -216,7 +216,7 @@ _080068FC:
 	str r2, [sp]
 	movs r2, #6
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _08006926
 	.align 2, 0
 _08006918: .4byte MapItem_UpdateGive

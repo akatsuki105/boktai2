@@ -42,7 +42,7 @@ _082274D0:
 	adds r0, r4, #0
 	movs r2, #0xc
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, _08227534 @ =0x00000DC8
 	adds r0, r7, r2
 	movs r1, #0x8d

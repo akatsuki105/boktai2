@@ -68,10 +68,10 @@ void FUN_081d11b8(Entity081d16ecItem* item) {
     item->anim.tick = item->anim.wait - item->anim.tick;
   } else {
     if (FUN_081d0e94(item, E081D16EC_FLAG_0)) {
-      FUN_08236fac(&item->anim, p->animFile, 1, 0, item->unk_bc);
+      AuxAnim_SetAnim(&item->anim, p->animFile, 1, 0, item->unk_bc);
       FUN_081d0e84(item, E081D16EC_FLAG_0);
     } else {
-      FUN_08236fac(&item->anim, p->animFile, 1, 0, item->unk_bc | ANIM_PLAY_REVERSE);
+      AuxAnim_SetAnim(&item->anim, p->animFile, 1, 0, item->unk_bc | ANIM_PLAY_REVERSE);
       FUN_081d0e84(item, E081D16EC_FLAG_1);
     }
     item->state = 2;

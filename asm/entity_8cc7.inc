@@ -206,7 +206,7 @@ _081D8B52:
 	adds r0, r4, #0
 	movs r2, #4
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1
 	ldr r1, [r5, #0x2c]
@@ -694,7 +694,7 @@ _081D8EE6:
 	ldrb r2, [r4]
 	str r2, [sp]
 	movs r2, #4
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _081D8F10:
 	adds r0, r6, #0
 	bl FUN_081d8cb0
@@ -1160,7 +1160,7 @@ _081D9256:
 	str r0, [sp]
 	adds r0, r5, #0
 	movs r2, #6
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r6, #0
 	movs r1, #1
 	bl FUN_081d8a14
@@ -1377,7 +1377,7 @@ _081D93CC:
 	ldrb r2, [r4]
 	str r2, [sp]
 	movs r2, #7
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r7, #0
 	adds r0, #0x78
 	strb r6, [r0]
@@ -1690,7 +1690,7 @@ _081D9670:
 	str r0, [sp]
 	mov r0, r8
 	movs r2, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrb r0, [r6]
 	adds r0, #1
 	strb r0, [r6]
@@ -1803,7 +1803,7 @@ _081D9748:
 	ldrb r2, [r4]
 	str r2, [sp]
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r5, #0
 	adds r0, #0x60
 	movs r1, #0x80

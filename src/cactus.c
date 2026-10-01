@@ -78,8 +78,6 @@ void Hazard_EmitBreakEffect(Cactus* p) {
   FUN_08014da0(8, 7, &p->pos, 0x3C, 0x1E, 0x16, 8, 8, 0, 0x100, 0x18, 0x10);
 }
 
-static inline bool32 Hazard_ContainsPoint(Cactus* p, Vec3* pos) { return pos->x >= p->min.x && pos->x <= p->max.x && pos->y >= p->min.y && pos->y <= p->max.y && pos->z >= p->min.z && pos->z <= p->max.z; }
-
 // hp が尽きた Cactus を片付け、生きているものは点滅を進めつつ、プレイヤーが範囲に入った最初の1個に攻撃判定を置く
 NON_MATCH s32 HazardManager_Update(CactusManager* p) {
 #ifdef NONMATCHING_C
@@ -95,7 +93,7 @@ NON_MATCH s32 HazardManager_Update(CactusManager* p) {
   player = gPlayerPtr[0];
   playerPos = NULL;
   if (player != NULL) {
-    playerPos = &player->unk_24.pos;
+    playerPos = &player->mover.pos;
   }
   registered = FALSE;
   hazard = p->list;
@@ -128,7 +126,7 @@ NON_MATCH s32 HazardManager_Update(CactusManager* p) {
           Hitbox_ClearFlags(&hazard->hitbox, HBFLAG_UNK_2);
         }
         if (playerPos != NULL && !registered) {
-          if (Hazard_ContainsPoint(hazard, playerPos)) {
+          if (playerPos->x >= hazard->min.x && playerPos->x <= hazard->max.x && playerPos->y >= hazard->min.y && playerPos->y <= hazard->max.y && playerPos->z >= hazard->min.z && playerPos->z <= hazard->max.z) {
             Hitbox_SetPos(&p->hitbox, &hazard->pos, 0);
             Hitbox_Register(&p->hitbox);
             registered = TRUE;

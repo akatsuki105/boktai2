@@ -90,9 +90,9 @@ void LevelUpper_UpdateParticle(LevelUpParticle* p, ParticleGroup* g) {
   } else {
     p->offset.y += p->unk_32;
     player = gPlayerPtr[0];
-    p->base.pos.x = player->unk_24.pos.x + p->offset.x;
-    p->base.pos.y = player->unk_24.pos.y + p->offset.y;
-    p->base.pos.z = player->unk_24.pos.z + p->offset.z;
+    p->base.pos.x = player->mover.pos.x + p->offset.x;
+    p->base.pos.y = player->mover.pos.y + p->offset.y;
+    p->base.pos.z = player->mover.pos.z + p->offset.z;
     if ((p->unk_3a >> 2) & 1) {
       FUN_0822dafc(&p->base, g, 3);
     } else {
@@ -106,7 +106,7 @@ void LevelUpper_EmitLevelUpEffect(LevelUpper* p) {
   s32 i;
   AuxSprite_Show(&p->sprite);
   AuxSprite_SetPoseIdx(&p->sprite, 0);
-  p->sprite.pos = gPlayerPtr[0]->unk_24.pos;
+  p->sprite.pos = gPlayerPtr[0]->mover.pos;
   p->sprite.pos.y += 250;
   p->unk_64 = 0;
   p->unk_62 = 1;
@@ -120,7 +120,7 @@ void LevelUpper_EmitLevelUpEffect(LevelUpper* p) {
 void LevelUpper_EmitWeaponLevelUpEffect(LevelUpper* p) {
   AuxSprite_Show(&p->sprite);
   AuxSprite_SetPoseIdx(&p->sprite, 3);
-  p->sprite.pos = gPlayerPtr[0]->unk_24.pos;
+  p->sprite.pos = gPlayerPtr[0]->mover.pos;
   p->sprite.pos.y += 250;
   p->unk_64 = 0;
   p->unk_62 = 1;

@@ -254,7 +254,7 @@ _0800B1E4:
 	ldrh r2, [r2]
 	str r6, [sp]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r1, _0800B294 @ =0x03002BC0
 	ldr r0, [r1]
 	mov r2, r8

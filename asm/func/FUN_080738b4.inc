@@ -87,7 +87,7 @@ _0807395C:
 	adds r0, r4, #0
 	movs r1, #0x17
 	movs r2, #1
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _080739D2
 _08073974:
 	movs r1, #0xd6

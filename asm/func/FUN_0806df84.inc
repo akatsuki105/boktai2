@@ -10,7 +10,7 @@
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _0806DFA0:
 	ldr r1, [r6, #0x20]
 	movs r0, #2
@@ -43,7 +43,7 @@ _0806DFBC:
 	ldrb r0, [r0]
 	str r0, [sp]
 	adds r0, r4, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, r6, #0
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]

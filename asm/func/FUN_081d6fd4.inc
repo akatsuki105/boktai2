@@ -63,7 +63,7 @@ _081D7030:
 	adds r0, r4, #0
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1
 	ldr r1, [r4]
@@ -229,7 +229,7 @@ _081D7174:
 	movs r2, #0
 	str r2, [sp]
 	movs r3, #0
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	strh r4, [r6]
 _081D7188:
 	movs r6, #0x80
@@ -261,7 +261,7 @@ _081D7194:
 	adds r0, r6, #0
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r5, #0
 	adds r0, #0x94
 	ldrh r0, [r0]
@@ -424,7 +424,7 @@ _081D72E0:
 	str r4, [sp]
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov r1, sb
 	ldr r0, [r1]
 	ands r0, r4

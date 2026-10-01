@@ -398,7 +398,7 @@ _0800E894:
 	str r2, [sp]
 	movs r2, #3
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _0800E8B6:
 	adds r0, r6, #0
 	adds r0, #0x80

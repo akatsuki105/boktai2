@@ -171,7 +171,7 @@ _082468C6:
 	ldrh r2, [r2]
 	str r6, [sp]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r0, #1
 	mov sb, r0
 	b _0824695C

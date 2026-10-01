@@ -110,7 +110,7 @@ _08064E48:
 	str r6, [sp]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	ldr r0, _08064EA4 @ =0x00000382
 	adds r1, r5, r0
 	movs r0, #0xbe
@@ -156,7 +156,7 @@ _08064EA8:
 	str r6, [sp]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	str r6, [r4]
 	adds r0, r5, #0
 	bl Player_PayMagicCost
@@ -198,7 +198,7 @@ _08064F16:
 	str r6, [sp]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	str r6, [r4]
 	adds r0, r5, #0
 	bl Player_PayMagicCost

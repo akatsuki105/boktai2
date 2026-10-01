@@ -210,15 +210,13 @@ s32 TextSlideshow_Start(TextSlideshow* p) {
 }
 
 // BG1-BG3 を消して BG0 だけ表示する
-static inline void ShowOnlyBG0(u32 hide) { gStagedDISPCNT = (gStagedDISPCNT & ~hide) | DISPCNT_BG0_ON; }
-
 NON_MATCH s32 TextSlideshow_Init(TextSlideshow* p) {
 #ifdef NONMATCHING_C
   gTextSlideshow = p;
   p->flags = VM_GetNamedArgValue('f', 0);
   if (p->flags & TEXTSLIDESHOW_TAKE_OVER_BG) {
     p->savedDispcnt = gStagedDISPCNT;
-    ShowOnlyBG0(DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON);
+    gStagedDISPCNT = (gStagedDISPCNT & ~(DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON)) | DISPCNT_BG0_ON;
   }
 
   return TextSlideshow_Start(p);

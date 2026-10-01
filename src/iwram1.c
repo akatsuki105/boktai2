@@ -102,4 +102,4 @@ IWRAM_DATA struct Entity081ea820* gEntity081ea820 = NULL;  // 0x030001BC
 IWRAM_DATA struct Entity081eaf6c* gEntity081eaf6c = NULL;  // 0x030001C0
 IWRAM_DATA struct Entity081eb2f0* gEntity081eb2f0 = NULL;  // 0x030001C4
 
-IWRAM_DATA u8 u8_030001c8[0x21C - 0x1c8] = {};
+IWRAM_DATA u8 u8_030001c8[0x218 - 0x1c8] = {};

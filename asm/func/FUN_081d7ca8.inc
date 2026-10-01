@@ -232,7 +232,7 @@ _081D7E64:
 	ldr r0, [sp, #0x10]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r7, #0
 	adds r0, #0xfe
 	strh r4, [r0]
@@ -255,7 +255,7 @@ _081D7E94:
 	ldr r0, [sp, #0x10]
 	movs r2, #2
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r1, r7, #0
 	adds r1, #0xfe
 	movs r3, #2

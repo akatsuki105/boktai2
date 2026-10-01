@@ -78,7 +78,7 @@ _08069FD2:
 	adds r0, r4, #0
 	movs r1, #0x17
 	movs r2, #1
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806A04A
 	.align 2, 0
 _0806A010: .4byte 0x000002E6
@@ -105,7 +105,7 @@ _0806A01E:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _0806A04A:
 	pop {r4}
 	pop {r0}

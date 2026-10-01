@@ -11,7 +11,7 @@ typedef struct GameResult {
   Entity e;           // 0x000, ENTITY_UNK_11
   MainSpriteGfx gfx;  // 0x018, SPRITE_42E2
   Tilemaps* tilemap;  // 0x038, TILEMAP_33B2
-  rgb555* pltt;       // 0x03C
+  rgb555* pltt;       // 0x03C, BGP_E9C3
   u32 unk_40;         // 0x040, なんかのbitfield?
   u32 scriptID_44;    // 0x044, 0x08222954
   s32 unk_48;         // 0x048, sUpdates の idx (このゲームでは常に 0)
@@ -74,7 +74,7 @@ void FUN_082229ac(GameResult* p) {
 
 // 背景パレットを読み込んで作業用バッファへ流す
 void FUN_082229e8(GameResult* p) {
-  p->pltt = GetBgPlttFile(0xE9C3)->body;
+  p->pltt = GetBgPlttFile(BGP_E9C3)->body;
   CpuCopy32(p->pltt, gBgPlttBuffer, 160);
 }
 

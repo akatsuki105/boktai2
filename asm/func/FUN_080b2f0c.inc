@@ -49,7 +49,7 @@ _080B2F52:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #4
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r7, r5, #0
 	adds r7, #0x18
 	ldrh r0, [r4, #8]
@@ -219,7 +219,7 @@ _080B3092:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #4
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r7, r5, #0
 	adds r7, #0x18
 	ldrh r0, [r4, #8]

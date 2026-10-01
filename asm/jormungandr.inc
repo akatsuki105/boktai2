@@ -10040,7 +10040,7 @@ _080C9E90:
 	ldr r2, _080C9F08 @ =0x000025CE
 	adds r1, r4, r2
 	ldrh r1, [r1]
-	bl FUN_0807a840
+	bl AddWeaponExpByMask
 	movs r0, #1
 	b _080C9FB2
 	.align 2, 0

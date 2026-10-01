@@ -36,7 +36,7 @@
 	adds r0, #0x48
 	ldr r1, [r1, #0x58]
 	str r5, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _080EF8D0 @ =0x0000046E
 	adds r7, r6, r0
 	b _080EF956

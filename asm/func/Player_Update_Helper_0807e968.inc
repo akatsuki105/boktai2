@@ -105,7 +105,7 @@ _0807EA1E:
 	movs r1, #0x1e
 _0807EA36:
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _0807EA3C:
 	movs r0, #1
 	b _0807EC8E

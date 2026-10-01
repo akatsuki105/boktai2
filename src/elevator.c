@@ -98,7 +98,7 @@ void FUN_081d276c(ElevatorUnkData* p) {
     Player* player = gPlayerPtr[i];
 
     if (player != NULL && p->id == q->ridingID) {
-      player->unk_24.tile = (p->state == 3 || p->state == 4) ? &player->tile : NULL;
+      player->mover.tile = (p->state == 3 || p->state == 4) ? &player->tile : NULL;
     }
   }
 }
@@ -114,7 +114,7 @@ NAKED void FUN_081d2a14(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d2a14.inc
 NAKED void FUN_081d2a64(Elevator* p) { INCFUNC("asm/func/FUN_081d2a64.inc"); }
 
 void FUN_081d2c10(void) {
-  Vec3 pos = gPlayerPtr[0]->unk_24.pos;
+  Vec3 pos = gPlayerPtr[0]->mover.pos;
 
   pos.x += 0x80;
   FUN_0807a91c(gPlayerPtr[0], &pos);
@@ -128,7 +128,7 @@ bool32 FUN_081d2c60(ElevatorUnkData* p) {
   Vec3 d;
 
   if (gPlayerPtr[0] != NULL) {
-    Vec3_Delta(&d, &p->hitbox.pos, &gPlayerPtr[0]->unk_24.pos);
+    Vec3_Delta(&d, &p->hitbox.pos, &gPlayerPtr[0]->mover.pos);
 
     if (d.x <= gElevatorRanges[0].x && d.x >= -gElevatorRanges[0].x && d.y <= gElevatorRanges[0].y && d.y >= -gElevatorRanges[0].y && d.z <= gElevatorRanges[0].z && d.z >= -gElevatorRanges[0].z) {
       return TRUE;
@@ -328,7 +328,7 @@ void FUN_081d5450(void) {
   ElevatorUnkData* p = Elevator_FindRiding();
 
   q->ridingID = 0;
-  gPlayerPtr[0]->unk_24.tile = &gPlayerPtr[0]->tile;
+  gPlayerPtr[0]->mover.tile = &gPlayerPtr[0]->tile;
   FUN_0807a99c(gPlayerPtr[0], 1);
   Elevator_ClearFlags(p, ELEVATOR_PLAYER_RIDING);
   gPlayerPtr[0]->unk_60e &= ~1;

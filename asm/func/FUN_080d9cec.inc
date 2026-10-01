@@ -249,7 +249,7 @@ _080D9ECA:
 	str r0, [sp]
 	ldr r0, [sp, #0x30]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, [sp, #0x28]
 	ldr r0, [r2]
 	ldr r1, [r2, #4]

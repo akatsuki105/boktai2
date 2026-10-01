@@ -15,7 +15,7 @@ typedef struct SpiritBug {
   u16 unk_6;          // 0x06, 状態遷移用の第2カウンタ (点滅回数など), 生成時は u32_ARRAY_085aa700[kind], 根拠: FUN_0800b7a0
   Vec3 vel;           // 0x08, 毎フレーム ptcl.pos に加算される, 根拠: FUN_0800b068
   Vec3 target;        // 0x10, 向かう先, 生成時は ptcl.pos のコピー, 根拠: Entity0800a89c_Spawn / ArcTan2_8 の入力
-  AuxAnimState anim;  // 0x18, 根拠: FUN_08236fac に渡される
+  AuxAnimState anim;  // 0x18, 根拠: AuxAnim_SetAnim に渡される
   Particle ptcl;      // 0x28, 根拠: FUN_0822da70 / Particle_Remove に渡される
 } SpiritBug;
 static_assert(sizeof(SpiritBug) == 80);
@@ -253,7 +253,7 @@ NON_MATCH void Entity0800a89c_PurifyDarkBugs(void) {
       swarm->kind = 0;
       for (j = 0; j < 4; j++) {
         if (swarm->bugs[j].state != 0) {
-          FUN_08236fac(&swarm->bugs[j].anim, p->anim, u16_ARRAY_085aa6d0[(p->isSabata * 3 + swarm->kind) * 2], 0, 0);
+          AuxAnim_SetAnim(&swarm->bugs[j].anim, p->anim, u16_ARRAY_085aa6d0[(p->isSabata * 3 + swarm->kind) * 2], 0, 0);
           if (swarm->bugs[j].state < 3 && swarm->bugs[j].timer < 180) {
             swarm->bugs[j].timer = 180;
           }

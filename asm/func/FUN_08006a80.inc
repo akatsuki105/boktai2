@@ -138,7 +138,7 @@ _08006B68:
 	str r2, [sp]
 	movs r2, #5
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _08006B8A:
 	ldr r0, [r7, #0x18]
 	adds r0, #1

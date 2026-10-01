@@ -13,7 +13,7 @@
 	adds r0, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	add sp, #4
 	pop {r4}
 	pop {r0}

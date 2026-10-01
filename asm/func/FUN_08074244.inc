@@ -38,7 +38,7 @@ _08074276:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #1
-	bl FUN_08060b84
+	bl Player_SetAction
 	adds r0, r5, #0
 	bl FUN_080726b4
 	b _08074340

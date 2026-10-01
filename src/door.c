@@ -45,7 +45,7 @@ typedef struct {
 static_assert(sizeof(DoorSpriteSet) == 140);
 
 // AuxSpriteGfx 5枚 x 7 種類の扉グラフィックを持ち、doorMax 体ぶんの扉の実体を管理するシングルトン
-// スクリプトのキーワードごとに種類が対応する: 'd'=木の扉 / 'S'=鉄格子 / 'k'=鍵付き青扉1 / 'b'=鍵付き青扉2 / 's' / 'u'
+// スクリプトの引数ごとに種類が対応する: 'd'=木の扉 / 'S'=鉄格子 / 'k'=鍵付き青扉1 / 'b'=鍵付き青扉2 / 's' / 'u'
 typedef struct {
   Entity e;                     // 0x00, ENTITY_UNK_9
   u16 subroutineID;             // 0x18, DoorManager_Update が FUN_08230F94 の検索キーに使う

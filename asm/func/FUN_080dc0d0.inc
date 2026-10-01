@@ -291,7 +291,7 @@ _080DC2E6:
 	str r4, [sp]
 	movs r2, #0xc
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r3, [sp, #0x10]
 	ldr r0, [r3]
 	movs r1, #1

@@ -1001,7 +1001,7 @@ _08132A46:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _08132A94 @ =0x0000046E
 	adds r7, r5, r0
 	b _08132B1A
@@ -1118,7 +1118,7 @@ _08132B34:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _08132B80 @ =0x0000046E
 	adds r7, r5, r0
 	b _08132C06
@@ -1253,7 +1253,7 @@ _08132C3C:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _08132C8C @ =0x0000046E
 	adds r7, r5, r0
 	b _08132D12
@@ -3267,7 +3267,7 @@ _08133B64:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, _08133BB8 @ =0x0000046E
 	adds r7, r6, r2
 	b _08133C3E
@@ -3466,7 +3466,7 @@ _08133CF2:
 	lsls r4, r7, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov r8, r5
 	ldr r1, _08133D4C @ =0x0000046E
 	adds r1, r1, r6
@@ -3590,7 +3590,7 @@ _08133DD8:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _08133EA2
 _08133E32:
 	ldr r0, [r6, #0x44]
@@ -4003,7 +4003,7 @@ _08134100:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, _08134148 @ =0x0000046E
 	adds r7, r6, r2
 	b _081341CE
@@ -4518,7 +4518,7 @@ _0813454C:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _08134590
 	.align 2, 0
 _08134570: .4byte 0x00000482
@@ -4881,7 +4881,7 @@ _0813481C:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _08134860
 	.align 2, 0
 _08134840: .4byte 0x00000482
@@ -5248,7 +5248,7 @@ _08134AFC:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _08134B40
 	.align 2, 0
 _08134B20: .4byte 0x00000482
@@ -5986,7 +5986,7 @@ _081350B8:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _081350FC
 	.align 2, 0
 _081350DC: .4byte 0x00000482
@@ -8264,7 +8264,7 @@ _081361B4:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r0, #4
 	ldrb r1, [r4, #0x15]
 	orrs r0, r1
@@ -8292,7 +8292,7 @@ _08136234:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #2
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	strh r7, [r4, #8]
 	adds r7, #1
 	cmp r7, #3
@@ -8490,7 +8490,7 @@ _0813638C:
 	str r0, [sp]
 	adds r0, r6, #0
 	movs r2, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _08136418
 _081363C2:
 	ldrb r0, [r6, #0x14]
@@ -8519,7 +8519,7 @@ _081363C2:
 	lsrs r0, r0, #0x18
 	str r0, [sp]
 	adds r0, r6, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _08136450 @ =0x00000482
 	add r0, sb
 	ldrh r1, [r0]
@@ -8529,7 +8529,7 @@ _081363C2:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r6, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	strh r4, [r6, #8]
 	strh r5, [r6, #0xe]
 _08136418:
@@ -8760,7 +8760,7 @@ _0813658C:
 	str r0, [sp]
 	adds r0, r7, #0
 	movs r2, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _08136610
 _081365C2:
 	ldrb r0, [r7, #0x14]
@@ -8787,7 +8787,7 @@ _081365C2:
 	lsrs r0, r0, #0x18
 	str r0, [sp]
 	adds r0, r7, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _08136644 @ =0x00000482
 	add r0, sb
 	ldrh r1, [r0]
@@ -8797,7 +8797,7 @@ _081365C2:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r7, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 _08136610:
 	mov r6, r8
 	adds r4, r7, #0
@@ -9087,7 +9087,7 @@ _08136808:
 	movs r2, #1
 	ldr r4, [sp, #0x10]
 	lsrs r3, r4, #0x18
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	b _0813686E
 _0813682C:
 	movs r0, #0xea
@@ -9109,7 +9109,7 @@ _0813682C:
 	adds r0, r7, #0
 	ldr r4, [sp, #0x10]
 	lsrs r3, r4, #0x18
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	ldr r0, _081368A0 @ =0x00000482
 	add r0, sb
 	ldrh r1, [r0]
@@ -9119,7 +9119,7 @@ _0813682C:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r7, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 _0813686E:
 	mov r6, r8
 	adds r4, r7, #0

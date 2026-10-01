@@ -1282,7 +1282,7 @@ _08162D36:
 	ldr r0, [r5, #0x44]
 	adds r0, #0x48
 	movs r1, #0x40
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 _08162D54:
 	ldr r1, _08162DA0 @ =0x0000046E
 	adds r0, r5, r1
@@ -1385,7 +1385,7 @@ _08162E12:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x48
 	movs r1, #0x40
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	adds r0, r4, #0
 	movs r1, #0x10
 	bl FUN_080efe38
@@ -1455,7 +1455,7 @@ _08162E92:
 	ldr r0, [r5, #0x44]
 	adds r0, #0x48
 	movs r1, #0x40
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 _08162EB0:
 	ldr r1, _08162EEC @ =0x0000046E
 	adds r0, r5, r1
@@ -1523,7 +1523,7 @@ _08162F1A:
 	ldr r0, [r5, #0x44]
 	adds r0, #0x48
 	movs r1, #0x40
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 _08162F38:
 	ldr r6, _08162F98 @ =0x0000046E
 	adds r0, r5, r6
@@ -1616,7 +1616,7 @@ _08162FC6:
 	ldr r1, [r1, #0x58]
 	str r3, [sp]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, _08163004 @ =0x0000046E
 	adds r6, r5, r2
 	b _0816304A
@@ -1686,7 +1686,7 @@ _08163074:
 	ldr r0, [r5, #0x44]
 	adds r0, #0x48
 	ldrh r1, [r1]
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 _0816307E:
 	ldr r1, _081630BC @ =0x0000046E
 	adds r0, r5, r1
@@ -1767,7 +1767,7 @@ _081630FA:
 	ldr r1, [r1, #0x58]
 	str r3, [sp]
 	movs r3, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _08163138 @ =0x0000046E
 	adds r4, r5, r0
 	b _08163184
@@ -1971,7 +1971,7 @@ _081632AA:
 	ldr r0, [r5, #0x44]
 	adds r0, #0x48
 	movs r1, #0x40
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 _081632C0:
 	ldr r1, _08163308 @ =0x0000046E
 	adds r0, r5, r1
@@ -2441,7 +2441,7 @@ _08163632:
 	ldr r0, [r4, #0x44]
 	adds r0, #0x48
 	movs r1, #0x40
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	adds r0, r4, #0
 	movs r1, #1
 	bl FUN_080efe38
@@ -2537,7 +2537,7 @@ _081636FE:
 	ldr r0, [r5, #0x44]
 	adds r0, #0x48
 	movs r1, #0x40
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	movs r1, #0xfe
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -3251,7 +3251,7 @@ _08163C78:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _08163CBC
 	.align 2, 0
 _08163C9C: .4byte 0x00000482

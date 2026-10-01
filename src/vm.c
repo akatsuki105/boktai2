@@ -673,7 +673,7 @@ static void FUN_08231c80(void) {
 void FUN_08231ca8(void) {
   u16 tmp = gStat->unk_246;
   ClearMemory(gWorld, sizeof(World));
-  ClearMemory(&gStat->playerPos, 0x38A);
+  ClearMemory(&gStat->playerX, 0x38A);
   gStat->unk_246 = tmp;
   Save_BackupStatAndWorld();
 }

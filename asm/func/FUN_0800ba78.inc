@@ -112,7 +112,7 @@ _0800BB20:
 	mov r5, ip
 	str r5, [sp]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r1, _0800BBA0 @ =0x03002BC0
 	ldr r0, [r1]
 	mov r2, sb

@@ -202,7 +202,7 @@ _08203CA0:
 	lsrs r0, r0, #0x18
 	str r0, [sp]
 	adds r0, r6, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	add sp, #4
 	pop {r4, r5, r6}
 	pop {r0}
@@ -371,7 +371,7 @@ _08203DD6:
 	adds r0, r4, #0
 	movs r2, #7
 	adds r3, r5, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r0, #1
 	mov r2, r8
 	strb r0, [r2]
@@ -560,7 +560,7 @@ _08203F3A:
 	adds r0, r4, #0
 	movs r2, #7
 	adds r3, r5, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov r2, r8
 	strb r6, [r2]
 _08203F4A:
@@ -735,7 +735,7 @@ _08204088:
 	str r2, [sp]
 	adds r0, r4, #0
 	movs r2, #7
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	strb r5, [r6]
 	b _082040C0
 	.align 2, 0
@@ -1711,7 +1711,7 @@ _08204786:
 	adds r0, r5, #0
 	movs r2, #5
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r5, #0x10]
 	movs r1, #1
 	orrs r0, r1

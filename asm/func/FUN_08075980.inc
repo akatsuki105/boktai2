@@ -28,7 +28,7 @@ _0807599C:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, r7, #0
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]
@@ -219,7 +219,7 @@ _08075B24:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r2, #0x93
 	lsls r2, r2, #3
 	adds r1, r7, r2

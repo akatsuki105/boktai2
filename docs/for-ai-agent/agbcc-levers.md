@@ -80,13 +80,37 @@ plausible.
   first and branches over it; the split form emits `Y` right after the second
   compare and puts `X` last, cross-jumping the two `Y` returns into one.
   `FUN_08084710` only closed on the split form.
+- **Which of the two `movs r0, #N` blocks comes first names the `if`'s own
+  return.** For a predicate that ends in `movs r0, #0` / `b` / `movs r0, #1`,
+  the block emitted *first* is the value the `if` body returns and the second is
+  the fallthrough `return`. So `0` first means the source is the de Morgan'd
+  form — `if (!a || (b && c)) return FALSE; return TRUE;` — not
+  `if (a && (!b || !c)) return TRUE; return FALSE;`. Negating the whole
+  condition and swapping the two returns is the only edit needed, and it leaves
+  the individual compares' polarity alone (`FUN_0807a9d0`).
+- **`x = (a && b)` puts its accumulator init where the first operand ends.**
+  The `movs rX, #0` that starts a materialized `&&` is emitted *after* whatever
+  RTL the first operand needed. If the target has it after the first `ldrh` and
+  you have it before, cache that operand in a local: `u16 state = p->unk_446;`
+  then `skip = state != 0 && p->unk_442 == 7;` moves the init past the load and
+  nothing else changes (`FUN_080667b0`).
 - **Do not collapse a duplicated body into `||`.** `if (a) {X} else if (b) {X}`
   and `if (a || b) {X}` emit different condition tests; the shared tails are
   cross-jumped but the branches stay distinct. Write the structure the target
   actually has.
 - **Shared tails.** If the target reaches one `bl` from two arms and you emit
   two, your two tails are not textually identical. Compute a common local in
-  each arm and call once.
+  each arm and call once. The converse is also a lever: one `bl` whose argument
+  differs per arm can come from **two calls** that agbcc cross-jumped. A ternary
+  or a local hoists one of the constants above the compare and saves an
+  instruction; writing the call out in both arms keeps each constant inside its
+  own arm (`Entity08001610_Create`).
+  A single `bl` shared by two arms is sometimes **not** reproducible: when both
+  arms are `return f(...)` with different arguments, agbcc cross-jumps the one
+  `bl` whatever the surrounding shape, while the target keeps two. Every spelling
+  tried (if/else, early-out, a `ret` local, a local for the argument) merged it,
+  so this residual is one instruction that no source-level change reaches
+  (`FUN_0807a6cc`).
 - **Aggregates.** Several scalars that always travel together may have been one
   struct. A local aggregate has different lifetime and addressing rules than
   independent locals, so restoring it changes codegen as well as readability.
@@ -101,7 +125,141 @@ plausible.
 - **Index the array, do not walk a pointer.** `argv[j] = ...` lets strength
   reduction create the walking pointer in the loop's preheader, i.e. *after* the
   entry guard; `u32* dst = argv;` above the loop materializes it before the
-  guard and takes a different register (`VM_Loop`).
+  guard and takes a different register (`VM_Loop`). Strength reduction also
+  folds the member offset into the pointer (`ldr r0, [r1]` on `p->a[i].flags`,
+  stride `sizeof(a[0])`), and turns an ascending `i < N` into a countdown trip
+  counter; a hand-written `for (i = N - 1; i >= 0; i--, q++)` keeps the offset
+  (`ldr r0, [r1, #0x8]`) and does not match (`SolarBank_HideAllSprites`).
+
+### Caching an operand in a local pins both the order and the association
+
+Two symptoms turn out to have one cure. `bool32 k = FALSE; if (p->a != 0 && p->b == N) { k = TRUE; }`
+emits `movs rK, #0` *before* the load of `p->a`, while several targets emit it
+after; and `a - (b - 100)` is reassociated by fold into `(a + 100) - b`, so the
+`subs #0x64` lands on the wrong register. In both cases naming the first operand
+in a local — `u16 n = p->a;`, `s32 agility = p->stats[...];` plus
+`s32 over = p->armor.weight - 100;` — reproduces the target exactly: the load
+becomes its own insn that cannot be sunk past the accumulator init, and a local
+is not a `PLUS_EXPR` that fold can split, so the constant stays with its own
+operand (`CalcMoveSpeed`).
+
+Caching only the *second* operand is not enough and makes things worse: with
+`over` alone the weight is loaded before the first operand, which is the opposite
+of the target. Cache the leftmost operand first.
+
+### An empty `case` is dropped, and that moves the switch's pivot
+
+agbcc builds a `switch` as a balanced binary tree over the case values and picks
+the root by node count, so the first `cmp` names how many cases the source had:
+four cases spanning 0..3 pivot on 1, three cases spanning 0..3 pivot on 2. A
+case whose body is only `break;` is removed before the tree is built, so writing
+`case 1: { break; }` for a case the target clearly dispatches on changes nothing
+and leaves the pivot wrong. `case 1: { return; }` keeps the node — the `return`
+is real code, and after jump optimization its jump lands on the same end label,
+which is why the case looks empty in the disassembly (`FUN_0806f1ec`).
+
+### A cached global pointer that the target reloads per store
+
+`gStat->playerX = pos->x;` three times in a row emits one `ldr rG, [=gStat]`
+here and three `strh` through it; several targets keep the *address* in a
+register and reload `[rG]` before every store, while still re-reading `pos`
+each time. agbcc's CSE invalidates the `pos` MEM on each store but decides the
+store cannot touch the `gStat` variable itself, so the pointer stays cached.
+`-fvolatile-global` reproduces the three loads, which only confirms the
+mechanism — it is a whole-translation-unit flag and `gStat` cannot be volatile,
+since functions that read two of its fields in one expression match today.
+Writing the stores through three `static inline` setters does not help (they are
+inlined and then CSE'd together), nor does a `GameInfo*` local, which is the
+opposite direction. `FUN_0807a91c` stays two instructions short.
+
+The read side behaves the same way. `FUN_08078844` tests `gEntity0B50 != NULL`,
+reads one of its fields, and then reads two more fields to build a call's
+arguments; the target keeps `&gEntity0B50` in a register (`adds r3, r0, #0`) and
+reloads `[r3]` for the argument setup, because the branch join in the middle of
+the condition ends the extended basic block. agbcc folds all of it into a single
+load and comes out two instructions short. Caching the pointer in a local, or
+caching it only for part of the condition, hoists the load above the first
+condition instead and makes the diff worse; nesting the conditions as separate
+`if`s changes nothing.
+
+### `gPlayerPtr[i]` loads into a temp and is copied
+
+`Player* p = gPlayerPtr[i];` emits `ldr rP, [rAddr]` straight into `p`'s
+register. Several targets instead emit `ldr r0, [r0]` followed by a dead
+`adds rP, r0, #0` and then compare `rP`, i.e. the element read and `p` are two
+pseudos that agbcc never coalesced. Tried without effect: the initializer and a
+separate assignment, either declaration order, `u32` vs `s32` for the index,
+`*(gPlayerPtr + i)` and `*(i + gPlayerPtr)` (both move the pool load instead),
+reading the element twice so CSE makes the temp explicit, a
+`static inline Player* GetPlayerPtr(s32 n)` accessor with the index passed in or
+the call nested inside, and splitting the two early-outs. Leaves
+`FUN_0807b1a4` and `FUN_0807b2dc` at a one-instruction residual.
+
+### The 0/1 materialization that will not come back
+
+About 400 sites across 255 unmatched functions end a predicate test like this:
+
+```asm
+	ands r0, r1          @ flags & mask
+	cmp r0, #0
+	beq _0f
+	movs r0, #1
+	b _0j
+_0f:
+	movs r0, #0
+_0j:
+	cmp r0, #0           @ and only now the real branch
+	bne _false
+```
+
+The value is materialized as 0/1 and *then* compared. `src/` has never
+reproduced it: every spelling collapses the materialization into the following
+branch, leaving the function exactly 5 instructions short
+(`FUN_08065a98`, `FUN_08065ad0`, `FUN_08065b08`, `FUN_08065b44`,
+`FUN_0809e0d4`, `FUN_0809e138`).
+
+Two partial observations, neither of which shortens the residual:
+
+- A one-argument `static inline` predicate such as `Stat_TestFlag934(0x18)`
+  reproduces `movs r1, #0x18` **ahead of** the `gStat` load, because the inline
+  argument materializes before the body (see the Tier C bullet). Two levels of
+  inlining push the mask *after* the load, so it would be one level with a literal.
+- The inline's source polarity decides which constant is emitted first:
+  `if ((x & bit) == 0) { return FALSE; } return TRUE;` gives `beq` → `movs 0`
+  with `movs 1` on the fallthrough, which is what the targets have. The
+  `if (x & bit) { return TRUE; } return FALSE;` spelling gives the inverse.
+
+A `static inline` accessor only earns its place in `src/` when a function matches
+*because of it*. Writing one, failing to match, and committing both together
+leaves an invented accessor that no matching function justifies — delete it and
+spell the access out before committing the NON_MATCH.
+
+**Do not put that helper back in `src/`.** It was there for a while and every one
+of its six callers stayed NON_MATCH at the same 5-instruction residual, so it
+bought nothing while inventing an accessor no matching function justifies — and
+the two copies had drifted to opposite polarities. The tree now spells these
+tests as the plain `gStat->unk_934 & SF934_x`. Reintroduce an accessor only
+together with a spelling that actually closes the residual.
+
+What does **not** work: `!T(b)`, `T(b) == FALSE`, `T(b) == TRUE`, `T(b) & 1`,
+`T(b) + 0`, a local for the result at block or function scope, `register`, a
+`volatile` local, a second `Not(bool32)` inline (that collapses to the
+accumulator `movs r,#0 / … / movs r,#1` form), non-static `inline`, and a
+`static` non-inline helper (that becomes a real `bl`). No flag reaches it
+either: `-O1`, `-fno-thread-jumps`, `-fno-cse-follow-jumps`,
+`-fno-cse-skip-blocks`, `-fno-gcse`, `-fno-rerun-cse-after-loop`,
+`-fno-expensive-optimizations`, `-fno-optimize-comparisons`, `-fno-regmove`,
+`-fno-peephole`, `-fno-force-mem`, `-fkeep-inline-functions`, and `old_agbcc`
+all fold it. The fold happens during RTL expansion, not in a pass that can be
+switched off.
+
+The two places it *does* survive are the clue to finish this: when the inlined
+predicate's body contains a **loop**, so its result is not a two-way constant
+(`FUN_08234660` inlines a linear search and gets `movs r0,#1 / b / movs r0,#0 /
+cmp r0,#1`), and when the result has a second real use such as a store. A
+spelling that makes the simple mask test opaque the same way is still missing;
+until then these functions stay NON_MATCH at a 5-instruction residual, and
+writing more spellings of the same four shapes is not worth the build.
 
 ---
 
@@ -132,10 +290,46 @@ Still source-level, still defensible.
 - **Keep it narrow.** The opposite case: when the target operates in the
   shifted domain (`lsl #24` … `asr #24` around the operation, constants shifted
   into the top byte), the value stayed narrow. Do not widen it.
+- **`/ 4096` is not how the original divides a fixed-point product.** agbcc
+  expands `v / 4096` into the bias form — `cmp v, #0 / bge / add v, #0xfff /
+  asr #12`, four instructions with the positive case falling through. Many
+  targets instead have `cmp r0, #0 / blt / asr #12 / b / neg / asr #12 / neg`,
+  which is the hand-written truncating shift and needs the positive arm in the
+  `if` body:
+
+  ```c
+  static inline s32 Fix12ToInt(s32 v) {
+    if (v >= 0) {
+      return v >> 12;
+    }
+    return -(-v >> 12);
+  }
+  ```
+
+  `FUN_080700a4` closed on it (two uses, one per axis); `v < 0` as the `if`
+  condition swaps the two arms and does not match. Any `gSineTable[...] * dist /
+  4096` written the C way is a candidate for the same substitution.
 - **Narrowing at a boundary.** A trailing `lsl`/`asr` pair at the end of a
   function is a narrow return type; the same pair after a `bl` is a cast of the
   call's result; a plain `strh`/`strb` with no shifts is a store-only
   truncation.
+- **Where a parameter's truncation sits says whose parameter is narrow.** A `u8`
+  or `u16` parameter of *this* function is truncated once at entry, before the
+  body's first load. The same `lsl`/`lsr` pair sitting *between* two argument
+  setups, right before the `str` that places it, is the **callee's** narrow
+  parameter instead: this function's parameter is `s32` and the conversion
+  happens at the call. `FUN_08066e9c` closed only after its own `s16`/`u8`
+  parameters were widened to `s32` and `FUN_08240cf0` was declared with `s16`
+  and `u8` ones — and for the same reason its sound id has to stay `SoundID32`,
+  since `PlaySound_082406e0` takes the wide type and the target never truncates
+  it.
+
+---
+
+- **A signed branch on an address means the source compared ints.** Comparing
+  two pointers emits the unsigned form (`bcs`/`bcc`); `bge`/`blt` on two
+  address-valued registers means both operands were declared as an integer type,
+  not as a pointer (`Entity08001610_ClearTable`, still open).
 
 ---
 
@@ -165,6 +359,12 @@ reference count, live range length, and — only on a tie — creation order.
   destination field live across several phases, assign it once and read through
   that local rather than re-spelling an equivalent expression. Re-spelling
   creates a second pseudo with a different role.
+- **...but re-spell a value that is only tested.** The reverse case: a local
+  holding a word tested against several masks needs a copy to survive the
+  `ands`, so you get an extra `adds rN, rM, #0` and `ands` writing into the
+  value register. Re-spelling the load in each test (`gInput[0].pressed & MASK`)
+  lets CSE hold it in one register and each `ands` writes into the mask register
+  (`FUN_080b3e80`).
 
 ### Materialization order: where a constant or address is set up
 
@@ -184,6 +384,16 @@ Four positions, cheapest first:
   the global; the same statement written out in full emits it after. This one
   lever closed `FUN_0801f214`, `FUN_0801f328` and `FUN_0801f38c`, each of which
   had sat at a one-instruction residual.
+- **A mask local is not the same lever as an inline parameter.**
+  `PlayerFlag378 mask = FLAG378_FAIRY; if (p->flag378 & mask)` materializes the
+  constant where the `&` needs it, i.e. *after* the field's offset and load, and
+  that is what `Player_ApplyDarkbug` matches. When the target materializes the
+  mask *before* the offset constant, only an inline with the mask as a parameter
+  reaches it: `static inline PlayerFlag378 Player_GetFlag378(Player* p,
+  PlayerFlag378 bits) { return p->flag378 & bits; }` closed `FUN_0806f900`,
+  where the local spelling stayed four instructions out of order. Note the
+  accessor returns the masked value, not a `bool32` — a `bool32` one adds the
+  0/1 materialization described in Tier A.
 - **So the converse is a lever too.** If the target loads the memory operand
   *first* and only then materializes the constant, the original did **not**
   route that constant through an inline parameter — write the statement out

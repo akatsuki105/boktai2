@@ -121,7 +121,7 @@ _08006260:
 	str r5, [sp]
 	movs r2, #5
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _080062B8 @ =0x030047A4
 	ldr r0, [r0]
 	movs r1, #0x80

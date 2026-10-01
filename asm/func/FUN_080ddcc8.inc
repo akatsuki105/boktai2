@@ -322,7 +322,7 @@ _080DDF26:
 	str r0, [sp]
 	ldr r0, [sp, #0x18]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, [sp, #0x10]
 	movs r0, #0xce
 	lsls r0, r0, #4

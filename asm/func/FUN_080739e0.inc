@@ -139,7 +139,7 @@ _08073AE2:
 	adds r0, r4, #0
 	movs r1, #0x18
 	movs r2, #1
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _08073B36
 	.align 2, 0
 _08073B04: .4byte 0x000004A4

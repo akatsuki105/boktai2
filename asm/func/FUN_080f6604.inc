@@ -235,7 +235,7 @@ _080F67C4:
 	ldr r2, _080F67F4 @ =0x00000189
 	adds r1, r5, r2
 	ldrb r1, [r1]
-	bl FUN_0807a840
+	bl AddWeaponExpByMask
 _080F67E2:
 	movs r1, #0x80
 	ldrh r0, [r6]

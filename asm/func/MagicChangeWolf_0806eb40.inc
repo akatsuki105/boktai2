@@ -31,7 +31,7 @@
 	adds r0, r5, #0
 	movs r1, #0xb
 	movs r2, #3
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806EBBA
 	.align 2, 0
 _0806EB8C: .4byte 0x03002B70
@@ -52,7 +52,7 @@ _0806EB9C:
 	adds r0, r5, #0
 	movs r1, #0xb
 	movs r2, #1
-	bl FUN_08060b84
+	bl Player_SetAction
 _0806EBBA:
 	adds r0, r5, #0
 	bl Player_PayMagicCost
@@ -133,7 +133,7 @@ _0806EC56:
 	adds r0, r5, #0
 	movs r1, #0xb
 	movs r2, #1
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806F1DE
 	.align 2, 0
 _0806EC70: .4byte 0x00000193
@@ -213,7 +213,7 @@ _0806ED0C:
 	adds r0, r5, #0
 	movs r1, #0xb
 	movs r2, #3
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806F1DE
 	.align 2, 0
 _0806ED18: .4byte 0x03002BF4
@@ -274,7 +274,7 @@ _0806ED7C:
 	adds r0, r5, #0
 	movs r1, #0xb
 	movs r2, #2
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806F1DE
 	.align 2, 0
 _0806ED94: .4byte 0x000002E6
@@ -474,7 +474,7 @@ _0806EF18:
 	adds r0, r5, #0
 	movs r1, #0xb
 	movs r2, #4
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806F1DE
 	.align 2, 0
 _0806EF24: .4byte 0x03002B70
@@ -607,7 +607,7 @@ _0806F01E:
 	adds r0, r5, #0
 	movs r1, #0xb
 	movs r2, #2
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806F05C
 	.align 2, 0
 _0806F034: .4byte 0x03002B88
@@ -626,7 +626,7 @@ _0806F038:
 	adds r0, r5, #0
 	movs r1, #0xb
 	movs r2, #4
-	bl FUN_08060b84
+	bl Player_SetAction
 _0806F05C:
 	ldr r1, _0806F068 @ =0x03002B88
 	movs r0, #0
@@ -666,7 +666,7 @@ _0806F0A4:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806F1DE
 	.align 2, 0
 _0806F0B0: .4byte 0x0000095E
@@ -795,7 +795,7 @@ _0806F18A:
 	adds r0, r5, #0
 	movs r1, #0xb
 	movs r2, #5
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806F1DE
 	.align 2, 0
 _0806F1BC: .4byte 0x000003F6
@@ -811,7 +811,7 @@ _0806F1C4:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _0806F1DE:
 	add sp, #0x10
 	pop {r3, r4}

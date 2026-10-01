@@ -139,7 +139,7 @@ _08061A4E:
 	lsrs r2, r2, #0x18
 	str r2, [sp]
 	movs r2, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r5, #0
 	bl FUN_0806181c
 	add sp, #0xc

@@ -16,10 +16,10 @@ typedef struct Generator {
   AuxSpriteGfx gfx;                           // 0x044, SPRITE_GENERATOR
   Vec3 pos;                                   // 0x060, Generator_Create の第1引数を8バイト複写したもの,Hitbox_SetPos に渡す
   HitboxData hitbox;                          // 0x068, Generator_InitHitbox が Hitbox_Init / _SetPowerAndAttributes / _SetPos / _SetHandler する
-  AuxAnimState anim;                          // 0x0B8, FUN_08236fac(&anim, animFile, 1 か 3, unk_cc, unk_cd)
+  AuxAnimState anim;                          // 0x0B8, AuxAnim_SetAnim(&anim, animFile, 1 か 3, unk_cc, unk_cd)
   AuxAnimFile* animFile;                      // 0x0C8, 0x3449
-  u8 unk_cc;                                  // 0x0CC, Generator_Init の第3引数,FUN_08236fac に渡す
-  u8 unk_cd;                                  // 0x0CD, Generator_Init の第4引数,FUN_08236fac に渡す
+  u8 unk_cc;                                  // 0x0CC, Generator_Init の第3引数,AuxAnim_SetAnim に渡す
+  u8 unk_cd;                                  // 0x0CD, Generator_Init の第4引数,AuxAnim_SetAnim に渡す
   u8 unk_ce;                                  // 0x0CE, Generator_Init の第6引数,読み手が見つかっていない
   u8 state;                                   // 0x0CF, Generator_SetState が書き、 sUpdateCallbacks[state] を updateCallback に入れる,3 で GENERATOR_ENABLED, 5 で GENERATOR_DISABLED を鳴らす
   u16 stateTimer;                             // 0x0D0, Generator_SetState が状態遷移のたびに 0 に戻す
@@ -77,12 +77,10 @@ NON_MATCH void FUN_080b2888(Generator* p) {
 
 NAKED void Generator_PushPlayer(Generator* p) { INCFUNC("asm/func/Generator_PushPlayer.inc"); }
 
-static inline bool32 Hitbox_HasAttributes(HitboxData* p, u32 mask) { return p->attributes & mask; }
-
 // 攻撃属性を持つ判定を受けたら発電量を溜め、上限に届いたら state 3 へ進む
 NON_MATCH void FUN_080b29a4(HitboxData* a, HitboxData* b, Generator* p) {
 #ifdef NONMATCHING_C
-  if (Hitbox_HasAttributes(a, 0x7F) && p->unk_e0 == 0 && p->state == 2) {
+  if (Hitbox_TestAttribute(a, 0x7F) && p->unk_e0 == 0 && p->state == 2) {
     s32 power = a->power - b->power;
 
     if (power < 0) {

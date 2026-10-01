@@ -22,7 +22,7 @@
 	str r2, [sp]
 	movs r2, #3
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _080DF01A
 _080DF006:
 	adds r0, r5, #0
@@ -33,7 +33,7 @@ _080DF006:
 	str r2, [sp]
 	movs r2, #5
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _080DF01A:
 	adds r0, r5, #0
 	adds r0, #0x8c

@@ -121,7 +121,7 @@ _0807C700:
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #2
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r0, #0x93
 	lsls r0, r0, #3
 	adds r1, r4, r0

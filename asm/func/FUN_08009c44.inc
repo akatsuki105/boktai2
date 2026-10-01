@@ -24,7 +24,7 @@
 	str r5, [sp]
 	movs r2, #8
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r6, #0x64]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -94,7 +94,7 @@ _08009CC4:
 	str r5, [sp]
 	movs r2, #8
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r6, #0x64]
 	movs r1, #2
 	rsbs r1, r1, #0

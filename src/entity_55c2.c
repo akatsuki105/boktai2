@@ -2,7 +2,7 @@
 #include "global.h"
 #include "hitbox.h"
 
-// ヒットボックスを1つ持ち、当たったら VM キーワードで指定された条件を見て反応するエンティティ
+// ヒットボックスを1つ持ち、当たったらスクリプトの引数で指定された条件を見て反応するエンティティ
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_8
   HitboxData hitbox;  // 0x18, _Destroy が Hitbox_Unregister に渡す

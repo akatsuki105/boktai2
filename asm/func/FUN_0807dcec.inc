@@ -67,7 +67,7 @@ _0807DD52:
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r4, r1

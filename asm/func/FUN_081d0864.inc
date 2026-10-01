@@ -184,7 +184,7 @@ _081D09C8:
 	str r0, [sp]
 	ldr r0, [sp, #0x28]
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r4, [sp, #0x28]
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1

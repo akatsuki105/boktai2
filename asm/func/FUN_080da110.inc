@@ -253,7 +253,7 @@ _080DA2FE:
 	str r1, [sp]
 	adds r1, r3, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov r2, sb
 	add r2, sl
 	lsls r2, r2, #3

@@ -84,6 +84,7 @@ static_assert(sizeof(HitboxData) == 80);
 
 static inline void Hitbox_SetFlags(HitboxData* hitbox, HitboxFlags flags) { hitbox->flags |= flags; }
 static inline void Hitbox_ClearFlags(HitboxData* hitbox, HitboxFlags flags) { hitbox->flags &= ~flags; }
+static inline HitboxFlags Hitbox_TestFlags(HitboxData* hitbox, HitboxFlags flags) { return hitbox->flags & flags; }
 static inline bool32 Hitbox_HasWeakness(HitboxData* hitbox, u32 mask) { return hitbox->weakness & mask; }
 static inline u32 Hitbox_TestAttribute(HitboxData* hitbox, HitboxAttributes mask) { return (hitbox->attributes & mask); }
 

@@ -916,7 +916,7 @@ FUN_08023090: @ 0x08023090
 	push {lr}
 	adds r0, #0xb4
 	ldr r0, [r0]
-	bl FUN_0807a840
+	bl AddWeaponExpByMask
 	pop {r0}
 	bx r0
 	.align 2, 0

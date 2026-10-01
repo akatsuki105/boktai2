@@ -39,7 +39,7 @@
 	lsls r4, r5, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _080EF9D4 @ =0x0000046E
 	adds r6, r7, r0
 	b _080EFA5A

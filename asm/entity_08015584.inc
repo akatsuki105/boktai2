@@ -359,7 +359,7 @@ _08015866:
 	adds r0, r4, #0
 	movs r2, #6
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _0801594E
 	.align 2, 0
 _080158A4: .4byte 0x000061F9
@@ -387,7 +387,7 @@ _080158A8:
 	adds r0, r4, #0
 	movs r2, #6
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _0801594E
 	.align 2, 0
 _080158E0: .4byte 0x000061F9
@@ -414,7 +414,7 @@ _080158E4:
 	adds r0, r4, #0
 	movs r2, #8
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _0801594E
 	.align 2, 0
 _0801591C: .4byte 0x000061F9
@@ -437,7 +437,7 @@ _08015924:
 	adds r0, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _0801594E:
 	adds r7, r4, #0
 	adds r4, r7, #0
@@ -575,7 +575,7 @@ _08015A38:
 	strb r0, [r1, #7]
 	ldrh r1, [r6, #6]
 	adds r0, r7, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	mov r0, r8
 	movs r1, #0
 	bl Video_AddAuxSpriteIntoDrawList

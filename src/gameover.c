@@ -35,7 +35,7 @@ typedef struct GameOverManager {
   u16 plttTimer;              // 0x344, 0..49 を回り、GameOverManager_UpdateMenuPltt が menuPltt[15] の明度を切り替える
   u16 timer;                  // 0x346, 各 state / animState で 0 から数え直す汎用カウンタ
   u16 cost[2];                // 0x348, '.c=500,250', コンティニューに必要な太陽エネルギー量で gStat->solarBank と比較する
-  u8 costIdx;                 // 0x34C, cost の添字, GameOverManager_StateWaitFlag が gPlayerPtr[0]->unk_37c が 28 か 29 のとき 1 にする
+  u8 costIdx;                 // 0x34C, cost の添字, GameOverManager_StateWaitFlag が gPlayerPtr[0]->action が 28 か 29 のとき 1 にする
   u8 unk_34d[3];              // 0x34D, padding?
   s32 scriptId;               // 0x350, '.p', コンティニューを選ばずに終わるとき cost[costIdx] を引数にして VM_ExecByID へ渡す
 } GameOverManager;
@@ -287,7 +287,7 @@ void GameOverManager_StateWaitFlag(GameOverManager* p) {
   }
   GameOverManager_AddSprites(p);
   FUN_0809c08c(7);
-  if (gPlayerPtr[0]->unk_37c >= 28 && gPlayerPtr[0]->unk_37c <= 29) {
+  if (gPlayerPtr[0]->action >= 28 && gPlayerPtr[0]->action <= 29) {
     p->costIdx = 1;
   } else {
     FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 2);

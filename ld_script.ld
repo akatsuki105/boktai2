@@ -44,6 +44,8 @@ SECTIONS {
     iwram (NOLOAD) :
     ALIGN(4)
     {
+      src/code_08000440.o(iwram_data);
+      src/entity_08001610.o(iwram_data);
       src/main.o(iwram_data);
       src/entity_d9ae.o(iwram_data);
       src/entity_08004fac.o(iwram_data);
@@ -82,6 +84,7 @@ SECTIONS {
       src/entity_fb53.o(iwram_data);
       . = ALIGN(8);
       src/iwram1.o(iwram_data);
+      src/entity_082034c0.o(iwram_data);
       src/entity_08203ad0.o(iwram_data);
       src/entity_08204cb8.o(iwram_data);
       src/entity_8aab.o(iwram_data);
@@ -150,6 +153,7 @@ SECTIONS {
       src/crt0.o (.text);
 			src/main.o (.text);
 			src/code_08000440.o (.text);
+			src/entity_08001610.o (.text);
 			src/map_pltt_4ae5.o (.text);
 			src/entity_6978.o (.text);
 			src/entity_e28b.o (.text);
@@ -351,7 +355,7 @@ SECTIONS {
 			src/code_081eafbc.o (.text);
 			src/boss/dvalinn.o (.text);
 			src/entity_08202cd8.o (.text);
-			src/code_08200ab4.o (.text);
+			src/entity_082034c0.o (.text);
 			src/entity_08203ad0.o (.text);
 			src/entity_082047f0.o (.text);
 			src/entity_08204cb8.o (.text);

@@ -55,7 +55,7 @@ _082258EE:
 	str r2, [sp]
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r1, _082259C4 @ =0x00000F33
 	adds r0, r6, r1
 	strb r4, [r0]

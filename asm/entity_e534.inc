@@ -123,7 +123,7 @@ _080118B2:
 	ldrb r3, [r3]
 	ldrb r4, [r7]
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	add sp, #8
 	pop {r4, r5, r6, r7}
 	pop {r0}

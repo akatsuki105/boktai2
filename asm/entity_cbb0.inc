@@ -7454,7 +7454,7 @@ FUN_080b0b7c: @ 0x080B0B7C
 	adds r0, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	add sp, #4
 	pop {r4, r5, r6}
 	pop {r0}
@@ -7574,7 +7574,7 @@ _080B0C64:
 	ldr r1, [r6, #0x58]
 	movs r3, #0
 	str r3, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r7]
 	adds r0, #1
 	mov r1, sl
@@ -7720,7 +7720,7 @@ _080B0DA2:
 	mov r3, sl
 	str r3, [sp]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov r0, sb
 	ands r7, r0
 	cmp r7, #0

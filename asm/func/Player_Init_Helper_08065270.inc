@@ -88,7 +88,7 @@ _08065320:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r0, #0xa3
 	lsls r0, r0, #2
 	adds r2, r4, r0

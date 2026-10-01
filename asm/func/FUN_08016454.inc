@@ -19,7 +19,7 @@
 	str r2, [sp]
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _08016482:
 	movs r1, #0x16
 	ldrsh r0, [r4, r1]

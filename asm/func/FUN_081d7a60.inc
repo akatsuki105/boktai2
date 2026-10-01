@@ -25,7 +25,7 @@ _081D7A82:
 	adds r0, r7, #0
 	movs r2, #4
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r4, r7, #0
 	ldrh r0, [r7, #8]
 	lsls r0, r0, #1

@@ -95,7 +95,7 @@ _080DF1CC:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1
 	ldr r1, [r6, #0x2c]

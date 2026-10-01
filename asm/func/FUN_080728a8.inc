@@ -87,7 +87,7 @@ _08072956:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #1
-	bl FUN_08060b84
+	bl Player_SetAction
 _0807296E:
 	adds r0, r4, #0
 	bl FUN_080726b4
@@ -124,7 +124,7 @@ _080729A6:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r0, #0x93
 	lsls r0, r0, #3
 	adds r1, r4, r0

@@ -96,7 +96,7 @@ static_assert(sizeof(EnemyAnimEntry) == 4);
   void* unk_1cc;                /* 0x1CC, handlerUpdate/handlerDestroy の唯一の引数, 破棄時にこれが Free される */     \
   u8 unk_1d0[0x1D4 - 0x1D0];    /* 0x1D0 */                                                                            \
   u32 unk_1d4;                  /* 0x1D4, FUN_080fadd4 が EntityMsg.unk_4 を書く */                                    \
-  Mover* unk_1d8;               /* 0x1D8, FUN_080faa98 が gPlayerPtr[n]->unk_24 を書く */                              \
+  Mover* unk_1d8;               /* 0x1D8, FUN_080faa98 が gPlayerPtr[n]->mover を書く */                               \
   u8 unk_1dc[0x1DF - 0x1DC];    /* 0x1DC */                                                                            \
   u8 kind;                      /* 0x1DF, 種族, 0x02/0x03/0x0B/0x0E/0x17/0x1B で分岐する */                            \
   u8 unk_1e0[0x202 - 0x1E0];    /* 0x1E0 */                                                                            \

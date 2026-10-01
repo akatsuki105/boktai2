@@ -432,10 +432,10 @@ NON_MATCH s32 MapItemManager_Init(MapItemManager* p, u32 param_2) {
 
     p->players[i] = player;
     if (player != NULL) {
-      s32 x = player->unk_24.pos.x >> 1;
-      s32 z = player->unk_24.pos.z >> 1;
+      s32 x = player->mover.pos.x >> 1;
+      s32 z = player->mover.pos.z >> 1;
       s32 depth = (x + z) * 48 / 256;
-      s32 height = player->unk_24.pos.y * 24 / 256;
+      s32 height = player->mover.pos.y * 24 / 256;
 
       p->playerScreen[i].x = (x - z) * 48 / 256;
       p->playerScreen[i].y = depth - height;

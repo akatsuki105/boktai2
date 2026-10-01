@@ -259,7 +259,7 @@ s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_
     FUN_0822d9f0(&e->ptcls[i].ptcl, gEff082473e0->group, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     Particle_SetOffset(&e->ptcls[i].ptcl, -8, -8);
     e->ptcls[i].ptcl.priority = 2;
-    FUN_08236fac(&e->ptcls[i].anim, gEff082473e0->anim, 0, 0, 0);
+    AuxAnim_SetAnim(&e->ptcls[i].anim, gEff082473e0->anim, 0, 0, 0);
   }
   Eff082473e0Emitter_Register(p, e);
   return 0;

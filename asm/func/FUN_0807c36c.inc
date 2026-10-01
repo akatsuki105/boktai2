@@ -56,7 +56,7 @@ _0807C3D6:
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #3
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r0, #0x93
 	lsls r0, r0, #3
 	adds r1, r4, r0
@@ -75,7 +75,7 @@ _0807C3F8:
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #3
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r2, #0x93
 	lsls r2, r2, #3
 	adds r1, r4, r2
@@ -89,7 +89,7 @@ _0807C41C:
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #3
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r3, #0x93
 	lsls r3, r3, #3
 	adds r1, r4, r3
@@ -101,7 +101,7 @@ _0807C438:
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #4
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r0, #0x93
 	lsls r0, r0, #3
 	adds r1, r4, r0

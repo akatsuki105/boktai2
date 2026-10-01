@@ -37,6 +37,8 @@ typedef u8 u2_6;    // an unsigned 2.6 fixed-point number
 typedef s8 s2_6;    // a signed 2.6 fixed-point number
 typedef u16 u10_6;  // an unsigned 10.6 fixed-point number
 typedef s16 s10_6;  // a signed 10.6 fixed-point number
+typedef s16 s12_4;  // a signed 12.4 fixed-point number
+typedef s32 s25_7;  // a signed 25.7 fixed-point number
 
 // bit0-9:    tile number
 // bit10:     x-flip

@@ -34,7 +34,7 @@ _080CBDBA:
 	lsrs r3, r3, #0x18
 	str r6, [sp]
 	adds r0, r4, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r7, r5, #0
 	adds r7, #0x60
 	ldrh r0, [r4, #8]

@@ -40,7 +40,7 @@ _081D0112:
 	str r4, [sp]
 	mov r0, sb
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov r2, r8
 	strb r4, [r2]
 	ldrh r0, [r5]

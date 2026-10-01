@@ -162,7 +162,7 @@ FUN_0820492c: @ 0x0820492C
 	str r2, [sp]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r0, #1
 	strb r0, [r4]
 _08204952:
@@ -331,7 +331,7 @@ FUN_08204a64: @ 0x08204A64
 	str r2, [sp]
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r0, #1
 	strb r0, [r4]
 _08204A8A:
@@ -574,7 +574,7 @@ _08204C28:
 	mov r1, r8
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r4]
 	movs r1, #1
 	orrs r0, r1

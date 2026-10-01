@@ -16,7 +16,7 @@
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r5, #0
 	adds r0, #0x78
 	movs r3, #1

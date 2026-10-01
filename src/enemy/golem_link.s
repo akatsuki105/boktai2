@@ -3692,7 +3692,7 @@ _081B9FB8:
 	str r2, [sp]
 	movs r2, #2
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _081BA00E
 	.align 2, 0
 _081B9FE0: .4byte 0x0000025D
@@ -3795,7 +3795,7 @@ _081BA088:
 	str r2, [sp]
 	movs r2, #2
 	movs r3, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _081BA0E0
 	.align 2, 0
 _081BA0B0: .4byte 0x0000025D
@@ -3853,7 +3853,7 @@ _081BA0F8:
 	str r2, [sp]
 	movs r2, #2
 	movs r3, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _081BA156
 	.align 2, 0
 _081BA128: .4byte 0x0000025D
@@ -3909,7 +3909,7 @@ _081BA174:
 	str r2, [sp]
 	movs r2, #2
 	movs r3, #2
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _081BA1CA
 	.align 2, 0
 _081BA19C: .4byte 0x0000025D
@@ -3964,7 +3964,7 @@ _081BA1E4:
 	str r3, [sp]
 	movs r3, #0
 _081BA206:
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, _081BA218 @ =0x0000046E
 	adds r6, r5, r2
 	b _081BA25E
@@ -4043,7 +4043,7 @@ _081BA27C:
 	str r2, [sp]
 	movs r2, #2
 	movs r3, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _081BA2B0 @ =0x0000046E
 	adds r6, r5, r0
 	b _081BA2F4
@@ -4192,7 +4192,7 @@ _081BA3A0:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _081BA3E4
 	.align 2, 0
 _081BA3C4: .4byte 0x00000482
@@ -5153,7 +5153,7 @@ _081BAAE4:
 	lsrs r2, r2, #0x18
 	str r2, [sp]
 	movs r2, #8
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, _081BAB44 @ =0x0000046E
 	adds r7, r5, r2
 	b _081BABCA
@@ -5300,7 +5300,7 @@ _081BAC34:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _081BAC74
 	.align 2, 0
 _081BAC58: .4byte 0x00000482
@@ -5422,7 +5422,7 @@ _081BACEA:
 	lsrs r2, r2, #0x18
 	str r2, [sp]
 	movs r2, #8
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, _081BAD4C @ =0x0000046E
 	adds r7, r6, r2
 	b _081BADDE
@@ -5552,7 +5552,7 @@ _081BAE28:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _081BAE68
 	.align 2, 0
 _081BAE4C: .4byte 0x00000482
@@ -5670,7 +5670,7 @@ _081BAEF6:
 	adds r0, #0x48
 	ldr r1, [r1, #0x58]
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _081BAF44 @ =0x0000046E
 	adds r7, r5, r0
 	b _081BAFC6
@@ -5889,7 +5889,7 @@ _081BB086:
 	lsrs r2, r2, #0x18
 	str r2, [sp]
 	movs r2, #8
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _081BB0EC @ =0x0000046E
 	adds r7, r6, r0
 	b _081BB186
@@ -6375,7 +6375,7 @@ _081BB494:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _081BB4D4
 	.align 2, 0
 _081BB4B8: .4byte 0x00000482
@@ -6475,7 +6475,7 @@ _081BB52E:
 	lsrs r2, r2, #0x18
 	str r2, [sp]
 	movs r2, #8
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, _081BB580 @ =0x0000046E
 	adds r7, r5, r2
 	b _081BB612
@@ -6736,7 +6736,7 @@ _081BB768:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _081BB7A8
 	.align 2, 0
 _081BB78C: .4byte 0x00000482
@@ -7261,7 +7261,7 @@ _081BBB48:
 	lsrs r2, r2, #0x18
 	str r2, [sp]
 	movs r2, #8
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _081BBBBC @ =0x0000046E
 	adds r0, r0, r6
 	mov r8, r0
@@ -7625,7 +7625,7 @@ _081BBE60:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _081BBEA0
 	.align 2, 0
 _081BBE84: .4byte 0x00000482
@@ -7722,7 +7722,7 @@ _081BBEE8:
 	lsrs r2, r2, #0x18
 	str r2, [sp]
 	movs r2, #8
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, _081BBF54 @ =0x0000046E
 	adds r7, r6, r2
 	b _081BBFDA
@@ -19608,7 +19608,7 @@ _081C1B7A:
 	ldrb r3, [r3]
 	ldrb r4, [r4]
 	str r4, [sp]
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	movs r7, #0xe1
 	lsls r7, r7, #1
 	adds r2, r5, r7
@@ -20523,7 +20523,7 @@ _081C22D4:
 	ldr r4, _081C2304 @ =0x00000189
 	adds r1, r7, r4
 	ldrb r1, [r1]
-	bl FUN_0807a840
+	bl AddWeaponExpByMask
 _081C22F2:
 	movs r1, #0x80
 	ldrh r0, [r5]

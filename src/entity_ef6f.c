@@ -1,11 +1,11 @@
+#include "bg_pltt.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "input.h"
 #include "particle.h"
 #include "sound.h"
-#include "sprite_main.h"
-#include "sprite_pltt.h"
+#include "sprite.h"
 #include "text.h"
 #include "tilemap.h"
 #include "video.h"
@@ -35,7 +35,7 @@ typedef struct {
   u8 unk_23;                    // 0x023, まだ未解析
   u32 unk_24;                   // 0x024, FUN_0801e284 が 0 を入れる, FUN_0801ec4c / FUN_0801f308 が符号なしで閾値と比べる
   Tilemaps* tilemap;            // 0x028, FUN_0801e2a8 / FUN_0801e328 が GetFile(DIR_TILE_MAP, ...) の戻り値を入れる
-  void* plttSrc;                // 0x02C, FUN_0801e2a8 が BGパレットファイル + 0x14 を入れる
+  rgb555* plttSrc;              // 0x02C, BGP_A41A
   s16 unk_30;                   // 0x030, FUN_0801eaac が unk_36 の下限として比べる
   s16 unk_32;                   // 0x032, FUN_0801eaac が unk_36 の上限として比べる
   s16 unk_34;                   // 0x034, FUN_0801ea34 が ×32 して unk_58 の目標値として比べる
@@ -119,15 +119,12 @@ void FUN_0801e290(EntityEF6F* p, u8 a, u8 b) {
 }
 
 s32 FUN_0801e2a8(EntityEF6F* p, s32 bgIndex) {
-  void* plttFile;
-
   p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_9F57);
   Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, &bgIndex);
   SetBGPrioDirect(2, 2);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
-  plttFile = GetFile(DIR_BGPLTT, 0xA41A);
-  p->plttSrc = (u8*)plttFile + 0x14;
-  CpuCopy32((u8*)plttFile + 0x1B4, &gBgPlttBuffer[0xD0], 96);
+  p->plttSrc = GetBgPlttFile(BGP_A41A)->body;
+  CpuCopy32(&p->plttSrc[208], &gBgPlttBuffer[208], 96);
   return 0;
 }
 

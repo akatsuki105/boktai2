@@ -252,7 +252,7 @@ _08226B66:
 	ldrb r0, [r0]
 	str r0, [sp]
 	adds r0, r4, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r6, _08226BD0 @ =0x00000D9C
 	adds r5, r7, r6
 	ldrh r0, [r4, #8]
@@ -459,7 +459,7 @@ _08226CFE:
 	ldrb r2, [r0]
 	str r5, [sp]
 	adds r0, r4, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r3, _08226D6C @ =0x00000D9C
 	adds r5, r7, r3
 	ldrh r0, [r4, #8]

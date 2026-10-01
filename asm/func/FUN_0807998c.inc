@@ -28,7 +28,7 @@
 	adds r0, r4, #0
 	movs r1, #0x14
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _080799CC:
 	movs r1, #0xdf
 	lsls r1, r1, #2

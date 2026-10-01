@@ -39,7 +39,7 @@ _08227002:
 	str r2, [sp]
 	movs r2, #0xb
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r1, _08227080 @ =0x00000DF4
 	adds r0, r7, r1
 	bl ParticleShadow_Show

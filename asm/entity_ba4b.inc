@@ -4044,10 +4044,10 @@ _08029D72:
 	adds r0, r5, #0
 	movs r2, #2
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r5, #0
 	movs r1, #0x20
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	movs r0, #1
 	strb r0, [r4, #7]
 	adds r1, r4, #0
@@ -4579,7 +4579,7 @@ _0802A16A:
 	mov r0, r8
 	movs r2, #3
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _0802A1BE
 	.align 2, 0
 _0802A194: .4byte 0x0203B400
@@ -4598,11 +4598,11 @@ _0802A1A0:
 	mov r0, r8
 	movs r2, #2
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _0802A1BE:
 	mov r0, r8
 	movs r1, #0x20
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	mov r2, sb
 	ldr r0, [r2]
 	movs r1, #2

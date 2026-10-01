@@ -263,7 +263,7 @@ _08016314:
 	str r6, [sp]
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrb r1, [r4]
 	ldr r0, _0801635C @ =0x00000113
 	adds r1, r1, r0

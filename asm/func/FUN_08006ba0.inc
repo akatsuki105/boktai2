@@ -148,7 +148,7 @@ _08006C9C:
 	ldr r1, [r3, #0x1c]
 	str r2, [sp]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _08006CC6
 	.align 2, 0
 _08006CBC: .4byte MapItem_UpdateIdle

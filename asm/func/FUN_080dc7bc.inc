@@ -624,7 +624,7 @@ _080DCC54:
 	adds r0, r4, #0
 	movs r2, #2
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r0, #2
 	b _080DCC9C
 	.align 2, 0
@@ -639,7 +639,7 @@ _080DCC84:
 	adds r0, r4, #0
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r0, #1
 _080DCC9C:
 	strb r0, [r5]

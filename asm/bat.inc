@@ -1696,7 +1696,7 @@ _0813F33C:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _0813F38C @ =0x0000046E
 	adds r7, r5, r0
 	b _0813F412

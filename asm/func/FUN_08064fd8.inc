@@ -37,7 +37,7 @@ _08065014:
 	movs r1, #0xd
 _0806501C:
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _08065032
 _08065024:
 	cmp r0, #4
@@ -45,7 +45,7 @@ _08065024:
 	adds r0, r5, #0
 	movs r1, #0xe
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _08065032:
 	movs r6, #0
 	strb r7, [r4]

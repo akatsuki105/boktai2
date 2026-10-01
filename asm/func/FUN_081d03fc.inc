@@ -29,7 +29,7 @@ _081D0418:
 	str r0, [sp]
 	mov r0, r8
 	movs r2, #0
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	movs r0, #0
 	strb r0, [r5]
 	ldrh r0, [r4]

@@ -15,7 +15,7 @@
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _0806CED6:
 	movs r2, #0xcf
 	lsls r2, r2, #2
@@ -33,7 +33,7 @@ _0806CED6:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1

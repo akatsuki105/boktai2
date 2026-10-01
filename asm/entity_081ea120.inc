@@ -72,7 +72,7 @@ _081E9FAE:
 	ldr r3, [sp, #8]
 	lsrs r2, r3, #0x10
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r4, #0xc]
 	ldr r1, [sp, #0x2c]
 	bl Video_SetAuxSpritePltt

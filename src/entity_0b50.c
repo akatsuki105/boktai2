@@ -1,13 +1,7 @@
+#include "entity_0b50.h"
+
 #include "entity.h"
 #include "global.h"
-
-typedef struct Entity0B50 {
-  Entity e;  // ENTITY_UNK_9
-  u8 unk_18[1052 - 0x18];
-} Entity0B50;
-static_assert(sizeof(Entity0B50) == 1052);
-
-extern Entity0B50* gEntity0B50;  // 0x03002C00
 
 void FUN_08084c58(unknown* p);
 void FUN_08084c9c(unknown* p);

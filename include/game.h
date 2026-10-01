@@ -7,6 +7,24 @@
 
 #define REGISTERED_WEAPON(n) (*(gStat->registeredWeapon + n))  // 登録 = 剣槍槌銃 のスロットに登録されている
 
+// gStat->unk_934
+#define SF934_UNK_0 (1 << 0)    // 0x1
+#define SF934_UNK_1 (1 << 1)    // 0x2
+#define SF934_UNK_2 (1 << 2)    // 0x4
+#define SF934_UNK_3 (1 << 3)    // 0x8
+#define SF934_UNK_4 (1 << 4)    // 0x10
+#define SF934_UNK_5 (1 << 5)    // 0x20
+#define SF934_UNK_6 (1 << 6)    // 0x40
+#define SF934_UNK_7 (1 << 7)    // 0x80
+#define SF934_UNK_8 (1 << 8)    // 0x100
+#define SF934_UNK_9 (1 << 9)    // 0x200
+#define SF934_UNK_10 (1 << 10)  // 0x400
+#define SF934_UNK_11 (1 << 11)  // 0x800
+#define SF934_UNK_12 (1 << 12)  // 0x1000
+#define SF934_UNK_13 (1 << 13)  // 0x2000
+#define SF934_UNK_14 (1 << 14)  // 0x4000
+#define SF934_UNK_15 (1 << 15)  // 0x8000
+
 // 0x0203C400 (ハードリセット時, ソフトリセット時は配置先が変動する)
 typedef struct {
   u32 magicNumber;            // 0x000, gScriptDirectoryBuildTime = 0x40A8186C がセットされる, ロード時にチェックしてそう
@@ -14,14 +32,17 @@ typedef struct {
   u16 unk_010;                // 0x010, FUN_08063634 が Player.unk_456 へ写す
   s16 messageSpeed;           // 0x012, メッセージ速度設定, FUN_08049668 が TextRenderer.speed に入れる
   u8 unk_14[4];               // 0x014
-  u16 stats[STAT_KINDS * 2];  // 0x018, ステータスポイントの割り振り と (多分タロットカードの)ドーピングボーナス, ステータス画面には合計値が表示される
+  s16 stats[STAT_KINDS * 2];  // 0x018, ステータスポイントの割り振り と (多分タロットカードの)ドーピングボーナス, ステータス画面には合計値が表示される
   u16 savedHP;                // 0x028, コンティニュー用？
   u16 savedMaxHP;             // 0x02A
   u16 savedEne;               // 0x02C
   u16 savedMaxEne;            // 0x02E
 
   // ここから .unk_3ba まで FUN_08231ca8 で ClearMemory されているので、ここから .unk_3ba(の直前) までが別の構造体として定義されているかもしれない
-  Vec3 playerPos;                // 0x030, プレイヤーの座標
+  s8_8 playerX;                  // 0x030, セーブされたプレイヤーの座標
+  s8_8 playerY;                  // 0x032
+  s8_8 playerZ;                  // 0x034
+  s16 playerFacing;              // 0x036, Vec3 の val に当たる位置, FUN_0807b0c0 が符号付きで読んで向きとして返す
   u16 sabataHP;                  // 0x038
   u16 sabataEne;                 // 0x03A
   u8 unk_03c[4];                 // 0x03C
@@ -29,7 +50,7 @@ typedef struct {
   u16 statusPoint;               // 0x042
   u16 unk_44;                    // 0x044
   s16 weaponExp[5];              // 0x046, 剣/槍/ハンマー/拳/銃 の経験値, 100たまると1レベルアップなので、 100 で割るとレベル(ステータスに表示される数値)になる
-  u32 exp;                       // 0x050, 総経験値
+  s32 exp;                       // 0x050, 総経験値, 999999 で頭打ち
   u32 unlockedMagic;             // 0x054
   s16 equippedWeaponIdx;         // 0x058
   s16 equippedMagicIdx;          // 0x05A, 登録された4つの魔法のうち、フィールドで選択している魔法のインデックス(0~3)

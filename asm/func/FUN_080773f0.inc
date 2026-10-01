@@ -40,7 +40,7 @@ _08077430:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, r6, #0
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]
@@ -168,7 +168,7 @@ _08077538:
 	adds r0, r6, #0
 	movs r1, #7
 	movs r2, #1
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _08077A46
 	.align 2, 0
 _08077544: .4byte 0x0000037E
@@ -219,7 +219,7 @@ _0807759C:
 	adds r0, r6, #0
 	movs r1, #7
 	movs r2, #2
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _08077A46
 	.align 2, 0
 _080775A8: .4byte 0x0000037E
@@ -252,7 +252,7 @@ _080775DA:
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r0, #0x93
 	lsls r0, r0, #3
 	adds r1, r6, r0
@@ -292,7 +292,7 @@ _08077622:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r7, r6, #0
 	adds r7, #0xe8
 	ldrh r0, [r4, #8]
@@ -452,7 +452,7 @@ _0807776E:
 	adds r0, r6, #0
 	movs r1, #7
 	movs r2, #4
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _08077A46
 	.align 2, 0
 _0807777C: .4byte 0x0000037E
@@ -472,7 +472,7 @@ _08077784:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r7, r6, #0
 	adds r7, #0xe8
 	ldrh r0, [r4, #8]
@@ -657,7 +657,7 @@ _08077900:
 	adds r0, r6, #0
 	movs r1, #7
 	movs r2, #5
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _08077A46
 	.align 2, 0
 _0807790C: .4byte 0x000003F6
@@ -684,7 +684,7 @@ _08077914:
 	str r0, [sp]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrh r0, [r5, #8]
 	lsls r0, r0, #1
 	ldr r1, [r5]

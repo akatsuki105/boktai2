@@ -41,7 +41,7 @@ _08228B7A:
 	str r2, [sp]
 	movs r2, #0xa
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r1, _08228BF0 @ =0x00000DF4
 	adds r0, r6, r1
 	bl ParticleShadow_Hide

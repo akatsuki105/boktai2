@@ -146,7 +146,7 @@ _081D13D4:
 	str r2, [sp]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r5, #0
 	movs r1, #1
 	bl FUN_081d0e74
@@ -161,7 +161,7 @@ _081D1406:
 	str r2, [sp]
 	movs r2, #2
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r5, #0
 	movs r1, #2
 	bl FUN_081d0e74

@@ -28,7 +28,7 @@ static_assert(sizeof(EntityAB4EElem) == 384);
 
 typedef struct {
   Entity e;                  // 0x0000, ENTITY_UNK_5
-  Vec3* playerPos;           // 0x0018, &gPlayerPtr[0]->unk_24.pos
+  Vec3* playerPos;           // 0x0018, &gPlayerPtr[0]->mover.pos
   s16 unk_1c;                // 0x001C, '.t'
   bool8 minuteChanged;       // 0x001E, 分が変わったフレームだけ立つ
   u8 prevMinute;             // 0x001F, 前フレームの GetMinute

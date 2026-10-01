@@ -11,7 +11,7 @@ struct MainSprite;
 // タイルが変わったときだけ FUN_082332f8 が今の値を [0] へ押し出してから [1] を新しいタイルで更新する
 typedef struct {
   u8 unk_0[4];     // 0x00, FUN_0823280c も FUN_082332f8 も触らない
-  s16 tileIdx[2];  // 0x04, gCollisionMap->rowOffsets[z >> 8] + (x >> 8)
+  u16 tileIdx[2];  // 0x04, gCollisionMap->rowOffsets[z >> 8] + (x >> 8)
   u8 attrLo[2];    // 0x08, TileAttr の bit0-3 (TATTR_WALL / TATTR_UNK_2)
   u8 attrHi[2];    // 0x0A, TileAttr の bit4-7 (TATTR_NOISE / TATTR_ICE / TATTR_LAVA) を 4bit 右にずらした値
   u16 obj[2];      // 0x0C, CollisionMapTile の obj と height をまとめた2バイト

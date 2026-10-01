@@ -41,7 +41,7 @@ _082251AE:
 	str r2, [sp]
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _08225260 @ =0x00000D9C
 	adds r2, r6, r0
 	ldr r0, [r2]
@@ -268,7 +268,7 @@ _08225378:
 	str r4, [sp]
 	movs r2, #0
 	movs r3, #4
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r3, _082253E0 @ =0x00000F0C
 	adds r0, r6, r3
 	ldr r1, [r0]

@@ -28,7 +28,7 @@ _080DF560:
 	str r2, [sp]
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrb r0, [r5]
 	adds r5, r0, #0
 	muls r5, r4, r5

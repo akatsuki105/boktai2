@@ -74,7 +74,7 @@ _08015530:
 	ldr r0, [sp, #8]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r0, #2
 	mov r1, r8
 	strb r0, [r1, #7]

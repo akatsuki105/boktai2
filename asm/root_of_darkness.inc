@@ -3374,7 +3374,7 @@ _081A45A4:
 	ldr r6, _081A45E0 @ =0x00000189
 	adds r1, r7, r6
 	ldrb r1, [r1]
-	bl FUN_0807a840
+	bl AddWeaponExpByMask
 	ldr r0, _081A45E4 @ =0x030047A4
 	ldr r0, [r0]
 	movs r1, #0x90

@@ -309,11 +309,6 @@ NAKED void FUN_080ed834(void) { INCFUNC("asm/func/FUN_080ed834.inc"); }
 
 NAKED void FUN_080ed8f0(void) { INCFUNC("asm/func/FUN_080ed8f0.inc"); }
 
-#ifdef NONMATCHING_C
-static inline bool32 TestBits(u32 value, u32 bit) { return (value & bit) != 0; }
-static inline bool32 Enemy_TestFlag5(Enemy* p, EnemyFlags5 bit) { return TestBits(p->flags5, bit); }
-#endif
-
 NON_MATCH void FUN_080ed9d0(void) {
 #ifdef NONMATCHING_C
   s32 id = VM_GetNamedArgValue('n', 0);
@@ -321,7 +316,7 @@ NON_MATCH void FUN_080ed9d0(void) {
   if (id != 0) {
     Enemy* p = FindEnemyById(id);
     if (p != NULL) {
-      if (Enemy_TestFlag5(p, ENEFLAG5_UNK_8)) {
+      if (p->flags5 & ENEFLAG5_UNK_8) {
         FUN_080ecbe8(p, val);
       }
     }

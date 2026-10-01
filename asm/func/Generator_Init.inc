@@ -130,7 +130,7 @@ _080B3634:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov ip, sb
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1
@@ -275,7 +275,7 @@ _080B3746:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #3
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov ip, sb
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1

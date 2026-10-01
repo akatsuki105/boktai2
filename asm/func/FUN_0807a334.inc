@@ -18,7 +18,7 @@ _0807A354:
 	adds r0, r4, #0
 	movs r1, #0x17
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	ldr r0, _0807A394 @ =0x000003F6
 	adds r1, r4, r0
 	movs r0, #0

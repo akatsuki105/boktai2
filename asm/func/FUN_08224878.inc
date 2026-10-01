@@ -50,7 +50,7 @@ _082248C4:
 	ldrb r2, [r2]
 	str r2, [sp]
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _08224968 @ =0x00000F16
 	adds r5, r4, r0
 	ldrb r0, [r5]

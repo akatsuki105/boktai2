@@ -325,7 +325,7 @@ _080DBC5E:
 	mov r3, ip
 	str r3, [sp]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r1, [sp, #0xc]
 	ldr r0, [r1]
 	ldr r1, _080DBCE8 @ =0x00000201

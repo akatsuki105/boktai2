@@ -13,7 +13,7 @@ typedef struct {
   s16 velZ;           // 0x08, gSineTable[angle]
   u8 unk_a[2];        // 0x0A, まだ未解析
   Particle particle;  // 0x0C, FUN_0822da70 で確保し Particle_Remove で返す
-  AuxAnimState anim;  // 0x34, FUN_08236fac が初期化し FUN_08237098 が進める
+  AuxAnimState anim;  // 0x34, AuxAnim_SetAnim が初期化し AuxAnim_SetAnimSpeed が進める
 } Entity08016ba4Piece;
 static_assert(sizeof(Entity08016ba4Piece) == 68);
 

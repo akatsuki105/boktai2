@@ -1023,7 +1023,7 @@ _0816704E:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, _081670A8 @ =0x0000046E
 	adds r7, r5, r2
 	b _0816712E
@@ -1153,7 +1153,7 @@ _0816714E:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, _081671B0 @ =0x0000046E
 	adds r7, r5, r2
 	b _08167236
@@ -1405,7 +1405,7 @@ _08167336:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r3, _08167390 @ =0x0000046E
 	adds r7, r5, r3
 	b _08167416
@@ -1536,7 +1536,7 @@ _08167438:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r3, _08167498 @ =0x0000046E
 	adds r7, r5, r3
 	b _0816751E

@@ -177,7 +177,7 @@ _081D7496:
 	mov r0, r8
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r1, r6, #0
 	adds r1, #0x94
 	movs r0, #3

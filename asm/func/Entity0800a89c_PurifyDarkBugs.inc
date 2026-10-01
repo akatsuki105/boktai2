@@ -52,7 +52,7 @@ _0800B000:
 	str r0, [sp]
 	adds r0, r6, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrb r0, [r4]
 	cmp r0, #2
 	bhi _0800B034

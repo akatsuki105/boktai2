@@ -23,7 +23,7 @@ typedef struct EntityF41A {
   Entity5941Node detectNode;           // 0x11C, Entity5941_Register / FUN_0807f598
   u16 targetAngle;                     // 0x12C, 乱数で決める向き, data.unk_5 がここへ4ずつ近づく
   u16 turnTimer;                       // 0x12E, 0 になると targetAngle を引き直す (0x78..0xB7 フレーム)
-  u16 animIdx;                         // 0x130, FUN_08236fac に渡すアニメ番号
+  u16 animIdx;                         // 0x130, AuxAnim_SetAnim に渡すアニメ番号
   u16 pushSpeed;                       // 0x132, ノックバックの速さ, 毎フレーム 3/4 になる
   u16 state;                           // 0x134, 0 = うろつく, 1 = 被弾, 2 = ノックバック
   u16 stateTimer;                      // 0x136, state を変えると 0, 被弾中のパレット切り替えに使う

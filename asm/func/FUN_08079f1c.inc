@@ -361,7 +361,7 @@ _0807A1C0:
 	adds r0, r5, #0
 	movs r1, #4
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0807A268
 	.align 2, 0
 _0807A1EC: .4byte 0x030046A4

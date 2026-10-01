@@ -26,7 +26,7 @@ typedef struct Judgement {
   Player* player;                // 0x018, _Init の第2引数
   MainSprite sprite;             // 0x01C, _Destroy が MainSprite_Remove に渡す
   u8 unk_7c[8];                  // 0x07C
-  Vec3 screen;                   // 0x084, player->unk_24.pos の y に +0x96 した点を投影した画面座標
+  Vec3 screen;                   // 0x084, player->mover.pos の y に +0x96 した点を投影した画面座標
   JudgementParticle ptcls[8];    // 0x08C, 根拠: _Destroy の stride 0x3C × 8
   u8 unk_26c[4];                 // 0x26C
   u16 timer;                     // 0x270, _Init が 0, 各状態関数が +1 する

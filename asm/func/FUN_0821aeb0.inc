@@ -145,7 +145,7 @@ _0821AF90:
 	str r4, [sp]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _0821AFE6:
 	movs r3, #0xb4
 	lsls r3, r3, #1

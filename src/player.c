@@ -123,25 +123,25 @@ const s16 s16_ARRAY_085abc8a[17] = {
 };  // 0x085abc8a
 
 void FUN_080609dc(Player* p) {
-  u8 v = p->sprite_2e4.active;
+  u8 v = p->facing;
 
   if (v > 4) {
-    p->sprite_2e4.unk_2 = 8 - v;
-    p->sprite_2e4.unk_3 = 1;
+    p->animIDOffset = 8 - v;
+    p->xflip = 1;
   } else {
-    p->sprite_2e4.unk_2 = v;
-    p->sprite_2e4.unk_3 = 0;
+    p->animIDOffset = v;
+    p->xflip = 0;
   }
 }
 
 NAKED bool32 FUN_08060a24(Player* p, u32 animIdx, s32 animSpeed) { INCFUNC("asm/func/FUN_08060a24.inc"); }
 
-NAKED void FUN_08060aa4(Player* p, s32 val) { INCFUNC("asm/func/FUN_08060aa4.inc"); }
+NAKED void Player_SetMoveDelta(Player* p, s32 val) { INCFUNC("asm/func/Player_SetMoveDelta.inc"); }
 
-void FUN_08060b84(Player* p, u32 r1, u32 r2) {
-  p->unk_37c = r1;
-  p->unk_37d = r2;
-  p->unk_37e = 0;
+void Player_SetAction(Player* p, u32 r1, u32 r2) {
+  p->action = r1;
+  p->state = r2;
+  p->stateTimer = 0;
 }
 
 NAKED void FUN_08060bac(Player* p) { INCFUNC("asm/func/FUN_08060bac.inc"); }

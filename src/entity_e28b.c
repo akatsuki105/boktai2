@@ -29,7 +29,7 @@ typedef struct {
   u16 unk_18;                  // 0x18, EntityE28B_Create の第1引数
   u16 unk_1a;                  // 0x1A, EntityE28B_Create の第2引数
   u32 unk_1c;                  // 0x1C, _Init が 0 を書く
-  s32 count;                   // 0x20, '.n' の値, キーワードが無ければ 8
+  s32 count;                   // 0x20, '.n' の値, 引数が無ければ 8
   s32 spriteCount;             // 0x24, count * 3
   u32 slotCount;               // 0x28, _Init が 0 を書く, slots の使用件数
   EntityE28BSlot slots[16];    // 0x2C, FUN_08002a00 が末尾に積む, 上限 16 件 (slotCount > 15 を弾く)

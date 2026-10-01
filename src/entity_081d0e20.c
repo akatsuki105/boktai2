@@ -8,11 +8,11 @@
 #include "vm.h"
 
 // Entity081d0e20 が抱える要素, Malloc(0xC0) で個別に確保され、先頭が AuxSprite になっている, 根拠: Entity081d0e20_AllocElem
-// 中身のほとんどは FUN_081d0864 がスクリプトのキーワードから埋める
+// 中身のほとんどは FUN_081d0864 がスクリプトの引数から埋める
 typedef struct Entity081d0e20Elem {
   AuxSprite sprite;   // 0x00, 根拠: AuxSprite_Remove に渡される (Entity081d0e20_Destroy)
   Mover unk_2c;       // 0x2C, 根拠: FUN_08002a58 / Mover_Unlink に渡される (Entity081d0e20_Destroy)
-  AuxAnimState anim;  // 0x70, 根拠: FUN_08236fac に渡される (FUN_081d0864)
+  AuxAnimState anim;  // 0x70, 根拠: AuxAnim_SetAnim に渡される (FUN_081d0864)
   Vec3 pos;           // 0x80, 8バイトまとめて sprite.pos にコピーされる, 根拠: FUN_081d0864
   s16 id;             // 0x88, '.i=0', Entity081d0e20_FindElem が引数と比較する (ldrsh)
   u16 scriptID_8a;    // 0x8A, '.R=0', flags bit7 が立つと VM_ExecByID に渡して0クリアする, 根拠: FUN_081cf944
@@ -146,7 +146,7 @@ void FUN_081d006c(Entity081d0e20Elem* p) {
 
   if (p->unk_bb >= p->unk_b2) {
     FUN_081cfdb8(p);
-    FUN_08236fac(&p->anim, mgr->anim, 0, p->unk_b0, 0);
+    AuxAnim_SetAnim(&p->anim, mgr->anim, 0, p->unk_b0, 0);
     p->state = 4;
     p->unk_bb = 0;
     switch (p->unk_b0) {
@@ -182,7 +182,7 @@ NON_MATCH void FUN_081d0718(Entity081d0e20* p, Entity081d0e20Elem* elem) {
 
   elem->sprite.flags &= ~SPRFLAG_HIDDEN;
   anim = &elem->anim;
-  FUN_08236fac(anim, p->anim, 0, elem->unk_b0, 0);
+  AuxAnim_SetAnim(anim, p->anim, 0, elem->unk_b0, 0);
   anim->cmdIdx = 1;
   cmd = &anim->cmds[anim->cmdIdx];
   elem->sprite.metaspriteIdx = *cmd >> 6;
@@ -229,7 +229,7 @@ void FUN_081d0838(Entity081d0e20* p, Entity081d0e20Elem* elem) {
   elem->flags &= ~0x42;
 }
 
-// スクリプトのキーワードから要素を1つ生成する
+// スクリプトの引数から要素を1つ生成する
 NON_MATCH void FUN_081d0864(void) {
 #ifdef NONMATCHING_C
   Entity081d0e20* p = gEntity081d0e20;
@@ -282,7 +282,7 @@ NON_MATCH void FUN_081d0864(void) {
       Video_SetAuxSpritePltt(gfx, 643);
     }
     AuxSprite_Add(&elem->sprite, gfx, 0);
-    FUN_08236fac(anim, p->anim, 0, elem->unk_b0, 0);
+    AuxAnim_SetAnim(anim, p->anim, 0, elem->unk_b0, 0);
     cmd = &anim->cmds[anim->cmdIdx];
     elem->sprite.metaspriteIdx = *cmd >> 6;
     if ((anim->flags & ANIM_PLAY_XFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {

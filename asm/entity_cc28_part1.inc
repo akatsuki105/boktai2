@@ -3261,7 +3261,7 @@ _0808BC18:
 	adds r0, r6, #0
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	ldrh r0, [r6, #8]
 	lsls r0, r0, #1
 	ldr r1, [r6]
@@ -3430,7 +3430,7 @@ _0808BD68:
 	str r2, [sp]
 	adds r0, r4, #0
 	movs r3, #4
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1
 	ldr r1, [r4]
@@ -3589,7 +3589,7 @@ _0808BE9C:
 	ldrb r2, [r2]
 	str r3, [sp]
 	movs r3, #4
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	b _0808BF42
 	.align 2, 0
 _0808BF0C: .4byte 0x00000B8C
@@ -3610,7 +3610,7 @@ _0808BF2C:
 	ldrb r2, [r2]
 	str r3, [sp]
 	movs r3, #0
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 _0808BF42:
 	movs r0, #0xb6
 	lsls r0, r0, #4

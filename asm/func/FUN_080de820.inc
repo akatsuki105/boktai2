@@ -464,7 +464,7 @@ _080DEB84:
 	adds r0, r7, #0
 	movs r2, #2
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r1, r5, #0
 	adds r1, #0xf6
 	movs r0, #2

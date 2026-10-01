@@ -9,7 +9,7 @@
 	adds r0, r4, #0
 	movs r1, #2
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r0, #0xd1
 	lsls r0, r0, #2
 	bl PlaySound_082406e0
@@ -29,7 +29,7 @@ _0806B396:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806B428
 	.align 2, 0
 _0806B3BC: .4byte 0x0000037E
@@ -67,7 +67,7 @@ _0806B3DC:
 	bne _0806B40A
 	adds r0, r4, #0
 	movs r1, #0x20
-	bl FUN_08060aa4
+	bl Player_SetMoveDelta
 _0806B40A:
 	adds r0, r4, #0
 	bl FUN_080609dc

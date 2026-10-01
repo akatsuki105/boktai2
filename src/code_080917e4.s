@@ -9630,7 +9630,7 @@ _080A5130:
 	ldrb r0, [r5, #3]
 	str r0, [sp]
 	adds r0, r4, #0
-	bl FUN_08237040
+	bl AuxAnim_RestartAnim
 	b _080A5166
 _080A514E:
 	adds r4, r5, #0
@@ -9643,7 +9643,7 @@ _080A514E:
 	ldrb r0, [r5, #3]
 	str r0, [sp]
 	adds r0, r4, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _080A5166:
 	movs r0, #0x50
 	bl VM_SeekToNamedArg
@@ -9654,7 +9654,7 @@ _080A5166:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 _080A5180:
 	movs r0, #0x6f
 	bl VM_SeekToNamedArg
@@ -10357,7 +10357,7 @@ _080A56DE:
 	ldrb r0, [r7, #3]
 	str r0, [sp]
 	adds r0, r4, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r0, #0x50
 	bl VM_SeekToNamedArg
 	cmp r0, #0
@@ -10367,7 +10367,7 @@ _080A56DE:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 _080A570E:
 	mov r6, sb
 	ldrh r0, [r4, #8]

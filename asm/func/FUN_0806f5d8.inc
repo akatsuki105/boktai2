@@ -36,7 +36,7 @@ _0806F61C:
 	adds r0, r4, #0
 	movs r1, #0x11
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _0806F626:
 	ldr r1, _0806F640 @ =0x0000037D
 	adds r0, r4, r1
@@ -85,7 +85,7 @@ _0806F66A:
 	adds r0, r4, #0
 	movs r1, #0x11
 	movs r2, #1
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806F730
 	.align 2, 0
 _0806F68C: .4byte 0x000003FA
@@ -95,7 +95,7 @@ _0806F698:
 	adds r0, r4, #0
 	movs r1, #0x11
 	movs r2, #2
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806F730
 _0806F6A4:
 	ldr r1, _0806F6CC @ =0x000003FA
@@ -149,7 +149,7 @@ _0806F6FE:
 	adds r0, r4, #0
 	movs r1, #0x11
 	movs r2, #3
-	bl FUN_08060b84
+	bl Player_SetAction
 	b _0806F730
 	.align 2, 0
 _0806F714: .4byte 0x0000037E
@@ -163,7 +163,7 @@ _0806F718:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #1
-	bl FUN_08060b84
+	bl Player_SetAction
 _0806F730:
 	pop {r4, r5}
 	pop {r0}

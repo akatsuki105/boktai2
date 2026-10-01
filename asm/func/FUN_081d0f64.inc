@@ -141,7 +141,7 @@ _081D107E:
 	adds r0, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	b _081D10BA
 _081D10A4:
 	adds r4, r6, #0
@@ -153,7 +153,7 @@ _081D10A4:
 	adds r0, r4, #0
 	movs r2, #2
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _081D10BA:
 	mov r2, sl
 	ldrh r1, [r2]

@@ -1369,7 +1369,7 @@ _08185012:
 	bne _08185032
 	adds r0, r7, #0
 	movs r1, #0x30
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 _08185032:
 	ldrh r0, [r7, #8]
 	cmp r0, #3

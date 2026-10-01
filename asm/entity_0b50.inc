@@ -1524,7 +1524,7 @@ _08085F1A:
 	lsrs r3, r3, #0x18
 	str r6, [sp]
 	adds r0, r4, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, #0x84
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1

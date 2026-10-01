@@ -10,7 +10,7 @@
 	adds r0, r5, #0
 	movs r1, #1
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	ldr r2, _0806C464 @ =0x00000385
 	adds r1, r5, r2
 	movs r0, #0
@@ -233,7 +233,7 @@ _0806C5CC:
 _0806C5D0:
 	adds r0, r5, #0
 	movs r1, #9
-	bl FUN_08060aa4
+	bl Player_SetMoveDelta
 	movs r2, #0xcf
 	lsls r2, r2, #2
 	adds r4, r5, r2
@@ -250,7 +250,7 @@ _0806C5D0:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1

@@ -566,7 +566,7 @@ bool32 FUN_080faa98(Enemy* p) {
     fn(p);
     return FALSE;
   }
-  p->unk_1d8 = &gPlayerPtr[idx]->unk_24;
+  p->unk_1d8 = &gPlayerPtr[idx]->mover;
   return TRUE;
 }
 

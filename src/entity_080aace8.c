@@ -24,7 +24,7 @@ typedef struct Entity080aace8 {
   Player* player;                     // 0x018, _Init の第2引数
   MainSprite sprite;                  // 0x01C, _Destroy が MainSprite_Remove に渡す
   u8 unk_7c[8];                       // 0x07C
-  Vec3 screen;                        // 0x084, player->unk_24.pos の y に +0x96 した点を投影した画面座標
+  Vec3 screen;                        // 0x084, player->mover.pos の y に +0x96 した点を投影した画面座標
   u8 unk_8c[0x58];                    // 0x08C
   AuxSprite auxSprites[2];            // 0x0E4, 根拠: _Destroy の stride 0x2C × 2
   u8 unk_13c[0x28];                   // 0x13C

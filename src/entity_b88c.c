@@ -17,7 +17,7 @@ s32 FUN_08049f5c(void);
 // 上下で項目を選ぶメニュー
 typedef struct {
   Entity e;               // 0x000, ENTITY_UNK_11
-  u32 params[4];          // 0x018, '.p' の4値, キーワードが無ければ末尾から 0 クリアされる
+  u32 params[4];          // 0x018, '.p' の4値, 引数が無ければ末尾から 0 クリアされる
   u8 state;               // 0x028, PTR_ARRAY_085ab584 の添字
   bool8 stateChanged;     // 0x029, 各ハンドラの入り口で1回だけ行う処理用
   s8 cursor;              // 0x02A, 選択中の項目, 負なら count-1、count 以上なら 0 に折り返す

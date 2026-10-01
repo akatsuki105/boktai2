@@ -4888,7 +4888,7 @@ _08197EAE:
 	ldr r0, [r0]
 	movs r2, #0x3e
 	ldrsh r1, [r7, r2]
-	bl FUN_0807a840
+	bl AddWeaponExpByMask
 	ldr r3, _08197FC0 @ =0x00000CC4
 	adds r1, r7, r3
 	movs r0, #1
@@ -15043,7 +15043,7 @@ _0819CE38:
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
 	adds r0, r4, #0
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	b _0819CE80
 	.align 2, 0
 _0819CE60: .4byte 0x00000482
@@ -15141,7 +15141,7 @@ _0819CEE8:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, _0819CF34 @ =0x0000046E
 	adds r7, r5, r2
 	b _0819CFBA
@@ -15272,7 +15272,7 @@ _0819CFE8:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	str r4, [sp]
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _0819D038 @ =0x0000046E
 	adds r7, r5, r0
 	b _0819D0BE
@@ -19356,7 +19356,7 @@ _0819EF64:
 	mov r3, ip
 	str r3, [sp]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrh r1, [r4]
 	lsls r0, r1, #1
 	adds r0, r0, r1
@@ -19641,7 +19641,7 @@ _0819F196:
 	mov r3, ip
 	str r3, [sp]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrh r1, [r4]
 	lsls r0, r1, #1
 	adds r0, r0, r1
@@ -20706,7 +20706,7 @@ FUN_0819f990: @ 0x0819F990
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1
 	ldr r1, [r4]

@@ -189,7 +189,7 @@ _080DA0CE:
 	movs r4, #0
 	str r4, [sp]
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [sp, #0x14]
 	str r0, [r7]
 	ldr r1, [r0, #4]

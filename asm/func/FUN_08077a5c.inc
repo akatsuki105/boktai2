@@ -145,7 +145,7 @@ _08077B64:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, r6, #0
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]

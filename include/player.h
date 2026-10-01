@@ -17,6 +17,8 @@
 struct Player;
 struct Input;
 
+typedef u32 PlayerFlag20;  // Player.unk_20
+
 typedef u32 PlayerFlag378;               // Player.flag378
 #define FLAG378_WET_DURABILITY (1 << 0)  // 0x00000001, WET_DURABILITY を持った武器を装備している間セットされる
 #define FLAG378_WET_ENE_COST (1 << 1)    // 0x00000002, WET_ENE_COST を持った武器を装備している間セットされる
@@ -26,8 +28,11 @@ typedef u32 PlayerFlag378;               // Player.flag378
 #define FLAG378_FAIRY (1 << 7)           // 0x00000080, 精霊の衣〃
 #define FLAG378_UNK_8 (1 << 8)           // 0x00000100, ???
 #define FLAG378_UNK_10 (1 << 10)         // 0x00000400, ???
+#define FLAG378_UNK_11 (1 << 11)         // 0x00000800, 立っていると FUN_0807a798 の経験値が1.5倍になる
 #define FLAG378_AET_SUNLIGHT (1 << 13)   // 0x00002000, 光のガーブ装備時, ApplyLxModifiers が太陽レベルを2倍にする
 #define FLAG378_AET_RES_SOL (1 << 14)    // 0x00004000, メイルオブソル装備時, 立っていると ApplySunlightGain の太陽スタンド加算が2倍になる
+#define FLAG378_UNK_19 (1 << 19)         // 0x00080000, 立っていると FUN_0806f900 が HP 割合ぶんの補正を足す
+#define FLAG378_UNK_18 (1 << 18)         // 0x00040000, 立っていると FUN_0807e784 が被弾後に FUN_0807e2cc を呼ぶ
 #define FLAG378_HEART (1 << 28)          // 0x10000000, ハートの紋章所持
 #define FLAG378_JOKER (1 << 29)          // 0x20000000, ジョーカーの紋章所持
 
@@ -112,18 +117,18 @@ typedef struct Player {
   Entity e;
   u32 unk_18;                  // 0x18, 0 or 1 他にもあるか不明
   u32 unk_1c;                  // 0x1C, ステート?, (0: ??, 1: 通常状態, 2: マップ移動などの操作できない状態?, 3: ???, 4: HP0, 5: ???, ...)
-  u32 unk_20;                  // 0x20, bitfield
-  Mover unk_24;                // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Mover
+  PlayerFlag20 unk_20;         // 0x20, see PlayerFlag20
+  Mover mover;                 // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Mover
   MainSpriteGfx spriteSet_68;  // 0x068, 根拠： FUN_08060a24
   MainSprite sprite_88;        // 0x088, 根拠： FUN_08060a24
-  u8 unk_e8[0x104 - 0xE8];
-  Vec3 unk_104;  // 0x104, FUN_0807a91c が unk_24.pos / sprite_88.pos と一緒に同じ座標を書く
-  u8 unk_10c[0x16C - 0x10C];
+  AuxSprite sprite_e8;         // 0x0E8, Player_Destroy が AuxSprite_Remove に渡す, pos は 0x104 で FUN_0807a91c が mover.pos / sprite_88.pos と一緒に書く
+  u8 unk_114[0x16C - 0x114];
   HitboxData unk_16c;  // 0x16C
-  MoverTile tile;      // 0x1BC, unk_24.tile がここを指す
-  u8 unk_1cc[0x230 - 0x1CC];
-  EntityMsgBox msgbox;  // 0x230, FUN_0807ddd4 が EntityMsgBus_Unregister に渡す
-  PlayerArmor armor;    // 0x264
+  MoverTile tile;      // 0x1BC, mover.tile がここを指す
+  u8 unk_1cc[0x220 - 0x1CC];
+  u8 unk_220[0x230 - 0x220];  // 0x220, Player_Destroy が FUN_080f8cac に渡す EntityD854Node
+  EntityMsgBox msgbox;        // 0x230, FUN_0807ddd4 が EntityMsgBus_Unregister に渡す
+  PlayerArmor armor;          // 0x264
   u16 unk_278;
   s16 unk_27a;
   u32 unk_27c;
@@ -137,8 +142,14 @@ typedef struct Player {
   struct Input* input_28c;  // 0x28C, &gInput[n]
   Keys16 unk_290[10];       // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
   rgb555 pltt_2a4[32];      // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
-  MainSprite sprite_2e4;    // 0x2E4, 根拠: FUN_08060a24
-  u8 unk_344[0x34C - 0x344];
+  u16 animID;               // 0x2E4, 今 sprite_88 で再生しているアニメのID, FUN_08060a24 が前回と同じIDかどうかの判定に使う
+  u8 animIDOffset;          // 0x2E6, FUN_08060a24 がアニメIDに足すオフセット
+  bool8 xflip;              // 0x2E7, 0 以外なら FUN_08060a24 が sprite_88.flags に SPRFLAG_XFLIP を立てる
+  Facing8 facing;           // 0x2E8, see Facing8
+  u8 unk_2e9[2];            // 0x2E9
+  u8 hitboxTimer;           // 0x2EB, hitbox_2ec を Hitbox_Register し続ける残りフレーム数, FUN_0807e2cc が 6 を入れる
+  HitboxData hitbox_2ec;    // 0x2EC
+  u8 unk_33c[0x34C - 0x33C];
   AuxAnimFile* anim_34c;  // 0x34C
   AuxAnimFile* anim_350;  // 0x350
   AuxAnimFile* anim_354;  // 0x354
@@ -153,32 +164,47 @@ typedef struct Player {
   u8 unk_36c[10];
   u16 unk_376;
   PlayerFlag378 flag378;  // 0x378, see PlayerFlag378
-  u8 unk_37c;             // 0x37C, 0x085abcac の idx
-  u8 unk_37d;             // 0x37D, 0x085abcacの関数内でステートとして使用されている
-  u16 unk_37e;
+  u8 action;              // 0x37C, いま実行している行動, kind ごとの PlayerFunc テーブル (0x085abcac など) の添字
+  u8 state;               // 0x37D, action の中の段階, 行動関数はこれで switch する
+  u16 stateTimer;         // 0x37E, Player_SetAction が 0 に戻してから経ったフレーム数, 行動関数が自分で数える
   u8 unk_380[7];
   coffin8_t coffin_387;  // 0x387, MagicSleeping_0806c124
-  u8 unk_388[6];
+  u8 unk_388[0x38A - 0x388];
+  u16 unk_38a;  // 0x38A, 0 のときだけ FUN_0806e404 が専用の効果音を鳴らして 40 を入れる
+  u8 unk_38c[0x38E - 0x38C];
   bool8 isSabata;  // 0x38E, 根拠: Player_Init_Helper_08065270
   u8 unk_38f;
   u16 unk_390;
   u16 elevatorID;  // 0x392, 搭乗中のエレベータのID
   u8 unk_394;      // 0x394, FUN_0807a9b8 が 1 を書く
   u8 unk_395;      // 0x395, FUN_0807d118 が 0 を入れる
-  u8 unk_396[2];
-  void* ptr_398;  // 0x398, FUN_0807a9b8 の第2引数
-  u8 unk_39c[0x3B0 - 0x39C];
+  u8 unk_396;      // 0x396, FUN_08065dac が 1 を書く
+  u8 unk_397;      // 0x397, 0 以外だと FUN_08065dac が何もしない
+  Vec3* ptr_398;   // 0x398, FUN_0807a9b8 の第2引数, FUN_08065dac は pos_39c を指させる
+  Vec3 pos_39c;    // 0x39C, FUN_08065dac が今踏んでいるタイルの中心を書く
+  u8 unk_3a4;      // 0x3A4, 0 以外だと FUN_080672b0 が移動速度を設定しない
+  u8 unk_3a5[0x3B0 - 0x3A5];
   Vec3 unk_3b0;  // 0x3B0, FUN_0807a528 が引数の座標をそのまま写す
   u16 unk_3b8;   // 0x3B8, FUN_0807a528 の第3引数
   u16 unk_3ba;   // 0x3BA, FUN_0807b5a8 が 1 を書く
   u8 unk_3bc;    // 0x3BC, FUN_08066d2c が見る
   u8 unk_3bd;    // 0x3BD, FUN_080674dc / FUN_0807b0c0 が見る
-  u8 unk_3be[0x3CC - 0x3BE];
-  u16 unk_3cc;
-  s16 unk_3ce;  // 0x3CE, FUN_0807856c が ldrsh で読む
+  u8 unk_3be[0x3C0 - 0x3BE];
+  Vec3 pos_3c0;  // 0x3C0, FUN_08066df8 が mover.pos とカメラの注視点から作って FUN_0823bac8 に渡す
+  s16 unk_3c8;   // 0x3C8, FUN_08066df8 が pos_3c0.x を作るとき mover.pos.x に足す
+  s16 unk_3ca;   // 0x3CA, 同じく pos_3c0.y
+  s16 unk_3cc;   // 0x3CC, 同じく pos_3c0.z
+  s16 unk_3ce;   // 0x3CE, FUN_0807856c が ldrsh で読む
   u8 unk_3d0;
   u8 unk_3d1;
-  u8 unk_3d2[36];
+  u8 unk_3d2[0x3DC - 0x3D2];
+  u16 unk_3dc;  // 0x3DC, FUN_080667b0 が毎回 太陽ゲージ+2 を足し、100 を超えるたびに FUN_08066794 を呼んで 100 引く
+  u8 unk_3de[0x3EA - 0x3DE];
+  u16 unk_3ea;  // 0x3EA, FUN_0807ad60 が 1 を書く
+  u16 unk_3ec;  // 0x3EC, 0 以外だと FUN_0807ad60 が上書きを断る
+  u8 unk_3ee[0x3F0 - 0x3EE];
+  u8 unk_3f0;  // 0x3F0, FUN_0807bdc8 が unk_4a6 と同じ値を書く
+  u8 unk_3f1[0x3F6 - 0x3F1];
   s16 unk_3f6;
   u8 unk_3f8[2];
   u8 magicFired;     // 0x3FA, 魔法の発動フレームに FUN_08064d6c (太陽ゲージ判定) の結果が入る, 1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
@@ -186,9 +212,9 @@ typedef struct Player {
   u8 unk_3fc[2];
   u8 unk_3fe;  // 0x3FE, FUN_0806a050 が見て FUN_08060c40 に渡す番号を選ぶ
   u8 unk_3ff;
-  u8 angle_400;  // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
-  u8 angle_401;  // 0x401, 同上
-  u8 unk_402;    // 0x402, FUN_0807a904 が +1 する
+  u8 angle_400;     // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
+  u8 angle_401;     // 0x401, 同上
+  u8 speedPenalty;  // 0x402, 移動速度から引かれる量, FUN_0807a904 が +1 する
   u8 unk_403[0x43A - 0x403];
   u16 unk_43a;     // 0x43A, FUN_0807b580 が 1 を書く
   u16 unk_43c[3];  // 0x43C, 多分状態異常の残り時間
@@ -200,11 +226,11 @@ typedef struct Player {
   u8 unk_457[0x498 - 0x457];
   PlayerFunc fn_498;  // 0x498, FUN_08078d5c
   Vec3 unk_49c;       // 0x49C, FUN_0807c88c が引数の座標をそのまま写す
-  u8 unk_4a4[0x4A6 - 0x4A4];
-  u8 unk_4a6;  // 0x4A6, FUN_0807bc14 の第2引数
-  u8 unk_4a7;  // 0x4A7, FUN_0807c748 の第3引数
+  u16 unk_4a4;        // 0x4A4, FUN_0807bee0 の第3引数
+  u8 unk_4a6;         // 0x4A6, FUN_0807bc14 の第2引数
+  u8 unk_4a7;         // 0x4A7, FUN_0807c748 の第3引数
   u8 unk_4a8;
-  u8 unk_4a9;  // 0x4A9, FUN_0807b9dc の第2引数
+  s8 unk_4a9;  // 0x4A9, FUN_0807b9dc の第2引数
   u8 unk_4aa;  // 0x4AA, FUN_080726b4
   u8 unk_4ab;  // 0x4AB, FUN_08072670 が 1 を書く
   u8 unk_4ac;
@@ -231,7 +257,8 @@ typedef struct Player {
   void* fn_714;                     // 0x714, Player_Init_Anim_08061bac シグネチャ不明, FUN_08061680 or FUN_080617bc
   PlayerParticleState718 ptcl_718;  // 0x718, 根拠: FUN_08061dd4
   PlayerParticleState858 ptcl_858;  // 0x858, 根拠: FUN_08062278
-  u8 unk_930[0x94A - 0x930];
+  Vec3 pos_930;                     // 0x930, FUN_08067f88 が mover.pos をずらして書く
+  u8 unk_938[0x94A - 0x938];
 
   u16 plttID_94a;  // 0x94A, FUN_08063084
   s16 unk_94c;     // 0x94C, FUN_08063084
@@ -246,7 +273,9 @@ typedef struct Player {
   u16 unk_960;  // 0x960, FUN_08074994 が unk_95e と対で書く
   u8 unk_962[0x96C - 0x962];
   u16 unk_96c;  // 0x96C, FUN_0807b8c0 が 0 を書く
-  u8 unk_96e[0x9BC - 0x96E];
+  u8 unk_96e[0x994 - 0x96E];
+  EntityMsg msg_994;  // 0x994, FUN_0807e278 が組み立てて送る, args は可変長なので後ろの unk_9a0 まで伸びる
+  u8 unk_9a0[0x9BC - 0x9A0];
   u16 unk_9bc;  // 0x9BC
   u16 pad_9be;
   s32 scriptID_9c0;  // 0x9C0
@@ -286,9 +315,10 @@ s32 FUN_0806f900(Player* player);
 s32 FUN_080d1b04(Player* player);
 void Player_ReduceENE_0807aa60(Player* player, s32 amount);
 
-static inline void Player_SetFlag20(Player* p, u32 bit) { p->unk_20 |= bit; }
+static inline void Player_SetFlag20(Player* p, PlayerFlag20 bit) { p->unk_20 |= bit; }
+static inline bool32 Player_TestFlag20(Player* p, PlayerFlag20 bit) { return p->unk_20 & bit; }
+
 static inline void Player_SetFlag378(Player* p, PlayerFlag378 bits) { p->flag378 |= bits; }
 static inline bool32 Player_TestFlag378(Player* p, PlayerFlag378 bits) { return p->flag378 & bits; }
-static inline bool32 Player_TestFlag20(Player* p, u32 bit) { return p->unk_20 & bit; }
 
 #endif  // GUARD_ZOKTAI_PLAYER_H

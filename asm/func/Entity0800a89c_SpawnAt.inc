@@ -190,7 +190,7 @@ _0800AD52:
 	str r6, [sp]
 	adds r0, r7, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov r3, sp
 	ldrh r3, [r3, #0x14]
 	strh r3, [r5, #0x20]

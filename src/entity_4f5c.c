@@ -25,7 +25,7 @@ typedef struct {
   Entity e;                 // 0x000, ENTITY_UNK_10
   u16 unk_18;               // 0x018, Entity4F5C_Init が 0 を書く, 読み手は未発見
   u16 scriptID;             // 0x01A, '.e' の値, elems が全部終わったら VM_ExecByID に渡す
-  Vec3 playerPos;           // 0x01C, player->unk_24.pos の写し
+  Vec3 playerPos;           // 0x01C, player->mover.pos の写し
   ParticleGroup* group1;    // 0x024, PTCL_GROUP_1
   ParticleGroup* group2;    // 0x028, PTCL_GROUP_2
   Entity4F5CElem elems[3];  // 0x02C

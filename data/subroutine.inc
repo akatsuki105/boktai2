@@ -123,7 +123,7 @@ gSubroutineTable:
 	.4byte 0x3215, FUN_081d0c38
 	.4byte 0x329B, Entity329B_Create
 	.4byte 0x3361, FUN_080c13a4
-	.4byte 0x33AA, FUN_08001004
+	.4byte 0x33AA, VM_Sub33AA
 	.4byte 0x33C4, FUN_081df814
 	.4byte 0x3469, VM_Random
 	.4byte 0x34C2, FUN_080a4f90
@@ -307,7 +307,7 @@ gSubroutineTable:
 	.4byte 0x7A25, FUN_0807d6f8
 	.4byte 0x7A27, Video_LoadTileMap
 	.4byte 0x7A75, FUN_081d515c
-	.4byte 0x7A77, FUN_080b39dc
+	.4byte 0x7A77, SolarBank_SetBalanceScripted
 	.4byte 0x7A82, FUN_08018a14
 	.4byte 0x7B7D, FUN_08243380
 	.4byte 0x7B9F, FUN_081d8948
@@ -367,7 +367,7 @@ gSubroutineTable:
 	.4byte 0x8F41, TextBox_SetBgPlttScripted
 	.4byte 0x8FA3, FUN_0807d1c0
 	.4byte 0x904B, FUN_0823d6bc
-	.4byte 0x9053, FUN_08001664
+	.4byte 0x9053, VM_Sub9053
 	.4byte 0x90B4, FUN_080077a8
 	.4byte 0x9146, FUN_0823e46c
 	.4byte 0x920F, FUN_08044310
@@ -400,7 +400,7 @@ gSubroutineTable:
 	.4byte 0x9BC7, FUN_08086910
 	.4byte 0x9C3F, FUN_080a5a40
 	.4byte 0x9DFE, FUN_082097f4
-	.4byte 0x9E8B, FUN_080b39c8
+	.4byte 0x9E8B, SolarBank_GetBalanceScripted
 	.4byte 0x9E8D, EnemyCrow_Create
 	.4byte 0x9EC0, Entity6978_SetRequestScripted
 	.4byte 0x9FB7, FUN_08091684
@@ -460,7 +460,7 @@ gSubroutineTable:
 	.4byte 0xB426, TitleCard_Create
 	.4byte 0xB45F, FUN_0823d6b0
 	.4byte 0xB47E, FUN_080a4fac
-	.4byte 0xB4B4, FUN_08000aec
+	.4byte 0xB4B4, VM_SubB4B4
 	.4byte 0xB50D, FUN_08224d28
 	.4byte 0xB55A, FUN_0823e298
 	.4byte 0xB603, FUN_0807b4b8
@@ -583,7 +583,7 @@ gSubroutineTable:
 	.4byte 0xE28B, EntityE28B_Create
 	.4byte 0xE435, EntityE435_Create
 	.4byte 0xE4A3, FUN_0807d5c8
-	.4byte 0xE4B1, FUN_08000df4
+	.4byte 0xE4B1, VM_SubE4B1
 	.4byte 0xE534, EntityE534_Create
 	.4byte 0xE6CA, FUN_0824087c
 	.4byte 0xE6F2, FUN_08240618

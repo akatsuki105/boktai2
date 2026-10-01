@@ -24,7 +24,7 @@ _0807B69C:
 	adds r0, r5, #0
 	movs r1, #0x1f
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _0807B6AC:
 	pop {r4, r5}
 	pop {r0}

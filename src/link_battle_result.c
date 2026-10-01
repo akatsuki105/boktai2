@@ -46,7 +46,7 @@ typedef struct LinkBattleResult {
   u16 unk_82a;                     // 0x82A, FUN_081dcd50 が 0 を入れる
   Tilemaps* tilemap0;              // 0x82C, TILEMAP_CD91, BG2 に敷く
   Tilemaps* tilemap1;              // 0x830, TILEMAP_A413, BG0 に敷く
-  rgb555* bgPltt;                  // 0x834, GetFile(DIR_BGPLTT, 0x26BB) + 0x14
+  rgb555* bgPltt;                  // 0x834, BGP_26BB
   LinkBattleResultFunc fn;         // 0x838, _Update が毎フレーム呼ぶ, _Init が 0x081DD774 を入れる
   u8* scriptPc;                    // 0x83C, '.s' の後の FUN_0823d340(), TextPanel_SetScript に渡す
   u8 unk_840[4];                   // 0x840
@@ -86,7 +86,7 @@ void FUN_081dc6d0(LinkBattleResult* p) {
   bgIndices[0] = 3;
   Video_SetupBGLayout(0, 0, p->tilemap1, 0, 0, 1, bgIndices);
   Video_GenerateBGMap(3, 0, 0, 0, 0);
-  p->bgPltt = GetBgPlttFile(0x26BB)->body;
+  p->bgPltt = GetBgPlttFile(BGP_26BB)->body;
   CpuCopy16(p->bgPltt, gBgPlttBuffer, 512);
 }
 

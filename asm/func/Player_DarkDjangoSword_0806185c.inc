@@ -125,7 +125,7 @@ _08061926:
 	lsrs r2, r2, #0x18
 	str r2, [sp]
 	movs r2, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r4, #0
 	bl FUN_0806181c
 	add sp, #0xc

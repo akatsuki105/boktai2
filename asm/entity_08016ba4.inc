@@ -202,7 +202,7 @@ _08016802:
 	mov r0, r8
 	movs r2, #3
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r3, #0x44
 	add r8, r3
 	adds r7, #0x44
@@ -322,7 +322,7 @@ _080168F8:
 	strh r0, [r4, #2]
 	mov r0, r8
 	movs r1, #0x10
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 	ldr r0, _08016950 @ =0x03000064
 	ldr r0, [r0]
 	ldr r3, [r0, #0x1c]
@@ -653,7 +653,7 @@ _08016B56:
 	adds r0, r5, #0
 	movs r2, #3
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r5, #0x44
 	adds r4, #0x44
 	subs r6, #1

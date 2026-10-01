@@ -95,7 +95,7 @@ _080DFEE6:
 	adds r0, r5, #0
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, [r7, #0xc]
 	ldr r1, _080DFFC0 @ =0x00000272
 	bl Video_SetAuxSpritePltt

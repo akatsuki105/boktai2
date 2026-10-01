@@ -18,7 +18,7 @@ struct EntityE02E {
   u8 unk_12f8[0x130C - 0x12F8];  // 0x12F8, まだ未解析
   MenuSpritePair pair1;          // 0x130C, SPRITE_UI_START_MENU
   u32* tilemap;                  // 0x13EC, TILEMAP_9F57
-  rgb555* bgPltt;                // 0x13F0, GetFile(DIR_BGPLTT, 0xA41A) + 0x1B4
+  rgb555* bgPltt;                // 0x13F0, BGP_A41A + 0x1B4
   u8* unk_13f4;                  // 0x13F4, '.i' の FUN_0823d340 の戻り値
   u8* unk_13f8;                  // 0x13F8, '.w' の FUN_0823d340 の戻り値
   u8* unk_13fc;                  // 0x13FC, '.a' の FUN_0823d340 の戻り値

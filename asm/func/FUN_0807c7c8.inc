@@ -74,7 +74,7 @@ _0807C856:
 	ldrb r2, [r0]
 	adds r0, r5, #0
 	movs r1, #7
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r0, #0x93
 	lsls r0, r0, #3
 	adds r1, r5, r0

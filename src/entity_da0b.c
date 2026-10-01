@@ -34,7 +34,7 @@ struct EntityDA0B {
   u8 unk_3f[0x44 - 0x3F];        // 0x003F, まだ未解析
   u32 fnTimer;                   // 0x0044, fn に入ってからのフレーム数, EntityDA0B_SetFn が 0 に戻す
   u32* tilemap;                  // 0x0048, TILEMAP_9F57
-  rgb555* bgPltt;                // 0x004C, GetFile(DIR_BGPLTT, 0xA41A) + 0x14
+  rgb555* bgPltt;                // 0x004C, BGP_A41A
   u32 selectable;                // 0x0050, 選べる武器スロットのビットマスク, FUN_0801c910 が作る
   u8 unk_54[0x65 - 0x54];        // 0x0054, まだ未解析
   bool8 unk_65;                  // 0x0065, FUN_0801dfe4 が読んで落とす1フレームの目印

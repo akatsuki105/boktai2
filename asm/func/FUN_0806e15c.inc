@@ -32,7 +32,7 @@
 	mov r0, r8
 	movs r1, #1
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 	movs r7, #0
 _0806E1A8:
 	movs r4, #0xe2
@@ -76,7 +76,7 @@ _0806E1EA:
 	bl FUN_080609dc
 	mov r0, r8
 	movs r1, #6
-	bl FUN_08060aa4
+	bl Player_SetMoveDelta
 	movs r4, #0xcf
 	lsls r4, r4, #2
 	add r4, r8
@@ -93,7 +93,7 @@ _0806E1EA:
 	str r0, [sp]
 	adds r0, r4, #0
 	movs r2, #0x20
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov r5, r8
 	adds r5, #0xe8
 	ldrh r0, [r4, #8]

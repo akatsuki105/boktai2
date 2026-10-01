@@ -75,7 +75,7 @@ _08061B06:
 	str r2, [sp]
 	movs r2, #2
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r4, #0
 	bl FUN_0806181c
 	add sp, #4

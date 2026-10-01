@@ -15,7 +15,7 @@ struct Entity571D {
   MainSpriteGfx gfx2;         // 0x0058, SPRITE_UI_MISC
   MainSprite sprites[38];     // 0x0078, _Destroy が 38枚まとめて MainSprite_Remove する, [1..16] と [17..28] がアイテム枠2面, [30] がカーソル
   u32* tilemap;               // 0x0EB8, TILEMAP_9F57
-  rgb555* bgPltt;             // 0x0EBC, GetFile(DIR_BGPLTT, 0xA41A) + 0x1B4
+  rgb555* bgPltt;             // 0x0EBC, BGP_A41A + 0x1B4
   u8* unk_ec0;                // 0x0EC0, '.s' があれば FUN_0823d340 の戻り値
   u8* unk_ec4;                // 0x0EC4, '.i' があれば FUN_0823d340 の戻り値
   u8 unk_ec8[2];              // 0x0EC8, まだ未解析

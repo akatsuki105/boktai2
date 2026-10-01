@@ -291,7 +291,7 @@ _081D83B6:
 	strb r1, [r0]
 	adds r0, r4, #0
 	movs r1, #0x20
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 _081D83F6:
 	ldrh r0, [r4, #8]
 	lsls r0, r0, #1
@@ -551,10 +551,10 @@ _081D85B8:
 	adds r0, r6, #0
 	movs r2, #6
 	movs r3, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	adds r0, r6, #0
 	movs r1, #0x20
-	bl FUN_08237098
+	bl AuxAnim_SetAnimSpeed
 _081D85E6:
 	adds r4, r5, #0
 	adds r4, #0xd6
@@ -737,7 +737,7 @@ FUN_081d8714: @ 0x081D8714
 	str r2, [sp]
 	movs r2, #8
 	movs r3, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r0, _081D8778 @ =0x00000201
 	adds r1, r7, r0
 	adds r0, r4, #0

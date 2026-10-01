@@ -189,7 +189,7 @@ _080DA4BE:
 	str r1, [sp]
 	adds r1, r3, #0
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r2, [sp, #0x10]
 	ldr r0, [r2]
 	ldr r1, [r2, #4]

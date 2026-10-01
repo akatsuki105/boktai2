@@ -14,7 +14,7 @@
 	adds r0, r5, #0
 	movs r1, #6
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _0806923C:
 	ldr r0, [r5, #0x20]
 	movs r1, #2

@@ -85,7 +85,7 @@ _080696CE:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_08060b84
+	bl Player_SetAction
 _080696FE:
 	add sp, #0xc
 	pop {r4}

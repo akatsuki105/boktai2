@@ -257,7 +257,7 @@ _0800AAC2:
 	movs r3, #0
 	str r3, [sp]
 	mov r0, sb
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	mov r0, sp
 	ldrh r0, [r0, #0x14]
 	strh r0, [r5, #0x18]

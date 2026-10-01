@@ -1229,7 +1229,7 @@ _0805397A:
 	str r2, [sp]
 	movs r2, #2
 	movs r3, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	movs r0, #0xf2
 	lsls r0, r0, #2
 	bl PlaySound_082406e0
@@ -1547,7 +1547,7 @@ FUN_08053ba8: @ 0x08053BA8
 	str r4, [sp]
 	movs r2, #2
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r1, _08053C20 @ =FUN_0805364c
 	adds r0, r6, #0
 	bl FUN_080535a4
@@ -1607,7 +1607,7 @@ FUN_08053c24: @ 0x08053C24
 	str r4, [sp]
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldrb r0, [r5, #3]
 	strb r0, [r5, #0x14]
 	ldrb r0, [r5, #3]
@@ -1675,7 +1675,7 @@ FUN_08053cbc: @ 0x08053CBC
 	str r2, [sp]
 	movs r2, #0
 	movs r3, #3
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 	ldr r1, _08053D40 @ =FUN_08053958
 	adds r0, r4, #0
 	bl FUN_080535a4

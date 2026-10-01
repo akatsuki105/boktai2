@@ -17,7 +17,7 @@
 	str r2, [sp]
 	movs r2, #3
 	movs r3, #0
-	bl FUN_08236fac
+	bl AuxAnim_SetAnim
 _0800EA12:
 	ldrh r0, [r4, #0x1a]
 	ldrh r1, [r4, #0x12]

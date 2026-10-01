@@ -66,13 +66,13 @@ NON_MATCH void Entity08080be8_Reposition(Entity08080be8* p) {
   s32 cosv;
   s32 sinv;
 
-  p->sprite.pos = player->unk_24.pos;
+  p->sprite.pos = player->mover.pos;
   p->sprite.pos.y += p->heightOffset;
-  dir = (player->sprite_2e4.active + 5) & 7;
+  dir = (player->facing + 5) & 7;
   angle = dir * 32;
   cosv = gSineTable[(angle + 0x40) & 0xFF];
   sinv = gSineTable[angle & 0xFF];
-  if (player->sprite_2e4.unk_3 == 0) {
+  if (player->xflip == 0) {
     p->sprite.pos.x += cosv * p->unk_be / 4096 - sinv * p->unk_c0 / 4096;
     p->sprite.pos.z += sinv * p->unk_be / 4096 + cosv * p->unk_c0 / 4096;
   } else {
@@ -184,12 +184,12 @@ NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
 #ifdef NONMATCHING_C
   u8 state;
 
-  if (p->player->unk_37c != 3) {
+  if (p->player->action != 3) {
     KillEntity(&p->e);
     return;
   }
   Entity08080be8_Reposition(p);
-  if (p->player->unk_37d == 5) {
+  if (p->player->state == 5) {
     Entity08080be8_ClearParticles(p);
     AuxSprite_Show(&p->sprite);
     p->sprite.metaspriteIdx = p->charge;
@@ -199,7 +199,7 @@ NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
     return;
   }
   Entity08080be8_UpdateParticles(p);
-  state = p->player->unk_37d;
+  state = p->player->state;
   if (state == 2) {
     if ((p->timer & 3) == 3) {
       Entity08080be8_SpawnParticle(p);
@@ -223,11 +223,11 @@ NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
 // サバタ側の溜め状態, 溜め中は粒子を出し、発射で StateFly へ、中断なら消える
 NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
 #ifdef NONMATCHING_C
-  if (p->player->unk_37c == 3) {
+  if (p->player->action == 3) {
     u8 state;
 
     Entity08080be8_Reposition(p);
-    state = p->player->unk_37d;
+    state = p->player->state;
     if (state == 5) {
       Entity08080be8_ClearParticles(p);
       AuxSprite_Show(&p->sprite);
@@ -242,7 +242,7 @@ NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
       Entity08080be8_PayENE(p);
     } else {
       Entity08080be8_UpdateParticles(p);
-      state = p->player->unk_37d;
+      state = p->player->state;
       if (state == 2) {
         if ((p->timer & 3) == 3) {
           Entity08080be8_SpawnParticle(p);
@@ -355,7 +355,7 @@ void Entity08080be8_SetupHitbox(Entity08080be8* p, u32 hitboxUnk40, HitboxAttrib
   } else {
     offset.x = 0, offset.y = 0, offset.z = 0;
   }
-  Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_8 | HBFLAG_UNK_0, 0, 1 << p->player->unk_24.unk_4, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_8 | HBFLAG_UNK_0, 0, 1 << p->player->mover.unk_4, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, 0, hitboxUnk40, 0x10, attrs, hitboxUnk44);
   Hitbox_SetHandler(hitbox, FUN_08080648, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);

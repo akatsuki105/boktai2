@@ -134,19 +134,10 @@ NAKED s32 FUN_081d1a9c(unknown* p) { INCFUNC("asm/func/FUN_081d1a9c.inc"); }
 // state 0 のハンドラ, 何もしない
 void FUN_081d1ae8(Entity081d2180Item* item) {}
 
-#ifdef NONMATCHING_C
-static inline bool32 IsCurrentArea(u16 id) {
-  if (gStat->unk_248 == id) {
-    return TRUE;
-  }
-  return FALSE;
-}
-#endif
-
 // 現在のエリアの要素でなければ隠す
 NON_MATCH bool32 FUN_081d1aec(Entity081d2180Item* item) {
 #ifdef NONMATCHING_C
-  if (IsCurrentArea(item->unk_58)) {
+  if (gStat->unk_248 == item->unk_58) {
     AuxSprite_Show(&item->sprite);
     return TRUE;
   }

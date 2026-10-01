@@ -104,12 +104,6 @@ void FUN_081d6bc0(EntityF1F9Item* item) {
   }
 }
 
-static inline void Vec3_Sub(Vec3* out, Vec3* a, Vec3* b) {
-  out->x = a->x - b->x;
-  out->y = a->y - b->y;
-  out->z = a->z - b->z;
-}
-
 // プレイヤーが一定距離まで近づいたら起動する
 NON_MATCH void FUN_081d6c24(EntityF1F9Item* item) {
 #ifdef NONMATCHING_C
@@ -117,7 +111,7 @@ NON_MATCH void FUN_081d6c24(EntityF1F9Item* item) {
     Vec3 d;
     s32 dist2;
 
-    Vec3_Sub(&d, &gPlayerPtr[0]->unk_24.pos, &item->sprite.pos);
+    d.x = gPlayerPtr[0]->mover.pos.x - item->sprite.pos.x, d.y = gPlayerPtr[0]->mover.pos.y - item->sprite.pos.y, d.z = gPlayerPtr[0]->mover.pos.z - item->sprite.pos.z;
     dist2 = d.x * d.x + d.z * d.z;
     item->unk_130 = dist2;
     if (dist2 < item->unk_134) {
@@ -137,7 +131,7 @@ NON_MATCH s32 FUN_081d6cb0(EntityF1F9Item* item) {
   Vec3 d;
   s32 dist2;
 
-  Vec3_Sub(&d, &gPlayerPtr[0]->unk_24.pos, &item->basePos);
+  d.x = gPlayerPtr[0]->mover.pos.x - item->basePos.x, d.y = gPlayerPtr[0]->mover.pos.y - item->basePos.y, d.z = gPlayerPtr[0]->mover.pos.z - item->basePos.z;
   item->unk_12c = item->unk_130;
   dist2 = d.x * d.x + d.z * d.z;
   item->unk_130 = dist2;
@@ -190,22 +184,13 @@ NAKED void FUN_081d7358(EntityC60FItem* p) { INCFUNC("asm/func/FUN_081d7358.inc"
 
 NAKED void FUN_081d76bc(EntityC60FItem* p) { INCFUNC("asm/func/FUN_081d76bc.inc"); }
 
-static inline bool32 EntityC60FItem_TestFlags(EntityC60FItem* p, EntityC60FItemFlags n) {
-  if (p->flags & n) {
-    return TRUE;
-  }
-  return FALSE;
-}
-
-static inline void EntityC60FItem_ClearFlags(EntityC60FItem* p, EntityC60FItemFlags n) { p->flags &= ~n; }
-
 // 生成した衝突タイルの上書きを取り消す
 NON_MATCH void FUN_081d7814(EntityC60FItem* p) {
 #ifdef NONMATCHING_C
   if (p->state == 3 || p->state == 4) {
-    if (EntityC60FItem_TestFlags(p, C60FITEM_TILE_OVERRIDE)) {
+    if (p->flags & C60FITEM_TILE_OVERRIDE) {
       FUN_082342a8(&p->tileOverride);
-      EntityC60FItem_ClearFlags(p, C60FITEM_TILE_OVERRIDE);
+      p->flags &= ~C60FITEM_TILE_OVERRIDE;
     }
   }
 #else
