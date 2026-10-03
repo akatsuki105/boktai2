@@ -72,15 +72,11 @@ s32 VM_Ctrl_22FF(void) {
 void* VM_Ctrl_Unused_C091(void* _) { return _; }
 
 // Zone (in "collision_map.h") の示す範囲に重なったときに呼ばれるコールバックを設定する
-// 残差1命令: args1/args2 のゼロ埋めループで、原典は添字が消えて歩くポインタと先頭の符号つき比較になっている (bge), こちらは添字のカウンタが残る
-// Tier A/B と C のポインタ化・添字変数の分離は試済, text_renderer.c の FUN_08048b28 と同じ形で止まっている
-NON_MATCH s32 VM_Ctrl_SetZoneCallback(void* r0) {
-#ifdef NONMATCHING_C
+s32 VM_Ctrl_SetZoneCallback(void* r0) {
   CollisionMapEvent ev;
   s32 type;
   u32 val;
   u8* pc;
-  u16* p;
   s32 i;
 
   FUN_082345ec();
@@ -104,8 +100,7 @@ NON_MATCH s32 VM_Ctrl_SetZoneCallback(void* r0) {
     ev.unk_4 = 0x1516;
   }
 
-  p = ev.args1;
-  for (i = 3; i >= 0; i--) {
+  for (i = 0; i < 4; i++) {
     ev.args1[i] = 0;
   }
   if (VM_SeekToNamedArg('w')) {
@@ -114,12 +109,11 @@ NON_MATCH s32 VM_Ctrl_SetZoneCallback(void* r0) {
       if (pc == NULL) {
         break;
       }
-      *p++ = VM_GetValueAt(pc);
+      ev.args1[i] = VM_GetValueAt(pc);
     }
   }
 
-  p = ev.args2;
-  for (i = 3; i >= 0; i--) {
+  for (i = 0; i < 4; i++) {
     ev.args2[i] = 0;
   }
   if (VM_SeekToNamedArg('s')) {
@@ -128,7 +122,7 @@ NON_MATCH s32 VM_Ctrl_SetZoneCallback(void* r0) {
       if (pc == NULL) {
         break;
       }
-      *p++ = VM_GetValueAt(pc);
+      ev.args2[i] = VM_GetValueAt(pc);
     }
   }
 
@@ -145,6 +139,7 @@ NON_MATCH s32 VM_Ctrl_SetZoneCallback(void* r0) {
     ev.scriptPC = (u8*)VM_GetValue();
   }
 
+  ev.flags |= 0;  // 原典のまま, 読み書きするだけで値は変わらない
   ev.zoneCount = 0;
   ev.zones = FindZonesByID(ev.zoneID, &ev.zoneCount);
   if (ev.zones == NULL) {
@@ -153,9 +148,6 @@ NON_MATCH s32 VM_Ctrl_SetZoneCallback(void* r0) {
 
   FUN_082349b8(&ev, (u32)r0);
   return 0;
-#else
-  INCFUNC("asm/func/VM_Ctrl_SetZoneCallback.inc");
-#endif
 }
 
 // https://boktaihacking.net/wiki/Bytecode#Control_0xe43c_(TODO)
