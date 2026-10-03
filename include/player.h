@@ -334,18 +334,17 @@ typedef struct Player {
   u16 unk_962;       // 0x962, Player_EquipMagic がエンチャント開始時に magic.id + 0x121 を入れる
   u16 unk_964;       // 0x964, 同じ呼び出しで 0x20 を入れる, unk_962 が 0 のときだけ 0 に戻される
   u8 unk_966[0x96C - 0x966];
-  u16 unk_96c;    // 0x96C, FUN_0807b8c0 が 0 を書く
-  u8 unk_96e[2];  // 0x96E
-  Vec3 pos_970;   // 0x970, Player_UpdateBloodSword が FUN_0805fe7c の第5引数に渡す
-  u8 unk_978;     // 0x978, 同じく第6引数
-  u8 unk_979;     // 0x979, Player_EquipMagic がエンチャントの有無で 1/0 を書く
-  u8 unk_97a[0x97C - 0x97A];
-  u8 unk_97c[4];  // 0x97C, MosaicFader_Start の from
-  u8 unk_980[4];  // 0x980, 同じく to
-  u16 unk_984;    // 0x984, 同じく interval
-  u8 unk_986[0x98C - 0x986];
-  s32 unk_98c;  // 0x98C, FUN_080da9c4 の戻り値を入れて次回の第1引数に渡す
-  u8 unk_990;   // 0x990, 同じ呼び出しの第3引数
+  u16 unk_96c;     // 0x96C, FUN_0807b8c0 が 0 を書く
+  u8 unk_96e[2];   // 0x96E
+  Vec3 pos_970;    // 0x970, Player_UpdateBloodSword が FUN_0805fe7c の第5引数に渡す
+  u8 unk_978;      // 0x978, 同じく第6引数
+  u8 unk_979;      // 0x979, Player_EquipMagic がエンチャントの有無で 1/0 を書く
+  u16 unk_97a;     // 0x97A, Player_InitEffects が条件付きで 0x40 を入れる
+  u8 unk_97c[4];   // 0x97C, MosaicFader_Start の from, 初期値は全部 4
+  u8 unk_980[4];   // 0x980, 同じく to, 初期値は全部 0
+  u16 unk_984[4];  // 0x984, 同じく interval, 初期値は全部 4
+  s32 unk_98c;     // 0x98C, FUN_080da9c4 の戻り値を入れて次回の第1引数に渡す
+  u8 unk_990;      // 0x990, 同じ呼び出しの第3引数
   u8 unk_991;
   u16 unk_992;        // 0x992, 0 でなければ毎フレーム 1 減らし, 0 になった回に FUN_080da9c4 を呼ぶ
   EntityMsg msg_994;  // 0x994, FUN_0807e278 が組み立てて送る, args は可変長なので後ろの unk_9a0 まで伸びる

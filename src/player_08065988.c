@@ -51,7 +51,7 @@ u32 FUN_08060ed8(Player* p, u32 bits);
 bool32 Player_IsMagicAvailableForm(Player* p, magic32_t id);
 void CheckHeartJokerEmblem(Player* p);
 void FUN_08061294(Player* p);
-void Player_Init_Helper_08063b6c(Player* p);
+void Player_InitEffects(Player* p);
 void FUN_0807ddbc(Player* p);
 
 void Player_EquipArmor(Player* p, const ArmorData* a);
@@ -3181,7 +3181,7 @@ static s32 Player_Init(Player* p, u32 n, void* _) {
   Player_InitArmor(p);
   CheckHeartJokerEmblem(p);
   FUN_08061294(p);
-  Player_Init_Helper_08063b6c(p);
+  Player_InitEffects(p);
   FUN_0807ddbc(p);
   FUN_08065240(p);
   gPlayerPtr[(p->mover).unk_4] = p;

@@ -15,11 +15,17 @@ extern u16 u16_03002b64;
 extern u16 u16_03002b74;
 extern u16 u16_03002bb0;
 
-s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);                      // src/entity_0805fd6c.c
-bool32 FUN_0809e138(Player* p);                                                                                             // src/entity_5ccc.c
-s32 GetMagicCategory(magic32_t id);                                                                                         // src/equip_magic.c
-s32 FUN_080ddcc8(Vec3* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);       // src/entity_080ddf88.c
-void FUN_0809c4f4(void);                                                                                                    // src/entity_cc28.c
+s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);                 // src/entity_0805fd6c.c
+bool32 FUN_0809e138(Player* p);                                                                                        // src/entity_5ccc.c
+s32 GetMagicCategory(magic32_t id);                                                                                    // src/equip_magic.c
+s32 FUN_080ddcc8(Vec3* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);  // src/entity_080ddf88.c
+void FUN_0809c4f4(void);                                                                                               // src/entity_cc28.c
+s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5);                         // src/eff_082473e0.c
+void* Entity080dc44c_Create(void);                                                                                     // src/entity_080dc44c.c
+extern u16 u16_03002b84;
+extern u16 u16_03002b90;
+extern u16 u16_03002bac;
+extern u16 u16_03002bf0;
 s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u16* interval);                              // src/mosaic_fader.c
 s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);  // src/entity_080db520.c
 void FUN_08242a98(Weapon* w, WeaponData* data);                                                                             // src/weapon.c
@@ -1735,7 +1741,60 @@ void Player_DestroyEffects(Player* p) {
   FUN_08061b98(p);
 }
 
-NAKED void Player_Init_Helper_08063b6c(Player* p) { INCFUNC("asm/func/Player_Init_Helper_08063b6c.inc"); }
+// Player の生成直後にエフェクト・影・パーティクル・モザイクの初期値をまとめて入れる
+// 残差4命令 (149/153): 原典は unk_446 && unk_442==5 の判定を 0/1 に作ってから 0 と比べる (FUN_0806241c と同じ系統)
+NON_MATCH void Player_InitEffects(Player* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_359 == 1) {
+    Eff082473e0Emitter_Init(&p->unk_4c4, &p->sprite_e8.pos, 0, 0, 1);
+  } else {
+    Eff082473e0Emitter_Init(&p->unk_4c4, &p->sprite_88.pos, 0, 0, 1);
+  }
+
+  p->shadowPos = p->sprite_88.pos;
+  p->shadowOffsetX = 0;
+  p->shadowOffsetY = 0;
+  p->shadowOffsetZ = 0;
+  ParticleShadow_Init(&p->shadow, &p->shadowPos, 0);
+  Entity080dc44c_Create();
+
+  if (p->unk_446 != 0 && p->unk_442 == 5) {
+    p->unk_97a = 0x40;
+    p->unk_3f1[0] = 1;
+  }
+
+  Player_ResetPltt(p);
+  FUN_08061458(p);
+  FUN_0806161c(p);
+  Player_InitPtcl718(p);
+  Player_InitPtcl858(p);
+  Player_InitShockwave(p);
+
+  p->unk_97c[0] = 4;
+  p->unk_97c[1] = 4;
+  p->unk_97c[2] = 4;
+  p->unk_97c[3] = 4;
+  p->unk_980[0] = 0;
+  p->unk_980[1] = 0;
+  p->unk_980[2] = 0;
+  p->unk_980[3] = 0;
+  p->unk_984[0] = 4;
+  p->unk_984[1] = 4;
+  p->unk_984[2] = 4;
+  p->unk_984[3] = 4;
+  p->unk_978 = 0;
+  p->pos_970.x = 0;
+  p->pos_970.y = 0;
+  p->pos_970.z = 0;
+  u16_03002bac = 0;
+  u16_03002b90 = 0;
+  u16_03002b84 = 1;
+  u16_03002bf0 = 0;
+  p->unk_3ff = 0xFF;
+#else
+  INCFUNC("asm/func/Player_InitEffects.inc");
+#endif
+}
 
 u32 Player_WeaponEffectSol(Player* p) { return gStat->sunGauge; }
 
