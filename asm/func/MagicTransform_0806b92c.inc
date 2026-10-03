@@ -305,7 +305,7 @@ _0806BBA4:
 _0806BBA6:
 	strb r0, [r1]
 	adds r0, r4, #0
-	bl FUN_08062c3c
+	bl Player_SetPlttIDs
 	ldr r1, _0806BBD0 @ =0x0000094C
 	adds r0, r4, r1
 	ldr r1, _0806BBD4 @ =0x0000FFFF

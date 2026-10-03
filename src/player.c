@@ -1802,7 +1802,7 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
 #endif
 }
 
-void FUN_08062c14(Player* p) {
+void Player_SetBasePlttID(Player* p) {
   if (p->unk_18 == 0) {
     p->plttID_94a = 0x1D;
   } else {
@@ -1810,12 +1810,122 @@ void FUN_08062c14(Player* p) {
   }
 }
 
-NAKED void FUN_08062c3c(Player* p) { INCFUNC("asm/func/FUN_08062c3c.inc"); }
+// 変身の種類と鎧の特殊効果 (AET 29-32) に応じて, パレットIDの表を作る
+void Player_SetPlttIDs(Player* p) {
+  switch (p->kind) {
+    case PLAYER_SOLAR_DJANGO: {
+      if (Player_TestFlag378(p, FLAG378_UNK_20)) {
+        p->plttIDs[0] = 0x128;
+      } else if (Player_TestFlag378(p, FLAG378_UNK_21)) {
+        p->plttIDs[0] = 0x129;
+      } else if (Player_TestFlag378(p, FLAG378_UNK_22)) {
+        p->plttIDs[0] = 0x12A;
+      } else if (Player_TestFlag378(p, FLAG378_UNK_23)) {
+        p->plttIDs[0] = 0x12B;
+      } else {
+        p->plttIDs[0] = 0x1D;
+      }
+      p->plttIDs[1] = 0x121;
+      p->plttIDs[2] = 0x20;
+      p->plttIDs[3] = 0x123;
+      p->plttIDs[4] = 0x124;
+      p->plttIDs[5] = 0x1F;
+      p->plttIDs[6] = 0x21;
+      p->plttIDs[7] = 0x1E;
+      break;
+    }
+    case PLAYER_DARK_DJANGO: {
+      if (Player_TestFlag378(p, FLAG378_UNK_20)) {
+        p->plttIDs[0] = 0x128;
+      } else if (Player_TestFlag378(p, FLAG378_UNK_21)) {
+        p->plttIDs[0] = 0x129;
+      } else if (Player_TestFlag378(p, FLAG378_UNK_22)) {
+        p->plttIDs[0] = 0x12A;
+      } else if (Player_TestFlag378(p, FLAG378_UNK_23)) {
+        p->plttIDs[0] = 0x12B;
+      } else {
+        p->plttIDs[0] = 0x26;
+      }
+      p->plttIDs[1] = 0x121;
+      p->plttIDs[2] = 0x20;
+      p->plttIDs[3] = 0x123;
+      p->plttIDs[4] = 0x124;
+      p->plttIDs[5] = 0x1F;
+      p->plttIDs[6] = 0x21;
+      p->plttIDs[7] = 0x1E;
+      break;
+    }
+    case PLAYER_BAT: {
+      if (Player_TestFlag378(p, FLAG378_UNK_20)) {
+        p->plttIDs[0] = 0x26F;
+      } else if (Player_TestFlag378(p, FLAG378_UNK_21)) {
+        p->plttIDs[0] = 0x270;
+      } else if (Player_TestFlag378(p, FLAG378_UNK_22)) {
+        p->plttIDs[0] = 0x26E;
+      } else if (Player_TestFlag378(p, FLAG378_UNK_23)) {
+        p->plttIDs[0] = 0x271;
+      } else {
+        p->plttIDs[0] = 0x266;
+      }
+      p->plttIDs[1] = 0x26D;
+      p->plttIDs[2] = 0x26B;
+      p->plttIDs[3] = 0x268;
+      p->plttIDs[4] = 0x269;
+      p->plttIDs[5] = 0x26A;
+      p->plttIDs[6] = 0x26C;
+      p->plttIDs[7] = 0x267;
+      break;
+    }
+    case PLAYER_MOUSE: {
+      if (Player_TestFlag378(p, FLAG378_UNK_20)) {
+        p->plttIDs[0] = 0x128;
+      } else if (Player_TestFlag378(p, FLAG378_UNK_21)) {
+        p->plttIDs[0] = 0x129;
+      } else if (Player_TestFlag378(p, FLAG378_UNK_22)) {
+        p->plttIDs[0] = 0x12A;
+      } else if (Player_TestFlag378(p, FLAG378_UNK_23)) {
+        p->plttIDs[0] = 0x12B;
+      } else {
+        p->plttIDs[0] = 0x1D;
+      }
+      p->plttIDs[1] = 0x121;
+      p->plttIDs[2] = 0x20;
+      p->plttIDs[3] = 0x123;
+      p->plttIDs[4] = 0x124;
+      p->plttIDs[5] = 0x1F;
+      p->plttIDs[6] = 0x21;
+      p->plttIDs[7] = 0x1E;
+      break;
+    }
+    case PLAYER_SLEEPING: {
+      p->plttIDs[0] = 0x207 + p->coffin_387;
+      p->plttIDs[1] = 0x20F;
+      p->plttIDs[2] = 0x207 + p->coffin_387;
+      p->plttIDs[3] = 0x207 + p->coffin_387;
+      p->plttIDs[4] = 0x207 + p->coffin_387;
+      p->plttIDs[5] = 0x207 + p->coffin_387;
+      p->plttIDs[6] = 0x207 + p->coffin_387;
+      p->plttIDs[7] = 0x207 + p->coffin_387;
+      break;
+    }
+    case PLAYER_SABATA: {
+      p->plttIDs[0] = 0x27;
+      p->plttIDs[1] = 0x121;
+      p->plttIDs[2] = 0x20;
+      p->plttIDs[3] = 0x123;
+      p->plttIDs[4] = 0x124;
+      p->plttIDs[5] = 0x1F;
+      p->plttIDs[6] = 0x21;
+      p->plttIDs[7] = 0x1E;
+      break;
+    }
+  }
+}
 
 // スプライトのパレットを自前の pltt_2a4 に差し替えて初期状態に戻す
 void Player_ResetPltt(Player* p) {
-  FUN_08062c14(p);
-  FUN_08062c3c(p);
+  Player_SetBasePlttID(p);
+  Player_SetPlttIDs(p);
   p->unk_94c = 0xFFFF;
   p->unk_950 = 0xFF;
   p->sprite_88.plttID = p->plttID_94a;
@@ -2879,7 +2989,7 @@ NON_MATCH void Player_ApplyArmorEffect(Player* p, const ArmorData* a) {
   *flags &= 0xF000000F;
 
   if (a == NULL) {
-    FUN_08062c3c(p);
+    Player_SetPlttIDs(p);
     p->unk_94c = 0xFFFF;
     return;
   }
@@ -3019,7 +3129,7 @@ NON_MATCH void Player_ApplyArmorEffect(Player* p, const ArmorData* a) {
     }
   }
 
-  FUN_08062c3c(p);
+  Player_SetPlttIDs(p);
   p->unk_94c = 0xFFFF;
 #else
   INCFUNC("asm/func/Player_ApplyArmorEffect.inc");

@@ -29,7 +29,7 @@ _08064856:
 	cmp r3, #0
 	bne _0806488C
 	adds r0, r4, #0
-	bl FUN_08062c3c
+	bl Player_SetPlttIDs
 	ldr r2, _08064888 @ =0x0000094C
 	adds r1, r4, r2
 	b _08064A50
@@ -262,7 +262,7 @@ _08064A40:
 	str r0, [r2]
 _08064A46:
 	adds r0, r4, #0
-	bl FUN_08062c3c
+	bl Player_SetPlttIDs
 	ldr r0, _08064A5C @ =0x0000094C
 	adds r1, r4, r0
 _08064A50:
