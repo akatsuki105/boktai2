@@ -1215,7 +1215,66 @@ NON_MATCH void Player_UpdatePtcl858(Player* p) {
 #endif
 }
 
-NAKED void FUN_08061f6c(Player* p) { INCFUNC("asm/func/FUN_08061f6c.inc"); }
+// 太陽ゲージのぶんカウンタを溜め, 0x27 を超えたら 0x858 のパーティクルを1つ出す
+// 残差7命令 (155/162): Player_SpawnPtcl858 と同じで, 原典は p と pos を r8/r9 に置くがこちらは r8 だけで足りる
+NON_MATCH void Player_SpawnSunPtcl858(Player* p, Vec3* pos) {
+#ifdef NONMATCHING_C
+  PlayerPtcl858* ptcl;
+  u16* table;
+  u32 idx;
+  s32 angle;
+  s32 dist;
+  s32 v;
+
+  p->ptcl_858.unk_06 += gStat->sunGauge + 2;
+  if (p->ptcl_858.unk_06 <= 0x27) {
+    return;
+  }
+
+  ptcl = &p->ptcl_858.ptcls[p->ptcl_858.unk_05];
+  ptcl->base.flags &= ~SPRFLAG_HIDDEN;
+  ptcl->plttBase = 2;
+  FUN_0822dafc(&ptcl->base, p->ptcl_858.group, 2);
+
+  table = gRandomTable;
+  idx = (gRandTableIdx + 1) & 0x3FF;
+  angle = (u8)table[idx];
+  gRandTableIdx = (idx + 1) & 0x3FF;
+  dist = (table[gRandTableIdx] & 0x3F) + 0x80;
+
+  v = dist * gSineTable[(angle + 0x40) & 0xFF];
+  if (v >= 0) {
+    ptcl->offsetX = v >> 12;
+  } else {
+    ptcl->offsetX = -((-v) >> 12);
+  }
+
+  v = dist * gSineTable[angle];
+  if (v >= 0) {
+    ptcl->offsetZ = v >> 12;
+  } else {
+    ptcl->offsetZ = -((-v) >> 12);
+  }
+
+  ptcl->base.pos = *pos;
+  ptcl->base.pos.x += ptcl->offsetX;
+  ptcl->base.pos.z += ptcl->offsetZ;
+
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  ptcl->speed = (gRandomTable[gRandTableIdx] & 3) + 0xE;
+  ptcl->timer = 0;
+  ptcl->active = TRUE;
+  p->ptcl_858.unk_05++;
+  if (p->ptcl_858.unk_05 > 3) {
+    p->ptcl_858.unk_05 = 0;
+  }
+
+  p->ptcl_858.unk_06 -= 0x28;
+  p->ptcl_858.active = TRUE;
+#else
+  INCFUNC("asm/func/Player_SpawnSunPtcl858.inc");
+#endif
+}
 
 // 4フレームごとに 0x858 のパーティクルを1つ, pos からランダムな向き・距離だけ離して置く
 // 残差6命令 (145/151): 原典は p と pos を r8/r9 に置くが, こちらは r8 だけで足りてしまう

@@ -210,7 +210,7 @@ _0806818C:
 	lsls r2, r2, #4
 	adds r1, r4, r2
 	adds r0, r4, #0
-	bl FUN_08061f6c
+	bl Player_SpawnSunPtcl858
 	movs r1, #0xa3
 	lsls r1, r1, #2
 	adds r0, r4, r1
