@@ -167,7 +167,57 @@ NON_MATCH bool32 Player_PlayAnim(Player* p, u32 animIdx, s32 animSpeed) {
 #endif
 }
 
-NAKED void Player_SetMoveDelta(Player* p, s32 val) { INCFUNC("asm/func/Player_SetMoveDelta.inc"); }
+// 向きと速さから mover.delta を作る, 階段タイルの上では上りで 52/64, 下りで 40/64 に変える
+// 残差10命令 (96/106): 原典は p を ip に置いたまま回すのでレジスタ圧が高く, こちらは低位レジスタで足りてしまう
+// Tier A/B は試済
+NON_MATCH void Player_SetMoveDelta(Player* p, s32 val) {
+#ifdef NONMATCHING_C
+  s32 angle = ((p->facing + 5) & 7) * 32;
+  s32 v;
+
+  v = val * gSineTable[(angle + 0x40) & 0xFF];
+  if (v >= 0) {
+    p->mover.delta.x = v >> 12;
+  } else {
+    p->mover.delta.x = -((-v) >> 12);
+  }
+
+  v = val * gSineTable[angle];
+  if (v >= 0) {
+    p->mover.delta.z = v >> 12;
+  } else {
+    p->mover.delta.z = -((-v) >> 12);
+  }
+
+  if (p->tile.stairs[1] == 1) {
+    if (p->mover.delta.z < 0) {
+      v = p->mover.delta.z * 40;
+    } else {
+      v = p->mover.delta.z * 52;
+    }
+
+    if (v >= 0) {
+      p->mover.delta.z = v >> 6;
+    } else {
+      p->mover.delta.z = -((-v) >> 6);
+    }
+  } else if (p->tile.stairs[1] == 2) {
+    if (p->mover.delta.x < 0) {
+      v = p->mover.delta.x * 40;
+    } else {
+      v = p->mover.delta.x * 52;
+    }
+
+    if (v >= 0) {
+      p->mover.delta.x = v >> 6;
+    } else {
+      p->mover.delta.x = -((-v) >> 6);
+    }
+  }
+#else
+  INCFUNC("asm/func/Player_SetMoveDelta.inc");
+#endif
+}
 
 void Player_SetAction(Player* p, u32 r1, u32 r2) {
   p->action = r1;
