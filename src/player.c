@@ -512,7 +512,23 @@ NAKED void Player_Init_Anim_08061bac(Player* p) { INCFUNC("asm/func/Player_Init_
 
 NAKED void FUN_08061c68(Player* p) { INCFUNC("asm/func/FUN_08061c68.inc"); }
 
-NAKED void FUN_08061d20(Player* p, s32* param_2, s32* param_3, s32 param_4) { INCFUNC("asm/func/FUN_08061d20.inc"); }
+// 0x718 のパーティクルを1つ使って pos / vel を入れて出す, 使う番号は 0..5 を巡回する
+void Player_SpawnPtcl718(Player* p, Vec3* pos, Vec3* vel, s32 plttStep) {
+  Particle52* ptcl = &p->ptcl_718.ptcls[p->ptcl_718.next];
+
+  ptcl->base.flags &= ~SPRFLAG_HIDDEN;
+  ptcl->plttBase = plttStep * 2 + 2;
+  FUN_0822dafc(&ptcl->base, p->ptcl_718.group, ptcl->plttBase);
+  ptcl->base.pos = *pos;
+  ptcl->vel = *vel;
+  ptcl->unk_31 = 0;
+  ptcl->active = TRUE;
+  p->ptcl_718.active = TRUE;
+  p->ptcl_718.next++;
+  if (p->ptcl_718.next > 5) {
+    p->ptcl_718.next = 0;
+  }
+}
 
 void FUN_08061db4(Player* p) {
   s32 i;
@@ -537,8 +553,8 @@ void Player_InitPtcl718(Player* p) {
     ptcl->base.priority = 2;
   }
 
-  st->unk_04[0] = 0;
-  st->unk_04[1] = 0;
+  st->active = FALSE;
+  st->next = 0;
 }
 
 NAKED void FUN_08061e2c(Player* p) { INCFUNC("asm/func/FUN_08061e2c.inc"); }

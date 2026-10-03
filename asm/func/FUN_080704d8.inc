@@ -134,7 +134,7 @@ _080705D2:
 	mov r0, ip
 	mov r1, sp
 	ldr r3, [sp, #0x10]
-	bl FUN_08061d20
+	bl Player_SpawnPtcl718
 	add sp, #0x14
 	pop {r3, r4, r5}
 	mov r8, r3

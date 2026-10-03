@@ -87,8 +87,12 @@ typedef struct {
 } PlayerArmor;
 
 typedef struct {
-  Particle base;         // 0x00
-  u8 unk_2c[52 - 0x28];  // 0x28
+  Particle base;  // 0x00
+  Vec3 vel;       // 0x28, Player_SpawnPtcl718 が第3引数の Vec3 をそのまま入れる
+  bool8 active;   // 0x30, Player_SpawnPtcl718 が 1 を書く
+  u8 unk_31;      // 0x31, Player_SpawnPtcl718 が 0 を書く
+  u8 plttBase;    // 0x32, FUN_0822dafc に渡すパレット番号
+  u8 unk_33;      // 0x33, padding?
 } Particle52;
 static_assert(sizeof(Particle52) == 52);
 
@@ -105,8 +109,10 @@ static_assert(sizeof(PlayerParticleGroup1) == 48);
 // Player_InitPtcl718 で初期化処理がされるが、アクセス方法的に構造体として扱われるっぽい
 typedef struct {
   ParticleGroup* group;  // 0x00, PTCL_GROUP_2
-  u8 unk_04[4];
-  Particle52 ptcls[6];  // Player_InitPtcl718 でのループ回数
+  bool8 active;          // 0x04, Player_SpawnPtcl718 が 1 を書く
+  u8 next;               // 0x05, 次に使う ptcls の添字, 0..5 を巡回する
+  u8 unk_06[2];          // 0x06
+  Particle52 ptcls[6];   // 0x08, Player_InitPtcl718 でのループ回数
 } PlayerParticleState718;
 
 // Player_InitPtcl858 で初期化処理がされるが、アクセス方法的に構造体として扱われるっぽい

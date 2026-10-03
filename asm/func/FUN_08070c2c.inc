@@ -183,7 +183,7 @@ _08070D86:
 	ldr r0, [sp, #0x10]
 	mov r1, sp
 	ldr r3, [sp, #0x34]
-	bl FUN_08061d20
+	bl Player_SpawnPtcl718
 	add sp, #0x14
 	pop {r3, r4, r5}
 	mov r8, r3
