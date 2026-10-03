@@ -25,7 +25,7 @@ _082362C6:
 	mov r1, r8
 	adds r2, r4, #0
 	str r3, [sp]
-	bl FUN_08235924
+	bl Map_IsPosInNavRect
 	ldr r3, [sp]
 	cmp r0, #0
 	beq _082362DC

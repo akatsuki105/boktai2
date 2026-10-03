@@ -291,7 +291,15 @@ NON_MATCH s32 FUN_082358f4(FileID id) {
 
 void FUN_08235918(NavMesh* navMesh) { gCollisionMap->navMesh = navMesh; }
 
-NAKED bool32 FUN_08235924(struct NavRect* rects, Vec3* pos, u32 idx) { INCFUNC("asm/func/FUN_08235924.inc"); }
+// pos が rects[idx] の矩形の中にあるか, 矩形は1タイル単位なので 8bit 左シフトして比べる
+bool32 Map_IsPosInNavRect(struct NavRect* rects, Vec3* pos, u32 idx) {
+  struct NavRect* rect = &rects[idx];
+
+  if (pos->x >= (rect->minX << 8) && pos->x < (rect->maxX << 8) && pos->z >= (rect->minY << 8) && pos->z < (rect->maxY << 8)) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED u16 FUN_0823595c(u16* distanceMap, u16 n, s32 a, s32 b) { INCFUNC("asm/func/FUN_0823595c.inc"); }
 

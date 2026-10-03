@@ -34,7 +34,7 @@ _08236338:
 	mov r1, sl
 	adds r2, r4, #0
 	str r3, [sp]
-	bl FUN_08235924
+	bl Map_IsPosInNavRect
 	adds r1, r0, #0
 	ldr r3, [sp]
 	cmp r1, #0
