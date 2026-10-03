@@ -26,7 +26,7 @@ _081D3422:
 	movs r0, #0x9c
 	lsls r0, r0, #1
 	add r0, ip
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	movs r0, #2
 	rsbs r0, r0, #0
 	ldrh r1, [r4]

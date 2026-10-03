@@ -62,7 +62,7 @@ _08041E2C:
 	adds r1, r7, r2
 	ldr r1, [r1]
 	ldrb r2, [r6]
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 	b _08041EB8
 	.align 2, 0
 _08041EA4: .4byte 0x00000215

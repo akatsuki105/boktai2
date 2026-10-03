@@ -3,7 +3,7 @@
 	lsls r1, r1, #0x18
 	lsrs r4, r1, #0x18
 	adds r0, r4, #0
-	bl FUN_08234f44
+	bl Map_GetPath
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _082350AA
@@ -35,7 +35,7 @@ _082350B6:
 	lsrs r2, r2, #0x18
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	ldrh r0, [r5]
 	lsls r0, r0, #0x10
 	asrs r2, r0, #0x18

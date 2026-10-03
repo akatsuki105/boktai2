@@ -472,7 +472,7 @@ s32 DoorManager_Destroy(DoorManager* p) {
     Door* door = &p->doors[i];
 
     if (door->unk_2c != NULL) {
-      FUN_082342a8(door->unk_2c);
+      Map_RemoveTileOverride(door->unk_2c);
       Free(door->unk_2c);
     }
     AuxSprite_Remove(&door->sprite);

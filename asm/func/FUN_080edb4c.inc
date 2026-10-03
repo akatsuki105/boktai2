@@ -37,7 +37,7 @@ _080EDB8C:
 	adds r0, r2, r3
 	ldrb r2, [r0]
 	mov r0, sp
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	movs r5, #0
 	add r3, sp, #8
 	mov r4, sp

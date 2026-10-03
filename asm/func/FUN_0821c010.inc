@@ -3,9 +3,9 @@
 	adds r6, r1, #0
 	lsls r0, r6, #0x18
 	lsrs r0, r0, #0x18
-	bl FUN_08234f44
+	bl Map_GetPath
 	adds r5, r0, #0
-	bl FUN_08234f6c
+	bl Map_GetPathNodes
 	movs r2, #0xbf
 	lsls r2, r2, #4
 	adds r1, r4, r2

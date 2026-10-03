@@ -4731,7 +4731,7 @@ FUN_08038b88: @ 0x08038B88
 	movs r0, #0x3f
 	ands r7, r0
 	movs r0, #5
-	bl FUN_08234f44
+	bl Map_GetPath
 	mov sl, r0
 	ldr r0, [r4]
 	adds r0, #1
@@ -4760,7 +4760,7 @@ FUN_08038b88: @ 0x08038B88
 	lsrs r2, r2, #0x18
 	add r0, sp, #4
 	movs r1, #5
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	add r5, sp, #4
 	adds r0, r5, #0
 	ldrh r0, [r0]
@@ -4882,7 +4882,7 @@ _08038CA8:
 	lsrs r2, r2, #0x18
 	add r0, sp, #4
 	movs r1, #5
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	ldrh r0, [r5]
 	lsls r0, r0, #0x10
 	asrs r2, r0, #0x18

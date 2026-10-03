@@ -2595,7 +2595,7 @@ FUN_080a1b28: @ 0x080A1B28
 	bl Hitbox_Unregister
 	adds r0, r4, #0
 	adds r0, #0xb0
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	pop {r4}
 	pop {r1}
 	bx r1
@@ -8774,7 +8774,7 @@ _080A4A7C:
 	cmp r0, #0
 	beq _080A4A94
 	mov r0, sb
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 _080A4A94:
 	movs r0, #0x88
 	lsls r0, r0, #1

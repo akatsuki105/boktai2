@@ -66,7 +66,7 @@ _0821CEE0:
 	adds r1, r5, r2
 	ldr r1, [r1]
 	movs r2, #0
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 	b _0821D03E
 	.align 2, 0
 _0821CF14: .4byte 0x00000BF6
@@ -118,7 +118,7 @@ _0821CF66:
 	adds r1, r5, r3
 	ldr r1, [r1]
 	ldrb r2, [r2]
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 	b _0821D03E
 	.align 2, 0
 _0821CF80: .4byte 0x00000BF5
@@ -209,7 +209,7 @@ _0821D026:
 	adds r1, r5, r3
 	ldr r1, [r1]
 	ldrb r2, [r2]
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 _0821D03E:
 	adds r0, r5, #0
 	movs r1, #2

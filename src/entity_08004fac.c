@@ -14,7 +14,7 @@ typedef struct Entity08004facNode {
   u16 unk_6;                        // 0x06, Map_AddTileOverride の第6引数
   u16 tileIdx;                      // 0x08, gCollisionMap->rowOffsets[y] + x
   u8 unk_a[0x0C - 0x0A];            // 0x0A, padding?
-  MapTileOverride tileOverride;     // 0x0C, Map_AddTileOverride / FUN_082342a8 に渡す
+  MapTileOverride tileOverride;     // 0x0C, Map_AddTileOverride / Map_RemoveTileOverride に渡す
   struct Entity08004facNode* prev;  // 0x1C
   struct Entity08004facNode* next;  // 0x20
 } Entity08004facNode;
@@ -74,7 +74,7 @@ NAKED s32 Entity08004fac_AddNode(u16 id, s16* pos, u8 param_3, u8 param_4, u16 p
 // 衝突マップから外してリストから抜き、ノードを解放する
 s32 Entity08004fac_FreeNode(Entity08004facNode* node) {
   if (node->active) {
-    FUN_082342a8(&node->tileOverride);
+    Map_RemoveTileOverride(&node->tileOverride);
     node->active = FALSE;
   }
 

@@ -90,7 +90,7 @@ _0801FC04:
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r1, r6, #0
-	bl FUN_08234cf8
+	bl Map_GetZoneMin
 	b _0801FC48
 _0801FC1E:
 	movs r0, #0x70

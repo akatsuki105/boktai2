@@ -81,7 +81,7 @@ _081D484C:
 	ldr r2, [sp, #0x20]
 	ldrb r1, [r2]
 	ldrb r2, [r4]
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	str r4, [sp, #0x14]
 _081D4862:
 	movs r0, #0x6b

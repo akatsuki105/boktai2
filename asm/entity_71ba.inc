@@ -219,7 +219,7 @@ FUN_080a01d8: @ 0x080A01D8
 	beq _080A0260
 	adds r0, r4, #0
 	adds r0, #0x24
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	strb r5, [r4, #0x1d]
 	ldr r0, _080A0224 @ =0x03002BE0
 	ldr r0, [r0]
@@ -257,7 +257,7 @@ _080A0250:
 	beq _080A0260
 	adds r0, r4, #0
 	adds r0, #0x24
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	strb r5, [r4, #0x1d]
 _080A0260:
 	add sp, #8
@@ -452,7 +452,7 @@ _080A03BE:
 	beq _080A03D0
 	adds r0, r4, #0
 	adds r0, #0x24
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	movs r0, #0
 	strb r0, [r4, #0x1d]
 _080A03D0:
@@ -564,7 +564,7 @@ _080A04A6:
 	beq _080A04B6
 	adds r0, r4, #0
 	adds r0, #0x24
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	strb r5, [r4, #0x1d]
 _080A04B6:
 	add sp, #8
@@ -655,7 +655,7 @@ _080A053E:
 _080A055C:
 	adds r0, r4, #0
 	adds r0, #0x24
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	strb r5, [r4, #0x1d]
 	ldr r0, _080A057C @ =0x03002BE0
 	ldr r0, [r0]
@@ -703,7 +703,7 @@ _080A05BC:
 	beq _080A05E0
 	adds r0, r4, #0
 	adds r0, #0x24
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	movs r0, #0
 	strb r0, [r4, #0x1d]
 	b _080A05E0
@@ -713,7 +713,7 @@ _080A05D0:
 	beq _080A05E0
 	adds r0, r4, #0
 	adds r0, #0x24
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	strb r5, [r4, #0x1d]
 _080A05E0:
 	add sp, #8
@@ -750,7 +750,7 @@ Entity71BA_Destroy: @ 0x080A060C
 	cmp r1, #0
 	beq _080A061C
 	adds r0, #0x24
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 _080A061C:
 	pop {r1}
 	bx r1

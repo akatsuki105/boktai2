@@ -22726,7 +22726,7 @@ _081935CC:
 	mov r0, sp
 	strb r2, [r0, #3]
 	ldr r0, [sp, #4]
-	bl FUN_08234f6c
+	bl Map_GetPathNodes
 	str r0, [sp, #8]
 	mov r1, sp
 	ldrb r1, [r1, #2]
@@ -23119,7 +23119,7 @@ _081938D0:
 	mov r0, sp
 	strb r2, [r0, #3]
 	ldr r0, [sp, #4]
-	bl FUN_08234f6c
+	bl Map_GetPathNodes
 	str r0, [sp, #8]
 	mov r1, sp
 	ldrb r1, [r1, #2]
@@ -23330,7 +23330,7 @@ FUN_08193a60: @ 0x08193A60
 	ldr r7, _08193B48 @ =0xFFFF0000
 _08193A96:
 	str r2, [sp, #0x24]
-	bl FUN_08234f6c
+	bl Map_GetPathNodes
 	lsls r1, r5, #3
 	adds r0, r0, r1
 	str r0, [r6, #8]
@@ -23390,7 +23390,7 @@ _08193AFC:
 	strb r2, [r0, #2]
 	strb r1, [r0, #3]
 	ldr r0, [sp, #4]
-	bl FUN_08234f6c
+	bl Map_GetPathNodes
 	str r0, [sp, #8]
 	mov r1, sp
 	ldrb r1, [r1, #2]
@@ -23464,7 +23464,7 @@ _08193B88:
 	mov sb, r3
 	add r5, sp, #0x18
 _08193B9E:
-	bl FUN_08234f6c
+	bl Map_GetPathNodes
 	lsls r1, r6, #3
 	adds r0, r0, r1
 	mov r1, sb
@@ -23566,7 +23566,7 @@ _08193C58:
 	strb r2, [r0, #2]
 	strb r1, [r0, #3]
 	ldr r0, [sp, #4]
-	bl FUN_08234f6c
+	bl Map_GetPathNodes
 	str r0, [sp, #8]
 	mov r1, sp
 	ldrb r1, [r1, #2]
@@ -24868,7 +24868,7 @@ _081946F8:
 	ldr r6, [sp, #0x120]
 	ldrb r2, [r6]
 	add r0, sp, #0x28
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	add r0, sp, #0x28
 	ldrh r0, [r0]
 	lsls r0, r0, #0x10

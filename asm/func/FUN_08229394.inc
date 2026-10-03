@@ -230,7 +230,7 @@ _0822953A:
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	mov r1, sp
-	bl FUN_08234cf8
+	bl Map_GetZoneMin
 	b _082295A0
 	.align 2, 0
 _0822956C: .4byte 0x00000F16

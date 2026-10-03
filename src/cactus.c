@@ -67,7 +67,7 @@ void Cactus_OnHit(HitboxData* a, HitboxData* b, Cactus* owner) {
 s32 Hazard_Remove(CactusManager* p, Cactus* hazard, u32 idx) {
   Hitbox_Unregister(&hazard->hitbox);
   AuxSprite_Remove(&hazard->sprite);
-  FUN_082342a8(&hazard->tileOverride);
+  Map_RemoveTileOverride(&hazard->tileOverride);
   p->activeMask &= ~(1 << idx);
 }
 

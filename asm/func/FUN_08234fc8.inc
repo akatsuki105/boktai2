@@ -11,7 +11,7 @@
 	lsrs r2, r2, #0x18
 	mov r0, sp
 	adds r1, r4, #0
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	cmp r0, #0
 	blt _0823502C
 	add r4, sp, #8

@@ -4560,7 +4560,7 @@ _0803E40E:
 	adds r0, r4, r6
 	ands r2, r3
 	movs r1, #4
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	movs r0, #0xb6
 	lsls r0, r0, #1
 	adds r1, r4, r0
@@ -6308,7 +6308,7 @@ _0803F130:
 	adds r0, r0, r2
 	ldrb r2, [r0]
 	add r0, sp, #0x18
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	add r7, sp, #0x18
 	adds r0, r7, #0
 	ldrh r0, [r0]

@@ -68,7 +68,7 @@ _080E726E:
 	strb r1, [r0]
 	mov r1, r8
 	ldr r0, [r1]
-	bl FUN_08234f6c
+	bl Map_GetPathNodes
 	adds r2, r4, #0
 	adds r2, #0xa4
 	str r0, [r2]

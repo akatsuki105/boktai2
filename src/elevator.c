@@ -36,7 +36,7 @@ typedef struct ElevatorUnkData {
   ElevatorUnkDataFunc* unk_e0;       // 0x0E0
   u8 unk_e4;                         // 0x0E4, Elevator_Create が VM 値を入れる
   u8 unk_e5;                         // 0x0E5
-  u8 unk_e6;                         // 0x0E6, Elevator_Create が VM 値を入れて FUN_08234f90 に渡す
+  u8 unk_e6;                         // 0x0E6, Elevator_Create が VM 値を入れて Map_GetPathNodePos に渡す
   u8 unk_e7;                         // 0x0E7, FUN_081d2a64 が 0/1/3 で走行音を出し分ける
   u8 unk_e8[0x0F4 - 0x0E8];          // 0x0E8
   Mover hitbox;                      // 0x0F4, pos を x-0x100 して sprite.pos にコピーする

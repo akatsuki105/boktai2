@@ -14,7 +14,7 @@ bool8 FUN_081d5848(EntityF1F9Item* item, u16 n);
 
 // EntityC60FItem.flags
 typedef u32 EntityC60FItemFlags;
-#define C60FITEM_TILE_OVERRIDE (1 << 5)  // 衝突タイルの上書きを持っている, 落とすときに FUN_082342a8 で取り消す
+#define C60FITEM_TILE_OVERRIDE (1 << 5)  // 衝突タイルの上書きを持っている, 落とすときに Map_RemoveTileOverride で取り消す
 #define C60FITEM_FIXED_AREA (1 << 7)     // state を回さず unk_10a を gStat->unk_248 と比べる
 
 // EntityC60F が抱える要素, Malloc(0x11C) で確保され、空きスロットに入る
@@ -33,7 +33,7 @@ typedef struct EntityC60FItem {
   u8 unk_108;                    // 0x108, 0 でないときだけ _Destroy が FUN_08002a58 / Mover_Unlink を呼ぶ
   u8 unk_109;                    // 0x109
   u16 unk_10a;                   // 0x10A, unk_100 の bit7 が立っているとき gStat->unk_248 と比較される
-  MapTileOverride tileOverride;  // 0x10C, unk_100 の bit5 が立っているとき _Destroy が FUN_082342a8 に渡す
+  MapTileOverride tileOverride;  // 0x10C, unk_100 の bit5 が立っているとき _Destroy が Map_RemoveTileOverride に渡す
 } EntityC60FItem;
 static_assert(sizeof(EntityC60FItem) == 284);
 
@@ -188,7 +188,7 @@ NON_MATCH void FUN_081d7814(EntityC60FItem* p) {
 #ifdef NONMATCHING_C
   if (p->state == 3 || p->state == 4) {
     if (p->flags & C60FITEM_TILE_OVERRIDE) {
-      FUN_082342a8(&p->tileOverride);
+      Map_RemoveTileOverride(&p->tileOverride);
       p->flags &= ~C60FITEM_TILE_OVERRIDE;
     }
   }

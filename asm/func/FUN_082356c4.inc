@@ -13,7 +13,7 @@
 	str r1, [sp, #0x10]
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
-	bl FUN_08234f44
+	bl Map_GetPath
 	mov sb, r0
 	cmp r0, #0
 	beq _082356F2
@@ -28,7 +28,7 @@ _082356F2:
 	b _0823584A
 _082356FC:
 	mov r0, sb
-	bl FUN_08234f6c
+	bl Map_GetPathNodes
 	mov r8, r0
 	cmp r0, #0
 	bne _08235712
@@ -56,7 +56,7 @@ _08235712:
 	mov r0, sp
 	mov r1, r8
 	movs r2, #0
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 	mov r0, sp
 	ldrh r0, [r0]
 	strh r0, [r6]
@@ -77,7 +77,7 @@ _08235754:
 	lsrs r2, r2, #0x18
 	mov r0, sp
 	mov r1, r8
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 	movs r0, #0
 	ldrsh r1, [r5, r0]
 	ldr r2, [sp, #8]

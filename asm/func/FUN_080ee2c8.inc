@@ -33,7 +33,7 @@
 	mov r0, r8
 	ldrb r2, [r0]
 	adds r0, r6, #0
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	adds r5, r7, #0
 	adds r5, #0x9c
 	ldrb r1, [r4]

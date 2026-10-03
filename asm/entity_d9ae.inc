@@ -902,7 +902,7 @@ FUN_080036a0: @ 0x080036A0
 	bl AuxSprite_Remove
 	adds r0, r4, #0
 	adds r0, #0xb8
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	adds r0, r4, #0
 	adds r0, #0xc8
 	bl Hitbox_Unregister

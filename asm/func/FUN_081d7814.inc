@@ -26,7 +26,7 @@ _081D783E:
 	movs r1, #0x86
 	lsls r1, r1, #1
 	adds r0, r3, r1
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	movs r1, #0x21
 	rsbs r1, r1, #0
 	ldr r0, [r4]

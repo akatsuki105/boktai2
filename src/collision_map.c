@@ -9,10 +9,10 @@
 IWRAM_DATA bool32 bool32_0300077c = FALSE;  // 0x0300077C
 
 bool32 Map_ResetCollisionMap(void);
-void FUN_08234bd8(CollisionMapEvent* ev);
+void Map_ClearEvent(CollisionMapEvent* ev);
 extern u32 gNextMapEventID;  // src/iwram2.c
 
-void FUN_082326a0(void) {
+void Map_InitCollisionMap(void) {
   CollisionMapData* p = Malloc(sizeof(CollisionMapData));
   ClearMemory(p, sizeof(CollisionMapData));
   Registry_Add(0x56C2, p, 1);
@@ -37,14 +37,14 @@ bool32 Map_ResetCollisionMap(void) {
   gCollisionMap->eventCount = 0;
 
   for (i = 0; i < 64; i++) {
-    FUN_08234bd8(&gCollisionMap->events[i]);
+    Map_ClearEvent(&gCollisionMap->events[i]);
     gCollisionMap->unk_d24[i] = 0;
   }
   return TRUE;
 }
 
 // 隣接タイルへの索引差分を -w / 1 / w / -1 で埋める
-void FUN_0823273c(void) {
+void Map_BuildNeighborOffsets(void) {
   CollisionMapTileData* tiledata = gCollisionMap->tiledata;
 
   gCollisionMap->neighborOffsets[0] = -tiledata->width;
@@ -78,17 +78,17 @@ void UpdateMapSize_0823279c(void) {
   gMapBlockH = (gCollisionMap->tiledata)->height;
 }
 
-s32 FUN_082327c0(FileID id) {
+s32 Map_LoadTileData(FileID id) {
   gCollisionMap->tiledata = GetFile(0xAE1B, id);  // これNULLを返すっぽいけど...
-  FUN_0823273c();
+  Map_BuildNeighborOffsets();
   Map_BuildRowOffsets();
   UpdateMapSize_0823279c();
   return 0;
 }
 
-void FUN_082327f0(CollisionMapTileData* tiledata) {
+void Map_SetTileData(CollisionMapTileData* tiledata) {
   gCollisionMap->tiledata = tiledata;
-  FUN_0823273c();
+  Map_BuildNeighborOffsets();
   Map_BuildRowOffsets();
   UpdateMapSize_0823279c();
 }
@@ -117,7 +117,7 @@ NAKED s32 FUN_08233d50(s32 param_1, unknown* param_2, unknown* param_3) { INCFUN
 
 NAKED s32 FUN_082340c8(unknown* param_1, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_082340c8.inc"); }
 
-void FUN_08234208(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 param_4, s32 param_5, s32 param_6) {
+void Map_InitTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 param_4, s32 param_5, s32 param_6) {
   p->tileIdx = tileIdx;
   p->flags = 0;
   p->height = (param_3 << 4) | param_4;
@@ -144,7 +144,7 @@ MapTileOverride* Map_FindTileOverride(u32 tileIdx, u32 mask) {
 
 // 上書き情報を初期化して、コリジョンマップが持つ双方向リストの先頭に繋ぐ
 s32 Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6) {
-  FUN_08234208(p, tileIdx, param_3, height, param_5, param_6);
+  Map_InitTileOverride(p, tileIdx, param_3, height, param_5, param_6);
   p->prev = NULL;
   p->next = gCollisionMap->tileOverrides;
   if (p->next != NULL) {
@@ -156,7 +156,7 @@ s32 Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height
 }
 
 // 衝突マップのタイル上書きリストからノードを外す
-void FUN_082342a8(MapTileOverride* p) {
+void Map_RemoveTileOverride(MapTileOverride* p) {
   MapTileOverride* prev = p->prev;
   MapTileOverride* next = p->next;
 
@@ -175,13 +175,13 @@ NAKED s32 FUN_082342cc(unknown* param_1, unknown* param_2) { INCFUNC("asm/func/F
 
 bool32 FUN_082345ec(void) { return bool32_0300077c; }
 
-s32 FUN_082345f8(FileID id) {
+s32 Map_LoadZones(FileID id) {
   gCollisionMap->zones = GetFile(0xDCFB, id);
   bool32_0300077c = FALSE;
   return 0;
 }
 
-void FUN_08234624(ZoneData* zones) {
+void Map_SetZones(ZoneData* zones) {
   gCollisionMap->zones = zones;
   bool32_0300077c = FALSE;
 }
@@ -240,12 +240,12 @@ NAKED void Map_InsertEvent(CollisionMapEvent* ev, u32 param_2) { INCFUNC("asm/fu
 
 NAKED s32 FUN_08234b1c(void) { INCFUNC("asm/func/FUN_08234b1c.inc"); }
 
-void FUN_08234bd8(CollisionMapEvent* ev) { ClearMemory(ev, sizeof(CollisionMapEvent)); }
+void Map_ClearEvent(CollisionMapEvent* ev) { ClearMemory(ev, sizeof(CollisionMapEvent)); }
 
 NAKED s32 FUN_08234be4(void) { INCFUNC("asm/func/FUN_08234be4.inc"); }
 
 // ゾーンの左上隅を Vec3 の単位 (z は 16 倍) で取り出す
-void FUN_08234cf8(u16 id, u16* out) {
+void Map_GetZoneMin(u16 id, u16* out) {
   u16 count;
   Zone* zone = FindZonesByID(id, &count);
 
@@ -257,7 +257,7 @@ void FUN_08234cf8(u16 id, u16* out) {
 }
 
 // ゾーンの右下隅を Vec3 の単位 (z は 16 倍) で取り出す
-void FUN_08234d24(u16 id, u16* out) {
+void Map_GetZoneMax(u16 id, u16* out) {
   u16 count;
   Zone* zone = FindZonesByID(id, &count);
 
@@ -270,12 +270,12 @@ void FUN_08234d24(u16 id, u16* out) {
 
 NAKED bool8 FUN_08234d50(u16 areaFileId, Vec3* pos) { INCFUNC("asm/func/FUN_08234d50.inc"); }
 
-s32 FUN_08234db8(FileID id) {
+s32 Map_LoadPaths(FileID id) {
   gCollisionMap->paths = GetFile(0xD4FB, id);
   return 0;
 }
 
-void FUN_08234ddc(PathData* paths) { gCollisionMap->paths = paths; }
+void Map_SetPaths(PathData* paths) { gCollisionMap->paths = paths; }
 
 NAKED bool32 FUN_08234de8(unknown* p, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_08234de8.inc"); }
 
@@ -283,7 +283,7 @@ NAKED bool32 FUN_08234e3c(unknown* p) { INCFUNC("asm/func/FUN_08234e3c.inc"); }
 
 NAKED s32 FUN_08234e78(unknown* param_1, s32 param_2, unknown* param_3, s32 param_4) { INCFUNC("asm/func/FUN_08234e78.inc"); }
 
-Path* FUN_08234f44(u8 idx) {
+Path* Map_GetPath(u8 idx) {
   PathData* d = gCollisionMap->paths;
 
   if (idx >= d->pathCount) return NULL;
@@ -292,21 +292,21 @@ Path* FUN_08234f44(u8 idx) {
 }
 
 // その経路の先頭ノードを指す
-PathNode* FUN_08234f6c(Path* path) {
+PathNode* Map_GetPathNodes(Path* path) {
   u8* base = (u8*)gCollisionMap->paths;
 
   return (PathNode*)(base + path->nodeOffset);
 }
 
 // 経路ノードの座標を Vec3 の X/Z に取り出す
-void FUN_08234f80(Vec3* dst, PathNode* nodes, u8 idx) {
+void Map_ReadPathNodePos(Vec3* dst, PathNode* nodes, u8 idx) {
   dst->x = nodes[idx].x;
   dst->z = nodes[idx].y;
 }
 
 // パス pathIdx の nodeIdx 番目のノードの座標を *dst に入れる
-s32 FUN_08234f90(Vec3* dst, u8 pathIdx, u8 nodeIdx) {
-  PathNode* nodes = FUN_08234f6c(FUN_08234f44(pathIdx));
+s32 Map_GetPathNodePos(Vec3* dst, u8 pathIdx, u8 nodeIdx) {
+  PathNode* nodes = Map_GetPathNodes(Map_GetPath(pathIdx));
 
   if (nodes == NULL) {
     dst->x = 0;
@@ -314,7 +314,7 @@ s32 FUN_08234f90(Vec3* dst, u8 pathIdx, u8 nodeIdx) {
     return -1;
   }
 
-  FUN_08234f80(dst, nodes, nodeIdx);
+  Map_ReadPathNodePos(dst, nodes, nodeIdx);
   return 0;
 }
 
@@ -336,16 +336,16 @@ NAKED s32 FUN_082356c4(Vec3* dst, s32 param_2, s32 param_3, s32 param_4) { INCFU
 
 NAKED s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_0823585c.inc"); }
 
-NON_MATCH s32 FUN_082358f4(FileID id) {
+NON_MATCH s32 Map_LoadNavMesh(FileID id) {
 #ifdef NONMATCHING_C
   gCollisionMap->navMesh = GetFile(0xF63B, id);
   return 0;
 #else
-  INCFUNC("asm/func/FUN_082358f4.inc");
+  INCFUNC("asm/func/Map_LoadNavMesh.inc");
 #endif
 }
 
-void FUN_08235918(NavMesh* navMesh) { gCollisionMap->navMesh = navMesh; }
+void Map_SetNavMesh(NavMesh* navMesh) { gCollisionMap->navMesh = navMesh; }
 
 // pos が rects[idx] の矩形の中にあるか, 矩形は1タイル単位なので 8bit 左シフトして比べる
 bool32 Map_IsPosInNavRect(struct NavRect* rects, Vec3* pos, u32 idx) {

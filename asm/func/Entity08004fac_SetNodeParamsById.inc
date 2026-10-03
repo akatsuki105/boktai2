@@ -64,7 +64,7 @@ _08004F56:
 	str r4, [sp]
 	ldrh r4, [r5, #6]
 	str r4, [sp, #4]
-	bl FUN_08234208
+	bl Map_InitTileOverride
 _08004F6C:
 	adds r5, r6, #0
 	cmp r5, #0

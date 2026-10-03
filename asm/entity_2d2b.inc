@@ -969,7 +969,7 @@ FUN_080085f8: @ 0x080085F8
 	ldr r1, [r6, #0x30]
 	add r0, sp, #4
 	movs r2, #0
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 	movs r4, #1
 _0800866A:
 	movs r0, #0x74

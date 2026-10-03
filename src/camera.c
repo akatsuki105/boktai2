@@ -16,14 +16,14 @@ COMMON_DATA u8 u8_030047d4[4] = {};     // todo
 COMMON_DATA u16 u16_030047d8 = 0;       // 0x030047D8, TextRenderer_PlayCharSound がこのIDのメッセージでは音を鳴らさない
 COMMON_DATA u8 u8_030047da[6] = {};     // todo
 
-s32 FUN_082327c0(FileID id);
-s32 FUN_082345f8(FileID id);
-s32 FUN_08234db8(FileID id);
-s32 FUN_082358f4(FileID id);
-void FUN_082327f0(CollisionMapTileData* tiledata);
-void FUN_08234624(ZoneData* zones);
-void FUN_08234ddc(PathData* paths);
-void FUN_08235918(NavMesh* navMesh);
+s32 Map_LoadTileData(FileID id);
+s32 Map_LoadZones(FileID id);
+s32 Map_LoadPaths(FileID id);
+s32 Map_LoadNavMesh(FileID id);
+void Map_SetTileData(CollisionMapTileData* tiledata);
+void Map_SetZones(ZoneData* zones);
+void Map_SetPaths(PathData* paths);
+void Map_SetNavMesh(NavMesh* navMesh);
 
 // Collision Map File が圧縮されてたら展開して返す、圧縮されてなかったらそのまま返す
 CollisionMapFile* OpenCollisionMapFile(void* file) {
@@ -56,10 +56,10 @@ s32 Map_LoadCollisionMapFile(s32 id) {
     hdr.navMesh.offset += (u32)f;
   }
 
-  FUN_082327f0(hdr.tileData.ptr);
-  FUN_08234624(hdr.zones.ptr);
-  FUN_08234ddc(hdr.paths.ptr);
-  FUN_08235918(hdr.navMesh.ptr);
+  Map_SetTileData(hdr.tileData.ptr);
+  Map_SetZones(hdr.zones.ptr);
+  Map_SetPaths(hdr.paths.ptr);
+  Map_SetNavMesh(hdr.navMesh.ptr);
   return 0;
 }
 
@@ -77,10 +77,10 @@ void Map_LoadMapScripted(void) {
   if (fileID != 0) {
     Map_LoadCollisionMapFile(fileID);
   } else {
-    if (h != 0) FUN_082327c0(h);
-    if (t != 0) FUN_082345f8(t);
-    if (r != 0) FUN_08234db8(r);
-    if (z != 0) FUN_082358f4(z);
+    if (h != 0) Map_LoadTileData(h);
+    if (t != 0) Map_LoadZones(t);
+    if (r != 0) Map_LoadPaths(r);
+    if (z != 0) Map_LoadNavMesh(z);
   }
 
   // これ以降が Camera_SetTilemapOffset と同じ処理になる

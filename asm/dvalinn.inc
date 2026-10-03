@@ -2879,7 +2879,7 @@ _081FBC64:
 	adds r0, r0, r5
 	ldrb r2, [r0]
 	mov r0, sp
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	ldrh r0, [r6]
 	lsls r0, r0, #0x10
 	asrs r2, r0, #0x18
@@ -3205,7 +3205,7 @@ _081FBECC:
 	adds r0, r0, r2
 	ldrb r2, [r0]
 	ldr r0, [sp, #0x20]
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	ldr r6, [sp, #0x20]
 	ldrh r0, [r6]
 	lsls r0, r0, #0x10
@@ -4570,7 +4570,7 @@ FUN_081fc890: @ 0x081FC890
 	ldrb r1, [r3]
 	ldrb r2, [r0]
 	adds r0, r5, #0
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	ldrh r0, [r5]
 	lsls r0, r0, #0x10
 	asrs r2, r0, #0x18
@@ -8251,7 +8251,7 @@ _081FE584:
 	ldrb r1, [r0]
 	mov r0, sb
 	movs r2, #1
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	mov r5, sb
 	ldrh r0, [r5]
 	lsls r0, r0, #0x10
@@ -8560,7 +8560,7 @@ _081FE800:
 	ldrb r1, [r0]
 	mov r0, sb
 	movs r2, #0
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	mov r5, sb
 	ldrh r0, [r5]
 	lsls r0, r0, #0x10

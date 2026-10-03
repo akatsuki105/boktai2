@@ -30,11 +30,11 @@ extern u8 gDecompressedCollisionMapFile[16380];  // 0x02031404, 展開された 
 // --------------------------------------------
 
 // 地形の上書き情報を管理する構造体
-// 根拠: Map_AddTileOverride (挿入) / FUN_082342a8 (除去) / FUN_08234208 (各フィールドの初期化)
+// 根拠: Map_AddTileOverride (挿入) / Map_RemoveTileOverride (除去) / Map_InitTileOverride (各フィールドの初期化)
 typedef struct MapTileOverride {
-  u16 flags;                     // 0x00, Map_FindTileOverride が引数のマスクと AND を取って弾く, FUN_08234208 は 0 を書く
-  u16 tileIdx;                   // 0x02, FUN_08234208 の第2引数, 呼び出し側はコリジョンマップのタイル索引を渡す
-  u8 height;                     // 0x04, FUN_08234208 が param_3 << 4 | param_4 を書く, 呼び出し側はタイルの高さを渡す
+  u16 flags;                     // 0x00, Map_FindTileOverride が引数のマスクと AND を取って弾く, Map_InitTileOverride は 0 を書く
+  u16 tileIdx;                   // 0x02, Map_InitTileOverride の第2引数, 呼び出し側はコリジョンマップのタイル索引を渡す
+  u8 height;                     // 0x04, Map_InitTileOverride が param_3 << 4 | param_4 を書く, 呼び出し側はタイルの高さを渡す
   u8 unk_5;                      // 0x05, EntityEC96_Init は 0xFF を渡す
   u16 unk_6;                     // 0x06, EntityEC96_Init は 0 を渡す
   struct MapTileOverride* prev;  // 0x08, Map_AddTileOverride が挿入時に NULL を書く
@@ -112,7 +112,7 @@ typedef struct {
 } Path;
 
 typedef struct {
-  u16 pathCount;      // 0x00, number of Path, 根拠: FUN_08234f44 が ldrh で読む
+  u16 pathCount;      // 0x00, number of Path, 根拠: Map_GetPath が ldrh で読む
   u16 unk_02;         // 0x02
   Path paths[1];      // 0x04, Path[pathCount]
   PathNode nodes[1];  // 要素数は Path[Path.nodeCount] の合計?
@@ -173,7 +173,7 @@ static_assert(sizeof(CollisionMapEvent) == 44);
 
 // --------------------------------------------
 
-// 読み込み中のコリジョンマップ, gCollisionMap が指す, Malloc(3620) で確保される (FUN_082326a0)
+// 読み込み中のコリジョンマップ, gCollisionMap が指す, Malloc(3620) で確保される (Map_InitCollisionMap)
 typedef struct CollisionMapData {
   u16 eventCount;                  // 0x000, events の件数, 根拠: Map_ResetCollisionMap が 0 を書き Map_InsertEvent が +1 する
   u8 unk_2[2];                     // 0x002, 読み書きするコードが見つかっていない, padding?
@@ -183,7 +183,7 @@ typedef struct CollisionMapData {
   PathData* paths;                 // 0x010
   NavMesh* navMesh;                // 0x014
   MapTileOverride* tileOverrides;  // 0x018, Map_AddTileOverride がここを先頭とする双方向リストにノードを繋ぐ
-  s16 neighborOffsets[4];          // 0x01C, 隣接タイルへの索引差分 -w/1/w/-1, 根拠: FUN_0823273c, 読み手は (dir & 3) で引く
+  s16 neighborOffsets[4];          // 0x01C, 隣接タイルへの索引差分 -w/1/w/-1, 根拠: Map_BuildNeighborOffsets, 読み手は (dir & 3) で引く
   u16 rowOffsets[256];             // 0x024, 行ごとのタイル索引オフセット表, rowOffsets[blockZ] + blockX がタイル索引
   CollisionMapEvent events[64];    // 0x224, 根拠: Map_ResetCollisionMap が i=0..63 で 44バイトずつクリアする
   u32 unk_d24[64];                 // 0xD24, events と同じ添字の並列配列, Map_InsertEvent の第2引数が入り、挿入・削除で events と一緒にずらされる, 読み手は未発見
@@ -193,7 +193,7 @@ static_assert(sizeof(CollisionMapData) == 3620);
 extern CollisionMapData* gCollisionMap;
 
 MapTileOverride* Map_FindTileOverride(u32 tileIdx, u32 mask);
-void FUN_082342a8(MapTileOverride* p);
+void Map_RemoveTileOverride(MapTileOverride* p);
 u16 FUN_082328ec(Vec3* pos);
 
 #endif  // __INCLUDE_COLLISION_MAP_H__

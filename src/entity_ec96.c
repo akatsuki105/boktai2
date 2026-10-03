@@ -88,7 +88,7 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
 // 当たり判定・マップノード・描画ノードをそれぞれのリストから外す
 s32 EntityEC96_Destroy(EntityEC96* p) {
   Hitbox_Unregister(&p->hitbox);
-  FUN_082342a8(&p->tileOverride);
+  Map_RemoveTileOverride(&p->tileOverride);
   AuxSprite_Remove(&p->sprite);
   return 0;
 }

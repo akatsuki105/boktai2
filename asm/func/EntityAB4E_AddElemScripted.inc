@@ -337,7 +337,7 @@ _080475A4:
 	ldr r1, [r0]
 	mov r0, r8
 	movs r2, #0
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 	adds r0, r7, #0
 	bl FUN_080453b0
 _08047608:
