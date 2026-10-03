@@ -1409,7 +1409,7 @@ gAuxSpritesFile0: @ 0x08A2291C
     .incbin "data/actor_sprites/boku_0.4bpp"               @ 0x08A93550, ActorID: 0x9247, PlttID: 307, ボク
     .incbin "data/actor_sprites/boku_1.4bpp"               @ 0x08A94C10, ActorID: 0xD4EA, PlttID: 307, ボク
     .incbin "data/actor_sprites/boku_2.4bpp"               @ 0x08A95C10, ActorID: 0x47DE, PlttID: 307, ボク
-    .incbin "data/actor_sprites/C046.4bpp"                 @ 0x08A981D0, ActorID: 0xC046, PlttID: 311, ベルドコンベア
+    .incbin "data/actor_sprites/treadmill.4bpp"            @ 0x08A981D0, ActorID: 0xC046, PlttID: 311, 暗黒ローンのお仕置き部屋の発電ベルドコンベア
     .incbin "data/actor_sprites/2097.4bpp"                 @ 0x08A993D0, ActorID: 0x2097, PlttID: 312, 四則演算ブロック
     .incbin "data/actor_sprites/17C8.4bpp"                 @ 0x08A9DBD0, ActorID: 0x17C8, PlttID: 287, 重量スイッチ
     .incbin "data/actor_sprites/lever_switch.4bpp"         @ 0x08A9E1D0, ActorID: 0xBB68, PlttID: 313, レバースイッチ
@@ -1448,7 +1448,7 @@ gAuxSpritesFile0: @ 0x08A2291C
     .incbin "data/actor_sprites/9803.4bpp"                 @ 0x08AB6B30, ActorID: 0x9803, PlttID: 83, 黒塗り
     .incbin "data/actor_sprites/D56D.4bpp"                 @ 0x08ABC330, ActorID: 0xD56D, PlttID: 404
     .incbin "data/actor_sprites/17CA.4bpp"                 @ 0x08ABC850, ActorID: 0x17CA, PlttID: 287, 重量スイッチ
-    .incbin "data/actor_sprites/3640.4bpp"                 @ 0x08ABCF50, ActorID: 0x3640, PlttID: 410, 天窓の光
+    .incbin "data/actor_sprites/spotlight.4bpp"            @ 0x08ABCF50, ActorID: 0x3640, PlttID: 410, 天窓の光(汎用?)
     .incbin "data/actor_sprites/9B09.4bpp"                 @ 0x08ABEF50, ActorID: 0x9B09, PlttID: 83, 黒塗り
     .incbin "data/actor_sprites/D454.4bpp"                 @ 0x08AC23D0, ActorID: 0xD454, PlttID: 83, 黒塗り
 		.incbin "data/actor_sprites/D636.4bpp"                 @ 0x08AC4D70, ActorID: 0xD636, PlttID: 417, centipede & sandworm & serpent

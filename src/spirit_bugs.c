@@ -178,7 +178,7 @@ s32 Entity0800a89c_Init(SpiritBugsManager* p, unknown* arg) {
 
   gSpiritBugsManager = p;
   p->group0 = GetParticleGroup(PTCL_GROUP_0);
-  p->anim = GetFile(DIR_ANIMATION, 0xD1B8);
+  p->anim = GetFile(DIR_ANIMATION, ANIM_D1B8);
   for (i = 0; i < 6; i++) {
     SpiritBugSwarm* swarm = &p->swarms[i];
 

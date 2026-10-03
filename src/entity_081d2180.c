@@ -1,10 +1,9 @@
 #include "entity.h"
 #include "entity_081d16ec.h"
-#include "game.h"
 #include "global.h"
 #include "random.h"
 #include "sound.h"
-#include "sprite_aux.h"
+#include "sprite.h"
 #include "vm.h"
 
 // Entity081d2180 が抱える要素

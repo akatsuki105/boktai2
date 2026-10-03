@@ -1,8 +1,8 @@
-#include "animation.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "sprite_animation.h"
 #include "sprite_aux.h"
 
 // リストに繋がれるノード, prev/next 以外はまだ未解析で全体の大きさも未確定
@@ -110,7 +110,7 @@ s32 Entity08016660_Destroy(Entity08016660* p) {
 
 s32 Entity08016660_Init(Entity08016660* p, u32 id) {
   gEntity08016660 = p;
-  p->anim = GetFile(DIR_ANIMATION, 0x931E);
+  p->anim = GetFile(DIR_ANIMATION, ANIM_931E);
   p->list = NULL;
   return 0;
 }

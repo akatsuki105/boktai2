@@ -34,7 +34,7 @@ static_assert(sizeof(Entity081d0e20Elem) == 192);
 // 要素を12個まで抱えるエンティティ, 空きスロットは activeMask のビットで管理する
 typedef struct Entity081d0e20 {
   Entity e;                       // 0x00, ENTITY_UNK_8
-  AuxAnimFile* anim;              // 0x18, GetFile(DIR_ANIMATION, 0x0AE9)
+  AuxAnimFile* anim;              // 0x18, ANIM_0AE9
   AuxSpriteGfx gfx;               // 0x1C, SPRITE_PITFALL_A945
   Entity081d0e20Elem* items[12];  // 0x38, 根拠: Entity081d0e20_AllocElem が確保したものを入れる
   u32 activeMask;                 // 0x68, 1 << i で items[i] が使用中, 根拠: Entity081d0e20_AllocElem / _Update / _Destroy
@@ -152,7 +152,7 @@ void FUN_081d006c(Entity081d0e20Elem* p) {
     switch (p->unk_b0) {
       case 0:
       case 1: {
-        if (gFlag030047a4 & FLAG030047A4_UNK_11) {
+        if (gFlag030047a4 & FLAG030047A4_LINK) {
           PlaySound_082406e0(0x26D);
         } else {
           PlaySound_082406e0(0x1AB);
@@ -437,7 +437,7 @@ NON_MATCH s32 Entity081d0e20_Destroy(Entity081d0e20* p) {
 
 s32 Entity081d0e20_Init(Entity081d0e20* p) {
   Video_GetAuxSprite(&p->gfx, SPRITE_PITFALL_A945);
-  p->anim = GetFile(DIR_ANIMATION, 0x0AE9);
+  p->anim = GetFile(DIR_ANIMATION, ANIM_0AE9);
   gEntity081d0e20 = p;
   p->activeMask = 0;
   return 0;

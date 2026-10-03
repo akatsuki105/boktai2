@@ -13,7 +13,7 @@ extern u32 u32_030047c0;
 extern u32 u32_030047c4;
 extern u16 u16_030047d8;
 extern u32 gSentinel02020400;
-extern const u8 u8_ARRAY_08dbd798[][2];  // 0x08DBD798
+extern const u8 u8_ARRAY_08dbd798[6][2];  // 0x08DBD798
 static const u8 u8_ARRAY_08dbd83c[684];
 
 void FUN_0823cd04(void) {
@@ -29,9 +29,10 @@ char* FUN_0823cd38(void) { return gStat->name; }
 
 NAKED void FUN_0823cd48(void) { INCFUNC("asm/func/FUN_0823cd48.inc"); }
 
-NAKED unknown* FUN_0823cdc0(u32 param_1, const u8* param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_0823cdc0.inc"); }
+// key でソート済みの {u16 key; u16 value;} のテーブルを二分探索して value を返す, 見つからなければ 0
+NAKED u32 FUN_0823cdc0(u32 key, const u8* table, s32 lo, s32 hi) { INCFUNC("asm/func/FUN_0823cdc0.inc"); }
 
-unknown* FUN_0823cdf8(u16 param_1) { return FUN_0823cdc0(param_1, u8_ARRAY_08dbd83c, 0, 0xAA); }
+u32 FUN_0823cdf8(u16 key) { return FUN_0823cdc0(key, u8_ARRAY_08dbd83c, 0, 0xAA); }
 
 s32 FUN_0823ce10(u16* param_1, u16* param_2) {
   *param_1 = u8_ARRAY_08dbd798[gClock.spanOfTime][0];

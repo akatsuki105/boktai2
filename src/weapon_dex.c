@@ -34,7 +34,7 @@ typedef struct {
   u8 unk_c8b;                 // 0xC8B
   AuxSprite node_c8c;         // 0xC8C, 根拠: 0x08210ef8
   AuxSpriteGfx sprite_cb8;    // 0xCB8, 根拠: 0x08210a2e
-  DexPreview preview;         // 0xCD4, 根拠: FUN_08055e34
+  SpriteHolder preview;       // 0xCD4, 根拠: FUN_08055e34
   rgb555 pltt_d68[16];        // 0xD68, 根拠: 0x08210a20
   u8 unk_d88;                 // 0xD88, FUN_082110a4 が 1 増やすカウンタ
   u8 unk_d89;                 // 0xD89, FUN_082110a4 が 0 に戻す
@@ -50,7 +50,7 @@ static const u8 sWeaponDexItemCounts[4] = {19, 19, 19, 3};  // 0x085af9ac, 武�
 bool32 IsWeaponAlreadyFound(weapon32_t n);
 void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, s32 zeroSuppress);
 s32 FUN_08049fa8(void);
-void FUN_08055d7c(DexPreview* p);
+void FUN_08055d7c(SpriteHolder* p);
 
 INCASM("asm/weapon_dex.inc");
 

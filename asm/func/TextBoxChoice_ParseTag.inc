@@ -15,7 +15,7 @@ _080055EE:
 	ldr r1, _08005638 @ =0x08251B3C
 	adds r0, r4, #0
 	movs r2, #5
-	bl TextBox_StrNCmp
+	bl Text_StrNCmp
 	cmp r0, #0
 	bne _080056D0
 	movs r0, #0
@@ -82,7 +82,7 @@ _08005662:
 	beq _08005680
 	adds r0, r2, #0
 	adds r1, r3, #0
-	bl TextBox_ParseDecimal
+	bl Text_ParseDecimal
 	mov r2, sb
 	strb r0, [r2]
 	b _08005686
@@ -93,7 +93,7 @@ _08005680:
 _08005686:
 	adds r0, r5, #0
 	movs r1, #0x3e
-	bl TextBox_FindChar
+	bl Text_FindChar
 	adds r5, r0, #0
 	ldrb r0, [r6, #0x1b]
 	lsls r0, r0, #2
@@ -131,7 +131,7 @@ _080056D0:
 	ldr r1, _08005700 @ =0x08251B44
 	adds r0, r4, #0
 	movs r2, #6
-	bl TextBox_StrNCmp
+	bl Text_StrNCmp
 	cmp r0, #0
 	bne _0800574C
 	movs r0, #0
@@ -186,7 +186,7 @@ _0800572A:
 	beq _08005744
 	adds r0, r2, #0
 	adds r1, r3, #0
-	bl TextBox_ParseDecimal
+	bl Text_ParseDecimal
 	b _08005746
 _08005744:
 	movs r0, #0
@@ -197,7 +197,7 @@ _0800574C:
 	ldr r1, _0800577C @ =0x08251B4C
 	adds r0, r4, #0
 	movs r2, #3
-	bl TextBox_StrNCmp
+	bl Text_StrNCmp
 	cmp r0, #0
 	bne _08005848
 	movs r3, #0
@@ -251,7 +251,7 @@ _080057A6:
 	beq _080057C0
 	adds r0, r2, #0
 	adds r1, r3, #0
-	bl TextBox_ParseDecimal
+	bl Text_ParseDecimal
 	b _080057C2
 _080057C0:
 	movs r0, #0
@@ -268,19 +268,19 @@ _080057C6:
 	strb r0, [r2]
 	adds r0, r5, #0
 	movs r1, #0x3e
-	bl TextBox_FindChar
+	bl Text_FindChar
 	adds r5, r0, #0
 	b _08005854
 _080057E2:
 	ldr r1, _08005814 @ =0x08251B50
 	adds r0, r4, #0
 	movs r2, #6
-	bl TextBox_StrNCmp
+	bl Text_StrNCmp
 	cmp r0, #0
 	bne _08005848
 	adds r0, r4, #0
 	movs r1, #0x3e
-	bl TextBox_FindChar
+	bl Text_FindChar
 	adds r5, r0, #0
 	adds r0, r6, #0
 	adds r0, #0x3f
@@ -326,7 +326,7 @@ _0800582A:
 _08005848:
 	adds r0, r4, #0
 	movs r1, #0x3e
-	bl TextBox_FindChar
+	bl Text_FindChar
 	adds r4, r0, #0
 	b _08005858
 _08005854:

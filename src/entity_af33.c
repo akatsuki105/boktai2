@@ -3,7 +3,7 @@
 #include "sprite_main.h"
 #include "text.h"
 
-typedef struct EntityAF33 {
+typedef struct {
   Entity e;               // 0x000, ENTITY_UNK_2
   u32 unk_18;             // 0x018, _Init が 0 を入れる
   u16 unk_1c;             // 0x01C, _Init が 0 を入れる
@@ -24,25 +24,82 @@ typedef struct EntityAF33 {
   u8* script;             // 0x0B8, '.s' の後の FUN_0823d340() の戻り値, NULL なら _Init が失敗する
   s32 windowID;           // 0x0BC, _Destroy が TextPanel_Destroy に渡す
   u32 unk_c0;             // 0x0C0, 読み手も書き手も見つかっていない
-  u32 unk_c4;             // 0x0C4, _Init が '.e' を入れる
+  u32 unk_c4;             // 0x0C4, '.e'
   u32 unk_c8;             // 0x0C8, _Init が 0 を入れる
   MainSpriteGfx gfx;      // 0x0CC, SPRITE_INVENTORY_ICONS
   MainSprite sprites[2];  // 0x0EC, _Destroy が MainSprite_Remove に渡す2枚
-  u16 unk_1ac;            // 0x1AC, _Init が '.M=11' を入れる
-  u16 unk_1ae[4];         // 0x1AE, _Init が '.p' の値を4つ入れる
+  u16 unk_1ac;            // 0x1AC, '.M=11'
+  u16 unk_1ae[4];         // 0x1AE, '.p'
   u8 unk_1b6[6];          // 0x1B6, 読み手も書き手も見つかっていない
 } EntityAF33;
 static_assert(sizeof(EntityAF33) == 444);
 
-extern EntityAF33* gEntityAF33;  // 0x030000F0
+IWRAM_DATA EntityAF33* gEntityAF33 = NULL;  // 0x030000F0
 
-void FUN_0804ff10(EntityAF33*);
-void FUN_0804ffa8(EntityAF33*);
-void FUN_08050070(EntityAF33*);
-void FUN_0805010c(EntityAF33*);
-void FUN_08050218(EntityAF33*);
+void FUN_08052290(unknown* p);
+void FUN_080522bc(unknown* p);
 
-INCASM("asm/entity_af33.inc");
+EntityAF33* FUN_0804f820(void) { return gEntityAF33; }
+
+NAKED void FUN_0804f82c(EntityAF33* p) { INCFUNC("asm/func/FUN_0804f82c.inc"); }
+
+NAKED void FUN_0804f8ec(EntityAF33* p) { INCFUNC("asm/func/FUN_0804f8ec.inc"); }
+
+NAKED void FUN_0804f950(void) { INCFUNC("asm/func/FUN_0804f950.inc"); }
+
+void FUN_0804f970(void) { FUN_0804f820(); }
+
+NAKED void FUN_0804f97c(EntityAF33* p) { INCFUNC("asm/func/FUN_0804f97c.inc"); }
+
+NAKED s32 FUN_0804fa04(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fa04.inc"); }
+
+NAKED s32 FUN_0804fa44(EntityAF33* p, u8 param_2, u32* param_3, s32 param_4) { INCFUNC("asm/func/FUN_0804fa44.inc"); }
+
+NAKED u32 FUN_0804fa94(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fa94.inc"); }
+
+NAKED void FUN_0804fb04(EntityAF33* p, s32 val) { INCFUNC("asm/func/FUN_0804fb04.inc"); }
+
+NAKED void FUN_0804fb24(void) { INCFUNC("asm/func/FUN_0804fb24.inc"); }
+
+NAKED void FUN_0804fb3c(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fb3c.inc"); }
+
+NAKED void FUN_0804fb6c(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_0804fb6c.inc"); }
+
+void FUN_0804fbd0(EntityAF33* p) {
+  if (p->unk_60 != NULL) {
+    FUN_08052290(p->unk_60);
+  }
+}
+
+void FUN_0804fbe0(EntityAF33* p) {
+  if (p->unk_60 != NULL) {
+    FUN_080522bc(p->unk_60);
+  }
+}
+
+NAKED void FUN_0804fbf0(void) { INCFUNC("asm/func/FUN_0804fbf0.inc"); }
+
+NAKED void FUN_0804fc08(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fc08.inc"); }
+
+NAKED void FUN_0804fd3c(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fd3c.inc"); }
+
+NAKED void FUN_0804fe24(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fe24.inc"); }
+
+NAKED void FUN_0804fe68(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fe68.inc"); }
+
+NAKED void FUN_0804feb0(EntityAF33* p) { INCFUNC("asm/func/FUN_0804feb0.inc"); }
+
+NAKED void FUN_0804ff10(EntityAF33* p) { INCFUNC("asm/func/FUN_0804ff10.inc"); }
+
+NAKED void FUN_0804ffa8(EntityAF33* p) { INCFUNC("asm/func/FUN_0804ffa8.inc"); }
+
+NAKED void FUN_08050070(EntityAF33* p) { INCFUNC("asm/func/FUN_08050070.inc"); }
+
+NAKED void FUN_0805010c(EntityAF33* p) { INCFUNC("asm/func/FUN_0805010c.inc"); }
+
+NAKED void FUN_080501c8(EntityAF33* p) { INCFUNC("asm/func/FUN_080501c8.inc"); }
+
+NAKED void FUN_08050218(EntityAF33* p) { INCFUNC("asm/func/FUN_08050218.inc"); }
 
 NAKED void FUN_080502a8(EntityAF33* p) { INCFUNC("asm/func/FUN_080502a8.inc"); }
 

@@ -65,9 +65,9 @@ static_assert(sizeof(MapItem) == 188);
 // マップに置かれたアイテムのリストを持ち、毎フレーム各アイテムの update を呼ぶ
 typedef struct MapItemManager {
   Entity e;                         // 0x00, ENTITY_UNK_9
-  ParticleGroup* particles;         // 0x18, GetParticleGroup(GROUP_0)
-  AuxAnimFile* anim;                // 0x1C, GetFile(DIR_ANIMATION, 0x9AF2)
-  SpriteID16 spriteID;              // 0x20, SPRITE_MIMIC (このスプライトはミミックと普通の宝箱を兼ねる), Video_GetAuxSprite に渡す
+  ParticleGroup* particles;         // 0x18, PTCL_GROUP_0
+  AuxAnimFile* anim;                // 0x1C, ANIM_9AF2
+  SpriteID16 spriteID;              // 0x20, SPRITE_MIMIC (このスプライトはミミックと普通の宝箱を兼ねる)
   u16 unk_22;                       // 0x22
   u8 ngDelay;                       // 0x24, MapItemManager_TryOpen が SE_NG を鳴らすと 0xF, Update が減らす
   u8 unk_25[3];                     // 0x25
@@ -425,7 +425,7 @@ NON_MATCH s32 MapItemManager_Init(MapItemManager* p, u32 param_2) {
   gMapItemManager = p;
   p->particles = GetParticleGroup(PTCL_GROUP_0);
   p->spriteID = SPRITE_MIMIC;
-  p->anim = GetFile(DIR_ANIMATION, 0x9AF2);
+  p->anim = GetFile(DIR_ANIMATION, ANIM_9AF2);
   p->items = NULL;
   for (i = 0; i < 4; i++) {
     Player* player = gPlayerPtr[i];

@@ -1,3 +1,5 @@
+#include "solar_generator.h"
+
 #include "eff_082473e0.h"
 #include "entity.h"
 #include "entity_cbb0.h"
@@ -7,54 +9,7 @@
 #include "sound.h"
 #include "sprite_aux.h"
 
-s32 Eff082473e0Emitter_Destroy(unknown* p);
-
-// 太陽ジェネレーター
-typedef struct Generator {
-  Entity e;                                   // 0x000, ENTITY_UNK_8
-  AuxSprite sprite;                           // 0x018, Generator_Init が AuxSprite_Add(&sprite, &gfx, 0) で登録し、_Destroy が外す
-  AuxSpriteGfx gfx;                           // 0x044, SPRITE_GENERATOR
-  Vec3 pos;                                   // 0x060, Generator_Create の第1引数を8バイト複写したもの,Hitbox_SetPos に渡す
-  HitboxData hitbox;                          // 0x068, Generator_InitHitbox が Hitbox_Init / _SetPowerAndAttributes / _SetPos / _SetHandler する
-  AuxAnimState anim;                          // 0x0B8, AuxAnim_SetAnim(&anim, animFile, 1 か 3, unk_cc, unk_cd)
-  AuxAnimFile* animFile;                      // 0x0C8, 0x3449
-  u8 unk_cc;                                  // 0x0CC, Generator_Init の第3引数,AuxAnim_SetAnim に渡す
-  u8 unk_cd;                                  // 0x0CD, Generator_Init の第4引数,AuxAnim_SetAnim に渡す
-  u8 unk_ce;                                  // 0x0CE, Generator_Init の第6引数,読み手が見つかっていない
-  u8 state;                                   // 0x0CF, Generator_SetState が書き、 sUpdateCallbacks[state] を updateCallback に入れる,3 で GENERATOR_ENABLED, 5 で GENERATOR_DISABLED を鳴らす
-  u16 stateTimer;                             // 0x0D0, Generator_SetState が状態遷移のたびに 0 に戻す
-  u16 unk_d2;                                 // 0x0D2, Init が 0、state が 4 のときは anim の先頭ハーフワードを入れる
-  u16 unk_d4;                                 // 0x0D4, Generator_Init の第7引数
-  u8 unk_d6[2];                               // 0x0D6
-  s16 unk_d8;                                 // 0x0D8, Div(unk_d4, 6)
-  u16 unk_da;                                 // 0x0DA, Init が 0,_Update が 0 まで減らす
-  u16 unk_dc;                                 // 0x0DC, Generator_Init の第9引数,読み手が見つかっていない
-  u8 unk_de[2];                               // 0x0DE
-  u16 unk_e0;                                 // 0x0E0, _Update が 0 まで減らす
-  u16 unk_e2;                                 // 0x0E2, 0 でない間 Generator_UpdateFlash が flashTimer を増やし、その後 0 に戻す
-  u16 flashTimer;                             // 0x0E4, 12 でパレット 0x1C7、1〜11 で 0x1C6、0 で plttID に戻る
-  u8 unk_e6[2];                               // 0x0E6
-  u16 unk_e8;                                 // 0x0E8, gEntityCBB0 の field_0xc10 が立ち、かつ state が 4 のときだけ減る
-  u8 unk_ea;                                  // 0x0EA, Init が 0,読み手が見つかっていない
-  u8 unk_eb;                                  // 0x0EB, 0 でない間 Generator_UpdateFlash がパレット 0x132 を強制して減らす
-  u8 unk_ec;                                  // 0x0EC, Init が 0,読み手が見つかっていない
-  u8 unk_ed;                                  // 0x0ED
-  u16 plttID;                                 // 0x0EE, Video_SetAuxSpritePltt(&gfx, plttID),Init が state に応じて 0x1C3 か 0x1C4 を入れる
-  u16 unk_f0;                                 // 0x0F0, 点灯時のパレットID
-  bool16 unk_f2;                              // 0x0F2, 0 でない間は稼働中
-  u16 unk_f4;                                 // 0x0F4, 次に音を鳴らす残り時間
-  u8 unk_f6[3];                               // 0x0F6
-  u8 unk_f9;                                  // 0x0F9, 0 まで減らすだけのカウンタ
-  u8 unk_fa[6];                               // 0x0FA
-  Eff082473e0Emitter unk_100;                 // 0x100, Init が Eff082473e0Emitter_Init(&unk_100, &sprite.pos, 0, 0, 0)、_Destroy が Eff082473e0Emitter_Destroy する
-  void (*updateCallback)(struct Generator*);  // 0x238, _Update が毎フレーム呼ぶ,Generator_SetState が state と一緒に書く
-} Generator;
-static_assert(sizeof(Generator) == 572);
-
-void* Eff082473e0Emitter_Reset(Eff082473e0Emitter* p);
-void* Eff082473e0Emitter_FadeParticle(Eff082473e0Emitter* p);
-
-static void (*const sUpdateCallbacks[8])(Generator*);
+static void (*const sGeneratorUpdates[8])(Generator*);
 
 NAKED void Generator_SetState(Generator* p, s32 state) { INCFUNC("asm/func/Generator_SetState.inc"); }
 
@@ -77,7 +32,7 @@ NON_MATCH void FUN_080b2888(Generator* p) {
 
 NAKED void Generator_PushPlayer(Generator* p) { INCFUNC("asm/func/Generator_PushPlayer.inc"); }
 
-// 攻撃属性を持つ判定を受けたら発電量を溜め、上限に届いたら state 3 へ進む
+// 攻撃属性を持つ判定を受けたらダメージを溜め、上限に届いたら state 3 へ進む
 NON_MATCH void FUN_080b29a4(HitboxData* a, HitboxData* b, Generator* p) {
 #ifdef NONMATCHING_C
   if (Hitbox_TestAttribute(a, 0x7F) && p->unk_e0 == 0 && p->state == 2) {
@@ -116,19 +71,19 @@ NAKED void FUN_080b2f0c(Generator* p) { INCFUNC("asm/func/FUN_080b2f0c.inc"); }
 
 NAKED void FUN_080b31b4(Generator* p) { INCFUNC("asm/func/FUN_080b31b4.inc"); }
 
-// 発電中はゲージ音を鳴らし、待機中は16フレームで state 4 へ進む
+// 起動中はゲージ音を鳴らし、待機中は16フレームで state 4 へ進む
 void FUN_080b32e0(Generator* p) {
   if (p->unk_f9 != 0) {
     p->unk_f9--;
   }
   if (p->unk_f2 == 0) {
     if (p->stateTimer == 0) {
-      Eff082473e0Emitter_Reset(&p->unk_100);
+      Eff082473e0Emitter_Reset(&p->eff_100);
     }
     p->stateTimer++;
     if (p->stateTimer > 15) {
       p->sprite.pos = p->pos;
-      p->plttID = 0x1C5;
+      p->plttID = 453;
       Generator_SetState(p, 4);
       p->hitbox.damage = 0;
       p->stateTimer = 0;
@@ -139,13 +94,13 @@ void FUN_080b32e0(Generator* p) {
     p->plttID = p->unk_f0;
     p->unk_f2--;
     if (p->unk_f2 < p->unk_f4) {
-      Eff082473e0Emitter_FadeParticle(&p->unk_100);
+      Eff082473e0Emitter_FadeParticle(&p->eff_100);
       p->unk_f4 -= 250;
     }
   }
 }
 
-static void (*const sUpdateCallbacks[8])(Generator*) = {
+static void (*const sGeneratorUpdates[8])(Generator*) = {
     FUN_080b2a14, FUN_080b2a18, FUN_080b2b68, FUN_080b2c70, FUN_080b2dec, FUN_080b2f0c, FUN_080b31b4, FUN_080b32e0,
 };  // 0x085AD0B8
 
@@ -174,15 +129,9 @@ void Generator_UpdateFlash(Generator* p) {
 }
 
 s32 Generator_Update(Generator* p) {
-  if (p->state != 0) {
-    Generator_PushPlayer(p);
-  }
-  if (p->unk_da != 0) {
-    p->unk_da--;
-  }
-  if (p->unk_e0 != 0) {
-    p->unk_e0--;
-  }
+  if (p->state != 0) Generator_PushPlayer(p);
+  if (p->unk_da != 0) p->unk_da--;
+  if (p->unk_e0 != 0) p->unk_e0--;
   p->updateCallback(p);
   Generator_UpdateFlash(p);
   if (p->unk_e8 != 0) {
@@ -201,7 +150,7 @@ s32 Generator_Update(Generator* p) {
 s32 Generator_Destroy(Generator* p) {
   AuxSprite_Remove(&p->sprite);
   Hitbox_Unregister(&p->hitbox);
-  Eff082473e0Emitter_Destroy(&p->unk_100);
+  Eff082473e0Emitter_Destroy(&p->eff_100);
   return 0;
 }
 

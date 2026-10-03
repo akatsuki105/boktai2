@@ -135,6 +135,7 @@ void Sensor_Disable(void) {
   gSensorRawLevel = -1;
 }
 
+// センサーが受け取った生の明るさの値を返す(無効な場合は -1 を返す)
 s32 Sensor_GetRawLevel(void) {
   if (!gSensorEnabled) return -1;
   return gSensorRawLevel;

@@ -203,7 +203,7 @@ _0823AC4C:
 	ldr r0, [r4]
 	cmp r0, #0
 	beq _0823AC5C
-	bl FUN_0823dd50
+	bl Time_UpdateSunTimers
 	movs r0, #0
 	str r0, [r4]
 _0823AC5C:

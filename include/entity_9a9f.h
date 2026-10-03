@@ -59,7 +59,7 @@ typedef struct Entity9A9F {
   u8 unk_173;                   // 0x173, FUN_081de090 が 0xFF を入れる
   u8 unk_174[40];               // 0x174
   u8 unk_19c[4];                // 0x19C, FUN_081de090 が ClearMemory で 0 にする
-  s8 unk_1a0;                   // 0x1A0, FUN_081de090 が FUN_0823e1b0() の戻り値を入れる
+  s8 unk_1a0;                   // 0x1A0, FUN_081de090 が Time_GetSpanOfTime() の戻り値を入れる
   u8 unk_1a1[3];                // 0x1A1
   Entity9A9FRecord records[4];  // 0x1A4, Entity08F4 が 0x48 刻みで走査する, 4個で 0x2C4 の手前まで埋まる
   u8 unk_2c4;                   // 0x2C4, FUN_081de090 が 0 にする

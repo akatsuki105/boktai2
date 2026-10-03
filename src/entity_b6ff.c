@@ -17,4 +17,24 @@ typedef struct {
 } EntityB6FF;
 static_assert(sizeof(EntityB6FF) == 2276);
 
-INCASM("asm/entity_b6ff.inc");
+NAKED void FUN_080ac5b4(u32 param_1) { INCFUNC("asm/func/FUN_080ac5b4.inc"); }
+
+NAKED void FUN_080ac5f4(void) { INCFUNC("asm/func/FUN_080ac5f4.inc"); }
+
+NAKED void FUN_080ac60c(u16 param_1, unknown* param_2, u16 param_3, u16 param_4) { INCFUNC("asm/func/FUN_080ac60c.inc"); }
+
+NAKED void FUN_080ac698(void) { INCFUNC("asm/func/FUN_080ac698.inc"); }
+
+NAKED void FUN_080ac738(unknown* param_1) { INCFUNC("asm/func/FUN_080ac738.inc"); }
+
+NAKED void FUN_080ac874(unknown* param_1, Vec3* param_2, u16 param_3) { INCFUNC("asm/func/FUN_080ac874.inc"); }
+
+NAKED s32 EntityB6FF_Update(EntityB6FF* p) { INCFUNC("asm/func/EntityB6FF_Update.inc"); }
+
+NAKED s32 EntityB6FF_Destroy(EntityB6FF* p) { INCFUNC("asm/func/EntityB6FF_Destroy.inc"); }
+
+NAKED void FUN_080aca60(unknown* param_1) { INCFUNC("asm/func/FUN_080aca60.inc"); }
+
+NAKED s32 EntityB6FF_Init(EntityB6FF* p) { INCFUNC("asm/func/EntityB6FF_Init.inc"); }
+
+NAKED EntityB6FF* EntityB6FF_Create(u16 param_1) { INCFUNC("asm/func/EntityB6FF_Create.inc"); }

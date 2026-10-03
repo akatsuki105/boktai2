@@ -117,7 +117,7 @@ _08049A1E:
 	cmp r0, #8
 	bne _08049A70
 	adds r0, r7, #0
-	bl FUN_0804960c
+	bl TextRenderer_GetCurrentText
 	cmp r0, #0
 	beq _08049A70
 	ldrb r0, [r0]
@@ -163,7 +163,7 @@ _08049A84:
 	adds r0, #1
 	str r0, [r4]
 	adds r0, r7, #0
-	bl FUN_0804960c
+	bl TextRenderer_GetCurrentText
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _08049AB6
@@ -178,7 +178,7 @@ _08049AB6:
 	cmp r0, #0
 	beq _08049AF0
 	adds r0, r7, #0
-	bl FUN_0804960c
+	bl TextRenderer_GetCurrentText
 	adds r4, r0, #0
 	ldrb r0, [r7, #7]
 	cmp r0, #0
@@ -222,7 +222,7 @@ _08049AF0:
 	ble _08049B44
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_08048a20
+	bl TextRenderer_DrawCharNarrow
 	ldr r0, [r4]
 	subs r0, #1
 	str r0, [r4]
@@ -280,7 +280,7 @@ _08049B86:
 	ble _08049BBE
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_08048a20
+	bl TextRenderer_DrawCharNarrow
 	movs r1, #0xc4
 	lsls r1, r1, #1
 	adds r0, r5, r1

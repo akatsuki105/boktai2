@@ -228,9 +228,6 @@ BOKC_BIN := $(BOKC:.bokc=.bin)
 $(BOKC_BIN): %.bin: %.bokc
 	$(BOKCC) compile $< --bin $@
 
-$(BUILD_DIR)/src/data/scripts.o: src/data/scripts.s $(BOKC_BIN) charmap.txt
-	$(PREPROC) $< charmap.txt | $(AS) $(ASFLAGS) -o $@ -
-
 # Assets --------------------------------------------
 
 include graphics_file_rules.mk

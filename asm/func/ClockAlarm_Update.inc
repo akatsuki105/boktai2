@@ -11,11 +11,11 @@
 	strh r5, [r4, #0x1e]
 	b _0801B4F0
 _0801B39C:
-	bl GetHour
+	bl Time_GetHour
 	strh r0, [r4, #0x18]
-	bl GetMinute
+	bl Time_GetMinute
 	strh r0, [r4, #0x1a]
-	bl GetSecond
+	bl Time_GetSecond
 	strh r0, [r4, #0x1c]
 	movs r1, #0x18
 	ldrsh r0, [r4, r1]

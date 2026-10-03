@@ -72,7 +72,7 @@
 	ldrsh r0, [r0, r1]
 	cmp r0, #0
 	bne _080B4550
-	bl GetSecond
+	bl Time_GetSecond
 	adds r1, r0, #0
 	ldr r0, [r4]
 	movs r2, #0xad

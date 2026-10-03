@@ -1,3 +1,4 @@
+#include "bg_pltt.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -12,10 +13,10 @@ typedef struct {
   u16 unk_18;            // 0x18, SunCountdown_Create の引数, 書き込むだけで読み手が見つかっていない
   u8 unk_1a;             // 0x1A, _Init が '.f' を入れる, 読み手が見つかっていない
   u8 bgNum;              // 0x1B, SetBGPrioDirect / Video_SetupBG / GetTilemapBuffer に渡す BG 番号, _Init が 0 を入れる
-  FileID tilemapFileID;  // 0x1C, _Init が 0x596F を入れて GetFile(DIR_TILE_MAP, ...) に渡す
-  FileID plttFileID;     // 0x1E, _Init が '.p' を入れて GetFile(DIR_BGPLTT, ...) に渡す
-  rgb555* pltt;          // 0x20, &gBgPlttBuffer[0xD0], CpuSet の転送先
-  void* plttSrc;         // 0x24, plttFileID のファイル + 0x1B4, CpuSet の転送元
+  FileID tilemapFileID;  // 0x1C, TILEMAP_596F
+  FileID plttFileID;     // 0x1E, '.p'
+  rgb555* pltt;          // 0x20, plttSrc の転送先, &gBgPlttBuffer[208]
+  rgb555* plttSrc;       // 0x24
   u16 unk_28;            // 0x28, _Redraw が描画の前に 0xF、後に 0 を入れる, 読み手が見つかっていない
   u8 unk_2a[2];          // 0x2A, 読み手も書き手も見つかっていない
 } SunCountdown;
@@ -45,7 +46,7 @@ void SunCountdown_Redraw(SunCountdown* p) {
   s32 month;
   s32 day;
 
-  ParseBCDDate(&year, &month, &day, (BCDDate)GetDate());
+  Time_ParseBCDDate(&year, &month, &day, (BCDDate)Time_GetDate());
   p->unk_28 = 15;
   SunCountdown_Draw(p);
   p->unk_28 = 0;
@@ -60,39 +61,39 @@ s32 SunCountdown_Destroy(SunCountdown* p) { gSunCountdown = NULL; }
 NON_MATCH s32 SunCountdown_Init(SunCountdown* p, u16 n) {
 #ifdef NONMATCHING_C
   Tilemaps* tilemap;
-  void* plttFile;
-  u16* dst;
+  BgPlttFile* plttFile;
+  BgMapEntry* dst;
   s32 x;
   s32 y;
 
   gSunCountdown = p;
   p->unk_18 = n;
   p->unk_1a = VM_GetNamedArgValue('f', 0);
-  p->tilemapFileID = 0x596F;
+  p->tilemapFileID = TILEMAP_596F;
   p->plttFileID = VM_GetNamedArgValue('p', 0);
-  p->pltt = &gBgPlttBuffer[0xD0];
+  p->pltt = &gBgPlttBuffer[208];
   p->bgNum = 0;
   tilemap = GetFile(DIR_TILE_MAP, p->tilemapFileID);
   if (tilemap == NULL) {
     return -1;
   }
-  plttFile = GetFile(DIR_BGPLTT, p->plttFileID);
+  plttFile = GetBgPlttFile(p->plttFileID);
   if (plttFile == NULL) {
     return -1;
   }
-  if (tilemap->magic[0] == 'M' && tilemap->magic[1] == 'P') {
-    SetBGPrioDirect(p->bgNum, 0);
+  if (tilemap->magic[0] == 'M' && tilemap->magic[1] == 'P') {  // "MP"
+    SetBGPrioDirect(p->bgNum, 0);                              // tilemap が圧縮されていない
   } else {
-    Video_SetupBG(p->bgNum, 0, tilemap, 0, 0, 0, 0, GetTilemapBuffer(0));
+    Video_SetupBG(p->bgNum, 0, tilemap, 0, 0, 0, 0, GetTilemapBuffer(0));  // tilemap が圧縮されている
   }
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   dst = SunCountdown_GetTilePtr(0, 0, 0);
   for (y = 0; y < 15; y++) {
-    for (x = 0; x < gBgStates[0].unk_18 * 2; x++) {
-      *dst++ = (13 << 12);
+    for (x = 0; x < gBgStates[0].width16 * 2; x++) {
+      *dst++ = (13 << 12);  // BGP13
     }
   }
-  p->plttSrc = (u8*)plttFile + 0x1B4;
+  p->plttSrc = &plttFile->body[208];
   CpuCopy32(p->plttSrc, p->pltt, 96);
   return 0;
 #else

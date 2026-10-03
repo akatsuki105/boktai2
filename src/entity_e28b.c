@@ -33,7 +33,7 @@ typedef struct {
   s32 spriteCount;             // 0x24, count * 3
   u32 slotCount;               // 0x28, _Init が 0 を書く, slots の使用件数
   EntityE28BSlot slots[16];    // 0x2C, FUN_08002a00 が末尾に積む, 上限 16 件 (slotCount > 15 を弾く)
-  AuxSpriteGfx gfx;            // 0x6C, '.m' の値、無ければ FUN_08230860("mask_test_00") の ID
+  AuxSpriteGfx gfx;            // 0x6C, '.m'、無ければ FUN_08230860("mask_test_00") の ID
   AuxSprite* sprites;          // 0x88, &entries[count] を指す
   u32* unk_8c;                 // 0x8C, sprites の後ろを指す
   EntityE28BEntry entries[1];  // 0x90, 実際は count 個 (可変長)

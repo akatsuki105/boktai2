@@ -54,7 +54,7 @@ NAKED void FUN_080d8c70(Entity080da848* p, u32 param_2, u32 param_3) { INCFUNC("
 
 NAKED void FUN_080d8cc0(Entity080da848* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5) { INCFUNC("asm/func/FUN_080d8cc0.inc"); }
 
-void FUN_080d8ddc(void) {}
+void FUN_080d8ddc(Entity080da848Elem* _) {}
 
 NAKED void FUN_080d8de0(Entity080da848* p, u32 param_2) { INCFUNC("asm/func/FUN_080d8de0.inc"); }
 
@@ -70,7 +70,11 @@ NAKED void FUN_080d9758(Entity080da848* p) { INCFUNC("asm/func/FUN_080d9758.inc"
 
 NAKED void FUN_080d9800(Entity080da848* p) { INCFUNC("asm/func/FUN_080d9800.inc"); }
 
-NAKED void FUN_080d98d4(Entity080da848* p) { INCFUNC("asm/func/FUN_080d98d4.inc"); }
+void (*const PTR_ARRAY_085ad2ec[6])(Entity080da848*) = {
+    FUN_080d94b4, FUN_080d9758, FUN_080d92ac, FUN_080d8e98, FUN_080d9800, FUN_080d9800,
+};  // 0x085AD2EC
+
+NAKED void FUN_080d98d4(Entity080da848Elem* p) { INCFUNC("asm/func/FUN_080d98d4.inc"); }
 
 NAKED s32 FUN_080d9974(Entity080da848* p) { INCFUNC("asm/func/FUN_080d9974.inc"); }
 
@@ -103,6 +107,12 @@ NAKED s32 FUN_080da4f8(Entity080da848* p, u32 param_2, u32 param_3, u32 param_4)
 s32 FUN_080da698(u8 param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8, u32 param_9) { return FUN_080da110(param_1, param_2, param_3, param_4, param_5, param_6, param_7, 3, param_8, param_9); }
 
 s32 FUN_080da6c4(u8 param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8, u32 param_9, u32 param_10) { return FUN_080da110(param_1, param_2, param_3, param_4, param_5, param_6, param_7, param_8, param_9, param_10); }
+
+void (*const PTR_ARRAY_085ad304[3])(Entity080da848Elem*) = {
+    FUN_080d8ddc,
+    FUN_080d98d4,
+    NULL,
+};  // 0x085AD304
 
 NAKED s32 Entity080da848_Update(Entity080da848* p) { INCFUNC("asm/func/Entity080da848_Update.inc"); }
 

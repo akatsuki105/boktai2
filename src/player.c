@@ -7,11 +7,10 @@
 #include "random.h"
 #include "sound.h"
 #include "sprite.h"
+#include "time.h"
 #include "vm.h"
 
 extern u16 u16_03002bb0;
-
-u32 FUN_0823e1b0(void);
 
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
 
@@ -166,14 +165,14 @@ NAKED u32 FUN_08060c98(unknown* r1, unknown* r2) { INCFUNC("asm/func/FUN_08060c9
 NAKED void FUN_08060cf8(Player* p, unknown* r1, unknown* r2) { INCFUNC("asm/func/FUN_08060cf8.inc"); }
 
 bool32 FUN_08060e1c(Player* p) {
-  u32 t;
+  u32 span;
 
   if (*(p->isSabata + gStat->unk_2c8) > 0) return TRUE;
   if (Player_TestFlag378(p, FLAG378_UNK_10)) return TRUE;
 
-  t = FUN_0823e1b0();
-  if (t - 4 <= 1) return TRUE;
-  if (t != 0) return FALSE;
+  span = Time_GetSpanOfTime();
+  if (span >= TIME_UNK4 && span <= TIME_UNK5) return TRUE;
+  if (span != TIME_NIGHT) return FALSE;
 
   return TRUE;
 }

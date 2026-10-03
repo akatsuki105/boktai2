@@ -1,5 +1,4 @@
 #include "eeprom.h"
-#include "game.h"
 #include "global.h"
 #include "malloc.h"
 #include "save.h"

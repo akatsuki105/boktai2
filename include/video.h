@@ -7,26 +7,31 @@
 
 // BG1枚分の状態 (gBgStates[4] @ 0x03003ED0), 要素の区切りの根拠: entity_cbb0, enemy_dex が &gBgStates[3] (0x03003F60) を起点に +0x10..+0x28 を触る
 typedef struct {
-  u8 unk_00[16];
-  u16 unk_10;  // 0x10, Video_SetBGLayer が 0x1000 を入れる
-  u16 unk_12;  // 0x12, 同上
-  u8 unk_14[4];
-  s16 unk_18;  // 0x18, ×2 したものが tilemap の 1 行のエントリ数, 根拠: FUN_0822bcf4. Video_SetBGLayer が TilemapLayer.width を入れる
-  u16 unk_1a;  // 0x1A, Video_SetBGLayer が TilemapLayer.height を入れる
-  u16 unk_1c;  // 0x1C, unk_18 と同じ値
-  u16 unk_1e;  // 0x1E, unk_1a と同じ値
-  u16 hofs;    // 0x20, BGnHOFS の基準値 (HBlank エフェクトで各ラインの値に足される), 根拠: FUN_0822eef4, StageBGRegs
-  u16 vofs;    // 0x22, BGnVOFS の基準値, 根拠: FUN_0822eef4, StageBGRegs
-  u8 unk_24[4];
-  MetatileIdx16* mtmap;  // 0x28, Video_SetBGLayer が TilemapLayer.offsetToTilemap を絶対アドレスにして入れる
-  u16* tilemap;          // 0x2C, タイルマップのバッファ, 根拠: FUN_0822bcf4 がタイル番号|反転<<10|パレット<<12 を書く
+  u8 unk_00[16];         // 0x00
+  u16 unk_10;            // 0x10, Video_SetBGLayer が 0x1000 を入れる
+  u16 unk_12;            // 0x12, 同上
+  u8 unk_14[4];          // 0x14
+  s16 width16;           // 0x18, TilemapLayer.width (= 16px単位)
+  u16 height16;          // 0x1A, TilemapLayer.height (= 16px単位)
+  u16 unk_1c;            // 0x1C, width16 と同じ値
+  u16 unk_1e;            // 0x1E, height16 と同じ値
+  u16 hofs;              // 0x20, BGnHOFS の基準値 (HBlank エフェクトで各ラインの値に足される)
+  u16 vofs;              // 0x22, BGnVOFS の基準値
+  u8 unk_24[4];          // 0x24
+  MetatileIdx16* mtmap;  // 0x28, TilemapLayer.mtmap
+  BgMapEntry* tilemap;   // 0x2C, GBAタイルマップのバッファ
 } BgState;
 static_assert(sizeof(BgState) == 48);
 
 extern BgState gBgStates[4];
 extern rgb555 gBgPlttBuffer[256];
-extern u16 gBgPlttBlendColor;
+extern rgb555 gBgPlttBlendColor;
+extern rgb555 gObjPlttBlendColor;
 extern u16 gStagedDISPCNT;
+
+extern s32 gBgBrightness;
+extern s32 gBgBrightness2;
+extern s32 gObjBrightness;
 
 extern u16* gHBlankEffectBuffer;
 extern vu16* gHBlankEffectReg;
@@ -54,12 +59,12 @@ void MainSprite_DrawListGameover(void);
 void SetBGPrioDirect(s32 bg, u32 prio);
 void Video_GenerateBGMap(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs);
 void Video_SetupBGLayout(s32 layout, u32 param_2, TilemapFile* tilemap, u32 param_4, u32 param_5, s32 count, s32* indices);
-void Video_SetupBG(s32 bg, u32 param_2, unknown* f, u32 unused, s16 param_5, s16 param_6, u32 prio, u16* tilemap);
+void Video_SetupBG(s32 bg, u32 param_2, unknown* f, u32 unused, s16 param_5, s16 param_6, u32 prio, BgMapEntry* tilemap);
 void Video_SetBGLayer(s32 bg, TilemapFile* tilemap, s32 layerIdx);
 void ClearBGTilemapBuffer(s32 bg);
 void vram_0822b778(void);
 
-u16* GetTilemapBuffer(s32 bg);
+BgMapEntry* GetTilemapBuffer(s32 bg);
 
 void FUN_0822f0d8(void);
 void FUN_0822f178(s32 idx, u32 evb, u32 eva);  // REG_BLDCNT / REG_BLDALPHA を設定する

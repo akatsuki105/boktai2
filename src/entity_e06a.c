@@ -10,10 +10,10 @@ typedef struct {
   Entity e;            // 0x00, ENTITY_UNK_8
   u16 id;              // 0x18, EntityE06A_Init の引数, ヒットボックスの所有者IDとして Hitbox_Init に渡る
   u8 unk_1a[2];        // 0x1A, padding?
-  AuxSprite sprite;    // 0x1C, 根拠: AuxSprite_Add / AuxSprite_Remove に渡される
+  AuxSprite sprite;    // 0x1C
   AuxSpriteGfx gfx;    // 0x48, SPRITE_NODATA_9DA7
-  HitboxData hitbox;   // 0x64, 根拠: EntityE06A_SetupHitbox が組み立て、EntityE06A_Update が毎フレーム更新する
-  HitboxData hitbox2;  // 0xB4, 組み立てるのは EntityE06A_SetupHitbox2 だが、その呼び出し元は未発見
+  HitboxData hitbox;   // 0x64
+  HitboxData hitbox2;  // 0xB4
 } EntityE06A;
 static_assert(sizeof(EntityE06A) == 260);
 

@@ -1,6 +1,6 @@
 	push {r4, r5, r6, lr}
 	adds r5, r0, #0
-	bl GetDate
+	bl Time_GetDate
 	asrs r6, r0, #0x10
 	movs r0, #0xd7
 	lsls r0, r0, #3
@@ -29,7 +29,7 @@
 	ands r6, r0
 	adds r2, r2, r6
 	str r2, [r3]
-	bl GetDate
+	bl Time_GetDate
 	movs r1, #0xff
 	lsls r1, r1, #8
 	ands r1, r0
@@ -44,7 +44,7 @@
 	ldr r2, _08214324 @ =0x000006BC
 	adds r1, r5, r2
 	strb r0, [r1]
-	bl GetDate
+	bl Time_GetDate
 	adds r6, r0, #0
 	movs r0, #0xff
 	ands r6, r0
@@ -57,11 +57,11 @@
 	ldr r2, _08214328 @ =0x000006BD
 	adds r1, r5, r2
 	strb r0, [r1]
-	bl GetHour
+	bl Time_GetHour
 	ldr r2, _0821432C @ =0x000006BE
 	adds r1, r5, r2
 	strb r0, [r1]
-	bl GetMinute
+	bl Time_GetMinute
 	ldr r2, _08214330 @ =0x000006BF
 	adds r1, r5, r2
 	strb r0, [r1]

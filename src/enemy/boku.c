@@ -12,6 +12,8 @@ typedef struct {
   void* p_63c;  // 0x63C
   u8 unk_640[108];
 } Boku;
+
+bool32 FUN_080f06b0(Enemy* p);
 static_assert(sizeof(Boku) == 1708);
 
 INCASM("asm/boku.inc");
@@ -55,12 +57,18 @@ NAKED bool32 FUN_08100228(Boku* p) { INCFUNC("asm/func/FUN_08100228.inc"); }
 
 NAKED bool32 FUN_081019e0(Boku* p) { INCFUNC("asm/func/FUN_081019e0.inc"); }
 
-NAKED bool32 FUN_08101bb4(Boku* p) { INCFUNC("asm/func/FUN_08101bb4.inc"); }
+bool32 FUN_08101bb4(Boku* p) {
+  FUN_080ffd28(p);
+  return TRUE;
+}
 
 NAKED bool32 FUN_08101bc0(Boku* p) { INCFUNC("asm/func/FUN_08101bc0.inc"); }
 
 // FUN_080edebc から呼ばれる
-NAKED s32 FUN_08101c1c(unknown* p) { INCFUNC("asm/func/FUN_08101c1c.inc"); }
+s32 FUN_08101c1c(unknown* p) {
+  FUN_080f06b0(p);
+  return 0;
+}
 
 NAKED s32 EnemyBoku_Destroy(Boku* p) { INCFUNC("asm/func/EnemyBoku_Destroy.inc"); }
 

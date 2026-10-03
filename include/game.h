@@ -9,7 +9,7 @@
 
 // gStat->unk_934
 #define SF934_UNK_0 (1 << 0)    // 0x1
-#define SF934_UNK_1 (1 << 1)    // 0x2
+#define SF934_OUTDOOR (1 << 1)  // 0x2, プレイヤーのいるマップが屋外のときにセット (屋内で天窓の下にいるのは含まれない)
 #define SF934_UNK_2 (1 << 2)    // 0x4
 #define SF934_UNK_3 (1 << 3)    // 0x8
 #define SF934_UNK_4 (1 << 4)    // 0x10
@@ -137,7 +137,7 @@ typedef struct {
 
   // これ以降はセーブデータには含まれない(太陽ゲージなどのtmpデータ?)
   u8 unk_928[12];  // 0x928
-  u16 unk_934;     // 0x934, UpdateOverheat
+  u16 unk_934;     // 0x934
   u8 unk_936[2];   // 0x936
   s16 unk_938;     // 0x938, FUN_080488fc がそのまま返す
   s16 unk_93a;     // 0x93A
@@ -171,5 +171,7 @@ extern GameInfo* gStat;          // 0x030046A0, ハード起動時は 0x0203C400
 
 GameInfo* FUN_08232254(void);
 World* FUN_08232260(void);
+
+s32 GetWeaponSkillLevel(s32 kind);
 
 #endif  // GUARD_ZOKTAI_GAME_H

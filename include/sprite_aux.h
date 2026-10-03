@@ -1,8 +1,8 @@
 #ifndef __INCLUDE_SPRITE_ACTOR_H__
 #define __INCLUDE_SPRITE_ACTOR_H__
 
-#include "animation.h"
 #include "gba/gba.h"
+#include "sprite_animation.h"
 #include "sprite_common.h"
 #include "types.h"
 

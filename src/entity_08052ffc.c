@@ -1,7 +1,7 @@
 #include "entity.h"
 #include "global.h"
 
-// Entity08052ffc_Init で Video_GetAuxSprite(gfx, SPRITE_OJAMA_BAT); をしているので オジャマバット用のエンティティ (つまり通信対戦系のEntity)
+// SPRITE_OJAMA_BAT を使うのでオジャマバット用のエンティティ (つまりクロスオーバーのEntity)
 typedef struct {
   Entity e;  // ENTITY_UNK_11
   u8 unk_18[308 - 0x18];

@@ -22,8 +22,8 @@ typedef struct FreezeEffect {
   Vec3 pos;                                      // 0x18, 根拠: FreezeEffect_Init
   HitboxData hitbox;                             // 0x20, 根拠: FreezeEffect_InitHitbox
   Particle ptcl;                                 // 0x70, 中心の粒子, 根拠: FreezeEffect_InitCenterParticle
-  ParticleGroup* ptclGroup;                      // 0x98, GetParticleGroup(GROUP_0), 根拠: FreezeEffect_InitCenterParticle
-  ParticleGroup* subPtclGroup;                   // 0x9C, GetParticleGroup(GROUP_2), 根拠: FreezeEffect_InitSubParticles
+  ParticleGroup* ptclGroup;                      // 0x98, PTCL_GROUP_0
+  ParticleGroup* subPtclGroup;                   // 0x9C, PTCL_GROUP_2
   FreezeSubParticle subPtcls[8];                 // 0xA0, 根拠: FreezeEffect_InitSubParticles
   u8 spawnIdx;                                   // 0x200, 次に出す subPtcls の添字, 8 で折り返す, 根拠: FreezeEffect_SpawnSubParticle
   u8 spawnTimer;                                 // 0x201, subPtcls を出す間隔のカウンタ, 根拠: FreezeEffect_SpawnSubParticle

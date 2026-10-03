@@ -611,7 +611,7 @@ FUN_080810a4: @ 0x080810A4
 	ands r0, r1
 	cmp r0, #0
 	bne _080810E4
-	bl FUN_0823e1b0
+	bl Time_GetSpanOfTime
 	adds r1, r0, #0
 	subs r0, r1, #4
 	cmp r0, #1

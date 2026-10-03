@@ -127,9 +127,9 @@ void FUN_081dc880(LinkBattleResult* p) {
 }
 
 // BG のタイルマップから (x, y) のエントリのアドレスを得る
-u16* FUN_081dc8a0(s32 bg, s32 x, s32 y) {
+BgMapEntry* FUN_081dc8a0(s32 bg, s32 x, s32 y) {
   BgState* state = &gBgStates[bg];
-  u16* tilemap = state->tilemap;
+  BgMapEntry* tilemap = state->tilemap;
 
   return tilemap + (x & 31) + (y & 31) * 32;
 }

@@ -358,7 +358,7 @@ _08214CC8:
 	ldr r1, _08214CF0 @ =0x000004E4
 	add r1, sl
 	ldrb r1, [r1]
-	bl GetDaysInMonth
+	bl Time_GetDaysInMonth
 	adds r5, r0, #0
 	cmp r6, #1
 	bne _08214CF8
@@ -534,7 +534,7 @@ _08214DDC:
 	ldr r0, [r4, #0x18]
 	ldr r1, [r4, #0x1c]
 	ldr r2, [r4, #0x20]
-	bl FUN_082401e8
+	bl Time_SetLocation
 	strb r5, [r4, #9]
 	movs r0, #0x1e
 	mov r1, r8
@@ -714,7 +714,7 @@ _08214FA2:
 	add r0, sl
 	ldrb r1, [r0]
 	adds r0, r2, #0
-	bl GetDaysInMonth
+	bl Time_GetDaysInMonth
 	adds r5, r0, #0
 	ldr r1, _082150DC @ =0x000004E5
 	add r1, sl

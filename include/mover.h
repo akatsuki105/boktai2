@@ -64,6 +64,8 @@ void Mover_Link(Mover* p);
 bool32 Mover_Unlink(Mover* p);
 Mover* Mover_FindByID(u16 id);
 
+void MoverList_ClearPtr(void);
+
 // Mover_FindByID を呼ぶだけのラッパ, 他モジュールが使っているのはこちら (11箇所)
 Mover* Mover_FindByID_Proxy(u16 id);
 

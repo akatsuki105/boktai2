@@ -167,7 +167,7 @@ Done so far:
 | `FUN_080f6e64` | `FUN_080f79e8`, `FUN_080f83ec`, `FUN_080f83ee` |
 | `FUN_080f48ac` | `FUN_080f5104`, `FUN_080f51e0` |
 
-Still open, found by the scan above: `FUN_080eafb4` and `FUN_0823fb90`.
+Still open, found by the scan above: `FUN_080eafb4` and `Time_UpdateSunAndMoon`.
 
 ## Remaining candidates
 

@@ -3,7 +3,6 @@
 #include "hitbox.h"
 #include "mover.h"
 #include "sprite.h"
-#include "struct.h"
 #include "vm.h"
 
 // EntityC9BC が count 個まとめて管理する要素
@@ -65,8 +64,6 @@ void (*const PTR_ARRAY_085aa774[7])(EntityC9BC*, EntityC9BCElem*, u32) = {
   FUN_0800d3f4,
 };  // 0x085aa774
 // clang-format on
-
-NAKED s32 HazardManager_SpawnScripted(void) { INCFUNC("asm/func/HazardManager_SpawnScripted.inc"); }
 
 EntityC9BC* FUN_0800cb70(void) { return gEntityC9BC; }
 

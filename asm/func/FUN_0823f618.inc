@@ -9,17 +9,17 @@
 	adds r4, r2, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0823f210
+	bl Time_GetSunLongitude
 	str r0, [sp]
 	str r1, [sp, #4]
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0823f3d4
+	bl Time_GetSunLatitude
 	adds r7, r1, #0
 	adds r6, r0, #0
 	adds r1, r5, #0
 	adds r0, r4, #0
-	bl FUN_0823e948
+	bl Time_GetEclipticObliquity
 	str r0, [sp, #8]
 	str r1, [sp, #0xc]
 	ldr r5, _0823F8FC @ =0x1A63C200

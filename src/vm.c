@@ -25,6 +25,8 @@ IWRAM_DATA SubroutineTable* gCtrlHandlers = NULL;  // 0x03000768
 
 IWRAM_DATA u8 u8_0300076c[4] = {};  // padding?
 
+#define READ_U32LE(u8ptr) (((u8ptr)[3] << 24) | ((u8ptr)[2] << 16) | ((u8ptr)[1] << 8) | (u8ptr)[0])
+
 // https://boktaihacking.net/wiki/Bytecode#Container_lengths
 u8* VM_ReadContainerLength(u8* pc, u32* length) {
   s32 nibble = pc[0] & 0xF;
@@ -181,17 +183,25 @@ NON_MATCH u8* VM_DecodeValue(u8* pc, s32* type, void* val) {
 
 void VM_ResetScriptStack(void) { gVM.scriptStackTop = &gVM.scriptStack[0]; }
 
-u32* VM_PushScriptFrame(ScriptArgs* args, s32 idx) {
+/**
+ * @brief スクリプトのスタックフレームを作る
+ * @param args スクリプトの引数
+ * @param localVarCount このスクリプトが使うローカル変数の数
+ * @return u32* 呼び出し元のスタックフレームのベースアドレス(スクリプト終了時に積んだ分を戻すため)
+ */
+u32* VM_PushScriptFrame(ScriptArgs* args, s32 localVarCount) {
   u32* base;
-  u32* p;
+  u32* sp;
 
   if (args == NULL) {
     return NULL;
   }
+
   base = gVM.scriptStackTop;
-  p = base + idx;
-  *p = (u32)args;
-  gVM.scriptStackTop = p + 1;
+  sp = base + localVarCount;  // ローカル変数 (v1, v2, ...)
+  *sp = (u32)args;
+
+  gVM.scriptStackTop = sp + 1;
   return base;
 }
 
@@ -211,11 +221,20 @@ u32 VM_ParseParameter(u32 idx) {
   return args->argv[idx - 1];
 }
 
-// scriptStackTop から手前に varidx + 1 語目にある変数を読む, スクリプトの v1 が varidx 1 に当たる
-u32 VM_GetVariable(u32 varidx) { return *(gVM.scriptStackTop - (varidx + 1)); }
+// スクリプトのローカル変数を取得する (.bokc では v1, v2, ... に対応)
+u32 VM_GetVariable(u32 scriptLocalVarIdx) {
+  // スタックフレーム(スクリプトの引数が3個 で ローカル変数2個 の場合)
+  // アドレスが大きくなる方に伸びることに注意
+  //               base[3]  <- 現在の scriptStackTop
+  //  ScriptArgs*  base[2]  -> {argc: 3, argv: [p0, p1, p2]}
+  //  v1           base[1]  v1: ローカル変数1, VM_GetVariable(1) はこの値を返す
+  //  v2           base[0]  v2: ローカル変数2, VM_GetVariable(2) はこの値を返す
+  return *(gVM.scriptStackTop - (1 + scriptLocalVarIdx));
+}
 
-// scriptStackTop から手前に varidx + 1 語目にある変数へ書き込む
-void VM_StoreVariable(u32 varidx, u32 val) { *(gVM.scriptStackTop - (varidx + 1)) = val; }
+// スクリプトのローカル変数を更新する (.bokc では v1, v2, ... に対応)
+// スタックのメモリレイアウトは VM_GetVariable を参照
+void VM_StoreVariable(u32 scriptLocalVarIdx, u32 val) { *(gVM.scriptStackTop - (1 + scriptLocalVarIdx)) = val; }
 
 void VM_ResetSubroutineStack(void) { gVM.subroutineStackTop = gVM.subroutineStack; }
 
@@ -451,20 +470,20 @@ void* VM_Parse_ScriptDirectory_ScriptEntries(s32* offsets, s32* length) {
 
 /**
  * @param scriptID スクリプトID, gScriptTable.entries のインデックスに変換する際に -1 することに注意
- * @param unk ScriptDirectory.script_entries のエントリの bit24..31 をここに書き込む (用途不明)
+ * @param localVarCount スクリプトが必要とするローカル変数の数 (gScriptTable.entries に格納されている)
  */
-u8* VM_LookupByID(u32 scriptID, u32* unk) {
+u8* VM_LookupByID(u32 scriptID, u32* localVarCount) {
   u32 idx = (scriptID & 0x7FFFFFFF) - 1;
   u8* ptr = (u8*)&gScriptTable.entries[idx];
-  *unk = ptr[3];
-  return &gScriptTable.bytecode[(*(s32*)ptr) & 0x00FFFFFF];
+  *localVarCount = ptr[3];
+  return &gScriptTable.bytecode[(*(u32*)ptr) & 0x00FFFFFF];
 }
 
 s32 VM_ExecByID(u32 scriptID, ScriptArgs* args) {
-  u32 unk, length;
-  u8* pc = VM_LookupByID(scriptID, &unk);
+  u32 localVarCount, length;
+  u8* pc = VM_LookupByID(scriptID, &localVarCount);
   pc = VM_ReadContainerLength(pc, &length);
-  return VM_Exec(pc, args, unk);
+  return VM_Exec(pc, args, localVarCount);
 }
 
 // 呼び出し先スクリプトIDと引数列を読み取り、引数記述子を組み立ててそのスクリプトを実行する
@@ -493,13 +512,15 @@ s32 VM_CallScript(u8* pc) {
 
 NAKED void* UNUSED FUN_0823193c(void* p, u32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0823193c.inc"); }
 
+// stringID で指定した文字列を返す
 char* Textbox_LookupString(s32 stringID) {
-  void** base = (void**)&gStringTable;
+  StringTable* tbl = &gStringTable;
+
+  // header = &gStringHeader[stringID]
   s32 byteOffset = stringID * 4;
-  u32 stringIndex = (u32)base[1];
-  u8* p = (u8*)(byteOffset + stringIndex);
-  u32 offset = ((p[3] << 24) | (p[2] << 16) | (p[1] << 8) | p[0]) & 0x7FFFFFFF;
-  return (char*)base[2] + offset;
+  u8* header = (u8*)(byteOffset + (u32)tbl->header);
+
+  return &tbl->body[(READ_U32LE(header) & 0x7FFFFFFF)];
 }
 
 /**
@@ -527,11 +548,11 @@ NON_MATCH static s32 VM_MountScriptDirectory(ScriptDirectory* d) {
 
   q = offsets + 4;
   val = (q[3] << 24) | (q[2] << 16) | (q[1] << 8) | q[0];
-  gStringTable.stringIndex = (u32*)(offsets + val);
+  gStringTable.header = (u32*)(offsets + val);
 
   q += 4;
   val = (q[3] << 24) | (q[2] << 16) | (q[1] << 8) | offsets[8];
-  gStringTable.stringData = offsets + val;
+  gStringTable.body = offsets + val;
 
   q += 4;
   val = (q[3] << 24) | (q[2] << 16) | (q[1] << 8) | offsets[12];
@@ -542,7 +563,7 @@ NON_MATCH static s32 VM_MountScriptDirectory(ScriptDirectory* d) {
   t->bytecode = special + 4;
 
   val = (special[3] << 24) | (special[2] << 16) | (special[1] << 8) | special[0];
-  t->special_script_data = val + special + 8;
+  t->specialScriptData = val + special + 8;
 
   return 0;
 #else
@@ -565,13 +586,13 @@ void VM_RestoreScriptTable(u8* src) {
 }
 
 // ブロック内の文(式/control/呼び出し)を順に実行する, controlがreturnを表す場合(戻り値1)そこで打ち切る
-bool32 VM_ExecBlock(u8* pc, ScriptArgs* args, s32 idx) {
+bool32 VM_ExecBlock(u8* pc, ScriptArgs* args, s32 localVarCount) {
   u32* frame;
   u32 length;
   s32 nibble;
   bool32 result;
 
-  frame = VM_PushScriptFrame(args, idx);
+  frame = VM_PushScriptFrame(args, localVarCount);
   while (pc != NULL) {
     nibble = *pc & 0xF0;
     switch (nibble) {
@@ -621,14 +642,14 @@ s32 VM_ExecByPointer(u8* pc, ScriptArgs* args) {
 
 /**
  * @param pc 実行するブロックの先頭アドレス
- * @param args ブロック内から変数varIdxとして読める値, NULLなら引数無しを表す sEmptyArgs がデフォルト値として束縛される
- * @param varIdx valを束縛する変数スロット番号(VM_GetVariableのvaridxに対応)
+ * @param args スクリプトに渡す引数, NULLなら引数無しを表す sEmptyArgs がデフォルト値として使用される
+ * @param localVarCount スクリプトが必要とするローカル変数の数
  */
-s32 VM_Exec(u8* pc, ScriptArgs* args, s32 varIdx) {
+s32 VM_Exec(u8* pc, ScriptArgs* args, s32 localVarCount) {
   if (args == NULL) {
     args = (ScriptArgs*)&sEmptyArgs;
   }
-  if (VM_ExecBlock(pc, args, varIdx) == 1) {
+  if (VM_ExecBlock(pc, args, localVarCount) == 1) {
     return (s32)gVM.result;
   }
   gVM.result = NULL;
@@ -637,7 +658,7 @@ s32 VM_Exec(u8* pc, ScriptArgs* args, s32 varIdx) {
 
 void VM_ExecSpecial(void) {
   u32 length;
-  u8* pc = VM_ReadContainerLength(gScriptTable.special_script_data, &length);
+  u8* pc = VM_ReadContainerLength(gScriptTable.specialScriptData, &length);
   VM_ExecByPointer(pc, (ScriptArgs*)&sEmptyArgs);
 }
 
@@ -706,7 +727,7 @@ void VM_LoadPointer(u8* src, s32 cmdAndArgs, s32 offset, u32* out) {
   switch ((cmdAndArgs >> 0x18) & 0xF) {
     case OP_S32: {
       src += offset * 4;
-      *out = (src[3] << 24) | (src[2] << 16) | (src[1] << 8) | src[0];
+      *out = READ_U32LE(src);
       break;
     }
     case OP_U24: {
@@ -809,7 +830,7 @@ u8* FUN_0823201c(u8* pc, u8* dst) {
 // pc上の4バイトのPointer/Indexed Pointer記述子を読み、対象領域(gStat/gScratch/gWorld)内のアドレスを解決してvalを書き込む
 void FUN_0823206c(u8* pc, s32 offset, u32 val) {
   u8* dst;
-  u32 cmd = (pc[0] << 24) | (pc[1] << 16) | (pc[2] << 8) | pc[3];
+  u32 cmd = (pc[0] << 24) | (pc[1] << 16) | (pc[2] << 8) | pc[3];  // BE
 
   if ((cmd & 0xF00000) == 0x800000) {
     dst = (u8*)gStat;

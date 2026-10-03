@@ -48,7 +48,7 @@ static_assert(sizeof(ElevatorUnkData) == 396);
 
 typedef struct Elevator {
   Entity e;                      // 0x0000, ENTITY_UNK_5
-  AuxAnimFile* animFile;         // 0x0018, GetFile(DIR_ANIMATION, 0x13F9)
+  AuxAnimFile* animFile;         // 0x0018, ANIM_13F9
   ElevatorUnkData unk_1c[12];    // 0x001C
   u32 usedMask;                  // 0x12AC, スロット i を確保すると bit i が立つ
   u16 ridingID;                  // 0x12B0, 搭乗中のエレベータの id, 降りると 0
@@ -237,7 +237,7 @@ NAKED s32 ElevatorController_Update(Elevator* p) { INCFUNC("asm/func/ElevatorCon
 NAKED s32 ElevatorController_Destroy(Elevator* p) { INCFUNC("asm/func/ElevatorController_Destroy.inc"); }
 
 s32 ElevatorController_Init(Elevator* p) {
-  p->animFile = GetFile(DIR_ANIMATION, 0x13F9);
+  p->animFile = GetFile(DIR_ANIMATION, ANIM_13F9);
   gElevator = p;
   p->usedMask = 0;
   return 0;

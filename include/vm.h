@@ -107,8 +107,12 @@ s32 FUN_08230f94(u32 id, ScriptRecord** out);
 
 // --------------------------------------------
 
+// bit0..23: ScriptTable.bytecode からのオフセット
+// bit24..31: スクリプトが必要とするローカル変数の数 (スタックフレームの構築に必要)
+typedef u32 ScriptOffset;
+
 typedef struct {
-  u32 script_data;   // 0x00, &ScriptDirectory.special_script_offset = &ScriptDirectory.offsets + ScriptDirectory.offsets.script_data
+  u32 script_data;   // 0x00, &ScriptDirectory.bytecodeSize = &ScriptDirectory.offsets + ScriptDirectory.offsets.script_data
   u32 string_index;  // 0x04, ScriptDirectory.string_index = &ScriptDirectory.offsets + ScriptDirectory.offsets.string_index
   u32 string_data;   // 0x08, ScriptDirectory.string_data = &ScriptDirectory.offsets + ScriptDirectory.offsets.string_data
   u32 unknown;       // 0x0C, ScriptDirectory.unknown = &ScriptDirectory.offsets + ScriptDirectory.offsets.unknown
@@ -116,39 +120,39 @@ typedef struct {
 
 // 0x08CBF248
 typedef struct {
-  u32 build_data;                  // 0x00000, seconds since unix epoch
-  s32 script_entries[11539 + 1];   // 0x00004, bytecode[script_entries[idx]], 各エントリの上位8bit は用途不明, VM_ExecByID で渡すスクリプトID から -1 することに注意
+  u32 buildDate;                           // 0x00000, seconds since unix epoch
+  ScriptOffset script_entries[11539 + 1];  // 0x00004, VM_ExecByID で渡すスクリプトID から -1 した値が idx
+
   ScriptDirectoryOffsets offsets;  // 0x0B454
-  u32 string_index[7141];          // 0x0B464
+  u32 string_index[7141];          // 0x0B464, bit31 が 1 なら 文字列, 0 ならバイナリデータ (ゲーム内ではこのbitは見ない)
   u8 string_data[269792];          // 0x123F8
   u8 unknown[4];                   // 0x541D8
-  u32 special_script_offset;       // 0x541DC, or bytecode length?
-  u8 bytecode[617012];             // 0x541E0
-  u32 special_script_size;         // 0xEAC14
-  u8 special_script_data[6];       // 0xEAC18
+
+  u32 bytecodeSize;     // 0x541DC
+  u8 bytecode[617012];  // 0x541E0, bytecode[bytecodeSize]
+
+  u32 specialScriptSize;    // 0xEAC14
+  u8 specialScriptData[6];  // 0xEAC18
+
 } ScriptDirectory;
 static_assert(sizeof(ScriptDirectory) == 961568);
 
 // RAM に ScriptDirectory を読み込む際に相対オフセットを絶対アドレスに変換したもの
 // レイアウトがちょっと違うかも(根拠: VM_RestoreScriptTable)
 typedef struct {
-  u32* entries;             // 0x00, = ScriptDirectory.script_entries
-  s32 scriptCount;          // 0x04, = 11539, length of ScriptDirectory.script_entries
-  u8* bytecode;             // 0x08, 0x08D13428, ScriptDirectory.bytecode, ここにアクセスする際に 0x03000748 からのオフセットでアクセスしている
-  u8* special_script_data;  // 0x0C, 0x08DA9E60, ScriptDirectory.special_script_data
+  ScriptOffset* entries;  // 0x00, = ScriptDirectory.script_entries
+  s32 scriptCount;        // 0x04, = 11539, length of ScriptDirectory.script_entries
+  u8* bytecode;           // 0x08, 0x08D13428, ScriptDirectory.bytecode, ここにアクセスする際に 0x03000748 からのオフセットでアクセスしている
+  u8* specialScriptData;  // 0x0C, 0x08DA9E60, ScriptDirectory.specialScriptData
 } ScriptTable;
-
-extern ScriptTable gScriptTable;  // 0x03000748
 
 // ScriptTable と StringTable として別々の構造体の可能性が高い
 typedef struct {
-  ScriptDirectoryOffsets* offsets;  // 0x10, = &ScriptDirectory.offsets
-  u32* stringIndex;                 // 0x14, 0x08CCA6AC, ScriptDirectory.string_index
-  u8* stringData;                   // 0x18, 0x08CD1640, ScriptDirectory.string_data
-  u8* unknown;                      // 0x1C, 0x08D13420, ScriptDirectory.unknown
-} StringTable;                      // 0x10
-
-extern StringTable gStringTable;  // 0x03000758
+  ScriptDirectoryOffsets* offsets;  // 0x0, = &ScriptDirectory.offsets
+  u32* header;                      // 0x4, gStringHeader
+  u8* body;                         // 0x8, String_0000
+  u8* unknown;                      // 0xC, unk08D13420
+} StringTable;
 
 // --------------------------------------------
 

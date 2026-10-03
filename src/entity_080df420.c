@@ -16,10 +16,9 @@ typedef struct {
 } Entity080df420Elem;
 static_assert(sizeof(Entity080df420Elem) == 252);
 
-// SPRITE_EFF_F422 を読み込んでいる
 typedef struct Entity080df420 {
   Entity e;                      // 0x0000, ENTITY_UNK_10
-  AuxSpriteGfx gfx;              // 0x0018, Video_GetAuxSprite(&gfx, 0xF422)
+  AuxSpriteGfx gfx;              // 0x0018, SPRITE_EFF_F422
   u8 unk_34[4];                  // 0x0034, まだ未解析
   u32 usedMask;                  // 0x0038, elems のどのスロットが使用中か, FUN_080de174 が立てる
   s16 frame;                     // 0x003C, _Update が毎フレーム 1 足す

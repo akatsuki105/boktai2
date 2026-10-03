@@ -19,7 +19,7 @@ typedef struct EntityF41A {
   MoverTile tile;                      // 0x0A8, data.tile がここを指す
   HitboxData hitbox;                   // 0x0B8
   AuxAnimState anim;                   // 0x108
-  AuxAnimFile* animFile;               // 0x118, GetFile(DIR_ANIMATION, 0x1DF8)
+  AuxAnimFile* animFile;               // 0x118, ANIM_1DF8
   Entity5941Node detectNode;           // 0x11C, Entity5941_Register / FUN_0807f598
   u16 targetAngle;                     // 0x12C, 乱数で決める向き, data.unk_5 がここへ4ずつ近づく
   u16 turnTimer;                       // 0x12E, 0 になると targetAngle を引き直す (0x78..0xB7 フレーム)
@@ -211,7 +211,7 @@ void EntityF41A_InitSprite(EntityF41A* p) {
   Mover_SetAuxSprite(&p->data, &p->sprite);
   Video_SetAuxSpritePltt(&p->gfx, 307);
   p->sprite.pos = p->data.pos;
-  p->animFile = GetFile(DIR_ANIMATION, 0x1DF8);
+  p->animFile = GetFile(DIR_ANIMATION, ANIM_1DF8);
   p->animIdx = 7;
   EntityF41A_UpdateAnim(p);
 }

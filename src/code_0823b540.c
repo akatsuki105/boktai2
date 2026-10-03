@@ -13,6 +13,8 @@ CollisionMapFile* OpenCollisionMapFile(void* file) {
   return (CollisionMapFile*)gDecompressedCollisionMapFile;
 }
 
+// id is HP_XXXX in "include/constants/collision_map.h"
 NAKED s32 Map_LoadCollisionMapFile(FileID id) { INCFUNC("asm/func/Map_LoadCollisionMapFile.inc"); }
 
+// 0x30AD
 NAKED void Map_LoadMapScripted(void) { INCFUNC("asm/func/Map_LoadMapScripted.inc"); }

@@ -10,8 +10,8 @@ typedef struct {
   u16 dampFrom;      // 0x04, timer がこの値以上になったら vel を減衰させる, Spawn の第5引数
   u16 damping;       // 0x06, vel = vel * damping >> 8 (0 方向に丸める), Spawn の第6引数
   Vec3 vel;          // 0x08, Spawn が第4引数を 2 ワードでコピーする, _Update が sprite.pos に足す
-  AuxSpriteGfx gfx;  // 0x10, _Init が Video_GetAuxSprite(&gfx, EFF_EXPLOSION) で読み込む
-  AuxSprite sprite;  // 0x2C, _Init が AuxSprite_Setup(&sprite, &gfx, 0)
+  AuxSpriteGfx gfx;  // 0x10, SPRITE_EXPLOSION
+  AuxSprite sprite;  // 0x2C
 } Explosion;
 static_assert(sizeof(Explosion) == 88);
 

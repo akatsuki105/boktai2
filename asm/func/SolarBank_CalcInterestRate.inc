@@ -69,7 +69,7 @@ _080B3982:
 	adds r0, r0, r6
 	strh r3, [r0]
 _080B398C:
-	bl GetSecond
+	bl Time_GetSecond
 	adds r1, r0, #0
 	ldr r4, _080B39C4 @ =0x030046A0
 	ldr r0, [r4]

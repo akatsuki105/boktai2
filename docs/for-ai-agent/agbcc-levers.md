@@ -131,6 +131,20 @@ plausible.
   counter; a hand-written `for (i = N - 1; i >= 0; i--, q++)` keeps the offset
   (`ldr r0, [r1, #0x8]`) and does not match (`SolarBank_HideAllSprites`).
 
+### A repeated `||` comparison is CSE'd; an inlined predicate is not
+
+`Time_GetSpanOfTime` compares `(hour, minute)` lexicographically against two boundary
+times, three times over. Written out as `a.hour < b.hour || (a.hour == b.hour &&
+a.minute < b.minute)` at each site — or through a macro, which is the same tree —
+agbcc shares the compares and the function comes out 81 instructions against the
+target's 107. The same comparison as a `static inline` returning `bool32` is
+expanded separately per call, each copy materializing its own 0/1, and reaches
+105. The remaining 2 are the `.minute` loads: by-value parameters are evaluated
+at the call, while the target loads a minute only on the path that needs it.
+Pointer parameters make it worse (119) because each `&gClock.field` becomes its
+own pool constant. Left NON_MATCH with the plain expression, because an inline
+that does not close the gap does not belong in `src/`.
+
 ### Caching an operand in a local pins both the order and the association
 
 Two symptoms turn out to have one cure. `bool32 k = FALSE; if (p->a != 0 && p->b == N) { k = TRUE; }`
@@ -195,7 +209,36 @@ reading the element twice so CSE makes the temp explicit, a
 the call nested inside, and splitting the two early-outs. Leaves
 `FUN_0807b1a4` and `FUN_0807b2dc` at a one-instruction residual.
 
-### The 0/1 materialization that will not come back
+### The 0/1 materialization: it comes back from two plain statements
+
+**Closed for the assignment form** (`Entity0809eb24_Update`). The materialization
+survives when the flag is set by its own `if` statement and read by a later one:
+
+```c
+u16 override = gSunlightOverride;   /* 先頭オペランドをローカルに退避する */
+bool32 forced = FALSE;
+
+if (override == 1) {
+  forced = TRUE;
+}
+if (forced && u16_03002bf0 != 0) { ... }
+```
+
+That emits `ldrh` → `movs rK, #0` → `cmp` → `movs rK, #1` → `cmp rK, #0`, exactly
+the target. What folds it is writing the flag as one expression —
+`bool32 forced = (gSunlightOverride == 1);` collapses into the branch and comes
+out 5 instructions short, and so does a `static inline` predicate whose `return`
+is the materialized value. The local for the first operand is what puts the
+`movs #0` *after* the load (see "Caching an operand in a local" above); without it
+the init is hoisted ahead of it.
+
+Untried lead for the sites below: they all consume an inline predicate's return
+value directly (`if (!T(bit)) { return TRUE; }`). Rewriting them in the two-statement
+form — `bool32 ok = FALSE; if (gStat->unk_934 & mask) { ok = TRUE; } if (!ok) …` —
+has not been measured yet and is the first thing to try.
+
+The rest of this entry is the record of what was tried against the
+*return-value* form, which is still open.
 
 About 400 sites across 255 unmatched functions end a predicate test like this:
 

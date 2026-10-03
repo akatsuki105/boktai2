@@ -92,12 +92,11 @@ Entity83B2Data* FUN_0800922c(Entity83B2* p, u32 n, s32* outIdx) {
 }
 
 // スプライトのパレットを切り替える (plttID 0/1/2 に 76 を足したものが実際のパレットID)
-s32 FUN_08009278(Entity83B2Data* p, s32 plttID) {
+missing FUN_08009278(Entity83B2Data* p, s32 plttID) {
   AuxSpriteGfx* gfx = &p->gfx;
   if (p->unk_4 == 0) {
     Video_SetAuxSpritePltt(gfx, plttID + 76);
   }
-  // 返り値は s32 だが実際には何も返さない
 }
 
 // 対象の座標を設定する, unk_2 で判定用の座標と描画位置のどちらをずらすかが変わる

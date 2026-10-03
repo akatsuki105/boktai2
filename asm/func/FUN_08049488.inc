@@ -25,7 +25,7 @@ _080494B6:
 	cmp r0, #0x1f
 	bne _08049506
 	adds r0, r5, #0
-	bl FUN_08048afc
+	bl Text_GetEscapeCharcode
 	lsls r0, r0, #0x10
 	lsrs r1, r0, #0x10
 	ldr r0, _080494DC @ =0x0000FFFF
@@ -37,7 +37,7 @@ _080494B6:
 	lsrs r4, r0, #0x10
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_08048a20
+	bl TextRenderer_DrawCharNarrow
 	b _08049502
 	.align 2, 0
 _080494DC: .4byte 0x0000FFFF
@@ -50,13 +50,13 @@ _080494E0:
 	ldr r0, _080494F8 @ =0x00007FFF
 	ands r1, r0
 	adds r0, r6, #0
-	bl FUN_08048a20
+	bl TextRenderer_DrawCharNarrow
 	b _08049502
 	.align 2, 0
 _080494F8: .4byte 0x00007FFF
 _080494FC:
 	adds r0, r6, #0
-	bl FUN_08048a20
+	bl TextRenderer_DrawCharNarrow
 _08049502:
 	adds r5, #2
 	b _08049560
@@ -67,7 +67,7 @@ _08049506:
 	lsrs r4, r0, #0x10
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_08048a20
+	bl TextRenderer_DrawCharNarrow
 _08049516:
 	adds r5, #1
 	b _08049560
@@ -84,12 +84,12 @@ _0804951A:
 	blo _0804953A
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08048998
+	bl TextRenderer_AdvanceCursor
 	b _08049516
 _0804953A:
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_08048a4c
+	bl TextRenderer_DrawCharWide
 	b _08049516
 _08049544:
 	adds r5, #1

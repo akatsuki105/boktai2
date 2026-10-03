@@ -3,11 +3,11 @@
 	mov r6, r8
 	push {r6, r7}
 	sub sp, #0x20
-	bl GetDate
+	bl Time_GetDate
 	adds r4, r0, #0
-	bl GetHour
+	bl Time_GetHour
 	adds r6, r0, #0
-	bl GetMinute
+	bl Time_GetMinute
 	mov sb, r0
 	ldr r0, _08242050 @ =gClock
 	ldrb r5, [r0, #0xc]
@@ -17,7 +17,7 @@
 	add r2, sp, #0x10
 	add r0, sp, #8
 	adds r3, r4, #0
-	bl ParseBCDDate
+	bl Time_ParseBCDDate
 	add r0, sp, #0x14
 	add r1, sp, #0x18
 	add r2, sp, #0x1c
@@ -27,7 +27,7 @@
 	lsls r4, r4, #1
 	adds r3, r3, r4
 	ldr r3, [r3]
-	bl ParseBCDDate
+	bl Time_ParseBCDDate
 	ldr r0, [sp, #8]
 	ldr r1, [sp, #0xc]
 	ldr r2, [sp, #0x10]
@@ -36,7 +36,7 @@
 	str r4, [sp]
 	ldr r4, [sp, #0x1c]
 	str r4, [sp, #4]
-	bl FUN_0823d9ec
+	bl Time_GetDayDiff
 	movs r3, #0
 	cmp r0, #1
 	bhi _0824209A

@@ -39,7 +39,7 @@ _08241D28:
 	strh r0, [r7, #0x20]
 	b _08241D90
 _08241D40:
-	bl FUN_082418c0
+	bl GetSensorLx
 	strh r0, [r7, #0x1c]
 	movs r1, #0x1c
 	ldrsh r0, [r7, r1]

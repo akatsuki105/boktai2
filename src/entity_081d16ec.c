@@ -10,7 +10,7 @@
 // 最大12個の Entity081d16ecItem をビットマスクで管理するシングルトン
 typedef struct Entity081d16ec {
   Entity e;                      // 0x000, ENTITY_UNK_9
-  AuxAnimFile* animFile;         // 0x018, GetFile(DIR_ANIMATION, 0xB952)
+  AuxAnimFile* animFile;         // 0x018, ANIM_B952
   Entity081d16ecItem items[12];  // 0x01C, _Update と _Destroy が 0x1C + i*200 で引く
   u32 activeMask;                // 0x97C, bit i が立っていれば items[i] が使用中, _Init が 0 にする
 } Entity081d16ec;
@@ -163,7 +163,7 @@ NON_MATCH s32 Entity081d16ec_Destroy(Entity081d16ec* p) {
 }
 
 s32 Entity081d16ec_Init(Entity081d16ec* p) {
-  p->animFile = GetFile(DIR_ANIMATION, 0xB952);
+  p->animFile = GetFile(DIR_ANIMATION, ANIM_B952);
   gEntity081d16ec = p;
   p->activeMask = 0;
   return 0;

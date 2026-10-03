@@ -4178,9 +4178,9 @@ Entity5645_Init: @ 0x08054F8C
 	mov r1, r8
 	str r1, [r0]
 	ldr r5, _08054FF8 @ =0x030046B8
-	bl GetMinute
+	bl Time_GetMinute
 	adds r4, r0, #0
-	bl GetSecond
+	bl Time_GetSecond
 	ldr r1, _08054FFC @ =0x03002CF0
 	lsls r2, r4, #4
 	subs r2, r2, r4

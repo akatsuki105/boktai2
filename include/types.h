@@ -37,13 +37,18 @@ typedef s32 slot32_t;
 
 typedef void unknown;  // まだ型が不明なときは unknown* で一応 void* と区別しておく
 
+// このゲームでは、返り値の型が void でないのに、 何も return しない関数がそこそこある
+// どれも返り値を使わない関数なので、関数の返り値の型を void にし忘れているだけだと思われる
+// それらをわかりやすく明示するために missing 型を用意
+typedef u32 missing;
+
 typedef s32 Sunlevel;  // 0..10, (digital) sunlight level
 
 typedef struct {
-  s8_8 x;
-  s8_8 y;  // 高さ
-  s8_8 z;
-  u16 val;  // 用途不明だが、Mover_Init で 0x10 がセットされている
+  s16 x;
+  s16 y;  // 高さ
+  s16 z;
+  u16 val;  // 用途不明だが、Mover_Init で 16 がセットされている
 } Vec3;
 
 #endif  // GUARD_ZOKTAI_TYPES_H

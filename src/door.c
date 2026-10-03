@@ -65,7 +65,7 @@ typedef struct {
   AuxSpriteGfx sprites_26c[5];  // 0x26C, '.b=SPRITE_DOOR_7AEE'
   AuxSpriteGfx sprites_2f8[5];  // 0x2F8, '.s=SPRITE_DOOR_7AF3'
   AuxSpriteGfx sprites_384[5];  // 0x384, '.u=SPRITE_DOOR_7AF3'
-  DoorSpriteSet* unk_410;       // 0x410, unk_34 が 0 でなければ Malloc(0x8C), '.k' の絵を複製して入れる
+  DoorSpriteSet* unk_410;       // 0x410, unk_34 が 0 でなければ Malloc(140), '.k' の絵を複製して入れる
   DoorSpriteSet* unk_414;       // 0x414
   DoorSpriteSet* unk_418;       // 0x418
   DoorSpriteSet* unk_41c;       // 0x41C

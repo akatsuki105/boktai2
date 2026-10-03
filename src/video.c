@@ -458,7 +458,7 @@ void Video_ResetFrameState(u32 clearOam) {
 
 NAKED void FUN_0822b470(void) { INCFUNC("asm/func/FUN_0822b470.inc"); }
 
-u16* GetTilemapBuffer(s32 bg) { return (u16*)&gTilemapBuffer[BG_SCREEN_SIZE * bg]; }
+BgMapEntry* GetTilemapBuffer(s32 bg) { return (BgMapEntry*)&gTilemapBuffer[BG_SCREEN_SIZE * bg]; }
 
 void ClearTilemapBuffer(void) { ClearMemory(gTilemapBuffer, sizeof(gTilemapBuffer)); }
 
@@ -568,7 +568,7 @@ NAKED s32 FUN_0822bc44(s32 bg, TileSetFile* f, s32 param_3, s32 param_4, s32 til
 void FUN_0822bcf4(s32 bg, u32 x8, u32 y8, u32 tileidx, u32 flip, u32 pltt) {
   BgState* s = &gBgStates[bg];
 
-  s->tilemap[(s->unk_18 << 1) * y8 + x8] = tileidx | (flip << 10) | (pltt << 12);
+  s->tilemap[(s->width16 << 1) * y8 + x8] = tileidx | (flip << 10) | (pltt << 12);
 }
 
 // BG のタイルマップバッファの矩形 (x, y, w, h) に、tiles のタイル番号を反転・パレット付きで順に書く
@@ -577,7 +577,7 @@ NON_MATCH void FUN_0822bd28(s32 bg, s32 x, s32 y, s32 w, s32 h, u32* tiles, u32 
   // 元は pitch と map がスタック、x*2 が sb、bottom が ip に割り当たる (こちらは pitch がレジスタ、bottom がスタック)
   BgState* s = &gBgStates[bg];
   u16* map = s->tilemap;
-  s32 pitch = s->unk_18 << 1;
+  s32 pitch = s->width16 << 1;
   s32 right = x + w;
   s32 bottom = y + h;
   s32 i, j;
@@ -598,7 +598,7 @@ NAKED void FUN_0822be3c(s32 bg, s32 x, s32 y, u32 param_4, u32 param_5, s32 w, u
 
 NAKED void* UNUSED FUN_0822bf80(void* dst, u32 val) { INCFUNC("asm/func/FUN_0822bf80.inc"); }
 
-NAKED void Video_SetupBG(s32 bg, u32 param_2, unknown* f, u32 unused, s16 param_5, s16 param_6, u32 prio, u16* tilemap) { INCFUNC("asm/func/Video_SetupBG.inc"); }
+NAKED void Video_SetupBG(s32 bg, u32 param_2, unknown* f, u32 unused, s16 param_5, s16 param_6, u32 prio, BgMapEntry* tilemap) { INCFUNC("asm/func/Video_SetupBG.inc"); }
 
 NAKED void Video_SetupBGLayout(s32 layout, u32 param_2, TilemapFile* f, u32 param_4, u32 param_5, s32 count, s32* indices) { INCFUNC("asm/func/Video_SetupBGLayout.inc"); }
 
@@ -627,9 +627,9 @@ void Video_SetBGLayer(s32 bg, TilemapFile* f, s32 layerIdx) {
   s->unk_12 = 0x1000;
   s->mtmap = layer.mtmap;
   w = layer.width;
-  s->unk_18 = w;
+  s->width16 = w;
   h = layer.height;
-  s->unk_1a = h;
+  s->height16 = h;
   s->unk_1c = w;
   s->unk_1e = h;
 }

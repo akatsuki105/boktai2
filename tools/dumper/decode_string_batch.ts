@@ -28,7 +28,7 @@ const main = () => {
 
       const rom = new DataView((Deno.readFileSync(romPath)).buffer);
 
-      const stringAddrs = VM.ParseScriptDirectory(rom, MFT.getFSEntry(rom, 0xA41E).ptr).strings;
+      const stringAddrs: addr[] = VM.ParseScriptDirectory(rom, MFT.getFSEntry(rom, 0xA41E).ptr).strings.map((s) => s.addr);
 
       if (!(0 <= startID && startID <= endIndex && endIndex <= stringAddrs.length)) {
         console.error(`error: ID範囲が不正です (0 <= start <= end <= ${stringAddrs.length} である必要があります)`);

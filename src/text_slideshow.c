@@ -35,7 +35,6 @@ typedef struct {
 } TextSlideshow;
 static_assert(sizeof(TextSlideshow) == 948);
 
-extern s32 gBgBrightness;
 extern u16 gBgPlttFadeRowMask;
 
 IWRAM_DATA TextSlideshow* gTextSlideshow = NULL;  // 0x030000D0

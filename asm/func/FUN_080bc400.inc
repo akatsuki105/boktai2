@@ -1,0 +1,39 @@
+	push {r4, r5, lr}
+	sub sp, #0x10
+	adds r4, r0, #0
+	ldr r0, _080BC450 @ =0x0000C091
+	ldr r1, _080BC454 @ =0x00009F57
+	bl GetFile
+	adds r2, r0, #0
+	ldr r0, _080BC458 @ =0x000012D8
+	adds r4, r4, r0
+	str r2, [r4]
+	movs r5, #0
+	str r5, [sp, #0xc]
+	str r5, [sp]
+	movs r0, #1
+	str r0, [sp, #4]
+	add r0, sp, #0xc
+	str r0, [sp, #8]
+	movs r0, #0
+	movs r1, #0
+	movs r3, #0
+	bl Video_SetupBGLayout
+	ldr r1, [r4]
+	movs r0, #0
+	movs r2, #2
+	bl Video_SetBGLayer
+	str r5, [sp]
+	movs r0, #0
+	movs r1, #0
+	movs r2, #0
+	movs r3, #0
+	bl Video_GenerateBGMap
+	add sp, #0x10
+	pop {r4, r5}
+	pop {r0}
+	bx r0
+	.align 2, 0
+_080BC450: .4byte 0x0000C091
+_080BC454: .4byte 0x00009F57
+_080BC458: .4byte 0x000012D8

@@ -5,6 +5,8 @@
 #include "sound.h"
 #include "vm.h"
 
+static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
+
 // スクリプトの配列変数に, 続く引数を先頭から順に書き込む
 s32 VM_InitArray(void) {
   u8 desc[8];
@@ -106,8 +108,6 @@ void FUN_080a6e88(bool32 stopSound) {
 
 void FUN_080a6ec0(void) { FUN_080a6e88(VM_SeekToNamedArg('p') ? VM_GetValue() : 0); }
 
-static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
-
 // FLAG030047A4_UNK_9 による停止を解除し, 止めていたEntityとBGMを再開する
 void FUN_080a6edc(void) {
   gFlag030047a4 &= ~FLAG030047A4_UNK_9;
@@ -124,4 +124,4 @@ bool32 FUN_080a6f20(void) {
   return FALSE;
 }
 
-s32 VM_Sub15B3(void) { gFlag030047a4 |= FLAG030047A4_UNK_11; }
+s32 VM_Sub15B3(void) { gFlag030047a4 |= FLAG030047A4_LINK; }

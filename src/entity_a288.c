@@ -20,7 +20,7 @@ struct EntityA288 {
   Entity e;                      // 0x0000, ENTITY_UNK_11
   MainSpriteGfx gfx;             // 0x0018, SPRITE_42E2
   Tilemaps* tilemap;             // 0x0038, TILEMAP_33B2
-  rgb555* bgPltt;                // 0x003C, GetFile(DIR_BGPLTT, 0xE9C3) + 0x14
+  rgb555* pltt;                  // 0x003C, BGP_E9C3
   s32 kind;                      // 0x0040, '.t', 初期 state を選ぶ
   u32 flags;                     // 0x0044, bit0 / bit1 が立っている間は timer1 / timer2 を止める
   u32 unk_48;                    // 0x0048, '.f'

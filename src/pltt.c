@@ -8,15 +8,11 @@ extern rgb555* gObjPlttData;
 extern s32 gObjPlttSlotCount;
 extern u16 gObjPlttSlotIDs[16];
 
-extern s32 gBgBrightness;
 extern s32 gObjPlttSlotCursor;
 extern s32 gBgBrightnessApplied;
 extern s32 gObjBrightnessApplied;
 extern s32 gObjPlttSlotReserved;
 extern u16 gBgPlttFadeRowMask;
-extern s32 gObjBrightness;
-extern s32 gBgBrightness2;
-extern u16 gObjPlttBlendColor;
 extern u16 gObjPlttFadeSkipMask;
 
 rgb555* FUN_0822d00c(void) { return gBgPlttBlendBuffer; }

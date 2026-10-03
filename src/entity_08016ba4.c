@@ -1,7 +1,7 @@
-#include "animation.h"
 #include "entity.h"
 #include "global.h"
 #include "particle.h"
+#include "sprite_animation.h"
 
 // 1発ぶんの破片, 速度を持って飛びながらアニメを進める
 typedef struct {
@@ -29,8 +29,8 @@ static_assert(sizeof(Entity08016ba4Burst) == 548);
 typedef struct {
   Entity e;                       // 0x0000, ENTITY_UNK_10
   s32 frame;                      // 0x0018, _Update が毎フレーム 1 足す
-  ParticleGroup* group;           // 0x001C, GetParticleGroup(GROUP_0)
-  AuxAnimFile* anim;              // 0x0020, GetFile(DIR_ANIMATION, 0xD1B8)
+  ParticleGroup* group;           // 0x001C, PTCL_GROUP_0
+  AuxAnimFile* anim;              // 0x0020, ANIM_D1B8
   Entity08016ba4Burst bursts[6];  // 0x0024, FUN_080166ac が空いている枠を先頭から探す
 } Entity08016ba4;
 static_assert(sizeof(Entity08016ba4) == 3324);

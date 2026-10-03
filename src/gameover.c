@@ -11,7 +11,7 @@
 // "GAME OVER" の1文字ぶん, 8個並べて1つのロゴになる
 typedef struct {
   AuxSprite sprite;  // 0x00, GameOverManager_SetupLetters が AuxSprite_Setup に渡す, flags は 0x1033 = SPRFLAG_GAMEOVER|SPRFLAG_OAM_DIRECT|SPRFLAG_SCREEN_COORD|SPRFLAG_AFFINE|SPRFLAG_HIDDEN で、metaspriteIdx に 0..7 が入る
-  AuxSpriteGfx gfx;  // 0x2C, GameOverManager_SetupLetters の Video_GetAuxSprite(&gfx, SPRITE_GAMEOVER)
+  AuxSpriteGfx gfx;  // 0x2C, SPRITE_GAMEOVER
   s16 baseX;         // 0x48, GameOverManager_SetupLetters が 56 + i * 16 (i >= 4 ならさらに +16) を入れる, GameOverManager_UpdateLetters がここから sprite.pos.x を作る
   s16 baseY;         // 0x4A, GameOverManager_SetupLetters が 72 を入れる
   u8 unk_4c[4];      // 0x4C
@@ -22,14 +22,14 @@ static_assert(sizeof(GameOverLetter) == 80);
 typedef struct GameOverManager {
   Entity e;                   // 0x000, ENTITY_UNK_11
   GameOverLetter letters[8];  // 0x018, "GAME OVER" の8文字, GameOverManager_SetupLetters が組み立て、GameOverManager_UpdateLetters が毎フレーム拡大率と位置を書き直す
-  MainSpriteGfx menuGfx;      // 0x298, GameOverManager_SetupMenu の GetFile(SPRITE_SETS, UI_START_MENU) を OpenMainSpriteFile したもの
+  MainSpriteGfx menuGfx;      // 0x298, UI_START_MENU
   MainSprite menu;            // 0x2B8, コンティニューの選択肢, cursor に応じてポーズ 135 / 136 を貼る, flags に SPRFLAG_GAMEOVER を含む
   rgb555 menuPltt[16];        // 0x318, GameOverManager_SetupMenu が gObjPlttData[0x2A90] から CpuSet でコピーし、menu.pltt をここに向ける, GameOverManager_UpdateMenuPltt が最後の1色 (index 15) を点滅させる
   u8* script;                 // 0x338, '.r', GameOverManager_StateOpenMenu が TextBox_Start に渡す
   s10_6 scaleX;               // 0x33C, GameOverManager_UpdateLetters が毎フレーム全 letters の sprite.scaleX へコピーする
   s10_6 scaleY;               // 0x33E, 同上で sprite.scaleY
-  u8 state;                   // 0x340, GameOverManager_Update が呼ぶ PTR_ARRAY_085ad034 の添字 (0..4)
-  u8 animState;               // 0x341, GameOverManager_UpdateAnim が呼ぶ PTR_ARRAY_085ad014 の添字 (0..8), ロゴの拡大縮小の段階
+  u8 state;                   // 0x340, PTR_ARRAY_085ad034[state]
+  u8 animState;               // 0x341, PTR_ARRAY_085ad014[animState], ロゴの拡大縮小の段階
   bool8 spritesAdded;         // 0x342, GameOverManager_AddSprites が描画リストへ登録したら 1, GameOverManager_Destroy はこれが立っているときだけ外す
   u8 cursor;                  // 0x343, 選択肢のカーソル, 0 で menu のポーズ 135、 1 で 136
   u16 plttTimer;              // 0x344, 0..49 を回り、GameOverManager_UpdateMenuPltt が menuPltt[15] の明度を切り替える

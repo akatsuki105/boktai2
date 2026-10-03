@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "global.h"
 #include "hitbox.h"
+#include "mover.h"
 #include "msgbus.h"
 #include "registry.h"
 #include "save.h"
@@ -22,7 +23,9 @@ IWRAM_DATA SystemSaveData gSystemSaveDataBuffer = {};  // 0x030016C0
 
 u32 FUN_082321e0(u8* pc);
 void FUN_0822d0e4(void);
-void MoverList_ClearPtr(void);
+
+static inline void DisableEntityFlags(u32 flags) { gEntityDisableFlags |= flags; }
+static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
 
 NAKED s32 FUN_0823a6c0(void) { INCFUNC("asm/func/FUN_0823a6c0.inc"); }
 
@@ -31,11 +34,9 @@ s32 FUN_0823a6fc(void) {
   if (rfu_REQBN_softReset_and_checkID() == RFU_ID) {
     return 1;
   }
-
   if (gVBlankCount > 449) {
     return -1;
   }
-
   return 0;
 }
 
@@ -106,10 +107,6 @@ void FUN_0823a9c4(void) {
   HitboxManager_Create();
   ShowBG(DISPCNT_BG0_ON);
 }
-
-static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
-
-static inline void DisableEntityFlags(u32 flags) { gEntityDisableFlags |= flags; }
 
 void FUN_0823a9f4(void) {
   FUN_0824082c();

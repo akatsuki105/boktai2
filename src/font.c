@@ -145,7 +145,7 @@ bool32 FUN_0822ea10(u32 tileidx) {
 // タイルマップ上の矩形 (x8, y8, w8, h8) を走査し、各タイルの下位10bit(タイル番号)を FUN_0822ea10 に渡して参照カウントを解放し、成功したら 0xF001 で塗り潰す
 // 矩形内の各セルのタイルを1つ解放し、解放できたセルを空きタイルに差し替える
 void FUN_0822ea60(u32 x8, u32 y8, u32 w8, u32 h8) {
-  u16* map = GetTilemapBuffer(0);
+  BgMapEntry* map = GetTilemapBuffer(0);
   u32 left = x8;
   u32 right = x8 + w8;
   u32 bottom = y8 + h8;
@@ -161,7 +161,7 @@ void FUN_0822ea60(u32 x8, u32 y8, u32 w8, u32 h8) {
 
 // タイルマップの矩形を空きタイルで塗りつぶす (テキストボックスの背景用)
 void FUN_0822eadc(u32 x8, u32 y8, u32 w8, u32 h8) {
-  u16* map = GetTilemapBuffer(0);
+  BgMapEntry* map = GetTilemapBuffer(0);
   u32 left = x8;
   u32 right = x8 + w8;
   u32 bottom = y8 + h8;

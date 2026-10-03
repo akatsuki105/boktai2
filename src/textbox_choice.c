@@ -56,7 +56,6 @@ IWRAM_DATA TextBoxChoice* gTextBoxChoice = NULL;  // 0x03000028
 
 u8* FUN_0823d340(void);
 s32 FUN_080488fc(void);
-u16 FUN_08048afc(u8* s);
 
 const char s_ALTER_08251b3c[] = "ALTER";
 const char s_EXTEND_08251b44[] = "EXTEND";
@@ -272,7 +271,7 @@ NON_MATCH u8* TextBoxChoice_ParseTag(TextBoxChoice* p, u8* s) {
   u8* q = s;
 
   if (*s != '/') {
-    if (TextBox_StrNCmp(s, s_ALTER_08251b3c, 5) == 0) {
+    if (Text_StrNCmp(s, s_ALTER_08251b3c, 5) == 0) {
       bool32 found = FALSE;
       s32 len = 0;
 
@@ -300,16 +299,16 @@ NON_MATCH u8* TextBoxChoice_ParseTag(TextBoxChoice* p, u8* s) {
       }
       p->tagValue[len] = 0;
       if (found && len != 0) {
-        p->widthOverride = TextBox_ParseDecimal(p->tagValue, len);
+        p->widthOverride = Text_ParseDecimal(p->tagValue, len);
       } else {
         p->widthOverride = 0;
       }
-      q = TextBox_FindChar(q, '>');
+      q = Text_FindChar(q, '>');
       p->entries[p->choiceCount].x = (p->col + p->winX) * 8;
       p->entries[p->choiceCount].y = p->winY * 8 + p->lineCount * 16;
       p->entries[p->choiceCount].line = p->lineCount;
       p->choiceWidth = 0;
-    } else if (TextBox_StrNCmp(s, s_EXTEND_08251b44, 6) == 0) {
+    } else if (Text_StrNCmp(s, s_EXTEND_08251b44, 6) == 0) {
       bool32 found = FALSE;
       s32 len = 0;
       s32 val;
@@ -339,15 +338,15 @@ NON_MATCH u8* TextBoxChoice_ParseTag(TextBoxChoice* p, u8* s) {
       }
       p->tagValue[len] = 0;
       if (found && len != 0) {
-        val = TextBox_ParseDecimal(p->tagValue, len);
+        val = Text_ParseDecimal(p->tagValue, len);
       } else {
         val = 0;
       }
       w = TextBox_GetExtendWidth(val);
       p->choiceWidth += w;
       p->col += w;
-      q = TextBox_FindChar(q, '>');
-    } else if (TextBox_StrNCmp(s, s_VAR_08251b4c, 3) == 0) {
+      q = Text_FindChar(q, '>');
+    } else if (Text_StrNCmp(s, s_VAR_08251b4c, 3) == 0) {
       bool32 found = FALSE;
       s32 len = 0;
       s32 val;
@@ -377,22 +376,22 @@ NON_MATCH u8* TextBoxChoice_ParseTag(TextBoxChoice* p, u8* s) {
       }
       p->tagValue[len] = 0;
       if (found && len != 0) {
-        val = TextBox_ParseDecimal(p->tagValue, len);
+        val = Text_ParseDecimal(p->tagValue, len);
       } else {
         val = 0;
       }
       w = TextBox_GetVarWidth(val);
       p->choiceWidth += w;
       p->col += w;
-      q = TextBox_FindChar(q, '>');
+      q = Text_FindChar(q, '>');
     } else {
-      return TextBox_FindChar(s, '>');
+      return Text_FindChar(s, '>');
     }
   } else {
-    if (TextBox_StrNCmp(s, s_ALTER_08251b50, 6) != 0) {
-      return TextBox_FindChar(s, '>');
+    if (Text_StrNCmp(s, s_ALTER_08251b50, 6) != 0) {
+      return Text_FindChar(s, '>');
     }
-    q = TextBox_FindChar(s, '>');
+    q = Text_FindChar(s, '>');
     if (p->widthOverride != 0) {
       p->entries[p->choiceCount].width = p->widthOverride;
     } else {
@@ -459,7 +458,7 @@ NON_MATCH void TextBoxChoice_ScanChoices(TextBoxChoice* p, u8* pc) {
         }
       }
     } else if (*s == 0x1F) {
-      u16 code = FUN_08048afc(s);
+      u16 code = Text_GetEscapeCharcode(s);
 
       if (code != 0xFFFF && (code & 0xFF00) == 0) {
         TextBoxChoice_AdvanceCol(p, 1);

@@ -1,8 +1,8 @@
-#include "animation.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "particle.h"
+#include "sprite_animation.h"
 
 // 32枠ぶんの演出要素, activeMask のビットが立っている枠だけ生きている
 typedef struct {
@@ -15,8 +15,8 @@ static_assert(sizeof(Entity080dbe54Slot) == 24);
 
 typedef struct Entity080dbe54 {
   Entity e;                      // 0x000, ENTITY_UNK_9
-  AuxAnimFile* anim;             // 0x018, FUN_080dbe14 が GetFile(0x922E, 0xD1B8) を入れる
-  ParticleGroup* group;          // 0x01C, FUN_080dbe14 が GetParticleGroup(PTCL_GROUP_0) を入れる
+  AuxAnimFile* anim;             // 0x018, ANIM_D1B8
+  ParticleGroup* group;          // 0x01C, PTCL_GROUP_0
   Particle ptcls[32];            // 0x020, slots[i].idx が添字
   u8 unk_520[0x200];             // 0x520
   u32 activeMask;                // 0x720, 使用中の slots のビットマスク
@@ -47,7 +47,7 @@ NAKED s32 Entity080dbe54_Destroy(Entity080dbe54* p) { INCFUNC("asm/func/Entity08
 
 void FUN_080dbe14(Entity080dbe54* p) {
   p->group = GetParticleGroup(PTCL_GROUP_0);
-  p->anim = GetFile(DIR_ANIMATION, 0xD1B8);
+  p->anim = GetFile(DIR_ANIMATION, ANIM_D1B8);
 }
 
 s32 Entity080dbe54_Init(Entity080dbe54* p, u32 param_2) {

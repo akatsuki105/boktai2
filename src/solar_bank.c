@@ -17,7 +17,7 @@ typedef struct Entity7F5E {
   MainSprite sprites[13];                      // 0x058
   AuxSprite auxSprites[2];                     // 0x538
   u8 unk_590[0x5C8 - 0x590];                   // 0x590
-  TilemapFile* tilemap;                        // 0x5C8
+  TilemapFile* tilemap;                        // 0x5C8, TILEMAP_83C0
   rgb555* bgPltt;                              // 0x5CC, BGP_EAA8[208]
   u8* textPc;                                  // 0x5D0, TextBox_Start に渡すバイトコード位置
   u8 unk_5d4[0x5DC - 0x5D4];                   // 0x5D4
@@ -191,7 +191,7 @@ s32 Entity7F5E_Destroy(Entity7F5E* p) {
 void SolarBank_InitBgLayout(Entity7F5E* p) {
   s32 indices;
 
-  p->tilemap = GetFile(DIR_TILE_MAP, 0x83C0);
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_83C0);
   indices = 0;
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &indices);
 }

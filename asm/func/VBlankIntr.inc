@@ -158,7 +158,7 @@ _0822A0DC:
 	lsrs r0, r0, #0x10
 	str r0, [r4]
 _0822A0F0:
-	bl FUN_0823dc70
+	bl Time_AdvanceFrame
 	ldr r1, _0822A10C @ =0x03003504
 	ldr r0, [r1]
 	adds r0, #1

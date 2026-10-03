@@ -14,7 +14,7 @@ typedef struct SunlightEntity {
   u8 unk_18;                                       // 0x18, FUN_08241f28 が 1 を書く, 読み手は見つかっていない
   u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む, UpdateSunlight / UpdateSunlightDebug が回し、IsSunlightActive / CalibrateSunSensor / SuspendSunlight / FUN_0824172c が見る
   u16 unk_1a;                                      // 0x1A, このモジュールは触らない
-  s16 lx;                                          // 0x1C, 太陽光の強さ
+  s16 lx;                                          // 0x1C, 太陽光の強さ (0 が暗く, 140 が明るい), 太陽センサー以外のもの(ライジングサンなど)は含めない
   s16 sunGauge;                                    // 0x1E, lx を 10段階に分けたもの
   u16 stateTimer;                                  // 0x20, UpdateSunlight のフレーム数, state 0 で 29 を超えるとセンサーを有効化し、state 1 で 59 を超えると計測に入る, state が変わるたび 0
   u16 adjustTimer;                                 // 0x22, UpdateDebugLx が A+L / A+R を押している間 +1 し、1フレームおきに gDebugLx を増減させる
@@ -37,7 +37,7 @@ COMMON_DATA ALIGNED(4) bool16 gSunlightSuspended = FALSE;  // 0x0300486C
 COMMON_DATA ALIGNED(4) u16 gSavedLx = 0;                   // 0x03004870
 COMMON_DATA ALIGNED(4) u16 gSavedSunGauge[6] = {};         // 0x03004874
 
-const u8 u8_ARRAY_ARRAY_08dbd798[6][2] = {
+const u8 u8_ARRAY_08dbd798[6][2] = {
     {2, 2},
     {2, 0},
     {0, 0},
@@ -141,7 +141,7 @@ s32 GetSunLevelMinLx(Sunlevel slv) { return gSunLevelMinLx[slv]; }
 // 生の lx に環境要因を掛ける, ライジングサン、天候、屋内判定でここが最終的な明るさを決める
 NON_MATCH s32 ApplyLxModifiers(s32 lx) {
 #ifdef NONMATCHING_C
-  if ((gFlag030047a4 & FLAG030047A4_UNK_11) == 0) {
+  if ((gFlag030047a4 & FLAG030047A4_LINK) == 0) {
     s32 slv;
 
     if (gPlayerPtr[0] != NULL && (gPlayerPtr[0]->flag378 & FLAG378_AET_SUNLIGHT)) {
@@ -174,7 +174,8 @@ NON_MATCH s32 ApplyLxModifiers(s32 lx) {
 #endif
 }
 
-s32 FUN_082418c0(void) {
+// 太陽センサーの生の明るさを取得し、キャリブレーション値で補正した後、 [0, 140] で clamp して返す (0 が 暗く, 140 が 明るい)
+s32 GetSensorLx(void) {
   s32 n = Sensor_GetRawLevel();
   if ((n < 0) || (n > gSystemSaveData->calibration)) {
     return 0;
@@ -189,10 +190,10 @@ s32 FUN_082418c0(void) {
 
 // 最後に炎天下にいた時間を記録する(これが記録されてから一定時間経てば、オーバーヒート状態が解除される)
 void SetOverheatTime(void) {
-  (gStat->overheatTime).date.val = GetDate();
-  (gStat->overheatTime).hour = GetHour();
-  (gStat->overheatTime).minute = GetMinute();
-  (gStat->overheatTime).second = GetSecond();
+  (gStat->overheatTime).date.val = Time_GetDate();
+  (gStat->overheatTime).hour = Time_GetHour();
+  (gStat->overheatTime).minute = Time_GetMinute();
+  (gStat->overheatTime).second = Time_GetSecond();
 }
 
 bool32 IsGunCooled(void) {
@@ -200,20 +201,20 @@ bool32 IsGunCooled(void) {
   s32 elapsed;
   u32 curH, curM, curS;
 
-  if (GetDate() == gStat->overheatTime.date.val) {
+  if (Time_GetDate() == gStat->overheatTime.date.val) {
     elapsed = 0;
   } else {
-    ParseBCDDate(&y0, &m0, &d0, (BCDDate)GetDate());
-    ParseBCDDate(&y1, &m1, &d1, gStat->overheatTime.date);
-    if (FUN_0823d9ec(y0, m0, d0, y1, m1, d1) > 1) {
+    Time_ParseBCDDate(&y0, &m0, &d0, (BCDDate)Time_GetDate());
+    Time_ParseBCDDate(&y1, &m1, &d1, gStat->overheatTime.date);
+    if (Time_GetDayDiff(y0, m0, d0, y1, m1, d1) > 1) {
       return TRUE;
     }
     elapsed = 86400;  // 1日分の秒数
   }
 
-  curH = GetHour();
-  curM = GetMinute();
-  curS = GetSecond();
+  curH = Time_GetHour();
+  curM = Time_GetMinute();
+  curS = Time_GetSecond();
   elapsed += (curH * 60 + curM) * 60 + curS - ((gStat->overheatTime.hour * 60 + gStat->overheatTime.minute) * 60 + gStat->overheatTime.second);
 
   if (elapsed >= 180) {  // 3分経ったらクールダウン
@@ -225,7 +226,7 @@ bool32 IsGunCooled(void) {
 NON_MATCH void UpdateOverheat(SunlightEntity* _ UNUSED) {
 #ifdef NONMATCHING_C
   if (gStat->thermal > 29999) {
-    if ((gStat->sunGauge < 3) || (gStat->unk_934 & 0x4200)) {
+    if ((gStat->sunGauge < 3) || (gStat->unk_934 & (SF934_UNK_14 | SF934_UNK_9))) {
       if (gStat->heatstroke > 0) {
         gStat->heatstroke--;
       }
@@ -247,7 +248,7 @@ NON_MATCH void UpdateOverheat(SunlightEntity* _ UNUSED) {
 // 日なたにいる間の毎フレームの取り分, 樹の経験値・ソーラースタンド・熱量を進める
 NON_MATCH void ApplySunlightGain(SunlightEntity* p) {
 #ifdef NONMATCHING_C
-  if (gPlayerPtr[0] != NULL && (gFlag030047a4 & (FLAG030047A4_UNK_11 | FLAG030047A4_UNK_12)) == 0) {
+  if (gPlayerPtr[0] != NULL && (gFlag030047a4 & (FLAG030047A4_LINK | FLAG030047A4_UNK_12)) == 0) {
     if ((gFlag030047a4 & FLAG030047A4_UNK_9) == 0 && gPlayerPtr[0]->unk_1c != 2) {
       if (gInput[0].down == 0) {
         if (p->idleTimer < 900) {
@@ -344,7 +345,7 @@ NON_MATCH void UpdateSunlight(SunlightEntity* p) {
       break;
     }
     case 2: {
-      p->lx = FUN_082418c0();
+      p->lx = GetSensorLx();
       p->sunGauge = GetSunLevel(p->lx);
       gStat->lx = ApplyLxModifiers(p->lx);
       gStat->sunGauge = GetSunLevel(gStat->lx);
@@ -364,7 +365,7 @@ NON_MATCH u32 UpdateDebugLx(SunlightEntity* p) {
 #ifdef NONMATCHING_C
   Keys16 down;
 
-  if (gFlag030047a4 & FLAG030047A4_UNK_11) {
+  if (gFlag030047a4 & FLAG030047A4_LINK) {
     s32 idx = Entity9A9F_GetPlayerIdx();
 
     down = gInput[idx].down;
@@ -459,9 +460,9 @@ u32 ReflectClock(void) {
   s32 sunsetHour, sunsetMinute;
   bool32 beforeSunset;
 
-  gStat->date.val = GetDate();
-  gStat->hour = GetHour();
-  gStat->minute = GetMinute();
+  gStat->date.val = Time_GetDate();
+  gStat->hour = Time_GetHour();
+  gStat->minute = Time_GetMinute();
   sunsetHour = gClock.sunset.hour;
   sunsetMinute = gClock.sunset.minute;
   beforeSunset = FALSE;
@@ -482,14 +483,14 @@ NON_MATCH void ApplyDayRollover(SunlightEntity* _ UNUSED) {
   bool32 reset;
   BCDDate date;
 
-  date.val = GetDate();
-  curHour = GetHour();
-  curMinute = GetMinute();
+  date.val = Time_GetDate();
+  curHour = Time_GetHour();
+  curMinute = Time_GetMinute();
   sunsetHour = gClock.sunset.hour;
   sunsetMinute = gClock.sunset.minute;
-  ParseBCDDate(&y0, &m0, &d0, date);
-  ParseBCDDate(&y1, &m1, &d1, gStat->date);
-  days = FUN_0823d9ec(y0, m0, d0, y1, m1, d1);
+  Time_ParseBCDDate(&y0, &m0, &d0, date);
+  Time_ParseBCDDate(&y1, &m1, &d1, gStat->date);
+  days = Time_GetDayDiff(y0, m0, d0, y1, m1, d1);
   reset = FALSE;
   if (days >= 2) {
     reset = TRUE;

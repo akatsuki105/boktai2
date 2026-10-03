@@ -52,7 +52,7 @@
 	bne _08001FC8
 _08001FC2:
 	adds r0, r4, #0
-	bl FUN_080019dc
+	bl MapPltt_BuildWeather
 _08001FC8:
 	adds r0, r4, #0
 	bl MapPltt_Rebuild

@@ -1,8 +1,6 @@
 #include "entity.h"
 #include "global.h"
-#include "sprite_aux.h"
-#include "sprite_main.h"
-#include "sprite_pltt.h"
+#include "sprite.h"
 
 typedef struct Entity501B Entity501B;
 typedef void(Entity501BFunc)(Entity501B* p);
@@ -11,7 +9,7 @@ typedef void(Entity501BFunc)(Entity501B* p);
 struct Entity501B {
   Entity e;                    // 0x000, ENTITY_UNK_11
   MainSprite digits[8];        // 0x018, [0..3] が上段 (y=0x40), [4..7] が下段 (y=0x78), 各段とも [0] が1の位
-  MainSpriteGfx gfx;           // 0x318, GetFile(DIR_SPRITE_SETS, UI_LINK)
+  MainSpriteGfx gfx;           // 0x318, SPRITE_UI_LINK
   u8 unk_338[0x358 - 0x338];   // 0x338, まだ未解析
   MainSpriteGfxFile* file;     // 0x358, SPRITE_SOLAR_STATION
   u8 unk_35c[4];               // 0x35C, まだ未解析
@@ -25,7 +23,7 @@ struct Entity501B {
   s32 unk_3c0;                 // 0x3C0, gEntity9A9F->unk_144[playerIdx] (±9999 で頭打ち)
   u32* tilemap0;               // 0x3C4, TILEMAP_CD91 を BG2 に敷く
   u32* tilemap1;               // 0x3C8, TILEMAP_A413 を BG0 に敷く
-  rgb555* bgPltt;              // 0x3CC, GetFile(DIR_BGPLTT, 0x26BB) + 0x14
+  rgb555* bgPltt;              // 0x3CC, BGP_26BB
   Entity501BFunc* fn;          // 0x3D0, _Update が毎フレーム呼ぶ状態関数
   u8* unk_3d4;                 // 0x3D4, '.s', TextPanel_SetScript に渡す
   u8* unk_3d8;                 // 0x3D8, '.e'

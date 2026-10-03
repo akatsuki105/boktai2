@@ -14,7 +14,7 @@ static_assert(sizeof(LinkBattleLobbySlot) == 4);
 typedef struct LinkBattleLobby {
   Entity e;                           // 0x000, ENTITY_UNK_11
   Tilemaps* tilemap;                  // 0x018, FUN_081db9f4 が TILEMAP_CD91 を入れ、Video_SetupBGLayout / Video_SetBGLayer に渡す
-  rgb555* bgPltt;                     // 0x01C, FUN_081db9f4 が GetFile(DIR_BGPLTT, 0x26BB) + 0x14 を入れ、gBgPlttBuffer へ 256色転送する
+  rgb555* bgPltt;                     // 0x01C, BGP_26BB
   MainSprite sprites[8];              // 0x020, FUN_081dbd74 が 0..3 に立ち絵を、FUN_081dbc60 が 4..7 にアイコンを登録する
   MainSpriteGfx uiGfx;                // 0x320, sprites[4..7] 用,FUN_081dbc60 が uiSpriteFile から開く
   MainSpriteGfx charGfx;              // 0x340, sprites[0..3] 用,FUN_081dbd74 が charSpriteFile から開く

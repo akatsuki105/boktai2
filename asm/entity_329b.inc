@@ -152,9 +152,9 @@ FUN_0800fd98: @ 0x0800FD98
 	mov r6, r8
 	push {r6, r7}
 	sub sp, #8
-	bl GetHour
+	bl Time_GetHour
 	adds r4, r0, #0
-	bl GetMinute
+	bl Time_GetMinute
 	mov sb, r0
 	adds r0, r4, #0
 	movs r1, #0xa
@@ -497,12 +497,12 @@ FUN_08010038: @ 0x08010038
 	adds r6, r0, #0
 	add r4, sp, #4
 	add r5, sp, #8
-	bl GetDate
+	bl Time_GetDate
 	adds r3, r0, #0
 	mov r0, sp
 	adds r1, r4, #0
 	adds r2, r5, #0
-	bl ParseBCDDate
+	bl Time_ParseBCDDate
 	ldrh r1, [r6, #0x28]
 	movs r0, #1
 	ands r0, r1

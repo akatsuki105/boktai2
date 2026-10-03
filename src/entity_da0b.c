@@ -4,13 +4,11 @@
 #include "sound.h"
 #include "sprite_main.h"
 #include "sprite_pltt.h"
-#include "struct.h"
+#include "text.h"
 #include "vm.h"
 #include "weapon.h"
 
 s32 FUN_0824175c(void);
-s32 GetWeaponSkillLevel(s32 idx);
-s32 FUN_08049f84(void);
 
 typedef struct EntityDA0B EntityDA0B;
 typedef void(EntityDA0BFunc)(EntityDA0B* p);
@@ -48,8 +46,8 @@ struct EntityDA0B {
   u8 unk_94;                     // 0x0094, まだ未解析
   u8 unk_95;                     // 0x0095, FUN_0801c910 が 0 を入れる
   u8 unk_96[0xB8 - 0x96];        // 0x0096, まだ未解析
-  u16 unk_b8;                    // 0x00B8, '.c' の値
-  u16 unk_ba;                    // 0x00BA, '.e' の値
+  u16 unk_b8;                    // 0x00B8, '.c'
+  u16 unk_ba;                    // 0x00BA, '.e'
   char statText[4];              // 0x00BC, FUN_08094c6c が武器の補正値を "+12" / "SP" の形で書く
   u8 unk_c0[0xD8 - 0xC0];        // 0x00C0, まだ未解析
   MainSpriteGfx gfx0;            // 0x00D8, SPRITE_UI_MISC
@@ -68,7 +66,7 @@ struct EntityDA0B {
   u8 unk_1311[3];                // 0x1311, まだ未解析
   u32 unk_1314;                  // 0x1314, FUN_0801d7f8 が 0 に戻す
   s32 unk_1318;                  // 0x1318, FUN_0801d7f8 が受け取った値
-  s16 unk_131c;                  // 0x131C, '.n' の値 (既定 0xB156)
+  s16 unk_131c;                  // 0x131C, '.n=0xB156'
   u16 unk_131e;                  // 0x131E, _Init が 5 を入れる
   u8 unk_1320[0x1364 - 0x1320];  // 0x1320, まだ未解析
 };
@@ -85,7 +83,7 @@ void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_
 void EntityDA0B_ClearPtr(void) { gEntityDA0B = NULL; }
 
 // パレット番号を 0x2DF 番からの並びとして OBJ パレットの先頭を返す
-rgb555* FUN_0801b670(s32 plttID) { return &gObjPlttData[(plttID + 0x2DF) * 16]; }
+rgb555* FUN_0801b670(s32 plttID) { return &gObjPlttData[(plttID + 735) * 16]; }
 
 void FUN_0801b688(EntityDA0B* p, EntityDA0BElem* elem) { MainSprite_SetPose(&elem->sprite, &p->gfx2, elem->data.id, 0); }
 
@@ -125,18 +123,14 @@ bool32 EntityDA0B_TakeFnChanged(EntityDA0B* p) {
 // 武器のランクを 20 刻みの値に直す, C=20 B=40 A=60 S=80 それ以外は 0
 s32 FUN_0801b904(EntityDA0B* p, EntityDA0BElem* elem) {
   switch (elem->data.rank) {
-    case 0: {
+    case 0:
       return 20;
-    }
-    case 1: {
+    case 1:
       return 40;
-    }
-    case 2: {
+    case 2:
       return 60;
-    }
-    case 3: {
+    case 3:
       return 80;
-    }
   }
 
   return 0;
@@ -152,13 +146,13 @@ unknown* FUN_0801bc98(EntityDA0B* p) {
   EntityDA0BElem* e = &p->weapons[18];
 
   switch (e->data.kind) {
-    case 0: {
+    case WK_SWORD: {
       return FUN_0801b938(p);
     }
-    case 1: {
+    case WK_SPEAR: {
       return FUN_0801ba58(p);
     }
-    case 2: {
+    case WK_HAMMER: {
       return FUN_0801bb78(p);
     }
   }
@@ -199,9 +193,8 @@ NAKED s32 FUN_0801c260(EntityDA0B* p) { INCFUNC("asm/func/FUN_0801c260.inc"); }
 
 s32 FUN_0801c2bc(EntityDA0B* p) {
   Vec3 pos;
-
   pos.x = 0, pos.y = 0x80, pos.z = 0;
-  MainSprite_Add(&p->iconSprite, &p->gfx2, 0xD0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, 0, 60, &pos);
+  MainSprite_Add(&p->iconSprite, &p->gfx2, 208, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, 0, 60, &pos);
 }
 
 NAKED s32 FUN_0801c300(EntityDA0B* p) { INCFUNC("asm/func/FUN_0801c300.inc"); }
@@ -354,27 +347,27 @@ void FUN_0801d420(EntityDA0B* p) {
   MainSprite_Show(spr);
 }
 
-NON_MATCH void FUN_0801d488(EntityDA0B* p) {
-#ifdef NONMATCHING_C
-  MainSprite_Hide(&p->sprites2[2]);
-  MainSprite_Hide(&p->sprites2[3]);
-#else
-  INCFUNC("asm/func/FUN_0801d488.inc");
-#endif
+void FUN_0801d488(EntityDA0B* p) {
+  MainSprite* spr;
+
+  spr = &p->sprites2[2];
+  spr->flags |= SPRFLAG_HIDDEN;
+  spr = &p->sprites2[3];
+  spr->flags |= SPRFLAG_HIDDEN;
 }
 
 void FUN_0801d4a8(EntityDA0B* p) {
   MainSprite* spr = &p->sprites2[0];
 
   spr->pos.x = p->unk_93;
-  MainSprite_Show(spr);
+  spr->flags &= ~SPRFLAG_HIDDEN;
 }
 
 void FUN_0801d4c4(EntityDA0B* p) {
   MainSprite* spr = &p->sprites2[0];
 
   spr->pos.x = p->unk_93;
-  MainSprite_Hide(spr);
+  spr->flags |= SPRFLAG_HIDDEN;
 }
 
 NAKED s32 FUN_0801d4dc(EntityDA0B* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_0801d4dc.inc"); }
@@ -454,7 +447,7 @@ void FUN_0801dc90(EntityDA0B* p) {
 
   FUN_0801d540(p);
   FUN_0823b8ac(&p->pos);
-  if (p->fnTimer > 29) {
+  if (p->fnTimer >= 30) {
     EntityDA0B_SetFn(p, FUN_0801dcdc);
   } else {
     p->fnTimer++;

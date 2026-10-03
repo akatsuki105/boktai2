@@ -1,10 +1,10 @@
-#include "animation.h"
 #include "collision_map.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
 #include "sprite.h"
+#include "sprite_animation.h"
 
 // 8個で使い回す当たり判定つきエフェクトの枠, FUN_0820372c が ttl == 0 かつ非表示のものを空きとして拾う
 typedef struct {
@@ -190,9 +190,9 @@ s32 FUN_08203a0c(Entity08203ad0* p) {
   Entity08203ad0Slot* slot;
   s32 i;
 
-  Video_GetAuxSprite(&p->gfx, 0xA5B3);
-  Video_SetAuxSpritePltt(&p->gfx, 0x236);
-  files = GetFile(DIR_ANIMATION, 0x1752);
+  Video_GetAuxSprite(&p->gfx, SPRITE_A5B3);
+  Video_SetAuxSpritePltt(&p->gfx, 566);
+  files = GetFile(DIR_ANIMATION, ANIM_1752);
 
   slot = p->slots;
   for (i = 0; i < 8; slot++, i++) {
@@ -208,7 +208,7 @@ s32 FUN_08203a0c(Entity08203ad0* p) {
 s32 Entity08203ad0_Init(Entity08203ad0* p) {
   p->activeCount = 0;
   p->unk_38 = 0;
-  Video_GetAuxSprite(&p->gfx, 0xA5B3);
+  Video_GetAuxSprite(&p->gfx, SPRITE_A5B3);
   if (FUN_08203a0c(p) < 0) {
     return -1;
   } else {

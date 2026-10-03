@@ -22,7 +22,7 @@ _0804979C:
 	ldr r1, _080497D0 @ =0x08251CC4
 	adds r0, r5, #0
 	movs r2, #3
-	bl TextBox_StrNCmp
+	bl Text_StrNCmp
 	cmp r0, #0
 	bne _08049824
 	movs r6, #0
@@ -68,7 +68,7 @@ _080497F6:
 	beq _08049810
 	adds r0, r3, #0
 	adds r1, r2, #0
-	bl TextBox_ParseDecimal
+	bl Text_ParseDecimal
 	adds r1, r0, #0
 	b _08049812
 _08049810:
@@ -79,12 +79,12 @@ _08049812:
 	adds r7, r7, r0
 	adds r0, r4, #0
 	movs r1, #0x3e
-	bl TextBox_FindChar
+	bl Text_FindChar
 	b _0804982C
 _08049824:
 	adds r0, r5, #0
 	movs r1, #0x3e
-	bl TextBox_FindChar
+	bl Text_FindChar
 _0804982C:
 	ldrb r0, [r5]
 	cmp r0, #0
@@ -94,7 +94,7 @@ _08049834:
 	cmp r0, #0x1f
 	bne _0804985C
 	adds r0, r5, #0
-	bl FUN_08048afc
+	bl Text_GetEscapeCharcode
 	lsls r0, r0, #0x10
 	lsrs r1, r0, #0x10
 	ldr r0, _08049858 @ =0x0000FFFF

@@ -1,8 +1,8 @@
-#include "animation.h"
 #include "entity.h"
 #include "global.h"
 #include "msgbus.h"
 #include "shadow.h"
+#include "sprite_animation.h"
 #include "sprite_aux.h"
 #include "video.h"
 
@@ -13,8 +13,8 @@ typedef struct {
   u16 unk_04;              // 0x04, FUN_080117d8 が 0 を入れる
   u8 unk_06;               // 0x06, FUN_080117d8 が 0 を入れる
   u8 unk_07[0x40 - 0x07];  // 0x07, まだ未解析
-  AuxSprite sprite;        // 0x40, AuxSprite_Add で登録する
-  AuxSpriteGfx gfx;        // 0x6C, Video_GetAuxSprite(0xDA6D) / Video_SetAuxSpritePltt(0x263)
+  AuxSprite sprite;        // 0x40
+  AuxSpriteGfx gfx;        // 0x6C, SPRITE_BAT
   ParticleShadow shadow;   // 0x88, ParticleShadow_Init(&shadow, &sprite.pos, 0) のあと Hide する
 } EntityE534Elem;
 static_assert(sizeof(EntityE534Elem) == 200);
@@ -23,7 +23,7 @@ typedef struct {
   Entity e;                   // 0x000, ENTITY_UNK_11
   u32 unk_18;                 // 0x018, _Init が 0 を入れる
   u8 unk_1c[4];               // 0x01C, まだ未解析
-  AuxAnimFile* anim;          // 0x020, GetFile(DIR_ANIMATION, 0x5BB7)
+  AuxAnimFile* anim;          // 0x020, ANIM_5BB7
   EntityE534Elem elems[16];   // 0x024, _Init が FUN_080117d8 で16個初期化し、_Destroy が FUN_08011854 で片付ける
   u8 unk_ca4[2];              // 0xCA4, まだ未解析
   u16 unk_ca6;                // 0xCA6, _Init が 0 を入れる

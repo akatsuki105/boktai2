@@ -67,7 +67,7 @@ s32 Entity0800f110_Destroy(Entity0800f110* p) {
 
 s32 Entity0800f110_Init(Entity0800f110* p, u32 _) {
   gEntity0800f110 = p;
-  p->anim = GetFile(DIR_ANIMATION, 0x931E);
+  p->anim = GetFile(DIR_ANIMATION, ANIM_931E);
   p->list = NULL;
   return 0;
 }

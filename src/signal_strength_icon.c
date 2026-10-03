@@ -4,17 +4,17 @@
 #include "sprite_main.h"
 
 // ワイヤレス通信(RFU)の電波強度インジケータ, gRfuLinkStatus->strength を見てアイコンを差し替える
-typedef struct SignalStrengthIcon {
+typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_11
   u32 updateCounter;  // 0x18, SignalStrengthIcon_Update が毎フレーム +1 するだけ, 読み手は見つかっていない
   u32 animCounter;    // 0x1C, SignalStrengthIcon_SetStrength が呼ばれるたびに +1, & 0x1F の値で同じ強度内の点滅段を選ぶ
-  s32 poseIdx;        // 0x20, 現在表示しているアイコン番号 (62..66), 変化したときだけ MainSprite_SetPose を呼ぶ
+  s32 poseIdx;        // 0x20, 現在表示しているアイコン番号 (62..66)
   MainSpriteGfx gfx;  // 0x24, SPRITE_UI_LINK
   MainSprite sprite;  // 0x44
 } SignalStrengthIcon;
 static_assert(sizeof(SignalStrengthIcon) == 164);
 
-extern SignalStrengthIcon* gSignalStrengthIcon;  // 0x030000E4
+IWRAM_DATA SignalStrengthIcon* gSignalStrengthIcon = NULL;  // 0x030000E4
 
 u32 FUN_0804e59c(void);
 bool32 FUN_0804e3ec(void);

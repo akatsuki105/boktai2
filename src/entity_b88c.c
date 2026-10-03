@@ -1,3 +1,4 @@
+#include "bg_pltt.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -7,14 +8,12 @@
 #include "video.h"
 #include "vm.h"
 
-s32 FUN_08049f84(void);
-
 extern s32 s32_030000d4;
 
 s32 FUN_08049e30(char* str);
 s32 FUN_08049f5c(void);
 
-// 上下で項目を選ぶメニュー
+// 上下で項目を選ぶメニュー, SPRITE_UI_LINK を使うので通信関連?
 typedef struct {
   Entity e;               // 0x000, ENTITY_UNK_11
   u32 params[4];          // 0x018, '.p' の4値, 引数が無ければ末尾から 0 クリアされる
@@ -61,7 +60,7 @@ s32 FUN_0804aa30(EntityB88C* p, s32 param_2) {
 
   Video_SetupBGLayout(1, 0, GetFile(DIR_TILE_MAP, TILEMAP_CD91), 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
-  CpuCopy16((u8*)GetFile(DIR_BGPLTT, 0x26BB) + 0x14, gBgPlttBuffer, 512);
+  CpuCopy16(GetBgPlttFile(BGP_26BB)->body, gBgPlttBuffer, 256 * sizeof(rgb555));
   return 0;
 }
 
@@ -70,7 +69,7 @@ s32 FUN_0804aa98(EntityB88C* p, s32 param_2) {
 
   Video_SetupBGLayout(0, 0, GetFile(DIR_TILE_MAP, TILEMAP_A413), 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
-  CpuCopy16((rgb555*)GetFile(DIR_BGPLTT, 0xEFDA) + 218, &gBgPlttBuffer[208], 96);
+  CpuCopy16(&GetBgPlttFile(BGP_EFDA)->body[208], &gBgPlttBuffer[208], 48 * sizeof(rgb555));
   return 0;
 }
 
@@ -81,9 +80,9 @@ void FUN_0804ab00(EntityB88C* p) {
 
   for (i = 0; i < 3; i++, spr++) {
     if (i < p->count) {
-      spr->flags &= ~1;
+      spr->flags &= ~SPRFLAG_HIDDEN;
     } else {
-      spr->flags |= 1;
+      spr->flags |= SPRFLAG_HIDDEN;
     }
   }
 }
@@ -131,7 +130,7 @@ NON_MATCH void FUN_0804aecc(EntityB88C* p) {
     FUN_0804ab00(p);
   }
 
-  if (p->timer > 0x1E) {
+  if (p->timer > 30) {
     if (EntityB88C_ConfirmOrCancel(p)) {
       return;
     }

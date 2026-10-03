@@ -89,7 +89,7 @@ Entity5E27_Update: @ 0x08018FBC
 	bl FUN_0800271c
 	cmp r0, #0
 	beq _08018FE4
-	bl FUN_0823e1b0
+	bl Time_GetSpanOfTime
 	adds r1, r0, #0
 	subs r0, r1, #4
 	cmp r0, #1

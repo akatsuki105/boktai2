@@ -12,7 +12,7 @@
 COMMON_DATA Vec3 gCameraVpCoords = {};  // 0x030047C8
 COMMON_DATA Camera* gCamera = NULL;     // 0x030047D0
 COMMON_DATA u8 u8_030047d4[4] = {};     // todo
-COMMON_DATA u16 u16_030047d8 = 0;       // 0x030047D8, FUN_080489c4 がこのIDのメッセージでは音を鳴らさない
+COMMON_DATA u16 u16_030047d8 = 0;       // 0x030047D8, TextRenderer_PlayCharSound がこのIDのメッセージでは音を鳴らさない
 COMMON_DATA u8 u8_030047da[6] = {};     // todo
 
 void Camera_SetTilemapOffset(void) {
@@ -123,7 +123,7 @@ void FUN_0823b980(s32 n, Vec3* pos) {
 }
 
 void FUN_0823b9cc(s32 n) {
-  if (gCamera != NULL && !(gFlag030047a4 & FLAG030047A4_UNK_11)) {
+  if (gCamera != NULL && !(gFlag030047a4 & FLAG030047A4_LINK)) {
     if (n > gCamera->shakeAmplitude) {
       gCamera->shakeAmplitude = n;
     }
@@ -253,7 +253,7 @@ void FUN_0823bce4(Vec3* pos, s32* enabled) {
 
 NON_MATCH void FUN_0823bd14(u32 amplitude, u32 frames, s32 stopOnEnd) {
 #ifdef NONMATCHING_C
-  if (gCamera != NULL && (gFlag030047a4 & FLAG030047A4_UNK_11) == 0) {
+  if (gCamera != NULL && (gFlag030047a4 & FLAG030047A4_LINK) == 0) {
     if (frames == 0 && stopOnEnd == 1) {
       gCamera->shakeActive = FALSE;
       gCamera->shakeStopOnEnd = FALSE;
@@ -505,7 +505,7 @@ NON_MATCH void* FUN_0823c928(Camera* cam) {
 NAKED s32 Camera_Update(Camera* cam) { INCFUNC("asm/func/Camera_Update.inc"); }
 
 s32 Camera_Destroy(Camera* cam) {
-  if (!(gFlag030047a4 & FLAG030047A4_UNK_11)) {
+  if (!(gFlag030047a4 & FLAG030047A4_LINK)) {
     EntityMsgBus_Unregister(&cam->msgbox);
   }
   gCamera = NULL;

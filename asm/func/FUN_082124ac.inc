@@ -1,5 +1,5 @@
 	push {lr}
-	bl FUN_0823e1b0
+	bl Time_GetSpanOfTime
 	cmp r0, #5
 	bhi _082124E4
 	lsls r0, r0, #2

@@ -160,7 +160,6 @@ bool32 VM_Ctrl_DebugPrint(u8* pc) {
   return 0;
 }
 
-// https://boktaihacking.net/wiki/Bytecode#Control_0x121f_(call_indirect)
 bool32 VM_Ctrl_CallIndirect(u8* _) {
   u32 argv[16];
   ScriptArgs args;

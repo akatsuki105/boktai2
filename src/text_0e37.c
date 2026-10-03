@@ -15,10 +15,10 @@ typedef void (*TextBoxFunc)(struct TextBox* p);
 typedef struct TextBox {
   Entity e;                // 0x000, ENTITY_UNK_12
   TextRenderer renderer;   // 0x018
-  u8 rectX;                // 0x178, '.r' の1番目, TextRenderer_SetRect と FUN_0822ea60 に渡す
-  u8 rectY;                // 0x179, '.r' の2番目
-  u8 rectW;                // 0x17A, '.r' の3番目
-  u8 rectH;                // 0x17B, '.r' の4番目
+  u8 rectX;                // 0x178, '.r[0]', TextRenderer_SetRect と FUN_0822ea60 に渡す
+  u8 rectY;                // 0x179, '.r[1]'
+  u8 rectW;                // 0x17A, '.r[2]'
+  u8 rectH;                // 0x17B, '.r[3]'
   s16 lineIdx;             // 0x17C, '.i', TextBox_GetLine(p, lineIdx) が行頭ポインタを返す, 次の行へ進むとき +1
   bool8 unk_17e;           // 0x17E, 0 なら fn = TextBox_StateType (1文字ずつ表示), 0 以外なら unk_198 を 0 にして fn = TextBox_StateRenderAll
   u8 unk_17f;              // 0x17F, 入力待ちのフラグらしい, キー状態の bit1 が入る
@@ -30,7 +30,7 @@ typedef struct TextBox {
   u16 autoAdvanceTimer;    // 0x186, 毎フレーム +1
   s32 waitFrames;          // 0x188, 次の行へ進む前に待つフレーム数, '.l' で初期化し、TextBox_Update が毎フレーム renderer.unk_18 で上書きする
   u32 waitTimer;           // 0x18C, waitFrames の経過フレーム数, TextBox_StateWaitInput が waitFrames に達するまで +1 し、達したら両方 0 に戻す
-  FileID bgPlttFileID;     // 0x190, '.c=0x519C', TextBox_LoadBgPltt が GetFile(BGPLTT, id) に渡した ID
+  FileID bgPlttFileID;     // 0x190, '.c=0x519C'
   s16 pendingLine;         // 0x192, 次に表示する行, -1 なら何もしない, TextBox_Update がこれを TextBox_ShowLine に渡す
   u32 unk_194;             // 0x194, '.m', TextBox_SetAutoAdvance の第3引数
   u32 unk_198;             // 0x198, 表示が終わると 1 になり TextBox_IsFinished が返す
@@ -39,7 +39,7 @@ typedef struct TextBox {
   u16 labelIdx;            // 0x1A4, labels の添字, pendingLine = labels[labelIdx]
   u16 labelCount;          // 0x1A6, TextBox_StartWithLabels が 32 に丸める
   u16 labels[32];          // 0x1A8, TextBox_StartWithLabels が呼び出し側の配列をコピーする行番号表
-  void* bgPltt;            // 0x1E8, TextBox_LoadBgPltt の GetFile(BGPLTT, bgPlttFileID), TextBox_UploadBgPltt が +500 から gBgPlttBuffer[0xF0] へ転送する
+  BgPlttFile* bgPltt;      // 0x1E8, bgPlttFileID
   MainSpriteGfx arrowGfx;  // 0x1EC, SPRITE_MARKERS
   MainSprite arrow;        // 0x20C, 次ページ送りの矢印, TextBox_Update が pos を枠の右下に置き直す
   MainSpriteGfx faceGfx;   // 0x26C, SPRITE_PORTRAITS
@@ -60,7 +60,7 @@ void TextBox_ClearGlobal(void) { gTextBox = NULL; }
 bool32 TextBox_IsOpen(void) { return gTextBox != NULL; }
 
 s32 TextBox_LoadBgPltt(TextBox* p, s32 fileID) {
-  void* f = GetFile(DIR_BGPLTT, fileID);
+  BgPlttFile* f = GetBgPlttFile(fileID);
 
   if (f == NULL) return -1;
 
@@ -70,7 +70,7 @@ s32 TextBox_LoadBgPltt(TextBox* p, s32 fileID) {
 }
 
 // パレットファイルの 500 バイト目から 16色を BG パレットの最終ブロックへ送る
-void TextBox_UploadBgPltt(TextBox* p) { CpuCopy32((u8*)p->bgPltt + 500, &gBgPlttBuffer[240], 16 * sizeof(rgb555)); }
+void TextBox_UploadBgPltt(TextBox* p) { CpuCopy32(&p->bgPltt->body[240], &gBgPlttBuffer[240], 16 * sizeof(rgb555)); }
 
 s32 TextBox_RefreshFace(TextBox* p) {
   TextRenderer* r = &p->renderer;
@@ -393,7 +393,7 @@ s32 FUN_080488dc(void) {
   if (p == NULL) {
     return 0;
   }
-  return FUN_08048c58(&p->renderer);
+  return TextRenderer_GetTextWidth(&p->renderer);
 }
 
 s32 FUN_080488fc(void) { return gStat->unk_938; }

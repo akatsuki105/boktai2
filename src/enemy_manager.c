@@ -47,7 +47,6 @@ Enemy* FindEnemyById(u32 id);
 static inline void EnemyManager_ClearFlags(EnemyManager* p, EnemyManagerFlags bits) { p->flags &= ~bits; }
 
 static inline void Stat_SetFlag934(u16 bit) { gStat->unk_934 |= bit; }
-
 static inline void Stat_ClearFlag934(u16 bit) { gStat->unk_934 &= ~bit; }
 
 // 番兵ノードを1つ確保してリストを空の状態にする
@@ -160,8 +159,8 @@ void FUN_080ec848(u8 kind, void* payload, u16 id) {
 NAKED void FUN_080ec8a4(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec8a4.inc"); }
 
 void FUN_080ec900(u8 kind) {
-  if ((kind == 1) || (kind == 0x19)) {
-    Stat_SetFlag934(1);
+  if ((kind == 1) || (kind == 25)) {
+    Stat_SetFlag934(SF934_UNK_0);
   }
 }
 
@@ -474,9 +473,9 @@ NAKED void FUN_080ee738(Enemy* p) { INCFUNC("asm/func/FUN_080ee738.inc"); }
 void FUN_080ee9d4(EnemyManager* p) {
   if (Mod(p->frameCounter, 15) == 0) {
     if (FUN_080a0808() == 0) {
-      Stat_SetFlag934(0x20);
+      Stat_SetFlag934(SF934_UNK_5);
     } else {
-      Stat_ClearFlag934(0x20);
+      Stat_ClearFlag934(SF934_UNK_5);
     }
   }
 }

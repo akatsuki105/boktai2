@@ -3,9 +3,10 @@
 #include "global.h"
 #include "player.h"
 #include "sprite.h"
+#include "time.h"
 #include "vm.h"
 
-// 天窓から差し込む光, スプライトは 0x3640
+// 天窓から差し込む(スポット的な)光, スプライトは SPRITE_SPOTLIGHT
 typedef struct {
   Vec3 pos;             // 0x00, '.p', 足元のタイルの高さに合わせてから入る
   AuxSprite sprite[2];  // 0x08
@@ -24,6 +25,7 @@ typedef struct {
 static_assert(sizeof(SkylightBeam) == 168);
 
 // 天窓の光を最大16個持ち、プレイヤーが光の中にいる間 太陽ゲージに応じて ENE を回復させる
+// おそらく、太陽光を浴びている状態の判定と浴びている時間に関するEntity, 天窓の情報も管理
 typedef struct Entity5CCC {
   Entity e;                // 0x000, ENTITY_UNK_9
   Player* player;          // 0x018
@@ -43,9 +45,10 @@ typedef struct Entity5CCC {
 static_assert(sizeof(Entity5CCC) == 2740);
 
 extern Entity5CCC* gEntity5CCC;  // 0x03000140
+extern u16 gSunlightOverride;
+extern u16 u16_03002bf0;
 
-u32 FUN_0823e1b0(void);
-u32 FUN_0823e4d4(void);
+u32 Time_GetMoonPhase(void);
 
 void FUN_0809df6c(void) { gEntity5CCC = NULL; }
 
@@ -73,37 +76,39 @@ NON_MATCH bool32 FUN_0809dfec(s32 param_1) {
 }
 
 // 太陽ゲージに比例した量を返す, 0 にはならない
-s32 FUN_0809e034(s32 param_1) {
-  s32 n = Div(gStat->sunGauge * param_1, 10);
-
-  if (n <= 0) {
+s32 FUN_0809e034(s32 coef) {
+  s32 n = Div(gStat->sunGauge * coef, 10);
+  if (n < 1) {
     n = 1;
   }
   return n;
 }
 
+// 引数の座標が天窓の下にあるかどうかを判定
 NAKED s32 FUN_0809e05c(Vec3* pos) { INCFUNC("asm/func/FUN_0809e05c.inc"); }
 
-NON_MATCH s32 FUN_0809e0d4(Vec3* pos, s32 param_2) {
+// 引数の座標が太陽光を受けているかを判定 (敵用?, 敵には太陽光でダメージを受けるものがいるのでその辺に関係)
+NON_MATCH s32 FUN_0809e0d4(Vec3* pos, s32 coef) {
 #ifdef NONMATCHING_C
   if (gStat->sunGauge == 0) {
     return 0;
   }
-  if (!(gStat->unk_934 & SF934_UNK_1) && FUN_0809e05c(pos) < 0 && gEntity5CCC->unk_29 == 0) {
+  if (!(gStat->unk_934 & SF934_OUTDOOR) && FUN_0809e05c(pos) < 0 && gEntity5CCC->unk_29 == 0) {
     return 0;
   }
-  return FUN_0809e034(param_2);
+  return FUN_0809e034(coef);
 #else
   INCFUNC("asm/func/FUN_0809e0d4.inc");
 #endif
 }
 
+// プレイヤーが太陽光を受けているかを判定
 NON_MATCH bool32 FUN_0809e138(Player* p) {
 #ifdef NONMATCHING_C
   if (gStat->sunGauge == 0) {
     return FALSE;
   }
-  if ((gStat->unk_934 & SF934_UNK_1) || (gEntity5CCC != NULL && FUN_0809e05c(&p->mover.pos) >= 0)) {
+  if ((gStat->unk_934 & SF934_OUTDOOR) || (gEntity5CCC != NULL && FUN_0809e05c(&p->mover.pos) >= 0)) {
     return TRUE;
   }
   return FALSE;
@@ -163,14 +168,51 @@ NAKED void FUN_0809e840(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809e840.inc"); }
 
 NAKED void FUN_0809e89c(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809e89c.inc"); }
 
-s32 FUN_0809e9d0(Entity5CCC* p) {
-  if (p->unk_1c != 0 && FUN_0823e1b0() - 1 >= 3) {
-    return 1;
+bool32 FUN_0809e9d0(Entity5CCC* p) {
+  if (p->unk_1c) {
+    u32 span = Time_GetSpanOfTime();
+
+    if (span < TIME_MORNING || span > TIME_SUNSET) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+// 日光の有無と屋内外で毎フレームの処理を振り分ける
+s32 Entity0809eb24_Update(Entity5CCC* p) {
+  if (p->unk_29 != 0) {
+    p->unk_29 = 0;
+  }
+
+  p->player = gPlayerPtr[0];
+  if (gPlayerPtr[0] != NULL) {
+    u16 override;
+    bool32 forced;
+
+    if (gStat->lx == 0) {  // 太陽光が0 (ライジングサンなども含めたもの)
+      if (FUN_0809e9d0(p)) {
+        FUN_0809e89c(p);
+      } else {
+        FUN_0809e840(p);
+      }
+    } else if (gStat->unk_934 & SF934_OUTDOOR) {  // 太陽光がある場合は、屋外と屋内で処理を分ける
+      FUN_0809e734(p);                            // 屋外
+    } else {
+      FUN_0809e7c4(p);  // 屋内
+    }
+
+    override = gSunlightOverride;
+    forced = FALSE;
+    if (override == 1) {
+      forced = TRUE;
+    }
+    if (forced && u16_03002bf0 != 0) {
+      p->unk_29 = 1;
+    }
   }
   return 0;
 }
-
-NAKED s32 Entity0809eb24_Update(Entity5CCC* p) { INCFUNC("asm/func/Entity0809eb24_Update.inc"); }
 
 s32 Entity0809eb24_Destroy(Entity5CCC* p) {
   s32 i;
@@ -188,7 +230,7 @@ bool32 FUN_0809eacc(void) {
   if (gFlag030047a4 & FLAG030047A4_UNK_8) {
     return FALSE;
   }
-  if (FUN_0823e4d4() == 4) {
+  if (Time_GetMoonPhase() == 4) {
     return TRUE;
   }
   return FALSE;
@@ -203,6 +245,7 @@ s32 Entity0809eb24_Init(Entity5CCC* p, u32 param_2, u32 param_3) {
   return 0;
 }
 
+// 1人プレイのときはこっち？
 Entity5CCC* Entity0809eb24_Create(u32 param_1, u32 param_2) {
   Entity5CCC* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity5CCC));
 
@@ -229,7 +272,7 @@ void FUN_0809ed54(Entity5CCC* p) {}
 NAKED void FUN_0809ed58(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809ed58.inc"); }
 
 s32 Entity0809eeb4_Update(Entity5CCC* p) {
-  if (gStat->unk_934 & 2) {
+  if (gStat->unk_934 & SF934_OUTDOOR) {
     FUN_0809ed54(p);
   } else {
     FUN_0809ed58(p);
@@ -258,6 +301,7 @@ s32 Entity0809eeb4_Init(Entity5CCC* p, u32 param_2, u32 param_3) {
   return 0;
 }
 
+// 通信時はこっち？
 Entity5CCC* Entity0809eeb4_Create(u32 param_1, u32 param_2) {
   Entity5CCC* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity5CCC));
 
@@ -276,7 +320,7 @@ Entity5CCC* VM_Sub5CCC(u32 param_1, u32 param_2) {
   if (gEntity5CCC != NULL) {
     return gEntity5CCC;
   }
-  if (gFlag030047a4 & FLAG030047A4_UNK_11) {
+  if (gFlag030047a4 & FLAG030047A4_LINK) {
     return Entity0809eeb4_Create(param_1, param_2);
   }
   return Entity0809eb24_Create(param_1, param_2);

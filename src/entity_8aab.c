@@ -1,15 +1,13 @@
-#include "animation.h"
 #include "entity.h"
 #include "global.h"
 #include "player.h"
 #include "shadow.h"
-#include "sprite_aux.h"
-#include "struct.h"
+#include "sprite.h"
 #include "video.h"
 
 typedef struct {
   AuxSprite sprite;       // 0x00, Entity8AAB_Destroy が AuxSprite_Remove に渡す
-  AuxSpriteGfx gfx;       // 0x2C, Video_GetAuxSprite(HINT_PANEL)
+  AuxSpriteGfx gfx;       // 0x2C, SPRITE_HINT_PANEL
   u8 unk_48[216 - 0x48];  // 0x48, まだ未解析
 } Entity8AABElem;
 static_assert(sizeof(Entity8AABElem) == 216);
@@ -19,10 +17,10 @@ typedef struct {
   Player* player;             // 0x018, _Init が gPlayerPtr[0] を入れる
   Entity8AABElem elems[16];   // 0x01C, _Init が16個ぶん Video_GetAuxSprite / AuxSprite_Add する
   AuxSprite sprite;           // 0xD9C, _Destroy が AuxSprite_Remove に渡す
-  AuxSpriteGfx gfx;           // 0xDC8, Video_GetAuxSprite(OTNK_97D3)
+  AuxSpriteGfx gfx;           // 0xDC8, SPRITE_OTNK_97D3
   u8 unk_de4[0xDF4 - 0xDE4];  // 0xDE4, まだ未解析
   ParticleShadow shadow;      // 0xDF4, ParticleShadow_Init(&shadow, &sprite.pos, 0) のあと Hide する
-  AuxAnimFile* anim;          // 0xE34, GetFile(DIR_ANIMATION, 0xC6A0)
+  AuxAnimFile* anim;          // 0xE34, ANIM_C6A0
   u16 unk_e38;                // 0xE38, _Init が 0 を入れる
   u8 unk_e3a;                 // 0xE3A, _Init が 1 を入れる
   u8 unk_e3b;                 // 0xE3B, まだ未解析

@@ -1,3 +1,4 @@
+#include "bg_pltt.h"
 #include "entity.h"
 #include "global.h"
 #include "sound.h"
@@ -22,7 +23,7 @@ typedef struct {
   Entity e;                // 0x000, ENTITY_UNK_8
   u8* record;              // 0x018, &gEntity9A9F->unk_15c, セッションが無ければ NULL で _Init は失敗する
   void* tilemapFile;       // 0x01C, TILEMAP_CD91, BG2 に敷く
-  rgb555* bgPltt;          // 0x020, GetFile(DIR_BGPLTT, "bg_link_col_arr") + 0x14
+  rgb555* pltt;            // 0x020, GetBgPlttFile("bg_link_col_arr")
   void* unk_24;            // 0x024, ワードとして読まれるが用途不明
   MainSpriteGfx gfx[4];    // 0x028
   MainSprite sprites[36];  // 0x0A8, Entity1B24_Destroy がまとめて外す

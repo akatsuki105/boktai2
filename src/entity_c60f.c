@@ -7,7 +7,6 @@
 #include "random.h"
 #include "sound.h"
 #include "sprite_aux.h"
-#include "struct.h"
 
 // src/entity_f1f9.c
 void FUN_081d5820(EntityF1F9Item* item, u16 n);
@@ -41,8 +40,8 @@ static_assert(sizeof(EntityC60FItem) == 284);
 // 最大32個の EntityC60FItem をビットマスクで管理するシングルトン
 typedef struct EntityC60F {
   Entity e;                   // 0x00, ENTITY_UNK_10
-  void* animFile0;            // 0x18, GetFile(DIR_ANIMATION, 0x1003)
-  void* animFile1;            // 0x1C, GetFile(DIR_ANIMATION, 0x931E)
+  void* animFile0;            // 0x18, ANIM_1003
+  void* animFile1;            // 0x1C, ANIM_931E
   EntityC60FItem* items[32];  // 0x20, _Update と _Destroy が32スロットを走査する
   u32 activeMask;             // 0xA0, bit i が立っていれば items[i] が確保済み
   u8 unk_a4;                  // 0xA4, _Init と _Update が 0xFF を書く, 読み手が見つかっていない
@@ -209,8 +208,8 @@ NAKED s32 EntityC60F_Update(EntityC60F* p) { INCFUNC("asm/func/EntityC60F_Update
 NAKED s32 EntityC60F_Destroy(EntityC60F* p) { INCFUNC("asm/func/EntityC60F_Destroy.inc"); }
 
 s32 EntityC60F_Init(EntityC60F* p) {
-  p->animFile0 = GetFile(DIR_ANIMATION, 0x1003);
-  p->animFile1 = GetFile(DIR_ANIMATION, 0x931E);
+  p->animFile0 = GetFile(DIR_ANIMATION, ANIM_1003);
+  p->animFile1 = GetFile(DIR_ANIMATION, ANIM_931E);
   gEntityC60F = p;
   p->activeMask = 0;
   p->unk_a4 = 255;

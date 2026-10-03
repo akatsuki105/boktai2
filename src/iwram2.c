@@ -50,7 +50,8 @@ IWRAM_DATA u8 u8_03002bc4[12] = {};                       // todo
 IWRAM_DATA u16 u16_03002bd0 = 0;                          // 0x03002BD0, FUN_0807b564 が 0 に戻す
 IWRAM_DATA u8 u8_03002bd2[14] = {};                       // todo
 IWRAM_DATA struct Player* gPlayerPtr[4] = {};             // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
-IWRAM_DATA u8 u8_03002bf0[4] = {};                        // todo
+IWRAM_DATA u16 u16_03002bf0 = 0;                          // 0x03002BF0, 0 以外かつ gSunlightOverride が 1 のとき Entity0809eb24_Update が unk_29 を立てる
+IWRAM_DATA u8 u8_03002bf2[2] = {};                        // todo
 IWRAM_DATA u16 u16_03002bf4 = 0;                          // 0x03002BF4, Player_Destroy が 0 に戻す
 IWRAM_DATA u8 u8_03002bf6[2] = {};                        // todo
 
@@ -110,7 +111,7 @@ IWRAM_DATA u16* gHBlankEffectBuffer = NULL;  // 0x03003518, スキャンライ�
 
 IWRAM_DATA bool16 gEepromIdle = FALSE;                    // 0x0300351C, EEPROM_BeginAccess (EEPROM アクセス前) が 0、EEPROM_EndAccess (アクセス後) が 1 を書く
 IWRAM_DATA u8 u8_0300351e[0x03003520 - 0x0300351E] = {};  // todo
-IWRAM_DATA bool32 gTextRendererActive = FALSE;            // 0x03003520, EntityDFC6 の表示中フラグと対で立つ
+IWRAM_DATA bool32 gTextRendererActive = FALSE;            // 0x03003520, Marquee の表示中フラグと対で立つ
 IWRAM_DATA u8 u8_03003524[0x03003530 - 0x03003524] = {};  // todo
 
 IWRAM_DATA u32 gSpriteListIdx = 0;  // 0x03003530, 描画リストの選択 (0: 通常, 1: スタートメニュー中)
@@ -222,7 +223,7 @@ IWRAM_DATA s32 gObjBrightness = 0;  // 0x0300445C, OBJ の明るさ, FRACUNIT_6 
 
 IWRAM_DATA s32 gBgBrightness2 = 0;  // 0x03004460, BG の明るさのもう一方の係数, gBgBrightness と独立に暗くしたい演出 (BgPlttDimmer 等) が使う
 
-IWRAM_DATA u16 gObjPlttBlendColor = 0;  // 0x03004464, FUN_0822d248 が OBJ の各色をこの色へ寄せる, gBgPlttBlendColor の OBJ 版, 書き手: Entity6978 / Entity4DDF などのフェード
+IWRAM_DATA rgb555 gObjPlttBlendColor = 0;  // 0x03004464, FUN_0822d248 が OBJ の各色をこの色へ寄せる, gBgPlttBlendColor の OBJ 版, 書き手: Entity6978 / Entity4DDF などのフェード
 
 IWRAM_DATA u8 u8_03004466[2] = {};  // todo
 

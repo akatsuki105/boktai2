@@ -26,6 +26,10 @@ static_assert(sizeof(Entity080db520) == 1372);
 
 extern Entity080db520* gEntity080db520;  // 0x03000160
 
+const u8 u8_ARRAY_085ad310[4] = {0x8, 0x4, 0x2, 0x1};  // 0x085AD310
+
+INCRODATA(".rodata", "data/rodata4.bin");  // ./tools/bin.ts ./baserom.gba 0x085ad314 0x085AF034 ./data/rodata4.bin
+
 NAKED s32 FUN_080da9c4(Entity080db520* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080da9c4.inc"); }
 
 NAKED void FUN_080dab9c(Entity080db520* p) { INCFUNC("asm/func/FUN_080dab9c.inc"); }
@@ -66,7 +70,7 @@ NAKED s32 Entity080db520_Destroy(Entity080db520* p) { INCFUNC("asm/func/Entity08
 s32 Entity080db520_Init(Entity080db520* p) {
   Video_GetAuxSprite(&p->gfx, SPRITE_EFF_1C1B);
   p->activeMask = 0;
-  p->anim = GetFile(DIR_ANIMATION, 0x3DC2);
+  p->anim = GetFile(DIR_ANIMATION, ANIM_3DC2);
   gEntity080db520 = p;
   return 0;
 }

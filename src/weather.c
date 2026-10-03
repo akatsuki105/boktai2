@@ -1,9 +1,8 @@
 #include "entity.h"
-#include "game.h"
 #include "global.h"
 #include "particle.h"
 #include "random.h"
-#include "types.h"
+#include "time.h"
 #include "video.h"
 #include "vm.h"
 
@@ -65,17 +64,6 @@ void WeatherManager_ScrollClouds(WeatherManager* p);
 s32 WeatherManager_UpdateParticles(WeatherManager* p);
 extern s32 s32_03002b48;
 s32 WeatherManager_SpawnParticles(WeatherManager* p, s32 a, s32 b, s32 c);
-u32 FUN_0823e1b0(void);
-
-bool32 FUN_08018118(WeatherManager*);
-bool32 FUN_08018250(WeatherManager*);
-bool32 FUN_08018284(WeatherManager*);
-bool32 FUN_08018324(WeatherManager*);
-bool32 FUN_080184ec(WeatherManager*);
-
-bool32 (*const PTR_ARRAY_085aa948[5])(WeatherManager*) = {
-    FUN_08018118, FUN_08018250, FUN_08018284, FUN_08018324, FUN_080184ec,
-};  // 0x085AA948
 
 bool32 WeatherManager_IsActive(void) {
   if (gWeatherManager != NULL) {
@@ -107,15 +95,15 @@ void WeatherManager_SetState(WeatherManager* p, u8 state) {
 // 天候が発生する確率, ゲーム内時間によっては半減する
 s32 WeatherManager_GetChance(WeatherManager* p) {
   s32 chance;
-  u32 hour;
+  u32 span;
 
   if (gStat->unk_2b0[1] != 0) {
     chance = p->unk_32;
   } else {
     chance = p->unk_30 * p->unk_32 >> FRACBITS_6;
   }
-  hour = FUN_0823e1b0();
-  if ((hour >= 4 && hour <= 5) || hour == 0) {
+  span = Time_GetSpanOfTime();
+  if ((span >= TIME_UNK4 && span <= TIME_UNK5) || span == TIME_NIGHT) {
     chance >>= 1;
   }
   return chance;
@@ -219,7 +207,7 @@ NON_MATCH bool32 FUN_08018284(WeatherManager* p) {
 #ifdef NONMATCHING_C
   if (p->unk_18 != 0) {
     p->unk_18 = 0;
-    gStat->unk_934 |= 0x800;
+    gStat->unk_934 |= SF934_UNK_11;
     if (p->unk_54 != 0) {
       VM_ExecByID(p->unk_54, NULL);
     }
@@ -252,6 +240,10 @@ NON_MATCH bool32 FUN_08018284(WeatherManager* p) {
 NAKED bool32 FUN_08018324(WeatherManager* p) { INCFUNC("asm/func/FUN_08018324.inc"); }
 
 NAKED bool32 FUN_080184ec(WeatherManager* p) { INCFUNC("asm/func/FUN_080184ec.inc"); }
+
+bool32 (*const PTR_ARRAY_085aa948[5])(WeatherManager*) = {
+    FUN_08018118, FUN_08018250, FUN_08018284, FUN_08018324, FUN_080184ec,
+};  // 0x085AA948
 
 NON_MATCH s32 WeatherManager_Update(WeatherManager* p) {
 #ifdef NONMATCHING_C
@@ -365,4 +357,4 @@ NON_MATCH s32 FUN_08018990(void) {
 
 u32 FUN_08018a08(void) { return u32_0300007c; }
 
-s32 FUN_08018a14(void) { return FUN_08018a08(); }
+s32 VM_Sub7A82(void) { return FUN_08018a08(); }

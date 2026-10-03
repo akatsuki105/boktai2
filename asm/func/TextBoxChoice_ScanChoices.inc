@@ -97,7 +97,7 @@ _08005922:
 	cmp r0, #0x1f
 	bne _0800596E
 	adds r0, r2, #0
-	bl FUN_08048afc
+	bl Text_GetEscapeCharcode
 	lsls r0, r0, #0x10
 	lsrs r1, r0, #0x10
 	ldr r0, _0800594C @ =0x0000FFFF

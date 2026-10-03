@@ -8,7 +8,7 @@ extern const mft_directory gPlttDirectory;
 extern const mft_directory gSpritePlttsDirectory;
 extern const mft_directory gAuxSpritesDirectory;
 extern const mft_directory gFontDirectory;
-extern const ScriptDirectory gScriptDirectory;
+extern const u32 gScriptDirectory;
 extern const mft_directory gCollisionMapsDirectory;
 extern const mft_directory gTilemapDirectory;
 extern const mft_directory gMainSpritesDirectory;

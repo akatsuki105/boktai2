@@ -38,8 +38,6 @@ static_assert(sizeof(LevelUpper) == 608);
 
 extern LevelUpper* gLevelUpper;  // 0x03000154
 
-s32 GetWeaponSkillLevel(s32 idx);
-
 // 次のレベルになるために必要な"総"経験値量を返す
 u32 GetNextLvExp(LevelUpper* p, s32 lv) {
   // = return p->expTable[lv] * 10;

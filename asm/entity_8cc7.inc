@@ -510,7 +510,7 @@ _081D8DA6:
 	movs r0, #0xe1
 	lsls r0, r0, #4
 	str r0, [r1]
-	bl FUN_0823e1b0
+	bl Time_GetSpanOfTime
 	cmp r0, #2
 	bgt _081D8DB8
 	movs r0, #0

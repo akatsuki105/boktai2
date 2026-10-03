@@ -6,9 +6,9 @@
 // 実時計を見張り、正午・夜明け・日没に差しかかった回に1度だけスクリプトを起動する
 typedef struct {
   Entity e;          // 0x00, ENTITY_UNK_8
-  s16 hour;          // 0x18, GetHour()
-  s16 minute;        // 0x1A, GetMinute()
-  s16 second;        // 0x1C, GetSecond()
+  s16 hour;          // 0x18, Time_GetHour()
+  s16 minute;        // 0x1A, Time_GetMinute()
+  s16 second;        // 0x1C, Time_GetSecond()
   s16 frameCounter;  // 0x1E, 毎フレーム +1, 60 になったフレームだけ判定を飛ばして 0 に戻す
   s32 secondOfDay;   // 0x20, hour * 3600 + minute * 60 + second
   s32 window;        // 0x24, '.d=60', 夜明け・日没と一致とみなす秒数の幅
@@ -51,9 +51,9 @@ NON_MATCH s32 ClockAlarm_Update(ClockAlarm* p) {
     p->frameCounter = 0;
     return 0;
   }
-  p->hour = GetHour();
-  p->minute = GetMinute();
-  p->second = GetSecond();
+  p->hour = Time_GetHour();
+  p->minute = Time_GetMinute();
+  p->second = Time_GetSecond();
   p->secondOfDay = p->hour * 3600 + p->minute * 60 + p->second;
 
   d = ClockAlarm_Diff(p->secondOfDay, 43230);
@@ -111,9 +111,9 @@ s32 ClockAlarm_Destroy(ClockAlarm* p) { return 0; }
 s32 ClockAlarm_Init(ClockAlarm* p) {
   s32 i;
 
-  p->hour = GetHour();
-  p->minute = GetMinute();
-  p->second = GetSecond();
+  p->hour = Time_GetHour();
+  p->minute = Time_GetMinute();
+  p->second = Time_GetSecond();
   p->secondOfDay = p->hour * 3600 + p->minute * 60 + p->second;
   p->window = VM_GetNamedArgValue('d', 60);
   p->scriptID = VM_GetNamedArgValue('p', 0);

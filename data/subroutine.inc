@@ -67,7 +67,7 @@ gSubroutineTable:
 	.4byte 0x1B24, Entity1B24_Create
 	.4byte 0x1B77, FUN_080558b8
 	.4byte 0x1BEE, FUN_0807b15c
-	.4byte 0x1C3E, FUN_0823e318
+	.4byte 0x1C3E, Time_GetDayOfWeekScripted
 	.4byte 0x1C64, TextBox_Open
 	.4byte 0x1DBE, FUN_0809ff84
 	.4byte 0x1E97, FUN_080ef5a8
@@ -139,7 +139,7 @@ gSubroutineTable:
 	.4byte 0x3A5D, FUN_08242450
 	.4byte 0x3A89, BgPlttBlender_AddSlotFromScript
 	.4byte 0x3C3E, FUN_0807dbe0
-	.4byte 0x3C47, FUN_0823e394
+	.4byte 0x3C47, Time_GetSunriseScripted
 	.4byte 0x3C48, FUN_0823d3fc
 	.4byte 0x3C8D, VM_ResetGameKeepingVars
 	.4byte 0x3D0C, FUN_08055b58
@@ -167,7 +167,7 @@ gSubroutineTable:
 	.4byte 0x41D3, FUN_0807b5d0
 	.4byte 0x4235, WeatherManager_StartScripted
 	.4byte 0x42EF, FUN_080d7f48
-	.4byte 0x430D, FUN_0823d85c
+	.4byte 0x430D, TimerEntity_CreateFromScript
 	.4byte 0x435E, ScriptShadow_DeleteFromScript
 	.4byte 0x4383, VM_Sub4383
 	.4byte 0x43A0, VM_ReadTable
@@ -192,11 +192,11 @@ gSubroutineTable:
 	.4byte 0x4CBB, FUN_082405a8
 	.4byte 0x4CCD, FUN_0823d37c
 	.4byte 0x4CDD, FUN_0807dc60
-	.4byte 0x4D4D, Entity4D4D_Create
+	.4byte 0x4D4D, ObjPlttBlender_Create
 	.4byte 0x4D88, item_0824292c
 	.4byte 0x4DDF, Entity4DDF_Create
 	.4byte 0x4E22, FUN_080eda24
-	.4byte 0x4E30, FUN_0823e28c
+	.4byte 0x4E30, Time_GetRtcStatus
 	.4byte 0x4E69, EntityMsgBus_Create
 	.4byte 0x4EBF, FUN_08205e68
 	.4byte 0x4ED4, sound_082403b8
@@ -209,7 +209,7 @@ gSubroutineTable:
 	.4byte 0x5276, FUN_08224b94
 	.4byte 0x5292, Entity5292_Create
 	.4byte 0x52BF, AlbumMenu_Create
-	.4byte 0x5365, FUN_0823e3e8
+	.4byte 0x5365, Time_GetSunsetScripted
 	.4byte 0x53BF, FUN_082402c8
 	.4byte 0x5460, FUN_080a1010
 	.4byte 0x546C, FUN_0807db58
@@ -226,7 +226,7 @@ gSubroutineTable:
 	.4byte 0x571D, Entity571D_Create
 	.4byte 0x5844, FUN_081d5450
 	.4byte 0x58D7, FUN_0807d660
-	.4byte 0x5933, FUN_0823e4e0
+	.4byte 0x5933, Time_GetMoonPhaseScripted
 	.4byte 0x5941, Entity5941_Create
 	.4byte 0x5986, FUN_0807b118
 	.4byte 0x5A36, FUN_080200f0
@@ -308,7 +308,7 @@ gSubroutineTable:
 	.4byte 0x7A27, Video_LoadTileMap
 	.4byte 0x7A75, FUN_081d515c
 	.4byte 0x7A77, SolarBank_SetBalanceScripted
-	.4byte 0x7A82, FUN_08018a14
+	.4byte 0x7A82, VM_Sub7A82
 	.4byte 0x7B7D, FUN_08243380
 	.4byte 0x7B9F, FUN_081d8948
 	.4byte 0x7C62, FUN_080a404c
@@ -342,7 +342,7 @@ gSubroutineTable:
 	.4byte 0x86F3, ScriptShadow_SetModeFromScript
 	.4byte 0x877F, FUN_08050e18
 	.4byte 0x87E4, EnemySpider_Create
-	.4byte 0x87FE, Entity87FE_Create
+	.4byte 0x87FE, MorningDew_Create
 	.4byte 0x883A, VM_Sub883A
 	.4byte 0x8894, FUN_082070bc
 	.4byte 0x88B7, FUN_0821a974
@@ -350,7 +350,7 @@ gSubroutineTable:
 	.4byte 0x8954, FUN_080e1280
 	.4byte 0x898D, FUN_0807b564
 	.4byte 0x89C6, FUN_0807b484
-	.4byte 0x8A21, FUN_0804732c
+	.4byte 0x8A21, EntityAB4E_AddElemScripted
 	.4byte 0x8AAB, Entity8AAB_Create
 	.4byte 0x8AF6, Entity8AF6_Create
 	.4byte 0x8B67, FUN_0801fedc
@@ -462,7 +462,7 @@ gSubroutineTable:
 	.4byte 0xB47E, FUN_080a4fac
 	.4byte 0xB4B4, VM_SubB4B4
 	.4byte 0xB50D, FUN_08224d28
-	.4byte 0xB55A, FUN_0823e298
+	.4byte 0xB55A, Time_GetDateTimeScripted
 	.4byte 0xB603, FUN_0807b4b8
 	.4byte 0xB639, MapAreaManager_Create
 	.4byte 0xB683, FUN_0807d9a8
@@ -528,7 +528,7 @@ gSubroutineTable:
 	.4byte 0xD0C7, FUN_08240428
 	.4byte 0xD0CE, FUN_082246bc
 	.4byte 0xD169, FUN_08224c8c
-	.4byte 0xD1C0, FUN_0820cfc0
+	.4byte 0xD1C0, VM_SubD1C0
 	.4byte 0xD229, FUN_0820bccc
 	.4byte 0xD24B, coffin_0808623c
 	.4byte 0xD25F, FUN_0809e2c4
@@ -569,7 +569,7 @@ gSubroutineTable:
 	.4byte 0xDED5, GameOverManager_StartScripted
 	.4byte 0xDF85, FUN_0809c214
 	.4byte 0xDFAB, FUN_081d19a8
-	.4byte 0xDFC6, EntityDFC6_Create
+	.4byte 0xDFC6, Marquee_Create
 	.4byte 0xE019, FUN_080eddc8
 	.4byte 0xE02A, FUN_08004a04
 	.4byte 0xE02E, EntityE02E_Create
@@ -637,7 +637,7 @@ gSubroutineTable:
 	.4byte 0xFA5D, FUN_08223fd8
 	.4byte 0xFB53, EntityFB53_Create
 	.4byte 0xFB8C, GameOverManager_Create
-	.4byte 0xFBC1, FUN_0823e338
+	.4byte 0xFBC1, Time_GetDayDiffScripted
 	.4byte 0xFBE5, EntityFBE5_Create
 	.4byte 0xFD12, FUN_0807b580
 	.4byte 0xFD6B, FUN_080e154c

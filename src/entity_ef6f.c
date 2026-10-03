@@ -416,12 +416,7 @@ s32 FUN_0801ea34(EntityEF6F* p) {
 
 // unk_36 が unk_30..unk_32 の範囲にどれだけ近く止まったかを採点し、成否に応じた効果音とポーズを選ぶ
 void FUN_0801eaac(EntityEF6F* p, s32 param_2) {
-  s32 diff = p->unk_34 - p->unk_36;
-
-  if (diff < 0) {
-    diff = -diff;
-  }
-
+  s32 diff = abs(p->unk_34 - p->unk_36);
   p->unk_67 = p->unk_36;
   FUN_0801e980(p);
 

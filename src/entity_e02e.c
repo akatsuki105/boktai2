@@ -2,8 +2,6 @@
 #include "global.h"
 #include "menu.h"
 #include "sprite.h"
-#include "sprite_main.h"
-#include "sprite_pltt.h"
 
 typedef struct EntityE02E EntityE02E;
 typedef void(EntityE02EFunc)(EntityE02E* p);

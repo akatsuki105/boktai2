@@ -1018,7 +1018,7 @@ FUN_081de090: @ 0x081DE090
 	adds r1, r4, r2
 	movs r0, #0xff
 	strb r0, [r1]
-	bl FUN_0823e1b0
+	bl Time_GetSpanOfTime
 	movs r1, #0xd0
 	lsls r1, r1, #1
 	adds r4, r4, r1

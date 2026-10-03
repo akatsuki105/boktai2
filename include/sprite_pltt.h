@@ -4,18 +4,12 @@
 #include "gba/gba.h"
 #include "types.h"
 
-// https://boktaihacking.net/wiki/Sprite_set_file#Palettes
-
-#define OBJ_PLTT_LENGTH 768
-
+// SpritePltt, OBJPltt, OBP
 typedef struct {
-  u16 length;                      // 0x00, OBJ_PLTT_LENGTH
-  u16 unk_02;                      // 0x02, ???
-  u16 body[OBJ_PLTT_LENGTH * 16];  // 0x04, RGB555 array
+  u16 length;      // 0x00, 16色パレットの個数
+  u16 unk_02;      // 0x02, ???
+  rgb555 body[0];  // 0x04, rgb555[length*16]
 } ObjPlttFile;
-static_assert(sizeof(ObjPlttFile) == 24580);
-
-extern const ObjPlttFile gObjPlttFile0;  // 0x08CB9244
 
 extern rgb555* gObjPlttData;
 s32 FUN_0822d12c(u32 plttID, rgb555* pltt);

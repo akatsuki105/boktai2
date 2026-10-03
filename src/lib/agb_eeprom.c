@@ -7,14 +7,14 @@ extern const eepromType gEEPROMConfig8k;
 
 IWRAM_DATA const eepromType* gEEPROMConfig = NULL;  // 0x0300581c
 
-u16 EEPROMConfigure(u16 unk_1) {
+u16 IdentifyEeprom(u16 eeprom_KbitSize) {
   u16 ret;
 
   ret = 0;
-  if (unk_1 == 4) {
+  if (eeprom_KbitSize == 4) {
     gEEPROMConfig = &gEEPROMConfig512;
   } else {
-    if (unk_1 == 0x40) {
+    if (eeprom_KbitSize == 0x40) {
       gEEPROMConfig = &gEEPROMConfig8k;
     } else {
       gEEPROMConfig = &gEEPROMConfig512;

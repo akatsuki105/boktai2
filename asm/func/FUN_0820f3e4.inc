@@ -66,7 +66,7 @@ _0820F40E:
 	bne _0820F472
 	ldrh r1, [r7, #8]
 	adds r0, r5, #0
-	bl FUN_08055fbc
+	bl SpriteHolder_SetPlttID
 _0820F472:
 	adds r0, r5, #0
 	movs r1, #2

@@ -9,7 +9,7 @@
 // https://boktaihacking.net/wiki/Collision_map_file
 
 typedef struct {
-  char magic[4];         // 0x00, "HP\0\0"
+  char magic[4];         // 0x00, "HP\0\0", Height Property とかで HP なのかな？
   u32 offsetToTileData;  // 0x04, この構造体の先頭から CollisionMapTileData 構造体までのバイトオフセット
   u32 offsetToZones;     // 0x08, この構造体の先頭から ZoneData 構造体までのバイトオフセット
   u32 offsetToPaths;     // 0x0C, この構造体の先頭から PathData 構造体までのバイトオフセット

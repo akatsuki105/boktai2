@@ -7,8 +7,8 @@
 
 typedef struct Eff082473e0 {
   Entity e;                      // 0x00
-  ParticleGroup* group;          // 0x18, Eff082473e0_Init が GetParticleGroup(PTCL_GROUP_0) を入れる, エミッタの粒子はここから取る
-  AuxAnimFile* anim;             // 0x1C, Eff082473e0_Init が GetFile(DIR_ANIMATION, 0xD1B8) を入れる
+  ParticleGroup* group;          // 0x18, PTCL_GROUP_0
+  AuxAnimFile* anim;             // 0x1C, ANIM_D1B8
   Eff082473e0Emitter* emitters;  // 0x20, 登録されているエミッタの双方向リストの先頭
 } Eff082473e0;
 static_assert(sizeof(Eff082473e0) == 36);
@@ -100,7 +100,7 @@ s32 Eff082473e0Emitter_BurstParticle(Eff082473e0Emitter* e, s32 count, Vec3* pos
 }
 
 // エミッタを待機状態に戻す, 枠は全部空きにして粒子も隠す
-void* Eff082473e0Emitter_Reset(Eff082473e0Emitter* e) {
+missing Eff082473e0Emitter_Reset(Eff082473e0Emitter* e) {
   s32 i;
 
   e->activeCount = 0;
@@ -214,7 +214,7 @@ s32 Eff082473e0_Init(Eff082473e0* p, u32 _) {
   gEff082473e0 = p;
   p->emitters = NULL;
   p->group = GetParticleGroup(PTCL_GROUP_0);
-  p->anim = GetFile(DIR_ANIMATION, 0xD1B8);
+  p->anim = GetFile(DIR_ANIMATION, ANIM_D1B8);
   return 0;
 }
 

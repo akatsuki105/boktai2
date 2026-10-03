@@ -25,12 +25,12 @@ extern const eepromType* gEEPROMConfig;
  * selects EEPROM type
  * selects 512byte on invalid argument
  *
- * @param unk_1 4 for 512 byte, 0x40 for 8k
- * @return 1 on invalid argument, 0 otherwise
+ * @param eeprom_KbitSize 4: 4096bits(512Byte), 0x40: 65536bits(8KB)
+ * @return 0 is normal end, non-zero is an argument error
  */
-u16 EEPROMConfigure(u16 unk_1);
-u16 EEPROMRead(eepromAdr address, u16* data);
-u16 EEPROMCompare(eepromAdr address, const u16* data);
-u16 EEPROMWrite0_8k_Check(eepromAdr address, const u16* data);
+u16 IdentifyEeprom(u16 eeprom_KbitSize);
+u16 EEPROMRead(eepromAdr address, u16* data);                   // Read 8 bytes
+u16 EEPROMCompare(eepromAdr address, const u16* data);          // Verify 8 bytes
+u16 EEPROMWrite0_8k_Check(eepromAdr address, const u16* data);  // Write 8 bytes
 
 #endif  // GUARD_GBA_EEPROM_H

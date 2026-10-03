@@ -120,7 +120,7 @@ NON_MATCH s32 HazardManager_Update(CactusManager* p) {
         if (hazard->damageTimer != 0) {
           Hitbox_SetFlags(&hazard->hitbox, HBFLAG_UNK_2);
           if (--hazard->damageTimer == 0) {
-            Video_SetAuxSpritePltt(&hazard->gfx, 0x11B);
+            Video_SetAuxSpritePltt(&hazard->gfx, 283);
           }
         } else {
           Hitbox_ClearFlags(&hazard->hitbox, HBFLAG_UNK_2);
@@ -312,3 +312,5 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   INCFUNC("asm/func/HazardManager_Spawn.inc");
 #endif
 }
+
+NAKED s32 HazardManager_SpawnScripted(void) { INCFUNC("asm/func/HazardManager_SpawnScripted.inc"); }

@@ -68,7 +68,7 @@ _0821578E:
 	adds r1, r1, r2
 	ldr r1, [r1]
 	movs r2, #0
-	bl FUN_082401e8
+	bl Time_SetLocation
 	ldr r1, _082157D0 @ =0x030047E0
 	movs r0, #0
 	strb r0, [r1, #9]

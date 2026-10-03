@@ -154,7 +154,7 @@ void FUN_08080648(HitboxData* a, HitboxData* b, Entity08080be8* p) { Entity08080
 
 // 発動時に ENE を払う
 void Entity08080be8_PayENE(Entity08080be8* p) {
-  if (gFlag030047a4 & FLAG030047A4_UNK_11) {
+  if (gFlag030047a4 & FLAG030047A4_LINK) {
     s32 cost = p->eneCost;
 
     if (gEntity9A9F != NULL) {
@@ -171,7 +171,7 @@ s32 Entity08080be8_GetDamage(Entity08080be8* p) {
   if (p->unk_cd != 0) {
     return 8;
   }
-  if (gFlag030047a4 & FLAG030047A4_UNK_11) {
+  if (gFlag030047a4 & FLAG030047A4_LINK) {
     dmg = FUN_080d1b04(p->player);
   } else {
     dmg = FUN_0806f900(p->player);

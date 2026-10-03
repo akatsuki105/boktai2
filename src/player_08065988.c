@@ -1245,7 +1245,7 @@ void FUN_0807a528(Player* p, Vec3* pos, u16 param_3) {
 bool32 FUN_0807a570(Player* p, s32 param_2) {
   bool32 ret;
 
-  if (gFlag030047a4 & FLAG030047A4_UNK_11) {
+  if (gFlag030047a4 & FLAG030047A4_LINK) {
     FUN_080d040c(p);
     Player_SetAction(p, 28, 0);
     return FALSE;

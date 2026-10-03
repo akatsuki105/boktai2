@@ -3,6 +3,7 @@
 
 #include "constants/armor.h"
 #include "constants/coffin.h"
+#include "constants/collision_map.h"
 #include "constants/enemy.h"
 #include "constants/item.h"
 #include "constants/magic.h"
@@ -12,6 +13,7 @@
 #include "constants/size.h"
 #include "constants/songs.h"
 #include "constants/sprite.h"
+#include "constants/sprite_animation.h"
 #include "constants/tilemap.h"
 #include "constants/weapon.h"
 

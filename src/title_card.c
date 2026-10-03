@@ -7,9 +7,6 @@
 #include "video.h"
 #include "vm.h"
 
-extern s32 gBgBrightness;
-extern s32 gObjBrightness;
-
 struct TitleCard;
 typedef void (*TitleCardFunc)(struct TitleCard*);
 

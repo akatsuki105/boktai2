@@ -15,9 +15,6 @@ struct Entity080db520;
 struct Entity080dbe54;
 struct Entity080dc44c;
 struct Entity080dd1f8;
-struct SignalStrengthIcon;
-struct EntityD53D;
-struct EntityAF33;
 struct Entity723E;
 struct Entity08051b70;
 struct Entity0805fe30;
@@ -43,16 +40,7 @@ struct Entity081ea820;
 struct Entity081eaf6c;
 struct Entity081eb2f0;
 
-IWRAM_DATA u8 u8_030000e0[0xE4 - 0xE0] = {};
-
-IWRAM_DATA struct SignalStrengthIcon* gSignalStrengthIcon = NULL;  // 0x030000E4
-IWRAM_DATA struct EntityD53D* gEntityD53D = NULL;                  // 0x030000E8
-
-IWRAM_DATA u8 u8_030000ec[0x0F0 - 0x0EC] = {};
-
-IWRAM_DATA struct EntityAF33* gEntityAF33 = NULL;  // 0x030000F0
-
-IWRAM_DATA u8 u8_030000f4[0x118 - 0x0F4] = {};
+IWRAM_DATA u8 u8_030000f4[0x118 - 0x0F4] = {};  // ライブラリが使う？
 
 IWRAM_DATA struct Entity08051b70* gEntity08051b70 = NULL;  // 0x03000118
 IWRAM_DATA struct Entity723E* gEntity723E = NULL;          // 0x0300011C

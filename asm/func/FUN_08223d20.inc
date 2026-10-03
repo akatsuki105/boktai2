@@ -28,7 +28,7 @@ _08223D54: .4byte 0x00000F44
 _08223D58: .4byte 0x00000F54
 _08223D5C: .4byte 0x030047E0
 _08223D60:
-	bl GetHour
+	bl Time_GetHour
 _08223D64:
 	pop {r0}
 	bx r0

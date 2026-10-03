@@ -16,14 +16,8 @@ gSpriteSetFile25 = 0x08C5A80C;
 
 gItemEffectHandlers = 0x085ACF7C;
 
-/* data/rodata.bin の中にある " " (0x20 0x00), FUN_08049e5c が空文字として渡す */
-gBlankText = 0x085AB548;
-
 /* data/rodata4.bin の中にある Vec3 3つ組, エレベータが乗り手との距離を測るときの許容範囲 (±) */
 gElevatorRanges = 0x085AE0D0;
-
-/* data/*.bin にまだ入っている u8[][2], gClock.spanOfTime で引く (FUN_0823ce10 / FUN_0823ce3c) */
-u8_ARRAY_08dbd798 = 0x08DBD798;
 
 /* gba-mus-ripper が出したやつ(意味はわからない) */
 voicegroup000 = 0x08252fc0;
@@ -78,11 +72,15 @@ SECTIONS {
       src/boss.o(iwram_data);
       src/entity_ab4e.o(iwram_data);
       src/text_0e37.o(iwram_data);
-      src/text_dfc6.o(iwram_data);
+      src/text_marquee.o(iwram_data);
       src/text_panel.o(iwram_data);
       src/text_slideshow.o(iwram_data);
       src/entity_fb53.o(iwram_data);
+      src/code_0804b9f4.o(iwram_data);
+      src/signal_strength_icon.o(iwram_data);
+      src/entity_d53d.o(iwram_data);
       . = ALIGN(8);
+      src/entity_af33.o(iwram_data);
       src/iwram1.o(iwram_data);
       src/entity_082034c0.o(iwram_data);
       src/entity_08203ad0.o(iwram_data);
@@ -173,7 +171,7 @@ SECTIONS {
 			src/entity_55c2.o (.text);
 			src/entity_0800f110.o (.text);
 			src/title_card.o (.text);
-			src/entity_4d4d.o (.text);
+			src/obp_blend.o (.text);
 			src/entity_329b.o (.text);
 			src/sun_countdown.o (.text);
 			src/password_decoder.o (.text);
@@ -218,11 +216,13 @@ SECTIONS {
 			src/entity_286f.o (.text);
 			src/entity_ab4e.o (.text);
 			src/text_0e37.o (.text);
-			src/text_dfc6.o (.text);
+			src/text_renderer.o (.text);
+			src/text_marquee.o (.text);
 			src/text_panel.o (.text);
 			src/text_slideshow.o (.text);
 			src/entity_b88c.o (.text);
 			src/entity_fb53.o (.text);
+			src/code_0804b9f4.o (.text);
 			src/signal_strength_icon.o (.text);
 			src/entity_d53d.o (.text);
 			src/crossover_lobby.o (.text);
@@ -269,7 +269,7 @@ SECTIONS {
 			src/healing_effect.o (.text);
 			src/entity_4063.o (.text);
 			src/judgement.o (.text);
-			src/entity_87fe.o (.text);
+			src/morning_dew.o (.text);
 			src/entity_080aace8.o (.text);
 			src/entity_c438.o (.text);
 			src/entity_080abd14.o (.text);
@@ -283,7 +283,8 @@ SECTIONS {
 			src/solar_bank.o (.text);
 			src/entity_e9d3.o (.text);
 			src/entity_e02e.o (.text);
-			src/code_080b5ab0.o (.text);
+			src/entity_3019.o (.text);
+			src/entity_744f.o (.text);
 			src/entity_571d.o (.text);
 			src/entity_b3d1.o (.text);
 			src/entity_d3a9.o (.text);
@@ -371,7 +372,7 @@ SECTIONS {
 			src/entity_0fc5.o (.text);
 			src/code_0821b21c.o (.text);
 			src/entity_0821b7fc.o (.text);
-			src/code_0821b860.o (.text);
+			src/entity_8ec8.o (.text);
 			src/boss/entity_0623.o (.text);
 			src/game_result.o (.text);
 			src/entity_8aab.o (.text);
@@ -406,6 +407,7 @@ SECTIONS {
 			src/code_0823b540.o (.text);
 			src/camera.o (.text);
 			src/code_0823cd04.o (.text);
+			src/timer.o (.text);
 			src/time.o (.text);
 			src/time_math.o (.text);
 			src/sound.o (.text);
@@ -542,10 +544,12 @@ SECTIONS {
     src/boss/shademan.o (.rodata);
     src/data3b.o (.rodata);
     src/entity_ab4e.o (.rodata);
-    src/text_dfc6.o (.rodata);
+    src/text_renderer.o (.rodata);
+    src/text_marquee.o (.rodata);
     src/text_slideshow.o (.rodata);
     src/entity_b88c.o (.rodata);
     src/entity_fb53.o (.rodata);
+    src/code_0804b9f4.o (.rodata);
     src/entity_d53d.o (.rodata);
     src/crossover_lobby.o (.rodata);
     src/entity_af33.o (.rodata);
@@ -568,6 +572,8 @@ SECTIONS {
     src/solar_generator.o (.rodata);
     src/boss/jormungandr.o (.rodata);
     src/player_080d82ec.o (.rodata);
+    src/entity_080da848.o (.rodata);
+    src/entity_080db520.o (.rodata);
     src/preview_stage.o (.rodata);
     src/weapon_dex.o (.rodata);
     src/album_menu.o (.rodata);
@@ -595,19 +601,6 @@ SECTIONS {
     src/data/sprite_main.o (.rodata);
     src/data/obp.o (.rodata);
     src/data/scripts.o (.rodata);
-    src/data/text/strings.o (.rodata);
-    src/data/text/string_3307.o (.rodata);
-    src/data/text/library.o (.rodata);
-    src/data/text/string_3790.o (.rodata);
-    src/data/text/chat_luis.o (.rodata);
-    src/data/text/chat_marcello.o (.rodata);
-    src/data/text/chat_unknown.o (.rodata);
-    src/data/text/chat_zaji.o (.rodata);
-    src/data/text/staff_roll.o (.rodata);
-    src/data/text/map_codename.o (.rodata);
-    src/data/text/continue.o (.rodata);
-    src/data/start_menu.o (.rodata);
-    src/data/scripts2.o (.rodata);
     src/data/item.o (.rodata);
     src/demo.o (.rodata);
     src/vm_ctrl2.o (.rodata);

@@ -3,7 +3,7 @@
 #include "sprite_aux.h"
 
 typedef struct {
-  AuxSprite sprite;       // 0x00, Entity5292_Destroy が AuxSprite_Remove に渡す
+  AuxSprite sprite;       // 0x00
   u8 unk_2c[100 - 0x2C];  // 0x2C, まだ未解析
 } Entity5292Elem;
 static_assert(sizeof(Entity5292Elem) == 100);

@@ -1190,8 +1190,8 @@ _08055FB4:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_08055fbc
-FUN_08055fbc: @ 0x08055FBC
+	thumb_func_start SpriteHolder_SetPlttID
+SpriteHolder_SetPlttID: @ 0x08055FBC
 	push {lr}
 	ldr r2, [r0]
 	cmp r2, #0
