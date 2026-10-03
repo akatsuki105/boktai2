@@ -444,9 +444,9 @@ s32 CalcMaxHP(Player* p) {
   s32 val;
   PlayerArmor* armor = &p->armor;
   if (p->kind == PLAYER_SOLAR_DJANGO) {
-    val = (p->stats[STAT_VITALITY] + armor->bonus[STAT_VITALITY]) + armor->hpBonus;
+    val = (p->stats[STAT_VITALITY] + armor->bonus[STAT_VITALITY]) + armor->bonus2[STAT_VITALITY];
   } else {
-    val = (p->stats[STAT_VITALITY] + armor->bonus[STAT_VITALITY]) - armor->hpBonus;
+    val = (p->stats[STAT_VITALITY] + armor->bonus[STAT_VITALITY]) - armor->bonus2[STAT_VITALITY];
   }
   if (99 < val) {
     val = 99;
@@ -462,9 +462,9 @@ s32 CalcMaxEne(Player* p) {
   }
 
   if (p->kind == PLAYER_SOLAR_DJANGO) {
-    val = (p->stats[STAT_SPIRIT] + armor->bonus[STAT_SPIRIT]) + armor->eneBonus;
+    val = (p->stats[STAT_SPIRIT] + armor->bonus[STAT_SPIRIT]) + armor->bonus2[STAT_SPIRIT];
   } else {
-    val = (p->stats[STAT_SPIRIT] + armor->bonus[STAT_SPIRIT]) - armor->eneBonus;
+    val = (p->stats[STAT_SPIRIT] + armor->bonus[STAT_SPIRIT]) - armor->bonus2[STAT_SPIRIT];
   }
   if (99 < val) {
     val = 99;
@@ -538,11 +538,11 @@ NON_MATCH void Player_RefreshAttackPower(Player* p) {
   } else {
     lv = gStat->lv;
     if (p->kind == PLAYER_SOLAR_DJANGO) {
-      power = p->stats[3] + armor->bonus[3] + armor->unk_27a;
+      power = p->stats[3] + armor->bonus[3] + armor->bonus2[3];
       attrs = p->unk_27c | 1;
       weakness = 2;
     } else {
-      power = p->stats[3] + armor->bonus[3] - armor->unk_27a;
+      power = p->stats[3] + armor->bonus[3] - armor->bonus2[3];
       attrs = p->unk_27c | 2;
       weakness = 1;
     }
@@ -2373,8 +2373,169 @@ NON_MATCH void Player_UpdateWeaponWear(Player* p) {
 #endif
 }
 
-NAKED void FUN_0806483c(Player* p, const ArmorData* a) { INCFUNC("asm/func/FUN_0806483c.inc"); }
+// 鎧の特殊効果を Player に展開する, 補正値をいったん全部消してから effectType ごとの効果を入れる
+// 鎧の特殊効果を Player に展開する, 補正値をいったん全部消してから effectType ごとの効果を入れる
+// 残差14命令 (205/191): レジスタ割当 (原典は a を r3 に置いたまま回す) と case ごとの定数の作り方
+// flag378 のアドレスをローカルに持つと 270 → 205 まで詰まった, Tier A/B は試済
+NON_MATCH void Player_ApplyArmorEffect(Player* p, const ArmorData* a) {
+#ifdef NONMATCHING_C
+  PlayerFlag378* flags = &*flags;
+  s32 i;
 
+  p->unk_27c = 0;
+  for (i = 0; i < STAT_KINDS; i++) {
+    p->armor.bonus[i] = 0;
+    p->armor.bonus2[i] = 0;
+  }
+  *flags &= 0xF000000F;
+
+  if (a == NULL) {
+    FUN_08062c3c(p);
+    p->unk_94c = 0xFFFF;
+    return;
+  }
+
+  switch (a->effectType - 1) {
+    case 0: {
+      for (i = STAT_KINDS - 1; i >= 0; i--) {
+        p->armor.bonus2[i] = a->value;
+      }
+      break;
+    }
+    case 1: {
+      for (i = STAT_KINDS - 1; i >= 0; i--) {
+        p->armor.bonus2[i] = -a->value;
+      }
+      break;
+    }
+    case 2: {
+      p->armor.bonus[STAT_STRENGTH] = a->value;
+      break;
+    }
+    case 25: {
+      p->armor.bonus[3] = a->value;
+      break;
+    }
+    case 4: {
+      p->unk_27c = 1;
+      *flags |= FLAG378_AET_RES_SOL;
+      break;
+    }
+    case 14: {
+      break;
+    }
+    case 5: {
+      p->unk_27c = 0x2;
+      break;
+    }
+    case 6: {
+      p->unk_27c = 0x4;
+      break;
+    }
+    case 7: {
+      p->unk_27c = 0x8;
+      break;
+    }
+    case 8: {
+      p->unk_27c = 0x10;
+      break;
+    }
+    case 9: {
+      p->unk_27c = 0x20;
+      break;
+    }
+    case 10: {
+      p->unk_27c = 0x3C;
+      break;
+    }
+    case 11: {
+      p->unk_27c = 0x40;
+      break;
+    }
+    case 3: {
+      *flags |= FLAG378_UNK_4;
+      break;
+    }
+    case 12: {
+      *flags |= FLAG378_FAIRY;
+      break;
+    }
+    case 13: {
+      *flags |= FLAG378_UNK_12;
+      break;
+    }
+    case 15: {
+      *flags |= FLAG378_AET_SUNLIGHT;
+      break;
+    }
+    case 16: {
+      *flags |= FLAG378_UNK_10;
+      break;
+    }
+    case 17: {
+      *flags |= FLAG378_UNK_8;
+      break;
+    }
+    case 18: {
+      *flags |= FLAG378_UNK_9;
+      break;
+    }
+    case 19: {
+      *flags |= FLAG378_UNK_11;
+      break;
+    }
+    case 20: {
+      *flags |= FLAG378_UNK_15;
+      break;
+    }
+    case 21: {
+      *flags |= FLAG378_UNK_16;
+      break;
+    }
+    case 22: {
+      *flags |= FLAG378_UNK_5;
+      break;
+    }
+    case 23: {
+      *flags |= FLAG378_WEAPONGUARD;
+      break;
+    }
+    case 24: {
+      *flags |= FLAG378_UNK_17;
+      break;
+    }
+    case 26: {
+      *flags |= FLAG378_UNK_18;
+      break;
+    }
+    case 27: {
+      *flags |= FLAG378_UNK_19;
+      break;
+    }
+    case 28: {
+      *flags |= FLAG378_UNK_20;
+      break;
+    }
+    case 29: {
+      *flags |= FLAG378_UNK_21;
+      break;
+    }
+    case 30: {
+      *flags |= FLAG378_UNK_22;
+      break;
+    }
+    case 31: {
+      *flags |= FLAG378_UNK_23;
+      break;
+    }
+  }
+
+  FUN_08062c3c(p);
+  p->unk_94c = 0xFFFF;
+#else
+  INCFUNC("asm/func/Player_ApplyArmorEffect.inc");
+#endif
+}
 // 鎧を装備する, a が NULL なら素手の値に戻す
 void Player_EquipArmor(Player* p, const ArmorData* a) {
   if (a == NULL) {
@@ -2387,7 +2548,7 @@ void Player_EquipArmor(Player* p, const ArmorData* a) {
     p->armor.weight = a->weight;
   }
 
-  FUN_0806483c(p, a);
+  Player_ApplyArmorEffect(p, a);
   FUN_080612bc(p);
 }
 

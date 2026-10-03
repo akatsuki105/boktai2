@@ -28,16 +28,26 @@ typedef u32 PlayerFlag378;               // Player.flag378
 #define FLAG378_WET_ENE_COST (1 << 1)    // 0x00000002, WET_ENE_COST を持った武器を装備している間セットされる
 #define FLAG378_BLOOD_SWORD (1 << 2)     // 0x00000004, WET_BLOOD_SWORD を持った武器を装備している間セットされる
 #define FLAG378_ASTRO (1 << 3)           // 0x00000008, アストロ武器 を装備している間セットされる
+#define FLAG378_UNK_4 (1 << 4)           // 0x00000010, 鎧の特殊効果 AET 4 で立つ
+#define FLAG378_UNK_5 (1 << 5)           // 0x00000020, 鎧の特殊効果 AET 23 で立つ
 #define FLAG378_WEAPONGUARD (1 << 6)     // 0x00000040, ウェポンガード〃
 #define FLAG378_FAIRY (1 << 7)           // 0x00000080, 精霊の衣〃
 #define FLAG378_UNK_8 (1 << 8)           // 0x00000100, ???
 #define FLAG378_UNK_9 (1 << 9)           // 0x00000200, 立っていると Player_BeginAction が PFLAG20_UNK_16 を立てる
 #define FLAG378_UNK_10 (1 << 10)         // 0x00000400, ???
 #define FLAG378_UNK_11 (1 << 11)         // 0x00000800, 立っていると FUN_0807a798 の経験値が1.5倍になる
+#define FLAG378_UNK_12 (1 << 12)         // 0x00001000, 鎧の特殊効果 AET 14 で立つ
 #define FLAG378_AET_SUNLIGHT (1 << 13)   // 0x00002000, 光のガーブ装備時, ApplyLxModifiers が太陽レベルを2倍にする
 #define FLAG378_AET_RES_SOL (1 << 14)    // 0x00004000, メイルオブソル装備時, 立っていると ApplySunlightGain の太陽スタンド加算が2倍になる
+#define FLAG378_UNK_15 (1 << 15)         // 0x00008000, 鎧の特殊効果 AET 21 で立つ
+#define FLAG378_UNK_16 (1 << 16)         // 0x00010000, 同 AET 22
+#define FLAG378_UNK_17 (1 << 17)         // 0x00020000, 同 AET 25
 #define FLAG378_UNK_19 (1 << 19)         // 0x00080000, 立っていると FUN_0806f900 が HP 割合ぶんの補正を足す
 #define FLAG378_UNK_18 (1 << 18)         // 0x00040000, 立っていると FUN_0807e784 が被弾後に FUN_0807e2cc を呼ぶ
+#define FLAG378_UNK_20 (1 << 20)         // 0x00100000, 鎧の特殊効果 AET 29 で立つ
+#define FLAG378_UNK_21 (1 << 21)         // 0x00200000, 同 AET 30
+#define FLAG378_UNK_22 (1 << 22)         // 0x00400000, 同 AET 31
+#define FLAG378_UNK_23 (1 << 23)         // 0x00800000, 同 AET 32
 #define FLAG378_HEART (1 << 28)          // 0x10000000, ハートの紋章所持
 #define FLAG378_JOKER (1 << 29)          // 0x20000000, ジョーカーの紋章所持
 
@@ -82,10 +92,9 @@ typedef struct {
   u16 weight;             // 0x04 (Player: 0x268), ArmorData.weight
   u16 unk_26a;            // 0x06 (Player: 0x26A)
   u16 bonus[STAT_KINDS];  // 0x08 (Player: 0x26C), 武者鎧などのステータスに対する補正値
-  s16 hpBonus;            // 0x10 (Player: 0x274), 鎧のHP補正値(赤なら+, 黒なら-)
-  s16 eneBonus;           // 0x12 (Player: 0x276), 鎧のEne補正値(赤なら+, 黒なら-)
-  u16 unk_278;            // 0x14 (Player: 0x278)
-  s16 unk_27a;            // 0x16 (Player: 0x27A), Player_RefreshAttackPower がチカラの補正として足し引きする
+  // 0x10 (Player: 0x274), 鎧の色による符号付き補正 (赤なら+, 黒なら-), [0] が HP, [1] が Ene に効く
+  // 根拠: Player_ApplyArmorEffect が bonus と対にして4要素ずつ消し, AET 1/2 で4要素すべてに ±value を入れる
+  s16 bonus2[STAT_KINDS];
 } PlayerArmor;
 static_assert(sizeof(PlayerArmor) == 24);  // 根拠: Player_RefreshAttackPower が 0x264 を1本のベースにして 0x266/0x272/0x27A を触る
 
