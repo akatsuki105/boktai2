@@ -315,7 +315,24 @@ void Map_GetZoneMax(u16 id, u16* out) {
   }
 }
 
-NAKED bool8 FUN_08234d50(u16 areaFileId, Vec3* pos) { INCFUNC("asm/func/FUN_08234d50.inc"); }
+// id のゾーンのどれかが pos を含んでいるか
+bool8 Map_IsPosInZoneByID(ZoneID16 id, Vec3* pos) {
+  u16 count;
+  Zone* zone = FindZonesByID(id, &count);
+  u16 i;
+
+  if (zone == NULL) {
+    return FALSE;
+  }
+
+  for (i = 0; i < count; i++) {
+    if (pos->x >= zone->x1 && pos->x < zone->x2 && pos->z >= zone->y1 && pos->z < zone->y2) {
+      return TRUE;
+    }
+    zone++;
+  }
+  return FALSE;
+}
 
 s32 Map_LoadPaths(FileID id) {
   gCollisionMap->paths = GetFile(0xD4FB, id);
