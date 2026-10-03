@@ -295,13 +295,15 @@ typedef struct Player {
   Vec3 pos_930;                     // 0x930, FUN_08067f88 が mover.pos をずらして書く
   u8 unk_938[0x94A - 0x938];
 
-  u16 plttID_94a;  // 0x94A, Player_ResetPltt
-  s16 unk_94c;     // 0x94C, Player_ResetPltt
-  u8 unk_94e;      // 0x94E, FUN_08062688
-  u8 unk_94f;      // 0x94F
-  u8 unk_950;      // 0x950, Player_ResetPltt
-  u8 unk_951;      // 0x951, FUN_0806f780 が unk_a8d + 1 (負なら 0) を入れる
-  u8 unk_952[0x95A - 0x952];
+  u16 plttID_94a;    // 0x94A, Player_ResetPltt
+  s16 unk_94c;       // 0x94C, Player_ResetPltt
+  u8 unk_94e;        // 0x94E, FUN_08062688
+  u8 unk_94f;        // 0x94F
+  u8 unk_950;        // 0x950, Player_ResetPltt
+  u8 unk_951;        // 0x951, FUN_0806f780 が unk_a8d + 1 (負なら 0) を入れる
+  u16 altPose;       // 0x952, Player_ApplyPoseHold が pose が変わったときに控える値
+  u16 altPoseTimer;  // 0x954, 変化時に 0x40 を入れて毎回 1 減らす, bit2 が立つ間は altPose を返す
+  u8 unk_956[0x95A - 0x956];
   u16 flashPose;   // 0x95A, flashTimer の bit2 が立っている間 Player_ApplyFlashPose が pose の代わりに返す値
   u16 flashTimer;  // 0x95C, Player_ApplyFlashPose が毎フレーム 1 減らす点滅タイマ
   u16 unk_95e;     // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く

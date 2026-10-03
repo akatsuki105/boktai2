@@ -16,7 +16,7 @@
 	adds r2, r0, #0
 	adds r0, r5, #0
 	adds r1, r2, #0
-	bl FUN_08063498
+	bl Player_ApplyPoseHold
 	adds r2, r0, #0
 	adds r0, r5, #0
 	adds r1, r2, #0

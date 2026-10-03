@@ -839,9 +839,49 @@ void FUN_08063248(Player* p) {
 
 NAKED void FUN_08063288(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_08063288.inc"); }
 
-u32 FUN_08063478(Player* p) { return (p->angle_400 - p->angle_401 + 0x100) & 0xFF; }
+s32 FUN_08063478(Player* p) { return (p->angle_400 - p->angle_401 + 0x100) & 0xFF; }
 
-NAKED u32 FUN_08063498(Player* p, u32 n) { INCFUNC("asm/func/FUN_08063498.inc"); }
+// 姿勢を決める, 変化直後は 0x40 フレームのあいだ 4フレームおきに前の値と交互に返す
+u32 Player_ApplyPoseHold(Player* p, u32 n) {
+  u32 pose = n;
+
+  if (p->unk_4c4.unk_3 != 0) {
+    if (p->unk_1c & 1) {
+      if (FUN_08063478(p) >= u8_ARRAY_085abab4[p->unk_4c4.kind - 1]) {
+        FUN_080630e8(p);
+        p->angle_401 = p->angle_400;
+      }
+    }
+
+    if (p->unk_4c4.unk_3 != 0) {
+      if (p->unk_4c4.kind == 1) {
+        pose = 3;
+      } else if (p->unk_4c4.kind == 2) {
+        pose = 4;
+      } else if (p->unk_4c4.kind == 3) {
+        pose = 5;
+      }
+    }
+  }
+
+  if (p->speedPenalty != 0) {
+    pose = 7;
+  }
+
+  if (pose == n) {
+    if (p->altPoseTimer != 0) {
+      if ((p->altPoseTimer >> 2) & 1) {
+        pose = p->altPose;
+      }
+      p->altPoseTimer--;
+    }
+  } else {
+    p->altPose = pose;
+    p->altPoseTimer = 0x40;
+  }
+
+  return pose;
+}
 
 // 状態異常 badcondID を frames フレームかける, 1 は変身を解き 2 は向きをランダムに変える
 // 命令数は76で一致, 残差はレジスタ割当だけ (原典は p/badcondID/frames を r5/r6/r7 に置き push が1本多い)
