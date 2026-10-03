@@ -177,7 +177,7 @@ _0807E4FE:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r7, #0
-	bl FUN_08060cf8
+	bl Player_SetHitDir
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r5, r1

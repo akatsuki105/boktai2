@@ -294,7 +294,53 @@ NON_MATCH u32 Player_GetHitDirIdx(HitboxData* a, HitboxData* b) {
 #endif
 }
 
-NAKED void FUN_08060cf8(Player* p, unknown* r1, unknown* r2) { INCFUNC("asm/func/FUN_08060cf8.inc"); }
+// 被弾したときの向きと退避処理, 攻撃側 a のダメージを被弾側 b に移してから向きを決める
+// 命令数は136で一致, 残差は attributes / unk_20 の ldr とマスク定数の順序だけ (CalcMagicCost と同じ系統)
+NON_MATCH void Player_SetHitDir(Player* p, HitboxData* a, HitboxData* b) {
+#ifdef NONMATCHING_C
+  b->unk_40 = a->unk_40;
+  if (a->unk_40 > 200) {
+    b->unk_40 = 200;
+  }
+
+  if (a->attributes & 0x40000) {
+    p->unk_3d2 = 1;
+    p->facing = Player_GetHitDirIdx(a, b);
+    return;
+  }
+
+  if (p->action == 5) {
+    b->flags |= 4;
+    b->unk_40 = 0;
+    return;
+  }
+
+  if (p->unk_20 & 0x8000) {
+    if (a->flags & 0x100) {
+      p->unk_3e8 = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+    } else {
+      s32 dx = a->center.x - b->center.x;
+      s32 dz = a->center.z - b->center.z;
+
+      if (dx == 0 && dz == 0) {
+        p->unk_3e8 = p->facing;
+      } else {
+        p->unk_3e8 = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
+      }
+    }
+
+    p->unk_3e6 = b->unk_40;
+    b->unk_40 = 0;
+    b->flags |= 4;
+    return;
+  }
+
+  p->unk_3d2 = 0;
+  p->facing = Player_GetHitDirIdx(a, b);
+#else
+  INCFUNC("asm/func/Player_SetHitDir.inc");
+#endif
+}
 
 bool32 FUN_08060e1c(Player* p) {
   u32 span;
