@@ -884,7 +884,30 @@ bool32 Player_CheckMagicCost(Player* p) {
   return FALSE;
 }
 
-NAKED void Player_PayMagicCost(Player* p) { INCFUNC("asm/func/Player_PayMagicCost.inc"); }
+// 魔法の消費分を支払う, 0〜5番の魔法でアストロ武器を装備しているときは Ene ではなく太陽スタンドから引く
+// 命令数は46で一致, 残差は FLAG378_ASTRO の movs の位置だけ (原典は flag378 を読む前に置く)
+// CalcMagicCost と同じ系統の残差, Tier A/B とオペランド順は試済
+NON_MATCH void Player_PayMagicCost(Player* p) {
+#ifdef NONMATCHING_C
+  s32 cost = CalcMagicCost(p);
+
+  if (p->equippedMagic <= 5 && (p->flag378 & FLAG378_ASTRO)) {
+    if ((s32)gStat->solarStand < cost) {
+      gStat->solarStand = 0;
+    } else {
+      gStat->solarStand -= cost;
+    }
+  } else {
+    if (p->ene < cost) {
+      p->ene = 0;
+    } else {
+      p->ene -= cost;
+    }
+  }
+#else
+  INCFUNC("asm/func/Player_PayMagicCost.inc");
+#endif
+}
 
 NAKED bool32 FUN_08064c48(Player* p, magic32_t id) { INCFUNC("asm/func/FUN_08064c48.inc"); }
 
