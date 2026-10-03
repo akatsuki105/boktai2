@@ -351,7 +351,14 @@ NAKED void Player_DarkDjangoSpear_08061970(Player* p, u32 idx, Vec3* pos, s32 n)
 NAKED void FUN_08061a98(Player* p, u32 idx, Vec3* pos) { INCFUNC("asm/func/FUN_08061a98.inc"); }
 
 // 多分、サバタが攻撃する時に呼ばれる
-NAKED void FUN_08061b48(Player* p, u32 _, Vec3* pos) { INCFUNC("asm/func/FUN_08061b48.inc"); }
+// サバタの攻撃時に散弾スプライトを pos の少し上に置いて表示する
+void Player_ShowGunSpread(Player* p, u32 _, Vec3* pos) {
+  p->meleeShockwave.sprite.flags &= ~SPRFLAG_HIDDEN;
+  p->meleeShockwave.sprite.pos = *pos;
+  p->meleeShockwave.sprite.pos.y += 0xE6;
+  p->meleeShockwave.sprite.rotation = p->unk_a8a;
+  p->meleeShockwave.finished = TRUE;
+}
 
 void FUN_08061b98(Player* p) { AuxSprite_Remove(&(p->meleeShockwave).sprite); }
 

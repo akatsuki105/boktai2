@@ -552,7 +552,7 @@ _080724A0:
 	ldrh r1, [r4]
 	adds r0, r5, #0
 	adds r2, r6, #0
-	bl FUN_08061b48
+	bl Player_ShowGunSpread
 	ldr r0, [r5, #0x2c]
 	ldr r1, [r5, #0x30]
 	str r0, [sp, #0x30]
