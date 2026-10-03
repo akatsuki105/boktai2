@@ -3214,13 +3214,10 @@ bool32 Player_CheckMagicCost(Player* p) {
 }
 
 // 魔法の消費分を支払う, 0〜5番の魔法でアストロ武器を装備しているときは Ene ではなく太陽スタンドから引く
-// 命令数は46で一致, 残差は FLAG378_ASTRO の movs の位置だけ (原典は flag378 を読む前に置く)
-// CalcMagicCost と同じ系統の残差, Tier A/B とオペランド順は試済
-NON_MATCH void Player_PayMagicCost(Player* p) {
-#ifdef NONMATCHING_C
+void Player_PayMagicCost(Player* p) {
   s32 cost = CalcMagicCost(p);
 
-  if (p->magic.id <= 5 && (p->flag378 & FLAG378_ASTRO)) {
+  if (p->magic.id <= 5 && Player_TestFlag378(p, FLAG378_ASTRO)) {
     if ((s32)gStat->solarStand < cost) {
       gStat->solarStand = 0;
     } else {
@@ -3233,9 +3230,6 @@ NON_MATCH void Player_PayMagicCost(Player* p) {
       p->ene -= cost;
     }
   }
-#else
-  INCFUNC("asm/func/Player_PayMagicCost.inc");
-#endif
 }
 
 // 今のフォームで魔法 id が使えるかを返す (magic.availableForm の中身)
