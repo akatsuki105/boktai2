@@ -14,7 +14,10 @@ typedef struct JudgementParticle {
   Particle ptcl;             // 0x00, _Destroy が Particle_Remove に渡す
   u16 timer;                 // 0x28, FUN_080a9808 が毎フレーム +1, 7 を超えると枠を畳む
   u16 active;                // 0x2A, FUN_080a98c0 が 0 の枠を飛ばす
-  u8 unk_2c[8];              // 0x2C
+  s16 vx;                    // 0x2C, FUN_080a95d4 が毎フレーム pos.x に足す
+  s16 vy;                    // 0x2E, 毎フレーム pos.y に足す, FUN_080a95d4 が重力として +1 する
+  u16 unk_30;                // 0x30
+  u8 unk_32[2];              // 0x32
   ParticleGroup* group;      // 0x34, FUN_0822dafc の第2引数
   JudgementParticleFunc fn;  // 0x38, FUN_080a98c0 が active な枠について呼ぶ
 } JudgementParticle;
@@ -39,11 +42,40 @@ NAKED void FUN_080a95d4(Judgement* p) { INCFUNC("asm/func/FUN_080a95d4.inc"); }
 
 NAKED void FUN_080a962c(Judgement* p) { INCFUNC("asm/func/FUN_080a962c.inc"); }
 
-NAKED void FUN_080a971c(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a971c.inc"); }
+// 16フレームで畳む, その間は2コマのアニメを出しながら vy ぶん動かす
+// 残差1命令: 原典は timer+1 を別レジスタに置いて使うたびに16bit化する, こちらは <<16 の中間値が残って else 側が1命令短くなる, Tier A/B と C のローカル分割・キャスト・アクセサ有無は試済
+NON_MATCH void JudgementParticle_UpdateMoving(JudgementParticle* ptcl) {
+#ifdef NONMATCHING_C
+  ptcl->timer++;
+  if (ptcl->timer > 15) {
+    ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
+    ptcl->active = 0;
+  } else {
+    FUN_0822dafc(&ptcl->ptcl, ptcl->group, ((ptcl->timer >> 2) & 1) + 2);
+    ptcl->ptcl.pos.y += ptcl->vy;
+  }
+#else
+  INCFUNC("asm/func/JudgementParticle_UpdateMoving.inc");
+#endif
+}
 
 NAKED void FUN_080a975c(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a975c.inc"); }
 
-NAKED void FUN_080a9808(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a9808.inc"); }
+// 8フレームで畳む, その間はその場で2コマのアニメを出す
+// 残差1命令: 原典は timer+1 を別レジスタに置いて使うたびに16bit化する, こちらは <<16 の中間値が残って else 側が1命令短くなる, Tier A/B と C のローカル分割・キャスト・アクセサ有無は試済
+NON_MATCH void FUN_080a9808(JudgementParticle* ptcl) {
+#ifdef NONMATCHING_C
+  ptcl->timer++;
+  if (ptcl->timer > 7) {
+    ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
+    ptcl->active = 0;
+  } else {
+    FUN_0822dafc(&ptcl->ptcl, ptcl->group, ((ptcl->timer >> 2) & 1) + 2);
+  }
+#else
+  INCFUNC("asm/func/FUN_080a9808.inc");
+#endif
+}
 
 NAKED void FUN_080a9840(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a9840.inc"); }
 
