@@ -92,7 +92,7 @@ _080F23D6:
 	adds r0, r6, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_08235038
+	bl Map_IsPosOutsidePathNode
 	lsls r0, r0, #0x18
 	lsrs r1, r0, #0x18
 	cmp r1, #0

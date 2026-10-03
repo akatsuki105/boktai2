@@ -438,7 +438,26 @@ NON_MATCH s32 VM_GetPathNodePos(void) {
 #endif
 }
 
-NAKED s32 FUN_08235038(unknown* param_1, Vec3* pos, unknown* param_3, s32 param_4) { INCFUNC("asm/func/FUN_08235038.inc"); }
+// pos がカーソルの指すノードから rx, rz の範囲内にあるか調べる, 外なら 1
+// 残差は nodePos.z のレジスタコピー1命令のみ (41/42), Tier A-C は試済
+NON_MATCH s32 Map_IsPosOutsidePathNode(PathWalker* w, Vec3* pos, u32 rx, u32 rz) {
+#ifdef NONMATCHING_C
+  Vec3 nodePos;
+  PathNode* node = w->node;
+
+  nodePos.x = node->x;
+  nodePos.z = node->y;
+  if (abs(pos->x - nodePos.x) > rx) {
+    return 1;
+  }
+  if (abs(pos->z - nodePos.z) > rz) {
+    return 1;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/Map_IsPosOutsidePathNode.inc");
+#endif
+}
 
 NAKED s32 FUN_08235090(Vec3* dst, u8 param_2) { INCFUNC("asm/func/FUN_08235090.inc"); }
 

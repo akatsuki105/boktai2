@@ -108,7 +108,7 @@ _081D306E:
 	adds r0, r4, #0
 	movs r2, #0x10
 	movs r3, #0x10
-	bl FUN_08235038
+	bl Map_IsPosOutsidePathNode
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081D3100

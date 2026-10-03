@@ -833,7 +833,7 @@ FUN_0810342c: @ 0x0810342C
 	adds r1, #8
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_08235038
+	bl Map_IsPosOutsidePathNode
 	lsls r0, r0, #0x18
 	lsrs r1, r0, #0x18
 	cmp r1, #0
