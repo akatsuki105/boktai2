@@ -160,7 +160,31 @@ void Player_StopEneChargeSound(Player* p) {
   sound_08240740(0x366);
 }
 
-NAKED u32 FUN_08060c98(unknown* r1, unknown* r2) { INCFUNC("asm/func/FUN_08060c98.inc"); }
+// 攻撃側 a から被弾側 b へ向かう向きを 1/3/5/7 の4象限に落として返す
+// 残差4命令: 原典は angle + 0xE0 を両方の枝で別々に組み立てるが, agbcc が ldrb と +0xE0 を共通化してしまう
+// Tier A/B と中間変数の切り出しは試済
+NON_MATCH u32 Player_GetHitDirIdx(HitboxData* a, HitboxData* b) {
+#ifdef NONMATCHING_C
+  s32 angle;
+
+  if (a->flags & HBFLAG_UNK_8) {
+    angle = a->angle + 0xE0;
+  } else {
+    s32 dx = a->center.x - b->center.x;
+    s32 dz = a->center.z - b->center.z;
+
+    if (dx == 0 && dz == 0) {
+      angle = b->angle + 0xE0;
+    } else {
+      angle = ArcTan2_8(dx, dz) + 0x60;
+    }
+  }
+
+  return ((angle & 0xFF) >> 6) * 2 + 1;
+#else
+  INCFUNC("asm/func/Player_GetHitDirIdx.inc");
+#endif
+}
 
 NAKED void FUN_08060cf8(Player* p, unknown* r1, unknown* r2) { INCFUNC("asm/func/FUN_08060cf8.inc"); }
 

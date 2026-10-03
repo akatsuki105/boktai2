@@ -26,7 +26,7 @@ _08060D16:
 	strb r0, [r1]
 	adds r0, r3, #0
 	adds r1, r5, #0
-	bl FUN_08060c98
+	bl Player_GetHitDirIdx
 	movs r2, #0xba
 	lsls r2, r2, #2
 	adds r1, r4, r2
@@ -138,7 +138,7 @@ _08060DFC:
 	strb r7, [r0]
 	adds r0, r3, #0
 	adds r1, r5, #0
-	bl FUN_08060c98
+	bl Player_GetHitDirIdx
 	movs r3, #0xba
 	lsls r3, r3, #2
 	adds r1, r4, r3
