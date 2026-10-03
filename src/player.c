@@ -2914,7 +2914,7 @@ void Player_ApplyWeapon(Player* p, Weapon* w) {
 // HitboxData.damage (Player.unk_a10.damage) が0以外なら Weapon.wear に加算して HitboxData.damage を 0にする, ジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 の 0x0813EFFC で加算される (他の敵も同様と思われる)
 // 攻撃で与えたダメージの分だけ武器を損傷させる, 限界を超えたら品質か特殊効果を1つ失う
 // 残差3命令 (93/96): 原典は unk_a10.damage のアドレスを 0xA10 + 0x3E に分けて作るが agbcc は 0xA4E を1つの定数に畳む
-// HitboxData* のローカル化は逆に高位レジスタを使って遠ざかった, Tier A/B は試済
+// HitboxData* のローカル化は 89 命令まで減って逆に遠ざかる (r7 まで使い始める), Tier A/B は試済
 NON_MATCH void Player_UpdateWeaponWear(Player* p) {
 #ifdef NONMATCHING_C
   s32 wear = p->unk_a10.damage;
@@ -2923,13 +2923,13 @@ NON_MATCH void Player_UpdateWeaponWear(Player* p) {
     return;
   }
 
-  if (p->flag378 & FLAG378_WEAPONGUARD) {
+  if (Player_TestFlag378(p, FLAG378_WEAPONGUARD)) {
     p->unk_a10.damage = 0;
     return;
   }
 
   if (p->weaponKind_a75 <= 2) {
-    if (p->flag378 & FLAG378_WET_DURABILITY) {
+    if (Player_TestFlag378(p, FLAG378_WET_DURABILITY)) {
       wear >>= 1;
     }
 
