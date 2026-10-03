@@ -375,12 +375,41 @@ void UpdateMaxHPEne(Player* p) {
   if (p->ene > (u16)maxEne) p->ene = maxEne;
 }
 
-NAKED void FUN_080610a4(Player* p) { INCFUNC("asm/func/FUN_080610a4.inc"); }
+// HP/Ene の最大値を計算し直し, セーブ値 (スクリプトが指定していれば満タン) を入れて上限で丸める
+void Player_RefreshHpEne(Player* p) {
+  p->maxHP = CalcMaxHP(p);
+  if (VM_GetNamedArgValue('l', 0) != 0) {
+    p->hp = p->maxHP;
+  } else if (p->kind == PLAYER_SABATA) {
+    p->hp = gStat->sabataHP;
+  } else {
+    p->hp = gStat->savedHP;
+  }
+
+  if (p->hp == 0) {
+    p->hp = 1;
+  } else if (p->hp > p->maxHP) {
+    p->hp = p->maxHP;
+  }
+
+  p->maxEne = CalcMaxEne(p);
+  if (VM_GetNamedArgValue('e', 0) != 0) {
+    p->ene = p->maxEne;
+  } else if (p->kind == PLAYER_SABATA) {
+    p->ene = gStat->sabataEne;
+  } else {
+    p->ene = gStat->savedEne;
+  }
+
+  if (p->ene > p->maxEne) {
+    p->ene = p->maxEne;
+  }
+}
 
 NAKED void FUN_08061198(Player* p) { INCFUNC("asm/func/FUN_08061198.inc"); }
 
 void FUN_08061294(Player* p) {
-  FUN_080610a4(p);
+  Player_RefreshHpEne(p);
   FUN_08061198(p);
 }
 
