@@ -111,7 +111,7 @@ _08061926:
 	add r2, sp, #8
 	adds r0, r6, #0
 	add r1, sp, #4
-	bl FUN_080617dc
+	bl Player_GetShockwaveDirParams
 	ldr r7, _08061968 @ =0x000006F4
 	adds r0, r4, r7
 	ldr r2, _0806196C @ =0x00000704

@@ -299,45 +299,38 @@ void PlayerShockwave_UpdateFlash(PlayerShockwave* p) {
   }
 }
 
-NON_MATCH void FUN_080617dc(u32 idx, s32* result1, s32* result2) {
-#ifdef NONMATCHING_C
-  s32 v = idx & 3;
+// 攻撃の向き dir から衝撃波スプライトのパラメータ2つを決める
+void Player_GetShockwaveDirParams(u32 dir, s32* result1, s32* result2) {
+  s32 axis = dir & 3;
 
-  switch (v) {
+  switch (axis) {
     case 0: {
-      v = 0;
+      *result1 = 0;
       break;
     }
     case 1: {
-      v = 1;
+      *result1 = 1;
       break;
     }
     case 2: {
-      v = 2;
+      *result1 = 2;
       break;
     }
     default: {
-      v = 1;
+      *result1 = 1;
       break;
     }
   }
 
-  *result1 = v;
-
-  if (idx <= 2) {
-    v = 0;
-  } else if (idx <= 4) {
-    v = 2;
-  } else if (idx == 5) {
-    v = 3;
+  if (dir <= 2) {
+    *result2 = 0;
+  } else if (dir == 3 || dir == 4) {
+    *result2 = 2;
+  } else if (dir == 5) {
+    *result2 = 3;
   } else {
-    v = 1;
+    *result2 = 1;
   }
-
-  *result2 = v;
-#else
-  INCFUNC("asm/func/FUN_080617dc.inc");
-#endif
 }
 
 // 衝撃波のスプライトに本体と同じパレットを渡して表示する

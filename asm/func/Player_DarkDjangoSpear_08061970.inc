@@ -125,7 +125,7 @@ _08061A4E:
 	add r2, sp, #8
 	mov r0, ip
 	add r1, sp, #4
-	bl FUN_080617dc
+	bl Player_GetShockwaveDirParams
 	ldr r1, _08061A90 @ =0x000006F4
 	adds r0, r5, r1
 	ldr r2, _08061A94 @ =0x00000704
