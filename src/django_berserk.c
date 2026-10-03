@@ -29,9 +29,9 @@ static_assert(sizeof(DjangoBerserkParticle) == 60);
 typedef struct DjangoBerserk {
   Entity e;                          // 0x000, ENTITY_UNK_11
   Player* player;                    // 0x018, Init の第1引数
-  MainSpriteGfx gfx;                 // 0x01C
-  MainSprite sprite;                 // 0x03C
-  HitboxData hitbox;                 // 0x09C, FUN_0807fdac が Hitbox_Register に渡す
+  MainSpriteGfx gfx;                 // 0x01C, SPRITE_DJANGO_SABATA
+  MainSprite sprite;                 // 0x03C, SPRITE_DJANGO_SABATA
+  HitboxData hitbox;                 // 0x09C
   u8 unk_ec[2];                      // 0x0EC
   u16 timer;                         // 0x0EE, SetState が状態を差し替えるたび 0 に戻す
   u16 hpDrainStep;                   // 0x0F0, Init: (player->hp - hpTarget) / 0x48 + 1,毎フレーム player->hp から引く量
