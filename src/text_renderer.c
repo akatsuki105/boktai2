@@ -5,6 +5,30 @@
 #include "text.h"
 #include "vm.h"
 
+// 本文中に書けるタグの一覧, TextRenderer_HandleTag が '<' の次からタグ名を引いて処理する
+// 値を取るものは <TAG=値> の形で書く, 値を省いた場合の既定値も併記した
+//
+//   WEIGHT   / /WEIGHT   style を 1 / 0 にする
+//   ALTER    / /ALTER    同じく style を 1 / 0 にする
+//   NONSEL   / /NONSEL   style を 2 / 0 にする
+//   UVMOJI   / /UVMOJI   同じく style を 2 / 0 にする
+//   WAIT=n               文字送り速度を n にする, 値が無ければ本体設定の速度に戻す
+//   LOCK=n               waitFrames に n を入れて次の行へ進むのを待たせる, 値が無ければ 0
+//   LABEL=名前 / /LABEL  名前に対応する顔番号を face に入れ, 出している間は無音かつ速度 0 にする (/LABEL で退避した速度に戻す)
+//   PLAYER               いまのプレイヤーの顔番号を face に入れる (Text_GetPlayerFace)
+//   FUTARI               二人のときの顔番号を face に入れる (Text_GetPairFace)
+//   FACEOFF              face を -1 にして顔を消す
+//   NAME                 プレイヤー名を差し込む, mode 1 に切り替えて textAlt を読ませる
+//   VAR=n                vars[n] を Text_FormatDecimal で10進に直して差し込む, mode 2 に切り替えて numBuf を読ませる
+//   EXTEND=n             extends[n] の文字列を差し込む, mode 3 に切り替えて extendText を読ませる
+//   PROC=n               n を pending に積む, TextRenderer_RunPending が scriptIds の添字として実行する
+//   SOUND=n              効果音 n を鳴らす, 値が無ければ 0xDD
+//   MOJISE=名前          文字送り音を切り替える, MOJISE_SYSTEM で gCharSounds[0], MOJISE_TALK で gCharSounds[1]
+//   END                  finished を立てて本文を終わらせる
+//   PAREN    / /PAREN    parenEnabled が立っているときだけ括弧を実際に1文字描く
+//
+// LABEL の名前は NONE, R_DJUNGO などの並び (0x08251B9C 以降) にあり, 見つかった順番がそのまま顔番号になる, どれにも当たらなければ 0xFF
+
 const s16 gCharSounds[2] = {0x105, 0x106};  // 0x085AB458, TextRenderer_PlayCharSound が charSoundIdx で選ぶ文字送り音
 
 // 0x1F エスケープの次のバイトと文字コードの組, bit15 が立っていれば全角 (Video_DrawCharWide 側)
