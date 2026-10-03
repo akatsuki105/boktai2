@@ -281,7 +281,27 @@ NAKED void FUN_08061384(Player* p) { INCFUNC("asm/func/FUN_08061384.inc"); }
 
 NAKED void FUN_080613ec(Player* p, unknown* param_2, s32 val) { INCFUNC("asm/func/FUN_080613ec.inc"); }
 
-NAKED void FUN_08061458(Player* p) { INCFUNC("asm/func/FUN_08061458.inc"); }
+// 0x64C のパーティクルを確保して隠した状態で初期化する
+// 命令数は40で一致, 残差は p と &ptcl_64c のレジスタが入れ替わっているだけ (原典は p が r5)
+// Tier A/B と C の宣言順・ローカル化は試済
+NON_MATCH void FUN_08061458(Player* p) {
+#ifdef NONMATCHING_C
+  ParticleGroup* group = GetParticleGroup(0x1C1C);
+  PlayerParticleGroup1* st = &p->ptcl_64c;
+
+  st->group1 = group;
+  FUN_0822d9f0(&st->ptcl, group, 0);
+  Particle_SetOffset(&st->ptcl, -4, -4);
+  FUN_0822dafc(&st->ptcl, st->group1, 4);
+  st->ptcl.flags |= SPRFLAG_HIDDEN;
+  st->ptcl.priority = 1;
+  st->ptcl.offsetZ = 0x14;
+  st->unk_2c = 0;
+  st->unk_2d = 0;
+#else
+  INCFUNC("asm/func/FUN_08061458.inc");
+#endif
+}
 
 NAKED void FUN_080614bc(Player* p) { INCFUNC("asm/func/FUN_080614bc.inc"); }
 
