@@ -8,6 +8,7 @@ bool32 FUN_0823a8b0(void);
 void FUN_08230eec(ScriptRecord*);
 bool32 FUN_082345ec(void);
 void FUN_082349b8(CollisionMapEvent* ev, u32 param_2);
+Zone* FindZonesByID(ZoneID16 id, u16* count);
 
 TaskFn VM_GetSubroutine(u32 subroutineID);
 
@@ -71,7 +72,91 @@ s32 VM_Ctrl_22FF(void) {
 void* VM_Ctrl_Unused_C091(void* _) { return _; }
 
 // Zone (in "collision_map.h") の示す範囲に重なったときに呼ばれるコールバックを設定する
-NAKED s32 VM_Ctrl_SetZoneCallback(void* r0) { INCFUNC("asm/func/VM_Ctrl_SetZoneCallback.inc"); }
+// 残差1命令: args1/args2 のゼロ埋めループで、原典は添字が消えて歩くポインタと先頭の符号つき比較になっている (bge), こちらは添字のカウンタが残る
+// Tier A/B と C のポインタ化・添字変数の分離は試済, text_renderer.c の FUN_08048b28 と同じ形で止まっている
+NON_MATCH s32 VM_Ctrl_SetZoneCallback(void* r0) {
+#ifdef NONMATCHING_C
+  CollisionMapEvent ev;
+  s32 type;
+  u32 val;
+  u8* pc;
+  u16* p;
+  s32 i;
+
+  FUN_082345ec();
+  ClearMemory(&ev, sizeof(ev));
+  ev.unk_8 = VM_GetValue();
+  ev.unk_6 = VM_GetValue();
+  if (VM_SeekToNamedArg('m')) {
+    ev.unk_4 = VM_GetValue();
+  } else {
+    ev.unk_4 = 0xDD2;
+  }
+
+  ev.unk_a = VM_GetNamedArgValue('t', 0);
+  ev.unk_c = 0;
+  if (ev.unk_6 == 0x3F) {
+    ev.unk_6 = 0x14C9;
+  }
+  if (ev.unk_4 == 0x3F) {
+    ev.unk_4 = 0x14C9;
+  } else if (ev.unk_4 == 0x2A) {
+    ev.unk_4 = 0x1516;
+  }
+
+  p = ev.args1;
+  for (i = 3; i >= 0; i--) {
+    ev.args1[i] = 0;
+  }
+  if (VM_SeekToNamedArg('w')) {
+    for (i = 0; i < 4; i++) {
+      pc = VM_GetPC();
+      if (pc == NULL) {
+        break;
+      }
+      *p++ = VM_GetValueAt(pc);
+    }
+  }
+
+  p = ev.args2;
+  for (i = 3; i >= 0; i--) {
+    ev.args2[i] = 0;
+  }
+  if (VM_SeekToNamedArg('s')) {
+    for (i = 0; i < 4; i++) {
+      pc = VM_GetPC();
+      if (pc == NULL) {
+        break;
+      }
+      *p++ = VM_GetValueAt(pc);
+    }
+  }
+
+  if (VM_SeekToNamedArg('b')) {
+    ev.unk_c |= 0x10;
+    ev.unk_20 = (u8*)VM_GetValue();
+  }
+
+  if (VM_SeekToNamedArg('e')) {
+    VM_DecodeValue(VM_GetPC(), &type, &val);
+    ev.scriptPC = (u8*)val;
+  } else if (VM_SeekToNamedArg('p')) {
+    ev.unk_c |= 0x20;
+    ev.scriptPC = (u8*)VM_GetValue();
+  }
+
+  ev.zoneCount = 0;
+  ev.zones = FindZonesByID(ev.unk_8, &ev.zoneCount);
+  if (ev.zones == NULL) {
+    return -1;
+  }
+
+  FUN_082349b8(&ev, (u32)r0);
+  return 0;
+#else
+  INCFUNC("asm/func/VM_Ctrl_SetZoneCallback.inc");
+#endif
+}
 
 // https://boktaihacking.net/wiki/Bytecode#Control_0xe43c_(TODO)
 void* VM_Ctrl_E43C(void) {
