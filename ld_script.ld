@@ -387,7 +387,7 @@ SECTIONS {
 			src/system_0823071c.o (.text);
 			src/malloc.o (.text);
 			src/entity.o (.text);
-			src/code_08230d30.o (.text);
+			src/registry.o (.text);
 			src/code_08230e88.o (.text);
 			src/file.o (.text);
 			src/vm.o (.text);
