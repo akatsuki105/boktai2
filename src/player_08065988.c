@@ -97,12 +97,12 @@ NAKED bool32 FUN_08065744(Player* p, u32 n) { INCFUNC("asm/func/FUN_08065744.inc
 void Player_InitWeapon(Player* p) {
   if (p->kind != PLAYER_SABATA) {
     if (REGISTERED_WEAPON(gStat->equippedWeaponIdx) >= 0) {
-      weapon_08064664(p, GetWeapon(REGISTERED_WEAPON(gStat->equippedWeaponIdx)));
+      Player_ApplyWeapon(p, GetWeapon(REGISTERED_WEAPON(gStat->equippedWeaponIdx)));
     } else {
-      weapon_08064664(p, NULL);
+      Player_ApplyWeapon(p, NULL);
     }
   } else {
-    weapon_08064664(p, NULL);
+    Player_ApplyWeapon(p, NULL);
     if (p->unk_18 == 0) {
       SetWeaponFoundFlag(WEAPON_GUN_DEL_HELL);
     }

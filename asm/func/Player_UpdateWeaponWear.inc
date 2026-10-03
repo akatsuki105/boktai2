@@ -71,7 +71,7 @@ _080647E6:
 	bl FUN_0809c4f4
 	ldr r1, [r4]
 	adds r0, r5, #0
-	bl weapon_08064664
+	bl Player_ApplyWeapon
 	b _08064826
 	.align 2, 0
 _080647F8: .4byte 0x07CF0000
@@ -94,7 +94,7 @@ _080647FC:
 	bl FUN_0809c4f4
 	ldr r1, [r4]
 	adds r0, r5, #0
-	bl weapon_08064664
+	bl Player_ApplyWeapon
 _08064826:
 	movs r3, #0xa1
 	lsls r3, r3, #4

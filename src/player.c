@@ -19,6 +19,9 @@ bool32 FUN_0809e138(Player* p);                                                 
 s32 GetMagicCategory(magic32_t id);                                                                                    // src/equip_magic.c
 s32 FUN_080ddcc8(Vec3* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);  // src/entity_080ddf88.c
 void FUN_0809c4f4(void);                                                                                               // src/entity_cc28.c
+void FUN_08242a98(Weapon* w, WeaponData* data);                                                                        // src/weapon.c
+s32 FUN_0807a6cc(WeaponData* w);                                                                                       // src/player_08065988.c
+void FUN_08071b14(Player* p);                                                                                          // src/player_08065988.c
 
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
 
@@ -1267,7 +1270,39 @@ NAKED void FUN_080643d4(Player* p) { INCFUNC("asm/func/FUN_080643d4.inc"); }
 
 void FUN_08064658(Player* p, Weapon* w) { p->weapon_a70 = w; }
 
-NAKED void weapon_08064664(Player* p, Weapon* w) { INCFUNC("asm/func/weapon_08064664.inc"); }
+// 装備中の武器の情報を Player に展開する, サバタは素手 (gWeaponDB[60]) 固定
+void Player_ApplyWeapon(Player* p, Weapon* w) {
+  WeaponData wd;
+
+  if (p->kind != PLAYER_SABATA) {
+    FUN_08064658(p, w);
+    if (p->weapon_a70 == NULL) {
+      wd = gWeaponDB[0];
+    } else {
+      FUN_08242a98(p->weapon_a70, &wd);
+    }
+  } else {
+    p->weapon_a70 = NULL;
+    wd = gWeaponDB[60];
+  }
+
+  p->weaponID_a74 = wd.id;
+  p->weaponKind_a75 = wd.kind;
+  p->weaponAtk = wd.atk;
+  p->unk_a7a = FUN_0807a6cc(&wd);
+  Player_EnableWeaponSpecialEffects(p, &wd);
+
+  if (p->weaponID_a74 == 0x3D) {
+    p->attackCB = FUN_08071b14;
+  } else {
+    p->attackCB = gPlayerAttackUpdates[p->weaponKind_a75];
+  }
+
+  FUN_080643d4(p);
+  if (p->action == 3) {
+    Player_SetAction(p, 0, 0);
+  }
+}
 
 // HitboxData.damage (Player.unk_a10.damage) が0以外なら Weapon.wear に加算して HitboxData.damage を 0にする, ジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 の 0x0813EFFC で加算される (他の敵も同様と思われる)
 // 攻撃で与えたダメージの分だけ武器を損傷させる, 限界を超えたら品質か特殊効果を1つ失う
@@ -1297,7 +1332,7 @@ NON_MATCH void Player_UpdateWeaponWear(Player* p) {
         p->weapon_a70->quality--;
         p->weapon_a70->wear = 0;
         FUN_0809c4f4();
-        weapon_08064664(p, p->weapon_a70);
+        Player_ApplyWeapon(p, p->weapon_a70);
       }
     } else if (*(u8*)&p->weapon_a70->effects[2] != 0) {
       p->weapon_a70->wear += wear;
@@ -1305,7 +1340,7 @@ NON_MATCH void Player_UpdateWeaponWear(Player* p) {
         *(u8*)&p->weapon_a70->effects[2] = 0;
         p->weapon_a70->wear = 0;
         FUN_0809c4f4();
-        weapon_08064664(p, p->weapon_a70);
+        Player_ApplyWeapon(p, p->weapon_a70);
       }
     } else if (*(u8*)&p->weapon_a70->effects[1] != 0) {
       p->weapon_a70->wear += wear;
@@ -1313,7 +1348,7 @@ NON_MATCH void Player_UpdateWeaponWear(Player* p) {
         *(u8*)&p->weapon_a70->effects[1] = 0;
         p->weapon_a70->wear = 0;
         FUN_0809c4f4();
-        weapon_08064664(p, p->weapon_a70);
+        Player_ApplyWeapon(p, p->weapon_a70);
       }
     }
   }

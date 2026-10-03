@@ -50,7 +50,7 @@ _08242BB4:
 	bl GetWeapon
 	adds r1, r0, #0
 	adds r0, r4, #0
-	bl weapon_08064664
+	bl Player_ApplyWeapon
 _08242BF2:
 	bl FUN_0809c28c
 _08242BF6:

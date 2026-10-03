@@ -326,7 +326,10 @@ typedef struct Player {
   Weapon* weapon_a70;
   weapon8_t weaponID_a74;  // 武器ID
   u8 weaponKind_a75;       // 0xA75, 武器種
-  u8 unk_a76[0xA8A - 0xA76];
+  u8 unk_a76[2];           // 0xA76
+  u16 weaponAtk;           // 0xA78, WeaponData.atk の複写, 根拠: Player_ApplyWeapon
+  u16 unk_a7a;             // 0xA7A, Player_ApplyWeapon が FUN_0807a6cc の戻り値を入れる
+  u8 unk_a7c[0xA8A - 0xA7C];
   u16 unk_a8a;  // 0xA8A, Player_ShowGunSpread が散弾スプライトの rotation に入れる向き
   u8 unk_a8c;   // 0xA8C
   s8 unk_a8d;   // 0xA8D, FUN_0806f780 が Player_CheckMagicEnchant の結果を入れる, 負ならエンチャントなし

@@ -15,7 +15,7 @@
 	adds r0, r0, r1
 	ldr r1, [r0]
 	adds r0, r3, #0
-	bl weapon_08064664
+	bl Player_ApplyWeapon
 	pop {r0}
 	bx r0
 	.align 2, 0
