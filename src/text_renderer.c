@@ -309,22 +309,22 @@ u8* Text_FindChar(u8* s, u8 c) {
   return s;
 }
 
-// タグの '=' から '>' までを buf_34 に写して、'>' か終端の位置を返す (例: <VAR=1>, <PROC=0>)
+// タグの '=' から '>' までを tagValue に写して、'>' か終端の位置を返す (例: <VAR=1>, <PROC=0>)
 // 残差は c のレジスタ1つ (原典は ldrb で直接 r2, こちらは r0 経由で1命令多い) だけ, Tier A/B と C のローカル分割は試済
-NON_MATCH char* FUN_08048ce0(TextRenderer* p, char* s) {
+NON_MATCH char* TextRenderer_ReadTagValue(TextRenderer* p, char* s) {
 #ifdef NONMATCHING_C
   s32 i;
 
-  p->unk_2c = 0;
-  p->unk_30 = 0;
+  p->tagHasValue = 0;
+  p->tagValueLen = 0;
   i = 0;
   while (*s != '>' && *s != 0) {
     char c = *s;
 
     if (c == '=') {
-      p->unk_2c = 1;
-    } else if (p->unk_2c != 0) {
-      p->buf_34[p->unk_30++] = c;
+      p->tagHasValue = 1;
+    } else if (p->tagHasValue != 0) {
+      p->tagValue[p->tagValueLen++] = c;
     }
 
     i++;
@@ -334,10 +334,10 @@ NON_MATCH char* FUN_08048ce0(TextRenderer* p, char* s) {
     }
   }
 
-  p->buf_34[p->unk_30] = 0;
+  p->tagValue[p->tagValueLen] = 0;
   return s;
 #else
-  INCFUNC("asm/func/FUN_08048ce0.inc");
+  INCFUNC("asm/func/TextRenderer_ReadTagValue.inc");
 #endif
 }
 
@@ -673,7 +673,7 @@ NON_MATCH s32 TextRenderer_GetExtendWidth(TextRenderer* p, s32 idx) {
                 if (*q == '=') {
                   hasEq = TRUE;
                 } else if (hasEq) {
-                  p->buf_34[n++] = *q;
+                  p->tagValue[n++] = *q;
                 }
 
                 q++;
@@ -685,9 +685,9 @@ NON_MATCH s32 TextRenderer_GetExtendWidth(TextRenderer* p, s32 idx) {
             }
           }
 
-          p->buf_34[n] = 0;
+          p->tagValue[n] = 0;
           if (hasEq && n != 0) {
-            var = Text_ParseDecimal(p->buf_34, n);
+            var = Text_ParseDecimal(p->tagValue, n);
           } else {
             var = 0;
           }

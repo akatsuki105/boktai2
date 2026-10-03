@@ -48,7 +48,7 @@ _08048DFC:
 	bne _08048E40
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08048ce0
+	bl TextRenderer_ReadTagValue
 	adds r7, r0, #0
 	ldr r0, [r5, #0x2c]
 	cmp r0, #0
@@ -81,7 +81,7 @@ _08048E40:
 	bne _08048E90
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08048ce0
+	bl TextRenderer_ReadTagValue
 	adds r7, r0, #0
 	ldr r0, [r5, #0x2c]
 	cmp r0, #0
@@ -139,7 +139,7 @@ _08048EB4:
 _08048EC4:
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08048ce0
+	bl TextRenderer_ReadTagValue
 	adds r7, r0, #0
 	ldr r0, [r5, #0x2c]
 	cmp r0, #0
@@ -523,7 +523,7 @@ _080491F0:
 	bne _0804922A
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08048ce0
+	bl TextRenderer_ReadTagValue
 	adds r7, r0, #0
 	ldr r0, [r5, #0x2c]
 	cmp r0, #0
@@ -551,7 +551,7 @@ _0804922A:
 	bne _08049272
 	adds r0, r5, #0
 	adds r1, r7, #0
-	bl FUN_08048ce0
+	bl TextRenderer_ReadTagValue
 	adds r7, r0, #0
 	ldr r0, [r5, #0x2c]
 	cmp r0, #0
@@ -587,7 +587,7 @@ _08049272:
 	bne _080492AC
 	adds r0, r5, #0
 	adds r1, r7, #0
-	bl FUN_08048ce0
+	bl TextRenderer_ReadTagValue
 	adds r7, r0, #0
 	ldr r0, [r5, #0x2c]
 	cmp r0, #0
@@ -615,7 +615,7 @@ _080492AC:
 	bne _08049310
 	adds r0, r5, #0
 	adds r1, r7, #0
-	bl FUN_08048ce0
+	bl TextRenderer_ReadTagValue
 	adds r7, r0, #0
 	ldr r0, [r5, #0x2c]
 	cmp r0, #0
@@ -664,7 +664,7 @@ _08049310:
 	bne _08049360
 	adds r0, r5, #0
 	adds r1, r7, #0
-	bl FUN_08048ce0
+	bl TextRenderer_ReadTagValue
 	adds r7, r0, #0
 	adds r4, r5, #0
 	adds r4, #0x34
