@@ -62,7 +62,7 @@ _08097734:
 	lsls r1, r1, #3
 	ldr r2, _080977A0 @ =0x08DAA7B0
 	adds r1, r1, r2
-	bl FUN_08064a64
+	bl Player_EquipArmor
 	adds r0, r4, #0
 	bl FUN_0808bac4
 	adds r0, r4, #0

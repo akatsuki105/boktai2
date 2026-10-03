@@ -54,7 +54,7 @@ void FUN_08061294(Player* p);
 void Player_Init_Helper_08063b6c(Player* p);
 void FUN_0807ddbc(Player* p);
 
-void FUN_08064a64(Player* p, const ArmorData* a);
+void Player_EquipArmor(Player* p, const ArmorData* a);
 struct Entity08080be8* Entity08080be8_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44, u32 ptclVal, u32 eneCost, u32 unk_cd);
 void FUN_0807e784(HitboxData* a, HitboxData* b, Player* p);
 void Player_SetMoveDelta(Player* p, s32 val);
@@ -124,7 +124,7 @@ void Player_InitArmor(Player* p) {
     a = &gArmorDB[ARMOR_MAIL_OF_LUNA];
   }
 
-  FUN_08064a64(p, a);
+  Player_EquipArmor(p, a);
 }
 
 // 本体の当たり判定を組み立てる, 赤ジャンゴは属性がソル・弱点がダークで、それ以外は逆になる

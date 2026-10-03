@@ -166,7 +166,7 @@ _08097330:
 	adds r0, r4, r1
 	ldr r0, [r0]
 	movs r1, #0
-	bl FUN_08064a64
+	bl Player_EquipArmor
 	adds r0, r4, #0
 	bl FUN_0808bac4
 	movs r0, #0xde

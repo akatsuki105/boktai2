@@ -711,7 +711,21 @@ NAKED void Player_UpdateWeaponWear(Player* p) { INCFUNC("asm/func/Player_UpdateW
 
 NAKED void FUN_0806483c(Player* p, const ArmorData* a) { INCFUNC("asm/func/FUN_0806483c.inc"); }
 
-NAKED void FUN_08064a64(Player* p, const ArmorData* a) { INCFUNC("asm/func/FUN_08064a64.inc"); }
+// 鎧を装備する, a が NULL なら素手の値に戻す
+void Player_EquipArmor(Player* p, const ArmorData* a) {
+  if (a == NULL) {
+    p->armor.id = 0xFFFF;
+    p->armor.defence = 0;
+    p->armor.weight = 0;
+  } else {
+    p->armor.id = a->id;
+    p->armor.defence = a->defence;
+    p->armor.weight = a->weight;
+  }
+
+  FUN_0806483c(p, a);
+  FUN_080612bc(p);
+}
 
 void CheckHeartJokerEmblem(Player* p) {
   if (CheckItemOwn(ITEM_HEART_EMBLEM)) {
