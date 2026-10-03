@@ -12,6 +12,7 @@
 #include "vm.h"
 
 extern u16 u16_03002b64;
+extern u16 u16_03002b74;
 extern u16 u16_03002bb0;
 
 s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);                 // src/entity_0805fd6c.c
@@ -459,22 +460,75 @@ void Player_RefreshHpEne(Player* p) {
   }
 }
 
-NAKED void FUN_08061198(Player* p) { INCFUNC("asm/func/FUN_08061198.inc"); }
+// 攻撃力と属性を当たり判定に設定する, レベルとチカラの平均に鎧の値を足した値が攻撃力になる
+// 命令数は107で一致, 残差はレジスタ割当だけ (原典は鎧のベースを r5, lv を r4 に置く)
+// PlayerArmor を 0x27A まで広げると命令数は揃った, Tier A/B は試済
+NON_MATCH void Player_RefreshAttackPower(Player* p) {
+#ifdef NONMATCHING_C
+  PlayerArmor* armor = &p->armor;
+  s32 lv;
+  s32 power;
+  HitboxAttributes attrs;
+  u32 weakness;
+  bool32 special;
+
+  if (p->kind == PLAYER_SABATA) {
+    lv = gStat->lv + 10;
+    if (lv > 99) {
+      lv = 99;
+    }
+    power = p->stats[3];
+    attrs = p->unk_27c | 2;
+    weakness = 1;
+  } else {
+    lv = gStat->lv;
+    if (p->kind == PLAYER_SOLAR_DJANGO) {
+      power = p->stats[3] + armor->bonus[3] + armor->unk_27a;
+      attrs = p->unk_27c | 1;
+      weakness = 2;
+    } else {
+      power = p->stats[3] + armor->bonus[3] - armor->unk_27a;
+      attrs = p->unk_27c | 2;
+      weakness = 1;
+    }
+  }
+
+  special = FALSE;
+  if (p->unk_446 != 0 && p->unk_442 == 8) {
+    special = TRUE;
+  }
+  if (special || p->unk_27c == 0x40) {
+    attrs = 0x40;
+  }
+
+  if (power > 99) {
+    power = 99;
+  }
+  power = ((power + lv) >> 1) + armor->defence;
+  if (p->kind == PLAYER_SABATA) {
+    u16_03002b74 = power;
+  }
+
+  Hitbox_SetPowerAndAttributes(&p->unk_16c, power, attrs, weakness);
+#else
+  INCFUNC("asm/func/Player_RefreshAttackPower.inc");
+#endif
+}
 
 void FUN_08061294(Player* p) {
   Player_RefreshHpEne(p);
-  FUN_08061198(p);
+  Player_RefreshAttackPower(p);
 }
 
 void FUN_080612a8(Player* p) {
   UpdateMaxHPEne(p);
-  FUN_08061198(p);
+  Player_RefreshAttackPower(p);
 }
 
 void FUN_080612bc(Player* p) {
   Player_RefreshStats(p);
   UpdateMaxHPEne(p);
-  FUN_08061198(p);
+  Player_RefreshAttackPower(p);
 }
 
 // 足元の判定を1つ出す, コウモリ/ネズミ姿は補助スプライトの位置と小さめの大きさを使う

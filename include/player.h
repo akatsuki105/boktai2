@@ -84,7 +84,10 @@ typedef struct {
   u16 bonus[STAT_KINDS];  // 0x08 (Player: 0x26C), 武者鎧などのステータスに対する補正値
   s16 hpBonus;            // 0x10 (Player: 0x274), 鎧のHP補正値(赤なら+, 黒なら-)
   s16 eneBonus;           // 0x12 (Player: 0x276), 鎧のEne補正値(赤なら+, 黒なら-)
+  u16 unk_278;            // 0x14 (Player: 0x278)
+  s16 unk_27a;            // 0x16 (Player: 0x27A), Player_RefreshAttackPower がチカラの補正として足し引きする
 } PlayerArmor;
+static_assert(sizeof(PlayerArmor) == 24);  // 根拠: Player_RefreshAttackPower が 0x264 を1本のベースにして 0x266/0x272/0x27A を触る
 
 typedef struct {
   Particle base;  // 0x00
@@ -173,8 +176,6 @@ typedef struct Player {
   u8 unk_220[0x230 - 0x220];  // 0x220, Player_Destroy が FUN_080f8cac に渡す EntityD854Node
   EntityMsgBox msgbox;        // 0x230, FUN_0807ddd4 が EntityMsgBus_Unregister に渡す
   PlayerArmor armor;          // 0x264
-  u16 unk_278;
-  s16 unk_27a;
   u32 unk_27c;
   PlayerMagic magic;  // 0x280, 装備魔法まわりの一群, 根拠: Player_RefreshMagicInfo が1本のベースレジスタで5フィールドを書く
   u8 unk_288[0x28C - 0x288];
