@@ -655,7 +655,67 @@ NON_MATCH void FUN_08061458(Player* p) {
 #endif
 }
 
-NAKED void FUN_080614bc(Player* p) { INCFUNC("asm/func/FUN_080614bc.inc"); }
+// 状態異常2が続いている間だけ, 周囲を回るパーティクルを1つ出し続ける
+// 残差1命令 (157/156): Y方向の割り算の結果を置くレジスタだけ違う (原典は r0, こちらは r1)
+// 代入を枝ごとに書く形は逆に離れた, Tier A/B は試済
+NON_MATCH void Player_UpdateBadCondPtcl(Player* p) {
+#ifdef NONMATCHING_C
+  s32 angle;
+  s32 v;
+  s32 offset;
+
+  if (p->ptcl_67c.active) {
+    if (p->unk_1c != 1 || p->unk_43c[2] == 0) {
+      p->ptcl_67c.ptcl.flags |= SPRFLAG_HIDDEN;
+      p->ptcl_67c.active = FALSE;
+      return;
+    }
+
+    angle = (p->ptcl_67c.timer * 5) & 0xFF;
+
+    v = gSineTable[(angle + 0x40) & 0xFF] * 56;
+    if (v >= 0) {
+      offset = v >> 12;
+    } else {
+      offset = -((-v) >> 12);
+    }
+    p->ptcl_67c.ptcl.pos.x = p->mover.pos.x + offset;
+
+    v = gSineTable[angle] * 70;
+    if (v >= 0) {
+      offset = v >> 12;
+    } else {
+      offset = -((-v) >> 12);
+    }
+    p->ptcl_67c.ptcl.pos.y = offset + 0x15E + p->mover.pos.y;
+
+    v = gSineTable[(angle + 0x40) & 0xFF] * 56;
+    if (v >= 0) {
+      offset = v >> 12;
+    } else {
+      offset = -((-v) >> 12);
+    }
+    p->ptcl_67c.ptcl.pos.z = p->mover.pos.z - offset;
+
+    p->ptcl_67c.timer++;
+    return;
+  }
+
+  if (p->unk_1c != 1 || p->unk_43c[2] == 0) {
+    return;
+  }
+
+  p->ptcl_67c.ptcl.pos = p->mover.pos;
+  p->ptcl_67c.ptcl.pos.x += 0x38;
+  p->ptcl_67c.ptcl.pos.y += 0x15E;
+  p->ptcl_67c.ptcl.flags &= ~SPRFLAG_HIDDEN;
+  FUN_0822dafc(&p->ptcl_67c.ptcl, p->ptcl_67c.group1, 0x10);
+  p->ptcl_67c.timer = 0;
+  p->ptcl_67c.active = TRUE;
+#else
+  INCFUNC("asm/func/Player_UpdateBadCondPtcl.inc");
+#endif
+}
 
 // 0x67C のパーティクルを確保して隠した状態で初期化する
 // FUN_08061458 と同じ残差 (40/40, p と &ptcl_67c のレジスタが入れ替わっているだけ)
@@ -1521,7 +1581,7 @@ NON_MATCH void Player_UpdatePoseAndShadow(Player* p) {
   }
 
   Player_RefreshAttackPower(p);
-  FUN_080614bc(p);
+  Player_UpdateBadCondPtcl(p);
   Player_UpdatePtcl718(p);
   Player_UpdatePtcl858(p);
   p->meleeShockwave.update(&p->meleeShockwave);

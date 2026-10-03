@@ -57,7 +57,7 @@ _08063A70:
 	adds r0, r5, #0
 	bl Player_UpdatePtcl64c
 	adds r0, r5, #0
-	bl FUN_080614bc
+	bl Player_UpdateBadCondPtcl
 	adds r0, r5, #0
 	bl Player_UpdatePtcl718
 	adds r0, r5, #0
