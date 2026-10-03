@@ -1738,7 +1738,83 @@ NON_MATCH u32 Player_ApplyFlashPose(Player* p, u32 pose) {
 #endif
 }
 
-NAKED void FUN_08063814(Player* p) { INCFUNC("asm/func/FUN_08063814.inc"); }
+// 変身の拡縮演出を1フレーム進める, unk_442 が 5 の間は縮み, それ以外では元の大きさへ戻る
+// 残差4命令 (186/190): レジスタ割当 (原典は p を r4) と定数の作り直し
+// 分岐の並び (unk_446 != 0 を先) は原典と一致した, Tier A/B は試済
+NON_MATCH void Player_UpdateFormScale(Player* p) {
+#ifdef NONMATCHING_C
+  s32 scale;
+
+  if (p->unk_446 != 0) {
+    if (p->unk_442 == 5) {
+      if (p->unk_97a <= 0x3F) {
+        if (p->unk_97a == 0) {
+          PlaySound_082406e0(0x1EE);
+          p->unk_3f1[0] = 1;
+        }
+        p->unk_97a++;
+      }
+
+      p->sprite_88.flags |= SPRFLAG_AFFINE;
+      scale = 0x40 - (p->unk_97a >> 1);
+      p->sprite_88.scaleX = scale;
+      p->sprite_88.scaleY = scale;
+      p->unk_20 |= 0x50000;
+    } else if (p->unk_97a != 0) {
+      if (p->unk_3f1[0] != 0) {
+        PlaySound_082406e0(0x336);
+        p->unk_3f1[0] = 0;
+      }
+
+      p->unk_97a--;
+      if (p->unk_97a == 0) {
+        p->sprite_88.flags &= ~(SPRFLAG_HIDDEN | SPRFLAG_AFFINE);
+        scale = 0x40;
+      } else {
+        p->sprite_88.flags |= SPRFLAG_AFFINE;
+        scale = 0x40 - (p->unk_97a >> 1);
+      }
+      p->sprite_88.scaleX = scale;
+      p->sprite_88.scaleY = scale;
+    }
+
+    if (p->unk_442 == 6) {
+      p->sprite_88.flags |= SPRFLAG_BLINK_ODD;
+      p->unk_20 |= 0x20000;
+    } else {
+      p->sprite_88.flags &= ~SPRFLAG_BLINK_ODD;
+    }
+
+    if (p->unk_1c & 1) {
+      p->unk_446--;
+    }
+  } else {
+    if (p->unk_97a != 0) {
+      if (p->unk_3f1[0] != 0) {
+        PlaySound_082406e0(0x336);
+        p->unk_3f1[0] = 0;
+      }
+
+      p->unk_97a--;
+      if (p->unk_97a == 0) {
+        p->sprite_88.flags &= ~(SPRFLAG_HIDDEN | SPRFLAG_AFFINE);
+        scale = 0x40;
+      } else {
+        p->sprite_88.flags |= SPRFLAG_AFFINE;
+        scale = 0x40 - (p->unk_97a >> 1);
+      }
+      p->sprite_88.scaleX = scale;
+      p->sprite_88.scaleY = scale;
+    }
+
+    if (p->sprite_88.flags & SPRFLAG_BLINK_ODD) {
+      p->sprite_88.flags &= ~SPRFLAG_BLINK_ODD;
+    }
+  }
+#else
+  INCFUNC("asm/func/Player_UpdateFormScale.inc");
+#endif
+}
 
 void FUN_080639d0(Player* p) {
   if (p->input_28c->pressed & (A_BUTTON | B_BUTTON | DPAD_RIGHT | DPAD_LEFT | DPAD_UP | DPAD_DOWN)) {
@@ -1753,7 +1829,7 @@ NON_MATCH void Player_UpdatePoseAndShadow(Player* p) {
   s32 pose = 0;
 
   if (p->mover.unk_4 == 0) {
-    FUN_08063814(p);
+    Player_UpdateFormScale(p);
     FUN_080639d0(p);
     pose = Player_TickBadCondTimers(p, 0);
     pose = Player_ApplyPoseHold(p, pose);

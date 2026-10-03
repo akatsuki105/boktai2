@@ -7,7 +7,7 @@
 	cmp r0, #0
 	bne _08063A34
 	adds r0, r5, #0
-	bl FUN_08063814
+	bl Player_UpdateFormScale
 	adds r0, r5, #0
 	bl FUN_080639d0
 	adds r0, r5, #0
