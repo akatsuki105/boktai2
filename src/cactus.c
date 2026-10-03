@@ -231,6 +231,7 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   MapTileOverride* tileOverride;
   CollisionMapTile* tile;
   MapTileOverride* ov;
+  s32 slot;
   s32 bx, bz, idx;
   s32 h;
   s32 i;

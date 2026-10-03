@@ -54,7 +54,7 @@ void EntityF41A_SetState(EntityF41A* p, s32 state) {
 // Entity5941 から届く通知, 0 = 攻撃が当たった, 1 = 吹き飛ばし開始
 NON_MATCH bool32 EntityF41A_OnMessage(Mover* data, s32 msg, s32 value) {
 #ifdef NONMATCHING_C
-  EntityF41A* p = data->p_38;
+  EntityF41A* p = data->owner;
 
   if (msg == 0) {
     if (p->state != 2) {
@@ -80,11 +80,11 @@ NON_MATCH bool32 EntityF41A_OnMessage(Mover* data, s32 msg, s32 value) {
 // targetAngle へ向きを4ずつ寄せながらうろつく, turnTimer が切れたら向きを引き直す
 NON_MATCH void EntityF41A_UpdateWander(EntityF41A* p) {
 #ifdef NONMATCHING_C
-  if (p->data.unk_5 != p->targetAngle) {
-    if (((p->targetAngle - p->data.unk_5 + 0x100) & 0xFF) < 0x80) {
-      p->data.unk_5 = p->data.unk_5 + 4;
+  if (p->data.angle != p->targetAngle) {
+    if (((p->targetAngle - p->data.angle + 0x100) & 0xFF) < 0x80) {
+      p->data.angle = p->data.angle + 4;
     } else {
-      p->data.unk_5 = p->data.unk_5 + 0xFC;
+      p->data.angle = p->data.angle + 0xFC;
     }
   }
   if (p->turnTimer == 0) {
@@ -121,12 +121,12 @@ NON_MATCH void EntityF41A_UpdateKnockback(EntityF41A* p) {
 #ifdef NONMATCHING_C
   p->animIdx = 2;
   if (p->pushSpeed != 0) {
-    p->data.delta.x += p->pushSpeed * gSineTable[(p->data.unk_5 + 0x40) & 0xFF] / 4096;
-    p->data.delta.z += p->pushSpeed * gSineTable[p->data.unk_5] / 4096;
+    p->data.delta.x += p->pushSpeed * gSineTable[(p->data.angle + 0x40) & 0xFF] / 4096;
+    p->data.delta.z += p->pushSpeed * gSineTable[p->data.angle] / 4096;
     p->pushSpeed = (p->pushSpeed * 3) >> 2;
   } else {
-    p->data.unk_5 += 0x80;
-    p->targetAngle = p->data.unk_5;
+    p->data.angle += 0x80;
+    p->targetAngle = p->data.angle;
     p->detectNode.flags &= ~1;
     EntityF41A_SetState(p, 0);
   }
