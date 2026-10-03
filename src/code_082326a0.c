@@ -124,7 +124,17 @@ NAKED void FUN_08234660(unknown* p) { INCFUNC("asm/func/FUN_08234660.inc"); }
 
 NAKED void FUN_08234868(unknown* param_1, CollisionMapEvent* ev, u32 param_3) { INCFUNC("asm/func/FUN_08234868.inc"); }
 
-NAKED bool32 FUN_082348f8(ZoneID16 id) { INCFUNC("asm/func/FUN_082348f8.inc"); }
+// id を持つゾーンが1つでもあるか
+bool32 FUN_082348f8(ZoneID16 id) {
+  s32 i;
+
+  for (i = 0; i < gCollisionMap->zones->count; i++) {
+    if (gCollisionMap->zones->zones[i].id == id) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
 
 // id を持つゾーンのうち最初の1つを返し、同じIDのゾーンの数を count に書く
 Zone* FindZonesByID(ZoneID16 id, u16* count) {
