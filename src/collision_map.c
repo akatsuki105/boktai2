@@ -319,7 +319,27 @@ bool32 Map_IsPosInNavRect(struct NavRect* rects, Vec3* pos, u32 idx) {
   return FALSE;
 }
 
-NAKED u16 FUN_0823595c(u16* distanceMap, u16 n, s32 a, s32 b) { INCFUNC("asm/func/FUN_0823595c.inc"); }
+// a と b の距離を distanceMap (上三角だけを詰めた行列) から引く, 同じなら 0
+// 残差は最後の4命令のレジスタだけ (原典は引き算の結果を左辺のレジスタに残す), 命令数は31で一致, Tier A/B と C の lo/hi 変数化・複合代入は試済
+NON_MATCH u16 Map_GetNavDistance(u16* distanceMap, u16 n, s32 a, s32 b) {
+#ifdef NONMATCHING_C
+  s32 idx;
+
+  if (a == b) {
+    return 0;
+  }
+
+  if (a <= b) {
+    idx = a * n + b - ((a + 2) * (a + 1) >> 1);
+  } else {
+    idx = b * n + a - ((b + 2) * (b + 1) >> 1);
+  }
+
+  return distanceMap[idx];
+#else
+  INCFUNC("asm/func/Map_GetNavDistance.inc");
+#endif
+}
 
 NAKED s32 FUN_0823599c(unknown* param_1, s32 param_2, Vec3* pos) { INCFUNC("asm/func/FUN_0823599c.inc"); }
 

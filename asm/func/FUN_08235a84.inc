@@ -477,7 +477,7 @@ _08235DEE:
 	adds r5, r3, r0
 	ldrb r3, [r5]
 	ldr r0, [sp, #0x30]
-	bl FUN_0823595c
+	bl Map_GetNavDistance
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #0x38]
