@@ -29,12 +29,8 @@ NAKED s32 Map_LoadCollisionMapFile(s32 id) { INCFUNC("asm/func/Map_LoadCollision
 void Map_LoadMapScripted(void) {
   CollisionMapData* cm;
   CollisionMapTileData* td;
-  s32 h;
-  s32 t;
-  s32 r;
-  s32 z;
+  s32 h, t, r, z;
   s32 pf;
-  s32 val;
 
   VM_GetNamedArgValue('n', 0);
   h = VM_GetNamedArgValue('h', 0);
@@ -45,24 +41,16 @@ void Map_LoadMapScripted(void) {
   if (pf != 0) {
     Map_LoadCollisionMapFile(pf);
   } else {
-    if (h != 0) {
-      FUN_082327c0(h);
-    }
-    if (t != 0) {
-      FUN_082345f8(t);
-    }
-    if (r != 0) {
-      FUN_08234db8(r);
-    }
-    if (z != 0) {
-      FUN_082358f4(z);
-    }
+    if (h != 0) FUN_082327c0(h);
+    if (t != 0) FUN_082345f8(t);
+    if (r != 0) FUN_08234db8(r);
+    if (z != 0) FUN_082358f4(z);
   }
 
   cm = Registry_Find(0x56C2);
   td = cm->tiledata;
   if (VM_SeekToNamedArg('v')) {
-    val = VM_GetValue();
+    s32 val = VM_GetValue();
     if (val == 0) {
       Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
       gCameraCoords.tilemapX = td->tilemap_offset_x >> 4;
