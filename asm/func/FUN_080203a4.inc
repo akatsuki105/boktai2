@@ -132,7 +132,7 @@ _08020484:
 	str r2, [sp]
 	str r5, [sp, #4]
 	movs r2, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	adds r5, r6, #0
 	adds r0, r6, #0
 	adds r0, #0x40

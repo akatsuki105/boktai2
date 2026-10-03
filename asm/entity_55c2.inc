@@ -601,7 +601,7 @@ _0800DF84:
 	adds r0, r4, #0
 	adds r1, r6, #0
 	movs r2, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	ldrh r0, [r4]
 	movs r6, #2
 	movs r7, #0

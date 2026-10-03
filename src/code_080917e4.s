@@ -2896,7 +2896,7 @@ _080A1D7A:
 	adds r2, #4
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	adds r0, r5, #0
 	add r1, sp, #8
 	bl FUN_080a1b48
@@ -8170,7 +8170,7 @@ _080A45F6:
 	movs r2, #0
 	str r2, [sp, #4]
 	adds r2, r5, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	adds r1, r4, #0
 	adds r1, #0xf7
 	movs r0, #1

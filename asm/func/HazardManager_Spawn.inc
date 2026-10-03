@@ -231,7 +231,7 @@ _0800C9EC:
 	ldr r0, [sp, #0x28]
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	ldr r1, _0800CA14 @ =0x000004B3
 	ldr r0, [sp, #0x2c]
 	bl Video_GetAuxSprite

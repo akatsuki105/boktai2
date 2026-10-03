@@ -245,7 +245,7 @@ _080A0228:
 	ldr r2, _080A024C @ =0x0000082A
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	movs r0, #1
 	strb r0, [r4, #0x1d]
 	b _080A0260
@@ -538,7 +538,7 @@ _080A0458:
 	ldr r2, _080A048C @ =0x0000080B
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	movs r0, #1
 	strb r0, [r4, #0x1d]
 	b _080A04B6
@@ -691,7 +691,7 @@ _080A0580:
 	ldr r2, _080A05B8 @ =0x0000082A
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	movs r0, #1
 	strb r0, [r4, #0x1d]
 	b _080A05E0

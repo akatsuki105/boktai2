@@ -111,7 +111,7 @@ _081D34BC:
 	str r1, [sp, #4]
 	adds r1, r2, #0
 	movs r2, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	movs r0, #1
 	ldrh r1, [r4]
 	orrs r0, r1

@@ -30,15 +30,15 @@ extern u8 gDecompressedCollisionMapFile[16380];  // 0x02031404, 展開された 
 // --------------------------------------------
 
 // 地形の上書き情報を管理する構造体
-// 根拠: FUN_08234270 (挿入) / FUN_082342a8 (除去) / FUN_08234208 (各フィールドの初期化)
+// 根拠: Map_AddTileOverride (挿入) / FUN_082342a8 (除去) / FUN_08234208 (各フィールドの初期化)
 typedef struct MapTileOverride {
   u16 unk_0;                     // 0x00, FUN_08234208 が 0 を書く
   u16 tileIdx;                   // 0x02, FUN_08234208 の第2引数, 呼び出し側はコリジョンマップのタイル索引を渡す
   u8 height;                     // 0x04, FUN_08234208 が param_3 << 4 | param_4 を書く, 呼び出し側はタイルの高さを渡す
   u8 unk_5;                      // 0x05, EntityEC96_Init は 0xFF を渡す
   u16 unk_6;                     // 0x06, EntityEC96_Init は 0 を渡す
-  struct MapTileOverride* prev;  // 0x08, FUN_08234270 が挿入時に NULL を書く
-  struct MapTileOverride* next;  // 0x0C, FUN_08234270 が挿入時に旧 head を書く
+  struct MapTileOverride* prev;  // 0x08, Map_AddTileOverride が挿入時に NULL を書く
+  struct MapTileOverride* next;  // 0x0C, Map_AddTileOverride が挿入時に旧 head を書く
 } MapTileOverride;
 static_assert(sizeof(MapTileOverride) == 16);
 
@@ -181,7 +181,7 @@ typedef struct CollisionMapData {
   ZoneData* zones;                 // 0x00C
   PathData* paths;                 // 0x010
   NavMesh* navMesh;                // 0x014
-  MapTileOverride* tileOverrides;  // 0x018, FUN_08234270 がここを先頭とする双方向リストにノードを繋ぐ
+  MapTileOverride* tileOverrides;  // 0x018, Map_AddTileOverride がここを先頭とする双方向リストにノードを繋ぐ
   s16 neighborOffsets[4];          // 0x01C, 隣接タイルへの索引差分 -w/1/w/-1, 根拠: FUN_0823273c, 読み手は (dir & 3) で引く
   u16 rowOffsets[256];             // 0x024, 行ごとのタイル索引オフセット表, rowOffsets[blockZ] + blockX がタイル索引
   CollisionMapEvent events[64];    // 0x224, 根拠: FUN_082326d8 が i=0..63 で 44バイトずつクリアする

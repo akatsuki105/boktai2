@@ -76,7 +76,7 @@ NAKED s32 FUN_08233d50(s32 param_1, unknown* param_2, unknown* param_3) { INCFUN
 
 NAKED s32 FUN_082340c8(unknown* param_1, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_082340c8.inc"); }
 
-void FUN_08234208(MapTileOverride* p, u16 tileIdx, u32 param_3, u32 param_4, u8 param_5, u16 param_6) {
+void FUN_08234208(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 param_4, s32 param_5, s32 param_6) {
   p->tileIdx = tileIdx;
   p->unk_0 = 0;
   p->height = (param_3 << 4) | param_4;
@@ -86,7 +86,18 @@ void FUN_08234208(MapTileOverride* p, u16 tileIdx, u32 param_3, u32 param_4, u8 
 
 NAKED MapTileOverride* FUN_08234224(u32 tileIdx, u32 mask) { INCFUNC("asm/func/FUN_08234224.inc"); }
 
-NAKED s32 FUN_08234270(MapTileOverride* p, u16 tileIdx, u32 param_3, u32 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_08234270.inc"); }
+// 上書き情報を初期化して、コリジョンマップが持つ双方向リストの先頭に繋ぐ
+s32 Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6) {
+  FUN_08234208(p, tileIdx, param_3, height, param_5, param_6);
+  p->prev = NULL;
+  p->next = gCollisionMap->tileOverrides;
+  if (p->next != NULL) {
+    p->next->prev = p;
+  }
+
+  gCollisionMap->tileOverrides = p;
+  return 0;
+}
 
 // 衝突マップのタイル上書きリストからノードを外す
 void FUN_082342a8(MapTileOverride* p) {

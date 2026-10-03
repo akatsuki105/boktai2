@@ -93,7 +93,7 @@ s32 EntityEC96_Destroy(EntityEC96* p) {
   return 0;
 }
 
-void FUN_08234270(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
+void Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
 
 // スクリプトから位置と耐久を読み、スプライト・当たり判定・マップノードを用意する
 s32 EntityEC96_Init(EntityEC96* p, u32 id) {
@@ -158,7 +158,7 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   if (h < 0xF) {
     h++;
   }
-  FUN_08234270(&p->tileOverride, idx, 0, h, 0xFF, 0);
+  Map_AddTileOverride(&p->tileOverride, idx, 0, h, 0xFF, 0);
   return 0;
 }
 

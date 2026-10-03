@@ -780,7 +780,7 @@ _081D4DC2:
 	str r1, [sp, #4]
 	adds r1, r2, #0
 	movs r2, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	movs r0, #1
 	mov r2, sl
 	ldrh r1, [r2]

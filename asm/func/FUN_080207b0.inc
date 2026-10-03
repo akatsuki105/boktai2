@@ -239,7 +239,7 @@ _08020964:
 	mov r2, sb
 	str r2, [sp, #4]
 	movs r2, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	ldrb r0, [r5]
 	movs r3, #0x39
 	adds r3, r3, r7
