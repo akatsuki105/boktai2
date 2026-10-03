@@ -18,6 +18,7 @@ s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* 
 bool32 FUN_0809e138(Player* p);                                                                                        // src/entity_5ccc.c
 s32 GetMagicCategory(magic32_t id);                                                                                    // src/equip_magic.c
 s32 FUN_080ddcc8(Vec3* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);  // src/entity_080ddf88.c
+void FUN_0809c4f4(void);                                                                                               // src/entity_cc28.c
 
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
 
@@ -1190,7 +1191,59 @@ void FUN_08064658(Player* p, Weapon* w) { p->weapon_a70 = w; }
 NAKED void weapon_08064664(Player* p, Weapon* w) { INCFUNC("asm/func/weapon_08064664.inc"); }
 
 // HitboxData.damage (Player.unk_a10.damage) が0以外なら Weapon.wear に加算して HitboxData.damage を 0にする, ジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 の 0x0813EFFC で加算される (他の敵も同様と思われる)
-NAKED void Player_UpdateWeaponWear(Player* p) { INCFUNC("asm/func/Player_UpdateWeaponWear.inc"); }
+// 攻撃で与えたダメージの分だけ武器を損傷させる, 限界を超えたら品質か特殊効果を1つ失う
+// 残差3命令 (93/96): 原典は unk_a10.damage のアドレスを 0xA10 + 0x3E に分けて作るが agbcc は 0xA4E を1つの定数に畳む
+// HitboxData* のローカル化は逆に高位レジスタを使って遠ざかった, Tier A/B は試済
+NON_MATCH void Player_UpdateWeaponWear(Player* p) {
+#ifdef NONMATCHING_C
+  s32 wear = p->unk_a10.damage;
+
+  if (wear <= 0) {
+    return;
+  }
+
+  if (p->flag378 & FLAG378_WEAPONGUARD) {
+    p->unk_a10.damage = 0;
+    return;
+  }
+
+  if (p->weaponKind_a75 <= 2) {
+    if (p->flag378 & FLAG378_WET_DURABILITY) {
+      wear >>= 1;
+    }
+
+    if ((s8)p->weapon_a70->quality > 0) {
+      p->weapon_a70->wear += wear;
+      if (p->weapon_a70->wear > 0xC7) {
+        p->weapon_a70->quality--;
+        p->weapon_a70->wear = 0;
+        FUN_0809c4f4();
+        weapon_08064664(p, p->weapon_a70);
+      }
+    } else if (*(u8*)&p->weapon_a70->effects[2] != 0) {
+      p->weapon_a70->wear += wear;
+      if (p->weapon_a70->wear > 0x7CF) {
+        *(u8*)&p->weapon_a70->effects[2] = 0;
+        p->weapon_a70->wear = 0;
+        FUN_0809c4f4();
+        weapon_08064664(p, p->weapon_a70);
+      }
+    } else if (*(u8*)&p->weapon_a70->effects[1] != 0) {
+      p->weapon_a70->wear += wear;
+      if (p->weapon_a70->wear > 0x7CF) {
+        *(u8*)&p->weapon_a70->effects[1] = 0;
+        p->weapon_a70->wear = 0;
+        FUN_0809c4f4();
+        weapon_08064664(p, p->weapon_a70);
+      }
+    }
+  }
+
+  p->unk_a10.damage = 0;
+#else
+  INCFUNC("asm/func/Player_UpdateWeaponWear.inc");
+#endif
+}
 
 NAKED void FUN_0806483c(Player* p, const ArmorData* a) { INCFUNC("asm/func/FUN_0806483c.inc"); }
 
