@@ -1259,7 +1259,90 @@ NON_MATCH void Player_PayMagicCost(Player* p) {
 #endif
 }
 
-NAKED bool32 FUN_08064c48(Player* p, magic32_t id) { INCFUNC("asm/func/FUN_08064c48.inc"); }
+// 今のフォームで魔法 id が使えるかを返す (magic.availableForm の中身)
+// 残差4命令 (84/88): 原典は共有された return FALSE のブロックを関数の中央に置いて前後から飛ぶが, agbcc は末尾にまとめる
+// Tier A/B は試済 (FUN_08060ed8 を両枝で呼ぶ形は原典と一致した)
+NON_MATCH bool32 Player_IsMagicAvailableForm(Player* p, magic32_t id) {
+#ifdef NONMATCHING_C
+  s32 cat;
+
+  if (id < 0) {
+    return FALSE;
+  }
+
+  cat = GetMagicCategory(id);
+  if (id <= 5) {
+    if (FUN_08060ed8(p, 2) != 0) {
+      return FALSE;
+    }
+  } else {
+    if (FUN_08060ed8(p, 4 << (id - 6)) != 0) {
+      return FALSE;
+    }
+  }
+
+  if (p->kind == PLAYER_SOLAR_DJANGO) {
+    if (cat == 0) {
+      if (id == 1) {
+        return FALSE;
+      }
+      return TRUE;
+    }
+    if (cat == 1) {
+      return TRUE;
+    }
+    if (cat == 2) {
+      return FALSE;
+    }
+    return FALSE;
+  }
+
+  if (p->kind == PLAYER_DARK_DJANGO) {
+    if (cat == 0) {
+      if (id == 0 || id == 2 || id == 3 || id == 4 || id == 5) {
+        return FALSE;
+      }
+      return TRUE;
+    }
+    if (cat == 1) {
+      return FALSE;
+    }
+    if (cat == 2) {
+      if (id != 0xE) {
+        return TRUE;
+      }
+      if (gStat->coffin >= 0) {
+        return FALSE;
+      }
+      return TRUE;
+    }
+    return FALSE;
+  }
+
+  if (p->kind == PLAYER_SABATA) {
+    return TRUE;
+  }
+  if (p->kind == PLAYER_BAT) {
+    if (id == 0xF) {
+      return TRUE;
+    }
+    return FALSE;
+  }
+  if (p->kind == PLAYER_MOUSE) {
+    if (id == 0x10) {
+      return TRUE;
+    }
+    return FALSE;
+  }
+
+  if (id == 0xE) {
+    return TRUE;
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/Player_IsMagicAvailableForm.inc");
+#endif
+}
 
 // エンチャント中で、コストも払えて、武器種が銃でも拳でもなければ その魔法の ID を返す
 magic32_t Player_CheckMagicEnchant(Player* p) {
@@ -1320,7 +1403,7 @@ void Player_RefreshMagicInfo(Player* p) {
 
   m->cat = GetMagicCategory(m->id);
   m->basicCost = FUN_08064b00(m->id);
-  m->availableForm = FUN_08064c48(p, m->id);
+  m->availableForm = Player_IsMagicAvailableForm(p, m->id);
   m->enchanted = u16_03002bb0;
   if (!m->availableForm) {
     m->enchanted = FALSE;

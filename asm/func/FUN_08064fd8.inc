@@ -80,7 +80,7 @@ _08065068:
 	movs r1, #0
 	ldrsb r1, [r4, r1]
 	adds r0, r5, #0
-	bl FUN_08064c48
+	bl Player_IsMagicAvailableForm
 	strb r0, [r4, #2]
 	movs r0, #0
 	ldrsb r0, [r4, r0]

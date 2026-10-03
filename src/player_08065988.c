@@ -48,7 +48,7 @@ void Player_DestroyEffects(Player* p);
 void FUN_0807bdc8(Player* p, s32 param_2, s32 param_3, u32 param_4);
 void FUN_08060ec8(Player* p, u32 bits);
 u32 FUN_08060ed8(Player* p, u32 bits);
-bool32 FUN_08064c48(Player* p, magic32_t id);
+bool32 Player_IsMagicAvailableForm(Player* p, magic32_t id);
 void CheckHeartJokerEmblem(Player* p);
 void FUN_08061294(Player* p);
 void Player_Init_Helper_08063b6c(Player* p);
@@ -1702,7 +1702,7 @@ NON_MATCH void FUN_0807b34c(void) {
   if (p != NULL && VM_SeekToNamedArg('f')) {
     FUN_08060ec8(p, VM_GetValue());
     if (FUN_08060ed8(p, 0x3FFE)) {
-      p->magic.availableForm = FUN_08064c48(p, p->magic.id);
+      p->magic.availableForm = Player_IsMagicAvailableForm(p, p->magic.id);
     }
     if (VM_SeekToNamedArg('p')) {
       p->scriptID_9c0 = VM_GetValue();
