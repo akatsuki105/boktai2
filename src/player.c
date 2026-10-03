@@ -389,7 +389,28 @@ NAKED void FUN_08062278(Player* p) { INCFUNC("asm/func/FUN_08062278.inc"); }
 
 NAKED void FUN_080622d0(Player* p) { INCFUNC("asm/func/FUN_080622d0.inc"); }
 
-NAKED u32 FUN_0806241c(Player* p) { INCFUNC("asm/func/FUN_0806241c.inc"); }
+// 屋外かどうかと PFLAG20 の 0x10 で 0 / 4 / 8 を返す
+// 残差は屋外判定の 0/1 正規化4命令だけ (29/34), 原典は真偽値を一度レジスタに作ってから 0 と比べている
+// Tier A/B と bool32 ローカル化・述語 inline 化は試済, agbcc がどう書いても畳んでしまう
+NON_MATCH u32 FUN_0806241c(Player* p) {
+#ifdef NONMATCHING_C
+  u32 r = 0;
+
+  if (gStat->unk_934 & SF934_OUTDOOR) {
+    if (Player_TestFlag20(p, 0x10)) {
+      r = 4;
+    }
+  } else {
+    if (Player_TestFlag20(p, 0x10)) {
+      r = 8;
+    }
+  }
+
+  return r;
+#else
+  INCFUNC("asm/func/FUN_0806241c.inc");
+#endif
+}
 
 // unk_950 ごとに3色ずつ並んだ表から、パレットの5,6,13番を差し替える
 void FUN_08062468(Player* p) {
