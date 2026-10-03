@@ -11,7 +11,7 @@
 
 // player.c とファイルを分けてるのは、ファイルサイズが大きくなりすぎてコードを把握しにくいからで、解析が進んだら整理する予定
 
-void FUN_08065164(Player* p);
+void Player_RefreshMagicInfo(Player* p);
 extern const s16 s16_ARRAY_085abc8a[17];
 extern const u16 u16_ARRAY_085abb2c[57];
 extern const u16 u16_ARRAY_085abb9e[57];
@@ -1702,7 +1702,7 @@ NON_MATCH void FUN_0807b34c(void) {
   if (p != NULL && VM_SeekToNamedArg('f')) {
     FUN_08060ec8(p, VM_GetValue());
     if (FUN_08060ed8(p, 0x3FFE)) {
-      p->isEquippedMagicAvailableForm = FUN_08064c48(p, p->equippedMagic);
+      p->magic.availableForm = FUN_08064c48(p, p->magic.id);
     }
     if (VM_SeekToNamedArg('p')) {
       p->scriptID_9c0 = VM_GetValue();
@@ -1829,7 +1829,7 @@ void FUN_0807b5d0(void) {
   s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
-    gPlayerPtr[i]->unk_285 = 1;
+    gPlayerPtr[i]->magic.unk_285 = 1;
   }
 }
 
@@ -1837,7 +1837,7 @@ void FUN_0807b5f8(void) {
   s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
-    gPlayerPtr[i]->unk_285 = 0;
+    gPlayerPtr[i]->magic.unk_285 = 0;
   }
 }
 
@@ -3176,7 +3176,7 @@ static s32 Player_Init(Player* p, u32 n, void* _) {
   Player_Init_Helper_08065270(p);
   FUN_08065744(p, n);
   Player_SetupHitbox(p);
-  FUN_08065164(p);
+  Player_RefreshMagicInfo(p);
   Player_InitWeapon(p);
   Player_InitArmor(p);
   CheckHeartJokerEmblem(p);

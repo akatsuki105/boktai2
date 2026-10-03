@@ -14,6 +14,7 @@ extern u16 u16_03002bb0;
 
 s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);  // src/entity_0805fd6c.c
 bool32 FUN_0809e138(Player* p);                                                                         // src/entity_5ccc.c
+s32 GetMagicCategory(magic32_t id);                                                                     // src/equip_magic.c
 
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
 
@@ -980,16 +981,16 @@ NON_MATCH s32 CalcMagicCost(Player* p) {
   s32 cost;
   s32 pct;
 
-  if (p->equippedMagic < 0) {
+  if (p->magic.id < 0) {
     return 0;
   }
 
-  cost = FUN_08064b00(p->equippedMagic);
+  cost = FUN_08064b00(p->magic.id);
   pct = 100;
   if (p->flag378 & FLAG378_UNK_8) {
     pct = 80;
   }
-  if (p->equippedMagic <= 5 && (p->flag378 & FLAG378_WET_ENE_COST)) {
+  if (p->magic.id <= 5 && (p->flag378 & FLAG378_WET_ENE_COST)) {
     pct -= 20;
   }
 
@@ -1007,7 +1008,7 @@ bool32 Player_CheckMagicCost(Player* p) {
   s32 cost = CalcMagicCost(p);
   s32 avail;
 
-  if (p->equippedMagic <= 5 && Player_TestFlag378(p, FLAG378_ASTRO)) {
+  if (p->magic.id <= 5 && Player_TestFlag378(p, FLAG378_ASTRO)) {
     avail = gStat->solarStand;
   } else {
     avail = p->ene;
@@ -1025,7 +1026,7 @@ NON_MATCH void Player_PayMagicCost(Player* p) {
 #ifdef NONMATCHING_C
   s32 cost = CalcMagicCost(p);
 
-  if (p->equippedMagic <= 5 && (p->flag378 & FLAG378_ASTRO)) {
+  if (p->magic.id <= 5 && (p->flag378 & FLAG378_ASTRO)) {
     if ((s32)gStat->solarStand < cost) {
       gStat->solarStand = 0;
     } else {
@@ -1047,9 +1048,9 @@ NAKED bool32 FUN_08064c48(Player* p, magic32_t id) { INCFUNC("asm/func/FUN_08064
 
 // エンチャント中で、コストも払えて、武器種が銃でも拳でもなければ その魔法の ID を返す
 magic32_t Player_CheckMagicEnchant(Player* p) {
-  if (p->isEnchanted && p->equippedMagic <= 5 && Player_CheckMagicCost(p)) {
+  if (p->magic.enchanted && p->magic.id <= 5 && Player_CheckMagicCost(p)) {
     if ((u8)(p->weaponKind_a75 - STYLE_GUN) > 1) {
-      return p->equippedMagic;
+      return p->magic.id;
     }
   }
 
@@ -1084,4 +1085,38 @@ s32 FUN_08065110(Player* p) {
   return 9;
 }
 
-NAKED void FUN_08065164(Player* p) { INCFUNC("asm/func/FUN_08065164.inc"); }
+// 装備魔法の情報 (カテゴリ・消費MP・フォームで使えるか・エンチャント中か) を再計算する
+void Player_RefreshMagicInfo(Player* p) {
+  PlayerMagic* m = &p->magic;
+
+  if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+    m->id = -1;
+  } else {
+    m->id = FUN_08065110(p);
+  }
+
+  if (m->id < 0) {
+    m->cat = 0xFF;
+    m->basicCost = 0;
+    m->availableForm = FALSE;
+    m->enchanted = FALSE;
+    return;
+  }
+
+  m->cat = GetMagicCategory(m->id);
+  m->basicCost = FUN_08064b00(m->id);
+  m->availableForm = FUN_08064c48(p, m->id);
+  m->enchanted = u16_03002bb0;
+  if (!m->availableForm) {
+    m->enchanted = FALSE;
+    return;
+  }
+
+  if (!m->enchanted) {
+    return;
+  }
+  if (m->id > 5) {
+    return;
+  }
+  p->unk_951 = m->id + 1;
+}

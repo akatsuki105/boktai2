@@ -118,6 +118,18 @@ typedef struct {
 
 // 通常プレイでは gPlayerPtr[0] にこの構造体がある
 // 通信対戦の相手キャラもこの構造体を使う
+// 装備している魔法の情報一式, Player の 0x280 に置かれている
+typedef struct {
+  magic8_t id;          // 0x280, 現在装備している(画面左下に表示されている)魔法のID
+  u8 cat;               // 0x281, 現在装備している魔法のカテゴリ (MC_LUNA, MC_SOL, MC_DARK)
+  bool8 availableForm;  // 0x282, 今のプレイヤーのフォームでこの魔法が使えるか (フォームと魔法の組み合わせのみで決まる, MPコストや太陽ゲージは見ない)
+  bool8 enchanted;      // 0x283, エンチャント○○ がアクティブかどうか (プレイヤーが対応する色に光っているかどうか)
+  u8 basicCost;         // 0x284, この魔法の消費MP (マジックローブなどの影響を抜いた元々の値)
+  u8 unk_285;           // 0x285, FUN_0807b5d0 が 1 を、FUN_0807b5f8 が 0 を書く
+  u8 unk_286[2];        // 0x286, agbcc は構造体を4バイト境界に揃えるのでここは必ず埋まる
+} PlayerMagic;
+static_assert(sizeof(PlayerMagic) == 8);
+
 // 近接攻撃の衝撃波 (ジャンゴ) / 銃の散弾 (サバタ) に使うスプライト一式
 // 根拠: Player_Update_Helper_080639f8 が &meleeShockwave を update に渡して呼ぶ, update は PlayerShockwave_UpdateAnim か PlayerShockwave_UpdateFlash
 struct PlayerShockwave;
@@ -158,13 +170,8 @@ typedef struct Player {
   u16 unk_278;
   s16 unk_27a;
   u32 unk_27c;
-  magic8_t equippedMagic;              // 0x280, 現在装備している(画面左下に表示されている)魔法のID
-  u8 equippedMagicCat;                 // 0x281, 現在装備している魔法のカテゴリ (MC_LUNA, MC_SOL, MC_DARK)
-  bool8 isEquippedMagicAvailableForm;  // 0x282, 現在のプレイヤーのフォームで装備している魔法が使用可能かどうか (例えば、赤ジャンゴならエンチャントソルならtrue, チェンジウルフならfalse), フォームと魔法の組み合わせのみで決まる(MPコストや太陽ゲージとかは関係ない), TODO: もっと短い名前を考える
-  bool8 isEnchanted;                   // 0x283, エンチャント○○ がアクティブかどうか(プレイヤーが対応する色に光っているかどうか)
-  u8 equippedMagicBasicCost;           // 0x284, 装備している魔法の消費MP(マジックローブなどの影響を抜いた元々の消費MP)
-  u8 unk_285;                          // 0x285, FUN_0807b5d0 が 1 を、FUN_0807b5f8 が 0 を書く
-  u8 unk_286[0x28C - 0x286];
+  PlayerMagic magic;  // 0x280, 装備魔法まわりの一群, 根拠: Player_RefreshMagicInfo が1本のベースレジスタで5フィールドを書く
+  u8 unk_288[0x28C - 0x288];
   struct Input* input_28c;  // 0x28C, &gInput[n]
   Keys16 unk_290[10];       // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
   rgb555 pltt_2a4[32];      // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
