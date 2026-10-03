@@ -117,12 +117,12 @@ void Map_InitMoverTile(MoverTile* p, Vec3* pos) {
   p->tileIdx[0] = p->tileIdx[1] = idx;
 
   tile = &td->tiles[p->tileIdx[1]];
-  p->attrLo[1] = tile->attr & 0xF;
-  p->attrHi[1] = (tile->attr & 0xFF) >> 4;
-  p->obj[1] = *(u16*)&tile->obj;
-  p->attrLo[0] = p->attrLo[1];
-  p->attrHi[0] = p->attrHi[1];
-  p->obj[0] = p->obj[1];
+  p->height[1] = tile->heightStairs & 0xF;
+  p->stairs[1] = tile->heightStairs >> 4;
+  p->attr[1] = tile->attr;
+  p->height[0] = p->height[1];
+  p->stairs[0] = p->stairs[1];
+  p->attr[0] = p->attr[1];
 }
 
 // from から to へ 4タイル以内で真っ直ぐ行ける向きを 8bit の角度で返す, 無ければ -1
@@ -156,7 +156,7 @@ NON_MATCH s32 Map_FindDirToTile(s32 from, s32 to) {
 // pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
 u16 Map_GetTileHeightAt(Vec3* pos) {
   MapTileOverride* ov;
-  u8* tile;
+  CollisionMapTile* tile;
   s32 stairs;
   s32 height;
   s32 bx;
@@ -173,13 +173,13 @@ u16 Map_GetTileHeightAt(Vec3* pos) {
 
   ov = Map_FindTileOverride(idx, 1);
   if (ov != NULL) {
-    tile = &ov->height;
+    tile = &ov->tile;
   } else {
-    tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+    tile = &gCollisionMap->tiledata->tiles[idx];
   }
 
-  stairs = *tile >> 4;
-  height = (*tile & 0xF) << 8;
+  stairs = tile->heightStairs >> 4;
+  height = (tile->heightStairs & 0xF) << 8;
   switch (stairs) {
     case 1: {
       height -= (u8)pos->z;
@@ -193,9 +193,10 @@ u16 Map_GetTileHeightAt(Vec3* pos) {
   return height;
 }
 
-// pos のタイルの obj と stairs/height を1語で返す, マップ外なら tiles[0] の値
-u16 Map_GetTileObjAndHeight(Vec3* pos) {
+// pos のタイルの attr を返す, マップ外なら tiles[0] の値
+TileAttr Map_GetTileAttr(Vec3* pos) {
   CollisionMapTileData* td;
+  CollisionMapTile* tile;
   s32 bx;
   s32 bz;
   s32 idx;
@@ -212,7 +213,8 @@ u16 Map_GetTileObjAndHeight(Vec3* pos) {
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  return *(u16*)&td->tiles[idx].obj;
+  tile = &td->tiles[idx];
+  return tile->attr;
 }
 
 NAKED u16 FUN_082329e0(Vec3* pos1, Vec3* pos2) { INCFUNC("asm/func/FUN_082329e0.inc"); }
@@ -245,9 +247,9 @@ NAKED s32 FUN_082340c8(unknown* param_1, s32 param_2, s32 param_3, s32 param_4) 
 void Map_InitTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 param_4, s32 param_5, s32 param_6) {
   p->tileIdx = tileIdx;
   p->flags = 0;
-  p->height = (param_3 << 4) | param_4;
-  p->unk_5 = param_5;
-  p->unk_6 = param_6;
+  p->tile.heightStairs = (param_3 << 4) | param_4;
+  p->tile.obj = param_5;
+  p->tile.attr = param_6;
 }
 
 // tileIdx の上書き情報のうち、mask のビットを持たず height の下位4bitが最大のものを返す
@@ -257,7 +259,7 @@ MapTileOverride* Map_FindTileOverride(u32 tileIdx, u32 mask) {
 
   while (p != NULL) {
     if (!(p->flags & mask) && p->tileIdx == tileIdx) {
-      if (best == NULL || (best->height & 0xF) < (p->height & 0xF)) {
+      if (best == NULL || (best->tile.heightStairs & 0xF) < (p->tile.heightStairs & 0xF)) {
         best = p;
       }
     }
@@ -675,12 +677,12 @@ s32 FUN_08235f40(NavAgent* agent, Vec3* param_2, Vec3* pos) {
 
   ov = Map_FindTileOverride(idx, 1);
   if (ov != NULL) {
-    tile = (CollisionMapTile*)&ov->height;
+    tile = &ov->tile;
   } else {
     tile = &gCollisionMap->tiledata->tiles[idx];
   }
 
-  attr = *(u16*)&tile->obj;
+  attr = tile->attr;
   if (attr & TATTR_WALL) {
     agent->flags = 0;
     return 0;

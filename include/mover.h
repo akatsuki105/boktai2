@@ -1,6 +1,7 @@
 #ifndef __INCLUDE_MOVER_H__
 #define __INCLUDE_MOVER_H__
 
+#include "collision_map.h"
 #include "gba/gba.h"
 #include "types.h"
 
@@ -10,11 +11,11 @@ struct MainSprite;
 // Mover が踏んでいるタイルの控え, どの配列も [0] が前、[1] が今
 // タイルが変わったときだけ FUN_082332f8 が今の値を [0] へ押し出してから [1] を新しいタイルで更新する
 typedef struct {
-  u8 unk_0[4];     // 0x00, Map_InitMoverTile も FUN_082332f8 も触らない
-  u16 tileIdx[2];  // 0x04, gCollisionMap->rowOffsets[z >> 8] + (x >> 8)
-  u8 attrLo[2];    // 0x08, TileAttr の bit0-3 (TATTR_WALL / TATTR_UNK_2)
-  u8 attrHi[2];    // 0x0A, TileAttr の bit4-7 (TATTR_NOISE / TATTR_ICE / TATTR_LAVA) を 4bit 右にずらした値
-  u16 obj[2];      // 0x0C, CollisionMapTile の obj と height をまとめた2バイト
+  u8 unk_0[4];       // 0x00, Map_InitMoverTile も FUN_082332f8 も触らない
+  u16 tileIdx[2];    // 0x04, gCollisionMap->rowOffsets[z >> 8] + (x >> 8)
+  u8 height[2];      // 0x08, CollisionMapTile.heightStairs の下位4bit
+  u8 stairs[2];      // 0x0A, CollisionMapTile.heightStairs の上位4bit
+  TileAttr attr[2];  // 0x0C, CollisionMapTile.attr
 } MoverTile;
 static_assert(sizeof(MoverTile) == 16);
 

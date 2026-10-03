@@ -29,24 +29,9 @@ extern u8 gDecompressedCollisionMapFile[16380];  // 0x02031404, 展開された 
 
 // --------------------------------------------
 
-// 地形の上書き情報を管理する構造体
-// 根拠: Map_AddTileOverride (挿入) / Map_RemoveTileOverride (除去) / Map_InitTileOverride (各フィールドの初期化)
-typedef struct MapTileOverride {
-  u16 flags;                     // 0x00, Map_FindTileOverride が引数のマスクと AND を取って弾く, Map_InitTileOverride は 0 を書く
-  u16 tileIdx;                   // 0x02, Map_InitTileOverride の第2引数, 呼び出し側はコリジョンマップのタイル索引を渡す
-  u8 height;                     // 0x04, Map_InitTileOverride が param_3 << 4 | param_4 を書く, 呼び出し側はタイルの高さを渡す
-  u8 unk_5;                      // 0x05, EntityEC96_Init は 0xFF を渡す
-  u16 unk_6;                     // 0x06, EntityEC96_Init は 0 を渡す
-  struct MapTileOverride* prev;  // 0x08, Map_AddTileOverride が挿入時に NULL を書く
-  struct MapTileOverride* next;  // 0x0C, Map_AddTileOverride が挿入時に旧 head を書く
-} MapTileOverride;
-static_assert(sizeof(MapTileOverride) == 16);
-
-// --------------------------------------------
-
 typedef u16 TileAttr;             // CollisionMapTile.attr
-#define TATTR_WALL (1 << 1)       // 0x0001, 壁(常に侵入不可)
-#define TATTR_UNK_2 (1 << 2)      // 0x0004, sometimes used directly on loading zone tiles
+#define TATTR_WALL (1 << 1)       // 0x0002, 壁(常に侵入不可), 根拠: FUN_08235f40 がこのビットで NavAgent を止める, CactusManager も上書きタイルに立てる
+#define TATTR_UNK_2 (1 << 2)      // 0x0004, 以下は未検証
 #define TATTR_NOISE (1 << 5)      // 0x0020, alerts enemies when stepping onto the tile
 #define TATTR_ICE (1 << 6)        // 0x0040
 #define TATTR_LAVA (1 << 7)       // 0x0080
@@ -55,13 +40,27 @@ typedef u16 TileAttr;             // CollisionMapTile.attr
 #define TATTR_UNK_11 (1 << 11)    // 0x0800, sometimes used near loading zones pointing NW
 #define TATTR_UNK_12 (1 << 12)    // 0x1000, sometimes used near loading zones pointing NE
 
+// コリジョンマップの1タイル
+// 根拠: heightStairs を 上位/下位4bit に割って使うのは Map_GetTileHeightAt と EntityE06A_Create など6ファイル, attr の位置は FUN_08235f40
 typedef struct {
-  TileAttr attr;  // 0x00, see TileAttr
-  u8 obj;         // 0x02, タイルで隠されるべき場合に使用されるスプライト
-  u8 height : 4;  // 同じ高さのタイル か (高さが適切な)階段タイル から侵入可能
-  u8 stairs : 4;  // 0: none, 1: vertical, 2: horizontal
+  u8 heightStairs;  // 0x00, 下位4bit が高さ (同じ高さのタイル か 高さが合う階段タイル から侵入可能), 上位4bit が階段 (0: なし, 1: 縦, 2: 横)
+  u8 obj;           // 0x01, タイルで隠されるべき場合に使用されるスプライト, 0xFF でなし
+  TileAttr attr;    // 0x02, see TileAttr
 } CollisionMapTile;
 static_assert(sizeof(CollisionMapTile) == 4);
+
+// --------------------------------------------
+
+// 地形の上書き情報を管理する構造体
+// 根拠: Map_AddTileOverride (挿入) / Map_RemoveTileOverride (除去) / Map_InitTileOverride (各フィールドの初期化)
+typedef struct MapTileOverride {
+  u16 flags;                     // 0x00, Map_FindTileOverride が引数のマスクと AND を取って弾く, Map_InitTileOverride は 0 を書く
+  u16 tileIdx;                   // 0x02, Map_InitTileOverride の第2引数, 呼び出し側はコリジョンマップのタイル索引を渡す
+  CollisionMapTile tile;         // 0x04, このタイルの代わりに使われる値, Map_InitTileOverride の第3引数以降が入る
+  struct MapTileOverride* prev;  // 0x08, Map_AddTileOverride が挿入時に NULL を書く
+  struct MapTileOverride* next;  // 0x0C, Map_AddTileOverride が挿入時に旧 head を書く
+} MapTileOverride;
+static_assert(sizeof(MapTileOverride) == 16);
 
 typedef struct {
   u32 unk_0;                  // 0x00
