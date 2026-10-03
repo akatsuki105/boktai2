@@ -44,7 +44,7 @@ _080652C0:
 _080652C6:
 	strb r0, [r1]
 	adds r0, r4, #0
-	bl FUN_08060f00
+	bl Player_RefreshStats
 	ldr r0, _080652FC @ =0x030047A4
 	ldr r0, [r0]
 	movs r1, #0x80

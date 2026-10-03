@@ -283,7 +283,50 @@ void FUN_08060ee8(Player* p) {
   }
 }
 
-NAKED void FUN_08060f00(Player* p) { INCFUNC("asm/func/FUN_08060f00.inc"); }
+// ステータス値を割り振りとドーピングから作り直す, サバタはレベルから4つに均等割りする
+// 残差3命令 (79/76): 原典は &p->stats を kind (0x358) のレジスタに +4 して作るが agbcc は 0x35C を組み直す
+// Tier A/B は試済
+NON_MATCH void Player_RefreshStats(Player* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  if (p->kind != PLAYER_SABATA) {
+    for (i = 0; i < STAT_KINDS; i++) {
+      p->stats[i] = gStat->stats[i] + gStat->stats[i + STAT_KINDS];
+      if (p->stats[i] > 99) {
+        p->stats[i] = 99;
+      }
+    }
+  } else {
+    s32 lv = gStat->lv + 10;
+    s32 total;
+    s32 base;
+    s32 rem;
+
+    if (lv > 99) {
+      lv = 99;
+    }
+
+    total = (lv - 1) * 3;
+    base = Div(total, 4);
+    rem = total - base * 4;
+    base += 10;
+
+    for (i = 0; i < STAT_KINDS; i++) {
+      p->stats[i] = gStat->stats[i + STAT_KINDS] + base;
+      if (rem > 0) {
+        p->stats[i]++;
+        rem--;
+      }
+      if (p->stats[i] > 99) {
+        p->stats[i] = 99;
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/Player_RefreshStats.inc");
+#endif
+}
 
 s32 CalcMaxHP(Player* p) {
   s32 val;
@@ -344,7 +387,7 @@ void FUN_080612a8(Player* p) {
 }
 
 void FUN_080612bc(Player* p) {
-  FUN_08060f00(p);
+  Player_RefreshStats(p);
   UpdateMaxHPEne(p);
   FUN_08061198(p);
 }
