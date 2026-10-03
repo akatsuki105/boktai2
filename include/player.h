@@ -21,6 +21,7 @@ struct Input;
 typedef u32 PlayerFlag20;         // Player.unk_20
 #define PFLAG20_UNK_0 (1 << 0)    // 0x00000001, Player_BeginAction が毎回これだけ立てた状態から始める
 #define PFLAG20_UNK_4 (1 << 4)    // 0x00000010, 日光が当たっているときに立つ, 根拠: Player_BeginAction
+#define PFLAG20_UNK_15 (1 << 15)  // 0x00008000, 立っていると Player_SetHitDir が被弾方向を facing ではなく unk_3e8 に書く
 #define PFLAG20_UNK_16 (1 << 16)  // 0x00010000, FLAG378_UNK_9 が立っているときに立つ
 
 typedef u32 PlayerFlag378;               // Player.flag378
