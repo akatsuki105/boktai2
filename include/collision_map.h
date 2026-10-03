@@ -146,7 +146,8 @@ typedef struct {
 } NavIsland;
 
 typedef struct {
-  u32 countIslands;      // 0x00
+  u16 countIslands;      // 0x00, 根拠: Map_FindNavRectAt が ldrh で読んで符号つきで比べる
+  u16 unk_02;            // 0x02
   u32 islandOffsets[1];  // 0x04, islandOffsets[countIslands]
   NavIsland islands[1];  // NavIsland[countIslands]
 } NavMesh;

@@ -1719,7 +1719,7 @@ FUN_0808608c: @ 0x0808608C
 	adds r6, r5, #0
 	adds r6, #0x48
 	adds r0, r6, #0
-	bl FUN_0823629c
+	bl Map_FindNavRectAt
 	cmp r0, #0xff
 	beq _080860BE
 	movs r0, #0xbe
@@ -2539,7 +2539,7 @@ _08086684:
 	adds r6, r5, #0
 	adds r6, #0x48
 	adds r0, r6, #0
-	bl FUN_0823629c
+	bl Map_FindNavRectAt
 	cmp r0, #0xff
 	beq _080866BC
 	movs r2, #0xbe

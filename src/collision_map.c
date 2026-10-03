@@ -473,6 +473,23 @@ NAKED void FUN_08236130(NavMesh* navMesh, unknown* param_2, Vec3* pos) { INCFUNC
 
 NAKED void FUN_08236268(unknown* param_1, Vec3* pos) { INCFUNC("asm/func/FUN_08236268.inc"); }
 
-NAKED s32 FUN_0823629c(Vec3* pos) { INCFUNC("asm/func/FUN_0823629c.inc"); }
+// pos を含むナビ矩形の番号を返す, 見つからなければ 0xFF
+s32 Map_FindNavRectAt(Vec3* pos) {
+  NavMesh* navMesh = gCollisionMap->navMesh;
+  s32 i;
+
+  for (i = 0; i < navMesh->countIslands; i++) {
+    NavIsland* island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[i]);
+    struct NavRect* rects = (struct NavRect*)((u8*)island + island->offsetToRects);
+    s32 j;
+
+    for (j = 0; j < island->countRects; j++) {
+      if (Map_IsPosInNavRect(rects, pos, j)) {
+        return j;
+      }
+    }
+  }
+  return 0xFF;
+}
 
 NAKED s32 FUN_082362fc(unknown* param_1, Vec3* pos) { INCFUNC("asm/func/FUN_082362fc.inc"); }
