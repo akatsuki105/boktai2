@@ -102,7 +102,7 @@ _081D306E:
 	cmp r1, r0
 	blo _081D3108
 	adds r0, r4, #0
-	bl FUN_08234e3c
+	bl Map_AdvancePathWalker
 	adds r1, r5, #0
 	adds r1, #0xfc
 	adds r0, r4, #0

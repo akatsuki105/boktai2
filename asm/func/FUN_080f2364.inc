@@ -84,7 +84,7 @@ _080F23D6:
 	cmp r0, #0
 	beq _080F247E
 	adds r0, r6, #0
-	bl FUN_08234e3c
+	bl Map_AdvancePathWalker
 	adds r0, r5, #0
 	bl FUN_080e6204
 	adds r1, r5, #0

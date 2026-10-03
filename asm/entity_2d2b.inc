@@ -578,7 +578,7 @@ _08008342:
 	cmp r0, #0
 	beq _08008374
 	adds r0, r5, #0
-	bl FUN_08234e3c
+	bl Map_AdvancePathWalker
 	ldr r0, [r5, #8]
 	ldrh r1, [r0, #4]
 	ldr r0, _08008390 @ =0x00000FFF

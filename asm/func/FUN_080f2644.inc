@@ -142,7 +142,7 @@ _080F272A:
 	bl VM_ExecByID
 _080F2762:
 	adds r0, r7, #0
-	bl FUN_08234e3c
+	bl Map_AdvancePathWalker
 	adds r0, r4, #0
 	bl FUN_080e6204
 	ldr r0, [r7, #8]

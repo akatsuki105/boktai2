@@ -358,7 +358,22 @@ NON_MATCH bool32 Map_InitPathWalker(PathWalker* p, u32 pathIdx, u32 param_3, u32
 #endif
 }
 
-NAKED bool32 FUN_08234e3c(unknown* p) { INCFUNC("asm/func/FUN_08234e3c.inc"); }
+// 次のノードへ進める, 末尾まで行ったら先頭に戻る
+bool32 Map_AdvancePathWalker(PathWalker* p) {
+  u8* base;
+  PathNode* nodes;
+
+  p->nodeIdx++;
+  if (p->nodeIdx >= (u8)p->path->nodeCount) {
+    p->nodeIdx = 0;
+  }
+
+  p->unk_3 = 0;
+  base = (u8*)gCollisionMap->paths;
+  nodes = (PathNode*)(base + p->path->nodeOffset);
+  p->node = &nodes[p->nodeIdx];
+  return TRUE;
+}
 
 NAKED s32 FUN_08234e78(unknown* param_1, s32 param_2, unknown* param_3, s32 param_4) { INCFUNC("asm/func/FUN_08234e78.inc"); }
 

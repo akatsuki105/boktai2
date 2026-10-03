@@ -111,7 +111,7 @@ _080F2922:
 	ands r0, r1
 	str r0, [r3]
 	adds r0, r7, #0
-	bl FUN_08234e3c
+	bl Map_AdvancePathWalker
 	adds r0, r5, #0
 	bl FUN_080e6204
 	ldr r0, [r7, #8]

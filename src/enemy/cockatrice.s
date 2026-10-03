@@ -11574,7 +11574,7 @@ _081585FA:
 	cmp r4, #4
 	beq _08158622
 	adds r0, r1, #0
-	bl FUN_08234e3c
+	bl Map_AdvancePathWalker
 	ldr r0, [r6, #0x24]
 	ldr r0, [r0, #8]
 	ldrb r0, [r0, #6]
@@ -11627,7 +11627,7 @@ _0815863E:
 	bl VM_ExecByID
 _08158676:
 	ldr r0, [r6, #0x24]
-	bl FUN_08234e3c
+	bl Map_AdvancePathWalker
 	adds r0, r5, #0
 	bl FUN_080e6204
 	ldr r0, [r6, #0x24]
