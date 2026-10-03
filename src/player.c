@@ -242,15 +242,17 @@ void Player_SetAction(Player* p, u32 r1, u32 r2) {
 
 // 行動を始める前のフラグ初期化, 日光と武器効果を見て unk_20 を組み立て直し各種タイマを 0 に戻す
 // 残差1命令 (61/62): 原典は 0x2C8 を movs/lsls で作るが agbcc が 0x38E のレジスタから引き算で作ってしまう
-// 添字をローカルに切り出すと 62/62 になるがレジスタが入れ替わる, Tier A-C は試済
+// unk_2c8 の読み出しを「添字を引数に取る static inline」経由にすると 62/62 まで詰まり, 残差は r0/r1 の入れ替えと
+// (gStat + idx*4) + 0x2C8 vs (gStat + 0x2C8) + idx*4 の結合順だけになる (名前の根拠がないので inline は入れていない)
+// Tier A-C は試済
 NON_MATCH void Player_BeginAction(Player* p) {
 #ifdef NONMATCHING_C
   p->unk_20 = PFLAG20_UNK_0;
   if (gStat->unk_2c8[p->isSabata] == 0 && FUN_0809e138(p)) {
-    p->unk_20 |= PFLAG20_UNK_4;
+    Player_SetFlag20(p, PFLAG20_UNK_4);
   }
-  if (p->flag378 & FLAG378_UNK_9) {
-    p->unk_20 |= PFLAG20_UNK_16;
+  if (Player_TestFlag378(p, FLAG378_UNK_9)) {
+    Player_SetFlag20(p, PFLAG20_UNK_16);
   }
 
   p->shadowOffsetX = 0;
