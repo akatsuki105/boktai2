@@ -155,18 +155,18 @@ typedef struct {
 
 // スクリプトから登録されるイベント, VM_Ctrl_SetZoneCallback が 44バイトを組み立て FUN_082349b8 が unk_8 をキーに挿入する
 typedef struct CollisionMapEvent {
-  u32 id;         // 0x00, FUN_082349b8 が u32_030046b0 の連番を書く
-  u16 unk_4;      // 0x04, '.m=0x0DD2', FUN_08234660 が 0xDD2/0x14C9/0x1516/0x1517/0xA5BF と比較する
-  u16 unk_6;      // 0x06, VM_Ctrl_SetZoneCallback の VM_GetValue 2番目
-  s16 unk_8;      // 0x08, 挿入時のソートキー, 根拠: FUN_082349b8
-  s16 unk_a;      // 0x0A
-  u16 unk_c;      // 0x0C
-  u16 zoneCount;  // 0x0E, FindZonesByID が zones の件数を書き込む
-  u16 args1[4];   // 0x10, FUN_08234868 が ScriptArgs にコピーする4語
-  u16 args2[4];   // 0x18, 同上、もう4語
-  u8* unk_20;     // 0x20
-  u8* scriptPC;   // 0x24, FUN_08234868 がスクリプトの PC として実行する
-  Zone* zones;    // 0x28, FindZonesByID が返す Zone の先頭, NULL なら登録しない
+  u32 id;           // 0x00, FUN_082349b8 が u32_030046b0 の連番を書く
+  u16 unk_4;        // 0x04, '.m=0x0DD2', FUN_08234660 が 0xDD2/0x14C9/0x1516/0x1517/0xA5BF と比較する
+  u16 unk_6;        // 0x06, VM_Ctrl_SetZoneCallback の VM_GetValue 2番目
+  ZoneID16 zoneID;  // 0x08, 発火させるゾーンのID, FindZonesByID に渡す, 挿入時のソートキーでもある (根拠: FUN_082349b8)
+  s16 unk_a;        // 0x0A
+  u16 flags;        // 0x0C, VM_Ctrl_SetZoneCallback が '.b' で 0x10、'.p' で 0x20 を立てる
+  u16 zoneCount;    // 0x0E, FindZonesByID が zones の件数を書き込む
+  u16 args1[4];     // 0x10, FUN_08234868 が ScriptArgs にコピーする4語
+  u16 args2[4];     // 0x18, 同上、もう4語
+  u8* unk_20;       // 0x20
+  u8* scriptPC;     // 0x24, FUN_08234868 がスクリプトの PC として実行する
+  Zone* zones;      // 0x28, FindZonesByID が返す Zone の先頭, NULL なら登録しない
 } CollisionMapEvent;
 static_assert(sizeof(CollisionMapEvent) == 44);
 
