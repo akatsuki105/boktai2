@@ -15,14 +15,15 @@ extern u16 u16_03002b64;
 extern u16 u16_03002b74;
 extern u16 u16_03002bb0;
 
-s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);                 // src/entity_0805fd6c.c
-bool32 FUN_0809e138(Player* p);                                                                                        // src/entity_5ccc.c
-s32 GetMagicCategory(magic32_t id);                                                                                    // src/equip_magic.c
-s32 FUN_080ddcc8(Vec3* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);  // src/entity_080ddf88.c
-void FUN_0809c4f4(void);                                                                                               // src/entity_cc28.c
-void FUN_08242a98(Weapon* w, WeaponData* data);                                                                        // src/weapon.c
-s32 FUN_0807a6cc(WeaponData* w);                                                                                       // src/player_08065988.c
-void FUN_08071b14(Player* p);                                                                                          // src/player_08065988.c
+s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);                      // src/entity_0805fd6c.c
+bool32 FUN_0809e138(Player* p);                                                                                             // src/entity_5ccc.c
+s32 GetMagicCategory(magic32_t id);                                                                                         // src/equip_magic.c
+s32 FUN_080ddcc8(Vec3* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);       // src/entity_080ddf88.c
+void FUN_0809c4f4(void);                                                                                                    // src/entity_cc28.c
+s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);  // src/entity_080db520.c
+void FUN_08242a98(Weapon* w, WeaponData* data);                                                                             // src/weapon.c
+s32 FUN_0807a6cc(WeaponData* w);                                                                                            // src/player_08065988.c
+void FUN_08071b14(Player* p);                                                                                               // src/player_08065988.c
 
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
 
@@ -242,9 +243,9 @@ NON_MATCH void Player_BeginAction(Player* p) {
     p->unk_20 |= PFLAG20_UNK_16;
   }
 
-  p->unk_604 = 0;
-  p->unk_606 = 0;
-  p->unk_608 = 0;
+  p->shadowOffsetX = 0;
+  p->shadowOffsetY = 0;
+  p->shadowOffsetZ = 0;
   p->unk_35a = 0;
   p->unk_16c.hitState &= ~2;
 #else
@@ -1148,7 +1149,48 @@ void FUN_080639d0(Player* p) {
   }
 }
 
-NAKED void Player_Update_Helper_080639f8(Player* p) { INCFUNC("asm/func/Player_Update_Helper_080639f8.inc"); }
+// Player の毎フレーム更新のうち, 姿勢の決定・パーティクル・影の位置合わせをまとめた部分
+// 命令数は119で一致, 残差は gStat->unk_2c8[isSabata] のアドレス計算の順序だけ (Player_BeginAction と同じ系統)
+NON_MATCH void Player_UpdatePoseAndShadow(Player* p) {
+#ifdef NONMATCHING_C
+  s32 pose = 0;
+
+  if (p->mover.unk_4 == 0) {
+    FUN_08063814(p);
+    FUN_080639d0(p);
+    pose = FUN_08063668(p, 0);
+    pose = Player_ApplyPoseHold(p, pose);
+    pose = Player_ApplyFlashPose(p, pose);
+  } else if (gStat->unk_2c8[p->isSabata] > 0) {
+    pose = 6;
+  }
+
+  if (p->unk_1c == 2) {
+    FUN_080628ec(p, pose);
+  } else {
+    FUN_08062688(p, pose);
+  }
+
+  Player_RefreshAttackPower(p);
+  FUN_080614bc(p);
+  Player_UpdatePtcl718(p);
+  FUN_08061e2c(p);
+  p->meleeShockwave.update(&p->meleeShockwave);
+
+  if (p->unk_992 != 0) {
+    p->unk_992--;
+    if (p->unk_992 == 0) {
+      p->unk_98c = FUN_080da9c4(p->unk_98c, &p->mover, p->unk_990, 0x7F, 0, 0, 0, 0x50);
+    }
+  }
+
+  p->shadowPos.x = p->shadowOffsetX + p->mover.pos.x;
+  p->shadowPos.y = p->shadowOffsetY + p->mover.pos.y;
+  p->shadowPos.z = p->shadowOffsetZ + p->mover.pos.z;
+#else
+  INCFUNC("asm/func/Player_UpdatePoseAndShadow.inc");
+#endif
+}
 
 // Player が抱えているエフェクト・影・パーティクル・衝撃波をまとめて片付ける
 void Player_DestroyEffects(Player* p) {

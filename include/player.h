@@ -140,7 +140,7 @@ typedef struct {
 static_assert(sizeof(PlayerMagic) == 8);
 
 // 近接攻撃の衝撃波 (ジャンゴ) / 銃の散弾 (サバタ) に使うスプライト一式
-// 根拠: Player_Update_Helper_080639f8 が &meleeShockwave を update に渡して呼ぶ, update は PlayerShockwave_UpdateAnim か PlayerShockwave_UpdateFlash
+// 根拠: Player_UpdatePoseAndShadow が &meleeShockwave を update に渡して呼ぶ, update は PlayerShockwave_UpdateAnim か PlayerShockwave_UpdateFlash
 struct PlayerShockwave;
 typedef void (*PlayerShockwaveFunc)(struct PlayerShockwave*);
 
@@ -282,10 +282,10 @@ typedef struct Player {
   s32 scriptID_4b0;  // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4c4 - 0x4b4];
   Eff082473e0Emitter unk_4c4;  // 0x4C4
-  u8 unk_5fc[0x604 - 0x5FC];
-  u16 unk_604;  // 0x604, Player_BeginAction が 0 に戻す
-  u16 unk_606;  // 0x606, 同上
-  u16 unk_608;  // 0x608, 同上
+  Vec3 shadowPos;              // 0x5FC, mover.pos に下の3つを足した値, 根拠: Player_UpdatePoseAndShadow
+  u16 shadowOffsetX;           // 0x604, Player_BeginAction が 0 に戻す
+  u16 shadowOffsetY;           // 0x606, 同上
+  u16 shadowOffsetZ;           // 0x608, 同上
   u8 unk_60a[2];
   ParticleShadow shadow;            // 0x60C, 根拠: Player_DestroyEffects が ParticleShadow_Remove に渡す, FUN_081d40b4 がエレベータ搭乗中に flags の bit0 を立てる
   PlayerParticleGroup1 ptcl_64c;    // 0x64C, FUN_08061458
@@ -314,7 +314,11 @@ typedef struct Player {
   u8 unk_96e[2];  // 0x96E
   Vec3 pos_970;   // 0x970, Player_UpdateBloodSword が FUN_0805fe7c の第5引数に渡す
   u8 unk_978;     // 0x978, 同じく第6引数
-  u8 unk_979[0x994 - 0x979];
+  u8 unk_979[0x98C - 0x979];
+  s32 unk_98c;  // 0x98C, FUN_080da9c4 の戻り値を入れて次回の第1引数に渡す
+  u8 unk_990;   // 0x990, 同じ呼び出しの第3引数
+  u8 unk_991;
+  u16 unk_992;        // 0x992, 0 でなければ毎フレーム 1 減らし, 0 になった回に FUN_080da9c4 を呼ぶ
   EntityMsg msg_994;  // 0x994, FUN_0807e278 が組み立てて送る, args は可変長なので後ろの unk_9a0 まで伸びる
   u8 unk_9a0[0x9BC - 0x9A0];
   u16 unk_9bc;  // 0x9BC

@@ -92,7 +92,7 @@ _0807F2C8:
 	adds r0, r4, #0
 	bl _call_via_r1
 	adds r0, r4, #0
-	bl Player_Update_Helper_080639f8
+	bl Player_UpdatePoseAndShadow
 	adds r0, r4, #0
 	bl FUN_080612a8
 	ldr r0, _0807F32C @ =0x000003EA
