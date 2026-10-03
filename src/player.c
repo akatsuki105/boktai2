@@ -624,7 +624,51 @@ void Player_InitShockwave(Player* p) {
   p->meleeShockwave.finished = FALSE;
 }
 
-NAKED void FUN_08061c68(Player* p) { INCFUNC("asm/func/FUN_08061c68.inc"); }
+// 0x718 のパーティクルを1フレーム進める, 12フレームで消え 6フレーム目でパレットを1段進める
+// 残差10命令 (76/86): 原典は生存数を高位レジスタ r8 に置き (push が1組増える), 要素のアドレスを r3/r4 の2本に複写している
+// Tier A/B は試済, ローカルを増やして原典のレジスタ圧を再現する形は未発見
+NON_MATCH void Player_UpdatePtcl718(Player* p) {
+#ifdef NONMATCHING_C
+  s32 alive;
+  s32 i;
+
+  if (!p->ptcl_718.active) {
+    return;
+  }
+
+  alive = 0;
+  for (i = 0; i < 6; i++) {
+    Particle52* ptcl;
+
+    if (!p->ptcl_718.ptcls[i].active) {
+      continue;
+    }
+
+    ptcl = &p->ptcl_718.ptcls[i];
+    ptcl->unk_31++;
+    if (ptcl->unk_31 > 0xB) {
+      ptcl->base.flags |= SPRFLAG_HIDDEN;
+      ptcl->active = FALSE;
+      continue;
+    }
+
+    if (ptcl->unk_31 == 6) {
+      FUN_0822dafc(&ptcl->base, p->ptcl_718.group, ptcl->plttBase + 1);
+    }
+
+    ptcl->base.pos.x += ptcl->vel.x;
+    ptcl->base.pos.y += ptcl->vel.y;
+    ptcl->base.pos.z += ptcl->vel.z;
+    alive++;
+  }
+
+  if (alive == 0) {
+    p->ptcl_718.active = FALSE;
+  }
+#else
+  INCFUNC("asm/func/Player_UpdatePtcl718.inc");
+#endif
+}
 
 // 0x718 のパーティクルを1つ使って pos / vel を入れて出す, 使う番号は 0..5 を巡回する
 void Player_SpawnPtcl718(Player* p, Vec3* pos, Vec3* vel, s32 plttStep) {
