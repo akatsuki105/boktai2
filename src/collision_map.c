@@ -96,7 +96,33 @@ void Map_SetTileData(CollisionMapTileData* tiledata) {
 
 NAKED void FUN_0823280c(MoverTile* p, Vec3* pos) { INCFUNC("asm/func/FUN_0823280c.inc"); }
 
-NAKED s32 FUN_08232888(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_08232888.inc"); }
+// from から to へ 4タイル以内で真っ直ぐ行ける向きを 8bit の角度で返す, 無ければ -1
+// 残差7命令: 原典は & 3 と & 0xFF をループ内で実際に計算し、配列先頭と定数2つを高位レジスタ (r8/r9/sl) に抱えている
+// こちらは dir が 0..3 と分かるので agbcc が両方のマスクを畳んでしまう, マスクが残る書き方が未発見
+NON_MATCH s32 Map_FindDirToTile(s32 from, s32 to) {
+#ifdef NONMATCHING_C
+  s32 angle = 0xC0;
+  s32 dir;
+
+  for (dir = 0; dir <= 3; dir++) {
+    s32 step = gCollisionMap->neighborOffsets[dir & 3];
+    s32 idx = from;
+    s32 i;
+
+    for (i = 0; i <= 3; i++) {
+      idx += step;
+      if (idx == to) {
+        return (u8)angle;
+      }
+    }
+
+    angle += 0x40;
+  }
+  return -1;
+#else
+  INCFUNC("asm/func/Map_FindDirToTile.inc");
+#endif
+}
 
 NAKED u16 FUN_082328ec(Vec3* pos) { INCFUNC("asm/func/FUN_082328ec.inc"); }
 

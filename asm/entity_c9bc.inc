@@ -370,7 +370,7 @@ _0800CE6C:
 _0800CE7A:
 	ldrh r1, [r3, #2]
 	movs r2, #2
-	bl FUN_08232888
+	bl Map_FindDirToTile
 	cmp r0, #0
 	blt _0800CF04
 	adds r1, r6, #0
