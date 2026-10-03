@@ -277,7 +277,7 @@ IWRAM_DATA GameInfo* gStat = NULL;          // 0x030046A0
 IWRAM_DATA struct CollisionMapData* gCollisionMap = NULL;  // Malloc(3620) で確保したバッファを指すポインタ (FUN_082326a0)
 IWRAM_DATA s32 gMapBlockW = 0;                             // 0x030046A8
 IWRAM_DATA s32 gMapBlockH = 0;                             // 0x030046AC
-IWRAM_DATA u32 gNextMapEventID = 0;                        // 0x030046B0, FUN_082349b8 が CollisionMapEvent.id に払い出す連番, 0 は使わない
+IWRAM_DATA u32 gNextMapEventID = 0;                        // 0x030046B0, Map_InsertEvent が CollisionMapEvent.id に払い出す連番, 0 は使わない
 
 IWRAM_DATA u32 gRandTableIdx2 = 0;  // 0x030046B4
 IWRAM_DATA u32 gRandTableIdx = 0;   // 0x030046B8

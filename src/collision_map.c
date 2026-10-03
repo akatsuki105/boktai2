@@ -236,7 +236,7 @@ CollisionMapEvent* Map_FindEventByID(u32 id) {
   return NULL;
 }
 
-NAKED void FUN_082349b8(CollisionMapEvent* ev, u32 param_2) { INCFUNC("asm/func/FUN_082349b8.inc"); }
+NAKED void Map_InsertEvent(CollisionMapEvent* ev, u32 param_2) { INCFUNC("asm/func/Map_InsertEvent.inc"); }
 
 NAKED s32 FUN_08234b1c(void) { INCFUNC("asm/func/FUN_08234b1c.inc"); }
 

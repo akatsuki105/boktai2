@@ -7,7 +7,7 @@ void SetMapInitScriptID(u32 n);
 bool32 FUN_0823a8b0(void);
 void FUN_08230eec(ScriptRecord*);
 bool32 FUN_082345ec(void);
-void FUN_082349b8(CollisionMapEvent* ev, u32 param_2);
+void Map_InsertEvent(CollisionMapEvent* ev, u32 param_2);
 Zone* FindZonesByID(ZoneID16 id, u16* count);
 
 TaskFn VM_GetSubroutine(u32 subroutineID);
@@ -146,7 +146,7 @@ s32 VM_Ctrl_SetZoneCallback(void* r0) {
     return -1;
   }
 
-  FUN_082349b8(&ev, (u32)r0);
+  Map_InsertEvent(&ev, (u32)r0);
   return 0;
 }
 

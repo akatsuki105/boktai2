@@ -153,12 +153,13 @@ typedef struct {
 
 // --------------------------------------------
 
-// スクリプトから登録されるイベント, VM_Ctrl_SetZoneCallback が 44バイトを組み立て FUN_082349b8 が unk_8 をキーに挿入する
+// スクリプトから登録されるイベント, VM_Ctrl_SetZoneCallback が 44バイトを組み立てる
+// Map_InsertEvent は同じ zoneID が連続するように挿し込む: 末尾から同じ zoneID を探し、見つかればその次へ (後続を1つずつずらす)、無ければ末尾に追加する
 typedef struct CollisionMapEvent {
-  u32 id;           // 0x00, FUN_082349b8 が gNextMapEventID の連番を書く
+  u32 id;           // 0x00, Map_InsertEvent が gNextMapEventID の連番を書く
   u16 unk_4;        // 0x04, '.m=0x0DD2', FUN_08234660 が 0xDD2/0x14C9/0x1516/0x1517/0xA5BF と比較する
   u16 unk_6;        // 0x06, VM_Ctrl_SetZoneCallback の VM_GetValue 2番目
-  ZoneID16 zoneID;  // 0x08, 発火させるゾーンのID, FindZonesByID に渡す, 挿入時のソートキーでもある (根拠: FUN_082349b8)
+  ZoneID16 zoneID;  // 0x08, 発火させるゾーンのID, FindZonesByID に渡す, 挿入時のソートキーでもある (根拠: Map_InsertEvent)
   s16 unk_a;        // 0x0A
   u16 flags;        // 0x0C, VM_Ctrl_SetZoneCallback が '.b' で 0x10、'.p' で 0x20 を立てる
   u16 zoneCount;    // 0x0E, FindZonesByID が zones の件数を書き込む
@@ -174,7 +175,7 @@ static_assert(sizeof(CollisionMapEvent) == 44);
 
 // 読み込み中のコリジョンマップ, gCollisionMap が指す, Malloc(3620) で確保される (FUN_082326a0)
 typedef struct CollisionMapData {
-  u16 eventCount;                  // 0x000, events の件数, 根拠: Map_ResetCollisionMap が 0 を書き FUN_082349b8 が +1 する
+  u16 eventCount;                  // 0x000, events の件数, 根拠: Map_ResetCollisionMap が 0 を書き Map_InsertEvent が +1 する
   u8 unk_2[2];                     // 0x002, 読み書きするコードが見つかっていない, padding?
   CollisionMapTileData* tiledata;  // 0x004
   u32 unk_8;                       // 0x008, Map_ResetCollisionMap が 0 を書くだけで読み手がいない
@@ -185,7 +186,7 @@ typedef struct CollisionMapData {
   s16 neighborOffsets[4];          // 0x01C, 隣接タイルへの索引差分 -w/1/w/-1, 根拠: FUN_0823273c, 読み手は (dir & 3) で引く
   u16 rowOffsets[256];             // 0x024, 行ごとのタイル索引オフセット表, rowOffsets[blockZ] + blockX がタイル索引
   CollisionMapEvent events[64];    // 0x224, 根拠: Map_ResetCollisionMap が i=0..63 で 44バイトずつクリアする
-  u32 unk_d24[64];                 // 0xD24, events と同じ添字の並列配列, FUN_082349b8 の第2引数が入り、挿入・削除で events と一緒にずらされる, 読み手は未発見
+  u32 unk_d24[64];                 // 0xD24, events と同じ添字の並列配列, Map_InsertEvent の第2引数が入り、挿入・削除で events と一緒にずらされる, 読み手は未発見
 } CollisionMapData;
 static_assert(sizeof(CollisionMapData) == 3620);
 
