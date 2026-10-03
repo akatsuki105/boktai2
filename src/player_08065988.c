@@ -61,7 +61,7 @@ void Player_SetMoveDelta(Player* p, s32 val);
 extern u16 u16_03002b74;
 void FUN_0823bac8(Vec3* pos);
 bool32 FUN_0808626c(s32 idA, u32 flagsA, s32 idB, u32 flagsB);
-void FUN_08064058(Player* p);
+void Player_UpdateBloodSword(Player* p);
 
 void FUN_08065200(Player* p) {
   if (VM_SeekToNamedArg('i')) {
@@ -1369,7 +1369,7 @@ void AddWeaponExpByMask(u32 mask, s32 amount) {
   }
 
   if (refresh && gPlayerPtr[0] != NULL) {
-    FUN_08064058(gPlayerPtr[0]);
+    Player_UpdateBloodSword(gPlayerPtr[0]);
   }
 }
 

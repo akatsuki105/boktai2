@@ -4728,7 +4728,7 @@ _080CE576:
 	cmp r0, #1
 	bne _080CE596
 	adds r0, r1, #0
-	bl FUN_08064058
+	bl Player_UpdateBloodSword
 _080CE596:
 	pop {r0}
 	bx r0

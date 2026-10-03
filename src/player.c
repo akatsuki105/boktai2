@@ -12,6 +12,8 @@
 
 extern u16 u16_03002bb0;
 
+s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);  // src/entity_0805fd6c.c
+
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
 
 // --------------------------------------------
@@ -828,7 +830,31 @@ u32 CheckParalyzeProc(void) {
   return 0;
 }
 
-NAKED void FUN_08064058(Player* p) { INCFUNC("asm/func/FUN_08064058.inc"); }
+// ブラッドソードの吸収, 通常状態でジャンゴなら unk_376 を増やし, それ以外なら HP を1回復して判定を出す
+// 命令数は63で一致, 残差は定数の組み立て順とレジスタ選択だけ (原典は 0x378 のレジスタを subs #2 で 0x376 に使い回す)
+// CalcMagicCost / Player_PayMagicCost と同じ系統の残差
+NON_MATCH void Player_UpdateBloodSword(Player* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_1c != 1 || !(p->flag378 & FLAG378_BLOOD_SWORD)) {
+    return;
+  }
+
+  if (p->kind == 0) {
+    if (p->hp <= 1) {
+      return;
+    }
+    p->unk_376++;
+  } else {
+    if (p->hp >= p->maxHP) {
+      return;
+    }
+    p->hp++;
+    FUN_0805fe7c(&p->unk_16c, 1, 1, &p->mover.pos, &p->pos_970, p->unk_978);
+  }
+#else
+  INCFUNC("asm/func/Player_UpdateBloodSword.inc");
+#endif
+}
 
 NAKED void Player_EnableWeaponSpecialEffects(Player* p, WeaponData* w) { INCFUNC("asm/func/Player_EnableWeaponSpecialEffects.inc"); }
 

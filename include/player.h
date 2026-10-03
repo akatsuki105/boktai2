@@ -284,8 +284,11 @@ typedef struct Player {
   u16 unk_95e;     // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
   u16 unk_960;     // 0x960, FUN_08074994 が unk_95e と対で書く
   u8 unk_962[0x96C - 0x962];
-  u16 unk_96c;  // 0x96C, FUN_0807b8c0 が 0 を書く
-  u8 unk_96e[0x994 - 0x96E];
+  u16 unk_96c;    // 0x96C, FUN_0807b8c0 が 0 を書く
+  u8 unk_96e[2];  // 0x96E
+  Vec3 pos_970;   // 0x970, Player_UpdateBloodSword が FUN_0805fe7c の第5引数に渡す
+  u8 unk_978;     // 0x978, 同じく第6引数
+  u8 unk_979[0x994 - 0x979];
   EntityMsg msg_994;  // 0x994, FUN_0807e278 が組み立てて送る, args は可変長なので後ろの unk_9a0 まで伸びる
   u8 unk_9a0[0x9BC - 0x9A0];
   u16 unk_9bc;  // 0x9BC
