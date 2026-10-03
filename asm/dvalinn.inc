@@ -1713,11 +1713,11 @@ _081FB348:
 _081FB352:
 	mov r0, sp
 	movs r1, #0
-	bl FUN_08235090
+	bl Map_PickRandomPathNode
 	adds r4, r0, #0
 	mov r0, r8
 	movs r1, #0
-	bl FUN_08235090
+	bl Map_PickRandomPathNode
 	cmp r4, r0
 	beq _081FB352
 	ldr r3, _081FB394 @ =0x0000083C
@@ -2239,7 +2239,7 @@ _081FB768:
 	add r4, sp, #0x94
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_08235090
+	bl Map_PickRandomPathNode
 	adds r6, r4, #0
 	ldrh r0, [r6]
 	lsls r0, r0, #0x10
@@ -2466,7 +2466,7 @@ _081FB930:
 	add r4, sp, #0xa4
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_08235090
+	bl Map_PickRandomPathNode
 	adds r6, r4, #0
 	ldrh r0, [r6]
 	lsls r0, r0, #0x10

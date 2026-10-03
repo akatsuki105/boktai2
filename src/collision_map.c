@@ -4,6 +4,7 @@
 #include "global.h"
 #include "malloc.h"
 #include "mover.h"
+#include "random.h"
 #include "registry.h"
 #include "vm.h"
 
@@ -656,7 +657,63 @@ NON_MATCH s32 Map_IsPosOutsidePathNode(PathWalker* w, Vec3* pos, u32 rx, u32 rz)
 #endif
 }
 
-NAKED s32 FUN_08235090(Vec3* dst, s32 param_2) { INCFUNC("asm/func/FUN_08235090.inc"); }
+// パス pathIdx のノードを1つランダムに選び, その座標と足元の高さを dst に入れてノード番号を返す
+// 原典は (u8)path->nodeCount を2回読むが, agbcc が2回目を1回目の値で済ませてしまう (94/95)
+// Tier A/B と C のガード分割は試済, 同種の CSE 残差は JudgementParticle_UpdateStill などにもある
+NON_MATCH s32 Map_PickRandomPathNode(Vec3* dst, s32 pathIdx) {
+#ifdef NONMATCHING_C
+  Path* path = Map_GetPath(pathIdx);
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
+  s32 nodeIdx;
+  s32 stairs;
+  s32 height;
+  s32 bx;
+  s32 bz;
+  s32 idx;
+
+  if (path == NULL || (u8)path->nodeCount == 0) {
+    dst->x = 0, dst->y = 0, dst->z = 0;
+    return -1;
+  }
+
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  nodeIdx = Mod(gRandomTable[gRandTableIdx], (u8)path->nodeCount);
+  Map_GetPathNodePos(dst, pathIdx, nodeIdx);
+
+  bx = (s8)(dst->x >> 8);
+  bz = (s8)(dst->z >> 8);
+  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+    idx = 0;
+  } else {
+    idx = gCollisionMap->rowOffsets[bz] + bx;
+  }
+
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    tile = &ov->tile;
+  } else {
+    tile = &gCollisionMap->tiledata->tiles[idx];
+  }
+
+  stairs = tile->heightStairs >> 4;
+  height = (tile->heightStairs & 0xF) << 8;
+  switch (stairs) {
+    case 1: {
+      height -= (u8)dst->z;
+      break;
+    }
+    case 2: {
+      height -= (u8)dst->x;
+      break;
+    }
+  }
+  dst->y = height;
+  return nodeIdx;
+#else
+  INCFUNC("asm/func/Map_PickRandomPathNode.inc");
+#endif
+}
 
 NAKED s32 FUN_08235178(Vec3* dst, Vec3* pos, s32 param_3) { INCFUNC("asm/func/FUN_08235178.inc"); }
 
@@ -668,7 +725,7 @@ NAKED s32 FUN_0823556c(Vec3* dst, Vec3* pos, s32 param_3) { INCFUNC("asm/func/FU
 
 NAKED s32 FUN_082356c4(Vec3* dst, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_082356c4.inc"); }
 
-// kind ごとの移動判定に振り分ける, どれも失敗したら FUN_08235090 で戻す
+// kind ごとの移動判定に振り分ける, どれも失敗したら Map_PickRandomPathNode で戻す
 // 原典は param_5 の2乗を求めてから switch に入るが, その値をどこでも読まないので agbcc が消してしまう
 // 残差はその4命令と dst/pos のレジスタ入れ替えのみ, Tier A-C は試済
 NON_MATCH s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 param_4, s32 param_5, s32 param_6, s32 param_7) {
@@ -677,7 +734,7 @@ NON_MATCH s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 param_4, s32 para
 
   switch (kind) {
     case 0: {
-      ret = FUN_08235090(dst, param_4);
+      ret = Map_PickRandomPathNode(dst, param_4);
       break;
     }
     case 1: {
@@ -703,7 +760,7 @@ NON_MATCH s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 param_4, s32 para
   }
 
   if (ret < 0) {
-    ret = FUN_08235090(dst, param_4);
+    ret = Map_PickRandomPathNode(dst, param_4);
   }
   return ret;
 #else

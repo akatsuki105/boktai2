@@ -1331,7 +1331,7 @@ FUN_0803cb6c: @ 0x0803CB6C
 _0803CB84:
 	mov r0, sp
 	movs r1, #8
-	bl FUN_08235090
+	bl Map_PickRandomPathNode
 	adds r0, r5, #0
 	mov r1, sp
 	adds r2, r6, #0
