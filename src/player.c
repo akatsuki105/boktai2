@@ -305,7 +305,26 @@ NON_MATCH void FUN_08061458(Player* p) {
 
 NAKED void FUN_080614bc(Player* p) { INCFUNC("asm/func/FUN_080614bc.inc"); }
 
-NAKED void FUN_0806161c(Player* p) { INCFUNC("asm/func/FUN_0806161c.inc"); }
+// 0x67C のパーティクルを確保して隠した状態で初期化する
+// FUN_08061458 と同じ残差 (40/40, p と &ptcl_67c のレジスタが入れ替わっているだけ)
+NON_MATCH void FUN_0806161c(Player* p) {
+#ifdef NONMATCHING_C
+  ParticleGroup* group = GetParticleGroup(0x1C1C);
+  PlayerParticleGroup1* st = &p->ptcl_67c;
+
+  st->group1 = group;
+  FUN_0822d9f0(&st->ptcl, group, 0);
+  Particle_SetOffset(&st->ptcl, -4, -4);
+  FUN_0822dafc(&st->ptcl, st->group1, 0x10);
+  st->ptcl.flags |= SPRFLAG_HIDDEN;
+  st->ptcl.priority = 1;
+  st->ptcl.offsetZ = 0x14;
+  st->unk_2c = 0;
+  st->unk_2d = 0;
+#else
+  INCFUNC("asm/func/FUN_0806161c.inc");
+#endif
+}
 
 // 衝撃波のアニメーションを1フレーム進める, 終端まで行くと finished を立てて消す
 NAKED void PlayerShockwave_UpdateAnim(PlayerShockwave* p) { INCFUNC("asm/func/PlayerShockwave_UpdateAnim.inc"); }
