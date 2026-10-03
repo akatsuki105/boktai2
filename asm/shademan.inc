@@ -1422,7 +1422,7 @@ _0803CC0E:
 	lsls r2, r2, #2
 	adds r0, r5, #0
 	movs r1, #2
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 _0803CC3E:
 	ldr r2, [r4]
 	adds r2, #0x2c

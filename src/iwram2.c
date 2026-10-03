@@ -30,7 +30,9 @@ struct CollisionMapData;
 IWRAM_DATA u32 u32_03002b54 = 0;                    // gUnkEntity1Ptr_03002b58 と同じ場所っぽい, rfu_syncVBlank の戻り値が入る
 IWRAM_DATA Entity* gUnkEntity1Ptr_03002b58 = NULL;  // 0x03002B58, Malloc(908) で確保したバッファを指すポインタ, RFU関連? (FUN_0804e2c0)
 
-IWRAM_DATA u8 u8_03002b5c[0x03002B74 - 0x03002B5C] = {};  // todo
+IWRAM_DATA u8 u8_03002b5c[0x03002B64 - 0x03002B5C] = {};  // todo
+IWRAM_DATA u16 u16_03002b64 = 0;                          // 0x03002B64, Player_ApplyBadCondition が Player.unk_456 と同じ値を書く
+IWRAM_DATA u8 u8_03002b66[0x03002B74 - 0x03002B66] = {};  // todo
 IWRAM_DATA u16 u16_03002b74 = 0;                          // 0x03002B74, サバタでプレイ中の FUN_0807a70c がハヤサの代わりに返す値
 IWRAM_DATA u8 u8_03002b76[2] = {};                        // todo
 IWRAM_DATA u16 u16_03002b78 = 0;                          // 0x03002B78, FUN_0807b564 が 0 に戻す

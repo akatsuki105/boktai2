@@ -236,7 +236,9 @@ typedef struct Player {
   s16 unk_3ce;   // 0x3CE, FUN_0807856c が ldrsh で読む
   u8 unk_3d0;
   u8 unk_3d1;
-  u8 unk_3d2[0x3DC - 0x3D2];
+  u8 unk_3d2[0x3D8 - 0x3D2];
+  u16 unk_3d8;  // 0x3D8, Player_ApplyBadCondition が状態異常1の残り時間が 0 のときに 0 を書く
+  u8 unk_3da[2];
   u16 unk_3dc;  // 0x3DC, FUN_080667b0 が毎回 太陽ゲージ+2 を足し、100 を超えるたびに FUN_08066794 を呼んで 100 引く
   u8 unk_3de[0x3EA - 0x3DE];
   u16 unk_3ea;  // 0x3EA, FUN_0807ad60 が 1 を書く

@@ -58,7 +58,7 @@ _08091EB6:
 _08091ED6:
 	adds r0, r3, #0
 	movs r1, #0
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 	ldr r0, _08091EEC @ =0x00003FA2
 	adds r1, r5, r0
 	movs r0, #0
@@ -85,7 +85,7 @@ _08091EF0:
 _08091F0C:
 	adds r0, r3, #0
 	movs r1, #2
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 	ldr r0, _08091F20 @ =0x00003FA2
 	adds r1, r5, r0
 	movs r0, #0

@@ -11,6 +11,7 @@
 #include "time.h"
 #include "vm.h"
 
+extern u16 u16_03002b64;
 extern u16 u16_03002bb0;
 
 s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);                 // src/entity_0805fd6c.c
@@ -798,7 +799,48 @@ u32 FUN_08063478(Player* p) { return (p->angle_400 - p->angle_401 + 0x100) & 0xF
 
 NAKED u32 FUN_08063498(Player* p, u32 n) { INCFUNC("asm/func/FUN_08063498.inc"); }
 
-NAKED void FUN_08063574(Player* p, s32 badcondID, s32 frames) { INCFUNC("asm/func/FUN_08063574.inc"); }
+// 状態異常 badcondID を frames フレームかける, 1 は変身を解き 2 は向きをランダムに変える
+// 命令数は76で一致, 残差はレジスタ割当だけ (原典は p/badcondID/frames を r5/r6/r7 に置き push が1本多い)
+NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
+#ifdef NONMATCHING_C
+  switch (badcondID) {
+    case 0: {
+      break;
+    }
+    case 1: {
+      if (p->unk_4c4.unk_3 != 0) {
+        if (p->unk_4c4.kind == 3) {
+          break;
+        }
+        FUN_08063220(p);
+      }
+      if (p->unk_43c[1] == 0) {
+        p->unk_3d8 = 0;
+      }
+      break;
+    }
+    case 2: {
+      if (p->unk_43c[2] == 0) {
+        s32 v;
+
+        gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+        v = (p->unk_456 + 1 + Mod(gRandomTable[gRandTableIdx], 7)) & 7;
+        u16_03002b64 = v;
+        p->unk_456 = v;
+        PlaySound_082406e0(0x138);
+      }
+      break;
+    }
+    default: {
+      return;
+    }
+  }
+
+  p->unk_43c[badcondID] = frames;
+#else
+  INCFUNC("asm/func/Player_ApplyBadCondition.inc");
+#endif
+}
 
 void FUN_08063634(Player* p, s32 n) {
   p->unk_43c[n] = 0;

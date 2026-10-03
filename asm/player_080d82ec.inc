@@ -23445,7 +23445,7 @@ _080D773C:
 	lsls r2, r2, #3
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 _080D7754:
 	movs r1, #0x80
 	lsls r1, r1, #0xd
@@ -23457,7 +23457,7 @@ _080D7754:
 	lsls r2, r2, #2
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 _080D776C:
 	movs r1, #0x80
 	lsls r1, r1, #0xa

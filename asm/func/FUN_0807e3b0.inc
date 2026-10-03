@@ -366,7 +366,7 @@ _0807E670:
 	lsls r2, r2, #3
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 _0807E694:
 	movs r1, #0x80
 	lsls r1, r1, #0xd
@@ -378,7 +378,7 @@ _0807E694:
 	lsls r2, r2, #2
 	adds r0, r5, #0
 	movs r1, #2
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 _0807E6AC:
 	movs r1, #0x80
 	lsls r1, r1, #0xa

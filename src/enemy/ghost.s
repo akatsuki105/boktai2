@@ -1260,7 +1260,7 @@ _0816B332:
 	movs r2, #0xe1
 	lsls r2, r2, #2
 	movs r1, #2
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 _0816B344:
 	ldr r0, _0816B36C @ =0x00000842
 	add r0, r8

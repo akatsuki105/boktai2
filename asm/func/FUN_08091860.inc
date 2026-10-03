@@ -84,7 +84,7 @@ _080918E0:
 	lsls r2, r2, #2
 	mov r0, r8
 	movs r1, #2
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 	b _0809192E
 	.align 2, 0
 _08091914: .4byte 0x00003FA2
@@ -96,7 +96,7 @@ _08091920:
 	lsls r2, r2, #2
 	mov r0, r8
 	movs r1, #0
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 _0809192E:
 	pop {r3, r4}
 	mov r8, r3

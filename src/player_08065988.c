@@ -35,7 +35,7 @@ void Player_ShowPtcl64c(Player* p, Vec3* pos, s32 val);
 void FUN_0807e854(Player* p);
 void FUN_0807d118(Player* p);
 void FUN_08063220(Player* p);
-void FUN_08063574(Player* p, s32 badcondID, s32 frames);
+void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames);
 void FUN_08063634(Player* p, s32 n);
 void FUN_080ec79c(u8 kind, void* payload);
 void FUN_08060c40(Player* p, u32 val);
@@ -1748,7 +1748,7 @@ void FUN_0807b428(void) {
       s32 val = VM_SeekToNamedArg('t') ? VM_GetValue() : u16_ARRAY_085abf4c[n];
 
       if (gPlayerPtr[0] != NULL) {
-        FUN_08063574(gPlayerPtr[0], n, val);
+        Player_ApplyBadCondition(gPlayerPtr[0], n, val);
       } else {
         u16_ARRAY_03002ba0[n] = val;
       }
