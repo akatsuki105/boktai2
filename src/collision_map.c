@@ -94,7 +94,36 @@ void Map_SetTileData(CollisionMapTileData* tiledata) {
   UpdateMapSize_0823279c();
 }
 
-NAKED void FUN_0823280c(MoverTile* p, Vec3* pos) { INCFUNC("asm/func/FUN_0823280c.inc"); }
+// pos のタイルを MoverTile に取り込む, 前と今を同じ値で埋める
+void Map_InitMoverTile(MoverTile* p, Vec3* pos) {
+  CollisionMapTileData* td;
+  CollisionMapTile* tile;
+  s32 bx;
+  s32 bz;
+  s32 idx;
+
+  if (gCollisionMap->tiledata == NULL) {
+    return;
+  }
+
+  td = gCollisionMap->tiledata;
+  bx = (s8)(pos->x >> 8);
+  bz = (s8)(pos->z >> 8);
+  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+    idx = 0;
+  } else {
+    idx = gCollisionMap->rowOffsets[bz] + bx;
+  }
+  p->tileIdx[0] = p->tileIdx[1] = idx;
+
+  tile = &td->tiles[p->tileIdx[1]];
+  p->attrLo[1] = tile->attr & 0xF;
+  p->attrHi[1] = (tile->attr & 0xFF) >> 4;
+  p->obj[1] = *(u16*)&tile->obj;
+  p->attrLo[0] = p->attrLo[1];
+  p->attrHi[0] = p->attrHi[1];
+  p->obj[0] = p->obj[1];
+}
 
 // from から to へ 4タイル以内で真っ直ぐ行ける向きを 8bit の角度で返す, 無ければ -1
 // 残差7命令: 原典は & 3 と & 0xFF をループ内で実際に計算し、配列先頭と定数2つを高位レジスタ (r8/r9/sl) に抱えている

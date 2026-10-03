@@ -200,7 +200,7 @@ void EntityF41A_InitData(EntityF41A* p) {
 
 // 足元のタイル情報を取って data に結びつける
 void EntityF41A_InitTile(EntityF41A* p) {
-  FUN_0823280c(&p->tile, &p->data.pos);
+  Map_InitMoverTile(&p->tile, &p->data.pos);
   Mover_SetCollision(&p->data, &p->tile, 30, 30);
 }
 

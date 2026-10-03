@@ -20,7 +20,7 @@
 	adds r1, r5, #0
 	adds r1, #0x2c
 	adds r0, r4, #0
-	bl FUN_0823280c
+	bl Map_InitMoverTile
 _08078BF2:
 	str r4, [r5, #0x3c]
 _08078BF4:

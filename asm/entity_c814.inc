@@ -305,7 +305,7 @@ FUN_080cb714: @ 0x080CB714
 	adds r1, r5, #0
 	adds r1, #0x24
 	adds r0, r4, #0
-	bl FUN_0823280c
+	bl Map_InitMoverTile
 	adds r0, r5, #0
 	adds r0, #0x1c
 	adds r1, r4, #0

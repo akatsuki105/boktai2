@@ -170,7 +170,7 @@ s32 Mover_Init(Mover* p, u16 id, Vec3* pos, u32 angle, u32 unk_4, void* owner) {
 
 bool32 Mover_SetCollision(Mover* p, MoverTile* tile, u16 sizeX, u16 sizeZ) {
   p->tile = tile;
-  FUN_0823280c(tile, &p->pos);
+  Map_InitMoverTile(tile, &p->pos);
   p->sizeX = sizeX;
   p->sizeZ = sizeZ;
   return TRUE;

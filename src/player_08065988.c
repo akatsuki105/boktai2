@@ -1594,7 +1594,7 @@ void FUN_0807b02c(void) {
         p->xflip = 0;
       }
     }
-    FUN_0823280c(&p->tile, &p->mover.pos);
+    Map_InitMoverTile(&p->tile, &p->mover.pos);
     Player_SetAction(p, 0, 0);
     Player_StopEneChargeSound(p);
   }

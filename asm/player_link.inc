@@ -2061,7 +2061,7 @@ _08081B98:
 	adds r4, r6, r0
 	adds r0, r4, #0
 	add r1, sp, #8
-	bl FUN_0823280c
+	bl Map_InitMoverTile
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0x1e
@@ -6866,7 +6866,7 @@ _080841C0:
 	adds r1, r5, #0
 	adds r1, #0x2c
 	adds r0, r4, #0
-	bl FUN_0823280c
+	bl Map_InitMoverTile
 	str r4, [r5, #0x3c]
 _080841D8:
 	adds r0, r5, #0

@@ -6711,7 +6711,7 @@ _080CF49C:
 	adds r4, r7, r2
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl FUN_0823280c
+	bl Map_InitMoverTile
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0x1e
@@ -8987,7 +8987,7 @@ _080D0606:
 	adds r1, r7, #0
 	adds r1, #0x2c
 	adds r0, r4, #0
-	bl FUN_0823280c
+	bl Map_InitMoverTile
 	str r4, [r7, #0x3c]
 	movs r1, #0xd5
 	lsls r1, r1, #1
@@ -21704,7 +21704,7 @@ FUN_080d69dc: @ 0x080D69DC
 	adds r1, r5, #0
 	adds r1, #0x2c
 	adds r0, r4, #0
-	bl FUN_0823280c
+	bl Map_InitMoverTile
 _080D6A0E:
 	str r4, [r5, #0x3c]
 _080D6A10:
