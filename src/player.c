@@ -511,8 +511,8 @@ void Player_RefreshHpEne(Player* p) {
 }
 
 // 攻撃力と属性を当たり判定に設定する, レベルとチカラの平均に鎧の値を足した値が攻撃力になる
-// 命令数は107で一致, 残差はレジスタ割当だけ (原典は鎧のベースを r5, lv を r4 に置く)
-// PlayerArmor を 0x27A まで広げると命令数は揃った, Tier A/B は試済
+// 命令数は107で一致, 残差はレジスタ割当だけ: 原典は armor を r5, lv を r4, special を r3 (caller-saved) に置くが
+// こちらは armor を r4, special を call-saved の r5 に取る. PlayerArmor を 0x27A まで広げて命令数は揃った, Tier A/B は試済
 NON_MATCH void Player_RefreshAttackPower(Player* p) {
 #ifdef NONMATCHING_C
   PlayerArmor* armor = &p->armor;
