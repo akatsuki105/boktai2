@@ -87,7 +87,7 @@ _080CB562:
 	adds r4, #0x24
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08236268
+	bl Map_StepNavPath
 	ldr r0, _080CB5AC @ =0x030044E0
 	ldrh r1, [r0, #2]
 	movs r0, #2

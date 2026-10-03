@@ -6935,7 +6935,7 @@ _08084256:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	adds r1, r6, #0
-	bl FUN_08236268
+	bl Map_StepNavPath
 _08084262:
 	adds r2, r5, #0
 	adds r2, #0xa8

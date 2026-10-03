@@ -212,7 +212,7 @@ _080430C2:
 _080430D8:
 	adds r0, r7, #0
 	mov r1, sb
-	bl FUN_08236268
+	bl Map_StepNavPath
 	adds r0, r5, #0
 	movs r1, #1
 	bl FUN_080414fc

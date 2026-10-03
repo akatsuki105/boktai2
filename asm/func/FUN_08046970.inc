@@ -327,7 +327,7 @@ _08046BCA:
 _08046BE0:
 	mov r0, sl
 	ldr r1, [sp, #0x10]
-	bl FUN_08236268
+	bl Map_StepNavPath
 	ldrb r0, [r5, #7]
 	ldr r2, _08046C30 @ =0x085AB414
 	lsls r1, r0, #1

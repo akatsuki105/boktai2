@@ -471,7 +471,15 @@ NAKED void FUN_08235ffc(NavMesh* navMesh, unknown* param_2, Vec3* pos) { INCFUNC
 
 NAKED void FUN_08236130(NavMesh* navMesh, unknown* param_2, Vec3* pos) { INCFUNC("asm/func/FUN_08236130.inc"); }
 
-NAKED void FUN_08236268(unknown* param_1, Vec3* pos) { INCFUNC("asm/func/FUN_08236268.inc"); }
+// ナビの経路探索を1歩進める, param_1 の bit0 が立っているときだけ後段も回す
+void Map_StepNavPath(unknown* param_1, Vec3* pos) {
+  NavMesh* navMesh = gCollisionMap->navMesh;
+
+  FUN_08235ffc(navMesh, param_1, pos);
+  if (*(u16*)param_1 & 1) {
+    FUN_08236130(navMesh, param_1, pos);
+  }
+}
 
 // pos を含むナビ矩形の番号を返す, 見つからなければ 0xFF
 s32 Map_FindNavRectAt(Vec3* pos) {

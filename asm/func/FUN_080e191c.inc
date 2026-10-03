@@ -752,7 +752,7 @@ _080E1EB0:
 	adds r0, r5, r4
 	ldr r0, [r0]
 	ldr r1, [sp, #0x10]
-	bl FUN_08236268
+	bl Map_StepNavPath
 _080E1ED0:
 	movs r0, #0xe5
 	lsls r0, r0, #1

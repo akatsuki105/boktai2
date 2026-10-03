@@ -404,7 +404,7 @@ _080468A2:
 _080468BA:
 	ldr r0, [sp, #0x1c]
 	adds r1, r7, #0
-	bl FUN_08236268
+	bl Map_StepNavPath
 	ldrb r0, [r5, #7]
 	ldr r2, _08046908 @ =0x085AB414
 	lsls r1, r0, #1
