@@ -21,6 +21,7 @@ s32 GetMagicCategory(magic32_t id);                                             
 s32 FUN_080ddcc8(Vec3* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);  // src/entity_080ddf88.c
 void FUN_0809c4f4(void);                                                                                               // src/entity_cc28.c
 s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5);                         // src/eff_082473e0.c
+s32 FUN_082467d0(Eff082473e0Emitter* e, u32 unk_1, u32 param_3, u32* param_4);                                         // src/eff_082473e0.c
 void* Entity080dc44c_Create(void);                                                                                     // src/entity_080dc44c.c
 extern u16 u16_03002b84;
 extern u16 u16_03002b90;
@@ -1558,7 +1559,65 @@ void FUN_08063248(Player* p) {
   }
 }
 
-NAKED void FUN_08063288(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_08063288.inc"); }
+// 変身エフェクトを kind で開始する, 変身の種類ごとに粒のばらけ方と効果音を変える
+// 残差3命令 (187/190): 原典は p と kind を r8/r9 に置くが, こちらは r8 だけで足りてしまう
+NON_MATCH void Player_StartFormEffect(Player* p, u32 kind) {
+#ifdef NONMATCHING_C
+  Vec3 spread;
+  u16* table;
+  u32 idx;
+
+  if (p->unk_4c4.unk_3 != 0) {
+    if (p->unk_4c4.kind != kind) {
+      if (p->unk_4c4.kind == 3) {
+        return;
+      }
+      FUN_08063248(p);
+    }
+  }
+
+  if (p->unk_4c4.unk_3 == 0) {
+    p->angle_401 = p->angle_400;
+    p->unk_3da = 0;
+  }
+
+  if (p->kind == 2) {
+    table = gRandomTable;
+    idx = (gRandTableIdx + 1) & 0x3FF;
+    spread.x = (table[idx] & 7) - 3;
+    gRandTableIdx = (idx + 1) & 0x3FF;
+    spread.y = (table[gRandTableIdx] & 7) - 5;
+  } else if (p->kind == 3) {
+    table = gRandomTable;
+    idx = (gRandTableIdx + 1) & 0x3FF;
+    spread.x = (table[idx] & 7) - 3;
+    gRandTableIdx = (idx + 1) & 0x3FF;
+    spread.y = (table[gRandTableIdx] & 7) - 3;
+  } else {
+    table = gRandomTable;
+    idx = (gRandTableIdx + 1) & 0x3FF;
+    spread.x = (table[idx] & 0xF) - 7;
+    gRandTableIdx = (idx + 1) & 0x3FF;
+    spread.y = -(table[gRandTableIdx] & 0x1F);
+  }
+
+  spread.z = 0;
+  if (FUN_082467d0(&p->unk_4c4, kind, 0xE10, (u32*)&spread) >= 0) {
+    if (p->unk_4c4.kind == 1) {
+      PlaySound_082406e0(0x191);
+    } else if (p->unk_4c4.kind == 2) {
+      p->unk_376 += 10;
+      PlaySound_082406e0(0x133);
+    } else if (p->unk_4c4.kind == 3) {
+      PlaySound_082406e0(0x133);
+    }
+
+    p->unk_43c[1] = 0;
+  }
+#else
+  INCFUNC("asm/func/Player_StartFormEffect.inc");
+#endif
+}
 
 s32 FUN_08063478(Player* p) { return (p->angle_400 - p->angle_401 + 0x100) & 0xFF; }
 

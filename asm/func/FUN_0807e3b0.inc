@@ -281,7 +281,7 @@ _0807E5A8:
 _0807E5D4:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08063288
+	bl Player_StartFormEffect
 	b _0807E670
 	.align 2, 0
 _0807E5E0: .4byte 0x00000442
@@ -313,7 +313,7 @@ _0807E5F0:
 _0807E61A:
 	adds r0, r5, #0
 	movs r1, #2
-	bl FUN_08063288
+	bl Player_StartFormEffect
 	b _0807E670
 	.align 2, 0
 _0807E624: .4byte 0x000003D2
@@ -332,7 +332,7 @@ _0807E630:
 	strh r0, [r1]
 	adds r0, r5, #0
 	movs r1, #3
-	bl FUN_08063288
+	bl Player_StartFormEffect
 	ldr r1, _0807E65C @ =0x000003D2
 	adds r0, r5, r1
 	strb r4, [r0]

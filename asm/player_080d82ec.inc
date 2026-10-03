@@ -23389,7 +23389,7 @@ _080D76A8:
 _080D76D2:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08063288
+	bl Player_StartFormEffect
 	b _080D773C
 	.align 2, 0
 _080D76DC: .4byte 0x00000442
@@ -23420,7 +23420,7 @@ _080D76EC:
 _080D7714:
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_08063288
+	bl Player_StartFormEffect
 	b _080D773C
 	.align 2, 0
 _080D7720: .4byte 0x000003D2

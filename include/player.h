@@ -258,7 +258,7 @@ typedef struct Player {
   u8 unk_3d2;  // 0x3D2, Player_SetHitDir が被弾時に 1/0 を書く
   u8 unk_3d3[0x3D8 - 0x3D3];
   u16 unk_3d8;  // 0x3D8, Player_ApplyBadCondition が状態異常1の残り時間が 0 のときに 0 を書く
-  u8 unk_3da[2];
+  u16 unk_3da;  // 0x3DA, Player_StartFormEffect が変身を始めるときに 0 に戻す
   u16 unk_3dc;  // 0x3DC, FUN_080667b0 が毎回 太陽ゲージ+2 を足し、100 を超えるたびに FUN_08066794 を呼んで 100 引く
   u8 unk_3de[0x3E6 - 0x3DE];
   u16 unk_3e6;  // 0x3E6, Player_SetHitDir が相手の HitboxData.unk_40 を退避する

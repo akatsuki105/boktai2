@@ -201,12 +201,12 @@ _0813A3C0:
 	bne _0813A3FE
 	ldr r0, [r6]
 	movs r1, #1
-	bl FUN_08063288
+	bl Player_StartFormEffect
 	b _0813A406
 _0813A3FE:
 	ldr r0, [r6]
 	movs r1, #2
-	bl FUN_08063288
+	bl Player_StartFormEffect
 _0813A406:
 	pop {r4, r5, r6, r7}
 	pop {r0}
@@ -1214,7 +1214,7 @@ _0813AB6C:
 	ldr r0, _0813AB9C @ =0x03002BE0
 	ldr r0, [r0]
 	movs r1, #1
-	bl FUN_08063288
+	bl Player_StartFormEffect
 	b _0813ABAA
 	.align 2, 0
 _0813AB98: .4byte 0x0000065E
@@ -1223,7 +1223,7 @@ _0813ABA0:
 	ldr r0, _0813ABD0 @ =0x03002BE0
 	ldr r0, [r0]
 	movs r1, #2
-	bl FUN_08063288
+	bl Player_StartFormEffect
 _0813ABAA:
 	ldr r0, _0813ABD4 @ =0x0000065E
 	adds r1, r6, r0
