@@ -105,11 +105,11 @@ typedef struct {
   Particle52 ptcls[6];  // Player_InitPtcl718 でのループ回数
 } PlayerParticleState718;
 
-// FUN_08062278 で初期化処理がされるが、アクセス方法的に構造体として扱われるっぽい
+// Player_InitPtcl858 で初期化処理がされるが、アクセス方法的に構造体として扱われるっぽい
 typedef struct {
   ParticleGroup* group;  // 0x00, PTCL_GROUP_2
   u8 unk_04[4];
-  Particle52 ptcls[4];  // FUN_08062278 でのループ回数
+  Particle52 ptcls[4];  // Player_InitPtcl858 でのループ回数
 } PlayerParticleState858;
 
 // 通常プレイでは gPlayerPtr[0] にこの構造体がある
@@ -267,7 +267,7 @@ typedef struct Player {
   PlayerParticleGroup1 ptcl_67c;    // 0x67C, FUN_0806161c
   PlayerShockwave meleeShockwave;   // 0x6AC
   PlayerParticleState718 ptcl_718;  // 0x718, 根拠: Player_InitPtcl718
-  PlayerParticleState858 ptcl_858;  // 0x858, 根拠: FUN_08062278
+  PlayerParticleState858 ptcl_858;  // 0x858, 根拠: Player_InitPtcl858
   Vec3 pos_930;                     // 0x930, FUN_08067f88 が mover.pos をずらして書く
   u8 unk_938[0x94A - 0x938];
 

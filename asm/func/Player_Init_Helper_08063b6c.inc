@@ -86,7 +86,7 @@ _08063C0E:
 	adds r0, r5, #0
 	bl Player_InitPtcl718
 	adds r0, r5, #0
-	bl FUN_08062278
+	bl Player_InitPtcl858
 	adds r0, r5, #0
 	bl Player_Init_Anim_08061bac
 	ldr r1, _08063CDC @ =0x0000097C

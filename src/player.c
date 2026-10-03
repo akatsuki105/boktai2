@@ -409,7 +409,24 @@ void FUN_08062258(Player* p) {
   }
 }
 
-NAKED void FUN_08062278(Player* p) { INCFUNC("asm/func/FUN_08062278.inc"); }
+// 0x858 のパーティクル4個を確保して初期化する
+void Player_InitPtcl858(Player* p) {
+  PlayerParticleState858* st = &p->ptcl_858;
+  s32 i;
+
+  st->group = GetParticleGroup(0x1C1E);
+  for (i = 0; i < 4; i++) {
+    Particle52* ptcl = &st->ptcls[i];
+
+    FUN_0822d9f0(&ptcl->base, st->group, 1);
+    Particle_SetOffset(&ptcl->base, -4, -4);
+    FUN_0822dadc(&ptcl->base, 1);
+    ptcl->base.priority = 2;
+  }
+
+  st->unk_04[1] = 0;
+  st->unk_04[2] = 0;
+}
 
 NAKED void FUN_080622d0(Player* p) { INCFUNC("asm/func/FUN_080622d0.inc"); }
 
