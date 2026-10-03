@@ -26,7 +26,7 @@
 	ldrb r1, [r1]
 	lsls r1, r1, #0x18
 	asrs r1, r1, #0x18
-	bl FUN_08064fd8
+	bl Player_EquipMagic
 	b _0808D994
 	.align 2, 0
 _0808D97C: .4byte 0x00000C02
@@ -38,7 +38,7 @@ _0808D984:
 	ldr r0, [r0]
 	movs r1, #1
 	rsbs r1, r1, #0
-	bl FUN_08064fd8
+	bl Player_EquipMagic
 _0808D994:
 	pop {r0}
 	bx r0

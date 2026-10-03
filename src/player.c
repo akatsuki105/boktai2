@@ -1833,7 +1833,65 @@ bool32 FUN_08064d6c(Player* p, s32 val) {
 
 NAKED unknown* FUN_08064db0(Player* p) { INCFUNC("asm/func/FUN_08064db0.inc"); }
 
-NAKED void FUN_08064fd8(Player* p, magic32_t n) { INCFUNC("asm/func/FUN_08064fd8.inc"); }
+// 装備魔法を n に変える, 変身中なら戻す行動に入り, エンチャント系なら即かけ直す
+void Player_EquipMagic(Player* p, magic32_t n) {
+  PlayerMagic* m = &p->magic;
+
+  if (m->id == n) {
+    return;
+  }
+
+  if (m->enchanted) {
+    m->enchanted = FALSE;
+    p->unk_951 = 0;
+  }
+
+  if (p->kind == 2) {
+    Player_SetAction(p, 0xC, 0);
+  } else if (p->kind == 3) {
+    Player_SetAction(p, 0xD, 0);
+  } else if (p->kind == 4) {
+    Player_SetAction(p, 0xE, 0);
+  }
+
+  m->id = n;
+  if ((s8)n < 0) {
+    m->enchanted = FALSE;
+    m->cat = 0xFF;
+    m->availableForm = FALSE;
+    m->basicCost = 0;
+    p->unk_979 = 0;
+    if (p->unk_962 == 0) {
+      p->unk_964 = 0;
+    }
+  } else {
+    m->cat = GetMagicCategory(m->id);
+    m->availableForm = Player_IsMagicAvailableForm(p, m->id);
+    m->basicCost = FUN_08064b00(m->id);
+    if (!m->availableForm) {
+      return;
+    }
+
+    if (m->id <= 5) {
+      m->enchanted = TRUE;
+      if (Player_CheckMagicEnchant(p) >= 0) {
+        p->unk_979 = 1;
+        p->unk_964 = 0x20;
+        p->unk_962 = m->id + 0x121;
+        p->unk_951 = m->id + 1;
+      }
+      return;
+    }
+
+    m->enchanted = FALSE;
+    p->unk_979 = 0;
+    if (p->unk_962 == 0) {
+      p->unk_964 = 0;
+    }
+  }
+
+  p->unk_951 = p->unk_950;
+}
 
 // 使う魔法の番号を返す, サバタは固定の2種から選び、それ以外は登録魔法から引く
 s32 FUN_08065110(Player* p) {
