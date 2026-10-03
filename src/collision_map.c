@@ -30,7 +30,25 @@ void FUN_0823273c(void) {
   gCollisionMap->neighborOffsets[3] = -1;
 }
 
-NAKED void FUN_08232760(void) { INCFUNC("asm/func/FUN_08232760.inc"); }
+// 行ごとのタイル索引オフセット表を作る, rowOffsets[z] = z * width
+// 残差1命令: 原典は rowOffsets の先頭を1本のレジスタに残したままカーソルへ複写する, こちらは先頭をそのままカーソルに使う
+// Tier A/B と C の添字形・guard+do/while は試済
+NON_MATCH void Map_BuildRowOffsets(void) {
+#ifdef NONMATCHING_C
+  s32 width = gCollisionMap->tiledata->width;
+  u16* dst = gCollisionMap->rowOffsets;
+  s32 offset = 0;
+  s32 i;
+
+  for (i = 0; i < gCollisionMap->tiledata->height; i++) {
+    *dst = offset;
+    offset += width;
+    dst++;
+  }
+#else
+  INCFUNC("asm/func/Map_BuildRowOffsets.inc");
+#endif
+}
 
 void UpdateMapSize_0823279c(void) {
   gMapBlockW = (gCollisionMap->tiledata)->width;
@@ -40,7 +58,7 @@ void UpdateMapSize_0823279c(void) {
 s32 FUN_082327c0(FileID id) {
   gCollisionMap->tiledata = GetFile(0xAE1B, id);  // これNULLを返すっぽいけど...
   FUN_0823273c();
-  FUN_08232760();
+  Map_BuildRowOffsets();
   UpdateMapSize_0823279c();
   return 0;
 }
@@ -48,7 +66,7 @@ s32 FUN_082327c0(FileID id) {
 void FUN_082327f0(CollisionMapTileData* tiledata) {
   gCollisionMap->tiledata = tiledata;
   FUN_0823273c();
-  FUN_08232760();
+  Map_BuildRowOffsets();
   UpdateMapSize_0823279c();
 }
 
