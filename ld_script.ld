@@ -404,7 +404,6 @@ SECTIONS {
 			src/vm_ctrl2.o (.text);
 			src/vm_subroutine.o (.text);
 			src/mover.o (.text);
-			src/code_0823b540.o (.text);
 			src/camera.o (.text);
 			src/code_0823cd04.o (.text);
 			src/timer.o (.text);
