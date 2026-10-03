@@ -2588,7 +2588,126 @@ bool32 FUN_08064d6c(Player* p, s32 val) {
   return TRUE;
 }
 
-NAKED unknown* FUN_08064db0(Player* p) { INCFUNC("asm/func/FUN_08064db0.inc"); }
+// 魔法ボタンを押したときに実行する行動番号を返す, 使えないときは今の行動をそのまま返す
+// 残差15命令 (264/249): AuxAnim_RestartAnim の宣言を外すと streamdiff は完全一致する (暗黙宣言のときだけ原典のコードになる)
+// Player_BurstFormEffect と同じ現象, 宣言を () にしてもプロトタイプありと同じコードになる
+NON_MATCH u32 Player_GetMagicAction(Player* p) {
+#ifdef NONMATCHING_C
+  PlayerMagic* m = &p->magic;
+  s32 id = m->id;
+
+  if (id >= 0) {
+    if (m->availableForm == 0) {
+      return p->action;
+    }
+
+    if (m->unk_285 == 0) {
+      if (id <= 5) {
+        if (m->enchanted != 0) {
+          m->enchanted = FALSE;
+          p->unk_951 = 0;
+        } else {
+          m->enchanted = TRUE;
+          if (Player_CheckMagicEnchant(p) >= 0) {
+            p->unk_979 = 1;
+            p->unk_964 = 0x20;
+            p->unk_951 = m->id + 1;
+          }
+        }
+      } else if ((u8)(m->id - 0xE) <= 2) {
+        if (p->action > 1) {
+          return p->action;
+        }
+
+        if (id == 0xF) {
+          if (p->kind != 2) {
+            if (Player_CheckMagicCost(p) == 0) {
+              return p->action;
+            }
+            p->gfx_114 = &p->gfxForms[0];
+            FUN_0822a4fc(&p->sprite_e8, p->gfx_114);
+            AuxAnim_RestartAnim(&p->anim_33c, p->anim_34c, 0, 0, 1);
+            p->unk_382 = 0xBE;
+            p->sprite_e8.flags = 1;
+            Player_PayMagicCost(p);
+          }
+          return 0xC;
+        }
+
+        if (id == 0x10) {
+          if (p->kind != 3) {
+            if (Player_CheckMagicCost(p) == 0) {
+              return p->action;
+            }
+            p->gfx_114 = &p->gfxForms[1];
+            FUN_0822a4fc(&p->sprite_e8, p->gfx_114);
+            AuxAnim_RestartAnim(&p->anim_33c, p->anim_350, 0, 0, 1);
+            p->sprite_e8.flags = 1;
+            Player_PayMagicCost(p);
+          }
+          return 0xD;
+        }
+
+        if (p->kind != 4) {
+          if (Player_CheckMagicCost(p) == 0) {
+            return p->action;
+          }
+          p->gfx_114 = &p->gfxForms[2];
+          FUN_0822a4fc(&p->sprite_e8, p->gfx_114);
+          AuxAnim_RestartAnim(&p->anim_33c, p->anim_354, 0, 0, 1);
+          p->sprite_e8.flags = 1;
+          Player_PayMagicCost(p);
+        }
+        return 0xE;
+      } else {
+        if (p->action > 1) {
+          return p->action;
+        }
+
+        if (id == 0x11) {
+          if (Player_CheckMagicCost(p) == 0) {
+            return p->action;
+          }
+          return 0xB;
+        }
+        if (id == 6) {
+          return 0xA;
+        }
+        if (id == 7 || id == 9) {
+          return 9;
+        }
+        if (m->id == 8) {
+          if (Player_CheckMagicCost(p) == 0) {
+            return p->action;
+          }
+          Player_PayMagicCost(p);
+          return 2;
+        }
+        if (m->id == 0xB) {
+          return 2;
+        }
+        if (m->id == 0xD) {
+          if (p->dynamiteCount != 0) {
+            return p->action;
+          }
+          return 0x11;
+        }
+        if (m->id == 0xA) {
+          return 0xF;
+        }
+        if (m->id == 0xC) {
+          return 0x10;
+        }
+        return p->action;
+      }
+    }
+  }
+
+  return p->action;
+#else
+  INCFUNC("asm/func/Player_GetMagicAction.inc");
+#endif
+}
 
 // 装備魔法を n に変える, 変身中なら戻す行動に入り, エンチャント系なら即かけ直す
 void Player_EquipMagic(Player* p, magic32_t n) {

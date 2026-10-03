@@ -187,9 +187,9 @@ typedef struct Player {
   MainSprite sprite_88;        // 0x088, 根拠： Player_PlayAnim
   AuxSprite sprite_e8;         // 0x0E8, Player_Destroy が AuxSprite_Remove に渡す, pos は 0x104 で FUN_0807a91c が mover.pos / sprite_88.pos と一緒に書く
   AuxSpriteGfx* gfx_114;       // 0x114, 根拠: Player_ResetPltt が plttID(+0x06) と pltt(+0x0C) を書く
-  u8 unk_118[0x16C - 0x118];
-  HitboxData unk_16c;  // 0x16C
-  MoverTile tile;      // 0x1BC, mover.tile がここを指す
+  AuxSpriteGfx gfxForms[3];    // 0x118, 変身3種のグラフィック, gfx_114 がこのどれかを指す
+  HitboxData unk_16c;          // 0x16C
+  MoverTile tile;              // 0x1BC, mover.tile がここを指す
   u8 unk_1cc[0x220 - 0x1CC];
   u8 unk_220[0x230 - 0x220];  // 0x220, Player_Destroy が FUN_080f8cac に渡す EntityD854Node
   EntityMsgBox msgbox;        // 0x230, FUN_0807ddd4 が EntityMsgBus_Unregister に渡す
@@ -207,11 +207,11 @@ typedef struct Player {
   u8 unk_2e9[2];            // 0x2E9
   u8 hitboxTimer;           // 0x2EB, hitbox_2ec を Hitbox_Register し続ける残りフレーム数, FUN_0807e2cc が 6 を入れる
   HitboxData hitbox_2ec;    // 0x2EC
-  u8 unk_33c[0x34C - 0x33C];
-  AuxAnimFile* anim_34c;  // 0x34C
-  AuxAnimFile* anim_350;  // 0x350
-  AuxAnimFile* anim_354;  // 0x354
-  u8 kind;                // 0x358: see PlayerKind
+  AuxAnimState anim_33c;    // 0x33C, 変身アニメの再生状態, 根拠: Player_GetMagicAction が AuxAnim_RestartAnim に渡す
+  AuxAnimFile* anim_34c;    // 0x34C
+  AuxAnimFile* anim_350;    // 0x350
+  AuxAnimFile* anim_354;    // 0x354
+  u8 kind;                  // 0x358: see PlayerKind
   u8 unk_359;
   u16 unk_35a;
   u16 stats[STAT_KINDS];  // 0x35C, プレイヤーのステータス値 (武者鎧などの装備品の補正値は含まない, タロットカードのドーピングは含む)
@@ -225,7 +225,9 @@ typedef struct Player {
   u8 action;              // 0x37C, いま実行している行動, kind ごとの PlayerFunc テーブル (0x085abcac など) の添字
   u8 state;               // 0x37D, action の中の段階, 行動関数はこれで switch する
   u16 stateTimer;         // 0x37E, Player_SetAction が 0 に戻してから経ったフレーム数, 行動関数が自分で数える
-  u8 unk_380[7];
+  u8 unk_380[2];
+  u8 unk_382;  // 0x382, Player_GetMagicAction がコウモリ変身時に 0xBE を入れる
+  u8 unk_383[4];
   coffin8_t coffin_387;  // 0x387, MagicSleeping_0806c124
   u8 unk_388[0x38A - 0x388];
   u16 unk_38a;  // 0x38A, 0 のときだけ FUN_0806e404 が専用の効果音を鳴らして 40 を入れる
@@ -271,7 +273,7 @@ typedef struct Player {
   s16 unk_3f6;
   u8 unk_3f8[2];
   u8 magicFired;     // 0x3FA, 魔法の発動フレームに FUN_08064d6c (太陽ゲージ判定) の結果が入る, 1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
-  u8 dynamiteCount;  // 0x3FB, 生存中の Entity080a8ff8 の数, Entity080a8ff8_Init が +1、消滅時に -1, MAGIC_DYNAMITE は 0 でないと再発動できない (FUN_08064db0)
+  u8 dynamiteCount;  // 0x3FB, 生存中の Entity080a8ff8 の数, Entity080a8ff8_Init が +1、消滅時に -1, MAGIC_DYNAMITE は 0 でないと再発動できない (Player_GetMagicAction)
   u8 unk_3fc[2];
   u8 unk_3fe;  // 0x3FE, FUN_0806a050 が見て FUN_08060c40 に渡す番号を選ぶ
   u8 unk_3ff;

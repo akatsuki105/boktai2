@@ -78,7 +78,7 @@ _08078954:
 	cmp r0, #0
 	beq _08078974
 	adds r0, r5, #0
-	bl FUN_08064db0
+	bl Player_GetMagicAction
 	adds r4, r0, #0
 _08078974:
 	movs r2, #0xd6
