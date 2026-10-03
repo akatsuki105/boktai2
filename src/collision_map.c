@@ -401,7 +401,37 @@ CollisionMapEvent* Map_FindEventByID(u32 id) {
 
 NAKED void Map_InsertEvent(CollisionMapEvent* ev, u32 param_2) { INCFUNC("asm/func/Map_InsertEvent.inc"); }
 
-NAKED s32 FUN_08234b1c(void) { INCFUNC("asm/func/FUN_08234b1c.inc"); }
+// スクリプトの 'n' 引数に並んだゾーンIDのイベントを events から取り除いて前へ詰める
+// 命令数は84で一致, 残差はレジスタ割当のみ (原典は events を r4, unk_d24 を sl, 書き込み先のバイトオフセットを r3 に置く)
+// Tier A/B と C の宣言順は試済
+NON_MATCH s32 VM_Ctrl_RemoveZoneEvents(void) {
+#ifdef NONMATCHING_C
+  s32 count = gCollisionMap->eventCount;
+
+  VM_SeekToNamedArg('n');
+  while (VM_GetPC() != NULL) {
+    CollisionMapEvent* events = gCollisionMap->events;
+    u32* aux = gCollisionMap->unk_d24;
+    s32 n = 0;
+    u32 id = VM_GetValue();
+    s32 i;
+
+    for (i = 0; i < count; i++) {
+      if (id != events[i].zoneID) {
+        gCollisionMap->events[n] = events[i];
+        gCollisionMap->unk_d24[n] = aux[i];
+        n++;
+      }
+    }
+    count = n;
+  }
+
+  gCollisionMap->eventCount = count;
+  return 0;
+#else
+  INCFUNC("asm/func/VM_Ctrl_RemoveZoneEvents.inc");
+#endif
+}
 
 void Map_ClearEvent(CollisionMapEvent* ev) { ClearMemory(ev, sizeof(CollisionMapEvent)); }
 
