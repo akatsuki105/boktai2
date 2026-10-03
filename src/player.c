@@ -741,7 +741,71 @@ NON_MATCH void Player_SpawnSwordShockwave(Player* p, u32 idx, Vec3* pos) {
 }
 
 // 黒ジャンゴが槍で攻撃する時に1回呼ばれる, idx はプレイヤーの向きで変わる (多分、 衝撃波 を出す処理)
-NAKED void Player_DarkDjangoSpear_08061970(Player* p, u32 idx, Vec3* pos, s32 n) { INCFUNC("asm/func/Player_DarkDjangoSpear_08061970.inc"); }
+// 黒ジャンゴが槍で攻撃する時に1回呼ばれる, n で衝撃波の高さと前に出る距離が変わる
+// 残差7命令 (140/133): Player_SpawnSwordShockwave と同じレジスタ圧の差
+NON_MATCH void Player_SpawnSpearShockwave(Player* p, u32 idx, Vec3* pos, s32 n) {
+  AuxSprite* sprite = &p->meleeShockwave.sprite;
+  s32 height;
+  s32 dist;
+  s32 angle;
+  s32 v;
+  s32 offset;
+  s32 variant;
+  s32 flags;
+
+  if (n == 0) {
+    height = 0xA0;
+    dist = 0x1C2;
+  } else if (n == 1) {
+    height = 0x8C;
+    dist = 0x152;
+  } else {
+    height = 0x78;
+    dist = 0xE0;
+  }
+
+  angle = ((p->facing + 5) & 7) * 32;
+#ifdef NONMATCHING_C
+  sprite->pos = *pos;
+  sprite->pos.y += height;
+
+  v = dist * gSineTable[(angle + 0x40) & 0xFF];
+  if (v >= 0) {
+    offset = v >> 12;
+  } else {
+    offset = -((-v) >> 12);
+  }
+  sprite->pos.x += offset;
+
+  v = dist * gSineTable[angle];
+  if (v >= 0) {
+    offset = v >> 12;
+  } else {
+    offset = -((-v) >> 12);
+  }
+  sprite->pos.z += offset;
+
+  v = gSineTable[(angle + 0x40) & 0xFF] * 10;
+  if (v >= 0) {
+    p->meleeShockwave.velX = v >> 12;
+  } else {
+    p->meleeShockwave.velX = -((-v) >> 12);
+  }
+
+  v = gSineTable[angle] * 10;
+  if (v >= 0) {
+    p->meleeShockwave.velZ = v >> 12;
+  } else {
+    p->meleeShockwave.velZ = -((-v) >> 12);
+  }
+
+  Player_GetShockwaveDirParams(idx, &variant, &flags);
+  AuxAnim_SetAnim(&p->meleeShockwave.anim, p->meleeShockwave.animFile, 1, variant, flags);
+  FUN_0806181c(p);
+#else
+  INCFUNC("asm/func/Player_SpawnSpearShockwave.inc");
+#endif
+}
 
 // Player_SpawnSwordShockwave のような関数だが、いつ呼ばれるか不明 (武器の攻撃ではない)
 // 衝撃波を pos から向きの反対側に少しずらして出す
