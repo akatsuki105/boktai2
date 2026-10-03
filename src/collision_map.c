@@ -8,17 +8,40 @@
 
 IWRAM_DATA bool32 bool32_0300077c = FALSE;  // 0x0300077C
 
-bool32 FUN_082326d8(void);
+bool32 Map_ResetCollisionMap(void);
+void FUN_08234bd8(CollisionMapEvent* ev);
+extern u32 u32_030046b0;  // src/iwram2.c
 
 void FUN_082326a0(void) {
   CollisionMapData* p = Malloc(sizeof(CollisionMapData));
   ClearMemory(p, sizeof(CollisionMapData));
   Registry_Add(0x56C2, p, 1);
   gCollisionMap = p;
-  FUN_082326d8();
+  Map_ResetCollisionMap();
 }
 
-NAKED bool32 FUN_082326d8(void) { INCFUNC("asm/func/FUN_082326d8.inc"); }
+// 読み込み済みのコリジョンマップを空にする, navMesh だけは消さない
+bool32 Map_ResetCollisionMap(void) {
+  s32 i;
+
+  if (gCollisionMap == NULL) {
+    return FALSE;
+  }
+
+  gCollisionMap->tiledata = NULL;
+  gCollisionMap->unk_8 = 0;
+  gCollisionMap->zones = NULL;
+  gCollisionMap->paths = NULL;
+  gCollisionMap->tileOverrides = NULL;
+  u32_030046b0 = 0;
+  gCollisionMap->eventCount = 0;
+
+  for (i = 0; i < 64; i++) {
+    FUN_08234bd8(&gCollisionMap->events[i]);
+    gCollisionMap->unk_d24[i] = 0;
+  }
+  return TRUE;
+}
 
 // 隣接タイルへの索引差分を -w / 1 / w / -1 で埋める
 void FUN_0823273c(void) {

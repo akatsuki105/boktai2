@@ -174,17 +174,17 @@ static_assert(sizeof(CollisionMapEvent) == 44);
 
 // 読み込み中のコリジョンマップ, gCollisionMap が指す, Malloc(3620) で確保される (FUN_082326a0)
 typedef struct CollisionMapData {
-  u16 eventCount;                  // 0x000, events の件数, 根拠: FUN_082326d8 が 0 を書き FUN_082349b8 が +1 する
+  u16 eventCount;                  // 0x000, events の件数, 根拠: Map_ResetCollisionMap が 0 を書き FUN_082349b8 が +1 する
   u8 unk_2[2];                     // 0x002, 読み書きするコードが見つかっていない, padding?
   CollisionMapTileData* tiledata;  // 0x004
-  u32 unk_8;                       // 0x008, FUN_082326d8 が 0 を書くだけで読み手がいない
+  u32 unk_8;                       // 0x008, Map_ResetCollisionMap が 0 を書くだけで読み手がいない
   ZoneData* zones;                 // 0x00C
   PathData* paths;                 // 0x010
   NavMesh* navMesh;                // 0x014
   MapTileOverride* tileOverrides;  // 0x018, Map_AddTileOverride がここを先頭とする双方向リストにノードを繋ぐ
   s16 neighborOffsets[4];          // 0x01C, 隣接タイルへの索引差分 -w/1/w/-1, 根拠: FUN_0823273c, 読み手は (dir & 3) で引く
   u16 rowOffsets[256];             // 0x024, 行ごとのタイル索引オフセット表, rowOffsets[blockZ] + blockX がタイル索引
-  CollisionMapEvent events[64];    // 0x224, 根拠: FUN_082326d8 が i=0..63 で 44バイトずつクリアする
+  CollisionMapEvent events[64];    // 0x224, 根拠: Map_ResetCollisionMap が i=0..63 で 44バイトずつクリアする
   u32 unk_d24[64];                 // 0xD24, events と同じ添字の並列配列, FUN_082349b8 の第2引数が入る
 } CollisionMapData;
 static_assert(sizeof(CollisionMapData) == 3620);

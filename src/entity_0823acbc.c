@@ -92,7 +92,7 @@ void FUN_0823a91c(void) { bool32_03004788 = FALSE; }
 
 void Save_BackupStatAndWorld(void);
 void FUN_0823cd04(void);
-bool32 FUN_082326d8(void);
+bool32 Map_ResetCollisionMap(void);
 void* HitboxManager_Create(void);
 
 NAKED s32 SoftReset_0823a928(void) { INCFUNC("asm/func/SoftReset_0823a928.inc"); }
@@ -103,7 +103,7 @@ void FUN_0823a9c4(void) {
   gObjBlendEnabled = 0;
   vram_0822b778();
   FUN_0823cd04();
-  FUN_082326d8();
+  Map_ResetCollisionMap();
   HitboxManager_Create();
   ShowBG(DISPCNT_BG0_ON);
 }
