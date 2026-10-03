@@ -281,29 +281,25 @@ void Player_StopEneChargeSound(Player* p) {
 }
 
 // 攻撃側 a から被弾側 b へ向かう向きを 1/3/5/7 の4象限に落として返す
-// 残差4命令: 原典は angle + 0xE0 を両方の枝で別々に組み立てるが, agbcc が ldrb と +0xE0 を共通化してしまう
-// Tier A/B と中間変数の切り出しは試済
-NON_MATCH u32 Player_GetHitDirIdx(HitboxData* a, HitboxData* b) {
-#ifdef NONMATCHING_C
+u32 Player_GetHitDirIdx(HitboxData* a, HitboxData* b) {
   s32 angle;
+  s32 dx;
+  s32 dz;
 
   if (a->flags & HBFLAG_UNK_8) {
     angle = a->angle + 0xE0;
-  } else {
-    s32 dx = a->center.x - b->center.x;
-    s32 dz = a->center.z - b->center.z;
-
-    if (dx == 0 && dz == 0) {
-      angle = b->angle + 0xE0;
-    } else {
-      angle = ArcTan2_8(dx, dz) + 0x60;
-    }
+    return ((angle & 0xFF) >> 6) * 2 + 1;
   }
 
+  dx = a->center.x - b->center.x;
+  dz = a->center.z - b->center.z;
+  if (dx == 0 && dz == 0) {
+    angle = b->angle + 0xE0;
+    return ((angle & 0xFF) >> 6) * 2 + 1;
+  }
+
+  angle = ArcTan2_8(dx, dz) + 0x60;
   return ((angle & 0xFF) >> 6) * 2 + 1;
-#else
-  INCFUNC("asm/func/Player_GetHitDirIdx.inc");
-#endif
 }
 
 // 被弾したときの向きと退避処理, 攻撃側 a のダメージを被弾側 b に移してから向きを決める
