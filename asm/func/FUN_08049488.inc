@@ -5,7 +5,7 @@
 _08049490:
 	adds r0, r6, #0
 	adds r1, r5, #0
-	bl FUN_08048da4
+	bl TextRenderer_HandleTag
 	adds r5, r0, #0
 	ldrb r0, [r6, #0xe]
 	cmp r0, #0

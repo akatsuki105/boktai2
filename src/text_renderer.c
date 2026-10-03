@@ -107,7 +107,7 @@ s32 FUN_08048a78(s32* p, s32 n) {
 
 // スクリプトの文字列参照2つを引いて dst に連結する, どちらかが無ければ dst を空にして -1
 // 残差は s と文字テンポラリのレジスタが逆 (原典は s が r1, 文字が r0) で adds の移動3命令ぶん少ない, Tier A/B と C のローカル分割・宣言順は試済
-NON_MATCH s32 FUN_08048a98(char* dst, u8* pc1, u8* pc2, s32 off1, s32 off2) {
+NON_MATCH s32 Text_ConcatStringRefs(char* dst, u8* pc1, u8* pc2, s32 off1, s32 off2) {
 #ifdef NONMATCHING_C
   char* s;
   s32 ref;
@@ -135,7 +135,7 @@ NON_MATCH s32 FUN_08048a98(char* dst, u8* pc1, u8* pc2, s32 off1, s32 off2) {
   *dst = *s;
   return 0;
 #else
-  INCFUNC("asm/func/FUN_08048a98.inc");
+  INCFUNC("asm/func/Text_ConcatStringRefs.inc");
 #endif
 }
 
@@ -368,7 +368,8 @@ NON_MATCH s32 FUN_08048d78(void) {
 #endif
 }
 
-NAKED char* FUN_08048da4(TextRenderer* p, char* s) { INCFUNC("asm/func/FUN_08048da4.inc"); }
+// '<' の次から始まるタグ名を表引きして適用し, '>' の次の位置を返す, 閉じタグ ('/' 始まり) も同じ関数が見る
+NAKED char* TextRenderer_HandleTag(TextRenderer* p, char* s) { INCFUNC("asm/func/TextRenderer_HandleTag.inc"); }
 
 // 文字を1つ描いて次の位置を返す, タグと改行は描かずに読み飛ばして続ける
 // ループ形 (while ((s8)*s >= 0) + 全角をループ外) は原典と一致した (入口ジャンプと底のテストが出る)
@@ -388,7 +389,7 @@ NON_MATCH char* FUN_08049488(TextRenderer* p, char* s) {
         return s;
       }
 
-      s = FUN_08048da4(p, s);
+      s = TextRenderer_HandleTag(p, s);
       if (p->unk_0e != 0) {
         return s;
       }
