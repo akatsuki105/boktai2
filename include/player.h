@@ -373,7 +373,9 @@ typedef struct Player {
   u8 unk_a76[2];           // 0xA76
   u16 weaponAtk;           // 0xA78, WeaponData.atk の複写, 根拠: Player_ApplyWeapon
   u16 unk_a7a;             // 0xA7A, Player_ApplyWeapon が FUN_0807a6cc の戻り値を入れる
-  u8 unk_a7c[0xA8A - 0xA7C];
+  u16 unk_a7c;             // 0xA7C, Hitbox_SetAttack の第3引数, 武器種ごとの値
+  u16 unk_a7e;             // 0xA7E, 同じく第6引数
+  u8 unk_a80[0xA8A - 0xA80];
   u16 unk_a8a;  // 0xA8A, Player_ShowGunSpread が散弾スプライトの rotation に入れる向き
   u8 unk_a8c;   // 0xA8C
   s8 unk_a8d;   // 0xA8D, FUN_0806f780 が Player_CheckMagicEnchant の結果を入れる, 負ならエンチャントなし

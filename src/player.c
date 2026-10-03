@@ -23,6 +23,7 @@ void FUN_0809c4f4(void);                                                        
 s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5);                         // src/eff_082473e0.c
 s32 FUN_082467d0(Eff082473e0Emitter* e, u32 unk_1, u32 param_3, u32* param_4);                                         // src/eff_082473e0.c
 magic32_t Player_CheckMagicEnchant(Player* p);                                                                         // src/player_08065988.c
+void dark_django_0806f990(HitboxData* a, HitboxData* b, void* _);                                                      // src/player_08065988.c
 void* Entity080dc44c_Create(void);                                                                                     // src/entity_080dc44c.c
 extern u16 u16_03002b84;
 extern u16 u16_03002b90;
@@ -2386,7 +2387,104 @@ NON_MATCH void Player_UpdateBloodSword(Player* p) {
 
 NAKED void Player_EnableWeaponSpecialEffects(Player* p, WeaponData* w) { INCFUNC("asm/func/Player_EnableWeaponSpecialEffects.inc"); }
 
-NAKED void FUN_080643d4(Player* p) { INCFUNC("asm/func/FUN_080643d4.inc"); }
+// 武器種ごとに当たり判定の大きさ・位置・属性を設定する, サバタは固定値
+// 残差29命令 (221/250): 原典は各 case で Vec3 の半分ずつを and/or で差し込むが, agbcc は定数同士をまとめて1ワードで書いてしまう
+// HitboxData* のローカル化は試済
+NON_MATCH void Player_SetWeaponHitbox(Player* p) {
+#ifdef NONMATCHING_C
+  HitboxData* hitbox = hitbox;
+  Vec3 halfSize;
+  Vec3 offset;
+  HitboxAttributes attrs;
+
+  if (p->kind == PLAYER_SABATA) {
+    attrs = 0;
+    halfSize.x = 0xAA;
+    halfSize.y = 0x32;
+    halfSize.z = 0xAA;
+    offset.x = 0;
+    offset.y = 0xFFEC;
+    offset.z = 0;
+    Hitbox_Init(hitbox, 0, 0x2101, 0, (0x10000 << p->mover.unk_4) >> 16, &halfSize, &offset);
+    Hitbox_SetAttack(hitbox, 0x14, 0x32, 0x10, 2, 0x14);
+    Hitbox_SetHandler(hitbox, NULL, p);
+    return;
+  }
+
+  if (p->weaponKind_a75 > 4) {
+    return;
+  }
+
+  switch (p->weaponKind_a75) {
+    case 0: {
+      halfSize.x = 0x5A;
+      halfSize.y = 0x320;
+      halfSize.z = 0x5A;
+      offset.x = 0;
+      offset.y = 0xFFE7;
+      offset.z = 0;
+      attrs = 1;
+      p->unk_a7c = 0x20;
+      p->unk_a7e = 0xA;
+      break;
+    }
+    case 1: {
+      halfSize.x = 0x3C;
+      halfSize.y = 0x640;
+      halfSize.z = 0x3C;
+      offset.x = 0;
+      offset.y = 0;
+      offset.z = 0;
+      attrs = 2;
+      p->unk_a7c = 0x40;
+      p->unk_a7e = 0x14;
+      break;
+    }
+    case 2: {
+      halfSize.x = 0x50;
+      halfSize.y = 0x460;
+      halfSize.z = 0x50;
+      offset.x = 0;
+      offset.y = 0x1E;
+      offset.z = 0;
+      attrs = 4;
+      p->unk_a7c = 0x30;
+      p->unk_a7e = 0x14;
+      break;
+    }
+    case 3: {
+      halfSize.x = 0x3C;
+      halfSize.y = 0x640;
+      halfSize.z = 0x3C;
+      offset.x = 0;
+      offset.y = 0xFFB0;
+      offset.z = 0;
+      attrs = 8;
+      p->unk_a7c = 1;
+      p->unk_a7e = 5;
+      break;
+    }
+    case 4: {
+      halfSize.x = 0x3C;
+      halfSize.y = 0x320;
+      halfSize.z = 0x3C;
+      offset.x = 0;
+      offset.y = 0xFFE7;
+      offset.z = 0;
+      attrs = 0x10;
+      p->unk_a7c = 0x20;
+      p->unk_a7e = 0x14;
+      break;
+    }
+  }
+
+  Hitbox_Init(hitbox, 0, 0x2101, 0, (0x10000 << p->mover.unk_4) >> 16, &halfSize, &offset);
+  Hitbox_SetAttack(hitbox, p->unk_a7a, p->unk_a7c, attrs, 0, p->unk_a7e);
+  Hitbox_SetHandler(hitbox, dark_django_0806f990, p);
+#else
+  INCFUNC("asm/func/Player_SetWeaponHitbox.inc");
+#endif
+}
 
 void FUN_08064658(Player* p, Weapon* w) { p->weapon_a70 = w; }
 
@@ -2418,7 +2516,7 @@ void Player_ApplyWeapon(Player* p, Weapon* w) {
     p->attackCB = gPlayerAttackUpdates[p->weaponKind_a75];
   }
 
-  FUN_080643d4(p);
+  Player_SetWeaponHitbox(p);
   if (p->action == 3) {
     Player_SetAction(p, 0, 0);
   }
