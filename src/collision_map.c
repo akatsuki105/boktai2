@@ -691,4 +691,28 @@ s32 Map_FindNavRectAt(Vec3* pos) {
   return 0xFF;
 }
 
-NAKED s32 FUN_082362fc(unknown* param_1, Vec3* pos) { INCFUNC("asm/func/FUN_082362fc.inc"); }
+// pos を含むナビ矩形を総当たりで探して NavAgent を初期化する, 見つからなければ 0xFF のまま
+s32 Map_InitNavAgent(NavAgent* agent, Vec3* pos) {
+  NavMesh* navMesh = gCollisionMap->navMesh;
+  s32 i;
+
+  agent->islandIdx = 0xFF;
+  agent->rectIdx = 0xFF;
+  for (i = 0; i < navMesh->countIslands; i++) {
+    NavIsland* island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[i]);
+    struct NavRect* rects = (struct NavRect*)((u8*)island + island->offsetToRects);
+    s32 j;
+
+    for (j = 0; j < island->countRects; j++) {
+      if (Map_IsPosInNavRect(rects, pos, j)) {
+        agent->islandIdx = i;
+        agent->rectIdx = j;
+      }
+    }
+  }
+
+  agent->flags = 0;
+  agent->unk_0c = *pos;
+  agent->unk_1c = *pos;
+  agent->unk_14 = *pos;
+}

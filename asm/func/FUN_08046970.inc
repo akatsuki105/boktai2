@@ -106,7 +106,7 @@ _08046A34:
 	adds r4, #8
 	mov r0, sl
 	adds r1, r4, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	adds r0, r5, #0
 	adds r0, #0x29
 	movs r2, #0

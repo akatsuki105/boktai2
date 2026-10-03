@@ -1727,7 +1727,7 @@ FUN_0808608c: @ 0x0808608C
 	adds r4, r5, r0
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	movs r0, #0xea
 	lsls r0, r0, #2
 	adds r2, r5, r0
@@ -2547,7 +2547,7 @@ _08086684:
 	adds r4, r5, r2
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	movs r0, #0xea
 	lsls r0, r0, #2
 	adds r2, r5, r0

@@ -19626,7 +19626,7 @@ _081CF30C:
 	ldr r2, [sp, #0xb4]
 	strb r1, [r2]
 	ldr r1, [sp, #0x30]
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	adds r0, r7, #0
 	bl FUN_080e6204
 	movs r3, #0xbf

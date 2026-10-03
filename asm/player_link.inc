@@ -2071,7 +2071,7 @@ _08081B98:
 	lsls r1, r1, #1
 	adds r0, r6, r1
 	add r1, sp, #8
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	ldr r0, _08081C00 @ =0x00000464
 	adds r1, r6, r0
 	movs r0, #1
@@ -6927,7 +6927,7 @@ _08084238:
 	lsls r2, r2, #1
 	adds r0, r5, r2
 	adds r1, r6, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	movs r0, #1
 	strb r0, [r4]
 _08084256:

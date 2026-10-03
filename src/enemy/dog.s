@@ -17513,7 +17513,7 @@ _081525A0:
 	ldr r6, [sp, #0xb0]
 	strb r1, [r6]
 	ldr r1, [sp, #0x198]
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	adds r0, r7, #0
 	bl FUN_080e6204
 	movs r0, #0xbf

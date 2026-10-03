@@ -16030,7 +16030,7 @@ _081BFF60:
 	adds r4, r7, #0
 	adds r4, #8
 	adds r1, r4, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	movs r0, #0x80
 	movs r3, #0xc0
 	lsls r3, r3, #1
@@ -27168,7 +27168,7 @@ _081C562C:
 	ldr r5, [sp, #0xb0]
 	strb r1, [r5]
 	ldr r1, [sp, #0x18c]
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	adds r0, r7, #0
 	bl FUN_080e6204
 	movs r6, #0xbf

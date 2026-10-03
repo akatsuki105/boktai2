@@ -36,7 +36,7 @@
 	adds r4, #0x64
 	mov r0, r8
 	adds r1, r4, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	movs r3, #0x8f
 	lsls r3, r3, #2
 	adds r2, r6, r3

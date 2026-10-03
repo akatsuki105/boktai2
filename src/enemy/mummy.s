@@ -24276,7 +24276,7 @@ _0812D5C4:
 	ldr r4, [sp, #0x60]
 	strb r1, [r4]
 	ldr r1, [sp, #0x144]
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	adds r0, r7, #0
 	bl FUN_080e6204
 	movs r5, #0xc1

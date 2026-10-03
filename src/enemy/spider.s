@@ -8278,7 +8278,7 @@ _08131C3C:
 	ldr r2, [sp, #0xd0]
 	strb r1, [r2]
 	ldr r1, [sp, #0x44]
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	adds r0, r7, #0
 	bl FUN_080e6204
 	ldr r3, _08131E0C @ =0x0000060C

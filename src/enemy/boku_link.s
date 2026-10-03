@@ -19793,7 +19793,7 @@ _081B7E58:
 	ldr r4, [sp, #0xbc]
 	strb r1, [r4]
 	ldr r1, [sp, #0x194]
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	adds r0, r7, #0
 	bl FUN_080e6204
 	movs r5, #0xbf

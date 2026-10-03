@@ -27,7 +27,7 @@
 	adds r4, r6, #0
 	adds r4, #8
 	adds r1, r4, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	str r5, [r6, #0x24]
 	ldrh r0, [r6, #8]
 	lsls r0, r0, #0x10

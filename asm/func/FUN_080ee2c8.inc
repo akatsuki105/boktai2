@@ -48,7 +48,7 @@
 	adds r0, r7, r1
 	ldr r0, [r0]
 	adds r1, r6, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	str r5, [r7, #0x24]
 _080EE336:
 	adds r0, r7, #0

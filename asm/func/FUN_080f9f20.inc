@@ -184,7 +184,7 @@ _080FA088:
 	adds r4, r6, #0
 	adds r4, #8
 	adds r1, r4, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	movs r2, #0x95
 	lsls r2, r2, #3
 	adds r0, r6, r2
