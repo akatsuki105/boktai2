@@ -62,15 +62,20 @@ NON_MATCH void JudgementParticle_UpdateMoving(JudgementParticle* ptcl) {
 NAKED void FUN_080a975c(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a975c.inc"); }
 
 // 8フレームで畳む, その間はその場で2コマのアニメを出す
-// 残差1命令: 原典は timer+1 を別レジスタに置いて使うたびに16bit化する, こちらは <<16 の中間値が残って else 側が1命令短くなる, Tier A/B と C のローカル分割・キャスト・アクセサ有無は試済
+// 残差1命令: 原典は timer+1 を別レジスタに残して使うたびに16bit化し直す, こちらは1回目の <<16 の中間値を else 側が使い回して1命令短くなる
+// 試済: ptcl->timer++ とフィールド再読み / u16 ローカル / int ローカル + 各使用箇所で (u16) キャスト / 切り詰めた値を別ローカルに分離 / Particle_Hide 経由と直書き
+// 試済 (Tier D, 診断): -fno-cse-follow-jumps / -fno-gcse / -fno-rerun-cse-after-loop / -fno-expensive-optimizations はいずれも無変化
+// -O1 だと使用箇所ごとの切り詰めが出て命令数も26で一致する (残差は adds の形だけ) が、同じファイルの一致済み関数が壊れるのでファイル単位のフラグとしては採れない
 NON_MATCH void JudgementParticle_UpdateStill(JudgementParticle* ptcl) {
 #ifdef NONMATCHING_C
-  ptcl->timer++;
-  if (ptcl->timer > 7) {
+  int timer = ptcl->timer + 1;
+
+  ptcl->timer = timer;
+  if ((u16)timer > 7) {
     ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
     ptcl->active = 0;
   } else {
-    FUN_0822dafc(&ptcl->ptcl, ptcl->group, ((ptcl->timer >> 2) & 1) + 2);
+    FUN_0822dafc(&ptcl->ptcl, ptcl->group, (((u16)timer >> 2) & 1) + 2);
   }
 #else
   INCFUNC("asm/func/JudgementParticle_UpdateStill.inc");
