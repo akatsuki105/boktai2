@@ -146,7 +146,7 @@ _08067458:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x20
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	b _080674D0
 	.align 2, 0
 _08067490: .4byte 0x0000095E
@@ -162,7 +162,7 @@ _0806749C:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r3, _080674D8 @ =0x0000037E
 	adds r1, r4, r3
 	ldrh r0, [r1]

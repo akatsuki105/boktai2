@@ -53,7 +53,7 @@ _0806A0E0:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r1, _0806A154 @ =0x000003F6
 	adds r0, r5, r1
 	movs r6, #0
@@ -320,7 +320,7 @@ _0806A2F8:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _0806A324
 	adds r0, r5, #0

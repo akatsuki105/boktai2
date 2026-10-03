@@ -22,7 +22,7 @@ extern u16 u16_03002b78;
 extern u16 gSunlightOverride;
 extern u16 u16_03002bd0;
 void FUN_080612d8(Player* p);
-bool32 FUN_08060a24(Player* p, u32 animID, s32 param_3);
+bool32 Player_PlayAnim(Player* p, u32 animID, s32 param_3);
 void FUN_080609dc(Player* p);
 s32 FUN_08086294(Vec3* pos, u32 a, u32 b);
 void Player_StopEneChargeSound(Player* p);
@@ -388,7 +388,7 @@ void FUN_08066f7c(Player* p) {
     FUN_080609dc(p);
   }
   p->unk_20 &= ~1;
-  FUN_08060a24(p, FUN_08066ee4(p->kind, 0), 0x40);
+  Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), 0x40);
 }
 
 // ハヤサと鎧の重さから移動速度を出す, 下限は 2
@@ -495,7 +495,7 @@ void FUN_080672b0(Player* p) {
   }
   FUN_080670fc(p, 0);
   FUN_080609dc(p);
-  FUN_08060a24(p, FUN_08066ee4(p->kind, 1), FRACUNIT_6);
+  Player_PlayAnim(p, FUN_08066ee4(p->kind, 1), FRACUNIT_6);
 }
 
 NAKED void MagicDash_0806734c(Player* p) { INCFUNC("asm/func/MagicDash_0806734c.inc"); }
@@ -748,7 +748,7 @@ void FUN_0806f1ec(Player* p) {
   switch (p->state) {
     case 0: {
       PlaySound_082406e0(0x39E);
-      FUN_08060a24(p, 403, FRACUNIT_6);
+      Player_PlayAnim(p, 403, FRACUNIT_6);
       Player_SetAction(p, 31, 1);
       break;
     }
@@ -955,7 +955,7 @@ NON_MATCH void FUN_08072724(Player* p) {
 #ifdef NONMATCHING_C
   switch (p->state) {
     case 0: {
-      FUN_08060a24(p, FUN_08066ee4(p->kind, 0), FRACUNIT_6);
+      Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), FRACUNIT_6);
       if (p->unk_4af != 0) {
         p->unk_4af = 0;
         FUN_080726b4(p);
@@ -965,14 +965,14 @@ NON_MATCH void FUN_08072724(Player* p) {
     case 2: {
       p->stateTimer++;
       if (p->stateTimer > 19) {
-        FUN_08060a24(p, FUN_08066ee4(p->kind, 0), FRACUNIT_6);
+        Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), FRACUNIT_6);
         FUN_08072620(p);
         FUN_080726b4(p);
         break;
       }
     }
     case 1: {
-      FUN_08060a24(p, FUN_08066ee4(p->kind, 0x2F), FRACUNIT_6);
+      Player_PlayAnim(p, FUN_08066ee4(p->kind, 0x2F), FRACUNIT_6);
       break;
     }
   }
@@ -986,7 +986,7 @@ NAKED void FUN_080727d4(Player* p) { INCFUNC("asm/func/FUN_080727d4.inc"); }
 NAKED void FUN_080728a8(Player* p) { INCFUNC("asm/func/FUN_080728a8.inc"); }
 
 void FUN_080729e0(Player* p) {
-  if (FUN_08060a24(p, 531, FRACUNIT_6)) {
+  if (Player_PlayAnim(p, 531, FRACUNIT_6)) {
     FUN_080609dc(p);
     FUN_08072620(p);
     FUN_080726b4(p);
@@ -994,7 +994,7 @@ void FUN_080729e0(Player* p) {
 }
 
 void FUN_08072a0c(Player* p) {
-  FUN_08060a24(p, FUN_08066ee4(p->kind, 51), FRACUNIT_6);
+  Player_PlayAnim(p, FUN_08066ee4(p->kind, 51), FRACUNIT_6);
   FUN_08060c40(p, 4);
 }
 
@@ -1038,13 +1038,13 @@ void FUN_08074994(Player* p) {
 void FUN_080749b0(Player* p) {
   switch (p->state) {
     case 0: {
-      if (FUN_08060a24(p, 536, FRACUNIT_6)) {
+      if (Player_PlayAnim(p, 536, FRACUNIT_6)) {
         Player_SetAction(p, 16, 1);
       }
       break;
     }
     case 1: {
-      FUN_08060a24(p, 538, FRACUNIT_6);
+      Player_PlayAnim(p, 538, FRACUNIT_6);
       if (p->stateTimer == 0) {
         FUN_080726b4(p);
         p->stateTimer++;
@@ -1052,7 +1052,7 @@ void FUN_080749b0(Player* p) {
       break;
     }
     case 2: {
-      if (FUN_08060a24(p, 536, FRACUNIT_6)) {
+      if (Player_PlayAnim(p, 536, FRACUNIT_6)) {
         FUN_080609dc(p);
         FUN_08072620(p);
         FUN_080726b4(p);
@@ -2358,7 +2358,7 @@ void FUN_0807c8d4(Player* p, s32 param_2) {
     p->facing = param_2;
   }
   FUN_080609dc(p);
-  FUN_08060a24(p, FUN_08066ee4(p->kind, 1), 0x20);
+  Player_PlayAnim(p, FUN_08066ee4(p->kind, 1), 0x20);
   FUN_0807b7a4(p);
   Player_SetAction(p, 2, 0);
   p->fn_498 = FUN_08074994;

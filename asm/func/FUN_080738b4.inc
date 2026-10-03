@@ -64,7 +64,7 @@ _08073924:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r2, _08073958 @ =0x000003F6
 	adds r1, r4, r2
 	ldrh r0, [r1]
@@ -99,7 +99,7 @@ _08073974:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _080739D2
 	movs r2, #0xba

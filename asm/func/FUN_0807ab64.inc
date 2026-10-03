@@ -77,7 +77,7 @@ _0807ABCC:
 	add r1, r8
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 _0807AC02:
 	ldr r2, [sp, #0x28]
 	cmp r2, #0

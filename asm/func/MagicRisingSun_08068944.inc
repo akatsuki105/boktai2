@@ -151,7 +151,7 @@ _08068A62:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r2, #0xba
 	lsls r2, r2, #2
 	adds r0, r4, r2
@@ -251,7 +251,7 @@ _08068B32:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	bne _08068B5A
 	b _08068C62
@@ -334,7 +334,7 @@ _08068BE6:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r0, _08068C28 @ =0x0000037E
 	adds r1, r4, r0
 	ldrh r0, [r1]
@@ -366,7 +366,7 @@ _08068C2C:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _08068C62
 	adds r0, r4, #0

@@ -66,7 +66,7 @@ _0806BF96:
 	adds r1, r0, #0
 	adds r0, r6, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r0, _0806C030 @ =0x0000095E
 	adds r1, r6, r0
 	movs r0, #0x91

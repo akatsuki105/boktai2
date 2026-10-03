@@ -133,7 +133,31 @@ void FUN_080609dc(Player* p) {
   }
 }
 
-NAKED bool32 FUN_08060a24(Player* p, u32 animIdx, s32 animSpeed) { INCFUNC("asm/func/FUN_08060a24.inc"); }
+// sprite_88 に animIdx のアニメを設定して1フレーム進める, 前回と同じIDならコマ番号を引き継ぐ
+// 命令数は57で一致, 残差は animIdx + animIDOffset の adds のオペランド順だけ (原典は adds r2, r1, r2)
+// Tier A/B と複合代入・オペランド入れ替えは試済
+NON_MATCH bool32 Player_PlayAnim(Player* p, u32 animIdx, s32 animSpeed) {
+#ifdef NONMATCHING_C
+  MainAnimPlayFlags16 flags = 0;
+
+  if (p->animID == animIdx) {
+    flags = MAIN_ANIM_KEEP_FRAME;
+  }
+  p->animID = animIdx;
+
+  MainSprite_SetAnim(&p->sprite_88, &p->spriteSet_68, animIdx + p->animIDOffset, 1, flags);
+  if (p->xflip) {
+    p->sprite_88.flags |= SPRFLAG_XFLIP;
+  } else {
+    p->sprite_88.flags &= ~SPRFLAG_XFLIP;
+  }
+
+  MainSprite_SetAnimSpeed(&p->sprite_88, (u16)animSpeed);
+  return MainSprite_AdvanceAnim(&p->sprite_88, &p->spriteSet_68);
+#else
+  INCFUNC("asm/func/Player_PlayAnim.inc");
+#endif
+}
 
 NAKED void Player_SetMoveDelta(Player* p, s32 val) { INCFUNC("asm/func/Player_SetMoveDelta.inc"); }
 

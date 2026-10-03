@@ -140,8 +140,8 @@ typedef struct Player {
   u32 unk_1c;                  // 0x1C, ステート?, (0: ??, 1: 通常状態, 2: マップ移動などの操作できない状態?, 3: ???, 4: HP0, 5: ???, ...)
   PlayerFlag20 unk_20;         // 0x20, see PlayerFlag20
   Mover mover;                 // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Mover
-  MainSpriteGfx spriteSet_68;  // 0x068, 根拠： FUN_08060a24
-  MainSprite sprite_88;        // 0x088, 根拠： FUN_08060a24
+  MainSpriteGfx spriteSet_68;  // 0x068, 根拠： Player_PlayAnim
+  MainSprite sprite_88;        // 0x088, 根拠： Player_PlayAnim
   AuxSprite sprite_e8;         // 0x0E8, Player_Destroy が AuxSprite_Remove に渡す, pos は 0x104 で FUN_0807a91c が mover.pos / sprite_88.pos と一緒に書く
   AuxSpriteGfx* gfx_114;       // 0x114, 根拠: Player_ResetPltt が plttID(+0x06) と pltt(+0x0C) を書く
   u8 unk_118[0x16C - 0x118];
@@ -164,9 +164,9 @@ typedef struct Player {
   struct Input* input_28c;  // 0x28C, &gInput[n]
   Keys16 unk_290[10];       // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
   rgb555 pltt_2a4[32];      // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
-  u16 animID;               // 0x2E4, 今 sprite_88 で再生しているアニメのID, FUN_08060a24 が前回と同じIDかどうかの判定に使う
-  u8 animIDOffset;          // 0x2E6, FUN_08060a24 がアニメIDに足すオフセット
-  bool8 xflip;              // 0x2E7, 0 以外なら FUN_08060a24 が sprite_88.flags に SPRFLAG_XFLIP を立てる
+  u16 animID;               // 0x2E4, 今 sprite_88 で再生しているアニメのID, Player_PlayAnim が前回と同じIDかどうかの判定に使う
+  u8 animIDOffset;          // 0x2E6, Player_PlayAnim がアニメIDに足すオフセット
+  bool8 xflip;              // 0x2E7, 0 以外なら Player_PlayAnim が sprite_88.flags に SPRFLAG_XFLIP を立てる
   Facing8 facing;           // 0x2E8, see Facing8
   u8 unk_2e9[2];            // 0x2E9
   u8 hitboxTimer;           // 0x2EB, hitbox_2ec を Hitbox_Register し続ける残りフレーム数, FUN_0807e2cc が 6 を入れる

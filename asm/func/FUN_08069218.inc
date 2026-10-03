@@ -480,7 +480,7 @@ _080695B2:
 	adds r0, r5, #0
 	ldr r1, [sp, #0x14]
 	ldr r2, [sp, #0xc]
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r4, [sp, #0x10]
 	cmp r4, #0
 	bne _080695CE

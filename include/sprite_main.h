@@ -83,7 +83,7 @@ typedef struct MainSprite {
   u8 unk_2;                       // 0x02, FUN_080609dc
   u8 unk_3;                       // 0x03, FUN_080609dc
   bool8 active;                   // 0x04, MainSprite_Remove
-  SpriteFlags flags;              // 0x08, see SpriteFlags, FUN_08060a24
+  SpriteFlags flags;              // 0x08, see SpriteFlags, Player_PlayAnim
   u16 animCmdTimer;               // 0x0C, 現在のコマの経過フレーム数, 根拠: MainSprite_AdvanceAnim が毎フレーム +1 してコマ切り替えで 0 に戻す
   u16 animCmdDuration;            // 0x0E, 現在のコマの表示フレーム数, MainAnimCmd.duration * animSpeed / 64 (0 なら 1)
   u10_6 animSpeed;                // 0x10, 再生速度 (MainSprite_Load が 1.0 = 等速をセット)
@@ -137,6 +137,7 @@ s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* gfx, u16 param_3, u8 playMo
 s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
 s32 MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
 bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx);
+s32 MainSprite_SetAnimSpeed(MainSprite* p, u32 speed);
 void MainSprite_Remove(MainSprite* p);
 
 extern u32 gObjBlendEnabled;  // 0 以外なら flags bit14 のスプライトを半透明にする
