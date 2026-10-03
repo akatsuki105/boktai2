@@ -75,7 +75,7 @@ typedef struct HitboxData {
   // 0x48, e.g. dark_django_0806f990(ジャンゴ), FUN_0813e944(バット)
   // Overlap時に呼ばれるが、ダメージ計算などの汎用処理もここでやるのか、追加のカスタム処理のためのコールバックなのかは不明
   // a: 攻撃側, b: 被攻撃側, owner: このHitboxの持ち主 (a->owner or b->owner のどちらか)
-  // 例え、ジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 では a は Player.Hitbox, b は Bat.Hitbox, owner は Bat
+  // 例え、ジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 では a は Player.Hitbox, b は EnemyBat.Hitbox, owner は EnemyBat
   void (*fn)(struct HitboxData* a, struct HitboxData* b, void* owner);
 
   void* owner;  // 0x4C, このHitboxの持ち主
