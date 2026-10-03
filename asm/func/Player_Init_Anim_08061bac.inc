@@ -34,13 +34,13 @@
 	str r1, [r4, #0x20]
 	ldr r0, _08061C08 @ =0x00000714
 	adds r1, r6, r0
-	ldr r0, _08061C0C @ =FUN_080617bc
+	ldr r0, _08061C0C @ =PlayerShockwave_UpdateFlash
 	b _08061C3E
 	.align 2, 0
 _08061C00: .4byte 0x000006AC
 _08061C04: .4byte 0x00002110
 _08061C08: .4byte 0x00000714
-_08061C0C: .4byte FUN_080617bc
+_08061C0C: .4byte PlayerShockwave_UpdateFlash
 _08061C10:
 	ldr r1, _08061C50 @ =0x00008F5D
 	adds r0, r5, #0
@@ -60,7 +60,7 @@ _08061C10:
 	str r0, [r1]
 	ldr r0, _08061C60 @ =0x00000714
 	adds r1, r6, r0
-	ldr r0, _08061C64 @ =FUN_08061680
+	ldr r0, _08061C64 @ =PlayerShockwave_UpdateAnim
 _08061C3E:
 	str r0, [r1]
 	movs r2, #0xe2
@@ -77,4 +77,4 @@ _08061C54: .4byte 0x0000922E
 _08061C58: .4byte 0x00000837
 _08061C5C: .4byte 0x00000704
 _08061C60: .4byte 0x00000714
-_08061C64: .4byte FUN_08061680
+_08061C64: .4byte PlayerShockwave_UpdateAnim

@@ -287,11 +287,17 @@ NAKED void FUN_080614bc(Player* p) { INCFUNC("asm/func/FUN_080614bc.inc"); }
 
 NAKED void FUN_0806161c(Player* p) { INCFUNC("asm/func/FUN_0806161c.inc"); }
 
-// Player.fn_714
-NAKED void FUN_08061680(unknown* p) { INCFUNC("asm/func/FUN_08061680.inc"); }
+// 衝撃波のアニメーションを1フレーム進める, 終端まで行くと finished を立てて消す
+NAKED void PlayerShockwave_UpdateAnim(PlayerShockwave* p) { INCFUNC("asm/func/PlayerShockwave_UpdateAnim.inc"); }
 
-// Player.fn_714
-NAKED void FUN_080617bc(unknown* p) { INCFUNC("asm/func/FUN_080617bc.inc"); }
+// finished が立っていれば下ろし, 立っていなければ衝撃波を消す
+void PlayerShockwave_UpdateFlash(PlayerShockwave* p) {
+  if (p->finished) {
+    p->finished = FALSE;
+  } else {
+    p->sprite.flags |= SPRFLAG_HIDDEN;
+  }
+}
 
 NON_MATCH void FUN_080617dc(u32 idx, s32* result1, s32* result2) {
 #ifdef NONMATCHING_C
@@ -339,7 +345,7 @@ void FUN_0806181c(Player* p) {
   p->meleeShockwave.gfx.plttID = p->sprite_88.plttID;
   p->meleeShockwave.gfx.pltt = p->sprite_88.pltt;
   AuxSprite_Show(&p->meleeShockwave.sprite);
-  p->unk_710 = 1;
+  p->meleeShockwave.finished = TRUE;
 }
 
 // 黒ジャンゴが剣で攻撃する時に1回呼ばれる, idx はプレイヤーの向きで変わる (多分、 衝撃波 を出す処理)

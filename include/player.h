@@ -113,6 +113,26 @@ typedef struct {
 
 // 通常プレイでは gPlayerPtr[0] にこの構造体がある
 // 通信対戦の相手キャラもこの構造体を使う
+// 近接攻撃の衝撃波 (ジャンゴ) / 銃の散弾 (サバタ) に使うスプライト一式
+// 根拠: Player_Update_Helper_080639f8 が &meleeShockwave を update に渡して呼ぶ, update は PlayerShockwave_UpdateAnim か PlayerShockwave_UpdateFlash
+struct PlayerShockwave;
+typedef void (*PlayerShockwaveFunc)(struct PlayerShockwave*);
+
+typedef struct PlayerShockwave {
+  AuxSprite sprite;            // 0x00
+  AuxSpriteGfx gfx;            // 0x2C, ジャンゴ: SPRITE_MELEE_SHOCKWAVE, サバタ: SPRITE_GUN_SPREAD
+  AuxAnimState anim;           // 0x48
+  AuxAnimFile* animFile;       // 0x58
+  u16 velX;                    // 0x5C, 毎フレーム sprite.pos.x に加算する, 根拠: PlayerShockwave_UpdateAnim
+  u16 unk_5e;                  // 0x5E
+  u16 velZ;                    // 0x60, 毎フレーム sprite.pos.z に加算する
+  u16 unk_62;                  // 0x62
+  bool8 finished;              // 0x64, アニメーションが最後まで行くと立つ, 読んだ側は 0 に戻す
+  u8 unk_65[3];                // 0x65
+  PlayerShockwaveFunc update;  // 0x68, PlayerShockwave_UpdateAnim か PlayerShockwave_UpdateFlash
+} PlayerShockwave;
+static_assert(sizeof(PlayerShockwave) == 108);
+
 typedef struct Player {
   Entity e;
   u32 unk_18;                  // 0x18, 0 or 1 他にもあるか不明
@@ -243,18 +263,9 @@ typedef struct Player {
   u8 unk_5fc[0x60E - 0x5FC];
   u8 unk_60e;  // 0x60E, FUN_081d40b4 がエレベータ搭乗中に bit0 を立てる
   u8 unk_60f[0x64C - 0x60F];
-  PlayerParticleGroup1 ptcl_64c;  // 0x64C, FUN_08061458
-  PlayerParticleGroup1 ptcl_67c;  // 0x67C, FUN_0806161c
-  struct {
-    AuxSprite sprite;
-    AuxSpriteGfx gfx;  // ジャンゴ: SPRITE_MELEE_SHOCKWAVE, サバタ: SPRITE_GUN_SPREAD
-  } meleeShockwave;    // 0x6AC
-  u8 unk_6f0[0x704 - 0x6F4];
-  AuxAnimFile* anim_704;  // 0x704
-  u8 unk_708[8];
-  u8 unk_710;  // 0x710, Player_Init_Anim_08061bac
-  u8 unk_711[3];
-  void* fn_714;                     // 0x714, Player_Init_Anim_08061bac シグネチャ不明, FUN_08061680 or FUN_080617bc
+  PlayerParticleGroup1 ptcl_64c;    // 0x64C, FUN_08061458
+  PlayerParticleGroup1 ptcl_67c;    // 0x67C, FUN_0806161c
+  PlayerShockwave meleeShockwave;   // 0x6AC
   PlayerParticleState718 ptcl_718;  // 0x718, 根拠: FUN_08061dd4
   PlayerParticleState858 ptcl_858;  // 0x858, 根拠: FUN_08062278
   Vec3 pos_930;                     // 0x930, FUN_08067f88 が mover.pos をずらして書く
