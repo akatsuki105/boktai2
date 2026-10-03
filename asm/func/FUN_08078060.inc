@@ -175,7 +175,7 @@ _080781B4:
 	lsls r2, r2, #4
 	adds r1, r4, r2
 	adds r0, r4, #0
-	bl FUN_080620f0
+	bl Player_SpawnPtcl858
 	ldr r3, _08078208 @ =0x0000095E
 	adds r1, r4, r3
 	movs r0, #0x91
@@ -448,7 +448,7 @@ _080783F6:
 	lsls r3, r3, #4
 	adds r1, r4, r3
 	adds r0, r4, #0
-	bl FUN_080620f0
+	bl Player_SpawnPtcl858
 _08078424:
 	ldr r1, _0807848C @ =0x0000037D
 	adds r0, r4, r1
