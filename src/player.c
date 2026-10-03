@@ -1112,14 +1112,55 @@ void Player_ResetPltt(Player* p) {
   FUN_08062688(p, 0);
 }
 
-NAKED void FUN_080630e8(Player* p) { INCFUNC("asm/func/FUN_080630e8.inc"); }
+// 変身エフェクトの粒を弾けさせる, kind 1 なら消えかけさせるだけ
+// 残差2命令 (134/132): 原典は高位レジスタを r8-r10 の3本使うが, プロトタイプありで呼ぶと2本で足りてしまう
+// Eff082473e0Emitter_BurstParticle の宣言を外すと streamdiff は完全一致する (暗黙宣言のときだけ原典のレジスタ圧になる)
+NON_MATCH void Player_BurstFormEffect(Player* p) {
+#ifdef NONMATCHING_C
+  Vec3 pos;
+  Vec3 vel;
+  Vec3 velRange;
+  Vec3* src;
+  u16* table;
+  u32 idx;
+
+  if (p->unk_4c4.kind == 1) {
+    Eff082473e0Emitter_FadeParticle(&p->unk_4c4);
+    return;
+  }
+
+  if (p->unk_4c4.kind == 2) {
+    PlaySound_082406e0(0x134);
+  } else if (p->unk_4c4.kind == 3) {
+    PlaySound_082406e0(0x134);
+  }
+
+  src = p->unk_4c4.pos;
+  pos.x = src->x;
+  pos.y = src->y + 0x80;
+  pos.z = src->z;
+
+  table = gRandomTable;
+  idx = (gRandTableIdx + 1) & 0x3FF;
+  vel.x = (table[idx] & 0xF) - 7;
+  idx = (idx + 1) & 0x3FF;
+  vel.y = (table[idx] & 0x1F) - 0x10;
+  gRandTableIdx = (idx + 1) & 0x3FF;
+  vel.z = (table[gRandTableIdx] & 0xF) - 7;
+
+  velRange.x = 5, velRange.y = 0xA, velRange.z = 5;
+  Eff082473e0Emitter_BurstParticle(&p->unk_4c4, 3, &pos, &vel, &velRange, 0x28, 0x28);
+#else
+  INCFUNC("asm/func/Player_BurstFormEffect.inc");
+#endif
+}
 
 void FUN_08063220(Player* p) {
   s32 count = p->unk_4c4.unk_3;
   s32 i;
 
   for (i = 0; i < count; i++) {
-    FUN_080630e8(p);
+    Player_BurstFormEffect(p);
   }
 }
 
@@ -1131,7 +1172,7 @@ void FUN_08063248(Player* p) {
     s32 i;
 
     for (i = 0; i < count; i++) {
-      FUN_080630e8(p);
+      Player_BurstFormEffect(p);
     }
   }
 }
@@ -1147,7 +1188,7 @@ u32 Player_ApplyPoseHold(Player* p, u32 n) {
   if (p->unk_4c4.unk_3 != 0) {
     if (p->unk_1c & 1) {
       if (FUN_08063478(p) >= u8_ARRAY_085abab4[p->unk_4c4.kind - 1]) {
-        FUN_080630e8(p);
+        Player_BurstFormEffect(p);
         p->angle_401 = p->angle_400;
       }
     }
