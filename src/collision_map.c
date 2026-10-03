@@ -514,17 +514,17 @@ bool32 FUN_08235fd8(u16* p) {
   return FALSE;
 }
 
-NAKED void FUN_08235ffc(NavMesh* navMesh, unknown* param_2, Vec3* pos) { INCFUNC("asm/func/FUN_08235ffc.inc"); }
+NAKED void FUN_08235ffc(NavMesh* navMesh, NavAgent* agent, Vec3* pos) { INCFUNC("asm/func/FUN_08235ffc.inc"); }
 
-NAKED void FUN_08236130(NavMesh* navMesh, unknown* param_2, Vec3* pos) { INCFUNC("asm/func/FUN_08236130.inc"); }
+NAKED void FUN_08236130(NavMesh* navMesh, NavAgent* agent, Vec3* pos) { INCFUNC("asm/func/FUN_08236130.inc"); }
 
-// ナビの経路探索を1歩進める, param_1 の bit0 が立っているときだけ後段も回す
-void Map_StepNavPath(unknown* param_1, Vec3* pos) {
+// ナビメッシュ上の移動を1歩進める, flags の bit0 が立っているときだけ後段も回す
+void Map_StepNavPath(NavAgent* agent, Vec3* pos) {
   NavMesh* navMesh = gCollisionMap->navMesh;
 
-  FUN_08235ffc(navMesh, param_1, pos);
-  if (*(u16*)param_1 & 1) {
-    FUN_08236130(navMesh, param_1, pos);
+  FUN_08235ffc(navMesh, agent, pos);
+  if (agent->flags & 1) {
+    FUN_08236130(navMesh, agent, pos);
   }
 }
 

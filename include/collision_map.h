@@ -126,6 +126,22 @@ static_assert(sizeof(PathWalker) == 12);
 bool32 Map_InitPathWalker(PathWalker* p, u32 pathIdx, u32 param_3, u32 nodeIdx);
 bool32 Map_AdvancePathWalker(PathWalker* p);
 
+// ナビメッシュ上を移動する主体の状態, Map_StepNavPath と FUN_08235ffc / FUN_08236130 が読み書きする
+// 全体サイズは未確定なので, 触っていることが分かっている +0x22 までだけ書いてある
+typedef struct {
+  u16 flags;      // 0x00, bit0 が立っているときだけ経路の後段処理も走る
+  u16 unk_02;     // 0x02
+  u16 islandIdx;  // 0x04, NavMesh.offsets[] の添字
+  u16 rectIdx;    // 0x06, islandIdx の島の中のナビ矩形番号
+  u8 unk_08[2];   // 0x08
+  u16 unk_0a;     // 0x0A
+  u8 unk_0c[16];  // 0x0C
+  u16 unk_1c;     // 0x1C
+  u16 unk_1e;     // 0x1E
+  u16 unk_20;     // 0x20
+  u16 unk_22;     // 0x22
+} NavAgent;
+
 typedef struct {
   u16 pathCount;      // 0x00, number of Path, 根拠: Map_GetPath が ldrh で読む
   u16 unk_02;         // 0x02
