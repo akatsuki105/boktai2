@@ -2369,9 +2369,12 @@ void Player_DestroyEffects(Player* p) {
 }
 
 // Player の生成直後にエフェクト・影・パーティクル・モザイクの初期値をまとめて入れる
-// 残差4命令 (149/153): 原典は unk_446 && unk_442==5 の判定を 0/1 に作ってから 0 と比べる (FUN_0806241c と同じ系統)
+// 残差3行 (153/153): 判定を bool32 のローカルに入れると命令数は一致する
+// 残るのは movs r1,#0 の位置だけで, 原典は 0x446 のプール定数に使った r1 をそのまま結果に使い回す (こちらは別レジスタを取る)
 NON_MATCH void Player_InitEffects(Player* p) {
 #ifdef NONMATCHING_C
+  bool32 valid;
+
   if (p->unk_359 == 1) {
     Eff082473e0Emitter_Init(&p->unk_4c4, &p->sprite_e8.pos, 0, 0, 1);
   } else {
@@ -2385,7 +2388,8 @@ NON_MATCH void Player_InitEffects(Player* p) {
   ParticleShadow_Init(&p->shadow, &p->shadowPos, 0);
   Entity080dc44c_Create();
 
-  if (p->unk_446 != 0 && p->unk_442 == 5) {
+  valid = p->unk_446 != 0 && p->unk_442 == 5;
+  if (valid) {
     p->unk_97a = 0x40;
     p->unk_3f1[0] = 1;
   }
