@@ -97,7 +97,7 @@ SECTIONS {
       . = ALIGN(8);
       src/vm.o(iwram_data);
       src/vm_ctrl1.o(iwram_data);
-      src/code_082326a0.o(iwram_data);
+      src/collision_map.o(iwram_data);
       src/hitbox.o(iwram_data);
       src/sprite_anim_aux.o(iwram_data);
       src/entity_0823acbc.o(iwram_data);
@@ -393,7 +393,7 @@ SECTIONS {
 			src/vm.o (.text);
 			src/vm_ctrl1.o (.text);
 			src/vm_expr.o (.text);
-			src/code_082326a0.o (.text);
+			src/collision_map.o (.text);
 			src/hitbox.o (.text);
 			src/sprite_anim_aux.o (.text);
 			src/sprite_anim_main.o (.text);

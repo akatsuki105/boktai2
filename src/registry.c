@@ -1,5 +1,6 @@
-#include "global.h"
 #include "registry.h"
+
+#include "global.h"
 
 RegistryEntry* Registry_AllocEntry(void) {
   s32 i;
