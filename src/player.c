@@ -1658,7 +1658,149 @@ NON_MATCH void Player_UpdatePltt(Player* p, u32 n) {
 #endif
 }
 
-NAKED void FUN_080628ec(Player* p, u32 n) { INCFUNC("asm/func/FUN_080628ec.inc"); }
+// 魔法エンチャント中のパレット更新, unk_96c で演出の段階 (1: フェードイン, 2: 点滅) を切り替える
+// 残差2命令 (350/348): p が r4 に入る割当差だけ (原典は r5), Player_UpdatePltt と同じ現象でコピー経路が2つあるぶん src の退避が2命令余る
+// Tier A-C は試済 (ローカルのスコープ最小化で4命令→2命令, n の符号付け替えは無効)
+NON_MATCH void FUN_080628ec(Player* p, u32 n) {
+#ifdef NONMATCHING_C
+  u32 bright;
+
+  if (p->unk_951 != p->unk_950) {
+    p->unk_950 = p->unk_951;
+    FUN_08062468(p);
+  }
+
+  bright = FUN_0806241c(p);
+  if (p->unk_94c != n || p->unk_94e != bright) {
+    p->unk_94c = n;
+    p->unk_94e = bright;
+    Player_BuildPltt(p);
+  }
+
+  if (p->unk_96c == 1) {
+    rgb555* src;
+    s32 w;
+    s32 i;
+
+    p->unk_964 = 0;
+    if (p->unk_960 > 0x1F) {
+      src = &gObjPlttData[p->unk_95e * 16];
+      if (p->unk_359 == 0) {
+        for (i = 0; i < 16; i++) {
+          if (i == 5 || i == 6 || i == 13) {
+            p->pltt_2a4[16 + i] = p->pltt_2a4[i];
+          } else {
+            p->pltt_2a4[16 + i] = src[i];
+          }
+        }
+        p->sprite_88.pltt = &p->pltt_2a4[16];
+      } else {
+        for (i = 0; i < 16; i++) {
+          p->pltt_2a4[16 + i] = src[i];
+        }
+        p->gfx_114->pltt = &p->pltt_2a4[16];
+      }
+      return;
+    }
+
+    src = &gObjPlttData[p->unk_95e * 16];
+    w = p->unk_960;
+    Player_BlendPltt(p, src, w, 0x20 - w, 5);
+    p->unk_960++;
+    return;
+  }
+
+  if (p->unk_96c == 2) {
+    rgb555* src;
+    s32 w;
+
+    p->unk_964 = 0;
+    src = &gObjPlttData[p->unk_95e * 16];
+    if (p->unk_960 <= 0x1F) {
+      w = p->unk_960;
+    } else if (p->unk_960 <= 0x2F) {
+      w = 0x20;
+    } else if (p->unk_960 <= 0x4F) {
+      w = 0x50 - p->unk_960;
+    } else {
+      w = 0;
+    }
+
+    Player_BlendPltt(p, src, w, 0x20 - w, 5);
+    p->unk_960++;
+    if (p->unk_960 > 0x5F) {
+      p->unk_960 = 0;
+    }
+    return;
+  }
+
+  if (p->unk_960 != 0) {
+    rgb555* src;
+    s32 w;
+    s32 i;
+
+    p->unk_964 = 0;
+    if (p->unk_960 > 0x1F) {
+      src = &gObjPlttData[p->unk_95e * 16];
+      if (p->unk_359 == 0) {
+        for (i = 0; i < 16; i++) {
+          if (i == 5 || i == 6 || i == 13) {
+            p->pltt_2a4[16 + i] = p->pltt_2a4[i];
+          } else {
+            p->pltt_2a4[16 + i] = src[i];
+          }
+        }
+        p->sprite_88.pltt = &p->pltt_2a4[16];
+      } else {
+        for (i = 0; i < 16; i++) {
+          p->pltt_2a4[16 + i] = src[i];
+        }
+        p->gfx_114->pltt = &p->pltt_2a4[16];
+      }
+    } else {
+      src = &gObjPlttData[p->unk_95e * 16];
+      w = p->unk_960;
+      Player_BlendPltt(p, src, w, 0x20 - w, 5);
+    }
+
+    p->unk_960--;
+    return;
+  }
+
+  if ((u16)(p->unk_964 - 1) <= 0x4E) {
+    rgb555* src = &gObjPlttData[p->unk_962 * 16];
+    s32 w;
+
+    if ((u16)(p->unk_964 - 0x21) <= 0xE) {
+      p->unk_964 = 0x30;
+    }
+
+    if (p->unk_964 <= 0x20) {
+      w = p->unk_964;
+      p->unk_964 = w - 1;
+    } else {
+      w = 0x50 - p->unk_964;
+      p->unk_964++;
+      if (p->unk_964 > 0x4F) {
+        p->unk_964 = 0;
+      }
+    }
+
+    Player_BlendPltt(p, src, w, 0x20 - w, 5);
+    return;
+  }
+
+  p->unk_964 = 0;
+  if (p->unk_359 == 0) {
+    p->sprite_88.pltt = p->pltt_2a4;
+  } else {
+    p->gfx_114->pltt = p->pltt_2a4;
+  }
+}
+#else
+  INCFUNC("asm/func/FUN_080628ec.inc");
+#endif
+}
 
 void FUN_08062c14(Player* p) {
   if (p->unk_18 == 0) {
