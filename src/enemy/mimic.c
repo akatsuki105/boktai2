@@ -1,11 +1,10 @@
 #include "enemy.h"
 #include "global.h"
+#include "malloc.h"
 
 typedef struct {
-  Mover mover;              // 0x000
-  EnemySpriteData* sprite;  // 0x044
-  EntityMsgBox msgbox;      // 0x048, 0x08149de6
-  u8 unk_7c[1684 - 0x7C];   // 0x07C
+  ENEMY_HDR;
+  u8 unk_654[1684 - sizeof(Enemy)];
 } Mimic;
 static_assert(sizeof(Mimic) == 1684);
 

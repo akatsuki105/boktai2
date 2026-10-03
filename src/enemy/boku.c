@@ -3,18 +3,12 @@
 #include "malloc.h"
 
 typedef struct {
-  Mover mover;              // 0x000
-  EnemySpriteData* sprite;  // 0x044
-  EntityMsgBox msgbox;      // 0x048, 0x08102d1e
-  u8 unk_7c[0x25D - 0x7C];
-  bool8 isMainSprite;  // 0x25D, true: Main, false: Aux
-  u8 unk_25e[0x63C - 0x25E];
-  void* p_63c;  // 0x63C
-  u8 unk_640[108];
+  ENEMY_HDR;
+  u8 unk_654[1708 - sizeof(Enemy)];
 } Boku;
+static_assert(sizeof(Boku) == 1708);
 
 bool32 FUN_080f06b0(Enemy* p);
-static_assert(sizeof(Boku) == 1708);
 
 INCASM("asm/boku.inc");
 
@@ -22,7 +16,7 @@ NAKED void FUN_080ff45c(Boku* p) { INCFUNC("asm/func/FUN_080ff45c.inc"); }
 
 NAKED void FUN_080ff470(unknown* p) { INCFUNC("asm/func/FUN_080ff470.inc"); }
 
-void FUN_080ff668(Boku* p) { p->p_63c = (void*)0x085AD4D8; }
+void FUN_080ff668(Boku* p) { p->handlerTables[4] = (void*)0x085AD4D8; }
 
 NAKED void FUN_080ff67c(unknown* p) { INCFUNC("asm/func/FUN_080ff67c.inc"); }
 
