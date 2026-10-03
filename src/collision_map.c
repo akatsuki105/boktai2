@@ -11,7 +11,9 @@ IWRAM_DATA bool32 bool32_0300077c = FALSE;  // 0x0300077C
 
 bool32 Map_ResetCollisionMap(void);
 void Map_ClearEvent(CollisionMapEvent* ev);
-extern u32 gNextMapEventID;  // src/iwram2.c
+s32 FUN_0823a88c(u8* pc, ScriptArgs* args);                      // src/entity_0823acbc.c
+s32 VM_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args);  // src/entity_0823acbc.c
+extern u32 gNextMapEventID;                                      // src/iwram2.c
 
 void Map_InitCollisionMap(void) {
   CollisionMapData* p = Malloc(sizeof(CollisionMapData));
@@ -315,9 +317,43 @@ void Map_SetZones(ZoneData* zones) {
 
 NAKED void FUN_0823463c(unknown* p) { INCFUNC("asm/func/FUN_0823463c.inc"); }
 
-NAKED void FUN_08234660(unknown* p) { INCFUNC("asm/func/FUN_08234660.inc"); }
+NAKED void FUN_08234660(ZoneEventSource* src) { INCFUNC("asm/func/FUN_08234660.inc"); }
 
-NAKED void FUN_08234868(unknown* param_1, CollisionMapEvent* ev, u32 param_3) { INCFUNC("asm/func/FUN_08234868.inc"); }
+// ゾーンイベントのスクリプトを 14 個の引数付きで起動する
+// 原典は args[2] から args[13] までを1本のカーソルで書くが, agbcc が先頭4本だけ固定オフセットに畳んでしまう
+// 命令数は68で一致, 残差はその畳み込み1箇所のみ, Tier A-C は試済
+NON_MATCH void Map_RunZoneEventScript(ZoneEventSource* src, CollisionMapEvent* ev, u16 msg) {
+#ifdef NONMATCHING_C
+  u32 args[14];
+  ScriptArgs sa;
+  u32* arg;
+  s32 i;
+
+  args[0] = src->id;
+  args[1] = ev->zoneID;
+  arg = &args[2];
+  *arg++ = msg;
+  *arg++ = src->pos->x;
+  *arg++ = src->pos->y;
+  *arg++ = src->pos->z;
+  for (i = 0; i < 4; i++) {
+    *arg++ = ev->args1[i];
+  }
+  for (i = 0; i < 4; i++) {
+    *arg++ = ev->args2[i];
+  }
+
+  sa.argc = 14;
+  sa.argv = args;
+  if (ev->flags & 0x20) {
+    VM_ExecById_Proxy_0823a8a4((u32)ev->scriptPC, &sa);
+  } else {
+    FUN_0823a88c(ev->scriptPC, &sa);
+  }
+#else
+  INCFUNC("asm/func/Map_RunZoneEventScript.inc");
+#endif
+}
 
 // id を持つゾーンが1つでもあるか
 bool32 Map_HasZoneByID(ZoneID16 id) {

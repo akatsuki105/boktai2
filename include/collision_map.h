@@ -182,6 +182,15 @@ typedef struct {
 
 // --------------------------------------------
 
+// ゾーンイベントを起こした側の情報, Map_RunZoneEventScript がスクリプトの引数に積む
+// 根拠: FUN_080412fc が Entity286F の 0x0A0 に mover.id と &mover.pos を入れて FUN_08234660 に渡す
+typedef struct {
+  u16 id;       // 0x00, Mover.id の複写
+  u8 unk_2[2];  // 0x02
+  Vec3* pos;    // 0x04, Mover.pos を指す
+} ZoneEventSource;
+static_assert(sizeof(ZoneEventSource) == 8);
+
 // スクリプトから登録されるイベント, VM_Ctrl_SetZoneCallback が 44バイトを組み立てる
 // Map_InsertEvent は同じ zoneID が連続するように挿し込む: 末尾から同じ zoneID を探し、見つかればその次へ (後続を1つずつずらす)、無ければ末尾に追加する
 typedef struct CollisionMapEvent {
@@ -192,10 +201,10 @@ typedef struct CollisionMapEvent {
   s16 unk_a;        // 0x0A
   u16 flags;        // 0x0C, VM_Ctrl_SetZoneCallback が '.b' で 0x10、'.p' で 0x20 を立てる
   u16 zoneCount;    // 0x0E, FindZonesByID が zones の件数を書き込む
-  u16 args1[4];     // 0x10, FUN_08234868 が ScriptArgs にコピーする4語
+  u16 args1[4];     // 0x10, Map_RunZoneEventScript が ScriptArgs にコピーする4語
   u16 args2[4];     // 0x18, 同上、もう4語
   u8* unk_20;       // 0x20
-  u8* scriptPC;     // 0x24, FUN_08234868 がスクリプトの PC として実行する
+  u8* scriptPC;     // 0x24, Map_RunZoneEventScript がスクリプトの PC として実行する
   Zone* zones;      // 0x28, FindZonesByID が返す Zone の先頭, NULL なら登録しない
 } CollisionMapEvent;
 static_assert(sizeof(CollisionMapEvent) == 44);
