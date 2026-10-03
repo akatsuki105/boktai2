@@ -638,25 +638,20 @@ void Player_ShowPtcl64c(Player* p, Vec3* pos, s32 big) {
 }
 
 // 0x64C のパーティクルを確保して隠した状態で初期化する
-// 命令数は40で一致, 残差は p と &ptcl_64c のレジスタが入れ替わっているだけ (原典は p が r5)
-// Tier A/B と C の宣言順・ローカル化は試済
-NON_MATCH void FUN_08061458(Player* p) {
-#ifdef NONMATCHING_C
+void FUN_08061458(Player* p) {
   ParticleGroup* group = GetParticleGroup(0x1C1C);
-  PlayerParticleGroup1* st = &p->ptcl_64c;
+  Particle* ptcl;
 
-  st->group1 = group;
-  FUN_0822d9f0(&st->ptcl, group, 0);
-  Particle_SetOffset(&st->ptcl, -4, -4);
-  FUN_0822dafc(&st->ptcl, st->group1, 4);
-  st->ptcl.flags |= SPRFLAG_HIDDEN;
-  st->ptcl.priority = 1;
-  st->ptcl.offsetZ = 0x14;
-  st->active = 0;
-  st->timer = 0;
-#else
-  INCFUNC("asm/func/FUN_08061458.inc");
-#endif
+  p->ptcl_64c.group1 = group;
+  ptcl = &p->ptcl_64c.ptcl;
+  FUN_0822d9f0(ptcl, group, 0);
+  Particle_SetOffset(ptcl, -4, -4);
+  FUN_0822dafc(ptcl, p->ptcl_64c.group1, 4);
+  ptcl->flags |= SPRFLAG_HIDDEN;
+  ptcl->priority = 1;
+  ptcl->offsetZ = 0x14;
+  p->ptcl_64c.active = 0;
+  p->ptcl_64c.timer = 0;
 }
 
 // 状態異常2が続いている間だけ, 周囲を回るパーティクルを1つ出し続ける
@@ -722,24 +717,20 @@ NON_MATCH void Player_UpdateBadCondPtcl(Player* p) {
 }
 
 // 0x67C のパーティクルを確保して隠した状態で初期化する
-// FUN_08061458 と同じ残差 (40/40, p と &ptcl_67c のレジスタが入れ替わっているだけ)
-NON_MATCH void FUN_0806161c(Player* p) {
-#ifdef NONMATCHING_C
+void FUN_0806161c(Player* p) {
   ParticleGroup* group = GetParticleGroup(0x1C1C);
-  PlayerParticleGroup1* st = &p->ptcl_67c;
+  Particle* ptcl;
 
-  st->group1 = group;
-  FUN_0822d9f0(&st->ptcl, group, 0);
-  Particle_SetOffset(&st->ptcl, -4, -4);
-  FUN_0822dafc(&st->ptcl, st->group1, 0x10);
-  st->ptcl.flags |= SPRFLAG_HIDDEN;
-  st->ptcl.priority = 1;
-  st->ptcl.offsetZ = 0x14;
-  st->active = 0;
-  st->timer = 0;
-#else
-  INCFUNC("asm/func/FUN_0806161c.inc");
-#endif
+  p->ptcl_67c.group1 = group;
+  ptcl = &p->ptcl_67c.ptcl;
+  FUN_0822d9f0(ptcl, group, 0);
+  Particle_SetOffset(ptcl, -4, -4);
+  FUN_0822dafc(ptcl, p->ptcl_67c.group1, 0x10);
+  ptcl->flags |= SPRFLAG_HIDDEN;
+  ptcl->priority = 1;
+  ptcl->offsetZ = 0x14;
+  p->ptcl_67c.active = 0;
+  p->ptcl_67c.timer = 0;
 }
 
 // 衝撃波のアニメーションを1フレーム進める, 終端まで行くと finished を立てて消す
