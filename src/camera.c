@@ -20,6 +20,10 @@ s32 FUN_082327c0(FileID id);
 s32 FUN_082345f8(FileID id);
 s32 FUN_08234db8(FileID id);
 s32 FUN_082358f4(FileID id);
+void FUN_082327f0(CollisionMapTileData* tiledata);
+void FUN_08234624(ZoneData* zones);
+void FUN_08234ddc(PathData* paths);
+void FUN_08235918(NavMesh* navMesh);
 
 // Collision Map File が圧縮されてたら展開して返す、圧縮されてなかったらそのまま返す
 CollisionMapFile* OpenCollisionMapFile(void* file) {
@@ -33,7 +37,31 @@ CollisionMapFile* OpenCollisionMapFile(void* file) {
 }
 
 // id is HP_XXXX in "include/constants/collision_map.h"
-NAKED s32 Map_LoadCollisionMapFile(s32 id) { INCFUNC("asm/func/Map_LoadCollisionMapFile.inc"); }
+// ヘッダの相対オフセットを絶対アドレスに直して、タイル/ゾーン/パス/ナビメッシュをそれぞれ登録する
+s32 Map_LoadCollisionMapFile(s32 id) {
+  CollisionMapFile hdr;
+  CollisionMapFile* f;
+  void* file = GetFile(DIR_COLLISION_MAP, id);
+
+  if (file == NULL) {
+    return -1;
+  }
+
+  f = OpenCollisionMapFile(file);
+  hdr = *f;
+  hdr.offsetToTileData += (u32)f;
+  hdr.offsetToZones += (u32)f;
+  hdr.offsetToPaths += (u32)f;
+  if (hdr.offsetToNavmesh != 0) {
+    hdr.offsetToNavmesh += (u32)f;
+  }
+
+  FUN_082327f0((CollisionMapTileData*)hdr.offsetToTileData);
+  FUN_08234624((ZoneData*)hdr.offsetToZones);
+  FUN_08234ddc((PathData*)hdr.offsetToPaths);
+  FUN_08235918((NavMesh*)hdr.offsetToNavmesh);
+  return 0;
+}
 
 // 0x30AD
 void Map_LoadMapScripted(void) {
