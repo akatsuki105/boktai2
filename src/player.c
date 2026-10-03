@@ -2093,7 +2093,8 @@ u32 Player_ApplyPoseHold(Player* p, u32 n) {
 }
 
 // 状態異常 badcondID を frames フレームかける, 1 は変身を解き 2 は向きをランダムに変える
-// 命令数は76で一致, 残差はレジスタ割当だけ (原典は p/badcondID/frames を r5/r6/r7 に置き push が1本多い)
+// 命令数は76で一致, 残差は 0x03002B64 / gRandTableIdx / gRandomTable のプール定数をロードする順序だけ
+// (原典は 0x03002B64 を if の先頭で先に作る), 連鎖代入にすると push が1本減って逆に遠ざかる
 NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
 #ifdef NONMATCHING_C
   switch (badcondID) {
@@ -2114,12 +2115,9 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
     }
     case 2: {
       if (p->unk_43c[2] == 0) {
-        s32 v;
-
         gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-        v = (p->unk_456 + 1 + Mod(gRandomTable[gRandTableIdx], 7)) & 7;
-        u16_03002b64 = v;
-        p->unk_456 = v;
+        u16_03002b64 = (p->unk_456 + 1 + Mod(gRandomTable[gRandTableIdx], 7)) & 7;
+        p->unk_456 = u16_03002b64;
         PlaySound_082406e0(0x138);
       }
       break;
