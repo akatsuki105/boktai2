@@ -309,7 +309,7 @@ u8* Text_FindChar(u8* s, u8 c) {
   return s;
 }
 
-// タグの '=' から '>' までを buf_34 に写して、'>' か終端の位置を返す
+// タグの '=' から '>' までを buf_34 に写して、'>' か終端の位置を返す (例: <VAR=1>, <PROC=0>)
 // 残差は c のレジスタ1つ (原典は ldrb で直接 r2, こちらは r0 経由で1命令多い) だけ, Tier A/B と C のローカル分割は試済
 NON_MATCH char* FUN_08048ce0(TextRenderer* p, char* s) {
 #ifdef NONMATCHING_C
