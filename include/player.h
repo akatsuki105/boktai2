@@ -9,6 +9,7 @@
 #include "mover.h"
 #include "msgbus.h"
 #include "particle.h"
+#include "shadow.h"
 #include "sprite.h"
 #include "struct.h"
 #include "types.h"
@@ -260,9 +261,8 @@ typedef struct Player {
   s32 scriptID_4b0;  // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4c4 - 0x4b4];
   Eff082473e0Emitter unk_4c4;  // 0x4C4
-  u8 unk_5fc[0x60E - 0x5FC];
-  u8 unk_60e;  // 0x60E, FUN_081d40b4 がエレベータ搭乗中に bit0 を立てる
-  u8 unk_60f[0x64C - 0x60F];
+  u8 unk_5fc[0x60C - 0x5FC];
+  ParticleShadow shadow;            // 0x60C, 根拠: Player_DestroyEffects が ParticleShadow_Remove に渡す, FUN_081d40b4 がエレベータ搭乗中に flags の bit0 を立てる
   PlayerParticleGroup1 ptcl_64c;    // 0x64C, FUN_08061458
   PlayerParticleGroup1 ptcl_67c;    // 0x67C, FUN_0806161c
   PlayerShockwave meleeShockwave;   // 0x6AC

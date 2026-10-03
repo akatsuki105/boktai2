@@ -495,7 +495,16 @@ void FUN_080639d0(Player* p) {
 
 NAKED void Player_Update_Helper_080639f8(Player* p) { INCFUNC("asm/func/Player_Update_Helper_080639f8.inc"); }
 
-NAKED void Player_Destroy_Helper_08063b24(Player* p) { INCFUNC("asm/func/Player_Destroy_Helper_08063b24.inc"); }
+// Player が抱えているエフェクト・影・パーティクル・衝撃波をまとめて片付ける
+void Player_DestroyEffects(Player* p) {
+  Eff082473e0Emitter_Destroy(&p->unk_4c4);
+  ParticleShadow_Remove(&p->shadow);
+  Particle_Remove(&p->ptcl_64c.ptcl);
+  Particle_Remove(&p->ptcl_67c.ptcl);
+  FUN_08061db4(p);
+  FUN_08062258(p);
+  FUN_08061b98(p);
+}
 
 NAKED void Player_Init_Helper_08063b6c(Player* p) { INCFUNC("asm/func/Player_Init_Helper_08063b6c.inc"); }
 

@@ -331,7 +331,7 @@ void FUN_081d5450(void) {
   gPlayerPtr[0]->mover.tile = &gPlayerPtr[0]->tile;
   FUN_0807a99c(gPlayerPtr[0], 1);
   Elevator_ClearFlags(p, ELEVATOR_PLAYER_RIDING);
-  gPlayerPtr[0]->unk_60e &= ~1;
+  gPlayerPtr[0]->shadow.flags &= ~1;
 }
 
 void FUN_081d54a8(void) {

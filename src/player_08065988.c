@@ -44,7 +44,7 @@ void FUN_080d040c(Player* p);
 extern void* ptr_03002ba8;
 extern u16 u16_03002bf4;
 void FUN_080f8cac(unknown* node);
-void Player_Destroy_Helper_08063b24(Player* p);
+void Player_DestroyEffects(Player* p);
 void FUN_0807bdc8(Player* p, s32 param_2, s32 param_3, u32 param_4);
 void FUN_08060ec8(Player* p, u32 bits);
 u32 FUN_08060ed8(Player* p, u32 bits);
@@ -3161,7 +3161,7 @@ static s32 Player_Destroy(Player* p) {
   AuxSprite_Remove(&p->sprite_e8);
   Hitbox_Unregister(&p->unk_16c);
   Mover_Unlink(&p->mover);
-  Player_Destroy_Helper_08063b24(p);
+  Player_DestroyEffects(p);
   FUN_0807ddd4(p);
   Player_StopEneChargeSound(p);
   ptr_03002ba8 = NULL;
