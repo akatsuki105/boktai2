@@ -81,7 +81,7 @@ plausible.
   So a descending pointer walk in the target is evidence of an *ascending*
   source loop. The descending form keeps its counter and cannot be reversed
   again, which is one instruction too many (`VM_Ctrl_SetZoneCallback`,
-  `FUN_08048b28`):
+  `Text_FormatDecimal`):
 
 ```sh
 printf 'void f(unsigned short*a){int i;for(i=0;i<4;i++){a[i]=0;}}\n' \

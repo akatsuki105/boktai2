@@ -38,7 +38,7 @@ _0804991C:
 	str r0, [r5, #0x1c]
 	strb r1, [r5, #7]
 	adds r0, r5, #0
-	bl FUN_08049640
+	bl TextRenderer_ResetModeStack
 	pop {r4, r5}
 	pop {r1}
 	bx r1

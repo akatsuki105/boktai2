@@ -475,7 +475,7 @@ _08049194:
 	bl Text_StrNCmp
 	cmp r0, #0
 	bne _080491AC
-	bl FUN_08048d78
+	bl Text_GetPairFace
 	b _080491C6
 	.align 2, 0
 _080491A8: .4byte 0x08251C94
@@ -486,7 +486,7 @@ _080491AC:
 	bl Text_StrNCmp
 	cmp r0, #0
 	bne _080491C4
-	bl FUN_08048d40
+	bl Text_GetPlayerFace
 	b _080491C6
 	.align 2, 0
 _080491C0: .4byte 0x08251C9C
@@ -640,7 +640,7 @@ _080492E2:
 	adds r0, r0, r1
 	ldr r1, [r0]
 	adds r0, r4, #0
-	bl FUN_08048b28
+	bl Text_FormatDecimal
 	str r4, [r5, #0x24]
 	adds r0, r5, #0
 	movs r1, #2

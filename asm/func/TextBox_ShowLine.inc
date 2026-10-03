@@ -86,7 +86,7 @@ _08047ACC:
 	str r1, [r0]
 _08047AE0:
 	mov r0, sb
-	bl FUN_08049640
+	bl TextRenderer_ResetModeStack
 	movs r3, #0xc9
 	lsls r3, r3, #1
 	adds r1, r5, r3

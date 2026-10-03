@@ -28,7 +28,7 @@ typedef struct TextBox {
   s8 unk_183;              // 0x183, 3 で初期化され 0 になると unk_17f が 1 になるカウントダウン
   u16 autoAdvanceDelay;    // 0x184, TextBox_SetAutoAdvance の第2引数, autoAdvanceTimer がこれ以上になると次へ進む
   u16 autoAdvanceTimer;    // 0x186, 毎フレーム +1
-  s32 waitFrames;          // 0x188, 次の行へ進む前に待つフレーム数, '.l' で初期化し、TextBox_Update が毎フレーム renderer.unk_18 で上書きする
+  s32 waitFrames;          // 0x188, 次の行へ進む前に待つフレーム数, '.l' で初期化し、TextBox_Update が毎フレーム renderer.waitFrames で上書きする
   u32 waitTimer;           // 0x18C, waitFrames の経過フレーム数, TextBox_StateWaitInput が waitFrames に達するまで +1 し、達したら両方 0 に戻す
   FileID bgPlttFileID;     // 0x190, '.c=0x519C'
   s16 pendingLine;         // 0x192, 次に表示する行, -1 なら何もしない, TextBox_Update がこれを TextBox_ShowLine に渡す
@@ -141,7 +141,7 @@ s32 TextBox_Start(u8* pc) {
     p->labelIdx = 0;
     p->labelCount = 1;
     p->pendingLine = 0;
-    FUN_08049640(r);
+    TextRenderer_ResetModeStack(r);
     p->arrow.flags |= SPRFLAG_HIDDEN;
   }
 

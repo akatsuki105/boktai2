@@ -30,7 +30,7 @@ typedef struct {
   u32 magicNumber;            // 0x000, gScriptDirectoryBuildTime = 0x40A8186C がセットされる, ロード時にチェックしてそう
   u8 unk_004[12];             // 0x004
   u16 unk_010;                // 0x010, FUN_08063634 が Player.unk_456 へ写す
-  s16 messageSpeed;           // 0x012, メッセージ速度設定, FUN_08049668 が TextRenderer.speed に入れる
+  s16 messageSpeed;           // 0x012, メッセージ速度設定, TextRenderer_ResetSpeed が TextRenderer.speed に入れる
   u8 unk_14[4];               // 0x014
   s16 stats[STAT_KINDS * 2];  // 0x018, ステータスポイントの割り振り と (多分タロットカードの)ドーピングボーナス, ステータス画面には合計値が表示される
   u16 savedHP;                // 0x028, コンティニュー用？

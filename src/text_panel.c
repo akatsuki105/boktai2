@@ -25,7 +25,7 @@ typedef struct TextPanel {
   u16 unk_16;              // 0x16, TextPanel_Create と TextPanel_SetScript が 1 を入れる
   u16 unk_18[32];          // 0x18, FUN_0804a27c が選択肢ごとのメッセージ番号を unk_16 個だけ書き込む
   TextPanelFunc fn;        // 0x58, TextPanelManager_Update が fn(mgr, box) で呼ぶ, 0x0804A4A0 が待機、0x0804A4A8 が表示中
-  TextRenderer renderer;   // 0x5C, FUN_0804967C / FUN_08049640 / TextRenderer_SetRect / TextRenderer_Advance がこのアドレスを取る
+  TextRenderer renderer;   // 0x5C, FUN_0804967C / TextRenderer_ResetModeStack / TextRenderer_SetRect / TextRenderer_Advance がこのアドレスを取る
   struct TextPanel* prev;  // 0x1BC, TextPanel_Create が繋ぎ TextPanel_Destroy が外す
   struct TextPanel* next;  // 0x1C0
 } TextPanel;
@@ -129,7 +129,7 @@ s32 TextPanel_Create(s32 x, s32 y, s32 width, s32 height) {
   r = &p->renderer;
   TextRenderer_Init(r, p->x, p->y, p->width, p->height);
   r->finished = FALSE;
-  r->unk_0b = 1;
+  r->silent = TRUE;
   TextPanelManager_Link(mgr, p);
   return p->id;
 }
@@ -204,7 +204,7 @@ s32 TextPanel_SetScript(s32 id, u8* scriptPc) {
   p->unk_14 = 0;
   p->unk_16 = 1;
   p->pendingMsgIdx = 0;
-  FUN_08049640(r);
+  TextRenderer_ResetModeStack(r);
   return 0;
 }
 
@@ -230,7 +230,7 @@ NON_MATCH s32 FUN_0804a27c(s32 id, u8* scriptPc, s32 count, s32 selected, u16* m
     p->unk_18[i] = msgIndices[i];
   }
   p->pendingMsgIdx = p->unk_18[p->unk_14];
-  FUN_08049640(r);
+  TextRenderer_ResetModeStack(r);
   return 0;
 #else
   INCFUNC("asm/func/FUN_0804a27c.inc");
@@ -252,7 +252,7 @@ s32 TextPanel_SetMessage(s32 id, s32 msgIdx) {
     p->msgIdx = msgIdx;
     r->text = TextPanel_LookupText(p, p->msgIdx);
     p->fn = TextPanel_StateTyping;
-    FUN_08049640(r);
+    TextRenderer_ResetModeStack(r);
     p->pendingMsgIdx = -1;
   }
   return 0;
