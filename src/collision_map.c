@@ -126,7 +126,7 @@ NAKED void FUN_08234660(unknown* p) { INCFUNC("asm/func/FUN_08234660.inc"); }
 NAKED void FUN_08234868(unknown* param_1, CollisionMapEvent* ev, u32 param_3) { INCFUNC("asm/func/FUN_08234868.inc"); }
 
 // id を持つゾーンが1つでもあるか
-bool32 FUN_082348f8(ZoneID16 id) {
+bool32 Map_HasZoneByID(ZoneID16 id) {
   s32 i;
 
   for (i = 0; i < gCollisionMap->zones->count; i++) {
