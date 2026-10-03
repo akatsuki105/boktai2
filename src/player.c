@@ -1428,7 +1428,9 @@ NON_MATCH void Player_BuildPltt(Player* p) {
 
 // 屋外かどうかと PFLAG20 の 0x10 で 0 / 4 / 8 を返す
 // 残差は屋外判定の 0/1 正規化4命令だけ (29/34), 原典は真偽値を一度レジスタに作ってから 0 と比べている
-// Tier A/B と bool32 ローカル化・述語 inline 化は試済, agbcc がどう書いても畳んでしまう
+// マスクを引数に取る `static inline bool32 f(u32 mask) { return (gStat->unk_934 & mask) != 0; }` 経由だと 32/34 まで詰まる
+// (定数マスクを直接書くと lsrs のビット抽出になってしまうので, マスクはレジスタに乗る形が必須)
+// 残るのは 0/1 の materialize だけ. if/return TRUE/FALSE 形や bool32 ローカルへの代入は agbcc が畳んでしまう
 NON_MATCH u32 FUN_0806241c(Player* p) {
 #ifdef NONMATCHING_C
   u32 r = 0;
