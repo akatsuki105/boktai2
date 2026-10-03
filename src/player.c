@@ -2310,6 +2310,7 @@ void FUN_080639d0(Player* p) {
 
 // Player の毎フレーム更新のうち, 姿勢の決定・パーティクル・影の位置合わせをまとめた部分
 // 命令数は119で一致, 残差は gStat->unk_2c8[isSabata] のアドレス計算の順序だけ (Player_BeginAction と同じ系統)
+// 添字を引数に取る static inline 経由にすると ldrb が先に出る形までは揃うが, +0x2C8 の結合順が残る
 NON_MATCH void Player_UpdatePoseAndShadow(Player* p) {
 #ifdef NONMATCHING_C
   s32 pose = 0;
@@ -2330,7 +2331,7 @@ NON_MATCH void Player_UpdatePoseAndShadow(Player* p) {
     Player_UpdatePltt(p, pose);
   }
 
-  Player_RefreshAttackPower(p);
+  Player_UpdatePtcl64c(p);
   Player_UpdateBadCondPtcl(p);
   Player_UpdatePtcl718(p);
   Player_UpdatePtcl858(p);
