@@ -153,8 +153,6 @@ typedef struct {
   PlayerPtcl858 ptcls[4];  // 0x08, Player_InitPtcl858 でのループ回数
 } PlayerParticleState858;
 
-// 通常プレイでは gPlayerPtr[0] にこの構造体がある
-// 通信対戦の相手キャラもこの構造体を使う
 // 装備している魔法の情報一式, Player の 0x280 に置かれている
 typedef struct {
   magic8_t id;          // 0x280, 現在装備している(画面左下に表示されている)魔法のID
@@ -163,7 +161,7 @@ typedef struct {
   bool8 enchanted;      // 0x283, エンチャント○○ がアクティブかどうか (プレイヤーが対応する色に光っているかどうか)
   u8 basicCost;         // 0x284, この魔法の消費MP (マジックローブなどの影響を抜いた元々の値)
   u8 unk_285;           // 0x285, FUN_0807b5d0 が 1 を、FUN_0807b5f8 が 0 を書く
-  u8 unk_286[2];        // 0x286, agbcc は構造体を4バイト境界に揃えるのでここは必ず埋まる
+  u8 unk_286[2];        // 0x286, padding
 } PlayerMagic;
 static_assert(sizeof(PlayerMagic) == 8);
 
@@ -182,11 +180,12 @@ typedef struct PlayerShockwave {
   u16 velZ;                    // 0x60, 毎フレーム sprite.pos.z に加算する
   u16 unk_62;                  // 0x62
   bool8 finished;              // 0x64, アニメーションが最後まで行くと立つ, 読んだ側は 0 に戻す
-  u8 unk_65[3];                // 0x65
+  u8 unk_65[3];                // 0x65, padding?
   PlayerShockwaveFunc update;  // 0x68, PlayerShockwave_UpdateAnim か PlayerShockwave_UpdateFlash
 } PlayerShockwave;
 static_assert(sizeof(PlayerShockwave) == 108);
 
+// 通常プレイでは gPlayerPtr[0] にこの構造体がある, 通信対戦の相手キャラもこの構造体を使う
 typedef struct Player {
   Entity e;
   u32 unk_18;                  // 0x18, 0 or 1 他にもあるか不明
