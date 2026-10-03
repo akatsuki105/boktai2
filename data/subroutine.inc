@@ -145,7 +145,7 @@ gSubroutineTable:
 	.4byte 0x3D0C, FUN_08055b58
 	.4byte 0x3D17, FUN_08224590
 	.4byte 0x3DB0, FUN_080a1de4
-	.4byte 0x3DB8, FUN_08234fc8
+	.4byte 0x3DB8, VM_GetPathNodePos
 	.4byte 0x3DF7, TextSlideshow_Create
 	.4byte 0x3E17, FUN_082241ac
 	.4byte 0x3E1F, VM_Sub3E1F

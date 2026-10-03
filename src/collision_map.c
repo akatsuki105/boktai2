@@ -5,6 +5,7 @@
 #include "malloc.h"
 #include "mover.h"
 #include "registry.h"
+#include "vm.h"
 
 IWRAM_DATA bool32 bool32_0300077c = FALSE;  // 0x0300077C
 
@@ -338,7 +339,31 @@ s32 Map_GetPathNodePos(Vec3* dst, u8 pathIdx, u8 nodeIdx) {
   return 0;
 }
 
-NAKED s32 FUN_08234fc8(void) { INCFUNC("asm/func/FUN_08234fc8.inc"); }
+// スクリプトから経路番号とノード番号を読み、そのノードの座標を配列変数に3つ書き込む
+// 残差2命令: 原典は pos をスタック先頭 (sp+0)、desc を sp+8 に置くが、agbcc はこちらでは逆に並べる
+// 宣言順の入れ替え・ブロック内宣言は効かなかった
+NON_MATCH s32 VM_GetPathNodePos(void) {
+#ifdef NONMATCHING_C
+  Vec3 pos;
+  s32 pathIdx = VM_GetValue();
+  s32 nodeIdx = VM_GetValue();
+  u8 desc[8];
+
+  if (Map_GetPathNodePos(&pos, pathIdx, nodeIdx) < 0) {
+    return -1;
+  }
+
+  FUN_0823167c(desc);
+  FUN_0823206c(desc, 0, pos.x);
+  FUN_0823167c(desc);
+  FUN_0823206c(desc, 0, pos.y);
+  FUN_0823167c(desc);
+  FUN_0823206c(desc, 0, pos.z);
+  return 0;
+#else
+  INCFUNC("asm/func/VM_GetPathNodePos.inc");
+#endif
+}
 
 NAKED s32 FUN_08235038(unknown* param_1, Vec3* pos, unknown* param_3, s32 param_4) { INCFUNC("asm/func/FUN_08235038.inc"); }
 
