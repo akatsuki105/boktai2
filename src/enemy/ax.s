@@ -1418,7 +1418,7 @@ FUN_081963c0: @ 0x081963C0
 	ble _081963E2
 	ldr r2, _081963EC @ =0x00000AFC
 	adds r0, r4, r2
-	bl FUN_082328ec
+	bl Map_GetTileHeightAt
 	movs r2, #0xc7
 	lsls r2, r2, #4
 	adds r1, r4, r2
@@ -4467,7 +4467,7 @@ _08197B48:
 	orrs r0, r2
 	strh r0, [r6]
 	mov r0, r8
-	bl FUN_082328ec
+	bl Map_GetTileHeightAt
 	movs r2, #0xc7
 	lsls r2, r2, #4
 	adds r1, r4, r2
@@ -9566,7 +9566,7 @@ _0819A348:
 	adds r1, r6, r2
 	strb r0, [r1]
 	mov r0, r8
-	bl FUN_082328ec
+	bl Map_GetTileHeightAt
 	movs r3, #0xaf
 	lsls r3, r3, #1
 	adds r0, r0, r3

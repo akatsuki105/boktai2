@@ -153,7 +153,45 @@ NON_MATCH s32 Map_FindDirToTile(s32 from, s32 to) {
 #endif
 }
 
-NAKED u16 FUN_082328ec(Vec3* pos) { INCFUNC("asm/func/FUN_082328ec.inc"); }
+// pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
+u16 Map_GetTileHeightAt(Vec3* pos) {
+  MapTileOverride* ov;
+  u8* tile;
+  s32 stairs;
+  s32 height;
+  s32 bx;
+  s32 bz;
+  s32 idx;
+
+  bx = (s8)(pos->x >> 8);
+  bz = (s8)(pos->z >> 8);
+  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+    idx = 0;
+  } else {
+    idx = gCollisionMap->rowOffsets[bz] + bx;
+  }
+
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    tile = &ov->height;
+  } else {
+    tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+  }
+
+  stairs = *tile >> 4;
+  height = (*tile & 0xF) << 8;
+  switch (stairs) {
+    case 1: {
+      height -= (u8)pos->z;
+      break;
+    }
+    case 2: {
+      height -= (u8)pos->x;
+      break;
+    }
+  }
+  return height;
+}
 
 // pos のタイルの obj と stairs/height を1語で返す, マップ外なら tiles[0] の値
 u16 Map_GetTileObjAndHeight(Vec3* pos) {

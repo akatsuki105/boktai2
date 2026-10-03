@@ -274,7 +274,7 @@ void Entity08080be8_StateFly(Entity08080be8* p) {
   Hitbox_SetPos(hitbox, pos, 0);
   Hitbox_Register(hitbox);
   Player_SetFlag20(p->player, 0x80002);
-  groundY = FUN_082328ec(pos);
+  groundY = Map_GetTileHeightAt(pos);
   if (groundY > p->sprite.pos.y) {
     Entity08080be8_SetState(p, Entity08080be8_StateImpact);
   } else {
