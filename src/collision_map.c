@@ -219,19 +219,21 @@ NAKED u16 FUN_082329e0(Vec3* pos1, Vec3* pos2) { INCFUNC("asm/func/FUN_082329e0.
 
 NAKED bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) { INCFUNC("asm/func/FUN_08232b00.inc"); }
 
-NAKED s32 FUN_08232df8(unknown* param_1, Vec3* param_2, Vec3* param_3, u8 param_4) { INCFUNC("asm/func/FUN_08232df8.inc"); }
+NAKED s32 FUN_08232df8(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) { INCFUNC("asm/func/FUN_08232df8.inc"); }
 
-NAKED void FUN_082332f8(unknown* param_1, Vec3* param_2, Vec3* param_3) { INCFUNC("asm/func/FUN_082332f8.inc"); }
+NAKED void FUN_082332f8(MoverTile* tile, Vec3* pos, Vec3* dst) { INCFUNC("asm/func/FUN_082332f8.inc"); }
 
-void FUN_08233428(unknown* param_1, Vec3* param_2, Vec3* param_3, s32 param_4, s32 param_5, u8 param_6) {
-  Vec3 sum;
+// pos から offset だけ動いた先のタイルを MoverTile に反映する
+// unused_4 と unused_5 は読まれていない
+void FUN_08233428(MoverTile* tile, Vec3* pos, Vec3* offset, s32 unused_4, s32 unused_5, u8 param_6) {
+  Vec3 dst;
 
-  sum.x = param_2->x + param_3->x;
-  sum.y = param_2->y + param_3->y;
-  sum.z = param_2->z + param_3->z;
-  sum.val = 16;
-  *(u8*)param_1 = FUN_08232df8(param_1, param_2, &sum, param_6);
-  FUN_082332f8(param_1, param_2, &sum);
+  dst.x = pos->x + offset->x;
+  dst.y = pos->y + offset->y;
+  dst.z = pos->z + offset->z;
+  dst.val = 16;
+  tile->unk_0[0] = FUN_08232df8(tile, pos, &dst, param_6);
+  FUN_082332f8(tile, pos, &dst);
 }
 
 NAKED void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16 sizeZ, u8 unk_4) { INCFUNC("asm/func/FUN_0823349c.inc"); }
