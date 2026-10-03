@@ -32,7 +32,7 @@ NON_MATCH u16* SunCountdown_GetTilePtr(s32 bgNum, s32 x, s32 y) {
 #ifdef NONMATCHING_C
   BgState* bg = &gBgStates[bgNum];
 
-  return bg->tilemap + x + (bg->unk_18 * 2) * y;
+  return bg->tilemap + x + (bg->width16 * 2) * y;
 #else
   INCFUNC("asm/func/SunCountdown_GetTilePtr.inc");
 #endif

@@ -3,6 +3,7 @@
 #include "entity_9a9f.h"
 #include "global.h"
 #include "input.h"
+#include "item.h"
 #include "player.h"
 #include "save.h"
 #include "solar_sensor.h"

@@ -1796,7 +1796,6 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
   } else {
     p->gfx_114->pltt = p->pltt_2a4;
   }
-}
 #else
   INCFUNC("asm/func/FUN_080628ec.inc");
 #endif
@@ -2183,7 +2182,7 @@ NON_MATCH u32 Player_TickBadCondTimers(Player* p, u32 n) {
         if (p->unk_43c[0] != 0 && (p->unk_1c & 1)) {
           p->unk_43c[0]--;
           if (p->input_28c->down & 0xF0) {
-            MosaicFader_Start(2, 1, 0x1E, p->unk_97c, p->unk_980, &p->unk_984);
+            MosaicFader_Start(2, 1, 0x1E, p->unk_97c, p->unk_980, p->unk_984);
           }
         }
         break;
@@ -2776,7 +2775,6 @@ NON_MATCH void Player_EnableWeaponSpecialEffects(Player* p, WeaponData* w) {
       }
     }
   }
-}
 #else
   INCFUNC("asm/func/Player_EnableWeaponSpecialEffects.inc");
 #endif
