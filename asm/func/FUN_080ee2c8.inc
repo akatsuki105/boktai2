@@ -43,7 +43,7 @@
 	mov r0, r8
 	ldrb r3, [r0]
 	adds r0, r5, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	ldr r1, _080EE370 @ =0x000004A4
 	adds r0, r7, r1
 	ldr r0, [r0]

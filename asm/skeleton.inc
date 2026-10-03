@@ -9496,7 +9496,7 @@ FUN_081077a4: @ 0x081077A4
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	movs r0, #0
 	mov r8, r0
 	movs r1, #1
@@ -9647,7 +9647,7 @@ FUN_081078d8: @ 0x081078D8
 	mov r0, sp
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	movs r0, #0
 	mov r8, r0
 	movs r1, #1

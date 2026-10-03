@@ -1,6 +1,7 @@
 #include "mover.h"
 
 #include "camera.h"
+#include "collision_map.h"
 #include "entity.h"
 #include "global.h"
 #include "sprite.h"
@@ -200,7 +201,7 @@ bool32 FUN_0823b47c(Mover* p, Vec3* unk_30) {
 
 bool32 Mover_SetPath(Mover* p, void* path, u8 param_3, u8 param_4, u8 param_5) {
   p->path = path;
-  FUN_08234de8(path, param_3, param_4, param_5);
+  Map_InitPathWalker(path, param_3, param_4, param_5);
   return TRUE;
 }
 

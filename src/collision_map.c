@@ -104,12 +104,12 @@ NON_MATCH s32 Map_FindDirToTile(s32 from, s32 to) {
   s32 angle = 0xC0;
   s32 dir;
 
-  for (dir = 0; dir <= 3; dir++) {
+  for (dir = 0; dir < 4; dir++) {
     s32 step = gCollisionMap->neighborOffsets[dir & 3];
     s32 idx = from;
     s32 i;
 
-    for (i = 0; i <= 3; i++) {
+    for (i = 0; i < 4; i++) {
       idx += step;
       if (idx == to) {
         return (u8)angle;
@@ -324,7 +324,39 @@ s32 Map_LoadPaths(FileID id) {
 
 void Map_SetPaths(PathData* paths) { gCollisionMap->paths = paths; }
 
-NAKED bool32 FUN_08234de8(unknown* p, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_08234de8.inc"); }
+// 経路をたどるカーソルを pathIdx / nodeIdx で初期化する
+// 残差2命令: 原典は2回目の nodeCount をポインタと同じレジスタに読んで潰すため、先に path のコピーを1本持つ (callee-saved が1本多い)
+NON_MATCH bool32 Map_InitPathWalker(PathWalker* p, u32 pathIdx, u32 param_3, u32 nodeIdx) {
+#ifdef NONMATCHING_C
+  PathData* d = gCollisionMap->paths;
+  Path* path;
+  PathNode* nodes;
+
+  if (pathIdx >= d->pathCount) {
+    return FALSE;
+  }
+
+  path = &d->paths[pathIdx];
+  if ((u8)path->nodeCount == 0) {
+    return FALSE;
+  }
+
+  if (nodeIdx >= (u8)path->nodeCount) {
+    nodeIdx = 0;
+  }
+
+  nodes = (PathNode*)((u8*)d + path->nodeOffset);
+  p->pathIdx = pathIdx;
+  p->unk_1 = param_3;
+  p->nodeIdx = nodeIdx;
+  p->unk_3 = 0;
+  p->path = path;
+  p->node = &nodes[p->nodeIdx];
+  return TRUE;
+#else
+  INCFUNC("asm/func/Map_InitPathWalker.inc");
+#endif
+}
 
 NAKED bool32 FUN_08234e3c(unknown* p) { INCFUNC("asm/func/FUN_08234e3c.inc"); }
 

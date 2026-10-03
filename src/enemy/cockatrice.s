@@ -17668,7 +17668,7 @@ FUN_0815b584: @ 0x0815B584
 	mov r0, sp
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	movs r2, #0
 	mov r8, r2
 	movs r3, #0xec

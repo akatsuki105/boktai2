@@ -133,7 +133,7 @@ _08046684:
 	ldrh r2, [r5, #0x30]
 	ldrh r3, [r5, #0x32]
 	ldr r0, [sp, #0x18]
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	movs r6, #0xa6
 	lsls r6, r6, #1
 	adds r0, r5, r6

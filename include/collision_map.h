@@ -111,6 +111,20 @@ typedef struct {
   u16 nodeOffset;  // 0x02, Byte offset from start of PathData to first node
 } Path;
 
+// 経路を1ノードずつたどるカーソル, Map_InitPathWalker が初期化し FUN_08234e3c が進める
+// サイズは +8 まで使うことしか分かっていないので 12 は暫定
+typedef struct {
+  u8 pathIdx;      // 0x00, Map_InitPathWalker の第2引数
+  u8 unk_1;        // 0x01, Map_InitPathWalker の第3引数
+  u8 nodeIdx;      // 0x02, いま指しているノード番号, nodeCount に達すると 0 に戻る
+  u8 unk_3;        // 0x03, 初期化と前進のたびに 0
+  Path* path;      // 0x04
+  PathNode* node;  // 0x08, nodes[nodeIdx]
+} PathWalker;
+static_assert(sizeof(PathWalker) == 12);
+
+bool32 Map_InitPathWalker(PathWalker* p, u32 pathIdx, u32 param_3, u32 nodeIdx);
+
 typedef struct {
   u16 pathCount;      // 0x00, number of Path, 根拠: Map_GetPath が ldrh で読む
   u16 unk_02;         // 0x02

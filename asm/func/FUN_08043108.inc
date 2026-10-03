@@ -45,7 +45,7 @@
 	adds r0, r5, r3
 	ldrh r3, [r0]
 	adds r0, r7, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	movs r7, #0xd0
 	lsls r7, r7, #1
 	adds r0, r5, r7

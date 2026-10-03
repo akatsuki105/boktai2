@@ -20,7 +20,7 @@
 	ldrb r2, [r0]
 	ldrb r3, [r3]
 	adds r0, r5, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	ldr r1, _080EE5A8 @ =0x000004A4
 	adds r0, r6, r1
 	ldr r0, [r0]

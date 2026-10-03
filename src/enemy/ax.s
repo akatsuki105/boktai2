@@ -19951,7 +19951,7 @@ FUN_0819f3fc: @ 0x0819F3FC
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	movs r0, #0
 	mov r8, r0
 	movs r1, #1

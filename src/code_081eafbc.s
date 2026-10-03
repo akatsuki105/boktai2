@@ -19606,7 +19606,7 @@ _081F4300:
 	movs r1, #3
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	adds r0, r4, #0
 	adds r0, #0x64
 	adds r1, r4, #0

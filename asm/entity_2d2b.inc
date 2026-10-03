@@ -951,7 +951,7 @@ FUN_080085f8: @ 0x080085F8
 	adds r0, #0x28
 	adds r1, r5, #0
 	adds r2, r4, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080086C2

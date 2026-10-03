@@ -6418,7 +6418,7 @@ FUN_0817e910: @ 0x0817E910
 	mov r0, sp
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	movs r0, #0
 	mov sb, r0
 	movs r1, #1

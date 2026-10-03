@@ -22706,7 +22706,7 @@ _081935CC:
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	ldr r2, _08193638 @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -23099,7 +23099,7 @@ _081938D0:
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	ldr r2, _0819393C @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -23315,7 +23315,7 @@ FUN_08193a60: @ 0x08193A60
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	ldr r2, _08193B44 @ =0x7FFFFFFF
 	movs r0, #1
 	rsbs r0, r0, #0
@@ -23443,7 +23443,7 @@ FUN_08193b50: @ 0x08193B50
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	ldr r2, _08193C08 @ =0x7FFFFFFF
 	mov r8, r2
 	ldr r3, [sp, #0x50]
