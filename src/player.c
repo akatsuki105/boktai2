@@ -679,7 +679,78 @@ NON_MATCH void FUN_0806161c(Player* p) {
 }
 
 // 衝撃波のアニメーションを1フレーム進める, 終端まで行くと finished を立てて消す
-NAKED void PlayerShockwave_UpdateAnim(PlayerShockwave* p) { INCFUNC("asm/func/PlayerShockwave_UpdateAnim.inc"); }
+// 衝撃波のアニメーションを1コマ進める, 末尾まで行ったら消して finished を落とす
+// 残差3命令 (153/156): 原典は定数1を r3 に作って r1 へ複写して使い回すが, agbcc は都度作る
+// anim のローカル化とガード後の代入で命令数はここまで詰まった, Tier A/B は試済
+NON_MATCH void PlayerShockwave_UpdateAnim(PlayerShockwave* p) {
+#ifdef NONMATCHING_C
+  AuxAnimState* anim;
+  AuxAnimCmd* cmd;
+  s32 done;
+
+  if (!p->finished) {
+    return;
+  }
+
+  anim = &p->anim;
+  cmd = &anim->cmds[anim->cmdIdx];
+  p->sprite.metaspriteIdx = *cmd >> 6;
+
+  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & 1)) {
+    p->sprite.flags |= SPRFLAG_XFLIP;
+  } else {
+    p->sprite.flags &= ~SPRFLAG_XFLIP;
+  }
+
+  if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & 2)) {
+    p->sprite.flags |= SPRFLAG_YFLIP;
+  } else {
+    p->sprite.flags &= ~SPRFLAG_YFLIP;
+  }
+
+  anim->tick++;
+  if (anim->tick < anim->wait) {
+    done = 0;
+  } else {
+    anim->tick = 0;
+    if (anim->flags & ANIM_PLAY_REVERSE) {
+      if (anim->cmdIdx == 0) {
+        anim->cmdIdx = anim->cmdCount - 1;
+        done = 1;
+      } else {
+        anim->cmdIdx--;
+        done = 0;
+      }
+    } else {
+      anim->cmdIdx++;
+      if (anim->cmdIdx >= anim->cmdCount) {
+        anim->cmdIdx = 0;
+        done = 1;
+      } else {
+        done = 0;
+      }
+    }
+
+    cmd = &anim->cmds[anim->cmdIdx];
+    anim->duration = *cmd & 0xF;
+    anim->wait = anim->duration * anim->speed >> 6;
+    if (anim->wait == 0) {
+      anim->wait = 1;
+    }
+  }
+
+  if (done != 0) {
+    p->finished = FALSE;
+    p->sprite.flags |= SPRFLAG_HIDDEN;
+    return;
+  }
+
+  p->sprite.pos.x += p->velX;
+  p->sprite.pos.z += p->velZ;
+#else
+  INCFUNC("asm/func/PlayerShockwave_UpdateAnim.inc");
+#endif
+}
 
 // finished が立っていれば下ろし, 立っていなければ衝撃波を消す
 void PlayerShockwave_UpdateFlash(PlayerShockwave* p) {
