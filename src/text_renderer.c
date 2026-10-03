@@ -15,8 +15,6 @@
 // <LOCK=n>              waitFrames に n を入れて次の行へ進むのを待たせる, 値が無ければ 0
 // <LABEL=名前>          名前に対応する顔番号を face に入れ, 出している間は無音かつ速度 0 にする
 // </LABEL>              <LABEL> が退避した速度に戻す
-// <PLAYER>              いまのプレイヤーの顔番号を face に入れる (Text_GetPlayerFace)
-// <FUTARI>              二人のときの顔番号を face に入れる (Text_GetPairFace)
 // <FACEOFF>             face を -1 にして顔を消す
 // <NAME>                プレイヤー名を差し込む, mode 1 に切り替えて textAlt を読ませる
 // <VAR=n>               vars[n] を10進に直して差し込む, mode 2 に切り替えて numBuf を読ませる
@@ -27,7 +25,9 @@
 // <END>                 finished を立てて本文を終わらせる
 // <PAREN> / </PAREN>    parenEnabled が立っているときだけ括弧を実際に1文字描く
 //
-// <LABEL> の名前は NONE, R_DJUNGO などの並び (0x08251B9C 以降) にあり, 見つかった順番がそのまま顔番号になる, どれにも当たらなければ 0xFF
+// <LABEL> の値は顔番号への名前表 (0x08251B9C 以降) で, NONE だけ 0xFF (顔なし) で, あとは R_DJUNGO が 0 から HATENA が 0x1A まで並ぶ (KURO_BAN だけ 0x1D)
+// 値が PLAYER と FUTARI のときだけ固定値ではなく Text_GetPlayerFace / Text_GetPairFace がプレイヤーを見て決める
+// src/data/text に実際に出てくるのは PROC / END / LABEL / EXTEND / VAR / NAME / ALTER / WEIGHT / LOCK / WAIT / MOJISE / FACEOFF の12種類だけで, NONSEL / UVMOJI / SOUND / PAREN は本文側には現れない
 
 const s16 gCharSounds[2] = {0x105, 0x106};  // 0x085AB458, TextRenderer_PlayCharSound が charSoundIdx で選ぶ文字送り音
 
