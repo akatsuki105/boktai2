@@ -800,8 +800,8 @@ NON_MATCH void PlayerShockwave_UpdateAnim(PlayerShockwave* p) {
     return;
   }
 
-  p->sprite.pos.x += p->velX;
-  p->sprite.pos.z += p->velZ;
+  p->sprite.pos.x += p->vel.x;
+  p->sprite.pos.z += p->vel.z;
 #else
   INCFUNC("asm/func/PlayerShockwave_UpdateAnim.inc");
 #endif
@@ -894,16 +894,16 @@ NON_MATCH void Player_SpawnSwordShockwave(Player* p, u32 idx, Vec3* pos) {
 
   v = gSineTable[(angle + 0x40) & 0xFF] * 10;
   if (v >= 0) {
-    p->meleeShockwave.velX = v >> 12;
+    p->meleeShockwave.vel.x = v >> 12;
   } else {
-    p->meleeShockwave.velX = -((-v) >> 12);
+    p->meleeShockwave.vel.x = -((-v) >> 12);
   }
 
   v = gSineTable[angle] * 10;
   if (v >= 0) {
-    p->meleeShockwave.velZ = v >> 12;
+    p->meleeShockwave.vel.z = v >> 12;
   } else {
-    p->meleeShockwave.velZ = -((-v) >> 12);
+    p->meleeShockwave.vel.z = -((-v) >> 12);
   }
 
   Player_GetShockwaveDirParams(idx, &variant, &flags);
@@ -961,16 +961,16 @@ NON_MATCH void Player_SpawnSpearShockwave(Player* p, u32 idx, Vec3* pos, s32 n) 
 
   v = gSineTable[(angle + 0x40) & 0xFF] * 10;
   if (v >= 0) {
-    p->meleeShockwave.velX = v >> 12;
+    p->meleeShockwave.vel.x = v >> 12;
   } else {
-    p->meleeShockwave.velX = -((-v) >> 12);
+    p->meleeShockwave.vel.x = -((-v) >> 12);
   }
 
   v = gSineTable[angle] * 10;
   if (v >= 0) {
-    p->meleeShockwave.velZ = v >> 12;
+    p->meleeShockwave.vel.z = v >> 12;
   } else {
-    p->meleeShockwave.velZ = -((-v) >> 12);
+    p->meleeShockwave.vel.z = -((-v) >> 12);
   }
 
   Player_GetShockwaveDirParams(idx, &variant, &flags);
@@ -1007,8 +1007,8 @@ void Player_SpawnShockwaveBehind(Player* p, u32 idx, Vec3* pos) {
   }
   sprite->pos.z += offset;
 
-  p->meleeShockwave.velX = 0;
-  p->meleeShockwave.velZ = 0;
+  p->meleeShockwave.vel.x = 0;
+  p->meleeShockwave.vel.z = 0;
   AuxAnim_SetAnim(&p->meleeShockwave.anim, p->meleeShockwave.animFile, 2, 0, 0);
   FUN_0806181c(p);
 }
@@ -1164,30 +1164,30 @@ NON_MATCH void Player_UpdatePtcl858(Player* p) {
       continue;
     }
 
-    if (abs(ptcl->offsetX) <= 15 && abs(ptcl->offsetZ) <= 15) {
+    if (abs(ptcl->offset.x) <= 15 && abs(ptcl->offset.z) <= 15) {
       ptcl->base.flags |= SPRFLAG_HIDDEN;
       ptcl->active = FALSE;
       continue;
     }
 
-    angle = ArcTan2_8(ptcl->offsetX, ptcl->offsetZ);
+    angle = ArcTan2_8(ptcl->offset.x, ptcl->offset.z);
 
     v = gSineTable[(angle + 0x40) & 0xFF] * ptcl->speed;
     if (v >= 0) {
-      ptcl->offsetX -= v >> 12;
+      ptcl->offset.x -= v >> 12;
     } else {
-      ptcl->offsetX -= -((-v) >> 12);
+      ptcl->offset.x -= -((-v) >> 12);
     }
 
     v = gSineTable[angle & 0xFF] * ptcl->speed;
     if (v >= 0) {
-      ptcl->offsetZ -= v >> 12;
+      ptcl->offset.z -= v >> 12;
     } else {
-      ptcl->offsetZ -= -((-v) >> 12);
+      ptcl->offset.z -= -((-v) >> 12);
     }
 
-    ptcl->base.pos.x = ptcl->offsetX + p->pos_930.x;
-    ptcl->base.pos.z = ptcl->offsetZ + p->pos_930.z;
+    ptcl->base.pos.x = ptcl->offset.x + p->pos_930.x;
+    ptcl->base.pos.z = ptcl->offset.z + p->pos_930.z;
 
     ptcl->timer++;
     if (ptcl->timer == 4) {
@@ -1234,21 +1234,21 @@ NON_MATCH void Player_SpawnSunPtcl858(Player* p, Vec3* pos) {
 
   v = dist * gSineTable[(angle + 0x40) & 0xFF];
   if (v >= 0) {
-    ptcl->offsetX = v >> 12;
+    ptcl->offset.x = v >> 12;
   } else {
-    ptcl->offsetX = -((-v) >> 12);
+    ptcl->offset.x = -((-v) >> 12);
   }
 
   v = dist * gSineTable[angle];
   if (v >= 0) {
-    ptcl->offsetZ = v >> 12;
+    ptcl->offset.z = v >> 12;
   } else {
-    ptcl->offsetZ = -((-v) >> 12);
+    ptcl->offset.z = -((-v) >> 12);
   }
 
   ptcl->base.pos = *pos;
-  ptcl->base.pos.x += ptcl->offsetX;
-  ptcl->base.pos.z += ptcl->offsetZ;
+  ptcl->base.pos.x += ptcl->offset.x;
+  ptcl->base.pos.z += ptcl->offset.z;
 
   gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
   ptcl->speed = (gRandomTable[gRandTableIdx] & 3) + 0xE;
@@ -1295,21 +1295,21 @@ NON_MATCH void Player_SpawnPtcl858(Player* p, Vec3* pos) {
 
   v = dist * gSineTable[(angle + 0x40) & 0xFF];
   if (v >= 0) {
-    ptcl->offsetX = v >> 12;
+    ptcl->offset.x = v >> 12;
   } else {
-    ptcl->offsetX = -((-v) >> 12);
+    ptcl->offset.x = -((-v) >> 12);
   }
 
   v = dist * gSineTable[angle];
   if (v >= 0) {
-    ptcl->offsetZ = v >> 12;
+    ptcl->offset.z = v >> 12;
   } else {
-    ptcl->offsetZ = -((-v) >> 12);
+    ptcl->offset.z = -((-v) >> 12);
   }
 
   ptcl->base.pos = *pos;
-  ptcl->base.pos.x += ptcl->offsetX;
-  ptcl->base.pos.z += ptcl->offsetZ;
+  ptcl->base.pos.x += ptcl->offset.x;
+  ptcl->base.pos.z += ptcl->offset.z;
 
   gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
   ptcl->speed = (gRandomTable[gRandTableIdx] & 7) + 0x1C;

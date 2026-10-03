@@ -137,10 +137,7 @@ typedef struct {
   u8 timer;       // 0x29, 毎フレーム +1
   u8 speed;       // 0x2A, 中心へ寄る速さ
   u8 plttBase;    // 0x2B, FUN_0822dafc に渡すパレット番号の起点
-  s16 offsetX;    // 0x2C, pos_930 からのずれ
-  u8 unk_2e[2];   // 0x2E
-  s16 offsetZ;    // 0x30, 同上
-  u8 unk_32[2];   // 0x32
+  Vec3 offset;    // 0x2C, pos_930 からのずれ, y と val は使われない
 } PlayerPtcl858;
 static_assert(sizeof(PlayerPtcl858) == 52);
 
@@ -175,10 +172,7 @@ typedef struct PlayerShockwave {
   AuxSpriteGfx gfx;            // 0x2C, ジャンゴ: SPRITE_MELEE_SHOCKWAVE, サバタ: SPRITE_GUN_SPREAD
   AuxAnimState anim;           // 0x48
   AuxAnimFile* animFile;       // 0x58
-  u16 velX;                    // 0x5C, 毎フレーム sprite.pos.x に加算する, 根拠: PlayerShockwave_UpdateAnim
-  u16 unk_5e;                  // 0x5E
-  u16 velZ;                    // 0x60, 毎フレーム sprite.pos.z に加算する
-  u16 unk_62;                  // 0x62
+  Vec3 vel;                    // 0x5C, 毎フレーム sprite.pos に加算する, y と val は使われない, 根拠: PlayerShockwave_UpdateAnim
   bool8 finished;              // 0x64, アニメーションが最後まで行くと立つ, 読んだ側は 0 に戻す
   u8 unk_65[3];                // 0x65, padding?
   PlayerShockwaveFunc update;  // 0x68, PlayerShockwave_UpdateAnim か PlayerShockwave_UpdateFlash
