@@ -35,7 +35,7 @@ _0806292C:
 	adds r0, r5, r1
 	strb r2, [r0]
 	adds r0, r5, #0
-	bl FUN_080622d0
+	bl Player_BuildPltt
 _0806293A:
 	ldr r2, _0806299C @ =0x0000096C
 	adds r0, r5, r2

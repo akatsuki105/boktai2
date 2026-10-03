@@ -1179,7 +1179,73 @@ void Player_InitPtcl858(Player* p) {
   st->unk_06 = 0;
 }
 
-NAKED void FUN_080622d0(Player* p) { INCFUNC("asm/func/FUN_080622d0.inc"); }
+// 自前のパレット pltt_2a4 を作る, unk_94e のぶん全チャンネルを明るくし, unk_359 が 0 なら色5/6/13 は触らない
+// 残差5命令 (159/154): 原典は高位レジスタを r8 の1本で済ませているが, こちらは r9 も使ってしまう
+// Tier A/B と dst のローカル化有無は試済
+NON_MATCH void Player_BuildPltt(Player* p) {
+#ifdef NONMATCHING_C
+  rgb555* src = &gObjPlttData[p->plttIDs[p->unk_94c] * 16];
+  s32 i;
+
+  if (p->unk_94e == 0) {
+    if (p->unk_359 == 0) {
+      for (i = 0; i < 16; i++) {
+        if (i != 5 && i != 6 && i != 13) {
+          p->pltt_2a4[i] = src[i];
+        }
+      }
+    } else {
+      for (i = 0; i < 16; i++) {
+        p->pltt_2a4[i] = src[i];
+      }
+    }
+  } else if (p->unk_359 == 0) {
+    for (i = 0; i < 16; i++) {
+      if (i != 5 && i != 6 && i != 13) {
+        u16 c = src[i];
+        s32 r = (c & 0x1F) + p->unk_94e;
+        s32 g;
+        s32 b;
+
+        if (r > 0x1F) {
+          r = 0x1F;
+        }
+        g = ((c >> 5) & 0x1F) + p->unk_94e;
+        if (g > 0x1F) {
+          g = 0x1F;
+        }
+        b = ((c >> 10) & 0x1F) + p->unk_94e;
+        if (b > 0x1F) {
+          b = 0x1F;
+        }
+        p->pltt_2a4[i] = (b << 10) | (g << 5) | r;
+      }
+    }
+  } else {
+    for (i = 0; i < 16; i++) {
+      u16 c = src[i];
+      s32 r = (c & 0x1F) + p->unk_94e;
+      s32 g;
+      s32 b;
+
+      if (r > 0x1F) {
+        r = 0x1F;
+      }
+      g = ((c >> 5) & 0x1F) + p->unk_94e;
+      if (g > 0x1F) {
+        g = 0x1F;
+      }
+      b = ((c >> 10) & 0x1F) + p->unk_94e;
+      if (b > 0x1F) {
+        b = 0x1F;
+      }
+      p->pltt_2a4[i] = (b << 10) | (g << 5) | r;
+    }
+  }
+#else
+  INCFUNC("asm/func/Player_BuildPltt.inc");
+#endif
+}
 
 // 屋外かどうかと PFLAG20 の 0x10 で 0 / 4 / 8 を返す
 // 残差は屋外判定の 0/1 正規化4命令だけ (29/34), 原典は真偽値を一度レジスタに作ってから 0 と比べている

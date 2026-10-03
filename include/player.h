@@ -315,7 +315,7 @@ typedef struct Player {
   PlayerParticleState718 ptcl_718;  // 0x718, 根拠: Player_InitPtcl718
   PlayerParticleState858 ptcl_858;  // 0x858, 根拠: Player_InitPtcl858
   Vec3 pos_930;                     // 0x930, FUN_08067f88 が mover.pos をずらして書く
-  u8 unk_938[0x94A - 0x938];
+  u16 plttIDs[9];                   // 0x938, unk_94c で引くパレットIDの表, 根拠: Player_BuildPltt
 
   u16 plttID_94a;    // 0x94A, Player_ResetPltt
   s16 unk_94c;       // 0x94C, Player_ResetPltt

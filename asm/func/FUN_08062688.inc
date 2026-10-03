@@ -35,7 +35,7 @@ _080626C8:
 	adds r0, r5, r1
 	strb r2, [r0]
 	adds r0, r5, #0
-	bl FUN_080622d0
+	bl Player_BuildPltt
 _080626D6:
 	movs r3, #0x96
 	lsls r3, r3, #4
