@@ -147,7 +147,7 @@ void FUN_080ec848(u8 kind, void* payload, u16 id) {
   if (node != NULL) {
     while (node->next != NULL) {
       p = node->enemy;
-      if ((p->kind == kind) && (p->unk_0.id == id) && (p->handlerMsg != NULL)) {
+      if ((p->kind == kind) && (p->mover.id == id) && (p->handlerMsg != NULL)) {
         p->handlerMsg(p, payload);
         return;
       }
@@ -366,7 +366,7 @@ NON_MATCH Enemy* FUN_080edce8(u32 id) {
       if (((p->flags & flag) == 0) && (id == 0)) {
         return p;
       }
-      if (p->unk_0.id == id) {
+      if (p->mover.id == id) {
         id = 0;
       }
       node = node->next;
@@ -388,7 +388,7 @@ Enemy* FindEnemyById(u32 id) {
   Enemy* p;
 
   for (node = gEnemyListHead; (p = node->enemy) != NULL; node = node->next) {
-    if (p->unk_0.id == id) {
+    if (p->mover.id == id) {
       return p;
     }
   }
@@ -431,7 +431,7 @@ NON_MATCH bool32 FUN_080ede14(u32 kind, u32 mask) {
 #ifdef NONMATCHING_C
   Enemy* p;
 
-  for (p = GetFirstEnemy(); p != NULL; p = FUN_080edce8(p->unk_0.id)) {
+  for (p = GetFirstEnemy(); p != NULL; p = FUN_080edce8(p->mover.id)) {
     if ((p->kind == kind) && (FUN_080e8a60(p) == 0) && ((p->flags & mask) != 0)) {
       return TRUE;
     }
