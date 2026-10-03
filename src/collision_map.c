@@ -82,6 +82,7 @@ void UpdateMapSize_0823279c(void) {
   gMapBlockH = (gCollisionMap->tiledata)->height;
 }
 
+// このゲームでこの関数が呼ばれることはない
 s32 Map_LoadTileData(FileID id) {
   gCollisionMap->tiledata = GetFile(0xAE1B, id);  // これNULLを返すっぽいけど...
   Map_BuildNeighborOffsets();
@@ -305,6 +306,7 @@ NAKED s32 FUN_082342cc(unknown* param_1, unknown* param_2) { INCFUNC("asm/func/F
 
 bool32 FUN_082345ec(void) { return bool32_0300077c; }
 
+// このゲームでこの関数が呼ばれることはない
 s32 Map_LoadZones(FileID id) {
   gCollisionMap->zones = GetFile(0xDCFB, id);
   bool32_0300077c = FALSE;
@@ -481,6 +483,7 @@ bool8 Map_IsPosInZoneByID(ZoneID16 id, Vec3* pos) {
   return FALSE;
 }
 
+// このゲームでこの関数が呼ばれることはない
 s32 Map_LoadPaths(FileID id) {
   gCollisionMap->paths = GetFile(0xD4FB, id);
   return 0;
@@ -768,6 +771,7 @@ NON_MATCH s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 param_4, s32 para
 #endif
 }
 
+// このゲームでこの関数が呼ばれることはない
 NON_MATCH s32 Map_LoadNavMesh(FileID id) {
 #ifdef NONMATCHING_C
   gCollisionMap->navMesh = GetFile(0xF63B, id);

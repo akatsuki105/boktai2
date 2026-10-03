@@ -66,8 +66,8 @@ typedef struct {
   u32 unk_0;                  // 0x00
   s16 width;                  // 0x04
   s16 height;                 // 0x06
-  s16 tilemap_offset_x;       // 0x08, pixel position of tilemap on the collision map (for camera)
-  s16 tilemap_offset_y;       // 0x0A, pixel position of tilemap on the collision map (for camera)
+  s16 tilemapOffsetX;         // 0x08, pixel position of tilemap on the collision map (for camera)
+  s16 tilemapOffsetY;         // 0x0A, pixel position of tilemap on the collision map (for camera)
   CollisionMapTile tiles[1];  // 0x0C, CollisionMapTile[width * height]
 } CollisionMapTileData;
 
@@ -106,7 +106,7 @@ typedef struct {
 } PathNode;
 
 typedef struct {
-  u16 nodeCount;   // 0x00, number of PathNode
+  u16 nodeCount;   // 0x00, PathNode の数
   u16 nodeOffset;  // 0x02, Byte offset from start of PathData to first node
 } Path;
 
@@ -174,8 +174,8 @@ typedef struct {
 } NavIsland;
 
 typedef struct {
-  u16 countIslands;      // 0x00, 根拠: Map_FindNavRectAt が ldrh で読んで符号つきで比べる
-  u16 unk_02;            // 0x02
+  u16 countIslands;      // 0x00
+  u16 unk_02;            // 0x02, padding?
   u32 islandOffsets[1];  // 0x04, islandOffsets[countIslands]
   NavIsland islands[1];  // NavIsland[countIslands]
 } NavMesh;
@@ -186,7 +186,7 @@ typedef struct {
 // 根拠: FUN_080412fc が Entity286F の 0x0A0 に mover.id と &mover.pos を入れて FUN_08234660 に渡す
 typedef struct {
   u16 id;       // 0x00, Mover.id の複写
-  u8 unk_2[2];  // 0x02
+  u8 unk_2[2];  // 0x02, padding?
   Vec3* pos;    // 0x04, Mover.pos を指す
 } ZoneEventSource;
 static_assert(sizeof(ZoneEventSource) == 8);
@@ -195,7 +195,7 @@ static_assert(sizeof(ZoneEventSource) == 8);
 // Map_InsertEvent は同じ zoneID が連続するように挿し込む: 末尾から同じ zoneID を探し、見つかればその次へ (後続を1つずつずらす)、無ければ末尾に追加する
 typedef struct CollisionMapEvent {
   u32 id;           // 0x00, Map_InsertEvent が gNextMapEventID の連番を書く
-  u16 unk_4;        // 0x04, '.m=0x0DD2', FUN_08234660 が 0xDD2/0x14C9/0x1516/0x1517/0xA5BF と比較する
+  u16 unk_4;        // 0x04, '.m=0x0DD2', FUN_08234660 が 0x0DD2/0x14C9/0x1516/0x1517/0xA5BF と比較する
   u16 unk_6;        // 0x06, VM_Ctrl_SetZoneCallback の VM_GetValue 2番目
   ZoneID16 zoneID;  // 0x08, 発火させるゾーンのID, FindZonesByID に渡す, 挿入時のソートキーでもある (根拠: Map_InsertEvent)
   s16 unk_a;        // 0x0A
@@ -214,7 +214,7 @@ static_assert(sizeof(CollisionMapEvent) == 44);
 // 読み込み中のコリジョンマップ, gCollisionMap が指す, Malloc(3620) で確保される (Map_InitCollisionMap)
 typedef struct CollisionMapData {
   u16 eventCount;                  // 0x000, events の件数, 根拠: Map_ResetCollisionMap が 0 を書き Map_InsertEvent が +1 する
-  u8 unk_2[2];                     // 0x002, 読み書きするコードが見つかっていない, padding?
+  u8 unk_2[2];                     // 0x002, padding
   CollisionMapTileData* tiledata;  // 0x004
   u32 unk_8;                       // 0x008, Map_ResetCollisionMap が 0 を書くだけで読み手がいない
   ZoneData* zones;                 // 0x00C
