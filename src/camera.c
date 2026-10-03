@@ -49,17 +49,17 @@ s32 Map_LoadCollisionMapFile(s32 id) {
 
   f = OpenCollisionMapFile(file);
   hdr = *f;
-  hdr.offsetToTileData += (u32)f;
-  hdr.offsetToZones += (u32)f;
-  hdr.offsetToPaths += (u32)f;
-  if (hdr.offsetToNavmesh != 0) {
-    hdr.offsetToNavmesh += (u32)f;
+  hdr.tileData.offset += (u32)f;
+  hdr.zones.offset += (u32)f;
+  hdr.paths.offset += (u32)f;
+  if (hdr.navMesh.offset != 0) {
+    hdr.navMesh.offset += (u32)f;
   }
 
-  FUN_082327f0((CollisionMapTileData*)hdr.offsetToTileData);
-  FUN_08234624((ZoneData*)hdr.offsetToZones);
-  FUN_08234ddc((PathData*)hdr.offsetToPaths);
-  FUN_08235918((NavMesh*)hdr.offsetToNavmesh);
+  FUN_082327f0(hdr.tileData.ptr);
+  FUN_08234624(hdr.zones.ptr);
+  FUN_08234ddc(hdr.paths.ptr);
+  FUN_08235918(hdr.navMesh.ptr);
   return 0;
 }
 
