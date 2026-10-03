@@ -277,7 +277,26 @@ void FUN_080612bc(Player* p) {
 
 NAKED void FUN_080612d8(Player* p) { INCFUNC("asm/func/FUN_080612d8.inc"); }
 
-NAKED void FUN_08061384(Player* p) { INCFUNC("asm/func/FUN_08061384.inc"); }
+// 0x64C のパーティクルを1フレーム進める, 4フレームごとにパレットを1段ずらし6フレーム過ぎたら消す
+// 残差は timer++ のレジスタ組だけ (42/43, 原典はアドレスを r1・値を r0 に置く), Tier A/B と C のローカル化は試済
+NON_MATCH void Player_UpdatePtcl64c(Player* p) {
+#ifdef NONMATCHING_C
+  if (p->ptcl_64c.active == 0) {
+    return;
+  }
+
+  p->ptcl_64c.timer++;
+  if (p->ptcl_64c.timer > 5) {
+    p->ptcl_64c.ptcl.flags |= SPRFLAG_HIDDEN;
+    p->ptcl_64c.active = 0;
+    return;
+  }
+
+  FUN_0822dafc(&p->ptcl_64c.ptcl, p->ptcl_64c.group1, (p->ptcl_64c.timer >> 2) + p->ptcl_64c.plttBase);
+#else
+  INCFUNC("asm/func/Player_UpdatePtcl64c.inc");
+#endif
+}
 
 NAKED void FUN_080613ec(Player* p, unknown* param_2, s32 val) { INCFUNC("asm/func/FUN_080613ec.inc"); }
 
@@ -296,8 +315,8 @@ NON_MATCH void FUN_08061458(Player* p) {
   st->ptcl.flags |= SPRFLAG_HIDDEN;
   st->ptcl.priority = 1;
   st->ptcl.offsetZ = 0x14;
-  st->unk_2c = 0;
-  st->unk_2d = 0;
+  st->active = 0;
+  st->timer = 0;
 #else
   INCFUNC("asm/func/FUN_08061458.inc");
 #endif
@@ -319,8 +338,8 @@ NON_MATCH void FUN_0806161c(Player* p) {
   st->ptcl.flags |= SPRFLAG_HIDDEN;
   st->ptcl.priority = 1;
   st->ptcl.offsetZ = 0x14;
-  st->unk_2c = 0;
-  st->unk_2d = 0;
+  st->active = 0;
+  st->timer = 0;
 #else
   INCFUNC("asm/func/FUN_0806161c.inc");
 #endif

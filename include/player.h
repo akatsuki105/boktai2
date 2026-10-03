@@ -91,9 +91,9 @@ static_assert(sizeof(Particle52) == 52);
 typedef struct {
   ParticleGroup* group1;  // 0x00, PTCL_GROUP_1
   Particle ptcl;          // 0x04
-  u8 unk_2c;              // 0x2C
-  u8 unk_2d;              // 0x2D
-  u8 unk_2e;              // 0x2E, FUN_080613ec
+  bool8 active;           // 0x2C, 0 なら更新しない, 再生が終わると 0 に戻る
+  u8 timer;               // 0x2D, 毎フレーム +1, 5 を超えると終わり
+  u8 plttBase;            // 0x2E, FUN_0822dafc に渡すパレット番号の起点, timer >> 2 が足される
   u8 unk_2f;              // 0x2F, padding?
 } PlayerParticleGroup1;
 static_assert(sizeof(PlayerParticleGroup1) == 48);
