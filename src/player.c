@@ -686,12 +686,63 @@ void FUN_0806181c(Player* p) {
 }
 
 // 黒ジャンゴが剣で攻撃する時に1回呼ばれる, idx はプレイヤーの向きで変わる (多分、 衝撃波 を出す処理)
-NAKED void Player_DarkDjangoSword_0806185c(Player* p, u32 idx, Vec3* pos) { INCFUNC("asm/func/Player_DarkDjangoSword_0806185c.inc"); }
+// 黒ジャンゴが剣で攻撃する時に1回呼ばれる, 衝撃波を向きに応じてずらして出す
+// 残差7命令 (130/123): 原典は idx を r6 に置いたまま回せているが, こちらはレジスタが足りず ip に退避してしまう
+// gSineTable のローカル化は原典と逆 (原典は初回参照時に作る) で効かなかった, Tier A/B は試済
+NON_MATCH void Player_SpawnSwordShockwave(Player* p, u32 idx, Vec3* pos) {
+  AuxSprite* sprite = &p->meleeShockwave.sprite;
+  s32 angle = ((p->facing + 5) & 7) * 32;
+  s32 v;
+  s32 offset;
+  s32 variant;
+  s32 flags;
+
+#ifdef NONMATCHING_C
+  sprite->pos = *pos;
+  sprite->pos.y += 0xBE;
+
+  v = gSineTable[(angle + 0x40) & 0xFF] * 240;
+  if (v >= 0) {
+    offset = v >> 12;
+  } else {
+    offset = -((-v) >> 12);
+  }
+  sprite->pos.x += offset;
+
+  v = gSineTable[angle] * 240;
+  if (v >= 0) {
+    offset = v >> 12;
+  } else {
+    offset = -((-v) >> 12);
+  }
+  sprite->pos.z += offset;
+
+  v = gSineTable[(angle + 0x40) & 0xFF] * 10;
+  if (v >= 0) {
+    p->meleeShockwave.velX = v >> 12;
+  } else {
+    p->meleeShockwave.velX = -((-v) >> 12);
+  }
+
+  v = gSineTable[angle] * 10;
+  if (v >= 0) {
+    p->meleeShockwave.velZ = v >> 12;
+  } else {
+    p->meleeShockwave.velZ = -((-v) >> 12);
+  }
+
+  Player_GetShockwaveDirParams(idx, &variant, &flags);
+  AuxAnim_SetAnim(&p->meleeShockwave.anim, p->meleeShockwave.animFile, 0, variant, flags);
+  FUN_0806181c(p);
+#else
+  INCFUNC("asm/func/Player_SpawnSwordShockwave.inc");
+#endif
+}
 
 // 黒ジャンゴが槍で攻撃する時に1回呼ばれる, idx はプレイヤーの向きで変わる (多分、 衝撃波 を出す処理)
 NAKED void Player_DarkDjangoSpear_08061970(Player* p, u32 idx, Vec3* pos, s32 n) { INCFUNC("asm/func/Player_DarkDjangoSpear_08061970.inc"); }
 
-// Player_DarkDjangoSword_0806185c のような関数だが、いつ呼ばれるか不明 (武器の攻撃ではない)
+// Player_SpawnSwordShockwave のような関数だが、いつ呼ばれるか不明 (武器の攻撃ではない)
 // 衝撃波を pos から向きの反対側に少しずらして出す
 void Player_SpawnShockwaveBehind(Player* p, u32 idx, Vec3* pos) {
   AuxSprite* sprite = &p->meleeShockwave.sprite;
