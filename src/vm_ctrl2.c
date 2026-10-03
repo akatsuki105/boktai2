@@ -85,7 +85,7 @@ NON_MATCH s32 VM_Ctrl_SetZoneCallback(void* r0) {
 
   FUN_082345ec();
   ClearMemory(&ev, sizeof(ev));
-  ev.unk_8 = VM_GetValue();
+  ev.zoneID = VM_GetValue();
   ev.unk_6 = VM_GetValue();
   if (VM_SeekToNamedArg('m')) {
     ev.unk_4 = VM_GetValue();
@@ -94,7 +94,7 @@ NON_MATCH s32 VM_Ctrl_SetZoneCallback(void* r0) {
   }
 
   ev.unk_a = VM_GetNamedArgValue('t', 0);
-  ev.unk_c = 0;
+  ev.flags = 0;
   if (ev.unk_6 == 0x3F) {
     ev.unk_6 = 0x14C9;
   }
@@ -133,7 +133,7 @@ NON_MATCH s32 VM_Ctrl_SetZoneCallback(void* r0) {
   }
 
   if (VM_SeekToNamedArg('b')) {
-    ev.unk_c |= 0x10;
+    ev.flags |= 0x10;
     ev.unk_20 = (u8*)VM_GetValue();
   }
 
@@ -141,12 +141,12 @@ NON_MATCH s32 VM_Ctrl_SetZoneCallback(void* r0) {
     VM_DecodeValue(VM_GetPC(), &type, &val);
     ev.scriptPC = (u8*)val;
   } else if (VM_SeekToNamedArg('p')) {
-    ev.unk_c |= 0x20;
+    ev.flags |= 0x20;
     ev.scriptPC = (u8*)VM_GetValue();
   }
 
   ev.zoneCount = 0;
-  ev.zones = FindZonesByID(ev.unk_8, &ev.zoneCount);
+  ev.zones = FindZonesByID(ev.zoneID, &ev.zoneCount);
   if (ev.zones == NULL) {
     return -1;
   }
