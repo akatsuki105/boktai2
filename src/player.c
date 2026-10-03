@@ -2611,11 +2611,8 @@ u32 CheckParalyzeProc(Player* p) {
 }
 
 // ブラッドソードの吸収, 通常状態でジャンゴなら unk_376 を増やし, それ以外なら HP を1回復して判定を出す
-// 命令数は63で一致, 残差は定数の組み立て順とレジスタ選択だけ (原典は 0x378 のレジスタを subs #2 で 0x376 に使い回す)
-// CalcMagicCost / Player_PayMagicCost と同じ系統の残差
-NON_MATCH void Player_UpdateBloodSword(Player* p) {
-#ifdef NONMATCHING_C
-  if (p->unk_1c != 1 || !(p->flag378 & FLAG378_BLOOD_SWORD)) {
+void Player_UpdateBloodSword(Player* p) {
+  if (p->unk_1c != 1 || !Player_TestFlag378(p, FLAG378_BLOOD_SWORD)) {
     return;
   }
 
@@ -2631,9 +2628,6 @@ NON_MATCH void Player_UpdateBloodSword(Player* p) {
     p->hp++;
     FUN_0805fe7c(&p->unk_16c, 1, 1, &p->mover.pos, &p->pos_970, p->unk_978);
   }
-#else
-  INCFUNC("asm/func/Player_UpdateBloodSword.inc");
-#endif
 }
 
 // 装備した武器の特殊効果に応じて, ダメージ計算時に呼ばれるコールバックとフラグを登録する
