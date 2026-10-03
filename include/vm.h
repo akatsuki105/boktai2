@@ -146,7 +146,6 @@ typedef struct {
   u8* specialScriptData;  // 0x0C, 0x08DA9E60, ScriptDirectory.specialScriptData
 } ScriptTable;
 
-// ScriptTable と StringTable として別々の構造体の可能性が高い
 typedef struct {
   ScriptDirectoryOffsets* offsets;  // 0x0, = &ScriptDirectory.offsets
   u32* header;                      // 0x4, gStringHeader

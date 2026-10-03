@@ -23,9 +23,17 @@ IWRAM_DATA SystemSaveData gSystemSaveDataBuffer = {};  // 0x030016C0
 
 u32 FUN_082321e0(u8* pc);
 void FUN_0822d0e4(void);
+void Save_BackupStatAndWorld(void);
+void FUN_0823cd04(void);
+bool32 Map_ResetCollisionMap(void);
+void* HitboxManager_Create(void);
 
 static inline void DisableEntityFlags(u32 flags) { gEntityDisableFlags |= flags; }
 static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
+
+static inline u32 TestFlag030047a4(u32 flags) { return (gFlag030047a4 | u32_030047a0) & flags; }
+
+static inline void ShowBG(u32 bits) { gStagedDISPCNT |= bits; }
 
 NAKED s32 FUN_0823a6c0(void) { INCFUNC("asm/func/FUN_0823a6c0.inc"); }
 
@@ -90,14 +98,7 @@ void FUN_0823a910(void) { bool32_03004788 = TRUE; }
 
 void FUN_0823a91c(void) { bool32_03004788 = FALSE; }
 
-void Save_BackupStatAndWorld(void);
-void FUN_0823cd04(void);
-bool32 Map_ResetCollisionMap(void);
-void* HitboxManager_Create(void);
-
 NAKED s32 SoftReset_0823a928(void) { INCFUNC("asm/func/SoftReset_0823a928.inc"); }
-
-static inline void ShowBG(u32 bits) { gStagedDISPCNT |= bits; }
 
 void FUN_0823a9c4(void) {
   gObjBlendEnabled = 0;
@@ -112,8 +113,6 @@ void FUN_0823a9f4(void) {
   FUN_0824082c();
   EnableEntityFlags(ENTITY_DISABLE_1);
 }
-
-static inline u32 TestFlag030047a4(u32 flags) { return (gFlag030047a4 | u32_030047a0) & flags; }
 
 void FUN_0823aa10(void) {
   if (!TestFlag030047a4(FLAG030047A4_UNK_0)) {
@@ -167,6 +166,7 @@ s32 FUN_0823ad98(void) {
 
 u32 FUN_0823adc0(void) { return FUN_082321e0(VM_GetPC()); }
 
+// 0xA222
 NAKED bool32 FUN_0823add0(void) { INCFUNC("asm/func/FUN_0823add0.inc"); }
 
 NON_MATCH bool32 UNUSED FUN_0823ae14(Entity0823acbc* p) {
@@ -175,15 +175,8 @@ NON_MATCH bool32 UNUSED FUN_0823ae14(Entity0823acbc* p) {
   p->unk_1c = 0;
   FUN_0823a9c4();
   VM_ClearScratchpad_Proxy();
-
-  if (gMapInitScriptID != 0) {
-    VM_ExecByID(gMapInitScriptID, NULL);
-  }
-
-  if (gMapInitScriptID == 0) {
-    VM_ExecSpecial();
-  }
-
+  if (gMapInitScriptID != 0) VM_ExecByID(gMapInitScriptID, NULL);
+  if (gMapInitScriptID == 0) VM_ExecSpecial();
   return TRUE;
 #else
   INCFUNC("asm/func/FUN_0823ae14.inc");
