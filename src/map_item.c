@@ -208,7 +208,8 @@ void MapItem_UpdateFall(MapItemManager* p, MapItem* item) {
   s32 bx = pos->x >> 8;
   s32 bz = pos->z >> 8;
   u32 idx;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
   s32 ground;
   s32 stairs;
   s32 d;
@@ -218,14 +219,14 @@ void MapItem_UpdateFall(MapItemManager* p, MapItem* item) {
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  tile = (u8*)Map_FindTileOverride(idx, 1);
-  if (tile != NULL) {
-    tile += 4;
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    tile = &ov->tile;
   } else {
-    tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+    tile = &gCollisionMap->tiledata->tiles[idx];
   }
-  stairs = *tile >> 4;
-  ground = (*tile & 0xF) << 8;
+  stairs = tile->heightStairs >> 4;
+  ground = (tile->heightStairs & 0xF) << 8;
   switch (stairs) {
     case 1: {
       ground -= (u8)pos->z;
@@ -260,7 +261,8 @@ void MapItem_UpdateBounce(MapItemManager* p, MapItem* item) {
   s32 bx = pos->x >> 8;
   s32 bz = pos->z >> 8;
   u32 idx;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
   s32 ground;
   s32 stairs;
 
@@ -269,14 +271,14 @@ void MapItem_UpdateBounce(MapItemManager* p, MapItem* item) {
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  tile = (u8*)Map_FindTileOverride(idx, 1);
-  if (tile != NULL) {
-    tile += 4;
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    tile = &ov->tile;
   } else {
-    tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+    tile = &gCollisionMap->tiledata->tiles[idx];
   }
-  stairs = *tile >> 4;
-  ground = (*tile & 0xF) << 8;
+  stairs = tile->heightStairs >> 4;
+  ground = (tile->heightStairs & 0xF) << 8;
   switch (stairs) {
     case 1: {
       ground -= (u8)pos->z;

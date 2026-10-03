@@ -100,7 +100,8 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   AuxSpriteGfx* gfx;
   HitboxData* hitbox;
   Vec3* pos;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
   s32 bx, bz, idx;
   s32 h;
   u32 z;
@@ -148,13 +149,13 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  tile = (u8*)Map_FindTileOverride(idx, 1);
-  if (tile != NULL) {
-    tile += 4;
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    tile = &ov->tile;
   } else {
-    tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+    tile = &gCollisionMap->tiledata->tiles[idx];
   }
-  h = *tile & 0xF;
+  h = tile->heightStairs & 0xF;
   if (h < 0xF) {
     h++;
   }

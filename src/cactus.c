@@ -229,7 +229,8 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   Vec3* min;
   Vec3* max;
   MapTileOverride* tileOverride;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
   s32 bx, bz, idx;
   s32 h;
   s32 i;
@@ -290,13 +291,13 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  tile = (u8*)Map_FindTileOverride(idx, 1);
-  if (tile != NULL) {
-    tile += 4;
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    tile = &ov->tile;
   } else {
-    tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+    tile = &gCollisionMap->tiledata->tiles[idx];
   }
-  h = *tile & 0xF;
+  h = tile->heightStairs & 0xF;
   if (h < 0xF) {
     h++;
   }

@@ -111,7 +111,8 @@ NON_MATCH void FreezeEffect_StateVanish(FreezeEffect* p) {
   Vec3* pos;
   s32 y;
   s32 bx, bz, idx;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
   u32 attr, kind, h;
   u16* table;
   u32 ridx;
@@ -130,13 +131,13 @@ NON_MATCH void FreezeEffect_StateVanish(FreezeEffect* p) {
     } else {
       idx = gCollisionMap->rowOffsets[bz] + bx;
     }
-    tile = (u8*)Map_FindTileOverride(idx, 1);
-    if (tile != NULL) {
-      tile += 4;
+    ov = Map_FindTileOverride(idx, 1);
+    if (ov != NULL) {
+      tile = &ov->tile;
     } else {
-      tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+      tile = &gCollisionMap->tiledata->tiles[idx];
     }
-    attr = *tile;
+    attr = tile->heightStairs;
     kind = attr >> 4;
     h = (attr & 0xF) << 8;
     switch (kind) {

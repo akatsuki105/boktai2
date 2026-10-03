@@ -157,7 +157,8 @@ void EntityF41A_InitData(EntityF41A* p) {
   Vec3* q;
   s32 bx, bz;
   u32 idx;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
   s32 ground;
   s32 stairs;
 
@@ -176,14 +177,14 @@ void EntityF41A_InitData(EntityF41A* p) {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
 
-  tile = (u8*)Map_FindTileOverride(idx, 1);
-  if (tile != NULL) {
-    tile += 4;
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    tile = &ov->tile;
   } else {
-    tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+    tile = &gCollisionMap->tiledata->tiles[idx];
   }
-  stairs = *tile >> 4;
-  ground = (*tile & 0xF) << 8;
+  stairs = tile->heightStairs >> 4;
+  ground = (tile->heightStairs & 0xF) << 8;
   switch (stairs) {
     case 1: {
       ground -= (u8)q->z;
