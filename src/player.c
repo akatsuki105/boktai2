@@ -860,7 +860,9 @@ void FUN_0806181c(Player* p) {
 
 // 黒ジャンゴが剣で攻撃する時に1回呼ばれる, idx はプレイヤーの向きで変わる (多分、 衝撃波 を出す処理)
 // 黒ジャンゴが剣で攻撃する時に1回呼ばれる, 衝撃波を向きに応じてずらして出す
-// 残差7命令 (130/123): 原典は idx を r6 に置いたまま回せているが, こちらはレジスタが足りず ip に退避してしまう
+// 命令数は123で一致, 原典は idx を r6 に置いたまま回せているが, こちらはレジスタが足りず ip に退避してしまう
+// 直接の原因は gSineTable のポインタを `adds r6, r2, #0` で call-saved に写してしまうこと (原典は r2 のまま使い回す)
+// sprite ローカルの除去・PlayerShockwave* 化・gSineTable のローカル化はいずれも逆に遠ざかる
 // gSineTable のローカル化は原典と逆 (原典は初回参照時に作る) で効かなかった, Tier A/B は試済
 NON_MATCH void Player_SpawnSwordShockwave(Player* p, u32 idx, Vec3* pos) {
   AuxSprite* sprite = &p->meleeShockwave.sprite;
