@@ -143,7 +143,8 @@ typedef struct Player {
   MainSpriteGfx spriteSet_68;  // 0x068, 根拠： FUN_08060a24
   MainSprite sprite_88;        // 0x088, 根拠： FUN_08060a24
   AuxSprite sprite_e8;         // 0x0E8, Player_Destroy が AuxSprite_Remove に渡す, pos は 0x104 で FUN_0807a91c が mover.pos / sprite_88.pos と一緒に書く
-  u8 unk_114[0x16C - 0x114];
+  AuxSpriteGfx* gfx_114;       // 0x114, 根拠: Player_ResetPltt が plttID(+0x06) と pltt(+0x0C) を書く
+  u8 unk_118[0x16C - 0x118];
   HitboxData unk_16c;  // 0x16C
   MoverTile tile;      // 0x1BC, mover.tile がここを指す
   u8 unk_1cc[0x220 - 0x1CC];
@@ -271,11 +272,11 @@ typedef struct Player {
   Vec3 pos_930;                     // 0x930, FUN_08067f88 が mover.pos をずらして書く
   u8 unk_938[0x94A - 0x938];
 
-  u16 plttID_94a;  // 0x94A, FUN_08063084
-  s16 unk_94c;     // 0x94C, FUN_08063084
+  u16 plttID_94a;  // 0x94A, Player_ResetPltt
+  s16 unk_94c;     // 0x94C, Player_ResetPltt
   u8 unk_94e;      // 0x94E, FUN_08062688
   u8 unk_94f;      // 0x94F
-  u8 unk_950;      // 0x950, FUN_08063084
+  u8 unk_950;      // 0x950, Player_ResetPltt
   u8 unk_951;      // 0x951, FUN_0806f780 が unk_a8d + 1 (負なら 0) を入れる
   u8 unk_952[0x95A - 0x952];
   u16 flashPose;   // 0x95A, flashTimer の bit2 が立っている間 Player_ApplyFlashPose が pose の代わりに返す値

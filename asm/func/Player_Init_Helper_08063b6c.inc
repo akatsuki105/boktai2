@@ -78,7 +78,7 @@ _08063BFA:
 	strb r0, [r1]
 _08063C0E:
 	adds r0, r5, #0
-	bl FUN_08063084
+	bl Player_ResetPltt
 	adds r0, r5, #0
 	bl FUN_08061458
 	adds r0, r5, #0

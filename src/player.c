@@ -519,7 +519,18 @@ void FUN_08062c14(Player* p) {
 
 NAKED void FUN_08062c3c(Player* p) { INCFUNC("asm/func/FUN_08062c3c.inc"); }
 
-NAKED void FUN_08063084(Player* p) { INCFUNC("asm/func/FUN_08063084.inc"); }
+// スプライトのパレットを自前の pltt_2a4 に差し替えて初期状態に戻す
+void Player_ResetPltt(Player* p) {
+  FUN_08062c14(p);
+  FUN_08062c3c(p);
+  p->unk_94c = 0xFFFF;
+  p->unk_950 = 0xFF;
+  p->sprite_88.plttID = p->plttID_94a;
+  p->sprite_88.pltt = p->pltt_2a4;
+  p->gfx_114->plttID = p->plttID_94a;
+  p->gfx_114->pltt = p->pltt_2a4;
+  FUN_08062688(p, 0);
+}
 
 NAKED void FUN_080630e8(Player* p) { INCFUNC("asm/func/FUN_080630e8.inc"); }
 
