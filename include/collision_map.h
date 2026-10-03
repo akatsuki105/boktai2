@@ -32,7 +32,7 @@ extern u8 gDecompressedCollisionMapFile[16380];  // 0x02031404, 展開された 
 // 地形の上書き情報を管理する構造体
 // 根拠: Map_AddTileOverride (挿入) / FUN_082342a8 (除去) / FUN_08234208 (各フィールドの初期化)
 typedef struct MapTileOverride {
-  u16 unk_0;                     // 0x00, FUN_08234208 が 0 を書く
+  u16 flags;                     // 0x00, Map_FindTileOverride が引数のマスクと AND を取って弾く, FUN_08234208 は 0 を書く
   u16 tileIdx;                   // 0x02, FUN_08234208 の第2引数, 呼び出し側はコリジョンマップのタイル索引を渡す
   u8 height;                     // 0x04, FUN_08234208 が param_3 << 4 | param_4 を書く, 呼び出し側はタイルの高さを渡す
   u8 unk_5;                      // 0x05, EntityEC96_Init は 0xFF を渡す
@@ -155,7 +155,7 @@ typedef struct {
 
 // スクリプトから登録されるイベント, VM_Ctrl_SetZoneCallback が 44バイトを組み立て FUN_082349b8 が unk_8 をキーに挿入する
 typedef struct CollisionMapEvent {
-  u32 id;           // 0x00, FUN_082349b8 が u32_030046b0 の連番を書く
+  u32 id;           // 0x00, FUN_082349b8 が gNextMapEventID の連番を書く
   u16 unk_4;        // 0x04, '.m=0x0DD2', FUN_08234660 が 0xDD2/0x14C9/0x1516/0x1517/0xA5BF と比較する
   u16 unk_6;        // 0x06, VM_Ctrl_SetZoneCallback の VM_GetValue 2番目
   ZoneID16 zoneID;  // 0x08, 発火させるゾーンのID, FindZonesByID に渡す, 挿入時のソートキーでもある (根拠: FUN_082349b8)
@@ -185,7 +185,7 @@ typedef struct CollisionMapData {
   s16 neighborOffsets[4];          // 0x01C, 隣接タイルへの索引差分 -w/1/w/-1, 根拠: FUN_0823273c, 読み手は (dir & 3) で引く
   u16 rowOffsets[256];             // 0x024, 行ごとのタイル索引オフセット表, rowOffsets[blockZ] + blockX がタイル索引
   CollisionMapEvent events[64];    // 0x224, 根拠: Map_ResetCollisionMap が i=0..63 で 44バイトずつクリアする
-  u32 unk_d24[64];                 // 0xD24, events と同じ添字の並列配列, FUN_082349b8 の第2引数が入る
+  u32 unk_d24[64];                 // 0xD24, events と同じ添字の並列配列, FUN_082349b8 の第2引数が入り、挿入・削除で events と一緒にずらされる, 読み手は未発見
 } CollisionMapData;
 static_assert(sizeof(CollisionMapData) == 3620);
 

@@ -10,7 +10,7 @@ IWRAM_DATA bool32 bool32_0300077c = FALSE;  // 0x0300077C
 
 bool32 Map_ResetCollisionMap(void);
 void FUN_08234bd8(CollisionMapEvent* ev);
-extern u32 u32_030046b0;  // src/iwram2.c
+extern u32 gNextMapEventID;  // src/iwram2.c
 
 void FUN_082326a0(void) {
   CollisionMapData* p = Malloc(sizeof(CollisionMapData));
@@ -33,7 +33,7 @@ bool32 Map_ResetCollisionMap(void) {
   gCollisionMap->zones = NULL;
   gCollisionMap->paths = NULL;
   gCollisionMap->tileOverrides = NULL;
-  u32_030046b0 = 0;
+  gNextMapEventID = 0;
   gCollisionMap->eventCount = 0;
 
   for (i = 0; i < 64; i++) {
@@ -119,7 +119,7 @@ NAKED s32 FUN_082340c8(unknown* param_1, s32 param_2, s32 param_3, s32 param_4) 
 
 void FUN_08234208(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 param_4, s32 param_5, s32 param_6) {
   p->tileIdx = tileIdx;
-  p->unk_0 = 0;
+  p->flags = 0;
   p->height = (param_3 << 4) | param_4;
   p->unk_5 = param_5;
   p->unk_6 = param_6;
@@ -131,7 +131,7 @@ MapTileOverride* Map_FindTileOverride(u32 tileIdx, u32 mask) {
   MapTileOverride* best = NULL;
 
   while (p != NULL) {
-    if (!(p->unk_0 & mask) && p->tileIdx == tileIdx) {
+    if (!(p->flags & mask) && p->tileIdx == tileIdx) {
       if (best == NULL || (best->height & 0xF) < (p->height & 0xF)) {
         best = p;
       }
