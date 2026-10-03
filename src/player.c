@@ -795,7 +795,35 @@ s32 FUN_08064b00(magic32_t id) {
   }
 }
 
-NAKED s32 CalcMagicCost(Player* p) { INCFUNC("asm/func/CalcMagicCost.inc"); }
+// 装備している魔法の消費 Ene を計算する, 装備していなければ 0
+// 命令数は46で一致, 残差は flag378 の読み出しと 0x100 の組み立ての順序だけ (原典は 0x378 を r6 に置いて push が1本多い)
+// Tier A/B と C の初期化位置・オペランド順は試済
+NON_MATCH s32 CalcMagicCost(Player* p) {
+#ifdef NONMATCHING_C
+  s32 cost;
+  s32 pct;
+
+  if (p->equippedMagic < 0) {
+    return 0;
+  }
+
+  cost = FUN_08064b00(p->equippedMagic);
+  pct = 100;
+  if (p->flag378 & FLAG378_UNK_8) {
+    pct = 80;
+  }
+  if (p->equippedMagic <= 5 && (p->flag378 & FLAG378_WET_ENE_COST)) {
+    pct -= 20;
+  }
+
+  if (pct <= 99) {
+    cost = Div(cost * pct, 100);
+  }
+  return cost;
+#else
+  INCFUNC("asm/func/CalcMagicCost.inc");
+#endif
+}
 
 // 装備中の魔法のコストを払えるか, アストロ武器なら太陽スタンドから、そうでなければ ENE から払う
 bool32 Player_CheckMagicCost(Player* p) {
