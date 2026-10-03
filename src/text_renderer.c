@@ -154,16 +154,14 @@ u16 Text_GetEscapeCharcode(u8* s) {
 }
 
 // n を10進で dst に書く, 上の桁の 0 は詰める, 負なら先頭に '-'
-// 残差はゼロ埋めループ1命令, 原典は添字ループが強度削減されて歩くポインタと dst の符号つき比較になっている (bge), こちらは base+index のまま, Tier A/B と C の変数分割は試済
-NON_MATCH void FUN_08048b28(char* dst, s32 n) {
-#ifdef NONMATCHING_C
+void FUN_08048b28(char* dst, s32 n) {
   s32 hasDigit = 0;
   char* out = dst;
   s32 d;
   s32 i;
 
-  for (i = 11; i >= 0; i--) {
-    out[i] = 0;
+  for (i = 0; i < 12; i++) {
+    dst[i] = 0;
   }
 
   if (n < 0) {
@@ -214,9 +212,6 @@ NON_MATCH void FUN_08048b28(char* dst, s32 n) {
 
   *out++ = d + '0';
   *out = 0;
-#else
-  INCFUNC("asm/func/FUN_08048b28.inc");
-#endif
 }
 
 // s の先頭 n 文字を lit と比べる, s が先に終われば -1、文字が違えば 1、n 文字一致すれば 0
