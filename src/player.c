@@ -1465,7 +1465,89 @@ void FUN_08062468(Player* p) {
   p->pltt_2a4[13] = src[1];
 }
 
-NAKED void FUN_080624b0(Player* p, u16* param_2, s32 param_3, s32 param_4, u32 param_5) { INCFUNC("asm/func/FUN_080624b0.inc"); }
+// src と pltt_2a4 を wSrc:wBase の比で混ぜて pltt_2a4[16..31] に作り, スプライトのパレットをそこへ向ける
+// unk_359 が 0 なら色5/6/13 は混ぜずにそのまま写す
+// 残差2命令 (227/225): レジスタ割当とスタック使用量だけ (原典は p を sl, wSrc を ip に置いて 0x14 で足りている)
+// 添字でなくカーソル (src++/base++) にすると命令数はここまで詰まった, Tier A/B は試済
+NON_MATCH void Player_BlendPltt(Player* p, u16* src, s32 wSrc, s32 wBase, u32 shift) {
+#ifdef NONMATCHING_C
+  rgb555* base;
+  s32 i;
+
+  if (wSrc == 0) {
+    if (p->unk_359 == 0) {
+      p->sprite_88.pltt = p->pltt_2a4;
+    } else {
+      p->gfx_114->pltt = p->pltt_2a4;
+    }
+    return;
+  }
+
+  if (p->unk_359 == 0) {
+    base = p->pltt_2a4;
+    for (i = 0; i < 16; i++) {
+      if (i == 5 || i == 6 || i == 13) {
+        base[16] = base[0];
+      } else {
+        u16 c = src[0];
+        u16 d;
+        s32 r = (c & 0x1F) + p->unk_94e;
+        s32 g;
+        s32 b;
+
+        if (r > 0x1F) {
+          r = 0x1F;
+        }
+        g = ((c >> 5) & 0x1F) + p->unk_94e;
+        if (g > 0x1F) {
+          g = 0x1F;
+        }
+        b = ((c >> 10) & 0x1F) + p->unk_94e;
+        if (b > 0x1F) {
+          b = 0x1F;
+        }
+
+        d = base[0];
+        base[16] = ((((b * wSrc) + (((d >> 10) & 0x1F) * wBase)) >> shift) << 10) | ((((g * wSrc) + (((d >> 5) & 0x1F) * wBase)) >> shift) << 5) | (((r * wSrc) + ((d & 0x1F) * wBase)) >> shift);
+      }
+
+      src++;
+      base++;
+    }
+    p->sprite_88.pltt = &p->pltt_2a4[16];
+  } else {
+    base = p->pltt_2a4;
+    for (i = 0; i < 16; i++) {
+      u16 c = src[0];
+      u16 d;
+      s32 r = (c & 0x1F) + p->unk_94e;
+      s32 g;
+      s32 b;
+
+      if (r > 0x1F) {
+        r = 0x1F;
+      }
+      g = ((c >> 5) & 0x1F) + p->unk_94e;
+      if (g > 0x1F) {
+        g = 0x1F;
+      }
+      b = ((c >> 10) & 0x1F) + p->unk_94e;
+      if (b > 0x1F) {
+        b = 0x1F;
+      }
+
+      d = base[0];
+      base[16] = ((((b * wSrc) + (((d >> 10) & 0x1F) * wBase)) >> shift) << 10) | ((((g * wSrc) + (((d >> 5) & 0x1F) * wBase)) >> shift) << 5) | (((r * wSrc) + ((d & 0x1F) * wBase)) >> shift);
+
+      src++;
+      base++;
+    }
+    p->gfx_114->pltt = &p->pltt_2a4[16];
+  }
+#else
+  INCFUNC("asm/func/Player_BlendPltt.inc");
+#endif
+}
 
 NAKED void FUN_08062688(Player* p, u32 n) { INCFUNC("asm/func/FUN_08062688.inc"); }
 
