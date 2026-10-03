@@ -102,7 +102,22 @@ void FUN_08234208(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 param_4, s32
   p->unk_6 = param_6;
 }
 
-NAKED MapTileOverride* FUN_08234224(u32 tileIdx, u32 mask) { INCFUNC("asm/func/FUN_08234224.inc"); }
+// tileIdx の上書き情報のうち、mask のビットを持たず height の下位4bitが最大のものを返す
+MapTileOverride* Map_FindTileOverride(u32 tileIdx, u32 mask) {
+  MapTileOverride* p = gCollisionMap->tileOverrides;
+  MapTileOverride* best = NULL;
+
+  while (p != NULL) {
+    if (!(p->unk_0 & mask) && p->tileIdx == tileIdx) {
+      if (best == NULL || (best->height & 0xF) < (p->height & 0xF)) {
+        best = p;
+      }
+    }
+
+    p = p->next;
+  }
+  return best;
+}
 
 // 上書き情報を初期化して、コリジョンマップが持つ双方向リストの先頭に繋ぐ
 s32 Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6) {

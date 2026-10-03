@@ -97,7 +97,7 @@ _080E4BAA:
 	adds r6, #8
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	mov r8, r6
 	cmp r0, #0
 	beq _080E4C84

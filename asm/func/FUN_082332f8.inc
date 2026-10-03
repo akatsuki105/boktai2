@@ -45,7 +45,7 @@ _0823334A:
 	lsrs r5, r0, #0x10
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0823335E
 	adds r2, r0, #4
@@ -119,7 +119,7 @@ _082333D0:
 _082333DE:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _082333F4
 	adds r0, #4

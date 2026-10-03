@@ -36,7 +36,7 @@ _08232A18:
 _08232A26:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08232A3C
 	adds r0, #4
@@ -107,7 +107,7 @@ _08232A9C:
 _08232AAA:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08232AC0
 	adds r0, #4

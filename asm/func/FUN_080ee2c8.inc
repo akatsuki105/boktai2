@@ -98,7 +98,7 @@ _080EE38A:
 	mov r5, r8
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080EE3AC
 	adds r0, #4

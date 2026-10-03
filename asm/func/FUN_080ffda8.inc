@@ -228,7 +228,7 @@ _080FFF64:
 _080FFF72:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080FFF88
 	adds r0, #4

@@ -90,7 +90,7 @@ NON_MATCH void ParticleShadow_FollowGround(ParticleShadow* shadow) {
   if (shadow->flags & 1) {
     dst->y = pos->y;
   } else {
-    tile = (u8*)FUN_08234224(idx, 1);
+    tile = (u8*)Map_FindTileOverride(idx, 1);
     if (tile != NULL) {
       tile += 4;
     } else {
@@ -112,7 +112,7 @@ NON_MATCH void ParticleShadow_FollowGround(ParticleShadow* shadow) {
     dst->y = h;
   }
   if (pos->y >= dst->y && dst->y != 0) {
-    tile = (u8*)FUN_08234224(idx, 1);
+    tile = (u8*)Map_FindTileOverride(idx, 1);
     if (tile != NULL) {
       tile += 4;
     } else {

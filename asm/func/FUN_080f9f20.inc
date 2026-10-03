@@ -240,7 +240,7 @@ _080FA104:
 _080FA112:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080FA128
 	adds r0, #4

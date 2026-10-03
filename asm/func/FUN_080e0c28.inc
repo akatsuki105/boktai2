@@ -85,7 +85,7 @@ _080E0CC8:
 	str r0, [sp, #0x20]
 	adds r0, r7, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E0CDA
 	adds r0, #4
@@ -148,7 +148,7 @@ _080E0D14:
 	strh r4, [r0]
 	adds r0, r7, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E0D58
 	adds r0, #4
@@ -367,7 +367,7 @@ _080E0EC2:
 	strh r4, [r0]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E0F18
 	adds r0, #4
@@ -426,7 +426,7 @@ _080E0F4E:
 	strh r4, [r0]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E0F8C
 	adds r0, #4

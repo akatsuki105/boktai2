@@ -261,7 +261,7 @@ _080F3F30:
 _080F3F3E:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080F3F54
 	adds r0, #4

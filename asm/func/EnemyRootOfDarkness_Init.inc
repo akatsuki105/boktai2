@@ -281,7 +281,7 @@ _081A57EA:
 	add r4, sp, #0x1c
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _081A580C
 	adds r0, #4

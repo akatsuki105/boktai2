@@ -125,7 +125,7 @@ _082353A4:
 _082353B2:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _082353C8
 	adds r0, #4

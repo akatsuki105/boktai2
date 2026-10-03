@@ -168,7 +168,7 @@ _080AA3E4:
 _080AA3F2:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080AA408
 	adds r0, #4
@@ -238,7 +238,7 @@ _080AA46C:
 _080AA47A:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080AA490
 	adds r0, #4

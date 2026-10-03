@@ -93,7 +93,7 @@ NON_MATCH void AuxShadow_FollowGround(AuxShadow* shadow) {
   } else {
     Vec3* pos = shadow->pos;
 
-    tile = (u8*)FUN_08234224(idx, 1);
+    tile = (u8*)Map_FindTileOverride(idx, 1);
     if (tile != NULL) {
       tile += 4;
     } else {
@@ -133,7 +133,7 @@ NON_MATCH void AuxShadow_FollowGround(AuxShadow* shadow) {
   shadow->sprite.scaleY = shadow->scale;
 
   if (shadow->pos->y >= shadow->sprite.pos.y && shadow->sprite.pos.y != 0) {
-    tile = (u8*)FUN_08234224(idx, 1);
+    tile = (u8*)Map_FindTileOverride(idx, 1);
     if (tile != NULL) {
       tile += 4;
     } else {

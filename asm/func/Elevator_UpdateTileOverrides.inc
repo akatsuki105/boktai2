@@ -110,7 +110,7 @@ _081D32B2:
 _081D32C4:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _081D32D8
 	adds r0, #4
@@ -181,7 +181,7 @@ _081D32FA:
 	strh r4, [r0]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _081D3368
 	adds r0, #4

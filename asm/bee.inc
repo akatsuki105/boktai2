@@ -2602,7 +2602,7 @@ _08167CCE:
 	adds r7, r5, r3
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08167CF8
 	adds r0, #4

@@ -279,7 +279,7 @@ _080F8704:
 _080F8712:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080F8728
 	adds r0, #4

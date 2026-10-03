@@ -2087,7 +2087,7 @@ _081A3B2E:
 	strh r4, [r0]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _081A3B80
 	adds r0, #4
@@ -2332,7 +2332,7 @@ _081A3CF6:
 	strh r4, [r0]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _081A3D80
 	adds r0, #4

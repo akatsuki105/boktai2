@@ -191,7 +191,7 @@ static_assert(sizeof(CollisionMapData) == 3620);
 
 extern CollisionMapData* gCollisionMap;
 
-MapTileOverride* FUN_08234224(u32 tileIdx, u32 mask);
+MapTileOverride* Map_FindTileOverride(u32 tileIdx, u32 mask);
 void FUN_082342a8(MapTileOverride* p);
 u16 FUN_082328ec(Vec3* pos);
 

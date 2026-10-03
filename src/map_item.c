@@ -218,7 +218,7 @@ void MapItem_UpdateFall(MapItemManager* p, MapItem* item) {
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  tile = (u8*)FUN_08234224(idx, 1);
+  tile = (u8*)Map_FindTileOverride(idx, 1);
   if (tile != NULL) {
     tile += 4;
   } else {
@@ -269,7 +269,7 @@ void MapItem_UpdateBounce(MapItemManager* p, MapItem* item) {
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  tile = (u8*)FUN_08234224(idx, 1);
+  tile = (u8*)Map_FindTileOverride(idx, 1);
   if (tile != NULL) {
     tile += 4;
   } else {
@@ -323,7 +323,7 @@ void MapItem_UpdateOnGround(MapItemManager* p, MapItem* item) {
     } else {
       idx = gCollisionMap->rowOffsets[bz] + bx;
     }
-    if (FUN_08234224(idx, 1) != NULL) {
+    if (Map_FindTileOverride(idx, 1) != NULL) {
       item->stateTimer = 900;
     }
   }

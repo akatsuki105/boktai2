@@ -290,7 +290,7 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  tile = (u8*)FUN_08234224(idx, 1);
+  tile = (u8*)Map_FindTileOverride(idx, 1);
   if (tile != NULL) {
     tile += 4;
   } else {

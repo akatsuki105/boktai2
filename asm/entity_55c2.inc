@@ -228,7 +228,7 @@ _0800DCB0:
 _0800DCBE:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0800DCD4
 	adds r0, #4
@@ -569,7 +569,7 @@ _0800DF48:
 _0800DF56:
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0800DF6C
 	adds r0, #4

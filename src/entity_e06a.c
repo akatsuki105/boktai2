@@ -61,7 +61,7 @@ void EntityE06A_SetupSprite(EntityE06A* p) {
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  tile = (u8*)FUN_08234224(idx, 1);
+  tile = (u8*)Map_FindTileOverride(idx, 1);
   if (tile != NULL) {
     tile += 4;
   } else {

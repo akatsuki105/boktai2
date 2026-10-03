@@ -102,7 +102,7 @@ _0800CC7C:
 	adds r4, r0, r5
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0800CC8E
 	adds r3, r0, #4
@@ -480,7 +480,7 @@ _0800CF44:
 	ldrh r5, [r0, #2]
 	adds r0, r5, #0
 	movs r1, #3
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0800CF60
 	adds r0, #4
@@ -1249,7 +1249,7 @@ _0800D4D4:
 	adds r0, r0, r2
 _0800D4E2:
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	adds r0, r5, #0
 	adds r0, #0x48
 	bl Mover_ApplyMove
@@ -1424,7 +1424,7 @@ _0800D614:
 	ldrh r6, [r0, #2]
 	adds r0, r6, #0
 	movs r1, #3
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0800D642
 	adds r0, #4
