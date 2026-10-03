@@ -12,7 +12,7 @@ typedef void (*JudgementFunc)(struct Judgement* p);
 // 演出で飛ばす粒子1個ぶんの枠, 8個を使い回す
 typedef struct JudgementParticle {
   Particle ptcl;             // 0x00, _Destroy が Particle_Remove に渡す
-  u16 timer;                 // 0x28, FUN_080a9808 が毎フレーム +1, 7 を超えると枠を畳む
+  u16 timer;                 // 0x28, JudgementParticle_UpdateStill が毎フレーム +1, 7 を超えると枠を畳む
   u16 active;                // 0x2A, FUN_080a98c0 が 0 の枠を飛ばす
   s16 vx;                    // 0x2C, FUN_080a95d4 が毎フレーム pos.x に足す
   s16 vy;                    // 0x2E, 毎フレーム pos.y に足す, FUN_080a95d4 が重力として +1 する
@@ -63,7 +63,7 @@ NAKED void FUN_080a975c(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a975
 
 // 8フレームで畳む, その間はその場で2コマのアニメを出す
 // 残差1命令: 原典は timer+1 を別レジスタに置いて使うたびに16bit化する, こちらは <<16 の中間値が残って else 側が1命令短くなる, Tier A/B と C のローカル分割・キャスト・アクセサ有無は試済
-NON_MATCH void FUN_080a9808(JudgementParticle* ptcl) {
+NON_MATCH void JudgementParticle_UpdateStill(JudgementParticle* ptcl) {
 #ifdef NONMATCHING_C
   ptcl->timer++;
   if (ptcl->timer > 7) {
@@ -73,7 +73,7 @@ NON_MATCH void FUN_080a9808(JudgementParticle* ptcl) {
     FUN_0822dafc(&ptcl->ptcl, ptcl->group, ((ptcl->timer >> 2) & 1) + 2);
   }
 #else
-  INCFUNC("asm/func/FUN_080a9808.inc");
+  INCFUNC("asm/func/JudgementParticle_UpdateStill.inc");
 #endif
 }
 
