@@ -468,18 +468,20 @@ void FUN_08063634(Player* p, s32 n) {
 
 NAKED u32 FUN_08063668(Player* p, u32 n) { INCFUNC("asm/func/FUN_08063668.inc"); }
 
-NON_MATCH u32 FUN_080637dc(Player* p, u32 n) {
+// flashTimer が動いている間, 4フレームごとに pose を flashPose と入れ替える (点滅)
+// 残差は共有された return pose のブロック位置だけ (23/23), Tier A の分岐形 4通りと Tier B は試済
+NON_MATCH u32 Player_ApplyFlashPose(Player* p, u32 pose) {
 #ifdef NONMATCHING_C
-  if (p->unk_95c != 0) {
-    p->unk_95c--;
-    if ((p->unk_95c >> 2) & 1) {
-      return p->unk_95a;
+  if (p->flashTimer != 0) {
+    p->flashTimer--;
+    if ((p->flashTimer >> 2) & 1) {
+      return p->flashPose;
     }
   }
 
-  return n;
+  return pose;
 #else
-  INCFUNC("asm/func/FUN_080637dc.inc");
+  INCFUNC("asm/func/Player_ApplyFlashPose.inc");
 #endif
 }
 

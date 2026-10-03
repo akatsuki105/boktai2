@@ -20,7 +20,7 @@
 	adds r2, r0, #0
 	adds r0, r5, #0
 	adds r1, r2, #0
-	bl FUN_080637dc
+	bl Player_ApplyFlashPose
 	adds r2, r0, #0
 	b _08063A50
 _08063A34:

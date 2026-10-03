@@ -278,10 +278,10 @@ typedef struct Player {
   u8 unk_950;      // 0x950, FUN_08063084
   u8 unk_951;      // 0x951, FUN_0806f780 が unk_a8d + 1 (負なら 0) を入れる
   u8 unk_952[0x95A - 0x952];
-  u16 unk_95a;  // 0x95A, FUN_080637dc が unk_95c の bit2 が立っている間だけ返す値
-  u16 unk_95c;  // 0x95C, FUN_080637dc が毎回 1 減らすタイマ
-  u16 unk_95e;  // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
-  u16 unk_960;  // 0x960, FUN_08074994 が unk_95e と対で書く
+  u16 flashPose;   // 0x95A, flashTimer の bit2 が立っている間 Player_ApplyFlashPose が pose の代わりに返す値
+  u16 flashTimer;  // 0x95C, Player_ApplyFlashPose が毎フレーム 1 減らす点滅タイマ
+  u16 unk_95e;     // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
+  u16 unk_960;     // 0x960, FUN_08074994 が unk_95e と対で書く
   u8 unk_962[0x96C - 0x962];
   u16 unk_96c;  // 0x96C, FUN_0807b8c0 が 0 を書く
   u8 unk_96e[0x994 - 0x96E];
