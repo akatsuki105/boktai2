@@ -99,7 +99,27 @@ NAKED s32 FUN_08232888(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_0823288
 
 NAKED u16 FUN_082328ec(Vec3* pos) { INCFUNC("asm/func/FUN_082328ec.inc"); }
 
-NAKED u16 FUN_0823297c(Vec3* pos) { INCFUNC("asm/func/FUN_0823297c.inc"); }
+// pos のタイルの obj と stairs/height を1語で返す, マップ外なら tiles[0] の値
+u16 Map_GetTileObjAndHeight(Vec3* pos) {
+  CollisionMapTileData* td;
+  s32 bx;
+  s32 bz;
+  s32 idx;
+
+  if (gCollisionMap->tiledata == NULL) {
+    return 0;
+  }
+
+  td = gCollisionMap->tiledata;
+  bx = (s8)(pos->x >> 8);
+  bz = (s8)(pos->z >> 8);
+  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+    idx = 0;
+  } else {
+    idx = gCollisionMap->rowOffsets[bz] + bx;
+  }
+  return *(u16*)&td->tiles[idx].obj;
+}
 
 NAKED u16 FUN_082329e0(Vec3* pos1, Vec3* pos2) { INCFUNC("asm/func/FUN_082329e0.inc"); }
 
