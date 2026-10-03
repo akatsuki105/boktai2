@@ -274,7 +274,7 @@ typedef struct Player {
   u8 unk_4ab;  // 0x4AB, FUN_08072670 が 1 を書く
   u8 unk_4ac;
   u8 unk_4ad;  // 0x4AD, 0 以外なら FUN_080726ec が unk_4ae を数える
-  u8 unk_4ae;  // 0x4AE, 8 フレームごとに FUN_080612d8 を呼ぶためのカウンタ
+  u8 unk_4ae;  // 0x4AE, 8 フレームごとに Player_SpawnFootHitbox を呼ぶためのカウンタ
   u8 unk_4af;
   s32 scriptID_4b0;  // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4c4 - 0x4b4];

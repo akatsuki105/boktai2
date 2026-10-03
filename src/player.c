@@ -13,9 +13,10 @@
 
 extern u16 u16_03002bb0;
 
-s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);  // src/entity_0805fd6c.c
-bool32 FUN_0809e138(Player* p);                                                                         // src/entity_5ccc.c
-s32 GetMagicCategory(magic32_t id);                                                                     // src/equip_magic.c
+s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);                 // src/entity_0805fd6c.c
+bool32 FUN_0809e138(Player* p);                                                                                        // src/entity_5ccc.c
+s32 GetMagicCategory(magic32_t id);                                                                                    // src/equip_magic.c
+s32 FUN_080ddcc8(Vec3* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);  // src/entity_080ddf88.c
 
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
 
@@ -392,7 +393,22 @@ void FUN_080612bc(Player* p) {
   FUN_08061198(p);
 }
 
-NAKED void FUN_080612d8(Player* p) { INCFUNC("asm/func/FUN_080612d8.inc"); }
+// 足元の判定を1つ出す, コウモリ/ネズミ姿は補助スプライトの位置と小さめの大きさを使う
+void Player_SpawnFootHitbox(Player* p) {
+  Vec3 size;
+  Vec3 pos;
+
+  if (p->kind == PLAYER_BAT || p->kind == PLAYER_MOUSE) {
+    pos = p->sprite_e8.pos;
+    size.x = 0x20, size.y = 0x20, size.z = 0x20;
+  } else {
+    pos = p->mover.pos;
+    pos.y += 0x50;
+    size.x = 0x40, size.y = 0x3C, size.z = 0x40;
+  }
+
+  FUN_080ddcc8(&pos, 1, &size, 0, 0, 0xC, 2, 2);
+}
 
 // 0x64C のパーティクルを1フレーム進める, 4フレームごとにパレットを1段ずらし6フレーム過ぎたら消す
 // 残差は timer++ のレジスタ組だけ (42/43, 原典はアドレスを r1・値を r0 に置く), Tier A/B と C のローカル化は試済

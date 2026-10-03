@@ -21,7 +21,7 @@ extern u16 u16_ARRAY_03002ba0[3];
 extern u16 u16_03002b78;
 extern u16 gSunlightOverride;
 extern u16 u16_03002bd0;
-void FUN_080612d8(Player* p);
+void Player_SpawnFootHitbox(Player* p);
 bool32 Player_PlayAnim(Player* p, u32 animID, s32 param_3);
 void FUN_080609dc(Player* p);
 s32 FUN_08086294(Vec3* pos, u32 a, u32 b);
@@ -225,7 +225,7 @@ NAKED void FUN_0806623c(Player* p) { INCFUNC("asm/func/FUN_0806623c.inc"); }
 NAKED void FUN_08066408(Player* p) { INCFUNC("asm/func/FUN_08066408.inc"); }
 
 void FUN_08066794(Player* p) {
-  FUN_080612d8(p);
+  Player_SpawnFootHitbox(p);
   p->unk_376++;
 }
 
@@ -944,7 +944,7 @@ void FUN_080726ec(Player* p) {
   if (p->unk_4ad != 0) {
     p->unk_4ae++;
     if (p->unk_4ae > 7) {
-      FUN_080612d8(p);
+      Player_SpawnFootHitbox(p);
       p->unk_4ae = 0;
     }
   }
