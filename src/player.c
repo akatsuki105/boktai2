@@ -1,6 +1,7 @@
 #include "player.h"
 
 #include "armor.h"
+#include "file.h"
 #include "global.h"
 #include "input.h"
 #include "item.h"
@@ -508,7 +509,31 @@ void Player_ShowGunSpread(Player* p, u32 _, Vec3* pos) {
 
 void FUN_08061b98(Player* p) { AuxSprite_Remove(&(p->meleeShockwave).sprite); }
 
-NAKED void Player_Init_Anim_08061bac(Player* p) { INCFUNC("asm/func/Player_Init_Anim_08061bac.inc"); }
+// 衝撃波スプライトを用意する, サバタは散弾の1枚絵, それ以外はアニメーション付き
+void Player_InitShockwave(Player* p) {
+  AuxSprite* sprite = &p->meleeShockwave.sprite;
+  AuxSpriteGfx* gfx = &p->meleeShockwave.gfx;
+
+  if (p->kind == PLAYER_SABATA) {
+    Video_GetAuxSprite(gfx, 0x2110);
+    AuxSprite_Add(sprite, gfx, 0x43);
+    sprite->metaspriteIdx = 4;
+    Video_SetAuxSpritePltt(gfx, 0x32);
+    sprite->priority = 1;
+    sprite->scaleY = 0x7F;
+    sprite->scaleX = 0x7F;
+    sprite->pos = p->mover.pos;
+    p->meleeShockwave.update = PlayerShockwave_UpdateFlash;
+  } else {
+    Video_GetAuxSprite(gfx, 0x8F5D);
+    AuxSprite_Add(sprite, gfx, 1);
+    Video_SetAuxSpritePltt(gfx, 0x1D);
+    p->meleeShockwave.animFile = GetFile(0x922E, 0x837);
+    p->meleeShockwave.update = PlayerShockwave_UpdateAnim;
+  }
+
+  p->meleeShockwave.finished = FALSE;
+}
 
 NAKED void FUN_08061c68(Player* p) { INCFUNC("asm/func/FUN_08061c68.inc"); }
 

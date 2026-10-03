@@ -88,7 +88,7 @@ _08063C0E:
 	adds r0, r5, #0
 	bl Player_InitPtcl858
 	adds r0, r5, #0
-	bl Player_Init_Anim_08061bac
+	bl Player_InitShockwave
 	ldr r1, _08063CDC @ =0x0000097C
 	adds r0, r5, r1
 	movs r2, #0
