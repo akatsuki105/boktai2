@@ -599,7 +599,8 @@ void Player_SpawnFootHitbox(Player* p) {
 }
 
 // 0x64C のパーティクルを1フレーム進める, 4フレームごとにパレットを1段ずらし6フレーム過ぎたら消す
-// 残差は timer++ のレジスタ組だけ (42/43, 原典はアドレスを r1・値を r0 に置く), Tier A/B と C のローカル化は試済
+// 残差は timer++ のレジスタ組だけ (43/43): 原典は `adds r4, r0, #1` と加算先を別レジスタにするが, こちらは `adds r1, #1` で上書きする
+// u8 の一時変数に取る形だと切り捨てが strb の前に出てしまい逆に遠ざかる, Tier A/B と C のローカル化は試済
 NON_MATCH void Player_UpdatePtcl64c(Player* p) {
 #ifdef NONMATCHING_C
   if (p->ptcl_64c.active == 0) {
