@@ -573,7 +573,7 @@ _08008342:
 	adds r1, r6, #0
 	adds r2, r7, #0
 	add r3, sp, #0xc
-	bl FUN_08234e78
+	bl Map_GetStepToPathNode
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08008374

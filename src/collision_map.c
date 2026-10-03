@@ -538,7 +538,41 @@ bool32 Map_AdvancePathWalker(PathWalker* p) {
   return TRUE;
 }
 
-NAKED s32 FUN_08234e78(unknown* param_1, s32 param_2, unknown* param_3, s32 param_4) { INCFUNC("asm/func/FUN_08234e78.inc"); }
+// カーソルの指すノードへ向かう移動量を out に入れる, rx/rz の範囲内なら差分をそのまま入れて 1 を返す
+s32 Map_GetStepToPathNode(PathWalker* w, Vec3* pos, Vec3* out, u8* outAngle, u32 rx, u32 rz, s32 speed) {
+  PathNode* node = w->node;
+  Vec3 nodePos;
+  s32 dx;
+  s32 dz;
+  s32 sin;
+  u8 angle;
+
+  nodePos.x = node->x;
+  nodePos.z = node->y;
+  dx = nodePos.x - pos->x;
+  dz = nodePos.z - pos->z;
+  angle = ArcTan2_8(dx, dz);
+  *outAngle = angle;
+  if (abs(dx) <= rx && abs(dz) <= rz) {
+    out->x = dx;
+    out->z = dz;
+    return 1;
+  }
+
+  sin = speed * gSineTable[(angle + 0x40) & 0xFF];
+  if (sin >= 0) {
+    out->x = sin >> 12;
+  } else {
+    out->x = -((-sin) >> 12);
+  }
+  sin = speed * gSineTable[angle];
+  if (sin >= 0) {
+    out->z = sin >> 12;
+  } else {
+    out->z = -((-sin) >> 12);
+  }
+  return 0;
+}
 
 Path* Map_GetPath(u8 idx) {
   PathData* d = gCollisionMap->paths;
