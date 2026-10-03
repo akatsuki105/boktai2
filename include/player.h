@@ -18,7 +18,10 @@
 struct Player;
 struct Input;
 
-typedef u32 PlayerFlag20;  // Player.unk_20
+typedef u32 PlayerFlag20;         // Player.unk_20
+#define PFLAG20_UNK_0 (1 << 0)    // 0x00000001, Player_BeginAction が毎回これだけ立てた状態から始める
+#define PFLAG20_UNK_4 (1 << 4)    // 0x00000010, 日光が当たっているときに立つ, 根拠: Player_BeginAction
+#define PFLAG20_UNK_16 (1 << 16)  // 0x00010000, FLAG378_UNK_9 が立っているときに立つ
 
 typedef u32 PlayerFlag378;               // Player.flag378
 #define FLAG378_WET_DURABILITY (1 << 0)  // 0x00000001, WET_DURABILITY を持った武器を装備している間セットされる
@@ -28,6 +31,7 @@ typedef u32 PlayerFlag378;               // Player.flag378
 #define FLAG378_WEAPONGUARD (1 << 6)     // 0x00000040, ウェポンガード〃
 #define FLAG378_FAIRY (1 << 7)           // 0x00000080, 精霊の衣〃
 #define FLAG378_UNK_8 (1 << 8)           // 0x00000100, ???
+#define FLAG378_UNK_9 (1 << 9)           // 0x00000200, 立っていると Player_BeginAction が PFLAG20_UNK_16 を立てる
 #define FLAG378_UNK_10 (1 << 10)         // 0x00000400, ???
 #define FLAG378_UNK_11 (1 << 11)         // 0x00000800, 立っていると FUN_0807a798 の経験値が1.5倍になる
 #define FLAG378_AET_SUNLIGHT (1 << 13)   // 0x00002000, 光のガーブ装備時, ApplyLxModifiers が太陽レベルを2倍にする
@@ -262,7 +266,11 @@ typedef struct Player {
   s32 scriptID_4b0;  // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4c4 - 0x4b4];
   Eff082473e0Emitter unk_4c4;  // 0x4C4
-  u8 unk_5fc[0x60C - 0x5FC];
+  u8 unk_5fc[0x604 - 0x5FC];
+  u16 unk_604;  // 0x604, Player_BeginAction が 0 に戻す
+  u16 unk_606;  // 0x606, 同上
+  u16 unk_608;  // 0x608, 同上
+  u8 unk_60a[2];
   ParticleShadow shadow;            // 0x60C, 根拠: Player_DestroyEffects が ParticleShadow_Remove に渡す, FUN_081d40b4 がエレベータ搭乗中に flags の bit0 を立てる
   PlayerParticleGroup1 ptcl_64c;    // 0x64C, FUN_08061458
   PlayerParticleGroup1 ptcl_67c;    // 0x67C, FUN_0806161c

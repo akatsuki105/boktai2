@@ -13,6 +13,7 @@
 extern u16 u16_03002bb0;
 
 s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);  // src/entity_0805fd6c.c
+bool32 FUN_0809e138(Player* p);                                                                         // src/entity_5ccc.c
 
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
 
@@ -169,7 +170,28 @@ void Player_SetAction(Player* p, u32 r1, u32 r2) {
   p->stateTimer = 0;
 }
 
-NAKED void FUN_08060bac(Player* p) { INCFUNC("asm/func/FUN_08060bac.inc"); }
+// 行動を始める前のフラグ初期化, 日光と武器効果を見て unk_20 を組み立て直し各種タイマを 0 に戻す
+// 残差1命令 (61/62): 原典は 0x2C8 を movs/lsls で作るが agbcc が 0x38E のレジスタから引き算で作ってしまう
+// 添字をローカルに切り出すと 62/62 になるがレジスタが入れ替わる, Tier A-C は試済
+NON_MATCH void Player_BeginAction(Player* p) {
+#ifdef NONMATCHING_C
+  p->unk_20 = PFLAG20_UNK_0;
+  if (gStat->unk_2c8[p->isSabata] == 0 && FUN_0809e138(p)) {
+    p->unk_20 |= PFLAG20_UNK_4;
+  }
+  if (p->flag378 & FLAG378_UNK_9) {
+    p->unk_20 |= PFLAG20_UNK_16;
+  }
+
+  p->unk_604 = 0;
+  p->unk_606 = 0;
+  p->unk_608 = 0;
+  p->unk_35a = 0;
+  p->unk_16c.hitState &= ~2;
+#else
+  INCFUNC("asm/func/Player_BeginAction.inc");
+#endif
+}
 
 void FUN_08060c40(Player* p, u32 val) { p->unk_35a |= val; }
 

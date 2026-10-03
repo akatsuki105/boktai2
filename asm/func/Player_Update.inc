@@ -2,7 +2,7 @@
 	adds r4, r0, #0
 	bl Player_Update_Helper_0807dde4
 	adds r0, r4, #0
-	bl FUN_08060bac
+	bl Player_BeginAction
 	ldr r0, [r4, #0x1c]
 	cmp r0, #1
 	bne _0807F276
