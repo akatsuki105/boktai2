@@ -573,9 +573,39 @@ NON_MATCH u16 Map_GetNavDistance(u16* distanceMap, u16 n, s32 a, s32 b) {
 
 NAKED s32 FUN_0823599c(unknown* param_1, s32 param_2, Vec3* pos) { INCFUNC("asm/func/FUN_0823599c.inc"); }
 
-NAKED s32 FUN_08235a84(unknown* param_1, Vec3* param_2, Vec3* param_3) { INCFUNC("asm/func/FUN_08235a84.inc"); }
+NAKED s32 FUN_08235a84(NavAgent* agent, Vec3* param_2, Vec3* pos) { INCFUNC("asm/func/FUN_08235a84.inc"); }
 
-NAKED s32 FUN_08235f40(unknown* param_1, Vec3* param_2, Vec3* param_3) { INCFUNC("asm/func/FUN_08235f40.inc"); }
+// pos のタイルが壁なら進行をやめさせ, そうでなければ FUN_08235a84 に任せる
+s32 FUN_08235f40(NavAgent* agent, Vec3* param_2, Vec3* pos) {
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
+  TileAttr attr;
+  s32 bx;
+  s32 bz;
+  s32 idx;
+
+  bx = (s8)(pos->x >> 8);
+  bz = (s8)(pos->z >> 8);
+  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+    idx = 0;
+  } else {
+    idx = gCollisionMap->rowOffsets[bz] + bx;
+  }
+
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    tile = (CollisionMapTile*)&ov->height;
+  } else {
+    tile = &gCollisionMap->tiledata->tiles[idx];
+  }
+
+  attr = *(u16*)&tile->obj;
+  if (attr & TATTR_WALL) {
+    agent->flags = 0;
+    return 0;
+  }
+  return FUN_08235a84(agent, param_2, pos);
+}
 
 void FUN_08235fd0(u16* p) { *p = 0; }
 
