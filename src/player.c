@@ -2342,7 +2342,7 @@ u32 Player_WeaponEffectEarth(Player* p, HitboxData* a, HitboxData* b) {
 }
 
 // 一定確率で防御無視(なまくら系の特殊効果)
-u32 CheckNamakuraProc(void) {
+u32 CheckNamakuraProc(Player* p) {
   gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
   if (Mod(*(gRandomTable + gRandTableIdx), 100) <= 10) {
     return 1 << 12;
@@ -2351,7 +2351,7 @@ u32 CheckNamakuraProc(void) {
 }
 
 // 一定確率で麻痺
-u32 CheckParalyzeProc(void) {
+u32 CheckParalyzeProc(Player* p) {
   gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
   if (Mod(*(gRandomTable + gRandTableIdx), 100) <= 10) {
     return 1 << 19;
@@ -2385,7 +2385,150 @@ NON_MATCH void Player_UpdateBloodSword(Player* p) {
 #endif
 }
 
-NAKED void Player_EnableWeaponSpecialEffects(Player* p, WeaponData* w) { INCFUNC("asm/func/Player_EnableWeaponSpecialEffects.inc"); }
+// 装備した武器の特殊効果に応じて, ダメージ計算時に呼ばれるコールバックとフラグを登録する
+// 残差1命令 (215/214): agbcc が &w->effects[0] をループ外に括り出す, 原典は ldrb [w + i*4, #0x18] のまま
+// Tier A-C は試済 (ループ変数の分離, 効果ID読み出しの inline 化も効果なし)
+NON_MATCH void Player_EnableWeaponSpecialEffects(Player* p, WeaponData* w) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < WEAPON_EFFECT_SLOT_COUNT; i++) {
+    p->weaponExDamageCb[i] = NULL;
+    p->weaponEffectCb2[i] = NULL;
+    p->weaponEffectCb3[i] = NULL;
+  }
+  Player_ClearFlag378(p, FLAG378_WET_DURABILITY | FLAG378_WET_ENE_COST | FLAG378_BLOOD_SWORD | FLAG378_ASTRO);
+
+  for (i = 0; i < WEAPON_EFFECT_SLOT_COUNT; i++) {
+    switch ((u8)w->effects[i]) {
+      case WET_GUN_DEL_SOL:
+      case WET_SOL: {
+        p->weaponExDamageCb[i] = Player_WeaponEffectSol;
+        break;
+      }
+      case WET_STATCOND: {
+        p->weaponExDamageCb[i] = Player_WeaponEffectStatCond;
+        break;
+      }
+      case WET_GUN_DEL_HELL:
+      case WET_NIGHT: {
+        p->weaponExDamageCb[i] = Player_WeaponEffectNight;
+        break;
+      }
+      case WET_AGILITY: {
+        p->weaponExDamageCb[i] = Player_WeaponEffectAgility;
+        break;
+      }
+      case WET_VITALITY: {
+        p->weaponExDamageCb[i] = Player_WeaponEffectVitality;
+        break;
+      }
+      case WET_SPIRIT: {
+        p->weaponExDamageCb[i] = Player_WeaponEffectSpirit;
+        break;
+      }
+      case WET_ENE: {
+        p->weaponExDamageCb[i] = Player_WeaponEffectENE;
+        break;
+      }
+      case WET_HP: {
+        p->weaponExDamageCb[i] = Player_WeaponEffectHP;
+        break;
+      }
+      case WET_KAJIBA: {
+        p->weaponExDamageCb[i] = Player_WeaponEffectKajiba;
+        break;
+      }
+      case WET_GYAKU_KAJIBA: {
+        p->weaponExDamageCb[i] = Player_WeaponEffectGyakuKajiba;
+        break;
+      }
+      case WET_KILLCOUNT: {
+        p->weaponEffectCb3[i] = Player_WeaponEffectKillCount;
+        break;
+      }
+      case WET_RANDOM: {
+        p->weaponEffectCb3[i] = Player_WeaponEffectRandom;
+        break;
+      }
+      case WET_ANTI_BEAST: {
+        p->weaponEffectCb3[i] = Player_WeaponEffectAntiBeast;
+        break;
+      }
+      case WET_ANTI_THING: {
+        p->weaponEffectCb3[i] = Player_WeaponEffectAntiThing;
+        break;
+      }
+      case WET_ANTI_PHANTOM: {
+        p->weaponEffectCb3[i] = Player_WeaponEffectAntiPhantom;
+        break;
+      }
+      case WET_ANTI_UNDEAD: {
+        p->weaponEffectCb3[i] = Player_WeaponEffectAntiUndead;
+        break;
+      }
+      case WET_ANTI_IMMORTAL: {
+        p->weaponEffectCb3[i] = Player_WeaponEffectAntiImmortal;
+        break;
+      }
+      case WET_FLAME: {
+        p->weaponEffectCb3[i] = Player_WeaponEffectFlame;
+        break;
+      }
+      case WET_FROST: {
+        p->weaponEffectCb3[i] = Player_WeaponEffectFrost;
+        break;
+      }
+      case WET_CLOUD: {
+        p->weaponEffectCb3[i] = Player_WeaponEffectCloud;
+        break;
+      }
+      case WET_EARTH: {
+        p->weaponEffectCb3[i] = Player_WeaponEffectEarth;
+        break;
+      }
+      case WET_NAMAKURA: {
+        p->weaponEffectCb2[i] = CheckNamakuraProc;
+        break;
+      }
+      case WET_PARALYZE: {
+        p->weaponEffectCb2[i] = CheckParalyzeProc;
+        break;
+      }
+      case WET_DURABILITY: {
+        Player_SetFlag378(p, FLAG378_WET_DURABILITY);
+        break;
+      }
+      case WET_ENE_COST: {
+        Player_SetFlag378(p, FLAG378_WET_ENE_COST);
+        break;
+      }
+      case WET_BLOOD_SWORD: {
+        Player_SetFlag378(p, FLAG378_BLOOD_SWORD);
+        break;
+      }
+      case WET_ASTRO_SWORD: {
+        Player_SetFlag378(p, FLAG378_ASTRO);
+        p->unk_a95 = 0;
+        break;
+      }
+      case WET_ASTRO_SPEAR: {
+        Player_SetFlag378(p, FLAG378_ASTRO);
+        p->unk_a95 = 4;
+        break;
+      }
+      case WET_ASTRO_HAMMER: {
+        Player_SetFlag378(p, FLAG378_ASTRO);
+        p->unk_a95 = 8;
+        break;
+      }
+    }
+  }
+}
+#else
+  INCFUNC("asm/func/Player_EnableWeaponSpecialEffects.inc");
+#endif
+}
 
 // 武器種ごとに当たり判定の大きさ・位置・属性を設定する, サバタは固定値
 // 残差29命令 (221/250): 原典は各 case で Vec3 の半分ずつを and/or で差し込むが, agbcc は定数同士をまとめて1ワードで書いてしまう

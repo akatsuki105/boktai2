@@ -381,7 +381,9 @@ typedef struct Player {
   s8 unk_a8d;   // 0xA8D, FUN_0806f780 が Player_CheckMagicEnchant の結果を入れる, 負ならエンチャントなし
   u8 unk_a8e;
   u8 unk_a8f;  // 0xA8F, Entity08080be8 が毎フレーム charge に写す, 威力を 1 + n/2 倍にし、スプライトの絵も選ぶ
-  u8 unk_a90[8];
+  u8 unk_a90[5];
+  u8 unk_a95;  // 0xA95, アストロ武器の種類ごとの値 (剣: 0, 槍: 4, 槌: 8)
+  u8 unk_a96[2];
   PlayerFunc attackCB;  // 0xA98, gPlayerAttackUpdates
 
   // 武器の特殊効果のコールバック関数の配列
@@ -410,6 +412,7 @@ static inline void Player_SetFlag20(Player* p, PlayerFlag20 bit) { p->unk_20 |= 
 static inline bool32 Player_TestFlag20(Player* p, PlayerFlag20 bit) { return p->unk_20 & bit; }
 
 static inline void Player_SetFlag378(Player* p, PlayerFlag378 bits) { p->flag378 |= bits; }
+static inline void Player_ClearFlag378(Player* p, PlayerFlag378 bits) { p->flag378 &= ~bits; }
 static inline bool32 Player_TestFlag378(Player* p, PlayerFlag378 bits) { return p->flag378 & bits; }
 
 #endif  // GUARD_ZOKTAI_PLAYER_H
