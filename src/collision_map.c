@@ -554,19 +554,60 @@ NON_MATCH s32 Map_IsPosOutsidePathNode(PathWalker* w, Vec3* pos, u32 rx, u32 rz)
 #endif
 }
 
-NAKED s32 FUN_08235090(Vec3* dst, u8 param_2) { INCFUNC("asm/func/FUN_08235090.inc"); }
+NAKED s32 FUN_08235090(Vec3* dst, s32 param_2) { INCFUNC("asm/func/FUN_08235090.inc"); }
 
-NAKED s32 FUN_08235178(Vec3* dst, Vec3* pos, u8 param_3) { INCFUNC("asm/func/FUN_08235178.inc"); }
+NAKED s32 FUN_08235178(Vec3* dst, Vec3* pos, s32 param_3) { INCFUNC("asm/func/FUN_08235178.inc"); }
 
-NAKED s32 FUN_082352c0(Vec3* dst, Vec3* pos, u8 param_3) { INCFUNC("asm/func/FUN_082352c0.inc"); }
+NAKED s32 FUN_082352c0(Vec3* dst, Vec3* pos, s32 param_3) { INCFUNC("asm/func/FUN_082352c0.inc"); }
 
-NAKED s32 FUN_08235408(Vec3* dst, Vec3* pos, u8 param_3) { INCFUNC("asm/func/FUN_08235408.inc"); }
+NAKED s32 FUN_08235408(Vec3* dst, Vec3* pos, s32 param_3) { INCFUNC("asm/func/FUN_08235408.inc"); }
 
-NAKED s32 FUN_0823556c(Vec3* dst, Vec3* pos, u8 param_3) { INCFUNC("asm/func/FUN_0823556c.inc"); }
+NAKED s32 FUN_0823556c(Vec3* dst, Vec3* pos, s32 param_3) { INCFUNC("asm/func/FUN_0823556c.inc"); }
 
 NAKED s32 FUN_082356c4(Vec3* dst, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_082356c4.inc"); }
 
-NAKED s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_0823585c.inc"); }
+// kind ごとの移動判定に振り分ける, どれも失敗したら FUN_08235090 で戻す
+// 原典は param_5 の2乗を求めてから switch に入るが, その値をどこでも読まないので agbcc が消してしまう
+// 残差はその4命令と dst/pos のレジスタ入れ替えのみ, Tier A-C は試済
+NON_MATCH s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 param_4, s32 param_5, s32 param_6, s32 param_7) {
+#ifdef NONMATCHING_C
+  s32 ret = -1;
+
+  switch (kind) {
+    case 0: {
+      ret = FUN_08235090(dst, param_4);
+      break;
+    }
+    case 1: {
+      ret = FUN_08235178(dst, pos, param_4);
+      break;
+    }
+    case 2: {
+      ret = FUN_082352c0(dst, pos, param_4);
+      break;
+    }
+    case 3: {
+      ret = FUN_08235408(dst, pos, param_4);
+      break;
+    }
+    case 4: {
+      ret = FUN_0823556c(dst, pos, param_4);
+      break;
+    }
+    case 5: {
+      ret = FUN_082356c4(dst, param_6, param_7, param_4);
+      break;
+    }
+  }
+
+  if (ret < 0) {
+    ret = FUN_08235090(dst, param_4);
+  }
+  return ret;
+#else
+  INCFUNC("asm/func/FUN_0823585c.inc");
+#endif
+}
 
 NON_MATCH s32 Map_LoadNavMesh(FileID id) {
 #ifdef NONMATCHING_C
