@@ -20,6 +20,7 @@ bool32 FUN_0809e138(Player* p);                                                 
 s32 GetMagicCategory(magic32_t id);                                                                                         // src/equip_magic.c
 s32 FUN_080ddcc8(Vec3* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);       // src/entity_080ddf88.c
 void FUN_0809c4f4(void);                                                                                                    // src/entity_cc28.c
+s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u16* interval);                              // src/mosaic_fader.c
 s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);  // src/entity_080db520.c
 void FUN_08242a98(Weapon* w, WeaponData* data);                                                                             // src/weapon.c
 s32 FUN_0807a6cc(WeaponData* w);                                                                                            // src/player_08065988.c
@@ -1588,7 +1589,72 @@ void FUN_08063634(Player* p, s32 n) {
   }
 }
 
-NAKED u32 FUN_08063668(Player* p, u32 n) { INCFUNC("asm/func/FUN_08063668.inc"); }
+// 太陽ゲージの消費と状態異常の残り時間を1フレーム進め, その結果で姿勢番号を上書きして返す
+// 残差6命令 (166/160): gStat の読み出しと isSabata のオフセット計算の順序 (Player_BeginAction と同じ系統)
+NON_MATCH u32 Player_TickBadCondTimers(Player* p, u32 n) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  if (gStat->unk_2c8[p->isSabata] > 0) {
+    if (p->unk_1c & 1) {
+      if (gStat->unk_2c8[p->isSabata] > gStat->sunGauge) {
+        gStat->unk_2c8[p->isSabata] -= gStat->sunGauge;
+      } else {
+        gStat->unk_2c8[p->isSabata] = 0;
+      }
+    }
+    n = 6;
+    p->unk_958 = 0x40;
+  } else if (p->unk_958 != 0) {
+    if ((p->unk_958 >> 2) & 1) {
+      n = 6;
+    }
+    p->unk_958--;
+  }
+
+  for (i = 0; i < 3; i++) {
+    switch (i) {
+      case 0: {
+        if (p->unk_43c[0] != 0 && (p->unk_1c & 1)) {
+          p->unk_43c[0]--;
+          if (p->input_28c->down & 0xF0) {
+            MosaicFader_Start(2, 1, 0x1E, p->unk_97c, p->unk_980, &p->unk_984);
+          }
+        }
+        break;
+      }
+      case 1: {
+        if (p->unk_43c[1] != 0) {
+          if (p->unk_1c & 1) {
+            p->unk_43c[1]--;
+          }
+          n = 2;
+          p->unk_956 = 0x40;
+        } else if (p->unk_956 != 0) {
+          if ((p->unk_956 >> 2) & 1) {
+            n = 2;
+          }
+          p->unk_956--;
+        }
+        break;
+      }
+      case 2: {
+        if (p->unk_43c[2] != 0 && (p->unk_1c & 1)) {
+          p->unk_43c[2]--;
+          if (p->unk_43c[2] == 0) {
+            p->unk_456 = gStat->unk_010;
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  return n;
+#else
+  INCFUNC("asm/func/Player_TickBadCondTimers.inc");
+#endif
+}
 
 // flashTimer が動いている間, 4フレームごとに pose を flashPose と入れ替える (点滅)
 // 残差は共有された return pose のブロック位置だけ (23/23), Tier A の分岐形 4通りと Tier B は試済
@@ -1624,7 +1690,7 @@ NON_MATCH void Player_UpdatePoseAndShadow(Player* p) {
   if (p->mover.unk_4 == 0) {
     FUN_08063814(p);
     FUN_080639d0(p);
-    pose = FUN_08063668(p, 0);
+    pose = Player_TickBadCondTimers(p, 0);
     pose = Player_ApplyPoseHold(p, pose);
     pose = Player_ApplyFlashPose(p, pose);
   } else if (gStat->unk_2c8[p->isSabata] > 0) {

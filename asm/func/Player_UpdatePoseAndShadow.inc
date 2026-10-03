@@ -12,7 +12,7 @@
 	bl FUN_080639d0
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_08063668
+	bl Player_TickBadCondTimers
 	adds r2, r0, #0
 	adds r0, r5, #0
 	adds r1, r2, #0

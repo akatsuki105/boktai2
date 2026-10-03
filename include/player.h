@@ -325,20 +325,25 @@ typedef struct Player {
   u8 unk_951;        // 0x951, FUN_0806f780 が unk_a8d + 1 (負なら 0) を入れる
   u16 altPose;       // 0x952, Player_ApplyPoseHold が pose が変わったときに控える値
   u16 altPoseTimer;  // 0x954, 変化時に 0x40 を入れて毎回 1 減らす, bit2 が立つ間は altPose を返す
-  u8 unk_956[0x95A - 0x956];
-  u16 flashPose;   // 0x95A, flashTimer の bit2 が立っている間 Player_ApplyFlashPose が pose の代わりに返す値
-  u16 flashTimer;  // 0x95C, Player_ApplyFlashPose が毎フレーム 1 減らす点滅タイマ
-  u16 unk_95e;     // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
-  u16 unk_960;     // 0x960, FUN_08074994 が unk_95e と対で書く
-  u16 unk_962;     // 0x962, Player_EquipMagic がエンチャント開始時に magic.id + 0x121 を入れる
-  u16 unk_964;     // 0x964, 同じ呼び出しで 0x20 を入れる, unk_962 が 0 のときだけ 0 に戻される
+  u16 unk_956;       // 0x956, Player_TickBadCondTimers が状態異常1の残り時間が切れたあと 0x40 から減らす点滅タイマ
+  u16 unk_958;       // 0x958, 同じく太陽ゲージ消費側の点滅タイマ
+  u16 flashPose;     // 0x95A, flashTimer の bit2 が立っている間 Player_ApplyFlashPose が pose の代わりに返す値
+  u16 flashTimer;    // 0x95C, Player_ApplyFlashPose が毎フレーム 1 減らす点滅タイマ
+  u16 unk_95e;       // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
+  u16 unk_960;       // 0x960, FUN_08074994 が unk_95e と対で書く
+  u16 unk_962;       // 0x962, Player_EquipMagic がエンチャント開始時に magic.id + 0x121 を入れる
+  u16 unk_964;       // 0x964, 同じ呼び出しで 0x20 を入れる, unk_962 が 0 のときだけ 0 に戻される
   u8 unk_966[0x96C - 0x966];
   u16 unk_96c;    // 0x96C, FUN_0807b8c0 が 0 を書く
   u8 unk_96e[2];  // 0x96E
   Vec3 pos_970;   // 0x970, Player_UpdateBloodSword が FUN_0805fe7c の第5引数に渡す
   u8 unk_978;     // 0x978, 同じく第6引数
   u8 unk_979;     // 0x979, Player_EquipMagic がエンチャントの有無で 1/0 を書く
-  u8 unk_97a[0x98C - 0x97A];
+  u8 unk_97a[0x97C - 0x97A];
+  u8 unk_97c[4];  // 0x97C, MosaicFader_Start の from
+  u8 unk_980[4];  // 0x980, 同じく to
+  u16 unk_984;    // 0x984, 同じく interval
+  u8 unk_986[0x98C - 0x986];
   s32 unk_98c;  // 0x98C, FUN_080da9c4 の戻り値を入れて次回の第1引数に渡す
   u8 unk_990;   // 0x990, 同じ呼び出しの第3引数
   u8 unk_991;
