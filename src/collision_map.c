@@ -168,7 +168,17 @@ Zone* FindZonesByID(ZoneID16 id, u16* count) {
   return first;
 }
 
-NAKED CollisionMapEvent* FUN_08234980(u32 id) { INCFUNC("asm/func/FUN_08234980.inc"); }
+// id を持つイベントを返す, 無ければ NULL, 件数に events ではなく zones の件数を使っている
+CollisionMapEvent* Map_FindEventByID(u32 id) {
+  s32 i;
+
+  for (i = 0; i < gCollisionMap->zones->count; i++) {
+    if (gCollisionMap->events[i].id == id) {
+      return &gCollisionMap->events[i];
+    }
+  }
+  return NULL;
+}
 
 NAKED void FUN_082349b8(CollisionMapEvent* ev, u32 param_2) { INCFUNC("asm/func/FUN_082349b8.inc"); }
 
