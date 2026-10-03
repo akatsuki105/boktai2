@@ -78,8 +78,7 @@ NON_MATCH bool32 EntityF41A_OnMessage(Mover* data, s32 msg, s32 value) {
 }
 
 // targetAngle へ向きを4ずつ寄せながらうろつく, turnTimer が切れたら向きを引き直す
-NON_MATCH void EntityF41A_UpdateWander(EntityF41A* p) {
-#ifdef NONMATCHING_C
+void EntityF41A_UpdateWander(EntityF41A* p) {
   if (p->data.angle != p->targetAngle) {
     if (((p->targetAngle - p->data.angle + 0x100) & 0xFF) < 0x80) {
       p->data.angle = p->data.angle + 4;
@@ -88,21 +87,23 @@ NON_MATCH void EntityF41A_UpdateWander(EntityF41A* p) {
     }
   }
   if (p->turnTimer == 0) {
-    u16* tbl = gRandomTable;
-    u32 idx = (gRandTableIdx + 1) & 0x3FF;
+    u16* table;
+    u32 idx;
+    u16 r;
 
-    p->targetAngle = (tbl[idx] & 3) << 6;
+    table = gRandomTable;
+    idx = (gRandTableIdx + 1) & 0x3FF;
+    r = table[idx];
+    p->targetAngle = (r & 3) << 6;
     gRandTableIdx = (idx + 1) & 0x3FF;
-    p->turnTimer = (tbl[gRandTableIdx] & 0x3F) + 0x78;
+    r = table[gRandTableIdx];
+    p->turnTimer = (r & 0x3F) + 0x78;
   } else {
     p->turnTimer--;
   }
   Hitbox_SetPos(&p->hitbox, &p->data.pos, 0);
   Hitbox_Register(&p->hitbox);
   p->animIdx = 7;
-#else
-  INCFUNC("asm/func/EntityF41A_UpdateWander.inc");
-#endif
 }
 
 // 被弾中, 6フレームだけ明るいパレットにして点滅させる
