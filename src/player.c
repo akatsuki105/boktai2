@@ -391,8 +391,8 @@ void FUN_08060ee8(Player* p) {
 }
 
 // ステータス値を割り振りとドーピングから作り直す, サバタはレベルから4つに均等割りする
-// 残差3命令 (79/76): 原典は &p->stats を kind (0x358) のレジスタに +4 して作るが agbcc は 0x35C を組み直す
-// Tier A/B は試済
+// 命令数は76で一致, 残差は p が r6 に入ること (原典は r5) だけ
+// その結果 &p->stats を kind (0x358) のレジスタ +4 で作れず 0x35C を組み直す, Tier A-C は試済
 NON_MATCH void Player_RefreshStats(Player* p) {
 #ifdef NONMATCHING_C
   s32 i;
