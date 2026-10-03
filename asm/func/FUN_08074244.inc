@@ -110,7 +110,7 @@ _080742E0:
 	adds r2, r5, #0
 	adds r2, #0x2c
 	adds r0, r5, #0
-	bl FUN_08061a98
+	bl Player_SpawnShockwaveBehind
 _08074330:
 	cmp r6, #0
 	beq _08074340

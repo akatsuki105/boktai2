@@ -165,7 +165,7 @@ _08071192:
 	adds r2, r4, #0
 	adds r2, #0x2c
 	adds r0, r4, #0
-	bl FUN_08061a98
+	bl Player_SpawnShockwaveBehind
 _080711C4:
 	movs r1, #0xd6
 	lsls r1, r1, #2

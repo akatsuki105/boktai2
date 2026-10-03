@@ -554,7 +554,36 @@ NAKED void Player_DarkDjangoSword_0806185c(Player* p, u32 idx, Vec3* pos) { INCF
 NAKED void Player_DarkDjangoSpear_08061970(Player* p, u32 idx, Vec3* pos, s32 n) { INCFUNC("asm/func/Player_DarkDjangoSpear_08061970.inc"); }
 
 // Player_DarkDjangoSword_0806185c のような関数だが、いつ呼ばれるか不明 (武器の攻撃ではない)
-NAKED void FUN_08061a98(Player* p, u32 idx, Vec3* pos) { INCFUNC("asm/func/FUN_08061a98.inc"); }
+// 衝撃波を pos から向きの反対側に少しずらして出す
+void Player_SpawnShockwaveBehind(Player* p, u32 idx, Vec3* pos) {
+  AuxSprite* sprite = &p->meleeShockwave.sprite;
+  s32 angle = ((p->facing + 5) & 7) * 32;
+  s32 sin;
+  s32 offset;
+
+  sprite->pos = *pos;
+
+  sin = gSineTable[(angle + 0x40) & 0xFF] * 180;
+  if (sin >= 0) {
+    offset = sin >> 12;
+  } else {
+    offset = -((-sin) >> 12);
+  }
+  sprite->pos.x += offset;
+
+  sin = gSineTable[angle] * 180;
+  if (sin >= 0) {
+    offset = sin >> 12;
+  } else {
+    offset = -((-sin) >> 12);
+  }
+  sprite->pos.z += offset;
+
+  p->meleeShockwave.velX = 0;
+  p->meleeShockwave.velZ = 0;
+  AuxAnim_SetAnim(&p->meleeShockwave.anim, p->meleeShockwave.animFile, 2, 0, 0);
+  FUN_0806181c(p);
+}
 
 // 多分、サバタが攻撃する時に呼ばれる
 // サバタの攻撃時に散弾スプライトを pos の少し上に置いて表示する
