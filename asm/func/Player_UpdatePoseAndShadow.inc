@@ -61,7 +61,7 @@ _08063A70:
 	adds r0, r5, #0
 	bl Player_UpdatePtcl718
 	adds r0, r5, #0
-	bl FUN_08061e2c
+	bl Player_UpdatePtcl858
 	ldr r0, _08063B08 @ =0x00000714
 	adds r1, r5, r0
 	ldr r2, _08063B0C @ =0x000006AC

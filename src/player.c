@@ -1014,7 +1014,68 @@ void Player_InitPtcl718(Player* p) {
   st->next = 0;
 }
 
-NAKED void FUN_08061e2c(Player* p) { INCFUNC("asm/func/FUN_08061e2c.inc"); }
+// 0x858 のパーティクルを pos_930 へ寄せながら1フレーム進める, 寄り切ったものは消す
+// 残差11命令 (139/150): 原典は gSineTable と 0xFF と生存数を r8-r10 に抱えるが, agbcc はループ内で作り直す
+// Tier A/B は試済
+NON_MATCH void Player_UpdatePtcl858(Player* p) {
+#ifdef NONMATCHING_C
+  s32 alive;
+  s32 i;
+
+  if (!p->ptcl_858.active) {
+    return;
+  }
+
+  alive = 0;
+  for (i = 0; i < 4; i++) {
+    PlayerPtcl858* ptcl = &p->ptcl_858.ptcls[i];
+    s32 angle;
+    s32 v;
+
+    if (!ptcl->active) {
+      continue;
+    }
+
+    if (abs(ptcl->offsetX) <= 15 && abs(ptcl->offsetZ) <= 15) {
+      ptcl->base.flags |= SPRFLAG_HIDDEN;
+      ptcl->active = FALSE;
+      continue;
+    }
+
+    angle = ArcTan2_8(ptcl->offsetX, ptcl->offsetZ);
+
+    v = gSineTable[(angle + 0x40) & 0xFF] * ptcl->speed;
+    if (v >= 0) {
+      ptcl->offsetX -= v >> 12;
+    } else {
+      ptcl->offsetX -= -((-v) >> 12);
+    }
+
+    v = gSineTable[angle & 0xFF] * ptcl->speed;
+    if (v >= 0) {
+      ptcl->offsetZ -= v >> 12;
+    } else {
+      ptcl->offsetZ -= -((-v) >> 12);
+    }
+
+    ptcl->base.pos.x = ptcl->offsetX + p->pos_930.x;
+    ptcl->base.pos.z = ptcl->offsetZ + p->pos_930.z;
+
+    ptcl->timer++;
+    if (ptcl->timer == 4) {
+      FUN_0822dafc(&ptcl->base, p->ptcl_858.group, ptcl->plttBase + 1);
+    }
+
+    alive++;
+  }
+
+  if (alive == 0) {
+    p->ptcl_858.active = FALSE;
+  }
+#else
+  INCFUNC("asm/func/Player_UpdatePtcl858.inc");
+#endif
+}
 
 NAKED void FUN_08061f6c(Player* p) { INCFUNC("asm/func/FUN_08061f6c.inc"); }
 
@@ -1035,7 +1096,7 @@ void Player_InitPtcl858(Player* p) {
 
   st->group = GetParticleGroup(0x1C1E);
   for (i = 0; i < 4; i++) {
-    Particle52* ptcl = &st->ptcls[i];
+    PlayerPtcl858* ptcl = &st->ptcls[i];
 
     FUN_0822d9f0(&ptcl->base, st->group, 1);
     Particle_SetOffset(&ptcl->base, -4, -4);
@@ -1043,8 +1104,8 @@ void Player_InitPtcl858(Player* p) {
     ptcl->base.priority = 2;
   }
 
-  st->unk_04[1] = 0;
-  st->unk_04[2] = 0;
+  st->unk_05 = 0;
+  st->unk_06 = 0;
 }
 
 NAKED void FUN_080622d0(Player* p) { INCFUNC("asm/func/FUN_080622d0.inc"); }
@@ -1325,7 +1386,7 @@ NON_MATCH void Player_UpdatePoseAndShadow(Player* p) {
   Player_RefreshAttackPower(p);
   FUN_080614bc(p);
   Player_UpdatePtcl718(p);
-  FUN_08061e2c(p);
+  Player_UpdatePtcl858(p);
   p->meleeShockwave.update(&p->meleeShockwave);
 
   if (p->unk_992 != 0) {

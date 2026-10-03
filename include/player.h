@@ -119,10 +119,28 @@ typedef struct {
 } PlayerParticleState718;
 
 // Player_InitPtcl858 で初期化処理がされるが、アクセス方法的に構造体として扱われるっぽい
+// ptcl_858 の要素, Particle のうしろに中心へ寄っていくための状態が並ぶ
+// 根拠: Player_UpdatePtcl858 が offsetX/offsetZ を見て寄せ, timer が 4 になるとパレットを1段進める
 typedef struct {
-  ParticleGroup* group;  // 0x00, PTCL_GROUP_2
-  u8 unk_04[4];
-  Particle52 ptcls[4];  // Player_InitPtcl858 でのループ回数
+  Particle base;  // 0x00
+  bool8 active;   // 0x28, 0 なら更新しない
+  u8 timer;       // 0x29, 毎フレーム +1
+  u8 speed;       // 0x2A, 中心へ寄る速さ
+  u8 plttBase;    // 0x2B, FUN_0822dafc に渡すパレット番号の起点
+  s16 offsetX;    // 0x2C, pos_930 からのずれ
+  u8 unk_2e[2];   // 0x2E
+  s16 offsetZ;    // 0x30, 同上
+  u8 unk_32[2];   // 0x32
+} PlayerPtcl858;
+static_assert(sizeof(PlayerPtcl858) == 52);
+
+typedef struct {
+  ParticleGroup* group;    // 0x00, PTCL_GROUP_2
+  bool8 active;            // 0x04, 生きている要素が無くなると 0 に戻る
+  u8 unk_05;               // 0x05
+  u8 unk_06;               // 0x06
+  u8 unk_07;               // 0x07
+  PlayerPtcl858 ptcls[4];  // 0x08, Player_InitPtcl858 でのループ回数
 } PlayerParticleState858;
 
 // 通常プレイでは gPlayerPtr[0] にこの構造体がある
