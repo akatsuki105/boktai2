@@ -52,7 +52,7 @@ _08063A64: .4byte 0x030046A0
 _08063A68:
 	adds r0, r5, #0
 	adds r1, r2, #0
-	bl FUN_08062688
+	bl Player_UpdatePltt
 _08063A70:
 	adds r0, r5, #0
 	bl Player_UpdatePtcl64c

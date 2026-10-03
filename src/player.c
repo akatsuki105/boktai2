@@ -22,6 +22,7 @@ s32 FUN_080ddcc8(Vec3* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u3
 void FUN_0809c4f4(void);                                                                                               // src/entity_cc28.c
 s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5);                         // src/eff_082473e0.c
 s32 FUN_082467d0(Eff082473e0Emitter* e, u32 unk_1, u32 param_3, u32* param_4);                                         // src/eff_082473e0.c
+magic32_t Player_CheckMagicEnchant(Player* p);                                                                         // src/player_08065988.c
 void* Entity080dc44c_Create(void);                                                                                     // src/entity_080dc44c.c
 extern u16 u16_03002b84;
 extern u16 u16_03002b90;
@@ -1549,7 +1550,112 @@ NON_MATCH void Player_BlendPltt(Player* p, u16* src, s32 wSrc, s32 wBase, u32 sh
 #endif
 }
 
-NAKED void FUN_08062688(Player* p, u32 n) { INCFUNC("asm/func/FUN_08062688.inc"); }
+// 毎フレームのパレット更新, エンチャントの色と変身の色をクロスフェードさせる
+// 残差1命令 (259/258): p と n のレジスタが入れ替わっているだけ (原典は p が r5)
+// Player_CheckMagicEnchant の宣言を外すと streamdiff は完全一致する (Player_GetMagicAction と同じ現象)
+NON_MATCH void Player_UpdatePltt(Player* p, u32 n) {
+#ifdef NONMATCHING_C
+  u32 bright;
+  s32 w;
+  rgb555* src;
+  s32 cost;
+  s32 i;
+
+  if (p->unk_951 != p->unk_950) {
+    p->unk_950 = p->unk_951;
+    FUN_08062468(p);
+  }
+
+  bright = FUN_0806241c(p);
+  if (p->unk_94c != n || p->unk_94e != bright) {
+    p->unk_94c = n;
+    p->unk_94e = bright;
+    Player_BuildPltt(p);
+  }
+
+  if (p->unk_960 != 0) {
+    p->unk_964 = 0;
+    if (p->unk_960 > 0x1F) {
+      src = &gObjPlttData[p->unk_95e * 16];
+      if (p->unk_359 == 0) {
+        for (i = 0; i < 16; i++) {
+          if (i == 5 || i == 6 || i == 13) {
+            p->pltt_2a4[16 + i] = p->pltt_2a4[i];
+          } else {
+            p->pltt_2a4[16 + i] = src[i];
+          }
+        }
+        p->sprite_88.pltt = &p->pltt_2a4[16];
+      } else {
+        for (i = 0; i < 16; i++) {
+          p->pltt_2a4[16 + i] = src[i];
+        }
+        p->gfx_114->pltt = &p->pltt_2a4[16];
+      }
+    } else {
+      src = &gObjPlttData[p->unk_95e * 16];
+      w = p->unk_960;
+      Player_BlendPltt(p, src, w, 0x20 - w, 5);
+    }
+
+    p->unk_960--;
+    return;
+  }
+
+  cost = Player_CheckMagicEnchant(p);
+  if (cost >= 0) {
+    p->unk_962 = cost + 0x121;
+    src = &gObjPlttData[p->unk_962 * 16];
+    if (p->unk_964 <= 0x1F) {
+      w = p->unk_964;
+    } else if (p->unk_964 <= 0x2F) {
+      w = 0x20;
+    } else if (p->unk_964 <= 0x4F) {
+      w = 0x50 - p->unk_964;
+    } else {
+      w = 0;
+    }
+
+    Player_BlendPltt(p, src, w, 0x20 - w, 5);
+    p->unk_964++;
+    if (p->unk_964 > 0x5F) {
+      p->unk_964 = 0;
+    }
+    return;
+  }
+
+  if ((u16)(p->unk_964 - 1) <= 0x4E) {
+    src = &gObjPlttData[p->unk_962 * 16];
+    if ((u16)(p->unk_964 - 0x21) <= 0xE) {
+      p->unk_964 = 0x30;
+    }
+
+    if (p->unk_964 <= 0x20) {
+      w = p->unk_964;
+      p->unk_964 = w - 1;
+    } else {
+      w = 0x50 - p->unk_964;
+      p->unk_964++;
+      if (p->unk_964 > 0x4F) {
+        p->unk_964 = 0;
+      }
+    }
+
+    Player_BlendPltt(p, src, w, 0x20 - w, 5);
+    return;
+  }
+
+  p->unk_962 = 0;
+  p->unk_964 = 0;
+  if (p->unk_359 == 0) {
+    p->sprite_88.pltt = p->pltt_2a4;
+  } else {
+    p->gfx_114->pltt = p->pltt_2a4;
+  }
+#else
+  INCFUNC("asm/func/Player_UpdatePltt.inc");
+#endif
+}
 
 NAKED void FUN_080628ec(Player* p, u32 n) { INCFUNC("asm/func/FUN_080628ec.inc"); }
 
@@ -1573,7 +1679,7 @@ void Player_ResetPltt(Player* p) {
   p->sprite_88.pltt = p->pltt_2a4;
   p->gfx_114->plttID = p->plttID_94a;
   p->gfx_114->pltt = p->pltt_2a4;
-  FUN_08062688(p, 0);
+  Player_UpdatePltt(p, 0);
 }
 
 // 変身エフェクトの粒を弾けさせる, kind 1 なら消えかけさせるだけ
@@ -1982,7 +2088,7 @@ NON_MATCH void Player_UpdatePoseAndShadow(Player* p) {
   if (p->unk_1c == 2) {
     FUN_080628ec(p, pose);
   } else {
-    FUN_08062688(p, pose);
+    Player_UpdatePltt(p, pose);
   }
 
   Player_RefreshAttackPower(p);

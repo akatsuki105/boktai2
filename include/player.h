@@ -330,7 +330,7 @@ typedef struct Player {
 
   u16 plttID_94a;    // 0x94A, Player_ResetPltt
   s16 unk_94c;       // 0x94C, Player_ResetPltt
-  u8 unk_94e;        // 0x94E, FUN_08062688
+  u8 unk_94e;        // 0x94E, Player_UpdatePltt
   u8 unk_94f;        // 0x94F
   u8 unk_950;        // 0x950, Player_ResetPltt
   u8 unk_951;        // 0x951, FUN_0806f780 が unk_a8d + 1 (負なら 0) を入れる
