@@ -31,7 +31,7 @@ void Player_SetAction(Player* p, u8 a, u8 b);
 void FUN_08072724(Player* p);
 void FUN_0823bca8(s32 n);
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
-void FUN_080613ec(Player* p, Vec3* pos, s32 val);
+void Player_ShowPtcl64c(Player* p, Vec3* pos, s32 val);
 void FUN_0807e854(Player* p);
 void FUN_0807d118(Player* p);
 void FUN_08063220(Player* p);
@@ -322,7 +322,7 @@ void FUN_08066e84(void) {
 void FUN_08066e9c(Player* p, Vec3* pos1, s32 param_3, s32 param_4, Vec3* pos2, s32 param_6, SoundID32 soundID) {
   FUN_08240cf0(pos1->x, pos1->z, param_3, 0, param_4, p->mover.id);
   if (pos2 != NULL) {
-    FUN_080613ec(p, pos2, param_6);
+    Player_ShowPtcl64c(p, pos2, param_6);
   }
   if (soundID != 0) {
     PlaySound_082406e0(soundID);

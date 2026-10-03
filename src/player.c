@@ -322,7 +322,22 @@ NON_MATCH void Player_UpdatePtcl64c(Player* p) {
 #endif
 }
 
-NAKED void FUN_080613ec(Player* p, unknown* param_2, s32 val) { INCFUNC("asm/func/FUN_080613ec.inc"); }
+// 0x64C のパーティクルを pos に出す, big なら別のパレットを使う
+void Player_ShowPtcl64c(Player* p, Vec3* pos, s32 big) {
+  Particle* ptcl = &p->ptcl_64c.ptcl;
+
+  if (big) {
+    p->ptcl_64c.plttBase = 0x48;
+  } else {
+    p->ptcl_64c.plttBase = 4;
+  }
+
+  FUN_0822dafc(ptcl, p->ptcl_64c.group1, p->ptcl_64c.plttBase);
+  ptcl->pos = *pos;
+  ptcl->flags &= ~SPRFLAG_HIDDEN;
+  p->ptcl_64c.active = TRUE;
+  p->ptcl_64c.timer = 0;
+}
 
 // 0x64C のパーティクルを確保して隠した状態で初期化する
 // 命令数は40で一致, 残差は p と &ptcl_64c のレジスタが入れ替わっているだけ (原典は p が r5)
