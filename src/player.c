@@ -737,7 +737,54 @@ u32 Player_WeaponEffectKajiba(Player* p) { return Div((p->maxHP - p->hp) * 20, p
 u32 Player_WeaponEffectGyakuKajiba(Player* p) { return -Div((p->maxHP - p->hp) * 40, p->maxHP); }
 
 // 同じ種族の敵をたくさん倒しているほど威力が上がる
-NAKED u32 Player_WeaponEffectKillCount(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/Player_WeaponEffectKillCount.inc"); }
+// 相手の系統に応じた撃破数ボーナス (撃破数/64, 最大10) を返す, 系統が付いていなければ 0
+// 命令数は59で一致, 残差は最初の movs #0x80 が attributes の ldr より前か後かだけ
+// 各枝で上限処理を書くと cross-jumping が原典と同じ形 (1本目に合流) になる, Tier A/B は試済
+NON_MATCH u32 Player_WeaponEffectKillCount(Player* p, HitboxData* a, HitboxData* b) {
+#ifdef NONMATCHING_C
+  s32 n;
+
+  if (b->attributes & HBATTR_BEAST) {
+    n = (s16)gStat->killCounts[0] >> 6;
+    if (n > 10) {
+      n = 10;
+    }
+    return n;
+  }
+  if (b->attributes & HBATTR_THING) {
+    n = (s16)gStat->killCounts[1] >> 6;
+    if (n > 10) {
+      n = 10;
+    }
+    return n;
+  }
+  if (b->attributes & HBATTR_PHANTOM) {
+    n = (s16)gStat->killCounts[2] >> 6;
+    if (n > 10) {
+      n = 10;
+    }
+    return n;
+  }
+  if (b->attributes & HBATTR_UNDEAD) {
+    n = (s16)gStat->killCounts[3] >> 6;
+    if (n > 10) {
+      n = 10;
+    }
+    return n;
+  }
+  if (b->attributes & HBATTR_IMMORTAL) {
+    n = (s16)gStat->killCounts[4] >> 6;
+    if (n > 10) {
+      n = 10;
+    }
+    return n;
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/Player_WeaponEffectKillCount.inc");
+#endif
+}
 
 // 一定確率で追加ダメージ 10
 u32 Player_WeaponEffectRandom(Player* p, HitboxData* a, HitboxData* b) {

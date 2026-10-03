@@ -84,7 +84,9 @@ typedef struct {
   s16 totalEnemyKillCount;       // 0x1F0
   s16 enemyKillCount[24];        // 0x1F2, idx: include/constants/enemy.h の EnemyCategoryID?
   u16 unk_222;                   // 0x222
-  u8 unk_224[22];                // 0x224
+  u8 unk_224[0x228 - 0x224];     // 0x224
+  u16 killCounts[5];             // 0x228, ビースト/シング/ファントム/アンデッド/イモータルの撃破数, 根拠: Player_WeaponEffectKillCount が敵の系統ビットで引く
+  u8 unk_232[0x23A - 0x232];     // 0x232
   s16 solarBankInterestRate;     // 0x23A, Solar bank interest rate (stored as (1+r)*64, e.g. 14.0625% = 73). Defaults to 65 when starting a new game.
   u8 unk_23c[4];                 // 0x23C
   s16 lap;                       // 0x240, 現在のゲーム周回数
