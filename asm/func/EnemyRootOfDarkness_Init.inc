@@ -238,7 +238,7 @@ _081A5798:
 	ldr r6, [sp, #0xf8]
 	ldrb r2, [r6]
 	add r0, sp, #0x1c
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	add r0, sp, #0x1c
 	ldrh r0, [r0]
 	lsls r0, r0, #0x10
@@ -281,7 +281,7 @@ _081A57EA:
 	add r4, sp, #0x1c
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _081A580C
 	adds r0, #4

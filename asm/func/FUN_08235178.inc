@@ -12,7 +12,7 @@
 	mov sl, r1
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
-	bl FUN_08234f44
+	bl Map_GetPath
 	mov r8, r0
 	cmp r0, #0
 	beq _082351A4
@@ -27,7 +27,7 @@ _082351A4:
 	b _082352AE
 _082351AE:
 	mov r0, r8
-	bl FUN_08234f6c
+	bl Map_GetPathNodes
 	str r0, [sp, #0xc]
 	cmp r0, #0
 	bne _082351CE
@@ -55,7 +55,7 @@ _082351DC:
 	mov r0, sp
 	ldr r1, [sp, #0xc]
 	str r3, [sp, #8]
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 	mov r0, sb
 	movs r1, #0
 	ldrsh r2, [r0, r1]
@@ -125,7 +125,7 @@ _0823525C:
 _0823526A:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08235280
 	adds r0, #4

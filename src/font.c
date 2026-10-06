@@ -190,14 +190,14 @@ void FUN_0822ec80(s32 val) {
   switch (val) {
     case 0:
     default: {
-      fileID = 0x529C;
+      fileID = BGP_529C;
       break;
     }
     case 1: {
-      fileID = 0x539C;
+      fileID = BGP_539C;
       break;
     }
   }
-  f = GetFile(DIR_BGPLTT, fileID);
-  CpuCopy32(&f->body[224], &gBgPlttBuffer[224], 64);
+  f = GetBgPlttFile(fileID);
+  CpuCopy32(&f->body[224], &gBgPlttBuffer[224], 32 * sizeof(rgb555));
 }

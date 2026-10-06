@@ -25,13 +25,13 @@ static_assert(sizeof(Entity080dc44c) == 708);
 
 extern Entity080dc44c* gEntity080dc44c;  // 0x03000168
 
-void FUN_080dbeb0(void) {}
+void FUN_080dbeb0(Entity080dc44c* p, Entity080dc44cSlot* elem) {}
 
 s32 FUN_080dc0d0(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6);
 
-NAKED void FUN_080dbeb4(Entity080dc44c* p, u32 param_2) { INCFUNC("asm/func/FUN_080dbeb4.inc"); }
+NAKED void FUN_080dbeb4(Entity080dc44c* p, Entity080dc44cSlot* elem) { INCFUNC("asm/func/FUN_080dbeb4.inc"); }
 
-NAKED void FUN_080dc00c(Entity080dc44c* p, u32 param_2) { INCFUNC("asm/func/FUN_080dc00c.inc"); }
+NAKED void FUN_080dc00c(Entity080dc44c* p, Entity080dc44cSlot* elem) { INCFUNC("asm/func/FUN_080dc00c.inc"); }
 
 NAKED s32 FUN_080dc050(Entity080dc44c* p) { INCFUNC("asm/func/FUN_080dc050.inc"); }
 
@@ -40,6 +40,12 @@ s32 FUN_080dc0a0(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 p
 s32 FUN_080dc0b8(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5) { return FUN_080dc0d0(p, param_2, param_3, param_4, param_5, 2); }
 
 NAKED s32 FUN_080dc0d0(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/FUN_080dc0d0.inc"); }
+
+void (*const PTR_ARRAY_085ad32c[3])(Entity080dc44c*, Entity080dc44cSlot*) = {
+    FUN_080dbeb0,
+    FUN_080dbeb4,
+    FUN_080dc00c,
+};  // 0x085AD32C
 
 NAKED s32 Entity080dc44c_Update(Entity080dc44c* p) { INCFUNC("asm/func/Entity080dc44c_Update.inc"); }
 

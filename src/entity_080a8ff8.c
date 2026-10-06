@@ -13,25 +13,25 @@ typedef struct {
 static_assert(sizeof(Entity080a8ff8Particle) == 44);
 
 typedef struct Entity080a8ff8 {
-  Entity e;                             // 0x000, ENTITY_UNK_8
-  Player* owner;                        // 0x018, Init の第2引数, owner->unk_3fb がこのエンティティの生存数カウンタ
-  AuxSprite sprite;                     // 0x01C
-  AuxSpriteGfx gfx;                     // 0x048, SPRITE_BOMB
-  Vec3 pos;                             // 0x064, Init が引数の Vec3 をまるごと写す
-  Entity080a8ff8Particle particles[8];  // 0x06C, 根拠: FUN_080a8dd8 の i=0..7 / stride 0x2C のループ
-  ParticleGroup* group;                 // 0x1CC, GetParticleGroup(GROUP_2) の戻り値
-  s16 mode;                             // 0x1D0, Init の第4引数, 0 かどうかで fuseTimer の減り方と timeoutTimer の有無が変わる
-  u16 phaseLen;                         // 0x1D2, fuseTimer の初期値 / 3, カウントダウンを3段階に分けてスプライト番号を変える
-  u16 fuseTimer;                        // 0x1D4, Init が 0xB4/0x5A/0x78 を入れる, 0 で爆発して KillEntity
-  u16 timeoutTimer;                     // 0x1D6, Init が 900, mode == 0 のときだけ減り、0 で爆発せずに KillEntity
-  u8 unk_1d8[2];                        // 0x1D8, 読み書きするコードが見つかっていない
-  u16 stateTimer;                       // 0x1DA, Entity080a8ff8_SetState が 0 に戻し、各状態が毎フレーム +1 する
-  void (*fn)(struct Entity080a8ff8*);   // 0x1DC, Entity080a8ff8_Update が p->fn(p) として呼ぶ状態関数
+  Entity e;                                        // 0x000, ENTITY_UNK_8
+  Player* owner;                                   // 0x018, Init の第2引数, owner->unk_3fb がこのエンティティの生存数カウンタ
+  AuxSprite sprite;                                // 0x01C
+  AuxSpriteGfx gfx;                                // 0x048, SPRITE_BOMB
+  Vec3 pos;                                        // 0x064, Init が引数の Vec3 をまるごと写す
+  Entity080a8ff8Particle particles[8];             // 0x06C, 根拠: FUN_080a8dd8 の i=0..7 / stride 0x2C のループ
+  ParticleGroup* group;                            // 0x1CC, GetParticleGroup(GROUP_2) の戻り値
+  s16 mode;                                        // 0x1D0, Init の第4引数, 0 かどうかで fuseTimer の減り方と timeoutTimer の有無が変わる
+  u16 phaseLen;                                    // 0x1D2, fuseTimer の初期値 / 3, カウントダウンを3段階に分けてスプライト番号を変える
+  u16 fuseTimer;                                   // 0x1D4, Init が 0xB4/0x5A/0x78 を入れる, 0 で爆発して KillEntity
+  u16 timeoutTimer;                                // 0x1D6, Init が 900, mode == 0 のときだけ減り、0 で爆発せずに KillEntity
+  u8 unk_1d8[2];                                   // 0x1D8, 読み書きするコードが見つかっていない
+  u16 stateTimer;                                  // 0x1DA, Entity080a8ff8_SetState が 0 に戻し、各状態が毎フレーム +1 する
+  void (*updateCallback)(struct Entity080a8ff8*);  // 0x1DC
 } Entity080a8ff8;
 static_assert(sizeof(Entity080a8ff8) == 480);
 
 void Entity080a8ff8_SetState(Entity080a8ff8* p, void* fn) {
-  p->fn = fn;
+  p->updateCallback = fn;
   p->stateTimer = 0;
 }
 
@@ -42,7 +42,7 @@ NAKED void FUN_080a8950(Entity080a8ff8* p) { INCFUNC("asm/func/FUN_080a8950.inc"
 NAKED void FUN_080a8cfc(Entity080a8ff8* p) { INCFUNC("asm/func/FUN_080a8cfc.inc"); }
 
 s32 Entity080a8ff8_Update(Entity080a8ff8* p) {
-  p->fn(p);
+  p->updateCallback(p);
   return 0;
 }
 

@@ -43,7 +43,7 @@ static_assert(sizeof(CactusManager) == 116);
 COMMON_DATA CactusManager* gCactusManager = NULL;  // 0x03002B34
 
 s32 GetMapAreaAt(Vec3* pos);
-void FUN_08234270(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
+void Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
 s32 FUN_08014da0(s32 param_1, s32 param_2, Vec3* pos, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
 // 被弾時に呼ばれる,hp を削り、0 以下になったら破壊待ちにし、そうでなければ点滅させる
@@ -67,7 +67,7 @@ void Cactus_OnHit(HitboxData* a, HitboxData* b, Cactus* owner) {
 s32 Hazard_Remove(CactusManager* p, Cactus* hazard, u32 idx) {
   Hitbox_Unregister(&hazard->hitbox);
   AuxSprite_Remove(&hazard->sprite);
-  FUN_082342a8(&hazard->tileOverride);
+  Map_RemoveTileOverride(&hazard->tileOverride);
   p->activeMask &= ~(1 << idx);
 }
 
@@ -229,7 +229,9 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   Vec3* min;
   Vec3* max;
   MapTileOverride* tileOverride;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
+  s32 slot;
   s32 bx, bz, idx;
   s32 h;
   s32 i;
@@ -290,17 +292,17 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  tile = (u8*)FUN_08234224(idx, 1);
-  if (tile != NULL) {
-    tile += 4;
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    tile = &ov->tile;
   } else {
-    tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+    tile = &gCollisionMap->tiledata->tiles[idx];
   }
-  h = *tile & 0xF;
+  h = tile->heightStairs & 0xF;
   if (h < 0xF) {
     h++;
   }
-  FUN_08234270(tileOverride, idx, 0, h, 0xFF, 2);
+  Map_AddTileOverride(tileOverride, idx, 0, h, 0xFF, 2);
   if (!Video_GetAuxSprite(gfx, SPRITE_CACTUS)) {
     return -1;
   }

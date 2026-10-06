@@ -58,7 +58,7 @@ NON_MATCH void MainSprite_DrawListInternal(void) {
       }
     }
     p = p->next;
-  }
+  } while (p != NULL);
 #else
   INCFUNC("asm/func/MainSprite_DrawListInternal.inc");
 #endif

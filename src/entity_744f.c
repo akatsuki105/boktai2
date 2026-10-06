@@ -10,41 +10,41 @@ typedef void(Entity744FFunc)(Entity744F* p);
 
 // 武器を並べて選ばせるメニュー, 武器IDをスクリプトから受け取り種別ごとの列に振り分ける
 struct Entity744F {
-  Entity e;                      // 0x0000, ENTITY_UNK_11
-  MainSpriteGfx gfx0;            // 0x0018, SPRITE_UI_START_MENU
-  MainSpriteGfx gfx1;            // 0x0038, SPRITE_INVENTORY_ICONS
-  MainSpriteGfx gfx2;            // 0x0058, SPRITE_UI_MISC
-  MainSprite sprites[58];        // 0x0078, [38] がカーソル
-  Tilemaps* tilemap;             // 0x1638, TILEMAP_9F57
-  rgb555* bgPltt;                // 0x163C, BGP_A41A + 0x1B4
-  u8* unk_1640;                  // 0x1640, '.s' があれば FUN_0823d340 の戻り値
-  u8* unk_1644;                  // 0x1644, '.w' があれば FUN_0823d340 の戻り値
-  char* unk_1648;                // 0x1648, '.c' を VM_ParseStringRef して Textbox_LookupString した文字列
-  u8 unk_164c[0x1654 - 0x164C];  // 0x164C, まだ未解析
-  u8 unk_1654;                   // 0x1654, _Init が 0 を入れる
-  u8 unk_1655;                   // 0x1655, FUN_080bcdf8 の第3引数
-  u8 unk_1656;                   // 0x1656, まだ未解析
-  u8 kind;                       // 0x1657, _Update が FUN_080b94cc / FUN_080b9400 に渡す
-  u8 unk_1658;                   // 0x1658, _Init が 0 を入れる
-  u8 unk_1659;                   // 0x1659, _Init が 0 を入れる
-  u8 unk_165a[2];                // 0x165A, まだ未解析
-  weapon8_t swords[16];          // 0x165C, '.P' のうち gWeaponDB[].kind == WK_SWORD のものを 12 個まで詰めて残りは 0
-  weapon8_t spears[16];          // 0x166C, 同じく WK_SPEAR
-  weapon8_t hammers[16];         // 0x167C, 同じく WK_HAMMER
-  u16 emptySlot;                 // 0x168C, FindEmptyWeaponSlot の戻り値
-  u16 stateTimer;                // 0x168E, Entity744F_SetState / FUN_080bcdf8 が差し替えのたびに 0 に戻す
-  MenuSpritePair pair0;          // 0x1690, _Destroy が FUN_080b9a0c に渡す
-  u8 unk_1770[0x1784 - 0x1770];  // 0x1770, まだ未解析
-  MenuCursor cursor;             // 0x1784, FUN_080b9ff8(&cursor, 1, 4, 0, 20)
-  MenuSpritePair pair1;          // 0x17B4, _Destroy が FUN_080b9894 に渡す
-  u32 unk_1894;                  // 0x1894, '.e' (なければ 0)
-  Entity744FFunc* fn;            // 0x1898, _Update が毎フレーム呼ぶ, Entity744F_SetState が差し替える
-  Entity744FFunc* unk_189c;      // 0x189C, FUN_080bcdf8 が入れる, 読み手は未調査
+  Entity e;                        // 0x0000, ENTITY_UNK_11
+  MainSpriteGfx gfx0;              // 0x0018, SPRITE_UI_START_MENU
+  MainSpriteGfx gfx1;              // 0x0038, SPRITE_INVENTORY_ICONS
+  MainSpriteGfx gfx2;              // 0x0058, SPRITE_UI_MISC
+  MainSprite sprites[58];          // 0x0078, [38] がカーソル
+  Tilemaps* tilemap;               // 0x1638, TILEMAP_9F57
+  rgb555* bgPltt;                  // 0x163C, BGP_A41A + 0x1B4
+  u8* unk_1640;                    // 0x1640, '.s' があれば FUN_0823d340 の戻り値
+  u8* unk_1644;                    // 0x1644, '.w' があれば FUN_0823d340 の戻り値
+  char* unk_1648;                  // 0x1648, '.c' を VM_ParseStringRef して Textbox_LookupString した文字列
+  u8 unk_164c[0x1654 - 0x164C];    // 0x164C, まだ未解析
+  u8 unk_1654;                     // 0x1654, _Init が 0 を入れる
+  u8 unk_1655;                     // 0x1655, FUN_080bcdf8 の第3引数
+  u8 unk_1656;                     // 0x1656, まだ未解析
+  u8 kind;                         // 0x1657, _Update が FUN_080b94cc / FUN_080b9400 に渡す
+  u8 unk_1658;                     // 0x1658, _Init が 0 を入れる
+  u8 unk_1659;                     // 0x1659, _Init が 0 を入れる
+  u8 unk_165a[2];                  // 0x165A, まだ未解析
+  weapon8_t swords[16];            // 0x165C, '.P' のうち gWeaponDB[].kind == WK_SWORD のものを 12 個まで詰めて残りは 0
+  weapon8_t spears[16];            // 0x166C, 同じく WK_SPEAR
+  weapon8_t hammers[16];           // 0x167C, 同じく WK_HAMMER
+  u16 emptySlot;                   // 0x168C, FindEmptyWeaponSlot の戻り値
+  u16 stateTimer;                  // 0x168E, Entity744F_SetState / FUN_080bcdf8 が差し替えのたびに 0 に戻す
+  MenuSpritePair pair0;            // 0x1690, _Destroy が FUN_080b9a0c に渡す
+  u8 unk_1770[0x1784 - 0x1770];    // 0x1770, まだ未解析
+  MenuCursor cursor;               // 0x1784, FUN_080b9ff8(&cursor, 1, 4, 0, 20)
+  MenuSpritePair pair1;            // 0x17B4, _Destroy が FUN_080b9894 に渡す
+  u32 unk_1894;                    // 0x1894, '.e' (なければ 0)
+  Entity744FFunc* updateCallback;  // 0x1898
+  Entity744FFunc* unk_189c;        // 0x189C, FUN_080bcdf8 が入れる, 読み手は未調査
 };
 static_assert(sizeof(Entity744F) == 6304);
 
 void Entity744F_SetState(Entity744F* p, Entity744FFunc* fn) {
-  p->fn = fn;
+  p->updateCallback = fn;
   p->stateTimer = 0;
 }
 

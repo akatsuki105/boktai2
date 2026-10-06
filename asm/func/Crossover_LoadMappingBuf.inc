@@ -13,7 +13,7 @@ _0804E744:
 _0804E746:
 	cmp r6, #0
 	beq _0804E7A8
-	bl FUN_0804e654
+	bl Crossover_GetMappingBuf
 	adds r7, r0, #0
 	movs r5, #0
 	movs r4, #0

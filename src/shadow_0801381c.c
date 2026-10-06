@@ -78,7 +78,8 @@ NON_MATCH void ParticleShadow_FollowGround(ParticleShadow* shadow) {
   Vec3* pos = shadow->pos;
   s32 bx = pos->x >> 8;
   s32 bz = pos->z >> 8;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
   u32 kind;
   u32 h;
 
@@ -90,13 +91,13 @@ NON_MATCH void ParticleShadow_FollowGround(ParticleShadow* shadow) {
   if (shadow->flags & 1) {
     dst->y = pos->y;
   } else {
-    tile = (u8*)FUN_08234224(idx, 1);
-    if (tile != NULL) {
-      tile += 4;
+    ov = Map_FindTileOverride(idx, 1);
+    if (ov != NULL) {
+      tile = &ov->tile;
     } else {
-      tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+      tile = &gCollisionMap->tiledata->tiles[idx];
     }
-    h = *tile;
+    h = tile->heightStairs;
     kind = h >> 4;
     h = (h & 0xF) << 8;
     switch (kind) {
@@ -112,13 +113,13 @@ NON_MATCH void ParticleShadow_FollowGround(ParticleShadow* shadow) {
     dst->y = h;
   }
   if (pos->y >= dst->y && dst->y != 0) {
-    tile = (u8*)FUN_08234224(idx, 1);
-    if (tile != NULL) {
-      tile += 4;
+    ov = Map_FindTileOverride(idx, 1);
+    if (ov != NULL) {
+      tile = &ov->tile;
     } else {
-      tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+      tile = &gCollisionMap->tiledata->tiles[idx];
     }
-    if (!(((u16*)tile)[1] & 0x20)) {
+    if (!(tile->attr & 0x20)) {
       goto show;
     }
   }

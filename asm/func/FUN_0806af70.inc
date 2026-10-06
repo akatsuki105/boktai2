@@ -31,7 +31,7 @@ _0806AF92:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldrb r0, [r4]
 	cmp r0, #5
 	bne _0806AFCC
@@ -87,7 +87,7 @@ _0806B016:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _0806B062
 	adds r0, r5, #0

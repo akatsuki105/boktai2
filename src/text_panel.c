@@ -11,23 +11,23 @@ typedef void (*TextPanelFunc)(struct TextPanelManager* mgr, struct TextPanel* p)
 
 // メッセージ枠1つ, TextPanel_Create が Malloc(0x1C4) して TextPanelManager のリストに繋ぐ
 typedef struct TextPanel {
-  s32 id;                  // 0x00, TextPanelManager_AllocID が 1..999999 で配る, TextPanelManager_FindByID の検索キー
-  u8 x;                    // 0x04, TextPanel_SetRect の第2引数, FUN_0822EA60 と TextRenderer_SetRect に渡す
-  u8 y;                    // 0x05, TextPanel_SetRect の第3引数
-  u8 width;                // 0x06, TextPanel_SetRect の第4引数
-  u8 height;               // 0x07, TextPanel_SetRect の第5引数
-  u16 unk_08;              // 0x08, TextPanel_Create が 0 を入れる
-  u16 msgIdx;              // 0x0A, TextPanel_SetMessage の引数, FUN_08049FE8 に渡す
-  s16 pendingMsgIdx;       // 0x0C, 0 以上の間 TextPanelManager_Update が TextPanel_SetMessage に流す, 適用後は -1 に戻る
-  u16 unk_0e;              // 0x0E, 読み手も書き手も見つかっていない
-  u8* scriptPc;            // 0x10, TextPanel_SetScript の第2引数, 本文のあるスクリプト位置
-  u16 unk_14;              // 0x14, TextPanel_Create と TextPanel_SetScript が 0 を入れる
-  u16 unk_16;              // 0x16, TextPanel_Create と TextPanel_SetScript が 1 を入れる
-  u16 unk_18[32];          // 0x18, FUN_0804a27c が選択肢ごとのメッセージ番号を unk_16 個だけ書き込む
-  TextPanelFunc fn;        // 0x58, TextPanelManager_Update が fn(mgr, box) で呼ぶ, 0x0804A4A0 が待機、0x0804A4A8 が表示中
-  TextRenderer renderer;   // 0x5C, FUN_0804967C / FUN_08049640 / TextRenderer_SetRect / TextRenderer_Advance がこのアドレスを取る
-  struct TextPanel* prev;  // 0x1BC, TextPanel_Create が繋ぎ TextPanel_Destroy が外す
-  struct TextPanel* next;  // 0x1C0
+  s32 id;                        // 0x00, TextPanelManager_AllocID が 1..999999 で配る, TextPanelManager_FindByID の検索キー
+  u8 x;                          // 0x04, TextPanel_SetRect の第2引数, FUN_0822EA60 と TextRenderer_SetRect に渡す
+  u8 y;                          // 0x05, TextPanel_SetRect の第3引数
+  u8 width;                      // 0x06, TextPanel_SetRect の第4引数
+  u8 height;                     // 0x07, TextPanel_SetRect の第5引数
+  u16 unk_08;                    // 0x08, TextPanel_Create が 0 を入れる
+  u16 msgIdx;                    // 0x0A, TextPanel_SetMessage の引数, FUN_08049FE8 に渡す
+  s16 pendingMsgIdx;             // 0x0C, 0 以上の間 TextPanelManager_Update が TextPanel_SetMessage に流す, 適用後は -1 に戻る
+  u16 unk_0e;                    // 0x0E, 読み手も書き手も見つかっていない
+  u8* scriptPc;                  // 0x10, TextPanel_SetScript の第2引数, 本文のあるスクリプト位置
+  u16 unk_14;                    // 0x14, TextPanel_Create と TextPanel_SetScript が 0 を入れる
+  u16 unk_16;                    // 0x16, TextPanel_Create と TextPanel_SetScript が 1 を入れる
+  u16 unk_18[32];                // 0x18, FUN_0804a27c が選択肢ごとのメッセージ番号を unk_16 個だけ書き込む
+  TextPanelFunc updateCallback;  // 0x58, 0x0804A4A0 が待機、0x0804A4A8 が表示中
+  TextRenderer renderer;         // 0x5C, FUN_0804967C / TextRenderer_ResetModeStack / TextRenderer_SetRect / TextRenderer_Advance がこのアドレスを取る
+  struct TextPanel* prev;        // 0x1BC, TextPanel_Create が繋ぎ TextPanel_Destroy が外す
+  struct TextPanel* next;        // 0x1C0
 } TextPanel;
 static_assert(sizeof(TextPanel) == 452);
 
@@ -125,11 +125,11 @@ s32 TextPanel_Create(s32 x, s32 y, s32 width, s32 height) {
   p->unk_14 = 0;
   p->unk_16 = 1;
   p->prev = NULL, p->next = NULL;
-  p->fn = TextPanel_StateIdle;
+  p->updateCallback = TextPanel_StateIdle;
   r = &p->renderer;
   TextRenderer_Init(r, p->x, p->y, p->width, p->height);
   r->finished = FALSE;
-  r->unk_0b = 1;
+  r->silent = TRUE;
   TextPanelManager_Link(mgr, p);
   return p->id;
 }
@@ -160,7 +160,7 @@ s32 TextPanel_Destroy(s32 id) {
     return -1;
   }
   FUN_0822ea60(p->x, p->y, p->width, p->height);
-  p->fn = TextPanel_StateIdle;
+  p->updateCallback = TextPanel_StateIdle;
   TextPanelManager_Unlink(mgr, p);
   Free(p);
   return id;
@@ -173,7 +173,7 @@ s32 TextPanel_Start(s32 id) {
   if (p == NULL) {
     return -1;
   }
-  p->fn = TextPanel_StateTyping;
+  p->updateCallback = TextPanel_StateTyping;
   return 0;
 }
 
@@ -185,7 +185,7 @@ s32 TextPanel_Hide(s32 id) {
     return -1;
   }
   FUN_0822ea60(p->x, p->y, p->width, p->height);
-  p->fn = TextPanel_StateIdle;
+  p->updateCallback = TextPanel_StateIdle;
   return 0;
 }
 
@@ -204,7 +204,7 @@ s32 TextPanel_SetScript(s32 id, u8* scriptPc) {
   p->unk_14 = 0;
   p->unk_16 = 1;
   p->pendingMsgIdx = 0;
-  FUN_08049640(r);
+  TextRenderer_ResetModeStack(r);
   return 0;
 }
 
@@ -230,7 +230,7 @@ NON_MATCH s32 FUN_0804a27c(s32 id, u8* scriptPc, s32 count, s32 selected, u16* m
     p->unk_18[i] = msgIndices[i];
   }
   p->pendingMsgIdx = p->unk_18[p->unk_14];
-  FUN_08049640(r);
+  TextRenderer_ResetModeStack(r);
   return 0;
 #else
   INCFUNC("asm/func/FUN_0804a27c.inc");
@@ -251,8 +251,8 @@ s32 TextPanel_SetMessage(s32 id, s32 msgIdx) {
     TextRenderer_SetRect(r, p->x, p->y, p->width, p->height);
     p->msgIdx = msgIdx;
     r->text = TextPanel_LookupText(p, p->msgIdx);
-    p->fn = TextPanel_StateTyping;
-    FUN_08049640(r);
+    p->updateCallback = TextPanel_StateTyping;
+    TextRenderer_ResetModeStack(r);
     p->pendingMsgIdx = -1;
   }
   return 0;
@@ -351,9 +351,9 @@ void TextPanel_StateTyping(TextPanelManager* mgr, TextPanel* p) {
       r->unk_08 = 0;
       if (TextRenderer_Advance(r) != 0) {
         if (r->finished) {
-          p->fn = TextPanel_StateIdle;
+          p->updateCallback = TextPanel_StateIdle;
         } else {
-          p->fn = TextPanel_StateDone;
+          p->updateCallback = TextPanel_StateDone;
         }
         break;
       }
@@ -375,8 +375,8 @@ s32 TextPanelManager_Update(TextPanelManager* mgr) {
     if (p->pendingMsgIdx >= 0) {
       TextPanel_SetMessage(p->id, p->pendingMsgIdx);
     }
-    if (p->fn != NULL) {
-      p->fn(mgr, p);
+    if (p->updateCallback != NULL) {
+      p->updateCallback(mgr, p);
     }
     TextRenderer_RunPending(r);
     p = next;

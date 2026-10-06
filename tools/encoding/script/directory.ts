@@ -4,7 +4,10 @@ import type { addr } from "../../common/gba/gba.ts";
 export type ScriptDirectory = {
   // スクリプトの先頭アドレスの配列(注意: スクリプトIDがnのスクリプトアドレスは scripts[n-1] で取得する)
   // スクリプトIDと配置順が一致するとは限らない & 同じスクリプトが複数のIDで参照されることもあるので注意
-  scripts: addr[];
+  scripts: {
+    varcount: number; // スクリプトが使うローカル変数の数
+    addr: addr;
+  }[];
 
   // 文字列の先頭アドレスの配列(こちらは文字列IDがそのままインデックス)
   strings: {
@@ -33,9 +36,11 @@ export const ParseScriptDirectory = (rom: DataView, start: addr): ScriptDirector
   const stringDataEnd: addr = p + gba.getU32(rom, p + 12);
   p += 16;
 
-  const scripts: addr[] = [];
+  const scripts: { varcount: number; addr: addr }[] = [];
   for (const offset of scriptEntry) {
-    scripts.push(scriptData + 4 + (offset & 0x00FFFFFF)); // 先頭4バイトはスクリプト全体のサイズなので飛ばす
+    const varcount = (offset >> 24) & 0xFF;
+    const addr: addr = (scriptData + 4) + (offset & 0x00FFFFFF); // 先頭4バイトはスクリプト全体のサイズなので飛ばす
+    scripts.push({ varcount, addr });
   }
 
   const strings: { attr: number; size: number; addr: addr }[] = [];

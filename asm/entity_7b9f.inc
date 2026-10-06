@@ -422,7 +422,7 @@ _081D84CC:
 	bl Hitbox_Register
 	mov r0, r8
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _081D84FC
 	adds r0, #4

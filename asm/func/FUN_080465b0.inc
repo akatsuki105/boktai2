@@ -125,7 +125,7 @@ _08046684:
 	adds r4, #8
 	ldr r0, [sp, #0x1c]
 	adds r1, r4, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	adds r0, r5, #0
 	adds r0, #0x28
 	movs r1, #0
@@ -133,14 +133,14 @@ _08046684:
 	ldrh r2, [r5, #0x30]
 	ldrh r3, [r5, #0x32]
 	ldr r0, [sp, #0x18]
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	movs r6, #0xa6
 	lsls r6, r6, #1
 	adds r0, r5, r6
 	ldr r1, [r0]
 	add r0, sp, #4
 	movs r2, #0
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 	ldr r0, [sp, #0x1c]
 	adds r1, r4, #0
 	add r2, sp, #4
@@ -404,7 +404,7 @@ _080468A2:
 _080468BA:
 	ldr r0, [sp, #0x1c]
 	adds r1, r7, #0
-	bl FUN_08236268
+	bl Map_StepNavPath
 	ldrb r0, [r5, #7]
 	ldr r2, _08046908 @ =0x085AB414
 	lsls r1, r0, #1

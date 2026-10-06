@@ -77,7 +77,7 @@ NON_MATCH bool32 FUN_08242b88(WeaponData* data) {
       gStat->equippedWeaponIdx = 0;
       if (gPlayerPtr[0] != NULL) {
         Weapon* w = GetWeapon(slot);
-        weapon_08064664(gPlayerPtr[0], w);
+        Player_ApplyWeapon(gPlayerPtr[0], w);
       }
     }
     FUN_0809c28c();
@@ -159,7 +159,7 @@ bool32 FUN_08242eb0(void) {
 void FUN_08242f08(void) {
   FUN_08242c08(REGISTERED_WEAPON(gStat->equippedWeaponIdx));
   if (gPlayerPtr[0] != NULL) {
-    weapon_08064664(gPlayerPtr[0], NULL);
+    Player_ApplyWeapon(gPlayerPtr[0], NULL);
     FUN_0809c464();
   }
 }

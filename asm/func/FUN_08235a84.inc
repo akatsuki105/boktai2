@@ -78,7 +78,7 @@ _08235B18:
 	ldr r1, [sp, #0x20]
 	adds r2, r4, #0
 	str r3, [sp, #0x58]
-	bl FUN_08235924
+	bl Map_IsPosInNavRect
 	ldr r3, [sp, #0x58]
 	cmp r0, #0
 	beq _08235B34
@@ -201,7 +201,7 @@ _08235BEE:
 	beq _08235C4A
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x20]
-	bl FUN_08235924
+	bl Map_IsPosInNavRect
 	cmp r0, #0
 	beq _08235C4A
 	movs r7, #1
@@ -321,7 +321,7 @@ _08235CCC:
 	beq _08235D28
 	ldr r0, [sp, #0x28]
 	ldr r1, [sp, #0x1c]
-	bl FUN_08235924
+	bl Map_IsPosInNavRect
 	cmp r0, #0
 	beq _08235D28
 	movs r6, #1
@@ -477,7 +477,7 @@ _08235DEE:
 	adds r5, r3, r0
 	ldrb r3, [r5]
 	ldr r0, [sp, #0x30]
-	bl FUN_0823595c
+	bl Map_GetNavDistance
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #0x38]

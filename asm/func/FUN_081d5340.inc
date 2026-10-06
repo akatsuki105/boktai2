@@ -55,7 +55,7 @@ _081D53AA:
 	adds r1, r7, #0
 	mov r2, r8
 	adds r3, r5, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	movs r1, #0x8c
 	lsls r1, r1, #1
 	adds r0, r6, r1

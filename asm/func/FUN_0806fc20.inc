@@ -150,7 +150,7 @@ _0806FD42:
 	mov r0, ip
 	mov r1, sp
 	ldr r3, [sp, #0x24]
-	bl FUN_08061d20
+	bl Player_SpawnPtcl718
 	add sp, #0x10
 	pop {r4, r5, r6, r7}
 	pop {r0}

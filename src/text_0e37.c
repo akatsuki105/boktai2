@@ -13,38 +13,38 @@ typedef void (*TextBoxFunc)(struct TextBox* p);
 
 // 文字送り・顔グラ・送り矢印・オートモードを持つ, TextPanel と区別しやすい名前にしたい
 typedef struct TextBox {
-  Entity e;                // 0x000, ENTITY_UNK_12
-  TextRenderer renderer;   // 0x018
-  u8 rectX;                // 0x178, '.r[0]', TextRenderer_SetRect と FUN_0822ea60 に渡す
-  u8 rectY;                // 0x179, '.r[1]'
-  u8 rectW;                // 0x17A, '.r[2]'
-  u8 rectH;                // 0x17B, '.r[3]'
-  s16 lineIdx;             // 0x17C, '.i', TextBox_GetLine(p, lineIdx) が行頭ポインタを返す, 次の行へ進むとき +1
-  bool8 unk_17e;           // 0x17E, 0 なら fn = TextBox_StateType (1文字ずつ表示), 0 以外なら unk_198 を 0 にして fn = TextBox_StateRenderAll
-  u8 unk_17f;              // 0x17F, 入力待ちのフラグらしい, キー状態の bit1 が入る
-  s8 shownFace;            // 0x180, 顔スプライトに実際に反映済みの renderer.face, 食い違うと TextBox_RefreshFace が貼り直す
-  u8 unk_181;              // 0x181, TextBox_Init が 0 を入れるだけ
-  u8 autoAdvance;          // 0x182, TextBox_EnableAutoAdvance (TextBox_SetAutoAdvance) の第1引数
-  s8 unk_183;              // 0x183, 3 で初期化され 0 になると unk_17f が 1 になるカウントダウン
-  u16 autoAdvanceDelay;    // 0x184, TextBox_SetAutoAdvance の第2引数, autoAdvanceTimer がこれ以上になると次へ進む
-  u16 autoAdvanceTimer;    // 0x186, 毎フレーム +1
-  s32 waitFrames;          // 0x188, 次の行へ進む前に待つフレーム数, '.l' で初期化し、TextBox_Update が毎フレーム renderer.unk_18 で上書きする
-  u32 waitTimer;           // 0x18C, waitFrames の経過フレーム数, TextBox_StateWaitInput が waitFrames に達するまで +1 し、達したら両方 0 に戻す
-  FileID bgPlttFileID;     // 0x190, '.c=0x519C'
-  s16 pendingLine;         // 0x192, 次に表示する行, -1 なら何もしない, TextBox_Update がこれを TextBox_ShowLine に渡す
-  u32 unk_194;             // 0x194, '.m', TextBox_SetAutoAdvance の第3引数
-  u32 unk_198;             // 0x198, 表示が終わると 1 になり TextBox_IsFinished が返す
-  u8 unk_19c[4];           // 0x19C
-  u8* scriptPc;            // 0x1A0, FUN_0823d340 の戻り値、または TextBox_Start / TextBox_StartWithLabels の第1引数
-  u16 labelIdx;            // 0x1A4, labels の添字, pendingLine = labels[labelIdx]
-  u16 labelCount;          // 0x1A6, TextBox_StartWithLabels が 32 に丸める
-  u16 labels[32];          // 0x1A8, TextBox_StartWithLabels が呼び出し側の配列をコピーする行番号表
-  BgPlttFile* bgPltt;      // 0x1E8, bgPlttFileID
-  MainSpriteGfx arrowGfx;  // 0x1EC, SPRITE_MARKERS
-  MainSprite arrow;        // 0x20C, 次ページ送りの矢印, TextBox_Update が pos を枠の右下に置き直す
-  MainSpriteGfx faceGfx;   // 0x26C, SPRITE_PORTRAITS
-  MainSprite face;         // 0x28C, 話者の顔, TextBox_RefreshFace が renderer.face のポーズを貼る
-  TextBoxFunc fn;          // 0x2EC, TextBox_Update が毎フレーム呼ぶ状態関数
+  Entity e;                    // 0x000, ENTITY_UNK_12
+  TextRenderer renderer;       // 0x018
+  u8 rectX;                    // 0x178, '.r[0]', TextRenderer_SetRect と FUN_0822ea60 に渡す
+  u8 rectY;                    // 0x179, '.r[1]'
+  u8 rectW;                    // 0x17A, '.r[2]'
+  u8 rectH;                    // 0x17B, '.r[3]'
+  s16 lineIdx;                 // 0x17C, '.i', TextBox_GetLine(p, lineIdx) が行頭ポインタを返す, 次の行へ進むとき +1
+  bool8 unk_17e;               // 0x17E, 0 なら updateCallback = TextBox_StateType (1文字ずつ表示), 0 以外なら unk_198 を 0 にして updateCallback = TextBox_StateRenderAll
+  u8 unk_17f;                  // 0x17F, 入力待ちのフラグらしい, キー状態の bit1 が入る
+  s8 shownFace;                // 0x180, 顔スプライトに実際に反映済みの renderer.face, 食い違うと TextBox_RefreshFace が貼り直す
+  u8 unk_181;                  // 0x181, TextBox_Init が 0 を入れるだけ
+  u8 autoAdvance;              // 0x182, TextBox_EnableAutoAdvance (TextBox_SetAutoAdvance) の第1引数
+  s8 unk_183;                  // 0x183, 3 で初期化され 0 になると unk_17f が 1 になるカウントダウン
+  u16 autoAdvanceDelay;        // 0x184, TextBox_SetAutoAdvance の第2引数, autoAdvanceTimer がこれ以上になると次へ進む
+  u16 autoAdvanceTimer;        // 0x186, 毎フレーム +1
+  s32 waitFrames;              // 0x188, 次の行へ進む前に待つフレーム数, '.l' で初期化し、TextBox_Update が毎フレーム renderer.waitFrames で上書きする
+  u32 waitTimer;               // 0x18C, waitFrames の経過フレーム数, TextBox_StateWaitInput が waitFrames に達するまで +1 し、達したら両方 0 に戻す
+  FileID bgPlttFileID;         // 0x190, '.c=0x519C'
+  s16 pendingLine;             // 0x192, 次に表示する行, -1 なら何もしない, TextBox_Update がこれを TextBox_ShowLine に渡す
+  u32 unk_194;                 // 0x194, '.m', TextBox_SetAutoAdvance の第3引数
+  u32 unk_198;                 // 0x198, 表示が終わると 1 になり TextBox_IsFinished が返す
+  u8 unk_19c[4];               // 0x19C
+  u8* scriptPc;                // 0x1A0, FUN_0823d340 の戻り値、または TextBox_Start / TextBox_StartWithLabels の第1引数
+  u16 labelIdx;                // 0x1A4, labels の添字, pendingLine = labels[labelIdx]
+  u16 labelCount;              // 0x1A6, TextBox_StartWithLabels が 32 に丸める
+  u16 labels[32];              // 0x1A8, TextBox_StartWithLabels が呼び出し側の配列をコピーする行番号表
+  BgPlttFile* bgPltt;          // 0x1E8, bgPlttFileID
+  MainSpriteGfx arrowGfx;      // 0x1EC, SPRITE_MARKERS
+  MainSprite arrow;            // 0x20C, 次ページ送りの矢印, TextBox_Update が pos を枠の右下に置き直す
+  MainSpriteGfx faceGfx;       // 0x26C, SPRITE_PORTRAITS
+  MainSprite face;             // 0x28C, 話者の顔, TextBox_RefreshFace が renderer.face のポーズを貼る
+  TextBoxFunc updateCallback;  // 0x2EC
 } TextBox;
 static_assert(sizeof(TextBox) == 752);
 
@@ -93,11 +93,11 @@ NON_MATCH s32 TextBox_SetInstant(s32 instant) {
 
   p->unk_17e = instant;
   if (p->unk_17e == 0) {
-    p->fn = TextBox_StateType;
+    p->updateCallback = TextBox_StateType;
     p->unk_183 = 3;
   } else {
     p->unk_198 = 0;
-    p->fn = TextBox_StateRenderAll;
+    p->updateCallback = TextBox_StateRenderAll;
   }
 
   p->renderer.finished = FALSE;
@@ -117,7 +117,7 @@ NON_MATCH s32 TextBox_Close(void) {
   if (p == NULL) return 0;
 
   FUN_0822ea60(p->rectX, p->rectY, p->rectW, p->rectH);
-  p->fn = TextBox_StateIdle;
+  p->updateCallback = TextBox_StateIdle;
   p->arrow.flags |= SPRFLAG_HIDDEN;
   p->renderer.face = -1;
   MainSprite_Hide(&p->face);
@@ -141,7 +141,7 @@ s32 TextBox_Start(u8* pc) {
     p->labelIdx = 0;
     p->labelCount = 1;
     p->pendingLine = 0;
-    FUN_08049640(r);
+    TextRenderer_ResetModeStack(r);
     p->arrow.flags |= SPRFLAG_HIDDEN;
   }
 

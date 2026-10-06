@@ -1478,8 +1478,8 @@ gAuxSpritesFile0: @ 0x08A2291C
 		.incbin "data/actor_sprites/weight_switch_17CB.4bpp"   @ 0x08AF5790, ActorID: 0x17CB, PlttID: 287
 		.incbin "data/actor_sprites/BE6D.4bpp"                 @ 0x08AF5E90, ActorID: 0xBE6D, PlttID: 83
 		.incbin "data/actor_sprites/CC88.4bpp"                 @ 0x08AF9E50, ActorID: 0xCC88, PlttID: 467
-		.incbin "data/actor_sprites/desert_monolith.4bpp"      @ 0x08AF9ED0, ActorID: 0x96B5, PlttID: 482, 砂漠の(3つの石板のことが書いてある)石碑
-		.incbin "data/actor_sprites/dried_oasis.4bpp"          @ 0x08AFA4D0, ActorID: 0x2C3D, PlttID: 498, 3つの石板を探す砂漠で砂漠入り口から1つ上のマップにある干上がったオアシス
+		.incbin "data/actor_sprites/desert_monolith.4bpp"      @ 0x08AF9ED0, ActorID: 0x96B5, PlttID: 482, 砂漠の(3つの石版のことが書いてある)石碑
+		.incbin "data/actor_sprites/dried_oasis.4bpp"          @ 0x08AFA4D0, ActorID: 0x2C3D, PlttID: 498, 3つの石版を探す砂漠で砂漠入り口から1つ上のマップにある干上がったオアシス
 		.incbin "data/actor_sprites/7BE7.4bpp"                 @ 0x08AFACD0, ActorID: 0x7BE7, PlttID: 83
 		.incbin "data/actor_sprites/dog_0.4bpp"                @ 0x08AFFF50, ActorID: 0xD635, PlttID: 501
 		.incbin "data/actor_sprites/dog_1.4bpp"                @ 0x08B0DA50, ActorID: 0xE369, PlttID: 501

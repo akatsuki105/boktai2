@@ -165,7 +165,6 @@ clean-code:
 	rm -f $(ELF)
 
 clean-scripts:
-	rm -f data/scripts/*.inc
 	rm -f data/scripts/*.bin
 
 clean-tilemap:
@@ -226,7 +225,7 @@ BOKC := $(shell find data/scripts -type f -name '*.bokc')
 BOKC_BIN := $(BOKC:.bokc=.bin)
 
 $(BOKC_BIN): %.bin: %.bokc
-	$(BOKCC) compile $< --bin $@
+	$(CPP) -P -C -iquote include $< | $(BOKCC) compile - -o $@
 
 # Assets --------------------------------------------
 

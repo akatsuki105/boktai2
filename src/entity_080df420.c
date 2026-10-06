@@ -29,4 +29,6 @@ static_assert(sizeof(Entity080df420) == 6112);
 
 extern Entity080df420* gEntity080df420;  // 0x03000178
 
+INCRODATA(".rodata", "data/rodata4.bin");  // ./tools/bin.ts ./baserom.gba 0x085ad354 0x085AF034 ./data/rodata4.bin
+
 INCASM("asm/entity_080df420.inc");

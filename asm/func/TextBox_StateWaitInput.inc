@@ -180,7 +180,7 @@ _08048126:
 	bl TextRenderer_SetRect
 	adds r0, r5, #0
 	adds r0, #0x18
-	bl FUN_08049640
+	bl TextRenderer_ResetModeStack
 	movs r1, #0x85
 	lsls r1, r1, #2
 	adds r2, r5, r1

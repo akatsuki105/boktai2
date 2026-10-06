@@ -9,12 +9,12 @@ typedef struct Entity08004facNode {
   u16 id;                           // 0x00, 一括で操作するためのキー
   bool8 active;                     // 0x02, 1 なら tileOverride を衝突マップへ登録済み
   u8 unk_3;                         // 0x03, Entity08004fac_AddNode の第3引数, SetNodeParamsById が書き換える
-  u8 unk_4;                         // 0x04, FUN_08234270 の第3引数
-  u8 unk_5;                         // 0x05, FUN_08234270 の第4引数
-  u16 unk_6;                        // 0x06, FUN_08234270 の第6引数
+  u8 unk_4;                         // 0x04, Map_AddTileOverride の第3引数
+  u8 unk_5;                         // 0x05, Map_AddTileOverride の第4引数
+  u16 unk_6;                        // 0x06, Map_AddTileOverride の第6引数
   u16 tileIdx;                      // 0x08, gCollisionMap->rowOffsets[y] + x
   u8 unk_a[0x0C - 0x0A];            // 0x0A, padding?
-  MapTileOverride tileOverride;     // 0x0C, FUN_08234270 / FUN_082342a8 に渡す
+  MapTileOverride tileOverride;     // 0x0C, Map_AddTileOverride / Map_RemoveTileOverride に渡す
   struct Entity08004facNode* prev;  // 0x1C
   struct Entity08004facNode* next;  // 0x20
 } Entity08004facNode;
@@ -74,7 +74,7 @@ NAKED s32 Entity08004fac_AddNode(u16 id, s16* pos, u8 param_3, u8 param_4, u16 p
 // 衝突マップから外してリストから抜き、ノードを解放する
 s32 Entity08004fac_FreeNode(Entity08004facNode* node) {
   if (node->active) {
-    FUN_082342a8(&node->tileOverride);
+    Map_RemoveTileOverride(&node->tileOverride);
     node->active = FALSE;
   }
 

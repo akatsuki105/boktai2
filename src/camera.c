@@ -1,6 +1,7 @@
 #include "camera.h"
 
 #include "collision_map.h"
+#include "file.h"
 #include "global.h"
 #include "mover.h"
 #include "msgbus.h"
@@ -15,6 +16,93 @@ COMMON_DATA u8 u8_030047d4[4] = {};     // todo
 COMMON_DATA u16 u16_030047d8 = 0;       // 0x030047D8, TextRenderer_PlayCharSound がこのIDのメッセージでは音を鳴らさない
 COMMON_DATA u8 u8_030047da[6] = {};     // todo
 
+s32 Map_LoadTileData(FileID id);
+s32 Map_LoadZones(FileID id);
+s32 Map_LoadPaths(FileID id);
+s32 Map_LoadNavMesh(FileID id);
+void Map_SetTileData(CollisionMapTileData* tiledata);
+void Map_SetZones(ZoneData* zones);
+void Map_SetPaths(PathData* paths);
+void Map_SetNavMesh(NavMesh* navMesh);
+
+// Collision Map File が圧縮されてたら展開して返す、圧縮されてなかったらそのまま返す
+CollisionMapFile* OpenCollisionMapFile(void* file) {
+  u8* magic = file;
+
+  if (magic[0] == 'H' && magic[1] == 'P') {  // "HP"
+    return (CollisionMapFile*)file;
+  }
+  LZ77UnCompWram(file, gDecompressedCollisionMapHeader);
+  return (CollisionMapFile*)gDecompressedCollisionMapFile;
+}
+
+// id is HP_XXXX in "include/constants/collision_map.h"
+// ヘッダの相対オフセットを絶対アドレスに直して、タイル/ゾーン/パス/ナビメッシュをそれぞれ登録する
+s32 Map_LoadCollisionMapFile(s32 id) {
+  CollisionMapFile hdr;
+  CollisionMapFile* f;
+  void* file = GetFile(DIR_COLLISION_MAP, id);
+
+  if (file == NULL) {
+    return -1;
+  }
+
+  f = OpenCollisionMapFile(file);
+  hdr = *f;
+  hdr.tileData.offset += (u32)f;
+  hdr.zones.offset += (u32)f;
+  hdr.paths.offset += (u32)f;
+  if (hdr.navMesh.offset != 0) {
+    hdr.navMesh.offset += (u32)f;
+  }
+
+  Map_SetTileData(hdr.tileData.ptr);
+  Map_SetZones(hdr.zones.ptr);
+  Map_SetPaths(hdr.paths.ptr);
+  Map_SetNavMesh(hdr.navMesh.ptr);
+  return 0;
+}
+
+// 0x30AD, このゲームでは、 '.n' と '.p' 以外の引数は渡していない
+void Map_LoadMapScripted(void) {
+  CollisionMapData* cm;
+  CollisionMapTileData* td;
+
+  s32 n = VM_GetNamedArgValue('n', 0);  // n は 使わない
+  s32 h = VM_GetNamedArgValue('h', 0);  // このゲームではこの引数を渡しているものはない (なので 0)
+  s32 t = VM_GetNamedArgValue('t', 0);  // このゲームではこの引数を渡しているものはない (なので 0)
+  s32 r = VM_GetNamedArgValue('r', 0);  // このゲームではこの引数を渡しているものはない (なので 0)
+  s32 z = VM_GetNamedArgValue('z', 0);  // このゲームではこの引数を渡しているものはない (なので 0)
+
+  s32 fileID = VM_GetNamedArgValue('p', 0);
+  if (fileID != 0) {
+    Map_LoadCollisionMapFile(fileID);
+  } else {
+    // '.h', '.t', '.r', '.z' はこのゲーム内の利用箇所で全て 0 なのでこれらは実行されることはない
+    if (h != 0) Map_LoadTileData(h);
+    if (t != 0) Map_LoadZones(t);
+    if (r != 0) Map_LoadPaths(r);
+    if (z != 0) Map_LoadNavMesh(z);
+  }
+
+  // これ以降が Camera_SetTilemapOffset と同じ処理になる
+  cm = Registry_Find(0x56C2);
+  td = cm->tiledata;
+  if (VM_SeekToNamedArg('v')) {  // このゲームではこの引数を渡しているものはないので、これ以降は実行されない
+    s32 val = VM_GetValue();
+    if (val == 0) {
+      Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
+      gCameraCoords.tilemapX = td->tilemapOffsetX >> 4;
+      gCameraCoords.tilemapY = td->tilemapOffsetY >> 4;
+    } else {
+      Video_SetDrawPasses(val, FUN_0822de64, FUN_0822ac90, MainSprite_DrawListScreen);
+      gCameraCoords.tilemapX = 0;
+      gCameraCoords.tilemapY = 0;
+    }
+  }
+}
+
+// 0x7539
 void Camera_SetTilemapOffset(void) {
   s32 val = VM_GetNamedArgValue('v', 0);
   if (val == 0) {
@@ -22,8 +110,8 @@ void Camera_SetTilemapOffset(void) {
     Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
     if (p != NULL) {
       if (p->tiledata != NULL) {
-        gCameraCoords.tilemapX = p->tiledata->tilemap_offset_x >> 4;
-        gCameraCoords.tilemapY = p->tiledata->tilemap_offset_y >> 4;
+        gCameraCoords.tilemapX = p->tiledata->tilemapOffsetX >> 4;
+        gCameraCoords.tilemapY = p->tiledata->tilemapOffsetY >> 4;
         return;
       }
     }

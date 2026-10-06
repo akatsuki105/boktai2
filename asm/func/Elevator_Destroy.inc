@@ -31,7 +31,7 @@ _081D52DA:
 	movs r1, #0x9c
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	adds r2, r4, #0
 	adds r2, #0xb4
 	movs r0, #2

@@ -146,36 +146,12 @@ typedef struct {
   u8* specialScriptData;  // 0x0C, 0x08DA9E60, ScriptDirectory.specialScriptData
 } ScriptTable;
 
-// ScriptTable と StringTable として別々の構造体の可能性が高い
 typedef struct {
   ScriptDirectoryOffsets* offsets;  // 0x0, = &ScriptDirectory.offsets
   u32* header;                      // 0x4, gStringHeader
   u8* body;                         // 0x8, String_0000
   u8* unknown;                      // 0xC, unk08D13420
 } StringTable;
-
-// --------------------------------------------
-
-// 0x085a9208
-// https://boktaihacking.net/wiki/Engine_calls_(Boktai_2)
-// VMのシステムコールみたいなもん
-typedef struct Subroutine {
-  u32 id;  // サブルーチンID
-  void* (*fn)(u32 subroutineID, void* unk);
-} Subroutine;
-
-// --------------------------------------------
-
-// RAM に gCtrlHandlerTableN_ROM を読みこんだもの
-typedef struct SubroutineTable {
-  struct SubroutineTable* next;  // 0x00, ?
-  u32 len;                       // = 8, length of gSubroutineTableN
-  const Subroutine* arr;         // gSubroutineTableN
-} SubroutineTable;
-
-extern SubroutineTable* gCtrlHandlers;  // SubroutineTable のリンクリスト, これが制御命令のハンドラ, なんでこんな構造にしてるのか全くわからん
-
-s32 VM_AddCtrlHandlers(SubroutineTable*);  // gCtrlHandlers に gCtrlHandlers1 or gCtrlHandlers2 を追加する
 
 // --------------------------------------------
 
@@ -195,7 +171,7 @@ char* Textbox_LookupString(s32 stringID);
 s32 VM_ExecByID(u32 scriptID, ScriptArgs* args);
 void VM_ExecSpecial(void);
 void VM_ClearScratchpad_Proxy(void);
-bool32 VM_ExecBlock(u8* pc, ScriptArgs* args, s32 varidx);
+bool32 VM_ExecBlock(u8* pc, ScriptArgs* args, s32 localVarCount);
 s32 VM_ExecByPointer(u8* pc, ScriptArgs* args);
 
 void FUN_0823167c(u8* dst);
@@ -205,6 +181,8 @@ u32 FUN_082320e4(u8* pc, s32 offset);
 u8* FUN_08232160(u8* pc);
 u8* FUN_0823d340(void);
 void* FUN_0823d34c(void);
+
+void SetMapInitScriptID(u32 scriptID);
 
 // name は ASCII 文字で書いてください, 例えば  VM_SeekToNamedArg(0x70)  は  VM_SeekToNamedArg('p') と書いてください
 bool32 VM_SeekToNamedArg(u8 name);

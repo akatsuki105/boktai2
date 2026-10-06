@@ -62,7 +62,7 @@ _08073E82:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldrb r0, [r4]
 	cmp r0, #5
 	beq _08073EA6
@@ -166,7 +166,7 @@ _08073F56:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _08073F82
 	adds r0, r5, #0

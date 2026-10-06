@@ -32,7 +32,7 @@ _081D31B6:
 	cmp r0, #0
 	beq _081D31CE
 	adds r0, r5, #0
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	movs r0, #0
 	strb r0, [r4]
 _081D31CE:

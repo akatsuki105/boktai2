@@ -39,7 +39,7 @@ _080E0622:
 	strh r4, [r6]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E0654
 	adds r0, #4
@@ -89,7 +89,7 @@ _080E067A:
 	strh r4, [r7]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E06B8
 	adds r0, #4
@@ -140,7 +140,7 @@ _080E06E0:
 	strh r4, [r7]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E071C
 	adds r0, #4

@@ -33,7 +33,7 @@
 	adds r4, #0x64
 	adds r0, r7, #0
 	adds r1, r4, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	movs r3, #0x8f
 	lsls r3, r3, #2
 	adds r2, r5, r3
@@ -212,7 +212,7 @@ _080430C2:
 _080430D8:
 	adds r0, r7, #0
 	mov r1, sb
-	bl FUN_08236268
+	bl Map_StepNavPath
 	adds r0, r5, #0
 	movs r1, #1
 	bl FUN_080414fc

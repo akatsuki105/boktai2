@@ -337,7 +337,7 @@ _080475A4:
 	ldr r1, [r0]
 	mov r0, r8
 	movs r2, #0
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 	adds r0, r7, #0
 	bl FUN_080453b0
 _08047608:
@@ -380,7 +380,7 @@ _08047644:
 _08047652:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08047668
 	adds r0, #4

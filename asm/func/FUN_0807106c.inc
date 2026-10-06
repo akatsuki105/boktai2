@@ -51,7 +51,7 @@ _080710B6:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	bne _080710DA
 	b _08071210
@@ -71,7 +71,7 @@ _080710DC:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r4, r2
@@ -111,7 +111,7 @@ _08071134:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	adds r0, r4, #0
 	bl FUN_08070db4
 	cmp r0, #0
@@ -165,7 +165,7 @@ _08071192:
 	adds r2, r4, #0
 	adds r2, #0x2c
 	adds r0, r4, #0
-	bl FUN_08061a98
+	bl Player_SpawnShockwaveBehind
 _080711C4:
 	movs r1, #0xd6
 	lsls r1, r1, #2
@@ -176,7 +176,7 @@ _080711C4:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _08071210
 	ldr r2, _08071200 @ =0x00000A76

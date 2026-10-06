@@ -74,11 +74,11 @@ _080DE8A0:
 _080DE8AE:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	add r6, sp, #0x14
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080DE8CC
 	adds r0, #4

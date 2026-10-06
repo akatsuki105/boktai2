@@ -17,49 +17,49 @@ typedef struct {
 static_assert(sizeof(EntityA288Entry) == 52);
 
 struct EntityA288 {
-  Entity e;                      // 0x0000, ENTITY_UNK_11
-  MainSpriteGfx gfx;             // 0x0018, SPRITE_42E2
-  Tilemaps* tilemap;             // 0x0038, TILEMAP_33B2
-  rgb555* pltt;                  // 0x003C, BGP_E9C3
-  s32 kind;                      // 0x0040, '.t', 初期 state を選ぶ
-  u32 flags;                     // 0x0044, bit0 / bit1 が立っている間は timer1 / timer2 を止める
-  u32 unk_48;                    // 0x0048, '.f'
-  u32 unk_4c;                    // 0x004C, '.l'
-  u32 unk_50;                    // 0x0050, '.e'
-  s32 state;                     // 0x0054, 0x085AFF84 の関数表の添字
-  s32 timer1;                    // 0x0058, flags bit0 が落ちている間 _Update が 1 足す
-  u32 unk_5c;                    // 0x005C, FUN_08219f34 が 0 に戻す
-  s32 timer2;                    // 0x0060, flags bit1 が落ちている間 _Update が 1 足す
-  s32 unk_64;                    // 0x0064, _Init が -1 を入れる
-  u32 unk_68;                    // 0x0068, _Init が 0 を入れる
-  u8 unk_6c[0x1CC - 0x6C];       // 0x006C, まだ未解析
-  u8* unk_1cc;                   // 0x01CC, '.s'
-  u8 unk_1d0[0x780 - 0x1D0];     // 0x01D0, まだ未解析
-  EntityA288Entry entries[30];   // 0x0780, '.I' から読む
-  u8 unk_d98[0xDAC - 0xD98];     // 0x0D98, まだ未解析
-  u8* unk_dac;                   // 0x0DAC, '.a'
-  u8* unk_db0;                   // 0x0DB0, '.I' の先頭
-  u8 unk_db4[2];                 // 0x0DB4, まだ未解析
-  s16 entryCount;                // 0x0DB6, 読めた entries の個数 - 1
-  u8 unk_db8[0xE80 - 0xDB8];     // 0x0DB8, まだ未解析
-  u8* unk_e80;                   // 0x0E80, '.X'
-  u8 unk_e84[4];                 // 0x0E84, まだ未解析
-  u32 unk_e88;                   // 0x0E88, '.E'
-  u8 unk_e8c[0x12AC - 0xE8C];    // 0x0E8C, まだ未解析
-  u8* unk_12ac;                  // 0x12AC, '.b'
-  u8 unk_12b0[0x1650 - 0x12B0];  // 0x12B0, まだ未解析
-  u8* unk_1650;                  // 0x1650, '.g'
-  u8* unk_1654;                  // 0x1654, '.T'
-  u8* unk_1658;                  // 0x1658, '.A'
-  u8 unk_165c[0x178C - 0x165C];  // 0x165C, まだ未解析
-  u8* unk_178c;                  // 0x178C, '.p' の PC
-  u8* unk_1790;                  // 0x1790, '.S'
-  u8* unk_1794;                  // 0x1794, '.P' の PC
-  u8* unk_1798;                  // 0x1798, '.N' の PC
-  u8* unk_179c;                  // 0x179C, '.H'
-  u8* unk_17a0;                  // 0x17A0, '.K'
-  u8 unk_17a4[0x1FE8 - 0x17A4];  // 0x17A4, まだ未解析
-  EntityA288Func* fn;            // 0x1FE8, _Update が毎フレーム呼ぶ, FUN_08219f34 が state から差し替える
+  Entity e;                        // 0x0000, ENTITY_UNK_11
+  MainSpriteGfx gfx;               // 0x0018, SPRITE_42E2
+  Tilemaps* tilemap;               // 0x0038, TILEMAP_33B2
+  rgb555* pltt;                    // 0x003C, BGP_E9C3
+  s32 kind;                        // 0x0040, '.t', 初期 state を選ぶ
+  u32 flags;                       // 0x0044, bit0 / bit1 が立っている間は timer1 / timer2 を止める
+  u32 unk_48;                      // 0x0048, '.f'
+  u32 unk_4c;                      // 0x004C, '.l'
+  u32 unk_50;                      // 0x0050, '.e'
+  s32 state;                       // 0x0054, 0x085AFF84 の関数表の添字
+  s32 timer1;                      // 0x0058, flags bit0 が落ちている間 _Update が 1 足す
+  u32 unk_5c;                      // 0x005C, FUN_08219f34 が 0 に戻す
+  s32 timer2;                      // 0x0060, flags bit1 が落ちている間 _Update が 1 足す
+  s32 unk_64;                      // 0x0064, _Init が -1 を入れる
+  u32 unk_68;                      // 0x0068, _Init が 0 を入れる
+  u8 unk_6c[0x1CC - 0x6C];         // 0x006C, まだ未解析
+  u8* unk_1cc;                     // 0x01CC, '.s'
+  u8 unk_1d0[0x780 - 0x1D0];       // 0x01D0, まだ未解析
+  EntityA288Entry entries[30];     // 0x0780, '.I' から読む
+  u8 unk_d98[0xDAC - 0xD98];       // 0x0D98, まだ未解析
+  u8* unk_dac;                     // 0x0DAC, '.a'
+  u8* unk_db0;                     // 0x0DB0, '.I' の先頭
+  u8 unk_db4[2];                   // 0x0DB4, まだ未解析
+  s16 entryCount;                  // 0x0DB6, 読めた entries の個数 - 1
+  u8 unk_db8[0xE80 - 0xDB8];       // 0x0DB8, まだ未解析
+  u8* unk_e80;                     // 0x0E80, '.X'
+  u8 unk_e84[4];                   // 0x0E84, まだ未解析
+  u32 unk_e88;                     // 0x0E88, '.E'
+  u8 unk_e8c[0x12AC - 0xE8C];      // 0x0E8C, まだ未解析
+  u8* unk_12ac;                    // 0x12AC, '.b'
+  u8 unk_12b0[0x1650 - 0x12B0];    // 0x12B0, まだ未解析
+  u8* unk_1650;                    // 0x1650, '.g'
+  u8* unk_1654;                    // 0x1654, '.T'
+  u8* unk_1658;                    // 0x1658, '.A'
+  u8 unk_165c[0x178C - 0x165C];    // 0x165C, まだ未解析
+  u8* unk_178c;                    // 0x178C, '.p' の PC
+  u8* unk_1790;                    // 0x1790, '.S'
+  u8* unk_1794;                    // 0x1794, '.P' の PC
+  u8* unk_1798;                    // 0x1798, '.N' の PC
+  u8* unk_179c;                    // 0x179C, '.H'
+  u8* unk_17a0;                    // 0x17A0, '.K'
+  u8 unk_17a4[0x1FE8 - 0x17A4];    // 0x17A4, まだ未解析
+  EntityA288Func* updateCallback;  // 0x1FE8
 };
 static_assert(sizeof(EntityA288) == 8172);
 

@@ -159,7 +159,7 @@ _0823478E:
 	mov r0, r8
 	mov r1, ip
 	ldr r2, _0823479C @ =0x00000DD2
-	bl FUN_08234868
+	bl Map_RunZoneEventScript
 _08234798:
 	adds r5, #1
 	b _0823483A
@@ -176,7 +176,7 @@ _082347AE:
 	mov r0, r8
 	mov r1, ip
 	ldr r2, _082347C0 @ =0x0000A5BF
-	bl FUN_08234868
+	bl Map_RunZoneEventScript
 	b _0823483A
 	.align 2, 0
 _082347BC: .4byte 0x00001517
@@ -248,7 +248,7 @@ _08234830:
 	mov r0, r8
 	mov r1, ip
 	ldr r2, _0823485C @ =0x0000D5CC
-	bl FUN_08234868
+	bl Map_RunZoneEventScript
 _0823483A:
 	mov r2, sb
 	ldr r1, _08234864 @ =0x030046A4

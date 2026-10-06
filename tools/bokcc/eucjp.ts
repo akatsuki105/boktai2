@@ -1,8 +1,10 @@
-// EUC-JP のエンコード/デコード。
+// コンパイル・デコンパイル共用。
+// EUC-JP のエンコード/デコード (エンコードは parser、デコードは描画で使う)
+// このゲーム の DebugPrint が EUC-JP を使っているため、EUC-JP のエンコード/デコードが必要になる。
+// npmライブラリに依存すればこのファイルは不要だが、あまり依存を増やしたくないため自前で実装している。
 //
-// デコードは TextDecoder("euc-jp") がそのまま使えるが、TextEncoder は仕様上 UTF-8 しか出せないので
-// エンコード側だけ自前で用意する。表を手で持つ代わりに、デコーダに全バイト列を一度食わせて逆引き表を作る
-// (デコーダと必ず整合するうえ、表のメンテが要らない)。
+// デコードは TextDecoder("euc-jp") がそのまま使えるが、TextEncoder は仕様上 UTF-8 しか出せないのでエンコード側だけ自前で用意する。
+// 表を手で持つ代わりに、デコーダに全バイト列を一度食わせて逆引き表を作る(デコーダと必ず整合するうえ、表のメンテが要らない)。
 //
 // EUC-JP のバイト構成:
 //   0x00-0x7F               ASCII
@@ -68,8 +70,7 @@ export const encodeChar = (ch: string): Uint8Array | null => {
   return table().get(ch) ?? null;
 };
 
-// bytes[i] から始まる1文字を読む。読めて、かつ同じバイト列に戻せるときだけ返す
-// (戻せない文字を可読化するとコンパイル結果がROMと変わってしまうため)
+// bytes[i] から始まる1文字を読む。読めて、かつ同じバイト列に戻せるときだけ返す(戻せない文字を可読化するとコンパイル結果がROMと変わってしまうため)
 export const readChar = (bytes: Uint8Array, i: number): { ch: string; len: number } | null => {
   const b = bytes[i];
   let len: number;

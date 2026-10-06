@@ -44,7 +44,7 @@
 	movs r0, #1
 	strh r0, [r4, #0x2a]
 	strh r2, [r4, #0x28]
-	ldr r0, _080A98BC @ =FUN_080a9808
+	ldr r0, _080A98BC @ =JudgementParticle_UpdateStill
 	str r0, [r4, #0x38]
 	pop {r3}
 	mov r8, r3
@@ -55,4 +55,4 @@
 _080A98B0: .4byte 0x0203B400
 _080A98B4: .4byte 0x030046B8
 _080A98B8: .4byte 0x000003FF
-_080A98BC: .4byte FUN_080a9808
+_080A98BC: .4byte JudgementParticle_UpdateStill

@@ -92,7 +92,7 @@ _082361D4:
 	mov r0, r8
 	ldrh r2, [r0, #8]
 	ldr r0, [sp, #8]
-	bl FUN_0823595c
+	bl Map_GetNavDistance
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	ldr r1, [sp, #0xc]

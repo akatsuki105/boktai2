@@ -711,7 +711,7 @@ _0803BFD6:
 	cmp r0, #0
 	bne _0803C028
 	movs r0, #5
-	bl FUN_08234f44
+	bl Map_GetPath
 	adds r3, r0, #0
 	ldr r2, _0803C01C @ =0x030046B8
 	ldr r0, [r2]

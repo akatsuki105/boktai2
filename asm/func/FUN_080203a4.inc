@@ -103,7 +103,7 @@ _08020460:
 	ldrh r4, [r6, #0x3c]
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08020478
 	adds r0, #4
@@ -132,7 +132,7 @@ _08020484:
 	str r2, [sp]
 	str r5, [sp, #4]
 	movs r2, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	adds r5, r6, #0
 	adds r0, r6, #0
 	adds r0, #0x40

@@ -27,7 +27,7 @@ _08235884: @ jump table
 _0823589C:
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08235090
+	bl Map_PickRandomPathNode
 	b _082358E2
 _082358A6:
 	adds r0, r5, #0
@@ -64,7 +64,7 @@ _082358E2:
 	bge _082358EE
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08235090
+	bl Map_PickRandomPathNode
 _082358EE:
 	pop {r4, r5, r6}
 	pop {r1}

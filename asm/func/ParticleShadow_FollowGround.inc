@@ -51,7 +51,7 @@ _0801372C: .4byte 0x030046A4
 _08013730:
 	adds r0, r7, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08013740
 	adds r0, #4
@@ -96,7 +96,7 @@ _0801376E:
 	beq _080137A4
 	adds r0, r7, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0801378E
 	adds r0, #4

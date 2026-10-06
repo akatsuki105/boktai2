@@ -32,7 +32,7 @@ _080E5B4C:
 	lsls r2, r2, #0x18
 	lsrs r2, r2, #0x18
 	adds r0, r4, #0
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	ldrh r0, [r5, #8]
 	lsls r0, r0, #0x10
 	asrs r2, r0, #0x18
@@ -75,7 +75,7 @@ _080E5BB6:
 	adds r6, r3, #0
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E5BD8
 	adds r0, #4

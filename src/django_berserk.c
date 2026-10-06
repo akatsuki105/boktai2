@@ -29,9 +29,9 @@ static_assert(sizeof(DjangoBerserkParticle) == 60);
 typedef struct DjangoBerserk {
   Entity e;                          // 0x000, ENTITY_UNK_11
   Player* player;                    // 0x018, Init の第1引数
-  MainSpriteGfx gfx;                 // 0x01C
-  MainSprite sprite;                 // 0x03C
-  HitboxData hitbox;                 // 0x09C, FUN_0807fdac が Hitbox_Register に渡す
+  MainSpriteGfx gfx;                 // 0x01C, SPRITE_DJANGO_SABATA
+  MainSprite sprite;                 // 0x03C, SPRITE_DJANGO_SABATA
+  HitboxData hitbox;                 // 0x09C
   u8 unk_ec[2];                      // 0x0EC
   u16 timer;                         // 0x0EE, SetState が状態を差し替えるたび 0 に戻す
   u16 hpDrainStep;                   // 0x0F0, Init: (player->hp - hpTarget) / 0x48 + 1,毎フレーム player->hp から引く量
@@ -40,7 +40,7 @@ typedef struct DjangoBerserk {
   DjangoBerserkParticle ptcls[16];   // 0x0F8, 根拠: _Destroy が stride 0x3C で 16回 Particle_Remove する
   u16 frameCounter;                  // 0x4B8, FUN_0807f8d0 が毎フレーム +1,リセットされない,ptcls[].startDelay と比較される
   u8 unk_4ba[6];                     // 0x4BA
-  DjangoBerserkFunc updateCallback;  // 0x4C0, _Update が毎フレーム呼ぶ状態関数
+  DjangoBerserkFunc updateCallback;  // 0x4C0
 } DjangoBerserk;
 static_assert(sizeof(DjangoBerserk) == 1220);
 

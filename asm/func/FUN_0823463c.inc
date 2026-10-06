@@ -8,7 +8,7 @@
 	adds r6, #8
 _0823464C:
 	ldm r6!, {r0}
-	bl FUN_08234980
+	bl Map_FindEventByID
 	adds r4, #1
 	ldrb r0, [r5, #3]
 	cmp r4, r0

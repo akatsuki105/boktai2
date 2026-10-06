@@ -36,7 +36,7 @@ _08065F6C:
 _08065F7A:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08065F90
 	adds r0, #4
@@ -110,7 +110,7 @@ _08065FF4:
 _08066002:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08066018
 	adds r0, #4

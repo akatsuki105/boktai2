@@ -42,6 +42,17 @@ extern s16 gObjTileCursor;
 extern s16 gParticleFileTileCount;
 extern ParticleFile* gParticleFile;  // 0x0300358C
 
+extern u16 u16_ARRAY_03003e70[4];
+extern u16 u16_03003e8c;
+extern u16 u16_03003e50;
+extern u16 u16_03003e9c;
+extern u16 u16_03003eb4;
+extern u16 u16_ARRAY_03003e90[4];
+extern u32 u32_03003e98;
+extern u32 u32_03003ea0;
+extern u32 u32_ARRAY_03003eb8[2];
+extern u16 gStagedBGOfs[8];
+
 extern Procedure gDrawAuxSprites;
 extern Procedure gDrawParticles;
 extern Procedure gDrawMainSprites;
@@ -77,6 +88,7 @@ const u16 gSpriteSizeTable[16] = {
 #undef SPRITE_SIZE
 
 void FUN_0822d014(rgb555* pltt, s32 val);
+void FUN_08230af8(void* dst, void* src, s32 bytesize);  // src/malloc.c
 void Video_GenerateBGMapCore(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs, unknown* param_6);
 void Video_ResetObjTileAlloc(void);
 void Video_ResetFrameState(u32 clearOam);
@@ -147,7 +159,24 @@ s32 VideoRender_Update(VideoRender* p) {
   return 0;
 }
 
-NAKED void FUN_0822a2a8(void) { INCFUNC("asm/func/FUN_0822a2a8.inc"); }
+// カメラの注視点と3種の描画リストをクリアし, OBJタイル割り当てとフレーム状態も初期化する
+void Video_Reset(void) {
+  s32 i;
+
+  gCameraCoords.worldPos.x = 0, gCameraCoords.worldPos.y = 0, gCameraCoords.worldPos.z = 0;
+  gCameraCoords.unk_0c = 1;
+  gCameraCoords.unk_10 = 0;
+  gSpriteListIdx = 0;
+
+  for (i = 0; i < 2; i++) {
+    gAuxSpriteLists[i] = NULL;
+    gParticleLists[i] = NULL;
+    gMainSpriteLists[i] = NULL;
+  }
+
+  Video_ResetObjTileAlloc();
+  Video_ResetFrameState(1);
+}
 
 void UNUSED FUN_0822a2f8(AuxSprite* p) { gAuxSpriteLists[gSpriteListIdx] = p; }
 
@@ -469,13 +498,100 @@ void ClearBGTilemapBuffer(s32 bg) {
   ClearMemory(GetTilemapBuffer(bg), BG_SCREEN_SIZE);
 }
 
-NAKED void FUN_0822b664(s32 bg) { INCFUNC("asm/func/FUN_0822b664.inc"); }
+static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
+
+// BG のタイルマップと転送待ち状態をすべてクリアし, mode に応じた2通りのうちどちらかで BGnCNT と DISPCNT を設定する
+void Video_InitBGMode(s32 mode) {
+  s32 i;
+
+  ClearTilemapBuffer();
+
+  for (i = 0; i < 4; i++) {
+    gBGTileDataSrcAddrs[i] = NULL;
+    gBGTileDataTileCounts[i] = 0;
+    gBGTileDataVramOffsets[i] = 0;
+  }
+
+  gStagedDISPCNT = 0;
+  u16_03003eb4 = 0x100;
+  u16_03003e9c = 0x100;
+  u16_03003e50 = 0;
+  u16_ARRAY_03003e70[0] = 0x100;
+  u16_ARRAY_03003e70[1] = 0;
+  u16_ARRAY_03003e70[2] = 0;
+  u16_ARRAY_03003e70[3] = 0x100;
+  u32_03003e98 = 0;
+  u32_03003ea0 = 0;
+  u16_03003e8c = mode;
+
+  switch (mode) {
+    case 0: {
+      REG_BG0CNT = 0x3F08;
+      REG_BG1CNT = 0x3E01;
+      REG_BG2CNT = 0x3D03;
+      REG_BG3CNT = 0x3C01;
+      REG_DISPCNT = 0x7160;
+      break;
+    }
+    case 1: {
+      REG_BG0CNT = 0x3F08;
+      REG_BG1CNT = 0x3E42;
+      REG_BG2CNT = 0x9D81;
+      REG_DISPCNT = 0x7161;
+      break;
+    }
+  }
+
+  HideBG(DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON);
+}
 
 NAKED void vram_0822b778(void) { INCFUNC("asm/func/vram_0822b778.inc"); }
 
-NAKED void StageBGRegs(void) { INCFUNC("asm/func/StageBGRegs.inc"); }
+// gBgStates のスクロール値を BGnHOFS/BGnVOFS の控えに積む, u16_03003e8c が立っている間は BG2/BG3 の代わりに別の控えを書き戻す
+void StageBGRegs(void) {
+  gStagedBGOfs[0] = gBgStates[0].hofs & 0xFF;
+  gStagedBGOfs[1] = gBgStates[0].vofs & 0xFF;
+  gStagedBGOfs[2] = gBgStates[1].hofs & 0xFF;
+  gStagedBGOfs[3] = gBgStates[1].vofs & 0xFF;
 
-NAKED void CopyBGTileDataAndTilemapToVram(void) { INCFUNC("asm/func/CopyBGTileDataAndTilemapToVram.inc"); }
+  if (u16_03003e8c == 0) {
+    gStagedBGOfs[4] = gBgStates[2].hofs & 0xFF;
+    gStagedBGOfs[5] = gBgStates[2].vofs & 0xFF;
+    gStagedBGOfs[6] = gBgStates[3].hofs & 0xFF;
+    gStagedBGOfs[7] = gBgStates[3].vofs & 0xFF;
+  } else {
+    u16_ARRAY_03003e90[0] = u16_ARRAY_03003e70[0];
+    u16_ARRAY_03003e90[1] = u16_ARRAY_03003e70[1];
+    u16_ARRAY_03003e90[2] = u16_ARRAY_03003e70[2];
+    u16_ARRAY_03003e90[3] = u16_ARRAY_03003e70[3];
+    u32_ARRAY_03003eb8[0] = u32_03003e98;
+    u32_ARRAY_03003eb8[1] = u32_03003ea0;
+  }
+}
+
+void CopyBGTileDataAndTilemapToVram(void) {
+  s32 i;
+
+  if (gStagedDISPCNT & DISPCNT_BG0_ON) {
+    DmaCopy32(3, GetTilemapBuffer(0), BG_SCREEN_ADDR(31), BG_SCREEN_SIZE);
+  }
+  if (gStagedDISPCNT & DISPCNT_BG1_ON) {
+    DmaCopy32(3, GetTilemapBuffer(1), BG_SCREEN_ADDR(30), BG_SCREEN_SIZE);
+  }
+  if (gStagedDISPCNT & DISPCNT_BG2_ON) {
+    DmaCopy32(3, GetTilemapBuffer(2), BG_SCREEN_ADDR(29), BG_SCREEN_SIZE);
+  }
+  if (gStagedDISPCNT & DISPCNT_BG3_ON) {
+    DmaCopy32(3, GetTilemapBuffer(3), BG_SCREEN_ADDR(28), BG_SCREEN_SIZE);
+  }
+
+  for (i = 0; i < 4; i++) {
+    if (gBGTileDataSrcAddrs[i] != NULL) {
+      FUN_08230af8(gBGTileDataSrcAddrs[i], (void*)(BG_VRAM + gBGTileDataVramOffsets[i]), gBGTileDataTileCounts[i] * 32);
+      gBGTileDataSrcAddrs[i] = NULL;
+    }
+  }
+}
 
 // 次の VRAM 転送で BG のタイルデータをどこから何枚どこへ送るかを控えておく
 void FUN_0822b9d4(s32 bg, void* src, u32 vramOffset, u32 tileCount) {

@@ -136,7 +136,8 @@ const main = () => {
   new Command()
     .name("extract_func.ts")
     .description("巨大な .s/.inc ファイルから1関数分のアセンブリを asm/func/FUNCNAME.inc として切り出す。")
-    .arguments("<functionName:string> [asmFile:string]")
+    .argument("<functionName:string>", "切り出す関数の名前")
+    .argument("[asmFile:string]", "対象の .s/.inc ファイルのパス")
     .action((_, functionName, asmFile) => {
       extractFunction(getRepoRoot(), functionName, asmFile);
     })

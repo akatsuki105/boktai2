@@ -9,16 +9,16 @@ typedef struct Entity150FSlot Entity150FSlot;
 typedef void(Entity150FSlotFunc)(Entity150F* p, Entity150FSlot* slot, s32 idx);
 
 struct Entity150FSlot {
-  s8 unk_00;               // 0x00, FUN_081e1220 の第3引数, gEntity9A9F->unk_118[i]
-  u8 unk_01;               // 0x01, FUN_081e1220 が 0 を入れる
-  u8 unk_02;               // 0x02, FUN_081e1220 が 0 を入れる
-  u8 unk_03;               // 0x03, FUN_081e1220 が 0 を入れる
-  u8 unk_04[2];            // 0x04, まだ未解析
-  u16 unk_06;              // 0x06, FUN_081e1220 が 0 を入れる
-  u8 unk_08[0x20 - 0x08];  // 0x08, まだ未解析
-  Entity150FSlotFunc* fn;  // 0x20, _Update が 0 以外のときだけ呼ぶ
-  AuxSprite sprite;        // 0x24
-  ParticleShadow shadow;   // 0x50, ParticleShadow_Init(&shadow, &sprite.pos, 0) の直後に Hide
+  s8 unk_00;                           // 0x00, FUN_081e1220 の第3引数, gEntity9A9F->unk_118[i]
+  u8 unk_01;                           // 0x01, FUN_081e1220 が 0 を入れる
+  u8 unk_02;                           // 0x02, FUN_081e1220 が 0 を入れる
+  u8 unk_03;                           // 0x03, FUN_081e1220 が 0 を入れる
+  u8 unk_04[2];                        // 0x04, まだ未解析
+  u16 unk_06;                          // 0x06, FUN_081e1220 が 0 を入れる
+  u8 unk_08[0x20 - 0x08];              // 0x08, まだ未解析
+  Entity150FSlotFunc* updateCallback;  // 0x20
+  AuxSprite sprite;                    // 0x24
+  ParticleShadow shadow;               // 0x50, ParticleShadow_Init(&shadow, &sprite.pos, 0) の直後に Hide
 };
 static_assert(sizeof(Entity150FSlot) == 144);
 

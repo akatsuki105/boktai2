@@ -78,7 +78,7 @@ _080A6B04:
 _080A6B12:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080A6B28
 	adds r0, #4

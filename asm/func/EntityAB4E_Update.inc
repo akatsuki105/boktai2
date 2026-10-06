@@ -137,7 +137,7 @@ _08046E82:
 	adds r0, r5, #0
 	movs r1, #1
 	str r3, [sp, #0x24]
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	ldr r3, [sp, #0x24]
 	cmp r0, #0
 	beq _08046E9C

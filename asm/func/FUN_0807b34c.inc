@@ -26,7 +26,7 @@
 	movs r1, #0
 	ldrsb r1, [r0, r1]
 	adds r0, r4, #0
-	bl FUN_08064c48
+	bl Player_IsMagicAvailableForm
 	ldr r2, _0807B3BC @ =0x00000282
 	adds r1, r4, r2
 	strb r0, [r1]

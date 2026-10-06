@@ -241,7 +241,7 @@ _08101F14:
 	ldr r6, [sp, #0xc8]
 	ldrb r2, [r6]
 	add r0, sp, #0x1c
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	add r0, sp, #0x1c
 	ldrh r0, [r0]
 	lsls r0, r0, #0x10
@@ -284,7 +284,7 @@ _08101F66:
 	add r4, sp, #0x1c
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08101F88
 	adds r0, #4
@@ -1515,7 +1515,7 @@ _08102834:
 	ldr r4, [sp, #0xb4]
 	strb r1, [r4]
 	ldr r1, [sp, #0x194]
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	adds r0, r7, #0
 	bl FUN_080e6204
 	movs r5, #0xbf

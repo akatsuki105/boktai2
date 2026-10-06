@@ -145,7 +145,7 @@ gSubroutineTable:
 	.4byte 0x3D0C, FUN_08055b58
 	.4byte 0x3D17, FUN_08224590
 	.4byte 0x3DB0, FUN_080a1de4
-	.4byte 0x3DB8, FUN_08234fc8
+	.4byte 0x3DB8, VM_GetPathNodePos
 	.4byte 0x3DF7, TextSlideshow_Create
 	.4byte 0x3E17, FUN_082241ac
 	.4byte 0x3E1F, VM_Sub3E1F
@@ -410,7 +410,7 @@ gSubroutineTable:
 	.4byte 0xA133, FUN_0820a480
 	.4byte 0xA16F, ElevatorController_Create
 	.4byte 0xA1D7, FUN_0819aa08
-	.4byte 0xA222, FUN_0823add0
+	.4byte 0xA222, Save_ReadSystemDataOrInit
 	.4byte 0xA285, FUN_0823d5b8
 	.4byte 0xA288, EntityA288_Create
 	.4byte 0xA2E1, FUN_0807d858
@@ -549,7 +549,7 @@ gSubroutineTable:
 	.4byte 0xD854, EntityD854_Create
 	.4byte 0xD8DF, FUN_0807b66c
 	.4byte 0xD916, FUN_08242eb0
-	.4byte 0xD935, FUN_0804e2c0
+	.4byte 0xD935, Entity0804e2c0_Create
 	.4byte 0xD9AE, EntityD9AE_Create
 	.4byte 0xD9B7, FUN_0807b528
 	.4byte 0xD9D3, BgPlttAnimator_Create

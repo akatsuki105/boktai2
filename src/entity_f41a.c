@@ -54,7 +54,7 @@ void EntityF41A_SetState(EntityF41A* p, s32 state) {
 // Entity5941 から届く通知, 0 = 攻撃が当たった, 1 = 吹き飛ばし開始
 NON_MATCH bool32 EntityF41A_OnMessage(Mover* data, s32 msg, s32 value) {
 #ifdef NONMATCHING_C
-  EntityF41A* p = data->p_38;
+  EntityF41A* p = data->owner;
 
   if (msg == 0) {
     if (p->state != 2) {
@@ -78,31 +78,32 @@ NON_MATCH bool32 EntityF41A_OnMessage(Mover* data, s32 msg, s32 value) {
 }
 
 // targetAngle へ向きを4ずつ寄せながらうろつく, turnTimer が切れたら向きを引き直す
-NON_MATCH void EntityF41A_UpdateWander(EntityF41A* p) {
-#ifdef NONMATCHING_C
-  if (p->data.unk_5 != p->targetAngle) {
-    if (((p->targetAngle - p->data.unk_5 + 0x100) & 0xFF) < 0x80) {
-      p->data.unk_5 = p->data.unk_5 + 4;
+void EntityF41A_UpdateWander(EntityF41A* p) {
+  if (p->data.angle != p->targetAngle) {
+    if (((p->targetAngle - p->data.angle + 0x100) & 0xFF) < 0x80) {
+      p->data.angle = p->data.angle + 4;
     } else {
-      p->data.unk_5 = p->data.unk_5 + 0xFC;
+      p->data.angle = p->data.angle + 0xFC;
     }
   }
   if (p->turnTimer == 0) {
-    u16* tbl = gRandomTable;
-    u32 idx = (gRandTableIdx + 1) & 0x3FF;
+    u16* table;
+    u32 idx;
+    u16 r;
 
-    p->targetAngle = (tbl[idx] & 3) << 6;
+    table = gRandomTable;
+    idx = (gRandTableIdx + 1) & 0x3FF;
+    r = table[idx];
+    p->targetAngle = (r & 3) << 6;
     gRandTableIdx = (idx + 1) & 0x3FF;
-    p->turnTimer = (tbl[gRandTableIdx] & 0x3F) + 0x78;
+    r = table[gRandTableIdx];
+    p->turnTimer = (r & 0x3F) + 0x78;
   } else {
     p->turnTimer--;
   }
   Hitbox_SetPos(&p->hitbox, &p->data.pos, 0);
   Hitbox_Register(&p->hitbox);
   p->animIdx = 7;
-#else
-  INCFUNC("asm/func/EntityF41A_UpdateWander.inc");
-#endif
 }
 
 // 被弾中, 6フレームだけ明るいパレットにして点滅させる
@@ -121,12 +122,12 @@ NON_MATCH void EntityF41A_UpdateKnockback(EntityF41A* p) {
 #ifdef NONMATCHING_C
   p->animIdx = 2;
   if (p->pushSpeed != 0) {
-    p->data.delta.x += p->pushSpeed * gSineTable[(p->data.unk_5 + 0x40) & 0xFF] / 4096;
-    p->data.delta.z += p->pushSpeed * gSineTable[p->data.unk_5] / 4096;
+    p->data.delta.x += p->pushSpeed * gSineTable[(p->data.angle + 0x40) & 0xFF] / 4096;
+    p->data.delta.z += p->pushSpeed * gSineTable[p->data.angle] / 4096;
     p->pushSpeed = (p->pushSpeed * 3) >> 2;
   } else {
-    p->data.unk_5 += 0x80;
-    p->targetAngle = p->data.unk_5;
+    p->data.angle += 0x80;
+    p->targetAngle = p->data.angle;
     p->detectNode.flags &= ~1;
     EntityF41A_SetState(p, 0);
   }
@@ -157,7 +158,8 @@ void EntityF41A_InitData(EntityF41A* p) {
   Vec3* q;
   s32 bx, bz;
   u32 idx;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
   s32 ground;
   s32 stairs;
 
@@ -176,14 +178,14 @@ void EntityF41A_InitData(EntityF41A* p) {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
 
-  tile = (u8*)FUN_08234224(idx, 1);
-  if (tile != NULL) {
-    tile += 4;
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    tile = &ov->tile;
   } else {
-    tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+    tile = &gCollisionMap->tiledata->tiles[idx];
   }
-  stairs = *tile >> 4;
-  ground = (*tile & 0xF) << 8;
+  stairs = tile->heightStairs >> 4;
+  ground = (tile->heightStairs & 0xF) << 8;
   switch (stairs) {
     case 1: {
       ground -= (u8)q->z;
@@ -200,7 +202,7 @@ void EntityF41A_InitData(EntityF41A* p) {
 
 // 足元のタイル情報を取って data に結びつける
 void EntityF41A_InitTile(EntityF41A* p) {
-  FUN_0823280c(&p->tile, &p->data.pos);
+  Map_InitMoverTile(&p->tile, &p->data.pos);
   Mover_SetCollision(&p->data, &p->tile, 30, 30);
 }
 

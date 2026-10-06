@@ -22,7 +22,7 @@ typedef struct GameResult {
   char unk_76[2];                              // 0x076, 0x08222c2a
   MainSprite sprites[8];                       // 0x078, 0x082226a6 で 8回ループ処理してるので長さは8
   bool32 unk_378;                              // 0x378
-  void (*updateCallback)(struct GameResult*);  // 0x37C, GameResult_Update で呼ばれる
+  void (*updateCallback)(struct GameResult*);  // 0x37C
 } GameResult;
 static_assert(sizeof(GameResult) == 896);
 

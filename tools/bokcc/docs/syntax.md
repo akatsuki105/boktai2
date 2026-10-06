@@ -44,14 +44,14 @@ ID で引くもので、ID は `ScriptDirectory.script_entries` の添字 + 1 (R
 16bit の ID と関数ポインタの組 (`Subroutine`) を ID 順に並べた
 `gSubroutineTable` (`data/subroutine.inc`, 643件) を二分探索して引く。
 
-`.bokc` からは `NativeCall_B745` / `NativeCall_9906` の第1引数がこの ID である。
+`.bokc` からは `SubroutineCall` / `EntityCreate` の第1引数がこの ID である。
 引数の渡し方は決まっていない。呼ばれた側が `VM_GetValue` や `VM_SeekToNamedArg` で
 スクリプトから自分で読むので、個数も形も関数ごとに違う。
 
 ややこしいことに、制御命令 (`0x60`) のハンドラも同じ `Subroutine` 型で登録されている。
 こちらは `gCtrlHandlers` (`src/vm_ctrl1.c` の6件 + `src/vm_ctrl2.c` の8件) を
 線形に探すもので、`gSubroutineTable` とは別の ID 空間である。
-`if` の `0x0D86` や `NativeCall_B745` の `0xB745` はこちら側の ID。
+`if` の `0x0D86` や `SubroutineCall` の `0xB745` はこちら側の ID。
 
 ### Label
 
@@ -84,7 +84,7 @@ boktaihacking の wiki はこの命令を keyword と呼んでいる。
 | `0x30` | 式 | `a + b` |
 | `0x40` | 引数参照 | `result` `p0` |
 | `0x50` | ラベル | `.p = 1` `case 3:` `else` |
-| `0x60` | 制御命令 | `if` `switch` `return` `NativeCall_B745(...)` |
+| `0x60` | 制御命令 | `if` `switch` `return` `SubroutineCall(...)` |
 | `0x70` | スクリプト呼び出し | `ScriptCall(0x0003)` |
 | `0x80` | ブロック | `{ ... }` |
 | `0x90` | 変数参照 | `v0` |
@@ -135,9 +135,9 @@ bokcc はコンテナ長から同じ情報を導けるので、この欄はテ�
 | `0x0D86` | `VM_Ctrl_If` | `if` / `else if` / `else` | 4044 | 条件が真になった最初の分岐のブロックを実行する |
 | `0x4A6F` | `VM_Ctrl_Switch` | `switch` | 346 | 値が一致した `case`、無ければ `default` の節を実行する |
 | `0xCD3A` | `VM_Ctrl_Return` | `return` | 648 | `result` に値を入れてスクリプトを終える |
-| `0x121F` | `VM_Ctrl_CallIndirect` | `ScriptCall(式, ...)` | 37 | 呼び先を式で指定するスクリプト呼び出し |
-| `0xB745` | `VM_Ctrl_Call` | `NativeCall_B745(ID, ...)` | 7057 | サブルーチンを呼ぶ。戻り値は `result` に入る |
-| `0x9906` | `VM_Ctrl_CallWithArg` | `NativeCall_9906(ID, 値)` | 2130 | 値1つを渡してサブルーチンを呼ぶ。戻り値は捨てる |
+| `0x121F` | `VM_Ctrl_CallScriptIndirect` | `ScriptCall(式, ...)` | 37 | 呼び先を式で指定するスクリプト呼び出し |
+| `0xB745` | `VM_Ctrl_CallSubroutine` | `SubroutineCall(ID, ...)` | 7057 | サブルーチンを呼ぶ。戻り値は `result` に入る |
+| `0x9906` | `VM_Ctrl_CreateEntity` | `EntityCreate(ID, 値)` | 2130 | 値1つを C の実引数として渡し Entity を生成する。戻り値は捨てる |
 | `0xC8BB` | `VM_Ctrl_LoadMap` | `LoadMap(ID, ...)` | 96 | マップ初期化スクリプトIDを設定してマップ遷移を要求する |
 | `0xD4CB` | `VM_Ctrl_SetZoneCallback` | `SetZoneCallback(...)` | 208 | Zone に重なったときのコールバックを登録する |
 | `0xB96E` | `VM_Ctrl_DebugPrint` | `DebugPrint(...)` | 107 | 文字列を Shift-JIS に変換する。出力先は残っていない |
@@ -154,7 +154,7 @@ bokcc はコンテナ長から同じ情報を導けるので、この欄はテ�
 ### 構文に見える制御命令
 
 `if` / `switch` / `return` が C の構文に見えるのは bokcc がそう描いているからで、
-バイトコード上は `NativeCall_B745` と同じ制御命令である。
+バイトコード上は `SubroutineCall` と同じ制御命令である。
 `if` のオペランドは条件とブロックの組で、2つめ以降の分岐は
 `else if` (`'i'`) / `else` (`'e'`) のラベルとして後ろに並ぶ。
 

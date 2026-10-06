@@ -96,7 +96,7 @@ _08004D76:
 	str r4, [sp]
 	ldrh r4, [r5, #6]
 	str r4, [sp, #4]
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	adds r0, r5, #0
 	bl Entity08004fac_LinkNode
 _08004D98:

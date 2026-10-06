@@ -76,7 +76,8 @@ NON_MATCH void AuxShadow_FollowGround(AuxShadow* shadow) {
   s32 bz = shadow->pos->z >> 8;
   u16 idx;
   s32 i;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
   u32 h;
   u32 kind;
   s32 dy;
@@ -93,13 +94,13 @@ NON_MATCH void AuxShadow_FollowGround(AuxShadow* shadow) {
   } else {
     Vec3* pos = shadow->pos;
 
-    tile = (u8*)FUN_08234224(idx, 1);
-    if (tile != NULL) {
-      tile += 4;
+    ov = Map_FindTileOverride(idx, 1);
+    if (ov != NULL) {
+      tile = &ov->tile;
     } else {
-      tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+      tile = &gCollisionMap->tiledata->tiles[idx];
     }
-    h = *tile;
+    h = tile->heightStairs;
     kind = h >> 4;
     h = (h & 0xF) << 8;
     switch (kind) {
@@ -133,13 +134,13 @@ NON_MATCH void AuxShadow_FollowGround(AuxShadow* shadow) {
   shadow->sprite.scaleY = shadow->scale;
 
   if (shadow->pos->y >= shadow->sprite.pos.y && shadow->sprite.pos.y != 0) {
-    tile = (u8*)FUN_08234224(idx, 1);
-    if (tile != NULL) {
-      tile += 4;
+    ov = Map_FindTileOverride(idx, 1);
+    if (ov != NULL) {
+      tile = &ov->tile;
     } else {
-      tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+      tile = &gCollisionMap->tiledata->tiles[idx];
     }
-    if (!(((u16*)tile)[1] & 0x20)) {  // 元は読んだ値が r0、0x20 が r1, この形だと逆になる
+    if (!(tile->attr & 0x20)) {  // 元は読んだ値が r0、0x20 が r1, この形だと逆になる
       goto show;
     }
   }

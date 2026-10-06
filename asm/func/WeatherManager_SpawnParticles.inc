@@ -123,7 +123,7 @@ _08017F5E:
 	adds r0, r4, #0
 	movs r1, #1
 	str r3, [sp, #0x18]
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	ldr r3, [sp, #0x18]
 	cmp r0, #0
 	beq _08017F78
@@ -229,7 +229,7 @@ _0801802A:
 	adds r0, r4, #0
 	movs r1, #1
 	str r3, [sp, #0x18]
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	ldr r3, [sp, #0x18]
 	cmp r0, #0
 	beq _08018044

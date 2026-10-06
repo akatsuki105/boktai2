@@ -2,7 +2,7 @@
 #include "global.h"
 #include "player.h"
 
-// 通信対戦の自キャラ (gPlayerPtr[1] に格納される)
+// 通信対戦の自キャラ?
 
 INCASM("asm/player_link.inc");
 

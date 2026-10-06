@@ -63,7 +63,7 @@ static_assert(sizeof(Entity4AE5) == 1784);
 extern s32 gBgBrightnessApplied;
 extern u16 gBgPlttFadeRowMask;
 
-COMMON_DATA u16 gMapInitScriptID = 0;        // 0x03002B28
+COMMON_DATA u16 gMapInitScriptID = 0;        // 0x03002B28, 魔物図鑑や太陽鍛治にも専用のIDがある(スタートメニューはない)ので、SceneIDとかの方が意味は近いかも？
 COMMON_DATA Entity4AE5* gEntity4AE5 = NULL;  // 0x03002B2C
 
 void FUN_08001878(void) { gEntity4AE5 = NULL; }

@@ -287,7 +287,7 @@ _08045D7C:
 	str r0, [sp, #4]
 	str r5, [sp, #8]
 	ldr r0, [sp, #0x10]
-	bl FUN_08234e78
+	bl Map_GetStepToPathNode
 	strb r0, [r6]
 _08045D98:
 	ldrb r0, [r6]

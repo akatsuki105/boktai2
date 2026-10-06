@@ -88,19 +88,20 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
 // 当たり判定・マップノード・描画ノードをそれぞれのリストから外す
 s32 EntityEC96_Destroy(EntityEC96* p) {
   Hitbox_Unregister(&p->hitbox);
-  FUN_082342a8(&p->tileOverride);
+  Map_RemoveTileOverride(&p->tileOverride);
   AuxSprite_Remove(&p->sprite);
   return 0;
 }
 
-void FUN_08234270(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
+void Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
 
 // スクリプトから位置と耐久を読み、スプライト・当たり判定・マップノードを用意する
 s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   AuxSpriteGfx* gfx;
   HitboxData* hitbox;
   Vec3* pos;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
   s32 bx, bz, idx;
   s32 h;
   u32 z;
@@ -148,17 +149,17 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  tile = (u8*)FUN_08234224(idx, 1);
-  if (tile != NULL) {
-    tile += 4;
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    tile = &ov->tile;
   } else {
-    tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+    tile = &gCollisionMap->tiledata->tiles[idx];
   }
-  h = *tile & 0xF;
+  h = tile->heightStairs & 0xF;
   if (h < 0xF) {
     h++;
   }
-  FUN_08234270(&p->tileOverride, idx, 0, h, 0xFF, 0);
+  Map_AddTileOverride(&p->tileOverride, idx, 0, h, 0xFF, 0);
   return 0;
 }
 

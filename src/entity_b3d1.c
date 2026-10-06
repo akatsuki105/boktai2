@@ -81,7 +81,10 @@ NAKED void FUN_080bff78(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bff78.inc"); }
 
 NAKED void FUN_080bff98(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bff98.inc"); }
 
-NAKED void FUN_080bffb8(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bffb8.inc"); }
+void FUN_080bffb8(EntityB3D1* p) {
+  FUN_080bfce4(p);
+  FUN_080bff78(p);
+}
 
 NAKED void FUN_080bffcc(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bffcc.inc"); }
 

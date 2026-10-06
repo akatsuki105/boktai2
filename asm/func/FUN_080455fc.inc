@@ -326,7 +326,7 @@ _08045858:
 	cmp r1, #0
 	bne _0804587A
 	ldr r0, [sp, #8]
-	bl FUN_08234e3c
+	bl Map_AdvancePathWalker
 	adds r0, r4, #0
 	bl FUN_080453b0
 	b _0804587E

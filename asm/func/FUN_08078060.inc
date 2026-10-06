@@ -35,7 +35,7 @@ _080780A4:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r3, #0xa3
 	lsls r3, r3, #2
 	adds r0, r4, r3
@@ -91,7 +91,7 @@ _0807810A:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	bne _08078134
 	b _08078424
@@ -165,7 +165,7 @@ _080781B4:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r0, #0xc1
 	lsls r0, r0, #3
 	adds r1, r4, r0
@@ -175,7 +175,7 @@ _080781B4:
 	lsls r2, r2, #4
 	adds r1, r4, r2
 	adds r0, r4, #0
-	bl FUN_080620f0
+	bl Player_SpawnPtcl858
 	ldr r3, _08078208 @ =0x0000095E
 	adds r1, r4, r3
 	movs r0, #0x91
@@ -319,7 +319,7 @@ _080782F4:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r2, #0xc1
 	lsls r2, r2, #3
 	adds r1, r4, r2
@@ -380,7 +380,7 @@ _08078374:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _08078424
 	adds r0, r4, #0
@@ -438,7 +438,7 @@ _080783F6:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r2, #0xc1
 	lsls r2, r2, #3
 	adds r1, r4, r2
@@ -448,7 +448,7 @@ _080783F6:
 	lsls r3, r3, #4
 	adds r1, r4, r3
 	adds r0, r4, #0
-	bl FUN_080620f0
+	bl Player_SpawnPtcl858
 _08078424:
 	ldr r1, _0807848C @ =0x0000037D
 	adds r0, r4, r1

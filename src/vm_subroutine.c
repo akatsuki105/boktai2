@@ -1,55 +1,50 @@
+#include "vm_subroutine.h"
+
 #include "global.h"
 #include "vm.h"
 
-IWRAM_DATA u16 gSubroutineCount = 0;  // 0x030016F4
+IWRAM_DATA u16 gSubroutineCount = 0;  // 0x030016F4, このゲームでは 642
 
 const ALIGNED(4) u8 u8_ARRAY_085a9108[256] = {0x0};  // 0x085A9108
 
-#define INCDATA(file) \
-  asm(".section .rodata\n\
-  .include \"" file   \
-      "\"\n\
- .syntax divided\n");
+// 関数の型がわかっていないものも多いのでいったん asm にしている
+asm("gSubroutineTable: .include \"data/subroutine.inc\"");
+extern Subroutine gSubroutineTable[642 + 1];  // 最後は NULL
 
-INCDATA("data/subroutine.inc");
-
-extern Subroutine gSubroutineTable[643];
-
-const u8 u8_ARRAY_085aa620[4] = {0x37, 0xC8, 0xEC, 0x40};  // 0x085aa620
+const u32 Time085aa620 = 1089259575;  // 2004-07-09 18:04:39 UTC
 
 void FUN_0823b158(void) {
   Subroutine* cur;
   gSubroutineCount = 0;
-  for (cur = &gSubroutineTable[0]; cur->fn != NULL; cur++) {
+  for (cur = &gSubroutineTable[0]; cur->fn.fn != NULL; cur++) {
     gSubroutineCount++;
   }
 }
 
 void FUN_0823b180(void) {
-  gSubroutineTable[0].fn = NULL;  // why???
+  gSubroutineTable[0].fn.fn = NULL;  // .rodata だから意味ないよ...
 }
 
 void FUN_0823b18c(void) {}
 
-TaskFn VM_GetSubroutine_Internal(u32 subID, Subroutine* arr, s32 start, s32 len) {
-  s32 i;
+static void* VM_GetSubroutine_Internal(u32 subroutineID, Subroutine* arr, s32 start, s32 len) {
   // Binary search
   while (start < len) {
-    i = Div(start + len, 2);
-    if (arr[i].id < subID) {
+    s32 i = Div(start + len, 2);
+    if (arr[i].id < subroutineID) {
       start = i + 1;
     } else {
       len = i;
     }
   }
 
-  if (arr[start].id == subID) {
-    return (TaskFn)arr[start].fn;
+  if (arr[start].id == subroutineID) {
+    return arr[start].fn.fn;
   }
   return NULL;
 }
 
-TaskFn VM_GetSubroutine(u32 subroutineID) {
-  TaskFn fn = VM_GetSubroutine_Internal(subroutineID, gSubroutineTable, 0, gSubroutineCount);
+void* VM_GetSubroutine(u32 subroutineID) {
+  void* fn = VM_GetSubroutine_Internal(subroutineID, gSubroutineTable, 0, gSubroutineCount);
   return fn;
 }

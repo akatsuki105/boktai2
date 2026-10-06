@@ -115,7 +115,7 @@ _080CB860:
 	orrs r0, r1
 	str r0, [r2, #0x20]
 	adds r0, r5, #0
-	bl FUN_082328ec
+	bl Map_GetTileHeightAt
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	movs r2, #0x36

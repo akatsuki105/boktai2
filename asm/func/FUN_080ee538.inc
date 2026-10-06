@@ -20,14 +20,14 @@
 	ldrb r2, [r0]
 	ldrb r3, [r3]
 	adds r0, r5, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	ldr r1, _080EE5A8 @ =0x000004A4
 	adds r0, r6, r1
 	ldr r0, [r0]
 	adds r4, r6, #0
 	adds r4, #8
 	adds r1, r4, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	str r5, [r6, #0x24]
 	ldrh r0, [r6, #8]
 	lsls r0, r0, #0x10
@@ -72,7 +72,7 @@ _080EE5C2:
 	adds r5, #8
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080EE5E8
 	adds r0, #4

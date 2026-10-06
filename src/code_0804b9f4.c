@@ -1,13 +1,21 @@
 #include "entity.h"
 #include "global.h"
+#include "malloc.h"
+#include "time.h"
 
-// EntityFB53 とは独立した通信まわりのモジュール, FUN_0804e2c0 が Malloc(908) した領域を gUnkEntity1Ptr_03002b58 に持ち、
-// PTR_ARRAY_085ab5e0 の 33 状態で回す。スクリプト命令 0x3699 / 0xD935 / 0x025E の入口を持つ
+// 通信まわり, 他の Entity と 違って、 _Init, _Update, _Destroy を持たない
+typedef struct {
+  Entity e;  // ENTITY_UNK_1
+  u8 unk_18[908 - 0x18];
+} Entity0804e2c0;
+static_assert(sizeof(Entity0804e2c0) == 908);
 
 IWRAM_DATA u8 u8_030000dc = 0;    // 0x030000DC
 IWRAM_DATA u32 u32_030000e0 = 0;  // 0x030000E0, 型不明
 
-extern const u8 u8_ARRAY_085ab5b0[8];  // src/entity_fb53.c
+extern const u8 u8_ARRAY_085ab5b0[8];    // src/entity_fb53.c
+extern Entity0804e2c0* gEntity0804e2c0;  // src/iwram2.c
+extern u16 gCrossoverMappingBuf[256];    // src/ewram.c
 
 s32 FUN_0804c3cc(unknown*);
 s32 FUN_0804c3e4(unknown*);
@@ -49,11 +57,11 @@ s32 (*const PTR_ARRAY_085ab5e0[33])(unknown*) = {
 
 NAKED s32 FUN_0804b9f4(void) { INCFUNC("asm/func/FUN_0804b9f4.inc"); }
 
-NAKED void FUN_0804ba3c(void) { INCFUNC("asm/func/FUN_0804ba3c.inc"); }
+Entity0804e2c0* FUN_0804ba3c(void) { return gEntity0804e2c0; }
 
 NAKED s32 FUN_0804ba48(void) { INCFUNC("asm/func/FUN_0804ba48.inc"); }
 
-NAKED void FUN_0804ba64(s32 param_1) { INCFUNC("asm/func/FUN_0804ba64.inc"); }
+NAKED void FUN_0804ba64(unknown* p) { INCFUNC("asm/func/FUN_0804ba64.inc"); }
 
 NAKED void FUN_0804bb30(s32 param_1) { INCFUNC("asm/func/FUN_0804bb30.inc"); }
 
@@ -79,7 +87,7 @@ NAKED void FUN_0804bf90(u8 param_1) { INCFUNC("asm/func/FUN_0804bf90.inc"); }
 
 NAKED void FUN_0804c190(u8 param_1) { INCFUNC("asm/func/FUN_0804c190.inc"); }
 
-NAKED void FUN_0804c3a8(void) { INCFUNC("asm/func/FUN_0804c3a8.inc"); }
+void FUN_0804c3a8(void) { rfu_REQ_recvData(); }
 
 NAKED void FUN_0804c3b4(void) { INCFUNC("asm/func/FUN_0804c3b4.inc"); }
 
@@ -131,7 +139,10 @@ NAKED s32 FUN_0804cc7c(unknown* p) { INCFUNC("asm/func/FUN_0804cc7c.inc"); }
 
 NAKED s32 FUN_0804cc98(unknown* p) { INCFUNC("asm/func/FUN_0804cc98.inc"); }
 
-NAKED s32 FUN_0804ccbc(unknown* p) { INCFUNC("asm/func/FUN_0804ccbc.inc"); }
+s32 FUN_0804ccbc(unknown* p) {
+  rfu_clearAllSlot();
+  FUN_0804ba64(p);
+}
 
 NAKED void FUN_0804ccd0(s32 param_1) { INCFUNC("asm/func/FUN_0804ccd0.inc"); }
 
@@ -167,7 +178,7 @@ NAKED s32 FUN_0804d6d0(unknown* p) { INCFUNC("asm/func/FUN_0804d6d0.inc"); }
 
 NAKED void FUN_0804d708(u8 param_1) { INCFUNC("asm/func/FUN_0804d708.inc"); }
 
-NAKED void FUN_0804d85c(void) { INCFUNC("asm/func/FUN_0804d85c.inc"); }
+void FUN_0804d85c(void) { rfu_REQ_recvData(); }
 
 NAKED void FUN_0804d868(s32 param_1) { INCFUNC("asm/func/FUN_0804d868.inc"); }
 
@@ -213,7 +224,7 @@ NAKED unknown* FUN_0804e164(unknown* p) { INCFUNC("asm/func/FUN_0804e164.inc"); 
 
 NAKED s32 FUN_0804e25c(unknown* p) { INCFUNC("asm/func/FUN_0804e25c.inc"); }
 
-NAKED Entity* FUN_0804e2c0(void) { INCFUNC("asm/func/FUN_0804e2c0.inc"); }
+NAKED Entity0804e2c0* Entity0804e2c0_Create(void) { INCFUNC("asm/func/Entity0804e2c0_Create.inc"); }
 
 NAKED void FUN_0804e36c(void) { INCFUNC("asm/func/FUN_0804e36c.inc"); }
 
@@ -257,7 +268,7 @@ NAKED s32 FUN_0804e61c(void) { INCFUNC("asm/func/FUN_0804e61c.inc"); }
 
 NAKED s32 FUN_0804e638(void) { INCFUNC("asm/func/FUN_0804e638.inc"); }
 
-NAKED void FUN_0804e654(void) { INCFUNC("asm/func/FUN_0804e654.inc"); }
+u16* Crossover_GetMappingBuf(void) { return gCrossoverMappingBuf; }
 
 NAKED s32 FUN_0804e65c(u32 param_1) { INCFUNC("asm/func/FUN_0804e65c.inc"); }
 

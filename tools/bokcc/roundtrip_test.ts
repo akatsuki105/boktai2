@@ -1,6 +1,3 @@
-// ROMからデコンパイルした bokcc コードを bokcc でコンパイルし、元のROMバイト列と一致するかを検証する。
-//
-// デコンパイル→コンパイルが自己循環するだけでは不十分で、必ず ROM の実バイト列と比較すること(デコンパイル結果とコンパイル結果を突き合わせるだけだと、両方が同じように間違っていても気づけないため)。
 import { fail } from "@std/assert";
 
 import { ByteStream, InstructionReader } from "./instruction_reader.ts";
@@ -12,6 +9,10 @@ import * as MFT from "../encoding/mft/mft.ts";
 import * as VM from "../encoding/script/script.ts";
 import type { addr } from "../common/gba/gba.ts";
 
+// ROMからデコンパイルした bokcc コードを bokcc でコンパイルし、元のROMバイト列と一致するかを検証する。
+//
+// デコンパイル→コンパイルが自己循環するだけでは不十分で、必ず ROM の実バイト列と比較すること(デコンパイル結果とコンパイル結果を突き合わせるだけだと、両方が同じように間違っていても気づけないため)。
+
 const romBytes = Deno.readFileSync(new URL("../../baserom.gba", import.meta.url));
 const rom = new DataView(romBytes.buffer);
 const dir = VM.ParseScriptDirectory(rom, MFT.getFSEntry(rom, 0xA41E).ptr);
@@ -20,7 +21,7 @@ const getScriptAddr = (scriptId: number): addr => {
   if (scriptId < 1 || scriptId > dir.scripts.length) {
     throw new Error(`Invalid script ID: ${scriptId}`);
   }
-  return dir.scripts[scriptId - 1];
+  return dir.scripts[scriptId - 1].addr;
 };
 
 const alreadyTested = new Set<addr>();

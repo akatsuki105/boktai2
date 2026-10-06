@@ -63,7 +63,7 @@ _08069FD2:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r0, #0xfe
 	lsls r0, r0, #2
 	adds r1, r4, r0
@@ -97,7 +97,7 @@ _0806A01E:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _0806A04A
 	adds r0, r4, #0

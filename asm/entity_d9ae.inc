@@ -168,7 +168,7 @@ _08003148:
 	adds r4, r1, r0
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0800315A
 	adds r4, r0, #4
@@ -289,7 +289,7 @@ _0800321C:
 	adds r4, r1, r0
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0800322E
 	adds r0, #4
@@ -902,7 +902,7 @@ FUN_080036a0: @ 0x080036A0
 	bl AuxSprite_Remove
 	adds r0, r4, #0
 	adds r0, #0xb8
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	adds r0, r4, #0
 	adds r0, #0xc8
 	bl Hitbox_Unregister
@@ -1627,7 +1627,7 @@ _08003C14:
 	adds r4, r4, r1
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	mov sb, r4
 	cmp r0, #0
 	beq _08003C28
@@ -1815,7 +1815,7 @@ _08003D6C:
 _08003D7A:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08003D90
 	adds r0, #4
@@ -1957,7 +1957,7 @@ _08003E52:
 	adds r0, r4, #0
 	movs r1, #1
 	str r3, [sp, #0x14]
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	ldr r3, [sp, #0x14]
 	cmp r0, #0
 	beq _08003E9A

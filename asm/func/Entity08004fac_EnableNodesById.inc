@@ -34,7 +34,7 @@ _08004EB6:
 	str r4, [sp]
 	ldrh r4, [r5, #6]
 	str r4, [sp, #4]
-	bl FUN_08234270
+	bl Map_AddTileOverride
 _08004EDE:
 	adds r5, r6, #0
 	cmp r5, #0

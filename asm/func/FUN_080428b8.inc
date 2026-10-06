@@ -127,7 +127,7 @@ _080429A8:
 	str r0, [sp, #4]
 	str r0, [sp, #8]
 	mov r0, r8
-	bl FUN_08234e78
+	bl Map_GetStepToPathNode
 	ldr r2, _080429C8 @ =0x00000213
 	adds r1, r5, r2
 	strb r0, [r1]
@@ -148,7 +148,7 @@ _080429CC:
 	str r0, [sp, #8]
 	mov r0, r8
 	adds r1, r6, #0
-	bl FUN_08234e78
+	bl Map_GetStepToPathNode
 	strb r0, [r4]
 _080429EC:
 	ldr r1, _08042A0C @ =0x00000213

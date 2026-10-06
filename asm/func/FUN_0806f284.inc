@@ -96,7 +96,7 @@ _0806F336:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	b _0806F394
 	.align 2, 0
 _0806F358: .4byte 0x0000095E
@@ -111,7 +111,7 @@ _0806F360:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r0, _0806F39C @ =0x0000037E
 	adds r1, r4, r0
 	ldrh r0, [r1]

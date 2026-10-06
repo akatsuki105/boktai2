@@ -59,7 +59,7 @@ _081D5054:
 	movs r1, #0x9c
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 _081D5062:
 	adds r0, r4, #0
 	bl Elevator_RemoveTileOverrides

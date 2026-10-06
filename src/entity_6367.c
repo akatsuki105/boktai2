@@ -11,7 +11,7 @@ typedef struct Entity6367 {
   s32 scriptID_15c;       // 0x15C
   s32 mode;               // 0x160, PTR_ARRAY_085affa0 の idx
   u8 unk_164[0x190 - 0x164];
-  void (*updateCallback)(struct Entity6367*);  // 0x190, このゲームでは FUN_0821a308 で固定
+  void (*updateCallback)(struct Entity6367*);  // 0x190
 } Entity6367;
 static_assert(sizeof(Entity6367) == 404);
 

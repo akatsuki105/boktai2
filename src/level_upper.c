@@ -30,7 +30,7 @@ typedef struct LevelUpper {
   u16 weaponLv[5];           // 0x68, 武器レベル, = GameInfo.weaponExp[n]/100
   u8 unk_72[2];              // 0x72
   u32 nextExp;               // 0x74, 次にレベルアップする総経験値量
-  u32* expTable;             // 0x78, 経験値テーブルの先頭アドレス, 常に 0x08D09FE8
+  u32* expTable;             // 0x78, 経験値テーブル, gExpTable
   ParticleGroup* p_7c;       // 0x7C, 根拠: LevelUpper_EmitLevelUpEffect で FUN_0822dafc に渡される
   LevelUpParticle ptcls[8];  // 0x80
 } LevelUpper;

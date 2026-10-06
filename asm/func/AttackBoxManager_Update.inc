@@ -4,7 +4,7 @@
 	cmp r0, #0
 	beq _080DDAA0
 	movs r5, #0
-	ldr r6, _080DDA74 @ =0x085AD348
+	ldr r6, _080DDA74 @ =sAttackBoxUpdates
 _080DDA62:
 	movs r1, #1
 	lsls r1, r5
@@ -15,7 +15,7 @@ _080DDA62:
 	movs r0, #1
 	b _080DDA7A
 	.align 2, 0
-_080DDA74: .4byte 0x085AD348
+_080DDA74: .4byte sAttackBoxUpdates
 _080DDA78:
 	movs r0, #0
 _080DDA7A:

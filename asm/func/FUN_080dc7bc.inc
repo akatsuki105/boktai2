@@ -83,7 +83,7 @@ _080DC836:
 	adds r4, #0x1c
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	adds r3, r4, #0
 	cmp r0, #0
 	beq _080DC874
@@ -196,7 +196,7 @@ _080DC912:
 	bl ArcTan2_8
 	ldr r0, [sp, #0x18]
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080DC944
 	adds r0, #4
@@ -373,7 +373,7 @@ _080DCA86:
 	add r7, sp, #0xc
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080DCA9C
 	adds r0, #4
@@ -411,7 +411,7 @@ _080DCAC8:
 	mov sb, r1
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080DCADA
 	adds r0, #4
@@ -433,7 +433,7 @@ _080DCAE6:
 	blt _080DCB1E
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080DCB08
 	adds r0, #4

@@ -2,11 +2,10 @@
 
 // _("XXX") requires preproc and charmap.txt
 
-const u8 Binary_1607[] = {
-    0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x0D, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x26, 0x00, 0x00, 0x00, 0x37, 0x00, 0x00, 0x00, 0x4C, 0x00, 0x00, 0x00, 0x65, 0x00, 0x00, 0x00, 0x82, 0x00, 0x00, 0x00, 0xA2, 0x00, 0x00, 0x00, 0xC6, 0x00, 0x00, 0x00, 0xEF, 0x00, 0x00, 0x00, 0x1C, 0x01, 0x00, 0x00, 0x4D, 0x01, 0x00, 0x00, 0x83, 0x01, 0x00, 0x00, 0xBD, 0x01, 0x00, 0x00, 0xFD, 0x01, 0x00, 0x00, 0x41, 0x02, 0x00, 0x00, 0x8A, 0x02, 0x00, 0x00, 0xD8, 0x02, 0x00, 0x00, 0x2B, 0x03, 0x00, 0x00, 0x84, 0x03, 0x00, 0x00, 0xE3, 0x03, 0x00, 0x00, 0x46, 0x04, 0x00, 0x00, 0xB0, 0x04, 0x00, 0x00, 0x1F, 0x05, 0x00, 0x00, 0x95, 0x05, 0x00, 0x00, 0x10, 0x06, 0x00, 0x00, 0x92, 0x06, 0x00, 0x00, 0x1A, 0x07, 0x00, 0x00, 0xA8, 0x07, 0x00, 0x00, 0x3D, 0x08, 0x00, 0x00,
-    0xD9, 0x08, 0x00, 0x00, 0x7C, 0x09, 0x00, 0x00, 0x25, 0x0A, 0x00, 0x00, 0xD5, 0x0A, 0x00, 0x00, 0x8D, 0x0B, 0x00, 0x00, 0x4C, 0x0C, 0x00, 0x00, 0x12, 0x0D, 0x00, 0x00, 0xE0, 0x0D, 0x00, 0x00, 0xB5, 0x0E, 0x00, 0x00, 0x93, 0x0F, 0x00, 0x00, 0x78, 0x10, 0x00, 0x00, 0x65, 0x11, 0x00, 0x00, 0x5A, 0x12, 0x00, 0x00, 0x57, 0x13, 0x00, 0x00, 0x5D, 0x14, 0x00, 0x00, 0x6C, 0x15, 0x00, 0x00, 0x82, 0x16, 0x00, 0x00, 0xA2, 0x17, 0x00, 0x00, 0xCA, 0x18, 0x00, 0x00, 0xFC, 0x19, 0x00, 0x00, 0x36, 0x1B, 0x00, 0x00, 0x7A, 0x1C, 0x00, 0x00, 0xC7, 0x1D, 0x00, 0x00, 0x1D, 0x1F, 0x00, 0x00, 0x7D, 0x20, 0x00, 0x00, 0xE7, 0x21, 0x00, 0x00, 0x5B, 0x23, 0x00, 0x00, 0xD8, 0x24, 0x00, 0x00, 0x5F, 0x26, 0x00, 0x00, 0xF1, 0x27, 0x00, 0x00, 0x8D, 0x29, 0x00, 0x00, 0x33, 0x2B, 0x00, 0x00, 0xE4, 0x2C, 0x00, 0x00,
-    0x9F, 0x2E, 0x00, 0x00, 0x66, 0x30, 0x00, 0x00, 0x37, 0x32, 0x00, 0x00, 0x13, 0x34, 0x00, 0x00, 0xFA, 0x35, 0x00, 0x00, 0xEC, 0x37, 0x00, 0x00, 0xEA, 0x39, 0x00, 0x00, 0xF4, 0x3B, 0x00, 0x00, 0x08, 0x3E, 0x00, 0x00, 0x29, 0x40, 0x00, 0x00, 0x55, 0x42, 0x00, 0x00, 0x8E, 0x44, 0x00, 0x00, 0xD2, 0x46, 0x00, 0x00, 0x23, 0x49, 0x00, 0x00, 0x80, 0x4B, 0x00, 0x00, 0xE9, 0x4D, 0x00, 0x00, 0x5F, 0x50, 0x00, 0x00, 0xE2, 0x52, 0x00, 0x00, 0x72, 0x55, 0x00, 0x00, 0x0E, 0x58, 0x00, 0x00, 0xB7, 0x5A, 0x00, 0x00, 0x6E, 0x5D, 0x00, 0x00, 0x42, 0x60, 0x00, 0x00, 0x03, 0x63, 0x00, 0x00, 0xE2, 0x65, 0x00, 0x00, 0xCE, 0x68, 0x00, 0x00, 0xC9, 0x6B, 0x00, 0x00, 0xD1, 0x6E, 0x00, 0x00, 0xE7, 0x71, 0x00, 0x00, 0x0B, 0x75, 0x00, 0x00, 0x3D, 0x78, 0x00, 0x00, 0x7E, 0x7B, 0x00, 0x00, 0xCE, 0x7E, 0x00, 0x00,
-};  // 0x08D09FE8, ID: 5639
+// 0x08D09FE8, ID: 5639
+const u32 gExpTable[99] = {
+    0, 1, 6, 13, 24, 38, 55, 76, 101, 130, 162, 198, 239, 284, 333, 387, 445, 509, 577, 650, 728, 811, 900, 995, 1094, 1200, 1311, 1429, 1552, 1682, 1818, 1960, 2109, 2265, 2428, 2597, 2773, 2957, 3148, 3346, 3552, 3765, 3987, 4216, 4453, 4698, 4951, 5213, 5484, 5762, 6050, 6346, 6652, 6966, 7290, 7623, 7965, 8317, 8679, 9051, 9432, 9823, 10225, 10637, 11059, 11492, 11935, 12390, 12855, 13331, 13818, 14316, 14826, 15348, 15880, 16425, 16981, 17550, 18130, 18723, 19328, 19945, 20575, 21218, 21874, 22542, 23223, 23918, 24642, 25347, 26082, 26830, 27593, 28369, 29159, 29963, 30781, 31614, 32462,
+};
 
 const u8 String_1608[] = _("大地の実");                                                                                                         // 0x08D0A174, ID: 5640
 const u8 String_1609[] = _("太陽の実");                                                                                                         // 0x08D0A17D, ID: 5641
@@ -269,399 +268,404 @@ const u8 String_1709[] = _("チカラが<VAR=0>上がった!!");                
 const u8 String_170A[] = _("ハヤサが<VAR=0>上がった!!");                                                                                        // 0x08D0C2B0, ID: 5898
 const u8 String_170B[] = _("アイテムが新品になった!!");                                                                                         // 0x08D0C2CA, ID: 5899
 const u8 String_170C[] = _("のメンテナンスをした!!");                                                                                           // 0x08D0C2E3, ID: 5900
-const u8 String_170D[] = _("");                                                                                                                 // 0x08D0C2FA, ID: 5901
-const u8 String_170E[] = _("グラディウス<EXTEND=0>");                                                                                           // 0x08D0C2FB, ID: 5902
-const u8 String_170F[] = _("ショ―トソ―ド<EXTEND=0>");                                                                                           // 0x08D0C312, ID: 5903
-const u8 String_1710[] = _("ブロ―ドソ―ド<EXTEND=0>");                                                                                           // 0x08D0C32B, ID: 5904
-const u8 String_1711[] = _("ロングソ―ド<EXTEND=0>");                                                                                            // 0x08D0C344, ID: 5905
-const u8 String_1712[] = _("なまくら<EXTEND=0>");                                                                                               // 0x08D0C35B, ID: 5906
-const u8 String_1713[] = _("ツヴァイハンダ―<EXTEND=0>");                                                                                        // 0x08D0C36E, ID: 5907
-const u8 String_1714[] = _("フランベルジェ<EXTEND=0>");                                                                                         // 0x08D0C389, ID: 5908
-const u8 String_1715[] = _("クレイモア<EXTEND=0>");                                                                                             // 0x08D0C3A2, ID: 5909
-const u8 String_1716[] = _("マジックソ―ド<EXTEND=0>");                                                                                          // 0x08D0C3B7, ID: 5910
-const u8 String_1717[] = _("刀<EXTEND=0>");                                                                                                     // 0x08D0C3D0, ID: 5911
-const u8 String_1718[] = _("バスタ―ドソ―ド<EXTEND=0>");                                                                                         // 0x08D0C3DD, ID: 5912
-const u8 String_1719[] = _("グレ―トソ―ド<EXTEND=0>");                                                                                           // 0x08D0C3F8, ID: 5913
-const u8 String_171A[] = _("武士道ブレ―ド<EXTEND=0>");                                                                                          // 0x08D0C411, ID: 5914
-const u8 String_171B[] = _("ブラッドソ―ド<EXTEND=0>");                                                                                          // 0x08D0C42A, ID: 5915
-const u8 String_171C[] = _("村正<EXTEND=0>");                                                                                                   // 0x08D0C443, ID: 5916
-const u8 String_171D[] = _("ヴォ―パルソ―ド<EXTEND=0>");                                                                                         // 0x08D0C452, ID: 5917
-const u8 String_171E[] = _("太陽の剣<EXTEND=0>");                                                                                               // 0x08D0C46D, ID: 5918
-const u8 String_171F[] = _("暗黒の剣<EXTEND=0>");                                                                                               // 0x08D0C480, ID: 5919
-const u8 String_1720[] = _("グラム<EXTEND=0>");                                                                                                 // 0x08D0C493, ID: 5920
-const u8 String_1721[] = _("ショ―トスピア<EXTEND=0>");                                                                                          // 0x08D0C4A4, ID: 5921
-const u8 String_1722[] = _("グレイブ<EXTEND=0>");                                                                                               // 0x08D0C4BD, ID: 5922
-const u8 String_1723[] = _("ロングスピア<EXTEND=0>");                                                                                           // 0x08D0C4D0, ID: 5923
-const u8 String_1724[] = _("ランス<EXTEND=0>");                                                                                                 // 0x08D0C4E7, ID: 5924
-const u8 String_1725[] = _("六尺棒<EXTEND=0>");                                                                                                 // 0x08D0C4F8, ID: 5925
-const u8 String_1726[] = _("コルセスカ<EXTEND=0>");                                                                                             // 0x08D0C509, ID: 5926
-const u8 String_1727[] = _("ファイヤ―ポ―<EXTEND=0>");                                                                                           // 0x08D0C51E, ID: 5927
-const u8 String_1728[] = _("バルディッシュ<EXTEND=0>");                                                                                         // 0x08D0C537, ID: 5928
-const u8 String_1729[] = _("アイスグレイブ<EXTEND=0>");                                                                                         // 0x08D0C550, ID: 5929
-const u8 String_172A[] = _("ル―ングレイブ<EXTEND=0>");                                                                                          // 0x08D0C569, ID: 5930
-const u8 String_172B[] = _("パルチザン<EXTEND=0>");                                                                                             // 0x08D0C582, ID: 5931
-const u8 String_172C[] = _("サンダ―スピア<EXTEND=0>");                                                                                          // 0x08D0C597, ID: 5932
-const u8 String_172D[] = _("ブラッドスピア<EXTEND=0>");                                                                                         // 0x08D0C5B0, ID: 5933
-const u8 String_172E[] = _("グランドランス<EXTEND=0>");                                                                                         // 0x08D0C5C9, ID: 5934
-const u8 String_172F[] = _("ル―ンスピア<EXTEND=0>");                                                                                            // 0x08D0C5E2, ID: 5935
-const u8 String_1730[] = _("ハルバ―ド<EXTEND=0>");                                                                                              // 0x08D0C5F9, ID: 5936
-const u8 String_1731[] = _("ホワイトクイ―ン<EXTEND=0>");                                                                                        // 0x08D0C60E, ID: 5937
-const u8 String_1732[] = _("ブラッククイ―ン<EXTEND=0>");                                                                                        // 0x08D0C629, ID: 5938
-const u8 String_1733[] = _("クングニル<EXTEND=0>");                                                                                             // 0x08D0C644, ID: 5939
-const u8 String_1734[] = _("クラブ<EXTEND=0>");                                                                                                 // 0x08D0C659, ID: 5940
-const u8 String_1735[] = _("ハンマ―<EXTEND=0>");                                                                                                // 0x08D0C66A, ID: 5941
-const u8 String_1736[] = _("メイス<EXTEND=0>");                                                                                                 // 0x08D0C67D, ID: 5942
-const u8 String_1737[] = _("フレイル<EXTEND=0>");                                                                                               // 0x08D0C68E, ID: 5943
-const u8 String_1738[] = _("とんかち<EXTEND=0>");                                                                                               // 0x08D0C6A1, ID: 5944
-const u8 String_1739[] = _("アックス<EXTEND=0>");                                                                                               // 0x08D0C6B4, ID: 5945
-const u8 String_173A[] = _("モ―ル<EXTEND=0>");                                                                                                  // 0x08D0C6C7, ID: 5946
-const u8 String_173B[] = _("シルバ―メイス<EXTEND=0>");                                                                                          // 0x08D0C6D8, ID: 5947
-const u8 String_173C[] = _("シルバ―フレイル<EXTEND=0>");                                                                                        // 0x08D0C6F1, ID: 5948
-const u8 String_173D[] = _("ヘヴィメイス<EXTEND=0>");                                                                                           // 0x08D0C70C, ID: 5949
-const u8 String_173E[] = _("バトルアックス<EXTEND=0>");                                                                                         // 0x08D0C723, ID: 5950
-const u8 String_173F[] = _("ウォ―ハンマ―<EXTEND=0>");                                                                                           // 0x08D0C73C, ID: 5951
-const u8 String_1740[] = _("ブラッディメイス<EXTEND=0>");                                                                                       // 0x08D0C755, ID: 5952
-const u8 String_1741[] = _("モ―ニングスタ―<EXTEND=0>");                                                                                         // 0x08D0C770, ID: 5953
-const u8 String_1742[] = _("ヘヴィアックス<EXTEND=0>");                                                                                         // 0x08D0C78B, ID: 5954
-const u8 String_1743[] = _("ア―スシェ―カ―<EXTEND=0>");                                                                                          // 0x08D0C7A4, ID: 5955
-const u8 String_1744[] = _("あかつき<EXTEND=0>");                                                                                               // 0x08D0C7BF, ID: 5956
-const u8 String_1745[] = _("たそがれ<EXTEND=0>");                                                                                               // 0x08D0C7D2, ID: 5957
-const u8 String_1746[] = _("ミョルニル<EXTEND=0>");                                                                                             // 0x08D0C7E5, ID: 5958
-const u8 String_1747[] = _("壊れた太陽銃");                                                                                                     // 0x08D0C7FA, ID: 5959
-const u8 String_1748[] = _("ガン・デル・ソル");                                                                                                 // 0x08D0C807, ID: 5960
-const u8 String_1749[] = _("ガン・デル・ヘル");                                                                                                 // 0x08D0C818, ID: 5961
-const u8 String_174A[] = _("ロックバスタ―");                                                                                                    // 0x08D0C829, ID: 5962
-const u8 String_174B[] = _("星のかけら");                                                                                                       // 0x08D0C838, ID: 5963
-const u8 String_174C[] = _("アストロソ―ド");                                                                                                    // 0x08D0C843, ID: 5964
-const u8 String_174D[] = _("アストロスピア");                                                                                                   // 0x08D0C852, ID: 5965
-const u8 String_174E[] = _("アストロハンマ―");                                                                                                  // 0x08D0C861, ID: 5966
-const u8 String_174F[] = _("素手。");                                                                                                           // 0x08D0C872, ID: 5967
-const u8 String_1750[] = _("Lv.<VAR=0>　威力:<VAR=1>　短剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                        // 0x08D0C879, ID: 5968
-const u8 String_1751[] = _("Lv.<VAR=0>　威力:<VAR=1>　小剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                        // 0x08D0C8D3, ID: 5969
-const u8 String_1752[] = _("Lv.<VAR=0>　威力:<VAR=1>　幅広の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0C92D, ID: 5970
-const u8 String_1753[] = _("Lv.<VAR=0>　威力:<VAR=1>　ロングソ―ド。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                 // 0x08D0C98B, ID: 5971
-const u8 String_1754[] = _("Lv.<VAR=0>　威力:<VAR=1>　斬れない剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                  // 0x08D0C9ED, ID: 5972
-const u8 String_1755[] = _("Lv.<VAR=0>　威力:<VAR=1>　両手剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0CA4D, ID: 5973
-const u8 String_1756[] = _("Lv.<VAR=0>　威力:<VAR=1>　炎形の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0CAA9, ID: 5974
-const u8 String_1757[] = _("Lv.<VAR=0>　威力:<VAR=1>　大剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                        // 0x08D0CB07, ID: 5975
-const u8 String_1758[] = _("Lv.<VAR=0>　威力:<VAR=1>　魔法の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0CB61, ID: 5976
-const u8 String_1759[] = _("Lv.<VAR=0>　威力:<VAR=1>　東方の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0CBBF, ID: 5977
-const u8 String_175A[] = _("Lv.<VAR=0>　威力:<VAR=1>　片手半剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0CC1D, ID: 5978
-const u8 String_175B[] = _("Lv.<VAR=0>　威力:<VAR=1>　巨大な剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0CC7B, ID: 5979
-const u8 String_175C[] = _("Lv.<VAR=0>　威力:<VAR=1>　武士の魂。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0CCD9, ID: 5980
-const u8 String_175D[] = _("Lv.<VAR=0>　威力:<VAR=1>　呪われた剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                  // 0x08D0CD37, ID: 5981
-const u8 String_175E[] = _("Lv.<VAR=0>　威力:<VAR=1>　妖刀。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                        // 0x08D0CD97, ID: 5982
-const u8 String_175F[] = _("Lv.<VAR=0>　威力:<VAR=1>　不屈の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0CDF1, ID: 5983
-const u8 String_1760[] = _("Lv.<VAR=0>　威力:<VAR=1>　光の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0CE4F, ID: 5984
-const u8 String_1761[] = _("Lv.<VAR=0>　威力:<VAR=1>　闇の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0CEAB, ID: 5985
-const u8 String_1762[] = _("Lv.<VAR=0>　威力:<VAR=1>　全き剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0CF07, ID: 5986
-const u8 String_1763[] = _("Lv.<VAR=0>　威力:<VAR=1>　手槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                        // 0x08D0CF63, ID: 5987
-const u8 String_1764[] = _("Lv.<VAR=0>　威力:<VAR=1>　片刃の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0CFBD, ID: 5988
-const u8 String_1765[] = _("Lv.<VAR=0>　威力:<VAR=1>　長槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                        // 0x08D0D01B, ID: 5989
-const u8 String_1766[] = _("Lv.<VAR=0>　威力:<VAR=1>　騎士の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0D075, ID: 5990
-const u8 String_1767[] = _("Lv.<VAR=0>　威力:<VAR=1>　180cmの棒。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                   // 0x08D0D0D3, ID: 5991
-const u8 String_1768[] = _("Lv.<VAR=0>　威力:<VAR=1>　翼形の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0D132, ID: 5992
-const u8 String_1769[] = _("Lv.<VAR=0>　威力:<VAR=1>　火の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0D190, ID: 5993
-const u8 String_176A[] = _("Lv.<VAR=0>　威力:<VAR=1>　長柄戦斧。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0D1EC, ID: 5994
-const u8 String_176B[] = _("Lv.<VAR=0>　威力:<VAR=1>　水の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0D24A, ID: 5995
-const u8 String_176C[] = _("Lv.<VAR=0>　威力:<VAR=1>　片刃の魔槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                  // 0x08D0D2A6, ID: 5996
-const u8 String_176D[] = _("Lv.<VAR=0>　威力:<VAR=1>　幅広の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0D306, ID: 5997
-const u8 String_176E[] = _("Lv.<VAR=0>　威力:<VAR=1>　風の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0D364, ID: 5998
-const u8 String_176F[] = _("Lv.<VAR=0>　威力:<VAR=1>　呪われた槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                  // 0x08D0D3C0, ID: 5999
-const u8 String_1770[] = _("Lv.<VAR=0>　威力:<VAR=1>　大地の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0D420, ID: 6000
-const u8 String_1771[] = _("Lv.<VAR=0>　威力:<VAR=1>　魔槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                        // 0x08D0D47E, ID: 6001
-const u8 String_1772[] = _("Lv.<VAR=0>　威力:<VAR=1>　斧槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                        // 0x08D0D4D8, ID: 6002
-const u8 String_1773[] = _("Lv.<VAR=0>　威力:<VAR=1>　光の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0D532, ID: 6003
-const u8 String_1774[] = _("Lv.<VAR=0>　威力:<VAR=1>　闇の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0D58E, ID: 6004
-const u8 String_1775[] = _("Lv.<VAR=0>　威力:<VAR=1>　全き槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0D5EA, ID: 6005
-const u8 String_1776[] = _("Lv.<VAR=0>　威力:<VAR=1>　こん棒。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0D646, ID: 6006
-const u8 String_1777[] = _("Lv.<VAR=0>　威力:<VAR=1>　金槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                        // 0x08D0D6A2, ID: 6007
-const u8 String_1778[] = _("Lv.<VAR=0>　威力:<VAR=1>　槌矛。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                        // 0x08D0D6FC, ID: 6008
-const u8 String_1779[] = _("Lv.<VAR=0>　威力:<VAR=1>　鎖付き鉄球。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                  // 0x08D0D756, ID: 6009
-const u8 String_177A[] = _("Lv.<VAR=0>　威力:<VAR=1>　小型の金槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                  // 0x08D0D7B6, ID: 6010
-const u8 String_177B[] = _("Lv.<VAR=0>　威力:<VAR=1>　斧。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                          // 0x08D0D816, ID: 6011
-const u8 String_177C[] = _("Lv.<VAR=0>　威力:<VAR=1>　巨大な木槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                  // 0x08D0D86E, ID: 6012
-const u8 String_177D[] = _("Lv.<VAR=0>　威力:<VAR=1>　銀製の槌矛。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                  // 0x08D0D8CE, ID: 6013
-const u8 String_177E[] = _("Lv.<VAR=0>　威力:<VAR=1>　鎖付き銀球。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                  // 0x08D0D92E, ID: 6014
-const u8 String_177F[] = _("Lv.<VAR=0>　威力:<VAR=1>　巨大な槌矛。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                  // 0x08D0D98E, ID: 6015
-const u8 String_1780[] = _("Lv.<VAR=0>　威力:<VAR=1>　戦斧。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                        // 0x08D0D9EE, ID: 6016
-const u8 String_1781[] = _("Lv.<VAR=0>　威力:<VAR=1>　戦槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                        // 0x08D0DA48, ID: 6017
-const u8 String_1782[] = _("Lv.<VAR=0>　威力:<VAR=1>　呪われた槌矛。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                // 0x08D0DAA2, ID: 6018
-const u8 String_1783[] = _("Lv.<VAR=0>　威力:<VAR=1>　鎖付き星球。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                  // 0x08D0DB04, ID: 6019
-const u8 String_1784[] = _("Lv.<VAR=0>　威力:<VAR=1>　巨大な戦斧。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                  // 0x08D0DB64, ID: 6020
-const u8 String_1785[] = _("Lv.<VAR=0>　威力:<VAR=1>　激震の槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                    // 0x08D0DBC4, ID: 6021
-const u8 String_1786[] = _("Lv.<VAR=0>　威力:<VAR=1>　光の槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0DC22, ID: 6022
-const u8 String_1787[] = _("Lv.<VAR=0>　威力:<VAR=1>　闇の槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0DC7E, ID: 6023
-const u8 String_1788[] = _("Lv.<VAR=0>　威力:<VAR=1>　全き槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                      // 0x08D0DCDA, ID: 6024
-const u8 String_1789[] = _("Lv.??　威力:<VAR=1>　父の形見。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                         // 0x08D0DD36, ID: 6025
-const u8 String_178A[] = _("Lv.??　威力:<VAR=1>　太陽銃。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                           // 0x08D0DD8F, ID: 6026
-const u8 String_178B[] = _("Lv.??　威力:<VAR=1>　暗黒銃。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                           // 0x08D0DDE6, ID: 6027
-const u8 String_178C[] = _("Lv.??　威力:<VAR=1>　友情の証。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                         // 0x08D0DE3D, ID: 6028
-const u8 String_178D[] = _("隕鉄のかたまり。");                                                                                                 // 0x08D0DE96, ID: 6029
-const u8 String_178E[] = _("Lv.??　威力:<VAR=1>　星の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                           // 0x08D0DEA7, ID: 6030
-const u8 String_178F[] = _("Lv.??　威力:<VAR=1>　星の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                           // 0x08D0DEFE, ID: 6031
-const u8 String_1790[] = _("Lv.??　威力:<VAR=1>　星の槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");                           // 0x08D0DF55, ID: 6032
-const u8 String_1791[] = _("");                                                                                                                 // 0x08D0DFAC, ID: 6033
-const u8 String_1792[] = _("太陽の光に応じて攻撃力アップ。");                                                                                   // 0x08D0DFAD, ID: 6034
-const u8 String_1793[] = _("夜間攻撃力が上がる。");                                                                                             // 0x08D0DFCC, ID: 6035
-const u8 String_1794[] = _("ライフが減るほど攻撃力アップ。");                                                                                   // 0x08D0DFE1, ID: 6036
-const u8 String_1795[] = _("ライフが減るほど攻撃力ダウン。");                                                                                   // 0x08D0E000, ID: 6037
-const u8 String_1796[] = _("エンチャント攻撃時、太陽スタンドのエネルギ―を直接使う。レベルに応じて威力アップ。");                                // 0x08D0E01F, ID: 6038
-const u8 String_1797[] = _("エンチャント攻撃時、太陽スタンドのエネルギ―を直接使う。レベルに応じて威力アップ。");                                // 0x08D0E072, ID: 6039
-const u8 String_1798[] = _("エンチャント攻撃時、太陽スタンドのエネルギ―を直接使う。レベルに応じて威力アップ。");                                // 0x08D0E0C5, ID: 6040
-const u8 String_1799[] = _("カラダに応じて攻撃力アップ。");                                                                                     // 0x08D0E118, ID: 6041
-const u8 String_179A[] = _("ココロに応じて攻撃力アップ。");                                                                                     // 0x08D0E135, ID: 6042
-const u8 String_179B[] = _("ハヤサに応じて攻撃力アップ。");                                                                                     // 0x08D0E152, ID: 6043
-const u8 String_179C[] = _("ライフに応じて攻撃力アップ。");                                                                                     // 0x08D0E16F, ID: 6044
-const u8 String_179D[] = _("エナジ―に応じて攻撃力アップ。");                                                                                    // 0x08D0E18C, ID: 6045
-const u8 String_179E[] = _("ステ―タス異常で攻撃力アップ。");                                                                                    // 0x08D0E1AB, ID: 6046
-const u8 String_179F[] = _("太陽の光に応じて攻撃力アップ。");                                                                                   // 0x08D0E1CA, ID: 6047
-const u8 String_17A0[] = _("夜間攻撃力が上がる。");                                                                                             // 0x08D0E1E9, ID: 6048
-const u8 String_17A1[] = _("時々ダメ―ジを追加する。");                                                                                          // 0x08D0E1FE, ID: 6049
-const u8 String_17A2[] = _("倒した数に応じて追加ダメ―ジ。");                                                                                    // 0x08D0E217, ID: 6050
-const u8 String_17A3[] = _("フレイム属性で追加ダメ―ジ。");                                                                                      // 0x08D0E236, ID: 6051
-const u8 String_17A4[] = _("フロスト属性で追加ダメ―ジ。");                                                                                      // 0x08D0E253, ID: 6052
-const u8 String_17A5[] = _("クラウド属性で追加ダメ―ジ。");                                                                                      // 0x08D0E270, ID: 6053
-const u8 String_17A6[] = _("ア―ス属性で追加ダメ―ジ。");                                                                                         // 0x08D0E28D, ID: 6054
-const u8 String_17A7[] = _("ビ―ストに追加ダメ―ジ。");                                                                                           // 0x08D0E2A8, ID: 6055
-const u8 String_17A8[] = _("シングに追加ダメ―ジ。");                                                                                            // 0x08D0E2C1, ID: 6056
-const u8 String_17A9[] = _("ファントムに追加ダメ―ジ。");                                                                                        // 0x08D0E2D8, ID: 6057
-const u8 String_17AA[] = _("アンデッドに追加ダメ―ジ。");                                                                                        // 0x08D0E2F3, ID: 6058
-const u8 String_17AB[] = _("イモ―タルに追加ダメ―ジ。");                                                                                         // 0x08D0E30E, ID: 6059
-const u8 String_17AC[] = _("時々防御力を無効にする。");                                                                                         // 0x08D0E329, ID: 6060
-const u8 String_17AD[] = _("時々敵をマヒさせる。");                                                                                             // 0x08D0E342, ID: 6061
-const u8 String_17AE[] = _("敵を倒すと・・・。");                                                                                               // 0x08D0E357, ID: 6062
-const u8 String_17AF[] = _("エンチャント攻撃時の魔法コストが下がる。");                                                                         // 0x08D0E36A, ID: 6063
-const u8 String_17B0[] = _("武器へのダメ―ジを減らす。");                                                                                        // 0x08D0E393, ID: 6064
-const u8 String_17B1[] = _("???");                                                                                                              // 0x08D0E3AE, ID: 6065
-const u8 String_17B2[] = _("???");                                                                                                              // 0x08D0E3B2, ID: 6066
-const u8 String_17B3[] = _("???");                                                                                                              // 0x08D0E3B6, ID: 6067
-const u8 String_17B4[] = _("???");                                                                                                              // 0x08D0E3BA, ID: 6068
-const u8 String_17B5[] = _("???");                                                                                                              // 0x08D0E3BE, ID: 6069
-const u8 String_17B6[] = _("これを捨てますか?");                                                                                                // 0x08D0E3C2, ID: 6070
-const u8 String_17B7[] = _("クロスア―マ―");                                                                                                     // 0x08D0E3D4, ID: 6071
-const u8 String_17B8[] = _("レザ―ア―マ―");                                                                                                      // 0x08D0E3E3, ID: 6072
-const u8 String_17B9[] = _("チェインメイル");                                                                                                   // 0x08D0E3F2, ID: 6073
-const u8 String_17BA[] = _("シルバ―チェイン");                                                                                                  // 0x08D0E401, ID: 6074
-const u8 String_17BB[] = _("スケイルメイル");                                                                                                   // 0x08D0E412, ID: 6075
-const u8 String_17BC[] = _("武者鎧");                                                                                                           // 0x08D0E421, ID: 6076
-const u8 String_17BD[] = _("プレ―トメイル");                                                                                                    // 0x08D0E428, ID: 6077
-const u8 String_17BE[] = _("ブリガンダイン");                                                                                                   // 0x08D0E437, ID: 6078
-const u8 String_17BF[] = _("メイルオブソル");                                                                                                   // 0x08D0E446, ID: 6079
-const u8 String_17C0[] = _("メイルオブダ―ク");                                                                                                  // 0x08D0E455, ID: 6080
-const u8 String_17C1[] = _("メイルオブルナ");                                                                                                   // 0x08D0E466, ID: 6081
-const u8 String_17C2[] = _("火竜の牙");                                                                                                         // 0x08D0E475, ID: 6082
-const u8 String_17C3[] = _("水竜の尾");                                                                                                         // 0x08D0E47E, ID: 6083
-const u8 String_17C4[] = _("風竜の翼");                                                                                                         // 0x08D0E487, ID: 6084
-const u8 String_17C5[] = _("地竜の爪");                                                                                                         // 0x08D0E490, ID: 6085
-const u8 String_17C6[] = _("ドラゴンスケイル");                                                                                                 // 0x08D0E499, ID: 6086
-const u8 String_17C7[] = _("妖精の衣");                                                                                                         // 0x08D0E4AA, ID: 6087
-const u8 String_17C8[] = _("大地の衣");                                                                                                         // 0x08D0E4B3, ID: 6088
-const u8 String_17C9[] = _("レインコ―ト");                                                                                                      // 0x08D0E4BC, ID: 6089
-const u8 String_17CA[] = _("光のガ―ブ");                                                                                                        // 0x08D0E4C9, ID: 6090
-const u8 String_17CB[] = _("闇のガ―ブ");                                                                                                        // 0x08D0E4D4, ID: 6091
-const u8 String_17CC[] = _("マジックロ―ブ");                                                                                                    // 0x08D0E4DF, ID: 6092
-const u8 String_17CD[] = _("血塗れのマント");                                                                                                   // 0x08D0E4EE, ID: 6093
-const u8 String_17CE[] = _("スカルス―ツ");                                                                                                      // 0x08D0E4FD, ID: 6094
-const u8 String_17CF[] = _("トラックス―ツ");                                                                                                    // 0x08D0E50A, ID: 6095
-const u8 String_17D0[] = _("盗人の服");                                                                                                         // 0x08D0E519, ID: 6096
-const u8 String_17D1[] = _("狩人の服");                                                                                                         // 0x08D0E522, ID: 6097
-const u8 String_17D2[] = _("ポイズンガ―ド");                                                                                                    // 0x08D0E52B, ID: 6098
-const u8 String_17D3[] = _("ウエポンガ―ド");                                                                                                    // 0x08D0E53A, ID: 6099
-const u8 String_17D4[] = _("パレ―ドア―マ―");                                                                                                    // 0x08D0E549, ID: 6100
-const u8 String_17D5[] = _("忍装束");                                                                                                           // 0x08D0E55A, ID: 6101
-const u8 String_17D6[] = _("スパイクメイル");                                                                                                   // 0x08D0E561, ID: 6102
-const u8 String_17D7[] = _("黒の鎧");                                                                                                           // 0x08D0E570, ID: 6103
-const u8 String_17D8[] = _("ロックパワ―");                                                                                                      // 0x08D0E577, ID: 6104
-const u8 String_17D9[] = _("ガッツパワ―");                                                                                                      // 0x08D0E584, ID: 6105
-const u8 String_17DA[] = _("ブル―スパワ―");                                                                                                     // 0x08D0E591, ID: 6106
-const u8 String_17DB[] = _("ト―ドパワ―");                                                                                                       // 0x08D0E5A0, ID: 6107
-const u8 String_17DC[] = _("耐久力:<VAR=0>　重量:<VAR=1>　布の鎧。");                                                                           // 0x08D0E5AD, ID: 6108
-const u8 String_17DD[] = _("耐久力:<VAR=0>　重量:<VAR=1>　革の鎧。");                                                                           // 0x08D0E5D4, ID: 6109
-const u8 String_17DE[] = _("耐久力:<VAR=0>　重量:<VAR=1>　金属の輪をつなぎ合わせた鎧。");                                                       // 0x08D0E5FB, ID: 6110
-const u8 String_17DF[] = _("耐久力:<VAR=0>　重量:<VAR=1>　銀製のチェインメイル。ステ―タスが変化する。");                                        // 0x08D0E636, ID: 6111
-const u8 String_17E0[] = _("耐久力:<VAR=0>　重量:<VAR=1>　金属板をぬいつけた革の鎧。");                                                         // 0x08D0E681, ID: 6112
-const u8 String_17E1[] = _("耐久力:<VAR=0>　重量:<VAR=1>　東方の鎧。チカラが上がる。");                                                         // 0x08D0E6BA, ID: 6113
-const u8 String_17E2[] = _("耐久力:<VAR=0>　重量:<VAR=1>　板金鎧。");                                                                           // 0x08D0E6F3, ID: 6114
-const u8 String_17E3[] = _("耐久力:<VAR=0>　重量:<VAR=1>　金属板をぬい込んだ革の鎧。太陽風から身を守る。");                                     // 0x08D0E71A, ID: 6115
-const u8 String_17E4[] = _("耐久力:<VAR=0>　重量:<VAR=1>　太陽の鎧。ソル属性から身を守る。スタンドへのチャ―ジが2倍速になる。");                 // 0x08D0E767, ID: 6116
-const u8 String_17E5[] = _("耐久力:<VAR=0>　重量:<VAR=1>　暗黒の鎧。ダ―ク属性から身を守る。");                                                  // 0x08D0E7C9, ID: 6117
-const u8 String_17E6[] = _("耐久力:<VAR=0>　重量:<VAR=1>　月光の鎧。全属性から身を守る。");                                                     // 0x08D0E80A, ID: 6118
-const u8 String_17E7[] = _("耐久力:<VAR=0>　重量:<VAR=1>　火のお守り。フレイム属性から身を守る。");                                             // 0x08D0E847, ID: 6119
-const u8 String_17E8[] = _("耐久力:<VAR=0>　重量:<VAR=1>　水のお守り。フロスト属性から身を守る。");                                             // 0x08D0E88C, ID: 6120
-const u8 String_17E9[] = _("耐久力:<VAR=0>　重量:<VAR=1>　風のお守り。クラウド属性から身を守る。");                                             // 0x08D0E8D1, ID: 6121
-const u8 String_17EA[] = _("耐久力:<VAR=0>　重量:<VAR=1>　大地のお守り。ア―ス属性から身を守る。");                                              // 0x08D0E916, ID: 6122
-const u8 String_17EB[] = _("耐久力:<VAR=0>　重量:<VAR=1>　竜のウロコで作られた鎧。4大属性から身を守る。");                                      // 0x08D0E95B, ID: 6123
-const u8 String_17EC[] = _("耐久力:<VAR=0>　重量:<VAR=1>　妖精の忘れ物。精霊虫の効果が2倍になる。");                                            // 0x08D0E9A7, ID: 6124
-const u8 String_17ED[] = _("耐久力:<VAR=0>　重量:<VAR=1>　巫女の装束。太陽の果実の効果時間が2倍になる。");                                      // 0x08D0E9ED, ID: 6125
-const u8 String_17EE[] = _("耐久力:<VAR=0>　重量:<VAR=1>　雨がっぱ。雨から身を守る。");                                                         // 0x08D0EA39, ID: 6126
-const u8 String_17EF[] = _("耐久力:<VAR=0>　重量:<VAR=1>　太陽の光で織られた服。太陽ゲ―ジの値が2倍になる。");                                   // 0x08D0EA72, ID: 6127
-const u8 String_17F0[] = _("耐久力:<VAR=0>　重量:<VAR=1>　暗黒物質で織られた服。夜の力を引き出す。");                                           // 0x08D0EAC2, ID: 6128
-const u8 String_17F1[] = _("耐久力:<VAR=0>　重量:<VAR=1>　呪文が織り込まれた服。魔法コストが下がる。");                                         // 0x08D0EB09, ID: 6129
-const u8 String_17F2[] = _("耐久力:<VAR=0>　重量:<VAR=1>　呪われた外とう。ステ―タスが変化する。");                                              // 0x08D0EB52, ID: 6130
-const u8 String_17F3[] = _("耐久力:<VAR=0>　重量:<VAR=1>　スニ―キングス―ツ。敵に見つかりにくくなる。");                                         // 0x08D0EB97, ID: 6131
-const u8 String_17F4[] = _("耐久力:<VAR=0>　重量:<VAR=1>　心で感じるための服。得られる経験値が増える。");                                       // 0x08D0EBE2, ID: 6132
-const u8 String_17F5[] = _("耐久力:<VAR=0>　重量:<VAR=1>　シ―フに盗まれた服。敵が通常アイテムを落しやすくなる。");                              // 0x08D0EC2D, ID: 6133
-const u8 String_17F6[] = _("耐久力:<VAR=0>　重量:<VAR=1>　ハンタ―が好んだ服。敵がレアアイテムを落しやすくなる。");                              // 0x08D0EC82, ID: 6134
-const u8 String_17F7[] = _("耐久力:<VAR=0>　重量:<VAR=1>　防御魔法がかけられた鎧。毒化から身を守る。");                                         // 0x08D0ECD7, ID: 6135
-const u8 String_17F8[] = _("耐久力:<VAR=0>　重量:<VAR=1>　防御魔法がかけられた鎧。武器へのダメ―ジを防ぐ。");                                    // 0x08D0ED20, ID: 6136
-const u8 String_17F9[] = _("耐久力:<VAR=0>　重量:<VAR=1>　儀礼用の鎧。クリムゾン・モンスタ―を呼び寄せる。");                                    // 0x08D0ED6F, ID: 6137
-const u8 String_17FA[] = _("耐久力:<VAR=0>　重量:<VAR=1>　忍者の装束。ハヤサが上がる。");                                                       // 0x08D0EDBE, ID: 6138
-const u8 String_17FB[] = _("耐久力:<VAR=0>　重量:<VAR=1>　装備した者を守る鎧。攻撃を受けると自動的に反撃する。");                               // 0x08D0EDF9, ID: 6139
-const u8 String_17FC[] = _("耐久力:<VAR=0>　重量:<VAR=1>　狂戦士の鎧。ライフを吸い取って攻撃力アップ。");                                       // 0x08D0EE4C, ID: 6140
-const u8 String_17FD[] = _("耐久力:<VAR=0>　重量:<VAR=1>　ロックマンの力。ロックバスタ―がチャ―ジ可能になる。");                                 // 0x08D0EE97, ID: 6141
-const u8 String_17FE[] = _("耐久力:<VAR=0>　重量:<VAR=1>　ガッツマンの力。受けるダメ―ジが半分になる。");                                        // 0x08D0EEEA, ID: 6142
-const u8 String_17FF[] = _("耐久力:<VAR=0>　重量:<VAR=1>　ブル―スの力。攻撃が速くなる。");                                                      // 0x08D0EF35, ID: 6143
-const u8 String_1800[] = _("耐久力:<VAR=0>　重量:<VAR=1>　ト―ドマンの力。雨でエナジ―が回復する。");                                             // 0x08D0EF72, ID: 6144
-const u8 String_1801[] = _("これを捨てますか?");                                                                                                // 0x08D0EFB9, ID: 6145
-const u8 String_1802[] = _("エンチャント・ソル");                                                                                               // 0x08D0EFCB, ID: 6146
-const u8 String_1803[] = _("エンチャント・ダ―ク");                                                                                              // 0x08D0EFDE, ID: 6147
-const u8 String_1804[] = _("エンチャント・フレイム");                                                                                           // 0x08D0EFF3, ID: 6148
-const u8 String_1805[] = _("エンチャント・フロスト");                                                                                           // 0x08D0F00A, ID: 6149
-const u8 String_1806[] = _("エンチャント・クラウド");                                                                                           // 0x08D0F021, ID: 6150
-const u8 String_1807[] = _("エンチャント・ア―ス");                                                                                              // 0x08D0F038, ID: 6151
-const u8 String_1808[] = _("トランス");                                                                                                         // 0x08D0F04D, ID: 6152
-const u8 String_1809[] = _("ライジングサン");                                                                                                   // 0x08D0F056, ID: 6153
-const u8 String_180A[] = _("ゼロシフト");                                                                                                       // 0x08D0F065, ID: 6154
-const u8 String_180B[] = _("ブラックサン");                                                                                                     // 0x08D0F070, ID: 6155
-const u8 String_180C[] = _("フリ―ズ");                                                                                                          // 0x08D0F07D, ID: 6156
-const u8 String_180D[] = _("ダッシュ");                                                                                                         // 0x08D0F086, ID: 6157
-const u8 String_180E[] = _("ヒ―リング");                                                                                                        // 0x08D0F08F, ID: 6158
-const u8 String_180F[] = _("ダイナマイト");                                                                                                     // 0x08D0F09A, ID: 6159
-const u8 String_1810[] = _("スリ―ピング");                                                                                                      // 0x08D0F0A7, ID: 6160
-const u8 String_1811[] = _("チェンジ・バット");                                                                                                 // 0x08D0F0B4, ID: 6161
-const u8 String_1812[] = _("チェンジ・マウス");                                                                                                 // 0x08D0F0C5, ID: 6162
-const u8 String_1813[] = _("チェンジ・ウルフ");                                                                                                 // 0x08D0F0D6, ID: 6163
-const u8 String_1814[] = _("コスト:05　武器に太陽の力、ソル属性を付加する。");                                                                  // 0x08D0F0E7, ID: 6164
-const u8 String_1815[] = _("コスト:05　武器に暗黒の力、ダ―ク属性を付加する。");                                                                 // 0x08D0F117, ID: 6165
-const u8 String_1816[] = _("コスト:10　武器に炎の力、フレイム属性を付加する。");                                                                // 0x08D0F149, ID: 6166
-const u8 String_1817[] = _("コスト:10　武器に氷の力、フロスト属性を付加する。");                                                                // 0x08D0F17B, ID: 6167
-const u8 String_1818[] = _("コスト:10　武器に風の力、クラウド属性を付加する。");                                                                // 0x08D0F1AD, ID: 6168
-const u8 String_1819[] = _("コスト:10　武器に大地の力、ア―ス属性を付加する。");                                                                 // 0x08D0F1DF, ID: 6169
-const u8 String_181A[] = _("コスト:0　赤と黒を切り換える。");                                                                                   // 0x08D0F211, ID: 6170
-const u8 String_181B[] = _("コスト:100以上すべて　太陽の欠片を召喚する。");                                                                     // 0x08D0F230, ID: 6171
-const u8 String_181C[] = _("コスト:10　瞬間移動をする。");                                                                                      // 0x08D0F25D, ID: 6172
-const u8 String_181D[] = _("コスト:100以上すべて　暗黒の欠片を召喚する。");                                                                     // 0x08D0F279, ID: 6173
-const u8 String_181E[] = _("Lv.0　敵を脅す。");                                                                                                 // 0x08D0F2A6, ID: 6174
-const u8 String_181F[] = _("Lv.1　ダッシュをする。");                                                                                           // 0x08D0F2B7, ID: 6175
-const u8 String_1820[] = _("Lv.2　植物を元気にする。");                                                                                         // 0x08D0F2CE, ID: 6176
-const u8 String_1821[] = _("Lv.3　爆弾を仕掛ける。");                                                                                           // 0x08D0F2E7, ID: 6177
-const u8 String_1822[] = _("コスト:0　棺桶で眠る。");                                                                                           // 0x08D0F2FE, ID: 6178
-const u8 String_1823[] = _("コスト:10　バットに変身する。");                                                                                    // 0x08D0F315, ID: 6179
-const u8 String_1824[] = _("コスト:10　マウスに変身する。");                                                                                    // 0x08D0F333, ID: 6180
-const u8 String_1825[] = _("コスト:10　噛みつきをする。");                                                                                      // 0x08D0F351, ID: 6181
-const u8 String_1826[] = _("渓谷");                                                                                                             // 0x08D0F36D, ID: 6182
-const u8 String_1827[] = _("街門");                                                                                                             // 0x08D0F372, ID: 6183
-const u8 String_1828[] = _("大聖堂A [1F]");                                                                                                     // 0x08D0F377, ID: 6184
-const u8 String_1829[] = _("大聖堂A [B1]");                                                                                                     // 0x08D0F384, ID: 6185
-const u8 String_182A[] = _("大聖堂B [3F]");                                                                                                     // 0x08D0F391, ID: 6186
-const u8 String_182B[] = _("大聖堂B [2F]");                                                                                                     // 0x08D0F39E, ID: 6187
-const u8 String_182C[] = _("大聖堂B [1F]");                                                                                                     // 0x08D0F3AB, ID: 6188
-const u8 String_182D[] = _("大聖堂B [B1]");                                                                                                     // 0x08D0F3B8, ID: 6189
-const u8 String_182E[] = _("遺跡A [2F]");                                                                                                       // 0x08D0F3C5, ID: 6190
-const u8 String_182F[] = _("遺跡A [1F]");                                                                                                       // 0x08D0F3D0, ID: 6191
-const u8 String_1830[] = _("遺跡B [1F]");                                                                                                       // 0x08D0F3DB, ID: 6192
-const u8 String_1831[] = _("遺跡B [B1]");                                                                                                       // 0x08D0F3E6, ID: 6193
-const u8 String_1832[] = _("遺跡B [B2]");                                                                                                       // 0x08D0F3F1, ID: 6194
-const u8 String_1833[] = _("遺跡B [B3]");                                                                                                       // 0x08D0F3FC, ID: 6195
-const u8 String_1834[] = _("砂漠");                                                                                                             // 0x08D0F407, ID: 6196
-const u8 String_1835[] = _("暗黒街A [3F]");                                                                                                     // 0x08D0F40C, ID: 6197
-const u8 String_1836[] = _("暗黒街A [2F]");                                                                                                     // 0x08D0F419, ID: 6198
-const u8 String_1837[] = _("暗黒街A [1F]");                                                                                                     // 0x08D0F426, ID: 6199
-const u8 String_1838[] = _("暗黒街B [4F]");                                                                                                     // 0x08D0F433, ID: 6200
-const u8 String_1839[] = _("暗黒街B [3F]");                                                                                                     // 0x08D0F440, ID: 6201
-const u8 String_183A[] = _("暗黒街B [2F]");                                                                                                     // 0x08D0F44D, ID: 6202
-const u8 String_183B[] = _("暗黒街B [B1]");                                                                                                     // 0x08D0F45A, ID: 6203
-const u8 String_183C[] = _("地下水路A [3F]");                                                                                                   // 0x08D0F467, ID: 6204
-const u8 String_183D[] = _("地下水路A [2F]");                                                                                                   // 0x08D0F476, ID: 6205
-const u8 String_183E[] = _("地下水路A [1F]");                                                                                                   // 0x08D0F485, ID: 6206
-const u8 String_183F[] = _("地下水路B [2F]");                                                                                                   // 0x08D0F494, ID: 6207
-const u8 String_1840[] = _("地下水路B [1F]");                                                                                                   // 0x08D0F4A3, ID: 6208
-const u8 String_1841[] = _("地下水路B [B1]");                                                                                                   // 0x08D0F4B2, ID: 6209
-const u8 String_1842[] = _("螺旋の塔B [13F]");                                                                                                  // 0x08D0F4C1, ID: 6210
-const u8 String_1843[] = _("螺旋の塔B [12F]");                                                                                                  // 0x08D0F4D1, ID: 6211
-const u8 String_1844[] = _("螺旋の塔B [11F]");                                                                                                  // 0x08D0F4E1, ID: 6212
-const u8 String_1845[] = _("螺旋の塔B [10F]");                                                                                                  // 0x08D0F4F1, ID: 6213
-const u8 String_1846[] = _("螺旋の塔B [9F]");                                                                                                   // 0x08D0F501, ID: 6214
-const u8 String_1847[] = _("螺旋の塔B [8F]");                                                                                                   // 0x08D0F510, ID: 6215
-const u8 String_1848[] = _("螺旋の塔B [7F]");                                                                                                   // 0x08D0F51F, ID: 6216
-const u8 String_1849[] = _("螺旋の塔A [6F]");                                                                                                   // 0x08D0F52E, ID: 6217
-const u8 String_184A[] = _("螺旋の塔A [5F]");                                                                                                   // 0x08D0F53D, ID: 6218
-const u8 String_184B[] = _("螺旋の塔A [4F]");                                                                                                   // 0x08D0F54C, ID: 6219
-const u8 String_184C[] = _("螺旋の塔A [3F]");                                                                                                   // 0x08D0F55B, ID: 6220
-const u8 String_184D[] = _("螺旋の塔A [2F]");                                                                                                   // 0x08D0F56A, ID: 6221
-const u8 String_184E[] = _("螺旋の塔A [1F]");                                                                                                   // 0x08D0F579, ID: 6222
-const u8 String_184F[] = _("変異域 [1F]");                                                                                                      // 0x08D0F588, ID: 6223
-const u8 String_1850[] = _("変異域 [B1]");                                                                                                      // 0x08D0F594, ID: 6224
-const u8 String_1851[] = _("変異域 [B2]");                                                                                                      // 0x08D0F5A0, ID: 6225
-const u8 String_1852[] = _("変異域 [B3]");                                                                                                      // 0x08D0F5AC, ID: 6226
-const u8 String_1853[] = _("変異域 [B4]");                                                                                                      // 0x08D0F5B8, ID: 6227
-const u8 String_1854[] = _("変異域 [?]");                                                                                                       // 0x08D0F5C4, ID: 6228
-const u8 String_1855[] = _("廃墟 [3F]");                                                                                                        // 0x08D0F5CF, ID: 6229
-const u8 String_1856[] = _("廃墟 [2F]");                                                                                                        // 0x08D0F5D9, ID: 6230
-const u8 String_1857[] = _("廃墟 [1F]");                                                                                                        // 0x08D0F5E3, ID: 6231
-const u8 String_1858[] = _("廃墟 [B1]");                                                                                                        // 0x08D0F5ED, ID: 6232
-const u8 String_1859[] = _("廃墟 [B2]");                                                                                                        // 0x08D0F5F7, ID: 6233
-const u8 String_185A[] = _("森 [2F]");                                                                                                          // 0x08D0F601, ID: 6234
-const u8 String_185B[] = _("森 [1F]");                                                                                                          // 0x08D0F609, ID: 6235
-const u8 String_185C[] = _("森 [B1]");                                                                                                          // 0x08D0F611, ID: 6236
-const u8 String_185D[] = _("地下墓地 [2F]");                                                                                                    // 0x08D0F619, ID: 6237
-const u8 String_185E[] = _("地下墓地 [1F]");                                                                                                    // 0x08D0F627, ID: 6238
-const u8 String_185F[] = _("時の家 [3F]");                                                                                                      // 0x08D0F635, ID: 6239
-const u8 String_1860[] = _("時の家 [2F]");                                                                                                      // 0x08D0F641, ID: 6240
-const u8 String_1861[] = _("時の家 [1F]");                                                                                                      // 0x08D0F64D, ID: 6241
-const u8 String_1862[] = _("時の家 [B1]");                                                                                                      // 0x08D0F659, ID: 6242
-const u8 String_1863[] = _("宝物庫 [1F]");                                                                                                      // 0x08D0F665, ID: 6243
-const u8 String_1864[] = _("夢幻街");                                                                                                           // 0x08D0F671, ID: 6244
-const u8 String_1865[] = _("闘技場");                                                                                                           // 0x08D0F678, ID: 6245
-const u8 String_1866[] = _("渓谷・街門");                                                                                                       // 0x08D0F67F, ID: 6246
-const u8 String_1867[] = _("大聖堂");                                                                                                           // 0x08D0F68A, ID: 6247
-const u8 String_1868[] = _("遺跡");                                                                                                             // 0x08D0F691, ID: 6248
-const u8 String_1869[] = _("暗黒街");                                                                                                           // 0x08D0F696, ID: 6249
-const u8 String_186A[] = _("地下水路");                                                                                                         // 0x08D0F69D, ID: 6250
-const u8 String_186B[] = _("螺旋の塔");                                                                                                         // 0x08D0F6A6, ID: 6251
-const u8 String_186C[] = _("変異域");                                                                                                           // 0x08D0F6AF, ID: 6252
-const u8 String_186D[] = _("廃墟");                                                                                                             // 0x08D0F6B6, ID: 6253
-const u8 String_186E[] = _("闘技場");                                                                                                           // 0x08D0F6BB, ID: 6254
-const u8 String_186F[] = _("森");                                                                                                               // 0x08D0F6C2, ID: 6255
-const u8 String_1870[] = _("地下墓地");                                                                                                         // 0x08D0F6C5, ID: 6256
-const u8 String_1871[] = _("時の家");                                                                                                           // 0x08D0F6CE, ID: 6257
-const u8 String_1872[] = _("宝物庫");                                                                                                           // 0x08D0F6D5, ID: 6258
-const u8 String_1873[] = _("夢幻街");                                                                                                           // 0x08D0F6DC, ID: 6259
-const u8 String_1874[] = _("???");                                                                                                              // 0x08D0F6E3, ID: 6260
-const u8 String_1875[] = _("陸番街");                                                                                                           // 0x08D0F6E7, ID: 6261
-const u8 String_1876[] = _("拾番街");                                                                                                           // 0x08D0F6EE, ID: 6262
-const u8 String_1877[] = _("肆番街");                                                                                                           // 0x08D0F6F5, ID: 6263
-const u8 String_1878[] = _("弍番街");                                                                                                           // 0x08D0F6FC, ID: 6264
-const u8 String_1879[] = _("捌番街");                                                                                                           // 0x08D0F703, ID: 6265
-const u8 String_187A[] = _("拾弍番街");                                                                                                         // 0x08D0F70A, ID: 6266
-const u8 String_187B[] = _("約束の丘");                                                                                                         // 0x08D0F713, ID: 6267
-const u8 String_187C[] = _("太陽街・商店街");                                                                                                   // 0x08D0F71C, ID: 6268
-const u8 String_187D[] = _("太陽街・太陽樹");                                                                                                   // 0x08D0F72B, ID: 6269
-const u8 String_187E[] = _("太陽街・広場");                                                                                                     // 0x08D0F73A, ID: 6270
-const u8 String_187F[] = _("パイルドライバ―");                                                                                                  // 0x08D0F747, ID: 6271
-const u8 String_1880[] = _("<NAME>");                                                                                                           // 0x08D0F758, ID: 6272
-const u8 String_1881[] = _("サバタ");                                                                                                           // 0x08D0F75F, ID: 6273
-const u8 String_1882[] = _("これを捨てますか?");                                                                                                // 0x08D0F766, ID: 6274
-const u8 String_1883[] = _("これを使いますか?");                                                                                                // 0x08D0F778, ID: 6275
-const u8 String_1884[] = _("バッグを整とんしますか?");                                                                                          // 0x08D0F78A, ID: 6276
-const u8 String_1885[] = _("<WEIGHT>Ａボタン</WEIGHT>で設定を変更します。");                                                                    // 0x08D0F7A2, ID: 6277
-const u8 String_1886[] = _("<WEIGHT>Ａボタン</WEIGHT>で決定します。");                                                                          // 0x08D0F7D0, ID: 6278
-const u8 String_1887[] = _("設定を変更しました。");                                                                                             // 0x08D0F7F8, ID: 6279
-const u8 String_1888[] = _("<WEIGHT>Ａボタン</WEIGHT>でセ―ブします。");                                                                         // 0x08D0F80D, ID: 6280
-const u8 String_1889[] = _("セ―ブしますか?");                                                                                                   // 0x08D0F837, ID: 6281
-const u8 String_188A[] = _("以前のデ―タに上書きしますか?");                                                                                     // 0x08D0F847, ID: 6282
-const u8 String_188B[] = _("セ―ブしています。\nカ―トリッジを抜いたり\n電源を切らないでください。");                                             // 0x08D0F865, ID: 6283
-const u8 String_188C[] = _("セ―ブしています。");                                                                                                // 0x08D0F8AA, ID: 6284
-const u8 String_188D[] = _("カ―トリッジを抜いたり\n電源を切らないでください。");                                                                // 0x08D0F8BD, ID: 6285
-const u8 String_188E[] = _("セ―ブしました。");                                                                                                  // 0x08D0F8EF, ID: 6286
-const u8 String_188F[] = _("セ―ブに失敗しました。");                                                                                            // 0x08D0F900, ID: 6287
-const u8 String_1890[] = _("<WEIGHT>SELECTボタン</WEIGHT>+<WEIGHT>Ｌボタン</WEIGHT>+\n<WEIGHT>Ｒボタン</WEIGHT>で復帰します。");                // 0x08D0F917, ID: 6288
-const u8 String_1891[] = _("<WEIGHT>Ａボタン</WEIGHT>でスリ―プします。");                                                                       // 0x08D0F978, ID: 6289
-const u8 String_1892[] = _("スリ―プしますか?");                                                                                                 // 0x08D0F9A4, ID: 6290
-const u8 String_1893[] = _("スリ―プします。");                                                                                                  // 0x08D0F9B6, ID: 6291
-const u8 String_1894[] = _("ライフ最大値に影響する。");                                                                                         // 0x08D0F9C7, ID: 6292
-const u8 String_1895[] = _("エナジ―最大値に影響する。");                                                                                        // 0x08D0F9E0, ID: 6293
-const u8 String_1896[] = _("攻撃力に影響する。");                                                                                               // 0x08D0F9FB, ID: 6294
-const u8 String_1897[] = _("移動速度・防御力に影響する。");                                                                                     // 0x08D0FA0E, ID: 6295
-const u8 String_1898[] = _("よろしいですか?");                                                                                                  // 0x08D0FA2B, ID: 6296
+
+const u8 String_170D[] = _("");                                                                                                   // 0x08D0C2FA, ID: 5901
+const u8 String_170E[] = _("グラディウス<EXTEND=0>");                                                                             // 0x08D0C2FB, ID: 5902
+const u8 String_170F[] = _("ショ―トソ―ド<EXTEND=0>");                                                                             // 0x08D0C312, ID: 5903
+const u8 String_1710[] = _("ブロ―ドソ―ド<EXTEND=0>");                                                                             // 0x08D0C32B, ID: 5904
+const u8 String_1711[] = _("ロングソ―ド<EXTEND=0>");                                                                              // 0x08D0C344, ID: 5905
+const u8 String_1712[] = _("なまくら<EXTEND=0>");                                                                                 // 0x08D0C35B, ID: 5906
+const u8 String_1713[] = _("ツヴァイハンダ―<EXTEND=0>");                                                                          // 0x08D0C36E, ID: 5907
+const u8 String_1714[] = _("フランベルジェ<EXTEND=0>");                                                                           // 0x08D0C389, ID: 5908
+const u8 String_1715[] = _("クレイモア<EXTEND=0>");                                                                               // 0x08D0C3A2, ID: 5909
+const u8 String_1716[] = _("マジックソ―ド<EXTEND=0>");                                                                            // 0x08D0C3B7, ID: 5910
+const u8 String_1717[] = _("刀<EXTEND=0>");                                                                                       // 0x08D0C3D0, ID: 5911
+const u8 String_1718[] = _("バスタ―ドソ―ド<EXTEND=0>");                                                                           // 0x08D0C3DD, ID: 5912
+const u8 String_1719[] = _("グレ―トソ―ド<EXTEND=0>");                                                                             // 0x08D0C3F8, ID: 5913
+const u8 String_171A[] = _("武士道ブレ―ド<EXTEND=0>");                                                                            // 0x08D0C411, ID: 5914
+const u8 String_171B[] = _("ブラッドソ―ド<EXTEND=0>");                                                                            // 0x08D0C42A, ID: 5915
+const u8 String_171C[] = _("村正<EXTEND=0>");                                                                                     // 0x08D0C443, ID: 5916
+const u8 String_171D[] = _("ヴォ―パルソ―ド<EXTEND=0>");                                                                           // 0x08D0C452, ID: 5917
+const u8 String_171E[] = _("太陽の剣<EXTEND=0>");                                                                                 // 0x08D0C46D, ID: 5918
+const u8 String_171F[] = _("暗黒の剣<EXTEND=0>");                                                                                 // 0x08D0C480, ID: 5919
+const u8 String_1720[] = _("グラム<EXTEND=0>");                                                                                   // 0x08D0C493, ID: 5920
+const u8 String_1721[] = _("ショ―トスピア<EXTEND=0>");                                                                            // 0x08D0C4A4, ID: 5921
+const u8 String_1722[] = _("グレイブ<EXTEND=0>");                                                                                 // 0x08D0C4BD, ID: 5922
+const u8 String_1723[] = _("ロングスピア<EXTEND=0>");                                                                             // 0x08D0C4D0, ID: 5923
+const u8 String_1724[] = _("ランス<EXTEND=0>");                                                                                   // 0x08D0C4E7, ID: 5924
+const u8 String_1725[] = _("六尺棒<EXTEND=0>");                                                                                   // 0x08D0C4F8, ID: 5925
+const u8 String_1726[] = _("コルセスカ<EXTEND=0>");                                                                               // 0x08D0C509, ID: 5926
+const u8 String_1727[] = _("ファイヤ―ポ―<EXTEND=0>");                                                                             // 0x08D0C51E, ID: 5927
+const u8 String_1728[] = _("バルディッシュ<EXTEND=0>");                                                                           // 0x08D0C537, ID: 5928
+const u8 String_1729[] = _("アイスグレイブ<EXTEND=0>");                                                                           // 0x08D0C550, ID: 5929
+const u8 String_172A[] = _("ル―ングレイブ<EXTEND=0>");                                                                            // 0x08D0C569, ID: 5930
+const u8 String_172B[] = _("パルチザン<EXTEND=0>");                                                                               // 0x08D0C582, ID: 5931
+const u8 String_172C[] = _("サンダ―スピア<EXTEND=0>");                                                                            // 0x08D0C597, ID: 5932
+const u8 String_172D[] = _("ブラッドスピア<EXTEND=0>");                                                                           // 0x08D0C5B0, ID: 5933
+const u8 String_172E[] = _("グランドランス<EXTEND=0>");                                                                           // 0x08D0C5C9, ID: 5934
+const u8 String_172F[] = _("ル―ンスピア<EXTEND=0>");                                                                              // 0x08D0C5E2, ID: 5935
+const u8 String_1730[] = _("ハルバ―ド<EXTEND=0>");                                                                                // 0x08D0C5F9, ID: 5936
+const u8 String_1731[] = _("ホワイトクイ―ン<EXTEND=0>");                                                                          // 0x08D0C60E, ID: 5937
+const u8 String_1732[] = _("ブラッククイ―ン<EXTEND=0>");                                                                          // 0x08D0C629, ID: 5938
+const u8 String_1733[] = _("クングニル<EXTEND=0>");                                                                               // 0x08D0C644, ID: 5939
+const u8 String_1734[] = _("クラブ<EXTEND=0>");                                                                                   // 0x08D0C659, ID: 5940
+const u8 String_1735[] = _("ハンマ―<EXTEND=0>");                                                                                  // 0x08D0C66A, ID: 5941
+const u8 String_1736[] = _("メイス<EXTEND=0>");                                                                                   // 0x08D0C67D, ID: 5942
+const u8 String_1737[] = _("フレイル<EXTEND=0>");                                                                                 // 0x08D0C68E, ID: 5943
+const u8 String_1738[] = _("とんかち<EXTEND=0>");                                                                                 // 0x08D0C6A1, ID: 5944
+const u8 String_1739[] = _("アックス<EXTEND=0>");                                                                                 // 0x08D0C6B4, ID: 5945
+const u8 String_173A[] = _("モ―ル<EXTEND=0>");                                                                                    // 0x08D0C6C7, ID: 5946
+const u8 String_173B[] = _("シルバ―メイス<EXTEND=0>");                                                                            // 0x08D0C6D8, ID: 5947
+const u8 String_173C[] = _("シルバ―フレイル<EXTEND=0>");                                                                          // 0x08D0C6F1, ID: 5948
+const u8 String_173D[] = _("ヘヴィメイス<EXTEND=0>");                                                                             // 0x08D0C70C, ID: 5949
+const u8 String_173E[] = _("バトルアックス<EXTEND=0>");                                                                           // 0x08D0C723, ID: 5950
+const u8 String_173F[] = _("ウォ―ハンマ―<EXTEND=0>");                                                                             // 0x08D0C73C, ID: 5951
+const u8 String_1740[] = _("ブラッディメイス<EXTEND=0>");                                                                         // 0x08D0C755, ID: 5952
+const u8 String_1741[] = _("モ―ニングスタ―<EXTEND=0>");                                                                           // 0x08D0C770, ID: 5953
+const u8 String_1742[] = _("ヘヴィアックス<EXTEND=0>");                                                                           // 0x08D0C78B, ID: 5954
+const u8 String_1743[] = _("ア―スシェ―カ―<EXTEND=0>");                                                                            // 0x08D0C7A4, ID: 5955
+const u8 String_1744[] = _("あかつき<EXTEND=0>");                                                                                 // 0x08D0C7BF, ID: 5956
+const u8 String_1745[] = _("たそがれ<EXTEND=0>");                                                                                 // 0x08D0C7D2, ID: 5957
+const u8 String_1746[] = _("ミョルニル<EXTEND=0>");                                                                               // 0x08D0C7E5, ID: 5958
+const u8 String_1747[] = _("壊れた太陽銃");                                                                                       // 0x08D0C7FA, ID: 5959
+const u8 String_1748[] = _("ガン・デル・ソル");                                                                                   // 0x08D0C807, ID: 5960
+const u8 String_1749[] = _("ガン・デル・ヘル");                                                                                   // 0x08D0C818, ID: 5961
+const u8 String_174A[] = _("ロックバスタ―");                                                                                      // 0x08D0C829, ID: 5962
+const u8 String_174B[] = _("星のかけら");                                                                                         // 0x08D0C838, ID: 5963
+const u8 String_174C[] = _("アストロソ―ド");                                                                                      // 0x08D0C843, ID: 5964
+const u8 String_174D[] = _("アストロスピア");                                                                                     // 0x08D0C852, ID: 5965
+const u8 String_174E[] = _("アストロハンマ―");                                                                                    // 0x08D0C861, ID: 5966
+const u8 String_174F[] = _("素手。");                                                                                             // 0x08D0C872, ID: 5967
+const u8 String_1750[] = _("Lv.<VAR=0>　威力:<VAR=1>　短剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");          // 0x08D0C879, ID: 5968
+const u8 String_1751[] = _("Lv.<VAR=0>　威力:<VAR=1>　小剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");          // 0x08D0C8D3, ID: 5969
+const u8 String_1752[] = _("Lv.<VAR=0>　威力:<VAR=1>　幅広の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0C92D, ID: 5970
+const u8 String_1753[] = _("Lv.<VAR=0>　威力:<VAR=1>　ロングソ―ド。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");   // 0x08D0C98B, ID: 5971
+const u8 String_1754[] = _("Lv.<VAR=0>　威力:<VAR=1>　斬れない剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");    // 0x08D0C9ED, ID: 5972
+const u8 String_1755[] = _("Lv.<VAR=0>　威力:<VAR=1>　両手剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0CA4D, ID: 5973
+const u8 String_1756[] = _("Lv.<VAR=0>　威力:<VAR=1>　炎形の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0CAA9, ID: 5974
+const u8 String_1757[] = _("Lv.<VAR=0>　威力:<VAR=1>　大剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");          // 0x08D0CB07, ID: 5975
+const u8 String_1758[] = _("Lv.<VAR=0>　威力:<VAR=1>　魔法の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0CB61, ID: 5976
+const u8 String_1759[] = _("Lv.<VAR=0>　威力:<VAR=1>　東方の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0CBBF, ID: 5977
+const u8 String_175A[] = _("Lv.<VAR=0>　威力:<VAR=1>　片手半剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0CC1D, ID: 5978
+const u8 String_175B[] = _("Lv.<VAR=0>　威力:<VAR=1>　巨大な剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0CC7B, ID: 5979
+const u8 String_175C[] = _("Lv.<VAR=0>　威力:<VAR=1>　武士の魂。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0CCD9, ID: 5980
+const u8 String_175D[] = _("Lv.<VAR=0>　威力:<VAR=1>　呪われた剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");    // 0x08D0CD37, ID: 5981
+const u8 String_175E[] = _("Lv.<VAR=0>　威力:<VAR=1>　妖刀。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");          // 0x08D0CD97, ID: 5982
+const u8 String_175F[] = _("Lv.<VAR=0>　威力:<VAR=1>　不屈の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0CDF1, ID: 5983
+const u8 String_1760[] = _("Lv.<VAR=0>　威力:<VAR=1>　光の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0CE4F, ID: 5984
+const u8 String_1761[] = _("Lv.<VAR=0>　威力:<VAR=1>　闇の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0CEAB, ID: 5985
+const u8 String_1762[] = _("Lv.<VAR=0>　威力:<VAR=1>　全き剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0CF07, ID: 5986
+const u8 String_1763[] = _("Lv.<VAR=0>　威力:<VAR=1>　手槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");          // 0x08D0CF63, ID: 5987
+const u8 String_1764[] = _("Lv.<VAR=0>　威力:<VAR=1>　片刃の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0CFBD, ID: 5988
+const u8 String_1765[] = _("Lv.<VAR=0>　威力:<VAR=1>　長槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");          // 0x08D0D01B, ID: 5989
+const u8 String_1766[] = _("Lv.<VAR=0>　威力:<VAR=1>　騎士の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0D075, ID: 5990
+const u8 String_1767[] = _("Lv.<VAR=0>　威力:<VAR=1>　180cmの棒。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");     // 0x08D0D0D3, ID: 5991
+const u8 String_1768[] = _("Lv.<VAR=0>　威力:<VAR=1>　翼形の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0D132, ID: 5992
+const u8 String_1769[] = _("Lv.<VAR=0>　威力:<VAR=1>　火の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0D190, ID: 5993
+const u8 String_176A[] = _("Lv.<VAR=0>　威力:<VAR=1>　長柄戦斧。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0D1EC, ID: 5994
+const u8 String_176B[] = _("Lv.<VAR=0>　威力:<VAR=1>　水の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0D24A, ID: 5995
+const u8 String_176C[] = _("Lv.<VAR=0>　威力:<VAR=1>　片刃の魔槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");    // 0x08D0D2A6, ID: 5996
+const u8 String_176D[] = _("Lv.<VAR=0>　威力:<VAR=1>　幅広の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0D306, ID: 5997
+const u8 String_176E[] = _("Lv.<VAR=0>　威力:<VAR=1>　風の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0D364, ID: 5998
+const u8 String_176F[] = _("Lv.<VAR=0>　威力:<VAR=1>　呪われた槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");    // 0x08D0D3C0, ID: 5999
+const u8 String_1770[] = _("Lv.<VAR=0>　威力:<VAR=1>　大地の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0D420, ID: 6000
+const u8 String_1771[] = _("Lv.<VAR=0>　威力:<VAR=1>　魔槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");          // 0x08D0D47E, ID: 6001
+const u8 String_1772[] = _("Lv.<VAR=0>　威力:<VAR=1>　斧槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");          // 0x08D0D4D8, ID: 6002
+const u8 String_1773[] = _("Lv.<VAR=0>　威力:<VAR=1>　光の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0D532, ID: 6003
+const u8 String_1774[] = _("Lv.<VAR=0>　威力:<VAR=1>　闇の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0D58E, ID: 6004
+const u8 String_1775[] = _("Lv.<VAR=0>　威力:<VAR=1>　全き槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0D5EA, ID: 6005
+const u8 String_1776[] = _("Lv.<VAR=0>　威力:<VAR=1>　こん棒。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0D646, ID: 6006
+const u8 String_1777[] = _("Lv.<VAR=0>　威力:<VAR=1>　金槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");          // 0x08D0D6A2, ID: 6007
+const u8 String_1778[] = _("Lv.<VAR=0>　威力:<VAR=1>　槌矛。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");          // 0x08D0D6FC, ID: 6008
+const u8 String_1779[] = _("Lv.<VAR=0>　威力:<VAR=1>　鎖付き鉄球。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");    // 0x08D0D756, ID: 6009
+const u8 String_177A[] = _("Lv.<VAR=0>　威力:<VAR=1>　小型の金槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");    // 0x08D0D7B6, ID: 6010
+const u8 String_177B[] = _("Lv.<VAR=0>　威力:<VAR=1>　斧。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");            // 0x08D0D816, ID: 6011
+const u8 String_177C[] = _("Lv.<VAR=0>　威力:<VAR=1>　巨大な木槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");    // 0x08D0D86E, ID: 6012
+const u8 String_177D[] = _("Lv.<VAR=0>　威力:<VAR=1>　銀製の槌矛。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");    // 0x08D0D8CE, ID: 6013
+const u8 String_177E[] = _("Lv.<VAR=0>　威力:<VAR=1>　鎖付き銀球。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");    // 0x08D0D92E, ID: 6014
+const u8 String_177F[] = _("Lv.<VAR=0>　威力:<VAR=1>　巨大な槌矛。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");    // 0x08D0D98E, ID: 6015
+const u8 String_1780[] = _("Lv.<VAR=0>　威力:<VAR=1>　戦斧。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");          // 0x08D0D9EE, ID: 6016
+const u8 String_1781[] = _("Lv.<VAR=0>　威力:<VAR=1>　戦槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");          // 0x08D0DA48, ID: 6017
+const u8 String_1782[] = _("Lv.<VAR=0>　威力:<VAR=1>　呪われた槌矛。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");  // 0x08D0DAA2, ID: 6018
+const u8 String_1783[] = _("Lv.<VAR=0>　威力:<VAR=1>　鎖付き星球。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");    // 0x08D0DB04, ID: 6019
+const u8 String_1784[] = _("Lv.<VAR=0>　威力:<VAR=1>　巨大な戦斧。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");    // 0x08D0DB64, ID: 6020
+const u8 String_1785[] = _("Lv.<VAR=0>　威力:<VAR=1>　激震の槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");      // 0x08D0DBC4, ID: 6021
+const u8 String_1786[] = _("Lv.<VAR=0>　威力:<VAR=1>　光の槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0DC22, ID: 6022
+const u8 String_1787[] = _("Lv.<VAR=0>　威力:<VAR=1>　闇の槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0DC7E, ID: 6023
+const u8 String_1788[] = _("Lv.<VAR=0>　威力:<VAR=1>　全き槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");        // 0x08D0DCDA, ID: 6024
+const u8 String_1789[] = _("Lv.??　威力:<VAR=1>　父の形見。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");           // 0x08D0DD36, ID: 6025
+const u8 String_178A[] = _("Lv.??　威力:<VAR=1>　太陽銃。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");             // 0x08D0DD8F, ID: 6026
+const u8 String_178B[] = _("Lv.??　威力:<VAR=1>　暗黒銃。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");             // 0x08D0DDE6, ID: 6027
+const u8 String_178C[] = _("Lv.??　威力:<VAR=1>　友情の証。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");           // 0x08D0DE3D, ID: 6028
+const u8 String_178D[] = _("隕鉄のかたまり。");                                                                                   // 0x08D0DE96, ID: 6029
+const u8 String_178E[] = _("Lv.??　威力:<VAR=1>　星の剣。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");             // 0x08D0DEA7, ID: 6030
+const u8 String_178F[] = _("Lv.??　威力:<VAR=1>　星の槍。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");             // 0x08D0DEFE, ID: 6031
+const u8 String_1790[] = _("Lv.??　威力:<VAR=1>　星の槌。<WEIGHT><EXTEND=0></WEIGHT><EXTEND=1><EXTEND=2><EXTEND=3>");             // 0x08D0DF55, ID: 6032
+const u8 String_1791[] = _("");                                                                                                   // 0x08D0DFAC, ID: 6033
+const u8 String_1792[] = _("太陽の光に応じて攻撃力アップ。");                                                                     // 0x08D0DFAD, ID: 6034
+const u8 String_1793[] = _("夜間攻撃力が上がる。");                                                                               // 0x08D0DFCC, ID: 6035
+const u8 String_1794[] = _("ライフが減るほど攻撃力アップ。");                                                                     // 0x08D0DFE1, ID: 6036
+const u8 String_1795[] = _("ライフが減るほど攻撃力ダウン。");                                                                     // 0x08D0E000, ID: 6037
+const u8 String_1796[] = _("エンチャント攻撃時、太陽スタンドのエネルギ―を直接使う。レベルに応じて威力アップ。");                  // 0x08D0E01F, ID: 6038
+const u8 String_1797[] = _("エンチャント攻撃時、太陽スタンドのエネルギ―を直接使う。レベルに応じて威力アップ。");                  // 0x08D0E072, ID: 6039
+const u8 String_1798[] = _("エンチャント攻撃時、太陽スタンドのエネルギ―を直接使う。レベルに応じて威力アップ。");                  // 0x08D0E0C5, ID: 6040
+const u8 String_1799[] = _("カラダに応じて攻撃力アップ。");                                                                       // 0x08D0E118, ID: 6041
+const u8 String_179A[] = _("ココロに応じて攻撃力アップ。");                                                                       // 0x08D0E135, ID: 6042
+const u8 String_179B[] = _("ハヤサに応じて攻撃力アップ。");                                                                       // 0x08D0E152, ID: 6043
+const u8 String_179C[] = _("ライフに応じて攻撃力アップ。");                                                                       // 0x08D0E16F, ID: 6044
+const u8 String_179D[] = _("エナジ―に応じて攻撃力アップ。");                                                                      // 0x08D0E18C, ID: 6045
+const u8 String_179E[] = _("ステ―タス異常で攻撃力アップ。");                                                                      // 0x08D0E1AB, ID: 6046
+const u8 String_179F[] = _("太陽の光に応じて攻撃力アップ。");                                                                     // 0x08D0E1CA, ID: 6047
+const u8 String_17A0[] = _("夜間攻撃力が上がる。");                                                                               // 0x08D0E1E9, ID: 6048
+const u8 String_17A1[] = _("時々ダメ―ジを追加する。");                                                                            // 0x08D0E1FE, ID: 6049
+const u8 String_17A2[] = _("倒した数に応じて追加ダメ―ジ。");                                                                      // 0x08D0E217, ID: 6050
+const u8 String_17A3[] = _("フレイム属性で追加ダメ―ジ。");                                                                        // 0x08D0E236, ID: 6051
+const u8 String_17A4[] = _("フロスト属性で追加ダメ―ジ。");                                                                        // 0x08D0E253, ID: 6052
+const u8 String_17A5[] = _("クラウド属性で追加ダメ―ジ。");                                                                        // 0x08D0E270, ID: 6053
+const u8 String_17A6[] = _("ア―ス属性で追加ダメ―ジ。");                                                                           // 0x08D0E28D, ID: 6054
+const u8 String_17A7[] = _("ビ―ストに追加ダメ―ジ。");                                                                             // 0x08D0E2A8, ID: 6055
+const u8 String_17A8[] = _("シングに追加ダメ―ジ。");                                                                              // 0x08D0E2C1, ID: 6056
+const u8 String_17A9[] = _("ファントムに追加ダメ―ジ。");                                                                          // 0x08D0E2D8, ID: 6057
+const u8 String_17AA[] = _("アンデッドに追加ダメ―ジ。");                                                                          // 0x08D0E2F3, ID: 6058
+const u8 String_17AB[] = _("イモ―タルに追加ダメ―ジ。");                                                                           // 0x08D0E30E, ID: 6059
+const u8 String_17AC[] = _("時々防御力を無効にする。");                                                                           // 0x08D0E329, ID: 6060
+const u8 String_17AD[] = _("時々敵をマヒさせる。");                                                                               // 0x08D0E342, ID: 6061
+const u8 String_17AE[] = _("敵を倒すと・・・。");                                                                                 // 0x08D0E357, ID: 6062
+const u8 String_17AF[] = _("エンチャント攻撃時の魔法コストが下がる。");                                                           // 0x08D0E36A, ID: 6063
+const u8 String_17B0[] = _("武器へのダメ―ジを減らす。");                                                                          // 0x08D0E393, ID: 6064
+const u8 String_17B1[] = _("???");                                                                                                // 0x08D0E3AE, ID: 6065
+const u8 String_17B2[] = _("???");                                                                                                // 0x08D0E3B2, ID: 6066
+const u8 String_17B3[] = _("???");                                                                                                // 0x08D0E3B6, ID: 6067
+const u8 String_17B4[] = _("???");                                                                                                // 0x08D0E3BA, ID: 6068
+const u8 String_17B5[] = _("???");                                                                                                // 0x08D0E3BE, ID: 6069
+const u8 String_17B6[] = _("これを捨てますか?");                                                                                  // 0x08D0E3C2, ID: 6070
+
+const u8 String_17B7[] = _("クロスア―マ―");                                                                                      // 0x08D0E3D4, ID: 6071
+const u8 String_17B8[] = _("レザ―ア―マ―");                                                                                       // 0x08D0E3E3, ID: 6072
+const u8 String_17B9[] = _("チェインメイル");                                                                                    // 0x08D0E3F2, ID: 6073
+const u8 String_17BA[] = _("シルバ―チェイン");                                                                                   // 0x08D0E401, ID: 6074
+const u8 String_17BB[] = _("スケイルメイル");                                                                                    // 0x08D0E412, ID: 6075
+const u8 String_17BC[] = _("武者鎧");                                                                                            // 0x08D0E421, ID: 6076
+const u8 String_17BD[] = _("プレ―トメイル");                                                                                     // 0x08D0E428, ID: 6077
+const u8 String_17BE[] = _("ブリガンダイン");                                                                                    // 0x08D0E437, ID: 6078
+const u8 String_17BF[] = _("メイルオブソル");                                                                                    // 0x08D0E446, ID: 6079
+const u8 String_17C0[] = _("メイルオブダ―ク");                                                                                   // 0x08D0E455, ID: 6080
+const u8 String_17C1[] = _("メイルオブルナ");                                                                                    // 0x08D0E466, ID: 6081
+const u8 String_17C2[] = _("火竜の牙");                                                                                          // 0x08D0E475, ID: 6082
+const u8 String_17C3[] = _("水竜の尾");                                                                                          // 0x08D0E47E, ID: 6083
+const u8 String_17C4[] = _("風竜の翼");                                                                                          // 0x08D0E487, ID: 6084
+const u8 String_17C5[] = _("地竜の爪");                                                                                          // 0x08D0E490, ID: 6085
+const u8 String_17C6[] = _("ドラゴンスケイル");                                                                                  // 0x08D0E499, ID: 6086
+const u8 String_17C7[] = _("妖精の衣");                                                                                          // 0x08D0E4AA, ID: 6087
+const u8 String_17C8[] = _("大地の衣");                                                                                          // 0x08D0E4B3, ID: 6088
+const u8 String_17C9[] = _("レインコ―ト");                                                                                       // 0x08D0E4BC, ID: 6089
+const u8 String_17CA[] = _("光のガ―ブ");                                                                                         // 0x08D0E4C9, ID: 6090
+const u8 String_17CB[] = _("闇のガ―ブ");                                                                                         // 0x08D0E4D4, ID: 6091
+const u8 String_17CC[] = _("マジックロ―ブ");                                                                                     // 0x08D0E4DF, ID: 6092
+const u8 String_17CD[] = _("血塗れのマント");                                                                                    // 0x08D0E4EE, ID: 6093
+const u8 String_17CE[] = _("スカルス―ツ");                                                                                       // 0x08D0E4FD, ID: 6094
+const u8 String_17CF[] = _("トラックス―ツ");                                                                                     // 0x08D0E50A, ID: 6095
+const u8 String_17D0[] = _("盗人の服");                                                                                          // 0x08D0E519, ID: 6096
+const u8 String_17D1[] = _("狩人の服");                                                                                          // 0x08D0E522, ID: 6097
+const u8 String_17D2[] = _("ポイズンガ―ド");                                                                                     // 0x08D0E52B, ID: 6098
+const u8 String_17D3[] = _("ウエポンガ―ド");                                                                                     // 0x08D0E53A, ID: 6099
+const u8 String_17D4[] = _("パレ―ドア―マ―");                                                                                     // 0x08D0E549, ID: 6100
+const u8 String_17D5[] = _("忍装束");                                                                                            // 0x08D0E55A, ID: 6101
+const u8 String_17D6[] = _("スパイクメイル");                                                                                    // 0x08D0E561, ID: 6102
+const u8 String_17D7[] = _("黒の鎧");                                                                                            // 0x08D0E570, ID: 6103
+const u8 String_17D8[] = _("ロックパワ―");                                                                                       // 0x08D0E577, ID: 6104
+const u8 String_17D9[] = _("ガッツパワ―");                                                                                       // 0x08D0E584, ID: 6105
+const u8 String_17DA[] = _("ブル―スパワ―");                                                                                      // 0x08D0E591, ID: 6106
+const u8 String_17DB[] = _("ト―ドパワ―");                                                                                        // 0x08D0E5A0, ID: 6107
+const u8 String_17DC[] = _("耐久力:<VAR=0>　重量:<VAR=1>　布の鎧。");                                                            // 0x08D0E5AD, ID: 6108
+const u8 String_17DD[] = _("耐久力:<VAR=0>　重量:<VAR=1>　革の鎧。");                                                            // 0x08D0E5D4, ID: 6109
+const u8 String_17DE[] = _("耐久力:<VAR=0>　重量:<VAR=1>　金属の輪をつなぎ合わせた鎧。");                                        // 0x08D0E5FB, ID: 6110
+const u8 String_17DF[] = _("耐久力:<VAR=0>　重量:<VAR=1>　銀製のチェインメイル。ステ―タスが変化する。");                         // 0x08D0E636, ID: 6111
+const u8 String_17E0[] = _("耐久力:<VAR=0>　重量:<VAR=1>　金属板をぬいつけた革の鎧。");                                          // 0x08D0E681, ID: 6112
+const u8 String_17E1[] = _("耐久力:<VAR=0>　重量:<VAR=1>　東方の鎧。チカラが上がる。");                                          // 0x08D0E6BA, ID: 6113
+const u8 String_17E2[] = _("耐久力:<VAR=0>　重量:<VAR=1>　板金鎧。");                                                            // 0x08D0E6F3, ID: 6114
+const u8 String_17E3[] = _("耐久力:<VAR=0>　重量:<VAR=1>　金属板をぬい込んだ革の鎧。太陽風から身を守る。");                      // 0x08D0E71A, ID: 6115
+const u8 String_17E4[] = _("耐久力:<VAR=0>　重量:<VAR=1>　太陽の鎧。ソル属性から身を守る。スタンドへのチャ―ジが2倍速になる。");  // 0x08D0E767, ID: 6116
+const u8 String_17E5[] = _("耐久力:<VAR=0>　重量:<VAR=1>　暗黒の鎧。ダ―ク属性から身を守る。");                                   // 0x08D0E7C9, ID: 6117
+const u8 String_17E6[] = _("耐久力:<VAR=0>　重量:<VAR=1>　月光の鎧。全属性から身を守る。");                                      // 0x08D0E80A, ID: 6118
+const u8 String_17E7[] = _("耐久力:<VAR=0>　重量:<VAR=1>　火のお守り。フレイム属性から身を守る。");                              // 0x08D0E847, ID: 6119
+const u8 String_17E8[] = _("耐久力:<VAR=0>　重量:<VAR=1>　水のお守り。フロスト属性から身を守る。");                              // 0x08D0E88C, ID: 6120
+const u8 String_17E9[] = _("耐久力:<VAR=0>　重量:<VAR=1>　風のお守り。クラウド属性から身を守る。");                              // 0x08D0E8D1, ID: 6121
+const u8 String_17EA[] = _("耐久力:<VAR=0>　重量:<VAR=1>　大地のお守り。ア―ス属性から身を守る。");                               // 0x08D0E916, ID: 6122
+const u8 String_17EB[] = _("耐久力:<VAR=0>　重量:<VAR=1>　竜のウロコで作られた鎧。4大属性から身を守る。");                       // 0x08D0E95B, ID: 6123
+const u8 String_17EC[] = _("耐久力:<VAR=0>　重量:<VAR=1>　妖精の忘れ物。精霊虫の効果が2倍になる。");                             // 0x08D0E9A7, ID: 6124
+const u8 String_17ED[] = _("耐久力:<VAR=0>　重量:<VAR=1>　巫女の装束。太陽の果実の効果時間が2倍になる。");                       // 0x08D0E9ED, ID: 6125
+const u8 String_17EE[] = _("耐久力:<VAR=0>　重量:<VAR=1>　雨がっぱ。雨から身を守る。");                                          // 0x08D0EA39, ID: 6126
+const u8 String_17EF[] = _("耐久力:<VAR=0>　重量:<VAR=1>　太陽の光で織られた服。太陽ゲ―ジの値が2倍になる。");                    // 0x08D0EA72, ID: 6127
+const u8 String_17F0[] = _("耐久力:<VAR=0>　重量:<VAR=1>　暗黒物質で織られた服。夜の力を引き出す。");                            // 0x08D0EAC2, ID: 6128
+const u8 String_17F1[] = _("耐久力:<VAR=0>　重量:<VAR=1>　呪文が織り込まれた服。魔法コストが下がる。");                          // 0x08D0EB09, ID: 6129
+const u8 String_17F2[] = _("耐久力:<VAR=0>　重量:<VAR=1>　呪われた外とう。ステ―タスが変化する。");                               // 0x08D0EB52, ID: 6130
+const u8 String_17F3[] = _("耐久力:<VAR=0>　重量:<VAR=1>　スニ―キングス―ツ。敵に見つかりにくくなる。");                          // 0x08D0EB97, ID: 6131
+const u8 String_17F4[] = _("耐久力:<VAR=0>　重量:<VAR=1>　心で感じるための服。得られる経験値が増える。");                        // 0x08D0EBE2, ID: 6132
+const u8 String_17F5[] = _("耐久力:<VAR=0>　重量:<VAR=1>　シ―フに盗まれた服。敵が通常アイテムを落しやすくなる。");               // 0x08D0EC2D, ID: 6133
+const u8 String_17F6[] = _("耐久力:<VAR=0>　重量:<VAR=1>　ハンタ―が好んだ服。敵がレアアイテムを落しやすくなる。");               // 0x08D0EC82, ID: 6134
+const u8 String_17F7[] = _("耐久力:<VAR=0>　重量:<VAR=1>　防御魔法がかけられた鎧。毒化から身を守る。");                          // 0x08D0ECD7, ID: 6135
+const u8 String_17F8[] = _("耐久力:<VAR=0>　重量:<VAR=1>　防御魔法がかけられた鎧。武器へのダメ―ジを防ぐ。");                     // 0x08D0ED20, ID: 6136
+const u8 String_17F9[] = _("耐久力:<VAR=0>　重量:<VAR=1>　儀礼用の鎧。クリムゾン・モンスタ―を呼び寄せる。");                     // 0x08D0ED6F, ID: 6137
+const u8 String_17FA[] = _("耐久力:<VAR=0>　重量:<VAR=1>　忍者の装束。ハヤサが上がる。");                                        // 0x08D0EDBE, ID: 6138
+const u8 String_17FB[] = _("耐久力:<VAR=0>　重量:<VAR=1>　装備した者を守る鎧。攻撃を受けると自動的に反撃する。");                // 0x08D0EDF9, ID: 6139
+const u8 String_17FC[] = _("耐久力:<VAR=0>　重量:<VAR=1>　狂戦士の鎧。ライフを吸い取って攻撃力アップ。");                        // 0x08D0EE4C, ID: 6140
+const u8 String_17FD[] = _("耐久力:<VAR=0>　重量:<VAR=1>　ロックマンの力。ロックバスタ―がチャ―ジ可能になる。");                  // 0x08D0EE97, ID: 6141
+const u8 String_17FE[] = _("耐久力:<VAR=0>　重量:<VAR=1>　ガッツマンの力。受けるダメ―ジが半分になる。");                         // 0x08D0EEEA, ID: 6142
+const u8 String_17FF[] = _("耐久力:<VAR=0>　重量:<VAR=1>　ブル―スの力。攻撃が速くなる。");                                       // 0x08D0EF35, ID: 6143
+const u8 String_1800[] = _("耐久力:<VAR=0>　重量:<VAR=1>　ト―ドマンの力。雨でエナジ―が回復する。");                              // 0x08D0EF72, ID: 6144
+const u8 String_1801[] = _("これを捨てますか?");                                                                                 // 0x08D0EFB9, ID: 6145
+
+const u8 String_1802[] = _("エンチャント・ソル");                                 // 0x08D0EFCB, ID: 6146
+const u8 String_1803[] = _("エンチャント・ダ―ク");                                // 0x08D0EFDE, ID: 6147
+const u8 String_1804[] = _("エンチャント・フレイム");                             // 0x08D0EFF3, ID: 6148
+const u8 String_1805[] = _("エンチャント・フロスト");                             // 0x08D0F00A, ID: 6149
+const u8 String_1806[] = _("エンチャント・クラウド");                             // 0x08D0F021, ID: 6150
+const u8 String_1807[] = _("エンチャント・ア―ス");                                // 0x08D0F038, ID: 6151
+const u8 String_1808[] = _("トランス");                                           // 0x08D0F04D, ID: 6152
+const u8 String_1809[] = _("ライジングサン");                                     // 0x08D0F056, ID: 6153
+const u8 String_180A[] = _("ゼロシフト");                                         // 0x08D0F065, ID: 6154
+const u8 String_180B[] = _("ブラックサン");                                       // 0x08D0F070, ID: 6155
+const u8 String_180C[] = _("フリ―ズ");                                            // 0x08D0F07D, ID: 6156
+const u8 String_180D[] = _("ダッシュ");                                           // 0x08D0F086, ID: 6157
+const u8 String_180E[] = _("ヒ―リング");                                          // 0x08D0F08F, ID: 6158
+const u8 String_180F[] = _("ダイナマイト");                                       // 0x08D0F09A, ID: 6159
+const u8 String_1810[] = _("スリ―ピング");                                        // 0x08D0F0A7, ID: 6160
+const u8 String_1811[] = _("チェンジ・バット");                                   // 0x08D0F0B4, ID: 6161
+const u8 String_1812[] = _("チェンジ・マウス");                                   // 0x08D0F0C5, ID: 6162
+const u8 String_1813[] = _("チェンジ・ウルフ");                                   // 0x08D0F0D6, ID: 6163
+const u8 String_1814[] = _("コスト:05　武器に太陽の力、ソル属性を付加する。");    // 0x08D0F0E7, ID: 6164
+const u8 String_1815[] = _("コスト:05　武器に暗黒の力、ダ―ク属性を付加する。");   // 0x08D0F117, ID: 6165
+const u8 String_1816[] = _("コスト:10　武器に炎の力、フレイム属性を付加する。");  // 0x08D0F149, ID: 6166
+const u8 String_1817[] = _("コスト:10　武器に氷の力、フロスト属性を付加する。");  // 0x08D0F17B, ID: 6167
+const u8 String_1818[] = _("コスト:10　武器に風の力、クラウド属性を付加する。");  // 0x08D0F1AD, ID: 6168
+const u8 String_1819[] = _("コスト:10　武器に大地の力、ア―ス属性を付加する。");   // 0x08D0F1DF, ID: 6169
+const u8 String_181A[] = _("コスト:0　赤と黒を切り換える。");                     // 0x08D0F211, ID: 6170
+const u8 String_181B[] = _("コスト:100以上すべて　太陽の欠片を召喚する。");       // 0x08D0F230, ID: 6171
+const u8 String_181C[] = _("コスト:10　瞬間移動をする。");                        // 0x08D0F25D, ID: 6172
+const u8 String_181D[] = _("コスト:100以上すべて　暗黒の欠片を召喚する。");       // 0x08D0F279, ID: 6173
+const u8 String_181E[] = _("Lv.0　敵を脅す。");                                   // 0x08D0F2A6, ID: 6174
+const u8 String_181F[] = _("Lv.1　ダッシュをする。");                             // 0x08D0F2B7, ID: 6175
+const u8 String_1820[] = _("Lv.2　植物を元気にする。");                           // 0x08D0F2CE, ID: 6176
+const u8 String_1821[] = _("Lv.3　爆弾を仕掛ける。");                             // 0x08D0F2E7, ID: 6177
+const u8 String_1822[] = _("コスト:0　棺桶で眠る。");                             // 0x08D0F2FE, ID: 6178
+const u8 String_1823[] = _("コスト:10　バットに変身する。");                      // 0x08D0F315, ID: 6179
+const u8 String_1824[] = _("コスト:10　マウスに変身する。");                      // 0x08D0F333, ID: 6180
+const u8 String_1825[] = _("コスト:10　噛みつきをする。");                        // 0x08D0F351, ID: 6181
+
+const u8 String_1826[] = _("渓谷");             // 0x08D0F36D, ID: 6182
+const u8 String_1827[] = _("街門");             // 0x08D0F372, ID: 6183
+const u8 String_1828[] = _("大聖堂A [1F]");     // 0x08D0F377, ID: 6184
+const u8 String_1829[] = _("大聖堂A [B1]");     // 0x08D0F384, ID: 6185
+const u8 String_182A[] = _("大聖堂B [3F]");     // 0x08D0F391, ID: 6186
+const u8 String_182B[] = _("大聖堂B [2F]");     // 0x08D0F39E, ID: 6187
+const u8 String_182C[] = _("大聖堂B [1F]");     // 0x08D0F3AB, ID: 6188
+const u8 String_182D[] = _("大聖堂B [B1]");     // 0x08D0F3B8, ID: 6189
+const u8 String_182E[] = _("遺跡A [2F]");       // 0x08D0F3C5, ID: 6190
+const u8 String_182F[] = _("遺跡A [1F]");       // 0x08D0F3D0, ID: 6191
+const u8 String_1830[] = _("遺跡B [1F]");       // 0x08D0F3DB, ID: 6192
+const u8 String_1831[] = _("遺跡B [B1]");       // 0x08D0F3E6, ID: 6193
+const u8 String_1832[] = _("遺跡B [B2]");       // 0x08D0F3F1, ID: 6194
+const u8 String_1833[] = _("遺跡B [B3]");       // 0x08D0F3FC, ID: 6195
+const u8 String_1834[] = _("砂漠");             // 0x08D0F407, ID: 6196
+const u8 String_1835[] = _("暗黒街A [3F]");     // 0x08D0F40C, ID: 6197
+const u8 String_1836[] = _("暗黒街A [2F]");     // 0x08D0F419, ID: 6198
+const u8 String_1837[] = _("暗黒街A [1F]");     // 0x08D0F426, ID: 6199
+const u8 String_1838[] = _("暗黒街B [4F]");     // 0x08D0F433, ID: 6200
+const u8 String_1839[] = _("暗黒街B [3F]");     // 0x08D0F440, ID: 6201
+const u8 String_183A[] = _("暗黒街B [2F]");     // 0x08D0F44D, ID: 6202
+const u8 String_183B[] = _("暗黒街B [B1]");     // 0x08D0F45A, ID: 6203
+const u8 String_183C[] = _("地下水路A [3F]");   // 0x08D0F467, ID: 6204
+const u8 String_183D[] = _("地下水路A [2F]");   // 0x08D0F476, ID: 6205
+const u8 String_183E[] = _("地下水路A [1F]");   // 0x08D0F485, ID: 6206
+const u8 String_183F[] = _("地下水路B [2F]");   // 0x08D0F494, ID: 6207
+const u8 String_1840[] = _("地下水路B [1F]");   // 0x08D0F4A3, ID: 6208
+const u8 String_1841[] = _("地下水路B [B1]");   // 0x08D0F4B2, ID: 6209
+const u8 String_1842[] = _("螺旋の塔B [13F]");  // 0x08D0F4C1, ID: 6210
+const u8 String_1843[] = _("螺旋の塔B [12F]");  // 0x08D0F4D1, ID: 6211
+const u8 String_1844[] = _("螺旋の塔B [11F]");  // 0x08D0F4E1, ID: 6212
+const u8 String_1845[] = _("螺旋の塔B [10F]");  // 0x08D0F4F1, ID: 6213
+const u8 String_1846[] = _("螺旋の塔B [9F]");   // 0x08D0F501, ID: 6214
+const u8 String_1847[] = _("螺旋の塔B [8F]");   // 0x08D0F510, ID: 6215
+const u8 String_1848[] = _("螺旋の塔B [7F]");   // 0x08D0F51F, ID: 6216
+const u8 String_1849[] = _("螺旋の塔A [6F]");   // 0x08D0F52E, ID: 6217
+const u8 String_184A[] = _("螺旋の塔A [5F]");   // 0x08D0F53D, ID: 6218
+const u8 String_184B[] = _("螺旋の塔A [4F]");   // 0x08D0F54C, ID: 6219
+const u8 String_184C[] = _("螺旋の塔A [3F]");   // 0x08D0F55B, ID: 6220
+const u8 String_184D[] = _("螺旋の塔A [2F]");   // 0x08D0F56A, ID: 6221
+const u8 String_184E[] = _("螺旋の塔A [1F]");   // 0x08D0F579, ID: 6222
+const u8 String_184F[] = _("変異域 [1F]");      // 0x08D0F588, ID: 6223
+const u8 String_1850[] = _("変異域 [B1]");      // 0x08D0F594, ID: 6224
+const u8 String_1851[] = _("変異域 [B2]");      // 0x08D0F5A0, ID: 6225
+const u8 String_1852[] = _("変異域 [B3]");      // 0x08D0F5AC, ID: 6226
+const u8 String_1853[] = _("変異域 [B4]");      // 0x08D0F5B8, ID: 6227
+const u8 String_1854[] = _("変異域 [?]");       // 0x08D0F5C4, ID: 6228
+const u8 String_1855[] = _("廃墟 [3F]");        // 0x08D0F5CF, ID: 6229
+const u8 String_1856[] = _("廃墟 [2F]");        // 0x08D0F5D9, ID: 6230
+const u8 String_1857[] = _("廃墟 [1F]");        // 0x08D0F5E3, ID: 6231
+const u8 String_1858[] = _("廃墟 [B1]");        // 0x08D0F5ED, ID: 6232
+const u8 String_1859[] = _("廃墟 [B2]");        // 0x08D0F5F7, ID: 6233
+const u8 String_185A[] = _("森 [2F]");          // 0x08D0F601, ID: 6234
+const u8 String_185B[] = _("森 [1F]");          // 0x08D0F609, ID: 6235
+const u8 String_185C[] = _("森 [B1]");          // 0x08D0F611, ID: 6236
+const u8 String_185D[] = _("地下墓地 [2F]");    // 0x08D0F619, ID: 6237
+const u8 String_185E[] = _("地下墓地 [1F]");    // 0x08D0F627, ID: 6238
+const u8 String_185F[] = _("時の家 [3F]");      // 0x08D0F635, ID: 6239
+const u8 String_1860[] = _("時の家 [2F]");      // 0x08D0F641, ID: 6240
+const u8 String_1861[] = _("時の家 [1F]");      // 0x08D0F64D, ID: 6241
+const u8 String_1862[] = _("時の家 [B1]");      // 0x08D0F659, ID: 6242
+const u8 String_1863[] = _("宝物庫 [1F]");      // 0x08D0F665, ID: 6243
+const u8 String_1864[] = _("夢幻街");           // 0x08D0F671, ID: 6244
+const u8 String_1865[] = _("闘技場");           // 0x08D0F678, ID: 6245
+const u8 String_1866[] = _("渓谷・街門");       // 0x08D0F67F, ID: 6246
+const u8 String_1867[] = _("大聖堂");           // 0x08D0F68A, ID: 6247
+const u8 String_1868[] = _("遺跡");             // 0x08D0F691, ID: 6248
+const u8 String_1869[] = _("暗黒街");           // 0x08D0F696, ID: 6249
+const u8 String_186A[] = _("地下水路");         // 0x08D0F69D, ID: 6250
+const u8 String_186B[] = _("螺旋の塔");         // 0x08D0F6A6, ID: 6251
+const u8 String_186C[] = _("変異域");           // 0x08D0F6AF, ID: 6252
+const u8 String_186D[] = _("廃墟");             // 0x08D0F6B6, ID: 6253
+const u8 String_186E[] = _("闘技場");           // 0x08D0F6BB, ID: 6254
+const u8 String_186F[] = _("森");               // 0x08D0F6C2, ID: 6255
+const u8 String_1870[] = _("地下墓地");         // 0x08D0F6C5, ID: 6256
+const u8 String_1871[] = _("時の家");           // 0x08D0F6CE, ID: 6257
+const u8 String_1872[] = _("宝物庫");           // 0x08D0F6D5, ID: 6258
+const u8 String_1873[] = _("夢幻街");           // 0x08D0F6DC, ID: 6259
+const u8 String_1874[] = _("???");              // 0x08D0F6E3, ID: 6260
+const u8 String_1875[] = _("陸番街");           // 0x08D0F6E7, ID: 6261
+const u8 String_1876[] = _("拾番街");           // 0x08D0F6EE, ID: 6262
+const u8 String_1877[] = _("肆番街");           // 0x08D0F6F5, ID: 6263
+const u8 String_1878[] = _("弍番街");           // 0x08D0F6FC, ID: 6264
+const u8 String_1879[] = _("捌番街");           // 0x08D0F703, ID: 6265
+const u8 String_187A[] = _("拾弍番街");         // 0x08D0F70A, ID: 6266
+const u8 String_187B[] = _("約束の丘");         // 0x08D0F713, ID: 6267
+const u8 String_187C[] = _("太陽街・商店街");   // 0x08D0F71C, ID: 6268
+const u8 String_187D[] = _("太陽街・太陽樹");   // 0x08D0F72B, ID: 6269
+const u8 String_187E[] = _("太陽街・広場");     // 0x08D0F73A, ID: 6270
+const u8 String_187F[] = _("パイルドライバ―");  // 0x08D0F747, ID: 6271
+
+const u8 String_1880[] = _("<NAME>");                                                                                             // 0x08D0F758, ID: 6272
+const u8 String_1881[] = _("サバタ");                                                                                             // 0x08D0F75F, ID: 6273
+const u8 String_1882[] = _("これを捨てますか?");                                                                                  // 0x08D0F766, ID: 6274
+const u8 String_1883[] = _("これを使いますか?");                                                                                  // 0x08D0F778, ID: 6275
+const u8 String_1884[] = _("バッグを整とんしますか?");                                                                            // 0x08D0F78A, ID: 6276
+const u8 String_1885[] = _("<WEIGHT>Ａボタン</WEIGHT>で設定を変更します。");                                                      // 0x08D0F7A2, ID: 6277
+const u8 String_1886[] = _("<WEIGHT>Ａボタン</WEIGHT>で決定します。");                                                            // 0x08D0F7D0, ID: 6278
+const u8 String_1887[] = _("設定を変更しました。");                                                                               // 0x08D0F7F8, ID: 6279
+const u8 String_1888[] = _("<WEIGHT>Ａボタン</WEIGHT>でセ―ブします。");                                                           // 0x08D0F80D, ID: 6280
+const u8 String_1889[] = _("セ―ブしますか?");                                                                                     // 0x08D0F837, ID: 6281
+const u8 String_188A[] = _("以前のデ―タに上書きしますか?");                                                                       // 0x08D0F847, ID: 6282
+const u8 String_188B[] = _("セ―ブしています。\nカ―トリッジを抜いたり\n電源を切らないでください。");                               // 0x08D0F865, ID: 6283
+const u8 String_188C[] = _("セ―ブしています。");                                                                                  // 0x08D0F8AA, ID: 6284
+const u8 String_188D[] = _("カ―トリッジを抜いたり\n電源を切らないでください。");                                                  // 0x08D0F8BD, ID: 6285
+const u8 String_188E[] = _("セ―ブしました。");                                                                                    // 0x08D0F8EF, ID: 6286
+const u8 String_188F[] = _("セ―ブに失敗しました。");                                                                              // 0x08D0F900, ID: 6287
+const u8 String_1890[] = _("<WEIGHT>SELECTボタン</WEIGHT>+<WEIGHT>Ｌボタン</WEIGHT>+\n<WEIGHT>Ｒボタン</WEIGHT>で復帰します。");  // 0x08D0F917, ID: 6288
+const u8 String_1891[] = _("<WEIGHT>Ａボタン</WEIGHT>でスリ―プします。");                                                         // 0x08D0F978, ID: 6289
+const u8 String_1892[] = _("スリ―プしますか?");                                                                                   // 0x08D0F9A4, ID: 6290
+const u8 String_1893[] = _("スリ―プします。");                                                                                    // 0x08D0F9B6, ID: 6291
+const u8 String_1894[] = _("ライフ最大値に影響する。");                                                                           // 0x08D0F9C7, ID: 6292
+const u8 String_1895[] = _("エナジ―最大値に影響する。");                                                                          // 0x08D0F9E0, ID: 6293
+const u8 String_1896[] = _("攻撃力に影響する。");                                                                                 // 0x08D0F9FB, ID: 6294
+const u8 String_1897[] = _("移動速度・防御力に影響する。");                                                                       // 0x08D0FA0E, ID: 6295
+const u8 String_1898[] = _("よろしいですか?");                                                                                    // 0x08D0FA2B, ID: 6296

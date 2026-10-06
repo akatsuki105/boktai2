@@ -439,6 +439,7 @@ u16 rfu_waitREQComplete(void);
 
 u32 rfu_REQBN_softReset_and_checkID(void);
 void rfu_REQ_sendData(bool8 clockChangeFlag);
+void rfu_REQ_recvData(void);
 void rfu_setREQCallback(void (*callback)(u16 reqCommandId, u16 reqResult));
 u16 rfu_getConnectParentStatus(u8* status, u8* connectSlotNo);
 u16 rfu_CHILD_getConnectRecoveryStatus(u8* status);

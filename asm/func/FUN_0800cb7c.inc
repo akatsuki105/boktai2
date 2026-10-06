@@ -12,7 +12,7 @@
 	movs r1, #0x8e
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 	movs r1, #0x96
 	lsls r1, r1, #1
 	adds r0, r4, r1

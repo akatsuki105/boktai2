@@ -9,7 +9,7 @@ typedef struct {
 } MapAreaManager;
 static_assert(sizeof(MapAreaManager) == 88);
 
-bool8 FUN_08234d50(u16 zoneID, Vec3* pos);
+bool8 Map_IsPosInZoneByID(u16 zoneID, Vec3* pos);
 
 IWRAM_DATA MapAreaManager* gMapAreaManager = NULL;  // 0x03001704
 COMMON_DATA u32 u32_03004860 = 0;                   // 0x03004860
@@ -26,7 +26,7 @@ s32 GetMapAreaAt(Vec3* pos) {
     if (p->areas[i] <= 0) {
       return -1;
     }
-    if (FUN_08234d50(p->areas[i], pos)) {
+    if (Map_IsPosInZoneByID(p->areas[i], pos)) {
       return p->areas[i];
     }
   }

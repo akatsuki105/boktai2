@@ -76,7 +76,7 @@ static_assert(sizeof(EnemyAnimEntry) == 4);
 // 各エネミー共通部, 最小のエネミー(Mimic)が1684バイトなのに対しここは0x654=1620バイトあり、構造体のほとんどが共通部分だとわかる
 // サイズの根拠: Enemy_Init_080f3680 が 0x62C から 0x650 まで10本のテーブルポインタを書き込む
 #define ENEMY_HDR                                                                                                      \
-  Mover unk_0;                  /* 0x000 */                                                                            \
+  Mover mover;                  /* 0x000 */                                                                            \
   EnemySpriteData* sprite;      /* 0x044 */                                                                            \
   EntityMsgBox msgbox;          /* 0x048 */                                                                            \
   u8 unk_7c[0x11C - 0x7C];      /* 0x07C */                                                                            \
@@ -96,7 +96,7 @@ static_assert(sizeof(EnemyAnimEntry) == 4);
   void* unk_1cc;                /* 0x1CC, handlerUpdate/handlerDestroy の唯一の引数, 破棄時にこれが Free される */     \
   u8 unk_1d0[0x1D4 - 0x1D0];    /* 0x1D0 */                                                                            \
   u32 unk_1d4;                  /* 0x1D4, FUN_080fadd4 が EntityMsg.unk_4 を書く */                                    \
-  Mover* unk_1d8;               /* 0x1D8, FUN_080faa98 が gPlayerPtr[n]->mover を書く */                               \
+  Mover* playerMover;           /* 0x1D8, FUN_080faa98 が gPlayerPtr[n]->mover を書く */                               \
   u8 unk_1dc[0x1DF - 0x1DC];    /* 0x1DC */                                                                            \
   u8 kind;                      /* 0x1DF, 種族, 0x02/0x03/0x0B/0x0E/0x17/0x1B で分岐する */                            \
   u8 unk_1e0[0x202 - 0x1E0];    /* 0x1E0 */                                                                            \

@@ -25,7 +25,7 @@ _080728E0:
 	ldr r1, _080728F8 @ =0x00000211
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _080729CE
 	ldr r0, _080728FC @ =0x0000037D
@@ -40,7 +40,7 @@ _08072900:
 	ldr r1, _0807290C @ =0x00000212
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	b _080729CE
 	.align 2, 0
 _0807290C: .4byte 0x00000212
@@ -48,7 +48,7 @@ _08072910:
 	ldr r1, _0807292C @ =0x00000211
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _080729CE
 	adds r0, r4, #0
@@ -62,7 +62,7 @@ _08072930:
 	ldr r1, _08072978 @ =0x00000212
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r1, _0807297C @ =0x0000037E
 	adds r5, r4, r1
 	ldrh r0, [r5]
@@ -99,7 +99,7 @@ _08072980:
 	ldr r1, _080729D4 @ =0x00000212
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r0, _080729D8 @ =0x0000037E
 	adds r5, r4, r0
 	ldrh r0, [r5]

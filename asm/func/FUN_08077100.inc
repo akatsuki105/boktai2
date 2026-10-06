@@ -41,7 +41,7 @@ _08077152:
 	adds r0, r6, #0
 	movs r1, #0xc7
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	adds r0, r6, #0
 	adds r0, #0xc2
 	movs r1, #0x91

@@ -1,7 +1,8 @@
 #include "global.h"
 #include "vm.h"
+#include "vm_subroutine.h"
 
-IWRAM_DATA SubroutineTable gCtrlHandlers1 = {};  // 0x03000770
+IWRAM_DATA CtrlHandlerTable gCtrlHandlers1 = {};  // 0x03000770, 制御命令ではこのハンドラ自体を直接みるのではなく、初期化時に gCtrlHandlers に登録してそれを制御命令が参照する
 
 s32 VM_Ctrl_Switch_Internal(void);
 
@@ -160,7 +161,9 @@ bool32 VM_Ctrl_DebugPrint(u8* pc) {
   return 0;
 }
 
-bool32 VM_Ctrl_CallIndirect(u8* _) {
+// VM_CallScript と同じくスクリプトを ScriptArgs 付きで実行するが, スクリプトIDを VM_GetValue で読むため
+// OP_MEMORY や OP_VARIABLE を書けば呼び先を実行時に決められる
+bool32 VM_Ctrl_CallScriptIndirect(u8* _) {
   u32 argv[16];
   ScriptArgs args;
 
@@ -182,16 +185,15 @@ bool32 VM_Ctrl_CallIndirect(u8* _) {
   return VM_ExecByID(scriptID, &args);
 }
 
-// clang-format off
+// こっちは制御構文に相当するランタイムに必要不可欠なものが集まっている
 static const Subroutine sCtrlHandlers1[6] = {
-    {.id = 0x0D86, .fn = (void*)VM_Ctrl_If},
-    {.id = 0x4A6F, .fn = (void*)VM_Ctrl_Switch},
-    {.id = 0x64C0, .fn = (void*)VM_Ctrl_Unused_64C0},
-    {.id = 0x121F, .fn = (void*)VM_Ctrl_CallIndirect},
-    {.id = 0xCD3A, .fn = (void*)VM_Ctrl_Return},
-    {.id = 0xB96E, .fn = (void*)VM_Ctrl_DebugPrint},
-}; // 0x085B01D0
-// clang-format on
+    {id : 0x0D86, fn : VM_Ctrl_If                },
+    {id : 0x4A6F, fn : VM_Ctrl_Switch            },
+    {id : 0x64C0, fn : VM_Ctrl_Unused_64C0       },
+    {id : 0x121F, fn : VM_Ctrl_CallScriptIndirect},
+    {id : 0xCD3A, fn : VM_Ctrl_Return            },
+    {id : 0xB96E, fn : VM_Ctrl_DebugPrint        },
+};  // 0x085B01D0
 
 void FUN_082324b0(void) {
   gCtrlHandlers1.next = NULL;

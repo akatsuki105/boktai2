@@ -28,4 +28,7 @@ EWRAM_DATA u8 gGameStateBuffer[12288] = {};  // 0x0203C400, RandomizeGameStateAd
 
 EWRAM_DATA u32 u32_ARRAY_0203f400[256] = {};
 EWRAM_DATA u32 u32_ARRAY_0203f800[256] = {};
+
+// クロスオーバー通信で送る文字列を1文字 = 1エントリに展開した表, 根拠: Crossover_LoadMappingBuf が 0x100 個まで strh で埋める
+EWRAM_DATA u16 gCrossoverMappingBuf[256] = {};  // 0x0203FC00
 // todo...

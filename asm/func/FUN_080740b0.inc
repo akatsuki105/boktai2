@@ -52,7 +52,7 @@ _0807410C:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r2, r6, #0
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	bne _0807412A
 	b _0807423C
@@ -74,7 +74,7 @@ _0807413C:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	b _0807423C
 _08074156:
 	ldr r2, _08074174 @ =0x0000037E
@@ -113,7 +113,7 @@ _0807418C:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r2, r6, #0
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	adds r6, r0, #0
 	ldrb r0, [r4]
 	cmp r0, #1
@@ -136,7 +136,7 @@ _0807418C:
 	adds r2, #0x2c
 	adds r0, r5, #0
 	movs r3, #0
-	bl Player_DarkDjangoSpear_08061970
+	bl Player_SpawnSpearShockwave
 _080741D4:
 	cmp r6, #0
 	beq _0807423C
@@ -158,7 +158,7 @@ _080741EC:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r2, r6, #0
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _0807423C
 	adds r0, r5, #0
@@ -176,7 +176,7 @@ _08074214:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r2, r6, #0
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _0807423C
 	adds r0, r5, #0

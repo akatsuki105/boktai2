@@ -74,7 +74,7 @@ const main = () => {
   new Command()
     .name("extract_all_func.ts")
     .description("引数で渡した .s/.inc ファイルの全部の関数に extract_func.ts を適用する (すでに適用されていたらスキップ)")
-    .arguments("<asmFile:string>")
+    .argument("<asmFile:string>", "対象の .s/.inc ファイルのパス")
     .action((_, asmFile) => {
       extractAllFunctions(getRepoRoot(), asmFile);
     })

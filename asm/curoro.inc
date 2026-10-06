@@ -201,12 +201,12 @@ _0813A3C0:
 	bne _0813A3FE
 	ldr r0, [r6]
 	movs r1, #1
-	bl FUN_08063288
+	bl Player_StartFormEffect
 	b _0813A406
 _0813A3FE:
 	ldr r0, [r6]
 	movs r1, #2
-	bl FUN_08063288
+	bl Player_StartFormEffect
 _0813A406:
 	pop {r4, r5, r6, r7}
 	pop {r0}
@@ -1214,7 +1214,7 @@ _0813AB6C:
 	ldr r0, _0813AB9C @ =0x03002BE0
 	ldr r0, [r0]
 	movs r1, #1
-	bl FUN_08063288
+	bl Player_StartFormEffect
 	b _0813ABAA
 	.align 2, 0
 _0813AB98: .4byte 0x0000065E
@@ -1223,7 +1223,7 @@ _0813ABA0:
 	ldr r0, _0813ABD0 @ =0x03002BE0
 	ldr r0, [r0]
 	movs r1, #2
-	bl FUN_08063288
+	bl Player_StartFormEffect
 _0813ABAA:
 	ldr r0, _0813ABD4 @ =0x0000065E
 	adds r1, r6, r0
@@ -3152,7 +3152,7 @@ _0813BA94:
 _0813BAA2:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0813BAB8
 	adds r0, #4
@@ -3502,7 +3502,7 @@ _0813BD44:
 _0813BD52:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0813BD68
 	adds r0, #4
@@ -4395,7 +4395,7 @@ _0813C426:
 	strb r1, [r4, #2]
 	strb r0, [r4, #3]
 	ldr r0, [r4, #4]
-	bl FUN_08234f6c
+	bl Map_GetPathNodes
 	ldrb r1, [r4, #2]
 	lsls r1, r1, #3
 	adds r0, r0, r1
@@ -5301,7 +5301,7 @@ _0813CB1C:
 _0813CB2A:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0813CB40
 	adds r0, #4
@@ -5417,7 +5417,7 @@ _0813CC02:
 	mov r6, sp
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0813CC18
 	adds r0, #4
@@ -6344,7 +6344,7 @@ _0813D308:
 _0813D316:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0813D32C
 	adds r0, #4
@@ -6870,7 +6870,7 @@ _0813D750:
 	ldr r6, [sp, #0xf4]
 	ldrb r2, [r6]
 	add r0, sp, #0x1c
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	add r0, sp, #0x1c
 	ldrh r0, [r0]
 	lsls r0, r0, #0x10
@@ -6913,7 +6913,7 @@ _0813D7A2:
 	add r4, sp, #0x1c
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0813D7C4
 	adds r0, #4
@@ -7918,7 +7918,7 @@ _0813DFB6:
 	ldr r5, [sp, #0x188]
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0813DFD8
 	adds r0, #4

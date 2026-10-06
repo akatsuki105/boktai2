@@ -184,7 +184,7 @@ _080FA088:
 	adds r4, r6, #0
 	adds r4, #8
 	adds r1, r4, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	movs r2, #0x95
 	lsls r2, r2, #3
 	adds r0, r6, r2
@@ -240,7 +240,7 @@ _080FA104:
 _080FA112:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080FA128
 	adds r0, #4

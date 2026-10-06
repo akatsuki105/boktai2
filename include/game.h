@@ -30,7 +30,7 @@ typedef struct {
   u32 magicNumber;            // 0x000, gScriptDirectoryBuildTime = 0x40A8186C がセットされる, ロード時にチェックしてそう
   u8 unk_004[12];             // 0x004
   u16 unk_010;                // 0x010, FUN_08063634 が Player.unk_456 へ写す
-  s16 messageSpeed;           // 0x012, メッセージ速度設定, FUN_08049668 が TextRenderer.speed に入れる
+  s16 messageSpeed;           // 0x012, メッセージ速度設定, TextRenderer_ResetSpeed が TextRenderer.speed に入れる
   u8 unk_14[4];               // 0x014
   s16 stats[STAT_KINDS * 2];  // 0x018, ステータスポイントの割り振り と (多分タロットカードの)ドーピングボーナス, ステータス画面には合計値が表示される
   u16 savedHP;                // 0x028, コンティニュー用？
@@ -84,7 +84,9 @@ typedef struct {
   s16 totalEnemyKillCount;       // 0x1F0
   s16 enemyKillCount[24];        // 0x1F2, idx: include/constants/enemy.h の EnemyCategoryID?
   u16 unk_222;                   // 0x222
-  u8 unk_224[22];                // 0x224
+  u8 unk_224[0x228 - 0x224];     // 0x224
+  u16 killCounts[5];             // 0x228, ビースト/シング/ファントム/アンデッド/イモータルの撃破数, 根拠: Player_WeaponEffectKillCount が敵の系統ビットで引く
+  u8 unk_232[0x23A - 0x232];     // 0x232
   s16 solarBankInterestRate;     // 0x23A, Solar bank interest rate (stored as (1+r)*64, e.g. 14.0625% = 73). Defaults to 65 when starting a new game.
   u8 unk_23c[4];                 // 0x23C
   s16 lap;                       // 0x240, 現在のゲーム周回数
@@ -102,7 +104,7 @@ typedef struct {
   u32 darkDjangoAtkCounter;      // 0x2A8
   u32 unk_2ac;                   // 0x2AC
   s16 unk_2b0[2];                // 0x2B0
-  u32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒)
+  s32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒), s32 の根拠: Entity0823acbc_Update が 0x7FFFFFFF と符号付き比較する
   u8 unk_2b8[8];                 // 0x2B8
   u8 unk_2c0[8];                 // 0x2C0
   s32 unk_2c8[2];                // 0x2C8, FUN_0807a8e0 が isSabata で引いて 0 を書く

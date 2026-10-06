@@ -173,6 +173,8 @@ void* DecompTargetFunc(void) {
        `.claude/skills/decomp-func/scripts/streamdiff.py BUILT_OBJECT SYMBOL ORIGINAL_INC` (keep a copy of the original inc via `git show HEAD:asm/... > <scratchpad>/orig.inc` before truncating it).
        Spelling variants, label/symbol spelling, pool offsets and immediate radix are masked, so every surviving hunk is a real codegen difference. **Branch targets are not masked** — an in-function target becomes a signed instruction-index delta (`beq ~+7`), so a branch landing on the wrong block shows up as a hunk rather than hiding behind a matching label.
        **Zero hunks is not a match.** Pool *values* and references that leave the function still differ underneath the masking. Measured on this repo: of the five NON_MATCH functions that streamdiff reported as identical, one matched the ROM and four did not. Only step 4 decides.
+       **Diffing a NON_MATCH function means `make clean-code` first.** Its C only exists in the object when the build defines `NONMATCHING_C`, and `make` does not treat `EXTRA_CPPFLAGS` as a dependency: run `make EXTRA_CPPFLAGS=-DNONMATCHING_C` right after a normal build and the untouched objects are reused, so the function is still compiled from its `INCFUNC` — the original assembly against itself. That reports "stream identical" and any `objdump` you take is the target, not your C. Always
+       `make clean-code && make EXTRA_CPPFLAGS=-DNONMATCHING_C`, or let `residual.ts` do it. Seen on seven functions in one session, three of which got a wrong instruction count written into their residual note.
        Two readings that save time:
        - A residual whose **only** difference is a trailing `.word <abs>` against `.word .rodata` is a real match. Those are table relocations the linker resolves.
        - When `make compare` reports a huge diff starting early in the ROM, the function's **size** changed and everything after it shifted; the body is probably fine. `Entity080abd14_Create` and `Entity080ac374_Create` both did this — an over-narrow parameter type (`u16` where the target takes `u32`) expands to `lsls`/`lsrs` at entry, keeps one more register live, and adds it to the push/pop pair. streamdiff normalises the stream, so it does not show a prologue register count as a hunk.
@@ -245,7 +247,7 @@ silently skipped — including the `make compare` you were relying on.
   `--brief` / `--no-ghidra` trim it.
 - `census.ts <file.c>...` — remaining-function census over the given `.c` files, smallest-first TSV with sizes and inc paths.
 - `streamdiff.py` — canonicalized instruction diff, object vs inc.
-- `residual.ts [file.c...]` — build with `-DNONMATCHING_C` and report every NON_MATCH function's hunk count, smallest-first. Cleans `build/` afterwards, so the next build starts over.
+- `residual.ts [file.c...]` — build with `-DNONMATCHING_C` and report every NON_MATCH function's hunk count, smallest-first. Cleans `build/` before and after, so its numbers are the trustworthy ones and the next build starts over.
 
 ## Resources (read when you reach that phase)
 

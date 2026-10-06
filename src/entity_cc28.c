@@ -60,7 +60,7 @@ struct EntityCC28 {
   u8 unk_9e4[0x9EC - 0x9E4];       // 0x09E4, まだ未解析
   u16 unk_9ec;                     // 0x09EC
   u16 unk_9ee;                     // 0x09EE
-  void* fn_9f0;                    // 0x09F0
+  EntityCC28Func* updateCallback;  // 0x09F0
   EntityCC28Func* fn;              // 0x09F4
   s8 unk_9f8;                      // 0x09F8
   u8 unk_9f9[0x9FA - 0x9F9];       // 0x09F9, まだ未解析
@@ -205,7 +205,14 @@ NAKED s32 FUN_0808a440(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_0808a44
 
 NAKED void FUN_0808a458(s32 param_1, u16 param_2) { INCFUNC("asm/func/FUN_0808a458.inc"); }
 
-NAKED s32 MinS32(s32 a, s32 b) { INCFUNC("asm/func/MinS32.inc"); }
+s32 MinS32(s32 a, s32 b) {
+  s32 min = b;
+
+  if (a <= b) {
+    min = a;
+  }
+  return min;
+}
 
 NAKED void FUN_0808a4ac(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6) { INCFUNC("asm/func/FUN_0808a4ac.inc"); }
 
@@ -283,11 +290,16 @@ NAKED void FUN_0808c548(EntityCC28* p) { INCFUNC("asm/func/FUN_0808c548.inc"); }
 
 NAKED void FUN_0808c61c(EntityCC28* p, u16 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0808c61c.inc"); }
 
-NAKED s32 FUN_0808c648(s32 param_1) { INCFUNC("asm/func/FUN_0808c648.inc"); }
+s32 FUN_0808c648(s32 param_1) {
+  if (param_1 == 0) {
+    return 0x93;
+  }
+  return param_1 + 0xA0;
+}
 
 NAKED void FUN_0808c658(EntityCC28* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0808c658.inc"); }
 
-NAKED void FUN_0808c700(EntityCC28* p) { INCFUNC("asm/func/FUN_0808c700.inc"); }
+void FUN_0808c700(EntityCC28* p) { FUN_0808c658(p, -1, -1); }
 
 NAKED s32 FUN_0808c710(unknown* param_1, ParticleGroup* param_2) { INCFUNC("asm/func/FUN_0808c710.inc"); }
 

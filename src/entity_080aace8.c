@@ -32,7 +32,7 @@ typedef struct Entity080aace8 {
   u8 unk_344[4];                      // 0x344
   u16 unk_348;                        // 0x348, _Init の第3引数, 0 のときだけ _Destroy が auxSprites を外す
   u8 unk_34a[2];                      // 0x34A
-  Entity080aace8Func updateCallback;  // 0x34C, _Update が毎フレーム呼ぶ
+  Entity080aace8Func updateCallback;  // 0x34C
 } Entity080aace8;
 static_assert(sizeof(Entity080aace8) == 848);
 

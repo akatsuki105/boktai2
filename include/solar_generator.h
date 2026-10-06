@@ -46,7 +46,7 @@ typedef struct Generator {
   u8 unk_f9;                                  // 0x0F9, 0 まで減らすだけのカウンタ
   u8 unk_fa[6];                               // 0x0FA
   Eff082473e0Emitter eff_100;                 // 0x100
-  void (*updateCallback)(struct Generator*);  // 0x238, _Update が毎フレーム呼ぶ,Generator_SetState が state と一緒に書く
+  void (*updateCallback)(struct Generator*);  // 0x238
 } Generator;
 static_assert(sizeof(Generator) == 572);
 

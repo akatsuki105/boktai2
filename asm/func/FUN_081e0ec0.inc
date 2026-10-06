@@ -51,7 +51,7 @@ _081E0F0E:
 _081E0F22:
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _081E0F60
 	adds r0, #4
@@ -115,7 +115,7 @@ _081E0F9E:
 	adds r4, r6, #1
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _081E0FB0
 	adds r0, #4
@@ -146,7 +146,7 @@ _081E0FCE:
 	adds r4, r6, r0
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _081E0FF0
 	adds r0, #4
@@ -176,7 +176,7 @@ _081E1012:
 	subs r4, r6, #1
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _081E1024
 	adds r0, #4
@@ -228,7 +228,7 @@ _081E106A:
 	subs r4, r6, r0
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _081E108C
 	adds r0, #4

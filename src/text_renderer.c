@@ -5,7 +5,31 @@
 #include "text.h"
 #include "vm.h"
 
-const s16 gCharSounds[2] = {0x105, 0x106};  // 0x085AB458, TextRenderer_PlayCharSound が unk_11 で選ぶ文字送り音
+// 本文中に書けるタグの一覧, TextRenderer_HandleTag が '<' の次からタグ名を引いて処理する
+//
+// <WEIGHT> / </WEIGHT>  style を 1 / 0 にする
+// <ALTER> / </ALTER>    同じく style を 1 / 0 にする
+// <NONSEL> / </NONSEL>  style を 2 / 0 にする
+// <UVMOJI> / </UVMOJI>  同じく style を 2 / 0 にする
+// <WAIT=n>              文字送り速度を n にする, 値が無ければ本体設定の速度に戻す
+// <LOCK=n>              waitFrames に n を入れて次の行へ進むのを待たせる, 値が無ければ 0
+// <LABEL=名前>          名前に対応する顔番号を face に入れ, 出している間は無音かつ速度 0 にする
+// </LABEL>              <LABEL> が退避した速度に戻す
+// <FACEOFF>             face を -1 にして顔を消す
+// <NAME>                プレイヤー名を差し込む, mode 1 に切り替えて textAlt を読ませる
+// <VAR=n>               vars[n] を10進に直して差し込む, mode 2 に切り替えて numBuf を読ませる
+// <EXTEND=n>            extends[n] の文字列を差し込む, mode 3 に切り替えて extendText を読ませる
+// <PROC=n>              n を pending に積む, TextRenderer_RunPending が scriptIds の添字として実行する
+// <SOUND=n>             効果音 n を鳴らす, 値が無ければ 0xDD
+// <MOJISE=名前>         文字送り音を切り替える, MOJISE_SYSTEM で gCharSounds[0], MOJISE_TALK で gCharSounds[1]
+// <END>                 finished を立てて本文を終わらせる
+// <PAREN> / </PAREN>    parenEnabled が立っているときだけ括弧を実際に1文字描く
+//
+// <LABEL> の値は顔番号への名前表 (0x08251B9C 以降) で, NONE だけ 0xFF (顔なし) で, あとは R_DJUNGO が 0 から HATENA が 0x1A まで並ぶ (KURO_BAN だけ 0x1D)
+// 値が PLAYER と FUTARI のときだけ固定値ではなく Text_GetPlayerFace / Text_GetPairFace がプレイヤーを見て決める
+// src/data/text に実際に出てくるのは PROC / END / LABEL / EXTEND / VAR / NAME / ALTER / WEIGHT / LOCK / WAIT / MOJISE / FACEOFF の12種類だけで, NONSEL / UVMOJI / SOUND / PAREN は本文側には現れない
+
+const s16 gCharSounds[2] = {0x105, 0x106};  // 0x085AB458, TextRenderer_PlayCharSound が charSoundIdx で選ぶ文字送り音
 
 // 0x1F エスケープの次のバイトと文字コードの組, bit15 が立っていれば全角 (Video_DrawCharWide 側)
 const u16 gEscapeCharcodes[118] = {
@@ -58,42 +82,42 @@ s32 TextRenderer_AdvanceCursor(TextRenderer* p, s32 wide) {
   }
 }
 
-// 文字送り音を鳴らす, unk_12 が 0/1 を往復して1文字おきに鳴る
+// 文字送り音を鳴らす, soundToggle が 0/1 を往復して1文字おきに鳴る
 void TextRenderer_PlayCharSound(TextRenderer* p, u32 charcode) {
   if (p->unk_0a != 0) {
     return;
   }
-  if (p->unk_0b != 0) {
+  if (p->silent != 0) {
     return;
   }
 
-  if ((p->speed > 1 && p->unk_16 == 0) || p->unk_12 == 0) {
+  if ((p->speed > 1 && p->soundEveryChar == 0) || p->soundToggle == 0) {
     if (charcode != 0 && charcode != u16_030047d8) {
-      PlaySound_082406e0(gCharSounds[p->unk_11]);
+      PlaySound_082406e0(gCharSounds[p->charSoundIdx]);
     }
   }
-  if (p->unk_12 != 0) {
-    p->unk_12 = 0;
+  if (p->soundToggle != 0) {
+    p->soundToggle = 0;
   } else {
-    p->unk_12++;
+    p->soundToggle++;
   }
 }
 
 s32 TextRenderer_DrawCharNarrow(TextRenderer* p, u16 charcode) {
   TextRenderer_PlayCharSound(p, charcode);
-  Video_DrawCharNarrow(charcode, p->cursorX, p->cursorY, p->unk_06);
+  Video_DrawCharNarrow(charcode, p->cursorX, p->cursorY, p->style);
   TextRenderer_AdvanceCursor(p, 0);
-  p->unk_13 = 0;
+  p->drewWide = 0;
 }
 
 s32 TextRenderer_DrawCharWide(TextRenderer* p, u16 charcode) {
   TextRenderer_PlayCharSound(p, charcode);
-  Video_DrawCharWide(charcode, p->cursorX, p->cursorY, p->unk_06);
+  Video_DrawCharWide(charcode, p->cursorX, p->cursorY, p->style);
   TextRenderer_AdvanceCursor(p, 1);
-  p->unk_13 = 1;
+  p->drewWide = 1;
 }
 
-s32 FUN_08048a78(s32* p, s32 n) {
+s32 Text_TakeDigit(s32* p, s32 n) {
   s32 count = 0;
   s32 v = *p;
 
@@ -107,7 +131,7 @@ s32 FUN_08048a78(s32* p, s32 n) {
 
 // スクリプトの文字列参照2つを引いて dst に連結する, どちらかが無ければ dst を空にして -1
 // 残差は s と文字テンポラリのレジスタが逆 (原典は s が r1, 文字が r0) で adds の移動3命令ぶん少ない, Tier A/B と C のローカル分割・宣言順は試済
-NON_MATCH s32 FUN_08048a98(char* dst, u8* pc1, u8* pc2, s32 off1, s32 off2) {
+NON_MATCH s32 Text_ConcatStringRefs(char* dst, u8* pc1, u8* pc2, s32 off1, s32 off2) {
 #ifdef NONMATCHING_C
   char* s;
   s32 ref;
@@ -135,7 +159,7 @@ NON_MATCH s32 FUN_08048a98(char* dst, u8* pc1, u8* pc2, s32 off1, s32 off2) {
   *dst = *s;
   return 0;
 #else
-  INCFUNC("asm/func/FUN_08048a98.inc");
+  INCFUNC("asm/func/Text_ConcatStringRefs.inc");
 #endif
 }
 
@@ -154,16 +178,14 @@ u16 Text_GetEscapeCharcode(u8* s) {
 }
 
 // n を10進で dst に書く, 上の桁の 0 は詰める, 負なら先頭に '-'
-// 残差はゼロ埋めループ1命令, 原典は添字ループが強度削減されて歩くポインタと dst の符号つき比較になっている (bge), こちらは base+index のまま, Tier A/B と C の変数分割は試済
-NON_MATCH void FUN_08048b28(char* dst, s32 n) {
-#ifdef NONMATCHING_C
+void Text_FormatDecimal(char* dst, s32 n) {
   s32 hasDigit = 0;
   char* out = dst;
   s32 d;
   s32 i;
 
-  for (i = 11; i >= 0; i--) {
-    out[i] = 0;
+  for (i = 0; i < 12; i++) {
+    dst[i] = 0;
   }
 
   if (n < 0) {
@@ -172,35 +194,35 @@ NON_MATCH void FUN_08048b28(char* dst, s32 n) {
     n = -n;
   }
 
-  d = FUN_08048a78(&n, 100000);
+  d = Text_TakeDigit(&n, 100000);
   if (d != 0) {
     *out = d + '0';
     hasDigit = 1;
     out++;
   }
 
-  d = FUN_08048a78(&n, 10000);
+  d = Text_TakeDigit(&n, 10000);
   if (d != 0 || hasDigit) {
     *out = d + '0';
     hasDigit = 1;
     out++;
   }
 
-  d = FUN_08048a78(&n, 1000);
+  d = Text_TakeDigit(&n, 1000);
   if (d != 0 || hasDigit) {
     *out = d + '0';
     hasDigit = 1;
     out++;
   }
 
-  d = FUN_08048a78(&n, 100);
+  d = Text_TakeDigit(&n, 100);
   if (d != 0 || hasDigit) {
     *out = d + '0';
     hasDigit = 1;
     out++;
   }
 
-  d = FUN_08048a78(&n, 10);
+  d = Text_TakeDigit(&n, 10);
   if (d != 0 || hasDigit) {
     *out = d + '0';
     out++;
@@ -214,9 +236,6 @@ NON_MATCH void FUN_08048b28(char* dst, s32 n) {
 
   *out++ = d + '0';
   *out = 0;
-#else
-  INCFUNC("asm/func/FUN_08048b28.inc");
-#endif
 }
 
 // s の先頭 n 文字を lit と比べる, s が先に終われば -1、文字が違えば 1、n 文字一致すれば 0
@@ -314,22 +333,22 @@ u8* Text_FindChar(u8* s, u8 c) {
   return s;
 }
 
-// タグの '=' から '>' までを buf_34 に写して、'>' か終端の位置を返す
+// タグの '=' から '>' までを tagValue に写して、'>' か終端の位置を返す (例: <VAR=1>, <PROC=0>)
 // 残差は c のレジスタ1つ (原典は ldrb で直接 r2, こちらは r0 経由で1命令多い) だけ, Tier A/B と C のローカル分割は試済
-NON_MATCH char* FUN_08048ce0(TextRenderer* p, char* s) {
+NON_MATCH char* TextRenderer_ReadTagValue(TextRenderer* p, char* s) {
 #ifdef NONMATCHING_C
   s32 i;
 
-  p->unk_2c = 0;
-  p->unk_30 = 0;
+  p->tagHasValue = 0;
+  p->tagValueLen = 0;
   i = 0;
   while (*s != '>' && *s != 0) {
     char c = *s;
 
     if (c == '=') {
-      p->unk_2c = 1;
-    } else if (p->unk_2c != 0) {
-      p->buf_34[p->unk_30++] = c;
+      p->tagHasValue = 1;
+    } else if (p->tagHasValue != 0) {
+      p->tagValue[p->tagValueLen++] = c;
     }
 
     i++;
@@ -339,14 +358,14 @@ NON_MATCH char* FUN_08048ce0(TextRenderer* p, char* s) {
     }
   }
 
-  p->buf_34[p->unk_30] = 0;
+  p->tagValue[p->tagValueLen] = 0;
   return s;
 #else
-  INCFUNC("asm/func/FUN_08048ce0.inc");
+  INCFUNC("asm/func/TextRenderer_ReadTagValue.inc");
 #endif
 }
 
-s32 FUN_08048d40(void) {
+s32 Text_GetPlayerFace(void) {
   switch (gStat->playerKind) {
     case PLAYER_SOLAR_DJANGO: {
       return 0;
@@ -363,22 +382,23 @@ s32 FUN_08048d40(void) {
   }
 }
 
-NON_MATCH s32 FUN_08048d78(void) {
+NON_MATCH s32 Text_GetPairFace(void) {
 #ifdef NONMATCHING_C
   if (gStat->playerKind == PLAYER_SOLAR_DJANGO) return 27;
 
   return 28;
 #else
-  INCFUNC("asm/func/FUN_08048d78.inc");
+  INCFUNC("asm/func/Text_GetPairFace.inc");
 #endif
 }
 
-NAKED char* FUN_08048da4(TextRenderer* p, char* s) { INCFUNC("asm/func/FUN_08048da4.inc"); }
+// '<' の次から始まるタグ名を表引きして適用し, '>' の次の位置を返す, 閉じタグ ('/' 始まり) も同じ関数が見る
+NAKED char* TextRenderer_HandleTag(TextRenderer* p, char* s) { INCFUNC("asm/func/TextRenderer_HandleTag.inc"); }
 
 // 文字を1つ描いて次の位置を返す, タグと改行は描かずに読み飛ばして続ける
 // ループ形 (while ((s8)*s >= 0) + 全角をループ外) は原典と一致した (入口ジャンプと底のテストが出る)
 // 残差5命令: 原典は *s の値を lsls#24 の結果から lsrs#24 で復元して 0/<の判定に使い回し, 先頭のテストが latch ブロックに合流している
-NON_MATCH char* FUN_08049488(TextRenderer* p, char* s) {
+NON_MATCH char* TextRenderer_DrawNextChar(TextRenderer* p, char* s) {
 #ifdef NONMATCHING_C
   u16 c;
 
@@ -393,7 +413,7 @@ NON_MATCH char* FUN_08049488(TextRenderer* p, char* s) {
         return s;
       }
 
-      s = FUN_08048da4(p, s);
+      s = TextRenderer_HandleTag(p, s);
       if (p->unk_0e != 0) {
         return s;
       }
@@ -445,7 +465,7 @@ NON_MATCH char* FUN_08049488(TextRenderer* p, char* s) {
   s++;
   return s;
 #else
-  INCFUNC("asm/func/FUN_08049488.inc");
+  INCFUNC("asm/func/TextRenderer_DrawNextChar.inc");
 #endif
 }
 
@@ -456,7 +476,7 @@ s32 TextRenderer_Advance(TextRenderer* p) {
   p->unk_0e = 0;
   switch (p->mode) {
     case 0: {
-      s = FUN_08049488(p, p->text);
+      s = TextRenderer_DrawNextChar(p, p->text);
       p->text = s;
       if (p->finished != 0) {
         return 1;
@@ -470,7 +490,7 @@ s32 TextRenderer_Advance(TextRenderer* p) {
       return 1;
     }
     case 1: {
-      s = FUN_08049488(p, p->textAlt);
+      s = TextRenderer_DrawNextChar(p, p->textAlt);
       p->textAlt = s;
       if (p->mode != 1) {
         return 0;
@@ -492,8 +512,8 @@ s32 TextRenderer_Advance(TextRenderer* p) {
       return 1;
     }
     case 2: {
-      s = FUN_08049488(p, p->unk_24);
-      p->unk_24 = s;
+      s = TextRenderer_DrawNextChar(p, p->numText);
+      p->numText = s;
       if (p->mode != 2) {
         return 0;
       }
@@ -514,8 +534,8 @@ s32 TextRenderer_Advance(TextRenderer* p) {
       return 1;
     }
     case 3: {
-      s = FUN_08049488(p, p->unk_28);
-      p->unk_28 = s;
+      s = TextRenderer_DrawNextChar(p, p->extendText);
+      p->extendText = s;
       if (p->mode != 3) {
         return 0;
       }
@@ -551,18 +571,18 @@ char* TextRenderer_GetCurrentText(TextRenderer* p) {
       return p->textAlt;
     }
     case 2: {
-      return p->unk_24;
+      return p->numText;
     }
     case 3: {
-      return p->unk_28;
+      return p->extendText;
     }
   }
 
   return NULL;
 }
 
-void FUN_08049640(TextRenderer* p) {
-  p->unk_06 = 0;
+void TextRenderer_ResetModeStack(TextRenderer* p) {
+  p->style = 0;
   p->stackDepth = 0;
   p->mode = 0;
 }
@@ -578,27 +598,27 @@ void TextRenderer_SetRect(TextRenderer* p, s32 x, s32 y, s32 width, s32 height) 
 }
 
 // 文字送り速度を設定から取り込む
-void FUN_08049668(TextRenderer* p) {
+void TextRenderer_ResetSpeed(TextRenderer* p) {
   p->unk_08 = 0;
   p->speed = GetMessageSpeed();
 }
 
 void TextRenderer_Init(TextRenderer* p, s32 x, s32 y, s32 width, s32 height) {
   TextRenderer_SetRect(p, x, y, width, height);
-  FUN_08049640(p);
-  FUN_08049668(p);
+  TextRenderer_ResetModeStack(p);
+  TextRenderer_ResetSpeed(p);
   p->unk_0a = 0;
-  p->unk_0b = 0;
-  p->unk_0c = p->speed;
-  p->unk_13 = 0;
+  p->silent = 0;
+  p->savedSpeed = p->speed;
+  p->drewWide = 0;
   p->scriptIdCount = 0;
   p->text = NULL;
   p->textAlt = NULL;
-  p->unk_24 = NULL;
-  p->unk_28 = NULL;
+  p->numText = NULL;
+  p->extendText = NULL;
   p->face = -1;
   p->unk_14 = 1;
-  p->unk_18 = 0;
+  p->waitFrames = 0;
 }
 
 s32 TextRenderer_SetVar(TextRenderer* p, s32 idx, u32 val) { p->vars[idx] = val; }
@@ -678,7 +698,7 @@ NON_MATCH s32 TextRenderer_GetExtendWidth(TextRenderer* p, s32 idx) {
                 if (*q == '=') {
                   hasEq = TRUE;
                 } else if (hasEq) {
-                  p->buf_34[n++] = *q;
+                  p->tagValue[n++] = *q;
                 }
 
                 q++;
@@ -690,9 +710,9 @@ NON_MATCH s32 TextRenderer_GetExtendWidth(TextRenderer* p, s32 idx) {
             }
           }
 
-          p->buf_34[n] = 0;
+          p->tagValue[n] = 0;
           if (hasEq && n != 0) {
-            var = Text_ParseDecimal(p->buf_34, n);
+            var = Text_ParseDecimal(p->tagValue, n);
           } else {
             var = 0;
           }

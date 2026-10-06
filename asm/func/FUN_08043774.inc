@@ -230,7 +230,7 @@ _08043910:
 	cmp r5, #0
 	bne _08043948
 	mov r0, r8
-	bl FUN_08234e3c
+	bl Map_AdvancePathWalker
 	adds r0, r4, #0
 	bl FUN_08043510
 	strb r0, [r4, #4]

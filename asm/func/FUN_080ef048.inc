@@ -82,7 +82,7 @@ _080EF0E6:
 	adds r6, r3, #0
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080EF108
 	adds r0, #4

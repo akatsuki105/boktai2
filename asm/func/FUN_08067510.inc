@@ -107,7 +107,7 @@ _080675E6:
 	adds r0, r7, #0
 	mov r1, r8
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	bne _080675F8
 	bl _08067DD4
@@ -356,7 +356,7 @@ _080677D4:
 _080677E2:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080677F8
 	adds r0, #4
@@ -408,7 +408,7 @@ _08067834:
 _0806783E:
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0806784E
 	adds r0, #4
@@ -525,7 +525,7 @@ _08067914:
 _08067922:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08067938
 	adds r0, #4
@@ -601,7 +601,7 @@ _080679A0:
 _080679AE:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080679C4
 	adds r0, #4
@@ -686,7 +686,7 @@ _08067A50:
 	adds r0, r7, #0
 	mov r1, r8
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r2, #0xb9
 	lsls r2, r2, #2
 	adds r0, r7, r2
@@ -732,7 +732,7 @@ _08067A96:
 	adds r1, r0, #0
 	adds r0, r7, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	bne _08067ABC
 	b _08067DD4
@@ -1041,7 +1041,7 @@ _08067D0C:
 _08067D1A:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08067D30
 	adds r0, #4

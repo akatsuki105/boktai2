@@ -26,9 +26,6 @@
     "editor.formatOnSave": true,
     "editor.insertSpaces": true
   },
-  "**/*.bokc": {
-    "editor.formatOnSave": false
-  },
 
   "[linkerscript]": {
     "editor.suggest.insertMode": "replace",
@@ -53,7 +50,6 @@
     "*.bokc": "c"
   },
   "workbench.editorAssociations": {
-    "*.bin": "hexEditor.hexedit",
     "*.gbapal": "hexEditor.hexedit"
   },
   "files.watcherExclude": {

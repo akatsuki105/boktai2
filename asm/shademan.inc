@@ -1331,7 +1331,7 @@ FUN_0803cb6c: @ 0x0803CB6C
 _0803CB84:
 	mov r0, sp
 	movs r1, #8
-	bl FUN_08235090
+	bl Map_PickRandomPathNode
 	adds r0, r5, #0
 	mov r1, sp
 	adds r2, r6, #0
@@ -1422,7 +1422,7 @@ _0803CC0E:
 	lsls r2, r2, #2
 	adds r0, r5, #0
 	movs r1, #2
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 _0803CC3E:
 	ldr r2, [r4]
 	adds r2, #0x2c
@@ -3520,7 +3520,7 @@ _0803DC6C:
 _0803DC7A:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0803DC90
 	adds r0, #4
@@ -3592,7 +3592,7 @@ _0803DCF0:
 _0803DCFE:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0803DD14
 	adds r0, #4
@@ -4308,7 +4308,7 @@ _0803E218:
 _0803E226:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0803E23C
 	adds r0, #4
@@ -4381,7 +4381,7 @@ _0803E2A0:
 _0803E2AE:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0803E2C4
 	adds r0, #4
@@ -4560,7 +4560,7 @@ _0803E40E:
 	adds r0, r4, r6
 	ands r2, r3
 	movs r1, #4
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	movs r0, #0xb6
 	lsls r0, r0, #1
 	adds r1, r4, r0
@@ -6308,7 +6308,7 @@ _0803F130:
 	adds r0, r0, r2
 	ldrb r2, [r0]
 	add r0, sp, #0x18
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	add r7, sp, #0x18
 	adds r0, r7, #0
 	ldrh r0, [r0]
@@ -6348,7 +6348,7 @@ _0803F18C:
 _0803F19A:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0803F1B0
 	adds r0, #4

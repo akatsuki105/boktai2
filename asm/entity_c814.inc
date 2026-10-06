@@ -87,7 +87,7 @@ _080CB562:
 	adds r4, #0x24
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08236268
+	bl Map_StepNavPath
 	ldr r0, _080CB5AC @ =0x030044E0
 	ldrh r1, [r0, #2]
 	movs r0, #2
@@ -214,7 +214,7 @@ _080CB664:
 _080CB672:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080CB688
 	adds r0, #4
@@ -305,7 +305,7 @@ FUN_080cb714: @ 0x080CB714
 	adds r1, r5, #0
 	adds r1, #0x24
 	adds r0, r4, #0
-	bl FUN_0823280c
+	bl Map_InitMoverTile
 	adds r0, r5, #0
 	adds r0, #0x1c
 	adds r1, r4, #0
@@ -323,7 +323,7 @@ FUN_080cb73c: @ 0x080CB73C
 	adds r1, r0, #0
 	adds r0, #0xb8
 	adds r1, #0x24
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	pop {r0}
 	bx r0
 

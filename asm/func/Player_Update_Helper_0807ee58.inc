@@ -37,7 +37,7 @@ _0807EE6A:
 	adds r0, r5, r2
 	str r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08062c3c
+	bl Player_SetPlttIDs
 	ldr r0, _0807EED8 @ =0x0000094C
 	adds r1, r5, r0
 	ldr r0, _0807EEDC @ =0x0000FFFF
@@ -92,7 +92,7 @@ _0807EEEC:
 	adds r0, r5, r2
 	str r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08062c3c
+	bl Player_SetPlttIDs
 	ldr r0, _0807EF60 @ =0x0000094C
 	adds r1, r5, r0
 	ldr r0, _0807EF64 @ =0x0000FFFF
@@ -152,7 +152,7 @@ _0807EF70:
 	adds r0, r5, r2
 	str r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08062c3c
+	bl Player_SetPlttIDs
 	ldr r0, _0807EFF0 @ =0x0000094C
 	adds r1, r5, r0
 	ldr r0, _0807EFF4 @ =0x0000FFFF
@@ -227,7 +227,7 @@ _0807F01C:
 	adds r0, #0x20
 	str r0, [r1]
 	adds r0, r5, #0
-	bl FUN_08062c3c
+	bl Player_SetPlttIDs
 	ldr r0, _0807F0A8 @ =0x0000094C
 	adds r1, r5, r0
 	ldr r0, _0807F0AC @ =0x0000FFFF
@@ -256,7 +256,7 @@ _0807F066:
 	movs r1, #0
 	ldrsb r1, [r0, r1]
 	adds r0, r5, #0
-	bl FUN_08064c48
+	bl Player_IsMagicAvailableForm
 	ldr r2, _0807F0B8 @ =0x00000282
 	adds r1, r5, r2
 	strb r0, [r1]

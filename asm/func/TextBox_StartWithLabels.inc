@@ -69,7 +69,7 @@ _080479C6:
 	adds r1, r5, r2
 	strh r0, [r1]
 	adds r0, r6, #0
-	bl FUN_08049640
+	bl TextRenderer_ResetModeStack
 	movs r0, #0x85
 	lsls r0, r0, #2
 	adds r2, r5, r0

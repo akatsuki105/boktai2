@@ -1,7 +1,7 @@
 	push {r4, lr}
 	lsls r0, r0, #0x10
 	lsrs r4, r0, #0x10
-	bl FUN_0804e654
+	bl Crossover_GetMappingBuf
 	adds r2, r0, #0
 	movs r1, #0
 _0804E682:

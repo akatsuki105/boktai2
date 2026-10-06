@@ -35,7 +35,7 @@ _0806292C:
 	adds r0, r5, r1
 	strb r2, [r0]
 	adds r0, r5, #0
-	bl FUN_080622d0
+	bl Player_BuildPltt
 _0806293A:
 	ldr r2, _0806299C @ =0x0000096C
 	adds r0, r5, r2
@@ -139,7 +139,7 @@ _080629EC:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r5, #0
-	bl FUN_080624b0
+	bl Player_BlendPltt
 	ldrh r0, [r4]
 	adds r0, #1
 	strh r0, [r4]
@@ -194,7 +194,7 @@ _08062A6A:
 	str r0, [sp]
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_080624b0
+	bl Player_BlendPltt
 	movs r6, #0x96
 	lsls r6, r6, #4
 	adds r1, r5, r6
@@ -309,7 +309,7 @@ _08062B3A:
 	movs r0, #5
 	str r0, [sp]
 	adds r0, r5, #0
-	bl FUN_080624b0
+	bl Player_BlendPltt
 _08062B58:
 	movs r6, #0x96
 	lsls r6, r6, #4
@@ -375,7 +375,7 @@ _08062BCC:
 	str r0, [sp]
 	adds r0, r5, #0
 	adds r1, r6, #0
-	bl FUN_080624b0
+	bl Player_BlendPltt
 	b _08062C0C
 _08062BDE:
 	strh r4, [r3]

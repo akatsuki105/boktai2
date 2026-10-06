@@ -20,7 +20,7 @@
 	ldrh r2, [r3, #6]
 	mov r1, sl
 	str r3, [sp, #0xc]
-	bl FUN_08235924
+	bl Map_IsPosInNavRect
 	ldr r3, [sp, #0xc]
 	cmp r0, #0
 	bne _0823611E
@@ -61,7 +61,7 @@ _0823605E:
 	mov r0, r8
 	mov r1, sl
 	str r3, [sp, #0xc]
-	bl FUN_08235924
+	bl Map_IsPosInNavRect
 	ldr r3, [sp, #0xc]
 	cmp r0, #0
 	beq _0823608A
@@ -96,7 +96,7 @@ _082360AA:
 	mov r1, sl
 	adds r2, r6, #0
 	str r3, [sp, #0xc]
-	bl FUN_08235924
+	bl Map_IsPosInNavRect
 	ldr r3, [sp, #0xc]
 	cmp r0, #0
 	beq _082360C6
@@ -133,7 +133,7 @@ _082360F4:
 	mov r1, sl
 	adds r2, r4, #0
 	str r3, [sp, #0xc]
-	bl FUN_08235924
+	bl Map_IsPosInNavRect
 	ldr r3, [sp, #0xc]
 	cmp r0, #0
 	beq _0823610C

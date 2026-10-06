@@ -6,7 +6,7 @@
 #define REGISTERED_MAGIC(n) (*(gStat->registeredMagic + n))
 
 void FUN_0809c2d0(void);
-void FUN_08064fd8(Player* p, magic32_t n);
+void Player_EquipMagic(Player* p, magic32_t n);
 
 s32 GetMagicCategory(magic32_t id) {
   if (id < 10) {
@@ -45,7 +45,7 @@ void magic_082434f0(magic32_t n) {
         return;
       }
       if (gPlayerPtr[0] != NULL) {
-        FUN_08064fd8(gPlayerPtr[0], n);
+        Player_EquipMagic(gPlayerPtr[0], n);
       }
       return;
     }

@@ -111,7 +111,7 @@ _080F2922:
 	ands r0, r1
 	str r0, [r3]
 	adds r0, r7, #0
-	bl FUN_08234e3c
+	bl Map_AdvancePathWalker
 	adds r0, r5, #0
 	bl FUN_080e6204
 	ldr r0, [r7, #8]
@@ -147,7 +147,7 @@ _080F2970:
 	adds r0, r7, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_08235038
+	bl Map_IsPosOutsidePathNode
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
 	cmp r0, #1

@@ -45,7 +45,7 @@ _080799CC:
 	cmp r0, #0
 	beq _080799F0
 	adds r0, r4, #0
-	bl FUN_08064db0
+	bl Player_GetMagicAction
 	adds r2, r0, #0
 _080799F0:
 	movs r1, #0xd6

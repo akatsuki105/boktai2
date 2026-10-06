@@ -368,7 +368,7 @@ _08073016:
 	adds r0, r4, #0
 	ldr r1, [sp]
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r7, #0
 	beq _08073034
 	ldr r6, _08073048 @ =0x000004A7

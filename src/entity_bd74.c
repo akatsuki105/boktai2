@@ -4,41 +4,41 @@
 #include "sound.h"
 #include "sprite_aux.h"
 
-// elems の1要素, FUN_08084b5c が unk_2c が非0 のものだけ fn を呼ぶ
+// elems の1要素, FUN_08084b5c が unk_2c が非0 のものだけ updateCallback を呼ぶ
 typedef struct {
   Particle ptcl;           // 0x00
   u8 unk_28[4];            // 0x28, まだ未解析
-  u16 unk_2c;              // 0x2C, 非0 の要素だけ fn が呼ばれる
+  u16 unk_2c;              // 0x2C, 非0 の要素だけ updateCallback が呼ばれる
   u8 unk_2e[0x38 - 0x2E];  // 0x2E, まだ未解析
-  void* fn;                // 0x38, fn(elem, p->unk_d0) として呼ばれる
+  void* updateCallback;    // 0x38, updateCallback(elem, p->unk_d0) として呼ばれる
 } EntityBD74Elem;
 static_assert(sizeof(EntityBD74Elem) == 60);
 
 typedef struct EntityBD74 {
-  Entity e;                        // 0x000, ENTITY_UNK_10
-  AuxSprite spr0;                  // 0x018
-  AuxSpriteGfx gfx0;               // 0x044, SPRITE_EFF_3641
-  AuxSprite spr1;                  // 0x060
-  AuxSpriteGfx gfx1;               // 0x08C, SPRITE_EFF_3641
-  u16 scale0;                      // 0x0A8, 下位バイトが spr0.scaleX / scaleY へ毎フレームコピーされる
-  u16 scale1;                      // 0x0AA, 下位バイトが spr1.scaleX / scaleY へ毎フレームコピーされる
-  u16 unk_ac;                      // 0x0AC, _Init が 0 を書く
-  u8 unk_ae;                       // 0x0AE, '.p[0]' なければ 8
-  u8 unk_af;                       // 0x0AF, '.p[1]', なければ 12
-  u8 unk_b0;                       // 0x0B0, _Update が毎フレーム 0 にする
-  u8 state;                        // 0x0B1, PTR_ARRAY_085abfc8 の添字, fn と一緒に差し替えられる
-  u16 stateTimer;                  // 0x0B2, state を変えるとき 0 に戻る
-  u8 unk_b4;                       // 0x0B4, _Init が 0x50 を書く
-  u8 unk_b5;                       // 0x0B5, _Init が 0 を書く
-  u8 unk_b6[2];                    // 0x0B6, まだ未解析
-  u16 unk_b8;                      // 0x0B8, FUN_08084798 が引数をそのまま書く
-  u8 unk_ba[0xC0 - 0xBA];          // 0x0BA, まだ未解析
-  Vec3 unk_c0;                     // 0x0C0, '.c' の座標
-  Vec3 unk_c8;                     // 0x0C8, '.c' の座標から x-0x2D, y-0x40, z-0x2D した位置
-  u32 unk_d0;                      // 0x0D0, elems の fn に第2引数として渡される
-  EntityBD74Elem elems[12];        // 0x0D4
-  u8 unk_3a4[4];                   // 0x3A4, まだ未解析
-  void (*fn)(struct EntityBD74*);  // 0x3A8, _Update が毎フレーム fn(p) として呼ぶ状態関数
+  Entity e;                                    // 0x000, ENTITY_UNK_10
+  AuxSprite spr0;                              // 0x018
+  AuxSpriteGfx gfx0;                           // 0x044, SPRITE_EFF_3641
+  AuxSprite spr1;                              // 0x060
+  AuxSpriteGfx gfx1;                           // 0x08C, SPRITE_EFF_3641
+  u16 scale0;                                  // 0x0A8, 下位バイトが spr0.scaleX / scaleY へ毎フレームコピーされる
+  u16 scale1;                                  // 0x0AA, 下位バイトが spr1.scaleX / scaleY へ毎フレームコピーされる
+  u16 unk_ac;                                  // 0x0AC, _Init が 0 を書く
+  u8 unk_ae;                                   // 0x0AE, '.p[0]' なければ 8
+  u8 unk_af;                                   // 0x0AF, '.p[1]', なければ 12
+  u8 unk_b0;                                   // 0x0B0, _Update が毎フレーム 0 にする
+  u8 state;                                    // 0x0B1, PTR_ARRAY_085abfc8 の添字, updateCallback と一緒に差し替えられる
+  u16 stateTimer;                              // 0x0B2, state を変えるとき 0 に戻る
+  u8 unk_b4;                                   // 0x0B4, _Init が 0x50 を書く
+  u8 unk_b5;                                   // 0x0B5, _Init が 0 を書く
+  u8 unk_b6[2];                                // 0x0B6, まだ未解析
+  u16 unk_b8;                                  // 0x0B8, FUN_08084798 が引数をそのまま書く
+  u8 unk_ba[0xC0 - 0xBA];                      // 0x0BA, まだ未解析
+  Vec3 unk_c0;                                 // 0x0C0, '.c' の座標
+  Vec3 unk_c8;                                 // 0x0C8, '.c' の座標から x-0x2D, y-0x40, z-0x2D した位置
+  u32 unk_d0;                                  // 0x0D0, elems の fn に第2引数として渡される
+  EntityBD74Elem elems[12];                    // 0x0D4
+  u8 unk_3a4[4];                               // 0x3A4, まだ未解析
+  void (*updateCallback)(struct EntityBD74*);  // 0x3A8
 } EntityBD74;
 static_assert(sizeof(EntityBD74) == 940);
 
@@ -111,14 +111,14 @@ NAKED void FUN_080849a4(Particle* p, ParticleGroup* group) { INCFUNC("asm/func/F
 
 NAKED void FUN_08084a14(EntityBD74* p) { INCFUNC("asm/func/FUN_08084a14.inc"); }
 
-// 生きている要素の fn を順に呼ぶ
+// 生きている要素の updateCallback を順に呼ぶ
 void FUN_08084b5c(EntityBD74* p) {
   EntityBD74Elem* elem = p->elems;
   s32 i;
 
   for (i = 0; i < 12; i++) {
     if (elem->unk_2c != 0) {
-      ((void (*)(EntityBD74Elem*, u32))p->elems[i].fn)(elem, p->unk_d0);
+      ((void (*)(EntityBD74Elem*, u32))p->elems[i].updateCallback)(elem, p->unk_d0);
     }
     elem++;
   }
@@ -137,7 +137,7 @@ NAKED void FUN_08084bb0(EntityBD74* p) { INCFUNC("asm/func/FUN_08084bb0.inc"); }
 // 状態を差し替える
 void FUN_08084c30(EntityBD74* p, u8 state) {
   p->state = state;
-  p->fn = PTR_ARRAY_085abfc8[p->state];
+  p->updateCallback = PTR_ARRAY_085abfc8[p->state];
   p->stateTimer = 0;
 }
 
@@ -205,7 +205,7 @@ s32 EntityBD74_Update(EntityBD74* p) {
   if (!TestPauseFlag(4)) {
     FUN_08084b5c(p);
     FUN_0808509c(p);
-    p->fn(p);
+    p->updateCallback(p);
     scale = p->scale0;
     p->spr0.scaleY = scale;
     p->spr0.scaleX = scale;

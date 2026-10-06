@@ -66,7 +66,8 @@ void FUN_08203770(Vec3* pos, s32 power, s32 unk_40, HitboxAttributes attrs, s32 
     s32 x, y, z;
     s32 bx, bz;
     s32 idx;
-    u8* tile;
+    CollisionMapTile* tile;
+    MapTileOverride* ov;
 
     p->activeCount++;
     slot->pos = *pos;
@@ -85,14 +86,14 @@ void FUN_08203770(Vec3* pos, s32 power, s32 unk_40, HitboxAttributes attrs, s32 
       idx = gCollisionMap->rowOffsets[bz] + bx;
     }
 
-    tile = (u8*)FUN_08234224(idx, 1);
-    if (tile != NULL) {
-      tile += 4;
+    ov = Map_FindTileOverride(idx, 1);
+    if (ov != NULL) {
+      tile = &ov->tile;
     } else {
-      tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+      tile = &gCollisionMap->tiledata->tiles[idx];
     }
 
-    slot->sprite.pos.y = (*tile & 0xF) << 8;
+    slot->sprite.pos.y = (tile->heightStairs & 0xF) << 8;
     slot->ttl = ttl;
     slot->sprite.flags &= ~SPRFLAG_HIDDEN;
     FUN_08203690(slot, power, unk_40, attrs, unk_44);

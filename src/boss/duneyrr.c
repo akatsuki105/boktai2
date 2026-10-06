@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "global.h"
 
+// 各Bossの構造体の最初の方は共通部分っぽい？
 typedef struct Duneyrr {
   Entity e;  // 0x0, ENTITY_UNK_8
   u8 unk_18[1956 - 0x18];

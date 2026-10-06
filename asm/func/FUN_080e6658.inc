@@ -15,7 +15,7 @@
 	ldrh r5, [r0]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E668C
 	adds r0, #4
@@ -49,7 +49,7 @@ _080E6698:
 	adds r0, r4, r3
 	ldrh r0, [r0]
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _080E6732

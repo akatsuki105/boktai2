@@ -84,7 +84,7 @@ _080F23D6:
 	cmp r0, #0
 	beq _080F247E
 	adds r0, r6, #0
-	bl FUN_08234e3c
+	bl Map_AdvancePathWalker
 	adds r0, r5, #0
 	bl FUN_080e6204
 	adds r1, r5, #0
@@ -92,7 +92,7 @@ _080F23D6:
 	adds r0, r6, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_08235038
+	bl Map_IsPosOutsidePathNode
 	lsls r0, r0, #0x18
 	lsrs r1, r0, #0x18
 	cmp r1, #0

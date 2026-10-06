@@ -513,7 +513,7 @@ void FUN_080f9bfc(Enemy* p) {
   p->unk_21e = 0;
   p->unk_220 = 0;
   p->unk_202 = 0;
-  p->unk_1d8 = 0;
+  p->playerMover = NULL;
 }
 
 NAKED void FUN_080f9c20(Enemy* p) { INCFUNC("asm/func/FUN_080f9c20.inc"); }
@@ -558,7 +558,7 @@ NAKED s32 FUN_080fa7a4(Enemy* p) { INCFUNC("asm/func/FUN_080fa7a4.inc"); }
 NAKED s32 FUN_080fa958(Vec3* pos) { INCFUNC("asm/func/FUN_080fa958.inc"); }
 
 bool32 FUN_080faa98(Enemy* p) {
-  s32 idx = FUN_080fa958(&p->unk_0.pos);
+  s32 idx = FUN_080fa958(&p->mover.pos);
   EnemyHandler fn;
 
   if (idx < 0) {
@@ -566,7 +566,7 @@ bool32 FUN_080faa98(Enemy* p) {
     fn(p);
     return FALSE;
   }
-  p->unk_1d8 = &gPlayerPtr[idx]->mover;
+  p->playerMover = &gPlayerPtr[idx]->mover;
   return TRUE;
 }
 

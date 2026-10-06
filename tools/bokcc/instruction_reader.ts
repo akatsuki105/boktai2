@@ -1,4 +1,9 @@
-import { DataType, InsnType, Instruction, MEM_SCRATCH, MEM_STAT, MEM_WORLD } from "./instruction.ts";
+import { ConstantOp, DataType, dataTypeOfTag, InsnType, Instruction, memRegionOf, memSelectorOf, Opcode, PARAM_EXTENDED } from "./instruction.ts";
+
+// デコンパイル専用。バイト列から Instruction を読む(前半。後半の描画は instruction.ts の toString)。
+//
+// ByteStream はROM上の連続したバイト列、InstructionReader はそこから命令を1つずつ組み立てる。
+// 「デフォルト」形式とは違う opcode や領域セレクタで書かれていた場合は、元のバイト列に戻せるようにコマンドエイリアスとして Instruction に記録する。
 
 export class ByteStream {
   private data: DataView;
@@ -18,65 +23,11 @@ export class ByteStream {
 // (short) キャストの移植: 16bit 値を符号付きに変換する。
 const toInt16 = (n: number): number => (n << 16) >> 16;
 
-// 型は命令の下位ニブルそのもので、メモリ参照と定数リテラルで共通。
-const TYPE_BY_TAG: Record<number, DataType> = {
-  0x1: DataType.Int16,
-  0x2: DataType.UInt8,
-  0x3: DataType.UInt8_0x03,
-  0x4: DataType.Bool,
-  0x6: DataType.UInt16,
-  0x8: DataType.UInt24,
-  0x9: DataType.Int32,
-  0xA: DataType.Int32_0x0A,
-  0xD: DataType.Int32_0x0D,
-};
-const TAG_BY_TYPE = new Map<DataType, number>(
-  Object.entries(TYPE_BY_TAG).map(([tag, type]) => [type, Number(tag)]),
-);
-
-const tagOf = (dataType: DataType, where: string): number => {
-  const tag = TAG_BY_TYPE.get(dataType);
-  if (tag === undefined) throw new Error(where + ": unexpected data type " + dataType);
-  return tag;
-};
-
-// Constant の (dataType, value) に対して「デフォルト」となる cmd バイトを返す。
-// 実際に読んだ cmd がこれと異なる場合、コマンドエイリアスとして Instruction に記録する。
-// Int32 は値が -1〜62 に収まるならコンパクト形式(0xC0-0xFF)が正準形、収まらないなら 9。
-const defaultConstantCmd = (dataType: DataType, val: number): number => {
-  if (dataType === DataType.Int32 && val >= -1 && val <= 62) {
-    return 0xC0 | ((val + 1) & 0x3F);
-  }
-  return tagOf(dataType, "defaultConstantCmd");
-};
-
-// Memory の型タグ(cmd & 0xF)のデフォルト値。
-const defaultMemoryTag = (dataType: DataType): number => tagOf(dataType, "defaultMemoryTag");
-
-// Memory のアドレス領域セレクタバイト(& 0xF0 適用前)のデフォルト値。
-// 0x203D800 と 0x203F000 の2領域はセレクタが1つしかないためエイリアスなし。
-// それ以外(0x203E800 領域)は複数のバイト値が同じ領域を指し得るため、
-// 0x00 を正準形と仮定している(実データでの検証はまだできていない)。
-const defaultRegionByte = (base: number): number => {
-  switch (base) {
-    case MEM_STAT: {
-      return 0x80;
-    }
-    case MEM_SCRATCH: {
-      return 0x10;
-    }
-    default: {
-      return 0x00; // world
-    }
-  }
-};
-
 export class InstructionReader {
   private stream: ByteStream;
   private alreadyReadInstructions: Instruction[];
   // 直近に readScriptOffset で読んだコンテナ長と、その本体が始まる位置。
-  // ラベル/制御命令の本体の終端はこの長さだけが決めるので、
-  // 「どのラベルが子を何個取るか」を知らなくても読める。
+  // ラベル/制御命令の本体の終端はこの長さだけが決めるので、「どのラベルが子を何個取るか」を知らなくても読める。
   private containerLen = 0;
   private containerStart = 0;
 
@@ -119,70 +70,65 @@ export class InstructionReader {
     let instr: Instruction = Instruction.Invalid;
     let subInstr: Instruction;
 
-    switch (cmd & 0xF0) {
-      case 0x00: {
-        instr = this.readConstant(cmd);
-        break;
-      }
-      case 0x10:
-      case 0x20: {
-        instr = this.readMemory(cmd);
-        break;
-      }
-      case 0x30: {
-        this.readScriptOffset(cmd);
-        instr = new Instruction(InsnType.Expression);
-        while (!(subInstr = this.readInstruction()).isExpressionEnd()) {
-          instr.children.push(subInstr);
+    // Operator とコンパクト形式の定数は上位ニブルを複数使うので、ニブルで分ける前に判定する。
+    if (cmd >= Opcode.ConstantCompact) {
+      instr = this.readConstant(cmd);
+    } else if ((cmd & 0xE0) === Opcode.Operator) {
+      instr = new Instruction(InsnType.Operator, cmd & 0x1F);
+    } else {
+      switch (cmd & 0xF0) {
+        case Opcode.Constant: {
+          instr = this.readConstant(cmd);
+          break;
         }
-        break;
-      }
-      case 0x40: {
-        if ((cmd & 0xF) === 0xF) {
-          instr = new Instruction(InsnType.Parameter, 0xF + this.stream.readByte());
-        } else {
-          instr = new Instruction(InsnType.Parameter, cmd & 0xF);
+        case Opcode.Memory:
+        case Opcode.MemoryIndexed: {
+          instr = this.readMemory(cmd);
+          break;
         }
-        break;
-      }
-      case 0x50: {
-        this.readScriptOffset(cmd);
-        instr = this.readLabel();
-        break;
-      }
-      case 0x60: {
-        this.readScriptOffset(cmd);
-        instr = this.readControl();
-        break;
-      }
-      case 0x70: {
-        this.readScriptOffset(cmd);
-        instr = this.readCall();
-        break;
-      }
-      case 0x80: {
-        this.readScriptOffset(cmd);
-        instr = new Instruction(InsnType.Block);
-        while ((subInstr = this.readInstruction()).insnType !== InsnType.End) {
-          instr.children.push(subInstr);
+        case Opcode.Expression: {
+          this.readScriptOffset(cmd);
+          instr = new Instruction(InsnType.Expression);
+          while (!(subInstr = this.readInstruction()).isExpressionEnd()) {
+            instr.children.push(subInstr);
+          }
+          break;
         }
-        break;
-      }
-      case 0x90: {
-        instr = new Instruction(InsnType.Variable, cmd & 0xF);
-        break;
-      }
-      case 0xA0:
-      case 0xB0: {
-        instr = new Instruction(InsnType.Operator, cmd & 0x1F);
-        break;
-      }
-      case 0xC0:
-      case 0xD0:
-      case 0xE0:
-      case 0xF0: {
-        instr = this.readConstant(cmd);
-        break;
+        case Opcode.Parameter: {
+          if ((cmd & 0xF) === PARAM_EXTENDED) {
+            instr = new Instruction(InsnType.Parameter, PARAM_EXTENDED + this.stream.readByte());
+          } else {
+            instr = new Instruction(InsnType.Parameter, cmd & 0xF);
+          }
+          break;
+        }
+        case Opcode.Label: {
+          this.readScriptOffset(cmd);
+          instr = this.readLabel();
+          break;
+        }
+        case Opcode.Control: {
+          this.readScriptOffset(cmd);
+          instr = this.readControl();
+          break;
+        }
+        case Opcode.Call: {
+          this.readScriptOffset(cmd);
+          instr = this.readCall();
+          break;
+        }
+        case Opcode.Block: {
+          this.readScriptOffset(cmd);
+          instr = new Instruction(InsnType.Block);
+          while ((subInstr = this.readInstruction()).insnType !== InsnType.End) {
+            instr.children.push(subInstr);
+          }
+          break;
+        }
+        case Opcode.Variable: {
+          instr = new Instruction(InsnType.Variable, cmd & 0xF);
+          break;
+        }
       }
     }
 
@@ -218,39 +164,37 @@ export class InstructionReader {
   protected readConstant(cmd: number): Instruction {
     let val = 0;
     let type: DataType;
-    if ((cmd & 0xF0) === 0) {
+    if ((cmd & 0xF0) === Opcode.Constant) {
       switch (cmd) {
-        case 0: {
+        case ConstantOp.End: {
           return new Instruction(InsnType.End);
         }
-        // 1 と 8 は VM_DecodeValue の同じ経路(2バイト・符号拡張)、6 だけがゼロ拡張。
-        case 1:
-        case 8: {
-          type = TYPE_BY_TAG[cmd];
+        case DataType.Int16:
+        case DataType.UInt24: { // s16 と u24 は VM_DecodeValue の同じ経路(2バイト・符号拡張)、u16 だけがゼロ拡張。
+          type = cmd as DataType;
           val = toInt16(this.stream.readByte() | (this.stream.readByte() << 8));
           break;
         }
-        case 2:
-        case 3:
-        case 4: {
-          type = TYPE_BY_TAG[cmd];
+        case DataType.UInt8:
+        case DataType.UInt8_0x03:
+        case DataType.Bool: {
+          type = cmd as DataType;
           val = this.stream.readByte();
           break;
         }
-        case 6: {
-          type = DataType.UInt16;
+        case DataType.UInt16: {
+          type = cmd as DataType;
           val = this.stream.readByte() | (this.stream.readByte() << 8);
           break;
         }
-        case 9:
-        case 10:
-        case 13: {
-          type = TYPE_BY_TAG[cmd];
+        case DataType.Int32:
+        case DataType.Int32_0x0A:
+        case DataType.Int32_0x0D: {
+          type = cmd as DataType;
           val = this.stream.readByte() | (this.stream.readByte() << 8) | (this.stream.readByte() << 16) | (this.stream.readByte() << 24);
           break;
         }
-        // opcode 7: 長さ1バイト + その長さ分のバイト列(VM_DecodeValue は pc + pc[0] + 1 進める)
-        case 7: {
+        case ConstantOp.String: { // String: 長さ1バイト + その長さ分のバイト列(VM_DecodeValue は pc + pc[0] + 1 進める)
           const len = this.stream.readByte();
           const bytes = new Uint8Array(len);
           for (let i = 0; i < len; i++) bytes[i] = this.stream.readByte();
@@ -258,8 +202,7 @@ export class InstructionReader {
           str.bytes = bytes;
           return str;
         }
-        // opcode 14: 2バイトの文字列ID(Textbox_LookupString に渡される)
-        case 14: {
+        case ConstantOp.StringRef: { // StringRef: 2バイトの文字列ID(Textbox_LookupString に渡される)
           const id = this.stream.readByte() | (this.stream.readByte() << 8);
           return new Instruction(InsnType.StringRef, id);
         }
@@ -273,8 +216,7 @@ export class InstructionReader {
     }
 
     const instr = new Instruction(InsnType.Constant, type, val);
-    const defaultCmd = defaultConstantCmd(type, val);
-    if (cmd !== defaultCmd) {
+    if (cmd !== instr.defaultConstantOpcode()) {
       instr.hasForcedOpcode = true;
       instr.forcedOpcode = cmd;
     }
@@ -283,30 +225,15 @@ export class InstructionReader {
 
   protected readMemory(cmd: number): Instruction {
     const regByte = this.stream.readByte();
-    let base: number;
-    switch (regByte & 0xF0) {
-      case 0x80: {
-        base = MEM_STAT;
-        break;
-      }
-      case 0x10: {
-        base = MEM_SCRATCH;
-        break;
-      }
-      default: {
-        base = MEM_WORLD;
-        break;
-      }
-    }
+    const base = memRegionOf(regByte & 0xF0);
 
-    // 領域バイトの下位ニブルは Bool のときだけ意味を持ち、ビット番号(0-7)を表す。
-    // 他の型では常に 0。アドレスはビッグエンディアンのバイトオフセット。
+    // 領域バイトの下位ニブルは Bool のときだけ意味を持ち、ビット番号(0-7)を表す。他の型では常に 0。
+    // アドレスはビッグエンディアンのバイトオフセット。
     const bitIndex = regByte & 0xF;
     const addr = base + ((this.stream.readByte() << 8) | this.stream.readByte());
 
-    // メモリ参照では 1 と 6 の動作は同じ(どちらも16bit・ストライド2)だが、
-    // タグとしては別物なので型も分けて保持する。
-    const dataType = TYPE_BY_TAG[cmd & 0xF] ?? DataType.Void;
+    // メモリ参照では 1 と 6 の動作は同じ(どちらも16bit・ストライド2)だが、タグとしては別物なので型も分けて保持する。
+    const dataType = dataTypeOfTag(cmd & 0xF) ?? DataType.Void;
 
     const instr = new Instruction();
     instr.dataType = dataType;
@@ -314,7 +241,7 @@ export class InstructionReader {
     instr.memRegionBase = base;
     instr.bitIndex = bitIndex;
 
-    if ((cmd & 0xF0) === 0x20) {
+    if ((cmd & 0xF0) === Opcode.MemoryIndexed) {
       instr.insnType = InsnType.MemoryIndexed;
       instr.children.push(this.readInstruction());
       instr.children.push(this.readInstruction());
@@ -322,15 +249,13 @@ export class InstructionReader {
       instr.insnType = InsnType.Memory;
     }
 
-    const defaultReg = defaultRegionByte(base);
-    if ((regByte & 0xF0) !== defaultReg) {
+    if ((regByte & 0xF0) !== memSelectorOf(base)) {
       instr.hasForcedRegion = true;
       instr.forcedRegion = regByte & 0xF0;
     }
 
     if (dataType !== DataType.Void) {
-      const defaultTag = defaultMemoryTag(dataType);
-      if ((cmd & 0xF) !== defaultTag) {
+      if ((cmd & 0xF) !== instr.typeTag()) {
         instr.hasForcedOpcode = true;
         instr.forcedOpcode = cmd & 0xF;
       }
@@ -339,8 +264,7 @@ export class InstructionReader {
     return instr;
   }
 
-  // ラベルは「1文字 + 本体」。本体に何が何個入るかは呼び出し先のエンジン関数次第なので、
-  // 個数は決め打ちせずコンテナ長が尽きるまで読む。
+  // ラベルは「1文字 + 本体」。本体に何が何個入るかは呼び出し先のエンジン関数次第なので、個数は決め打ちせずコンテナ長が尽きるまで読む。
   protected readLabel(): Instruction {
     const end = this.containerStart + this.containerLen;
     const instr = new Instruction(InsnType.Label, this.stream.readByte());
@@ -350,8 +274,7 @@ export class InstructionReader {
     return instr;
   }
 
-  // 制御命令もラベルと同じで、続く値がいくつ並ぶかは呼び出し先が決める
-  // (0xB745 は呼ばれたエンジン関数が自分で VM_GetValue() する)。コンテナ長で読む。
+  // 制御命令もラベルと同じで、続く値がいくつ並ぶかは呼び出し先が決める(0xB745 は呼ばれたエンジン関数が自分で VM_GetValue() する)。コンテナ長で読む。
   protected readControl(): Instruction {
     const end = this.containerStart + this.containerLen;
     const tag = this.stream.readByte() | (this.stream.readByte() << 8);

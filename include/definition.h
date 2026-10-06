@@ -4,9 +4,6 @@
 #include "gba/types.h"
 #include "types.h"
 
-typedef void* (*TaskFn)(u32, void*);
-typedef void* (*TaskFnNoArg)(void);
-
 extern u16 gEntityCount;
 extern bool32 bool32_03004788;
 extern u32 u32_03004798;
@@ -26,6 +23,5 @@ extern u32 gFlag030047a4;                // 0x030047A4
 // --------------------------------------------
 
 void FUN_0809c464(void);
-bool32 FUN_08234de8(unknown* p, u32 param_2, u32 param_3, u32 param_4);
 
 #endif  // GUARD_ZOKTAI_DEFINITION_H

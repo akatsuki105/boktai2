@@ -288,7 +288,7 @@ _08002C64:
 	str r4, [r3]
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08002C9C
 	adds r3, r0, #4

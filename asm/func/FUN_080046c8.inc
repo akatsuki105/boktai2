@@ -171,7 +171,7 @@ _08004814:
 _08004822:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08004838
 	adds r0, #4
@@ -202,7 +202,7 @@ _08004850:
 	str r2, [sp, #4]
 	adds r1, r5, #0
 	adds r3, r4, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	lsls r0, r4, #8
 	movs r6, #0
 	strh r0, [r7, #0x12]

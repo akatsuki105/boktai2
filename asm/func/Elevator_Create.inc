@@ -81,7 +81,7 @@ _081D484C:
 	ldr r2, [sp, #0x20]
 	ldrb r1, [r2]
 	ldrb r2, [r4]
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	str r4, [sp, #0x14]
 _081D4862:
 	movs r0, #0x6b
@@ -780,7 +780,7 @@ _081D4DC2:
 	str r1, [sp, #4]
 	adds r1, r2, #0
 	movs r2, #0
-	bl FUN_08234270
+	bl Map_AddTileOverride
 	movs r0, #1
 	mov r2, sl
 	ldrh r1, [r2]

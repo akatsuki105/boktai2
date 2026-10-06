@@ -8,42 +8,30 @@
 // このソースコードではゲームのマップ単位をブロック(block)と呼ぶようにする(具体的には 木箱とかの立方体の大きさが1ブロック)
 // https://boktaihacking.net/wiki/Collision_map_file
 
+// ファイル内では構造体先頭からのバイトオフセットが入っている, Map_LoadCollisionMapFile がヘッダを複写してから絶対アドレスに直し、以降は ptr として読む
+typedef union {
+  u32 offset;
+  void* ptr;
+} CollisionMapRef;
+
 typedef struct {
-  char magic[4];         // 0x00, "HP\0\0", Height Property とかで HP なのかな？
-  u32 offsetToTileData;  // 0x04, この構造体の先頭から CollisionMapTileData 構造体までのバイトオフセット
-  u32 offsetToZones;     // 0x08, この構造体の先頭から ZoneData 構造体までのバイトオフセット
-  u32 offsetToPaths;     // 0x0C, この構造体の先頭から PathData 構造体までのバイトオフセット
-  u32 offsetToNavmesh;   // 0x10, この構造体の先頭から NavMesh 構造体までのバイトオフセット
-  // これ以降はそれぞれサイズが可変
-  // CollisionMapTileData tileData;  // 床の属性や高さ、階段やプレイヤーが奥側にいるときに手前に何を描画するかなどの情報を持つ
-  // ZoneData zoneData;   // イベントのトリガー範囲を管理する
-  // PathData pathData;   // ???
-  // NavMesh navMesh;     // NPCをマップ上の任意の2点間で移動させるためのデータ
+  char magic[4];             // 0x00, "HP\0\0", Height Property とかで HP なのかな？
+  CollisionMapRef tileData;  // 0x04, CollisionMapTileData, 床の属性や高さ、階段やプレイヤーが奥側にいるときに手前に何を描画するかなどの情報を持つ
+  CollisionMapRef zones;     // 0x08, ZoneData, イベントのトリガー範囲を管理する
+  CollisionMapRef paths;     // 0x0C, PathData, ???
+  CollisionMapRef navMesh;   // 0x10, NavMesh, NPCをマップ上の任意の2点間で移動させるためのデータ, 0 なら無し
+  // これ以降は上の4つが指す可変長のデータが並ぶ
 } CollisionMapFile;
+static_assert(sizeof(CollisionMapFile) == 20);
 
 extern u8 gDecompressedCollisionMapHeader[4];    // 0x02031400, 展開先の先頭4バイト, 用途不明
 extern u8 gDecompressedCollisionMapFile[16380];  // 0x02031404, 展開された CollisionMapFile 本体
 
 // --------------------------------------------
 
-// 地形の上書き情報を管理する構造体
-// 根拠: FUN_08234270 (挿入) / FUN_082342a8 (除去) / FUN_08234208 (各フィールドの初期化)
-typedef struct MapTileOverride {
-  u16 unk_0;                     // 0x00, FUN_08234208 が 0 を書く
-  u16 tileIdx;                   // 0x02, FUN_08234208 の第2引数, 呼び出し側はコリジョンマップのタイル索引を渡す
-  u8 height;                     // 0x04, FUN_08234208 が param_3 << 4 | param_4 を書く, 呼び出し側はタイルの高さを渡す
-  u8 unk_5;                      // 0x05, EntityEC96_Init は 0xFF を渡す
-  u16 unk_6;                     // 0x06, EntityEC96_Init は 0 を渡す
-  struct MapTileOverride* prev;  // 0x08, FUN_08234270 が挿入時に NULL を書く
-  struct MapTileOverride* next;  // 0x0C, FUN_08234270 が挿入時に旧 head を書く
-} MapTileOverride;
-static_assert(sizeof(MapTileOverride) == 16);
-
-// --------------------------------------------
-
 typedef u16 TileAttr;             // CollisionMapTile.attr
-#define TATTR_WALL (1 << 1)       // 0x0001, 壁(常に侵入不可)
-#define TATTR_UNK_2 (1 << 2)      // 0x0004, sometimes used directly on loading zone tiles
+#define TATTR_WALL (1 << 1)       // 0x0002, 壁(常に侵入不可), 根拠: FUN_08235f40 がこのビットで NavAgent を止める, CactusManager も上書きタイルに立てる
+#define TATTR_UNK_2 (1 << 2)      // 0x0004, 以下は未検証
 #define TATTR_NOISE (1 << 5)      // 0x0020, alerts enemies when stepping onto the tile
 #define TATTR_ICE (1 << 6)        // 0x0040
 #define TATTR_LAVA (1 << 7)       // 0x0080
@@ -52,20 +40,34 @@ typedef u16 TileAttr;             // CollisionMapTile.attr
 #define TATTR_UNK_11 (1 << 11)    // 0x0800, sometimes used near loading zones pointing NW
 #define TATTR_UNK_12 (1 << 12)    // 0x1000, sometimes used near loading zones pointing NE
 
+// コリジョンマップの1タイル
+// 根拠: heightStairs を 上位/下位4bit に割って使うのは Map_GetTileHeightAt と EntityE06A_Create など6ファイル, attr の位置は FUN_08235f40
 typedef struct {
-  TileAttr attr;  // 0x00, see TileAttr
-  u8 obj;         // 0x02, タイルで隠されるべき場合に使用されるスプライト
-  u8 height : 4;  // 同じ高さのタイル か (高さが適切な)階段タイル から侵入可能
-  u8 stairs : 4;  // 0: none, 1: vertical, 2: horizontal
+  u8 heightStairs;  // 0x00, 下位4bit が高さ (同じ高さのタイル か 高さが合う階段タイル から侵入可能), 上位4bit が階段 (0: なし, 1: 縦, 2: 横)
+  u8 obj;           // 0x01, タイルで隠されるべき場合に使用されるスプライト, 0xFF でなし
+  TileAttr attr;    // 0x02, see TileAttr
 } CollisionMapTile;
 static_assert(sizeof(CollisionMapTile) == 4);
+
+// --------------------------------------------
+
+// 地形の上書き情報を管理する構造体
+// 根拠: Map_AddTileOverride (挿入) / Map_RemoveTileOverride (除去) / Map_InitTileOverride (各フィールドの初期化)
+typedef struct MapTileOverride {
+  u16 flags;                     // 0x00, Map_FindTileOverride が引数のマスクと AND を取って弾く, Map_InitTileOverride は 0 を書く
+  u16 tileIdx;                   // 0x02, Map_InitTileOverride の第2引数, 呼び出し側はコリジョンマップのタイル索引を渡す
+  CollisionMapTile tile;         // 0x04, このタイルの代わりに使われる値, Map_InitTileOverride の第3引数以降が入る
+  struct MapTileOverride* prev;  // 0x08, Map_AddTileOverride が挿入時に NULL を書く
+  struct MapTileOverride* next;  // 0x0C, Map_AddTileOverride が挿入時に旧 head を書く
+} MapTileOverride;
+static_assert(sizeof(MapTileOverride) == 16);
 
 typedef struct {
   u32 unk_0;                  // 0x00
   s16 width;                  // 0x04
   s16 height;                 // 0x06
-  s16 tilemap_offset_x;       // 0x08, pixel position of tilemap on the collision map (for camera)
-  s16 tilemap_offset_y;       // 0x0A, pixel position of tilemap on the collision map (for camera)
+  s16 tilemapOffsetX;         // 0x08, pixel position of tilemap on the collision map (for camera)
+  s16 tilemapOffsetY;         // 0x0A, pixel position of tilemap on the collision map (for camera)
   CollisionMapTile tiles[1];  // 0x0C, CollisionMapTile[width * height]
 } CollisionMapTileData;
 
@@ -104,12 +106,41 @@ typedef struct {
 } PathNode;
 
 typedef struct {
-  u16 nodeCount;   // 0x00, number of PathNode
+  u16 nodeCount;   // 0x00, PathNode の数
   u16 nodeOffset;  // 0x02, Byte offset from start of PathData to first node
 } Path;
 
+// 経路を1ノードずつたどるカーソル, Map_InitPathWalker が初期化し Map_AdvancePathWalker が進める
+// サイズは +8 まで使うことしか分かっていないので 12 は暫定
 typedef struct {
-  u16 pathCount;      // 0x00, number of Path, 根拠: FUN_08234f44 が ldrh で読む
+  u8 pathIdx;      // 0x00, Map_InitPathWalker の第2引数
+  u8 unk_1;        // 0x01, Map_InitPathWalker の第3引数
+  u8 nodeIdx;      // 0x02, いま指しているノード番号, nodeCount に達すると 0 に戻る
+  u8 unk_3;        // 0x03, 初期化と前進のたびに 0
+  Path* path;      // 0x04
+  PathNode* node;  // 0x08, nodes[nodeIdx]
+} PathWalker;
+static_assert(sizeof(PathWalker) == 12);
+
+bool32 Map_InitPathWalker(PathWalker* p, u32 pathIdx, u32 param_3, u32 nodeIdx);
+bool32 Map_AdvancePathWalker(PathWalker* p);
+
+// ナビメッシュ上を移動する主体の状態, Map_StepNavPath と FUN_08235ffc / FUN_08236130 が読み書きする
+// 全体サイズは未確定なので, 触っていることが分かっている +0x23 までだけ書いてある
+typedef struct {
+  u16 flags;      // 0x00, bit0 が立っているときだけ経路の後段処理も走る
+  u16 unk_02;     // 0x02
+  u16 islandIdx;  // 0x04, NavMesh.offsets[] の添字
+  u16 rectIdx;    // 0x06, islandIdx の島の中のナビ矩形番号
+  u8 unk_08[2];   // 0x08
+  u16 unk_0a;     // 0x0A
+  Vec3 unk_0c;    // 0x0C
+  Vec3 unk_14;    // 0x14
+  Vec3 unk_1c;    // 0x1C
+} NavAgent;
+
+typedef struct {
+  u16 pathCount;      // 0x00, number of Path, 根拠: Map_GetPath が ldrh で読む
   u16 unk_02;         // 0x02
   Path paths[1];      // 0x04, Path[pathCount]
   PathNode nodes[1];  // 要素数は Path[Path.nodeCount] の合計?
@@ -143,53 +174,66 @@ typedef struct {
 } NavIsland;
 
 typedef struct {
-  u32 countIslands;      // 0x00
+  u16 countIslands;      // 0x00
+  u16 unk_02;            // 0x02, padding?
   u32 islandOffsets[1];  // 0x04, islandOffsets[countIslands]
   NavIsland islands[1];  // NavIsland[countIslands]
 } NavMesh;
 
 // --------------------------------------------
 
-// スクリプトから登録されるイベント, VM_Ctrl_SetZoneCallback が 44バイトを組み立て FUN_082349b8 が unk_8 をキーに挿入する
+// ゾーンイベントを起こした側の情報, Map_RunZoneEventScript がスクリプトの引数に積む
+// 根拠: FUN_080412fc が Entity286F の 0x0A0 に mover.id と &mover.pos を入れて FUN_08234660 に渡す
+typedef struct {
+  u16 id;       // 0x00, Mover.id の複写
+  u8 unk_2[2];  // 0x02, padding?
+  Vec3* pos;    // 0x04, Mover.pos を指す
+} ZoneEventSource;
+static_assert(sizeof(ZoneEventSource) == 8);
+
+// スクリプトから登録されるイベント, VM_Ctrl_SetZoneCallback が 44バイトを組み立てる
+// Map_InsertEvent は同じ zoneID が連続するように挿し込む: 末尾から同じ zoneID を探し、見つかればその次へ (後続を1つずつずらす)、無ければ末尾に追加する
 typedef struct CollisionMapEvent {
-  u32 id;        // 0x00, FUN_082349b8 が u32_030046b0 の連番を書く
-  u16 unk_4;     // 0x04, '.m=0x0DD2', FUN_08234660 が 0xDD2/0x14C9/0x1516/0x1517/0xA5BF と比較する
-  s16 unk_6;     // 0x06, VM_Ctrl_SetZoneCallback の VM_GetValue 2番目
-  s16 unk_8;     // 0x08, 挿入時のソートキー, 根拠: FUN_082349b8
-  s16 unk_a;     // 0x0A
-  u16 unk_c;     // 0x0C
-  s16 unk_e;     // 0x0E
-  u16 args1[4];  // 0x10, FUN_08234868 が ScriptArgs にコピーする4語
-  u16 args2[4];  // 0x18, 同上、もう4語
-  u8* unk_20;    // 0x20
-  u8* scriptPC;  // 0x24, FUN_08234868 がスクリプトの PC として実行する
-  s32 unk_28;    // 0x28
+  u32 id;           // 0x00, Map_InsertEvent が gNextMapEventID の連番を書く
+  u16 unk_4;        // 0x04, '.m=0x0DD2', FUN_08234660 が 0x0DD2/0x14C9/0x1516/0x1517/0xA5BF と比較する
+  u16 unk_6;        // 0x06, VM_Ctrl_SetZoneCallback の VM_GetValue 2番目
+  ZoneID16 zoneID;  // 0x08, 発火させるゾーンのID, FindZonesByID に渡す, 挿入時のソートキーでもある (根拠: Map_InsertEvent)
+  s16 unk_a;        // 0x0A
+  u16 flags;        // 0x0C, VM_Ctrl_SetZoneCallback が '.b' で 0x10、'.p' で 0x20 を立てる
+  u16 zoneCount;    // 0x0E, FindZonesByID が zones の件数を書き込む
+  u16 args1[4];     // 0x10, Map_RunZoneEventScript が ScriptArgs にコピーする4語
+  u16 args2[4];     // 0x18, 同上、もう4語
+  u8* unk_20;       // 0x20
+  u8* scriptPC;     // 0x24, Map_RunZoneEventScript がスクリプトの PC として実行する
+  Zone* zones;      // 0x28, FindZonesByID が返す Zone の先頭, NULL なら登録しない
 } CollisionMapEvent;
 static_assert(sizeof(CollisionMapEvent) == 44);
 
 // --------------------------------------------
 
-// 読み込み中のコリジョンマップ, gCollisionMap が指す, Malloc(3620) で確保される (FUN_082326a0)
+// 読み込み中のコリジョンマップ, gCollisionMap が指す, Malloc(3620) で確保される (Map_InitCollisionMap)
 typedef struct CollisionMapData {
-  u16 eventCount;                  // 0x000, events の件数, 根拠: FUN_082326d8 が 0 を書き FUN_082349b8 が +1 する
-  u8 unk_2[2];                     // 0x002, 読み書きするコードが見つかっていない, padding?
+  u16 eventCount;                  // 0x000, events の件数, 根拠: Map_ResetCollisionMap が 0 を書き Map_InsertEvent が +1 する
+  u8 unk_2[2];                     // 0x002, padding
   CollisionMapTileData* tiledata;  // 0x004
-  u32 unk_8;                       // 0x008, FUN_082326d8 が 0 を書くだけで読み手がいない
+  u32 unk_8;                       // 0x008, Map_ResetCollisionMap が 0 を書くだけで読み手がいない
   ZoneData* zones;                 // 0x00C
   PathData* paths;                 // 0x010
   NavMesh* navMesh;                // 0x014
-  MapTileOverride* tileOverrides;  // 0x018, FUN_08234270 がここを先頭とする双方向リストにノードを繋ぐ
-  s16 neighborOffsets[4];          // 0x01C, 隣接タイルへの索引差分 -w/1/w/-1, 根拠: FUN_0823273c, 読み手は (dir & 3) で引く
+  MapTileOverride* tileOverrides;  // 0x018, Map_AddTileOverride がここを先頭とする双方向リストにノードを繋ぐ
+  s16 neighborOffsets[4];          // 0x01C, 隣接タイルへの索引差分 -w/1/w/-1, 根拠: Map_BuildNeighborOffsets, 読み手は (dir & 3) で引く
   u16 rowOffsets[256];             // 0x024, 行ごとのタイル索引オフセット表, rowOffsets[blockZ] + blockX がタイル索引
-  CollisionMapEvent events[64];    // 0x224, 根拠: FUN_082326d8 が i=0..63 で 44バイトずつクリアする
-  u32 unk_d24[64];                 // 0xD24, events と同じ添字の並列配列, FUN_082349b8 の第2引数が入る
+  CollisionMapEvent events[64];    // 0x224, 根拠: Map_ResetCollisionMap が i=0..63 で 44バイトずつクリアする
+  u32 unk_d24[64];                 // 0xD24, events と同じ添字の並列配列, Map_InsertEvent の第2引数が入り、挿入・削除で events と一緒にずらされる, 読み手は未発見
 } CollisionMapData;
 static_assert(sizeof(CollisionMapData) == 3620);
 
 extern CollisionMapData* gCollisionMap;
 
-MapTileOverride* FUN_08234224(u32 tileIdx, u32 mask);
-void FUN_082342a8(MapTileOverride* p);
-u16 FUN_082328ec(Vec3* pos);
+MapTileOverride* Map_FindTileOverride(u32 tileIdx, u32 mask);
+void Map_RemoveTileOverride(MapTileOverride* p);
+u16 Map_GetTileHeightAt(Vec3* pos);
+Zone* FindZonesByID(ZoneID16 id, u16* count);
+void Map_InsertEvent(CollisionMapEvent* ev, u32 param_2);
 
 #endif  // __INCLUDE_COLLISION_MAP_H__

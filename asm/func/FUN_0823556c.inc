@@ -10,7 +10,7 @@
 	str r3, [sp, #8]
 	lsls r0, r2, #0x18
 	lsrs r0, r0, #0x18
-	bl FUN_08234f44
+	bl Map_GetPath
 	mov r8, r0
 	cmp r0, #0
 	beq _08235594
@@ -57,7 +57,7 @@ _082355CC:
 	lsrs r2, r2, #0x18
 	mov r0, sp
 	lsrs r1, r1, #0x18
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	mov r0, sb
 	movs r1, #0
 	ldrsh r2, [r0, r1]
@@ -119,7 +119,7 @@ _08235650:
 _0823565E:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08235674
 	adds r0, #4

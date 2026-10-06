@@ -3,8 +3,9 @@
 #include "vm.h"
 
 // ScriptDirectory in include/vm.h
+// 0x08CBF248
 
-const u32 gScriptDirectory = 0x40A8186C;  // 0x08CBF248
+const u32 gScriptDirectory = 1084758124;  // 2004-05-17 01:42:04 UTC
 
 // 0x08CBF24C
 const ScriptOffset ScriptEntries[11539 + 1] = INCBIN_U32("data/script_entries.bin");
@@ -42,5 +43,7 @@ const u32 Bytecode = 617012;
 const u8 Bytecode_start[] = INCBIN_U8("data/scripts/scripts.bin");
 
 // 0x08DA9E5C
+// Entity0823acbc_Update で gMapInitScriptID が 0のときに呼ばれる, ゲームの起動時に1回呼ばれるのは確認
+// TODO: これがVMスクリプトのエントリポイントか検証する
 const u32 SpecialScriptSize = 6;
 const u8 SpecialScript[] = INCBIN_U8("data/scripts/special.bin");

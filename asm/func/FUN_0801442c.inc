@@ -86,7 +86,7 @@ _080144C2:
 	beq _08014534
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080144E4
 	adds r0, #4
@@ -116,7 +116,7 @@ _08014504: .4byte 0x0000FFFF
 _08014508:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08014518
 	adds r0, #4

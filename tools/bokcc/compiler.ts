@@ -1,19 +1,8 @@
-import { DataType, InsnType, Instruction, MEM_SCRATCH, MEM_STAT } from "./instruction.ts";
+import { ConstantOp, DataType, InsnType, Instruction, memSelectorOf, Opcode, OPERATOR_END, PARAM_EXTENDED } from "./instruction.ts";
 
-// 型タグ(命令の下位ニブル)。instruction_reader.ts の TYPE_BY_TAG の逆。
-const TAG_BY_TYPE: Record<number, number> = {
-  [DataType.Int16]: 0x1,
-  [DataType.UInt8]: 0x2,
-  [DataType.UInt8_0x03]: 0x3,
-  [DataType.Bool]: 0x4,
-  [DataType.UInt16]: 0x6,
-  [DataType.UInt24]: 0x8,
-  [DataType.Int32]: 0x9,
-  [DataType.Int32_0x0A]: 0xA,
-  [DataType.Int32_0x0D]: 0xD,
-};
-
-const regionByteOf = (base: number): number => base === MEM_STAT ? 0x80 : base === MEM_SCRATCH ? 0x10 : 0x00;
+// コンパイル専用。Instruction をバイト列に書き出す(後半。前半の解析は parser.ts)。
+//
+// コンテナの長さプレフィックスと制御命令のラベル距離は中身を書き終えるまで分からないので、いったん仮置きして後から埋め戻す。
 
 class Writer {
   bytes: number[] = [];
@@ -27,8 +16,7 @@ class Writer {
   }
 
   // block/call のような「長さプレフィックス付きコンテナ」を書く共通ヘルパー。
-  // 中身を書き終えるまでバイト数が分からないので、opcodeバイトを仮置きしておき、
-  // 書き終わった後に実際のバイト数から長さニブル/拡張バイトを逆算して埋め戻す。
+  // 中身を書き終えるまでバイト数が分からないので、opcodeバイトを仮置きしておき、書き終わった後に実際のバイト数から長さニブル/拡張バイトを逆算して埋め戻す。
   private container(opcodeHighNibble: number, writeBody: () => void): void {
     const opcodePos = this.bytes.length;
     this.bytes.push(0);
@@ -49,35 +37,27 @@ class Writer {
     }
   }
 
-  // 定数の opcode バイト(エイリアスがあればそれを優先)
-  private constantCmd(instr: Instruction): number {
-    if (instr.hasForcedOpcode) return instr.forcedOpcode!;
-    if (instr.dataType === DataType.Int32 && instr.value >= -1 && instr.value <= 62) {
-      return 0xC0 | ((instr.value + 1) & 0x3F);
-    }
-    return TAG_BY_TYPE[instr.dataType];
-  }
-
   private writeConstant(instr: Instruction): void {
-    const cmd = this.constantCmd(instr);
+    const cmd = instr.hasForcedOpcode ? instr.forcedOpcode! : instr.defaultConstantOpcode();
     this.u8(cmd);
-    if ((cmd & 0xC0) === 0xC0) return; // コンパクト形式は値がopcodeに埋まっている
+    if (cmd >= Opcode.ConstantCompact) return; // コンパクト形式は値がopcodeに埋まっている
+    // コンパクト形式を除けば cmd は型タグそのものなので、続くバイト数は型で決まる
     switch (cmd) {
-      case 0x1:
-      case 0x6:
-      case 0x8: {
+      case DataType.Int16:
+      case DataType.UInt16:
+      case DataType.UInt24: {
         this.u16le(instr.value);
         break;
       }
-      case 0x2:
-      case 0x3:
-      case 0x4: {
+      case DataType.UInt8:
+      case DataType.UInt8_0x03:
+      case DataType.Bool: {
         this.u8(instr.value);
         break;
       }
-      case 0x9:
-      case 0xA:
-      case 0xD: {
+      case DataType.Int32:
+      case DataType.Int32_0x0A:
+      case DataType.Int32_0x0D: {
         this.u16le(instr.value);
         this.u16le(instr.value >> 16);
         break;
@@ -89,12 +69,12 @@ class Writer {
   }
 
   private writeMemory(instr: Instruction): void {
-    const tag = instr.hasForcedOpcode ? instr.forcedOpcode! : TAG_BY_TYPE[instr.dataType];
-    const high = instr.insnType === InsnType.MemoryIndexed ? 0x20 : 0x10;
+    const tag = instr.hasForcedOpcode ? instr.forcedOpcode! : instr.typeTag();
+    const high = instr.insnType === InsnType.MemoryIndexed ? Opcode.MemoryIndexed : Opcode.Memory;
     this.u8(high | tag);
     const base = instr.memRegionBase!;
     // 領域バイト: 上位ニブルが領域、下位ニブルは Bool のビット番号
-    const region = instr.hasForcedRegion ? instr.forcedRegion! : regionByteOf(base);
+    const region = instr.hasForcedRegion ? instr.forcedRegion! : memSelectorOf(base);
     this.u8(region | (instr.bitIndex ?? 0));
     const off = instr.value - base;
     this.u8((off >> 8) & 0xFF); // アドレスはビッグエンディアン
@@ -107,36 +87,36 @@ class Writer {
   writeInstruction(instr: Instruction): void {
     switch (instr.insnType) {
       case InsnType.Block: {
-        this.container(0x80, () => {
+        this.container(Opcode.Block, () => {
           for (const child of instr.children) this.writeInstruction(child);
-          this.u8(0x00); // End
+          this.u8(ConstantOp.End);
         });
         break;
       }
       case InsnType.Call: {
-        this.container(0x70, () => {
+        this.container(Opcode.Call, () => {
           this.u16le(instr.value);
           for (const child of instr.children) this.writeInstruction(child);
-          this.u8(0x00); // End
+          this.u8(ConstantOp.End);
         });
         break;
       }
       case InsnType.Expression: {
-        this.container(0x30, () => {
+        this.container(Opcode.Expression, () => {
           for (const child of instr.children) this.writeInstruction(child);
-          this.u8(0xA0); // 式の終端 (Operator 0)
+          this.u8(Opcode.Operator | OPERATOR_END); // 式の終端
         });
         break;
       }
       case InsnType.Label: {
-        this.container(0x50, () => {
+        this.container(Opcode.Label, () => {
           this.u8(instr.value); // ラベルの1文字
           for (const child of instr.children) this.writeInstruction(child);
         });
         break;
       }
       case InsnType.Control: {
-        this.container(0x60, () => {
+        this.container(Opcode.Control, () => {
           this.u16le(instr.value);
           this.writeControlBody(instr);
         });
@@ -147,13 +127,13 @@ class Writer {
         break;
       }
       case InsnType.String: {
-        this.u8(0x07);
+        this.u8(ConstantOp.String);
         this.u8(instr.bytes!.length);
         for (const b of instr.bytes!) this.u8(b);
         break;
       }
       case InsnType.StringRef: {
-        this.u8(0x0E);
+        this.u8(ConstantOp.StringRef);
         this.u16le(instr.value);
         break;
       }
@@ -163,20 +143,20 @@ class Writer {
         break;
       }
       case InsnType.Parameter: {
-        if (instr.value >= 0xF) {
-          this.u8(0x4F);
-          this.u8(instr.value - 0xF);
+        if (instr.value >= PARAM_EXTENDED) {
+          this.u8(Opcode.Parameter | PARAM_EXTENDED);
+          this.u8(instr.value - PARAM_EXTENDED);
         } else {
-          this.u8(0x40 | instr.value);
+          this.u8(Opcode.Parameter | instr.value);
         }
         break;
       }
       case InsnType.Variable: {
-        this.u8(0x90 | instr.value);
+        this.u8(Opcode.Variable | instr.value);
         break;
       }
       case InsnType.Operator: {
-        this.u8(0xA0 | instr.value);
+        this.u8(Opcode.Operator | instr.value);
         break;
       }
       default: {
@@ -199,7 +179,7 @@ class Writer {
     }
     // 距離は「最初のラベル、または終端命令の位置まで」(終端命令の手前まで)
     if (distance < 0) distance = this.bytes.length - bodyStart;
-    this.u8(0x00); // End
+    this.u8(ConstantOp.End);
     // 0x80未満なら1バイト、そうでなければ2バイト(ビッグエンディアン、上位バイトに 0x80 を立てる)
     if (distance < 0x80) {
       this.bytes[fieldPos] = distance;

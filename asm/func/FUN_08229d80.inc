@@ -90,7 +90,7 @@
 	str r6, [r0]
 	bl Video_ResetMosaic
 	movs r0, #0
-	bl FUN_0822b664
+	bl Video_InitBGMode
 	movs r4, #0xb4
 	str r4, [sp]
 	movs r0, #0
@@ -113,7 +113,7 @@
 	strh r6, [r0]
 	ldr r0, _08229F0C @ =0x03002CA8
 	str r6, [r0]
-	bl FUN_0822a2a8
+	bl Video_Reset
 	bl Video_CreateSpriteLUT
 	bl FUN_0822f1b0
 	bl Video_ResetHBlankEffect

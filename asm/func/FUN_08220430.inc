@@ -172,7 +172,7 @@ _08220578:
 	lsrs r2, r5, #0x18
 	add r0, sp, #0x18
 	movs r1, #9
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	movs r0, #0xa0
 	lsls r0, r0, #3
 	strh r0, [r7, #2]

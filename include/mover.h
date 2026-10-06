@@ -1,6 +1,7 @@
 #ifndef __INCLUDE_MOVER_H__
 #define __INCLUDE_MOVER_H__
 
+#include "collision_map.h"
 #include "gba/gba.h"
 #include "types.h"
 
@@ -10,11 +11,11 @@ struct MainSprite;
 // Mover が踏んでいるタイルの控え, どの配列も [0] が前、[1] が今
 // タイルが変わったときだけ FUN_082332f8 が今の値を [0] へ押し出してから [1] を新しいタイルで更新する
 typedef struct {
-  u8 unk_0[4];     // 0x00, FUN_0823280c も FUN_082332f8 も触らない
-  u16 tileIdx[2];  // 0x04, gCollisionMap->rowOffsets[z >> 8] + (x >> 8)
-  u8 attrLo[2];    // 0x08, TileAttr の bit0-3 (TATTR_WALL / TATTR_UNK_2)
-  u8 attrHi[2];    // 0x0A, TileAttr の bit4-7 (TATTR_NOISE / TATTR_ICE / TATTR_LAVA) を 4bit 右にずらした値
-  u16 obj[2];      // 0x0C, CollisionMapTile の obj と height をまとめた2バイト
+  u8 unk_0[4];       // 0x00, Map_InitMoverTile も FUN_082332f8 も触らない
+  u16 tileIdx[2];    // 0x04, gCollisionMap->rowOffsets[z >> 8] + (x >> 8)
+  u8 height[2];      // 0x08, CollisionMapTile.heightStairs の下位4bit
+  u8 stairs[2];      // 0x0A, CollisionMapTile.heightStairs の上位4bit
+  TileAttr attr[2];  // 0x0C, CollisionMapTile.attr
 } MoverTile;
 static_assert(sizeof(MoverTile) == 16);
 
@@ -44,7 +45,7 @@ typedef struct Mover {
 static_assert(sizeof(Mover) == 68);
 
 // MoverTile を pos の足元のタイルで埋める (実体は衝突マップ側の code_082326a0.c)
-void FUN_0823280c(MoverTile* p, Vec3* pos);
+void Map_InitMoverTile(MoverTile* p, Vec3* pos);
 
 // delta の分だけ衝突を見ながら pos を進める (同上)
 void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16 sizeZ, u8 unk_4);

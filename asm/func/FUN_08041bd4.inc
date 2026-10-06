@@ -88,7 +88,7 @@ _08041C3C:
 	adds r1, r7, r2
 	ldr r1, [r1]
 	ldrb r2, [r6]
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 _08041C98:
 	movs r0, #0x62
 	bl VM_SeekToNamedArg

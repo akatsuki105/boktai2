@@ -106,7 +106,7 @@ _08046A34:
 	adds r4, #8
 	mov r0, sl
 	adds r1, r4, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	adds r0, r5, #0
 	adds r0, #0x29
 	movs r2, #0
@@ -327,7 +327,7 @@ _08046BCA:
 _08046BE0:
 	mov r0, sl
 	ldr r1, [sp, #0x10]
-	bl FUN_08236268
+	bl Map_StepNavPath
 	ldrb r0, [r5, #7]
 	ldr r2, _08046C30 @ =0x085AB414
 	lsls r1, r0, #1

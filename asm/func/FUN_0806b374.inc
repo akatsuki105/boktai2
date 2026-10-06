@@ -80,7 +80,7 @@ _0806B40A:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 _0806B428:
 	pop {r4, r5}
 	pop {r0}

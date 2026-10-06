@@ -33,7 +33,7 @@
 	mov r0, r8
 	ldrb r2, [r0]
 	adds r0, r6, #0
-	bl FUN_08234f90
+	bl Map_GetPathNodePos
 	adds r5, r7, #0
 	adds r5, #0x9c
 	ldrb r1, [r4]
@@ -43,12 +43,12 @@
 	mov r0, r8
 	ldrb r3, [r0]
 	adds r0, r5, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	ldr r1, _080EE370 @ =0x000004A4
 	adds r0, r7, r1
 	ldr r0, [r0]
 	adds r1, r6, #0
-	bl FUN_082362fc
+	bl Map_InitNavAgent
 	str r5, [r7, #0x24]
 _080EE336:
 	adds r0, r7, #0
@@ -98,7 +98,7 @@ _080EE38A:
 	mov r5, r8
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080EE3AC
 	adds r0, #4

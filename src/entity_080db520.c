@@ -28,15 +28,13 @@ extern Entity080db520* gEntity080db520;  // 0x03000160
 
 const u8 u8_ARRAY_085ad310[4] = {0x8, 0x4, 0x2, 0x1};  // 0x085AD310
 
-INCRODATA(".rodata", "data/rodata4.bin");  // ./tools/bin.ts ./baserom.gba 0x085ad314 0x085AF034 ./data/rodata4.bin
-
 NAKED s32 FUN_080da9c4(Entity080db520* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080da9c4.inc"); }
 
 NAKED void FUN_080dab9c(Entity080db520* p) { INCFUNC("asm/func/FUN_080dab9c.inc"); }
 
 NAKED void FUN_080dabe4(Entity080db520* p) { INCFUNC("asm/func/FUN_080dabe4.inc"); }
 
-void FUN_080dac20(void) {}
+void FUN_080dac20(Entity080db520* p, Entity080db520Elem* elem) {}
 
 NAKED void FUN_080dac24(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080dac24.inc"); }
 
@@ -53,15 +51,21 @@ NAKED s32 FUN_080dad94(Entity080db520* p) { INCFUNC("asm/func/FUN_080dad94.inc")
 
 NAKED void FUN_080dadec(Entity080db520* p) { INCFUNC("asm/func/FUN_080dadec.inc"); }
 
-NAKED void FUN_080dae60(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080dae60.inc"); }
+NAKED void FUN_080dae60(Entity080db520* p, Entity080db520Elem* elem) { INCFUNC("asm/func/FUN_080dae60.inc"); }
 
-NAKED void FUN_080db040(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080db040.inc"); }
+NAKED void FUN_080db040(Entity080db520* p, Entity080db520Elem* elem) { INCFUNC("asm/func/FUN_080db040.inc"); }
 
 NAKED void FUN_080db0f8(Entity080db520* p) { INCFUNC("asm/func/FUN_080db0f8.inc"); }
 
 NAKED void FUN_080db260(Entity080db520* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080db260.inc"); }
 
 NAKED s32 FUN_080db290(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080db290.inc"); }
+
+void (*const PTR_ARRAY_085ad314[3])(Entity080db520*, Entity080db520Elem*) = {
+    FUN_080dac20,
+    FUN_080dae60,
+    FUN_080db040,
+};  // 0x085AD314
 
 NAKED s32 Entity080db520_Update(Entity080db520* p) { INCFUNC("asm/func/Entity080db520_Update.inc"); }
 

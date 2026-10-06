@@ -55,6 +55,12 @@ NAKED s32 SpawnAttackBox(Vec3* pos, u8 kind, u32 unk_60, s32 power, s32 unk_40, 
 
 NAKED void FUN_080dd93c(void) { INCFUNC("asm/func/FUN_080dd93c.inc"); }
 
+void (*const sAttackBoxUpdates[3])(AttackBoxManager*, AttackBox*) = {
+    AttackBox_Idle,
+    AttackBox_Update,
+    AttackBox_Free,
+};  // 0x085AD348
+
 NAKED s32 AttackBoxManager_Update(AttackBoxManager* p) { INCFUNC("asm/func/AttackBoxManager_Update.inc"); }
 
 s32 AttackBoxManager_Destroy(AttackBoxManager* p) {

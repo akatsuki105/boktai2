@@ -44,7 +44,7 @@ _08079C8E:
 	cmp r0, #0
 	beq _08079CB2
 	adds r0, r5, #0
-	bl FUN_08064db0
+	bl Player_GetMagicAction
 	adds r4, r0, #0
 _08079CB2:
 	ldr r1, _08079CD8 @ =0x00000387

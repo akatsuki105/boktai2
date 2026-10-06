@@ -52,7 +52,7 @@ _08091836:
 	lsls r2, r2, #2
 	adds r0, r6, #0
 	movs r1, #0
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 _08091856:
 	pop {r3}
 	mov r8, r3

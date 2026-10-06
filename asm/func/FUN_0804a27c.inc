@@ -54,7 +54,7 @@ _0804A2DC:
 	ldrh r0, [r0]
 	strh r0, [r5, #0xc]
 	adds r0, r6, #0
-	bl FUN_08049640
+	bl TextRenderer_ResetModeStack
 	movs r0, #0
 _0804A2EE:
 	pop {r3}

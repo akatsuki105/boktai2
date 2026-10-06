@@ -21,7 +21,7 @@ _08240B1E:
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	adds r1, r6, #0
-	bl FUN_08234d50
+	bl Map_IsPosInZoneByID
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08240B14

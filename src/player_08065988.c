@@ -11,7 +11,7 @@
 
 // player.c とファイルを分けてるのは、ファイルサイズが大きくなりすぎてコードを把握しにくいからで、解析が進んだら整理する予定
 
-void FUN_08065164(Player* p);
+void Player_RefreshMagicInfo(Player* p);
 extern const s16 s16_ARRAY_085abc8a[17];
 extern const u16 u16_ARRAY_085abb2c[57];
 extern const u16 u16_ARRAY_085abb9e[57];
@@ -21,8 +21,8 @@ extern u16 u16_ARRAY_03002ba0[3];
 extern u16 u16_03002b78;
 extern u16 gSunlightOverride;
 extern u16 u16_03002bd0;
-void FUN_080612d8(Player* p);
-bool32 FUN_08060a24(Player* p, u32 animID, s32 param_3);
+void Player_SpawnFootHitbox(Player* p);
+bool32 Player_PlayAnim(Player* p, u32 animID, s32 param_3);
 void FUN_080609dc(Player* p);
 s32 FUN_08086294(Vec3* pos, u32 a, u32 b);
 void Player_StopEneChargeSound(Player* p);
@@ -31,11 +31,11 @@ void Player_SetAction(Player* p, u8 a, u8 b);
 void FUN_08072724(Player* p);
 void FUN_0823bca8(s32 n);
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
-void FUN_080613ec(Player* p, Vec3* pos, s32 val);
+void Player_ShowPtcl64c(Player* p, Vec3* pos, s32 val);
 void FUN_0807e854(Player* p);
 void FUN_0807d118(Player* p);
 void FUN_08063220(Player* p);
-void FUN_08063574(Player* p, s32 badcondID, s32 frames);
+void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames);
 void FUN_08063634(Player* p, s32 n);
 void FUN_080ec79c(u8 kind, void* payload);
 void FUN_08060c40(Player* p, u32 val);
@@ -44,24 +44,24 @@ void FUN_080d040c(Player* p);
 extern void* ptr_03002ba8;
 extern u16 u16_03002bf4;
 void FUN_080f8cac(unknown* node);
-void Player_Destroy_Helper_08063b24(Player* p);
+void Player_DestroyEffects(Player* p);
 void FUN_0807bdc8(Player* p, s32 param_2, s32 param_3, u32 param_4);
 void FUN_08060ec8(Player* p, u32 bits);
 u32 FUN_08060ed8(Player* p, u32 bits);
-bool32 FUN_08064c48(Player* p, magic32_t id);
+bool32 Player_IsMagicAvailableForm(Player* p, magic32_t id);
 void CheckHeartJokerEmblem(Player* p);
 void FUN_08061294(Player* p);
-void Player_Init_Helper_08063b6c(Player* p);
+void Player_InitEffects(Player* p);
 void FUN_0807ddbc(Player* p);
 
-void FUN_08064a64(Player* p, const ArmorData* a);
+void Player_EquipArmor(Player* p, const ArmorData* a);
 struct Entity08080be8* Entity08080be8_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44, u32 ptclVal, u32 eneCost, u32 unk_cd);
 void FUN_0807e784(HitboxData* a, HitboxData* b, Player* p);
 void Player_SetMoveDelta(Player* p, s32 val);
 extern u16 u16_03002b74;
 void FUN_0823bac8(Vec3* pos);
 bool32 FUN_0808626c(s32 idA, u32 flagsA, s32 idB, u32 flagsB);
-void FUN_08064058(Player* p);
+void Player_UpdateBloodSword(Player* p);
 
 void FUN_08065200(Player* p) {
   if (VM_SeekToNamedArg('i')) {
@@ -97,12 +97,12 @@ NAKED bool32 FUN_08065744(Player* p, u32 n) { INCFUNC("asm/func/FUN_08065744.inc
 void Player_InitWeapon(Player* p) {
   if (p->kind != PLAYER_SABATA) {
     if (REGISTERED_WEAPON(gStat->equippedWeaponIdx) >= 0) {
-      weapon_08064664(p, GetWeapon(REGISTERED_WEAPON(gStat->equippedWeaponIdx)));
+      Player_ApplyWeapon(p, GetWeapon(REGISTERED_WEAPON(gStat->equippedWeaponIdx)));
     } else {
-      weapon_08064664(p, NULL);
+      Player_ApplyWeapon(p, NULL);
     }
   } else {
-    weapon_08064664(p, NULL);
+    Player_ApplyWeapon(p, NULL);
     if (p->unk_18 == 0) {
       SetWeaponFoundFlag(WEAPON_GUN_DEL_HELL);
     }
@@ -124,7 +124,7 @@ void Player_InitArmor(Player* p) {
     a = &gArmorDB[ARMOR_MAIL_OF_LUNA];
   }
 
-  FUN_08064a64(p, a);
+  Player_EquipArmor(p, a);
 }
 
 // 本体の当たり判定を組み立てる, 赤ジャンゴは属性がソル・弱点がダークで、それ以外は逆になる
@@ -225,7 +225,7 @@ NAKED void FUN_0806623c(Player* p) { INCFUNC("asm/func/FUN_0806623c.inc"); }
 NAKED void FUN_08066408(Player* p) { INCFUNC("asm/func/FUN_08066408.inc"); }
 
 void FUN_08066794(Player* p) {
-  FUN_080612d8(p);
+  Player_SpawnFootHitbox(p);
   p->unk_376++;
 }
 
@@ -322,7 +322,7 @@ void FUN_08066e84(void) {
 void FUN_08066e9c(Player* p, Vec3* pos1, s32 param_3, s32 param_4, Vec3* pos2, s32 param_6, SoundID32 soundID) {
   FUN_08240cf0(pos1->x, pos1->z, param_3, 0, param_4, p->mover.id);
   if (pos2 != NULL) {
-    FUN_080613ec(p, pos2, param_6);
+    Player_ShowPtcl64c(p, pos2, param_6);
   }
   if (soundID != 0) {
     PlaySound_082406e0(soundID);
@@ -388,7 +388,7 @@ void FUN_08066f7c(Player* p) {
     FUN_080609dc(p);
   }
   p->unk_20 &= ~1;
-  FUN_08060a24(p, FUN_08066ee4(p->kind, 0), 0x40);
+  Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), 0x40);
 }
 
 // ハヤサと鎧の重さから移動速度を出す, 下限は 2
@@ -495,7 +495,7 @@ void FUN_080672b0(Player* p) {
   }
   FUN_080670fc(p, 0);
   FUN_080609dc(p);
-  FUN_08060a24(p, FUN_08066ee4(p->kind, 1), FRACUNIT_6);
+  Player_PlayAnim(p, FUN_08066ee4(p->kind, 1), FRACUNIT_6);
 }
 
 NAKED void MagicDash_0806734c(Player* p) { INCFUNC("asm/func/MagicDash_0806734c.inc"); }
@@ -748,7 +748,7 @@ void FUN_0806f1ec(Player* p) {
   switch (p->state) {
     case 0: {
       PlaySound_082406e0(0x39E);
-      FUN_08060a24(p, 403, FRACUNIT_6);
+      Player_PlayAnim(p, 403, FRACUNIT_6);
       Player_SetAction(p, 31, 1);
       break;
     }
@@ -944,7 +944,7 @@ void FUN_080726ec(Player* p) {
   if (p->unk_4ad != 0) {
     p->unk_4ae++;
     if (p->unk_4ae > 7) {
-      FUN_080612d8(p);
+      Player_SpawnFootHitbox(p);
       p->unk_4ae = 0;
     }
   }
@@ -955,7 +955,7 @@ NON_MATCH void FUN_08072724(Player* p) {
 #ifdef NONMATCHING_C
   switch (p->state) {
     case 0: {
-      FUN_08060a24(p, FUN_08066ee4(p->kind, 0), FRACUNIT_6);
+      Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), FRACUNIT_6);
       if (p->unk_4af != 0) {
         p->unk_4af = 0;
         FUN_080726b4(p);
@@ -965,14 +965,14 @@ NON_MATCH void FUN_08072724(Player* p) {
     case 2: {
       p->stateTimer++;
       if (p->stateTimer > 19) {
-        FUN_08060a24(p, FUN_08066ee4(p->kind, 0), FRACUNIT_6);
+        Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), FRACUNIT_6);
         FUN_08072620(p);
         FUN_080726b4(p);
         break;
       }
     }
     case 1: {
-      FUN_08060a24(p, FUN_08066ee4(p->kind, 0x2F), FRACUNIT_6);
+      Player_PlayAnim(p, FUN_08066ee4(p->kind, 0x2F), FRACUNIT_6);
       break;
     }
   }
@@ -986,7 +986,7 @@ NAKED void FUN_080727d4(Player* p) { INCFUNC("asm/func/FUN_080727d4.inc"); }
 NAKED void FUN_080728a8(Player* p) { INCFUNC("asm/func/FUN_080728a8.inc"); }
 
 void FUN_080729e0(Player* p) {
-  if (FUN_08060a24(p, 531, FRACUNIT_6)) {
+  if (Player_PlayAnim(p, 531, FRACUNIT_6)) {
     FUN_080609dc(p);
     FUN_08072620(p);
     FUN_080726b4(p);
@@ -994,7 +994,7 @@ void FUN_080729e0(Player* p) {
 }
 
 void FUN_08072a0c(Player* p) {
-  FUN_08060a24(p, FUN_08066ee4(p->kind, 51), FRACUNIT_6);
+  Player_PlayAnim(p, FUN_08066ee4(p->kind, 51), FRACUNIT_6);
   FUN_08060c40(p, 4);
 }
 
@@ -1038,13 +1038,13 @@ void FUN_08074994(Player* p) {
 void FUN_080749b0(Player* p) {
   switch (p->state) {
     case 0: {
-      if (FUN_08060a24(p, 536, FRACUNIT_6)) {
+      if (Player_PlayAnim(p, 536, FRACUNIT_6)) {
         Player_SetAction(p, 16, 1);
       }
       break;
     }
     case 1: {
-      FUN_08060a24(p, 538, FRACUNIT_6);
+      Player_PlayAnim(p, 538, FRACUNIT_6);
       if (p->stateTimer == 0) {
         FUN_080726b4(p);
         p->stateTimer++;
@@ -1052,7 +1052,7 @@ void FUN_080749b0(Player* p) {
       break;
     }
     case 2: {
-      if (FUN_08060a24(p, 536, FRACUNIT_6)) {
+      if (Player_PlayAnim(p, 536, FRACUNIT_6)) {
         FUN_080609dc(p);
         FUN_08072620(p);
         FUN_080726b4(p);
@@ -1369,7 +1369,7 @@ void AddWeaponExpByMask(u32 mask, s32 amount) {
   }
 
   if (refresh && gPlayerPtr[0] != NULL) {
-    FUN_08064058(gPlayerPtr[0]);
+    Player_UpdateBloodSword(gPlayerPtr[0]);
   }
 }
 
@@ -1594,7 +1594,7 @@ void FUN_0807b02c(void) {
         p->xflip = 0;
       }
     }
-    FUN_0823280c(&p->tile, &p->mover.pos);
+    Map_InitMoverTile(&p->tile, &p->mover.pos);
     Player_SetAction(p, 0, 0);
     Player_StopEneChargeSound(p);
   }
@@ -1702,7 +1702,7 @@ NON_MATCH void FUN_0807b34c(void) {
   if (p != NULL && VM_SeekToNamedArg('f')) {
     FUN_08060ec8(p, VM_GetValue());
     if (FUN_08060ed8(p, 0x3FFE)) {
-      p->isEquippedMagicAvailableForm = FUN_08064c48(p, p->equippedMagic);
+      p->magic.availableForm = Player_IsMagicAvailableForm(p, p->magic.id);
     }
     if (VM_SeekToNamedArg('p')) {
       p->scriptID_9c0 = VM_GetValue();
@@ -1748,7 +1748,7 @@ void FUN_0807b428(void) {
       s32 val = VM_SeekToNamedArg('t') ? VM_GetValue() : u16_ARRAY_085abf4c[n];
 
       if (gPlayerPtr[0] != NULL) {
-        FUN_08063574(gPlayerPtr[0], n, val);
+        Player_ApplyBadCondition(gPlayerPtr[0], n, val);
       } else {
         u16_ARRAY_03002ba0[n] = val;
       }
@@ -1829,7 +1829,7 @@ void FUN_0807b5d0(void) {
   s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
-    gPlayerPtr[i]->unk_285 = 1;
+    gPlayerPtr[i]->magic.unk_285 = 1;
   }
 }
 
@@ -1837,7 +1837,7 @@ void FUN_0807b5f8(void) {
   s32 i = VM_GetPlayerIdx();
 
   if (gPlayerPtr[i] != NULL) {
-    gPlayerPtr[i]->unk_285 = 0;
+    gPlayerPtr[i]->magic.unk_285 = 0;
   }
 }
 
@@ -2358,7 +2358,7 @@ void FUN_0807c8d4(Player* p, s32 param_2) {
     p->facing = param_2;
   }
   FUN_080609dc(p);
-  FUN_08060a24(p, FUN_08066ee4(p->kind, 1), 0x20);
+  Player_PlayAnim(p, FUN_08066ee4(p->kind, 1), 0x20);
   FUN_0807b7a4(p);
   Player_SetAction(p, 2, 0);
   p->fn_498 = FUN_08074994;
@@ -3161,7 +3161,7 @@ static s32 Player_Destroy(Player* p) {
   AuxSprite_Remove(&p->sprite_e8);
   Hitbox_Unregister(&p->unk_16c);
   Mover_Unlink(&p->mover);
-  Player_Destroy_Helper_08063b24(p);
+  Player_DestroyEffects(p);
   FUN_0807ddd4(p);
   Player_StopEneChargeSound(p);
   ptr_03002ba8 = NULL;
@@ -3176,12 +3176,12 @@ static s32 Player_Init(Player* p, u32 n, void* _) {
   Player_Init_Helper_08065270(p);
   FUN_08065744(p, n);
   Player_SetupHitbox(p);
-  FUN_08065164(p);
+  Player_RefreshMagicInfo(p);
   Player_InitWeapon(p);
   Player_InitArmor(p);
   CheckHeartJokerEmblem(p);
   FUN_08061294(p);
-  Player_Init_Helper_08063b6c(p);
+  Player_InitEffects(p);
   FUN_0807ddbc(p);
   FUN_08065240(p);
   gPlayerPtr[(p->mover).unk_4] = p;

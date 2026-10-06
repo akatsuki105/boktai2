@@ -79,11 +79,11 @@ _080DEC48:
 _080DEC56:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	add r5, sp, #0x14
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080DEC74
 	adds r0, #4

@@ -30,7 +30,7 @@ typedef struct FreezeEffect {
   u16 unk_202;                                   // 0x202, FreezeEffect_Init で 0
   u16 unk_204;                                   // 0x204, FreezeEffect_Create の第5引数 (MagicFreeze_08069710 は 90)
   u16 stateTimer;                                // 0x206, 状態を切り替えると 0 に戻る, 根拠: FreezeEffect_SetState / FreezeEffect_StateGather
-  void (*updateCallback)(struct FreezeEffect*);  // 0x208, 現在の状態関数
+  void (*updateCallback)(struct FreezeEffect*);  // 0x208
 } FreezeEffect;
 static_assert(sizeof(FreezeEffect) == 524);
 
@@ -111,7 +111,8 @@ NON_MATCH void FreezeEffect_StateVanish(FreezeEffect* p) {
   Vec3* pos;
   s32 y;
   s32 bx, bz, idx;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
   u32 attr, kind, h;
   u16* table;
   u32 ridx;
@@ -130,13 +131,13 @@ NON_MATCH void FreezeEffect_StateVanish(FreezeEffect* p) {
     } else {
       idx = gCollisionMap->rowOffsets[bz] + bx;
     }
-    tile = (u8*)FUN_08234224(idx, 1);
-    if (tile != NULL) {
-      tile += 4;
+    ov = Map_FindTileOverride(idx, 1);
+    if (ov != NULL) {
+      tile = &ov->tile;
     } else {
-      tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+      tile = &gCollisionMap->tiledata->tiles[idx];
     }
-    attr = *tile;
+    attr = tile->heightStairs;
     kind = attr >> 4;
     h = (attr & 0xF) << 8;
     switch (kind) {

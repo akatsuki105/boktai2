@@ -43,7 +43,7 @@ _082359E8:
 _082359F2:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08235A02
 	adds r0, #4
@@ -91,7 +91,7 @@ _08235A48:
 	adds r0, r6, #0
 	mov r1, sb
 	adds r2, r4, #0
-	bl FUN_08235924
+	bl Map_IsPosInNavRect
 	cmp r0, #0
 	beq _08235A60
 	mov r1, sl

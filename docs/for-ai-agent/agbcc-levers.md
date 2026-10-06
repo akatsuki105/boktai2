@@ -75,6 +75,26 @@ plausible.
 - **Loop form.** A constant positive bound folds to a bottom-tested loop with
   no entry guard; a runtime bound keeps the guard. If the target has a guard
   and you do not, the bound is not the constant you assumed.
+- **An ascending index loop comes back descending.** With no loop-carried
+  dependency, gcc reverses `for (i = 0; i < 4; i++) a[i] = 0;` and walks a
+  pointer *down* from `&a[3]`, exiting on a **signed** compare against the base.
+  So a descending pointer walk in the target is evidence of an *ascending*
+  source loop. The descending form keeps its counter and cannot be reversed
+  again, which is one instruction too many (`VM_Ctrl_SetZoneCallback`,
+  `Text_FormatDecimal`):
+
+```sh
+printf 'void f(unsigned short*a){int i;for(i=0;i<4;i++){a[i]=0;}}\n' \
+  | tools/agbcc/bin/agbcc -mthumb-interwork -O2 -o - -
+# add r1,r0,#6 / strh / sub r1,#2 / cmp r1,r0 / bge
+```
+
+- **Do not write the walking pointer yourself.** The cursor a reduced loop uses
+  is created by the compiler in the loop preheader, i.e. *after* the `i = 0`
+  init. Declaring `u16* dst` before the loop and writing `*dst++ = v` puts its
+  initialization *before* the init and costs a move; the array-index form
+  (`ev.args1[i] = v`) lets strength reduction place it where the target has it
+  (`VM_Ctrl_SetZoneCallback`).
 - **`if (a && b) return X; return Y;` and `if (!a) return Y; if (b) return X; return Y;`
   put different arms on the fallthrough.** The `&&` chain emits the `X` block
   first and branches over it; the split form emits `Y` right after the second
@@ -474,7 +494,10 @@ A zero-instruction `do { } while (0);` between two statements creates a basic
 block boundary and can change emission order without emitting anything. It is
 source, not asm, but it is also not something a person writes — treat it as
 tier D in spirit: a signal that the real answer is a statement-order or
-block-structure difference you have not found yet.
+block-structure difference you have not found yet. A 2-byte residual that resisted
+about twenty source forms, eight flags and 130k permuter iterations closed on
+exactly this — the callee-save copy order between two adjacent stores
+(`AddAttr2dBitMap` in laqieer/fireemblem8j, `docs/agbcc_codegen_levers.md`).
 
 ---
 

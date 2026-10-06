@@ -38,7 +38,7 @@ _080E3D04:
 _080E3D12:
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E3D28
 	adds r0, #4
@@ -86,7 +86,7 @@ _080E3D60:
 _080E3D6C:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E3D7C
 	adds r0, #4
@@ -126,7 +126,7 @@ _080E3DAC:
 _080E3DB4:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E3DC8
 	adds r0, #4
@@ -178,7 +178,7 @@ _080E3E08:
 _080E3E14:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E3E24
 	adds r0, #4
@@ -216,7 +216,7 @@ _080E3E50:
 _080E3E58:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E3E6C
 	adds r0, #4

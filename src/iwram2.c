@@ -14,11 +14,13 @@
 #include "video.h"
 #include "vm.h"
 
+struct Entity0804e2c0;
 struct Dvalinn;
 struct Entity0FC5;
 struct Entity5941;
 struct EntityBD74;
 struct Entity0B50;
+struct EntityA628;
 struct Entity4063;
 struct Entity080acd4c;
 struct EntityCBB0;
@@ -27,22 +29,29 @@ struct Entity9A9F;
 struct Player;
 struct CollisionMapData;
 
-IWRAM_DATA u32 u32_03002b54 = 0;                    // gUnkEntity1Ptr_03002b58 と同じ場所っぽい, rfu_syncVBlank の戻り値が入る
-IWRAM_DATA Entity* gUnkEntity1Ptr_03002b58 = NULL;  // 0x03002B58, Malloc(908) で確保したバッファを指すポインタ, RFU関連? (FUN_0804e2c0)
+IWRAM_DATA u32 u32_03002b54 = 0;                           // gUnkEntity1Ptr_03002b58 と同じ場所っぽい, rfu_syncVBlank の戻り値が入る
+IWRAM_DATA struct Entity0804e2c0* gEntity0804e2c0 = NULL;  // 0x03002B58
 
-IWRAM_DATA u8 u8_03002b5c[0x03002B74 - 0x03002B5C] = {};  // todo
+IWRAM_DATA u8 u8_03002b5c[0x03002B64 - 0x03002B5C] = {};  // todo
+IWRAM_DATA u16 u16_03002b64 = 0;                          // 0x03002B64, Player_ApplyBadCondition が Player.unk_456 と同じ値を書く
+IWRAM_DATA u8 u8_03002b66[0x03002B74 - 0x03002B66] = {};  // todo
 IWRAM_DATA u16 u16_03002b74 = 0;                          // 0x03002B74, サバタでプレイ中の FUN_0807a70c がハヤサの代わりに返す値
 IWRAM_DATA u8 u8_03002b76[2] = {};                        // todo
 IWRAM_DATA u16 u16_03002b78 = 0;                          // 0x03002B78, FUN_0807b564 が 0 に戻す
 IWRAM_DATA u8 u8_03002b7a[6] = {};                        // todo
 IWRAM_DATA u16 gSunlightOverride = 0;                     // 0x03002B80, ApplyLxModifiers が 1 なら太陽レベル +4、2 なら日光なしにする
-IWRAM_DATA u8 u8_03002b82[22] = {};                       // todo
+IWRAM_DATA u8 u8_03002b82[2] = {};                        // todo
+IWRAM_DATA u16 u16_03002b84 = 0;                          // 0x03002B84, Player_InitEffects が 1 を入れる
+IWRAM_DATA u8 u8_03002b86[10] = {};                       // todo
+IWRAM_DATA u16 u16_03002b90 = 0;                          // 0x03002B90, Player_InitEffects が 0 に戻す
+IWRAM_DATA u8 u8_03002b92[6] = {};                        // todo
 IWRAM_DATA u16 gPlayerCount = 0;                          // Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
 IWRAM_DATA u8 u8_03002b9a[6] = {};                        // todo
 IWRAM_DATA u16 u16_ARRAY_03002ba0[3] = {};                // 0x03002BA0, Player がいないときに FUN_0807b428 が書き込む退避先
 IWRAM_DATA u8 u8_03002ba6[2] = {};                        // todo
 IWRAM_DATA void* ptr_03002ba8 = NULL;                     // 0x03002BA8, Player_Destroy が NULL に戻す
-IWRAM_DATA u8 u8_03002bac[4] = {};                        // todo
+IWRAM_DATA u16 u16_03002bac = 0;                          // 0x03002BAC, Player_InitEffects が 0 に戻す
+IWRAM_DATA u8 u8_03002bae[2] = {};                        // todo
 IWRAM_DATA u16 u16_03002bb0 = 0;                          // 0x03002BB0, FUN_08065110 がサバタのとき 0 に戻す
 IWRAM_DATA u8 u8_03002bb2[14] = {};                       // todo
 IWRAM_DATA u32 u32_03002bc0 = 0;                          // 0x03002BC0, ビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る
@@ -62,7 +71,11 @@ IWRAM_DATA struct Entity0B50* gEntity0B50 = NULL;         // 0x03002C00
 IWRAM_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 
 IWRAM_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
-IWRAM_DATA u8 u8_03002c12[0x03002C50 - 0x03002C12] = {};  // todo
+IWRAM_DATA u8 u8_03002c12[0x03002C3C - 0x03002C12] = {};  // todo
+
+IWRAM_DATA struct EntityA628* gEntityA628 = NULL;  // 0x03002C3C
+
+IWRAM_DATA u8 u8_03002c40[0x03002C50 - 0x03002C40] = {};  // todo
 
 IWRAM_DATA struct Entity4063* gEntity4063 = NULL;          // 0x03002C50
 IWRAM_DATA struct Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
@@ -161,11 +174,13 @@ IWRAM_DATA u8 u8_03003a40[0x03003E40 - 0x03003A40] = {};  // todo
 
 IWRAM_DATA s32 s32_03003e40 = 0;  // 0x03003E40, Video_ResetFrameState が毎フレーム 0 に戻す
 
-IWRAM_DATA u8 u8_03003e44[0x03003E60 - 0x03003E44] = {};  // todo
+IWRAM_DATA u8 u8_03003e44[0x03003E50 - 0x03003E44] = {};  // todo
+IWRAM_DATA u16 u16_03003e50 = 0;                          // 0x03003E50, Video_InitBGMode が 0 を書く
+IWRAM_DATA u8 u8_03003e52[0x03003E60 - 0x03003E52] = {};  // todo
 
 IWRAM_DATA void* gBGTileDataSrcAddrs[4] = {};  // 0x03003E60, BG ごとのタイルデータ転送元, 根拠: FUN_0822b9d4
 
-IWRAM_DATA u8 u8_03003e70[0x03003E78 - 0x03003E70] = {};  // todo
+IWRAM_DATA u16 u16_ARRAY_03003e70[4] = {};  // 0x03003E70, StageBGRegs が u16_ARRAY_03003e90 へ丸ごと写す控え
 
 IWRAM_DATA u16 gStagedDISPCNT = 0;  // 0x03003E78, Video_SetupBG / Video_SetupBGLayout が表示する BG のビットを立て、VideoCommit_Update が DISPCNT に流し込む
 
@@ -173,11 +188,23 @@ IWRAM_DATA u8 u8_03003e7a[0x03003E80 - 0x03003E7A] = {};  // todo
 
 IWRAM_DATA u16 gBGTileDataTileCounts[4] = {};  // 0x03003E80, BG ごとの転送タイル枚数, 根拠: FUN_0822b9d4
 
-IWRAM_DATA u8 u8_03003e88[0x03003EA8 - 0x03003E88] = {};  // todo
+IWRAM_DATA u8 u8_03003e88[0x03003E8C - 0x03003E88] = {};  // todo
+IWRAM_DATA u16 u16_03003e8c = 0;                          // 0x03003E8C, 0 なら StageBGRegs が BG2/BG3 のオフセットを積み, 0 以外なら控えの書き戻しを行う
+IWRAM_DATA u8 u8_03003e8e[0x03003E90 - 0x03003E8E] = {};  // todo
+IWRAM_DATA u16 u16_ARRAY_03003e90[4] = {};                // 0x03003E90, StageBGRegs が u16_ARRAY_03003e70 から写す先
+IWRAM_DATA u32 u32_03003e98 = 0;                          // 0x03003E98, StageBGRegs が u32_ARRAY_03003eb8[0] へ写す
+IWRAM_DATA u16 u16_03003e9c = 0;                          // 0x03003E9C, Video_InitBGMode が 0x100 を書く
+IWRAM_DATA u8 u8_03003e9e[0x03003EA0 - 0x03003E9E] = {};  // todo
+IWRAM_DATA u32 u32_03003ea0 = 0;                          // 0x03003EA0, StageBGRegs が u32_ARRAY_03003eb8[1] へ写す
+IWRAM_DATA u8 u8_03003ea4[0x03003EA8 - 0x03003EA4] = {};  // todo
 
 IWRAM_DATA u16 gBGTileDataVramOffsets[4] = {};  // 0x03003EA8, BG ごとの転送先 VRAM オフセット, 根拠: FUN_0822b9d4
 
-IWRAM_DATA u8 u8_03003eb0[0x03003ED0 - 0x03003EB0] = {};  // todo
+IWRAM_DATA u8 u8_03003eb0[0x03003EB4 - 0x03003EB0] = {};  // todo
+IWRAM_DATA u16 u16_03003eb4 = 0;                          // 0x03003EB4, Video_InitBGMode が 0x100 を書く
+IWRAM_DATA u8 u8_03003eb6[0x03003EB8 - 0x03003EB6] = {};  // todo
+IWRAM_DATA u32 u32_ARRAY_03003eb8[2] = {};                // 0x03003EB8, StageBGRegs が u32_03003e98 / u32_03003ea0 から写す先
+IWRAM_DATA u16 gStagedBGOfs[8] = {};                      // 0x03003EC0, BG0HOFS..BG3VOFS に流し込む値の控え, BG ごとに (H, V) の順, 根拠: StageBGRegs
 
 IWRAM_DATA BgState gBgStates[4] = {};  // 0x03003ED0, BG0-3 の状態, 根拠: FUN_0822eef4, StageBGRegs (stride 0x30, +0x20/+0x22 を BGnHOFS/BGnVOFS に使う)
 
@@ -274,10 +301,10 @@ IWRAM_DATA World* gWorld = NULL;            // 0x03004698
 IWRAM_DATA GameInfo* gStatBackup = NULL;    // 0x0300469C
 IWRAM_DATA GameInfo* gStat = NULL;          // 0x030046A0
 
-IWRAM_DATA struct CollisionMapData* gCollisionMap = NULL;  // Malloc(3620) で確保したバッファを指すポインタ (FUN_082326a0)
+IWRAM_DATA struct CollisionMapData* gCollisionMap = NULL;  // Malloc(3620) で確保したバッファを指すポインタ (Map_InitCollisionMap)
 IWRAM_DATA s32 gMapBlockW = 0;                             // 0x030046A8
 IWRAM_DATA s32 gMapBlockH = 0;                             // 0x030046AC
-IWRAM_DATA u32 u32_030046b0 = 0;                           // 0x030046B0
+IWRAM_DATA u32 gNextMapEventID = 0;                        // 0x030046B0, Map_InsertEvent が CollisionMapEvent.id に払い出す連番, 0 は使わない
 
 IWRAM_DATA u32 gRandTableIdx2 = 0;  // 0x030046B4
 IWRAM_DATA u32 gRandTableIdx = 0;   // 0x030046B8
@@ -297,14 +324,16 @@ IWRAM_DATA LINK_MANAGER lman = {};  // 0x03004740
 IWRAM_DATA bool32 bool32_03004788 = FALSE;  // 0x03004788
 
 IWRAM_DATA u32 u32_0300478c = 0;  // 0x0300478C, FUN_0823cd04 の一括クリアで 0 になる
-IWRAM_DATA u8 u8_03004790[8] = {};
+IWRAM_DATA u32 u32_03004790 = 0;
+IWRAM_DATA u32 u32_03004794 = 0;
 IWRAM_DATA u32 u32_03004798 = 0;
 IWRAM_DATA u32 u32_0300479c = 0;
 IWRAM_DATA u32 u32_030047a0 = 0;
 IWRAM_DATA u32 gFlag030047a4 = 0;
 
 IWRAM_DATA SystemSaveData* gSystemSaveData = NULL;
-IWRAM_DATA u8 u8_030047ac[8] = {};            // todo
+IWRAM_DATA u32 u32_030047ac = 0;
+IWRAM_DATA u32 u32_030047b0 = 0;
 IWRAM_DATA bool32 gSaveSucceeded = FALSE;     // 0x030047B4, Save_WriteCore でセーブ成功時に 1 がセットされる
 IWRAM_DATA bool32 gSoftResetInhibit = FALSE;  // 0x030047B8, 立てたフレームはソフトリセットのコマンド判定を飛ばす, Entity0823acbc_Update が読んで 0 に戻す
 IWRAM_DATA u32 u32_030047bc = 0;              // 0x030047BC, Entity0823acbc_Update が ENTITY_DISABLE_1 が落ちている間だけ毎フレーム +1 する, 読み手は未発見

@@ -44,7 +44,7 @@ _08232B52:
 	lsrs r6, r0, #0x10
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08232B6C
 	adds r0, #4
@@ -131,7 +131,7 @@ _08232BF6:
 	lsrs r4, r0, #0x10
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08232C10
 	adds r0, #4
@@ -192,7 +192,7 @@ _08232C60:
 	subs r4, r6, r0
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	bne _08232C9E
 	b _08232CA8
@@ -207,7 +207,7 @@ _08232C8C:
 	adds r4, r6, r0
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08232CA8
 _08232C9E:
@@ -269,7 +269,7 @@ _08232CF8:
 	subs r4, r6, #1
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	bne _08232D2E
 	b _08232D32
@@ -281,7 +281,7 @@ _08232D20:
 	adds r4, r6, #1
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08232D32
 _08232D2E:
@@ -343,7 +343,7 @@ _08232D84:
 _08232D90:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	bne _08232DAC
 	b _08232DB0
@@ -351,7 +351,7 @@ _08232D9E:
 	adds r4, r4, r1
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08232DB0
 _08232DAC:

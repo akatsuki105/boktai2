@@ -376,7 +376,7 @@ _080D7EE6:
 	adds r0, r5, #0
 	movs r1, #0
 _080D7EEE:
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 	adds r0, r5, #0
 	movs r1, #0x21
 	bl FUN_080d7bc4
@@ -408,7 +408,7 @@ _080D7F28:
 	lsls r2, r2, #2
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_08063574
+	bl Player_ApplyBadCondition
 	adds r0, r5, #0
 	movs r1, #0x21
 	bl FUN_080d7bc4

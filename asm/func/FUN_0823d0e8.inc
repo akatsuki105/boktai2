@@ -51,7 +51,7 @@ _0823D120:
 	mov r4, sp
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0823D168
 	adds r0, #4

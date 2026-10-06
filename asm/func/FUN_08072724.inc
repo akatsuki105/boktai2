@@ -26,7 +26,7 @@ _08072746:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r0, _08072774 @ =0x000004AF
 	adds r1, r4, r0
 	ldrb r0, [r1]
@@ -58,7 +58,7 @@ _0807278A:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	b _080727CC
 	.align 2, 0
 _080727A4: .4byte 0x0000037E
@@ -72,7 +72,7 @@ _080727A8:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	adds r0, r4, #0
 	bl FUN_08072620
 	adds r0, r4, #0

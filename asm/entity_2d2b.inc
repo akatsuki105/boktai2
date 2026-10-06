@@ -573,12 +573,12 @@ _08008342:
 	adds r1, r6, #0
 	adds r2, r7, #0
 	add r3, sp, #0xc
-	bl FUN_08234e78
+	bl Map_GetStepToPathNode
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08008374
 	adds r0, r5, #0
-	bl FUN_08234e3c
+	bl Map_AdvancePathWalker
 	ldr r0, [r5, #8]
 	ldrh r1, [r0, #4]
 	ldr r0, _08008390 @ =0x00000FFF
@@ -951,7 +951,7 @@ FUN_080085f8: @ 0x080085F8
 	adds r0, #0x28
 	adds r1, r5, #0
 	adds r2, r4, #0
-	bl FUN_08234de8
+	bl Map_InitPathWalker
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080086C2
@@ -969,7 +969,7 @@ FUN_080085f8: @ 0x080085F8
 	ldr r1, [r6, #0x30]
 	add r0, sp, #4
 	movs r2, #0
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 	movs r4, #1
 _0800866A:
 	movs r0, #0x74
@@ -1095,7 +1095,7 @@ _08008764:
 _08008772:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08008788
 	adds r0, #4

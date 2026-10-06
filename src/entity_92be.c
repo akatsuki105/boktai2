@@ -16,7 +16,7 @@ typedef struct Entity92BE {
   u8 unk_9e[0xA0 - 0x9E];                      // 0x9E
   Vec3 pos;                                    // 0xA0, MainSprite_Add に渡す位置, Init が x/y/z を 0 で埋める
   u32 scriptID;                                // 0xA8, '.p'
-  void (*updateCallback)(struct Entity92BE*);  // 0xAC, Entity92BE_Update が毎フレーム呼ぶ, Init は Entity92BE_Shake を入れる
+  void (*updateCallback)(struct Entity92BE*);  // 0xAC, Init は Entity92BE_Shake を入れる
 } Entity92BE;
 static_assert(sizeof(Entity92BE) == 176);
 

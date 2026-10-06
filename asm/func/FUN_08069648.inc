@@ -74,7 +74,7 @@ _080696CE:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r2, _0806970C @ =0x000003FF
 	adds r0, r4, r2
 	ldrb r0, [r0]

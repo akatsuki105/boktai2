@@ -93,7 +93,7 @@ _080657FC:
 _0806580A:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _08065820
 	adds r0, #4
@@ -183,7 +183,7 @@ _080658B6:
 	adds r4, r5, r2
 	adds r0, r4, #0
 	add r1, sp, #8
-	bl FUN_0823280c
+	bl Map_InitMoverTile
 	adds r0, r6, #0
 	adds r1, r4, #0
 	movs r2, #0x1e

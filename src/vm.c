@@ -4,8 +4,9 @@
 #include "file.h"
 #include "global.h"
 #include "malloc.h"
+#include "vm_subroutine.h"
 
-static void FUN_08231c80(void);
+static void ClearStatAndWorld(void);
 void FUN_082324b0(void);
 void VM_ClearScratchpad(void);
 void Save_BackupStatAndWorld(void);
@@ -21,7 +22,8 @@ static const ScriptArgs sEmptyArgs = {0, NULL};  // 引数無しでスクリプ�
 IWRAM_DATA ScriptTable gScriptTable = {};  // 0x03000748
 IWRAM_DATA StringTable gStringTable = {};  // 0x03000758
 
-IWRAM_DATA SubroutineTable* gCtrlHandlers = NULL;  // 0x03000768
+// 0x03000768, CtrlHandlerTable のリンクリスト, これが制御命令のハンドラ, なんでこんな構造にしてるのか全くわからん
+IWRAM_DATA CtrlHandlerTable* gCtrlHandlers = NULL;
 
 IWRAM_DATA u8 u8_0300076c[4] = {};  // padding?
 
@@ -290,7 +292,7 @@ u32 VM_GetValueAt(u8* addr) {
   return val;
 }
 
-s32 FUN_082315c0(u8* pc, s32* out) {
+s32 VM_GetThreeValuesAt(u8* pc, s32* out) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
@@ -302,7 +304,18 @@ s32 FUN_082315c0(u8* pc, s32* out) {
   return 0;
 }
 
-NAKED s32 FUN_082315f4(u8* pc, unknown* r1) { INCFUNC("asm/func/FUN_082315f4.inc"); }
+// VM_GetThreeValuesAt と同じだが, 値を s16 に切り詰めて格納する
+s32 VM_GetThreeValues16At(u8* pc, s16* out) {
+  s32 i;
+
+  for (i = 0; i < 3; i++) {
+    s32 type, val;
+    pc = VM_DecodeValue(pc, &type, &val);
+    out[i] = val;
+  }
+  gVM.pc = pc;
+  return 0;
+}
 
 void* VM_GetValueAtSafe(u8* addr) {
   if (addr != NULL) {
@@ -355,9 +368,9 @@ u8* VM_GetPC(void) {
 // 現在のスクリプトPC位置の値を読む
 u32 VM_GetValue(void) { return VM_GetValueAt(VM_GetPC()); }
 
-s32 FUN_082316f4(s32* out) { return FUN_082315c0(VM_GetPC(), out); }
+s32 VM_GetThreeValues(s32* out) { return VM_GetThreeValuesAt(VM_GetPC(), out); }
 
-s32 FUN_08231708(s32* out) { return FUN_082315f4(VM_GetPC(), out); }
+s32 VM_GetThreeValues16(s16* out) { return VM_GetThreeValues16At(VM_GetPC(), out); }
 
 // VM_GetValueSafe2 と全く同じ
 void* VM_GetValueSafe1(void) { return VM_GetValueAtSafe(VM_GetPC()); }
@@ -380,18 +393,18 @@ void VM_ResetStacks(void) {
   VM_ResetSubroutineStack();
 }
 
-void FUN_08231780(void) { gCtrlHandlers = NULL; }
+void VM_ClearCtrlHandlers(void) { gCtrlHandlers = NULL; }
 
-s32 VM_AddCtrlHandlers(SubroutineTable* p) {
+s32 VM_AddCtrlHandlers(CtrlHandlerTable* p) {
   p->next = gCtrlHandlers;
   gCtrlHandlers = p;
   return 0;
 }
 
 // gCtrlHandlers リストから p を取り除く
-s32 VM_RemoveCtrlHandlers(SubroutineTable* p) {
-  SubroutineTable* cur;
-  SubroutineTable* prev;
+s32 VM_RemoveCtrlHandlers(CtrlHandlerTable* p) {
+  CtrlHandlerTable* cur;
+  CtrlHandlerTable* prev;
 
   if (gCtrlHandlers == p) {
     gCtrlHandlers = p->next;
@@ -412,7 +425,7 @@ s32 VM_RemoveCtrlHandlers(SubroutineTable* p) {
 
 // gCtrlHandlers から subID に対応するハンドラを探す
 Subroutine* VM_GetControlHandler(u32 subID) {
-  SubroutineTable* t = gCtrlHandlers;
+  CtrlHandlerTable* t = gCtrlHandlers;
 
   while (t != NULL) {
     const Subroutine* arr = t->arr;
@@ -430,21 +443,19 @@ Subroutine* VM_GetControlHandler(u32 subID) {
 
 // 制御命令をIDで解決し、ラベルの開始位置を subroutineStack にpushした状態でハンドラを実行する
 bool32 VM_RunControl(u8* pc) {
-  Subroutine* h;
-  u8* newPc;
-  u32 offset;
+  Subroutine* handler;
+  u8* body;
+  u32 labelOffset;
   bool32 result;
-  bool32 (*fn)(u8*);
-
   u32 id = (pc[1] << 8) | pc[0];
-  pc += 2;
-  h = VM_GetControlHandler(id);
-  newPc = VM_ReadCtrlLabelOffset(pc, &offset);
-  VM_PushSubroutineStack(newPc + offset);
-  VM_SetPC(newPc);
 
-  fn = (bool32 (*)(u8*))h->fn;
-  result = fn(newPc);
+  pc += 2;
+  handler = VM_GetControlHandler(id);
+  body = VM_ReadCtrlLabelOffset(pc, &labelOffset);
+  VM_PushSubroutineStack(body + labelOffset);  // 最初のラベル命令
+  VM_SetPC(body);
+
+  result = (handler->fn.ctrl)(body);
 
   VM_PopSubroutineStack();
   return result;
@@ -473,6 +484,10 @@ void* VM_Parse_ScriptDirectory_ScriptEntries(s32* offsets, s32* length) {
  * @param localVarCount スクリプトが必要とするローカル変数の数 (gScriptTable.entries に格納されている)
  */
 u8* VM_LookupByID(u32 scriptID, u32* localVarCount) {
+  // Entity0823acbc_Update で gMapInitScriptID
+  //   0 なら VM_ExecSpecial
+  //   0 以外なら VM_ExecByID
+  // を呼ぶので、実質的に VM_ExecSpecial が scriptID 0 で、 これらが 1.. に相当するのかもしれない
   u32 idx = (scriptID & 0x7FFFFFFF) - 1;
   u8* ptr = (u8*)&gScriptTable.entries[idx];
   *localVarCount = ptr[3];
@@ -486,7 +501,8 @@ s32 VM_ExecByID(u32 scriptID, ScriptArgs* args) {
   return VM_Exec(pc, args, localVarCount);
 }
 
-// 呼び出し先スクリプトIDと引数列を読み取り、引数記述子を組み立ててそのスクリプトを実行する
+// 呼び出し先スクリプトIDと引数列を読み取り、 ScriptArgs を組み立ててそのスクリプトを実行する
+// スクリプトIDは pc から即値で読むので呼び先はコンパイル時に固定される, 実行時に選びたい場合は VM_Ctrl_CallScriptIndirect を使う
 s32 VM_CallScript(u8* pc) {
   u32 argv[16];
   ScriptArgs args;
@@ -585,48 +601,48 @@ void VM_RestoreScriptTable(u8* src) {
   gStringTable = *((StringTable*)src);
 }
 
-// ブロック内の文(式/control/呼び出し)を順に実行する, controlがreturnを表す場合(戻り値1)そこで打ち切る
+/**
+ * @brief ブロック内の文(式 / control / 別スクリプトの呼び出し)を先頭から順に実行する
+ * @param pc 実行するブロックの先頭アドレス
+ * @param args スクリプトに渡す引数, NULL ならスタックフレームを積まず呼び出し元のフレームのまま実行する
+ * @param localVarCount スクリプトが必要とするローカル変数の数
+ * @return control が return を表していた場合は TRUE (返す値は gVM.result に入っている), ブロックの終端まで実行し切った場合は FALSE
+ */
 bool32 VM_ExecBlock(u8* pc, ScriptArgs* args, s32 localVarCount) {
-  u32* frame;
-  u32 length;
-  s32 nibble;
   bool32 result;
 
-  frame = VM_PushScriptFrame(args, localVarCount);
+  u32* frame = VM_PushScriptFrame(args, localVarCount);
   while (pc != NULL) {
-    nibble = *pc & 0xF0;
-    switch (nibble) {
+    u32 length;
+    switch (*pc & 0xF0) {  // 上位ニブルがどれにも当たらない場合は pc が進まないので、不正なバイトコードを渡すとここで止まる
       case OP_CONTROL: {
         pc = VM_ReadContainerLength(pc, &length);
         if (VM_RunControl(pc) == 1) {
-          result = 1;
+          result = TRUE;
           goto done;
         }
-        pc = pc + length;
-        continue;
+        pc += length;
+        break;
       }
       case OP_CALL: {
         pc = VM_ReadContainerLength(pc, &length);
         gVM.result = (void*)VM_CallScript(pc);
-        pc = pc + length;
-        continue;
+        pc += length;
+        break;
       }
       case OP_END: {
-        goto fail;
+        pc = NULL;  // ブロックの終端なので次の文はない
+        break;
       }
       case OP_EXPRESSION: {
         pc = VM_ReadContainerLength(pc, &length);
         gVM.result = (void*)VM_RunExpression(pc);
-        pc = pc + length;
-        continue;
-      }
-      default: {
-        continue;
+        pc += length;
+        break;
       }
     }
   }
-fail:
-  result = 0;
+  result = FALSE;
 done:
   VM_PopScriptFrame(frame);
   return result;
@@ -656,6 +672,8 @@ s32 VM_Exec(u8* pc, ScriptArgs* args, s32 localVarCount) {
   return 0;
 }
 
+// Entity0823acbc_Update で gMapInitScriptID が 0のときに呼ばれる, ゲームの起動時に1回呼ばれるのは確認
+// これがVMスクリプトのエントリポイントかも？
 void VM_ExecSpecial(void) {
   u32 length;
   u8* pc = VM_ReadContainerLength(gScriptTable.specialScriptData, &length);
@@ -674,8 +692,8 @@ void SetMapInitScriptID(u32 scriptID) { gMapInitScriptID = scriptID; }
 
 void FUN_08231bec(void) {
   VM_ResetStacks();
-  FUN_08231c80();
-  FUN_08231780();
+  ClearStatAndWorld();
+  VM_ClearCtrlHandlers();
   FUN_082324b0();
   VM_MountScriptDirectory(GetFile(DIR_SCRIPT, 0xA41E));
   SetMapInitScriptID(0);
@@ -685,7 +703,7 @@ void VM_ClearScratchpad_Proxy(void) { VM_ClearScratchpad(); }
 
 NAKED void RandomizeGameStateAddr(void) { INCFUNC("asm/func/RandomizeGameStateAddr.inc"); }
 
-static void FUN_08231c80(void) {
+static void ClearStatAndWorld(void) {
   ClearMemory(gWorld, sizeof(World));
   ClearMemory(gStat, sizeof(GameInfo));
 }
@@ -761,7 +779,37 @@ void VM_LoadPointer(u8* src, s32 cmdAndArgs, s32 offset, u32* out) {
   }
 }
 
-NAKED u8* VM_ReadMemory(u8* pc, s32* op, void* out) { INCFUNC("asm/func/VM_ReadMemory.inc"); }
+// pc上の4バイトのPointer/Indexed Pointer記述子を読み, 対象領域(gStat/gScratch/gWorld)内の値を out に取り出す, 命令種別は op に返す
+u8* VM_ReadMemory(u8* pc, s32* op, void* out) {
+  u8* src;
+  u8* newPc;
+  s32 type;
+  s32 scale;
+  s32 offset;
+  u32 cmd = (pc[0] << 24) | (pc[1] << 16) | (pc[2] << 8) | pc[3];
+
+  *op = (cmd >> 24) & 0xF;
+
+  if ((cmd & 0xF00000) == 0x800000) {
+    src = (u8*)gStat;
+  } else if ((cmd & 0xF00000) == 0x100000) {
+    src = (u8*)gScratch;
+  } else {
+    src = (u8*)gWorld;
+  }
+  src += cmd & 0xFFFF;
+
+  if (((cmd >> 24) & 0xF0) == OP_MEMORY_INDEXED) {
+    newPc = VM_DecodeValue(pc + 4, &type, &scale);
+    newPc = VM_DecodeValue(newPc, &type, &offset);
+  } else {
+    offset = 0;
+    newPc = pc + 4;
+  }
+
+  VM_LoadPointer(src, cmd, offset, out);
+  return newPc;
+}
 
 void VM_StorePointerCore(u8* dst, s32 cmdAndArgs, s32 offset, u32 val) {
   switch (((cmdAndArgs >> 0x18) & 0xF)) {
@@ -805,7 +853,35 @@ void VM_StorePointerCore(u8* dst, s32 cmdAndArgs, s32 offset, u32 val) {
   }
 }
 
-NAKED u8* VM_StorePointer(u8* pc, u32 val) { INCFUNC("asm/func/VM_StorePointer.inc"); }
+// pc上の4バイトのPointer/Indexed Pointer記述子を読み, 対象領域(gStat/gScratch/gWorld)内の指す先に val を書き込む
+u8* VM_StorePointer(u8* pc, u32 val) {
+  u8* dst;
+  u8* newPc;
+  s32 type;
+  s32 scale;
+  s32 offset;
+  u32 cmd = (pc[0] << 24) | (pc[1] << 16) | (pc[2] << 8) | pc[3];
+
+  if ((cmd & 0xF00000) == 0x800000) {
+    dst = (u8*)gStat;
+  } else if ((cmd & 0xF00000) == 0x100000) {
+    dst = (u8*)gScratch;
+  } else {
+    dst = (u8*)gWorld;
+  }
+  dst += cmd & 0xFFFF;
+
+  if (((cmd >> 24) & 0xF0) == OP_MEMORY_INDEXED) {
+    newPc = VM_DecodeValue(pc + 4, &type, &scale);
+    newPc = VM_DecodeValue(newPc, &type, &offset);
+  } else {
+    offset = 0;
+    newPc = pc + 4;
+  }
+
+  VM_StorePointerCore(dst, cmd, offset, val);
+  return newPc;
+}
 
 u8* FUN_0823201c(u8* pc, u8* dst) {
   u8* newPc;

@@ -1,12 +1,11 @@
 #include "enemy.h"
 #include "global.h"
+#include "malloc.h"
 
 // クロロホルルン
 typedef struct {
-  Mover unk_0;              // 0x000
-  EnemySpriteData* sprite;  // 0x044
-  EntityMsgBox msgbox;      // 0x048, 0x0813e5ba
-  u8 unk_7c[1712 - 0x7C];   // 0x07C
+  ENEMY_HDR;
+  u8 unk_654[1712 - sizeof(Enemy)];
 } Curoro;
 static_assert(sizeof(Curoro) == 1712);
 

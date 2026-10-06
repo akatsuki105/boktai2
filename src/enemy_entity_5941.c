@@ -2,7 +2,7 @@
 #include "global.h"
 
 // 敵の索敵範囲を管理する? 敵は _Init で Entity5941_Register、_Destroy で FUN_0807f598 を呼んで出入りする (28種)
-// unk_18 が単方向リストの先頭, ノードは敵の構造体に埋め込まれている (Bat なら +0x7C)
+// unk_18 が単方向リストの先頭, ノードは敵の構造体に埋め込まれている (EnemyBat なら +0x7C)
 // ノードの中身: 0x0 敵自身へのポインタ / 0x4 フラグ(bit0 が立っているものだけ検索対象) / 0x8 関数ポインタ / 0xC next
 // 用途は Entity5941_FindNearestInCone (扇形の中で最も近いノードを返す) だが、これを呼ぶコードは見つかっていない
 typedef struct Entity5941 {

@@ -35,7 +35,8 @@ s32 EntityE06A_Destroy(EntityE06A* p) {
 // '.p' から位置を読み、足元のタイルの高さと階段の向きで y を補正する
 void EntityE06A_SetupSprite(EntityE06A* p) {
   Vec3* pos;
-  u8* tile;
+  CollisionMapTile* tile;
+  MapTileOverride* ov;
   s32 bx, bz, idx;
   s32 y, stairs;
   u32 z;
@@ -61,14 +62,14 @@ void EntityE06A_SetupSprite(EntityE06A* p) {
   } else {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
-  tile = (u8*)FUN_08234224(idx, 1);
-  if (tile != NULL) {
-    tile += 4;
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    tile = &ov->tile;
   } else {
-    tile = (u8*)&gCollisionMap->tiledata->tiles[idx];
+    tile = &gCollisionMap->tiledata->tiles[idx];
   }
-  stairs = *tile >> 4;
-  y = (*tile & 0xF) << 8;
+  stairs = tile->heightStairs >> 4;
+  y = (tile->heightStairs & 0xF) << 8;
   switch (stairs) {
     case 1: {
       y -= (u8)pos->z;

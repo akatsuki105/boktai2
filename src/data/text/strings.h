@@ -113,6 +113,7 @@ const u8 String_0066[] = _("<LABEL>アックス+を倒せ!!</LABEL>");
 const u8 String_0067[] = _("<PROC=0>\n<END>");
 const u8 String_0068[] = _(" <ALTER>はい</ALTER>\n <ALTER>いいえ</ALTER>");
 const u8 String_0069[] = _("<PROC=0>\n<END>");
+
 const u8 String_006A[] = _("<LABEL>「地図A」\nを手に入れた!!</LABEL><PROC=1>");
 const u8 String_006B[] = _("<PROC=0>\n<END>");
 const u8 String_006C[] = _("<LABEL>「地図B」\nを手に入れた!!</LABEL><PROC=1>");

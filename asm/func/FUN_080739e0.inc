@@ -59,7 +59,7 @@ _08073A46:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r0, #0xe6
 	bl PlaySound_082406e0
 	ldr r2, _08073AA8 @ =0x0000037E
@@ -153,7 +153,7 @@ _08073B08:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _08073B36
 	adds r0, r4, #0

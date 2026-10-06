@@ -411,7 +411,7 @@ _080E1C1A:
 	ldrh r4, [r6]
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E1C2C
 	adds r0, #4
@@ -563,7 +563,7 @@ _080E1D22:
 	strh r4, [r0]
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E1D68
 	adds r0, #4
@@ -722,7 +722,7 @@ _080E1E78:
 	ldrh r4, [r0]
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _080E1EA4
 	adds r0, #4
@@ -752,7 +752,7 @@ _080E1EB0:
 	adds r0, r5, r4
 	ldr r0, [r0]
 	ldr r1, [sp, #0x10]
-	bl FUN_08236268
+	bl Map_StepNavPath
 _080E1ED0:
 	movs r0, #0xe5
 	lsls r0, r0, #1

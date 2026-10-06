@@ -26,7 +26,7 @@ _08004E6A:
 	strb r0, [r1, #2]
 	adds r0, r1, #0
 	adds r0, #0xc
-	bl FUN_082342a8
+	bl Map_RemoveTileOverride
 _08004E84:
 	adds r1, r4, #0
 	cmp r1, #0

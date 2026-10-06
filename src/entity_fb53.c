@@ -16,8 +16,8 @@ typedef struct {
   u32 timer;            // 0x24, 毎フレーム +1, state を変えるとき 0 に戻る
   u8* scriptM;          // 0x28, '.m'
   u8* scriptS;          // 0x2C, '.s'
-  s32 panelID;          // 0x30, TextPanel_Create(1, 7, 0x1C, 6) の戻り値, 負なら未作成
-  s32 scriptID;         // 0x34, '.e' の値, 読み手は未発見
+  s32 panelID;          // 0x30, TextPanel_Create(1, 7, 28, 6) の戻り値, 負なら未作成
+  s32 scriptID;         // 0x34, '.e', 読み手は未発見
   u8 unk_38;            // 0x38, まだ未解析
   u8 linkLossSlot;      // 0x39, rfu_REQBN_watchLink の bmLinkLossSlot
   u8 linkLossReason;    // 0x3A, rfu_REQBN_watchLink の linkLossReason

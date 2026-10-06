@@ -562,7 +562,7 @@ _0821F504:
 _0821F512:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08234224
+	bl Map_FindTileOverride
 	cmp r0, #0
 	beq _0821F528
 	adds r0, #4
@@ -731,7 +731,7 @@ _0821F646:
 	ldr r1, [r0]
 	ldrb r2, [r2]
 	adds r0, r4, #0
-	bl FUN_08234f80
+	bl Map_ReadPathNodePos
 	adds r0, r7, #0
 	bl FUN_0821bef0
 	adds r0, r7, #0

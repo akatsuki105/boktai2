@@ -44,7 +44,7 @@ typedef struct Entity08080be8 {
   u8 unk_ce[2];                       // 0x0CE, padding?
   ParticleGroup* group;               // 0x0D0, PTCL_GROUP_2
   Entity08080be8Particle ptcls[4];    // 0x0D4, 根拠: Entity08080be8_SetupParticles / Entity08080be8_ClearParticles / _Destroy の stride 0x30 × 4 のループ
-  Entity08080be8Func updateCallback;  // 0x194, _Update が毎フレーム呼ぶ状態関数
+  Entity08080be8Func updateCallback;  // 0x194
 } Entity08080be8;
 static_assert(sizeof(Entity08080be8) == 408);
 
@@ -274,7 +274,7 @@ void Entity08080be8_StateFly(Entity08080be8* p) {
   Hitbox_SetPos(hitbox, pos, 0);
   Hitbox_Register(hitbox);
   Player_SetFlag20(p->player, 0x80002);
-  groundY = FUN_082328ec(pos);
+  groundY = Map_GetTileHeightAt(pos);
   if (groundY > p->sprite.pos.y) {
     Entity08080be8_SetState(p, Entity08080be8_StateImpact);
   } else {

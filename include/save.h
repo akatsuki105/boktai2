@@ -5,7 +5,7 @@
 #include "types.h"
 
 typedef struct {
-  s32 frameCounter;   // 0x00
+  u32 frameCounter;   // 0x00, u32 の根拠: Entity0823acbc_Update が 0xFFFFFFFF と符号なし比較する
   s32 calibration;    // 0x04, 太陽センサーのキャリブレーション値
   u8 currentSlot;     // 0x08
   u8 unk_09;          // 0x09

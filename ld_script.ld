@@ -97,7 +97,7 @@ SECTIONS {
       . = ALIGN(8);
       src/vm.o(iwram_data);
       src/vm_ctrl1.o(iwram_data);
-      src/code_082326a0.o(iwram_data);
+      src/collision_map.o(iwram_data);
       src/hitbox.o(iwram_data);
       src/sprite_anim_aux.o(iwram_data);
       src/entity_0823acbc.o(iwram_data);
@@ -258,6 +258,7 @@ SECTIONS {
 			src/entity_dc21.o (.text);
 			src/entity_1dbe.o (.text);
 			src/entity_71ba.o (.text);
+			src/entity_a628.o (.text);
 			src/code_080917e4.o (.text);
 			src/entity_d852.o (.text);
 			src/code_080a6c94.o (.text);
@@ -387,13 +388,13 @@ SECTIONS {
 			src/system_0823071c.o (.text);
 			src/malloc.o (.text);
 			src/entity.o (.text);
-			src/code_08230d30.o (.text);
+			src/registry.o (.text);
 			src/code_08230e88.o (.text);
 			src/file.o (.text);
 			src/vm.o (.text);
 			src/vm_ctrl1.o (.text);
 			src/vm_expr.o (.text);
-			src/code_082326a0.o (.text);
+			src/collision_map.o (.text);
 			src/hitbox.o (.text);
 			src/sprite_anim_aux.o (.text);
 			src/sprite_anim_main.o (.text);
@@ -404,7 +405,6 @@ SECTIONS {
 			src/vm_ctrl2.o (.text);
 			src/vm_subroutine.o (.text);
 			src/mover.o (.text);
-			src/code_0823b540.o (.text);
 			src/camera.o (.text);
 			src/code_0823cd04.o (.text);
 			src/timer.o (.text);
@@ -574,6 +574,11 @@ SECTIONS {
     src/player_080d82ec.o (.rodata);
     src/entity_080da848.o (.rodata);
     src/entity_080db520.o (.rodata);
+    src/entity_080dbe54.o (.rodata);
+    src/entity_080dc44c.o (.rodata);
+    src/entity_080dd1f8.o (.rodata);
+    src/attack_box.o (.rodata);
+    src/entity_080df420.o (.rodata);
     src/preview_stage.o (.rodata);
     src/weapon_dex.o (.rodata);
     src/album_menu.o (.rodata);

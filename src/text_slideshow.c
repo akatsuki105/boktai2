@@ -1,3 +1,4 @@
+#include "bg_pltt.h"
 #include "entity.h"
 #include "global.h"
 #include "input.h"
@@ -198,7 +199,7 @@ s32 TextSlideshow_Start(TextSlideshow* p) {
   p->skipScriptID = VM_GetNamedArgValue('c', 0);
   TextBox_Start(p->scriptS);
   TextBox_SetInstant(TRUE);
-  TextBox_SetBgPltt(0x539C);
+  TextBox_SetBgPltt(BGP_539C);
   TextBox_ShowLine(p->curLine);
   TextSlideshow_ApplyLineRect(p);
   gBgPlttBlendColor = RGB(4, 4, 4);

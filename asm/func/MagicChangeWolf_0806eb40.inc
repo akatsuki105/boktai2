@@ -103,7 +103,7 @@ _0806EC04:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	b _0806EC42
 	.align 2, 0
 _0806EC34: .4byte 0x0000037E
@@ -111,7 +111,7 @@ _0806EC38:
 	ldr r1, _0806EC70 @ =0x00000193
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 _0806EC42:
 	ldr r0, _0806EC74 @ =0x0000037E
 	adds r1, r5, r0
@@ -270,7 +270,7 @@ _0806ED7C:
 	lsls r1, r1, #1
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	adds r0, r5, #0
 	movs r1, #0xb
 	movs r2, #2
@@ -366,7 +366,7 @@ _0806EE34:
 	lsls r1, r1, #1
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	adds r0, r5, #0
 	movs r1, #0
 	bl FUN_080670fc
@@ -401,7 +401,7 @@ _0806EE6C:
 	ldr r1, _0806EE94 @ =0x00000193
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	b _0806EF18
 	.align 2, 0
 _0806EE90: .4byte 0x03002BA8
@@ -432,7 +432,7 @@ _0806EEC2:
 	lsls r1, r1, #1
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r0, #0x9c
@@ -651,7 +651,7 @@ _0806F06C:
 	ldr r1, _0806F0B4 @ =0x00000193
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r2, _0806F0B8 @ =0x0000037E
 	adds r1, r5, r2
 	ldrh r0, [r1]
@@ -697,7 +697,7 @@ _0806F0E2:
 	ldr r1, _0806F128 @ =0x00000193
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r3, #0xba
 	lsls r3, r3, #2
 	adds r0, r5, r3
@@ -805,7 +805,7 @@ _0806F1C4:
 	lsls r1, r1, #1
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	beq _0806F1DE
 	adds r0, r5, #0

@@ -47,7 +47,7 @@ _08072074:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	cmp r0, #0
 	bne _08072092
 	b _080725EE
@@ -82,7 +82,7 @@ _080720B8:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldrh r0, [r4]
 	adds r0, #1
 	strh r0, [r4]
@@ -165,7 +165,7 @@ _08072168:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r2, _080721BC @ =0x0000037E
 	adds r4, r5, r2
 	ldrh r0, [r4]
@@ -246,7 +246,7 @@ _08072214:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -310,7 +310,7 @@ _080722A0:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -370,7 +370,7 @@ _0807232C:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -414,7 +414,7 @@ _08072388:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -475,7 +475,7 @@ _08072404:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r2, _0807243C @ =0x0000037E
 	adds r1, r5, r2
 	ldrh r0, [r1]
@@ -552,7 +552,7 @@ _080724A0:
 	ldrh r1, [r4]
 	adds r0, r5, #0
 	adds r2, r6, #0
-	bl FUN_08061b48
+	bl Player_ShowGunSpread
 	ldr r0, [r5, #0x2c]
 	ldr r1, [r5, #0x30]
 	str r0, [sp, #0x30]
@@ -669,7 +669,7 @@ _0807254E:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_08060a24
+	bl Player_PlayAnim
 	ldr r2, _08072610 @ =0x0000037E
 	adds r4, r5, r2
 	ldrh r1, [r4]
