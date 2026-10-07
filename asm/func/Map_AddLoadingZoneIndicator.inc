@@ -28,13 +28,13 @@ _080A6314:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	cmp r7, #0
 	bne _080A6350
 	adds r0, r5, #0
 	adds r1, r4, #0
 	movs r2, #0x33
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	b _080A635C
 	.align 2, 0
 _080A6348: .4byte 0x0000FD22
@@ -44,7 +44,7 @@ _080A6350:
 	adds r2, #0x34
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _080A635C:
 	movs r2, #8
 	rsbs r2, r2, #0

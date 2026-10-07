@@ -25,5 +25,6 @@ armor32_t GetInventoryArmor(slot32_t n);
 void SetArmorIntoInventory(slot32_t n, armor32_t a);
 bool32 IsArmorAlreadyFound(armor32_t);
 void SetArmorFoundFlag(armor32_t n);
+void SwapArmorSlot(slot32_t a, slot32_t b);
 
 #endif  // GUARD_ZOKTAI_ARMOR_H

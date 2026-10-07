@@ -1757,7 +1757,7 @@ _08205A9A:
 	adds r5, r0, #0
 	mov r0, r8
 	adds r1, r6, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _08205AB4
@@ -1864,7 +1864,7 @@ _08205AE4:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -1930,7 +1930,7 @@ _08205BF4:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _08205C50
 	.align 2, 0
 _08205C24: .4byte FUN_08042178
@@ -2028,7 +2028,7 @@ _08205CD0:
 	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	adds r0, r4, #0
-	bl FUN_08040eb0
+	bl Entity286F_FindNodeByMoverID
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _08205DDC
@@ -2178,7 +2178,7 @@ FUN_08205dec: @ 0x08205DEC
 	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	adds r0, r4, #0
-	bl FUN_08040eb0
+	bl Entity286F_FindNodeByMoverID
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _08205E5E
@@ -2212,7 +2212,7 @@ _08205E2A:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 _08205E5E:
 	pop {r4, r5}
 	pop {r0}
@@ -2240,7 +2240,7 @@ FUN_08205e68: @ 0x08205E68
 	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	adds r0, r4, #0
-	bl FUN_08040eb0
+	bl Entity286F_FindNodeByMoverID
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _08205ED0
@@ -3057,7 +3057,7 @@ _082064B6:
 	mov r8, r0
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _082064D4
@@ -3166,7 +3166,7 @@ _082064FA:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -3237,7 +3237,7 @@ _0820661C:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _082066B2
 	.align 2, 0
 _08206650: .4byte FUN_08042178
@@ -4315,7 +4315,7 @@ _08206E4A:
 	movs r7, #0
 	mov r0, r8
 	adds r1, r5, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r5, r0, #0
 	cmp r5, #0
 	bne _08206E6A
@@ -4415,7 +4415,7 @@ _08206E8E:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r5, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r5, #0
 	bl FUN_08041e10
@@ -4491,7 +4491,7 @@ _08206FB8:
 	adds r0, #0xd0
 	bl FUN_08055ef8
 	adds r0, r5, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _082070A8
 	.align 2, 0
 _08206FE8: .4byte FUN_08042178
@@ -4612,7 +4612,7 @@ FUN_082070bc: @ 0x082070BC
 	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	adds r0, r4, #0
-	bl FUN_08040eb0
+	bl Entity286F_FindNodeByMoverID
 	adds r5, r0, #0
 	cmp r5, #0
 	beq _0820710C
@@ -5634,7 +5634,7 @@ _0820787A:
 	mov r8, r0
 	adds r0, r7, #0
 	adds r1, r6, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _08207898
@@ -5740,7 +5740,7 @@ _082078BE:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -5813,7 +5813,7 @@ _082079E0:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _08207AAE
 	.align 2, 0
 _08207A14: .4byte FUN_08042178
@@ -6501,7 +6501,7 @@ _08207F52:
 	mov r8, r0
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _08207F70
@@ -6607,7 +6607,7 @@ _08207F96:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -6678,7 +6678,7 @@ _082080B4:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _0820814A
 	.align 2, 0
 _082080E8: .4byte FUN_08042178
@@ -9435,7 +9435,7 @@ _082095B6:
 	movs r7, #0
 	mov r0, r8
 	adds r1, r6, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _082095D2
@@ -9545,7 +9545,7 @@ _082095F6:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -9614,7 +9614,7 @@ _0820971C:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _082097C6
 	.align 2, 0
 _0820974C: .4byte FUN_08042178
@@ -9719,7 +9719,7 @@ FUN_082097f4: @ 0x082097F4
 	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	adds r0, r4, #0
-	bl FUN_08040eb0
+	bl Entity286F_FindNodeByMoverID
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _0820982A
@@ -10186,7 +10186,7 @@ _08209B92:
 	mov r8, r0
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _08209BB0
@@ -10292,7 +10292,7 @@ _08209BD6:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -10363,7 +10363,7 @@ _08209CF4:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _08209D8A
 	.align 2, 0
 _08209D28: .4byte FUN_08042178
@@ -10789,7 +10789,7 @@ _0820A04A:
 	mov r8, r0
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _0820A068
@@ -10895,7 +10895,7 @@ _0820A08E:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -10966,7 +10966,7 @@ _0820A1AC:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _0820A242
 	.align 2, 0
 _0820A1E0: .4byte FUN_08042178
@@ -11392,7 +11392,7 @@ _0820A502:
 	mov r8, r0
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _0820A520
@@ -11498,7 +11498,7 @@ _0820A546:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -11569,7 +11569,7 @@ _0820A664:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _0820A6FA
 	.align 2, 0
 _0820A698: .4byte FUN_08042178
@@ -11995,7 +11995,7 @@ _0820A9BA:
 	mov r8, r0
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _0820A9D8
@@ -12101,7 +12101,7 @@ _0820A9FE:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -12172,7 +12172,7 @@ _0820AB1C:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _0820ABB2
 	.align 2, 0
 _0820AB50: .4byte FUN_08042178
@@ -13239,7 +13239,7 @@ _0820B37A:
 	mov r8, r0
 	adds r0, r7, #0
 	adds r1, r6, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _0820B398
@@ -13345,7 +13345,7 @@ _0820B3BE:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -13418,7 +13418,7 @@ _0820B4E0:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _0820B5AE
 	.align 2, 0
 _0820B514: .4byte FUN_08042178
@@ -14515,7 +14515,7 @@ _0820BD4E:
 	mov r8, r0
 	adds r0, r6, #0
 	adds r1, r7, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _0820BD6C
@@ -14621,7 +14621,7 @@ _0820BD92:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -14692,7 +14692,7 @@ _0820BEB0:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _0820BF46
 	.align 2, 0
 _0820BEE4: .4byte FUN_08042178
@@ -15402,7 +15402,7 @@ _0820C462:
 	movs r7, #0
 	mov r0, r8
 	adds r1, r6, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _0820C482
@@ -15505,7 +15505,7 @@ _0820C4A6:
 	bl FUN_08040df4
 	mov r0, sb
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sb
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -15572,7 +15572,7 @@ _0820C5BC:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _0820C642
 	.align 2, 0
 _0820C5EC: .4byte FUN_08042178
@@ -16091,7 +16091,7 @@ _0820C9C2:
 	mov r8, r0
 	mov r0, sb
 	adds r1, r6, #0
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _0820C9EC
@@ -16194,7 +16194,7 @@ _0820CA10:
 	bl FUN_08040df4
 	mov r0, sl
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 	mov r0, sl
 	adds r1, r4, #0
 	bl FUN_08041e10
@@ -16265,7 +16265,7 @@ _0820CB24:
 	movs r1, #1
 	bl FUN_08055ef8
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _0820CBC8
 	.align 2, 0
 _0820CB58: .4byte FUN_08042178

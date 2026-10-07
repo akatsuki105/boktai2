@@ -23,7 +23,7 @@
 	cmp r0, #0
 	beq _0808DE24
 	adds r0, r4, #0
-	bl FUN_0808d39c
+	bl EntityCC28_HideSprites
 	b _0808DE2A
 	.align 2, 0
 _0808DE20: .4byte 0x030047A4

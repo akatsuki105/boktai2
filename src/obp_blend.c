@@ -8,15 +8,15 @@
 extern s32 gObjPlttSlotCursor;
 extern s32 gObjPlttSlotReserved;
 extern s32 gObjPlttSlotCount;
-s32 FUN_0822d190(u32 plttID, rgb555* pltt);
+s32 AllocBlendPlttSlot(u32 plttID, rgb555* pltt);
 s32 FUN_0823ce10(u16* a, u16* b);
 u32 FUN_0823cdf8(u16 id);
 
 // 1枚ぶんの補間スロット, 同じ絵の時刻帯バリエーション3枚を srcs に持ち、2枚の間を混ぜた結果を pltt に書く
 typedef struct {
   u16 id;           // 0x00, スクリプトの '.p', FUN_0823cdf8 に渡して plttID を引く
-  u16 plttID;       // 0x02, '.o[i]' + FUN_0823cdf8(id), FUN_0822d190 に渡す OBJ パレットのID
-  rgb555 pltt[16];  // 0x04, 混ぜた結果, これを FUN_0822d190 で OBJ パレットスロットに載せる
+  u16 plttID;       // 0x02, '.o[i]' + FUN_0823cdf8(id), AllocBlendPlttSlot に渡す OBJ パレットのID
+  rgb555 pltt[16];  // 0x04, 混ぜた結果, これを AllocBlendPlttSlot で OBJ パレットスロットに載せる
   rgb555* srcs[3];  // 0x24, gObjPlttData の plttID * 32 から 32 バイトおきの3枚
 } ObjPlttBlend;
 static_assert(sizeof(ObjPlttBlend) == 48);
@@ -94,7 +94,7 @@ s32 ObjPlttBlender_Update(ObjPlttBlender* p) {
   gObjPlttSlotCursor = gObjPlttSlotCount;
   gObjPlttSlotReserved = 0;
   for (i = 0; i < p->count; i++) {
-    FUN_0822d190(p->slots[i].plttID, p->slots[i].pltt);
+    AllocBlendPlttSlot(p->slots[i].plttID, p->slots[i].pltt);
     gObjPlttSlotReserved++;
   }
 

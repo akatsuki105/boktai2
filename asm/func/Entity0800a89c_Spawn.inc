@@ -401,7 +401,7 @@ _0800ABDC:
 _0800ABF2:
 	ldr r0, [sp, #0x1c]
 	movs r1, #0
-	bl FUN_0822da50
+	bl Particle_AddToDrawList
 	adds r5, #0x50
 	movs r3, #0x50
 	add sb, r3
@@ -436,7 +436,7 @@ _0800AC2C:
 	str r0, [r4]
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_0822da50
+	bl Particle_AddToDrawList
 	adds r4, #0x50
 	movs r2, #1
 	add sl, r2

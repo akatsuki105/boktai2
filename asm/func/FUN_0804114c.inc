@@ -11,7 +11,7 @@
 	adds r1, r4, #0
 	bl FUN_08040e68
 	adds r0, r4, #0
-	bl FUN_080410f4
+	bl Entity286FNode_RemoveMover
 	adds r0, r4, #0
 	adds r0, #0x5c
 	bl Mover_Unlink
@@ -19,7 +19,7 @@
 	adds r0, #0xd0
 	bl FUN_08055d7c
 	adds r0, r4, #0
-	bl FUN_0804103c
+	bl Entity286FNode_RemoveShadow
 	movs r0, #0
 	strb r0, [r4]
 	adds r0, r4, #0

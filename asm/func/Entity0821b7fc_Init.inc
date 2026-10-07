@@ -40,7 +40,7 @@ _0821B7B2:
 	ldr r1, [r6, #0x78]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r4, #0
 	adds r1, r7, #0
 	adds r2, r7, #0
@@ -48,10 +48,10 @@ _0821B7B2:
 	ldr r1, [r6, #0x78]
 	adds r0, r4, #0
 	movs r2, #2
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	movs r0, #0
 	strh r0, [r4, #0x28]
 	adds r4, #0x30

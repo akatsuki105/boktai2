@@ -39,7 +39,7 @@ _080DE0D2:
 	ldr r1, [r0]
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r4, #0
 	movs r1, #8
 	rsbs r1, r1, #0

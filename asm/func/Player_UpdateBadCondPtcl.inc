@@ -163,7 +163,7 @@ _080615AC:
 	adds r1, r5, r2
 	ldr r1, [r1]
 	movs r2, #0x10
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r1, _08061618 @ =0x000006A9
 	adds r0, r5, r1
 	strb r4, [r0]

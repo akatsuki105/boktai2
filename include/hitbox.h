@@ -25,8 +25,8 @@ typedef u8 HitboxHitResult8;
 #define HBRESULT_BONUS (1 << 3)   // 0x8, 1.5倍の追加補正を適用済み, 背後から当てたとき、または dark_django_0806f990 の条件で立つ
 
 typedef u32 HitboxAttributes;      // 低位7bitが自分の属性マスク, 攻撃側の属性と守備側の耐性を兼ねる, bit7-11 は dark_django_0806f990 が別の用途で見る
-#define HBATTR_0 (1 << 0)          // 0x1, ???
-#define HBATTR_1 (1 << 1)          // 0x2, ???
+#define HBATTR_SOL (1 << 0)        // 0x1, ソル属性
+#define HBATTR_DARK (1 << 1)       // 0x2, ダーク属性
 #define HBATTR_FLAME (1 << 2)      // 0x4, 炎属性
 #define HBATTR_FROST (1 << 3)      // 0x8, 氷属性
 #define HBATTR_CLOUD (1 << 4)      // 0x10, 風属性

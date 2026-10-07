@@ -22,7 +22,7 @@ _080AA0AC:
 	ands r2, r0
 	adds r2, #2
 	adds r0, r4, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldrh r0, [r4, #0x2c]
 	ldrh r1, [r4, #0x18]
 	adds r0, r0, r1

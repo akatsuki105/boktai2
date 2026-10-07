@@ -1,5 +1,8 @@
 #include "entity.h"
 #include "global.h"
+#include "save.h"
+#include "text.h"
+#include "vm.h"
 
 // GBAワイヤレスアダプタで相手を探して接続するエンティティ
 typedef struct {
@@ -17,7 +20,7 @@ typedef struct {
   u8* scriptM;          // 0x28, '.m'
   u8* scriptS;          // 0x2C, '.s'
   s32 panelID;          // 0x30, TextPanel_Create(1, 7, 28, 6) の戻り値, 負なら未作成
-  s32 scriptID;         // 0x34, '.e', 読み手は未発見
+  s32 scriptID;         // 0x34, '.e', state 8 が 20フレーム後に VM_ExecByID へ渡す
   u8 unk_38;            // 0x38, まだ未解析
   u8 linkLossSlot;      // 0x39, rfu_REQBN_watchLink の bmLinkLossSlot
   u8 linkLossReason;    // 0x3A, rfu_REQBN_watchLink の linkLossReason
@@ -29,6 +32,8 @@ static_assert(sizeof(EntityFB53) == 76);
 
 IWRAM_DATA s32 s32_030000d4 = 0;            // 0x030000D4
 IWRAM_DATA EntityFB53* gEntityFB53 = NULL;  // 0x030000D8
+
+COMMON_DATA u32 u32_03002b54 = 0;  // 0x03002B54
 
 const u8 u8_ARRAY_085ab5b0[8] = {0x67, 0x8E, 0xAA, 0x8F, 0xE0, 0x90, 0xD6, 0x8F};  // 0x085AB5B0
 
@@ -47,11 +52,21 @@ void (*const PTR_ARRAY_085ab5b8[10])(EntityFB53*) = {
     FUN_0804b474, FUN_0804b530, FUN_0804b5f0, FUN_0804b65c, FUN_0804b6bc, FUN_0804b71c, FUN_0804b774, FUN_0804b7d0, FUN_0804b83c, FUN_0804b870,
 };  // 0x085AB5B8
 
-NAKED s32 EntityFB53_IsActive(void) { INCFUNC("asm/func/EntityFB53_IsActive.inc"); }
+s32 EntityFB53_IsActive(void) {
+  if (gEntityFB53 != NULL) {
+    return 1;
+  }
+  return 0;
+}
 
 NAKED void EntityFB53_WatchLink(void) { INCFUNC("asm/func/EntityFB53_WatchLink.inc"); }
 
-NAKED void EntityFB53_SetLinkError(EntityFB53* p, s16 reason) { INCFUNC("asm/func/EntityFB53_SetLinkError.inc"); }
+// 第1引数は使っておらず、グローバルの方に書く
+void EntityFB53_SetLinkError(EntityFB53* _, u16 reason) {
+  if (gEntityFB53 != NULL && reason != 0) {
+    gEntityFB53->linkError |= 0xF0 | reason;
+  }
+}
 
 NAKED s32 FUN_0804b2dc(void) { INCFUNC("asm/func/FUN_0804b2dc.inc"); }
 
@@ -65,7 +80,20 @@ NAKED void FUN_0804b474(EntityFB53* p) { INCFUNC("asm/func/FUN_0804b474.inc"); }
 
 NAKED s32 EntityFB53_FindGameIdx(u8* record) { INCFUNC("asm/func/EntityFB53_FindGameIdx.inc"); }
 
-NAKED void FUN_0804b500(s32 param_1) { INCFUNC("asm/func/FUN_0804b500.inc"); }
+// idx 番のゲームIDをセーブデータの eventFlags[idx] に書き写す
+// 残差2命令, 原典は添字を idx * 2 から始める誘導変数1本にまとめ, カウンタを下向きに反転している
+NON_MATCH void FUN_0804b500(s32 idx) {
+#ifdef NONMATCHING_C
+  s32 base = idx * 2;
+  s32 i;
+
+  for (i = 0; i < 2; i++) {
+    ((u8*)gSystemSaveData->eventFlags)[base + i] = u8_ARRAY_085ab5b0[base + i];
+  }
+#else
+  INCFUNC("asm/func/FUN_0804b500.inc");
+#endif
+}
 
 NAKED void FUN_0804b530(EntityFB53* p) { INCFUNC("asm/func/FUN_0804b530.inc"); }
 
@@ -81,14 +109,46 @@ NAKED void FUN_0804b774(EntityFB53* p) { INCFUNC("asm/func/FUN_0804b774.inc"); }
 
 NAKED void FUN_0804b7d0(EntityFB53* p) { INCFUNC("asm/func/FUN_0804b7d0.inc"); }
 
-NAKED void FUN_0804b83c(EntityFB53* p) { INCFUNC("asm/func/FUN_0804b83c.inc"); }
+// 20フレーム待ってから '.e' のスクリプトを起動して自分を消す
+void FUN_0804b83c(EntityFB53* p) {
+  if (p->stateChanged) {
+    p->stateChanged = 0;
+  }
+
+  if (p->timer == 20 && p->scriptID != 0) {
+    VM_ExecByID(p->scriptID, NULL);
+    KillEntity((Entity*)p);
+  } else {
+    p->timer++;
+  }
+}
 
 NAKED void FUN_0804b870(EntityFB53* p) { INCFUNC("asm/func/FUN_0804b870.inc"); }
 
 NAKED s32 EntityFB53_Update(EntityFB53* p) { INCFUNC("asm/func/EntityFB53_Update.inc"); }
 
-NAKED s32 EntityFB53_Destroy(EntityFB53* p) { INCFUNC("asm/func/EntityFB53_Destroy.inc"); }
+s32 EntityFB53_Destroy(EntityFB53* p) {
+  FUN_0824172c();
+  if (p->panelID >= 0) {
+    TextPanel_Hide(p->panelID);
+    TextPanel_Destroy(p->panelID);
+  }
+  gEntityFB53 = NULL;
+  return 0;
+}
 
 NAKED s32 EntityFB53_Init(EntityFB53* p) { INCFUNC("asm/func/EntityFB53_Init.inc"); }
 
-NAKED EntityFB53* EntityFB53_Create(void) { INCFUNC("asm/func/EntityFB53_Create.inc"); }
+EntityFB53* EntityFB53_Create(void) {
+  EntityFB53* p = CreateEntity(ENTITY_UNK_2, sizeof(EntityFB53));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityFB53_Update, EntityFB53_Destroy);
+    if (EntityFB53_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}

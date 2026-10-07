@@ -122,13 +122,13 @@ _0805EBB4:
 	adds r1, #0x18
 _0805EBB8:
 	adds r0, r4, #0
-	bl FUN_0822a568
+	bl AuxSprite_SetGfxPtr
 	b _0805EBCA
 _0805EBC0:
 	adds r1, r6, #0
 	adds r1, #0x34
 	adds r0, r4, #0
-	bl FUN_0822a568
+	bl AuxSprite_SetGfxPtr
 _0805EBCA:
 	ldr r0, [r5, #0x14]
 	cmp r0, #0x1d
@@ -136,7 +136,7 @@ _0805EBCA:
 	adds r1, r6, #0
 	adds r1, #0x18
 	adds r0, r4, #0
-	bl FUN_0822a568
+	bl AuxSprite_SetGfxPtr
 	movs r0, #3
 	movs r1, #0
 	strb r0, [r5, #1]

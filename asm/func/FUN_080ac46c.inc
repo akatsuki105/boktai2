@@ -10,7 +10,7 @@
 	ldr r1, [r2, #0x30]
 	adds r0, r2, #0
 	movs r2, #3
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	b _080AC4B0
 _080AC48A:
 	cmp r0, #7
@@ -18,7 +18,7 @@ _080AC48A:
 	ldr r1, [r2, #0x30]
 	adds r0, r2, #0
 	movs r2, #2
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	b _080AC4B0
 _080AC49A:
 	ldrh r1, [r2, #0x3a]

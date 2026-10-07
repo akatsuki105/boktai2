@@ -22,12 +22,24 @@ typedef u32 SpriteFlags;
 #define SPRFLAG_GAMEOVER (1 << 12)     // 0x00001000, ゲームオーバー画面に残すスプライト, ゲームオーバー中は Video_SetDrawPasses がこのビットだけを描くパス (XXX_DrawListGameover) に差し替えるので、立っていないものは一斉に消える
 
 // 0x00002000, SPRFLAG_GAMEOVER と同じ用途(特定の場面での描画制御), まだどの場面かで使われるかは未解析
-// Particle: FUN_0822e424, AuxSprite: FUN_0822af38, MainSprite: FUN_08230594
+// Particle: Particle_DrawListUnk13, AuxSprite: AuxSprite_DrawListUnk13, MainSprite: FUN_08230594
 #define SPRFLAG_UNK_13 (1 << 13)
 
 // 0..15
 // (OAM1.14-15 << 2) | (OAM0.14-15), ie. ((sizeidx << 2) | shape)
 typedef u8 SpriteShape;
+
+// OAM のアフィンパラメータの元データ, Video_BuildOAM がここから pa/pb/pc/pd を作る
+typedef struct {
+  u8 angle;   // 0x00, gSineTable の添字
+  s8 scaleX;  // 0x01, 0 なら pa/pb を 0 にする
+  s8 scaleY;  // 0x02, 0 なら pc/pd を 0 にする
+  u8 unk_3;   // 0x03
+} ObjAffineParams;
+static_assert(sizeof(ObjAffineParams) == 4);
+
+extern ObjAffineParams gObjAffineParams[32];
+extern s32 gObjAffineCount;
 
 extern u32 gSpriteListIdx;
 extern const u16 gSpriteSizeTable[16];  // SpriteShape が idx

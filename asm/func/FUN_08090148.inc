@@ -79,7 +79,7 @@ _080901D4:
 	lsls r0, r0, #4
 	adds r0, r0, r2
 	ldrb r0, [r0]
-	bl FUN_0808fd2c
+	bl IsMapUnlocked
 	cmp r0, #0
 	beq _0809024E
 	ldrb r0, [r4, #6]
@@ -177,7 +177,7 @@ _080902A4:
 	lsls r0, r0, #4
 	adds r0, r0, r1
 	ldrb r0, [r0]
-	bl FUN_0808fd2c
+	bl IsMapUnlocked
 	cmp r0, #0
 	beq _0809030A
 	ldrb r1, [r4, #7]
@@ -276,7 +276,7 @@ _08090374:
 	lsls r0, r0, #4
 	adds r0, r0, r1
 	ldrb r0, [r0]
-	bl FUN_0808fd2c
+	bl IsMapUnlocked
 	cmp r0, #0
 	beq _080903DA
 	ldrb r1, [r4, #8]
@@ -377,7 +377,7 @@ _08090452:
 	lsls r0, r0, #4
 	adds r0, r0, r1
 	ldrb r0, [r0]
-	bl FUN_0808fd2c
+	bl IsMapUnlocked
 	cmp r0, #0
 	beq _080904A0
 	ldrb r1, [r4, #9]
@@ -474,7 +474,7 @@ _08090512:
 	lsls r0, r0, #4
 	adds r0, r0, r2
 	ldrb r0, [r0]
-	bl FUN_0808fd2c
+	bl IsMapUnlocked
 	cmp r0, #0
 	bne _08090530
 	b _08090682
@@ -518,7 +518,7 @@ _08090570:
 	lsls r0, r0, #4
 	adds r0, r0, r2
 	ldrb r0, [r0]
-	bl FUN_0808fd2c
+	bl IsMapUnlocked
 	cmp r0, #0
 	bne _08090588
 	b _08090682
@@ -564,7 +564,7 @@ _080905C8:
 	adds r0, r0, r2
 	ldrb r0, [r0]
 	str r3, [sp, #0x10]
-	bl FUN_0808fd2c
+	bl IsMapUnlocked
 	ldr r3, [sp, #0x10]
 	cmp r0, #0
 	beq _08090682
@@ -608,7 +608,7 @@ _08090624:
 	lsls r0, r0, #4
 	adds r0, r0, r2
 	ldrb r0, [r0]
-	bl FUN_0808fd2c
+	bl IsMapUnlocked
 	cmp r0, #0
 	beq _08090682
 	ldrb r0, [r4, #0xe]

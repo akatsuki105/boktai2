@@ -35,11 +35,11 @@ _08041330:
 	beq _0804134E
 _08041346:
 	adds r0, r4, #0
-	bl FUN_0804106c
+	bl Entity286FNode_HideShadow
 	b _08041354
 _0804134E:
 	adds r0, r4, #0
-	bl FUN_0804109c
+	bl Entity286FNode_ShowShadow
 _08041354:
 	pop {r4}
 	pop {r1}

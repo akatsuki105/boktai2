@@ -65,7 +65,7 @@ _0808488E:
 	ldr r1, [r0]
 	adds r0, r6, #0
 	movs r2, #1
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r2, _08084934 @ =0x085B0A08
 	movs r3, #0x30
 	ldrsh r0, [r6, r3]

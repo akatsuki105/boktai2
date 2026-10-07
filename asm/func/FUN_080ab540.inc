@@ -117,7 +117,7 @@ _080AB60A:
 	ldr r1, [r0]
 	ldrb r2, [r4, #0x11]
 	adds r0, r7, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldrh r0, [r4, #0x20]
 	mov r1, r8
 	ldrh r1, [r1]

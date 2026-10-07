@@ -32,13 +32,13 @@ _080BDCA0:
 _080BDCA6:
 	adds r0, r5, #0
 	bl FUN_080bd47c
-	ldr r1, _080BDCB8 @ =FUN_080bde2c
+	ldr r1, _080BDCB8 @ =Entity744F_SwapSelectedWeapon
 	adds r0, r5, #0
 	movs r2, #0
 	bl FUN_080bcdf8
 	b _080BDD62
 	.align 2, 0
-_080BDCB8: .4byte FUN_080bde2c
+_080BDCB8: .4byte Entity744F_SwapSelectedWeapon
 _080BDCBC:
 	ldr r0, _080BDCEC @ =0x00000107
 	bl PlaySound_082406e0

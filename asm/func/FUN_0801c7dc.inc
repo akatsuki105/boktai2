@@ -32,7 +32,7 @@ _0801C80E:
 	movs r0, #0
 	movs r1, #4
 	movs r2, #9
-	bl FUN_0822be3c
+	bl Video_DrawBGNumber
 	movs r0, #0
 	bl GetWeaponSkillLevel
 	adds r3, r0, #0
@@ -54,7 +54,7 @@ _0801C83A:
 	movs r0, #0
 	movs r1, #3
 	movs r2, #0xb
-	bl FUN_0822be3c
+	bl Video_DrawBGNumber
 	movs r0, #1
 	bl GetWeaponSkillLevel
 	adds r3, r0, #0
@@ -76,7 +76,7 @@ _0801C866:
 	movs r0, #0
 	movs r1, #8
 	movs r2, #0xb
-	bl FUN_0822be3c
+	bl Video_DrawBGNumber
 	movs r0, #2
 	bl GetWeaponSkillLevel
 	adds r3, r0, #0
@@ -98,7 +98,7 @@ _0801C892:
 	movs r0, #0
 	movs r1, #3
 	movs r2, #0xc
-	bl FUN_0822be3c
+	bl Video_DrawBGNumber
 	movs r0, #3
 	bl GetWeaponSkillLevel
 	adds r3, r0, #0
@@ -120,7 +120,7 @@ _0801C8BE:
 	movs r0, #0
 	movs r1, #8
 	movs r2, #0xc
-	bl FUN_0822be3c
+	bl Video_DrawBGNumber
 	movs r0, #4
 	bl GetWeaponSkillLevel
 	adds r3, r0, #0
@@ -142,7 +142,7 @@ _0801C8EA:
 	movs r0, #0
 	movs r1, #3
 	movs r2, #0xd
-	bl FUN_0822be3c
+	bl Video_DrawBGNumber
 	adds r0, r5, #0
 	bl FUN_0801c40c
 	add sp, #0xc

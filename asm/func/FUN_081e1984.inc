@@ -4,7 +4,7 @@
 	ldr r0, [r0]
 	cmp r0, #0
 	beq _081E19D4
-	bl FUN_081e12a4
+	bl Entity150F_FindSlot
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _081E19D4

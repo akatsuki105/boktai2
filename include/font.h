@@ -3,27 +3,11 @@
 
 #include "gba/gba.h"
 
-typedef struct {
-  u16 narrowCharCount;  // このゲームでは 128
-  u16 wideCharCount;    // このゲームでは 1537
-  u32 offsetToNarrowChars;
-  u32 offsetToWideChars;
-} FontHeader;
-
-// FontHeader のオフセットをアドレスにしたもの
-typedef struct {
-  u16 narrowCharCount;  // 0x0, FontHeader.narrowCharCount, 半角文字 (8x16px)
-  u16 wideCharCount;    // 0x2, FontHeader.wideCharCount, 全角文字 (16x16px)
-  u8* narrowChars;      // tiles
-  u8* wideChars;        // tiles
-} FontInfo;
-static_assert(sizeof(FontInfo) == 12);
-
 void FUN_0822ea60(u32 x8, u32 y8, u32 w8, u32 h8);
 void FUN_0822eadc(u32 x8, u32 y8, u32 w8, u32 h8);
 void FUN_0822e8b4(void);
-void Video_DrawCharNarrow(u16 charcode, s32 x8, s32 y8, s32 param_4);
-u32 Video_GetZenkakuCharCount(void);
-void Video_DrawCharWide(u16 charcode, s32 x8, s32 y8, s32 param_4);
+void Font_DrawHankakuChar(u16 charcode, s32 x8, s32 y8, s32 style);
+u32 Font_GetZenkakuCharCount(void);
+void Font_DrawZenkakuChar(u16 charcode, s32 x8, s32 y8, s32 style);
 
 #endif  // __INCLUDE_FONT_H__

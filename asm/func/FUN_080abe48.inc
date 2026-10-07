@@ -88,7 +88,7 @@ _080ABE68:
 	adds r0, #0x29
 	ldrb r2, [r0]
 	adds r0, r4, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldrb r3, [r6]
 	ldr r2, _080ABF30 @ =0x085B0A08
 	mov r1, r8

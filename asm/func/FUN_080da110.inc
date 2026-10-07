@@ -160,7 +160,7 @@ _080DA246:
 _080DA24A:
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	ldr r1, [sp, #0x38]
 	ldrb r0, [r1]
 	ldr r2, [sp, #0x40]

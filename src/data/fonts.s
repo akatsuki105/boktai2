@@ -11,13 +11,13 @@ gFontDirectory: @ 0x089ee074
 
 .global gFontFile0
 gFontFile0: @ 0x089ee090
-  .2byte 128                         @ narrowCharCount (8x16px)
-  .2byte 1537                        @ wideCharCount (16x16px)
-  .4byte gHankakuFonts - gFontFile0  @ offsetToNarrowChars
-  .4byte gZenkakuFonts - gFontFile0  @ offsetToWideChars
+  .2byte 128
+  .2byte 1537
+  .4byte gHankakuFonts - gFontFile0
+  .4byte gZenkakuFonts - gFontFile0
 
 gHankakuFonts: @ 0x089EE09C
-  .incbin "data/font_narrow.4bpp"
+  .incbin "data/hankaku.4bpp"
 
 gZenkakuFonts: @ 0x089F009C
-  .incbin "data/font_wide.4bpp"
+  .incbin "data/zenkaku.4bpp"

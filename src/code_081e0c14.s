@@ -8116,7 +8116,7 @@ _081E58F8:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0x1e
-	bl FUN_0822bdb8
+	bl Video_FillBGRect
 	adds r0, r7, #0
 	bl FUN_081e47c4
 	adds r0, r7, #0
@@ -10779,7 +10779,7 @@ _081E6F5E:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0x1e
-	bl FUN_0822bdb8
+	bl Video_FillBGRect
 	ldr r1, [r5, #0x1c]
 	movs r0, #3
 	movs r2, #3
@@ -11384,7 +11384,7 @@ _081E7456:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0x1e
-	bl FUN_0822bdb8
+	bl Video_FillBGRect
 	ldr r1, [r7, #0x1c]
 	movs r0, #3
 	movs r2, #2

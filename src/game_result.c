@@ -6,18 +6,23 @@
 #include "tilemap.h"
 #include "video.h"
 
+typedef u32 GameResultFlags;
+#define GRF_UNK_0 (1 << 0)  // 0x1, unk_4c を止める
+#define GRF_UNK_1 (1 << 1)  // 0x2, unk_54 を止める
+
 // ゲームクリア時のリザルト画面
+// なんか GameResultFlags とかが IntroFlags と似てるし、 他にも Intro との共通点がある気がする...
 typedef struct GameResult {
-  Entity e;           // 0x000, ENTITY_UNK_11
-  MainSpriteGfx gfx;  // 0x018, SPRITE_42E2
-  Tilemaps* tilemap;  // 0x038, TILEMAP_33B2
-  rgb555* pltt;       // 0x03C, BGP_E9C3
-  u32 unk_40;         // 0x040, なんかのbitfield?
-  u32 scriptID_44;    // 0x044, 0x08222954
-  s32 unk_48;         // 0x048, sUpdates の idx (このゲームでは常に 0)
-  s32 unk_4c;         // 0x04C
-  s32 unk_50;         // 0x050
-  s32 unk_54;         // 0x054
+  Entity e;                // 0x000, ENTITY_UNK_11
+  MainSpriteGfx gfx;       // 0x018, SPRITE_42E2
+  Tilemaps* tilemap;       // 0x038, TILEMAP_33B2
+  rgb555* pltt;            // 0x03C, BGP_E9C3
+  GameResultFlags unk_40;  // 0x040, なんかのbitfield?
+  u32 scriptID_44;         // 0x044, 0x08222954
+  s32 unk_48;              // 0x048, sUpdates の idx (このゲームでは常に 0)
+  s32 unk_4c;              // 0x04C
+  s32 unk_50;              // 0x050
+  s32 unk_54;              // 0x054
   u8 unk_58[0x76 - 0x58];
   char unk_76[2];                              // 0x076, 0x08222c2a
   MainSprite sprites[8];                       // 0x078, 0x082226a6 で 8回ループ処理してるので長さは8
@@ -105,8 +110,8 @@ void FUN_08222a54(GameResult* p, s32 idx) {
 }
 
 s32 GameResult_Update(GameResult* p) {
-  if ((p->unk_40 & (1 << 0)) == 0) p->unk_4c++;
-  if ((p->unk_40 & (1 << 1)) == 0) p->unk_54++;
+  if (!(p->unk_40 & GRF_UNK_0)) p->unk_4c++;
+  if (!(p->unk_40 & GRF_UNK_1)) p->unk_54++;
   p->updateCallback(p);  // このゲームでは常に _GameResult_Update
   return 0;
 }

@@ -107,7 +107,7 @@ _0807F708:
 	ldr r1, [r0]
 	mov r0, ip
 	movs r2, #4
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	b _0807F736
 _0807F724:
 	cmp r1, #4
@@ -117,7 +117,7 @@ _0807F724:
 	ldr r1, [r0]
 	mov r0, ip
 	movs r2, #5
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _0807F736:
 	ldrb r0, [r4]
 	adds r0, #1

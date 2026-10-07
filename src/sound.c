@@ -4,7 +4,7 @@
 #include "global.h"
 #include "vm.h"
 
-IWRAM_DATA ALIGNED(16) struct MusicPlayerTrack gMPlayTracks[50] = {};  // 0x03001710
+IWRAM_DATA ALIGNED(16) MusicPlayerTrack gMPlayTracks[50] = {};  // 0x03001710
 
 COMMON_DATA SoundID16 gSoundIDs[MUSIC_PLAYER_LENGTH] = {};  // 0x03004820
 
@@ -25,6 +25,7 @@ void FUN_082402c8(void) {
   }
 }
 
+// 0xE7CA
 void FUN_082402e0(void) {
   if (VM_SeekToNamedArg('i') != 0) {
     sound_08240264(VM_GetValue());
@@ -50,7 +51,7 @@ void Sound_FadeInBGM(u32 speed) {
   if (gSoundIDs[10] != 0) {
     SoundID16 id = gSoundIDs[10];
     u16 ms = gSongTable[id].ms;
-    struct MusicPlayerInfo* mplay = gMPlayTable[ms].info;
+    MusicPlayerInfo* mplay = gMPlayTable[ms].info;
     m4aMPlayImmInit(mplay);
     m4aMPlayVolumeControl(mplay, 0xFFFF, 1);
     m4aSongNumStop(id);
@@ -68,7 +69,7 @@ void sound_082403b8(void) {
 void Sound_FadeOutBGMTemporarily(u32 speed) {
   if (gSoundIDs[10] != 0) {
     u16 ms = gSongTable[gSoundIDs[10]].ms;
-    struct MusicPlayerInfo* mplay = gMPlayTable[ms].info;
+    MusicPlayerInfo* mplay = gMPlayTable[ms].info;
     m4aMPlayImmInit(mplay);
     m4aMPlayVolumeControl(mplay, 0xFFFF, 0x100);
     m4aMPlayFadeOutTemporarily(mplay, speed);
@@ -86,7 +87,7 @@ void FUN_08240428(void) {
 void Sound_FadeOutBGM(u32 speed) {
   if (gSoundIDs[10] != 0) {
     u16 ms = gSongTable[gSoundIDs[10]].ms;
-    struct MusicPlayerInfo* mplay = gMPlayTable[ms].info;
+    MusicPlayerInfo* mplay = gMPlayTable[ms].info;
     m4aMPlayImmInit(mplay);
     m4aMPlayVolumeControl(mplay, 0xFFFF, 0xFF);
     m4aMPlayFadeOut(mplay, speed);
@@ -113,7 +114,7 @@ void FUN_082404fc(u32 speed) {
   SoundID16 id = gSoundIDs[12];
 
   if ((id != 0) && (gSongTable[id].ms == 12)) {
-    struct MusicPlayerInfo* mplay = gMPlayTable[12].info;
+    MusicPlayerInfo* mplay = gMPlayTable[12].info;
     m4aMPlayImmInit(mplay);
     m4aMPlayVolumeControl(mplay, 0xFFFF, 1);
     m4aSongNumStop(id);
@@ -146,7 +147,7 @@ void FUN_082405c0(u32 speed) {
 
   if (id != 0) {
     u16 ms = gSongTable[id].ms;
-    struct MusicPlayerInfo* mplay = gMPlayTable[ms].info;
+    MusicPlayerInfo* mplay = gMPlayTable[ms].info;
     m4aMPlayImmInit(mplay);
     m4aMPlayVolumeControl(mplay, 0xFFFF, 0xFF);
     m4aMPlayFadeOut(mplay, speed);
@@ -317,41 +318,42 @@ bool32 sound_08240960(SoundID32 id) {
 // --------------------------------------------
 // data
 
-INCRODATA(".rodata", "data/sound.bin");  // ./tmp/bin.sh ./baserom.gba 0x08252c00 0x0825e3ec ./data/sound.bin
+#include "data/voicegroups.h"
 
-// clang-format off
-const struct MusicPlayer gMPlayTable[MUSIC_PLAYER_LENGTH] = {
-    [0]  =  {NULL, NULL,  0, 0},
-    [1]  =  {NULL, NULL,  0, 0},
-    [2]  =  {NULL, NULL,  0, 0},
-    [3]  =  {NULL, NULL,  0, 0},
-    [4]  =  {NULL, NULL,  0, 0},
-    [5]  =  {NULL, NULL,  0, 0},
-    [6]  =  {NULL, NULL,  0, 0},
-    [7]  =  {NULL, NULL,  0, 0},
-    [8]  =  {NULL, NULL,  0, 0},
-    [9]  =  {NULL, NULL,  0, 0},
-    [10] = {&gMPlayInfo_09, &gMPlayTracks[0], 12, 0},
-    [11] = {NULL, NULL,  0, 0},
-    [12] = {&gMPlayInfo_13, &gMPlayTracks[12], 8, 0},
-    [13] = {NULL, NULL,  0, 0},
-    [14] = {NULL, NULL,  0, 0},
-    [15] = {NULL, NULL,  0, 0},
-    [16] = {NULL, NULL,  0, 0},
-    [17] = {&gMPlayInfo_14, &gMPlayTracks[20], 2, 1},
-    [18] = {&gMPlayInfo_06, &gMPlayTracks[22], 1, 1},
-    [19] = {NULL, NULL,  0, 0},
-    [20] = {&gMPlayInfo_03, &gMPlayTracks[23], 2, 1},
-    [21] = {&gMPlayInfo_05, &gMPlayTracks[25], 2, 1},
-    [22] = {&gMPlayInfo_12, &gMPlayTracks[27], 3, 1},
-    [23] = {&gMPlayInfo_00, &gMPlayTracks[30], 3, 1},
-    [24] = {&gMPlayInfo_04, &gMPlayTracks[33], 2, 1},
-    [25] = {&gMPlayInfo_10, &gMPlayTracks[35], 3, 1},
-    [26] = {&gMPlayInfo_02, &gMPlayTracks[38], 1, 1},
-    [27] = {&gMPlayInfo_15, &gMPlayTracks[39], 3, 1},
-    [28] = {&gMPlayInfo_07, &gMPlayTracks[42], 2, 1},
-    [29] = {&gMPlayInfo_11, &gMPlayTracks[44], 1, 1},
-    [30] = {&gMPlayInfo_01, &gMPlayTracks[45], 2, 1},
-    [31] = {&gMPlayInfo_08, &gMPlayTracks[47], 3, 1},
+// ./tools/bin.ts ./baserom.gba 0x0825dd6c 0x0825e3ec ./data/programmable_wave_samples.bin
+const u8 ProgrammableWaveData[] = INCBIN_U8("data/programmable_wave_samples.bin");
+
+const MusicPlayer gMPlayTable[MUSIC_PLAYER_LENGTH] = {
+    [0] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [1] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [2] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [3] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [4] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [5] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [6] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [7] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [8] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [9] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [10] = {info : &gMPlayInfo_09, track : &gMPlayTracks[0],  numTracks : 12, unk_A : 0},
+    [11] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [12] = {info : &gMPlayInfo_13, track : &gMPlayTracks[12], numTracks : 8,  unk_A : 0},
+    [13] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [14] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [15] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [16] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [17] = {info : &gMPlayInfo_14, track : &gMPlayTracks[20], numTracks : 2,  unk_A : 1},
+    [18] = {info : &gMPlayInfo_06, track : &gMPlayTracks[22], numTracks : 1,  unk_A : 1},
+    [19] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
+    [20] = {info : &gMPlayInfo_03, track : &gMPlayTracks[23], numTracks : 2,  unk_A : 1},
+    [21] = {info : &gMPlayInfo_05, track : &gMPlayTracks[25], numTracks : 2,  unk_A : 1},
+    [22] = {info : &gMPlayInfo_12, track : &gMPlayTracks[27], numTracks : 3,  unk_A : 1},
+    [23] = {info : &gMPlayInfo_00, track : &gMPlayTracks[30], numTracks : 3,  unk_A : 1},
+    [24] = {info : &gMPlayInfo_04, track : &gMPlayTracks[33], numTracks : 2,  unk_A : 1},
+    [25] = {info : &gMPlayInfo_10, track : &gMPlayTracks[35], numTracks : 3,  unk_A : 1},
+    [26] = {info : &gMPlayInfo_02, track : &gMPlayTracks[38], numTracks : 1,  unk_A : 1},
+    [27] = {info : &gMPlayInfo_15, track : &gMPlayTracks[39], numTracks : 3,  unk_A : 1},
+    [28] = {info : &gMPlayInfo_07, track : &gMPlayTracks[42], numTracks : 2,  unk_A : 1},
+    [29] = {info : &gMPlayInfo_11, track : &gMPlayTracks[44], numTracks : 1,  unk_A : 1},
+    [30] = {info : &gMPlayInfo_01, track : &gMPlayTracks[45], numTracks : 2,  unk_A : 1},
+    [31] = {info : &gMPlayInfo_08, track : &gMPlayTracks[47], numTracks : 3,  unk_A : 1},
 };
-// clang-format on

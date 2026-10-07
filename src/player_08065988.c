@@ -33,7 +33,6 @@ void FUN_0823bca8(s32 n);
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
 void Player_ShowPtcl64c(Player* p, Vec3* pos, s32 val);
 void FUN_0807e854(Player* p);
-void FUN_0807d118(Player* p);
 void FUN_08063220(Player* p);
 void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames);
 void FUN_08063634(Player* p, s32 n);
@@ -136,9 +135,9 @@ void Player_SetupHitbox(Player* p) {
   offset.x = 0, offset.y = 127, offset.z = 0;
   Hitbox_Init(hitbox, p->mover.id, HBFLAG_UNK_14 | HBFLAG_UNK_12 | HBFLAG_UNK_0, 0, 1 << p->unk_18, &halfSize, &offset);
   if (p->kind == PLAYER_SOLAR_DJANGO) {
-    Hitbox_SetPowerAndAttributes(hitbox, 20, HBATTR_0, HBATTR_1);
+    Hitbox_SetPowerAndAttributes(hitbox, 20, HBATTR_SOL, HBATTR_DARK);
   } else {
-    Hitbox_SetPowerAndAttributes(hitbox, 20, HBATTR_1, HBATTR_0);
+    Hitbox_SetPowerAndAttributes(hitbox, 20, HBATTR_DARK, HBATTR_SOL);
   }
   Hitbox_SetHandler(hitbox, FUN_0807e784, p);
   Hitbox_SetPos(hitbox, &p->sprite_e8.pos, 0);
@@ -725,7 +724,7 @@ void FUN_0806e404(Player* p) {
         p->unk_38a = 40;
       }
       PlaySound_082406e0(0xCD);
-      Entity08080be8_Create(p, 20, 180, 0, 32, 0x2C, 32, HBATTR_0, 20, 3, 10, 1);
+      Entity08080be8_Create(p, 20, 180, 0, 32, 44, 32, HBATTR_SOL, 20, 3, 10, 1);
     }
   }
   p->stateTimer++;
@@ -1338,10 +1337,10 @@ NON_MATCH void FUN_0807a798(s32 amount) {
 // 残差はレジスタの割り当てのみ (命令数 30 対 30): 原典は kind を退避するが、こちらは amount を退避する
 NON_MATCH void AddWeaponExp(s32 kind, s32 amount) {
 #ifdef NONMATCHING_C
-  if (gStat->playerKind != 5 && kind <= 4) {
+  if (gStat->playerKind != PLAYER_SABATA && kind < 5) {
     gStat->weaponExp[kind] += amount;
-    if (gStat->weaponExp[kind] > 0x26AB) {
-      gStat->weaponExp[kind] = 0x26AC;
+    if (gStat->weaponExp[kind] >= 9900) {
+      gStat->weaponExp[kind] = 9900;
     }
   }
 #else
@@ -1353,19 +1352,19 @@ NON_MATCH void AddWeaponExp(s32 kind, s32 amount) {
 void AddWeaponExpByMask(u32 mask, s32 amount) {
   bool32 refresh = FALSE;
 
-  if (mask & 1) {
-    AddWeaponExp(0, amount);
+  if (mask & (1 << WK_SWORD)) {
+    AddWeaponExp(WK_SWORD, amount);
     refresh = TRUE;
-  } else if (mask & 2) {
-    AddWeaponExp(1, amount);
+  } else if (mask & (1 << WK_SPEAR)) {
+    AddWeaponExp(WK_SPEAR, amount);
     refresh = TRUE;
-  } else if (mask & 4) {
-    AddWeaponExp(2, amount);
+  } else if (mask & (1 << WK_HAMMER)) {
+    AddWeaponExp(WK_HAMMER, amount);
     refresh = TRUE;
-  } else if (mask & 8) {
-    AddWeaponExp(3, amount);
-  } else if (mask & 0x10) {
-    AddWeaponExp(4, amount);
+  } else if (mask & (1 << WK_OTHERS)) {
+    AddWeaponExp(WK_OTHERS, amount);
+  } else if (mask & (1 << WK_GUN)) {
+    AddWeaponExp(WK_GUN, amount);
   }
 
   if (refresh && gPlayerPtr[0] != NULL) {
@@ -1997,9 +1996,9 @@ void FUN_0807bc14(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_0807304c;
 }
 
-void FUN_0807bc64(Player* p, u32 param_2) {
+void FUN_0807bc64(Player* p, u32 scriptID) {
   if (p->unk_1c == 2 && p->action == 7 && p->state != 0) {
-    p->scriptID_4b0 = param_2;
+    p->scriptID_4b0 = scriptID;
     FUN_0807b7a4(p);
     Player_SetAction(p, 7, 3);
     p->fn_498 = FUN_0807304c;
@@ -3193,18 +3192,18 @@ static s32 Player_Init(Player* p, u32 n, void* _) {
   return 0;
 }
 
-// エリア移動などでも呼ばれる
+// 0xF5EB, エリア移動などでも呼ばれる
 Player* CreatePlayer(u32 n, void* _) {
-  s32 ok;
   Player* p = CreateEntity(ENTITY_PLAYER, sizeof(Player));
+
   if (p != NULL) {
     SetEntityRoutine(p, Player_Update, Player_Destroy);
-    ok = Player_Init(p, n, _);
-    if (ok < 0) {
+    if (Player_Init(p, n, _) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
   }
+
   return p;
 }
 

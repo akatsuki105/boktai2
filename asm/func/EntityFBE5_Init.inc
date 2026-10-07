@@ -102,8 +102,8 @@ _0801A9E8:
 	movs r2, #0x18
 	movs r3, #1
 	bl MainSprite_SetAnim
-	ldr r1, _0801AA9C @ =FUN_0822e424
-	ldr r2, _0801AAA0 @ =FUN_0822af38
+	ldr r1, _0801AA9C @ =Particle_DrawListUnk13
+	ldr r2, _0801AAA0 @ =AuxSprite_DrawListUnk13
 	ldr r3, _0801AAA4 @ =FUN_0822f264
 	movs r0, #0
 	bl Video_SetDrawPasses
@@ -159,8 +159,8 @@ _0801AA84:
 _0801AA90: .4byte 0xFFFF0000
 _0801AA94: .4byte 0x0000FFFF
 _0801AA98: .4byte 0x00002011
-_0801AA9C: .4byte FUN_0822e424
-_0801AAA0: .4byte FUN_0822af38
+_0801AA9C: .4byte Particle_DrawListUnk13
+_0801AAA0: .4byte AuxSprite_DrawListUnk13
 _0801AAA4: .4byte FUN_0822f264
 _0801AAA8: .4byte 0x00001084
 _0801AAAC: .4byte 0x00006541

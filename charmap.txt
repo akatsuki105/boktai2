@@ -1,9 +1,8 @@
-@ font_narrow
 @   same as ASCII
-
 '$' = 00  @ TERMINATOR
 '\n' = 0A
 
+@   same as ASCII
 ' '  = 20 @ 半角スペース
 '!'  = 21
 QT   = 22
@@ -101,7 +100,7 @@ QT   = 22
 '‾'  = 7E @ not ASCII
 '·'  = 7F @ not ASCII
 
-@ font_wide
+@ 全角
 'あ' = 80 01
 'い' = 80 02
 'う' = 80 03

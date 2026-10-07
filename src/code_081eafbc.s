@@ -5891,7 +5891,7 @@ _081EDD88:
 	ldrb r0, [r3]
 	adds r2, r2, r0
 	mov r0, ip
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _081EDDAC:
 	pop {r0}
 	bx r0
@@ -6405,7 +6405,7 @@ _081EE15A:
 	ldr r1, [r6, #0x18]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #4
 	rsbs r2, r2, #0
 	adds r0, r5, #0
@@ -6414,10 +6414,10 @@ _081EE15A:
 	ldr r1, [r6, #0x18]
 	ldrb r2, [r4]
 	adds r0, r5, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	ldr r0, [r5]
 	movs r1, #1
 	orrs r0, r1
@@ -7567,7 +7567,7 @@ _081EE9D6:
 	ldr r1, [r7, #0x18]
 	adds r0, r6, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #8
 	rsbs r2, r2, #0
 	adds r0, r6, #0
@@ -7576,7 +7576,7 @@ _081EE9D6:
 	ldr r1, [r7, #0x18]
 	adds r0, r6, #0
 	movs r2, #0x34
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r0, [r6]
 	orrs r0, r4
 	str r0, [r6]
@@ -15520,7 +15520,7 @@ _081F24C8:
 	ldr r1, [r0, #0x28]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	ldr r1, [sp, #0x5c]
 	rsbs r1, r1, #0
 	ldr r2, [sp, #0x60]
@@ -31781,7 +31781,7 @@ FUN_081f9e54: @ 0x081F9E54
 	ldrb r0, [r3]
 	adds r2, r2, r0
 	mov r0, ip
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	b _081F9E8C
 _081F9E88:
 	subs r0, #1
@@ -32019,7 +32019,7 @@ _081FA01A:
 	ldr r1, [r6, #0x18]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #4
 	rsbs r2, r2, #0
 	adds r0, r5, #0
@@ -32028,10 +32028,10 @@ _081FA01A:
 	ldr r1, [r6, #0x18]
 	ldrb r2, [r4]
 	adds r0, r5, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	ldr r0, [r5]
 	movs r1, #1
 	orrs r0, r1
@@ -32244,7 +32244,7 @@ FUN_081fa1bc: @ 0x081FA1BC
 	beq _081FA224
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #8
 	rsbs r2, r2, #0
 	adds r0, r5, #0
@@ -32257,7 +32257,7 @@ FUN_081fa1bc: @ 0x081FA1BC
 	ldr r1, [r4, #0x40]
 	adds r0, r5, #0
 	movs r2, #0x20
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	movs r0, #0
 	strb r0, [r5, #0xf]
 	ldr r0, [r4, #0x18]

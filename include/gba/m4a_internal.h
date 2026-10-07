@@ -39,14 +39,14 @@
 #define SOUND_MODE_DA_BIT_SHIFT 20
 
 // 波形データの構造
-struct WaveData {
+typedef struct {
   u16 type;       // タイプ
   u16 status;     // ステータス
   u32 freq;       // 周波数計算値
   u32 loopStart;  // ループ開始位置
   u32 size;       // サンプリング数
   s8 data[1];     // サンプリングデータ配列
-};
+} WaveData;
 
 #define TONEDATA_TYPE_CGB 0x07
 #define TONEDATA_TYPE_FIX 0x08
@@ -57,17 +57,17 @@ struct WaveData {
 #define TONEDATA_P_S_PAM TONEDATA_P_S_PAN
 
 // 音色データの構造
-struct ToneData {
-  u8 type;               // タイプ
-  u8 key;                // オリジナルキー
-  u8 length;             // 音の長さ（互換サウンド)
-  u8 pan_sweep;          // パンポット or スイープ（互換サウンド１）
-  struct WaveData* wav;  // 波形データのアドレス
-  u8 attack;             // アタック
-  u8 decay;              // ディケイ
-  u8 sustain;            // サスティン
-  u8 release;            // リリース
-};
+typedef struct {
+  u8 type;        // タイプ
+  u8 key;         // オリジナルキー
+  u8 length;      // 音の長さ（互換サウンド)
+  u8 pan_sweep;   // パンポット or スイープ（互換サウンド１）
+  WaveData* wav;  // 波形データのアドレス
+  u8 attack;      // アタック
+  u8 decay;       // ディケイ
+  u8 sustain;     // サスティン
+  u8 release;     // リリース
+} ToneData;       // 12 bytes
 
 #define SOUND_CHANNEL_SF_START 0x80
 #define SOUND_CHANNEL_SF_STOP 0x40
@@ -86,7 +86,9 @@ struct ToneData {
 #define CGB_NRx2_ENV_DIR_DEC 0x00
 #define CGB_NRx2_ENV_DIR_INC 0x08
 
-struct CgbChannel {
+struct MusicPlayerTrack;
+
+typedef struct {
   u8 statusFlags;
   u8 type;
   u8 rightVolume;
@@ -124,11 +126,9 @@ struct CgbChannel {
   void* prevChannelPointer;
   void* nextChannelPointer;
   u8 dummy4[8];
-};
+} CgbChannel;
 
-struct MusicPlayerTrack;
-
-struct SoundChannel {
+typedef struct {
   u8 statusFlags;
   u8 type;
   u8 rightVolume;
@@ -154,7 +154,7 @@ struct SoundChannel {
   u32 count;
   u32 fw;
   u32 frequency;
-  struct WaveData* wav;
+  WaveData* wav;
   s8* currentPointer;
   struct MusicPlayerTrack* track;
   void* prevChannelPointer;
@@ -162,7 +162,7 @@ struct SoundChannel {
   u32 dummy4;
   u16 xpi;
   u16 xpc;
-};
+} SoundChannel;
 
 #define MAX_DIRECTSOUND_CHANNELS 12
 
@@ -179,7 +179,7 @@ typedef void (*ExtVolPitFunc)(void);
 typedef void (*MPlayMainFunc)(struct MusicPlayerInfo*);
 
 // a.k.a. SoundArea
-struct SoundInfo {
+typedef struct SoundInfo {
   // This field is normally equal to ID_NUMBER but it is set to other
   // values during sensitive operations for locking purposes.
   // This field should be volatile but isn't. This could potentially cause
@@ -202,7 +202,7 @@ struct SoundInfo {
   s32 pcmSamplesPerVBlank;
   s32 pcmFreq;
   s32 divFreq;
-  struct CgbChannel* cgbChans;
+  CgbChannel* cgbChans;
   MPlayMainFunc MPlayMainHead;
   struct MusicPlayerInfo* musicPlayerHead;
   CgbSoundFunc CgbSound;
@@ -212,16 +212,16 @@ struct SoundInfo {
   PlyNoteFunc plynote;
   ExtVolPitFunc ExtVolPit;
   u8 gap2[16];
-  struct SoundChannel chans[MAX_DIRECTSOUND_CHANNELS];
+  SoundChannel chans[MAX_DIRECTSOUND_CHANNELS];
   s8 pcmBuffer[PCM_DMA_BUF_SIZE * 2];
-};
+} SoundInfo;
 
 typedef struct SongHeader {
   u8 trackCount;
   u8 blockCount;
   u8 priority;
   u8 reverb;
-  struct ToneData* tone;
+  ToneData* tone;
   u8* part[1];
 } SongHeader;
 
@@ -232,7 +232,7 @@ typedef struct SongHeader {
 #define MPT_FLG_START 0x40
 #define MPT_FLG_EXIST 0x80
 
-struct MusicPlayerTrack {
+typedef struct MusicPlayerTrack {
   u8 flags;
   u8 wait;
   u8 patternLevel;
@@ -265,15 +265,15 @@ struct MusicPlayerTrack {
   u8 priority;
   u8 pseudoEchoVolume;
   u8 pseudoEchoLength;
-  struct SoundChannel* chan;
-  struct ToneData tone;
+  SoundChannel* chan;
+  ToneData tone;
   u8 gap[10];
   u16 unk_3A;
   u32 unk_3C;
   u8* cmdPtr;
   u8* patternStack[3];
-};
-static_assert(sizeof(struct MusicPlayerTrack) == 80);
+} MusicPlayerTrack;
+static_assert(sizeof(MusicPlayerTrack) == 80);
 
 #define MUSICPLAYER_STATUS_TRACK 0x0000ffff
 #define MUSICPLAYER_STATUS_PAUSE 0x80000000
@@ -286,7 +286,7 @@ static_assert(sizeof(struct MusicPlayerTrack) == 80);
 #define FADE_VOL_SHIFT 2
 
 // a.k.a. MusicPlayerArea
-struct MusicPlayerInfo {
+typedef struct MusicPlayerInfo {
   SongHeader* songHeader;  // 現在のソングポインタ
   u32 status;              // ステータス
   u8 trackCount;           // トラック数
@@ -303,19 +303,19 @@ struct MusicPlayerInfo {
   u16 fadeOI;
   u16 fadeOC;
   u16 fadeOV;
-  struct MusicPlayerTrack* tracks;
-  struct ToneData* tone;
+  MusicPlayerTrack* tracks;
+  ToneData* tone;
   u32 ident;
   MPlayMainFunc MPlayMainNext;
   struct MusicPlayerInfo* musicPlayerNext;
-};
+} MusicPlayerInfo;
 
-struct MusicPlayer {
-  struct MusicPlayerInfo* info;
-  struct MusicPlayerTrack* track;
-  u8 unk_8;
+typedef struct {
+  MusicPlayerInfo* info;
+  MusicPlayerTrack* track;
+  u8 numTracks;
   u16 unk_A;
-};
+} MusicPlayer;
 
 typedef struct Song {
   SongHeader* header;  // 0x0, 曲データ
@@ -323,8 +323,8 @@ typedef struct Song {
   u16 me;              // 0x6, 最大エフェクト数
 } Song;
 
-extern const struct MusicPlayer gMPlayTable[];
-extern const struct Song gSongTable[];
+extern const MusicPlayer gMPlayTable[];
+extern const Song gSongTable[];
 
 extern u8 gMPlayMemAccArea[];
 
@@ -332,10 +332,10 @@ extern char SoundMainRAM[];
 
 extern MPlayFunc gMPlayJumpTable[];
 
-typedef void (*XcmdFunc)(struct MusicPlayerInfo*, struct MusicPlayerTrack*);
+typedef void (*XcmdFunc)(MusicPlayerInfo*, MusicPlayerTrack*);
 extern const XcmdFunc gXcmdTable[];
 
-extern struct CgbChannel gCgbChans[];
+extern CgbChannel gCgbChans[];
 
 extern const u8 gScaleTable[];
 extern const u32 gFreqTable[];
@@ -344,8 +344,6 @@ extern const u16 gPcmSamplesPerVBlankTable[];
 extern const u8 gCgbScaleTable[];
 extern const s16 gCgbFreqTable[];
 extern const u8 gNoiseTable[];
-
-extern const struct ToneData voicegroup000;
 
 extern char gNumMusicPlayers[];
 extern char gMaxLines[];
@@ -368,13 +366,13 @@ void TrkVolPitSet(struct MusicPlayerInfo* mplayInfo, struct MusicPlayerTrack* tr
 void MPlayFadeOut(struct MusicPlayerInfo* mplayInfo, u16 speed);
 void ClearChain(void* x);
 void Clear64byte(void* addr);
-void SoundInit(struct SoundInfo* soundInfo);
-void MPlayExtender(struct CgbChannel* cgbChans);
+void SoundInit(SoundInfo* soundInfo);
+void MPlayExtender(CgbChannel* cgbChans);
 void m4aSoundMode(u32 mode);
 void MPlayOpen(struct MusicPlayerInfo* mplayInfo, struct MusicPlayerTrack* track, u8 a3);
 void CgbSound(void);
 void CgbOscOff(u8);
-void CgbModVol(struct CgbChannel* chan);
+void CgbModVol(CgbChannel* chan);
 u32 MidiKeyToCgbFreq(u8, u8, u8);
 void DummyFunc(void);
 void MPlayJumpTableCopy(MPlayFunc* mplayJumpTable);
@@ -382,13 +380,13 @@ void SampleFreqSet(u32 freq);
 void m4aSoundVSyncOn(void);
 void m4aSoundVSyncOff(void);
 
-void m4aMPlayTempoControl(struct MusicPlayerInfo* mplayInfo, u16 tempo);
-void m4aMPlayVolumeControl(struct MusicPlayerInfo* mplayInfo, u16 trackBits, u16 volume);
-void m4aMPlayPitchControl(struct MusicPlayerInfo* mplayInfo, u16 trackBits, s16 pitch);
-void m4aMPlayPanpotControl(struct MusicPlayerInfo* mplayInfo, u16 trackBits, s8 pan);
-void ClearModM(struct MusicPlayerTrack* track);
-void m4aMPlayModDepthSet(struct MusicPlayerInfo* mplayInfo, u16 trackBits, u8 modDepth);
-void m4aMPlayLFOSpeedSet(struct MusicPlayerInfo* mplayInfo, u16 trackBits, u8 lfoSpeed);
+void m4aMPlayTempoControl(MusicPlayerInfo* mplayInfo, u16 tempo);
+void m4aMPlayVolumeControl(MusicPlayerInfo* mplayInfo, u16 trackBits, u16 volume);
+void m4aMPlayPitchControl(MusicPlayerInfo* mplayInfo, u16 trackBits, s16 pitch);
+void m4aMPlayPanpotControl(MusicPlayerInfo* mplayInfo, u16 trackBits, s8 pan);
+void ClearModM(MusicPlayerTrack* track);
+void m4aMPlayModDepthSet(MusicPlayerInfo* mplayInfo, u16 trackBits, u8 modDepth);
+void m4aMPlayLFOSpeedSet(MusicPlayerInfo* mplayInfo, u16 trackBits, u8 lfoSpeed);
 
 // sound command handler functions
 void ply_fine(struct MusicPlayerInfo*, struct MusicPlayerTrack*);

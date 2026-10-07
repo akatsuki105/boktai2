@@ -154,7 +154,7 @@ _08215A8C:
 _08215A92:
 	adds r0, r6, #0
 	movs r1, #0
-	bl FUN_08219f34
+	bl EntityA288_SetState
 	ldr r0, [r7, #8]
 	orrs r0, r5
 	str r0, [r7, #8]
@@ -162,7 +162,7 @@ _08215A92:
 _08215AA2:
 	adds r0, r6, #0
 	movs r1, #3
-	bl FUN_08219f34
+	bl EntityA288_SetState
 	ldr r0, [r7, #8]
 	mov r2, r8
 	orrs r0, r2

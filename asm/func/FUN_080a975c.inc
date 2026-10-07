@@ -11,7 +11,7 @@
 	ldr r1, [r4, #0x34]
 	adds r0, r4, #0
 	movs r2, #6
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r0, _080A97F8 @ =0x0203B400
 	mov sb, r0
 	ldr r5, _080A97FC @ =0x030046B8

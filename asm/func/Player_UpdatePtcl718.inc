@@ -59,7 +59,7 @@ _08061CC4:
 	ldrb r2, [r0]
 	adds r2, #1
 	adds r0, r3, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _08061CE2:
 	ldrh r0, [r4, #0x28]
 	ldrh r2, [r4, #0x18]

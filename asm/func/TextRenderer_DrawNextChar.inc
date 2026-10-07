@@ -37,7 +37,7 @@ _080494B6:
 	lsrs r4, r0, #0x10
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl TextRenderer_DrawCharNarrow
+	bl TextRenderer_DrawHankakuChar
 	b _08049502
 	.align 2, 0
 _080494DC: .4byte 0x0000FFFF
@@ -50,13 +50,13 @@ _080494E0:
 	ldr r0, _080494F8 @ =0x00007FFF
 	ands r1, r0
 	adds r0, r6, #0
-	bl TextRenderer_DrawCharNarrow
+	bl TextRenderer_DrawHankakuChar
 	b _08049502
 	.align 2, 0
 _080494F8: .4byte 0x00007FFF
 _080494FC:
 	adds r0, r6, #0
-	bl TextRenderer_DrawCharNarrow
+	bl TextRenderer_DrawHankakuChar
 _08049502:
 	adds r5, #2
 	b _08049560
@@ -67,7 +67,7 @@ _08049506:
 	lsrs r4, r0, #0x10
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl TextRenderer_DrawCharNarrow
+	bl TextRenderer_DrawHankakuChar
 _08049516:
 	adds r5, #1
 	b _08049560
@@ -79,7 +79,7 @@ _0804951A:
 	ldrb r1, [r5]
 	lsls r4, r0, #8
 	orrs r4, r1
-	bl Video_GetZenkakuCharCount
+	bl Font_GetZenkakuCharCount
 	cmp r4, r0
 	blo _0804953A
 	adds r0, r6, #0
@@ -89,7 +89,7 @@ _0804951A:
 _0804953A:
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl TextRenderer_DrawCharWide
+	bl TextRenderer_DrawZenkakuChar
 	b _08049516
 _08049544:
 	adds r5, #1

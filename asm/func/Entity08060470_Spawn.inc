@@ -149,7 +149,7 @@ _080605FE:
 	str r0, [r5]
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_0822da50
+	bl Particle_AddToDrawList
 	ldr r0, [sp]
 	movs r1, #1
 	lsls r1, r0

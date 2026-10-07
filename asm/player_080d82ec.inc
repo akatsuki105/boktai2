@@ -661,7 +661,7 @@ _080CC684:
 	lsrs r2, r2, #0x1a
 	ldrb r3, [r3]
 	adds r2, r2, r3
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _080CC6A0:
 	pop {r4, r5}
 	pop {r0}
@@ -699,7 +699,7 @@ _080CC6D2:
 	adds r0, r4, r2
 	ldrb r2, [r0]
 	adds r0, r5, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r0, [r6]
 	ldr r1, [r6, #4]
 	str r0, [r5, #0x18]
@@ -740,7 +740,7 @@ FUN_080cc71c: @ 0x080CC71C
 	adds r4, r5, r0
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #4
 	rsbs r2, r2, #0
 	adds r0, r4, #0
@@ -749,7 +749,7 @@ FUN_080cc71c: @ 0x080CC71C
 	ldr r1, [r6]
 	adds r0, r4, #0
 	movs r2, #4
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r0, [r4]
 	movs r1, #1
 	orrs r0, r1
@@ -940,7 +940,7 @@ _080CC870:
 	adds r1, r5, r2
 	ldr r1, [r1]
 	movs r2, #0x10
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r1, _080CC8DC @ =0x000006A9
 	adds r0, r5, r1
 	strb r4, [r0]
@@ -968,7 +968,7 @@ FUN_080cc8e0: @ 0x080CC8E0
 	adds r4, r5, r0
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #4
 	rsbs r2, r2, #0
 	adds r0, r4, #0
@@ -977,7 +977,7 @@ FUN_080cc8e0: @ 0x080CC8E0
 	ldr r1, [r6]
 	adds r0, r4, #0
 	movs r2, #0x10
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r0, [r4]
 	movs r1, #1
 	orrs r0, r1
@@ -1854,7 +1854,7 @@ _080CCF88:
 	ldrb r2, [r0]
 	adds r2, #1
 	adds r0, r3, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _080CCFA6:
 	ldrh r0, [r4, #0x28]
 	ldrh r2, [r4, #0x18]
@@ -1926,7 +1926,7 @@ FUN_080ccfe4: @ 0x080CCFE4
 	ldr r1, [r0]
 	ldrb r2, [r2]
 	adds r0, r4, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r0, [r6]
 	ldr r1, [r6, #4]
 	str r0, [r4, #0x18]
@@ -2005,14 +2005,14 @@ _080CD0AE:
 	ldr r1, [r5]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r4, #0
 	adds r1, r7, #0
 	adds r2, r7, #0
 	bl Particle_SetOffset
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	movs r0, #2
 	strb r0, [r4, #0xf]
 	adds r6, #1
@@ -2172,7 +2172,7 @@ _080CD1BE:
 	ldrb r2, [r0]
 	adds r2, #1
 	adds r0, r5, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _080CD204:
 	movs r0, #1
 	add sb, r0
@@ -2257,7 +2257,7 @@ _080CD26E:
 	ldr r1, [r0]
 	adds r0, r6, #0
 	movs r2, #2
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r0, _080CD2F4 @ =0x0203B400
 	mov ip, r0
 	ldr r3, _080CD2F8 @ =0x030046B8
@@ -2442,7 +2442,7 @@ _080CD3E4:
 	ldr r1, [r0]
 	adds r0, r6, #0
 	movs r2, #4
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r3, _080CD46C @ =0x0203B400
 	mov ip, r3
 	ldr r3, _080CD470 @ =0x030046B8
@@ -2611,14 +2611,14 @@ _080CD55C:
 	ldr r1, [r5]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r4, #0
 	adds r1, r7, #0
 	adds r2, r7, #0
 	bl Particle_SetOffset
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	movs r0, #2
 	strb r0, [r4, #0xf]
 	adds r6, #1
@@ -5852,7 +5852,7 @@ _080CEE10:
 	adds r5, r6, #0
 	adds r5, #0xe8
 	adds r0, r5, #0
-	bl FUN_0822a4fc
+	bl AuxSprite_SetGfx
 	movs r1, #0xcf
 	lsls r1, r1, #2
 	adds r0, r6, r1

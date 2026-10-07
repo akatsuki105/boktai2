@@ -330,7 +330,7 @@ _0800AEE8:
 _0800AEFE:
 	ldr r0, [sp, #0x1c]
 	movs r1, #0
-	bl FUN_0822da50
+	bl Particle_AddToDrawList
 	adds r7, #0x50
 	adds r5, #0x50
 	ldr r3, [sp, #0x1c]
@@ -359,7 +359,7 @@ _0800AF2E:
 	str r0, [r4]
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_0822da50
+	bl Particle_AddToDrawList
 	adds r4, #0x50
 	movs r0, #1
 	add sb, r0

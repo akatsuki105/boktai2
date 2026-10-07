@@ -45,10 +45,10 @@ _0808C874:
 	ldr r1, [r3]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	ldr r0, _0808C900 @ =0x030046B8
 	ldr r1, [r0]
 	adds r1, #1

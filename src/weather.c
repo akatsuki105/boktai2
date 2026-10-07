@@ -13,7 +13,7 @@ typedef struct {
   u8 phase;       // 0x02, 0 で出現待ち、1 で消滅待ち
   u8 posIdx;      // 0x03, 0 と 1 を毎フレーム反転させ、pos[posIdx] を ptcl.pos へ写す
   Vec3 pos[2];    // 0x04, WeatherManager_SpawnParticles がプレイヤー位置 ±0x800 の乱数で埋める
-  Particle ptcl;  // 0x14, FUN_0822da70 / Particle_SetOffset / Particle_Remove に渡す
+  Particle ptcl;  // 0x14, Particle_Setup / Particle_SetOffset / Particle_Remove に渡す
 } WeatherParticle;
 static_assert(sizeof(WeatherParticle) == 60);
 
@@ -126,9 +126,9 @@ s32 WeatherManager_InitParticles(WeatherManager* p) {
     ptcl->active = FALSE;
     ptcl->timer = 0;
     ptcl->phase = 0;
-    FUN_0822da70(q, p->group, 1);
+    Particle_Setup(q, p->group, 1);
     Particle_SetOffset(q, -4, -4);
-    FUN_0822dafc(q, p->group, 30);
+    Particle_SetFrame(q, p->group, 30);
   }
   return 0;
 }
@@ -163,7 +163,7 @@ NON_MATCH s32 WeatherManager_UpdateParticles(WeatherManager* p) {
         case 0: {
           if (ptcl->timer > 2) {
             ptcl->phase = 1;
-            FUN_0822dafc(q, p->group, 0x1F);
+            Particle_SetFrame(q, p->group, 0x1F);
             ptcl->timer = 0;
           }
           break;

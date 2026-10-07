@@ -36,8 +36,6 @@ typedef struct {
 } TextSlideshow;
 static_assert(sizeof(TextSlideshow) == 948);
 
-extern u16 gBgPlttFadeRowMask;
-
 IWRAM_DATA TextSlideshow* gTextSlideshow = NULL;  // 0x030000D0
 
 void TextSlideshow_ClearPtr(void) { gTextSlideshow = NULL; }
@@ -203,7 +201,7 @@ s32 TextSlideshow_Start(TextSlideshow* p) {
   TextBox_ShowLine(p->curLine);
   TextSlideshow_ApplyLineRect(p);
   gBgPlttBlendColor = RGB(4, 4, 4);
-  gBgPlttFadeRowMask = 0x8000;
+  gBgPlttFadeRowMask = (1 << 15);
   gBgBrightness = 0;
   TextSlideshow_SetStep(p, 0);
   return 0;

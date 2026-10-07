@@ -42,7 +42,7 @@ _0808CB4E:
 	ldr r1, [r6]
 	adds r0, r4, #0
 	ldr r2, [sp, #4]
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r4, #0
 	mov r1, sb
 	mov r2, sb

@@ -82,7 +82,7 @@ _080AB154:
 	adds r0, #0x29
 	ldrb r2, [r0]
 	adds r0, r4, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldrh r3, [r4, #0x30]
 	ldr r2, _080AB20C @ =0x085B0A08
 	ldrb r0, [r5]

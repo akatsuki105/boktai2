@@ -9,7 +9,6 @@ COMMON_DATA Clock gClock = {};  // 0x030047E0
 COMMON_DATA ALIGNED(16) RtcDataOrg gRTC = {};  // 0x03004810
 COMMON_DATA u32 u32_0300481c = 0;
 
-extern bool32 gSaveSucceeded;
 bool32 SetGameDateTimeIntoRTC(s32 year, s32 month, s32 day, s32 hour, s32 minute, s32 second);
 s32 Time_CheckRtcPowerOn(void);
 static bool32 ApplyRtcToClock(void);
@@ -146,16 +145,14 @@ NON_MATCH void Time_AdvanceFrame(void) {
             if (month > 12) {
               month = 1;
               year++;
-              if (year > 2098) {
-                year = 2099;
-              }
+              if (year >= 2099) year = 2099;
             }
           }
           gClock.date = GetBCDDate(year, month, day);
           gClock.dayOfWeek = GetDayOfWeek(year, month, day);
         }
 
-        gSaveSucceeded = 1;
+        gSaveSucceeded = TRUE;
         if (gClock.sunset.hour == gClock.hour && gClock.sunset.minute == gClock.minute) {
           gClock.moonAge++;
           if (gClock.moonAge > 280) {

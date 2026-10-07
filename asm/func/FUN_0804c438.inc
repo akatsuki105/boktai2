@@ -19,7 +19,7 @@ _0804C44C:
 	strb r0, [r4]
 	b _0804C568
 _0804C45E:
-	bl FUN_0823a6fc
+	bl PollRfuSoftReset
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _0804C48A

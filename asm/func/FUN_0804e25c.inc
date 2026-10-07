@@ -5,7 +5,7 @@
 	strb r5, [r0]
 	ldr r0, _0804E2B4 @ =0x030000E0
 	str r5, [r0]
-	bl FUN_0823a6c0
+	bl InitRfuAPI
 	cmp r0, #0
 	blt _0804E2AE
 	strb r5, [r4, #0x1d]

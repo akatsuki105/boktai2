@@ -22,7 +22,7 @@ _08090740:
 	lsls r0, r5, #4
 	adds r0, r0, r2
 	ldrb r0, [r0]
-	bl FUN_0808fd2c
+	bl IsMapUnlocked
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _080907B2
@@ -64,7 +64,7 @@ _0809078C:
 	lsls r0, r5, #4
 	adds r0, r0, r2
 	ldrb r0, [r0]
-	bl FUN_0808fd2c
+	bl IsMapUnlocked
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080907C4

@@ -8,7 +8,7 @@
 	bl VM_GetNamedArgValue
 	adds r1, r0, #0
 	adds r0, r4, #0
-	bl FUN_08040eb0
+	bl Entity286F_FindNodeByMoverID
 	cmp r0, #0
 	beq _08041DFA
 	ldr r1, _08041E04 @ =0x00000227

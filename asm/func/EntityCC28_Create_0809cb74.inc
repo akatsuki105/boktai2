@@ -11,7 +11,7 @@
 	cmp r4, #0
 	beq _0809CBC8
 	ldr r1, _0809CBBC @ =FUN_0809c8e8
-	ldr r2, _0809CBC0 @ =FUN_0809c928
+	ldr r2, _0809CBC0 @ =EntityCC28_Destroy
 	bl SetEntityRoutine
 	ldr r1, _0809CBC4 @ =0x000009FA
 	adds r0, r4, r1
@@ -29,7 +29,7 @@
 _0809CBB4: .4byte 0x0300013C
 _0809CBB8: .4byte 0x0000405C
 _0809CBBC: .4byte FUN_0809c8e8
-_0809CBC0: .4byte FUN_0809c928
+_0809CBC0: .4byte EntityCC28_Destroy
 _0809CBC4: .4byte 0x000009FA
 _0809CBC8:
 	adds r0, r4, #0

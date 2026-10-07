@@ -34,13 +34,13 @@ _080BAD70:
 _080BAD76:
 	adds r0, r5, #0
 	bl FUN_080ba624
-	ldr r1, _080BAD88 @ =FUN_080baf1c
+	ldr r1, _080BAD88 @ =Entity3019_SwapSelectedItem
 	adds r0, r5, #0
 	movs r2, #0
 	bl FUN_080ba054
 	b _080BAE52
 	.align 2, 0
-_080BAD88: .4byte FUN_080baf1c
+_080BAD88: .4byte Entity3019_SwapSelectedItem
 _080BAD8C:
 	ldr r0, _080BADC8 @ =0x00000107
 	bl PlaySound_082406e0

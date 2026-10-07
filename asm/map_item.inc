@@ -77,7 +77,7 @@ _08007130:
 	ldr r0, [r5, #0x1c]
 	ldr r1, [r4, #0x18]
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	ldr r0, [r5, #0x1c]
 	movs r1, #8
 	rsbs r1, r1, #0

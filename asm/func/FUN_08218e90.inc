@@ -150,7 +150,7 @@ _08218FBE:
 	movs r0, #2
 	str r0, [sp, #4]
 	movs r2, #6
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	adds r4, #1
 	adds r5, #1
 	cmp r5, #0xb
@@ -402,7 +402,7 @@ _082191E4:
 	movs r0, #2
 	movs r2, #6
 	movs r3, #1
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	adds r5, #1
 	cmp r5, #8
 	ble _082191E4

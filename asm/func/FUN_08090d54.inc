@@ -37,7 +37,7 @@ _08090D7A:
 	lsls r0, r0, #4
 	adds r0, r0, r1
 	ldrb r0, [r0]
-	bl FUN_0808fd2c
+	bl IsMapUnlocked
 	cmp r0, #0
 	beq _08090DBC
 	ldr r0, _08090DB8 @ =0x00004039
@@ -149,7 +149,7 @@ _08090E94: .4byte 0x00004038
 _08090E98: .4byte 0x0000402C
 _08090E9C:
 	adds r0, r7, #0
-	bl FUN_08090698
+	bl EntityCC28_FillBg1
 	adds r0, r7, #0
 	bl FUN_08090ca4
 _08090EA8:

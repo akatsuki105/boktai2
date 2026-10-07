@@ -373,12 +373,12 @@ _082155E2:
 	cmp r0, #0
 	bne _082155FE
 	adds r0, r6, #0
-	bl FUN_08219f34
+	bl EntityA288_SetState
 	b _0821569C
 _082155FE:
 	adds r0, r6, #0
 	movs r1, #4
-	bl FUN_08219f34
+	bl EntityA288_SetState
 	b _0821569C
 _08215608:
 	movs r0, #2
@@ -443,7 +443,7 @@ _08215690: .4byte 0x00000E7C
 _08215694:
 	adds r0, r6, #0
 	movs r1, #4
-	bl FUN_08219f34
+	bl EntityA288_SetState
 _0821569C:
 	ldr r0, [r6, #0x5c]
 	cmp r0, #0

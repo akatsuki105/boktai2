@@ -66,7 +66,7 @@ _08045146:
 	movs r6, #0
 	adds r0, r7, #0
 	mov r1, r8
-	bl FUN_08040ed8
+	bl Entity286FNode_Alloc
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _08045166
@@ -168,7 +168,7 @@ _0804518A:
 	strb r6, [r4, #0x18]
 	mov r0, sb
 	movs r1, #0
-	bl FUN_08040d94
+	bl Entity286F_FindSpriteData
 	movs r2, #0xae
 	lsls r2, r2, #2
 	adds r1, r4, r2
@@ -225,7 +225,7 @@ _080452A0:
 _080452B4:
 	mov r0, sl
 	adds r1, r4, #0
-	bl FUN_08040e34
+	bl Entity286F_LinkNode
 _080452BC:
 	add sp, #0xc
 	pop {r3, r4, r5}

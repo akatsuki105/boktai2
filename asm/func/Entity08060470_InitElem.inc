@@ -11,14 +11,14 @@
 	ldr r1, [r5, #0x20]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0822da70
+	bl Particle_Setup
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	ldr r1, [r5, #0x20]
 	adds r0, r4, #0
 	movs r2, #3
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	movs r2, #4
 	rsbs r2, r2, #0
 	adds r0, r4, #0

@@ -5,7 +5,6 @@
 #include "vm.h"
 
 extern u32 u32_03004860;
-extern bool32 gSaveSucceeded;
 
 // EEPROM_WriteOnce が各データの末尾に付ける 8 バイトのトレーラー (EEPROM_ReadOnce が検証する)
 typedef struct {

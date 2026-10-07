@@ -101,7 +101,7 @@ _080DA01C:
 _080DA020:
 	adds r0, r6, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	ldrb r0, [r4]
 	mov r2, r8
 	ldrb r1, [r2]

@@ -37,14 +37,14 @@ _080AB736:
 	ldr r1, [r6, #4]
 	adds r0, r5, #0
 	movs r2, #1
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r5, #0
 	mov r1, r8
 	mov r2, r8
 	bl Particle_SetOffset
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	movs r0, #0xf8
 	strb r0, [r4, #1]
 	movs r0, #2

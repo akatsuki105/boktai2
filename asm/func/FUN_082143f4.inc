@@ -553,7 +553,7 @@ _08214810:
 	str r1, [r7, #0x44]
 	adds r0, r7, #0
 	movs r1, #3
-	bl FUN_08219f34
+	bl EntityA288_SetState
 _08214826:
 	movs r0, #0x9c
 	lsls r0, r0, #3

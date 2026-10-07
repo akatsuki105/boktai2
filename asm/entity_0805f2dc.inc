@@ -432,13 +432,13 @@ _0805F3A8:
 	adds r1, r7, #0
 	adds r1, #0x18
 	adds r0, r6, #0
-	bl FUN_0822a4fc
+	bl AuxSprite_SetGfx
 	b _0805F41A
 _0805F410:
 	adds r1, r7, #0
 	adds r1, #0x34
 	adds r0, r6, #0
-	bl FUN_0822a4fc
+	bl AuxSprite_SetGfx
 _0805F41A:
 	movs r0, #0
 	str r0, [r5, #4]

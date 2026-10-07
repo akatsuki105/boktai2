@@ -40,7 +40,7 @@ _080A8E18:
 	ldr r1, [r2]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #4
 	rsbs r2, r2, #0
 	adds r0, r5, #0
@@ -50,10 +50,10 @@ _080A8E18:
 	ldr r1, [r0]
 	adds r0, r5, #0
 	movs r2, #7
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	ldr r1, _080A8EC0 @ =0x030046B8
 	ldr r2, [r1]
 	adds r2, #1

@@ -27,6 +27,7 @@ extern BgState gBgStates[4];
 extern rgb555 gBgPlttBuffer[256];
 extern rgb555 gBgPlttBlendColor;
 extern rgb555 gObjPlttBlendColor;
+extern u16 gBgPlttFadeRowMask;  // 0x03004454, bit i が立っているパレット行だけ ApplyBgPlttBlend が明るさ・ブレンドを掛ける
 extern u16 gStagedDISPCNT;
 
 extern s32 gBgBrightness;
@@ -41,7 +42,7 @@ extern u16 u16_03003514;
 extern u32 gOamDirty;
 extern u32 gVBlankCount;
 
-rgb555* FUN_0822d00c(void);
+rgb555* GetBgPlttBlendBuffer(void);
 
 void Video_SetBLDCNTDirect(u32 effect, u32 target1, u32 target2);
 void Video_SetBLDALPHADirect(u32 target1, u32 target2);
@@ -49,8 +50,8 @@ void Video_SetDrawPasses(s32 val, Procedure ptclFn, Procedure auxsprFn, Procedur
 void Particle_DrawList(void);
 void AuxSprite_DrawList(void);
 void MainSprite_DrawList(void);
-void FUN_0822ac90(void);
-void FUN_0822de64(void);
+void AuxSprite_DrawListScreen(void);
+void Particle_DrawListScreen(void);
 void MainSprite_DrawListScreen(void);
 void AuxSprite_DrawListGameover(void);
 void Particle_DrawListGameover(void);
@@ -62,7 +63,7 @@ void Video_SetupBGLayout(s32 layout, u32 param_2, TilemapFile* tilemap, u32 para
 void Video_SetupBG(s32 bg, u32 param_2, unknown* f, u32 unused, s16 param_5, s16 param_6, u32 prio, BgMapEntry* tilemap);
 void Video_SetBGLayer(s32 bg, TilemapFile* tilemap, s32 layerIdx);
 void ClearBGTilemapBuffer(s32 bg);
-void vram_0822b778(void);
+void Video_ResetBG(void);
 
 BgMapEntry* GetTilemapBuffer(s32 bg);
 

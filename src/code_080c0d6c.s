@@ -1739,7 +1739,7 @@ _080C1A3C:
 	ldr r1, [r5, #0x78]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r4, #0
 	mov r1, r8
 	mov r2, r8
@@ -1747,10 +1747,10 @@ _080C1A3C:
 	ldr r1, [r5, #0x78]
 	adds r0, r4, #0
 	movs r2, #0x11
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	movs r0, #0
 	strb r0, [r6]
 	adds r6, #0x30

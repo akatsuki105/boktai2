@@ -54,7 +54,7 @@ _0800D926:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	adds r2, r7, #0
-	bl FUN_0800d46c
+	bl EntityC9BCElem_SaveState
 	ldrb r0, [r4, #3]
 	lsls r0, r0, #2
 	add r0, sb

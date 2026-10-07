@@ -16,7 +16,6 @@ static_assert(sizeof(SavedHBlankState) == 16);
 
 COMMON_DATA SavedHBlankState gSavedHBlankState = {};  // 0x03004880
 
-extern bool16 gEepromIdle;
 extern u32 u32_0300481c;
 extern u32 u32_0300170c;
 

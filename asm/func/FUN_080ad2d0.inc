@@ -33,7 +33,7 @@
 	ldr r1, [r3]
 	adds r0, r4, #0
 	movs r2, #2
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	mov r2, r8
 	ldr r0, [r2]
 	ldr r1, [r2, #4]

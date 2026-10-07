@@ -26,7 +26,7 @@ _08084BE2:
 	ldr r1, [r5]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r4, #0
 	adds r1, r7, #0
 	adds r2, r7, #0
@@ -34,10 +34,10 @@ _08084BE2:
 	ldr r1, [r5]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	movs r0, #1
 	strb r0, [r4, #0xf]
 	movs r0, #0x14

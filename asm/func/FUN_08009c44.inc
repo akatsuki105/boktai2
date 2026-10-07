@@ -17,7 +17,7 @@
 	ldr r1, [r7, #0x20]
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	adds r0, r6, #0
 	adds r0, #0x8c
 	ldr r1, [r7, #0x28]
@@ -87,7 +87,7 @@ _08009CC4:
 	ldr r1, [r7, #0x20]
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	adds r0, r6, #0
 	adds r0, #0x8c
 	ldr r1, [r7, #0x28]

@@ -10,10 +10,10 @@ typedef struct Entity92BE {
   Entity e;                                    // 0x00, ENTITY_UNK_9
   MainSpriteGfx gfx;                           // 0x18, SPRITE_MARKERS
   MainSprite sprite;                           // 0x38
-  u8 unk_98[0x9A - 0x98];                      // 0x98
+  u8 unk_98[0x9A - 0x98];                      // 0x98, padding?
   u16 timer;                                   // 0x9A, Entity92BE_Update が毎フレーム +1 して lifetime と比べる
   u16 lifetime;                                // 0x9C, '.I=60'
-  u8 unk_9e[0xA0 - 0x9E];                      // 0x9E
+  u8 unk_9e[0xA0 - 0x9E];                      // 0x9E, padding?
   Vec3 pos;                                    // 0xA0, MainSprite_Add に渡す位置, Init が x/y/z を 0 で埋める
   u32 scriptID;                                // 0xA8, '.p'
   void (*updateCallback)(struct Entity92BE*);  // 0xAC, Init は Entity92BE_Shake を入れる
@@ -58,7 +58,7 @@ s32 Entity92BE_Init(Entity92BE* p) {
   if (f == NULL) {
     return -1;
   }
-  p->gfx = *(MainSpriteGfx*)f;
+  p->gfx = *f;
   OpenMainSpriteFile(&p->gfx, f);
   idx = VM_SeekToNamedArg('t') ? VM_GetValue() : 0;
   if (VM_SeekToNamedArg('I')) {

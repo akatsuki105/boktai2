@@ -3302,7 +3302,7 @@ FUN_08054848: @ 0x08054848
 	str r5, [r0]
 	ldr r0, [r4, #4]
 	ldr r1, [r5, #4]
-	bl FUN_08040d94
+	bl Entity286F_FindSpriteData
 	movs r2, #0xc0
 	lsls r2, r2, #1
 	adds r1, r4, r2

@@ -8,7 +8,7 @@
 	ldr r1, [r6, #0x30]
 	adds r0, r6, #0
 	movs r2, #3
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r0, [r6, #0x28]
 	ldr r1, [r6, #0x2c]
 	str r0, [r6, #0x18]

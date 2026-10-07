@@ -15,7 +15,7 @@
 	ands r0, r1
 	str r0, [r2]
 	adds r0, r5, #0
-	bl FUN_080bbbac
+	bl FindEmptyArmorSlot
 	ldr r2, _080BBC50 @ =0x000012F2
 	adds r1, r5, r2
 	strh r0, [r1]

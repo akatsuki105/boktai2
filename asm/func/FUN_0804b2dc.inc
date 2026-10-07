@@ -1,5 +1,5 @@
 	push {lr}
-	bl FUN_0823a6c0
+	bl InitRfuAPI
 	cmp r0, #0
 	blt _0804B33C
 	ldr r0, _0804B328 @ =EntityFB53_SetLinkError

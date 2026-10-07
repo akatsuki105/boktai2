@@ -376,7 +376,7 @@ _08014C84:
 	strb r0, [r4, #0x1f]
 	ldr r0, [sp, #0x20]
 	movs r1, #0
-	bl FUN_0822da50
+	bl Particle_AddToDrawList
 	movs r2, #0x38
 	add sb, r2
 	adds r4, #0x38

@@ -10,7 +10,7 @@ typedef void (*DjangoBerserkFunc)(struct DjangoBerserk* p);
 
 // プレイヤーの周りを旋回する粒子1個ぶんの枠,16個を使い回す
 typedef struct {
-  Particle ptcl;  // 0x00, Particle_Remove / FUN_0822dafc に Particle* として渡る
+  Particle ptcl;  // 0x00, Particle_Remove / Particle_SetFrame に Particle* として渡る
   bool8 active;   // 0x28, FUN_0807f8d0 が 0 の枠を飛ばし、lifetime が尽きると 0 に戻す
   u8 angle;       // 0x29, FUN_0807f650 が毎フレーム angleStep を足し、gSineTable の8bit索引にする
   u8 riseSpeed;   // 0x2A, FUN_0807f650 が ptcl.pos.y に足す
@@ -36,7 +36,7 @@ typedef struct DjangoBerserk {
   u16 timer;                         // 0x0EE, SetState が状態を差し替えるたび 0 に戻す
   u16 hpDrainStep;                   // 0x0F0, Init: (player->hp - hpTarget) / 0x48 + 1,毎フレーム player->hp から引く量
   u16 hpTarget;                      // 0x0F2, Init: player->hp >> 1 (0 なら 1),ここまで削って止める
-  ParticleGroup* group;              // 0x0F4, FUN_0822dafc の第2引数
+  ParticleGroup* group;              // 0x0F4, Particle_SetFrame の第2引数
   DjangoBerserkParticle ptcls[16];   // 0x0F8, 根拠: _Destroy が stride 0x3C で 16回 Particle_Remove する
   u16 frameCounter;                  // 0x4B8, FUN_0807f8d0 が毎フレーム +1,リセットされない,ptcls[].startDelay と比較される
   u8 unk_4ba[6];                     // 0x4BA

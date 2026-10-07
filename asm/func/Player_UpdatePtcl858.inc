@@ -141,7 +141,7 @@ _08061EFA:
 	ldrb r2, [r0]
 	adds r2, #1
 	adds r0, r5, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _08061F40:
 	movs r0, #1
 	add sb, r0

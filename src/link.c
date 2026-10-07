@@ -3,6 +3,19 @@
 #include "global.h"
 #include "interrupts.h"
 
+EWRAM_DATA u32 u32_ARRAY_0203f800[256] = {};  // 0x0203F800
+
+// 通信 (SIO マルチプレイ) の送受信リングバッファ
+IWRAM_DATA s32 gSioRecvWriteIdx = 0;  // 0x03000788
+IWRAM_DATA s32 gSioRecvReadIdx = 0;   // 0x0300078C
+IWRAM_DATA s32 gSioRecvCount = 0;     // 0x03000790
+IWRAM_DATA s32 gSioSendWriteIdx = 0;  // 0x03000794
+IWRAM_DATA s32 gSioSendReadIdx = 0;   // 0x03000798
+IWRAM_DATA s32 gSioSendCount = 0;     // 0x0300079C
+IWRAM_DATA u8 gSioRecvBuf[64] = {};   // 0x030007A0
+IWRAM_DATA u8 gSioSendBuf[64] = {};   // 0x030007E0
+IWRAM_DATA u8 u8_03000820[0x03000838 - 0x03000820] = {};
+
 void Sio_ParentTimerIntr(void);
 
 // タイマー3 を約 100Hz の割り込みで動かし、そのハンドラに Sio_ParentTimerIntr を登録する

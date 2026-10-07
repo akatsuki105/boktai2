@@ -4570,7 +4570,7 @@ _0802A16A:
 	mov r0, sb
 	ldr r2, _0802A19C @ =0x00000B48
 	adds r1, r6, r2
-	bl FUN_0822a4fc
+	bl AuxSprite_SetGfx
 	movs r1, #0xfd
 	lsls r1, r1, #4
 	adds r0, r6, r1
@@ -4589,7 +4589,7 @@ _0802A1A0:
 	mov r0, sb
 	ldr r2, _0802A1E4 @ =0x00000B64
 	adds r1, r6, r2
-	bl FUN_0822a4fc
+	bl AuxSprite_SetGfx
 	movs r1, #0xfd
 	lsls r1, r1, #4
 	adds r0, r6, r1

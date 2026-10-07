@@ -14,7 +14,7 @@ typedef u8 MapPlttFlags;
 // マップ切り替え時に毎回生成される(時間帯によるマップのパレット処理と思われる)
 typedef struct {
   Entity e;                      // ENTITY_UNK_11
-  u16 subroutineID;              // 0x018, 自分を生成したスクリプトのサブルーチンID (0xE231, 0x317B, 0xF68D, 0xA58E, 0x4AE5 など)
+  u16 id;                        // 0x018
   MapPlttFlags flags;            // 0x01A, '.f', see MapPlttFlags
   u8 state;                      // 0x01B, sMapPlttStates の idx, 4 以上はフェード中で新規コマンドを 4/5 しか受け付けない
   u8 crossfadeLevel;             // 0x01C, MapPltt_StepCrossfade が BlendPltt2 に渡す混合比, 0x40 を超えたら srcPltt2 へ乗り換える
@@ -23,8 +23,8 @@ typedef struct {
   u8 crossfadeRowStep;           // 0x01F, 1回に進めるパレット行数, 既定 4
   u8 unk_20;                     // 0x020, dstPltt を書いたら 1, _Update の先頭で 0, 読み手は未発見
   u8 unk_21[0x24 - 0x21];        // 0x021, padding?
-  const rgb555* srcPltt1;        // 0x024, PLTTファイルのRGB555データその1
-  const rgb555* srcPltt2;        // 0x028, PLTTファイルのRGB555データその2
+  const rgb555* srcPltt1;        // 0x024
+  const rgb555* srcPltt2;        // 0x028
   rgb555* dstPltt;               // 0x02C, gBgPlttBuffer
   rgb555* curPltt;               // 0x030, いま dstPltt へ転送する元, plttTimeBlend か plttWeatherBlend を指す
   rgb555 plttTimeBlend[256];     // 0x034, srcPltt1 と srcPltt2 を timeBlendLevel で混ぜたもの
@@ -61,7 +61,6 @@ typedef struct {
 static_assert(sizeof(Entity4AE5) == 1784);
 
 extern s32 gBgBrightnessApplied;
-extern u16 gBgPlttFadeRowMask;
 
 COMMON_DATA u16 gMapInitScriptID = 0;        // 0x03002B28, 魔物図鑑や太陽鍛治にも専用のIDがある(スタートメニューはない)ので、SceneIDとかの方が意味は近いかも？
 COMMON_DATA Entity4AE5* gEntity4AE5 = NULL;  // 0x03002B2C
@@ -376,7 +375,7 @@ void MapPltt_FadeOut(Entity4AE5* p) {
 
   gBgBrightness = (p->fadeTimer << 6) >> p->fadeShift;
   if ((p->fadeTimer = p->fadeTimer + 1) >= (1 << p->fadeShift)) {
-    pltt = FUN_0822d00c();
+    pltt = GetBgPlttBlendBuffer();
     gBgBrightness = 0x40;
     gBgPlttBlendColor = RGB(4, 4, 4);
     *pltt = RGB(4, 4, 4);
@@ -503,7 +502,7 @@ NON_MATCH s32 Entity4AE5_Update(Entity4AE5* p) {
     } else {
       switch (cmd) {
         case 1: {
-          p->srcPltt2 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->bgpIDs[(s16)args[0]]) + 0x14);
+          p->srcPltt2 = (const rgb555*)GetBgPlttFile(p->bgpIDs[(s16)args[0]])->body;
           p->state = 1;
           p->crossfadeRow = 0;
           p->crossfadeLevel = args[1];
@@ -550,8 +549,8 @@ NON_MATCH s32 Entity4AE5_Update(Entity4AE5* p) {
       FUN_0823ce10(&id0, &id1);
       p->timeBlendLevel = 0;
       p->unk_648 = 0;
-      p->srcPltt1 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->bgpIDs[id0]) + 0x14);
-      p->srcPltt2 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->bgpIDs[id1]) + 0x14);
+      p->srcPltt1 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id0])->body;
+      p->srcPltt2 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id1])->body;
     }
     p->spanOfTime = gClock.spanOfTime;
     p->unk_64e = gClock.unk_0f;
@@ -598,7 +597,7 @@ NON_MATCH s32 Entity4AE5_Update(Entity4AE5* p) {
 s32 Entity4AE5_Destroy(Entity4AE5* p) { gEntity4AE5 = NULL; }
 
 // パレット処理の初期化, flags のビットで、時間帯連動・往復混合・単純転送のどれかを選ぶ
-NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
+NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 id) {
 #ifdef NONMATCHING_C
   const rgb555* src;
   u16 id0;
@@ -606,7 +605,7 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
   s32 i;
 
   gEntity4AE5 = p;
-  p->subroutineID = val;
+  p->id = id;
   p->dstPltt = gBgPlttBuffer;
   gBgBrightness = 0x40;
   gBgBrightnessApplied = 0x40;
@@ -633,8 +632,8 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
   if (p->flags & MAPPLTT_TIMEOFDAY) {
     FUN_0823ce10(&id0, &id1);
     p->timeBlendLevel = 0x40;
-    p->srcPltt1 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->bgpIDs[id0]) + 0x14);
-    p->srcPltt2 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->bgpIDs[id1]) + 0x14);
+    p->srcPltt1 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id0])->body;
+    p->srcPltt2 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id1])->body;
     MapPltt_Rebuild(p);
     p->unk_64e = gClock.unk_0f;
     p->spanOfTime = gClock.spanOfTime;
@@ -642,8 +641,8 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
   } else if (p->flags & MAPPLTT_OSCILLATE) {
     id0 = VM_GetNamedArgValue('c', 0);
     id1 = VM_GetNamedArgValue('m', 0);
-    p->srcPltt1 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->bgpIDs[id0]) + 0x14);
-    p->srcPltt2 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->bgpIDs[id1]) + 0x14);
+    p->srcPltt1 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id0])->body;
+    p->srcPltt2 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id1])->body;
     if (VM_SeekToNamedArg('a')) {
       p->unk_652 = VM_GetValue();
       p->oscPeriod = VM_GetValue();
@@ -667,8 +666,8 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
   } else {
     id0 = VM_GetNamedArgValue('c', 0);
     id1 = VM_GetNamedArgValue('m', 0);
-    p->srcPltt1 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->bgpIDs[id0]) + 0x14);
-    p->srcPltt2 = (const rgb555*)((u8*)GetFile(DIR_BGPLTT, p->bgpIDs[id1]) + 0x14);
+    p->srcPltt1 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id0])->body;
+    p->srcPltt2 = (const rgb555*)GetBgPlttFile(p->bgpIDs[id1])->body;
     src = p->srcPltt1;
   }
   CpuCopy32(src, p->dstPltt, 208 * sizeof(rgb555));
@@ -680,12 +679,12 @@ NON_MATCH s32 Entity4AE5_Init(Entity4AE5* p, u16 val) {
 #endif
 }
 
-Entity4AE5* Entity4AE5_Create(u32 val) {
+Entity4AE5* Entity4AE5_Create(u32 id) {
   if (gEntity4AE5 == NULL) {
     Entity4AE5* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity4AE5));
     if (p != NULL) {
       SetEntityRoutine(p, Entity4AE5_Update, Entity4AE5_Destroy);
-      if (Entity4AE5_Init(p, val) < 0) {
+      if (Entity4AE5_Init(p, id) < 0) {
         KillEntity((Entity*)p);
         return NULL;
       }

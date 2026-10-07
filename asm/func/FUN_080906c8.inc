@@ -28,7 +28,7 @@ _08090704: .4byte 0x00004038
 _08090708: .4byte 0x0000402C
 _0809070C:
 	adds r0, r4, #0
-	bl FUN_08090698
+	bl EntityCC28_FillBg1
 	adds r0, r4, #0
 	bl FUN_08090004
 	adds r0, r4, #0

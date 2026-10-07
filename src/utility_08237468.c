@@ -4,6 +4,10 @@
 
 // utility functions
 
+EWRAM_DATA u16 gRandomTable[1024] = {};      // 0x0203B400
+EWRAM_DATA u16 sUnused_0203bc00[1024] = {};  // 0x0203BC00
+EWRAM_DATA u8 gGameStateBuffer[12288] = {};  // 0x0203C400, RandomizeGameStateAddr で このバッファのランダムなアドレスに gScratch, gWorldBackup, gWorld, gStatBackup, gStat の各要素の実態が配置される (チート対策と思われる)
+
 void IntrDummy(void);
 
 // 乱数表(gRandomTable とは別, テーブルの値は固定, gRandTableIdx2 が idx)

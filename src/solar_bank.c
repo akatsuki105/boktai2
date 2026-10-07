@@ -9,8 +9,7 @@
 #include "video.h"
 #include "vm.h"
 
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
-
+// 太陽バンクのメニュー
 typedef struct Entity7F5E {
   Entity e;                                    // ENTITY_UNK_11
   MainSpriteGfx gfx[2];                        // 0x018
@@ -29,6 +28,8 @@ typedef struct Entity7F5E {
   void (*updateCallback)(struct Entity7F5E*);  // 0x5F0
 } Entity7F5E;
 static_assert(sizeof(Entity7F5E) == 1524);
+
+void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
 void FUN_080b3c98(Entity7F5E* p);
 void FUN_080b3dd0(Entity7F5E* p);

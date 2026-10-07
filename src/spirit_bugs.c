@@ -16,7 +16,7 @@ typedef struct SpiritBug {
   Vec3 vel;           // 0x08, 毎フレーム ptcl.pos に加算される, 根拠: FUN_0800b068
   Vec3 target;        // 0x10, 向かう先, 生成時は ptcl.pos のコピー, 根拠: Entity0800a89c_Spawn / ArcTan2_8 の入力
   AuxAnimState anim;  // 0x18, 根拠: AuxAnim_SetAnim に渡される
-  Particle ptcl;      // 0x28, 根拠: FUN_0822da70 / Particle_Remove に渡される
+  Particle ptcl;      // 0x28, 根拠: Particle_Setup / Particle_Remove に渡される
 } SpiritBug;
 static_assert(sizeof(SpiritBug) == 80);
 
@@ -184,8 +184,8 @@ s32 Entity0800a89c_Init(SpiritBugsManager* p, unknown* arg) {
 
     swarm->active = 0;
     for (j = 0; j < 4; j++) {
-      FUN_0822da70(&swarm->bugs[j].ptcl, p->group0, 1);
-      FUN_0822dadc(&swarm->bugs[j].ptcl, 1);
+      Particle_Setup(&swarm->bugs[j].ptcl, p->group0, 1);
+      Particle_SetPltt(&swarm->bugs[j].ptcl, 1);
     }
   }
   p->unk_1c = 0;

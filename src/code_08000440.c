@@ -58,7 +58,22 @@ static_assert(sizeof(Entity08000a94) == 296);
 // ここからの32バイトは rfu_MBOOT_CHILD_inheritanceLinkStatus が RFU_LINK_STATUS として使う領域と union になっている
 IWRAM_DATA Entity08000a94* gEntity08000a94[4] = {};
 
-NAKED void Entity08000a94_ClearTable(void) { INCFUNC("asm/func/Entity08000a94_ClearTable.inc"); }
+// BG ごとの Entity08000a94 の登録表を後ろから NULL で埋める
+// 残差は movs r2, #0 の位置と, 比較が bcs になる点の2箇所, 原典は符号付きの bge で比べているが C のポインタ比較は符号なしになる
+// 添字ループ (for (i = 3; i >= 0; i--)) にすると bge になる代わりにカウンタが残って1命令増える
+NON_MATCH void Entity08000a94_ClearTable(void) {
+#ifdef NONMATCHING_C
+  Entity08000a94** head = gEntity08000a94;
+  Entity08000a94** p = head + 3;
+
+  do {
+    *p = NULL;
+    p--;
+  } while (p >= head);
+#else
+  INCFUNC("asm/func/Entity08000a94_ClearTable.inc");
+#endif
+}
 
 NAKED s32 FUN_0800045c(Entity08000a94* p) { INCFUNC("asm/func/FUN_0800045c.inc"); }
 

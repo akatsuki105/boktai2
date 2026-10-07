@@ -144,4 +144,15 @@ extern u32 gObjBlendEnabled;  // 0 以外なら flags bit14 のスプライト�
 void FUN_0822f588(MainSprite* p, MainSprite* src, u32 val);
 void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 playMode, MainAnimPlayFlags16 flags);
 
+// MainSprite のタイルを OBJ VRAM へ流すための転送要求1件, MainSprite_DrawInternal が積み CopyMainSpriteTileDataToVram が流す
+typedef struct {
+  void* src;  // 0x00, 転送元, ブロックごとに 0x200 ずつ進む
+  u16 size;   // 0x04, 1ブロックのバイト数
+  u16 count;  // 0x06, ブロック数
+} MainSpriteTileRequest;
+static_assert(sizeof(MainSpriteTileRequest) == 8);
+
+extern MainSpriteTileRequest gMainSpriteTileRequests[1024];  // 0x02039000
+extern u32 gMainSpriteTileRequestCount;                      // 0x030035A4
+
 #endif  // __INCLUDE_SPRITE_MAIN_H__

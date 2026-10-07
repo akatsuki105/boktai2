@@ -65,7 +65,7 @@ _08240D72:
 	mov r3, r8
 	str r3, [sp, #4]
 	mov r3, sl
-	bl FUN_08240ad4
+	bl BoxesOverlap
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08240D4C

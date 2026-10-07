@@ -45,5 +45,6 @@ u32 GetWeaponKind(s32 slot);
 void SetWeaponFoundFlag(weapon32_t n);
 void FUN_08064658(struct Player* p, Weapon* w);
 void Player_ApplyWeapon(struct Player* p, Weapon* w);
+void SwapWeaponSlot(slot32_t slot1, slot32_t slot2);
 
 #endif  // GUARD_ZOKTAI_WEAPON_H

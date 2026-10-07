@@ -31,7 +31,7 @@ typedef struct LevelUpper {
   u8 unk_72[2];              // 0x72
   u32 nextExp;               // 0x74, 次にレベルアップする総経験値量
   u32* expTable;             // 0x78, 経験値テーブル, gExpTable
-  ParticleGroup* p_7c;       // 0x7C, 根拠: LevelUpper_EmitLevelUpEffect で FUN_0822dafc に渡される
+  ParticleGroup* p_7c;       // 0x7C, 根拠: LevelUpper_EmitLevelUpEffect で Particle_SetFrame に渡される
   LevelUpParticle ptcls[8];  // 0x80
 } LevelUpper;
 static_assert(sizeof(LevelUpper) == 608);
@@ -92,9 +92,9 @@ void LevelUpper_UpdateParticle(LevelUpParticle* p, ParticleGroup* g) {
     p->base.pos.y = player->mover.pos.y + p->offset.y;
     p->base.pos.z = player->mover.pos.z + p->offset.z;
     if ((p->unk_3a >> 2) & 1) {
-      FUN_0822dafc(&p->base, g, 3);
+      Particle_SetFrame(&p->base, g, 3);
     } else {
-      FUN_0822dafc(&p->base, g, 2);
+      Particle_SetFrame(&p->base, g, 2);
     }
   }
 }
@@ -110,7 +110,7 @@ void LevelUpper_EmitLevelUpEffect(LevelUpper* p) {
   p->unk_62 = 1;
   p->unk_60 = 1;
   for (i = 0; i < 8; i++) {
-    FUN_0822dafc(&p->ptcls[i].base, p->p_7c, 0);
+    Particle_SetFrame(&p->ptcls[i].base, p->p_7c, 0);
   }
 }
 
@@ -185,10 +185,10 @@ void LevelUpper_InitParticles(LevelUpper* p) {
 
   p->p_7c = GetParticleGroup(PTCL_GROUP_2);
   for (i = 0; i < 8; i++) {
-    FUN_0822d9f0(&p->ptcls[i].base, p->p_7c, 1);
-    FUN_0822dafc(&p->ptcls[i].base, p->p_7c, 0);
+    Particle_Add(&p->ptcls[i].base, p->p_7c, 1);
+    Particle_SetFrame(&p->ptcls[i].base, p->p_7c, 0);
     Particle_SetOffset(&p->ptcls[i].base, -4, -4);
-    FUN_0822dadc(&p->ptcls[i].base, 1);
+    Particle_SetPltt(&p->ptcls[i].base, 1);
   }
 }
 

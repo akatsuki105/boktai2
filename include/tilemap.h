@@ -38,7 +38,4 @@ typedef struct TilemapLayer {
   MetatileIdx16* mtmap;  // 0x8, Tilemaps.mtmap の開始位置, ROMでは &Tilemaps からの オフセット で RAM読み込み時にポインタに変換される
 } TilemapLayer;
 
-extern u8 gTilemapFileBufferHead[4];  // 0x02021400, 展開先の先頭4バイト, 用途不明
-extern u8 gTilemapFileBuffer[65532];  // 0x02021404, 展開された TilemapFile 本体
-
 #endif  // __INCLUDE_TILEMAP_H__

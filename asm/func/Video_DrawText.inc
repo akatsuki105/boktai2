@@ -40,7 +40,7 @@ _0821B2F4:
 	adds r1, r6, #0
 	adds r2, r7, #0
 	mov r3, r8
-	bl Video_DrawCharNarrow
+	bl Font_DrawHankakuChar
 	adds r6, #1
 	b _0821B34A
 _0821B30C:
@@ -51,7 +51,7 @@ _0821B30C:
 	ldrb r1, [r5]
 	lsls r4, r0, #8
 	orrs r4, r1
-	bl Video_GetZenkakuCharCount
+	bl Font_GetZenkakuCharCount
 	cmp r4, r0
 	blo _0821B326
 	adds r6, #2
@@ -61,7 +61,7 @@ _0821B326:
 	adds r1, r6, #0
 	adds r2, r7, #0
 	mov r3, r8
-	bl Video_DrawCharWide
+	bl Font_DrawZenkakuChar
 	adds r6, #2
 	mov r0, r8
 	cmp r0, #1

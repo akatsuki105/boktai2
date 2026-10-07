@@ -431,6 +431,10 @@ extern RFU_LINK_STATUS* gRfuLinkStatus;
 extern RFU_SLOT_STATUS_NI* gRfuSlotStatusNI[RFU_CHILD_MAX];
 extern RFU_SLOT_STATUS_UNI* gRfuSlotStatusUNI[RFU_CHILD_MAX];
 
+// librfu_rfu
+u16 rfu_initializeAPI(u32* APIBuffer, u16 buffByteSize, IntrFunc* sioIntrTable_p, bool8 copyInterruptToRam);
+void rfu_setTimerInterrupt(u8 timerNo, IntrFunc* timerIntrTable_p);
+
 // librfu_sio32id
 s32 AgbRFU_checkID(u8 maxTries);
 void AgbRFU_SoftReset(void);

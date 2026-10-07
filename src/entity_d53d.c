@@ -1,6 +1,20 @@
 #include "entity.h"
 #include "global.h"
+#include "signal_strength_icon.h"
+#include "text.h"
 #include "tilemap.h"
+#include "video.h"
+
+void Video_ResetFrameState(u32 clearOam);  // src/video.c
+void TextPanelManager_DestroyAll(void);    // src/text_panel.c
+void MosaicFader_Stop(void);               // src/mosaic_fader.c
+void nop_0822e738(void);                   // src/particle.c
+void nop_0822b09c(void);                   // src/sprite_aux.c
+void FUN_0822f584(void);                   // src/sprite_main.c
+s32 FUN_0809c08c(s32 mode);                // src/entity_cc28.c
+
+// 次の描画から BG を消す
+static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
 
 // スクリプト命令 0xD53D が作る失敗画面, 全画面のタイルマップとパレットを読み込み、SE_NG を鳴らしてメッセージを出し、最後に scriptID のスクリプトを起動する
 typedef struct {
@@ -18,17 +32,43 @@ static_assert(sizeof(EntityD53D) == 48);
 
 IWRAM_DATA EntityD53D* gEntityD53D = NULL;  // 0x030000E8
 
-NAKED void FUN_0804e9f4(s16 param_1, s16 param_2) { INCFUNC("asm/func/FUN_0804e9f4.inc"); }
+// 電波強度アイコンを作って表示位置を決める
+// 電波強度アイコンを作って表示位置を決める
+// 電波強度アイコンを作って表示位置を決める
+void SignalStrengthIcon_CreateAt(s32 x, s32 y) {
+  SignalStrengthIcon* p = SignalStrengthIcon_Create();
+
+  if (p != NULL) {
+    MainSprite* sprite = &p->sprite;
+
+    sprite->pos.x = x;
+    sprite->pos.y = y;
+  }
+}
 
 EntityD53D* FUN_0804ea10(void) { return gEntityD53D; }
 
-NAKED void FUN_0804ea1c(void) { INCFUNC("asm/func/FUN_0804ea1c.inc"); }
+// テキストパネルとモザイクを片付けて, 描画パスを通常に戻す
+void FUN_0804ea1c(void) {
+  TextPanelManager_DestroyAll();
+  MosaicFader_Stop();
+  HideBG(DISPCNT_BG1_ON | DISPCNT_BG2_ON);
+  Video_ResetFrameState(1);
+  Video_SetDrawPasses(0, nop_0822e738, nop_0822b09c, FUN_0822f584);
+  FUN_0809c08c(7);
+  ClearBGTilemapBuffer(0);
+}
 
 NAKED void FUN_0804ea68(EntityD53D* p, s32 param_2) { INCFUNC("asm/func/FUN_0804ea68.inc"); }
 
 NAKED void FUN_0804ead0(EntityD53D* p, s32 param_2) { INCFUNC("asm/func/FUN_0804ead0.inc"); }
 
-NAKED void FUN_0804eb38(EntityD53D* p) { INCFUNC("asm/func/FUN_0804eb38.inc"); }
+void EntityD53D_UpdateState0(EntityD53D* p) {
+  if (p->enter) {
+    p->enter = 0;
+  }
+  p->timer++;
+}
 
 NAKED void FUN_0804eb50(EntityD53D* p) { INCFUNC("asm/func/FUN_0804eb50.inc"); }
 
@@ -37,7 +77,7 @@ NAKED void FUN_0804ebc4(EntityD53D* p) { INCFUNC("asm/func/FUN_0804ebc4.inc"); }
 NAKED void FUN_0804ec58(EntityD53D* p) { INCFUNC("asm/func/FUN_0804ec58.inc"); }
 
 void (*const sEntityD53DUpdates[4])(EntityD53D*) = {
-    FUN_0804eb38,
+    EntityD53D_UpdateState0,
     FUN_0804eb50,
     FUN_0804ebc4,
     FUN_0804ec58,
@@ -45,7 +85,11 @@ void (*const sEntityD53DUpdates[4])(EntityD53D*) = {
 
 NAKED s32 EntityD53D_Update(EntityD53D* p) { INCFUNC("asm/func/EntityD53D_Update.inc"); }
 
-NAKED s32 EntityD53D_Destroy(EntityD53D* p) { INCFUNC("asm/func/EntityD53D_Destroy.inc"); }
+s32 EntityD53D_Destroy(EntityD53D* p) {
+  TextPanel_Destroy(p->windowID);
+  gEntityD53D = NULL;
+  return 0;
+}
 
 NAKED s32 EntityD53D_Init(EntityD53D* p) { INCFUNC("asm/func/EntityD53D_Init.inc"); }
 

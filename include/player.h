@@ -21,6 +21,7 @@ struct Input;
 typedef u32 PlayerFlag20;         // Player.unk_20
 #define PFLAG20_UNK_0 (1 << 0)    // 0x00000001, Player_BeginAction が毎回これだけ立てた状態から始める
 #define PFLAG20_UNK_4 (1 << 4)    // 0x00000010, 日光が当たっているときに立つ, 根拠: Player_BeginAction
+#define PFLAG20_UNK_12 (1 << 12)  // 0x00001000, 根拠: FUN_08082464 が立てる
 #define PFLAG20_UNK_15 (1 << 15)  // 0x00008000, 立っていると Player_SetHitDir が被弾方向を facing ではなく unk_3e8 に書く
 #define PFLAG20_UNK_16 (1 << 16)  // 0x00010000, FLAG378_UNK_9 が立っているときに立つ
 
@@ -69,12 +70,12 @@ typedef void (*PlayerFunc)(struct Player*);
 
 // Player.kind, 0x085abb14 (Player.fn_ac0) のインデックスでもある
 enum PlayerKind {
-  PLAYER_SOLAR_DJANGO,  // 赤ジャンゴ
-  PLAYER_DARK_DJANGO,   // 黒ジャンゴ
-  PLAYER_BAT,           // バット, 魔法"チェンジ・バット"でコウモリに変身した状態
-  PLAYER_MOUSE,         // マウス, 魔法"チェンジ・マウス"でネズミに変身した状態
-  PLAYER_SLEEPING,      // スリーピング, 魔法"スリーピング"で棺桶の中で寝ている状態
-  PLAYER_SABATA,        // サバタ
+  PLAYER_SOLAR_DJANGO,  // 0, 赤ジャンゴ
+  PLAYER_DARK_DJANGO,   // 1, 黒ジャンゴ
+  PLAYER_BAT,           // 2, バット, 魔法"チェンジ・バット"でコウモリに変身した状態
+  PLAYER_MOUSE,         // 3, マウス, 魔法"チェンジ・マウス"でネズミに変身した状態
+  PLAYER_SLEEPING,      // 4, スリーピング, 魔法"スリーピング"で棺桶の中で寝ている状態
+  PLAYER_SABATA,        // 5, サバタ
 };
 
 // WeaponKind とは別
@@ -102,7 +103,7 @@ typedef struct {
   Vec3 vel;       // 0x28, Player_SpawnPtcl718 が第3引数の Vec3 をそのまま入れる
   bool8 active;   // 0x30, Player_SpawnPtcl718 が 1 を書く
   u8 unk_31;      // 0x31, Player_SpawnPtcl718 が 0 を書く
-  u8 plttBase;    // 0x32, FUN_0822dafc に渡すパレット番号
+  u8 frameBase;   // 0x32, Particle_SetFrame に渡すコマ番号
   u8 unk_33;      // 0x33, padding?
 } Particle52;
 static_assert(sizeof(Particle52) == 52);
@@ -112,7 +113,7 @@ typedef struct {
   Particle ptcl;          // 0x04
   bool8 active;           // 0x2C, 0 なら更新しない, 再生が終わると 0 に戻る
   u8 timer;               // 0x2D, 毎フレーム +1, 5 を超えると終わり
-  u8 plttBase;            // 0x2E, FUN_0822dafc に渡すパレット番号の起点, timer >> 2 が足される
+  u8 frameBase;           // 0x2E, Particle_SetFrame に渡すコマ番号の起点, timer >> 2 が足される
   u8 unk_2f;              // 0x2F, padding?
 } PlayerParticleGroup1;
 static_assert(sizeof(PlayerParticleGroup1) == 48);
@@ -128,13 +129,13 @@ typedef struct {
 
 // Player_InitPtcl858 で初期化処理がされるが、アクセス方法的に構造体として扱われるっぽい
 // ptcl_858 の要素, Particle のうしろに中心へ寄っていくための状態が並ぶ
-// 根拠: Player_UpdatePtcl858 が offsetX/offsetZ を見て寄せ, timer が 4 になるとパレットを1段進める
+// 根拠: Player_UpdatePtcl858 が offsetX/offsetZ を見て寄せ, timer が 4 になるとコマを1つ進める
 typedef struct {
   Particle base;  // 0x00
   bool8 active;   // 0x28, 0 なら更新しない
   u8 timer;       // 0x29, 毎フレーム +1
   u8 speed;       // 0x2A, 中心へ寄る速さ
-  u8 plttBase;    // 0x2B, FUN_0822dafc に渡すパレット番号の起点
+  u8 frameBase;   // 0x2B, Particle_SetFrame に渡すコマ番号の起点
   Vec3 offset;    // 0x2C, pos_930 からのずれ, y と val は使われない
 } PlayerPtcl858;
 static_assert(sizeof(PlayerPtcl858) == 52);
@@ -281,7 +282,11 @@ typedef struct Player {
   u8 angle_400;                     // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
   u8 angle_401;                     // 0x401, 同上
   u8 speedPenalty;                  // 0x402, 移動速度から引かれる量, FUN_0807a904 が +1 する
-  u8 unk_403[0x43A - 0x403];        // 0x403
+  u8 unk_403[0x40C - 0x403];        // 0x403
+  u8 unk_40c[32];                   // 0x40C, 根拠: FUN_080bfa74 が32要素とも 0 で埋める
+  u8 unk_42c[2];                    // 0x42C
+  u16 unk_42e;                      // 0x42E, 根拠: FUN_080bfa74 が 0 を入れる
+  u8 unk_430[0x43A - 0x430];        // 0x430
   u16 unk_43a;                      // 0x43A, FUN_0807b580 が 1 を書く
   u16 unk_43c[3];                   // 0x43C, 多分状態異常の残り時間
   u16 unk_442;                      // 0x442, FUN_0807b2dc が unk_446 が 0 でないときに返す値
@@ -399,6 +404,9 @@ Player* CreatePlayer(u32 n, void* _);
 s32 FUN_0806f900(Player* player);
 s32 FUN_080d1b04(Player* player);
 void Player_ReduceENE_0807aa60(Player* player, s32 amount);
+void FUN_0807d118(Player* p);
+void FUN_0807bb3c(Player* p, Vec3* pos, s32 param_3, s32 param_4, u32 scriptID);
+void FUN_0807bc64(Player* p, u32 scriptID);
 
 static inline void Player_SetFlag20(Player* p, PlayerFlag20 bit) { p->unk_20 |= bit; }
 static inline bool32 Player_TestFlag20(Player* p, PlayerFlag20 bit) { return p->unk_20 & bit; }

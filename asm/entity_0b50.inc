@@ -19,7 +19,7 @@ _080853CE:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r4, #0
 	adds r1, r6, #0
 	adds r2, r6, #0

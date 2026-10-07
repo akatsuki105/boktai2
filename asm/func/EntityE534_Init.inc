@@ -33,7 +33,7 @@ _08012BE2:
 	adds r0, r6, #0
 	adds r1, r5, #0
 	adds r2, r4, #0
-	bl FUN_080117d8
+	bl EntityE534Elem_Init
 	adds r4, #1
 	adds r5, #0xc8
 	cmp r4, #0xf

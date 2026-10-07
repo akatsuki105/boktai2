@@ -1,6 +1,6 @@
 	push {r4, r5, lr}
 	adds r4, r0, #0
-	bl FUN_0808d39c
+	bl EntityCC28_HideSprites
 	ldr r0, _0808DFC0 @ =0x00000D98
 	adds r5, r4, r0
 	movs r0, #0

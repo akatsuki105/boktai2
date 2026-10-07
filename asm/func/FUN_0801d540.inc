@@ -107,7 +107,7 @@ _0801D608:
 	movs r0, #0
 	movs r2, #0x10
 	movs r3, #5
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	adds r5, #1
 _0801D61E:
 	ldr r0, [r7, #0x6c]
@@ -124,7 +124,7 @@ _0801D62C:
 	movs r0, #0
 	movs r2, #0x10
 	movs r3, #6
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	adds r5, #1
 	cmp r5, #9
 	ble _0801D62C
@@ -152,7 +152,7 @@ _0801D642:
 	movs r0, #0
 	movs r1, #0x15
 	movs r2, #0x10
-	bl FUN_0822be3c
+	bl Video_DrawBGNumber
 	str r6, [sp]
 	str r5, [sp, #4]
 	str r4, [sp, #8]
@@ -160,7 +160,7 @@ _0801D642:
 	movs r1, #0x18
 	movs r2, #0x10
 	mov r3, r8
-	bl FUN_0822be3c
+	bl Video_DrawBGNumber
 	adds r0, r7, #0
 	bl FUN_0801d394
 	add sp, #0xc

@@ -20,7 +20,7 @@ _0809C09C:
 	cmp r0, #7
 	bne _0809C104
 	adds r0, r4, #0
-	bl FUN_0808d39c
+	bl EntityCC28_HideSprites
 	ldr r0, _0809C0F4 @ =0x00000A3C
 	adds r1, r4, r0
 	ldr r0, [r1]
@@ -87,7 +87,7 @@ _0809C144: .4byte 0x030046A0
 _0809C148: .4byte 0x00000A1E
 _0809C14C:
 	adds r0, r4, #0
-	bl FUN_0808d39c
+	bl EntityCC28_HideSprites
 	ldr r0, _0809C1A8 @ =0x00000A3C
 	adds r1, r4, r0
 	ldr r0, [r1]

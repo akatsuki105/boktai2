@@ -2,6 +2,7 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "mover.h"
 #include "sprite.h"
 
 // 8枠ぶんの要素, activeMask のビットが立っている枠だけ生きている
@@ -57,7 +58,18 @@ NAKED void FUN_080db040(Entity080db520* p, Entity080db520Elem* elem) { INCFUNC("
 
 NAKED void FUN_080db0f8(Entity080db520* p) { INCFUNC("asm/func/FUN_080db0f8.inc"); }
 
-NAKED void FUN_080db260(Entity080db520* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080db260.inc"); }
+// 向きから象限を出して, アニメーションの variant と反転フラグを決める
+void Mover_GetAnimQuadrant(Mover* mover, u8* variant, u8* flags) {
+  u32 q = ((((mover->angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+
+  if (q > 1) {
+    *flags = 1;
+    *variant = 3 - q;
+  } else {
+    *flags = 0;
+    *variant = q;
+  }
+}
 
 NAKED s32 FUN_080db290(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080db290.inc"); }
 

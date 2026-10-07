@@ -42,7 +42,7 @@ _08062114:
 	ldr r1, [r0]
 	adds r0, r6, #0
 	movs r2, #4
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r3, _0806219C @ =0x0203B400
 	mov ip, r3
 	ldr r3, _080621A0 @ =0x030046B8

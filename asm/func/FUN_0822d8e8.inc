@@ -2,7 +2,7 @@
 	mov r7, sb
 	mov r6, r8
 	push {r6, r7}
-	bl FUN_0822d00c
+	bl GetBgPlttBlendBuffer
 	mov ip, r0
 	ldr r0, _0822D980 @ =0x03004468
 	mov r1, ip

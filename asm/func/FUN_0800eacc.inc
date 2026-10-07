@@ -44,7 +44,7 @@
 	str r2, [sp, #0x14]
 	movs r2, #9
 	movs r3, #0x14
-	bl FUN_080166ac
+	bl Entity08016ba4_Spawn
 _0800EB30:
 	ldrb r0, [r5, #2]
 	cmp r0, #1

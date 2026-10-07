@@ -1,11 +1,14 @@
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "shadow.h"
 #include "sprite_aux.h"
 
 typedef struct {
   AuxSprite sprite;        // 0x00, Entity8CC7_Destroy が AuxSprite_Remove に渡す
-  u8 unk_2c[0x79 - 0x2C];  // 0x2C, まだ未解析
+  u8 unk_2c[0x6E - 0x2C];  // 0x2C, まだ未解析
+  u16 flags;               // 0x6E, 根拠: Entity8CC7Elem_SetFlags / _ClearFlags / _TestFlags
+  u8 unk_70[0x79 - 0x70];  // 0x70, まだ未解析
   u8 noShadow;             // 0x79, 0 なら _Destroy が ParticleShadow_Remove を呼ぶ
   u8 unk_7a[2];            // 0x7A, まだ未解析
   ParticleShadow shadow;   // 0x7C, noShadow が 0 のとき生きている影
@@ -21,4 +24,75 @@ typedef struct Entity8CC7 {
 } Entity8CC7;
 static_assert(sizeof(Entity8CC7) == 3796);
 
-INCASM("asm/entity_8cc7.inc");
+extern Entity8CC7* gEntity8CC7;  // 0x030001A4
+
+void Entity8CC7Elem_SetFlags(Entity8CC7Elem* e, u16 bits) { e->flags |= bits; }
+
+void Entity8CC7Elem_ClearFlags(Entity8CC7Elem* e, u16 bits) { e->flags &= ~bits; }
+
+// 残差は 7 命令 vs 11 命令 で、原典は 0/1 を分岐で作る (!= 0 も ?1:0 もビット演算に畳まれる)
+NON_MATCH bool32 Entity8CC7Elem_TestFlags(Entity8CC7Elem* e, u16 bits) {
+#ifdef NONMATCHING_C
+  return (e->flags & bits) != 0;
+#else
+  INCFUNC("asm/func/Entity8CC7Elem_TestFlags.inc");
+#endif
+}
+
+NAKED Entity8CC7Elem* Entity8CC7_AllocElem(Entity8CC7* p) { INCFUNC("asm/func/Entity8CC7_AllocElem.inc"); }
+
+NAKED void FUN_081d8a98(void) { INCFUNC("asm/func/FUN_081d8a98.inc"); }
+
+NAKED void FUN_081d8c80(u32 param_1, u8* param_2, u8* param_3) { INCFUNC("asm/func/FUN_081d8c80.inc"); }
+
+NAKED s32 FUN_081d8cb0(Entity8CC7Elem* e) { INCFUNC("asm/func/FUN_081d8cb0.inc"); }
+
+NAKED s32 FUN_081d8d20(Entity8CC7Elem* e) { INCFUNC("asm/func/FUN_081d8d20.inc"); }
+
+// 3600フレームごとに, 時間帯が 2 より後なら TRUE を返す
+// 残差5命令, 原典は != 0 側 (デクリメント) を fall-through に置くが, agbcc は if/else をどちら向きに書いても == 0 側を先に並べる
+NON_MATCH bool32 FUN_081d8d90(Entity8CC7* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_ed0 != 0) {
+    p->unk_ed0--;
+    return FALSE;
+  }
+
+  p->unk_ed0 = 3600;
+  if (Time_GetSpanOfTime() <= 2) {
+    return FALSE;
+  }
+
+  return TRUE;
+#else
+  INCFUNC("asm/func/FUN_081d8d90.inc");
+#endif
+}
+
+void nop_081d8dc0(void) {}
+
+NAKED void FUN_081d8dc4(Entity8CC7* p, Entity8CC7Elem* e) { INCFUNC("asm/func/FUN_081d8dc4.inc"); }
+
+NAKED void FUN_081d919c(Entity8CC7* p, Entity8CC7Elem* e) { INCFUNC("asm/func/FUN_081d919c.inc"); }
+
+NAKED void FUN_081d93b0(Entity8CC7* p, Entity8CC7Elem* e) { INCFUNC("asm/func/FUN_081d93b0.inc"); }
+
+NAKED void FUN_081d96b8(Entity8CC7* p, Entity8CC7Elem* e) { INCFUNC("asm/func/FUN_081d96b8.inc"); }
+
+NAKED void FUN_081d98a0(Entity8CC7* p, Entity8CC7Elem* e) { INCFUNC("asm/func/FUN_081d98a0.inc"); }
+
+NAKED s32 Entity8CC7_Update(Entity8CC7* p) { INCFUNC("asm/func/Entity8CC7_Update.inc"); }
+
+NAKED s32 Entity8CC7_Destroy(Entity8CC7* p) { INCFUNC("asm/func/Entity8CC7_Destroy.inc"); }
+
+s32 Entity8CC7_Init(Entity8CC7* p) {
+  p->anim = GetFile(DIR_ANIMATION, ANIM_7B03);
+  gEntity8CC7 = p;
+  p->usedMask = 0;
+  p->unk_ed0 = 3600;
+  return 0;
+}
+
+NAKED Entity8CC7* Entity8CC7_Create(u32 id) { INCFUNC("asm/func/Entity8CC7_Create.inc"); }
+
+void ClearEntity8CC7(void) { gEntity8CC7 = NULL; }

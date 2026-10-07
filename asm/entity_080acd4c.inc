@@ -21,7 +21,7 @@ FUN_080acc20: @ 0x080ACC20
 	ldrh r2, [r4, #0x2e]
 	lsrs r2, r2, #1
 	adds r2, #0xc
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldrh r0, [r4, #0x1a]
 	adds r0, #0xa
 	strh r0, [r4, #0x1a]
@@ -124,7 +124,7 @@ _080ACCCE:
 	str r1, [r4, #0x28]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r5, #0
 	mov r1, sb
 	mov r2, sb
@@ -132,7 +132,7 @@ _080ACCCE:
 	ldr r1, [r4, #0x28]
 	adds r0, r5, #0
 	movs r2, #0xc
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r0, [r4]
 	movs r1, #1
 	orrs r0, r1

@@ -99,7 +99,7 @@ _08064E48:
 	adds r4, r5, #0
 	adds r4, #0xe8
 	adds r0, r4, #0
-	bl FUN_0822a4fc
+	bl AuxSprite_SetGfx
 	movs r1, #0xcf
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -145,7 +145,7 @@ _08064EA8:
 	adds r4, r5, #0
 	adds r4, #0xe8
 	adds r0, r4, #0
-	bl FUN_0822a4fc
+	bl AuxSprite_SetGfx
 	movs r1, #0xcf
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -187,7 +187,7 @@ _08064F16:
 	adds r4, r5, #0
 	adds r4, #0xe8
 	adds r0, r4, #0
-	bl FUN_0822a4fc
+	bl AuxSprite_SetGfx
 	movs r1, #0xcf
 	lsls r1, r1, #2
 	adds r0, r5, r1

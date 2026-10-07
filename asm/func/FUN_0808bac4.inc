@@ -165,7 +165,7 @@ _0808BC18:
 	adds r5, r7, r0
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0822a4fc
+	bl AuxSprite_SetGfx
 	ldr r0, [r5]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -334,7 +334,7 @@ _0808BD68:
 	adds r5, r7, r0
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0822a4fc
+	bl AuxSprite_SetGfx
 	ldr r0, [r5]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -488,7 +488,7 @@ _0808BE9C:
 	adds r4, r7, r0
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_0822a4fc
+	bl AuxSprite_SetGfx
 	ldr r0, [r4]
 	movs r1, #2
 	rsbs r1, r1, #0

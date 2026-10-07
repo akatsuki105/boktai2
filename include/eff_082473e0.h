@@ -16,7 +16,7 @@ typedef struct {
   s16 unk_4;          // 0x04, FUN_082467d0 の第3引数
   u8 unk_6[2];        // 0x06, padding?
   Vec3 pos;           // 0x08, FUN_082467d0 の第4引数が指す8バイトをそのまま写す
-  Particle ptcl;      // 0x10, FUN_0822d9f0 / Particle_SetOffset / Particle_Remove に渡る
+  Particle ptcl;      // 0x10, Particle_Add / Particle_SetOffset / Particle_Remove に渡る
   AuxAnimState anim;  // 0x38, AuxAnim_SetAnim に Eff082473e0.anim と一緒に渡る
 } Eff082473e0Particle;
 static_assert(sizeof(Eff082473e0Particle) == 72);

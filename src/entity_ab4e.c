@@ -64,7 +64,19 @@ s32 (*const PTR_ARRAY_085ab434[9])(EntityAB4E*, EntityAB4EElem*, s32) = {
     FUN_080455fc, FUN_08045890, FUN_08045b6c, FUN_08045e68, FUN_08046254, FUN_08046340, FUN_08046970, FUN_080465b0, FUN_08046c98,
 };  // 0x085AB434
 
-NAKED EntityAB4EElem* EntityAB4E_FindFreeElem(EntityAB4E* p) { INCFUNC("asm/func/EntityAB4E_FindFreeElem.inc"); }
+// 未使用の要素を先頭から探す
+EntityAB4EElem* EntityAB4E_FindFreeElem(EntityAB4E* p) {
+  EntityAB4EElem* elem = p->elems;
+  s32 i;
+
+  for (i = 0; i < 16; i++, elem++) {
+    if (!elem->active) {
+      return elem;
+    }
+  }
+
+  return NULL;
+}
 
 NAKED s32 FUN_080452f4(EntityAB4E* p, EntityAB4EElem* elem, s32 index) { INCFUNC("asm/func/FUN_080452f4.inc"); }
 

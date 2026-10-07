@@ -6,7 +6,7 @@
 
 // FUN_080a8dd8 が 8個ばらまく粒子, Particle に角度と半径を足しただけ
 typedef struct {
-  Particle base;  // 0x00, FUN_0822d9f0 などに Particle* として渡る
+  Particle base;  // 0x00, Particle_Add などに Particle* として渡る
   u16 angle;      // 0x28, gSineTable[(angle + 0x40) & 0xFF] と gSineTable[angle & 0xFF] で x/z のオフセットを作る
   u16 radius;     // 0x2A, 上の sin に掛けて >> 12 する
 } Entity080a8ff8Particle;

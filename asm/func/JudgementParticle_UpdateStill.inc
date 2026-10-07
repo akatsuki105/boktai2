@@ -22,7 +22,7 @@ _080A9828:
 	ands r2, r0
 	adds r2, #2
 	adds r0, r3, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _080A983A:
 	pop {r0}
 	bx r0

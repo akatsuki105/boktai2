@@ -184,6 +184,34 @@ Keep working files in the scratchpad. `G=http://127.0.0.1:8089`,
     struct edit can change `sizeof` and break a `static_assert`, so never report
     it as done without that. Keep the two sides spelled the same — the repo's
     field-name style is `unk_1c`, not `unk_1C` or `unk_01c`.
+    A member comment carries only what the type does not already say: a concrete
+    ID, what a value means or its range, which field it pairs with, who reads it.
+    Never the function that fills it — `OpenMainSpriteFile に渡される` or
+    `FUN_xxxx が書く` is noise, since the type already says it. Step 6 asks for the
+    evidence in the *Ghidra* field comment; the repository comment has a different
+    job, so rewrite it here instead of copying that wording across.
+    Three field kinds have a fixed spelling in this repository — follow it:
+    - Anything obtained through `GetFile`: the comment carries that file's ID and
+      nothing else. `MainSpriteGfx` / `AuxSpriteGfx` are the common ones, but the
+      rule is the same for every file type:
+
+      ```c
+      MainSpriteGfx gfx;      // 0x018, SPRITE_D353
+      ParticleGroup* group;   // 0x018, PTCL_GROUP_0, ...
+      AuxAnimFile* anim;      // 0x01C, ANIM_D1B8, ...
+      Tilemaps* tilemap;      // 0x018, TILEMAP_CD91, ...
+      ```
+
+      When the ID is not fixed, say only that.
+    - Filled from a VM named argument: write the argument as `.X`, an array
+      element as `.X[1]`, a default as `.X=defaultval`
+      (`s32 unk_58;  // 0x058, '.d'`, `s16 unk_90;  // 0x090, '.K[0]'`).
+      The `.X` form already says it is a VM named argument, so do not write that
+      out: `// 0x058, '.d'`, never `// 0x058, VM の名前付き引数 '.d'`.
+    - The function `T_Update` calls through: spell the pointer out and name the
+      field `updateCallback`
+      (`void (*updateCallback)(struct Intro*);  // 0x428`). Put the information
+      in the member name, not in a comment beside a contentless `fn`.
     A new sub-type starts in the `.c` that needs it; move it out to a header in
     `include/` as soon as a second file needs it, rather than duplicating the
     declaration.

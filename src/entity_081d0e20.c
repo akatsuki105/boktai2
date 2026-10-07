@@ -43,9 +43,7 @@ static_assert(sizeof(Entity081d0e20) == 108);
 
 extern Entity081d0e20* gEntity081d0e20;  // 0x03000188
 
-s32 FUN_08002a48(Mover* p);
 unknown* FUN_081ee9bc(Vec3* pos);
-s32 FUN_08002a58(Mover* p);
 s32 FUN_080e11a8(Vec3* pos, Vec3* size, s32 idx);
 s32 FUN_080e1100(Vec3* pos, Vec3* size, u32* out);
 

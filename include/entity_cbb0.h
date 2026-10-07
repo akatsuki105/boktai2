@@ -33,9 +33,13 @@ struct EntityCBB0 {
   u8 unk_500[0x508 - 0x500];        // 0x0500, まだ未解析
   Vec3 unk_508;                     // 0x0508, FUN_080b10f8 が FUN_080b1038 に渡す座標
   Vec3 pos_510;                     // 0x0510, FUN_080b1038 が距離判定に使うワールド座標
-  u8 unk_518[0x68A - 0x518];        // 0x0518, まだ未解析
+  u8 unk_518[0x67A - 0x518];        // 0x0518, まだ未解析
+  u16 unk_67a;                      // 0x067A, 根拠: FUN_080b01b4 が毎フレーム +1 して unk_690 と比べる
+  u8 unk_67c[0x68A - 0x67C];        // 0x067C, まだ未解析
   u16 unk_68a;                      // 0x068A
-  u8 unk_68c[0x69C - 0x68C];        // 0x068C, まだ未解析
+  u8 unk_68c[0x690 - 0x68C];        // 0x068C, まだ未解析
+  u16 unk_690;                      // 0x0690, 根拠: FUN_080b01b4 が unk_67a の上限として見る
+  u8 unk_692[0x69C - 0x692];        // 0x0692, まだ未解析
   Vec3 unk_69c;                     // 0x069C, FUN_080b0e58 が 3成分とも 0xA0 を入れる
   Vec3 unk_6a4;                     // 0x06A4, FUN_080b0e58 が入れる当たり判定の広がりらしい値
   EntityCBB0* unk_6ac;              // 0x06AC, *(*unk_6ac + 0xBE8 + i*4) を引くので EntityCBB0 を指す (暫定)
@@ -50,7 +54,8 @@ struct EntityCBB0 {
   bool8 unk_c12;                    // 0x0C12, FUN_080b2314 / FUN_080b2334 が 1 / 0 を入れ, FUN_080b176c が見る
   u8 unk_c13[0xC16 - 0xC13];        // 0x0C13, まだ未解析
   u16 unk_c16;                      // 0x0C16
-  u8 unk_c18[0x12E4 - 0xC18];       // 0x0C18, まだ未解析
+  u8 unk_c18[0xC6C - 0xC18];        // 0x0C18, まだ未解析
+  u8 unk_c6c[0x12E4 - 0xC6C];       // 0x0C6C, 根拠: FUN_080af374 の第1引数, +0x678 までを触る
   u16 unk_12e4;                     // 0x12E4, 0 の間だけ FUN_080b1888 が先に進む
   u8 unk_12e6[0x1324 - 0x12E6];     // 0x12E6, まだ未解析
   u16 unk_1324;                     // 0x1324, 0 から 0x3F で折り返すカウンタ, FUN_080adf50 が 0x30, FUN_080adf60 が 0x40 を入れる
@@ -66,7 +71,8 @@ struct EntityCBB0 {
   SoundID16 unk_1340[4];            // 0x1340, PlaySound_082406e0(unk_1340[unk_133f]) で鳴らす
   u8 unk_1348[0x135C - 0x1348];     // 0x1348, まだ未解析
   EntityCBB0Func* unk_135c;         // 0x135C, FUN_080af0ac が非NULLのとき unk_135c(p) を呼ぶ
-  u8 unk_1360[0x1374 - 0x1360];     // 0x1360, まだ未解析
+  unknown* unk_1360;                // 0x1360, 根拠: FUN_080af0c8 が FUN_0805b1a0 に渡す
+  u8 unk_1364[0x1374 - 0x1364];     // 0x1364, まだ未解析
   bool16 unk_1374;                  // 0x1374, FUN_080adf60 が立て, FUN_080adfa0 が見る
   u8 unk_1376[0x1420 - 0x1376];     // 0x1376, まだ未解析
   u32 unk_1420;                     // 0x1420, FUN_080adb5c が 0 に戻す

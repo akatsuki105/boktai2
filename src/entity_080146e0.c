@@ -142,7 +142,7 @@ s32 Entity080146e0_Init(Entity080146e0* p, u32 _) {
   for (i = 0; i < 6; i++) {
     p->data[i].active = FALSE;
     for (j = 0; j < 8; j++) {
-      FUN_0822da70(&p->data[i].ptcls[j].ptcl, p->group1, 1);
+      Particle_Setup(&p->data[i].ptcls[j].ptcl, p->group1, 1);
       Particle_SetOffset(&p->data[i].ptcls[j].ptcl, -4, -4);
     }
   }

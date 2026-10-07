@@ -20,8 +20,6 @@ typedef struct {
 } RegistryEntry;
 static_assert(sizeof(RegistryEntry) == 8);
 
-// アドレス上は 0x0203B000 から 0x0203B400 の手前までの128スロットだが、Registry_AllocEntry が 31 を超えたところで NULL を返すので実際に使われるのは32スロットまで
-extern RegistryEntry gRegistry[128];
 extern s32 gRegistryCount;
 
 RegistryEntry* Registry_AllocEntry(void);

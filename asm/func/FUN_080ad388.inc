@@ -22,14 +22,14 @@ _080AD3A8:
 	ldr r1, [r6]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r4, #0
 	adds r1, r7, #0
 	adds r2, r7, #0
 	bl Particle_SetOffset
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	adds r4, #0x30
 	movs r0, #0
 	strb r0, [r4]

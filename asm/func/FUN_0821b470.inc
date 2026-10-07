@@ -103,7 +103,7 @@ _0821B51A:
 	ldr r1, [r0, #0x78]
 	mov r0, r8
 	movs r2, #3
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _0821B53A:
 	ldrb r0, [r7]
 	adds r0, #1

@@ -1,5 +1,6 @@
 #include "entity_cbb0.h"
 
+#include "bg_pltt.h"
 #include "camera.h"
 #include "entity.h"
 #include "entity_0b50.h"
@@ -9,6 +10,7 @@
 #include "player.h"
 #include "solar_generator.h"
 #include "sprite_common.h"
+#include "video.h"
 #include "vm.h"
 
 // solar_generator.c で gEntityCBB0 を参照するのでヘッダに定義を置いた
@@ -17,13 +19,10 @@ const FileID FileID_ARRAY_085ad048[6] = {
     TILEMAP_8446, TILEMAP_8546, TILEMAP_8646, TILEMAP_8746, TILEMAP_8846, TILEMAP_8946,
 };  // 0x085AD048
 
-void Generator_SetState(struct Generator* p, s32 state);                          // src/solar_generator.c
-void FUN_0807d118(Player* p);                                                     // src/player_08065988.c
-void FUN_08086b18(Vec3* pos);                                                     // asm/entity_0b50.inc
-void FUN_0807bb3c(Player* p, Vec3* pos, s32 param_3, s32 param_4, u32 scriptID);  // src/player_08065988.c
-void FUN_0807bc64(Player* p, u32 param_2);                                        // src/player_08065988.c
-void FUN_0823bca8(s32 n);                                                         // src/camera.c
-void Sound_FadeOutBGM(u32 speed);
+void FUN_080df478(void);        // src/entity_080df420.c
+void FUN_0805b1a0(unknown* p);  // src/code_08052eb8.s
+void FUN_08086b18(Vec3* pos);   // asm/entity_0b50.inc
+void FUN_0823bca8(s32 n);       // src/camera.c
 
 void FUN_080ada64(EntityCBB0*);
 void FUN_080ada9c(EntityCBB0*);
@@ -258,7 +257,12 @@ void FUN_080addac(EntityCBB0* p) {
 
 NAKED s32 FUN_080adde4(EntityCBB0* p) { INCFUNC("asm/func/FUN_080adde4.inc"); }
 
-NAKED void FUN_080ade4c(EntityCBB0* p) { INCFUNC("asm/func/FUN_080ade4c.inc"); }
+// BGP_313A の 10 色目から 16 色ずつのうち1組を BG パレットバッファの先頭にコピーする
+void EntityCBB0_LoadBgPltt(EntityCBB0* p) {
+  rgb555* pltt = (rgb555*)GetFile(DIR_BGPLTT, BGP_313A) + 10;
+
+  CpuCopy32(&pltt[FUN_080adde4(p) * 16], gBgPlttBuffer, 64);
+}
 
 NAKED void FUN_080ade88(EntityCBB0* p) { INCFUNC("asm/func/FUN_080ade88.inc"); }
 
@@ -299,7 +303,18 @@ void FUN_080af0ac(EntityCBB0* p) {
   }
 }
 
-NAKED void FUN_080af0c8(EntityCBB0* p) { INCFUNC("asm/func/FUN_080af0c8.inc"); }
+void FUN_080af0c8(EntityCBB0* p) {
+  switch (p->tilemapIdx) {
+    case 3: {
+      FUN_080df478();
+      break;
+    }
+    case 4: {
+      FUN_0805b1a0(p->unk_1360);
+      break;
+    }
+  }
+}
 
 NAKED void FUN_080af0f8(EntityCBB0* p) { INCFUNC("asm/func/FUN_080af0f8.inc"); }
 
@@ -309,7 +324,7 @@ NAKED void FUN_080af2f4(EntityCBB0* p) { INCFUNC("asm/func/FUN_080af2f4.inc"); }
 
 NAKED void FUN_080af334(EntityCBB0* p) { INCFUNC("asm/func/FUN_080af334.inc"); }
 
-NAKED void FUN_080af374(EntityCBB0* p, s32 param_2) { INCFUNC("asm/func/FUN_080af374.inc"); }
+NAKED void FUN_080af374(unknown* p, s32 param_2) { INCFUNC("asm/func/FUN_080af374.inc"); }
 
 NAKED void FUN_080af400(EntityCBB0* p) { INCFUNC("asm/func/FUN_080af400.inc"); }
 
@@ -350,7 +365,15 @@ NAKED void FUN_080affdc(EntityCBB0* p) { INCFUNC("asm/func/FUN_080affdc.inc"); }
 
 NAKED void FUN_080b009c(EntityCBB0* p) { INCFUNC("asm/func/FUN_080b009c.inc"); }
 
-NAKED void FUN_080b01b4(EntityCBB0* p) { INCFUNC("asm/func/FUN_080b01b4.inc"); }
+// unk_690 フレーム経ったら次へ進む
+void FUN_080b01b4(EntityCBB0* p) {
+  p->unk_67a++;
+
+  if (p->unk_67a >= p->unk_690) {
+    FUN_080af5b8(p);
+    FUN_080af374(p, 3);
+  }
+}
 
 NAKED void FUN_080b01ec(EntityCBB0* p) { INCFUNC("asm/func/FUN_080b01ec.inc"); }
 
@@ -519,7 +542,12 @@ void FUN_080b176c(EntityCBB0* p) {
   }
 }
 
-NAKED void FUN_080b17bc(EntityCBB0* p) { INCFUNC("asm/func/FUN_080b17bc.inc"); }
+void FUN_080b17bc(EntityCBB0* p) {
+  if (gEntity0B50->unk_1f5 == 12) {
+    FUN_080af374(p->unk_c6c, 1);
+    FUN_080ad1ec(p, 10);
+  }
+}
 
 NAKED void FUN_080b17f4(EntityCBB0* p) { INCFUNC("asm/func/FUN_080b17f4.inc"); }
 

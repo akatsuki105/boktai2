@@ -1425,12 +1425,12 @@ gAuxSpritesFile0: @ 0x08A2291C
     .incbin "data/actor_sprites/5D7C.4bpp"                 @ 0x08AA38D0, ActorID: 0x5D7C, PlttID: 338, 瓦礫
     .incbin "data/actor_sprites/B837.4bpp"                 @ 0x08AA40D0, ActorID: 0xB837, PlttID: 339, わからん(ふしぎのぼうしのチュチュみたいな形)
     .incbin "data/actor_sprites/cube_iron.4bpp"            @ 0x08AA4C10, ActorID: 0xE0C9, PlttID: 340, 鉄ブロック
-    .incbin "data/actor_sprites/8203.4bpp"                 @ 0x08AA5210, ActorID: 0x8203, PlttID: 341, ヨルムンガンド
-    .incbin "data/actor_sprites/8204.4bpp"                 @ 0x08AA6B10, ActorID: 0x8204, PlttID: 341, ヨルムンガンド
-    .incbin "data/actor_sprites/8205.4bpp"                 @ 0x08AA6DD0, ActorID: 0x8205, PlttID: 350, ヨルムンガンド
-    .incbin "data/actor_sprites/8202.4bpp"                 @ 0x08AA6FD0, ActorID: 0x8202, PlttID: 350, ヨルムンガンド
-    .incbin "data/actor_sprites/8206.4bpp"                 @ 0x08AA7650, ActorID: 0x8206, PlttID: 341
-    .incbin "data/actor_sprites/8207.4bpp"                 @ 0x08AA7950, ActorID: 0x8207, PlttID: 341
+    .incbin "data/actor_sprites/jormungandr_8203.4bpp"     @ 0x08AA5210, ActorID: 0x8203, PlttID: 341, ヨルムンガンド
+    .incbin "data/actor_sprites/jormungandr_8204.4bpp"     @ 0x08AA6B10, ActorID: 0x8204, PlttID: 341, ヨルムンガンド
+    .incbin "data/actor_sprites/wedge_8205.4bpp"           @ 0x08AA6DD0, ActorID: 0x8205, PlttID: 350, ヨルムンガンドの楔
+    .incbin "data/actor_sprites/wedge_8202.4bpp"           @ 0x08AA6FD0, ActorID: 0x8202, PlttID: 350, ヨルムンガンドの楔
+    .incbin "data/actor_sprites/jormungandr_8206.4bpp"     @ 0x08AA7650, ActorID: 0x8206, PlttID: 341, ヨルムンガンドのタコ足
+    .incbin "data/actor_sprites/jormungandr_8207.4bpp"     @ 0x08AA7950, ActorID: 0x8207, PlttID: 341, ヨルムンガンドのタコ足
     .incbin "data/actor_sprites/DC38.4bpp"                 @ 0x08AA7A30, ActorID: 0xDC38, PlttID: 83
     .incbin "data/actor_sprites/8393.4bpp"                 @ 0x08AAB1D0, ActorID: 0x8393, PlttID: 83
     .incbin "data/actor_sprites/solar_bamboo.4bpp"         @ 0x08AB09D0, ActorID: 0x066A, PlttID: 361

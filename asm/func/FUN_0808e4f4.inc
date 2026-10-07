@@ -11,7 +11,7 @@
 	orrs r0, r1
 	str r0, [r2]
 	adds r0, r4, #0
-	bl FUN_0808d998
+	bl EntityCC28_ApplyWeapon
 	adds r0, r4, #0
 	bl FUN_0808d93c
 	adds r0, r4, #0

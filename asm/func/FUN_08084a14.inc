@@ -43,7 +43,7 @@ _08084A40:
 	ands r2, r0
 	adds r2, #4
 	adds r0, r6, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	adds r0, r5, #0
 	adds r0, #0xc0
 	ldrh r0, [r0]

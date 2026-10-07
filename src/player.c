@@ -614,7 +614,7 @@ NON_MATCH void Player_UpdatePtcl64c(Player* p) {
     return;
   }
 
-  FUN_0822dafc(&p->ptcl_64c.ptcl, p->ptcl_64c.group1, (p->ptcl_64c.timer >> 2) + p->ptcl_64c.plttBase);
+  Particle_SetFrame(&p->ptcl_64c.ptcl, p->ptcl_64c.group1, (p->ptcl_64c.timer >> 2) + p->ptcl_64c.frameBase);
 #else
   INCFUNC("asm/func/Player_UpdatePtcl64c.inc");
 #endif
@@ -625,12 +625,12 @@ void Player_ShowPtcl64c(Player* p, Vec3* pos, s32 big) {
   Particle* ptcl = &p->ptcl_64c.ptcl;
 
   if (big) {
-    p->ptcl_64c.plttBase = 0x48;
+    p->ptcl_64c.frameBase = 0x48;
   } else {
-    p->ptcl_64c.plttBase = 4;
+    p->ptcl_64c.frameBase = 4;
   }
 
-  FUN_0822dafc(ptcl, p->ptcl_64c.group1, p->ptcl_64c.plttBase);
+  Particle_SetFrame(ptcl, p->ptcl_64c.group1, p->ptcl_64c.frameBase);
   ptcl->pos = *pos;
   ptcl->flags &= ~SPRFLAG_HIDDEN;
   p->ptcl_64c.active = TRUE;
@@ -644,9 +644,9 @@ void FUN_08061458(Player* p) {
 
   p->ptcl_64c.group1 = group;
   ptcl = &p->ptcl_64c.ptcl;
-  FUN_0822d9f0(ptcl, group, 0);
+  Particle_Add(ptcl, group, 0);
   Particle_SetOffset(ptcl, -4, -4);
-  FUN_0822dafc(ptcl, p->ptcl_64c.group1, 4);
+  Particle_SetFrame(ptcl, p->ptcl_64c.group1, 4);
   ptcl->flags |= SPRFLAG_HIDDEN;
   ptcl->priority = 1;
   ptcl->offsetZ = 0x14;
@@ -708,7 +708,7 @@ NON_MATCH void Player_UpdateBadCondPtcl(Player* p) {
   p->ptcl_67c.ptcl.pos.x += 0x38;
   p->ptcl_67c.ptcl.pos.y += 0x15E;
   p->ptcl_67c.ptcl.flags &= ~SPRFLAG_HIDDEN;
-  FUN_0822dafc(&p->ptcl_67c.ptcl, p->ptcl_67c.group1, 0x10);
+  Particle_SetFrame(&p->ptcl_67c.ptcl, p->ptcl_67c.group1, 0x10);
   p->ptcl_67c.timer = 0;
   p->ptcl_67c.active = TRUE;
 #else
@@ -723,9 +723,9 @@ void FUN_0806161c(Player* p) {
 
   p->ptcl_67c.group1 = group;
   ptcl = &p->ptcl_67c.ptcl;
-  FUN_0822d9f0(ptcl, group, 0);
+  Particle_Add(ptcl, group, 0);
   Particle_SetOffset(ptcl, -4, -4);
-  FUN_0822dafc(ptcl, p->ptcl_67c.group1, 0x10);
+  Particle_SetFrame(ptcl, p->ptcl_67c.group1, 0x10);
   ptcl->flags |= SPRFLAG_HIDDEN;
   ptcl->priority = 1;
   ptcl->offsetZ = 0x14;
@@ -1080,7 +1080,7 @@ NON_MATCH void Player_UpdatePtcl718(Player* p) {
     }
 
     if (ptcl->unk_31 == 6) {
-      FUN_0822dafc(&ptcl->base, p->ptcl_718.group, ptcl->plttBase + 1);
+      Particle_SetFrame(&ptcl->base, p->ptcl_718.group, ptcl->frameBase + 1);
     }
 
     ptcl->base.pos.x += ptcl->vel.x;
@@ -1098,12 +1098,12 @@ NON_MATCH void Player_UpdatePtcl718(Player* p) {
 }
 
 // 0x718 のパーティクルを1つ使って pos / vel を入れて出す, 使う番号は 0..5 を巡回する
-void Player_SpawnPtcl718(Player* p, Vec3* pos, Vec3* vel, s32 plttStep) {
+void Player_SpawnPtcl718(Player* p, Vec3* pos, Vec3* vel, s32 frameStep) {
   Particle52* ptcl = &p->ptcl_718.ptcls[p->ptcl_718.next];
 
   ptcl->base.flags &= ~SPRFLAG_HIDDEN;
-  ptcl->plttBase = plttStep * 2 + 2;
-  FUN_0822dafc(&ptcl->base, p->ptcl_718.group, ptcl->plttBase);
+  ptcl->frameBase = frameStep * 2 + 2;
+  Particle_SetFrame(&ptcl->base, p->ptcl_718.group, ptcl->frameBase);
   ptcl->base.pos = *pos;
   ptcl->vel = *vel;
   ptcl->unk_31 = 0;
@@ -1132,9 +1132,9 @@ void Player_InitPtcl718(Player* p) {
   for (i = 0; i < 6; i++) {
     Particle52* ptcl = &st->ptcls[i];
 
-    FUN_0822d9f0(&ptcl->base, st->group, 1);
+    Particle_Add(&ptcl->base, st->group, 1);
     Particle_SetOffset(&ptcl->base, -4, -4);
-    FUN_0822dadc(&ptcl->base, 1);
+    Particle_SetPltt(&ptcl->base, 1);
     ptcl->base.priority = 2;
   }
 
@@ -1191,7 +1191,7 @@ NON_MATCH void Player_UpdatePtcl858(Player* p) {
 
     ptcl->timer++;
     if (ptcl->timer == 4) {
-      FUN_0822dafc(&ptcl->base, p->ptcl_858.group, ptcl->plttBase + 1);
+      Particle_SetFrame(&ptcl->base, p->ptcl_858.group, ptcl->frameBase + 1);
     }
 
     alive++;
@@ -1223,8 +1223,8 @@ NON_MATCH void Player_SpawnSunPtcl858(Player* p, Vec3* pos) {
 
   ptcl = &p->ptcl_858.ptcls[p->ptcl_858.unk_05];
   ptcl->base.flags &= ~SPRFLAG_HIDDEN;
-  ptcl->plttBase = 2;
-  FUN_0822dafc(&ptcl->base, p->ptcl_858.group, 2);
+  ptcl->frameBase = 2;
+  Particle_SetFrame(&ptcl->base, p->ptcl_858.group, 2);
 
   table = gRandomTable;
   idx = (gRandTableIdx + 1) & 0x3FF;
@@ -1284,8 +1284,8 @@ NON_MATCH void Player_SpawnPtcl858(Player* p, Vec3* pos) {
 
   ptcl = &p->ptcl_858.ptcls[p->ptcl_858.unk_05];
   ptcl->base.flags &= ~SPRFLAG_HIDDEN;
-  ptcl->plttBase = 4;
-  FUN_0822dafc(&ptcl->base, p->ptcl_858.group, 4);
+  ptcl->frameBase = 4;
+  Particle_SetFrame(&ptcl->base, p->ptcl_858.group, 4);
 
   table = gRandomTable;
   idx = (gRandTableIdx + 1) & 0x3FF;
@@ -1342,9 +1342,9 @@ void Player_InitPtcl858(Player* p) {
   for (i = 0; i < 4; i++) {
     PlayerPtcl858* ptcl = &st->ptcls[i];
 
-    FUN_0822d9f0(&ptcl->base, st->group, 1);
+    Particle_Add(&ptcl->base, st->group, 1);
     Particle_SetOffset(&ptcl->base, -4, -4);
-    FUN_0822dadc(&ptcl->base, 1);
+    Particle_SetPltt(&ptcl->base, 1);
     ptcl->base.priority = 2;
   }
 
@@ -2602,7 +2602,7 @@ void Player_UpdateBloodSword(Player* p) {
     return;
   }
 
-  if (p->kind == 0) {
+  if (p->kind == PLAYER_SOLAR_DJANGO) {
     if (p->hp <= 1) {
       return;
     }
@@ -3351,7 +3351,7 @@ NON_MATCH u32 Player_GetMagicAction(Player* p) {
               return p->action;
             }
             p->gfx_114 = &p->gfxForms[0];
-            FUN_0822a4fc(&p->sprite_e8, p->gfx_114);
+            AuxSprite_SetGfx(&p->sprite_e8, p->gfx_114);
             AuxAnim_RestartAnim(&p->anim_33c, p->anim_34c, 0, 0, 1);
             p->unk_382 = 0xBE;
             p->sprite_e8.flags = 1;
@@ -3366,7 +3366,7 @@ NON_MATCH u32 Player_GetMagicAction(Player* p) {
               return p->action;
             }
             p->gfx_114 = &p->gfxForms[1];
-            FUN_0822a4fc(&p->sprite_e8, p->gfx_114);
+            AuxSprite_SetGfx(&p->sprite_e8, p->gfx_114);
             AuxAnim_RestartAnim(&p->anim_33c, p->anim_350, 0, 0, 1);
             p->sprite_e8.flags = 1;
             Player_PayMagicCost(p);
@@ -3379,7 +3379,7 @@ NON_MATCH u32 Player_GetMagicAction(Player* p) {
             return p->action;
           }
           p->gfx_114 = &p->gfxForms[2];
-          FUN_0822a4fc(&p->sprite_e8, p->gfx_114);
+          AuxSprite_SetGfx(&p->sprite_e8, p->gfx_114);
           AuxAnim_RestartAnim(&p->anim_33c, p->anim_354, 0, 0, 1);
           p->sprite_e8.flags = 1;
           Player_PayMagicCost(p);

@@ -7,7 +7,7 @@
 	movs r0, #1
 	strb r0, [r1]
 	adds r0, r4, #0
-	bl FUN_080bbbac
+	bl FindEmptyArmorSlot
 	ldr r2, _080BC3E8 @ =0x000012F2
 	adds r1, r4, r2
 	strh r0, [r1]
@@ -37,7 +37,7 @@
 	movs r1, #1
 	movs r2, #4
 	movs r3, #0
-	bl FUN_080b9ff8
+	bl MenuCursor_Init
 	ldr r2, _080BC3F8 @ =0x00000D98
 	adds r1, r4, r2
 	adds r0, r5, #0

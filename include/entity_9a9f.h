@@ -24,7 +24,14 @@ typedef struct Entity9A9F {
   u8 prevState;                                // 0x020, FUN_081ddbdc が state を退避する, Create は 3 を入れる
   u8 unk_21;                                   // 0x021
   u8 unk_22;                                   // 0x022, Entity9A9F_SetState が状態遷移のたびに 1 を入れる
-  u8 unk_23[13];                               // 0x023
+  u8 unk_23;                                   // 0x023, 根拠: FUN_081df95c が書く
+  u8 unk_24;                                   // 0x024, 根拠: FUN_081df8a0 が引数の値を入れる
+  u8 unk_25;                                   // 0x025, 根拠: FUN_081df8d4 が 1 を入れる
+  u8 unk_26[0x29 - 0x26];                      // 0x026
+  u8 unk_29;                                   // 0x029, 根拠: FUN_081df908 が 1 を入れる
+  u8 unk_2a;                                   // 0x02A, 根拠: FUN_081df924 が 1 を入れる
+  u8 unk_2b;                                   // 0x02B, 根拠: FUN_081df940 が 1 を入れる
+  u8 unk_2c[0x30 - 0x2C];                      // 0x02C
   u16 unk_30;                                  // 0x030, Entity9A9F_Create が 0x1C20 を入れる
   u16 unk_32;                                  // 0x032, 同上
   s32 stateTimer;                              // 0x034, FUN_081dfa98 が毎フレーム +1、Entity9A9F_SetState が 0 に戻す
@@ -45,7 +52,11 @@ typedef struct Entity9A9F {
   u16 unk_66;                                  // 0x066, FUN_0809eb6c: Div(n * unk_66, 0x8C)
   u8 unk_68[4];                                // 0x068, Create が 4要素を 0 にする
   u16 unk_6c[4];                               // 0x06C, Create が 4要素を 0xFFFF にする, unk_44 がここを指す
-  u8 unk_74[164];                              // 0x074
+  u8 unk_74[0x78 - 0x74];                      // 0x074
+  u8 unk_78[0x7E - 0x78];                      // 0x078, 根拠: FUN_081de004 が recordCount 個ぶん 0 以外を探す
+  u16 unk_7e;                                  // 0x07E, 根拠: FUN_081dd9f0 が 0 に戻す
+  u16 unk_80[4];                               // 0x080, 根拠: 同上
+  u8 unk_88[0x118 - 0x88];                     // 0x088
   u8 unk_118[5];                               // 0x118, FUN_081de0dc が 0x11C から下へ 5要素に 4 を入れる
   u8 unk_11d[3];                               // 0x11D
   u16 unk_120[4];                              // 0x120, FUN_081de0dc が 0 にする
@@ -65,7 +76,9 @@ typedef struct Entity9A9F {
   u8 unk_2c4;                                  // 0x2C4, FUN_081de090 が 0 にする
   u8 unk_2c5;                                  // 0x2C5, 同上
   u8 unk_2c6;                                  // 0x2C6, 同上
-  u8 unk_2c7[13];                              // 0x2C7
+  u8 unk_2c7[0x2CC - 0x2C7];                   // 0x2C7
+  u8 unk_2cc[3];                               // 0x2CC, 根拠: FUN_081ddf84 が sEntity9A9FLimits[i] 以上なら 0 に戻す
+  u8 unk_2cf[0x2D4 - 0x2CF];                   // 0x2CF
   void (*updateCallback)(struct Entity9A9F*);  // 0x2D4
   u8 unk_2d8[4];                               // 0x2D8
   s16 unk_2dc;                                 // 0x2DC, '.l=0'

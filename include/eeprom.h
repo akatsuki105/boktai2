@@ -10,4 +10,6 @@ s32 FUN_08243648(s32 n);
 s32 EEPROM_ReadRetry(eepromAdr addr, SaveData* data, s32 len);
 s32 EEPROM_WriteRetry(eepromAdr addr, SaveData* data, s32 len);
 
+extern bool16 gEepromIdle;
+
 #endif  // __INCLUDE_EEPROM_H__

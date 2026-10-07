@@ -186,7 +186,7 @@ s32 ParticleShadow_Init(ParticleShadow* shadow, Vec3* ownerPos, s32 kind) {
   } else {
     shadow->updateCallback = ParticleShadow_UpdateNone;
   }
-  FUN_0822d9f0(&shadow->particle, gParticleShadowManager->group0, SPRFLAG_BLINK_ODD);
+  Particle_Add(&shadow->particle, gParticleShadowManager->group0, SPRFLAG_BLINK_ODD);
   Particle_SetOffset(&shadow->particle, -8, -8);
   shadow->particle.tileNum = gParticleShadowManager->group0->tile + (shadow->particle.spriteWidth >> 3) * (shadow->particle.spriteHeight >> 3) * 34;
   shadow->particle.offsetZ = -4;

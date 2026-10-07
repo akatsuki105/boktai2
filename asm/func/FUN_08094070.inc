@@ -26,12 +26,12 @@
 	movs r1, #1
 	movs r2, #5
 	movs r3, #3
-	bl FUN_0808a5b0
+	bl EntityCC28_DrawHP
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #5
 	movs r3, #4
-	bl FUN_0808a5e0
+	bl EntityCC28_DrawEne
 	b _080941EC
 	.align 2, 0
 _080940C0: .4byte 0x030044E0
@@ -102,7 +102,7 @@ _080940CC:
 	ldr r0, [r4, #0x58]
 	movs r1, #4
 	movs r2, #0
-	bl FUN_0808c510
+	bl EntityCC28_ShowBottomLine
 	adds r0, r4, #0
 	movs r1, #1
 	bl FUN_0808b6fc

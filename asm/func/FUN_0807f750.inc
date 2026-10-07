@@ -23,7 +23,7 @@
 	ldr r1, [r0]
 	adds r0, r2, #0
 	movs r2, #5
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _0807F786:
 	pop {r0}
 	bx r0

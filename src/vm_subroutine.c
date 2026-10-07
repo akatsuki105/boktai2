@@ -13,7 +13,8 @@ extern Subroutine gSubroutineTable[642 + 1];  // 最後は NULL
 
 const u32 Time085aa620 = 1089259575;  // 2004-07-09 18:04:39 UTC
 
-void FUN_0823b158(void) {
+// gSubroutineTable の 要素数を数える (このゲームでは 642 になる)
+void VM_CountSubroutine(void) {
   Subroutine* cur;
   gSubroutineCount = 0;
   for (cur = &gSubroutineTable[0]; cur->fn.fn != NULL; cur++) {

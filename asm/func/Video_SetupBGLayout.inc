@@ -265,7 +265,7 @@ _0822C2C0:
 	ldr r0, [sp]
 	ldrh r3, [r5, #0x16]
 	adds r2, r4, #0
-	bl FUN_0822b9d4
+	bl Video_RequestBGTileData
 _0822C2D8:
 	movs r3, #0
 	cmp r3, r8

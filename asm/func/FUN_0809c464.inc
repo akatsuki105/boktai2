@@ -36,7 +36,7 @@
 	bl FUN_0808e224
 _0809C4B6:
 	ldr r0, [r4]
-	bl FUN_0808d39c
+	bl EntityCC28_HideSprites
 	b _0809C4E8
 	.align 2, 0
 _0809C4C0: .4byte 0x0300013C

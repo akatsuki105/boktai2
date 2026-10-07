@@ -20,7 +20,14 @@ static_assert(sizeof(Entity080da848Elem) == 308);
 
 typedef struct Entity080da848 {
   Entity e;                     // 0x000, ENTITY_UNK_9
-  u8 unk_18[0x44];              // 0x018
+  u8 unk_18[0x32 - 0x18];       // 0x018, まだ未解析
+  u8 unk_32[3];                 // 0x032, 根拠: FUN_080d8644 が3要素を 0 で埋める
+  u8 unk_35[3];                 // 0x035, 同上
+  u8 unk_38[0x3E - 0x38];       // 0x038, まだ未解析
+  u16 unk_3e[3];                // 0x03E, 同上
+  u8 unk_44[0x4C - 0x44];       // 0x044, まだ未解析
+  u32 unk_4c[3];                // 0x04C, 同上
+  u8 unk_58[0x5C - 0x58];       // 0x058, まだ未解析
   Entity080da848Elem elems[8];  // 0x05C, 根拠: _Destroy の stride 0x134 × 8
   u32 activeMask;               // 0x9FC, 使用中の elems のビットマスク
 } Entity080da848;
@@ -28,7 +35,16 @@ static_assert(sizeof(Entity080da848) == 2560);
 
 extern Entity080da848* gEntity080da848;  // 0x0300015C
 
-NAKED void FUN_080d8644(Entity080da848* p) { INCFUNC("asm/func/FUN_080d8644.inc"); }
+void FUN_080d8644(Entity080da848* p) {
+  s32 i;
+
+  for (i = 0; i < 3; i++) {
+    p->unk_32[i] = 0;
+    p->unk_35[i] = 0;
+    p->unk_4c[i] = 0;
+    p->unk_3e[i] = 0;
+  }
+}
 
 NAKED void FUN_080d866c(Entity080da848* p) { INCFUNC("asm/func/FUN_080d866c.inc"); }
 

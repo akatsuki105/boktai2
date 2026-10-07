@@ -372,7 +372,7 @@ _080CB078:
 	bl FUN_080c3784
 	movs r0, #0x64
 	movs r1, #0x64
-	bl FUN_082464b8
+	bl Entity082464b8_Create
 	movs r6, #0xc8
 	lsls r6, r6, #5
 	adds r1, r5, r6

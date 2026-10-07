@@ -14,7 +14,6 @@
 #include "video.h"
 #include "vm.h"
 
-struct Entity0804e2c0;
 struct Dvalinn;
 struct Entity0FC5;
 struct Entity5941;
@@ -28,9 +27,6 @@ struct EnemyManager;
 struct Entity9A9F;
 struct Player;
 struct CollisionMapData;
-
-IWRAM_DATA u32 u32_03002b54 = 0;                           // gUnkEntity1Ptr_03002b58 と同じ場所っぽい, rfu_syncVBlank の戻り値が入る
-IWRAM_DATA struct Entity0804e2c0* gEntity0804e2c0 = NULL;  // 0x03002B58
 
 IWRAM_DATA u8 u8_03002b5c[0x03002B64 - 0x03002B5C] = {};  // todo
 IWRAM_DATA u16 u16_03002b64 = 0;                          // 0x03002B64, Player_ApplyBadCondition が Player.unk_456 と同じ値を書く
@@ -71,7 +67,9 @@ IWRAM_DATA struct Entity0B50* gEntity0B50 = NULL;         // 0x03002C00
 IWRAM_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 
 IWRAM_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
-IWRAM_DATA u8 u8_03002c12[0x03002C3C - 0x03002C12] = {};  // todo
+IWRAM_DATA u8 u8_03002c12[0x03002C14 - 0x03002C12] = {};  // todo
+IWRAM_DATA u16 u16_03002c14 = 0;                          // 0x03002C14, 根拠: EntityCC28_Destroy_0809cc04 が EntityCC28.state2 を書き込む
+IWRAM_DATA u8 u8_03002c16[0x03002C3C - 0x03002C16] = {};  // todo
 
 IWRAM_DATA struct EntityA628* gEntityA628 = NULL;  // 0x03002C3C
 
@@ -86,7 +84,8 @@ IWRAM_DATA struct EnemyListNode* gEnemyListHead = NULL;  // 0x03002C60, 生存�
 IWRAM_DATA struct LinkConnect* gLinkConnect = NULL;      // 0x03002C64
 IWRAM_DATA struct Entity9A9F* gEntity9A9F = NULL;        // 0x03002C68
 
-IWRAM_DATA u8 u8_03002c6c[0x03002C80 - 0x03002C6C] = {};  // todo
+IWRAM_DATA void* ptr_03002c6c = NULL;                     // 0x03002C6C, 0 以外なら SoftReset_0823a928 が Sio_Stop を呼ぶ, FUN_081e21dc が書き FUN_081e21c4 が 0 に戻す
+IWRAM_DATA u8 u8_03002c70[0x03002C80 - 0x03002C70] = {};  // todo
 
 IWRAM_DATA struct Dvalinn* gDvalinn = NULL;  // 0x03002C80
 
@@ -142,7 +141,7 @@ IWRAM_DATA AuxSprite* gAuxSpriteLists[2] = {};    // 0x03003560
 IWRAM_DATA MainSprite* gMainSpriteLists[2] = {};  // 0x03003568
 IWRAM_DATA Particle* gParticleLists[2] = {};      // 0x03003570, 根拠: Video_AddParticleIntoDrawList
 
-IWRAM_DATA u16 gAuxSpriteTileCount = 0;   // 0x03003578, このフレームに FUN_0822b270 が積んだアクタースプライトのタイル数, 根拠: FUN_0822b308 が DMA 先の起点計算に使う
+IWRAM_DATA s16 gAuxSpriteTileCount = 0;   // 0x03003578, このフレームに Video_AllocObjTiles が積んだアクタースプライトのタイル数, 根拠: CopyObjTileDataToVram が ldrsh で読んで DMA 先の起点計算に使う
 IWRAM_DATA u16 u16_0300357a = 0;          // todo
 IWRAM_DATA u16 gMainSpriteTileCount = 0;  // 0x0300357C, MainSprite_DrawInternal が積んだタイル数を加算していくが、読み出す箇所が見つかっていない
 IWRAM_DATA u16 u16_0300357e = 0;          // todo
@@ -153,57 +152,64 @@ IWRAM_DATA rgb555* gObjPlttData = NULL;  // 0x03003584, = ObjPlttFile.body
 IWRAM_DATA s16 gObjTileCursor = 0;  // 0x03003588, 次に確保する OBJ VRAM のタイル番号 (上限 0x400), Video_ResetObjTileAlloc で gParticleFileTileCount に戻される
 
 IWRAM_DATA ParticleFile* gParticleFile = NULL;         // 0x0300358C, 現在ロードされているParticleFileへのポインタ, ParticleFile は ParticleFile0 しかないので NULL or &ParticleFile0 になるはず
-IWRAM_DATA u16 gParticle_03003590 = 0;                 // 0x03003590, まだ不明
+IWRAM_DATA u16 gObjTileRequestCount = 0;               // 0x03003590, gObjTileRequests に積まれている件数
 IWRAM_DATA ALIGNED(4) s16 gParticleFileTileCount = 0;  // 0x03003594, ParticleFile.tileCount のタイル数
 
 IWRAM_DATA u8* gAuxSpriteTiles = NULL;            // 0x03003598, &AuxSpriteFile + offsetToTiles
 IWRAM_DATA AuxSubsprite* gAuxSubsprites = NULL;   // 0x0300359C, &AuxSpriteFile + offsetToSubsprites
 IWRAM_DATA AuxSpriteFile* gAuxSpriteFile = NULL;  // 0x030035A0
 
-IWRAM_DATA u8 u8_030035A4[140] = {};  // todo
+IWRAM_DATA u32 gMainSpriteTileRequestCount = 0;  // 0x030035A4, gMainSpriteTileRequests に積まれている件数
+IWRAM_DATA u8 u8_030035a8[8] = {};               // todo
+
+// 根拠: Video_BuildOAM が 4 バイト刻みで 32 個まで読み、+0 を gSineTable の添字、+1/+2 を Div の除数にして OAM のアフィンパラメータを組む
+IWRAM_DATA ObjAffineParams gObjAffineParams[32] = {};  // 0x030035B0
 
 IWRAM_DATA OamData gOAMBuffer[128] = {};  // 0x03003630, OAM のバッファ
 
-IWRAM_DATA u16 u16_ARRAY_03003a30[4] = {};  // 0x03003A30, Video_ResetFrameState が毎フレーム 0 に戻す
+IWRAM_DATA u16 gOAMPrioCounts[4] = {};  // 0x03003A30, 優先度ごとに積まれたスプライト数, 根拠: Video_BuildOAM が優先度順に gOAMBuffer へ並べ替えるのに使う
 
-IWRAM_DATA s32 s32_03003a38 = 0;  // 0x03003A38, Video_ResetFrameState が毎フレーム 0 に戻す
+IWRAM_DATA s32 gOAMCount = 0;  // 0x03003A38, gOAMBuffer に並べ終えたスプライト数, 根拠: Video_BuildOAM
 
-IWRAM_DATA s32 s32_03003a3c = 0;  // 0x03003A3C, Video_ResetFrameState が毎フレーム 0 に戻す
+IWRAM_DATA s32 gStagedOAMCount = 0;  // 0x03003A3C, gStagedOAMBuffer に積まれたスプライト数, 根拠: Video_BuildOAM
 
-IWRAM_DATA u8 u8_03003a40[0x03003E40 - 0x03003A40] = {};  // todo
+// 描画パスが積む並べ替え前のスプライト, attr3 は本来のアフィン番号ではなく (優先度 << 8 | 次の要素の添字) として使われる
+IWRAM_DATA OamData gStagedOAMBuffer[128] = {};  // 0x03003A40, 根拠: Video_BuildOAM
 
-IWRAM_DATA s32 s32_03003e40 = 0;  // 0x03003E40, Video_ResetFrameState が毎フレーム 0 に戻す
+IWRAM_DATA s32 gObjAffineCount = 0;  // 0x03003E40, gObjAffineParams に積まれた件数 (32 で打ち止め), 根拠: Video_BuildOAM
 
 IWRAM_DATA u8 u8_03003e44[0x03003E50 - 0x03003E44] = {};  // todo
-IWRAM_DATA u16 u16_03003e50 = 0;                          // 0x03003E50, Video_InitBGMode が 0 を書く
+IWRAM_DATA u16 gBgAffineAngle = 0;                        // 0x03003E50, BG のアフィン変換の角度 (gSineTable の添字), 根拠: Video_SetBGAffine
 IWRAM_DATA u8 u8_03003e52[0x03003E60 - 0x03003E52] = {};  // todo
 
-IWRAM_DATA void* gBGTileDataSrcAddrs[4] = {};  // 0x03003E60, BG ごとのタイルデータ転送元, 根拠: FUN_0822b9d4
+IWRAM_DATA void* gBGTileDataSrcAddrs[4] = {};  // 0x03003E60, BG ごとのタイルデータ転送元, 根拠: Video_RequestBGTileData
 
-IWRAM_DATA u16 u16_ARRAY_03003e70[4] = {};  // 0x03003E70, StageBGRegs が u16_ARRAY_03003e90 へ丸ごと写す控え
+IWRAM_DATA s16 gBgAffineMatrix[4] = {};  // 0x03003E70, BGnPA/PB/PC/PD の控え, StageBGRegs が gStagedBgAffineMatrix へ丸ごと写す
 
 IWRAM_DATA u16 gStagedDISPCNT = 0;  // 0x03003E78, Video_SetupBG / Video_SetupBGLayout が表示する BG のビットを立て、VideoCommit_Update が DISPCNT に流し込む
 
 IWRAM_DATA u8 u8_03003e7a[0x03003E80 - 0x03003E7A] = {};  // todo
 
-IWRAM_DATA u16 gBGTileDataTileCounts[4] = {};  // 0x03003E80, BG ごとの転送タイル枚数, 根拠: FUN_0822b9d4
+IWRAM_DATA u16 gBGTileDataTileCounts[4] = {};  // 0x03003E80, BG ごとの転送タイル枚数, 根拠: Video_RequestBGTileData
 
-IWRAM_DATA u8 u8_03003e88[0x03003E8C - 0x03003E88] = {};  // todo
+IWRAM_DATA s16 gBgAffineCenterY = 0;                      // 0x03003E88, 根拠: Video_SetBGAffine が BGnY の算出に使う
+IWRAM_DATA u8 u8_03003e8a[2] = {};                        // todo
 IWRAM_DATA u16 u16_03003e8c = 0;                          // 0x03003E8C, 0 なら StageBGRegs が BG2/BG3 のオフセットを積み, 0 以外なら控えの書き戻しを行う
 IWRAM_DATA u8 u8_03003e8e[0x03003E90 - 0x03003E8E] = {};  // todo
-IWRAM_DATA u16 u16_ARRAY_03003e90[4] = {};                // 0x03003E90, StageBGRegs が u16_ARRAY_03003e70 から写す先
-IWRAM_DATA u32 u32_03003e98 = 0;                          // 0x03003E98, StageBGRegs が u32_ARRAY_03003eb8[0] へ写す
-IWRAM_DATA u16 u16_03003e9c = 0;                          // 0x03003E9C, Video_InitBGMode が 0x100 を書く
+IWRAM_DATA s16 gStagedBgAffineMatrix[4] = {};             // 0x03003E90, StageBGRegs が gBgAffineMatrix から写す先
+IWRAM_DATA s32 gBgAffineRefX = 0;                         // 0x03003E98, BGnX の控え, StageBGRegs が gStagedBgAffineRef[0] へ写す
+IWRAM_DATA s16 gBgAffineScaleY = 0;                       // 0x03003E9C, 8.8 固定小数の Y 倍率, Video_InitBGMode が 0x100 (等倍) を書く
 IWRAM_DATA u8 u8_03003e9e[0x03003EA0 - 0x03003E9E] = {};  // todo
-IWRAM_DATA u32 u32_03003ea0 = 0;                          // 0x03003EA0, StageBGRegs が u32_ARRAY_03003eb8[1] へ写す
+IWRAM_DATA s32 gBgAffineRefY = 0;                         // 0x03003EA0, BGnY の控え, StageBGRegs が gStagedBgAffineRef[1] へ写す
 IWRAM_DATA u8 u8_03003ea4[0x03003EA8 - 0x03003EA4] = {};  // todo
 
-IWRAM_DATA u16 gBGTileDataVramOffsets[4] = {};  // 0x03003EA8, BG ごとの転送先 VRAM オフセット, 根拠: FUN_0822b9d4
+IWRAM_DATA u16 gBGTileDataVramOffsets[4] = {};  // 0x03003EA8, BG ごとの転送先 VRAM オフセット, 根拠: Video_RequestBGTileData
 
-IWRAM_DATA u8 u8_03003eb0[0x03003EB4 - 0x03003EB0] = {};  // todo
-IWRAM_DATA u16 u16_03003eb4 = 0;                          // 0x03003EB4, Video_InitBGMode が 0x100 を書く
+IWRAM_DATA s16 gBgAffineCenterX = 0;                      // 0x03003EB0, 根拠: Video_SetBGAffine が BGnX の算出に使う
+IWRAM_DATA u8 u8_03003eb2[2] = {};                        // todo
+IWRAM_DATA s16 gBgAffineScaleX = 0;                       // 0x03003EB4, 8.8 固定小数の X 倍率, Video_InitBGMode が 0x100 (等倍) を書く
 IWRAM_DATA u8 u8_03003eb6[0x03003EB8 - 0x03003EB6] = {};  // todo
-IWRAM_DATA u32 u32_ARRAY_03003eb8[2] = {};                // 0x03003EB8, StageBGRegs が u32_03003e98 / u32_03003ea0 から写す先
+IWRAM_DATA s32 gStagedBgAffineRef[2] = {};                // 0x03003EB8, StageBGRegs が gBgAffineRefX / gBgAffineRefY から写す先
 IWRAM_DATA u16 gStagedBGOfs[8] = {};                      // 0x03003EC0, BG0HOFS..BG3VOFS に流し込む値の控え, BG ごとに (H, V) の順, 根拠: StageBGRegs
 
 IWRAM_DATA BgState gBgStates[4] = {};  // 0x03003ED0, BG0-3 の状態, 根拠: FUN_0822eef4, StageBGRegs (stride 0x30, +0x20/+0x22 を BGnHOFS/BGnVOFS に使う)
@@ -232,19 +238,19 @@ IWRAM_DATA u8 gOAMTileWidthTable[16] = {};       // 0x03003FE0, タイル(8px)�
 IWRAM_DATA u32 gOAMShapeSizeAttrTable[16] = {};  // 0x03003FF0, OAM0.14-15(shape) と OAM1.14-15(size) のビットを attr0|attr1<<16 形式で格納, AuxSprite_DrawInternal / MainSprite_DrawInternal が OR する
 IWRAM_DATA u8 gOAMWidthTable[16] = {};           // 0x03004030, ピクセル単位
 
-IWRAM_DATA s32 gBgBrightness = 0;          // 0x03004040, BG の明るさ, FRACUNIT_6 (64) が等倍で 0 なら gBgPlttBlendColor 一色, FUN_0822d630 が gBgBrightness2 と掛けて BG パレットに適用する, data3d.c も色のスケールに使う
-IWRAM_DATA s32 gObjPlttSlotCursor = 0;     // 0x03004044, gObjPlttSlotIDs の確保位置 (最大 16), FUN_0822d114 が毎フレーム gObjPlttSlotReserved + 2 に戻す, 根拠: FUN_0822d190 (FUN_0822d12c は gObjPlttSlotCount の方を使う)
-IWRAM_DATA s32 gBgBrightnessApplied = 0;   // 0x03004048, FUN_0822d630 が最後に適用した BG の明るさ, gObjBrightnessApplied の BG 版
+IWRAM_DATA s32 gBgBrightness = 0;          // 0x03004040, BG の明るさ, FRACUNIT_6 (64) が等倍で 0 なら gBgPlttBlendColor 一色, ApplyBgPlttBlend が gBgBrightness2 と掛けて BG パレットに適用する, data3d.c も色のスケールに使う
+IWRAM_DATA s32 gObjPlttSlotCursor = 0;     // 0x03004044, gObjPlttSlotIDs の確保位置 (最大 16), ResetObjPlttSlotCursor が毎フレーム gObjPlttSlotReserved + 2 に戻す, 根拠: AllocBlendPlttSlot (AllocParticlePlttSlot は gObjPlttSlotCount の方を使う)
+IWRAM_DATA s32 gBgBrightnessApplied = 0;   // 0x03004048, ApplyBgPlttBlend が最後に適用した BG の明るさ, gObjBrightnessApplied の BG 版
 IWRAM_DATA s32 gObjBrightnessApplied = 0;  // 0x0300404C, FUN_0822d248 が最後に適用した gObjBrightness, 等倍のまま変わっていなければ加工を省くための控え
 
 IWRAM_DATA rgb555 gObjectPlttBuffer[256] = {};  // 0x03004050, CommitPalette で OBJ_PLTT にコピーされる
 IWRAM_DATA rgb555 gBgPlttBuffer[256] = {};      // 0x03004250, BG パレットの作業用バッファ, ゲーム側はここに書き、加工が要らなければこのまま CommitPalette の転送元になる
 
-IWRAM_DATA s32 gObjPlttSlotReserved = 0;  // 0x03004450, FUN_0822d114 が gObjPlttSlotCursor = これ + 2 として 0 に戻す
-IWRAM_DATA u16 gBgPlttFadeRowMask = 0;    // 0x03004454, bit i が立っているパレット行だけ FUN_0822d630 が明るさ・ブレンドを掛ける, 書き手: Entity4AE5_Init/Update
+IWRAM_DATA s32 gObjPlttSlotReserved = 0;  // 0x03004450, ResetObjPlttSlotCursor が gObjPlttSlotCursor = これ + 2 として 0 に戻す
+IWRAM_DATA u16 gBgPlttFadeRowMask = 0;    // 0x03004454, bit i が立っているパレット行だけ ApplyBgPlttBlend が明るさ・ブレンドを掛ける
 IWRAM_DATA u8 u8_03004456[2] = {};        // todo
 
-IWRAM_DATA s32 gObjPlttSlotCount = 0;  // 0x03004458, 確保済みの OBJ パレットスロット数 (最大 2), 根拠: FUN_0822d12c
+IWRAM_DATA s32 gObjPlttSlotCount = 0;  // 0x03004458, 確保済みの OBJ パレットスロット数 (最大 2), 根拠: AllocParticlePlttSlot
 
 IWRAM_DATA s32 gObjBrightness = 0;  // 0x0300445C, OBJ の明るさ, FRACUNIT_6 (64) が等倍で 0 なら gObjPlttBlendColor 一色, FUN_0822d248 が OBJ パレットに適用する, 掛ける相手はなく1本だけ
 
@@ -258,12 +264,12 @@ IWRAM_DATA rgb555* gBGPlttBufferPointer = NULL;  // 0x03004468
 
 IWRAM_DATA s32 s32_0300446c = 0;  // 0x0300446C
 
-IWRAM_DATA u16 gObjPlttSlotIDs[16] = {};  // 0x03004470, 各 OBJ パレットスロットに割り当てたパレット ID, 根拠: FUN_0822d12c (2 個まで), FUN_0822d190 (16 個まで)
+IWRAM_DATA u16 gObjPlttSlotIDs[16] = {};  // 0x03004470, 各 OBJ パレットスロットに割り当てたパレット ID, 根拠: AllocParticlePlttSlot (2 個まで), AllocBlendPlttSlot (16 個まで)
 
 IWRAM_DATA u16 gObjPlttFadeSkipMask = 0;  // 0x03004490, FUN_0822d248 のフェードから除外する OBJ パレットを選ぶ, bit0 で ID 0x1D/0x26/0x27/0x117, bit1 で 0x2A9/0x27A を素通しにする, 書き手: Entity6978 ('.params[4]')
 
 IWRAM_DATA u8 u8_03004492[2] = {};     // todo
-IWRAM_DATA u16 gBgPlttBlendColor = 0;  // 0x03004494, FUN_0822d630 が各色をこの色へ寄せる, 0 なら明るさだけ掛ける, 書き手: MapPltt_FadeOut (明転の完了時に RGB(4, 4, 4)), FUN_0822d014
+IWRAM_DATA u16 gBgPlttBlendColor = 0;  // 0x03004494, ApplyBgPlttBlend が各色をこの色へ寄せる, 0 なら明るさだけ掛ける, 書き手: MapPltt_FadeOut (明転の完了時に RGB(4, 4, 4)), ResetPltt
 IWRAM_DATA u8 u8_03004496[2] = {};     // todo
 
 IWRAM_DATA u8 gMosaicTargets = 0;                       // 0x03004498, bit0-3: BG0-3 の BGnCNT.6 を立てる, bit4: MOSAIC の OBJ 側(bit8-15)も書く, 根拠: Video_ApplyMosaic
@@ -328,6 +334,7 @@ IWRAM_DATA u32 u32_03004790 = 0;
 IWRAM_DATA u32 u32_03004794 = 0;
 IWRAM_DATA u32 u32_03004798 = 0;
 IWRAM_DATA u32 u32_0300479c = 0;
+
 IWRAM_DATA u32 u32_030047a0 = 0;
 IWRAM_DATA u32 gFlag030047a4 = 0;
 

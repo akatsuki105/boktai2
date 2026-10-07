@@ -181,7 +181,7 @@ _0805F7F2:
 	ldr r1, [r7, #0x1c]
 	mov r3, r8
 	adds r2, r3, r5
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	cmp r5, #0
 	ble _0805F804
 	movs r0, #4
@@ -200,7 +200,7 @@ _0805F812:
 	mov r0, r8
 	adds r2, r0, r5
 	mov r0, sb
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldrb r0, [r6, #7]
 	cmp r0, #0
 	bne _0805F82C
@@ -222,7 +222,7 @@ _0805F83A:
 	mov r3, r8
 	adds r2, r3, r5
 	mov r0, sl
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldrb r0, [r6, #7]
 	cmp r0, #0
 	bne _0805F854
@@ -244,7 +244,7 @@ _0805F864:
 	ldr r0, [sp, #8]
 	mov r7, r8
 	adds r2, r7, r5
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldrb r1, [r6, #7]
 	cmp r1, #0
 	bne _0805F878
@@ -385,7 +385,7 @@ _0805F96E:
 	strh r0, [r7, #0x1a]
 	mov r0, r8
 	movs r1, #0
-	bl FUN_0822da50
+	bl Particle_AddToDrawList
 	ldr r1, [sp, #0xc]
 	adds r1, #5
 	str r1, [sp, #0xc]
@@ -994,7 +994,7 @@ _0805FDDA:
 	ldr r1, [r7, #0x1c]
 	adds r0, r4, #0
 	ldr r2, _0805FE2C @ =0x00010010
-	bl FUN_0822da70
+	bl Particle_Setup
 	adds r0, r4, #0
 	mov r1, sl
 	mov r2, sl
@@ -1002,7 +1002,7 @@ _0805FDDA:
 	ldr r1, [r7, #0x1c]
 	adds r0, r4, #0
 	movs r2, #0x20
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	movs r0, #1
 	strb r0, [r4, #0xf]
 	subs r6, #1

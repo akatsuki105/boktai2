@@ -59,6 +59,8 @@ typedef struct {
 } Entity5645;
 static_assert(sizeof(Entity5645) == 7712);
 
+IWRAM_DATA Entity5645* gEntity5645 = NULL;  // 0x03000120
+
 void FUN_08055d7c(SpriteHolder* p);
 
 INCRODATA(".rodata", "data/entity_5645.bin");  // ./tools/bin.ts ./baserom.gba 0x085ab748 0x085ab990 ./data/entity_5645.bin

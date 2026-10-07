@@ -355,7 +355,7 @@ _08050B10:
 	str r0, [r6, #0x64]
 	movs r0, #4
 	movs r1, #0x18
-	bl FUN_0804e9f4
+	bl SignalStrengthIcon_CreateAt
 	movs r0, #0x73
 	bl VM_SeekToNamedArg
 	cmp r0, #0

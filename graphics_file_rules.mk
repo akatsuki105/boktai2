@@ -1,8 +1,8 @@
 # gbagfx に追加でオプションを渡す場合は target-specific variables で個別に記述する
 GFX_OPTS :=
 
-data/font_narrow.4bpp: GFX_OPTS := -mheight 2
-data/font_wide.4bpp: GFX_OPTS := -num_tiles 6148 -mwidth 2 -mheight 2
+data/hankaku.4bpp: GFX_OPTS := -mheight 2
+data/zenkaku.4bpp: GFX_OPTS := -num_tiles 6148 -mwidth 2 -mheight 2
 data/particle_group_0.4bpp: GFX_OPTS := -mwidth 2 -mheight 2
 data/particle_group_1.4bpp: GFX_OPTS := -num_tiles 74
 
@@ -42,8 +42,7 @@ data/actor_sprites/210F.4bpp: GFX_OPTS := -num_tiles 54
 data/actor_sprites/solar_station.4bpp: GFX_OPTS := -num_tiles 22
 data/actor_sprites/crow_0.4bpp: GFX_OPTS := -num_tiles 214
 data/actor_sprites/crow_1.4bpp: GFX_OPTS := -num_tiles 105
-data/actor_sprites/8204.4bpp: GFX_OPTS := -num_tiles 22
-data/actor_sprites/8207.4bpp: GFX_OPTS := -num_tiles 7
+data/actor_sprites/jormungandr_8204.4bpp: GFX_OPTS := -num_tiles 22
 data/actor_sprites/DC38.4bpp: GFX_OPTS := -num_tiles 445
 data/actor_sprites/D0A3.4bpp: GFX_OPTS := -num_tiles 18
 data/actor_sprites/beenest.4bpp: GFX_OPTS := -num_tiles 19
@@ -101,7 +100,7 @@ $(COLLISION_MAPS_LZ): GFX_OPTS := -search 1
 
 .PHONY: clean-graphics clean-collisionmap
 clean-graphics:
-	@rm -f data/font_narrow.4bpp data/font_wide.4bpp data/particle_group_*.4bpp data/spriteset/*.4bpp data/tilesets.4bpp data/actor_sprites/*.4bpp data/bgp/*.gbapal
+	@rm -f data/hankaku.4bpp data/zenkaku.4bpp data/particle_group_*.4bpp data/spriteset/*.4bpp data/tilesets.4bpp data/actor_sprites/*.4bpp data/bgp/*.gbapal
 
 clean-collisionmap:
 	@rm -f $(COLLISION_MAPS_LZ)

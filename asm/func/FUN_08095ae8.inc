@@ -87,7 +87,7 @@ _08095B30:
 	ldr r0, [r5, #0x58]
 	movs r1, #4
 	movs r2, #0
-	bl FUN_0808c510
+	bl EntityCC28_ShowBottomLine
 	adds r0, r5, #0
 	movs r1, #1
 	bl FUN_0808b6fc

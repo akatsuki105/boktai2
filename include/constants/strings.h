@@ -323,7 +323,7 @@
 #define STR_0563 0x0563                        // <LABEL=NONE>暗黒ロ―ンの暗子ちゃん</LABEL><PROC=1>「それでは、わたし…
 #define STR_056C 0x056C                        // <LABEL=NONE>暗黒ロ―ンの暗子ちゃん</LABEL><PROC=1>「それでは、わたし…
 #define STR_0578 0x0578                        // <LABEL=NONE>???</LABEL>「あっ、<NAME>さま!!
-#define STR_0581 0x0581                        // これを買いますか?
+#define STR_BUY_CONFIRM 0x0581                 // これを買いますか?
 #define STR_059E 0x059E                        // 太陽鍛冶について <ALTER>太陽鍛冶とは</ALTER>　<ALTER>鍛冶の内容</ALT…
 #define STR_05A0 0x05A0                        // 太陽鍛冶(たいようかじ)とは、
 #define STR_05A3 0x05A3                        // 太陽鍛冶(たいようかじ)では、
@@ -342,9 +342,9 @@
 #define STR_05DF 0x05DF                        // <LABEL=OTENKO>おてんこさま</LABEL>「よし!!太陽センサ―に太陽の光を当て
 #define STR_05E2 0x05E2                        // <LABEL=OTENKO>おてんこさま</LABEL>「ううむ・・・
 #define STR_05E8 0x05E8                        // <LABEL=OTENKO>おてんこさま</LABEL>「ん?
-#define STR_05EC 0x05EC                        // <LABEL=OTENKO>おてんこさま</LABEL>「太陽ぉ――――――!!」
-#define STR_05EE 0x05EE                        // <LABEL=R_DJUNGO><NAME></LABEL>「太陽ぉ――――――!!」
-#define STR_05F0 0x05F0                        // <LABEL=B_DJUNGO><NAME></LABEL>「太陽ぉ――――――!!」
+#define STR_PILEDRIVER_TAIYO_OTNK 0x05EC       // <LABEL=OTENKO>おてんこさま</LABEL>「太陽ぉ――――――!!」
+#define STR_PILEDRIVER_TAIYO_RDJANGO 0x05EE    // <LABEL=R_DJUNGO><NAME></LABEL>「太陽ぉ――――――!!」
+#define STR_PILEDRIVER_TAIYO_BDJANGO 0x05F0    // <LABEL=B_DJUNGO><NAME></LABEL>「太陽ぉ――――――!!」
 #define STR_05F2 0x05F2                        // <LABEL=OTENKO>おてんこさま</LABEL>「バトルドライブ開始!!
 #define STR_05FA 0x05FA                        // <LABEL=ZAJI>ザジ</LABEL>「サバタ、ええか?
 #define STR_05FF 0x05FF                        // <LABEL=OTENKO>おてんこさま</LABEL>「いかん!!イモ―タルが逃(に)げるぞ!
@@ -652,9 +652,9 @@
 #define STR_0A75 0x0A75                        // <LABEL=RINGO3>黒のダ―イン</LABEL>「イモ―タルの宿敵にしてキミたちの父親、…
 #define STR_0A98 0x0A98                        // <LABEL=PLAYER><NAME></LABEL>(クロ・・・!!)
 #define STR_0A9A 0x0A9A                        // <LABEL=SABATA>サバタ</LABEL>「<NAME>!!」
-#define STR_0A9D 0x0A9D                        // <LABEL=DVALINN>青いシルエットの女</LABEL>「サバタには逃(に)げられたか・…
-#define STR_0AA3 0x0AA3                        // <LABEL=NONE>サバタの声</LABEL>「しっかりしろ、<NAME>!!
-#define STR_0AA5 0x0AA5                        // <LABEL=NONE></LABEL>そいつの始末は任せたぞ!俺はヤツを追う!!」
+#define STR_DVALINN_0A9D 0x0A9D                // <LABEL=DVALINN>青いシルエットの女</LABEL>「サバタには逃(に)げられたか・…
+#define STR_DVALINN_0AA3 0x0AA3                // <LABEL=NONE>サバタの声</LABEL>「しっかりしろ、<NAME>!!
+#define STR_DVALINN_0AA5 0x0AA5                // <LABEL=NONE></LABEL>そいつの始末は任せたぞ!俺はヤツを追う!!」
 #define STR_0AA7 0x0AA7                        // <LABEL=LADY>???</LABEL>「誰(だれ)かと思えば・・・
 #define STR_0AAD 0x0AAD                        // <ALTER>覚えてる</ALTER>　<ALTER>知らない</ALTER>
 #define STR_0AAF 0x0AAF                        // <LABEL=LADY>レディ</LABEL>「いい子ね♪
@@ -679,7 +679,7 @@
 #define STR_0B34 0x0B34                        // <LABEL=PLAYER></LABEL>そうだよね・・・おとうさん!!」
 #define STR_0B36 0x0B36                        // <LABEL=RINGO2>リンゴ</LABEL>「・・・その通りだ!!
 #define STR_0B3E 0x0B3E                        // <LABEL=PLAYER><NAME></LABEL>(さようなら、おとうさん・・・)
-#define STR_0B40 0x0B40                        // <LABEL=NONE></LABEL>太陽銃が残された・・・
+#define STR_GUN_MEMENTO 0x0B40                 // <LABEL=NONE></LABEL>太陽銃が残された・・・
 #define STR_0B42 0x0B42                        // <LABEL=ZAJI>ザジ</LABEL>「<NAME>、今のは・・・
 #define STR_0B46 0x0B46                        // <LABEL=ZAJI>ザジ</LABEL>「原種の欠片、ヨルムンガンド・・・
 #define STR_0B55 0x0B55                        // <LABEL=ZAJI>ザジ</LABEL>「これは・・・!!まさかヨルムンガンドが!?
@@ -1019,28 +1019,28 @@
 #define STR_SUMIRE_105B 0x105B                 // <LABEL=SUMIRE>スミレ</LABEL>「そうこのカギは、ぜんぶで3つなんだって。
 #define STR_SUMIRE_105E 0x105E                 // <LABEL=SUMIRE>スミレ</LABEL>「おにいちゃんはカミナリへいき?
 #define STR_SUMIRE_1062 0x1062                 // <LABEL=SUMIRE>スミレ</LABEL>「あれ・・・?<NAME>のおにいちゃん?」
-#define STR_106D 0x106D                        // <LABEL=LADY>レディ</LABEL>「いらっしゃい、<NAME>くん。
-#define STR_1076 0x1076                        // <LABEL=LADY>レディ</LABEL>「いらっしゃい、<NAME>くん。
-#define STR_107E 0x107E                        // <LABEL=LADY>レディ</LABEL>「ちょうどいいところに来たわね、<NAME>くん。
-#define STR_1086 0x1086                        // <LABEL=LADY>レディ</LABEL>「終末の獣(けもの)だなんて・・・
-#define STR_108E 0x108E                        // <LABEL=LADY>レディ</LABEL>「どう、調子は?」 <ALTER>仕事の話</AL…
-#define STR_1090 0x1090                        // <LABEL=LADY>レディ</LABEL>「あら、ごめんなさい。
-#define STR_1095 0x1095                        // <LABEL=LADY>レディ</LABEL>「<NAME>くんがいてくれてほんと、助かるわ。
-#define STR_1098 0x1098                        // <LABEL=LADY>レディ</LABEL>「気に入った依頼(いらい)は、なかったかしら?
-#define STR_109C 0x109C                        // <LABEL=LADY>レディ</LABEL>「そういえば・・・
-#define STR_10A0 0x10A0                        // <LABEL=LADY>レディ</LABEL>「そういえば・・・
-#define STR_10A4 0x10A4                        // <LABEL=LADY>レディ</LABEL>「そういえば・・・
-#define STR_10A8 0x10A8                        // <LABEL=LADY>レディ</LABEL>「そういえば・・・
-#define STR_10AD 0x10AD                        // <LABEL=LADY>レディ</LABEL>「そういえば・・・
-#define STR_10B2 0x10B2                        // <LABEL=LADY>レディ</LABEL>「そういえば・・・
-#define STR_10B6 0x10B6                        // <LABEL=LADY>レディ</LABEL>「そういえば・・・
-#define STR_10B9 0x10B9                        // <LABEL=LADY>レディ</LABEL>「敵モンスタ―を倒(たお)すことで得られる経験値。
-#define STR_10BD 0x10BD                        // <LABEL=LADY>レディ</LABEL>「魔法カ―ドは使ってる?
-#define STR_10C2 0x10C2                        // <LABEL=LADY>レディ</LABEL>「スキル(SKILL)って知ってる?
-#define STR_10CB 0x10CB                        // <LABEL=LADY>レディ</LABEL>「景品交換(けいひんこうかん)では、
-#define STR_10D1 0x10D1                        // <MOJISE=MOJISE_SYSTEM>現在の対戦ポイントは、<VAR=1>ポイントです。
-#define STR_10D3 0x10D3                        // <MOJISE=MOJISE_SYSTEM><VAR=2>ポイント使って、魔法カ―ドと交換(こう…
-#define STR_10D5 0x10D5                        // <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>
+#define STR_LADY_106D 0x106D                   // <LABEL=LADY>レディ</LABEL>「いらっしゃい、<NAME>くん。
+#define STR_LADY_1076 0x1076                   // <LABEL=LADY>レディ</LABEL>「いらっしゃい、<NAME>くん。
+#define STR_LADY_107E 0x107E                   // <LABEL=LADY>レディ</LABEL>「ちょうどいいところに来たわね、<NAME>くん。
+#define STR_LADY_1086 0x1086                   // <LABEL=LADY>レディ</LABEL>「終末の獣(けもの)だなんて・・・
+#define STR_LADY_108E 0x108E                   // <LABEL=LADY>レディ</LABEL>「どう、調子は?」 <ALTER>仕事の話</AL…
+#define STR_LADY_1090 0x1090                   // <LABEL=LADY>レディ</LABEL>「あら、ごめんなさい。
+#define STR_LADY_1095 0x1095                   // <LABEL=LADY>レディ</LABEL>「<NAME>くんがいてくれてほんと、助かるわ。
+#define STR_LADY_1098 0x1098                   // <LABEL=LADY>レディ</LABEL>「気に入った依頼(いらい)は、なかったかしら?
+#define STR_LADY_109C 0x109C                   // <LABEL=LADY>レディ</LABEL>「そういえば・・・
+#define STR_LADY_10A0 0x10A0                   // <LABEL=LADY>レディ</LABEL>「そういえば・・・
+#define STR_LADY_10A4 0x10A4                   // <LABEL=LADY>レディ</LABEL>「そういえば・・・
+#define STR_LADY_10A8 0x10A8                   // <LABEL=LADY>レディ</LABEL>「そういえば・・・
+#define STR_LADY_10AD 0x10AD                   // <LABEL=LADY>レディ</LABEL>「そういえば・・・
+#define STR_LADY_10B2 0x10B2                   // <LABEL=LADY>レディ</LABEL>「そういえば・・・
+#define STR_LADY_10B6 0x10B6                   // <LABEL=LADY>レディ</LABEL>「そういえば・・・
+#define STR_LADY_10B9 0x10B9                   // <LABEL=LADY>レディ</LABEL>「敵モンスタ―を倒(たお)すことで得られる経験値。
+#define STR_LADY_10BD 0x10BD                   // <LABEL=LADY>レディ</LABEL>「魔法カ―ドは使ってる?
+#define STR_LADY_10C2 0x10C2                   // <LABEL=LADY>レディ</LABEL>「スキル(SKILL)って知ってる?
+#define STR_LADY_10CB 0x10CB                   // <LABEL=LADY>レディ</LABEL>「景品交換(けいひんこうかん)では、
+#define STR_LINK_10D1 0x10D1                   // <MOJISE=MOJISE_SYSTEM>現在の対戦ポイントは、<VAR=1>ポイントです。
+#define STR_LINK_10D3 0x10D3                   // <MOJISE=MOJISE_SYSTEM><VAR=2>ポイント使って、魔法カ―ドと交換(こう…
+#define STR_LINK_10D5 0x10D5                   // <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>
 #define STR_LINK_THEFOOL 0x10D9                // 「愚者のカ―ド」を手に入れた!!
 #define STR_LINK_THEEMPEROR 0x10DC             // 「皇帝のカ―ド」を手に入れた!!
 #define STR_LINK_THELOVERS 0x10DF              // 「恋人のカ―ド」を手に入れた!!
@@ -1295,7 +1295,7 @@
 #define STR_18BB 0x18BB                        // ジャンゴ
 #define BIN_18BC 0x18BC                        //
 #define STR_18BD 0x18BD                        // <NAME>
-#define STR_18F3 0x18F3                        //
+#define STR_18F3 0x18F3                        // String_18F3
 #define BIN_18F6 0x18F6                        //
 #define STR_18F7 0x18F7                        // 通信中です。相手からの接続を待っていますＢボタンでキャンセルします。
 #define STR_18FF 0x18FF                        // <EXTEND=1>

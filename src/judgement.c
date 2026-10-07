@@ -18,7 +18,7 @@ typedef struct JudgementParticle {
   s16 vy;                    // 0x2E, 毎フレーム pos.y に足す, FUN_080a95d4 が重力として +1 する
   u16 unk_30;                // 0x30
   u8 unk_32[2];              // 0x32
-  ParticleGroup* group;      // 0x34, FUN_0822dafc の第2引数
+  ParticleGroup* group;      // 0x34, Particle_SetFrame の第2引数
   JudgementParticleFunc fn;  // 0x38, FUN_080a98c0 が active な枠について呼ぶ
 } JudgementParticle;
 static_assert(sizeof(JudgementParticle) == 60);
@@ -51,7 +51,7 @@ NON_MATCH void JudgementParticle_UpdateMoving(JudgementParticle* ptcl) {
     ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
     ptcl->active = 0;
   } else {
-    FUN_0822dafc(&ptcl->ptcl, ptcl->group, ((ptcl->timer >> 2) & 1) + 2);
+    Particle_SetFrame(&ptcl->ptcl, ptcl->group, ((ptcl->timer >> 2) & 1) + 2);
     ptcl->ptcl.pos.y += ptcl->vy;
   }
 #else
@@ -75,7 +75,7 @@ NON_MATCH void JudgementParticle_UpdateStill(JudgementParticle* ptcl) {
     ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
     ptcl->active = 0;
   } else {
-    FUN_0822dafc(&ptcl->ptcl, ptcl->group, (((u16)timer >> 2) & 1) + 2);
+    Particle_SetFrame(&ptcl->ptcl, ptcl->group, (((u16)timer >> 2) & 1) + 2);
   }
 #else
   INCFUNC("asm/func/JudgementParticle_UpdateStill.inc");

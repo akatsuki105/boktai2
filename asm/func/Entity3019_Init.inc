@@ -16,7 +16,7 @@ _080BCCE4:
 	adds r0, r5, #0
 	bl FUN_080bc400
 	adds r0, r5, #0
-	bl FUN_080bc45c
+	bl Entity3019_LoadBgPltt
 	adds r0, r5, #0
 	bl FUN_080bc498
 	adds r0, r5, #0

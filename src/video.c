@@ -7,106 +7,69 @@
 #include "global.h"
 #include "particle.h"
 #include "sprite.h"
-#include "tilemap.h"
-#include "tilesets.h"
 
-extern u8 gTilemapBuffer[BG_SCREEN_SIZE * 4];
+// フレームの描画/反映の入口, 描画リスト, AuxSprite, スプライト資源の読み込み, OBJ タイルの確保と OAM の組み立て
+// BG (タイルマップ) 側は src/bg.c, 表示レジスタの退避/復帰と直書きは src/video_reg.c にある
+
 extern u32 gFrameCounter;
 extern OamData gOAMBuffer[128];
-extern u16 u16_ARRAY_03003a30[4];
-extern s32 s32_03003a38;
-extern s32 s32_03003a3c;
-extern s32 s32_03003e40;
+extern u16 gOAMPrioCounts[4];
+extern s32 gOAMCount;
+extern s32 gStagedOAMCount;
+
 extern bool32 gDispcntLocked;
 extern bool32 gVBlankDone;
 extern u16 gStagedDISPCNT;
 extern s32 s32_0300446c;
-extern u16 gWIN0H;
-extern u16 gWIN0V;
-extern u16 gWIN1H;
-extern u16 gWIN1V;
-extern void* gBGTileDataSrcAddrs[4];
-extern u16 gBGTileDataTileCounts[4];
-extern u16 gBGTileDataVramOffsets[4];
 extern u16 gObjPlttLen;
 
 extern u8 gOAMHeightTable[16];
 extern u8 gOAMWidthTable[16];
-extern u8 gOAMTileWidthTable[16];
-extern u8 gOAMTileHeightTable[16];
-extern u8 gOAMTileCounts[16];
-extern u32 gOAMShapeSizeAttrTable[16];
 
 extern u16 gMainSpriteTileCount;
+extern u16 gObjTileRequestCount;
 extern s16 gObjTileCursor;
 extern s16 gParticleFileTileCount;
 extern ParticleFile* gParticleFile;  // 0x0300358C
-
-extern u16 u16_ARRAY_03003e70[4];
-extern u16 u16_03003e8c;
-extern u16 u16_03003e50;
-extern u16 u16_03003e9c;
-extern u16 u16_03003eb4;
-extern u16 u16_ARRAY_03003e90[4];
-extern u32 u32_03003e98;
-extern u32 u32_03003ea0;
-extern u32 u32_ARRAY_03003eb8[2];
-extern u16 gStagedBGOfs[8];
 
 extern Procedure gDrawAuxSprites;
 extern Procedure gDrawParticles;
 extern Procedure gDrawMainSprites;
 
-IWRAM_DATA Entity gVideoCommit = {};                      // 0x03000258
-IWRAM_DATA Entity gVideoRender = {};                      // 0x03000270
-IWRAM_DATA u8 u8_03000288[0x03000688 - 0x03000288] = {};  // おそらく最初の方は gVideoRender の続きが入るが、どこまでが gVideoRender なのかは不明
-IWRAM_DATA FileID gCachedTilemapFileID = 0;               // 0x03000688, gTilemapFileBuffer に展開済みの TilemapFile の ID, 同じ ID なら展開し直さない, 根拠: GetTilemapFile
-IWRAM_DATA u16 u16_0300068a = 0;                          // 0x0300068A, unused, padding?
-IWRAM_DATA u16 gSavedDISPCNT = 0;                         // 0x0300068C
-IWRAM_DATA u16 gSavedWIN0H = 0;                           // 0x0300068E
-IWRAM_DATA u16 gSavedWIN1H = 0;                           // 0x03000690
-IWRAM_DATA u16 gSavedWIN0V = 0;                           // 0x03000692
-IWRAM_DATA u16 gSavedWIN1V = 0;                           // 0x03000694
-IWRAM_DATA u16 gSavedWININ = 0;                           // 0x03000696, Video_SaveWININOUT が退避した WININ
-IWRAM_DATA u16 gSavedWINOUT = 0;                          // 0x03000698, Video_SaveWININOUT が退避した WINOUT
+// OBJ VRAM への転送待ちのタイルデータ1件, Video_AllocObjTiles が積み CopyObjTileDataToVram が流す
+typedef struct {
+  u16 tileCount;  // 0x00, 転送するタイル枚数
+  u16 tileIdx;    // 0x02, 転送先の OBJ VRAM タイル番号 (積んだ時点の gObjTileCursor)
+  void* tiles;    // 0x04, 転送元
+} ObjTileRequest;
 
-const u8 u8_ARRAY_085b0110[32] = {0};
+EWRAM_DATA u8 u8_ARRAY_02036c00[512] = {};                            // 0x02036C00
+EWRAM_DATA rgb555 gBgPlttBlendBuffer[256] = {};                       // 0x02036e00, gBgPlttBuffer に明るさとブレンド色を掛けた結果の置き場, 根拠: ApplyBgPlttBlend
+EWRAM_DATA u8 gTilemapBuffer[BG_SCREEN_SIZE * 4] = {};                // 0x02037000, BG0, BG1, BG2, BG3 のタイルマップのバッファ
+EWRAM_DATA MainSpriteTileRequest gMainSpriteTileRequests[1024] = {};  // 0x02039000, 根拠: CopyMainSpriteTileDataToVram が 8 バイト刻みで読む
 
-#define SPRITE_SIZE(widthPixel, heightPixel) ((heightPixel << 8) | widthPixel)
+IWRAM_DATA Entity gVideoCommit = {};                   // 0x03000258
+IWRAM_DATA Entity gVideoRender = {};                   // 0x03000270
+IWRAM_DATA ObjTileRequest gObjTileRequests[128] = {};  // 0x03000288, 根拠: Video_AllocObjTiles が 8 バイト刻みで積み、上限を 127 で弾く
 
-// clang-format off
-// idx: SpriteShape
-const u16 gSpriteSizeTable[16] = {
-// OAM0.14-15:  Square(0)             Horizontal(1)         Vertical(2)           Prohibited(3)
-                SPRITE_SIZE( 8,  8),  SPRITE_SIZE(16,  8),  SPRITE_SIZE( 8, 16),  0x0,
-                SPRITE_SIZE(16, 16),  SPRITE_SIZE(32,  8),  SPRITE_SIZE( 8, 32),  0x0,
-                SPRITE_SIZE(32, 32),  SPRITE_SIZE(32, 16),  SPRITE_SIZE(16, 32),  0x0,
-                SPRITE_SIZE(64, 64),  SPRITE_SIZE(64, 32),  SPRITE_SIZE(32, 64),  0x0,
-}; // 0x085b0130
-// clang-format on
-
-#undef SPRITE_SIZE
-
-void FUN_0822d014(rgb555* pltt, s32 val);
-void FUN_08230af8(void* dst, void* src, s32 bytesize);  // src/malloc.c
-void Video_GenerateBGMapCore(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs, unknown* param_6);
+void ResetPltt(rgb555* pltt, s32 val);
 void Video_ResetObjTileAlloc(void);
 void Video_ResetFrameState(u32 clearOam);
-void FUN_0822b470(void);
-void FUN_0822d114(void);
+void Video_BuildOAM(void);
+void ResetObjPlttSlotCursor(void);
 void FUN_0822d248(void);
-void FUN_0822d630(void);
+void ApplyBgPlttBlend(void);
 void FUN_0822d828(void);
 void FUN_0822d8e8(void);
 void FUN_0822d98c(void);
 void StageBGRegs(void);
 void CopyBGTileDataAndTilemapToVram(void);
-void FUN_0822b308(void);
+void CopyObjTileDataToVram(void);
+void CopyMainSpriteTileDataToVram(s32 tileIdx);
 void FUN_0822e73c(void);
 void FUN_0822eef4(void);
 void Video_ApplyMosaic(void);
 void CommitPalette(void);
-
 typedef Entity VideoCommit;  // Entity と同じサイズ, 他のEntityにある Create, Init, Destroy 関数 はなく Update (VideoCommit_Update) のみ
 
 // VBlank を待って、この 1 フレーム分の OAM・パレット・タイル・レジスタをまとめてハードへ反映する
@@ -119,7 +82,7 @@ s32 VideoCommit_Update(VideoCommit* p) {
     gOamDirty &= ~1;
   }
   CommitPalette();
-  FUN_0822b308();
+  CopyObjTileDataToVram();
   FUN_0822e73c();
   CopyBGTileDataAndTilemapToVram();
   REG_DISPCNT &= ~(DISPCNT_BG_ALL_ON | DISPCNT_OBJ_ON);
@@ -135,12 +98,12 @@ typedef Entity VideoRender;  // Entity と同じサイズ, 他のEntityにある
 
 // 1 フレーム分の描画処理, 登録された 3 つのコールバックを回し、パレットを組み立ててフレーム数を進める
 s32 VideoRender_Update(VideoRender* p) {
-  FUN_0822d114();
+  ResetObjPlttSlotCursor();
   Video_ResetObjTileAlloc();
   gDrawAuxSprites();
   gDrawMainSprites();
   gDrawParticles();
-  FUN_0822b470();
+  Video_BuildOAM();
   if (s32_0300446c != 0) {
     FUN_0822d8e8();
     FUN_0822d828();
@@ -151,7 +114,7 @@ s32 VideoRender_Update(VideoRender* p) {
       FUN_0822d98c();
     }
   } else {
-    FUN_0822d630();
+    ApplyBgPlttBlend();
     FUN_0822d248();
   }
   Video_ResetFrameState(0);
@@ -178,11 +141,11 @@ void Video_Reset(void) {
   Video_ResetFrameState(1);
 }
 
-void UNUSED FUN_0822a2f8(AuxSprite* p) { gAuxSpriteLists[gSpriteListIdx] = p; }
+void UNUSED Video_SetAuxSpriteDrawListHead(AuxSprite* p) { gAuxSpriteLists[gSpriteListIdx] = p; }
 
-void UNUSED FUN_0822a310(Particle* p) { gParticleLists[gSpriteListIdx] = p; }
+void UNUSED Video_SetParticleDrawListHead(Particle* p) { gParticleLists[gSpriteListIdx] = p; }
 
-void UNUSED FUN_0822a328(MainSprite* p) { gMainSpriteLists[gSpriteListIdx] = p; }
+void UNUSED Video_SetMainSpriteDrawListHead(MainSprite* p) { gMainSpriteLists[gSpriteListIdx] = p; }
 
 // 描画リストの先頭にノードを繋ぐ
 s32 Video_AddAuxSpriteIntoDrawList(AuxSprite* p, s32 idx) {
@@ -291,7 +254,7 @@ static inline void _AuxSprite_Setup(AuxSprite* p, AuxSpriteGfx* gfx, SpriteFlags
   p->scaleX = FRACUNIT_6, p->scaleY = FRACUNIT_6;
   p->rotation = 0;
   p->priority = 2;
-  FUN_0822a4fc(p, gfx);
+  AuxSprite_SetGfx(p, gfx);
 }
 
 // ノードを初期化して描画リストに繋ぐ
@@ -325,7 +288,7 @@ void AuxSprite_Remove(AuxSprite* p) {
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2) {}
 
 // ノードに AuxSpriteGfx を割り当て、OAM属性のシェイプ/サイズを作り直す
-void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* gfx) {
+void AuxSprite_SetGfx(AuxSprite* p, AuxSpriteGfx* gfx) {
   if (gfx != NULL) {
     p->metaspriteIdx = 0;
     p->unk_12 = 0;
@@ -339,7 +302,7 @@ void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* gfx) {
   }
 }
 
-void FUN_0822a568(AuxSprite* p, AuxSpriteGfx* gfx) {
+void AuxSprite_SetGfxPtr(AuxSprite* p, AuxSpriteGfx* gfx) {
   if (gfx != NULL) {
     p->gfx = gfx;
   }
@@ -348,14 +311,186 @@ void FUN_0822a568(AuxSprite* p, AuxSpriteGfx* gfx) {
 NAKED void AuxSprite_DrawInternal(AuxSprite* p, s32 x, s32 y, s32 z) { INCFUNC("asm/func/AuxSprite_DrawInternal.inc"); }
 
 // 汎用の AuxSprite 描画パス (ほとんどの場面で使われる)
+// 描画リストの AuxSprite を全部描くメインのパス, AuxSprite.scaleX/scaleY が入っているものは当たり判定の矩形も同じ倍率で縮めてから画面外判定する
 NAKED void AuxSprite_DrawList(void) { INCFUNC("asm/func/AuxSprite_DrawList.inc"); }
 
-NAKED void FUN_0822ac90(void) { INCFUNC("asm/func/FUN_0822ac90.inc"); }
+// 描画リストの AuxSprite を順に描く, 点滅で消える回と画面外のものは落とす
+// MainSprite_DrawListScreen / Particle_DrawListScreen と同じ組で Video_SetDrawPasses に差し替えられる側 ('v' 引数を渡す VM スクリプトがないので実際には動かない)
+// ただし本家と違ってカメラからの相対座標を 1/8 にして描くので、こちらは縮小表示のパスとみられる
+// 残差は x/8 の展開形で、元は -((-x) >> 3), `/ 8` と書くと (x+7) >> 3 になる (116 命令 vs 128 命令)
+NON_MATCH void AuxSprite_DrawListScreen(void) {
+#ifdef NONMATCHING_C
+  SpriteFlags skipMask = (gFrameCounter & 1) ? (SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD) : (SPRFLAG_HIDDEN | SPRFLAG_BLINK_EVEN);
+  AuxSprite* p;
+
+  for (p = gAuxSpriteLists[gSpriteListIdx]; p != NULL; p = p->next) {
+    SpriteFlags flags = p->flags;
+    AuxSpriteGfx* gfx;
+    s32 x, y, z;
+
+    if (flags & skipMask) {
+      continue;
+    }
+
+    gfx = p->gfx;
+    x = (p->pos.x - gCameraCoords.worldPos.x) / 8 + 120;
+    y = (p->pos.y - gCameraCoords.worldPos.y) / 8 + 90;
+    z = p->pos.z - gCameraCoords.worldPos.z;
+
+    if (!(flags & SPRFLAG_NO_CLIP)) {
+      s32 left, top, w, h;
+
+      if (flags & SPRFLAG_XFLIP) {
+        left = x + gfx->px - gfx->pw;
+        w = gfx->pw;
+      } else {
+        left = x - gfx->px;
+        w = gfx->pw;
+      }
+      if (flags & SPRFLAG_YFLIP) {
+        top = y + gfx->py - gfx->ph;
+        h = gfx->ph;
+      } else {
+        top = y - gfx->py;
+        h = gfx->ph;
+      }
+      if (left > 240 || top > 180 || left + w < 0 || top + h < 0) {
+        continue;
+      }
+    }
+
+    AuxSprite_DrawInternal(p, x, y, z);
+  }
+#else
+  INCFUNC("asm/func/AuxSprite_DrawListScreen.inc");
+#endif
+}
 
 // ゲームオーバー時の AuxSprite 描画パス (SPRFLAG_GAMEOVER がセットされた AuxSprite のみ描画)
-NAKED void AuxSprite_DrawListGameover(void) { INCFUNC("asm/func/AuxSprite_DrawListGameover.inc"); }
+// SPRFLAG_GAMEOVER の立った AuxSprite だけを描くパス, ゲームオーバー中は Video_SetDrawPasses がこちらに差し替える
+// 残差は 196 命令 vs 183 命令 で、AuxSprite_DrawListUnk13 と同じく点滅マスクがレジスタに残らず高位レジスタを1本余計に使う
+NON_MATCH void AuxSprite_DrawListGameover(void) {
+#ifdef NONMATCHING_C
+  SpriteFlags skipMask = (gFrameCounter & 1) ? (SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD) : (SPRFLAG_HIDDEN | SPRFLAG_BLINK_EVEN);
+  AuxSprite* p;
+  Vec3 screen;
 
-NAKED void FUN_0822af38(void) { INCFUNC("asm/func/FUN_0822af38.inc"); }
+  for (p = gAuxSpriteLists[gSpriteListIdx]; p != NULL; p = p->next) {
+    SpriteFlags flags = p->flags;
+    AuxSpriteGfx* gfx;
+    s32 x, y, z;
+
+    if (flags & skipMask) {
+      continue;
+    }
+    if (!(flags & SPRFLAG_GAMEOVER)) {
+      continue;
+    }
+
+    gfx = p->gfx;
+    if (flags & SPRFLAG_SCREEN_COORD) {
+      x = p->pos.x;
+      y = p->pos.y;
+      z = p->pos.z;
+    } else {
+      s32 a, b;
+
+      screen.x = (((p->pos.x >> 1) - (p->pos.z >> 1)) * 48) / 256;
+      a = (((p->pos.x >> 1) + (p->pos.z >> 1)) * 48) / 256;
+      b = (p->pos.y * 24) / 256;
+      screen.x = screen.x - gCameraVpCoords.x + 120;
+      screen.y = (a - b) - gCameraVpCoords.y + 90;
+      screen.z = (a + b) - gCameraVpCoords.z;
+      x = screen.x;
+      y = screen.y;
+      z = screen.z;
+    }
+
+    flags = p->flags;
+    if (!(flags & SPRFLAG_NO_CLIP)) {
+      s32 left, top, w, h;
+
+      if (flags & SPRFLAG_XFLIP) {
+        left = x + gfx->px - gfx->pw;
+        w = gfx->pw;
+      } else {
+        left = x - gfx->px;
+        w = gfx->pw;
+      }
+      if (flags & SPRFLAG_YFLIP) {
+        top = y + gfx->py - gfx->ph;
+        h = gfx->ph;
+      } else {
+        top = y - gfx->py;
+        h = gfx->ph;
+      }
+      if (left > 240 || top > 180 || left + w < 0 || top + h < 0) {
+        continue;
+      }
+    }
+
+    AuxSprite_DrawInternal(p, x, y, z);
+  }
+#else
+  INCFUNC("asm/func/AuxSprite_DrawListGameover.inc");
+#endif
+}
+
+// SPRFLAG_UNK_13 の立った AuxSprite だけを描くパス, SPRFLAG_GAMEOVER に対する AuxSprite_DrawListGameover と同じ関係
+// 残差は 169 命令 vs 163 命令 で、点滅マスクがレジスタに残らずスタックに退避される
+// 投影を static inline void f(Vec3* pos, Vec3* screen) に切り出すと screen がスタック常駐になり 155 命令まで寄るので、原典はそうした関数を通していたとみられる (ただし &screen がループ外に巻き上げられて一致はしない)
+NON_MATCH void AuxSprite_DrawListUnk13(void) {
+#ifdef NONMATCHING_C
+  SpriteFlags skipMask = (gFrameCounter & 1) ? (SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD) : (SPRFLAG_HIDDEN | SPRFLAG_BLINK_EVEN);
+  AuxSprite* p;
+  Vec3 screen;
+
+  for (p = gAuxSpriteLists[gSpriteListIdx]; p != NULL; p = p->next) {
+    SpriteFlags flags = p->flags;
+    AuxSpriteGfx* gfx;
+    s32 x, y, z;
+
+    if (flags & skipMask) {
+      continue;
+    }
+    if (!(flags & SPRFLAG_UNK_13)) {
+      continue;
+    }
+
+    gfx = p->gfx;
+    if (flags & SPRFLAG_SCREEN_COORD) {
+      x = p->pos.x;
+      y = p->pos.y;
+      z = p->pos.z;
+    } else {
+      s32 a, b;
+
+      screen.x = (((p->pos.x >> 1) - (p->pos.z >> 1)) * 48) / 256;
+      a = (((p->pos.x >> 1) + (p->pos.z >> 1)) * 48) / 256;
+      b = (p->pos.y * 24) / 256;
+      screen.x = screen.x - gCameraVpCoords.x + 120;
+      screen.y = (a - b) - gCameraVpCoords.y + 90;
+      screen.z = (a + b) - gCameraVpCoords.z;
+      x = screen.x;
+      y = screen.y;
+      z = screen.z;
+    }
+
+    if (!(p->flags & SPRFLAG_NO_CLIP)) {
+      s32 left = x - gfx->px;
+      s32 top = y - gfx->py;
+
+      if (left > 240 || top > 180 || left + gfx->pw < 0 || top + gfx->ph < 0) {
+        continue;
+      }
+    }
+
+    AuxSprite_DrawInternal(p, x, y, z);
+  }
+#else
+  INCFUNC("asm/func/AuxSprite_DrawListUnk13.inc");
+#endif
+}
 
 void nop_0822b09c(void) {}
 
@@ -365,7 +500,7 @@ void InitPltt(void) {
   ObjPlttFile* f = GetFile(DIR_OBJPLTT, 0xC5E9);
   gObjPlttLen = f->length;
   gObjPlttData = f->body;
-  FUN_0822d014(gObjPlttData, 8);
+  ResetPltt(gObjPlttData, 8);
 }
 
 // パーティクルファイルを覚えて、タイルデータを OBJ VRAM へ流し込む
@@ -459,22 +594,100 @@ void Video_ResetObjTileAlloc(void) {
   }
 }
 
-NAKED u32 FUN_0822b270(unknown* tiledata, s32 param_2) { INCFUNC("asm/func/FUN_0822b270.inc"); }
+// タイルデータの転送要求を積んで割り当てた OBJ VRAM のタイル番号を返す, 既に積んであれば積み直さずその番号を返す
+// この C は単体では原典とバイト一致するが、同じ TU の Video_ResetFrameState の2つの store の順序が入れ替わって ROM が合わなくなる (あちらの文の順序を入れ替えても出力は変わらない)
+NON_MATCH s32 Video_AllocObjTiles(void* tiles, s32 tileCount) {
+#ifdef NONMATCHING_C
+  ObjTileRequest* req;
+  ObjTileRequest* newReq;
+  s32 i;
 
-NAKED void FUN_0822b308(void) { INCFUNC("asm/func/FUN_0822b308.inc"); }
+  if (gObjTileRequestCount > 127) {
+    return gParticleFileTileCount;
+  }
+  if (gObjTileCursor + tileCount > 1023) {
+    return gParticleFileTileCount;
+  }
 
-NAKED void FUN_0822b38c(s32 tileIdx) { INCFUNC("asm/func/FUN_0822b38c.inc"); }
+  req = gObjTileRequests;
+  for (i = 0; i < gObjTileRequestCount; i++, req++) {
+    if (req->tiles == tiles) {
+      return req->tileIdx;
+    }
+  }
+
+  newReq = &gObjTileRequests[gObjTileRequestCount];
+  newReq->tileCount = tileCount;
+  newReq->tileIdx = gObjTileCursor;
+  newReq->tiles = tiles;
+  gObjTileCursor += tileCount;
+  gAuxSpriteTileCount += tileCount;
+  gObjTileRequestCount++;
+  return newReq->tileIdx;
+#else
+  INCFUNC("asm/func/Video_AllocObjTiles.inc");
+#endif
+}
+
+// 積まれた転送要求を順に OBJ VRAM へ流す, 転送先はパーティクルのタイルの直後から詰めていく
+// 残差は size を r2 から r4 に複写する1命令と, それで溢れた高位レジスタ1本の退避/復帰のみ, Tier A-C は試済
+NON_MATCH void CopyObjTileDataToVram(void) {
+#ifdef NONMATCHING_C
+  u8* dst = (u8*)OBJ_VRAM0 + gParticleFileTileCount * 32;
+  ObjTileRequest* req = gObjTileRequests;
+  s32 i;
+
+  for (i = gObjTileRequestCount; i != 0; i--) {
+    s32 size = req->tileCount * 32;
+
+    DmaCopy32(3, req->tiles, dst, size);
+    dst += size;
+    req++;
+  }
+
+  gObjTileRequestCount = 0;
+  CopyMainSpriteTileDataToVram(gParticleFileTileCount + gAuxSpriteTileCount);
+#else
+  INCFUNC("asm/func/CopyObjTileDataToVram.inc");
+#endif
+}
+
+// 積まれた MainSprite のタイルを OBJ VRAM の tileIdx 以降に詰めて流す
+// 命令数は一致, 残差は内側ループをまたぐ i と req+1 のどちらをスタックに退避するかだけ (元は i), Tier A-C は試済
+NON_MATCH void CopyMainSpriteTileDataToVram(s32 tileIdx) {
+#ifdef NONMATCHING_C
+  MainSpriteTileRequest* req = gMainSpriteTileRequests;
+  u8* dst = (u8*)OBJ_VRAM0 + tileIdx * 32;
+  u32 i;
+  s32 j;
+
+  for (i = 0; i < gMainSpriteTileRequestCount; i++) {
+    u8* src = req->src;
+
+    for (j = 0; j < req->count; j++) {
+      DmaCopy32(3, src, dst, req->size);
+      src += 0x200;
+      dst += req->size;
+    }
+    req++;
+  }
+
+  gMainSpriteTileRequestCount = 0;
+#else
+  INCFUNC("asm/func/CopyMainSpriteTileDataToVram.inc");
+#endif
+}
 
 // 1 フレーム分の描画状態を空にする, clearOam が 0 以外なら OAM バッファのスプライトも全部隠す
 void Video_ResetFrameState(u32 clearOam) {
   s32 i;
 
-  s32_03003a38 = 0;
+  gOAMCount = 0;
   for (i = 0; i < 4; i++) {
-    u16_ARRAY_03003a30[i] = 0;
+    gOAMPrioCounts[i] = 0;
   }
-  s32_03003a3c = 0;
-  s32_03003e40 = 0;
+  gStagedOAMCount = 0;
+  gObjAffineCount = 0;
   if (clearOam != 0) {
     OamData* oam = gOAMBuffer;
 
@@ -485,440 +698,6 @@ void Video_ResetFrameState(u32 clearOam) {
   }
 }
 
-NAKED void FUN_0822b470(void) { INCFUNC("asm/func/FUN_0822b470.inc"); }
-
-BgMapEntry* GetTilemapBuffer(s32 bg) { return (BgMapEntry*)&gTilemapBuffer[BG_SCREEN_SIZE * bg]; }
-
-void ClearTilemapBuffer(void) { ClearMemory(gTilemapBuffer, sizeof(gTilemapBuffer)); }
-
-void ClearBGTilemapBuffer(s32 bg) {
-  if (bg == 0) {
-    FUN_0822e8b4();
-  }
-  ClearMemory(GetTilemapBuffer(bg), BG_SCREEN_SIZE);
-}
-
-static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
-
-// BG のタイルマップと転送待ち状態をすべてクリアし, mode に応じた2通りのうちどちらかで BGnCNT と DISPCNT を設定する
-void Video_InitBGMode(s32 mode) {
-  s32 i;
-
-  ClearTilemapBuffer();
-
-  for (i = 0; i < 4; i++) {
-    gBGTileDataSrcAddrs[i] = NULL;
-    gBGTileDataTileCounts[i] = 0;
-    gBGTileDataVramOffsets[i] = 0;
-  }
-
-  gStagedDISPCNT = 0;
-  u16_03003eb4 = 0x100;
-  u16_03003e9c = 0x100;
-  u16_03003e50 = 0;
-  u16_ARRAY_03003e70[0] = 0x100;
-  u16_ARRAY_03003e70[1] = 0;
-  u16_ARRAY_03003e70[2] = 0;
-  u16_ARRAY_03003e70[3] = 0x100;
-  u32_03003e98 = 0;
-  u32_03003ea0 = 0;
-  u16_03003e8c = mode;
-
-  switch (mode) {
-    case 0: {
-      REG_BG0CNT = 0x3F08;
-      REG_BG1CNT = 0x3E01;
-      REG_BG2CNT = 0x3D03;
-      REG_BG3CNT = 0x3C01;
-      REG_DISPCNT = 0x7160;
-      break;
-    }
-    case 1: {
-      REG_BG0CNT = 0x3F08;
-      REG_BG1CNT = 0x3E42;
-      REG_BG2CNT = 0x9D81;
-      REG_DISPCNT = 0x7161;
-      break;
-    }
-  }
-
-  HideBG(DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON);
-}
-
-NAKED void vram_0822b778(void) { INCFUNC("asm/func/vram_0822b778.inc"); }
-
-// gBgStates のスクロール値を BGnHOFS/BGnVOFS の控えに積む, u16_03003e8c が立っている間は BG2/BG3 の代わりに別の控えを書き戻す
-void StageBGRegs(void) {
-  gStagedBGOfs[0] = gBgStates[0].hofs & 0xFF;
-  gStagedBGOfs[1] = gBgStates[0].vofs & 0xFF;
-  gStagedBGOfs[2] = gBgStates[1].hofs & 0xFF;
-  gStagedBGOfs[3] = gBgStates[1].vofs & 0xFF;
-
-  if (u16_03003e8c == 0) {
-    gStagedBGOfs[4] = gBgStates[2].hofs & 0xFF;
-    gStagedBGOfs[5] = gBgStates[2].vofs & 0xFF;
-    gStagedBGOfs[6] = gBgStates[3].hofs & 0xFF;
-    gStagedBGOfs[7] = gBgStates[3].vofs & 0xFF;
-  } else {
-    u16_ARRAY_03003e90[0] = u16_ARRAY_03003e70[0];
-    u16_ARRAY_03003e90[1] = u16_ARRAY_03003e70[1];
-    u16_ARRAY_03003e90[2] = u16_ARRAY_03003e70[2];
-    u16_ARRAY_03003e90[3] = u16_ARRAY_03003e70[3];
-    u32_ARRAY_03003eb8[0] = u32_03003e98;
-    u32_ARRAY_03003eb8[1] = u32_03003ea0;
-  }
-}
-
-void CopyBGTileDataAndTilemapToVram(void) {
-  s32 i;
-
-  if (gStagedDISPCNT & DISPCNT_BG0_ON) {
-    DmaCopy32(3, GetTilemapBuffer(0), BG_SCREEN_ADDR(31), BG_SCREEN_SIZE);
-  }
-  if (gStagedDISPCNT & DISPCNT_BG1_ON) {
-    DmaCopy32(3, GetTilemapBuffer(1), BG_SCREEN_ADDR(30), BG_SCREEN_SIZE);
-  }
-  if (gStagedDISPCNT & DISPCNT_BG2_ON) {
-    DmaCopy32(3, GetTilemapBuffer(2), BG_SCREEN_ADDR(29), BG_SCREEN_SIZE);
-  }
-  if (gStagedDISPCNT & DISPCNT_BG3_ON) {
-    DmaCopy32(3, GetTilemapBuffer(3), BG_SCREEN_ADDR(28), BG_SCREEN_SIZE);
-  }
-
-  for (i = 0; i < 4; i++) {
-    if (gBGTileDataSrcAddrs[i] != NULL) {
-      FUN_08230af8(gBGTileDataSrcAddrs[i], (void*)(BG_VRAM + gBGTileDataVramOffsets[i]), gBGTileDataTileCounts[i] * 32);
-      gBGTileDataSrcAddrs[i] = NULL;
-    }
-  }
-}
-
-// 次の VRAM 転送で BG のタイルデータをどこから何枚どこへ送るかを控えておく
-void FUN_0822b9d4(s32 bg, void* src, u32 vramOffset, u32 tileCount) {
-  gBGTileDataSrcAddrs[bg] = src;
-  gBGTileDataTileCounts[bg] = tileCount;
-  gBGTileDataVramOffsets[bg] = vramOffset;
-}
-
-void SetBGPrioDirect(s32 bg, u32 prio) {
-  vu16* p;
-  u16 v;
-
-  switch (bg) {
-    case 0: {
-      p = &REG_BG0CNT;
-      break;
-    }
-    case 1: {
-      p = &REG_BG1CNT;
-      break;
-    }
-    case 2: {
-      p = &REG_BG2CNT;
-      break;
-    }
-    case 3: {
-      p = &REG_BG3CNT;
-      break;
-    }
-    default: {
-      return;
-    }
-  }
-  v = (*p & 0xFFFC) | prio;
-  *p = v;
-}
-
-NON_MATCH void SetBGCharBaseDirect(s32 bg, u32 charbase) {
-#ifdef NONMATCHING_C
-  vu16* p;
-  u16 v;
-
-  switch (bg) {
-    case 0: {
-      p = &REG_BG0CNT;
-      break;
-    }
-    case 1: {
-      p = &REG_BG1CNT;
-      break;
-    }
-    case 2: {
-      p = &REG_BG2CNT;
-      break;
-    }
-    case 3: {
-      p = &REG_BG3CNT;
-      break;
-    }
-    default: {
-      return;
-    }
-  }
-  v = (*p & ~BGCNT_CHARBASE(3)) | BGCNT_CHARBASE(charbase);
-  *p = v;
-#else
-  INCFUNC("asm/func/SetBGCharBaseDirect.inc");
-#endif
-}
-
-NAKED void FUN_0822baa4(u32 val1, u32 val2, u32 val3, u16 val4, u32 val5) { INCFUNC("asm/func/FUN_0822baa4.inc"); }
-
-// タイルセットの部品表から ID の一致する TileSetPart を探す
-TileSetPart* TileSet_FindPart(TileSet* p, u16 id) {
-  TileSetPart* part = p->parts;
-  s32 i;
-
-  for (i = 0; i < p->partCount; i++) {
-    if (part->id == id) {
-      return part;
-    }
-    part++;
-  }
-  return NULL;
-}
-
-NAKED s32 FUN_0822bc44(s32 bg, TileSetFile* f, s32 param_3, s32 param_4, s32 tileidx) { INCFUNC("asm/func/FUN_0822bc44.inc"); }
-
-// BG のタイルマップバッファの (x, y) にエントリ (タイル番号, 反転, パレット) を書く
-void FUN_0822bcf4(s32 bg, u32 x8, u32 y8, u32 tileidx, u32 flip, u32 pltt) {
-  BgState* s = &gBgStates[bg];
-
-  s->tilemap[(s->width16 << 1) * y8 + x8] = tileidx | (flip << 10) | (pltt << 12);
-}
-
-// BG のタイルマップバッファの矩形 (x, y, w, h) に、tiles のタイル番号を反転・パレット付きで順に書く
-NON_MATCH void FUN_0822bd28(s32 bg, s32 x, s32 y, s32 w, s32 h, u32* tiles, u32 flip, u32 pltt) {
-#ifdef NONMATCHING_C
-  // 元は pitch と map がスタック、x*2 が sb、bottom が ip に割り当たる (こちらは pitch がレジスタ、bottom がスタック)
-  BgState* s = &gBgStates[bg];
-  u16* map = s->tilemap;
-  s32 pitch = s->width16 << 1;
-  s32 right = x + w;
-  s32 bottom = y + h;
-  s32 i, j;
-
-  for (j = y; j < bottom; j++) {
-    for (i = x; i < right; i++) {
-      map[pitch * j + i] = *tiles++ | (flip << 10) | (pltt << 12);
-    }
-  }
-#else
-  INCFUNC("asm/func/FUN_0822bd28.inc");
-#endif
-}
-
-NAKED void FUN_0822bdb8(s32 bg, s32 x, s32 y, s32 w, s32 h, u32 param_6, u32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_0822bdb8.inc"); }
-
-NAKED void FUN_0822be3c(s32 bg, s32 x, s32 y, u32 param_4, u32 param_5, s32 w, u32 pltt) { INCFUNC("asm/func/FUN_0822be3c.inc"); }
-
-NAKED void* UNUSED FUN_0822bf80(void* dst, u32 val) { INCFUNC("asm/func/FUN_0822bf80.inc"); }
-
-NAKED void Video_SetupBG(s32 bg, u32 param_2, unknown* f, u32 unused, s16 param_5, s16 param_6, u32 prio, BgMapEntry* tilemap) { INCFUNC("asm/func/Video_SetupBG.inc"); }
-
-NAKED void Video_SetupBGLayout(s32 layout, u32 param_2, TilemapFile* f, u32 param_4, u32 param_5, s32 count, s32* indices) { INCFUNC("asm/func/Video_SetupBGLayout.inc"); }
-
-// タイルマップファイルの指定レイヤを (オフセットをアドレスに直してから) gBgStates に割り当てる
-void Video_SetBGLayer(s32 bg, TilemapFile* f, s32 layerIdx) {
-  Tilemaps hdr;
-  TilemapLayer layer;
-  BgState* s;
-  u16 w, h;
-
-  if (bg == 0) {
-    FUN_0822e8b4();
-  }
-
-  // 相対オフセットをROMアドレスに変換する
-  hdr = *f;
-  hdr.layers = (TilemapLayer*)((u32)hdr.layers + (u32)f);
-  hdr.tiles = (u8*)((u32)hdr.tiles + (u32)f);
-  hdr.metatiles = (BgMapEntry*)((u32)hdr.metatiles + (u32)f);
-
-  s = &gBgStates[bg];
-  layer = hdr.layers[layerIdx];
-  layer.mtmap = (u16*)((u32)layer.mtmap + (u32)f);
-
-  s->unk_10 = 0x1000;
-  s->unk_12 = 0x1000;
-  s->mtmap = layer.mtmap;
-  w = layer.width;
-  s->width16 = w;
-  h = layer.height;
-  s->height16 = h;
-  s->unk_1c = w;
-  s->unk_1e = h;
-}
-
-void Video_GenerateBGMap(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs) { Video_GenerateBGMapCore(bg, param_2, param_3, hofs, vofs, NULL); }
-
-NAKED void Video_GenerateBGMapCore(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs, unknown* param_6) { INCFUNC("asm/func/Video_GenerateBGMapCore.inc"); }
-
-// TilemapFile が圧縮されてたら展開して返す、圧縮されてなかったらそのまま返す
-TilemapFile* GetTilemapFile(FileID id) {
-  u32 fileID = id;
-
-  u8* file = GetFile(DIR_TILE_MAP, fileID);
-  if (file == NULL) {
-    return NULL;
-  }
-  if ((file[0] == 'M' && file[1] == 'P') || *(u32*)file == 0x005E8CC5) {  // "MP"
-    return (TilemapFile*)file;
-  }
-  if (gCachedTilemapFileID != fileID) {
-    gCachedTilemapFileID = fileID;
-    LZ77UnCompWram(file, gTilemapFileBufferHead);
-  }
-  return (TilemapFile*)gTilemapFileBuffer;
-}
-
-// ウィンドウ矩形の控えを退避する
-void Video_SaveWindowRect(u32 win) {
-  if (win == 0) {
-    gSavedWIN0H = gWIN0H;
-    gSavedWIN0V = gWIN0V;
-  } else {
-    gSavedWIN1H = gWIN1H;
-    gSavedWIN1V = gWIN1V;
-  }
-}
-
-// 退避しておいたウィンドウ矩形を控えに戻し、WINnH / WINnV にも書き戻す
-NON_MATCH void Video_RestoreWindowRect(u32 win) {
-#ifdef NONMATCHING_C
-  vu16* p;
-  u16 h, v;
-
-  if (win == 0) {
-    h = gSavedWIN0H;
-    gWIN0H = h;
-    v = gSavedWIN0V;
-    gWIN0V = v;
-    p = &REG_WIN0H;
-  } else {
-    h = gSavedWIN1H;
-    gWIN1H = h;
-    v = gSavedWIN1V;
-    gWIN1V = v;
-    p = &REG_WIN1H;
-  }
-  *p = h;
-  p += 2;
-  *p = v;
-#else
-  INCFUNC("asm/func/Video_RestoreWindowRect.inc");
-#endif
-}
-
-// ウィンドウの矩形を WINnH / WINnV に設定し、同じ値を控えにも残す
-void Video_SetWindowRect(s32 win, s32 left, s32 top, s32 right, s32 bottom) {
-  if (win == 0) {
-    gWIN0H = (left << 8) | right;
-    REG_WIN0H = gWIN0H;
-    gWIN0V = (top << 8) | bottom;
-    REG_WIN0V = gWIN0V;
-  } else {
-    gWIN1H = (left << 8) | right;
-    REG_WIN1H = gWIN1H;
-    gWIN1V = (top << 8) | bottom;
-    REG_WIN1V = gWIN1V;
-  }
-}
-
-// ウィンドウ内外の表示対象 (WININ/WINOUT) を設定する
-void Video_SetWindowInOut(u32 win0In, u32 win1In, u32 winOut, u32 objWinIn) {
-  REG_WININ = (win1In << 8) | win0In;
-  REG_WINOUT = (objWinIn << 8) | winOut;
-}
-
-void Video_SaveWININOUT(void) {
-  gSavedWININ = REG_WININ;
-  gSavedWINOUT = REG_WINOUT;
-}
-
-void Video_RestoreWININOUT(void) {
-  REG_WININ = gSavedWININ;
-  REG_WINOUT = gSavedWINOUT;
-}
-
-void UNUSED Video_SaveDISPCNT(void) { gSavedDISPCNT = REG_DISPCNT; }
-
-void UNUSED Video_RestoreDISPCNT(void) { REG_DISPCNT = gSavedDISPCNT; }
-
-void Video_SetBLDCNTDirect(u32 effect, u32 target1, u32 target2) { REG_BLDCNT = target1 | (target2 << 8) | (effect << 6); }
-
-void Video_SetBLDALPHADirect(u32 target1, u32 target2) { REG_BLDALPHA = BLDALPHA_BLEND(target1, target2); }
-
-void Video_SetBLDYDirect(u32 bldy) { REG_BLDY = bldy; }
-
-void UNUSED Video_SetBGnOFSDirect(s32 bg, u32 hofs, u32 vofs) {
-  vu16* p;
-
-  switch (bg) {
-    case 0: {
-      p = &REG_BG0HOFS;
-      break;
-    }
-    case 1: {
-      p = &REG_BG1HOFS;
-      break;
-    }
-    case 2: {
-      p = &REG_BG2HOFS;
-      break;
-    }
-    case 3: {
-      p = &REG_BG3HOFS;
-      break;
-    }
-    default: {
-      return;
-    }
-  }
-  *p++ = hofs;
-  *p = vofs;
-}
-
-void UNUSED Video_SetBG23OFSDirect(s32 bg, u32 hofs, u32 vofs) {
-  vu16* p;
-
-  switch (bg) {
-    case 2: {
-      p = &REG_BG2HOFS;
-      break;
-    }
-    case 3: {
-      p = &REG_BG3HOFS;
-      break;
-    }
-    case 0:
-    case 1:
-    default: {
-      return;
-    }
-  }
-  *p++ = hofs;
-  *p = vofs;
-}
-
-void UNUSED Video_SetBgPlttColorDirect(u32 plttIdx, u32 colorIdx, u32 color) { ((rgb555*)BG_PLTT)[plttIdx * 16 + colorIdx] = color; }
-
-void UNUSED Video_SetObjPlttColorDirect(u32 plttIdx, u32 colorIdx, u32 color) { ((rgb555*)OBJ_PLTT)[plttIdx * 16 + colorIdx] = color; }
-
-// gSpriteSizeTable から、OAM の形状・サイズ(0-15)ごとの幅/高さ/タイル数/OAM属性ビットの表を作る
-void Video_CreateSpriteLUT(void) {
-  s32 i;
-
-  for (i = 0; i < 16; i++) {
-    s32 w = (u8)gSpriteSizeTable[i];
-    s32 h = gSpriteSizeTable[i] >> 8;
-    s32 tw = w >> 3;
-    s32 th = h >> 3;
-    gOAMWidthTable[i] = w;
-    gOAMHeightTable[i] = h;
-    gOAMTileWidthTable[i] = tw;
-    gOAMTileHeightTable[i] = th;
-    gOAMTileCounts[i] = tw * th;
-    gOAMShapeSizeAttrTable[i] = ((i & 3) << 14) | ((i & 0xC) << 28);
-  }
-}
+// gStagedOAMBuffer のスプライトを優先度順に gOAMBuffer へ並べ替え、続く領域に OAM のアフィン行列を組んで gOamDirty を立てる
+// 優先度ごとのバケットは attr3 の上位バイトを鍵、下位バイトを次要素の添字とした連結リストで、スタック上の 256 バイトが各バケットの先頭を持つ
+NAKED void Video_BuildOAM(void) { INCFUNC("asm/func/Video_BuildOAM.inc"); }

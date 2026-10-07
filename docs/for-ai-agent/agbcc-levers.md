@@ -503,6 +503,16 @@ exactly this — the callee-save copy order between two adjacent stores
 
 ## 5. Tier D — per-translation-unit compiler flags
 
+### Keep a new `static inline` out of shared headers
+
+Moving `HideBG` (`gStagedDISPCNT &= ~bits;`) from `src/bg.c` into `include/video.h`
+so a third file could call it changed the register allocation of
+`GameOverManager_StateShowLogo` in `src/gameover.c`, which neither calls it nor
+mentions `gStagedDISPCNT`. Merely being declared in an included header is enough.
+Define the helper per translation unit instead — which is what `bg.c` and
+`entity_ef6f.c` already do with identical copies.
+
+
 Per-file overrides go in `Makefile` after line 107, next to the existing
 `sprite_main_arm.o` and `agb_eeprom.o` rules.
 

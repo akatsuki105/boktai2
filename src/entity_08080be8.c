@@ -13,7 +13,7 @@ typedef void (*Entity08080be8Func)(struct Entity08080be8* p);
 
 // Entity08080be8_SpawnParticle が1個ずつ撒く粒子, 4個を順に使い回す
 typedef struct {
-  Particle base;   // 0x00, FUN_0822d9f0 や Particle_Remove に Particle* として渡る
+  Particle base;   // 0x00, Particle_Add や Particle_Remove に Particle* として渡る
   bool8 active;    // 0x28, Entity08080be8_SpawnParticle が 1 にし、Entity08080be8_UpdateParticles が寿命で 0 に戻す, 0 の間は動かさない
   s8 angleOffset;  // 0x29, Mod(rand, 0x60) - 0x30, dir から作る8bit角度に足してばらつかせる
   u16 radius;      // 0x2A, (rand >> 3 & 0x7F) + 0x40, gSineTable に掛けて >> 12 したものが base.pos のずれになる
@@ -368,10 +368,10 @@ void Entity08080be8_SetupParticles(Entity08080be8* p, s32 val) {
   p->ptclIdx = 0;
   p->group = GetParticleGroup(PTCL_GROUP_2);
   for (i = 0; i < 4; i++) {
-    FUN_0822d9f0(&p->ptcls[i].base, p->group, SPRFLAG_HIDDEN);
+    Particle_Add(&p->ptcls[i].base, p->group, SPRFLAG_HIDDEN);
     Particle_SetOffset(&p->ptcls[i].base, -4, -4);
-    FUN_0822dafc(&p->ptcls[i].base, p->group, val);
-    FUN_0822dadc(&p->ptcls[i].base, 1);
+    Particle_SetFrame(&p->ptcls[i].base, p->group, val);
+    Particle_SetPltt(&p->ptcls[i].base, 1);
     p->ptcls[i].active = FALSE;
   }
 }

@@ -295,7 +295,7 @@ _08014940:
 	mov r0, sb
 	movs r1, #0
 	str r3, [sp, #0x10]
-	bl FUN_0822da50
+	bl Particle_AddToDrawList
 	adds r4, #0x38
 	movs r0, #0x38
 	add sb, r0

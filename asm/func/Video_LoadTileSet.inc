@@ -77,7 +77,7 @@ _08000F8C:
 	mov r1, r8
 	adds r2, r6, #0
 	add r3, sp, #4
-	bl FUN_0822bc44
+	bl Video_LoadTileSetParts
 	movs r0, #0
 	add sp, #0x9c
 	pop {r3, r4}

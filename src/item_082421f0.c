@@ -1,4 +1,5 @@
 #include "global.h"
+#include "inventory.h"
 #include "item.h"
 #include "player.h"
 #include "vm.h"
@@ -189,7 +190,7 @@ bool32 FUN_082424d4(void) {
   return FALSE;
 }
 
-void SwapNormalItem(s32 slot1, s32 slot2) {
+void SwapNormalItem(slot32_t slot1, slot32_t slot2) {
   s32 tmp;
   tmp = ITEM(slot1);
   ITEM(slot1) = ITEM(slot2);
@@ -199,7 +200,7 @@ void SwapNormalItem(s32 slot1, s32 slot2) {
   SetRotCount(slot2, tmp);
 }
 
-void SwapValuable(s32 slot1, s32 slot2) {
+void SwapValuable(slot32_t slot1, slot32_t slot2) {
   item32_t a = GetValuableItemID(slot1);
   item32_t b = GetValuableItemID(slot2);
   SetValuable(slot1, b);

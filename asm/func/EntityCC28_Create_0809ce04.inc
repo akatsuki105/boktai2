@@ -10,8 +10,8 @@
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _0809CE58
-	ldr r1, _0809CE4C @ =FUN_0809cbd0
-	ldr r2, _0809CE50 @ =FUN_0809cc04
+	ldr r1, _0809CE4C @ =EntityCC28_Update_0809cbd0
+	ldr r2, _0809CE50 @ =EntityCC28_Destroy_0809cc04
 	bl SetEntityRoutine
 	ldr r1, _0809CE54 @ =0x000009FA
 	adds r0, r4, r1
@@ -28,8 +28,8 @@
 	.align 2, 0
 _0809CE44: .4byte 0x0300013C
 _0809CE48: .4byte 0x0000405C
-_0809CE4C: .4byte FUN_0809cbd0
-_0809CE50: .4byte FUN_0809cc04
+_0809CE4C: .4byte EntityCC28_Update_0809cbd0
+_0809CE50: .4byte EntityCC28_Destroy_0809cc04
 _0809CE54: .4byte 0x000009FA
 _0809CE58:
 	adds r0, r4, #0

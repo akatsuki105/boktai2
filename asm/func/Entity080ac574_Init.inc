@@ -18,10 +18,10 @@ _080AC512:
 	str r1, [r4, #0x30]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	adds r0, r5, #0
 	mov r1, r8
 	mov r2, r8

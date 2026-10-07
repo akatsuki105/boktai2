@@ -5,7 +5,7 @@
 	adds r0, r4, #0
 	bl FUN_080be144
 	adds r0, r4, #0
-	bl FUN_080be1c8
+	bl Entity744F_LoadBgPltt
 	adds r0, r4, #0
 	bl FUN_080be204
 	adds r0, r4, #0

@@ -27,6 +27,7 @@ static inline void SystemSave_SetUnk09(u32 val) { gSystemSaveData->unk_09 = val;
 // --------------------------------------------
 
 extern bool32 gSoftResetInhibit;
+extern bool32 gSaveSucceeded;
 
 // もう一方のスロットにセーブデータを書き込み、成功したらそちらを現在のスロットにする
 u8 Save_WriteToNextSlot(void);

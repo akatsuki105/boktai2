@@ -26,7 +26,7 @@ _080AB098:
 	ldrb r2, [r0]
 	adds r2, #1
 	adds r0, r5, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _080AB0AE:
 	ldrh r2, [r5, #0x2c]
 	adds r1, r5, #0

@@ -2,6 +2,9 @@
 
 #include "global.h"
 
+// アドレス上は 0x0203B000 から 0x0203B400 の手前までの128スロットだが、Registry_AllocEntry が 31 を超えたところで NULL を返すので実際に使われるのは32スロットまで
+EWRAM_DATA RegistryEntry gRegistry[128] = {};
+
 RegistryEntry* Registry_AllocEntry(void) {
   s32 i;
   RegistryEntry* p = &gRegistry[0];

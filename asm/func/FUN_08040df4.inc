@@ -4,7 +4,7 @@
 	adds r5, r3, #0
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_08040d94
+	bl Entity286F_FindSpriteData
 	movs r2, #0xae
 	lsls r2, r2, #2
 	adds r1, r6, r2

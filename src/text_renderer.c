@@ -31,7 +31,7 @@
 
 const s16 gCharSounds[2] = {0x105, 0x106};  // 0x085AB458, TextRenderer_PlayCharSound が charSoundIdx で選ぶ文字送り音
 
-// 0x1F エスケープの次のバイトと文字コードの組, bit15 が立っていれば全角 (Video_DrawCharWide 側)
+// 0x1F エスケープの次のバイトと文字コードの組, bit15 が立っていれば全角 (Font_DrawZenkakuChar 側)
 const u16 gEscapeCharcodes[118] = {
     0x4C, 0x61, 0x68, 0x62, 0x66, 0x60, 0x1, 0x63, 0x3, 0x64, 0x6A, 0x66, 0x4, 0x67, 0x67, 0x65, 0x69, 0x68, 0x6E, 0x6A, 0x6B, 0x6B, 0x6C, 0x69, 0x6D, 0x6C, 0x72, 0x6E, 0x6F, 0x6F, 0x70, 0x6D, 0x6, 0x70, 0x75, 0x72, 0x73, 0x73, 0x74, 0x71, 0x7, 0x74, 0x5A, 0x75, 0x28, 0x8F, 0x9, 0x78, 0x8, 0x79, 0xA, 0x77, 0xD, 0x94, 0xB, 0x7A, 0xE, 0x7B, 0x10, 0x7D, 0xF, 0x7E, 0x11, 0x7C, 0x12, 0x7F, 0x14, 0x81, 0x13, 0x82, 0x15, 0x80, 0x16, 0x83, 0x19, 0x85, 0x18, 0x86, 0x1A, 0x84, 0x1B, 0x87, 0x1E, 0x89, 0x1D, 0x8A, 0x1F, 0x88, 0x20, 0x8B, 0x58, 0x8C, 0x59, 0x8D, 0x4F, 0x8015, 0x50, 0x8016, 0x29, 0x0, 0x48, 0x90, 0x49, 0x91, 0x4A, 0x0, 0x22, 0x95, 0x42, 0x93, 0x41, 0x92, 0x17, 0x8E, 0x5, 0x76, 0xFF81, 0x0,
 };  // 0x085AB45C, 終端の 0 は無く、ループは隣の gBlankText のゼロ埋めで止まる
@@ -103,18 +103,18 @@ void TextRenderer_PlayCharSound(TextRenderer* p, u32 charcode) {
   }
 }
 
-s32 TextRenderer_DrawCharNarrow(TextRenderer* p, u16 charcode) {
+s32 TextRenderer_DrawHankakuChar(TextRenderer* p, u16 charcode) {
   TextRenderer_PlayCharSound(p, charcode);
-  Video_DrawCharNarrow(charcode, p->cursorX, p->cursorY, p->style);
+  Font_DrawHankakuChar(charcode, p->cursorX, p->cursorY, p->style);
   TextRenderer_AdvanceCursor(p, 0);
-  p->drewWide = 0;
+  p->drewWide = FALSE;
 }
 
-s32 TextRenderer_DrawCharWide(TextRenderer* p, u16 charcode) {
+s32 TextRenderer_DrawZenkakuChar(TextRenderer* p, u16 charcode) {
   TextRenderer_PlayCharSound(p, charcode);
-  Video_DrawCharWide(charcode, p->cursorX, p->cursorY, p->style);
+  Font_DrawZenkakuChar(charcode, p->cursorX, p->cursorY, p->style);
   TextRenderer_AdvanceCursor(p, 1);
-  p->drewWide = 1;
+  p->drewWide = TRUE;
 }
 
 s32 Text_TakeDigit(s32* p, s32 n) {
@@ -436,11 +436,11 @@ NON_MATCH char* TextRenderer_DrawNextChar(TextRenderer* p, char* s) {
 
       if (charcode == 0xFFFF) {
         c = *s - 0x20;
-        TextRenderer_DrawCharNarrow(p, c);
+        TextRenderer_DrawHankakuChar(p, c);
       } else if ((charcode & 0xFF00) != 0) {
-        TextRenderer_DrawCharNarrow(p, charcode & 0x7FFF);
+        TextRenderer_DrawHankakuChar(p, charcode & 0x7FFF);
       } else {
-        TextRenderer_DrawCharNarrow(p, charcode);
+        TextRenderer_DrawHankakuChar(p, charcode);
       }
 
       s += 2;
@@ -448,7 +448,7 @@ NON_MATCH char* TextRenderer_DrawNextChar(TextRenderer* p, char* s) {
     }
 
     c = *s - 0x20;
-    TextRenderer_DrawCharNarrow(p, c);
+    TextRenderer_DrawHankakuChar(p, c);
     s++;
     return s;
   }
@@ -456,8 +456,8 @@ NON_MATCH char* TextRenderer_DrawNextChar(TextRenderer* p, char* s) {
   c = (*s & 0x7F) << 8;
   s++;
   c |= *s;
-  if (c < Video_GetZenkakuCharCount()) {
-    TextRenderer_DrawCharWide(p, c);
+  if (c < Font_GetZenkakuCharCount()) {
+    TextRenderer_DrawZenkakuChar(p, c);
   } else {
     TextRenderer_AdvanceCursor(p, 1);
   }
@@ -610,7 +610,7 @@ void TextRenderer_Init(TextRenderer* p, s32 x, s32 y, s32 width, s32 height) {
   p->unk_0a = 0;
   p->silent = 0;
   p->savedSpeed = p->speed;
-  p->drewWide = 0;
+  p->drewWide = FALSE;
   p->scriptIdCount = 0;
   p->text = NULL;
   p->textAlt = NULL;

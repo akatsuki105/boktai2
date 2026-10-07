@@ -38,7 +38,7 @@ _0804B998:
 	bl FUN_0804b3f8
 	movs r0, #0
 	movs r1, #0
-	bl FUN_0804e9f4
+	bl SignalStrengthIcon_CreateAt
 	movs r0, #0
 _0804B9B2:
 	pop {r4}

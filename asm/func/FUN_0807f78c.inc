@@ -72,7 +72,7 @@ _0807F7B8:
 	ldr r1, [r0]
 	adds r0, r7, #0
 	movs r2, #4
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r2, _0807F84C @ =0x085B0A08
 	mov r0, r8
 	adds r0, #0x40

@@ -57,7 +57,7 @@ void FreezeEffect_GatherSubParticles(FreezeEffect* p) {
         p->subPtcls[i].base.pos.y = Div(p->subPtcls[i].base.pos.y * n + p->ptcl.pos.y, d);
         p->subPtcls[i].base.pos.z = Div(p->subPtcls[i].base.pos.z * n + p->ptcl.pos.z, d);
         if (p->subPtcls[i].frame == 4) {
-          FUN_0822dafc(&p->subPtcls[i].base, p->subPtclGroup, 9);
+          Particle_SetFrame(&p->subPtcls[i].base, p->subPtclGroup, 9);
         }
       }
     }
@@ -204,9 +204,9 @@ void FreezeEffect_InitCenterParticle(FreezeEffect* p) {
   Particle* ptcl = &p->ptcl;
 
   p->ptclGroup = GetParticleGroup(PTCL_GROUP_0);
-  FUN_0822d9f0(ptcl, p->ptclGroup, 1);
+  Particle_Add(ptcl, p->ptclGroup, 1);
   Particle_SetOffset(ptcl, -8, -8);
-  FUN_0822dafc(ptcl, p->ptclGroup, 10);
+  Particle_SetFrame(ptcl, p->ptclGroup, 10);
   ptcl->pos = p->pos;
   ptcl->pos.y += 0xD7;
   ptcl->priority = 1;
@@ -220,10 +220,10 @@ void FreezeEffect_InitSubParticles(FreezeEffect* p) {
   p->subPtclGroup = GetParticleGroup(PTCL_GROUP_2);
   for (i = 0; i < 8; i++) {
     Particle* ptcl = &p->subPtcls[i].base;
-    FUN_0822d9f0(ptcl, p->subPtclGroup, 1);
+    Particle_Add(ptcl, p->subPtclGroup, 1);
     Particle_SetOffset(ptcl, -4, -4);
-    FUN_0822dafc(ptcl, p->subPtclGroup, 8);
-    FUN_0822dadc(ptcl, 1);
+    Particle_SetFrame(ptcl, p->subPtclGroup, 8);
+    Particle_SetPltt(ptcl, 1);
     ptcl->priority = 2;
     ptcl->offsetZ = 0xEC;
     p->subPtcls[i].active = FALSE;

@@ -273,7 +273,7 @@ _0821A1FC:
 	add r0, sp
 	ldr r1, [r0]
 	adds r0, r7, #0
-	bl FUN_08219f34
+	bl EntityA288_SetState
 	movs r0, #0
 	add sp, #0x14
 	pop {r3, r4, r5}

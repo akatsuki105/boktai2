@@ -1417,11 +1417,13 @@ const u8 String_057D[] = _("<LABEL=NONE>???</LABEL>\n「なぬ!?");
 const u8 String_057E[] = _("わわわ、\nどうしよう陽子ちゃん!!」");
 const u8 String_057F[] = _("<LABEL=NONE>???</LABEL>\n「しっかりなさい!\nさあ、お仕事よ!!」");
 const u8 String_0580[] = _("<PROC=0>\n<END>");
+
 const u8 String_0581[] = _("これを買いますか?");
 const u8 String_0582[] = _("これを売りますか?");
 const u8 String_0583[] = _("これを捨てますか?");
 const u8 String_0584[] = _("バッグをせいとんしますか?");
 const u8 String_0585[] = _("倉庫をせいとんしますか?");
+
 const u8 String_0586[] = _("おはよう");
 const u8 String_0587[] = _("<PROC=0>");
 const u8 String_0588[] = _("こんにちは");
@@ -1446,6 +1448,7 @@ const u8 String_059A[] = _("マラソン");
 const u8 String_059B[] = _("<PROC=0>");
 const u8 String_059C[] = _("ちゃうねん");
 const u8 String_059D[] = _("<PROC=0>");
+
 const u8 String_059E[] = _("太陽鍛冶について\n <ALTER>太陽鍛冶とは</ALTER>　<ALTER>鍛冶の内容</ALTER>\n <ALTER>材料の選択</ALTER>　　<ALTER>鍛冶の手順</ALTER>");
 const u8 String_059F[] = _("<PROC=0>\n<END>");
 const u8 String_05A0[] = _("太陽鍛冶(たいようかじ)とは、");
@@ -1921,6 +1924,7 @@ const u8 String_0774[] = _("この街のいたるところに根を出\nして�
 const u8 String_0775[] = _("これはダ―ク属性、暗黒の力に\nよるもの・・・");
 const u8 String_0776[] = _("ひまわり娘(むすめ)の言ってい\nた遺跡(いせき)はこの先だな」");
 const u8 String_0777[] = _("<PROC=0>\n<END>");
+
 const u8 String_0778[] = _("閉ざされている。\nまだ、この扉を開けることはで\nきないようだ・・・");
 const u8 String_0779[] = _("<PROC=0>\n<END>");
 const u8 String_077A[] = _("どのランクに挑みますか?\n <ALTER><EXTEND=0>ブロンズ</ALTER> ");
@@ -1962,6 +1966,7 @@ const u8 String_079D[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\nそうそ�
 const u8 String_079E[] = _("やっぱり、\nナントカをソレして");
 const u8 String_079F[] = _("イイカンジに\nアレコレするんだ!{MEOW6}");
 const u8 String_07A0[] = _("<PROC=0>\n<END>");
+
 const u8 String_07A1[] = _("<LABEL=ZAJI>魔法少女</LABEL>\n「無事来よったな。\nくさっても太陽少年や。");
 const u8 String_07A2[] = _("そや、\nソル・デバのレンタル料、\n太陽バンクに頼(たの)むで。");
 const u8 String_07A3[] = _("そやなぁ、\n100万ぽっきりでええわ。");
@@ -2035,6 +2040,7 @@ const u8 String_07E6[] = _("ヤツは近くにいる!?\nだが・・・");
 const u8 String_07E7[] = _("今はスミスの捜索(そうさく)が\n先だ。");
 const u8 String_07E8[] = _("<NAME>、\n北西の大聖堂に向かうんだ!!」");
 const u8 String_07E9[] = _("<PROC=0>\n<END>");
+
 const u8 String_07EA[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「今のは・・・」");
 const u8 String_07EB[] = _("<PROC=0>\n<END>");
 const u8 String_07EC[] = _("???\n<PROC=1><LOCK=44>「お待ちなさい・・・」");
@@ -2047,6 +2053,7 @@ const u8 String_07F2[] = _("私、お腹がすいたの。\n本当に永いこ�
 const u8 String_07F3[] = _("でも、目覚めてそうそうに太陽\n仔(たいようし)を食べられるな\nんて、素敵だわ・・・");
 const u8 String_07F4[] = _("そういうことだから・・・\nごめんなさいね、坊や」");
 const u8 String_07F5[] = _("<PROC=0>\n<END>");
+
 const u8 String_07F6[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「スミス!!」");
 const u8 String_07F7[] = _("<LABEL=SMITH>スミス</LABEL>\n「う・・・うう・・・」");
 const u8 String_07F8[] = _("<PROC=0>\n<END>");
@@ -2101,6 +2108,7 @@ const u8 String_0828[] = _("あの棺桶(かんおけ)を商店街の\n北にあ
 const u8 String_0829[] = _("そこにパイルドライバ―を召喚\n(しょうかん)し、");
 const u8 String_082A[] = _("太陽の光をもってイモ―タル、\n白きドゥネイルを浄化する!」");
 const u8 String_082B[] = _("<PROC=0>\n<END>");
+
 const u8 String_082C[] = _("<LABEL=NONE>リボンの少女</LABEL>\n「<NAME>さま!!\nおてんこさま!!」");
 const u8 String_082D[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「リタ!!\nどうしてここに!");
 const u8 String_082E[] = _("サバタが予見していたように、\n今このサン・ミゲルにはアンデ\nッドがさまよい、");

@@ -296,7 +296,7 @@ s32 Breakable_Spawn(void) {
   if (!Video_GetAuxSprite(&item->gfx, spriteID)) {
     return -1;
   }
-  FUN_0822a4fc(sprite, &item->gfx);
+  AuxSprite_SetGfx(sprite, &item->gfx);
   sprite->metaspriteIdx = pose;
   sprite->priority = 2;
   Breakable_SetUpdate(item, Breakable_UpdateAlive);

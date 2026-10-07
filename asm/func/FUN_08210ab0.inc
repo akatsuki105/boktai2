@@ -79,7 +79,7 @@ _08210B42:
 	mov r2, r8
 	adds r2, #3
 	movs r3, #2
-	bl FUN_0822bdb8
+	bl Video_FillBGRect
 	movs r0, #1
 	add sb, r0
 	ldr r2, [sp, #0x1c]

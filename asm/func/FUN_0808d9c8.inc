@@ -2,7 +2,7 @@
 	adds r4, r0, #0
 	bl FUN_0808d268
 	adds r0, r4, #0
-	bl FUN_0808d998
+	bl EntityCC28_ApplyWeapon
 	adds r0, r4, #0
 	bl FUN_0808d93c
 	ldr r0, _0808DA08 @ =0x00000C03

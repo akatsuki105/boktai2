@@ -6,68 +6,96 @@
 #include "malloc.h"
 #include "video.h"
 
-extern u8 u8_02035400[0x800];
+typedef struct {
+  u16 hankakuCharCount;  // 0x0, 半角文字 (8x16px) の文字数 (タイル数は hankakuCharCount * 2)
+  u16 zenkakuCharCount;  // 0x2, 全角文字 (16x16px) の文字数 (タイル数は zenkakuCharCount * 4)
+  // これらのメンバは、 ROMでは &FontInfo からのオフセットでRAM読み込み時にポインタに変換される
+  u8* hankaku;  // u8[hankakuCharCount * 2 * 32], 半角文字のタイルデータ
+  u8* zenkaku;  // u8[zenkakuCharCount * 4 * 32], 全角文字のタイルデータ
+} FontInfo;
+static_assert(sizeof(FontInfo) == 12);
+
+typedef FontInfo FontFile;  // ROM内の FontInfo であることを示すためのエイリアス
+
+EWRAM_DATA u8 u8_02035400[0x800] = {};   // 0x02035400
+EWRAM_DATA u8 u8_02035c00[0x1000] = {};  // 0x02035C00
 
 IWRAM_DATA u8 u8_ARRAY_030006a0[128] = {};  // 0x030006A0
 IWRAM_DATA u32 u32_03000720 = 0;            // 0x03000720, なんかのカウンタ
-IWRAM_DATA FontInfo* gFontInfo = NULL;      // 0x03000724
+
+IWRAM_DATA FontInfo* gFontInfo = NULL;  // 0x03000724
 
 // 多分、バッファのフォントのタイルデータをVRAMに転送する関数
 NAKED void FUN_0822e73c(void) { INCFUNC("asm/func/FUN_0822e73c.inc"); }
 
-NAKED void FUN_0822e794(s32 val, u8* src) { INCFUNC("asm/func/FUN_0822e794.inc"); }
+// タイル1枚ぶんの字形を u8_02035c00 に積む
+// 残差1命令, 原典は src を r1 のまま使い val を r3 に退避するが, こちらはカウンタに r1 を取るので src の退避が1本増える
+NON_MATCH void FUN_0822e794(s32 val, u8* src) {
+#ifdef NONMATCHING_C
+  if (u32_03000720 <= 0x80) {
+    u8_ARRAY_030006a0[u32_03000720] = val;
+    CopyMemory(&u8_02035c00[u32_03000720 * 32], src, 32);
+    u32_03000720++;
+  }
+#else
+  INCFUNC("asm/func/FUN_0822e794.inc");
+#endif
+}
 
 void FUN_0822e7cc(void) { gFontInfo = NULL; }
 
 FontInfo* FUN_0822e7d8(void) { return gFontInfo; }
 
-// フォントファイルを読んで gFontInfo を作る, ヘッダのオフセットは実アドレスに直して持つ
+// フォントファイルを読んで gFontInfo を作る
 s32 FUN_0822e7e4(void) {
-  FontHeader* f;
-
   if (gFontInfo != NULL) {
     return 0;
   }
+
   gFontInfo = Malloc(sizeof(FontInfo));
   if (gFontInfo != NULL) {
     ClearMemory(gFontInfo, sizeof(FontInfo));
-    f = GetFile(DIR_FONT, 0x3F51);
-    if (f != NULL) {
-      *gFontInfo = *(FontInfo*)f;
-      gFontInfo->narrowChars += (u32)f;
-      gFontInfo->wideChars += (u32)f;
-      return 0;
+
+    {
+      FontFile* f = GetFile(DIR_FONT, 0x3F51);
+      if (f != NULL) {
+        // 相対オフセットをROMアドレスに変換する
+        *gFontInfo = *f;
+        gFontInfo->hankaku = (u8*)((u32)gFontInfo->hankaku + (u32)f);
+        gFontInfo->zenkaku = (u8*)((u32)gFontInfo->zenkaku + (u32)f);
+        return 0;
+      }
     }
   }
   return -1;
 }
 
-u32 Video_GetHankakuCharCount(void) {
+u32 Font_GetHankakuCharCount(void) {
   if (gFontInfo == NULL) {
     return 0;
   }
-  return gFontInfo->narrowCharCount;
+  return gFontInfo->hankakuCharCount;
 }
 
-u32 Video_GetZenkakuCharCount(void) {
+u32 Font_GetZenkakuCharCount(void) {
   if (gFontInfo == NULL) {
     return 0;
   }
-  return gFontInfo->wideCharCount;
+  return gFontInfo->zenkakuCharCount;
 }
 
-u8* Video_GetHankakuTiles(void) {
+u8* Font_GetHankakuTiles(void) {
   if (gFontInfo == NULL) {
     return NULL;
   }
-  return gFontInfo->narrowChars;
+  return gFontInfo->hankaku;
 }
 
-u8* Video_GetZenkakuTiles(void) {
+u8* Font_GetZenkakuTiles(void) {
   if (gFontInfo == NULL) {
     return NULL;
   }
-  return gFontInfo->wideChars;
+  return gFontInfo->zenkaku;
 }
 
 void FUN_0822e8b4(void) { ClearMemory(u8_02035400, sizeof(u8_02035400)); }
@@ -173,9 +201,9 @@ void FUN_0822eadc(u32 x8, u32 y8, u32 w8, u32 h8) {
   }
 }
 
-NAKED void Video_DrawCharNarrow(u16 charcode, s32 x8, s32 y8, s32 param_4) { INCFUNC("asm/func/Video_DrawCharNarrow.inc"); }
+NAKED void Font_DrawHankakuChar(u16 charcode, s32 x8, s32 y8, s32 style) { INCFUNC("asm/func/Font_DrawHankakuChar.inc"); }
 
-NAKED void Video_DrawCharWide(u16 charcode, s32 x8, s32 y8, s32 param_4) { INCFUNC("asm/func/Video_DrawCharWide.inc"); }
+NAKED void Font_DrawZenkakuChar(u16 charcode, s32 x8, s32 y8, s32 style) { INCFUNC("asm/func/Font_DrawZenkakuChar.inc"); }
 
 void nop_0822ec58(void) {}
 

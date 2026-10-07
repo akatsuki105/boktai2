@@ -118,9 +118,10 @@ const u8 String_18EF[] = _("ミヤギ");        // 0x08D0FFDC, ID: 6383
 const u8 String_18F0[] = _("アキタ");        // 0x08D0FFE3, ID: 6384
 const u8 String_18F1[] = _("ヤマガタ");      // 0x08D0FFEA, ID: 6385
 const u8 String_18F2[] = _("フクシマ");      // 0x08D0FFF3, ID: 6386
-const u8 String_18F3[] = _("");              // 0x08D0FFFC, ID: 6387
-const u8 String_18F4[] = _("シャイアン");    // 0x08D0FFFD, ID: 6388
-const u8 String_18F5[] = _("スミス");        // 0x08D10008, ID: 6389
+
+const u8 String_18F3[] = _("");            // 0x08D0FFFC, ID: 6387
+const u8 String_18F4[] = _("シャイアン");  // 0x08D0FFFD, ID: 6388
+const u8 String_18F5[] = _("スミス");      // 0x08D10008, ID: 6389
 
 // 0x08D1000F, ID: 6390
 // TextSlideshow_Create の '.t'

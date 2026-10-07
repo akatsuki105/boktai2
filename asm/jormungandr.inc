@@ -1799,14 +1799,14 @@ _080C3F5C:
 	ldr r1, [r6, #4]
 	adds r0, r5, #0
 	movs r2, #1
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r5, #0
 	mov r1, r8
 	mov r2, r8
 	bl Particle_SetOffset
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	movs r0, #1
 	strb r0, [r4, #0x1f]
 	adds r5, #0x38
@@ -1965,7 +1965,7 @@ _080C4080:
 	ldr r1, [r7, #4]
 	adds r0, r4, #0
 	movs r2, #2
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	movs r1, #0xba
 	lsls r1, r1, #2
 	add r1, r8
@@ -2158,7 +2158,7 @@ _080C41FE:
 	ldr r1, [r0, #4]
 	adds r0, r7, #0
 	movs r2, #3
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _080C422E:
 	movs r3, #1
 _080C4230:

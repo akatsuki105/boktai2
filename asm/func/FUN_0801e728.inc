@@ -106,7 +106,7 @@ _0801E7EE:
 	movs r0, #2
 	movs r2, #0x10
 	movs r3, #1
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	adds r5, #1
 	cmp r5, #0xa
 	ble _0801E7EE
@@ -118,21 +118,21 @@ _0801E806:
 	movs r1, #3
 	movs r2, #0x10
 	movs r3, #2
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	str r4, [sp]
 	str r5, [sp, #4]
 	movs r0, #2
 	movs r1, #4
 	movs r2, #0x10
 	movs r3, #3
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	str r4, [sp]
 	str r5, [sp, #4]
 	movs r0, #2
 	movs r1, #5
 	movs r2, #0x10
 	movs r3, #4
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	movs r5, #0
 	b _0801E850
 _0801E83A:
@@ -144,7 +144,7 @@ _0801E83A:
 	movs r0, #2
 	movs r2, #0x10
 	movs r3, #5
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	adds r5, #1
 _0801E850:
 	ldr r0, [r7, #0x40]
@@ -161,7 +161,7 @@ _0801E85E:
 	movs r0, #2
 	movs r2, #0x10
 	movs r3, #6
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	adds r5, #1
 	cmp r5, #9
 	ble _0801E85E
@@ -174,7 +174,7 @@ _0801E874:
 	movs r1, #0x10
 	movs r2, #0x10
 	movs r3, #7
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 _0801E888:
 	ldrb r4, [r7, #0x1f]
 	mov sb, r4
@@ -189,35 +189,35 @@ _0801E888:
 	movs r1, #0x15
 	movs r2, #0x10
 	movs r3, #1
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	str r4, [sp]
 	str r5, [sp, #4]
 	movs r0, #2
 	movs r1, #0x16
 	movs r2, #0x10
 	movs r3, #1
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	str r4, [sp]
 	str r5, [sp, #4]
 	movs r0, #2
 	movs r1, #0x17
 	movs r2, #0x10
 	movs r3, #1
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	str r4, [sp]
 	str r5, [sp, #4]
 	movs r0, #2
 	movs r1, #0x18
 	movs r2, #0x10
 	movs r3, #1
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	str r4, [sp]
 	str r5, [sp, #4]
 	movs r0, #2
 	movs r1, #0x19
 	movs r2, #0x10
 	movs r3, #1
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	b _0801E944
 _0801E8E8:
 	adds r4, r7, #0
@@ -243,7 +243,7 @@ _0801E8E8:
 	movs r0, #2
 	movs r1, #0x15
 	movs r2, #0x10
-	bl FUN_0822be3c
+	bl Video_DrawBGNumber
 	mov r0, sb
 	str r0, [sp]
 	str r4, [sp, #4]
@@ -251,7 +251,7 @@ _0801E8E8:
 	movs r1, #0x17
 	movs r2, #0x10
 	movs r3, #0x1b
-	bl FUN_0822bcf4
+	bl Video_SetBGTile
 	str r6, [sp]
 	str r5, [sp, #4]
 	str r4, [sp, #8]
@@ -259,7 +259,7 @@ _0801E8E8:
 	movs r1, #0x18
 	movs r2, #0x10
 	mov r3, r8
-	bl FUN_0822be3c
+	bl Video_DrawBGNumber
 _0801E944:
 	adds r0, r7, #0
 	bl FUN_0801e6a0

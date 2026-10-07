@@ -97,7 +97,10 @@ typedef struct {
   s16 playerKind;                // 0x250, see PlayerKind in player.h
   coffin16_t coffin;             // 0x252
   s16 areaID;                    // 0x254, current area ID
-  u8 unk_256[10];                // 0x256
+  u16 unk_256;                   // 0x256, 根拠: FUN_0808fc8c が '.f' の値を入れる
+  u16 unk_258;                   // 0x258, 根拠: FUN_0808fcb4 が '.s' の値を入れる
+  u16 unk_25a;                   // 0x25A, 根拠: FUN_0808fcd8 が '.f' の値を入れる
+  u8 unk_25c[0x260 - 0x25C];     // 0x25C
   u32 unlockedMap;               // 0x260
   u32 unk_264;                   // 0x264, なんかのbitfield? (根拠: FUN_08090f0c)
   u8 unk_268[64];                // 0x268

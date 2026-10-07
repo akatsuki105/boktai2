@@ -25,7 +25,7 @@ _081EB196:
 	ldr r1, [r5, #0x1c]
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #8
 	rsbs r2, r2, #0
 	adds r0, r4, #0

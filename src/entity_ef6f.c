@@ -85,7 +85,6 @@ typedef struct {
 static_assert(sizeof(EntityEF6F) == 1884);
 
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
-void Sound_FadeOutBGMTemporarily(u32 speed);
 void FUN_0801c0d8(s32 param_1, s32 param_2);
 
 // 次の描画から BG を消す

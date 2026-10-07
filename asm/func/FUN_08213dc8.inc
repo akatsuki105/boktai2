@@ -117,7 +117,7 @@ _08213EA4:
 	cmp r2, #0
 	beq _08213EB6
 	adds r0, r6, #0
-	bl FUN_08213d90
+	bl EntityA288_ShowText
 _08213EB6:
 	movs r1, #0xeb
 	lsls r1, r1, #1
@@ -449,12 +449,12 @@ _0821412C:
 	bne _0821414A
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08219f34
+	bl EntityA288_SetState
 	b _08214152
 _0821414A:
 	adds r0, r6, #0
 	movs r1, #4
-	bl FUN_08219f34
+	bl EntityA288_SetState
 _08214152:
 	add sp, #4
 	pop {r3, r4}

@@ -295,7 +295,7 @@ _080DDF00:
 	movs r5, #0xf
 	mov r0, r8
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	b _080DDF26
 _080DDF0C:
 	movs r5, #0x10
@@ -305,13 +305,13 @@ _080DDF10:
 _080DDF12:
 	mov r0, r8
 	movs r1, #0
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	b _080DDF26
 _080DDF1C:
 	movs r5, #0xf
 	mov r0, r8
 	movs r1, #0
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 _080DDF26:
 	ldr r2, [sp, #0x10]
 	ldr r1, _080DDF84 @ =0x00000CD8

@@ -98,7 +98,7 @@ _0822C06C:
 	ldrsh r3, [r0, r2]
 	adds r0, r7, #0
 	adds r2, r5, #0
-	bl FUN_0822b9d4
+	bl Video_RequestBGTileData
 	adds r0, r7, #0
 	ldr r1, [sp, #0x60]
 	bl SetBGPrioDirect

@@ -64,12 +64,12 @@ extern Particle* gParticleLists[2];
 void LoadParticleFile(ParticleFile* p);
 ParticleGroup* GetParticleGroup(u16 ptclgroupID);
 void Video_RemoveParticleFromDrawList(Particle* p, s32 idx);
-void FUN_0822d9f0(Particle* p, ParticleGroup* g, u32 flags);
-void FUN_0822da70(Particle* p, ParticleGroup* g, u32 flags);
+void Particle_Add(Particle* p, ParticleGroup* g, u32 flags);
+void Particle_Setup(Particle* p, ParticleGroup* g, u32 flags);
 void Particle_Remove(Particle* p);
-void FUN_0822dadc(Particle* p, s32 plttID);
+void Particle_SetPltt(Particle* p, s32 plttID);
 void Particle_SetOffset(Particle* p, s32 offsetX, s32 offsetY);
-void FUN_0822dafc(Particle* p, ParticleGroup* g, u32 val);
+void Particle_SetFrame(Particle* p, ParticleGroup* g, u32 frame);
 
 static inline void Particle_Hide(Particle* p) { p->flags |= SPRFLAG_HIDDEN; }
 

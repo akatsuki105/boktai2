@@ -13,7 +13,7 @@
 	blt _0809B2E2
 	adds r1, r0, #0
 	adds r0, r5, #0
-	bl FUN_08098f48
+	bl EntityCC28_ShowLineInstant
 	movs r0, #0xff
 	strb r0, [r4]
 _0809B2E2:

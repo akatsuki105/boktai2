@@ -1,5 +1,5 @@
-#ifndef GUARD_ZOKTAI_TYPES_H
-#define GUARD_ZOKTAI_TYPES_H
+#ifndef __INCLUDE_BOKTAI2_TYPES_H__
+#define __INCLUDE_BOKTAI2_TYPES_H__
 
 #include "gba/types.h"
 
@@ -51,4 +51,10 @@ typedef struct {
   u16 val;  // 用途不明だが、Mover_Init で 16 がセットされている
 } Vec3;
 
-#endif  // GUARD_ZOKTAI_TYPES_H
+// Boktai2 で ROM から RAM に読み込んで使うデータの中には、ROM内では親構造体からのオフセットでRAM読み込み時にポインタに変換されるものが多い
+typedef union {
+  void* ptr;
+  u32 offset;
+} AssetRef;
+
+#endif  // __INCLUDE_BOKTAI2_TYPES_H__

@@ -40,7 +40,7 @@ _080613C0:
 	lsrs r2, r2, #0x1a
 	ldrb r3, [r3]
 	adds r2, r2, r3
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _080613DC:
 	pop {r4, r5}
 	pop {r0}

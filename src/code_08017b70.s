@@ -102,7 +102,7 @@ FUN_0801940c: @ 0x0801940C
 	movs r4, #1
 	ands r3, r4
 	adds r2, r2, r3
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _08019438:
 	ldrh r0, [r5, #6]
 	adds r0, #1
@@ -524,7 +524,7 @@ _08019724:
 	ldr r1, [r6, #0x28]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #4
 	rsbs r2, r2, #0
 	adds r0, r4, #0
@@ -533,10 +533,10 @@ _08019724:
 	ldr r1, [r6, #0x28]
 	ldrh r2, [r6, #0x26]
 	adds r0, r4, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	ldrb r2, [r5, #1]
 	ldrh r3, [r5, #4]
 	adds r0, r2, #0
@@ -1004,7 +1004,7 @@ FUN_08019af4: @ 0x08019AF4
 	ldr r1, [r0]
 	adds r0, r5, #0
 	movs r2, #0x13
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #4
 	rsbs r2, r2, #0
 	adds r0, r5, #0
@@ -1014,7 +1014,7 @@ FUN_08019af4: @ 0x08019AF4
 	ldr r1, [r0]
 	adds r0, r5, #0
 	movs r2, #0x33
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	mov r0, sb
 	strb r0, [r4, #0x17]
 	strh r6, [r4, #0x30]
@@ -1801,7 +1801,7 @@ _0801A0CC:
 	adds r2, r2, r1
 	ldr r1, [r2]
 	movs r2, #0x33
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	movs r1, #1
 	movs r0, #0
 	strb r1, [r4]
@@ -1856,7 +1856,7 @@ _0801A134:
 	adds r2, r2, r1
 	ldr r1, [r2]
 	movs r2, #0x35
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	movs r0, #2
 	movs r1, #0
 	strb r0, [r4]

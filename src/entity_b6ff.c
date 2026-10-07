@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "sprite_aux.h"
+#include "vm.h"
 
 typedef struct {
   AuxSprite sprite;      // 0x00, EntityB6FF_Destroy が AuxSprite_Remove に渡す
@@ -19,7 +20,11 @@ static_assert(sizeof(EntityB6FF) == 2276);
 
 NAKED void FUN_080ac5b4(u32 param_1) { INCFUNC("asm/func/FUN_080ac5b4.inc"); }
 
-NAKED void FUN_080ac5f4(void) { INCFUNC("asm/func/FUN_080ac5f4.inc"); }
+void FUN_080ac5f4(void) {
+  if (VM_SeekToNamedArg('n')) {
+    FUN_080ac5b4(VM_GetValue());
+  }
+}
 
 NAKED void FUN_080ac60c(u16 param_1, unknown* param_2, u16 param_3, u16 param_4) { INCFUNC("asm/func/FUN_080ac60c.inc"); }
 
@@ -31,7 +36,14 @@ NAKED void FUN_080ac874(unknown* param_1, Vec3* param_2, u16 param_3) { INCFUNC(
 
 NAKED s32 EntityB6FF_Update(EntityB6FF* p) { INCFUNC("asm/func/EntityB6FF_Update.inc"); }
 
-NAKED s32 EntityB6FF_Destroy(EntityB6FF* p) { INCFUNC("asm/func/EntityB6FF_Destroy.inc"); }
+s32 EntityB6FF_Destroy(EntityB6FF* p) {
+  s32 i;
+
+  for (i = 0; i < 24; i++) {
+    AuxSprite_Remove(&p->elems[i].sprite);
+  }
+  return 0;
+}
 
 NAKED void FUN_080aca60(unknown* param_1) { INCFUNC("asm/func/FUN_080aca60.inc"); }
 

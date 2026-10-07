@@ -19,5 +19,7 @@ extern u16 gSioChildRecv;
 extern s32 gSioStatus;
 
 void Sio_Reset(void);
+s32 Sio_Stop(void);
+void FUN_08238bf4(void);
 
 #endif  // __INCLUDE_LINK_H__

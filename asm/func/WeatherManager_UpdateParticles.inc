@@ -40,7 +40,7 @@ _08017E2A:
 	ldr r1, [r0]
 	adds r0, r3, #0
 	movs r2, #0x1f
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	strb r5, [r4, #1]
 	b _08017E56
 _08017E48:

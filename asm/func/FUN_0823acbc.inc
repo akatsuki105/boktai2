@@ -1,5 +1,5 @@
 	push {r4, r5, lr}
-	bl FUN_0823b158
+	bl VM_CountSubroutine
 	bl FUN_0823aa84
 	bl FUN_0823b130
 	bl FUN_082324b0

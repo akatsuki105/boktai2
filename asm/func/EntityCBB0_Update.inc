@@ -75,7 +75,7 @@ _080B2638:
 	adds r0, r4, #0
 	bl FUN_080ae8a4
 	adds r0, r4, #0
-	bl FUN_080ade4c
+	bl EntityCBB0_LoadBgPltt
 	adds r0, r4, #0
 	bl FUN_080b24a4
 	ldr r1, _080B2688 @ =0x0000133E

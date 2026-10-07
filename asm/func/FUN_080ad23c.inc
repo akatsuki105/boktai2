@@ -56,7 +56,7 @@ _080AD288:
 	ldr r1, [r6]
 	adds r0, r2, #0
 	movs r2, #3
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _080AD2B2:
 	ldrb r0, [r4]
 	adds r0, #1

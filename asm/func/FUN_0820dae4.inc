@@ -61,7 +61,7 @@
 	movs r1, #4
 	movs r2, #6
 	movs r3, #8
-	bl FUN_0822bdb8
+	bl Video_FillBGRect
 	movs r0, #0
 	add sp, #0x14
 	pop {r4, r5, r6}

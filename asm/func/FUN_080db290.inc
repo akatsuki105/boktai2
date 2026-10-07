@@ -23,7 +23,7 @@ _080DB2B0:
 	mov r0, sb
 	add r1, sp, #4
 	mov r2, r8
-	bl FUN_080db260
+	bl Mover_GetAnimQuadrant
 	adds r4, r7, #0
 	adds r4, #0x9c
 	mov r2, sb

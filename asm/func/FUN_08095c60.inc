@@ -3,12 +3,12 @@
 	movs r1, #1
 	movs r2, #5
 	movs r3, #3
-	bl FUN_0808a5b0
+	bl EntityCC28_DrawHP
 	adds r0, r5, #0
 	movs r1, #1
 	movs r2, #5
 	movs r3, #4
-	bl FUN_0808a5e0
+	bl EntityCC28_DrawEne
 	ldr r6, _08095D10 @ =0x030044E0
 	ldrh r1, [r6]
 	movs r0, #4

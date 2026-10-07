@@ -23,7 +23,7 @@ _0808C738:
 	lsrs r2, r2, #0x1b
 	adds r2, #2
 	adds r0, r4, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldrh r0, [r4, #0x30]
 	ldrh r1, [r4, #0x18]
 	adds r0, r0, r1

@@ -9,7 +9,7 @@
 	ldr r2, _08219ECC @ =0x04000028
 	bl CpuSet
 	adds r0, r4, #0
-	bl FUN_082138a0
+	bl EntityA288_LoadBgPltt
 	pop {r4}
 	pop {r0}
 	bx r0

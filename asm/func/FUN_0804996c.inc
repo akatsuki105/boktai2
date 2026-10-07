@@ -222,7 +222,7 @@ _08049AF0:
 	ble _08049B44
 	adds r0, r7, #0
 	movs r1, #0
-	bl TextRenderer_DrawCharNarrow
+	bl TextRenderer_DrawHankakuChar
 	ldr r0, [r4]
 	subs r0, #1
 	str r0, [r4]
@@ -280,7 +280,7 @@ _08049B86:
 	ble _08049BBE
 	adds r0, r7, #0
 	movs r1, #0
-	bl TextRenderer_DrawCharNarrow
+	bl TextRenderer_DrawHankakuChar
 	movs r1, #0xc4
 	lsls r1, r1, #1
 	adds r0, r5, r1

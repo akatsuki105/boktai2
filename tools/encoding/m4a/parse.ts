@@ -1,5 +1,6 @@
 import * as gba from "../../common/gba/gba.ts";
 import type { addr } from "../../common/gba/gba.ts";
+import { Parser } from "@binary-parser";
 
 type Song = {
   header: addr;

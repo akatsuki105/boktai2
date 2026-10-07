@@ -725,7 +725,7 @@ _08049388:
 	bl TextRenderer_PlayCharSound
 	adds r0, r5, #0
 	movs r1, #0x3b
-	bl TextRenderer_DrawCharNarrow
+	bl TextRenderer_DrawHankakuChar
 _080493AC:
 	adds r0, r7, #0
 	b _0804945E
@@ -793,7 +793,7 @@ _08049420:
 	bl TextRenderer_PlayCharSound
 	adds r0, r5, #0
 	movs r1, #0x3d
-	bl TextRenderer_DrawCharNarrow
+	bl TextRenderer_DrawHankakuChar
 	b _0804945C
 	.align 2, 0
 _08049448: .4byte 0x08251D20

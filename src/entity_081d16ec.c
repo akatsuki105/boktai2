@@ -10,7 +10,7 @@
 // 最大12個の Entity081d16ecItem をビットマスクで管理するシングルトン
 typedef struct Entity081d16ec {
   Entity e;                      // 0x000, ENTITY_UNK_9
-  AuxAnimFile* animFile;         // 0x018, ANIM_B952
+  AuxAnimFile* anim;             // 0x018, ANIM_B952
   Entity081d16ecItem items[12];  // 0x01C, _Update と _Destroy が 0x1C + i*200 で引く
   u32 activeMask;                // 0x97C, bit i が立っていれば items[i] が使用中, _Init が 0 にする
 } Entity081d16ec;
@@ -68,10 +68,10 @@ void FUN_081d11b8(Entity081d16ecItem* item) {
     item->anim.tick = item->anim.wait - item->anim.tick;
   } else {
     if (FUN_081d0e94(item, E081D16EC_FLAG_0)) {
-      AuxAnim_SetAnim(&item->anim, p->animFile, 1, 0, item->unk_bc);
+      AuxAnim_SetAnim(&item->anim, p->anim, 1, 0, item->unk_bc);
       FUN_081d0e84(item, E081D16EC_FLAG_0);
     } else {
-      AuxAnim_SetAnim(&item->anim, p->animFile, 1, 0, item->unk_bc | ANIM_PLAY_REVERSE);
+      AuxAnim_SetAnim(&item->anim, p->anim, 1, 0, item->unk_bc | ANIM_PLAY_REVERSE);
       FUN_081d0e84(item, E081D16EC_FLAG_1);
     }
     item->state = 2;
@@ -163,7 +163,7 @@ NON_MATCH s32 Entity081d16ec_Destroy(Entity081d16ec* p) {
 }
 
 s32 Entity081d16ec_Init(Entity081d16ec* p) {
-  p->animFile = GetFile(DIR_ANIMATION, ANIM_B952);
+  p->anim = GetFile(DIR_ANIMATION, ANIM_B952);
   gEntity081d16ec = p;
   p->activeMask = 0;
   return 0;

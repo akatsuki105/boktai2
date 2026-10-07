@@ -10,6 +10,10 @@
 #include "video.h"
 #include "vm.h"
 
+// CollisionMapFile が圧縮されている場合、ここに展開してファイル内容を読み込む, 圧縮されていないならROMから直接読み込むのでここは使われない
+EWRAM_DATA u8 gDecompressedCollisionMapHeader[4] = {};    // 0x02031400, 展開先の先頭4バイト, 圧縮処理のメタデータが格納されるが使われてなさそう
+EWRAM_DATA u8 gDecompressedCollisionMapFile[16380] = {};  // 0x02031404, 展開された CollisionMapFile 本体, 根拠: OpenCollisionMapFile がここを返す
+
 COMMON_DATA Vec3 gCameraVpCoords = {};  // 0x030047C8
 COMMON_DATA Camera* gCamera = NULL;     // 0x030047D0
 COMMON_DATA u8 u8_030047d4[4] = {};     // todo
@@ -95,7 +99,7 @@ void Map_LoadMapScripted(void) {
       gCameraCoords.tilemapX = td->tilemapOffsetX >> 4;
       gCameraCoords.tilemapY = td->tilemapOffsetY >> 4;
     } else {
-      Video_SetDrawPasses(val, FUN_0822de64, FUN_0822ac90, MainSprite_DrawListScreen);
+      Video_SetDrawPasses(val, Particle_DrawListScreen, AuxSprite_DrawListScreen, MainSprite_DrawListScreen);
       gCameraCoords.tilemapX = 0;
       gCameraCoords.tilemapY = 0;
     }
@@ -116,7 +120,7 @@ void Camera_SetTilemapOffset(void) {
       }
     }
   } else {
-    Video_SetDrawPasses(val, FUN_0822de64, FUN_0822ac90, MainSprite_DrawListScreen);
+    Video_SetDrawPasses(val, Particle_DrawListScreen, AuxSprite_DrawListScreen, MainSprite_DrawListScreen);
   }
   gCameraCoords.tilemapX = 0;
   gCameraCoords.tilemapY = 0;

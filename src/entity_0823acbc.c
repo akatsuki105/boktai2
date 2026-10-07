@@ -1,11 +1,17 @@
 #include "camera.h"
+#include "eeprom.h"
+#include "entity_9a9f.h"
 #include "global.h"
 #include "hitbox.h"
 #include "input.h"
+#include "link.h"
+#include "link_connect.h"
 #include "mover.h"
 #include "msgbus.h"
+#include "random.h"
 #include "registry.h"
 #include "save.h"
+#include "solar_sensor.h"
 #include "sound.h"
 #include "sprite_main.h"
 #include "video.h"
@@ -19,20 +25,26 @@ typedef struct {
 } Entity0823acbc;
 static_assert(sizeof(Entity0823acbc) == 32);
 
-extern bool32 gDispcntLocked;  // 0x03002CA8
-extern u32 u32_0300478c;       // 0x0300478C
-extern u32 u32_03004794;       // 0x03004794
-extern u32 u32_030047ac;       // 0x030047AC
-extern bool32 gSaveSucceeded;  // 0x030047B4
-extern u32 u32_030047bc;       // 0x030047BC
-extern u32 u32_030047c4;       // 0x030047C4
-extern u32 u32_03004860;
+IWRAM_DATA Entity0823acbc gEntity0823acbc = {};  // 0x030016A0
 
-IWRAM_DATA Entity0823acbc gEntity0823acbc = {};        // 0x030016A0
 IWRAM_DATA SystemSaveData gSystemSaveDataBuffer = {};  // 0x030016C0
 
+extern bool32 gDispcntLocked;  // 0x03002CA8
+extern u32 u32_0300478c;       // 0x0300478C
+extern void* ptr_03002c6c;     // 0x03002C6C
+extern u16 u16_03003510;       // 0x03003510
+extern u16 u16_03003514;       // 0x03003514
+extern u32 u32_03004790;       // 0x03004790
+extern u32 u32_03004794;       // 0x03004794
+extern u32 u32_030047ac;       // 0x030047AC
+extern u32 u32_030047b0;       // 0x030047B0
+extern u32 u32_030047bc;       // 0x030047BC
+extern u32 u32_030047c4;       // 0x030047C4
+extern u32 u32_03004860;       // 0x03004860
+
+void VM_CountSubroutine(void);
 u32 FUN_082321e0(u8* pc);
-void FUN_0822d0e4(void);
+void ResetParticlePlttSlots(void);
 void Save_BackupStatAndWorld(void);
 void FUN_0823cd04(void);
 bool32 Map_ResetCollisionMap(void);
@@ -49,45 +61,6 @@ static inline u32 TestFlag030047a4(u32 flags) { return (gFlag030047a4 | u32_0300
 
 static inline void ShowBG(u32 bits) { gStagedDISPCNT |= bits; }
 
-NAKED s32 FUN_0823a6c0(void) { INCFUNC("asm/func/FUN_0823a6c0.inc"); }
-
-// 通信カートリッジの応答を待つ, 応答があれば 1、待ち時間を使い切ったら -1
-s32 FUN_0823a6fc(void) {
-  if (rfu_REQBN_softReset_and_checkID() == RFU_ID) {
-    return 1;
-  }
-  if (gVBlankCount > 449) {
-    return -1;
-  }
-  return 0;
-}
-
-NAKED void FUN_0823a730(unknown* p, u32 param_2, u32 param_3, u16 param_4, u32 param_5, unknown* param_6, unknown* param_7) { INCFUNC("asm/func/FUN_0823a730.inc"); }
-
-void FUN_0823a76c(u8* p) {
-  CpuFill32(0, p, 516);
-  p[0] = 1;
-}
-
-NAKED bool32 FUN_0823a790(unknown* p, unknown* src) { INCFUNC("asm/func/FUN_0823a790.inc"); }
-
-NAKED bool32 FUN_0823a7d8(unknown* p, unknown* dst) { INCFUNC("asm/func/FUN_0823a7d8.inc"); }
-
-// デモ表から demoID/step/idx のメッセージを1件引く (どの段でも NULL に当たったら終端)
-EntityMsg* DemoTable_GetMsg(s32 demoID, s32 step, s32 idx) {
-  const EntityMsg* const* const* demo;
-  const EntityMsg* const* stp;
-
-  demo = gDemoTable[demoID];
-  if (demo != NULL) {
-    stp = demo[step];
-    if (stp != NULL) {
-      return (EntityMsg*)stp[idx];
-    }
-  }
-  return NULL;
-}
-
 void FUN_0823a870(void) { gSystemSaveData = &gSystemSaveDataBuffer; }
 
 s32 FUN_0823a880(u8* pc, ScriptArgs* args) { return VM_ExecByPointer(pc, args); }
@@ -98,7 +71,18 @@ static s32 FUN_0823a898(u32 scriptID, ScriptArgs* args) { return VM_ExecByID(scr
 
 s32 VM_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args) { return VM_ExecByID(scriptID, args); }
 
-NAKED bool32 FUN_0823a8b0(void) { INCFUNC("asm/func/FUN_0823a8b0.inc"); }
+bool32 FUN_0823a8b0(void) {
+  if (TestFlag030047a4(FLAG030047A4_GAMEOVER)) {
+    return TRUE;
+  }
+  if (u32_030047b0 != 0) {
+    return TRUE;
+  }
+  if (u32_03004790 != 0) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 void FUN_0823a8f4(u32 val) {
   if (val == 0) {
@@ -112,11 +96,38 @@ void FUN_0823a910(void) { bool32_03004788 = TRUE; }
 
 void FUN_0823a91c(void) { bool32_03004788 = FALSE; }
 
-NAKED s32 SoftReset_0823a928(void) { INCFUNC("asm/func/SoftReset_0823a928.inc"); }
+s32 SoftReset_0823a928(void) {
+  gHBlankEffectBuffer = NULL;
+  gHBlankEffectReg = NULL;
+  u16_03003510 = 0;
+  u16_03003514 = 0;
+  gEepromIdle = FALSE;
+  m4aMPlayAllStop();
+  m4aSoundVSyncOff();
+  WaitForVBlank();
+  WaitForVBlank();
+  Sensor_Disable();
+  RtcIoDisable();
+
+  if (gEntity9A9F != NULL || gLinkConnect != NULL) {
+    FUN_08238bf4();
+  } else if (ptr_03002c6c != NULL) {
+    Sio_Stop();
+  }
+
+  rfu_setREQCallback(NULL);
+  rfu_REQ_stopMode();
+  if (rfu_waitREQComplete() == 0) {
+    SoftResetExram(0xDC);
+  } else {
+    SoftResetExram(0xDC);
+  }
+  return 0;
+}
 
 void FUN_0823a9c4(void) {
   gObjBlendEnabled = 0;
-  vram_0822b778();
+  Video_ResetBG();
   FUN_0823cd04();
   Map_ResetCollisionMap();
   HitboxManager_Create();
@@ -150,7 +161,7 @@ void FUN_0823aa70(void) {}
 
 void FUN_0823aa74(void) {
   Registry_Sweep(FALSE);
-  FUN_0822d0e4();
+  ResetParticlePlttSlots();
 }
 
 void FUN_0823aa84(void) {

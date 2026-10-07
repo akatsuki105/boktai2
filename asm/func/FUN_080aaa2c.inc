@@ -23,7 +23,7 @@ _080AAA4E:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	movs r2, #0x11
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r5, #0
 	movs r1, #4
 	rsbs r1, r1, #0
@@ -32,10 +32,10 @@ _080AAA4E:
 	ldr r1, [r4]
 	adds r0, r5, #0
 	movs r2, #2
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	mov r0, sb
 	strb r0, [r5, #0xf]
 	mov r0, sb

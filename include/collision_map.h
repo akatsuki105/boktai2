@@ -8,24 +8,15 @@
 // このソースコードではゲームのマップ単位をブロック(block)と呼ぶようにする(具体的には 木箱とかの立方体の大きさが1ブロック)
 // https://boktaihacking.net/wiki/Collision_map_file
 
-// ファイル内では構造体先頭からのバイトオフセットが入っている, Map_LoadCollisionMapFile がヘッダを複写してから絶対アドレスに直し、以降は ptr として読む
-typedef union {
-  u32 offset;
-  void* ptr;
-} CollisionMapRef;
-
 typedef struct {
-  char magic[4];             // 0x00, "HP\0\0", Height Property とかで HP なのかな？
-  CollisionMapRef tileData;  // 0x04, CollisionMapTileData, 床の属性や高さ、階段やプレイヤーが奥側にいるときに手前に何を描画するかなどの情報を持つ
-  CollisionMapRef zones;     // 0x08, ZoneData, イベントのトリガー範囲を管理する
-  CollisionMapRef paths;     // 0x0C, PathData, ???
-  CollisionMapRef navMesh;   // 0x10, NavMesh, NPCをマップ上の任意の2点間で移動させるためのデータ, 0 なら無し
+  char magic[4];      // 0x00, "HP\0\0", Height Property とかで HP なのかな？
+  AssetRef tileData;  // 0x04, CollisionMapTileData, 床の属性や高さ、階段やプレイヤーが奥側にいるときに手前に何を描画するかなどの情報を持つ
+  AssetRef zones;     // 0x08, ZoneData, イベントのトリガー範囲を管理する
+  AssetRef paths;     // 0x0C, PathData, ???
+  AssetRef navMesh;   // 0x10, NavMesh, NPCをマップ上の任意の2点間で移動させるためのデータ, 0 なら無し
   // これ以降は上の4つが指す可変長のデータが並ぶ
 } CollisionMapFile;
 static_assert(sizeof(CollisionMapFile) == 20);
-
-extern u8 gDecompressedCollisionMapHeader[4];    // 0x02031400, 展開先の先頭4バイト, 用途不明
-extern u8 gDecompressedCollisionMapFile[16380];  // 0x02031404, 展開された CollisionMapFile 本体
 
 // --------------------------------------------
 

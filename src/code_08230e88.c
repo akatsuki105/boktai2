@@ -3,6 +3,8 @@
 
 IWRAM_DATA u32 u32_03000740 = 0;
 
+EWRAM_DATA u32 u32_ARRAY_0203f400[256] = {};  // 0x0203F400
+
 ScriptRecordBlock* ScriptRecord_GetBlocks(void) { return (ScriptRecordBlock*)u32_ARRAY_0203f400; }
 
 // 2面のレコード置き場を両方空にして深さを 0 に戻す

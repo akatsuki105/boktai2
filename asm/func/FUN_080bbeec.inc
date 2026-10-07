@@ -34,13 +34,13 @@ _080BBF2C:
 _080BBF32:
 	adds r0, r5, #0
 	bl FUN_080bb688
-	ldr r1, _080BBF44 @ =FUN_080bc0e8
+	ldr r1, _080BBF44 @ =Entity3019_SwapSelectedArmor
 	adds r0, r5, #0
 	movs r2, #0
 	bl FUN_080ba054
 	b _080BC01E
 	.align 2, 0
-_080BBF44: .4byte FUN_080bc0e8
+_080BBF44: .4byte Entity3019_SwapSelectedArmor
 _080BBF48:
 	ldr r0, _080BBF84 @ =0x00000107
 	bl PlaySound_082406e0

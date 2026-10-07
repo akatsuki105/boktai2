@@ -164,7 +164,7 @@ _0801F642:
 	ldr r1, [r7]
 	adds r0, r4, #0
 	movs r2, #0x11
-	bl FUN_0822d9f0
+	bl Particle_Add
 	adds r0, r4, #0
 	mov r1, sb
 	mov r2, sb
@@ -172,7 +172,7 @@ _0801F642:
 	ldr r1, [r7]
 	adds r0, r4, #0
 	movs r2, #0x33
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	movs r1, #1
 	strb r1, [r4, #0xf]
 	movs r2, #0

@@ -53,6 +53,9 @@ void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16 sizeZ, u8
 // pos と向きを入れてリストに繋ぐ
 s32 Mover_Init(Mover* p, u16 id, Vec3* pos, u32 angle, u32 unk_4, void* owner);
 
+s32 FUN_08002a48(Mover* p);
+s32 FUN_08002a58(Mover* p);
+
 // delta の分だけ pos を進めて delta をクリアする, 毎フレーム呼ぶ
 void Mover_ApplyMove(Mover* p);
 

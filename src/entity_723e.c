@@ -2,13 +2,13 @@
 #include "global.h"
 
 // 通信関連?
-typedef struct Entity723E {
+typedef struct {
   Entity e;  // ENTITY_UNK_11
   u8 unk_18[2280 - 0x18];
 } Entity723E;
 static_assert(sizeof(Entity723E) == 2280);
 
-extern Entity723E* gEntity723E;  // 0x0300011C
+IWRAM_DATA Entity723E* gEntity723E = NULL;  // 0x0300011C
 
 void FUN_08052338(Entity723E*);
 void FUN_0805234c(Entity723E*);

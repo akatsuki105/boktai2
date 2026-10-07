@@ -1168,8 +1168,8 @@ _08052B5C:
 	adds r0, r5, #0
 	movs r1, #0xc
 	bl FUN_080522d0
-	ldr r1, _08052C3C @ =FUN_0822e424
-	ldr r2, _08052C40 @ =FUN_0822af38
+	ldr r1, _08052C3C @ =Particle_DrawListUnk13
+	ldr r2, _08052C40 @ =AuxSprite_DrawListUnk13
 	ldr r3, _08052C44 @ =FUN_0822f264
 	movs r0, #0
 	bl Video_SetDrawPasses
@@ -1241,8 +1241,8 @@ _08052B5C:
 	.align 2, 0
 _08052C34: .4byte 0x03003E78
 _08052C38: .4byte 0xFFFFF3FF
-_08052C3C: .4byte FUN_0822e424
-_08052C40: .4byte FUN_0822af38
+_08052C3C: .4byte Particle_DrawListUnk13
+_08052C40: .4byte AuxSprite_DrawListUnk13
 _08052C44: .4byte FUN_0822f264
 _08052C48: .4byte 0x0000270F
 _08052C4C:

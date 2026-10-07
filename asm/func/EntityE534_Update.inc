@@ -1,7 +1,7 @@
 	push {r4, r5, r6, r7, lr}
 	sub sp, #4
 	adds r6, r0, #0
-	bl FUN_0801200c
+	bl EntityE534_HandleMsgs
 	ldr r0, [r6, #0x18]
 	cmp r0, #0
 	beq _08012B4C
@@ -108,7 +108,7 @@ _08012B26:
 	adds r2, r5, #0
 	bl _call_via_r3
 	adds r0, r4, #0
-	bl FUN_080118d4
+	bl EntityE534Elem_UpdateSprite
 	adds r5, #1
 	adds r4, #0xc8
 	cmp r5, #0xf

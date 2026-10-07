@@ -1182,7 +1182,7 @@ _0804F6D4:
 	bl TextPanel_Start
 	movs r0, #0
 	movs r1, #0x18
-	bl FUN_0804e9f4
+	bl SignalStrengthIcon_CreateAt
 	movs r0, #4
 	str r0, [sp]
 	ldr r0, _0804F7C4 @ =0x0000FFFF

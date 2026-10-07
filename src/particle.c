@@ -8,7 +8,7 @@ s32 Video_AddParticleIntoDrawList(Particle* p, s32 idx);
 void Video_RemoveParticleFromDrawList(Particle* p, s32 idx);
 
 // Particle を ParticleGroup の先頭フレームで初期化し、描画リストに繋ぐ
-void FUN_0822d9f0(Particle* p, ParticleGroup* g, SpriteFlags flags) {
+void Particle_Add(Particle* p, ParticleGroup* g, SpriteFlags flags) {
   u32 mask;
   s32 idx;
 
@@ -20,8 +20,8 @@ void FUN_0822d9f0(Particle* p, ParticleGroup* g, SpriteFlags flags) {
     p->rotation = 0;
     p->scaleX = FRACUNIT_6, p->scaleY = FRACUNIT_6;
     Particle_SetOffset(p, 0, 0);
-    FUN_0822dafc(p, g, 0);
-    p->plttSlot = FUN_0822d12c(g->plttID, &gObjPlttData[g->plttID * 16]);
+    Particle_SetFrame(p, g, 0);
+    p->plttSlot = AllocParticlePlttSlot(g->plttID, &gObjPlttData[g->plttID * 16]);
     mask = SPRFLAG_DRAWLIST;
     idx = (u32)(0 - (flags & mask)) >> 31;
     p->prev = NULL, p->next = NULL;
@@ -30,7 +30,7 @@ void FUN_0822d9f0(Particle* p, ParticleGroup* g, SpriteFlags flags) {
 }
 
 // 描画リストに繋がれていなければ、flags の bit7 で選んだリストに Particle を繋ぐ
-void FUN_0822da50(Particle* p, SpriteFlags flags) {
+void Particle_AddToDrawList(Particle* p, SpriteFlags flags) {
   if (!p->active) {
     u32 mask = SPRFLAG_DRAWLIST;
     Video_AddParticleIntoDrawList(p, (flags & mask) != 0);
@@ -38,15 +38,15 @@ void FUN_0822da50(Particle* p, SpriteFlags flags) {
 }
 
 // Particle を ParticleGroup の先頭フレームで初期化する (描画リストには繋がない)
-void FUN_0822da70(Particle* p, ParticleGroup* g, SpriteFlags flags) {
+void Particle_Setup(Particle* p, ParticleGroup* g, SpriteFlags flags) {
   if (!p->active) {
     p->flags = flags;
     p->oamAttr01 = 0;
     p->priority = 1;
     p->offsetZ = 0;
     Particle_SetOffset(p, -8, -8);
-    FUN_0822dafc(p, g, 0);
-    p->plttSlot = FUN_0822d12c(g->plttID, &gObjPlttData[g->plttID * 16]);
+    Particle_SetFrame(p, g, 0);
+    p->plttSlot = AllocParticlePlttSlot(g->plttID, &gObjPlttData[g->plttID * 16]);
     p->prev = NULL, p->next = NULL;
   }
 }
@@ -64,25 +64,27 @@ void Particle_SetOffset(Particle* p, s32 offsetX, s32 offsetY) {
 }
 
 // パーティクルに OBJ パレット plttID を割り当て、確保されたパレットスロット番号を記録する
-void FUN_0822dadc(Particle* p, s32 plttID) { p->plttSlot = FUN_0822d12c(plttID, &gObjPlttData[plttID * 16]); }
+void Particle_SetPltt(Particle* p, s32 plttID) { p->plttSlot = AllocParticlePlttSlot(plttID, &gObjPlttData[plttID * 16]); }
 
-// ParticleGroup の形状からパーティクルのサイズ・OAM 属性・タイル番号(val 番目のフレーム)を設定する
-void FUN_0822dafc(Particle* p, ParticleGroup* g, u32 val) {
+// ParticleGroup の形状からパーティクルのサイズと OAM 属性を作り、frame コマ目のタイル番号を入れる
+void Particle_SetFrame(Particle* p, ParticleGroup* g, u32 frame) {
   p->spriteWidth = gSpriteSizeTable[g->shape];
   p->spriteHeight = gSpriteSizeTable[g->shape] >> 8;
   p->oamAttr01 = ((g->shape & 3) << 14) | ((g->shape & 0xC) << 28);
   if (g->flags & PGFLAG_BPP8) p->oamAttr01 |= OAM0_8BPP;
-  p->tileNum = val * ((p->spriteWidth >> 3) * (p->spriteHeight >> 3)) + g->tile;
+  p->tileNum = frame * ((p->spriteWidth >> 3) * (p->spriteHeight >> 3)) + g->tile;
 }
 
 // 汎用の Particle 描画パス (ほとんどの場面で使われる)
 NAKED void Particle_DrawList(void) { INCFUNC("asm/func/Particle_DrawList.inc"); }
 
-NAKED void FUN_0822de64(void) { INCFUNC("asm/func/FUN_0822de64.inc"); }
+// Video_SetDrawPasses が AuxSprite_DrawListScreen / MainSprite_DrawListScreen と組で差し替える側
+NAKED void Particle_DrawListScreen(void) { INCFUNC("asm/func/Particle_DrawListScreen.inc"); }
 
 // ゲームオーバー時の Particle 描画パス
 NAKED void Particle_DrawListGameover(void) { INCFUNC("asm/func/Particle_DrawListGameover.inc"); }
 
-NAKED void FUN_0822e424(void) { INCFUNC("asm/func/FUN_0822e424.inc"); }
+// SPRFLAG_UNK_13 の立った Particle だけを描くパス, AuxSprite_DrawListUnk13 と同じ関係
+NAKED void Particle_DrawListUnk13(void) { INCFUNC("asm/func/Particle_DrawListUnk13.inc"); }
 
 void nop_0822e738(void) {}

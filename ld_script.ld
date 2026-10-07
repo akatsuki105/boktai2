@@ -6,22 +6,21 @@ MEMORY {
 		rom     : ORIGIN = (0x08000000), LENGTH = 16M
 }
 
-gInput = 0x030044E0;
 SOUND_INFO_PTR = 0x03007FF0;
 
 gMaxLines = 0;
 gNumMusicPlayers = 32;
 
-gSpriteSetFile25 = 0x08C5A80C;
-
 gItemEffectHandlers = 0x085ACF7C;
+
+/* EntityCC28.state2 で引く状態関数表, 根拠: FUN_0809a67c */
+sEntityCC28State2Fns = 0x085ACFDC;
 
 /* data/rodata4.bin の中にある Vec3 3つ組, エレベータが乗り手との距離を測るときの許容範囲 (±) */
 gElevatorRanges = 0x085AE0D0;
 
-/* gba-mus-ripper が出したやつ(意味はわからない) */
-voicegroup000 = 0x08252fc0;
-voicegroup019 = 0x0825a280;
+/* FUN_081ddf84 が unk_2cc[i] の上限として引く3要素, 根拠: FUN_081ddf84 */
+sEntity9A9FLimits = 0x085AE3E8;
 
 SECTIONS {
 	. = 0x2000000;
@@ -31,7 +30,15 @@ SECTIONS {
       gHeap = .;
       . = 0x20400;
       src/main.o(ewram_data);
-      src/ewram.o(ewram_data);
+      src/bg.o(ewram_data);
+      src/camera.o(ewram_data);
+      src/font.o(ewram_data);
+      src/video.o(ewram_data);
+      src/registry.o(ewram_data);
+      src/utility_08237468.o(ewram_data);
+      src/code_08230e88.o(ewram_data);
+      src/link.o(ewram_data);
+      src/code_0804b9f4.o(ewram_data);
     } >ewram = 0x00
 
 	. = 0x3000000;
@@ -81,6 +88,9 @@ SECTIONS {
       src/entity_d53d.o(iwram_data);
       . = ALIGN(8);
       src/entity_af33.o(iwram_data);
+      src/entity_08051b70.o(iwram_data);
+      src/entity_723e.o(iwram_data);
+      src/entity_5645.o(iwram_data);
       src/iwram1.o(iwram_data);
       src/entity_082034c0.o(iwram_data);
       src/entity_08203ad0.o(iwram_data);
@@ -90,6 +100,8 @@ SECTIONS {
       src/interrupts.o(iwram_data);
       . = ALIGN(8);
       src/video.o(iwram_data);
+      src/bg.o(iwram_data);
+      src/video_reg.o(iwram_data);
       . = ALIGN(8);
       src/font.o(iwram_data);
       src/system_0823071c.o(iwram_data);
@@ -99,7 +111,11 @@ SECTIONS {
       src/vm_ctrl1.o(iwram_data);
       src/collision_map.o(iwram_data);
       src/hitbox.o(iwram_data);
-      src/sprite_anim_aux.o(iwram_data);
+      . = ALIGN(8);
+      src/link.o(iwram_data);
+      . = ALIGN(8);
+      src/rfu.o(iwram_data);
+      . = ALIGN(8);
       src/entity_0823acbc.o(iwram_data);
       src/vm_ctrl2.o(iwram_data);
       src/vm_subroutine.o(iwram_data);
@@ -125,6 +141,8 @@ SECTIONS {
       src/entity_08016660.o(COMMON);
       src/msgbus.o(COMMON);
       src/entity_286f.o(COMMON);
+      src/entity_fb53.o(COMMON);
+      src/code_0804b9f4.o(COMMON);
       src/iwram2.o(iwram_data);
       src/camera.o(COMMON);
       src/time.o(COMMON);
@@ -282,13 +300,13 @@ SECTIONS {
 			src/entity_cbb0.o (.text);
 			src/solar_generator.o (.text);
 			src/solar_bank.o (.text);
-			src/entity_e9d3.o (.text);
-			src/entity_e02e.o (.text);
-			src/entity_3019.o (.text);
-			src/entity_744f.o (.text);
-			src/entity_571d.o (.text);
+			src/dark_loans.o (.text);
+			src/warehouse.o (.text);
+			src/shop_item.o (.text);
+			src/shop_weapon.o (.text);
+			src/shop_coffin.o (.text);
 			src/entity_b3d1.o (.text);
-			src/entity_d3a9.o (.text);
+			src/soundbus.o (.text);
 			src/code_080c0d6c.o (.text);
 			src/boss/jormungandr.o (.text);
 			src/entity_e06a.o (.text);
@@ -348,7 +366,7 @@ SECTIONS {
 			src/link_battle_result.o (.text);
 			src/entity_9a9f.o (.text);
 			src/entity_501b.o (.text);
-			src/entity_150f.o (.text);
+			src/link_battle_coin.o (.text);
 			src/code_081e0c14.o (.text);
 			src/entity_081ea120.o (.text);
 			src/entity_081ea820.o (.text);
@@ -379,6 +397,8 @@ SECTIONS {
 			src/entity_8aab.o (.text);
 			src/interrupts.o (.text);
 			src/video.o (.text);
+			src/bg.o (.text);
+			src/video_reg.o (.text);
 			src/pltt.o (.text);
 			src/particle.o (.text);
 			src/font.o (.text);
@@ -401,6 +421,8 @@ SECTIONS {
 			src/utility_08237468.o (.text);
 			src/link.o (.text);
 			src/lib/linkManager.o (.text);
+			src/rfu.o (.text);
+			src/demo.o (.text);
 			src/entity_0823acbc.o (.text);
 			src/vm_ctrl2.o (.text);
 			src/vm_subroutine.o (.text);
@@ -428,7 +450,7 @@ SECTIONS {
 	{
       src/lib/m4a_1.o (.text);
 			src/lib/m4a.o (.text);
-			src/code_08245c4c.o (.text);
+			src/entity_082464b8.o (.text);
 			src/eff_082473e0.o (.text);
 			src/solar_sensor.o (.text);
 			src/lib/librfu_stwi.o (.text);
@@ -542,6 +564,7 @@ SECTIONS {
     src/boss/entity_ba4b.o (.rodata);
     src/boss/durathror.o (.rodata);
     src/boss/shademan.o (.rodata);
+    src/entity_286f.o (.rodata);
     src/data3b.o (.rodata);
     src/entity_ab4e.o (.rodata);
     src/text_renderer.o (.rodata);
@@ -582,13 +605,16 @@ SECTIONS {
     src/preview_stage.o (.rodata);
     src/weapon_dex.o (.rodata);
     src/album_menu.o (.rodata);
-    src/data3d.o (.rodata);
+    src/intro.o (.rodata);
+    src/entity_a288.o (.rodata);
     src/entity_6367.o (.rodata);
     src/entity_0fc5.o (.rodata);
     src/boss/entity_0623.o (.rodata);
     src/game_result.o (.rodata);
     src/entity_8aab.o (.rodata);
     src/video.o (.rodata);
+    src/bg.o (.rodata);
+    src/video_reg.o (.rodata);
     src/video_effect.o (.rodata);
     src/entity.o (.rodata);
     src/vm.o (.rodata);
@@ -610,7 +636,7 @@ SECTIONS {
     src/demo.o (.rodata);
     src/vm_ctrl2.o (.rodata);
     src/solar.o (.rodata);
-    src/data5.o (.rodata);
+    src/entity_082464b8.o (.rodata);
     src/eff_082473e0.o (.rodata);
     src/solar_sensor.o (.rodata);
     src/code_0823cd04.o (.rodata);

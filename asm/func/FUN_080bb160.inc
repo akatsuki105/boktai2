@@ -73,7 +73,7 @@
 	movs r1, #1
 	movs r2, #4
 	movs r3, #0
-	bl FUN_080b9ff8
+	bl MenuCursor_Init
 	ldr r2, _080BB25C @ =0x00000D98
 	adds r1, r6, r2
 	adds r0, r4, #0

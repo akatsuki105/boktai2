@@ -29,7 +29,7 @@ typedef struct {
   u8 rectY;              // 0x003, TextRenderer_SetRect の第3引数
   u8 rectW;              // 0x004, TextRenderer_SetRect の第4引数
   u8 rectH;              // 0x005, TextRenderer_SetRect の第5引数
-  u8 style;              // 0x006, Video_DrawCharNarrow/Wide の第4引数, WEIGHT/ALTER タグで 1、NONSEL/UVMOJI タグで 2、閉じタグで 0
+  u8 style;              // 0x006, Font_DrawXXXkakuChar の第4引数, WEIGHT/ALTER タグで 1、NONSEL/UVMOJI タグで 2、閉じタグで 0
   u8 mode;               // 0x007, TextRenderer_Advance がこれで分岐する, 0 なら text、 1 なら textAlt を進める
   u8 unk_08;             // 0x008, TextRenderer_ResetSpeed が速度を読む直前に 0 を入れる
   u8 speed;              // 0x009, TextRenderer_ResetSpeed が gStat->unk_12 (メッセージ速度設定) を入れる, 0x0C にも同じ値を複製する
@@ -42,7 +42,7 @@ typedef struct {
   bool8 parenEnabled;    // 0x010, 立っていないと PAREN / /PAREN タグが括弧を描かない
   u8 charSoundIdx;       // 0x011, gCharSounds の添字, MOJISE_SYSTEM タグで 0、MOJISE_TALK タグで 1
   u8 soundToggle;        // 0x012, 0/1 を往復して1文字おきに文字送り音を鳴らす
-  bool8 drewWide;        // 0x013, 直前に描いた文字が全角なら TRUE, TextRenderer_DrawCharNarrow/Wide が書く
+  bool8 drewWide;        // 0x013, 直前に描いた文字が全角なら TRUE
   u8 unk_14;             // 0x014, TextRenderer_Init が 1 を入れる
   s8 face;               // 0x015, TextRenderer_Init が 0xFF を入れる, TextBox が顔スプライトのポーズ番号として読む
   bool8 soundEveryChar;  // 0x016, TextRenderer_PlayCharSound が speed > 1 のときだけ読む, TRUE なら1文字おきの間引きをやめて毎文字鳴らす

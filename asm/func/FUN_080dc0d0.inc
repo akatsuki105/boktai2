@@ -273,7 +273,7 @@ _080DC2E6:
 	ldr r1, [r3, #0x1c]
 	ldr r0, [sp, #0x10]
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #8
 	rsbs r2, r2, #0
 	ldr r0, [sp, #0x10]

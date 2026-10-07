@@ -1,9 +1,6 @@
 #include "global.h"
 #include "time.h"
 
-// 多分、緯度経度に基づいた計算処理 (f64 を多用する, asm直書きの関数もあるかも)
-// Time_SetLocation が gClock に書き込みをしているので時間関連であることは確か
-
 /**
  * @brief 日付から修正ユリウス日 (MJD) を求める, MJD は 太陽の位置計算の基準日として使われる
  * @param year 西暦の年, 2026年なら 2026 をそのまま渡す

@@ -60,7 +60,7 @@ _0809423C:
 	ldr r0, [r4, #0x58]
 	movs r1, #2
 	movs r2, #1
-	bl FUN_0808c510
+	bl EntityCC28_ShowBottomLine
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_0808b6fc
@@ -115,7 +115,7 @@ _080942E8:
 	ldr r0, [r4, #0x58]
 	movs r1, #2
 	movs r2, #1
-	bl FUN_0808c510
+	bl EntityCC28_ShowBottomLine
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_0808b6fc
@@ -139,7 +139,7 @@ _08094320:
 	ldr r0, [r4, #0x58]
 	movs r1, #3
 	movs r2, #1
-	bl FUN_0808c510
+	bl EntityCC28_ShowBottomLine
 	adds r0, r4, #0
 	bl FUN_080921a8
 	adds r1, r0, #0

@@ -50,7 +50,7 @@ _080BA13C:
 _080BA154:
 	add r4, sp, #0x24
 	adds r1, r4, #0
-	bl FUN_080ba0c0
+	bl SplitDecimal3_080ba0c0
 	movs r0, #0x18
 	add r0, sl
 	mov r8, r0
@@ -112,7 +112,7 @@ _080BA1C0:
 	movs r6, #1
 _080BA1DA:
 	add r1, sp, #0x24
-	bl FUN_080ba0c0
+	bl SplitDecimal3_080ba0c0
 	lsls r0, r6, #2
 	adds r0, r0, r6
 	lsls r6, r0, #1

@@ -19,7 +19,27 @@ static_assert(sizeof(Entity794C) == 216);
 
 IWRAM_DATA Entity794C* gEntity794C = NULL;  // 0x03001700
 
-NAKED bool32 FUN_08240ad4(s32 a1, s32 a2, s32 a3, s32 b1, s32 b2, s32 b3) { INCFUNC("asm/func/FUN_08240ad4.inc"); }
+// 2点が size1 + size2 の正方範囲に収まっているか
+bool32 BoxesOverlap(s32 x1, s32 y1, s32 size1, s32 x2, s32 y2, s32 size2) {
+  s32 dx, dy, limit;
+
+  dx = x1 - x2;
+  if (dx < 0) {
+    dx = -dx;
+  }
+
+  dy = y1 - y2;
+  if (dy < 0) {
+    dy = -dy;
+  }
+
+  limit = size1 + size2;
+  if (dx < limit && dy < limit) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
 
 INCASM("asm/entity_794c.inc");
 

@@ -245,7 +245,7 @@ s32 AuxShadow_SetSprite(AuxShadow* shadow, SpriteID32 id, s32 poseIdx) {
 
   Video_GetAuxSprite(gfx, id);
   sprite = &shadow->sprite;
-  FUN_0822a4fc(sprite, gfx);
+  AuxSprite_SetGfx(sprite, gfx);
   sprite->metaspriteIdx = poseIdx;
   // 戻り値のある宣言だが return なし
 }

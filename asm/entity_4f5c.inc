@@ -122,7 +122,7 @@ _0801A204:
 	mov r2, r8
 	ldr r1, [r2, #0x28]
 	movs r2, #2
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldrb r0, [r7, #1]
 	lsls r1, r0, #2
 	adds r1, r1, r0
@@ -181,7 +181,7 @@ _0801A2AC:
 	mov r2, r8
 	ldr r1, [r2, #0x28]
 	movs r2, #2
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldrb r0, [r7, #1]
 	lsls r1, r0, #2
 	adds r1, r1, r0
@@ -248,7 +248,7 @@ _0801A332:
 	ldr r1, [r2, #0x28]
 	adds r0, r6, #0
 	movs r2, #2
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	mov r3, r8
 	ldr r0, [r3, #0x28]
 	ldrb r0, [r0, #6]
@@ -426,7 +426,7 @@ _0801A4A0:
 	ldrb r2, [r3]
 	adds r2, #2
 	adds r0, r4, #0
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r0, [r7, #0x28]
 	ldrb r0, [r0, #6]
 	adds r0, #1
@@ -797,7 +797,7 @@ _0801A77E:
 	ldr r1, [r7, #0x24]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #4
 	rsbs r2, r2, #0
 	adds r0, r4, #0
@@ -808,7 +808,7 @@ _0801A77E:
 	ldr r1, [r7, #0x24]
 	adds r0, r4, #0
 	movs r2, #0x1c
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r0, [r7, #0x24]
 	ldrh r0, [r0, #6]
 	b _0801A7C4
@@ -820,7 +820,7 @@ _0801A7B4:
 	ldr r1, [r7, #0x28]
 	adds r0, r4, #0
 	movs r2, #2
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	ldr r0, [r7, #0x28]
 	ldrb r0, [r0, #6]
 	adds r0, #1

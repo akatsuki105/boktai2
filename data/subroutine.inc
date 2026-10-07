@@ -214,7 +214,7 @@ gSubroutineTable:
 	.4byte 0x5460, FUN_080a1010
 	.4byte 0x546C, FUN_0807db58
 	.4byte 0x5470, FUN_08209fc8
-	.4byte 0x54C1, FUN_0808fd00
+	.4byte 0x54C1, UnlockMap
 	.4byte 0x54DF, Elevator_SetPltt
 	.4byte 0x5517, FUN_08041bd4
 	.4byte 0x554B, FUN_080a07f0
@@ -405,7 +405,7 @@ gSubroutineTable:
 	.4byte 0x9EC0, Entity6978_SetRequestScripted
 	.4byte 0x9FB7, FUN_08091684
 	.4byte 0x9FFD, FUN_0807d298
-	.4byte 0xA062, FUN_0800db80
+	.4byte 0xA062, VM_SubA062
 	.4byte 0xA0A6, FUN_081e2280
 	.4byte 0xA133, FUN_0820a480
 	.4byte 0xA16F, ElevatorController_Create

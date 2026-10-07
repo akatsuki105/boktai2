@@ -39,7 +39,7 @@ _080A9222:
 	ldr r1, [r0]
 	adds r0, r5, #0
 	movs r2, #0
-	bl FUN_0822d9f0
+	bl Particle_Add
 	movs r2, #4
 	rsbs r2, r2, #0
 	adds r0, r5, #0
@@ -47,7 +47,7 @@ _080A9222:
 	bl Particle_SetOffset
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_0822dadc
+	bl Particle_SetPltt
 	ldr r2, [r6]
 	adds r2, #1
 	mov r3, r8
@@ -172,7 +172,7 @@ _080A930A:
 	ldr r1, [r0]
 	adds r0, r5, #0
 	movs r2, #0xc
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	b _080A935C
 	.align 2, 0
 _080A9348: .4byte 0x0203B400
@@ -183,7 +183,7 @@ _080A934C:
 	ldr r1, [r0]
 	adds r0, r5, #0
 	movs r2, #0xd
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _080A935C:
 	ldr r0, [r6]
 	adds r0, #1

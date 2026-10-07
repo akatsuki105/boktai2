@@ -89,7 +89,7 @@ typedef struct AuxSprite {
   s2_6 scaleY;             // 0x09
   u8 listIdx;              // 0x0A, gAuxSpriteLists の添字
   u8 unk_0b;               // 0x0B, padding?
-  AuxSpriteGfx* gfx;       // 0x0C, FUN_0822a4fc がセットする
+  AuxSpriteGfx* gfx;       // 0x0C, AuxSprite_SetGfx がセットする
   s16 metaspriteIdx;       // 0x10, gfx->metasprites の添字
   u8 unk_12;               // 0x12
   u8 plttOffset;           // 0x13, gfx->plttID に加算される
@@ -113,15 +113,16 @@ void Video_RemoveAuxSpriteFromDrawList(AuxSprite* p, s32 idx);
 extern AuxSpriteFile* gAuxSpriteFile;  // 0x030035A0
 extern u8* gAuxSpriteTiles;
 extern AuxSubsprite* gAuxSubsprites;
-extern u16 gAuxSpriteTileCount;
+extern s16 gAuxSpriteTileCount;
 
 void AuxSprite_Add(AuxSprite* p, AuxSpriteGfx* gfx, SpriteFlags flags);
 void AuxSprite_Setup(AuxSprite* p, AuxSpriteGfx* gfx, SpriteFlags flags);
 void AuxSprite_Remove(AuxSprite* p);
 bool32 Video_GetAuxSprite(AuxSpriteGfx* gfx, SpriteID32 id);
 void Video_SetAuxSpritePltt(AuxSpriteGfx* gfx, s32 plttID);
-void FUN_0822a4fc(AuxSprite* p, AuxSpriteGfx* gfx);
+void AuxSprite_SetGfx(AuxSprite* p, AuxSpriteGfx* gfx);
 
+static inline void AuxSprite_SetMetaspriteIdx(AuxSprite* spr, s32 idx) { spr->metaspriteIdx = idx; }
 static inline void AuxSprite_Show(AuxSprite* spr) { spr->flags &= ~SPRFLAG_HIDDEN; }
 static inline void AuxSprite_Hide(AuxSprite* spr) { spr->flags |= SPRFLAG_HIDDEN; }
 static inline void AuxSprite_SetPoseIdx(AuxSprite* spr, s32 val) { spr->metaspriteIdx = val; }

@@ -133,7 +133,7 @@ _08099A34:
 	strb r0, [r1]
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_08098f48
+	bl EntityCC28_ShowLineInstant
 	ldr r1, _08099AC4 @ =FUN_08098f7c
 	adds r0, r4, #0
 	movs r2, #0
@@ -157,12 +157,12 @@ _08099AC8:
 	movs r1, #1
 	movs r2, #5
 	movs r3, #7
-	bl FUN_0808a5b0
+	bl EntityCC28_DrawHP
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #5
 	movs r3, #8
-	bl FUN_0808a5e0
+	bl EntityCC28_DrawEne
 	ldr r1, _08099B28 @ =0x00004002
 	adds r0, r4, r1
 	ldrb r0, [r0]
@@ -174,7 +174,7 @@ _08099AC8:
 	lsls r1, r1, #0x18
 	asrs r1, r1, #0x18
 	adds r0, r4, #0
-	bl FUN_08098f48
+	bl EntityCC28_ShowLineInstant
 	ldr r1, _08099B30 @ =FUN_08099008
 	adds r0, r4, #0
 	movs r2, #0

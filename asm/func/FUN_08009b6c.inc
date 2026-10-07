@@ -46,11 +46,11 @@
 	ldr r1, [r6, #0x1c]
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0822d9f0
+	bl Particle_Add
 	ldr r1, [r6, #0x1c]
 	adds r0, r4, #0
 	movs r2, #0xc
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 	movs r2, #8
 	rsbs r2, r2, #0
 	adds r0, r4, #0

@@ -19,29 +19,29 @@ void MapPltt_PushCommand(s32 val, s32 count, u32* args);
 void Entity6978_SetRequest(s32 val, s32 count, s32* args);
 void RingoDemoAnim_Create(Vec3* pos, EntityMsgBox* box);
 
-void FUN_08022668(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
+void FUN_08022668(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
   Vec3 pos;
-  pos.x = data->args[0];
-  pos.y = data->args[1];
-  pos.z = data->args[2];
-  FUN_08019814(&pos, data->args[3], data->args[4], data->args[5], data->args[6]);
+  pos.x = msg->args[0];
+  pos.y = msg->args[1];
+  pos.z = msg->args[2];
+  FUN_08019814(&pos, msg->args[3], msg->args[4], msg->args[5], msg->args[6]);
 }
 
-void FUN_080226a8(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
-  Mover* target = Mover_FindByID_Proxy(data->args[0]);
+void FUN_080226a8(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
+  Mover* mover = Mover_FindByID_Proxy(msg->args[0]);
 
-  if (target != NULL) {
+  if (mover != NULL) {
     Vec3 pos;
-    pos.x = target->pos.x;
-    pos.y = target->pos.y;
-    pos.z = target->pos.z;
-    FUN_08019814(&pos, data->args[1], data->args[2], data->args[3], data->args[4]);
+    pos.x = mover->pos.x;
+    pos.y = mover->pos.y;
+    pos.z = mover->pos.z;
+    FUN_08019814(&pos, msg->args[1], msg->args[2], msg->args[3], msg->args[4]);
   }
 }
 
-NON_MATCH void FUN_08022704(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
+NON_MATCH void FUN_08022704(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
 #ifdef NONMATCHING_C
-  s16* args = data->args;
+  s16* args = msg->args;
   u32 flags = 0;
   s32 kind;
 
@@ -55,7 +55,7 @@ NON_MATCH void FUN_08022704(Entity730A* p, EntityMsgBox* node, EntityMsg* data) 
     flags |= 0xE000;
   }
   kind = 3;
-  if (data->args[0] == 0) {
+  if (msg->args[0] == 0) {
     kind = 2;
   }
   FUN_0823ce68(kind, args[1], args[2], args[3], args[4], flags, args[8]);
@@ -64,9 +64,9 @@ NON_MATCH void FUN_08022704(Entity730A* p, EntityMsgBox* node, EntityMsg* data) 
 #endif
 }
 
-NON_MATCH void FUN_08022770(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
+NON_MATCH void FUN_08022770(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
 #ifdef NONMATCHING_C
-  s16* args = data->args;
+  s16* args = msg->args;
   u32 cmd[5];
   u32 flags = 0;
   s32 kind;
@@ -100,9 +100,9 @@ NON_MATCH void FUN_08022770(Entity730A* p, EntityMsgBox* node, EntityMsg* data) 
 #endif
 }
 
-NON_MATCH void FUN_080227f4(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
+NON_MATCH void FUN_080227f4(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
 #ifdef NONMATCHING_C
-  s16* args = data->args;
+  s16* args = msg->args;
   s32 cmd[5];
   s32 kind;
 
@@ -126,12 +126,12 @@ NON_MATCH void FUN_080227f4(Entity730A* p, EntityMsgBox* node, EntityMsg* data) 
 #endif
 }
 
-void FUN_0802284c(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
-  p->unk_50 = data->args[0];
-  p->unk_54 = data->args[1];
+void FUN_0802284c(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
+  p->unk_50 = msg->args[0];
+  p->unk_54 = msg->args[1];
 }
 
-void FUN_0802285c(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
+void FUN_0802285c(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
   p->unk_50 = 0;
   p->unk_54 = 0;
 }
@@ -140,46 +140,45 @@ void FUN_0802285c(Entity730A* p, EntityMsgBox* node, EntityMsg* data) {
 NON_MATCH s32 Entity730A_Update_Helper_08022864(Entity730A* p) {
 #ifdef NONMATCHING_C
   EntityMsgBox* box = &p->msgbox;
-  EntityMsg* data;
   s32 i;
 
   for (i = 0; i < box->count[gEntityMsgBus->bufIdx]; i++) {
-    data = box->msgs[gEntityMsgBus->bufIdx][i];
-    EntityMsgBox_BeginWait(box, data);
-    switch (data->cmd) {
+    EntityMsg* msg = box->msgs[gEntityMsgBus->bufIdx][i];
+    EntityMsgBox_BeginWait(box, msg);
+    switch (msg->cmd) {
       case 0: {
-        FUN_08022668(p, box, data);
+        FUN_08022668(p, box, msg);
         break;
       }
       case 1: {
-        FUN_080226a8(p, box, data);
+        FUN_080226a8(p, box, msg);
         break;
       }
       case 2: {
-        FUN_08022704(p, box, data);
+        FUN_08022704(p, box, msg);
         break;
       }
       case 3: {
-        FUN_08022770(p, box, data);
+        FUN_08022770(p, box, msg);
         break;
       }
       case 4: {
-        FUN_080227f4(p, box, data);
+        FUN_080227f4(p, box, msg);
         break;
       }
       case 5: {
-        FUN_0802284c(p, box, data);
+        FUN_0802284c(p, box, msg);
         break;
       }
       case 6: {
-        FUN_0802285c(p, box, data);
+        FUN_0802285c(p, box, msg);
         break;
       }
       case 7: {
         Vec3 pos;
-        pos.x = data->args[0];
-        pos.y = data->args[1];
-        pos.z = data->args[2];
+        pos.x = msg->args[0];
+        pos.y = msg->args[1];
+        pos.z = msg->args[2];
         RingoDemoAnim_Create(&pos, box);
       }
       default: {

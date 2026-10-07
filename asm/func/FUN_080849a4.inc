@@ -35,7 +35,7 @@
 	adds r0, r4, #0
 	adds r1, r3, #0
 	movs r2, #4
-	bl FUN_0822dafc
+	bl Particle_SetFrame
 _080849F2:
 	ldrh r0, [r4, #0x2e]
 	cmp r0, #0xa
