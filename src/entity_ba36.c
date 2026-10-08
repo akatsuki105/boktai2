@@ -49,7 +49,31 @@ s32 EntityBA36_Destroy(EntityBA36* p) {
   return 0;
 }
 
-NAKED s32 EntityBA36_Init(EntityBA36* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/EntityBA36_Init.inc"); }
+s32 EntityBA36_Init(EntityBA36* p, u32 param_2, u32 param_3) {
+  s32 v = VM_SeekToNamedArg('c');
+
+  if (v != 0) {
+    v = VM_GetValue();
+  } else {
+    v = 1800;
+  }
+  p->timer = v;
+
+  v = VM_SeekToNamedArg('p');
+  if (v != 0) {
+    v = VM_GetValue();
+  }
+  p->scriptID = v;
+
+  if (p->timer != 0) {
+    if (!CheckItemOwn(ITEM_TASTY_WATER)) {
+      TryAddItem(ITEM_TASTY_WATER, 0);
+    }
+    FUN_0809c544((s32)&p->timer);
+  }
+  gEntityBA36 = p;
+  return 0;
+}
 
 EntityBA36* EntityBA36_Create(u32 param_1, u32 param_2) {
   if (gEntityBA36 == NULL) {
