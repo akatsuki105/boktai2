@@ -160,6 +160,8 @@ s32 FUN_0804ba48(void) {
   return 0;
 }
 
+void FUN_0804e584(s32);
+
 NAKED void FUN_0804ba64(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804ba64.inc"); }
 
 // 通信用の状態をまとめて初期化する
@@ -341,7 +343,19 @@ s32 FUN_0804cbcc(Entity0804e2c0* p) {
   return 0;
 }
 
-NAKED s32 FUN_0804cbfc(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804cbfc.inc"); }
+s32 FUN_0804cbfc(Entity0804e2c0* p) {
+  if (p->unk_32 != 0) {
+    p->unk_32 = 0;
+    FUN_0804e584(1);
+    rfu_LMAN_stopManager(1);
+    p->unk_1b = 0;
+    p->unk_1c = 0;
+  }
+  if (FUN_0804bc10(p)) {
+    FUN_0804ba64(p);
+  }
+  return 0;
+}
 
 NAKED s32 FUN_0804cc38(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804cc38.inc"); }
 
