@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "item.h"
 #include "player.h"
 #include "shadow.h"
 #include "sound.h"
@@ -42,7 +43,18 @@ NAKED void FUN_08080f80(s32 param_1, s32 param_2, s32 param_3) { INCFUNC("asm/fu
 
 NAKED s32 FUN_080810a4(Player* p) { INCFUNC("asm/func/FUN_080810a4.inc"); }
 
-NAKED s32 FUN_080810f8(void) { INCFUNC("asm/func/FUN_080810f8.inc"); }
+// 貴重品から最初に見つかった棺桶の Coffin ID を返す, 無ければ COFFIN_OAK
+s32 FUN_080810f8(void) {
+  s32 i;
+
+  for (i = 0; i < 16; i++) {
+    u32 coffin = GetValuableItemID(i) - ITEM_OAK_COFFIN;
+    if (coffin < COFFIN_NUM) {
+      return coffin;
+    }
+  }
+  return COFFIN_OAK;
+}
 
 NAKED void FUN_08081118(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_08081118.inc"); }
 
