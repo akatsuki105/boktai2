@@ -13,4 +13,14 @@ s32 EnemySkeleton_Destroy(Skeleton*);
 
 INCASM("asm/skeleton.inc");
 
-NAKED void EnemySkeleton_Create(void) { INCFUNC("asm/func/EnemySkeleton_Create.inc"); }
+void EnemySkeleton_Create(void) {
+  Skeleton* p = Malloc(sizeof(Skeleton));
+
+  if (p != NULL) {
+    ClearMemory(p, sizeof(Skeleton));
+    if (EnemySkeleton_Init(p) < 0) {
+      EnemySkeleton_Destroy(p);
+      Free(p);
+    }
+  }
+}
