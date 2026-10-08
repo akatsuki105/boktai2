@@ -31,7 +31,12 @@ void EntityA628_StartFollowCamera(void) {
   }
 }
 
-NAKED void EntityA628_StopFollowCamera(void) { INCFUNC("asm/func/EntityA628_StopFollowCamera.inc"); }
+void EntityA628_StopFollowCamera(void) {
+  if (gEntityA628 != NULL) {
+    gEntityA628->followCamera = FALSE;
+    gEntityA628->blend = 8;
+  }
+}
 
 void EntityA628_StartFollowCameraScripted(void) { EntityA628_StartFollowCamera(); }
 
