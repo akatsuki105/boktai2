@@ -22,4 +22,36 @@ static_assert(sizeof(EntityA628) == 56);
 
 extern EntityA628* gEntityA628;  // 0x03002C3C
 
-INCASM("asm/entity_a628.inc");
+NAKED void EntityA628_StartFollowCamera(void) { INCFUNC("asm/func/EntityA628_StartFollowCamera.inc"); }
+
+NAKED void EntityA628_StopFollowCamera(void) { INCFUNC("asm/func/EntityA628_StopFollowCamera.inc"); }
+
+NAKED void EntityA628_StartFollowCameraScripted(void) { INCFUNC("asm/func/EntityA628_StartFollowCameraScripted.inc"); }
+
+NAKED void EntityA628_StopFollowCameraScripted(void) { INCFUNC("asm/func/EntityA628_StopFollowCameraScripted.inc"); }
+
+NAKED void EntityA628_ActivateScripted(void) { INCFUNC("asm/func/EntityA628_ActivateScripted.inc"); }
+
+NAKED void EntityA628_DeactivateScripted(void) { INCFUNC("asm/func/EntityA628_DeactivateScripted.inc"); }
+
+NAKED u32 EntityA628_IsActive(void) { INCFUNC("asm/func/EntityA628_IsActive.inc"); }
+
+NAKED u32 EntityA628_IsActiveScripted(void) { INCFUNC("asm/func/EntityA628_IsActiveScripted.inc"); }
+
+NAKED void EntityA628_ResetOrbit(EntityA628* p) { INCFUNC("asm/func/EntityA628_ResetOrbit.inc"); }
+
+NAKED void EntityA628_UpdateBGVisibility(EntityA628* p) { INCFUNC("asm/func/EntityA628_UpdateBGVisibility.inc"); }
+
+NAKED void EntityA628_UpdatePos(EntityA628* p) { INCFUNC("asm/func/EntityA628_UpdatePos.inc"); }
+
+NAKED s32 EntityA628_Update(EntityA628* p) { INCFUNC("asm/func/EntityA628_Update.inc"); }
+
+NAKED s32 EntityA628_Destroy(EntityA628* p) { INCFUNC("asm/func/EntityA628_Destroy.inc"); }
+
+NAKED void EntityA628_SetupBG(EntityA628* p) { INCFUNC("asm/func/EntityA628_SetupBG.inc"); }
+
+NAKED s32 EntityA628_Init(EntityA628* p, u16 param_2, u8 playerIdx, bool8 active) { INCFUNC("asm/func/EntityA628_Init.inc"); }
+
+NAKED EntityA628* EntityA628_Create(u16 param_1, u8 playerIdx, bool8 active) { INCFUNC("asm/func/EntityA628_Create.inc"); }
+
+NAKED s32 EntityA628_CreateScripted(u16 param_1) { INCFUNC("asm/func/EntityA628_CreateScripted.inc"); }
