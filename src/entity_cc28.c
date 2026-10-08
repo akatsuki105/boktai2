@@ -45,7 +45,7 @@ typedef struct EntityCC28 {
   unknown* unk_3c;                 // 0x003C, 根拠: FUN_0808ebe8 が FUN_0808a3c4 の第5引数に渡す
   u8 unk_40[0x58 - 0x40];          // 0x0040, まだ未解析
   u8* unk_58;                      // 0x0058, 根拠: EntityCC28_ShowLineInstant が TextBox_Start に渡す
-  u32 unk_5c;                      // 0x005C
+  s32* unk_5c;                     // 0x005C, gStat->lv で引く表, weapon_080993c4 がその10倍を返す
   MainSpriteGfx gfx[9];            // 0x0060
   BgState savedBg1;                // 0x0180
   u16 savedTilemap1[1024];         // 0x01B0
@@ -1263,7 +1263,16 @@ NAKED void FUN_08099008(EntityCC28* p) { INCFUNC("asm/func/FUN_08099008.inc"); }
 
 NAKED void FUN_080992c0(EntityCC28* p) { INCFUNC("asm/func/FUN_080992c0.inc"); }
 
-NAKED void weapon_080993c4(EntityCC28* p) { INCFUNC("asm/func/weapon_080993c4.inc"); }
+// 残差は p->unk_5c と gStat の読み順のみ (13命令中2つ), Tier A は試済
+NON_MATCH s32 weapon_080993c4(EntityCC28* p) {
+#ifdef NONMATCHING_C
+  s32* table = p->unk_5c;
+
+  return table[gStat->lv] * 10;
+#else
+  INCFUNC("asm/func/weapon_080993c4.inc");
+#endif
+}
 
 NAKED void weapon_080993e4(EntityCC28* p) { INCFUNC("asm/func/weapon_080993e4.inc"); }
 
