@@ -58,8 +58,9 @@ IWRAM_DATA u16 u16_03002c14 = 0;                          // 0x03002C14, 根拠:
 IWRAM_DATA u8 u8_03002c16[0x03002C3C - 0x03002C16] = {};  // todo
 
 IWRAM_DATA struct EntityA628* gEntityA628 = NULL;  // 0x03002C3C
+IWRAM_DATA struct EntityBA36* gEntityBA36 = NULL;  // 0x03002C40
 
-IWRAM_DATA u8 u8_03002c40[0x03002C50 - 0x03002C40] = {};  // todo
+IWRAM_DATA u8 u8_03002c44[0x03002C50 - 0x03002C44] = {};  // todo
 
 IWRAM_DATA struct Entity4063* gEntity4063 = NULL;          // 0x03002C50
 IWRAM_DATA struct Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54

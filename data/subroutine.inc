@@ -476,7 +476,7 @@ gSubroutineTable:
 	.4byte 0xB88C, EntityB88C_Create
 	.4byte 0xB8B9, MoverList_Create
 	.4byte 0xB8C7, FUN_08005034
-	.4byte 0xBA36, FUN_080a1168
+	.4byte 0xBA36, EntityBA36_Create
 	.4byte 0xBA4B, EntityBA4B_Create
 	.4byte 0xBB01, FUN_0807d4ec
 	.4byte 0xBB34, FUN_08205a18

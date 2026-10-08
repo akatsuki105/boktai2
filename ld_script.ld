@@ -266,6 +266,7 @@ SECTIONS {
 			src/entity_1dbe.o (.text);
 			src/entity_71ba.o (.text);
 			src/entity_a628.o (.text);
+			src/entity_ba36.o (.text);
 			src/code_080917e4.o (.text);
 			src/entity_d852.o (.text);
 			src/code_080a6c94.o (.text);
