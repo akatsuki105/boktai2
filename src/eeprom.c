@@ -1,6 +1,7 @@
 #include "eeprom.h"
 
 #include "global.h"
+#include "solar.h"
 #include "sound.h"
 #include "video.h"
 
@@ -44,7 +45,7 @@ s32 EEPROM_BeginAccess(void) {
   u32_0300170c = u32_0300481c;
   u32_0300481c = 1;
   REG_IME = 1;
-  SuspendSunlight();
+  Taiyo_Disable();
   return 0;
 }
 
@@ -63,7 +64,7 @@ u32 EEPROM_EndAccess(void) {
   u16_03003514 = s->unk_a;
   u32_0300481c = u32_0300170c;
   REG_IME = 1;
-  FUN_0824172c();
+  Taiyo_Enable();
 }
 
 NAKED s32 EEPROM_WriteOnce(eepromAdr addr, SaveData* data, s32 r2) { INCFUNC("asm/func/EEPROM_WriteOnce.inc"); }
@@ -131,13 +132,11 @@ NON_MATCH s32 EEPROM_VerifyOnce(eepromAdr addr, s32 len) {
     nextAddr = addr + 1;
     count += 1;
     p = buf;
-    i = 3;
-    do {
+    for (i = 0; i < 4; i++) {
       checksum[0] ^= *p;
       checksum[1] += *p;
-      p += 1;
-      i -= 1;
-    } while (i >= 0);
+      p++;
+    }
     addr = nextAddr;
   }
   err = EEPROMRead(addr, trailer);

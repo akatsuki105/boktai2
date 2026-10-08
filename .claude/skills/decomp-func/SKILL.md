@@ -43,7 +43,7 @@ grep -n "^\(NAKED\|NON_MATCH\)\b.*\b<FUNCTION_NAME>\s*(" src/*.c
 ```
 
 The `.c` paths are required — pass only the files the request is about
-(`src/enemy_080ef84c.c`), and the glob above only when it really is the whole
+(`src/enedefault.c`), and the glob above only when it really is the whole
 repository.
 
 `census.ts` already reports each candidate's byte size; take them

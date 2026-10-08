@@ -105,7 +105,7 @@ _0804518A:
 	adds r0, r4, r2
 	adds r1, r7, #0
 	movs r2, #5
-	bl EntityMsgBus_Register
+	bl MsgQueue_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r5, [r0]

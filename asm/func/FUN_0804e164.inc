@@ -1,6 +1,6 @@
 	push {r4, r5, lr}
 	adds r5, r0, #0
-	bl SuspendSunlight
+	bl Taiyo_Disable
 	ldr r0, _0804E18C @ =0x030000E0
 	adds r1, r5, #0
 	adds r1, #0x33
@@ -90,7 +90,7 @@ _0804E204:
 	bl RemoveEntity
 	adds r0, r5, #0
 	bl Free
-	bl FUN_0824172c
+	bl Taiyo_Enable
 	b _0804E24E
 	.align 2, 0
 _0804E228: .4byte 0x0300481C

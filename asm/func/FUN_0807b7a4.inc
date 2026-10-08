@@ -92,7 +92,7 @@ _0807B824:
 _0807B85C:
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	movs r1, #0x80
 	lsls r1, r1, #0xb
 	ldr r0, [r5, #0x20]

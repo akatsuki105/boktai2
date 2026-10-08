@@ -3,6 +3,7 @@
 
 #include "constants/constants.h"
 #include "eff_082473e0.h"
+#include "enedefault.h"
 #include "entity.h"
 #include "gba/gba.h"
 #include "hitbox.h"
@@ -15,43 +16,50 @@
 #include "types.h"
 #include "weapon.h"
 
-struct Player;
-struct Input;
-
 typedef u32 PlayerFlag20;         // Player.unk_20
 #define PFLAG20_UNK_0 (1 << 0)    // 0x00000001, Player_BeginAction が毎回これだけ立てた状態から始める
 #define PFLAG20_UNK_4 (1 << 4)    // 0x00000010, 日光が当たっているときに立つ, 根拠: Player_BeginAction
 #define PFLAG20_UNK_12 (1 << 12)  // 0x00001000, 根拠: FUN_08082464 が立てる
 #define PFLAG20_UNK_15 (1 << 15)  // 0x00008000, 立っていると Player_SetHitDir が被弾方向を facing ではなく unk_3e8 に書く
-#define PFLAG20_UNK_16 (1 << 16)  // 0x00010000, FLAG378_UNK_9 が立っているときに立つ
+#define PFLAG20_UNK_16 (1 << 16)  // 0x00010000, FLAG378_SKULLSUIT が立っているときに立つ
 
-typedef u32 PlayerFlag378;               // Player.flag378
-#define FLAG378_WET_DURABILITY (1 << 0)  // 0x00000001, WET_DURABILITY を持った武器を装備している間セットされる
-#define FLAG378_WET_ENE_COST (1 << 1)    // 0x00000002, WET_ENE_COST を持った武器を装備している間セットされる
-#define FLAG378_BLOOD_SWORD (1 << 2)     // 0x00000004, WET_BLOOD_SWORD を持った武器を装備している間セットされる
-#define FLAG378_ASTRO (1 << 3)           // 0x00000008, アストロ武器 を装備している間セットされる
-#define FLAG378_UNK_4 (1 << 4)           // 0x00000010, 鎧の特殊効果 AET 4 で立つ
-#define FLAG378_UNK_5 (1 << 5)           // 0x00000020, 鎧の特殊効果 AET 23 で立つ
-#define FLAG378_WEAPONGUARD (1 << 6)     // 0x00000040, ウェポンガード〃
-#define FLAG378_FAIRY (1 << 7)           // 0x00000080, 精霊の衣〃
-#define FLAG378_UNK_8 (1 << 8)           // 0x00000100, ???
-#define FLAG378_UNK_9 (1 << 9)           // 0x00000200, 立っていると Player_BeginAction が PFLAG20_UNK_16 を立てる
-#define FLAG378_UNK_10 (1 << 10)         // 0x00000400, ???
-#define FLAG378_UNK_11 (1 << 11)         // 0x00000800, 立っていると FUN_0807a798 の経験値が1.5倍になる
-#define FLAG378_UNK_12 (1 << 12)         // 0x00001000, 鎧の特殊効果 AET 14 で立つ
-#define FLAG378_AET_SUNLIGHT (1 << 13)   // 0x00002000, 光のガーブ装備時, ApplyLxModifiers が太陽レベルを2倍にする
-#define FLAG378_AET_RES_SOL (1 << 14)    // 0x00004000, メイルオブソル装備時, 立っていると ApplySunlightGain の太陽スタンド加算が2倍になる
-#define FLAG378_UNK_15 (1 << 15)         // 0x00008000, 鎧の特殊効果 AET 21 で立つ
-#define FLAG378_UNK_16 (1 << 16)         // 0x00010000, 同 AET 22
-#define FLAG378_UNK_17 (1 << 17)         // 0x00020000, 同 AET 25
-#define FLAG378_UNK_19 (1 << 19)         // 0x00080000, 立っていると FUN_0806f900 が HP 割合ぶんの補正を足す
-#define FLAG378_UNK_18 (1 << 18)         // 0x00040000, 立っていると FUN_0807e784 が被弾後に FUN_0807e2cc を呼ぶ
-#define FLAG378_UNK_20 (1 << 20)         // 0x00100000, 鎧の特殊効果 AET 29 で立つ
-#define FLAG378_UNK_21 (1 << 21)         // 0x00200000, 同 AET 30
-#define FLAG378_UNK_22 (1 << 22)         // 0x00400000, 同 AET 31
-#define FLAG378_UNK_23 (1 << 23)         // 0x00800000, 同 AET 32
-#define FLAG378_HEART (1 << 28)          // 0x10000000, ハートの紋章所持
-#define FLAG378_JOKER (1 << 29)          // 0x20000000, ジョーカーの紋章所持
+// Player.flag35a, Player_BeginAction が毎フレーム 0 に戻し、行動関数が立てたものを FUN_08078bc0 がその場で反映する
+typedef u16 PlayerFlag35A;
+#define PFLAG35A_HIDE_SPRITE (1 << 0)     // 0x0001, sprite_88 に SPRFLAG_HIDDEN を立てる
+#define PFLAG35A_BLINK (1 << 1)           // 0x0002, sprite_88 に SPRFLAG_BLINK_ODD を立てる
+#define PFLAG35A_HIDE_SHADOW (1 << 2)     // 0x0004, 影を ParticleShadow_Hide する
+#define PFLAG35A_NO_HITBOX (1 << 3)       // 0x0008, unk_16c に HBFLAG_UNK_2 を立てて Hitbox_SetPos を飛ばす
+#define PFLAG35A_NO_TILE (1 << 4)         // 0x0010, mover.tile を NULL にして Map_InitMoverTile を飛ばす
+#define PFLAG35A_UNK_5 (1 << 5)           // 0x0020, FUN_08082464 が立てるが読み手は未発見
+#define PFLAG35A_SHOW_SPRITE_E8 (1 << 6)  // 0x0040, 立てたときだけ sprite_e8 の SPRFLAG_HIDDEN を落とす (既定は隠す)
+
+typedef u32 PlayerFlag378;                 // Player.flag378
+#define FLAG378_WET_DURABILITY (1 << 0)    // 0x00000001, WET_DURABILITY を持った武器を装備している間セットされる
+#define FLAG378_WET_ENE_COST (1 << 1)      // 0x00000002, WET_ENE_COST を持った武器を装備している間セットされる
+#define FLAG378_BLOOD_SWORD (1 << 2)       // 0x00000004, WET_BLOOD_SWORD を持った武器を装備している間セットされる
+#define FLAG378_ASTRO (1 << 3)             // 0x00000008, アストロ武器 を装備している間セットされる
+#define FLAG378_SOLAR_WIND (1 << 4)        // 0x00000010, ブリガンダイン (AET_SOLAR_WIND)
+#define FLAG378_IMMUNEPOISON (1 << 5)      // 0x00000020, ポイズンガード (AET_IMMUNE_POISON)
+#define FLAG378_WEAPONGUARD (1 << 6)       // 0x00000040, ウェポンガード〃
+#define FLAG378_FAIRY (1 << 7)             // 0x00000080, 精霊の衣〃
+#define FLAG378_MAGICROBE (1 << 8)         // 0x00000100, マジックローブ (魔法のMP消費を軽減)
+#define FLAG378_SKULLSUIT (1 << 9)         // 0x00000200, スカルスーツ (AET_SKULL_SUIT)
+#define FLAG378_ALLNIGHT (1 << 10)         // 0x00000400, 闇のガーブ (AET_ALLNIGHT)
+#define FLAG378_TRAININGGEAR (1 << 11)     // 0x00000800, トラックスーツ (AET_EXP_BOOST, 経験値1.5倍)
+#define FLAG378_EARTHLYROBE (1 << 12)      // 0x00001000, 大地の衣 (AET_EARTHLY_ROBE)
+#define FLAG378_AET_SUNLIGHT (1 << 13)     // 0x00002000, 光のガーブ装備時, ApplyLxModifiers が太陽レベルを2倍にする
+#define FLAG378_AET_RES_SOL (1 << 14)      // 0x00004000, メイルオブソル装備時, 立っていると ApplySunlightGain の太陽スタンド加算が2倍になる
+#define FLAG378_AET_NORMAL_DROP (1 << 15)  // 0x00008000, 盗人の服
+#define FLAG378_AET_RARE_DROP (1 << 16)    // 0x00010000, 狩人の服
+#define FLAG378_PARADE (1 << 17)           // 0x00020000, パレードアーマー
+#define FLAG378_UNK_19 (1 << 19)           // 0x00080000, 立っていると FUN_0806f900 が HP 割合ぶんの補正を足す
+#define FLAG378_SPIKE (1 << 18)            // 0x00040000, スパイクメイル
+#define FLAG378_MEGAPOWER (1 << 20)        // 0x00100000, ロックパワー
+#define FLAG378_GUTSPOWER (1 << 21)        // 0x00200000, ガッツパワー
+#define FLAG378_PROTOPOWER (1 << 22)       // 0x00400000, ブルースパワー
+#define FLAG378_TOADPOWER (1 << 23)        // 0x00800000, トードパワー
+#define FLAG378_HEART (1 << 28)            // 0x10000000, ハートの紋章所持
+#define FLAG378_JOKER (1 << 29)            // 0x20000000, ジョーカーの紋章所持
 
 // プレイヤーの向き
 typedef u8 Facing8;
@@ -66,27 +74,17 @@ typedef u32 Facing32;
 #define FACE_LEFT 6        // 左
 #define FACE_UP_LEFT 7     // 左上
 
+// PlayerKind, Player.kind
+#define PLAYER_SOLAR_DJANGO 0  // 赤ジャンゴ (Red Django)
+#define PLAYER_DARK_DJANGO 1   // 黒ジャンゴ (Dark Django)
+#define PLAYER_BAT 2           // バット, 魔法"チェンジ・バット"でコウモリに変身した状態
+#define PLAYER_MOUSE 3         // マウス, 魔法"チェンジ・マウス"でネズミに変身した状態
+#define PLAYER_SLEEPING 4      // スリーピング, 魔法"スリーピング"で棺桶の中で寝ている状態
+#define PLAYER_SABATA 5        // サバタ
+
+struct Player;
+struct Input;
 typedef void (*PlayerFunc)(struct Player*);
-
-// Player.kind, 0x085abb14 (Player.fn_ac0) のインデックスでもある
-enum PlayerKind {
-  PLAYER_SOLAR_DJANGO,  // 0, 赤ジャンゴ
-  PLAYER_DARK_DJANGO,   // 1, 黒ジャンゴ
-  PLAYER_BAT,           // 2, バット, 魔法"チェンジ・バット"でコウモリに変身した状態
-  PLAYER_MOUSE,         // 3, マウス, 魔法"チェンジ・マウス"でネズミに変身した状態
-  PLAYER_SLEEPING,      // 4, スリーピング, 魔法"スリーピング"で棺桶の中で寝ている状態
-  PLAYER_SABATA,        // 5, サバタ
-};
-
-// WeaponKind とは別
-enum AttackStyle {
-  STYLE_SWORD,   // 剣
-  STYLE_SPEAR,   // 槍
-  STYLE_HAMMER,  // 槌
-  STYLE_GUN,     // 銃
-  STYLE_FIST,    // 拳
-  STYLE_NONE,    // なし
-};
 
 typedef struct {
   armor16_t id;            // 0x00 (Player: 0x264), ArmorData.id
@@ -162,26 +160,22 @@ typedef struct {
 static_assert(sizeof(PlayerMagic) == 8);
 
 // 近接攻撃の衝撃波 (ジャンゴ) / 銃の散弾 (サバタ) に使うスプライト一式
-// 根拠: Player_UpdatePoseAndShadow が &meleeShockwave を update に渡して呼ぶ, update は PlayerShockwave_UpdateAnim か PlayerShockwave_UpdateFlash
-struct PlayerShockwave;
-typedef void (*PlayerShockwaveFunc)(struct PlayerShockwave*);
-
 typedef struct PlayerShockwave {
-  AuxSprite sprite;            // 0x00
-  AuxSpriteGfx gfx;            // 0x2C, ジャンゴ: SPRITE_MELEE_SHOCKWAVE, サバタ: SPRITE_GUN_SPREAD
-  AuxAnimState anim;           // 0x48
-  AuxAnimFile* animFile;       // 0x58
-  Vec3 vel;                    // 0x5C, 毎フレーム sprite.pos に加算する, y と val は使われない, 根拠: PlayerShockwave_UpdateAnim
-  bool8 finished;              // 0x64, アニメーションが最後まで行くと立つ, 読んだ側は 0 に戻す
-  u8 unk_65[3];                // 0x65, padding?
-  PlayerShockwaveFunc update;  // 0x68, PlayerShockwave_UpdateAnim か PlayerShockwave_UpdateFlash
+  AuxSprite sprite;                         // 0x00 -> gfx
+  AuxSpriteGfx gfx;                         // 0x2C, ジャンゴ: SPRITE_MELEE_SHOCKWAVE, サバタ: SPRITE_GUN_SPREAD
+  AuxAnimState anim;                        // 0x48
+  AuxAnimFile* animFile;                    // 0x58
+  Vec3 vel;                                 // 0x5C, 毎フレーム sprite.pos に加算する, y と val は使われない, 根拠: PlayerShockwave_UpdateAnim
+  bool8 finished;                           // 0x64, アニメーションが最後まで行くと立つ, 読んだ側は 0 に戻す
+  u8 unk_65[3];                             // 0x65, padding?
+  void (*update)(struct PlayerShockwave*);  // 0x68, PlayerShockwave_UpdateAnim か PlayerShockwave_UpdateFlash
 } PlayerShockwave;
 static_assert(sizeof(PlayerShockwave) == 108);
 
 // 通常プレイでは gPlayerPtr[0] にこの構造体がある, 通信対戦の相手キャラもこの構造体を使う
 typedef struct Player {
   Entity e;                         // 0x000
-  u32 unk_18;                       // 0x018, 0 or 1 他にもあるか不明
+  u32 unk_18;                       // 0x018, `.i`, 0 or 1 他にもあるか不明, 多分イベントシーンとかで作られたやつを区別するためのものとか？
   u32 unk_1c;                       // 0x01C, ステート?, (0: ??, 1: 通常状態, 2: マップ移動などの操作できない状態?, 3: ???, 4: HP0, 5: ???, ...)
   PlayerFlag20 unk_20;              // 0x020, see PlayerFlag20
   Mover mover;                      // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Mover
@@ -193,13 +187,13 @@ typedef struct Player {
   HitboxData unk_16c;               // 0x16C
   MoverTile tile;                   // 0x1BC, mover.tile がここを指す
   u8 unk_1cc[0x220 - 0x1CC];        // 0x1CC
-  u8 unk_220[0x230 - 0x220];        // 0x220, Player_Destroy が FUN_080f8cac に渡す EntityD854Node
-  EntityMsgBox msgbox;              // 0x230, FUN_0807ddd4 が EntityMsgBus_Unregister に渡す
+  EnemyTarget target;               // 0x220, kindMask 2 で登録される
+  MsgQueue mq;                      // 0x230, FUN_0807ddd4 が MsgQueue_Unregister に渡す
   PlayerArmor armor;                // 0x264
-  u32 unk_27c;                      // 0x27C
+  HitboxAttributes hbattrs;         // 0x27C
   PlayerMagic magic;                // 0x280, 装備魔法まわりの一群, 根拠: Player_RefreshMagicInfo が1本のベースレジスタで5フィールドを書く
   u8 unk_288[0x28C - 0x288];        // 0x288
-  struct Input* input_28c;          // 0x28C, &gInput[n]
+  struct Input* input;              // 0x28C, &gInput[n]
   Keys16 unk_290[10];               // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
   rgb555 pltt_2a4[32];              // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
   u16 animID;                       // 0x2E4, 今 sprite_88 で再生しているアニメのID, Player_PlayAnim が前回と同じIDかどうかの判定に使う
@@ -215,7 +209,7 @@ typedef struct Player {
   AuxAnimFile* anim_354;            // 0x354
   u8 kind;                          // 0x358: see PlayerKind
   u8 unk_359;                       // 0x359
-  u16 unk_35a;                      // 0x35A
+  PlayerFlag35A flag35a;            // 0x35A, see PlayerFlag35A
   u16 stats[STAT_KINDS];            // 0x35C, プレイヤーのステータス値 (武者鎧などの装備品の補正値は含まない, タロットカードのドーピングは含む)
   u16 hp;                           // 0x364
   u16 maxHP;                        // 0x366
@@ -230,7 +224,7 @@ typedef struct Player {
   u8 unk_380[2];                    // 0x380
   u8 unk_382;                       // 0x382, Player_GetMagicAction がコウモリ変身時に 0xBE を入れる
   u8 unk_383[4];                    // 0x383
-  coffin8_t coffin_387;             // 0x387, MagicSleeping_0806c124
+  coffin8_t coffin;                 // 0x387, MagicSleeping_0806c124
   u8 unk_388[0x38A - 0x388];        // 0x388
   u16 unk_38a;                      // 0x38A, 0 のときだけ FUN_0806e404 が専用の効果音を鳴らして 40 を入れる
   u8 unk_38c[0x38E - 0x38C];        // 0x38C
@@ -245,13 +239,13 @@ typedef struct Player {
   Vec3* ptr_398;                    // 0x398, FUN_0807a9b8 の第2引数, FUN_08065dac は pos_39c を指させる
   Vec3 pos_39c;                     // 0x39C, FUN_08065dac が今踏んでいるタイルの中心を書く
   u8 unk_3a4;                       // 0x3A4, 0 以外だと FUN_080672b0 が移動速度を設定しない
-  u8 unk_3a5[0x3B0 - 0x3A5];        // 0x3A5
+  u8 unk_3a5[0x3B0 - 0x3A5];        // 0x3A5, padding?
   Vec3 unk_3b0;                     // 0x3B0, FUN_0807a528 が引数の座標をそのまま写す
   u16 unk_3b8;                      // 0x3B8, FUN_0807a528 の第3引数
   u16 unk_3ba;                      // 0x3BA, FUN_0807b5a8 が 1 を書く
   u8 unk_3bc;                       // 0x3BC, FUN_08066d2c が見る
   u8 unk_3bd;                       // 0x3BD, FUN_080674dc / FUN_0807b0c0 が見る
-  u8 unk_3be[0x3C0 - 0x3BE];        // 0x3BE
+  u8 unk_3be[0x3C0 - 0x3BE];        // 0x3BE, padding?
   Vec3 pos_3c0;                     // 0x3C0, FUN_08066df8 が mover.pos とカメラの注視点から作って FUN_0823bac8 に渡す
   s16 unk_3c8;                      // 0x3C8, FUN_08066df8 が pos_3c0.x を作るとき mover.pos.x に足す
   s16 unk_3ca;                      // 0x3CA, 同じく pos_3c0.y
@@ -277,7 +271,7 @@ typedef struct Player {
   u8 magicFired;                    // 0x3FA, 魔法の発動フレームに FUN_08064d6c (太陽ゲージ判定) の結果が入る, 1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
   u8 dynamiteCount;                 // 0x3FB, 生存中の Entity080a8ff8 の数, Entity080a8ff8_Init が +1、消滅時に -1, MAGIC_DYNAMITE は 0 でないと再発動できない (Player_GetMagicAction)
   u8 unk_3fc[2];                    // 0x3FC
-  u8 unk_3fe;                       // 0x3FE, FUN_0806a050 が見て FUN_08060c40 に渡す番号を選ぶ
+  u8 unk_3fe;                       // 0x3FE, FUN_0806a050 が見て Player_SetFlag35a に渡す番号を選ぶ
   u8 unk_3ff;                       // 0x3FF
   u8 angle_400;                     // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
   u8 angle_401;                     // 0x401, 同上
@@ -312,10 +306,7 @@ typedef struct Player {
   u8 unk_4b4[0x4c4 - 0x4b4];        // 0x4B4
   Eff082473e0Emitter unk_4c4;       // 0x4C4
   Vec3 shadowPos;                   // 0x5FC, mover.pos に下の3つを足した値, 根拠: Player_UpdatePoseAndShadow
-  u16 shadowOffsetX;                // 0x604, Player_BeginAction が 0 に戻す
-  u16 shadowOffsetY;                // 0x606, 同上
-  u16 shadowOffsetZ;                // 0x608, 同上
-  u8 unk_60a[2];                    // 0x60A
+  Vec3 shadowOffset;                // 0x604, shadowPos を作るときに mover.pos に足す分, Player_BeginAction が 0 に戻す
   ParticleShadow shadow;            // 0x60C, 根拠: Player_DestroyEffects が ParticleShadow_Remove に渡す, FUN_081d40b4 がエレベータ搭乗中に flags の bit0 を立てる
   PlayerParticleGroup1 ptcl_64c;    // 0x64C, FUN_08061458
   PlayerParticleGroup1 ptcl_67c;    // 0x67C, FUN_0806161c
@@ -324,74 +315,73 @@ typedef struct Player {
   PlayerParticleState858 ptcl_858;  // 0x858, 根拠: Player_InitPtcl858
   Vec3 pos_930;                     // 0x930, FUN_08067f88 が mover.pos をずらして書く
   u16 plttIDs[9];                   // 0x938, unk_94c で引くパレットIDの表, 根拠: Player_BuildPltt
-
-  u16 plttID_94a;             // 0x94A, Player_ResetPltt
-  s16 unk_94c;                // 0x94C, Player_ResetPltt
-  u8 unk_94e;                 // 0x94E, Player_UpdatePltt
-  u8 unk_94f;                 // 0x94F
-  u8 unk_950;                 // 0x950, Player_ResetPltt
-  u8 unk_951;                 // 0x951, FUN_0806f780 が unk_a8d + 1 (負なら 0) を入れる
-  u16 altPose;                // 0x952, Player_ApplyPoseHold が pose が変わったときに控える値
-  u16 altPoseTimer;           // 0x954, 変化時に 0x40 を入れて毎回 1 減らす, bit2 が立つ間は altPose を返す
-  u16 unk_956;                // 0x956, Player_TickBadCondTimers が状態異常1の残り時間が切れたあと 0x40 から減らす点滅タイマ
-  u16 unk_958;                // 0x958, 同じく太陽ゲージ消費側の点滅タイマ
-  u16 flashPose;              // 0x95A, flashTimer の bit2 が立っている間 Player_ApplyFlashPose が pose の代わりに返す値
-  u16 flashTimer;             // 0x95C, Player_ApplyFlashPose が毎フレーム 1 減らす点滅タイマ
-  u16 unk_95e;                // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
-  u16 unk_960;                // 0x960, FUN_08074994 が unk_95e と対で書く
-  u16 unk_962;                // 0x962, Player_EquipMagic がエンチャント開始時に magic.id + 0x121 を入れる
-  u16 unk_964;                // 0x964, 同じ呼び出しで 0x20 を入れる, unk_962 が 0 のときだけ 0 に戻される
-  u8 unk_966[0x96C - 0x966];  // 0x966
-  u16 unk_96c;                // 0x96C, FUN_0807b8c0 が 0 を書く
-  u8 unk_96e[2];              // 0x96E, padding?
-  Vec3 pos_970;               // 0x970, Player_UpdateBloodSword が FUN_0805fe7c の第5引数に渡す
-  u8 unk_978;                 // 0x978, 同じく第6引数
-  u8 unk_979;                 // 0x979, Player_EquipMagic がエンチャントの有無で 1/0 を書く
-  u16 unk_97a;                // 0x97A, Player_InitEffects が条件付きで 0x40 を入れる
-  u8 unk_97c[4];              // 0x97C, MosaicFader_Start の from, 初期値は全部 4
-  u8 unk_980[4];              // 0x980, 同じく to, 初期値は全部 0
-  u16 unk_984[4];             // 0x984, 同じく interval, 初期値は全部 4
-  s32 unk_98c;                // 0x98C, FUN_080da9c4 の戻り値を入れて次回の第1引数に渡す
-  u8 unk_990;                 // 0x990, 同じ呼び出しの第3引数
-  u8 unk_991;                 // 0x991
-  u16 unk_992;                // 0x992, 0 でなければ毎フレーム 1 減らし, 0 になった回に FUN_080da9c4 を呼ぶ
-  EntityMsg msg_994;          // 0x994, FUN_0807e278 が組み立てて送る, args は可変長なので後ろの unk_9a0 まで伸びる
-  u8 unk_9a0[0x9BC - 0x9A0];  // 0x9A0
-  u16 unk_9bc;                // 0x9BC
-  u16 pad_9be;                // 0x9BE, padding
-  s32 scriptID_9c0;           // 0x9C0
-  s32 scriptID_9c4;           // 0x9C4
-  u8 unk_9c8[0xA10 - 0x9C8];  // 0x9C8
-  HitboxData unk_a10;         // 0xA10, 根拠: 0x08064644
-  u8 unk_a60[0xA70 - 0xA60];  // 0xA60
-  Weapon* weapon_a70;         // 0xA70
-  weapon8_t weaponID_a74;     // 0xA74, 武器ID
-  u8 weaponKind_a75;          // 0xA75, 武器種
-  u8 unk_a76[2];              // 0xA76
-  u16 weaponAtk;              // 0xA78, WeaponData.atk の複写, 根拠: Player_ApplyWeapon
-  u16 unk_a7a;                // 0xA7A, Player_ApplyWeapon が FUN_0807a6cc の戻り値を入れる
-  u16 unk_a7c;                // 0xA7C, Hitbox_SetAttack の第3引数, 武器種ごとの値
-  u16 unk_a7e;                // 0xA7E, 同じく第6引数
-  u8 unk_a80[0xA8A - 0xA80];  // 0xA80
-  u16 unk_a8a;                // 0xA8A, Player_ShowGunSpread が散弾スプライトの rotation に入れる向き
-  u8 unk_a8c;                 // 0xA8C
-  s8 unk_a8d;                 // 0xA8D, FUN_0806f780 が Player_CheckMagicEnchant の結果を入れる, 負ならエンチャントなし
-  u8 unk_a8e;                 // 0xA8E
-  u8 unk_a8f;                 // 0xA8F, Entity08080be8 が毎フレーム charge に写す, 威力を 1 + n/2 倍にし、スプライトの絵も選ぶ
-  u8 unk_a90[5];              // 0xA90
-  u8 unk_a95;                 // 0xA95, アストロ武器の種類ごとの値 (剣: 0, 槍: 4, 槌: 8)
-  u8 unk_a96[2];              // 0xA96, padding?
-  PlayerFunc attackCB;        // 0xA98, gPlayerAttackUpdates
+  u16 plttID_94a;                   // 0x94A, Player_ResetPltt
+  s16 unk_94c;                      // 0x94C, Player_ResetPltt
+  u8 unk_94e;                       // 0x94E, Player_UpdatePltt
+  u8 unk_94f;                       // 0x94F
+  u8 unk_950;                       // 0x950, Player_ResetPltt
+  u8 unk_951;                       // 0x951, FUN_0806f780 が unk_a8d + 1 (負なら 0) を入れる
+  u16 altPose;                      // 0x952, Player_ApplyPoseHold が pose が変わったときに控える値
+  u16 altPoseTimer;                 // 0x954, 変化時に 0x40 を入れて毎回 1 減らす, bit2 が立つ間は altPose を返す
+  u16 unk_956;                      // 0x956, Player_TickBadCondTimers が状態異常1の残り時間が切れたあと 0x40 から減らす点滅タイマ
+  u16 unk_958;                      // 0x958, 同じく太陽ゲージ消費側の点滅タイマ
+  u16 flashPose;                    // 0x95A, flashTimer の bit2 が立っている間 Player_ApplyFlashPose が pose の代わりに返す値
+  u16 flashTimer;                   // 0x95C, Player_ApplyFlashPose が毎フレーム 1 減らす点滅タイマ
+  u16 unk_95e;                      // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
+  u16 unk_960;                      // 0x960, FUN_08074994 が unk_95e と対で書く
+  u16 unk_962;                      // 0x962, Player_EquipMagic がエンチャント開始時に magic.id + 0x121 を入れる
+  u16 unk_964;                      // 0x964, 同じ呼び出しで 0x20 を入れる, unk_962 が 0 のときだけ 0 に戻される
+  u8 unk_966[0x96C - 0x966];        // 0x966
+  u16 unk_96c;                      // 0x96C, FUN_0807b8c0 が 0 を書く
+  u8 unk_96e[2];                    // 0x96E, padding?
+  Vec3 pos_970;                     // 0x970, Player_UpdateBloodSword が FUN_0805fe7c の第5引数に渡す
+  u8 unk_978;                       // 0x978, 同じく第6引数
+  u8 unk_979;                       // 0x979, Player_EquipMagic がエンチャントの有無で 1/0 を書く
+  u16 unk_97a;                      // 0x97A, Player_InitEffects が条件付きで 0x40 を入れる
+  u8 unk_97c[4];                    // 0x97C, MosaicFader_Start の from, 初期値は全部 4
+  u8 unk_980[4];                    // 0x980, 同じく to, 初期値は全部 0
+  u16 unk_984[4];                   // 0x984, 同じく interval, 初期値は全部 4
+  s32 unk_98c;                      // 0x98C, FUN_080da9c4 の戻り値を入れて次回の第1引数に渡す
+  u8 unk_990;                       // 0x990, 同じ呼び出しの第3引数
+  u8 unk_991;                       // 0x991
+  u16 unk_992;                      // 0x992, 0 でなければ毎フレーム 1 減らし, 0 になった回に FUN_080da9c4 を呼ぶ
+  MsgPacket msg_994;                // 0x994, FUN_0807e278 が組み立てて送る, args は可変長なので後ろの unk_9a0 まで伸びる
+  u8 unk_9a0[0x9BC - 0x9A0];        // 0x9A0
+  u16 unk_9bc;                      // 0x9BC
+  u16 pad_9be;                      // 0x9BE, padding
+  s32 scriptID_9c0;                 // 0x9C0
+  s32 scriptID_9c4;                 // 0x9C4
+  u8 unk_9c8[0xA10 - 0x9C8];        // 0x9C8
+  HitboxData unk_a10;               // 0xA10, 根拠: 0x08064644
+  u8 unk_a60[0xA70 - 0xA60];        // 0xA60
+  Weapon* weapon_a70;               // 0xA70
+  weapon8_t weaponID_a74;           // 0xA74, 武器ID
+  u8 weaponKind_a75;                // 0xA75, 武器種
+  u8 unk_a76[2];                    // 0xA76
+  u16 weaponAtk;                    // 0xA78, WeaponData.atk の複写, 根拠: Player_ApplyWeapon
+  u16 unk_a7a;                      // 0xA7A, Player_ApplyWeapon が FUN_0807a6cc の戻り値を入れる
+  u16 unk_a7c;                      // 0xA7C, Hitbox_SetAttack の第3引数, 武器種ごとの値
+  u16 unk_a7e;                      // 0xA7E, 同じく第6引数
+  u8 unk_a80[0xA8A - 0xA80];        // 0xA80
+  u16 unk_a8a;                      // 0xA8A, Player_ShowGunSpread が散弾スプライトの rotation に入れる向き
+  u8 unk_a8c;                       // 0xA8C
+  s8 unk_a8d;                       // 0xA8D, FUN_0806f780 が Player_CheckMagicEnchant の結果を入れる, 負ならエンチャントなし
+  u8 unk_a8e;                       // 0xA8E
+  u8 unk_a8f;                       // 0xA8F, Entity08080be8 が毎フレーム charge に写す, 威力を 1 + n/2 倍にし、スプライトの絵も選ぶ
+  u8 unk_a90[5];                    // 0xA90
+  u8 unk_a95;                       // 0xA95, アストロ武器の種類ごとの値 (剣: 0, 槍: 4, 槌: 8)
+  u8 unk_a96[2];                    // 0xA96, padding?
+  PlayerFunc attackCB;              // 0xA98, gPlayerAttackUpdates
 
   // 武器の特殊効果のコールバック関数の配列
   u32 (*weaponExDamageCb[WEAPON_EFFECT_SLOT_COUNT])(struct Player*);  // 0xA9C, プレイヤーの状態を参照する武器の特殊効果コールバック
   u32 (*weaponEffectCb2[WEAPON_EFFECT_SLOT_COUNT])(struct Player*);   // 0xAA8, 状態を参照しない武器の特殊効果コールバック, 防御無視効果と麻痺のハンドラはここ
   void* weaponEffectCb3[WEAPON_EFFECT_SLOT_COUNT];                    // 0xAB4,　敵の状態を参照する武器の特殊効果コールバック, xx特効系のハンドラはここ, シグネチャはまだ不明
 
-  // 0xAC0, onUpdate (Player_Update) で毎フレーム呼ばれる
+  // 0xAC0
   // CreatePlayer製:       FUN_08065270　で 0x085abb14 の関数テーブル or FUN_08079f1c
   // CreateLinkPlayer2P製: FUN_080817ec で FUN_08084330 がセットされる
-  PlayerFunc fn_ac0;
+  PlayerFunc updateCallback;
 } Player;
 static_assert(sizeof(Player) == 2756);
 
@@ -407,6 +397,7 @@ void Player_ReduceENE_0807aa60(Player* player, s32 amount);
 void FUN_0807d118(Player* p);
 void FUN_0807bb3c(Player* p, Vec3* pos, s32 param_3, s32 param_4, u32 scriptID);
 void FUN_0807bc64(Player* p, u32 scriptID);
+void Player_SetAction(Player* p, u32 action, u32 state);
 
 static inline void Player_SetFlag20(Player* p, PlayerFlag20 bit) { p->unk_20 |= bit; }
 static inline bool32 Player_TestFlag20(Player* p, PlayerFlag20 bit) { return p->unk_20 & bit; }

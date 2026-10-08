@@ -817,7 +817,7 @@ _080EB8C2:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080EB8FC
 	ldr r4, [sp, #0x10]
@@ -2219,7 +2219,7 @@ _080EC330:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x34]
 	adds r2, r7, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080EC374
 	ldr r0, _080EC370 @ =0xFFFFFDFF
@@ -2270,7 +2270,7 @@ _080EC3A0:
 	.align 2, 0
 _080EC3B4: .4byte 0xFFFFFDFF
 _080EC3B8:
-	ldr r1, _080EC418 @ =FUN_080e48d0
+	ldr r1, _080EC418 @ =Enemy_ClearStateBegun
 	ldr r5, [sp, #0x10]
 	ldr r6, _080EC41C @ =0x0000046D
 	adds r0, r5, r6
@@ -2320,7 +2320,7 @@ _080EC406:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_080EC418: .4byte FUN_080e48d0
+_080EC418: .4byte Enemy_ClearStateBegun
 _080EC41C: .4byte 0x0000046D
 _080EC420: .4byte 0x0000046B
 _080EC424: .4byte 0x00000553

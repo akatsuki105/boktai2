@@ -31,7 +31,7 @@ _080F5718:
 	strb r0, [r7, #5]
 	adds r0, r7, #0
 	movs r1, #6
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r0, #2
 	movs r2, #0xbe
 	lsls r2, r2, #1

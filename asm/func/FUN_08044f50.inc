@@ -33,7 +33,7 @@ _08044F78:
 	ldr r7, [r0]
 	mov r0, sb
 	adds r1, r7, #0
-	bl EntityMsgBox_BeginWait
+	bl MsgQueue_BeginWait
 	ldrb r0, [r7, #6]
 	subs r0, #1
 	cmp r0, #8

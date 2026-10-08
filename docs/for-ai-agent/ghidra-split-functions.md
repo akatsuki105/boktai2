@@ -91,7 +91,7 @@ without saving is always a way back.
 |---|---|---|
 | `FUN_080ff048` | `FUN_080fe7f4` | `[080FF048, 080FF05B]` |
 | `FUN_080fe198` | `FUN_080fd08c` | `[080FE198, 080FE1A7]` |
-| `FUN_080f9a24` | `FUN_080f8f04` | `[080F9A24, 080F9A35]` |
+| `FUN_080f9a24` | `EnemyTargetManager_Bind` | `[080F9A24, 080F9A35]` |
 
 `FUN_080ff048` also needed a repository-side fix, because the extraction had
 already split it into its own `asm/func/FUN_080ff048.inc`: its contents were
@@ -166,8 +166,22 @@ Done so far:
 |---|---|
 | `FUN_080f6e64` | `FUN_080f79e8`, `FUN_080f83ec`, `FUN_080f83ee` |
 | `FUN_080f48ac` | `FUN_080f5104`, `FUN_080f51e0` |
+| `FUN_080e9178` | `FUN_080eafb4`, `FUN_080eafc0`, `FUN_080eafce`, `FUN_080eafd2` |
 
-Still open, found by the scan above: `FUN_080eafb4` and `Time_UpdateSunAndMoon`.
+`FUN_080eafb4` needed the repository-side fix: every label inside its `.inc`
+was already local, so its contents were appended to `asm/func/FUN_080e9178.inc`
+behind a new `_080EAFB4:` label, the one `bl FUN_080eafb4` became
+`bl _080EAFB4`, and the `NAKED` stub was dropped from `src/enemy.c`.
+
+`FUN_080e9178` ends in a jump-table dispatch
+(`(*(code *)PTR_ARRAY_080e91a0[enemyID])()`), so Ghidra also registered each
+table target as its own function. Those (`080E920C`, `080E9350`, `080EA2D8`,
+`080EA6B8`) are reached by an indirect jump, not a `bl`, and the repository
+already carries them as plain labels, so they are Ghidra-only. After the merge
+above they land inside the parent's body and `MergeContinuation.java` refuses
+them (`ABORT: ... が親の body 内`); they are harmless and were left alone.
+
+Still open, found by the scan above: `Time_UpdateSunAndMoon`.
 
 ## Remaining candidates
 

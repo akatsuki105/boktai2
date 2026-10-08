@@ -506,7 +506,7 @@ _08036300:
 	mov r1, r8
 	adds r2, r5, #0
 	movs r3, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	adds r0, r7, #0
 	bl FUN_08027ed0
 	adds r1, r0, #0

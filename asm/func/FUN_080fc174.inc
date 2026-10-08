@@ -19,7 +19,7 @@ _080FC192:
 	beq _080FC1AE
 	adds r0, r4, #0
 	movs r1, #7
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #0xc0
 	lsls r1, r1, #1
 	adds r0, r4, r1

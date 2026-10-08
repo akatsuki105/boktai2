@@ -31,7 +31,7 @@ typedef u32 HitboxAttributes;      // 低位7bitが自分の属性マスク, 攻
 #define HBATTR_FROST (1 << 3)      // 0x8, 氷属性
 #define HBATTR_CLOUD (1 << 4)      // 0x10, 風属性
 #define HBATTR_EARTH (1 << 5)      // 0x20, 地属性
-#define HBATTR_6 (1 << 6)          // 0x40, ???
+#define HBATTR_6 (1 << 6)          // 0x40, 全属性?
 #define HBATTR_BEAST (1 << 7)      // 0x80, ビースト系の敵
 #define HBATTR_THING (1 << 8)      // 0x100, シング系の敵
 #define HBATTR_PHANTOM (1 << 9)    // 0x200, ファントム系の敵

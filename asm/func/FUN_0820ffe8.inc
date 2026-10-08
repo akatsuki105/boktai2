@@ -91,7 +91,7 @@ _08210080:
 	movs r1, #3
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _082100A6:
 	ldr r3, _082100C0 @ =0x00000CD4
 	adds r0, r4, r3
@@ -122,7 +122,7 @@ _082100C8:
 	movs r1, #0x70
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _082100E6:
 	ldr r1, _08210104 @ =0x00000CD4
 	adds r0, r4, r1
@@ -156,7 +156,7 @@ _08210110:
 	movs r1, #0x75
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _0821012E:
 	ldr r2, _0821014C @ =0x00000CD4
 	adds r0, r4, r2
@@ -190,7 +190,7 @@ _08210158:
 	movs r1, #0x70
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _08210176:
 	ldr r2, _08210194 @ =0x00000CD4
 	adds r0, r4, r2
@@ -224,7 +224,7 @@ _082101A0:
 	movs r1, #0x7a
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _082101BE:
 	ldr r2, _082101E0 @ =0x00000CD4
 	adds r5, r4, r2
@@ -280,7 +280,7 @@ _08210206:
 	movs r1, #3
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _0821022A:
 	ldr r2, _08210244 @ =0x00000CD4
 	adds r0, r4, r2
@@ -312,7 +312,7 @@ _08210250:
 	movs r1, #0x84
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _0821026C:
 	ldr r2, _08210288 @ =0x00000CD4
 	adds r0, r4, r2
@@ -359,7 +359,7 @@ _082102B0:
 	movs r1, #0x84
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _082102CC:
 	ldr r0, _082102EC @ =0x00000CD4
 	adds r5, r4, r0
@@ -428,7 +428,7 @@ _08210334:
 	movs r1, #0x98
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _0821034E:
 	ldr r1, _08210368 @ =0x00000CD4
 	adds r0, r4, r1
@@ -459,7 +459,7 @@ _08210374:
 	movs r1, #0xa2
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _0821038E:
 	ldr r2, _082103A8 @ =0x00000CD4
 	adds r0, r4, r2
@@ -490,7 +490,7 @@ _082103B4:
 	movs r1, #0x9d
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _082103CE:
 	ldr r2, _082103F4 @ =0x00000CD4
 	adds r6, r4, r2
@@ -509,7 +509,7 @@ _082103DE:
 _082103EA:
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	b _08210528
 	.align 2, 0
 _082103F4: .4byte 0x00000CD4
@@ -548,7 +548,7 @@ _0821041A:
 	movs r1, #3
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _0821043E:
 	ldr r2, _08210458 @ =0x00000CD4
 	adds r0, r4, r2
@@ -578,7 +578,7 @@ _08210464:
 	movs r1, #0x52
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _08210480:
 	ldr r2, _08210498 @ =0x00000CD4
 	adds r0, r4, r2
@@ -608,7 +608,7 @@ _082104A4:
 _082104B6:
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _082104BE:
 	ldr r3, _082104DC @ =0x00000CD4
 	adds r0, r4, r3
@@ -643,7 +643,7 @@ _082104E8:
 	movs r1, #0x57
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _08210504:
 	ldr r0, _08210538 @ =0x00000CD4
 	adds r5, r4, r0
@@ -660,7 +660,7 @@ _08210504:
 	movs r1, #0x57
 	movs r2, #0
 	movs r3, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _08210528:
 	ldr r1, _08210538 @ =0x00000CD4
 	adds r0, r4, r1

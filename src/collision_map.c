@@ -815,7 +815,8 @@ NON_MATCH u16 Map_GetNavDistance(u16* distanceMap, u16 n, s32 a, s32 b) {
 #endif
 }
 
-NAKED s32 FUN_0823599c(unknown* param_1, s32 param_2, Vec3* pos) { INCFUNC("asm/func/FUN_0823599c.inc"); }
+// pos を含むナビ島が agent->islandIdx と同じかを返す, 壁タイルの上なら FALSE
+NAKED bool32 Map_IsPosInAgentIsland(NavAgent* agent, s32 param_2, Vec3* pos) { INCFUNC("asm/func/Map_IsPosInAgentIsland.inc"); }
 
 NAKED s32 FUN_08235a84(NavAgent* agent, Vec3* param_2, Vec3* pos) { INCFUNC("asm/func/FUN_08235a84.inc"); }
 

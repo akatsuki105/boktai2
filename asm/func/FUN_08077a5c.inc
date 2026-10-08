@@ -101,7 +101,7 @@ _08077B22:
 _08077B24:
 	adds r0, r6, #0
 	movs r1, #0x40
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	adds r0, r6, #0
 	movs r1, #0xc7
 	movs r2, #0x40
@@ -270,7 +270,7 @@ _08077C66:
 	beq _08077C78
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _08077C78:
 	ldr r0, _08077CB0 @ =0x0000037E
 	adds r1, r6, r0

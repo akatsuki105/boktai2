@@ -84,7 +84,7 @@ _0808410C:
 _0808411C:
 	adds r0, r5, #0
 	movs r1, #0x10
-	bl FUN_08080ed8
+	bl PlayerLink_TestFlag35a
 	cmp r0, #0
 	beq _080841C0
 	movs r0, #0
@@ -186,7 +186,7 @@ _080841D8:
 _080841E0:
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_08080ed8
+	bl PlayerLink_TestFlag35a
 	cmp r0, #0
 	beq _080841FC
 	movs r0, #0xb9
@@ -215,7 +215,7 @@ _080841FC:
 _0808421A:
 	adds r0, r5, #0
 	movs r1, #0x20
-	bl FUN_08080ed8
+	bl PlayerLink_TestFlag35a
 	cmp r0, #0
 	beq _08084238
 	ldr r0, _08084234 @ =0x00000464
@@ -264,7 +264,7 @@ _08084262:
 	strh r0, [r1]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08080ed8
+	bl PlayerLink_TestFlag35a
 	cmp r0, #0
 	beq _080842A0
 	adds r0, r5, #0
@@ -288,7 +288,7 @@ _080842AC:
 	adds r4, r0, #0
 	adds r0, r5, #0
 	movs r1, #2
-	bl FUN_08080ed8
+	bl PlayerLink_TestFlag35a
 	cmp r0, #0
 	beq _080842C6
 	ldr r0, [r4]
@@ -304,7 +304,7 @@ _080842CC:
 	str r0, [r4]
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_08080ed8
+	bl PlayerLink_TestFlag35a
 	cmp r0, #0
 	beq _080842EC
 	ldr r1, _080842E8 @ =0x0000060C
@@ -321,7 +321,7 @@ _080842EC:
 _080842F4:
 	adds r0, r5, #0
 	movs r1, #0x80
-	bl FUN_08080ed8
+	bl PlayerLink_TestFlag35a
 	cmp r0, #0
 	beq _08084318
 	ldr r1, _08084314 @ =0x000009C8

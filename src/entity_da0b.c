@@ -1,17 +1,13 @@
 #include "camera.h"
 #include "entity.h"
 #include "global.h"
+#include "solar.h"
 #include "sound.h"
-#include "sprite_main.h"
-#include "sprite_pltt.h"
+#include "sprite.h"
 #include "text.h"
+#include "tilemap.h"
 #include "vm.h"
 #include "weapon.h"
-
-s32 FUN_0824175c(void);
-
-typedef struct EntityDA0B EntityDA0B;
-typedef void(EntityDA0BFunc)(EntityDA0B* p);
 
 // 武器一覧の1枠, 武器データとその絵を1組で持つ
 typedef struct {
@@ -21,55 +17,55 @@ typedef struct {
 static_assert(sizeof(EntityDA0BElem) == 132);
 
 // 武器の付け替えメニュー
-struct EntityDA0B {
-  Entity e;                        // 0x0000, ENTITY_UNK_11
-  Vec3 pos;                        // 0x0018, '.p' の x, y, z, FUN_0823b8ac に渡す
-  Vec3 pos2;                       // 0x0020, pos の写し
-  u8 unk_28[0x3C - 0x28];          // 0x0028, まだ未解析
-  bool8 fnChanged;                 // 0x003C, EntityDA0B_SetFn が立て EntityDA0B_TakeFnChanged が読んで落とす, updateCallback に入った最初の1フレームの目印
-  u8 cursor;                       // 0x003D, 選択中の weapons の添字
-  u8 unk_3e;                       // 0x003E, FUN_0801c910 が 0 を入れる
-  u8 unk_3f[0x44 - 0x3F];          // 0x003F, まだ未解析
-  u32 fnTimer;                     // 0x0044, updateCallback に入ってからのフレーム数, EntityDA0B_SetFn が 0 に戻す
-  u32* tilemap;                    // 0x0048, TILEMAP_9F57
-  rgb555* bgPltt;                  // 0x004C, BGP_A41A
-  u32 selectable;                  // 0x0050, 選べる武器スロットのビットマスク, FUN_0801c910 が作る
-  u8 unk_54[0x65 - 0x54];          // 0x0054, まだ未解析
-  bool8 unk_65;                    // 0x0065, FUN_0801dfe4 が読んで落とす1フレームの目印
-  u8 unk_66[0x6C - 0x66];          // 0x0066, まだ未解析
-  s32 unk_6c;                      // 0x006C, _Update が毎フレーム FUN_0824175c の戻り値を入れる
-  u8 unk_70[0x80 - 0x70];          // 0x0070, まだ未解析
-  s32 unk_80;                      // 0x0080, FUN_0801d420 が >> 5 して sprites2[2]/[3] の x にする
-  u8 unk_84[0x92 - 0x84];          // 0x0084, まだ未解析
-  u8 unk_92;                       // 0x0092, FUN_0801e00c がスクリプトへ返す値 (既定 2)
-  u8 unk_93;                       // 0x0093, sprites2[0] の表示位置 (x)
-  u8 unk_94;                       // 0x0094, まだ未解析
-  u8 unk_95;                       // 0x0095, FUN_0801c910 が 0 を入れる
-  u8 unk_96[0xB8 - 0x96];          // 0x0096, まだ未解析
-  u16 unk_b8;                      // 0x00B8, '.c'
-  u16 unk_ba;                      // 0x00BA, '.e'
-  char statText[4];                // 0x00BC, FUN_08094c6c が武器の補正値を "+12" / "SP" の形で書く
-  u8 unk_c0[0xD8 - 0xC0];          // 0x00C0, まだ未解析
-  MainSpriteGfx gfx0;              // 0x00D8, SPRITE_UI_MISC
-  MainSpriteGfx gfx1;              // 0x00F8, SPRITE_UI_START_MENU
-  MainSpriteGfx gfx2;              // 0x0118, SPRITE_INVENTORY_ICONS
-  EntityDA0BElem weapons[19];      // 0x0138, FUN_0801c5d0 が stride 0x84 で19個まわす, 前の16個が武器スロット
-  MainSprite sprites0[3];          // 0x0B04, [0] がカーソル
-  MainSprite sprites1[4];          // 0x0C24, FUN_0801c3a8 が gStat->registeredWeapon の位置に置く
-  MainSprite iconSprite;           // 0x0DA4, 選択中の武器の絵
-  MainSprite sprites2[13];         // 0x0E04, FUN_0801d084 が追加し FUN_0801d6a0 が消す
-  u8 unk_12e4[0x1304 - 0x12E4];    // 0x12E4, まだ未解析
-  EntityDA0BFunc* updateCallback;  // 0x1304
-  u8* unk_1308;                    // 0x1308, '.w' の FUN_0823d340 の戻り値, TextBox_Start に渡す
-  u8* unk_130c;                    // 0x130C, '.k' の FUN_0823d340 の戻り値, VM_ParseStringRef に渡す
-  bool8 unk_1310;                  // 0x1310, FUN_0801d7f8 が立て FUN_0801d7d8 が読んで落とす1フレームの目印
-  u8 unk_1311[3];                  // 0x1311, まだ未解析
-  u32 unk_1314;                    // 0x1314, FUN_0801d7f8 が 0 に戻す
-  s32 unk_1318;                    // 0x1318, FUN_0801d7f8 が受け取った値
-  s16 unk_131c;                    // 0x131C, '.n=0xB156'
-  u16 unk_131e;                    // 0x131E, _Init が 5 を入れる
-  u8 unk_1320[0x1364 - 0x1320];    // 0x1320, まだ未解析
-};
+typedef struct EntityDA0B {
+  Entity e;                                    // 0x0000, ENTITY_UNK_11
+  Vec3 pos;                                    // 0x0018, '.p' の x, y, z, FUN_0823b8ac に渡す
+  Vec3 pos2;                                   // 0x0020, pos の写し
+  u8 unk_28[0x3C - 0x28];                      // 0x0028, まだ未解析
+  bool8 fnChanged;                             // 0x003C, EntityDA0B_SetFn が立て EntityDA0B_TakeFnChanged が読んで落とす, updateCallback に入った最初の1フレームの目印
+  u8 cursor;                                   // 0x003D, 選択中の weapons の添字
+  u8 unk_3e;                                   // 0x003E, FUN_0801c910 が 0 を入れる
+  u8 unk_3f[0x44 - 0x3F];                      // 0x003F, まだ未解析
+  u32 fnTimer;                                 // 0x0044, updateCallback に入ってからのフレーム数, EntityDA0B_SetFn が 0 に戻す
+  Tilemaps* tilemap;                           // 0x0048, TILEMAP_9F57
+  rgb555* bgPltt;                              // 0x004C, BGP_A41A
+  u32 selectable;                              // 0x0050, 選べる武器スロットのビットマスク, FUN_0801c910 が作る
+  u8 unk_54[0x65 - 0x54];                      // 0x0054, まだ未解析
+  bool8 unk_65;                                // 0x0065, FUN_0801dfe4 が読んで落とす1フレームの目印
+  u8 unk_66[0x6C - 0x66];                      // 0x0066, まだ未解析
+  s32 sunGauge;                                // 0x006C
+  u8 unk_70[0x80 - 0x70];                      // 0x0070, まだ未解析
+  s32 unk_80;                                  // 0x0080, FUN_0801d420 が >> 5 して sprites2[2]/[3] の x にする
+  u8 unk_84[0x92 - 0x84];                      // 0x0084, まだ未解析
+  u8 unk_92;                                   // 0x0092, FUN_0801e00c がスクリプトへ返す値 (既定 2)
+  u8 unk_93;                                   // 0x0093, sprites2[0] の表示位置 (x)
+  u8 unk_94;                                   // 0x0094, まだ未解析
+  u8 unk_95;                                   // 0x0095, FUN_0801c910 が 0 を入れる
+  u8 unk_96[0xB8 - 0x96];                      // 0x0096, まだ未解析
+  u16 unk_b8;                                  // 0x00B8, '.c'
+  u16 unk_ba;                                  // 0x00BA, '.e'
+  char statText[4];                            // 0x00BC, FUN_08094c6c が武器の補正値を "+12" / "SP" の形で書く
+  u8 unk_c0[0xD8 - 0xC0];                      // 0x00C0, まだ未解析
+  MainSpriteGfx gfx0;                          // 0x00D8, SPRITE_UI_MISC
+  MainSpriteGfx gfx1;                          // 0x00F8, SPRITE_UI_START_MENU
+  MainSpriteGfx gfx2;                          // 0x0118, SPRITE_INVENTORY_ICONS
+  EntityDA0BElem weapons[19];                  // 0x0138, FUN_0801c5d0 が stride 0x84 で19個まわす, 前の16個が武器スロット
+  MainSprite sprites0[3];                      // 0x0B04, [0] がカーソル
+  MainSprite sprites1[4];                      // 0x0C24, FUN_0801c3a8 が gStat->registeredWeapon の位置に置く
+  MainSprite iconSprite;                       // 0x0DA4, 選択中の武器の絵
+  MainSprite sprites2[13];                     // 0x0E04, FUN_0801d084 が追加し FUN_0801d6a0 が消す
+  u8 unk_12e4[0x1304 - 0x12E4];                // 0x12E4, まだ未解析
+  void (*updateCallback)(struct EntityDA0B*);  // 0x1304
+  u8* unk_1308;                                // 0x1308, '.w' の FUN_0823d340 の戻り値, TextBox_Start に渡す
+  u8* unk_130c;                                // 0x130C, '.k' の FUN_0823d340 の戻り値, VM_ParseStringRef に渡す
+  bool8 unk_1310;                              // 0x1310, FUN_0801d7f8 が立て FUN_0801d7d8 が読んで落とす1フレームの目印
+  u8 unk_1311[3];                              // 0x1311, まだ未解析
+  u32 unk_1314;                                // 0x1314, FUN_0801d7f8 が 0 に戻す
+  s32 unk_1318;                                // 0x1318, FUN_0801d7f8 が受け取った値
+  s16 unk_131c;                                // 0x131C, '.n=0xB156'
+  u16 unk_131e;                                // 0x131E, _Init が 5 を入れる
+  u8 unk_1320[0x1364 - 0x1320];                // 0x1320, まだ未解析
+} EntityDA0B;
 static_assert(sizeof(EntityDA0B) == 4964);
 
 IWRAM_DATA EntityDA0B* gEntityDA0B = NULL;  // 0x03000098
@@ -104,7 +100,7 @@ NAKED WeaponData* weapon_0801b6c4(u32 kind, u32 lv) { INCFUNC("asm/func/weapon_0
 
 NAKED WeaponData* FUN_0801b730(s32 param_1) { INCFUNC("asm/func/FUN_0801b730.inc"); }
 
-void EntityDA0B_SetFn(EntityDA0B* p, EntityDA0BFunc* fn) {
+void EntityDA0B_SetFn(EntityDA0B* p, void* fn) {
   p->fnTimer = 0;
   p->fnChanged = TRUE;
   p->updateCallback = fn;
@@ -486,7 +482,7 @@ s32 FUN_0801e00c(void) {
 }
 
 s32 EntityDA0B_Update(EntityDA0B* p) {
-  p->unk_6c = FUN_0824175c();
+  p->sunGauge = Taiyo_GetGameGauge();
   p->updateCallback(p);
   return 0;
 }

@@ -889,7 +889,22 @@ void FUN_0801f38c(EntityEF6F* p) {
 }
 
 void (*const PTR_ARRAY_085aa98c[16])(EntityEF6F*) = {
-    FUN_0801eb64, FUN_0801ec4c, FUN_0801ec6c, FUN_0801ed18, FUN_0801ed7c, FUN_0801ee6c, FUN_0801eefc, FUN_0801f054, FUN_0801f0a4, FUN_0801f0e4, FUN_0801f130, FUN_0801f1d4, FUN_0801f214, FUN_0801f308, FUN_0801f328, FUN_0801f38c,
+    FUN_0801eb64,
+    FUN_0801ec4c,
+    FUN_0801ec6c,
+    FUN_0801ed18,
+    FUN_0801ed7c,
+    FUN_0801ee6c,
+    FUN_0801eefc,
+    FUN_0801f054,
+    FUN_0801f0a4,
+    FUN_0801f0e4,
+    FUN_0801f130,
+    FUN_0801f1d4,
+    FUN_0801f214,
+    FUN_0801f308,
+    FUN_0801f328,
+    FUN_0801f38c,
 };  // 0x085AA98C
 
 NAKED s32 EntityEF6F_Update(EntityEF6F* p) { INCFUNC("asm/func/EntityEF6F_Update.inc"); }

@@ -511,7 +511,7 @@ _08200646:
 	adds r1, r4, #0
 	mov r2, sb
 	movs r3, #1
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	ldr r0, [r4, #8]
 	mov r2, r8
 	orrs r0, r2

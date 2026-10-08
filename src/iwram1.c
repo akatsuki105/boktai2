@@ -7,37 +7,6 @@
 #include "time.h"
 #include "vm.h"
 
-struct GameOverManager;
-struct LevelUpper;
-struct EntityB3D1;
-struct Entity080da848;
-struct Entity080db520;
-struct Entity080dbe54;
-struct Entity080dc44c;
-struct Entity080dd1f8;
-struct Entity0805fe30;
-struct ExplosionManager;
-struct EntityCC28;
-struct Entity5CCC;
-struct Entity1DBE;
-struct AttackBoxManager;
-struct Entity080de11c;
-struct Entity080df420;
-struct Entity081d0e20;
-struct Entity081d16ec;
-struct Entity081d2180;
-struct Elevator;
-struct EntityF1F9;
-struct EntityC60F;
-struct Entity7B9F;
-struct Entity8CC7;
-struct LinkBattleLobby;
-struct LinkBattleCoinManager;
-struct Entity081ea120;
-struct Entity081ea820;
-struct Entity081eaf6c;
-struct Entity081eb2f0;
-
 IWRAM_DATA u8 u8_03000124[0x130 - 0x124] = {};
 
 IWRAM_DATA struct Entity0805fe30* gEntity0805fe30 = NULL;      // 0x03000130
@@ -61,8 +30,9 @@ IWRAM_DATA struct AttackBoxManager* gAttackBoxManager = NULL;  // 0x03000170
 IWRAM_DATA struct Entity080de11c* gEntity080de11c = NULL;      // 0x03000174
 IWRAM_DATA struct Entity080df420* gEntity080df420 = NULL;      // 0x03000178
 
-IWRAM_DATA u8 u8_0300017c[0x184 - 0x17c] = {};
-IWRAM_DATA struct EntityD854* gEntityD854 = NULL;  // 0x03000184
+IWRAM_DATA struct Entity080e01bc* gEntity080e01bc = NULL;          // 0x0300017C
+IWRAM_DATA struct Entity778B* gEntity778B = NULL;                  // 0x03000180
+IWRAM_DATA struct EnemyTargetManager* gEnemyTargetManager = NULL;  // 0x03000184
 
 IWRAM_DATA struct Entity081d0e20* gEntity081d0e20 = NULL;                // 0x03000188
 IWRAM_DATA struct Entity081d16ec* gEntity081d16ec = NULL;                // 0x0300018C

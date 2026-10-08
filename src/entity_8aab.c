@@ -112,7 +112,6 @@ void FUN_082272f0(void*);
 void FUN_08227498(void*);
 void FUN_08227608(void*);
 
-// clang-format off
 const void* const PTR_ARRAY_085b0084[16] = {
     (void*)FUN_08224fb8,
     (void*)FUN_0822517c,
@@ -130,8 +129,7 @@ const void* const PTR_ARRAY_085b0084[16] = {
     (void*)FUN_082272f0,
     (void*)FUN_08227498,
     (void*)FUN_08227608,
-}; // 0x085b0084
-// clang-format on
+};  // 0x085b0084
 
 void FUN_082279e0(void*);
 void FUN_082279e4(void*);
@@ -147,7 +145,6 @@ void FUN_08228d8c(void*);
 void FUN_08228e94(void*);
 void FUN_08228f9c(void*);
 
-// clang-format off
 const void* const PTR_ARRAY_085b00c4[15] = {
     (void*)FUN_082279e0,
     (void*)FUN_082279e4,
@@ -164,8 +161,7 @@ const void* const PTR_ARRAY_085b00c4[15] = {
     (void*)NULL,
     (void*)FUN_08228f9c,
     (void*)NULL,
-}; // 0x085b00c4
-// clang-format on
+};  // 0x085b00c4
 
 void FUN_0822913c(void*);
 void FUN_08229140(void*);

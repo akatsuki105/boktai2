@@ -43,7 +43,7 @@ _08241D40:
 	strh r0, [r7, #0x1c]
 	movs r1, #0x1c
 	ldrsh r0, [r7, r1]
-	bl GetSunLevel
+	bl Taiyo_LxToGauge
 	strh r0, [r7, #0x1e]
 	movs r1, #0x1c
 	ldrsh r0, [r7, r1]
@@ -58,7 +58,7 @@ _08241D40:
 	adds r0, r0, r4
 	movs r1, #0
 	ldrsh r0, [r0, r1]
-	bl GetSunLevel
+	bl Taiyo_LxToGauge
 	ldr r1, [r5]
 	ldr r6, _08241D9C @ =0x00000942
 	adds r1, r1, r6

@@ -21,7 +21,7 @@ _08043660:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _0804367C:
 	ldr r0, [r4, #0x14]
 	adds r0, #1

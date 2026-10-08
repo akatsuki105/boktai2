@@ -297,7 +297,7 @@ _08027A1E:
 	adds r1, r4, #0
 	adds r2, r5, #0
 	movs r3, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	mov r3, sl
 	ldrb r2, [r3]
 	cmp r2, #0

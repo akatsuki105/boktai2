@@ -127,7 +127,7 @@ _080ECCC4:
 	adds r0, r4, #0
 	adds r1, r6, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080ECCF0
 	movs r6, #0xc0
@@ -302,7 +302,7 @@ _080ECE26:
 	strh r1, [r0]
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r1, _080ECE90 @ =0x03002BE0
 	ldr r3, _080ECE94 @ =0x000004A4
 	adds r0, r5, r3
@@ -316,7 +316,7 @@ _080ECE26:
 	adds r0, r7, #0
 	mov r1, r8
 	adds r2, r6, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	beq _080ECE98
 	adds r0, r7, #0

@@ -27,7 +27,7 @@
 	ldr r1, _08093E44 @ =FUN_08093e4c
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0808a354
+	bl EntityCC28_SetState
 	ldr r0, _08093E48 @ =0x0000010D
 	bl PlaySound_082406e0
 _08093E30:

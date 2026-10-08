@@ -37,7 +37,7 @@ _080F6288:
 _080F6296:
 	adds r0, r3, #0
 	movs r1, #1
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	pop {r0}
 	bx r0
 	.align 2, 0

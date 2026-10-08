@@ -11,13 +11,12 @@ void HBlankIntr(void);
 void FUN_0822a188(void);
 void VBlankIntr(void);
 
-// clang-format off
 const Procedure gIntrTableTemplate[13] = {
-    VCountIntr,   // V-count interrupt
+    VCountIntr,  // V-count interrupt
     IntrDummy,
     IntrDummy,
-    HBlankIntr,   // H-blank interrupt
-    VBlankIntr,   // V-blank interrupt
+    HBlankIntr,  // H-blank interrupt
+    VBlankIntr,  // V-blank interrupt
     IntrDummy,
     IntrDummy,
     IntrDummy,
@@ -27,7 +26,6 @@ const Procedure gIntrTableTemplate[13] = {
     IntrDummy,
     FUN_0822a188,
 };
-// clang-format on
 
 NAKED void InitIntrHandlers(void) { INCFUNC("asm/func/InitIntrHandlers.inc"); }
 

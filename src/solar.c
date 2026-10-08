@@ -1,4 +1,6 @@
 
+#include "solar.h"
+
 #include "entity.h"
 #include "entity_9a9f.h"
 #include "global.h"
@@ -10,33 +12,32 @@
 #include "time.h"
 
 // 太陽センサーを毎フレーム読んで lx と太陽ゲージを作り、その結果を gStat に流し込むシングルトン
-typedef struct SunlightEntity {
-  Entity e;                                        // 0x00, ENTITY_UNK_5
-  u8 unk_18;                                       // 0x18, FUN_08241f28 が 1 を書く, 読み手は見つかっていない
-  u8 state;                                        // 0x19, 0 -> 1 -> 2 と進む, UpdateSunlight / UpdateSunlightDebug が回し、IsSunlightActive / CalibrateSunSensor / SuspendSunlight / FUN_0824172c が見る
-  u16 unk_1a;                                      // 0x1A, このモジュールは触らない
-  s16 lx;                                          // 0x1C, 太陽光の強さ (0 が暗く, 140 が明るい), 太陽センサー以外のもの(ライジングサンなど)は含めない
-  s16 sunGauge;                                    // 0x1E, lx を 10段階に分けたもの
-  u16 stateTimer;                                  // 0x20, UpdateSunlight のフレーム数, state 0 で 29 を超えるとセンサーを有効化し、state 1 で 59 を超えると計測に入る, state が変わるたび 0
-  u16 adjustTimer;                                 // 0x22, UpdateDebugLx が A+L / A+R を押している間 +1 し、1フレームおきに gDebugLx を増減させる
-  u16 tickCounter;                                 // 0x24, ApplySunlightGain が毎フレーム +1, (tickCounter & 0x3F) == 0 と (& 0x7F) == 0 で処理を間引く
-  u16 idleTimer;                                   // 0x26, ApplySunlightGain が入力のたび 0 に戻し、無操作なら 900 まで数える, 900 に達すると太陽の恵みが止まる
-  u16 solarStandFrac;                              // 0x28, ApplySunlightGain が sunGauge/2 + 5 をここに貯め、>> 4 した繰り上がりを gStat->solarStand に足す
-  u16 unk_2a;                                      // 0x2A, padding?
-  void (*updateCallback)(struct SunlightEntity*);  // 0x2C
-} SunlightEntity;
-static_assert(sizeof(SunlightEntity) == 48);
+typedef struct Taiyo {
+  Entity e;                               // 0x00, ENTITY_UNK_5
+  u8 unk_18;                              // 0x18, FUN_08241f28 が 1 を書く, 読み手は見つかっていない
+  u8 state;                               // 0x19, 0 -> 1 -> 2 と進む
+  u16 unk_1a;                             // 0x1A, このモジュールは触らない
+  s16 lx;                                 // 0x1C, 太陽光の強さ (0 が暗く, 140 が明るい), 太陽センサー以外のもの(ライジングサンなど)は含めない
+  s16 sunGauge;                           // 0x1E, lx を 10段階に分けたもの
+  u16 stateTimer;                         // 0x20, UpdateSunlight のフレーム数, state 0 で 29 を超えるとセンサーを有効化し、state 1 で 59 を超えると計測に入る, state が変わるたび 0
+  u16 adjustTimer;                        // 0x22, UpdateDebugLx が A+L / A+R を押している間 +1 し、1フレームおきに gDebugLx を増減させる
+  u16 tickCounter;                        // 0x24, ApplySunlightGain が毎フレーム +1, (tickCounter & 0x3F) == 0 と (& 0x7F) == 0 で処理を間引く
+  u16 idleTimer;                          // 0x26, ApplySunlightGain が入力のたび 0 に戻し、無操作なら 900 まで数える, 900 に達すると太陽の恵みが止まる
+  u16 solarStandFrac;                     // 0x28, ApplySunlightGain が sunGauge/2 + 5 をここに貯め、>> 4 した繰り上がりを gStat->solarStand に足す
+  u16 unk_2a;                             // 0x2A, padding?
+  void (*updateCallback)(struct Taiyo*);  // 0x2C
+} Taiyo;
+static_assert(sizeof(Taiyo) == 48);
 
-IWRAM_DATA SunlightEntity* gSunlightEntity = NULL;  // 0x03001708
-extern u16 gSunlightOverride;                       // 0x03002B80, FUN_0807e854 が 0 に戻す, 1 で太陽レベル +4、2 で日光なし
+IWRAM_DATA Taiyo* gTaiyo = NULL;  // 0x03001708
 
 IWRAM_DATA u32 u32_0300170c = 0;  // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
 
 COMMON_DATA u16 u16_03004864 = 0;
-COMMON_DATA ALIGNED(4) u16 gDebugLx = 0;                   // 0x03004868
-COMMON_DATA ALIGNED(4) bool16 gSunlightSuspended = FALSE;  // 0x0300486C
-COMMON_DATA ALIGNED(4) u16 gSavedLx = 0;                   // 0x03004870
-COMMON_DATA ALIGNED(4) u16 gSavedSunGauge[6] = {};         // 0x03004874
+COMMON_DATA ALIGNED(4) u16 gDebugLx = 0;                // 0x03004868
+COMMON_DATA ALIGNED(4) bool16 gTaiyoSuspended = FALSE;  // 0x0300486C
+COMMON_DATA ALIGNED(4) u16 gSavedLx = 0;                // 0x03004870
+COMMON_DATA ALIGNED(4) u16 gSavedSunGauge[6] = {};      // 0x03004874
 
 const u8 u8_ARRAY_08dbd798[6][2] = {
     {2, 2},
@@ -47,27 +48,27 @@ const u8 u8_ARRAY_08dbd798[6][2] = {
     {2, 2},
 };  // 0x08DBD798
 
-const u16 gSunLevelMaxLx[11] = {0, 5, 12, 22, 34, 49, 66, 86, 109, 139, 140};  // 0x08DBD7A4
+static const u16 sGaugeMaxLx[11] = {0, 5, 12, 22, 34, 49, 66, 86, 109, 139, 140};  // 0x08DBD7A4
 
-const u16 gSunLevelMinLx[11] = {0, 1, 6, 13, 23, 35, 50, 67, 87, 110, 140};  // 0x08DBD7BA
+static const u16 sGaugeMinLx[11] = {0, 1, 6, 13, 23, 35, 50, 67, 87, 110, 140};  // 0x08DBD7BA
 
 // 太陽光まわりを初期状態に戻す
-NON_MATCH void ResetSunlight(void) {
+NON_MATCH void UNUSED Taiyo_Reset(void) {
 #ifdef NONMATCHING_C
-  gSunlightEntity = NULL;
+  gTaiyo = NULL;
   gStat->lx = 0;
   gStat->sunGauge = 0;
   gSavedLx = 0;
   gSavedSunGauge[0] = 0;
-  gSunlightSuspended = FALSE;
+  gTaiyoSuspended = FALSE;
 #else
-  INCFUNC("asm/func/ResetSunlight.inc");
+  INCFUNC("asm/func/Taiyo_Reset.inc");
 #endif
 }
 
 // センサーの値が今そのまま使えるか, state 2 が計測中
-bool32 IsSunlightActive(void) {
-  if (gSunlightEntity != NULL && !gSunlightSuspended && gSunlightEntity->state == 2) {
+bool32 UNUSED IsTaiyoActive(void) {
+  if (gTaiyo != NULL && !gTaiyoSuspended && gTaiyo->state == 2) {
     return TRUE;
   }
   return FALSE;
@@ -78,11 +79,11 @@ void FUN_082416bc(void) { u16_03004864 = 1; }
 void FUN_082416c8(void) { u16_03004864 = 0; }
 
 // 今のセンサー値を暗所の基準として控える, 以降 lx は calibration からの差で出る
-NON_MATCH bool32 CalibrateSunSensor(void) {
+NON_MATCH bool32 Taiyo_CalibrateSensor(void) {
 #ifdef NONMATCHING_C
   s32 raw;
 
-  if (gSunlightEntity->state == 2) {
+  if (gTaiyo->state == 2) {
     raw = Sensor_GetRawLevel();
     if (raw >= 0) {
       gSystemSaveData->calibration = raw - 2;
@@ -91,35 +92,36 @@ NON_MATCH bool32 CalibrateSunSensor(void) {
   }
   return FALSE;
 #else
-  INCFUNC("asm/func/CalibrateSunSensor.inc");
+  INCFUNC("asm/func/Taiyo_CalibrateSensor.inc");
 #endif
 }
 
 // 太陽光の更新を止める, センサーも切る
-void SuspendSunlight(void) {
-  if (gSunlightEntity != NULL) {
-    if (gSunlightEntity->state != 0) {
+void Taiyo_Disable(void) {
+  if (gTaiyo != NULL) {
+    if (gTaiyo->state != 0) {
       Sensor_Disable();
     }
-    gSunlightSuspended = TRUE;
+    gTaiyoSuspended = TRUE;
   }
 }
 
-void FUN_0824172c(void) {
-  if (gSunlightEntity != NULL) {
-    if (gSunlightEntity->state != 0) {
-      gSunlightEntity->state = 1;
-      gSunlightEntity->stateTimer = 0;
+void Taiyo_Enable(void) {
+  if (gTaiyo != NULL) {
+    if (gTaiyo->state != 0) {
+      gTaiyo->state = 1;
+      gTaiyo->stateTimer = 0;
       Sensor_Enable();
     }
-    gSunlightSuspended = FALSE;
+    gTaiyoSuspended = FALSE;
   }
 }
 
-s32 FUN_0824175c(void) { return gStat->sunGauge; }
+// 0x31FF
+s32 Taiyo_GetGameGauge(void) { return gStat->sunGauge; }
 
 // 照度(lx)を 0〜10 の太陽レベルに変換する
-Sunlevel GetSunLevel(s32 lx) {
+s32 Taiyo_LxToGauge(s32 lx) {
   if (lx == 0) return 0;
   if (lx <= 5) return 1;
   if (lx <= 12) return 2;
@@ -133,11 +135,11 @@ Sunlevel GetSunLevel(s32 lx) {
   return 10;
 }
 
-// その太陽レベルに収まる lx の上限
-s32 GetSunLevelMaxLx(Sunlevel slv) { return gSunLevelMaxLx[slv]; }
+// その太陽ゲージに収まる lx の上限
+static s32 GetSunGaugeMaxLx(s32 sunGauge) { return sGaugeMaxLx[sunGauge]; }
 
-// その太陽レベルに収まる lx の下限
-s32 GetSunLevelMinLx(Sunlevel slv) { return gSunLevelMinLx[slv]; }
+// その太陽ゲージに収まる lx の下限
+static s32 GetSunGaugeMinLx(s32 sunGauge) { return sGaugeMinLx[sunGauge]; }
 
 // 生の lx に環境要因を掛ける, ライジングサン、天候、屋内判定でここが最終的な明るさを決める
 NON_MATCH s32 ApplyLxModifiers(s32 lx) {
@@ -146,26 +148,26 @@ NON_MATCH s32 ApplyLxModifiers(s32 lx) {
     s32 slv;
 
     if (gPlayerPtr[0] != NULL && (gPlayerPtr[0]->flag378 & FLAG378_AET_SUNLIGHT)) {
-      slv = GetSunLevel(lx) * 2;  // 光のガーブ装備時は(太陽センサー由来の)太陽ゲージを2倍にする
+      slv = Taiyo_LxToGauge(lx) * 2;  // 光のガーブ装備時は(太陽センサー由来の)太陽ゲージを2倍にする
       if (slv > 10) {
         slv = 10;
       }
-      lx = GetSunLevelMaxLx(slv);
+      lx = GetSunGaugeMaxLx(slv);
     }
     if (gStat->unk_2b0[0] == 0) {
-      if (gStat->unk_2b0[1] != 0 && GetSunLevel(lx) > 2) {
-        lx = GetSunLevelMaxLx(2);
+      if (gStat->unk_2b0[1] != 0 && Taiyo_LxToGauge(lx) > 2) {
+        lx = GetSunGaugeMaxLx(2);
       }
-    } else if (GetSunLevel(lx) < 2) {
-      lx = GetSunLevelMinLx(2);
+    } else if (Taiyo_LxToGauge(lx) < 2) {
+      lx = GetSunGaugeMinLx(2);
     }
-    if (gSunlightOverride == 1) {
-      slv = GetSunLevel(lx) + 4;
+    if (gSunGaugeOverride == SUN_OVERRIDE_RISING) {
+      slv = Taiyo_LxToGauge(lx) + 4;
       if (slv > 10) {
         slv = 10;
       }
-      lx = GetSunLevelMaxLx(slv);
-    } else if (gSunlightOverride == 2) {
+      lx = GetSunGaugeMaxLx(slv);
+    } else if (gSunGaugeOverride == SUN_OVERRIDE_BLACK) {
       lx = 0;
     }
   }
@@ -224,7 +226,7 @@ bool32 IsGunCooled(void) {
   return FALSE;
 }
 
-NON_MATCH void UpdateOverheat(SunlightEntity* _ UNUSED) {
+NON_MATCH void UpdateOverheat(Taiyo* _ UNUSED) {
 #ifdef NONMATCHING_C
   if (gStat->thermal > 29999) {
     if ((gStat->sunGauge < 3) || (gStat->unk_934 & (SF934_UNK_14 | SF934_UNK_9))) {
@@ -247,7 +249,7 @@ NON_MATCH void UpdateOverheat(SunlightEntity* _ UNUSED) {
 }
 
 // 日なたにいる間の毎フレームの取り分, 樹の経験値・ソーラースタンド・熱量を進める
-NON_MATCH void ApplySunlightGain(SunlightEntity* p) {
+NON_MATCH void ApplySunlightGain(Taiyo* p) {
 #ifdef NONMATCHING_C
   if (gPlayerPtr[0] != NULL && (gFlag030047a4 & (FLAG030047A4_LINK | FLAG030047A4_UNK_12)) == 0) {
     if ((gFlag030047a4 & FLAG030047A4_UNK_9) == 0 && gPlayerPtr[0]->unk_1c != 2) {
@@ -325,7 +327,7 @@ NON_MATCH void ApplySunlightGain(SunlightEntity* p) {
 }
 
 // 毎フレームの本体, センサーを温めてから計測に入り、結果を gStat に流す
-NON_MATCH void UpdateSunlight(SunlightEntity* p) {
+NON_MATCH void UpdateSunlight(Taiyo* p) {
 #ifdef NONMATCHING_C
   switch (p->state) {
     case 0: {
@@ -347,9 +349,9 @@ NON_MATCH void UpdateSunlight(SunlightEntity* p) {
     }
     case 2: {
       p->lx = GetSensorLx();
-      p->sunGauge = GetSunLevel(p->lx);
+      p->sunGauge = Taiyo_LxToGauge(p->lx);
       gStat->lx = ApplyLxModifiers(p->lx);
-      gStat->sunGauge = GetSunLevel(gStat->lx);
+      gStat->sunGauge = Taiyo_LxToGauge(gStat->lx);
       ApplySunlightGain(p);
       gSavedLx = gStat->lx;
       gSavedSunGauge[0] = gStat->sunGauge;
@@ -362,7 +364,7 @@ NON_MATCH void UpdateSunlight(SunlightEntity* p) {
 }
 
 // デバッグ用, A+L / A+R で lx を手動で上下させ、その値を返す
-NON_MATCH u32 UpdateDebugLx(SunlightEntity* p) {
+NON_MATCH u32 UpdateDebugLx(Taiyo* p) {
 #ifdef NONMATCHING_C
   Keys16 down;
 
@@ -393,7 +395,7 @@ NON_MATCH u32 UpdateDebugLx(SunlightEntity* p) {
 }
 
 // UpdateSunlight のデバッグ版, lx をセンサーでなく手動値から取る, 呼び出し元は見つかっていない
-NON_MATCH void UpdateSunlightDebug(SunlightEntity* p) {
+NON_MATCH void UpdateSunlightDebug(Taiyo* p) {
 #ifdef NONMATCHING_C
   switch (p->state) {
     case 0: {
@@ -415,9 +417,9 @@ NON_MATCH void UpdateSunlightDebug(SunlightEntity* p) {
     }
     case 2: {
       p->lx = UpdateDebugLx(p);
-      p->sunGauge = GetSunLevel(p->lx);
+      p->sunGauge = Taiyo_LxToGauge(p->lx);
       gStat->lx = ApplyLxModifiers(p->lx);
-      gStat->sunGauge = GetSunLevel(gStat->lx);
+      gStat->sunGauge = Taiyo_LxToGauge(gStat->lx);
       ApplySunlightGain(p);
       gSavedLx = gStat->lx;
       gSavedSunGauge[0] = gStat->sunGauge;
@@ -429,18 +431,18 @@ NON_MATCH void UpdateSunlightDebug(SunlightEntity* p) {
 #endif
 }
 
-s32 SunlightEntity_Update(SunlightEntity* p) {
-  if (!gSunlightSuspended) p->updateCallback(p);
+s32 Taiyo_Update(Taiyo* p) {
+  if (!gTaiyoSuspended) p->updateCallback(p);
   return 0;
 }
 
-s32 SunlightEntity_Destroy(SunlightEntity* _) {
+s32 Taiyo_Destroy(Taiyo* _) {
   Sensor_Disable();
-  gSunlightEntity = NULL;
+  gTaiyo = NULL;
   return 0;
 }
 
-NON_MATCH void FUN_08241f28(SunlightEntity* p) {
+NON_MATCH void FUN_08241f28(Taiyo* p) {
 #ifdef NONMATCHING_C
   u16 tmp;
   p->unk_18 = 1;
@@ -474,7 +476,7 @@ u32 ReflectClock(void) {
 }
 
 // 日付をまたいだか、最後に起動してから日没を越えたかを見て、熱と天候の状態を1日ぶん巻き戻す
-NON_MATCH void ApplyDayRollover(SunlightEntity* _ UNUSED) {
+NON_MATCH void ApplyDayRollover(Taiyo* _ UNUSED) {
 #ifdef NONMATCHING_C
   u32 y0, m0, d0;
   u32 y1, m1, d1;
@@ -531,24 +533,25 @@ NON_MATCH void ApplyDayRollover(SunlightEntity* _ UNUSED) {
 #endif
 }
 
-s32 SunlightEntity_Init(SunlightEntity* p) {
+s32 Taiyo_Init(Taiyo* p) {
   FUN_08241f28(p);
   ApplyDayRollover(p);
-  gSunlightEntity = p;
+  gTaiyo = p;
   return 0;
 }
 
-SunlightEntity* SunlightEntity_Create(void) {
-  if (gSunlightEntity == NULL) {
-    SunlightEntity* p = CreateEntity(ENTITY_UNK_5, 48);
+// 0x2D36
+Taiyo* Taiyo_Create(u32 _) {
+  if (gTaiyo == NULL) {
+    Taiyo* p = CreateEntity(ENTITY_UNK_5, 48);
     if (p != NULL) {
-      SetEntityRoutine(p, SunlightEntity_Update, SunlightEntity_Destroy);
-      if (SunlightEntity_Init(p) < 0) {
+      SetEntityRoutine(p, Taiyo_Update, Taiyo_Destroy);
+      if (Taiyo_Init(p) < 0) {
         KillEntity((Entity*)p);
         return NULL;
       }
     }
     return p;
   }
-  return gSunlightEntity;
+  return gTaiyo;
 }

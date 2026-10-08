@@ -20,7 +20,7 @@
 	ldr r1, _08099300 @ =FUN_08099008
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0808a354
+	bl EntityCC28_SetState
 	b _080993B4
 	.align 2, 0
 _080992FC: .4byte 0x00004002
@@ -73,7 +73,7 @@ _08099304:
 	ldr r1, _08099380 @ =FUN_08098f7c
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_0808a354
+	bl EntityCC28_SetState
 	b _080993B4
 	.align 2, 0
 _08099378: .4byte 0x0000144C
@@ -99,7 +99,7 @@ _08099384:
 	ldr r1, _080993C0 @ =FUN_08099008
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_0808a354
+	bl EntityCC28_SetState
 _080993B4:
 	pop {r4, r5, r6}
 	pop {r0}

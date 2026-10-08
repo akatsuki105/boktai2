@@ -117,8 +117,9 @@ bool32 Map_InitPathWalker(PathWalker* p, u32 pathIdx, u32 param_3, u32 nodeIdx);
 bool32 Map_AdvancePathWalker(PathWalker* p);
 
 // ナビメッシュ上を移動する主体の状態, Map_StepNavPath と FUN_08235ffc / FUN_08236130 が読み書きする
-// 全体サイズは未確定なので, 触っていることが分かっている +0x23 までだけ書いてある
-typedef struct {
+// Enemy は実体を持たず Enemy.navAgent (0x4A4) にポインタで持つので, 確保元が見つかるまで全体サイズは未確定
+// 触っていることが分かっている +0x23 までだけ書いてある
+typedef struct NavAgent {
   u16 flags;      // 0x00, bit0 が立っているときだけ経路の後段処理も走る
   u16 unk_02;     // 0x02
   u16 islandIdx;  // 0x04, NavMesh.offsets[] の添字

@@ -472,7 +472,7 @@ _080E7EB6:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x14]
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080E7EEC
 	ldr r3, [sp, #8]

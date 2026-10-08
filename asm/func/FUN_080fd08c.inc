@@ -27,7 +27,7 @@ _080FD0BA:
 	beq _080FD0F6
 	adds r0, r7, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #8
 	movs r2, #0xc0
 	lsls r2, r2, #1
@@ -1116,7 +1116,7 @@ _080FD918:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080FD958
 	ldr r0, _080FD954 @ =0xFFFFFDFF
@@ -1185,7 +1185,7 @@ _080FD9A2:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080FD9E0
 	ldr r0, _080FD9DC @ =0xFFFFFDFF
@@ -2034,7 +2034,7 @@ _080FE030:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080FE070
 	ldr r0, _080FE06C @ =0xFFFFFDFF
@@ -2103,7 +2103,7 @@ _080FE0BA:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080FE0F8
 	ldr r0, _080FE0F4 @ =0xFFFFFDFF

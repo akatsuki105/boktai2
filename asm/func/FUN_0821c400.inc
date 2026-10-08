@@ -109,7 +109,7 @@ _0821C4BA:
 	str r6, [sp, #8]
 	adds r0, r4, #0
 	adds r3, r7, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	b _0821C512
 _0821C4D8:
 	movs r1, #0xaf
@@ -139,7 +139,7 @@ _0821C4F8:
 	str r6, [sp, #4]
 	adds r0, r4, #0
 	adds r3, r7, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 _0821C512:
 	add sp, #0xc
 	pop {r3}

@@ -20,7 +20,7 @@ _080E72D2:
 	beq _080E72DE
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _080E72DE:
 	movs r1, #0x97
 	lsls r1, r1, #3
@@ -64,7 +64,7 @@ _080E7326:
 	bgt _080E739A
 	adds r0, r5, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	cmp r6, #0x3c
 	bne _080E734E
 	ldr r1, _080E738C @ =0x000001DF
@@ -84,7 +84,7 @@ _080E734E:
 	lsls r3, r3, #3
 	adds r0, r5, r3
 	ldr r0, [r0]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 _080E7362:
 	asrs r0, r6, #2
 	movs r1, #1

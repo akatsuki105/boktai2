@@ -322,7 +322,7 @@ _0808388C:
 	strh r0, [r1]
 	adds r0, r7, #0
 	movs r1, #0x80
-	bl FUN_08080ec8
+	bl PlayerLink_SetFlag35a
 	movs r3, #0xde
 	lsls r3, r3, #1
 	adds r0, r7, r3

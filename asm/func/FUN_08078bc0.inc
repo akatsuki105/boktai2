@@ -8,7 +8,7 @@
 	bne _08078BF4
 	adds r0, r5, #0
 	movs r1, #0x10
-	bl FUN_08060c50
+	bl Player_TestFlag35a
 	cmp r0, #0
 	bne _08078BF2
 	ldr r0, [r5, #0x3c]
@@ -32,7 +32,7 @@ _08078BF4:
 	bl FUN_080417dc
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_08060c50
+	bl Player_TestFlag35a
 	cmp r0, #0
 	beq _08078C20
 	movs r0, #0xb9
@@ -61,7 +61,7 @@ _08078C20:
 _08078C3E:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08060c50
+	bl Player_TestFlag35a
 	cmp r0, #0
 	beq _08078C5C
 	adds r0, r5, #0
@@ -84,7 +84,7 @@ _08078C68:
 	adds r4, r0, #0
 	adds r0, r5, #0
 	movs r1, #2
-	bl FUN_08060c50
+	bl Player_TestFlag35a
 	cmp r0, #0
 	beq _08078C82
 	ldr r0, [r4]
@@ -100,7 +100,7 @@ _08078C88:
 	str r0, [r4]
 	adds r0, r5, #0
 	movs r1, #0x40
-	bl FUN_08060c50
+	bl Player_TestFlag35a
 	cmp r0, #0
 	beq _08078CA8
 	adds r0, r5, #0
@@ -122,7 +122,7 @@ _08078CB2:
 	str r1, [r0]
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_08060c50
+	bl Player_TestFlag35a
 	cmp r0, #0
 	beq _08078CD0
 	ldr r1, _08078CCC @ =0x0000060C

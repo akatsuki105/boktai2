@@ -46,7 +46,7 @@ _080FE202:
 	bls _080FE21C
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _080FE21C:
 	adds r0, r4, #0
 	bl FUN_080ffda8
@@ -83,7 +83,7 @@ _080FE260: .4byte 0x0000046C
 _080FE264:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _080FE26C:
 	pop {r4, r5}
 	pop {r0}

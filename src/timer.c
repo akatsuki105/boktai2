@@ -114,7 +114,7 @@ TimerEntity* TimerEntity_CreateFromScript(u32 recordID) {
 
       p->args.argv = p->argv;
       i = 0;
-      while (i <= 7 && VM_GetPC() != NULL) {
+      while (i < 8 && VM_GetPC() != NULL) {
         p->args.argv[i] = VM_GetValue();
         i++;
       }

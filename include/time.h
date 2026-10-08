@@ -49,7 +49,7 @@ typedef struct {
   struct Time ALIGNED(2) untilSunset;   // 0x10, 日の入までの残り時間
   struct Time ALIGNED(2) untilSunrise;  // 0x12, 日の出までの残り時間
   u16 moonAge;                          // 0x14, 月齢の10倍, 日の入のたびに +1 し 280 を超えると 0 に戻る
-  u8 moonPhase;                         // 0x16
+  u8 moonPhase;                         // 0x16, 4 が満月
   u8 unk_17;                            // 0x17
   s32 latitude;                         // 0x18, 緯度
   s32 longitude;                        // 0x1C, 経度
@@ -72,5 +72,6 @@ u32 Time_GetDayDiff(s32 year1, s32 month1, s32 day1, s32 year2, s32 month2, s32 
 u32 Time_GetSpanOfTime(void);
 void Time_ParseBCDDate(s32* year, s32* month, s32* day, BCDDate date);
 s32 Time_SetLocation(s32 latitude, s32 longitude, s32 tz);
+u32 Time_GetMoonPhase(void);
 
 #endif  // __INCLUDE_BOKTAI2_TIME_H__

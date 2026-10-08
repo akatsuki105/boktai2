@@ -38,7 +38,18 @@ void FUN_0800ec08(Entity0800f110Data*);
 void FUN_0800ed14(Entity0800f110Data*);
 
 void (*const PTR_ARRAY_085aa7a0[28])(Entity0800f110Data*) = {
-    FUN_0800e9e8, FUN_0800eacc, FUN_0800ee3c, FUN_0800ef08, FUN_0800e9e8, FUN_0800ec08, FUN_0800ec08, FUN_0800ec08, FUN_0800e9e8, FUN_0800ed14, FUN_0800ed14, FUN_0800ed14,
+    FUN_0800e9e8,
+    FUN_0800eacc,
+    FUN_0800ee3c,
+    FUN_0800ef08,
+    FUN_0800e9e8,
+    FUN_0800ec08,
+    FUN_0800ec08,
+    FUN_0800ec08,
+    FUN_0800e9e8,
+    FUN_0800ed14,
+    FUN_0800ed14,
+    FUN_0800ed14,
 };  // 0x085aa7a0
 
 void FUN_0800e49c(void) { gEntity0800f110 = NULL; }

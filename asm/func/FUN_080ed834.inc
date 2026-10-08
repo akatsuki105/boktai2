@@ -52,7 +52,7 @@ _080ED876:
 	strb r4, [r0]
 	cmp r5, #0
 	bne _080ED8CA
-	ldr r2, _080ED8E8 @ =FUN_080e48d0
+	ldr r2, _080ED8E8 @ =Enemy_ClearStateBegun
 	movs r1, #0x10
 	adds r6, #1
 	adds r0, r3, r6
@@ -87,5 +87,5 @@ _080ED8DA:
 	.align 2, 0
 _080ED8E0: .4byte 0x00000469
 _080ED8E4: .4byte 0x0000046A
-_080ED8E8: .4byte FUN_080e48d0
+_080ED8E8: .4byte Enemy_ClearStateBegun
 _080ED8EC: .4byte 0x0000046B

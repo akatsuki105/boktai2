@@ -17,7 +17,7 @@ typedef struct PreviewStage {
   AuxSpriteGfx subSpriteGfx;          // 0x338, SPRITE_EFF_1C1B
   Vec3 pos;                           // 0x354, model->x + 64, model->y + 88, FUN_0820feb8 が直接入れることもある
   u8 unk_35c[0x364 - 0x35C];          // 0x35C, 読み手も書き手も見つかっていない
-  u16 poseBase;                       // 0x364, model->poseBase の写し, FUN_08055b5c の第2引数になる
+  u16 poseBase;                       // 0x364, model->poseBase の写し, SpriteHolder_SetAnim の第2引数になる
   u8 frameIdx;                        // 0x366, FUN_0820efc4 が model->direction から作るコマ番号
   u8 hFlip;                           // 0x367, 同上の左右反転
   bool8 reloadRequested;              // 0x368, FUN_0820fe98 が立て、_Update が読み込み直して 0 に戻す
@@ -57,7 +57,7 @@ void FUN_0820fe94(PreviewStage* p, u32 val) { p->posOverridden = val; }
 // 多関節の魔物1体ぶんの、5枚のスプライトの並べ方
 typedef struct {
   s8 offset[5][2];  // 0x00, [i][0] を pos.x に、[i][1] を pos.y に足して i 番目の器の座標にする
-  u16 pose[5];      // 0x0A, i 番目の器に渡す FUN_08055b5c の第2引数, i == 0 だけ direction 由来の向きを伴う
+  u16 pose[5];      // 0x0A, i 番目の器に渡す SpriteHolder_SetAnim の第2引数, i == 0 だけ direction 由来の向きを伴う
 } EnemyDexSegments;
 static_assert(sizeof(EnemyDexSegments) == 20);
 
@@ -106,7 +106,7 @@ typedef struct EnemyDexModel {
   SpriteID16 id;                // 0x00
   u16 animFileID;               // 0x02, FUN_08055dac の第3引数, kind == 2 では常に 0 (MainSprite は 自身にアニメーションを持つので、animFileID は不要)
   u16 kind;                     // 0x04, 1: AuxSprite+AuxAnimState, 2: MainSprite
-  u16 poseBase;                 // 0x06, PreviewStage.poseBase に控え、FUN_08055b5c の第2引数になる
+  u16 poseBase;                 // 0x06, PreviewStage.poseBase に控え、SpriteHolder_SetAnim の第2引数になる
   u16 plttID;                   // 0x08, SpriteHolder_SetPlttID に渡すパレットID
   u8 direction;                 // 0x0A, FUN_0820efc4 が (コマ番号, 左右反転) に展開する向き
   EnemyDexModelFlags flags;     // 0x0B, see EnemyDexModelFlags

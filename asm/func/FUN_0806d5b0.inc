@@ -197,7 +197,7 @@ _0806D720:
 	cmp r0, #0
 	bge _0806D73E
 	adds r0, r6, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #0

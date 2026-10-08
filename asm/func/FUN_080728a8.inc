@@ -52,7 +52,7 @@ _08072910:
 	cmp r0, #0
 	beq _080729CE
 	adds r0, r4, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r4, #0
 	bl FUN_08072620
 	b _0807296E
@@ -75,7 +75,7 @@ _08072930:
 	bge _08072956
 	adds r0, r4, #0
 	movs r1, #5
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _08072956:
 	ldrh r0, [r5]
 	adds r0, #1
@@ -112,7 +112,7 @@ _08072980:
 	blt _080729A6
 	adds r0, r4, #0
 	movs r1, #5
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _080729A6:
 	ldrh r0, [r5]
 	adds r0, #1

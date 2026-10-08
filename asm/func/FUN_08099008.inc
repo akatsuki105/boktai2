@@ -220,7 +220,7 @@ _080991B8:
 	ldr r1, _080991F4 @ =FUN_080992c0
 	adds r0, r5, #0
 	movs r2, #1
-	bl FUN_0808a354
+	bl EntityCC28_SetState
 	b _0809921A
 	.align 2, 0
 _080991EC: .4byte 0x030044E0

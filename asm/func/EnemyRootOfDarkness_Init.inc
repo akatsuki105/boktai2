@@ -1343,16 +1343,16 @@ _081A606E:
 	cmp r0, #3
 	bhi _081A60AC
 	movs r0, #5
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r0, #1
 	movs r0, #6
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r4, r0
 	movs r0, #7
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r4, r0
 	movs r0, #8
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r4, r0
 	b _081A60B6
 	.align 2, 0
@@ -1360,7 +1360,7 @@ _081A60A8: .4byte 0x03003584
 _081A60AC:
 	ldr r1, [sp, #0xa8]
 	ldrb r0, [r1]
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r0, #1
 _081A60B6:
 	ldr r0, [r7, #0x44]
@@ -1770,7 +1770,7 @@ _081A63FE:
 _081A6406:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r5, [sp, #0x10c]
 	ldrb r0, [r5]
 	cmp r0, #0
@@ -1937,7 +1937,7 @@ _081A653E:
 	adds r0, #0x48
 	ldrh r1, [r7]
 	movs r2, #3
-	bl EntityMsgBus_Register
+	bl MsgQueue_Register
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r5, [sp, #0x50]

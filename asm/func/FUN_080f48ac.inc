@@ -112,7 +112,7 @@ _080F4990: .4byte 0x00000484
 _080F4994: .4byte 0xFFFFDFFF
 _080F4998:
 	adds r0, r6, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	lsrs r4, r0, #0x18
 	cmp r4, #0
@@ -129,7 +129,7 @@ _080F4998:
 	lsls r2, r2, #3
 	adds r4, r6, r2
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r5]
 	mov r3, r8
 	bics r0, r3
@@ -632,7 +632,7 @@ _080F4DA0:
 	lsls r0, r0, #3
 	adds r4, r6, r0
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r5]
 	movs r1, #0x80
 	lsls r1, r1, #5
@@ -736,7 +736,7 @@ _080F4E86:
 	lsls r2, r2, #3
 	adds r4, r6, r2
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r5]
 	mov r3, sb
 	bics r0, r3

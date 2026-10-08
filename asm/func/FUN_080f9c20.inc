@@ -147,7 +147,7 @@ _080F9CDC:
 	adds r0, r4, #0
 	adds r1, r6, #0
 	adds r2, r7, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080F9D84
 	movs r2, #0xc0

@@ -8,7 +8,7 @@
 	movs r0, #1
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	ldr r0, _0807C7F8 @ =0x000002E6
 	adds r1, r5, r0
 	ldrb r0, [r1]
@@ -57,7 +57,7 @@ _0807C834:
 	strb r6, [r0]
 _0807C840:
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	ldr r0, _0807C880 @ =0x000002E6
 	adds r1, r5, r0
 	ldrb r0, [r1]

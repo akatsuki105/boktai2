@@ -1,5 +1,5 @@
 	push {lr}
-	bl FUN_080e16e8
+	bl Entity778B_ClearGlobal
 	bl FUN_081eafb0
 	bl Entity081d0e20_ClearGlobal
 	bl FUN_081d1738
@@ -8,7 +8,7 @@
 	bl FUN_080dbea4
 	bl FUN_080dc498
 	bl FUN_080ec4d0
-	bl FUN_080f9bec
+	bl EnemyTargetManager_Forget
 	bl FUN_081e9cf8
 	bl FUN_081ea86c
 	bl FUN_081edd10
@@ -35,7 +35,7 @@
 	bl FUN_081f79c0
 	bl FUN_081f7e30
 	bl FUN_080df46c
-	bl FUN_080e0208
+	bl Entity080e01bc_ClearGlobal
 	bl FUN_081d81b8
 	bl FUN_081f8a74
 	bl FUN_081f95e8

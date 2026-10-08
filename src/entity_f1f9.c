@@ -7,7 +7,7 @@
 #include "sprite_aux.h"
 
 // EntityF1F9 が抱える要素, スプライト・ヒットボックス・影を1つずつ持つ
-typedef struct {
+typedef struct EntityF1F9Item {
   AuxSprite sprite;   // 0x000
   u8 unk_2c[44];      // 0x02C
   HitboxData hitbox;  // 0x058

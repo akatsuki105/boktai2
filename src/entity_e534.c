@@ -30,7 +30,7 @@ typedef struct {
   rgb555 pltt[16];            // 0xCA8, BlendPltt(&pltt, gObjPlttData+0x2630, gObjPlttData+0x2650, 0x40, 6), elems[i].gfx.pltt がここを指す
   u32 unk_cc8;                // 0xCC8, _Init が 0 を入れる
   u8 unk_ccc[0xCD4 - 0xCCC];  // 0xCCC, まだ未解析
-  EntityMsgBox msgbox;        // 0xCD4
+  MsgQueue mq;                // 0xCD4
 } EntityE534;
 static_assert(sizeof(EntityE534) == 3336);
 
@@ -80,11 +80,11 @@ NON_MATCH void EntityE534Elem_SetAnim(EntityE534* p, EntityE534Elem* e, s32 anim
 
 NAKED void EntityE534Elem_UpdateSprite(EntityE534Elem* e) { INCFUNC("asm/func/EntityE534Elem_UpdateSprite.inc"); }
 
-NAKED s32 EntityE534_HandleCmd0(EntityE534* p, EntityMsgBox* box, EntityMsg* msg) { INCFUNC("asm/func/EntityE534_HandleCmd0.inc"); }
+NAKED s32 EntityE534_HandleCmd0(EntityE534* p, MsgQueue* mq, MsgPacket* msg) { INCFUNC("asm/func/EntityE534_HandleCmd0.inc"); }
 
-NAKED s32 EntityE534_HandleCmd1(EntityE534* p, EntityMsgBox* box, EntityMsg* msg) { INCFUNC("asm/func/EntityE534_HandleCmd1.inc"); }
+NAKED s32 EntityE534_HandleCmd1(EntityE534* p, MsgQueue* mq, MsgPacket* msg) { INCFUNC("asm/func/EntityE534_HandleCmd1.inc"); }
 
-NAKED s32 EntityE534_HandleCmd2(EntityE534* p, EntityMsgBox* box, EntityMsg* msg) { INCFUNC("asm/func/EntityE534_HandleCmd2.inc"); }
+NAKED s32 EntityE534_HandleCmd2(EntityE534* p, MsgQueue* mq, MsgPacket* msg) { INCFUNC("asm/func/EntityE534_HandleCmd2.inc"); }
 
 NAKED s32 EntityE534_HandleMsgs(EntityE534* p) { INCFUNC("asm/func/EntityE534_HandleMsgs.inc"); }
 
@@ -103,7 +103,13 @@ NAKED void EntityE534Elem_UpdateState5(EntityE534* p, EntityE534Elem* e, s32 idx
 NAKED void EntityE534Elem_UpdateState6(EntityE534* p, EntityE534Elem* e, s32 idx) { INCFUNC("asm/func/EntityE534Elem_UpdateState6.inc"); }
 
 static void (*const sElemUpdates[7])(EntityE534*, EntityE534Elem*, s32) = {
-    EntityE534Elem_UpdateState0, EntityE534Elem_UpdateState1, EntityE534Elem_UpdateState2, EntityE534Elem_UpdateState3, EntityE534Elem_UpdateState4, EntityE534Elem_UpdateState5, EntityE534Elem_UpdateState6,
+    EntityE534Elem_UpdateState0,
+    EntityE534Elem_UpdateState1,
+    EntityE534Elem_UpdateState2,
+    EntityE534Elem_UpdateState3,
+    EntityE534Elem_UpdateState4,
+    EntityE534Elem_UpdateState5,
+    EntityE534Elem_UpdateState6,
 };  // 0x085AA81C
 
 NAKED s32 EntityE534_Update(EntityE534* p) { INCFUNC("asm/func/EntityE534_Update.inc"); }
@@ -116,7 +122,7 @@ s32 EntityE534_Destroy(EntityE534* p) {
     EntityE534Elem_Destroy(p, e, i);
   }
 
-  EntityMsgBus_Unregister(&p->msgbox);
+  MsgQueue_Unregister(&p->mq);
   return 0;
 }
 

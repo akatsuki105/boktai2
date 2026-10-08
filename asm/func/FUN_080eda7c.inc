@@ -11,7 +11,7 @@
 	beq _080EDB24
 	ldr r0, _080EDB38 @ =0x0000A007
 	mov sl, r0
-	ldr r1, _080EDB3C @ =FUN_080e48d0
+	ldr r1, _080EDB3C @ =Enemy_ClearStateBegun
 	mov sb, r1
 	movs r2, #0x10
 	mov r8, r2
@@ -19,7 +19,7 @@
 	movs r7, #0
 _080EDAA4:
 	adds r0, r4, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EDB1C
@@ -94,7 +94,7 @@ _080EDB24:
 	.align 2, 0
 _080EDB34: .4byte 0x03002C60
 _080EDB38: .4byte 0x0000A007
-_080EDB3C: .4byte FUN_080e48d0
+_080EDB3C: .4byte Enemy_ClearStateBegun
 _080EDB40: .4byte 0x000001DF
 _080EDB44: .4byte 0x0000046D
 _080EDB48: .4byte 0x0000046C

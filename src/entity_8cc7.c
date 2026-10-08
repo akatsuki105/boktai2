@@ -4,7 +4,7 @@
 #include "shadow.h"
 #include "sprite_aux.h"
 
-typedef struct {
+typedef struct Entity8CC7Elem {
   AuxSprite sprite;        // 0x00, Entity8CC7_Destroy が AuxSprite_Remove に渡す
   u8 unk_2c[0x6E - 0x2C];  // 0x2C, まだ未解析
   u16 flags;               // 0x6E, 根拠: Entity8CC7Elem_SetFlags / _ClearFlags / _TestFlags

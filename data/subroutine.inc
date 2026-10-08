@@ -26,7 +26,7 @@ gSubroutineTable:
 	.4byte 0x09EA, FUN_080ca430
 	.4byte 0x0AC7, EnemyCentipede_Create
 	.4byte 0x0AD8, FUN_08002fdc
-	.4byte 0x0B50, Entity0B50_Create
+	.4byte 0x0B50, ImmortalCoffin_Create
 	.4byte 0x0BCE, FUN_081d5504
 	.4byte 0x0BFD, FUN_0808fe1c
 	.4byte 0x0C1B, FUN_0808fdc8
@@ -92,7 +92,7 @@ gSubroutineTable:
 	.4byte 0x277A, FUN_080ac698
 	.4byte 0x286B, FUN_080eda7c
 	.4byte 0x286F, Entity286F_Create
-	.4byte 0x28CB, Entity28CB_Create
+	.4byte 0x28CB, CoffinSealEffect_Create
 	.4byte 0x2924, FUN_080a07c0
 	.4byte 0x29F1, FUN_080b22e8
 	.4byte 0x2B06, LinkPlayer_Create
@@ -100,7 +100,7 @@ gSubroutineTable:
 	.4byte 0x2B8C, FUN_0800e908
 	.4byte 0x2D2B, Entity2D2B_Create
 	.4byte 0x2D30, EnemyAx_Create
-	.4byte 0x2D36, SunlightEntity_Create
+	.4byte 0x2D36, Taiyo_Create
 	.4byte 0x2D8F, Breakable_Spawn
 	.4byte 0x2E1C, FUN_080085f8
 	.4byte 0x2F01, Time_GetType
@@ -118,7 +118,7 @@ gSubroutineTable:
 	.4byte 0x30CC, FUN_0807dcec
 	.4byte 0x3117, FUN_080a58e4
 	.4byte 0x31FE, FUN_080a4ee8
-	.4byte 0x31FF, FUN_0824175c
+	.4byte 0x31FF, Taiyo_GetGameGauge
 	.4byte 0x320C, FUN_0809e3a0
 	.4byte 0x3215, FUN_081d0c38
 	.4byte 0x329B, Entity329B_Create
@@ -197,7 +197,7 @@ gSubroutineTable:
 	.4byte 0x4DDF, Entity4DDF_Create
 	.4byte 0x4E22, FUN_080eda24
 	.4byte 0x4E30, Time_GetRtcStatus
-	.4byte 0x4E69, EntityMsgBus_Create
+	.4byte 0x4E69, MsgBus_Create
 	.4byte 0x4EBF, FUN_08205e68
 	.4byte 0x4ED4, sound_082403b8
 	.4byte 0x4F5C, Entity4F5C_Create
@@ -444,7 +444,7 @@ gSubroutineTable:
 	.4byte 0xAE3A, FUN_081d5268
 	.4byte 0xAE4E, FUN_0823d3ec
 	.4byte 0xAE71, FUN_080dd364
-	.4byte 0xAEB2, FUN_080e18e0
+	.4byte 0xAEB2, Entity080e18e0_Create
 	.4byte 0xAF33, EntityAF33_Create
 	.4byte 0xAF43, FUN_0807d900
 	.4byte 0xAF8E, Entity4063_Cancel
@@ -495,7 +495,7 @@ gSubroutineTable:
 	.4byte 0xC347, FUN_08206dc8
 	.4byte 0xC3BC, EnemySlime_Create
 	.4byte 0xC419, Entity081d0e20_Create
-	.4byte 0xC438, EntityC438_Create
+	.4byte 0xC438, DungeonMarker_Create
 	.4byte 0xC46E, FUN_080a4e1c
 	.4byte 0xC556, TextBox_CloseScripted
 	.4byte 0xC5D8, FUN_0803c9b8
@@ -546,7 +546,7 @@ gSubroutineTable:
 	.4byte 0xD774, FUN_082097dc
 	.4byte 0xD7F4, FUN_080a4fd4
 	.4byte 0xD852, EntityD852_Create
-	.4byte 0xD854, EntityD854_Create
+	.4byte 0xD854, EnemyTargetManager_Create
 	.4byte 0xD8DF, FUN_0807b66c
 	.4byte 0xD916, FUN_08242eb0
 	.4byte 0xD935, Entity0804e2c0_Create

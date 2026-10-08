@@ -58,8 +58,7 @@ NON_MATCH void SortArmors(s32 from) {
 
   validCount = 0;
   emptyCount = 0;
-  i = 0;
-  do {
+  for (i = 0; i < 16; i++) {
     slot = from + i;
     if (GetInventoryArmor(slot) < 0) {
       emptyCount += 1;
@@ -69,24 +68,19 @@ NON_MATCH void SortArmors(s32 from) {
         SwapArmorSlot(slot, slot - emptyCount);
       }
     }
-    i += 1;
-  } while (i <= 0xf);
+  }
 
   if (validCount > 1) {
     s32 j;
     s32 k;
-    s32 nextJ;
     s32 lastIdx;
     s32 pi;
     s32 pj;
     s32 vi;
 
-    j = 0;
     lastIdx = validCount - 1;
-    for (; j < lastIdx;) {
-      k = j;
-      nextJ = j + 1;
-      for (; k < validCount; k++) {
+    for (j = 0; j < lastIdx; j++) {
+      for (k = j; k < validCount; k++) {
         pi = from + j;
         vi = GetInventoryArmor(pi);
         pj = from + k;
@@ -94,7 +88,6 @@ NON_MATCH void SortArmors(s32 from) {
           SwapArmorSlot(pi, pj);
         }
       }
-      j = nextJ;
     }
   }
 #else

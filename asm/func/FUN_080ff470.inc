@@ -89,7 +89,7 @@ _080FF4F8:
 	str r0, [r2]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r0, _080FF5E4 @ =0x0000067E
 	add r0, sb
 	ldrh r3, [r0]
@@ -164,7 +164,7 @@ _080FF4F8:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080FF604
 	ldr r0, _080FF600 @ =0xFFFFFDFF

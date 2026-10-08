@@ -183,7 +183,14 @@ void GameOver_CancelScripted(void) {
 
 // ロゴの拡大縮小の段階ごとの処理, animState が添字
 void (*const sGameOverAnimFns[8])(GameOverManager*) = {
-    GameOverManager_AnimStart, GameOverManager_AnimStretchY, GameOverManager_AnimShrinkY1, GameOverManager_AnimShrinkY2, GameOverManager_AnimGrowX, GameOverManager_AnimHold, GameOverManager_AnimClose, GameOverManager_AnimEnd,
+    GameOverManager_AnimStart,
+    GameOverManager_AnimStretchY,
+    GameOverManager_AnimShrinkY1,
+    GameOverManager_AnimShrinkY2,
+    GameOverManager_AnimGrowX,
+    GameOverManager_AnimHold,
+    GameOverManager_AnimClose,
+    GameOverManager_AnimEnd,
 };  // 0x085AD014
 
 // 現在の animState の処理を呼んでから、その結果の拡大率を letters へ反映する
@@ -344,7 +351,11 @@ void GameOverManager_StateFinish(GameOverManager* p) {
 
 s32 GameOverManager_Update(GameOverManager* p) {
   static void (*const sGameOverStateFns[5])(GameOverManager*) = {
-      GameOverManager_StateWaitFlag, GameOverManager_StateShowLogo, GameOverManager_StateOpenMenu, FUN_080a7800, GameOverManager_StateFinish,
+      GameOverManager_StateWaitFlag,
+      GameOverManager_StateShowLogo,
+      GameOverManager_StateOpenMenu,
+      FUN_080a7800,
+      GameOverManager_StateFinish,
   };  // 0x085AD034
   sGameOverStateFns[p->state](p);
   return 0;

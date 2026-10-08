@@ -27,7 +27,11 @@ void FUN_080038bc(void*);
 void FUN_08003970(void*);
 
 void (*const PTR_ARRAY_085aa658[5])(void*) = {
-    FUN_080037c8, FUN_080038bc, FUN_08003970, NULL, NULL,
+    FUN_080037c8,
+    FUN_080038bc,
+    FUN_08003970,
+    NULL,
+    NULL,
 };  // 0x085AA658
 
 void FUN_08003008(void) { gEntityD9AE = NULL; }

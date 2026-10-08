@@ -105,7 +105,7 @@ _080E5A9C: .4byte 0x0000046A
 _080E5AA0: .4byte 0x00000584
 _080E5AA4:
 	adds r0, r4, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	lsrs r5, r0, #0x18
 	cmp r5, #0

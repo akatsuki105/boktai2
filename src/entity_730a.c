@@ -6,10 +6,10 @@
 
 typedef struct {
   Entity e;                // ENTITY_UNK_3
-  EntityMsgBox msgbox;     // 0x18
+  MsgQueue mq;             // 0x18
   u8 unk_4c[0x50 - 0x4C];  // 0x4C
-  s32 unk_50;              // 0x50, FUN_0802284c が EntityMsg.args[0] を入れ、Entity730A_Update が毎フレーム減らす
-  s32 unk_54;              // 0x54, FUN_0802284c が EntityMsg.args[1] を入れ、Entity730A_Update が FUN_0823b9cc に渡す
+  s32 unk_50;              // 0x50, FUN_0802284c が MsgPacket.args[0] を入れ、Entity730A_Update が毎フレーム減らす
+  s32 unk_54;              // 0x54, FUN_0802284c が MsgPacket.args[1] を入れ、Entity730A_Update が FUN_0823b9cc に渡す
 } Entity730A;
 static_assert(sizeof(Entity730A) == 88);
 
@@ -17,9 +17,9 @@ void FUN_08019814(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5)
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void MapPltt_PushCommand(s32 val, s32 count, u32* args);
 void Entity6978_SetRequest(s32 val, s32 count, s32* args);
-void RingoDemoAnim_Create(Vec3* pos, EntityMsgBox* box);
+void RingoDemoAnim_Create(Vec3* pos, MsgQueue* mq);
 
-void FUN_08022668(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
+void FUN_08022668(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
   Vec3 pos;
   pos.x = msg->args[0];
   pos.y = msg->args[1];
@@ -27,7 +27,7 @@ void FUN_08022668(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
   FUN_08019814(&pos, msg->args[3], msg->args[4], msg->args[5], msg->args[6]);
 }
 
-void FUN_080226a8(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
+void FUN_080226a8(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
   Mover* mover = Mover_FindByID_Proxy(msg->args[0]);
 
   if (mover != NULL) {
@@ -39,7 +39,7 @@ void FUN_080226a8(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
   }
 }
 
-NON_MATCH void FUN_08022704(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
+NON_MATCH void FUN_08022704(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
 #ifdef NONMATCHING_C
   s16* args = msg->args;
   u32 flags = 0;
@@ -64,7 +64,7 @@ NON_MATCH void FUN_08022704(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
 #endif
 }
 
-NON_MATCH void FUN_08022770(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
+NON_MATCH void FUN_08022770(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
 #ifdef NONMATCHING_C
   s16* args = msg->args;
   u32 cmd[5];
@@ -100,7 +100,7 @@ NON_MATCH void FUN_08022770(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
 #endif
 }
 
-NON_MATCH void FUN_080227f4(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
+NON_MATCH void FUN_080227f4(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
 #ifdef NONMATCHING_C
   s16* args = msg->args;
   s32 cmd[5];
@@ -126,12 +126,12 @@ NON_MATCH void FUN_080227f4(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
 #endif
 }
 
-void FUN_0802284c(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
+void FUN_0802284c(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
   p->unk_50 = msg->args[0];
   p->unk_54 = msg->args[1];
 }
 
-void FUN_0802285c(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
+void FUN_0802285c(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
   p->unk_50 = 0;
   p->unk_54 = 0;
 }
@@ -139,39 +139,39 @@ void FUN_0802285c(Entity730A* p, EntityMsgBox* box, EntityMsg* msg) {
 // 溜まったメッセージを cmd ごとのハンドラへ配る
 NON_MATCH s32 Entity730A_Update_Helper_08022864(Entity730A* p) {
 #ifdef NONMATCHING_C
-  EntityMsgBox* box = &p->msgbox;
+  MsgQueue* mq = &p->mq;
   s32 i;
 
-  for (i = 0; i < box->count[gEntityMsgBus->bufIdx]; i++) {
-    EntityMsg* msg = box->msgs[gEntityMsgBus->bufIdx][i];
-    EntityMsgBox_BeginWait(box, msg);
+  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+    MsgQueue_BeginWait(mq, msg);
     switch (msg->cmd) {
       case 0: {
-        FUN_08022668(p, box, msg);
+        FUN_08022668(p, mq, msg);
         break;
       }
       case 1: {
-        FUN_080226a8(p, box, msg);
+        FUN_080226a8(p, mq, msg);
         break;
       }
       case 2: {
-        FUN_08022704(p, box, msg);
+        FUN_08022704(p, mq, msg);
         break;
       }
       case 3: {
-        FUN_08022770(p, box, msg);
+        FUN_08022770(p, mq, msg);
         break;
       }
       case 4: {
-        FUN_080227f4(p, box, msg);
+        FUN_080227f4(p, mq, msg);
         break;
       }
       case 5: {
-        FUN_0802284c(p, box, msg);
+        FUN_0802284c(p, mq, msg);
         break;
       }
       case 6: {
-        FUN_0802285c(p, box, msg);
+        FUN_0802285c(p, mq, msg);
         break;
       }
       case 7: {
@@ -179,13 +179,13 @@ NON_MATCH s32 Entity730A_Update_Helper_08022864(Entity730A* p) {
         pos.x = msg->args[0];
         pos.y = msg->args[1];
         pos.z = msg->args[2];
-        RingoDemoAnim_Create(&pos, box);
+        RingoDemoAnim_Create(&pos, mq);
       }
       default: {
         continue;
       }
     }
-    EntityMsgBox_EndWait(box, 1);
+    MsgQueue_EndWait(mq, 1);
   }
   return 0;
 #else
@@ -205,12 +205,12 @@ s32 Entity730A_Update(Entity730A* p) {
 }
 
 s32 Entity730A_Destroy(Entity730A* p) {
-  EntityMsgBus_Unregister(&p->msgbox);
+  MsgQueue_Unregister(&p->mq);
   return 0;
 }
 
 s32 Entity730A_Init(Entity730A* p, u32 param) {
-  EntityMsgBus_Register(&p->msgbox, param, 7);
+  MsgQueue_Register(&p->mq, param, 7);
   return 0;
 }
 

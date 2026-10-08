@@ -301,7 +301,7 @@ _08214014:
 	ldr r0, [r6, #0x60]
 	cmp r0, #0x3b
 	bgt _08214032
-	bl CalibrateSunSensor
+	bl Taiyo_CalibrateSensor
 	cmp r0, #0
 	bne _08214024
 	b _08214152

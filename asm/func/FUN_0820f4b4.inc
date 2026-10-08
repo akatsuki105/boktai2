@@ -38,7 +38,7 @@ _0820F4DE:
 	movs r0, #5
 	str r0, [sp, #8]
 	adds r0, r7, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	b _0820F56A
 	.align 2, 0
 _0820F508: .4byte 0x085AF0CE
@@ -74,7 +74,7 @@ _0820F530:
 	adds r0, r7, #0
 _0820F548:
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	b _0820F56A
 _0820F550:
 	mov r4, sl
@@ -88,7 +88,7 @@ _0820F550:
 	adds r0, r7, #0
 	movs r2, #2
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _0820F56A:
 	adds r0, r7, #0
 	bl FUN_08055c04

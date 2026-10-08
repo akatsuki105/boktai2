@@ -19,5 +19,11 @@ const eepromType gEEPROMConfig8k = {
 };
 
 const eepromType* const sEepromConfigArray[7] = {
-    (const eepromType*)&gEEPROMConfig, &gEEPROMConfig512, &gEEPROMConfig8k, (const eepromType*)&gEEPROMConfig, (const eepromType*)&gEEPROMConfig, (const eepromType*)&gEEPROMConfig, (const eepromType*)&gEEPROMConfig,
+    (const eepromType*)&gEEPROMConfig,
+    &gEEPROMConfig512,
+    &gEEPROMConfig8k,
+    (const eepromType*)&gEEPROMConfig,
+    (const eepromType*)&gEEPROMConfig,
+    (const eepromType*)&gEEPROMConfig,
+    (const eepromType*)&gEEPROMConfig,
 };

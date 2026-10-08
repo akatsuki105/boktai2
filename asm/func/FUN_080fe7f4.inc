@@ -793,7 +793,7 @@ _080FEDF6:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080FEE38
 	ldr r0, _080FEE34 @ =0xFFFFFDFF
@@ -972,7 +972,7 @@ _080FEF58:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080FEF90
 	ldr r0, _080FEF8C @ =0xFFFFFDFF
@@ -1012,7 +1012,7 @@ _080FEFBC:
 	adds r3, r0, #0
 	cmp r3, #0
 	bne _080FEFFC
-	ldr r0, _080FEFF8 @ =FUN_080e48d0
+	ldr r0, _080FEFF8 @ =Enemy_ClearStateBegun
 	movs r2, #1
 	ldr r1, [sp, #0x54]
 	strb r2, [r1]
@@ -1039,7 +1039,7 @@ _080FEFBC:
 	b _080FF04C
 	.align 2, 0
 _080FEFF4: .4byte 0xFFFFFDFF
-_080FEFF8: .4byte FUN_080e48d0
+_080FEFF8: .4byte Enemy_ClearStateBegun
 _080FEFFC:
 	movs r1, #0x95
 	lsls r1, r1, #3

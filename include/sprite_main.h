@@ -80,8 +80,8 @@ typedef MainSpriteGfx MainSpriteGfxFile;  // ROM内のスプライトグラフ�
 // 主人公やメインのNPC、ボスなどのたくさんグラフィックのある主要キャラクターを扱う時はこれを使っている
 typedef struct MainSprite {
   u16 unk_0;                      // 0x00, MainSpritePose.unk_0
-  u8 unk_2;                       // 0x02, FUN_080609dc
-  u8 unk_3;                       // 0x03, FUN_080609dc
+  u8 unk_2;                       // 0x02, Player_SetAnimFacing
+  u8 unk_3;                       // 0x03, Player_SetAnimFacing
   bool8 active;                   // 0x04, MainSprite_Remove
   SpriteFlags flags;              // 0x08, see SpriteFlags, Player_PlayAnim
   u16 animCmdTimer;               // 0x0C, 現在のコマの経過フレーム数, 根拠: MainSprite_AdvanceAnim が毎フレーム +1 してコマ切り替えで 0 に戻す

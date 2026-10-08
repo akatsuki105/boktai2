@@ -235,7 +235,7 @@ the call nested inside, and splitting the two early-outs. Leaves
 survives when the flag is set by its own `if` statement and read by a later one:
 
 ```c
-u16 override = gSunlightOverride;   /* 先頭オペランドをローカルに退避する */
+u16 override = gSunGaugeOverride;   /* 先頭オペランドをローカルに退避する */
 bool32 forced = FALSE;
 
 if (override == 1) {
@@ -246,7 +246,7 @@ if (forced && u16_03002bf0 != 0) { ... }
 
 That emits `ldrh` → `movs rK, #0` → `cmp` → `movs rK, #1` → `cmp rK, #0`, exactly
 the target. What folds it is writing the flag as one expression —
-`bool32 forced = (gSunlightOverride == 1);` collapses into the branch and comes
+`bool32 forced = (gSunGaugeOverride == 1);` collapses into the branch and comes
 out 5 instructions short, and so does a `static inline` predicate whose `return`
 is the materialized value. The local for the first operand is what puts the
 `movs #0` *after* the load (see "Caching an operand in a local" above); without it

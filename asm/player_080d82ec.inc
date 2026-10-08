@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_080cc1e8
-FUN_080cc1e8: @ 0x080CC1E8
+	thumb_func_start PlayerLink_PlayAnim
+PlayerLink_PlayAnim: @ 0x080CC1E8
 	push {r4, r5, r6, r7, lr}
 	sub sp, #4
 	adds r6, r0, #0
@@ -197,8 +197,8 @@ _080CC342:
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_080cc348
-FUN_080cc348: @ 0x080CC348
+	thumb_func_start PlayerLink_SetAction
+PlayerLink_SetAction: @ 0x080CC348
 	push {r4, lr}
 	movs r4, #0xdf
 	lsls r4, r4, #2
@@ -282,8 +282,8 @@ FUN_080cc3d4: @ 0x080CC3D4
 	.align 2, 0
 _080CC3E0: .4byte 0x0000035A
 
-	thumb_func_start FUN_080cc3e4
-FUN_080cc3e4: @ 0x080CC3E4
+	thumb_func_start Sound_PlayForPlayer
+Sound_PlayForPlayer: @ 0x080CC3E4
 	push {lr}
 	adds r2, r0, #0
 	ldr r0, _080CC3F8 @ =0x03002C68
@@ -3572,7 +3572,7 @@ _080CDC98:
 	ldr r0, [r7, #0x18]
 	movs r1, #0x9a
 	lsls r1, r1, #1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080CDCB6
 _080CDCA8:
 	cmp r0, #3
@@ -3580,7 +3580,7 @@ _080CDCA8:
 	ldr r0, [r7, #0x18]
 	movs r1, #0x9a
 	lsls r1, r1, #1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080CDCB6:
 	ldr r1, _080CDD8C @ =0x000004CC
 	adds r0, r7, r1
@@ -4053,7 +4053,7 @@ _080CE022:
 	ldr r0, [r4, #0x18]
 	movs r1, #0xf7
 	lsls r1, r1, #1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	ldr r0, _080CE090 @ =0x000003F1
 	adds r1, r4, r0
 	movs r0, #1
@@ -4107,7 +4107,7 @@ _080CE094:
 	beq _080CE0B8
 	ldr r0, [r4, #0x18]
 	ldr r1, _080CE0E0 @ =0x00000336
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	movs r0, #0
 	strb r0, [r7]
 _080CE0B8:
@@ -4261,7 +4261,7 @@ _080CE1C4:
 	beq _080CE1E8
 	ldr r0, [r4, #0x18]
 	ldr r1, _080CE210 @ =0x00000336
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	mov r3, r8
 	strb r3, [r7]
 _080CE1E8:
@@ -6230,7 +6230,7 @@ FUN_080cf0b4: @ 0x080CF0B4
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	adds r0, r4, #0
 	bl FUN_080cf064
 	ldr r2, _080CF14C @ =0x00000442
@@ -6737,7 +6737,7 @@ _080CF49C:
 	adds r0, r7, r1
 	adds r1, r5, #0
 	movs r2, #2
-	bl FUN_080f8c58
+	bl EnemyTargetManager_Add
 	ldr r2, _080CF548 @ =0x03002B68
 	ldr r1, [r7, #0x18]
 	lsls r1, r1, #1
@@ -8545,7 +8545,7 @@ _080D02B0:
 	beq _080D02DC
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D02D8 @ =0x00000335
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	strb r7, [r4]
 	b _080D038E
 	.align 2, 0
@@ -8707,7 +8707,7 @@ _080D03F8:
 	beq _080D0404
 	ldr r0, [r4, #0x18]
 	adds r1, r6, #0
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D0404:
 	add sp, #8
 	pop {r4, r5, r6, r7}
@@ -9028,11 +9028,11 @@ _080D0606:
 	adds r1, r0, #0
 	adds r0, r7, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	pop {r3, r4}
 	mov r8, r3
 	mov sb, r4
@@ -9120,7 +9120,7 @@ FUN_080d0738: @ 0x080D0738
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	adds r0, r4, #0
 	bl FUN_080d06d4
 	movs r2, #0xba
@@ -9144,7 +9144,7 @@ _080D0766:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	pop {r4}
 	pop {r0}
 	bx r0
@@ -9430,14 +9430,14 @@ _080D0978:
 	bne _080D0994
 	ldr r0, [r4, #0x18]
 	movs r1, #0xc8
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D09F8
 	.align 2, 0
 _080D0990: .4byte 0x00000442
 _080D0994:
 	ldr r0, [r4, #0x18]
 	movs r1, #0xc7
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D09F8
 _080D099E:
 	movs r1, #0xe4
@@ -9459,14 +9459,14 @@ _080D09B4:
 	bne _080D09CC
 	ldr r0, [r4, #0x18]
 	movs r1, #0xca
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D09F8
 	.align 2, 0
 _080D09C8: .4byte 0x000001C7
 _080D09CC:
 	ldr r0, [r4, #0x18]
 	movs r1, #0xc9
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D09F8
 _080D09D6:
 	adds r0, r4, #0
@@ -9476,14 +9476,14 @@ _080D09D6:
 	bne _080D09F0
 	ldr r0, [r4, #0x18]
 	ldr r1, _080D09EC @ =0x0000028E
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D09F8
 	.align 2, 0
 _080D09EC: .4byte 0x0000028E
 _080D09F0:
 	ldr r0, [r4, #0x18]
 	ldr r1, _080D0A00 @ =0x0000028D
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D09F8:
 	add sp, #0xc
 	pop {r4, r5, r6}
@@ -9561,7 +9561,7 @@ _080D0A70:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	pop {r4, r5}
 	pop {r0}
 	bx r0
@@ -9585,7 +9585,7 @@ FUN_080d0aa0: @ 0x080D0AA0
 	beq _080D0B1C
 	ldr r0, [r4, #0x18]
 	ldr r1, _080D0AD4 @ =0x00000392
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	ldr r1, [r4, #0x18]
 	ldr r0, _080D0AD8 @ =0x03002C68
 	ldr r0, [r0]
@@ -9624,7 +9624,7 @@ _080D0AFA:
 	adds r0, r4, #0
 	movs r1, #2
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D0B30
 	.align 2, 0
 _080D0B18: .4byte 0x000003FD
@@ -9632,11 +9632,11 @@ _080D0B1C:
 	ldr r0, [r4, #0x18]
 	movs r1, #0xc9
 	lsls r1, r1, #1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r4, #0
 	movs r1, #2
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D0B30:
 	ldr r1, _080D0B40 @ =0x0000037D
 	adds r0, r4, r1
@@ -9664,7 +9664,7 @@ _080D0B44:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D0C2C
 	.align 2, 0
 _080D0B68: .4byte 0x0000037E
@@ -9726,7 +9726,7 @@ _080D0BB4:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x20
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	b _080D0C2C
 	.align 2, 0
 _080D0BEC: .4byte 0x0000095E
@@ -9742,7 +9742,7 @@ _080D0BF8:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r3, _080D0C34 @ =0x0000037E
 	adds r1, r4, r3
 	ldrh r0, [r1]
@@ -9755,7 +9755,7 @@ _080D0BF8:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D0C2C:
 	pop {r4}
 	pop {r0}
@@ -9826,7 +9826,7 @@ FUN_080d0c6c: @ 0x080D0C6C
 	adds r0, r7, #0
 	movs r1, #4
 	movs r2, #2
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D0CA8:
 	ldr r1, _080D0CBC @ =0x0000037D
 	adds r0, r7, r1
@@ -9866,7 +9866,7 @@ _080D0CC8:
 	beq _080D0D42
 	ldr r0, [r7, #0x18]
 	movs r1, #0xd0
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	ldr r0, _080D0D2C @ =0x000003BD
 	adds r2, r7, r0
 	ldrb r0, [r2]
@@ -9909,7 +9909,7 @@ _080D0D42:
 	adds r0, r7, #0
 	mov r1, sb
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	bne _080D0D52
 	b _080D12F4
@@ -9917,7 +9917,7 @@ _080D0D52:
 	adds r0, r7, #0
 	movs r1, #4
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D12F4
 	.align 2, 0
 _080D0D60: .4byte 0x000002E6
@@ -10440,7 +10440,7 @@ _080D1144:
 	adds r0, r7, #0
 	mov r1, sb
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r2, #0xb9
 	lsls r2, r2, #2
 	adds r0, r7, r2
@@ -10465,7 +10465,7 @@ _080D1168:
 _080D1174:
 	ldr r0, [r7, #0x18]
 	movs r1, #0xdb
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D12F4
 _080D117E:
 	movs r1, #8
@@ -10481,7 +10481,7 @@ _080D117E:
 	adds r1, r0, #0
 	adds r0, r7, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	bne _080D11A4
 	b _080D12F4
@@ -10652,7 +10652,7 @@ _080D1294:
 	adds r0, r7, #0
 	movs r1, #4
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D12F4:
 	add sp, #0x20
 	pop {r3, r4, r5}
@@ -10770,7 +10770,7 @@ FUN_080d13b8: @ 0x080D13B8
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	ldr r2, _080D13F0 @ =0x00000951
 	adds r1, r4, r2
 	movs r0, #0
@@ -10808,11 +10808,11 @@ _080D1410:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D169A
 _080D1434:
 	ldr r1, _080D1460 @ =0x0000037E
@@ -10872,14 +10872,14 @@ _080D148A:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	bne _080D14B2
 	b _080D169A
 _080D14B2:
 	ldr r0, [r4, #0x18]
 	movs r1, #0xcb
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r4, r2
@@ -10898,7 +10898,7 @@ _080D14CE:
 	beq _080D1500
 	ldr r0, [r4, #0x18]
 	movs r1, #0xd8
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	ldr r0, _080D14F8 @ =0x00000409
 	adds r1, r4, r0
 	movs r0, #1
@@ -10942,7 +10942,7 @@ _080D150C:
 	bne _080D1544
 	ldr r0, [r4, #0x18]
 	subs r1, #0x50
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D154E
 	.align 2, 0
 _080D1540: .4byte 0x00000404
@@ -10950,7 +10950,7 @@ _080D1544:
 	ldr r0, [r4, #0x18]
 	movs r1, #0x94
 	lsls r1, r1, #1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D154E:
 	movs r2, #0xd6
 	lsls r2, r2, #2
@@ -10961,7 +10961,7 @@ _080D154E:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r0, #0xc1
 	lsls r0, r0, #3
 	adds r1, r4, r0
@@ -11008,7 +11008,7 @@ _080D15C4:
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #3
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D169A
 	.align 2, 0
 _080D15D0: .4byte 0x00000409
@@ -11026,7 +11026,7 @@ _080D15D4:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r0, #0xc1
 	lsls r0, r0, #3
 	adds r1, r4, r0
@@ -11045,7 +11045,7 @@ _080D1610:
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #4
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D169A
 _080D161C:
 	adds r0, r4, #0
@@ -11054,7 +11054,7 @@ _080D161C:
 	beq _080D169A
 	ldr r0, [r4, #0x18]
 	movs r1, #0xd8
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	ldr r2, _080D164C @ =0x00000409
 	adds r1, r4, r2
 	movs r0, #1
@@ -11067,7 +11067,7 @@ _080D163A:
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #2
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D169A
 	.align 2, 0
 _080D164C: .4byte 0x00000409
@@ -11087,7 +11087,7 @@ _080D1654:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	beq _080D169A
 	movs r2, #0xba
@@ -11104,7 +11104,7 @@ _080D1654:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D169A:
 	pop {r4, r5}
 	pop {r0}
@@ -11154,7 +11154,7 @@ FUN_080d16d4: @ 0x080D16D4
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D16EE:
 	ldr r2, _080D1704 @ =0x0000037D
 	adds r0, r4, r2
@@ -11187,11 +11187,11 @@ _080D1720:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D19F2
 _080D1744:
 	ldr r2, _080D1770 @ =0x0000037E
@@ -11251,14 +11251,14 @@ _080D179A:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	bne _080D17C2
 	b _080D19F2
 _080D17C2:
 	ldr r0, [r4, #0x18]
 	movs r1, #0xcb
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r4, r2
@@ -11278,7 +11278,7 @@ _080D17DE:
 	ldr r0, [r4, #0x18]
 	movs r1, #0xb9
 	lsls r1, r1, #2
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	ldr r0, _080D180C @ =0x00000409
 	adds r1, r4, r0
 	movs r0, #1
@@ -11316,7 +11316,7 @@ _080D1820:
 	bne _080D1846
 	ldr r0, [r4, #0x18]
 	ldr r1, _080D189C @ =0x00000239
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D1846:
 	movs r1, #0xd6
 	lsls r1, r1, #2
@@ -11327,7 +11327,7 @@ _080D1846:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r2, #0xc1
 	lsls r2, r2, #3
 	adds r1, r4, r2
@@ -11415,7 +11415,7 @@ _080D1914:
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #3
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D19F2
 	.align 2, 0
 _080D1920: .4byte 0x00000239
@@ -11434,7 +11434,7 @@ _080D1928:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r0, #0xc1
 	lsls r0, r0, #3
 	adds r1, r4, r0
@@ -11453,7 +11453,7 @@ _080D1964:
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #4
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D19F2
 _080D1970:
 	adds r0, r4, #0
@@ -11462,7 +11462,7 @@ _080D1970:
 	beq _080D19F2
 	ldr r0, [r4, #0x18]
 	ldr r1, _080D19A0 @ =0x00000239
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	ldr r2, _080D19A4 @ =0x00000409
 	adds r1, r4, r2
 	movs r0, #1
@@ -11475,7 +11475,7 @@ _080D198E:
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #2
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D19F2
 	.align 2, 0
 _080D19A0: .4byte 0x00000239
@@ -11496,7 +11496,7 @@ _080D19AC:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	beq _080D19F2
 	movs r2, #0xba
@@ -11513,7 +11513,7 @@ _080D19AC:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D19F2:
 	pop {r4, r5}
 	pop {r0}
@@ -12136,7 +12136,7 @@ FUN_080d1e7c: @ 0x080D1E7C
 	ldr r0, [r7, #0x18]
 	movs r1, #0xe3
 	lsls r1, r1, #2
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D1EC0
 	.align 2, 0
 _080D1EB0: .4byte 0x000009C8
@@ -12144,7 +12144,7 @@ _080D1EB4: .4byte 0x00000A8A
 _080D1EB8:
 	ldr r0, [r7, #0x18]
 	ldr r1, _080D1F04 @ =0x0000038B
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D1EC0:
 	adds r0, r5, #0
 	adds r0, #0xc2
@@ -12372,7 +12372,7 @@ _080D2054:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r2, r6, #0
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	bne _080D2078
 	b _080D21C2
@@ -12380,7 +12380,7 @@ _080D2078:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D21C2
 _080D2084:
 	adds r0, r5, #0
@@ -12396,7 +12396,7 @@ _080D2084:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r3, #0xa3
 	lsls r3, r3, #2
 	adds r0, r5, r3
@@ -12411,7 +12411,7 @@ _080D2084:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #4
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D21C2
 _080D20CC:
 	ldr r0, _080D20D8 @ =0x0000037E
@@ -12450,7 +12450,7 @@ _080D20FE:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r2, r6, #0
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldrb r0, [r4]
 	cmp r0, #1
 	bne _080D2142
@@ -12480,7 +12480,7 @@ _080D2142:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #6
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D21C2
 	.align 2, 0
 _080D2158: .4byte 0x000003D1
@@ -12533,7 +12533,7 @@ _080D219C:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D21C2:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -13278,7 +13278,7 @@ FUN_080d2724: @ 0x080D2724
 	bne _080D2764
 	ldr r0, [r6, #0x18]
 	ldr r1, _080D2760 @ =0x0000038F
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D276C
 	.align 2, 0
 _080D2758: .4byte 0x000009C8
@@ -13287,7 +13287,7 @@ _080D2760: .4byte 0x0000038F
 _080D2764:
 	ldr r0, [r6, #0x18]
 	ldr r1, _080D27B0 @ =0x0000038D
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D276C:
 	adds r0, r5, #0
 	adds r0, #0xc2
@@ -13609,7 +13609,7 @@ _080D29CC:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r2, r7, #0
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	bne _080D29F0
 	b _080D2BF8
@@ -13617,7 +13617,7 @@ _080D29F0:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D2BF8
 _080D29FC:
 	adds r0, r5, #0
@@ -13633,7 +13633,7 @@ _080D29FC:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r2, _080D2A50 @ =0x0000037E
 	adds r0, r5, r2
 	ldrh r0, [r0]
@@ -13653,7 +13653,7 @@ _080D29FC:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #4
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D2BF8
 	.align 2, 0
 _080D2A50: .4byte 0x0000037E
@@ -13682,7 +13682,7 @@ _080D2A64:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r2, r7, #0
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldrb r0, [r4]
 	cmp r0, #1
 	bne _080D2B22
@@ -13765,7 +13765,7 @@ _080D2B22:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #5
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D2BF8
 _080D2B38:
 	ldr r2, _080D2B84 @ =0x000003D1
@@ -13795,13 +13795,13 @@ _080D2B5A:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r2, r7, #0
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	beq _080D2BF8
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #6
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D2BF8
 	.align 2, 0
 _080D2B84: .4byte 0x000003D1
@@ -13849,14 +13849,14 @@ _080D2BD0:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	adds r2, r7, #0
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	beq _080D2BF8
 	strb r6, [r4]
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D2BF8:
 	pop {r4, r5, r6, r7}
 	pop {r0}
@@ -14274,14 +14274,14 @@ _080D2F1E:
 	bne _080D2F3C
 	ldr r0, [r5, #0x18]
 	adds r1, #0x38
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D2F44
 	.align 2, 0
 _080D2F38: .4byte 0x00000A84
 _080D2F3C:
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D2F8C @ =0x0000038E
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D2F44:
 	adds r4, r6, #0
 	adds r4, #0xc2
@@ -14641,7 +14641,7 @@ _080D31D6:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	bne _080D31FA
 	b _080D3330
@@ -14661,7 +14661,7 @@ _080D31FC:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r4, r2
@@ -14676,7 +14676,7 @@ _080D31FC:
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #4
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3330
 _080D3244:
 	ldr r0, _080D3250 @ =0x0000037E
@@ -14701,7 +14701,7 @@ _080D3254:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	adds r0, r4, #0
 	bl FUN_080d2ed0
 	cmp r0, #0
@@ -14709,7 +14709,7 @@ _080D3254:
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #5
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3330
 	.align 2, 0
 _080D328C: .4byte 0x000003D1
@@ -14766,7 +14766,7 @@ _080D32E4:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	beq _080D3330
 	ldr r2, _080D3320 @ =0x00000A76
@@ -14780,7 +14780,7 @@ _080D330E:
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3330
 	.align 2, 0
 _080D331C: .4byte 0x000003D1
@@ -14790,7 +14790,7 @@ _080D3324:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D3330:
 	pop {r4, r5}
 	pop {r0}
@@ -14886,7 +14886,7 @@ FUN_080d33dc: @ 0x080D33DC
 	bne _080D33F6
 	ldr r0, [r6, #0x18]
 	ldr r1, _080D3430 @ =0x00000391
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D33F6:
 	ldrh r0, [r4]
 	adds r0, #1
@@ -15020,7 +15020,7 @@ _080D34F4:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	bne _080D3512
 	b _080D369C
@@ -15037,7 +15037,7 @@ _080D3512:
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D369C
 _080D3530:
 	adds r0, r4, #0
@@ -15051,7 +15051,7 @@ _080D3530:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r1, #0xa3
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -15067,7 +15067,7 @@ _080D3560:
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #4
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D369C
 _080D3572:
 	ldr r0, _080D3580 @ =0x0000037E
@@ -15092,7 +15092,7 @@ _080D3584:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r1, #0xa3
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -15114,7 +15114,7 @@ _080D35BE:
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #5
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D369C
 	.align 2, 0
 _080D35D4: .4byte 0x000003D1
@@ -15132,7 +15132,7 @@ _080D35DC:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r1, #0xa3
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -15177,7 +15177,7 @@ _080D3638:
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #6
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D369C
 	.align 2, 0
 _080D365C: .4byte 0x0000037E
@@ -15195,7 +15195,7 @@ _080D3660:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r0, _080D36A8 @ =0x0000037E
 	adds r1, r4, r0
 	ldrh r0, [r1]
@@ -15208,7 +15208,7 @@ _080D3660:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D369C:
 	pop {r4, r5}
 	pop {r0}
@@ -15256,7 +15256,7 @@ _080D36F0:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	bne _080D370E
 	b _080D3AD8
@@ -15264,7 +15264,7 @@ _080D370E:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3AD8
 _080D371A:
 	ldr r0, _080D377C @ =0x0000037E
@@ -15274,7 +15274,7 @@ _080D371A:
 	bne _080D372C
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D3780 @ =0x000001F7
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D372C:
 	adds r0, r5, #0
 	bl FUN_080d19fc
@@ -15287,7 +15287,7 @@ _080D372C:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldrh r0, [r4]
 	adds r0, #1
 	strh r0, [r4]
@@ -15335,11 +15335,11 @@ _080D378C:
 	bne _080D37C0
 	ldr r0, [r5, #0x18]
 	movs r1, #0xcd
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #5
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D37CA
 	.align 2, 0
 _080D37BC: .4byte 0x00000A92
@@ -15347,7 +15347,7 @@ _080D37C0:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #2
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D37CA:
 	movs r1, #0x20
 	str r1, [sp]
@@ -15382,7 +15382,7 @@ _080D37F6:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r0, _080D388C @ =0x00000A92
 	adds r1, r5, r0
 	ldrh r0, [r1]
@@ -15396,7 +15396,7 @@ _080D37F6:
 	ldr r0, [r5, #0x18]
 	movs r1, #0xfc
 	lsls r1, r1, #1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D3832:
 	movs r2, #0xa3
 	lsls r2, r2, #2
@@ -15435,11 +15435,11 @@ _080D3854:
 	strh r0, [r1]
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D38A4 @ =0x000001F9
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #4
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3AD8
 	.align 2, 0
 _080D388C: .4byte 0x00000A92
@@ -15461,7 +15461,7 @@ _080D38A8:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r2, _080D38F8 @ =0x00000A92
 	adds r1, r5, r2
 	ldrh r0, [r1]
@@ -15481,11 +15481,11 @@ _080D38E4:
 	ldr r0, [r5, #0x18]
 	movs r1, #0xcd
 _080D38E8:
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #5
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3AD8
 	.align 2, 0
 _080D38F8: .4byte 0x00000A92
@@ -15499,7 +15499,7 @@ _080D38FC:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r1, #0xa3
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -15632,7 +15632,7 @@ _080D3A04:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #6
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3AD8
 	.align 2, 0
 _080D3A24: .4byte 0x0000037E
@@ -15646,7 +15646,7 @@ _080D3A28:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -15691,7 +15691,7 @@ _080D3A7C:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #7
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3AD8
 	.align 2, 0
 _080D3AA0: .4byte 0x0000037E
@@ -15705,7 +15705,7 @@ _080D3AA4:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r2, _080D3B08 @ =0x0000037E
 	adds r1, r5, r2
 	ldrh r0, [r1]
@@ -15718,7 +15718,7 @@ _080D3AA4:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D3AD8:
 	ldr r0, _080D3B0C @ =0x00000A92
 	adds r4, r5, r0
@@ -15789,7 +15789,7 @@ _080D3B58:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	bne _080D3B76
 	b _080D3F04
@@ -15797,7 +15797,7 @@ _080D3B76:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3F04
 _080D3B82:
 	adds r0, r5, #0
@@ -15811,7 +15811,7 @@ _080D3B82:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r2, _080D3BD8 @ =0x0000037E
 	adds r1, r5, r2
 	ldrh r0, [r1]
@@ -15856,17 +15856,17 @@ _080D3BE0:
 	ldr r0, [r5, #0x18]
 	movs r1, #0xfb
 	lsls r1, r1, #1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #5
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3C12
 _080D3C08:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #4
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D3C12:
 	movs r1, #0x20
 	str r1, [sp]
@@ -15900,7 +15900,7 @@ _080D3C3C:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r2, _080D3CC8 @ =0x0000037E
 	adds r4, r5, r2
 	ldrh r0, [r4]
@@ -15909,7 +15909,7 @@ _080D3C3C:
 	ldr r0, [r5, #0x18]
 	movs r1, #0xfa
 	lsls r1, r1, #1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D3C6E:
 	movs r1, #0xa3
 	lsls r1, r1, #2
@@ -15948,11 +15948,11 @@ _080D3C90:
 	strh r0, [r1]
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D3CDC @ =0x000001F5
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #4
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3F04
 	.align 2, 0
 _080D3CC8: .4byte 0x0000037E
@@ -15973,7 +15973,7 @@ _080D3CE0:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -15989,11 +15989,11 @@ _080D3D12:
 	movs r1, #0xfb
 	lsls r1, r1, #1
 _080D3D18:
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #5
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3F04
 _080D3D28:
 	movs r1, #0xd6
@@ -16005,7 +16005,7 @@ _080D3D28:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -16138,7 +16138,7 @@ _080D3E30:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #6
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3F04
 	.align 2, 0
 _080D3E50: .4byte 0x0000037E
@@ -16152,7 +16152,7 @@ _080D3E54:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -16197,7 +16197,7 @@ _080D3EA8:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #7
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D3F04
 	.align 2, 0
 _080D3ECC: .4byte 0x0000037E
@@ -16211,7 +16211,7 @@ _080D3ED0:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r2, _080D3F14 @ =0x0000037E
 	adds r1, r5, r2
 	ldrh r0, [r1]
@@ -16224,7 +16224,7 @@ _080D3ED0:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D3F04:
 	ldr r0, _080D3F18 @ =0x00000951
 	adds r1, r5, r0
@@ -16252,7 +16252,7 @@ FUN_080d3f1c: @ 0x080D3F1C
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D3F38:
 	ldr r2, _080D3F50 @ =0x0000037D
 	adds r0, r5, r2
@@ -16289,7 +16289,7 @@ _080D3F7C:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	bne _080D3F9A
 	b _080D4462
@@ -16297,7 +16297,7 @@ _080D3F9A:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4462
 _080D3FA6:
 	adds r0, r5, #0
@@ -16311,7 +16311,7 @@ _080D3FA6:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r0, _080D3FF4 @ =0x0000037E
 	adds r1, r5, r0
 	ldrh r0, [r1]
@@ -16351,11 +16351,11 @@ _080D3FFC:
 	bne _080D4028
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D4024 @ =0x00000203
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #5
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4032
 	.align 2, 0
 _080D4024: .4byte 0x00000203
@@ -16363,7 +16363,7 @@ _080D4028:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #2
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D4032:
 	movs r1, #0x20
 	str r1, [sp]
@@ -16398,7 +16398,7 @@ _080D405E:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r2, _080D40B8 @ =0x0000037E
 	adds r4, r5, r2
 	ldrh r0, [r4]
@@ -16407,7 +16407,7 @@ _080D405E:
 	ldr r0, [r5, #0x18]
 	movs r1, #0xfc
 	lsls r1, r1, #1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D4090:
 	movs r1, #0xa3
 	lsls r1, r1, #2
@@ -16421,11 +16421,11 @@ _080D4090:
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D40BC @ =0x00000203
 _080D40A6:
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #5
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4462
 	.align 2, 0
 _080D40B8: .4byte 0x0000037E
@@ -16456,11 +16456,11 @@ _080D40D0:
 	strh r0, [r1]
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D4108 @ =0x000001F9
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #4
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4462
 	.align 2, 0
 _080D4100: .4byte 0x00000A8F
@@ -16478,7 +16478,7 @@ _080D410C:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -16493,7 +16493,7 @@ _080D410C:
 _080D4140:
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D4190 @ =0x000002E9
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	movs r1, #0xba
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -16520,11 +16520,11 @@ _080D4140:
 	bl Hitbox_SetAttack
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D4198 @ =0x00000202
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #8
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4462
 	.align 2, 0
 _080D4190: .4byte 0x000002E9
@@ -16540,7 +16540,7 @@ _080D419C:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -16569,7 +16569,7 @@ _080D41E2:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #6
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4462
 	.align 2, 0
 _080D41F0: .4byte 0x00000A76
@@ -16584,7 +16584,7 @@ _080D41F8:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r2, #0xa3
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -16631,7 +16631,7 @@ _080D4260:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #7
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4462
 	.align 2, 0
 _080D4270: .4byte 0x0000037E
@@ -16645,7 +16645,7 @@ _080D4274:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r2, _080D42AC @ =0x0000037E
 	adds r1, r5, r2
 	ldrh r0, [r1]
@@ -16660,7 +16660,7 @@ _080D42A0:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4462
 	.align 2, 0
 _080D42AC: .4byte 0x0000037E
@@ -16839,7 +16839,7 @@ _080D43BE:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r2, _080D4484 @ =0x0000037E
 	adds r4, r5, r2
 	ldrh r1, [r4]
@@ -16850,7 +16850,7 @@ _080D43BE:
 	ldr r0, [r5, #0x18]
 	movs r1, #0x81
 	lsls r1, r1, #2
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D443A:
 	ldrh r0, [r4]
 	adds r0, #1
@@ -16869,7 +16869,7 @@ _080D443A:
 	adds r0, r5, #0
 	movs r1, #3
 	movs r2, #6
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D4462:
 	ldr r0, _080D4490 @ =0x00000951
 	adds r1, r5, r0
@@ -16902,7 +16902,7 @@ FUN_080d4494: @ 0x080D4494
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D44AE:
 	ldr r1, _080D44C0 @ =0x00000A98
 	adds r0, r4, r1
@@ -16965,7 +16965,7 @@ _080D451E:
 	adds r0, r4, #0
 	movs r1, #0x11
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D4528:
 	ldr r1, _080D4540 @ =0x0000037D
 	adds r0, r4, r1
@@ -17005,7 +17005,7 @@ _080D456A:
 	adds r0, r4, #0
 	movs r1, #0xb8
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	beq _080D4630
 	ldrb r0, [r5]
@@ -17014,7 +17014,7 @@ _080D456A:
 	adds r0, r4, #0
 	movs r1, #0x11
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4630
 	.align 2, 0
 _080D458C: .4byte 0x000003FA
@@ -17024,7 +17024,7 @@ _080D4598:
 	adds r0, r4, #0
 	movs r1, #0x11
 	movs r2, #2
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4630
 _080D45A4:
 	ldr r1, _080D45CC @ =0x000003FA
@@ -17062,12 +17062,12 @@ _080D45DC:
 	ldr r0, [r4, #0x18]
 	movs r1, #0xc9
 	lsls r1, r1, #1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D45F0:
 	adds r0, r4, #0
 	movs r1, #0xc2
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldrh r0, [r5]
 	adds r0, #1
 	strh r0, [r5]
@@ -17079,7 +17079,7 @@ _080D4600:
 	adds r0, r4, #0
 	movs r1, #0x11
 	movs r2, #3
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4630
 	.align 2, 0
 _080D4614: .4byte 0x0000037E
@@ -17087,13 +17087,13 @@ _080D4618:
 	adds r0, r4, #0
 	movs r1, #0xbd
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	beq _080D4630
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D4630:
 	pop {r4, r5}
 	pop {r0}
@@ -17182,7 +17182,7 @@ _080D46BC:
 _080D46D4:
 	ldr r0, [r4, #0x18]
 	ldr r1, _080D4708 @ =0x000001AD
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	movs r0, #0xba
 	lsls r0, r0, #2
 	adds r2, r4, r0
@@ -17227,11 +17227,11 @@ _080D4724:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	adds r0, r4, #0
 	movs r1, #0x16
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	ldr r0, _080D4758 @ =0x000003F6
 	adds r1, r4, r0
 	movs r0, #0
@@ -17254,7 +17254,7 @@ _080D475C:
 	adds r0, r4, #0
 	movs r1, #0x16
 	movs r2, #2
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	ldr r0, _080D4798 @ =0x000003F6
 	adds r1, r4, r0
 	movs r0, #0
@@ -17265,7 +17265,7 @@ _080D475C:
 	ldr r0, [r4, #0x18]
 	movs r1, #0xd7
 	lsls r1, r1, #1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D4820
 	.align 2, 0
 _080D4794: .4byte 0x0000037E
@@ -17280,7 +17280,7 @@ _080D479C:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r2, _080D47D8 @ =0x000003F6
 	adds r1, r4, r2
 	ldrh r0, [r1]
@@ -17296,7 +17296,7 @@ _080D479C:
 	bne _080D47E0
 	ldr r0, [r4, #0x18]
 	subs r1, #0x91
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D47E8
 	.align 2, 0
 _080D47D8: .4byte 0x000003F6
@@ -17304,7 +17304,7 @@ _080D47DC: .4byte 0x0000037E
 _080D47E0:
 	ldr r0, [r4, #0x18]
 	ldr r1, _080D4808 @ =0x00000305
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D47E8:
 	ldr r2, _080D480C @ =0x0000037E
 	adds r1, r4, r2
@@ -17318,7 +17318,7 @@ _080D47E8:
 	adds r0, r4, #0
 	movs r1, #0x16
 	movs r2, #3
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4820
 	.align 2, 0
 _080D4808: .4byte 0x00000305
@@ -17352,7 +17352,7 @@ FUN_080d482c: @ 0x080D482C
 	adds r0, r4, #0
 	movs r1, #0x18
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	movs r3, #0xba
 	lsls r3, r3, #2
 	adds r2, r4, r3
@@ -17395,7 +17395,7 @@ _080D4888:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r0, _080D48FC @ =0x000003D6
 	adds r5, r4, r0
 	ldrh r0, [r5]
@@ -17403,7 +17403,7 @@ _080D4888:
 	beq _080D48B6
 	ldr r0, [r4, #0x18]
 	ldrh r1, [r5]
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	movs r0, #0
 	strh r0, [r5]
 _080D48B6:
@@ -17470,7 +17470,7 @@ _080D491A:
 	bne _080D493E
 	ldr r0, [r4, #0x18]
 	ldr r1, _080D494C @ =0x00000191
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r4, #0
 	adds r0, #0x2c
 	bl FUN_080acd98
@@ -17566,7 +17566,7 @@ _080D49CA:
 	adds r0, r4, #0
 	movs r1, #0x13
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4A2C
 	.align 2, 0
 _080D49F4: .4byte 0x00000395
@@ -17582,7 +17582,7 @@ _080D4A00:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	beq _080D4A2C
 	adds r0, r4, #0
@@ -17590,7 +17590,7 @@ _080D4A00:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D4A2C:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -17610,7 +17610,7 @@ FUN_080d4a34: @ 0x080D4A34
 	adds r0, r4, #0
 	movs r1, #0x19
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	movs r5, #0xba
 	lsls r5, r5, #2
 	adds r2, r4, r5
@@ -17650,7 +17650,7 @@ _080D4A8C:
 	beq _080D4AA2
 	ldr r0, [r4, #0x18]
 	ldrh r1, [r5]
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	movs r0, #0
 	strh r0, [r5]
 _080D4AA2:
@@ -17688,7 +17688,7 @@ _080D4AE0:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r5, _080D4B18 @ =0x0000037E
 	adds r1, r4, r5
 	ldrh r0, [r1]
@@ -17703,7 +17703,7 @@ _080D4B0C:
 	adds r0, r4, #0
 	movs r1, #0x19
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4D28
 	.align 2, 0
 _080D4B18: .4byte 0x0000037E
@@ -17728,7 +17728,7 @@ _080D4B30:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r1, #0xba
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -17842,11 +17842,11 @@ _080D4C18:
 	ldr r0, [r4, #0x18]
 	movs r1, #0xaa
 	lsls r1, r1, #2
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r4, #0
 	movs r1, #0x19
 	movs r2, #2
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4D28
 	.align 2, 0
 _080D4C30: .4byte 0x0000037E
@@ -17916,7 +17916,7 @@ _080D4C9A:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	beq _080D4D28
 	movs r2, #0xd6
@@ -17927,7 +17927,7 @@ _080D4C9A:
 	adds r0, r4, #0
 	movs r1, #0x19
 	movs r2, #3
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4D28
 _080D4CD0:
 	ldr r5, _080D4CF0 @ =0x0000037E
@@ -17942,7 +17942,7 @@ _080D4CD0:
 	adds r0, r4, #0
 	movs r1, #0x19
 	movs r2, #4
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4D28
 	.align 2, 0
 _080D4CF0: .4byte 0x0000037E
@@ -17956,7 +17956,7 @@ _080D4CF4:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	beq _080D4D28
 	ldr r2, _080D4D30 @ =0x000003D2
@@ -17968,7 +17968,7 @@ _080D4CF4:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D4D28:
 	pop {r4, r5}
 	pop {r0}
@@ -17996,7 +17996,7 @@ FUN_080d4d34: @ 0x080D4D34
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r0, #0xf5
 	lsls r0, r0, #2
 	adds r1, r5, r0
@@ -18007,22 +18007,22 @@ FUN_080d4d34: @ 0x080D4D34
 	bne _080D4D7C
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D4D78 @ =0x000002EB
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D4D84
 	.align 2, 0
 _080D4D78: .4byte 0x000002EB
 _080D4D7C:
 	ldr r0, [r5, #0x18]
 	movs r1, #0xe7
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D4D84:
 	ldr r0, [r5, #0x18]
 	movs r1, #0xe6
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #0x1a
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D4D96:
 	ldr r1, _080D4DAC @ =0x0000037D
 	adds r0, r5, r1
@@ -18204,7 +18204,7 @@ _080D4EDC:
 	adds r0, r5, #0
 	movs r1, #0x1a
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4F98
 	.align 2, 0
 _080D4EF4: .4byte 0x030046A4
@@ -18221,7 +18221,7 @@ _080D4EF8:
 	bne _080D4F1E
 	ldr r0, [r5, #0x18]
 	movs r1, #0xd1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	adds r0, #0x2c
 	ldr r1, [r5, #0x18]
@@ -18236,13 +18236,13 @@ _080D4F1E:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	beq _080D4F98
 	adds r0, r5, #0
 	movs r1, #0x1a
 	movs r2, #2
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4F98
 _080D4F46:
 	ldr r4, _080D4F64 @ =0x0000037E
@@ -18257,7 +18257,7 @@ _080D4F46:
 	adds r0, r5, #0
 	movs r1, #0x1a
 	movs r2, #3
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D4F98
 	.align 2, 0
 _080D4F64: .4byte 0x0000037E
@@ -18344,7 +18344,7 @@ _080D4FF4:
 	bne _080D5014
 	ldr r0, [r5, #0x18]
 	subs r1, #0x6d
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D501C
 	.align 2, 0
 _080D500C: .4byte 0x000002E6
@@ -18352,15 +18352,15 @@ _080D5010: .4byte 0x000002E7
 _080D5014:
 	ldr r0, [r5, #0x18]
 	movs r1, #0xe7
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D501C:
 	ldr r0, [r5, #0x18]
 	movs r1, #0xe6
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #0x1b
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D502E:
 	ldr r2, _080D5044 @ =0x0000037D
 	adds r0, r5, r2
@@ -18393,7 +18393,7 @@ _080D5060:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r0, _080D50A4 @ =0x0000037E
 	adds r1, r5, r0
 	ldrh r0, [r1]
@@ -18408,7 +18408,7 @@ _080D508C:
 	adds r0, r5, #0
 	movs r1, #0x1b
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	ldr r2, _080D50A8 @ =0x000003F6
 	adds r1, r5, r2
 	movs r0, #0x96
@@ -18428,7 +18428,7 @@ _080D50AC:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	movs r1, #0xba
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -18609,7 +18609,7 @@ _080D5216:
 	ldr r0, [r5, #0x18]
 	movs r1, #0xaa
 	lsls r1, r1, #2
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	adds r0, #0x2c
 	ldr r1, [r5, #0x18]
@@ -18617,7 +18617,7 @@ _080D5216:
 	adds r0, r5, #0
 	movs r1, #0x1b
 	movs r2, #2
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D53D8
 	.align 2, 0
 _080D5240: .4byte 0x000003F6
@@ -18768,7 +18768,7 @@ _080D534C:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	cmp r0, #0
 	beq _080D53D8
 	movs r2, #0xd6
@@ -18779,7 +18779,7 @@ _080D534C:
 	adds r0, r5, #0
 	movs r1, #0x1b
 	movs r2, #3
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D53D8
 	.align 2, 0
 _080D5380: .4byte 0x030046A4
@@ -18796,7 +18796,7 @@ _080D5384:
 	adds r0, r5, #0
 	movs r1, #0x1b
 	movs r2, #4
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D53D8
 	.align 2, 0
 _080D53A4: .4byte 0x0000037E
@@ -18866,7 +18866,7 @@ _080D5412:
 	adds r1, r0, #0
 	adds r0, r5, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r1, _080D5450 @ =0x000003F6
 	adds r0, r5, r1
 	strh r4, [r0]
@@ -18877,11 +18877,11 @@ _080D5412:
 	bl FUN_081df64c
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D5454 @ =0x000001AD
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #0x1c
 	movs r2, #1
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D5504
 	.align 2, 0
 _080D5450: .4byte 0x000003F6
@@ -18902,11 +18902,11 @@ _080D5458:
 	strh r0, [r1]
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D5490 @ =0x000001AF
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	movs r1, #0x1c
 	movs r2, #2
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D5504
 	.align 2, 0
 _080D5488: .4byte 0x0000037E
@@ -18916,7 +18916,7 @@ _080D5494:
 	adds r0, r5, #0
 	movs r1, #0x2c
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r1, _080D54DC @ =0x000003F6
 	adds r2, r5, r1
 	ldrh r0, [r2]
@@ -18943,7 +18943,7 @@ _080D5494:
 	adds r0, r5, #0
 	movs r1, #0x1c
 	movs r2, #3
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D5504
 	.align 2, 0
 _080D54DC: .4byte 0x000003F6
@@ -18983,11 +18983,11 @@ FUN_080d5510: @ 0x080D5510
 	adds r0, r4, #0
 	movs r1, #2
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	ldr r0, [r4, #0x18]
 	movs r1, #0xd1
 	lsls r1, r1, #2
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D5534:
 	adds r0, r4, #0
 	movs r1, #8
@@ -19004,7 +19004,7 @@ _080D5534:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D55C8
 	.align 2, 0
 _080D555C: .4byte 0x0000037E
@@ -19055,7 +19055,7 @@ _080D55AA:
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 _080D55C8:
 	pop {r4, r5}
 	pop {r0}
@@ -19078,7 +19078,7 @@ FUN_080d55d8: @ 0x080D55D8
 	adds r0, r6, #0
 	movs r1, #0xd
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	movs r2, #0x96
 	lsls r2, r2, #4
 	adds r1, r6, r2
@@ -19088,7 +19088,7 @@ FUN_080d55d8: @ 0x080D55D8
 	bl FUN_080cdda8
 	ldr r0, [r6, #0x18]
 	ldr r1, _080D56E4 @ =0x0000039A
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	movs r0, #0x38
 	str r0, [sp]
 	adds r0, r6, #0
@@ -19104,7 +19104,7 @@ _080D561C:
 	bne _080D562E
 	ldr r0, [r6, #0x18]
 	ldr r1, _080D56EC @ =0x000003A1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D562E:
 	ldrh r0, [r4]
 	movs r1, #7
@@ -19134,7 +19134,7 @@ _080D5654:
 	adds r1, r0, #0
 	adds r0, r6, #0
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	ldr r0, _080D56F0 @ =0x0000095E
 	adds r1, r6, r0
 	movs r0, #0x91
@@ -19316,7 +19316,7 @@ _080D579C:
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D57D8:
 	add sp, #4
 	pop {r4, r5, r6, r7}
@@ -19344,7 +19344,7 @@ FUN_080d57e4: @ 0x080D57E4
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D580A:
 	movs r2, #0xcf
 	lsls r2, r2, #2
@@ -19536,7 +19536,7 @@ FUN_080d5948: @ 0x080D5948
 	adds r0, r6, #0
 	movs r1, #1
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D596C:
 	ldr r0, [r6, #0x20]
 	movs r1, #2
@@ -19708,7 +19708,7 @@ _080D5A98:
 	strb r2, [r1]
 	ldr r0, [r6, #0x18]
 	movs r1, #0xc7
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	b _080D5AD8
 	.align 2, 0
 _080D5AC4: .4byte 0x0000034A
@@ -19718,7 +19718,7 @@ _080D5ACC:
 	strb r0, [r1]
 	ldr r0, [r6, #0x18]
 	movs r1, #0xc8
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 _080D5AD8:
 	add sp, #4
 	pop {r4, r5, r6, r7}
@@ -19816,7 +19816,7 @@ _080D5B72:
 	adds r0, r7, #0
 	movs r1, #4
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	adds r1, r7, #0
 	adds r1, #0x2c
 	add r0, sp, #0xc
@@ -19975,7 +19975,7 @@ _080D5CAC:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D5CC8:
 	add sp, #0x14
 	pop {r4, r5, r6, r7}
@@ -19998,7 +19998,7 @@ FUN_080d5cd4: @ 0x080D5CD4
 	adds r0, r6, #0
 	movs r1, #0x14
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D5CF0:
 	movs r2, #0xa4
 	lsls r2, r2, #2
@@ -20189,7 +20189,7 @@ _080D5E44:
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D5E62:
 	add sp, #4
 	pop {r4, r5, r6, r7}
@@ -20401,7 +20401,7 @@ _080D5FE0:
 	ldr r0, [r7, #0x18]
 	movs r1, #0xd8
 	lsls r1, r1, #1
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	ldr r2, _080D6004 @ =0x0000037D
 	adds r1, r7, r2
 	movs r0, #1
@@ -20564,7 +20564,7 @@ _080D611C:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D6130:
 	add sp, #4
 	pop {r3}
@@ -20624,14 +20624,14 @@ _080D6190:
 	beq _080D61A6
 	ldr r0, [r5, #0x18]
 	ldrh r1, [r4]
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	movs r0, #0
 	strh r0, [r4]
 _080D61A6:
 	adds r0, r5, #0
 	movs r1, #0x18
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D61B0:
 	movs r0, #0xcf
 	lsls r0, r0, #2
@@ -20827,7 +20827,7 @@ _080D630A:
 	bne _080D632E
 	ldr r0, [r5, #0x18]
 	ldr r1, _080D633C @ =0x00000191
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	adds r0, #0x2c
 	bl FUN_080acd98
@@ -20923,7 +20923,7 @@ _080D63BA:
 	adds r0, r5, #0
 	movs r1, #0x13
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D6400
 	.align 2, 0
 _080D63E4: .4byte 0x00000395
@@ -20935,7 +20935,7 @@ _080D63F0:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D6400:
 	add sp, #4
 	pop {r4, r5, r6, r7}
@@ -20956,7 +20956,7 @@ FUN_080d6408: @ 0x080D6408
 	adds r0, r6, #0
 	movs r1, #0xd
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	movs r2, #0x96
 	lsls r2, r2, #4
 	adds r1, r6, r2
@@ -20966,7 +20966,7 @@ FUN_080d6408: @ 0x080D6408
 	bl FUN_080cdda8
 	ldr r0, [r6, #0x18]
 	ldr r1, _080D64E4 @ =0x0000039A
-	bl FUN_080cc3e4
+	bl Sound_PlayForPlayer
 	movs r0, #0x38
 	str r0, [sp]
 	adds r0, r6, #0
@@ -20998,7 +20998,7 @@ _080D6474:
 	adds r0, r6, #0
 	movs r1, #0xc7
 	movs r2, #0x40
-	bl FUN_080cc1e8
+	bl PlayerLink_PlayAnim
 	adds r1, r6, #0
 	adds r1, #0xd0
 	ldr r0, _080D64EC @ =0x03003584
@@ -21181,7 +21181,7 @@ _080D65BE:
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D65E8:
 	add sp, #4
 	pop {r4, r5, r6, r7}
@@ -23741,13 +23741,13 @@ _080D7986:
 	adds r0, r5, #0
 	movs r1, #0x1d
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	b _080D79A0
 _080D7996:
 	adds r0, r5, #0
 	movs r1, #0x1c
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 _080D79A0:
 	ldr r4, _080D79AC @ =0x00000376
 	adds r1, r5, r4

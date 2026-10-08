@@ -19,7 +19,7 @@ _080EFF32:
 	beq _080EFF56
 	adds r0, r6, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r0, #0x80
 	lsls r0, r0, #3
 	movs r1, #0xc0

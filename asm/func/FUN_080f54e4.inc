@@ -39,7 +39,7 @@ _080F5506:
 	strh r1, [r0]
 	adds r0, r6, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r7, _080F5580 @ =0x000001DF
 	adds r1, r6, r7
 	ldrb r0, [r1]

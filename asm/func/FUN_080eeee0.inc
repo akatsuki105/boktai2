@@ -35,7 +35,7 @@ _080EEF1E:
 	cmp r0, #0
 	beq _080EEF2A
 	movs r0, #0xb
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	b _080EEF54
 _080EEF2A:
 	movs r5, #0x80

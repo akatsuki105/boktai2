@@ -48,7 +48,7 @@ _0806BF70:
 	blt _0806BF96
 	adds r0, r6, #0
 	movs r1, #0x41
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	movs r1, #0x82
 	lsls r1, r1, #1
 	adds r2, r6, r1

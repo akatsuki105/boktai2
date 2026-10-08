@@ -2,7 +2,7 @@
 	sub sp, #8
 	adds r7, r0, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #0x95
 	lsls r1, r1, #3
 	adds r0, r7, r1
@@ -99,7 +99,7 @@ _080F0BDC:
 	adds r0, r6, #0
 	adds r1, r4, #0
 	adds r2, r5, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080F0C10
 	movs r5, #0xc0
@@ -225,7 +225,7 @@ _080F0CDC:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080F0D00
 	movs r2, #0xc0

@@ -33,7 +33,7 @@ _080F5C38:
 	strb r0, [r7, #5]
 	adds r0, r7, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r1, _080F5D48 @ =0x00000482
 	adds r2, r7, r1
 	movs r1, #1

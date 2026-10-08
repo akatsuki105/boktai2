@@ -88,7 +88,7 @@ _08079C24: .4byte 0x000003CE
 _08079C28:
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	movs r1, #0x93
 	lsls r1, r1, #3
 	adds r0, r5, r1

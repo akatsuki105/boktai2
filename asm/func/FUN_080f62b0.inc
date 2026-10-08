@@ -36,7 +36,7 @@ _080F62DA:
 	adds r0, r7, #0
 	movs r1, #0
 	str r3, [sp]
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #3
 	movs r6, #0x8d
 	lsls r6, r6, #3

@@ -2,7 +2,7 @@
 	sub sp, #0xc
 	adds r5, r0, #0
 	movs r1, #4
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r1, _0806ADEC @ =0x0000037D
 	adds r0, r5, r1
 	ldrb r0, [r0]
@@ -69,7 +69,7 @@ _0806AE50:
 _0806AE64:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	movs r0, #0xd7
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -122,7 +122,7 @@ _0806AED8: .4byte 0x00000145
 _0806AEDC:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r0, _0806AF1C @ =0x0000037E
 	adds r1, r5, r0
 	ldrh r0, [r1]
@@ -154,7 +154,7 @@ _0806AF20: .4byte 0x00001FFF
 _0806AF24:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r0, _0806AF58 @ =0x0000037E
 	adds r1, r5, r0
 	ldrh r0, [r1]
@@ -181,7 +181,7 @@ _0806AF5C: .4byte 0x030047A4
 _0806AF60:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _0806AF68:
 	add sp, #0xc
 	pop {r4, r5}

@@ -18,7 +18,7 @@ _080F5B52:
 	beq _080F5B74
 	adds r0, r7, #0
 	movs r1, #7
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	adds r0, r7, #0
 	bl FUN_080e499c
 	movs r1, #0xc0
@@ -53,7 +53,7 @@ _080F5B74:
 	str r0, [r1]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #3
 	movs r2, #0x8d
 	lsls r2, r2, #3

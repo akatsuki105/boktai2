@@ -475,7 +475,7 @@ void FUN_0823c050(void) {
 
 void FUN_0823c0a4(Camera* cam) { cam->unk_1e = 2; }
 
-void FUN_0823c0ac(Camera* cam) { EntityMsgBox_EndWait(&cam->msgbox, 1); }
+void FUN_0823c0ac(Camera* cam) { MsgQueue_EndWait(&cam->mq, 1); }
 
 NAKED void FUN_0823c0bc(Camera* cam) { INCFUNC("asm/func/FUN_0823c0bc.inc"); }
 
@@ -598,7 +598,7 @@ NAKED s32 Camera_Update(Camera* cam) { INCFUNC("asm/func/Camera_Update.inc"); }
 
 s32 Camera_Destroy(Camera* cam) {
   if (!(gFlag030047a4 & FLAG030047A4_LINK)) {
-    EntityMsgBus_Unregister(&cam->msgbox);
+    MsgQueue_Unregister(&cam->mq);
   }
   gCamera = NULL;
   return 0;

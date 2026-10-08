@@ -307,7 +307,7 @@ NON_MATCH void MapPltt_BlendRows(Entity4AE5* p) {
         d = p->dstPltt + i * 16;
         s1 = p->srcPltt1 + i * 16;
         s2 = p->srcPltt2 + i * 16;
-        for (j = 0xF; j >= 0; j--) {
+        for (j = 0; j < 16; j++) {
           rb = ((*s2 & 0x7C1F) * scale + (*s1 & 0x7C1F) * inv) & 0xF83E0;
           g = ((*s2 & 0x3E0) * scale + (*s1 & 0x3E0) * inv) & 0x7C00;
           *d = (rb | g) >> 5;
@@ -464,17 +464,15 @@ void FUN_080020bc(void) {
   MapPltt_PushCommand(kw_r, count, args);
 }
 
-// clang-format off
 static void (*const sMapPlttStates[7])(Entity4AE5*) = {
-    (void*)NULL,
+    NULL,
     MapPltt_StepCrossfade,
     MapPltt_FadeOut,
     MapPltt_FadeIn,
     MapPltt_FadeOut,
     MapPltt_FadeIn,
-    (void*)NULL,
-}; // 0x085aa634
-// clang-format on
+    NULL,
+};  // 0x085aa634
 
 // cmds に積まれたコマンドを順に処理し、時間帯の変化やフェードの進行を反映する
 NON_MATCH s32 Entity4AE5_Update(Entity4AE5* p) {

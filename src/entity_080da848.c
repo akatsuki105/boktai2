@@ -87,7 +87,12 @@ NAKED void FUN_080d9758(Entity080da848* p) { INCFUNC("asm/func/FUN_080d9758.inc"
 NAKED void FUN_080d9800(Entity080da848* p) { INCFUNC("asm/func/FUN_080d9800.inc"); }
 
 void (*const PTR_ARRAY_085ad2ec[6])(Entity080da848*) = {
-    FUN_080d94b4, FUN_080d9758, FUN_080d92ac, FUN_080d8e98, FUN_080d9800, FUN_080d9800,
+    FUN_080d94b4,
+    FUN_080d9758,
+    FUN_080d92ac,
+    FUN_080d8e98,
+    FUN_080d9800,
+    FUN_080d9800,
 };  // 0x085AD2EC
 
 NAKED void FUN_080d98d4(Entity080da848Elem* p) { INCFUNC("asm/func/FUN_080d98d4.inc"); }

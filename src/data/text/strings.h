@@ -2858,6 +2858,7 @@ const u8 String_0B15[] = _("<LABEL=SABATA>サバタ</LABEL>\n「バカな!?");
 const u8 String_0B16[] = _("<NAME>・・・」");
 const u8 String_0B17[] = _("<LABEL=RINGO3>黒きダ―イン</LABEL>\n<PROC=1><LOCK=85>「ハッハッハッ・・・!!」");
 const u8 String_0B18[] = _("<PROC=0>\n<END>");
+
 const u8 String_0B19[] = _("<LABEL=RINGO3>黒きダ―イン</LABEL>\n「ボクが・・・");
 const u8 String_0B1A[] = _("真なる暗黒仔(あんこくし)たる\nこのボクが・・・なぜ・・・?\n」");
 const u8 String_0B1B[] = _("<LABEL=SABATA>サバタ</LABEL>\n「まだ気がつかないのか?");
@@ -2868,6 +2869,7 @@ const u8 String_0B1F[] = _("リンゴの魂(たましい)も・・・\n完全に
 const u8 String_0B20[] = _("<LABEL=PLAYER><NAME></LABEL>\n<PROC=1><LOCK=69>「明日もまた日は昇(のぼ)る!");
 const u8 String_0B21[] = _("太陽は沈もうとも・・・\n必ずまた、昇るんだ!!」");
 const u8 String_0B22[] = _("<PROC=0>\n<END>");
+
 const u8 String_0B23[] = _("<LABEL=SABATA>サバタ</LABEL>\n「これで塔は・・・\nいましめの槍(やり)は元通りだ");
 const u8 String_0B24[] = _("あとは・・・終末の獣(けもの)\nとやらがどうなったのか・・・\nそれを確かめねばならん。");
 const u8 String_0B25[] = _("<NAME>、\nおまえはそいつを浄化(じょう\nか)するんだ。");

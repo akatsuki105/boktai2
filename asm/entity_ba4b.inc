@@ -5160,7 +5160,7 @@ _0802A60C:
 	ldr r6, [r0]
 	ldr r0, [sp]
 	adds r1, r6, #0
-	bl EntityMsgBox_BeginWait
+	bl MsgQueue_BeginWait
 	ldrb r0, [r6, #6]
 	cmp r0, #0x20
 	bls _0802A634
@@ -5676,7 +5676,7 @@ _0802AA3A:
 	adds r0, r7, r4
 _0802AA40:
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802AB0A
 	.align 2, 0
 _0802AA48: .4byte 0x0000018B
@@ -5773,7 +5773,7 @@ _0802AAFE:
 	lsls r3, r3, #1
 	adds r0, r7, r3
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _0802AB0A:
 	movs r4, #1
 	add sl, r4
@@ -12223,7 +12223,7 @@ _0802DB90:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _0802DBA8:
 	adds r1, r4, #0
 	adds r1, #0xbc
@@ -12262,7 +12262,7 @@ _0802DBD4:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _0802DBEC:
 	adds r1, r4, #0
 	adds r1, #0xbc
@@ -12316,7 +12316,7 @@ _0802DC28:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802DC58
 _0802DC4E:
 	adds r1, r3, #0
@@ -12371,7 +12371,7 @@ _0802DC88:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802DCB8
 _0802DCAE:
 	adds r1, r3, #0
@@ -12429,7 +12429,7 @@ _0802DCE8:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802DD1E
 _0802DD14:
 	adds r1, r3, #0
@@ -12485,7 +12485,7 @@ _0802DD50:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802DD80
 _0802DD76:
 	adds r1, r3, #0
@@ -12541,7 +12541,7 @@ _0802DDB0:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802DDE2
 _0802DDD8:
 	adds r1, r3, #0
@@ -12582,7 +12582,7 @@ _0802DE04:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _0802DE1C:
 	adds r1, r4, #0
 	adds r1, #0xbc
@@ -12648,7 +12648,7 @@ _0802DE6C:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802DE9C
 _0802DE92:
 	adds r1, r3, #0
@@ -12705,7 +12705,7 @@ _0802DED0:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802DF00
 _0802DEF6:
 	adds r1, r3, #0
@@ -12760,7 +12760,7 @@ _0802DF30:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802DF60
 _0802DF56:
 	adds r1, r3, #0
@@ -12806,7 +12806,7 @@ _0802DF90:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802DFAE
 _0802DFA4:
 	adds r1, r3, #0
@@ -12853,7 +12853,7 @@ _0802DFE0:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802DFFE
 _0802DFF4:
 	adds r1, r3, #0
@@ -12900,7 +12900,7 @@ _0802E030:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802E04E
 _0802E044:
 	adds r1, r3, #0
@@ -12947,7 +12947,7 @@ _0802E080:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802E09E
 _0802E094:
 	adds r1, r3, #0
@@ -12988,7 +12988,7 @@ _0802E0C0:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _0802E0D8:
 	adds r1, r4, #0
 	adds r1, #0xbc
@@ -13033,7 +13033,7 @@ _0802E114:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802E132
 _0802E128:
 	adds r1, r3, #0
@@ -13086,7 +13086,7 @@ _0802E170:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802E192
 	.align 2, 0
 _0802E184: .4byte 0x00000173
@@ -13153,7 +13153,7 @@ _0802E1D0:
 	lsls r1, r1, #1
 	adds r0, r2, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802E20A
 	.align 2, 0
 _0802E1FC: .4byte 0x00000173
@@ -13212,7 +13212,7 @@ _0802E23C:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802E26E
 _0802E264:
 	adds r1, r3, #0
@@ -13269,7 +13269,7 @@ _0802E2A0:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802E2D2
 _0802E2C8:
 	adds r1, r3, #0
@@ -13328,7 +13328,7 @@ _0802E304:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802E33A
 _0802E330:
 	adds r1, r3, #0
@@ -13369,7 +13369,7 @@ _0802E35C:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _0802E374:
 	adds r1, r4, #0
 	adds r1, #0xbc
@@ -13423,7 +13423,7 @@ _0802E3B0:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802E3E0
 _0802E3D6:
 	adds r1, r3, #0
@@ -13469,7 +13469,7 @@ _0802E410:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _0802E42E
 _0802E424:
 	adds r1, r3, #0
@@ -14993,7 +14993,7 @@ _0802EFB0:
 	movs r0, #4
 	str r0, [sp, #8]
 	adds r0, r4, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldr r0, _0802F074 @ =0x0000034B
 	bl PlaySound_0824078c
 _0802EFD0:
@@ -15529,7 +15529,7 @@ _0802F3B8:
 	movs r0, #4
 	str r0, [sp, #8]
 	adds r0, r4, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldr r0, _0802F430 @ =0x0000034A
 	bl PlaySound_0824078c
 _0802F3D8:
@@ -15694,7 +15694,7 @@ _0802F4F8:
 	movs r0, #4
 	str r0, [sp, #8]
 	adds r0, r4, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldr r0, _0802F594 @ =0x0000034B
 	bl PlaySound_0824078c
 _0802F518:
@@ -16649,7 +16649,7 @@ _0802FC58:
 	movs r0, #4
 	str r0, [sp, #8]
 	adds r0, r5, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 _0802FC74:
 	adds r0, r5, #0
 	adds r0, #0xfc
@@ -16995,7 +16995,7 @@ _0802FEF0:
 	movs r0, #4
 	str r0, [sp, #8]
 	adds r0, r5, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 _0802FF0E:
 	adds r0, r5, #0
 	adds r0, #0xfc
@@ -17350,7 +17350,7 @@ FUN_08030148: @ 0x08030148
 	str r0, [sp, #8]
 	adds r0, r6, #0
 	movs r3, #0x3a
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	movs r1, #0xaf
 	lsls r1, r1, #1
 	adds r0, r6, r1
@@ -17520,7 +17520,7 @@ _08030296:
 	str r0, [sp, #8]
 	mov r0, r8
 	movs r3, #0x3a
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldr r1, _08030334 @ =0x000008E4
 	adds r0, r6, r1
 	ldrh r0, [r0]
@@ -17610,7 +17610,7 @@ _08030342:
 	str r0, [sp, #8]
 	mov r0, r8
 	movs r3, #0x3b
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	movs r0, #0
 	strh r0, [r4]
 	b _0803047E
@@ -17631,7 +17631,7 @@ _080303D8:
 	str r5, [sp, #8]
 	mov r0, r8
 	movs r3, #0x3a
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	b _08030484
 _080303F8:
 	ldr r4, _08030440 @ =0x00000311
@@ -17666,7 +17666,7 @@ _080303F8:
 	str r0, [sp, #8]
 	mov r0, r8
 	movs r3, #0x3c
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	b _0803047E
 	.align 2, 0
 _08030440: .4byte 0x00000311
@@ -17685,7 +17685,7 @@ _08030448:
 	str r0, [sp, #8]
 	mov r0, r8
 	movs r3, #0x3b
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	b _08030484
 _08030468:
 	ldr r4, _080304BC @ =0x00000311
@@ -17794,7 +17794,7 @@ FUN_080304c0: @ 0x080304C0
 	str r0, [sp, #8]
 	adds r0, r5, #0
 	movs r3, #0x3a
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	movs r1, #0xaf
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -17937,7 +17937,7 @@ _0803061A:
 	adds r0, r5, #0
 	movs r3, #0x3c
 _08030640:
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldrh r0, [r7]
 	adds r0, #1
 	strh r0, [r7]
@@ -17955,7 +17955,7 @@ _0803064C:
 	str r0, [sp, #8]
 	adds r0, r5, #0
 	movs r3, #0x3b
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldrh r0, [r4]
 	adds r0, #1
 	strh r0, [r4]
@@ -18029,7 +18029,7 @@ FUN_08030680: @ 0x08030680
 	str r0, [sp, #8]
 	adds r0, r6, #0
 	movs r3, #0x3a
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	movs r1, #0xaf
 	lsls r1, r1, #1
 	adds r0, r6, r1
@@ -18195,7 +18195,7 @@ _080307C4:
 	str r0, [sp, #8]
 	adds r0, r7, #0
 	movs r3, #0x3a
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldr r1, _08030860 @ =0x000008E4
 	adds r0, r6, r1
 	ldrh r0, [r0]
@@ -18236,7 +18236,7 @@ _08030864:
 	str r0, [sp, #8]
 	adds r0, r7, #0
 	movs r3, #0x3b
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldrh r0, [r5]
 	adds r0, #1
 	b _08030924
@@ -18270,7 +18270,7 @@ _080308A4:
 	str r0, [sp, #8]
 	adds r0, r7, #0
 	movs r3, #0x3c
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldrh r0, [r5]
 	adds r0, #1
 	b _08030924
@@ -18290,7 +18290,7 @@ _080308E8:
 	str r0, [sp, #8]
 	adds r0, r7, #0
 	movs r3, #0x3b
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldrh r0, [r4]
 	adds r0, #1
 	strh r0, [r4]
@@ -18923,7 +18923,7 @@ _08030DBE:
 	movs r0, #4
 	str r0, [sp, #4]
 	mov r0, r8
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r2, #0x87
 	lsls r2, r2, #4
 	adds r1, r5, r2
@@ -19385,7 +19385,7 @@ _08031154:
 	movs r0, #4
 	str r0, [sp, #4]
 	adds r0, r5, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xaf
 	lsls r1, r1, #1
 	adds r0, r4, r1
@@ -19573,7 +19573,7 @@ _080312C2:
 	movs r0, #4
 	str r0, [sp, #4]
 	adds r0, r5, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xaf
 	lsls r1, r1, #1
 	adds r2, r4, r1
@@ -19686,7 +19686,7 @@ _080313A4:
 	movs r0, #4
 	str r0, [sp, #4]
 	adds r0, r5, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	bl FUN_080846f8
 	movs r1, #0xaf
 	lsls r1, r1, #1
@@ -19791,7 +19791,7 @@ dainn_0803141c: @ 0x0803141C
 	str r0, [sp, #4]
 	adds r0, r6, #0
 	movs r3, #0x2d
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xaf
 	lsls r1, r1, #1
 	adds r0, r6, r1
@@ -19923,7 +19923,7 @@ _080314F8:
 	mov r1, r8
 	adds r2, r7, #0
 	movs r3, #0x2d
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	ldrh r0, [r5]
 	adds r0, #1
 	strh r0, [r5]
@@ -20076,7 +20076,7 @@ FUN_0803166c: @ 0x0803166C
 	str r0, [sp, #4]
 	adds r0, r3, #0
 	movs r3, #0x2d
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	ldr r0, _08031728 @ =0x00000353
 	bl PlaySound_0824078c
 _080316BC:
@@ -20174,7 +20174,7 @@ FUN_08031734: @ 0x08031734
 	str r0, [sp, #4]
 	adds r0, r4, #0
 	movs r3, #0x2e
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	ldr r0, _080317E4 @ =0x00000352
 	bl PlaySound_0824078c
 _08031782:
@@ -20274,7 +20274,7 @@ _0803180C:
 	adds r0, r7, #0
 	adds r2, r4, #0
 	movs r3, #0x2f
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -20711,7 +20711,7 @@ _08031B9E:
 	mov r0, sl
 	adds r2, r5, #0
 	movs r3, #0x31
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -20747,7 +20747,7 @@ _08031BE4:
 	mov r0, sl
 	adds r2, r5, #0
 	movs r3, #0x33
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -20828,7 +20828,7 @@ _08031C8A:
 	mov r0, sl
 	adds r2, r5, #0
 	movs r3, #0x35
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -20875,7 +20875,7 @@ _08031CE2:
 	str r0, [sp, #4]
 	mov r0, sl
 	movs r3, #0x37
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r0, #0xd5
 	lsls r0, r0, #2
 	adds r1, r7, r0
@@ -20962,7 +20962,7 @@ _08031D84:
 	str r0, [sp, #4]
 	mov r0, sl
 	movs r3, #0x38
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xa4
 	lsls r1, r1, #4
 	adds r2, r7, r1
@@ -21036,7 +21036,7 @@ _08031E20:
 	str r0, [sp, #4]
 	mov r0, sl
 	movs r3, #0x38
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r2, #0xaf
 	lsls r2, r2, #1
 	adds r1, r7, r2
@@ -21066,7 +21066,7 @@ _08031E60:
 	mov r0, sl
 	adds r2, r6, #0
 	movs r3, #0x35
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r0, #0xd5
 	lsls r0, r0, #2
 	adds r4, r7, r0
@@ -21174,7 +21174,7 @@ FUN_08031f14: @ 0x08031F14
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x2f
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r6, r1
@@ -21279,7 +21279,7 @@ _08032012:
 	mov r0, r8
 	adds r2, r5, #0
 	movs r3, #0x31
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r6, r1
@@ -21311,7 +21311,7 @@ _0803203E:
 	mov r0, r8
 	adds r2, r5, #0
 	movs r3, #0x33
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r6, r1
@@ -21343,7 +21343,7 @@ _0803207E:
 	mov r0, r8
 	adds r2, r5, #0
 	movs r3, #0x35
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r6, r1
@@ -21390,7 +21390,7 @@ _080320D4:
 	str r0, [sp, #4]
 	mov r0, r8
 	movs r3, #0x38
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r2, r6, r1
@@ -21676,7 +21676,7 @@ _0803230E:
 	str r0, [sp, #4]
 	adds r0, r6, #0
 	movs r3, #0x39
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r2, #0xa4
 	lsls r2, r2, #4
 	add r2, r8
@@ -21828,7 +21828,7 @@ _08032450:
 	movs r0, #4
 	str r0, [sp, #4]
 	adds r0, r6, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xaf
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -22090,7 +22090,7 @@ _08032664:
 	movs r0, #4
 	str r0, [sp, #4]
 	adds r0, r6, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xaf
 	lsls r1, r1, #1
 	adds r2, r5, r1
@@ -22162,7 +22162,7 @@ _080326F0:
 	movs r0, #4
 	str r0, [sp, #4]
 	adds r0, r6, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xaf
 	lsls r1, r1, #1
 	adds r2, r5, r1
@@ -22540,7 +22540,7 @@ FUN_08032988: @ 0x08032988
 	str r0, [sp, #8]
 	adds r0, r5, #0
 	movs r3, #0x41
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	movs r1, #0xaf
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -22632,7 +22632,7 @@ _08032A38:
 	str r0, [sp, #8]
 	adds r0, r5, #0
 	movs r3, #0x40
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldrh r0, [r4]
 	adds r0, #1
 	strh r0, [r4]
@@ -22702,7 +22702,7 @@ _08032B14:
 	movs r0, #4
 	str r0, [sp, #4]
 	adds r0, r4, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	bl FUN_080846f8
 	adds r0, r5, #0
 	bl FUN_08029c2c
@@ -23137,7 +23137,7 @@ _08032E6E:
 	movs r7, #0
 	str r7, [sp, #4]
 	adds r0, r4, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	ldr r0, [r6]
 	cmp r0, #0
 	bne _08032E92
@@ -23266,7 +23266,7 @@ _08032F64:
 	movs r0, #4
 	str r0, [sp, #8]
 	adds r0, r6, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	movs r1, #0x8e
 	lsls r1, r1, #4
 	adds r0, r5, r1
@@ -23456,7 +23456,7 @@ _080330E2:
 	str r0, [sp, #4]
 	adds r0, r6, #0
 	movs r3, #0x16
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	b _08033310
 _08033110:
 	adds r0, r4, #0
@@ -23647,7 +23647,7 @@ _0803327C:
 	movs r0, #0
 	str r0, [sp, #4]
 	adds r0, r6, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	adds r0, r5, #0
 	bl FUN_08027ed0
 	adds r1, r0, #0
@@ -23871,7 +23871,7 @@ _08033424:
 	movs r0, #4
 	str r0, [sp, #8]
 	adds r0, r5, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 _0803343E:
 	movs r3, #0xc0
 	lsls r3, r3, #1
@@ -24388,7 +24388,7 @@ _08033800:
 	movs r0, #4
 	str r0, [sp, #8]
 	adds r0, r5, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	b _08033864
 _0803381C:
 	adds r0, r4, #0
@@ -24426,7 +24426,7 @@ _0803384C:
 	str r0, [sp, #4]
 	str r0, [sp, #8]
 	adds r0, r5, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 _08033864:
 	movs r3, #0xc0
 	lsls r3, r3, #1
@@ -25175,7 +25175,7 @@ _08033DCC:
 	movs r0, #4
 	str r0, [sp, #8]
 	adds r0, r5, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	adds r2, r5, #0
 	adds r2, #0xcc
 	ldr r0, [r6, #8]
@@ -25517,7 +25517,7 @@ _08034060:
 	movs r0, #4
 	str r0, [sp, #8]
 	adds r0, r5, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldr r0, _080340DC @ =0x0000034A
 	bl PlaySound_0824078c
 _08034080:
@@ -25715,7 +25715,7 @@ _080341E0:
 	movs r0, #4
 	str r0, [sp, #8]
 	adds r0, r5, #0
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	ldr r0, _08034274 @ =0x0000034B
 	bl PlaySound_0824078c
 _08034200:
@@ -26090,7 +26090,7 @@ FUN_0803446c: @ 0x0803446C
 	str r0, [sp, #8]
 	adds r0, r4, #0
 	movs r3, #0x3a
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 _080344DE:
 	movs r0, #0xc0
 	lsls r0, r0, #1
@@ -26199,7 +26199,7 @@ FUN_08034570: @ 0x08034570
 	str r0, [sp, #8]
 	adds r0, r5, #0
 	movs r3, #0x3b
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	movs r1, #0xaf
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -26297,7 +26297,7 @@ _08034638:
 	str r0, [sp, #8]
 	adds r0, r6, #0
 	movs r3, #0x3c
-	bl FUN_08022c9c
+	bl Boss_PlayAnimFacing
 	b _08034680
 	.align 2, 0
 _08034668: .4byte 0x00000311
@@ -26418,7 +26418,7 @@ _08034734:
 	movs r0, #4
 	str r0, [sp, #4]
 	adds r0, r5, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	ldr r0, _080347A8 @ =0x00000355
 	bl PlaySound_0824078c
 _08034754:
@@ -27442,7 +27442,7 @@ FUN_08034ebc: @ 0x08034EBC
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x2f
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r6, r1
@@ -27545,7 +27545,7 @@ _08034FC6:
 	mov r0, r8
 	adds r2, r5, #0
 	movs r3, #0x31
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r6, r1
@@ -27581,7 +27581,7 @@ _0803500C:
 	mov r0, r8
 	adds r2, r5, #0
 	movs r3, #0x33
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r6, r1
@@ -27660,7 +27660,7 @@ _080350AA:
 	mov r0, r8
 	adds r2, r5, #0
 	movs r3, #0x35
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r6, r1
@@ -27707,7 +27707,7 @@ _08035102:
 	str r0, [sp, #4]
 	mov r0, r8
 	movs r3, #0x37
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r2, #0xd5
 	lsls r2, r2, #2
 	adds r1, r6, r2
@@ -27755,7 +27755,7 @@ _0803514A:
 	str r0, [sp, #4]
 	mov r0, r8
 	movs r3, #0x38
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xa4
 	lsls r1, r1, #4
 	adds r2, r6, r1
@@ -27815,7 +27815,7 @@ _080351E8:
 	str r0, [sp, #4]
 	mov r0, r8
 	movs r3, #0x38
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r2, #0xaf
 	lsls r2, r2, #1
 	adds r1, r6, r2
@@ -27919,7 +27919,7 @@ _080352B0:
 	movs r0, #4
 	str r0, [sp, #4]
 	adds r0, r5, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r3, #0
 	movs r2, #0xca
 	ldr r7, _080352EC @ =0x0000087C
@@ -28110,7 +28110,7 @@ _08035420:
 	movs r4, #4
 	str r4, [sp, #4]
 	adds r0, r6, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r2, #0xc6
 	ldr r3, _0803545C @ =0x0000087C
 	adds r1, r5, r3
@@ -28539,7 +28539,7 @@ _08035750:
 	movs r0, #4
 	str r0, [sp, #4]
 	adds r0, r5, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r0, #6
 	movs r2, #0xce
 	ldr r3, _08035790 @ =0x0000087C
@@ -28715,7 +28715,7 @@ _080358A8:
 	movs r0, #4
 	str r0, [sp, #4]
 	adds r0, r5, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r0, #0xaf
 	lsls r0, r0, #1
 	adds r2, r6, r0

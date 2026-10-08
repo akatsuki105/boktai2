@@ -66,7 +66,7 @@ _080F0496:
 _080F04AC:
 	adds r0, r4, #0
 	movs r1, #6
-	bl FUN_080f9a38
+	bl EnemyTargetManager_Claim
 	adds r7, r0, #0
 	cmp r7, #0
 	bne _080F04BC
@@ -82,7 +82,7 @@ _080F04BC:
 	beq _080F04E2
 	mov r3, sl
 	ldr r0, [r3]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r5]
 	mov r1, r8
 	bics r0, r1
@@ -137,7 +137,7 @@ _080F04E2:
 	adds r0, r7, #0
 	mov r1, r8
 	adds r2, r6, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	beq _080F0570
 	adds r0, r7, #0
@@ -214,8 +214,8 @@ _080F05AE:
 	movs r2, #0xbd
 	lsls r2, r2, #1
 	adds r0, r4, #0
-	bl FUN_080e6768
-	ldr r1, _080F0678 @ =FUN_080e48d0
+	bl Enemy_ClearPendingState
+	ldr r1, _080F0678 @ =Enemy_ClearStateBegun
 	ldr r2, _080F067C @ =0x0000046D
 	adds r0, r4, r2
 	movs r2, #1
@@ -262,7 +262,7 @@ _080F05AE:
 	strb r0, [r1]
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r2, _080F0690 @ =0x00000202
 	adds r1, r4, r2
 	movs r0, #0xb4
@@ -286,7 +286,7 @@ _080F05AE:
 	.align 2, 0
 _080F0670: .4byte 0x00000544
 _080F0674: .4byte 0x08251F80
-_080F0678: .4byte FUN_080e48d0
+_080F0678: .4byte Enemy_ClearStateBegun
 _080F067C: .4byte 0x0000046D
 _080F0680: .4byte 0x0000046B
 _080F0684: .4byte 0x00000469

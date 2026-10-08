@@ -3679,7 +3679,7 @@ _080C4DE2:
 	adds r0, r6, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	b _080C4E30
 _080C4E0C:
 	adds r1, r6, #0
@@ -3698,7 +3698,7 @@ _080C4E0C:
 	adds r0, r6, #0
 	movs r2, #1
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C4E30:
 	adds r0, r6, #0
 	adds r0, #0x94
@@ -3818,7 +3818,7 @@ _080C4EE0:
 	adds r0, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	b _080C4F4E
 	.align 2, 0
 _080C4F20: .4byte 0x000004C5
@@ -3842,7 +3842,7 @@ _080C4F24:
 	adds r0, r4, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C4F4E:
 	ldr r1, _080C4FB4 @ =0x000008F4
 	adds r0, r5, r1
@@ -4025,7 +4025,7 @@ FUN_080c5058: @ 0x080C5058
 	str r0, [sp, #8]
 	adds r0, r6, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	b _080C50F6
 	.align 2, 0
 _080C50C4: .4byte 0x05000002
@@ -4048,7 +4048,7 @@ _080C50D0:
 	str r0, [sp, #8]
 	adds r0, r6, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C50F6:
 	mov r0, sl
 	ldr r1, [sp, #0x38]
@@ -5460,7 +5460,7 @@ FUN_080c5b6c: @ 0x080C5B6C
 	str r1, [sp, #8]
 	movs r1, #0x38
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r2, #0xbe
 	lsls r2, r2, #2
 	adds r0, r4, r2
@@ -5537,7 +5537,7 @@ FUN_080c5c04: @ 0x080C5C04
 	str r1, [sp, #8]
 	movs r1, #0x39
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C5C32:
 	movs r2, #0xd8
 	lsls r2, r2, #0xd
@@ -5552,7 +5552,7 @@ _080C5C32:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _080C5C50:
 	add sp, #0xc
 	pop {r4, r5}
@@ -5733,7 +5733,7 @@ _080C5DA0:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _080C5DB0:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -5797,7 +5797,7 @@ FUN_080c5dd0: @ 0x080C5DD0
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C5E38:
 	movs r2, #0xd8
 	lsls r2, r2, #0xd
@@ -5891,7 +5891,7 @@ FUN_080c5e8c: @ 0x080C5E8C
 	str r1, [sp, #8]
 	movs r1, #3
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C5EF4:
 	movs r2, #0xd8
 	lsls r2, r2, #0xd
@@ -5921,7 +5921,7 @@ _080C5EF4:
 	lsls r3, r3, #1
 	adds r0, r4, r3
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _080C5F32:
 	add sp, #0xc
 	pop {r4, r5, r6}
@@ -5972,7 +5972,7 @@ FUN_080c5f44: @ 0x080C5F44
 	movs r1, #3
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C5F98:
 	movs r2, #0xd8
 	lsls r2, r2, #0xd
@@ -6057,7 +6057,7 @@ FUN_080c5fd8: @ 0x080C5FD8
 	str r1, [sp, #8]
 	movs r1, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C603E:
 	movs r2, #0xd8
 	lsls r2, r2, #0xd
@@ -6122,7 +6122,7 @@ FUN_080c6060: @ 0x080C6060
 	str r1, [sp, #8]
 	movs r1, #0x36
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r3, _080C60EC @ =0x000008F4
 	adds r0, r5, r3
 	strb r4, [r0]
@@ -6172,7 +6172,7 @@ FUN_080c60f4: @ 0x080C60F4
 	str r1, [sp, #8]
 	movs r1, #0x37
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r0, _080C6164 @ =0x000008F4
 	adds r1, r4, r0
 	movs r0, #1
@@ -6268,7 +6268,7 @@ FUN_080c6170: @ 0x080C6170
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r2, #0xe6
 	lsls r2, r2, #2
 	adds r0, r7, r2
@@ -6278,7 +6278,7 @@ FUN_080c6170: @ 0x080C6170
 	movs r1, #0x18
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C61F8:
 	movs r2, #0xd8
 	lsls r2, r2, #0xd
@@ -6408,7 +6408,7 @@ FUN_080c62cc: @ 0x080C62CC
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	ldr r0, _080C634C @ =0x00000225
 	bl PlaySound_082406e0
 	movs r1, #0xc0
@@ -6421,7 +6421,7 @@ FUN_080c62cc: @ 0x080C62CC
 	str r1, [sp, #8]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C6312:
 	movs r2, #0xd8
 	lsls r2, r2, #0xd
@@ -6484,7 +6484,7 @@ FUN_080c6354: @ 0x080C6354
 	str r1, [sp, #8]
 	movs r1, #5
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C638A:
 	movs r2, #0xd8
 	lsls r2, r2, #0xd
@@ -6655,7 +6655,7 @@ _080C64CC:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _080C64DC:
 	pop {r4, r5, r6}
 	pop {r0}
@@ -7104,7 +7104,7 @@ FUN_080c6850: @ 0x080C6850
 	movs r1, #7
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C6896:
 	movs r2, #0xd8
 	lsls r2, r2, #0xd
@@ -7208,7 +7208,7 @@ _080C693C:
 	str r1, [sp, #8]
 	movs r1, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r0, #0xe7
 	bl PlaySound_082406e0
 	b _080C6A44
@@ -7318,7 +7318,7 @@ _080C6A2A:
 	movs r2, #0
 _080C6A2C:
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	b _080C6A44
 	.align 2, 0
 _080C6A34: .4byte 0x00000231
@@ -7401,7 +7401,7 @@ FUN_080c6a5c: @ 0x080C6A5C
 	movs r1, #0xf
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C6AD4:
 	movs r1, #0xd8
 	lsls r1, r1, #0xd
@@ -7667,7 +7667,7 @@ FUN_080c6c8c: @ 0x080C6C8C
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r3, #0xe6
 	lsls r3, r3, #2
 	adds r0, r7, r3
@@ -7677,7 +7677,7 @@ FUN_080c6c8c: @ 0x080C6C8C
 	movs r1, #0x18
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C6D12:
 	adds r0, r7, #0
 	adds r0, #0xfc
@@ -7717,7 +7717,7 @@ _080C6D28:
 	movs r1, #8
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r3, _080C6D78 @ =0x000025E8
 	adds r0, r7, r3
 	b _080C6DA2
@@ -7743,7 +7743,7 @@ _080C6D7C:
 	movs r1, #0xb
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r2, _080C6E00 @ =0x000025E8
 	adds r0, r7, r2
 _080C6DA2:
@@ -7773,7 +7773,7 @@ _080C6DA4:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r2, _080C6E04 @ =0x0000260C
 	adds r0, r7, r2
 	ldrb r0, [r0]
@@ -8292,7 +8292,7 @@ FUN_080c718c: @ 0x080C718C
 	str r1, [sp, #8]
 	movs r1, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r2, _080C7238 @ =0x000025FA
 	adds r0, r5, r2
 	strb r4, [r0]
@@ -8341,7 +8341,7 @@ _080C723C:
 	movs r1, #0x14
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	adds r0, r5, #0
 	bl FUN_080c6b44
 	movs r2, #0xbb
@@ -8385,7 +8385,7 @@ _080C7292:
 _080C72A8:
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	b _080C72DC
 _080C72B2:
 	cmp r6, #0xd2
@@ -8471,7 +8471,7 @@ FUN_080c72f4: @ 0x080C72F4
 	movs r1, #0x12
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r2, #0xe6
 	lsls r2, r2, #2
 	adds r0, r7, r2
@@ -8481,7 +8481,7 @@ FUN_080c72f4: @ 0x080C72F4
 	movs r1, #0x19
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C736E:
 	adds r0, r7, #0
 	adds r0, #0xfc
@@ -8581,7 +8581,7 @@ FUN_080c73c0: @ 0x080C73C0
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r1, #0xe6
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -8592,7 +8592,7 @@ FUN_080c73c0: @ 0x080C73C0
 	movs r1, #0x18
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C7450:
 	adds r0, r6, #0
 	adds r0, #0xfc
@@ -8738,7 +8738,7 @@ FUN_080c7518: @ 0x080C7518
 	movs r1, #3
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C7572:
 	adds r0, r5, #0
 	adds r0, #0xfc
@@ -8846,7 +8846,7 @@ FUN_080c75f8: @ 0x080C75F8
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r2, #0xe6
 	lsls r2, r2, #2
 	adds r0, r7, r2
@@ -8856,7 +8856,7 @@ FUN_080c75f8: @ 0x080C75F8
 	movs r1, #0x18
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r3, _080C76B0 @ =0x000025CA
 	adds r0, r7, r3
 	strh r4, [r0]
@@ -8892,7 +8892,7 @@ _080C7678:
 	movs r1, #8
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r3, _080C76B8 @ =0x000025E8
 	adds r0, r7, r3
 	b _080C76E2
@@ -8917,7 +8917,7 @@ _080C76BC:
 	movs r1, #0xb
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r2, _080C777C @ =0x000025E8
 	adds r0, r7, r2
 _080C76E2:
@@ -8946,7 +8946,7 @@ _080C76E4:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	strh r5, [r4]
 _080C7718:
 	adds r0, r7, #0
@@ -9169,7 +9169,7 @@ FUN_080c789c: @ 0x080C789C
 	str r1, [sp, #8]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C78DC:
 	movs r2, #0x80
 	lsls r2, r2, #0xb
@@ -9286,7 +9286,7 @@ FUN_080c797c: @ 0x080C797C
 	str r1, [sp, #8]
 	movs r1, #5
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C79CC:
 	ldr r2, _080C7A1C @ =0x0000192E
 	adds r4, r5, r2
@@ -9317,7 +9317,7 @@ _080C79E0:
 	movs r1, #5
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	strb r6, [r4]
 	ldr r1, _080C7A24 @ =0x0000192F
 	adds r0, r5, r1
@@ -9439,7 +9439,7 @@ _080C7AEA:
 	movs r1, #6
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C7B08:
 	ldr r3, _080C7B44 @ =0x0000192D
 	adds r0, r5, r3
@@ -9526,7 +9526,7 @@ FUN_080c7b84: @ 0x080C7B84
 	movs r1, #0x2d
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r0, _080C7C18 @ =0x03002BE0
 	ldr r0, [r0]
 	ldr r1, [r0, #0x2c]
@@ -9607,7 +9607,7 @@ FUN_080c7c20: @ 0x080C7C20
 	movs r1, #7
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C7C56:
 	cmp r6, #0x10
 	bne _080C7C74
@@ -9703,7 +9703,7 @@ _080C7CE8:
 	str r1, [sp, #8]
 	movs r1, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r0, _080C7D24 @ =0x03002BE0
 	ldr r0, [r0]
 	movs r1, #0xd9
@@ -9818,7 +9818,7 @@ _080C7DE2:
 	movs r2, #0
 _080C7DE4:
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	b _080C7DFC
 	.align 2, 0
 _080C7DEC: .4byte 0x00000231
@@ -9922,7 +9922,7 @@ FUN_080c7e54: @ 0x080C7E54
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r1, #0xe6
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -9932,7 +9932,7 @@ FUN_080c7e54: @ 0x080C7E54
 	movs r1, #0x18
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C7ED2:
 	adds r0, r7, #0
 	adds r0, #0xfc
@@ -10033,7 +10033,7 @@ FUN_080c7f34: @ 0x080C7F34
 	movs r1, #0x13
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r1, #0xe6
 	lsls r1, r1, #2
 	adds r0, r6, r1
@@ -10044,7 +10044,7 @@ FUN_080c7f34: @ 0x080C7F34
 	movs r1, #0x18
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C7FB2:
 	adds r0, r7, #0
 	adds r0, #0xfc
@@ -10153,7 +10153,7 @@ FUN_080c800c: @ 0x080C800C
 	movs r1, #0x14
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r1, #0xe6
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -10163,7 +10163,7 @@ FUN_080c800c: @ 0x080C800C
 	movs r1, #0x18
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C80A4:
 	adds r0, r7, #0
 	adds r0, #0xfc
@@ -10302,7 +10302,7 @@ FUN_080c819c: @ 0x080C819C
 	str r1, [sp, #8]
 	movs r1, #0x15
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C81CA:
 	cmp r5, #0x24
 	ble _080C81D6
@@ -10372,7 +10372,7 @@ FUN_080c81e0: @ 0x080C81E0
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r2, #0xe6
 	lsls r2, r2, #2
 	adds r0, r7, r2
@@ -10382,7 +10382,7 @@ FUN_080c81e0: @ 0x080C81E0
 	movs r1, #0x19
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8266:
 	adds r0, r7, #0
 	adds r0, #0xfc
@@ -10561,7 +10561,7 @@ FUN_080c8358: @ 0x080C8358
 	movs r1, #0x11
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r1, #0xe6
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -10572,7 +10572,7 @@ FUN_080c8358: @ 0x080C8358
 	movs r1, #0x19
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C83E0:
 	adds r0, r5, #0
 	adds r0, #0xfc
@@ -10679,7 +10679,7 @@ _080C8498:
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r3, #0xe6
 	lsls r3, r3, #2
 	adds r0, r6, r3
@@ -10690,7 +10690,7 @@ _080C8498:
 	movs r1, #0x18
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C84CC:
 	adds r0, r7, #0
 	adds r0, #0xfc
@@ -10769,7 +10769,7 @@ FUN_080c852c: @ 0x080C852C
 	movs r1, #2
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r1, #0xe6
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -10779,7 +10779,7 @@ FUN_080c852c: @ 0x080C852C
 	movs r1, #0x18
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8588:
 	adds r0, r7, #0
 	adds r0, #0xfc
@@ -10895,7 +10895,7 @@ FUN_080c8644: @ 0x080C8644
 	str r1, [sp, #8]
 	movs r1, #3
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8674:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -10980,7 +10980,7 @@ FUN_080c86ac: @ 0x080C86AC
 	movs r1, #0x2f
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r2, #0xc0
 	lsls r2, r2, #2
 	adds r0, r6, r2
@@ -10991,7 +10991,7 @@ FUN_080c86ac: @ 0x080C86AC
 	movs r1, #0x11
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8730:
 	adds r0, r6, #0
 	adds r0, #0xfc
@@ -11023,7 +11023,7 @@ _080C8730:
 	movs r1, #0x12
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r2, #0xe6
 	lsls r2, r2, #2
 	adds r0, r6, r2
@@ -11033,7 +11033,7 @@ _080C8730:
 	movs r1, #0x19
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8788:
 	mov r0, r8
 	bl FUN_080c4990
@@ -11090,7 +11090,7 @@ FUN_080c87c8: @ 0x080C87C8
 	str r1, [sp, #8]
 	movs r1, #0x30
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C87F8:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -11174,7 +11174,7 @@ FUN_080c8848: @ 0x080C8848
 	movs r1, #0x32
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C889E:
 	adds r0, r5, #0
 	adds r0, #0xfc
@@ -11344,7 +11344,7 @@ FUN_080c898c: @ 0x080C898C
 	movs r1, #0x2f
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r2, #0xc0
 	lsls r2, r2, #2
 	adds r0, r6, r2
@@ -11355,7 +11355,7 @@ FUN_080c898c: @ 0x080C898C
 	movs r1, #0x11
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8A10:
 	adds r0, r6, #0
 	adds r0, #0xfc
@@ -11387,7 +11387,7 @@ _080C8A10:
 	movs r1, #0x12
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r2, #0xe6
 	lsls r2, r2, #2
 	adds r0, r6, r2
@@ -11397,7 +11397,7 @@ _080C8A10:
 	movs r1, #0x19
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8A68:
 	mov r0, r8
 	bl FUN_080c4990
@@ -11454,7 +11454,7 @@ FUN_080c8aa8: @ 0x080C8AA8
 	str r1, [sp, #8]
 	movs r1, #0x31
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8AD8:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -11528,7 +11528,7 @@ FUN_080c8b28: @ 0x080C8B28
 	str r1, [sp, #8]
 	movs r1, #0x33
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8B68:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -11665,7 +11665,7 @@ FUN_080c8c4c: @ 0x080C8C4C
 	str r1, [sp, #8]
 	movs r1, #0x34
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8C7C:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -11756,7 +11756,7 @@ FUN_080c8cc8: @ 0x080C8CC8
 	str r1, [sp, #8]
 	movs r1, #0x11
 	movs r2, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8D2C:
 	adds r0, r6, #0
 	adds r0, #0xfc
@@ -11788,7 +11788,7 @@ _080C8D2C:
 	movs r1, #0x12
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r2, #0xe6
 	lsls r2, r2, #2
 	adds r0, r6, r2
@@ -11798,7 +11798,7 @@ _080C8D2C:
 	movs r1, #0x19
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8D84:
 	mov r0, r8
 	cmp r0, #0x13
@@ -11845,7 +11845,7 @@ FUN_080c8dac: @ 0x080C8DAC
 	str r1, [sp, #8]
 	movs r1, #0x2a
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8DDC:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -11912,7 +11912,7 @@ FUN_080c8e14: @ 0x080C8E14
 	movs r1, #0x2b
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8E62:
 	adds r0, r5, #0
 	adds r0, #0xfc
@@ -11978,7 +11978,7 @@ FUN_080c8eb8: @ 0x080C8EB8
 	str r1, [sp, #8]
 	movs r1, #0x2c
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8EE6:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -12036,7 +12036,7 @@ FUN_080c8f20: @ 0x080C8F20
 	str r1, [sp, #8]
 	movs r1, #0xb
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C8F54:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -12154,7 +12154,7 @@ FUN_080c8fe0: @ 0x080C8FE0
 	movs r1, #0xc
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C903C:
 	adds r0, r7, #0
 	adds r0, #0xfc
@@ -12192,7 +12192,7 @@ _080C9052:
 	movs r1, #0xd
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r2, _080C917C @ =0x000025E8
 	adds r0, r7, r2
 	strh r4, [r0]
@@ -12233,7 +12233,7 @@ _080C90AA:
 	movs r1, #0xc
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	strh r5, [r4]
 _080C90DC:
 	movs r0, #0xf
@@ -12461,7 +12461,7 @@ FUN_080c9278: @ 0x080C9278
 	str r1, [sp, #8]
 	movs r1, #8
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C92AC:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -12579,7 +12579,7 @@ FUN_080c9338: @ 0x080C9338
 	movs r1, #9
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C9394:
 	adds r0, r7, #0
 	adds r0, #0xfc
@@ -12617,7 +12617,7 @@ _080C93AA:
 	movs r1, #0xa
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r2, _080C94D0 @ =0x000025E8
 	adds r0, r7, r2
 	strh r6, [r0]
@@ -12657,7 +12657,7 @@ _080C9402:
 	movs r1, #9
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	strh r5, [r4]
 _080C9432:
 	movs r0, #0xf
@@ -12881,7 +12881,7 @@ FUN_080c95cc: @ 0x080C95CC
 	str r1, [sp, #8]
 	movs r1, #0xd
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C95FC:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -12945,7 +12945,7 @@ FUN_080c9648: @ 0x080C9648
 	str r1, [sp, #8]
 	movs r1, #0xa
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C9678:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -13008,7 +13008,7 @@ FUN_080c96c4: @ 0x080C96C4
 	str r1, [sp, #8]
 	movs r1, #0xe
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C96F2:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -13105,7 +13105,7 @@ FUN_080c9774: @ 0x080C9774
 	str r1, [sp, #8]
 	movs r1, #0xf
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C97AE:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -13192,7 +13192,7 @@ FUN_080c9824: @ 0x080C9824
 	str r1, [sp, #8]
 	movs r1, #0x10
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C9858:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -13342,7 +13342,7 @@ FUN_080c994c: @ 0x080C994C
 	str r1, [sp, #8]
 	movs r1, #0xf
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	movs r2, #0xbe
 	lsls r2, r2, #2
 	adds r0, r6, r2
@@ -13543,7 +13543,7 @@ FUN_080c9aec: @ 0x080C9AEC
 	movs r1, #0x35
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	ldr r2, _080C9CA0 @ =0x000025F8
 	adds r1, r6, r2
 	movs r0, #3
@@ -13571,7 +13571,7 @@ _080C9B3C:
 	movs r1, #0x36
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _080C9B5C:
 	ldr r2, _080C9CAC @ =0x00400002
 	adds r1, r6, #0
@@ -14010,7 +14010,7 @@ _080C9E90:
 	ldr r2, _080C9F08 @ =0x000025CE
 	adds r1, r4, r2
 	ldrh r1, [r1]
-	bl AddWeaponExpByMask
+	bl Player_AddWeaponExp
 	movs r0, #1
 	b _080C9FB2
 	.align 2, 0
@@ -14857,7 +14857,7 @@ _080CA504:
 	ldr r4, [r0]
 	mov r0, r8
 	adds r1, r4, #0
-	bl EntityMsgBox_BeginWait
+	bl MsgQueue_BeginWait
 	ldrb r0, [r4, #6]
 	subs r0, #0x12
 	cmp r0, #0x1a
@@ -14973,7 +14973,7 @@ _080CA634:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _080CA672
 	.align 2, 0
 _080CA644: .4byte 0x000025BC

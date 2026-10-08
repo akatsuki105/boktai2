@@ -6,14 +6,14 @@
 
 // デモのメッセージ cmd 7 で呼び出され、リンゴ を 6段のアニメーションで見せてからデモの待ちを解く
 typedef struct {
-  Entity e;              // 0x000, ENTITY_UNK_8
-  u32 state;             // 0x018, 0..5 の switch, 5 フレームごとに次へ進む
-  u32 timer;             // 0x01C, Update の先頭と末尾で +1 されるので毎フレーム +2, 4 を超えると state を進めて 0 に戻す
-  Vec3 pos;              // 0x020, Init の第2引数, 両方の MainSprite が指す
-  MainSpriteGfx gfx;     // 0x028, SPRITE_RINGO
-  MainSprite sprite;     // 0x048, prio2, state 5 で animEvents の bit1 を見て終了を待つ
-  MainSprite sprite2;    // 0x0A8, prio3, state 3 で SPRFLAG_HIDDEN を立てて消す
-  EntityMsgBox* msgBox;  // 0x108, Init の第3引数, 終わったら EntityMsgBox_EndWait(msgBox, 1)
+  Entity e;            // 0x000, ENTITY_UNK_8
+  u32 state;           // 0x018, 0..5 の switch, 5 フレームごとに次へ進む
+  u32 timer;           // 0x01C, Update の先頭と末尾で +1 されるので毎フレーム +2, 4 を超えると state を進めて 0 に戻す
+  Vec3 pos;            // 0x020, Init の第2引数, 両方の MainSprite が指す
+  MainSpriteGfx gfx;   // 0x028, SPRITE_RINGO
+  MainSprite sprite;   // 0x048, prio2, state 5 で animEvents の bit1 を見て終了を待つ
+  MainSprite sprite2;  // 0x0A8, prio3, state 3 で SPRFLAG_HIDDEN を立てて消す
+  MsgQueue* mq;        // 0x108, Init の第3引数, 終わったら MsgQueue_EndWait(mq, 1)
 } RingoDemoAnim;
 static_assert(sizeof(RingoDemoAnim) == 268);
 
@@ -71,7 +71,7 @@ s32 RingoDemoAnim_Update(RingoDemoAnim* p) {
     }
     case 5: {
       if (p->sprite.animEvents & MAIN_ANIM_EVENT_ENDED) {
-        EntityMsgBox_EndWait(p->msgBox, 1);
+        MsgQueue_EndWait(p->mq, 1);
         KillEntity((Entity*)p);
       }
       break;
@@ -91,11 +91,11 @@ s32 RingoDemoAnim_Destroy(RingoDemoAnim* p) {
 }
 
 // リンゴの絵を読んで 2 枚のスプライトを同じ座標に重ね、1 段目のアニメーションを当てる
-s32 RingoDemoAnim_Init(RingoDemoAnim* p, Vec3* pos, EntityMsgBox* msgBox) {
+s32 RingoDemoAnim_Init(RingoDemoAnim* p, Vec3* pos, MsgQueue* mq) {
   Vec3* q;
   MainSpriteGfxFile* f;
 
-  p->msgBox = msgBox;
+  p->mq = mq;
   q = &p->pos;
   *q = *pos;
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_RINGO);
@@ -113,12 +113,12 @@ s32 RingoDemoAnim_Init(RingoDemoAnim* p, Vec3* pos, EntityMsgBox* msgBox) {
   return 0;
 }
 
-RingoDemoAnim* RingoDemoAnim_Create(Vec3* pos, EntityMsgBox* msgBox) {
+RingoDemoAnim* RingoDemoAnim_Create(Vec3* pos, MsgQueue* mq) {
   RingoDemoAnim* p = CreateEntity(ENTITY_UNK_8, sizeof(RingoDemoAnim));
 
   if (p != NULL) {
     SetEntityRoutine(p, RingoDemoAnim_Update, RingoDemoAnim_Destroy);
-    if (RingoDemoAnim_Init(p, pos, msgBox) < 0) {
+    if (RingoDemoAnim_Init(p, pos, mq) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

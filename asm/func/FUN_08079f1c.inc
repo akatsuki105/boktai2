@@ -376,7 +376,7 @@ _0807A1FC: .4byte 0x000003BE
 _0807A200:
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	movs r2, #0xdf
 	lsls r2, r2, #2
 	adds r1, r5, r2
@@ -412,7 +412,7 @@ _0807A248: .4byte 0x085ABEDC
 _0807A24C:
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	movs r4, #0x93
 	lsls r4, r4, #3
 	adds r0, r5, r4

@@ -1,5 +1,4 @@
 #include "entity.h"
-#include "gba/linkManager.h"
 #include "global.h"
 #include "input.h"
 #include "malloc.h"
@@ -112,9 +111,43 @@ s32 FUN_0804de18(Entity0804e2c0*);
 s32 FUN_0804de40(Entity0804e2c0*);
 s32 FUN_0804de58(Entity0804e2c0*);
 
+// clang-format off
 Entity0804e2c0Func* const PTR_ARRAY_085ab5e0[33] = {
-    FUN_0804c3cc, FUN_0804c3e4, FUN_0804c438, FUN_0804c57c, FUN_0804c5c0, FUN_0804c5d8, FUN_0804c650, FUN_0804c6ac, FUN_0804c7c8, FUN_0804c888, FUN_0804c8bc, FUN_0804c8f4, FUN_0804c940, FUN_0804c978, FUN_0804c9a8, FUN_0804cb6c, FUN_0804cb84, FUN_0804cb9c, FUN_0804cbb4, FUN_0804d698, FUN_0804d6d0, FUN_0804da50, FUN_0804de18, FUN_0804da78, FUN_0804de40, FUN_0804dae4, FUN_0804de58, FUN_0804cbcc, FUN_0804cbfc, FUN_0804cc38, FUN_0804cc7c, FUN_0804cc98, FUN_0804ccbc,
+    FUN_0804c3cc,
+    FUN_0804c3e4,
+    FUN_0804c438,
+    FUN_0804c57c,
+    FUN_0804c5c0,
+    FUN_0804c5d8,
+    FUN_0804c650,
+    FUN_0804c6ac,
+    FUN_0804c7c8,
+    FUN_0804c888,
+    FUN_0804c8bc,
+    FUN_0804c8f4,
+    FUN_0804c940,
+    FUN_0804c978,
+    FUN_0804c9a8,
+    FUN_0804cb6c,
+    FUN_0804cb84,
+    FUN_0804cb9c,
+    FUN_0804cbb4,
+    FUN_0804d698,
+    FUN_0804d6d0,
+    FUN_0804da50,
+    FUN_0804de18,
+    FUN_0804da78,
+    FUN_0804de40,
+    FUN_0804dae4,
+    FUN_0804de58,
+    FUN_0804cbcc,
+    FUN_0804cbfc,
+    FUN_0804cc38,
+    FUN_0804cc7c,
+    FUN_0804cc98,
+    FUN_0804ccbc,
 };  // 0x085AB5E0
+// clang-format on
 
 NAKED s32 FUN_0804b9f4(void) { INCFUNC("asm/func/FUN_0804b9f4.inc"); }
 

@@ -692,7 +692,7 @@ _08115804:
 	adds r3, #3
 	adds r0, r4, r3
 	strb r1, [r0]
-	ldr r3, _0811586C @ =FUN_080e48d0
+	ldr r3, _0811586C @ =Enemy_ClearStateBegun
 	movs r2, #0x10
 	adds r6, #3
 	adds r0, r4, r6
@@ -727,7 +727,7 @@ _0811585C:
 	.align 2, 0
 _08115864: .4byte 0x00000469
 _08115868: .4byte 0x0000046A
-_0811586C: .4byte FUN_080e48d0
+_0811586C: .4byte Enemy_ClearStateBegun
 _08115870: .4byte 0x0000046B
 
 	thumb_func_start FUN_08115874
@@ -1002,7 +1002,7 @@ _08115A6C:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _08115AAC
 	movs r2, #0xc0
@@ -1132,7 +1132,7 @@ _08115B74:
 	adds r4, r5, r2
 	ldr r2, [r4]
 	adds r2, #8
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	beq _08115BAE
 	movs r1, #0xd9
@@ -1222,7 +1222,7 @@ _08115C2C:
 	adds r1, r6, #0
 	adds r1, #8
 	adds r2, r5, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	beq _08115C6A
 	movs r1, #0xd9
@@ -1310,7 +1310,7 @@ FUN_08115ce0: @ 0x08115CE0
 	ldr r1, _08115D44 @ =0x0825200C
 	movs r2, #0x86
 	lsls r2, r2, #2
-	bl FUN_080e6768
+	bl Enemy_ClearPendingState
 	movs r1, #2
 	movs r2, #0x8d
 	lsls r2, r2, #3
@@ -1505,7 +1505,7 @@ FUN_08115dd8: @ 0x08115DD8
 	bl FUN_080e6204
 	adds r0, r6, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r0, [r6, #0x44]
 	adds r5, r0, #0
 	adds r4, r5, #0
@@ -1963,7 +1963,7 @@ FUN_081161d0: @ 0x081161D0
 	adds r0, r6, r1
 	ldr r4, [r0]
 	adds r0, r6, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081161EC
@@ -2162,7 +2162,7 @@ FUN_08116350: @ 0x08116350
 	ldr r0, [r0]
 	mov r8, r0
 	adds r0, r5, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0811637A
@@ -2345,7 +2345,7 @@ _081164BA:
 	beq _08116524
 _081164BE:
 	adds r0, r5, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081164EC
@@ -2461,7 +2461,7 @@ _08116590: .4byte 0x03002BE0
 _08116594: .4byte 0x000006BC
 _08116598:
 	adds r0, r5, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081165C6
@@ -2501,7 +2501,7 @@ _081165E0: .4byte 0xFEFFFFFF
 _081165E4: .4byte 0x000006BC
 _081165E8:
 	adds r0, r5, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08116616
@@ -2545,7 +2545,7 @@ FUN_08116628: @ 0x08116628
 	adds r7, r1, #0
 	adds r6, r2, #0
 	adds r0, r6, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	lsrs r2, r0, #0x18
 	cmp r2, #0
@@ -3448,7 +3448,7 @@ FUN_08116ce4: @ 0x08116CE4
 _08116CF6:
 	adds r0, r2, #0
 	movs r1, #1
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	pop {r0}
 	bx r0
 	.align 2, 0
@@ -3468,7 +3468,7 @@ FUN_08116d08: @ 0x08116D08
 _08116D1A:
 	adds r0, r2, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	pop {r0}
 	bx r0
 	.align 2, 0
@@ -3577,7 +3577,7 @@ _08116DCA:
 	beq _08116E2C
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #3
 	movs r2, #0x8d
 	lsls r2, r2, #3
@@ -3609,7 +3609,7 @@ _08116E28: .4byte 0x000005BC
 _08116E2C:
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	b _081173C0
 _08116E36:
 	cmp r2, #1
@@ -4247,7 +4247,7 @@ _081172FA:
 	strb r0, [r5, #5]
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #0x80
 	lsls r1, r1, #3
 	mov r2, sb
@@ -4389,7 +4389,7 @@ _08117430:
 	ble _0811746C
 	adds r0, r4, #0
 	movs r1, #7
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r2, _08117464 @ =FUN_0811747c
 	movs r1, #0xd
 	movs r0, #1
@@ -4652,7 +4652,7 @@ _081174F2:
 	ldr r1, _081176B8 @ =0x08251FF4
 	adds r0, r6, #0
 	ldr r2, _081176BC @ =0x00000982
-	bl FUN_080e6768
+	bl Enemy_ClearPendingState
 	movs r2, #0xa8
 	lsls r2, r2, #3
 	adds r0, r6, r2
@@ -4727,7 +4727,7 @@ _081176E2:
 	beq _08117704
 	adds r0, r5, #0
 	movs r1, #6
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r0, #2
 	movs r1, #0xc0
 	lsls r1, r1, #1
@@ -4822,7 +4822,7 @@ _0811779E:
 	beq _081177BA
 	adds r0, r4, #0
 	movs r1, #7
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #0xc0
 	lsls r1, r1, #1
 	adds r0, r4, r1
@@ -4886,7 +4886,7 @@ _08117812:
 	beq _08117826
 	adds r0, r4, #0
 	movs r1, #0xf
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r0, _08117838 @ =0x0000046E
 	adds r1, r4, r0
 	movs r0, #0
@@ -4926,7 +4926,7 @@ _0811785A:
 	beq _08117876
 	adds r0, r5, #0
 	movs r1, #0xf
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r0, #0x80
 	lsls r0, r0, #1
 	movs r1, #0xc0
@@ -5121,7 +5121,7 @@ _081179D0:
 	adds r0, r5, #0
 	add r1, sp, #4
 	adds r2, r4, #0
-	bl FUN_080e5d44
+	bl Enemy_SetAnimFacing
 	add r0, sp, #4
 	ldrb r3, [r0]
 	ldrb r2, [r4]
@@ -5389,7 +5389,7 @@ _08117BD6:
 	adds r0, r6, #0
 	add r1, sp, #8
 	adds r2, r4, #0
-	bl FUN_080e5d44
+	bl Enemy_SetAnimFacing
 	add r0, sp, #8
 	ldrb r3, [r0]
 	ldrb r2, [r4]
@@ -5646,7 +5646,7 @@ _08117DE2:
 	adds r0, r5, #0
 	add r1, sp, #4
 	adds r2, r4, #0
-	bl FUN_080e5d44
+	bl Enemy_SetAnimFacing
 	add r0, sp, #4
 	ldrb r3, [r0]
 	ldrb r1, [r4]
@@ -5856,7 +5856,7 @@ _08117F72:
 	adds r0, r6, #0
 	add r1, sp, #4
 	adds r2, r4, #0
-	bl FUN_080e5d44
+	bl Enemy_SetAnimFacing
 	add r0, sp, #4
 	ldrb r3, [r0]
 	ldrb r2, [r4]
@@ -6443,7 +6443,7 @@ _0811841A:
 	adds r0, r5, #0
 	add r1, sp, #8
 	adds r2, r4, #0
-	bl FUN_080e5d44
+	bl Enemy_SetAnimFacing
 	add r0, sp, #8
 	ldrb r3, [r0]
 	ldrb r2, [r4]
@@ -6796,7 +6796,7 @@ _081186DA:
 _081186E6:
 	adds r0, r7, #0
 	movs r1, #0x10
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r6, #0x20
 	movs r3, #0xc1
 	lsls r3, r3, #1
@@ -7228,7 +7228,7 @@ _08118A34:
 	adds r0, r6, #0
 	add r1, sp, #4
 	adds r2, r4, #0
-	bl FUN_080e5d44
+	bl Enemy_SetAnimFacing
 	add r0, sp, #4
 	ldrb r3, [r0]
 	ldrb r2, [r4]
@@ -7690,7 +7690,7 @@ _08118DD4:
 	adds r0, r6, #0
 	add r1, sp, #4
 	adds r2, r4, #0
-	bl FUN_080e5d44
+	bl Enemy_SetAnimFacing
 	strb r5, [r6, #5]
 	add r0, sp, #4
 	ldrb r3, [r0]
@@ -7977,7 +7977,7 @@ _0811900E:
 	beq _08119022
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r3, _081190D4 @ =0x0000046E
 	adds r1, r4, r3
 	movs r0, #0
@@ -8020,7 +8020,7 @@ _08119034:
 	bl FUN_080e6304
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #0xb7
 	lsls r1, r1, #3
 	adds r0, r4, r1
@@ -8094,8 +8094,8 @@ _081190F4:
 	bl FUN_080e6304
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080ef86c
-	ldr r1, _0811917C @ =FUN_080e48d0
+	bl Enemy_PlayAnim
+	ldr r1, _0811917C @ =Enemy_ClearStateBegun
 	movs r3, #0x10
 	ldr r6, _08119180 @ =0x0000046D
 	adds r0, r4, r6
@@ -8146,7 +8146,7 @@ _081190F4:
 	b _081191AC
 	.align 2, 0
 _08119178: .4byte 0x0000068C
-_0811917C: .4byte FUN_080e48d0
+_0811917C: .4byte Enemy_ClearStateBegun
 _08119180: .4byte 0x0000046D
 _08119184: .4byte 0x0000046B
 _08119188: .4byte 0x0000046A
@@ -8205,7 +8205,7 @@ _081191E6:
 	beq _081191F2
 	adds r0, r7, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _081191F2:
 	movs r0, #0x10
 	movs r1, #0xc1
@@ -8244,7 +8244,7 @@ _0811922C:
 	strb r5, [r0]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r0, #3
 	movs r1, #0x8d
 	lsls r1, r1, #3
@@ -8971,7 +8971,7 @@ _081197AE:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _081197F0
 	ldr r0, _081197EC @ =0xFFFFFDFF
@@ -9186,7 +9186,7 @@ _0811995C:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _08119994
 	ldr r0, _08119990 @ =0xFFFFFDFF
@@ -9226,7 +9226,7 @@ _081199C0:
 	adds r3, r0, #0
 	cmp r3, #0
 	bne _08119A00
-	ldr r0, _081199FC @ =FUN_080e48d0
+	ldr r0, _081199FC @ =Enemy_ClearStateBegun
 	movs r2, #1
 	ldr r4, [sp, #0x2c]
 	strb r2, [r4]
@@ -9253,7 +9253,7 @@ _081199C0:
 	b _08119A0C
 	.align 2, 0
 _081199F8: .4byte 0xFFFFFDFF
-_081199FC: .4byte FUN_080e48d0
+_081199FC: .4byte Enemy_ClearStateBegun
 _08119A00:
 	movs r4, #0x95
 	lsls r4, r4, #3
@@ -9298,7 +9298,7 @@ _08119A42:
 	beq _08119A76
 	adds r0, r7, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #0x93
 	lsls r1, r1, #3
 	adds r0, r7, r1
@@ -10269,7 +10269,7 @@ _0811A1A2:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811A1E4
 	ldr r0, _0811A1E0 @ =0xFFFFFDFF
@@ -10338,7 +10338,7 @@ _0811A22E:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811A26C
 	ldr r0, _0811A268 @ =0xFFFFFDFF
@@ -11190,7 +11190,7 @@ _0811A8C4:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811A904
 	ldr r0, _0811A900 @ =0xFFFFFDFF
@@ -11259,7 +11259,7 @@ _0811A94E:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811A98C
 	ldr r0, _0811A988 @ =0xFFFFFDFF
@@ -11413,7 +11413,7 @@ _0811AA8E:
 	beq _0811AB04
 	adds r0, r7, #0
 	movs r1, #0xa
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r1, _0811ABAC @ =0x0000046E
 	adds r0, r7, r1
 	movs r4, #0
@@ -11763,7 +11763,7 @@ _0811AD6A:
 	movs r0, #0xe5
 	bl PlaySound_082406e0
 _0811AD70:
-	ldr r3, _0811ADF4 @ =FUN_080e48d0
+	ldr r3, _0811ADF4 @ =Enemy_ClearStateBegun
 	movs r2, #0x10
 	ldr r5, _0811ADF8 @ =0x0000046D
 	adds r0, r7, r5
@@ -11823,7 +11823,7 @@ _0811ADE4: .4byte 0x0000FFFF
 _0811ADE8: .4byte 0x030046B8
 _0811ADEC: .4byte 0x000003FF
 _0811ADF0: .4byte 0x0203B400
-_0811ADF4: .4byte FUN_080e48d0
+_0811ADF4: .4byte Enemy_ClearStateBegun
 _0811ADF8: .4byte 0x0000046D
 _0811ADFC: .4byte 0x0000046A
 _0811AE00: .4byte 0x0000046C
@@ -11903,7 +11903,7 @@ _0811AE86:
 	strb r0, [r7, #5]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r0, _0811AF1C @ =0xFFFFDFDF
 	ldrh r1, [r6]
 	ands r0, r1
@@ -12681,7 +12681,7 @@ _0811B482:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811B4BC
 	movs r1, #0xc0
@@ -12749,7 +12749,7 @@ _0811B50A:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811B540
 	movs r2, #0xc0
@@ -13241,7 +13241,7 @@ _0811B90A:
 	strb r0, [r2]
 	adds r0, r7, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _0811B936:
 	movs r2, #0xec
 	lsls r2, r2, #1
@@ -14018,7 +14018,7 @@ _0811BF18:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811BF50
 	movs r6, #0xc0
@@ -14086,7 +14086,7 @@ _0811BF9E:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811BFD4
 	movs r5, #0xc0
@@ -14205,7 +14205,7 @@ _0811C08C:
 	strb r0, [r2]
 	adds r0, r7, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _0811C0B8:
 	movs r6, #0xec
 	lsls r6, r6, #1
@@ -14983,7 +14983,7 @@ _0811C6A0:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811C6D8
 	movs r6, #0xc0
@@ -15051,7 +15051,7 @@ _0811C726:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811C75C
 	movs r5, #0xc0
@@ -15178,7 +15178,7 @@ _0811C824:
 	strb r0, [r2]
 	adds r0, r7, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _0811C850:
 	movs r4, #0xec
 	lsls r4, r4, #1
@@ -15951,7 +15951,7 @@ _0811CE28:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811CE60
 	movs r6, #0xc0
@@ -16019,7 +16019,7 @@ _0811CEAE:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811CEE4
 	movs r5, #0xc0
@@ -17039,7 +17039,7 @@ _0811D692:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811D6D4
 	ldr r0, _0811D6D0 @ =0xFFFFFDFF
@@ -17214,7 +17214,7 @@ _0811D7F4:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811D82C
 	ldr r0, _0811D828 @ =0xFFFFFDFF
@@ -17254,7 +17254,7 @@ _0811D858:
 	adds r3, r0, #0
 	cmp r3, #0
 	bne _0811D898
-	ldr r0, _0811D894 @ =FUN_080e48d0
+	ldr r0, _0811D894 @ =Enemy_ClearStateBegun
 	movs r2, #1
 	ldr r1, [sp, #0x2c]
 	strb r2, [r1]
@@ -17281,7 +17281,7 @@ _0811D858:
 	b _0811D8AA
 	.align 2, 0
 _0811D890: .4byte 0xFFFFFDFF
-_0811D894: .4byte FUN_080e48d0
+_0811D894: .4byte Enemy_ClearStateBegun
 _0811D898:
 	movs r1, #0x95
 	lsls r1, r1, #3
@@ -17327,7 +17327,7 @@ FUN_0811d8cc: @ 0x0811D8CC
 	adds r0, r4, r1
 	ldr r5, [r0]
 	adds r0, r4, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0811D8F4
@@ -18964,7 +18964,7 @@ _0811E5C8:
 _0811E5D8:
 	ldr r0, [sp, #0x18]
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r0, #3
 	movs r4, #0x8d
 	lsls r4, r4, #3
@@ -19740,7 +19740,7 @@ _0811EBB4:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	add r2, sp, #0x10
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811EBF4
 	ldr r0, _0811EBF0 @ =0xFFFFFDFF
@@ -19942,7 +19942,7 @@ _0811ED3C:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	adds r2, r6, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811ED7C
 	ldr r0, _0811ED78 @ =0xFFFFFDFF
@@ -21148,7 +21148,7 @@ _0811F68A:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x24]
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811F6C8
 	ldr r0, _0811F6C4 @ =0xFFFFFDFF
@@ -21390,7 +21390,7 @@ _0811F86C:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x24]
 	adds r2, r5, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _0811F8A4
 	ldr r0, _0811F8A0 @ =0xFFFFFDFF
@@ -22599,7 +22599,7 @@ _081201F6:
 _08120202:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r3, _08120294 @ =FUN_080e6794
 	movs r2, #0xe
 	ldr r5, _08120288 @ =0x0000046D
@@ -23395,7 +23395,7 @@ _0812080E:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _08120850
 	ldr r0, _0812084C @ =0xFFFFFDFF
@@ -23558,7 +23558,7 @@ _08120966:
 	beq _08120972
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl EntityMsgBus_Unregister
+	bl MsgQueue_Unregister
 _08120972:
 	ldr r1, _081209CC @ =0x0000044C
 	adds r5, r4, r1
@@ -24917,16 +24917,16 @@ _08121464:
 	cmp r0, #3
 	bhi _081214A0
 	movs r0, #5
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r0, #1
 	movs r0, #6
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r4, r0
 	movs r0, #7
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r4, r0
 	movs r0, #8
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r4, r0
 	b _081214AA
 	.align 2, 0
@@ -24934,7 +24934,7 @@ _0812149C: .4byte 0x03003584
 _081214A0:
 	ldr r5, [sp, #0xac]
 	ldrb r0, [r5]
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r0, #1
 _081214AA:
 	ldr r0, [r7, #0x44]
@@ -25372,7 +25372,7 @@ _0812184A:
 _08121852:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r6, [sp, #0xe4]
 	ldrb r0, [r6]
 	cmp r0, #0
@@ -25539,7 +25539,7 @@ _0812198A:
 	adds r0, #0x48
 	ldrh r1, [r7]
 	movs r2, #3
-	bl EntityMsgBus_Register
+	bl MsgQueue_Register
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r2, [sp, #0x4c]

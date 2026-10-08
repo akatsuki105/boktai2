@@ -34,7 +34,7 @@
 	orrs r0, r2
 	str r0, [r1]
 	ldrh r0, [r4]
-	bl FUN_080f8d60
+	bl EnemyTargetManager_FindOwnerByID
 	movs r2, #0xec
 	lsls r2, r2, #1
 	adds r1, r5, r2

@@ -38,16 +38,16 @@ _080EEEAE:
 	b _080EEECC
 _080EEEB6:
 	movs r0, #0xb
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	cmp r0, #0
 	bne _080EEED8
 	movs r0, #0x17
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	cmp r0, #0
 	bne _080EEED8
 	movs r0, #0x1b
 _080EEECC:
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	cmp r0, #0
 	bne _080EEED8
 _080EEED4:

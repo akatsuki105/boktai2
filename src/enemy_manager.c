@@ -17,6 +17,27 @@ typedef u32 EnemyManagerFlags;
 #define EMFLAG_UNK_16 (1 << 16)  // 0x00010000, 種族 0x1B を今フレーム更新済み
 #define EMFLAG_UNK_17 (1 << 17)  // 0x00020000, 遷移でなく即時差し替え
 
+// 生存中のエネミーを繋ぐ単方向リストのノード, 根拠: EnemyManager_InitList が Malloc(8) して gEnemyListHead に繋ぐ
+typedef struct EnemyListNode {
+  struct EnemyListNode* next;  // 0x00, FUN_080ec6fc が削除時に前ノードの next へ付け替える
+  Enemy* enemy;                // 0x04, Enemy_Init_080ec640 が登録対象を書く
+} EnemyListNode;
+static_assert(sizeof(EnemyListNode) == 8);
+
+// 16色パレットのクロスフェード, FUN_080eeb14 が開始し、FUN_080eec74 が毎フレーム1段進める
+typedef struct {
+  u16 pltt[16];  // 0x00, r/g/b から合成した BGR555 の出力, EnemySpriteData のパレットポインタに直接繋がれる
+  u16 timer;     // 0x20, FUN_080eeb14 が 0x20 をセットし FUN_080eec74 が毎フレーム -1
+  u16 plttID;    // 0x22, 遷移先のパレット番号
+  s16 r[16];     // 0x24, 5.5固定小数の現在値, 毎フレーム stepR が加算される
+  s16 g[16];     // 0x44
+  s16 b[16];     // 0x64
+  s8 stepR[16];  // 0x84, FUN_080eeb14 が (遷移先 - 現在) を書く
+  s8 stepG[16];  // 0x94
+  s8 stepB[16];  // 0xA4
+} EnemyPaletteFade;
+static_assert(sizeof(EnemyPaletteFade) == 180);
+
 // エネミー全体の管理者, シングルトンで、生存中のエネミーを gEnemyListHead のリストで持つ
 typedef struct EnemyManager {
   Entity e;                     // 0x00, ENTITY_UNK_8
@@ -28,7 +49,7 @@ typedef struct EnemyManager {
   u16 frameCounter;             // 0x2A, EnemyManager_Update が毎フレーム +1
   EnemyManagerFlags flags;      // 0x2C, bit3/4/5/11/12=sharedEntity の生成済みフラグ, bit13=パレット遷移中, bit14/15/16=種族 0x0B/0x17/0x1B を今フレーム更新済み(Updateで毎回クリア), bit17=遷移でなく即時差し替え
   u8 unk_30;                    // 0x30, EnemyManager_Init が 3、FUN_080ef584 が '.l=3' を代入, FUN_080ec5b4 がレコードの3語目へコピーする
-  u8 unk_31;                    // 0x31, 読み手も書き手も未発見
+  u8 unk_31;                    // 0x31, 読み手も書き手も未発見, padding?
   s16 enemyCount;               // 0x32, Enemy_Init_080ec640 で +1 / FUN_080ec6fc で -1. 0x13 を超えると新規生成を拒否する
   Entity* sharedEntity[8];      // 0x34, FUN_080eca74 が種族に応じて生成する共有エンティティのキャッシュ, [0]=Entity080db520, [1]=FUN_081e8d0c, [2]=Entity080da848_Create, [6]=Entity081ea120_Create, [7]=Entity081ea820_Create
   u16 sharedEntityId[8];        // 0x54, FUN_080eca74 が sharedEntity[i]->e.id を控える
@@ -36,13 +57,11 @@ typedef struct EnemyManager {
 } EnemyManager;
 static_assert(sizeof(EnemyManager) == 640);
 
-extern EnemyManager* gEnemyManager;  // 0x03002C5C
-
-// 実体は src/code_080917e4.s
-u32 FUN_080a0808(void);
+extern EnemyManager* gEnemyManager;    // 0x03002C5C
+extern EnemyListNode* gEnemyListHead;  // 0x03002C60
 
 EnemyManager* GetEnemyManager(void);
-Enemy* FindEnemyById(u32 id);
+u32 FUN_080a0808(void);
 
 static inline void EnemyManager_ClearFlags(EnemyManager* p, EnemyManagerFlags bits) { p->flags &= ~bits; }
 
@@ -191,7 +210,7 @@ s32 FUN_080ec968(void) {
   if (p != NULL) {
     mask = ENEFLAG_UNK_0 | ENEFLAG_UNK_1;
     do {
-      if ((FUN_080e8a60(p) != 0) || ((p->flags & mask) != 0)) {
+      if ((Enemy_IsDead(p) != 0) || ((p->flags & mask) != 0)) {
         node = node->next;
         p = node->enemy;
       } else {
@@ -225,7 +244,7 @@ NON_MATCH s32 FUN_080ecf18(void) {
   count = 0;
   if (p != NULL) {
     do {
-      if ((p->unk_184 > 0) && ((p->flags2 & ENEFLAG2_UNK_17) == 0)) {
+      if ((p->hp > 0) && ((p->flags2 & ENEFLAG2_UNK_17) == 0)) {
         count++;
       }
       node = node->next;
@@ -238,7 +257,8 @@ NON_MATCH s32 FUN_080ecf18(void) {
 #endif
 }
 
-NAKED s32 FUN_080ecf60(u32 kind) { INCFUNC("asm/func/FUN_080ecf60.inc"); }
+// 指定した種族の生きている敵の数を数える
+NAKED s32 Enemy_CountByKind(u32 kind) { INCFUNC("asm/func/Enemy_CountByKind.inc"); }
 
 NAKED s32 FUN_080ecfbc(u32 kind, u32 unk_480) { INCFUNC("asm/func/FUN_080ecfbc.inc"); }
 
@@ -255,7 +275,7 @@ NON_MATCH Enemy* FUN_080ed020(void) {
   if (p != NULL) {
     mask = ENEFLAG2_UNK_17;
     do {
-      if ((p->unk_184 > 0) && ((p->flags2 & mask) == 0)) {
+      if ((p->hp > 0) && ((p->flags2 & mask) == 0)) {
         return p;
       }
       node = node->next;
@@ -277,8 +297,8 @@ void FUN_080ed068(void) {
   p = node->enemy;
   if (p != NULL) {
     do {
-      if (FUN_080e8a60(p) == 0) {
-        p->unk_184 = 0;
+      if (Enemy_IsDead(p) == 0) {
+        p->hp = 0;
         Enemy_SetFlag(p, ENEFLAG_UNK_12);
       }
       node = node->next;
@@ -338,7 +358,7 @@ void FUN_080eda24(void) {
     if (p != NULL) {
       mask = ENEFLAG3_UNK_14;
       do {
-        if ((FUN_080e8a60(p) == 0) && ((p->flags3 & mask) != 0)) {
+        if ((Enemy_IsDead(p) == 0) && ((p->flags3 & mask) != 0)) {
           FUN_080ecbe8(p, val);
         }
         node = node->next;
@@ -395,7 +415,7 @@ Enemy* FindEnemyById(u32 id) {
   return NULL;
 }
 
-// スクリプトが指定した敵が生存している (unk_184 > 0) かを返す
+// スクリプトが指定した敵が生存している (hp > 0) かを返す
 bool32 FUN_080eddc8(void) {
   u32 id = VM_GetValue();
   Enemy* p;
@@ -409,7 +429,7 @@ bool32 FUN_080eddc8(void) {
   if (p == NULL) {
     return FALSE;
   }
-  hp = p->unk_184;
+  hp = p->hp;
   alive = TRUE;
   if (hp <= 0) {
     alive = FALSE;
@@ -432,7 +452,7 @@ NON_MATCH bool32 FUN_080ede14(u32 kind, u32 mask) {
   Enemy* p;
 
   for (p = GetFirstEnemy(); p != NULL; p = FUN_080edce8(p->mover.id)) {
-    if ((p->kind == kind) && (FUN_080e8a60(p) == 0) && ((p->flags & mask) != 0)) {
+    if ((p->kind == kind) && (Enemy_IsDead(p) == 0) && ((p->flags & mask) != 0)) {
       return TRUE;
     }
   }

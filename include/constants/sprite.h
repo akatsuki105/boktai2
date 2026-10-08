@@ -96,7 +96,7 @@
 #define SPRITE_OTNK 0x97D3             // おてんこさま
 #define SPRITE_COMBO_SCORE 0xA5BD      // ブラックパンサー(ミニゲーム)の"COMBO:", "SCORE:" の文字
 #define SPRITE_PANTHER_BONUS 0xA8E7    // ブラックパンサー(ミニゲーム)のボーナス表示
-#define SPRITE_EFF_F422 0xF422         // 砂のエフェクト
+#define SPRITE_EFF_F422 0xF422         // エフェクト
 #define SPRITE_SOLAR_STATION 0xA47C    // 太陽スタンド
 #define SPRITE_MOUSE 0xD495            // チェンジマウスで変身するネズミ
 #define SPRITE_SPOTLIGHT 0x3640        // 天窓の光(汎用?, 魔方陣などのエフェクトもこれかも？)
@@ -266,7 +266,7 @@
 #define SPRITE_494E 0x494E
 #define SPRITE_7BE2 0x7BE2
 #define SPRITE_2EC0 0x2EC0
-#define SPRITE_354D 0x354D
+#define SPRITE_EFF_354D 0x354D  // 何かのエフェクト
 #define SPRITE_39A3 0x39A3
 #define SPRITE_B0BC 0xB0BC
 #define SPRITE_70EE 0x70EE

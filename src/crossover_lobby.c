@@ -33,7 +33,14 @@ void FUN_0804f47c(CrossoverLobby*);
 void FUN_0804f4b0(CrossoverLobby*);
 
 void (*const sCrossoverLobbyUpdates[8])(CrossoverLobby*) = {
-    FUN_0804f16c, FUN_0804f1d8, FUN_0804f230, FUN_0804f3d8, FUN_0804f404, FUN_0804f448, FUN_0804f47c, FUN_0804f4b0,
+    FUN_0804f16c,
+    FUN_0804f1d8,
+    FUN_0804f230,
+    FUN_0804f3d8,
+    FUN_0804f404,
+    FUN_0804f448,
+    FUN_0804f47c,
+    FUN_0804f4b0,
 };  // 0x085AB684
 
 NAKED void FUN_0804edc8(CrossoverLobby* p, s32 n) { INCFUNC("asm/func/FUN_0804edc8.inc"); }

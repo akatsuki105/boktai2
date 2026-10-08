@@ -68,7 +68,7 @@ _0807C3F0: .4byte 0x000002E7
 _0807C3F4: .4byte FUN_08075134
 _0807C3F8:
 	adds r0, r4, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	ldrb r0, [r5]
 	cmp r0, #3
 	bne _0807C41C

@@ -18,7 +18,7 @@ typedef struct {
     struct {
       AuxSpriteGfx gfx;       // 0x0C, FUN_08055dac が Video_GetAuxSprite で作る
       AuxSprite sprite;       // 0x28
-      AuxAnimState anim;      // 0x54, FUN_08055b5c が AuxAnim_SetAnim に渡す
+      AuxAnimState anim;      // 0x54, SpriteHolder_SetAnim が AuxAnim_SetAnim に渡す
       AuxAnimFile* animFile;  // 0x64, 0 ならアニメーションなし
     } aux;
     struct {

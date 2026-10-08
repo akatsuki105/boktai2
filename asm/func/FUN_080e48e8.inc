@@ -10,7 +10,7 @@
 	movs r0, #0xaf
 	lsls r0, r0, #3
 	adds r2, r4, r0
-	ldr r0, _080E4954 @ =FUN_080e48d0
+	ldr r0, _080E4954 @ =Enemy_ClearStateBegun
 	str r0, [r2]
 	ldr r0, _080E4958 @ =0x0000046D
 	adds r2, r4, r0
@@ -53,7 +53,7 @@ _080E4928:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080E4954: .4byte FUN_080e48d0
+_080E4954: .4byte Enemy_ClearStateBegun
 _080E4958: .4byte 0x0000046D
 _080E495C: .4byte 0x0000046B
 _080E4960: .4byte 0x00000454

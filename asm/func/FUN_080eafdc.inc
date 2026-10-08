@@ -1,6 +1,6 @@
 	push {r4, r5, r6, r7, lr}
 	adds r5, r0, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080EAFEC

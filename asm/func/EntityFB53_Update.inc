@@ -1,6 +1,6 @@
 	push {r4, lr}
 	adds r4, r0, #0
-	bl SuspendSunlight
+	bl Taiyo_Disable
 	ldr r0, _0804B920 @ =0x03002B54
 	ldr r0, [r0]
 	cmp r0, #0

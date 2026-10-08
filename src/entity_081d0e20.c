@@ -252,7 +252,7 @@ NON_MATCH void FUN_081d0864(void) {
     elem->scriptID_8a = VM_GetNamedArgValue('R', 0);
     if (VM_SeekToNamedArg('G')) {
       dst = elem->unk_90;
-      for (i = 5; i >= 0; i--) {
+      for (i = 0; i < 6; i++) {
         *dst = (VM_GetPC() == NULL) ? 0 : VM_GetValue();
         dst++;
       }
@@ -260,7 +260,7 @@ NON_MATCH void FUN_081d0864(void) {
     elem->scriptID_8c = VM_GetNamedArgValue('C', 0);
     if (VM_SeekToNamedArg('A')) {
       dst = elem->unk_a8;
-      for (i = 1; i >= 0; i--) {
+      for (i = 0; i < 2; i++) {
         *dst = (VM_GetPC() == NULL) ? 0 : VM_GetValue();
         dst++;
       }

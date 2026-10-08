@@ -4886,7 +4886,7 @@ _08197EAE:
 	ldr r0, [r0]
 	movs r2, #0x3e
 	ldrsh r1, [r7, r2]
-	bl AddWeaponExpByMask
+	bl Player_AddWeaponExp
 	ldr r3, _08197FC0 @ =0x00000CC4
 	adds r1, r7, r3
 	movs r0, #1
@@ -10444,14 +10444,14 @@ FUN_0819aa98: @ 0x0819AA98
 	ldr r0, [r0]
 	str r0, [sp, #8]
 	adds r0, r6, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0819AAC2
 	b _0819B1FC
 _0819AAC2:
 	adds r0, r6, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	lsrs r1, r0, #0x18
 	cmp r1, #0
@@ -16022,7 +16022,7 @@ _0819D5E6:
 	movs r5, #0
 	movs r2, #0
 	strh r2, [r0]
-	ldr r4, _0819D654 @ =FUN_080e48d0
+	ldr r4, _0819D654 @ =Enemy_ClearStateBegun
 	movs r3, #0x10
 	ldr r7, _0819D658 @ =0x0000046D
 	adds r0, r6, r7
@@ -16069,7 +16069,7 @@ _0819D640:
 	bx r0
 	.align 2, 0
 _0819D650: .4byte 0x030046A0
-_0819D654: .4byte FUN_080e48d0
+_0819D654: .4byte Enemy_ClearStateBegun
 _0819D658: .4byte 0x0000046D
 _0819D65C: .4byte 0x00000469
 _0819D660: .4byte 0x00000484
@@ -17630,10 +17630,10 @@ enemy_ax_0819e1ec: @ 0x0819E1EC
 	ldr r1, _0819E2B0 @ =0x0825221C
 	adds r0, r6, #0
 	movs r2, #0xd2
-	bl FUN_080e6768
+	bl Enemy_ClearPendingState
 	adds r0, r6, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	add sp, #4
 	pop {r4, r5, r6}
 	pop {r0}
@@ -17840,7 +17840,7 @@ FUN_0819e418: @ 0x0819E418
 	adds r0, r6, r1
 	ldr r4, [r0]
 	adds r0, r6, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0819E434
@@ -18383,7 +18383,7 @@ _0819E820:
 FUN_0819e828: @ 0x0819E828
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0819E874
@@ -18935,7 +18935,7 @@ FUN_0819ec50: @ 0x0819EC50
 	push {r5, r6, r7}
 	sub sp, #0xc
 	mov r8, r0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0819EC6A
@@ -24715,7 +24715,7 @@ _081A191E:
 	beq _081A192A
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl EntityMsgBus_Unregister
+	bl MsgQueue_Unregister
 _081A192A:
 	ldr r1, _081A1984 @ =0x0000044C
 	adds r5, r4, r1
@@ -26212,16 +26212,16 @@ _081A2534:
 	cmp r0, #3
 	bhi _081A2570
 	movs r0, #5
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r0, #1
 	movs r0, #6
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r4, r0
 	movs r0, #7
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r4, r0
 	movs r0, #8
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r4, r0
 	b _081A257A
 	.align 2, 0
@@ -26229,7 +26229,7 @@ _081A256C: .4byte 0x03003584
 _081A2570:
 	ldr r3, [sp, #0x70]
 	ldrb r0, [r3]
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r0, #1
 _081A257A:
 	ldr r0, [r7, #0x44]
@@ -26663,7 +26663,7 @@ _081A2902:
 _081A290A:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r5, [sp, #0xec]
 	ldrb r0, [r5]
 	cmp r0, #0
@@ -26830,7 +26830,7 @@ _081A2A42:
 	adds r0, #0x48
 	ldrh r1, [r7]
 	movs r2, #3
-	bl EntityMsgBus_Register
+	bl MsgQueue_Register
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r5, [sp, #0x184]

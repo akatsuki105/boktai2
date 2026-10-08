@@ -1508,16 +1508,16 @@ _0816A394:
 	cmp r0, #3
 	bhi _0816A3D0
 	movs r0, #5
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r0, #1
 	movs r0, #6
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r4, r0
 	movs r0, #7
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r4, r0
 	movs r0, #8
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r4, r0
 	b _0816A3DA
 	.align 2, 0
@@ -1525,7 +1525,7 @@ _0816A3CC: .4byte 0x03003584
 _0816A3D0:
 	ldr r1, [sp, #0xb4]
 	ldrb r0, [r1]
-	bl FUN_080ecf60
+	bl Enemy_CountByKind
 	adds r4, r0, #1
 _0816A3DA:
 	ldr r0, [r7, #0x44]
@@ -1932,7 +1932,7 @@ _0816A72A:
 _0816A732:
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r3, [sp, #0x144]
 	ldrb r0, [r3]
 	cmp r0, #0
@@ -2099,7 +2099,7 @@ _0816A86A:
 	adds r0, #0x48
 	ldrh r1, [r7]
 	movs r2, #3
-	bl EntityMsgBus_Register
+	bl MsgQueue_Register
 	movs r0, #0x80
 	lsls r0, r0, #1
 	ldr r5, [sp, #0x58]

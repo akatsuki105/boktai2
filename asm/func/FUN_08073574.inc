@@ -127,7 +127,7 @@ _0807366E:
 	blt _0807368A
 	adds r0, r5, #0
 	movs r1, #5
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _0807368A:
 	ldrh r0, [r4]
 	adds r0, #1
@@ -146,7 +146,7 @@ _080736A4: .4byte 0x0000037E
 _080736A8:
 	adds r0, r5, #0
 	movs r1, #5
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _080736B0:
 	pop {r4, r5}
 	pop {r0}

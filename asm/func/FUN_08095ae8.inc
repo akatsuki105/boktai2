@@ -124,7 +124,7 @@ _08095BF0:
 _08095C12:
 	adds r0, r5, #0
 	movs r2, #1
-	bl FUN_0808a354
+	bl EntityCC28_SetState
 	b _08095C4E
 	.align 2, 0
 _08095C1C: .4byte weapon_08095d4c

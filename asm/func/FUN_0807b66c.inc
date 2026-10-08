@@ -20,7 +20,7 @@
 	strb r0, [r1]
 _0807B69C:
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r5, #0
 	movs r1, #0x1f
 	movs r2, #0

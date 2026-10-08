@@ -10,7 +10,7 @@ typedef struct Entity08060470Elem {
   u16 timer;      // 0x02, 毎フレーム +1, 根拠: Entity08060470_Update
   u16 lifetime;   // 0x04, timer がこれ以上になると消える, 生成時は配置半径としても使われる, 根拠: Entity08060470_UpdateElem / Entity08060470_Spawn
   u8 unk_6[2];    // 0x06, 読み書きとも未発見, padding
-  Particle ptcl;  // 0x08, 根拠: Particle_Setup / Particle_Remove に渡される
+  Particle ptcl;  // 0x08
   Vec3 vel;       // 0x30, 毎フレーム ptcl.pos に加算される, 根拠: Entity08060470_UpdateElem
 } Entity08060470Elem;
 static_assert(sizeof(Entity08060470Elem) == 56);
@@ -20,8 +20,8 @@ typedef struct Entity08060470 {
   Entity e;                      // 0x00, ENTITY_UNK_10
   u32 unk_18;                    // 0x18, 読み手も書き手も未発見
   u32 activeMask;                // 0x1C, 1 << i で ptcls[i] が使用中, 根拠: Entity08060470_Init が0クリア、Entity08060470_ReleaseElem がビットを落とす
-  ParticleGroup* group;          // 0x20, GetParticleGroup(PTCL_GROUP_2), 根拠: Entity08060470_Init
-  Entity08060470Elem ptcls[16];  // 0x24, 根拠: _Init / _Update / _Destroy が stride 0x38 で16回まわす
+  ParticleGroup* group;          // 0x20, PTCL_GROUP_2
+  Entity08060470Elem ptcls[16];  // 0x24
 } Entity08060470;
 static_assert(sizeof(Entity08060470) == 932);
 

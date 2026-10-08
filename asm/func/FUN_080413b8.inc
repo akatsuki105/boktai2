@@ -29,7 +29,7 @@ _080413E2:
 	str r0, [sp, #8]
 	adds r0, r1, #0
 	adds r1, r5, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	add sp, #0xc
 	pop {r4, r5}
 	pop {r1}

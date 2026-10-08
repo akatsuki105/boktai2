@@ -71,7 +71,7 @@ _080E1FCE:
 	cmp r0, #0
 	bne _080E201A
 	adds r0, r7, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	lsrs r3, r0, #0x18
 	cmp r3, #0
@@ -200,7 +200,7 @@ _080E20B0:
 	beq _080E20CA
 _080E20BE:
 	adds r0, r7, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080E20DC
@@ -1404,7 +1404,7 @@ _080E2A0A:
 _080E2A20: .4byte 0xFFFFDFFF
 _080E2A24:
 	adds r0, r7, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	lsrs r4, r0, #0x18
 	cmp r4, #0
@@ -1420,7 +1420,7 @@ _080E2A24:
 	lsls r0, r0, #3
 	adds r4, r7, r0
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r6]
 	bics r0, r5
 	movs r1, #0
@@ -1917,7 +1917,7 @@ _080E2E20:
 	lsls r0, r0, #3
 	adds r4, r7, r0
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	mov r1, sl
 	ldrh r0, [r1]
 	mov r2, r8
@@ -2024,7 +2024,7 @@ _080E2F0E:
 	lsls r2, r2, #3
 	adds r4, r7, r2
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	mov r3, sl
 	ldrh r0, [r3]
 	bics r0, r6
@@ -2356,7 +2356,7 @@ _080E3116:
 	bl FUN_080ddcc8
 _080E31E0:
 	adds r0, r7, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080E31EE
@@ -2502,7 +2502,7 @@ _080E32E6:
 	bl FUN_080e5718
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r2, _080E33F8 @ =0x080E6795
 	movs r1, #0xe
 	ldr r3, _080E33FC @ =0x0000046D
@@ -2683,7 +2683,7 @@ _080E3470:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	adds r2, r6, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080E34AC
 	ldr r0, _080E34A8 @ =0xFFFFFDFF

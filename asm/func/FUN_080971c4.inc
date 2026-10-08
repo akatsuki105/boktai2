@@ -266,7 +266,7 @@ _080973DA:
 _0809740E:
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0808a354
+	bl EntityCC28_SetState
 	b _08097474
 	.align 2, 0
 _08097418: .4byte 0x0000038A

@@ -21,7 +21,7 @@ FUN_081668f4: @ 0x081668F4
 	mov r8, r1
 	adds r6, r2, #0
 	adds r0, r6, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08166914
@@ -36,7 +36,7 @@ _08166914:
 	b _08166FFA
 _08166922:
 	adds r0, r6, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	lsrs r2, r0, #0x18
 	movs r0, #0x40
@@ -1278,7 +1278,7 @@ FUN_08167270: @ 0x08167270
 _08167282:
 	adds r0, r2, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	pop {r0}
 	bx r0
 	.align 2, 0
@@ -1298,7 +1298,7 @@ FUN_08167294: @ 0x08167294
 _081672A6:
 	adds r0, r2, #0
 	movs r1, #0xe
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	pop {r0}
 	bx r0
 	.align 2, 0
@@ -1326,7 +1326,7 @@ _081672D6:
 	beq _081672E2
 	adds r0, r4, #0
 	movs r1, #5
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _081672E2:
 	ldr r1, _081672FC @ =0x0000046E
 	adds r0, r4, r1
@@ -1488,7 +1488,7 @@ _08167416:
 _0816741A:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	b _08167530
 _08167424:
 	ldr r0, _08167488 @ =0x00000663
@@ -1688,7 +1688,7 @@ _0816758A:
 	strh r0, [r4]
 	adds r0, r7, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r0, #0x9f
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -1881,7 +1881,7 @@ _0816770A:
 	beq _0816774C
 	adds r0, r6, #0
 	movs r1, #0xa
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	adds r0, r6, #0
 	bl FUN_080e8360
 	movs r1, #0xbc
@@ -2031,7 +2031,7 @@ _08167840:
 	movs r5, #0
 	movs r2, #0
 	strh r2, [r0]
-	ldr r4, _081678AC @ =FUN_080e48d0
+	ldr r4, _081678AC @ =Enemy_ClearStateBegun
 	movs r3, #0x10
 	ldr r7, _081678B0 @ =0x0000046D
 	adds r0, r6, r7
@@ -2078,7 +2078,7 @@ _0816789E:
 	bx r0
 	.align 2, 0
 _081678A8: .4byte 0x030046A0
-_081678AC: .4byte FUN_080e48d0
+_081678AC: .4byte Enemy_ClearStateBegun
 _081678B0: .4byte 0x0000046D
 _081678B4: .4byte 0x00000469
 _081678B8: .4byte 0x00000484
@@ -2280,7 +2280,7 @@ FUN_08167a38: @ 0x08167A38
 	sub sp, #0x1c
 	adds r6, r0, #0
 	adds r5, r1, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08167A52
@@ -2692,7 +2692,7 @@ _08167D62:
 	bl CpuSet
 	adds r0, r6, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r5, [r6, #0x44]
 	adds r4, r5, #0
 	adds r4, #0x48
@@ -2826,7 +2826,7 @@ FUN_08167e84: @ 0x08167E84
 	adds r0, r4, r1
 	ldr r6, [r0]
 	adds r0, r4, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08167E9E
@@ -3922,7 +3922,7 @@ FUN_081686c4: @ 0x081686C4
 	push {r4, r5, lr}
 	sub sp, #8
 	adds r4, r0, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08168746
@@ -5982,7 +5982,7 @@ _081696CE:
 	beq _081696DA
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl EntityMsgBus_Unregister
+	bl MsgQueue_Unregister
 _081696DA:
 	ldr r1, _08169734 @ =0x0000044C
 	adds r5, r4, r1

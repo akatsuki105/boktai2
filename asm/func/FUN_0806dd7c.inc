@@ -48,7 +48,7 @@ _0806DDCE:
 	blt _0806DDF6
 	adds r0, r6, #0
 	movs r1, #0x41
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	adds r2, r6, #0
 	adds r2, #0xa8
 	ldr r0, [r6, #0x2c]

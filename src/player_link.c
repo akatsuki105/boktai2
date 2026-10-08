@@ -21,9 +21,9 @@ void FUN_08080e0c(Player* p, u8 action, u8 state) {
 
 NAKED void FUN_08080e34(Player* param_1) { INCFUNC("asm/func/FUN_08080e34.inc"); }
 
-void FUN_08080ec8(Player* p, u32 bits) { p->unk_35a |= bits; }
+void PlayerLink_SetFlag35a(Player* p, u32 bits) { p->flag35a |= bits; }
 
-u32 FUN_08080ed8(Player* p, u16 bits) { return p->unk_35a & bits; }
+u32 PlayerLink_TestFlag35a(Player* p, u16 bits) { return p->flag35a & bits; }
 
 // サバタのときだけ3つの音を鳴らす
 void FUN_08080ee8(Player* p) {
@@ -115,12 +115,12 @@ s32 FUN_08082124(Player* p) {
 
 NAKED void FUN_08082154(Player* p) { INCFUNC("asm/func/FUN_08082154.inc"); }
 
-// unk_3fe で unk_35a に立てるビットを選ぶ
+// unk_3fe で flag35a に立てるビットを選ぶ
 void FUN_08082464(Player* p) {
   if (p->unk_3fe) {
-    FUN_08080ec8(p, 0x3C);
+    PlayerLink_SetFlag35a(p, PFLAG35A_HIDE_SHADOW | PFLAG35A_NO_HITBOX | PFLAG35A_NO_TILE | PFLAG35A_UNK_5);
   } else {
-    FUN_08080ec8(p, 0x3D);
+    PlayerLink_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_HIDE_SHADOW | PFLAG35A_NO_HITBOX | PFLAG35A_NO_TILE | PFLAG35A_UNK_5);
   }
 
   Player_SetFlag20(p, PFLAG20_UNK_12);

@@ -150,7 +150,7 @@ _080F381A:
 	adds r0, r7, r3
 	movs r1, #1
 	strb r1, [r0]
-	ldr r4, _080F3878 @ =FUN_080e48d0
+	ldr r4, _080F3878 @ =Enemy_ClearStateBegun
 	movs r3, #0x10
 	adds r5, #4
 	adds r0, r7, r5
@@ -164,7 +164,7 @@ _080F3868: .4byte 0x00000469
 _080F386C: .4byte 0x0000046A
 _080F3870: .4byte 0x00000484
 _080F3874: .4byte 0x0000046C
-_080F3878: .4byte FUN_080e48d0
+_080F3878: .4byte Enemy_ClearStateBegun
 _080F387C:
 	ldrb r0, [r7, #5]
 	cmp r0, #0
@@ -224,7 +224,7 @@ _080F38A0:
 	adds r0, r7, r4
 	movs r1, #1
 	strb r1, [r0]
-	ldr r4, _080F390C @ =FUN_080e48d0
+	ldr r4, _080F390C @ =Enemy_ClearStateBegun
 	movs r2, #0x10
 	adds r5, #5
 	adds r0, r7, r5
@@ -237,7 +237,7 @@ _080F38FC: .4byte 0x00000469
 _080F3900: .4byte 0x0000046A
 _080F3904: .4byte 0x00000484
 _080F3908: .4byte 0x0000046C
-_080F390C: .4byte FUN_080e48d0
+_080F390C: .4byte Enemy_ClearStateBegun
 _080F3910:
 	cmp r1, #1
 	ble _080F396C
@@ -267,7 +267,7 @@ _080F3910:
 	adds r0, r7, r2
 	movs r1, #1
 	strb r1, [r0]
-	ldr r4, _080F3968 @ =FUN_080e48d0
+	ldr r4, _080F3968 @ =Enemy_ClearStateBegun
 	movs r2, #0x10
 	adds r5, #4
 	adds r0, r7, r5
@@ -279,11 +279,11 @@ _080F3958: .4byte 0x00000469
 _080F395C: .4byte 0x0000046A
 _080F3960: .4byte 0x00000484
 _080F3964: .4byte 0x0000046C
-_080F3968: .4byte FUN_080e48d0
+_080F3968: .4byte Enemy_ClearStateBegun
 _080F396C:
 	ldr r0, [sp, #0x2c]
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _080F3C9A
 _080F3976:
 	mov r5, sb
@@ -312,7 +312,7 @@ _080F3976:
 	adds r0, r7, r6
 	movs r1, #1
 	strb r1, [r0]
-	ldr r4, _080F39E0 @ =FUN_080e48d0
+	ldr r4, _080F39E0 @ =Enemy_ClearStateBegun
 	movs r2, #0x10
 	subs r5, #0x17
 	adds r0, r7, r5
@@ -337,7 +337,7 @@ _080F39B6:
 _080F39D4: .4byte 0x00000469
 _080F39D8: .4byte 0x0000046A
 _080F39DC: .4byte 0x00000484
-_080F39E0: .4byte FUN_080e48d0
+_080F39E0: .4byte Enemy_ClearStateBegun
 _080F39E4: .4byte 0x00000553
 _080F39E8:
 	movs r1, #2
@@ -360,7 +360,7 @@ _080F39E8:
 	adds r0, r7, r4
 	movs r1, #1
 	strb r1, [r0]
-	ldr r4, _080F3A48 @ =FUN_080e48d0
+	ldr r4, _080F3A48 @ =Enemy_ClearStateBegun
 	movs r3, #0x10
 	adds r5, #5
 	adds r0, r7, r5
@@ -386,7 +386,7 @@ _080F3A38: .4byte 0x00000469
 _080F3A3C: .4byte 0x0000046A
 _080F3A40: .4byte 0x00000484
 _080F3A44: .4byte 0x0000046C
-_080F3A48: .4byte FUN_080e48d0
+_080F3A48: .4byte Enemy_ClearStateBegun
 _080F3A4C: .4byte 0x00000553
 _080F3A50:
 	add r1, sp, #0x1c
@@ -659,11 +659,11 @@ _080F3C90:
 _080F3C92:
 	ldr r0, [sp, #0x2c]
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _080F3C9A:
 	mov r0, sl
 	mov r1, sb
-	bl EntityMsgBox_BeginWait
+	bl MsgQueue_BeginWait
 	ldr r0, [sp, #0x28]
 	adds r0, #1
 	str r0, [sp, #0x28]

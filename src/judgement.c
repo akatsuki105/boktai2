@@ -4,45 +4,37 @@
 #include "player.h"
 #include "sprite.h"
 
-struct JudgementParticle;
-typedef void (*JudgementParticleFunc)(struct JudgementParticle* ptcl);
-struct Judgement;
-typedef void (*JudgementFunc)(struct Judgement* p);
-
 // 演出で飛ばす粒子1個ぶんの枠, 8個を使い回す
 typedef struct JudgementParticle {
-  Particle ptcl;             // 0x00, _Destroy が Particle_Remove に渡す
-  u16 timer;                 // 0x28, JudgementParticle_UpdateStill が毎フレーム +1, 7 を超えると枠を畳む
-  u16 active;                // 0x2A, FUN_080a98c0 が 0 の枠を飛ばす
-  s16 vx;                    // 0x2C, FUN_080a95d4 が毎フレーム pos.x に足す
-  s16 vy;                    // 0x2E, 毎フレーム pos.y に足す, FUN_080a95d4 が重力として +1 する
-  u16 unk_30;                // 0x30
-  u8 unk_32[2];              // 0x32
-  ParticleGroup* group;      // 0x34, Particle_SetFrame の第2引数
-  JudgementParticleFunc fn;  // 0x38, FUN_080a98c0 が active な枠について呼ぶ
+  Particle ptcl;                          // 0x00, _Destroy が Particle_Remove に渡す
+  u16 timer;                              // 0x28, JudgementParticle_UpdateStill が毎フレーム +1, 7 を超えると枠を畳む
+  u16 active;                             // 0x2A, FUN_080a98c0 が 0 の枠を飛ばす
+  Vec3 vel;                               // 0x2C, FUN_080a95d4 が毎フレーム ptcl.pos に足す, y は8フレームごとに +1 されて重力になる, 根拠: FUN_080a975c が pos.x/y/z を書いた直後に同じ形で x/y/z を初期化する
+  ParticleGroup* group;                   // 0x34, Particle_SetFrame の第2引数
+  void (*fn)(struct JudgementParticle*);  // 0x38, FUN_080a98c0 が active な枠について呼ぶ
 } JudgementParticle;
 static_assert(sizeof(JudgementParticle) == 60);
 
 // "審判のカード" (ITEM_JUDGEMENT, 全回復して復活) の 効果処理 及び 演出
 typedef struct Judgement {
-  Entity e;                      // 0x000, ENTITY_UNK_11
-  Player* player;                // 0x018, _Init の第2引数
-  MainSprite sprite;             // 0x01C, _Destroy が MainSprite_Remove に渡す
-  u8 unk_7c[8];                  // 0x07C
-  Vec3 screen;                   // 0x084, player->mover.pos の y に +0x96 した点を投影した画面座標
-  JudgementParticle ptcls[8];    // 0x08C, 根拠: _Destroy の stride 0x3C × 8
-  u8 unk_26c[4];                 // 0x26C
-  u16 timer;                     // 0x270, _Init が 0, 各状態関数が +1 する
-  u8 unk_272[2];                 // 0x272
-  JudgementFunc updateCallback;  // 0x274
+  Entity e;                                   // 0x000, ENTITY_UNK_11
+  Player* player;                             // 0x018, _Init の第2引数
+  MainSprite sprite;                          // 0x01C, _Destroy が MainSprite_Remove に渡す
+  u8 unk_7c[8];                               // 0x07C
+  Vec3 screen;                                // 0x084, player->mover.pos の y に +0x96 した点を投影した画面座標
+  JudgementParticle ptcls[8];                 // 0x08C, 根拠: _Destroy の stride 0x3C × 8
+  u8 unk_26c[4];                              // 0x26C
+  u16 timer;                                  // 0x270, _Init が 0, 各状態関数が +1 する
+  u8 unk_272[2];                              // 0x272
+  void (*updateCallback)(struct Judgement*);  // 0x274
 } Judgement;
 static_assert(sizeof(Judgement) == 632);
 
-NAKED void FUN_080a95d4(Judgement* p) { INCFUNC("asm/func/FUN_080a95d4.inc"); }
+NAKED void FUN_080a95d4(JudgementParticle* ptcl) { INCFUNC("asm/func/FUN_080a95d4.inc"); }
 
 NAKED void FUN_080a962c(Judgement* p) { INCFUNC("asm/func/FUN_080a962c.inc"); }
 
-// 16フレームで畳む, その間は2コマのアニメを出しながら vy ぶん動かす
+// 16フレームで畳む, その間は2コマのアニメを出しながら vel.y ぶん動かす
 // 残差1命令: 原典は timer+1 を別レジスタに置いて使うたびに16bit化する, こちらは <<16 の中間値が残って else 側が1命令短くなる, Tier A/B と C のローカル分割・キャスト・アクセサ有無は試済
 NON_MATCH void JudgementParticle_UpdateMoving(JudgementParticle* ptcl) {
 #ifdef NONMATCHING_C
@@ -52,7 +44,7 @@ NON_MATCH void JudgementParticle_UpdateMoving(JudgementParticle* ptcl) {
     ptcl->active = 0;
   } else {
     Particle_SetFrame(&ptcl->ptcl, ptcl->group, ((ptcl->timer >> 2) & 1) + 2);
-    ptcl->ptcl.pos.y += ptcl->vy;
+    ptcl->ptcl.pos.y += ptcl->vel.y;
   }
 #else
   INCFUNC("asm/func/JudgementParticle_UpdateMoving.inc");

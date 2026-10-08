@@ -12,7 +12,7 @@ void FUN_081df62c(Entity9A9F* p);
 void FUN_080a5e4c(void);     // src/code_080917e4.s
 s32 FUN_0809c08c(s32 mode);  // src/entity_cc28.c
 
-extern const s32 sEntity9A9FLimits[3];  // 0x085AE3E8, ld_script.ld
+extern const s32 sEntity9A9FLimits[3];  // 0x085AE3E8
 
 Entity9A9F* GetEntity9A9F(void) { return gEntity9A9F; }
 

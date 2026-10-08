@@ -11,17 +11,6 @@ SOUND_INFO_PTR = 0x03007FF0;
 gMaxLines = 0;
 gNumMusicPlayers = 32;
 
-gItemEffectHandlers = 0x085ACF7C;
-
-/* EntityCC28.state2 で引く状態関数表, 根拠: FUN_0809a67c */
-sEntityCC28State2Fns = 0x085ACFDC;
-
-/* data/rodata4.bin の中にある Vec3 3つ組, エレベータが乗り手との距離を測るときの許容範囲 (±) */
-gElevatorRanges = 0x085AE0D0;
-
-/* FUN_081ddf84 が unk_2cc[i] の上限として引く3要素, 根拠: FUN_081ddf84 */
-sEntity9A9FLimits = 0x085AE3E8;
-
 SECTIONS {
 	. = 0x2000000;
 	ewram (NOLOAD) :
@@ -267,9 +256,9 @@ SECTIONS {
 			src/entity_08080be8.o (.text);
 			src/player_link.o (.text);
 			src/entity_bd74.o (.text);
-			src/entity_0b50.o (.text);
-			src/entity_162e.o (.text);
 			src/coffin_immortal.o (.text);
+			src/entity_162e.o (.text);
+			src/coffin_sealing.o (.text);
 			src/entity_cc28.o (.text);
 			src/entity_1b24.o (.text);
 			src/entity_5ccc.o (.text);
@@ -290,15 +279,15 @@ SECTIONS {
 			src/judgement.o (.text);
 			src/morning_dew.o (.text);
 			src/entity_080aace8.o (.text);
-			src/entity_c438.o (.text);
+			src/dungeon_marker.o (.text);
 			src/entity_080abd14.o (.text);
 			src/entity_080ac374.o (.text);
 			src/entity_080ac574.o (.text);
 			src/entity_b6ff.o (.text);
 			src/entity_080acd4c.o (.text);
 			src/entity_5292.o (.text);
-			src/entity_cbb0.o (.text);
-			src/solar_generator.o (.text);
+			src/pile_driver.o (.text);
+			src/pile_driver_generator.o (.text);
 			src/solar_bank.o (.text);
 			src/dark_loans.o (.text);
 			src/warehouse.o (.text);
@@ -323,9 +312,12 @@ SECTIONS {
 			src/attack_box.o (.text);
 			src/entity_080ddf88.o (.text);
 			src/entity_080df420.o (.text);
-			src/code_080df46c.o (.text);
+			src/entity_080e01bc.o (.text);
+			src/entity_778b.o (.text);
+			src/entity_080e18e0.o (.text);
+			src/enemy.o (.text);
 			src/enemy_manager.o (.text);
-			src/enemy_080ef84c.o (.text);
+			src/enedefault.o (.text);
 			src/enemy/boku.o (.text);
 			src/enemy/skeleton.o (.text);
 			src/enemy/golem.o (.text);
@@ -500,6 +492,8 @@ SECTIONS {
     src/entity_e28b.o (.rodata);
     src/textbox_choice.o (.rodata);
     src/data.o (.rodata);
+    src/data_pile_driver.o (.rodata);
+    src/data_ect.o (.rodata);
     src/entity_f41a.o (.rodata);
     src/data2.o (.rodata);
     src/game_result_data.o (.rodata);
@@ -581,18 +575,19 @@ SECTIONS {
     src/entity_723e.o (.rodata);
     src/entity_08052ffc.o (.rodata);
     src/entity_5645.o (.rodata);
+    src/rodata.o (.rodata);
     src/entity_0805ee80.o (.rodata);
     src/entity_0805fe30.o (.rodata);
     src/entity_080601a8.o (.rodata);
     src/entity_08060470.o (.rodata);
     src/player.o (.rodata);
     src/player_08065988.o (.rodata);
-    src/entity_0b50.o (.rodata);
     src/coffin_immortal.o (.rodata);
+    src/coffin_sealing.o (.rodata);
     src/entity_cc28.o (.rodata);
     src/gameover.o (.rodata);
-    src/entity_cbb0.o (.rodata);
-    src/solar_generator.o (.rodata);
+    src/pile_driver.o (.rodata);
+    src/pile_driver_generator.o (.rodata);
     src/boss/jormungandr.o (.rodata);
     src/player_080d82ec.o (.rodata);
     src/entity_080da848.o (.rodata);
@@ -602,6 +597,12 @@ SECTIONS {
     src/entity_080dd1f8.o (.rodata);
     src/attack_box.o (.rodata);
     src/entity_080df420.o (.rodata);
+    src/entity_080e01bc.o (.rodata);
+    src/enemy.o (.rodata);
+    src/enedefault.o (.rodata);
+    src/enemy/boku.o (.rodata);
+    src/enemy/data.o (.rodata);
+    src/rodata4.o (.rodata);
     src/preview_stage.o (.rodata);
     src/weapon_dex.o (.rodata);
     src/album_menu.o (.rodata);

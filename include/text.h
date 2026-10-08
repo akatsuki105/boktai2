@@ -105,6 +105,7 @@ s32 TextPanel_Hide(s32 id);
 s32 TextPanel_SetScript(s32 id, u8* scriptPc);
 s32 TextPanel_SetMessage(s32 id, s32 msgIdx);
 
+s32 FUN_08049e5c(void);
 s32 FUN_08049f84(void);
 
 static inline void TextRenderer_GetRect(TextRenderer* r, u32* out) { out[0] = r->rectX, out[1] = r->rectY, out[2] = r->rectW, out[3] = r->rectH; }

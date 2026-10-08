@@ -10,9 +10,7 @@ static_assert(sizeof(Entity5DA5) == 940);
 
 IWRAM_DATA Entity5DA5* gEntity5DA5 = NULL;  // 0x03000038
 
-const u16 u16_ARRAY_085aa690[8] = {
-    0x0, 0x80, 0xFF80, 0x0, 0xFF80, 0x0, 0x0, 0x80,
-};  // 0x085aa690
+const u16 u16_ARRAY_085aa690[8] = {0x0, 0x80, 0xFF80, 0x0, 0xFF80, 0x0, 0x0, 0x80};  // 0x085aa690
 
 void FUN_08008b68(Entity5DA5*, unknown*);
 void FUN_08008c08(Entity5DA5*, unknown*);

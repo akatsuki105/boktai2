@@ -76,7 +76,7 @@ _0820F894:
 	str r0, [sp, #8]
 	mov r0, r8
 	movs r1, #1
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _0820F8C6:
 	mov r0, r8
 	bl FUN_08055c04
@@ -115,7 +115,7 @@ _0820F8E4:
 	str r0, [sp, #8]
 	mov r0, r8
 	movs r1, #2
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 _0820F918:
 	mov r0, r8
 	bl FUN_08055c04
@@ -171,7 +171,7 @@ _0820F958:
 	str r0, [sp, #8]
 	mov r0, r8
 	movs r1, #3
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	adds r0, r6, #0
 	adds r0, #0xb4
 	ldr r2, [r0]

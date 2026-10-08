@@ -3,7 +3,7 @@
 	movs r1, #0x88
 	lsls r1, r1, #2
 	adds r0, r4, r1
-	bl FUN_080f8cac
+	bl EnemyTargetManager_Remove
 	adds r0, r4, #0
 	adds r0, #0x88
 	bl MainSprite_Remove

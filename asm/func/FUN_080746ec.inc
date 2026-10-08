@@ -130,7 +130,7 @@ _080747F4: .4byte 0x000002E7
 _080747F8:
 	adds r0, r6, #0
 	movs r1, #4
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	mov r1, sb
 	ldrh r0, [r1]
 	cmp r0, #3
@@ -156,7 +156,7 @@ _08074824:
 _0807482C:
 	adds r0, r6, #0
 	movs r1, #2
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	b _08074850
 _08074836:
 	ldr r0, _08074878 @ =0x0000095E
@@ -170,7 +170,7 @@ _08074836:
 	strh r0, [r1]
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _08074850:
 	ldr r3, _08074880 @ =0x0000037E
 	adds r1, r6, r3

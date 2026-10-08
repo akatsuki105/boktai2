@@ -35,7 +35,7 @@ _080F46C2:
 	strh r1, [r0]
 	adds r0, r4, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r1, _080F4710 @ =0x000001DF
 	adds r0, r4, r1
 	ldrb r0, [r0]

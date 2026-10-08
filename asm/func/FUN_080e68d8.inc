@@ -57,7 +57,7 @@
 	ldr r1, _080E6970 @ =0x08251F60
 	ldr r2, _080E6974 @ =0x00000921
 	adds r0, r6, #0
-	bl FUN_080e6768
+	bl Enemy_ClearPendingState
 _080E6952:
 	pop {r4, r5, r6, r7}
 	pop {r0}

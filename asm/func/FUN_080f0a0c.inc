@@ -51,7 +51,7 @@ _080F0A64:
 	beq _080F0A7E
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_080f9a38
+	bl EnemyTargetManager_Claim
 	adds r3, r0, #0
 	cmp r3, #0
 	bne _080F0A88
@@ -81,7 +81,7 @@ _080F0A88:
 	lsls r4, r4, #3
 	adds r0, r6, r4
 	str r3, [r0]
-	ldr r0, _080F0B2C @ =FUN_080e48d0
+	ldr r0, _080F0B2C @ =Enemy_ClearStateBegun
 	mov ip, r0
 	movs r1, #0x10
 	ldr r3, _080F0B30 @ =0x0000046D
@@ -142,7 +142,7 @@ _080F0B1A:
 _080F0B20: .4byte 0xFFFEBE3F
 _080F0B24: .4byte 0x0000021E
 _080F0B28: .4byte 0x00000202
-_080F0B2C: .4byte FUN_080e48d0
+_080F0B2C: .4byte Enemy_ClearStateBegun
 _080F0B30: .4byte 0x0000046D
 _080F0B34: .4byte 0x00000469
 _080F0B38: .4byte 0x0000046C

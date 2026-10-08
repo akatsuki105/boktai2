@@ -8,7 +8,7 @@
 	ble _0808458E
 	adds r0, r4, #0
 	movs r1, #8
-	bl FUN_08080ec8
+	bl PlayerLink_SetFlag35a
 	movs r1, #0xd6
 	lsls r1, r1, #1
 	adds r0, r4, r1
@@ -30,7 +30,7 @@
 	beq _08084586
 	adds r0, r4, #0
 	movs r1, #5
-	bl FUN_08080ec8
+	bl PlayerLink_SetFlag35a
 _08084586:
 	movs r1, #0xd8
 	lsls r1, r1, #1

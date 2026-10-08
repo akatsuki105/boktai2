@@ -71,11 +71,3 @@ const ALIGNED(4) char s_Djungo_08251d38[] = "Djungo";
 const u32 u32_08251d40 = 0xFFFF0011;
 const ALIGNED(4) char gString_08251d44[] = "../../skoba/enemy/system/eneinline.h";
 const ALIGNED(4) char s_bg_link_col_arr_08251d6c[] = "bg_link_col_arr";
-const ALIGNED(4) char s_pile_driver_noon1_col_arr_08251d7c[] = "pile_driver_noon1_col_arr";
-const ALIGNED(4) char s_pile_driver_even_col_arr_08251d98[] = "pile_driver_even_col_arr";
-const ALIGNED(4) char s_pile_driver_night_col_arr_08251db4[] = "pile_driver_night_col_arr";
-
-const ALIGNED(4) char s_ect_08251dd0[] = "ect";
-const ALIGNED(4) char s_ect_anm_08251dd4[] = "ect_anm";
-const ALIGNED(4) char gString_08251ddc[] = "../../skoba/enemy/system/eneinline.h";
-const ALIGNED(4) char s_ect_08251e04[] = "ect";

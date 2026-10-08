@@ -353,7 +353,7 @@ _0803BCA8:
 	adds r1, r4, #0
 	adds r2, r5, #0
 	movs r3, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	ldr r4, _0803BDEC @ =0x03003584
 	ldr r0, [r4]
 	movs r2, #0xbd

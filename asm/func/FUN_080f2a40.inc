@@ -32,7 +32,7 @@ _080F2A70:
 _080F2A7E:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r2, #0xb1
 	lsls r2, r2, #3
 	adds r0, r5, r2

@@ -550,8 +550,8 @@ FUN_08055b58: @ 0x08055B58
 	bx lr
 	.align 2, 0
 
-	thumb_func_start FUN_08055b5c
-FUN_08055b5c: @ 0x08055B5C
+	thumb_func_start SpriteHolder_SetAnim
+SpriteHolder_SetAnim: @ 0x08055B5C
 	push {r4, r5, r6, r7, lr}
 	sub sp, #4
 	adds r4, r0, #0

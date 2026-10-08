@@ -59,7 +59,7 @@ _0807B980: .4byte 0x000002E7
 _0807B984: .4byte FUN_08074d90
 _0807B988:
 	adds r0, r4, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	ldrb r0, [r5]
 	cmp r0, #3
 	bne _0807B9A4

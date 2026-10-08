@@ -360,7 +360,7 @@ _0806A5E8:
 	movs r0, #0
 	strb r0, [r1]
 	adds r0, r4, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0

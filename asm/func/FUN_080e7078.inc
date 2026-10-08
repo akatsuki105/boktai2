@@ -58,7 +58,7 @@ _080E70DA:
 	ble _080E7090
 _080E70E4:
 	movs r0, #4
-	bl FUN_080f8cf0
+	bl EnemyTargetManager_FindByKind
 	cmp r0, #0
 	beq _080E7144
 	ldr r2, [r0]

@@ -87,7 +87,7 @@ _0806B794:
 	adds r0, r6, r2
 	strb r1, [r0]
 	adds r0, r6, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 _0806B81E:
 	movs r3, #0xd6
 	lsls r3, r3, #2
@@ -185,7 +185,7 @@ _0806B8E0:
 	blt _0806B8FC
 	adds r0, r6, #0
 	movs r1, #5
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _0806B8FC:
 	ldrh r0, [r4]
 	adds r0, #1
@@ -204,7 +204,7 @@ _0806B918: .4byte 0x0000037E
 _0806B91C:
 	adds r0, r6, #0
 	movs r1, #5
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _0806B924:
 	add sp, #0x10
 	pop {r4, r5, r6}

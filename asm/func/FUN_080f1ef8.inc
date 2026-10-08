@@ -39,7 +39,7 @@ _080F1F40: .4byte 0x0000046B
 _080F1F44:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r4, #0xb1
 	lsls r4, r4, #3
 	adds r0, r5, r4
@@ -119,7 +119,7 @@ _080F1FD4:
 	adds r0, r5, #0
 	adds r0, #0x48
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	movs r1, #2
 	movs r3, #0x8d
 	lsls r3, r3, #3

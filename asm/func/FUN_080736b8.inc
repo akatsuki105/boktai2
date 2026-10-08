@@ -28,7 +28,7 @@ _080736E4:
 _080736E6:
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r0, [r5, #0x2c]
 	ldr r1, [r5, #0x30]
 	str r0, [sp, #0xc]
@@ -155,7 +155,7 @@ _080737F8: .4byte 0x000003F6
 _080737FC:
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r2, _08073838 @ =0x0000037E
 	adds r1, r5, r2
 	ldrh r0, [r1]
@@ -186,7 +186,7 @@ _0807383C: .4byte 0x000003F6
 _08073840:
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	movs r2, #0xd6
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -213,7 +213,7 @@ _08073840:
 	bls _080738AC
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	movs r0, #0
 	strh r0, [r4]
 	adds r0, r5, #0
@@ -229,7 +229,7 @@ _080738A0: .4byte 0x0000037E
 _080738A4:
 	adds r0, r5, #0
 	movs r1, #5
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _080738AC:
 	add sp, #0x14
 	pop {r4, r5}

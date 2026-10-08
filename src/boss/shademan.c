@@ -8,9 +8,7 @@ typedef struct {
 } BossShadeMan;
 static_assert(sizeof(BossShadeMan) == 2396);
 
-const u8 u8_ARRAY_085aaf2c[64] = {
-    0, 2, 3, 4, 4, 3, 1, 6, 3, 0, 5, 0, 5, 3, 4, 6, 4, 3, 1, 6, 0, 4, 2, 3, 3, 0, 5, 0, 4, 6, 5, 3, 0, 3, 4, 2, 4, 3, 1, 6, 3, 0, 5, 0, 4, 6, 5, 3, 3, 4, 0, 2, 3, 0, 5, 0, 4, 3, 1, 6, 5, 3, 4, 6,
-};  // 0x085AAF2C
+const u8 u8_ARRAY_085aaf2c[64] = {0, 2, 3, 4, 4, 3, 1, 6, 3, 0, 5, 0, 5, 3, 4, 6, 4, 3, 1, 6, 0, 4, 2, 3, 3, 0, 5, 0, 4, 6, 5, 3, 0, 3, 4, 2, 4, 3, 1, 6, 3, 0, 5, 0, 4, 6, 5, 3, 3, 4, 0, 2, 3, 0, 5, 0, 4, 3, 1, 6, 5, 3, 4, 6};  // 0x085AAF2C
 
 void FUN_0803d8e4(BossShadeMan*);
 void FUN_0803d93c(BossShadeMan*);
@@ -27,7 +25,19 @@ void FUN_0803e058(BossShadeMan*);
 void FUN_0803e4f4(BossShadeMan*);
 
 void (*const PTR_ARRAY_085aaf6c[13])(BossShadeMan*) = {
-    FUN_0803d8e4, FUN_0803d93c, FUN_0803d9b4, FUN_0803da2c, FUN_0803da90, FUN_0803dd88, FUN_0803de00, FUN_0803de78, FUN_0803def0, FUN_0803df68, FUN_0803dfe0, FUN_0803e058, FUN_0803e4f4,
+    FUN_0803d8e4,
+    FUN_0803d93c,
+    FUN_0803d9b4,
+    FUN_0803da2c,
+    FUN_0803da90,
+    FUN_0803dd88,
+    FUN_0803de00,
+    FUN_0803de78,
+    FUN_0803def0,
+    FUN_0803df68,
+    FUN_0803dfe0,
+    FUN_0803e058,
+    FUN_0803e4f4,
 };  // 0x085AAF6C
 
 void FUN_0803e578(BossShadeMan*);
@@ -74,7 +84,21 @@ void FUN_0803fef0(BossShadeMan*, s32);
 void FUN_080400a4(BossShadeMan*, s32);
 
 void (*const PTR_ARRAY_085aafb8[15])(BossShadeMan*, s32) = {
-    NULL, FUN_0803e6b0, FUN_0803e860, FUN_0803e9f4, FUN_0803ea98, FUN_0803ebc4, FUN_0803ed40, FUN_0803ee50, FUN_0803ef80, FUN_0803f2f4, FUN_0803f5b8, FUN_0803f8cc, FUN_0803fc70, FUN_0803fef0, FUN_080400a4,
+    NULL,
+    FUN_0803e6b0,
+    FUN_0803e860,
+    FUN_0803e9f4,
+    FUN_0803ea98,
+    FUN_0803ebc4,
+    FUN_0803ed40,
+    FUN_0803ee50,
+    FUN_0803ef80,
+    FUN_0803f2f4,
+    FUN_0803f5b8,
+    FUN_0803f8cc,
+    FUN_0803fc70,
+    FUN_0803fef0,
+    FUN_080400a4,
 };  // 0x085AAFB8
 
 s32 FUN_0803c1bc(void* _) { return BOSS_SHADEMAN; }

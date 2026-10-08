@@ -109,7 +109,7 @@ _0806CCCC: .4byte 0x000002E7
 _0806CCD0:
 	adds r0, r5, #0
 	movs r1, #0x41
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	adds r0, r5, #0
 	adds r0, #0xa8
 	ldr r1, [r5, #0x2c]
@@ -331,7 +331,7 @@ _0806CE64:
 	adds r0, r5, r2
 	strb r1, [r0]
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0

@@ -15,25 +15,25 @@ extern u16 u16_03002b64;
 extern u16 u16_03002b74;
 extern u16 u16_03002bb0;
 
-s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);                 // src/entity_0805fd6c.c
-bool32 FUN_0809e138(Player* p);                                                                                        // src/entity_5ccc.c
-s32 GetMagicCategory(magic32_t id);                                                                                    // src/equip_magic.c
-s32 FUN_080ddcc8(Vec3* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);  // src/entity_080ddf88.c
-void FUN_0809c4f4(void);                                                                                               // src/entity_cc28.c
-s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5);                         // src/eff_082473e0.c
-s32 FUN_082467d0(Eff082473e0Emitter* e, u32 unk_1, u32 param_3, u32* param_4);                                         // src/eff_082473e0.c
-magic32_t Player_CheckMagicEnchant(Player* p);                                                                         // src/player_08065988.c
-void dark_django_0806f990(HitboxData* a, HitboxData* b, void* _);                                                      // src/player_08065988.c
-void* Entity080dc44c_Create(void);                                                                                     // src/entity_080dc44c.c
+s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
+bool32 FUN_0809e138(Player* p);
+s32 GetMagicCategory(magic32_t id);
+s32 FUN_080ddcc8(Vec3* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);
+void FUN_0809c4f4(void);
+s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5);
+s32 FUN_082467d0(Eff082473e0Emitter* e, u32 unk_1, u32 param_3, u32* param_4);
+magic32_t Player_CheckMagicEnchant(Player* p);
+void dark_django_0806f990(HitboxData* a, HitboxData* b, void* _);
+void* Entity080dc44c_Create(void);
 extern u16 u16_03002b84;
 extern u16 u16_03002b90;
 extern u16 u16_03002bac;
 extern u16 u16_03002bf0;
-s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u16* interval);                              // src/mosaic_fader.c
-s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);  // src/entity_080db520.c
-void FUN_08242a98(Weapon* w, WeaponData* data);                                                                             // src/weapon.c
-s32 FUN_0807a6cc(WeaponData* w);                                                                                            // src/player_08065988.c
-void FUN_08071b14(Player* p);                                                                                               // src/player_08065988.c
+s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u16* interval);
+s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);
+void FUN_08242a98(Weapon* w, WeaponData* data);
+s32 FUN_0807a6cc(WeaponData* w);
+void FUN_08071b14(Player* p);
 
 const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
 
@@ -45,19 +45,16 @@ void FUN_0807106c(Player* p);
 void FUN_080713a8(Player* p);
 void gun_080715a0(Player* p);
 
-// clang-format off
 const PlayerFunc gPlayerAttackUpdates[5] = {
-    [WK_SWORD]  = FUN_0806fedc,
-    [WK_SPEAR]  = FUN_08070844,
+    [WK_SWORD] = FUN_0806fedc,
+    [WK_SPEAR] = FUN_08070844,
     [WK_HAMMER] = FUN_0807106c,
     [WK_OTHERS] = FUN_080713a8,
-    [WK_GUN]    = gun_080715a0,
+    [WK_GUN] = gun_080715a0,
 };  // 0x085abab8
-// clang-format on
 
 // --------------------------------------------
 
-// clang-format off
 const u16 gMagicCosts[MAGIC_NUM] = {
     [MAGIC_SOL] = 5,
     [MAGIC_DARK] = 5,
@@ -78,10 +75,8 @@ const u16 gMagicCosts[MAGIC_NUM] = {
     [MAGIC_RAT] = 10,
     [MAGIC_WOLF] = 10,
 };  // 0x085abacc
-// clang-format on
 
-// FUN_08064b00 での使い方的にこれも魔法の消費コストっぽいけど、いつ使うかわからん
-// clang-format off
+// GetMagicCost での使い方的にこれも魔法の消費コストっぽいけど、いつ使うかわからん
 const u16 gMagicUnkVal[MAGIC_NUM] = {
     [MAGIC_SOL] = 10,
     [MAGIC_DARK] = 0,
@@ -102,7 +97,6 @@ const u16 gMagicUnkVal[MAGIC_NUM] = {
     [MAGIC_RAT] = 0,
     [MAGIC_WOLF] = 0,
 };  // 0x085abaf0
-// clang-format on
 
 // --------------------------------------------
 
@@ -113,38 +107,49 @@ void FUN_08079b64(Player* p);
 void FUN_08079e4c(Player* p);
 void FUN_08079138(Player* p);
 
-// clang-format off
 const PlayerFunc PTR_ARRAY_085abb14[6] = {
     [PLAYER_SOLAR_DJANGO] = FUN_08078d5c,
-    [PLAYER_DARK_DJANGO]  = FUN_08078d5c,
-    [PLAYER_BAT]          = FUN_080798a4,
-    [PLAYER_MOUSE]        = FUN_08079b64,
-    [PLAYER_SLEEPING]     = FUN_08079e4c,
-    [PLAYER_SABATA]       = FUN_08079138,
+    [PLAYER_DARK_DJANGO] = FUN_08078d5c,
+    [PLAYER_BAT] = FUN_080798a4,
+    [PLAYER_MOUSE] = FUN_08079b64,
+    [PLAYER_SLEEPING] = FUN_08079e4c,
+    [PLAYER_SABATA] = FUN_08079138,
 };  // 0x085abb14
-// clang-format on
 
 // --------------------------------------------
 
+// clang-format off
 const u16 u16_ARRAY_085abb2c[57] = {
-    0, 5, 20, 22, 24, 26, 28, 30, 52, 54, 56, 58, 60, 61, 62, 63, 10, 15, 44, 46, 48, 109, 119, 114, 124, 129, 134, 139, 144, 149, 154, 159, 64, 69, 74, 79, 84, 89, 94, 99, 104, 32, 34, 38, 40, 42, 36, 179, 184, 194, 189, 534, 513, 514, 515, 519, 520,
+    0,   5,   20,  22,  24,  26,  28,  30,  52,  54,  56,  58,  60,  61,  62,
+    63,  10,  15,  44,  46,  48,  109, 119, 114, 124, 129, 134, 139, 144, 149,
+    154, 159, 64,  69,  74,  79,  84,  89,  94,  99,  104, 32,  34,  38,  40,
+    42,  36,  179, 184, 194, 189, 534, 513, 514, 515, 519, 520,
 };  // 0x085abb2c
+// clang-format on
 
+// clang-format off
 const u16 u16_ARRAY_085abb9e[57] = {
-    199, 204, 219, 221, 223, 225, 227, 229, 251, 253, 255, 257, 259, 260, 261, 262, 209, 214, 243, 245, 247, 308, 318, 313, 323, 328, 333, 338, 343, 348, 353, 358, 263, 268, 273, 278, 283, 288, 293, 298, 303, 231, 233, 237, 239, 241, 235, 378, 383, 393, 388, 535, 521, 522, 523, 527, 528,
+    199, 204, 219, 221, 223, 225, 227, 229, 251, 253, 255, 257, 259, 260, 261,
+    262, 209, 214, 243, 245, 247, 308, 318, 313, 323, 328, 333, 338, 343, 348,
+    353, 358, 263, 268, 273, 278, 283, 288, 293, 298, 303, 231, 233, 237, 239,
+    241, 235, 378, 383, 393, 388, 535, 521, 522, 523, 527, 528,
 };  // 0x085abb9e
+// clang-format on
 
+// clang-format off
 const u16 u16_ARRAY_085abc10[57] = {
-    414, 419, 434, 436, 438, 440, 442, 444, 466, 468, 470, 472, 474, 475, 476, 477, 424, 429, 458, 460, 462, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 478, 483, 488, 0, 0, 0, 446, 448, 452, 454, 456, 450, 493, 498, 508, 503, 533, 0, 0, 0, 0, 0,
+    414, 419, 434, 436, 438, 440, 442, 444, 466, 468, 470, 472, 474, 475, 476,
+    477, 424, 429, 458, 460, 462, 0,   0,   0,   0,   0,   0,   0,   0,   0,
+    0,   0,   0,   0,   0,   478, 483, 488, 0,   0,   0,   446, 448, 452, 454,
+    456, 450, 493, 498, 508, 503, 533, 0,   0,   0,   0,   0,
 };  // 0x085abc10
+// clang-format on
 
 const u8 u8_ARRAY_085abc82[8] = {4, 2, 2, 1, 1, 2, 8, 0};  // 0x085abc82
 
-const s16 s16_ARRAY_085abc8a[17] = {
-    -0x1, 0x0, 0x4, -0x1, 0x6, 0x7, 0x5, -0x1, 0x2, 0x1, 0x3, -0x1, -0x1, -0x1, -0x1, -0x1, 0x0,
-};  // 0x085abc8a
+const s16 s16_ARRAY_085abc8a[17] = {-1, 0, 4, -1, 6, 7, 5, -1, 2, 1, 3, -1, -1, -1, -1, -1, 0};  // 0x085abc8a
 
-void FUN_080609dc(Player* p) {
+void Player_SetAnimFacing(Player* p) {
   u8 v = p->facing;
 
   if (v > 4) {
@@ -234,9 +239,9 @@ NON_MATCH void Player_SetMoveDelta(Player* p, s32 val) {
 #endif
 }
 
-void Player_SetAction(Player* p, u32 r1, u32 r2) {
-  p->action = r1;
-  p->state = r2;
+void Player_SetAction(Player* p, u32 action, u32 state) {
+  p->action = action;
+  p->state = state;
   p->stateTimer = 0;
 }
 
@@ -251,23 +256,21 @@ NON_MATCH void Player_BeginAction(Player* p) {
   if (gStat->unk_2c8[p->isSabata] == 0 && FUN_0809e138(p)) {
     Player_SetFlag20(p, PFLAG20_UNK_4);
   }
-  if (Player_TestFlag378(p, FLAG378_UNK_9)) {
+  if (Player_TestFlag378(p, FLAG378_SKULLSUIT)) {
     Player_SetFlag20(p, PFLAG20_UNK_16);
   }
 
-  p->shadowOffsetX = 0;
-  p->shadowOffsetY = 0;
-  p->shadowOffsetZ = 0;
-  p->unk_35a = 0;
+  p->shadowOffset.x = 0, p->shadowOffset.y = 0, p->shadowOffset.z = 0;
+  p->flag35a = 0;
   p->unk_16c.hitState &= ~2;
 #else
   INCFUNC("asm/func/Player_BeginAction.inc");
 #endif
 }
 
-void FUN_08060c40(Player* p, u32 val) { p->unk_35a |= val; }
+void Player_SetFlag35a(Player* p, u32 val) { p->flag35a |= val; }
 
-u32 FUN_08060c50(Player* p, u32 mask) { return p->unk_35a & mask; }
+u32 Player_TestFlag35a(Player* p, u32 mask) { return p->flag35a & mask; }
 
 // エネルギーチャージ音を止める
 void Player_StopEneChargeSound(Player* p) {
@@ -349,7 +352,7 @@ bool32 FUN_08060e1c(Player* p) {
   u32 span;
 
   if (*(p->isSabata + gStat->unk_2c8) > 0) return TRUE;
-  if (Player_TestFlag378(p, FLAG378_UNK_10)) return TRUE;
+  if (Player_TestFlag378(p, FLAG378_ALLNIGHT)) return TRUE;
 
   span = Time_GetSpanOfTime();
   if (span >= TIME_UNK4 && span <= TIME_UNK5) return TRUE;
@@ -528,17 +531,17 @@ NON_MATCH void Player_RefreshAttackPower(Player* p) {
       lv = 99;
     }
     power = p->stats[3];
-    attrs = p->unk_27c | 2;
+    attrs = p->hbattrs | HBATTR_DARK;
     weakness = 1;
   } else {
     lv = gStat->lv;
     if (p->kind == PLAYER_SOLAR_DJANGO) {
       power = p->stats[3] + armor->bonus[3] + armor->bonus2[3];
-      attrs = p->unk_27c | 1;
+      attrs = p->hbattrs | HBATTR_SOL;
       weakness = 2;
     } else {
       power = p->stats[3] + armor->bonus[3] - armor->bonus2[3];
-      attrs = p->unk_27c | 2;
+      attrs = p->hbattrs | HBATTR_DARK;
       weakness = 1;
     }
   }
@@ -547,8 +550,8 @@ NON_MATCH void Player_RefreshAttackPower(Player* p) {
   if (p->unk_446 != 0 && p->unk_442 == 8) {
     special = TRUE;
   }
-  if (special || p->unk_27c == 0x40) {
-    attrs = 0x40;
+  if (special || p->hbattrs == HBATTR_6) {
+    attrs = HBATTR_6;
   }
 
   if (power > 99) {
@@ -639,7 +642,7 @@ void Player_ShowPtcl64c(Player* p, Vec3* pos, s32 big) {
 
 // 0x64C のパーティクルを確保して隠した状態で初期化する
 void FUN_08061458(Player* p) {
-  ParticleGroup* group = GetParticleGroup(0x1C1C);
+  ParticleGroup* group = GetParticleGroup(PTCL_GROUP_1);
   Particle* ptcl;
 
   p->ptcl_64c.group1 = group;
@@ -718,7 +721,7 @@ NON_MATCH void Player_UpdateBadCondPtcl(Player* p) {
 
 // 0x67C のパーティクルを確保して隠した状態で初期化する
 void FUN_0806161c(Player* p) {
-  ParticleGroup* group = GetParticleGroup(0x1C1C);
+  ParticleGroup* group = GetParticleGroup(PTCL_GROUP_1);
   Particle* ptcl;
 
   p->ptcl_67c.group1 = group;
@@ -1128,7 +1131,7 @@ void Player_InitPtcl718(Player* p) {
   PlayerParticleState718* st = &p->ptcl_718;
   s32 i;
 
-  st->group = GetParticleGroup(0x1C1E);
+  st->group = GetParticleGroup(PTCL_GROUP_2);
   for (i = 0; i < 6; i++) {
     Particle52* ptcl = &st->ptcls[i];
 
@@ -1338,7 +1341,7 @@ void Player_InitPtcl858(Player* p) {
   PlayerParticleState858* st = &p->ptcl_858;
   s32 i;
 
-  st->group = GetParticleGroup(0x1C1E);
+  st->group = GetParticleGroup(PTCL_GROUP_2);
   for (i = 0; i < 4; i++) {
     PlayerPtcl858* ptcl = &st->ptcls[i];
 
@@ -1792,119 +1795,120 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
 
 void Player_SetBasePlttID(Player* p) {
   if (p->unk_18 == 0) {
-    p->plttID_94a = 0x1D;
+    p->plttID_94a = 29;
   } else {
-    p->plttID_94a = 0x28;
+    p->plttID_94a = 40;
   }
 }
 
-// 変身の種類と鎧の特殊効果 (AET 29-32) に応じて, パレットIDの表を作る
+// ロックマンコラボの鎧を装備すると、プレイヤーのパレットIDが対応するものに変更される
+// 例: ロックパワー(FLAG378_MEGAPOWER) は ロックマンと同じ青色
 void Player_SetPlttIDs(Player* p) {
   switch (p->kind) {
     case PLAYER_SOLAR_DJANGO: {
-      if (Player_TestFlag378(p, FLAG378_UNK_20)) {
-        p->plttIDs[0] = 0x128;
-      } else if (Player_TestFlag378(p, FLAG378_UNK_21)) {
-        p->plttIDs[0] = 0x129;
-      } else if (Player_TestFlag378(p, FLAG378_UNK_22)) {
-        p->plttIDs[0] = 0x12A;
-      } else if (Player_TestFlag378(p, FLAG378_UNK_23)) {
-        p->plttIDs[0] = 0x12B;
+      if (Player_TestFlag378(p, FLAG378_MEGAPOWER)) {
+        p->plttIDs[0] = 296;
+      } else if (Player_TestFlag378(p, FLAG378_GUTSPOWER)) {
+        p->plttIDs[0] = 297;
+      } else if (Player_TestFlag378(p, FLAG378_PROTOPOWER)) {
+        p->plttIDs[0] = 298;
+      } else if (Player_TestFlag378(p, FLAG378_TOADPOWER)) {
+        p->plttIDs[0] = 299;
       } else {
-        p->plttIDs[0] = 0x1D;
+        p->plttIDs[0] = 29;
       }
-      p->plttIDs[1] = 0x121;
-      p->plttIDs[2] = 0x20;
-      p->plttIDs[3] = 0x123;
-      p->plttIDs[4] = 0x124;
-      p->plttIDs[5] = 0x1F;
-      p->plttIDs[6] = 0x21;
-      p->plttIDs[7] = 0x1E;
+      p->plttIDs[1] = 289;
+      p->plttIDs[2] = 32;
+      p->plttIDs[3] = 291;
+      p->plttIDs[4] = 292;
+      p->plttIDs[5] = 31;
+      p->plttIDs[6] = 33;
+      p->plttIDs[7] = 30;
       break;
     }
     case PLAYER_DARK_DJANGO: {
-      if (Player_TestFlag378(p, FLAG378_UNK_20)) {
-        p->plttIDs[0] = 0x128;
-      } else if (Player_TestFlag378(p, FLAG378_UNK_21)) {
-        p->plttIDs[0] = 0x129;
-      } else if (Player_TestFlag378(p, FLAG378_UNK_22)) {
-        p->plttIDs[0] = 0x12A;
-      } else if (Player_TestFlag378(p, FLAG378_UNK_23)) {
-        p->plttIDs[0] = 0x12B;
+      if (Player_TestFlag378(p, FLAG378_MEGAPOWER)) {
+        p->plttIDs[0] = 296;
+      } else if (Player_TestFlag378(p, FLAG378_GUTSPOWER)) {
+        p->plttIDs[0] = 297;
+      } else if (Player_TestFlag378(p, FLAG378_PROTOPOWER)) {
+        p->plttIDs[0] = 298;
+      } else if (Player_TestFlag378(p, FLAG378_TOADPOWER)) {
+        p->plttIDs[0] = 299;
       } else {
-        p->plttIDs[0] = 0x26;
+        p->plttIDs[0] = 38;
       }
-      p->plttIDs[1] = 0x121;
-      p->plttIDs[2] = 0x20;
-      p->plttIDs[3] = 0x123;
-      p->plttIDs[4] = 0x124;
-      p->plttIDs[5] = 0x1F;
-      p->plttIDs[6] = 0x21;
-      p->plttIDs[7] = 0x1E;
+      p->plttIDs[1] = 289;
+      p->plttIDs[2] = 32;
+      p->plttIDs[3] = 291;
+      p->plttIDs[4] = 292;
+      p->plttIDs[5] = 31;
+      p->plttIDs[6] = 33;
+      p->plttIDs[7] = 30;
       break;
     }
     case PLAYER_BAT: {
-      if (Player_TestFlag378(p, FLAG378_UNK_20)) {
-        p->plttIDs[0] = 0x26F;
-      } else if (Player_TestFlag378(p, FLAG378_UNK_21)) {
-        p->plttIDs[0] = 0x270;
-      } else if (Player_TestFlag378(p, FLAG378_UNK_22)) {
-        p->plttIDs[0] = 0x26E;
-      } else if (Player_TestFlag378(p, FLAG378_UNK_23)) {
-        p->plttIDs[0] = 0x271;
+      if (Player_TestFlag378(p, FLAG378_MEGAPOWER)) {
+        p->plttIDs[0] = 623;
+      } else if (Player_TestFlag378(p, FLAG378_GUTSPOWER)) {
+        p->plttIDs[0] = 624;
+      } else if (Player_TestFlag378(p, FLAG378_PROTOPOWER)) {
+        p->plttIDs[0] = 622;
+      } else if (Player_TestFlag378(p, FLAG378_TOADPOWER)) {
+        p->plttIDs[0] = 625;
       } else {
-        p->plttIDs[0] = 0x266;
+        p->plttIDs[0] = 614;
       }
-      p->plttIDs[1] = 0x26D;
-      p->plttIDs[2] = 0x26B;
-      p->plttIDs[3] = 0x268;
-      p->plttIDs[4] = 0x269;
-      p->plttIDs[5] = 0x26A;
-      p->plttIDs[6] = 0x26C;
-      p->plttIDs[7] = 0x267;
+      p->plttIDs[1] = 621;
+      p->plttIDs[2] = 619;
+      p->plttIDs[3] = 616;
+      p->plttIDs[4] = 617;
+      p->plttIDs[5] = 618;
+      p->plttIDs[6] = 620;
+      p->plttIDs[7] = 615;
       break;
     }
     case PLAYER_MOUSE: {
-      if (Player_TestFlag378(p, FLAG378_UNK_20)) {
-        p->plttIDs[0] = 0x128;
-      } else if (Player_TestFlag378(p, FLAG378_UNK_21)) {
-        p->plttIDs[0] = 0x129;
-      } else if (Player_TestFlag378(p, FLAG378_UNK_22)) {
-        p->plttIDs[0] = 0x12A;
-      } else if (Player_TestFlag378(p, FLAG378_UNK_23)) {
-        p->plttIDs[0] = 0x12B;
+      if (Player_TestFlag378(p, FLAG378_MEGAPOWER)) {
+        p->plttIDs[0] = 296;
+      } else if (Player_TestFlag378(p, FLAG378_GUTSPOWER)) {
+        p->plttIDs[0] = 297;
+      } else if (Player_TestFlag378(p, FLAG378_PROTOPOWER)) {
+        p->plttIDs[0] = 298;
+      } else if (Player_TestFlag378(p, FLAG378_TOADPOWER)) {
+        p->plttIDs[0] = 299;
       } else {
-        p->plttIDs[0] = 0x1D;
+        p->plttIDs[0] = 29;
       }
-      p->plttIDs[1] = 0x121;
-      p->plttIDs[2] = 0x20;
-      p->plttIDs[3] = 0x123;
-      p->plttIDs[4] = 0x124;
-      p->plttIDs[5] = 0x1F;
-      p->plttIDs[6] = 0x21;
-      p->plttIDs[7] = 0x1E;
+      p->plttIDs[1] = 289;
+      p->plttIDs[2] = 32;
+      p->plttIDs[3] = 291;
+      p->plttIDs[4] = 292;
+      p->plttIDs[5] = 31;
+      p->plttIDs[6] = 33;
+      p->plttIDs[7] = 30;
       break;
     }
     case PLAYER_SLEEPING: {
-      p->plttIDs[0] = 0x207 + p->coffin_387;
-      p->plttIDs[1] = 0x20F;
-      p->plttIDs[2] = 0x207 + p->coffin_387;
-      p->plttIDs[3] = 0x207 + p->coffin_387;
-      p->plttIDs[4] = 0x207 + p->coffin_387;
-      p->plttIDs[5] = 0x207 + p->coffin_387;
-      p->plttIDs[6] = 0x207 + p->coffin_387;
-      p->plttIDs[7] = 0x207 + p->coffin_387;
+      p->plttIDs[0] = 519 + p->coffin;
+      p->plttIDs[1] = 527;
+      p->plttIDs[2] = 519 + p->coffin;
+      p->plttIDs[3] = 519 + p->coffin;
+      p->plttIDs[4] = 519 + p->coffin;
+      p->plttIDs[5] = 519 + p->coffin;
+      p->plttIDs[6] = 519 + p->coffin;
+      p->plttIDs[7] = 519 + p->coffin;
       break;
     }
     case PLAYER_SABATA: {
-      p->plttIDs[0] = 0x27;
-      p->plttIDs[1] = 0x121;
-      p->plttIDs[2] = 0x20;
-      p->plttIDs[3] = 0x123;
-      p->plttIDs[4] = 0x124;
-      p->plttIDs[5] = 0x1F;
-      p->plttIDs[6] = 0x21;
-      p->plttIDs[7] = 0x1E;
+      p->plttIDs[0] = 39;
+      p->plttIDs[1] = 289;
+      p->plttIDs[2] = 32;
+      p->plttIDs[3] = 291;
+      p->plttIDs[4] = 292;
+      p->plttIDs[5] = 31;
+      p->plttIDs[6] = 33;
+      p->plttIDs[7] = 30;
       break;
     }
   }
@@ -2010,13 +2014,13 @@ NON_MATCH void Player_StartFormEffect(Player* p, u32 kind) {
     p->unk_3da = 0;
   }
 
-  if (p->kind == 2) {
+  if (p->kind == PLAYER_BAT) {
     table = gRandomTable;
     idx = (gRandTableIdx + 1) & 0x3FF;
     spread.x = (table[idx] & 7) - 3;
     gRandTableIdx = (idx + 1) & 0x3FF;
     spread.y = (table[gRandTableIdx] & 7) - 5;
-  } else if (p->kind == 3) {
+  } else if (p->kind == PLAYER_MOUSE) {
     table = gRandomTable;
     idx = (gRandTableIdx + 1) & 0x3FF;
     spread.x = (table[idx] & 7) - 3;
@@ -2168,7 +2172,7 @@ NON_MATCH u32 Player_TickBadCondTimers(Player* p, u32 n) {
       case 0: {
         if (p->unk_43c[0] != 0 && (p->unk_1c & 1)) {
           p->unk_43c[0]--;
-          if (p->input_28c->down & 0xF0) {
+          if (p->input->down & 0xF0) {
             MosaicFader_Start(2, 1, 0x1E, p->unk_97c, p->unk_980, p->unk_984);
           }
         }
@@ -2303,7 +2307,7 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
 }
 
 void FUN_080639d0(Player* p) {
-  if (p->input_28c->pressed & (A_BUTTON | B_BUTTON | DPAD_RIGHT | DPAD_LEFT | DPAD_UP | DPAD_DOWN)) {
+  if (p->input->pressed & (A_BUTTON | B_BUTTON | DPAD_RIGHT | DPAD_LEFT | DPAD_UP | DPAD_DOWN)) {
     p->angle_400++;
   }
 }
@@ -2344,9 +2348,9 @@ NON_MATCH void Player_UpdatePoseAndShadow(Player* p) {
     }
   }
 
-  p->shadowPos.x = p->shadowOffsetX + p->mover.pos.x;
-  p->shadowPos.y = p->shadowOffsetY + p->mover.pos.y;
-  p->shadowPos.z = p->shadowOffsetZ + p->mover.pos.z;
+  p->shadowPos.x = p->shadowOffset.x + p->mover.pos.x;
+  p->shadowPos.y = p->shadowOffset.y + p->mover.pos.y;
+  p->shadowPos.z = p->shadowOffset.z + p->mover.pos.z;
 #else
   INCFUNC("asm/func/Player_UpdatePoseAndShadow.inc");
 #endif
@@ -2377,9 +2381,7 @@ NON_MATCH void Player_InitEffects(Player* p) {
   }
 
   p->shadowPos = p->sprite_88.pos;
-  p->shadowOffsetX = 0;
-  p->shadowOffsetY = 0;
-  p->shadowOffsetZ = 0;
+  p->shadowOffset.x = 0, p->shadowOffset.y = 0, p->shadowOffset.z = 0;
   ParticleShadow_Init(&p->shadow, &p->shadowPos, 0);
   Entity080dc44c_Create();
 
@@ -2779,7 +2781,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
     offset.y = 0xFFEC;
     offset.z = 0;
     Hitbox_Init(hitbox, 0, 0x2101, 0, (0x10000 << p->mover.unk_4) >> 16, &halfSize, &offset);
-    Hitbox_SetAttack(hitbox, 0x14, 0x32, 0x10, 2, 0x14);
+    Hitbox_SetAttack(hitbox, 20, 0x32, 0x10, HBATTR_DARK, 0x14);
     Hitbox_SetHandler(hitbox, NULL, p);
     return;
   }
@@ -2861,20 +2863,20 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
 
 void FUN_08064658(Player* p, Weapon* w) { p->weapon_a70 = w; }
 
-// 装備中の武器の情報を Player に展開する, サバタは素手 (gWeaponDB[60]) 固定
+// 装備中の武器の情報を Player に展開する, サバタはガンデルヘル (WEAPON_GUN_DEL_HELL) 固定
 void Player_ApplyWeapon(Player* p, Weapon* w) {
   WeaponData wd;
 
   if (p->kind != PLAYER_SABATA) {
     FUN_08064658(p, w);
     if (p->weapon_a70 == NULL) {
-      wd = gWeaponDB[0];
+      wd = gWeaponDB[WEAPON_NONE];
     } else {
       FUN_08242a98(p->weapon_a70, &wd);
     }
   } else {
     p->weapon_a70 = NULL;
-    wd = gWeaponDB[60];
+    wd = gWeaponDB[WEAPON_GUN_DEL_HELL];
   }
 
   p->weaponID_a74 = wd.id;
@@ -2883,7 +2885,7 @@ void Player_ApplyWeapon(Player* p, Weapon* w) {
   p->unk_a7a = FUN_0807a6cc(&wd);
   Player_EnableWeaponSpecialEffects(p, &wd);
 
-  if (p->weaponID_a74 == 0x3D) {
+  if (p->weaponID_a74 == WEAPON_MEGA_BUSTER) {
     p->attackCB = FUN_08071b14;
   } else {
     p->attackCB = gPlayerAttackUpdates[p->weaponKind_a75];
@@ -2919,7 +2921,7 @@ NON_MATCH void Player_UpdateWeaponWear(Player* p) {
 
     if ((s8)p->weapon_a70->quality > 0) {
       p->weapon_a70->wear += wear;
-      if (p->weapon_a70->wear > 0xC7) {
+      if (p->weapon_a70->wear >= 200) {
         p->weapon_a70->quality--;
         p->weapon_a70->wear = 0;
         FUN_0809c4f4();
@@ -2927,7 +2929,7 @@ NON_MATCH void Player_UpdateWeaponWear(Player* p) {
       }
     } else if (*(u8*)&p->weapon_a70->effects[2] != 0) {
       p->weapon_a70->wear += wear;
-      if (p->weapon_a70->wear > 0x7CF) {
+      if (p->weapon_a70->wear >= 2000) {
         *(u8*)&p->weapon_a70->effects[2] = 0;
         p->weapon_a70->wear = 0;
         FUN_0809c4f4();
@@ -2935,7 +2937,7 @@ NON_MATCH void Player_UpdateWeaponWear(Player* p) {
       }
     } else if (*(u8*)&p->weapon_a70->effects[1] != 0) {
       p->weapon_a70->wear += wear;
-      if (p->weapon_a70->wear > 0x7CF) {
+      if (p->weapon_a70->wear >= 2000) {
         *(u8*)&p->weapon_a70->effects[1] = 0;
         p->weapon_a70->wear = 0;
         FUN_0809c4f4();
@@ -2951,20 +2953,19 @@ NON_MATCH void Player_UpdateWeaponWear(Player* p) {
 }
 
 // 鎧の特殊効果を Player に展開する, 補正値をいったん全部消してから effectType ごとの効果を入れる
-// 鎧の特殊効果を Player に展開する, 補正値をいったん全部消してから effectType ごとの効果を入れる
-// 残差14命令 (205/191): レジスタ割当 (原典は a を r3 に置いたまま回す) と case ごとの定数の作り方
-// flag378 のアドレスをローカルに持つと 270 → 205 まで詰まった, Tier A/B は試済
+// 残差10命令 (201/191): レジスタ割当 (原典は a を r3 に置いたまま回す) と case ごとの定数の作り方
+// flag378 のアドレスをローカルに持つのが効いている (持たないと 270 命令), Tier A/B は試済
 NON_MATCH void Player_ApplyArmorEffect(Player* p, const ArmorData* a) {
 #ifdef NONMATCHING_C
-  PlayerFlag378* flags = &*flags;
+  PlayerFlag378* flags = &p->flag378;
   s32 i;
 
-  p->unk_27c = 0;
+  p->hbattrs = 0;
   for (i = 0; i < STAT_KINDS; i++) {
     p->armor.bonus[i] = 0;
     p->armor.bonus2[i] = 0;
   }
-  *flags &= 0xF000000F;
+  *flags &= ~0x0FFFFFF0;
 
   if (a == NULL) {
     Player_SetPlttIDs(p);
@@ -2972,137 +2973,137 @@ NON_MATCH void Player_ApplyArmorEffect(Player* p, const ArmorData* a) {
     return;
   }
 
-  switch (a->effectType - 1) {
-    case 0: {
-      for (i = STAT_KINDS - 1; i >= 0; i--) {
+  switch (a->effectType) {
+    case AET_SILVER_CHAIN: {
+      for (i = 0; i < STAT_KINDS; i++) {
         p->armor.bonus2[i] = a->value;
       }
       break;
     }
-    case 1: {
-      for (i = STAT_KINDS - 1; i >= 0; i--) {
+    case AET_BLOOD_CAPE: {
+      for (i = 0; i < STAT_KINDS; i++) {
         p->armor.bonus2[i] = -a->value;
       }
       break;
     }
-    case 2: {
+    case AET_STR: {
       p->armor.bonus[STAT_STRENGTH] = a->value;
       break;
     }
-    case 25: {
-      p->armor.bonus[3] = a->value;
+    case AET_SOLAR_WIND: {
+      *flags |= FLAG378_SOLAR_WIND;
       break;
     }
-    case 4: {
-      p->unk_27c = 1;
+    case AET_RES_SOL: {
+      p->hbattrs = HBATTR_SOL;
       *flags |= FLAG378_AET_RES_SOL;
       break;
     }
-    case 14: {
+    case AET_RES_DARK: {
+      p->hbattrs = HBATTR_DARK;
       break;
     }
-    case 5: {
-      p->unk_27c = 0x2;
+    case AET_RES_FLAME: {
+      p->hbattrs = HBATTR_FLAME;
       break;
     }
-    case 6: {
-      p->unk_27c = 0x4;
+    case AET_RES_FROST: {
+      p->hbattrs = HBATTR_FROST;
       break;
     }
-    case 7: {
-      p->unk_27c = 0x8;
+    case AET_RES_CLOUD: {
+      p->hbattrs = HBATTR_CLOUD;
       break;
     }
-    case 8: {
-      p->unk_27c = 0x10;
+    case AET_RES_EARTH: {
+      p->hbattrs = HBATTR_EARTH;
       break;
     }
-    case 9: {
-      p->unk_27c = 0x20;
+    case AET_DRAGON_SCALE: {
+      p->hbattrs = (HBATTR_FLAME | HBATTR_FROST | HBATTR_CLOUD | HBATTR_EARTH);
       break;
     }
-    case 10: {
-      p->unk_27c = 0x3C;
+    case AET_RES_ALL: {
+      p->hbattrs = HBATTR_6;
       break;
     }
-    case 11: {
-      p->unk_27c = 0x40;
-      break;
-    }
-    case 3: {
-      *flags |= FLAG378_UNK_4;
-      break;
-    }
-    case 12: {
+    case AET_FAIRY_ROBE: {
       *flags |= FLAG378_FAIRY;
       break;
     }
-    case 13: {
-      *flags |= FLAG378_UNK_12;
+    case AET_EARTHLY_ROBE: {
+      *flags |= FLAG378_EARTHLYROBE;
       break;
     }
-    case 15: {
+    case AET_RAIN_COAT: {
+      break;
+    }
+    case AET_SUNLIGHT: {
       *flags |= FLAG378_AET_SUNLIGHT;
       break;
     }
-    case 16: {
-      *flags |= FLAG378_UNK_10;
+    case AET_ALLNIGHT: {
+      *flags |= FLAG378_ALLNIGHT;
       break;
     }
-    case 17: {
-      *flags |= FLAG378_UNK_8;
+    case AET_MAGIC_COST: {
+      *flags |= FLAG378_MAGICROBE;
       break;
     }
-    case 18: {
-      *flags |= FLAG378_UNK_9;
+    case AET_SKULL_SUIT: {
+      *flags |= FLAG378_SKULLSUIT;
       break;
     }
-    case 19: {
-      *flags |= FLAG378_UNK_11;
+    case AET_EXP_BOOST: {
+      *flags |= FLAG378_TRAININGGEAR;
       break;
     }
-    case 20: {
-      *flags |= FLAG378_UNK_15;
+    case AET_NORMAL_DROP: {
+      *flags |= FLAG378_AET_NORMAL_DROP;
       break;
     }
-    case 21: {
-      *flags |= FLAG378_UNK_16;
+    case AET_RARE_DROP: {
+      *flags |= FLAG378_AET_RARE_DROP;
       break;
     }
-    case 22: {
-      *flags |= FLAG378_UNK_5;
+    case AET_IMMUNE_POISON: {
+      *flags |= FLAG378_IMMUNEPOISON;
       break;
     }
-    case 23: {
+    case AET_WEAPON_GUARD: {
       *flags |= FLAG378_WEAPONGUARD;
       break;
     }
-    case 24: {
-      *flags |= FLAG378_UNK_17;
+    case AET_PARADE: {
+      *flags |= FLAG378_PARADE;
       break;
     }
-    case 26: {
-      *flags |= FLAG378_UNK_18;
+    case AET_AGILITY: {
+      p->armor.bonus[STAT_AGILITY] = a->value;
       break;
     }
-    case 27: {
+    case AET_SPIKE: {
+      *flags |= FLAG378_SPIKE;
+      break;
+    }
+    case AET_BLACK_ARMOR: {
       *flags |= FLAG378_UNK_19;
       break;
     }
-    case 28: {
-      *flags |= FLAG378_UNK_20;
+    case AET_MEGA_POWER: {
+      *flags |= FLAG378_MEGAPOWER;
       break;
     }
-    case 29: {
-      *flags |= FLAG378_UNK_21;
+    case AET_GUTS_POWER: {
+      *flags |= FLAG378_GUTSPOWER;
       break;
     }
-    case 30: {
-      *flags |= FLAG378_UNK_22;
+    case AET_PROTO_POWER: {
+      *flags |= FLAG378_PROTOPOWER;
       break;
     }
-    case 31: {
-      *flags |= FLAG378_UNK_23;
+    case AET_TOAD_POWER: {
+      *flags |= FLAG378_TOADPOWER;
       break;
     }
   }
@@ -3113,6 +3114,7 @@ NON_MATCH void Player_ApplyArmorEffect(Player* p, const ArmorData* a) {
   INCFUNC("asm/func/Player_ApplyArmorEffect.inc");
 #endif
 }
+
 // 鎧を装備する, a が NULL なら素手の値に戻す
 void Player_EquipArmor(Player* p, const ArmorData* a) {
   if (a == NULL) {
@@ -3139,7 +3141,7 @@ void CheckHeartJokerEmblem(Player* p) {
   }
 }
 
-s32 FUN_08064b00(magic32_t id) {
+static s32 GetMagicCost(magic32_t id) {
   if (gFlag030047a4 & FLAG030047A4_UNK_12) {
     return gMagicUnkVal[id];
   } else {
@@ -3148,7 +3150,7 @@ s32 FUN_08064b00(magic32_t id) {
 }
 
 // 装備している魔法の消費 Ene を計算する, 装備していなければ 0
-s32 CalcMagicCost(Player* p) {
+static s32 CalcMagicCost(Player* p) {
   s32 cost;
   s32 pct;
 
@@ -3156,16 +3158,16 @@ s32 CalcMagicCost(Player* p) {
     return 0;
   }
 
-  cost = FUN_08064b00(p->magic.id);
+  cost = GetMagicCost(p->magic.id);
   pct = 100;
-  if (Player_TestFlag378(p, FLAG378_UNK_8)) {
-    pct = 80;
+  if (Player_TestFlag378(p, FLAG378_MAGICROBE)) {  // マジックローブ装備時
+    pct = 80;                                      // 本来は ArmorData.value の値を見るのが正しい処理と思われるが 20% 削減で固定されている
   }
-  if (p->magic.id <= 5 && Player_TestFlag378(p, FLAG378_WET_ENE_COST)) {
+  if (p->magic.id <= MAGIC_EARTH && Player_TestFlag378(p, FLAG378_WET_ENE_COST)) {
     pct -= 20;
   }
 
-  if (pct <= 99) {
+  if (pct < 100) {
     cost = Div(cost * pct, 100);
   }
   return cost;
@@ -3176,7 +3178,7 @@ bool32 Player_CheckMagicCost(Player* p) {
   s32 cost = CalcMagicCost(p);
   s32 avail;
 
-  if (p->magic.id <= 5 && Player_TestFlag378(p, FLAG378_ASTRO)) {
+  if (p->magic.id <= MAGIC_EARTH && Player_TestFlag378(p, FLAG378_ASTRO)) {
     avail = gStat->solarStand;
   } else {
     avail = p->ene;
@@ -3191,7 +3193,7 @@ bool32 Player_CheckMagicCost(Player* p) {
 void Player_PayMagicCost(Player* p) {
   s32 cost = CalcMagicCost(p);
 
-  if (p->magic.id <= 5 && Player_TestFlag378(p, FLAG378_ASTRO)) {
+  if (p->magic.id <= MAGIC_EARTH && Player_TestFlag378(p, FLAG378_ASTRO)) {
     if ((s32)gStat->solarStand < cost) {
       gStat->solarStand = 0;
     } else {
@@ -3218,44 +3220,44 @@ NON_MATCH bool32 Player_IsMagicAvailableForm(Player* p, magic32_t id) {
   }
 
   cat = GetMagicCategory(id);
-  if (id <= 5) {
+  if (id <= MAGIC_EARTH) {
     if (FUN_08060ed8(p, 2) != 0) {
       return FALSE;
     }
   } else {
-    if (FUN_08060ed8(p, 4 << (id - 6)) != 0) {
+    if (FUN_08060ed8(p, 4 << (id - MAGIC_TRANSFORM)) != 0) {
       return FALSE;
     }
   }
 
   if (p->kind == PLAYER_SOLAR_DJANGO) {
-    if (cat == 0) {
-      if (id == 1) {
+    if (cat == MC_LUNA) {
+      if (id == MAGIC_DARK) {
         return FALSE;
       }
       return TRUE;
     }
-    if (cat == 1) {
+    if (cat == MC_SOL) {
       return TRUE;
     }
-    if (cat == 2) {
+    if (cat == MC_DARK) {
       return FALSE;
     }
     return FALSE;
   }
 
   if (p->kind == PLAYER_DARK_DJANGO) {
-    if (cat == 0) {
-      if (id == 0 || id == 2 || id == 3 || id == 4 || id == 5) {
+    if (cat == MC_LUNA) {
+      if (id == MAGIC_SOL || id == MAGIC_FLAME || id == MAGIC_FROST || id == MAGIC_CLOUD || id == MAGIC_EARTH) {
         return FALSE;
       }
       return TRUE;
     }
-    if (cat == 1) {
+    if (cat == MC_SOL) {
       return FALSE;
     }
-    if (cat == 2) {
-      if (id != 0xE) {
+    if (cat == MC_DARK) {
+      if (id != MAGIC_SLEEPING) {
         return TRUE;
       }
       if (gStat->coffin >= 0) {
@@ -3270,19 +3272,19 @@ NON_MATCH bool32 Player_IsMagicAvailableForm(Player* p, magic32_t id) {
     return TRUE;
   }
   if (p->kind == PLAYER_BAT) {
-    if (id == 0xF) {
+    if (id == MAGIC_BAT) {
       return TRUE;
     }
     return FALSE;
   }
   if (p->kind == PLAYER_MOUSE) {
-    if (id == 0x10) {
+    if (id == MAGIC_RAT) {
       return TRUE;
     }
     return FALSE;
   }
 
-  if (id == 0xE) {
+  if (id == MAGIC_SLEEPING) {
     return TRUE;
   }
   return FALSE;
@@ -3293,13 +3295,13 @@ NON_MATCH bool32 Player_IsMagicAvailableForm(Player* p, magic32_t id) {
 
 // エンチャント中で、コストも払えて、武器種が銃でも拳でもなければ その魔法の ID を返す
 magic32_t Player_CheckMagicEnchant(Player* p) {
-  if (p->magic.enchanted && p->magic.id <= 5 && Player_CheckMagicCost(p)) {
-    if ((u8)(p->weaponKind_a75 - STYLE_GUN) > 1) {
+  if (p->magic.enchanted && p->magic.id <= MAGIC_EARTH && Player_CheckMagicCost(p)) {
+    if (p->weaponKind_a75 != WK_OTHERS && p->weaponKind_a75 != WK_GUN) {
       return p->magic.id;
     }
   }
 
-  return -1;
+  return MAGIC_NONE;
 }
 
 bool32 Player_HasEnoughEne(Player* p, s32 ene) {
@@ -3315,21 +3317,21 @@ bool32 FUN_08064d6c(Player* p, s32 val) {
 }
 
 // 魔法ボタンを押したときに実行する行動番号を返す, 使えないときは今の行動をそのまま返す
-// 残差15命令 (264/249): AuxAnim_RestartAnim の宣言を外すと streamdiff は完全一致する (暗黙宣言のときだけ原典のコードになる)
+// 残差9命令 (258/249): AuxAnim_RestartAnim の宣言を外すと streamdiff は完全一致する (暗黙宣言のときだけ原典のコードになる)
 // Player_BurstFormEffect と同じ現象, 宣言を () にしてもプロトタイプありと同じコードになる
 NON_MATCH u32 Player_GetMagicAction(Player* p) {
 #ifdef NONMATCHING_C
   PlayerMagic* m = &p->magic;
-  s32 id = m->id;
+  magic32_t id = m->id;
 
   if (id >= 0) {
-    if (m->availableForm == 0) {
+    if (!m->availableForm) {
       return p->action;
     }
 
     if (m->unk_285 == 0) {
-      if (id <= 5) {
-        if (m->enchanted != 0) {
+      if (id <= MAGIC_EARTH) {
+        if (m->enchanted) {
           m->enchanted = FALSE;
           p->unk_951 = 0;
         } else {
@@ -3337,17 +3339,17 @@ NON_MATCH u32 Player_GetMagicAction(Player* p) {
           if (Player_CheckMagicEnchant(p) >= 0) {
             p->unk_979 = 1;
             p->unk_964 = 0x20;
-            p->unk_951 = m->id + 1;
+            p->unk_951 = id + 1;
           }
         }
-      } else if ((u8)(m->id - 0xE) <= 2) {
+      } else if (id >= MAGIC_SLEEPING && id <= MAGIC_RAT) {
         if (p->action > 1) {
           return p->action;
         }
 
-        if (id == 0xF) {
-          if (p->kind != 2) {
-            if (Player_CheckMagicCost(p) == 0) {
+        if (id == MAGIC_BAT) {
+          if (p->kind != PLAYER_BAT) {
+            if (!Player_CheckMagicCost(p)) {
               return p->action;
             }
             p->gfx_114 = &p->gfxForms[0];
@@ -3360,9 +3362,9 @@ NON_MATCH u32 Player_GetMagicAction(Player* p) {
           return 0xC;
         }
 
-        if (id == 0x10) {
-          if (p->kind != 3) {
-            if (Player_CheckMagicCost(p) == 0) {
+        if (id == MAGIC_RAT) {
+          if (p->kind != PLAYER_MOUSE) {
+            if (!Player_CheckMagicCost(p)) {
               return p->action;
             }
             p->gfx_114 = &p->gfxForms[1];
@@ -3374,8 +3376,8 @@ NON_MATCH u32 Player_GetMagicAction(Player* p) {
           return 0xD;
         }
 
-        if (p->kind != 4) {
-          if (Player_CheckMagicCost(p) == 0) {
+        if (p->kind != PLAYER_SLEEPING) {
+          if (!Player_CheckMagicCost(p)) {
             return p->action;
           }
           p->gfx_114 = &p->gfxForms[2];
@@ -3390,38 +3392,38 @@ NON_MATCH u32 Player_GetMagicAction(Player* p) {
           return p->action;
         }
 
-        if (id == 0x11) {
-          if (Player_CheckMagicCost(p) == 0) {
+        if (id == MAGIC_WOLF) {
+          if (!Player_CheckMagicCost(p)) {
             return p->action;
           }
           return 0xB;
         }
-        if (id == 6) {
+        if (id == MAGIC_TRANSFORM) {
           return 0xA;
         }
-        if (id == 7 || id == 9) {
+        if (id == MAGIC_RISING_SUN || id == MAGIC_UNK_9) {
           return 9;
         }
-        if (m->id == 8) {
-          if (Player_CheckMagicCost(p) == 0) {
+        if (id == MAGIC_UNK_8) {
+          if (!Player_CheckMagicCost(p)) {
             return p->action;
           }
           Player_PayMagicCost(p);
           return 2;
         }
-        if (m->id == 0xB) {
+        if (id == MAGIC_DASH) {
           return 2;
         }
-        if (m->id == 0xD) {
+        if (id == MAGIC_DYNAMITE) {
           if (p->dynamiteCount != 0) {
             return p->action;
           }
           return 0x11;
         }
-        if (m->id == 0xA) {
+        if (id == MAGIC_FREEZE) {
           return 0xF;
         }
-        if (m->id == 0xC) {
+        if (id == MAGIC_HEALING) {
           return 0x10;
         }
         return p->action;
@@ -3448,12 +3450,12 @@ void Player_EquipMagic(Player* p, magic32_t n) {
     p->unk_951 = 0;
   }
 
-  if (p->kind == 2) {
-    Player_SetAction(p, 0xC, 0);
-  } else if (p->kind == 3) {
-    Player_SetAction(p, 0xD, 0);
-  } else if (p->kind == 4) {
-    Player_SetAction(p, 0xE, 0);
+  if (p->kind == PLAYER_BAT) {
+    Player_SetAction(p, 12, 0);
+  } else if (p->kind == PLAYER_MOUSE) {
+    Player_SetAction(p, 13, 0);
+  } else if (p->kind == PLAYER_SLEEPING) {
+    Player_SetAction(p, 14, 0);
   }
 
   m->id = n;
@@ -3469,12 +3471,12 @@ void Player_EquipMagic(Player* p, magic32_t n) {
   } else {
     m->cat = GetMagicCategory(m->id);
     m->availableForm = Player_IsMagicAvailableForm(p, m->id);
-    m->basicCost = FUN_08064b00(m->id);
+    m->basicCost = GetMagicCost(m->id);
     if (!m->availableForm) {
       return;
     }
 
-    if (m->id <= 5) {
+    if (m->id <= MAGIC_EARTH) {
       m->enchanted = TRUE;
       if (Player_CheckMagicEnchant(p) >= 0) {
         p->unk_979 = 1;
@@ -3502,9 +3504,9 @@ s32 FUN_08065110(Player* p) {
   }
 
   u16_03002bb0 = 0;
-  if (gStat->unk_5e == 0) return 8;
+  if (gStat->unk_5e == 0) return MAGIC_UNK_8;
 
-  return 9;
+  return MAGIC_UNK_9;
 }
 
 // 装備魔法の情報 (カテゴリ・消費MP・フォームで使えるか・エンチャント中か) を再計算する
@@ -3512,7 +3514,7 @@ void Player_RefreshMagicInfo(Player* p) {
   PlayerMagic* m = &p->magic;
 
   if (gFlag030047a4 & FLAG030047A4_UNK_12) {
-    m->id = -1;
+    m->id = MAGIC_NONE;
   } else {
     m->id = FUN_08065110(p);
   }
@@ -3526,7 +3528,7 @@ void Player_RefreshMagicInfo(Player* p) {
   }
 
   m->cat = GetMagicCategory(m->id);
-  m->basicCost = FUN_08064b00(m->id);
+  m->basicCost = GetMagicCost(m->id);
   m->availableForm = Player_IsMagicAvailableForm(p, m->id);
   m->enchanted = u16_03002bb0;
   if (!m->availableForm) {
@@ -3537,7 +3539,7 @@ void Player_RefreshMagicInfo(Player* p) {
   if (!m->enchanted) {
     return;
   }
-  if (m->id > 5) {
+  if (m->id > MAGIC_EARTH) {
     return;
   }
   p->unk_951 = m->id + 1;

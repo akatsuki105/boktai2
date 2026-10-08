@@ -88,7 +88,7 @@ _080797C6:
 	strh r0, [r1]
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_08060c50
+	bl Player_TestFlag35a
 	cmp r0, #0
 	beq _08079804
 	movs r3, #0xb9
@@ -120,7 +120,7 @@ _08079804:
 _08079822:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08060c50
+	bl Player_TestFlag35a
 	cmp r0, #0
 	beq _08079840
 	adds r0, r5, #0
@@ -142,7 +142,7 @@ _0807984C:
 	str r1, [r0]
 	adds r0, r5, #0
 	movs r1, #0x40
-	bl FUN_08060c50
+	bl Player_TestFlag35a
 	cmp r0, #0
 	beq _08079868
 	adds r0, r5, #0
@@ -162,7 +162,7 @@ _08079872:
 	str r1, [r0]
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_08060c50
+	bl Player_TestFlag35a
 	cmp r0, #0
 	beq _08079890
 	ldr r2, _0807988C @ =0x0000060C

@@ -20,7 +20,7 @@ _080EDE72:
 	cmp r0, r6
 	bne _080EDEA2
 	adds r0, r4, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080EDEA2

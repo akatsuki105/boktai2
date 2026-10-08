@@ -129,7 +129,7 @@ _0820FC6A:
 	movs r0, #5
 	str r0, [sp, #8]
 	mov r0, r8
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	mov r0, r8
 	bl FUN_08055c04
 _0820FCB0:

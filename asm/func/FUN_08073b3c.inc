@@ -334,7 +334,7 @@ _08073DDA:
 	movs r0, #0xd0
 	bl PlaySound_082406e0
 	adds r0, r4, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r4, #0
 	bl FUN_08072620
 	adds r0, r4, #0

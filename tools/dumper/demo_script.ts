@@ -17,7 +17,7 @@ const REGION_END = 0x08dbd758;
 
 // FUN_080223f4 の第3引数を全登録元から拾ったもの
 const CLASS_NAMES: Record<number, string> = {
-  1: "CLS_BUS", // EntityMsgBus 自身 (デモ進行)
+  1: "CLS_BUS", // MsgBus 自身 (デモ進行)
   2: "CLS_PLAYER", // CreatePlayer / LinkPlayer_Create
   3: "CLS_ENEMY", // Enemy*_Init 25種
   4: "CLS_BOSS", // Boss_Init_08022a70
@@ -91,7 +91,7 @@ const read = (rom: DataView) => {
 const preamble = `#include "global.h"
 #include "msgbus.h"
 
-// デモ(イベント/カットシーン)スクリプト。EntityMsgBus がこれを読んで各エンティティにメッセージを配る。
+// デモ(イベント/カットシーン)スクリプト。MsgBus がこれを読んで各エンティティにメッセージを配る。
 // 構造は デモ表[demoID] -> デモ[step] -> ステップ[i] -> メッセージ の4段で、DemoTable_GetMsg が引く。
 //
 // ROM の並びが 段ごとのまとまり (メッセージ本体 -> ステップ -> デモ -> デモ表) なので、
@@ -104,7 +104,7 @@ const preamble = `#include "global.h"
 
 // ---- メッセージの実体 ----
 // 可変長で、実体サイズは 8 + ceil(argc/2)*4。argc を偶数に丸めた6種を使い分ける。
-// 実行時に見るときは EntityMsg* にキャストする。余りスロットは常に 0。
+// 実行時に見るときは MsgPacket* にキャストする。余りスロットは常に 0。
 
 typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u8 argc; }                DemoMsg0;
 typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u8 argc; s16 args[2]; }   DemoMsg2;
@@ -117,7 +117,7 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define NOWAIT 0
 #define WAIT 1
 
-// targetClass: 宛先の種別。EntityMsgBus_Register の第3引数と照合される
+// targetClass: 宛先の種別。MsgQueue_Register の第3引数と照合される
 #define CLS_BUS 1
 #define CLS_PLAYER 2
 #define CLS_ENEMY 3
@@ -134,7 +134,7 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define BUS_WAIT 1         // Demo_CmdWait
 #define BUS_WAIT_EXT 2     // Demo_CmdWaitExternal
 
-#define M(x) (const EntityMsg*)&x
+#define M(x) (const MsgPacket*)&x
 `;
 
 const dump = (rom: DataView): string => {
@@ -171,7 +171,7 @@ const dump = (rom: DataView): string => {
   demos.forEach((demo, di) => {
     demo.steps.forEach((step, si) => {
       const items = step.msgs.map((_, mi) => `M(${msgName(di, si, mi)})`).join(", ");
-      out.push(`static const EntityMsg* const ${stepName(di, si)}[] = { ${items}, NULL };`);
+      out.push(`static const MsgPacket* const ${stepName(di, si)}[] = { ${items}, NULL };`);
     });
   });
 
@@ -179,12 +179,12 @@ const dump = (rom: DataView): string => {
   out.push(`\n/* ======== デモ (0x${gba.toHex32(demos[0].addr)}-) ======== */\n`);
   demos.forEach((demo, di) => {
     const items = demo.steps.map((_, si) => stepName(di, si)).join(", ");
-    out.push(`static const EntityMsg* const* const ${demoName(di)}[] = { ${items}, NULL };`);
+    out.push(`static const MsgPacket* const* const ${demoName(di)}[] = { ${items}, NULL };`);
   });
 
   // ---- 領域4: デモ表 ----
   out.push(`\n/* ======== デモ表 (0x${gba.toHex32(ROOT)}-) ======== */\n`);
-  out.push(`const EntityMsg* const* const* const gDemoTable[${demos.length}] = {`);
+  out.push(`const MsgPacket* const* const* const gDemoTable[${demos.length}] = {`);
   for (let i = 0; i < demos.length; i += 5) {
     out.push("    " + demos.slice(i, i + 5).map((_, j) => `${demoName(i + j)},`).join(" "));
   }

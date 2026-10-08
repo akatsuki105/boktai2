@@ -43,7 +43,7 @@ _080FB50A:
 	strb r0, [r2, #5]
 	mov r0, sb
 	movs r1, #5
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r2, #4
 	ldr r1, _080FB540 @ =0x0000065C
 	add r1, sl

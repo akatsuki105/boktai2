@@ -8,7 +8,7 @@
 	str r4, [sp, #8]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	add sp, #0xc
 	pop {r4}
 	pop {r1}

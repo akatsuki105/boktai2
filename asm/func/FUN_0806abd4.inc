@@ -2,7 +2,7 @@
 	sub sp, #0xc
 	adds r5, r0, #0
 	movs r1, #4
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r1, _0806ABF8 @ =0x0000037D
 	adds r0, r5, r1
 	ldrb r0, [r0]
@@ -190,7 +190,7 @@ _0806AD70:
 	strh r0, [r1]
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r0, _0806ADB0 @ =0x0000037E
 	adds r1, r5, r0
 	ldrh r0, [r1]
@@ -218,7 +218,7 @@ _0806ADB4: .4byte 0x030047A4
 _0806ADB8:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _0806ADC0:
 	add sp, #0xc
 	pop {r4, r5}

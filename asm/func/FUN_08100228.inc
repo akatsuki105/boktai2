@@ -56,7 +56,7 @@ _08100290:
 	strb r0, [r7, #5]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r0, _08100320 @ =0xFFFFDFDF
 	ldr r6, [sp, #0xf0]
 	ldrh r1, [r6]
@@ -829,7 +829,7 @@ _0810087E:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _081008C0
 	ldr r0, _081008BC @ =0xFFFFFDFF
@@ -898,7 +898,7 @@ _0810090A:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _08100948
 	ldr r0, _08100944 @ =0xFFFFFDFF
@@ -1122,7 +1122,7 @@ _08100ADA:
 	strb r0, [r2]
 	adds r0, r7, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _08100B06:
 	movs r2, #0xec
 	lsls r2, r2, #1
@@ -1898,7 +1898,7 @@ _081010E8:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _08101128
 	ldr r0, _08101124 @ =0xFFFFFDFF
@@ -1967,7 +1967,7 @@ _08101172:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _081011B0
 	ldr r0, _081011AC @ =0xFFFFFDFF
@@ -2077,7 +2077,7 @@ _0810124C:
 	strb r0, [r2]
 	adds r0, r7, #0
 	movs r1, #3
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _08101278:
 	movs r4, #0xec
 	lsls r4, r4, #1
@@ -2851,7 +2851,7 @@ _08101850:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sl
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _08101890
 	ldr r0, _0810188C @ =0xFFFFFDFF
@@ -2920,7 +2920,7 @@ _081018DA:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _08101918
 	ldr r0, _08101914 @ =0xFFFFFDFF

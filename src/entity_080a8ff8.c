@@ -18,8 +18,8 @@ typedef struct Entity080a8ff8 {
   AuxSprite sprite;                                // 0x01C
   AuxSpriteGfx gfx;                                // 0x048, SPRITE_BOMB
   Vec3 pos;                                        // 0x064, Init が引数の Vec3 をまるごと写す
-  Entity080a8ff8Particle particles[8];             // 0x06C, 根拠: FUN_080a8dd8 の i=0..7 / stride 0x2C のループ
-  ParticleGroup* group;                            // 0x1CC, GetParticleGroup(GROUP_2) の戻り値
+  Entity080a8ff8Particle ptcls[8];                 // 0x06C, 根拠: FUN_080a8dd8 の i=0..7 / stride 0x2C のループ
+  ParticleGroup* group;                            // 0x1CC, PTCL_GROUP_2
   s16 mode;                                        // 0x1D0, Init の第4引数, 0 かどうかで fuseTimer の減り方と timeoutTimer の有無が変わる
   u16 phaseLen;                                    // 0x1D2, fuseTimer の初期値 / 3, カウントダウンを3段階に分けてスプライト番号を変える
   u16 fuseTimer;                                   // 0x1D4, Init が 0xB4/0x5A/0x78 を入れる, 0 で爆発して KillEntity
@@ -48,11 +48,10 @@ s32 Entity080a8ff8_Update(Entity080a8ff8* p) {
 
 s32 Entity080a8ff8_Destroy(Entity080a8ff8* p) {
   s32 i;
-
   AuxSprite_Remove(&p->sprite);
 
   for (i = 0; i < 8; i++) {
-    Particle_Remove(&p->particles[i].base);
+    Particle_Remove((Particle*)&p->ptcls[i]);
   }
 
   return 0;

@@ -17,9 +17,7 @@ u32 FUN_0800271c(void);
 #define BG_PLTT7 (gBgPlttBuffer + 0x70)
 #define OFF_COLOR (*(gBgPlttBuffer + 0x2F))
 
-static const u8 sEntityCF82StepDurations[8] = {
-    10, 10, 10, 16, 10, 10, 10, 16,
-};  // 0x085AA95C
+static const u8 sEntityCF82StepDurations[8] = {10, 10, 10, 16, 10, 10, 10, 16};  // 0x085AA95C
 
 // 点灯色と消灯色を 1 色ずつ塗り替えて、尺が来たら次の step へ進める
 NON_MATCH s32 EntityCF82_Update(EntityCF82* p) {

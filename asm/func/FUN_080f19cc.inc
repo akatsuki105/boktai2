@@ -189,7 +189,7 @@ _080F1B34:
 	adds r0, r4, #0
 	adds r1, r6, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080F1B60
 	movs r4, #0xc0

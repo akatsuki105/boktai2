@@ -8,7 +8,7 @@
 	ble _0807ECFC
 	adds r0, r4, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	movs r1, #0xd6
 	lsls r1, r1, #1
 	adds r0, r4, r1
@@ -33,7 +33,7 @@
 	beq _0807ECF4
 	adds r0, r4, #0
 	movs r1, #5
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _0807ECF4:
 	movs r1, #0xd8
 	lsls r1, r1, #1

@@ -175,7 +175,7 @@ _080F5362:
 	movs r5, #0
 	movs r2, #0
 	strh r2, [r0]
-	ldr r4, _080F53D4 @ =FUN_080e48d0
+	ldr r4, _080F53D4 @ =Enemy_ClearStateBegun
 	movs r3, #0x10
 	ldr r7, _080F53D8 @ =0x0000046D
 	adds r0, r6, r7
@@ -222,7 +222,7 @@ _080F5362:
 	b _080F53EA
 	.align 2, 0
 _080F53D0: .4byte 0x030046A0
-_080F53D4: .4byte FUN_080e48d0
+_080F53D4: .4byte Enemy_ClearStateBegun
 _080F53D8: .4byte 0x0000046D
 _080F53DC: .4byte 0x00000469
 _080F53E0: .4byte 0x00000484

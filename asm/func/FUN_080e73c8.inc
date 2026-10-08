@@ -19,7 +19,7 @@
 	lsls r1, r1, #3
 	adds r4, r7, r1
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldr r2, [sp, #8]
 	ldrh r0, [r2]
 	bics r0, r5
@@ -33,7 +33,7 @@ _080E7402:
 	strh r4, [r0]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r1, _080E74E0 @ =FUN_080e6794
 	movs r0, #0xe
 	ldr r5, _080E74E4 @ =0x0000046D
@@ -760,7 +760,7 @@ _080E797E:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080E79B8
 	movs r1, #0xc0
@@ -868,7 +868,7 @@ _080E7A58:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	adds r2, r6, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080E7A94
 	ldr r0, _080E7A90 @ =0xFFFFFDFF

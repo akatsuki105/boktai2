@@ -237,7 +237,7 @@ _0806B20A:
 _0806B24E:
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldrh r0, [r6]
 	adds r0, #1
 	strh r0, [r6]
@@ -293,7 +293,7 @@ _0806B2A8:
 	strh r0, [r4]
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r2, _0806B300 @ =0x0000037E
 	adds r1, r5, r2
 	ldrh r0, [r1]
@@ -305,7 +305,7 @@ _0806B2A8:
 	bls _0806B35E
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r0, _0806B304 @ =0x000005DC
 	strh r0, [r4]
 	adds r0, r5, #0
@@ -320,7 +320,7 @@ _0806B304: .4byte 0x000005DC
 _0806B308:
 	adds r0, r5, #0
 	movs r1, #5
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r3, _0806B318 @ =0x0000037E
 	adds r1, r5, r3
 	b _0806B358

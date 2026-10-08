@@ -4,7 +4,7 @@
 	mov r5, r8
 	push {r5, r6, r7}
 	adds r6, r0, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080F9F8E
@@ -74,7 +74,7 @@ _080F9F9C:
 	strh r0, [r1]
 	adds r0, r6, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	str r7, [r5]
 	movs r1, #3
 	movs r5, #0x8d
@@ -289,7 +289,7 @@ _080FA154:
 	adds r0, r5, #0
 	mov r1, sb
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080FA18C
 	ldr r0, _080FA188 @ =0xFFFFFDFF
@@ -411,7 +411,7 @@ _080FA240:
 	bl FUN_080e5718
 	adds r0, r6, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _080FA26A:
 	movs r0, #1
 _080FA26C:

@@ -2,7 +2,7 @@
 	sub sp, #0x18
 	adds r4, r0, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r1, _08078084 @ =0x0000037D
 	adds r0, r4, r1
 	ldrb r0, [r0]
@@ -384,7 +384,7 @@ _08078374:
 	cmp r0, #0
 	beq _08078424
 	adds r0, r4, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #0
@@ -468,7 +468,7 @@ _08078424:
 	ldr r0, _08078494 @ =0x00000239
 	bl sound_08240740
 	adds r0, r4, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r4, #0
 	bl FUN_08072620
 	movs r3, #0x96

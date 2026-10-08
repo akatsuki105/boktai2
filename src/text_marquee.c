@@ -4,12 +4,11 @@
 #include "text.h"
 #include "vm.h"
 
-// TextRenderer を1つ持ち、offset を毎フレーム進めて u8_03002ce8 に流すシングルトン
 // スタートメニューのアイテム説明など横にスクロールするテキストで使われていたので、 Marquee
 typedef struct {
   Entity e;               // 0x000, ENTITY_UNK_3
   TextRenderer renderer;  // 0x018, Marquee_Init が FUN_0804967C(&renderer, 0, 18, 2, 2) で初期化する
-  bool8 active;           // 0x178, FUN_08049C3C が立てて gTextRendererActive も 1 にする, FUN_08049C78 が両方戻す
+  bool8 active;           // 0x178, FUN_08049C3C が立てて gMarqueeActive も 1 にする, FUN_08049C78 が両方戻す
   bool8 openReq;          // 0x179, _Update が FUN_08049C3C を呼んでから 0 に戻す
   bool8 closeReq;         // 0x17A, _Update が FUN_08049C78 を呼んでから 0 に戻す
   bool8 manualScroll;     // 0x17B, 0 なら offset を 8 単位で進める, 0 以外なら delay と SELECT で進める
@@ -29,10 +28,8 @@ IWRAM_DATA Marquee* gMarquee = NULL;  // 0x030000C8
 
 const char gBlankText[8] = " ";  // 0x085AB548
 
-extern u8 u8_03002ce8[8];           // 0x03002CE8
-extern bool32 gTextRendererActive;  // 0x03003520
-
-s32 FUN_08049e5c(void);
+extern u8 u8_03002ce8[8];      // 0x03002CE8
+extern bool32 gMarqueeActive;  // 0x03003520
 
 void FUN_080498c8(void) { gMarquee = NULL; }
 
@@ -53,7 +50,7 @@ s32 FUN_08049c3c(Marquee* p) {
 
   p->offset = 0;
   FUN_0804990c(p, TRUE);
-  gTextRendererActive = TRUE;
+  gMarqueeActive = TRUE;
   p->active = TRUE;
   return 0;
 }
@@ -64,7 +61,7 @@ s32 FUN_08049c78(Marquee* p) {
   }
 
   FUN_08049e5c();
-  gTextRendererActive = FALSE;
+  gMarqueeActive = FALSE;
   p->active = FALSE;
   return 0;
 }
@@ -180,11 +177,9 @@ s32 FUN_08049f84(void) {
 }
 
 s32 FUN_08049fa8(void) {
-  Marquee* p = gMarquee;
-
-  if (p == NULL) {
+  if (gMarquee == NULL) {
     return -1;
   }
-  FUN_08049c78(p);
+  FUN_08049c78(gMarquee);
   return 0;
 }

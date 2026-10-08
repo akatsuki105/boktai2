@@ -18,7 +18,7 @@ _080F3CFA:
 	beq _080F3D06
 	adds r0, r4, #0
 	movs r1, #0xb
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _080F3D06:
 	ldr r1, _080F3D20 @ =0x0000046E
 	adds r0, r4, r1

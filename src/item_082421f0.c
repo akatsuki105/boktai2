@@ -9,57 +9,51 @@
 #define VALUABLES(slot) (*(gStat->valuables + slot))  // gStat->valuables[slot]
 #define ROTCOUNT(slot) (*(gStat->rotTimer + slot))    // gStat->rotTimer[slot]
 
-s32 GetRotCount(s32 slot) { return ROTCOUNT(slot); }
+s32 GetRotCount(slot32_t slot) { return ROTCOUNT(slot); }
 
-void SetRotCount(s32 slot, u32 value) { ROTCOUNT(slot) = value; }
+void SetRotCount(slot32_t slot, u32 value) { ROTCOUNT(slot) = value; }
 
-s32 GetRotCount2(s32 slot) { return ROTCOUNT(slot) & 0x7FFF; }
+s32 GetRotCount2(slot32_t slot) { return ROTCOUNT(slot) & 0x7FFF; }
 
-void SetRotCount2(s32 slot, u32 value) {
+void SetRotCount2(slot32_t slot, u32 value) {
   ROTCOUNT(slot) = (value & 0x7FFF) | (ROTCOUNT(slot) & 0x8000);
   return;
 }
 
-void CoverChocolate(s32 slot) {
+void CoverChocolate(slot32_t slot) {
   ROTCOUNT(slot) |= 0x8000;
   return;
 }
 
-void UncoverChocolate(s32 slot) {
+void UncoverChocolate(slot32_t slot) {
   ROTCOUNT(slot) &= 0x7FFF;
   return;
 }
 
-s32 IsChocolateCovered(u32 slot) { return *(gStat->rotTimer + slot) & 0x8000; }
+s32 IsChocolateCovered(slot32_t slot) { return *(gStat->rotTimer + slot) & 0x8000; }
 
-item32_t GetNormalItemID(s32 slot) {
+item32_t GetNormalItemID(slot32_t slot) {
   if (IsChocolateCovered(slot)) {
     return ITEM_CHOCOLATE_COVERED;
   }
   return ITEM(slot);
 }
 
-item32_t GetValuableItemID(s32 slot) { return VALUABLES(slot); }
+item32_t GetValuableItemID(slot32_t slot) { return VALUABLES(slot); }
 
-void SetItem(s32 slot, item32_t id) {
+void SetItem(slot32_t slot, item32_t id) {
   ITEM(slot) = id;
   return;
 }
 
-void SetValuable(s32 slot, item32_t id) {
-  VALUABLES(slot) = id;
-  return;
-}
+void SetValuable(slot32_t slot, item32_t id) { VALUABLES(slot) = id; }
 
-void RemoveItem(s32 slot) {
+void RemoveItem(slot32_t slot) {
   SetItem(slot, ITEM_NONE);
   SetRotCount(slot, 0);
 }
 
-void RemoveValuable(s32 slot) {
-  SetValuable(slot, ITEM_NONE);
-  return;
-}
+void RemoveValuable(slot32_t slot) { SetValuable(slot, ITEM_NONE); }
 
 bool32 IsValuable(item32_t id) {
   if (ITEM_JUDGEMENT >= id) {
@@ -208,6 +202,7 @@ void SwapValuable(slot32_t slot1, slot32_t slot2) {
 }
 
 NAKED void SortInventory(s32 slot) { INCFUNC("asm/func/SortInventory.inc"); }
+
 NAKED void SortValuable(s32 slot) { INCFUNC("asm/func/SortValuable.inc"); }
 
 item32_t GetRottenItemID(item32_t n) {
@@ -330,8 +325,7 @@ bool32 item_0824292c(void) {
   } else {
     u32 category = VM_GetValue();
     if (VM_SeekToNamedArg('i')) {
-      item32_t n = VM_GetValue();
-      return CheckEmptySlotExist(category, n);
+      return CheckEmptySlotExist(category, VM_GetValue());
     }
   }
   return FALSE;

@@ -11,7 +11,7 @@
 	lsls r2, r2, #1
 	adds r0, r1, r2
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _080446D2:
 	pop {r0}
 	bx r0

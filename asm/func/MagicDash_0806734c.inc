@@ -136,7 +136,7 @@ _08067458:
 	movs r1, #1
 	bl FUN_080670fc
 	adds r0, r4, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r4, r1

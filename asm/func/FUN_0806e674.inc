@@ -29,7 +29,7 @@ _0806E690:
 	adds r0, r7, r2
 	strb r1, [r0]
 	adds r0, r7, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 _0806E6B6:
 	movs r3, #0xcf
 	lsls r3, r3, #2

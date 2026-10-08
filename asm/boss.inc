@@ -129,7 +129,7 @@ Boss_Init_08022a70: @ 0x08022A70
 	adds r0, r7, r1
 	mov r1, r8
 	movs r2, #4
-	bl EntityMsgBus_Register
+	bl MsgQueue_Register
 	movs r0, #0
 	add sp, #0x10
 	pop {r3}
@@ -147,7 +147,7 @@ FUN_08022b04: @ 0x08022B04
 	movs r1, #0x8c
 	lsls r1, r1, #1
 	adds r0, r4, r1
-	bl EntityMsgBus_Unregister
+	bl MsgQueue_Unregister
 	adds r0, r4, #0
 	adds r0, #0x48
 	bl Mover_Unlink
@@ -363,8 +363,8 @@ _08022C92:
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_08022c9c
-FUN_08022c9c: @ 0x08022C9C
+	thumb_func_start Boss_PlayAnimFacing
+Boss_PlayAnimFacing: @ 0x08022C9C
 	push {r4, r5, r6, lr}
 	sub sp, #4
 	mov ip, r0
@@ -511,8 +511,8 @@ _08022D9C:
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_08022da8
-FUN_08022da8: @ 0x08022DA8
+	thumb_func_start Boss_PlayAnim
+Boss_PlayAnim: @ 0x08022DA8
 	push {r4, r5, r6, lr}
 	sub sp, #4
 	mov ip, r0
@@ -916,7 +916,7 @@ FUN_08023090: @ 0x08023090
 	push {lr}
 	adds r0, #0xb4
 	ldr r0, [r0]
-	bl AddWeaponExpByMask
+	bl Player_AddWeaponExp
 	pop {r0}
 	bx r0
 	.align 2, 0

@@ -61,7 +61,15 @@ static u16 ime_bkup;
 static bool8 rtc_lock;  // 0x030026CA
 
 const bool8* const RTCLocks[9] = {
-    &rtc_lock, &rtc_lock, &rtc_lock, &rtc_lock, &rtc_lock, &rtc_lock, &rtc_lock, &rtc_lock, &rtc_lock,
+    &rtc_lock,
+    &rtc_lock,
+    &rtc_lock,
+    &rtc_lock,
+    &rtc_lock,
+    &rtc_lock,
+    &rtc_lock,
+    &rtc_lock,
+    &rtc_lock,
 };
 
 bool8* const gRTCLocked = &rtc_lock;

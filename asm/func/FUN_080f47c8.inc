@@ -25,7 +25,7 @@ _080F47E6:
 	strb r0, [r5, #5]
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _080F4800:
 	movs r2, #0x10
 	movs r1, #0xbe

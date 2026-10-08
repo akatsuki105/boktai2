@@ -27,7 +27,7 @@ _0806E7FE:
 	movs r0, #4
 	strb r0, [r1]
 	adds r0, r6, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	ldr r0, _0806E85C @ =0x0000098C
 	adds r5, r6, r0
 	ldr r0, [r5]
@@ -141,7 +141,7 @@ _0806E8F6:
 _0806E8FA:
 	adds r0, r6, #0
 	movs r1, #0x40
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	adds r0, r6, #0
 	movs r1, #0xc7
 	movs r2, #0x40
@@ -309,7 +309,7 @@ _0806EA3A:
 	beq _0806EA4C
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _0806EA4C:
 	ldr r3, _0806EA90 @ =0x0000037E
 	adds r1, r6, r3
@@ -333,7 +333,7 @@ _0806EA4C:
 	movs r0, #4
 	strb r0, [r1]
 	adds r0, r6, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #0

@@ -124,7 +124,7 @@ _080FA424:
 	adds r4, #8
 	adds r1, r4, #0
 	add r2, sp, #8
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	beq _080FA4D4
 	add r0, sp, #8
@@ -401,7 +401,7 @@ _080FA684:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080FA6CC
 	ldr r0, _080FA6C8 @ =0xFFFFFDFF

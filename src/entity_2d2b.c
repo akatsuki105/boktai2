@@ -22,7 +22,6 @@ void FUN_08008100(Entity2D2B*);
 void FUN_0800816c(Entity2D2B*);
 void FUN_080081e0(Entity2D2B*);
 
-// clang-format off
 void (*const PTR_ARRAY_085aa67c[5])(Entity2D2B*) = {
     FUN_080080a8,
     FUN_080080ac,
@@ -30,6 +29,5 @@ void (*const PTR_ARRAY_085aa67c[5])(Entity2D2B*) = {
     FUN_0800816c,
     FUN_080081e0,
 };  // 0x085aa67c
-// clang-format on
 
 INCASM("asm/entity_2d2b.inc");

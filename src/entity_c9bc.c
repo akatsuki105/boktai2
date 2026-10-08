@@ -18,17 +18,15 @@ void EntityC9BCElem_UpdateState4(EntityC9BC* p, EntityC9BCElem* elem, u32 idx);
 void EntityC9BCElem_UpdateState5(EntityC9BC* p, EntityC9BCElem* elem, u32 idx);
 void EntityC9BCElem_UpdateState6(EntityC9BC* p, EntityC9BCElem* elem, u32 idx);
 
-// clang-format off
 void (*const sC9BCElemUpdates[7])(EntityC9BC*, EntityC9BCElem*, u32) = {
-  EntityC9BCElem_UpdateState0,
-  EntityC9BCElem_UpdateState1,
-  EntityC9BCElem_UpdateState2,
-  EntityC9BCElem_UpdateState3,
-  EntityC9BCElem_UpdateState4,
-  EntityC9BCElem_UpdateState5,
-  EntityC9BCElem_UpdateState6,
+    EntityC9BCElem_UpdateState0,
+    EntityC9BCElem_UpdateState1,
+    EntityC9BCElem_UpdateState2,
+    EntityC9BCElem_UpdateState3,
+    EntityC9BCElem_UpdateState4,
+    EntityC9BCElem_UpdateState5,
+    EntityC9BCElem_UpdateState6,
 };  // 0x085aa774
-// clang-format on
 
 EntityC9BC* GetEntityC9BC(void) { return gEntityC9BC; }
 

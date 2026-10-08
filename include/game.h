@@ -7,6 +7,14 @@
 
 #define REGISTERED_WEAPON(n) (*(gStat->registeredWeapon + n))  // 登録 = 剣槍槌銃 のスロットに登録されている
 
+// AttackStyle, GameInfo.style, WeaponKind とは別, ゲームクリア時に、ゲーム中で1番使っていた武器を表示する仕組みがあって、それの識別番号
+#define STYLE_SWORD 0   // 剣
+#define STYLE_SPEAR 1   // 槍
+#define STYLE_HAMMER 2  // 槌
+#define STYLE_GUN 3     // 銃 (WeaponKind だと 4)
+#define STYLE_FIST 4    // 拳 (WeaponKind だと 3)
+#define STYLE_NONE 5    // なし
+
 // gStat->unk_934
 #define SF934_UNK_0 (1 << 0)    // 0x1
 #define SF934_OUTDOOR (1 << 1)  // 0x2, プレイヤーのいるマップが屋外のときにセット (屋内で天窓の下にいるのは含まれない)
@@ -75,7 +83,7 @@ typedef struct {
   u32 darkDebts;                 // 0x1C4, 実際に返す必要のある額
   u8 unk_1c8[12];                // 0x1C8
   u32 loan_1d4;                  // 0x1D4
-  u32 treeExp;                   // 0x1D8, リザルト画面の "ENERGY" でもある
+  u32 treeExp;                   // 0x1D8, 今まで浴びた太陽エネルギー (太陽樹の成長経験値 や リザルト画面の "ENERGY")
   u8 unk_1dc[4];                 // 0x1DC
   s32 unk_1e0;                   // 0x1E0, ApplySunlightGain が sunGauge を足し続ける, treeExp と同じ 0x7FFFFFFF 飽和
   s32 unk_1e4;                   // 0x1E4, unk_1e0 を更新した回数

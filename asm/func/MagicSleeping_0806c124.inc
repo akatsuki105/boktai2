@@ -32,7 +32,7 @@ _0806C156:
 	bl Player_PlayAnim
 	adds r0, r6, #0
 	movs r1, #0x40
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	movs r0, #0x82
 	lsls r0, r0, #1
 	adds r2, r6, r0

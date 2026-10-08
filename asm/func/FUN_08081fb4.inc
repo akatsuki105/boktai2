@@ -13,7 +13,7 @@
 _08081FCE:
 	adds r0, r4, #0
 	movs r1, #0x10
-	bl FUN_08080ec8
+	bl PlayerLink_SetFlag35a
 	movs r2, #0x82
 	lsls r2, r2, #2
 	adds r3, r4, r2

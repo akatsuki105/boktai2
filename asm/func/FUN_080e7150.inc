@@ -66,7 +66,7 @@ _080E71AC:
 	lsls r4, r4, #3
 	add r4, r8
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r5]
 	bics r0, r6
 	movs r1, #0

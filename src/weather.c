@@ -242,7 +242,11 @@ NAKED bool32 FUN_08018324(WeatherManager* p) { INCFUNC("asm/func/FUN_08018324.in
 NAKED bool32 FUN_080184ec(WeatherManager* p) { INCFUNC("asm/func/FUN_080184ec.inc"); }
 
 bool32 (*const PTR_ARRAY_085aa948[5])(WeatherManager*) = {
-    FUN_08018118, FUN_08018250, FUN_08018284, FUN_08018324, FUN_080184ec,
+    FUN_08018118,
+    FUN_08018250,
+    FUN_08018284,
+    FUN_08018324,
+    FUN_080184ec,
 };  // 0x085AA948
 
 NON_MATCH s32 WeatherManager_Update(WeatherManager* p) {

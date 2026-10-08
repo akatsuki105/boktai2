@@ -27,7 +27,7 @@ _08012030:
 	ldr r4, [r0]
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl EntityMsgBox_BeginWait
+	bl MsgQueue_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #1
 	beq _08012080
@@ -61,7 +61,7 @@ _08012080:
 	adds r0, r5, r2
 _0801208E:
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _080120B0
 	.align 2, 0
 _08012098: .4byte 0x00000CD4
@@ -73,7 +73,7 @@ _0801209C:
 	ldr r1, _080120CC @ =0x00000CD4
 	adds r0, r5, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _080120B0:
 	adds r7, #1
 	ldr r0, _080120D0 @ =0x03002B4C

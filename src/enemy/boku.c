@@ -10,6 +10,55 @@ static_assert(sizeof(Boku) == 1708);
 
 bool32 FUN_080f06b0(Enemy* p);
 
+void FUN_080f2644(Enemy* p);
+void FUN_080f2864(Enemy* p);
+void FUN_080f248c(Enemy* p);
+void FUN_080f2364(Enemy* p);
+void FUN_080f2ec0(Enemy* p);
+void FUN_080f2d04(Enemy* p);
+void FUN_080f2a40(Enemy* p);
+void FUN_080f31c4(Enemy* p);
+void FUN_080f19cc(Enemy* p);
+void FUN_080f33e8(Enemy* p);
+void FUN_080f34a0(Enemy* p);
+void FUN_080f0e78(Enemy* p);
+void FUN_080f11d0(Enemy* p);
+void FUN_080f12c4(Enemy* p);
+void FUN_080ff06c(unknown* p);
+void FUN_080ff270(unknown* p);
+void FUN_080ff36c(Enemy* p);
+void FUN_080ff470(unknown* p);
+
+// FUN_080ff45c が handlerTables[2] に入れる, 先頭15要素は gEnemyHandlerTable2 と同じ中身
+void (*const PTR_ARRAY_085ad490[18])(Enemy*) = {
+    FUN_080f2644,
+    FUN_080f2864,
+    FUN_080f248c,
+    FUN_080f2364,
+    NULL,
+    FUN_080f2ec0,
+    FUN_080f2d04,
+    FUN_080f2a40,
+    FUN_080f31c4,
+    FUN_080f19cc,
+    FUN_080f33e8,
+    FUN_080f34a0,
+    FUN_080f0e78,
+    FUN_080f11d0,
+    FUN_080f12c4,
+    (void*)FUN_080ff06c,
+    (void*)FUN_080ff270,
+    FUN_080ff36c,
+};  // 0x085AD490
+
+// FUN_080ff668 が handlerTables[4] に入れる
+void (*const PTR_ARRAY_085ad4d8[1])(Enemy*) = {
+    (void*)FUN_080ff470,
+};  // 0x085AD4D8
+
+// FUN_080ffcd0 が引く
+const u16 u16_ARRAY_085ad4dc[4] = {336, 336, 0, 180};  // 0x085AD4DC
+
 INCASM("asm/boku.inc");
 
 void FUN_080ff45c(Boku* p) { p->handlerTables[2] = (void*)0x085AD490; }

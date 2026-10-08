@@ -2,6 +2,7 @@
 #include "entity_9a9f.h"
 #include "global.h"
 #include "player.h"
+#include "solar.h"
 #include "sprite.h"
 #include "time.h"
 #include "vm.h"
@@ -45,10 +46,7 @@ typedef struct Entity5CCC {
 static_assert(sizeof(Entity5CCC) == 2740);
 
 extern Entity5CCC* gEntity5CCC;  // 0x03000140
-extern u16 gSunlightOverride;
 extern u16 u16_03002bf0;
-
-u32 Time_GetMoonPhase(void);
 
 void FUN_0809df6c(void) { gEntity5CCC = NULL; }
 
@@ -202,7 +200,7 @@ s32 Entity0809eb24_Update(Entity5CCC* p) {
       FUN_0809e7c4(p);  // 屋内
     }
 
-    override = gSunlightOverride;
+    override = gSunGaugeOverride;
     forced = FALSE;
     if (override == 1) {
       forced = TRUE;
@@ -230,7 +228,7 @@ bool32 FUN_0809eacc(void) {
   if (gFlag030047a4 & FLAG030047A4_UNK_8) {
     return FALSE;
   }
-  if (Time_GetMoonPhase() == 4) {
+  if (Time_GetMoonPhase() == 4) {  // 満月
     return TRUE;
   }
   return FALSE;

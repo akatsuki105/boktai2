@@ -18,7 +18,7 @@ _080FC50A:
 	beq _080FC516
 	adds r0, r4, #0
 	movs r1, #5
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 _080FC516:
 	ldr r0, [r4, #0x44]
 	adds r3, r0, #0

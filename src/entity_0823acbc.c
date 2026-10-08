@@ -5,7 +5,6 @@
 #include "hitbox.h"
 #include "input.h"
 #include "link.h"
-#include "link_connect.h"
 #include "mover.h"
 #include "msgbus.h"
 #include "random.h"
@@ -28,6 +27,8 @@ static_assert(sizeof(Entity0823acbc) == 32);
 IWRAM_DATA Entity0823acbc gEntity0823acbc = {};  // 0x030016A0
 
 IWRAM_DATA SystemSaveData gSystemSaveDataBuffer = {};  // 0x030016C0
+
+extern struct LinkConnect* gLinkConnect;  // 0x03002C64
 
 extern bool32 gDispcntLocked;  // 0x03002CA8
 extern u32 u32_0300478c;       // 0x0300478C

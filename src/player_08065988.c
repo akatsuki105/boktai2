@@ -1,10 +1,11 @@
 #include "armor.h"
 #include "camera.h"
+#include "coffin_immortal.h"
 #include "collision_map.h"
-#include "entity_0b50.h"
 #include "global.h"
 #include "input.h"
 #include "player.h"
+#include "solar.h"
 #include "sound.h"
 #include "vm.h"
 #include "weapon.h"
@@ -19,15 +20,13 @@ extern const u16 u16_ARRAY_085abc10[57];
 extern const u16 u16_ARRAY_085abf4c[3];
 extern u16 u16_ARRAY_03002ba0[3];
 extern u16 u16_03002b78;
-extern u16 gSunlightOverride;
 extern u16 u16_03002bd0;
 void Player_SpawnFootHitbox(Player* p);
 bool32 Player_PlayAnim(Player* p, u32 animID, s32 param_3);
-void FUN_080609dc(Player* p);
+void Player_SetAnimFacing(Player* p);  // facing から animIDOffset と xflip を決める
 s32 FUN_08086294(Vec3* pos, u32 a, u32 b);
 void Player_StopEneChargeSound(Player* p);
 magic32_t Player_CheckMagicEnchant(Player* p);
-void Player_SetAction(Player* p, u8 a, u8 b);
 void FUN_08072724(Player* p);
 void FUN_0823bca8(s32 n);
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
@@ -37,12 +36,12 @@ void FUN_08063220(Player* p);
 void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames);
 void FUN_08063634(Player* p, s32 n);
 void FUN_080ec79c(u8 kind, void* payload);
-void FUN_08060c40(Player* p, u32 val);
+void Player_SetFlag35a(Player* p, u32 val);
 bool32 FUN_0809f658(Vec3* pos);
 void FUN_080d040c(Player* p);
 extern void* ptr_03002ba8;
 extern u16 u16_03002bf4;
-void FUN_080f8cac(unknown* node);
+void EnemyTargetManager_Remove(unknown* node);
 void Player_DestroyEffects(Player* p);
 void FUN_0807bdc8(Player* p, s32 param_2, s32 param_3, u32 param_4);
 void FUN_08060ec8(Player* p, u32 bits);
@@ -264,14 +263,14 @@ void FUN_08066d10(Player* p) {
 // 残差1命令: 原典は TRUE を返す経路を全部まとめて後ろへ飛ばすが、こちらは途中で合流する
 NON_MATCH bool32 FUN_08066d2c(Player* p, s32 val) {
 #ifdef NONMATCHING_C
-  if (p->kind <= 1 || p->kind == 5) {
+  if (p->kind <= PLAYER_DARK_DJANGO || p->kind == PLAYER_SABATA) {
     if (val == 0 || val == 3 || val == 6) {
       return TRUE;
     }
     if (val == 4 && p->unk_3bc != 0) {
       return TRUE;
     }
-  } else if (p->kind == 4) {
+  } else if (p->kind == PLAYER_SLEEPING) {
     if (val == 0) {
       return TRUE;
     }
@@ -287,7 +286,7 @@ NON_MATCH bool32 FUN_08066d2c(Player* p, s32 val) {
 }
 
 void FUN_08066d7c(Player* p, s32 val) {
-  if ((p->input_28c->down & R_BUTTON) && FUN_08066d2c(p, val)) {
+  if ((p->input->down & R_BUTTON) && FUN_08066d2c(p, val)) {
     if ((p->kind <= PLAYER_DARK_DJANGO || p->kind == PLAYER_SABATA) && p->action == 4) {
       FUN_08066c64(p);
     } else {
@@ -329,15 +328,15 @@ void FUN_08066e9c(Player* p, Vec3* pos1, s32 param_3, s32 param_4, Vec3* pos2, s
 }
 
 u32 FUN_08066ee4(s32 kind, s32 idx) {
-  if (kind == 0) {
+  if (kind == PLAYER_SOLAR_DJANGO) {
     return u16_ARRAY_085abb2c[idx];
   }
 
-  if (kind == 1) {
+  if (kind == PLAYER_DARK_DJANGO) {
     return u16_ARRAY_085abb9e[idx];
   }
 
-  if (kind == 5) {
+  if (kind == PLAYER_SABATA) {
     return u16_ARRAY_085abc10[idx];
   }
 
@@ -384,7 +383,7 @@ void FUN_08066f7c(Player* p) {
   if (p->action != 0) {
     Player_SetAction(p, 0, 0);
     p->facing = FUN_08066f18(p);
-    FUN_080609dc(p);
+    Player_SetAnimFacing(p);
   }
   p->unk_20 &= ~1;
   Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), 0x40);
@@ -493,7 +492,7 @@ void FUN_080672b0(Player* p) {
     Player_SetMoveDelta(p, val);
   }
   FUN_080670fc(p, 0);
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   Player_PlayAnim(p, FUN_08066ee4(p->kind, 1), FRACUNIT_6);
 }
 
@@ -553,7 +552,7 @@ NAKED void FUN_08068624(Player* p) { INCFUNC("asm/func/FUN_08068624.inc"); }
 
 NAKED void MagicRisingSun_08068944(Player* p) { INCFUNC("asm/func/MagicRisingSun_08068944.inc"); }
 
-// gEntity0B50 を動かしている間の移動速度, CalcMoveSpeed にチカラを足して gEntity0B50 の重さ分を引いたもの
+// gImmortalCoffin を動かしている間の移動速度, CalcMoveSpeed にチカラを足して gImmortalCoffin の重さ分を引いたもの
 s32 FUN_08068c6c(Player* p) {
   u16 n = p->unk_446;
   bool32 heaviest = FALSE;
@@ -569,7 +568,7 @@ s32 FUN_08068c6c(Player* p) {
     s32 agility = p->stats[STAT_AGILITY];
     s32 over = p->armor.weight - 100;
 
-    val = Div((agility - over + p->stats[STAT_STRENGTH] - gEntity0B50->unk_1e) * 12, 100);
+    val = Div((agility - over + p->stats[STAT_STRENGTH] - gImmortalCoffin->weight) * 12, 100);
     if (val > 16) {
       val = 16;
     } else if (val < 6) {
@@ -625,9 +624,9 @@ NAKED void FUN_08069f60(Player* p) { INCFUNC("asm/func/FUN_08069f60.inc"); }
 
 void FUN_0806a050(Player* p) {
   if (p->unk_3fe != 0) {
-    FUN_08060c40(p, 0x1C);
+    Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW | PFLAG35A_NO_HITBOX | PFLAG35A_NO_TILE);
   } else {
-    FUN_08060c40(p, 0x1D);
+    Player_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_HIDE_SHADOW | PFLAG35A_NO_HITBOX | PFLAG35A_NO_TILE);
   }
   Player_SetFlag20(p, 0x1100);
 }
@@ -756,7 +755,7 @@ void FUN_0806f1ec(Player* p) {
     }
     case 2: {
       if ((p->stateTimer & 7) >= 7 - (p->stateTimer >> 3)) {
-        FUN_08060c40(p, 5);
+        Player_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_HIDE_SHADOW);
       }
       p->stateTimer++;
       if (p->stateTimer > 55) {
@@ -765,7 +764,7 @@ void FUN_0806f1ec(Player* p) {
       break;
     }
     case 3: {
-      FUN_08060c40(p, 5);
+      Player_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_HIDE_SHADOW);
       break;
     }
   }
@@ -785,7 +784,7 @@ bool32 FUN_0806f738(Player* p) {
     p->facing = FUN_08067068(p);
     turned = TRUE;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   return turned;
 }
 
@@ -924,7 +923,7 @@ void FUN_08072670(Player* p) {
 
 void FUN_0807268c(Player* p) {
   if (p->unk_4ab != 0) {
-    EntityMsgBox_EndWait(&p->msgbox, 1);
+    MsgQueue_EndWait(&p->mq, 1);
     p->unk_4ab = 0;
   }
 }
@@ -937,7 +936,7 @@ void FUN_080726b4(Player* p) {
   }
 }
 
-void FUN_080726e0(Player* p) { FUN_08060c40(p, 5); }
+void FUN_080726e0(Player* p) { Player_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_HIDE_SHADOW); }
 
 void FUN_080726ec(Player* p) {
   if (p->unk_4ad != 0) {
@@ -986,7 +985,7 @@ NAKED void FUN_080728a8(Player* p) { INCFUNC("asm/func/FUN_080728a8.inc"); }
 
 void FUN_080729e0(Player* p) {
   if (Player_PlayAnim(p, 531, FRACUNIT_6)) {
-    FUN_080609dc(p);
+    Player_SetAnimFacing(p);
     FUN_08072620(p);
     FUN_080726b4(p);
   }
@@ -994,7 +993,7 @@ void FUN_080729e0(Player* p) {
 
 void FUN_08072a0c(Player* p) {
   Player_PlayAnim(p, FUN_08066ee4(p->kind, 51), FRACUNIT_6);
-  FUN_08060c40(p, 4);
+  Player_SetFlag35a(p, PFLAG35A_HIDE_SHADOW);
 }
 
 NAKED void FUN_08072a38(Player* p) { INCFUNC("asm/func/FUN_08072a38.inc"); }
@@ -1052,7 +1051,7 @@ void FUN_080749b0(Player* p) {
     }
     case 2: {
       if (Player_PlayAnim(p, 536, FRACUNIT_6)) {
-        FUN_080609dc(p);
+        Player_SetAnimFacing(p);
         FUN_08072620(p);
         FUN_080726b4(p);
       }
@@ -1101,15 +1100,15 @@ NAKED void FUN_08078060(Player* p) { INCFUNC("asm/func/FUN_08078060.inc"); }
 // 残差なし・最後の ands のオペランド順のみ不一致 (原典は keys 側が生き残る)
 NON_MATCH s32 FUN_0807849c(Player* p) {
 #ifdef NONMATCHING_C
-  s16 idx = (p->input_28c->down & DPAD_UP) != 0;
+  s16 idx = (p->input->down & DPAD_UP) != 0;
 
-  if (p->input_28c->down & DPAD_DOWN) {
+  if (p->input->down & DPAD_DOWN) {
     idx |= 2;
   }
-  if (p->input_28c->down & DPAD_LEFT) {
+  if (p->input->down & DPAD_LEFT) {
     idx |= 4;
   }
-  if (p->input_28c->down & DPAD_RIGHT) {
+  if (p->input->down & DPAD_RIGHT) {
     idx |= 8;
   }
   return s16_ARRAY_085abc8a[idx];
@@ -1149,10 +1148,10 @@ NAKED void FUN_0807858c(Player* p) { INCFUNC("asm/func/FUN_0807858c.inc"); }
 NAKED s32 FUN_0807868c(Player* p) { INCFUNC("asm/func/FUN_0807868c.inc"); }
 
 // A ボタンを押していて, 相手が話しかけられる状態で, なおかつ同じエレベータに乗っているか
-// 残差2命令: 原典は gEntity0B50 をアドレスだけ保持して引数作りのところで読み直すが、こちらは1回のロードに畳まれる (agbcc-levers.md 参照)
+// 残差2命令: 原典は gImmortalCoffin をアドレスだけ保持して引数作りのところで読み直すが、こちらは1回のロードに畳まれる (agbcc-levers.md 参照)
 NON_MATCH s32 FUN_08078844(Player* p) {
 #ifdef NONMATCHING_C
-  if ((p->input_28c->down & A_BUTTON) && gEntity0B50 != NULL && (gEntity0B50->unk_1f5 == 1 || gEntity0B50->unk_1f5 == 0x10) && FUN_0808626c(p->elevatorID, p->unk_390, gEntity0B50->elevatorID, gEntity0B50->unk_384)) {
+  if ((p->input->down & A_BUTTON) && gImmortalCoffin != NULL && (gImmortalCoffin->state == 1 || gImmortalCoffin->state == 0x10) && FUN_0808626c(p->elevatorID, p->unk_390, gImmortalCoffin->elevatorID, gImmortalCoffin->unk_384)) {
     return TRUE;
   }
   return FALSE;
@@ -1315,14 +1314,14 @@ s32 FUN_0807a70c(ArmorData* data) {
   return ((val + gStat->lv) >> 1) + data->defence;
 }
 
-// 経験値を加算する, サバタでプレイ中は入らず、FLAG378_UNK_11 が立っていると1.5倍になる
+// 経験値を加算する, サバタでプレイ中は入らず、 FLAG378_TRAININGGEAR が立っていると1.5倍になる
 // 残差2命令: 原典は gStat->exp への store ごとに gStat を読み直す (agbcc-levers.md 参照)
 NON_MATCH void FUN_0807a798(s32 amount) {
 #ifdef NONMATCHING_C
   if (gStat->playerKind == PLAYER_SABATA) {
     return;
   }
-  if (gPlayerPtr[0] != NULL && (gPlayerPtr[0]->flag378 & FLAG378_UNK_11)) {
+  if (gPlayerPtr[0] != NULL && (gPlayerPtr[0]->flag378 & FLAG378_TRAININGGEAR)) {
     amount = (amount * 3) >> 1;
   }
   gStat->exp += amount;
@@ -1349,7 +1348,7 @@ NON_MATCH void AddWeaponExp(s32 kind, s32 amount) {
 }
 
 // 当たった武器のビットから該当する武器に経験値を入れる, 剣/槍/ハンマーのときだけ装備の状態を作り直す
-void AddWeaponExpByMask(u32 mask, s32 amount) {
+void Player_AddWeaponExp(u32 mask, s32 amount) {
   bool32 refresh = FALSE;
 
   if (mask & (1 << WK_SWORD)) {
@@ -1720,6 +1719,7 @@ void FUN_0807b3c0(void) {
   }
 }
 
+// 0xDD0E
 // 残差は分岐の配置のみ (命令数 28 対 28): 原典は return 0 のブロックが先に出て、成功側が後ろに置かれる
 NON_MATCH s32 FUN_0807b3e0(void) {
 #ifdef NONMATCHING_C
@@ -1804,7 +1804,7 @@ void FUN_0807b528(void) {
 
 void FUN_0807b564(void) {
   u16_03002bd0 = 0;
-  gSunlightOverride = 0;
+  gSunGaugeOverride = 0;
   u16_03002b78 = 0;
 }
 
@@ -1870,7 +1870,7 @@ NON_MATCH void FUN_0807b66c(void) {
     if (VM_SeekToNamedArg('d')) {
       p->facing = VM_GetValue();
     }
-    FUN_080609dc(p);
+    Player_SetAnimFacing(p);
     Player_SetAction(p, 31, 0);
   }
 #else
@@ -1917,7 +1917,7 @@ void FUN_0807ba14(Player* p, s32 param_2) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   FUN_0807b7a4(p);
   Player_SetAction(p, 0, 1);
   p->fn_498 = FUN_08072724;
@@ -1927,7 +1927,7 @@ void FUN_0807ba50(Player* p, s32 param_2, u32 param_3) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
   FUN_0807b7a4(p);
   Player_SetAction(p, 0, 2);
@@ -2010,7 +2010,7 @@ void FUN_0807bcb0(Player* p, s32 param_2, u32 param_3) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
   FUN_0807b7a4(p);
   Player_SetAction(p, 18, 0);
@@ -2022,7 +2022,7 @@ void FUN_0807bcfc(Player* p, s32 param_2) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   PlaySound_082406e0(0xC6);
   FUN_0807b7a4(p);
   Player_SetAction(p, 18, 2);
@@ -2034,7 +2034,7 @@ void FUN_0807bd44(Player* p, s32 param_2) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   FUN_0807b7a4(p);
   Player_SetAction(p, 18, 1);
   p->fn_498 = FUN_08073574;
@@ -2044,7 +2044,7 @@ void FUN_0807bd84(Player* p, s32 param_2, u32 param_3) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
   FUN_0807b7a4(p);
   Player_SetAction(p, 18, 3);
@@ -2214,7 +2214,7 @@ void FUN_0807c200(Player* p, s32 facing, u32 scriptID) {
     } else {
       p->facing = FACE_UP;
     }
-    FUN_080609dc(p);
+    Player_SetAnimFacing(p);
     if (p->kind == PLAYER_MOUSE) {
       p->fn_498 = FUN_0807688c;
     } else if (p->kind == PLAYER_SLEEPING) {
@@ -2234,7 +2234,7 @@ void FUN_0807c30c(Player* p, s32 param_2, u32 param_3) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
   FUN_0807b7a4(p);
   Player_SetAction(p, 7, 7);
@@ -2247,7 +2247,7 @@ void FUN_0807c458(Player* p, s32 param_2, u32 param_3) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
   FUN_0807b7a4(p);
   Player_SetAction(p, 3, 0);
@@ -2258,7 +2258,7 @@ void FUN_0807c49c(Player* p, s32 param_2, u32 param_3) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
   FUN_0807b7a4(p);
   Player_SetAction(p, 3, 2);
@@ -2269,7 +2269,7 @@ void FUN_0807c4e0(Player* p, s32 param_2, u32 param_3) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
   FUN_0807b7a4(p);
   Player_SetAction(p, 3, 0);
@@ -2280,7 +2280,7 @@ void FUN_0807c524(Player* p, s32 param_2, u32 param_3) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
   FUN_0807b7a4(p);
   Player_SetAction(p, 3, 2);
@@ -2291,7 +2291,7 @@ void FUN_0807c568(Player* p, s32 param_2, u32 param_3) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
   FUN_0807b7a4(p);
   Player_SetAction(p, 3, 0);
@@ -2302,7 +2302,7 @@ void FUN_0807c5ac(Player* p, s32 param_2, u32 param_3) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
   FUN_0807b7a4(p);
   Player_SetAction(p, 3, 2);
@@ -2313,7 +2313,7 @@ void FUN_0807c5f0(Player* p, s32 param_2, u32 param_3) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
   FUN_0807b7a4(p);
   Player_SetAction(p, 3, 0);
@@ -2326,7 +2326,7 @@ void FUN_0807c748(Player* p, s32 param_2, s32 param_3, u32 param_4) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_4;
   p->unk_4a7 = param_3;
   FUN_0807b7a4(p);
@@ -2356,7 +2356,7 @@ void FUN_0807c8d4(Player* p, s32 param_2) {
   if (param_2 >= 0) {
     p->facing = param_2;
   }
-  FUN_080609dc(p);
+  Player_SetAnimFacing(p);
   Player_PlayAnim(p, FUN_08066ee4(p->kind, 1), 0x20);
   FUN_0807b7a4(p);
   Player_SetAction(p, 2, 0);
@@ -2493,7 +2493,7 @@ bool32 FUN_0807cc84(Player* p, u32 scriptID) {
     p->fn_498 = FUN_08077100;
   } else if (p->kind == PLAYER_SLEEPING) {
     p->facing = FACE_DOWN;
-    FUN_080609dc(p);
+    Player_SetAnimFacing(p);
     FUN_0807b7a4(p);
     Player_SetAction(p, 14, 0);
     p->fn_498 = FUN_08077a5c;
@@ -3041,15 +3041,15 @@ void Player_Unlock(void) {
 
 NAKED void FUN_0807dcec(Player* p) { INCFUNC("asm/func/FUN_0807dcec.inc"); }
 
-void FUN_0807ddbc(Player* p) { EntityMsgBus_Register(&p->msgbox, p->mover.id, 2); }
+void FUN_0807ddbc(Player* p) { MsgQueue_Register(&p->mq, p->mover.id, 2); }
 
-void FUN_0807ddd4(Player* p) { EntityMsgBus_Unregister(&p->msgbox); }
+void FUN_0807ddd4(Player* p) { MsgQueue_Unregister(&p->mq); }
 
 NAKED void Player_Update_Helper_0807dde4(Player* p) { INCFUNC("asm/func/Player_Update_Helper_0807dde4.inc"); }
 
 // 自分宛ての targetClass 2 のメッセージを1件組み立てて送る
 void FUN_0807e278(Player* p, s32 cmd, s32 argc, s16* args) {
-  EntityMsg* msg = &p->msg_994;
+  MsgPacket* msg = &p->msg_994;
 
   msg->targetID = p->mover.id;
   msg->targetClass = 2;
@@ -3064,7 +3064,7 @@ void FUN_0807e278(Player* p, s32 cmd, s32 argc, s16* args) {
       msg->args[i] = args[i];
     }
   }
-  EntityMsg_Send(msg);
+  MsgPacket_Send(msg);
 }
 
 NAKED void FUN_0807e2cc(Player* p) { INCFUNC("asm/func/FUN_0807e2cc.inc"); }
@@ -3094,7 +3094,7 @@ void FUN_0807e784(HitboxData* a, HitboxData* b, Player* p) {
       b->hitState |= 2;
     }
     FUN_0807e3b0(p, a, b);
-    if (Player_GetFlag378(p, FLAG378_UNK_18)) {
+    if (Player_GetFlag378(p, FLAG378_SPIKE)) {
       FUN_0807e2cc(p);
     }
   }
@@ -3130,11 +3130,11 @@ NON_MATCH void FUN_0807eca8(Player* p) {
   s32 n = p->unk_16c.unk_44;
 
   if (n > 0) {
-    FUN_08060c40(p, 8);
+    Player_SetFlag35a(p, PFLAG35A_NO_HITBOX);
     if (p->unk_16c.unk_40 == 0 && p->action != 0x18 && p->action != 0x19) {
       n--;
       if (n != 0 && ((n >> 2) & 1)) {
-        FUN_08060c40(p, 5);
+        Player_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_HIDE_SHADOW);
       }
       p->unk_16c.unk_44 = n;
     }
@@ -3155,7 +3155,7 @@ NAKED void dark_django_0807f13c(Player* p) { INCFUNC("asm/func/dark_django_0807f
 NAKED static s32 Player_Update(Player* p) { INCFUNC("asm/func/Player_Update.inc"); }
 
 static s32 Player_Destroy(Player* p) {
-  FUN_080f8cac(p->unk_220);
+  EnemyTargetManager_Remove(&p->target);
   MainSprite_Remove(&p->sprite_88);
   AuxSprite_Remove(&p->sprite_e8);
   Hitbox_Unregister(&p->unk_16c);
@@ -3260,17 +3260,112 @@ void FUN_0806c868(Player* p);
 void FUN_0806c9bc(Player* p);
 void FUN_0806cbe8(Player* p);
 
+// clang-format off
 const PlayerFunc PTR_ARRAY_085abcac[33] = {
-    FUN_08066f7c, FUN_080672b0, MagicDash_0806734c, FUN_080695ec, FUN_08067510, FUN_08067de8, FUN_08069218, FUN_08067ffc, FUN_08068624, MagicRisingSun_08068944, MagicTransform_0806b92c, MagicChangeWolf_0806eb40, MagicChangeBat_0806bc74, MagicChangeMouse_0806bf18, MagicSleeping_0806c124, MagicFreeze_08069710, MagicHealing_08069928, MagicDynamite_08069b18, FUN_08069c8c, FUN_0806961c, FUN_08069648, FUN_0806a050, FUN_08069d70, FUN_08069f60, FUN_0806a084, FUN_0806a32c, FUN_0806a628, FUN_0806a88c, FUN_0806abd4, FUN_0806adc8, FUN_0806af70, FUN_0806f1ec, FUN_0806b06c,
+    FUN_08066f7c,
+    FUN_080672b0,
+    MagicDash_0806734c,
+    FUN_080695ec,
+    FUN_08067510,
+    FUN_08067de8,
+    FUN_08069218,
+    FUN_08067ffc,
+    FUN_08068624,
+    MagicRisingSun_08068944,
+    MagicTransform_0806b92c,
+    MagicChangeWolf_0806eb40,
+    MagicChangeBat_0806bc74,
+    MagicChangeMouse_0806bf18,
+    MagicSleeping_0806c124,
+    MagicFreeze_08069710,
+    MagicHealing_08069928,
+    MagicDynamite_08069b18,
+    FUN_08069c8c,
+    FUN_0806961c,
+    FUN_08069648,
+    FUN_0806a050,
+    FUN_08069d70,
+    FUN_08069f60,
+    FUN_0806a084,
+    FUN_0806a32c,
+    FUN_0806a628,
+    FUN_0806a88c,
+    FUN_0806abd4,
+    FUN_0806adc8,
+    FUN_0806af70,
+    FUN_0806f1ec,
+    FUN_0806b06c,
 };  // 0x085ABCAC
+// clang-format on
 
+// clang-format off
 const PlayerFunc PTR_ARRAY_085abd30[32] = {
-    FUN_08066f7c, FUN_080672b0, FUN_0806b374, FUN_08072014, FUN_08067510, FUN_08067de8, FUN_08069218, FUN_0806830c, FUN_08068624, Sabata_BlackSun, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_0806961c, FUN_08069648, FUN_0806a050, FUN_08069d70, FUN_08069f60, FUN_0806a084, FUN_0806a32c, FUN_0806a628, FUN_0806a88c, FUN_0806abd4, FUN_0806adc8, FUN_0806af70, FUN_0806b758,
+    FUN_08066f7c,
+    FUN_080672b0,
+    FUN_0806b374,
+    FUN_08072014,
+    FUN_08067510,
+    FUN_08067de8,
+    FUN_08069218,
+    FUN_0806830c,
+    FUN_08068624,
+    Sabata_BlackSun,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806961c,
+    FUN_08069648,
+    FUN_0806a050,
+    FUN_08069d70,
+    FUN_08069f60,
+    FUN_0806a084,
+    FUN_0806a32c,
+    FUN_0806a628,
+    FUN_0806a88c,
+    FUN_0806abd4,
+    FUN_0806adc8,
+    FUN_0806af70,
+    FUN_0806b758,
 };  // 0x085ABD30
+// clang-format on
 
+// clang-format off
 const PlayerFunc PTR_ARRAY_085abdb0[27] = {
-    FUN_0806c2dc, FUN_0806c400, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_0806cbe8, NULL, NULL, NULL, NULL, NULL, NULL, FUN_0806c868, FUN_0806c6d4, NULL, NULL, NULL, FUN_0806c9bc, NULL, NULL,
+    FUN_0806c2dc,
+    FUN_0806c400,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806cbe8,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806c868,
+    FUN_0806c6d4,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806c9bc,
+    NULL,
+    NULL,
 };  // 0x085ABDB0
+// clang-format on
 
 // --------------------------------------------
 
@@ -3283,9 +3378,37 @@ void FUN_0806d5b0(Player* p);
 void FUN_0806d74c(Player* p);
 void FUN_0806da18(Player* p);
 
+// clang-format off
 const PlayerFunc PTR_ARRAY_085abe1c[27] = {
-    FUN_0806ceb0, FUN_0806d014, NULL, NULL, FUN_0806d22c, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_0806dd7c, NULL, NULL, NULL, NULL, NULL, FUN_0806d420, FUN_0806d5b0, NULL, NULL, FUN_0806d74c, FUN_0806da18, NULL, NULL,
+    FUN_0806ceb0,
+    FUN_0806d014,
+    NULL,
+    NULL,
+    FUN_0806d22c,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806dd7c,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806d420,
+    FUN_0806d5b0,
+    NULL,
+    NULL,
+    FUN_0806d74c,
+    FUN_0806da18,
+    NULL,
+    NULL,
 };  // 0x085ABE1C
+// clang-format on
 
 // --------------------------------------------
 
@@ -3296,9 +3419,31 @@ void FUN_0806e4b4(Player* p);
 void FUN_0806e7dc(Player* p);
 void FUN_0806e674(Player* p);
 
+// clang-format off
 const PlayerFunc PTR_ARRAY_085abe88[21] = {
-    FUN_0806df84, FUN_0806e15c, NULL, FUN_0806e404, FUN_0806e4b4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_0806e7dc, NULL, NULL, NULL, NULL, NULL, FUN_0806e674,
+    FUN_0806df84,
+    FUN_0806e15c,
+    NULL,
+    FUN_0806e404,
+    FUN_0806e4b4,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806e7dc,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806e674,
 };  // 0x085ABE88
+// clang-format on
 
 // --------------------------------------------
 
@@ -3331,9 +3476,38 @@ void FUN_0806a32c(Player* p);
 void FUN_0806a628(Player* p);
 void FUN_0806a88c(Player* p);
 
+// clang-format off
 const PlayerFunc PTR_ARRAY_085abedc[28] = {
-    FUN_08066f7c, FUN_080672b0, FUN_0806f284, FUN_080695ec, FUN_08067510, FUN_08067de8, FUN_08069218, FUN_08067ffc, FUN_08068624, MagicRisingSun_08068944, MagicTransform_0806b92c, MagicChangeWolf_0806eb40, MagicChangeBat_0806bc74, MagicChangeMouse_0806bf18, MagicSleeping_0806c124, MagicFreeze_08069710, MagicHealing_0806f3a0, FUN_0806f5d8, FUN_08069c8c, FUN_0806961c, FUN_08069648, FUN_0806a050, FUN_08069d70, FUN_08069f60, FUN_0806a084, FUN_0806a32c, FUN_0806a628, FUN_0806a88c,
+    FUN_08066f7c,
+    FUN_080672b0,
+    FUN_0806f284,
+    FUN_080695ec,
+    FUN_08067510,
+    FUN_08067de8,
+    FUN_08069218,
+    FUN_08067ffc,
+    FUN_08068624,
+    MagicRisingSun_08068944,
+    MagicTransform_0806b92c,
+    MagicChangeWolf_0806eb40,
+    MagicChangeBat_0806bc74,
+    MagicChangeMouse_0806bf18,
+    MagicSleeping_0806c124,
+    MagicFreeze_08069710,
+    MagicHealing_0806f3a0,
+    FUN_0806f5d8,
+    FUN_08069c8c,
+    FUN_0806961c,
+    FUN_08069648,
+    FUN_0806a050,
+    FUN_08069d70,
+    FUN_08069f60,
+    FUN_0806a084,
+    FUN_0806a32c,
+    FUN_0806a628,
+    FUN_0806a88c,
 };  // 0x085ABEDC
+// clang-format on
 
 const u16 u16_ARRAY_085abf4c[3] = {1800, 1800, 900};  // 0x085ABF4C
 
@@ -3353,6 +3527,36 @@ void FUN_08082464(Player* p);
 void FUN_08082498(Player* p);
 void FUN_08082670(Player* p);
 
+// clang-format off
 const PlayerFunc PTR_ARRAY_085abf54[29] = {
-    FUN_08081f80, FUN_08081fb4, FUN_08082bdc, FUN_080832b8, NULL, NULL, NULL, FUN_08082154, FUN_0808301c, FUN_08082dac, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_08082970, FUN_08082a94, FUN_080835d8, FUN_08082464, NULL, NULL, FUN_08082498, FUN_08082670, NULL, NULL, NULL,
+    FUN_08081f80,
+    FUN_08081fb4,
+    FUN_08082bdc,
+    FUN_080832b8,
+    NULL,
+    NULL,
+    NULL,
+    FUN_08082154,
+    FUN_0808301c,
+    FUN_08082dac,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_08082970,
+    FUN_08082a94,
+    FUN_080835d8,
+    FUN_08082464,
+    NULL,
+    NULL,
+    FUN_08082498,
+    FUN_08082670,
+    NULL,
+    NULL,
+    NULL,
 };  // 0x085ABF54
+// clang-format on

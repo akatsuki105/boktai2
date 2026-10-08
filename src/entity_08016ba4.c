@@ -6,14 +6,10 @@
 
 // 1発ぶんの破片, 速度を持って飛びながらアニメを進める
 typedef struct {
-  bool8 active;  // 0x00, Entity08016ba4_Spawn が 1 を入れる
-  u8 life;       // 0x01, Entity08016ba4Burst_Update が毎フレーム 1 減らし, 0 で particle を隠す
-  s16 speed;     // 0x02, velX / velZ に掛けて >>12 してから pos に足す
-  // TODO: Vec3 になおす
-  s16 velX;           // 0x04, gSineTable[angle + 0x40]
-  s16 velY;           // 0x06, Entity08016ba4Burst_Update が毎フレーム 2 減らす
-  s16 velZ;           // 0x08, gSineTable[angle]
-  u8 unk_a[2];        // 0x0A, まだ未解析
+  bool8 active;       // 0x00, Entity08016ba4_Spawn が 1 を入れる
+  u8 life;            // 0x01, Entity08016ba4Burst_Update が毎フレーム 1 減らし, 0 で particle を隠す
+  s16 speed;          // 0x02, vel.x / vel.z に掛けて >>12 してから pos に足す
+  Vec3 vel;           // 0x04, x は gSineTable[angle + 0x40], z は gSineTable[angle], y は Entity08016ba4Burst_Update が毎フレーム 2 減らす
   Particle particle;  // 0x0C, Particle_Setup で確保し Particle_Remove で返す
   AuxAnimState anim;  // 0x34, AuxAnim_SetAnim が初期化し AuxAnim_SetAnimSpeed が進める
 } Entity08016ba4Piece;

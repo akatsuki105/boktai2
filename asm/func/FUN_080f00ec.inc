@@ -29,7 +29,7 @@ _080F010A:
 	lsls r0, r0, #3
 	adds r4, r5, r0
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	mov r1, r8
 	ldrh r0, [r1]
 	mov r2, sb
@@ -55,8 +55,8 @@ _080F0138:
 	ldr r1, _080F0200 @ =0x08251F80
 	subs r2, #0xf2
 	adds r0, r5, #0
-	bl FUN_080e6768
-	ldr r3, _080F0204 @ =FUN_080e48d0
+	bl Enemy_ClearPendingState
+	ldr r3, _080F0204 @ =Enemy_ClearStateBegun
 	mov sb, r3
 	movs r1, #0x10
 	ldr r2, _080F0208 @ =0x0000046D
@@ -133,7 +133,7 @@ _080F01F4: .4byte 0xFFFEBE3F
 _080F01F8: .4byte 0x0000021E
 _080F01FC: .4byte 0x00000202
 _080F0200: .4byte 0x08251F80
-_080F0204: .4byte FUN_080e48d0
+_080F0204: .4byte Enemy_ClearStateBegun
 _080F0208: .4byte 0x0000046D
 _080F020C: .4byte 0x0000046B
 _080F0210: .4byte 0x00000469

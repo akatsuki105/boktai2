@@ -5,7 +5,7 @@
 #include "tilemap.h"
 #include "types.h"
 
-// BG1枚分の状態 (gBgStates[4] @ 0x03003ED0), 要素の区切りの根拠: entity_cbb0, enemy_dex が &gBgStates[3] (0x03003F60) を起点に +0x10..+0x28 を触る
+// BG1枚分の状態 (gBgStates[4] @ 0x03003ED0), 要素の区切りの根拠: pile_driver, enemy_dex が &gBgStates[3] (0x03003F60) を起点に +0x10..+0x28 を触る
 typedef struct {
   u8 unk_00[16];         // 0x00
   u16 unk_10;            // 0x10, Video_SetBGLayer が 0x1000 を入れる

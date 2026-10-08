@@ -36,7 +36,7 @@ typedef struct {
   u32 unk_58;                    // 0x0058, 1 で画面を明転, 2 で暗転 (gObjBrightness を 4 ずつ動かす), 終わると 0 に戻る
   u32 unk_5c;                    // 0x005C, _Init が 0
   Vec3 pos;                      // 0x0060, '.c', FUN_0823b8ac に渡す
-  MainSpriteGfx gfx[7];          // 0x0068, sDAT_085ab750 が 2 の要素だけ
+  MainSpriteGfx gfx[7];          // 0x0068, Entity5645Entry.unk_08 が 2 の要素だけ
   Entity5645Elem elems[5];       // 0x0148
   u8 unk_8dc[0x17DC - 0x8DC];    // 0x08DC, この family が触らない領域, 残り63関数の担当
   AuxAnimFile* animFiles[4];     // 0x17DC, ANIM_871C / ANIM_5BB7 / ANIM_62C7 / ANIM_6830
@@ -63,8 +63,133 @@ IWRAM_DATA Entity5645* gEntity5645 = NULL;  // 0x03000120
 
 void FUN_08055d7c(SpriteHolder* p);
 
-INCRODATA(".rodata", "data/entity_5645.bin");  // ./tools/bin.ts ./baserom.gba 0x085ab748 0x085ab990 ./data/entity_5645.bin
+// 0x085AB748 の8件のテーブル, FUN_08054848 が 0x38 刻みで引く
+typedef struct {
+  SpriteID32 id;                                  // 0x00, Entity286F_FindSpriteData の第1引数
+  s32 idx;                                        // 0x04, Entity286F_FindSpriteData の第2引数
+  u32 unk_08;                                     // 0x08, FUN_080533ec に渡す, 2 の要素だけ Entity5645.gfx[] に入る
+  u32 unk_0c;                                     // 0x0C, FUN_080533ec に渡す, SPRITE_MOUSE の要素だけ ANIM_AF44
+  void (*fns[10])(Entity5645*, Entity5645Elem*);  // 0x10, FUN_08054960 が Entity5645Elem + 0x0D で引く
+} Entity5645Entry;
+static_assert(sizeof(Entity5645Entry) == 56);
 
-INCRODATA(".rodata", "data/rodata.bin");  // ./tools/bin.ts ./baserom.gba 0x085ab990 0x085ABA70 ./data/rodata.bin
+void FUN_08053dac(Entity5645* p, Entity5645Elem* elem);
+void FUN_08053dcc(Entity5645* p, Entity5645Elem* elem);
+void FUN_08053dfc(Entity5645* p, Entity5645Elem* elem);
+void FUN_08053e2c(Entity5645* p, Entity5645Elem* elem);
+void FUN_08053e64(Entity5645* p, Entity5645Elem* elem);
+void FUN_08053f44(Entity5645* p, Entity5645Elem* elem);
+void FUN_08053fd0(Entity5645* p, Entity5645Elem* elem);
+void FUN_08054054(Entity5645* p, Entity5645Elem* elem);
+void FUN_080540d4(Entity5645* p, Entity5645Elem* elem);
+void FUN_08054130(Entity5645* p, Entity5645Elem* elem);
+void FUN_08054170(Entity5645* p, Entity5645Elem* elem);
+void FUN_080541cc(Entity5645* p, Entity5645Elem* elem);
+void FUN_080541fc(Entity5645* p, Entity5645Elem* elem);
+void FUN_08054290(Entity5645* p, Entity5645Elem* elem);
+void FUN_080542ac(Entity5645* p, Entity5645Elem* elem);
+void FUN_0805431c(Entity5645* p, Entity5645Elem* elem);
+void FUN_08054444(Entity5645* p, Entity5645Elem* elem);
+void FUN_08054490(Entity5645* p, Entity5645Elem* elem);
+void FUN_080544b4(Entity5645* p, Entity5645Elem* elem);
+void FUN_08054520(Entity5645* p, Entity5645Elem* elem);
+void FUN_08054670(Entity5645* p, Entity5645Elem* elem);
+void FUN_08054698(Entity5645* p, Entity5645Elem* elem);
+void FUN_08054700(Entity5645* p, Entity5645Elem* elem);
+void FUN_0805474c(Entity5645* p, Entity5645Elem* elem);
+void FUN_080547a8(Entity5645* p, Entity5645Elem* elem);
+void FUN_080547f4(Entity5645* p, Entity5645Elem* elem);
+
+// clang-format off
+const Entity5645Entry Entity5645Entry_ARRAY_085ab748[8] = {
+    {
+        .id = SPRITE_KURO,
+        .idx = 0,
+        .unk_08 = 2,
+        .unk_0c = 0,
+        .fns = {FUN_08053dac, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, FUN_08053e64, FUN_08053f44, FUN_08053fd0, FUN_080540d4, FUN_08054130, FUN_08054130},
+    },
+    {
+        .id = SPRITE_DJANGO_SABATA,
+        .idx = 0,
+        .unk_08 = 2,
+        .unk_0c = 0,
+        .fns = {FUN_08053dac, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, FUN_08053e64, FUN_08053f44, FUN_08053dcc, FUN_08053dac, FUN_08053dac, FUN_080541cc},
+    },
+    {
+        .id = SPRITE_DJANGO_SABATA,
+        .idx = 1,
+        .unk_08 = 2,
+        .unk_0c = 0,
+        .fns = {FUN_08053dac, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, FUN_08053e64, FUN_08053f44, FUN_08053dcc, FUN_08053dac, FUN_08053dac, FUN_080541fc},
+    },
+    {
+        .id = SPRITE_RITA,
+        .idx = 0,
+        .unk_08 = 2,
+        .unk_0c = 0,
+        .fns = {FUN_08053dac, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, FUN_08053e64, FUN_08053f44, FUN_08053dcc, FUN_08053dac, FUN_08053dac, FUN_080541fc},
+    },
+    {
+        .id = SPRITE_ZAJI,
+        .idx = 0,
+        .unk_08 = 2,
+        .unk_0c = 0,
+        .fns = {FUN_08053dac, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, FUN_08053e64, FUN_08053f44, FUN_08053dcc, FUN_08053dac, FUN_08053dac, FUN_080541fc},
+    },
+    {
+        .id = SPRITE_SUMIRE,
+        .idx = 0,
+        .unk_08 = 2,
+        .unk_0c = 0,
+        .fns = {FUN_08053dac, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, FUN_08053e64, FUN_08053f44, FUN_08053dcc, FUN_08053dac, FUN_08054170, FUN_080541fc},
+    },
+    {
+        .id = SPRITE_LADY,
+        .idx = 0,
+        .unk_08 = 2,
+        .unk_0c = 0,
+        .fns = {FUN_08053dac, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, FUN_08053e64, FUN_08053f44, FUN_08053dcc, FUN_08053dac, FUN_08053dac, FUN_080541fc},
+    },
+    {
+        .id = SPRITE_MOUSE,
+        .idx = 0,
+        .unk_08 = 1,
+        .unk_0c = ANIM_AF44,
+        .fns = {FUN_08053dac, FUN_08053dcc, FUN_08053dfc, FUN_08053e2c, FUN_08053e64, FUN_08053f44, FUN_08054054, FUN_08053dac, FUN_08053dac, FUN_08053dac},
+    },
+};  // 0x085AB748
+// clang-format on
+
+// 何かのIDの並びに見えるが特定できていない
+const u16 u16_ARRAY_085ab908[5] = {0x6BDC, 0xF450, 0x094D, 0x6530, 0x2803};  // 0x085AB908
+
+// FUN_08054848 が Entity5645Entry_ARRAY_085ab748 と同じ添字で引く, 9件目は未使用
+const u16 u16_ARRAY_085ab912[9] = {250, 350, 350, 350, 350, 300, 350, 250, 0};  // 0x085AB912
+
+// 推測: {u8, u8, u16} の12組
+const u8 u8_ARRAY_085ab924[48] = {
+    0x01, 0x00, 0x20, 0x00, 0x01, 0x00, 0x1B, 0x00, 0x03, 0x00, 0x00, 0x00, 0x03, 0x00, 0x10, 0x00, 0x01, 0x00, 0x0A, 0x00, 0x01, 0x00, 0x07, 0x00,
+    0x03, 0x01, 0x89, 0x01, 0x02, 0x01, 0x13, 0x02, 0x02, 0x01, 0x0B, 0x00, 0x01, 0x00, 0x07, 0x00, 0x01, 0x00, 0x0A, 0x00, 0x02, 0x01, 0x02, 0x00,
+};  // 0x085AB924
+
+const u16 u16_ARRAY_085ab954[4] = {SPRITE_BOMB, SPRITE_BAT, SPRITE_BEE, 0};  // 0x085AB954
+
+// FUN_08054960 が Entity5645Elem + 0x0B で引く
+void (*const PTR_ARRAY_085ab95c[13])(Entity5645*, Entity5645Elem*) = {
+    FUN_08054290,
+    FUN_080542ac,
+    FUN_0805431c,
+    FUN_08054444,
+    FUN_08054490,
+    FUN_080544b4,
+    FUN_08054520,
+    FUN_08054670,
+    FUN_08054698,
+    FUN_08054700,
+    FUN_0805474c,
+    FUN_080547a8,
+    FUN_080547f4,
+};  // 0x085AB95C
 
 INCASM("asm/entity_5645.inc");

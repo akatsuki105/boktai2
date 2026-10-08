@@ -86,7 +86,7 @@ _0806F322:
 	bl Player_SetMoveDelta
 _0806F336:
 	adds r0, r4, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r4, r1

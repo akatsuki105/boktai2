@@ -100,7 +100,7 @@ _0804429C:
 	mov r0, r8
 	adds r1, r5, #0
 	str r3, [sp]
-	bl EntityMsgBox_BeginWait
+	bl MsgQueue_BeginWait
 	ldr r3, [sp]
 	adds r3, #1
 	ldr r0, _080442D0 @ =0x03002B4C

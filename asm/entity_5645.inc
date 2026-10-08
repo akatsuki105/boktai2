@@ -257,7 +257,7 @@ _08053264:
 	str r0, [sp, #8]
 	adds r0, r5, #0
 	adds r1, r7, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	add sp, #0xc
 	pop {r4, r5, r6, r7}
 	pop {r1}
@@ -297,7 +297,7 @@ _080532AA:
 	str r0, [sp, #8]
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	add sp, #0xc
 	pop {r4, r5}
 	pop {r1}
@@ -352,7 +352,7 @@ _08053308:
 	ldr r1, [sp, #0x24]
 	str r1, [sp, #8]
 	adds r1, r7, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	add sp, #0xc
 	pop {r4, r5, r6, r7}
 	pop {r1}
@@ -370,7 +370,7 @@ FUN_08053324: @ 0x08053324
 	str r4, [sp, #8]
 	movs r2, #0
 	movs r3, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	add sp, #0xc
 	pop {r4}
 	pop {r1}

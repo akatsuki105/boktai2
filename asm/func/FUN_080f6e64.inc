@@ -600,7 +600,7 @@ _080F72CC:
 	lsls r0, r0, #3
 	adds r4, r6, r0
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r7]
 	mov r1, sl
 	bics r0, r1
@@ -623,7 +623,7 @@ _080F7344: .4byte 0x00000202
 _080F7348: .4byte 0xFFFFDFFF
 _080F734C:
 	adds r0, r6, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	lsrs r4, r0, #0x18
 	cmp r4, #0
@@ -637,7 +637,7 @@ _080F734C:
 	lsls r0, r0, #3
 	adds r4, r6, r0
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r7]
 	mov r1, sl
 	bics r0, r1
@@ -1098,7 +1098,7 @@ _080F76F4:
 	lsls r3, r3, #3
 	adds r4, r6, r3
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r7]
 	mov r1, sl
 	bics r0, r1
@@ -1204,7 +1204,7 @@ _080F77D8:
 	lsls r2, r2, #3
 	adds r4, r6, r2
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r7]
 	mov r3, sb
 	bics r0, r3
@@ -1819,7 +1819,7 @@ _080F7CE0: .4byte 0x00000202
 _080F7CE4: .4byte 0xFFFFDFFF
 _080F7CE8:
 	adds r0, r6, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	lsrs r4, r0, #0x18
 	cmp r4, #0
@@ -1834,7 +1834,7 @@ _080F7CE8:
 	lsls r0, r0, #3
 	adds r4, r6, r0
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r7]
 	bics r0, r5
 	strh r0, [r7]
@@ -2298,7 +2298,7 @@ _080F8094:
 	lsls r3, r3, #3
 	adds r4, r6, r3
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r7]
 	mov r1, sl
 	bics r0, r1
@@ -2404,7 +2404,7 @@ _080F817C:
 	lsls r2, r2, #3
 	adds r4, r6, r2
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r7]
 	mov r3, sb
 	bics r0, r3

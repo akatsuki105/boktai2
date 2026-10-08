@@ -11,17 +11,14 @@ void FUN_080d318c(Player* p);
 void FUN_080d34b4(Player* p);
 void FUN_080d36ac(Player* p);
 
-// clang-format off
 const PlayerFunc PTR_ARRAY_085ad14c[5] = {
-    [WK_SWORD]  = FUN_080d2008,
-    [WK_SPEAR]  = FUN_080d2968,
+    [WK_SWORD] = FUN_080d2008,
+    [WK_SPEAR] = FUN_080d2968,
     [WK_HAMMER] = FUN_080d318c,
     [WK_OTHERS] = FUN_080d34b4,
-    [WK_GUN]    = FUN_080d36ac,
+    [WK_GUN] = FUN_080d36ac,
 };  // 0x085AD14C
-// clang-format on
 
-// clang-format off
 const u16 gMagicCosts_085ad160[MAGIC_NUM] = {
     [MAGIC_SOL] = 5,
     [MAGIC_DARK] = 5,
@@ -42,7 +39,6 @@ const u16 gMagicCosts_085ad160[MAGIC_NUM] = {
     [MAGIC_RAT] = 10,
     [MAGIC_WOLF] = 10,
 };  // 0x085AD160
-// clang-format on
 
 void FUN_080d0738(Player* p);
 void FUN_080d0a04(Player* p);
@@ -61,13 +57,78 @@ void FUN_080d53e4(Player* p);
 void FUN_080d3f1c(Player* p);
 void FUN_080d16d4(Player* p);
 
+// clang-format off
 const PlayerFunc PTR_ARRAY_085ad184[32] = {
-    FUN_080d0738, FUN_080d0a04, FUN_080d0aa0, FUN_080d4494, FUN_080d0c6c, NULL, NULL, FUN_080d13b8, NULL, NULL, NULL, NULL, NULL, FUN_080d55d8, NULL, NULL, NULL, FUN_080d44c4, NULL, NULL, NULL, NULL, NULL, NULL, FUN_080d482c, FUN_080d4a34, FUN_080d4d34, FUN_080d4fa4, FUN_080d53e4, NULL, NULL, NULL,
+    FUN_080d0738,
+    FUN_080d0a04,
+    FUN_080d0aa0,
+    FUN_080d4494,
+    FUN_080d0c6c,
+    NULL,
+    NULL,
+    FUN_080d13b8,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_080d55d8,
+    NULL,
+    NULL,
+    NULL,
+    FUN_080d44c4,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_080d482c,
+    FUN_080d4a34,
+    FUN_080d4d34,
+    FUN_080d4fa4,
+    FUN_080d53e4,
+    NULL,
+    NULL,
+    NULL,
 };  // 0x085AD184
+// clang-format on
 
+// clang-format off
 const PlayerFunc PTR_ARRAY_085ad204[31] = {
-    FUN_080d0738, FUN_080d0a04, FUN_080d5510, FUN_080d3f1c, FUN_080d0c6c, NULL, NULL, FUN_080d16d4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_080d482c, FUN_080d4a34, FUN_080d4d34, FUN_080d4fa4, FUN_080d53e4, NULL, NULL,
+    FUN_080d0738,
+    FUN_080d0a04,
+    FUN_080d5510,
+    FUN_080d3f1c,
+    FUN_080d0c6c,
+    NULL,
+    NULL,
+    FUN_080d16d4,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_080d482c,
+    FUN_080d4a34,
+    FUN_080d4d34,
+    FUN_080d4fa4,
+    FUN_080d53e4,
+    NULL,
+    NULL,
 };  // 0x085AD204
+// clang-format on
 
 void FUN_080d57e4(Player* p);
 void FUN_080d5948(Player* p);
@@ -75,9 +136,37 @@ void FUN_080d5ae0(Player* p);
 void FUN_080d6408(Player* p);
 void FUN_080d613c(Player* p);
 
+// clang-format off
 const PlayerFunc PTR_ARRAY_085ad280[27] = {
-    FUN_080d57e4, FUN_080d5948, NULL, NULL, FUN_080d5ae0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_080d6408, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, FUN_080d613c, NULL, NULL,
+    FUN_080d57e4,
+    FUN_080d5948,
+    NULL,
+    NULL,
+    FUN_080d5ae0,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_080d6408,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_080d613c,
+    NULL,
+    NULL,
 };  // 0x085AD280
+// clang-format on
 
 NAKED void FUN_080cc1a0(Player* p) { INCFUNC("asm/func/FUN_080cc1a0.inc"); }
 

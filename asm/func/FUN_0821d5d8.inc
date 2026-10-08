@@ -35,7 +35,7 @@ _0821D5F6:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _0821D624:
 	pop {r4}
 	pop {r0}

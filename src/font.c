@@ -107,7 +107,7 @@ s32 FUN_0822e8d0(u32 val1, u32 val2, u32 val3, u32 val4) {
   s32 i;
   u32 key = (val1 | (val2 << 16) | (val3 << 18) | (val4 << 20)) & 0x3FFFFF;
   u32* p = FUN_0822e8c8();
-  for (i = 0; i <= 0xFF; p++, i++) {
+  for (i = 0; i < 0x100; p++, i++) {
     if (((*p & 0x3FFFFF) == key) && (*p & (0xFF << 22))) {
       return i;
     }
@@ -129,7 +129,7 @@ NON_MATCH s32 FUN_0822e920(void* tiledata, u32 val2, u32 val3, u32 val4, u32 val
     return idx;
   }
 
-  for (i = 0; i <= 0xFF; p++, i++) {
+  for (i = 0; i < 0x100; p++, i++) {
     if (!(*p & (0xFF << 22))) break;
   }
   if (i == 0x100) return -1;

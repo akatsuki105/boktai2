@@ -55,7 +55,7 @@ _08074AB6:
 	ands r0, r1
 	strb r0, [r2]
 	adds r0, r6, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	ldr r2, _08074AD8 @ =0x000002E6
 	adds r1, r6, r2
 	ldrb r0, [r1]
@@ -187,7 +187,7 @@ _08074BB0:
 	cmp r0, #0
 	beq _08074C9A
 	adds r0, r6, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	ldrb r0, [r4]
 	subs r0, #1
 	strb r0, [r4]

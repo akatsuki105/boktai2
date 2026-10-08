@@ -430,7 +430,7 @@ _0806DD5C: .4byte 0x000004C5
 _0806DD60: .4byte 0x000004C7
 _0806DD64:
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0

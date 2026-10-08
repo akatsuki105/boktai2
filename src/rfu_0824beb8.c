@@ -84,7 +84,7 @@ NON_MATCH s32 Rfu_FindPartnerByRecord(u16 id, u8 flags, u16* partnerid) {
           p++;
           if (Rfu_GetRecordLength(p) == 7) break;
           pos += Rfu_GetRecordLength(p) + 2;
-        } while (pos <= 15);
+        } while (pos < 16);
         return -2;
       }
     }

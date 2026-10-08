@@ -2254,7 +2254,7 @@ _08024378:
 	ldr r4, [r0]
 	mov r0, r8
 	adds r1, r4, #0
-	bl EntityMsgBox_BeginWait
+	bl MsgQueue_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #0xa
 	bls _0802439E
@@ -2394,7 +2394,7 @@ _080244A0:
 	adds r0, r5, r3
 _080244B4:
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _080244DA
 _080244BC:
 	movs r1, #2
@@ -4506,7 +4506,7 @@ _08025430:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _08025448:
 	adds r1, r4, #0
 	adds r1, #0xbc
@@ -4545,7 +4545,7 @@ _08025474:
 	lsls r1, r1, #1
 	adds r0, r4, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _0802548C:
 	adds r1, r4, #0
 	adds r1, #0xbc
@@ -4602,7 +4602,7 @@ _080254C8:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _080254FE
 _080254F4:
 	adds r1, r3, #0
@@ -4659,7 +4659,7 @@ _08025530:
 	lsls r1, r1, #1
 	adds r0, r3, r1
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _08025562
 _08025558:
 	adds r1, r3, #0
@@ -4825,7 +4825,7 @@ FUN_08025654: @ 0x08025654
 	str r0, [sp]
 	str r3, [sp, #4]
 	adds r0, r4, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 _08025680:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -4891,7 +4891,7 @@ FUN_080256c4: @ 0x080256C4
 	str r4, [sp, #4]
 	adds r0, r5, #0
 	movs r3, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	ldr r0, _08025764 @ =0x00000551
 	adds r2, r5, r0
 	ldrb r1, [r2]
@@ -5079,7 +5079,7 @@ FUN_08025830: @ 0x08025830
 	str r3, [sp, #4]
 	adds r0, r4, #0
 	movs r3, #1
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 _0802585E:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -5233,7 +5233,7 @@ FUN_08025948: @ 0x08025948
 	str r4, [sp, #4]
 	adds r0, r5, #0
 	movs r3, #2
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xb0
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -5636,7 +5636,7 @@ FUN_08025c84: @ 0x08025C84
 	str r3, [sp, #4]
 	adds r0, r4, #0
 	movs r3, #3
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 _08025CB0:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -5703,7 +5703,7 @@ FUN_08025cf8: @ 0x08025CF8
 	str r0, [sp]
 	str r3, [sp, #4]
 	adds r0, r4, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 _08025D32:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -5847,7 +5847,7 @@ FUN_08025e10: @ 0x08025E10
 	str r3, [sp, #4]
 	adds r0, r4, #0
 	movs r3, #4
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	ldr r2, _08025E9C @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -6042,7 +6042,7 @@ FUN_08025f8c: @ 0x08025F8C
 	str r3, [sp, #4]
 	adds r0, r7, #0
 	movs r3, #5
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	adds r6, r7, #0
 	adds r6, #0x50
 	ldr r1, _08026044 @ =0x00003001
@@ -6140,7 +6140,7 @@ FUN_0802604c: @ 0x0802604C
 	str r0, [sp]
 	str r3, [sp, #4]
 	adds r0, r4, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	ldr r6, _08026114 @ =0x0000077A
 	adds r0, r4, r6
 	ldrh r1, [r0]
@@ -6188,7 +6188,7 @@ _080260A4:
 	str r3, [sp, #4]
 	adds r0, r4, #0
 	movs r3, #6
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 _080260E8:
 	ldr r0, [r5]
 	movs r2, #0xac
@@ -6323,7 +6323,7 @@ FUN_080261b4: @ 0x080261B4
 	str r4, [sp, #4]
 	adds r0, r5, #0
 	movs r3, #6
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xb0
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -6454,7 +6454,7 @@ FUN_080262c0: @ 0x080262C0
 	str r3, [sp, #4]
 	adds r0, r4, #0
 	movs r3, #7
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 _080262EC:
 	adds r0, r4, #0
 	adds r0, #0xfc
@@ -6524,7 +6524,7 @@ FUN_08026334: @ 0x08026334
 	str r3, [sp, #4]
 	adds r0, r5, #0
 	movs r3, #9
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	bl FUN_08009154
 	cmp r0, #0
 	beq _080263BA
@@ -6764,7 +6764,7 @@ FUN_08026514: @ 0x08026514
 	str r0, [sp, #4]
 	adds r0, r7, #0
 	movs r3, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	bl FUN_080591f4
 	movs r1, #6
 	cmp r0, #6
@@ -7036,7 +7036,7 @@ FUN_08026738: @ 0x08026738
 	str r4, [sp, #4]
 	adds r0, r5, #0
 	movs r3, #8
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xb0
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -7207,7 +7207,7 @@ _08026884:
 	str r0, [sp, #4]
 	adds r0, r5, #0
 	movs r3, #9
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	bl FUN_08009154
 	cmp r0, #0
 	beq _08026956
@@ -7312,7 +7312,7 @@ FUN_08026968: @ 0x08026968
 	str r0, [sp, #4]
 	adds r0, r4, #0
 	movs r3, #0xa
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	ldr r2, _08026A24 @ =0x030046B8
 	ldr r0, [r2]
 	adds r0, #1
@@ -7737,7 +7737,7 @@ FUN_08026c50: @ 0x08026C50
 	str r5, [sp, #4]
 	mov r0, r8
 	movs r3, #0xb
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 _08026D08:
 	mov r3, sb
 	ldr r0, [r3, #8]
@@ -8138,7 +8138,7 @@ _08026FD8:
 	str r4, [sp, #4]
 	mov r0, r8
 	movs r3, #0x13
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r0, #1
 	strh r0, [r5]
 _0802701A:
@@ -8225,7 +8225,7 @@ FUN_08027090: @ 0x08027090
 	str r4, [sp, #4]
 	adds r0, r5, #0
 	movs r3, #0x13
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r2, #0x9e
 	lsls r2, r2, #2
 	adds r1, r5, r2
@@ -8342,7 +8342,7 @@ FUN_08027188: @ 0x08027188
 	str r0, [sp]
 	str r3, [sp, #4]
 	adds r0, r4, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 _080271B2:
 	movs r0, #0xa8
 	lsls r0, r0, #3
@@ -8389,7 +8389,7 @@ FUN_080271e0: @ 0x080271E0
 	str r4, [sp, #4]
 	adds r0, r7, #0
 	movs r3, #0
-	bl FUN_08022da8
+	bl Boss_PlayAnim
 	movs r1, #0xac
 	lsls r1, r1, #1
 	adds r5, r7, r1

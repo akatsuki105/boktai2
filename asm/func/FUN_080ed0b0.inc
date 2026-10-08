@@ -12,7 +12,7 @@
 _080ED0C8: .4byte 0x03002C60
 _080ED0CC:
 	adds r0, r7, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	lsrs r2, r0, #0x18
 	cmp r2, #0
@@ -465,7 +465,7 @@ _080ED44C:
 	ldr r4, _080ED478 @ =0x00000189
 	adds r1, r7, r4
 	ldrb r1, [r1]
-	bl AddWeaponExpByMask
+	bl Player_AddWeaponExp
 _080ED466:
 	movs r1, #0x80
 	ldrh r0, [r5]

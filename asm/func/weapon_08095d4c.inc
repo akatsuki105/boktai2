@@ -278,7 +278,7 @@ _08095F6A:
 	mov r1, sb
 _08095FAA:
 	movs r2, #1
-	bl FUN_0808a354
+	bl EntityCC28_SetState
 	b _08096008
 	.align 2, 0
 _08095FB4: .4byte 0x0000144C

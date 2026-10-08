@@ -217,7 +217,7 @@ _080770CC: .4byte 0x000004A4
 _080770D0:
 	strh r0, [r3]
 	adds r0, r7, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0

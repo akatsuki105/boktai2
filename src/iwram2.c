@@ -14,20 +14,6 @@
 #include "video.h"
 #include "vm.h"
 
-struct Dvalinn;
-struct Entity0FC5;
-struct Entity5941;
-struct EntityBD74;
-struct Entity0B50;
-struct EntityA628;
-struct Entity4063;
-struct Entity080acd4c;
-struct EntityCBB0;
-struct EnemyManager;
-struct Entity9A9F;
-struct Player;
-struct CollisionMapData;
-
 IWRAM_DATA u8 u8_03002b5c[0x03002B64 - 0x03002B5C] = {};  // todo
 IWRAM_DATA u16 u16_03002b64 = 0;                          // 0x03002B64, Player_ApplyBadCondition が Player.unk_456 と同じ値を書く
 IWRAM_DATA u8 u8_03002b66[0x03002B74 - 0x03002B66] = {};  // todo
@@ -35,7 +21,7 @@ IWRAM_DATA u16 u16_03002b74 = 0;                          // 0x03002B74, サバ�
 IWRAM_DATA u8 u8_03002b76[2] = {};                        // todo
 IWRAM_DATA u16 u16_03002b78 = 0;                          // 0x03002B78, FUN_0807b564 が 0 に戻す
 IWRAM_DATA u8 u8_03002b7a[6] = {};                        // todo
-IWRAM_DATA u16 gSunlightOverride = 0;                     // 0x03002B80, ApplyLxModifiers が 1 なら太陽レベル +4、2 なら日光なしにする
+IWRAM_DATA u16 gSunGaugeOverride = 0;                     // 0x03002B80, ApplyLxModifiers が 1 なら太陽レベル +4、2 なら日光なしにする
 IWRAM_DATA u8 u8_03002b82[2] = {};                        // todo
 IWRAM_DATA u16 u16_03002b84 = 0;                          // 0x03002B84, Player_InitEffects が 1 を入れる
 IWRAM_DATA u8 u8_03002b86[10] = {};                       // todo
@@ -55,7 +41,7 @@ IWRAM_DATA u8 u8_03002bc4[12] = {};                       // todo
 IWRAM_DATA u16 u16_03002bd0 = 0;                          // 0x03002BD0, FUN_0807b564 が 0 に戻す
 IWRAM_DATA u8 u8_03002bd2[14] = {};                       // todo
 IWRAM_DATA struct Player* gPlayerPtr[4] = {};             // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
-IWRAM_DATA u16 u16_03002bf0 = 0;                          // 0x03002BF0, 0 以外かつ gSunlightOverride が 1 のとき Entity0809eb24_Update が unk_29 を立てる
+IWRAM_DATA u16 u16_03002bf0 = 0;                          // 0x03002BF0, 0 以外かつ gSunGaugeOverride が 1 のとき Entity0809eb24_Update が unk_29 を立てる
 IWRAM_DATA u8 u8_03002bf2[2] = {};                        // todo
 IWRAM_DATA u16 u16_03002bf4 = 0;                          // 0x03002BF4, Player_Destroy が 0 に戻す
 IWRAM_DATA u8 u8_03002bf6[2] = {};                        // todo
@@ -63,8 +49,8 @@ IWRAM_DATA u8 u8_03002bf6[2] = {};                        // todo
 IWRAM_DATA struct Entity5941* gEntity5941 = NULL;  // 0x03002BF8
 IWRAM_DATA struct EntityBD74* gEntityBD74 = NULL;  // 0x03002BFC
 
-IWRAM_DATA struct Entity0B50* gEntity0B50 = NULL;         // 0x03002C00
-IWRAM_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
+IWRAM_DATA struct ImmortalCoffin* gImmortalCoffin = NULL;  // 0x03002C00
+IWRAM_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};   // padding?
 
 IWRAM_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
 IWRAM_DATA u8 u8_03002c12[0x03002C14 - 0x03002C12] = {};  // todo
@@ -123,7 +109,7 @@ IWRAM_DATA u16* gHBlankEffectBuffer = NULL;  // 0x03003518, スキャンライ�
 
 IWRAM_DATA bool16 gEepromIdle = FALSE;                    // 0x0300351C, EEPROM_BeginAccess (EEPROM アクセス前) が 0、EEPROM_EndAccess (アクセス後) が 1 を書く
 IWRAM_DATA u8 u8_0300351e[0x03003520 - 0x0300351E] = {};  // todo
-IWRAM_DATA bool32 gTextRendererActive = FALSE;            // 0x03003520, Marquee の表示中フラグと対で立つ
+IWRAM_DATA bool32 gMarqueeActive = FALSE;                 // 0x03003520, Marquee の表示中フラグと対で立つ
 IWRAM_DATA u8 u8_03003524[0x03003530 - 0x03003524] = {};  // todo
 
 IWRAM_DATA u32 gSpriteListIdx = 0;  // 0x03003530, 描画リストの選択 (0: 通常, 1: スタートメニュー中)

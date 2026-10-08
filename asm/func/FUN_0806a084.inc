@@ -324,7 +324,7 @@ _0806A2F8:
 	cmp r0, #0
 	beq _0806A324
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0

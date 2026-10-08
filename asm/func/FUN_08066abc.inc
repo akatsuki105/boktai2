@@ -204,7 +204,7 @@ _08066C44:
 	bne _08066C58
 _08066C52:
 	adds r0, r4, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 _08066C58:
 	pop {r4, r5}
 	pop {r0}

@@ -126,7 +126,6 @@ void TextSlideshow_StepSkip(TextSlideshow* p) {
 
 // 今の step の処理を1フレーム進め, スキップ先が指定されていれば Start/A でスキップ段へ飛ばす
 s32 TextSlideshow_Update(TextSlideshow* p) {
-  // clang-format off
   static void (*const sTextSlideshowUpdates[5])(TextSlideshow*) = {
       TextSlideshow_StepFadeIn,
       TextSlideshow_StepHold,
@@ -134,7 +133,6 @@ s32 TextSlideshow_Update(TextSlideshow* p) {
       TextSlideshow_StepSkip,
       NULL,
   };  // 0x085AB550
-  // clang-format on
 
   void (*update)(TextSlideshow*) = sTextSlideshowUpdates[p->step];
   if (update != NULL) {

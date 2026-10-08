@@ -170,7 +170,7 @@ _080FA8DC:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080FA914
 	movs r1, #0xc0

@@ -28,9 +28,7 @@ Entity0623* Entity0623_Create(u32 id) {
   return p;
 }
 
-const u8 u8_ARRAY_085affa8[16] = {
-    0x9, 0x9, 0x9, 0x9, 0x6, 0x6, 0xB, 0xB, 0x6, 0x8, 0x9, 0x9, 0xA, 0xA, 0x6, 0x6,
-};  // 0x085affa8
+const u8 u8_ARRAY_085affa8[16] = {9, 9, 9, 9, 6, 6, 11, 11, 6, 8, 9, 9, 10, 10, 6, 6};  // 0x085affa8
 
 void FUN_0821ce18(Entity0623*);
 void FUN_0821ce7c(Entity0623*);

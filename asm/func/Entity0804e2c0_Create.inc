@@ -8,7 +8,7 @@
 	.align 2, 0
 _0804E2D0: .4byte 0x03002B58
 _0804E2D4:
-	bl SuspendSunlight
+	bl Taiyo_Disable
 	movs r4, #0xe3
 	lsls r4, r4, #2
 	adds r0, r4, #0

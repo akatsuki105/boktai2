@@ -115,7 +115,7 @@ NON_MATCH s32 MainSprite_Load(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, Sp
 s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, u8 playMode) {
   if (MainSprite_LoadPose(p, gfx, poseIdx) < 0) return -1;
 
-  *(u16*)&p->unk_2 = u16_030044b8;  // unk_2, unk_3 をまとめて書く (FUN_080609dc は 1 バイトずつ書く)
+  *(u16*)&p->unk_2 = u16_030044b8;  // unk_2, unk_3 をまとめて書く (Player_SetAnimFacing は 1 バイトずつ書く)
   p->playMode = playMode;
   return 0;
 }

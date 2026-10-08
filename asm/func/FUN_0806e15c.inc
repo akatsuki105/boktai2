@@ -73,7 +73,7 @@ _0806E1EA:
 	add r1, r8
 	strb r0, [r1]
 	mov r0, r8
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	mov r0, r8
 	movs r1, #6
 	bl Player_SetMoveDelta

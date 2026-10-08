@@ -3515,7 +3515,7 @@ _080A2B06:
 	adds r0, r4, #0
 	adds r0, #0x18
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _080A2B24:
 	pop {r4, r5}
 	pop {r0}
@@ -3769,7 +3769,7 @@ _080A2CF2:
 	adds r0, r4, #0
 	adds r0, #0x18
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _080A2D0E:
 	pop {r4, r5}
 	pop {r0}
@@ -4746,7 +4746,7 @@ _080A346A:
 	ldr r4, [r0]
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl EntityMsgBox_BeginWait
+	bl MsgQueue_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #7
 	beq _080A3498
@@ -4855,7 +4855,7 @@ _080A354A:
 	cmp r5, #0
 	bge _080A354A
 	adds r0, r7, #0
-	bl EntityMsgBus_Unregister
+	bl MsgQueue_Unregister
 	movs r0, #0
 	pop {r4, r5, r6, r7}
 	pop {r1}
@@ -5315,7 +5315,7 @@ _080A3882:
 	ldr r0, [sp, #0x14]
 	ldr r1, [sp]
 	movs r2, #0xa
-	bl EntityMsgBus_Register
+	bl MsgQueue_Register
 	movs r0, #0x44
 	bl VM_SeekToNamedArg
 	cmp r0, #0

@@ -16,7 +16,7 @@
 	cmp r4, #0
 	beq _080ED9BA
 	movs r7, #0
-	ldr r0, _080ED948 @ =FUN_080e48d0
+	ldr r0, _080ED948 @ =Enemy_ClearStateBegun
 	mov sl, r0
 	movs r1, #0x80
 	lsls r1, r1, #1
@@ -25,7 +25,7 @@
 	mov r8, r2
 _080ED926:
 	adds r0, r4, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080ED9B2
@@ -40,7 +40,7 @@ _080ED926:
 	b _080ED952
 	.align 2, 0
 _080ED944: .4byte 0x03002C60
-_080ED948: .4byte FUN_080e48d0
+_080ED948: .4byte Enemy_ClearStateBegun
 _080ED94C: .4byte 0x00000474
 _080ED950:
 	movs r0, #0

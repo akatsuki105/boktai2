@@ -2,6 +2,7 @@
 
 #include "global.h"
 #include "save.h"
+#include "solar.h"
 #include "vm.h"
 
 COMMON_DATA Clock gClock = {};  // 0x030047E0
@@ -482,6 +483,7 @@ u32 Time_GetMoonAge(void) { return gClock.moonAge; }
 
 u32 Time_GetMoonPhase(void) { return gClock.moonPhase; }
 
+// 0x5933
 u32 Time_GetMoonPhaseScripted(void) { return gClock.moonPhase; }
 
 // RTC の起動を5回まで待ち、駄目なら 2004/7/22 12:00 で初期化する
@@ -524,7 +526,7 @@ bool32 SetGameDateTimeIntoRTC(s32 year, s32 month, s32 day, s32 hour, s32 minute
   gRTC.second = ToBCD(second);
   gRTC.stat = 0;
   status = 0;
-  SuspendSunlight();
+  Taiyo_Disable();
   for (i = 0; i < 5; i++) {
     REG_IME = 0;
     ie = REG_IE;
@@ -539,7 +541,7 @@ bool32 SetGameDateTimeIntoRTC(s32 year, s32 month, s32 day, s32 hour, s32 minute
     }
     Delay(200);
   }
-  FUN_0824172c();
+  Taiyo_Enable();
   return status;
 }
 
@@ -549,7 +551,7 @@ static bool32 ReadRtcDate(void) {
   s32 i;
   u16 ie;
 
-  SuspendSunlight();
+  Taiyo_Disable();
   for (i = 0; i < 5; i++) {
     REG_IME = 0;
     ie = REG_IE;
@@ -564,7 +566,7 @@ static bool32 ReadRtcDate(void) {
     }
     Delay(200);
   }
-  FUN_0824172c();
+  Taiyo_Enable();
   if (status == 1) {
     if (((gRTC.year & 0xF0) > 0x9F) || ((gRTC.year & 0xF) > 9)) {
       status = -2;

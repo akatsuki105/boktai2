@@ -1,5 +1,5 @@
 	push {r4, r5, r6, lr}
-	ldr r4, _080FF6D4 @ =FUN_080e48d0
+	ldr r4, _080FF6D4 @ =Enemy_ClearStateBegun
 	movs r2, #0x10
 	ldr r3, _080FF6D8 @ =0x0000046D
 	adds r1, r0, r3
@@ -42,7 +42,7 @@
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080FF6D4: .4byte FUN_080e48d0
+_080FF6D4: .4byte Enemy_ClearStateBegun
 _080FF6D8: .4byte 0x0000046D
 _080FF6DC: .4byte 0x0000046B
 _080FF6E0: .4byte 0x0000046A

@@ -11,7 +11,7 @@
 	ldr r0, [r0]
 	mov sb, r0
 	adds r0, r6, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08101A06
@@ -79,7 +79,7 @@ _08101A58:
 	bl FUN_080e6304
 	adds r0, r6, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r4, #0xb7
 	lsls r4, r4, #3
 	adds r0, r6, r4
@@ -165,7 +165,7 @@ _08101A58:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	adds r2, r7, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _08101B68
 	ldr r0, _08101B64 @ =0xFFFFFDFF

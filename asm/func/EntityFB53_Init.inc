@@ -5,7 +5,7 @@
 	str r0, [r1]
 	ldr r0, _0804B994 @ =0x030000D8
 	str r4, [r0]
-	bl SuspendSunlight
+	bl Taiyo_Disable
 	movs r0, #0x6d
 	bl VM_SeekToNamedArg
 	cmp r0, #0

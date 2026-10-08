@@ -15,7 +15,7 @@
 	ldr r1, _0809A4F8 @ =FUN_0809a510
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0808a354
+	bl EntityCC28_SetState
 	b _0809A506
 	.align 2, 0
 _0809A4EC: .4byte 0x030047B8
@@ -26,7 +26,7 @@ _0809A4FC:
 	ldr r1, _0809A50C @ =FUN_0809a574
 	adds r0, r4, #0
 	movs r2, #1
-	bl FUN_0808a354
+	bl EntityCC28_SetState
 _0809A506:
 	pop {r4, r5}
 	pop {r0}

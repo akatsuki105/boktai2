@@ -430,7 +430,7 @@ _080790B0:
 	str r1, [r5, #0x20]
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	movs r2, #0xdf
 	lsls r2, r2, #2
 	adds r1, r5, r2
@@ -470,7 +470,7 @@ _08079104:
 	str r1, [r5, #0x20]
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	movs r4, #0x93
 	lsls r4, r4, #3
 	adds r0, r5, r4

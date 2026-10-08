@@ -1,3 +1,8 @@
 BasedOnStyle: Google
-ColumnLimit: 1000
+ColumnLimit: 280
 AlignArrayOfStructures: Left
+PackArguments:
+  BinPack: OnePerLine
+PackParameters:
+  BinPack: OnePerLine
+ReflowComments: Never

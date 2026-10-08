@@ -47,7 +47,7 @@ _080D7FCE:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080cc348
+	bl PlayerLink_SetAction
 	ldr r2, _080D8050 @ =0x0000095E
 	adds r1, r4, r2
 	movs r0, #0x91

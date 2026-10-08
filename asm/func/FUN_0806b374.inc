@@ -16,7 +16,7 @@
 _0806B396:
 	adds r0, r4, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r0, _0806B3BC @ =0x0000037E
 	adds r5, r4, r0
 	ldrh r0, [r5]
@@ -36,7 +36,7 @@ _0806B3BC: .4byte 0x0000037E
 _0806B3C0:
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldrh r0, [r5]
 	subs r0, #5
 	lsls r0, r0, #0x10
@@ -45,11 +45,11 @@ _0806B3C0:
 	bhi _0806B3DC
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _0806B3DC:
 	adds r0, r4, #0
 	movs r1, #4
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r0, _0806B430 @ =0x0000095E
 	adds r1, r4, r0
 	ldr r0, _0806B434 @ =0x00000127
@@ -70,7 +70,7 @@ _0806B3DC:
 	bl Player_SetMoveDelta
 _0806B40A:
 	adds r0, r4, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r4, r1

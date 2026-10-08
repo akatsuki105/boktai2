@@ -26,7 +26,15 @@ void FUN_080ca020(unknown*);
 void FUN_080ca024(unknown*);
 
 void (*const PTR_ARRAY_085ad100[9])(unknown*) = {
-    FUN_080ca004, FUN_080ca008, FUN_080ca00c, FUN_080ca010, FUN_080ca014, FUN_080ca018, FUN_080ca01c, FUN_080ca020, FUN_080ca024,
+    FUN_080ca004,
+    FUN_080ca008,
+    FUN_080ca00c,
+    FUN_080ca010,
+    FUN_080ca014,
+    FUN_080ca018,
+    FUN_080ca01c,
+    FUN_080ca020,
+    FUN_080ca024,
 };  // 0x085AD100
 
 void FUN_080ca028(unknown*);

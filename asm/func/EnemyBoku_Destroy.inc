@@ -37,7 +37,7 @@ _08101C6E:
 	beq _08101C7A
 	adds r0, r4, #0
 	adds r0, #0x48
-	bl EntityMsgBus_Unregister
+	bl MsgQueue_Unregister
 _08101C7A:
 	ldr r1, _08101CD4 @ =0x0000044C
 	adds r5, r4, r1

@@ -42,8 +42,6 @@ typedef void unknown;  // まだ型が不明なときは unknown* で一応 void
 // それらをわかりやすく明示するために missing 型を用意
 typedef u32 missing;
 
-typedef s32 Sunlevel;  // 0..10, (digital) sunlight level
-
 typedef struct {
   s16 x;
   s16 y;  // 高さ

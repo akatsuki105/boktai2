@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "save.h"
+#include "solar.h"
 #include "text.h"
 #include "vm.h"
 
@@ -49,7 +50,16 @@ void FUN_0804b83c(EntityFB53*);
 void FUN_0804b870(EntityFB53*);
 
 void (*const PTR_ARRAY_085ab5b8[10])(EntityFB53*) = {
-    FUN_0804b474, FUN_0804b530, FUN_0804b5f0, FUN_0804b65c, FUN_0804b6bc, FUN_0804b71c, FUN_0804b774, FUN_0804b7d0, FUN_0804b83c, FUN_0804b870,
+    FUN_0804b474,
+    FUN_0804b530,
+    FUN_0804b5f0,
+    FUN_0804b65c,
+    FUN_0804b6bc,
+    FUN_0804b71c,
+    FUN_0804b774,
+    FUN_0804b7d0,
+    FUN_0804b83c,
+    FUN_0804b870,
 };  // 0x085AB5B8
 
 s32 EntityFB53_IsActive(void) {
@@ -128,7 +138,7 @@ NAKED void FUN_0804b870(EntityFB53* p) { INCFUNC("asm/func/FUN_0804b870.inc"); }
 NAKED s32 EntityFB53_Update(EntityFB53* p) { INCFUNC("asm/func/EntityFB53_Update.inc"); }
 
 s32 EntityFB53_Destroy(EntityFB53* p) {
-  FUN_0824172c();
+  Taiyo_Enable();
   if (p->panelID >= 0) {
     TextPanel_Hide(p->panelID);
     TextPanel_Destroy(p->panelID);

@@ -52,7 +52,7 @@ NON_MATCH void ObjPlttBlender_UpdateSlot(ObjPlttBlender* p, ObjPlttBlend* slot) 
     t = 0x40;
   }
   inv = 0x40 - t;
-  for (i = 15; i >= 0; i--) {
+  for (i = 0; i < 16; i++) {
     s32 ar = *srcA & 0x1F;
     s32 ag = (*srcA >> 5) & 0x1F;
     s32 ab = (*srcA >> 10) & 0x1F;
@@ -117,11 +117,11 @@ NON_MATCH s32 ObjPlttBlender_Init(ObjPlttBlender* p, u16 val) {
 
   if (VM_SeekToNamedArg('o')) {
     i = 0;
-    while (i <= 5 && VM_GetPC() != NULL) {
+    while (i < 6 && VM_GetPC() != NULL) {
       ofs[i] = VM_GetValue();
       i++;
     }
-    for (; i <= 5; i++) {
+    for (; i < 6; i++) {
       ofs[i] = 0;
     }
   } else {
@@ -135,7 +135,7 @@ NON_MATCH s32 ObjPlttBlender_Init(ObjPlttBlender* p, u16 val) {
 
   if (VM_SeekToNamedArg('p')) {
     i = 0;
-    while (i <= 5 && VM_GetPC() != NULL) {
+    while (i < 6 && VM_GetPC() != NULL) {
       ObjPlttBlend* slot = &p->slots[i];
 
       slot->id = VM_GetValue();

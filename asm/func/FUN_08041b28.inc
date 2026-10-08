@@ -69,7 +69,7 @@ _08041B96:
 	bls _08041B96
 _08041BBA:
 	adds r0, r5, #0
-	bl EntityMsg_Send
+	bl MsgPacket_Send
 	ldr r1, [r6, #0x28]
 	lsls r1, r1, #2
 	adds r1, r7, r1

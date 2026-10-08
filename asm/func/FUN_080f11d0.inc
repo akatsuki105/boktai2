@@ -63,7 +63,7 @@ _080F1222:
 	beq _080F12B0
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #0xc
 	ldr r2, _080F12A8 @ =0x0000046A
 	adds r0, r5, r2

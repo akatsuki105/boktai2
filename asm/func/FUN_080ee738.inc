@@ -29,7 +29,7 @@
 	str r0, [sp]
 	movs r2, #1
 	strb r2, [r0]
-	ldr r1, _080EE984 @ =FUN_080e48d0
+	ldr r1, _080EE984 @ =Enemy_ClearStateBegun
 	movs r0, #0x10
 	ldr r3, _080EE988 @ =0x0000046D
 	adds r3, r7, r3
@@ -203,7 +203,7 @@
 	ldr r1, _080EE9C0 @ =0x08251F68
 	adds r0, r7, #0
 	ldr r2, _080EE9C4 @ =0x00000982
-	bl FUN_080e6768
+	bl Enemy_ClearPendingState
 	movs r3, #0xa8
 	lsls r3, r3, #3
 	adds r0, r7, r3
@@ -281,7 +281,7 @@ _080EE974: .4byte 0x00000469
 _080EE978: .4byte 0x0000046A
 _080EE97C: .4byte 0x00000484
 _080EE980: .4byte 0x0000046C
-_080EE984: .4byte FUN_080e48d0
+_080EE984: .4byte Enemy_ClearStateBegun
 _080EE988: .4byte 0x0000046D
 _080EE98C: .4byte 0x00000553
 _080EE990: .4byte 0x0000055C

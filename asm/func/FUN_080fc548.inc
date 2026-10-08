@@ -19,7 +19,7 @@ _080FC566:
 	beq _080FC57A
 	adds r0, r4, #0
 	movs r1, #0xc
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r2, _080FC624 @ =0x0000046E
 	adds r1, r4, r2
 	movs r0, #0
@@ -62,7 +62,7 @@ _080FC58C:
 	bl FUN_080e6304
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #0xb7
 	lsls r1, r1, #3
 	adds r0, r4, r1
@@ -128,7 +128,7 @@ _080FC63C:
 	bl FUN_080e6304
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #0xb4
 	lsls r1, r1, #3
 	adds r0, r4, r1

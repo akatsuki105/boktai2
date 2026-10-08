@@ -16,7 +16,7 @@ _080F1E28:
 _080F1E2A:
 	cmp r0, #0
 	beq _080F1E56
-	ldr r4, _080F1E68 @ =FUN_080e48d0
+	ldr r4, _080F1E68 @ =Enemy_ClearStateBegun
 	movs r3, #0x10
 	ldr r0, _080F1E6C @ =0x0000046D
 	adds r1, r5, r0
@@ -46,7 +46,7 @@ _080F1E56:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080F1E68: .4byte FUN_080e48d0
+_080F1E68: .4byte Enemy_ClearStateBegun
 _080F1E6C: .4byte 0x0000046D
 _080F1E70: .4byte 0x0000046B
 _080F1E74: .4byte 0x00000484

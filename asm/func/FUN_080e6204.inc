@@ -90,7 +90,7 @@ _080E6298:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	beq _080E62DC
 	adds r0, r4, #0

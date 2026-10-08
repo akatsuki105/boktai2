@@ -442,7 +442,7 @@ NON_MATCH s32 VM_Sub883A(void) {
   Entity83B2Data* data;
   s32 i;
   s32 n;
-  u16* arg;
+  s32 j;
   s32 scriptID;
   u32 v;
   AuxSprite* sprite;
@@ -468,20 +468,16 @@ NON_MATCH s32 VM_Sub883A(void) {
       scriptID = VM_GetNamedArgValue('D', 0xE6);
       data->unk_10 = scriptID * scriptID;
       if (VM_SeekToNamedArg('a')) {
-        arg = data->unk_14;
-        do {
+        for (j = 0; j < 4; j++) {
           if (VM_GetPC() != NULL) {
             v = VM_GetValue();
           }
-          *arg = v;
-          arg++;
-        } while (arg <= &data->unk_14[3]);
+          data->unk_14[j] = v;
+        }
       } else {
-        arg = &data->unk_14[3];
-        do {
-          *arg = 0;
-          arg--;
-        } while (arg >= data->unk_14);
+        for (j = 0; j < 4; j++) {
+          data->unk_14[j] = 0;
+        }
       }
       if (VM_SeekToNamedArg('p')) {
         pos.x = VM_GetValue();

@@ -3,8 +3,8 @@
 import { Command } from "@cliffy/command";
 import * as path from "@std/path";
 
-// e.g. .claude/skills/decomp-func/scripts/census.ts src/enemy_080ef84c.c
-// e.g. .claude/skills/decomp-func/scripts/census.ts src/enemy_manager.c src/enemy_080ef84c.c
+// e.g. .claude/skills/decomp-func/scripts/census.ts src/enedefault.c
+// e.g. .claude/skills/decomp-func/scripts/census.ts src/enemy_manager.c src/enedefault.c
 // e.g. .claude/skills/decomp-func/scripts/census.ts src/**/*.c
 const main = () => {
   new Command()

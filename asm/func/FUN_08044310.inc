@@ -126,7 +126,7 @@ _08044408:
 	adds r0, r4, r2
 	mov r1, sb
 	movs r2, #5
-	bl EntityMsgBus_Register
+	bl MsgQueue_Register
 	adds r0, r4, #0
 	adds r0, #0x61
 	strb r6, [r0]

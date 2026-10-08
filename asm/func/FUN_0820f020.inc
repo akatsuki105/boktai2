@@ -119,7 +119,7 @@ _0820F0E8:
 	movs r0, #5
 	str r0, [sp, #8]
 	adds r0, r7, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	adds r0, r7, #0
 	bl FUN_08055c04
 _0820F126:

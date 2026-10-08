@@ -107,7 +107,7 @@ _080692CC:
 	adds r1, r5, r7
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	movs r1, #0xe9
 	lsls r1, r1, #2
 	adds r0, r5, r1

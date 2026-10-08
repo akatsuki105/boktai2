@@ -14,7 +14,7 @@ _08229FA2:
 	ldr r0, [r0]
 	str r0, [r1]
 	ldr r1, _08229FFC @ =0x03002CEC
-	ldr r0, _0822A000 @ =0x03003520
+	ldr r0, _0822A000 @ =gMarqueeActive
 	ldr r0, [r0]
 	str r0, [r1]
 	ldr r1, _0822A004 @ =0x04000010
@@ -52,7 +52,7 @@ _08229FF0: .4byte 0x0300350C
 _08229FF4: .4byte 0x03003508
 _08229FF8: .4byte 0x03002CE8
 _08229FFC: .4byte 0x03002CEC
-_0822A000: .4byte 0x03003520
+_0822A000: .4byte gMarqueeActive
 _0822A004: .4byte 0x04000010
 _0822A008: .4byte 0x03003EC0
 _0822A00C: .4byte 0x03003E8C

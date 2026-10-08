@@ -193,7 +193,7 @@ _080E1A84:
 	strb r3, [r6]
 _080E1A86:
 	adds r0, r5, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080E1A94
@@ -443,7 +443,7 @@ _080E1C38:
 	cmp r0, r1
 	bgt _080E1CF8
 	adds r0, r5, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	lsrs r4, r0, #0x18
 	cmp r4, #0

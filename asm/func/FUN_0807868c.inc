@@ -197,7 +197,7 @@ _080787F2:
 	movs r4, #0
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	movs r1, #0xdf
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -213,7 +213,7 @@ _0807881C:
 	adds r1, r5, r2
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	movs r6, #0xdf
 	lsls r6, r6, #2
 	adds r0, r5, r6

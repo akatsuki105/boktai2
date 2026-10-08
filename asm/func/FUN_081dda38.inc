@@ -29,7 +29,7 @@ _081DDA60:
 	ldrb r0, [r1]
 _081DDA70:
 	adds r4, r0, #0
-	bl GetSunLevel
+	bl Taiyo_LxToGauge
 	adds r1, r5, #0
 	adds r1, #0x60
 	adds r1, r1, r6

@@ -134,7 +134,7 @@ _081A4DCE:
 	movs r0, #2
 	strb r0, [r1, #7]
 _081A4DD4:
-	ldr r2, _081A4E70 @ =FUN_080e48d0
+	ldr r2, _081A4E70 @ =Enemy_ClearStateBegun
 	movs r1, #0x10
 	ldr r3, _081A4E74 @ =0x0000046D
 	adds r0, r5, r3
@@ -214,7 +214,7 @@ _081A4E62:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_081A4E70: .4byte FUN_080e48d0
+_081A4E70: .4byte Enemy_ClearStateBegun
 _081A4E74: .4byte 0x0000046D
 _081A4E78: .4byte 0x0000046B
 _081A4E7C: .4byte 0x0000046A

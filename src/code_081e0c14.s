@@ -922,7 +922,7 @@ _081E2072:
 	adds r0, r5, #0
 	bl _call_via_r1
 _081E20A0:
-	bl FUN_0824172c
+	bl Taiyo_Enable
 	ldr r0, _081E20D4 @ =0x0300481C
 	movs r1, #0
 	str r1, [r0]
@@ -966,7 +966,7 @@ _081E20E8:
 FUN_081e20ec: @ 0x081E20EC
 	push {r4, lr}
 	adds r4, r0, #0
-	bl SuspendSunlight
+	bl Taiyo_Disable
 	ldr r1, _081E210C @ =0x0300481C
 	movs r0, #1
 	str r0, [r1]
@@ -4617,7 +4617,7 @@ _081E3CD0: .4byte 0x00001610
 	thumb_func_start FUN_081e3cd4
 FUN_081e3cd4: @ 0x081E3CD4
 	push {lr}
-	bl FUN_0824172c
+	bl Taiyo_Enable
 	ldr r1, _081E3CE4 @ =0x0300481C
 	movs r0, #0
 	str r0, [r1]
@@ -13328,7 +13328,7 @@ FUN_081e8468: @ 0x081E8468
 	bl ClearBGTilemapBuffer
 	movs r0, #3
 	bl ClearBGTilemapBuffer
-	bl FUN_0824172c
+	bl Taiyo_Enable
 	ldr r0, _081E84B4 @ =0x0300481C
 	str r5, [r0]
 	ldr r0, _081E84B8 @ =0x00001626

@@ -850,7 +850,7 @@ _080F1932:
 	adds r0, r4, #0
 	adds r1, r5, #0
 	mov r2, sp
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080F196C
 	movs r1, #0xc0

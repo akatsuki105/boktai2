@@ -40,7 +40,7 @@ _08084384: .4byte 0x085ABF54
 _08084388:
 	adds r0, r4, #0
 	movs r1, #8
-	bl FUN_08080ec8
+	bl PlayerLink_SetFlag35a
 	movs r1, #0x93
 	lsls r1, r1, #3
 	adds r0, r4, r1

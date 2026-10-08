@@ -61,7 +61,7 @@ _080F24F2:
 _080F2500:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #0xb1
 	lsls r1, r1, #3
 	adds r0, r5, r1

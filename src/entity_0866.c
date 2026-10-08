@@ -42,7 +42,6 @@ void FUN_08009c44(Entity0866*, Entity0866Elem*);
 void FUN_08009e28(Entity0866*, Entity0866Elem*);
 void FUN_08009e54(Entity0866*, Entity0866Elem*);
 
-// clang-format off
 void (*const PTR_ARRAY_085aa6b8[6])(Entity0866*, Entity0866Elem*) = {
     FUN_08009c28,
     FUN_08009e28,
@@ -51,7 +50,6 @@ void (*const PTR_ARRAY_085aa6b8[6])(Entity0866*, Entity0866Elem*) = {
     FUN_08009e28,
     FUN_08009e54,
 };  // 0x085AA6B8
-// clang-format on
 
 // --------------------------------------------
 

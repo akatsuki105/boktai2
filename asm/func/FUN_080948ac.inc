@@ -72,7 +72,7 @@
 	ldr r1, _08094984 @ =FUN_08094070
 	adds r0, r4, #0
 	movs r2, #0
-	bl FUN_0808a354
+	bl EntityCC28_SetState
 	add sp, #4
 	pop {r4}
 	pop {r0}

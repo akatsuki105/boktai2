@@ -8,7 +8,7 @@
 	adds r5, #5
 	add r1, sp, #4
 	adds r2, r5, #0
-	bl FUN_080e5d44
+	bl Enemy_SetAnimFacing
 	lsls r4, r4, #2
 	adds r4, r6, r4
 	movs r0, #0x98

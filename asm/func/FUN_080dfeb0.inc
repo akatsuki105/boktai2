@@ -12,7 +12,7 @@
 	ldr r5, [r0]
 	cmp r5, #0
 	bne _080DFED8
-	bl FUN_080e01bc
+	bl Entity080e01bc_Create
 	adds r5, r0, #0
 	cmp r5, #0
 	bne _080DFED8

@@ -174,7 +174,7 @@ _0806EC7C:
 	bls _0806ECC6
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 _0806ECC6:
 	adds r0, r6, #0
 	muls r0, r6, r0
@@ -397,7 +397,7 @@ _0806EE6C:
 	movs r0, #0
 	str r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	ldr r1, _0806EE94 @ =0x00000193
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -469,7 +469,7 @@ _0806EEE8:
 	bne _0806EF30
 	str r0, [r4]
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 _0806EF18:
 	adds r0, r5, #0
 	movs r1, #0xb
@@ -614,7 +614,7 @@ _0806F034: .4byte 0x03002B88
 _0806F038:
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r4, _0806F064 @ =0x03002BA8
 	ldr r1, [r4]
 	ldr r0, [r1]
@@ -647,7 +647,7 @@ _0806F06C:
 	movs r0, #0x20
 	strh r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	ldr r1, _0806F0B4 @ =0x00000193
 	adds r0, r5, #0
 	movs r2, #0x40
@@ -675,7 +675,7 @@ _0806F0B8: .4byte 0x0000037E
 _0806F0BC:
 	adds r0, r5, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r3, _0806F120 @ =0x0000037E
 	adds r0, r5, r3
 	ldrh r0, [r0]
@@ -693,7 +693,7 @@ _0806F0BC:
 	strh r0, [r1]
 _0806F0E2:
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	ldr r1, _0806F128 @ =0x00000193
 	adds r0, r5, #0
 	movs r2, #0x40

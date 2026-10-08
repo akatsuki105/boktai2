@@ -187,7 +187,7 @@ _080F862E:
 	lsls r3, r3, #3
 	adds r4, r5, r3
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	mov r1, r8
 	ldrh r0, [r1]
 	bics r0, r6
@@ -335,7 +335,7 @@ _080F8754:
 	adds r0, r6, #0
 	adds r1, r7, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080F879C
 	ldr r0, _080F8798 @ =0xFFFFFDFF

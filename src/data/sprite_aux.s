@@ -1519,7 +1519,7 @@ gAuxSpritesFile0: @ 0x08A2291C
 		.incbin "data/actor_sprites/7BE2.4bpp"                 @ 0x08B58C70, ActorID: 0x7BE2, PlttID: 83
 		.incbin "data/actor_sprites/2EC0.4bpp"                 @ 0x08B5D490, ActorID: 0x2EC0, PlttID: 594, 遺跡ステージの4人の燭台の床パネル?
 		.incbin "data/actor_sprites/bat.4bpp"                  @ 0x08B5D910, ActorID: 0xDA6D, PlttID: 610
-		.incbin "data/actor_sprites/354D.4bpp"                 @ 0x08B5E330, ActorID: 0x354D, PlttID: 627
+		.incbin "data/actor_sprites/354D.4bpp"                 @ 0x08B5E330, ActorID: 0x354D, PlttID: 627, 何かのエフェクト
 		.incbin "data/actor_sprites/shaian_ax.4bpp"            @ 0x08B5E830, ActorID: 0x39A3, PlttID: 626
 		.incbin "data/actor_sprites/level_up_indicator.4bpp"   @ 0x08B5E950, ActorID: 0x1C1D, PlttID: 44
 		.incbin "data/actor_sprites/gameover.4bpp"             @ 0x08B5EE50, ActorID: 0x654B, PlttID: 634

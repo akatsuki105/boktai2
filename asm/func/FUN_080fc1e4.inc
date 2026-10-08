@@ -47,7 +47,7 @@ _080FC23A:
 	ble _080FC27C
 	adds r0, r4, #0
 	movs r1, #9
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r3, _080FC270 @ =FUN_080fc28c
 	movs r2, #0xd
 	ldr r0, _080FC274 @ =0x0000046D

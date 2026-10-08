@@ -13,7 +13,7 @@
 	lsls r1, r1, #3
 	adds r4, r5, r1
 	ldr r0, [r4]
-	bl FUN_080f8e3c
+	bl EnemyTargetManager_Release
 	ldrh r0, [r6]
 	bics r0, r7
 	movs r1, #0
@@ -235,7 +235,7 @@ _080F67C4:
 	ldr r2, _080F67F4 @ =0x00000189
 	adds r1, r5, r2
 	ldrb r1, [r1]
-	bl AddWeaponExpByMask
+	bl Player_AddWeaponExp
 _080F67E2:
 	movs r1, #0x80
 	ldrh r0, [r6]

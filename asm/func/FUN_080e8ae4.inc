@@ -73,7 +73,7 @@ _080E8B5A:
 	ldr r0, [r0]
 	adds r1, r3, #0
 	adds r2, r4, #0
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	beq _080E8B94
 	ldr r0, [r4]
@@ -507,7 +507,7 @@ _080E8ECA:
 	ldr r0, [r0]
 	ldr r1, [sp, #0x3c]
 	mov r2, sl
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	beq _080E8EF4
 	b _080E8DCC

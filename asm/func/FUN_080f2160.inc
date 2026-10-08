@@ -54,8 +54,8 @@ _080F21C0:
 	adds r0, r5, #0
 	adds r0, #0x48
 	movs r1, #1
-	bl EntityMsgBox_EndWait
-	ldr r2, _080F2234 @ =FUN_080e48d0
+	bl MsgQueue_EndWait
+	ldr r2, _080F2234 @ =Enemy_ClearStateBegun
 	movs r1, #0x10
 	ldr r3, _080F2238 @ =0x0000046D
 	adds r0, r5, r3
@@ -103,7 +103,7 @@ _080F21C0:
 	b _080F224A
 	.align 2, 0
 _080F2230: .4byte 0x0000046B
-_080F2234: .4byte FUN_080e48d0
+_080F2234: .4byte Enemy_ClearStateBegun
 _080F2238: .4byte 0x0000046D
 _080F223C: .4byte 0x00000469
 _080F2240:

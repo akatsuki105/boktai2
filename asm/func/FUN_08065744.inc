@@ -209,7 +209,7 @@ _080658B6:
 	adds r0, r5, r1
 	adds r1, r6, #0
 	movs r2, #2
-	bl FUN_080f8c58
+	bl EnemyTargetManager_Add
 	ldr r2, _08065920 @ =0x03002B68
 	adds r1, r5, #0
 	adds r1, #0x28

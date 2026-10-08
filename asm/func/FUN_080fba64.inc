@@ -92,7 +92,7 @@ _080FBAF8:
 	beq _080FBB34
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #3
 	movs r3, #0x8d
 	lsls r3, r3, #3
@@ -106,7 +106,7 @@ _080FBB30: .4byte 0x00000469
 _080FBB34:
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	b _080FC0A0
 _080FBB3E:
 	cmp r2, #1
@@ -726,7 +726,7 @@ _080FBFDA:
 	strb r0, [r5, #5]
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	movs r1, #0x80
 	lsls r1, r1, #3
 	mov r2, sb

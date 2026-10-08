@@ -46,7 +46,7 @@ _08041442:
 	ldr r1, [sp, #0x24]
 	str r1, [sp, #8]
 	adds r1, r7, #0
-	bl FUN_08055b5c
+	bl SpriteHolder_SetAnim
 	add sp, #0xc
 	pop {r4, r5, r6, r7}
 	pop {r1}

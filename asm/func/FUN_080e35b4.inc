@@ -9,7 +9,7 @@
 	movs r0, #0
 	str r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080E35D6

@@ -47,9 +47,12 @@ static_assert(sizeof(SpiritBugsManager) == 2012);
 
 IWRAM_DATA SpiritBugsManager* gSpiritBugsManager = NULL;  // 0x03000044
 
+// clang-format off
 const u16 u16_ARRAY_085aa6d0[24] = {
-    0x4, 0x0, 0x5, 0x0, 0x6, 0x0, 0x6, 0x0, 0x5, 0x0, 0x4, 0x0, 0x9, 0x0, 0xA, 0x0, 0xB, 0x0, 0xB, 0x0, 0xA, 0x0, 0x9, 0x0,
+    0x4, 0x0, 0x5, 0x0, 0x6, 0x0, 0x6, 0x0, 0x5, 0x0, 0x4, 0x0,
+    0x9, 0x0, 0xA, 0x0, 0xB, 0x0, 0xB, 0x0, 0xA, 0x0, 0x9, 0x0,
 };
+// clang-format on
 
 const u32 u32_ARRAY_085aa700[3] = {10, 10, 120};
 
@@ -88,7 +91,6 @@ void Entity0800a89c_UpdateCollectedBug(SpiritBugsManager* p, SpiritBugSwarm* swa
 void FUN_0800b404(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox);
 void FUN_0800ba78(SpiritBugsManager* p, SpiritBugSwarm* swarm, s32 bugIdx, u32 frameBit, u32 framePhase, void* screenBox);
 
-// clang-format off
 const SpiritBugHandler PTR_ARRAY_085aa730[15] = {
     FUN_0800b064,
     FUN_0800b068,
@@ -106,7 +108,6 @@ const SpiritBugHandler PTR_ARRAY_085aa730[15] = {
     FUN_0800be38,
     Entity0800a89c_UpdateCollectedBug,
 };  // 0x085AA730
-// clang-format on
 
 // --------------------------------------------
 

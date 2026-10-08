@@ -29,7 +29,7 @@ _08022232:
 	ldr r4, [r0]
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl EntityMsgBox_BeginWait
+	bl MsgQueue_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #1
 	beq _08022276

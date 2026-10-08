@@ -237,7 +237,7 @@ _080FC31A:
 	ldr r1, _080FC4E0 @ =0x08251FA8
 	adds r0, r6, #0
 	ldr r2, _080FC4E4 @ =0x00000982
-	bl FUN_080e6768
+	bl Enemy_ClearPendingState
 	movs r2, #0xa8
 	lsls r2, r2, #3
 	adds r0, r6, r2

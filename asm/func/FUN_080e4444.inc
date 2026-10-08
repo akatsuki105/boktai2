@@ -474,7 +474,7 @@ _080E47AE:
 	adds r1, #8
 	ldr r2, [sp, #0x10]
 	adds r2, #8
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	beq _080E4898
 _080E47C8:
@@ -585,7 +585,7 @@ _080E487E:
 	adds r1, #8
 	ldr r2, [sp, #0x10]
 	adds r2, #8
-	bl FUN_0823599c
+	bl Map_IsPosInAgentIsland
 	cmp r0, #0
 	bne _080E48A0
 _080E4898:

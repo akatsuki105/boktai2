@@ -37,12 +37,12 @@
 	ldr r1, _080FFB78 @ =0x08251FC0
 	adds r0, r5, #0
 	movs r2, #0x93
-	bl FUN_080e6768
+	bl Enemy_ClearPendingState
 	adds r0, r5, #0
 	bl FUN_080e6204
 	adds r0, r5, #0
 	movs r1, #0
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r0, [r5, #0x44]
 	adds r5, r0, #0
 	adds r4, r5, #0

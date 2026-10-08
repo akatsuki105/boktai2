@@ -52,7 +52,20 @@ void FUN_08042414(unknown*, unknown*);
 void FUN_08042638(unknown*, unknown*);
 
 void (*const PTR_ARRAY_085ab378[14])(unknown*, unknown*) = {
-    NULL, FUN_08042178, FUN_080421bc, FUN_08042200, FUN_0804234c, FUN_08042414, FUN_08042638, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+    NULL,
+    FUN_08042178,
+    FUN_080421bc,
+    FUN_08042200,
+    FUN_0804234c,
+    FUN_08042414,
+    FUN_08042638,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
 };  // 0x085AB378
 
 void FUN_0804454c(unknown*, unknown*);
@@ -67,7 +80,16 @@ void FUN_080446b4(unknown*, unknown*);
 void FUN_080446d8(unknown*, unknown*);
 
 void (*const PTR_ARRAY_085ab3b0[10])(unknown*, unknown*) = {
-    FUN_0804454c, FUN_08044570, FUN_080445a4, FUN_080445d8, FUN_080445fc, FUN_08044634, FUN_08044658, FUN_08044690, FUN_080446b4, FUN_080446d8,
+    FUN_0804454c,
+    FUN_08044570,
+    FUN_080445a4,
+    FUN_080445d8,
+    FUN_080445fc,
+    FUN_08044634,
+    FUN_08044658,
+    FUN_08044690,
+    FUN_080446b4,
+    FUN_080446d8,
 };  // 0x085AB3B0
 
 void FUN_0804473c(unknown*, unknown*);
@@ -82,7 +104,17 @@ void FUN_08044dd8(unknown*, unknown*);
 void FUN_08044e6c(unknown*, unknown*);
 
 void (*const PTR_ARRAY_085ab3d8[11])(unknown*, unknown*) = {
-    NULL, FUN_0804473c, FUN_0804478c, FUN_080448c8, FUN_0804494c, FUN_080449c0, FUN_08044a54, FUN_08044a90, FUN_08044d9c, FUN_08044dd8, FUN_08044e6c,
+    NULL,
+    FUN_0804473c,
+    FUN_0804478c,
+    FUN_080448c8,
+    FUN_0804494c,
+    FUN_080449c0,
+    FUN_08044a54,
+    FUN_08044a90,
+    FUN_08044d9c,
+    FUN_08044dd8,
+    FUN_08044e6c,
 };  // 0x085AB3D8
 
 const u16 u16_ARRAY_085ab404[8] = {0, 16, 0, 0, 0, 0, 0, 0};  // 0x085AB404

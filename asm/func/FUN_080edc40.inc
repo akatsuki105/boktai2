@@ -15,7 +15,7 @@
 _080EDC5C:
 	adds r0, r4, #0
 	str r3, [sp, #8]
-	bl FUN_080e8a60
+	bl Enemy_IsDead
 	lsls r0, r0, #0x18
 	ldr r3, [sp, #8]
 	cmp r0, #0

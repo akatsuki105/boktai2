@@ -30,7 +30,7 @@ _080B2378:
 	ldr r4, [r0]
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl EntityMsgBox_BeginWait
+	bl MsgQueue_BeginWait
 	ldrb r0, [r4, #6]
 	cmp r0, #0
 	beq _080B23B0
@@ -48,7 +48,7 @@ _080B23B0:
 	strb r1, [r0]
 	adds r0, r5, #0
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 	b _080B23D8
 	.align 2, 0
 _080B23C4: .4byte 0x00000C11
@@ -58,7 +58,7 @@ _080B23C8:
 	bl EntityCBB0_SetState
 	adds r0, r5, #0
 	movs r1, #1
-	bl EntityMsgBox_EndWait
+	bl MsgQueue_EndWait
 _080B23D8:
 	adds r6, #1
 	mov r3, r8

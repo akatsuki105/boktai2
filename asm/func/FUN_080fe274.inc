@@ -28,7 +28,7 @@ _080FE2A6:
 	beq _080FE33E
 	adds r0, r7, #0
 	movs r1, #0xa
-	bl FUN_080ef86c
+	bl Enemy_PlayAnim
 	ldr r4, _080FE3D0 @ =0x0000046E
 	adds r0, r7, r4
 	movs r4, #0
@@ -501,7 +501,7 @@ _080FE666:
 	movs r1, #1
 	orrs r0, r1
 	str r0, [r2]
-	ldr r4, _080FE6F4 @ =FUN_080e48d0
+	ldr r4, _080FE6F4 @ =Enemy_ClearStateBegun
 	movs r2, #0x10
 	ldr r6, _080FE6F8 @ =0x0000046D
 	adds r0, r7, r6
@@ -551,7 +551,7 @@ _080FE6DE:
 	bx r0
 	.align 2, 0
 _080FE6F0: .4byte 0x030046A0
-_080FE6F4: .4byte FUN_080e48d0
+_080FE6F4: .4byte Enemy_ClearStateBegun
 _080FE6F8: .4byte 0x0000046D
 _080FE6FC: .4byte 0x00000469
 _080FE700: .4byte 0x00000484

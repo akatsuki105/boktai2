@@ -66,7 +66,7 @@ _0806865C:
 	adds r4, r5, r2
 	strb r0, [r4]
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -168,7 +168,7 @@ _08068766:
 	adds r0, r5, r2
 	strb r1, [r0]
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -373,7 +373,7 @@ _08068910:
 	movs r2, #0
 	bl Player_SetAction
 	adds r0, r5, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 _0806893C:
 	pop {r4, r5, r6, r7}
 	pop {r0}

@@ -1,7 +1,7 @@
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r1, #8
-	bl FUN_08060c40
+	bl Player_SetFlag35a
 	ldr r1, _08069F7C @ =0x0000037D
 	adds r0, r4, r1
 	ldrb r3, [r0]
@@ -101,7 +101,7 @@ _0806A01E:
 	cmp r0, #0
 	beq _0806A04A
 	adds r0, r4, #0
-	bl FUN_080609dc
+	bl Player_SetAnimFacing
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
