@@ -205,4 +205,15 @@ s32 Entity744F_Destroy(Entity744F* p) {
 
 NAKED s32 Entity744F_Init(Entity744F* p) { INCFUNC("asm/func/Entity744F_Init.inc"); }
 
-NAKED Entity744F* Entity744F_Create(void) { INCFUNC("asm/func/Entity744F_Create.inc"); }
+Entity744F* Entity744F_Create(void) {
+  Entity744F* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity744F));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity744F_Update, Entity744F_Destroy);
+    if (Entity744F_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
