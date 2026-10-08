@@ -8,8 +8,20 @@ typedef struct {
 } EnemyBat;
 static_assert(sizeof(EnemyBat) == 1728);
 
+s32 EnemyBat_Destroy(EnemyBat*);
+
 INCASM("asm/bat.inc");
 
 NAKED s32 EnemyBat_Init(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_Init.inc"); }
 
-NAKED void EnemyBat_Create(void) { INCFUNC("asm/func/EnemyBat_Create.inc"); }
+void EnemyBat_Create(void) {
+  EnemyBat* p = Malloc(sizeof(EnemyBat));
+
+  if (p != NULL) {
+    ClearMemory(p, sizeof(EnemyBat));
+    if (EnemyBat_Init(p) < 0) {
+      EnemyBat_Destroy(p);
+      Free(p);
+    }
+  }
+}
