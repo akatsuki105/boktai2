@@ -36,4 +36,18 @@ s32 Entity5941_Init(Entity5941* p, u32 unused1, u32 unused2) {
   return 0;
 }
 
-NAKED Entity5941* Entity5941_Create(u32 id, u32 _) { INCFUNC("asm/func/Entity5941_Create.inc"); }
+Entity5941* Entity5941_Create(u32 id, u32 _) {
+  if (gEntity5941 == NULL) {
+    Entity5941* p = CreateEntity(ENTITY_UNK_2, sizeof(Entity5941));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity5941_Update, Entity5941_Destroy);
+      if (Entity5941_Init(p, id, _) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity5941;
+}
