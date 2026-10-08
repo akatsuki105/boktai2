@@ -5,7 +5,7 @@
 gSubroutineTable:
 	.4byte 0x0074, Dvalinn_Create
 	.4byte 0x0101, FUN_081d1a7c
-	.4byte 0x0238, FUN_080a1058
+	.4byte 0x0238, EntityBA36_GetRemaining
 	.4byte 0x025E, FUN_0804e384
 	.4byte 0x0272, FUN_0823cd48
 	.4byte 0x0353, FUN_0807b64c
@@ -211,7 +211,7 @@ gSubroutineTable:
 	.4byte 0x52BF, AlbumMenu_Create
 	.4byte 0x5365, Time_GetSunsetScripted
 	.4byte 0x53BF, FUN_082402c8
-	.4byte 0x5460, FUN_080a1010
+	.4byte 0x5460, EntityBA36_SetRemaining
 	.4byte 0x546C, FUN_0807db58
 	.4byte 0x5470, FUN_08209fc8
 	.4byte 0x54C1, UnlockMap

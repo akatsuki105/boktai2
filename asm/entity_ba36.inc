@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_080a1010
-FUN_080a1010: @ 0x080A1010
+	thumb_func_start EntityBA36_SetRemaining
+EntityBA36_SetRemaining: @ 0x080A1010
 	push {r4, lr}
 	movs r0, #0x63
 	bl VM_SeekToNamedArg
@@ -42,8 +42,8 @@ _080A104E:
 	.align 2, 0
 _080A1054: .4byte 0x03002C40
 
-	thumb_func_start FUN_080a1058
-FUN_080a1058: @ 0x080A1058
+	thumb_func_start EntityBA36_GetRemaining
+EntityBA36_GetRemaining: @ 0x080A1058
 	push {lr}
 	ldr r0, _080A1068 @ =0x03002C40
 	ldr r0, [r0]
