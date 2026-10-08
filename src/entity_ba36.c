@@ -51,4 +51,17 @@ s32 EntityBA36_Destroy(EntityBA36* p) {
 
 NAKED s32 EntityBA36_Init(EntityBA36* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/EntityBA36_Init.inc"); }
 
-NAKED EntityBA36* EntityBA36_Create(u32 param_1, u32 param_2) { INCFUNC("asm/func/EntityBA36_Create.inc"); }
+EntityBA36* EntityBA36_Create(u32 param_1, u32 param_2) {
+  if (gEntityBA36 == NULL) {
+    EntityBA36* p = CreateEntity(ENTITY_UNK_8, sizeof(EntityBA36));
+    if (p != NULL) {
+      SetEntityRoutine(p, EntityBA36_Update, EntityBA36_Destroy);
+      if (EntityBA36_Init(p, param_1, param_2) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntityBA36;
+}
