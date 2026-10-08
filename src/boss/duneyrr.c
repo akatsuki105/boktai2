@@ -142,7 +142,18 @@ void (*const PTR_ARRAY_085aab60[23])(Duneyrr*, s32) = {
 
 INCASM("asm/duneyrr.inc");
 
-NAKED s32 Duneyrr_Update(Duneyrr* p) { INCFUNC("asm/func/Duneyrr_Update.inc"); }
+void FUN_08024500(Duneyrr*);
+void FUN_08025630(Duneyrr*);
+void FUN_08027588(Duneyrr*);
+void FUN_080245e4(Duneyrr*);
+
+s32 Duneyrr_Update(Duneyrr* p) {
+  FUN_08024500(p);
+  FUN_08025630(p);
+  FUN_08027588(p);
+  FUN_080245e4(p);
+  return 0;
+}
 
 NAKED s32 Duneyrr_Destroy(Duneyrr* p) { INCFUNC("asm/func/Duneyrr_Destroy.inc"); }
 
