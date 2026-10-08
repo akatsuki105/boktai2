@@ -5115,8 +5115,8 @@ FUN_081a54a8: @ 0x081A54A8
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_081a54b4
-FUN_081a54b4: @ 0x081A54B4
+	thumb_func_start EnemyRootOfDarkness_Destroy
+EnemyRootOfDarkness_Destroy: @ 0x081A54B4
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	ldr r1, _081A54CC @ =0x0000025D

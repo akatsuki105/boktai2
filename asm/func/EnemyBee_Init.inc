@@ -2198,7 +2198,7 @@ _0816A882:
 	movs r5, #0xc4
 	lsls r5, r5, #3
 	adds r1, r7, r5
-	ldr r0, _0816A964 @ =FUN_08169688
+	ldr r0, _0816A964 @ =EnemyBee_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
 	bl Enemy_Init_080ec640
@@ -2212,7 +2212,7 @@ _0816A954: .4byte 0x0000057C
 _0816A958: .4byte FUN_080f09e0
 _0816A95C: .4byte 0x0000061C
 _0816A960: .4byte FUN_08169668
-_0816A964: .4byte FUN_08169688
+_0816A964: .4byte EnemyBee_Destroy
 _0816A968:
 	movs r0, #1
 	rsbs r0, r0, #0

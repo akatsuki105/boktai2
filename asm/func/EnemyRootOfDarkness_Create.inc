@@ -13,7 +13,7 @@
 	cmp r0, #0
 	bge _081A66DA
 	adds r0, r4, #0
-	bl FUN_081a54b4
+	bl EnemyRootOfDarkness_Destroy
 	adds r0, r4, #0
 	bl Free
 _081A66DA:

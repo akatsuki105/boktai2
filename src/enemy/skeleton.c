@@ -8,6 +8,9 @@ typedef struct {
 } Skeleton;
 static_assert(sizeof(Skeleton) == 1960);
 
+s32 EnemySkeleton_Init(Skeleton*);
+s32 EnemySkeleton_Destroy(Skeleton*);
+
 INCASM("asm/skeleton.inc");
 
 NAKED void EnemySkeleton_Create(void) { INCFUNC("asm/func/EnemySkeleton_Create.inc"); }

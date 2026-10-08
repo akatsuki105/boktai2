@@ -5941,8 +5941,8 @@ FUN_08169668: @ 0x08169668
 	.align 2, 0
 _08169684: .4byte 0x03002BE0
 
-	thumb_func_start FUN_08169688
-FUN_08169688: @ 0x08169688
+	thumb_func_start EnemyBee_Destroy
+EnemyBee_Destroy: @ 0x08169688
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	ldr r1, _081696A0 @ =0x0000025D

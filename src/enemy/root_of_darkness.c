@@ -8,6 +8,8 @@ typedef struct {
 } RootOfDarkness;
 static_assert(sizeof(RootOfDarkness) == 1696);
 
+s32 EnemyRootOfDarkness_Destroy(RootOfDarkness*);
+
 INCASM("asm/root_of_darkness.inc");
 
 NAKED s32 EnemyRootOfDarkness_Init(RootOfDarkness* p) { INCFUNC("asm/func/EnemyRootOfDarkness_Init.inc"); }

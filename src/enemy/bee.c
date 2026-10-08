@@ -8,8 +8,20 @@ typedef struct {
 } Bee;
 static_assert(sizeof(Bee) == 1812);
 
+s32 EnemyBee_Destroy(Bee*);
+
 INCASM("asm/bee.inc");
 
 NAKED s32 EnemyBee_Init(Bee* p) { INCFUNC("asm/func/EnemyBee_Init.inc"); }
 
-NAKED void EnemyBee_Create(void) { INCFUNC("asm/func/EnemyBee_Create.inc"); }
+void EnemyBee_Create(void) {
+  Bee* p = Malloc(sizeof(Bee));
+
+  if (p != NULL) {
+    ClearMemory(p, sizeof(Bee));
+    if (EnemyBee_Init(p) < 0) {
+      EnemyBee_Destroy(p);
+      Free(p);
+    }
+  }
+}
