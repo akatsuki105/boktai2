@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "video.h"
+#include "vm.h"
 
 typedef struct {
   Entity e;            // 0x0, ENTITY_UNK_9 or ENTITY_UNK_11
@@ -32,6 +33,26 @@ s32 EntityE435_Destroy(EntityE435* p) {
   return 0;
 }
 
-NAKED s32 EntityE435_Init(EntityE435* p, u32 id) { INCFUNC("asm/func/EntityE435_Init.inc"); }
+NAKED s32 EntityE435_Init(EntityE435* p, u16 id) { INCFUNC("asm/func/EntityE435_Init.inc"); }
 
-NAKED EntityE435* EntityE435_Create(u32 id) { INCFUNC("asm/func/EntityE435_Create.inc"); }
+EntityE435* EntityE435_Create(u32 id) {
+  if (gEntityE435 == NULL) {
+    EntityE435* p;
+
+    if (VM_GetNamedArgValue('a', 0)) {
+      p = CreateEntity(ENTITY_UNK_11, sizeof(EntityE435));
+    } else {
+      p = CreateEntity(ENTITY_UNK_9, sizeof(EntityE435));
+    }
+
+    if (p != NULL) {
+      SetEntityRoutine(p, EntityE435_Update, EntityE435_Destroy);
+      if (EntityE435_Init(p, id) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntityE435;
+}
