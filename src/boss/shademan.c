@@ -105,7 +105,18 @@ s32 FUN_0803c1bc(void* _) { return BOSS_SHADEMAN; }
 
 INCASM("asm/shademan.inc");
 
-NAKED s32 BossShadeMan_Update(BossShadeMan* p) { INCFUNC("asm/func/BossShadeMan_Update.inc"); }
+void FUN_0803cee4(BossShadeMan*);
+void FUN_0803e68c(BossShadeMan*);
+void FUN_08040184(BossShadeMan*);
+void FUN_0803d0a4(BossShadeMan*);
+
+s32 BossShadeMan_Update(BossShadeMan* p) {
+  FUN_0803cee4(p);
+  FUN_0803e68c(p);
+  FUN_08040184(p);
+  FUN_0803d0a4(p);
+  return 0;
+}
 
 NAKED s32 BossShadeMan_Destroy(BossShadeMan* p) { INCFUNC("asm/func/BossShadeMan_Destroy.inc"); }
 
