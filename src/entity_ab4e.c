@@ -120,6 +120,20 @@ NAKED s32 EntityAB4E_Destroy(EntityAB4E* p) { INCFUNC("asm/func/EntityAB4E_Destr
 
 NAKED s32 EntityAB4E_Init(EntityAB4E* p) { INCFUNC("asm/func/EntityAB4E_Init.inc"); }
 
-NAKED EntityAB4E* EntityAB4E_Create(void) { INCFUNC("asm/func/EntityAB4E_Create.inc"); }
+EntityAB4E* EntityAB4E_Create(void) {
+  if (gEntityAB4E == NULL) {
+    EntityAB4E* p = CreateEntity(ENTITY_UNK_5, sizeof(EntityAB4E));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, EntityAB4E_Update, EntityAB4E_Destroy);
+      if (EntityAB4E_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntityAB4E;
+}
 
 NAKED s32 EntityAB4E_AddElemScripted(void) { INCFUNC("asm/func/EntityAB4E_AddElemScripted.inc"); }
