@@ -46,7 +46,10 @@ NAKED void EntityA628_UpdatePos(EntityA628* p) { INCFUNC("asm/func/EntityA628_Up
 
 NAKED s32 EntityA628_Update(EntityA628* p) { INCFUNC("asm/func/EntityA628_Update.inc"); }
 
-NAKED s32 EntityA628_Destroy(EntityA628* p) { INCFUNC("asm/func/EntityA628_Destroy.inc"); }
+s32 EntityA628_Destroy(EntityA628* p) {
+  gEntityA628 = NULL;
+  return 0;
+}
 
 NAKED void EntityA628_SetupBG(EntityA628* p) { INCFUNC("asm/func/EntityA628_SetupBG.inc"); }
 
