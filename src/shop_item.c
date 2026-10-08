@@ -394,4 +394,15 @@ Entity3019* Entity3019_Create(void) {
 }
 
 // 0x7300, 道具屋(キッド)
-NAKED Entity3019* FUN_080bcd94(void) { INCFUNC("asm/func/FUN_080bcd94.inc"); }
+Entity3019* FUN_080bcd94(void) {
+  Entity3019* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity3019));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity3019_Update, Entity3019_Destroy);
+    if (Entity3019_Init(p, 1) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
