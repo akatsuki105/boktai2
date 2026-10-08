@@ -428,7 +428,21 @@ NAKED s32 Entity286F_Destroy(Entity286F* p) { INCFUNC("asm/func/Entity286F_Destr
 
 NAKED s32 Entity286F_Init(Entity286F* p) { INCFUNC("asm/func/Entity286F_Init.inc"); }
 
-NAKED Entity286F* Entity286F_Create(void) { INCFUNC("asm/func/Entity286F_Create.inc"); }
+Entity286F* Entity286F_Create(void) {
+  if (gEntity286F == NULL) {
+    Entity286F* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity286F));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity286F_Update, Entity286F_Destroy);
+      if (Entity286F_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity286F;
+}
 
 void FUN_080440ac(Entity286F* p, Entity286FNode* node) {
   if (node->unk_08 != 0) {
