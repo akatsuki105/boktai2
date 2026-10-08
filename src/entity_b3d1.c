@@ -198,4 +198,18 @@ NAKED void FUN_080c0770(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c0770.inc"); }
 
 NAKED s32 EntityB3D1_Init(EntityB3D1* p) { INCFUNC("asm/func/EntityB3D1_Init.inc"); }
 
-NAKED EntityB3D1* EntityB3D1_Create(void) { INCFUNC("asm/func/EntityB3D1_Create.inc"); }
+EntityB3D1* EntityB3D1_Create(void) {
+  if (gEntityB3D1 == NULL) {
+    EntityB3D1* p = CreateEntity(ENTITY_UNK_8, sizeof(EntityB3D1));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, EntityB3D1_Update, EntityB3D1_Destroy);
+      if (EntityB3D1_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntityB3D1;
+}
