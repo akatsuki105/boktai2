@@ -4,6 +4,7 @@
 #include "file.h"
 #include "global.h"
 #include "inventory.h"
+#include "item.h"
 #include "menu.h"
 #include "sprite.h"
 #include "tilemap.h"
@@ -224,7 +225,17 @@ NAKED void FUN_080ba85c(Entity3019* p, s32 param_2) { INCFUNC("asm/func/FUN_080b
 
 NAKED s32 FUN_080ba980(Entity3019* p) { INCFUNC("asm/func/FUN_080ba980.inc"); }
 
-NAKED s32 FUN_080baa40(void) { INCFUNC("asm/func/FUN_080baa40.inc"); }
+// 道具欄の空きスロット番号を返す, 空きがなければ -1
+s32 FUN_080baa40(void) {
+  s32 i;
+
+  for (i = 0; i < 16; i++) {
+    if (GetNormalItemID(i) < 0) {
+      return i;
+    }
+  }
+  return -1;
+}
 
 NAKED void FUN_080baa64(Entity3019* p) { INCFUNC("asm/func/FUN_080baa64.inc"); }
 
