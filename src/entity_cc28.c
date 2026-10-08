@@ -1558,9 +1558,24 @@ NAKED void FUN_0809c960(EntityCC28* p) { INCFUNC("asm/func/FUN_0809c960.inc"); }
 
 NAKED void FUN_0809ca08(EntityCC28* p) { INCFUNC("asm/func/FUN_0809ca08.inc"); }
 
-NAKED s32 FUN_0809cae0(EntityCC28* p, unknown* param_2) { INCFUNC("asm/func/FUN_0809cae0.inc"); }
+NAKED s32 FUN_0809cae0(EntityCC28* p, u32 val) { INCFUNC("asm/func/FUN_0809cae0.inc"); }
 
-NAKED EntityCC28* EntityCC28_Create_0809cb74(u32 val, unknown* param_2) { INCFUNC("asm/func/EntityCC28_Create_0809cb74.inc"); }
+EntityCC28* EntityCC28_Create_0809cb74(u32 val, unknown* param_2) {
+  if (gEntityCC28 == NULL) {
+    EntityCC28* p = CreateEntity(ENTITY_UNK_12, sizeof(EntityCC28));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, FUN_0809c8e8, EntityCC28_Destroy);
+      p->unk_9fa = val;
+      if (FUN_0809cae0(p, val) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntityCC28;
+}
 
 s32 EntityCC28_Update_0809cbd0(EntityCC28* p) {
   Player* player = gPlayerPtr[0];
@@ -1586,7 +1601,7 @@ s32 EntityCC28_Destroy_0809cc04(EntityCC28* p) {
   return 0;
 }
 
-NAKED s32 FUN_0809cc48(EntityCC28* p) { INCFUNC("asm/func/FUN_0809cc48.inc"); }
+NAKED s32 FUN_0809cc48(EntityCC28* p, u32 val) { INCFUNC("asm/func/FUN_0809cc48.inc"); }
 
 NAKED EntityCC28* EntityCC28_Create_0809ce04(u32 val, unknown* param_2) { INCFUNC("asm/func/EntityCC28_Create_0809ce04.inc"); }
 
