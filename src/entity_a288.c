@@ -311,7 +311,11 @@ NAKED void FUN_08216968(EntityA288* p, unknown* param_2) { INCFUNC("asm/func/FUN
 
 NAKED void FUN_082169a0(EntityA288* p) { INCFUNC("asm/func/FUN_082169a0.inc"); }
 
-NAKED void FUN_08216a60(EntityA288* p) { INCFUNC("asm/func/FUN_08216a60.inc"); }
+void FUN_08216a60(EntityA288* p) {
+  MainSprite_Remove(&p->sprites_166c[0]);
+  MainSprite_Remove(&p->sprites_166c[1]);
+  MainSprite_Remove(&p->sprites_166c[2]);
+}
 
 NAKED void FUN_08216a90(EntityA288* p) { INCFUNC("asm/func/FUN_08216a90.inc"); }
 
