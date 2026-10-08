@@ -26,7 +26,7 @@ NAKED void EntityA628_StartFollowCamera(void) { INCFUNC("asm/func/EntityA628_Sta
 
 NAKED void EntityA628_StopFollowCamera(void) { INCFUNC("asm/func/EntityA628_StopFollowCamera.inc"); }
 
-NAKED void EntityA628_StartFollowCameraScripted(void) { INCFUNC("asm/func/EntityA628_StartFollowCameraScripted.inc"); }
+void EntityA628_StartFollowCameraScripted(void) { EntityA628_StartFollowCamera(); }
 
 NAKED void EntityA628_StopFollowCameraScripted(void) { INCFUNC("asm/func/EntityA628_StopFollowCameraScripted.inc"); }
 
