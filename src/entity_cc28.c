@@ -783,6 +783,7 @@ NAKED void FUN_08091684(void) { INCFUNC("asm/func/FUN_08091684.inc"); }
 
 extern u16 u16_03002c10;
 extern u16 u16_03002c14;  // src/iwram2.c
+extern u16 u16_03002c18;  // src/iwram2.c
 
 u32 FUN_080916bc(u32 bitidx) { return u16_03002c10 & (1 << bitidx); }
 
@@ -1416,7 +1417,12 @@ void FUN_0809c010(EntityCC28* p) {
   }
 }
 
-NAKED void FUN_0809c040(void) { INCFUNC("asm/func/FUN_0809c040.inc"); }
+void FUN_0809c040(void) {
+  gEntityCC28 = NULL;
+  u16_03002c14 = 1;
+  u16_03002c10 = 0;
+  u16_03002c18 = 1;
+}
 
 s32 FUN_0809c068(void) {
   if (gEntityCC28 == NULL) {

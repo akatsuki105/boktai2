@@ -55,7 +55,9 @@ IWRAM_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};   // padding?
 IWRAM_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
 IWRAM_DATA u8 u8_03002c12[0x03002C14 - 0x03002C12] = {};  // todo
 IWRAM_DATA u16 u16_03002c14 = 0;                          // 0x03002C14, 根拠: EntityCC28_Destroy_0809cc04 が EntityCC28.state2 を書き込む
-IWRAM_DATA u8 u8_03002c16[0x03002C3C - 0x03002C16] = {};  // todo
+IWRAM_DATA u8 u8_03002c16[0x03002C18 - 0x03002C16] = {};  // todo
+IWRAM_DATA u16 u16_03002c18 = 0;                          // 0x03002C18, FUN_0809c040 が 1 を入れる
+IWRAM_DATA u8 u8_03002c1a[0x03002C3C - 0x03002C1A] = {};  // todo
 
 IWRAM_DATA struct EntityA628* gEntityA628 = NULL;  // 0x03002C3C
 IWRAM_DATA struct EntityBA36* gEntityBA36 = NULL;  // 0x03002C40
