@@ -1603,7 +1603,22 @@ s32 EntityCC28_Destroy_0809cc04(EntityCC28* p) {
 
 NAKED s32 FUN_0809cc48(EntityCC28* p, u32 val) { INCFUNC("asm/func/FUN_0809cc48.inc"); }
 
-NAKED EntityCC28* EntityCC28_Create_0809ce04(u32 val, unknown* param_2) { INCFUNC("asm/func/EntityCC28_Create_0809ce04.inc"); }
+EntityCC28* EntityCC28_Create_0809ce04(u32 val, unknown* param_2) {
+  if (gEntityCC28 == NULL) {
+    EntityCC28* p = CreateEntity(ENTITY_UNK_12, sizeof(EntityCC28));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, EntityCC28_Update_0809cbd0, EntityCC28_Destroy_0809cc04);
+      p->unk_9fa = val;
+      if (FUN_0809cc48(p, val) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntityCC28;
+}
 
 EntityCC28* EntityCC28_Create(u32 val, unknown* param_2) {
   if (gFlag030047a4 & FLAG030047A4_LINK) {
