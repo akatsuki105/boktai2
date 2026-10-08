@@ -61,7 +61,21 @@ NAKED s32 Entity080e01bc_Destroy(Entity080e01bc* p) { INCFUNC("asm/func/Entity08
 
 NAKED s32 Entity080e01bc_Init(Entity080e01bc* p) { INCFUNC("asm/func/Entity080e01bc_Init.inc"); }
 
-NAKED Entity080e01bc* Entity080e01bc_Create(void) { INCFUNC("asm/func/Entity080e01bc_Create.inc"); }
+Entity080e01bc* Entity080e01bc_Create(void) {
+  if (gEntity080e01bc == NULL) {
+    Entity080e01bc* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity080e01bc));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity080e01bc_Update, Entity080e01bc_Destroy);
+      if (Entity080e01bc_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity080e01bc;
+}
 
 void Entity080e01bc_ClearGlobal(void) { gEntity080e01bc = NULL; }
 
