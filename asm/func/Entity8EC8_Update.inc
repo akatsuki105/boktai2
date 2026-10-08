@@ -1,7 +1,7 @@
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	movs r5, #0
-	bl Earthquake_HandleMessages
+	bl Entity8EC8_HandleMessages
 	ldr r0, [r4, #0x70]
 	adds r0, #1
 	str r0, [r4, #0x70]
@@ -38,7 +38,7 @@ _0821B9BC:
 	str r0, [r4, #0x7c]
 	b _0821BA20
 _0821B9D4:
-	bl Earthquake_IsStartHeld
+	bl Entity8EC8_IsStartHeld
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0821B9FA
@@ -54,7 +54,7 @@ _0821B9D4:
 	bl sound_08240740
 	b _0821BA1E
 _0821B9FA:
-	bl Earthquake_IsSelectHeld
+	bl Entity8EC8_IsSelectHeld
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0821BA20

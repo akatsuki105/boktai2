@@ -1,6 +1,6 @@
 ---
 name: ghidra-struct
-description: Recover C struct layouts in Ghidra for GBA decompilation through the GhidraMCP HTTP server (http://127.0.0.1:8089) — find every function and struct that uses a type, gather evidence from the code (callee parameter types, allocation sizes, loop strides, load/store width and signedness, GBA hardware semantics), check existing types before inventing new ones, and edit Ghidra data types without packing fields or wiping function signatures. Use this whenever the user asks to analyze / 解析 / 調べる a struct or type in Ghidra, fill unknown fields (unk_XX, field_0x...), determine or verify a struct's size, split or merge struct types, retype function signatures around a struct, or otherwise mentions Ghidra together with 構造体 / 型 / フィールド / サイズ — even if they don't name this skill. Invoked as `/ghidra-struct TypeName` to run one full analysis pass on that type; `-r`/`--reflect` also mirrors the result into the repository, `-n`/`--name` renames the type and its functions where the evidence is solid, `-p`/`--push` verifies the build and commits+pushes, and the short forms bundle (`-rp`, `-rnp`).
+description: Recover C struct layouts in Ghidra for GBA decompilation through the GhidraMCP HTTP server (http://127.0.0.1:8089) — find every function and struct that uses a type, gather evidence from the code (callee parameter types, allocation sizes, loop strides, load/store width and signedness, GBA hardware semantics), check existing types before inventing new ones, and edit Ghidra data types without packing fields or wiping function signatures. Use this whenever the user asks to analyze / 解析 / 調べる a struct or type in Ghidra, fill unknown fields (unk_XX, field_0x...), determine or verify a struct's size, split or merge struct types, retype function signatures around a struct, or otherwise mentions Ghidra together with 構造体 / 型 / フィールド / サイズ — even if they don't name this skill. Invoked as `/ghidra-struct TypeName` to run one full analysis pass on that type; `-r`/`--reflect` also mirrors the result into the repository, `-n`/`--name` renames the type's functions where the evidence is solid (never the type itself), `-p`/`--push` verifies the build and commits+pushes, and the short forms bundle (`-rp`, `-rnp`).
 argument-hint: <TypeName> [-r|--reflect] [-n|--name] [-p|--push]
 ---
 
@@ -28,7 +28,7 @@ The text after the command arrives as `ARGUMENTS:` at the end of this skill.
 
   | long | short | step | effect |
   |---|---|---|---|
-  | `--name` | `-n` | 10 | rename the type and its functions where the evidence is solid |
+  | `--name` | `-n` | 10 | rename the type's **functions** where the evidence is solid (never the type itself) |
   | `--reflect` | `-r` | 11 | mirror the saved Ghidra layout into the repository |
   | `--push` | `-p` | 12 | verify the build, then commit and push what steps 10/11 changed |
 
@@ -45,7 +45,7 @@ The text after the command arrives as `ARGUMENTS:` at the end of this skill.
     mistyped `--reflct` must not quietly skip the reflection.
   - A plain-language request turns the same switches on, but the flags are the
     form to prefer: 「終わったらリポジトリにも反映して」→ `-r`,
-    「自信があったらリネームして」→ `-n`,
+    「自信があったら関数をリネームして」→ `-n`,
     「終わったらコミットしてpushして」→ `-p`.
 - **With only a type name, do one complete pass on that type** — the same
   thing that was done for `FreezeEffect`:
@@ -114,12 +114,20 @@ What still differs is how much evidence a name needs:
   Do not invent a name for a field whose meaning you cannot back with
   evidence — `unk_XX` is the honest answer there.
 
-Field names are part of every pass. **Renaming the type itself and its
-functions is not** — that happens only with `--name` (step 10), and the bar
-there is higher than for a field: the user has cancelled work over a wrong
-type name, so propose nothing speculative and rename nothing you would not
-defend in one sentence. Without `--name`, do not even suggest renames in the
-report unless the user asked what to call something.
+**Never rename the type itself.** Not with `--name`, not on your own
+initiative, not as a suggestion in the report. Every name this skill has
+proposed for a type has been wrong, and the user has had to revert them, so the
+type keeps its `EntityXXXX` / `TXXXX` name until the user chooses a new one
+themselves. The same goes for the type's own prefix: `EntityA628_Verb` stays
+`EntityA628_Verb`. What you learned about what the type *is* belongs in the
+report as a description, never as a proposed name — and only state it if you
+can point at the code that shows it.
+
+Field names are part of every pass. **Renaming the type's functions is not** —
+that happens only with `--name` (step 10), and the bar there is higher than for
+a field: rename nothing you would not defend in one sentence. Without `--name`,
+do not even suggest function renames in the report unless the user asked what to
+call something.
 
 ## Workflow
 
@@ -166,9 +174,12 @@ Keep working files in the scratchpad. `G=http://127.0.0.1:8089`,
      types. Hits can belong to other structs used in the same function (e.g. `gCollisionMap->field_0x24`); only those on the struct under analysis matter. It cannot see offsets hidden in temporaries (`iVar3 = p + 0x2c`
      then `*(u8 *)(iVar3 + 200)`), so skim the decompile too.
 9. **Save** (`POST $G/save_program`) and report.
-10. **Rename** — only with `--name`. Rename the type and its functions where the
-    analysis settled what they are; leave `FUN_xxxxxxxx` and `unk_XX` where it
-    did not. `tools/rename_with_ghidra.sh --quiet OLD NEW` renames the
+10. **Rename the functions** — only with `--name`, and **only the functions**:
+    the type's own name is off limits (see "Confidence and naming"). Rename the
+    functions whose job the analysis settled; leave `FUN_xxxxxxxx` and `unk_XX`
+    where it did not. Keep the existing type prefix as it is — a helper of
+    `Entity8EC8` becomes `Entity8EC8_HandleMessages`, never a prefix invented
+    from what you think the type is. `tools/rename_with_ghidra.sh --quiet OLD NEW` renames the
     repository and Ghidra together (and `asm/func/OLD.inc`), so use it rather
     than editing either side by hand. Follow the neighbours: `Owner_Verb`, and
     the `T_Create` / `_Init` / `_Update` / `_Destroy` family for entities. The
@@ -277,7 +288,8 @@ Strongest first. Most of these produced a confirmed field on this project.
 - Mistakes and how they were rolled back — state them plainly.
 - Hints for other types found on the way (e.g. an undefined byte in
   `HitboxData` that this struct writes to).
-- With `--name`: an old → new table with the evidence for each name, and the
+- With `--name`: an old → new table of the **function** renames with the
+  evidence for each name, and the
   ones you deliberately left as `FUN_xxxxxxxx`.
 - With `--push`: the commit hash, and that `make compare` printed the OK line.
 

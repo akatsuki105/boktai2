@@ -2,7 +2,7 @@
 #include "global.h"
 #include "msgbus.h"
 
-// 一定間隔でカメラを揺らして地震の音を鳴らすシングルトン, メッセージ (cmd 4/5) で外部からも起こせる
+// 一定間隔で gCamera->shakeAmplitude を上げて NOISE_QUAKE_121 を鳴らすシングルトン, メッセージ (cmd 4/5) で外部からも起こせる
 typedef struct {
   Entity e;             // 0x00, ENTITY_UNK_4
   u32 id;               // 0x18, mq の targetID と同じ値
@@ -19,7 +19,7 @@ typedef struct {
   s32 nextDelay;        // 0x74, 次の発生までのフレーム数, interval + (乱数 & 0x7F)
   bool32 stateBegun;    // 0x78, state が変わった最初のフレームだけ 1
   bool32 soundPlaying;  // 0x7C, NOISE_QUAKE_121 を鳴らしている間 1
-} Earthquake;
-static_assert(sizeof(Earthquake) == 128);
+} Entity8EC8;
+static_assert(sizeof(Entity8EC8) == 128);
 
 INCASM("asm/entity_8ec8.inc");

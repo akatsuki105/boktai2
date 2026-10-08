@@ -362,7 +362,7 @@ gSubroutineTable:
 	.4byte 0x8D5C, Entity8D5C_Create
 	.4byte 0x8E9F, EnemyCheyenne_Create
 	.4byte 0x8EA3, FUN_0820c940
-	.4byte 0x8EC8, Earthquake_Create
+	.4byte 0x8EC8, Entity8EC8_Create
 	.4byte 0x8ECD, WeatherManager_Create
 	.4byte 0x8F41, TextBox_SetBgPlttScripted
 	.4byte 0x8FA3, FUN_0807d1c0
