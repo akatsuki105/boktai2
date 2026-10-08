@@ -22,6 +22,8 @@ static_assert(sizeof(EntityA628) == 56);
 
 extern EntityA628* gEntityA628;  // 0x03002C3C
 
+void EntityA628_ResetOrbit(EntityA628*);
+
 NAKED void EntityA628_StartFollowCamera(void) { INCFUNC("asm/func/EntityA628_StartFollowCamera.inc"); }
 
 NAKED void EntityA628_StopFollowCamera(void) { INCFUNC("asm/func/EntityA628_StopFollowCamera.inc"); }
@@ -30,7 +32,14 @@ void EntityA628_StartFollowCameraScripted(void) { EntityA628_StartFollowCamera()
 
 void EntityA628_StopFollowCameraScripted(void) { EntityA628_StopFollowCamera(); }
 
-NAKED void EntityA628_ActivateScripted(void) { INCFUNC("asm/func/EntityA628_ActivateScripted.inc"); }
+void EntityA628_ActivateScripted(void) {
+  EntityA628* p = gEntityA628;
+
+  if (p != NULL && !p->active) {
+    EntityA628_ResetOrbit(p);
+    p->active = TRUE;
+  }
+}
 
 void EntityA628_DeactivateScripted(void) {
   if (gEntityA628 != NULL) {
