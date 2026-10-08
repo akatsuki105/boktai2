@@ -36,7 +36,7 @@ NAKED void EntityA628_DeactivateScripted(void) { INCFUNC("asm/func/EntityA628_De
 
 NAKED u32 EntityA628_IsActive(void) { INCFUNC("asm/func/EntityA628_IsActive.inc"); }
 
-NAKED u32 EntityA628_IsActiveScripted(void) { INCFUNC("asm/func/EntityA628_IsActiveScripted.inc"); }
+u32 EntityA628_IsActiveScripted(void) { return EntityA628_IsActive(); }
 
 NAKED void EntityA628_ResetOrbit(EntityA628* p) { INCFUNC("asm/func/EntityA628_ResetOrbit.inc"); }
 
