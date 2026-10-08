@@ -449,4 +449,15 @@ s32 EntityA288_Destroy(EntityA288* p) {
 
 NAKED s32 EntityA288_Init(EntityA288* p) { INCFUNC("asm/func/EntityA288_Init.inc"); }
 
-NAKED EntityA288* EntityA288_Create(void) { INCFUNC("asm/func/EntityA288_Create.inc"); }
+EntityA288* EntityA288_Create(void) {
+  EntityA288* p = CreateEntity(ENTITY_UNK_11, sizeof(EntityA288));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityA288_Update, EntityA288_Destroy);
+    if (EntityA288_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
