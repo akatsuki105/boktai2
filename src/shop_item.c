@@ -380,7 +380,18 @@ s32 Entity3019_Destroy(Entity3019* p) {
 NAKED s32 Entity3019_Init(Entity3019* p, s8 param_2) { INCFUNC("asm/func/Entity3019_Init.inc"); }
 
 // 0x3019, 果実屋(リタ)
-NAKED Entity3019* Entity3019_Create(void) { INCFUNC("asm/func/Entity3019_Create.inc"); }
+Entity3019* Entity3019_Create(void) {
+  Entity3019* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity3019));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity3019_Update, Entity3019_Destroy);
+    if (Entity3019_Init(p, 0) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
 
 // 0x7300, 道具屋(キッド)
 NAKED Entity3019* FUN_080bcd94(void) { INCFUNC("asm/func/FUN_080bcd94.inc"); }
