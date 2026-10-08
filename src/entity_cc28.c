@@ -1270,7 +1270,14 @@ NAKED void FUN_080996e0(EntityCC28* p) { INCFUNC("asm/func/FUN_080996e0.inc"); }
 
 NAKED void FUN_08099968(EntityCC28* p) { INCFUNC("asm/func/FUN_08099968.inc"); }
 
-NAKED void FUN_08099b3c(s32 param_1) { INCFUNC("asm/func/FUN_08099b3c.inc"); }
+void FUN_08099b3c(s32 param_1) {
+  if (param_1 < 0) {
+    TextBox_Close();
+  } else {
+    TextBox_SetInstant(TRUE);
+    TextBox_ShowLine(param_1);
+  }
+}
 
 // メッセージ速度の設定値を 1 と 2 で入れ替えて返す
 s32 FUN_08099b5c(void) {
