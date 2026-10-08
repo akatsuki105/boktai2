@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "solar.h"
 #include "tilemap.h"
 #include "vm.h"
 
@@ -57,7 +58,22 @@ void EntityA628_DeactivateScripted(void) {
   }
 }
 
-NAKED u32 EntityA628_IsActive(void) { INCFUNC("asm/func/EntityA628_IsActive.inc"); }
+// 残差は movs r1, #0 の位置のみ (18命令中1つ), Tier A-B は試済
+NON_MATCH u32 EntityA628_IsActive(void) {
+#ifdef NONMATCHING_C
+  bool32 overridden = gSunGaugeOverride == SUN_OVERRIDE_RISING;
+
+  if (overridden) {
+    return 0;
+  }
+  if (gEntityA628 == NULL) {
+    return 0;
+  }
+  return gEntityA628->active;
+#else
+  INCFUNC("asm/func/EntityA628_IsActive.inc");
+#endif
+}
 
 u32 EntityA628_IsActiveScripted(void) { return EntityA628_IsActive(); }
 
