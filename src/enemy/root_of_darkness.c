@@ -14,4 +14,14 @@ INCASM("asm/root_of_darkness.inc");
 
 NAKED s32 EnemyRootOfDarkness_Init(RootOfDarkness* p) { INCFUNC("asm/func/EnemyRootOfDarkness_Init.inc"); }
 
-NAKED void EnemyRootOfDarkness_Create(void) { INCFUNC("asm/func/EnemyRootOfDarkness_Create.inc"); }
+void EnemyRootOfDarkness_Create(void) {
+  RootOfDarkness* p = Malloc(sizeof(RootOfDarkness));
+
+  if (p != NULL) {
+    ClearMemory(p, sizeof(RootOfDarkness));
+    if (EnemyRootOfDarkness_Init(p) < 0) {
+      EnemyRootOfDarkness_Destroy(p);
+      Free(p);
+    }
+  }
+}
