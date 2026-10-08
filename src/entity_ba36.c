@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "item.h"
+#include "vm.h"
 
 // おいしい水の効果時間を数え、0 になったらアイテムを消してスクリプトを実行するシングルトン
 typedef struct EntityBA36 {
@@ -13,7 +14,21 @@ static_assert(sizeof(EntityBA36) == 32);
 
 extern EntityBA36* gEntityBA36;  // 0x03002C40
 
-NAKED void EntityBA36_SetRemaining(void) { INCFUNC("asm/func/EntityBA36_SetRemaining.inc"); }
+bool32 TryAddItem(item32_t n, s32 rotCount);
+void FUN_0809c544(s32 param_1);
+
+// 残りフレーム数を '.c' で入れ直し、おいしい水と画面のカウントダウンを揃える
+void EntityBA36_SetRemaining(void) {
+  s32 timer = VM_SeekToNamedArg('c') ? VM_GetValue() : 1800;
+
+  gEntityBA36->timer = timer;
+  if (gEntityBA36->timer != 0) {
+    if (!CheckItemOwn(ITEM_TASTY_WATER)) {
+      TryAddItem(ITEM_TASTY_WATER, 0);
+    }
+    FUN_0809c544((s32)&gEntityBA36->timer);
+  }
+}
 
 // 残りフレーム数を返す, Entity がいなければ 0
 s32 EntityBA36_GetRemaining(void) {
