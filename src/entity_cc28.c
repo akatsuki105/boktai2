@@ -670,7 +670,11 @@ NAKED void FUN_0808fbf4(EntityCC28* p) { INCFUNC("asm/func/FUN_0808fbf4.inc"); }
 
 NAKED s32 FUN_0808fc14(void) { INCFUNC("asm/func/FUN_0808fc14.inc"); }
 
-NAKED void FUN_0808fc68(void) { INCFUNC("asm/func/FUN_0808fc68.inc"); }
+void FUN_0808fc68(void) {
+  if (VM_SeekToNamedArg('s')) {
+    gStat->areaID = VM_GetValue();
+  }
+}
 
 void FUN_0808fc8c(void) {
   if (VM_SeekToNamedArg('f')) {
