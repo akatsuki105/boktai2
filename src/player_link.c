@@ -174,4 +174,18 @@ NAKED s32 LinkPlayer_Destroy(Player* p) { INCFUNC("asm/func/LinkPlayer_Destroy.i
 
 NAKED s32 LinkPlayer_Init(Player* p, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/LinkPlayer_Init.inc"); }
 
-NAKED Player* LinkPlayer_Create(unknown* param_1, unknown* param_2) { INCFUNC("asm/func/LinkPlayer_Create.inc"); }
+Player* LinkPlayer_Create(unknown* param_1, unknown* param_2) {
+  if (gPlayerPtr[1] == NULL) {
+    Player* p = CreateEntity(ENTITY_PLAYER, sizeof(Player));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, LinkPlayer_Update, LinkPlayer_Destroy);
+      if (LinkPlayer_Init(p, param_1, param_2) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gPlayerPtr[1];
+}
