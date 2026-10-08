@@ -465,6 +465,7 @@ void rfu_REQ_noise(void);
 void rfu_REQ_disconnect(u8 bmDisconnectSlot);
 
 u16 rfu_NI_CHILD_setSendGameName(u8 slotNo, u8 subFrameSize);
+void rfu_UNI_readySendData(u8 slotStatusIndex);
 u16 rfu_UNI_PARENT_getDRAC_ACK(u8* ackFlag);
 u16 rfu_NI_stopReceivingData(u8 slotStatusIndex);
 u16 rfu_changeSendTarget(u8 connType, u8 slotStatusIndex, u8 bmNewTgtSlot);

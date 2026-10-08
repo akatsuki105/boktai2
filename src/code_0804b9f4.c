@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "gba/agbrfu.h"
 #include "global.h"
 #include "input.h"
 #include "malloc.h"
@@ -77,6 +78,7 @@ static inline void Entity0804e2c0_SetMotion(Entity0804e2c0* p, u16 motion) {
 void FUN_08229f4c(u32 n);  // src/interrupts.c
 void FUN_0804d868(Entity0804e2c0* p);
 
+void FUN_0804e584(s32);
 s32 FUN_0804c3cc(Entity0804e2c0*);
 s32 FUN_0804c3e4(Entity0804e2c0*);
 s32 FUN_0804c438(Entity0804e2c0*);
@@ -159,8 +161,6 @@ s32 FUN_0804ba48(void) {
   }
   return 0;
 }
-
-void FUN_0804e584(s32);
 
 NAKED void FUN_0804ba64(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804ba64.inc"); }
 
@@ -382,9 +382,14 @@ s32 FUN_0804ccbc(Entity0804e2c0* p) {
 
 NAKED void FUN_0804ccd0(s32 param_1) { INCFUNC("asm/func/FUN_0804ccd0.inc"); }
 
-NAKED s32 FUN_0804cd1c(s32 param_1) { INCFUNC("asm/func/FUN_0804cd1c.inc"); }
+NAKED s32 FUN_0804cd1c(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804cd1c.inc"); }
 
-NAKED void FUN_0804cde8(s32 param_1) { INCFUNC("asm/func/FUN_0804cde8.inc"); }
+void FUN_0804cde8(Entity0804e2c0* p) {
+  if (FUN_0804cd1c(p)) {
+    rfu_UNI_readySendData(p->unk_21);
+  }
+  rfu_LMAN_REQ_sendData(1);
+}
 
 // 通信スロットの対応表を未割り当てに戻す
 void FUN_0804ce0c(Entity0804e2c0* p) {
