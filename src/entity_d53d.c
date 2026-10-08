@@ -93,4 +93,19 @@ s32 EntityD53D_Destroy(EntityD53D* p) {
 
 NAKED s32 EntityD53D_Init(EntityD53D* p) { INCFUNC("asm/func/EntityD53D_Init.inc"); }
 
-NAKED EntityD53D* EntityD53D_Create(void) { INCFUNC("asm/func/EntityD53D_Create.inc"); }
+EntityD53D* EntityD53D_Create(void) {
+  EntityD53D* p = FUN_0804ea10();
+
+  if (p != NULL) {
+    return p;
+  }
+  p = CreateEntity(ENTITY_UNK_12, sizeof(EntityD53D));
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityD53D_Update, EntityD53D_Destroy);
+    if (EntityD53D_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
