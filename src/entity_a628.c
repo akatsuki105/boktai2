@@ -24,7 +24,12 @@ extern EntityA628* gEntityA628;  // 0x03002C3C
 
 void EntityA628_ResetOrbit(EntityA628*);
 
-NAKED void EntityA628_StartFollowCamera(void) { INCFUNC("asm/func/EntityA628_StartFollowCamera.inc"); }
+void EntityA628_StartFollowCamera(void) {
+  if (gEntityA628 != NULL) {
+    gEntityA628->followCamera = TRUE;
+    gEntityA628->blend = 0;
+  }
+}
 
 NAKED void EntityA628_StopFollowCamera(void) { INCFUNC("asm/func/EntityA628_StopFollowCamera.inc"); }
 
