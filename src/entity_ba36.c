@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "item.h"
 
 // おいしい水の効果時間を数え、0 になったらアイテムを消してスクリプトを実行するシングルトン
 typedef struct EntityBA36 {
@@ -24,7 +25,14 @@ s32 EntityBA36_GetRemaining(void) {
 
 NAKED s32 EntityBA36_Update(EntityBA36* p) { INCFUNC("asm/func/EntityBA36_Update.inc"); }
 
-NAKED s32 EntityBA36_Destroy(EntityBA36* p) { INCFUNC("asm/func/EntityBA36_Destroy.inc"); }
+// 効果が切れていなくてもおいしい水を回収する
+s32 EntityBA36_Destroy(EntityBA36* p) {
+  if (CheckItemOwn(ITEM_TASTY_WATER)) {
+    RemoveSpecifiedItem(ITEM_TASTY_WATER);
+  }
+  gEntityBA36 = NULL;
+  return 0;
+}
 
 NAKED s32 EntityBA36_Init(EntityBA36* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/EntityBA36_Init.inc"); }
 
