@@ -184,4 +184,15 @@ NAKED s32 Player080d82ec_Destroy(Player* p) { INCFUNC("asm/func/Player080d82ec_D
 
 NAKED s32 Player080d82ec_Init(Player* p, u32 val1, u32 val2) { INCFUNC("asm/func/Player080d82ec_Init.inc"); }
 
-NAKED Player* Player080d82ec_Create(u32 val1, u32 val2) { INCFUNC("asm/func/Player080d82ec_Create.inc"); }
+Player* Player080d82ec_Create(u32 val1, u32 val2) {
+  Player* p = CreateEntity(ENTITY_PLAYER, sizeof(Player));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Player080d82ec_Update, Player080d82ec_Destroy);
+    if (Player080d82ec_Init(p, val1, val2) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
