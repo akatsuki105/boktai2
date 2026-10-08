@@ -305,7 +305,18 @@ void (*const PTR_ARRAY_085aad38[62])(EntityBA4B*, s32) = {
 
 INCASM("asm/entity_ba4b.inc");
 
-NAKED s32 EntityBA4B_Update(EntityBA4B* p) { INCFUNC("asm/func/EntityBA4B_Update.inc"); }
+void FUN_0802ae4c(EntityBA4B*);
+void FUN_0802e4fc(EntityBA4B*);
+void FUN_08035a3c(EntityBA4B*);
+void FUN_0802b074(EntityBA4B*);
+
+s32 EntityBA4B_Update(EntityBA4B* p) {
+  FUN_0802ae4c(p);
+  FUN_0802e4fc(p);
+  FUN_08035a3c(p);
+  FUN_0802b074(p);
+  return 0;
+}
 
 NAKED s32 EntityBA4B_Destroy(EntityBA4B* p) { INCFUNC("asm/func/EntityBA4B_Destroy.inc"); }
 
