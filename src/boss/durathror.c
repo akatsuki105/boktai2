@@ -162,7 +162,18 @@ void (*const durathror_085aaecc[24])(Durathror*, s32) = {
 
 INCASM("asm/durathror.inc");
 
-NAKED s32 Durathror_Update(Durathror* p) { INCFUNC("asm/func/Durathror_Update.inc"); }
+void FUN_080390f8(Durathror*);
+void FUN_0803a104(Durathror*);
+void FUN_0803b7c4(Durathror*);
+void FUN_08039280(Durathror*);
+
+s32 Durathror_Update(Durathror* p) {
+  FUN_080390f8(p);
+  FUN_0803a104(p);
+  FUN_0803b7c4(p);
+  FUN_08039280(p);
+  return 0;
+}
 
 NAKED s32 Durathror_Destroy(Durathror* p) { INCFUNC("asm/func/Durathror_Destroy.inc"); }
 
