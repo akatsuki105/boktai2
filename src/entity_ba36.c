@@ -16,6 +16,10 @@ extern EntityBA36* gEntityBA36;  // 0x03002C40
 
 bool32 TryAddItem(item32_t n, s32 rotCount);
 void FUN_0809c544(s32 param_1);
+void FUN_0809c58c(void);
+
+static inline void Stat_SetFlag934(u16 bit) { gStat->unk_934 |= bit; }
+static inline void Stat_ClearFlag934(u16 bit) { gStat->unk_934 &= ~bit; }
 
 // 残りフレーム数を '.c' で入れ直し、おいしい水と画面のカウントダウンを揃える
 void EntityBA36_SetRemaining(void) {
@@ -38,7 +42,25 @@ s32 EntityBA36_GetRemaining(void) {
   return gEntityBA36->timer;
 }
 
-NAKED s32 EntityBA36_Update(EntityBA36* p) { INCFUNC("asm/func/EntityBA36_Update.inc"); }
+// 残り時間を1フレーム減らし、0 になったらおいしい水を回収してスクリプトを実行する
+s32 EntityBA36_Update(EntityBA36* p) {
+  if (p->timer == 0) {
+    Stat_SetFlag934(SF934_UNK_12);
+  } else {
+    Stat_ClearFlag934(SF934_UNK_12);
+    p->timer--;
+    if (p->timer == 0) {
+      if (CheckItemOwn(ITEM_TASTY_WATER)) {
+        RemoveSpecifiedItem(ITEM_TASTY_WATER);
+      }
+      FUN_0809c58c();
+      if (p->scriptID != 0) {
+        VM_ExecByID(p->scriptID, NULL);
+      }
+    }
+  }
+  return 0;
+}
 
 // 効果が切れていなくてもおいしい水を回収する
 s32 EntityBA36_Destroy(EntityBA36* p) {
