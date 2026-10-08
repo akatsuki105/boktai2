@@ -47,7 +47,7 @@ typedef struct Entity9A9F {
   u8 unk_52;                                   // 0x052, Create が 0 を入れる
   u8 unk_53;                                   // 0x053, Create が 0 を入れる
   u8 unk_54[12];                               // 0x054
-  u8 unk_60[4];                                // 0x060, FUN_080a0864 が unk_60[playerIdx] を読む, 長さは人数からの推定
+  u8 unk_60[4];                                // 0x060, EntityA628_UpdateBGVisibility が unk_60[playerIdx] を読む, 長さは人数からの推定
   u8 unk_64[2];                                // 0x064
   u16 unk_66;                                  // 0x066, FUN_0809eb6c: Div(n * unk_66, 0x8C)
   u8 unk_68[4];                                // 0x068, Create が 4要素を 0 にする

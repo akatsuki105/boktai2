@@ -421,7 +421,7 @@ gSubroutineTable:
 	.4byte 0xA3B3, FUN_08224af8
 	.4byte 0xA4FC, Elevator_Create
 	.4byte 0xA61C, Map_SetLoadingZoneIndicatorMode
-	.4byte 0xA628, FUN_080a0fac
+	.4byte 0xA628, EntityA628_CreateScripted
 	.4byte 0xA687, BgPlttDimmer_Create
 	.4byte 0xA76D, FUN_0820cf6c
 	.4byte 0xA7CE, FUN_0820d124

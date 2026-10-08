@@ -69,7 +69,7 @@ FUN_080a07cc: @ 0x080A07CC
 	cmp r0, #0
 	bne _080A07E6
 	adds r0, r4, #0
-	bl FUN_080a0844
+	bl EntityA628_ResetOrbit
 	movs r0, #1
 	strb r0, [r4, #0x1f]
 _080A07E6:
@@ -130,8 +130,8 @@ FUN_080a0838: @ 0x080A0838
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_080a0844
-FUN_080a0844: @ 0x080A0844
+	thumb_func_start EntityA628_ResetOrbit
+EntityA628_ResetOrbit: @ 0x080A0844
 	ldr r1, _080A085C @ =0x030046A0
 	ldr r1, [r1]
 	ldr r2, _080A0860 @ =0x00000932
@@ -148,8 +148,8 @@ FUN_080a0844: @ 0x080A0844
 _080A085C: .4byte 0x030046A0
 _080A0860: .4byte 0x00000932
 
-	thumb_func_start FUN_080a0864
-FUN_080a0864: @ 0x080A0864
+	thumb_func_start EntityA628_UpdateBGVisibility
+EntityA628_UpdateBGVisibility: @ 0x080A0864
 	push {r4, r5, lr}
 	adds r4, r0, #0
 	ldr r0, _080A0884 @ =0x030047A4
@@ -192,7 +192,7 @@ _080A08A8:
 	cmp r0, #0
 	bne _080A090E
 	adds r0, r4, #0
-	bl FUN_080a0844
+	bl EntityA628_ResetOrbit
 	movs r0, #1
 _080A08B6:
 	strb r0, [r4, #0x1f]
@@ -233,7 +233,7 @@ _080A08E8:
 	cmp r0, #0
 	beq _080A0920
 	adds r0, r4, #0
-	bl FUN_080a0844
+	bl EntityA628_ResetOrbit
 _080A0902:
 	ldrb r0, [r4, #0x1f]
 	cmp r0, #0
@@ -265,8 +265,8 @@ _080A092A:
 _080A0930: .4byte 0x03003E78
 _080A0934: .4byte 0xFFFFFDFF
 
-	thumb_func_start FUN_080a0938
-FUN_080a0938: @ 0x080A0938
+	thumb_func_start EntityA628_UpdatePos
+EntityA628_UpdatePos: @ 0x080A0938
 	push {r4, r5, r6, r7, lr}
 	adds r7, r0, #0
 	adds r0, #0x36
@@ -761,12 +761,12 @@ EntityA628_Update: @ 0x080A0D08
 	push {r4, r5, r6, lr}
 	sub sp, #0xc
 	adds r4, r0, #0
-	bl FUN_080a0864
+	bl EntityA628_UpdateBGVisibility
 	ldrb r0, [r4, #0x1f]
 	cmp r0, #0
 	beq _080A0DDC
 	adds r0, r4, #0
-	bl FUN_080a0938
+	bl EntityA628_UpdatePos
 	add r5, sp, #4
 	adds r6, r4, #0
 	adds r6, #0x28
@@ -887,8 +887,8 @@ EntityA628_Destroy: @ 0x080A0DE8
 	.align 2, 0
 _080A0DF0: .4byte 0x03002C3C
 
-	thumb_func_start FUN_080a0df4
-FUN_080a0df4: @ 0x080A0DF4
+	thumb_func_start EntityA628_SetupBG
+EntityA628_SetupBG: @ 0x080A0DF4
 	push {r4, r5, lr}
 	sub sp, #0x10
 	adds r4, r0, #0
@@ -975,9 +975,9 @@ EntityA628_Init: @ 0x080A0E98
 	strh r1, [r4, #0x1c]
 	strb r2, [r4, #0x1e]
 	strb r3, [r4, #0x1f]
-	bl FUN_080a0df4
+	bl EntityA628_SetupBG
 	adds r0, r4, #0
-	bl FUN_080a0844
+	bl EntityA628_ResetOrbit
 	ldr r2, _080A0ECC @ =0x085B0A08
 	ldrh r0, [r4, #0x30]
 	adds r0, #0x40
@@ -1107,8 +1107,8 @@ _080A0FA6:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_080a0fac
-FUN_080a0fac: @ 0x080A0FAC
+	thumb_func_start EntityA628_CreateScripted
+EntityA628_CreateScripted: @ 0x080A0FAC
 	push {r4, r5, lr}
 	adds r5, r0, #0
 	ldr r0, _080A0FCC @ =0x030047A4
