@@ -77,7 +77,11 @@ NON_MATCH u32 EntityA628_IsActive(void) {
 
 u32 EntityA628_IsActiveScripted(void) { return EntityA628_IsActive(); }
 
-NAKED void EntityA628_ResetOrbit(EntityA628* p) { INCFUNC("asm/func/EntityA628_ResetOrbit.inc"); }
+void EntityA628_ResetOrbit(EntityA628* p) {
+  p->angle = gStat->sunAngle;
+  p->dist = 300;
+  p->blend = 0;
+}
 
 NAKED void EntityA628_UpdateBGVisibility(EntityA628* p) { INCFUNC("asm/func/EntityA628_UpdateBGVisibility.inc"); }
 
