@@ -1,6 +1,7 @@
 #include "boss.h"
 #include "entity.h"
 #include "global.h"
+#include "vm.h"
 
 // 紅のリンゴ, ダーイン
 typedef struct {
@@ -322,4 +323,19 @@ NAKED s32 EntityBA4B_Destroy(EntityBA4B* p) { INCFUNC("asm/func/EntityBA4B_Destr
 
 NAKED s32 EntityBA4B_Init(EntityBA4B* p, u32 id) { INCFUNC("asm/func/EntityBA4B_Init.inc"); }
 
-NAKED EntityBA4B* EntityBA4B_Create(u32 id) { INCFUNC("asm/func/EntityBA4B_Create.inc"); }
+EntityBA4B* EntityBA4B_Create(u32 id) {
+  EntityBA4B* p = FUN_08022a2c(VM_GetNamedArgValue('t', 1));
+  if (p != NULL) {
+    return p;
+  }
+
+  p = CreateEntity(ENTITY_UNK_8, sizeof(EntityBA4B));
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityBA4B_Update, EntityBA4B_Destroy);
+    if (EntityBA4B_Init(p, id) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
