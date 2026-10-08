@@ -12,4 +12,14 @@ static_assert(sizeof(EntityBA36) == 32);
 
 extern EntityBA36* gEntityBA36;  // 0x03002C40
 
-INCASM("asm/entity_ba36.inc");
+NAKED void EntityBA36_SetRemaining(void) { INCFUNC("asm/func/EntityBA36_SetRemaining.inc"); }
+
+NAKED s32 EntityBA36_GetRemaining(void) { INCFUNC("asm/func/EntityBA36_GetRemaining.inc"); }
+
+NAKED s32 EntityBA36_Update(EntityBA36* p) { INCFUNC("asm/func/EntityBA36_Update.inc"); }
+
+NAKED s32 EntityBA36_Destroy(EntityBA36* p) { INCFUNC("asm/func/EntityBA36_Destroy.inc"); }
+
+NAKED s32 EntityBA36_Init(EntityBA36* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/EntityBA36_Init.inc"); }
+
+NAKED EntityBA36* EntityBA36_Create(u32 param_1, u32 param_2) { INCFUNC("asm/func/EntityBA36_Create.inc"); }
