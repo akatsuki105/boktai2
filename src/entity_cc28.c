@@ -511,7 +511,13 @@ void FUN_0808e1f4(void) {
 
 NAKED void FUN_0808e224(EntityCC28* p) { INCFUNC("asm/func/FUN_0808e224.inc"); }
 
-NAKED void FUN_0808e400(EntityCC28* p) { INCFUNC("asm/func/FUN_0808e400.inc"); }
+void FUN_0808e224(EntityCC28*);
+
+void FUN_0808e400(EntityCC28* p) {
+  if (!(gEntityDisableFlags & 1)) {
+    FUN_0808e224(p);
+  }
+}
 
 NAKED void FUN_0808e420(void) { INCFUNC("asm/func/FUN_0808e420.inc"); }
 
