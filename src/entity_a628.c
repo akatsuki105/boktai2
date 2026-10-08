@@ -32,7 +32,11 @@ void EntityA628_StopFollowCameraScripted(void) { EntityA628_StopFollowCamera(); 
 
 NAKED void EntityA628_ActivateScripted(void) { INCFUNC("asm/func/EntityA628_ActivateScripted.inc"); }
 
-NAKED void EntityA628_DeactivateScripted(void) { INCFUNC("asm/func/EntityA628_DeactivateScripted.inc"); }
+void EntityA628_DeactivateScripted(void) {
+  if (gEntityA628 != NULL) {
+    gEntityA628->active = FALSE;
+  }
+}
 
 NAKED u32 EntityA628_IsActive(void) { INCFUNC("asm/func/EntityA628_IsActive.inc"); }
 
