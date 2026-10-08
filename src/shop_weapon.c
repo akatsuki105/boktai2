@@ -51,6 +51,8 @@ static_assert(sizeof(Entity744F) == 6304);
 bool32 FUN_080b9adc(unknown* p);       // src/shop_item.c
 void FUN_080b9a0c(MenuSpritePair* p);  // src/shop_item.c
 void FUN_080b9894(MenuSpritePair* p);  // src/shop_item.c
+void FUN_080b9400(s32 kind);           // src/shop_item.c
+void FUN_080b94cc(s32 kind);           // src/shop_item.c
 
 void FUN_080be810(Entity744F* p);
 
@@ -180,7 +182,12 @@ NAKED void FUN_080be810(Entity744F* p) { INCFUNC("asm/func/FUN_080be810.inc"); }
 
 NAKED void FUN_080be948(Entity744F* p) { INCFUNC("asm/func/FUN_080be948.inc"); }
 
-NAKED s32 Entity744F_Update(Entity744F* p) { INCFUNC("asm/func/Entity744F_Update.inc"); }
+s32 Entity744F_Update(Entity744F* p) {
+  FUN_080b94cc(p->kind);
+  FUN_080b9400(p->kind);
+  p->updateCallback(p);
+  return 0;
+}
 
 s32 Entity744F_Destroy(Entity744F* p) {
   MainSprite* sprite = p->sprites;
