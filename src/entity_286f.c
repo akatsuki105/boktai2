@@ -232,7 +232,15 @@ s32 Entity286FNode_ShowShadow(Entity286FNode* node) {
   return 0;
 }
 
-NAKED s32 FUN_080410cc(Entity286FNode* node) { INCFUNC("asm/func/FUN_080410cc.inc"); }
+s32 FUN_08002a48(Mover*);
+
+s32 FUN_080410cc(Entity286FNode* node) {
+  if (FUN_08002a48(&node->mover) < 0) {
+    return -1;
+  }
+  node->unk_1ee = 1;
+  return 0;
+}
 
 // 登録済みなら mover をリストから外す
 s32 Entity286FNode_RemoveMover(Entity286FNode* node) {
