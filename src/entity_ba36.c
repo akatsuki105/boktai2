@@ -14,7 +14,13 @@ extern EntityBA36* gEntityBA36;  // 0x03002C40
 
 NAKED void EntityBA36_SetRemaining(void) { INCFUNC("asm/func/EntityBA36_SetRemaining.inc"); }
 
-NAKED s32 EntityBA36_GetRemaining(void) { INCFUNC("asm/func/EntityBA36_GetRemaining.inc"); }
+// 残りフレーム数を返す, Entity がいなければ 0
+s32 EntityBA36_GetRemaining(void) {
+  if (gEntityBA36 == NULL) {
+    return 0;
+  }
+  return gEntityBA36->timer;
+}
 
 NAKED s32 EntityBA36_Update(EntityBA36* p) { INCFUNC("asm/func/EntityBA36_Update.inc"); }
 
