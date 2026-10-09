@@ -400,9 +400,7 @@ s32 FUN_0804cbfc(Entity0804e2c0* p) {
   return 0;
 }
 
-// 残差は30/30命令で movs #0x1e の位置のみ, 原典は最初のストアより前に 30 を作る, 代入順の入れ替えは試済 (命令数が増える)
-NON_MATCH s32 FUN_0804cc38(Entity0804e2c0* p) {
-#ifdef NONMATCHING_C
+s32 FUN_0804cc38(Entity0804e2c0* p) {
   if (p->unk_32) {
     p->unk_32 = 0;
     FUN_0804e584(2);
@@ -412,15 +410,10 @@ NON_MATCH s32 FUN_0804cc38(Entity0804e2c0* p) {
   }
 
   if (FUN_0804bc10(p)) {
-    p->unk_1c = 0;
-    p->unk_38 = 30;
-    p->unk_44 = 0;
+    Entity0804e2c0_SetMotion(p, 30);
     p->unk_32 = 1;
   }
   return 0;
-#else
-  INCFUNC("asm/func/FUN_0804cc38.inc");
-#endif
 }
 
 s32 FUN_0804cc7c(Entity0804e2c0* p) {
