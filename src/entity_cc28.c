@@ -1706,7 +1706,17 @@ void FUN_0809c264(void) {
   }
 }
 
-NAKED void FUN_0809c28c(void) { INCFUNC("asm/func/FUN_0809c28c.inc"); }
+void FUN_0809c28c(void) {
+  EntityCC28* p = gEntityCC28;
+
+  if (p != NULL && p->player != NULL) {
+    FUN_0808d5cc(p);
+    FUN_0808d4dc(gEntityCC28);
+    if (gEntityCC28->unk_9fe <= 2) {
+      FUN_0808d3d4(gEntityCC28);
+    }
+  }
+}
 
 NAKED void FUN_0809c2d0(void) { INCFUNC("asm/func/FUN_0809c2d0.inc"); }
 
