@@ -797,7 +797,7 @@ NAKED void MagicHealing_0806f3a0(Player* p) { INCFUNC("asm/func/MagicHealing_080
 
 NAKED void FUN_0806f5d8(Player* p) { INCFUNC("asm/func/FUN_0806f5d8.inc"); }
 
-// 入力方向が来ていて見渡しモード中でなければ向きを入力方向に合わせる, 向きを変えたら TRUE
+// 入力方向が来ていて見回しモード中でなければ向きを入力方向に合わせる, 向きを変えたら TRUE
 bool32 FUN_0806f738(Player* p) {
   bool32 turned = FALSE;
 
