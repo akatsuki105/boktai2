@@ -27,11 +27,20 @@ static_assert(sizeof(Entity080dbe54) == 2600);
 
 extern Entity080dbe54* gEntity080dbe54;  // 0x03000164
 
+static inline void Entity080dbe54_ClearActive(Entity080dbe54* p, s32 idx) { p->activeMask &= ~(1 << idx); }
+
 void FUN_080db7e4(Entity080dbe54* p, Entity080dbe54Slot* param_2) {}
 
 NAKED void FUN_080db7e8(Entity080dbe54* p, Entity080dbe54Slot* param_2) { INCFUNC("asm/func/FUN_080db7e8.inc"); }
 
-NAKED void FUN_080db970(Entity080dbe54* p, Entity080dbe54Slot* param_2) { INCFUNC("asm/func/FUN_080db970.inc"); }
+// スロットを解放する
+void FUN_080db970(Entity080dbe54* p, Entity080dbe54Slot* slot) {
+  Particle_Remove(&p->ptcls[slot->idx]);
+  slot->unk_12 = 0;
+  Entity080dbe54_ClearActive(p, slot->idx);
+  ClearMemory(slot, sizeof(Entity080dbe54Slot));
+  slot->idx = -1;
+}
 
 NAKED s32 FUN_080db9b4(Entity080dbe54* p) { INCFUNC("asm/func/FUN_080db9b4.inc"); }
 
