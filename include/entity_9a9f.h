@@ -57,7 +57,7 @@ typedef struct Entity9A9F {
   u16 unk_7e;                                  // 0x07E, 根拠: FUN_081dd9f0 が 0 に戻す
   u16 unk_80[4];                               // 0x080, 根拠: 同上
   u8 unk_88[0x118 - 0x88];                     // 0x088
-  u8 unk_118[5];                               // 0x118, FUN_081de0dc が 0x11C から下へ 5要素に 4 を入れる
+  s8 unk_118[5];                               // 0x118, FUN_081de0dc が 0x11C から下へ 5要素に 4 を入れる
   u8 unk_11d[3];                               // 0x11D
   u16 unk_120[4];                              // 0x120, FUN_081de0dc が 0 にする
   u16 unk_128[4];                              // 0x128, 同上

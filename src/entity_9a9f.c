@@ -200,7 +200,24 @@ NAKED s32 FUN_081df698(Entity9A9F* p, s32 param_2) { INCFUNC("asm/func/FUN_081df
 
 NAKED s32 FUN_081df6dc(Entity9A9F* p) { INCFUNC("asm/func/FUN_081df6dc.inc"); }
 
-NAKED s32 FUN_081df720(Entity9A9F* p) { INCFUNC("asm/func/FUN_081df720.inc"); }
+// unk_118 の5要素のうち n と等しいものの個数を返す
+s32 FUN_081df720(s32 n) {
+  Entity9A9F* p = gEntity9A9F;
+  s32 count;
+  s32 i;
+
+  if (p == NULL) {
+    return 0;
+  }
+
+  count = 0;
+  for (i = 0; i < 5; i++) {
+    if (p->unk_118[i] == n) {
+      count++;
+    }
+  }
+  return count;
+}
 
 NAKED s32 FUN_081df75c(void) { INCFUNC("asm/func/FUN_081df75c.inc"); }
 
