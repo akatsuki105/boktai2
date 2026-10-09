@@ -652,7 +652,12 @@ s32 FUN_0804e3c0(void) {
 
 NAKED s32 FUN_0804e3ec(void) { INCFUNC("asm/func/FUN_0804e3ec.inc"); }
 
-NAKED s32 FUN_0804e438(void) { INCFUNC("asm/func/FUN_0804e438.inc"); }
+u8* FUN_0804e438(void) {
+  if (gEntity0804e2c0 == NULL) {
+    return NULL;
+  }
+  return gEntity0804e2c0->unk_134;
+}
 
 s32 FUN_0804e458(void) {
   if (gEntity0804e2c0 == NULL) {
