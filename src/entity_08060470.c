@@ -80,7 +80,19 @@ void (*const PTR_ARRAY_085abaac[2])(Entity08060470*, Entity08060470Elem*, s32) =
 
 NAKED s32 Entity08060470_Update(Entity08060470* p) { INCFUNC("asm/func/Entity08060470_Update.inc"); }
 
-NAKED s32 Entity08060470_Destroy(Entity08060470* p) { INCFUNC("asm/func/Entity08060470_Destroy.inc"); }
+s32 Entity08060470_Destroy(Entity08060470* p) {
+  Entity08060470Elem* elem = p->ptcls;
+  s32 i;
+
+  for (i = 0; i < 16; i++, elem++) {
+    if (p->activeMask & (1 << i)) {
+      Entity08060470_ReleaseElem(p, elem, i);
+    }
+  }
+
+  gEntity08060470 = NULL;
+  return 0;
+}
 
 s32 Entity08060470_Init(Entity08060470* p) {
   Entity08060470Elem* elem;
