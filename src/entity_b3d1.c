@@ -87,7 +87,13 @@ NAKED void FUN_080bfba4(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfba4.inc"); }
 
 NAKED void FUN_080bfc60(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfc60.inc"); }
 
-NAKED void FUN_080bfce4(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfce4.inc"); }
+void FUN_080bfce4(EntityB3D1* p) {
+  s32 i;
+
+  for (i = 0; i < 5; i++) {
+    p->mainSprites[i].flags &= ~SPRFLAG_HIDDEN;
+  }
+}
 
 void FUN_080bfd04(EntityB3D1* p) {
   s32 i;
