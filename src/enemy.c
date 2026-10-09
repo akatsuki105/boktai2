@@ -170,7 +170,15 @@ void Enemy_ClearStateBegun(Enemy* p) {
 
 NAKED void FUN_080e48e8(Enemy* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_080e48e8.inc"); }
 
-NAKED void FUN_080e4964(Enemy* p) { INCFUNC("asm/func/FUN_080e4964.inc"); }
+void FUN_080e4964(Enemy* p) {
+  u16 prev;
+
+  p->unk_46b = 0;
+  prev = p->unk_1c8++;
+  if (p->handlerState != NULL) {
+    ((void (*)(Enemy*, u16))p->handlerState)(p, prev);
+  }
+}
 
 void FUN_080e499c(Enemy* p) {
   p->unk_116 = 0;
