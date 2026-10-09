@@ -693,7 +693,7 @@ s32 FUN_08044168(Entity286FNode* node) {
     return 0;
   }
 
-  fn = (Entity286FNodeUpdate*)PTR_ARRAY_085ab378[node->unk_05];
+  fn = PTR_ARRAY_085ab378[node->unk_05];
   node->unk_06 = node->unk_05;
   node->unk_2cc = fn;
   node->unk_10 = 0;
@@ -938,7 +938,7 @@ s32 FUN_08044ee0(Entity286FNode* node) {
     return 0;
   }
 
-  fn = (Entity286FNodeUpdate*)PTR_ARRAY_085ab3d8[node->unk_05];
+  fn = PTR_ARRAY_085ab3d8[node->unk_05];
   node->unk_06 = node->unk_05;
   node->unk_2cc = fn;
   node->unk_10 = 0;
