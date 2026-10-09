@@ -77,7 +77,14 @@ NON_MATCH void FUN_080bcdf8(Entity744F* p, Entity744FFunc* fn, u8 val) {
 #endif
 }
 
-NAKED void FUN_080bce20(Entity744F* p, s32 param_2) { INCFUNC("asm/func/FUN_080bce20.inc"); }
+void FUN_080bce20(Entity744F* p, s32 line) {
+  FUN_08049e5c();
+  p->sprites[33].flags |= SPRFLAG_HIDDEN;
+  TextBox_Start(p->unk_1640);
+  TextBox_SetRect(0, 16, 30, 2);
+  TextBox_SetInstant(1);
+  TextBox_ShowLine(line);
+}
 
 NAKED s32 FUN_080bce64(s32 slot) { INCFUNC("asm/func/FUN_080bce64.inc"); }
 
