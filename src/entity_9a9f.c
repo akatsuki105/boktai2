@@ -8,6 +8,8 @@
 
 s32 FUN_081dec1c(Entity9A9F* p);
 s32 FUN_081de130(Entity9A9F* p);
+s32 FUN_081de844(Entity9A9F*);
+s32 FUN_081de960(Entity9A9F*);
 void FUN_081df568(Entity9A9F* p);
 void FUN_081df62c(Entity9A9F* p);
 void FUN_080a5e4c(void);     // src/code_080917e4.s
@@ -127,7 +129,21 @@ NAKED s32 FUN_081de360(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de360.inc
 
 NAKED s32 FUN_081de6f0(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de6f0.inc"); }
 
-NAKED s32 FUN_081de7e8(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de7e8.inc"); }
+s32 FUN_081de7e8(Entity9A9F* p) {
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  if (p->stateTimer > 120) {
+    if (gEntity9A9F != NULL && gEntity9A9F->playerIdx == 0) {
+      Entity9A9F_SetState(p, 7, (EntityFunc*)FUN_081de844);
+    } else {
+      Entity9A9F_SetState(p, 8, (EntityFunc*)FUN_081de960);
+    }
+  }
+  return 0;
+}
 
 NAKED s32 FUN_081de844(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de844.inc"); }
 

@@ -34,7 +34,7 @@ typedef struct Entity9A9F {
   u8 unk_2c[0x30 - 0x2C];                      // 0x02C
   u16 unk_30;                                  // 0x030, Entity9A9F_Create が 0x1C20 を入れる
   u16 unk_32;                                  // 0x032, 同上
-  s32 stateTimer;                              // 0x034, FUN_081dfa98 が毎フレーム +1、Entity9A9F_SetState が 0 に戻す
+  u32 stateTimer;                              // 0x034, FUN_081dfa98 が毎フレーム +1、Entity9A9F_SetState が 0 に戻す
   u8 unk_38[4];                                // 0x038
   s32 unk_3c;                                  // 0x03C, '.L=5000'
   u8 unk_40[2];                                // 0x040
