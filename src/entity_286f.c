@@ -84,7 +84,9 @@ typedef struct Entity286F {
 static_assert(sizeof(Entity286F) == 1084);
 
 extern void (*const PTR_ARRAY_085ab36c[3])(unknown*, unknown*);
+extern void (*const PTR_ARRAY_085ab378[14])(unknown*, unknown*);
 extern void (*const PTR_ARRAY_085ab3b0[10])(unknown*, unknown*);
+extern void (*const PTR_ARRAY_085ab3d8[11])(unknown*, unknown*);
 
 COMMON_DATA Entity286F* gEntity286F = NULL;  // 0x03002B50
 
@@ -575,7 +577,22 @@ s32 FUN_0804415c(Entity286F* p, Entity286FNode* node) {
   return 0;
 }
 
-NAKED s32 FUN_08044168(Entity286FNode* node) { INCFUNC("asm/func/FUN_08044168.inc"); }
+// unk_05 に対応する更新関数を割り当てて動き出せる状態にする
+s32 FUN_08044168(Entity286FNode* node) {
+  Entity286FNodeUpdate* fn;
+
+  if ((u8)(node->unk_05 - 1) > 13) {
+    return 0;
+  }
+
+  fn = (Entity286FNodeUpdate*)PTR_ARRAY_085ab378[node->unk_05];
+  node->unk_06 = node->unk_05;
+  node->unk_2cc = fn;
+  node->unk_10 = 0;
+  node->unk_09 = 1;
+  node->unk_18[0] = 0;
+  return 1;
+}
 
 // ノードの待ちを解除して unk_2cc を呼ぶ
 s32 FUN_080441a4(Entity286F* p, Entity286FNode* node) {
