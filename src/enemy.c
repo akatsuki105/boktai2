@@ -14,6 +14,7 @@ const s16 s16_ARRAY_085ad3cc[4] = {1600, 0, 1600};  // 0x085AD3CC
 
 // --------------------------------------------
 
+s32 FUN_08240b98(u8* param_1, s8 param_2);  // asm/entity_794c.inc
 void FUN_080f22e8(Enemy* p);
 void FUN_080f230c(Enemy* p);
 void FUN_080f2330(Enemy* p);
@@ -357,9 +358,15 @@ bool8 Enemy_IsDead(Enemy* p) {
 
 NAKED void FUN_080e8aa0(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_080e8aa0.inc"); }
 
-NAKED void FUN_080e8ae4(unknown* param_1, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080e8ae4.inc"); }
+NAKED void FUN_080e8ae4(Enemy* p, u8* param_2, u8* param_3) { INCFUNC("asm/func/FUN_080e8ae4.inc"); }
 
-NAKED void FUN_080e8f20(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080e8f20.inc"); }
+void FUN_080e8f20(Enemy* p, s32 param_2) {
+  p->unk_21e = FUN_08240b98(p->unk_204, param_2);
+
+  if (p->unk_21e == 0xB546) {
+    FUN_080e8ae4(p, p->unk_204, p->unk_204);
+  }
+}
 
 NAKED s32 FUN_080e8f5c(unknown* param_1) { INCFUNC("asm/func/FUN_080e8f5c.inc"); }
 
