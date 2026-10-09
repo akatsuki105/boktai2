@@ -71,7 +71,15 @@ Entity0866Elem* FUN_08009b10(Entity0866* p) {
   return NULL;
 }
 
-NAKED void FUN_08009b30(HitboxData* a, HitboxData* b, void* owner) { INCFUNC("asm/func/FUN_08009b30.inc"); }
+void FUN_08009b30(HitboxData* a, HitboxData* b, Entity0866Elem* elem) {
+  if (!Hitbox_TestAttribute(a, HBATTR_14) && !Hitbox_HasWeakness(a, HBATTR_6 | HBATTR_BEAST | HBATTR_THING)) {
+    b->hitResult = HBRESULT_NORMAL;
+    elem->unk_02 = 1;
+    elem->unk_0a = 0;
+    elem->unk_07 = TRUE;
+    elem->hitbox.flags |= HBFLAG_UNK_2;
+  }
+}
 
 NAKED s32 FUN_08009b6c(Entity0866* p, Entity0866Elem* param_2) { INCFUNC("asm/func/FUN_08009b6c.inc"); }
 

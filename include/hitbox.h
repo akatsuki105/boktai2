@@ -39,6 +39,7 @@ typedef u32 HitboxAttributes;      // 低位7bitが自分の属性マスク, 攻
 #define HBATTR_IMMORTAL (1 << 11)  // 0x800, イモータル系の敵
 #define HBATTR_12 (1 << 12)        // 0x1000, 守備側の power を引かない
 #define HBATTR_13 (1 << 13)        // 0x2000, 守備側の耐性を無視する
+#define HBATTR_14 (1 << 14)        // 0x4000, FUN_08009b30 が立っていたら何もしない
 #define HBATTR_18 (1 << 18)        // 0x40000, ???
 
 // TODO: 解析が終わって問題なさそうなら HitboxData じゃなくて Hitbox にリネームする
