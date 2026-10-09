@@ -203,6 +203,7 @@ static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags;
 
 void FUN_08242c08(slot32_t n);  // src/weapon.c
 void FUN_0809630c(EntityCC28* p);
+void FUN_0809ae0c(EntityCC28* p);
 s32 FUN_0808da88(EntityCC28* p);
 s32 FUN_0809b3b0(EntityCC28* p);
 void FUN_0808db68(EntityCC28* p);
@@ -649,7 +650,14 @@ NAKED void FUN_0808ef58(EntityCC28* p) { INCFUNC("asm/func/FUN_0808ef58.inc"); }
 
 NAKED void FUN_0808f01c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f01c.inc"); }
 
-NAKED void FUN_0808f09c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f09c.inc"); }
+void FUN_0808f09c(EntityCC28* p) {
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+
+  p->unk_9ec++;
+  if (p->unk_9ec > 149) {
+    FUN_0808a33c(p, FUN_0809ae0c);
+  }
+}
 
 NAKED void FUN_0808f0d8(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f0d8.inc"); }
 
