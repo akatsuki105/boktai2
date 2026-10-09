@@ -12,7 +12,13 @@ static_assert(sizeof(Entity4063) == 32);
 
 extern Entity4063* gEntity4063;  // 0x03002C50
 
-NAKED s32 Entity4063_GetRemaining(void) { INCFUNC("asm/func/Entity4063_GetRemaining.inc"); }
+// 残りフレーム数を返す, Entity がいなければ 0
+s32 Entity4063_GetRemaining(void) {
+  if (gEntity4063 == NULL) {
+    return 0;
+  }
+  return gEntity4063->timer;
+}
 
 // 次の更新でスクリプトを実行せずに消えるようにする
 void Entity4063_Cancel(void) {
