@@ -204,6 +204,7 @@ static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags;
 
 void FUN_08242c08(slot32_t n);  // src/weapon.c
 void FUN_0809630c(EntityCC28* p);
+void FUN_0808e400(EntityCC28* p);
 void FUN_08099e70(EntityCC28* p);
 void FUN_0809a368(EntityCC28* p);
 s32 FUN_0804a40c(s32 id, s32 idx, char* str);  // src/text_panel.c
@@ -596,7 +597,18 @@ void FUN_0808e400(EntityCC28* p) {
 
 NAKED void FUN_0808e420(void) { INCFUNC("asm/func/FUN_0808e420.inc"); }
 
-NAKED void FUN_0808e4f4(void) { INCFUNC("asm/func/FUN_0808e4f4.inc"); }
+void FUN_0808e4f4(void) {
+  EntityCC28* p = gEntityCC28;
+
+  if (p != NULL) {
+    FUN_0808d268();
+    p->unk_a34.flags |= SPRFLAG_HIDDEN;
+    EntityCC28_ApplyWeapon(p);
+    FUN_0808d93c(p);
+    FUN_0808d3d4(p);
+    FUN_0808a33c(p, FUN_0808e400);
+  }
+}
 
 NAKED void FUN_0808e53c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808e53c.inc"); }
 
