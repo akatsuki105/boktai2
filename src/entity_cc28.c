@@ -1549,32 +1549,24 @@ void FUN_08099b3c(s32 param_1) {
 
 // メッセージ速度の設定値を 1 と 2 で入れ替えて返す
 s32 FUN_08099b5c(void) {
-  if (gStat->messageSpeed == 1) {
-    return 2;
-  }
-  if (gStat->messageSpeed == 2) {
-    return 1;
-  }
-  return 0;
+  if (gStat->textSpeed == 1) return 2;  // 設定で "速い" を選んだ時
+  if (gStat->textSpeed == 2) return 1;  // "普通"
+  return 0;                             // "遅い"
 }
 
 s32 FUN_08099b84(s32 n) {
-  if (n == 0) {
-    return 4;
-  }
-  if (n == 1) {
-    return 2;
-  }
-  return 1;
+  if (n == 0) return 4;  // 設定で "遅い" を選んだ時
+  if (n == 1) return 2;  // "普通"
+  return 1;              // "速い"
 }
 
 NAKED void FUN_08099b9c(EntityCC28* p) { INCFUNC("asm/func/FUN_08099b9c.inc"); }
 
 void FUN_08099c1c(EntityCC28* p) {
   p->unk_4000[13] = 0;
-  p->unk_4000[14] = gStat->unk_010;
+  p->unk_4000[14] = gStat->controlUp;
   p->unk_4000[15] = FUN_08099b5c();
-  p->unk_4000[16] = gStat->unk_014;
+  p->unk_4000[16] = gStat->markerEnabled;
 }
 
 NAKED void FUN_08099c64(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_08099c64.inc"); }

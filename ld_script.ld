@@ -132,6 +132,7 @@ SECTIONS {
       src/entity_286f.o(COMMON);
       src/entity_fb53.o(COMMON);
       src/code_0804b9f4.o(COMMON);
+      . = ALIGN(8);
       src/iwram2.o(iwram_data);
       src/camera.o(COMMON);
       src/time.o(COMMON);

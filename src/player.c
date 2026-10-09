@@ -2140,7 +2140,7 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
 void FUN_08063634(Player* p, s32 n) {
   p->unk_43c[n] = 0;
   if (n == 2) {
-    p->unk_456 = gStat->unk_010;
+    p->unk_456 = gStat->controlUp;
   }
 }
 
@@ -2197,7 +2197,7 @@ NON_MATCH u32 Player_TickBadCondTimers(Player* p, u32 n) {
         if (p->unk_43c[2] != 0 && (p->unk_1c & 1)) {
           p->unk_43c[2]--;
           if (p->unk_43c[2] == 0) {
-            p->unk_456 = gStat->unk_010;
+            p->unk_456 = gStat->controlUp;
           }
         }
         break;
