@@ -561,7 +561,6 @@ SECTIONS {
     src/boss/durathror.o (.rodata);
     src/boss/shademan.o (.rodata);
     src/entity_286f.o (.rodata);
-    src/data3b.o (.rodata);
     src/entity_ab4e.o (.rodata);
     src/text_renderer.o (.rodata);
     src/text_marquee.o (.rodata);

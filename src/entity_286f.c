@@ -87,11 +87,6 @@ typedef struct Entity286F {
 } Entity286F;
 static_assert(sizeof(Entity286F) == 1084);
 
-extern void (*const PTR_ARRAY_085ab36c[3])(unknown*, unknown*);
-extern void (*const PTR_ARRAY_085ab378[14])(unknown*, unknown*);
-extern void (*const PTR_ARRAY_085ab3b0[10])(unknown*, unknown*);
-extern void (*const PTR_ARRAY_085ab3d8[11])(unknown*, unknown*);
-
 void FUN_08055d7c(SpriteHolder* p);
 
 COMMON_DATA Entity286F* gEntity286F = NULL;  // 0x03002B50
@@ -135,6 +130,39 @@ const Entity286FSpriteEntry sEntity286FSprites[21] = {
     {id : SPRITE_ENNIO_LUIS,           idx : 1, data : &u16_ARRAY_085aaff4[260]},
     {id : SPRITE_MEGAMAN,              idx : 0, data : &u16_ARRAY_085aaff4[268]}
 };  // 0x085AB210
+
+typedef struct {
+  SpriteID16 id;  // 0x0, NPCのスプライトIDばっかり
+  u8 idx;         // 0x2, 1つのグラフィックにn人分のグラフィックデータが入っているときにどのキャラクターかを示すインデックス?
+  u8 unk_3;       // 0x3, 不明
+  u8 unk_4[4];    // 0x4, 不明, 型も不明
+} Unk085ab2b8;
+
+const Unk085ab2b8 Unk085ab2b8_ARRAY_085ab2b8[21] = {
+    {id : SPRITE_DJANGO_SABATA,        idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
+    {id : SPRITE_MOUSE,                idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
+    {id : SPRITE_SKELETONS,            idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
+    {id : SPRITE_BOKU,                 idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
+    {id : SPRITE_OTNK,                 idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
+    {id : SPRITE_SMITH_MARCELLO,       idx : 0, unk_3 : 0, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
+    {id : SPRITE_SHAIAN,               idx : 0, unk_3 : 0, unk_4 : {0x4, 0x0, 0x4, 0x0}    },
+    {id : SPRITE_RITA,                 idx : 0, unk_3 : 1, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
+    {id : SPRITE_ZAJI,                 idx : 0, unk_3 : 1, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
+    {id : SPRITE_SUMIRE,               idx : 0, unk_3 : 2, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
+    {id : SPRITE_KURO,                 idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
+    {id : SPRITE_KID,                  idx : 0, unk_3 : 0, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
+    {id : SPRITE_LADY,                 idx : 0, unk_3 : 1, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
+    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
+    {id : SPRITE_ENNIO_LUIS,           idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
+    {id : SPRITE_DAINN,                idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
+    {id : SPRITE_DJANGO_SABATA,        idx : 1, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
+    {id : SPRITE_SMITH_MARCELLO,       idx : 1, unk_3 : 0, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
+    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 1, unk_3 : 0, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
+    {id : SPRITE_ENNIO_LUIS,           idx : 1, unk_3 : 0, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
+    {id : SPRITE_MEGAMAN,              idx : 0, unk_3 : 0, unk_4 : {0x2, 0x0, 0x2, 0x0}    }
+};  // 0x085AB2B8
+
+const SoundID16 sound16_t_ARRAY_085ab360[6] = {0xC9, 0xCA, 0x25B, 0x25C, 0x25B, 0x25C};  // 0x085AB360
 
 // 状態を差し替えて経過フレーム数を 0 に戻す
 static inline void Entity286FNode_SetState(Entity286FNode* node, u32 state) {
@@ -379,7 +407,7 @@ bool32 FUN_08041dcc(void) {
 
 NAKED s32 FUN_08041e10(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08041e10.inc"); }
 
-NAKED void FUN_08042178(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08042178.inc"); }
+NAKED void FUN_08042178(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_08042178.inc"); }
 
 NAKED void FUN_080421bc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_080421bc.inc"); }
 
@@ -389,7 +417,7 @@ NAKED void FUN_0804234c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_08042414(Entity286F* p, Entity286FNode* node, s32 param_3) { INCFUNC("asm/func/FUN_08042414.inc"); }
 
-NAKED void FUN_08042638(Entity286F* p, Entity286FNode* node, s32 param_3) { INCFUNC("asm/func/FUN_08042638.inc"); }
+NAKED void FUN_08042638(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08042638.inc"); }
 
 NAKED void FUN_08042868(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08042868.inc"); }
 
@@ -632,6 +660,12 @@ void FUN_08044104(Entity286F* p, Entity286FNode* node) {
   }
 }
 
+void (*const PTR_ARRAY_085ab36c[3])(Entity286F*, Entity286FNode*) = {
+    FUN_080440ac,
+    FUN_080440d0,
+    FUN_08044104,
+};  // 0x085AB36C
+
 void FUN_08044138(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085ab36c[node->state](p, node); }
 
 void FUN_08044150(Entity286F* p, Entity286FNode* node) { FUN_08044138(p, node); }
@@ -640,6 +674,16 @@ s32 FUN_0804415c(Entity286F* p, Entity286FNode* node) {
   FUN_08044150(p, node);
   return 0;
 }
+
+void (*const PTR_ARRAY_085ab378[14])(Entity286F*, Entity286FNode*, u32) = {
+    NULL,
+    FUN_08042178,
+    (void*)FUN_080421bc,
+    (void*)FUN_08042200,
+    (void*)FUN_0804234c,
+    (void*)FUN_08042414,
+    (void*)FUN_08042638,
+};  // 0x085AB378
 
 // unk_05 に対応する更新関数を割り当てて動き出せる状態にする
 s32 FUN_08044168(Entity286FNode* node) {
@@ -813,6 +857,19 @@ void FUN_080446d8(Entity286F* p, Entity286FNode* node) {
   }
 }
 
+void (*const PTR_ARRAY_085ab3b0[10])(Entity286F*, Entity286FNode*) = {
+    FUN_0804454c,
+    FUN_08044570,
+    FUN_080445a4,
+    FUN_080445d8,
+    FUN_080445fc,
+    FUN_08044634,
+    FUN_08044658,
+    FUN_08044690,
+    FUN_080446b4,
+    FUN_080446d8,
+};  // 0x085AB3B0
+
 void FUN_0804470c(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085ab3b0[node->state](p, node); }
 
 void FUN_08044724(Entity286F* p, Entity286FNode* node) { FUN_0804470c(p, node); }
@@ -822,30 +879,29 @@ s32 FUN_08044730(Entity286F* p, Entity286FNode* node) {
   return 0;
 }
 
-NAKED void FUN_0804473c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0804473c.inc"); }
+NAKED void FUN_0804473c(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_0804473c.inc"); }
 
-NAKED void FUN_0804478c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0804478c.inc"); }
+NAKED void FUN_0804478c(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_0804478c.inc"); }
 
-NAKED void FUN_080448c8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_080448c8.inc"); }
+NAKED void FUN_080448c8(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_080448c8.inc"); }
 
-NAKED void FUN_0804494c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0804494c.inc"); }
+NAKED void FUN_0804494c(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_0804494c.inc"); }
 
-NAKED void FUN_080449c0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_080449c0.inc"); }
+NAKED void FUN_080449c0(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_080449c0.inc"); }
 
-void FUN_08044a54(Entity286F* p, Entity286FNode* node) {
+void FUN_08044a54(Entity286F* p, Entity286FNode* node, u32 _) {
   if (node->unk_09) {
     node->unk_09 = 0;
     node->unk_07 = 0;
     FUN_08041480(node, 7, 2, 0, 1);
     node->unk_20 = 0;
   }
-
   node->fn(node);
 }
 
-NAKED void FUN_08044a90(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08044a90.inc"); }
+NAKED void FUN_08044a90(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_08044a90.inc"); }
 
-void FUN_08044d9c(Entity286F* p, Entity286FNode* node) {
+void FUN_08044d9c(Entity286F* p, Entity286FNode* node, u32 _) {
   if (node->unk_09) {
     node->unk_09 = 0;
     node->unk_07 = 0;
@@ -856,9 +912,23 @@ void FUN_08044d9c(Entity286F* p, Entity286FNode* node) {
   node->fn(node);
 }
 
-NAKED void FUN_08044dd8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08044dd8.inc"); }
+NAKED void FUN_08044dd8(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_08044dd8.inc"); }
 
-NAKED void FUN_08044e6c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08044e6c.inc"); }
+NAKED void FUN_08044e6c(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_08044e6c.inc"); }
+
+void (*const PTR_ARRAY_085ab3d8[11])(Entity286F*, Entity286FNode*, u32) = {
+    NULL,
+    FUN_0804473c,
+    FUN_0804478c,
+    FUN_080448c8,
+    FUN_0804494c,
+    FUN_080449c0,
+    FUN_08044a54,
+    FUN_08044a90,
+    FUN_08044d9c,
+    FUN_08044dd8,
+    FUN_08044e6c,
+};  // 0x085AB3D8
 
 // unk_05 に対応する更新関数を割り当てて動き出せる状態にする
 s32 FUN_08044ee0(Entity286FNode* node) {

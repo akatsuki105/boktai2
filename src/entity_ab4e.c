@@ -51,6 +51,12 @@ static_assert(sizeof(EntityAB4E) == 6704);
 
 IWRAM_DATA EntityAB4E* gEntityAB4E = NULL;  // 0x030000C0
 
+const u16 u16_ARRAY_085ab404[8] = {0, 16, 0, 0, 0, 0, 0, 0};  // 0x085AB404
+
+const u16 u16_ARRAY_085ab414[8] = {5, 21, 0, 0, 0, 0, 0, 0};  // 0x085AB414
+
+const u16 u16_ARRAY_085ab424[8] = {7, 23, 0, 0, 0, 0, 0, 0};  // 0x085AB424
+
 s32 FUN_080455fc(EntityAB4E*, EntityAB4EElem*, s32);
 s32 FUN_08045890(EntityAB4E*, EntityAB4EElem*, s32);
 s32 FUN_08045b6c(EntityAB4E*, EntityAB4EElem*, s32);
