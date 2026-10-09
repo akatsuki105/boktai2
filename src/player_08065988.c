@@ -58,49 +58,6 @@ void FUN_0823bac8(Vec3* pos);
 bool32 FUN_0808626c(s32 idA, u32 flagsA, s32 idB, u32 flagsB);
 void Player_UpdateBloodSword(Player* p);
 
-void FUN_08078d5c(Player* p);
-void FUN_08078d5c(Player* p);
-void FUN_080798a4(Player* p);
-void FUN_08079b64(Player* p);
-void FUN_08079e4c(Player* p);
-void FUN_08079138(Player* p);
-
-const PlayerFunc PTR_ARRAY_085abb14[6] = {
-    [PLAYER_SOLAR_DJANGO] = FUN_08078d5c,
-    [PLAYER_DARK_DJANGO] = FUN_08078d5c,
-    [PLAYER_BAT] = FUN_080798a4,
-    [PLAYER_MOUSE] = FUN_08079b64,
-    [PLAYER_SLEEPING] = FUN_08079e4c,
-    [PLAYER_SABATA] = FUN_08079138,
-};  // 0x085abb14
-
-// clang-format off
-const u16 u16_ARRAY_085abb2c[57] = {
-    0,   5,   20,  22,  24,  26,  28,  30,  52,  54,  56,  58,  60,  61,  62,
-    63,  10,  15,  44,  46,  48,  109, 119, 114, 124, 129, 134, 139, 144, 149,
-    154, 159, 64,  69,  74,  79,  84,  89,  94,  99,  104, 32,  34,  38,  40,
-    42,  36,  179, 184, 194, 189, 534, 513, 514, 515, 519, 520,
-};  // 0x085abb2c
-// clang-format on
-
-// clang-format off
-const u16 u16_ARRAY_085abb9e[57] = {
-    199, 204, 219, 221, 223, 225, 227, 229, 251, 253, 255, 257, 259, 260, 261,
-    262, 209, 214, 243, 245, 247, 308, 318, 313, 323, 328, 333, 338, 343, 348,
-    353, 358, 263, 268, 273, 278, 283, 288, 293, 298, 303, 231, 233, 237, 239,
-    241, 235, 378, 383, 393, 388, 535, 521, 522, 523, 527, 528,
-};  // 0x085abb9e
-// clang-format on
-
-// clang-format off
-const u16 u16_ARRAY_085abc10[57] = {
-    414, 419, 434, 436, 438, 440, 442, 444, 466, 468, 470, 472, 474, 475, 476,
-    477, 424, 429, 458, 460, 462, 0,   0,   0,   0,   0,   0,   0,   0,   0,
-    0,   0,   0,   0,   0,   478, 483, 488, 0,   0,   0,   446, 448, 452, 454,
-    456, 450, 493, 498, 508, 503, 533, 0,   0,   0,   0,   0,
-};  // 0x085abc10
-// clang-format on
-
 void FUN_08065200(Player* p) {
   if (VM_SeekToNamedArg('i')) {
     p->unk_18 = VM_GetValue();
@@ -124,6 +81,22 @@ void FUN_08065240(Player* p) {
     p->scriptID_9c4 = 0;
   }
 }
+
+void FUN_08078d5c(Player* p);
+void FUN_08078d5c(Player* p);
+void FUN_080798a4(Player* p);
+void FUN_08079b64(Player* p);
+void FUN_08079e4c(Player* p);
+void FUN_08079138(Player* p);
+
+const PlayerFunc PTR_ARRAY_085abb14[6] = {
+    [PLAYER_SOLAR_DJANGO] = FUN_08078d5c,
+    [PLAYER_DARK_DJANGO] = FUN_08078d5c,
+    [PLAYER_BAT] = FUN_080798a4,
+    [PLAYER_MOUSE] = FUN_08079b64,
+    [PLAYER_SLEEPING] = FUN_08079e4c,
+    [PLAYER_SABATA] = FUN_08079138,
+};  // 0x085ABB14
 
 NAKED s32 Player_Init_Helper_08065270(Player* p) { INCFUNC("asm/func/Player_Init_Helper_08065270.inc"); }
 
@@ -368,14 +341,25 @@ void FUN_08066e9c(Player* p, Vec3* pos1, s32 param_3, s32 param_4, Vec3* pos2, s
 }
 
 u32 FUN_08066ee4(s32 playerKind, s32 idx) {
+  static const u16 sSolarDjangoAnimIdxTable[57] = {
+      0, 5, 20, 22, 24, 26, 28, 30, 52, 54, 56, 58, 60, 61, 62, 63, 10, 15, 44, 46, 48, 109, 119, 114, 124, 129, 134, 139, 144, 149, 154, 159, 64, 69, 74, 79, 84, 89, 94, 99, 104, 32, 34, 38, 40, 42, 36, 179, 184, 194, 189, 534, 513, 514, 515, 519, 520,
+  };  // 0x085ABB2C
+  static const u16 sDarkDjangoAnimIdxTable[57] = {
+      199, 204, 219, 221, 223, 225, 227, 229, 251, 253, 255, 257, 259, 260, 261, 262, 209, 214, 243, 245, 247, 308, 318, 313, 323, 328, 333, 338, 343,
+      348, 353, 358, 263, 268, 273, 278, 283, 288, 293, 298, 303, 231, 233, 237, 239, 241, 235, 378, 383, 393, 388, 535, 521, 522, 523, 527, 528,
+  };  // 0x085ABB9E
+  static const u16 sSabataAnimIdxTable[57] = {
+      414, 419, 434, 436, 438, 440, 442, 444, 466, 468, 470, 472, 474, 475, 476, 477, 424, 429, 458, 460, 462, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 478, 483, 488, 0, 0, 0, 446, 448, 452, 454, 456, 450, 493, 498, 508, 503, 533, 0, 0, 0, 0, 0,
+  };  // 0x085ABC10
+
   if (playerKind == PLAYER_SOLAR_DJANGO) {
-    return u16_ARRAY_085abb2c[idx];
+    return sSolarDjangoAnimIdxTable[idx];
   }
   if (playerKind == PLAYER_DARK_DJANGO) {
-    return u16_ARRAY_085abb9e[idx];
+    return sDarkDjangoAnimIdxTable[idx];
   }
   if (playerKind == PLAYER_SABATA) {
-    return u16_ARRAY_085abc10[idx];
+    return sSabataAnimIdxTable[idx];
   }
   return 0;
 }
