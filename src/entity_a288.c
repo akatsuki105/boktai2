@@ -33,12 +33,15 @@ typedef struct EntityA288 {
   s32 timer2;                                  // 0x0060, flags bit1 が落ちている間 _Update が 1 足す
   s32 unk_64;                                  // 0x0064, _Init が -1 を入れる
   u32 unk_68;                                  // 0x0068, _Init が 0 を入れる
-  u8 unk_6c[0x98 - 0x6C];                      // 0x006C, まだ未解析
+  u8 unk_6c[0x78 - 0x6C];                      // 0x006C, まだ未解析
+  MainSpriteGfx gfx_78;                        // 0x0078
   MainSprite sprite_98;                        // 0x0098
   Tilemaps* tilemap2;                          // 0x00F8, TILEMAP_A413
   rgb555* bgp2;                                // 0x00FC, BGP_EFDA[208]
   s32 windowID;                                // 0x0100
-  u8 unk_104[0x10C - 0x104];                   // 0x0104, まだ未解析
+  u8 unk_104[0x106 - 0x104];                   // 0x0104, まだ未解析
+  u16 unk_106;                                 // 0x0106, +4 したものを sprite_98 のアニメ番号にする
+  u8 unk_108[0x10C - 0x108];                   // 0x0108, まだ未解析
   MainSprite sprites_10c[2];                   // 0x010C
   u8* unk_1cc;                                 // 0x01CC, '.s'
   u8 unk_1d0[0x1D8 - 0x1D0];                   // 0x01D0, まだ未解析
@@ -179,7 +182,15 @@ void FUN_08213960(EntityA288* p) {
   TextPanel_Destroy(p->windowID);
 }
 
-NAKED void FUN_0821397c(EntityA288* p) { INCFUNC("asm/func/FUN_0821397c.inc"); }
+// 残差1命令, 原典は gfx_78 のアドレスを callee-saved に残して p を使い捨てるが agbcc は逆に割り当てる, MainSpriteGfx* ローカルは試済
+NON_MATCH void FUN_0821397c(EntityA288* p) {
+#ifdef NONMATCHING_C
+  MainSprite_SetAnim(&p->sprite_98, &p->gfx_78, p->unk_106 + 4, 1, 4);
+  p->sprite_98.flags &= ~SPRFLAG_HIDDEN;
+#else
+  INCFUNC("asm/func/FUN_0821397c.inc");
+#endif
+}
 
 NAKED void FUN_082139b4(EntityA288* p, s16 param_2) { INCFUNC("asm/func/FUN_082139b4.inc"); }
 
