@@ -55,7 +55,10 @@ typedef struct Entity286FNode {
     ParticleShadow ptcl;          // shadowKind == 1
     AuxShadow aux;                // shadowKind == 2
   } shadow;                       // 0x244
-  u8 unk_2b0[0x2C8 - 0x2B0];      // 0x2B0, まだ未解析
+  u8 unk_2b0[0x2B8 - 0x2B0];      // 0x2B0, まだ未解析
+  unknown* unk_2b8;               // 0x2B8, Entity286F_FindSpriteData の戻り値
+  unknown* unk_2bc;               // 0x2BC, FUN_08040dc0 の戻り値
+  u8 unk_2c0[0x2C8 - 0x2C0];      // 0x2C0, まだ未解析
   u16 unk_2c8;                    // 0x2C8, FUN_080411d8 が unk_2ca を複写する
   u16 unk_2ca;                    // 0x2CA, FUN_080415cc が書き、FUN_080411d8 が unk_2c8 へ移す
   Entity286FNodeUpdate* unk_2cc;  // 0x2CC, 根拠: FUN_080441a4 が (p, node, unk_10) で呼ぶ
@@ -155,7 +158,17 @@ unknown* Entity286F_FindSpriteData(SpriteID32 id, s32 idx) {
 
 NAKED unknown* FUN_08040dc0(SpriteID32 id, s32 idx) { INCFUNC("asm/func/FUN_08040dc0.inc"); }
 
-NAKED s32 FUN_08040df4(Entity286F* p, Entity286FNode* node, SpriteID32 id, s32 idx) { INCFUNC("asm/func/FUN_08040df4.inc"); }
+s32 FUN_08040df4(Entity286F* p, Entity286FNode* node, SpriteID32 id, s32 idx) {
+  node->unk_2b8 = Entity286F_FindSpriteData(id, idx);
+
+  if (node->unk_2b8 != NULL) {
+    node->unk_2bc = FUN_08040dc0(id, idx);
+    if (node->unk_2bc != NULL) {
+      return 0;
+    }
+  }
+  return -1;
+}
 
 // ノードをリストの先頭に繋ぐ
 void Entity286F_LinkNode(Entity286F* p, Entity286FNode* node) {
