@@ -182,8 +182,9 @@ typedef struct EntityCC28 {
   u8 unk_4000[0x401D - 0x4000];    // 0x4000
   u8 unk_401d;                     // 0x401D, 根拠: FUN_08091bbc が 1 を入れる
   u8 unk_401e[0x402C - 0x401E];    // 0x401E
-  void* unk_402c[3];               // 0x402C
-  u32 unk_4038;                    // 0x4038
+  u8 (*unk_402c[3])[16];           // 0x402C, 1件16バイトの表, +0x0F が TextBox_ShowLine に渡す行番号
+  u8 unk_4038;                     // 0x4038, unk_402c[0] の添字
+  u8 unk_4039[3];                  // 0x4039, まだ未解析
   u8 unk_403c[20];                 // 0x403C
   u16 unk_4050;                    // 0x4050
   u16 unk_4052;                    // 0x4052
@@ -714,7 +715,7 @@ void FUN_0808fbcc(MenuCursor* p) {
 
 NAKED void FUN_0808fbdc(s32 param_1, u8 param_2, u8 param_3) { INCFUNC("asm/func/FUN_0808fbdc.inc"); }
 
-NAKED void FUN_0808fbf4(EntityCC28* p) { INCFUNC("asm/func/FUN_0808fbf4.inc"); }
+void FUN_0808fbf4(EntityCC28* p) { TextBox_ShowLine(p->unk_402c[0][p->unk_4038][0xF]); }
 
 NAKED s32 FUN_0808fc14(void) { INCFUNC("asm/func/FUN_0808fc14.inc"); }
 
