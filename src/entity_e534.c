@@ -69,7 +69,7 @@ NON_MATCH void EntityE534Elem_SetAnim(EntityE534* p, EntityE534Elem* e, s32 anim
 #ifdef NONMATCHING_C
   u16 angle = e->angle;
   s32 q = ((((angle + 0x20) & 0xFF) >> 6) + 1) & 3;
-  u8 variant = ((u8)(q - 1) <= 1) ? 1 : 0;
+  u8 variant = (q == 1 || q == 2) ? 1 : 0;
   AuxAnimPlayFlags flags = (q > 1) ? 1 : 0;
 
   AuxAnim_SetAnim(&e->anim, p->anim, animIdx, variant, flags);

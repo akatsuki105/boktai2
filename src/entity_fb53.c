@@ -171,7 +171,7 @@ s32 EntityFB53_Update(EntityFB53* p) {
     p->linkError |= 0x70;
   }
 
-  if ((u8)(p->state - 8) > 1 && p->linkError != 0) {
+  if (p->state != 8 && p->state != 9 && p->linkError != 0) {
     EntityFB53_SetState(p, 9);
   }
 

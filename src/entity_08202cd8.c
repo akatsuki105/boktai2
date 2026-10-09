@@ -164,7 +164,7 @@ void FUN_0820287c(Entity08202cd8* p, s32 keep) {
 
 // unk_6db で指定された状態関数を fn に移す
 s32 FUN_082028b8(Entity08202cd8* p) {
-  if ((u8)(p->unk_6db - 1) > 7) {
+  if (p->unk_6db == 0 || p->unk_6db > 8) {
     return 0;
   }
 

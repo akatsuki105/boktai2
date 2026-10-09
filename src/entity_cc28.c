@@ -1065,9 +1065,11 @@ u32 item_08092034(s32 slot) {
 
 NAKED void FUN_08092070(EntityCC28* p) { INCFUNC("asm/func/FUN_08092070.inc"); }
 
-// 選択中のアイテムの effectType が 1 か 2 かどうか
+// 選択中のアイテムが HP/Ene 回復アイテムかどうか
 bool32 FUN_080921a8(EntityCC28* p) {
-  if ((u16)(gItemDB[GetItemID(p->inValuableInventory, p->selectedSlot)].effectType - 1) <= 1) {
+  item32_t id = GetItemID(p->inValuableInventory, p->selectedSlot);
+
+  if (gItemDB[id].effectType == IET_HP || gItemDB[id].effectType == IET_MP) {
     return TRUE;
   }
   return FALSE;

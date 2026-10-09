@@ -1617,9 +1617,9 @@ NON_MATCH void Player_UpdatePltt(Player* p, u32 n) {
     return;
   }
 
-  if ((u16)(p->unk_964 - 1) <= 0x4E) {
+  if (p->unk_964 >= 1 && p->unk_964 <= 0x4F) {
     src = &gObjPlttData[p->unk_962 * 16];
-    if ((u16)(p->unk_964 - 0x21) <= 0xE) {
+    if (p->unk_964 >= 0x21 && p->unk_964 <= 0x2F) {
       p->unk_964 = 0x30;
     }
 
@@ -1759,11 +1759,11 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
     return;
   }
 
-  if ((u16)(p->unk_964 - 1) <= 0x4E) {
+  if (p->unk_964 >= 1 && p->unk_964 <= 0x4F) {
     rgb555* src = &gObjPlttData[p->unk_962 * 16];
     s32 w;
 
-    if ((u16)(p->unk_964 - 0x21) <= 0xE) {
+    if (p->unk_964 >= 0x21 && p->unk_964 <= 0x2F) {
       p->unk_964 = 0x30;
     }
 
