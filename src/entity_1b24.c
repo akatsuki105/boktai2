@@ -9,31 +9,28 @@
 #include "vm.h"
 #include "weapon.h"
 
-struct Entity1B24;
-typedef void Entity1B24Func(struct Entity1B24* p);
-
 // 通信販売(相手と武器の売り買いをする, 実質的なアイテム交換機能) or 通信対戦の武器選択 の画面
 // gEntity9A9F の記録から相手の武器を読み、36枚のスプライトで並べる
 // 相手の武器を詳細にみているので、多分 通信販売 の画面
 typedef struct Entity1B24 {
-  Entity e;                        // 0x000, ENTITY_UNK_8
-  u8* record;                      // 0x018, &gEntity9A9F->unk_15c, セッションが無ければ NULL で _Init は失敗する
-  Tilemaps* tilemap;               // 0x01C, TILEMAP_CD91, BG2 に敷く
-  rgb555* pltt;                    // 0x020, GetBgPlttFile("bg_link_col_arr")
-  void* unk_24;                    // 0x024, ワードとして読まれるが用途不明
-  MainSpriteGfx gfx[4];            // 0x028
-  MainSprite sprites[36];          // 0x0A8, Entity1B24_Destroy がまとめて外す
-  u8 unk_e28[48];                  // 0xE28
-  u8 unk_e58[244];                 // 0xE58, _Init が FUN_080b99a0(&unk_e58), _Destroy が FUN_080b9a0c(&unk_e58) に渡す
-  WeaponData weaponData;           // 0xF4C, record[0x40] が 2 なら GUN_DEL_HELL を直接書き、そうでなければ FUN_08242b14(slot, &weaponData)
-  s8 slot;                         // 0xF70, record[0x17], 負なら武器を読まない
-  u8 weaponKindMask;               // 0xF71, GetWeaponKind(slot) を16スロット分見て bit0..3 を立てる, record[0x40] が 2 なら 0xF
-  u16 unk_f72;                     // 0xF72, FUN_0809ce90 が状態遷移のたびに 0 を入れる
-  u32 unk_f74;                     // 0xF74, _Init が 0x1E を入れる
-  u8 unk_f78[12];                  // 0xF78
-  void* unk_f84;                   // 0xF84, FUN_0809ce90 が GetFile の戻り値か 0 を入れる
-  void* unk_f88;                   // 0xF88, 同上
-  Entity1B24Func* updateCallback;  // 0xF8C
+  Entity e;                                    // 0x000, ENTITY_UNK_8
+  u8* record;                                  // 0x018, &gEntity9A9F->unk_15c, セッションが無ければ NULL で _Init は失敗する
+  Tilemaps* tilemap;                           // 0x01C, TILEMAP_CD91, BG2 に敷く
+  rgb555* pltt;                                // 0x020, GetBgPlttFile("bg_link_col_arr")
+  void* unk_24;                                // 0x024, ワードとして読まれるが用途不明
+  MainSpriteGfx gfx[4];                        // 0x028
+  MainSprite sprites[36];                      // 0x0A8, Entity1B24_Destroy がまとめて外す
+  u8 unk_e28[48];                              // 0xE28
+  u8 unk_e58[244];                             // 0xE58, _Init が FUN_080b99a0(&unk_e58), _Destroy が FUN_080b9a0c(&unk_e58) に渡す
+  WeaponData weaponData;                       // 0xF4C, record[0x40] が 2 なら GUN_DEL_HELL を直接書き、そうでなければ FUN_08242b14(slot, &weaponData)
+  s8 slot;                                     // 0xF70, record[0x17], 負なら武器を読まない
+  u8 weaponKindMask;                           // 0xF71, GetWeaponKind(slot) を16スロット分見て bit0..3 を立てる, record[0x40] が 2 なら 0xF
+  u16 unk_f72;                                 // 0xF72, FUN_0809ce90 が状態遷移のたびに 0 を入れる
+  u32 unk_f74;                                 // 0xF74, _Init が 0x1E を入れる
+  u8 unk_f78[12];                              // 0xF78
+  void* unk_f84;                               // 0xF84, FUN_0809ce90 が GetFile の戻り値か 0 を入れる
+  void* unk_f88;                               // 0xF88, 同上
+  void (*updateCallback)(struct Entity1B24*);  // 0xF8C
 } Entity1B24;
 static_assert(sizeof(Entity1B24) == 3984);
 
@@ -45,7 +42,7 @@ void FUN_080b9fc4(unknown* p, unknown* q);
 void MenuCursor_Init(unknown* p, s32 a, s32 b, s32 c, s32 d);
 
 // 状態関数を差し替える
-void FUN_0809ce90(Entity1B24* p, Entity1B24Func fn) {
+void FUN_0809ce90(Entity1B24* p, void* fn) {
   p->updateCallback = fn;
   p->unk_f72 = 0;
 }

@@ -7,7 +7,6 @@
 #include "vm.h"
 
 struct ElevatorUnkData;
-
 typedef void ElevatorUnkDataFunc(struct ElevatorUnkData* p);
 
 typedef u16 ElevatorFlags;               // ElevatorUnkData.flags

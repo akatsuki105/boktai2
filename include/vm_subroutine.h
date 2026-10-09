@@ -13,14 +13,10 @@ typedef void* (*SubroutineFn)(void);
 typedef struct Subroutine {
   u32 id;  // サブルーチンID
   union {
-    void* fn;          // raw
-    CtrlHandler ctrl;  // 制御命令 (0x60) のハンドラもサブルーチンと同じ機構を使う
-    // VM_Ctrl_CreateEntity が呼ぶ Entity 生成関数, 第1引数に種別/パラメータが入り第2引数は常に NULL
-    // 生成物はマネージャ側に登録されるのでスクリプトは受け取る必要がなく, 戻り値は捨てられる
-    EntityCreateFn create;
-    // VM_Ctrl_CallSubroutine が呼ぶ汎用のサブルーチン, C の仮引数は持たず
-    // 必要な値は VM_GetValue や VM_SeekToNamedArg で自分で読み出す, 戻り値は gVM.result に入る
-    SubroutineFn call;
+    void* fn;               // raw
+    CtrlHandler ctrl;       // 制御命令 (0x60) のハンドラもサブルーチンと同じ機構を使う
+    EntityCreateFn create;  // VM_Ctrl_CreateEntity が呼ぶ Entity 生成関数, 第1引数に種別/パラメータが入り第2引数は常に NULL, 生成物はマネージャ側に登録されるのでスクリプトは受け取る必要がなく, 戻り値は捨てられる
+    SubroutineFn call;      // VM_Ctrl_CallSubroutine が呼ぶ汎用のサブルーチン, C の仮引数は持たず必要な値は VM_GetValue や VM_SeekToNamedArg で自分で読み出す, 戻り値は gVM.result に入る
   } fn;
 } Subroutine;
 

@@ -5,9 +5,6 @@
 #include "player.h"
 #include "sprite.h"
 
-struct DjangoBerserk;
-typedef void (*DjangoBerserkFunc)(struct DjangoBerserk* p);
-
 // プレイヤーの周りを旋回する粒子1個ぶんの枠,16個を使い回す
 typedef struct {
   Particle ptcl;  // 0x00, Particle_Remove / Particle_SetFrame に Particle* として渡る
@@ -27,25 +24,25 @@ static_assert(sizeof(DjangoBerserkParticle) == 60);
 
 // 黒ジャンゴが暴走する処理(暴走: プレイヤーのHPが半分になるが、画面上の全ての敵にダメージ)
 typedef struct DjangoBerserk {
-  Entity e;                          // 0x000, ENTITY_UNK_11
-  Player* player;                    // 0x018, Init の第1引数
-  MainSpriteGfx gfx;                 // 0x01C, SPRITE_DJANGO_SABATA
-  MainSprite sprite;                 // 0x03C, SPRITE_DJANGO_SABATA
-  HitboxData hitbox;                 // 0x09C
-  u8 unk_ec[2];                      // 0x0EC
-  u16 timer;                         // 0x0EE, SetState が状態を差し替えるたび 0 に戻す
-  u16 hpDrainStep;                   // 0x0F0, Init: (player->hp - hpTarget) / 0x48 + 1,毎フレーム player->hp から引く量
-  u16 hpTarget;                      // 0x0F2, Init: player->hp >> 1 (0 なら 1),ここまで削って止める
-  ParticleGroup* group;              // 0x0F4, Particle_SetFrame の第2引数
-  DjangoBerserkParticle ptcls[16];   // 0x0F8, 根拠: _Destroy が stride 0x3C で 16回 Particle_Remove する
-  u16 frameCounter;                  // 0x4B8, FUN_0807f8d0 が毎フレーム +1,リセットされない,ptcls[].startDelay と比較される
-  u8 unk_4ba[6];                     // 0x4BA
-  DjangoBerserkFunc updateCallback;  // 0x4C0
+  Entity e;                                       // 0x000, ENTITY_UNK_11
+  Player* player;                                 // 0x018
+  MainSpriteGfx gfx;                              // 0x01C, SPRITE_DJANGO_SABATA
+  MainSprite sprite;                              // 0x03C, SPRITE_DJANGO_SABATA
+  HitboxData hitbox;                              // 0x09C
+  u8 unk_ec[2];                                   // 0x0EC
+  u16 timer;                                      // 0x0EE, SetState が状態を差し替えるたび 0 に戻す
+  u16 hpDrainStep;                                // 0x0F0, Init: (player->hp - hpTarget) / 0x48 + 1,毎フレーム player->hp から引く量
+  u16 hpTarget;                                   // 0x0F2, Init: player->hp >> 1 (0 なら 1),ここまで削って止める
+  ParticleGroup* group;                           // 0x0F4, Particle_SetFrame の第2引数
+  DjangoBerserkParticle ptcls[16];                // 0x0F8, 根拠: _Destroy が stride 0x3C で 16回 Particle_Remove する
+  u16 frameCounter;                               // 0x4B8, FUN_0807f8d0 が毎フレーム +1,リセットされない,ptcls[].startDelay と比較される
+  u8 unk_4ba[6];                                  // 0x4BA
+  void (*updateCallback)(struct DjangoBerserk*);  // 0x4C0
 } DjangoBerserk;
 static_assert(sizeof(DjangoBerserk) == 1220);
 
 // 状態関数を差し替えて経過フレームを 0 に戻す
-void DjangoBerserk_SetState(DjangoBerserk* p, DjangoBerserkFunc fn) {
+void DjangoBerserk_SetState(DjangoBerserk* p, void* fn) {
   p->updateCallback = fn;
   p->timer = 0;
 }

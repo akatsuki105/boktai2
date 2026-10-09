@@ -12,7 +12,6 @@ struct Entity286F;
 struct Entity286FNode;
 
 typedef void(Entity286FNodeCb)(struct Entity286F* p, struct Entity286FNode* node);
-typedef s32(Entity286FNodeFn)(struct Entity286FNode* node);
 typedef void(Entity286FNodeUpdate)(struct Entity286F* p, struct Entity286FNode* node, u32 elapsed);
 
 typedef struct Entity286FNode {
@@ -52,21 +51,21 @@ typedef struct Entity286FNode {
   u8 unk_227;                 // 0x227, unk_217 が立っているときの遷移先 state
   u8 unk_228[0x244 - 0x228];  // 0x228, まだ未解析
   union {
-    ParticleShadow ptcl;          // shadowKind == 1
-    AuxShadow aux;                // shadowKind == 2
-  } shadow;                       // 0x244
-  u8 unk_2b0[0x2B8 - 0x2B0];      // 0x2B0, まだ未解析
-  unknown* unk_2b8;               // 0x2B8, Entity286F_FindSpriteData の戻り値
-  unknown* unk_2bc;               // 0x2BC, FUN_08040dc0 の戻り値
-  u8 unk_2c0[0x2C8 - 0x2C0];      // 0x2C0, まだ未解析
-  u16 unk_2c8;                    // 0x2C8, FUN_080411d8 が unk_2ca を複写する
-  u16 unk_2ca;                    // 0x2CA, FUN_080415cc が書き、FUN_080411d8 が unk_2c8 へ移す
-  Entity286FNodeUpdate* unk_2cc;  // 0x2CC, 根拠: FUN_080441a4 が (p, node, unk_10) で呼ぶ
-  Entity286FNodeCb* cbs[4];       // 0x2D0, FUN_080411a0 が 0 以外のものを順に呼ぶ
-  Entity286FNodeCb* onDestroy;    // 0x2E0, _Destroy が呼ぶ
-  Entity286FNodeFn* fn;           // 0x2E4, node だけを渡して呼ぶ
-  struct Entity286FNode* prev;    // 0x2E8
-  struct Entity286FNode* next;    // 0x2EC
+    ParticleShadow ptcl;              // shadowKind == 1
+    AuxShadow aux;                    // shadowKind == 2
+  } shadow;                           // 0x244
+  u8 unk_2b0[0x2B8 - 0x2B0];          // 0x2B0, まだ未解析
+  unknown* unk_2b8;                   // 0x2B8, Entity286F_FindSpriteData の戻り値
+  unknown* unk_2bc;                   // 0x2BC, FUN_08040dc0 の戻り値
+  u8 unk_2c0[0x2C8 - 0x2C0];          // 0x2C0, まだ未解析
+  u16 unk_2c8;                        // 0x2C8, FUN_080411d8 が unk_2ca を複写する
+  u16 unk_2ca;                        // 0x2CA, FUN_080415cc が書き、FUN_080411d8 が unk_2c8 へ移す
+  Entity286FNodeUpdate* unk_2cc;      // 0x2CC, 根拠: FUN_080441a4 が (p, node, unk_10) で呼ぶ
+  Entity286FNodeCb* cbs[4];           // 0x2D0, FUN_080411a0 が 0 以外のものを順に呼ぶ
+  Entity286FNodeCb* onDestroy;        // 0x2E0, _Destroy が呼ぶ
+  s32 (*fn)(struct Entity286FNode*);  // 0x2E4, node だけを渡して呼ぶ
+  struct Entity286FNode* prev;        // 0x2E8
+  struct Entity286FNode* next;        // 0x2EC
 } Entity286FNode;
 static_assert(sizeof(Entity286FNode) == 752);
 
