@@ -46,7 +46,7 @@ typedef struct {
   s16 x;
   s16 y;  // 高さ
   s16 z;
-  u16 val;  // 用途不明だが、Mover_Init で 16 がセットされている
+  s16 val;  // 用途不明だが、Mover_Init で 16 がセットされている
 } Vec3;
 
 // ワールド座標, isometric, Y-up, right-handed coordinate system (X: 画面右下, Y: 高さ, Z: 画面左下)
