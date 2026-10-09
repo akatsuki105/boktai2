@@ -34,7 +34,7 @@ typedef struct {
   u8 unk_22;                    // 0x022, FUN_0801eb64 が A を押したときに立てる
   u8 unk_23;                    // 0x023, まだ未解析
   u32 unk_24;                   // 0x024, FUN_0801e284 が 0 を入れる, FUN_0801ec4c / FUN_0801f308 が符号なしで閾値と比べる
-  Tilemaps* tilemap;            // 0x028, FUN_0801e2a8 / FUN_0801e328 が GetFile(DIR_TILE_MAP, ...) の戻り値を入れる
+  Tilemaps* tilemap;            // 0x028
   rgb555* plttSrc;              // 0x02C, BGP_A41A
   s16 unk_30;                   // 0x030, FUN_0801eaac が unk_36 の下限として比べる
   s16 unk_32;                   // 0x032, FUN_0801eaac が unk_36 の上限として比べる

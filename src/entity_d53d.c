@@ -6,17 +6,6 @@
 #include "video.h"
 #include "vm.h"
 
-void Video_ResetFrameState(u32 clearOam);  // src/video.c
-void TextPanelManager_DestroyAll(void);    // src/text_panel.c
-void MosaicFader_Stop(void);               // src/mosaic_fader.c
-void nop_0822e738(void);                   // src/particle.c
-void nop_0822b09c(void);                   // src/sprite_aux.c
-void FUN_0822f584(void);                   // src/sprite_main.c
-s32 FUN_0809c08c(s32 mode);                // src/entity_cc28.c
-
-// 次の描画から BG を消す
-static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
-
 // スクリプト命令 0xD53D が作る失敗画面, 全画面のタイルマップとパレットを読み込み、SE_NG を鳴らしてメッセージを出し、最後に scriptID のスクリプトを起動する
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_12
@@ -33,10 +22,18 @@ static_assert(sizeof(EntityD53D) == 48);
 
 IWRAM_DATA EntityD53D* gEntityD53D = NULL;  // 0x030000E8
 
-s32 FUN_0804e59c(void);  // src/code_0804b9f4.c
+void Video_ResetFrameState(u32 clearOam);  // src/video.c
+void TextPanelManager_DestroyAll(void);    // src/text_panel.c
+void MosaicFader_Stop(void);               // src/mosaic_fader.c
+void nop_0822e738(void);                   // src/particle.c
+void nop_0822b09c(void);                   // src/sprite_aux.c
+void FUN_0822f584(void);                   // src/sprite_main.c
+s32 FUN_0809c08c(s32 mode);                // src/entity_cc28.c
+s32 FUN_0804e59c(void);
 
-// 電波強度アイコンを作って表示位置を決める
-// 電波強度アイコンを作って表示位置を決める
+// 次の描画から BG を消す
+static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
+
 // 電波強度アイコンを作って表示位置を決める
 void SignalStrengthIcon_CreateAt(s32 x, s32 y) {
   SignalStrengthIcon* p = SignalStrengthIcon_Create();

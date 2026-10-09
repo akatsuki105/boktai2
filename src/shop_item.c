@@ -14,8 +14,6 @@
 #include "video.h"
 #include "vm.h"
 
-s32 FUN_08049f5c(void);  // src/text_marquee.c
-
 struct Entity3019;
 typedef void(Entity3019Func)(struct Entity3019*);
 

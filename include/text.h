@@ -108,6 +108,8 @@ s32 TextPanel_SetMessage(s32 id, s32 msgIdx);
 
 s32 FUN_08049e5c(void);
 s32 FUN_08049f84(void);
+s32 FUN_08049f5c(void);
+s32 FUN_08049e30(char* str);
 
 static inline void TextRenderer_GetRect(TextRenderer* r, u32* out) { out[0] = r->rectX, out[1] = r->rectY, out[2] = r->rectW, out[3] = r->rectH; }
 static inline void TextRenderer_SetFinished(TextRenderer* r, bool8 finished) { r->finished = finished; }

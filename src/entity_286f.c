@@ -12,7 +12,7 @@ struct Entity286F;
 struct Entity286FNode;
 
 typedef void(Entity286FNodeCb)(struct Entity286F* p, struct Entity286FNode* node);
-typedef void(Entity286FNodeUpdate)(struct Entity286F* p, struct Entity286FNode* node, u32 elapsed);
+typedef void(Entity286FNodeUpdate)(struct Entity286F* p, struct Entity286FNode* node, s32 elapsed);
 
 typedef struct Entity286FNode {
   u8 active;                  // 0x000, Entity286F_LinkNode が 1 を入れ、FUN_0804114c が 0 にして Free する
@@ -399,7 +399,7 @@ bool32 FUN_08041dcc(void) {
     return FALSE;
   }
 
-  if ((u8)(node->unk_227 - 13) <= 2) {
+  if (node->unk_227 >= 13 && node->unk_227 <= 15) {
     return TRUE;
   }
   return FALSE;
@@ -407,15 +407,15 @@ bool32 FUN_08041dcc(void) {
 
 NAKED s32 FUN_08041e10(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08041e10.inc"); }
 
-NAKED void FUN_08042178(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_08042178.inc"); }
+NAKED void FUN_08042178(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08042178.inc"); }
 
-NAKED void FUN_080421bc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_080421bc.inc"); }
+NAKED void FUN_080421bc(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_080421bc.inc"); }
 
-NAKED void FUN_08042200(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08042200.inc"); }
+NAKED void FUN_08042200(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08042200.inc"); }
 
-NAKED void FUN_0804234c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0804234c.inc"); }
+NAKED void FUN_0804234c(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_0804234c.inc"); }
 
-NAKED void FUN_08042414(Entity286F* p, Entity286FNode* node, s32 param_3) { INCFUNC("asm/func/FUN_08042414.inc"); }
+NAKED void FUN_08042414(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08042414.inc"); }
 
 NAKED void FUN_08042638(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08042638.inc"); }
 
@@ -675,21 +675,21 @@ s32 FUN_0804415c(Entity286F* p, Entity286FNode* node) {
   return 0;
 }
 
-void (*const PTR_ARRAY_085ab378[14])(Entity286F*, Entity286FNode*, u32) = {
+void (*const PTR_ARRAY_085ab378[14])(Entity286F*, Entity286FNode*, s32) = {
     NULL,
     FUN_08042178,
-    (void*)FUN_080421bc,
-    (void*)FUN_08042200,
-    (void*)FUN_0804234c,
-    (void*)FUN_08042414,
-    (void*)FUN_08042638,
+    FUN_080421bc,
+    FUN_08042200,
+    FUN_0804234c,
+    FUN_08042414,
+    FUN_08042638,
 };  // 0x085AB378
 
 // unk_05 に対応する更新関数を割り当てて動き出せる状態にする
 s32 FUN_08044168(Entity286FNode* node) {
   Entity286FNodeUpdate* fn;
 
-  if ((u8)(node->unk_05 - 1) > 13) {
+  if (node->unk_05 == 0 || node->unk_05 > 14) {  // 本来は >= 14 と書くべきものと思われる...
     return 0;
   }
 
@@ -879,17 +879,17 @@ s32 FUN_08044730(Entity286F* p, Entity286FNode* node) {
   return 0;
 }
 
-NAKED void FUN_0804473c(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_0804473c.inc"); }
+NAKED void FUN_0804473c(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_0804473c.inc"); }
 
-NAKED void FUN_0804478c(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_0804478c.inc"); }
+NAKED void FUN_0804478c(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_0804478c.inc"); }
 
-NAKED void FUN_080448c8(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_080448c8.inc"); }
+NAKED void FUN_080448c8(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_080448c8.inc"); }
 
-NAKED void FUN_0804494c(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_0804494c.inc"); }
+NAKED void FUN_0804494c(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_0804494c.inc"); }
 
-NAKED void FUN_080449c0(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_080449c0.inc"); }
+NAKED void FUN_080449c0(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_080449c0.inc"); }
 
-void FUN_08044a54(Entity286F* p, Entity286FNode* node, u32 _) {
+void FUN_08044a54(Entity286F* p, Entity286FNode* node, s32 _) {
   if (node->unk_09) {
     node->unk_09 = 0;
     node->unk_07 = 0;
@@ -899,9 +899,9 @@ void FUN_08044a54(Entity286F* p, Entity286FNode* node, u32 _) {
   node->fn(node);
 }
 
-NAKED void FUN_08044a90(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_08044a90.inc"); }
+NAKED void FUN_08044a90(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08044a90.inc"); }
 
-void FUN_08044d9c(Entity286F* p, Entity286FNode* node, u32 _) {
+void FUN_08044d9c(Entity286F* p, Entity286FNode* node, s32 _) {
   if (node->unk_09) {
     node->unk_09 = 0;
     node->unk_07 = 0;
@@ -912,11 +912,11 @@ void FUN_08044d9c(Entity286F* p, Entity286FNode* node, u32 _) {
   node->fn(node);
 }
 
-NAKED void FUN_08044dd8(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_08044dd8.inc"); }
+NAKED void FUN_08044dd8(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08044dd8.inc"); }
 
-NAKED void FUN_08044e6c(Entity286F* p, Entity286FNode* node, u32 elapsed) { INCFUNC("asm/func/FUN_08044e6c.inc"); }
+NAKED void FUN_08044e6c(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08044e6c.inc"); }
 
-void (*const PTR_ARRAY_085ab3d8[11])(Entity286F*, Entity286FNode*, u32) = {
+void (*const PTR_ARRAY_085ab3d8[11])(Entity286F*, Entity286FNode*, s32) = {
     NULL,
     FUN_0804473c,
     FUN_0804478c,
@@ -934,7 +934,7 @@ void (*const PTR_ARRAY_085ab3d8[11])(Entity286F*, Entity286FNode*, u32) = {
 s32 FUN_08044ee0(Entity286FNode* node) {
   Entity286FNodeUpdate* fn;
 
-  if ((u8)(node->unk_05 - 1) > 10) {
+  if (node->unk_05 == 0 || node->unk_05 > 11) {  // 本来は >= 11 と書くべきものと思われる...
     return 0;
   }
 
@@ -949,16 +949,14 @@ s32 FUN_08044ee0(Entity286FNode* node) {
 
 // ノードの待ちを解除して unk_2cc を呼ぶ
 s32 FUN_08044f1c(Entity286F* p, Entity286FNode* node) {
-  Entity286FNodeUpdate* fn;
-  u32 elapsed;
+  s32 elapsed;
 
   node->flags = 0;
   node->unk_07 = 0;
   elapsed = node->unk_10++;
 
-  fn = node->unk_2cc;
-  if (fn != NULL) {
-    fn(p, node, elapsed);
+  if (node->unk_2cc != NULL) {
+    node->unk_2cc(p, node, elapsed);
   }
 
   return 0;

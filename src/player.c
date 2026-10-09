@@ -1034,20 +1034,20 @@ void Player_InitShockwave(Player* p) {
   AuxSpriteGfx* gfx = &p->meleeShockwave.gfx;
 
   if (p->kind == PLAYER_SABATA) {
-    Video_GetAuxSprite(gfx, 0x2110);
-    AuxSprite_Add(sprite, gfx, 0x43);
+    Video_GetAuxSprite(gfx, SPRITE_GUN_SPREAD);
+    AuxSprite_Add(sprite, gfx, SPRFLAG_NO_CLIP | SPRFLAG_AFFINE | SPRFLAG_HIDDEN);
     sprite->metaspriteIdx = 4;
-    Video_SetAuxSpritePltt(gfx, 0x32);
+    Video_SetAuxSpritePltt(gfx, 50);
     sprite->priority = 1;
     sprite->scaleY = 0x7F;
     sprite->scaleX = 0x7F;
     sprite->pos = p->mover.pos;
     p->meleeShockwave.update = PlayerShockwave_UpdateFlash;
   } else {
-    Video_GetAuxSprite(gfx, 0x8F5D);
-    AuxSprite_Add(sprite, gfx, 1);
-    Video_SetAuxSpritePltt(gfx, 0x1D);
-    p->meleeShockwave.animFile = GetFile(0x922E, 0x837);
+    Video_GetAuxSprite(gfx, SPRITE_MELEE_SHOCKWAVE);
+    AuxSprite_Add(sprite, gfx, SPRFLAG_HIDDEN);
+    Video_SetAuxSpritePltt(gfx, 29);
+    p->meleeShockwave.animFile = GetFile(DIR_ANIMATION, ANIM_0837);
     p->meleeShockwave.update = PlayerShockwave_UpdateAnim;
   }
 
@@ -1433,11 +1433,11 @@ NON_MATCH u32 FUN_0806241c(Player* p) {
   u32 r = 0;
 
   if (gStat->unk_934 & SF934_OUTDOOR) {
-    if (Player_TestFlag20(p, 0x10)) {
+    if (Player_TestFlag20(p, PFLAG20_UNK_4)) {
       r = 4;
     }
   } else {
-    if (Player_TestFlag20(p, 0x10)) {
+    if (Player_TestFlag20(p, PFLAG20_UNK_4)) {
       r = 8;
     }
   }

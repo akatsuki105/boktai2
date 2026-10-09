@@ -9,8 +9,6 @@
 #include "tilemap.h"
 #include "video.h"
 #include "vm.h"
-
-s32 FUN_08049f5c(void);  // src/text_marquee.c
 #include "weapon.h"
 
 struct Entity744F;
