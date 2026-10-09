@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "particle.h"
+#include "player.h"
 #include "sprite.h"
 
 typedef void (*Entity080abd14SpriteFunc)(AuxSprite* spr);
@@ -17,7 +18,7 @@ typedef struct {
   u8 unk_18;                            // 0x018, _Init の第5引数, 0 かどうかで鳴らす SE が変わる
   u8 unk_19;                            // 0x019, _Update が 0 以外なら 0x03002BF0 を1減らして 0 に戻す
   u16 unk_1a;                           // 0x01A, 下位バイトは _Init の第6引数, 上位バイトは _Update が owner の状態が 4 のとき 1 にする, _Destroy は2バイトまとめて 0 かを見る
-  void* owner;                          // 0x01C, _Init の第2引数, _Update が owner->[0x1C] == 4 を見る
+  Player* owner;                        // 0x01C, _Init の第2引数, _Update が owner->unk_1c == 4 を見る
   AuxSprite spr0;                       // 0x020, FUN_080abb08 が AuxSprite_Remove に渡す
   u8 unk_4c[0x68 - 0x4C];               // 0x04C
   AuxSprite spr1;                       // 0x068, FUN_080abb08 が AuxSprite_Remove に渡す
@@ -77,7 +78,19 @@ NAKED void FUN_080ab99c(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab99c.inc"
 
 NAKED void FUN_080ab9e0(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab9e0.inc"); }
 
-NAKED void FUN_080abac8(Entity080abd14* p) { INCFUNC("asm/func/FUN_080abac8.inc"); }
+void FUN_080abac8(Entity080abd14* p) {
+  if (p->unk_b0 == 0) {
+    if (*(u16*)&p->owner->action == 0x209) {
+      p->unk_b0 = 1;
+    }
+
+    if (p->unk_b0 == 0) {
+      return;
+    }
+  }
+
+  p->spriteFunc(&p->spr0);
+}
 
 void FUN_080abb08(Entity080abd14* p) {
   AuxSprite_Remove(&p->spr0);
