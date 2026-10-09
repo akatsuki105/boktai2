@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "vm.h"
 
 // 画面にカウントダウンを出し、0 になったらスクリプトを実行して消えるタイマー
 typedef struct Entity4063 {
@@ -11,6 +12,9 @@ typedef struct Entity4063 {
 static_assert(sizeof(Entity4063) == 32);
 
 extern Entity4063* gEntity4063;  // 0x03002C50
+
+void FUN_0809c544(s32 param_1);
+void FUN_0809c58c(void);
 
 // 残りフレーム数を返す, Entity がいなければ 0
 s32 Entity4063_GetRemaining(void) {
@@ -34,6 +38,25 @@ s32 Entity4063_Destroy(Entity4063* p) {
   return 0;
 }
 
-NAKED s32 Entity4063_Init(Entity4063* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/Entity4063_Init.inc"); }
+s32 Entity4063_Init(Entity4063* p, u32 param_2, u32 param_3) {
+  s32 v = VM_SeekToNamedArg('t');
+
+  if (v != 0) {
+    v = VM_GetValue();
+  } else {
+    v = 1800;
+  }
+  p->timer = v;
+
+  v = VM_SeekToNamedArg('p');
+  if (v != 0) {
+    v = VM_GetValue();
+  }
+  p->scriptID = v;
+
+  FUN_0809c544((s32)&p->timer);
+  gEntity4063 = p;
+  return 0;
+}
 
 NAKED Entity4063* Entity4063_Create(u32 param_1, u32 param_2) { INCFUNC("asm/func/Entity4063_Create.inc"); }
