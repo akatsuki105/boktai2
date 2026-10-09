@@ -204,6 +204,7 @@ static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags;
 
 void FUN_08242c08(slot32_t n);  // src/weapon.c
 void FUN_0809630c(EntityCC28* p);
+s32 GetRotCount2(slot32_t slot);  // src/item_082421f0.c
 void FUN_0808e400(EntityCC28* p);
 void FUN_08099e70(EntityCC28* p);
 void FUN_0809a368(EntityCC28* p);
@@ -995,7 +996,27 @@ void FUN_0809200c(EntityCC28* p, s32 slotA, s32 slotB) {
   }
 }
 
-NAKED u32 item_08092034(s32 slot) { INCFUNC("asm/func/item_08092034.inc"); }
+// 腐敗の進み具合を 0xD0〜0xD3 の4段階で返す, アイテムが無いか腐らないものなら 0xCF
+u32 item_08092034(s32 slot) {
+  item32_t n = GetNormalItemID(slot);
+  u16 rotLimit;
+  s32 stage;
+
+  if (n < 0) {
+    return 0xCF;
+  }
+
+  rotLimit = gItemDB[n].unk_04;
+  if (rotLimit == 0) {
+    return 0xCF;
+  }
+
+  stage = Div(GetRotCount2(slot) * 4, rotLimit * 32);
+  if (stage > 3) {
+    stage = 3;
+  }
+  return stage + 0xD0;
+}
 
 NAKED void FUN_08092070(EntityCC28* p) { INCFUNC("asm/func/FUN_08092070.inc"); }
 
