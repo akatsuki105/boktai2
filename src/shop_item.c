@@ -175,7 +175,24 @@ s32 FUN_080b9df0(MenuCursor* p) {
   return 0;
 }
 
-NAKED s32 FUN_080b9e50(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9e50.inc"); }
+// 同じ行を右へ辿って別のスロットへカーソルを移す
+s32 FUN_080b9e50(MenuCursor* p) {
+  s32 cur = p->slots[p->col + p->row * 4];
+  u8 col = (p->col + 1) & 3;
+
+  while (col != p->col) {
+    s32 slot = p->slots[col + p->row * 4];
+
+    if (slot >= 0 && slot != cur) {
+      p->col = col;
+      p->slot = MenuCursor_GetSlot(p);
+      PlaySound_082406e0(0xDC);
+      return 1;
+    }
+    col = (col + 1) & 3;
+  }
+  return 0;
+}
 
 NAKED s32 FUN_080b9eb0(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9eb0.inc"); }
 
