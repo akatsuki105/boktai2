@@ -12,4 +12,14 @@ static_assert(sizeof(Entity4063) == 32);
 
 extern Entity4063* gEntity4063;  // 0x03002C50
 
-INCASM("asm/entity_4063.inc");
+NAKED s32 Entity4063_GetRemaining(void) { INCFUNC("asm/func/Entity4063_GetRemaining.inc"); }
+
+NAKED void Entity4063_Cancel(void) { INCFUNC("asm/func/Entity4063_Cancel.inc"); }
+
+NAKED s32 Entity4063_Update(Entity4063* p) { INCFUNC("asm/func/Entity4063_Update.inc"); }
+
+NAKED s32 Entity4063_Destroy(Entity4063* p) { INCFUNC("asm/func/Entity4063_Destroy.inc"); }
+
+NAKED s32 Entity4063_Init(Entity4063* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/Entity4063_Init.inc"); }
+
+NAKED Entity4063* Entity4063_Create(u32 param_1, u32 param_2) { INCFUNC("asm/func/Entity4063_Create.inc"); }
