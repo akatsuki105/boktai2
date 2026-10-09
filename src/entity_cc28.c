@@ -701,7 +701,14 @@ NAKED void FUN_0808f81c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f81c.inc"); }
 
 NAKED void FUN_0808f8bc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f8bc.inc"); }
 
-NAKED void FUN_0808f920(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f920.inc"); }
+void FUN_0808f920(EntityCC28* p) {
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+
+  p->unk_9ec++;
+  if (p->unk_9ec > 149) {
+    FUN_0808a33c(p, FUN_0809ae0c);
+  }
+}
 
 // 残差は命令2本の順序だけ (原典は ~DISPCNT_BG1_ON のプール読みを gStagedDISPCNT の ldrh より先に出す)
 NON_MATCH void FUN_0808f95c(EntityCC28* p) {
