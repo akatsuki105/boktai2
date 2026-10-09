@@ -3,6 +3,8 @@
 #include "global.h"
 #include "input.h"
 #include "malloc.h"
+#include "random.h"
+#include "solar.h"
 #include "sound.h"
 #include "time.h"
 #include "video.h"
@@ -75,7 +77,9 @@ static inline void Entity0804e2c0_SetMotion(Entity0804e2c0* p, u16 motion) {
   p->unk_44 = 0;
 }
 
-void FUN_08229f4c(u32 n);  // src/interrupts.c
+void FUN_08229f4c(u32 n);   // src/interrupts.c
+void AddEntity(Entity* p);  // src/entity.c
+extern u32 u32_0300481c;    // src/time.c
 void FUN_0804d868(Entity0804e2c0* p);
 
 void FUN_0804e584(s32);
@@ -577,7 +581,44 @@ NAKED unknown* FUN_0804e164(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e164.
 
 NAKED s32 FUN_0804e25c(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e25c.inc"); }
 
-NAKED Entity0804e2c0* Entity0804e2c0_Create(void) { INCFUNC("asm/func/Entity0804e2c0_Create.inc"); }
+// 残差は64/64命令で unk_6c の式の評価順のみ, 原典は gRandomTable の読みを gFrameCounter より先に出す, OR の左右入れ替えと Time_GetSecond のローカル退避は試済
+NON_MATCH Entity0804e2c0* Entity0804e2c0_Create(void) {
+#ifdef NONMATCHING_C
+  Entity0804e2c0* p;
+  u32 sec;
+
+  if (gEntity0804e2c0 != NULL) {
+    return gEntity0804e2c0;
+  }
+
+  Taiyo_Disable();
+  p = Malloc(sizeof(Entity0804e2c0));
+  if (p == NULL) {
+    return NULL;
+  }
+
+  ClearMemory(p, sizeof(Entity0804e2c0));
+  sec = Time_GetSecond();
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  p->unk_6c = (((sec + gRandomTable[gRandTableIdx]) & 0xFF) << 8) | (u8)gFrameCounter;
+
+  if (FUN_0804e25c(p) < 0) {
+    Free(p);
+    return NULL;
+  }
+
+  SetEntityRoutine(p, NULL, NULL);
+  p->e.kind = ENTITY_UNK_1;
+  p->e.unk_16 = 1;
+  p->e.id = 0;
+  AddEntity((Entity*)p);
+  u32_0300481c = 1;
+  gEntity0804e2c0 = p;
+  return p;
+#else
+  INCFUNC("asm/func/Entity0804e2c0_Create.inc");
+#endif
+}
 
 void FUN_0804e36c(void) {
   if (gEntity0804e2c0 != NULL) {
