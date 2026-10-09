@@ -4,6 +4,7 @@
 #include "global.h"
 #include "link.h"
 #include "sound.h"
+#include "vm.h"
 
 s32 FUN_081dec1c(Entity9A9F* p);
 s32 FUN_081de130(Entity9A9F* p);
@@ -219,7 +220,15 @@ s32 FUN_081df720(s32 n) {
   return count;
 }
 
-NAKED s32 FUN_081df75c(void) { INCFUNC("asm/func/FUN_081df75c.inc"); }
+// '.X' の値と等しい unk_118 の個数を数え、スクリプト側へ書き戻して返す
+s32 FUN_081df75c(void) {
+  u8 desc[8];
+  s32 count = FUN_081df720(VM_GetValue());
+
+  FUN_0823167c(desc);
+  FUN_0823206c(desc, 0, count);
+  return count;
+}
 
 NAKED s32 FUN_081df784(void) { INCFUNC("asm/func/FUN_081df784.inc"); }
 
