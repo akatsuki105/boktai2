@@ -52,7 +52,7 @@
 	adds r6, r6, r0
 	ldrh r1, [r6]
 	adds r0, r4, #0
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	pop {r3, r4, r5}
 	mov r8, r3
 	mov sb, r4

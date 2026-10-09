@@ -41,7 +41,7 @@
 	bl MainSprite_Add
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	movs r1, #0xd8
 	add r0, sp, #0x10
 	strh r1, [r0]

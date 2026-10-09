@@ -103,7 +103,7 @@ _0808C3DE:
 	bl MainSprite_SetPose
 	adds r0, r4, #0
 	mov r1, sb
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	ldr r0, [r5]
 	ldr r1, [r5, #4]
 	str r0, [r4, #0x20]

@@ -62,7 +62,7 @@ _0809A9E2:
 	bne _0809AA58
 	adds r0, r6, #0
 	ldr r1, _0809AA54 @ =0x000002A5
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	b _0809AA60
 	.align 2, 0
 _0809AA38: .4byte 0xFFFF0000
@@ -76,7 +76,7 @@ _0809AA54: .4byte 0x000002A5
 _0809AA58:
 	adds r0, r6, #0
 	ldr r1, _0809AAE0 @ =0x000002A6
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 _0809AA60:
 	adds r7, #0x60
 	ldr r0, [sp]
@@ -125,7 +125,7 @@ _0809AA90:
 	bl MainSprite_SetPose
 	adds r0, r7, #0
 	ldr r1, _0809AAF0 @ =0x000002A5
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	adds r6, #0x60
 	adds r7, #0x60
 	movs r0, #1

@@ -25,7 +25,7 @@
 	ldr r1, _080947CC @ =0x00001BC4
 	adds r0, r4, r1
 	ldr r1, _080947D0 @ =0x000002DF
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	b _080947E0
 	.align 2, 0
 _080947C0: .4byte 0x00003F9C
@@ -38,7 +38,7 @@ _080947D4:
 	adds r0, r4, r1
 	movs r1, #0xb8
 	lsls r1, r1, #2
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 _080947E0:
 	ldr r0, _0809480C @ =0x00001C8C
 	adds r2, r4, r0
@@ -57,7 +57,7 @@ _080947E0:
 	ldr r1, _08094814 @ =0x00001C84
 	adds r0, r4, r1
 	ldr r1, _08094818 @ =0x000002DF
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	b _08094828
 	.align 2, 0
 _08094808: .4byte 0x00001BC4
@@ -70,7 +70,7 @@ _0809481C:
 	adds r0, r4, r1
 	movs r1, #0xb8
 	lsls r1, r1, #2
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 _08094828:
 	adds r0, r4, #0
 	bl FUN_0808bac4

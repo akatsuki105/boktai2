@@ -306,7 +306,10 @@ NAKED void FUN_0808b97c(s32 param_1, s32 param_2, s32 param_3, s32 param_4) { IN
 
 NAKED void FUN_0808b9c4(s32 param_1, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_0808b9c4.inc"); }
 
-NAKED void FUN_0808ba0c(s32 param_1, u16 param_2) { INCFUNC("asm/func/FUN_0808ba0c.inc"); }
+void MainSprite_SetPltt(MainSprite* p, u16 plttID) {
+  p->plttID = plttID;
+  p->pltt = &gObjPlttData[p->plttID * 16];
+}
 
 NAKED void FUN_0808ba20(unknown* param_1, s16* param_2, s32 param_3) { INCFUNC("asm/func/FUN_0808ba20.inc"); }
 

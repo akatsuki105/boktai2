@@ -77,7 +77,7 @@ _08097E82:
 	bl MainSprite_SetPose
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	ldr r2, _08097F40 @ =0x00000C04
 	adds r0, r6, r2
 	ldr r0, [r0]

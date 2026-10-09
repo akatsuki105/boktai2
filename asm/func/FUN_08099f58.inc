@@ -30,7 +30,7 @@
 	mov r8, r0
 	adds r0, r5, #0
 	mov r1, r8
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	movs r1, #0x60
 	adds r1, r1, r4
 	mov sl, r1
@@ -57,7 +57,7 @@
 	adds r5, r4, r2
 	adds r0, r5, #0
 	mov r1, r8
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	adds r0, r5, #0
 	mov r1, sl
 	movs r2, #0x52
@@ -82,7 +82,7 @@
 	adds r5, r4, r2
 	adds r0, r5, #0
 	mov r1, r8
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	adds r0, r5, #0
 	mov r1, sl
 	movs r2, #0x55

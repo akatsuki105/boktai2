@@ -64,7 +64,7 @@ _0809393E:
 	bl MainSprite_SetAnim
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	ldr r0, _08093988 @ =0x0000010D
 	bl PlaySound_082406e0
 	ldr r1, _0809398C @ =FUN_08093990
