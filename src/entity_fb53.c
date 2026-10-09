@@ -38,13 +38,7 @@ COMMON_DATA u32 u32_03002b54 = 0;  // 0x03002B54
 
 const u8 u8_ARRAY_085ab5b0[8] = {0x67, 0x8E, 0xAA, 0x8F, 0xE0, 0x90, 0xD6, 0x8F};  // 0x085AB5B0
 
-static inline void EntityFB53_SetState(EntityFB53* p, u8 state) {
-  p->state = state;
-  p->stateChanged = 1;
-  p->timer = 0;
-}
-
-void SignalStrengthIcon_CreateAt(s32 x, s32 y);  // src/entity_d53d.c
+void SignalStrengthIcon_CreateAt(s32 x, s32 y);
 
 void FUN_0804b474(EntityFB53*);
 void FUN_0804b530(EntityFB53*);
@@ -69,6 +63,12 @@ void (*const PTR_ARRAY_085ab5b8[10])(EntityFB53*) = {
     FUN_0804b83c,
     FUN_0804b870,
 };  // 0x085AB5B8
+
+static inline void EntityFB53_SetState(EntityFB53* p, u8 state) {
+  p->state = state;
+  p->stateChanged = 1;
+  p->timer = 0;
+}
 
 s32 EntityFB53_IsActive(void) {
   if (gEntityFB53 != NULL) {
