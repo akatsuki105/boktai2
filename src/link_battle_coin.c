@@ -44,7 +44,18 @@ NAKED void FUN_081e0ec0(Entity150FSlot* slot) { INCFUNC("asm/func/FUN_081e0ec0.i
 
 NAKED void FUN_081e10b8(Entity150FSlot* slot, u32 param_2) { INCFUNC("asm/func/FUN_081e10b8.inc"); }
 
-NAKED s32 FUN_081e1220(LinkBattleCoinManager* p, Entity150FSlot* slot, s32 param_3) { INCFUNC("asm/func/FUN_081e1220.inc"); }
+s32 FUN_081e1220(LinkBattleCoinManager* p, Entity150FSlot* slot, s32 param_3) {
+  slot->unk_00 = param_3;
+  slot->unk_01 = 0;
+  slot->unk_02 = 0;
+  slot->unk_03 = 0;
+  slot->unk_06 = 0;
+  slot->updateCallback = NULL;
+  AuxSprite_Add(&slot->sprite, &p->coinGfx, 1);
+  ParticleShadow_Init(&slot->shadow, &slot->sprite.pos, 0);
+  ParticleShadow_Hide(&slot->shadow);
+  return 0;
+}
 
 s32 FUN_081e1260(LinkBattleCoinManager* p, Entity150FSlot* slot) {
   AuxSprite_Remove(&slot->sprite);
