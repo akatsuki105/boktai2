@@ -111,7 +111,7 @@ typedef struct {
   u8 unk_25c[0x260 - 0x25C];     // 0x25C
   u32 unlockedMap;               // 0x260
   u32 unk_264;                   // 0x264, なんかのbitfield? (根拠: FUN_08090f0c)
-  u8 unk_268[64];                // 0x268
+  u32 unk_268[16];               // 0x268, areaID で引く, FUN_0808fd8c が 0 でクリアする
   u32 darkDjangoAtkCounter;      // 0x2A8
   u32 unk_2ac;                   // 0x2AC
   s16 unk_2b0[2];                // 0x2B0

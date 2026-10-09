@@ -806,7 +806,22 @@ u32 IsMapUnlocked(u32 mapIdx) { return gStat->unlockedMap & (1 << mapIdx); }
 
 NAKED s32 FUN_0808fd44(void) { INCFUNC("asm/func/FUN_0808fd44.inc"); }
 
-NAKED void FUN_0808fd8c(void) { INCFUNC("asm/func/FUN_0808fd8c.inc"); }
+// 残差は26/26命令でレジスタ番号のみ (idx が r2 ではなく r1 に入る), ローカルの初期化形は試済
+NON_MATCH void FUN_0808fd8c(void) {
+#ifdef NONMATCHING_C
+  s32 idx;
+
+  if (VM_SeekToNamedArg('s')) {
+    idx = VM_GetValue();
+  } else {
+    idx = gStat->areaID;
+  }
+
+  gStat->unk_268[idx] = 0;
+#else
+  INCFUNC("asm/func/FUN_0808fd8c.inc");
+#endif
+}
 
 NAKED void FUN_0808fdc8(void) { INCFUNC("asm/func/FUN_0808fdc8.inc"); }
 
