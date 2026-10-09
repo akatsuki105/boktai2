@@ -197,6 +197,8 @@ extern EntityCC28* gEntityCC28;  // 0x0300013C
 
 extern EntityCC28Func* const sEntityCC28State2Fns[];  // 0x085ACFDC
 
+static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
+
 void FUN_08092bf0(EntityCC28* p);
 void FUN_080931cc(EntityCC28* p);
 void FUN_08093158(EntityCC28* p);
@@ -433,7 +435,16 @@ NAKED void FUN_0808d93c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d93c.inc"); }
 // 4つめのスプライトが指す武器を Player に適用する
 void EntityCC28_ApplyWeapon(EntityCC28* p) { Player_ApplyWeapon(p->player, p->unk_da0[p->unk_c0c[3].unk_60].weapon); }
 
-NAKED void FUN_0808d9c8(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d9c8.inc"); }
+void FUN_0808d9c8(EntityCC28* p) {
+  FUN_0808d268();
+  EntityCC28_ApplyWeapon(p);
+  FUN_0808d93c(p);
+  p->unk_c03 = 0;
+  FUN_0808d3d4(p);
+  FUN_082408f4();
+  EnableEntityFlags(ENTITY_DISABLE_2);
+  FUN_0808a33c(p, FUN_0808cf14);
+}
 
 NAKED s32 FUN_0808da14(EntityCC28* p) { INCFUNC("asm/func/FUN_0808da14.inc"); }
 
