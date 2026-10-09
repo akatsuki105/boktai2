@@ -1126,7 +1126,7 @@ void FUN_080784fc(Player* p) {
 
   p->unk_290[0] = FUN_0807849c(p);
   if ((s16)p->unk_290[0] >= 0) {
-    p->unk_290[0] = ((s16)p->unk_290[0] + p->unk_456 + 7) & 7;
+    p->unk_290[0] = ((s16)p->unk_290[0] + p->controlUp + 7) & 7;
   }
 }
 

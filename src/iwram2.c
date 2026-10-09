@@ -15,7 +15,7 @@
 #include "vm.h"
 
 IWRAM_DATA u16 u16_03002b60 = 0;                  // 0x03002B60
-IWRAM_DATA u16 ALIGNED(4) u16_03002b64 = 0;       // 0x03002B64, Player_ApplyBadCondition が Player.unk_456 と同じ値を書く
+IWRAM_DATA u16 ALIGNED(4) u16_03002b64 = 0;       // 0x03002B64, Player_ApplyBadCondition が Player.controlUp と同じ値を書く
 IWRAM_DATA u16 ALIGNED(4) u16_03002b68[4] = {};   // 0x03002B68
 IWRAM_DATA u16 u16_03002b70 = 0;                  // 0x03002B70
 IWRAM_DATA u16 ALIGNED(4) u16_03002b74 = 0;       // 0x03002B74, サバタでプレイ中の FUN_0807a70c がハヤサの代わりに返す値

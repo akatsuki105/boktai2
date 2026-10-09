@@ -2120,8 +2120,8 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
     case 2: {
       if (p->unk_43c[2] == 0) {
         gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-        u16_03002b64 = (p->unk_456 + 1 + Mod(gRandomTable[gRandTableIdx], 7)) & 7;
-        p->unk_456 = u16_03002b64;
+        u16_03002b64 = (p->controlUp + 1 + Mod(gRandomTable[gRandTableIdx], 7)) & 7;
+        p->controlUp = u16_03002b64;
         PlaySound_082406e0(0x138);
       }
       break;
@@ -2140,7 +2140,7 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
 void FUN_08063634(Player* p, s32 n) {
   p->unk_43c[n] = 0;
   if (n == 2) {
-    p->unk_456 = gStat->controlUp;
+    p->controlUp = gStat->controlUp;
   }
 }
 
@@ -2197,7 +2197,7 @@ NON_MATCH u32 Player_TickBadCondTimers(Player* p, u32 n) {
         if (p->unk_43c[2] != 0 && (p->unk_1c & 1)) {
           p->unk_43c[2]--;
           if (p->unk_43c[2] == 0) {
-            p->unk_456 = gStat->controlUp;
+            p->controlUp = gStat->controlUp;
           }
         }
         break;
