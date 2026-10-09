@@ -5,6 +5,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "player.h"
+#include "sound.h"
 
 // 原典のファイル名は enedefault.c, 根拠: FUN_080f00ec / FUN_080f0430 が、抜き取られた assert の引数として文字列 "enedefault.c" (0x08251F80) と行番号を積む
 // Enemy の共通部分?
@@ -30,6 +31,7 @@ bool8 FUN_080f3718(Enemy* p);
 s32 FUN_08240b98(u32 param_1, s8 param_2);
 void FUN_080e8ae4(unknown* param_1, u32 param_2, u32 param_3);
 void FUN_0801a0a0(s32 playerIdx, Vec3* pos);  // src/code_08017b70.s
+void FUN_080e5718(Enemy* p, s32 param_2, s32 param_3, s32 param_4);
 
 void FUN_080f09a4(Enemy* p);
 void FUN_080f07d0(Enemy* p);
@@ -293,7 +295,14 @@ NAKED s32 FUN_080f62b0(Enemy* p) { INCFUNC("asm/func/FUN_080f62b0.inc"); }
 
 NAKED bool32 FUN_080f64f0(Enemy* p) { INCFUNC("asm/func/FUN_080f64f0.inc"); }
 
-NAKED bool32 FUN_080f65a8(Enemy* p) { INCFUNC("asm/func/FUN_080f65a8.inc"); }
+bool32 FUN_080f65a8(Enemy* p) {
+  Enemy_SetFlag3(p, ENEFLAG3_UNK_5);
+  FUN_080e5718(p, 3, 0, p->kind);
+  Enemy_ClearFlag(p, ENEFLAG_UNK_26);
+  Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
+  PlaySound_082406e0(0x13E);
+  return TRUE;
+}
 
 NAKED s32 FUN_080f6604(Enemy* p) { INCFUNC("asm/func/FUN_080f6604.inc"); }
 

@@ -29,6 +29,7 @@ typedef u32 EnemyFlags;
 #define ENEFLAG_UNK_12 (1 << 12)  // 0x00001000, FUN_080ed068 / FUN_080edebc が立てる
 #define ENEFLAG_UNK_13 (1 << 13)  // 0x00002000, FUN_080ef5a8 が立てる
 #define ENEFLAG_UNK_17 (1 << 17)  // 0x00020000, FUN_080ef5a8 が立てる
+#define ENEFLAG_UNK_26 (1 << 26)  // 0x04000000, FUN_080f65a8 が落とす
 
 // Enemy.flags2 (0x17C)
 typedef u32 EnemyFlags2;
@@ -41,6 +42,7 @@ typedef u32 EnemyFlags2;
 // Enemy.flags3 (0x180)
 typedef u16 EnemyFlags3;
 #define ENEFLAG3_UNK_1 (1 << 1)    // 0x0002, FUN_080f1cb8 が見る
+#define ENEFLAG3_UNK_5 (1 << 5)    // 0x0020, FUN_080f65a8 が立てる
 #define ENEFLAG3_UNK_6 (1 << 6)    // 0x0040, Enemy_IsDead が死亡扱いにする
 #define ENEFLAG3_UNK_12 (1 << 12)  // 0x1000, FUN_080ee738 が見る
 #define ENEFLAG3_UNK_13 (1 << 13)  // 0x2000, FUN_08101bc0 が unk_4be より優先して見る
@@ -207,9 +209,11 @@ Enemy* FindEnemyById(u32 id);
 // ビットのセット/クリアはこのヘルパー経由で書く, フィールドごとに専用のものが要る
 // (幅で共通化して u32* を渡す形にすると、if/else の両腕が同じ形になって str が1つに畳まれ一致しない)
 static inline void Enemy_SetFlag(Enemy* p, EnemyFlags bit) { p->flags |= bit; }
+static inline void Enemy_ClearFlag(Enemy* p, EnemyFlags bit) { p->flags &= ~bit; }
 static inline void Enemy_SetFlag2(Enemy* p, EnemyFlags2 bit) { p->flags2 |= bit; }
 static inline void Enemy_ClearFlag2(Enemy* p, EnemyFlags2 bit) { p->flags2 &= ~bit; }
 static inline EnemyFlags Enemy_TestFlag(Enemy* p, EnemyFlags bit) { return p->flags & bit; }
+static inline void Enemy_SetFlag3(Enemy* p, EnemyFlags3 bit) { p->flags3 |= bit; }
 static inline bool32 Enemy_TestFlag2(Enemy* p, EnemyFlags2 bit) { return (p->flags2 & bit) != 0; }
 static inline bool32 Enemy_TestFlag3(Enemy* p, EnemyFlags3 bit) { return (p->flags3 & bit) != 0; }
 static inline void Enemy_SetFlag4(Enemy* p, EnemyFlags4 bit) { p->flags4 |= bit; }
