@@ -478,7 +478,21 @@ NON_MATCH void FUN_0808dda4(EntityCC28* p) {
 #endif
 }
 
-NAKED void FUN_0808dddc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808dddc.inc"); }
+void FUN_0808dddc(EntityCC28* p) {
+  FUN_0808dcdc(p);
+
+  if (p->player != NULL) {
+    FUN_0808d5cc(p);
+    FUN_0808d774(p);
+    FUN_0808d4dc(p);
+    FUN_0808d564(p);
+    if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+      EntityCC28_HideSprites(p);
+    } else {
+      FUN_0808d3d4(p);
+    }
+  }
+}
 
 void FUN_0808de30(EntityCC28* p) {
   FUN_0808d5cc(p);
