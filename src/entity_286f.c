@@ -44,7 +44,11 @@ typedef struct Entity286FNode {
   u8 unk_1ee;                 // 0x1EE, 根拠: Entity286FNode_RemoveMover が 0 以外のときだけ mover を切り離して 0 に戻す
   u8 unk_1ef[0x214 - 0x1EF];  // 0x1EF, まだ未解析
   u8 shadowKind;              // 0x214, 1 なら shadow.ptcl, 2 なら shadow.aux
-  u8 unk_215[0x244 - 0x215];  // 0x215, まだ未解析
+  u8 unk_215[0x217 - 0x215];  // 0x215, まだ未解析
+  u8 unk_217;                 // 0x217, 0 以外なら次の state を unk_227 から取る
+  u8 unk_218[0x227 - 0x218];  // 0x218, まだ未解析
+  u8 unk_227;                 // 0x227, unk_217 が立っているときの遷移先 state
+  u8 unk_228[0x244 - 0x228];  // 0x228, まだ未解析
   union {
     ParticleShadow ptcl;          // shadowKind == 1
     AuxShadow aux;                // shadowKind == 2
@@ -397,7 +401,27 @@ void FUN_080435b4(Entity286F* p, Entity286FNode* node) {
   node->timer++;
 }
 
-NAKED void FUN_080435f0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_080435f0.inc"); }
+// 待ちが解除されたら unk_05 を 4 にして, unk_07 が立っていたら state を移してメッセージの待ちを終える
+void FUN_080435f0(Entity286F* p, Entity286FNode* node) {
+  if (node->unk_08) {
+    node->unk_08 = 0;
+    node->unk_07 = 0;
+    node->unk_05 = 4;
+  }
+
+  if (node->unk_07) {
+    if (node->unk_217) {
+      Entity286FNode_SetState(node, node->unk_227);
+      node->unk_08 = 1;
+    } else {
+      Entity286FNode_SetState(node, 1);
+      node->unk_08 = 1;
+    }
+    MsgQueue_EndWait(&node->mq, 1);
+  }
+
+  node->timer++;
+}
 
 // 待ちが解除されたら unk_05 を 5 にして, unk_07 が立っていたら state 1 に移してメッセージの待ちを終える
 void FUN_0804364c(Entity286F* p, Entity286FNode* node) {
