@@ -14,7 +14,12 @@ extern Entity4063* gEntity4063;  // 0x03002C50
 
 NAKED s32 Entity4063_GetRemaining(void) { INCFUNC("asm/func/Entity4063_GetRemaining.inc"); }
 
-NAKED void Entity4063_Cancel(void) { INCFUNC("asm/func/Entity4063_Cancel.inc"); }
+// 次の更新でスクリプトを実行せずに消えるようにする
+void Entity4063_Cancel(void) {
+  if (gEntity4063 != NULL) {
+    gEntity4063->cancelled = TRUE;
+  }
+}
 
 NAKED s32 Entity4063_Update(Entity4063* p) { INCFUNC("asm/func/Entity4063_Update.inc"); }
 
