@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "input.h"
 #include "inventory.h"
 #include "item.h"
 #include "menu.h"
@@ -135,7 +136,24 @@ void FUN_080b9d94(MenuCursor* p, u32 unk) {
 
 u8 FUN_080b9da0(MenuCursor* p, u8 mask) { return p->unk_7 & mask; }
 
-NAKED s32 FUN_080b9da8(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9da8.inc"); }
+// 十字キーの入力を返す, 押しっぱなしのときは10フレームごとに1回だけ返す
+s32 FUN_080b9da8(MenuCursor* p) {
+  if (gInput[0].pressed & DPAD_ANY) {
+    p->unk_8 = 0;
+    return gInput[0].pressed;
+  }
+
+  if (gInput[0].down & DPAD_ANY) {
+    p->unk_8++;
+    if (p->unk_8 > 9) {
+      p->unk_8 = 0;
+      return gInput[0].down;
+    }
+  } else {
+    p->unk_8 = 0;
+  }
+  return 0;
+}
 
 NAKED s32 FUN_080b9df0(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9df0.inc"); }
 
