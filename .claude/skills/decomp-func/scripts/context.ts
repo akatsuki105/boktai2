@@ -479,6 +479,28 @@ const m2cDecompile = (fn: string, asmText: string): string | null => {
   }
 };
 
+// census.ts の estimateSize と同じ定義 (打ち切り予算を同じ尺度で決めるため)
+const estimateSize = (incPath: string): number => {
+  let est = 0;
+  for (const line of Deno.readTextFileSync(incPath).split("\n")) {
+    const s = line.trim();
+    if (!s || s.endsWith(":")) continue;
+    if (/^(@|\.align|\.include|\.syntax|\.text|\.thumb|thumb_func|arm_func)/.test(s)) continue;
+    if (s.startsWith(".4byte")) est += 4;
+    else if (s.startsWith(".short") || s.startsWith(".2byte")) est += 2;
+    else if (s.startsWith(".byte")) est += 1;
+    else if (!s.startsWith(".")) est += 2;
+  }
+  return est;
+};
+
+// SKILL.md の "Stopping" の表, 境界は残り関数のサイズ四分位 (p25=98, p75=332)
+const budget = (size: number): { iters: number; tokens: number } => {
+  if (size <= 100) return { iters: 3, tokens: 6000 };
+  if (size <= 350) return { iters: 5, tokens: 20000 };
+  return { iters: 7, tokens: 40000 };
+};
+
 const context = async (repo: string, fn: string, srcArg?: string, asmArg?: string, useGhidra = true, brief = false) => {
   const srcFile = srcArg ? path.resolve(srcArg) : findSrcFile(repo, fn);
   const asmFile = asmArg ? path.resolve(asmArg) : path.join(repo, "asm", "func", `${fn}.inc`);
@@ -491,7 +513,9 @@ const context = async (repo: string, fn: string, srcArg?: string, asmArg?: strin
   const asm = readAsm(asmFile);
   const sig = findSignature(srcFile, fn);
 
-  hr(`TARGET ASSEMBLY: ${path.relative(repo, asmFile)}`);
+  const size = estimateSize(asmFile);
+  const bg = budget(size);
+  hr(`TARGET ASSEMBLY: ${path.relative(repo, asmFile)} (${size} バイト, 予算: ${bg.iters} 反復 / ${bg.tokens} トークン)`);
   console.log(asm.code.join("\n"));
 
   if (asm.pool.length > 0) {
