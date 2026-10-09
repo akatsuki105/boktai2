@@ -122,6 +122,13 @@ NAKED void FUN_080ad23c(EntityCBB0* p) { INCFUNC("asm/func/FUN_080ad23c.inc"); }
 
 NAKED void FUN_080ad2d0(EntityCBB0* p, s32* param_2, SpriteFlags* param_3, u8 param_4, u8 param_5) { INCFUNC("asm/func/FUN_080ad2d0.inc"); }
 
+// EntityCBB0 が 0x0C6C から15件持つ枠
+typedef struct {
+  AuxSprite spr;          // 0x00, FUN_080b0ab4 が AuxSprite_Remove に渡す
+  u8 unk_2c[104 - 0x2C];  // 0x2C, まだ未解析
+} EntityCBB0Sprite104;
+static_assert(sizeof(EntityCBB0Sprite104) == 104);
+
 NAKED void FUN_080ad368(EntityCBB0* p) { INCFUNC("asm/func/FUN_080ad368.inc"); }
 
 NAKED void FUN_080ad388(EntityCBB0* p) { INCFUNC("asm/func/FUN_080ad388.inc"); }
@@ -438,7 +445,24 @@ NAKED void FUN_080b087c(EntityCBB0* p, s32 param_2) { INCFUNC("asm/func/FUN_080b
 
 NAKED void FUN_080b09d4(EntityCBB0* p) { INCFUNC("asm/func/FUN_080b09d4.inc"); }
 
-NAKED void FUN_080b0ab4(unknown* param_1) { INCFUNC("asm/func/FUN_080b0ab4.inc"); }
+void FUN_080b0ab4(EntityCBB0Sprite104* elems) {
+  EntityCBB0Sprite104* elem;
+  s32 i;
+
+  AuxSprite_Remove(&elems->spr);
+
+  elem = &elems[1];
+  for (i = 0; i < 8; i++) {
+    AuxSprite_Remove(&elem->spr);
+    elem++;
+  }
+
+  elem = &elems[9];
+  for (i = 0; i < 6; i++) {
+    AuxSprite_Remove(&elem->spr);
+    elem++;
+  }
+}
 
 NAKED void FUN_080b0aec(EntityCBB0* p, u32 param_2) { INCFUNC("asm/func/FUN_080b0aec.inc"); }
 
