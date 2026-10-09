@@ -33,11 +33,24 @@ static_assert(sizeof(BgPlttBlender) == 860);
 
 IWRAM_DATA BgPlttBlender* gBgPlttBlender = NULL;  // 0x0300008C
 
+bool32 FUN_0800271c(void);  // asm/entity_517b.inc
+
 void BgPlttBlender_SavePltt(BgPlttBlender* p) { CpuCopy32(gBgPlttBuffer, p->savedPltt, sizeof(p->savedPltt)); }
 
 NAKED s32 BgPlttBlender_UpdateSlot(BgPlttBlender* p, BgPlttBlend* slot) { INCFUNC("asm/func/BgPlttBlender_UpdateSlot.inc"); }
 
-NAKED s32 BgPlttBlender_Update(BgPlttBlender* p) { INCFUNC("asm/func/BgPlttBlender_Update.inc"); }
+s32 BgPlttBlender_Update(BgPlttBlender* p) {
+  u32 i;
+
+  if (FUN_0800271c()) {
+    BgPlttBlender_SavePltt(p);
+  }
+
+  for (i = 0; i < p->count; i++) {
+    BgPlttBlender_UpdateSlot(p, &p->slots[i]);
+  }
+  return 0;
+}
 
 s32 BgPlttBlender_Destroy(BgPlttBlender* p) {
   gBgPlttBlender = NULL;
