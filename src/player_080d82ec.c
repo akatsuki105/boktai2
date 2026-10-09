@@ -56,6 +56,9 @@ void FUN_080d4fa4(Player* p);
 void FUN_080d53e4(Player* p);
 void FUN_080d3f1c(Player* p);
 void FUN_080d16d4(Player* p);
+void FUN_080cc43c(Player* p);  // asm/player_080d82ec.inc
+void FUN_080ce330(Player* p);  // asm/player_080d82ec.inc
+void EnemyTargetManager_Remove(EnemyTarget* node);
 
 // clang-format off
 const PlayerFunc PTR_ARRAY_085ad184[32] = {
@@ -191,7 +194,18 @@ NAKED void FUN_080d7fbc(Player* p) { INCFUNC("asm/func/FUN_080d7fbc.inc"); }
 
 NAKED s32 Player080d82ec_Update(Player* p) { INCFUNC("asm/func/Player080d82ec_Update.inc"); }
 
-NAKED s32 Player080d82ec_Destroy(Player* p) { INCFUNC("asm/func/Player080d82ec_Destroy.inc"); }
+s32 Player080d82ec_Destroy(Player* p) {
+  EnemyTargetManager_Remove(&p->target);
+  MainSprite_Remove(&p->sprite_88);
+  AuxSprite_Remove(&p->sprite_e8);
+  Hitbox_Unregister(&p->unk_16c);
+  Mover_Unlink(&p->mover);
+  FUN_080ce330(p);
+  FUN_080cc43c(p);
+  gPlayerPtr[p->unk_18] = NULL;
+  gPlayerCount--;
+  return 0;
+}
 
 NAKED s32 Player080d82ec_Init(Player* p, u32 val1, u32 val2) { INCFUNC("asm/func/Player080d82ec_Init.inc"); }
 
