@@ -1729,7 +1729,7 @@ NON_MATCH s32 FUN_0807b3e0(void) {
   if (p != NULL && VM_SeekToNamedArg('s')) {
     s32 n = VM_GetValue();
 
-    if (n <= 2 && p->unk_43c[n] != 0) {
+    if (n <= 2 && p->badCondTimer[n] != 0) {
       return 1;
     }
   }

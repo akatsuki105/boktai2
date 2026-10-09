@@ -667,7 +667,7 @@ NON_MATCH void Player_UpdateBadCondPtcl(Player* p) {
   s32 offset;
 
   if (p->ptcl_67c.active) {
-    if (p->unk_1c != 1 || p->unk_43c[2] == 0) {
+    if (p->unk_1c != 1 || p->badCondTimer[2] == 0) {
       p->ptcl_67c.ptcl.flags |= SPRFLAG_HIDDEN;
       p->ptcl_67c.active = FALSE;
       return;
@@ -703,7 +703,7 @@ NON_MATCH void Player_UpdateBadCondPtcl(Player* p) {
     return;
   }
 
-  if (p->unk_1c != 1 || p->unk_43c[2] == 0) {
+  if (p->unk_1c != 1 || p->badCondTimer[2] == 0) {
     return;
   }
 
@@ -2045,7 +2045,7 @@ NON_MATCH void Player_StartFormEffect(Player* p, u32 kind) {
       PlaySound_082406e0(0x133);
     }
 
-    p->unk_43c[1] = 0;
+    p->badCondTimer[1] = 0;
   }
 #else
   INCFUNC("asm/func/Player_StartFormEffect.inc");
@@ -2112,13 +2112,13 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
         }
         FUN_08063220(p);
       }
-      if (p->unk_43c[1] == 0) {
+      if (p->badCondTimer[1] == 0) {
         p->unk_3d8 = 0;
       }
       break;
     }
     case 2: {
-      if (p->unk_43c[2] == 0) {
+      if (p->badCondTimer[2] == 0) {
         gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
         u16_03002b64 = (p->controlUp + 1 + Mod(gRandomTable[gRandTableIdx], 7)) & 7;
         p->controlUp = u16_03002b64;
@@ -2131,14 +2131,14 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
     }
   }
 
-  p->unk_43c[badcondID] = frames;
+  p->badCondTimer[badcondID] = frames;
 #else
   INCFUNC("asm/func/Player_ApplyBadCondition.inc");
 #endif
 }
 
 void FUN_08063634(Player* p, s32 n) {
-  p->unk_43c[n] = 0;
+  p->badCondTimer[n] = 0;
   if (n == 2) {
     p->controlUp = gStat->controlUp;
   }
@@ -2170,8 +2170,8 @@ NON_MATCH u32 Player_TickBadCondTimers(Player* p, u32 n) {
   for (i = 0; i < 3; i++) {
     switch (i) {
       case 0: {
-        if (p->unk_43c[0] != 0 && (p->unk_1c & 1)) {
-          p->unk_43c[0]--;
+        if (p->badCondTimer[0] != 0 && (p->unk_1c & 1)) {
+          p->badCondTimer[0]--;
           if (p->input->down & 0xF0) {
             MosaicFader_Start(2, 1, 0x1E, p->unk_97c, p->unk_980, p->unk_984);
           }
@@ -2179,9 +2179,9 @@ NON_MATCH u32 Player_TickBadCondTimers(Player* p, u32 n) {
         break;
       }
       case 1: {
-        if (p->unk_43c[1] != 0) {
+        if (p->badCondTimer[1] != 0) {
           if (p->unk_1c & 1) {
-            p->unk_43c[1]--;
+            p->badCondTimer[1]--;
           }
           n = 2;
           p->unk_956 = 0x40;
@@ -2194,9 +2194,9 @@ NON_MATCH u32 Player_TickBadCondTimers(Player* p, u32 n) {
         break;
       }
       case 2: {
-        if (p->unk_43c[2] != 0 && (p->unk_1c & 1)) {
-          p->unk_43c[2]--;
-          if (p->unk_43c[2] == 0) {
+        if (p->badCondTimer[2] != 0 && (p->unk_1c & 1)) {
+          p->badCondTimer[2]--;
+          if (p->badCondTimer[2] == 0) {
             p->controlUp = gStat->controlUp;
           }
         }
@@ -2431,7 +2431,7 @@ u32 Player_WeaponEffectStatCond(Player* p) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    if (p->unk_43c[i] != 0) return 10;
+    if (p->badCondTimer[i] != 0) return 10;
   }
 
   if (*(p->isSabata + gStat->unk_2c8) != 0) return 10;

@@ -282,7 +282,7 @@ typedef struct Player {
   u16 unk_42e;                      // 0x42E, 根拠: FUN_080bfa74 が 0 を入れる
   u8 unk_430[0x43A - 0x430];        // 0x430
   u16 unk_43a;                      // 0x43A, FUN_0807b580 が 1 を書く
-  u16 unk_43c[3];                   // 0x43C, 時間経過で治る状態異常の残り時間 [0: 腹痛, 1: 毒, 2: ?]
+  u16 badCondTimer[3];              // 0x43C, 時間経過で治る状態異常の残り時間 [0: 腹痛, 1: 毒, 2: 混乱]
   u16 unk_442;                      // 0x442, FUN_0807b2dc が unk_446 が 0 でないときに返す値
   u16 unk_444;                      // 0x444
   u16 unk_446;                      // 0x446, 0 でなければ unk_442 が有効
@@ -356,7 +356,7 @@ typedef struct Player {
   u8 unk_a60[0xA70 - 0xA60];        // 0xA60
   Weapon* weapon_a70;               // 0xA70
   weapon8_t weaponID;               // 0xA74, 装備中(画面右下に表示される攻撃ボタンで使用する)武器のID
-  u8 weaponKind;                    // 0xA75, 武器種 (see WeaponKind)
+  u8 weaponKind;                    // 0xA75, 装備中の武器種 (see WeaponKind)
   u8 unk_a76[2];                    // 0xA76, padding?
   u16 weaponAtk;                    // 0xA78, WeaponData.atk の複写, 根拠: Player_ApplyWeapon
   u16 totalAtk_a7a;                 // 0xA7A, ステータス画面に表示される"コウゲキ"の値と等しくなる(力, 防具込みの最終値っぽい), 装備してすぐに更新されず、クイックチェンジ(セレクトでの武器切り替え)のタイミングで更新される
