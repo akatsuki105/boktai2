@@ -95,17 +95,17 @@ void FUN_08079b64(Player* p);
 void FUN_08079e4c(Player* p);
 void FUN_08079138(Player* p);
 
-const PlayerFunc PTR_ARRAY_085abb14[6] = {
-    [PLAYER_SOLAR_DJANGO] = FUN_08078d5c,
-    [PLAYER_DARK_DJANGO] = FUN_08078d5c,
-    [PLAYER_BAT] = FUN_080798a4,
-    [PLAYER_MOUSE] = FUN_08079b64,
-    [PLAYER_SLEEPING] = FUN_08079e4c,
-    [PLAYER_SABATA] = FUN_08079138,
-};  // 0x085ABB14
-
 // プレイヤー生成の後半, kind を決めて更新コールバックと入力を割り当て, 1Pなら前のプレイヤーが残した状態異常の残り時間を引き継ぐ
 s32 Player_InitState(Player* p) {
+  static const PlayerFunc PTR_ARRAY_085abb14[6] = {
+      [PLAYER_SOLAR_DJANGO] = FUN_08078d5c,
+      [PLAYER_DARK_DJANGO] = FUN_08078d5c,
+      [PLAYER_BAT] = FUN_080798a4,
+      [PLAYER_MOUSE] = FUN_08079b64,
+      [PLAYER_SLEEPING] = FUN_08079e4c,
+      [PLAYER_SABATA] = FUN_08079138,
+  };  // 0x085ABB14
+
   p->unk_1c = 1;
 
   if (VM_SeekToNamedArg('k')) {
