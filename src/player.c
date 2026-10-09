@@ -2212,7 +2212,7 @@ NON_MATCH u32 Player_TickBadCondTimers(Player* p, u32 n) {
 }
 
 // flashTimer が動いている間, 4フレームごとに pose を flashPose と入れ替える (点滅)
-// 残差は共有された return pose のブロック位置だけ (23/23), Tier A の分岐形 4通りと Tier B は試済
+// 残差は共有された return pose のブロック位置だけ (23/23), Tier A の分岐形 4通りと Tier B は試済, player_link.c の LinkPlayer_ApplyFlashPose も同じ残差
 NON_MATCH u32 Player_ApplyFlashPose(Player* p, u32 pose) {
 #ifdef NONMATCHING_C
   if (p->flashTimer != 0) {
