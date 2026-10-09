@@ -31,7 +31,23 @@ void Entity4063_Cancel(void) {
   }
 }
 
-NAKED s32 Entity4063_Update(Entity4063* p) { INCFUNC("asm/func/Entity4063_Update.inc"); }
+// 残り時間を1フレーム減らし、0 になったらスクリプトを実行して消える
+s32 Entity4063_Update(Entity4063* p) {
+  if (p->cancelled) {
+    FUN_0809c58c();
+    KillEntity((Entity*)p);
+  } else {
+    p->timer--;
+    if (p->timer == 0) {
+      FUN_0809c58c();
+      if (p->scriptID != 0) {
+        VM_ExecByID(p->scriptID, NULL);
+      }
+      KillEntity((Entity*)p);
+    }
+  }
+  return 0;
+}
 
 s32 Entity4063_Destroy(Entity4063* p) {
   gEntity4063 = NULL;
