@@ -80,7 +80,31 @@ void FUN_080d8954(s32 dir, s32* outX, s32* outY) {
   }
 }
 
-NAKED void FUN_080d8990(Entity080da848* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080d8990.inc"); }
+// 向きごとの表示オフセットを返す
+void FUN_080d8990(s32 dir, s32* outX, s32* outY) {
+  switch (dir) {
+    case 0: {
+      *outX = -4;
+      *outY = -15;
+      break;
+    }
+    case 1: {
+      *outX = -16;
+      *outY = -8;
+      break;
+    }
+    case 2: {
+      *outX = -4;
+      *outY = -4;
+      break;
+    }
+    case 3: {
+      *outX = -4;
+      *outY = -4;
+      break;
+    }
+  }
+}
 
 NAKED void FUN_080d89cc(Entity080da848* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5) { INCFUNC("asm/func/FUN_080d89cc.inc"); }
 
