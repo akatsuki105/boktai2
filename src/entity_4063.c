@@ -18,7 +18,10 @@ NAKED void Entity4063_Cancel(void) { INCFUNC("asm/func/Entity4063_Cancel.inc"); 
 
 NAKED s32 Entity4063_Update(Entity4063* p) { INCFUNC("asm/func/Entity4063_Update.inc"); }
 
-NAKED s32 Entity4063_Destroy(Entity4063* p) { INCFUNC("asm/func/Entity4063_Destroy.inc"); }
+s32 Entity4063_Destroy(Entity4063* p) {
+  gEntity4063 = NULL;
+  return 0;
+}
 
 NAKED s32 Entity4063_Init(Entity4063* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/Entity4063_Init.inc"); }
 
