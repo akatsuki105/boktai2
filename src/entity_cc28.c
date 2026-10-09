@@ -1169,7 +1169,17 @@ NAKED void FUN_08094a94(EntityCC28* p, u32 permission) { INCFUNC("asm/func/FUN_0
 
 NAKED void FUN_08094c6c(u8* param_1, s8* param_2) { INCFUNC("asm/func/FUN_08094c6c.inc"); }
 
-NAKED void FUN_08094cdc(s32 param_1, s32 param_2, u8* param_3, s8* param_4) { INCFUNC("asm/func/FUN_08094cdc.inc"); }
+void FUN_08094cdc(s32 usePanel, s32 panelID, u8* param_3, s8* param_4) {
+  FUN_08094c6c(param_3, param_4);
+
+  if (usePanel) {
+    TextPanel_SetMessage(panelID, param_3[0]);
+    FUN_0804a40c(panelID, 0, (char*)param_4);
+  } else {
+    TextBox_ShowLine(param_3[0]);
+    TextBox_SetExtendValue(0, (char*)param_4);
+  }
+}
 
 void FUN_08094d1c(u8* param_1, s8* param_2) { FUN_08094cdc(0, -1, param_1, param_2); }
 
