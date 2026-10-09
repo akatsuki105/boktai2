@@ -13,7 +13,7 @@ static_assert(sizeof(Entity4063) == 32);
 
 extern Entity4063* gEntity4063;  // 0x03002C50
 
-void FUN_0809c544(s32 param_1);
+void FUN_0809c544(void* param_1);
 void FUN_0809c58c(void);
 
 // 残りフレーム数を返す, Entity がいなければ 0
@@ -55,22 +55,19 @@ s32 Entity4063_Destroy(Entity4063* p) {
 }
 
 s32 Entity4063_Init(Entity4063* p, u32 param_2, u32 param_3) {
-  s32 v = VM_SeekToNamedArg('t');
-
-  if (v != 0) {
-    v = VM_GetValue();
+  if (VM_SeekToNamedArg('t')) {
+    p->timer = VM_GetValue();
   } else {
-    v = 1800;
+    p->timer = 1800;
   }
-  p->timer = v;
 
-  v = VM_SeekToNamedArg('p');
-  if (v != 0) {
-    v = VM_GetValue();
+  if (VM_SeekToNamedArg('p')) {
+    p->scriptID = VM_GetValue();
+  } else {
+    p->scriptID = 0;
   }
-  p->scriptID = v;
 
-  FUN_0809c544((s32)&p->timer);
+  FUN_0809c544(&p->timer);
   gEntity4063 = p;
   return 0;
 }

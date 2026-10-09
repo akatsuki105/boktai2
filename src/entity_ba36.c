@@ -15,7 +15,7 @@ static_assert(sizeof(EntityBA36) == 32);
 extern EntityBA36* gEntityBA36;  // 0x03002C40
 
 bool32 TryAddItem(item32_t n, s32 rotCount);
-void FUN_0809c544(s32 param_1);
+void FUN_0809c544(void* param_1);
 void FUN_0809c58c(void);
 
 static inline void Stat_SetFlag934(u16 bit) { gStat->unk_934 |= bit; }
@@ -30,7 +30,7 @@ void EntityBA36_SetRemaining(void) {
     if (!CheckItemOwn(ITEM_TASTY_WATER)) {
       TryAddItem(ITEM_TASTY_WATER, 0);
     }
-    FUN_0809c544((s32)&gEntityBA36->timer);
+    FUN_0809c544(&gEntityBA36->timer);
   }
 }
 
@@ -91,7 +91,7 @@ s32 EntityBA36_Init(EntityBA36* p, u32 param_2, u32 param_3) {
     if (!CheckItemOwn(ITEM_TASTY_WATER)) {
       TryAddItem(ITEM_TASTY_WATER, 0);
     }
-    FUN_0809c544((s32)&p->timer);
+    FUN_0809c544(&p->timer);
   }
   gEntityBA36 = p;
   return 0;

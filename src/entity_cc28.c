@@ -20,7 +20,7 @@ typedef struct {
   MainSprite sprite;      // 0x0000
   s8 unk_60;              // 0x0060, 根拠: EntityCC28_ApplyWeapon が ldrsb で読んで配列の添字にする
   u8 unk_61;              // 0x0061
-  u8 unk_62[100 - 0x62];  // 0x0062, まだ未解析
+  u8 unk_62[100 - 0x62];  // 0x0062, まだ未解析, padding?
 } EntityCC28Sprite100;
 static_assert(sizeof(EntityCC28Sprite100) == 100);
 
@@ -29,11 +29,11 @@ typedef struct {
   MainSprite sprite;      // 0x0004
   u8 unk_64;              // 0x0064
   u8 unk_65;              // 0x0065
-  u8 unk_66[104 - 0x66];  // 0x0066, まだ未解析
+  u8 unk_66[104 - 0x66];  // 0x0066, まだ未解析, padding?
 } EntityCC28Sprite104;
 static_assert(sizeof(EntityCC28Sprite104) == 104);
 
-// メニューのインベントリ操作に関係してそう
+// メニューのインベントリに関係してそう
 typedef struct EntityCC28 {
   Entity e;                        // 0x0000, ENTITY_UNK_12
   void* unk_18;                    // 0x0018
@@ -1829,7 +1829,7 @@ void FUN_0809c464(void) {
 
 NAKED void FUN_0809c4f4(void) { INCFUNC("asm/func/FUN_0809c4f4.inc"); }
 
-NAKED void FUN_0809c544(s32 param_1) { INCFUNC("asm/func/FUN_0809c544.inc"); }
+NAKED void FUN_0809c544(void* param_1) { INCFUNC("asm/func/FUN_0809c544.inc"); }
 
 NAKED void FUN_0809c58c(void) { INCFUNC("asm/func/FUN_0809c58c.inc"); }
 
