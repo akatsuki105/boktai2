@@ -282,7 +282,7 @@ NAKED void FUN_08066c64(Player* p) { INCFUNC("asm/func/FUN_08066c64.inc"); }
 
 void FUN_08066d10(Player* p) {
   FUN_0823bca8(8);
-  p->lookAroundActive = 0;
+  p->lookAroundOffset.val = 0;
 }
 
 // 残差1命令: 原典は TRUE を返す経路を全部まとめて後ろへ飛ばすが、こちらは途中で合流する
@@ -317,7 +317,7 @@ void FUN_08066d7c(Player* p, s32 val) {
     } else {
       FUN_08066abc(p);
     }
-  } else if (p->lookAroundActive != 0) {
+  } else if (p->lookAroundOffset.val != 0) {
     FUN_08066d10(p);
   }
   p->unk_3d1 = 1;
@@ -327,9 +327,9 @@ void FUN_08066d7c(Player* p, s32 val) {
 // 残差1命令: 原典は y だけ 150 をカメラ側のレジスタに足すが、agbcc の fold は整数の和から定数を必ず最後へ括り出すので和全体に足す形になる
 NON_MATCH void FUN_08066df8(Player* p) {
 #ifdef NONMATCHING_C
-  p->pos_3c0.x = Div(p->mover.pos.x + p->unk_3c8 + gCameraCoords.worldPos.x * 4, 5);
-  p->pos_3c0.y = Div(p->mover.pos.y + p->unk_3ca + gCameraCoords.worldPos.y * 4 + 150, 5);
-  p->pos_3c0.z = Div(p->mover.pos.z + p->unk_3cc + gCameraCoords.worldPos.z * 4, 5);
+  p->pos_3c0.x = Div(p->mover.pos.x + p->lookAroundOffset.x + gCameraCoords.worldPos.x * 4, 5);
+  p->pos_3c0.y = Div(p->mover.pos.y + p->lookAroundOffset.y + gCameraCoords.worldPos.y * 4 + 150, 5);
+  p->pos_3c0.z = Div(p->mover.pos.z + p->lookAroundOffset.z + gCameraCoords.worldPos.z * 4, 5);
   FUN_0823bac8(&p->pos_3c0);
 #else
   INCFUNC("asm/func/FUN_08066df8.inc");
@@ -801,7 +801,7 @@ NAKED void FUN_0806f5d8(Player* p) { INCFUNC("asm/func/FUN_0806f5d8.inc"); }
 bool32 FUN_0806f738(Player* p) {
   bool32 turned = FALSE;
 
-  if ((s16)p->facingHistory[0] != -1 && p->lookAroundActive == 0) {
+  if ((s16)p->facingHistory[0] != -1 && p->lookAroundOffset.val == 0) {
     p->facing = FUN_08067068(p);
     turned = TRUE;
   }
@@ -1162,13 +1162,13 @@ void FUN_080784fc(Player* p) {
 
 void FUN_08078548(Player* p) {
   Player_StopEneChargeSound(p);
-  if (p->lookAroundActive != 0) {
+  if (p->lookAroundOffset.val != 0) {
     FUN_08066d10(p);
   }
 }
 
 void FUN_0807856c(Player* p) {
-  if (p->lookAroundActive != 0) {
+  if (p->lookAroundOffset.val != 0) {
     FUN_08066d10(p);
   }
 }

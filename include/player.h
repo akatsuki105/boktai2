@@ -247,10 +247,7 @@ typedef struct Player {
   u8 unk_3bd;                       // 0x3BD, FUN_080674dc / FUN_0807b0c0 が見る
   u8 unk_3be[0x3C0 - 0x3BE];        // 0x3BE, padding?
   Vec3 pos_3c0;                     // 0x3C0, FUN_08066df8 が mover.pos とカメラの注視点から作って FUN_0823bac8 に渡す
-  s16 unk_3c8;                      // 0x3C8, FUN_08066df8 が pos_3c0.x を作るとき mover.pos.x に足す
-  s16 unk_3ca;                      // 0x3CA, 同じく pos_3c0.y
-  s16 unk_3cc;                      // 0x3CC, 同じく pos_3c0.z
-  s16 lookAroundActive;             // 0x3CE, Rボタンの見回しモード中か(0 or 1), unk_3c8/3ca/3cc の初期化済みフラグも兼ねる, 読み出しが ldrsh なので型は s16
+  Vec3 lookAroundOffset;            // 0x3C8, 見回し開始時のカメラ注視点からプレイヤーへのオフセット, val は見回しモード中か(0 or 1)
   u8 unk_3d0;                       // 0x3D0
   u8 unk_3d1;                       // 0x3D1
   u8 unk_3d2;                       // 0x3D2, Player_SetHitDir が被弾時に 1/0 を書く
