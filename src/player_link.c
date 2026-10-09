@@ -194,7 +194,15 @@ NAKED void FUN_080843ac(s32 param_1, s32 param_2, s32 param_3) { INCFUNC("asm/fu
 
 NAKED void FUN_08084540(Player* p) { INCFUNC("asm/func/FUN_08084540.inc"); }
 
-NAKED s32 LinkPlayer_Update(Player* p) { INCFUNC("asm/func/LinkPlayer_Update.inc"); }
+s32 LinkPlayer_Update(Player* p) {
+  if (!(gPlayerPtr[0]->unk_1c & 4)) {
+    FUN_08080e34(p);
+    FUN_08084540(p);
+    p->updateCallback(p);
+    FUN_08081628(p);
+  }
+  return 0;
+}
 
 NAKED s32 LinkPlayer_Destroy(Player* p) { INCFUNC("asm/func/LinkPlayer_Destroy.inc"); }
 
