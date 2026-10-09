@@ -736,7 +736,22 @@ NAKED void FUN_08044dd8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_08044e6c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08044e6c.inc"); }
 
-NAKED s32 FUN_08044ee0(Entity286FNode* node) { INCFUNC("asm/func/FUN_08044ee0.inc"); }
+// unk_05 に対応する更新関数を割り当てて動き出せる状態にする
+s32 FUN_08044ee0(Entity286FNode* node) {
+  Entity286FNodeUpdate* fn;
+
+  if ((u8)(node->unk_05 - 1) > 10) {
+    return 0;
+  }
+
+  fn = (Entity286FNodeUpdate*)PTR_ARRAY_085ab3d8[node->unk_05];
+  node->unk_06 = node->unk_05;
+  node->unk_2cc = fn;
+  node->unk_10 = 0;
+  node->unk_09 = 1;
+  node->unk_18[0] = 0;
+  return 1;
+}
 
 // ノードの待ちを解除して unk_2cc を呼ぶ
 s32 FUN_08044f1c(Entity286F* p, Entity286FNode* node) {
