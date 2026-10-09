@@ -29,6 +29,7 @@ void FUN_080ee738(Enemy* p);
 bool8 FUN_080f3718(Enemy* p);
 s32 FUN_08240b98(u32 param_1, s8 param_2);
 void FUN_080e8ae4(unknown* param_1, u32 param_2, u32 param_3);
+void FUN_0801a0a0(s32 playerIdx, Vec3* pos);  // src/code_08017b70.s
 
 void FUN_080f09a4(Enemy* p);
 void FUN_080f07d0(Enemy* p);
@@ -338,7 +339,39 @@ s32 FUN_080f8abc(Enemy* p) {
 
 NAKED void FUN_080f8ae0(Enemy* p) { INCFUNC("asm/func/FUN_080f8ae0.inc"); }
 
-NAKED void FUN_080f8bb8(Mover* owner) { INCFUNC("asm/func/FUN_080f8bb8.inc"); }
+// 残差5命令, 原典はフラグ判定の結果を 0/1 に起こしてから if で見るが agbcc は条件を直接分岐に畳む, ローカルの bool32 と static inline (引数あり/オペランド順) は試済
+NON_MATCH void FUN_080f8bb8(Mover* owner) {
+#ifdef NONMATCHING_C
+  if (gFlag030047a4 & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
+    s32 idx;
+
+    switch (owner->unk_4) {
+      case 0: {
+        idx = 0;
+        break;
+      }
+      case 1: {
+        idx = 1;
+        break;
+      }
+      case 2: {
+        idx = 2;
+        break;
+      }
+      case 3: {
+        idx = 3;
+        break;
+      }
+      default: {
+        return;
+      }
+    }
+    FUN_0801a0a0(idx, &owner->pos);
+  }
+#else
+  INCFUNC("asm/func/FUN_080f8bb8.inc");
+#endif
+}
 
 // 登録リストを空にする
 void EnemyTargetManager_Clear(void) {
