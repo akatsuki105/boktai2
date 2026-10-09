@@ -44,7 +44,8 @@ typedef struct EntityCC28 {
   u8 unk_30[0x34 - 0x30];          // 0x0030, まだ未解析
   void* unk_34[2];                 // 0x0034
   unknown* unk_3c;                 // 0x003C, 根拠: FUN_0808ebe8 が FUN_0808a3c4 の第5引数に渡す
-  u8 unk_40[0x58 - 0x40];          // 0x0040, まだ未解析
+  u8 unk_40[0x54 - 0x40];          // 0x0040, まだ未解析
+  u8* unk_54;                      // 0x0054, FUN_0808f170 が TextBox_Start に渡す
   u8* unk_58;                      // 0x0058, 根拠: EntityCC28_ShowLineInstant が TextBox_Start に渡す
   s32* unk_5c;                     // 0x005C, gStat->lv で引く表, weapon_080993c4 がその10倍を返す
   MainSpriteGfx gfx[9];            // 0x0060
@@ -706,7 +707,20 @@ s32 FUN_0808f140(void) {
   return 11 - gauge;
 }
 
-NAKED void FUN_0808f170(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f170.inc"); }
+void FUN_0808f170(EntityCC28* p) {
+  TextBox_Close();
+  FUN_08049e5c();
+  FUN_08049f84();
+  TextBox_SetRect(1, 15, 28, 4);
+  TextBox_Start(p->unk_54);
+  TextBox_SetInstant(1);
+
+  if (p->unk_401e[1] != 0) {
+    FUN_0808ede4(p);
+  } else {
+    FUN_0808ebe8(p);
+  }
+}
 
 NAKED void FUN_0808f1bc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f1bc.inc"); }
 
