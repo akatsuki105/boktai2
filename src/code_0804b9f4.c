@@ -77,9 +77,10 @@ static inline void Entity0804e2c0_SetMotion(Entity0804e2c0* p, u16 motion) {
   p->unk_44 = 0;
 }
 
-void FUN_08229f4c(u32 n);   // src/interrupts.c
-void AddEntity(Entity* p);  // src/entity.c
-extern u32 u32_0300481c;    // src/time.c
+void FUN_08229f4c(u32 n);                     // src/interrupts.c
+void AddEntity(Entity* p);                    // src/entity.c
+extern u32 u32_0300481c;                      // src/time.c
+extern const u16 gAcceptableSerialNoList[2];  // src/data.c
 void FUN_0804d868(Entity0804e2c0* p);
 
 void FUN_0804e584(s32);
@@ -259,7 +260,21 @@ s32 FUN_0804c5c0(Entity0804e2c0* p) {
 
 NAKED s32 FUN_0804c5d8(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c5d8.inc"); }
 
-NAKED s32 FUN_0804c650(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c650.inc"); }
+s32 FUN_0804c650(Entity0804e2c0* p) {
+  if (p->unk_32) {
+    p->unk_32 = 0;
+    p->unk_26 = 0;
+  }
+
+  if (rfu_LMAN_establishConnection(0, 0, 600, (u16*)gAcceptableSerialNoList)) {
+    Entity0804e2c0_SetMotion(p, 27);
+    p->unk_32 = 1;
+    return -1;
+  }
+
+  Entity0804e2c0_SetMotion(p, 8);
+  p->unk_32 = 1;
+}
 
 NAKED s32 FUN_0804c6ac(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c6ac.inc"); }
 
