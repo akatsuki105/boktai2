@@ -33,6 +33,8 @@ static_assert(sizeof(EntityD53D) == 48);
 
 IWRAM_DATA EntityD53D* gEntityD53D = NULL;  // 0x030000E8
 
+s32 FUN_0804e59c(void);  // src/code_0804b9f4.c
+
 // 電波強度アイコンを作って表示位置を決める
 // 電波強度アイコンを作って表示位置を決める
 // 電波強度アイコンを作って表示位置を決める
@@ -84,7 +86,24 @@ void (*const sEntityD53DUpdates[4])(EntityD53D*) = {
     FUN_0804ec58,
 };  // 0x085AB664
 
-NAKED s32 EntityD53D_Update(EntityD53D* p) { INCFUNC("asm/func/EntityD53D_Update.inc"); }
+s32 EntityD53D_Update(EntityD53D* p) {
+  if (p->state == 0) {
+    s32 status = FUN_0804e59c();
+
+    if (status == 1) {
+      p->state = 1;
+      p->enter = 1;
+      p->timer = 0;
+    } else if (status == 2) {
+      p->state = 2;
+      p->enter = 1;
+      p->timer = 0;
+    }
+  }
+
+  sEntityD53DUpdates[p->state](p);
+  return 0;
+}
 
 s32 EntityD53D_Destroy(EntityD53D* p) {
   TextPanel_Destroy(p->windowID);
