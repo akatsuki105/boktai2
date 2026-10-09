@@ -22,9 +22,9 @@ typedef struct {
 static_assert(sizeof(Entity0866Elem) == 156);
 
 typedef struct {
-  Entity e;   // 0x0, ENTITY_UNK_10
-  u8 unk_18;  // 0x18
-  u8 unk_19[3];
+  Entity e;                  // 0x0, ENTITY_UNK_10
+  u8 unk_18;                 // 0x18
+  u8 unk_19[3];              // padding?
   ParticleGroup* group0;     // 0x1C, PTCL_GROUP_0
   ParticleGroup* group1;     // 0x20, PTCL_GROUP_1
   AuxAnimFile* anim_24;      // 0x24
@@ -150,6 +150,7 @@ Entity0866* Entity0866_Create(u32 _, u32 unused) {
 
 NAKED s32 FUN_0800a2f8(void) { INCFUNC("asm/func/FUN_0800a2f8.inc"); }
 
+// 使われてなさそう
 NAKED u32 VM_Sub78EE(void) { INCFUNC("asm/func/VM_Sub78EE.inc"); }
 
 void FUN_0800a458(void) {
