@@ -64,7 +64,7 @@ typedef u32 PlayerFlag378;                 // Player.flag378
 // プレイヤーの向き
 typedef u8 Facing8;
 typedef u16 Facing16;
-typedef u32 Facing32;
+typedef s32 Facing32;
 #define FACE_UP 0          // 上
 #define FACE_UP_RIGHT 1    // 右上
 #define FACE_RIGHT 2       // 右

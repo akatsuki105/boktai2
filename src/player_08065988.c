@@ -1117,20 +1117,34 @@ NAKED void FUN_08077cbc(Player* p) { INCFUNC("asm/func/FUN_08077cbc.inc"); }
 
 NAKED void FUN_08078060(Player* p) { INCFUNC("asm/func/FUN_08078060.inc"); }
 
-const s16 s16_ARRAY_085abc8a[17] = {-1, 0, 4, -1, 6, 7, 5, -1, 2, 1, 3, -1, -1, -1, -1, -1, 0};  // 0x085abc8a
+// 十字キーの押下状態を 4bit に畳んで方向番号に引き直す, どれも押していない or ありえない組み合わせは -1
+Facing32 FUN_0807849c(Player* p) {
+  static const s16 sDpadFacingTable[17] = {
+      [0] = -1,
+      [1] = FACE_UP,           // ↑
+      [2] = FACE_DOWN,         // ↓
+      [3] = -1,                // ↑+↓ (invalid)
+      [4] = FACE_LEFT,         // ←
+      [5] = FACE_UP_LEFT,      // ←+↑
+      [6] = FACE_DOWN_LEFT,    // ←+↓
+      [7] = -1,                // ↑+←+↓ (invalid)
+      [8] = FACE_RIGHT,        // →
+      [9] = FACE_UP_RIGHT,     // →+↑
+      [10] = FACE_DOWN_RIGHT,  // →+↓
+      [11] = -1,               // ↑+↓+→ (invalid)
+      [12] = -1,               // ←+→ (invalid)
+      [13] = -1,               // ←+↑+→ (invalid)
+      [14] = -1,               // ↓+←+→ (invalid)
+      [15] = -1,               // ↑+↓+←+→ (invalid)
+      [16] = 0,
+  };  // 0x085ABC8A
 
-// 十字キーの押下状態を 4bit に畳んで方向番号に引き直す, どれも押していなければ -1
-// 残差なし・最後の ands のオペランド順のみ不一致 (原典は keys 側が生き残る)
-NON_MATCH s32 FUN_0807849c(Player* p) {
-#ifdef NONMATCHING_C
-  s16 idx = (p->input->down & DPAD_UP) != 0;
+  s16 idx = 0;
+  if (p->input->down & DPAD_UP) idx |= (1 << 0);
   if (p->input->down & DPAD_DOWN) idx |= (1 << 1);
   if (p->input->down & DPAD_LEFT) idx |= (1 << 2);
   if (p->input->down & DPAD_RIGHT) idx |= (1 << 3);
-  return s16_ARRAY_085abc8a[idx];
-#else
-  INCFUNC("asm/func/FUN_0807849c.inc");
-#endif
+  return sDpadFacingTable[idx];
 }
 
 void FUN_080784fc(Player* p) {
