@@ -279,7 +279,31 @@ s32 FUN_0804c888(Entity0804e2c0* p) {
 
 NAKED s32 FUN_0804c8bc(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c8bc.inc"); }
 
-NAKED s32 FUN_0804c8f4(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c8f4.inc"); }
+// 残差は36/36命令, 原典は if/else 両腕のストアを畳まず, else 側で unk_30 の 0 を使い回すが agbcc は共通化してしまう, ローカル退避は試済
+NON_MATCH s32 FUN_0804c8f4(Entity0804e2c0* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_32) {
+    p->unk_32 = 0;
+    PlaySound_082406e0(0xDE);
+  }
+
+  if (p->unk_44 > 89) {
+    FUN_0804bb30(p);
+    if (p->unk_30) {
+      p->unk_1c = 0;
+      p->unk_38 = 7;
+      p->unk_44 = 0;
+    } else {
+      p->unk_1c = 0;
+      p->unk_38 = 6;
+      p->unk_44 = 0;
+    }
+    p->unk_32 = 1;
+  }
+#else
+  INCFUNC("asm/func/FUN_0804c8f4.inc");
+#endif
+}
 
 s32 FUN_0804c940(Entity0804e2c0* p) {
   bool8 mode;
