@@ -297,7 +297,17 @@ s32 FUN_0804c888(Entity0804e2c0* p) {
   }
 }
 
-NAKED s32 FUN_0804c8bc(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c8bc.inc"); }
+s32 FUN_0804c8bc(Entity0804e2c0* p) {
+  if (p->unk_32) {
+    p->unk_32 = 0;
+  }
+
+  if (p->unk_44 > 599) {
+    rfu_LMAN_stopManager(0);
+    Entity0804e2c0_SetMotion(p, 4);
+    p->unk_32 = 1;
+  }
+}
 
 // 残差2命令, 原典は &unk_32 を r5 に載せたまま関数呼び出しを跨ぐが agbcc は最後の1回だけ再計算する, Entity0804e2c0_SetMotion 化とローカル退避は試済
 NON_MATCH s32 FUN_0804c8f4(Entity0804e2c0* p) {
