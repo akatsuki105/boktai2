@@ -6,6 +6,7 @@
 #include "player.h"
 #include "shadow.h"
 #include "sprite.h"
+#include "vm.h"
 
 struct Entity286F;
 struct Entity286FNode;
@@ -344,7 +345,25 @@ NAKED s32 FUN_08041bd4(void) { INCFUNC("asm/func/FUN_08041bd4.inc"); }
 
 NAKED s32 FUN_08041d60(void) { INCFUNC("asm/func/FUN_08041d60.inc"); }
 
-NAKED s32 FUN_08041dcc(void) { INCFUNC("asm/func/FUN_08041dcc.inc"); }
+// '.n' の Mover ID のノードの unk_227 が 13〜15 かどうか
+bool32 FUN_08041dcc(void) {
+  Entity286F* p = gEntity286F;
+  Entity286FNode* node;
+
+  if (p == NULL) {
+    return FALSE;
+  }
+
+  node = Entity286F_FindNodeByMoverID(p, VM_GetNamedArgValue('n', 0));
+  if (node == NULL) {
+    return FALSE;
+  }
+
+  if ((u8)(node->unk_227 - 13) <= 2) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED s32 FUN_08041e10(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08041e10.inc"); }
 
