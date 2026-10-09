@@ -20,6 +20,7 @@ extern u16 u16_03002b64;
 extern u16 u16_03002b7c;
 extern u16 u16_03002b8c;
 void Player_RefreshStats(Player* p);  // src/player.c
+bool32 IsMagicUnlocked(magic32_t n);  // src/equip_magic.c
 void FUN_08079f1c(Player* p);
 extern u16 u16_03002b78;
 extern u16 u16_03002bd0;
@@ -3334,7 +3335,39 @@ NAKED void FUN_0807ed04(Player* p) { INCFUNC("asm/func/FUN_0807ed04.inc"); }
 
 NAKED void Player_Update_Helper_0807ee58(Player* p) { INCFUNC("asm/func/Player_Update_Helper_0807ee58.inc"); }
 
-NAKED void FUN_0807f0bc(Player* p) { INCFUNC("asm/func/FUN_0807f0bc.inc"); }
+// ボタンを押している間, プレイスタイルの集計カウンタを進める (どれも 0x7FFFFFFF で止まる)
+// 残差はレジスタ番号 r1/r2 の入れ替えのみ (命令列は55命令で完全一致), Tier A-C は試済
+// ポインタのローカルを3箇所で使い回す形までは追い込めたが, 先頭の定数 0x358 が原典では r1, こちらでは r2 に入る
+NON_MATCH void Player_CountStyleFrames(Player* p) {
+#ifdef NONMATCHING_C
+  s32* frames;
+
+  if (p->input->down == 0) {
+    return;
+  }
+
+  if (IsMagicUnlocked(MAGIC_TRANSFORM)) {
+    if (p->kind == PLAYER_SOLAR_DJANGO) {
+      frames = &gStat->solarFormFrames;
+      if (*frames <= 0x7FFFFFFE) {
+        (*frames)++;
+      }
+    } else if (p->kind != PLAYER_SABATA) {
+      frames = &gStat->darkFormFrames;
+      if (*frames <= 0x7FFFFFFE) {
+        (*frames)++;
+      }
+    }
+  }
+
+  frames = &gStat->weaponFrames[p->weaponKind];
+  if (*frames <= 0x7FFFFFFE) {
+    (*frames)++;
+  }
+#else
+  INCFUNC("asm/func/Player_CountStyleFrames.inc");
+#endif
+}
 
 NAKED void dark_django_0807f13c(Player* p) { INCFUNC("asm/func/dark_django_0807f13c.inc"); }
 

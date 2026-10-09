@@ -120,8 +120,10 @@ typedef struct {
   u8 unk_2b8[8];                 // 0x2B8
   u8 unk_2c0[8];                 // 0x2C0
   s32 unk_2c8[2];                // 0x2C8, FUN_0807a8e0 が isSabata で引いて 0 を書く
-  u8 unk_2d0[16];                // 0x2D0
-  u32 weaponFrames[5];           // 0x2E0, 剣槍槌拳銃 の使用フレーム数, これを元に style が決まる (攻撃時のみでなく、その武器で歩いているだけでもカウントされる)
+  u8 unk_2d0[8];                 // 0x2D0
+  s32 solarFormFrames;           // 0x2D8, 赤ジャンゴのままボタンを押していたフレーム数, s32 の根拠: Player_CountStyleFrames が 0x7FFFFFFE と符号付き比較する
+  s32 darkFormFrames;            // 0x2DC, 赤ジャンゴ以外(サバタを除く)でボタンを押していたフレーム数, s32 の根拠は同上
+  s32 weaponFrames[5];           // 0x2E0, 剣槍槌拳銃 の使用フレーム数, これを元に style が決まる (攻撃時のみでなく、その武器で歩いているだけでもカウントされる)
   u8 unk_2f4[4];                 // 0x2F4
   u16 side;                      // 0x2F8, 赤(Solar)寄りか黒(Dark)寄りか, 次の3つのどれかを取る, 0: 赤, 1: 中立, 2: 黒
   u16 style;                     // 0x2FA, プレイ中、最も使用フレーム数が多かった攻撃種別, see AttackStyle

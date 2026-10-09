@@ -7,7 +7,7 @@
 	cmp r0, #1
 	bne _0807F276
 	adds r0, r4, #0
-	bl FUN_0807f0bc
+	bl Player_CountStyleFrames
 	adds r0, r4, #0
 	bl Player_UpdateWeaponWear
 	adds r0, r4, #0
