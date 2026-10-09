@@ -168,7 +168,18 @@ const PlayerFunc PTR_ARRAY_085ad280[27] = {
 };  // 0x085AD280
 // clang-format on
 
-NAKED void FUN_080cc1a0(Player* p) { INCFUNC("asm/func/FUN_080cc1a0.inc"); }
+// facing から animIDOffset と xflip を決める
+void Player080d82ec_SetAnimFacing(Player* p) {
+  u8 v = p->facing;
+
+  if (v > 4) {
+    p->animIDOffset = 8 - v;
+    p->xflip = 1;
+  } else {
+    p->animIDOffset = v;
+    p->xflip = 0;
+  }
+}
 
 INCASM("asm/player_080d82ec.inc");
 
