@@ -84,8 +84,6 @@ const u16 u16_ARRAY_085abc10[57] = {
 };  // 0x085abc10
 // clang-format on
 
-const u8 u8_ARRAY_085abc82[8] = {4, 2, 2, 1, 1, 2, 8, 0};  // 0x085ABC82
-
 void FUN_08065200(Player* p) {
   if (VM_SeekToNamedArg('i')) {
     p->unk_18 = VM_GetValue();
@@ -725,6 +723,18 @@ NAKED void FUN_0806d74c(Player* p) { INCFUNC("asm/func/FUN_0806d74c.inc"); }
 NAKED void FUN_0806da18(Player* p) { INCFUNC("asm/func/FUN_0806da18.inc"); }
 
 NAKED void FUN_0806dd7c(Player* p) { INCFUNC("asm/func/FUN_0806dd7c.inc"); }
+
+// おそらく、棺桶での"寝心地"(寝心地がいいほど、魔法スリーピングでのENEの回復が速い)
+const u8 u8_ARRAY_085abc82[8] = {
+    [COFFIN_OAK] = 4,
+    [COFFIN_BRONZE] = 2,
+    [COFFIN_IRON] = 2,
+    [COFFIN_SILVER] = 1,
+    [COFFIN_SOLAR] = 1,
+    [COFFIN_ELEFAN] = 2,
+    [COFFIN_VAMPIRE] = 8,
+    [COFFIN_IRON_MAIDEN] = 0,
+};  // 0x085ABC82
 
 NAKED void FUN_0806df84(Player* p) { INCFUNC("asm/func/FUN_0806df84.inc"); }
 
