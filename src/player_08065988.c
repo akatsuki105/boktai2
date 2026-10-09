@@ -714,7 +714,7 @@ void FUN_0806a050(Player* p) {
   } else {
     Player_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_HIDE_SHADOW | PFLAG35A_NO_HITBOX | PFLAG35A_NO_TILE);
   }
-  Player_SetFlag20(p, 0x1100);
+  Player_SetFlag20(p, PFLAG20_UNK_12 | PFLAG20_UNK_8);
 }
 
 NAKED void FUN_0806a084(Player* p) { INCFUNC("asm/func/FUN_0806a084.inc"); }
@@ -1208,7 +1208,7 @@ NAKED void FUN_080744bc(Player* p) { INCFUNC("asm/func/FUN_080744bc.inc"); }
 NAKED void FUN_080746ec(Player* p) { INCFUNC("asm/func/FUN_080746ec.inc"); }
 
 void FUN_08074994(Player* p) {
-  p->unk_95e = 0x127;
+  p->plttID_95e = 295;
   p->unk_960 = 24;
 }
 
@@ -1689,8 +1689,8 @@ void Player_ApplyDarkbug(Player* p, s32 amount) {
 }
 
 void FUN_0807ab14(Player* p) {
-  Player_SetFlag20(p, 0x1000);
-  p->formRequest = 0;
+  Player_SetFlag20(p, PFLAG20_UNK_12);
+  p->formRequest = FALSE;
   p->animIDOffset = 0;
   FUN_08063220(p);
   p->unk_16c.flags |= HBFLAG_UNK_2;
@@ -1712,7 +1712,7 @@ bool32 FUN_0807ad60(Player* p, s32 param_2) {
     return FALSE;
   }
   if (p->kind == PLAYER_MOUSE || p->kind == PLAYER_SLEEPING) {
-    p->formRequest = 1;
+    p->formRequest = TRUE;
     p->formRequestKind = PLAYER_DARK_DJANGO;
   }
   p->unk_3ec = param_2;
@@ -2072,12 +2072,12 @@ NAKED void FUN_0807b7a4(Player* p) { INCFUNC("asm/func/FUN_0807b7a4.inc"); }
 
 void FUN_0807b890(Player* p, s32 val) {
   p->unk_96c = 1;
-  p->unk_95e = val;
+  p->plttID_95e = val;
 }
 
 void FUN_0807b8a8(Player* p, s32 val) {
   p->unk_96c = 2;
-  p->unk_95e = val;
+  p->plttID_95e = val;
 }
 
 void FUN_0807b8c0(Player* p) { p->unk_96c = 0; }
@@ -2135,7 +2135,7 @@ void FUN_0807ba94(Player* p, Vec3* pos, u32 scriptID, s32 facing) {
     p->fn_498 = FUN_08075f00;
   } else {
     if (p->kind == PLAYER_SLEEPING) {
-      p->formRequest = 1;
+      p->formRequest = TRUE;
       p->formRequestKind = PLAYER_DARK_DJANGO;
       p->fn_498 = FUN_08072a38;
     } else {
@@ -2253,7 +2253,7 @@ void FUN_0807bdc8(Player* p, s32 facing, s32 param_3, u32 scriptID) {
     p->fn_498 = FUN_080762fc;
   } else {
     if (p->kind == PLAYER_SLEEPING) {
-      p->formRequest = 1;
+      p->formRequest = TRUE;
       p->formRequestKind = PLAYER_DARK_DJANGO;
     }
     p->fn_498 = FUN_080736b8;
@@ -2273,7 +2273,7 @@ void FUN_0807be58(Player* p, s32 facing, s32 param_3, u32 scriptID) {
     p->fn_498 = FUN_080765a0;
   } else {
     if (p->kind == PLAYER_SLEEPING) {
-      p->formRequest = 1;
+      p->formRequest = TRUE;
       p->formRequestKind = PLAYER_DARK_DJANGO;
     }
     p->fn_498 = FUN_080738b4;
@@ -3336,7 +3336,7 @@ NAKED void FUN_0807ed04(Player* p) { INCFUNC("asm/func/FUN_0807ed04.inc"); }
 
 // 変身の要求 (formRequest) を実際のフォーム切り替えに反映する, 使うスプライトと更新関数とパレットを差し替える
 void Player_ApplyFormRequest(Player* p) {
-  if (p->formRequest == 0) {
+  if (!p->formRequest) {
     return;
   }
 
@@ -3344,32 +3344,30 @@ void Player_ApplyFormRequest(Player* p) {
     p->kind = PLAYER_BAT;
     p->updateCallback = FUN_080798a4;
     p->unk_359 = 1;
-    p->mover.mainSprite = NULL;
-    p->mover.auxSprite = &p->sprite_e8;
+    p->mover.mainSprite = NULL, p->mover.auxSprite = &p->sprite_e8;
     p->unk_4c4.pos = &p->sprite_e8.pos;
     Player_SetPlttIDs(p);
     p->unk_94c = 0xFFFF;
     p->gfx_114->plttID = p->plttID_94a;
-    p->unk_95e = 0x26D;
+    p->plttID_95e = 621;
     p->unk_960 = 0x20;
   } else if (p->formRequestKind == PLAYER_MOUSE) {
     p->kind = PLAYER_MOUSE;
     p->updateCallback = FUN_08079b64;
     p->unk_359 = 1;
-    p->mover.mainSprite = NULL;
-    p->mover.auxSprite = &p->sprite_e8;
+    p->mover.mainSprite = NULL, p->mover.auxSprite = &p->sprite_e8;
     p->unk_4c4.pos = &p->sprite_e8.pos;
     Player_SetPlttIDs(p);
     p->unk_94c = 0xFFFF;
     p->gfx_114->plttID = p->plttID_94a;
-    p->unk_95e = 0x122;
+    p->plttID_95e = 290;
     p->unk_960 = 0x20;
+
   } else if (p->formRequestKind == PLAYER_SLEEPING) {
     p->kind = PLAYER_SLEEPING;
     p->updateCallback = FUN_08079e4c;
     p->unk_359 = 1;
-    p->mover.mainSprite = NULL;
-    p->mover.auxSprite = &p->sprite_e8;
+    p->mover.mainSprite = NULL, p->mover.auxSprite = &p->sprite_e8;
     p->unk_4c4.pos = &p->sprite_e8.pos;
     Player_SetPlttIDs(p);
     p->unk_94c = 0xFFFF;
@@ -3379,18 +3377,17 @@ void Player_ApplyFormRequest(Player* p) {
     p->facing = 0;
     p->animIDOffset = 0;
     p->xflip = 0;
+
   } else {
     s32 enchant;
-
     if (p->kind != PLAYER_SLEEPING) {
-      p->unk_95e = 0x122;
+      p->plttID_95e = 290;
       p->unk_960 = 0x20;
     }
     p->kind = PLAYER_DARK_DJANGO;
     p->updateCallback = FUN_08078d5c;
     p->unk_359 = 0;
-    p->mover.mainSprite = &p->sprite_88;
-    p->mover.auxSprite = NULL;
+    p->mover.mainSprite = &p->sprite_88, p->mover.auxSprite = NULL;
     p->unk_4c4.pos = &p->sprite_88.pos;
     Player_SetPlttIDs(p);
     p->unk_94c = 0xFFFF;
@@ -3402,7 +3399,7 @@ void Player_ApplyFormRequest(Player* p) {
 
   p->sprite_88.plttID = p->plttID_94a;
   p->magic.availableForm = Player_IsMagicAvailableForm(p, p->magic.id);
-  p->formRequest = 0;
+  p->formRequest = FALSE;
 }
 
 // ボタンを押している間, プレイスタイルの集計カウンタを進める (どれも 0x7FFFFFFF で止まる)

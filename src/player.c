@@ -1473,7 +1473,7 @@ NON_MATCH void Player_UpdatePltt(Player* p, u32 n) {
   if (p->unk_960 != 0) {
     p->unk_964 = 0;
     if (p->unk_960 > 0x1F) {
-      src = &gObjPlttData[p->unk_95e * 16];
+      src = &gObjPlttData[p->plttID_95e * 16];
       if (p->unk_359 == 0) {
         for (i = 0; i < 16; i++) {
           if (i == 5 || i == 6 || i == 13) {
@@ -1490,7 +1490,7 @@ NON_MATCH void Player_UpdatePltt(Player* p, u32 n) {
         p->gfx_114->pltt = &p->pltt_2a4[16];
       }
     } else {
-      src = &gObjPlttData[p->unk_95e * 16];
+      src = &gObjPlttData[p->plttID_95e * 16];
       w = p->unk_960;
       Player_BlendPltt(p, src, w, 0x20 - w, 5);
     }
@@ -1580,7 +1580,7 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
 
     p->unk_964 = 0;
     if (p->unk_960 > 0x1F) {
-      src = &gObjPlttData[p->unk_95e * 16];
+      src = &gObjPlttData[p->plttID_95e * 16];
       if (p->unk_359 == 0) {
         for (i = 0; i < 16; i++) {
           if (i == 5 || i == 6 || i == 13) {
@@ -1599,7 +1599,7 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
       return;
     }
 
-    src = &gObjPlttData[p->unk_95e * 16];
+    src = &gObjPlttData[p->plttID_95e * 16];
     w = p->unk_960;
     Player_BlendPltt(p, src, w, 0x20 - w, 5);
     p->unk_960++;
@@ -1611,7 +1611,7 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
     s32 w;
 
     p->unk_964 = 0;
-    src = &gObjPlttData[p->unk_95e * 16];
+    src = &gObjPlttData[p->plttID_95e * 16];
     if (p->unk_960 <= 0x1F) {
       w = p->unk_960;
     } else if (p->unk_960 <= 0x2F) {
@@ -1637,7 +1637,7 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
 
     p->unk_964 = 0;
     if (p->unk_960 > 0x1F) {
-      src = &gObjPlttData[p->unk_95e * 16];
+      src = &gObjPlttData[p->plttID_95e * 16];
       if (p->unk_359 == 0) {
         for (i = 0; i < 16; i++) {
           if (i == 5 || i == 6 || i == 13) {
@@ -1654,7 +1654,7 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
         p->gfx_114->pltt = &p->pltt_2a4[16];
       }
     } else {
-      src = &gObjPlttData[p->unk_95e * 16];
+      src = &gObjPlttData[p->plttID_95e * 16];
       w = p->unk_960;
       Player_BlendPltt(p, src, w, 0x20 - w, 5);
     }

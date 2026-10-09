@@ -18,11 +18,14 @@
 
 typedef u32 PlayerFlag20;         // Player.unk_20
 #define PFLAG20_UNK_0 (1 << 0)    // 0x00000001, Player_BeginAction が毎回これだけ立てた状態から始める
+#define PFLAG20_UNK_1 (1 << 1)    // 0x00000002
 #define PFLAG20_UNK_4 (1 << 4)    // 0x00000010, 日光が当たっているときに立つ, 根拠: Player_BeginAction
-#define PFLAG20_UNK_12 (1 << 12)  // 0x00001000, 根拠: FUN_08082464 が立てる
+#define PFLAG20_UNK_8 (1 << 8)    // 0x00000100
+#define PFLAG20_UNK_12 (1 << 12)  // 0x00001000
 #define PFLAG20_UNK_15 (1 << 15)  // 0x00008000, 立っていると Player_SetHitDir が被弾方向を facing ではなく unk_3e8 に書く
 #define PFLAG20_UNK_16 (1 << 16)  // 0x00010000, FLAG378_SKULLSUIT が立っているときに立つ
 #define PFLAG20_UNK_17 (1 << 17)  // 0x00020000, 棺桶が COFFIN_SILVER のとき寝ている間だけ立つ
+#define PFLAG20_UNK_19 (1 << 19)  // 0x00080000
 
 // Player.flag35a, Player_BeginAction が毎フレーム 0 に戻し、行動関数が立てたものを FUN_08078bc0 がその場で反映する
 typedef u16 PlayerFlag35A;
@@ -326,7 +329,7 @@ typedef struct Player {
   u16 unk_958;                      // 0x958, 同じく太陽ゲージ消費側の点滅タイマ
   u16 flashPose;                    // 0x95A, flashTimer の bit2 が立っている間 Player_ApplyFlashPose が pose の代わりに返す値
   u16 flashTimer;                   // 0x95C, Player_ApplyFlashPose が毎フレーム 1 減らす点滅タイマ
-  u16 unk_95e;                      // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
+  u16 plttID_95e;                   // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
   u16 unk_960;                      // 0x960, FUN_08074994 が unk_95e と対で書く
   u16 unk_962;                      // 0x962, Player_EquipMagic がエンチャント開始時に magic.id + 0x121 を入れる
   u16 unk_964;                      // 0x964, 同じ呼び出しで 0x20 を入れる, unk_962 が 0 のときだけ 0 に戻される
