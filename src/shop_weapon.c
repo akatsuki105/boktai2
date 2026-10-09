@@ -96,7 +96,17 @@ NAKED void FUN_080bd180(Entity744F* p) { INCFUNC("asm/func/FUN_080bd180.inc"); }
 
 NAKED void FUN_080bd390(Entity744F* p) { INCFUNC("asm/func/FUN_080bd390.inc"); }
 
-NAKED s32 FindRegisteredWeaponSlot(s32 weapon) { INCFUNC("asm/func/FindRegisteredWeaponSlot.inc"); }
+// 登録スロットから weapon を探して添字を返す, 無ければ -1
+s32 FindRegisteredWeaponSlot(s32 weapon) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    if (REGISTERED_WEAPON(i) == weapon) {
+      return i;
+    }
+  }
+  return -1;
+}
 
 NAKED void FUN_080bd47c(Entity744F* p) { INCFUNC("asm/func/FUN_080bd47c.inc"); }
 
