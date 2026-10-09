@@ -21209,7 +21209,7 @@ _080D660C:
 	cmp r2, #0
 	bgt _080D660C
 	adds r0, r4, #0
-	bl FUN_0807849c
+	bl Player_GetDpadFacing
 	adds r1, r0, #0
 	movs r3, #0xa4
 	lsls r3, r3, #2

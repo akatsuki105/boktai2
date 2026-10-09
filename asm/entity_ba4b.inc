@@ -16294,7 +16294,7 @@ _0802F9B2:
 	cmp r0, #3
 	bls _0802F9E0
 	adds r0, r3, #0
-	bl FUN_0807849c
+	bl Player_GetDpadFacing
 	lsls r0, r0, #0x1d
 	movs r1, #0xa0
 	lsls r1, r1, #0x18
@@ -20643,7 +20643,7 @@ _08031B18:
 	cmp r0, #3
 	bls _08031B46
 	adds r0, r3, #0
-	bl FUN_0807849c
+	bl Player_GetDpadFacing
 	lsls r0, r0, #0x1d
 	movs r1, #0xa0
 	lsls r1, r1, #0x18

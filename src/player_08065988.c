@@ -1118,7 +1118,7 @@ NAKED void FUN_08077cbc(Player* p) { INCFUNC("asm/func/FUN_08077cbc.inc"); }
 NAKED void FUN_08078060(Player* p) { INCFUNC("asm/func/FUN_08078060.inc"); }
 
 // 十字キーの押下状態を 4bit に畳んで方向番号に引き直す, どれも押していない or ありえない組み合わせは -1
-Facing32 FUN_0807849c(Player* p) {
+Facing32 Player_GetDpadFacing(Player* p) {
   static const s16 sDpadFacingTable[17] = {
       [0] = -1,
       [1] = FACE_UP,           // ↑
@@ -1154,7 +1154,7 @@ void FUN_080784fc(Player* p) {
     p->unk_290[i] = p->unk_290[i - 1];
   }
 
-  p->unk_290[0] = FUN_0807849c(p);
+  p->unk_290[0] = Player_GetDpadFacing(p);
   if ((s16)p->unk_290[0] >= 0) {
     p->unk_290[0] = ((s16)p->unk_290[0] + p->controlUp + 7) & 7;
   }
