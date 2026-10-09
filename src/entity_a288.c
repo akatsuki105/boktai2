@@ -424,7 +424,8 @@ NAKED void FUN_0821869c(EntityA288* p) { INCFUNC("asm/func/FUN_0821869c.inc"); }
 
 NAKED void FUN_08218910(EntityA288* p) { INCFUNC("asm/func/FUN_08218910.inc"); }
 
-NAKED void FUN_08218b20(EntityA288* p) { INCFUNC("asm/func/FUN_08218b20.inc"); }
+// 名前欄に "ジャンゴ" を書き込む, 転送量は文字列の長さではなく名前欄の 10 バイト
+void FUN_08218b20(u8* dst) { CpuCopy16(gStringDjango_085aff78, dst, 10); }
 
 NAKED void FUN_08218b34(EntityA288* p, unknown* param_2) { INCFUNC("asm/func/FUN_08218b34.inc"); }
 
