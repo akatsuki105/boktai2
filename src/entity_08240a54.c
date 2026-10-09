@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "malloc.h"
+#include "registry.h"
 
 typedef Entity Entity08240a54;  // ENTITY_UNK_3, サイズは Entity と同じ
 
@@ -78,4 +79,18 @@ Entity08240a54* Entity08240a54_Create(void) {
   return p;
 }
 
-NAKED bool32 FUN_08240a90(void) { INCFUNC("asm/func/FUN_08240a90.inc"); }
+// 未登録なら作業領域を確保して登録し, Entity を作る
+bool32 FUN_08240a90(void) {
+  Entity08240a54Data* data;
+
+  if (Registry_Find(0x757B) != NULL) {
+    return FALSE;
+  }
+
+  data = Malloc(sizeof(Entity08240a54Data));
+  ClearMemory(data, sizeof(Entity08240a54Data));
+  Registry_Add(0x757B, data, 0);
+  gEntity08240a54Data = data;
+  Entity08240a54_Create();
+  return TRUE;
+}
