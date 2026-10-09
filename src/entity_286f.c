@@ -527,7 +527,22 @@ NAKED void FUN_08043e54(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED s32 Entity286F_Update(Entity286F* p) { INCFUNC("asm/func/Entity286F_Update.inc"); }
 
-NAKED s32 Entity286F_Destroy(Entity286F* p) { INCFUNC("asm/func/Entity286F_Destroy.inc"); }
+s32 Entity286F_Destroy(Entity286F* p) {
+  Entity286FNode* node = p->head;
+
+  while (node != NULL) {
+    Entity286FNode* next = node->next;
+
+    if (node->onDestroy != NULL) {
+      node->onDestroy(p, node);
+    }
+    FUN_0804114c(node);
+    node = next;
+  }
+
+  gEntity286F = NULL;
+  return 0;
+}
 
 NAKED s32 Entity286F_Init(Entity286F* p) { INCFUNC("asm/func/Entity286F_Init.inc"); }
 
