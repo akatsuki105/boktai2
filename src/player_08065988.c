@@ -25,6 +25,7 @@ void Player_StopEneChargeSound(Player* p);
 magic32_t Player_CheckMagicEnchant(Player* p);
 void FUN_08072724(Player* p);
 void FUN_0823bca8(s32 n);
+s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
 void Player_ShowPtcl64c(Player* p, Vec3* pos, s32 val);
 void FUN_0807e854(Player* p);
@@ -736,7 +737,88 @@ const u8 u8_ARRAY_085abc82[8] = {
     [COFFIN_IRON_MAIDEN] = 0,
 };  // 0x085ABC82
 
-NAKED void FUN_0806df84(Player* p) { INCFUNC("asm/func/FUN_0806df84.inc"); }
+// 棺桶で寝ている間の処理, 棺桶のアニメを1コマ進めつつ寝心地に応じて ENE を回復し, 一定間隔で寝息を出す
+// 残差2命令 (211/213): 原典は反転判定の定数を1つのレジスタに作って両辺で使い回し, u16 の切り詰めも `& 0xFFFF` の定数で書くが, こちらは定数を都度作り lsls/lsrs で切り詰める, Tier A-C は試済
+// コマ側を AuxAnimPlayFlags に型付けする static inline を挟むと定数の使い回しと ldrh の幅は再現できる (209/213) が一致しないので残していない, 同じ AuxAnim 手動送りを持つ PlayerShockwave_UpdateAnim / MapItem_AdvanceAnim / Entity08203ad0_Update も同じ残差で止まっている
+NON_MATCH void MagicSleeping_Update(Player* p) {
+#ifdef NONMATCHING_C
+  AuxAnimState* anim;
+  AuxAnimCmd* cmd;
+  AuxSprite* spr;
+
+  if (p->action != 0) {
+    Player_SetAction(p, 0, 0);
+  }
+
+  p->unk_20 &= ~PFLAG20_UNK_0;
+  if (p->coffin == COFFIN_SILVER) {
+    p->unk_20 |= PFLAG20_UNK_17;
+  }
+
+  anim = &p->anim_33c;
+  AuxAnim_SetAnim(anim, p->anim_354, p->coffin, p->animIDOffset, p->xflip);
+
+  spr = &p->sprite_e8;
+  cmd = &anim->cmds[anim->cmdIdx];
+  spr->metaspriteIdx = *cmd >> 6;
+
+  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+    spr->flags |= SPRFLAG_XFLIP;
+  } else {
+    spr->flags &= ~SPRFLAG_XFLIP;
+  }
+
+  if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+    spr->flags |= SPRFLAG_YFLIP;
+  } else {
+    spr->flags &= ~SPRFLAG_YFLIP;
+  }
+
+  anim->tick++;
+  if (anim->tick >= anim->wait) {
+    anim->tick = 0;
+    if (anim->flags & ANIM_PLAY_REVERSE) {
+      s32 idx = anim->cmdIdx;
+
+      if (idx == 0) {
+        idx = anim->cmdCount;
+      }
+      anim->cmdIdx = idx - 1;
+    } else {
+      anim->cmdIdx++;
+      if (anim->cmdIdx >= anim->cmdCount) {
+        anim->cmdIdx = 0;
+      }
+    }
+
+    cmd = &anim->cmds[anim->cmdIdx];
+    anim->duration = *cmd & 0xF;
+    anim->wait = anim->duration * anim->speed >> 6;
+    if (anim->wait == 0) {
+      anim->wait = 1;
+    }
+  }
+
+  if (p->ene >= p->maxEne) {
+    return;
+  }
+
+  p->eneAccum += u8_ARRAY_085abc82[p->coffin];
+  if (p->eneAccum > 0x7F) {
+    p->ene++;
+    p->eneAccum -= 0x80;
+  }
+
+  p->stateTimer++;
+  if (p->stateTimer > 0x45) {
+    p->unk_990 = 2;
+    p->unk_98c = FUN_080da9c4(p->unk_98c, &p->mover, 2, 0, 0, 0, 0x80, 0);
+    p->stateTimer = 0;
+  }
+#else
+  INCFUNC("asm/func/MagicSleeping_Update.inc");
+#endif
+}
 
 NAKED void FUN_0806e15c(Player* p) { INCFUNC("asm/func/FUN_0806e15c.inc"); }
 
@@ -3452,7 +3534,7 @@ const PlayerFunc PTR_ARRAY_085abe1c[27] = {
 
 // --------------------------------------------
 
-void FUN_0806df84(Player* p);
+void MagicSleeping_Update(Player* p);
 void FUN_0806e15c(Player* p);
 void FUN_0806e404(Player* p);
 void FUN_0806e4b4(Player* p);
@@ -3461,7 +3543,7 @@ void FUN_0806e674(Player* p);
 
 // clang-format off
 const PlayerFunc PTR_ARRAY_085abe88[21] = {
-    FUN_0806df84,
+    MagicSleeping_Update,
     FUN_0806e15c,
     NULL,
     FUN_0806e404,

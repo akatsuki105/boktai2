@@ -22,6 +22,7 @@ typedef u32 PlayerFlag20;         // Player.unk_20
 #define PFLAG20_UNK_12 (1 << 12)  // 0x00001000, 根拠: FUN_08082464 が立てる
 #define PFLAG20_UNK_15 (1 << 15)  // 0x00008000, 立っていると Player_SetHitDir が被弾方向を facing ではなく unk_3e8 に書く
 #define PFLAG20_UNK_16 (1 << 16)  // 0x00010000, FLAG378_SKULLSUIT が立っているときに立つ
+#define PFLAG20_UNK_17 (1 << 17)  // 0x00020000, 棺桶が COFFIN_SILVER のとき寝ている間だけ立つ
 
 // Player.flag35a, Player_BeginAction が毎フレーム 0 に戻し、行動関数が立てたものを FUN_08078bc0 がその場で反映する
 typedef u16 PlayerFlag35A;
@@ -227,7 +228,7 @@ typedef struct Player {
   coffin8_t coffin;                 // 0x387, MagicSleeping_0806c124
   u8 unk_388[0x38A - 0x388];        // 0x388
   u16 unk_38a;                      // 0x38A, 0 のときだけ FUN_0806e404 が専用の効果音を鳴らして 40 を入れる
-  u8 unk_38c[0x38E - 0x38C];        // 0x38C
+  u16 eneAccum;                     // 0x38C, 棺桶で寝ている間の ENE 回復の端数, 棺桶ごとの寝心地を毎フレーム足して 0x80 ごとに ene を 1 増やす
   bool8 isSabata;                   // 0x38E, 根拠: Player_Init_Helper_08065270
   u8 unk_38f;                       // 0x38F
   u16 unk_390;                      // 0x390
