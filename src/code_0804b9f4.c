@@ -862,7 +862,25 @@ NON_MATCH s32 FUN_0804e674(u16 id) {
 #endif
 }
 
-NAKED void FUN_0804e69c(s32 param_1, u8* param_2, s32 param_3) { INCFUNC("asm/func/FUN_0804e69c.inc"); }
+// 1バイトずつ変換表を引いて, 0x7F を超えるものは2バイトに展開しながら dst へ詰める
+void FUN_0804e69c(u8* src, u8* dst, s32 count) {
+  s32 i;
+
+  for (i = 0; i < count; i++) {
+    u16 c = FUN_0804e65c(src[i]);
+
+    if (c <= 0x7F) {
+      *dst = c;
+      dst++;
+    } else {
+      dst[0] = c;
+      dst[1] = c >> 8;
+      dst += 2;
+    }
+  }
+
+  *dst = 0;
+}
 
 NAKED void FUN_0804e6d8(unknown* s, s32 param_2, s32 charcount) { INCFUNC("asm/func/FUN_0804e6d8.inc"); }
 
