@@ -25,6 +25,8 @@ typedef struct Entity08060470 {
 } Entity08060470;
 static_assert(sizeof(Entity08060470) == 932);
 
+extern void* gEntity08060470;  // 0x03000134
+
 // 粒子を1個分だけ初期化する
 void Entity08060470_InitElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {
   Particle* ptcl = &elem->ptcl;
@@ -80,9 +82,20 @@ NAKED s32 Entity08060470_Update(Entity08060470* p) { INCFUNC("asm/func/Entity080
 
 NAKED s32 Entity08060470_Destroy(Entity08060470* p) { INCFUNC("asm/func/Entity08060470_Destroy.inc"); }
 
-NAKED s32 Entity08060470_Init(Entity08060470* p) { INCFUNC("asm/func/Entity08060470_Init.inc"); }
+s32 Entity08060470_Init(Entity08060470* p) {
+  Entity08060470Elem* elem;
+  s32 i;
 
-extern void* gEntity08060470;
+  gEntity08060470 = p;
+  p->activeMask = 0;
+  p->group = GetParticleGroup(PTCL_GROUP_2);
+
+  elem = p->ptcls;
+  for (i = 0; i < 16; i++, elem++) {
+    Entity08060470_InitElem(p, elem, i);
+  }
+  return 0;
+}
 
 Entity08060470* Entity08060470_Create(void) {
   Entity08060470* p = gEntity08060470;
