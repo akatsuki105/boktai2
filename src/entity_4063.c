@@ -75,4 +75,17 @@ s32 Entity4063_Init(Entity4063* p, u32 param_2, u32 param_3) {
   return 0;
 }
 
-NAKED Entity4063* Entity4063_Create(u32 param_1, u32 param_2) { INCFUNC("asm/func/Entity4063_Create.inc"); }
+Entity4063* Entity4063_Create(u32 param_1, u32 param_2) {
+  if (gEntity4063 == NULL) {
+    Entity4063* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity4063));
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity4063_Update, Entity4063_Destroy);
+      if (Entity4063_Init(p, param_1, param_2) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity4063;
+}
