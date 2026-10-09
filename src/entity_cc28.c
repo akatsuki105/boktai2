@@ -1553,7 +1553,12 @@ s32 FUN_08099b84(s32 n) {
 
 NAKED void FUN_08099b9c(EntityCC28* p) { INCFUNC("asm/func/FUN_08099b9c.inc"); }
 
-NAKED void FUN_08099c1c(EntityCC28* p) { INCFUNC("asm/func/FUN_08099c1c.inc"); }
+void FUN_08099c1c(EntityCC28* p) {
+  p->unk_4000[13] = 0;
+  p->unk_4000[14] = gStat->unk_010;
+  p->unk_4000[15] = FUN_08099b5c();
+  p->unk_4000[16] = gStat->unk_014;
+}
 
 NAKED void FUN_08099c64(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_08099c64.inc"); }
 

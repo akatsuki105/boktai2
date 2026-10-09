@@ -39,7 +39,8 @@ typedef struct {
   u8 unk_004[12];             // 0x004
   u16 unk_010;                // 0x010, FUN_08063634 が Player.unk_456 へ写す
   s16 messageSpeed;           // 0x012, メッセージ速度設定, TextRenderer_ResetSpeed が TextRenderer.speed に入れる
-  u8 unk_14[4];               // 0x014
+  u16 unk_014;                // 0x014
+  u8 unk_016[2];              // 0x016
   s16 stats[STAT_KINDS * 2];  // 0x018, ステータスポイントの割り振り と (多分タロットカードの)ドーピングボーナス, ステータス画面には合計値が表示される
   u16 savedHP;                // 0x028, コンティニュー用？
   u16 savedMaxHP;             // 0x02A
