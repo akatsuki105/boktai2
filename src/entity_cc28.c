@@ -1718,7 +1718,17 @@ void FUN_0809c28c(void) {
   }
 }
 
-NAKED void FUN_0809c2d0(void) { INCFUNC("asm/func/FUN_0809c2d0.inc"); }
+void FUN_0809c2d0(void) {
+  EntityCC28* p = gEntityCC28;
+
+  if (p != NULL && p->player != NULL) {
+    FUN_0808d774(p);
+    FUN_0808d564(gEntityCC28);
+    if (gEntityCC28->unk_9fe <= 2) {
+      FUN_0808d3d4(gEntityCC28);
+    }
+  }
+}
 
 // VM の f 引数を unk_da0[3] に書き込む
 void FUN_0809c314(void) {
