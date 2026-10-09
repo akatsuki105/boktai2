@@ -45,9 +45,9 @@ void (*const PTR_ARRAY_085ad80c[7])(Enemy*, u16*) = {
     FUN_08140278,
 };  // 0x085AD80C
 
-s32 EnemyBat_Destroy(EnemyBat*);
-
 INCASM("asm/bat.inc");
+
+NAKED s32 EnemyBat_Destroy(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_Destroy.inc"); }
 
 NAKED s32 EnemyBat_Init(EnemyBat* p) { INCFUNC("asm/func/EnemyBat_Init.inc"); }
 

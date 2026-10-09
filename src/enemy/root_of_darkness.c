@@ -53,9 +53,9 @@ void (*const PTR_ARRAY_085ade8c[7])(Enemy*, u16*) = {
     FUN_081a4ccc,
 };  // 0x085ADE8C
 
-s32 EnemyRootOfDarkness_Destroy(RootOfDarkness*);
-
 INCASM("asm/root_of_darkness.inc");
+
+NAKED s32 EnemyRootOfDarkness_Destroy(RootOfDarkness* p) { INCFUNC("asm/func/EnemyRootOfDarkness_Destroy.inc"); }
 
 NAKED s32 EnemyRootOfDarkness_Init(RootOfDarkness* p) { INCFUNC("asm/func/EnemyRootOfDarkness_Init.inc"); }
 

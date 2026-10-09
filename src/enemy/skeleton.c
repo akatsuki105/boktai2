@@ -110,10 +110,11 @@ void (*const PTR_ARRAY_085ad5d8[8])(Enemy*, u16*) = {
     FUN_0810323c,
 };  // 0x085AD5D8
 
-s32 EnemySkeleton_Init(Skeleton*);
-s32 EnemySkeleton_Destroy(Skeleton*);
-
 INCASM("asm/skeleton.inc");
+
+NAKED s32 EnemySkeleton_Destroy(Skeleton* p) { INCFUNC("asm/func/EnemySkeleton_Destroy.inc"); }
+
+NAKED s32 EnemySkeleton_Init(Skeleton* p) { INCFUNC("asm/func/EnemySkeleton_Init.inc"); }
 
 void EnemySkeleton_Create(void) {
   Skeleton* p = Malloc(sizeof(Skeleton));

@@ -53,9 +53,9 @@ void (*const PTR_ARRAY_085ada68[7])(Enemy*, u16*) = {
     FUN_08167a38,
 };  // 0x085ADA68
 
-s32 EnemyBee_Destroy(Bee*);
-
 INCASM("asm/bee.inc");
+
+NAKED s32 EnemyBee_Destroy(Bee* p) { INCFUNC("asm/func/EnemyBee_Destroy.inc"); }
 
 NAKED s32 EnemyBee_Init(Bee* p) { INCFUNC("asm/func/EnemyBee_Init.inc"); }
 
