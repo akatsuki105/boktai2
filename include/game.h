@@ -64,7 +64,7 @@ typedef struct {
   s16 equippedWeaponIdx;         // 0x058
   s16 equippedMagicIdx;          // 0x05A, registeredMagic[equippedMagicIdx] が現在装備中の魔法ID
   slot16_t armor;                // 0x05C
-  s16 unk_5e;                    // 0x05E, FUN_08065110 がサバタの魔法番号を選ぶときに 0 かどうかを見る
+  s16 unk_5e;                    // 0x05E, Player_GetEquippedMagic がサバタの魔法番号を選ぶときに 0 かどうかを見る
   slot16_t registeredWeapon[4];  // 0x060, 剣槍槌銃, 登録武器のIDではなく、武器インベントリのどこにある武器を登録しているかのインデックス(0~15)が入る
   magic16_t registeredMagic[4];  // 0x068, 登録中の魔法4種のID
   item16_t items[16 + 16 + 16];  // 0x070

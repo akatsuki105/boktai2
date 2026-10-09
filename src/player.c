@@ -3473,7 +3473,7 @@ void Player_EquipMagic(Player* p, magic32_t n) {
 }
 
 // 使う魔法の番号を返す, サバタは固定の2種から選び、それ以外は登録魔法から引く
-s32 FUN_08065110(Player* p) {
+s32 Player_GetEquippedMagic(Player* p) {
   if (p->kind != PLAYER_SABATA) {
     return *(gStat->equippedMagicIdx + gStat->registeredMagic);
   }
@@ -3491,7 +3491,7 @@ void Player_RefreshMagicInfo(Player* p) {
   if (gFlag030047a4 & FLAG030047A4_UNK_12) {
     m->id = MAGIC_NONE;
   } else {
-    m->id = FUN_08065110(p);
+    m->id = Player_GetEquippedMagic(p);
   }
 
   if (m->id < 0) {
