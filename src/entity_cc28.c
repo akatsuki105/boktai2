@@ -1751,10 +1751,8 @@ void FUN_0809c264(void) {
 }
 
 void FUN_0809c28c(void) {
-  EntityCC28* p = gEntityCC28;
-
-  if (p != NULL && p->player != NULL) {
-    FUN_0808d5cc(p);
+  if (gEntityCC28 != NULL && gEntityCC28->player != NULL) {
+    FUN_0808d5cc(gEntityCC28);
     FUN_0808d4dc(gEntityCC28);
     if (gEntityCC28->unk_9fe <= 2) {
       FUN_0808d3d4(gEntityCC28);
@@ -1763,10 +1761,8 @@ void FUN_0809c28c(void) {
 }
 
 void FUN_0809c2d0(void) {
-  EntityCC28* p = gEntityCC28;
-
-  if (p != NULL && p->player != NULL) {
-    FUN_0808d774(p);
+  if (gEntityCC28 != NULL && gEntityCC28->player != NULL) {
+    FUN_0808d774(gEntityCC28);
     FUN_0808d564(gEntityCC28);
     if (gEntityCC28->unk_9fe <= 2) {
       FUN_0808d3d4(gEntityCC28);

@@ -6,7 +6,6 @@
 #define REGISTERED_MAGIC(n) (*(gStat->registeredMagic + n))
 
 void FUN_0809c2d0(void);
-void Player_EquipMagic(Player* p, magic32_t n);
 
 s32 GetMagicCategory(magic32_t id) {
   if (id < 10) {
@@ -18,7 +17,7 @@ s32 GetMagicCategory(magic32_t id) {
   }
 }
 
-magic32_t GetEquippedMagic(void) {
+magic32_t UNUSED GetEquippedMagic(void) {
   const s32 idx = gStat->equippedMagicIdx;
   return REGISTERED_MAGIC(idx);
 }
@@ -34,7 +33,7 @@ void RegisterMagic(s32 idx, magic32_t m) {
   REGISTERED_MAGIC(idx) = m;
 }
 
-void magic_082434f0(magic32_t n) {
+void UnlockMagic(magic32_t n) {
   s32 i;
   gStat->unlockedMagic |= (1 << n);
   for (i = 0; i < 4; i++) {
@@ -52,9 +51,10 @@ void magic_082434f0(magic32_t n) {
   }
 }
 
-void FUN_08243558(void) {
+// 0xE083
+void UnlockMagicScripted(void) {
   if (VM_SeekToNamedArg('m')) {
-    magic_082434f0(VM_GetValue());
+    UnlockMagic(VM_GetValue());
   }
 }
 
@@ -74,4 +74,5 @@ void UnregisterMagic(s32 idx) {
   return;
 }
 
+// 0x1887
 NAKED void magic_082435b8(void) { INCFUNC("asm/func/magic_082435b8.inc"); }

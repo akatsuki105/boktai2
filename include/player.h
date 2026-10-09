@@ -398,6 +398,7 @@ void FUN_0807d118(Player* p);
 void FUN_0807bb3c(Player* p, Vec3* pos, s32 param_3, s32 param_4, u32 scriptID);
 void FUN_0807bc64(Player* p, u32 scriptID);
 void Player_SetAction(Player* p, u32 action, u32 state);
+void Player_EquipMagic(Player* p, magic32_t n);
 
 static inline void Player_SetFlag20(Player* p, PlayerFlag20 bit) { p->unk_20 |= bit; }
 static inline bool32 Player_TestFlag20(Player* p, PlayerFlag20 bit) { return p->unk_20 & bit; }

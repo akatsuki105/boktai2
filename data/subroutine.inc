@@ -574,7 +574,7 @@ gSubroutineTable:
 	.4byte 0xE02A, FUN_08004a04
 	.4byte 0xE02E, EntityE02E_Create
 	.4byte 0xE06A, EntityE06A_Create
-	.4byte 0xE083, FUN_08243558
+	.4byte 0xE083, UnlockMagicScripted
 	.4byte 0xE0A5, FUN_0800a458
 	.4byte 0xE0E1, FUN_080e0248
 	.4byte 0xE131, EnemyBee_Create
