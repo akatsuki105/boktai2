@@ -25,7 +25,19 @@ typedef struct Entity08060470 {
 } Entity08060470;
 static_assert(sizeof(Entity08060470) == 932);
 
-NAKED void Entity08060470_InitElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) { INCFUNC("asm/func/Entity08060470_InitElem.inc"); }
+// 粒子を1個分だけ初期化する
+void Entity08060470_InitElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {
+  Particle* ptcl = &elem->ptcl;
+
+  elem->state = 0;
+  elem->unk_1 = 1;
+  elem->timer = 0;
+  elem->lifetime = 0;
+  Particle_Setup(ptcl, p->group, 1);
+  Particle_SetPltt(ptcl, 1);
+  Particle_SetFrame(ptcl, p->group, 3);
+  Particle_SetOffset(ptcl, -4, -4);
+}
 
 void Entity08060470_ReleaseElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {
   Particle_Remove(&elem->ptcl);
