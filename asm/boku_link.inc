@@ -4,9 +4,6 @@
 	
 	.text
 
-@ 通信対戦用のボク
-@ EnemyXXX_Create でファイル分けしているだけなので他の敵のコードも混じっているかもしれない
-
 	thumb_func_start FUN_081ae594
 FUN_081ae594: @ 0x081AE594
 	push {r4, r5, lr}

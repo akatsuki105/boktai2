@@ -222,4 +222,40 @@ static inline bool32 Enemy_TestFlag3(Enemy* p, EnemyFlags3 bit) { return (p->fla
 static inline void Enemy_SetFlag4(Enemy* p, EnemyFlags4 bit) { p->flags4 |= bit; }
 static inline void Enemy_ClearFlags4(Enemy* p, EnemyFlags4 bits) { p->flags4 &= ~bits; }
 
+// --------------------------------------------
+// Enemy全体で利用される共通ハンドラ
+
+void FUN_080e6624(Enemy* p, u16* msg);
+void FUN_080e664c(Enemy* p, u16* msg);
+void FUN_080f07d0(Enemy* p);
+void FUN_080f0868(Enemy* p);
+void FUN_080f0914(Enemy* p);
+void FUN_080f09a4(Enemy* p);
+void FUN_080f0e78(Enemy* p);
+void FUN_080f11d0(Enemy* p);
+void FUN_080f12c4(Enemy* p);
+void FUN_080f19cc(Enemy* p);
+void FUN_080f1c54(Enemy* p);
+void FUN_080f1cb8(Enemy* p);
+void FUN_080f1cf0(Enemy* p);
+void FUN_080f1de4(Enemy* p);
+void FUN_080f1e0c(Enemy* p);
+void FUN_080f1e78(Enemy* p);
+void FUN_080f1ef8(Enemy* p);
+void FUN_080f2074(Enemy* p);
+void FUN_080f2160(Enemy* p);
+void FUN_080f2364(Enemy* p);
+void FUN_080f248c(Enemy* p);
+void FUN_080f2644(Enemy* p);
+void FUN_080f2864(Enemy* p);
+void FUN_080f2a40(Enemy* p);
+void FUN_080f2d04(Enemy* p);
+void FUN_080f2ec0(Enemy* p);
+void FUN_080f31c4(Enemy* p);
+void FUN_080f33e8(Enemy* p);
+void FUN_080f34a0(Enemy* p);
+void FUN_080f9c20(Enemy* p);
+void FUN_080f9e34(Enemy* p);
+void FUN_080f9ee0(Enemy* p);
+
 #endif  // __INCLUDE_ENEMY_H__
