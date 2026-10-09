@@ -70,7 +70,19 @@ s32 OpenMainSpriteFile(MainSpriteGfx* gfx, MainSpriteGfxFile* f) {
 }
 
 // Unused?
-NAKED unknown* FUN_0822f2bc(unknown* a, unknown* b) { INCFUNC("asm/func/FUN_0822f2bc.inc"); }
+// unk_0 が poseIdx と一致する MainSpritePose を探して返す, 無ければ NULL
+MainSpritePose* FUN_0822f2bc(MainSpriteGfx* gfx, u16 poseIdx) {
+  MainSpritePose* pose = gfx->sprites;
+  s32 i;
+
+  for (i = 0; i < gfx->spriteCount; i++) {
+    if (pose->unk_0 == poseIdx) {
+      return pose;
+    }
+    pose++;
+  }
+  return NULL;
+}
 
 // MainSpriteGfx の poseIdx 番目のメタスプライトを MainSprite に読み込む (パレットは未設定のときだけ設定する)
 s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx) {
