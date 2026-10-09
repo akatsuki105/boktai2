@@ -2,9 +2,11 @@
 
 #include "entity.h"
 #include "global.h"
+#include "input.h"
 #include "link.h"
 #include "sound.h"
 #include "text.h"
+#include "video.h"
 #include "vm.h"
 
 s32 FUN_081dec1c(Entity9A9F* p);
@@ -432,7 +434,14 @@ NAKED void FUN_081dfa20(Entity9A9F* p, unknown* param_2, unknown* param_3, unkno
 
 NAKED s32 FUN_081dfa98(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dfa98.inc"); }
 
-NAKED s32 Entity9A9F_Destroy(Entity9A9F* p) { INCFUNC("asm/func/Entity9A9F_Destroy.inc"); }
+s32 Entity9A9F_Destroy(Entity9A9F* p) {
+  FUN_08238bf4();
+  Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
+  gUseLinkInput = FALSE;
+  gFlag030047a4 &= ~FLAG030047A4_LINK;
+  gEntity9A9F = NULL;
+  return 0;
+}
 
 NAKED Entity9A9F* Entity9A9F_Create(void) { INCFUNC("asm/func/Entity9A9F_Create.inc"); }
 
