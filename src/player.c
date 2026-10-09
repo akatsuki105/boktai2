@@ -1817,13 +1817,7 @@ void Player_SetPlttIDs(Player* p) {
       } else {
         p->plttIDs[0] = 29;
       }
-      p->plttIDs[1] = 289;
-      p->plttIDs[2] = 32;
-      p->plttIDs[3] = 291;
-      p->plttIDs[4] = 292;
-      p->plttIDs[5] = 31;
-      p->plttIDs[6] = 33;
-      p->plttIDs[7] = 30;
+      p->plttIDs[1] = 289, p->plttIDs[2] = 32, p->plttIDs[3] = 291, p->plttIDs[4] = 292, p->plttIDs[5] = 31, p->plttIDs[6] = 33, p->plttIDs[7] = 30;
       break;
     }
     case PLAYER_DARK_DJANGO: {
@@ -1838,13 +1832,7 @@ void Player_SetPlttIDs(Player* p) {
       } else {
         p->plttIDs[0] = 38;
       }
-      p->plttIDs[1] = 289;
-      p->plttIDs[2] = 32;
-      p->plttIDs[3] = 291;
-      p->plttIDs[4] = 292;
-      p->plttIDs[5] = 31;
-      p->plttIDs[6] = 33;
-      p->plttIDs[7] = 30;
+      p->plttIDs[1] = 289, p->plttIDs[2] = 32, p->plttIDs[3] = 291, p->plttIDs[4] = 292, p->plttIDs[5] = 31, p->plttIDs[6] = 33, p->plttIDs[7] = 30;
       break;
     }
     case PLAYER_BAT: {
@@ -1859,13 +1847,7 @@ void Player_SetPlttIDs(Player* p) {
       } else {
         p->plttIDs[0] = 614;
       }
-      p->plttIDs[1] = 621;
-      p->plttIDs[2] = 619;
-      p->plttIDs[3] = 616;
-      p->plttIDs[4] = 617;
-      p->plttIDs[5] = 618;
-      p->plttIDs[6] = 620;
-      p->plttIDs[7] = 615;
+      p->plttIDs[1] = 621, p->plttIDs[2] = 619, p->plttIDs[3] = 616, p->plttIDs[4] = 617, p->plttIDs[5] = 618, p->plttIDs[6] = 620, p->plttIDs[7] = 615;
       break;
     }
     case PLAYER_MOUSE: {
@@ -1880,13 +1862,7 @@ void Player_SetPlttIDs(Player* p) {
       } else {
         p->plttIDs[0] = 29;
       }
-      p->plttIDs[1] = 289;
-      p->plttIDs[2] = 32;
-      p->plttIDs[3] = 291;
-      p->plttIDs[4] = 292;
-      p->plttIDs[5] = 31;
-      p->plttIDs[6] = 33;
-      p->plttIDs[7] = 30;
+      p->plttIDs[1] = 289, p->plttIDs[2] = 32, p->plttIDs[3] = 291, p->plttIDs[4] = 292, p->plttIDs[5] = 31, p->plttIDs[6] = 33, p->plttIDs[7] = 30;
       break;
     }
     case PLAYER_SLEEPING: {
