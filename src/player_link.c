@@ -8,7 +8,18 @@
 
 // 通信対戦の自キャラ?
 
-NAKED void FUN_08080c64(Player* p) { INCFUNC("asm/func/FUN_08080c64.inc"); }
+// facing から animIDOffset と xflip を決める
+void LinkPlayer_SetAnimFacing(Player* p) {
+  u8 v = p->facing;
+
+  if (v > 4) {
+    p->animIDOffset = 8 - v;
+    p->xflip = 1;
+  } else {
+    p->animIDOffset = v;
+    p->xflip = 0;
+  }
+}
 
 NAKED void FUN_08080cac(Player* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_08080cac.inc"); }
 
@@ -108,7 +119,7 @@ NAKED s32 FUN_08081de0(s32 param_1, unknown* param_2, unknown* param_3) { INCFUN
 void FUN_08081f80(Player* p) {
   if (p->action) {
     FUN_08080e0c(p, 0, 0);
-    FUN_08080c64(p);
+    LinkPlayer_SetAnimFacing(p);
   }
 
   FUN_08080cac(p, 0x19E, 0x40);

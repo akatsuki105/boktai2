@@ -103,7 +103,7 @@ _08082B70:
 	strb r0, [r3]
 _08082B74:
 	adds r0, r5, #0
-	bl FUN_08080c64
+	bl LinkPlayer_SetAnimFacing
 	movs r1, #0xcf
 	lsls r1, r1, #1
 	adds r0, r5, #0

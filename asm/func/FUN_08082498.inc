@@ -221,7 +221,7 @@ _08082634:
 	adds r0, r4, r3
 	strb r2, [r0]
 	adds r0, r4, #0
-	bl FUN_08080c64
+	bl LinkPlayer_SetAnimFacing
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0

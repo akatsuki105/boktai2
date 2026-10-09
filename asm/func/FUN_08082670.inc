@@ -338,7 +338,7 @@ _0808290C:
 	movs r5, #0
 	strb r5, [r0]
 	adds r0, r4, #0
-	bl FUN_08080c64
+	bl LinkPlayer_SetAnimFacing
 	ldr r3, _08082964 @ =0x0000046D
 	adds r2, r4, r3
 	ldrb r0, [r2]

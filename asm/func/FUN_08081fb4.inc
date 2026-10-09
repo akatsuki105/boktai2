@@ -168,7 +168,7 @@ _080820DE:
 	adds r0, r4, r2
 	strb r1, [r0]
 	adds r0, r4, #0
-	bl FUN_08080c64
+	bl LinkPlayer_SetAnimFacing
 _0808210E:
 	ldr r1, _08082120 @ =0x000001A3
 	adds r0, r4, #0

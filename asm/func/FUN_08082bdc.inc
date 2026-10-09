@@ -64,7 +64,7 @@ _08082C2C:
 	adds r0, r4, r2
 	strb r1, [r0]
 	adds r0, r4, #0
-	bl FUN_08080c64
+	bl LinkPlayer_SetAnimFacing
 	movs r5, #0x8e
 	lsls r5, r5, #3
 	adds r0, r4, r5
@@ -215,7 +215,7 @@ _08082D5E:
 	adds r0, r4, r2
 	strb r1, [r0]
 	adds r0, r4, #0
-	bl FUN_08080c64
+	bl LinkPlayer_SetAnimFacing
 _08082D96:
 	ldr r1, _08082DA8 @ =0x000001A3
 	adds r0, r4, #0
