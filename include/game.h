@@ -62,11 +62,11 @@ typedef struct {
   s32 exp;                       // 0x050, 総経験値, 999999 で頭打ち
   u32 unlockedMagic;             // 0x054
   s16 equippedWeaponIdx;         // 0x058
-  s16 equippedMagicIdx;          // 0x05A, 登録された4つの魔法のうち、フィールドで選択している魔法のインデックス(0~3)
+  s16 equippedMagicIdx;          // 0x05A, registeredMagic[equippedMagicIdx] が現在装備中の魔法ID
   slot16_t armor;                // 0x05C
   s16 unk_5e;                    // 0x05E, FUN_08065110 がサバタの魔法番号を選ぶときに 0 かどうかを見る
   slot16_t registeredWeapon[4];  // 0x060, 剣槍槌銃, 登録武器のIDではなく、武器インベントリのどこにある武器を登録しているかのインデックス(0~15)が入る
-  magic16_t registeredMagic[4];  // 0x068
+  magic16_t registeredMagic[4];  // 0x068, 登録中の魔法4種のID
   item16_t items[16 + 16 + 16];  // 0x070
   s16 rotTimer[16 + 16 + 16];    // 0x0D0, if MSB is set, item is chocolate-covered
   item16_t valuables[16];        // 0x130
