@@ -88,7 +88,15 @@ void FUN_080b9724(MainSprite* sprites) {
   }
 }
 
-NAKED void FUN_080b9740(MainSprite* sprite, MainSpriteGfx* gfx, char* param_3, s8 param_4) { INCFUNC("asm/func/FUN_080b9740.inc"); }
+void FUN_080b9740(MainSprite* sprite, MainSpriteGfx* gfx, char* out, s32 val) {
+  u16 animIdx;
+
+  sprite->flags &= ~SPRFLAG_HIDDEN;
+  *out = val;
+  animIdx = ((u8)val != 0) ? 4 : 5;
+  MainSprite_SetAnim(sprite, gfx, animIdx, 1, 0);
+  MainSprite_AdvanceAnim(sprite, gfx);
+}
 
 NAKED s32 FUN_080b977c(MainSprite* sprite, MainSpriteGfx* gfx, u8* param_3) { INCFUNC("asm/func/FUN_080b977c.inc"); }
 
