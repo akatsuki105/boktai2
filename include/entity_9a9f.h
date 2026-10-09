@@ -80,7 +80,7 @@ typedef struct Entity9A9F {
   u8 unk_2cc[3];                               // 0x2CC, 根拠: FUN_081ddf84 が sEntity9A9FLimits[i] 以上なら 0 に戻す
   u8 unk_2cf[0x2D4 - 0x2CF];                   // 0x2CF
   void (*updateCallback)(struct Entity9A9F*);  // 0x2D4
-  u8 unk_2d8[4];                               // 0x2D8
+  s32 windowID;                                // 0x2D8, TextPanel_Create の戻り値
   s16 unk_2dc;                                 // 0x2DC, '.l=0'
   s16 unk_2de;                                 // 0x2DE, '.R=0'
   s16 unk_2e0;                                 // 0x2E0, '.v=0'

@@ -4,10 +4,12 @@
 #include "global.h"
 #include "link.h"
 #include "sound.h"
+#include "text.h"
 #include "vm.h"
 
 s32 FUN_081dec1c(Entity9A9F* p);
 s32 FUN_081de130(Entity9A9F* p);
+void FUN_081df460(Entity9A9F*);
 s32 FUN_081de844(Entity9A9F*);
 s32 FUN_081de960(Entity9A9F*);
 void FUN_081df568(Entity9A9F* p);
@@ -169,7 +171,23 @@ NAKED s32 FUN_081df23c(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df23c.inc
 
 NAKED void FUN_081df398(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df398.inc"); }
 
-NAKED void FUN_081df3f0(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df3f0.inc"); }
+s32 FUN_081df3f0(Entity9A9F* p) {
+  if ((u8)FUN_081dd9d4(p)) {
+    p->windowID = TextPanel_Create(1, 7, 28, 6);
+    TextPanel_SetScript(p->windowID, p->unk_2f0);
+    TextPanel_SetMessage(p->windowID, 10);
+    TextPanel_Start(p->windowID);
+  }
+
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  if (p->stateTimer > 119) {
+    Entity9A9F_SetState(p, 21, (EntityFunc*)FUN_081df460);
+  }
+}
 
 NAKED void FUN_081df460(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df460.inc"); }
 
