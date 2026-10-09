@@ -194,7 +194,33 @@ s32 FUN_080b9e50(MenuCursor* p) {
   return 0;
 }
 
-NAKED s32 FUN_080b9eb0(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9eb0.inc"); }
+// 同じ列を上へ辿って別のスロットへカーソルを移す
+s32 FUN_080b9eb0(MenuCursor* p) {
+  s32 orig = p->row;
+  s32 cur = p->slots[orig * 4 + p->col];
+  s32 row = orig - 1;
+
+  if (orig == 0) {
+    row = 8;
+  }
+
+  while (row != orig) {
+    s32 slot = p->slots[row * 4 + p->col];
+
+    if (slot >= 0 && slot != cur) {
+      p->row = row;
+      p->slot = MenuCursor_GetSlot(p);
+      PlaySound_082406e0(0xDC);
+      return 1;
+    }
+    if (row == 0) {
+      row = 8;
+    } else {
+      row--;
+    }
+  }
+  return 0;
+}
 
 NAKED s32 FUN_080b9f10(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9f10.inc"); }
 
