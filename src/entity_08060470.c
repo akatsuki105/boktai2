@@ -46,7 +46,30 @@ void Entity08060470_ReleaseElem(Entity08060470* p, Entity08060470Elem* elem, s32
 
 void FUN_08060358(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {}
 
-NAKED void Entity08060470_UpdateElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) { INCFUNC("asm/func/Entity08060470_UpdateElem.inc"); }
+// vel の分だけ粒子を進め, 寿命が来たら解放して枠を空ける
+// 残差は37命令 vs 44命令, 原典は pos と vel のベースポインタを別に作って y/z を +2/+4 で引くが agbcc は elem からの固定オフセットに畳む, Vec3* ローカル2本/3本は試済
+NON_MATCH void Entity08060470_UpdateElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {
+#ifdef NONMATCHING_C
+  Particle* ptcl = &elem->ptcl;
+
+  if (elem->unk_1) {
+    elem->unk_1 = 0;
+  }
+
+  ptcl->pos.x += elem->vel.x;
+  ptcl->pos.y += elem->vel.y;
+  ptcl->pos.z += elem->vel.z;
+
+  if (elem->timer >= elem->lifetime) {
+    Entity08060470_ReleaseElem(p, elem, idx);
+    elem->state = 0;
+    elem->unk_1 = 1;
+    elem->timer = 0;
+  }
+#else
+  INCFUNC("asm/func/Entity08060470_UpdateElem.inc");
+#endif
+}
 
 void (*const PTR_ARRAY_085abaac[2])(Entity08060470*, Entity08060470Elem*, s32) = {
     FUN_08060358,
