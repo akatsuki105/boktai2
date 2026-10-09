@@ -203,6 +203,7 @@ static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags;
 
 void FUN_08242c08(slot32_t n);  // src/weapon.c
 void FUN_0809630c(EntityCC28* p);
+s32 FUN_0804a40c(s32 id, s32 idx, char* str);  // src/text_panel.c
 void FUN_0809ae0c(EntityCC28* p);
 s32 FUN_0808da88(EntityCC28* p);
 s32 FUN_0809b3b0(EntityCC28* p);
@@ -968,7 +969,13 @@ NAKED u32 item_08092034(s32 slot) { INCFUNC("asm/func/item_08092034.inc"); }
 
 NAKED void FUN_08092070(EntityCC28* p) { INCFUNC("asm/func/FUN_08092070.inc"); }
 
-NAKED bool32 FUN_080921a8(EntityCC28* p) { INCFUNC("asm/func/FUN_080921a8.inc"); }
+// 選択中のアイテムの effectType が 1 か 2 かどうか
+bool32 FUN_080921a8(EntityCC28* p) {
+  if ((u16)(gItemDB[GetItemID(p->inValuableInventory, p->selectedSlot)].effectType - 1) <= 1) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED void FUN_080921e8(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_080921e8.inc"); }
 
@@ -1160,7 +1167,7 @@ NAKED void FUN_080949b0(EntityCC28* p) { INCFUNC("asm/func/FUN_080949b0.inc"); }
 
 NAKED void FUN_08094a94(EntityCC28* p, u32 permission) { INCFUNC("asm/func/FUN_08094a94.inc"); }
 
-NAKED void FUN_08094c6c(s32 param_1, u8* param_2) { INCFUNC("asm/func/FUN_08094c6c.inc"); }
+NAKED void FUN_08094c6c(u8* param_1, s8* param_2) { INCFUNC("asm/func/FUN_08094c6c.inc"); }
 
 NAKED void FUN_08094cdc(s32 param_1, s32 param_2, u8* param_3, s8* param_4) { INCFUNC("asm/func/FUN_08094cdc.inc"); }
 

@@ -72,6 +72,7 @@ s32 TextBox_SetRect(s32 x, s32 y, s32 w, s32 h);
 s32 TextBox_Start(u8* pc);
 s32 TextBox_SetInstant(s32 instant);
 s32 TextBox_ShowLine(s32 line);
+s32 TextBox_SetExtendValue(s32 idx, char* text);
 s32 TextBox_SetBgPltt(s32 fileID);
 s32 TextBox_SetVarValue(s32 idx, s32 value);
 s32 TextBox_Close(void);
