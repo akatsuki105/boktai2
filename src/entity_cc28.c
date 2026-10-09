@@ -378,7 +378,22 @@ NAKED void FUN_0808cc14(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cc14.inc"); }
 
 NAKED void FUN_0808cc84(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cc84.inc"); }
 
-NAKED void FUN_0808ce98(EntityCC28* p) { INCFUNC("asm/func/FUN_0808ce98.inc"); }
+void FUN_0808ce98(EntityCC28* p) {
+  if (p->player != NULL && p->unk_9fe != 7 && p->unk_9fe <= 2) {
+    FUN_0808a610(p, 0, 3, 1);
+    FUN_0808a768(p, 0, 3, 2);
+    FUN_0808a9a4(p, 0, 9, 18);
+    FUN_0808afac(p);
+    if (p->unk_9fe == 0) {
+      FUN_0808ad5c(p);
+    } else {
+      FUN_0808abec(p, p->unk_9fe);
+    }
+    FUN_0808cc14(p);
+    FUN_0808cc84(p);
+    FUN_0808b1bc(p);
+  }
+}
 
 NAKED void FUN_0808cf14(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cf14.inc"); }
 
