@@ -43,6 +43,7 @@ typedef u16 EnemyFlags3;
 #define ENEFLAG3_UNK_1 (1 << 1)    // 0x0002, FUN_080f1cb8 が見る
 #define ENEFLAG3_UNK_6 (1 << 6)    // 0x0040, Enemy_IsDead が死亡扱いにする
 #define ENEFLAG3_UNK_12 (1 << 12)  // 0x1000, FUN_080ee738 が見る
+#define ENEFLAG3_UNK_13 (1 << 13)  // 0x2000, FUN_08101bc0 が unk_4be より優先して見る
 #define ENEFLAG3_UNK_14 (1 << 14)  // 0x4000, FUN_080ec9b0 が立て FUN_080edebc が落とす
 
 // Enemy.flags4 (0x182)
