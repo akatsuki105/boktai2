@@ -301,7 +301,14 @@ NON_MATCH void FUN_080ba054(Entity3019* p, Entity3019Func* fn, u8 val) {
 #endif
 }
 
-NAKED void FUN_080ba07c(Entity3019* p, s32 param_2) { INCFUNC("asm/func/FUN_080ba07c.inc"); }
+void FUN_080ba07c(Entity3019* p, s32 line) {
+  FUN_08049e5c();
+  p->sprites[33].flags |= SPRFLAG_HIDDEN;
+  TextBox_Start(p->unk_12e0);
+  TextBox_SetRect(0, 16, 30, 2);
+  TextBox_SetInstant(1);
+  TextBox_ShowLine(line);
+}
 
 // value を百の位・十の位・一の位に分解する
 void SplitDecimal3_080ba0c0(s32 value, s32* digits) {
