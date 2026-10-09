@@ -417,7 +417,11 @@ NAKED void FUN_08219d98(EntityA288* p) { INCFUNC("asm/func/FUN_08219d98.inc"); }
 
 NAKED void FUN_08219e5c(EntityA288* p) { INCFUNC("asm/func/FUN_08219e5c.inc"); }
 
-NAKED void FUN_08219e9c(EntityA288* p) { INCFUNC("asm/func/FUN_08219e9c.inc"); }
+void FUN_08219e9c(EntityA288* p) {
+  p->pltt = GetBgPlttFile(BGP_E9C3)->body;
+  CpuCopy32(p->pltt, gBgPlttBuffer, 80 * sizeof(rgb555));
+  EntityA288_LoadBgPltt(p);
+}
 
 NAKED void FUN_08219ed0(EntityA288* p) { INCFUNC("asm/func/FUN_08219ed0.inc"); }
 
