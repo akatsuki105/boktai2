@@ -93,7 +93,18 @@ NAKED void FUN_081e1734(LinkBattleCoinManager* p) { INCFUNC("asm/func/FUN_081e17
 
 NAKED s32 Entity150F_Update(LinkBattleCoinManager* p) { INCFUNC("asm/func/Entity150F_Update.inc"); }
 
-NAKED s32 Entity150F_Destroy(LinkBattleCoinManager* p) { INCFUNC("asm/func/Entity150F_Destroy.inc"); }
+s32 Entity150F_Destroy(LinkBattleCoinManager* p) {
+  s32 i;
+
+  for (i = 0; i < 5; i++) {
+    if (FUN_081e1260(p, &p->coins[i]) < 0) {
+      return -1;
+    }
+  }
+
+  gLinkBattleCoinManager = NULL;
+  return 0;
+}
 
 NAKED s32 Entity150F_Init(LinkBattleCoinManager* p, u32 unused) { INCFUNC("asm/func/Entity150F_Init.inc"); }
 
