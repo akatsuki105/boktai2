@@ -652,7 +652,26 @@ NAKED void FUN_080fba64(Enemy* p) { INCFUNC("asm/func/FUN_080fba64.inc"); }
 
 NAKED void FUN_080fc0b8(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fc0b8.inc"); }
 
-NAKED void FUN_080fc174(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fc174.inc"); }
+// 残差5命令, 原典は stateBegun を食ったかどうかを 0/1 に起こしてから if で見るが agbcc は条件を直接分岐に畳む (FUN_080f3cdc と同じ), ローカル bool32 の if/else と static inline は試済
+NON_MATCH void FUN_080fc174(Enemy* p, s32 param_2) {
+#ifdef NONMATCHING_C
+  if (p->stateBegun != 0) {
+    p->stateBegun = 0;
+    Enemy_PlayAnim(p, 7);
+    Enemy_ClearFlag3(p, ENEFLAG3_UNK_0);
+  }
+
+  if (param_2 == 40) {
+    Enemy_SetFlag4(p, ENEFLAG4_UNK_4);
+  }
+
+  if (p->animForceRestart != 0 && param_2 > 120) {
+    p->unk_46b = 1;
+  }
+#else
+  INCFUNC("asm/func/FUN_080fc174.inc");
+#endif
+}
 
 NAKED void FUN_080fc1e4(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fc1e4.inc"); }
 

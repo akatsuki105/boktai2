@@ -41,6 +41,7 @@ typedef u32 EnemyFlags2;
 
 // Enemy.flags3 (0x180)
 typedef u16 EnemyFlags3;
+#define ENEFLAG3_UNK_0 (1 << 0)    // 0x0001, FUN_080fc174 が落とす
 #define ENEFLAG3_UNK_1 (1 << 1)    // 0x0002, FUN_080f1cb8 が見る
 #define ENEFLAG3_UNK_5 (1 << 5)    // 0x0020, FUN_080f65a8 が立てる
 #define ENEFLAG3_UNK_6 (1 << 6)    // 0x0040, Enemy_IsDead が死亡扱いにする
@@ -53,6 +54,7 @@ typedef u16 EnemyFlags4;
 #define ENEFLAG4_UNK_0 (1 << 0)    // 0x0001, FUN_080f6e34 がまとめて落とす
 #define ENEFLAG4_UNK_1 (1 << 1)    // 0x0002, Enemy_Sleep が立てる
 #define ENEFLAG4_UNK_3 (1 << 3)    // 0x0008, FUN_080f6e34 がまとめて落とす
+#define ENEFLAG4_UNK_4 (1 << 4)    // 0x0010, FUN_080fc174 が立てる
 #define ENEFLAG4_UNK_6 (1 << 6)    // 0x0040, FUN_080f6e34 がまとめて落とす
 #define ENEFLAG4_UNK_7 (1 << 7)    // 0x0080, FUN_080f6e34 がまとめて落とす
 #define ENEFLAG4_UNK_8 (1 << 8)    // 0x0100, FUN_080f6e34 がまとめて落とす
@@ -214,6 +216,7 @@ static inline void Enemy_SetFlag2(Enemy* p, EnemyFlags2 bit) { p->flags2 |= bit;
 static inline void Enemy_ClearFlag2(Enemy* p, EnemyFlags2 bit) { p->flags2 &= ~bit; }
 static inline EnemyFlags Enemy_TestFlag(Enemy* p, EnemyFlags bit) { return p->flags & bit; }
 static inline void Enemy_SetFlag3(Enemy* p, EnemyFlags3 bit) { p->flags3 |= bit; }
+static inline void Enemy_ClearFlag3(Enemy* p, EnemyFlags3 bit) { p->flags3 &= ~bit; }
 static inline bool32 Enemy_TestFlag2(Enemy* p, EnemyFlags2 bit) { return (p->flags2 & bit) != 0; }
 static inline bool32 Enemy_TestFlag3(Enemy* p, EnemyFlags3 bit) { return (p->flags3 & bit) != 0; }
 static inline void Enemy_SetFlag4(Enemy* p, EnemyFlags4 bit) { p->flags4 |= bit; }
