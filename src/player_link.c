@@ -2,6 +2,7 @@
 #include "global.h"
 #include "item.h"
 #include "player.h"
+#include "random.h"
 #include "shadow.h"
 #include "sound.h"
 #include "vm.h"
@@ -126,7 +127,18 @@ NAKED void FUN_08081c04(Player* p) { INCFUNC("asm/func/FUN_08081c04.inc"); }
 
 NAKED void FUN_08081d18(Player* p, s16 param_2) { INCFUNC("asm/func/FUN_08081d18.inc"); }
 
-NAKED s32 FUN_08081da4(Player* p) { INCFUNC("asm/func/FUN_08081da4.inc"); }
+// 乱数が確率 (%) を下回ったかどうか
+bool32 FUN_08081da4(s32 percent) {
+  s32 r;
+
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  r = *(gRandomTable + gRandTableIdx);
+
+  if (Mod(r >> 4, 100) < percent) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED s32 FUN_08081de0(s32 param_1, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/FUN_08081de0.inc"); }
 
