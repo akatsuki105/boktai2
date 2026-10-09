@@ -60,7 +60,7 @@ typedef struct EntityCC28 {
   u8 unk_9dc;                      // 0x09DC
   u8 unk_9dd;                      // 0x09DD
   s8 unk_9de;                      // 0x09DE
-  u8 unk_9df[0x9E0 - 0x9DF];       // 0x09DF, まだ未解析
+  u8 playerIdx;                    // 0x09DF, gPlayerPtr の添字
   Player* player;                  // 0x09E0
   u8 unk_9e4[0x9EC - 0x9E4];       // 0x09E4, まだ未解析
   u16 unk_9ec;                     // 0x09EC
@@ -1551,7 +1551,20 @@ NAKED void FUN_0809c780(EntityCC28* p, s32 param_2, s32 param_3, s32 param_4) { 
 
 NAKED void FUN_0809c880(EntityCC28* p) { INCFUNC("asm/func/FUN_0809c880.inc"); }
 
-NAKED s32 FUN_0809c8e8(EntityCC28* p) { INCFUNC("asm/func/FUN_0809c8e8.inc"); }
+// 残差1命令, 原典は 0x9DF と 0x9E0 のオフセットを別々に作るが agbcc は前者を使い回して add #1 に畳む, ローカル分割 (Player* / 添字) は試済
+NON_MATCH s32 FUN_0809c8e8(EntityCC28* p) {
+#ifdef NONMATCHING_C
+  if (!(gEntityDisableFlags & ENTITY_DISABLE_0)) {
+    Player* player = gPlayerPtr[p->playerIdx];
+
+    p->player = player;
+    FUN_0809c880(p);
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_0809c8e8.inc");
+#endif
+}
 
 s32 EntityCC28_Destroy(EntityCC28* p) {
   FUN_0808cf50(p);
