@@ -1,14 +1,23 @@
 #include "boss.h"
 #include "entity.h"
 #include "global.h"
+#include "shadow.h"
+#include "sprite_main.h"
 
 typedef struct {
-  Entity e;  // 0x0, ENTITY_UNK_8
-  u8 unk_18[2396 - 0x18];
+  Entity e;                  // 0x0, ENTITY_UNK_8
+  u8 unk_18[0x34C - 0x18];   // 0x034C, まだ未解析
+  MainSprite sprite;         // 0x34C, _Destroy が MainSprite_Remove に渡す
+  AuxShadow shadow;          // 0x3AC, _Destroy が AuxShadow_Remove に渡す
+  u8 unk_418[2396 - 0x418];  // 0x418, まだ未解析
 } BossShadeMan;
 static_assert(sizeof(BossShadeMan) == 2396);
 
 const u8 u8_ARRAY_085aaf2c[64] = {0, 2, 3, 4, 4, 3, 1, 6, 3, 0, 5, 0, 5, 3, 4, 6, 4, 3, 1, 6, 0, 4, 2, 3, 3, 0, 5, 0, 4, 6, 5, 3, 0, 3, 4, 2, 4, 3, 1, 6, 3, 0, 5, 0, 4, 6, 5, 3, 3, 4, 0, 2, 3, 0, 5, 0, 4, 3, 1, 6, 5, 3, 4, 6};  // 0x085AAF2C
+
+void FUN_08022b04(BossShadeMan*);  // asm/boss.inc
+void FUN_0803c264(BossShadeMan*);
+void FUN_0803c76c(BossShadeMan*);
 
 void FUN_0803d8e4(BossShadeMan*);
 void FUN_0803d93c(BossShadeMan*);
@@ -118,7 +127,14 @@ s32 BossShadeMan_Update(BossShadeMan* p) {
   return 0;
 }
 
-NAKED s32 BossShadeMan_Destroy(BossShadeMan* p) { INCFUNC("asm/func/BossShadeMan_Destroy.inc"); }
+s32 BossShadeMan_Destroy(BossShadeMan* p) {
+  AuxShadow_Remove(&p->shadow);
+  FUN_0803c264(p);
+  FUN_0803c76c(p);
+  MainSprite_Remove(&p->sprite);
+  FUN_08022b04(p);
+  return 0;
+}
 
 NAKED s32 BossShadeMan_Init(BossShadeMan* p, u32 id) { INCFUNC("asm/func/BossShadeMan_Init.inc"); }
 
