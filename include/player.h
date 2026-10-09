@@ -229,7 +229,7 @@ typedef struct Player {
   u8 unk_388[0x38A - 0x388];        // 0x388
   u16 unk_38a;                      // 0x38A, 0 のときだけ FUN_0806e404 が専用の効果音を鳴らして 40 を入れる
   u16 eneAccum;                     // 0x38C, 棺桶で寝ている間の ENE 回復の端数, 棺桶ごとの寝心地を毎フレーム足して 0x80 ごとに ene を 1 増やす
-  bool8 isSabata;                   // 0x38E, 根拠: Player_Init_Helper_08065270
+  bool8 isSabata;                   // 0x38E, 根拠: Player_InitState
   u8 unk_38f;                       // 0x38F
   u16 unk_390;                      // 0x390
   u16 elevatorID;                   // 0x392, 搭乗中のエレベータのID

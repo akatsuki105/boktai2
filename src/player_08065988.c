@@ -105,7 +105,7 @@ const PlayerFunc PTR_ARRAY_085abb14[6] = {
 };  // 0x085ABB14
 
 // プレイヤー生成の後半, kind を決めて更新コールバックと入力を割り当て, 1Pなら前のプレイヤーが残した状態異常の残り時間を引き継ぐ
-s32 Player_Init_Helper_08065270(Player* p) {
+s32 Player_InitState(Player* p) {
   p->unk_1c = 1;
 
   if (VM_SeekToNamedArg('k')) {
@@ -3358,7 +3358,7 @@ static s32 Player_Destroy(Player* p) {
 
 static s32 Player_Init(Player* p, u32 n, void* _) {
   FUN_08065200(p);
-  Player_Init_Helper_08065270(p);
+  Player_InitState(p);
   FUN_08065744(p, n);
   Player_SetupHitbox(p);
   Player_RefreshMagicInfo(p);
