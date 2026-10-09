@@ -10,10 +10,32 @@ typedef struct Dvalinn {
 static_assert(sizeof(Dvalinn) == 2120);
 
 extern Dvalinn* gDvalinn;  // 0x03002C80
+extern u32 u32_03002bc0;   // src/iwram2.c
+
+static inline bool32 TestFlag03002bc0(u32 flags) { return (u32_03002bc0 & flags) != 0; }
+
+void FUN_08022e20(Dvalinn*);  // asm/boss.inc
+void FUN_08022ec0(Dvalinn*);  // asm/boss.inc
+void FUN_081fc86c(Dvalinn*);
+void FUN_081ff734(Dvalinn*);
+void FUN_081ff740(Dvalinn*);
+void FUN_081ffd9c(Dvalinn*);
+void FUN_081ffdb0(Dvalinn*);
 
 INCASM("asm/dvalinn.inc");
 
-NAKED s32 Dvalinn_Update(Dvalinn* p) { INCFUNC("asm/func/Dvalinn_Update.inc"); }
+s32 Dvalinn_Update(Dvalinn* p) {
+  if (!TestFlag03002bc0(4)) {
+    FUN_08022e20(p);
+    FUN_081ffd9c(p);
+    FUN_081fc86c(p);
+    FUN_081ff740(p);
+    FUN_081ff734(p);
+    FUN_08022ec0(p);
+    FUN_081ffdb0(p);
+  }
+  return 0;
+}
 
 NAKED s32 Dvalinn_Destroy(Dvalinn* p) { INCFUNC("asm/func/Dvalinn_Destroy.inc"); }
 
