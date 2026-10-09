@@ -5,9 +5,12 @@
 #include "inventory.h"
 #include "menu.h"
 #include "sprite.h"
+#include "text.h"
 #include "tilemap.h"
 #include "video.h"
 #include "vm.h"
+
+s32 FUN_08049f5c(void);  // src/text_marquee.c
 #include "weapon.h"
 
 struct Entity744F;
@@ -168,7 +171,16 @@ void Entity744F_LoadBgPltt(Entity744F* p) {
 
 NAKED void FUN_080be204(Entity744F* p) { INCFUNC("asm/func/FUN_080be204.inc"); }
 
-NAKED void FUN_080be650(Entity744F* p) { INCFUNC("asm/func/FUN_080be650.inc"); }
+void FUN_080be650(Entity744F* p) {
+  if (VM_SeekToNamedArg('s')) {
+    p->unk_1640 = FUN_0823d340();
+  }
+
+  FUN_08049f5c();
+  TextBox_SetRect(0, 16, 30, 2);
+  TextBox_SetInstant(1);
+  TextBox_SetBgPltt(BGP_A41A);
+}
 
 NAKED void FUN_080be690(Entity744F* p) { INCFUNC("asm/func/FUN_080be690.inc"); }
 
