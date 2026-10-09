@@ -15,6 +15,12 @@
 void Player_RefreshMagicInfo(Player* p);
 extern const u16 u16_ARRAY_085abf4c[3];
 extern u16 u16_ARRAY_03002ba0[3];
+extern u16 u16_03002b60;
+extern u16 u16_03002b64;
+extern u16 u16_03002b7c;
+extern u16 u16_03002b8c;
+void Player_RefreshStats(Player* p);  // src/player.c
+void FUN_08079f1c(Player* p);
 extern u16 u16_03002b78;
 extern u16 u16_03002bd0;
 void Player_SpawnFootHitbox(Player* p);
@@ -98,7 +104,65 @@ const PlayerFunc PTR_ARRAY_085abb14[6] = {
     [PLAYER_SABATA] = FUN_08079138,
 };  // 0x085ABB14
 
-NAKED s32 Player_Init_Helper_08065270(Player* p) { INCFUNC("asm/func/Player_Init_Helper_08065270.inc"); }
+// プレイヤー生成の後半, kind を決めて更新コールバックと入力を割り当て, 1Pなら前のプレイヤーが残した状態異常の残り時間を引き継ぐ
+s32 Player_Init_Helper_08065270(Player* p) {
+  p->unk_1c = 1;
+
+  if (VM_SeekToNamedArg('k')) {
+    p->kind = VM_GetValue();
+  } else {
+    p->kind = gStat->playerKind;
+  }
+
+  if (p->kind == PLAYER_SABATA) {
+    p->isSabata = TRUE;
+  } else {
+    p->isSabata = FALSE;
+  }
+
+  Player_RefreshStats(p);
+
+  if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+      u16_ARRAY_03002ba0[i] = 0;
+    }
+    p->updateCallback = FUN_08079f1c;
+  } else {
+    p->updateCallback = PTR_ARRAY_085abb14[p->kind];
+  }
+
+  Player_SetAction(p, 0, 0);
+  p->input = &gInput[p->unk_18];
+  FUN_0806521c(p);
+
+  if (p->unk_18 == 0) {
+    s32 i;
+
+    p->unk_442 = u16_03002b60;
+    p->unk_444 = u16_03002b7c;
+    p->unk_446 = u16_03002b8c;
+    for (i = 0; i < 3; i++) {
+      p->badCondTimer[i] = u16_ARRAY_03002ba0[i];
+    }
+  } else {
+    s32 i;
+
+    p->unk_442 = 0;
+    p->unk_444 = 0;
+    p->unk_446 = 0;
+    for (i = 0; i < 3; i++) {
+      p->badCondTimer[i] = 0;
+    }
+  }
+
+  p->controlUp = gStat->controlUp;
+  if (p->badCondTimer[2] != 0) {
+    p->controlUp = u16_03002b64;
+  }
+  return 0;
+}
 
 NAKED void FUN_0806540c(Player* p) { INCFUNC("asm/func/FUN_0806540c.inc"); }
 NAKED void FUN_08065514(Player* p) { INCFUNC("asm/func/FUN_08065514.inc"); }
