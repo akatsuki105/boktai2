@@ -9,12 +9,16 @@ typedef struct {
   u8 unk_48[0x74 - 0x48];  // 0x48, まだ未解析
   char* charTable;         // 0x74, パスワードに使える文字の並び
   u8* nameTablePc;         // 0x78, 名前に使える文字テーブルの VM バイトコード位置
-  u32 unk_7c;              // 0x7C, 0x0008C159 固定
+  u32 rngState;            // 0x7C, 線形合同法の内部状態, 初期値 0x0008C159
   u8 unk_80[140 - 0x80];   // 0x80, まだ未解析
 } PasswordDecoder;
 static_assert(sizeof(PasswordDecoder) == 140);
 
-NAKED u32 FUN_08011110(PasswordDecoder* p) { INCFUNC("asm/func/FUN_08011110.inc"); }
+// 線形合同法で乱数を1ステップ進める
+u32 FUN_08011110(PasswordDecoder* p) {
+  p->rngState = p->rngState * 0x6262C05D + 1;
+  return p->rngState;
+}
 
 NAKED s32 FUN_08011124(PasswordDecoder* p) { INCFUNC("asm/func/FUN_08011124.inc"); }
 
@@ -63,7 +67,7 @@ NON_MATCH s32 FUN_08011584(char* password, u8* charTablePc, u8* nameTablePc, u8*
   ClearMemory(p, sizeof(PasswordDecoder));
   p->charTable = Textbox_LookupString(VM_ParseStringRef(charTablePc));
   p->nameTablePc = nameTablePc;
-  p->unk_7c = 0x0008C159;
+  p->rngState = 0x0008C159;
   PasswordDecoder_StripTags(p->password, password, 0x30);
 
   ret = FUN_080111a4(p);
