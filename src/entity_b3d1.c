@@ -99,7 +99,19 @@ void FUN_080bfd04(EntityB3D1* p) {
 
 NAKED void FUN_080bfd24(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfd24.inc"); }
 
-NAKED s32 FUN_080bfd5c(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfd5c.inc"); }
+// unk_588 がどの区間にあるかを 10 / 5 / 1 / 2 で返す
+s32 FUN_080bfd5c(EntityB3D1* p) {
+  if (p->unk_588 > p->unk_58e) {
+    return 10;
+  }
+  if (p->unk_588 > p->unk_58c) {
+    return 5;
+  }
+  if (p->unk_588 > p->unk_58a) {
+    return 2;
+  }
+  return 1;
+}
 
 NAKED void FUN_080bfdac(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfdac.inc"); }
 
