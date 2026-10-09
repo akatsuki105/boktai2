@@ -399,7 +399,22 @@ void FUN_080435b4(Entity286F* p, Entity286FNode* node) {
 
 NAKED void FUN_080435f0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_080435f0.inc"); }
 
-NAKED void FUN_0804364c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0804364c.inc"); }
+// 待ちが解除されたら unk_05 を 5 にして, unk_07 が立っていたら state 1 に移してメッセージの待ちを終える
+void FUN_0804364c(Entity286F* p, Entity286FNode* node) {
+  if (node->unk_08) {
+    node->unk_08 = 0;
+    node->unk_07 = 0;
+    node->unk_05 = 5;
+  }
+
+  if (node->unk_07) {
+    Entity286FNode_SetState(node, 1);
+    node->unk_08 = 1;
+    MsgQueue_EndWait(&node->mq, 1);
+  }
+
+  node->timer++;
+}
 
 NAKED void FUN_08043688(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08043688.inc"); }
 
