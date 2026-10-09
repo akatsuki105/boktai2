@@ -98,7 +98,7 @@ void FUN_0806521c(Player* p) {
   s32 i;
 
   for (i = 0; i < 10; i++) {
-    p->unk_290[i] |= 0xFFFF;
+    p->facingHistory[i] |= 0xFFFF;
   }
 }
 
@@ -369,7 +369,7 @@ u32 FUN_08066ee4(s32 playerKind, s32 idx) {
 // 残差なし・レジスタ割当のみ不一致 (原典は p を ip に置く)
 NON_MATCH u32 FUN_08066f18(Player* p) {
 #ifdef NONMATCHING_C
-  s32 dir = (s16)p->unk_290[1];
+  s32 dir = (s16)p->facingHistory[1];
 
   if (dir != -1) {
     s32 next;
@@ -382,7 +382,7 @@ NON_MATCH u32 FUN_08066f18(Player* p) {
     next = (dir + 1) & 7;
     prev = (dir + 7) & 7;
     for (i = 2; i < 10; i++) {
-      s32 d = (s16)p->unk_290[i];
+      s32 d = (s16)p->facingHistory[i];
 
       if (d != -1) {
         if (d == next || d == prev) {
@@ -450,7 +450,7 @@ static s32 CalcMoveSpeed(Player* p) {
 // 残差1命令・レジスタ割当のみ不一致 (原典は d を早めに戻り値レジスタへ写す)
 NON_MATCH u32 FUN_08067068(Player* p) {
 #ifdef NONMATCHING_C
-  s32 dir = (s16)p->unk_290[0];
+  s32 dir = (s16)p->facingHistory[0];
   s32 next;
   s32 prev;
   s32 i;
@@ -461,13 +461,13 @@ NON_MATCH u32 FUN_08067068(Player* p) {
   next = (dir + 1) & 7;
   prev = (dir + 7) & 7;
   for (i = 1; i < 5; i++) {
-    s32 d = (s16)p->unk_290[i];
+    s32 d = (s16)p->facingHistory[i];
 
     if (d != -1) {
       if (d == next || d == prev) {
         return d;
       }
-      if (d != (s16)p->unk_290[0]) {
+      if (d != (s16)p->facingHistory[0]) {
         return dir;
       }
     }
@@ -801,7 +801,7 @@ NAKED void FUN_0806f5d8(Player* p) { INCFUNC("asm/func/FUN_0806f5d8.inc"); }
 bool32 FUN_0806f738(Player* p) {
   bool32 turned = FALSE;
 
-  if ((s16)p->unk_290[0] != -1 && p->unk_3ce == 0) {
+  if ((s16)p->facingHistory[0] != -1 && p->unk_3ce == 0) {
     p->facing = FUN_08067068(p);
     turned = TRUE;
   }
@@ -1151,12 +1151,12 @@ void FUN_080784fc(Player* p) {
   s32 i;
 
   for (i = 9; i > 0; i--) {
-    p->unk_290[i] = p->unk_290[i - 1];
+    p->facingHistory[i] = p->facingHistory[i - 1];
   }
 
-  p->unk_290[0] = Player_GetDpadFacing(p);
-  if ((s16)p->unk_290[0] >= 0) {
-    p->unk_290[0] = ((s16)p->unk_290[0] + p->controlUp + 7) & 7;
+  p->facingHistory[0] = Player_GetDpadFacing(p);
+  if ((s16)p->facingHistory[0] >= 0) {
+    p->facingHistory[0] = ((s16)p->facingHistory[0] + p->controlUp + 7) & 7;
   }
 }
 

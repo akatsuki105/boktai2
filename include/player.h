@@ -194,7 +194,7 @@ typedef struct Player {
   PlayerMagic magic;                // 0x280, 装備魔法まわりの一群, 根拠: Player_RefreshMagicInfo が1本のベースレジスタで5フィールドを書く
   u8 unk_288[0x28C - 0x288];        // 0x288
   struct Input* input;              // 0x28C, &gInput[n]
-  Keys16 unk_290[10];               // 0x290, 根拠: FUN_0806521c, 多分プレイヤーの操作履歴
+  Facing16 facingHistory[10];       // 0x290, 入力方向の履歴, 添字 0 が今フレームで大きいほど古い, 入力なしは -1
   rgb555 pltt_2a4[32];              // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
   u16 animID;                       // 0x2E4, 今 sprite_88 で再生しているアニメのID, Player_PlayAnim が前回と同じIDかどうかの判定に使う
   u8 animIDOffset;                  // 0x2E6, Player_PlayAnim がアニメIDに足すオフセット
