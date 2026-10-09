@@ -3,42 +3,54 @@
 #include "sprite_main.h"
 #include "text.h"
 
+// 0x3C から 0xC 刻みで3件, _Init が各回 +4 に {100, 100, 0, 0} と +8 に u32 0 を入れる
 typedef struct {
-  Entity e;                // 0x000, ENTITY_UNK_2
-  u32 unk_18;              // 0x018, _Init が 0 を入れる
-  u16 unk_1c;              // 0x01C, _Init が 0 を入れる
-  u16 unk_1e;              // 0x01E, _Init が 0 を入れる
-  u32 unk_20;              // 0x020, _Init が 0 を入れる
-  u32 unk_24;              // 0x024, _Init が 0 を入れる
-  u8 unk_28[0x33 - 0x28];  // 0x028, _Init が 0x28/0x2B/0x2C/0x2D に 0、0x29/0x32 に 1 を入れる
-  u8 unk_33;               // 0x033, _Init が 0、FUN_0804fb24 が 1 を入れる
-  u8 unk_34;               // 0x034, FUN_0804fbf0 が 1 を入れる
-  u8 unk_35[0x38 - 0x35];  // 0x035
-  u8 unk_38[4];            // 0x038, _Init が 4バイト 0 クリアする
-  u8 unk_3c[36];           // 0x03C, _Init が 0xC 刻みで2回まわして埋める, 各回 0x40+i*0xC に {100,100,0,0} と u32 0
-  void* unk_60;            // 0x060, _Init が Entity08052250_Create() の戻り値を入れる
-  void* unk_64;            // 0x064, _Init が Entity08052ffc_Create() の戻り値を入れる
-  u32 count78;             // 0x068, unk_78 に積んだ '.w' の件数
-  u32 count98;             // 0x06C, unk_98 に積んだ '.m' の件数
-  u32 mask70;              // 0x070, unk_78 を配るときに使用済みスロットのビットを立てる
-  u32 mask74;              // 0x074, unk_98 を配るときに使用済みスロットのビットを立てる
-  u16 unk_78[16];          // 0x078, '.w' の値を最大16個
-  u16 unk_98[16];          // 0x098, '.m' の値を最大16個
-  u8* script;              // 0x0B8, '.s' の後の FUN_0823d340() の戻り値, NULL なら _Init が失敗する
-  s32 windowID;            // 0x0BC, _Destroy が TextPanel_Destroy に渡す
-  u32 unk_c0;              // 0x0C0, 読み手も書き手も見つかっていない
-  u32 unk_c4;              // 0x0C4, '.e'
-  u32 unk_c8;              // 0x0C8, _Init が 0 を入れる
-  MainSpriteGfx gfx;       // 0x0CC, SPRITE_INVENTORY_ICONS
-  MainSprite sprites[2];   // 0x0EC, _Destroy が MainSprite_Remove に渡す2枚
-  u16 unk_1ac;             // 0x1AC, '.M=11'
-  u16 unk_1ae[4];          // 0x1AE, '.p'
-  u8 unk_1b6[6];           // 0x1B6, 読み手も書き手も見つかっていない
+  u8 unk_00;     // 0x00, まだ未解析
+  u8 unk_01;     // 0x01, 0 以外なら FUN_0804e514 に渡す
+  u8 unk_02[2];  // 0x02, まだ未解析
+  u8 unk_04[4];  // 0x04, _Init が {100, 100, 0, 0} を入れる
+  u32 unk_08;    // 0x08, _Init が 0 を入れる
+} EntityAF33Slot;
+static_assert(sizeof(EntityAF33Slot) == 12);
+
+typedef struct {
+  Entity e;                 // 0x000, ENTITY_UNK_2
+  u32 unk_18;               // 0x018, _Init が 0 を入れる
+  u16 unk_1c;               // 0x01C, _Init が 0 を入れる
+  u16 unk_1e;               // 0x01E, _Init が 0 を入れる
+  u32 unk_20;               // 0x020, _Init が 0 を入れる
+  u32 unk_24;               // 0x024, _Init が 0 を入れる
+  u8 unk_28[0x33 - 0x28];   // 0x028, _Init が 0x28/0x2B/0x2C/0x2D に 0、0x29/0x32 に 1 を入れる
+  u8 unk_33;                // 0x033, _Init が 0、FUN_0804fb24 が 1 を入れる
+  u8 unk_34;                // 0x034, FUN_0804fbf0 が 1 を入れる
+  u8 unk_35[0x38 - 0x35];   // 0x035
+  u8 unk_38[4];             // 0x038, _Init が 4バイト 0 クリアする
+  EntityAF33Slot slots[3];  // 0x03C, _Init は先頭2件だけ埋める
+  void* unk_60;             // 0x060, _Init が Entity08052250_Create() の戻り値を入れる
+  void* unk_64;             // 0x064, _Init が Entity08052ffc_Create() の戻り値を入れる
+  u32 count78;              // 0x068, unk_78 に積んだ '.w' の件数
+  u32 count98;              // 0x06C, unk_98 に積んだ '.m' の件数
+  u32 mask70;               // 0x070, unk_78 を配るときに使用済みスロットのビットを立てる
+  u32 mask74;               // 0x074, unk_98 を配るときに使用済みスロットのビットを立てる
+  u16 unk_78[16];           // 0x078, '.w' の値を最大16個
+  u16 unk_98[16];           // 0x098, '.m' の値を最大16個
+  u8* script;               // 0x0B8, '.s' の後の FUN_0823d340() の戻り値, NULL なら _Init が失敗する
+  s32 windowID;             // 0x0BC, _Destroy が TextPanel_Destroy に渡す
+  u32 unk_c0;               // 0x0C0, 読み手も書き手も見つかっていない
+  u32 unk_c4;               // 0x0C4, '.e'
+  u32 unk_c8;               // 0x0C8, _Init が 0 を入れる
+  MainSpriteGfx gfx;        // 0x0CC, SPRITE_INVENTORY_ICONS
+  MainSprite sprites[2];    // 0x0EC, _Destroy が MainSprite_Remove に渡す2枚
+  u16 unk_1ac;              // 0x1AC, '.M=11'
+  u16 unk_1ae[4];           // 0x1AE, '.p'
+  u8 unk_1b6[6];            // 0x1B6, 読み手も書き手も見つかっていない
 } EntityAF33;
 static_assert(sizeof(EntityAF33) == 444);
 
 IWRAM_DATA EntityAF33* gEntityAF33 = NULL;  // 0x030000F0
 IWRAM_DATA u8 u8_030000f4[0x118 - 0x0F4] = {};
+
+s32 FUN_0804e514(void* param_1);  // src/code_0804b9f4.c
 
 void FUN_08052290(unknown* p);
 void FUN_080522bc(unknown* p);
@@ -49,7 +61,13 @@ NAKED void FUN_0804f82c(EntityAF33* p) { INCFUNC("asm/func/FUN_0804f82c.inc"); }
 
 NAKED void FUN_0804f8ec(EntityAF33* p) { INCFUNC("asm/func/FUN_0804f8ec.inc"); }
 
-NAKED void FUN_0804f950(void) { INCFUNC("asm/func/FUN_0804f950.inc"); }
+void FUN_0804f950(void) {
+  EntityAF33* p = FUN_0804f820();
+
+  if (p != NULL && p->slots[2].unk_01 != 0) {
+    FUN_0804e514(&p->slots[2]);
+  }
+}
 
 void FUN_0804f970(void) { FUN_0804f820(); }
 
