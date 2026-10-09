@@ -12,6 +12,7 @@
 s32 FUN_081dec1c(Entity9A9F* p);
 s32 FUN_081de130(Entity9A9F* p);
 void FUN_081df460(Entity9A9F*);
+void FUN_080a6180(s32 param_1, s32 param_2, void* fn, void* arg);  // src/code_080917e4.s
 s32 FUN_081de250(Entity9A9F*);
 s32 FUN_081de9d8(Entity9A9F*);
 s32 FUN_081de360(Entity9A9F*);
@@ -211,7 +212,18 @@ NAKED s32 FUN_081deaf4(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081deaf4.inc
 
 void FUN_081debc0(Entity9A9F* p) { Entity9A9F_SetState(p, 12, (EntityFunc*)FUN_081dec1c); }
 
-NAKED s32 FUN_081debd4(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081debd4.inc"); }
+s32 FUN_081debd4(Entity9A9F* p) {
+  gUseLinkInput = TRUE;
+
+  if ((u8)FUN_081dd9d4(p)) {
+    FUN_080a6180(0, 0, FUN_081debc0, p);
+  }
+
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+}
 
 NAKED s32 FUN_081dec1c(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dec1c.inc"); }
 
