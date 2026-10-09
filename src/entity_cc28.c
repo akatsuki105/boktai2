@@ -1781,7 +1781,37 @@ void FUN_0809c430(void) {
   }
 }
 
-NAKED void FUN_0809c464(void) { INCFUNC("asm/func/FUN_0809c464.inc"); }
+void FUN_0809c464(void) {
+  EntityCC28* p = gEntityCC28;
+  Player* player;
+
+  if (p == NULL) {
+    return;
+  }
+
+  player = gPlayerPtr[0];
+  p->player = player;
+  if (player == NULL) {
+    return;
+  }
+
+  FUN_0808d774(p);
+  FUN_0808d564(gEntityCC28);
+  FUN_0808d5cc(gEntityCC28);
+  FUN_0808d4dc(gEntityCC28);
+
+  if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+    if (gEntityCC28->unk_9fe == 0) {
+      FUN_0808e224(gEntityCC28);
+    }
+    EntityCC28_HideSprites(gEntityCC28);
+  } else {
+    if (gEntityCC28->unk_9fe == 0) {
+      FUN_0808d3d4(gEntityCC28);
+      FUN_0808ce98(gEntityCC28);
+    }
+  }
+}
 
 NAKED void FUN_0809c4f4(void) { INCFUNC("asm/func/FUN_0809c4f4.inc"); }
 
