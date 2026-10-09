@@ -91,7 +91,22 @@ NAKED void FUN_080813d0(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080813d0
 
 NAKED void FUN_080815ac(s32 param_1) { INCFUNC("asm/func/FUN_080815ac.inc"); }
 
-NAKED s32 FUN_080815f0(s32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_080815f0.inc"); }
+// flashTimer が動いている間, 4フレームごとに pose を flashPose と入れ替える (点滅)
+// 残差は23/23命令で共有された return pose のブロック位置だけ (player.c の Player_ApplyFlashPose と同じ), 分岐形の反転は試済
+NON_MATCH u32 LinkPlayer_ApplyFlashPose(Player* p, u32 pose) {
+#ifdef NONMATCHING_C
+  if (p->flashTimer != 0) {
+    p->flashTimer--;
+    if ((p->flashTimer >> 2) & 1) {
+      return p->flashPose;
+    }
+  }
+
+  return pose;
+#else
+  INCFUNC("asm/func/LinkPlayer_ApplyFlashPose.inc");
+#endif
+}
 
 NAKED void FUN_08081628(Player* p) { INCFUNC("asm/func/FUN_08081628.inc"); }
 
