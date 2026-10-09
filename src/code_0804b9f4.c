@@ -53,8 +53,13 @@ typedef struct {
   u8 unk_fa;
   u8 unk_fb;  // 0xFB, 根拠: FUN_0804e384 が 1 を入れる
   u8 unk_fc[0x134 - 0xFC];
-  u8 unk_134[0x40];  // 0x134, 根拠: FUN_0804bb30 が ClearMemory で 0 にする
-  u8 unk_174[908 - 0x174];
+  u8 unk_134[0x40];           // 0x134, 根拠: FUN_0804bb30 が ClearMemory で 0 にする
+  u8 unk_174[0x378 - 0x174];  // 0x174, まだ未解析
+  void* unk_378;              // 0x378, FUN_0804e4dc が書く
+  Entity* unk_37c;            // 0x37C, 同上
+  EntityFunc* unk_380;        // 0x380, 同上
+  EntityFunc* unk_384;        // 0x384, 同上
+  u8 unk_388[908 - 0x388];    // 0x388, まだ未解析
 } Entity0804e2c0;
 static_assert(sizeof(Entity0804e2c0) == 908);
 
@@ -760,7 +765,16 @@ void FUN_0804e4c4(void) {
   }
 }
 
-NAKED void FUN_0804e4dc(unknown* param_1, Entity* param_2, EntityFunc* param_3, EntityFunc* param_4) { INCFUNC("asm/func/FUN_0804e4dc.inc"); }
+void FUN_0804e4dc(void* param_1, Entity* param_2, EntityFunc* param_3, EntityFunc* param_4) {
+  Entity0804e2c0* p = gEntity0804e2c0;
+
+  if (p != NULL) {
+    p->unk_378 = param_1;
+    p->unk_37c = param_2;
+    p->unk_380 = param_3;
+    p->unk_384 = param_4;
+  }
+}
 
 NAKED s32 FUN_0804e514(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e514.inc"); }
 
