@@ -230,7 +230,21 @@ NAKED void FUN_08214274(EntityA288* p) { INCFUNC("asm/func/FUN_08214274.inc"); }
 
 NAKED void FUN_08214334(EntityA288* p) { INCFUNC("asm/func/FUN_08214334.inc"); }
 
-NAKED void FUN_082143c0(EntityA288* p) { INCFUNC("asm/func/FUN_082143c0.inc"); }
+// 残差2命令, 原典は sprites_1d8 の先頭アドレスを別レジスタに残して sprite_658.flags をそこからの +0x488 で引く, MainSprite* ローカルと sprites_1d8[13] 化は試済
+NON_MATCH void FUN_082143c0(EntityA288* p) {
+#ifdef NONMATCHING_C
+  MainSprite* sprite = p->sprites_1d8;
+  s32 i;
+
+  for (i = 0; i < 12; i++) {
+    sprite[i].flags |= SPRFLAG_HIDDEN;
+  }
+
+  p->sprite_658.flags |= SPRFLAG_HIDDEN;
+#else
+  INCFUNC("asm/func/FUN_082143c0.inc");
+#endif
+}
 
 NAKED void FUN_082143f4(EntityA288* p) { INCFUNC("asm/func/FUN_082143f4.inc"); }
 
