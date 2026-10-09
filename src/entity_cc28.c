@@ -952,7 +952,19 @@ NAKED void FUN_08092300(EntityCC28* p, s32 param_2, s32 param_3, s32 param_4) { 
 
 NAKED void FUN_080923a0(EntityCC28* p) { INCFUNC("asm/func/FUN_080923a0.inc"); }
 
-NAKED u32 FUN_080925d4(item32_t n) { INCFUNC("asm/func/FUN_080925d4.inc"); }
+u32 FUN_080925d4(item32_t n) {
+  u32 flags;
+
+  if (n < 0) {
+    return 0;
+  }
+
+  flags = FUN_08091e34(n) ? 0x10 : 0;
+  if (FUN_08091cb8(n)) {
+    flags |= 1;
+  }
+  return flags;
+}
 
 NAKED void FUN_08092608(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_08092608.inc"); }
 
