@@ -32,7 +32,8 @@ typedef struct Entity286FNode {
   u8 unk_18[4];               // 0x018, まだ未解析
   u16 plttID;                 // 0x01C, Entity286FNode_SetPltt が書き、Entity286FNode_RefreshPltt が再適用する
   u16 curPlttID;              // 0x01E, Entity286FNode_ApplyPltt が SpriteHolder_SetPlttID へ渡した値
-  u8 unk_20[0x05C - 0x020];   // 0x020, まだ未解析
+  u16 unk_20;                 // 0x020, FUN_08044a54 系が 0 を入れる
+  u8 unk_22[0x05C - 0x022];   // 0x022, まだ未解析
   Mover mover;                // 0x05C
   u16 unk_a0;                 // 0x0A0, FUN_080412fc が mover.id を複写し、&unk_a0 を FUN_08234660 に渡す
   u8 unk_a2[2];               // 0x0A2, まだ未解析
@@ -785,7 +786,16 @@ NAKED void FUN_0804494c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_080449c0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_080449c0.inc"); }
 
-NAKED void FUN_08044a54(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08044a54.inc"); }
+void FUN_08044a54(Entity286F* p, Entity286FNode* node) {
+  if (node->unk_09) {
+    node->unk_09 = 0;
+    node->unk_07 = 0;
+    FUN_08041480(node, 7, 2, 0, 1);
+    node->unk_20 = 0;
+  }
+
+  node->fn(node);
+}
 
 NAKED void FUN_08044a90(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08044a90.inc"); }
 
