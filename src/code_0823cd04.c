@@ -30,9 +30,25 @@ char* FUN_0823cd38(void) { return gStat->name; }
 NAKED void FUN_0823cd48(void) { INCFUNC("asm/func/FUN_0823cd48.inc"); }
 
 // key でソート済みの {u16 key; u16 value;} のテーブルを二分探索して value を返す, 見つからなければ 0
-NAKED u32 FUN_0823cdc0(u32 key, const u8* table, s32 lo, s32 hi) { INCFUNC("asm/func/FUN_0823cdc0.inc"); }
+// 4バイト1組 {key, value} の表を二分探索して value を返す, 見つからなければ 0
+u32 FUN_0823cdc0(u32 key, const u16* table, s32 lo, s32 hi) {
+  while (lo < hi) {
+    s32 mid = (lo + hi) >> 1;
 
-u32 FUN_0823cdf8(u16 key) { return FUN_0823cdc0(key, u8_ARRAY_08dbd83c, 0, 0xAA); }
+    if (table[mid * 2] < key) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+
+  if (table[lo * 2] == key) {
+    return table[lo * 2 + 1];
+  }
+  return 0;
+}
+
+u32 FUN_0823cdf8(u16 key) { return FUN_0823cdc0(key, (const u16*)u8_ARRAY_08dbd83c, 0, 0xAA); }
 
 s32 FUN_0823ce10(u16* param_1, u16* param_2) {
   *param_1 = u8_ARRAY_08dbd798[gClock.spanOfTime][0];
