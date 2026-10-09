@@ -16,8 +16,7 @@ typedef struct {
   Entity e;                             // 0x000, ENTITY_UNK_8
   u8 unk_18;                            // 0x018, _Init の第5引数, 0 かどうかで鳴らす SE が変わる
   u8 unk_19;                            // 0x019, _Update が 0 以外なら 0x03002BF0 を1減らして 0 に戻す
-  u8 unk_1a;                            // 0x01A, _Init の第6引数
-  u8 unk_1b;                            // 0x01B, _Update が owner の状態が 4 のとき 1 にする
+  u16 unk_1a;                           // 0x01A, 下位バイトは _Init の第6引数, 上位バイトは _Update が owner の状態が 4 のとき 1 にする, _Destroy は2バイトまとめて 0 かを見る
   void* owner;                          // 0x01C, _Init の第2引数, _Update が owner->[0x1C] == 4 を見る
   AuxSprite spr0;                       // 0x020, FUN_080abb08 が AuxSprite_Remove に渡す
   u8 unk_4c[0x68 - 0x4C];               // 0x04C
@@ -33,6 +32,8 @@ typedef struct {
   Entity080abd14Particle ptcls[12];     // 0x140, 根拠: FUN_080ab6d8 の stride 0x44 × 12
 } Entity080abd14;
 static_assert(sizeof(Entity080abd14) == 1136);
+
+extern u16 u16_03002bf0;
 
 NAKED void FUN_080ab018(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab018.inc"); }
 
@@ -87,7 +88,18 @@ NAKED void FUN_080abb20(Entity080abd14* p, u32 param_2) { INCFUNC("asm/func/FUN_
 
 NAKED s32 Entity080abd14_Update(Entity080abd14* p) { INCFUNC("asm/func/Entity080abd14_Update.inc"); }
 
-NAKED s32 Entity080abd14_Destroy(Entity080abd14* p) { INCFUNC("asm/func/Entity080abd14_Destroy.inc"); }
+s32 Entity080abd14_Destroy(Entity080abd14* p) {
+  if (p->unk_b0 && !p->unk_b1 && p->unk_1a == 0) {
+    FUN_080ab018(p);
+  }
+
+  FUN_080abb08(p);
+  FUN_080ab8ec(p);
+  FUN_080ab6d8(p);
+  if (p->unk_19) {
+    u16_03002bf0--;
+  }
+}
 
 NAKED s32 Entity080abd14_Init(Entity080abd14* p, void* owner, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/Entity080abd14_Init.inc"); }
 
