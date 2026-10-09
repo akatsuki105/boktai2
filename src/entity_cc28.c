@@ -945,7 +945,38 @@ NAKED u32 FUN_080925d4(item32_t n) { INCFUNC("asm/func/FUN_080925d4.inc"); }
 
 NAKED void FUN_08092608(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_08092608.inc"); }
 
-NAKED s32 FUN_080926c4(EntityCC28* p) { INCFUNC("asm/func/FUN_080926c4.inc"); }
+// 残差は50/50命令で return 0 と return 3 の基本ブロックの並びだけ, 原典は両方を末尾の共通ブロックにして 0 を先に置く, 条件の反転と末尾のネスト化は試済
+NON_MATCH s32 FUN_080926c4(EntityCC28* p) {
+#ifdef NONMATCHING_C
+  if (GetItemID(p->inValuableInventory, p->selectedSlot) < 0) {
+    if (GetItemID(p->inValuableInventory, p->unk_3aeb) < 0) {
+      return 0;
+    }
+    return 3;
+  }
+
+  if (p->unk_3aeb == 20) {
+    return 2;
+  }
+
+  if (p->unk_3aeb == 16) {
+    return 1;
+  }
+
+  if (p->selectedSlot != p->unk_3aeb) {
+    return 3;
+  }
+
+  if (!(p->unk_3ae8 & 1)) {
+    return 0;
+  }
+
+  p->unk_3aeb = 16;
+  return 1;
+#else
+  INCFUNC("asm/func/FUN_080926c4.inc");
+#endif
+}
 
 NAKED void FUN_08092744(EntityCC28* p) { INCFUNC("asm/func/FUN_08092744.inc"); }
 
