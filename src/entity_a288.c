@@ -446,7 +446,18 @@ void EntityA288_SetState(EntityA288* p, s32 state) {
   EntityA288_SetFlags(p, 2);
 }
 
-NAKED s32 EntityA288_Update(EntityA288* p) { INCFUNC("asm/func/EntityA288_Update.inc"); }
+s32 EntityA288_Update(EntityA288* p) {
+  if (!(p->flags & 1)) {
+    p->timer1++;
+  }
+
+  if (!(p->flags & 2)) {
+    p->timer2++;
+  }
+
+  p->updateCallback(p);
+  return 0;
+}
 
 s32 EntityA288_Destroy(EntityA288* p) {
   FUN_08213960(p);
