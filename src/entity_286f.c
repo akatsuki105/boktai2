@@ -269,7 +269,21 @@ s32 Entity286FNode_RefreshPltt(Entity286FNode* node) { return Entity286FNode_App
 
 NAKED s32 FUN_0804114c(Entity286FNode* node) { INCFUNC("asm/func/FUN_0804114c.inc"); }
 
-NAKED s32 FUN_080411a0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_080411a0.inc"); }
+// 登録済みのコールバックを順に呼ぶ
+s32 FUN_080411a0(Entity286F* p, Entity286FNode* node) {
+  s32 i;
+
+  if (!node->active) {
+    return -1;
+  }
+
+  for (i = 0; i < 4; i++) {
+    if (node->cbs[i] != NULL) {
+      node->cbs[i](p, node);
+    }
+  }
+  return 0;
+}
 
 NAKED s32 FUN_080411d8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_080411d8.inc"); }
 
