@@ -279,7 +279,35 @@ void FUN_080addac(EntityCBB0* p) {
   }
 }
 
-NAKED s32 FUN_080adde4(EntityCBB0* p) { INCFUNC("asm/func/FUN_080adde4.inc"); }
+// 太陽ゲージに応じた BGP_313A のパレット行を返す
+s32 FUN_080adde4(EntityCBB0* p) {
+  switch (p->unk_c10) {
+    case 0: {
+      return 8;
+    }
+    case 1:
+    case 2: {
+      return 6;
+    }
+    case 3: {
+      return 4;
+    }
+    case 4: {
+      return 2;
+    }
+    case 7:
+    case 8: {
+      return 10;
+    }
+    case 9:
+    case 10: {
+      return 12;
+    }
+    default: {
+      return 0;
+    }
+  }
+}
 
 // BGP_313A
 void EntityCBB0_LoadBgPltt(EntityCBB0* p) {
