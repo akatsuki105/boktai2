@@ -39,20 +39,6 @@ const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
 
 // --------------------------------------------
 
-void FUN_0806fedc(Player* p);
-void FUN_08070844(Player* p);
-void FUN_0807106c(Player* p);
-void FUN_080713a8(Player* p);
-void gun_080715a0(Player* p);
-
-const PlayerFunc gPlayerAttackUpdates[5] = {
-    [WK_SWORD] = FUN_0806fedc,
-    [WK_SPEAR] = FUN_08070844,
-    [WK_HAMMER] = FUN_0807106c,
-    [WK_OTHERS] = FUN_080713a8,
-    [WK_GUN] = gun_080715a0,
-};  // 0x085abab8
-
 void Player_SetAnimFacing(Player* p) {
   u8 v = p->facing;
 
@@ -2742,8 +2728,22 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
 
 void FUN_08064658(Player* p, Weapon* w) { p->weapon_a70 = w; }
 
+void FUN_0806fedc(Player* p);
+void FUN_08070844(Player* p);
+void FUN_0807106c(Player* p);
+void FUN_080713a8(Player* p);
+void gun_080715a0(Player* p);
+
 // 装備中の武器の情報を Player に展開する, サバタはガンデルヘル (WEAPON_GUN_DEL_HELL) 固定
 void Player_ApplyWeapon(Player* p, Weapon* w) {
+  static const PlayerFunc sPlayerAttackUpdates[5] = {
+      [WK_SWORD] = FUN_0806fedc,
+      [WK_SPEAR] = FUN_08070844,
+      [WK_HAMMER] = FUN_0807106c,
+      [WK_OTHERS] = FUN_080713a8,
+      [WK_GUN] = gun_080715a0,
+  };  // 0x085ABAB8
+
   WeaponData wd;
 
   if (p->kind != PLAYER_SABATA) {
@@ -2767,7 +2767,7 @@ void Player_ApplyWeapon(Player* p, Weapon* w) {
   if (p->weaponID == WEAPON_MEGA_BUSTER) {
     p->attackCB = FUN_08071b14;
   } else {
-    p->attackCB = gPlayerAttackUpdates[p->weaponKind];
+    p->attackCB = sPlayerAttackUpdates[p->weaponKind];
   }
 
   Player_SetWeaponHitbox(p);

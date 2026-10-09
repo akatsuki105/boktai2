@@ -330,7 +330,7 @@ typedef struct Player {
   u16 flashPose;                    // 0x95A, flashTimer の bit2 が立っている間 Player_ApplyFlashPose が pose の代わりに返す値
   u16 flashTimer;                   // 0x95C, Player_ApplyFlashPose が毎フレーム 1 減らす点滅タイマ
   u16 plttID_95e;                   // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
-  u16 unk_960;                      // 0x960, FUN_08074994 が unk_95e と対で書く
+  u16 unk_960;                      // 0x960, FUN_08074994 が plttID_95e と対で書く
   u16 unk_962;                      // 0x962, Player_EquipMagic がエンチャント開始時に magic.id + 0x121 を入れる
   u16 unk_964;                      // 0x964, 同じ呼び出しで 0x20 を入れる, unk_962 が 0 のときだけ 0 に戻される
   u8 unk_966[0x96C - 0x966];        // 0x966
@@ -373,7 +373,7 @@ typedef struct Player {
   u8 unk_a90[5];                    // 0xA90
   u8 unk_a95;                       // 0xA95, アストロ武器の種類ごとの値 (剣: 0, 槍: 4, 槌: 8)
   u8 unk_a96[2];                    // 0xA96, padding?
-  PlayerFunc attackCB;              // 0xA98, gPlayerAttackUpdates
+  PlayerFunc attackCB;              // 0xA98, sPlayerAttackUpdates
 
   // 武器の特殊効果のコールバック関数の配列
   u32 (*weaponExDamageCb[WEAPON_EFFECT_SLOT_COUNT])(struct Player*);  // 0xA9C, プレイヤーの状態を参照する武器の特殊効果コールバック
@@ -390,7 +390,6 @@ static_assert(sizeof(Player) == 2756);
 // ------------------------------------------------------------------------------------------------------------------------------------
 
 extern Player* gPlayerPtr[4];
-extern const PlayerFunc gPlayerAttackUpdates[5];  // 0: 剣, 1: 槍, 2: ハンマー, 3: 拳, 4: 銃
 
 Player* CreatePlayer(u32 n, void* _);
 s32 FUN_0806f900(Player* player);
