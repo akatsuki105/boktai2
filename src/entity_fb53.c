@@ -86,13 +86,34 @@ void EntityFB53_SetLinkError(EntityFB53* _, u16 reason) {
   }
 }
 
-NAKED s32 FUN_0804b2dc(void) { INCFUNC("asm/func/FUN_0804b2dc.inc"); }
+NAKED s32 FUN_0804b2dc(EntityFB53* unused) { INCFUNC("asm/func/FUN_0804b2dc.inc"); }
 
 NAKED void EntityFB53_Disconnect(void) { INCFUNC("asm/func/EntityFB53_Disconnect.inc"); }
 
 NAKED void EntityFB53_SetupBG(EntityFB53* p, s32 param_2) { INCFUNC("asm/func/EntityFB53_SetupBG.inc"); }
 
-NAKED void FUN_0804b3f8(EntityFB53* p) { INCFUNC("asm/func/FUN_0804b3f8.inc"); }
+void FUN_0804b3f8(EntityFB53* p) {
+  EntityFB53_SetupBG(p, 3);
+  p->panelID = TextPanel_Create(1, 7, 28, 6);
+
+  if (FUN_0804b2dc(p) >= 0) {
+    EntityFB53_SetState(p, 1);
+    if (p->panelID >= 0) {
+      TextPanel_SetScript(p->panelID, p->scriptM);
+      TextPanel_SetMessage(p->panelID, 2);
+      TextPanel_Start(p->panelID);
+    }
+    rfu_REQ_startSearchParent();
+    rfu_waitREQComplete();
+  } else {
+    EntityFB53_SetState(p, 0);
+    if (p->panelID >= 0) {
+      TextPanel_SetScript(p->panelID, p->scriptM);
+      TextPanel_SetMessage(p->panelID, 1);
+      TextPanel_Start(p->panelID);
+    }
+  }
+}
 
 NAKED void FUN_0804b474(EntityFB53* p) { INCFUNC("asm/func/FUN_0804b474.inc"); }
 
