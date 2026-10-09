@@ -10,6 +10,7 @@
 s32 FUN_081dec1c(Entity9A9F* p);
 s32 FUN_081de130(Entity9A9F* p);
 void FUN_081df460(Entity9A9F*);
+s32 FUN_081de250(Entity9A9F*);
 s32 FUN_081de9d8(Entity9A9F*);
 s32 FUN_081de360(Entity9A9F*);
 
@@ -124,7 +125,21 @@ NAKED void FUN_081de0dc(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de0dc.inc"); }
 
 NAKED s32 FUN_081de130(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de130.inc"); }
 
-NAKED void FUN_081de214(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de214.inc"); }
+// 残差1命令, 原典は FUN_081dd9d4 の戻り値を別レジスタへ複写してから u8 に落として判定する, ローカル退避と直接 (u8) キャストは試済
+NON_MATCH void FUN_081de214(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  if ((u8)FUN_081dd9d4(p)) {
+    p->unk_23 = 0;
+  }
+
+  if (p->unk_23 == 3) {
+    Entity9A9F_SetState(p, 2, (EntityFunc*)FUN_081de250);
+    p->unk_23 = 0;
+  }
+#else
+  INCFUNC("asm/func/FUN_081de214.inc");
+#endif
+}
 
 NAKED s32 FUN_081de250(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de250.inc"); }
 
