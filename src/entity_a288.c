@@ -56,7 +56,7 @@ typedef struct EntityA288 {
   u8 unk_db8[0xDBA - 0xDB8];                   // 0x0DB8, まだ未解析
   s16 unk_dba;                                 // 0x0DBA, 16倍して sprite_720 の縦位置にする
   MainSprite sprites_dbc[2];                   // 0x0DBC
-  u8 unk_e7c[0xE80 - 0xE7C];                   // 0x0E7C, まだ未解析
+  s32 unk_e7c;                                 // 0x0E7C, 24倍して sprites_dbc[0] の縦位置にする
   u8* unk_e80;                                 // 0x0E80, '.X'
   u8 unk_e84[4];                               // 0x0E84, まだ未解析
   u32 unk_e88;                                 // 0x0E88, '.E'
@@ -278,7 +278,11 @@ void FUN_0821587c(EntityA288* p) {
 
 NAKED void FUN_082158a0(EntityA288* p) { INCFUNC("asm/func/FUN_082158a0.inc"); }
 
-NAKED void FUN_082158e4(EntityA288* p) { INCFUNC("asm/func/FUN_082158e4.inc"); }
+void FUN_082158e4(EntityA288* p) {
+  MainSprite* sprite = &p->sprites_dbc[0];
+
+  sprite->pos.y = p->unk_e7c * 24;
+}
 
 NAKED void FUN_082158fc(EntityA288* p) { INCFUNC("asm/func/FUN_082158fc.inc"); }
 
