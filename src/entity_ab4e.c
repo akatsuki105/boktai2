@@ -131,7 +131,19 @@ NAKED s32 FUN_08046c98(EntityAB4E* p, EntityAB4EElem* elem, s32 index) { INCFUNC
 
 NAKED s32 EntityAB4E_Update(EntityAB4E* p) { INCFUNC("asm/func/EntityAB4E_Update.inc"); }
 
-NAKED s32 EntityAB4E_Destroy(EntityAB4E* p) { INCFUNC("asm/func/EntityAB4E_Destroy.inc"); }
+s32 EntityAB4E_Destroy(EntityAB4E* p) {
+  EntityAB4EElem* elem = p->elems;
+  s32 i;
+
+  for (i = 0; i < 16; i++, elem++) {
+    if (elem->active) {
+      FUN_080452f4(p, elem, i);
+    }
+  }
+
+  gEntityAB4E = NULL;
+  return 0;
+}
 
 NAKED s32 EntityAB4E_Init(EntityAB4E* p) { INCFUNC("asm/func/EntityAB4E_Init.inc"); }
 
