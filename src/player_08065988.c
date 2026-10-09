@@ -58,6 +58,22 @@ void FUN_0823bac8(Vec3* pos);
 bool32 FUN_0808626c(s32 idA, u32 flagsA, s32 idB, u32 flagsB);
 void Player_UpdateBloodSword(Player* p);
 
+void FUN_08078d5c(Player* p);
+void FUN_08078d5c(Player* p);
+void FUN_080798a4(Player* p);
+void FUN_08079b64(Player* p);
+void FUN_08079e4c(Player* p);
+void FUN_08079138(Player* p);
+
+const PlayerFunc PTR_ARRAY_085abb14[6] = {
+    [PLAYER_SOLAR_DJANGO] = FUN_08078d5c,
+    [PLAYER_DARK_DJANGO] = FUN_08078d5c,
+    [PLAYER_BAT] = FUN_080798a4,
+    [PLAYER_MOUSE] = FUN_08079b64,
+    [PLAYER_SLEEPING] = FUN_08079e4c,
+    [PLAYER_SABATA] = FUN_08079138,
+};  // 0x085abb14
+
 // clang-format off
 const u16 u16_ARRAY_085abb2c[57] = {
     0,   5,   20,  22,  24,  26,  28,  30,  52,  54,  56,  58,  60,  61,  62,

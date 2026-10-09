@@ -96,25 +96,7 @@ const u16 gMagicUnkVal[MAGIC_NUM] = {
     [MAGIC_BAT] = 0,
     [MAGIC_RAT] = 0,
     [MAGIC_WOLF] = 0,
-};  // 0x085abaf0
-
-// --------------------------------------------
-
-void FUN_08078d5c(Player* p);
-void FUN_08078d5c(Player* p);
-void FUN_080798a4(Player* p);
-void FUN_08079b64(Player* p);
-void FUN_08079e4c(Player* p);
-void FUN_08079138(Player* p);
-
-const PlayerFunc PTR_ARRAY_085abb14[6] = {
-    [PLAYER_SOLAR_DJANGO] = FUN_08078d5c,
-    [PLAYER_DARK_DJANGO] = FUN_08078d5c,
-    [PLAYER_BAT] = FUN_080798a4,
-    [PLAYER_MOUSE] = FUN_08079b64,
-    [PLAYER_SLEEPING] = FUN_08079e4c,
-    [PLAYER_SABATA] = FUN_08079138,
-};  // 0x085abb14
+};  // 0x085ABAF0
 
 void Player_SetAnimFacing(Player* p) {
   u8 v = p->facing;
