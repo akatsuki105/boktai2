@@ -19,7 +19,7 @@ typedef struct {
   u8 unk_1c;  // 0x1C, 根拠: FUN_0804e4c4 が 1 を入れる
   u8 unk_1d;  // 0x1D, 根拠: FUN_0804e604 が 1 を入れる
   u8 unk_1e;  // 0x1E, 根拠: FUN_0804bb30 が 0 を入れる
-  u8 unk_1f;
+  s8 unk_1f;  // 0x1F, 根拠: FUN_0804e3a0 が ldrsb で読んで返す
   u8 unk_20;
   u8 unk_21;   // 0x21, 根拠: FUN_0804e3c0 が返す
   u16 unk_22;  // 0x22, 根拠: FUN_0804c888 が bit7 を見る
@@ -632,7 +632,12 @@ void FUN_0804e384(void) {
   }
 }
 
-NAKED s32 FUN_0804e3a0(void) { INCFUNC("asm/func/FUN_0804e3a0.inc"); }
+s32 FUN_0804e3a0(void) {
+  if (gEntity0804e2c0 == NULL) {
+    return -1;
+  }
+  return gEntity0804e2c0->unk_1f;
+}
 
 // 子機として接続しているときだけ unk_21 を返す
 s32 FUN_0804e3c0(void) {
