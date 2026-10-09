@@ -33,7 +33,7 @@ typedef struct EntityCBB0 {
   u16 unk_4fe;                      // 0x04FE, FUN_080ad1ec が unk_4fc の差し替えのたびに 0 に戻すカウンタ
   u8 unk_500[0x508 - 0x500];        // 0x0500, まだ未解析
   Vec3 unk_508;                     // 0x0508, FUN_080b10f8 が FUN_080b1038 に渡す座標
-  Vec3 pos_510;                     // 0x0510, FUN_080b1038 が距離判定に使うワールド座標
+  WorldPos pos_510;                 // 0x0510, FUN_080b1038 が距離判定に使うワールド座標
   u8 unk_518[0x67A - 0x518];        // 0x0518, まだ未解析
   u16 unk_67a;                      // 0x067A, 根拠: FUN_080b01b4 が毎フレーム +1 して unk_690 と比べる
   u8 unk_67c[0x68A - 0x67C];        // 0x067C, まだ未解析

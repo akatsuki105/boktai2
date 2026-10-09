@@ -28,7 +28,7 @@ typedef struct Mover {
   u8 unk_4;                       // 0x04, 衝突解決 FUN_0823349c の第6引数
   u8 angle;                       // 0x05, 8bit の向き, gSineTable の添字
   u8 unk_6[2];                    // 0x06, 読み手も書き手も未発見, padding?
-  Vec3 pos;                       // 0x08, ワールド座標, 1タイル = 256
+  WorldPos pos;                   // 0x08, ワールド座標
   Vec3 delta;                     // 0x10, そのフレームの移動要求, Mover_ApplyMove が pos に適用してから 0 に戻す
   MoverTile* tile;                // 0x18, 踏んでいるタイルの控え, 非NULLなら Mover_ApplyMove が衝突解決を通す
   u16 sizeX;                      // 0x1C, 衝突判定の X 方向の広がり, FUN_0823349c が pos.x に足して角を見る

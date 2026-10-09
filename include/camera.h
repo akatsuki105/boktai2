@@ -47,13 +47,13 @@ extern Camera* gCamera;  // 0x030047D0
 // 根拠: Video_Reset / Camera_SetTilemapOffset / Map_LoadMapScripted / Video_SetDrawPasses がいずれも 0x03003540 を単一のプール定数から読み、そこからのオフセットで書く
 // 上限の根拠: Video_SetDrawPasses は同一関数内で 0x03003554 / 0x03003534 / 0x03003558 をそれぞれ別のプール定数から読んでいる
 typedef struct {
-  Vec3 worldPos;  // 0x00, カメラの注視点のワールド座標, 根拠: Video_Reset が +0/+2/+4 をクリアする
-  s16 tilemapX;   // 0x08, 根拠: Camera_SetTilemapOffset が strh [r1,#0x8] で書く
-  s16 tilemapY;   // 0x0A, 根拠: 同上 strh [r1,#0xa]
-  s16 unk_0c;     // 0x0C, Video_Reset が 1 を書く, 読み手は未特定
-  s16 unk_0e;     // 0x0E, 参照が見つかっていない (幅も未確定)
-  s16 unk_10;     // 0x10, Video_Reset が 0 を書く, 読み手は未特定
-  s16 unk_12;     // 0x12, 根拠: Video_SetDrawPasses が strh [r4,#0x12] で書き、Mover_ApplyMove / Video_GenerateBackgroundMaps / FUN_0823c450 / FUN_0823c620 が読む
+  WorldPos worldPos;  // 0x00, カメラの注視点のワールド座標, 根拠: Video_Reset が +0/+2/+4 をクリアする
+  s16 tilemapX;       // 0x08, 根拠: Camera_SetTilemapOffset が strh [r1,#0x8] で書く
+  s16 tilemapY;       // 0x0A, 根拠: 同上 strh [r1,#0xa]
+  s16 unk_0c;         // 0x0C, Video_Reset が 1 を書く, 読み手は未特定
+  s16 unk_0e;         // 0x0E, 参照が見つかっていない (幅も未確定)
+  s16 unk_10;         // 0x10, Video_Reset が 0 を書く, 読み手は未特定
+  s16 unk_12;         // 0x12, 根拠: Video_SetDrawPasses が strh [r4,#0x12] で書き、Mover_ApplyMove / Video_GenerateBackgroundMaps / FUN_0823c450 / FUN_0823c620 が読む
 } CameraCoords;
 static_assert(sizeof(CameraCoords) == 20);
 

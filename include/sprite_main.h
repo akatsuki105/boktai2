@@ -96,7 +96,7 @@ typedef struct MainSprite {
   u8 listIdx;                     // 0x1C, MainSprite_Remove
   MainAnimEvents8 animEvents;     // 0x1D, see MainAnimEvents8
   u8 unk_1e[2];                   // 0x1E, padding?
-  Vec3 pos;                       // 0x20, ワールド座標, flags bit4 が立っていればスクリーン座標としてそのまま使われる, 根拠: MainSprite_DrawList のアイソメトリック投影と MainSprite_Load の Vec3 コピー
+  WorldPos pos;                   // 0x20, ワールド座標, flags bit4 が立っていればスクリーン座標としてそのまま使われる, 根拠: MainSprite_DrawList のアイソメトリック投影と MainSprite_Load の Vec3 コピー
   u16 offsetX;                    // 0x28, 投影後のスクリーン座標に加算される, MainSpritePose.unk_4
   u16 offsetY;                    // 0x2A, MainSpritePose.unk_6
   s16 boxRight;                   // 0x2C, 画面外判定に使う矩形, MainSpritePose.unk_8

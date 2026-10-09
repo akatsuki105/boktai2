@@ -30,7 +30,7 @@ typedef struct Eff082473e0Emitter {
   u8 unk_4;                                                         // 0x004, Eff082473e0Emitter_Init の第4引数
   u8 unk_5;                                                         // 0x005, Eff082473e0Emitter_Init の第5引数
   u8 unk_6[2];                                                      // 0x006, padding?
-  Vec3* pos;                                                        // 0x008, 追いかけるワールド座標, Eff082473e0Emitter_Init の第2引数 (Generator は &sprite.pos を渡す)
+  WorldPos* pos;                                                    // 0x008, 追いかけるワールド座標, Eff082473e0Emitter_Init の第2引数 (Generator は &sprite.pos を渡す)
   Eff082473e0Particle ptcls[4];                                     // 0x00C
   void (*fn_12c)(struct Eff082473e0*, struct Eff082473e0Emitter*);  // 0x12C, Eff082473e0_Update(0x0824736c) で実行
   struct Eff082473e0Emitter* prev;                                  // 0x130, Eff082473e0.emitters を先頭とする双方向リスト
