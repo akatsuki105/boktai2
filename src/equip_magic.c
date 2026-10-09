@@ -2,10 +2,9 @@
 #include "player.h"
 #include "vm.h"
 
-// TODO: このマクロを使わずに自然なCコードで一致するコードがかけるならこのマクロを削除する
-#define REGISTERED_MAGIC(n) (*(gStat->registeredMagic + n))
-
 void FUN_0809c2d0(void);
+
+#define REGISTERED_MAGIC(n) (*(gStat->registeredMagic + (n)))
 
 s32 GetMagicCategory(magic32_t id) {
   if (id < 10) {
@@ -17,10 +16,7 @@ s32 GetMagicCategory(magic32_t id) {
   }
 }
 
-magic32_t UNUSED GetEquippedMagic(void) {
-  const s32 idx = gStat->equippedMagicIdx;
-  return REGISTERED_MAGIC(idx);
-}
+magic32_t UNUSED GetEquippedMagic(void) { return REGISTERED_MAGIC(gStat->equippedMagicIdx); }
 
 // 同じ魔法が他のスロットに入っていれば外してから idx のスロットに登録する
 void RegisterMagic(s32 idx, magic32_t m) {
@@ -69,10 +65,7 @@ bool32 FUN_08243584(void) {
   }
 }
 
-void UnregisterMagic(s32 idx) {
-  REGISTERED_MAGIC(idx) = -1;
-  return;
-}
+void UnregisterMagic(s32 idx) { REGISTERED_MAGIC(idx) = -1; }
 
 // 0x1887
 NAKED void magic_082435b8(void) { INCFUNC("asm/func/magic_082435b8.inc"); }
