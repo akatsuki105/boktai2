@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "input.h"
 #include "inventory.h"
 #include "item.h"
 #include "menu.h"
@@ -203,6 +204,8 @@ static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags;
 
 void FUN_08242c08(slot32_t n);  // src/weapon.c
 void FUN_0809630c(EntityCC28* p);
+void FUN_08099e70(EntityCC28* p);
+void FUN_0809a368(EntityCC28* p);
 s32 FUN_0804a40c(s32 id, s32 idx, char* str);  // src/text_panel.c
 void FUN_0809ae0c(EntityCC28* p);
 s32 FUN_0808da88(EntityCC28* p);
@@ -1480,7 +1483,15 @@ NAKED void FUN_08099c64(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_0809
 
 NAKED s32 FUN_08099d2c(EntityCC28* p) { INCFUNC("asm/func/FUN_08099d2c.inc"); }
 
-NAKED void FUN_08099e2c(EntityCC28* p) { INCFUNC("asm/func/FUN_08099e2c.inc"); }
+void FUN_08099e2c(EntityCC28* p) {
+  if (gInput[0].pressed & A_BUTTON) {
+    PlaySound_082406e0(0xDD);
+    FUN_08099c64(p, 1);
+    FUN_08099b3c(6);
+    FUN_0808c700(p);
+    EntityCC28_SetState(p, FUN_08099e70, 1);
+  }
+}
 
 NAKED void FUN_08099e70(EntityCC28* p) { INCFUNC("asm/func/FUN_08099e70.inc"); }
 
