@@ -4,6 +4,7 @@
 #include "text.h"
 #include "tilemap.h"
 #include "video.h"
+#include "vm.h"
 
 void Video_ResetFrameState(u32 clearOam);  // src/video.c
 void TextPanelManager_DestroyAll(void);    // src/text_panel.c
@@ -91,7 +92,26 @@ s32 EntityD53D_Destroy(EntityD53D* p) {
   return 0;
 }
 
-NAKED s32 EntityD53D_Init(EntityD53D* p) { INCFUNC("asm/func/EntityD53D_Init.inc"); }
+s32 EntityD53D_Init(EntityD53D* p) {
+  gEntityD53D = p;
+  MosaicFader_Stop();
+
+  if (VM_SeekToNamedArg('s')) {
+    p->msgPc = FUN_0823d340();
+    if (p->msgPc == NULL) {
+      return -1;
+    }
+  } else {
+    return -1;
+  }
+
+  p->scriptID = VM_GetNamedArgValue('r', 0);
+  p->windowID = -1;
+  p->state = 0;
+  p->enter = 1;
+  p->timer = 0;
+  return 0;
+}
 
 EntityD53D* EntityD53D_Create(void) {
   EntityD53D* p = FUN_0804ea10();
