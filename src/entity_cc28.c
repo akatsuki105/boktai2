@@ -388,7 +388,24 @@ NAKED void FUN_0808cb00(s32 param_1) { INCFUNC("asm/func/FUN_0808cb00.inc"); }
 
 NAKED void FUN_0808cb90(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cb90.inc"); }
 
-NAKED void FUN_0808cbd8(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cbd8.inc"); }
+// 残差は29/29命令で 0xD000 を作る位置のみ, 原典はループカウンタより前に作る, 昇順ループとローカル退避は試済
+NON_MATCH void FUN_0808cbd8(EntityCC28* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_a30) {
+    BgMapEntry* entry = FUN_0808a420(0, 0, 0);
+    s32 i;
+
+    for (i = 8; i >= 0; i--) {
+      *entry = 0xD000;
+      entry++;
+    }
+
+    p->unk_a30 = 0;
+  }
+#else
+  INCFUNC("asm/func/FUN_0808cbd8.inc");
+#endif
+}
 
 NAKED void FUN_0808cc14(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cc14.inc"); }
 
