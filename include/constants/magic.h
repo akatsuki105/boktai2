@@ -13,8 +13,8 @@
 #define MAGIC_EARTH 5       // エンチャント・アース
 #define MAGIC_TRANSFORM 6   // トランス
 #define MAGIC_RISING_SUN 7  // ライジングサン
-#define MAGIC_UNK_8 8       // ゼロシフト?
-#define MAGIC_UNK_9 9       // ブラックさん?
+#define MAGIC_ZERO_SHIFT 8  // ゼロシフト
+#define MAGIC_BLACK_SUN 9   // ブラックさん?
 #define MAGIC_FREEZE 10     // フリーズ
 #define MAGIC_DASH 11       // ダッシュ
 #define MAGIC_HEALING 12    // ヒーリング

@@ -53,51 +53,6 @@ const PlayerFunc gPlayerAttackUpdates[5] = {
     [WK_GUN] = gun_080715a0,
 };  // 0x085abab8
 
-// --------------------------------------------
-
-const u16 gMagicCosts[MAGIC_NUM] = {
-    [MAGIC_SOL] = 5,
-    [MAGIC_DARK] = 5,
-    [MAGIC_FLAME] = 10,
-    [MAGIC_FROST] = 10,
-    [MAGIC_CLOUD] = 10,
-    [MAGIC_EARTH] = 10,
-    [MAGIC_TRANSFORM] = 0,
-    [MAGIC_RISING_SUN] = 100,
-    [MAGIC_UNK_8] = 10,
-    [MAGIC_UNK_9] = 100,
-    [MAGIC_FREEZE] = 0,
-    [MAGIC_DASH] = 0,
-    [MAGIC_HEALING] = 0,
-    [MAGIC_DYNAMITE] = 0,
-    [MAGIC_SLEEPING] = 0,
-    [MAGIC_BAT] = 10,
-    [MAGIC_RAT] = 10,
-    [MAGIC_WOLF] = 10,
-};  // 0x085abacc
-
-// GetMagicCost での使い方的にこれも魔法の消費コストっぽいけど、いつ使うかわからん
-const u16 gMagicUnkVal[MAGIC_NUM] = {
-    [MAGIC_SOL] = 10,
-    [MAGIC_DARK] = 0,
-    [MAGIC_FLAME] = 5,
-    [MAGIC_FROST] = 5,
-    [MAGIC_CLOUD] = 5,
-    [MAGIC_EARTH] = 5,
-    [MAGIC_TRANSFORM] = 0,
-    [MAGIC_RISING_SUN] = 0,
-    [MAGIC_UNK_8] = 0,
-    [MAGIC_UNK_9] = 0,
-    [MAGIC_FREEZE] = 0,
-    [MAGIC_DASH] = 1,
-    [MAGIC_HEALING] = 2,
-    [MAGIC_DYNAMITE] = 2,
-    [MAGIC_SLEEPING] = 0,
-    [MAGIC_BAT] = 0,
-    [MAGIC_RAT] = 0,
-    [MAGIC_WOLF] = 0,
-};  // 0x085ABAF0
-
 void Player_SetAnimFacing(Player* p) {
   u8 v = p->facing;
 
@@ -3066,10 +3021,52 @@ void CheckHeartJokerEmblem(Player* p) {
 }
 
 static s32 GetMagicCost(magic32_t id) {
+  static const u16 sMagicCosts[MAGIC_NUM] = {
+      [MAGIC_SOL] = 5,
+      [MAGIC_DARK] = 5,
+      [MAGIC_FLAME] = 10,
+      [MAGIC_FROST] = 10,
+      [MAGIC_CLOUD] = 10,
+      [MAGIC_EARTH] = 10,
+      [MAGIC_TRANSFORM] = 0,
+      [MAGIC_RISING_SUN] = 100,
+      [MAGIC_ZERO_SHIFT] = 10,
+      [MAGIC_BLACK_SUN] = 100,
+      [MAGIC_FREEZE] = 0,
+      [MAGIC_DASH] = 0,
+      [MAGIC_HEALING] = 0,
+      [MAGIC_DYNAMITE] = 0,
+      [MAGIC_SLEEPING] = 0,
+      [MAGIC_BAT] = 10,
+      [MAGIC_RAT] = 10,
+      [MAGIC_WOLF] = 10,
+  };  // 0x085ABACC
+
+  static const u16 sMagicUnkVal[MAGIC_NUM] = {
+      [MAGIC_SOL] = 10,
+      [MAGIC_DARK] = 0,
+      [MAGIC_FLAME] = 5,
+      [MAGIC_FROST] = 5,
+      [MAGIC_CLOUD] = 5,
+      [MAGIC_EARTH] = 5,
+      [MAGIC_TRANSFORM] = 0,
+      [MAGIC_RISING_SUN] = 0,
+      [MAGIC_ZERO_SHIFT] = 0,
+      [MAGIC_BLACK_SUN] = 0,
+      [MAGIC_FREEZE] = 0,
+      [MAGIC_DASH] = 1,
+      [MAGIC_HEALING] = 2,
+      [MAGIC_DYNAMITE] = 2,
+      [MAGIC_SLEEPING] = 0,
+      [MAGIC_BAT] = 0,
+      [MAGIC_RAT] = 0,
+      [MAGIC_WOLF] = 0,
+  };  // 0x085ABAF0, いつ使うかわからん
+
   if (gFlag030047a4 & FLAG030047A4_UNK_12) {
-    return gMagicUnkVal[id];
+    return sMagicUnkVal[id];
   } else {
-    return gMagicCosts[id];
+    return sMagicCosts[id];
   }
 }
 
@@ -3325,10 +3322,10 @@ NON_MATCH u32 Player_GetMagicAction(Player* p) {
         if (id == MAGIC_TRANSFORM) {
           return 0xA;
         }
-        if (id == MAGIC_RISING_SUN || id == MAGIC_UNK_9) {
+        if (id == MAGIC_RISING_SUN || id == MAGIC_BLACK_SUN) {
           return 9;
         }
-        if (id == MAGIC_UNK_8) {
+        if (id == MAGIC_ZERO_SHIFT) {
           if (!Player_CheckMagicCost(p)) {
             return p->action;
           }
@@ -3428,9 +3425,9 @@ s32 Player_GetEquippedMagic(Player* p) {
   }
 
   u16_03002bb0 = 0;
-  if (gStat->unk_5e == 0) return MAGIC_UNK_8;
+  if (gStat->unk_5e == 0) return MAGIC_ZERO_SHIFT;
 
-  return MAGIC_UNK_9;
+  return MAGIC_BLACK_SUN;
 }
 
 // 装備魔法の情報 (カテゴリ・消費MP・フォームで使えるか・エンチャント中か) を再計算する
