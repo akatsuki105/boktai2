@@ -9,9 +9,12 @@
 #include "menu.h"
 #include "sound.h"
 #include "sprite.h"
+#include "text.h"
 #include "tilemap.h"
 #include "video.h"
 #include "vm.h"
+
+s32 FUN_08049f5c(void);  // src/text_marquee.c
 
 struct Entity3019;
 typedef void(Entity3019Func)(struct Entity3019*);
@@ -437,7 +440,16 @@ void Entity3019_LoadBgPltt(Entity3019* p) {
 
 NAKED void FUN_080bc498(Entity3019* p) { INCFUNC("asm/func/FUN_080bc498.inc"); }
 
-NAKED void FUN_080bc8c8(Entity3019* p) { INCFUNC("asm/func/FUN_080bc8c8.inc"); }
+void FUN_080bc8c8(Entity3019* p) {
+  if (VM_SeekToNamedArg('s')) {
+    p->unk_12e0 = FUN_0823d340();
+  }
+
+  FUN_08049f5c();
+  TextBox_SetRect(0, 16, 30, 2);
+  TextBox_SetInstant(1);
+  TextBox_SetBgPltt(BGP_A41A);
+}
 
 NAKED void FUN_080bc908(Entity3019* p) { INCFUNC("asm/func/FUN_080bc908.inc"); }
 
