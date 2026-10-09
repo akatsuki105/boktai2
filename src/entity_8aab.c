@@ -158,9 +158,9 @@ const void* const PTR_ARRAY_085b00c4[15] = {
     (void*)FUN_08228b48,
     (void*)FUN_08228d8c,
     (void*)FUN_08228e94,
-    (void*)NULL,
+    NULL,
     (void*)FUN_08228f9c,
-    (void*)NULL,
+    NULL,
 };  // 0x085b00c4
 
 void FUN_0822913c(void*);

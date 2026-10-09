@@ -113,13 +113,13 @@ void Entity4DDF_StepFadeOut(struct Entity4DDF* p, struct Entity4DDFData* slide);
 void Entity4DDF_StepBlank(struct Entity4DDF* p, struct Entity4DDFData* slide);
 void Entity4DDF_StepEnd(struct Entity4DDF* p, struct Entity4DDFData* slide);
 
-const void* const PTR_ARRAY_08252738[6] = {
-    (void*)Entity4DDF_StepFadeIn,
-    (void*)Entity4DDF_StepHold,
-    (void*)Entity4DDF_StepFadeOut,
-    (void*)Entity4DDF_StepBlank,
-    (void*)Entity4DDF_StepEnd,
-    (void*)NULL,
+void (*const PTR_ARRAY_08252738[6])(struct Entity4DDF*, struct Entity4DDFData*) = {
+    Entity4DDF_StepFadeIn,
+    Entity4DDF_StepHold,
+    Entity4DDF_StepFadeOut,
+    Entity4DDF_StepBlank,
+    Entity4DDF_StepEnd,
+    NULL,
 };
 
 const u32 u32_ARRAY_08252750[10] = {0x2BC, 0x2BB, 0x2C4, 0x2C8, 0x2C5, 0x2C9, 0x2C6, 0x2CA, 0x2C7, 0x2CB};
