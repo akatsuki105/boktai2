@@ -230,7 +230,21 @@ s32 FUN_081df75c(void) {
   return count;
 }
 
-NAKED s32 FUN_081df784(void) { INCFUNC("asm/func/FUN_081df784.inc"); }
+// playerIdx をスクリプト側へ書き戻して返す
+// 残差1命令, 原典は -1 と playerIdx を別の基本ブロックで代入するが agbcc は -1 を先に作って条件付きで上書きする形に畳む, 三項/if-else/条件の反転は試済
+NON_MATCH s32 FUN_081df784(void) {
+#ifdef NONMATCHING_C
+  u8 desc[8];
+  Entity9A9F* p = gEntity9A9F;
+  s32 idx = (p == NULL) ? -1 : p->playerIdx;
+
+  FUN_0823167c(desc);
+  FUN_0823206c(desc, 0, idx);
+  return idx;
+#else
+  INCFUNC("asm/func/FUN_081df784.inc");
+#endif
+}
 
 // idx 番の unk_120 を 1 増やす
 s32 FUN_081df7bc(s32 idx) {
