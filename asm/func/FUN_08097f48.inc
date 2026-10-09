@@ -37,7 +37,7 @@
 	bl FUN_08097ca0
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	pop {r3}
 	mov r8, r3
 	pop {r4, r5, r6, r7}

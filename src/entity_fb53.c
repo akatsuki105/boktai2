@@ -38,6 +38,14 @@ COMMON_DATA u32 u32_03002b54 = 0;  // 0x03002B54
 
 const u8 u8_ARRAY_085ab5b0[8] = {0x67, 0x8E, 0xAA, 0x8F, 0xE0, 0x90, 0xD6, 0x8F};  // 0x085AB5B0
 
+static inline void EntityFB53_SetState(EntityFB53* p, u8 state) {
+  p->state = state;
+  p->stateChanged = 1;
+  p->timer = 0;
+}
+
+void SignalStrengthIcon_CreateAt(s32 x, s32 y);  // src/entity_d53d.c
+
 void FUN_0804b474(EntityFB53*);
 void FUN_0804b530(EntityFB53*);
 void FUN_0804b5f0(EntityFB53*);
@@ -78,13 +86,34 @@ void EntityFB53_SetLinkError(EntityFB53* _, u16 reason) {
   }
 }
 
-NAKED s32 FUN_0804b2dc(void) { INCFUNC("asm/func/FUN_0804b2dc.inc"); }
+NAKED s32 FUN_0804b2dc(EntityFB53* unused) { INCFUNC("asm/func/FUN_0804b2dc.inc"); }
 
 NAKED void EntityFB53_Disconnect(void) { INCFUNC("asm/func/EntityFB53_Disconnect.inc"); }
 
 NAKED void EntityFB53_SetupBG(EntityFB53* p, s32 param_2) { INCFUNC("asm/func/EntityFB53_SetupBG.inc"); }
 
-NAKED void FUN_0804b3f8(EntityFB53* p) { INCFUNC("asm/func/FUN_0804b3f8.inc"); }
+void FUN_0804b3f8(EntityFB53* p) {
+  EntityFB53_SetupBG(p, 3);
+  p->panelID = TextPanel_Create(1, 7, 28, 6);
+
+  if (FUN_0804b2dc(p) >= 0) {
+    EntityFB53_SetState(p, 1);
+    if (p->panelID >= 0) {
+      TextPanel_SetScript(p->panelID, p->scriptM);
+      TextPanel_SetMessage(p->panelID, 2);
+      TextPanel_Start(p->panelID);
+    }
+    rfu_REQ_startSearchParent();
+    rfu_waitREQComplete();
+  } else {
+    EntityFB53_SetState(p, 0);
+    if (p->panelID >= 0) {
+      TextPanel_SetScript(p->panelID, p->scriptM);
+      TextPanel_SetMessage(p->panelID, 1);
+      TextPanel_Start(p->panelID);
+    }
+  }
+}
 
 NAKED void FUN_0804b474(EntityFB53* p) { INCFUNC("asm/func/FUN_0804b474.inc"); }
 
@@ -135,7 +164,20 @@ void FUN_0804b83c(EntityFB53* p) {
 
 NAKED void FUN_0804b870(EntityFB53* p) { INCFUNC("asm/func/FUN_0804b870.inc"); }
 
-NAKED s32 EntityFB53_Update(EntityFB53* p) { INCFUNC("asm/func/EntityFB53_Update.inc"); }
+s32 EntityFB53_Update(EntityFB53* p) {
+  Taiyo_Disable();
+
+  if (u32_03002b54 != 0) {
+    p->linkError |= 0x70;
+  }
+
+  if ((u8)(p->state - 8) > 1 && p->linkError != 0) {
+    EntityFB53_SetState(p, 9);
+  }
+
+  PTR_ARRAY_085ab5b8[p->state](p);
+  return 0;
+}
 
 s32 EntityFB53_Destroy(EntityFB53* p) {
   Taiyo_Enable();
@@ -147,7 +189,34 @@ s32 EntityFB53_Destroy(EntityFB53* p) {
   return 0;
 }
 
-NAKED s32 EntityFB53_Init(EntityFB53* p) { INCFUNC("asm/func/EntityFB53_Init.inc"); }
+s32 EntityFB53_Init(EntityFB53* p) {
+  u32_03002b54 = 0;
+  gEntityFB53 = p;
+  Taiyo_Disable();
+
+  if (!VM_SeekToNamedArg('m')) {
+    return -1;
+  }
+
+  p->scriptM = FUN_0823d340();
+  if (p->scriptM == NULL) {
+    return -1;
+  }
+
+  if (VM_SeekToNamedArg('s')) {
+    p->scriptS = FUN_0823d340();
+    if (p->scriptS == NULL) {
+      return -1;
+    }
+  } else {
+    return -1;
+  }
+
+  p->scriptID = VM_GetNamedArgValue('e', 0);
+  FUN_0804b3f8(p);
+  SignalStrengthIcon_CreateAt(0, 0);
+  return 0;
+}
 
 EntityFB53* EntityFB53_Create(void) {
   EntityFB53* p = CreateEntity(ENTITY_UNK_2, sizeof(EntityFB53));

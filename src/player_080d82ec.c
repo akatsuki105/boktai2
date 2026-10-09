@@ -56,6 +56,9 @@ void FUN_080d4fa4(Player* p);
 void FUN_080d53e4(Player* p);
 void FUN_080d3f1c(Player* p);
 void FUN_080d16d4(Player* p);
+void FUN_080cc43c(Player* p);  // asm/player_080d82ec.inc
+void FUN_080ce330(Player* p);  // asm/player_080d82ec.inc
+void EnemyTargetManager_Remove(EnemyTarget* node);
 
 // clang-format off
 const PlayerFunc PTR_ARRAY_085ad184[32] = {
@@ -168,7 +171,18 @@ const PlayerFunc PTR_ARRAY_085ad280[27] = {
 };  // 0x085AD280
 // clang-format on
 
-NAKED void FUN_080cc1a0(Player* p) { INCFUNC("asm/func/FUN_080cc1a0.inc"); }
+// facing から animIDOffset と xflip を決める
+void Player080d82ec_SetAnimFacing(Player* p) {
+  u8 v = p->facing;
+
+  if (v > 4) {
+    p->animIDOffset = 8 - v;
+    p->xflip = 1;
+  } else {
+    p->animIDOffset = v;
+    p->xflip = 0;
+  }
+}
 
 INCASM("asm/player_080d82ec.inc");
 
@@ -180,8 +194,30 @@ NAKED void FUN_080d7fbc(Player* p) { INCFUNC("asm/func/FUN_080d7fbc.inc"); }
 
 NAKED s32 Player080d82ec_Update(Player* p) { INCFUNC("asm/func/Player080d82ec_Update.inc"); }
 
-NAKED s32 Player080d82ec_Destroy(Player* p) { INCFUNC("asm/func/Player080d82ec_Destroy.inc"); }
+s32 Player080d82ec_Destroy(Player* p) {
+  EnemyTargetManager_Remove(&p->target);
+  MainSprite_Remove(&p->sprite_88);
+  AuxSprite_Remove(&p->sprite_e8);
+  Hitbox_Unregister(&p->unk_16c);
+  Mover_Unlink(&p->mover);
+  FUN_080ce330(p);
+  FUN_080cc43c(p);
+  gPlayerPtr[p->unk_18] = NULL;
+  gPlayerCount--;
+  return 0;
+}
 
 NAKED s32 Player080d82ec_Init(Player* p, u32 val1, u32 val2) { INCFUNC("asm/func/Player080d82ec_Init.inc"); }
 
-NAKED Player* Player080d82ec_Create(u32 val1, u32 val2) { INCFUNC("asm/func/Player080d82ec_Create.inc"); }
+Player* Player080d82ec_Create(u32 val1, u32 val2) {
+  Player* p = CreateEntity(ENTITY_PLAYER, sizeof(Player));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Player080d82ec_Update, Player080d82ec_Destroy);
+    if (Player080d82ec_Init(p, val1, val2) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

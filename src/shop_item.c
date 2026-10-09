@@ -3,9 +3,13 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "input.h"
 #include "inventory.h"
+#include "item.h"
 #include "menu.h"
+#include "sound.h"
 #include "sprite.h"
+#include "text.h"
 #include "tilemap.h"
 #include "video.h"
 #include "vm.h"
@@ -82,7 +86,15 @@ void FUN_080b9724(MainSprite* sprites) {
   }
 }
 
-NAKED void FUN_080b9740(MainSprite* sprite, MainSpriteGfx* gfx, char* param_3, s8 param_4) { INCFUNC("asm/func/FUN_080b9740.inc"); }
+void FUN_080b9740(MainSprite* sprite, MainSpriteGfx* gfx, char* out, s32 val) {
+  u16 animIdx;
+
+  sprite->flags &= ~SPRFLAG_HIDDEN;
+  *out = val;
+  animIdx = ((u8)val != 0) ? 4 : 5;
+  MainSprite_SetAnim(sprite, gfx, animIdx, 1, 0);
+  MainSprite_AdvanceAnim(sprite, gfx);
+}
 
 NAKED s32 FUN_080b977c(MainSprite* sprite, MainSpriteGfx* gfx, u8* param_3) { INCFUNC("asm/func/FUN_080b977c.inc"); }
 
@@ -134,15 +146,118 @@ void FUN_080b9d94(MenuCursor* p, u32 unk) {
 
 u8 FUN_080b9da0(MenuCursor* p, u8 mask) { return p->unk_7 & mask; }
 
-NAKED s32 FUN_080b9da8(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9da8.inc"); }
+// 十字キーの入力を返す, 押しっぱなしのときは10フレームごとに1回だけ返す
+s32 FUN_080b9da8(MenuCursor* p) {
+  if (gInput[0].pressed & DPAD_ANY) {
+    p->unk_8 = 0;
+    return gInput[0].pressed;
+  }
 
-NAKED s32 FUN_080b9df0(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9df0.inc"); }
+  if (gInput[0].down & DPAD_ANY) {
+    p->unk_8++;
+    if (p->unk_8 > 9) {
+      p->unk_8 = 0;
+      return gInput[0].down;
+    }
+  } else {
+    p->unk_8 = 0;
+  }
+  return 0;
+}
 
-NAKED s32 FUN_080b9e50(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9e50.inc"); }
+// 同じ行を左へ辿って別のスロットへカーソルを移す
+s32 FUN_080b9df0(MenuCursor* p) {
+  s32 cur = p->slots[p->col + p->row * 4];
+  u8 col = (p->col + 3) & 3;
 
-NAKED s32 FUN_080b9eb0(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9eb0.inc"); }
+  while (col != p->col) {
+    s32 slot = p->slots[col + p->row * 4];
 
-NAKED s32 FUN_080b9f10(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9f10.inc"); }
+    if (slot >= 0 && slot != cur) {
+      p->col = col;
+      p->slot = MenuCursor_GetSlot(p);
+      PlaySound_082406e0(0xDC);
+      return 1;
+    }
+    col = (col + 3) & 3;
+  }
+  return 0;
+}
+
+// 同じ行を右へ辿って別のスロットへカーソルを移す
+s32 FUN_080b9e50(MenuCursor* p) {
+  s32 cur = p->slots[p->col + p->row * 4];
+  u8 col = (p->col + 1) & 3;
+
+  while (col != p->col) {
+    s32 slot = p->slots[col + p->row * 4];
+
+    if (slot >= 0 && slot != cur) {
+      p->col = col;
+      p->slot = MenuCursor_GetSlot(p);
+      PlaySound_082406e0(0xDC);
+      return 1;
+    }
+    col = (col + 1) & 3;
+  }
+  return 0;
+}
+
+// 同じ列を上へ辿って別のスロットへカーソルを移す
+s32 FUN_080b9eb0(MenuCursor* p) {
+  s32 orig = p->row;
+  s32 cur = p->slots[orig * 4 + p->col];
+  s32 row = orig - 1;
+
+  if (orig == 0) {
+    row = 8;
+  }
+
+  while (row != orig) {
+    s32 slot = p->slots[row * 4 + p->col];
+
+    if (slot >= 0 && slot != cur) {
+      p->row = row;
+      p->slot = MenuCursor_GetSlot(p);
+      PlaySound_082406e0(0xDC);
+      return 1;
+    }
+    if (row == 0) {
+      row = 8;
+    } else {
+      row--;
+    }
+  }
+  return 0;
+}
+
+// 同じ列を下へ辿って別のスロットへカーソルを移す
+s32 FUN_080b9f10(MenuCursor* p) {
+  s32 orig = p->row;
+  s32 cur = p->slots[orig * 4 + p->col];
+  s32 row = orig + 1;
+
+  if (orig == 8) {
+    row = 0;
+  }
+
+  while (row != orig) {
+    s32 slot = p->slots[row * 4 + p->col];
+
+    if (slot >= 0 && slot != cur) {
+      p->row = row;
+      p->slot = MenuCursor_GetSlot(p);
+      PlaySound_082406e0(0xDC);
+      return 1;
+    }
+    if (row == 8) {
+      row = 0;
+    } else {
+      row++;
+    }
+  }
+  return 0;
+}
 
 NAKED s32 FUN_080b9f70(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9f70.inc"); }
 
@@ -192,7 +307,14 @@ NON_MATCH void FUN_080ba054(Entity3019* p, Entity3019Func* fn, u8 val) {
 #endif
 }
 
-NAKED void FUN_080ba07c(Entity3019* p, s32 param_2) { INCFUNC("asm/func/FUN_080ba07c.inc"); }
+void FUN_080ba07c(Entity3019* p, s32 line) {
+  FUN_08049e5c();
+  p->sprites[33].flags |= SPRFLAG_HIDDEN;
+  TextBox_Start(p->unk_12e0);
+  TextBox_SetRect(0, 16, 30, 2);
+  TextBox_SetInstant(1);
+  TextBox_ShowLine(line);
+}
 
 // value を百の位・十の位・一の位に分解する
 void SplitDecimal3_080ba0c0(s32 value, s32* digits) {
@@ -224,7 +346,17 @@ NAKED void FUN_080ba85c(Entity3019* p, s32 param_2) { INCFUNC("asm/func/FUN_080b
 
 NAKED s32 FUN_080ba980(Entity3019* p) { INCFUNC("asm/func/FUN_080ba980.inc"); }
 
-NAKED s32 FUN_080baa40(void) { INCFUNC("asm/func/FUN_080baa40.inc"); }
+// 道具欄の空きスロット番号を返す, 空きがなければ -1
+s32 FUN_080baa40(void) {
+  s32 i;
+
+  for (i = 0; i < 16; i++) {
+    if (GetNormalItemID(i) < 0) {
+      return i;
+    }
+  }
+  return -1;
+}
 
 NAKED void FUN_080baa64(Entity3019* p) { INCFUNC("asm/func/FUN_080baa64.inc"); }
 
@@ -321,7 +453,16 @@ void Entity3019_LoadBgPltt(Entity3019* p) {
 
 NAKED void FUN_080bc498(Entity3019* p) { INCFUNC("asm/func/FUN_080bc498.inc"); }
 
-NAKED void FUN_080bc8c8(Entity3019* p) { INCFUNC("asm/func/FUN_080bc8c8.inc"); }
+void FUN_080bc8c8(Entity3019* p) {
+  if (VM_SeekToNamedArg('s')) {
+    p->unk_12e0 = FUN_0823d340();
+  }
+
+  FUN_08049f5c();
+  TextBox_SetRect(0, 16, 30, 2);
+  TextBox_SetInstant(1);
+  TextBox_SetBgPltt(BGP_A41A);
+}
 
 NAKED void FUN_080bc908(Entity3019* p) { INCFUNC("asm/func/FUN_080bc908.inc"); }
 
@@ -347,7 +488,12 @@ NAKED void FUN_080bca7c(Entity3019* p) { INCFUNC("asm/func/FUN_080bca7c.inc"); }
 
 NAKED void FUN_080bcbf4(Entity3019* p) { INCFUNC("asm/func/FUN_080bcbf4.inc"); }
 
-NAKED s32 Entity3019_Update(Entity3019* p) { INCFUNC("asm/func/Entity3019_Update.inc"); }
+s32 Entity3019_Update(Entity3019* p) {
+  FUN_080b94cc(p->kind);
+  FUN_080b9400(p->kind);
+  p->updateCallback(p);
+  return 0;
+}
 
 s32 Entity3019_Destroy(Entity3019* p) {
   s32 i;
@@ -364,7 +510,29 @@ s32 Entity3019_Destroy(Entity3019* p) {
 NAKED s32 Entity3019_Init(Entity3019* p, s8 param_2) { INCFUNC("asm/func/Entity3019_Init.inc"); }
 
 // 0x3019, 果実屋(リタ)
-NAKED Entity3019* Entity3019_Create(void) { INCFUNC("asm/func/Entity3019_Create.inc"); }
+Entity3019* Entity3019_Create(void) {
+  Entity3019* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity3019));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity3019_Update, Entity3019_Destroy);
+    if (Entity3019_Init(p, 0) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
 
 // 0x7300, 道具屋(キッド)
-NAKED Entity3019* FUN_080bcd94(void) { INCFUNC("asm/func/FUN_080bcd94.inc"); }
+Entity3019* FUN_080bcd94(void) {
+  Entity3019* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity3019));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity3019_Update, Entity3019_Destroy);
+    if (Entity3019_Init(p, 1) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

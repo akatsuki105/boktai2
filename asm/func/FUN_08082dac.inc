@@ -286,7 +286,7 @@ _08082FE8:
 	cmp r0, #0
 	beq _08083012
 	adds r0, r4, #0
-	bl FUN_08080c64
+	bl LinkPlayer_SetAnimFacing
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0

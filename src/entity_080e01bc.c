@@ -1,9 +1,15 @@
 #include "entity.h"
 #include "global.h"
+#include "hitbox.h"
 
 typedef struct Entity080e01bc {
-  Entity e;  // ENTITY_UNK_10
-  u8 unk_18[3548 - 0x18];
+  Entity e;                  // ENTITY_UNK_10
+  u8 unk_18[0x1C - 0x18];    // 0x01C, まだ未解析
+  Vec3 pos;                  // 0x01C, 2本の Hitbox の位置に渡す
+  u8 unk_24[0xF4 - 0x24];    // 0x024, まだ未解析
+  HitboxData hitbox_f4;      // 0x0F4, FUN_080df880 が Hitbox_Register する
+  HitboxData hitbox_144;     // 0x144
+  u8 unk_194[3548 - 0x194];  // 0x194, まだ未解析
 } Entity080e01bc;
 static_assert(sizeof(Entity080e01bc) == 3548);
 
@@ -39,7 +45,11 @@ NAKED void FUN_080df760(s32 param_1, s32 param_2, unknown* param_3) { INCFUNC("a
 
 NAKED void FUN_080df790(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_080df790.inc"); }
 
-NAKED void FUN_080df880(s32 param_1) { INCFUNC("asm/func/FUN_080df880.inc"); }
+void FUN_080df880(Entity080e01bc* p) {
+  Hitbox_SetPos(&p->hitbox_f4, &p->pos, 0);
+  Hitbox_SetPos(&p->hitbox_144, &p->pos, 0);
+  Hitbox_Register(&p->hitbox_f4);
+}
 
 NAKED s32 FUN_080df8b0(unknown* p) { INCFUNC("asm/func/FUN_080df8b0.inc"); }
 
@@ -61,7 +71,21 @@ NAKED s32 Entity080e01bc_Destroy(Entity080e01bc* p) { INCFUNC("asm/func/Entity08
 
 NAKED s32 Entity080e01bc_Init(Entity080e01bc* p) { INCFUNC("asm/func/Entity080e01bc_Init.inc"); }
 
-NAKED Entity080e01bc* Entity080e01bc_Create(void) { INCFUNC("asm/func/Entity080e01bc_Create.inc"); }
+Entity080e01bc* Entity080e01bc_Create(void) {
+  if (gEntity080e01bc == NULL) {
+    Entity080e01bc* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity080e01bc));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity080e01bc_Update, Entity080e01bc_Destroy);
+      if (Entity080e01bc_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity080e01bc;
+}
 
 void Entity080e01bc_ClearGlobal(void) { gEntity080e01bc = NULL; }
 

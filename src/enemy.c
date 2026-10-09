@@ -14,6 +14,7 @@ const s16 s16_ARRAY_085ad3cc[4] = {1600, 0, 1600};  // 0x085AD3CC
 
 // --------------------------------------------
 
+s32 FUN_08240b98(u8* param_1, s8 param_2);  // asm/entity_794c.inc
 void FUN_080f22e8(Enemy* p);
 void FUN_080f230c(Enemy* p);
 void FUN_080f2330(Enemy* p);
@@ -170,7 +171,15 @@ void Enemy_ClearStateBegun(Enemy* p) {
 
 NAKED void FUN_080e48e8(Enemy* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_080e48e8.inc"); }
 
-NAKED void FUN_080e4964(Enemy* p) { INCFUNC("asm/func/FUN_080e4964.inc"); }
+void FUN_080e4964(Enemy* p) {
+  u16 prev;
+
+  p->unk_46b = 0;
+  prev = p->unk_1c8++;
+  if (p->handlerState != NULL) {
+    ((void (*)(Enemy*, u16))p->handlerState)(p, prev);
+  }
+}
 
 void FUN_080e499c(Enemy* p) {
   p->unk_116 = 0;
@@ -336,13 +345,28 @@ NAKED void FUN_080e850c(Enemy* p) { INCFUNC("asm/func/FUN_080e850c.inc"); }
 
 NAKED void FUN_080e8614(Enemy* p) { INCFUNC("asm/func/FUN_080e8614.inc"); }
 
-NAKED bool8 Enemy_IsDead(Enemy* p) { INCFUNC("asm/func/Enemy_IsDead.inc"); }
+bool8 Enemy_IsDead(Enemy* p) {
+  if (p == NULL) {
+    return FALSE;
+  }
+
+  if (Enemy_TestFlag3(p, ENEFLAG3_UNK_6) || Enemy_TestFlag2(p, ENEFLAG2_UNK_17) || p->hp <= 0) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED void FUN_080e8aa0(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_080e8aa0.inc"); }
 
-NAKED void FUN_080e8ae4(unknown* param_1, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080e8ae4.inc"); }
+NAKED void FUN_080e8ae4(Enemy* p, u8* param_2, u8* param_3) { INCFUNC("asm/func/FUN_080e8ae4.inc"); }
 
-NAKED void FUN_080e8f20(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080e8f20.inc"); }
+void FUN_080e8f20(Enemy* p, s32 param_2) {
+  p->unk_21e = FUN_08240b98(p->unk_204, param_2);
+
+  if (p->unk_21e == 0xB546) {
+    FUN_080e8ae4(p, p->unk_204, p->unk_204);
+  }
+}
 
 NAKED s32 FUN_080e8f5c(unknown* param_1) { INCFUNC("asm/func/FUN_080e8f5c.inc"); }
 

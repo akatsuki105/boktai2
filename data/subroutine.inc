@@ -5,7 +5,7 @@
 gSubroutineTable:
 	.4byte 0x0074, Dvalinn_Create
 	.4byte 0x0101, FUN_081d1a7c
-	.4byte 0x0238, FUN_080a1058
+	.4byte 0x0238, EntityBA36_GetRemaining
 	.4byte 0x025E, FUN_0804e384
 	.4byte 0x0272, FUN_0823cd48
 	.4byte 0x0353, FUN_0807b64c
@@ -93,7 +93,7 @@ gSubroutineTable:
 	.4byte 0x286B, FUN_080eda7c
 	.4byte 0x286F, Entity286F_Create
 	.4byte 0x28CB, CoffinSealEffect_Create
-	.4byte 0x2924, FUN_080a07c0
+	.4byte 0x2924, EntityA628_StopFollowCameraScripted
 	.4byte 0x29F1, FUN_080b22e8
 	.4byte 0x2B06, LinkPlayer_Create
 	.4byte 0x2B68, FUN_0807b3c0
@@ -112,7 +112,7 @@ gSubroutineTable:
 	.4byte 0x300F, FUN_080ec4d0
 	.4byte 0x3019, Entity3019_Create
 	.4byte 0x305A, FUN_082423a8
-	.4byte 0x3062, FUN_080a0838
+	.4byte 0x3062, EntityA628_IsActiveScripted
 	.4byte 0x30A3, FUN_08224d94
 	.4byte 0x30AD, Map_LoadMapScripted
 	.4byte 0x30CC, FUN_0807dcec
@@ -211,13 +211,13 @@ gSubroutineTable:
 	.4byte 0x52BF, AlbumMenu_Create
 	.4byte 0x5365, Time_GetSunsetScripted
 	.4byte 0x53BF, FUN_082402c8
-	.4byte 0x5460, FUN_080a1010
+	.4byte 0x5460, EntityBA36_SetRemaining
 	.4byte 0x546C, FUN_0807db58
 	.4byte 0x5470, FUN_08209fc8
 	.4byte 0x54C1, UnlockMap
 	.4byte 0x54DF, Elevator_SetPltt
 	.4byte 0x5517, FUN_08041bd4
-	.4byte 0x554B, FUN_080a07f0
+	.4byte 0x554B, EntityA628_DeactivateScripted
 	.4byte 0x55C2, Entity55C2_Create
 	.4byte 0x55C5, FUN_080ac5f4
 	.4byte 0x5645, Entity5645_Create
@@ -421,7 +421,7 @@ gSubroutineTable:
 	.4byte 0xA3B3, FUN_08224af8
 	.4byte 0xA4FC, Elevator_Create
 	.4byte 0xA61C, Map_SetLoadingZoneIndicatorMode
-	.4byte 0xA628, FUN_080a0fac
+	.4byte 0xA628, EntityA628_CreateScripted
 	.4byte 0xA687, BgPlttDimmer_Create
 	.4byte 0xA76D, FUN_0820cf6c
 	.4byte 0xA7CE, FUN_0820d124
@@ -476,7 +476,7 @@ gSubroutineTable:
 	.4byte 0xB88C, EntityB88C_Create
 	.4byte 0xB8B9, MoverList_Create
 	.4byte 0xB8C7, FUN_08005034
-	.4byte 0xBA36, FUN_080a1168
+	.4byte 0xBA36, EntityBA36_Create
 	.4byte 0xBA4B, EntityBA4B_Create
 	.4byte 0xBB01, FUN_0807d4ec
 	.4byte 0xBB34, FUN_08205a18
@@ -564,7 +564,7 @@ gSubroutineTable:
 	.4byte 0xDDCF, FUN_08007640
 	.4byte 0xDDD0, FUN_08041b28
 	.4byte 0xDDEE, FUN_0807d938
-	.4byte 0xDDF8, FUN_080a07b4
+	.4byte 0xDDF8, EntityA628_StartFollowCameraScripted
 	.4byte 0xDEA2, FUN_080a504c
 	.4byte 0xDED5, GameOverManager_StartScripted
 	.4byte 0xDF85, FUN_0809c214
@@ -611,7 +611,7 @@ gSubroutineTable:
 	.4byte 0xED2E, FUN_0823d68c
 	.4byte 0xEDE2, FUN_0823d1d8
 	.4byte 0xEE18, FUN_08240668
-	.4byte 0xEF19, FUN_080a07cc
+	.4byte 0xEF19, EntityA628_ActivateScripted
 	.4byte 0xEF66, FUN_080a1664
 	.4byte 0xEF6F, EntityEF6F_Create
 	.4byte 0xEFD1, FUN_0809c63c

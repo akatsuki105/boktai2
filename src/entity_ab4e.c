@@ -17,7 +17,8 @@ typedef struct {
   u8 unk_38[0x60 - 0x38];     // 0x038, まだ未解析
   Mover unk_60;               // 0x060, _Update が Mover_ApplyMove に渡す
   MainSprite sprite;          // 0x0A4, _Update が MainSprite_AdvanceAnim に渡す
-  u8 unk_104[0x174 - 0x104];  // 0x104, まだ未解析
+  ParticleShadow shadow;      // 0x104, _Destroy が ParticleShadow_Remove に渡す
+  u8 unk_144[0x174 - 0x144];  // 0x144, まだ未解析
   s16 unk_174;                // 0x174, 0/1 で FUN_080da9c4 の呼び分けをする
   s16 unk_176;                // 0x176, FUN_080da9c4 に渡す
   s16 counter;                // 0x178, 毎フレーム減らし, 0 になると period に戻す
@@ -49,6 +50,12 @@ typedef struct {
 static_assert(sizeof(EntityAB4E) == 6704);
 
 IWRAM_DATA EntityAB4E* gEntityAB4E = NULL;  // 0x030000C0
+
+const u16 u16_ARRAY_085ab404[8] = {0, 16, 0, 0, 0, 0, 0, 0};  // 0x085AB404
+
+const u16 u16_ARRAY_085ab414[8] = {5, 21, 0, 0, 0, 0, 0, 0};  // 0x085AB414
+
+const u16 u16_ARRAY_085ab424[8] = {7, 23, 0, 0, 0, 0, 0, 0};  // 0x085AB424
 
 s32 FUN_080455fc(EntityAB4E*, EntityAB4EElem*, s32);
 s32 FUN_08045890(EntityAB4E*, EntityAB4EElem*, s32);
@@ -86,7 +93,21 @@ EntityAB4EElem* EntityAB4E_FindFreeElem(EntityAB4E* p) {
   return NULL;
 }
 
-NAKED s32 FUN_080452f4(EntityAB4E* p, EntityAB4EElem* elem, s32 index) { INCFUNC("asm/func/FUN_080452f4.inc"); }
+// 要素の Mover / 影 / スプライトを外して非アクティブにする
+s32 FUN_080452f4(EntityAB4E* p, EntityAB4EElem* elem, s32 index) {
+  Mover* mover;
+
+  if (!elem->active) {
+    return -1;
+  }
+
+  mover = &elem->unk_60;
+  FUN_08002a58(mover);
+  Mover_Unlink(mover);
+  ParticleShadow_Remove(&elem->shadow);
+  MainSprite_Remove(&elem->sprite);
+  elem->active = FALSE;
+}
 
 NAKED void FUN_08045330(EntityAB4EElem* elem, unknown* param_2) { INCFUNC("asm/func/FUN_08045330.inc"); }
 
@@ -116,10 +137,36 @@ NAKED s32 FUN_08046c98(EntityAB4E* p, EntityAB4EElem* elem, s32 index) { INCFUNC
 
 NAKED s32 EntityAB4E_Update(EntityAB4E* p) { INCFUNC("asm/func/EntityAB4E_Update.inc"); }
 
-NAKED s32 EntityAB4E_Destroy(EntityAB4E* p) { INCFUNC("asm/func/EntityAB4E_Destroy.inc"); }
+s32 EntityAB4E_Destroy(EntityAB4E* p) {
+  EntityAB4EElem* elem = p->elems;
+  s32 i;
+
+  for (i = 0; i < 16; i++, elem++) {
+    if (elem->active) {
+      FUN_080452f4(p, elem, i);
+    }
+  }
+
+  gEntityAB4E = NULL;
+  return 0;
+}
 
 NAKED s32 EntityAB4E_Init(EntityAB4E* p) { INCFUNC("asm/func/EntityAB4E_Init.inc"); }
 
-NAKED EntityAB4E* EntityAB4E_Create(void) { INCFUNC("asm/func/EntityAB4E_Create.inc"); }
+EntityAB4E* EntityAB4E_Create(void) {
+  if (gEntityAB4E == NULL) {
+    EntityAB4E* p = CreateEntity(ENTITY_UNK_5, sizeof(EntityAB4E));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, EntityAB4E_Update, EntityAB4E_Destroy);
+      if (EntityAB4E_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntityAB4E;
+}
 
 NAKED s32 EntityAB4E_AddElemScripted(void) { INCFUNC("asm/func/EntityAB4E_AddElemScripted.inc"); }

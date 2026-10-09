@@ -37,9 +37,10 @@
 typedef struct {
   u32 magicNumber;            // 0x000, gScriptDirectoryBuildTime = 0x40A8186C がセットされる, ロード時にチェックしてそう
   u8 unk_004[12];             // 0x004
-  u16 unk_010;                // 0x010, FUN_08063634 が Player.unk_456 へ写す
-  s16 messageSpeed;           // 0x012, メッセージ速度設定, TextRenderer_ResetSpeed が TextRenderer.speed に入れる
-  u8 unk_14[4];               // 0x014
+  u16 controlUp;              // 0x010, 十字キー上を押した時の移動方向の設定, 0: 左上, 1: 上, 2: 右上
+  s16 textSpeed;              // 0x012, メッセージ速度設定(1: 速い, 2: 普通, 4: 遅い), TextRenderer_ResetSpeed が TextRenderer.speed に入れる
+  bool16 markerEnabled;       // 0x014, マーカーの表示設定 (0: 非表示, 1: 表示)
+  u8 unk_016[2];              // 0x016
   s16 stats[STAT_KINDS * 2];  // 0x018, ステータスポイントの割り振り と (多分タロットカードの)ドーピングボーナス, ステータス画面には合計値が表示される
   u16 savedHP;                // 0x028, コンティニュー用？
   u16 savedMaxHP;             // 0x02A
@@ -111,7 +112,7 @@ typedef struct {
   u8 unk_25c[0x260 - 0x25C];     // 0x25C
   u32 unlockedMap;               // 0x260
   u32 unk_264;                   // 0x264, なんかのbitfield? (根拠: FUN_08090f0c)
-  u8 unk_268[64];                // 0x268
+  u32 unk_268[16];               // 0x268, areaID で引く, FUN_0808fd8c が 0 でクリアする
   u32 darkDjangoAtkCounter;      // 0x2A8
   u32 unk_2ac;                   // 0x2AC
   s16 unk_2b0[2];                // 0x2B0
@@ -146,21 +147,21 @@ typedef struct {
   s16 unk_916;                   // 0x916, FUN_081dd25c が通信参加のたびに 1 増やす (9999 で頭打ち), linkBattles の隣
   u8 unk_918[8];                 // 0x918, bokpass に記述があるが、用途も型も不明
   u32 weaponDex[2];              // 0x920
-  //
 
   // これ以降はセーブデータには含まれない(太陽ゲージなどのtmpデータ?)
-  u8 unk_928[12];  // 0x928
-  u16 unk_934;     // 0x934
-  u8 unk_936[2];   // 0x936
-  s16 unk_938;     // 0x938, FUN_080488fc がそのまま返す
-  s16 unk_93a;     // 0x93A
-  u8 unk_93c[4];   // 0x93C
-  s16 lx;          // 0x940, 太陽光の強さ(ルクス), ライジングサンの効果も反映される,
-  s16 sunGauge;    // 0x942, 現在の太陽ゲージ ライジングサンによる太陽ゲージも反映される, ゲームと同じく 0..10
-  u8 unk_944[2];   // 0x944
-  s16 unk_946;     // 0x946, WeatherManager_Update が state 3 で 0x7FFF にし、それ以外では 0 まで減らす
-  s16 unk_948[4];  // 0x948, FUN_0823d2e0 が 9998 を上限に +1 する
-  s16 unk_950[4];  // 0x950, FUN_0823d310 が 9998 を上限に +1 する
+  u8 unk_928[0x932 - 0x928];  // 0x928
+  u16 sunAngle;               // 0x932, gSineTable の添字 (下位8bit), 太陽の方角, MagicRisingSun と Sabata_BlackSun が書き換える
+  u16 unk_934;                // 0x934
+  u8 unk_936[2];              // 0x936
+  s16 unk_938;                // 0x938, FUN_080488fc がそのまま返す
+  s16 unk_93a;                // 0x93A
+  u8 unk_93c[4];              // 0x93C
+  s16 lx;                     // 0x940, 太陽光の強さ(ルクス), ライジングサンの効果も反映される,
+  s16 sunGauge;               // 0x942, 現在の太陽ゲージ ライジングサンによる太陽ゲージも反映される, ゲームと同じく 0..10
+  u8 unk_944[2];              // 0x944
+  s16 unk_946;                // 0x946, WeatherManager_Update が state 3 で 0x7FFF にし、それ以外では 0 まで減らす
+  s16 unk_948[4];             // 0x948, FUN_0823d2e0 が 9998 を上限に +1 する
+  s16 unk_950[4];             // 0x950, FUN_0823d310 が 9998 を上限に +1 する
 } GameInfo;
 static_assert(sizeof(GameInfo) == 2392);
 
@@ -171,16 +172,16 @@ static_assert(sizeof(World) == 1024);
 
 typedef struct {
   u8 unk_000[1024];  // 0x000
-} UnkGameStruct;
-static_assert(sizeof(UnkGameStruct) == 1024);  // VM_StorePointer で World と別扱いしているので World とはサイズが同じだけの別の構造体として定義しておく
+} Scratch;
+static_assert(sizeof(Scratch) == 1024);  // VM_StorePointer で World と別扱いしているので World とはサイズが同じだけの別の構造体として定義しておく
 
 // --------------------------------------------
 
-extern UnkGameStruct* gScratch;  // 0x03004690, 多分VM用のスクラッチパッド
-extern World* gWorldBackup;      // 0x03004694, ハード起動時は 0x0203DE00, 特定のタイミング(トランジションや死亡時)で、 gWorld の内容をこっちに反映する, ゲームをセーブする際にはこのデータを EEPROM に書き込む
-extern World* gWorld;            // 0x03004698, ハード起動時は 0x0203DA00, ゲームプレイ中はこのデータを参照・更新する
-extern GameInfo* gStatBackup;    // 0x0300469C, ハード起動時は 0x0203CF00, gWorldBackup と同じ
-extern GameInfo* gStat;          // 0x030046A0, ハード起動時は 0x0203C400
+extern Scratch* gScratch;      // 0x03004690, 多分VM用のスクラッチパッド
+extern World* gWorldBackup;    // 0x03004694, ハード起動時は 0x0203DE00, 特定のタイミング(トランジションや死亡時)で、 gWorld の内容をこっちに反映する, ゲームをセーブする際にはこのデータを EEPROM に書き込む
+extern World* gWorld;          // 0x03004698, ハード起動時は 0x0203DA00, ゲームプレイ中はこのデータを参照・更新する
+extern GameInfo* gStatBackup;  // 0x0300469C, ハード起動時は 0x0203CF00, gWorldBackup と同じ
+extern GameInfo* gStat;        // 0x030046A0, ハード起動時は 0x0203C400
 
 GameInfo* FUN_08232254(void);
 World* FUN_08232260(void);

@@ -47,6 +47,6 @@ void (*const PTR_ARRAY_085ad35c[2])(unknown*, unknown*) = {
 
 INCASM("asm/entity_080df420.inc");
 
-NAKED void FUN_080df46c(void) { INCFUNC("asm/func/FUN_080df46c.inc"); }
+void FUN_080df46c(void) { gEntity080df420 = NULL; }
 
 NAKED void FUN_080df478(void) { INCFUNC("asm/func/FUN_080df478.inc"); }

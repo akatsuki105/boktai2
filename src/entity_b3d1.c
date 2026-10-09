@@ -87,7 +87,13 @@ NAKED void FUN_080bfba4(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfba4.inc"); }
 
 NAKED void FUN_080bfc60(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfc60.inc"); }
 
-NAKED void FUN_080bfce4(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfce4.inc"); }
+void FUN_080bfce4(EntityB3D1* p) {
+  s32 i;
+
+  for (i = 0; i < 5; i++) {
+    p->mainSprites[i].flags &= ~SPRFLAG_HIDDEN;
+  }
+}
 
 void FUN_080bfd04(EntityB3D1* p) {
   s32 i;
@@ -99,7 +105,19 @@ void FUN_080bfd04(EntityB3D1* p) {
 
 NAKED void FUN_080bfd24(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfd24.inc"); }
 
-NAKED s32 FUN_080bfd5c(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfd5c.inc"); }
+// unk_588 がどの区間にあるかを 10 / 5 / 1 / 2 で返す
+s32 FUN_080bfd5c(EntityB3D1* p) {
+  if (p->unk_588 > p->unk_58e) {
+    return 10;
+  }
+  if (p->unk_588 > p->unk_58c) {
+    return 5;
+  }
+  if (p->unk_588 > p->unk_58a) {
+    return 2;
+  }
+  return 1;
+}
 
 NAKED void FUN_080bfdac(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfdac.inc"); }
 
@@ -198,4 +216,18 @@ NAKED void FUN_080c0770(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c0770.inc"); }
 
 NAKED s32 EntityB3D1_Init(EntityB3D1* p) { INCFUNC("asm/func/EntityB3D1_Init.inc"); }
 
-NAKED EntityB3D1* EntityB3D1_Create(void) { INCFUNC("asm/func/EntityB3D1_Create.inc"); }
+EntityB3D1* EntityB3D1_Create(void) {
+  if (gEntityB3D1 == NULL) {
+    EntityB3D1* p = CreateEntity(ENTITY_UNK_8, sizeof(EntityB3D1));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, EntityB3D1_Update, EntityB3D1_Destroy);
+      if (EntityB3D1_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntityB3D1;
+}

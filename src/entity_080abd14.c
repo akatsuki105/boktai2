@@ -1,9 +1,8 @@
 #include "entity.h"
 #include "global.h"
 #include "particle.h"
+#include "player.h"
 #include "sprite.h"
-
-typedef void (*Entity080abd14SpriteFunc)(AuxSprite* spr);
 
 // 12個を使い回す粒子の枠
 typedef struct {
@@ -13,26 +12,27 @@ typedef struct {
 static_assert(sizeof(Entity080abd14Particle) == 68);
 
 typedef struct {
-  Entity e;                             // 0x000, ENTITY_UNK_8
-  u8 unk_18;                            // 0x018, _Init の第5引数, 0 かどうかで鳴らす SE が変わる
-  u8 unk_19;                            // 0x019, _Update が 0 以外なら 0x03002BF0 を1減らして 0 に戻す
-  u8 unk_1a;                            // 0x01A, _Init の第6引数
-  u8 unk_1b;                            // 0x01B, _Update が owner の状態が 4 のとき 1 にする
-  void* owner;                          // 0x01C, _Init の第2引数, _Update が owner->[0x1C] == 4 を見る
-  AuxSprite spr0;                       // 0x020, FUN_080abb08 が AuxSprite_Remove に渡す
-  u8 unk_4c[0x68 - 0x4C];               // 0x04C
-  AuxSprite spr1;                       // 0x068, FUN_080abb08 が AuxSprite_Remove に渡す
-  u8 unk_94[0xB0 - 0x94];               // 0x094
-  u8 unk_b0;                            // 0x0B0, _Destroy が 0 以外かを見る
-  u8 unk_b1;                            // 0x0B1, _Destroy が 0 かを見る
-  u8 unk_b2[6];                         // 0x0B2
-  Entity080abd14SpriteFunc spriteFunc;  // 0x0B8, FUN_080abac8 が spr0 を渡して呼ぶ
-  u8 unk_bc[4];                         // 0x0BC
-  AuxSprite spr2;                       // 0x0C0, FUN_080ab8ec が AuxSprite_Remove に渡す
-  u8 unk_ec[0x140 - 0xEC];              // 0x0EC
-  Entity080abd14Particle ptcls[12];     // 0x140, 根拠: FUN_080ab6d8 の stride 0x44 × 12
+  Entity e;                          // 0x000, ENTITY_UNK_8
+  u8 unk_18;                         // 0x018, _Init の第5引数, 0 かどうかで鳴らす SE が変わる
+  u8 unk_19;                         // 0x019, _Update が 0 以外なら 0x03002BF0 を1減らして 0 に戻す
+  u16 unk_1a;                        // 0x01A, 下位バイトは _Init の第6引数, 上位バイトは _Update が owner の状態が 4 のとき 1 にする, _Destroy は2バイトまとめて 0 かを見る
+  Player* owner;                     // 0x01C, _Init の第2引数, _Update が owner->unk_1c == 4 を見る
+  AuxSprite spr0;                    // 0x020, FUN_080abb08 が AuxSprite_Remove に渡す
+  u8 unk_4c[0x68 - 0x4C];            // 0x04C
+  AuxSprite spr1;                    // 0x068, FUN_080abb08 が AuxSprite_Remove に渡す
+  u8 unk_94[0xB0 - 0x94];            // 0x094
+  u8 unk_b0;                         // 0x0B0, _Destroy が 0 以外かを見る
+  u8 unk_b1;                         // 0x0B1, _Destroy が 0 かを見る
+  u8 unk_b2[6];                      // 0x0B2
+  void (*spriteFunc)(AuxSprite*);    // 0x0B8, FUN_080abac8 が spr0 を渡して呼ぶ
+  u8 unk_bc[4];                      // 0x0BC
+  AuxSprite spr2;                    // 0x0C0, FUN_080ab8ec が AuxSprite_Remove に渡す
+  u8 unk_ec[0x140 - 0xEC];           // 0x0EC
+  Entity080abd14Particle ptcls[12];  // 0x140, 根拠: FUN_080ab6d8 の stride 0x44 × 12
 } Entity080abd14;
 static_assert(sizeof(Entity080abd14) == 1136);
+
+extern u16 u16_03002bf0;
 
 NAKED void FUN_080ab018(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab018.inc"); }
 
@@ -76,7 +76,19 @@ NAKED void FUN_080ab99c(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab99c.inc"
 
 NAKED void FUN_080ab9e0(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab9e0.inc"); }
 
-NAKED void FUN_080abac8(Entity080abd14* p) { INCFUNC("asm/func/FUN_080abac8.inc"); }
+void FUN_080abac8(Entity080abd14* p) {
+  if (p->unk_b0 == 0) {
+    if (*(u16*)&p->owner->action == 0x209) {
+      p->unk_b0 = 1;
+    }
+
+    if (p->unk_b0 == 0) {
+      return;
+    }
+  }
+
+  p->spriteFunc(&p->spr0);
+}
 
 void FUN_080abb08(Entity080abd14* p) {
   AuxSprite_Remove(&p->spr0);
@@ -87,7 +99,18 @@ NAKED void FUN_080abb20(Entity080abd14* p, u32 param_2) { INCFUNC("asm/func/FUN_
 
 NAKED s32 Entity080abd14_Update(Entity080abd14* p) { INCFUNC("asm/func/Entity080abd14_Update.inc"); }
 
-NAKED s32 Entity080abd14_Destroy(Entity080abd14* p) { INCFUNC("asm/func/Entity080abd14_Destroy.inc"); }
+s32 Entity080abd14_Destroy(Entity080abd14* p) {
+  if (p->unk_b0 && !p->unk_b1 && p->unk_1a == 0) {
+    FUN_080ab018(p);
+  }
+
+  FUN_080abb08(p);
+  FUN_080ab8ec(p);
+  FUN_080ab6d8(p);
+  if (p->unk_19) {
+    u16_03002bf0--;
+  }
+}
 
 NAKED s32 Entity080abd14_Init(Entity080abd14* p, void* owner, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/Entity080abd14_Init.inc"); }
 

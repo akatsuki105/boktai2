@@ -25,7 +25,21 @@ typedef struct Entity08060470 {
 } Entity08060470;
 static_assert(sizeof(Entity08060470) == 932);
 
-NAKED void Entity08060470_InitElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) { INCFUNC("asm/func/Entity08060470_InitElem.inc"); }
+extern void* gEntity08060470;  // 0x03000134
+
+// 粒子を1個分だけ初期化する
+void Entity08060470_InitElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {
+  Particle* ptcl = &elem->ptcl;
+
+  elem->state = 0;
+  elem->unk_1 = 1;
+  elem->timer = 0;
+  elem->lifetime = 0;
+  Particle_Setup(ptcl, p->group, 1);
+  Particle_SetPltt(ptcl, 1);
+  Particle_SetFrame(ptcl, p->group, 3);
+  Particle_SetOffset(ptcl, -4, -4);
+}
 
 void Entity08060470_ReleaseElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {
   Particle_Remove(&elem->ptcl);
@@ -34,7 +48,30 @@ void Entity08060470_ReleaseElem(Entity08060470* p, Entity08060470Elem* elem, s32
 
 void FUN_08060358(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {}
 
-NAKED void Entity08060470_UpdateElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) { INCFUNC("asm/func/Entity08060470_UpdateElem.inc"); }
+// vel の分だけ粒子を進め, 寿命が来たら解放して枠を空ける
+// 残差は37命令 vs 44命令, 原典は pos と vel のベースポインタを別に作って y/z を +2/+4 で引くが agbcc は elem からの固定オフセットに畳む, Vec3* ローカル2本/3本は試済
+NON_MATCH void Entity08060470_UpdateElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {
+#ifdef NONMATCHING_C
+  Particle* ptcl = &elem->ptcl;
+
+  if (elem->unk_1) {
+    elem->unk_1 = 0;
+  }
+
+  ptcl->pos.x += elem->vel.x;
+  ptcl->pos.y += elem->vel.y;
+  ptcl->pos.z += elem->vel.z;
+
+  if (elem->timer >= elem->lifetime) {
+    Entity08060470_ReleaseElem(p, elem, idx);
+    elem->state = 0;
+    elem->unk_1 = 1;
+    elem->timer = 0;
+  }
+#else
+  INCFUNC("asm/func/Entity08060470_UpdateElem.inc");
+#endif
+}
 
 void (*const PTR_ARRAY_085abaac[2])(Entity08060470*, Entity08060470Elem*, s32) = {
     FUN_08060358,
@@ -43,11 +80,34 @@ void (*const PTR_ARRAY_085abaac[2])(Entity08060470*, Entity08060470Elem*, s32) =
 
 NAKED s32 Entity08060470_Update(Entity08060470* p) { INCFUNC("asm/func/Entity08060470_Update.inc"); }
 
-NAKED s32 Entity08060470_Destroy(Entity08060470* p) { INCFUNC("asm/func/Entity08060470_Destroy.inc"); }
+s32 Entity08060470_Destroy(Entity08060470* p) {
+  Entity08060470Elem* elem = p->ptcls;
+  s32 i;
 
-NAKED s32 Entity08060470_Init(Entity08060470* p) { INCFUNC("asm/func/Entity08060470_Init.inc"); }
+  for (i = 0; i < 16; i++, elem++) {
+    if (p->activeMask & (1 << i)) {
+      Entity08060470_ReleaseElem(p, elem, i);
+    }
+  }
 
-extern void* gEntity08060470;
+  gEntity08060470 = NULL;
+  return 0;
+}
+
+s32 Entity08060470_Init(Entity08060470* p) {
+  Entity08060470Elem* elem;
+  s32 i;
+
+  gEntity08060470 = p;
+  p->activeMask = 0;
+  p->group = GetParticleGroup(PTCL_GROUP_2);
+
+  elem = p->ptcls;
+  for (i = 0; i < 16; i++, elem++) {
+    Entity08060470_InitElem(p, elem, i);
+  }
+  return 0;
+}
 
 Entity08060470* Entity08060470_Create(void) {
   Entity08060470* p = gEntity08060470;

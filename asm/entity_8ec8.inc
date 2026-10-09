@@ -4,29 +4,29 @@
 	
 	.text
 
-	thumb_func_start FUN_0821b860
-FUN_0821b860: @ 0x0821B860
-  .include "asm/func/FUN_0821b860.inc"
+	thumb_func_start Entity8EC8_HandleMessages
+Entity8EC8_HandleMessages: @ 0x0821B860
+  .include "asm/func/Entity8EC8_HandleMessages.inc"
 
-	thumb_func_start FUN_0821b90c
-FUN_0821b90c: @ 0x0821B90C
-  .include "asm/func/FUN_0821b90c.inc"
+	thumb_func_start Entity8EC8_IsStartHeld
+Entity8EC8_IsStartHeld: @ 0x0821B90C
+  .include "asm/func/Entity8EC8_IsStartHeld.inc"
 
-	thumb_func_start FUN_0821b948
-FUN_0821b948: @ 0x0821B948
-  .include "asm/func/FUN_0821b948.inc"
+	thumb_func_start Entity8EC8_IsSelectHeld
+Entity8EC8_IsSelectHeld: @ 0x0821B948
+  .include "asm/func/Entity8EC8_IsSelectHeld.inc"
 
-	thumb_func_start FUN_0821b984
-FUN_0821b984: @ 0x0821B984
-  .include "asm/func/FUN_0821b984.inc"
+	thumb_func_start Entity8EC8_Update
+Entity8EC8_Update: @ 0x0821B984
+  .include "asm/func/Entity8EC8_Update.inc"
 
-	thumb_func_start FUN_0821bc5c
-FUN_0821bc5c: @ 0x0821BC5C
-  .include "asm/func/FUN_0821bc5c.inc"
+	thumb_func_start Entity8EC8_Destroy
+Entity8EC8_Destroy: @ 0x0821BC5C
+  .include "asm/func/Entity8EC8_Destroy.inc"
 
-	thumb_func_start FUN_0821bc70
-FUN_0821bc70: @ 0x0821BC70
-  .include "asm/func/FUN_0821bc70.inc"
+	thumb_func_start Entity8EC8_Init
+Entity8EC8_Init: @ 0x0821BC70
+  .include "asm/func/Entity8EC8_Init.inc"
 
 	thumb_func_start Entity8EC8_Create
 Entity8EC8_Create: @ 0x0821BCD4

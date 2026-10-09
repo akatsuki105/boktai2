@@ -121,7 +121,7 @@ _0809B26C:
 	bne _0809B29C
 	adds r0, r4, #0
 	ldr r1, _0809B298 @ =0x000002A5
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	b _0809B2A4
 	.align 2, 0
 _0809B28C: .4byte 0x00000F57
@@ -131,7 +131,7 @@ _0809B298: .4byte 0x000002A5
 _0809B29C:
 	adds r0, r4, #0
 	ldr r1, _0809B2B4 @ =0x000002A6
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 _0809B2A4:
 	adds r4, #0x60
 _0809B2A6:

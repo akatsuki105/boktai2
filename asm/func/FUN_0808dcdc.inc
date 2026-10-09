@@ -58,7 +58,7 @@ _0808DD2C:
 	bl MainSprite_Add
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	movs r0, #0x68
 	muls r0, r5, r0
 	add r0, r8

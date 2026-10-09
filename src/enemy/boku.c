@@ -9,6 +9,7 @@ typedef struct {
 static_assert(sizeof(Boku) == 1708);
 
 bool32 FUN_080f06b0(Enemy* p);
+void FUN_080e4964(Enemy* p);
 
 void FUN_080f2644(Enemy* p);
 void FUN_080f2864(Enemy* p);
@@ -105,7 +106,19 @@ bool32 FUN_08101bb4(Boku* p) {
   return TRUE;
 }
 
-NAKED bool32 FUN_08101bc0(Boku* p) { INCFUNC("asm/func/FUN_08101bc0.inc"); }
+bool32 FUN_08101bc0(Boku* p) {
+  FUN_081019e0(p);
+
+  if (Enemy_TestFlag3((Enemy*)p, ENEFLAG3_UNK_13) || p->unk_4be == 0) {
+    u32 idx = p->unk_468;
+    EnemyHandler* table = p->handlerTables[0];
+    table[idx]((Enemy*)p);
+    FUN_080e4964((Enemy*)p);
+  }
+
+  FUN_08101bb4(p);
+  return TRUE;
+}
 
 // FUN_080edebc から呼ばれる
 s32 FUN_08101c1c(unknown* p) {

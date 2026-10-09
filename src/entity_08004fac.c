@@ -102,7 +102,25 @@ s32 Entity08004fac_FreeAllNodes(void) {
   return 0;
 }
 
-NAKED s32 Entity08004fac_FreeNodesById(u16 id) { INCFUNC("asm/func/Entity08004fac_FreeNodesById.inc"); }
+// id が一致するノードをすべて解放する
+s32 Entity08004fac_FreeNodesById(u16 id) {
+  Entity08004facNode* node;
+
+  if (gEntity08004fac == NULL) {
+    return -1;
+  }
+
+  node = gEntity08004fac->head;
+  while (node != NULL) {
+    Entity08004facNode* next = node->next;
+
+    if (node->id == id) {
+      Entity08004fac_FreeNode(node);
+    }
+    node = next;
+  }
+  return 0;
+}
 
 NAKED s32 Entity08004fac_DisableNodesById(u16 id) { INCFUNC("asm/func/Entity08004fac_DisableNodesById.inc"); }
 

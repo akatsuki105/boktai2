@@ -14,37 +14,36 @@
 #include "video.h"
 #include "vm.h"
 
-IWRAM_DATA u8 u8_03002b5c[0x03002B64 - 0x03002B5C] = {};  // todo
-IWRAM_DATA u16 u16_03002b64 = 0;                          // 0x03002B64, Player_ApplyBadCondition が Player.unk_456 と同じ値を書く
-IWRAM_DATA u8 u8_03002b66[0x03002B74 - 0x03002B66] = {};  // todo
-IWRAM_DATA u16 u16_03002b74 = 0;                          // 0x03002B74, サバタでプレイ中の FUN_0807a70c がハヤサの代わりに返す値
-IWRAM_DATA u8 u8_03002b76[2] = {};                        // todo
-IWRAM_DATA u16 u16_03002b78 = 0;                          // 0x03002B78, FUN_0807b564 が 0 に戻す
-IWRAM_DATA u8 u8_03002b7a[6] = {};                        // todo
-IWRAM_DATA u16 gSunGaugeOverride = 0;                     // 0x03002B80, ApplyLxModifiers が 1 なら太陽レベル +4、2 なら日光なしにする
-IWRAM_DATA u8 u8_03002b82[2] = {};                        // todo
-IWRAM_DATA u16 u16_03002b84 = 0;                          // 0x03002B84, Player_InitEffects が 1 を入れる
-IWRAM_DATA u8 u8_03002b86[10] = {};                       // todo
-IWRAM_DATA u16 u16_03002b90 = 0;                          // 0x03002B90, Player_InitEffects が 0 に戻す
-IWRAM_DATA u8 u8_03002b92[6] = {};                        // todo
-IWRAM_DATA u16 gPlayerCount = 0;                          // Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
-IWRAM_DATA u8 u8_03002b9a[6] = {};                        // todo
-IWRAM_DATA u16 u16_ARRAY_03002ba0[3] = {};                // 0x03002BA0, Player がいないときに FUN_0807b428 が書き込む退避先
-IWRAM_DATA u8 u8_03002ba6[2] = {};                        // todo
-IWRAM_DATA void* ptr_03002ba8 = NULL;                     // 0x03002BA8, Player_Destroy が NULL に戻す
-IWRAM_DATA u16 u16_03002bac = 0;                          // 0x03002BAC, Player_InitEffects が 0 に戻す
-IWRAM_DATA u8 u8_03002bae[2] = {};                        // todo
-IWRAM_DATA u16 u16_03002bb0 = 0;                          // 0x03002BB0, FUN_08065110 がサバタのとき 0 に戻す
-IWRAM_DATA u8 u8_03002bb2[14] = {};                       // todo
-IWRAM_DATA u32 u32_03002bc0 = 0;                          // 0x03002BC0, ビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る
-IWRAM_DATA u8 u8_03002bc4[12] = {};                       // todo
-IWRAM_DATA u16 u16_03002bd0 = 0;                          // 0x03002BD0, FUN_0807b564 が 0 に戻す
-IWRAM_DATA u8 u8_03002bd2[14] = {};                       // todo
-IWRAM_DATA struct Player* gPlayerPtr[4] = {};             // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
-IWRAM_DATA u16 u16_03002bf0 = 0;                          // 0x03002BF0, 0 以外かつ gSunGaugeOverride が 1 のとき Entity0809eb24_Update が unk_29 を立てる
-IWRAM_DATA u8 u8_03002bf2[2] = {};                        // todo
-IWRAM_DATA u16 u16_03002bf4 = 0;                          // 0x03002BF4, Player_Destroy が 0 に戻す
-IWRAM_DATA u8 u8_03002bf6[2] = {};                        // todo
+IWRAM_DATA u16 u16_03002b60 = 0;                  // 0x03002B60
+IWRAM_DATA u16 ALIGNED(4) u16_03002b64 = 0;       // 0x03002B64, Player_ApplyBadCondition が Player.controlUp と同じ値を書く
+IWRAM_DATA u16 ALIGNED(4) u16_03002b68[4] = {};   // 0x03002B68
+IWRAM_DATA u16 u16_03002b70 = 0;                  // 0x03002B70
+IWRAM_DATA u16 ALIGNED(4) u16_03002b74 = 0;       // 0x03002B74, サバタでプレイ中の FUN_0807a70c がハヤサの代わりに返す値
+IWRAM_DATA u16 ALIGNED(4) u16_03002b78 = 0;       // 0x03002B78, FUN_0807b564 が 0 に戻す
+IWRAM_DATA u16 ALIGNED(4) u16_03002b7c = 0;       // 0x03002B7C
+IWRAM_DATA u16 ALIGNED(4) gSunGaugeOverride = 0;  // 0x03002B80, ApplyLxModifiers が 1 なら太陽レベル +4、2 なら日光なしにする
+IWRAM_DATA u16 ALIGNED(4) u16_03002b84 = 0;       // 0x03002B84, Player_InitEffects が 1 を入れる
+IWRAM_DATA u16 ALIGNED(4) u16_03002b88 = 0;       // 0x03002B88
+IWRAM_DATA u16 ALIGNED(4) u16_03002b8c = 0;       // 0x03002B8C
+IWRAM_DATA u16 ALIGNED(4) u16_03002b90 = 0;       // 0x03002B90, Player_InitEffects が 0 に戻す
+IWRAM_DATA u16 ALIGNED(8) gPlayerCount = 0;       // 0x03002B98, Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
+IWRAM_DATA u8 u8_03002b9a[6] = {};                // todo
+IWRAM_DATA u16 u16_ARRAY_03002ba0[3] = {};        // 0x03002BA0, Player がいないときに FUN_0807b428 が書き込む退避先
+IWRAM_DATA u8 u8_03002ba6[2] = {};                // todo
+IWRAM_DATA void* ptr_03002ba8 = NULL;             // 0x03002BA8, Player_Destroy が NULL に戻す
+IWRAM_DATA u16 u16_03002bac = 0;                  // 0x03002BAC, Player_InitEffects が 0 に戻す
+IWRAM_DATA u8 u8_03002bae[2] = {};                // todo
+IWRAM_DATA u16 u16_03002bb0 = 0;                  // 0x03002BB0, FUN_08065110 がサバタのとき 0 に戻す
+IWRAM_DATA u8 u8_03002bb2[14] = {};               // todo
+IWRAM_DATA u32 u32_03002bc0 = 0;                  // 0x03002BC0, ビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る
+IWRAM_DATA u8 u8_03002bc4[12] = {};               // todo
+IWRAM_DATA u16 u16_03002bd0 = 0;                  // 0x03002BD0, FUN_0807b564 が 0 に戻す
+IWRAM_DATA u8 u8_03002bd2[14] = {};               // todo
+IWRAM_DATA struct Player* gPlayerPtr[4] = {};     // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
+IWRAM_DATA u16 u16_03002bf0 = 0;                  // 0x03002BF0, 0 以外かつ gSunGaugeOverride が 1 のとき Entity0809eb24_Update が unk_29 を立てる
+IWRAM_DATA u8 u8_03002bf2[2] = {};                // todo
+IWRAM_DATA u16 u16_03002bf4 = 0;                  // 0x03002BF4, Player_Destroy が 0 に戻す
+IWRAM_DATA u8 u8_03002bf6[2] = {};                // todo
 
 IWRAM_DATA struct Entity5941* gEntity5941 = NULL;  // 0x03002BF8
 IWRAM_DATA struct EntityBD74* gEntityBD74 = NULL;  // 0x03002BFC
@@ -55,11 +54,14 @@ IWRAM_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};   // padding?
 IWRAM_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
 IWRAM_DATA u8 u8_03002c12[0x03002C14 - 0x03002C12] = {};  // todo
 IWRAM_DATA u16 u16_03002c14 = 0;                          // 0x03002C14, 根拠: EntityCC28_Destroy_0809cc04 が EntityCC28.state2 を書き込む
-IWRAM_DATA u8 u8_03002c16[0x03002C3C - 0x03002C16] = {};  // todo
+IWRAM_DATA u8 u8_03002c16[0x03002C18 - 0x03002C16] = {};  // todo
+IWRAM_DATA u16 u16_03002c18 = 0;                          // 0x03002C18, FUN_0809c040 が 1 を入れる
+IWRAM_DATA u8 u8_03002c1a[0x03002C3C - 0x03002C1A] = {};  // todo
 
 IWRAM_DATA struct EntityA628* gEntityA628 = NULL;  // 0x03002C3C
+IWRAM_DATA struct EntityBA36* gEntityBA36 = NULL;  // 0x03002C40
 
-IWRAM_DATA u8 u8_03002c40[0x03002C50 - 0x03002C40] = {};  // todo
+IWRAM_DATA u8 u8_03002c44[0x03002C50 - 0x03002C44] = {};  // todo
 
 IWRAM_DATA struct Entity4063* gEntity4063 = NULL;          // 0x03002C50
 IWRAM_DATA struct Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
@@ -287,11 +289,11 @@ IWRAM_DATA u32 gScriptDirectoryBuildTime = 0;  // 0x03004594, ScriptDirectory.bu
 IWRAM_DATA u8 u8_03004598[8] = {};             // todo
 IWRAM_DATA VM gVM = {};                        // 0x030045A0
 
-IWRAM_DATA UnkGameStruct* gScratch = NULL;  // 0x03004690
-IWRAM_DATA World* gWorldBackup = NULL;      // 0x03004694
-IWRAM_DATA World* gWorld = NULL;            // 0x03004698
-IWRAM_DATA GameInfo* gStatBackup = NULL;    // 0x0300469C
-IWRAM_DATA GameInfo* gStat = NULL;          // 0x030046A0
+IWRAM_DATA Scratch* gScratch = NULL;      // 0x03004690
+IWRAM_DATA World* gWorldBackup = NULL;    // 0x03004694
+IWRAM_DATA World* gWorld = NULL;          // 0x03004698
+IWRAM_DATA GameInfo* gStatBackup = NULL;  // 0x0300469C
+IWRAM_DATA GameInfo* gStat = NULL;        // 0x030046A0
 
 IWRAM_DATA struct CollisionMapData* gCollisionMap = NULL;  // Malloc(3620) で確保したバッファを指すポインタ (Map_InitCollisionMap)
 IWRAM_DATA s32 gMapBlockW = 0;                             // 0x030046A8

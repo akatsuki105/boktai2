@@ -31,7 +31,7 @@ _08097D5A:
 	bl MainSprite_SetPose
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	b _08097DA8
 	.align 2, 0
 _08097D94: .4byte 0x000015C4

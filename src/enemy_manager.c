@@ -61,7 +61,7 @@ extern EnemyManager* gEnemyManager;    // 0x03002C5C
 extern EnemyListNode* gEnemyListHead;  // 0x03002C60
 
 EnemyManager* GetEnemyManager(void);
-u32 FUN_080a0808(void);
+u32 EntityA628_IsActive(void);
 
 static inline void EnemyManager_ClearFlags(EnemyManager* p, EnemyManagerFlags bits) { p->flags &= ~bits; }
 
@@ -492,7 +492,7 @@ NAKED void FUN_080ee738(Enemy* p) { INCFUNC("asm/func/FUN_080ee738.inc"); }
 
 void FUN_080ee9d4(EnemyManager* p) {
   if (Mod(p->frameCounter, 15) == 0) {
-    if (FUN_080a0808() == 0) {
+    if (EntityA628_IsActive() == 0) {
       Stat_SetFlag934(SF934_UNK_5);
     } else {
       Stat_ClearFlag934(SF934_UNK_5);

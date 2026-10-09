@@ -11,7 +11,8 @@ static_assert(sizeof(EntityB6FFElem) == 92);
 
 typedef struct {
   Entity e;                  // 0x000, ENTITY_UNK_10
-  u8 unk_18[4];              // 0x018, まだ未解析
+  u16 unk_18;                // 0x018, EntityB6FF_Create の引数, 読み手が見つかっていない
+  u8 unk_1a[2];              // 0x01A, まだ未解析
   u8 unk_1c[36];             // 0x01C, _Init が stride 0xC で4回まわして u16 を3つずつ書く ('.c'/'.r'), 4回目は elems[0] の先頭に重なる
   EntityB6FFElem elems[24];  // 0x040, _Destroy が stride 0x5C で24枚 AuxSprite_Remove する
   u8 unk_8e0[2276 - 0x8E0];  // 0x8E0, まだ未解析
@@ -49,4 +50,16 @@ NAKED void FUN_080aca60(unknown* param_1) { INCFUNC("asm/func/FUN_080aca60.inc")
 
 NAKED s32 EntityB6FF_Init(EntityB6FF* p) { INCFUNC("asm/func/EntityB6FF_Init.inc"); }
 
-NAKED EntityB6FF* EntityB6FF_Create(u16 param_1) { INCFUNC("asm/func/EntityB6FF_Create.inc"); }
+EntityB6FF* EntityB6FF_Create(u32 param_1) {
+  EntityB6FF* p = CreateEntity(ENTITY_UNK_10, sizeof(EntityB6FF));
+
+  if (p != NULL) {
+    p->unk_18 = param_1;
+    SetEntityRoutine(p, EntityB6FF_Update, EntityB6FF_Destroy);
+    if (EntityB6FF_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

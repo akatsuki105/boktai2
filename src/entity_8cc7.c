@@ -43,7 +43,18 @@ NAKED Entity8CC7Elem* Entity8CC7_AllocElem(Entity8CC7* p) { INCFUNC("asm/func/En
 
 NAKED void FUN_081d8a98(void) { INCFUNC("asm/func/FUN_081d8a98.inc"); }
 
-NAKED void FUN_081d8c80(u32 param_1, u8* param_2, u8* param_3) { INCFUNC("asm/func/FUN_081d8c80.inc"); }
+// 8bit の向きを4方位に丸めて, 左右反転するかどうかと一緒に返す
+void FUN_081d8c80(u32 angle, u8* out1, u8* out2) {
+  s32 dir = (((((u16)angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+
+  if (dir > 1) {
+    *out2 = 1;
+    *out1 = 3 - dir;
+  } else {
+    *out2 = 0;
+    *out1 = dir;
+  }
+}
 
 NAKED s32 FUN_081d8cb0(Entity8CC7Elem* e) { INCFUNC("asm/func/FUN_081d8cb0.inc"); }
 
@@ -93,6 +104,20 @@ s32 Entity8CC7_Init(Entity8CC7* p) {
   return 0;
 }
 
-NAKED Entity8CC7* Entity8CC7_Create(u32 id) { INCFUNC("asm/func/Entity8CC7_Create.inc"); }
+Entity8CC7* Entity8CC7_Create(u32 id) {
+  if (gEntity8CC7 == NULL) {
+    Entity8CC7* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity8CC7));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity8CC7_Update, Entity8CC7_Destroy);
+      if (Entity8CC7_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity8CC7;
+}
 
 void ClearEntity8CC7(void) { gEntity8CC7 = NULL; }

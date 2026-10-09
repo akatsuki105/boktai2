@@ -8,33 +8,30 @@
 #include "sprite.h"
 #include "vm.h"
 
-struct Door;
-typedef void (*DoorFunc)(struct Door* p);
-
 // 扉1体, DoorManager.doors が doorMax 体ぶん並べて持つ
 typedef struct Door {
-  AuxSprite sprite;         // 0x00, DoorManager_Destroy が AuxSprite_Remove に渡す
-  MapTileOverride* unk_2c;  // 0x2C, DoorManager_Destroy が NULL でなければ Free する
-  DoorFunc fn;              // 0x30, FUN_08020AF8 が FUN_08020B88 を、FUN_08020B24 が別のハンドラを入れる
-  u16 unk_34;               // 0x34, 扉のID, FUN_0801fe58 が一致する扉に unk_36 の bit0 を立てる
-  u8 unk_36;                // 0x36
-  u8 unk_37;                // 0x37, FUN_08020af8 が 2 を入れる
-  u8 unk_38;                // 0x38, ここから 0x40 にかけては 32bit の ldr とバイト単位の strb が重なっていて境界が決まらない
-  u8 unk_39;                // 0x39, FUN_08020af8 が 0 を入れる
-  u8 unk_3a;                // 0x3A, FUN_08020af8 が 0 を入れる
-  u8 unk_3b;                // 0x3B
-  u16 unk_3c;               // 0x3C, 扉のID (FUN_08020358 が unk_40 == 2 の扉と突き合わせる)
-  u8 unk_3e;                // 0x3E
-  u8 unk_3f;                // 0x3F
-  u8 unk_40;                // 0x40, 2 のとき unk_3c が有効
-  u8 unk_41;                // 0x41, FUN_0801fc88 が 1 を入れる
-  u8 unk_42[30];            // 0x42
-  s32 unk_60;               // 0x60, FUN_08020CD8 / FUN_08020D10 が読み書きする
-  s32 scriptID;             // 0x64, FUN_08020D10 が VM_ExecByID に渡してから 0 を入れる
-  u8 unk_68[24];            // 0x68, 0x72 の strh と 0x7A の ldrh がある
-  u16 unk_80;               // 0x80, FUN_08020B88 が +0xF、FUN_08020C1C が -0xF する
-  s16 unk_82;               // 0x82, FUN_08020D10 が ldrsh で読んで減らす
-  u8 unk_84[8];             // 0x84, 0x84 の ldrb と 0x88 の ldrh がある
+  AuxSprite sprite;          // 0x00, DoorManager_Destroy が AuxSprite_Remove に渡す
+  MapTileOverride* unk_2c;   // 0x2C, DoorManager_Destroy が NULL でなければ Free する
+  void (*fn)(struct Door*);  // 0x30, FUN_08020AF8 が FUN_08020B88 を、FUN_08020B24 が別のハンドラを入れる
+  u16 unk_34;                // 0x34, 扉のID, FUN_0801fe58 が一致する扉に unk_36 の bit0 を立てる
+  u8 unk_36;                 // 0x36
+  u8 unk_37;                 // 0x37, FUN_08020af8 が 2 を入れる
+  u8 unk_38;                 // 0x38, ここから 0x40 にかけては 32bit の ldr とバイト単位の strb が重なっていて境界が決まらない
+  u8 unk_39;                 // 0x39, FUN_08020af8 が 0 を入れる
+  u8 unk_3a;                 // 0x3A, FUN_08020af8 が 0 を入れる
+  u8 unk_3b;                 // 0x3B
+  u16 unk_3c;                // 0x3C, 扉のID (FUN_08020358 が unk_40 == 2 の扉と突き合わせる)
+  u8 unk_3e;                 // 0x3E
+  u8 unk_3f;                 // 0x3F
+  u8 unk_40;                 // 0x40, 2 のとき unk_3c が有効
+  u8 unk_41;                 // 0x41, FUN_0801fc88 が 1 を入れる
+  u8 unk_42[30];             // 0x42
+  s32 unk_60;                // 0x60, FUN_08020CD8 / FUN_08020D10 が読み書きする
+  s32 scriptID;              // 0x64, FUN_08020D10 が VM_ExecByID に渡してから 0 を入れる
+  u8 unk_68[24];             // 0x68, 0x72 の strh と 0x7A の ldrh がある
+  u16 unk_80;                // 0x80, FUN_08020B88 が +0xF、FUN_08020C1C が -0xF する
+  s16 unk_82;                // 0x82, FUN_08020D10 が ldrsh で読んで減らす
+  u8 unk_84[8];              // 0x84, 0x84 の ldrb と 0x88 の ldrh がある
 } Door;
 static_assert(sizeof(Door) == 140);
 

@@ -54,12 +54,12 @@ _08096C2C:
 	lsls r1, r1, #2
 _08096C30:
 	adds r0, r5, #0
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	b _08096C40
 _08096C38:
 	ldr r1, _08096C74 @ =0x000002DF
 	adds r0, r5, #0
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 _08096C40:
 	ldr r3, _08096C78 @ =0x00001ECC
 	adds r2, r4, r3

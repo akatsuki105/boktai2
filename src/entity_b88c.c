@@ -8,11 +8,6 @@
 #include "video.h"
 #include "vm.h"
 
-extern s32 s32_030000d4;
-
-s32 FUN_08049e30(char* str);
-s32 FUN_08049f5c(void);
-
 // 上下で項目を選ぶメニュー, SPRITE_UI_LINK を使うので通信関連?
 typedef struct {
   Entity e;               // 0x000, ENTITY_UNK_11
@@ -36,6 +31,8 @@ typedef struct {
   u8* script;             // 0x280, '.r', NULL なら EntityB88C_Init が失敗する
 } EntityB88C;
 static_assert(sizeof(EntityB88C) == 644);
+
+extern s32 s32_030000d4;
 
 const u16 u16_ARRAY_085ab564[16] = {0x200, 0x100, 0x200, 0x100, 0x200, 0x200, 0x100, 0x100, 0x100, 0x100, 0x200, 0x200, 0x4, 0x8, 0x4, 0x8};  // 0x085AB564
 

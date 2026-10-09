@@ -49,7 +49,21 @@ s32 Entity7B9F_Init(Entity7B9F* p) {
   return 0;
 }
 
-NAKED Entity7B9F* Entity7B9F_Create(void) { INCFUNC("asm/func/Entity7B9F_Create.inc"); }
+Entity7B9F* Entity7B9F_Create(void) {
+  if (gEntity7B9F == NULL) {
+    Entity7B9F* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity7B9F));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity7B9F_Update, Entity7B9F_Destroy);
+      if (Entity7B9F_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity7B9F;
+}
 
 void nop_081d88a4(void) {}
 

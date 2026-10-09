@@ -60,7 +60,7 @@ _08092284:
 	beq _080922CC
 	adds r0, r5, #0
 	ldr r1, _080922C8 @ =0x000002DF
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	b _080922E0
 	.align 2, 0
 _080922C4: .4byte 0x00000F6C
@@ -69,12 +69,12 @@ _080922CC:
 	adds r0, r5, #0
 	movs r1, #0xb8
 	lsls r1, r1, #2
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	b _080922E0
 _080922D8:
 	adds r0, r5, #0
 	ldr r1, _080922FC @ =0x000002DF
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 _080922E0:
 	adds r5, #0x60
 	adds r7, #0x60

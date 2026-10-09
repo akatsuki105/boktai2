@@ -44,7 +44,18 @@ NAKED void FUN_081e0ec0(Entity150FSlot* slot) { INCFUNC("asm/func/FUN_081e0ec0.i
 
 NAKED void FUN_081e10b8(Entity150FSlot* slot, u32 param_2) { INCFUNC("asm/func/FUN_081e10b8.inc"); }
 
-NAKED s32 FUN_081e1220(LinkBattleCoinManager* p, Entity150FSlot* slot, s32 param_3) { INCFUNC("asm/func/FUN_081e1220.inc"); }
+s32 FUN_081e1220(LinkBattleCoinManager* p, Entity150FSlot* slot, s32 param_3) {
+  slot->unk_00 = param_3;
+  slot->unk_01 = 0;
+  slot->unk_02 = 0;
+  slot->unk_03 = 0;
+  slot->unk_06 = 0;
+  slot->updateCallback = NULL;
+  AuxSprite_Add(&slot->sprite, &p->coinGfx, 1);
+  ParticleShadow_Init(&slot->shadow, &slot->sprite.pos, 0);
+  ParticleShadow_Hide(&slot->shadow);
+  return 0;
+}
 
 s32 FUN_081e1260(LinkBattleCoinManager* p, Entity150FSlot* slot) {
   AuxSprite_Remove(&slot->sprite);
@@ -93,11 +104,33 @@ NAKED void FUN_081e1734(LinkBattleCoinManager* p) { INCFUNC("asm/func/FUN_081e17
 
 NAKED s32 Entity150F_Update(LinkBattleCoinManager* p) { INCFUNC("asm/func/Entity150F_Update.inc"); }
 
-NAKED s32 Entity150F_Destroy(LinkBattleCoinManager* p) { INCFUNC("asm/func/Entity150F_Destroy.inc"); }
+s32 Entity150F_Destroy(LinkBattleCoinManager* p) {
+  s32 i;
 
-NAKED s32 Entity150F_Init(LinkBattleCoinManager* p) { INCFUNC("asm/func/Entity150F_Init.inc"); }
+  for (i = 0; i < 5; i++) {
+    if (FUN_081e1260(p, &p->coins[i]) < 0) {
+      return -1;
+    }
+  }
+
+  gLinkBattleCoinManager = NULL;
+  return 0;
+}
+
+NAKED s32 Entity150F_Init(LinkBattleCoinManager* p, u32 unused) { INCFUNC("asm/func/Entity150F_Init.inc"); }
 
 // 0x150F
-NAKED LinkBattleCoinManager* Entity150F_Create(void) { INCFUNC("asm/func/Entity150F_Create.inc"); }
+LinkBattleCoinManager* Entity150F_Create(u32 id) {
+  LinkBattleCoinManager* p = CreateEntity(ENTITY_UNK_10, sizeof(LinkBattleCoinManager));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity150F_Update, Entity150F_Destroy);
+    if (Entity150F_Init(p, id) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
 
 NAKED s32 FUN_081e1984(unknown* param_1) { INCFUNC("asm/func/FUN_081e1984.inc"); }

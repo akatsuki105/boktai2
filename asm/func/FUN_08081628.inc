@@ -4,7 +4,7 @@
 	adds r0, r4, r1
 	ldrh r1, [r0]
 	adds r0, r4, #0
-	bl FUN_080815f0
+	bl LinkPlayer_ApplyFlashPose
 	adds r1, r0, #0
 	adds r0, r4, #0
 	bl FUN_080813d0

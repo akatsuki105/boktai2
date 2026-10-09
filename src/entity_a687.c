@@ -1,6 +1,8 @@
 #include "entity.h"
 #include "global.h"
 #include "video.h"
+
+extern u16 gObjPlttFadeSkipMask;  // 0x03004490
 #include "vm.h"
 
 // 画面を暗くして一定時間保ち、元の明るさへ戻して自滅する演出, brightness は ApplyBgPlttBlend が読む明るさ係数
@@ -16,7 +18,15 @@ static_assert(sizeof(BgPlttDimmer) == 44);
 
 NAKED s32 BgPlttDimmer_Update(BgPlttDimmer* p) { INCFUNC("asm/func/BgPlttDimmer_Update.inc"); }
 
-NAKED s32 BgPlttDimmer_Destroy(BgPlttDimmer* p) { INCFUNC("asm/func/BgPlttDimmer_Destroy.inc"); }
+s32 BgPlttDimmer_Destroy(BgPlttDimmer* p) {
+  gBgBrightness2 = FRACUNIT_6;
+  gBgPlttFadeRowMask = 0x1FFF;
+  gBgPlttBlendColor = RGB(4, 4, 4);
+  gObjBrightness = FRACUNIT_6;
+  gObjPlttFadeSkipMask = 0;
+  gObjPlttBlendColor = RGB(4, 4, 4);
+  return 0;
+}
 
 s32 BgPlttDimmer_Init(BgPlttDimmer* p) {
   p->minBrightness = VM_GetNamedArgValue('r', 32);

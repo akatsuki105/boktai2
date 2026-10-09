@@ -10,7 +10,18 @@ static_assert(sizeof(Entity0623) == 3076);
 
 INCASM("asm/entity_0623.inc");
 
-NAKED s32 Entity0623_Update(Entity0623* p) { INCFUNC("asm/func/Entity0623_Update.inc"); }
+void FUN_0822129c(Entity0623*);
+void FUN_0821d800(Entity0623*);
+void FUN_08221194(Entity0623*);
+void FUN_08221450(Entity0623*);
+
+s32 Entity0623_Update(Entity0623* p) {
+  FUN_0822129c(p);
+  FUN_0821d800(p);
+  FUN_08221194(p);
+  FUN_08221450(p);
+  return 0;
+}
 
 NAKED s32 Entity0623_Destroy(Entity0623* p) { INCFUNC("asm/func/Entity0623_Destroy.inc"); }
 

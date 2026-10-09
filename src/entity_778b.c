@@ -61,14 +61,28 @@ s32 Entity778B_Destroy(Entity778B* p) {
   return 0;
 }
 
-s32 Entity778B_Init(Entity778B* p) {
+s32 Entity778B_Init(Entity778B* p, s32 unused) {
   Entity081eaf6c_Create();
   gEntity778B = p;
   return 0;
 }
 
 // 0x778B
-NAKED Entity778B* Entity778B_Create(s32 param_1) { INCFUNC("asm/func/Entity778B_Create.inc"); }
+Entity778B* Entity778B_Create(s32 param_1) {
+  if (gEntity778B == NULL) {
+    Entity778B* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity778B));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity778B_Update, Entity778B_Destroy);
+      if (Entity778B_Init(p, param_1) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity778B;
+}
 
 NAKED void FUN_080e154c(void) { INCFUNC("asm/func/FUN_080e154c.inc"); }
 

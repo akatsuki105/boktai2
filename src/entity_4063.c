@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "vm.h"
 
 // 画面にカウントダウンを出し、0 になったらスクリプトを実行して消えるタイマー
 typedef struct Entity4063 {
@@ -12,4 +13,76 @@ static_assert(sizeof(Entity4063) == 32);
 
 extern Entity4063* gEntity4063;  // 0x03002C50
 
-INCASM("asm/entity_4063.inc");
+void FUN_0809c544(void* param_1);
+void FUN_0809c58c(void);
+
+// 残りフレーム数を返す, Entity がいなければ 0
+s32 Entity4063_GetRemaining(void) {
+  if (gEntity4063 == NULL) {
+    return 0;
+  }
+  return gEntity4063->timer;
+}
+
+// 次の更新でスクリプトを実行せずに消えるようにする
+void Entity4063_Cancel(void) {
+  if (gEntity4063 != NULL) {
+    gEntity4063->cancelled = TRUE;
+  }
+}
+
+// 残り時間を1フレーム減らし、0 になったらスクリプトを実行して消える
+s32 Entity4063_Update(Entity4063* p) {
+  if (p->cancelled) {
+    FUN_0809c58c();
+    KillEntity((Entity*)p);
+  } else {
+    p->timer--;
+    if (p->timer == 0) {
+      FUN_0809c58c();
+      if (p->scriptID != 0) {
+        VM_ExecByID(p->scriptID, NULL);
+      }
+      KillEntity((Entity*)p);
+    }
+  }
+  return 0;
+}
+
+s32 Entity4063_Destroy(Entity4063* p) {
+  gEntity4063 = NULL;
+  return 0;
+}
+
+s32 Entity4063_Init(Entity4063* p, u32 param_2, u32 param_3) {
+  if (VM_SeekToNamedArg('t')) {
+    p->timer = VM_GetValue();
+  } else {
+    p->timer = 1800;
+  }
+
+  if (VM_SeekToNamedArg('p')) {
+    p->scriptID = VM_GetValue();
+  } else {
+    p->scriptID = 0;
+  }
+
+  FUN_0809c544(&p->timer);
+  gEntity4063 = p;
+  return 0;
+}
+
+Entity4063* Entity4063_Create(u32 param_1, u32 param_2) {
+  if (gEntity4063 == NULL) {
+    Entity4063* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity4063));
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity4063_Update, Entity4063_Destroy);
+      if (Entity4063_Init(p, param_1, param_2) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity4063;
+}

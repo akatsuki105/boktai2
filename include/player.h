@@ -287,7 +287,7 @@ typedef struct Player {
   u16 unk_444;                      // 0x444
   u16 unk_446;                      // 0x446, 0 でなければ unk_442 が有効
   u8 unk_448[0x456 - 0x448];        // 0x448
-  s8 unk_456;                       // 0x456, FUN_080784fc が unk_290[0] の補正に足す
+  s8 controlUp;                     // 0x456, 通常は gStat->controlUp が入るが、混乱(移動方向がおかしくなる状態異常)のときに書き換えられる
   u8 unk_457[0x498 - 0x457];        // 0x457
   PlayerFunc fn_498;                // 0x498, FUN_08078d5c
   Vec3 unk_49c;                     // 0x49C, FUN_0807c88c が引数の座標をそのまま写す

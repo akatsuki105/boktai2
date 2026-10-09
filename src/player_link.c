@@ -1,13 +1,26 @@
 #include "entity.h"
 #include "global.h"
+#include "item.h"
 #include "player.h"
+#include "random.h"
 #include "shadow.h"
 #include "sound.h"
 #include "vm.h"
 
 // 通信対戦の自キャラ?
 
-NAKED void FUN_08080c64(Player* p) { INCFUNC("asm/func/FUN_08080c64.inc"); }
+// facing から animIDOffset と xflip を決める
+void LinkPlayer_SetAnimFacing(Player* p) {
+  u8 v = p->facing;
+
+  if (v > 4) {
+    p->animIDOffset = 8 - v;
+    p->xflip = 1;
+  } else {
+    p->animIDOffset = v;
+    p->xflip = 0;
+  }
+}
 
 NAKED void FUN_08080cac(Player* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_08080cac.inc"); }
 
@@ -42,7 +55,18 @@ NAKED void FUN_08080f80(s32 param_1, s32 param_2, s32 param_3) { INCFUNC("asm/fu
 
 NAKED s32 FUN_080810a4(Player* p) { INCFUNC("asm/func/FUN_080810a4.inc"); }
 
-NAKED s32 FUN_080810f8(void) { INCFUNC("asm/func/FUN_080810f8.inc"); }
+// 貴重品から最初に見つかった棺桶の Coffin ID を返す, 無ければ COFFIN_OAK
+s32 FUN_080810f8(void) {
+  s32 i;
+
+  for (i = 0; i < 16; i++) {
+    u32 coffin = GetValuableItemID(i) - ITEM_OAK_COFFIN;
+    if (coffin < COFFIN_NUM) {
+      return coffin;
+    }
+  }
+  return COFFIN_OAK;
+}
 
 NAKED void FUN_08081118(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_08081118.inc"); }
 
@@ -68,7 +92,22 @@ NAKED void FUN_080813d0(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080813d0
 
 NAKED void FUN_080815ac(s32 param_1) { INCFUNC("asm/func/FUN_080815ac.inc"); }
 
-NAKED s32 FUN_080815f0(s32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_080815f0.inc"); }
+// flashTimer が動いている間, 4フレームごとに pose を flashPose と入れ替える (点滅)
+// 残差は23/23命令で共有された return pose のブロック位置だけ (player.c の Player_ApplyFlashPose と同じ), 分岐形の反転は試済
+NON_MATCH u32 LinkPlayer_ApplyFlashPose(Player* p, u32 pose) {
+#ifdef NONMATCHING_C
+  if (p->flashTimer != 0) {
+    p->flashTimer--;
+    if ((p->flashTimer >> 2) & 1) {
+      return p->flashPose;
+    }
+  }
+
+  return pose;
+#else
+  INCFUNC("asm/func/LinkPlayer_ApplyFlashPose.inc");
+#endif
+}
 
 NAKED void FUN_08081628(Player* p) { INCFUNC("asm/func/FUN_08081628.inc"); }
 
@@ -88,7 +127,18 @@ NAKED void FUN_08081c04(Player* p) { INCFUNC("asm/func/FUN_08081c04.inc"); }
 
 NAKED void FUN_08081d18(Player* p, s16 param_2) { INCFUNC("asm/func/FUN_08081d18.inc"); }
 
-NAKED s32 FUN_08081da4(Player* p) { INCFUNC("asm/func/FUN_08081da4.inc"); }
+// 乱数が確率 (%) を下回ったかどうか
+bool32 FUN_08081da4(s32 percent) {
+  s32 r;
+
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  r = *(gRandomTable + gRandTableIdx);
+
+  if (Mod(r >> 4, 100) < percent) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED s32 FUN_08081de0(s32 param_1, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/FUN_08081de0.inc"); }
 
@@ -96,7 +146,7 @@ NAKED s32 FUN_08081de0(s32 param_1, unknown* param_2, unknown* param_3) { INCFUN
 void FUN_08081f80(Player* p) {
   if (p->action) {
     FUN_08080e0c(p, 0, 0);
-    FUN_08080c64(p);
+    LinkPlayer_SetAnimFacing(p);
   }
 
   FUN_08080cac(p, 0x19E, 0x40);
@@ -156,10 +206,32 @@ NAKED void FUN_080843ac(s32 param_1, s32 param_2, s32 param_3) { INCFUNC("asm/fu
 
 NAKED void FUN_08084540(Player* p) { INCFUNC("asm/func/FUN_08084540.inc"); }
 
-NAKED s32 LinkPlayer_Update(Player* p) { INCFUNC("asm/func/LinkPlayer_Update.inc"); }
+s32 LinkPlayer_Update(Player* p) {
+  if (!(gPlayerPtr[0]->unk_1c & 4)) {
+    FUN_08080e34(p);
+    FUN_08084540(p);
+    p->updateCallback(p);
+    FUN_08081628(p);
+  }
+  return 0;
+}
 
 NAKED s32 LinkPlayer_Destroy(Player* p) { INCFUNC("asm/func/LinkPlayer_Destroy.inc"); }
 
 NAKED s32 LinkPlayer_Init(Player* p, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/LinkPlayer_Init.inc"); }
 
-NAKED Player* LinkPlayer_Create(unknown* param_1, unknown* param_2) { INCFUNC("asm/func/LinkPlayer_Create.inc"); }
+Player* LinkPlayer_Create(unknown* param_1, unknown* param_2) {
+  if (gPlayerPtr[1] == NULL) {
+    Player* p = CreateEntity(ENTITY_PLAYER, sizeof(Player));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, LinkPlayer_Update, LinkPlayer_Destroy);
+      if (LinkPlayer_Init(p, param_1, param_2) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gPlayerPtr[1];
+}

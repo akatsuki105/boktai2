@@ -1,7 +1,10 @@
 #include "entity.h"
+#include "gba/agbrfu.h"
 #include "global.h"
 #include "input.h"
 #include "malloc.h"
+#include "random.h"
+#include "solar.h"
 #include "sound.h"
 #include "time.h"
 #include "video.h"
@@ -16,7 +19,7 @@ typedef struct {
   u8 unk_1c;  // 0x1C, 根拠: FUN_0804e4c4 が 1 を入れる
   u8 unk_1d;  // 0x1D, 根拠: FUN_0804e604 が 1 を入れる
   u8 unk_1e;  // 0x1E, 根拠: FUN_0804bb30 が 0 を入れる
-  u8 unk_1f;
+  s8 unk_1f;  // 0x1F, 根拠: FUN_0804e3a0 が ldrsb で読んで返す
   u8 unk_20;
   u8 unk_21;   // 0x21, 根拠: FUN_0804e3c0 が返す
   u16 unk_22;  // 0x22, 根拠: FUN_0804c888 が bit7 を見る
@@ -50,15 +53,20 @@ typedef struct {
   u8 unk_fa;
   u8 unk_fb;  // 0xFB, 根拠: FUN_0804e384 が 1 を入れる
   u8 unk_fc[0x134 - 0xFC];
-  u8 unk_134[0x40];  // 0x134, 根拠: FUN_0804bb30 が ClearMemory で 0 にする
-  u8 unk_174[908 - 0x174];
+  u8 unk_134[0x40];           // 0x134, 根拠: FUN_0804bb30 が ClearMemory で 0 にする
+  u8 unk_174[0x378 - 0x174];  // 0x174, まだ未解析
+  void* unk_378;              // 0x378, FUN_0804e4dc が書く
+  Entity* unk_37c;            // 0x37C, 同上
+  EntityFunc* unk_380;        // 0x380, 同上
+  EntityFunc* unk_384;        // 0x384, 同上
+  u8 unk_388[908 - 0x388];    // 0x388, まだ未解析
 } Entity0804e2c0;
 static_assert(sizeof(Entity0804e2c0) == 908);
 
 typedef s32(Entity0804e2c0Func)(Entity0804e2c0* p);
 
-IWRAM_DATA u8 u8_030000dc = 0;    // 0x030000DC
-IWRAM_DATA u32 u32_030000e0 = 0;  // 0x030000E0, 型不明
+IWRAM_DATA volatile u8 u8_030000dc = 0;  // 0x030000DC, 送信完了を待つビジーループが見るので volatile
+IWRAM_DATA u32 u32_030000e0 = 0;         // 0x030000E0, 型不明
 
 COMMON_DATA Entity0804e2c0* gEntity0804e2c0 = NULL;  // 0x03002B58
 
@@ -74,9 +82,13 @@ static inline void Entity0804e2c0_SetMotion(Entity0804e2c0* p, u16 motion) {
   p->unk_44 = 0;
 }
 
-void FUN_08229f4c(u32 n);  // src/interrupts.c
+void FUN_08229f4c(u32 n);                     // src/interrupts.c
+void AddEntity(Entity* p);                    // src/entity.c
+extern u32 u32_0300481c;                      // src/time.c
+extern const u16 gAcceptableSerialNoList[2];  // src/data.c
 void FUN_0804d868(Entity0804e2c0* p);
 
+void FUN_0804e584(s32);
 s32 FUN_0804c3cc(Entity0804e2c0*);
 s32 FUN_0804c3e4(Entity0804e2c0*);
 s32 FUN_0804c438(Entity0804e2c0*);
@@ -253,7 +265,21 @@ s32 FUN_0804c5c0(Entity0804e2c0* p) {
 
 NAKED s32 FUN_0804c5d8(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c5d8.inc"); }
 
-NAKED s32 FUN_0804c650(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c650.inc"); }
+s32 FUN_0804c650(Entity0804e2c0* p) {
+  if (p->unk_32) {
+    p->unk_32 = 0;
+    p->unk_26 = 0;
+  }
+
+  if (rfu_LMAN_establishConnection(0, 0, 600, (u16*)gAcceptableSerialNoList)) {
+    Entity0804e2c0_SetMotion(p, 27);
+    p->unk_32 = 1;
+    return -1;
+  }
+
+  Entity0804e2c0_SetMotion(p, 8);
+  p->unk_32 = 1;
+}
 
 NAKED s32 FUN_0804c6ac(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c6ac.inc"); }
 
@@ -271,9 +297,39 @@ s32 FUN_0804c888(Entity0804e2c0* p) {
   }
 }
 
-NAKED s32 FUN_0804c8bc(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c8bc.inc"); }
+s32 FUN_0804c8bc(Entity0804e2c0* p) {
+  if (p->unk_32) {
+    p->unk_32 = 0;
+  }
 
-NAKED s32 FUN_0804c8f4(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c8f4.inc"); }
+  if (p->unk_44 > 599) {
+    rfu_LMAN_stopManager(0);
+    Entity0804e2c0_SetMotion(p, 4);
+    p->unk_32 = 1;
+  }
+}
+
+// 残差2命令, 原典は &unk_32 を r5 に載せたまま関数呼び出しを跨ぐが agbcc は最後の1回だけ再計算する, Entity0804e2c0_SetMotion 化とローカル退避は試済
+NON_MATCH s32 FUN_0804c8f4(Entity0804e2c0* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_32) {
+    p->unk_32 = 0;
+    PlaySound_082406e0(0xDE);
+  }
+
+  if (p->unk_44 > 89) {
+    FUN_0804bb30(p);
+    if (p->unk_30) {
+      Entity0804e2c0_SetMotion(p, 7);
+    } else {
+      Entity0804e2c0_SetMotion(p, 6);
+    }
+    p->unk_32 = 1;
+  }
+#else
+  INCFUNC("asm/func/FUN_0804c8f4.inc");
+#endif
+}
 
 s32 FUN_0804c940(Entity0804e2c0* p) {
   bool8 mode;
@@ -341,9 +397,35 @@ s32 FUN_0804cbcc(Entity0804e2c0* p) {
   return 0;
 }
 
-NAKED s32 FUN_0804cbfc(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804cbfc.inc"); }
+s32 FUN_0804cbfc(Entity0804e2c0* p) {
+  if (p->unk_32 != 0) {
+    p->unk_32 = 0;
+    FUN_0804e584(1);
+    rfu_LMAN_stopManager(1);
+    p->unk_1b = 0;
+    p->unk_1c = 0;
+  }
+  if (FUN_0804bc10(p)) {
+    FUN_0804ba64(p);
+  }
+  return 0;
+}
 
-NAKED s32 FUN_0804cc38(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804cc38.inc"); }
+s32 FUN_0804cc38(Entity0804e2c0* p) {
+  if (p->unk_32) {
+    p->unk_32 = 0;
+    FUN_0804e584(2);
+    rfu_LMAN_stopManager(1);
+    p->unk_1b = 0;
+    p->unk_1c = 0;
+  }
+
+  if (FUN_0804bc10(p)) {
+    Entity0804e2c0_SetMotion(p, 30);
+    p->unk_32 = 1;
+  }
+  return 0;
+}
 
 s32 FUN_0804cc7c(Entity0804e2c0* p) {
   if (p->unk_32) {
@@ -368,9 +450,14 @@ s32 FUN_0804ccbc(Entity0804e2c0* p) {
 
 NAKED void FUN_0804ccd0(s32 param_1) { INCFUNC("asm/func/FUN_0804ccd0.inc"); }
 
-NAKED s32 FUN_0804cd1c(s32 param_1) { INCFUNC("asm/func/FUN_0804cd1c.inc"); }
+NAKED s32 FUN_0804cd1c(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804cd1c.inc"); }
 
-NAKED void FUN_0804cde8(s32 param_1) { INCFUNC("asm/func/FUN_0804cde8.inc"); }
+void FUN_0804cde8(Entity0804e2c0* p) {
+  if (FUN_0804cd1c(p)) {
+    rfu_UNI_readySendData(p->unk_21);
+  }
+  rfu_LMAN_REQ_sendData(1);
+}
 
 // 通信スロットの対応表を未割り当てに戻す
 void FUN_0804ce0c(Entity0804e2c0* p) {
@@ -461,7 +548,7 @@ NAKED void FUN_0804d868(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804d868.inc"
 
 NAKED s32 FUN_0804d90c(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804d90c.inc"); }
 
-NAKED void FUN_0804d9a4(s32 param_1) { INCFUNC("asm/func/FUN_0804d9a4.inc"); }
+NAKED void FUN_0804d9a4(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804d9a4.inc"); }
 
 // モーション 0x17 をセットする状態ハンドラ
 s32 FUN_0804da50(Entity0804e2c0* p) {
@@ -542,7 +629,26 @@ NAKED s32 FUN_0804df18(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804df18.inc")
 
 NAKED s32 FUN_0804e028(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e028.inc"); }
 
-NAKED void FUN_0804e0bc(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e0bc.inc"); }
+void FUN_0804e0bc(Entity0804e2c0* p) {
+  while (u8_030000dc == 1) {
+  }
+
+  rfu_LMAN_manager_entity(0);
+  if (p->unk_35 != 0) {
+    rfu_REQ_disconnect(p->unk_35);
+    rfu_waitREQComplete();
+    p->unk_35 = 0;
+  }
+
+  if (gRfuLinkStatus->parent_child == 1) {
+    u8_030000dc = 1;
+    rfu_LMAN_REQ_sendData(1);
+  }
+
+  FUN_0804d90c(p);
+  FUN_0804d9a4(p);
+  PTR_ARRAY_085ab5e0[p->unk_38](p);
+}
 
 // RFU の状態を進めてから unk_38 番の状態ハンドラを呼ぶ
 s32 FUN_0804e128(Entity0804e2c0* p) {
@@ -558,7 +664,44 @@ NAKED unknown* FUN_0804e164(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e164.
 
 NAKED s32 FUN_0804e25c(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e25c.inc"); }
 
-NAKED Entity0804e2c0* Entity0804e2c0_Create(void) { INCFUNC("asm/func/Entity0804e2c0_Create.inc"); }
+// 残差は64/64命令で unk_6c の式の評価順のみ, 原典は gRandomTable の読みを gFrameCounter より先に出す, OR の左右入れ替えと Time_GetSecond のローカル退避は試済
+NON_MATCH Entity0804e2c0* Entity0804e2c0_Create(void) {
+#ifdef NONMATCHING_C
+  Entity0804e2c0* p;
+  u32 sec;
+
+  if (gEntity0804e2c0 != NULL) {
+    return gEntity0804e2c0;
+  }
+
+  Taiyo_Disable();
+  p = Malloc(sizeof(Entity0804e2c0));
+  if (p == NULL) {
+    return NULL;
+  }
+
+  ClearMemory(p, sizeof(Entity0804e2c0));
+  sec = Time_GetSecond();
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  p->unk_6c = (((sec + gRandomTable[gRandTableIdx]) & 0xFF) << 8) | (u8)gFrameCounter;
+
+  if (FUN_0804e25c(p) < 0) {
+    Free(p);
+    return NULL;
+  }
+
+  SetEntityRoutine(p, NULL, NULL);
+  p->e.kind = ENTITY_UNK_1;
+  p->e.unk_16 = 1;
+  p->e.id = 0;
+  AddEntity((Entity*)p);
+  u32_0300481c = 1;
+  gEntity0804e2c0 = p;
+  return p;
+#else
+  INCFUNC("asm/func/Entity0804e2c0_Create.inc");
+#endif
+}
 
 void FUN_0804e36c(void) {
   if (gEntity0804e2c0 != NULL) {
@@ -572,7 +715,12 @@ void FUN_0804e384(void) {
   }
 }
 
-NAKED s32 FUN_0804e3a0(void) { INCFUNC("asm/func/FUN_0804e3a0.inc"); }
+s32 FUN_0804e3a0(void) {
+  if (gEntity0804e2c0 == NULL) {
+    return -1;
+  }
+  return gEntity0804e2c0->unk_1f;
+}
 
 // 子機として接続しているときだけ unk_21 を返す
 s32 FUN_0804e3c0(void) {
@@ -587,7 +735,12 @@ s32 FUN_0804e3c0(void) {
 
 NAKED s32 FUN_0804e3ec(void) { INCFUNC("asm/func/FUN_0804e3ec.inc"); }
 
-NAKED s32 FUN_0804e438(void) { INCFUNC("asm/func/FUN_0804e438.inc"); }
+u8* FUN_0804e438(void) {
+  if (gEntity0804e2c0 == NULL) {
+    return NULL;
+  }
+  return gEntity0804e2c0->unk_134;
+}
 
 s32 FUN_0804e458(void) {
   if (gEntity0804e2c0 == NULL) {
@@ -622,7 +775,16 @@ void FUN_0804e4c4(void) {
   }
 }
 
-NAKED void FUN_0804e4dc(unknown* param_1, Entity* param_2, EntityFunc* param_3, EntityFunc* param_4) { INCFUNC("asm/func/FUN_0804e4dc.inc"); }
+void FUN_0804e4dc(void* param_1, Entity* param_2, EntityFunc* param_3, EntityFunc* param_4) {
+  Entity0804e2c0* p = gEntity0804e2c0;
+
+  if (p != NULL) {
+    p->unk_378 = param_1;
+    p->unk_37c = param_2;
+    p->unk_380 = param_3;
+    p->unk_384 = param_4;
+  }
+}
 
 NAKED s32 FUN_0804e514(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e514.inc"); }
 
@@ -700,7 +862,25 @@ NON_MATCH s32 FUN_0804e674(u16 id) {
 #endif
 }
 
-NAKED void FUN_0804e69c(s32 param_1, u8* param_2, s32 param_3) { INCFUNC("asm/func/FUN_0804e69c.inc"); }
+// 1バイトずつ変換表を引いて, 0x7F を超えるものは2バイトに展開しながら dst へ詰める
+void FUN_0804e69c(u8* src, u8* dst, s32 count) {
+  s32 i;
+
+  for (i = 0; i < count; i++) {
+    u16 c = FUN_0804e65c(src[i]);
+
+    if (c <= 0x7F) {
+      *dst = c;
+      dst++;
+    } else {
+      dst[0] = c;
+      dst[1] = c >> 8;
+      dst += 2;
+    }
+  }
+
+  *dst = 0;
+}
 
 NAKED void FUN_0804e6d8(unknown* s, s32 param_2, s32 charcount) { INCFUNC("asm/func/FUN_0804e6d8.inc"); }
 

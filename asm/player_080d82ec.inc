@@ -6334,7 +6334,7 @@ _080CF1DE:
 	movs r4, #0
 	strb r1, [r0]
 	adds r0, r6, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	movs r3, #0xb9
 	lsls r3, r3, #2
 	adds r0, r6, r3
@@ -9021,7 +9021,7 @@ _080D0606:
 	adds r0, r7, r2
 	strb r1, [r0]
 	adds r0, r7, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	ldrb r0, [r6]
 	movs r1, #0
 	bl FUN_08066ee4
@@ -9128,7 +9128,7 @@ FUN_080d0738: @ 0x080D0738
 	adds r1, r4, r2
 	strb r0, [r1]
 	adds r0, r4, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 _080D0766:
 	ldr r0, [r4, #0x20]
 	movs r1, #2
@@ -9551,7 +9551,7 @@ _080D0A70:
 	movs r1, #0
 	bl FUN_080d08b8
 	adds r0, r4, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -9716,7 +9716,7 @@ _080D0BB4:
 	movs r1, #1
 	bl FUN_080d08b8
 	adds r0, r4, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -11550,7 +11550,7 @@ FUN_080d19fc: @ 0x080D19FC
 	movs r5, #1
 _080D1A30:
 	adds r0, r4, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	adds r0, r5, #0
 	pop {r4, r5}
 	pop {r1}
@@ -16829,7 +16829,7 @@ _080D43BE:
 	adds r1, r5, r2
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -17586,7 +17586,7 @@ _080D4A00:
 	cmp r0, #0
 	beq _080D4A2C
 	adds r0, r4, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
@@ -17964,7 +17964,7 @@ _080D4CF4:
 	movs r0, #0
 	strb r0, [r1]
 	adds r0, r4, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #0
@@ -19045,7 +19045,7 @@ _080D557C:
 	bl FUN_080cc268
 _080D55AA:
 	adds r0, r4, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	movs r1, #0xd6
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -19555,7 +19555,7 @@ _080D596C:
 	adds r0, r6, #0
 	bl FUN_080cc268
 	adds r0, r6, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	movs r0, #0xcf
 	lsls r0, r0, #2
 	adds r4, r6, r0
@@ -20185,7 +20185,7 @@ _080D5E44:
 	cmp r0, #0
 	bge _080D5E62
 	adds r0, r6, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #0
@@ -20560,7 +20560,7 @@ _080D611C:
 	cmp r2, #0
 	beq _080D6130
 	adds r0, r7, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0
@@ -20931,7 +20931,7 @@ _080D63E8: .4byte 0x000004C5
 _080D63EC: .4byte 0x000004C7
 _080D63F0:
 	adds r0, r5, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
@@ -21436,7 +21436,7 @@ _080D67B2:
 	movs r4, #0
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	movs r1, #0xdf
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -21452,7 +21452,7 @@ _080D67DC:
 	adds r1, r5, r2
 	strb r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080cc1a0
+	bl Player080d82ec_SetAnimFacing
 	movs r6, #0xdf
 	lsls r6, r6, #2
 	adds r0, r5, r6

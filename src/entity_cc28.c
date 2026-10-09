@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "input.h"
 #include "inventory.h"
 #include "item.h"
 #include "menu.h"
@@ -19,7 +20,7 @@ typedef struct {
   MainSprite sprite;      // 0x0000
   s8 unk_60;              // 0x0060, 根拠: EntityCC28_ApplyWeapon が ldrsb で読んで配列の添字にする
   u8 unk_61;              // 0x0061
-  u8 unk_62[100 - 0x62];  // 0x0062, まだ未解析
+  u8 unk_62[100 - 0x62];  // 0x0062, まだ未解析, padding?
 } EntityCC28Sprite100;
 static_assert(sizeof(EntityCC28Sprite100) == 100);
 
@@ -28,11 +29,11 @@ typedef struct {
   MainSprite sprite;      // 0x0004
   u8 unk_64;              // 0x0064
   u8 unk_65;              // 0x0065
-  u8 unk_66[104 - 0x66];  // 0x0066, まだ未解析
+  u8 unk_66[104 - 0x66];  // 0x0066, まだ未解析, padding?
 } EntityCC28Sprite104;
 static_assert(sizeof(EntityCC28Sprite104) == 104);
 
-// メニューのインベントリ操作に関係してそう
+// メニューのインベントリに関係してそう
 typedef struct EntityCC28 {
   Entity e;                        // 0x0000, ENTITY_UNK_12
   void* unk_18;                    // 0x0018
@@ -43,9 +44,10 @@ typedef struct EntityCC28 {
   u8 unk_30[0x34 - 0x30];          // 0x0030, まだ未解析
   void* unk_34[2];                 // 0x0034
   unknown* unk_3c;                 // 0x003C, 根拠: FUN_0808ebe8 が FUN_0808a3c4 の第5引数に渡す
-  u8 unk_40[0x58 - 0x40];          // 0x0040, まだ未解析
+  u8 unk_40[0x54 - 0x40];          // 0x0040, まだ未解析
+  u8* unk_54;                      // 0x0054, FUN_0808f170 が TextBox_Start に渡す
   u8* unk_58;                      // 0x0058, 根拠: EntityCC28_ShowLineInstant が TextBox_Start に渡す
-  u32 unk_5c;                      // 0x005C
+  s32* unk_5c;                     // 0x005C, gStat->lv で引く表, weapon_080993c4 がその10倍を返す
   MainSpriteGfx gfx[9];            // 0x0060
   BgState savedBg1;                // 0x0180
   u16 savedTilemap1[1024];         // 0x01B0
@@ -60,7 +62,7 @@ typedef struct EntityCC28 {
   u8 unk_9dc;                      // 0x09DC
   u8 unk_9dd;                      // 0x09DD
   s8 unk_9de;                      // 0x09DE
-  u8 unk_9df[0x9E0 - 0x9DF];       // 0x09DF, まだ未解析
+  u8 playerIdx;                    // 0x09DF, gPlayerPtr の添字
   Player* player;                  // 0x09E0
   u8 unk_9e4[0x9EC - 0x9E4];       // 0x09E4, まだ未解析
   u16 unk_9ec;                     // 0x09EC
@@ -182,8 +184,9 @@ typedef struct EntityCC28 {
   u8 unk_4000[0x401D - 0x4000];    // 0x4000
   u8 unk_401d;                     // 0x401D, 根拠: FUN_08091bbc が 1 を入れる
   u8 unk_401e[0x402C - 0x401E];    // 0x401E
-  void* unk_402c[3];               // 0x402C
-  u32 unk_4038;                    // 0x4038
+  u8 (*unk_402c[3])[16];           // 0x402C, 1件16バイトの表, +0x0F が TextBox_ShowLine に渡す行番号
+  u8 unk_4038;                     // 0x4038, unk_402c[0] の添字
+  u8 unk_4039[3];                  // 0x4039, まだ未解析
   u8 unk_403c[20];                 // 0x403C
   u16 unk_4050;                    // 0x4050
   u16 unk_4052;                    // 0x4052
@@ -197,6 +200,21 @@ extern EntityCC28* gEntityCC28;  // 0x0300013C
 
 extern EntityCC28Func* const sEntityCC28State2Fns[];  // 0x085ACFDC
 
+static inline void DisableEntityFlags(u32 flags) { gEntityDisableFlags |= flags; }
+static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
+
+void FUN_08242c08(slot32_t n);  // src/weapon.c
+void FUN_0809630c(EntityCC28* p);
+void FUN_0808eef8(EntityCC28* p);
+s32 GetRotCount2(slot32_t slot);  // src/item_082421f0.c
+void FUN_0808e400(EntityCC28* p);
+void FUN_08099e70(EntityCC28* p);
+void FUN_0809a368(EntityCC28* p);
+s32 FUN_0804a40c(s32 id, s32 idx, char* str);  // src/text_panel.c
+void FUN_0809ae0c(EntityCC28* p);
+s32 FUN_0808da88(EntityCC28* p);
+s32 FUN_0809b3b0(EntityCC28* p);
+void FUN_0808db68(EntityCC28* p);
 void FUN_08092bf0(EntityCC28* p);
 void FUN_080931cc(EntityCC28* p);
 void FUN_08093158(EntityCC28* p);
@@ -306,7 +324,10 @@ NAKED void FUN_0808b97c(s32 param_1, s32 param_2, s32 param_3, s32 param_4) { IN
 
 NAKED void FUN_0808b9c4(s32 param_1, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_0808b9c4.inc"); }
 
-NAKED void FUN_0808ba0c(s32 param_1, u16 param_2) { INCFUNC("asm/func/FUN_0808ba0c.inc"); }
+void MainSprite_SetPltt(MainSprite* p, u16 plttID) {
+  p->plttID = plttID;
+  p->pltt = &gObjPlttData[p->plttID * 16];
+}
 
 NAKED void FUN_0808ba20(unknown* param_1, s16* param_2, s32 param_3) { INCFUNC("asm/func/FUN_0808ba20.inc"); }
 
@@ -367,15 +388,56 @@ NAKED void FUN_0808cb00(s32 param_1) { INCFUNC("asm/func/FUN_0808cb00.inc"); }
 
 NAKED void FUN_0808cb90(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cb90.inc"); }
 
-NAKED void FUN_0808cbd8(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cbd8.inc"); }
+// 残差は29/29命令で 0xD000 を作る位置のみ, 原典はループカウンタより前に作る, 昇順ループとローカル退避は試済
+NON_MATCH void FUN_0808cbd8(EntityCC28* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_a30) {
+    BgMapEntry* entry = FUN_0808a420(0, 0, 0);
+    s32 i;
+
+    for (i = 8; i >= 0; i--) {
+      *entry = 0xD000;
+      entry++;
+    }
+
+    p->unk_a30 = 0;
+  }
+#else
+  INCFUNC("asm/func/FUN_0808cbd8.inc");
+#endif
+}
 
 NAKED void FUN_0808cc14(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cc14.inc"); }
 
 NAKED void FUN_0808cc84(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cc84.inc"); }
 
-NAKED void FUN_0808ce98(EntityCC28* p) { INCFUNC("asm/func/FUN_0808ce98.inc"); }
+void FUN_0808ce98(EntityCC28* p) {
+  if (p->player != NULL && p->unk_9fe != 7 && p->unk_9fe <= 2) {
+    FUN_0808a610(p, 0, 3, 1);
+    FUN_0808a768(p, 0, 3, 2);
+    FUN_0808a9a4(p, 0, 9, 18);
+    FUN_0808afac(p);
+    if (p->unk_9fe == 0) {
+      FUN_0808ad5c(p);
+    } else {
+      FUN_0808abec(p, p->unk_9fe);
+    }
+    FUN_0808cc14(p);
+    FUN_0808cc84(p);
+    FUN_0808b1bc(p);
+  }
+}
 
-NAKED void FUN_0808cf14(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cf14.inc"); }
+void FUN_0808cf14(EntityCC28* p) {
+  if (!(gEntityDisableFlags & ENTITY_DISABLE_0)) {
+    FUN_0808ce98(p);
+    if (FUN_0808da88(p)) {
+      PlaySound_082406e0(0x10C);
+    } else {
+      FUN_0809b3b0(p);
+    }
+  }
+}
 
 void FUN_0808cf50(EntityCC28* p) { MainSprite_Remove(&p->unk_a34); }
 
@@ -423,14 +485,29 @@ NAKED void FUN_0808d5cc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d5cc.inc"); }
 
 NAKED void FUN_0808d774(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d774.inc"); }
 
-NAKED void FUN_0808d908(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d908.inc"); }
+void FUN_0808d908(EntityCC28* p) {
+  FUN_0808d200(p);
+  FUN_0808d2ac(p);
+  FUN_082408d0();
+  DisableEntityFlags(ENTITY_DISABLE_2);
+  FUN_0808a33c(p, FUN_0808db68);
+}
 
 NAKED void FUN_0808d93c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d93c.inc"); }
 
 // 4つめのスプライトが指す武器を Player に適用する
 void EntityCC28_ApplyWeapon(EntityCC28* p) { Player_ApplyWeapon(p->player, p->unk_da0[p->unk_c0c[3].unk_60].weapon); }
 
-NAKED void FUN_0808d9c8(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d9c8.inc"); }
+void FUN_0808d9c8(EntityCC28* p) {
+  FUN_0808d268();
+  EntityCC28_ApplyWeapon(p);
+  FUN_0808d93c(p);
+  p->unk_c03 = 0;
+  FUN_0808d3d4(p);
+  FUN_082408f4();
+  EnableEntityFlags(ENTITY_DISABLE_2);
+  FUN_0808a33c(p, FUN_0808cf14);
+}
 
 NAKED s32 FUN_0808da14(EntityCC28* p) { INCFUNC("asm/func/FUN_0808da14.inc"); }
 
@@ -464,7 +541,21 @@ NON_MATCH void FUN_0808dda4(EntityCC28* p) {
 #endif
 }
 
-NAKED void FUN_0808dddc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808dddc.inc"); }
+void FUN_0808dddc(EntityCC28* p) {
+  FUN_0808dcdc(p);
+
+  if (p->player != NULL) {
+    FUN_0808d5cc(p);
+    FUN_0808d774(p);
+    FUN_0808d4dc(p);
+    FUN_0808d564(p);
+    if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+      EntityCC28_HideSprites(p);
+    } else {
+      FUN_0808d3d4(p);
+    }
+  }
+}
 
 void FUN_0808de30(EntityCC28* p) {
   FUN_0808d5cc(p);
@@ -484,7 +575,12 @@ NAKED void FUN_0808de70(EntityCC28* p) { INCFUNC("asm/func/FUN_0808de70.inc"); }
 
 NAKED void FUN_0808df7c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808df7c.inc"); }
 
-NAKED void FUN_0808dfcc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808dfcc.inc"); }
+void FUN_0808dfcc(EntityCC28* p) {
+  if (!(gEntityDisableFlags & ENTITY_DISABLE_0) && p->unk_9fe <= 2) {
+    FUN_0808a610(p, 0, 3, 1);
+    FUN_0808daa8(p);
+  }
+}
 
 NAKED void FUN_0808e008(EntityCC28* p) { INCFUNC("asm/func/FUN_0808e008.inc"); }
 
@@ -511,11 +607,28 @@ void FUN_0808e1f4(void) {
 
 NAKED void FUN_0808e224(EntityCC28* p) { INCFUNC("asm/func/FUN_0808e224.inc"); }
 
-NAKED void FUN_0808e400(EntityCC28* p) { INCFUNC("asm/func/FUN_0808e400.inc"); }
+void FUN_0808e224(EntityCC28*);
+
+void FUN_0808e400(EntityCC28* p) {
+  if (!(gEntityDisableFlags & 1)) {
+    FUN_0808e224(p);
+  }
+}
 
 NAKED void FUN_0808e420(void) { INCFUNC("asm/func/FUN_0808e420.inc"); }
 
-NAKED void FUN_0808e4f4(void) { INCFUNC("asm/func/FUN_0808e4f4.inc"); }
+void FUN_0808e4f4(void) {
+  EntityCC28* p = gEntityCC28;
+
+  if (p != NULL) {
+    FUN_0808d268();
+    p->unk_a34.flags |= SPRFLAG_HIDDEN;
+    EntityCC28_ApplyWeapon(p);
+    FUN_0808d93c(p);
+    FUN_0808d3d4(p);
+    FUN_0808a33c(p, FUN_0808e400);
+  }
+}
 
 NAKED void FUN_0808e53c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808e53c.inc"); }
 
@@ -565,7 +678,20 @@ NAKED void FUN_0808ede4(EntityCC28* p) { INCFUNC("asm/func/FUN_0808ede4.inc"); }
 
 NAKED void FUN_0808ee50(EntityCC28* p) { INCFUNC("asm/func/FUN_0808ee50.inc"); }
 
-NAKED void FUN_0808eeac(EntityCC28* p) { INCFUNC("asm/func/FUN_0808eeac.inc"); }
+void FUN_0808eeac(EntityCC28* p) {
+  s32 result;
+
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+
+  result = FUN_0808b760(p);
+  if (result == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_0808a33c(p, FUN_0808eef8);
+  } else if (result == 1) {
+    PlaySound_082406e0(0xDD);
+    FUN_0808ec18(p);
+  }
+}
 
 NAKED void FUN_0808eef8(EntityCC28* p) { INCFUNC("asm/func/FUN_0808eef8.inc"); }
 
@@ -573,7 +699,14 @@ NAKED void FUN_0808ef58(EntityCC28* p) { INCFUNC("asm/func/FUN_0808ef58.inc"); }
 
 NAKED void FUN_0808f01c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f01c.inc"); }
 
-NAKED void FUN_0808f09c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f09c.inc"); }
+void FUN_0808f09c(EntityCC28* p) {
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+
+  p->unk_9ec++;
+  if (p->unk_9ec > 149) {
+    FUN_0808a33c(p, FUN_0809ae0c);
+  }
+}
 
 NAKED void FUN_0808f0d8(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f0d8.inc"); }
 
@@ -591,7 +724,20 @@ s32 FUN_0808f140(void) {
   return 11 - gauge;
 }
 
-NAKED void FUN_0808f170(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f170.inc"); }
+void FUN_0808f170(EntityCC28* p) {
+  TextBox_Close();
+  FUN_08049e5c();
+  FUN_08049f84();
+  TextBox_SetRect(1, 15, 28, 4);
+  TextBox_Start(p->unk_54);
+  TextBox_SetInstant(1);
+
+  if (p->unk_401e[1] != 0) {
+    FUN_0808ede4(p);
+  } else {
+    FUN_0808ebe8(p);
+  }
+}
 
 NAKED void FUN_0808f1bc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f1bc.inc"); }
 
@@ -617,7 +763,14 @@ NAKED void FUN_0808f81c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f81c.inc"); }
 
 NAKED void FUN_0808f8bc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f8bc.inc"); }
 
-NAKED void FUN_0808f920(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f920.inc"); }
+void FUN_0808f920(EntityCC28* p) {
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+
+  p->unk_9ec++;
+  if (p->unk_9ec > 149) {
+    FUN_0808a33c(p, FUN_0809ae0c);
+  }
+}
 
 // 残差は命令2本の順序だけ (原典は ~DISPCNT_BG1_ON のプール読みを gStagedDISPCNT の ldrh より先に出す)
 NON_MATCH void FUN_0808f95c(EntityCC28* p) {
@@ -660,11 +813,15 @@ void FUN_0808fbcc(MenuCursor* p) {
 
 NAKED void FUN_0808fbdc(s32 param_1, u8 param_2, u8 param_3) { INCFUNC("asm/func/FUN_0808fbdc.inc"); }
 
-NAKED void FUN_0808fbf4(EntityCC28* p) { INCFUNC("asm/func/FUN_0808fbf4.inc"); }
+void FUN_0808fbf4(EntityCC28* p) { TextBox_ShowLine(p->unk_402c[0][p->unk_4038][0xF]); }
 
 NAKED s32 FUN_0808fc14(void) { INCFUNC("asm/func/FUN_0808fc14.inc"); }
 
-NAKED void FUN_0808fc68(void) { INCFUNC("asm/func/FUN_0808fc68.inc"); }
+void FUN_0808fc68(void) {
+  if (VM_SeekToNamedArg('s')) {
+    gStat->areaID = VM_GetValue();
+  }
+}
 
 void FUN_0808fc8c(void) {
   if (VM_SeekToNamedArg('f')) {
@@ -695,7 +852,22 @@ u32 IsMapUnlocked(u32 mapIdx) { return gStat->unlockedMap & (1 << mapIdx); }
 
 NAKED s32 FUN_0808fd44(void) { INCFUNC("asm/func/FUN_0808fd44.inc"); }
 
-NAKED void FUN_0808fd8c(void) { INCFUNC("asm/func/FUN_0808fd8c.inc"); }
+// 残差は26/26命令でレジスタ番号のみ (idx が r2 ではなく r1 に入る), ローカルの初期化形は試済
+NON_MATCH void FUN_0808fd8c(void) {
+#ifdef NONMATCHING_C
+  s32 idx;
+
+  if (VM_SeekToNamedArg('s')) {
+    idx = VM_GetValue();
+  } else {
+    idx = gStat->areaID;
+  }
+
+  gStat->unk_268[idx] = 0;
+#else
+  INCFUNC("asm/func/FUN_0808fd8c.inc");
+#endif
+}
 
 NAKED void FUN_0808fdc8(void) { INCFUNC("asm/func/FUN_0808fdc8.inc"); }
 
@@ -773,6 +945,7 @@ NAKED void FUN_08091684(void) { INCFUNC("asm/func/FUN_08091684.inc"); }
 
 extern u16 u16_03002c10;
 extern u16 u16_03002c14;  // src/iwram2.c
+extern u16 u16_03002c18;  // src/iwram2.c
 
 u32 FUN_080916bc(u32 bitidx) { return u16_03002c10 & (1 << bitidx); }
 
@@ -868,11 +1041,37 @@ void FUN_0809200c(EntityCC28* p, s32 slotA, s32 slotB) {
   }
 }
 
-NAKED u32 item_08092034(s32 slot) { INCFUNC("asm/func/item_08092034.inc"); }
+// 腐敗の進み具合を 0xD0〜0xD3 の4段階で返す, アイテムが無いか腐らないものなら 0xCF
+u32 item_08092034(s32 slot) {
+  item32_t n = GetNormalItemID(slot);
+  u16 rotLimit;
+  s32 stage;
+
+  if (n < 0) {
+    return 0xCF;
+  }
+
+  rotLimit = gItemDB[n].unk_04;
+  if (rotLimit == 0) {
+    return 0xCF;
+  }
+
+  stage = Div(GetRotCount2(slot) * 4, rotLimit * 32);
+  if (stage > 3) {
+    stage = 3;
+  }
+  return stage + 0xD0;
+}
 
 NAKED void FUN_08092070(EntityCC28* p) { INCFUNC("asm/func/FUN_08092070.inc"); }
 
-NAKED bool32 FUN_080921a8(EntityCC28* p) { INCFUNC("asm/func/FUN_080921a8.inc"); }
+// 選択中のアイテムの effectType が 1 か 2 かどうか
+bool32 FUN_080921a8(EntityCC28* p) {
+  if ((u16)(gItemDB[GetItemID(p->inValuableInventory, p->selectedSlot)].effectType - 1) <= 1) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED void FUN_080921e8(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_080921e8.inc"); }
 
@@ -882,11 +1081,54 @@ NAKED void FUN_08092300(EntityCC28* p, s32 param_2, s32 param_3, s32 param_4) { 
 
 NAKED void FUN_080923a0(EntityCC28* p) { INCFUNC("asm/func/FUN_080923a0.inc"); }
 
-NAKED u32 FUN_080925d4(item32_t n) { INCFUNC("asm/func/FUN_080925d4.inc"); }
+u32 FUN_080925d4(item32_t n) {
+  u32 flags;
+
+  if (n < 0) {
+    return 0;
+  }
+
+  flags = FUN_08091e34(n) ? 0x10 : 0;
+  if (FUN_08091cb8(n)) {
+    flags |= 1;
+  }
+  return flags;
+}
 
 NAKED void FUN_08092608(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_08092608.inc"); }
 
-NAKED s32 FUN_080926c4(EntityCC28* p) { INCFUNC("asm/func/FUN_080926c4.inc"); }
+// 残差は50/50命令で return 0 と return 3 の基本ブロックの並びだけ, 原典は両方を末尾の共通ブロックにして 0 を先に置く, 条件の反転と末尾のネスト化は試済
+NON_MATCH s32 FUN_080926c4(EntityCC28* p) {
+#ifdef NONMATCHING_C
+  if (GetItemID(p->inValuableInventory, p->selectedSlot) < 0) {
+    if (GetItemID(p->inValuableInventory, p->unk_3aeb) < 0) {
+      return 0;
+    }
+    return 3;
+  }
+
+  if (p->unk_3aeb == 20) {
+    return 2;
+  }
+
+  if (p->unk_3aeb == 16) {
+    return 1;
+  }
+
+  if (p->selectedSlot != p->unk_3aeb) {
+    return 3;
+  }
+
+  if (!(p->unk_3ae8 & 1)) {
+    return 0;
+  }
+
+  p->unk_3aeb = 16;
+  return 1;
+#else
+  INCFUNC("asm/func/FUN_080926c4.inc");
+#endif
+}
 
 NAKED void FUN_08092744(EntityCC28* p) { INCFUNC("asm/func/FUN_08092744.inc"); }
 
@@ -1021,9 +1263,19 @@ NAKED void FUN_080949b0(EntityCC28* p) { INCFUNC("asm/func/FUN_080949b0.inc"); }
 
 NAKED void FUN_08094a94(EntityCC28* p, u32 permission) { INCFUNC("asm/func/FUN_08094a94.inc"); }
 
-NAKED void FUN_08094c6c(s32 param_1, u8* param_2) { INCFUNC("asm/func/FUN_08094c6c.inc"); }
+NAKED void FUN_08094c6c(u8* param_1, s8* param_2) { INCFUNC("asm/func/FUN_08094c6c.inc"); }
 
-NAKED void FUN_08094cdc(s32 param_1, s32 param_2, u8* param_3, s8* param_4) { INCFUNC("asm/func/FUN_08094cdc.inc"); }
+void FUN_08094cdc(s32 usePanel, s32 panelID, u8* param_3, s8* param_4) {
+  FUN_08094c6c(param_3, param_4);
+
+  if (usePanel) {
+    TextPanel_SetMessage(panelID, param_3[0]);
+    FUN_0804a40c(panelID, 0, (char*)param_4);
+  } else {
+    TextBox_ShowLine(param_3[0]);
+    TextBox_SetExtendValue(0, (char*)param_4);
+  }
+}
 
 void FUN_08094d1c(u8* param_1, s8* param_2) { FUN_08094cdc(0, -1, param_1, param_2); }
 
@@ -1069,7 +1321,20 @@ NAKED void FUN_080961a4(EntityCC28* p) { INCFUNC("asm/func/FUN_080961a4.inc"); }
 
 NAKED void FUN_0809620c(EntityCC28* p) { INCFUNC("asm/func/FUN_0809620c.inc"); }
 
-NAKED void FUN_080962b0(EntityCC28* p) { INCFUNC("asm/func/FUN_080962b0.inc"); }
+void FUN_080962b0(EntityCC28* p) {
+  s32 result = FUN_0808b760(p);
+
+  if (result == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_08095a5c(p);
+  } else if (result == 1) {
+    FUN_080956c4(p, 0, p->selectedSlot, 20);
+    FUN_08242c08(p->selectedSlot);
+    FUN_0809536c(p);
+    FUN_080954a8(p, 1);
+    EntityCC28_SetState(p, FUN_0809630c, 1);
+  }
+}
 
 NAKED void FUN_0809630c(EntityCC28* p) { INCFUNC("asm/func/FUN_0809630c.inc"); }
 
@@ -1252,7 +1517,16 @@ NAKED void FUN_08099008(EntityCC28* p) { INCFUNC("asm/func/FUN_08099008.inc"); }
 
 NAKED void FUN_080992c0(EntityCC28* p) { INCFUNC("asm/func/FUN_080992c0.inc"); }
 
-NAKED void weapon_080993c4(EntityCC28* p) { INCFUNC("asm/func/weapon_080993c4.inc"); }
+// 残差は p->unk_5c と gStat の読み順のみ (13命令中2つ), Tier A は試済
+NON_MATCH s32 weapon_080993c4(EntityCC28* p) {
+#ifdef NONMATCHING_C
+  s32* table = p->unk_5c;
+
+  return table[gStat->lv] * 10;
+#else
+  INCFUNC("asm/func/weapon_080993c4.inc");
+#endif
+}
 
 NAKED void weapon_080993e4(EntityCC28* p) { INCFUNC("asm/func/weapon_080993e4.inc"); }
 
@@ -1264,38 +1538,50 @@ NAKED void FUN_080996e0(EntityCC28* p) { INCFUNC("asm/func/FUN_080996e0.inc"); }
 
 NAKED void FUN_08099968(EntityCC28* p) { INCFUNC("asm/func/FUN_08099968.inc"); }
 
-NAKED void FUN_08099b3c(s32 param_1) { INCFUNC("asm/func/FUN_08099b3c.inc"); }
+void FUN_08099b3c(s32 param_1) {
+  if (param_1 < 0) {
+    TextBox_Close();
+  } else {
+    TextBox_SetInstant(TRUE);
+    TextBox_ShowLine(param_1);
+  }
+}
 
 // メッセージ速度の設定値を 1 と 2 で入れ替えて返す
 s32 FUN_08099b5c(void) {
-  if (gStat->messageSpeed == 1) {
-    return 2;
-  }
-  if (gStat->messageSpeed == 2) {
-    return 1;
-  }
-  return 0;
+  if (gStat->textSpeed == 1) return 2;  // 設定で "速い" を選んだ時
+  if (gStat->textSpeed == 2) return 1;  // "普通"
+  return 0;                             // "遅い"
 }
 
 s32 FUN_08099b84(s32 n) {
-  if (n == 0) {
-    return 4;
-  }
-  if (n == 1) {
-    return 2;
-  }
-  return 1;
+  if (n == 0) return 4;  // 設定で "遅い" を選んだ時
+  if (n == 1) return 2;  // "普通"
+  return 1;              // "速い"
 }
 
 NAKED void FUN_08099b9c(EntityCC28* p) { INCFUNC("asm/func/FUN_08099b9c.inc"); }
 
-NAKED void FUN_08099c1c(EntityCC28* p) { INCFUNC("asm/func/FUN_08099c1c.inc"); }
+void FUN_08099c1c(EntityCC28* p) {
+  p->unk_4000[13] = 0;
+  p->unk_4000[14] = gStat->controlUp;
+  p->unk_4000[15] = FUN_08099b5c();
+  p->unk_4000[16] = gStat->markerEnabled;
+}
 
 NAKED void FUN_08099c64(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_08099c64.inc"); }
 
 NAKED s32 FUN_08099d2c(EntityCC28* p) { INCFUNC("asm/func/FUN_08099d2c.inc"); }
 
-NAKED void FUN_08099e2c(EntityCC28* p) { INCFUNC("asm/func/FUN_08099e2c.inc"); }
+void FUN_08099e2c(EntityCC28* p) {
+  if (gInput[0].pressed & A_BUTTON) {
+    PlaySound_082406e0(0xDD);
+    FUN_08099c64(p, 1);
+    FUN_08099b3c(6);
+    FUN_0808c700(p);
+    EntityCC28_SetState(p, FUN_08099e70, 1);
+  }
+}
 
 NAKED void FUN_08099e70(EntityCC28* p) { INCFUNC("asm/func/FUN_08099e70.inc"); }
 
@@ -1313,7 +1599,15 @@ NAKED void FUN_0809a20c(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a20c.inc"); }
 
 NAKED void FUN_0809a274(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a274.inc"); }
 
-NAKED void FUN_0809a324(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a324.inc"); }
+void FUN_0809a324(EntityCC28* p) {
+  if (gInput[0].pressed & A_BUTTON) {
+    PlaySound_082406e0(0xDD);
+    FUN_0808b6fc(p, 1);
+    FUN_08099b3c(9);
+    FUN_0808c700(p);
+    EntityCC28_SetState(p, FUN_0809a368, 1);
+  }
+}
 
 NAKED void FUN_0809a368(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a368.inc"); }
 
@@ -1399,7 +1693,12 @@ void FUN_0809c010(EntityCC28* p) {
   }
 }
 
-NAKED void FUN_0809c040(void) { INCFUNC("asm/func/FUN_0809c040.inc"); }
+void FUN_0809c040(void) {
+  gEntityCC28 = NULL;
+  u16_03002c14 = 1;
+  u16_03002c10 = 0;
+  u16_03002c18 = 1;
+}
 
 s32 FUN_0809c068(void) {
   if (gEntityCC28 == NULL) {
@@ -1449,9 +1748,29 @@ void FUN_0809c264(void) {
   }
 }
 
-NAKED void FUN_0809c28c(void) { INCFUNC("asm/func/FUN_0809c28c.inc"); }
+void FUN_0809c28c(void) {
+  EntityCC28* p = gEntityCC28;
 
-NAKED void FUN_0809c2d0(void) { INCFUNC("asm/func/FUN_0809c2d0.inc"); }
+  if (p != NULL && p->player != NULL) {
+    FUN_0808d5cc(p);
+    FUN_0808d4dc(gEntityCC28);
+    if (gEntityCC28->unk_9fe <= 2) {
+      FUN_0808d3d4(gEntityCC28);
+    }
+  }
+}
+
+void FUN_0809c2d0(void) {
+  EntityCC28* p = gEntityCC28;
+
+  if (p != NULL && p->player != NULL) {
+    FUN_0808d774(p);
+    FUN_0808d564(gEntityCC28);
+    if (gEntityCC28->unk_9fe <= 2) {
+      FUN_0808d3d4(gEntityCC28);
+    }
+  }
+}
 
 // VM の f 引数を unk_da0[3] に書き込む
 void FUN_0809c314(void) {
@@ -1476,11 +1795,41 @@ void FUN_0809c430(void) {
   }
 }
 
-NAKED void FUN_0809c464(void) { INCFUNC("asm/func/FUN_0809c464.inc"); }
+void FUN_0809c464(void) {
+  EntityCC28* p = gEntityCC28;
+  Player* player;
+
+  if (p == NULL) {
+    return;
+  }
+
+  player = gPlayerPtr[0];
+  p->player = player;
+  if (player == NULL) {
+    return;
+  }
+
+  FUN_0808d774(p);
+  FUN_0808d564(gEntityCC28);
+  FUN_0808d5cc(gEntityCC28);
+  FUN_0808d4dc(gEntityCC28);
+
+  if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+    if (gEntityCC28->unk_9fe == 0) {
+      FUN_0808e224(gEntityCC28);
+    }
+    EntityCC28_HideSprites(gEntityCC28);
+  } else {
+    if (gEntityCC28->unk_9fe == 0) {
+      FUN_0808d3d4(gEntityCC28);
+      FUN_0808ce98(gEntityCC28);
+    }
+  }
+}
 
 NAKED void FUN_0809c4f4(void) { INCFUNC("asm/func/FUN_0809c4f4.inc"); }
 
-NAKED void FUN_0809c544(s32 param_1) { INCFUNC("asm/func/FUN_0809c544.inc"); }
+NAKED void FUN_0809c544(void* param_1) { INCFUNC("asm/func/FUN_0809c544.inc"); }
 
 NAKED void FUN_0809c58c(void) { INCFUNC("asm/func/FUN_0809c58c.inc"); }
 
@@ -1511,7 +1860,20 @@ NAKED void FUN_0809c780(EntityCC28* p, s32 param_2, s32 param_3, s32 param_4) { 
 
 NAKED void FUN_0809c880(EntityCC28* p) { INCFUNC("asm/func/FUN_0809c880.inc"); }
 
-NAKED s32 FUN_0809c8e8(EntityCC28* p) { INCFUNC("asm/func/FUN_0809c8e8.inc"); }
+// 残差1命令, 原典は 0x9DF と 0x9E0 のオフセットを別々に作るが agbcc は前者を使い回して add #1 に畳む, ローカル分割 (Player* / 添字) は試済
+NON_MATCH s32 FUN_0809c8e8(EntityCC28* p) {
+#ifdef NONMATCHING_C
+  if (!(gEntityDisableFlags & ENTITY_DISABLE_0)) {
+    Player* player = gPlayerPtr[p->playerIdx];
+
+    p->player = player;
+    FUN_0809c880(p);
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_0809c8e8.inc");
+#endif
+}
 
 s32 EntityCC28_Destroy(EntityCC28* p) {
   FUN_0808cf50(p);
@@ -1526,9 +1888,24 @@ NAKED void FUN_0809c960(EntityCC28* p) { INCFUNC("asm/func/FUN_0809c960.inc"); }
 
 NAKED void FUN_0809ca08(EntityCC28* p) { INCFUNC("asm/func/FUN_0809ca08.inc"); }
 
-NAKED s32 FUN_0809cae0(EntityCC28* p, unknown* param_2) { INCFUNC("asm/func/FUN_0809cae0.inc"); }
+NAKED s32 FUN_0809cae0(EntityCC28* p, u32 val) { INCFUNC("asm/func/FUN_0809cae0.inc"); }
 
-NAKED EntityCC28* EntityCC28_Create_0809cb74(u32 val, unknown* param_2) { INCFUNC("asm/func/EntityCC28_Create_0809cb74.inc"); }
+EntityCC28* EntityCC28_Create_0809cb74(u32 val, unknown* param_2) {
+  if (gEntityCC28 == NULL) {
+    EntityCC28* p = CreateEntity(ENTITY_UNK_12, sizeof(EntityCC28));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, FUN_0809c8e8, EntityCC28_Destroy);
+      p->unk_9fa = val;
+      if (FUN_0809cae0(p, val) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntityCC28;
+}
 
 s32 EntityCC28_Update_0809cbd0(EntityCC28* p) {
   Player* player = gPlayerPtr[0];
@@ -1554,9 +1931,24 @@ s32 EntityCC28_Destroy_0809cc04(EntityCC28* p) {
   return 0;
 }
 
-NAKED s32 FUN_0809cc48(EntityCC28* p) { INCFUNC("asm/func/FUN_0809cc48.inc"); }
+NAKED s32 FUN_0809cc48(EntityCC28* p, u32 val) { INCFUNC("asm/func/FUN_0809cc48.inc"); }
 
-NAKED EntityCC28* EntityCC28_Create_0809ce04(u32 val, unknown* param_2) { INCFUNC("asm/func/EntityCC28_Create_0809ce04.inc"); }
+EntityCC28* EntityCC28_Create_0809ce04(u32 val, unknown* param_2) {
+  if (gEntityCC28 == NULL) {
+    EntityCC28* p = CreateEntity(ENTITY_UNK_12, sizeof(EntityCC28));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, EntityCC28_Update_0809cbd0, EntityCC28_Destroy_0809cc04);
+      p->unk_9fa = val;
+      if (FUN_0809cc48(p, val) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntityCC28;
+}
 
 EntityCC28* EntityCC28_Create(u32 val, unknown* param_2) {
   if (gFlag030047a4 & FLAG030047A4_LINK) {

@@ -1,6 +1,7 @@
 #include "boss.h"
 #include "entity.h"
 #include "global.h"
+#include "vm.h"
 
 // 紅のリンゴ, ダーイン
 typedef struct {
@@ -305,10 +306,36 @@ void (*const PTR_ARRAY_085aad38[62])(EntityBA4B*, s32) = {
 
 INCASM("asm/entity_ba4b.inc");
 
-NAKED s32 EntityBA4B_Update(EntityBA4B* p) { INCFUNC("asm/func/EntityBA4B_Update.inc"); }
+void FUN_0802ae4c(EntityBA4B*);
+void FUN_0802e4fc(EntityBA4B*);
+void FUN_08035a3c(EntityBA4B*);
+void FUN_0802b074(EntityBA4B*);
+
+s32 EntityBA4B_Update(EntityBA4B* p) {
+  FUN_0802ae4c(p);
+  FUN_0802e4fc(p);
+  FUN_08035a3c(p);
+  FUN_0802b074(p);
+  return 0;
+}
 
 NAKED s32 EntityBA4B_Destroy(EntityBA4B* p) { INCFUNC("asm/func/EntityBA4B_Destroy.inc"); }
 
 NAKED s32 EntityBA4B_Init(EntityBA4B* p, u32 id) { INCFUNC("asm/func/EntityBA4B_Init.inc"); }
 
-NAKED EntityBA4B* EntityBA4B_Create(u32 id) { INCFUNC("asm/func/EntityBA4B_Create.inc"); }
+EntityBA4B* EntityBA4B_Create(u32 id) {
+  EntityBA4B* p = FUN_08022a2c(VM_GetNamedArgValue('t', 1));
+  if (p != NULL) {
+    return p;
+  }
+
+  p = CreateEntity(ENTITY_UNK_8, sizeof(EntityBA4B));
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityBA4B_Update, EntityBA4B_Destroy);
+    if (EntityBA4B_Init(p, id) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

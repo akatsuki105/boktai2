@@ -1,11 +1,17 @@
 #include "boss.h"
 #include "entity.h"
 #include "global.h"
+#include "shadow.h"
+#include "sprite_main.h"
 
 // 各Bossの構造体の最初の方は共通部分っぽい？
 typedef struct Duneyrr {
-  Entity e;  // 0x0, ENTITY_UNK_8
-  u8 unk_18[1956 - 0x18];
+  Entity e;                   // 0x0, ENTITY_UNK_8
+  u8 unk_18[0x258 - 0x18];    // 0x018, まだ未解析
+  MainSprite sprite;          // 0x258, _Destroy が MainSprite_Remove に渡す
+  u8 unk_2b8[0x4D4 - 0x2B8];  // 0x2B8, まだ未解析
+  AuxShadow shadow;           // 0x4D4, _Destroy が AuxShadow_Remove に渡す
+  u8 unk_540[1956 - 0x540];   // 0x540, まだ未解析
 } Duneyrr;
 static_assert(sizeof(Duneyrr) == 1956);
 
@@ -16,6 +22,10 @@ const u8 u8_ARRAY_085aaacc[32] = {0, 2, 1, 2, 2, 2, 3, 2, 0, 3, 1, 2, 2, 3, 3, 2
 const u16 u16_ARRAY_085aaaec[5] = {15, 16, 12, 13, 14};  // 0x085AAAEC
 
 const u16 u16_ARRAY_085aaaf6[9] = {0x400, 0x500, 0x900, 0x500, 0x400, 0xA00, 0x900, 0xA00, 0x0};  // 0x085AAAF6
+
+void FUN_08022b04(Duneyrr*);  // asm/boss.inc
+void FUN_080234dc(Duneyrr*);
+void FUN_08023ba0(Duneyrr*);
 
 void FUN_08024c38(Duneyrr*);
 void FUN_08024c84(Duneyrr*);
@@ -142,9 +152,27 @@ void (*const PTR_ARRAY_085aab60[23])(Duneyrr*, s32) = {
 
 INCASM("asm/duneyrr.inc");
 
-NAKED s32 Duneyrr_Update(Duneyrr* p) { INCFUNC("asm/func/Duneyrr_Update.inc"); }
+void FUN_08024500(Duneyrr*);
+void FUN_08025630(Duneyrr*);
+void FUN_08027588(Duneyrr*);
+void FUN_080245e4(Duneyrr*);
 
-NAKED s32 Duneyrr_Destroy(Duneyrr* p) { INCFUNC("asm/func/Duneyrr_Destroy.inc"); }
+s32 Duneyrr_Update(Duneyrr* p) {
+  FUN_08024500(p);
+  FUN_08025630(p);
+  FUN_08027588(p);
+  FUN_080245e4(p);
+  return 0;
+}
+
+s32 Duneyrr_Destroy(Duneyrr* p) {
+  AuxShadow_Remove(&p->shadow);
+  FUN_080234dc(p);
+  MainSprite_Remove(&p->sprite);
+  FUN_08023ba0(p);
+  FUN_08022b04(p);
+  return 0;
+}
 
 NAKED s32 Duneyrr_Init(Duneyrr* p, u32 id) { INCFUNC("asm/func/Duneyrr_Init.inc"); }
 

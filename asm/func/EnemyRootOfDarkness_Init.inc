@@ -2072,7 +2072,7 @@ _081A65EC:
 	movs r3, #0xc4
 	lsls r3, r3, #3
 	adds r1, r7, r3
-	ldr r0, _081A6694 @ =FUN_081a54b4
+	ldr r0, _081A6694 @ =EnemyRootOfDarkness_Destroy
 	str r0, [r1]
 	adds r0, r7, #0
 	bl Enemy_Init_080ec640
@@ -2092,7 +2092,7 @@ _081A6684: .4byte 0x0000057C
 _081A6688: .4byte FUN_080f09e0
 _081A668C: .4byte 0x0000061C
 _081A6690: .4byte FUN_081a54a8
-_081A6694: .4byte FUN_081a54b4
+_081A6694: .4byte EnemyRootOfDarkness_Destroy
 _081A6698:
 	movs r0, #1
 	rsbs r0, r0, #0

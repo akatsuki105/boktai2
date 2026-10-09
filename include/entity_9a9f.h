@@ -34,7 +34,7 @@ typedef struct Entity9A9F {
   u8 unk_2c[0x30 - 0x2C];                      // 0x02C
   u16 unk_30;                                  // 0x030, Entity9A9F_Create が 0x1C20 を入れる
   u16 unk_32;                                  // 0x032, 同上
-  s32 stateTimer;                              // 0x034, FUN_081dfa98 が毎フレーム +1、Entity9A9F_SetState が 0 に戻す
+  u32 stateTimer;                              // 0x034, FUN_081dfa98 が毎フレーム +1、Entity9A9F_SetState が 0 に戻す
   u8 unk_38[4];                                // 0x038
   s32 unk_3c;                                  // 0x03C, '.L=5000'
   u8 unk_40[2];                                // 0x040
@@ -47,7 +47,7 @@ typedef struct Entity9A9F {
   u8 unk_52;                                   // 0x052, Create が 0 を入れる
   u8 unk_53;                                   // 0x053, Create が 0 を入れる
   u8 unk_54[12];                               // 0x054
-  u8 unk_60[4];                                // 0x060, FUN_080a0864 が unk_60[playerIdx] を読む, 長さは人数からの推定
+  u8 unk_60[4];                                // 0x060, EntityA628_UpdateBGVisibility が unk_60[playerIdx] を読む, 長さは人数からの推定
   u8 unk_64[2];                                // 0x064
   u16 unk_66;                                  // 0x066, FUN_0809eb6c: Div(n * unk_66, 0x8C)
   u8 unk_68[4];                                // 0x068, Create が 4要素を 0 にする
@@ -57,7 +57,7 @@ typedef struct Entity9A9F {
   u16 unk_7e;                                  // 0x07E, 根拠: FUN_081dd9f0 が 0 に戻す
   u16 unk_80[4];                               // 0x080, 根拠: 同上
   u8 unk_88[0x118 - 0x88];                     // 0x088
-  u8 unk_118[5];                               // 0x118, FUN_081de0dc が 0x11C から下へ 5要素に 4 を入れる
+  s8 unk_118[5];                               // 0x118, FUN_081de0dc が 0x11C から下へ 5要素に 4 を入れる
   u8 unk_11d[3];                               // 0x11D
   u16 unk_120[4];                              // 0x120, FUN_081de0dc が 0 にする
   u16 unk_128[4];                              // 0x128, 同上
@@ -80,7 +80,7 @@ typedef struct Entity9A9F {
   u8 unk_2cc[3];                               // 0x2CC, 根拠: FUN_081ddf84 が sEntity9A9FLimits[i] 以上なら 0 に戻す
   u8 unk_2cf[0x2D4 - 0x2CF];                   // 0x2CF
   void (*updateCallback)(struct Entity9A9F*);  // 0x2D4
-  u8 unk_2d8[4];                               // 0x2D8
+  s32 windowID;                                // 0x2D8, TextPanel_Create の戻り値
   s16 unk_2dc;                                 // 0x2DC, '.l=0'
   s16 unk_2de;                                 // 0x2DE, '.R=0'
   s16 unk_2e0;                                 // 0x2E0, '.v=0'

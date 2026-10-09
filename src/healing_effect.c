@@ -53,4 +53,15 @@ NAKED void HealingParticles_InitHitbox(HealingEffect* p) { INCFUNC("asm/func/Hea
 
 NAKED s32 HealingParticles_Init(HealingEffect* p, Player* player, Vec3* pos) { INCFUNC("asm/func/HealingParticles_Init.inc"); }
 
-NAKED HealingEffect* HealingParticles_Create(Player* player, Vec3* pos) { INCFUNC("asm/func/HealingParticles_Create.inc"); }
+HealingEffect* HealingParticles_Create(Player* player, Vec3* pos) {
+  HealingEffect* p = CreateEntity(ENTITY_UNK_8, sizeof(HealingEffect));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, HealingParticles_Update, HealingParticles_Destroy);
+    if (HealingParticles_Init(p, player, pos) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

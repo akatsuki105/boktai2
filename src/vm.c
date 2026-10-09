@@ -739,7 +739,7 @@ void* FUN_08231d80(void* statFieldPtr) {
   return (u8*)gStatBackup + offset;
 }
 
-void VM_ClearScratchpad(void) { ClearMemory(gScratch, sizeof(UnkGameStruct)); }
+void VM_ClearScratchpad(void) { ClearMemory(gScratch, sizeof(Scratch)); }
 
 void VM_LoadPointer(u8* src, s32 cmdAndArgs, s32 offset, u32* out) {
   switch ((cmdAndArgs >> 0x18) & 0xF) {

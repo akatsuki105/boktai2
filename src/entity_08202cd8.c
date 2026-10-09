@@ -39,6 +39,7 @@ typedef struct Entity08202cd8 {
 static_assert(sizeof(Entity08202cd8) == 1776);
 
 extern u32 u32_03002bc0;
+extern void (*const PTR_ARRAY_085ae7f8[8])(unknown*);  // src/rodata4.c
 
 s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
 void FUN_081fa608(void);
@@ -161,7 +162,19 @@ void FUN_0820287c(Entity08202cd8* p, s32 keep) {
   p->unk_6d9 = 1;
 }
 
-NAKED s32 FUN_082028b8(Entity08202cd8* p) { INCFUNC("asm/func/FUN_082028b8.inc"); }
+// unk_6db で指定された状態関数を fn に移す
+s32 FUN_082028b8(Entity08202cd8* p) {
+  if ((u8)(p->unk_6db - 1) > 7) {
+    return 0;
+  }
+
+  p->fn = (void*)PTR_ARRAY_085ae7f8[p->unk_6db];
+  p->unk_6dc = p->unk_6db;
+  p->unk_6db = 0;
+  p->unk_18 = 0;
+  p->unk_6d8 = 1;
+  return 1;
+}
 
 NON_MATCH void FUN_08202910(Entity08202cd8* p) {
 #ifdef NONMATCHING_C

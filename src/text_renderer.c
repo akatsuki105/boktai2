@@ -51,7 +51,7 @@ const u16 gEscapeCharcodes[118] = {
 extern u16 u16_030047d8;             // src/camera.c
 extern const char s_VAR_08251cc4[];  // src/data.c
 
-static inline s32 GetMessageSpeed(void) { return gStat->messageSpeed; }  // 本体設定のメッセージ速度
+static inline s32 GetTextSpeed(void) { return gStat->textSpeed; }  // 本体設定のメッセージ速度
 
 // いまの mode を退避して新しい mode に切り替える, 7段まで
 void TextRenderer_PushMode(TextRenderer* p, s32 mode) {
@@ -612,7 +612,7 @@ void TextRenderer_SetRect(TextRenderer* p, s32 x, s32 y, s32 width, s32 height) 
 // 文字送り速度を設定から取り込む
 void TextRenderer_ResetSpeed(TextRenderer* p) {
   p->unk_08 = 0;
-  p->speed = GetMessageSpeed();
+  p->speed = GetTextSpeed();
 }
 
 void TextRenderer_Init(TextRenderer* p, s32 x, s32 y, s32 width, s32 height) {

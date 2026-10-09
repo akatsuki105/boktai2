@@ -10,5 +10,13 @@
       ""
     ],
 		"description": "entity_xxxx.c の雛形"
-	}
+	},
+  "Create INCASM": {
+    "scope": "c",
+    "prefix": "incasm",
+    "body": [
+      "INCASM(\"asm/$TM_FILENAME_BASE.inc\");",
+      ""
+    ]
+  }
 }

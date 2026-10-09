@@ -2,11 +2,23 @@
 
 #include "entity.h"
 #include "global.h"
+#include "input.h"
 #include "link.h"
 #include "sound.h"
+#include "text.h"
+#include "video.h"
+#include "vm.h"
 
 s32 FUN_081dec1c(Entity9A9F* p);
 s32 FUN_081de130(Entity9A9F* p);
+void FUN_081df460(Entity9A9F*);
+void FUN_080a6180(s32 param_1, s32 param_2, void* fn, void* arg);  // src/code_080917e4.s
+s32 FUN_081de250(Entity9A9F*);
+s32 FUN_081de9d8(Entity9A9F*);
+s32 FUN_081de360(Entity9A9F*);
+
+s32 FUN_081de844(Entity9A9F*);
+s32 FUN_081de960(Entity9A9F*);
 void FUN_081df568(Entity9A9F* p);
 void FUN_081df62c(Entity9A9F* p);
 void FUN_080a5e4c(void);     // src/code_080917e4.s
@@ -70,7 +82,18 @@ void FUN_081ddbdc(Entity9A9F* p) {
   FUN_08238bf4();
 }
 
-NAKED void FUN_081ddc04(Entity9A9F* p) { INCFUNC("asm/func/FUN_081ddc04.inc"); }
+// unk_118 の先頭 recordCount 件に添字を入れ, 残りを 4 で埋める
+void FUN_081ddc04(Entity9A9F* p) {
+  s32 i;
+
+  for (i = 0; i < p->recordCount; i++) {
+    p->unk_118[i] = i;
+  }
+
+  for (; i <= 4; i++) {
+    p->unk_118[i] = 4;
+  }
+}
 
 NAKED void FUN_081ddc3c(Entity9A9F* p) { INCFUNC("asm/func/FUN_081ddc3c.inc"); }
 
@@ -116,7 +139,21 @@ NAKED void FUN_081de0dc(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de0dc.inc"); }
 
 NAKED s32 FUN_081de130(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de130.inc"); }
 
-NAKED void FUN_081de214(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de214.inc"); }
+// 残差1命令, 原典は FUN_081dd9d4 の戻り値を別レジスタへ複写してから u8 に落として判定する, ローカル退避と直接 (u8) キャストは試済
+NON_MATCH void FUN_081de214(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  if ((u8)FUN_081dd9d4(p)) {
+    p->unk_23 = 0;
+  }
+
+  if (p->unk_23 == 3) {
+    Entity9A9F_SetState(p, 2, (EntityFunc*)FUN_081de250);
+    p->unk_23 = 0;
+  }
+#else
+  INCFUNC("asm/func/FUN_081de214.inc");
+#endif
+}
 
 NAKED s32 FUN_081de250(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de250.inc"); }
 
@@ -126,11 +163,48 @@ NAKED s32 FUN_081de360(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de360.inc
 
 NAKED s32 FUN_081de6f0(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de6f0.inc"); }
 
-NAKED s32 FUN_081de7e8(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de7e8.inc"); }
+s32 FUN_081de7e8(Entity9A9F* p) {
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  if (p->stateTimer > 120) {
+    if (gEntity9A9F != NULL && gEntity9A9F->playerIdx == 0) {
+      Entity9A9F_SetState(p, 7, (EntityFunc*)FUN_081de844);
+    } else {
+      Entity9A9F_SetState(p, 8, (EntityFunc*)FUN_081de960);
+    }
+  }
+  return 0;
+}
 
 NAKED s32 FUN_081de844(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de844.inc"); }
 
-NAKED s32 FUN_081de960(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de960.inc"); }
+// 残差6命令, 原典は通信ステータスの比較結果を 0/1 に起こしてから if で見るが agbcc は条件を直接分岐に畳む (FUN_080f8bb8 / FUN_080fc174 と同じ), static inline (if/else で return) は試済
+NON_MATCH s32 FUN_081de960(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  u16* status;
+
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  status = p->unk_44;
+  if ((*status & 0x3C00) == 0x1C00) {
+    Entity9A9F_SetState(p, 9, (EntityFunc*)FUN_081de9d8);
+    return 0;
+  }
+
+  if ((*status & 0x3C00) == 0x400) {
+    Entity9A9F_SetState(p, 4, (EntityFunc*)FUN_081de360);
+    return 0;
+  }
+#else
+  INCFUNC("asm/func/FUN_081de960.inc");
+#endif
+}
 
 NAKED s32 FUN_081de9d8(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de9d8.inc"); }
 
@@ -138,7 +212,18 @@ NAKED s32 FUN_081deaf4(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081deaf4.inc
 
 void FUN_081debc0(Entity9A9F* p) { Entity9A9F_SetState(p, 12, (EntityFunc*)FUN_081dec1c); }
 
-NAKED s32 FUN_081debd4(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081debd4.inc"); }
+s32 FUN_081debd4(Entity9A9F* p) {
+  gUseLinkInput = TRUE;
+
+  if ((u8)FUN_081dd9d4(p)) {
+    FUN_080a6180(0, 0, FUN_081debc0, p);
+  }
+
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+}
 
 NAKED s32 FUN_081dec1c(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dec1c.inc"); }
 
@@ -152,7 +237,23 @@ NAKED s32 FUN_081df23c(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df23c.inc
 
 NAKED void FUN_081df398(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df398.inc"); }
 
-NAKED void FUN_081df3f0(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df3f0.inc"); }
+s32 FUN_081df3f0(Entity9A9F* p) {
+  if ((u8)FUN_081dd9d4(p)) {
+    p->windowID = TextPanel_Create(1, 7, 28, 6);
+    TextPanel_SetScript(p->windowID, p->unk_2f0);
+    TextPanel_SetMessage(p->windowID, 10);
+    TextPanel_Start(p->windowID);
+  }
+
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  if (p->stateTimer > 119) {
+    Entity9A9F_SetState(p, 21, (EntityFunc*)FUN_081df460);
+  }
+}
 
 NAKED void FUN_081df460(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df460.inc"); }
 
@@ -200,11 +301,50 @@ NAKED s32 FUN_081df698(Entity9A9F* p, s32 param_2) { INCFUNC("asm/func/FUN_081df
 
 NAKED s32 FUN_081df6dc(Entity9A9F* p) { INCFUNC("asm/func/FUN_081df6dc.inc"); }
 
-NAKED s32 FUN_081df720(Entity9A9F* p) { INCFUNC("asm/func/FUN_081df720.inc"); }
+// unk_118 の5要素のうち n と等しいものの個数を返す
+s32 FUN_081df720(s32 n) {
+  Entity9A9F* p = gEntity9A9F;
+  s32 count;
+  s32 i;
 
-NAKED s32 FUN_081df75c(void) { INCFUNC("asm/func/FUN_081df75c.inc"); }
+  if (p == NULL) {
+    return 0;
+  }
 
-NAKED s32 FUN_081df784(void) { INCFUNC("asm/func/FUN_081df784.inc"); }
+  count = 0;
+  for (i = 0; i < 5; i++) {
+    if (p->unk_118[i] == n) {
+      count++;
+    }
+  }
+  return count;
+}
+
+// '.X' の値と等しい unk_118 の個数を数え、スクリプト側へ書き戻して返す
+s32 FUN_081df75c(void) {
+  u8 desc[8];
+  s32 count = FUN_081df720(VM_GetValue());
+
+  FUN_0823167c(desc);
+  FUN_0823206c(desc, 0, count);
+  return count;
+}
+
+// playerIdx をスクリプト側へ書き戻して返す
+// 残差1命令, 原典は -1 と playerIdx を別の基本ブロックで代入するが agbcc は -1 を先に作って条件付きで上書きする形に畳む, 三項/if-else/条件の反転は試済
+NON_MATCH s32 FUN_081df784(void) {
+#ifdef NONMATCHING_C
+  u8 desc[8];
+  Entity9A9F* p = gEntity9A9F;
+  s32 idx = (p == NULL) ? -1 : p->playerIdx;
+
+  FUN_0823167c(desc);
+  FUN_0823206c(desc, 0, idx);
+  return idx;
+#else
+  INCFUNC("asm/func/FUN_081df784.inc");
+#endif
+}
 
 // idx 番の unk_120 を 1 増やす
 s32 FUN_081df7bc(s32 idx) {
@@ -290,7 +430,19 @@ void FUN_081df974(void) {
   }
 }
 
-NAKED s32 FUN_081df98c(void) { INCFUNC("asm/func/FUN_081df98c.inc"); }
+// 終了要求が立っているかどうか
+bool32 FUN_081df98c(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return FALSE;
+  }
+
+  if (p->killRequested != 0) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED void FUN_081df9ac(Entity9A9F* p, s32 param_2) { INCFUNC("asm/func/FUN_081df9ac.inc"); }
 
@@ -305,7 +457,14 @@ NAKED void FUN_081dfa20(Entity9A9F* p, unknown* param_2, unknown* param_3, unkno
 
 NAKED s32 FUN_081dfa98(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dfa98.inc"); }
 
-NAKED s32 Entity9A9F_Destroy(Entity9A9F* p) { INCFUNC("asm/func/Entity9A9F_Destroy.inc"); }
+s32 Entity9A9F_Destroy(Entity9A9F* p) {
+  FUN_08238bf4();
+  Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
+  gUseLinkInput = FALSE;
+  gFlag030047a4 &= ~FLAG030047A4_LINK;
+  gEntity9A9F = NULL;
+  return 0;
+}
 
 NAKED Entity9A9F* Entity9A9F_Create(void) { INCFUNC("asm/func/Entity9A9F_Create.inc"); }
 

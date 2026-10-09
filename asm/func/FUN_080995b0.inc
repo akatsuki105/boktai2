@@ -45,7 +45,7 @@
 	strh r5, [r0]
 	ldr r1, _08099648 @ =0x000002A5
 	adds r0, r6, #0
-	bl FUN_0808ba0c
+	bl MainSprite_SetPltt
 	ldr r1, _0809964C @ =0x00004002
 	adds r0, r4, r1
 	mov r1, sb

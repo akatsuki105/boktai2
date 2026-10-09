@@ -22,9 +22,9 @@ typedef struct {
 static_assert(sizeof(Entity0866Elem) == 156);
 
 typedef struct {
-  Entity e;   // 0x0, ENTITY_UNK_10
-  u8 unk_18;  // 0x18
-  u8 unk_19[3];
+  Entity e;                  // 0x0, ENTITY_UNK_10
+  u8 unk_18;                 // 0x18
+  u8 unk_19[3];              // padding?
   ParticleGroup* group0;     // 0x1C, PTCL_GROUP_0
   ParticleGroup* group1;     // 0x20, PTCL_GROUP_1
   AuxAnimFile* anim_24;      // 0x24
@@ -71,7 +71,15 @@ Entity0866Elem* FUN_08009b10(Entity0866* p) {
   return NULL;
 }
 
-NAKED void FUN_08009b30(HitboxData* a, HitboxData* b, void* owner) { INCFUNC("asm/func/FUN_08009b30.inc"); }
+void FUN_08009b30(HitboxData* a, HitboxData* b, Entity0866Elem* elem) {
+  if (!Hitbox_TestAttribute(a, HBATTR_14) && !Hitbox_HasWeakness(a, HBATTR_6 | HBATTR_BEAST | HBATTR_THING)) {
+    b->hitResult = HBRESULT_NORMAL;
+    elem->unk_02 = 1;
+    elem->unk_0a = 0;
+    elem->unk_07 = TRUE;
+    elem->hitbox.flags |= HBFLAG_UNK_2;
+  }
+}
 
 NAKED s32 FUN_08009b6c(Entity0866* p, Entity0866Elem* param_2) { INCFUNC("asm/func/FUN_08009b6c.inc"); }
 
@@ -142,6 +150,7 @@ Entity0866* Entity0866_Create(u32 _, u32 unused) {
 
 NAKED s32 FUN_0800a2f8(void) { INCFUNC("asm/func/FUN_0800a2f8.inc"); }
 
+// 使われてなさそう
 NAKED u32 VM_Sub78EE(void) { INCFUNC("asm/func/VM_Sub78EE.inc"); }
 
 void FUN_0800a458(void) {

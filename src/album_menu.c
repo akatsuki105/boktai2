@@ -36,7 +36,6 @@ static_assert(sizeof(AlbumMenu) == 2176);
 
 s32 FUN_08049fa8(void);
 void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, s32 zeroSuppress);
-s32 FUN_08049e30(char* str);
 
 const u8 gAlbumPhotoSlotCounts[3] = {10, 10, 7};  // アルバムの各ページのブロマイドスロット数
 

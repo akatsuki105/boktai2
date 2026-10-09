@@ -29,6 +29,7 @@ typedef u32 EnemyFlags;
 #define ENEFLAG_UNK_12 (1 << 12)  // 0x00001000, FUN_080ed068 / FUN_080edebc が立てる
 #define ENEFLAG_UNK_13 (1 << 13)  // 0x00002000, FUN_080ef5a8 が立てる
 #define ENEFLAG_UNK_17 (1 << 17)  // 0x00020000, FUN_080ef5a8 が立てる
+#define ENEFLAG_UNK_26 (1 << 26)  // 0x04000000, FUN_080f65a8 が落とす
 
 // Enemy.flags2 (0x17C)
 typedef u32 EnemyFlags2;
@@ -40,8 +41,12 @@ typedef u32 EnemyFlags2;
 
 // Enemy.flags3 (0x180)
 typedef u16 EnemyFlags3;
+#define ENEFLAG3_UNK_0 (1 << 0)    // 0x0001, FUN_080fc174 が落とす
 #define ENEFLAG3_UNK_1 (1 << 1)    // 0x0002, FUN_080f1cb8 が見る
+#define ENEFLAG3_UNK_5 (1 << 5)    // 0x0020, FUN_080f65a8 が立てる
+#define ENEFLAG3_UNK_6 (1 << 6)    // 0x0040, Enemy_IsDead が死亡扱いにする
 #define ENEFLAG3_UNK_12 (1 << 12)  // 0x1000, FUN_080ee738 が見る
+#define ENEFLAG3_UNK_13 (1 << 13)  // 0x2000, FUN_08101bc0 が unk_4be より優先して見る
 #define ENEFLAG3_UNK_14 (1 << 14)  // 0x4000, FUN_080ec9b0 が立て FUN_080edebc が落とす
 
 // Enemy.flags4 (0x182)
@@ -49,6 +54,7 @@ typedef u16 EnemyFlags4;
 #define ENEFLAG4_UNK_0 (1 << 0)    // 0x0001, FUN_080f6e34 がまとめて落とす
 #define ENEFLAG4_UNK_1 (1 << 1)    // 0x0002, Enemy_Sleep が立てる
 #define ENEFLAG4_UNK_3 (1 << 3)    // 0x0008, FUN_080f6e34 がまとめて落とす
+#define ENEFLAG4_UNK_4 (1 << 4)    // 0x0010, FUN_080fc174 が立てる
 #define ENEFLAG4_UNK_6 (1 << 6)    // 0x0040, FUN_080f6e34 がまとめて落とす
 #define ENEFLAG4_UNK_7 (1 << 7)    // 0x0080, FUN_080f6e34 がまとめて落とす
 #define ENEFLAG4_UNK_8 (1 << 8)    // 0x0100, FUN_080f6e34 がまとめて落とす
@@ -205,11 +211,51 @@ Enemy* FindEnemyById(u32 id);
 // ビットのセット/クリアはこのヘルパー経由で書く, フィールドごとに専用のものが要る
 // (幅で共通化して u32* を渡す形にすると、if/else の両腕が同じ形になって str が1つに畳まれ一致しない)
 static inline void Enemy_SetFlag(Enemy* p, EnemyFlags bit) { p->flags |= bit; }
+static inline void Enemy_ClearFlag(Enemy* p, EnemyFlags bit) { p->flags &= ~bit; }
 static inline void Enemy_SetFlag2(Enemy* p, EnemyFlags2 bit) { p->flags2 |= bit; }
 static inline void Enemy_ClearFlag2(Enemy* p, EnemyFlags2 bit) { p->flags2 &= ~bit; }
 static inline EnemyFlags Enemy_TestFlag(Enemy* p, EnemyFlags bit) { return p->flags & bit; }
+static inline void Enemy_SetFlag3(Enemy* p, EnemyFlags3 bit) { p->flags3 |= bit; }
+static inline void Enemy_ClearFlag3(Enemy* p, EnemyFlags3 bit) { p->flags3 &= ~bit; }
+static inline bool32 Enemy_TestFlag2(Enemy* p, EnemyFlags2 bit) { return (p->flags2 & bit) != 0; }
 static inline bool32 Enemy_TestFlag3(Enemy* p, EnemyFlags3 bit) { return (p->flags3 & bit) != 0; }
 static inline void Enemy_SetFlag4(Enemy* p, EnemyFlags4 bit) { p->flags4 |= bit; }
 static inline void Enemy_ClearFlags4(Enemy* p, EnemyFlags4 bits) { p->flags4 &= ~bits; }
+
+// --------------------------------------------
+// Enemy全体で利用される共通ハンドラ
+
+void FUN_080e6624(Enemy* p, u16* msg);
+void FUN_080e664c(Enemy* p, u16* msg);
+void FUN_080f07d0(Enemy* p);
+void FUN_080f0868(Enemy* p);
+void FUN_080f0914(Enemy* p);
+void FUN_080f09a4(Enemy* p);
+void FUN_080f0e78(Enemy* p);
+void FUN_080f11d0(Enemy* p);
+void FUN_080f12c4(Enemy* p);
+void FUN_080f19cc(Enemy* p);
+void FUN_080f1c54(Enemy* p);
+void FUN_080f1cb8(Enemy* p);
+void FUN_080f1cf0(Enemy* p);
+void FUN_080f1de4(Enemy* p);
+void FUN_080f1e0c(Enemy* p);
+void FUN_080f1e78(Enemy* p);
+void FUN_080f1ef8(Enemy* p);
+void FUN_080f2074(Enemy* p);
+void FUN_080f2160(Enemy* p);
+void FUN_080f2364(Enemy* p);
+void FUN_080f248c(Enemy* p);
+void FUN_080f2644(Enemy* p);
+void FUN_080f2864(Enemy* p);
+void FUN_080f2a40(Enemy* p);
+void FUN_080f2d04(Enemy* p);
+void FUN_080f2ec0(Enemy* p);
+void FUN_080f31c4(Enemy* p);
+void FUN_080f33e8(Enemy* p);
+void FUN_080f34a0(Enemy* p);
+void FUN_080f9c20(Enemy* p);
+void FUN_080f9e34(Enemy* p);
+void FUN_080f9ee0(Enemy* p);
 
 #endif  // __INCLUDE_ENEMY_H__

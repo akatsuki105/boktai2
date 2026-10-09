@@ -5,6 +5,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "player.h"
+#include "sound.h"
 
 // 原典のファイル名は enedefault.c, 根拠: FUN_080f00ec / FUN_080f0430 が、抜き取られた assert の引数として文字列 "enedefault.c" (0x08251F80) と行番号を積む
 // Enemy の共通部分?
@@ -29,6 +30,8 @@ void FUN_080ee738(Enemy* p);
 bool8 FUN_080f3718(Enemy* p);
 s32 FUN_08240b98(u32 param_1, s8 param_2);
 void FUN_080e8ae4(unknown* param_1, u32 param_2, u32 param_3);
+void FUN_0801a0a0(s32 playerIdx, Vec3* pos);  // src/code_08017b70.s
+void FUN_080e5718(Enemy* p, s32 param_2, s32 param_3, s32 param_4);
 
 void FUN_080f09a4(Enemy* p);
 void FUN_080f07d0(Enemy* p);
@@ -292,7 +295,14 @@ NAKED s32 FUN_080f62b0(Enemy* p) { INCFUNC("asm/func/FUN_080f62b0.inc"); }
 
 NAKED bool32 FUN_080f64f0(Enemy* p) { INCFUNC("asm/func/FUN_080f64f0.inc"); }
 
-NAKED bool32 FUN_080f65a8(Enemy* p) { INCFUNC("asm/func/FUN_080f65a8.inc"); }
+bool32 FUN_080f65a8(Enemy* p) {
+  Enemy_SetFlag3(p, ENEFLAG3_UNK_5);
+  FUN_080e5718(p, 3, 0, p->kind);
+  Enemy_ClearFlag(p, ENEFLAG_UNK_26);
+  Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
+  PlaySound_082406e0(0x13E);
+  return TRUE;
+}
 
 NAKED s32 FUN_080f6604(Enemy* p) { INCFUNC("asm/func/FUN_080f6604.inc"); }
 
@@ -338,7 +348,39 @@ s32 FUN_080f8abc(Enemy* p) {
 
 NAKED void FUN_080f8ae0(Enemy* p) { INCFUNC("asm/func/FUN_080f8ae0.inc"); }
 
-NAKED void FUN_080f8bb8(Mover* owner) { INCFUNC("asm/func/FUN_080f8bb8.inc"); }
+// 残差5命令, 原典はフラグ判定の結果を 0/1 に起こしてから if で見るが agbcc は条件を直接分岐に畳む, ローカルの bool32 と static inline (引数あり/オペランド順) は試済
+NON_MATCH void FUN_080f8bb8(Mover* owner) {
+#ifdef NONMATCHING_C
+  if (gFlag030047a4 & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
+    s32 idx;
+
+    switch (owner->unk_4) {
+      case 0: {
+        idx = 0;
+        break;
+      }
+      case 1: {
+        idx = 1;
+        break;
+      }
+      case 2: {
+        idx = 2;
+        break;
+      }
+      case 3: {
+        idx = 3;
+        break;
+      }
+      default: {
+        return;
+      }
+    }
+    FUN_0801a0a0(idx, &owner->pos);
+  }
+#else
+  INCFUNC("asm/func/FUN_080f8bb8.inc");
+#endif
+}
 
 // 登録リストを空にする
 void EnemyTargetManager_Clear(void) {
@@ -610,7 +652,26 @@ NAKED void FUN_080fba64(Enemy* p) { INCFUNC("asm/func/FUN_080fba64.inc"); }
 
 NAKED void FUN_080fc0b8(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fc0b8.inc"); }
 
-NAKED void FUN_080fc174(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fc174.inc"); }
+// 残差5命令, 原典は stateBegun を食ったかどうかを 0/1 に起こしてから if で見るが agbcc は条件を直接分岐に畳む (FUN_080f3cdc と同じ), ローカル bool32 の if/else と static inline は試済
+NON_MATCH void FUN_080fc174(Enemy* p, s32 param_2) {
+#ifdef NONMATCHING_C
+  if (p->stateBegun != 0) {
+    p->stateBegun = 0;
+    Enemy_PlayAnim(p, 7);
+    Enemy_ClearFlag3(p, ENEFLAG3_UNK_0);
+  }
+
+  if (param_2 == 40) {
+    Enemy_SetFlag4(p, ENEFLAG4_UNK_4);
+  }
+
+  if (p->animForceRestart != 0 && param_2 > 120) {
+    p->unk_46b = 1;
+  }
+#else
+  INCFUNC("asm/func/FUN_080fc174.inc");
+#endif
+}
 
 NAKED void FUN_080fc1e4(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fc1e4.inc"); }
 

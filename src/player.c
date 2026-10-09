@@ -1034,20 +1034,20 @@ void Player_InitShockwave(Player* p) {
   AuxSpriteGfx* gfx = &p->meleeShockwave.gfx;
 
   if (p->kind == PLAYER_SABATA) {
-    Video_GetAuxSprite(gfx, 0x2110);
-    AuxSprite_Add(sprite, gfx, 0x43);
+    Video_GetAuxSprite(gfx, SPRITE_GUN_SPREAD);
+    AuxSprite_Add(sprite, gfx, SPRFLAG_NO_CLIP | SPRFLAG_AFFINE | SPRFLAG_HIDDEN);
     sprite->metaspriteIdx = 4;
-    Video_SetAuxSpritePltt(gfx, 0x32);
+    Video_SetAuxSpritePltt(gfx, 50);
     sprite->priority = 1;
     sprite->scaleY = 0x7F;
     sprite->scaleX = 0x7F;
     sprite->pos = p->mover.pos;
     p->meleeShockwave.update = PlayerShockwave_UpdateFlash;
   } else {
-    Video_GetAuxSprite(gfx, 0x8F5D);
-    AuxSprite_Add(sprite, gfx, 1);
-    Video_SetAuxSpritePltt(gfx, 0x1D);
-    p->meleeShockwave.animFile = GetFile(0x922E, 0x837);
+    Video_GetAuxSprite(gfx, SPRITE_MELEE_SHOCKWAVE);
+    AuxSprite_Add(sprite, gfx, SPRFLAG_HIDDEN);
+    Video_SetAuxSpritePltt(gfx, 29);
+    p->meleeShockwave.animFile = GetFile(DIR_ANIMATION, ANIM_0837);
     p->meleeShockwave.update = PlayerShockwave_UpdateAnim;
   }
 
@@ -1433,11 +1433,11 @@ NON_MATCH u32 FUN_0806241c(Player* p) {
   u32 r = 0;
 
   if (gStat->unk_934 & SF934_OUTDOOR) {
-    if (Player_TestFlag20(p, 0x10)) {
+    if (Player_TestFlag20(p, PFLAG20_UNK_4)) {
       r = 4;
     }
   } else {
-    if (Player_TestFlag20(p, 0x10)) {
+    if (Player_TestFlag20(p, PFLAG20_UNK_4)) {
       r = 8;
     }
   }
@@ -2120,8 +2120,8 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
     case 2: {
       if (p->unk_43c[2] == 0) {
         gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-        u16_03002b64 = (p->unk_456 + 1 + Mod(gRandomTable[gRandTableIdx], 7)) & 7;
-        p->unk_456 = u16_03002b64;
+        u16_03002b64 = (p->controlUp + 1 + Mod(gRandomTable[gRandTableIdx], 7)) & 7;
+        p->controlUp = u16_03002b64;
         PlaySound_082406e0(0x138);
       }
       break;
@@ -2140,7 +2140,7 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
 void FUN_08063634(Player* p, s32 n) {
   p->unk_43c[n] = 0;
   if (n == 2) {
-    p->unk_456 = gStat->unk_010;
+    p->controlUp = gStat->controlUp;
   }
 }
 
@@ -2197,7 +2197,7 @@ NON_MATCH u32 Player_TickBadCondTimers(Player* p, u32 n) {
         if (p->unk_43c[2] != 0 && (p->unk_1c & 1)) {
           p->unk_43c[2]--;
           if (p->unk_43c[2] == 0) {
-            p->unk_456 = gStat->unk_010;
+            p->controlUp = gStat->controlUp;
           }
         }
         break;
@@ -2212,7 +2212,7 @@ NON_MATCH u32 Player_TickBadCondTimers(Player* p, u32 n) {
 }
 
 // flashTimer が動いている間, 4フレームごとに pose を flashPose と入れ替える (点滅)
-// 残差は共有された return pose のブロック位置だけ (23/23), Tier A の分岐形 4通りと Tier B は試済
+// 残差は共有された return pose のブロック位置だけ (23/23), Tier A の分岐形 4通りと Tier B は試済, player_link.c の LinkPlayer_ApplyFlashPose も同じ残差
 NON_MATCH u32 Player_ApplyFlashPose(Player* p, u32 pose) {
 #ifdef NONMATCHING_C
   if (p->flashTimer != 0) {

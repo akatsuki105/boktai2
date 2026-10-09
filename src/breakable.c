@@ -7,38 +7,37 @@
 #include "sprite_aux.h"
 #include "vm.h"
 
-struct Breakable;
 struct BreakableManager;
-typedef void (*BreakableUpdate)(struct BreakableManager*, struct Breakable*);
 
 // マップに置かれた壊せるオブジェクト1個, スクリプトコマンド 0x2D8F (Breakable_Spawn) が1個ずつ置く
-// 大聖堂の狛犬(壊すと宝箱が出現するやつ)で使っているが、他の壊せるオブジェクトでも流用可能っぽい(実際に流用されているかは不明)
+// このゲームでは 大聖堂の狛犬(壊すと宝箱が出現するやつ) でしか使っていないが、汎用的に使える構造になっている
 typedef struct Breakable {
-  u16 id;                  // 0x00, '.n', hitbox の ID になり、壊れたときのスクリプトの argv[0] にもなる
-  bool8 active;            // 0x02, BreakableManager_FindFreeSlot が 0 のスロットを空きとして返す, Update は 0 のものを飛ばす
-  bool8 stateChanged;      // 0x03, Breakable_SetUpdate が 1 にし、Breakable_TakeStateChanged が読んで 0 に戻す
-  s16 hp;                  // 0x04, '.l=10', Breakable_OnHit が相手の HitboxData.damage を引き、1 未満で Breakable_UpdateAlive が破壊処理へ進む
-  u16 unk_6;               // 0x06, Breakable_Spawn が 0 を書くだけ
-  u8 unk_8;                // 0x08, '.k', 読み手が見つかっていない
-  u8 flashTimer;           // 0x09, 被弾で 4, 0 になったら Video_SetAuxSpritePltt でパレットを戻す
-  u8 brokenPose;           // 0x0A, '.P'+1, 壊れたときに sprite.metaspriteIdx へ入る
-  u8 shakeTimer;           // 0x0B, 被弾で 10, 0 でない間は hitbox.flags の bit2 を立てて当たらなくし、sprite.pos を乱数で揺らす
-  u16 scriptOnBreak;       // 0x0C, '.d', 壊れたとき VM_ExecByID に渡す
-  u16 unk_e;               // 0x0E, padding?
-  Vec3 pos;                // 0x10, '.p', Hitbox_SetPos で hitbox の座標として登録され、sprite.pos の基準にもなる
-  u32 unk_18;              // 0x18, Breakable_SetUpdate が 0 にする, 読み手が見つかっていない
-  BreakableUpdate update;  // 0x1C, BreakableManager_Update が毎フレーム呼ぶ
-  AuxSpriteGfx gfx;        // 0x20, '.t=SPRITE_KOMAINU'
-  AuxSprite sprite;        // 0x3C
-  HitboxData hitbox;       // 0x68, Hitbox_SetHandler が Breakable_OnHit を被弾コールバックに設定する
+  u16 id;                                                       // 0x00, '.n', hitbox の ID になり、壊れたときのスクリプトの argv[0] にもなる
+  bool8 active;                                                 // 0x02, BreakableManager_FindFreeSlot が 0 のスロットを空きとして返す, Update は 0 のものを飛ばす
+  bool8 stateChanged;                                           // 0x03, Breakable_SetUpdate が 1 にし、Breakable_TakeStateChanged が読んで 0 に戻す
+  s16 hp;                                                       // 0x04, '.l=10', Breakable_OnHit が相手の HitboxData.damage を引き、1 未満で Breakable_UpdateAlive が破壊処理へ進む
+  u16 unk_6;                                                    // 0x06, Breakable_Spawn が 0 を書くだけ
+  u8 unk_8;                                                     // 0x08, '.k', 読み手が見つかっていない
+  u8 flashTimer;                                                // 0x09, 被弾で 4, 0 になったら Video_SetAuxSpritePltt でパレットを戻す
+  u8 brokenPose;                                                // 0x0A, '.P'+1, 壊れたときに sprite.metaspriteIdx へ入る
+  u8 shakeTimer;                                                // 0x0B, 被弾で 10, 0 でない間は hitbox.flags の bit2 を立てて当たらなくし、sprite.pos を乱数で揺らす
+  u16 scriptOnBreak;                                            // 0x0C, '.d', 壊れたとき VM_ExecByID に渡す
+  u16 unk_e;                                                    // 0x0E, padding?
+  Vec3 pos;                                                     // 0x10, '.p', Hitbox_SetPos で hitbox の座標として登録され、sprite.pos の基準にもなる
+  u32 unk_18;                                                   // 0x18, Breakable_SetUpdate が 0 にする, 読み手が見つかっていない
+  void (*update)(struct BreakableManager*, struct Breakable*);  // 0x1C
+  AuxSpriteGfx gfx;                                             // 0x20, '.t=SPRITE_KOMAINU'
+  AuxSprite sprite;                                             // 0x3C
+  HitboxData hitbox;                                            // 0x68
 } Breakable;
 static_assert(sizeof(Breakable) == 184);
 
 // 壊せるオブジェクトのプールを持ち、毎フレーム各オブジェクトの update を呼ぶ
+// このゲームでは 大聖堂の狛犬(壊すと宝箱が出現するやつ) でしか使っていない
 typedef struct BreakableManager {
   Entity e;          // 0x00, ENTITY_UNK_8
   s32 count;         // 0x18, '.n=4'
-  Breakable* items;  // 0x1C, BreakableManager_Init が Malloc(count * sizeof(Breakable)) したもの
+  Breakable* items;  // 0x1C
 } BreakableManager;
 static_assert(sizeof(BreakableManager) == 32);
 
@@ -52,8 +51,8 @@ void Breakable_UpdateIdle(BreakableManager* p, Breakable* item);
 IWRAM_DATA BreakableManager* gBreakableManager = NULL;  // 0x03000030
 
 // update を差し替え、切り替わったことを stateChanged で知らせる
-void Breakable_SetUpdate(Breakable* item, BreakableUpdate update) {
-  item->update = update;
+void Breakable_SetUpdate(Breakable* item, void* fn) {
+  item->update = fn;
   item->unk_18 = 0;
   item->stateChanged = TRUE;
 }

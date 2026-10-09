@@ -33,12 +33,15 @@ typedef struct EntityA288 {
   s32 timer2;                                  // 0x0060, flags bit1 が落ちている間 _Update が 1 足す
   s32 unk_64;                                  // 0x0064, _Init が -1 を入れる
   u32 unk_68;                                  // 0x0068, _Init が 0 を入れる
-  u8 unk_6c[0x98 - 0x6C];                      // 0x006C, まだ未解析
+  u8 unk_6c[0x78 - 0x6C];                      // 0x006C, まだ未解析
+  MainSpriteGfx gfx_78;                        // 0x0078
   MainSprite sprite_98;                        // 0x0098
   Tilemaps* tilemap2;                          // 0x00F8, TILEMAP_A413
   rgb555* bgp2;                                // 0x00FC, BGP_EFDA[208]
   s32 windowID;                                // 0x0100
-  u8 unk_104[0x10C - 0x104];                   // 0x0104, まだ未解析
+  u8 unk_104[0x106 - 0x104];                   // 0x0104, まだ未解析
+  u16 unk_106;                                 // 0x0106, +4 したものを sprite_98 のアニメ番号にする
+  u8 unk_108[0x10C - 0x108];                   // 0x0108, まだ未解析
   MainSprite sprites_10c[2];                   // 0x010C
   u8* unk_1cc;                                 // 0x01CC, '.s'
   u8 unk_1d0[0x1D8 - 0x1D0];                   // 0x01D0, まだ未解析
@@ -53,9 +56,10 @@ typedef struct EntityA288 {
   u8* unk_db0;                                 // 0x0DB0, '.I' の先頭
   u8 unk_db4[2];                               // 0x0DB4, まだ未解析
   s16 entryCount;                              // 0x0DB6, 読めた entries の個数 - 1
-  u8 unk_db8[0xDBC - 0xDB8];                   // 0x0DB8, まだ未解析
+  u8 unk_db8[0xDBA - 0xDB8];                   // 0x0DB8, まだ未解析
+  s16 unk_dba;                                 // 0x0DBA, 16倍して sprite_720 の縦位置にする
   MainSprite sprites_dbc[2];                   // 0x0DBC
-  u8 unk_e7c[0xE80 - 0xE7C];                   // 0x0E7C, まだ未解析
+  s32 unk_e7c;                                 // 0x0E7C, 24倍して sprites_dbc[0] の縦位置にする
   u8* unk_e80;                                 // 0x0E80, '.X'
   u8 unk_e84[4];                               // 0x0E84, まだ未解析
   u32 unk_e88;                                 // 0x0E88, '.E'
@@ -65,7 +69,9 @@ typedef struct EntityA288 {
   u8* unk_1650;                                // 0x1650, '.g'
   u8* unk_1654;                                // 0x1654, '.T'
   u8* unk_1658;                                // 0x1658, '.A'
-  u8 unk_165c[0x166C - 0x165C];                // 0x165C, まだ未解析
+  u16 unk_165c;                                // 0x165C, gStat->unk_93a が 0 なら 1, そうでなければ 0
+  u16 unk_165e;                                // 0x165E, FUN_08218e4c が 0 を入れる
+  u8 unk_1660[0x166C - 0x1660];                // 0x1660, まだ未解析
   MainSprite sprites_166c[3];                  // 0x166C
   u8* unk_178c;                                // 0x178C, '.p' の PC
   u8* unk_1790;                                // 0x1790, '.S'
@@ -178,7 +184,15 @@ void FUN_08213960(EntityA288* p) {
   TextPanel_Destroy(p->windowID);
 }
 
-NAKED void FUN_0821397c(EntityA288* p) { INCFUNC("asm/func/FUN_0821397c.inc"); }
+// 残差1命令, 原典は gfx_78 のアドレスを callee-saved に残して p を使い捨てるが agbcc は逆に割り当てる, MainSpriteGfx* ローカルは試済
+NON_MATCH void FUN_0821397c(EntityA288* p) {
+#ifdef NONMATCHING_C
+  MainSprite_SetAnim(&p->sprite_98, &p->gfx_78, p->unk_106 + 4, 1, 4);
+  p->sprite_98.flags &= ~SPRFLAG_HIDDEN;
+#else
+  INCFUNC("asm/func/FUN_0821397c.inc");
+#endif
+}
 
 NAKED void FUN_082139b4(EntityA288* p, s16 param_2) { INCFUNC("asm/func/FUN_082139b4.inc"); }
 
@@ -229,7 +243,21 @@ NAKED void FUN_08214274(EntityA288* p) { INCFUNC("asm/func/FUN_08214274.inc"); }
 
 NAKED void FUN_08214334(EntityA288* p) { INCFUNC("asm/func/FUN_08214334.inc"); }
 
-NAKED void FUN_082143c0(EntityA288* p) { INCFUNC("asm/func/FUN_082143c0.inc"); }
+// 残差2命令, 原典は sprites_1d8 の先頭アドレスを別レジスタに残して sprite_658.flags をそこからの +0x488 で引く, MainSprite* ローカルと sprites_1d8[13] 化は試済
+NON_MATCH void FUN_082143c0(EntityA288* p) {
+#ifdef NONMATCHING_C
+  MainSprite* sprite = p->sprites_1d8;
+  s32 i;
+
+  for (i = 0; i < 12; i++) {
+    sprite[i].flags |= SPRFLAG_HIDDEN;
+  }
+
+  p->sprite_658.flags |= SPRFLAG_HIDDEN;
+#else
+  INCFUNC("asm/func/FUN_082143c0.inc");
+#endif
+}
 
 NAKED void FUN_082143f4(EntityA288* p) { INCFUNC("asm/func/FUN_082143f4.inc"); }
 
@@ -256,7 +284,11 @@ void FUN_082152c0(EntityA288* p) {
   MainSprite_SetAnim(&p->sprite_720, &p->gfx, 4, 1, 0);
 }
 
-NAKED void FUN_082152ec(EntityA288* p) { INCFUNC("asm/func/FUN_082152ec.inc"); }
+void FUN_082152ec(EntityA288* p) {
+  MainSprite* sprite = &p->sprite_720;
+
+  sprite->pos.y = p->unk_dba * 16;
+}
 
 NAKED void FUN_08215304(EntityA288* p) { INCFUNC("asm/func/FUN_08215304.inc"); }
 
@@ -273,7 +305,11 @@ void FUN_0821587c(EntityA288* p) {
 
 NAKED void FUN_082158a0(EntityA288* p) { INCFUNC("asm/func/FUN_082158a0.inc"); }
 
-NAKED void FUN_082158e4(EntityA288* p) { INCFUNC("asm/func/FUN_082158e4.inc"); }
+void FUN_082158e4(EntityA288* p) {
+  MainSprite* sprite = &p->sprites_dbc[0];
+
+  sprite->pos.y = p->unk_e7c * 24;
+}
 
 NAKED void FUN_082158fc(EntityA288* p) { INCFUNC("asm/func/FUN_082158fc.inc"); }
 
@@ -311,7 +347,11 @@ NAKED void FUN_08216968(EntityA288* p, unknown* param_2) { INCFUNC("asm/func/FUN
 
 NAKED void FUN_082169a0(EntityA288* p) { INCFUNC("asm/func/FUN_082169a0.inc"); }
 
-NAKED void FUN_08216a60(EntityA288* p) { INCFUNC("asm/func/FUN_08216a60.inc"); }
+void FUN_08216a60(EntityA288* p) {
+  MainSprite_Remove(&p->sprites_166c[0]);
+  MainSprite_Remove(&p->sprites_166c[1]);
+  MainSprite_Remove(&p->sprites_166c[2]);
+}
 
 NAKED void FUN_08216a90(EntityA288* p) { INCFUNC("asm/func/FUN_08216a90.inc"); }
 
@@ -384,7 +424,8 @@ NAKED void FUN_0821869c(EntityA288* p) { INCFUNC("asm/func/FUN_0821869c.inc"); }
 
 NAKED void FUN_08218910(EntityA288* p) { INCFUNC("asm/func/FUN_08218910.inc"); }
 
-NAKED void FUN_08218b20(EntityA288* p) { INCFUNC("asm/func/FUN_08218b20.inc"); }
+// 名前欄に "ジャンゴ" を書き込む, 転送量は文字列の長さではなく名前欄の 10 バイト
+void FUN_08218b20(u8* dst) { CpuCopy16(gStringDjango_085aff78, dst, 10); }
 
 NAKED void FUN_08218b34(EntityA288* p, unknown* param_2) { INCFUNC("asm/func/FUN_08218b34.inc"); }
 
@@ -392,7 +433,15 @@ NAKED void FUN_08218c30(EntityA288* p) { INCFUNC("asm/func/FUN_08218c30.inc"); }
 
 NAKED void FUN_08218ddc(EntityA288* p) { INCFUNC("asm/func/FUN_08218ddc.inc"); }
 
-NAKED void FUN_08218e4c(EntityA288* p) { INCFUNC("asm/func/FUN_08218e4c.inc"); }
+void FUN_08218e4c(EntityA288* p) {
+  if (gStat->unk_93a != 0) {
+    p->unk_165c = 0;
+  } else {
+    p->unk_165c = 1;
+  }
+
+  p->unk_165e = 0;
+}
 
 NAKED void FUN_08218e90(EntityA288* p) { INCFUNC("asm/func/FUN_08218e90.inc"); }
 
@@ -402,9 +451,20 @@ NAKED void FUN_082192f4(EntityA288* p) { INCFUNC("asm/func/FUN_082192f4.inc"); }
 
 NAKED void FUN_08219d98(EntityA288* p) { INCFUNC("asm/func/FUN_08219d98.inc"); }
 
-NAKED void FUN_08219e5c(EntityA288* p) { INCFUNC("asm/func/FUN_08219e5c.inc"); }
+void FUN_08219e5c(EntityA288* p) {
+  s32 indices[1];
 
-NAKED void FUN_08219e9c(EntityA288* p) { INCFUNC("asm/func/FUN_08219e9c.inc"); }
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_33B2);
+  indices[0] = 0;
+  Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, indices);
+  FUN_08213880(p);
+}
+
+void FUN_08219e9c(EntityA288* p) {
+  p->pltt = GetBgPlttFile(BGP_E9C3)->body;
+  CpuCopy32(p->pltt, gBgPlttBuffer, 80 * sizeof(rgb555));
+  EntityA288_LoadBgPltt(p);
+}
 
 NAKED void FUN_08219ed0(EntityA288* p) { INCFUNC("asm/func/FUN_08219ed0.inc"); }
 
@@ -429,7 +489,18 @@ void EntityA288_SetState(EntityA288* p, s32 state) {
   EntityA288_SetFlags(p, 2);
 }
 
-NAKED s32 EntityA288_Update(EntityA288* p) { INCFUNC("asm/func/EntityA288_Update.inc"); }
+s32 EntityA288_Update(EntityA288* p) {
+  if (!(p->flags & 1)) {
+    p->timer1++;
+  }
+
+  if (!(p->flags & 2)) {
+    p->timer2++;
+  }
+
+  p->updateCallback(p);
+  return 0;
+}
 
 s32 EntityA288_Destroy(EntityA288* p) {
   FUN_08213960(p);
@@ -445,4 +516,15 @@ s32 EntityA288_Destroy(EntityA288* p) {
 
 NAKED s32 EntityA288_Init(EntityA288* p) { INCFUNC("asm/func/EntityA288_Init.inc"); }
 
-NAKED EntityA288* EntityA288_Create(void) { INCFUNC("asm/func/EntityA288_Create.inc"); }
+EntityA288* EntityA288_Create(void) {
+  EntityA288* p = CreateEntity(ENTITY_UNK_11, sizeof(EntityA288));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, EntityA288_Update, EntityA288_Destroy);
+    if (EntityA288_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

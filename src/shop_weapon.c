@@ -5,6 +5,7 @@
 #include "inventory.h"
 #include "menu.h"
 #include "sprite.h"
+#include "text.h"
 #include "tilemap.h"
 #include "video.h"
 #include "vm.h"
@@ -51,6 +52,8 @@ static_assert(sizeof(Entity744F) == 6304);
 bool32 FUN_080b9adc(unknown* p);       // src/shop_item.c
 void FUN_080b9a0c(MenuSpritePair* p);  // src/shop_item.c
 void FUN_080b9894(MenuSpritePair* p);  // src/shop_item.c
+void FUN_080b9400(s32 kind);           // src/shop_item.c
+void FUN_080b94cc(s32 kind);           // src/shop_item.c
 
 void FUN_080be810(Entity744F* p);
 
@@ -72,7 +75,14 @@ NON_MATCH void FUN_080bcdf8(Entity744F* p, Entity744FFunc* fn, u8 val) {
 #endif
 }
 
-NAKED void FUN_080bce20(Entity744F* p, s32 param_2) { INCFUNC("asm/func/FUN_080bce20.inc"); }
+void FUN_080bce20(Entity744F* p, s32 line) {
+  FUN_08049e5c();
+  p->sprites[33].flags |= SPRFLAG_HIDDEN;
+  TextBox_Start(p->unk_1640);
+  TextBox_SetRect(0, 16, 30, 2);
+  TextBox_SetInstant(1);
+  TextBox_ShowLine(line);
+}
 
 NAKED s32 FUN_080bce64(s32 slot) { INCFUNC("asm/func/FUN_080bce64.inc"); }
 
@@ -94,7 +104,17 @@ NAKED void FUN_080bd180(Entity744F* p) { INCFUNC("asm/func/FUN_080bd180.inc"); }
 
 NAKED void FUN_080bd390(Entity744F* p) { INCFUNC("asm/func/FUN_080bd390.inc"); }
 
-NAKED s32 FindRegisteredWeaponSlot(s32 weapon) { INCFUNC("asm/func/FindRegisteredWeaponSlot.inc"); }
+// 登録スロットから weapon を探して添字を返す, 無ければ -1
+s32 FindRegisteredWeaponSlot(s32 weapon) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    if (REGISTERED_WEAPON(i) == weapon) {
+      return i;
+    }
+  }
+  return -1;
+}
 
 NAKED void FUN_080bd47c(Entity744F* p) { INCFUNC("asm/func/FUN_080bd47c.inc"); }
 
@@ -156,7 +176,16 @@ void Entity744F_LoadBgPltt(Entity744F* p) {
 
 NAKED void FUN_080be204(Entity744F* p) { INCFUNC("asm/func/FUN_080be204.inc"); }
 
-NAKED void FUN_080be650(Entity744F* p) { INCFUNC("asm/func/FUN_080be650.inc"); }
+void FUN_080be650(Entity744F* p) {
+  if (VM_SeekToNamedArg('s')) {
+    p->unk_1640 = FUN_0823d340();
+  }
+
+  FUN_08049f5c();
+  TextBox_SetRect(0, 16, 30, 2);
+  TextBox_SetInstant(1);
+  TextBox_SetBgPltt(BGP_A41A);
+}
 
 NAKED void FUN_080be690(Entity744F* p) { INCFUNC("asm/func/FUN_080be690.inc"); }
 
@@ -180,7 +209,12 @@ NAKED void FUN_080be810(Entity744F* p) { INCFUNC("asm/func/FUN_080be810.inc"); }
 
 NAKED void FUN_080be948(Entity744F* p) { INCFUNC("asm/func/FUN_080be948.inc"); }
 
-NAKED s32 Entity744F_Update(Entity744F* p) { INCFUNC("asm/func/Entity744F_Update.inc"); }
+s32 Entity744F_Update(Entity744F* p) {
+  FUN_080b94cc(p->kind);
+  FUN_080b9400(p->kind);
+  p->updateCallback(p);
+  return 0;
+}
 
 s32 Entity744F_Destroy(Entity744F* p) {
   MainSprite* sprite = p->sprites;
@@ -198,4 +232,15 @@ s32 Entity744F_Destroy(Entity744F* p) {
 
 NAKED s32 Entity744F_Init(Entity744F* p) { INCFUNC("asm/func/Entity744F_Init.inc"); }
 
-NAKED Entity744F* Entity744F_Create(void) { INCFUNC("asm/func/Entity744F_Create.inc"); }
+Entity744F* Entity744F_Create(void) {
+  Entity744F* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity744F));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity744F_Update, Entity744F_Destroy);
+    if (Entity744F_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
