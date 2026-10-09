@@ -440,7 +440,14 @@ NAKED void FUN_082192f4(EntityA288* p) { INCFUNC("asm/func/FUN_082192f4.inc"); }
 
 NAKED void FUN_08219d98(EntityA288* p) { INCFUNC("asm/func/FUN_08219d98.inc"); }
 
-NAKED void FUN_08219e5c(EntityA288* p) { INCFUNC("asm/func/FUN_08219e5c.inc"); }
+void FUN_08219e5c(EntityA288* p) {
+  s32 indices[1];
+
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_33B2);
+  indices[0] = 0;
+  Video_SetupBGLayout(1, 0, p->tilemap, 0, 0, 1, indices);
+  FUN_08213880(p);
+}
 
 void FUN_08219e9c(EntityA288* p) {
   p->pltt = GetBgPlttFile(BGP_E9C3)->body;
