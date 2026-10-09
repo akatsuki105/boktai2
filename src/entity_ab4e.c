@@ -17,7 +17,8 @@ typedef struct {
   u8 unk_38[0x60 - 0x38];     // 0x038, まだ未解析
   Mover unk_60;               // 0x060, _Update が Mover_ApplyMove に渡す
   MainSprite sprite;          // 0x0A4, _Update が MainSprite_AdvanceAnim に渡す
-  u8 unk_104[0x174 - 0x104];  // 0x104, まだ未解析
+  ParticleShadow shadow;      // 0x104, _Destroy が ParticleShadow_Remove に渡す
+  u8 unk_144[0x174 - 0x144];  // 0x144, まだ未解析
   s16 unk_174;                // 0x174, 0/1 で FUN_080da9c4 の呼び分けをする
   s16 unk_176;                // 0x176, FUN_080da9c4 に渡す
   s16 counter;                // 0x178, 毎フレーム減らし, 0 になると period に戻す
@@ -86,7 +87,21 @@ EntityAB4EElem* EntityAB4E_FindFreeElem(EntityAB4E* p) {
   return NULL;
 }
 
-NAKED s32 FUN_080452f4(EntityAB4E* p, EntityAB4EElem* elem, s32 index) { INCFUNC("asm/func/FUN_080452f4.inc"); }
+// 要素の Mover / 影 / スプライトを外して非アクティブにする
+s32 FUN_080452f4(EntityAB4E* p, EntityAB4EElem* elem, s32 index) {
+  Mover* mover;
+
+  if (!elem->active) {
+    return -1;
+  }
+
+  mover = &elem->unk_60;
+  FUN_08002a58(mover);
+  Mover_Unlink(mover);
+  ParticleShadow_Remove(&elem->shadow);
+  MainSprite_Remove(&elem->sprite);
+  elem->active = FALSE;
+}
 
 NAKED void FUN_08045330(EntityAB4EElem* elem, unknown* param_2) { INCFUNC("asm/func/FUN_08045330.inc"); }
 
