@@ -10,6 +10,9 @@
 s32 FUN_081dec1c(Entity9A9F* p);
 s32 FUN_081de130(Entity9A9F* p);
 void FUN_081df460(Entity9A9F*);
+s32 FUN_081de9d8(Entity9A9F*);
+s32 FUN_081de360(Entity9A9F*);
+
 s32 FUN_081de844(Entity9A9F*);
 s32 FUN_081de960(Entity9A9F*);
 void FUN_081df568(Entity9A9F* p);
@@ -149,7 +152,30 @@ s32 FUN_081de7e8(Entity9A9F* p) {
 
 NAKED s32 FUN_081de844(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de844.inc"); }
 
-NAKED s32 FUN_081de960(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de960.inc"); }
+// 残差6命令, 原典は通信ステータスの比較結果を 0/1 に起こしてから if で見るが agbcc は条件を直接分岐に畳む (FUN_080f8bb8 / FUN_080fc174 と同じ), static inline (if/else で return) は試済
+NON_MATCH s32 FUN_081de960(Entity9A9F* p) {
+#ifdef NONMATCHING_C
+  u16* status;
+
+  if (FUN_081ddab4(p) < 0) {
+    FUN_081ddbdc(p);
+    return -1;
+  }
+
+  status = p->unk_44;
+  if ((*status & 0x3C00) == 0x1C00) {
+    Entity9A9F_SetState(p, 9, (EntityFunc*)FUN_081de9d8);
+    return 0;
+  }
+
+  if ((*status & 0x3C00) == 0x400) {
+    Entity9A9F_SetState(p, 4, (EntityFunc*)FUN_081de360);
+    return 0;
+  }
+#else
+  INCFUNC("asm/func/FUN_081de960.inc");
+#endif
+}
 
 NAKED s32 FUN_081de9d8(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de9d8.inc"); }
 
