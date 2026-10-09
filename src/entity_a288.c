@@ -69,7 +69,9 @@ typedef struct EntityA288 {
   u8* unk_1650;                                // 0x1650, '.g'
   u8* unk_1654;                                // 0x1654, '.T'
   u8* unk_1658;                                // 0x1658, '.A'
-  u8 unk_165c[0x166C - 0x165C];                // 0x165C, まだ未解析
+  u16 unk_165c;                                // 0x165C, gStat->unk_93a が 0 なら 1, そうでなければ 0
+  u16 unk_165e;                                // 0x165E, FUN_08218e4c が 0 を入れる
+  u8 unk_1660[0x166C - 0x1660];                // 0x1660, まだ未解析
   MainSprite sprites_166c[3];                  // 0x166C
   u8* unk_178c;                                // 0x178C, '.p' の PC
   u8* unk_1790;                                // 0x1790, '.S'
@@ -430,7 +432,15 @@ NAKED void FUN_08218c30(EntityA288* p) { INCFUNC("asm/func/FUN_08218c30.inc"); }
 
 NAKED void FUN_08218ddc(EntityA288* p) { INCFUNC("asm/func/FUN_08218ddc.inc"); }
 
-NAKED void FUN_08218e4c(EntityA288* p) { INCFUNC("asm/func/FUN_08218e4c.inc"); }
+void FUN_08218e4c(EntityA288* p) {
+  if (gStat->unk_93a != 0) {
+    p->unk_165c = 0;
+  } else {
+    p->unk_165c = 1;
+  }
+
+  p->unk_165e = 0;
+}
 
 NAKED void FUN_08218e90(EntityA288* p) { INCFUNC("asm/func/FUN_08218e90.inc"); }
 
