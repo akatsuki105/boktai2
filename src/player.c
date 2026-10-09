@@ -2768,8 +2768,7 @@ NON_MATCH void Player_EnableWeaponSpecialEffects(Player* p, WeaponData* w) {
 NON_MATCH void Player_SetWeaponHitbox(Player* p) {
 #ifdef NONMATCHING_C
   HitboxData* hitbox = hitbox;
-  Vec3 halfSize;
-  Vec3 offset;
+  Vec3 halfSize, offset;
   HitboxAttributes attrs;
 
   if (p->kind == PLAYER_SABATA) {
@@ -2786,12 +2785,12 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
     return;
   }
 
-  if (p->weaponKind_a75 > 4) {
+  if (p->weaponKind > 4) {
     return;
   }
 
-  switch (p->weaponKind_a75) {
-    case 0: {
+  switch (p->weaponKind) {
+    case WK_SWORD: {
       halfSize.x = 0x5A;
       halfSize.y = 0x320;
       halfSize.z = 0x5A;
@@ -2803,7 +2802,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
       p->unk_a7e = 0xA;
       break;
     }
-    case 1: {
+    case WK_SPEAR: {
       halfSize.x = 0x3C;
       halfSize.y = 0x640;
       halfSize.z = 0x3C;
@@ -2815,7 +2814,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
       p->unk_a7e = 0x14;
       break;
     }
-    case 2: {
+    case WK_HAMMER: {
       halfSize.x = 0x50;
       halfSize.y = 0x460;
       halfSize.z = 0x50;
@@ -2827,7 +2826,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
       p->unk_a7e = 0x14;
       break;
     }
-    case 3: {
+    case WK_OTHERS: {
       halfSize.x = 0x3C;
       halfSize.y = 0x640;
       halfSize.z = 0x3C;
@@ -2839,7 +2838,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
       p->unk_a7e = 5;
       break;
     }
-    case 4: {
+    case WK_GUN: {
       halfSize.x = 0x3C;
       halfSize.y = 0x320;
       halfSize.z = 0x3C;
@@ -2854,7 +2853,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
   }
 
   Hitbox_Init(hitbox, 0, 0x2101, 0, (0x10000 << p->mover.unk_4) >> 16, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, p->unk_a7a, p->unk_a7c, attrs, 0, p->unk_a7e);
+  Hitbox_SetAttack(hitbox, p->totalAtk_a7a, p->unk_a7c, attrs, 0, p->unk_a7e);
   Hitbox_SetHandler(hitbox, dark_django_0806f990, p);
 #else
   INCFUNC("asm/func/Player_SetWeaponHitbox.inc");
@@ -2879,16 +2878,16 @@ void Player_ApplyWeapon(Player* p, Weapon* w) {
     wd = gWeaponDB[WEAPON_GUN_DEL_HELL];
   }
 
-  p->weaponID_a74 = wd.id;
-  p->weaponKind_a75 = wd.kind;
+  p->weaponID = wd.id;
+  p->weaponKind = wd.kind;
   p->weaponAtk = wd.atk;
-  p->unk_a7a = FUN_0807a6cc(&wd);
+  p->totalAtk_a7a = FUN_0807a6cc(&wd);
   Player_EnableWeaponSpecialEffects(p, &wd);
 
-  if (p->weaponID_a74 == WEAPON_MEGA_BUSTER) {
+  if (p->weaponID == WEAPON_MEGA_BUSTER) {
     p->attackCB = FUN_08071b14;
   } else {
-    p->attackCB = gPlayerAttackUpdates[p->weaponKind_a75];
+    p->attackCB = gPlayerAttackUpdates[p->weaponKind];
   }
 
   Player_SetWeaponHitbox(p);
@@ -2914,7 +2913,7 @@ NON_MATCH void Player_UpdateWeaponWear(Player* p) {
     return;
   }
 
-  if (p->weaponKind_a75 <= 2) {
+  if (p->weaponKind <= 2) {
     if (Player_TestFlag378(p, FLAG378_WET_DURABILITY)) {
       wear >>= 1;
     }
@@ -3296,7 +3295,7 @@ NON_MATCH bool32 Player_IsMagicAvailableForm(Player* p, magic32_t id) {
 // エンチャント中で、コストも払えて、武器種が銃でも拳でもなければ その魔法の ID を返す
 magic32_t Player_CheckMagicEnchant(Player* p) {
   if (p->magic.enchanted && p->magic.id <= MAGIC_EARTH && Player_CheckMagicCost(p)) {
-    if (p->weaponKind_a75 != WK_OTHERS && p->weaponKind_a75 != WK_GUN) {
+    if (p->weaponKind != WK_OTHERS && p->weaponKind != WK_GUN) {
       return p->magic.id;
     }
   }

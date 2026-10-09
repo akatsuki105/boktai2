@@ -1847,7 +1847,7 @@ s32 FUN_0807b620(void) {
   if (gPlayerPtr[i] == NULL) {
     return 0;
   }
-  return gPlayerPtr[i]->weaponKind_a75;
+  return gPlayerPtr[i]->weaponKind;
 }
 
 void FUN_0807b64c(void) {

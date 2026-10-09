@@ -54,7 +54,7 @@ typedef struct HitboxData {
   Vec3 halfSize;                // 0x1C, 判定の直方体の各軸の半径, Hitbox_Init が引数の Vec3 を8バイトまるごとコピーする
   Vec3 center;                  // 0x24, 判定の直方体の中心, Hitbox_UpdateBoxes が毎フレーム pos + offset で作る
   u8 unk_2c[0x34 - 0x2C];       // 0x2C - 0x33, 未解析の領域
-  u32 weakness;                 // 0x34 (Player: 0x1A0), 低位7bitが属性マスク, Hitbox_ApplyDamage が (b->weakness & 0x7F & a->attributes) != 0 でダメージ4倍にする
+  u32 weakness;                 // 0x34, 低位7bitが属性マスク, Hitbox_ApplyDamage が (b->weakness & 0x7F & a->attributes) != 0 でダメージ4倍にする
   HitboxAttributes attributes;  // 0x38, see HitboxAttributes
   u16 power;                    // 0x3C (Player: 0x1A8), Hitbox_ApplyDamage の基礎ダメージ = a->power - b->power (1未満なら1), 攻撃側では攻撃力、守備側では防御力
 
@@ -62,10 +62,10 @@ typedef struct HitboxData {
   // 攻撃側でも使われる: ジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 の 0x0813EFFC で a->damage (Player.unk_a10.damage) に値が加算され、Player_UpdateWeaponWear がこれを武器の耐久ダメージ (Weapon.wear) として吸い上げる
   u16 damage;
 
-  u16 unk_40;  // 0x40 (Player: 0x1AC)
+  u16 unk_40;  // 0x40, Hitbox_SetAttack の第3引数
 
   // 0x42, 8bit の向き, Hitbox_GetPushDir が (angle + 0x20 & 0xFF) >> 6 で押し出し方向の象限を出し、Breakable_OnHit が gSineTable の添字に使う
-  // Hitbox_ApplyDamage は a と b の差が 0x21 未満なら背後から当てたとみなして 1.5倍にする
+  // Hitbox_ApplyDamage は a と b の差が 33 未満なら背後から当てたとみなして 1.5倍にする
   u8 angle;
 
   HitboxHitResult8 hitResult;  // 0x43, see HBRESULT_*
