@@ -35,6 +35,7 @@ void PlaySound_082406e0(SoundID32 id);
 void sound_08240740(SoundID32 id);
 void FUN_082407e0(void);
 void FUN_0824082c(void);
+void FUN_082408d0(void);
 void FUN_082408f4(void);
 void FUN_08240918(void);
 void FUN_08240930(void);

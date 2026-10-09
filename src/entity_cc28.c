@@ -198,10 +198,12 @@ extern EntityCC28* gEntityCC28;  // 0x0300013C
 
 extern EntityCC28Func* const sEntityCC28State2Fns[];  // 0x085ACFDC
 
+static inline void DisableEntityFlags(u32 flags) { gEntityDisableFlags |= flags; }
 static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
 
 void FUN_08242c08(slot32_t n);  // src/weapon.c
 void FUN_0809630c(EntityCC28* p);
+void FUN_0808db68(EntityCC28* p);
 void FUN_08092bf0(EntityCC28* p);
 void FUN_080931cc(EntityCC28* p);
 void FUN_08093158(EntityCC28* p);
@@ -446,7 +448,13 @@ NAKED void FUN_0808d5cc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d5cc.inc"); }
 
 NAKED void FUN_0808d774(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d774.inc"); }
 
-NAKED void FUN_0808d908(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d908.inc"); }
+void FUN_0808d908(EntityCC28* p) {
+  FUN_0808d200(p);
+  FUN_0808d2ac(p);
+  FUN_082408d0();
+  DisableEntityFlags(ENTITY_DISABLE_2);
+  FUN_0808a33c(p, FUN_0808db68);
+}
 
 NAKED void FUN_0808d93c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d93c.inc"); }
 
