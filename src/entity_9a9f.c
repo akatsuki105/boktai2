@@ -390,7 +390,19 @@ void FUN_081df974(void) {
   }
 }
 
-NAKED s32 FUN_081df98c(void) { INCFUNC("asm/func/FUN_081df98c.inc"); }
+// 終了要求が立っているかどうか
+bool32 FUN_081df98c(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return FALSE;
+  }
+
+  if (p->killRequested != 0) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED void FUN_081df9ac(Entity9A9F* p, s32 param_2) { INCFUNC("asm/func/FUN_081df9ac.inc"); }
 
