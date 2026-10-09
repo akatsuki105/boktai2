@@ -88,6 +88,8 @@ extern void (*const PTR_ARRAY_085ab378[14])(unknown*, unknown*);
 extern void (*const PTR_ARRAY_085ab3b0[10])(unknown*, unknown*);
 extern void (*const PTR_ARRAY_085ab3d8[11])(unknown*, unknown*);
 
+void FUN_08055d7c(SpriteHolder* p);
+
 COMMON_DATA Entity286F* gEntity286F = NULL;  // 0x03002B50
 
 const u16 u16_ARRAY_085aaff4[270] = {
@@ -273,7 +275,22 @@ s32 Entity286FNode_SetPltt(Entity286FNode* node, u16 param_2) {
 
 s32 Entity286FNode_RefreshPltt(Entity286FNode* node) { return Entity286FNode_ApplyPltt(node, node->plttID); }
 
-NAKED s32 FUN_0804114c(Entity286FNode* node) { INCFUNC("asm/func/FUN_0804114c.inc"); }
+// ノードを表から外して Free する
+s32 FUN_0804114c(Entity286FNode* node) {
+  Entity286F* p = gEntity286F;
+
+  if (p != NULL && node->active) {
+    FUN_08040e68(p, node);
+    Entity286FNode_RemoveMover(node);
+    Mover_Unlink(&node->mover);
+    FUN_08055d7c(&node->sprite);
+    Entity286FNode_RemoveShadow(node);
+    node->active = 0;
+    Free(node);
+    return 0;
+  }
+  return -1;
+}
 
 // 登録済みのコールバックを順に呼ぶ
 s32 FUN_080411a0(Entity286F* p, Entity286FNode* node) {
