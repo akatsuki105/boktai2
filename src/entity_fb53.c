@@ -44,6 +44,8 @@ static inline void EntityFB53_SetState(EntityFB53* p, u8 state) {
   p->timer = 0;
 }
 
+void SignalStrengthIcon_CreateAt(s32 x, s32 y);  // src/entity_d53d.c
+
 void FUN_0804b474(EntityFB53*);
 void FUN_0804b530(EntityFB53*);
 void FUN_0804b5f0(EntityFB53*);
@@ -166,7 +168,34 @@ s32 EntityFB53_Destroy(EntityFB53* p) {
   return 0;
 }
 
-NAKED s32 EntityFB53_Init(EntityFB53* p) { INCFUNC("asm/func/EntityFB53_Init.inc"); }
+s32 EntityFB53_Init(EntityFB53* p) {
+  u32_03002b54 = 0;
+  gEntityFB53 = p;
+  Taiyo_Disable();
+
+  if (!VM_SeekToNamedArg('m')) {
+    return -1;
+  }
+
+  p->scriptM = FUN_0823d340();
+  if (p->scriptM == NULL) {
+    return -1;
+  }
+
+  if (VM_SeekToNamedArg('s')) {
+    p->scriptS = FUN_0823d340();
+    if (p->scriptS == NULL) {
+      return -1;
+    }
+  } else {
+    return -1;
+  }
+
+  p->scriptID = VM_GetNamedArgValue('e', 0);
+  FUN_0804b3f8(p);
+  SignalStrengthIcon_CreateAt(0, 0);
+  return 0;
+}
 
 EntityFB53* EntityFB53_Create(void) {
   EntityFB53* p = CreateEntity(ENTITY_UNK_2, sizeof(EntityFB53));
