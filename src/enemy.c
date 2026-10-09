@@ -344,7 +344,16 @@ NAKED void FUN_080e850c(Enemy* p) { INCFUNC("asm/func/FUN_080e850c.inc"); }
 
 NAKED void FUN_080e8614(Enemy* p) { INCFUNC("asm/func/FUN_080e8614.inc"); }
 
-NAKED bool8 Enemy_IsDead(Enemy* p) { INCFUNC("asm/func/Enemy_IsDead.inc"); }
+bool8 Enemy_IsDead(Enemy* p) {
+  if (p == NULL) {
+    return FALSE;
+  }
+
+  if (Enemy_TestFlag3(p, ENEFLAG3_UNK_6) || Enemy_TestFlag2(p, ENEFLAG2_UNK_17) || p->hp <= 0) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED void FUN_080e8aa0(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_080e8aa0.inc"); }
 
