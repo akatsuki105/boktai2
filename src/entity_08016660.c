@@ -14,7 +14,8 @@ typedef struct Entity08016660Node {
   u8 unk_03[0x06 - 0x03];           // 0x03, まだ未解析
   u16 timer;                        // 0x06, unk_08 を超えたら 0 に戻る
   u16 unk_08;                       // 0x08, timer の上限
-  u8 unk_0a[0x18 - 0x0A];           // 0x0A, まだ未解析
+  u8 unk_0a[0x16 - 0x0A];           // 0x0A, まだ未解析
+  u16 hp;                           // 0x16, 被弾のたびにダメージを引く, 0 止まり
   HitboxData* hitbox;               // 0x18, 非NULL なら解放時に Hitbox_Unregister して Free する
   void* unk_1c;                     // 0x1C, 非NULL なら解放時に Free する
   u8 unk_20[0x3C - 0x20];           // 0x20, まだ未解析
@@ -48,7 +49,19 @@ void (*const PTR_ARRAY_085aa918[2])(Entity08016660Node*) = {
 
 void FUN_08016060(void) { gEntity08016660 = NULL; }
 
-NAKED void FUN_0801606c(HitboxData* a, HitboxData* b, unknown* p) { INCFUNC("asm/func/FUN_0801606c.inc"); }
+// 氷属性なら2倍のダメージを hp から引く
+void FUN_0801606c(HitboxData* a, HitboxData* b, Entity08016660Node* node) {
+  s32 damage = b->damage;
+
+  if (Hitbox_TestAttribute(a, HBATTR_FROST)) {
+    damage *= 2;
+  }
+
+  node->hp -= damage;
+  if ((s16)node->hp < 0) {
+    node->hp = 0;
+  }
+}
 
 void nop_08016090(void) { return; }
 
