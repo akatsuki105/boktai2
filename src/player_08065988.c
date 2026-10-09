@@ -282,7 +282,7 @@ NAKED void FUN_08066c64(Player* p) { INCFUNC("asm/func/FUN_08066c64.inc"); }
 
 void FUN_08066d10(Player* p) {
   FUN_0823bca8(8);
-  p->unk_3ce = 0;
+  p->lookAroundActive = 0;
 }
 
 // 残差1命令: 原典は TRUE を返す経路を全部まとめて後ろへ飛ばすが、こちらは途中で合流する
@@ -317,7 +317,7 @@ void FUN_08066d7c(Player* p, s32 val) {
     } else {
       FUN_08066abc(p);
     }
-  } else if (p->unk_3ce != 0) {
+  } else if (p->lookAroundActive != 0) {
     FUN_08066d10(p);
   }
   p->unk_3d1 = 1;
@@ -797,11 +797,11 @@ NAKED void MagicHealing_0806f3a0(Player* p) { INCFUNC("asm/func/MagicHealing_080
 
 NAKED void FUN_0806f5d8(Player* p) { INCFUNC("asm/func/FUN_0806f5d8.inc"); }
 
-// 入力方向が来ていて unk_3ce が 0 なら向きを入力方向に合わせる, 向きを変えたら TRUE
+// 入力方向が来ていて見渡しモード中でなければ向きを入力方向に合わせる, 向きを変えたら TRUE
 bool32 FUN_0806f738(Player* p) {
   bool32 turned = FALSE;
 
-  if ((s16)p->facingHistory[0] != -1 && p->unk_3ce == 0) {
+  if ((s16)p->facingHistory[0] != -1 && p->lookAroundActive == 0) {
     p->facing = FUN_08067068(p);
     turned = TRUE;
   }
@@ -1162,13 +1162,13 @@ void FUN_080784fc(Player* p) {
 
 void FUN_08078548(Player* p) {
   Player_StopEneChargeSound(p);
-  if (p->unk_3ce != 0) {
+  if (p->lookAroundActive != 0) {
     FUN_08066d10(p);
   }
 }
 
 void FUN_0807856c(Player* p) {
-  if (p->unk_3ce != 0) {
+  if (p->lookAroundActive != 0) {
     FUN_08066d10(p);
   }
 }
