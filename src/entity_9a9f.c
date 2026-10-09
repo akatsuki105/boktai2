@@ -81,7 +81,18 @@ void FUN_081ddbdc(Entity9A9F* p) {
   FUN_08238bf4();
 }
 
-NAKED void FUN_081ddc04(Entity9A9F* p) { INCFUNC("asm/func/FUN_081ddc04.inc"); }
+// unk_118 の先頭 recordCount 件に添字を入れ, 残りを 4 で埋める
+void FUN_081ddc04(Entity9A9F* p) {
+  s32 i;
+
+  for (i = 0; i < p->recordCount; i++) {
+    p->unk_118[i] = i;
+  }
+
+  for (; i <= 4; i++) {
+    p->unk_118[i] = 4;
+  }
+}
 
 NAKED void FUN_081ddc3c(Entity9A9F* p) { INCFUNC("asm/func/FUN_081ddc3c.inc"); }
 
