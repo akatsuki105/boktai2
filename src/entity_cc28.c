@@ -1509,7 +1509,15 @@ NAKED void FUN_0809a20c(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a20c.inc"); }
 
 NAKED void FUN_0809a274(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a274.inc"); }
 
-NAKED void FUN_0809a324(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a324.inc"); }
+void FUN_0809a324(EntityCC28* p) {
+  if (gInput[0].pressed & A_BUTTON) {
+    PlaySound_082406e0(0xDD);
+    FUN_0808b6fc(p, 1);
+    FUN_08099b3c(9);
+    FUN_0808c700(p);
+    EntityCC28_SetState(p, FUN_0809a368, 1);
+  }
+}
 
 NAKED void FUN_0809a368(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a368.inc"); }
 
