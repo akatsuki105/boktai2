@@ -156,7 +156,7 @@ void FUN_080092f0(Entity83B2* p, Entity83B2Data* data) {
 bool32 FUN_08009364(Entity83B2* p, Entity83B2Data* data) {
   Player* player = p->player;
   u32 mask = 0x186C;
-  if ((player->unk_20 & mask) == 0 && player->unk_380[0] == 0 && p->unk_19 < 0) {
+  if ((player->unk_20 & mask) == 0 && player->formRequest == 0 && p->unk_19 < 0) {
     return TRUE;
   }
   return FALSE;

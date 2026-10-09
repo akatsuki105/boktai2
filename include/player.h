@@ -222,11 +222,12 @@ typedef struct Player {
   u8 action;                        // 0x37C, いま実行している行動, kind ごとの PlayerFunc テーブル (0x085abcac など) の添字
   u8 state;                         // 0x37D, action の中の段階, 行動関数はこれで switch する
   u16 stateTimer;                   // 0x37E, Player_SetAction が 0 に戻してから経ったフレーム数, 行動関数が自分で数える
-  u8 unk_380[2];                    // 0x380
+  bool8 formRequest;                // 0x380, 0 以外なら Player_ApplyFormRequest が formRequestKind のフォームに切り替えて 0 に戻す
+  u8 formRequestKind;               // 0x381, 切り替え先の kind (see PlayerKind), 2/3/4 以外は PLAYER_DARK_DJANGO に戻る
   u8 unk_382;                       // 0x382, Player_GetMagicAction がコウモリ変身時に 0xBE を入れる
   u8 unk_383[4];                    // 0x383
   coffin8_t coffin;                 // 0x387, MagicSleeping_0806c124
-  u8 unk_388[0x38A - 0x388];        // 0x388
+  u16 unk_388;                      // 0x388, Player_ApplyFormRequest が寝るときに 0 にする
   u16 unk_38a;                      // 0x38A, 0 のときだけ FUN_0806e404 が専用の効果音を鳴らして 40 を入れる
   u16 eneAccum;                     // 0x38C, 棺桶で寝ている間の ENE 回復の端数, 棺桶ごとの寝心地を毎フレーム足して 0x80 ごとに ene を 1 増やす
   bool8 isSabata;                   // 0x38E, 根拠: Player_InitState
