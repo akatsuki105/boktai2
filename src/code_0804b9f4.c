@@ -60,8 +60,8 @@ static_assert(sizeof(Entity0804e2c0) == 908);
 
 typedef s32(Entity0804e2c0Func)(Entity0804e2c0* p);
 
-IWRAM_DATA u8 u8_030000dc = 0;    // 0x030000DC
-IWRAM_DATA u32 u32_030000e0 = 0;  // 0x030000E0, 型不明
+IWRAM_DATA volatile u8 u8_030000dc = 0;  // 0x030000DC, 送信完了を待つビジーループが見るので volatile
+IWRAM_DATA u32 u32_030000e0 = 0;         // 0x030000E0, 型不明
 
 COMMON_DATA Entity0804e2c0* gEntity0804e2c0 = NULL;  // 0x03002B58
 
@@ -529,7 +529,7 @@ NAKED void FUN_0804d868(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804d868.inc"
 
 NAKED s32 FUN_0804d90c(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804d90c.inc"); }
 
-NAKED void FUN_0804d9a4(s32 param_1) { INCFUNC("asm/func/FUN_0804d9a4.inc"); }
+NAKED void FUN_0804d9a4(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804d9a4.inc"); }
 
 // モーション 0x17 をセットする状態ハンドラ
 s32 FUN_0804da50(Entity0804e2c0* p) {
@@ -610,7 +610,26 @@ NAKED s32 FUN_0804df18(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804df18.inc")
 
 NAKED s32 FUN_0804e028(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e028.inc"); }
 
-NAKED void FUN_0804e0bc(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e0bc.inc"); }
+void FUN_0804e0bc(Entity0804e2c0* p) {
+  while (u8_030000dc == 1) {
+  }
+
+  rfu_LMAN_manager_entity(0);
+  if (p->unk_35 != 0) {
+    rfu_REQ_disconnect(p->unk_35);
+    rfu_waitREQComplete();
+    p->unk_35 = 0;
+  }
+
+  if (gRfuLinkStatus->parent_child == 1) {
+    u8_030000dc = 1;
+    rfu_LMAN_REQ_sendData(1);
+  }
+
+  FUN_0804d90c(p);
+  FUN_0804d9a4(p);
+  PTR_ARRAY_085ab5e0[p->unk_38](p);
+}
 
 // RFU の状態を進めてから unk_38 番の状態ハンドラを呼ぶ
 s32 FUN_0804e128(Entity0804e2c0* p) {
