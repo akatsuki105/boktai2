@@ -271,7 +271,7 @@ NAKED s32 FUN_082380f4(void) { INCFUNC("asm/func/FUN_082380f4.inc"); }
 
 s32 Sio_GetTimerIntrCount(void) { return gSioTimerIntrCount; }
 
-NAKED s32 Sio_GetSerialIntrCount(void) { INCFUNC("asm/func/Sio_GetSerialIntrCount.inc"); }
+s32 Sio_GetSerialIntrCount(void) { return gSioSerialIntrCount; }
 
 NAKED s32 Sio_GetMultiId(void) { INCFUNC("asm/func/Sio_GetMultiId.inc"); }
 
