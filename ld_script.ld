@@ -302,6 +302,7 @@ SECTIONS {
 			src/entity_a628.o (.text);
 			src/entity_ba36.o (.text);
 			src/code_080917e4.o (.text);
+			src/entity_8af6.o (.text);
 			src/entity_cf58.o (.text);
 			src/entity_d852.o (.text);
 			src/code_080a6c94.o (.text);

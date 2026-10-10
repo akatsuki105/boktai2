@@ -61,8 +61,9 @@ IWRAM_DATA u8 u8_03002c1a[0x03002C3C - 0x03002C1A] = {};  // todo
 IWRAM_DATA struct EntityA628* gEntityA628 = NULL;  // 0x03002C3C
 IWRAM_DATA struct EntityBA36* gEntityBA36 = NULL;  // 0x03002C40
 
-IWRAM_DATA u8 u8_03002c44[0x03002C50 - 0x03002C44] = {};  // todo
+IWRAM_DATA u8 u8_03002c44[0x03002C4C - 0x03002C44] = {};  // todo
 
+IWRAM_DATA struct Entity8AF6* gEntity8AF6 = NULL;          // 0x03002C4C
 IWRAM_DATA struct Entity4063* gEntity4063 = NULL;          // 0x03002C50
 IWRAM_DATA struct Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
 IWRAM_DATA struct EntityCBB0* gEntityCBB0 = NULL;          // 0x03002C58
