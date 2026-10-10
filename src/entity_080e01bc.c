@@ -69,7 +69,17 @@ void FUN_080df730(s32 param_1, s32 param_2, Entity080e01bc* p) {
   hb->flags |= HBFLAG_UNK_2;
 }
 
-NAKED void FUN_080df760(s32 param_1, s32 param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080df760.inc"); }
+void FUN_080df760(s32 param_1, s32 param_2, Entity080e01bc* p) {
+  HitboxData* hb;
+
+  p->unk_1ae = 2;
+  p->unk_1b2 = 1;
+
+  hb = &p->hitbox_f4;
+  hb->flags |= HBFLAG_UNK_2;
+  hb = &p->hitbox_144;
+  hb->flags |= HBFLAG_UNK_2;
+}
 
 NAKED void FUN_080df790(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_080df790.inc"); }
 
