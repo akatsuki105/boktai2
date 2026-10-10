@@ -83,7 +83,7 @@ _08074568:
 	ldrb r2, [r0]
 	adds r0, r4, #0
 	movs r1, #0x20
-	bl FUN_080c1abc
+	bl Entity080c1abc_Create
 	b _080746E4
 	.align 2, 0
 _08074584: .4byte 0x0000037E
