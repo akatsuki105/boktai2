@@ -200,6 +200,54 @@ NAKED s32 FUN_08083eac(Player* p) { INCFUNC("asm/func/FUN_08083eac.inc"); }
 
 NAKED void FUN_08084078(s32 param_1) { INCFUNC("asm/func/FUN_08084078.inc"); }
 
+void FUN_08081f80(Player* p);
+void FUN_08081fb4(Player* p);
+void FUN_08082bdc(Player* p);
+void FUN_080832b8(Player* p);
+void FUN_08082154(Player* p);
+void FUN_0808301c(Player* p);
+void FUN_08082dac(Player* p);
+void FUN_08082970(Player* p);
+void FUN_08082a94(Player* p);
+void FUN_080835d8(Player* p);
+void FUN_08082464(Player* p);
+void FUN_08082498(Player* p);
+void FUN_08082670(Player* p);
+
+// clang-format off
+const PlayerFunc PTR_ARRAY_085abf54[29] = {
+    FUN_08081f80,
+    FUN_08081fb4,
+    FUN_08082bdc,
+    FUN_080832b8,
+    NULL,
+    NULL,
+    NULL,
+    FUN_08082154,
+    FUN_0808301c,
+    FUN_08082dac,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_08082970,
+    FUN_08082a94,
+    FUN_080835d8,
+    FUN_08082464,
+    NULL,
+    NULL,
+    FUN_08082498,
+    FUN_08082670,
+    NULL,
+    NULL,
+    NULL,
+};  // 0x085ABF54
+// clang-format on
+
 NAKED void FUN_08084330(Player* p) { INCFUNC("asm/func/FUN_08084330.inc"); }
 
 NAKED void FUN_080843ac(s32 param_1, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_080843ac.inc"); }

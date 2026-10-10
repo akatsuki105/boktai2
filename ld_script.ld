@@ -583,6 +583,7 @@ SECTIONS {
     src/entity_08060470.o (.rodata);
     src/player.o (.rodata);
     src/player_08065988.o (.rodata);
+    src/player_link.o (.rodata);
     src/coffin_immortal.o (.rodata);
     src/coffin_sealing.o (.rodata);
     src/entity_cc28.o (.rodata);
