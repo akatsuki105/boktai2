@@ -3,12 +3,12 @@
 	ldr r0, [r0]
 	cmp r0, #0
 	bne _08238C08
-	bl FUN_0823869c
+	bl Sio_StopSerialIntr
 	b _08238C0C
 	.align 2, 0
 _08238C04: .4byte 0x030046CC
 _08238C08:
-	bl FUN_0823869c
+	bl Sio_StopSerialIntr
 _08238C0C:
 	ldr r1, _08238C20 @ =0x030046C4
 	ldr r0, [r1]

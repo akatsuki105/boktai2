@@ -355,7 +355,15 @@ void Sio_StartTransfer(void) { REG_SIOCNT |= SIO_START; }
 
 NAKED void FUN_08238634(void) { INCFUNC("asm/func/FUN_08238634.inc"); }
 
-NAKED void FUN_0823869c(void) { INCFUNC("asm/func/FUN_0823869c.inc"); }
+// シリアル割り込みを止めてハンドラを IntrDummy に戻し, SIOCNT を割り込みなしのマルチプレイモードに戻す
+void Sio_StopSerialIntr(void) {
+  REG_IME = 0;
+  REG_IE &= ~INTR_FLAG_SERIAL;
+  gIntrTable[1] = IntrDummy;
+  REG_IME = 1;
+  REG_SIOCNT = SIO_MULTI_MODE | SIO_115200_BPS;
+  REG_IF = INTR_FLAG_SERIAL;
+}
 
 NAKED void FUN_082386e4(void) { INCFUNC("asm/func/FUN_082386e4.inc"); }
 
