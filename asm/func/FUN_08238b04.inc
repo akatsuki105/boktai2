@@ -2,7 +2,7 @@
 	ldr r1, _08238B90 @ =0x030046C4
 	movs r0, #1
 	str r0, [r1]
-	bl FUN_082389c8
+	bl Sio_Reinit
 	ldr r0, _08238B94 @ =0x0300082C
 	movs r2, #0
 	str r2, [r0]

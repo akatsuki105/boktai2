@@ -336,7 +336,7 @@ NAKED void FUN_0823869c(void) { INCFUNC("asm/func/FUN_0823869c.inc"); }
 NAKED void FUN_082386e4(void) { INCFUNC("asm/func/FUN_082386e4.inc"); }
 
 // 保留中のシリアル割り込みを捨ててから VBlank を待ち、SIO を 115200bps のマルチプレイモードに組み直す
-void FUN_082389c8(void) {
+void Sio_Reinit(void) {
   gSioStatus = 0;
   gSioMultiId = -1;
   REG_IME = 0;
