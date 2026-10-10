@@ -13,7 +13,6 @@
 // player.c とファイルを分けてるのは、ファイルサイズが大きくなりすぎてコードを把握しにくいからで、解析が進んだら整理する予定
 
 void Player_RefreshMagicInfo(Player* p);
-extern const u16 u16_ARRAY_085abf4c[3];
 extern u16 u16_ARRAY_03002ba0[3];
 extern u16 u16_03002b60;
 extern u16 u16_03002b64;
@@ -1663,23 +1662,197 @@ NAKED void FUN_08079644(Player* p) { INCFUNC("asm/func/FUN_08079644.inc"); }
 
 NAKED void FUN_0807972c(Player* p) { INCFUNC("asm/func/FUN_0807972c.inc"); }
 
+// clang-format off
+const PlayerFunc sPlayerBatUpdates[27] = {
+    FUN_0806c2dc,
+    FUN_0806c400,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806cbe8,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806c868,
+    FUN_0806c6d4,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806c9bc,
+    NULL,
+    NULL,
+};  // 0x085ABDB0
+// clang-format on
+
 NAKED void Player_UpdateBat(Player* p) { INCFUNC("asm/func/Player_UpdateBat.inc"); }
+
+// --------------------------------------------
 
 NAKED s32 FUN_0807998c(Player* p) { INCFUNC("asm/func/FUN_0807998c.inc"); }
 
 NAKED void FUN_08079a64(Player* p) { INCFUNC("asm/func/FUN_08079a64.inc"); }
 
+void FUN_0806ceb0(Player* p);
+void FUN_0806d014(Player* p);
+void FUN_0806d22c(Player* p);
+void FUN_0806dd7c(Player* p);
+void FUN_0806d420(Player* p);
+void FUN_0806d5b0(Player* p);
+void FUN_0806d74c(Player* p);
+void FUN_0806da18(Player* p);
+
+// clang-format off
+const PlayerFunc sPlayerMouseUpdates[27] = {
+    FUN_0806ceb0,
+    FUN_0806d014,
+    NULL,
+    NULL,
+    FUN_0806d22c,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806dd7c,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806d420,
+    FUN_0806d5b0,
+    NULL,
+    NULL,
+    FUN_0806d74c,
+    FUN_0806da18,
+    NULL,
+    NULL,
+};  // 0x085ABE1C
+// clang-format on
+
 NAKED void Player_UpdateMouse(Player* p) { INCFUNC("asm/func/Player_UpdateMouse.inc"); }
+
+// --------------------------------------------
 
 NAKED s32 FUN_08079c50(Player* p) { INCFUNC("asm/func/FUN_08079c50.inc"); }
 
 NAKED void FUN_08079d40(Player* p) { INCFUNC("asm/func/FUN_08079d40.inc"); }
 
+void MagicSleeping_Update(Player* p);
+void FUN_0806e15c(Player* p);
+void FUN_0806e404(Player* p);
+void FUN_0806e4b4(Player* p);
+void FUN_0806e7dc(Player* p);
+void FUN_0806e674(Player* p);
+
+// clang-format off
+const PlayerFunc sPlayerSleepingUpdates[21] = {
+    MagicSleeping_Update,
+    FUN_0806e15c,
+    NULL,
+    FUN_0806e404,
+    FUN_0806e4b4,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806e7dc,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806e674,
+};  // 0x085ABE88
+// clang-format on
+
 NAKED void Player_UpdateSleeping(Player* p) { INCFUNC("asm/func/Player_UpdateSleeping.inc"); }
+
+// --------------------------------------------
+
+void FUN_08066f7c(Player* p);
+void FUN_080672b0(Player* p);
+void FUN_0806f284(Player* p);
+void FUN_080695ec(Player* p);
+void FUN_08067510(Player* p);
+void FUN_08067de8(Player* p);
+void FUN_08069218(Player* p);
+void FUN_08067ffc(Player* p);
+void FUN_08068624(Player* p);
+void MagicRisingSun_08068944(Player* p);
+void MagicTransform_0806b92c(Player* p);
+void MagicChangeWolf_0806eb40(Player* p);
+void MagicChangeBat_0806bc74(Player* p);
+void MagicChangeMouse_0806bf18(Player* p);
+void MagicSleeping_0806c124(Player* p);
+void MagicFreeze_08069710(Player* p);
+void MagicHealing_0806f3a0(Player* p);
+void FUN_0806f5d8(Player* p);
+void FUN_08069c8c(Player* p);
+void FUN_0806961c(Player* p);
+void FUN_08069648(Player* p);
+void FUN_0806a050(Player* p);
+void FUN_08069d70(Player* p);
+void FUN_08069f60(Player* p);
+void FUN_0806a084(Player* p);
+void FUN_0806a32c(Player* p);
+void FUN_0806a628(Player* p);
+void FUN_0806a88c(Player* p);
+
+// clang-format off
+const PlayerFunc PTR_ARRAY_085abedc[28] = {
+    FUN_08066f7c,
+    FUN_080672b0,
+    FUN_0806f284,
+    FUN_080695ec,
+    FUN_08067510,
+    FUN_08067de8,
+    FUN_08069218,
+    FUN_08067ffc,
+    FUN_08068624,
+    MagicRisingSun_08068944,
+    MagicTransform_0806b92c,
+    MagicChangeWolf_0806eb40,
+    MagicChangeBat_0806bc74,
+    MagicChangeMouse_0806bf18,
+    MagicSleeping_0806c124,
+    MagicFreeze_08069710,
+    MagicHealing_0806f3a0,
+    FUN_0806f5d8,
+    FUN_08069c8c,
+    FUN_0806961c,
+    FUN_08069648,
+    FUN_0806a050,
+    FUN_08069d70,
+    FUN_08069f60,
+    FUN_0806a084,
+    FUN_0806a32c,
+    FUN_0806a628,
+    FUN_0806a88c,
+};  // 0x085ABEDC
+// clang-format on
 
 NAKED void FUN_08079f1c(Player* p) { INCFUNC("asm/func/FUN_08079f1c.inc"); }
 
-NAKED void FUN_0807a270(Player* p) { INCFUNC("asm/func/FUN_0807a270.inc"); }
+NAKED void UNUSED FUN_0807a270(Player* p) { INCFUNC("asm/func/FUN_0807a270.inc"); }
 
 NAKED void FUN_0807a334(Player* p) { INCFUNC("asm/func/FUN_0807a334.inc"); }
 
@@ -2225,11 +2398,12 @@ NON_MATCH s32 FUN_0807b3e0(void) {
 }
 
 void FUN_0807b428(void) {
+  static const u16 sBadCondFrames[3] = {30 * 60, 30 * 60, 15 * 60};  // 0x085ABF4C
   if (VM_SeekToNamedArg('s')) {
     s32 n = VM_GetValue();
 
     if (n <= 2) {
-      s32 val = VM_SeekToNamedArg('t') ? VM_GetValue() : u16_ARRAY_085abf4c[n];
+      s32 val = VM_SeekToNamedArg('t') ? VM_GetValue() : sBadCondFrames[n];
 
       if (gPlayerPtr[0] != NULL) {
         Player_ApplyBadCondition(gPlayerPtr[0], n, val);
@@ -3789,179 +3963,3 @@ Player* CreatePlayer(u32 n, void* _) {
 
   return p;
 }
-
-// clang-format off
-const PlayerFunc PTR_ARRAY_085abdb0[27] = {
-    FUN_0806c2dc,
-    FUN_0806c400,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    FUN_0806cbe8,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    FUN_0806c868,
-    FUN_0806c6d4,
-    NULL,
-    NULL,
-    NULL,
-    FUN_0806c9bc,
-    NULL,
-    NULL,
-};  // 0x085ABDB0
-// clang-format on
-
-// --------------------------------------------
-
-void FUN_0806ceb0(Player* p);
-void FUN_0806d014(Player* p);
-void FUN_0806d22c(Player* p);
-void FUN_0806dd7c(Player* p);
-void FUN_0806d420(Player* p);
-void FUN_0806d5b0(Player* p);
-void FUN_0806d74c(Player* p);
-void FUN_0806da18(Player* p);
-
-// clang-format off
-const PlayerFunc PTR_ARRAY_085abe1c[27] = {
-    FUN_0806ceb0,
-    FUN_0806d014,
-    NULL,
-    NULL,
-    FUN_0806d22c,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    FUN_0806dd7c,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    FUN_0806d420,
-    FUN_0806d5b0,
-    NULL,
-    NULL,
-    FUN_0806d74c,
-    FUN_0806da18,
-    NULL,
-    NULL,
-};  // 0x085ABE1C
-// clang-format on
-
-// --------------------------------------------
-
-void MagicSleeping_Update(Player* p);
-void FUN_0806e15c(Player* p);
-void FUN_0806e404(Player* p);
-void FUN_0806e4b4(Player* p);
-void FUN_0806e7dc(Player* p);
-void FUN_0806e674(Player* p);
-
-// clang-format off
-const PlayerFunc PTR_ARRAY_085abe88[21] = {
-    MagicSleeping_Update,
-    FUN_0806e15c,
-    NULL,
-    FUN_0806e404,
-    FUN_0806e4b4,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    FUN_0806e7dc,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    FUN_0806e674,
-};  // 0x085ABE88
-// clang-format on
-
-// --------------------------------------------
-
-void FUN_08066f7c(Player* p);
-void FUN_080672b0(Player* p);
-void FUN_0806f284(Player* p);
-void FUN_080695ec(Player* p);
-void FUN_08067510(Player* p);
-void FUN_08067de8(Player* p);
-void FUN_08069218(Player* p);
-void FUN_08067ffc(Player* p);
-void FUN_08068624(Player* p);
-void MagicRisingSun_08068944(Player* p);
-void MagicTransform_0806b92c(Player* p);
-void MagicChangeWolf_0806eb40(Player* p);
-void MagicChangeBat_0806bc74(Player* p);
-void MagicChangeMouse_0806bf18(Player* p);
-void MagicSleeping_0806c124(Player* p);
-void MagicFreeze_08069710(Player* p);
-void MagicHealing_0806f3a0(Player* p);
-void FUN_0806f5d8(Player* p);
-void FUN_08069c8c(Player* p);
-void FUN_0806961c(Player* p);
-void FUN_08069648(Player* p);
-void FUN_0806a050(Player* p);
-void FUN_08069d70(Player* p);
-void FUN_08069f60(Player* p);
-void FUN_0806a084(Player* p);
-void FUN_0806a32c(Player* p);
-void FUN_0806a628(Player* p);
-void FUN_0806a88c(Player* p);
-
-// clang-format off
-const PlayerFunc PTR_ARRAY_085abedc[28] = {
-    FUN_08066f7c,
-    FUN_080672b0,
-    FUN_0806f284,
-    FUN_080695ec,
-    FUN_08067510,
-    FUN_08067de8,
-    FUN_08069218,
-    FUN_08067ffc,
-    FUN_08068624,
-    MagicRisingSun_08068944,
-    MagicTransform_0806b92c,
-    MagicChangeWolf_0806eb40,
-    MagicChangeBat_0806bc74,
-    MagicChangeMouse_0806bf18,
-    MagicSleeping_0806c124,
-    MagicFreeze_08069710,
-    MagicHealing_0806f3a0,
-    FUN_0806f5d8,
-    FUN_08069c8c,
-    FUN_0806961c,
-    FUN_08069648,
-    FUN_0806a050,
-    FUN_08069d70,
-    FUN_08069f60,
-    FUN_0806a084,
-    FUN_0806a32c,
-    FUN_0806a628,
-    FUN_0806a88c,
-};  // 0x085ABEDC
-// clang-format on
-
-const u16 u16_ARRAY_085abf4c[3] = {1800, 1800, 900};  // 0x085ABF4C
