@@ -321,7 +321,7 @@ _081E1C30:
 	movs r0, #0
 	strb r0, [r1]
 _081E1C38:
-	bl FUN_08238094
+	bl Sio_GetError
 	cmp r0, #0
 	blt _081E1C2C
 	bl Sio_GetMultiId

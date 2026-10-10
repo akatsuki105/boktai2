@@ -261,7 +261,13 @@ NAKED s32 FUN_08237f74(unknown* p) { INCFUNC("asm/func/FUN_08237f74.inc"); }
 
 NAKED s32 FUN_08238014(unknown* p, s32 param_2) { INCFUNC("asm/func/FUN_08238014.inc"); }
 
-NAKED s32 FUN_08238094(void) { INCFUNC("asm/func/FUN_08238094.inc"); }
+// 通信エラーが出ていればそのエラーコード, 出ていなければ 0
+s32 Sio_GetError(void) {
+  if (gSioStatus < 0) {
+    return gSioStatus;
+  }
+  return 0;
+}
 
 NAKED s32 FUN_082380a8(void) { INCFUNC("asm/func/FUN_082380a8.inc"); }
 
