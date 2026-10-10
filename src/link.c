@@ -387,7 +387,15 @@ NAKED void FUN_08238c24(void) { INCFUNC("asm/func/FUN_08238c24.inc"); }
 
 NAKED void FUN_08238cd4(void) { INCFUNC("asm/func/FUN_08238cd4.inc"); }
 
-NAKED void FUN_08238d84(void) { INCFUNC("asm/func/FUN_08238d84.inc"); }
+// 接続待ち (-1, -2) の間は何もせず, 正常に繋がっている間だけ転送を開始する
+void Sio_StartTransferIfIdle(void) {
+  if (gSioStatus < 0 && gSioStatus > -3) {
+    return;
+  }
+  if (gSioStatus == 0) {
+    Sio_StartTransfer();
+  }
+}
 
 NAKED s32 FUN_08238da8(u16* param_1) { INCFUNC("asm/func/FUN_08238da8.inc"); }
 

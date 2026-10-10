@@ -95,7 +95,7 @@ _081D9B24:
 	ldr r0, [r6, #0x24]
 	cmp r0, #0
 	bne _081D9B4E
-	bl FUN_08238d84
+	bl Sio_StartTransferIfIdle
 _081D9B4E:
 	ldr r0, [r6, #0x48]
 	cmp r0, #0

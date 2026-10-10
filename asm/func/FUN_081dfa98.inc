@@ -44,7 +44,7 @@ _081DFAB0:
 	beq _081DFB1A
 	cmp r1, #0x18
 	beq _081DFB1A
-	bl FUN_08238d84
+	bl Sio_StartTransferIfIdle
 	b _081DFB1A
 	.align 2, 0
 _081DFAFC: .4byte 0x030001AC
@@ -58,7 +58,7 @@ _081DFB08:
 	beq _081DFB1A
 	cmp r1, #0x18
 	beq _081DFB1A
-	bl FUN_08238d84
+	bl Sio_StartTransferIfIdle
 _081DFB1A:
 	ldr r1, _081DFB80 @ =0x030001AC
 	movs r0, #4
