@@ -122,7 +122,7 @@ gSubroutineTable:
 	.4byte 0x320C, FUN_0809e3a0
 	.4byte 0x3215, FUN_081d0c38
 	.4byte 0x329B, Entity329B_Create
-	.4byte 0x3361, FUN_080c13a4
+	.4byte 0x3361, Entity3361_Create
 	.4byte 0x33AA, VM_Sub33AA
 	.4byte 0x33C4, FUN_081df814
 	.4byte 0x3469, VM_Random
