@@ -628,7 +628,9 @@ SECTIONS {
     src/entity_723e.o (.rodata);
     src/entity_08052ffc.o (.rodata);
     src/entity_5645.o (.rodata);
+    src/entity_08056728.o (.rodata);
     src/rodata.o (.rodata);
+    src/entity_0805e67c.o (.rodata);
     src/entity_0805ee80.o (.rodata);
     src/entity_0805fe30.o (.rodata);
     src/entity_080601a8.o (.rodata);

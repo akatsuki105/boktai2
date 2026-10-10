@@ -2,9 +2,6 @@
 
 // ---------------- code_08052eb8.s -----------------
 
-void FUN_08055fe4(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_080561b8(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_080563b0(unknown* p, unknown* param_2, unknown* param_3);
 void FUN_080573a0(unknown* p, unknown* param_2, unknown* param_3);
 void FUN_08057478(unknown* p, unknown* param_2, unknown* param_3);
 void FUN_0805758c(unknown* p, unknown* param_2, unknown* param_3);
@@ -48,18 +45,7 @@ void FUN_0805ce28(unknown* p, unknown* param_2, unknown* param_3);
 void FUN_0805d0a0(unknown* p, unknown* param_2, unknown* param_3);
 void FUN_0805d0f0(unknown* p, unknown* param_2, unknown* param_3);
 
-// FUN_08055fe4 / FUN_080561b8 が引く
-const u16 u16_ARRAY_085ab990[4] = {4, 1, 2, 4};  // 0x085AB990
-
-// Entity08056728_Update が引く
-void (*const PTR_ARRAY_085ab998[3])(unknown*, unknown*, unknown*) = {
-    FUN_08055fe4,
-    FUN_080561b8,
-    FUN_080563b0,
-};  // 0x085AB998
-
-// 推測: u32[4] = {64, 16, 0, 0}
-const u8 u8_ARRAY_085ab9a4[16] = {0x40, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};  // 0x085AB9A4
+const u32 u32_ARRAY_085ab9a4[4] = {64, 16, 0, 0};  // 0x085AB9A4
 
 // FUN_08058ca8 が引く
 void (*const PTR_ARRAY_085ab9b4[10])(unknown*, unknown*, unknown*) = {
@@ -126,20 +112,3 @@ void (*const PTR_ARRAY_085aba2c[12])(unknown*, unknown*, unknown*) = {
     FUN_0805d0a0,
     FUN_0805d0f0,
 };  // 0x085ABA2C
-
-// ---------------- entity_0805e67c.c -----------------
-
-void FUN_0805e04c(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_0805e050(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_0805e110(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_0805e1fc(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_0805e2fc(unknown* p, unknown* param_2, unknown* param_3);
-
-// Entity0805e67c_Update が引く
-void (*const PTR_ARRAY_085aba5c[5])(unknown*, unknown*, unknown*) = {
-    FUN_0805e04c,
-    FUN_0805e050,
-    FUN_0805e110,
-    FUN_0805e1fc,
-    FUN_0805e2fc,
-};  // 0x085ABA5C
