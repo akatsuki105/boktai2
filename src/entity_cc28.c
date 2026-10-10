@@ -196,7 +196,7 @@ typedef struct EntityCC28 {
 } EntityCC28;
 static_assert(sizeof(EntityCC28) == 16476);
 
-extern EntityCC28* gEntityCC28;  // 0x0300013C
+IWRAM_DATA EntityCC28* gEntityCC28 = NULL;  // 0x0300013C
 
 extern EntityCC28Func* const sEntityCC28State2Fns[];  // 0x085ACFDC
 

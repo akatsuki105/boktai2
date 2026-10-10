@@ -612,7 +612,7 @@ gSubroutineTable:
 	.4byte 0xEDE2, FUN_0823d1d8
 	.4byte 0xEE18, FUN_08240668
 	.4byte 0xEF19, EntityA628_ActivateScripted
-	.4byte 0xEF66, FUN_080a1664
+	.4byte 0xEF66, EntityEF66_Create
 	.4byte 0xEF6F, EntityEF6F_Create
 	.4byte 0xEFD1, FUN_0809c63c
 	.4byte 0xEFE6, FUN_0807d198

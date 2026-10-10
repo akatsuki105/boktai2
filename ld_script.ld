@@ -80,7 +80,13 @@ SECTIONS {
       src/entity_08051b70.o(iwram_data);
       src/entity_723e.o(iwram_data);
       src/entity_5645.o(iwram_data);
-      src/iwram1.o(iwram_data);
+      src/entity_0805fe30.o(iwram_data);
+      src/entity_08060470.o(iwram_data);
+      src/explosion.o(iwram_data);
+      src/entity_cc28.o(iwram_data);
+      src/entity_5ccc.o(iwram_data);
+      src/entity_1dbe.o(iwram_data);
+      src/entity_ef66.o(iwram_data);
       src/entity_cf58.o(iwram_data);
       src/gameover.o(iwram_data);
       src/level_upper.o(iwram_data);
@@ -301,6 +307,7 @@ SECTIONS {
 			src/entity_71ba.o (.text);
 			src/entity_a628.o (.text);
 			src/entity_ba36.o (.text);
+			src/entity_ef66.o (.text);
 			src/code_080917e4.o (.text);
 			src/entity_8af6.o (.text);
 			src/entity_cf58.o (.text);

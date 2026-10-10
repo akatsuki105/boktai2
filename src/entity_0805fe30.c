@@ -17,7 +17,7 @@ typedef struct Entity0805fe30Slot {
 static_assert(sizeof(Entity0805fe30Slot) == 180);
 
 // ダメージ値などの数字を画面に浮かせて出す
-typedef struct Entity0805fe30 {
+typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_9
   u32 activeMask;               // 0x018, slots 1つにつき1bit
   ParticleGroup* group;         // 0x01C, PTCL_GROUP_1
@@ -25,7 +25,8 @@ typedef struct Entity0805fe30 {
 } Entity0805fe30;
 static_assert(sizeof(Entity0805fe30) == 752);
 
-extern Entity0805fe30* gEntity0805fe30;  // 0x03000130
+IWRAM_DATA u8 u8_03000124[0x130 - 0x124] = {};
+IWRAM_DATA Entity0805fe30* gEntity0805fe30 = NULL;  // 0x03000130
 
 const s32 s32_ARRAY_085aba88[5] = {0, 0, -3, -6, -9};  // 0x085ABA88
 
