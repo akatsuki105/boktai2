@@ -81,6 +81,11 @@ SECTIONS {
       src/entity_723e.o(iwram_data);
       src/entity_5645.o(iwram_data);
       src/iwram1.o(iwram_data);
+      src/gameover.o(iwram_data);
+      src/level_upper.o(iwram_data);
+      src/entity_b3d1.o(iwram_data);
+      src/entity_080da848.o(iwram_data);
+      src/entity_080db520.o(iwram_data);
       src/entity_080dbe54.o(iwram_data);
       src/entity_080dc44c.o(iwram_data);
       src/entity_080dd1f8.o(iwram_data);

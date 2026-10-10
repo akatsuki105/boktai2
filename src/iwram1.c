@@ -17,9 +17,3 @@ IWRAM_DATA struct Entity5CCC* gEntity5CCC = NULL;              // 0x03000140
 IWRAM_DATA struct Entity1DBE* gEntity1DBE = NULL;              // 0x03000144
 
 IWRAM_DATA u8 u8_03000148[8] = {};
-
-IWRAM_DATA struct GameOverManager* gGameOverManager = NULL;  // 0x03000150
-IWRAM_DATA struct LevelUpper* gLevelUpper = NULL;            // 0x03000154
-IWRAM_DATA struct EntityB3D1* gEntityB3D1 = NULL;            // 0x03000158
-IWRAM_DATA struct Entity080da848* gEntity080da848 = NULL;    // 0x0300015C
-IWRAM_DATA struct Entity080db520* gEntity080db520 = NULL;    // 0x03000160
