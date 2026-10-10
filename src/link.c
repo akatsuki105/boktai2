@@ -5,16 +5,19 @@
 
 EWRAM_DATA u32 u32_ARRAY_0203f800[256] = {};  // 0x0203F800
 
-// 通信 (SIO マルチプレイ) の送受信リングバッファ
-IWRAM_DATA s32 gSioRecvWriteIdx = 0;  // 0x03000788
-IWRAM_DATA s32 gSioRecvReadIdx = 0;   // 0x0300078C
-IWRAM_DATA s32 gSioRecvCount = 0;     // 0x03000790
-IWRAM_DATA s32 gSioSendWriteIdx = 0;  // 0x03000794
-IWRAM_DATA s32 gSioSendReadIdx = 0;   // 0x03000798
-IWRAM_DATA s32 gSioSendCount = 0;     // 0x0300079C
-IWRAM_DATA u8 gSioRecvBuf[64] = {};   // 0x030007A0
-IWRAM_DATA u8 gSioSendBuf[64] = {};   // 0x030007E0
-IWRAM_DATA u8 u8_03000820[0x03000838 - 0x03000820] = {};
+IWRAM_DATA s32 gSioRecvWriteIdx = 0;        // 0x03000788
+IWRAM_DATA s32 gSioRecvReadIdx = 0;         // 0x0300078C
+IWRAM_DATA s32 gSioRecvCount = 0;           // 0x03000790
+IWRAM_DATA s32 gSioSendWriteIdx = 0;        // 0x03000794
+IWRAM_DATA s32 gSioSendReadIdx = 0;         // 0x03000798
+IWRAM_DATA s32 gSioSendCount = 0;           // 0x0300079C
+IWRAM_DATA u8 gSioRecvBuf[64] = {};         // 0x030007A0
+IWRAM_DATA u8 gSioSendBuf[64] = {};         // 0x030007E0
+IWRAM_DATA void* ptr_03000820 = NULL;       // 0x03000820, 0x30C バイトのコンテキストを指す, FUN_08238138 が u32_ARRAY_0203f800 を割り当てる
+IWRAM_DATA u16 u16_03000824 = 0;            // 0x03000824, 送信スロット, bit14 が立っているときだけ FUN_08238e14 が上書きできる
+IWRAM_DATA s32 s32_03000828 = 0;            // 0x03000828, 0x03004720 の u16[4] を読む面 (0 or 1), 割り込みは 1 - これ の面に書いてから反転する
+IWRAM_DATA bool32 bool32_0300082c = FALSE;  // 0x0300082C, 0x03004720 に未読データあり, FUN_08238da8 が読み出すと 0 に戻る
+IWRAM_DATA s32 s32_03000830 = 0;            // 0x03000830, 0x030046F0 の u16[4] を読む面 (0 or 1), 同じく割り込みが反転する
 
 void Sio_ParentTimerIntr(void);
 
