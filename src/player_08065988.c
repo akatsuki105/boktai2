@@ -158,7 +158,6 @@ void FUN_08065240(Player* p) {
 }
 
 void Player_UpdateDjango(Player* p);
-void Player_UpdateDjango(Player* p);
 void FUN_080798a4(Player* p);
 void FUN_08079b64(Player* p);
 void FUN_08079e4c(Player* p);
