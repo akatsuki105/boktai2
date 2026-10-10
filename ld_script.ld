@@ -82,6 +82,7 @@ SECTIONS {
       src/entity_5645.o(iwram_data);
       src/entity_d438.o(iwram_data);
       src/entity_08056728.o(iwram_data);
+      src/entity_08058ffc.o(iwram_data);
       src/entity_0805fe30.o(iwram_data);
       src/entity_08060470.o(iwram_data);
       src/explosion.o(iwram_data);
@@ -285,6 +286,7 @@ SECTIONS {
 			src/entity_8d5c.o (.text);
 			src/entity_d438.o (.text);
 			src/entity_08056728.o (.text);
+			src/entity_08058ffc.o (.text);
 			src/code_08052eb8.o (.text);
 			src/entity_0805e67c.o (.text);
 			src/entity_0805ee80.o (.text);
@@ -629,6 +631,7 @@ SECTIONS {
     src/entity_08052ffc.o (.rodata);
     src/entity_5645.o (.rodata);
     src/entity_08056728.o (.rodata);
+    src/entity_08058ffc.o (.rodata);
     src/rodata.o (.rodata);
     src/entity_0805e67c.o (.rodata);
     src/entity_0805ee80.o (.rodata);

@@ -8,7 +8,6 @@ typedef struct {
 static_assert(sizeof(Entity08056728) == 3504);
 
 IWRAM_DATA Entity08056728* gEntity08056728 = NULL;  // 0x03000128
-IWRAM_DATA u8 u8_0300012c[0x130 - 0x12c] = {};
 
 void FUN_08055fe4(Entity08056728*, unknown*, s32);
 void FUN_080561b8(Entity08056728*, unknown*, s32);

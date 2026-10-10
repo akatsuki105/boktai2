@@ -721,7 +721,7 @@ _08027DCA:
 	lsls r4, r4, #3
 	adds r2, r6, r4
 	ldr r2, [r2]
-	bl FUN_08058ffc
+	bl Entity08058ffc_Create
 	cmp r0, #0
 	bne _08027E40
 _08027E18:

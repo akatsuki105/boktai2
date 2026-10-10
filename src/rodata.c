@@ -2,16 +2,6 @@
 
 // ---------------- code_08052eb8.s -----------------
 
-void FUN_080573a0(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_08057478(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_0805758c(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_080579a4(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_08057db0(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_080581dc(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_08058460(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_080587cc(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_08058a98(unknown* p, unknown* param_2, unknown* param_3);
-void FUN_08058ae4(unknown* p, unknown* param_2, unknown* param_3);
 void FUN_080595a4(unknown* p, unknown* param_2, unknown* param_3);
 void FUN_080595a8(unknown* p, unknown* param_2, unknown* param_3);
 void FUN_0805965c(unknown* p, unknown* param_2, unknown* param_3);
@@ -44,22 +34,6 @@ void FUN_0805cd08(unknown* p, unknown* param_2, unknown* param_3);
 void FUN_0805ce28(unknown* p, unknown* param_2, unknown* param_3);
 void FUN_0805d0a0(unknown* p, unknown* param_2, unknown* param_3);
 void FUN_0805d0f0(unknown* p, unknown* param_2, unknown* param_3);
-
-const u32 u32_ARRAY_085ab9a4[4] = {64, 16, 0, 0};  // 0x085AB9A4
-
-// FUN_08058ca8 が引く
-void (*const PTR_ARRAY_085ab9b4[10])(unknown*, unknown*, unknown*) = {
-    FUN_080573a0,
-    FUN_08057478,
-    FUN_0805758c,
-    FUN_080579a4,
-    FUN_08057db0,
-    FUN_080581dc,
-    FUN_08058460,
-    FUN_080587cc,
-    FUN_08058a98,
-    FUN_08058ae4,
-};  // 0x085AB9B4
 
 // FUN_08059820 が引く
 void (*const PTR_ARRAY_085ab9dc[4])(unknown*, unknown*, unknown*) = {
