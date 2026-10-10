@@ -20,7 +20,7 @@
 _08238E6C: .4byte 0x030046D4
 _08238E70: .4byte 0x0000FFFF
 _08238E74:
-	bl FUN_0823860c
+	bl Sio_DisableInterrupts
 	ldr r2, _08238EAC @ =0x030046F0
 	ldr r0, _08238EB0 @ =0x03000830
 	ldr r1, [r0]

@@ -4,7 +4,7 @@
 	ldr r0, [r0]
 	cmp r0, #0
 	blt _08238E0E
-	bl FUN_0823860c
+	bl Sio_DisableInterrupts
 	ldr r3, _08238DF4 @ =0x0300082C
 	ldr r0, [r3]
 	cmp r0, #0

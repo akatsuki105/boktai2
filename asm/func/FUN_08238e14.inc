@@ -1,7 +1,7 @@
 	push {r4, lr}
 	lsls r0, r0, #0x10
 	lsrs r4, r0, #0x10
-	bl FUN_0823860c
+	bl Sio_DisableInterrupts
 	ldr r2, _08238E34 @ =0x03000824
 	ldrh r1, [r2]
 	movs r0, #0x80

@@ -323,7 +323,7 @@ NAKED s32 FUN_08238590(void) { INCFUNC("asm/func/FUN_08238590.inc"); }
 
 NAKED void FUN_082385b0(void) { INCFUNC("asm/func/FUN_082385b0.inc"); }
 
-NAKED void FUN_0823860c(void) { INCFUNC("asm/func/FUN_0823860c.inc"); }
+void Sio_DisableInterrupts(void) { REG_IME = 0; }
 
 NAKED void FUN_08238618(void) { INCFUNC("asm/func/FUN_08238618.inc"); }
 
