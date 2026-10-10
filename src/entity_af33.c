@@ -5,9 +5,7 @@
 
 // 0x3C から 0xC 刻みで3件, _Init が各回 +4 に {100, 100, 0, 0} と +8 に u32 0 を入れる
 typedef struct {
-  u8 unk_00;     // 0x00, まだ未解析
-  u8 unk_01;     // 0x01, 0 以外なら FUN_0804e514 に渡す
-  u8 unk_02[2];  // 0x02, まだ未解析
+  u8 unk_00[4];  // 0x00, [1] が 0 以外なら FUN_0804e514 に渡す, FUN_0804fb04 が4バイトまとめて 0 にする
   u8 unk_04[4];  // 0x04, _Init が {100, 100, 0, 0} を入れる
   u32 unk_08;    // 0x08, _Init が 0 を入れる
 } EntityAF33Slot;
@@ -64,7 +62,7 @@ NAKED void FUN_0804f8ec(EntityAF33* p) { INCFUNC("asm/func/FUN_0804f8ec.inc"); }
 void FUN_0804f950(void) {
   EntityAF33* p = FUN_0804f820();
 
-  if (p != NULL && p->slots[2].unk_01 != 0) {
+  if (p != NULL && p->slots[2].unk_00[1] != 0) {
     FUN_0804e514(&p->slots[2]);
   }
 }
@@ -79,7 +77,15 @@ NAKED s32 FUN_0804fa44(EntityAF33* p, u8 param_2, u32* param_3, s32 param_4) { I
 
 NAKED u32 FUN_0804fa94(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fa94.inc"); }
 
-NAKED void FUN_0804fb04(EntityAF33* p, s32 val) { INCFUNC("asm/func/FUN_0804fb04.inc"); }
+void FUN_0804fb04(EntityAF33* p, s32 idx) {
+  EntityAF33Slot* slot = &p->slots[idx];
+  s32 i;
+
+  slot->unk_04[2] = 0;
+  for (i = 0; i < 4; i++) {
+    slot->unk_00[i] = 0;
+  }
+}
 
 void FUN_0804fb24(void) {
   EntityAF33* p = FUN_0804f820();
