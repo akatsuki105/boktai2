@@ -373,7 +373,7 @@ gSubroutineTable:
 	.4byte 0x920F, FUN_08044310
 	.4byte 0x9284, CrossoverLobby_Create
 	.4byte 0x92BE, Entity92BE_Create
-	.4byte 0x92ED, FUN_081e232c
+	.4byte 0x92ED, Entity92ED_Create
 	.4byte 0x930F, TextBox_SetRectScripted
 	.4byte 0x9311, FUN_080ef534
 	.4byte 0x933C, Player_MoveTo
@@ -406,7 +406,7 @@ gSubroutineTable:
 	.4byte 0x9FB7, FUN_08091684
 	.4byte 0x9FFD, FUN_0807d298
 	.4byte 0xA062, VM_SubA062
-	.4byte 0xA0A6, FUN_081e2280
+	.4byte 0xA0A6, EntityA0A6_Create
 	.4byte 0xA133, FUN_0820a480
 	.4byte 0xA16F, ElevatorController_Create
 	.4byte 0xA1D7, FUN_0819aa08

@@ -67,13 +67,12 @@ IWRAM_DATA struct Entity4063* gEntity4063 = NULL;          // 0x03002C50
 IWRAM_DATA struct Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
 IWRAM_DATA struct EntityCBB0* gEntityCBB0 = NULL;          // 0x03002C58
 
-IWRAM_DATA struct EnemyManager* gEnemyManager = NULL;    // 0x03002C5C
-IWRAM_DATA struct EnemyListNode* gEnemyListHead = NULL;  // 0x03002C60, 生存中のエネミーの単方向リスト, EnemyManager.list と同じ値
-IWRAM_DATA struct LinkConnect* gLinkConnect = NULL;      // 0x03002C64
-IWRAM_DATA struct Entity9A9F* gEntity9A9F = NULL;        // 0x03002C68
-
-IWRAM_DATA void* ptr_03002c6c = NULL;                     // 0x03002C6C, 0 以外なら SoftReset_0823a928 が Sio_Stop を呼ぶ, FUN_081e21dc が書き FUN_081e21c4 が 0 に戻す
-IWRAM_DATA u8 u8_03002c70[0x03002C80 - 0x03002C70] = {};  // todo
+IWRAM_DATA struct EnemyManager* gEnemyManager = NULL;        // 0x03002C5C
+IWRAM_DATA struct EnemyListNode* gEnemyListHead = NULL;      // 0x03002C60, 生存中のエネミーの単方向リスト, EnemyManager.list と同じ値
+IWRAM_DATA struct LinkConnect* gLinkConnect = NULL;          // 0x03002C64
+IWRAM_DATA struct Entity9A9F* gEntity9A9F = NULL;            // 0x03002C68
+IWRAM_DATA struct LinkShopManager* gLinkShopManager = NULL;  // 0x03002C6C
+IWRAM_DATA u8 u8_03002c70[16] = {};                          // unused?
 
 IWRAM_DATA struct Dvalinn* gDvalinn = NULL;  // 0x03002C80
 

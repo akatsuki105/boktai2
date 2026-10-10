@@ -30,18 +30,18 @@ IWRAM_DATA SystemSaveData gSystemSaveDataBuffer = {};  // 0x030016C0
 
 extern struct LinkConnect* gLinkConnect;  // 0x03002C64
 
-extern bool32 gDispcntLocked;  // 0x03002CA8
-extern u32 u32_0300478c;       // 0x0300478C
-extern void* ptr_03002c6c;     // 0x03002C6C
-extern u16 u16_03003510;       // 0x03003510
-extern u16 u16_03003514;       // 0x03003514
-extern u32 u32_03004790;       // 0x03004790
-extern u32 u32_03004794;       // 0x03004794
-extern u32 u32_030047ac;       // 0x030047AC
-extern u32 u32_030047b0;       // 0x030047B0
-extern u32 u32_030047bc;       // 0x030047BC
-extern u32 u32_030047c4;       // 0x030047C4
-extern u32 u32_03004860;       // 0x03004860
+extern bool32 gDispcntLocked;                     // 0x03002CA8
+extern u32 u32_0300478c;                          // 0x0300478C
+extern struct LinkShopManager* gLinkShopManager;  // 0x03002C6C
+extern u16 u16_03003510;                          // 0x03003510
+extern u16 u16_03003514;                          // 0x03003514
+extern u32 u32_03004790;                          // 0x03004790
+extern u32 u32_03004794;                          // 0x03004794
+extern u32 u32_030047ac;                          // 0x030047AC
+extern u32 u32_030047b0;                          // 0x030047B0
+extern u32 u32_030047bc;                          // 0x030047BC
+extern u32 u32_030047c4;                          // 0x030047C4
+extern u32 u32_03004860;                          // 0x03004860
 
 void VM_CountSubroutine(void);
 u32 FUN_082321e0(u8* pc);
@@ -112,7 +112,7 @@ s32 SoftReset_0823a928(void) {
 
   if (gEntity9A9F != NULL || gLinkConnect != NULL) {
     FUN_08238bf4();
-  } else if (ptr_03002c6c != NULL) {
+  } else if (gLinkShopManager != NULL) {
     Sio_Stop();
   }
 

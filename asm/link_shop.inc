@@ -1167,8 +1167,8 @@ _081E2274: .4byte FUN_081e1b40
 _081E2278: .4byte 0x03002C6C
 _081E227C: .4byte FUN_081e20d8
 
-	thumb_func_start FUN_081e2280
-FUN_081e2280: @ 0x081E2280
+	thumb_func_start EntityA0A6_Create
+EntityA0A6_Create: @ 0x081E2280
 	push {r4, lr}
 	ldr r0, _081E22B4 @ =0x03002C6C
 	ldr r0, [r0]
@@ -1251,8 +1251,8 @@ _081E2322:
 	.align 2, 0
 _081E2328: .4byte 0x03002C6C
 
-	thumb_func_start FUN_081e232c
-FUN_081e232c: @ 0x081E232C
+	thumb_func_start Entity92ED_Create
+Entity92ED_Create: @ 0x081E232C
 	push {r4, lr}
 	ldr r0, _081E2360 @ =0x03002C6C
 	ldr r0, [r0]

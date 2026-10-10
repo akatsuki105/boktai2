@@ -361,7 +361,7 @@ SECTIONS {
 			src/entity_9a9f.o (.text);
 			src/entity_501b.o (.text);
 			src/link_battle_coin.o (.text);
-			src/code_081e0c14.o (.text);
+			src/link_shop.o (.text);
 			src/entity_8b8e.o (.text);
 			src/entity_081e8d0c.o (.text);
 			src/entity_081e9cac.o (.text);
