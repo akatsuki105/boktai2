@@ -401,7 +401,7 @@ NAKED void FUN_08066c64(Player* p) { INCFUNC("asm/func/FUN_08066c64.inc"); }
 
 void FUN_08066d10(Player* p) {
   FUN_0823bca8(8);
-  p->lookAroundOffset.val = 0;
+  p->lookAroundOffset.val = FALSE;
 }
 
 // 残差1命令: 原典は TRUE を返す経路を全部まとめて後ろへ飛ばすが、こちらは途中で合流する
@@ -436,7 +436,7 @@ void FUN_08066d7c(Player* p, s32 val) {
     } else {
       FUN_08066abc(p);
     }
-  } else if (p->lookAroundOffset.val != 0) {
+  } else if (p->lookAroundOffset.val) {
     FUN_08066d10(p);
   }
   p->unk_3d1 = 1;
@@ -1024,7 +1024,7 @@ NAKED void FUN_0806f5d8(Player* p) { INCFUNC("asm/func/FUN_0806f5d8.inc"); }
 bool32 FUN_0806f738(Player* p) {
   bool32 turned = FALSE;
 
-  if ((s16)p->facingHistory[0] != -1 && p->lookAroundOffset.val == 0) {
+  if ((s16)p->facingHistory[0] != -1 && !p->lookAroundOffset.val) {
     p->facing = FUN_08067068(p);
     turned = TRUE;
   }
@@ -1385,13 +1385,13 @@ void FUN_080784fc(Player* p) {
 
 void FUN_08078548(Player* p) {
   Player_StopEneChargeSound(p);
-  if (p->lookAroundOffset.val != 0) {
+  if (p->lookAroundOffset.val) {
     FUN_08066d10(p);
   }
 }
 
 void FUN_0807856c(Player* p) {
-  if (p->lookAroundOffset.val != 0) {
+  if (p->lookAroundOffset.val) {
     FUN_08066d10(p);
   }
 }
@@ -1527,7 +1527,7 @@ NON_MATCH void Player_UpdateDjango(Player* p) {
       }
 
       FUN_08078bc0(p);
-      if (p->lookAroundOffset.val != 0) {
+      if (p->lookAroundOffset.val) {
         FUN_08066df8(p);
       }
       FUN_08065b7c(p);
