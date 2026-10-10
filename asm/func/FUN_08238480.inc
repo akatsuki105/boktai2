@@ -1,5 +1,5 @@
 	push {r4, lr}
-	bl FUN_08238138
+	bl Sio_AllocPacketCtx
 	ldr r0, _08238498 @ =0x03000820
 	ldr r4, [r0]
 	adds r0, r4, #0

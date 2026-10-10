@@ -299,7 +299,7 @@ s32 Sio_GetSerialIntrCount(void) { return gSioSerialIntrCount; }
 
 s32 Sio_GetMultiId(void) { return gSioMultiId; }
 
-NAKED void FUN_08238138(void) { INCFUNC("asm/func/FUN_08238138.inc"); }
+void Sio_AllocPacketCtx(void) { gSioPacketCtx = gSioPacketCtxBuf; }
 
 NAKED void FUN_08238148(unknown* p) { INCFUNC("asm/func/FUN_08238148.inc"); }
 
