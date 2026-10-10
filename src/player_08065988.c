@@ -271,7 +271,7 @@ void Player_InitArmor(Player* p) {
 
 // 本体の当たり判定を組み立てる, 赤ジャンゴは属性がソル・弱点がダークで、それ以外は逆になる
 void Player_SetupHitbox(Player* p) {
-  HitboxData* hitbox = &p->hitbox_16c;
+  HitboxData* hitbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   halfSize.x = 50, halfSize.y = 127, halfSize.z = 50;
@@ -1867,7 +1867,7 @@ void FUN_0807a44c(Player* p, s32 dir) {
     p->animIDOffset = p->unk_3bd >> 1;
     p->xflip = FALSE;
   }
-  p->hitbox_16c.unk_40 = 0;
+  p->hurtbox.unk_40 = 0;
 }
 
 // プレイヤーが乗っているタイルの索引を返す, MoverTile の控えがあればそれ、無ければ座標から引く
@@ -2163,9 +2163,9 @@ void FUN_0807ab14(Player* p) {
   p->formRequest = FALSE;
   p->animIDOffset = 0;
   FUN_08063220(p);
-  p->hitbox_16c.flags |= HBFLAG_UNK_2;
-  p->hitbox_16c.unk_40 = 0;
-  p->hitbox_16c.unk_44 = 0;
+  p->hurtbox.flags |= HBFLAG_UNK_2;
+  p->hurtbox.unk_40 = 0;
+  p->hurtbox.unk_44 = 0;
   Player_SetAction(p, 21, 0);
 }
 
@@ -3762,9 +3762,9 @@ void FUN_0807e784(HitboxData* a, HitboxData* b, Player* p) {
 // 一時的な HitboxData を組み立てて自分の当たり判定にぶつける
 s32 FUN_0807e7fc(Player* p, s32 power, s32 unk_40, s32 angle, s32 unk_44, HitboxAttributes attrs) {
   if (p->unk_1c == 1) {
-    HitboxData* own = &p->hitbox_16c;
+    HitboxData* own = &p->hurtbox;
     HitboxData hb;
-    s32 n = p->hitbox_16c.unk_44;
+    s32 n = p->hurtbox.unk_44;
 
     if (n <= 0) {
       hb.flags = HBFLAG_UNK_13;
@@ -3786,16 +3786,16 @@ NAKED bool32 Player_Update_Helper_0807e968(Player* p) { INCFUNC("asm/func/Player
 // 残差なし・レジスタ割当のみ不一致 (p と n の r4/r5 が入れ替わる)
 NON_MATCH void FUN_0807eca8(Player* p) {
 #ifdef NONMATCHING_C
-  s32 n = p->hitbox_16c.unk_44;
+  s32 n = p->hurtbox.unk_44;
 
   if (n > 0) {
     Player_SetFlag35a(p, PFLAG35A_NO_HITBOX);
-    if (p->hitbox_16c.unk_40 == 0 && p->action != 24 && p->action != 25) {
+    if (p->hurtbox.unk_40 == 0 && p->action != 24 && p->action != 25) {
       n--;
       if (n != 0 && ((n >> 2) & 1)) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_HIDE_SHADOW);
       }
-      p->hitbox_16c.unk_44 = n;
+      p->hurtbox.unk_44 = n;
     }
   }
 #else
@@ -3915,7 +3915,7 @@ static s32 Player_Destroy(Player* p) {
   EnemyTargetManager_Remove(&p->target);
   MainSprite_Remove(&p->sprite_88);
   AuxSprite_Remove(&p->sprite_e8);
-  Hitbox_Unregister(&p->hitbox_16c);
+  Hitbox_Unregister(&p->hurtbox);
   Mover_Unlink(&p->mover);
   Player_DestroyEffects(p);
   FUN_0807ddd4(p);

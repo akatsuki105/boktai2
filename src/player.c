@@ -150,7 +150,7 @@ NON_MATCH void Player_BeginAction(Player* p) {
 
   p->shadowOffset.x = 0, p->shadowOffset.y = 0, p->shadowOffset.z = 0;
   p->flag35a = 0;
-  p->hitbox_16c.hitState &= ~2;
+  p->hurtbox.hitState &= ~2;
 #else
   INCFUNC("asm/func/Player_BeginAction.inc");
 #endif
@@ -450,7 +450,7 @@ NON_MATCH void Player_RefreshDefence(Player* p) {
     gSabataDefence = power;
   }
 
-  Hitbox_SetPowerAndAttributes(&p->hitbox_16c, power, attrs, weakness);
+  Hitbox_SetPowerAndAttributes(&p->hurtbox, power, attrs, weakness);
 #else
   INCFUNC("asm/func/Player_RefreshDefence.inc");
 #endif
@@ -2480,7 +2480,7 @@ void Player_UpdateBloodSword(Player* p) {
       return;
     }
     p->hp++;
-    FUN_0805fe7c(&p->hitbox_16c, 1, 1, &p->mover.pos, &p->pos_970, p->unk_978);
+    FUN_0805fe7c(&p->hurtbox, 1, 1, &p->mover.pos, &p->pos_970, p->unk_978);
   }
 }
 

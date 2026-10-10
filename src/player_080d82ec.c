@@ -198,7 +198,7 @@ s32 Player080d82ec_Destroy(Player* p) {
   EnemyTargetManager_Remove(&p->target);
   MainSprite_Remove(&p->sprite_88);
   AuxSprite_Remove(&p->sprite_e8);
-  Hitbox_Unregister(&p->hitbox_16c);
+  Hitbox_Unregister(&p->hurtbox);
   Mover_Unlink(&p->mover);
   FUN_080ce330(p);
   FUN_080cc43c(p);

@@ -34,7 +34,7 @@ typedef u16 PlayerFlag35A;
 #define PFLAG35A_HIDE_SPRITE (1 << 0)     // 0x0001, sprite_88 に SPRFLAG_HIDDEN を立てる
 #define PFLAG35A_BLINK (1 << 1)           // 0x0002, sprite_88 に SPRFLAG_BLINK_ODD を立てる
 #define PFLAG35A_HIDE_SHADOW (1 << 2)     // 0x0004, 影を ParticleShadow_Hide する
-#define PFLAG35A_NO_HITBOX (1 << 3)       // 0x0008, hitbox_16c に HBFLAG_UNK_2 を立てて Hitbox_SetPos を飛ばす
+#define PFLAG35A_NO_HITBOX (1 << 3)       // 0x0008, hurtbox に HBFLAG_UNK_2 を立てて Hitbox_SetPos を飛ばす
 #define PFLAG35A_NO_TILE (1 << 4)         // 0x0010, mover.tile を NULL にして Map_InitMoverTile を飛ばす
 #define PFLAG35A_UNK_5 (1 << 5)           // 0x0020, FUN_08082464 が立てるが読み手は未発見
 #define PFLAG35A_SHOW_SPRITE_E8 (1 << 6)  // 0x0040, 立てたときだけ sprite_e8 の SPRFLAG_HIDDEN を落とす (既定は隠す)
@@ -190,7 +190,7 @@ typedef struct Player {
   AuxSprite sprite_e8;              // 0x0E8, Player_Destroy が AuxSprite_Remove に渡す, pos は 0x104 で FUN_0807a91c が mover.pos / sprite_88.pos と一緒に書く
   AuxSpriteGfx* gfx_114;            // 0x114
   AuxSpriteGfx gfxForms[3];         // 0x118, 変身3種のグラフィック, gfx_114 がこのどれかを指す [Bat, Mouse, Sleeping]
-  HitboxData hitbox_16c;            // 0x16C
+  HitboxData hurtbox;               // 0x16C
   MoverTile tile;                   // 0x1BC, mover.tile がここを指す
   u8 unk_1cc[0x220 - 0x1CC];        // 0x1CC
   EnemyTarget target;               // 0x220, kindMask 2 で登録される
