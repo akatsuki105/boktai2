@@ -263,7 +263,7 @@ _081E1BAA:
 	adds r1, #0x6b
 	b _081E1C0E
 _081E1BC8:
-	bl FUN_082380f4
+	bl Sio_HasChildData
 	mov r8, r0
 	bl Sio_GetTimerIntrCount
 	ldr r1, [r6, #0x70]

@@ -279,7 +279,13 @@ bool32 Sio_HasParentData(void) {
   return FALSE;
 }
 
-NAKED s32 FUN_082380f4(void) { INCFUNC("asm/func/FUN_082380f4.inc"); }
+// 親が子からデータを受け取っているか (0xFFFF はデータなし)
+bool32 Sio_HasChildData(void) {
+  if (gSioParentRecv != 0xFFFF) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 s32 Sio_GetTimerIntrCount(void) { return gSioTimerIntrCount; }
 
