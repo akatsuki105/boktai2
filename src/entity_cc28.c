@@ -1402,7 +1402,7 @@ NAKED void FUN_08097ab8(EntityCC28* p, u8 param_2) { INCFUNC("asm/func/FUN_08097
 
 NAKED void FUN_08097c04(EntityCC28* p) { INCFUNC("asm/func/FUN_08097c04.inc"); }
 
-NAKED void FUN_08097ca0(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_08097ca0.inc"); }
+NAKED void FUN_08097ca0(WorldPos* pos, s32 idx) { INCFUNC("asm/func/FUN_08097ca0.inc"); }
 
 // unk_3ff0 から value の位置を探す
 s32 FUN_08097d20(EntityCC28* p, s32 value) {
@@ -1441,7 +1441,13 @@ NAKED void FUN_08098684(EntityCC28* p) { INCFUNC("asm/func/FUN_08098684.inc"); }
 
 NAKED void FUN_08098734(EntityCC28* p) { INCFUNC("asm/func/FUN_08098734.inc"); }
 
-NAKED void FUN_08098758(EntityCC28* p) { INCFUNC("asm/func/FUN_08098758.inc"); }
+void FUN_08098758(EntityCC28* p) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    FUN_08097ca0(&p->sprites[i + 36].pos, i + 0x10);
+  }
+}
 
 void FUN_0809877c(EntityCC28* p) {
   FUN_08098734(p);
