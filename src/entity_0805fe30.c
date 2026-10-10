@@ -11,7 +11,7 @@ typedef struct Entity0805fe30Slot {
   u8 digitCount;      // 0x07, 使っている ptcls の数 (0..4), s32_ARRAY_085aba88 の添字でもある
   u16 unk_08;         // 0x08
   s16 unk_0a;         // 0x0A, unk_08 + 6
-  Vec3 pos;           // 0x0C, ワールド座標, アイソメトリック投影してスクリーン座標にする
+  WorldPos pos;       // 0x0C, ワールド座標, アイソメトリック投影してスクリーン座標にする
   Particle ptcls[4];  // 0x14, 1桁につき1個
 } Entity0805fe30Slot;
 static_assert(sizeof(Entity0805fe30Slot) == 180);

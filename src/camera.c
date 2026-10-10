@@ -227,7 +227,7 @@ void FUN_0823b9cc(s32 n) {
 static inline s32 Div256(s32 v) { return v >= 0 ? (v >> 8) : -((-v) >> 8); }
 
 // ワールド座標をアイソメトリック投影して視点座標にする
-static inline void WorldToVp(Vec3* vp, Vec3* world) {
+static inline void WorldToVp(Vec3* vp, WorldPos* world) {
   s32 hx = world->x >> 1;
   s32 hz = world->z >> 1;
   s32 a, b;
