@@ -330,9 +330,9 @@ s32 CalcMaxHP(Player* p) {
   s32 val;
   PlayerArmor* armor = &p->armor;
   if (p->kind == PLAYER_SOLAR_DJANGO) {
-    val = (p->stats[STAT_VITALITY] + armor->bonus[STAT_VITALITY]) + armor->bonus2[STAT_VITALITY];
+    val = (p->stats[STAT_VITALITY] + armor->bonus[STAT_VITALITY]) + armor->sideBonus[STAT_VITALITY];
   } else {
-    val = (p->stats[STAT_VITALITY] + armor->bonus[STAT_VITALITY]) - armor->bonus2[STAT_VITALITY];
+    val = (p->stats[STAT_VITALITY] + armor->bonus[STAT_VITALITY]) - armor->sideBonus[STAT_VITALITY];
   }
   if (99 < val) {
     val = 99;
@@ -348,9 +348,9 @@ s32 CalcMaxEne(Player* p) {
   }
 
   if (p->kind == PLAYER_SOLAR_DJANGO) {
-    val = (p->stats[STAT_SPIRIT] + armor->bonus[STAT_SPIRIT]) + armor->bonus2[STAT_SPIRIT];
+    val = (p->stats[STAT_SPIRIT] + armor->bonus[STAT_SPIRIT]) + armor->sideBonus[STAT_SPIRIT];
   } else {
-    val = (p->stats[STAT_SPIRIT] + armor->bonus[STAT_SPIRIT]) - armor->bonus2[STAT_SPIRIT];
+    val = (p->stats[STAT_SPIRIT] + armor->bonus[STAT_SPIRIT]) - armor->sideBonus[STAT_SPIRIT];
   }
   if (99 < val) {
     val = 99;
@@ -413,7 +413,7 @@ NON_MATCH void Player_RefreshAttackPower(Player* p) {
   u32 weakness;
   bool32 special;
 
-  if (p->kind == PLAYER_SABATA) {
+  if (p->kind == PLAYER_SABATA) {  // サバタの場合、常にジャンゴのレベル+10　
     lv = gStat->lv + 10;
     if (lv > 99) {
       lv = 99;
@@ -424,13 +424,13 @@ NON_MATCH void Player_RefreshAttackPower(Player* p) {
   } else {
     lv = gStat->lv;
     if (p->kind == PLAYER_SOLAR_DJANGO) {
-      power = p->stats[3] + armor->bonus[3] + armor->bonus2[3];
+      power = p->stats[STAT_AGILITY] + armor->bonus[STAT_AGILITY] + armor->sideBonus[STAT_AGILITY];
       attrs = p->hbattrs | HBATTR_SOL;
-      weakness = 2;
+      weakness = HBATTR_DARK;
     } else {
-      power = p->stats[3] + armor->bonus[3] - armor->bonus2[3];
+      power = p->stats[STAT_AGILITY] + armor->bonus[STAT_AGILITY] - armor->sideBonus[STAT_AGILITY];
       attrs = p->hbattrs | HBATTR_DARK;
-      weakness = 1;
+      weakness = HBATTR_SOL;
     }
   }
 
@@ -2842,7 +2842,7 @@ NON_MATCH void Player_ApplyArmorEffect(Player* p, const ArmorData* a) {
   p->hbattrs = 0;
   for (i = 0; i < STAT_KINDS; i++) {
     p->armor.bonus[i] = 0;
-    p->armor.bonus2[i] = 0;
+    p->armor.sideBonus[i] = 0;
   }
   *flags &= ~0x0FFFFFF0;
 
@@ -2855,13 +2855,13 @@ NON_MATCH void Player_ApplyArmorEffect(Player* p, const ArmorData* a) {
   switch (a->effectType) {
     case AET_SILVER_CHAIN: {
       for (i = 0; i < STAT_KINDS; i++) {
-        p->armor.bonus2[i] = a->value;
+        p->armor.sideBonus[i] = a->value;
       }
       break;
     }
     case AET_BLOOD_CAPE: {
       for (i = 0; i < STAT_KINDS; i++) {
-        p->armor.bonus2[i] = -a->value;
+        p->armor.sideBonus[i] = -a->value;
       }
       break;
     }

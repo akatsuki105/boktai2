@@ -93,12 +93,12 @@ struct Input;
 typedef void (*PlayerFunc)(struct Player*);
 
 typedef struct {
-  armor16_t id;            // 0x00 (Player: 0x264), ArmorData.id
-  u16 defence;             // 0x02 (Player: 0x266), ArmorData.defence
-  u16 weight;              // 0x04 (Player: 0x268), ArmorData.weight
-  u16 unk_26a;             // 0x06 (Player: 0x26A)
-  u16 bonus[STAT_KINDS];   // 0x08 (Player: 0x26C), 武者鎧などのステータスに対する補正値
-  s16 bonus2[STAT_KINDS];  // 0x10 (Player: 0x274), 鎧の色による符号付き補正 (赤なら+, 黒なら-), [0] が HP, [1] が Ene に効く
+  armor16_t id;               // 0x00 (Player: 0x264), ArmorData.id
+  u16 defence;                // 0x02 (Player: 0x266), ArmorData.defence
+  u16 weight;                 // 0x04 (Player: 0x268), ArmorData.weight
+  u16 unk_26a;                // 0x06 (Player: 0x26A)
+  u16 bonus[STAT_KINDS];      // 0x08 (Player: 0x26C), 武者鎧などのステータスに対する補正値
+  s16 sideBonus[STAT_KINDS];  // 0x10 (Player: 0x274), 赤/黒による符号付き補正 (赤なら+, 黒なら-), [0] が HP, [1] が Ene に効く
 } PlayerArmor;
 static_assert(sizeof(PlayerArmor) == 24);  // 根拠: Player_RefreshAttackPower が 0x264 を1本のベースにして 0x266/0x272/0x27A を触る
 
