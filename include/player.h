@@ -188,8 +188,8 @@ typedef struct Player {
   MainSpriteGfx spriteSet_68;       // 0x068, 根拠： Player_PlayAnim
   MainSprite sprite_88;             // 0x088, 根拠： Player_PlayAnim
   AuxSprite sprite_e8;              // 0x0E8, Player_Destroy が AuxSprite_Remove に渡す, pos は 0x104 で FUN_0807a91c が mover.pos / sprite_88.pos と一緒に書く
-  AuxSpriteGfx* gfx_114;            // 0x114, 根拠: Player_ResetPltt が plttID(+0x06) と pltt(+0x0C) を書く
-  AuxSpriteGfx gfxForms[3];         // 0x118, 変身3種のグラフィック, gfx_114 がこのどれかを指す
+  AuxSpriteGfx* gfx_114;            // 0x114
+  AuxSpriteGfx gfxForms[3];         // 0x118, 変身3種のグラフィック, gfx_114 がこのどれかを指す [Bat, Mouse, Sleeping]
   HitboxData hitbox_16c;            // 0x16C
   MoverTile tile;                   // 0x1BC, mover.tile がここを指す
   u8 unk_1cc[0x220 - 0x1CC];        // 0x1CC
