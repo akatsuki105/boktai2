@@ -362,6 +362,7 @@ SECTIONS {
 			src/entity_501b.o (.text);
 			src/link_battle_coin.o (.text);
 			src/code_081e0c14.o (.text);
+			src/entity_081e9cac.o (.text);
 			src/entity_081ea120.o (.text);
 			src/entity_081ea820.o (.text);
 			src/flamethrower.o (.text);

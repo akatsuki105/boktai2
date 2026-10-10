@@ -45,12 +45,10 @@ IWRAM_DATA struct Entity8CC7* gEntity8CC7 = NULL;                        // 0x03
 IWRAM_DATA struct LinkBattleLobby* gLinkBattleLobby = NULL;              // 0x030001A8
 IWRAM_DATA u32 bool32_030001ac = FALSE;                                  // 0x030001AC
 IWRAM_DATA struct LinkBattleCoinManager* gLinkBattleCoinManager = NULL;  // 0x030001B0
-
-IWRAM_DATA u8 u8_030001b4[0x1B8 - 0x1B4] = {};
-
-IWRAM_DATA struct Entity081ea120* gEntity081ea120 = NULL;  // 0x030001B8
-IWRAM_DATA struct Entity081ea820* gEntity081ea820 = NULL;  // 0x030001BC
-IWRAM_DATA struct Entity081eaf6c* gEntity081eaf6c = NULL;  // 0x030001C0
-IWRAM_DATA struct Entity081eb2f0* gEntity081eb2f0 = NULL;  // 0x030001C4
+IWRAM_DATA struct Entity081e9cac* gEntity081e9cac = NULL;                // 0x030001B4
+IWRAM_DATA struct Entity081ea120* gEntity081ea120 = NULL;                // 0x030001B8
+IWRAM_DATA struct Entity081ea820* gEntity081ea820 = NULL;                // 0x030001BC
+IWRAM_DATA struct Entity081eaf6c* gEntity081eaf6c = NULL;                // 0x030001C0
+IWRAM_DATA struct Entity081eb2f0* gEntity081eb2f0 = NULL;                // 0x030001C4
 
 IWRAM_DATA u8 u8_030001c8[0x218 - 0x1c8] = {};
