@@ -30,10 +30,10 @@ IWRAM_DATA Entity0805fe30* gEntity0805fe30 = NULL;  // 0x03000130
 
 const s32 s32_ARRAY_085aba88[5] = {0, 0, -3, -6, -9};  // 0x085ABA88
 
-void Entity0805fe30_UpdateSlotRise(unknown*, unknown*, s32);
-void Entity0805fe30_UpdateSlotHold(unknown*, unknown*, s32);
+void Entity0805fe30_UpdateSlotRise(Entity0805fe30*, Entity0805fe30Slot*, s32);
+void Entity0805fe30_UpdateSlotHold(Entity0805fe30*, Entity0805fe30Slot*, s32);
 
-void (*const PTR_ARRAY_085aba9c[2])(unknown*, unknown*, s32) = {
+void (*const PTR_ARRAY_085aba9c[2])(Entity0805fe30*, Entity0805fe30Slot*, s32) = {
     Entity0805fe30_UpdateSlotRise,
     Entity0805fe30_UpdateSlotHold,
 };  // 0x085ABA9C
