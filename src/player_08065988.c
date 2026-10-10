@@ -1482,7 +1482,7 @@ static inline CollisionMapTile* Player_GetTileAt(Vec3* pos) {
 
 // プレイヤーの毎フレーム更新本体, unk_1c の状態ごとに行動関数を呼び, 通常状態では段差を登れるかも見る
 // 残差2命令 (416/414): 原典は sp のコピーを r6 に持つがこちらは持たず, unk_3be = 0 のブロックが原典では関数末尾に出る
-// 12bit 固定小数の切り捨てを三項演算子で書くと原典の rsbs/asrs/rsbs 形になる (agbcc-levers.md の Fix12ToInt は if/else なので除算に畳み戻されて使えない)
+// 12bit 固定小数の切り捨ては式として書けば原典の rsbs/asrs/rsbs 形になるが, agbcc-levers.md の Fix12ToInt のように static inline に包むと gcc が除算に畳み戻してバイアス形になるので直書きが必要
 // Player_GetTileAt は一致していないので本来なら消す規約だが, 展開すると gcc が2つの同一ブロックを畳んで 397/414 まで遠くなるため残している
 NON_MATCH void Player_UpdateDjango(Player* p) {
 #ifdef NONMATCHING_C
