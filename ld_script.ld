@@ -348,6 +348,7 @@ SECTIONS {
 			src/entity_b3d1.o (.text);
 			src/soundbus.o (.text);
 			src/code_080c0d6c.o (.text);
+			src/entity_b87b.o (.text);
 			src/boss/jormungandr.o (.text);
 			src/entity_e06a.o (.text);
 			src/entity_c814.o (.text);
