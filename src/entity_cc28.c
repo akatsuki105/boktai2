@@ -1009,7 +1009,8 @@ void FUN_08091c78(void) {
   }
 }
 
-NAKED void FUN_08091c90(void) { INCFUNC("asm/func/FUN_08091c90.inc"); }
+// 装備中の武器の損傷度をリセットする
+void FUN_08091c90(void) { GetWeapon(REGISTERED_WEAPON(gStat->equippedWeaponIdx))->wear = 0; }
 
 NAKED u32 FUN_08091cb8(item32_t n) { INCFUNC("asm/func/FUN_08091cb8.inc"); }
 
