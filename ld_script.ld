@@ -362,6 +362,7 @@ SECTIONS {
 			src/entity_501b.o (.text);
 			src/link_battle_coin.o (.text);
 			src/code_081e0c14.o (.text);
+			src/entity_8b8e.o (.text);
 			src/entity_081e8d0c.o (.text);
 			src/entity_081e9cac.o (.text);
 			src/entity_081ea120.o (.text);
@@ -641,6 +642,7 @@ SECTIONS {
     src/link_battle_lobby.o (.rodata);
     src/link_battle_result.o (.rodata);
     src/entity_9a9f.o (.rodata);
+    src/entity_8b8e.o (.rodata);
     src/rodata4.o (.rodata);
     src/preview_stage.o (.rodata);
     src/weapon_dex.o (.rodata);

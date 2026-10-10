@@ -354,7 +354,7 @@ gSubroutineTable:
 	.4byte 0x8AAB, Entity8AAB_Create
 	.4byte 0x8AF6, Entity8AF6_Create
 	.4byte 0x8B67, FUN_0801fedc
-	.4byte 0x8B8E, FUN_081e857c
+	.4byte 0x8B8E, Entity8B8E_Create
 	.4byte 0x8C35, EnemyBombGolem_Create
 	.4byte 0x8CC7, FUN_081d8a98
 	.4byte 0x8CFE, FUN_0807b5f8
