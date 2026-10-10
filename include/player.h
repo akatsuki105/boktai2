@@ -244,13 +244,14 @@ typedef struct Player {
   Vec3* ptr_398;                    // 0x398, FUN_0807a9b8 の第2引数, FUN_08065dac は pos_39c を指させる
   Vec3 pos_39c;                     // 0x39C, FUN_08065dac が今踏んでいるタイルの中心を書く
   u8 unk_3a4;                       // 0x3A4, 0 以外だと FUN_080672b0 が移動速度を設定しない
-  u8 unk_3a5[0x3B0 - 0x3A5];        // 0x3A5, padding?
+  u8 unk_3a5[3];                    // 0x3A5, padding?
+  Vec3 unk_3a8;                     // 0x3A8, unk_3a4 が 0 以外のとき FUN_08078d5c が mover.delta にそのまま写す移動量
   Vec3 unk_3b0;                     // 0x3B0, FUN_0807a528 が引数の座標をそのまま写す
   u16 unk_3b8;                      // 0x3B8, FUN_0807a528 の第3引数
   u16 unk_3ba;                      // 0x3BA, FUN_0807b5a8 が 1 を書く
   u8 unk_3bc;                       // 0x3BC, FUN_08066d2c が見る
   u8 unk_3bd;                       // 0x3BD, FUN_080674dc / FUN_0807b0c0 が見る
-  u8 unk_3be[0x3C0 - 0x3BE];        // 0x3BE, padding?
+  u16 unk_3be;                      // 0x3BE, FUN_08078d5c が毎フレーム +1 し, 5 になった回だけ処理をする
   Vec3 pos_3c0;                     // 0x3C0, FUN_08066df8 が mover.pos とカメラの注視点から作って FUN_0823bac8 に渡す
   Vec3 lookAroundOffset;            // 0x3C8, 見回し開始時のカメラ注視点からプレイヤーへのオフセット, val は見回しモード中か(0 or 1)
   u8 unk_3d0;                       // 0x3D0
