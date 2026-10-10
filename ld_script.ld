@@ -280,6 +280,7 @@ SECTIONS {
 			src/entity_08052ffc.o (.text);
 			src/entity_5645.o (.text);
 			src/entity_56dc.o (.text);
+			src/entity_8d5c.o (.text);
 			src/code_08052eb8.o (.text);
 			src/entity_0805e67c.o (.text);
 			src/entity_0805ee80.o (.text);

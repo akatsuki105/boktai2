@@ -537,7 +537,7 @@ gSubroutineTable:
 	.4byte 0xD3A9, EntityD3A9_Create
 	.4byte 0xD401, TextBox_SetPendingLineScripted
 	.4byte 0xD40E, FUN_0807da18
-	.4byte 0xD438, FUN_08055b0c
+	.4byte 0xD438, EntityD438_Create
 	.4byte 0xD4B5, FUN_0807b174
 	.4byte 0xD4E3, FUN_0801fb48
 	.4byte 0xD53D, EntityD53D_Create
