@@ -158,20 +158,20 @@ void FUN_08065240(Player* p) {
 }
 
 void Player_UpdateDjango(Player* p);
-void FUN_080798a4(Player* p);
-void FUN_08079b64(Player* p);
-void FUN_08079e4c(Player* p);
-void FUN_08079138(Player* p);
+void Player_UpdateBat(Player* p);
+void Player_UpdateMouse(Player* p);
+void Player_UpdateSleeping(Player* p);
+void Player_UpdateSabata(Player* p);
 
 // プレイヤー生成の後半, kind を決めて更新コールバックと入力を割り当て, 1Pなら前のプレイヤーが残した状態異常の残り時間を引き継ぐ
 s32 Player_InitState(Player* p) {
-  static const PlayerFunc PTR_ARRAY_085abb14[6] = {
+  static const PlayerFunc sPlayerUpdates[6] = {
       [PLAYER_SOLAR_DJANGO] = Player_UpdateDjango,
       [PLAYER_DARK_DJANGO] = Player_UpdateDjango,
-      [PLAYER_BAT] = FUN_080798a4,
-      [PLAYER_MOUSE] = FUN_08079b64,
-      [PLAYER_SLEEPING] = FUN_08079e4c,
-      [PLAYER_SABATA] = FUN_08079138,
+      [PLAYER_BAT] = Player_UpdateBat,
+      [PLAYER_MOUSE] = Player_UpdateMouse,
+      [PLAYER_SLEEPING] = Player_UpdateSleeping,
+      [PLAYER_SABATA] = Player_UpdateSabata,
   };  // 0x085ABB14
 
   p->unk_1c = 1;
@@ -198,7 +198,7 @@ s32 Player_InitState(Player* p) {
     }
     p->updateCallback = FUN_08079f1c;
   } else {
-    p->updateCallback = PTR_ARRAY_085abb14[p->kind];
+    p->updateCallback = sPlayerUpdates[p->kind];
   }
 
   Player_SetAction(p, 0, 0);
@@ -272,7 +272,7 @@ void Player_InitArmor(Player* p) {
 
 // 本体の当たり判定を組み立てる, 赤ジャンゴは属性がソル・弱点がダークで、それ以外は逆になる
 void Player_SetupHitbox(Player* p) {
-  HitboxData* hitbox = &p->unk_16c;
+  HitboxData* hitbox = &p->hitbox_16c;
   Vec3 halfSize, offset;
 
   halfSize.x = 50, halfSize.y = 127, halfSize.z = 50;
@@ -1653,7 +1653,7 @@ const PlayerFunc PTR_ARRAY_085abd30[32] = {
 };  // 0x085ABD30
 // clang-format on
 
-NAKED void FUN_08079138(Player* p) { INCFUNC("asm/func/FUN_08079138.inc"); }
+NAKED void Player_UpdateSabata(Player* p) { INCFUNC("asm/func/Player_UpdateSabata.inc"); }
 
 NAKED s32 FUN_080794e0(Player* p) { INCFUNC("asm/func/FUN_080794e0.inc"); }
 
@@ -1663,19 +1663,19 @@ NAKED void FUN_08079644(Player* p) { INCFUNC("asm/func/FUN_08079644.inc"); }
 
 NAKED void FUN_0807972c(Player* p) { INCFUNC("asm/func/FUN_0807972c.inc"); }
 
-NAKED void FUN_080798a4(Player* p) { INCFUNC("asm/func/FUN_080798a4.inc"); }
+NAKED void Player_UpdateBat(Player* p) { INCFUNC("asm/func/Player_UpdateBat.inc"); }
 
 NAKED s32 FUN_0807998c(Player* p) { INCFUNC("asm/func/FUN_0807998c.inc"); }
 
 NAKED void FUN_08079a64(Player* p) { INCFUNC("asm/func/FUN_08079a64.inc"); }
 
-NAKED void FUN_08079b64(Player* p) { INCFUNC("asm/func/FUN_08079b64.inc"); }
+NAKED void Player_UpdateMouse(Player* p) { INCFUNC("asm/func/Player_UpdateMouse.inc"); }
 
 NAKED s32 FUN_08079c50(Player* p) { INCFUNC("asm/func/FUN_08079c50.inc"); }
 
 NAKED void FUN_08079d40(Player* p) { INCFUNC("asm/func/FUN_08079d40.inc"); }
 
-NAKED void FUN_08079e4c(Player* p) { INCFUNC("asm/func/FUN_08079e4c.inc"); }
+NAKED void Player_UpdateSleeping(Player* p) { INCFUNC("asm/func/Player_UpdateSleeping.inc"); }
 
 NAKED void FUN_08079f1c(Player* p) { INCFUNC("asm/func/FUN_08079f1c.inc"); }
 
@@ -1689,12 +1689,12 @@ void FUN_0807a44c(Player* p, s32 dir) {
   p->facing = (dir + 4) & 7;
   if (p->unk_3bd > 4) {
     p->animIDOffset = (8 - p->unk_3bd) >> 1;
-    p->xflip = 1;
+    p->xflip = TRUE;
   } else {
     p->animIDOffset = p->unk_3bd >> 1;
-    p->xflip = 0;
+    p->xflip = FALSE;
   }
-  p->unk_16c.unk_40 = 0;
+  p->hitbox_16c.unk_40 = 0;
 }
 
 // プレイヤーが乗っているタイルの索引を返す, MoverTile の控えがあればそれ、無ければ座標から引く
@@ -1990,9 +1990,9 @@ void FUN_0807ab14(Player* p) {
   p->formRequest = FALSE;
   p->animIDOffset = 0;
   FUN_08063220(p);
-  p->unk_16c.flags |= HBFLAG_UNK_2;
-  p->unk_16c.unk_40 = 0;
-  p->unk_16c.unk_44 = 0;
+  p->hitbox_16c.flags |= HBFLAG_UNK_2;
+  p->hitbox_16c.unk_40 = 0;
+  p->hitbox_16c.unk_44 = 0;
   Player_SetAction(p, 21, 0);
 }
 
@@ -3588,9 +3588,9 @@ void FUN_0807e784(HitboxData* a, HitboxData* b, Player* p) {
 // 一時的な HitboxData を組み立てて自分の当たり判定にぶつける
 s32 FUN_0807e7fc(Player* p, s32 power, s32 unk_40, s32 angle, s32 unk_44, HitboxAttributes attrs) {
   if (p->unk_1c == 1) {
-    HitboxData* own = &p->unk_16c;
+    HitboxData* own = &p->hitbox_16c;
     HitboxData hb;
-    s32 n = p->unk_16c.unk_44;
+    s32 n = p->hitbox_16c.unk_44;
 
     if (n <= 0) {
       hb.flags = HBFLAG_UNK_13;
@@ -3612,16 +3612,16 @@ NAKED bool32 Player_Update_Helper_0807e968(Player* p) { INCFUNC("asm/func/Player
 // 残差なし・レジスタ割当のみ不一致 (p と n の r4/r5 が入れ替わる)
 NON_MATCH void FUN_0807eca8(Player* p) {
 #ifdef NONMATCHING_C
-  s32 n = p->unk_16c.unk_44;
+  s32 n = p->hitbox_16c.unk_44;
 
   if (n > 0) {
     Player_SetFlag35a(p, PFLAG35A_NO_HITBOX);
-    if (p->unk_16c.unk_40 == 0 && p->action != 24 && p->action != 25) {
+    if (p->hitbox_16c.unk_40 == 0 && p->action != 24 && p->action != 25) {
       n--;
       if (n != 0 && ((n >> 2) & 1)) {
         Player_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_HIDE_SHADOW);
       }
-      p->unk_16c.unk_44 = n;
+      p->hitbox_16c.unk_44 = n;
     }
   }
 #else
@@ -3639,7 +3639,7 @@ void Player_ApplyFormRequest(Player* p) {
 
   if (p->formRequestKind == PLAYER_BAT) {
     p->kind = PLAYER_BAT;
-    p->updateCallback = FUN_080798a4;
+    p->updateCallback = Player_UpdateBat;
     p->unk_359 = 1;
     p->mover.mainSprite = NULL, p->mover.auxSprite = &p->sprite_e8;
     p->unk_4c4.pos = &p->sprite_e8.pos;
@@ -3650,7 +3650,7 @@ void Player_ApplyFormRequest(Player* p) {
     p->unk_960 = 0x20;
   } else if (p->formRequestKind == PLAYER_MOUSE) {
     p->kind = PLAYER_MOUSE;
-    p->updateCallback = FUN_08079b64;
+    p->updateCallback = Player_UpdateMouse;
     p->unk_359 = 1;
     p->mover.mainSprite = NULL, p->mover.auxSprite = &p->sprite_e8;
     p->unk_4c4.pos = &p->sprite_e8.pos;
@@ -3662,7 +3662,7 @@ void Player_ApplyFormRequest(Player* p) {
 
   } else if (p->formRequestKind == PLAYER_SLEEPING) {
     p->kind = PLAYER_SLEEPING;
-    p->updateCallback = FUN_08079e4c;
+    p->updateCallback = Player_UpdateSleeping;
     p->unk_359 = 1;
     p->mover.mainSprite = NULL, p->mover.auxSprite = &p->sprite_e8;
     p->unk_4c4.pos = &p->sprite_e8.pos;
@@ -3741,7 +3741,7 @@ static s32 Player_Destroy(Player* p) {
   EnemyTargetManager_Remove(&p->target);
   MainSprite_Remove(&p->sprite_88);
   AuxSprite_Remove(&p->sprite_e8);
-  Hitbox_Unregister(&p->unk_16c);
+  Hitbox_Unregister(&p->hitbox_16c);
   Mover_Unlink(&p->mover);
   Player_DestroyEffects(p);
   FUN_0807ddd4(p);
