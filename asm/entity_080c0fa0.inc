@@ -154,8 +154,8 @@ _080C0E70:
 	.align 2, 0
 _080C0E74: .4byte FUN_080c0df4
 
-	thumb_func_start FUN_080c0e78
-FUN_080c0e78: @ 0x080C0E78
+	thumb_func_start Entity080c0fa0_Update
+Entity080c0fa0_Update: @ 0x080C0E78
 	push {lr}
 	ldr r1, [r0, #0x78]
 	bl _call_via_r1
@@ -164,8 +164,8 @@ FUN_080c0e78: @ 0x080C0E78
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_080c0e88
-FUN_080c0e88: @ 0x080C0E88
+	thumb_func_start Entity080c0fa0_Destroy
+Entity080c0fa0_Destroy: @ 0x080C0E88
 	push {lr}
 	adds r0, #0x18
 	bl AuxSprite_Remove
@@ -174,8 +174,8 @@ FUN_080c0e88: @ 0x080C0E88
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_080c0e98
-FUN_080c0e98: @ 0x080C0E98
+	thumb_func_start Entity080c0fa0_Init
+Entity080c0fa0_Init: @ 0x080C0E98
 	push {r4, r5, r6, r7, lr}
 	mov r7, sb
 	mov r6, r8
@@ -307,8 +307,8 @@ _080C0F8C:
 	.align 2, 0
 _080C0F9C: .4byte FUN_080c0df4
 
-	thumb_func_start FUN_080c0fa0
-FUN_080c0fa0: @ 0x080C0FA0
+	thumb_func_start Entity080c0fa0_Create
+Entity080c0fa0_Create: @ 0x080C0FA0
 	push {r4, r5, r6, r7, lr}
 	mov r7, r8
 	push {r7}
@@ -323,8 +323,8 @@ FUN_080c0fa0: @ 0x080C0FA0
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080C0FF8
-	ldr r1, _080C0FF0 @ =FUN_080c0e78
-	ldr r2, _080C0FF4 @ =FUN_080c0e88
+	ldr r1, _080C0FF0 @ =Entity080c0fa0_Update
+	ldr r2, _080C0FF4 @ =Entity080c0fa0_Destroy
 	bl SetEntityRoutine
 	str r5, [sp]
 	ldr r0, [sp, #0x28]
@@ -337,7 +337,7 @@ FUN_080c0fa0: @ 0x080C0FA0
 	adds r1, r6, #0
 	adds r2, r7, #0
 	mov r3, r8
-	bl FUN_080c0e98
+	bl Entity080c0fa0_Init
 	cmp r0, #0
 	bge _080C0FF8
 	adds r0, r4, #0
@@ -345,8 +345,8 @@ FUN_080c0fa0: @ 0x080C0FA0
 	movs r0, #0
 	b _080C0FFA
 	.align 2, 0
-_080C0FF0: .4byte FUN_080c0e78
-_080C0FF4: .4byte FUN_080c0e88
+_080C0FF0: .4byte Entity080c0fa0_Update
+_080C0FF4: .4byte Entity080c0fa0_Destroy
 _080C0FF8:
 	adds r0, r4, #0
 _080C0FFA:
@@ -473,7 +473,7 @@ _080C10E2:
 	add r1, sp, #0x10
 	mov r2, r8
 	adds r3, r7, #0
-	bl FUN_080c0e98
+	bl Entity080c0fa0_Init
 	movs r0, #0
 	add sp, #0x18
 	pop {r3, r4}
@@ -495,8 +495,8 @@ FUN_080c1108: @ 0x080C1108
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _080C1144
-	ldr r1, _080C113C @ =FUN_080c0e78
-	ldr r2, _080C1140 @ =FUN_080c0e88
+	ldr r1, _080C113C @ =Entity080c0fa0_Update
+	ldr r2, _080C1140 @ =Entity080c0fa0_Destroy
 	bl SetEntityRoutine
 	adds r0, r4, #0
 	adds r1, r5, #0
@@ -509,8 +509,8 @@ FUN_080c1108: @ 0x080C1108
 	movs r0, #0
 	b _080C1146
 	.align 2, 0
-_080C113C: .4byte FUN_080c0e78
-_080C1140: .4byte FUN_080c0e88
+_080C113C: .4byte Entity080c0fa0_Update
+_080C1140: .4byte Entity080c0fa0_Destroy
 _080C1144:
 	adds r0, r4, #0
 _080C1146:

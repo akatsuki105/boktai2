@@ -3056,7 +3056,7 @@ _080295D8:
 	add r0, sp, #0x10
 	movs r1, #0x2c
 	movs r2, #2
-	bl FUN_080c0fa0
+	bl Entity080c0fa0_Create
 	ldr r0, _08029624 @ =0x00000345
 	bl PlaySound_0824078c
 _0802960C:

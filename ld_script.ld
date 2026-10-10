@@ -347,7 +347,7 @@ SECTIONS {
 			src/shop_coffin.o (.text);
 			src/entity_b3d1.o (.text);
 			src/soundbus.o (.text);
-			src/code_080c0d6c.o (.text);
+			src/entity_080c0fa0.o (.text);
 			src/entity_3361.o (.text);
 			src/entity_080c1abc.o (.text);
 			src/entity_b87b.o (.text);
