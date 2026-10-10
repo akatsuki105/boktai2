@@ -22,6 +22,23 @@ extern u16 u16_03002b8c;
 void Player_RefreshStats(Player* p);  // src/player.c
 bool32 IsMagicUnlocked(magic32_t n);  // src/equip_magic.c
 void Player_SetPlttIDs(Player* p);    // src/player.c
+bool32 FUN_08065b44(u32 val);
+void FUN_08065b7c(Player* p);
+void FUN_08065dac(Player* p);
+void FUN_0806623c(Player* p);
+void FUN_08066408(Player* p);
+void FUN_080667b0(Player* p, s32 sunGauge);
+bool32 FUN_0806680c(Player* p);
+void FUN_0806687c(Player* p);
+void FUN_0806692c(Player* p);
+void FUN_08066d7c(Player* p, s32 val);
+void FUN_08066df8(Player* p);
+void FUN_080726ec(Player* p);
+void FUN_080784fc(Player* p);
+void FUN_0807858c(Player* p);
+s32 FUN_080788d0(Player* p);
+void FUN_08078bc0(Player* p);
+extern const PlayerFunc PTR_ARRAY_085abcac[33];
 void FUN_08079f1c(Player* p);
 extern u16 u16_03002b78;
 extern u16 u16_03002bd0;
@@ -140,8 +157,8 @@ void FUN_08065240(Player* p) {
   }
 }
 
-void FUN_08078d5c(Player* p);
-void FUN_08078d5c(Player* p);
+void Player_UpdateDjango(Player* p);
+void Player_UpdateDjango(Player* p);
 void FUN_080798a4(Player* p);
 void FUN_08079b64(Player* p);
 void FUN_08079e4c(Player* p);
@@ -150,8 +167,8 @@ void FUN_08079138(Player* p);
 // プレイヤー生成の後半, kind を決めて更新コールバックと入力を割り当て, 1Pなら前のプレイヤーが残した状態異常の残り時間を引き継ぐ
 s32 Player_InitState(Player* p) {
   static const PlayerFunc PTR_ARRAY_085abb14[6] = {
-      [PLAYER_SOLAR_DJANGO] = FUN_08078d5c,
-      [PLAYER_DARK_DJANGO] = FUN_08078d5c,
+      [PLAYER_SOLAR_DJANGO] = Player_UpdateDjango,
+      [PLAYER_DARK_DJANGO] = Player_UpdateDjango,
       [PLAYER_BAT] = FUN_080798a4,
       [PLAYER_MOUSE] = FUN_08079b64,
       [PLAYER_SLEEPING] = FUN_08079e4c,
@@ -1442,7 +1459,163 @@ const PlayerFunc PTR_ARRAY_085abcac[33] = {
 };  // 0x085ABCAC
 // clang-format on
 
-NAKED void FUN_08078d5c(Player* p) { INCFUNC("asm/func/FUN_08078d5c.inc"); }
+// pos のブロックのコリジョンタイルを引く, 差し替えがあればそちら, マップ外なら tiles[0]
+// Map_GetTileHeightAt (src/collision_map.c) の前半と同じ処理だが, 原典ではこの関数の中に2回展開されているのでインラインで持つ
+static inline CollisionMapTile* Player_GetTileAt(Vec3* pos) {
+  MapTileOverride* ov;
+  s32 bx;
+  s32 bz;
+  s32 idx;
+
+  bx = (s8)(pos->x >> 8);
+  bz = (s8)(pos->z >> 8);
+  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+    idx = 0;
+  } else {
+    idx = gCollisionMap->rowOffsets[bz] + bx;
+  }
+
+  ov = Map_FindTileOverride(idx, 1);
+  if (ov != NULL) {
+    return &ov->tile;
+  }
+  return &gCollisionMap->tiledata->tiles[idx];
+}
+
+// プレイヤーの毎フレーム更新本体, unk_1c の状態ごとに行動関数を呼び, 通常状態では段差を登れるかも見る
+// 残差2命令 (416/414): 原典は sp のコピーを r6 に持つがこちらは持たず, unk_3be = 0 のブロックが原典では関数末尾に出る
+// 12bit 固定小数の切り捨てを三項演算子で書くと原典の rsbs/asrs/rsbs 形になる (agbcc-levers.md の Fix12ToInt は if/else なので除算に畳み戻されて使えない)
+// Player_GetTileAt は一致していないので本来なら消す規約だが, 展開すると gcc が2つの同一ブロックを畳んで 397/414 まで遠くなるため残している
+NON_MATCH void Player_UpdateDjango(Player* p) {
+#ifdef NONMATCHING_C
+  p->unk_20 |= PFLAG20_UNK_14;
+
+  switch (p->unk_1c) {
+    case 1: {
+      CollisionMapTile* tile;
+      Vec3 pos;
+      s32 action;
+      s32 angle;
+      s32 v;
+      s32 n;
+      s32 height;
+      bool32 busy;
+      bool32 canStep;
+
+      FUN_0807858c(p);
+      if (p->kind == PLAYER_SOLAR_DJANGO) {
+        if (FUN_0806680c(p)) {
+          FUN_0806687c(p);
+        }
+      } else {
+        if (p->unk_20 & PFLAG20_UNK_4) {
+          FUN_080667b0(p, gStat->sunGauge);
+        }
+        if (FUN_0806680c(p)) {
+          FUN_0806687c(p);
+          FUN_0806692c(p);
+        }
+      }
+
+      FUN_080784fc(p);
+      action = FUN_080788d0(p);
+      FUN_08066d7c(p, action);
+      PTR_ARRAY_085abcac[action](p);
+
+      if (p->unk_3a4 != 0) {
+        p->mover.delta = p->unk_3a8;
+      } else {
+        FUN_08066408(p);
+      }
+
+      FUN_08078bc0(p);
+      if (p->lookAroundOffset.val != 0) {
+        FUN_08066df8(p);
+      }
+      FUN_08065b7c(p);
+      if (p->kind == PLAYER_DARK_DJANGO) {
+        FUN_08065dac(p);
+      }
+      FUN_0806623c(p);
+
+      busy = p->unk_446 != 0 && p->unk_442 == 5;
+      if (busy) {
+        return;
+      }
+
+      canStep = !FUN_08065b44(p->tile.attr[1]) && p->action == 1 && (p->tile.unk_0[0] & 1) && (p->facing & 1);
+      if (!canStep) {
+        p->unk_3be = 0;
+        return;
+      }
+
+      p->unk_3be++;
+      if (p->unk_3be != 5) {
+        return;
+      }
+
+      pos = p->mover.pos;
+      angle = ((p->facing + 5) & 7) * 32;
+      v = gSineTable[(angle + 0x40) & 0xFF] * 50;
+      n = (v >= 0) ? (v >> 12) : -((-v) >> 12);
+      pos.x += n;
+      v = gSineTable[angle & 0xFF] * 50;
+      n = (v >= 0) ? (v >> 12) : -((-v) >> 12);
+      pos.z += n;
+
+      tile = Player_GetTileAt(&pos);
+      height = (tile->heightStairs & 0xF) << 8;
+      switch (tile->heightStairs >> 4) {
+        case 1: {
+          height -= (u8)pos.z;
+          break;
+        }
+        case 2: {
+          height -= (u8)pos.x;
+          break;
+        }
+      }
+      if ((u32)height < (u32)(p->mover.pos.y + 200)) {
+        return;
+      }
+
+      tile = Player_GetTileAt(&pos);
+      if (tile->attr & 4) {
+        return;
+      }
+
+      p->unk_3bd = p->facing;
+      p->unk_3bc = 0;
+      Player_SetAction(p, 4, 0);
+      break;
+    }
+    case 2: {
+      p->unk_20 |= PFLAG20_UNK_18;
+      Player_SetFlag35a(p, 8);
+      p->fn_498(p);
+      FUN_08078bc0(p);
+      FUN_080726ec(p);
+      break;
+    }
+    case 4: {
+      s32 n;
+
+      p->unk_20 |= PFLAG20_UNK_18;
+      Player_SetFlag35a(p, 8);
+      if (p->action >= 0x1C && p->action <= 0x1F) {
+        n = p->action;
+      } else {
+        n = (p->unk_3d2 != 0) ? 0x1B : 0x1A;
+      }
+      PTR_ARRAY_085abcac[n](p);
+      FUN_08078bc0(p);
+      break;
+    }
+  }
+#else
+  INCFUNC("asm/func/Player_UpdateDjango.inc");
+#endif
+}
 
 NAKED void FUN_08079138(Player* p) { INCFUNC("asm/func/FUN_08079138.inc"); }
 
@@ -3473,7 +3646,7 @@ void Player_ApplyFormRequest(Player* p) {
       p->unk_960 = 0x20;
     }
     p->kind = PLAYER_DARK_DJANGO;
-    p->updateCallback = FUN_08078d5c;
+    p->updateCallback = Player_UpdateDjango;
     p->unk_359 = 0;
     p->mover.mainSprite = &p->sprite_88, p->mover.auxSprite = NULL;
     p->unk_4c4.pos = &p->sprite_88.pos;

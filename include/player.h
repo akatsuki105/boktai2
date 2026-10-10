@@ -22,9 +22,11 @@ typedef u32 PlayerFlag20;         // Player.unk_20
 #define PFLAG20_UNK_4 (1 << 4)    // 0x00000010, 日光が当たっているときに立つ, 根拠: Player_BeginAction
 #define PFLAG20_UNK_8 (1 << 8)    // 0x00000100
 #define PFLAG20_UNK_12 (1 << 12)  // 0x00001000
+#define PFLAG20_UNK_14 (1 << 14)  // 0x00004000, Player_UpdateDjango が先頭で毎フレーム立てる
 #define PFLAG20_UNK_15 (1 << 15)  // 0x00008000, 立っていると Player_SetHitDir が被弾方向を facing ではなく unk_3e8 に書く
 #define PFLAG20_UNK_16 (1 << 16)  // 0x00010000, FLAG378_SKULLSUIT が立っているときに立つ
 #define PFLAG20_UNK_17 (1 << 17)  // 0x00020000, 棺桶が COFFIN_SILVER のとき寝ている間だけ立つ
+#define PFLAG20_UNK_18 (1 << 18)  // 0x00040000, Player_UpdateDjango が unk_1c が 2 か 4 のとき立てる
 #define PFLAG20_UNK_19 (1 << 19)  // 0x00080000
 
 // Player.flag35a, Player_BeginAction が毎フレーム 0 に戻し、行動関数が立てたものを FUN_08078bc0 がその場で反映する
@@ -245,13 +247,13 @@ typedef struct Player {
   Vec3 pos_39c;                     // 0x39C, FUN_08065dac が今踏んでいるタイルの中心を書く
   u8 unk_3a4;                       // 0x3A4, 0 以外だと FUN_080672b0 が移動速度を設定しない
   u8 unk_3a5[3];                    // 0x3A5, padding?
-  Vec3 unk_3a8;                     // 0x3A8, unk_3a4 が 0 以外のとき FUN_08078d5c が mover.delta にそのまま写す移動量
+  Vec3 unk_3a8;                     // 0x3A8, unk_3a4 が 0 以外のとき Player_UpdateDjango が mover.delta にそのまま写す移動量
   Vec3 unk_3b0;                     // 0x3B0, FUN_0807a528 が引数の座標をそのまま写す
   u16 unk_3b8;                      // 0x3B8, FUN_0807a528 の第3引数
   u16 unk_3ba;                      // 0x3BA, FUN_0807b5a8 が 1 を書く
   u8 unk_3bc;                       // 0x3BC, FUN_08066d2c が見る
   u8 unk_3bd;                       // 0x3BD, FUN_080674dc / FUN_0807b0c0 が見る
-  u16 unk_3be;                      // 0x3BE, FUN_08078d5c が毎フレーム +1 し, 5 になった回だけ処理をする
+  u16 unk_3be;                      // 0x3BE, Player_UpdateDjango が毎フレーム +1 し, 5 になった回だけ処理をする
   Vec3 pos_3c0;                     // 0x3C0, FUN_08066df8 が mover.pos とカメラの注視点から作って FUN_0823bac8 に渡す
   Vec3 lookAroundOffset;            // 0x3C8, 見回し開始時のカメラ注視点からプレイヤーへのオフセット, val は見回しモード中か(0 or 1)
   u8 unk_3d0;                       // 0x3D0
@@ -292,7 +294,7 @@ typedef struct Player {
   u8 unk_448[0x456 - 0x448];        // 0x448
   s8 controlUp;                     // 0x456, 通常は gStat->controlUp が入るが、混乱(移動方向がおかしくなる状態異常)のときに書き換えられる
   u8 unk_457[0x498 - 0x457];        // 0x457
-  PlayerFunc fn_498;                // 0x498, FUN_08078d5c
+  PlayerFunc fn_498;                // 0x498, Player_UpdateDjango
   Vec3 unk_49c;                     // 0x49C, FUN_0807c88c が引数の座標をそのまま写す
   u16 unk_4a4;                      // 0x4A4, FUN_0807bee0 の第3引数
   u8 unk_4a6;                       // 0x4A6, FUN_0807bc14 の第2引数
