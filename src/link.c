@@ -396,13 +396,35 @@ void Sio_Reinit(void) {
 
 NAKED void FUN_08238a30(void) { INCFUNC("asm/func/FUN_08238a30.inc"); }
 
-NAKED void FUN_08238aac(void) { INCFUNC("asm/func/FUN_08238aac.inc"); }
+// 残差は命令列が完全一致でレジスタ番号が全体に1つずれるのみ (r1-r4 対 r2-r5), Tier A-C 試済
+NON_MATCH void Sio_DetectRole(void) {
+#ifdef NONMATCHING_C
+  u16 cnt, si;
+
+  gSioMultiId = -1;
+  gSioStatus = 0;
+  cnt = REG_SIOCNT;
+  if ((cnt & (SIO_MULTI_SD | SIO_MULTI_BUSY)) != SIO_MULTI_SD) {
+    gSioStatus = -1;
+    return;
+  }
+  si = cnt & SIO_MULTI_SI;
+  if (si == 0) {
+    gSioMultiId = 0;
+  } else {
+    gSioMultiId = -1;
+  }
+  REG_SIOMLT_SEND = 0x4000;
+#else
+  INCFUNC("asm/func/Sio_DetectRole.inc");
+#endif
+}
 
 NAKED s32 FUN_08238b04(void) { INCFUNC("asm/func/FUN_08238b04.inc"); }
 
 // 役割を判定してシリアル割り込みを動かす, 戻り値は 0 = 親, 1 = 子, 負ならエラー
 s32 Sio_Connect(void) {
-  FUN_08238aac();
+  Sio_DetectRole();
   if (gSioStatus < 0) {
     return gSioStatus;
   }
