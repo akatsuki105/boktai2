@@ -127,7 +127,7 @@ void Player_EquipArmor(Player* p, const ArmorData* a);
 struct Entity08080be8* Entity08080be8_Create(Player* player, u32 heightOffset, u32 unk_be, u32 unk_c0, u32 offsetRadius, u32 plttID, u32 hitboxUnk40, u32 attributes, u32 hitboxUnk44, u32 ptclVal, u32 eneCost, u32 unk_cd);
 void FUN_0807e784(HitboxData* a, HitboxData* b, Player* p);
 void Player_SetMoveDelta(Player* p, s32 val);
-extern u16 u16_03002b74;
+extern u16 gSabataDefence;
 void FUN_0823bac8(Vec3* pos);
 bool32 FUN_0808626c(s32 idA, u32 flagsA, s32 idB, u32 flagsB);
 void Player_UpdateBloodSword(Player* p);
@@ -1930,12 +1930,12 @@ NON_MATCH s32 FUN_0807a6cc(WeaponData* w) {
 #endif
 }
 
-// 鎧の効果を乗せたハヤサから派生値を出す, 鎧を渡さなければ素の値, サバタでプレイ中は u16_03002b74 をそのまま返す
+// 鎧の効果を乗せたハヤサから派生値を出す, 鎧を渡さなければ素の値, サバタでプレイ中は gSabataDefence をそのまま返す
 s32 FUN_0807a70c(ArmorData* data) {
   s32 val;
 
   if (gStat->playerKind == PLAYER_SABATA) {
-    return u16_03002b74;
+    return gSabataDefence;
   }
 
   val = gStat->stats[STAT_AGILITY] + gStat->stats[STAT_KINDS + STAT_AGILITY];

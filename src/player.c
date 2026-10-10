@@ -12,7 +12,7 @@
 #include "vm.h"
 
 extern u16 u16_03002b64;
-extern u16 u16_03002b74;
+extern u16 gSabataDefence;
 extern u16 u16_03002bb0;
 
 s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
@@ -401,10 +401,10 @@ void Player_RefreshHpEne(Player* p) {
   }
 }
 
-// 攻撃力と属性を当たり判定に設定する, レベルとチカラの平均に鎧の値を足した値が攻撃力になる
+// 防御力と属性を当たり判定に設定する, レベルとハヤサの平均に鎧の値を足した値が防御力になる
 // 命令数は107で一致, 残差はレジスタ割当だけ: 原典は armor を r5, lv を r4, special を r3 (caller-saved) に置くが
 // こちらは armor を r4, special を call-saved の r5 に取る. PlayerArmor を 0x27A まで広げて命令数は揃った, Tier A/B は試済
-NON_MATCH void Player_RefreshAttackPower(Player* p) {
+NON_MATCH void Player_RefreshDefence(Player* p) {
 #ifdef NONMATCHING_C
   PlayerArmor* armor = &p->armor;
   s32 lv;
@@ -447,29 +447,29 @@ NON_MATCH void Player_RefreshAttackPower(Player* p) {
   }
   power = ((power + lv) >> 1) + armor->defence;
   if (p->kind == PLAYER_SABATA) {
-    u16_03002b74 = power;
+    gSabataDefence = power;
   }
 
   Hitbox_SetPowerAndAttributes(&p->hitbox_16c, power, attrs, weakness);
 #else
-  INCFUNC("asm/func/Player_RefreshAttackPower.inc");
+  INCFUNC("asm/func/Player_RefreshDefence.inc");
 #endif
 }
 
 void FUN_08061294(Player* p) {
   Player_RefreshHpEne(p);
-  Player_RefreshAttackPower(p);
+  Player_RefreshDefence(p);
 }
 
 void FUN_080612a8(Player* p) {
   UpdateMaxHPEne(p);
-  Player_RefreshAttackPower(p);
+  Player_RefreshDefence(p);
 }
 
 void FUN_080612bc(Player* p) {
   Player_RefreshStats(p);
   UpdateMaxHPEne(p);
-  Player_RefreshAttackPower(p);
+  Player_RefreshDefence(p);
 }
 
 // 足元の判定を1つ出す, コウモリ/ネズミ姿は補助スプライトの位置と小さめの大きさを使う

@@ -100,7 +100,7 @@ typedef struct {
   u16 bonus[STAT_KINDS];      // 0x08 (Player: 0x26C), 武者鎧などのステータスに対する補正値
   s16 sideBonus[STAT_KINDS];  // 0x10 (Player: 0x274), 赤/黒による符号付き補正 (赤なら+, 黒なら-), [0] が HP, [1] が Ene に効く
 } PlayerArmor;
-static_assert(sizeof(PlayerArmor) == 24);  // 根拠: Player_RefreshAttackPower が 0x264 を1本のベースにして 0x266/0x272/0x27A を触る
+static_assert(sizeof(PlayerArmor) == 24);  // 根拠: Player_RefreshDefence が 0x264 を1本のベースにして 0x266/0x272/0x27A を触る
 
 typedef struct {
   Particle base;  // 0x00
