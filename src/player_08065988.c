@@ -1617,6 +1617,43 @@ NON_MATCH void Player_UpdateDjango(Player* p) {
 #endif
 }
 
+// clang-format off
+const PlayerFunc PTR_ARRAY_085abd30[32] = {
+    FUN_08066f7c,
+    FUN_080672b0,
+    FUN_0806b374,
+    FUN_08072014,
+    FUN_08067510,
+    FUN_08067de8,
+    FUN_08069218,
+    FUN_0806830c,
+    FUN_08068624,
+    Sabata_BlackSun,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    FUN_0806961c,
+    FUN_08069648,
+    FUN_0806a050,
+    FUN_08069d70,
+    FUN_08069f60,
+    FUN_0806a084,
+    FUN_0806a32c,
+    FUN_0806a628,
+    FUN_0806a88c,
+    FUN_0806abd4,
+    FUN_0806adc8,
+    FUN_0806af70,
+    FUN_0806b758,
+};  // 0x085ABD30
+// clang-format on
+
 NAKED void FUN_08079138(Player* p) { INCFUNC("asm/func/FUN_08079138.inc"); }
 
 NAKED s32 FUN_080794e0(Player* p) { INCFUNC("asm/func/FUN_080794e0.inc"); }
@@ -3753,43 +3790,6 @@ Player* CreatePlayer(u32 n, void* _) {
 
   return p;
 }
-
-// clang-format off
-const PlayerFunc PTR_ARRAY_085abd30[32] = {
-    FUN_08066f7c,
-    FUN_080672b0,
-    FUN_0806b374,
-    FUN_08072014,
-    FUN_08067510,
-    FUN_08067de8,
-    FUN_08069218,
-    FUN_0806830c,
-    FUN_08068624,
-    Sabata_BlackSun,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    FUN_0806961c,
-    FUN_08069648,
-    FUN_0806a050,
-    FUN_08069d70,
-    FUN_08069f60,
-    FUN_0806a084,
-    FUN_0806a32c,
-    FUN_0806a628,
-    FUN_0806a88c,
-    FUN_0806abd4,
-    FUN_0806adc8,
-    FUN_0806af70,
-    FUN_0806b758,
-};  // 0x085ABD30
-// clang-format on
 
 // clang-format off
 const PlayerFunc PTR_ARRAY_085abdb0[27] = {
