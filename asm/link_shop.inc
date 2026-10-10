@@ -275,7 +275,7 @@ _081E1BC8:
 	bl Sio_GetTimerIntrCount
 	b _081E1C0A
 _081E1BE4:
-	bl FUN_082380d4
+	bl Sio_HasParentData
 	mov r8, r0
 	bl Sio_GetSerialIntrCount
 	ldr r1, [r6, #0x70]

@@ -271,7 +271,13 @@ s32 Sio_GetError(void) {
 
 NAKED s32 FUN_082380a8(void) { INCFUNC("asm/func/FUN_082380a8.inc"); }
 
-NAKED s32 FUN_082380d4(void) { INCFUNC("asm/func/FUN_082380d4.inc"); }
+// 子が親からデータを受け取っているか (0xFFFF はデータなし)
+bool32 Sio_HasParentData(void) {
+  if (gSioChildRecv != 0xFFFF) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED s32 FUN_082380f4(void) { INCFUNC("asm/func/FUN_082380f4.inc"); }
 
