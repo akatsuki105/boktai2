@@ -6,12 +6,12 @@
 #include "vm.h"
 
 // BG 1枚を受け持つ, Entity08001610 と同じ形だが座標を 25.7 固定小数の s32 で持つ
-typedef struct Entity08000a94 {
+typedef struct {
   Entity e;           // 0x000, ENTITY_UNK_9 か ENTITY_UNK_11
   u16 unk_18;         // 0x018, Init の第2引数, 読み手は見つかっていない
   u8 flags;           // 0x01A, Init が bit0 と bit1 と bit4 を見る
   u8 bgIdx;           // 0x01B, gBgStates と GetTilemapBuffer と gEntity08000a94 の添字
-  u32 tilemapID;      // 0x01C, GetTilemapFile に渡す, 4バイトで書く
+  u32 tilemapID;      // 0x01C, TILEMAP_XXXX, 4バイトで書く
   s25_7 x;            // 0x020
   s25_7 y;            // 0x024
   s32 unk_28;         // 0x028, Init が x と同じ値を入れる
@@ -89,6 +89,7 @@ NAKED s32 Entity08000a94_Init(Entity08000a94* p, u16 param_2, u8* param_3) { INC
 // Update は Video_GenerateBackgroundMaps, Destroy は Entity08000a94_Destroy
 NAKED Entity08000a94* Entity08000a94_Create(u16 param_1, unknown* param_2) { INCFUNC("asm/func/Entity08000a94_Create.inc"); }
 
+// 0xB4B4
 NAKED unknown* VM_SubB4B4(u32 param_1) { INCFUNC("asm/func/VM_SubB4B4.inc"); }
 
 // id が一致するレイヤの添字を返す, 無ければ 0

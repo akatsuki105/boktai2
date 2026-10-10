@@ -34,7 +34,7 @@ SECTIONS {
     iwram (NOLOAD) :
     ALIGN(4)
     {
-      src/code_08000440.o(iwram_data);
+      src/entity_08000a94.o(iwram_data);
       src/entity_08001610.o(iwram_data);
       src/main.o(iwram_data);
       src/entity_d9ae.o(iwram_data);
@@ -200,7 +200,7 @@ SECTIONS {
       src/rom_header.o (.text);
       src/crt0.o (.text);
 			src/main.o (.text);
-			src/code_08000440.o (.text);
+			src/entity_08000a94.o (.text);
 			src/entity_08001610.o (.text);
 			src/map_pltt_4ae5.o (.text);
 			src/entity_6978.o (.text);
