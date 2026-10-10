@@ -254,4 +254,104 @@ s32 Sio_Stop(void) {
   return 0;
 }
 
-INCASM("asm/link.inc");
+NAKED s32 FUN_08237f74(unknown* p) { INCFUNC("asm/func/FUN_08237f74.inc"); }
+
+NAKED s32 FUN_08238014(unknown* p, s32 param_2) { INCFUNC("asm/func/FUN_08238014.inc"); }
+
+NAKED s32 FUN_08238094(void) { INCFUNC("asm/func/FUN_08238094.inc"); }
+
+NAKED s32 FUN_082380a8(void) { INCFUNC("asm/func/FUN_082380a8.inc"); }
+
+NAKED s32 FUN_082380d4(void) { INCFUNC("asm/func/FUN_082380d4.inc"); }
+
+NAKED s32 FUN_082380f4(void) { INCFUNC("asm/func/FUN_082380f4.inc"); }
+
+NAKED s32 Sio_GetTimerIntrCount(void) { INCFUNC("asm/func/Sio_GetTimerIntrCount.inc"); }
+
+NAKED s32 Sio_GetSerialIntrCount(void) { INCFUNC("asm/func/Sio_GetSerialIntrCount.inc"); }
+
+NAKED s32 Sio_GetMultiId(void) { INCFUNC("asm/func/Sio_GetMultiId.inc"); }
+
+NAKED void FUN_08238138(void) { INCFUNC("asm/func/FUN_08238138.inc"); }
+
+NAKED void FUN_08238148(unknown* p) { INCFUNC("asm/func/FUN_08238148.inc"); }
+
+NAKED void FUN_08238158(unknown* p) { INCFUNC("asm/func/FUN_08238158.inc"); }
+
+NAKED void FUN_08238178(s32 param_1, unknown* param_2) { INCFUNC("asm/func/FUN_08238178.inc"); }
+
+NAKED void FUN_08238198(s32 param_1, unknown* param_2) { INCFUNC("asm/func/FUN_08238198.inc"); }
+
+NAKED s32 FUN_082381b4(s32 param_1) { INCFUNC("asm/func/FUN_082381b4.inc"); }
+
+NAKED s32 FUN_082381c8(s32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_082381c8.inc"); }
+
+NAKED u32 FUN_082381e8(s32 param_1) { INCFUNC("asm/func/FUN_082381e8.inc"); }
+
+NAKED s32 FUN_082381fc(s32 param_1) { INCFUNC("asm/func/FUN_082381fc.inc"); }
+
+NAKED void FUN_08238228(s32 param_1) { INCFUNC("asm/func/FUN_08238228.inc"); }
+
+NAKED s32 FUN_08238250(u32 param_1, s32 param_2, unknown* param_3, s32 param_4) { INCFUNC("asm/func/FUN_08238250.inc"); }
+
+NAKED s32 FUN_0823829c(s32 param_1, u8 param_2) { INCFUNC("asm/func/FUN_0823829c.inc"); }
+
+NAKED void FUN_082382ec(s32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_082382ec.inc"); }
+
+NAKED void FUN_082382f8(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_082382f8.inc"); }
+
+NAKED void FUN_08238354(s32 param_1) { INCFUNC("asm/func/FUN_08238354.inc"); }
+
+NAKED u32 FUN_08238400(void) { INCFUNC("asm/func/FUN_08238400.inc"); }
+
+NAKED s32 FUN_0823840c(unknown* p) { INCFUNC("asm/func/FUN_0823840c.inc"); }
+
+NAKED s32 FUN_08238480(void) { INCFUNC("asm/func/FUN_08238480.inc"); }
+
+NAKED void FUN_0823849c(void) { INCFUNC("asm/func/FUN_0823849c.inc"); }
+
+NAKED s32 FUN_082384b0(u32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_082384b0.inc"); }
+
+NAKED s32 FUN_082384f4(u32 param_1) { INCFUNC("asm/func/FUN_082384f4.inc"); }
+
+NAKED s32 FUN_08238538(unknown* p) { INCFUNC("asm/func/FUN_08238538.inc"); }
+
+NAKED s32 FUN_08238590(void) { INCFUNC("asm/func/FUN_08238590.inc"); }
+
+NAKED void FUN_082385b0(void) { INCFUNC("asm/func/FUN_082385b0.inc"); }
+
+NAKED void FUN_0823860c(void) { INCFUNC("asm/func/FUN_0823860c.inc"); }
+
+NAKED void FUN_08238618(void) { INCFUNC("asm/func/FUN_08238618.inc"); }
+
+NAKED void FUN_08238624(void) { INCFUNC("asm/func/FUN_08238624.inc"); }
+
+NAKED void FUN_08238634(void) { INCFUNC("asm/func/FUN_08238634.inc"); }
+
+NAKED void FUN_0823869c(void) { INCFUNC("asm/func/FUN_0823869c.inc"); }
+
+NAKED void FUN_082386e4(void) { INCFUNC("asm/func/FUN_082386e4.inc"); }
+
+NAKED void FUN_082389c8(void) { INCFUNC("asm/func/FUN_082389c8.inc"); }
+
+NAKED void FUN_08238a30(void) { INCFUNC("asm/func/FUN_08238a30.inc"); }
+
+NAKED void FUN_08238aac(void) { INCFUNC("asm/func/FUN_08238aac.inc"); }
+
+NAKED s32 FUN_08238b04(void) { INCFUNC("asm/func/FUN_08238b04.inc"); }
+
+NAKED s32 FUN_08238bc0(void) { INCFUNC("asm/func/FUN_08238bc0.inc"); }
+
+NAKED s32 FUN_08238bf4(void) { INCFUNC("asm/func/FUN_08238bf4.inc"); }
+
+NAKED void FUN_08238c24(void) { INCFUNC("asm/func/FUN_08238c24.inc"); }
+
+NAKED void FUN_08238cd4(void) { INCFUNC("asm/func/FUN_08238cd4.inc"); }
+
+NAKED void FUN_08238d84(void) { INCFUNC("asm/func/FUN_08238d84.inc"); }
+
+NAKED s32 FUN_08238da8(u16* param_1) { INCFUNC("asm/func/FUN_08238da8.inc"); }
+
+NAKED s32 FUN_08238e14(u16 param_1) { INCFUNC("asm/func/FUN_08238e14.inc"); }
+
+NAKED s32 FUN_08238e48(u16* param_1) { INCFUNC("asm/func/FUN_08238e48.inc"); }

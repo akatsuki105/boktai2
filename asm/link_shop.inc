@@ -157,14 +157,14 @@ _081E1AF8:
 	ldr r1, [r4, #0x64]
 	orrs r1, r0
 	str r1, [r4, #0x64]
-	bl FUN_08238114
+	bl Sio_GetTimerIntrCount
 	b _081E1B16
 _081E1B0A:
 	movs r0, #0x40
 	ldr r1, [r4, #0x64]
 	orrs r1, r0
 	str r1, [r4, #0x64]
-	bl FUN_08238120
+	bl Sio_GetSerialIntrCount
 _081E1B16:
 	str r0, [r4, #0x70]
 	bl FUN_08238480
@@ -253,7 +253,7 @@ _081E1BAA:
 	bne _081E1C80
 	movs r0, #0
 	mov r8, r0
-	bl FUN_0823812c
+	bl Sio_GetMultiId
 	adds r5, r0, #0
 	cmp r5, #0
 	beq _081E1BC8
@@ -265,19 +265,19 @@ _081E1BAA:
 _081E1BC8:
 	bl FUN_082380f4
 	mov r8, r0
-	bl FUN_08238114
+	bl Sio_GetTimerIntrCount
 	ldr r1, [r6, #0x70]
 	cmp r1, r0
 	beq _081E1BF4
 	adds r4, r6, #0
 	adds r4, #0x6b
 	strb r5, [r4]
-	bl FUN_08238114
+	bl Sio_GetTimerIntrCount
 	b _081E1C0A
 _081E1BE4:
 	bl FUN_082380d4
 	mov r8, r0
-	bl FUN_08238120
+	bl Sio_GetSerialIntrCount
 	ldr r1, [r6, #0x70]
 	cmp r1, r0
 	bne _081E1C00
@@ -292,7 +292,7 @@ _081E1C00:
 	adds r4, r6, #0
 	adds r4, #0x6b
 	strb r7, [r4]
-	bl FUN_08238120
+	bl Sio_GetSerialIntrCount
 _081E1C0A:
 	str r0, [r6, #0x70]
 	adds r1, r4, #0
@@ -324,10 +324,10 @@ _081E1C38:
 	bl FUN_08238094
 	cmp r0, #0
 	blt _081E1C2C
-	bl FUN_0823812c
+	bl Sio_GetMultiId
 	cmp r0, #0
 	blt _081E1C80
-	bl FUN_0823812c
+	bl Sio_GetMultiId
 	adds r1, r6, #0
 	adds r1, #0x6d
 	movs r2, #0
@@ -348,7 +348,7 @@ _081E1C6A:
 _081E1C6C:
 	cmp r0, #0
 	bne _081E1C2C
-	bl FUN_0823812c
+	bl Sio_GetMultiId
 	strb r0, [r4]
 	movs r1, #0x80
 	lsls r1, r1, #6

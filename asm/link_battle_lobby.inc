@@ -1005,7 +1005,7 @@ _081DC3C4:
 	adds r0, r5, r4
 	strb r2, [r0]
 _081DC3F2:
-	bl FUN_0823812c
+	bl Sio_GetMultiId
 	movs r2, #0xf2
 	lsls r2, r2, #2
 	adds r1, r5, r2
