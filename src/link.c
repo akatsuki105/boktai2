@@ -329,7 +329,7 @@ NAKED void FUN_082382f8(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_082382
 
 NAKED void FUN_08238354(s32 param_1) { INCFUNC("asm/func/FUN_08238354.inc"); }
 
-NAKED u32 FUN_08238400(void) { INCFUNC("asm/func/FUN_08238400.inc"); }
+void Sio_FreePacketCtx(void) { gSioPacketCtx = NULL; }
 
 NAKED s32 FUN_0823840c(unknown* p) { INCFUNC("asm/func/FUN_0823840c.inc"); }
 
