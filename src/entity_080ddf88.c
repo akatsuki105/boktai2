@@ -9,14 +9,14 @@ typedef struct {
 } Entity080de11cElem;
 static_assert(sizeof(Entity080de11cElem) == 68);
 
-typedef struct Entity080de11c {
+typedef struct {
   Entity e;                      // 0x0, ENTITY_UNK_9
   u8 unk_18[0x24 - 0x18];        // 0x18, まだ未解析
-  Entity080de11cElem elems[48];  // 0x24
+  Entity080de11cElem ptcls[48];  // 0x24
 } Entity080de11c;
 static_assert(sizeof(Entity080de11c) == 3300);
 
-extern Entity080de11c* gEntity080de11c;  // 0x03000174
+IWRAM_DATA Entity080de11c* gEntity080de11c = NULL;  // 0x03000174
 
 NAKED s32 Entity080de11c_Update(Entity080de11c* p) { INCFUNC("asm/func/Entity080de11c_Update.inc"); }
 
@@ -25,7 +25,7 @@ s32 Entity080de11c_Destroy(Entity080de11c* p) {
   s32 i;
 
   for (i = 0; i < 48; i++) {
-    Particle_Remove(&p->elems[i].ptcl);
+    Particle_Remove(&p->ptcls[i].ptcl);
   }
 
   gEntity080de11c = NULL;

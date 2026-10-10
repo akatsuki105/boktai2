@@ -14,7 +14,7 @@ typedef struct {
 } Entity7B9FElem;
 static_assert(sizeof(Entity7B9FElem) == 220);
 
-typedef struct Entity7B9F {
+typedef struct {
   Entity e;                 // 0x000, ENTITY_UNK_10
   u8 unk_18[32];            // 0x018, まだ未解析
   Entity7B9FElem elems[4];  // 0x038, _AllocElem が usedMask の空きビットを探して確保する
@@ -22,7 +22,7 @@ typedef struct Entity7B9F {
 } Entity7B9F;
 static_assert(sizeof(Entity7B9F) == 940);
 
-extern Entity7B9F* gEntity7B9F;  // 0x030001A0
+IWRAM_DATA Entity7B9F* gEntity7B9F = NULL;  // 0x030001A0
 
 NAKED Entity7B9FElem* Entity7B9F_AllocElem(Entity7B9F* p) { INCFUNC("asm/func/Entity7B9F_AllocElem.inc"); }
 

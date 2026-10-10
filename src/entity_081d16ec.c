@@ -14,7 +14,7 @@ typedef u16 Entity081d16ecItemFlags;  // Entity081d16ecItem.flags
 #define E081D16EC_FLAG_3 (1 << 3)     // まだ不明
 #define E081D16EC_FLAG_4 (1 << 4)     // まだ不明
 
-// Entity081d16ec が抱える要素, スプライトとヒットボックスを1つずつ持つ
+// スプライトとヒットボックスを1つずつ持つ
 typedef struct Entity081d16ecItem {
   AuxSprite sprite;               // 0x00, Entity081d16ec_Destroy が要素そのものを AuxSprite_Remove に渡す
   AuxAnimState anim;              // 0x2C, AuxAnim_SetAnim で再生する
@@ -39,15 +39,15 @@ typedef struct Entity081d16ecItem {
 static_assert(sizeof(Entity081d16ecItem) == 200);
 
 // 最大12個の Entity081d16ecItem をビットマスクで管理するシングルトン
-typedef struct Entity081d16ec {
+typedef struct {
   Entity e;                      // 0x000, ENTITY_UNK_9
   AuxAnimFile* anim;             // 0x018, ANIM_B952
-  Entity081d16ecItem items[12];  // 0x01C, _Update と _Destroy が 0x1C + i*200 で引く
+  Entity081d16ecItem items[12];  // 0x01C
   u32 activeMask;                // 0x97C, bit i が立っていれば items[i] が使用中, _Init が 0 にする
 } Entity081d16ec;
 static_assert(sizeof(Entity081d16ec) == 2432);
 
-extern Entity081d16ec* gEntity081d16ec;  // 0x0300018C
+IWRAM_DATA Entity081d16ec* gEntity081d16ec = NULL;  // 0x0300018C
 
 void FUN_081d0e74(Entity081d16ecItem* item, Entity081d16ecItemFlags n) { item->flags |= n; }
 

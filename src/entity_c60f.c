@@ -13,7 +13,6 @@ typedef u32 EntityC60FItemFlags;
 #define C60FITEM_TILE_OVERRIDE (1 << 5)  // 衝突タイルの上書きを持っている, 落とすときに Map_RemoveTileOverride で取り消す
 #define C60FITEM_FIXED_AREA (1 << 7)     // state を回さず unk_10a を gStat->unk_248 と比べる
 
-// EntityC60F が抱える要素
 typedef struct {
   AuxSprite sprite;              // 0x000
   u8 unk_2c[28];                 // 0x02C
@@ -34,7 +33,7 @@ typedef struct {
 static_assert(sizeof(EntityC60FItem) == 284);
 
 // 最大32個の EntityC60FItem をビットマスクで管理するシングルトン
-typedef struct EntityC60F {
+typedef struct {
   Entity e;                   // 0x00, ENTITY_UNK_10
   AuxAnimFile* anim0;         // 0x18, ANIM_1003
   AuxAnimFile* anim1;         // 0x1C, ANIM_931E
@@ -45,7 +44,7 @@ typedef struct EntityC60F {
 } EntityC60F;
 static_assert(sizeof(EntityC60F) == 168);
 
-extern EntityC60F* gEntityC60F;  // 0x0300019C
+IWRAM_DATA EntityC60F* gEntityC60F = NULL;  // 0x0300019C
 
 NAKED void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) { INCFUNC("asm/func/FUN_081d6d28.inc"); }
 

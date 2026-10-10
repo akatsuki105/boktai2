@@ -17,14 +17,14 @@ typedef struct {
 static_assert(sizeof(AttackBox) == 100);
 
 // 5枠の攻撃判定プール, 敵やスクリプトが SpawnAttackBox で1枠借りる
-typedef struct AttackBoxManager {
-  Entity e;            // 0x00, ENTITY_UNK_10
-  u32 activeMask;      // 0x18, 使用中の boxes のビットマスク
-  AttackBox boxes[5];  // 0x1C, 根拠: _Update の stride 0x64 と AttackBox_Free の ClearMemory(box, 0x64)
+typedef struct {
+  Entity e;           // 0x00, ENTITY_UNK_10
+  u32 activeMask;     // 0x18, 使用中の pool のビットマスク
+  AttackBox pool[5];  // 0x1C, 根拠: _Update の stride 0x64 と AttackBox_Free の ClearMemory(box, 0x64)
 } AttackBoxManager;
 static_assert(sizeof(AttackBoxManager) == 528);
 
-extern AttackBoxManager* gAttackBoxManager;  // 0x03000170
+IWRAM_DATA AttackBoxManager* gAttackBoxManager = NULL;  // 0x03000170
 
 NAKED s32 FUN_080dd324(unknown* p) { INCFUNC("asm/func/FUN_080dd324.inc"); }
 

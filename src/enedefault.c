@@ -10,7 +10,6 @@
 // 原典のファイル名は enedefault.c, 根拠: FUN_080f00ec / FUN_080f0430 が、抜き取られた assert の引数として文字列 "enedefault.c" (0x08251F80) と行番号を積む
 // Enemy の共通部分?
 
-// gSubroutineTable の 0xD854 から生成されるシングルトン, 実体のポインタは gEnemyTargetManager (0x03000184)
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_8
   u32 unk_18;         // 0x18, EnemyTargetManager_Clear が 0 でクリアする
@@ -22,7 +21,7 @@ typedef struct {
 } EnemyTargetManager;
 static_assert(sizeof(EnemyTargetManager) == 44);
 
-extern EnemyTargetManager* gEnemyTargetManager;  // 0x03000184
+IWRAM_DATA EnemyTargetManager* gEnemyTargetManager = NULL;  // 0x03000184
 
 bool32 FUN_0808672c(void);
 s32 FUN_080fa958(Vec3* pos);

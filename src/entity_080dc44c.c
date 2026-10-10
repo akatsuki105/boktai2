@@ -2,9 +2,8 @@
 #include "file.h"
 #include "global.h"
 #include "particle.h"
-#include "sprite_animation.h"
+#include "sprite_aux.h"
 
-// 8枠ぶんの演出要素, activeMask のビットが立っている枠だけ生きている
 typedef struct {
   u8 unk_0[0x17];  // 0x00
   s8 idx;          // 0x17, 自分の添字, ptcls と activeMask のビットを指す
@@ -12,7 +11,7 @@ typedef struct {
 } Entity080dc44cSlot;
 static_assert(sizeof(Entity080dc44cSlot) == 28);
 
-typedef struct Entity080dc44c {
+typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_10
   AuxAnimFile* anim;            // 0x018, ANIM_D1B8
   ParticleGroup* group;         // 0x01C, PTCL_GROUP_0
@@ -23,7 +22,7 @@ typedef struct Entity080dc44c {
 } Entity080dc44c;
 static_assert(sizeof(Entity080dc44c) == 708);
 
-extern Entity080dc44c* gEntity080dc44c;  // 0x03000168
+IWRAM_DATA Entity080dc44c* gEntity080dc44c = NULL;  // 0x03000168
 
 void FUN_080dbeb0(Entity080dc44c* p, Entity080dc44cSlot* elem) {}
 

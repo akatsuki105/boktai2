@@ -7,8 +7,6 @@
 #include "sprite_aux.h"
 #include "vm.h"
 
-// Entity081d0e20 が抱える要素, Malloc(0xC0) で個別に確保され、先頭が AuxSprite になっている, 根拠: Entity081d0e20_AllocElem
-// 中身のほとんどは FUN_081d0864 がスクリプトの引数から埋める
 typedef struct {
   AuxSprite sprite;   // 0x00
   Mover unk_2c;       // 0x2C
@@ -32,16 +30,16 @@ typedef struct {
 static_assert(sizeof(Entity081d0e20Elem) == 192);
 
 // 要素を12個まで抱えるエンティティ, 空きスロットは activeMask のビットで管理する
-typedef struct Entity081d0e20 {
+typedef struct {
   Entity e;                       // 0x00, ENTITY_UNK_8
   AuxAnimFile* anim;              // 0x18, ANIM_0AE9
   AuxSpriteGfx gfx;               // 0x1C, SPRITE_PITFALL_A945
-  Entity081d0e20Elem* items[12];  // 0x38, 根拠: Entity081d0e20_AllocElem が確保したものを入れる
+  Entity081d0e20Elem* items[12];  // 0x38
   u32 activeMask;                 // 0x68, 1 << i で items[i] が使用中, 根拠: Entity081d0e20_AllocElem / _Update / _Destroy
 } Entity081d0e20;
 static_assert(sizeof(Entity081d0e20) == 108);
 
-extern Entity081d0e20* gEntity081d0e20;  // 0x03000188
+IWRAM_DATA Entity081d0e20* gEntity081d0e20 = NULL;  // 0x03000188
 
 void FUN_081cfd3c(Entity081d0e20Elem*);
 void FUN_081cfd40(Entity081d0e20Elem*);

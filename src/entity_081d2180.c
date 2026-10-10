@@ -5,7 +5,6 @@
 #include "sprite.h"
 #include "vm.h"
 
-// Entity081d2180 が抱える要素
 typedef struct {
   AuxSprite sprite;  // 0x00
   u8 unk_2c[44];     // 0x2C
@@ -26,10 +25,9 @@ typedef struct {
   Entity081d2180Item items[8];  // 0x018
   u32 activeMask;               // 0x458, bit i が立っていれば items[i] が使用中, _Init が 0 にする
 } Entity081d2180;
-
-extern Entity081d2180* gEntity081d2180;  // 0x03000190
-
 static_assert(sizeof(Entity081d2180) == 1116);
+
+IWRAM_DATA Entity081d2180* gEntity081d2180 = NULL;  // 0x03000190
 
 NAKED s32 FUN_081d1a9c(unknown* p) { INCFUNC("asm/func/FUN_081d1a9c.inc"); }
 

@@ -16,7 +16,7 @@ typedef struct {
 } Entity080df420Elem;
 static_assert(sizeof(Entity080df420Elem) == 252);
 
-typedef struct Entity080df420 {
+typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_10
   AuxSpriteGfx gfx;              // 0x18, SPRITE_EFF_F422
   u8 unk_34[4];                  // 0x34, まだ未解析
@@ -27,7 +27,7 @@ typedef struct Entity080df420 {
 } Entity080df420;
 static_assert(sizeof(Entity080df420) == 6112);
 
-extern Entity080df420* gEntity080df420;  // 0x03000178
+IWRAM_DATA Entity080df420* gEntity080df420 = NULL;  // 0x03000178
 
 void FUN_080de81c(Entity080df420*, Entity080df420Elem*);
 void FUN_080de820(Entity080df420*, Entity080df420Elem*);

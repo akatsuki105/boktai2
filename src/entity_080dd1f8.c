@@ -4,7 +4,6 @@
 #include "shadow.h"
 #include "sprite.h"
 
-// 12枠ぶんの演出要素, activeMask のビットが立っている枠だけ生きている
 typedef struct {
   AuxSprite spr;          // 0x000, _Destroy が AuxSprite_Remove に渡す
   u8 unk_2c[0xB0];        // 0x02C
@@ -13,7 +12,7 @@ typedef struct {
 } Entity080dd1f8Elem;
 static_assert(sizeof(Entity080dd1f8Elem) == 324);
 
-typedef struct Entity080dd1f8 {
+typedef struct {
   Entity e;                      // 0x000, ENTITY_UNK_8
   AuxSpriteGfx gfx;              // 0x018, SPRITE_BOMB
   AuxAnimFile* anim;             // 0x034, ANIM_871C
@@ -22,9 +21,9 @@ typedef struct Entity080dd1f8 {
 } Entity080dd1f8;
 static_assert(sizeof(Entity080dd1f8) == 3948);
 
-extern Entity080dd1f8* gEntity080dd1f8;  // 0x0300016C
+IWRAM_DATA Entity080dd1f8* gEntity080dd1f8 = NULL;  // 0x0300016C
 
-const u8 u8_ARRAY_085ad338[4] = {0x0, 0x8, 0x4, 0x2};  // 0x085AD338
+const u8 u8_ARRAY_085ad338[4] = {0, 8, 4, 2};  // 0x085AD338
 
 void FUN_080dc4a4(Entity080dd1f8* p, Entity080dd1f8Elem* elem) {}
 

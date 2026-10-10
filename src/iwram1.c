@@ -18,27 +18,8 @@ IWRAM_DATA struct Entity1DBE* gEntity1DBE = NULL;              // 0x03000144
 
 IWRAM_DATA u8 u8_03000148[8] = {};
 
-IWRAM_DATA struct GameOverManager* gGameOverManager = NULL;    // 0x03000150
-IWRAM_DATA struct LevelUpper* gLevelUpper = NULL;              // 0x03000154
-IWRAM_DATA struct EntityB3D1* gEntityB3D1 = NULL;              // 0x03000158
-IWRAM_DATA struct Entity080da848* gEntity080da848 = NULL;      // 0x0300015C
-IWRAM_DATA struct Entity080db520* gEntity080db520 = NULL;      // 0x03000160
-IWRAM_DATA struct Entity080dbe54* gEntity080dbe54 = NULL;      // 0x03000164
-IWRAM_DATA struct Entity080dc44c* gEntity080dc44c = NULL;      // 0x03000168
-IWRAM_DATA struct Entity080dd1f8* gEntity080dd1f8 = NULL;      // 0x0300016C
-IWRAM_DATA struct AttackBoxManager* gAttackBoxManager = NULL;  // 0x03000170
-IWRAM_DATA struct Entity080de11c* gEntity080de11c = NULL;      // 0x03000174
-IWRAM_DATA struct Entity080df420* gEntity080df420 = NULL;      // 0x03000178
-
-IWRAM_DATA struct Entity080e01bc* gEntity080e01bc = NULL;          // 0x0300017C
-IWRAM_DATA struct Entity778B* gEntity778B = NULL;                  // 0x03000180
-IWRAM_DATA struct EnemyTargetManager* gEnemyTargetManager = NULL;  // 0x03000184
-
-IWRAM_DATA struct Entity081d0e20* gEntity081d0e20 = NULL;  // 0x03000188
-IWRAM_DATA struct Entity081d16ec* gEntity081d16ec = NULL;  // 0x0300018C
-IWRAM_DATA struct Entity081d2180* gEntity081d2180 = NULL;  // 0x03000190
-IWRAM_DATA struct Elevator* gElevator = NULL;              // 0x03000194
-IWRAM_DATA struct EntityF1F9* gEntityF1F9 = NULL;          // 0x03000198
-IWRAM_DATA struct EntityC60F* gEntityC60F = NULL;          // 0x0300019C
-IWRAM_DATA struct Entity7B9F* gEntity7B9F = NULL;          // 0x030001A0
-IWRAM_DATA struct Entity8CC7* gEntity8CC7 = NULL;          // 0x030001A4
+IWRAM_DATA struct GameOverManager* gGameOverManager = NULL;  // 0x03000150
+IWRAM_DATA struct LevelUpper* gLevelUpper = NULL;            // 0x03000154
+IWRAM_DATA struct EntityB3D1* gEntityB3D1 = NULL;            // 0x03000158
+IWRAM_DATA struct Entity080da848* gEntity080da848 = NULL;    // 0x0300015C
+IWRAM_DATA struct Entity080db520* gEntity080db520 = NULL;    // 0x03000160

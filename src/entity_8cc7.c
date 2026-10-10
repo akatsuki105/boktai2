@@ -15,7 +15,7 @@ typedef struct {
 } Entity8CC7Elem;
 static_assert(sizeof(Entity8CC7Elem) == 188);
 
-typedef struct Entity8CC7 {
+typedef struct {
   Entity e;                  // 0x000, ENTITY_UNK_9
   AuxAnimFile* anim;         // 0x018, ANIM_7B03
   Entity8CC7Elem elems[20];  // 0x01C, usedMask のビットが立っている要素だけ _Destroy が片付ける
@@ -24,7 +24,7 @@ typedef struct Entity8CC7 {
 } Entity8CC7;
 static_assert(sizeof(Entity8CC7) == 3796);
 
-extern Entity8CC7* gEntity8CC7;  // 0x030001A4
+IWRAM_DATA Entity8CC7* gEntity8CC7 = NULL;  // 0x030001A4
 
 void Entity8CC7Elem_SetFlags(Entity8CC7Elem* e, u16 bits) { e->flags |= bits; }
 

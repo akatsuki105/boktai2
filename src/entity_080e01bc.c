@@ -3,13 +3,13 @@
 #include "hitbox.h"
 #include "sprite_aux.h"
 
-typedef struct Entity080e01bcElem {
+typedef struct {
   AuxSprite sprite;      // 0x00
   u8 unk_2c[92 - 0x2C];  // 0x2C, まだ未解析
 } Entity080e01bcElem;
 static_assert(sizeof(Entity080e01bcElem) == 92);
 
-typedef struct Entity080e01bc {
+typedef struct {
   Entity e;                     // ENTITY_UNK_10
   u8 unk_18[0x1C - 0x18];       // 0x01C, まだ未解析
   Vec3 pos;                     // 0x01C, 2本の Hitbox の位置に渡す
@@ -25,7 +25,7 @@ typedef struct Entity080e01bc {
 } Entity080e01bc;
 static_assert(sizeof(Entity080e01bc) == 3548);
 
-extern Entity080e01bc* gEntity080e01bc;  // 0x0300017C
+IWRAM_DATA Entity080e01bc* gEntity080e01bc = NULL;  // 0x0300017C
 
 void nop_080dfa20(Entity080e01bc*, s32);
 void FUN_080dfa24(Entity080e01bc*, s32);
@@ -38,10 +38,6 @@ void (*const PTR_ARRAY_085ad364[4])(Entity080e01bc*, s32) = {
     FUN_080dfbe4,
     FUN_080dfde8,
 };  // 0x085AD364
-
-const u8 u8_ARRAY_085ad374[80] = {
-    0, 0, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 3, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 0, 2, 2, 2, 2, 2, 2, 0, 0, 2, 3, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 0, 0,
-};  // 0x085AD374
 
 NAKED void FUN_080df4c4(unknown* p) { INCFUNC("asm/func/FUN_080df4c4.inc"); }
 

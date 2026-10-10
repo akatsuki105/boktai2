@@ -46,7 +46,7 @@ typedef struct ElevatorUnkData {
 } ElevatorUnkData;
 static_assert(sizeof(ElevatorUnkData) == 396);
 
-typedef struct Elevator {
+typedef struct {
   Entity e;                      // 0x0000, ENTITY_UNK_5
   AuxAnimFile* animFile;         // 0x0018, ANIM_13F9
   ElevatorUnkData unk_1c[12];    // 0x001C
@@ -58,7 +58,7 @@ typedef struct Elevator {
 } Elevator;
 static_assert(sizeof(Elevator) == 4792);
 
-extern Elevator* gElevator;  // 0x03000194
+IWRAM_DATA Elevator* gElevator = NULL;  // 0x03000194
 
 // エレベータが乗り手との距離を測るときの許容範囲 (±), Elevator_FindAtPos ほかが引く
 const Vec3 gElevatorRanges[3] = {
