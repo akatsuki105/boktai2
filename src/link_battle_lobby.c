@@ -42,7 +42,7 @@ typedef struct LinkBattleLobby {
 } LinkBattleLobby;
 static_assert(sizeof(LinkBattleLobby) == 988);
 
-extern LinkBattleLobby* gLinkBattleLobby;  // 0x030001A8
+IWRAM_DATA LinkBattleLobby* gLinkBattleLobby = NULL;  // 0x030001A8
 
 // FUN_081dbea0 がバイト単位で引く
 // clang-format off

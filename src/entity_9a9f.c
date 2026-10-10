@@ -25,6 +25,8 @@ s32 FUN_0809c08c(s32 mode);
 
 extern const s32 sEntity9A9FLimits[3];  // 0x085AE3E8
 
+IWRAM_DATA u32 bool32_030001ac = FALSE;  // 0x030001AC
+
 Entity9A9F* GetEntity9A9F(void) { return gEntity9A9F; }
 
 void ClearEntity9A9F(void) { gEntity9A9F = NULL; }

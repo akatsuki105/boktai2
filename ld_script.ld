@@ -81,6 +81,16 @@ SECTIONS {
       src/entity_723e.o(iwram_data);
       src/entity_5645.o(iwram_data);
       src/iwram1.o(iwram_data);
+      src/link_battle_lobby.o(iwram_data);
+      src/entity_9a9f.o(iwram_data);
+      src/link_battle_coin.o(iwram_data);
+      src/entity_081e9cac.o(iwram_data);
+      src/entity_081ea120.o(iwram_data);
+      src/entity_081ea820.o(iwram_data);
+      src/flamethrower.o(iwram_data);
+      src/entity_081eb2f0.o(iwram_data);
+      src/entity_081edcc4.o(iwram_data);
+      src/entity_081ee2a0.o(iwram_data);
       src/entity_082034c0.o(iwram_data);
       src/entity_08203ad0.o(iwram_data);
       src/entity_08204cb8.o(iwram_data);
@@ -369,6 +379,8 @@ SECTIONS {
 			src/entity_081ea820.o (.text);
 			src/flamethrower.o (.text);
 			src/entity_081eb2f0.o (.text);
+			src/entity_081edcc4.o (.text);
+			src/entity_081ee2a0.o (.text);
 			src/code_081eafbc.o (.text);
 			src/boss/dvalinn.o (.text);
 			src/entity_08202cd8.o (.text);

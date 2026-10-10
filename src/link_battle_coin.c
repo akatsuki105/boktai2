@@ -7,7 +7,6 @@
 // 通信対戦のコイン(対戦相手を倒したりすると落とすもので、これがプレイヤーの得点になる)
 
 struct LinkBattleCoinManager;
-struct Entity150FSlot;
 
 typedef struct Entity150FSlot {
   s8 unk_00;                                                                                      // 0x00, FUN_081e1220 の第3引数, gEntity9A9F->unk_118[i]
@@ -34,7 +33,7 @@ typedef struct LinkBattleCoinManager {
 } LinkBattleCoinManager;
 static_assert(sizeof(LinkBattleCoinManager) == 828);
 
-extern LinkBattleCoinManager* gLinkBattleCoinManager;  // 0x030001B0
+IWRAM_DATA LinkBattleCoinManager* gLinkBattleCoinManager = NULL;  // 0x030001B0
 
 void FUN_081e0c14(void) { gLinkBattleCoinManager = NULL; }
 
