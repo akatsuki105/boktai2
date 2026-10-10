@@ -16,4 +16,4 @@ IWRAM_DATA struct EntityCC28* gEntityCC28 = NULL;              // 0x0300013C
 IWRAM_DATA struct Entity5CCC* gEntity5CCC = NULL;              // 0x03000140
 IWRAM_DATA struct Entity1DBE* gEntity1DBE = NULL;              // 0x03000144
 
-IWRAM_DATA u8 u8_03000148[8] = {};
+IWRAM_DATA u8 u8_03000148[4] = {};
