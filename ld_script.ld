@@ -362,6 +362,7 @@ SECTIONS {
 			src/entity_501b.o (.text);
 			src/link_battle_coin.o (.text);
 			src/code_081e0c14.o (.text);
+			src/entity_081e8d0c.o (.text);
 			src/entity_081e9cac.o (.text);
 			src/entity_081ea120.o (.text);
 			src/entity_081ea820.o (.text);
@@ -628,6 +629,7 @@ SECTIONS {
     src/enemy/boku_link.o (.rodata);
     src/enemy/golem_link.o (.rodata);
     src/enemy/dog_link.o (.rodata);
+    src/entity_081d0e20.o (.rodata);
     src/rodata4.o (.rodata);
     src/preview_stage.o (.rodata);
     src/weapon_dex.o (.rodata);

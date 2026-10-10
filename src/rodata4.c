@@ -1,30 +1,5 @@
 #include "global.h"
 
-// ---------------- entity_081d0e20.c -----------------
-
-struct Entity081d0e20Elem;
-
-void FUN_081cfd3c(void);
-void FUN_081cfd40(struct Entity081d0e20Elem* p);
-void FUN_081d006c(struct Entity081d0e20Elem* p);
-void FUN_081d00f0(struct Entity081d0e20Elem* p);
-void FUN_081d02bc(struct Entity081d0e20Elem* p);
-void FUN_081d03fc(struct Entity081d0e20Elem* p);
-void FUN_081d0578(struct Entity081d0e20Elem* p);
-void FUN_081d070c(struct Entity081d0e20Elem* p);
-
-// Entity081d0e20Elem.state (0xB6) で引く
-void (*const PTR_ARRAY_085ae098[8])(struct Entity081d0e20Elem*) = {
-    (void*)FUN_081cfd3c,
-    FUN_081cfd40,
-    FUN_081d006c,
-    FUN_081d00f0,
-    FUN_081d02bc,
-    FUN_081d03fc,
-    FUN_081d0578,
-    FUN_081d070c,
-};  // 0x085AE098
-
 // ---------------- entity_081d16ec.c -----------------
 
 struct Entity081d16ec;
@@ -234,7 +209,7 @@ void FUN_081e8660(unknown*, unknown*);
 void FUN_081e86ec(unknown*, unknown*);
 void FUN_081e8710(unknown*, unknown*);
 
-// FUN_081e8c50 が (p, item) で呼ぶ
+// Entity081e8d0c_Update が (p, item) で呼ぶ
 void (*const PTR_ARRAY_085ae450[3])(unknown*, unknown*) = {
     FUN_081e8660,
     FUN_081e8710,

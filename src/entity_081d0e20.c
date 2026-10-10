@@ -9,10 +9,10 @@
 
 // Entity081d0e20 が抱える要素, Malloc(0xC0) で個別に確保され、先頭が AuxSprite になっている, 根拠: Entity081d0e20_AllocElem
 // 中身のほとんどは FUN_081d0864 がスクリプトの引数から埋める
-typedef struct Entity081d0e20Elem {
-  AuxSprite sprite;   // 0x00, 根拠: AuxSprite_Remove に渡される (Entity081d0e20_Destroy)
-  Mover unk_2c;       // 0x2C, 根拠: FUN_08002a58 / Mover_Unlink に渡される (Entity081d0e20_Destroy)
-  AuxAnimState anim;  // 0x70, 根拠: AuxAnim_SetAnim に渡される (FUN_081d0864)
+typedef struct {
+  AuxSprite sprite;   // 0x00
+  Mover unk_2c;       // 0x2C
+  AuxAnimState anim;  // 0x70
   Vec3 pos;           // 0x80, 8バイトまとめて sprite.pos にコピーされる, 根拠: FUN_081d0864
   s16 id;             // 0x88, '.i=0', Entity081d0e20_FindElem が引数と比較する (ldrsh)
   u16 scriptID_8a;    // 0x8A, '.R=0', flags bit7 が立つと VM_ExecByID に渡して0クリアする, 根拠: FUN_081cf944
@@ -43,12 +43,32 @@ static_assert(sizeof(Entity081d0e20) == 108);
 
 extern Entity081d0e20* gEntity081d0e20;  // 0x03000188
 
+void FUN_081cfd3c(Entity081d0e20Elem*);
+void FUN_081cfd40(Entity081d0e20Elem*);
+void FUN_081d006c(Entity081d0e20Elem*);
+void FUN_081d00f0(Entity081d0e20Elem*);
+void FUN_081d02bc(Entity081d0e20Elem*);
+void FUN_081d03fc(Entity081d0e20Elem*);
+void FUN_081d0578(Entity081d0e20Elem*);
+void FUN_081d070c(Entity081d0e20Elem*);
+
+// Entity081d0e20Elem.state (0xB6) で引く
+void (*const PTR_ARRAY_085ae098[8])(Entity081d0e20Elem*) = {
+    FUN_081cfd3c,
+    FUN_081cfd40,
+    FUN_081d006c,
+    FUN_081d00f0,
+    FUN_081d02bc,
+    FUN_081d03fc,
+    FUN_081d0578,
+    FUN_081d070c,
+};  // 0x085AE098
+
 unknown* FUN_081ee9bc(Vec3* pos);
 s32 FUN_080e11a8(Vec3* pos, Vec3* size, s32 idx);
 s32 FUN_080e1100(Vec3* pos, Vec3* size, u32* out);
 
 Entity081d0e20* Entity081d0e20_Create(void);
-Entity081d0e20Elem* Entity081d0e20_AllocElem(Entity081d0e20* p);
 
 void FUN_081cf944(Entity081d0e20Elem* p) {
   u32 args[8];
@@ -112,7 +132,7 @@ NON_MATCH Entity081d0e20Elem* Entity081d0e20_AllocElem(Entity081d0e20* p) {
 
 NAKED s32 FUN_081cfcb8(Entity081d0e20Elem* p) { INCFUNC("asm/func/FUN_081cfcb8.inc"); }
 
-void FUN_081cfd3c(void) {}
+void FUN_081cfd3c(Entity081d0e20Elem* _) {}
 
 void FUN_081cfd40(Entity081d0e20Elem* p) {
   Vec3 size;
