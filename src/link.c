@@ -327,7 +327,7 @@ void Sio_DisableInterrupts(void) { REG_IME = 0; }
 
 void Sio_EnableInterrupts(void) { REG_IME = 1; }
 
-NAKED void FUN_08238624(void) { INCFUNC("asm/func/FUN_08238624.inc"); }
+void Sio_StartTransfer(void) { REG_SIOCNT |= SIO_START; }
 
 NAKED void FUN_08238634(void) { INCFUNC("asm/func/FUN_08238634.inc"); }
 

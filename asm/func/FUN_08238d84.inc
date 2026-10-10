@@ -10,7 +10,7 @@
 _08238D96:
 	cmp r1, #0
 	bne _08238D9E
-	bl FUN_08238624
+	bl Sio_StartTransfer
 _08238D9E:
 	pop {r0}
 	bx r0
