@@ -17,7 +17,11 @@ typedef struct Entity080e01bc {
   Entity080e01bcElem elems[2];  // 0x03C
   HitboxData hitbox_f4;         // 0x0F4, FUN_080df880 が Hitbox_Register する
   HitboxData hitbox_144;        // 0x144
-  u8 unk_194[3548 - 0x194];     // 0x194, まだ未解析
+  u8 unk_194[0x1AE - 0x194];    // 0x194, まだ未解析
+  u8 unk_1ae;                   // 0x1AE
+  u8 unk_1af[0x1B2 - 0x1AF];    // 0x1AF, まだ未解析
+  u8 unk_1b2;                   // 0x1B2
+  u8 unk_1b3[3548 - 0x1B3];     // 0x1B3, まだ未解析
 } Entity080e01bc;
 static_assert(sizeof(Entity080e01bc) == 3548);
 
@@ -53,7 +57,17 @@ void FUN_080df714(Entity080e01bc* p) {
   }
 }
 
-NAKED void FUN_080df730(s32 param_1, s32 param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080df730.inc"); }
+void FUN_080df730(s32 param_1, s32 param_2, Entity080e01bc* p) {
+  HitboxData* hb;
+
+  p->unk_1ae = 2;
+  p->unk_1b2 = 1;
+
+  hb = &p->hitbox_f4;
+  hb->flags |= HBFLAG_UNK_2;
+  hb = &p->hitbox_144;
+  hb->flags |= HBFLAG_UNK_2;
+}
 
 NAKED void FUN_080df760(s32 param_1, s32 param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080df760.inc"); }
 
