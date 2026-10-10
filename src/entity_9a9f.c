@@ -23,8 +23,6 @@ void FUN_081df62c(Entity9A9F* p);
 void FUN_080a5e4c(void);
 s32 FUN_0809c08c(s32 mode);
 
-extern const s32 sEntity9A9FLimits[3];  // 0x085AE3E8
-
 IWRAM_DATA u32 bool32_030001ac = FALSE;  // 0x030001AC
 
 Entity9A9F* GetEntity9A9F(void) { return gEntity9A9F; }
@@ -32,9 +30,9 @@ Entity9A9F* GetEntity9A9F(void) { return gEntity9A9F; }
 void ClearEntity9A9F(void) { gEntity9A9F = NULL; }
 
 // 状態番号と状態関数を入れ替えて、経過フレームを 0 に戻す
-void Entity9A9F_SetState(Entity9A9F* p, u8 state, EntityFunc* fn) {
+void Entity9A9F_SetState(Entity9A9F* p, u8 state, void* fn) {
   p->state = state;
-  p->updateCallback = (void (*)(struct Entity9A9F*))fn;
+  p->updateCallback = fn;
   p->stateTimer = 0;
   p->unk_22 = 1;
 }
@@ -78,7 +76,7 @@ NAKED s32 FUN_081ddb5c(Entity9A9F* p, s32 param_2, s32 param_3, s32 param_4) { I
 void FUN_081ddbdc(Entity9A9F* p) {
   p->recordCount = 0;
   p->prevState = p->state;
-  Entity9A9F_SetState(p, 0, (EntityFunc*)FUN_081de130);
+  Entity9A9F_SetState(p, 0, FUN_081de130);
   FUN_080a5e4c();
   FUN_08238bf4();
 }
@@ -149,7 +147,7 @@ NON_MATCH void FUN_081de214(Entity9A9F* p) {
   }
 
   if (p->unk_23 == 3) {
-    Entity9A9F_SetState(p, 2, (EntityFunc*)FUN_081de250);
+    Entity9A9F_SetState(p, 2, FUN_081de250);
     p->unk_23 = 0;
   }
 #else
@@ -173,9 +171,9 @@ s32 FUN_081de7e8(Entity9A9F* p) {
 
   if (p->stateTimer > 120) {
     if (gEntity9A9F != NULL && gEntity9A9F->playerIdx == 0) {
-      Entity9A9F_SetState(p, 7, (EntityFunc*)FUN_081de844);
+      Entity9A9F_SetState(p, 7, FUN_081de844);
     } else {
-      Entity9A9F_SetState(p, 8, (EntityFunc*)FUN_081de960);
+      Entity9A9F_SetState(p, 8, FUN_081de960);
     }
   }
   return 0;
@@ -195,12 +193,12 @@ NON_MATCH s32 FUN_081de960(Entity9A9F* p) {
 
   status = p->unk_44;
   if ((*status & 0x3C00) == 0x1C00) {
-    Entity9A9F_SetState(p, 9, (EntityFunc*)FUN_081de9d8);
+    Entity9A9F_SetState(p, 9, FUN_081de9d8);
     return 0;
   }
 
   if ((*status & 0x3C00) == 0x400) {
-    Entity9A9F_SetState(p, 4, (EntityFunc*)FUN_081de360);
+    Entity9A9F_SetState(p, 4, FUN_081de360);
     return 0;
   }
 #else
@@ -212,7 +210,7 @@ NAKED s32 FUN_081de9d8(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081de9d8.inc
 
 NAKED s32 FUN_081deaf4(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081deaf4.inc"); }
 
-void FUN_081debc0(Entity9A9F* p) { Entity9A9F_SetState(p, 12, (EntityFunc*)FUN_081dec1c); }
+void FUN_081debc0(Entity9A9F* p) { Entity9A9F_SetState(p, 12, FUN_081dec1c); }
 
 s32 FUN_081debd4(Entity9A9F* p) {
   gUseLinkInput = TRUE;
@@ -256,7 +254,7 @@ s32 FUN_081df3f0(Entity9A9F* p) {
   }
 
   if (p->stateTimer > 119) {
-    Entity9A9F_SetState(p, 21, (EntityFunc*)FUN_081df460);
+    Entity9A9F_SetState(p, 21, FUN_081df460);
   }
 }
 
@@ -267,7 +265,7 @@ NON_MATCH void FUN_081df540(Entity9A9F* p) {
 #ifdef NONMATCHING_C
   FUN_081dd9d4(p);
   if (p->unk_2a) {
-    Entity9A9F_SetState(p, 23, (EntityFunc*)FUN_081df568);
+    Entity9A9F_SetState(p, 23, FUN_081df568);
   }
 #else
   INCFUNC("asm/func/FUN_081df540.inc");
@@ -281,7 +279,7 @@ NON_MATCH void FUN_081df604(Entity9A9F* p) {
 #ifdef NONMATCHING_C
   FUN_081dd9d4(p);
   if (p->unk_2b) {
-    Entity9A9F_SetState(p, 25, (EntityFunc*)FUN_081df62c);
+    Entity9A9F_SetState(p, 25, FUN_081df62c);
   }
 #else
   INCFUNC("asm/func/FUN_081df604.inc");

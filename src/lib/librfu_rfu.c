@@ -127,8 +127,6 @@ static const struct LLSFStruct llsf_struct[2] = {
 #define str(s) #s
 static const char version_string[] = "RFU_V" xstr(LIBRFU_VERSION);
 
-static const char str_checkMbootLL[] = "RFU-MBOOT";
-
 #define COPY(src, dst, iterator, size)           \
   do {                                           \
     const u16* _src = (const u16*)(src);         \
@@ -301,7 +299,7 @@ u16 rfu_getRFUStatus(u8* rfuState) {
  * Returns 1 if the packet to inherit is malformed.
  */
 u16 rfu_MBOOT_CHILD_inheritanceLinkStatus(void) {
-  const char* s1 = str_checkMbootLL;
+  const char* s1 = "RFU-MBOOT";
   char* s2 = (char*)(IWRAM_START + 0xF0);
   u16 checksum;
   u16* mb_buff_iwram_p;
