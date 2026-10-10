@@ -414,7 +414,18 @@ s32 Sio_Connect(void) {
   return 1;
 }
 
-NAKED s32 FUN_08238bf4(void) { INCFUNC("asm/func/FUN_08238bf4.inc"); }
+// シリアル割り込みを止めて通信を終了する, 親子で同じ処理だが分岐の形が一致に必要
+s32 Sio_Disconnect(void) {
+  if (gSioMultiId == 0) {
+    Sio_StopSerialIntr();
+  } else {
+    Sio_StopSerialIntr();
+  }
+  if (u32_030046c4 == 1) {
+    u32_030046c4 = 0;
+  }
+  return 0;
+}
 
 NAKED void FUN_08238c24(void) { INCFUNC("asm/func/FUN_08238c24.inc"); }
 

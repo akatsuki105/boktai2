@@ -111,7 +111,7 @@ s32 SoftReset_0823a928(void) {
   RtcIoDisable();
 
   if (gEntity9A9F != NULL || gLinkConnect != NULL) {
-    FUN_08238bf4();
+    Sio_Disconnect();
   } else if (gLinkShopManager != NULL) {
     Sio_Stop();
   }

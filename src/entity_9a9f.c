@@ -78,7 +78,7 @@ void FUN_081ddbdc(Entity9A9F* p) {
   p->prevState = p->state;
   Entity9A9F_SetState(p, 0, FUN_081de130);
   FUN_080a5e4c();
-  FUN_08238bf4();
+  Sio_Disconnect();
 }
 
 // unk_118 の先頭 recordCount 件に添字を入れ, 残りを 4 で埋める
@@ -461,7 +461,7 @@ NAKED void FUN_081dfa20(Entity9A9F* p, unknown* param_2, unknown* param_3, unkno
 NAKED s32 FUN_081dfa98(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dfa98.inc"); }
 
 s32 Entity9A9F_Destroy(Entity9A9F* p) {
-  FUN_08238bf4();
+  Sio_Disconnect();
   Video_SetDrawPasses(0, Particle_DrawList, AuxSprite_DrawList, MainSprite_DrawList);
   gUseLinkInput = FALSE;
   gFlag030047a4 &= ~FLAG030047A4_LINK;

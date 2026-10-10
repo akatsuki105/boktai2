@@ -8,7 +8,7 @@
 	ldr r0, [r6, #0x2c]
 	cmp r0, #0
 	beq _081D9AD0
-	bl FUN_08238bf4
+	bl Sio_Disconnect
 	movs r0, #1
 	str r0, [r6, #0x30]
 	ldr r0, [r6, #0x28]
@@ -190,7 +190,7 @@ _081D9BD8:
 	ldr r0, [r6, #0x3c]
 	cmp r0, #0x1d
 	ble _081D9C10
-	bl FUN_08238bf4
+	bl Sio_Disconnect
 	bl FUN_08238cd4
 	bl Sio_Connect
 	str r0, [r6, #0x24]
@@ -216,7 +216,7 @@ _081D9C26:
 	ldr r0, [r6, #0x50]
 	cmp r0, #0x1d
 	ble _081D9C46
-	bl FUN_08238bf4
+	bl Sio_Disconnect
 	bl FUN_08238cd4
 	bl Sio_Connect
 	str r0, [r6, #0x24]

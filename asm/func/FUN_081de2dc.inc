@@ -42,7 +42,7 @@ _081DE324:
 	adds r0, r4, #0
 	movs r1, #2
 	bl Entity9A9F_SetState
-	bl FUN_08238bf4
+	bl Sio_Disconnect
 	adds r1, r4, #0
 	adds r1, #0x68
 	movs r2, #0

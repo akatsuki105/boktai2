@@ -12,7 +12,7 @@ typedef struct LinkConnect {
   s32 handle;       // 0x24, Sio_Connect() の戻り値, 負の間は張り直す, コールバックの第2引数になる
   s32 succeeded;    // 0x28, 両者が 0xE2 を返したら 1, onSuccess と onFailure の選択に使う
   s32 finished;     // 0x2C, 立つと次のフレームでコールバックを呼んで KillEntity する
-  s32 linkStopped;  // 0x30, FUN_08238bf4 を呼んだら 1, _Destroy はこれが立っていれば呼ばない
+  s32 linkStopped;  // 0x30, Sio_Disconnect を呼んだら 1, _Destroy はこれが立っていれば呼ばない
   s32 timer;        // 0x34, LinkConnect_TickTimeout が +1 し、timeout 以上になったら真を返す
   s32 agreeFrames;  // 0x38, 両者が 0x192 を返し続けたフレーム数, 0x77 を超えると sendVal が 0xE2 になる
   s32 unk_3c;       // 0x3C, 再試行カウンタ, 0x1E で張り直して 0 に戻る
@@ -49,7 +49,7 @@ NAKED s32 LinkConnect_Update(LinkConnect* p) { INCFUNC("asm/func/LinkConnect_Upd
 
 s32 LinkConnect_Destroy(LinkConnect* p) {
   if (p->linkStopped == 0) {
-    FUN_08238bf4();
+    Sio_Disconnect();
   }
   gLinkConnect = NULL;
   return 0;

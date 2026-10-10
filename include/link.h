@@ -12,6 +12,7 @@ extern s32 gSioSendCount;
 extern u8 gSioRecvBuf[64];
 extern u8 gSioSendBuf[64];
 extern u16 gSioParentRecv;
+extern u32 u32_030046c4;
 extern s32 gSioTimerIntrCount;
 extern s32 gSioSerialIntrCount;
 extern s32 gSioMultiId;
@@ -20,6 +21,6 @@ extern s32 gSioStatus;
 
 void Sio_Reset(void);
 s32 Sio_Stop(void);
-s32 FUN_08238bf4(void);
+s32 Sio_Disconnect(void);
 
 #endif  // __INCLUDE_LINK_H__
