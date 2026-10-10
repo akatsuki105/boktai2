@@ -2,13 +2,15 @@
 #include "interrupts.h"
 #include "video.h"
 
+#define MULTI_SIO_TIMER_NO 3
+
 IWRAM_DATA u32 gRfuAPIBuffer[RFU_API_BUFF_SIZE_RAM / 4] = {};  // 0x03000838, rfu_initializeAPI に渡す
 
 s32 InitRfuAPI(void) {
   if (rfu_initializeAPI(gRfuAPIBuffer, RFU_API_BUFF_SIZE_RAM, &gIntrTable[1], TRUE) != 0) {
     return -1;
   }
-  rfu_setTimerInterrupt(3, &gIntrTable[2]);
+  rfu_setTimerInterrupt(MULTI_SIO_TIMER_NO, &gIntrTable[2]);
   return 0;
 }
 
