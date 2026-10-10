@@ -1,15 +1,23 @@
 #include "entity.h"
 #include "global.h"
+#include "hitbox.h"
+#include "shadow.h"
 
 // シェードマンのスプライトをロードしている (Entity0623_Init_Helper_0821c758)
 typedef struct {
-  Entity e;  // 0x0, ENTITY_UNK_8
-  u8 unk_18[3076 - 0x18];
+  Entity e;                   // 0x000, ENTITY_UNK_8
+  u8 unk_18[0x15C - 0x18];    // 0x018, まだ未解析
+  HitboxData hitbox_15c;      // 0x15C
+  u8 unk_1ac[0x31C - 0x1AC];  // 0x1AC, まだ未解析
+  AuxShadow shadow_31c;       // 0x31C
+  u8 unk_388[3076 - 0x388];   // 0x388, まだ未解析
 } Entity0623;
 static_assert(sizeof(Entity0623) == 3076);
 
 INCASM("asm/entity_0623.inc");
 
+void FUN_0821c918(Entity0623*);
+void FUN_08022b04(Entity0623*);  // asm/boss.inc
 void FUN_0822129c(Entity0623*);
 void FUN_0821d800(Entity0623*);
 void FUN_08221194(Entity0623*);
@@ -23,7 +31,13 @@ s32 Entity0623_Update(Entity0623* p) {
   return 0;
 }
 
-NAKED s32 Entity0623_Destroy(Entity0623* p) { INCFUNC("asm/func/Entity0623_Destroy.inc"); }
+s32 Entity0623_Destroy(Entity0623* p) {
+  FUN_0821c918(p);
+  AuxShadow_Remove(&p->shadow_31c);
+  Hitbox_Unregister(&p->hitbox_15c);
+  FUN_08022b04(p);
+  return 0;
+}
 
 NAKED s32 Entity0623_Init(Entity0623* p, u32 id) { INCFUNC("asm/func/Entity0623_Init.inc"); }
 
