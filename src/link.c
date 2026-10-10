@@ -327,7 +327,7 @@ NAKED void FUN_082382ec(s32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_082382
 
 NAKED void FUN_082382f8(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_082382f8.inc"); }
 
-NAKED void FUN_08238354(s32 param_1) { INCFUNC("asm/func/FUN_08238354.inc"); }
+NAKED void FUN_08238354(unknown* p) { INCFUNC("asm/func/FUN_08238354.inc"); }
 
 void Sio_FreePacketCtx(void) { gSioPacketCtx = NULL; }
 
@@ -335,7 +335,7 @@ NAKED s32 FUN_0823840c(unknown* p) { INCFUNC("asm/func/FUN_0823840c.inc"); }
 
 NAKED s32 FUN_08238480(void) { INCFUNC("asm/func/FUN_08238480.inc"); }
 
-NAKED void FUN_0823849c(void) { INCFUNC("asm/func/FUN_0823849c.inc"); }
+void FUN_0823849c(void) { FUN_08238354(gSioPacketCtx); }
 
 NAKED s32 FUN_082384b0(u32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_082384b0.inc"); }
 
