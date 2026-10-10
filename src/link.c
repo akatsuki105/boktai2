@@ -269,7 +269,13 @@ s32 Sio_GetError(void) {
   return 0;
 }
 
-NAKED s32 FUN_082380a8(void) { INCFUNC("asm/func/FUN_082380a8.inc"); }
+// 親と子の双方からデータが来ているか, どちらかが 0xFFFF (データなし) なら OR も 0xFFFF になる
+bool32 Sio_HasBothData(void) {
+  if ((gSioChildRecv | gSioParentRecv) != 0xFFFF) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 // 子が親からデータを受け取っているか (0xFFFF はデータなし)
 bool32 Sio_HasParentData(void) {
