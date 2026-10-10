@@ -8,14 +8,14 @@
 	ldr r0, [r0]
 	cmp r0, #0
 	beq _08238BE8
-	bl FUN_08238634
+	bl Sio_StartSerialIntr
 	movs r0, #1
 	b _08238BEE
 	.align 2, 0
 _08238BE0: .4byte 0x030046D4
 _08238BE4: .4byte 0x030046CC
 _08238BE8:
-	bl FUN_08238634
+	bl Sio_StartSerialIntr
 	movs r0, #0
 _08238BEE:
 	pop {r1}

@@ -353,7 +353,20 @@ void Sio_EnableInterrupts(void) { REG_IME = 1; }
 
 void Sio_StartTransfer(void) { REG_SIOCNT |= SIO_START; }
 
-NAKED void FUN_08238634(void) { INCFUNC("asm/func/FUN_08238634.inc"); }
+void Sio_SerialIntr(void);
+
+// シリアル割り込みのハンドラに Sio_SerialIntr を据え, SIOCNT と IE の両方で割り込みを有効にする
+void Sio_StartSerialIntr(void) {
+  REG_IME = 0;
+  REG_IE &= ~INTR_FLAG_SERIAL;
+  gIntrTable[1] = Sio_SerialIntr;
+  REG_IME = 1;
+  REG_IF = INTR_FLAG_SERIAL;
+  REG_SIOCNT |= SIO_INTR_ENABLE;
+  REG_IME = 0;
+  REG_IE |= INTR_FLAG_SERIAL;
+  REG_IME = 1;
+}
 
 // シリアル割り込みを止めてハンドラを IntrDummy に戻し, SIOCNT を割り込みなしのマルチプレイモードに戻す
 void Sio_StopSerialIntr(void) {
@@ -365,7 +378,7 @@ void Sio_StopSerialIntr(void) {
   REG_IF = INTR_FLAG_SERIAL;
 }
 
-NAKED void FUN_082386e4(void) { INCFUNC("asm/func/FUN_082386e4.inc"); }
+NAKED void Sio_SerialIntr(void) { INCFUNC("asm/func/Sio_SerialIntr.inc"); }
 
 // 保留中のシリアル割り込みを捨ててから VBlank を待ち、SIO を 115200bps のマルチプレイモードに組み直す
 void Sio_Reinit(void) {
