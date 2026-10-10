@@ -333,7 +333,15 @@ void Sio_FreePacketCtx(void) { gSioPacketCtx = NULL; }
 
 NAKED s32 FUN_0823840c(unknown* p) { INCFUNC("asm/func/FUN_0823840c.inc"); }
 
-NAKED s32 FUN_08238480(void) { INCFUNC("asm/func/FUN_08238480.inc"); }
+// コンテキストの置き場所を確保して初期化し, そのポインタを返す
+void* Sio_CreatePacketCtx(void) {
+  void* ctx;
+
+  Sio_AllocPacketCtx();
+  ctx = gSioPacketCtx;
+  FUN_0823840c(ctx);
+  return ctx;
+}
 
 void FUN_0823849c(void) { FUN_08238354(gSioPacketCtx); }
 

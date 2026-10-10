@@ -167,7 +167,7 @@ _081E1B0A:
 	bl Sio_GetSerialIntrCount
 _081E1B16:
 	str r0, [r4, #0x70]
-	bl FUN_08238480
+	bl Sio_CreatePacketCtx
 	movs r1, #0x80
 	lsls r1, r1, #4
 	ldr r0, [r4, #0x64]
