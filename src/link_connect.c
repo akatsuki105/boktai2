@@ -9,7 +9,7 @@ typedef struct LinkConnect {
   s32 timeout;      // 0x18, Create の第1引数, 0 なら 300, LinkConnect_TickTimeout が timer と比べる
   s32 cancelable;   // 0x1C, Create の第2引数, 0 でない間だけ B ボタンでキャンセルできる
   s32 canceled;     // 0x20, B ボタンで打ち切ったとき 1, コールバックの第3引数になる
-  s32 handle;       // 0x24, FUN_08238bc0() の戻り値, 負の間は張り直す, コールバックの第2引数になる
+  s32 handle;       // 0x24, Sio_Connect() の戻り値, 負の間は張り直す, コールバックの第2引数になる
   s32 succeeded;    // 0x28, 両者が 0xE2 を返したら 1, onSuccess と onFailure の選択に使う
   s32 finished;     // 0x2C, 立つと次のフレームでコールバックを呼んで KillEntity する
   s32 linkStopped;  // 0x30, FUN_08238bf4 を呼んだら 1, _Destroy はこれが立っていれば呼ばない

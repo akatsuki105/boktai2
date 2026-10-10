@@ -26,7 +26,7 @@ _081DE280:
 	ldr r1, [r4, #0x34]
 	cmp r1, #2
 	bls _081DE2D2
-	bl FUN_08238bc0
+	bl Sio_Connect
 	adds r1, r0, #0
 	cmp r1, #0
 	blt _081DE2A4

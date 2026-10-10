@@ -48,7 +48,7 @@ _081D9AD0:
 	ldr r0, [r6, #0x54]
 	adds r0, #1
 	str r0, [r6, #0x54]
-	bl FUN_08238bc0
+	bl Sio_Connect
 	str r0, [r6, #0x24]
 	cmp r0, #0
 	bge _081D9B0C
@@ -56,7 +56,7 @@ _081D9AD0:
 	cmp r0, #0x1d
 	ble _081D9B08
 	bl FUN_08238cd4
-	bl FUN_08238bc0
+	bl Sio_Connect
 	str r0, [r6, #0x24]
 	mov r0, sl
 	b _081D9B0A
@@ -192,7 +192,7 @@ _081D9BD8:
 	ble _081D9C10
 	bl FUN_08238bf4
 	bl FUN_08238cd4
-	bl FUN_08238bc0
+	bl Sio_Connect
 	str r0, [r6, #0x24]
 	str r5, [r6, #0x38]
 	str r5, [r6, #0x50]
@@ -218,7 +218,7 @@ _081D9C26:
 	ble _081D9C46
 	bl FUN_08238bf4
 	bl FUN_08238cd4
-	bl FUN_08238bc0
+	bl Sio_Connect
 	str r0, [r6, #0x24]
 	str r5, [r6, #0x38]
 	str r5, [r6, #0x50]

@@ -400,7 +400,19 @@ NAKED void FUN_08238aac(void) { INCFUNC("asm/func/FUN_08238aac.inc"); }
 
 NAKED s32 FUN_08238b04(void) { INCFUNC("asm/func/FUN_08238b04.inc"); }
 
-NAKED s32 FUN_08238bc0(void) { INCFUNC("asm/func/FUN_08238bc0.inc"); }
+// 役割を判定してシリアル割り込みを動かす, 戻り値は 0 = 親, 1 = 子, 負ならエラー
+s32 Sio_Connect(void) {
+  FUN_08238aac();
+  if (gSioStatus < 0) {
+    return gSioStatus;
+  }
+  if (gSioMultiId == 0) {
+    Sio_StartSerialIntr();
+    return 0;
+  }
+  Sio_StartSerialIntr();
+  return 1;
+}
 
 NAKED s32 FUN_08238bf4(void) { INCFUNC("asm/func/FUN_08238bf4.inc"); }
 
