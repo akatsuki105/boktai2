@@ -25,7 +25,6 @@ typedef struct {
 } Entity0805fe30;
 static_assert(sizeof(Entity0805fe30) == 752);
 
-IWRAM_DATA u8 u8_03000124[0x130 - 0x124] = {};
 IWRAM_DATA Entity0805fe30* gEntity0805fe30 = NULL;  // 0x03000130
 
 const s32 s32_ARRAY_085aba88[5] = {0, 0, -3, -6, -9};  // 0x085ABA88
