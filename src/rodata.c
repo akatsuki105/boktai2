@@ -51,7 +51,7 @@ void FUN_0805d0f0(unknown* p, unknown* param_2, unknown* param_3);
 // FUN_08055fe4 / FUN_080561b8 が引く
 const u16 u16_ARRAY_085ab990[4] = {4, 1, 2, 4};  // 0x085AB990
 
-// FUN_080564f0 が引く
+// Entity08056728_Update が引く
 void (*const PTR_ARRAY_085ab998[3])(unknown*, unknown*, unknown*) = {
     FUN_08055fe4,
     FUN_080561b8,
