@@ -18,7 +18,7 @@ _08238E38:
 	movs r4, #4
 	rsbs r4, r4, #0
 _08238E3C:
-	bl FUN_08238618
+	bl Sio_EnableInterrupts
 	adds r0, r4, #0
 	pop {r4}
 	pop {r1}

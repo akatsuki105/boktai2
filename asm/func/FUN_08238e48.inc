@@ -40,7 +40,7 @@ _08238E74:
 	adds r1, r1, r2
 	ldrh r0, [r1]
 	strh r0, [r4, #6]
-	bl FUN_08238618
+	bl Sio_EnableInterrupts
 	ldr r0, _08238EB4 @ =0x030046CC
 	ldr r0, [r0]
 _08238EA6:
