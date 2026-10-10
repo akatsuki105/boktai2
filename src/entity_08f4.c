@@ -13,7 +13,7 @@ typedef struct Entity08F4 {
   MainSpriteGfxFile* gfxFile;                  // 0x2E0, SPRITE_UI_LINK
   rgb555 objPltt[16];                          // 0x2E4, FUN_081db32c が gObjPlttData+0x2930 から16色複写し、sprites[0].pltt をここへ向ける
   u16 unk_304;                                 // 0x304, FUN_081db32c が 0 を入れるだけ
-  u16 unk_306;                                 // 0x306, 読み手も書き手も見つかっていない
+  u16 unk_306;                                 // 0x306, 読み手も書き手も見つかっていない, padding?
   void (*updateCallback)(struct Entity08F4*);  // 0x308
   u8* scriptPc;                                // 0x30C, Init が FUN_0823d340() を入れる, VM_ParseStringRef / TextPanel_SetScript に渡す
   u32 unk_310;                                 // 0x310, FUN_081db074 が bit0 を落とし、FUN_081db57c が立てる
@@ -31,5 +31,13 @@ typedef struct Entity08F4 {
   u16 timer;                                   // 0x32E, 30 未満の間は入力を受け付けない
 } Entity08F4;
 static_assert(sizeof(Entity08F4) == 816);
+
+const s32 s32_ARRAY_085ae1b4[6] = {0, 0, 0, 32, 0, 64};  // 0x085AE1B4
+
+const s32 s32_ARRAY_085ae1cc[6] = {32, 0, 32, 32, 16, 64};  // 0x085AE1CC
+
+const s32 s32_ARRAY_085ae1e4[6] = {0, 0, 0, 32, 0, 64};  // 0x085AE1E4
+
+const u16 u16_ARRAY_085ae1fc[4] = {60, 90, 120, 0};  // 0x085AE1FC
 
 INCASM("asm/entity_08f4.inc");

@@ -4,8 +4,8 @@
 #include "shadow.h"
 #include "sprite_aux.h"
 
-typedef struct Entity8CC7Elem {
-  AuxSprite sprite;        // 0x00, Entity8CC7_Destroy が AuxSprite_Remove に渡す
+typedef struct {
+  AuxSprite sprite;        // 0x00
   u8 unk_2c[0x6E - 0x2C];  // 0x2C, まだ未解析
   u16 flags;               // 0x6E, 根拠: Entity8CC7Elem_SetFlags / _ClearFlags / _TestFlags
   u8 unk_70[0x79 - 0x70];  // 0x70, まだ未解析
@@ -80,7 +80,7 @@ NON_MATCH bool32 FUN_081d8d90(Entity8CC7* p) {
 #endif
 }
 
-void nop_081d8dc0(void) {}
+void nop_081d8dc0(Entity8CC7* p, Entity8CC7Elem* e) {}
 
 NAKED void FUN_081d8dc4(Entity8CC7* p, Entity8CC7Elem* e) { INCFUNC("asm/func/FUN_081d8dc4.inc"); }
 
@@ -91,6 +91,15 @@ NAKED void FUN_081d93b0(Entity8CC7* p, Entity8CC7Elem* e) { INCFUNC("asm/func/FU
 NAKED void FUN_081d96b8(Entity8CC7* p, Entity8CC7Elem* e) { INCFUNC("asm/func/FUN_081d96b8.inc"); }
 
 NAKED void FUN_081d98a0(Entity8CC7* p, Entity8CC7Elem* e) { INCFUNC("asm/func/FUN_081d98a0.inc"); }
+
+void (*const PTR_ARRAY_085ae12c[6])(Entity8CC7*, Entity8CC7Elem*) = {
+    nop_081d8dc0,
+    FUN_081d919c,
+    FUN_081d8dc4,
+    FUN_081d93b0,
+    FUN_081d96b8,
+    FUN_081d98a0,
+};  // 0x085AE12C
 
 NAKED s32 Entity8CC7_Update(Entity8CC7* p) { INCFUNC("asm/func/Entity8CC7_Update.inc"); }
 

@@ -39,4 +39,16 @@ typedef struct Entity7999 {
 } Entity7999;
 static_assert(sizeof(Entity7999) == 676);
 
+const u32 u32_ARRAY_085ae144[7] = {0, 2, 3, 4, 5, 11, 13};  // 0x085AE144
+
+// FUN_081d9da4 / FUN_081d9e50 / FUN_081da14c が引く
+const u32 u32_ARRAY_085ae160[3] = {1, 16, 8};  // 0x085AE160
+
+// FUN_081d9e50 / FUN_081da468 が引く
+const s32 s32_ARRAY_085ae16c[3][6] = {
+    {0, 0, 0, 32, 0,   64},
+    {0, 0, 0, 32, -16, 64},
+    {0, 0, 0, 32, 0,   64},
+};  // 0x085AE16C
+
 INCASM("asm/entity_7999.inc");

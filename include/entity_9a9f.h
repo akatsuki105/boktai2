@@ -96,6 +96,8 @@ static_assert(sizeof(Entity9A9F) == 756);
 
 extern Entity9A9F* gEntity9A9F;  // 0x03002C68
 
+void FUN_081df8f0(s32 val);
+
 // 自分が何番目の参加者かを返す, セッションが無ければ -1
 static inline s32 Entity9A9F_GetPlayerIdx(void) {
   Entity9A9F* p = gEntity9A9F;

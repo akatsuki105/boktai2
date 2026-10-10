@@ -1,3 +1,4 @@
+#include "coffin_immortal.h"
 #include "collision_map.h"
 #include "entity.h"
 #include "file.h"
@@ -57,8 +58,14 @@ typedef struct Elevator {
 } Elevator;
 static_assert(sizeof(Elevator) == 4792);
 
-extern Elevator* gElevator;            // 0x03000194
-extern const Vec3 gElevatorRanges[3];  // 0x085AE0D0
+extern Elevator* gElevator;  // 0x03000194
+
+// エレベータが乗り手との距離を測るときの許容範囲 (±), Elevator_FindAtPos ほかが引く
+const Vec3 gElevatorRanges[3] = {
+    {128, 32, 128},
+    {128, 32, 128},
+    {98,  32, 98 }
+};  // 0x085AE0D0
 
 static inline void Vec3_Delta(Vec3* out, Vec3* origin, Vec3* target) {
   out->x = target->x - origin->x;
@@ -69,12 +76,9 @@ static inline void Vec3_Delta(Vec3* out, Vec3* origin, Vec3* target) {
 static inline void Elevator_SetFlags(ElevatorUnkData* p, ElevatorFlags bits) { p->flags |= bits; }
 static inline void Elevator_ClearFlags(ElevatorUnkData* p, ElevatorFlags bits) { p->flags &= ~bits; }
 
-void FUN_0807a91c(Player* p, Vec3* pos);
 void FUN_0807a97c(Player* p, u32 flags, u32 value);
 void FUN_0807a99c(Player* p, u32 flags);
 void FUN_080869c8(u32 flags, u32 value);
-bool32 FUN_08086a28(Vec3* pos);
-void FUN_08086a4c(Vec3* pos);
 void FUN_080869f8(u32 flags);
 
 NAKED void FUN_081d21d8(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d21d8.inc"); }
@@ -230,6 +234,16 @@ NAKED void FUN_081d4658(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d4658.inc
 NAKED void FUN_081d4704(Elevator* q, ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d4704.inc"); }
 
 NAKED void Elevator_Create(void) { INCFUNC("asm/func/Elevator_Create.inc"); }
+
+void (*const PTR_ARRAY_085ae0e8[7])(ElevatorUnkData*) = {
+    FUN_081d280c,
+    FUN_081d2a14,
+    FUN_081d2810,
+    FUN_081d2fd0,
+    FUN_081d2cf8,
+    FUN_081d3110,
+    FUN_081d3114,
+};  // 0x085AE0E8
 
 NAKED s32 ElevatorController_Update(Elevator* p) { INCFUNC("asm/func/ElevatorController_Update.inc"); }
 

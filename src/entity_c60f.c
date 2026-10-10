@@ -14,7 +14,7 @@ typedef u32 EntityC60FItemFlags;
 #define C60FITEM_FIXED_AREA (1 << 7)     // state を回さず unk_10a を gStat->unk_248 と比べる
 
 // EntityC60F が抱える要素
-typedef struct EntityC60FItem {
+typedef struct {
   AuxSprite sprite;              // 0x000
   u8 unk_2c[28];                 // 0x02C
   Mover unk_48;                  // 0x048
@@ -103,6 +103,14 @@ NAKED void FUN_081d785c(EntityC60FItem* p) { INCFUNC("asm/func/FUN_081d785c.inc"
 NAKED void FUN_081d7a60(EntityC60FItem* p) { INCFUNC("asm/func/FUN_081d7a60.inc"); }
 
 NAKED void FUN_081d7ca8(unknown* p) { INCFUNC("asm/func/FUN_081d7ca8.inc"); }
+
+void (*const PTR_ARRAY_085ae118[5])(EntityC60FItem*) = {
+    FUN_081d6f60,
+    FUN_081d7358,
+    FUN_081d76bc,
+    FUN_081d785c,
+    FUN_081d7a60,
+};  // 0x085AE118
 
 NAKED s32 EntityC60F_Update(EntityC60F* p) { INCFUNC("asm/func/EntityC60F_Update.inc"); }
 

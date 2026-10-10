@@ -630,6 +630,17 @@ SECTIONS {
     src/enemy/golem_link.o (.rodata);
     src/enemy/dog_link.o (.rodata);
     src/entity_081d0e20.o (.rodata);
+    src/entity_081d16ec.o (.rodata);
+    src/entity_081d2180.o (.rodata);
+    src/elevator.o (.rodata);
+    src/entity_f1f9.o (.rodata);
+    src/entity_c60f.o (.rodata);
+    src/entity_8cc7.o (.rodata);
+    src/entity_7999.o (.rodata);
+    src/entity_08f4.o (.rodata);
+    src/link_battle_lobby.o (.rodata);
+    src/link_battle_result.o (.rodata);
+    src/entity_9a9f.o (.rodata);
     src/rodata4.o (.rodata);
     src/preview_stage.o (.rodata);
     src/weapon_dex.o (.rodata);

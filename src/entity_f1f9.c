@@ -6,7 +6,7 @@
 #include "shadow.h"
 #include "sprite_aux.h"
 
-// EntityF1F9 が抱える要素, スプライト・ヒットボックス・影を1つずつ持つ
+// スプライト・ヒットボックス・影を1つずつ持つ
 typedef struct EntityF1F9Item {
   AuxSprite sprite;   // 0x000
   u8 unk_2c[44];      // 0x02C
@@ -115,6 +115,14 @@ NAKED void FUN_081d5f54(unknown* p) { INCFUNC("asm/func/FUN_081d5f54.inc"); }
 NAKED void FUN_081d60c8(EntityF1F9* p, EntityF1F9Item* item) { INCFUNC("asm/func/FUN_081d60c8.inc"); }
 
 NAKED void FUN_081d6200(EntityF1F9* p, EntityF1F9Item* item) { INCFUNC("asm/func/FUN_081d6200.inc"); }
+
+void (*const PTR_ARRAY_085ae104[5])(EntityF1F9*, EntityF1F9Item*) = {
+    FUN_081d5d14,
+    FUN_081d5d18,
+    FUN_081d5d70,
+    FUN_081d60c8,
+    FUN_081d6200,
+};  // 0x085AE104
 
 NAKED s32 EntityF1F9_Update(EntityF1F9* p) { INCFUNC("asm/func/EntityF1F9_Update.inc"); }
 
