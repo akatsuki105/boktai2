@@ -35,8 +35,6 @@ void FUN_08242a98(Weapon* w, WeaponData* data);
 s32 FUN_0807a6cc(WeaponData* w);
 void FUN_08071b14(Player* p);
 
-const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085abab4
-
 // --------------------------------------------
 
 void Player_SetAnimFacing(Player* p) {
@@ -1922,6 +1920,8 @@ s32 FUN_08063478(Player* p) { return (p->angle_400 - p->angle_401 + 0x100) & 0xF
 
 // 姿勢を決める, 変化直後は 0x40 フレームのあいだ 4フレームおきに前の値と交互に返す
 u32 Player_ApplyPoseHold(Player* p, u32 n) {
+  static const u8 u8_ARRAY_085abab4[4] = {3, 4, 6, 0};  // 0x085ABAB4
+
   u32 pose = n;
 
   if (p->unk_4c4.unk_3 != 0) {
@@ -1968,10 +1968,10 @@ u32 Player_ApplyPoseHold(Player* p, u32 n) {
 NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
 #ifdef NONMATCHING_C
   switch (badcondID) {
-    case 0: {
+    case 0: {  // 腹痛
       break;
     }
-    case 1: {
+    case 1: {  // 毒
       if (p->unk_4c4.unk_3 != 0) {
         if (p->unk_4c4.kind == 3) {
           break;
@@ -1983,7 +1983,7 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
       }
       break;
     }
-    case 2: {
+    case 2: {  // 混乱
       if (p->badCondTimer[2] == 0) {
         gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
         u16_03002b64 = (p->controlUp + 1 + Mod(gRandomTable[gRandTableIdx], 7)) & 7;
