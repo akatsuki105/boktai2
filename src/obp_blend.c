@@ -8,7 +8,6 @@
 extern s32 gObjPlttSlotCursor;
 extern s32 gObjPlttSlotReserved;
 extern s32 gObjPlttSlotCount;
-s32 AllocBlendPlttSlot(u32 plttID, rgb555* pltt);
 s32 FUN_0823ce10(u16* a, u16* b);
 u32 FUN_0823cdf8(u16 id);
 
@@ -161,6 +160,7 @@ NON_MATCH s32 ObjPlttBlender_Init(ObjPlttBlender* p, u16 val) {
 #endif
 }
 
+// 0x4D4D
 ObjPlttBlender* ObjPlttBlender_Create(u32 val) {
   ObjPlttBlender* p = CreateEntity(ENTITY_UNK_12, sizeof(ObjPlttBlender));
 

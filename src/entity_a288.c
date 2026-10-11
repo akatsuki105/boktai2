@@ -166,8 +166,6 @@ const SoundID16 u16_ARRAY_085afeb2[99] = {
 };  // 0x085afeb2
 // clang-format on
 
-const u8 gStringDjango_085aff78[] = _("ジャンゴ");
-
 static inline void EntityA288_SetFlags(EntityA288* p, u32 bits) { p->flags |= bits; }
 
 void FUN_08213880(EntityA288* p) { p->tilemap2 = GetFile(DIR_TILE_MAP, TILEMAP_A413); }
@@ -424,6 +422,8 @@ NAKED void FUN_0821869c(EntityA288* p) { INCFUNC("asm/func/FUN_0821869c.inc"); }
 
 NAKED void FUN_08218910(EntityA288* p) { INCFUNC("asm/func/FUN_08218910.inc"); }
 
+const u8 gStringDjango_085aff78[] = _("ジャンゴ");
+
 // 名前欄に "ジャンゴ" を書き込む, 転送量は文字列の長さではなく名前欄の 10 バイト
 void FUN_08218b20(u8* dst) { CpuCopy16(gStringDjango_085aff78, dst, 10); }
 
@@ -490,14 +490,12 @@ void EntityA288_SetState(EntityA288* p, s32 state) {
 }
 
 s32 EntityA288_Update(EntityA288* p) {
-  if (!(p->flags & 1)) {
+  if (!(p->flags & (1 << 0))) {
     p->timer1++;
   }
-
-  if (!(p->flags & 2)) {
+  if (!(p->flags & (1 << 1))) {
     p->timer2++;
   }
-
   p->updateCallback(p);
   return 0;
 }

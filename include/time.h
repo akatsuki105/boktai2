@@ -55,7 +55,7 @@ typedef struct {
   s32 longitude;                        // 0x1C, 経度
   s32 tz;                               // 0x20, Region time zone offset
 } Clock;                                // 36 bytes
-static_assert(sizeof(Clock) == 36);     // 0x0823d91c でのメモリクリアのサイズ指定的に36バイトで間違いない
+static_assert(sizeof(Clock) == 36);
 
 // ------------------------------------------------------------------------------------------------------------------------------------
 

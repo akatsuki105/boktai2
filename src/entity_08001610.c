@@ -27,7 +27,7 @@ typedef struct {
 static_assert(sizeof(Entity08001610Config) == 60);
 
 // BG 1枚のスクロールを受け持つ, 0x03000010 のテーブルに bgIdx で自分を登録し、gBgStates[bgIdx] の hofs/vofs を毎フレーム書く
-typedef struct Entity08001610 {
+typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_9 か ENTITY_UNK_11
   u16 unk_18;         // 0x18, Init の第2引数, 読み手は見つかっていない
   u8 flags;           // 0x1A, Init が bit0 と bit1, Update が bit3 を見る
@@ -73,8 +73,7 @@ typedef struct Entity08001610 {
 } Entity08001610;
 static_assert(sizeof(Entity08001610) == 248);
 
-// 0x03000010, BG ごとの Entity08001610, Init が bgIdx の位置に自分を入れ、Destroy が NULL に戻す
-IWRAM_DATA Entity08001610* gEntity08001610[4] = {};
+IWRAM_DATA Entity08001610* gEntity08001610[4] = {};  // 0x03000010, BG ごとの Entity08001610, Init が bgIdx の位置に自分を入れ、Destroy が NULL に戻す
 
 NON_MATCH void Entity08001610_ClearTable(void) {
 #ifdef NONMATCHING_C

@@ -167,7 +167,7 @@ void* DecompTargetFunc(void) {
     -> the output contains the `boktai2.gba: OK` line: goto Step 6
     -> it does not: goto Step 5
 
-5. **On NON-MATCH, take the instruction-stream diff and classify it** — never the ROM bytes (pool offsets shift). **State which iteration this is** ("2 回目 / 4") before anything else; the stop condition counts these and nothing else counts them for you.
+5. **On NON-MATCH, take the instruction-stream diff and classify it** — never the ROM bytes (pool offsets shift). **State which iteration this is against the budget** ("2 回目 / 5", the budget from `context.ts`) before anything else; the stop condition counts these and nothing else counts them for you.
 
     a. **Instruction-stream diff (every iteration).** Diff your object against the original asm:
        `.claude/skills/decomp-func/scripts/streamdiff.py BUILT_OBJECT SYMBOL ORIGINAL_INC` (keep a copy of the original inc via `git show HEAD:asm/... > <scratchpad>/orig.inc` before truncating it).
@@ -214,7 +214,17 @@ void* DecompTargetFunc(void) {
 
 ## Stopping
 
-Stop after **4 iterations** of the 3-5 loop and keep whichever candidate is best. Step 5 states the iteration number, so the count is on screen rather than remembered. If the remaining token count (`N tokens left`) happens to be visible, also stop once **20,000 tokens** have gone into this one function — but the iteration count is the rule that actually holds, because the token figure is not always on screen and resets across a compaction.
+**The budget scales with the target's size.** `context.ts` prints it on its own first line (`asm/func/FUN_08066d2c.inc (78 バイト, 予算: 3 反復 / 6000 トークン)`), so it is decided and on screen before the first iteration:
+
+| size | iterations | tokens |
+|---|---|---|
+| ≤ 100 bytes | 3 | 6,000 |
+| 101 – 350 bytes | 5 | 20,000 |
+| > 350 bytes | 7 | 40,000 |
+
+The thresholds are the quartiles of what is left in the repo (p25 = 98, p75 = 332 bytes over 2452 functions), and `census.ts`'s `size` column is the same measure. A flat count fits neither end: on a 20-byte function the residual has one cause, so two levers exhaust it, while a 600-byte function stacks several independent residuals and each iteration can only close one.
+
+Stop at that iteration count and keep whichever candidate is best. Step 5 states the iteration number against the budget, so the count is on screen rather than remembered. The token figure is the secondary rule — apply it only when the remaining count (`N tokens left`) happens to be visible, because it is not always on screen and resets across a compaction.
 
 Leave the best candidate as NON_MATCH: its C inside `#ifdef NONMATCHING_C`, the `INCFUNC` restored in `#else` (restore the `.inc` from git if it was deleted), and `make compare` printing OK.
 
@@ -224,7 +234,7 @@ Leave the best candidate as NON_MATCH: its C inside `#ifdef NONMATCHING_C`, the 
 // 残差はr4/r5の入れ替えのみ, Tier A-C は試済, 未: per-TU フラグ
 ```
 
-Without it the next session cannot tell "nobody tried hard" from "the cheap tiers are used up", and repeats the same four iterations. Stopping is a budget decision, never a proof that no C exists — that distinction is `agbcc-levers.md` §7.
+Without it the next session cannot tell "nobody tried hard" from "the cheap tiers are used up", and spends its whole budget repeating them. Stopping is a budget decision, never a proof that no C exists — that distinction is `agbcc-levers.md` §7.
 
 `scripts/residual.ts` measures every NON_MATCH function in the repo at once, so use it rather than re-deriving how close a stalled function is.
 

@@ -21,7 +21,7 @@ void (*const PTR_ARRAY_085abfc8[8])(unknown*) = {
     FUN_08084e54,
     FUN_08084ecc,
     FUN_08084f7c,
-};  // 0x085abfc8
+};  // 0x085ABFC8
 
 // --------------------------------------------
 

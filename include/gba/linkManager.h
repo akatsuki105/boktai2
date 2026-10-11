@@ -4,6 +4,8 @@
 #include "gba/agbrfu.h"
 #include "gba/types.h"
 
+#define static_assert(cond) extern char assertion[(cond) ? 1 : -1]
+
 // リンクマネージャーの動作モード(rfu_LMAN_establishConnectionの引数u8 parent_childで指定）
 // #define MODE_CHILD									0		//
 // CHILDモードでリンクマネージャーを起動 #define MODE_PARENT
@@ -207,7 +209,8 @@ typedef struct linkManagerTag {
   INIT_PARAM* init_param;                         // 初期設定処理を行う際のパラメータへのポインタ
   void (*LMAN_callback)(u8 msg, u8 param_count);  // リンクマネージャー動作によって発生するユーザー定義のLMANコールバックルーチンへのポインタ
   void (*MSC_callback)(u16 REQ_commandID);        // ユーザー定義のMSCコールバック関数, （リンクマネージャー定義時には、rfu_setMSCCallbackは用いず、rfu_LMAN_initializeManagerもしくはrfu_LMAN_setMSCCallbackを用いてMSCコールバックを定義します
-} LINK_MANAGER;                                   // 72 Bytes
+} LINK_MANAGER;
+static_assert(sizeof(LINK_MANAGER) == 72);
 
 extern LINK_MANAGER lman;
 

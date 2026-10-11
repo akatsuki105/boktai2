@@ -18,14 +18,14 @@ _081DFAB0:
 	cmp r1, #2
 	bls _081DFB24
 	ldr r0, [r4, #0x44]
-	bl FUN_08238da8
+	bl Sio_GetRecvData
 	str r0, [r4, #0x4c]
 	movs r0, #2
 	str r0, [r6]
 	adds r0, r4, #0
 	adds r0, #0x42
 	ldrh r0, [r0]
-	bl FUN_08238e14
+	bl Sio_SetSendData
 	str r0, [r4, #0x48]
 	movs r0, #3
 	str r0, [r6]
@@ -44,7 +44,7 @@ _081DFAB0:
 	beq _081DFB1A
 	cmp r1, #0x18
 	beq _081DFB1A
-	bl FUN_08238d84
+	bl Sio_StartTransferIfIdle
 	b _081DFB1A
 	.align 2, 0
 _081DFAFC: .4byte 0x030001AC
@@ -58,7 +58,7 @@ _081DFB08:
 	beq _081DFB1A
 	cmp r1, #0x18
 	beq _081DFB1A
-	bl FUN_08238d84
+	bl Sio_StartTransferIfIdle
 _081DFB1A:
 	ldr r1, _081DFB80 @ =0x030001AC
 	movs r0, #4

@@ -75,4 +75,6 @@ void Video_ClearMosaic(void);
 
 void Video_SetWindowRect(s32 win, s32 left, s32 top, s32 right, s32 bottom);
 
+s32 AllocBlendPlttSlot(u32 plttID, rgb555* pltt);
+
 #endif  // __INCLUDE_VIDEO_H__

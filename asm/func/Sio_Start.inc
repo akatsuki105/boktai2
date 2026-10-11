@@ -12,12 +12,12 @@
 	str r1, [r0]
 	ldr r0, _08237F2C @ =0x0300079C
 	str r1, [r0]
-	ldr r5, _08237F30 @ =0x030046D4
-	ldr r6, _08237F34 @ =0x030046CC
-	ldr r0, _08237F38 @ =0x030046C0
+	ldr r5, _08237F30 @ =gSioStatus
+	ldr r6, _08237F34 @ =gSioMultiId
+	ldr r0, _08237F38 @ =gSioTimerIntrCount
 	mov ip, r0
-	ldr r7, _08237F3C @ =0x030046C8
-	ldr r4, _08237F40 @ =0x030007A0
+	ldr r7, _08237F3C @ =gSioSerialIntrCount
+	ldr r4, _08237F40 @ =gSioRecvBuf
 	movs r2, #0
 	ldr r3, _08237F44 @ =0x030007E0
 _08237EE0:
@@ -53,11 +53,11 @@ _08237F20: .4byte 0x03000794
 _08237F24: .4byte 0x03000798
 _08237F28: .4byte 0x03000790
 _08237F2C: .4byte 0x0300079C
-_08237F30: .4byte 0x030046D4
-_08237F34: .4byte 0x030046CC
-_08237F38: .4byte 0x030046C0
-_08237F3C: .4byte 0x030046C8
-_08237F40: .4byte 0x030007A0
+_08237F30: .4byte gSioStatus
+_08237F34: .4byte gSioMultiId
+_08237F38: .4byte gSioTimerIntrCount
+_08237F3C: .4byte gSioSerialIntrCount
+_08237F40: .4byte gSioRecvBuf
 _08237F44: .4byte 0x030007E0
 _08237F48:
 	bl Sio_StartParentTimer

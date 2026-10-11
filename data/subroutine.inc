@@ -7,7 +7,7 @@ gSubroutineTable:
 	.4byte 0x0101, FUN_081d1a7c
 	.4byte 0x0238, EntityBA36_GetRemaining
 	.4byte 0x025E, FUN_0804e384
-	.4byte 0x0272, FUN_0823cd48
+	.4byte 0x0272, SetPlayerName
 	.4byte 0x0353, FUN_0807b64c
 	.4byte 0x03CA, FUN_08223ea0
 	.4byte 0x0447, FUN_08223e04
@@ -42,7 +42,7 @@ gSubroutineTable:
 	.4byte 0x12C4, Entity12C4_Create
 	.4byte 0x1320, FUN_080a6f20
 	.4byte 0x1343, FUN_0807d7dc
-	.4byte 0x138E, FUN_0823d220
+	.4byte 0x138E, SoftResetScripted
 	.4byte 0x13AC, EnemySerpent_Create
 	.4byte 0x1422, FUN_08240f4c
 	.4byte 0x1488, FUN_080dd93c
@@ -80,7 +80,7 @@ gSubroutineTable:
 	.4byte 0x2207, FUN_081d19cc
 	.4byte 0x225B, FUN_08223f3c
 	.4byte 0x2306, HazardManager_SpawnScripted
-	.4byte 0x2354, FUN_0823d6f4
+	.4byte 0x2354, GetCrossoverBattleCount
 	.4byte 0x237A, FUN_0807b620
 	.4byte 0x2502, Demo_Resume
 	.4byte 0x2571, FUN_080ef584
@@ -122,7 +122,7 @@ gSubroutineTable:
 	.4byte 0x320C, FUN_0809e3a0
 	.4byte 0x3215, FUN_081d0c38
 	.4byte 0x329B, Entity329B_Create
-	.4byte 0x3361, FUN_080c13a4
+	.4byte 0x3361, Entity3361_Create
 	.4byte 0x33AA, VM_Sub33AA
 	.4byte 0x33C4, FUN_081df814
 	.4byte 0x3469, VM_Random
@@ -153,7 +153,7 @@ gSubroutineTable:
 	.4byte 0x3E93, FUN_0823d408
 	.4byte 0x3EA2, FUN_08240550
 	.4byte 0x3ED0, FUN_08240680
-	.4byte 0x3F3B, FUN_0823d700
+	.4byte 0x3F3B, GetCrossoverBattleWins
 	.4byte 0x3F4B, VM_UnlockPhoto
 	.4byte 0x3F96, FUN_0820a938
 	.4byte 0x3F99, EnemyOctopus_Create
@@ -354,7 +354,7 @@ gSubroutineTable:
 	.4byte 0x8AAB, Entity8AAB_Create
 	.4byte 0x8AF6, Entity8AF6_Create
 	.4byte 0x8B67, FUN_0801fedc
-	.4byte 0x8B8E, FUN_081e857c
+	.4byte 0x8B8E, Entity8B8E_Create
 	.4byte 0x8C35, EnemyBombGolem_Create
 	.4byte 0x8CC7, FUN_081d8a98
 	.4byte 0x8CFE, FUN_0807b5f8
@@ -366,14 +366,14 @@ gSubroutineTable:
 	.4byte 0x8ECD, WeatherManager_Create
 	.4byte 0x8F41, TextBox_SetBgPlttScripted
 	.4byte 0x8FA3, FUN_0807d1c0
-	.4byte 0x904B, FUN_0823d6bc
+	.4byte 0x904B, SetCrossoverPoint
 	.4byte 0x9053, VM_Sub9053
 	.4byte 0x90B4, FUN_080077a8
 	.4byte 0x9146, FUN_0823e46c
 	.4byte 0x920F, FUN_08044310
 	.4byte 0x9284, CrossoverLobby_Create
 	.4byte 0x92BE, Entity92BE_Create
-	.4byte 0x92ED, FUN_081e232c
+	.4byte 0x92ED, Entity92ED_Create
 	.4byte 0x930F, TextBox_SetRectScripted
 	.4byte 0x9311, FUN_080ef534
 	.4byte 0x933C, Player_MoveTo
@@ -406,7 +406,7 @@ gSubroutineTable:
 	.4byte 0x9FB7, FUN_08091684
 	.4byte 0x9FFD, FUN_0807d298
 	.4byte 0xA062, VM_SubA062
-	.4byte 0xA0A6, FUN_081e2280
+	.4byte 0xA0A6, EntityA0A6_Create
 	.4byte 0xA133, FUN_0820a480
 	.4byte 0xA16F, ElevatorController_Create
 	.4byte 0xA1D7, FUN_0819aa08
@@ -458,7 +458,7 @@ gSubroutineTable:
 	.4byte 0xB3D1, EntityB3D1_Create
 	.4byte 0xB3D7, FUN_080eefec
 	.4byte 0xB426, TitleCard_Create
-	.4byte 0xB45F, FUN_0823d6b0
+	.4byte 0xB45F, GetCrossoverPoint
 	.4byte 0xB47E, FUN_080a4fac
 	.4byte 0xB4B4, VM_SubB4B4
 	.4byte 0xB50D, FUN_08224d28
@@ -472,7 +472,7 @@ gSubroutineTable:
 	.4byte 0xB838, FUN_08224074
 	.4byte 0xB83E, FUN_0807d560
 	.4byte 0xB85F, LinkBattleResult_Create
-	.4byte 0xB87B, FUN_080c2640
+	.4byte 0xB87B, EntityB87B_Create
 	.4byte 0xB88C, EntityB88C_Create
 	.4byte 0xB8B9, MoverList_Create
 	.4byte 0xB8C7, FUN_08005034
@@ -537,7 +537,7 @@ gSubroutineTable:
 	.4byte 0xD3A9, EntityD3A9_Create
 	.4byte 0xD401, TextBox_SetPendingLineScripted
 	.4byte 0xD40E, FUN_0807da18
-	.4byte 0xD438, FUN_08055b0c
+	.4byte 0xD438, EntityD438_Create
 	.4byte 0xD4B5, FUN_0807b174
 	.4byte 0xD4E3, FUN_0801fb48
 	.4byte 0xD53D, EntityD53D_Create
@@ -556,7 +556,7 @@ gSubroutineTable:
 	.4byte 0xDA0B, EntityDA0B_Create
 	.4byte 0xDA19, FUN_08090ee0
 	.4byte 0xDA5A, FUN_08234be4
-	.4byte 0xDAA4, FUN_0823d680
+	.4byte 0xDAA4, GetPrefecture
 	.4byte 0xDB6C, ScriptShadow_MoveFromScript
 	.4byte 0xDC21, EntityDC21_Create
 	.4byte 0xDD0E, FUN_0807b3e0
@@ -574,7 +574,7 @@ gSubroutineTable:
 	.4byte 0xE02A, FUN_08004a04
 	.4byte 0xE02E, EntityE02E_Create
 	.4byte 0xE06A, EntityE06A_Create
-	.4byte 0xE083, FUN_08243558
+	.4byte 0xE083, UnlockMagicScripted
 	.4byte 0xE0A5, FUN_0800a458
 	.4byte 0xE0E1, FUN_080e0248
 	.4byte 0xE131, EnemyBee_Create
@@ -608,11 +608,11 @@ gSubroutineTable:
 	.4byte 0xEC96, EntityEC96_Create
 	.4byte 0xED07, BreakableManager_Create
 	.4byte 0xED1F, FUN_080a59e0
-	.4byte 0xED2E, FUN_0823d68c
+	.4byte 0xED2E, IsCrossoverUnlocked
 	.4byte 0xEDE2, FUN_0823d1d8
 	.4byte 0xEE18, FUN_08240668
 	.4byte 0xEF19, EntityA628_ActivateScripted
-	.4byte 0xEF66, FUN_080a1664
+	.4byte 0xEF66, EntityEF66_Create
 	.4byte 0xEF6F, EntityEF6F_Create
 	.4byte 0xEFD1, FUN_0809c63c
 	.4byte 0xEFE6, FUN_0807d198

@@ -18,27 +18,27 @@ _08238360:
 	bge _08238382
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_082382ec
+	bl Sio_SetPacketError
 	b _082383D4
 _08238382:
 	adds r0, r4, #0
-	bl FUN_082381fc
+	bl SioFrame_VerifyChecksum
 	cmp r0, #0
 	bge _0823839E
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_08238178
+	bl SioFrameList_PushBack
 	adds r0, r5, #0
 	movs r1, #5
-	bl FUN_082382ec
+	bl Sio_SetPacketError
 	b _082383D4
 _0823839E:
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_082382f8
+	bl Sio_HandleFrame
 _082383A6:
 	adds r0, r6, #0
-	bl FUN_082381b4
+	bl SioFrameList_First
 	adds r4, r0, #0
 	cmp r4, #0
 	bne _08238360
@@ -54,15 +54,15 @@ _082383C0:
 	adds r0, r5, #0
 	adds r0, #0x40
 	adds r1, r4, #0
-	bl FUN_08238178
+	bl SioFrameList_PushBack
 	b _082383D4
 _082383CC:
 	adds r0, r7, #0
 	adds r1, r4, #0
-	bl FUN_08238178
+	bl SioFrameList_PushBack
 _082383D4:
 	adds r0, r5, #0
-	bl FUN_082381b4
+	bl SioFrameList_First
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _082383FA
@@ -76,7 +76,7 @@ _082383D4:
 	bge _082383B4
 	adds r0, r5, #0
 	movs r1, #6
-	bl FUN_082382ec
+	bl Sio_SetPacketError
 _082383FA:
 	pop {r4, r5, r6, r7}
 	pop {r0}

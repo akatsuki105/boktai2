@@ -38,10 +38,10 @@ typedef struct Entity9A9F {
   u8 unk_38[4];                                // 0x038
   s32 unk_3c;                                  // 0x03C, '.L=5000'
   u8 unk_40[2];                                // 0x040
-  u16 unk_42;                                  // 0x042, FUN_081dfa98 が FUN_08238e14 に渡す
-  u16* unk_44;                                 // 0x044, Create が unk_6c を指す, FUN_081dfa98 が FUN_08238da8 に渡す
-  s32 unk_48;                                  // 0x048, Create は -1, FUN_08238e14 の戻り値
-  s32 unk_4c;                                  // 0x04C, Create は -1, FUN_08238da8 の戻り値, -3 を再試行の合図にする
+  u16 unk_42;                                  // 0x042, FUN_081dfa98 が Sio_SetSendData に渡す
+  u16* unk_44;                                 // 0x044, Create が unk_6c を指す, FUN_081dfa98 が Sio_GetRecvData に渡す
+  s32 unk_48;                                  // 0x048, Create は -1, Sio_SetSendData の戻り値
+  s32 unk_4c;                                  // 0x04C, Create は -1, Sio_GetRecvData の戻り値, -3 を再試行の合図にする
   u8 unk_50;                                   // 0x050, Create が 0 を入れる
   u8 unk_51;                                   // 0x051, Create が 1 を入れる
   u8 unk_52;                                   // 0x052, Create が 0 を入れる
@@ -95,6 +95,8 @@ typedef struct Entity9A9F {
 static_assert(sizeof(Entity9A9F) == 756);
 
 extern Entity9A9F* gEntity9A9F;  // 0x03002C68
+
+void FUN_081df8f0(s32 val);
 
 // 自分が何番目の参加者かを返す, セッションが無ければ -1
 static inline s32 Entity9A9F_GetPlayerIdx(void) {

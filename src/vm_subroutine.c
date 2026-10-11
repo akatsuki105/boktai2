@@ -3,7 +3,7 @@
 #include "global.h"
 #include "vm.h"
 
-IWRAM_DATA u16 gSubroutineCount = 0;  // 0x030016F4, このゲームでは 642
+static u16 sSubroutineCount;  // 0x030016F4, このゲームでは 642
 
 const ALIGNED(4) u8 u8_ARRAY_085a9108[256] = {0x0};  // 0x085A9108
 
@@ -16,9 +16,9 @@ const u32 Time085aa620 = 1089259575;  // 2004-07-09 18:04:39 UTC
 // gSubroutineTable の 要素数を数える (このゲームでは 642 になる)
 void VM_CountSubroutine(void) {
   Subroutine* cur;
-  gSubroutineCount = 0;
+  sSubroutineCount = 0;
   for (cur = &gSubroutineTable[0]; cur->fn.fn != NULL; cur++) {
-    gSubroutineCount++;
+    sSubroutineCount++;
   }
 }
 
@@ -46,6 +46,6 @@ static void* VM_GetSubroutine_Internal(u32 subroutineID, Subroutine* arr, s32 st
 }
 
 void* VM_GetSubroutine(u32 subroutineID) {
-  void* fn = VM_GetSubroutine_Internal(subroutineID, gSubroutineTable, 0, gSubroutineCount);
+  void* fn = VM_GetSubroutine_Internal(subroutineID, gSubroutineTable, 0, sSubroutineCount);
   return fn;
 }

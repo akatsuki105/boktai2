@@ -29,9 +29,7 @@ typedef struct Taiyo {
 } Taiyo;
 static_assert(sizeof(Taiyo) == 48);
 
-IWRAM_DATA Taiyo* gTaiyo = NULL;  // 0x03001708
-
-IWRAM_DATA u32 u32_0300170c = 0;  // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
+static Taiyo* gTaiyo;  // 0x03001708
 
 COMMON_DATA u16 u16_03004864 = 0;
 COMMON_DATA ALIGNED(4) u16 gDebugLx = 0;                // 0x03004868
@@ -47,10 +45,6 @@ const u8 u8_ARRAY_08dbd798[6][2] = {
     {1, 2},
     {2, 2},
 };  // 0x08DBD798
-
-static const u16 sGaugeMaxLx[11] = {0, 5, 12, 22, 34, 49, 66, 86, 109, 139, 140};  // 0x08DBD7A4
-
-static const u16 sGaugeMinLx[11] = {0, 1, 6, 13, 23, 35, 50, 67, 87, 110, 140};  // 0x08DBD7BA
 
 // 太陽光まわりを初期状態に戻す
 NON_MATCH void UNUSED Taiyo_Reset(void) {
@@ -136,10 +130,16 @@ s32 Taiyo_LxToGauge(s32 lx) {
 }
 
 // その太陽ゲージに収まる lx の上限
-static s32 GetSunGaugeMaxLx(s32 sunGauge) { return sGaugeMaxLx[sunGauge]; }
+static s32 GetSunGaugeMaxLx(s32 sunGauge) {
+  static const u16 sGaugeMaxLx[11] = {0, 5, 12, 22, 34, 49, 66, 86, 109, 139, 140};  // 0x08DBD7A4
+  return sGaugeMaxLx[sunGauge];
+}
 
 // その太陽ゲージに収まる lx の下限
-static s32 GetSunGaugeMinLx(s32 sunGauge) { return sGaugeMinLx[sunGauge]; }
+static s32 GetSunGaugeMinLx(s32 sunGauge) {
+  static const u16 sGaugeMinLx[11] = {0, 1, 6, 13, 23, 35, 50, 67, 87, 110, 140};  // 0x08DBD7BA
+  return sGaugeMinLx[sunGauge];
+}
 
 // 生の lx に環境要因を掛ける, ライジングサン、天候、屋内判定でここが最終的な明るさを決める
 NON_MATCH s32 ApplyLxModifiers(s32 lx) {

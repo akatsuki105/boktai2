@@ -11,12 +11,13 @@ static_assert(sizeof(MapAreaManager) == 88);
 
 bool8 Map_IsPosInZoneByID(u16 zoneID, Vec3* pos);
 
-IWRAM_DATA MapAreaManager* gMapAreaManager = NULL;  // 0x03001704
-COMMON_DATA u32 u32_03004860 = 0;                   // 0x03004860
+static MapAreaManager* sMapAreaManager;  // 0x03001704
+
+COMMON_DATA u32 u32_03004860 = 0;  // 0x03004860
 
 // pos がどのマップエリアの矩形群に入っているかを調べ、そのエリアIDを返す
 s32 GetMapAreaAt(Vec3* pos) {
-  MapAreaManager* p = gMapAreaManager;
+  MapAreaManager* p = sMapAreaManager;
   s32 i;
 
   if (p == NULL) {
@@ -36,7 +37,7 @@ s32 GetMapAreaAt(Vec3* pos) {
 s32 MapAreaManager_Update(MapAreaManager* p) { return 0; }
 
 s32 MapAreaManager_Destroy(MapAreaManager* p) {
-  gMapAreaManager = NULL;
+  sMapAreaManager = NULL;
   u32_03004860 = 0;
   return 0;
 }
@@ -50,7 +51,7 @@ s32 MapAreaManager_Init(MapAreaManager* p, u32 unused1, u32 unused2) {
       *area++ = VM_GetValue();
     }
   }
-  gMapAreaManager = p;
+  sMapAreaManager = p;
   return 0;
 }
 

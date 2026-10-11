@@ -24,11 +24,11 @@ typedef u8 EntityKind;
 #define ENTITY_KINDS 14
 
 // EntityList.disableFlags
-typedef u32 EntityDisableFlags;
-#define ENTITY_DISABLE_0 (1 << 0)
-#define ENTITY_DISABLE_1 (1 << 1)
-#define ENTITY_DISABLE_2 (1 << 2)
-#define ENTITY_DISABLE_3 (1 << 3)
+typedef u32 EntityDisableFlags;    // セットされるとき
+#define ENTITY_DISABLE_0 (1 << 0)  //
+#define ENTITY_DISABLE_1 (1 << 1)  //
+#define ENTITY_DISABLE_2 (1 << 2)  // クイックチェンジ, スタートメニュー中 (ショップなどではセットされない)
+#define ENTITY_DISABLE_3 (1 << 3)  // 会話中
 
 // Entity.unk_12
 #define E_FLAG_DELETE (1 << 0)  // 1 にすると Entity を削除する
@@ -62,7 +62,7 @@ typedef struct {
 // ------------------------------------------------------------------------------------------------------------------------------------
 
 extern EntityList gEntityManager[ENTITY_KINDS];
-extern EntityDisableFlags gEntityDisableFlags;
+extern EntityDisableFlags gEntityDisableFlags;  // 0x030044BC
 
 // --------------------------------------------
 

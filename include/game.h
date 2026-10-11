@@ -62,11 +62,11 @@ typedef struct {
   s32 exp;                       // 0x050, 総経験値, 999999 で頭打ち
   u32 unlockedMagic;             // 0x054
   s16 equippedWeaponIdx;         // 0x058
-  s16 equippedMagicIdx;          // 0x05A, 登録された4つの魔法のうち、フィールドで選択している魔法のインデックス(0~3)
+  s16 equippedMagicIdx;          // 0x05A, registeredMagic[equippedMagicIdx] が現在装備中の魔法ID
   slot16_t armor;                // 0x05C
-  s16 unk_5e;                    // 0x05E, FUN_08065110 がサバタの魔法番号を選ぶときに 0 かどうかを見る
+  s16 unk_5e;                    // 0x05E, Player_GetEquippedMagic がサバタの魔法番号を選ぶときに 0 かどうかを見る
   slot16_t registeredWeapon[4];  // 0x060, 剣槍槌銃, 登録武器のIDではなく、武器インベントリのどこにある武器を登録しているかのインデックス(0~15)が入る
-  magic16_t registeredMagic[4];  // 0x068
+  magic16_t registeredMagic[4];  // 0x068, 登録中の魔法4種のID
   item16_t items[16 + 16 + 16];  // 0x070
   s16 rotTimer[16 + 16 + 16];    // 0x0D0, if MSB is set, item is chocolate-covered
   item16_t valuables[16];        // 0x130
@@ -120,8 +120,10 @@ typedef struct {
   u8 unk_2b8[8];                 // 0x2B8
   u8 unk_2c0[8];                 // 0x2C0
   s32 unk_2c8[2];                // 0x2C8, FUN_0807a8e0 が isSabata で引いて 0 を書く
-  u8 unk_2d0[16];                // 0x2D0
-  u32 weaponFrames[5];           // 0x2E0, 剣槍槌拳銃 の使用フレーム数, これを元に style が決まる (攻撃時のみでなく、その武器で歩いているだけでもカウントされる)
+  u8 unk_2d0[8];                 // 0x2D0
+  s32 solarFormFrames;           // 0x2D8, 赤ジャンゴのままボタンを押していたフレーム数, s32 の根拠: Player_CountStyleFrames が 0x7FFFFFFE と符号付き比較する
+  s32 darkFormFrames;            // 0x2DC, 赤ジャンゴ以外(サバタを除く)でボタンを押していたフレーム数, s32 の根拠は同上
+  s32 weaponFrames[5];           // 0x2E0, 剣槍槌拳銃 の使用フレーム数, これを元に style が決まる (攻撃時のみでなく、その武器で歩いているだけでもカウントされる)
   u8 unk_2f4[4];                 // 0x2F4
   u16 side;                      // 0x2F8, 赤(Solar)寄りか黒(Dark)寄りか, 次の3つのどれかを取る, 0: 赤, 1: 中立, 2: 黒
   u16 style;                     // 0x2FA, プレイ中、最も使用フレーム数が多かった攻撃種別, see AttackStyle
@@ -141,10 +143,10 @@ typedef struct {
   u32 solarStand;                // 0x3BC
   u8 name[16];                   // 0x3C0, JP: 5文字, EN: 9文字
   Weapon weapons[16 + 16 + 16];  // 0x3D0
-  u16 solarBank;                 // 0x910
-  u8 unk_912[2];                 // 0x912
-  u16 linkBattles;               // 0x914, 根拠: bokpass
-  s16 unk_916;                   // 0x916, FUN_081dd25c が通信参加のたびに 1 増やす (9999 で頭打ち), linkBattles の隣
+  u16 solarBank;                 // 0x910, 太陽バンクの残高(= 所持金)
+  u16 linkBattlePoint;           // 0x912, 対戦ポイント
+  s16 linkBattleCount;           // 0x914, 通信対戦の参加回数 (勝率計算に使用)
+  s16 linkBattleWins;            // 0x916, 通信対戦の勝利回数
   u8 unk_918[8];                 // 0x918, bokpass に記述があるが、用途も型も不明
   u32 weaponDex[2];              // 0x920
 

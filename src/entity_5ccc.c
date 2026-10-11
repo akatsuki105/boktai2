@@ -27,7 +27,7 @@ static_assert(sizeof(SkylightBeam) == 168);
 
 // 天窓の光を最大16個持ち、プレイヤーが光の中にいる間 太陽ゲージに応じて ENE を回復させる
 // おそらく、太陽光を浴びている状態の判定と浴びている時間に関するEntity, 天窓の情報も管理
-typedef struct Entity5CCC {
+typedef struct {
   Entity e;                // 0x000, ENTITY_UNK_9
   Player* player;          // 0x018
   bool16 unk_1c;           // 0x01C
@@ -45,7 +45,8 @@ typedef struct Entity5CCC {
 } Entity5CCC;
 static_assert(sizeof(Entity5CCC) == 2740);
 
-extern Entity5CCC* gEntity5CCC;  // 0x03000140
+IWRAM_DATA Entity5CCC* gEntity5CCC = NULL;  // 0x03000140
+
 extern u16 u16_03002bf0;
 
 void FUN_0809df6c(void) { gEntity5CCC = NULL; }

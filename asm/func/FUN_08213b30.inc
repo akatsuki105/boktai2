@@ -8,7 +8,7 @@
 	movs r2, #0x10
 	movs r3, #2
 	bl FUN_0821b28c
-	bl FUN_0823cd38
+	bl GetPlayerName
 	adds r2, r0, #0
 	movs r0, #9
 	movs r1, #5

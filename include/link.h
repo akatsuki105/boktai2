@@ -3,23 +3,15 @@
 
 #include "gba/gba.h"
 
-extern s32 gSioRecvWriteIdx;
-extern s32 gSioRecvReadIdx;
-extern s32 gSioRecvCount;
-extern s32 gSioSendWriteIdx;
-extern s32 gSioSendReadIdx;
-extern s32 gSioSendCount;
-extern u8 gSioRecvBuf[64];
-extern u8 gSioSendBuf[64];
 extern u16 gSioParentRecv;
-extern s32 gSioTimerIntrCount;
-extern s32 gSioSerialIntrCount;
-extern s32 gSioMultiId;
-extern u16 gSioChildRecv;
-extern s32 gSioStatus;
 
 void Sio_Reset(void);
 s32 Sio_Stop(void);
-void FUN_08238bf4(void);
+s32 Sio_Connect(void);
+s32 Sio_Disconnect(void);
+void Sio_StartTransferIfIdle(void);
+s32 Sio_SetSendData(u16 data);
+s32 Sio_GetRecvData(u16* dst);
+s32 Sio_PeekRecvData(u16* dst);
 
 #endif  // __INCLUDE_LINK_H__

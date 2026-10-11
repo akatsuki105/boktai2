@@ -1,7 +1,7 @@
 	push {r4, r5, r6, r7, lr}
 	adds r6, r0, #0
 	adds r7, r1, #0
-	ldr r0, _0823807C @ =0x030046D4
+	ldr r0, _0823807C @ =gSioStatus
 	ldr r0, [r0]
 	cmp r0, #0
 	blt _0823808E
@@ -49,7 +49,7 @@ _08238062:
 	adds r0, r7, #0
 	b _0823808E
 	.align 2, 0
-_0823807C: .4byte 0x030046D4
+_0823807C: .4byte gSioStatus
 _08238080: .4byte 0x03000794
 _08238084: .4byte 0x0300079C
 _08238088: .4byte 0x030007E0

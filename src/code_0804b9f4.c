@@ -45,7 +45,9 @@ typedef struct {
   u8 unk_48[0x50 - 0x48];
   u8 unk_50[0x6C - 0x50];  // 0x50, 根拠: FUN_0804e61c がこの位置のアドレスを返す
   u16 unk_6c;              // 0x6C, 根拠: FUN_0804e638 が返す
-  u8 unk_6e[0xEA - 0x6E];
+  u8 unk_6e[0xC4 - 0x6E];
+  u32 unk_c4[3];  // 0xC4, FUN_0804e55c が 12バイトまとめて引数のバッファに写す
+  u8 unk_d0[0xEA - 0xD0];
   u16 unk_ea;     // 0xEA, 根拠: FUN_0804ce0c が 0xFFFF を入れる
   u16 unk_ec;     // 0xEC, 根拠: FUN_0804bb70 が bit14 を見て unk_ee を書き込む
   u16 unk_ee;     // 0xEE, 根拠: FUN_0804bb68 が書く
@@ -788,7 +790,13 @@ void FUN_0804e4dc(void* param_1, Entity* param_2, EntityFunc* param_3, EntityFun
 
 NAKED s32 FUN_0804e514(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e514.inc"); }
 
-NAKED s32 FUN_0804e55c(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e55c.inc"); }
+s32 FUN_0804e55c(void* dest) {
+  if (gEntity0804e2c0 == NULL) {
+    return -1;
+  }
+  CpuCopy32(gEntity0804e2c0->unk_c4, dest, 12);
+  return 0;
+}
 
 void FUN_0804e584(s32 val) {
   if (gEntity0804e2c0 != NULL) {

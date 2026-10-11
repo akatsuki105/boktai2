@@ -17,7 +17,7 @@ typedef struct {
 } Entity794C;
 static_assert(sizeof(Entity794C) == 216);
 
-IWRAM_DATA Entity794C* gEntity794C = NULL;  // 0x03001700
+static Entity794C* sEntity794C;  // 0x03001700
 
 // 2点が size1 + size2 の正方範囲に収まっているか
 bool32 BoxesOverlap(s32 x1, s32 y1, s32 size1, s32 x2, s32 y2, s32 size2) {
@@ -49,4 +49,4 @@ NAKED void FUN_08240f94(void) { INCFUNC("asm/func/FUN_08240f94.inc"); }
 
 NAKED void FUN_08240fdc(void) { INCFUNC("asm/func/FUN_08240fdc.inc"); }
 
-void FUN_08241000(void) { gEntity794C = NULL; }
+void FUN_08241000(void) { sEntity794C = NULL; }

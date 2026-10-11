@@ -42,7 +42,7 @@ _082435FA:
 	ble _0824361A
 _0824360C:
 	bl VM_GetValue
-	bl magic_082434f0
+	bl UnlockMagic
 	subs r4, #1
 	cmp r4, #0
 	bne _0824360C

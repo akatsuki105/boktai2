@@ -40,7 +40,7 @@
 	bl FUN_081f8a74
 	bl FUN_081f95e8
 	bl FUN_081f9d04
-	bl FUN_081e2374
+	bl LinkShopManager_ClearGlobal
 	bl FUN_081dc688
 	bl FUN_081e0c14
 	bl FUN_081fa1b0

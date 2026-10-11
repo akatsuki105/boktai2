@@ -207,7 +207,7 @@ static inline void UpdateSunTimers(Clock* c) {
   c->untilSunrise.hour = sunriseHour;
   c->untilSunrise.minute = sunriseMinute;
 
-  if ((u8)(c->spanOfTime - 1) <= 2) {
+  if (c->spanOfTime >= TIME_MORNING && c->spanOfTime <= TIME_SUNSET) {
     blend = (60 - sunsetMinute) << 6;
   } else {
     blend = (60 - sunriseMinute) << 6;
@@ -572,11 +572,11 @@ static bool32 ReadRtcDate(void) {
       status = -2;
       gRTC.year = 0;
     }
-    if (((u8)(gRTC.month - 1) > 0x11) || ((gRTC.month & 0xF) > 9)) {
+    if ((gRTC.month == 0) || (gRTC.month > 0x12) || ((gRTC.month & 0xF) > 9)) {
       status = -3;
       gRTC.month = 1;
     }
-    if (((u8)(gRTC.day - 1) > 0x30) || ((gRTC.day & 0xF) > 9)) {
+    if ((gRTC.day == 0) || (gRTC.day > 0x31) || ((gRTC.day & 0xF) > 9)) {
       status = -4;
       gRTC.day = 1;
     }

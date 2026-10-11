@@ -103,4 +103,7 @@ static_assert(sizeof(ImmortalCoffin) == 1052);
 
 extern ImmortalCoffin* gImmortalCoffin;  // 0x03002C00
 
+bool32 FUN_08086a28(Vec3* pos);
+void FUN_08086a4c(Vec3* pos);
+
 #endif  // __INCLUDE_IMMORTAL_COFFIN_H__

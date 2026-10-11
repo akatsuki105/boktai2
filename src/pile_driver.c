@@ -22,7 +22,7 @@ const FileID FileID_ARRAY_085ad048[6] = {
 
 void FUN_080df478(void);        // src/entity_080df420.c
 void FUN_0805b1a0(unknown* p);  // src/code_08052eb8.s
-void FUN_08086b18(Vec3* pos);
+void FUN_08086b18(WorldPos* pos);
 void FUN_0823bca8(s32 n);  // src/camera.c
 
 void FUN_080ada64(EntityCBB0*);

@@ -34,4 +34,8 @@ static_assert(sizeof(SpriteHolder) == 148);  // 根拠: 0x08055e54
 // kind に応じて AuxSprite / MainSprite のパレットIDを設定する, kind == 0 なら -1
 s32 SpriteHolder_SetPlttID(SpriteHolder* p, u32 plttID);
 
+// kind に応じて AuxAnim / MainSprite のアニメを設定する, kind == 0 なら -1
+// 第4引数は実装が読まず, 呼び出し側は第7引数まで積むが実装は第6引数までしか読まない
+s32 SpriteHolder_SetAnim(SpriteHolder* p, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7);
+
 #endif  // __INCLUDE_SPRITE_H__

@@ -5,80 +5,57 @@ void VM_StoreVariable(u32 varidx, u32 val);
 u8* VM_StorePointer(u8* pc, u32 val);
 
 /**
- * @param opcode 0xA1..0xBF, https://boktaihacking.net/wiki/Bytecode#Opcode_0xa0-0xbf_(operator)
+ * @param opcode 0xA1..0xBF
  */
 s32 VM_RunOperator(u32 opcode, s32 a, s32 b) {
   switch (opcode - 1) {
-    case 0: {
+    case 0:
       return -b;
-    }
-    case 1: {
+    case 1:
       return b == 0;
-    }
-    case 2: {
+    case 2:
       return ~b;
-    }
-    case 3: {
+    case 3:
       return a + b;
-    }
-    case 4: {
+    case 4:
       return a - b;
-    }
-    case 5: {
+    case 5:
       return a * b;
-    }
-    case 6: {
+    case 6:
       return Div(a, b);
-    }
-    case 7: {
+    case 7:
       return Mod(a, b);
-    }
-    case 8: {
+    case 8:
       return a << b;
-    }
-    case 9: {
+    case 9:
       return ((u32)a) >> b;
-    }
-    case 10: {
+    case 10:
       return a == b;
-    }
-    case 11: {
+    case 11:
       return a != b;
-    }
-    case 12: {
+    case 12:
       return a < b;
-    }
-    case 13: {
+    case 13:
       return a <= b;
-    }
-    case 14: {
+    case 14:
       return a > b;
-    }
-    case 15: {
+    case 15:
       return a >= b;
-    }
-    case 16: {
+    case 16:
       return a | b;
-    }
-    case 17: {
+    case 17:
       return a & b;
-    }
-    case 18: {
+    case 18:
       return a ^ b;
-    }
-    case 19: {
+    case 19:
       return ((a != 0) || (b != 0));
-    }
-    case 20: {
+    case 20:
       return ((a != 0) && (b != 0));
-    }
-    case 22: {
+    case 22:
       return b;
-    }
     case 21:
-    default: {
+    default:
       return 0;
-    }
   }
 }
 
@@ -108,7 +85,7 @@ u32 VM_RunExpression(u8* pc) {
       if (op == 0) {
         return top[1].value;
       }
-      if (op == 0x16) {
+      if (op == 22) {
         s32 masked;
         lhsPc = top[0].lvaluePc;
         tag = *lhsPc;

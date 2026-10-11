@@ -670,7 +670,7 @@ _0821FD14:
 	cmp r0, #3
 	bls _0821FD42
 	mov r0, sb
-	bl FUN_0807849c
+	bl Player_GetDpadFacing
 	lsls r0, r0, #0x1d
 	movs r1, #0xa0
 	lsls r1, r1, #0x18

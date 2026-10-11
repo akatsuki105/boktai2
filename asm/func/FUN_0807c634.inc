@@ -111,7 +111,7 @@ _0807C700:
 	str r6, [sp, #8]
 	add r0, sp, #0xc
 	movs r2, #0
-	bl FUN_080c0fa0
+	bl Entity080c0fa0_Create
 	movs r5, #0x96
 	lsls r5, r5, #3
 	adds r0, r4, r5

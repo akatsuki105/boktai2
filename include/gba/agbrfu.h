@@ -354,11 +354,11 @@ typedef struct RFU_linkStatus_Tag {
   vu8 llf_ready_flag;                     // 次に送信するリンク層フレームが構築されているか, （rfu_constructLLFrameをコール時にこのフラグが立ち、rfu_REQ_sendDataで送信が行われるとクリアされる, ） (pret: LLFReadyFlag)
   u8 remainLLFrameSize_P;                 // 親機の時のリンク層通信フレームの残りサイズ (pret: remainLLFrameSizeParent)
   u8 remainLLFrameSize_C[RFU_CHILD_MAX];  // 子機の時の各スロット毎のリンク層通信フレームの残りサイズ (pret: remainLLFrameSizeChild)
-
-  rfuTgtData partner[RFU_CHILD_MAX];  // 親、子：接続が存在する時は、接続したスロット番号に対応した配列要素に接続相手のゲーム識別情報が格納される
-                                      // 子    ：rfu_REQ_xxxxSearchParent実行時に発見した親候補のゲーム識別情報が格納される
-  rfuTgtData my;                      // 自分のゲーム識別情報（要素slotの値は関係なし）
-} RFU_LINK_STATUS;                    // 180 Bytes
+  rfuTgtData partner[RFU_CHILD_MAX];      // 親、子：接続が存在する時は、接続したスロット番号に対応した配列要素に接続相手のゲーム識別情報が格納される
+                                          // 子    ：rfu_REQ_xxxxSearchParent実行時に発見した親候補のゲーム識別情報が格納される
+  rfuTgtData my;                          // 自分のゲーム識別情報（要素slotの値は関係なし）
+} RFU_LINK_STATUS;
+static_assert(sizeof(RFU_LINK_STATUS) == 180);
 
 #define WINDOW_COUNT 4
 

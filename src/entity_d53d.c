@@ -1,6 +1,5 @@
 #include "entity.h"
 #include "global.h"
-#include "signal_strength_icon.h"
 #include "text.h"
 #include "tilemap.h"
 #include "video.h"
@@ -33,18 +32,6 @@ s32 FUN_0804e59c(void);
 
 // 次の描画から BG を消す
 static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
-
-// 電波強度アイコンを作って表示位置を決める
-void SignalStrengthIcon_CreateAt(s32 x, s32 y) {
-  SignalStrengthIcon* p = SignalStrengthIcon_Create();
-
-  if (p != NULL) {
-    MainSprite* sprite = &p->sprite;
-
-    sprite->pos.x = x;
-    sprite->pos.y = y;
-  }
-}
 
 EntityD53D* FUN_0804ea10(void) { return gEntityD53D; }
 

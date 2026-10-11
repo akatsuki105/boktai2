@@ -7,7 +7,7 @@
 	cmp r0, #1
 	bne _0807F276
 	adds r0, r4, #0
-	bl FUN_0807f0bc
+	bl Player_CountStyleFrames
 	adds r0, r4, #0
 	bl Player_UpdateWeaponWear
 	adds r0, r4, #0
@@ -74,7 +74,7 @@ _0807F290:
 	strh r2, [r1]
 _0807F2AE:
 	adds r0, r4, #0
-	bl Player_Update_Helper_0807ee58
+	bl Player_ApplyFormRequest
 	ldr r1, _0807F324 @ =0x00000979
 	adds r5, r4, r1
 	ldrb r0, [r5]

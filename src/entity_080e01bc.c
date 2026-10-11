@@ -1,19 +1,31 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "sprite_aux.h"
 
-typedef struct Entity080e01bc {
-  Entity e;                  // ENTITY_UNK_10
-  u8 unk_18[0x1C - 0x18];    // 0x01C, まだ未解析
-  Vec3 pos;                  // 0x01C, 2本の Hitbox の位置に渡す
-  u8 unk_24[0xF4 - 0x24];    // 0x024, まだ未解析
-  HitboxData hitbox_f4;      // 0x0F4, FUN_080df880 が Hitbox_Register する
-  HitboxData hitbox_144;     // 0x144
-  u8 unk_194[3548 - 0x194];  // 0x194, まだ未解析
+typedef struct {
+  AuxSprite sprite;      // 0x00
+  u8 unk_2c[92 - 0x2C];  // 0x2C, まだ未解析
+} Entity080e01bcElem;
+static_assert(sizeof(Entity080e01bcElem) == 92);
+
+typedef struct {
+  Entity e;                     // ENTITY_UNK_10
+  u8 unk_18[0x1C - 0x18];       // 0x01C, まだ未解析
+  Vec3 pos;                     // 0x01C, 2本の Hitbox の位置に渡す
+  u8 unk_24[0x3C - 0x24];       // 0x024, まだ未解析
+  Entity080e01bcElem elems[2];  // 0x03C
+  HitboxData hitbox_f4;         // 0x0F4, FUN_080df880 が Hitbox_Register する
+  HitboxData hitbox_144;        // 0x144
+  u8 unk_194[0x1AE - 0x194];    // 0x194, まだ未解析
+  u8 unk_1ae;                   // 0x1AE
+  u8 unk_1af[0x1B2 - 0x1AF];    // 0x1AF, まだ未解析
+  u8 unk_1b2;                   // 0x1B2
+  u8 unk_1b3[3548 - 0x1B3];     // 0x1B3, まだ未解析
 } Entity080e01bc;
 static_assert(sizeof(Entity080e01bc) == 3548);
 
-extern Entity080e01bc* gEntity080e01bc;  // 0x0300017C
+IWRAM_DATA Entity080e01bc* gEntity080e01bc = NULL;  // 0x0300017C
 
 void nop_080dfa20(Entity080e01bc*, s32);
 void FUN_080dfa24(Entity080e01bc*, s32);
@@ -27,21 +39,43 @@ void (*const PTR_ARRAY_085ad364[4])(Entity080e01bc*, s32) = {
     FUN_080dfde8,
 };  // 0x085AD364
 
-const u8 u8_ARRAY_085ad374[80] = {
-    0, 0, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 3, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 0, 2, 2, 2, 2, 2, 2, 0, 0, 2, 3, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 0, 0,
-};  // 0x085AD374
-
 NAKED void FUN_080df4c4(unknown* p) { INCFUNC("asm/func/FUN_080df4c4.inc"); }
 
 NAKED void FUN_080df540(unknown* p) { INCFUNC("asm/func/FUN_080df540.inc"); }
 
 NAKED void FUN_080df6d4(unknown* param_1) { INCFUNC("asm/func/FUN_080df6d4.inc"); }
 
-NAKED void FUN_080df714(s32 param_1) { INCFUNC("asm/func/FUN_080df714.inc"); }
+void FUN_080df714(Entity080e01bc* p) {
+  s32 i;
 
-NAKED void FUN_080df730(s32 param_1, s32 param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080df730.inc"); }
+  for (i = 0; i < 2; i++) {
+    AuxSprite_Remove(&p->elems[i].sprite);
+  }
+}
 
-NAKED void FUN_080df760(s32 param_1, s32 param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080df760.inc"); }
+void FUN_080df730(s32 param_1, s32 param_2, Entity080e01bc* p) {
+  HitboxData* hb;
+
+  p->unk_1ae = 2;
+  p->unk_1b2 = 1;
+
+  hb = &p->hitbox_f4;
+  hb->flags |= HBFLAG_UNK_2;
+  hb = &p->hitbox_144;
+  hb->flags |= HBFLAG_UNK_2;
+}
+
+void FUN_080df760(s32 param_1, s32 param_2, Entity080e01bc* p) {
+  HitboxData* hb;
+
+  p->unk_1ae = 2;
+  p->unk_1b2 = 1;
+
+  hb = &p->hitbox_f4;
+  hb->flags |= HBFLAG_UNK_2;
+  hb = &p->hitbox_144;
+  hb->flags |= HBFLAG_UNK_2;
+}
 
 NAKED void FUN_080df790(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_080df790.inc"); }
 

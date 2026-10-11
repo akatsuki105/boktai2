@@ -19,7 +19,7 @@ static_assert(sizeof(LevelUpParticle) == 60);  // 根拠: LevelUpper_EmitLevelUp
 
 // 現在の経験値を確認して、レベルアップする場合はレベルアップ処理を行う
 // またその際のパーティクルやSEなどの演出処理も行う
-typedef struct LevelUpper {
+typedef struct {
   Entity e;                  // 0x00, ENTITY_UNK_9
   AuxSprite sprite;          // 0x18, gfx を指す描画ノード, 根拠: LevelUpper_InitSprite / LevelUpper_Destroy
   AuxSpriteGfx gfx;          // 0x44, 根拠: LevelUpper_InitSprite
@@ -36,7 +36,7 @@ typedef struct LevelUpper {
 } LevelUpper;
 static_assert(sizeof(LevelUpper) == 608);
 
-extern LevelUpper* gLevelUpper;  // 0x03000154
+IWRAM_DATA LevelUpper* gLevelUpper = NULL;  // 0x03000154
 
 // 次のレベルになるために必要な"総"経験値量を返す
 u32 GetNextLvExp(LevelUpper* p, s32 lv) {

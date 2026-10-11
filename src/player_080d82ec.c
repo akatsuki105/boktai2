@@ -28,8 +28,8 @@ const u16 gMagicCosts_085ad160[MAGIC_NUM] = {
     [MAGIC_EARTH] = 10,
     [MAGIC_TRANSFORM] = 0,
     [MAGIC_RISING_SUN] = 100,
-    [MAGIC_UNK_8] = 10,
-    [MAGIC_UNK_9] = 100,
+    [MAGIC_ZERO_SHIFT] = 10,
+    [MAGIC_BLACK_SUN] = 100,
     [MAGIC_FREEZE] = 0,
     [MAGIC_DASH] = 0,
     [MAGIC_HEALING] = 0,
@@ -198,7 +198,7 @@ s32 Player080d82ec_Destroy(Player* p) {
   EnemyTargetManager_Remove(&p->target);
   MainSprite_Remove(&p->sprite_88);
   AuxSprite_Remove(&p->sprite_e8);
-  Hitbox_Unregister(&p->unk_16c);
+  Hitbox_Unregister(&p->hurtbox);
   Mover_Unlink(&p->mover);
   FUN_080ce330(p);
   FUN_080cc43c(p);

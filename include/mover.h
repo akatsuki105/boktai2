@@ -21,14 +21,14 @@ static_assert(sizeof(MoverTile) == 16);
 
 // ワールド上を移動する本体, プレイヤー・エネミー・多くのオブジェクトが自分の中に1個持つ
 // 動かす側は delta に移動量を積むだけで、Mover_ApplyMove が衝突と経路を見て pos を進め、スプライトへ書き戻してから delta を捨てる
-// 生成時に Mover_Link でひとつのリストに繋がれ、id で引ける (gMoverList が head/tail を持つ)
+// 生成時に Mover_Link でひとつのリストに繋がれ、id で引ける (sMoverList が head/tail を持つ)
 typedef struct Mover {
   u16 id;                         // 0x00, Mover_FindByID の検索キー
   u16 unk_2;                      // 0x02, フラグっぽい
   u8 unk_4;                       // 0x04, 衝突解決 FUN_0823349c の第6引数
   u8 angle;                       // 0x05, 8bit の向き, gSineTable の添字
   u8 unk_6[2];                    // 0x06, 読み手も書き手も未発見, padding?
-  Vec3 pos;                       // 0x08, ワールド座標, 1タイル = 256
+  WorldPos pos;                   // 0x08, ワールド座標
   Vec3 delta;                     // 0x10, そのフレームの移動要求, Mover_ApplyMove が pos に適用してから 0 に戻す
   MoverTile* tile;                // 0x18, 踏んでいるタイルの控え, 非NULLなら Mover_ApplyMove が衝突解決を通す
   u16 sizeX;                      // 0x1C, 衝突判定の X 方向の広がり, FUN_0823349c が pos.x に足して角を見る

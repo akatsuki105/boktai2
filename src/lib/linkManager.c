@@ -54,6 +54,11 @@ static u8 rfu_LMAN_linkWatcher(u16 REQ_commandID);
 static void rfu_LMAN_settingPCSWITCH(u32 rand);
 static void rfu_LMAN_managerChangeAgbClockMaster();
 
+//-----------------------------------------------------------------
+// グローバル変数定義
+//-----------------------------------------------------------------
+LINK_MANAGER lman;  // 0x03004740
+
 u32 rfu_LMAN_REQBN_softReset_and_checkID() {
   u32 id;
 

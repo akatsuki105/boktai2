@@ -5,7 +5,6 @@
 #include "mover.h"
 #include "sprite.h"
 
-// 8枠ぶんの要素, activeMask のビットが立っている枠だけ生きている
 typedef struct {
   AuxSprite spr;      // 0x00, _Destroy が AuxSprite_Remove に渡す
   u8 unk_2c[0x14];    // 0x2C
@@ -16,7 +15,7 @@ typedef struct {
 } Entity080db520Elem;
 static_assert(sizeof(Entity080db520Elem) == 164);
 
-typedef struct Entity080db520 {
+typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_10
   AuxSpriteGfx gfx;             // 0x018
   AuxAnimFile* anim;            // 0x034
@@ -25,9 +24,9 @@ typedef struct Entity080db520 {
 } Entity080db520;
 static_assert(sizeof(Entity080db520) == 1372);
 
-extern Entity080db520* gEntity080db520;  // 0x03000160
+IWRAM_DATA Entity080db520* gEntity080db520 = NULL;  // 0x03000160
 
-const u8 u8_ARRAY_085ad310[4] = {0x8, 0x4, 0x2, 0x1};  // 0x085AD310
+const u8 u8_ARRAY_085ad310[4] = {8, 4, 2, 1};  // 0x085AD310
 
 NAKED s32 FUN_080da9c4(Entity080db520* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080da9c4.inc"); }
 

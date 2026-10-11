@@ -13,13 +13,13 @@ typedef struct Eff082473e0 {
 } Eff082473e0;
 static_assert(sizeof(Eff082473e0) == 36);
 
-IWRAM_DATA Eff082473e0* gEff082473e0 = NULL;  // .bss, 0x030026B0
+static Eff082473e0* sEff082473e0;  // 0x030026B0
 
 const u16 u16_ARRAY_08dbd810[4] = {3, 3, 1, 2};  // 0x08DBD810
 
 s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
 
-void Eff082473e0_ClearGlobal(void) { gEff082473e0 = NULL; }
+void Eff082473e0_ClearGlobal(void) { sEff082473e0 = NULL; }
 
 // kind 0 の更新, 何もしない
 void Eff082473e0Emitter_UpdateIdle(Eff082473e0* p, Eff082473e0Emitter* e) {}
@@ -106,7 +106,7 @@ missing Eff082473e0Emitter_Reset(Eff082473e0Emitter* e) {
   e->activeCount = 0;
   e->unk_3 = 0;
   e->kind = 0;
-  e->fn_12c = Eff082473e0Emitter_UpdateIdle;
+  e->update = Eff082473e0Emitter_UpdateIdle;
   for (i = 0; i < 4; i++) {
     e->ptcls[i].state = 0;
     e->ptcls[i].unk_2 = 0;
@@ -199,19 +199,19 @@ s32 Eff082473e0_Update(Eff082473e0* p) {
   Eff082473e0Emitter* e = p->emitters;
 
   while (e != NULL) {
-    e->fn_12c(p, e);
+    e->update(p, e);
     e = e->next;
   }
   return 0;
 }
 
 s32 Eff082473e0_Destroy(Eff082473e0* _) {
-  gEff082473e0 = NULL;
+  sEff082473e0 = NULL;
   return 0;
 }
 
 s32 Eff082473e0_Init(Eff082473e0* p, u32 _) {
-  gEff082473e0 = p;
+  sEff082473e0 = p;
   p->emitters = NULL;
   p->group = GetParticleGroup(PTCL_GROUP_0);
   p->anim = GetFile(DIR_ANIMATION, ANIM_D1B8);
@@ -219,7 +219,7 @@ s32 Eff082473e0_Init(Eff082473e0* p, u32 _) {
 }
 
 Eff082473e0* Eff082473e0_Create(u32 unused1, u32 unused2) {
-  if (gEff082473e0 == NULL) {
+  if (sEff082473e0 == NULL) {
     Eff082473e0* p = CreateEntity(ENTITY_UNK_9, sizeof(Eff082473e0));
     if (p != NULL) {
       SetEntityRoutine(p, Eff082473e0_Update, Eff082473e0_Destroy);
@@ -230,12 +230,12 @@ Eff082473e0* Eff082473e0_Create(u32 unused1, u32 unused2) {
     }
     return p;
   }
-  return gEff082473e0;
+  return sEff082473e0;
 }
 
 // エミッタを初期化して Eff082473e0 に登録する, エンティティがまだ無ければ先に作る
 s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5) {
-  Eff082473e0* p = gEff082473e0;
+  Eff082473e0* p = sEff082473e0;
   s32 i;
 
   if (p == NULL) {
@@ -251,15 +251,15 @@ s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_
   e->kind = kind;
   e->unk_4 = unk_4;
   e->unk_5 = unk_5;
-  e->fn_12c = Eff082473e0Emitter_UpdateIdle;
+  e->update = Eff082473e0Emitter_UpdateIdle;
   for (i = 0; i < 4; i++) {
     e->ptcls[i].state = 0;
     e->ptcls[i].unk_2 = 0;
     e->ptcls[i].pos.x = 0, e->ptcls[i].pos.y = 0, e->ptcls[i].pos.z = 0;
-    Particle_Add(&e->ptcls[i].ptcl, gEff082473e0->group, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
+    Particle_Add(&e->ptcls[i].ptcl, sEff082473e0->group, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     Particle_SetOffset(&e->ptcls[i].ptcl, -8, -8);
     e->ptcls[i].ptcl.priority = 2;
-    AuxAnim_SetAnim(&e->ptcls[i].anim, gEff082473e0->anim, 0, 0, 0);
+    AuxAnim_SetAnim(&e->ptcls[i].anim, sEff082473e0->anim, 0, 0, 0);
   }
   Eff082473e0Emitter_Register(p, e);
   return 0;
@@ -272,8 +272,8 @@ s32 Eff082473e0Emitter_Destroy(Eff082473e0Emitter* e) {
   for (i = 0; i < 4; i++) {
     Particle_Remove(&e->ptcls[i].ptcl);
   }
-  if (gEff082473e0 != NULL) {
-    Eff082473e0Emitter_Unregister(gEff082473e0, e);
+  if (sEff082473e0 != NULL) {
+    Eff082473e0Emitter_Unregister(sEff082473e0, e);
   }
   return 0;
 }

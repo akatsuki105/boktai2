@@ -8,7 +8,7 @@
 	ldr r0, [r6, #0x2c]
 	cmp r0, #0
 	beq _081D9AD0
-	bl FUN_08238bf4
+	bl Sio_Disconnect
 	movs r0, #1
 	str r0, [r6, #0x30]
 	ldr r0, [r6, #0x28]
@@ -48,7 +48,7 @@ _081D9AD0:
 	ldr r0, [r6, #0x54]
 	adds r0, #1
 	str r0, [r6, #0x54]
-	bl FUN_08238bc0
+	bl Sio_Connect
 	str r0, [r6, #0x24]
 	cmp r0, #0
 	bge _081D9B0C
@@ -56,7 +56,7 @@ _081D9AD0:
 	cmp r0, #0x1d
 	ble _081D9B08
 	bl FUN_08238cd4
-	bl FUN_08238bc0
+	bl Sio_Connect
 	str r0, [r6, #0x24]
 	mov r0, sl
 	b _081D9B0A
@@ -81,12 +81,12 @@ _081D9B24:
 	adds r5, r6, #0
 	adds r5, #0x5e
 	adds r0, r5, #0
-	bl FUN_08238da8
+	bl Sio_GetRecvData
 	str r0, [r6, #0x48]
 	adds r4, r6, #0
 	adds r4, #0x5c
 	ldrh r0, [r4]
-	bl FUN_08238e14
+	bl Sio_SetSendData
 	str r0, [r6, #0x44]
 	ldr r0, [r6, #0x2c]
 	str r4, [sp]
@@ -95,7 +95,7 @@ _081D9B24:
 	ldr r0, [r6, #0x24]
 	cmp r0, #0
 	bne _081D9B4E
-	bl FUN_08238d84
+	bl Sio_StartTransferIfIdle
 _081D9B4E:
 	ldr r0, [r6, #0x48]
 	cmp r0, #0
@@ -190,9 +190,9 @@ _081D9BD8:
 	ldr r0, [r6, #0x3c]
 	cmp r0, #0x1d
 	ble _081D9C10
-	bl FUN_08238bf4
+	bl Sio_Disconnect
 	bl FUN_08238cd4
-	bl FUN_08238bc0
+	bl Sio_Connect
 	str r0, [r6, #0x24]
 	str r5, [r6, #0x38]
 	str r5, [r6, #0x50]
@@ -216,9 +216,9 @@ _081D9C26:
 	ldr r0, [r6, #0x50]
 	cmp r0, #0x1d
 	ble _081D9C46
-	bl FUN_08238bf4
+	bl Sio_Disconnect
 	bl FUN_08238cd4
-	bl FUN_08238bc0
+	bl Sio_Connect
 	str r0, [r6, #0x24]
 	str r5, [r6, #0x38]
 	str r5, [r6, #0x50]

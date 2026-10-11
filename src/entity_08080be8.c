@@ -263,23 +263,17 @@ NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
 
 // 前へ進めながら当たり判定を出し、地面より下に潜ったら次の状態へ
 void Entity08080be8_StateFly(Entity08080be8* p) {
-  HitboxData* hitbox;
-  Vec3* pos;
-  u16 groundY;
-
   p->sprite.pos.x += p->offset.x;
   p->sprite.pos.z += p->offset.z;
-  hitbox = &p->hitbox;
-  pos = &p->sprite.pos;
-  Hitbox_SetPos(hitbox, pos, 0);
-  Hitbox_Register(hitbox);
-  Player_SetFlag20(p->player, 0x80002);
-  groundY = Map_GetTileHeightAt(pos);
-  if (groundY > p->sprite.pos.y) {
+  Hitbox_SetPos(&p->hitbox, &p->sprite.pos, 0);
+  Hitbox_Register(&p->hitbox);
+
+  Player_SetFlag20(p->player, PFLAG20_UNK_19 | PFLAG20_UNK_1);
+
+  if (Map_GetTileHeightAt(&p->sprite.pos) > p->sprite.pos.y) {
     Entity08080be8_SetState(p, Entity08080be8_StateImpact);
   } else {
-    p->timer++;
-    if (p->timer > 59) {
+    if (++p->timer >= 60) {
       KillEntity(&p->e);
     }
   }

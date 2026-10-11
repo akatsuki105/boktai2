@@ -51,7 +51,7 @@ typedef struct EntityB3D1 {
 } EntityB3D1;
 static_assert(sizeof(EntityB3D1) == 1468);
 
-extern EntityB3D1* gEntityB3D1;  // 0x03000158
+IWRAM_DATA EntityB3D1* gEntityB3D1 = NULL;  // 0x03000158
 
 void FUN_080bfa50(void) { gEntityB3D1 = NULL; }
 

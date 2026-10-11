@@ -46,8 +46,15 @@ typedef struct {
   s16 x;
   s16 y;  // 高さ
   s16 z;
-  u16 val;  // 用途不明だが、Mover_Init で 16 がセットされている
+  s16 val;  // 用途不明だが、 Mover_Init で 16 がセットされていて、 lookAroundOffset ではここを見回しモードが有効かどうかのbool値として使うので、汎用のフィールドっぽい？
 } Vec3;
+
+// ワールド座標, isometric, Y-up, right-handed coordinate system (X: 画面右下, Y: 高さ, Z: 画面左下)
+// 1ブロック = 256, ブロック: このゲームの地形の単位ユニット, 木箱の大きさと同じ
+// 例：
+//   x と z は サンミゲルの太陽樹のところあたりのグリッドがわかりやすい, 右下に1グリッド進むと x が 256 増える, 左下に1グリッド進むと z が 256 増える
+//   階段を1つ登ると y が 256 増える
+typedef Vec3 WorldPos;
 
 // Boktai2 で ROM から RAM に読み込んで使うデータの中には、ROM内では親構造体からのオフセットでRAM読み込み時にポインタに変換されるものが多い
 typedef union {

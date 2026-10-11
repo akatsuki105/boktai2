@@ -119,7 +119,7 @@ _08048E90:
 	bl Text_StrNCmp
 	cmp r0, #0
 	bne _08048EB4
-	bl FUN_0823cd38
+	bl GetPlayerName
 	str r0, [r5, #0x20]
 	adds r0, r5, #0
 	movs r1, #1
@@ -699,7 +699,7 @@ _08049360:
 	bl Text_StrNCmp
 	cmp r0, #0
 	bne _08049388
-	bl FUN_0823cd38
+	bl GetPlayerName
 	str r0, [r5, #0x20]
 	adds r0, r7, #0
 	movs r1, #0x3e

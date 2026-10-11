@@ -39,7 +39,7 @@ _08217E38:
 	ands r1, r0
 	cmp r1, #0
 	bne _08217E54
-	bl FUN_0823cd38
+	bl GetPlayerName
 	bl FUN_08218b20
 _08217E54:
 	ldr r1, _08217E5C @ =0x00001FE6
@@ -65,7 +65,7 @@ _08217E6E:
 	add r0, sp, #4
 	adds r1, r4, #0
 	bl CpuSet
-	bl FUN_0823cd38
+	bl GetPlayerName
 	adds r1, r4, #0
 	movs r2, #5
 	bl CpuSet
@@ -377,7 +377,7 @@ _082180E2:
 	adds r0, r5, #0
 	adds r1, r4, #0
 	bl FUN_08218b34
-	bl FUN_0823cd38
+	bl GetPlayerName
 	adds r1, r0, #0
 	adds r0, r4, #0
 	movs r2, #5

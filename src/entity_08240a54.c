@@ -13,15 +13,15 @@ typedef struct {
 } Entity08240a54Data;
 static_assert(sizeof(Entity08240a54Data) == 12);
 
-IWRAM_DATA Entity08240a54Data* gEntity08240a54Data = NULL;  // 0x030016FC
+static Entity08240a54Data* sEntity08240a54Data;  // 0x030016FC
 
 // 空き枠に id を登録する
 bool32 FUN_082409a0(u32 id) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    if (gEntity08240a54Data->ids[i] == 0) {
-      gEntity08240a54Data->ids[i] = id;
+    if (sEntity08240a54Data->ids[i] == 0) {
+      sEntity08240a54Data->ids[i] = id;
       return TRUE;
     }
   }
@@ -34,8 +34,8 @@ bool32 FUN_082409d0(u32 id) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    if (gEntity08240a54Data->ids[i] == id) {
-      gEntity08240a54Data->ids[i] = 0;
+    if (sEntity08240a54Data->ids[i] == id) {
+      sEntity08240a54Data->ids[i] = 0;
       return TRUE;
     }
   }
@@ -46,20 +46,20 @@ bool32 FUN_082409d0(u32 id) {
 s32 Entity08240a54_Update(Entity08240a54* p) { return 0; }
 
 s32 Entity08240a54_Destroy(Entity08240a54* p) {
-  Free(gEntity08240a54Data);
-  gEntity08240a54Data = NULL;
+  Free(sEntity08240a54Data);
+  sEntity08240a54Data = NULL;
   return 0;
 }
 
 s32 Entity08240a54_Init(Entity08240a54* p) {
   s32 i;
 
-  if (gEntity08240a54Data == NULL) {
+  if (sEntity08240a54Data == NULL) {
     return -1;
   }
 
   for (i = 0; i < 4; i++) {
-    gEntity08240a54Data->ids[i] = 0;
+    sEntity08240a54Data->ids[i] = 0;
   }
 
   return 0;
@@ -90,7 +90,7 @@ bool32 FUN_08240a90(void) {
   data = Malloc(sizeof(Entity08240a54Data));
   ClearMemory(data, sizeof(Entity08240a54Data));
   Registry_Add(0x757B, data, 0);
-  gEntity08240a54Data = data;
+  sEntity08240a54Data = data;
   Entity08240a54_Create();
   return TRUE;
 }

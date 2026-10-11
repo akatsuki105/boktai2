@@ -1,7 +1,5 @@
 #include "global.h"
 
-// リンクされる場所的に、GBAの公式ライブラリの可能性もある
-
 void Rfu_CopyBytes(u8* src, u8* dst, u8 bytesize);
 
 void FUN_0824c0c4(u8 pid, u8* dst);

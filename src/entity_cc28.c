@@ -196,7 +196,7 @@ typedef struct EntityCC28 {
 } EntityCC28;
 static_assert(sizeof(EntityCC28) == 16476);
 
-extern EntityCC28* gEntityCC28;  // 0x0300013C
+IWRAM_DATA EntityCC28* gEntityCC28 = NULL;  // 0x0300013C
 
 extern EntityCC28Func* const sEntityCC28State2Fns[];  // 0x085ACFDC
 
@@ -1009,7 +1009,8 @@ void FUN_08091c78(void) {
   }
 }
 
-NAKED void FUN_08091c90(void) { INCFUNC("asm/func/FUN_08091c90.inc"); }
+// 装備中の武器の損傷度をリセットする
+void FUN_08091c90(void) { GetWeapon(REGISTERED_WEAPON(gStat->equippedWeaponIdx))->wear = 0; }
 
 NAKED u32 FUN_08091cb8(item32_t n) { INCFUNC("asm/func/FUN_08091cb8.inc"); }
 
@@ -1065,9 +1066,11 @@ u32 item_08092034(s32 slot) {
 
 NAKED void FUN_08092070(EntityCC28* p) { INCFUNC("asm/func/FUN_08092070.inc"); }
 
-// 選択中のアイテムの effectType が 1 か 2 かどうか
+// 選択中のアイテムが HP/Ene 回復アイテムかどうか
 bool32 FUN_080921a8(EntityCC28* p) {
-  if ((u16)(gItemDB[GetItemID(p->inValuableInventory, p->selectedSlot)].effectType - 1) <= 1) {
+  item32_t id = GetItemID(p->inValuableInventory, p->selectedSlot);
+
+  if (gItemDB[id].effectType == IET_HP || gItemDB[id].effectType == IET_MP) {
     return TRUE;
   }
   return FALSE;
@@ -1400,7 +1403,7 @@ NAKED void FUN_08097ab8(EntityCC28* p, u8 param_2) { INCFUNC("asm/func/FUN_08097
 
 NAKED void FUN_08097c04(EntityCC28* p) { INCFUNC("asm/func/FUN_08097c04.inc"); }
 
-NAKED void FUN_08097ca0(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_08097ca0.inc"); }
+NAKED void FUN_08097ca0(WorldPos* pos, s32 idx) { INCFUNC("asm/func/FUN_08097ca0.inc"); }
 
 // unk_3ff0 から value の位置を探す
 s32 FUN_08097d20(EntityCC28* p, s32 value) {
@@ -1439,7 +1442,13 @@ NAKED void FUN_08098684(EntityCC28* p) { INCFUNC("asm/func/FUN_08098684.inc"); }
 
 NAKED void FUN_08098734(EntityCC28* p) { INCFUNC("asm/func/FUN_08098734.inc"); }
 
-NAKED void FUN_08098758(EntityCC28* p) { INCFUNC("asm/func/FUN_08098758.inc"); }
+void FUN_08098758(EntityCC28* p) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    FUN_08097ca0(&p->sprites[i + 36].pos, i + 0x10);
+  }
+}
 
 void FUN_0809877c(EntityCC28* p) {
   FUN_08098734(p);
@@ -1749,10 +1758,8 @@ void FUN_0809c264(void) {
 }
 
 void FUN_0809c28c(void) {
-  EntityCC28* p = gEntityCC28;
-
-  if (p != NULL && p->player != NULL) {
-    FUN_0808d5cc(p);
+  if (gEntityCC28 != NULL && gEntityCC28->player != NULL) {
+    FUN_0808d5cc(gEntityCC28);
     FUN_0808d4dc(gEntityCC28);
     if (gEntityCC28->unk_9fe <= 2) {
       FUN_0808d3d4(gEntityCC28);
@@ -1761,10 +1768,8 @@ void FUN_0809c28c(void) {
 }
 
 void FUN_0809c2d0(void) {
-  EntityCC28* p = gEntityCC28;
-
-  if (p != NULL && p->player != NULL) {
-    FUN_0808d774(p);
+  if (gEntityCC28 != NULL && gEntityCC28->player != NULL) {
+    FUN_0808d774(gEntityCC28);
     FUN_0808d564(gEntityCC28);
     if (gEntityCC28->unk_9fe <= 2) {
       FUN_0808d3d4(gEntityCC28);

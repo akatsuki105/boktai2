@@ -2,8 +2,7 @@
 #include "global.h"
 #include "particle.h"
 
-// Entity08060470 が持つ粒子1個, 生成元 (Entity08060470_Spawn) が角度と速度から vel を作り、
-// 以降は Entity08060470_UpdateElem が毎フレーム ptcl.pos に vel を足すだけ
+// 生成元 (Entity08060470_Spawn) が角度と速度から vel を作り、以降は Entity08060470_UpdateElem が毎フレーム ptcl.pos に vel を足すだけ
 typedef struct Entity08060470Elem {
   u8 state;       // 0x00, PTR_ARRAY_085abaac の添字 (0 = 何もしない, 1 = 飛行中), 根拠: Entity08060470_Update
   u8 unk_1;       // 0x01, 生成時に1、最初の更新で0にされる, 読み手は未発見, 根拠: Entity08060470_UpdateElem
@@ -16,7 +15,7 @@ typedef struct Entity08060470Elem {
 static_assert(sizeof(Entity08060470Elem) == 56);
 
 // 粒子を16個まで抱えるエンティティ, 空きスロットは activeMask のビットで管理する
-typedef struct Entity08060470 {
+typedef struct {
   Entity e;                      // 0x00, ENTITY_UNK_10
   u32 unk_18;                    // 0x18, 読み手も書き手も未発見
   u32 activeMask;                // 0x1C, 1 << i で ptcls[i] が使用中, 根拠: Entity08060470_Init が0クリア、Entity08060470_ReleaseElem がビットを落とす
@@ -25,7 +24,7 @@ typedef struct Entity08060470 {
 } Entity08060470;
 static_assert(sizeof(Entity08060470) == 932);
 
-extern void* gEntity08060470;  // 0x03000134
+IWRAM_DATA Entity08060470* gEntity08060470 = NULL;  // 0x03000134
 
 // 粒子を1個分だけ初期化する
 void Entity08060470_InitElem(Entity08060470* p, Entity08060470Elem* elem, s32 idx) {

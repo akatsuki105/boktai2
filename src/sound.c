@@ -4,7 +4,24 @@
 #include "global.h"
 #include "vm.h"
 
-IWRAM_DATA ALIGNED(16) MusicPlayerTrack gMPlayTracks[50] = {};  // 0x03001710
+extern MusicPlayerInfo gMPlayInfo_00;
+extern MusicPlayerInfo gMPlayInfo_01;
+extern MusicPlayerInfo gMPlayInfo_02;
+extern MusicPlayerInfo gMPlayInfo_03;
+extern MusicPlayerInfo gMPlayInfo_04;
+extern MusicPlayerInfo gMPlayInfo_05;
+extern MusicPlayerInfo gMPlayInfo_06;
+extern MusicPlayerInfo gMPlayInfo_07;
+extern MusicPlayerInfo gMPlayInfo_08;
+extern MusicPlayerInfo gMPlayInfo_09;
+extern MusicPlayerInfo gMPlayInfo_10;
+extern MusicPlayerInfo gMPlayInfo_11;
+extern MusicPlayerInfo gMPlayInfo_12;
+extern MusicPlayerInfo gMPlayInfo_13;
+extern MusicPlayerInfo gMPlayInfo_14;
+extern MusicPlayerInfo gMPlayInfo_15;
+
+static MusicPlayerTrack sMPlayTracks[50];  // 0x03001710
 
 COMMON_DATA SoundID16 gSoundIDs[MUSIC_PLAYER_LENGTH] = {};  // 0x03004820
 
@@ -334,26 +351,26 @@ const MusicPlayer gMPlayTable[MUSIC_PLAYER_LENGTH] = {
     [7] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
     [8] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
     [9] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
-    [10] = {info : &gMPlayInfo_09, track : &gMPlayTracks[0],  numTracks : 12, unk_A : 0},
+    [10] = {info : &gMPlayInfo_09, track : &sMPlayTracks[0],  numTracks : 12, unk_A : 0},
     [11] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
-    [12] = {info : &gMPlayInfo_13, track : &gMPlayTracks[12], numTracks : 8,  unk_A : 0},
+    [12] = {info : &gMPlayInfo_13, track : &sMPlayTracks[12], numTracks : 8,  unk_A : 0},
     [13] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
     [14] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
     [15] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
     [16] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
-    [17] = {info : &gMPlayInfo_14, track : &gMPlayTracks[20], numTracks : 2,  unk_A : 1},
-    [18] = {info : &gMPlayInfo_06, track : &gMPlayTracks[22], numTracks : 1,  unk_A : 1},
+    [17] = {info : &gMPlayInfo_14, track : &sMPlayTracks[20], numTracks : 2,  unk_A : 1},
+    [18] = {info : &gMPlayInfo_06, track : &sMPlayTracks[22], numTracks : 1,  unk_A : 1},
     [19] = {info : NULL,           track : NULL,              numTracks : 0,  unk_A : 0},
-    [20] = {info : &gMPlayInfo_03, track : &gMPlayTracks[23], numTracks : 2,  unk_A : 1},
-    [21] = {info : &gMPlayInfo_05, track : &gMPlayTracks[25], numTracks : 2,  unk_A : 1},
-    [22] = {info : &gMPlayInfo_12, track : &gMPlayTracks[27], numTracks : 3,  unk_A : 1},
-    [23] = {info : &gMPlayInfo_00, track : &gMPlayTracks[30], numTracks : 3,  unk_A : 1},
-    [24] = {info : &gMPlayInfo_04, track : &gMPlayTracks[33], numTracks : 2,  unk_A : 1},
-    [25] = {info : &gMPlayInfo_10, track : &gMPlayTracks[35], numTracks : 3,  unk_A : 1},
-    [26] = {info : &gMPlayInfo_02, track : &gMPlayTracks[38], numTracks : 1,  unk_A : 1},
-    [27] = {info : &gMPlayInfo_15, track : &gMPlayTracks[39], numTracks : 3,  unk_A : 1},
-    [28] = {info : &gMPlayInfo_07, track : &gMPlayTracks[42], numTracks : 2,  unk_A : 1},
-    [29] = {info : &gMPlayInfo_11, track : &gMPlayTracks[44], numTracks : 1,  unk_A : 1},
-    [30] = {info : &gMPlayInfo_01, track : &gMPlayTracks[45], numTracks : 2,  unk_A : 1},
-    [31] = {info : &gMPlayInfo_08, track : &gMPlayTracks[47], numTracks : 3,  unk_A : 1},
+    [20] = {info : &gMPlayInfo_03, track : &sMPlayTracks[23], numTracks : 2,  unk_A : 1},
+    [21] = {info : &gMPlayInfo_05, track : &sMPlayTracks[25], numTracks : 2,  unk_A : 1},
+    [22] = {info : &gMPlayInfo_12, track : &sMPlayTracks[27], numTracks : 3,  unk_A : 1},
+    [23] = {info : &gMPlayInfo_00, track : &sMPlayTracks[30], numTracks : 3,  unk_A : 1},
+    [24] = {info : &gMPlayInfo_04, track : &sMPlayTracks[33], numTracks : 2,  unk_A : 1},
+    [25] = {info : &gMPlayInfo_10, track : &sMPlayTracks[35], numTracks : 3,  unk_A : 1},
+    [26] = {info : &gMPlayInfo_02, track : &sMPlayTracks[38], numTracks : 1,  unk_A : 1},
+    [27] = {info : &gMPlayInfo_15, track : &sMPlayTracks[39], numTracks : 3,  unk_A : 1},
+    [28] = {info : &gMPlayInfo_07, track : &sMPlayTracks[42], numTracks : 2,  unk_A : 1},
+    [29] = {info : &gMPlayInfo_11, track : &sMPlayTracks[44], numTracks : 1,  unk_A : 1},
+    [30] = {info : &gMPlayInfo_01, track : &sMPlayTracks[45], numTracks : 2,  unk_A : 1},
+    [31] = {info : &gMPlayInfo_08, track : &sMPlayTracks[47], numTracks : 3,  unk_A : 1},
 };

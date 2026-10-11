@@ -15,10 +15,11 @@ typedef struct {
 } SavedHBlankState;
 static_assert(sizeof(SavedHBlankState) == 16);
 
+static u32 u32_0300170c;  // 0x0300170C, EEPROM_BeginAccess が u32_0300481c を退避し、EEPROM_EndAccess が戻す
+
 COMMON_DATA SavedHBlankState gSavedHBlankState = {};  // 0x03004880
 
 extern u32 u32_0300481c;
-extern u32 u32_0300170c;
 
 s32 FUN_08243648(s32 n) {
   u32 val = n & (~7);

@@ -1,5 +1,5 @@
 	push {r4, r5, lr}
-	bl FUN_082389c8
+	bl Sio_Reinit
 	ldr r0, _08238CA8 @ =0x0300082C
 	movs r2, #0
 	str r2, [r0]

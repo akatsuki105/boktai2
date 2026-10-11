@@ -364,7 +364,7 @@ NAKED s32 FUN_080413b8(Entity286FNode* node, s32 param_2, u16 param_3, s32 param
 
 NAKED s32 FUN_080413fc(Entity286FNode* node, s32 param_2, u16 param_3, s8 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_080413fc.inc"); }
 
-NAKED s32 FUN_08041460(Entity286FNode* node, s32 param_2, u16 param_3, s32 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_08041460.inc"); }
+s32 FUN_08041460(Entity286FNode* node, u32 pose, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return SpriteHolder_SetAnim(&node->sprite, pose, 0, 0, param_3, param_5, param_6); }
 
 NAKED s32 FUN_08041480(Entity286FNode* node, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_08041480.inc"); }
 

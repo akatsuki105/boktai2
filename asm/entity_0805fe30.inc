@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_0805f6d4
-FUN_0805f6d4: @ 0x0805F6D4
+	thumb_func_start Entity0805fe30_ClearGlobal
+Entity0805fe30_ClearGlobal: @ 0x0805F6D4
 	ldr r1, _0805F6DC @ =0x03000130
 	movs r0, #0
 	str r0, [r1]
@@ -13,8 +13,8 @@ FUN_0805f6d4: @ 0x0805F6D4
 	.align 2, 0
 _0805F6DC: .4byte 0x03000130
 
-	thumb_func_start FUN_0805f6e0
-FUN_0805f6e0: @ 0x0805F6E0
+	thumb_func_start Entity0805fe30_SetSlotActive
+Entity0805fe30_SetSlotActive: @ 0x0805F6E0
 	movs r2, #1
 	lsls r2, r1
 	ldr r1, [r0, #0x18]
@@ -22,8 +22,8 @@ FUN_0805f6e0: @ 0x0805F6E0
 	str r1, [r0, #0x18]
 	bx lr
 
-	thumb_func_start FUN_0805f6ec
-FUN_0805f6ec: @ 0x0805F6EC
+	thumb_func_start Entity0805fe30_ClearSlotActive
+Entity0805fe30_ClearSlotActive: @ 0x0805F6EC
 	movs r2, #1
 	lsls r2, r1
 	ldr r1, [r0, #0x18]
@@ -31,8 +31,8 @@ FUN_0805f6ec: @ 0x0805F6EC
 	str r1, [r0, #0x18]
 	bx lr
 
-	thumb_func_start FUN_0805f6f8
-FUN_0805f6f8: @ 0x0805F6F8
+	thumb_func_start Entity0805fe30_IsSlotActive
+Entity0805fe30_IsSlotActive: @ 0x0805F6F8
 	movs r2, #1
 	lsls r2, r1
 	ldr r0, [r0, #0x18]
@@ -40,8 +40,8 @@ FUN_0805f6f8: @ 0x0805F6F8
 	bx lr
 	.align 2, 0
 
-	thumb_func_start FUN_0805f704
-FUN_0805f704: @ 0x0805F704
+	thumb_func_start Entity0805fe30_FindSlotByKey
+Entity0805fe30_FindSlotByKey: @ 0x0805F704
 	push {r4, r5, r6, r7, lr}
 	adds r6, r0, #0
 	adds r7, r1, #0
@@ -51,7 +51,7 @@ FUN_0805f704: @ 0x0805F704
 _0805F710:
 	adds r0, r6, #0
 	adds r1, r4, #0
-	bl FUN_0805f6f8
+	bl Entity0805fe30_IsSlotActive
 	cmp r0, #0
 	beq _0805F726
 	ldr r0, [r5]
@@ -71,8 +71,8 @@ _0805F732:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_0805f738
-FUN_0805f738: @ 0x0805F738
+	thumb_func_start Entity0805fe30_FindFreeSlot
+Entity0805fe30_FindFreeSlot: @ 0x0805F738
 	push {r4, r5, r6, lr}
 	adds r5, r0, #0
 	adds r6, r1, #0
@@ -80,7 +80,7 @@ FUN_0805f738: @ 0x0805F738
 _0805F740:
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0805f6f8
+	bl Entity0805fe30_IsSlotActive
 	cmp r0, #0
 	beq _0805F75E
 	adds r4, #1
@@ -555,7 +555,7 @@ _0805FAA6:
 _0805FAB4:
 	mov r0, r8
 	mov r1, sl
-	bl FUN_0805f6e0
+	bl Entity0805fe30_SetSlotActive
 	add sp, #0xc
 	pop {r3, r4, r5}
 	mov r8, r3
@@ -565,8 +565,8 @@ _0805FAB4:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_0805facc
-FUN_0805facc: @ 0x0805FACC
+	thumb_func_start Entity0805fe30_ReleaseSlot
+Entity0805fe30_ReleaseSlot: @ 0x0805FACC
 	push {r4, r5, r6, r7, lr}
 	mov r7, r8
 	push {r7}
@@ -597,15 +597,15 @@ _0805FAFE:
 	strb r0, [r6, #7]
 	adds r0, r7, #0
 	mov r1, r8
-	bl FUN_0805f6ec
+	bl Entity0805fe30_ClearSlotActive
 	pop {r3}
 	mov r8, r3
 	pop {r4, r5, r6, r7}
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_0805fb14
-FUN_0805fb14: @ 0x0805FB14
+	thumb_func_start Entity0805fe30_NextState
+Entity0805fe30_NextState: @ 0x0805FB14
 	ldrb r1, [r0, #6]
 	adds r1, #1
 	movs r2, #0
@@ -613,8 +613,8 @@ FUN_0805fb14: @ 0x0805FB14
 	strb r2, [r0, #5]
 	bx lr
 
-	thumb_func_start FUN_0805fb20
-FUN_0805fb20: @ 0x0805FB20
+	thumb_func_start Entity0805fe30_UpdateSlotRise
+Entity0805fe30_UpdateSlotRise: @ 0x0805FB20
 	push {r4, r5, r6, r7, lr}
 	mov r7, r8
 	push {r7}
@@ -753,7 +753,7 @@ _0805FC14:
 	cmp r0, #0x13
 	bls _0805FC28
 	adds r0, r5, #0
-	bl FUN_0805fb14
+	bl Entity0805fe30_NextState
 _0805FC28:
 	movs r0, #0
 	add sp, #8
@@ -764,8 +764,8 @@ _0805FC28:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_0805fc38
-FUN_0805fc38: @ 0x0805FC38
+	thumb_func_start Entity0805fe30_UpdateSlotHold
+Entity0805fe30_UpdateSlotHold: @ 0x0805FC38
 	push {r4, r5, r6, r7, lr}
 	mov r7, sb
 	mov r6, r8
@@ -894,7 +894,7 @@ _0805FD16:
 	bls _0805FD2E
 	mov r0, sb
 	mov r1, r8
-	bl FUN_0805facc
+	bl Entity0805fe30_ReleaseSlot
 _0805FD2E:
 	movs r0, #0
 	add sp, #8
@@ -917,7 +917,7 @@ Entity0805fe30_Update: @ 0x0805FD40
 _0805FD4C:
 	adds r0, r6, #0
 	adds r1, r5, #0
-	bl FUN_0805f6f8
+	bl Entity0805fe30_IsSlotActive
 	cmp r0, #0
 	beq _0805FD6A
 	ldrb r0, [r4, #6]
@@ -948,7 +948,7 @@ Entity0805fe30_Destroy: @ 0x0805FD80
 _0805FD86:
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0805facc
+	bl Entity0805fe30_ReleaseSlot
 	adds r4, #1
 	cmp r4, #3
 	ble _0805FD86
@@ -1093,13 +1093,13 @@ _0805FEA4:
 	orrs r5, r0
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_0805f704
+	bl Entity0805fe30_FindSlotByKey
 	adds r1, r0, #0
 	cmp r1, #0
 	bge _0805FED0
 	adds r0, r4, #0
 	adds r1, r7, #0
-	bl FUN_0805f738
+	bl Entity0805fe30_FindFreeSlot
 	adds r1, r0, #0
 	cmp r1, #0
 	bge _0805FEDE

@@ -4,7 +4,7 @@
 #include "particle.h"
 #include "sprite_animation.h"
 
-typedef struct Entity081eb2f0 {
+typedef struct {
   Entity e;                 // 0x000, ENTITY_UNK_10
   AuxAnimFile* anim;        // 0x018, ANIM_D1B8
   ParticleGroup* group;     // 0x01C, PTCL_GROUP_0
@@ -12,7 +12,7 @@ typedef struct Entity081eb2f0 {
 } Entity081eb2f0;
 static_assert(sizeof(Entity081eb2f0) == 2340);
 
-extern Entity081eb2f0* gEntity081eb2f0;  // 0x030001C4
+IWRAM_DATA Entity081eb2f0* gEntity081eb2f0 = NULL;  // 0x030001C4
 
 void FUN_081eafbc(Entity081eb2f0* p, Particle* ptcl) {}
 

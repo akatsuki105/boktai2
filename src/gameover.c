@@ -41,7 +41,7 @@ typedef struct GameOverManager {
 } GameOverManager;
 static_assert(sizeof(GameOverManager) == 852);
 
-extern GameOverManager* gGameOverManager;  // 0x03000150
+IWRAM_DATA GameOverManager* gGameOverManager = NULL;  // 0x03000150
 
 void FUN_0823a8f4(u32 val);
 

@@ -6,7 +6,7 @@
 	sub sp, #0x14
 	adds r4, r0, #0
 	mov r0, sp
-	bl FUN_08238e48
+	bl Sio_PeekRecvData
 	adds r0, r4, #0
 	bl FUN_081dd9d4
 	lsls r0, r0, #0x18
@@ -55,7 +55,7 @@ _081DE3C6:
 	adds r0, r4, #0
 	movs r1, #2
 	bl Entity9A9F_SetState
-	bl FUN_08238bf4
+	bl Sio_Disconnect
 	b _081DE6D4
 	.align 2, 0
 _081DE3D8: .4byte 0x03002C68

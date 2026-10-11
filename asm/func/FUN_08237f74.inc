@@ -2,7 +2,7 @@
 	mov r7, r8
 	push {r7}
 	adds r6, r0, #0
-	ldr r0, _08237FB4 @ =0x030046D4
+	ldr r0, _08237FB4 @ =gSioStatus
 	mov r8, r0
 	ldr r0, [r0]
 	cmp r0, #0
@@ -15,7 +15,7 @@
 	bl EnableInterrupts
 	cmp r7, #0
 	ble _08238008
-	ldr r1, _08237FC0 @ =0x030007A0
+	ldr r1, _08237FC0 @ =gSioRecvBuf
 	adds r0, r4, r1
 	ldrb r5, [r0]
 	adds r4, #1
@@ -28,10 +28,10 @@
 	str r0, [r1]
 	b _0823800A
 	.align 2, 0
-_08237FB4: .4byte 0x030046D4
+_08237FB4: .4byte gSioStatus
 _08237FB8: .4byte 0x0300078C
 _08237FBC: .4byte 0x03000790
-_08237FC0: .4byte 0x030007A0
+_08237FC0: .4byte gSioRecvBuf
 _08237FC4:
 	adds r0, r5, #1
 	cmp r0, r7

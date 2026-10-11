@@ -1043,7 +1043,7 @@ FUN_081e0660: @ 0x081E0660
 	ldrb r0, [r6]
 	cmp r0, #0
 	beq _081E06A0
-	bl FUN_08238bf4
+	bl Sio_Disconnect
 	movs r2, #0xf8
 	lsls r2, r2, #2
 	adds r4, r5, r2

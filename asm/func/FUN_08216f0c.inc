@@ -327,14 +327,14 @@ _08217176:
 	ldr r3, _082171F0 @ =0x00001798
 	adds r0, r7, r3
 	ldr r4, [r0]
-	bl FUN_0823cd38
+	bl GetPlayerName
 	adds r3, r0, #0
 	adds r0, r6, #0
 	adds r1, r5, #0
 	adds r2, r4, #0
 	bl FUN_08011584
 	adds r4, r0, #0
-	bl FUN_0823cd38
+	bl GetPlayerName
 	movs r2, #0
 _082171B8:
 	ldrb r1, [r0]

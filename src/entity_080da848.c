@@ -3,7 +3,6 @@
 #include "particle.h"
 #include "sprite.h"
 
-// 8枠ぶんの演出要素, activeMask のビットが立っている枠だけ生きている
 typedef struct {
   u8 unk_0[0x2D];     // 0x000
   u8 unk_2d;          // 0x02D, FUN_080da8a0 が 0 かどうかを見る
@@ -18,7 +17,7 @@ typedef struct {
 } Entity080da848Elem;
 static_assert(sizeof(Entity080da848Elem) == 308);
 
-typedef struct Entity080da848 {
+typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_9
   u8 unk_18[0x32 - 0x18];       // 0x018, まだ未解析
   u8 unk_32[3];                 // 0x032, 根拠: FUN_080d8644 が3要素を 0 で埋める
@@ -33,7 +32,7 @@ typedef struct Entity080da848 {
 } Entity080da848;
 static_assert(sizeof(Entity080da848) == 2560);
 
-extern Entity080da848* gEntity080da848;  // 0x0300015C
+IWRAM_DATA Entity080da848* gEntity080da848 = NULL;  // 0x0300015C
 
 void FUN_080d8644(Entity080da848* p) {
   s32 i;

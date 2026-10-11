@@ -1,15 +1,19 @@
 #include "entity.h"
 #include "global.h"
 
-typedef struct Entity778B {
+typedef struct {
   Entity e;  // ENTITY_UNK_10
   u8 unk_18[412 - 0x18];
 } Entity778B;
 static_assert(sizeof(Entity778B) == 412);
 
-extern Entity778B* gEntity778B;  // 0x03000180
+IWRAM_DATA Entity778B* gEntity778B = NULL;  // 0x03000180
 
 void Entity081eaf6c_Create(void);
+
+const u8 u8_ARRAY_085ad374[80] = {
+    0, 0, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 3, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 0, 2, 2, 2, 2, 2, 2, 0, 0, 2, 3, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 2, 0, 0,
+};  // 0x085AD374
 
 NAKED s32 FUN_080e0404(s32 param_1, s32 param_2, unknown* param_3, s32 param_4) { INCFUNC("asm/func/FUN_080e0404.inc"); }
 

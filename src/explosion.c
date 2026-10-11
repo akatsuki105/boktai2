@@ -16,13 +16,13 @@ typedef struct {
 static_assert(sizeof(Explosion) == 88);
 
 // 爆発を最大16個まとめて動かすシングルトン
-typedef struct ExplosionManager {
+typedef struct {
   Entity e;             // 0x00, ENTITY_UNK_10
   Explosion items[16];  // 0x18, _Init / _Update / _Destroy が 16 回まわす
 } ExplosionManager;
 static_assert(sizeof(ExplosionManager) == 1432);
 
-extern ExplosionManager* gExplosionManager;  // 0x03000138
+IWRAM_DATA ExplosionManager* gExplosionManager = NULL;  // 0x03000138
 
 void ExplosionManager_ClearGlobal(void) { gExplosionManager = NULL; }
 

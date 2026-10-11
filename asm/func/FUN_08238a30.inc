@@ -1,8 +1,8 @@
 	push {r4, r5, r6, lr}
-	ldr r0, _08238A8C @ =0x030046D4
+	ldr r0, _08238A8C @ =gSioStatus
 	movs r6, #0
 	str r6, [r0]
-	ldr r1, _08238A90 @ =0x030046CC
+	ldr r1, _08238A90 @ =gSioMultiId
 	movs r0, #1
 	rsbs r0, r0, #0
 	str r0, [r1]
@@ -41,8 +41,8 @@
 	pop {r0}
 	bx r0
 	.align 2, 0
-_08238A8C: .4byte 0x030046D4
-_08238A90: .4byte 0x030046CC
+_08238A8C: .4byte gSioStatus
+_08238A90: .4byte gSioMultiId
 _08238A94: .4byte 0x04000208
 _08238A98: .4byte 0x04000200
 _08238A9C: .4byte 0x0000FF7F

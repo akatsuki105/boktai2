@@ -59,7 +59,7 @@ _08218F0C: .4byte 0x030046A0
 _08218F10: .4byte 0x0000093A
 _08218F14: .4byte 0x08252844
 _08218F18:
-	bl FUN_0823cd38
+	bl GetPlayerName
 	adds r4, r0, #0
 _08218F1E:
 	movs r0, #8

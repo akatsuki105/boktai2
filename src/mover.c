@@ -14,31 +14,31 @@ typedef struct {
 } MoverList;
 static_assert(sizeof(MoverList) == 32);
 
-IWRAM_DATA MoverList* gMoverList = NULL;  // 0x030016F8
+static MoverList* sMoverList;  // 0x030016F8
 
-void MoverList_ClearPtr(void) { gMoverList = NULL; }
+void MoverList_ClearPtr(void) { sMoverList = NULL; }
 
 void Mover_Link(Mover* p) {
-  if (gMoverList != NULL) {
-    if (gMoverList->head == NULL) {
-      gMoverList->head = p;
-      gMoverList->tail = p;
+  if (sMoverList != NULL) {
+    if (sMoverList->head == NULL) {
+      sMoverList->head = p;
+      sMoverList->tail = p;
       p->prev = NULL;
       p->next = NULL;
     } else {
-      gMoverList->tail->next = p;
-      p->prev = gMoverList->tail;
+      sMoverList->tail->next = p;
+      p->prev = sMoverList->tail;
       p->next = NULL;
-      gMoverList->tail = p;
+      sMoverList->tail = p;
     }
   }
 }
 
 Mover* Mover_FindByID(u16 id) {
   Mover* p;
-  if (gMoverList == NULL) return NULL;
+  if (sMoverList == NULL) return NULL;
 
-  p = gMoverList->head;
+  p = sMoverList->head;
   while (p != NULL) {
     if (p->id == id) {
       return p;
@@ -50,9 +50,9 @@ Mover* Mover_FindByID(u16 id) {
 
 Mover* Mover_FindInList(Mover* target) {
   Mover* p;
-  if (gMoverList == NULL) return NULL;
+  if (sMoverList == NULL) return NULL;
 
-  p = gMoverList->head;
+  p = sMoverList->head;
   while (p != NULL) {
     if (p == target) {
       return p;
@@ -64,7 +64,7 @@ Mover* Mover_FindInList(Mover* target) {
 
 // リンクリストから指定ノードを削除する
 bool32 Mover_Unlink(Mover* p) {
-  MoverList* mgr = gMoverList;
+  MoverList* mgr = sMoverList;
   Mover* prev;
   Mover* next;
   if ((mgr == NULL) || (p == NULL) || (Mover_FindInList(p) == NULL)) {
@@ -118,18 +118,18 @@ s32 Mover_GetPosScripted(void) {
 s32 MoverList_Update(MoverList* _) { return 0; }
 
 s32 MoverList_Destroy(MoverList* _) {
-  gMoverList = NULL;
+  sMoverList = NULL;
   return 0;
 }
 
 s32 MoverList_Init(MoverList* p, u32 id, u32 _) {
-  gMoverList = p;
+  sMoverList = p;
   p->head = NULL, p->tail = NULL;
   return 0;
 }
 
 MoverList* MoverList_Create(u32 id, u32 _) {
-  if (gMoverList == NULL) {
+  if (sMoverList == NULL) {
     MoverList* p = CreateEntity(ENTITY_UNK_2, sizeof(MoverList));
     if (p != NULL) {
       SetEntityRoutine(p, MoverList_Update, MoverList_Destroy);
@@ -140,14 +140,14 @@ MoverList* MoverList_Create(u32 id, u32 _) {
     }
     return p;
   }
-  return gMoverList;
+  return sMoverList;
 }
 
 MoverList* MoverList_Get(void) {
-  if (gMoverList == NULL) {
+  if (sMoverList == NULL) {
     return NULL;
   } else {
-    return gMoverList;
+    return sMoverList;
   }
 }
 

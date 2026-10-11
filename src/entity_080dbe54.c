@@ -13,7 +13,7 @@ typedef struct {
 } Entity080dbe54Slot;
 static_assert(sizeof(Entity080dbe54Slot) == 24);
 
-typedef struct Entity080dbe54 {
+typedef struct {
   Entity e;                      // 0x000, ENTITY_UNK_9
   AuxAnimFile* anim;             // 0x018, ANIM_D1B8
   ParticleGroup* group;          // 0x01C, PTCL_GROUP_0
@@ -25,7 +25,7 @@ typedef struct Entity080dbe54 {
 } Entity080dbe54;
 static_assert(sizeof(Entity080dbe54) == 2600);
 
-extern Entity080dbe54* gEntity080dbe54;  // 0x03000164
+IWRAM_DATA Entity080dbe54* gEntity080dbe54 = NULL;  // 0x03000164
 
 static inline void Entity080dbe54_ClearActive(Entity080dbe54* p, s32 idx) { p->activeMask &= ~(1 << idx); }
 

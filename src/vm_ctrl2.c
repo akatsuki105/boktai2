@@ -10,11 +10,10 @@ bool32 FUN_082345ec(void);
 
 void* VM_GetSubroutine(u32 subroutineID);
 
-IWRAM_DATA CtrlHandlerTable gCtrlHandlers2 = {};  // 0x030016E8, 制御命令ではこのハンドラ自体を直接みるのではなく、初期化時に gCtrlHandlers に登録してそれを制御命令が参照する
+static CtrlHandlerTable gCtrlHandlers2;  // 0x030016E8, 制御命令ではこのハンドラ自体を直接みるのではなく、初期化時に gCtrlHandlers に登録してそれを制御命令が参照する
 
 void* VM_Ctrl_Unused_0BB3(void) { return NULL; }
 
-// https://boktaihacking.net/wiki/Bytecode#Control_0xc8bb_(load_map)
 void* VM_Ctrl_LoadMap(void) {
   u16 scriptID = (u16)VM_GetValue();
   u32_03004798 = 0x01;

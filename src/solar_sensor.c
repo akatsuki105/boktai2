@@ -5,19 +5,20 @@
 
 // 太陽センサーのドライバ
 
-IWRAM_DATA s32 gSensorState = 0;             // 0x030026B4, Sensor_Tick の状態, 0: リセット中, 1: 計測中, 2: 待機
-IWRAM_DATA s32 gSensorCounter = 0;           // 0x030026B8, 0-511, counts half-cycles of the 74LV4040 counter chip
-IWRAM_DATA s32 gSensorUnk0c = 0;             // 0x030026BC, 計測中のセンサー出力の最後の値, ROM 内に読む箇所なし
-IWRAM_DATA s32 gSensorNextWrite = 0;         // 0x030026C0, next value to be written to GPIO_DATA
-IWRAM_DATA bool32 gSensorIoEnabled = FALSE;  // 0x030026C4
-COMMON_DATA u32 gSensorDrvUnk00 = 0;         // 0x030057B0, Sensor_DoEnableIO が 0xFF を書くだけで読む箇所なし
-COMMON_DATA u32 gSensorDrvUnk04 = 0;         // 0x030057B4, 有効化時の GPIO_PORT_DATA の控え, 読む箇所なし
-COMMON_DATA bool32 gSensorEnabled = FALSE;   // 0x030057B8
-COMMON_DATA u32 gSensorGpioData = 0;         // 0x030057BC, last read GPIO data (GPIO_DATA & 8)
-COMMON_DATA s32 gSensorDrvUnk10 = 0;         // 0x030057C0, Sensor_DoEnableIO が 1 を書くだけで読む箇所なし
-COMMON_DATA s32 gSensorDrvUnk14 = 0;         // 0x030057C4, Sensor_DoEnableIO が 4 を書くだけで読む箇所なし
-COMMON_DATA s32 gSensorRawLevel = 0;         // 0x030057C8, light level (0: Max brightness, 0xFF: Dark)
-COMMON_DATA s32 gSensorTickPeriod = 0;       // 0x030057CC, Sensor_Tick の周期, タイマー3 に -gSensorTickPeriod を再装填する
+static s32 sSensorState;         // 0x030026B4, Sensor_Tick の状態, 0: リセット中, 1: 計測中, 2: 待機
+static s32 sSensorCounter;       // 0x030026B8, 0-511, counts half-cycles of the 74LV4040 counter chip
+static s32 sSensorUnk0c;         // 0x030026BC, 計測中のセンサー出力の最後の値, ROM 内に読む箇所なし
+static s32 sSensorNextWrite;     // 0x030026C0, next value to be written to GPIO_DATA
+static bool32 sSensorIoEnabled;  // 0x030026C4
+
+COMMON_DATA u32 gSensorDrvUnk00 = 0;        // 0x030057B0, Sensor_DoEnableIO が 0xFF を書くだけで読む箇所なし
+COMMON_DATA u32 gSensorDrvUnk04 = 0;        // 0x030057B4, 有効化時の GPIO_PORT_DATA の控え, 読む箇所なし
+COMMON_DATA bool32 gSensorEnabled = FALSE;  // 0x030057B8
+COMMON_DATA u32 gSensorGpioData = 0;        // 0x030057BC, last read GPIO data (GPIO_DATA & 8)
+COMMON_DATA s32 gSensorDrvUnk10 = 0;        // 0x030057C0, Sensor_DoEnableIO が 1 を書くだけで読む箇所なし
+COMMON_DATA s32 gSensorDrvUnk14 = 0;        // 0x030057C4, Sensor_DoEnableIO が 4 を書くだけで読む箇所なし
+COMMON_DATA s32 gSensorRawLevel = 0;        // 0x030057C8, light level (0: Max brightness, 0xFF: Dark)
+COMMON_DATA s32 gSensorTickPeriod = 0;      // 0x030057CC, Sensor_Tick の周期, タイマー3 に -gSensorTickPeriod を再装填する
 
 void Sensor_Tick(void);
 
@@ -25,9 +26,9 @@ void Sensor_Tick(void);
 void Sensor_DoEnableIO(void) {
   u16 ie;
 
-  gSensorNextWrite = (gSensorNextWrite & ~2) | 1;
-  gSensorState = 0;
-  gSensorCounter = 0;
+  sSensorNextWrite = (sSensorNextWrite & ~2) | 1;
+  sSensorState = 0;
+  sSensorCounter = 0;
   gSensorEnabled = FALSE;
   gSensorTickPeriod = 0x3128;
   gSensorDrvUnk10 = 1;
@@ -69,68 +70,68 @@ void Sensor_Tick(void) {
   u32 data = GPIO_PORT_DATA;
   u32 gpio;
 
-  GPIO_PORT_DATA = gSensorNextWrite;
+  GPIO_PORT_DATA = sSensorNextWrite;
   REG_TM3CNT_L = -gSensorTickPeriod;
   gpio = data & 8;
   gSensorGpioData = gpio;
   if (gSensorEnabled) {
-    switch (gSensorState) {
+    switch (sSensorState) {
       case 0: {
-        if (gSensorCounter <= 9) {
-          gSensorNextWrite |= 2;
+        if (sSensorCounter <= 9) {
+          sSensorNextWrite |= 2;
         } else {
-          gSensorNextWrite &= ~2;
+          sSensorNextWrite &= ~2;
         }
-        if (gSensorCounter > 20 && gpio == 0) {
-          gSensorState++;
-          gSensorCounter = 0;
-          gSensorUnk0c = 0;
+        if (sSensorCounter > 20 && gpio == 0) {
+          sSensorState++;
+          sSensorCounter = 0;
+          sSensorUnk0c = 0;
         }
         break;
       }
       case 1: {
         if (gpio != 0) {
-          gSensorRawLevel = gSensorCounter >> 1;
-          gSensorState = 2;
+          gSensorRawLevel = sSensorCounter >> 1;
+          sSensorState = 2;
         }
-        gSensorUnk0c = gpio;
+        sSensorUnk0c = gpio;
       }
       case 2: {
-        gSensorNextWrite ^= 1;
-        if (gSensorCounter > 511) {
-          gSensorState = 0;
-          gSensorCounter = 0;
+        sSensorNextWrite ^= 1;
+        if (sSensorCounter > 511) {
+          sSensorState = 0;
+          sSensorCounter = 0;
         }
         break;
       }
     }
-    gSensorCounter++;
+    sSensorCounter++;
   }
 }
 
 void Sensor_EnableIO(void) {
   gSensorDrvUnk04 = 0;
-  gSensorIoEnabled = TRUE;
+  sSensorIoEnabled = TRUE;
   Sensor_DoEnableIO();
 }
 
 void Sensor_DisableIO(void) {
-  if (gSensorIoEnabled) {
-    gSensorIoEnabled = FALSE;
+  if (sSensorIoEnabled) {
+    sSensorIoEnabled = FALSE;
     Sensor_DoDisableIO();
   }
 }
 
 void Sensor_Enable(void) {
-  if (!gSensorIoEnabled) Sensor_EnableIO();
+  if (!sSensorIoEnabled) Sensor_EnableIO();
   gSensorEnabled = TRUE;
-  gSensorState = 0;
-  gSensorCounter = 0;
+  sSensorState = 0;
+  sSensorCounter = 0;
   gSensorRawLevel = -1;
 }
 
 void Sensor_Disable(void) {
-  if (gSensorIoEnabled == TRUE) Sensor_DisableIO();
+  if (sSensorIoEnabled == TRUE) Sensor_DisableIO();
   gSensorEnabled = FALSE;
   gSensorRawLevel = -1;
 }
@@ -141,8 +142,8 @@ s32 Sensor_GetRawLevel(void) {
   return gSensorRawLevel;
 }
 
-bool32 Sensor_IsIoEnabled(void) { return gSensorIoEnabled; }
+bool32 Sensor_IsIoEnabled(void) { return sSensorIoEnabled; }
 
-s32 Sensor_GetState(void) { return gSensorState; }
+s32 Sensor_GetState(void) { return sSensorState; }
 
-s32 Sensor_GetCounter(void) { return gSensorCounter; }
+s32 Sensor_GetCounter(void) { return sSensorCounter; }
