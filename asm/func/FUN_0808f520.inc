@@ -47,7 +47,7 @@ _0808F572:
 	cmp r0, #0x74
 	bls _0808F5DA
 	movs r0, #7
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r0, _0808F5E8 @ =0x00003504
 	adds r1, r4, r0
 	ldr r0, _0808F5EC @ =0x0000FFE4

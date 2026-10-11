@@ -59,7 +59,7 @@ _0809D8EA:
 	ble _0809D8B6
 	ldr r4, _0809D924 @ =0x000092B3
 	ldr r0, _0809D928 @ =0x08251D6C
-	bl FUN_08230860
+	bl HashName
 	adds r1, r0, #0
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10

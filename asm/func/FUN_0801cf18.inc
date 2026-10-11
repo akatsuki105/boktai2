@@ -19,13 +19,13 @@
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	ldr r1, _0801CFD4 @ =0x0000130C
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	movs r0, #3
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	bl FUN_08049e5c
 	ldr r0, _0801CFD8 @ =0x00000DA4
 	adds r2, r5, r0

@@ -340,11 +340,13 @@ s32 VM_ParseStringRef(u8* pc) {
 
 void FUN_0823167c(u8* dst) { gVM.pc = FUN_0823201c(VM_GetPC(), dst); }
 
+// type が 0 になるまで値をデコードし飛ばす
+// 残差1命令, gVM のプールロードと &val のフレームアドレス計算の前後が入れ替わるだけ (命令列は 15 対 15)
 NON_MATCH u8* FUN_08231698(u8* pc) {
 #ifdef NONMATCHING_C
-  VM* vm = &gVM;
   s32 type;
   s32 val;
+  VM* vm = &gVM;
 
   do {
     pc = VM_DecodeValue(pc, &type, &val);
@@ -701,7 +703,23 @@ void FUN_08231bec(void) {
 
 void VM_ClearScratchpad_Proxy(void) { VM_ClearScratchpad(); }
 
-NAKED void RandomizeGameStateAddr(void) { INCFUNC("asm/func/RandomizeGameStateAddr.inc"); }
+extern u8 gGameStateBuffer[12288];  // src/utility_08237468.c
+
+// チート対策, gGameStateBuffer の中のランダムな位置に各ゲーム状態を配置し直す
+// 残差はレジスタ割当のみ (命令列は 30 対 30 で一致), 原典は base を r1 に置いて REG_VCOUNT を r2 で受ける
+NON_MATCH void RandomizeGameStateAddr(void) {
+#ifdef NONMATCHING_C
+  u8* base = &gGameStateBuffer[(REG_VCOUNT & 0x7F) * 8];
+
+  gStat = (GameInfo*)base;
+  gStatBackup = (GameInfo*)(base + 0xB00);
+  gWorld = (World*)(base + 0x1600);
+  gWorldBackup = (World*)(base + 0x1A00);
+  gScratch = (Scratch*)(base + 0x1E00);
+#else
+  INCFUNC("asm/func/RandomizeGameStateAddr.inc");
+#endif
+}
 
 static void ClearStatAndWorld(void) {
   ClearMemory(gWorld, sizeof(World));

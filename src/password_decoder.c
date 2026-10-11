@@ -4,7 +4,7 @@
 
 // パスワード (ふっかつのじゅもん) の解析用に FUN_08011584 が一時的に確保する作業領域
 typedef struct {
-  u8 unk_00[0x18];         // 0x00, まだ未解析
+  u8 decoded[24];          // 0x00, FUN_080111a4 が password を2文字ずつ charTable の添字に直して入れる
   char password[0x30];     // 0x18, タグを除いたパスワード文字列
   u8 unk_48[0x74 - 0x48];  // 0x48, まだ未解析
   char* charTable;         // 0x74, パスワードに使える文字の並び
@@ -34,7 +34,21 @@ s32 FUN_08011178(u8* table, s32 lo, s32 hi) {
   return -1;
 }
 
-NAKED s32 FUN_080111a4(PasswordDecoder* p) { INCFUNC("asm/func/FUN_080111a4.inc"); }
+// password を2文字ずつ charTable の添字に直して decoded へ入れる, 表に無い組があれば -1
+s32 FUN_080111a4(PasswordDecoder* p) {
+  u8* s = (u8*)p->password;
+  s32 i;
+
+  for (i = 0; i < 24; i++, s += 2) {
+    u32 idx = FUN_08011178(p->charTable, s[0], s[1]);
+
+    if (idx > 0x3F) {
+      return -1;
+    }
+    p->decoded[i] = idx;
+  }
+  return 0;
+}
 
 NAKED u32 FUN_080111d8(u8* p, s32 start, s32 count) { INCFUNC("asm/func/FUN_080111d8.inc"); }
 

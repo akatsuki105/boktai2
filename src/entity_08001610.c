@@ -75,6 +75,8 @@ static_assert(sizeof(Entity08001610) == 248);
 
 IWRAM_DATA Entity08001610* gEntity08001610[4] = {};  // 0x03000010, BG ごとの Entity08001610, Init が bgIdx の位置に自分を入れ、Destroy が NULL に戻す
 
+// 残差1命令: 原典はポインタを降順に歩かせて base と**符号つき**で比較する (bge) が,
+// C のポインタ比較は必ず unsigned (bcs) になるため埋められない. 添字ループでは強度低減が起きず誘導変数が残る
 NON_MATCH void Entity08001610_ClearTable(void) {
 #ifdef NONMATCHING_C
   Entity08001610** base = gEntity08001610;

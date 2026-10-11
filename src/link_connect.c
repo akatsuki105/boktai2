@@ -195,7 +195,7 @@ s32 LinkConnect_Destroy(LinkConnect* p) {
   return 0;
 }
 
-// 太陽センサと時計の更新を止めてリンクを張り直し、握手の初期値を入れる
+// 太陽センサーと時計の更新を止めてリンクを張り直し、握手の初期値を入れる
 s32 LinkConnect_Init(LinkConnect* p, s32 timeout, s32 cancelable) {
   gLinkConnect = p;
   Taiyo_Disable();

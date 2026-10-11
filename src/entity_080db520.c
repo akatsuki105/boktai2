@@ -6,12 +6,14 @@
 #include "sprite.h"
 
 typedef struct {
-  AuxSprite spr;      // 0x00, _Destroy が AuxSprite_Remove に渡す
-  u8 unk_2c[0x14];    // 0x2C
-  u16 unk_40;         // 0x40, FUN_080dacac が bit1 を立てる
-  u8 unk_42[10];      // 0x42
-  HitboxData hitbox;  // 0x4C, _Destroy が Hitbox_Unregister に渡す
-  u8 unk_9c[8];       // 0x9C
+  AuxSprite spr;           // 0x00, _Destroy が AuxSprite_Remove に渡す
+  u8 unk_2c[0x3E - 0x2C];  // 0x2C
+  s16 unk_3e;              // 0x3E, 2 なら FUN_080dabe4 が何もしない
+  u16 unk_40;              // 0x40, FUN_080dacac が bit1、FUN_080dabe4 が bit2 を立てる
+  s16 unk_42;              // 0x42, 負なら FUN_080dabe4 が何もしない
+  u8 unk_44[0x4C - 0x44];  // 0x44
+  HitboxData hitbox;       // 0x4C, _Destroy が Hitbox_Unregister に渡す
+  u8 unk_9c[8];            // 0x9C
 } Entity080db520Elem;
 static_assert(sizeof(Entity080db520Elem) == 164);
 
@@ -32,7 +34,18 @@ NAKED s32 FUN_080da9c4(Entity080db520* p, u32 param_2, u32 param_3, u32 param_4,
 
 NAKED void FUN_080dab9c(Entity080db520* p) { INCFUNC("asm/func/FUN_080dab9c.inc"); }
 
-NAKED void FUN_080dabe4(Entity080db520* p) { INCFUNC("asm/func/FUN_080dabe4.inc"); }
+// idx 番の要素の unk_40 に bit2 を立てる
+void FUN_080dabe4(s32 idx) {
+  Entity080db520* p = gEntity080db520;
+
+  if (idx >= 0) {
+    Entity080db520Elem* e = &p->elems[idx];
+
+    if (e->unk_42 >= 0 && e->unk_3e != 2) {
+      e->unk_40 |= 4;
+    }
+  }
+}
 
 void FUN_080dac20(Entity080db520* p, Entity080db520Elem* elem) {}
 

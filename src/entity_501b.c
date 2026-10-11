@@ -22,7 +22,7 @@ typedef struct Entity501B {
   s32 unk_3c0;                                 // 0x3C0, gEntity9A9F->unk_144[playerIdx] (±9999 で頭打ち)
   Tilemaps* tilemap0;                          // 0x3C4, TILEMAP_CD91 を BG2 に敷く
   Tilemaps* tilemap1;                          // 0x3C8, TILEMAP_A413 を BG0 に敷く
-  rgb555* bgPltt;                              // 0x3CC, BGP_26BB
+  rgb555* bgPltt;                              // 0x3CC, bg_link_col_arr
   void (*updateCallback)(struct Entity501B*);  // 0x3D0
   u8* unk_3d4;                                 // 0x3D4, '.s', TextPanel_SetScript に渡す
   u8* unk_3d8;                                 // 0x3D8, '.e'

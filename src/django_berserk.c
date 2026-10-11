@@ -49,7 +49,16 @@ void DjangoBerserk_SetState(DjangoBerserk* p, void* fn) {
 
 NAKED void FUN_0807f650(DjangoBerserk* p, DjangoBerserkParticle* ptcl) { INCFUNC("asm/func/FUN_0807f650.inc"); }
 
-NAKED void FUN_0807f750(DjangoBerserk* p, DjangoBerserkParticle* ptcl) { INCFUNC("asm/func/FUN_0807f750.inc"); }
+// 直進モードの粒子, vel のぶん進めて animTimer が 5 になったらコマを差し替える
+void FUN_0807f750(DjangoBerserk* p, DjangoBerserkParticle* ptcl) {
+  ptcl->ptcl.pos.x += ptcl->vel.x;
+  ptcl->ptcl.pos.z += ptcl->vel.z;
+  ptcl->animTimer++;
+
+  if (ptcl->animTimer == 5) {
+    Particle_SetFrame(&ptcl->ptcl, p->group, 5);
+  }
+}
 
 NAKED void FUN_0807f78c(DjangoBerserk* p, Vec3* pos, u32 angle) { INCFUNC("asm/func/FUN_0807f78c.inc"); }
 

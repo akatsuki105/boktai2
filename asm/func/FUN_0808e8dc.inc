@@ -204,7 +204,7 @@ _0808EA78:
 	adds r0, r6, #0
 	bl FUN_0808e5a8
 	movs r0, #4
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r1, _0808EAC4 @ =0x00004026
 	adds r0, r6, r1
 	strh r4, [r0]
@@ -248,7 +248,7 @@ _0808EAE0:
 	cmp r0, #0
 	bne _0808EB0A
 	movs r0, #6
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	movs r0, #1
 	strh r0, [r4]
 _0808EB0A:

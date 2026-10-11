@@ -79,13 +79,23 @@ weapon32_t WeaponDexMenu_GetPage1stEntry(s32 page) {
   }
 }
 
-// そのマスに武器が並んでいるか
+// カーソル位置がそのページに実在するマスか
+// 残差2命令, AlbumMenu_CheckCursorPos と同じ (y*5 + 1) + x の結合順
 NON_MATCH bool32 WeaponDexMenu_CheckCursorPos(s32 x, s32 y, s32 page) {
 #ifdef NONMATCHING_C
-  if (x >= 0 && x <= 4 && y >= 0 && y <= 3 && WeaponDexMenu_GetPageEntryCount(page) >= x + y * 5 + 1) {
-    return TRUE;
+  if (x < 0 || x > 4) {
+    return FALSE;
   }
-  return FALSE;
+  if (y < 0) {
+    return FALSE;
+  }
+  if (y > 3) {
+    return FALSE;
+  }
+  if (WeaponDexMenu_GetPageEntryCount(page) < (y * 5 + 1) + x) {
+    return FALSE;
+  }
+  return TRUE;
 #else
   INCFUNC("asm/func/WeaponDexMenu_CheckCursorPos.inc");
 #endif
@@ -108,7 +118,8 @@ s32 WeaponDexMenu_CountFoundInPage(s32 page) {
 // ページ内の武器が全て図鑑登録済みか
 bool32 WeaponDexMenu_IsPageComplete(s32 page) { return WeaponDexMenu_CountFoundInPage(page) >= WeaponDexMenu_GetPageEntryCount(page); }
 
-// 武器の種別ごとの色をパレットの3か所に差し込む
+// 武器種 kind の色をプレビュー用パレットに差し込む
+// 残差2命令, 原典は2件目の前に src を1つ進めて [r3] / [r3,#2] で読む (こちらは [r3,#2] / [r3,#4])
 NON_MATCH void FUN_0820ff98(WeaponDexMenu* p, s32 kind) {
 #ifdef NONMATCHING_C
   rgb555* src = &gObjPlttData[40 * 16];

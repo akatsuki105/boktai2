@@ -241,15 +241,12 @@ NAKED void Enemy_Init_080f3680(Enemy* p) { INCFUNC("asm/func/Enemy_Init_080f3680
 
 NAKED bool8 FUN_080f3718(Enemy* p) { INCFUNC("asm/func/FUN_080f3718.inc"); }
 
+// state に入った最初のフレームだけ11番のアニメを鳴らす
+// 残差5命令, 原典は stateBegun の判定を 0/1 に起こしてからもう一度判定する二段形 (FUN_08065a98 系と同じ)
 NON_MATCH void FUN_080f3cdc(Enemy* p) {
 #ifdef NONMATCHING_C
-  bool32 fired = FALSE;
-
   if (p->stateBegun != 0) {
     p->stateBegun = 0;
-    fired = TRUE;
-  }
-  if (fired) {
     Enemy_PlayAnim(p, 0xB);
   }
   if (p->animForceRestart != 0) {

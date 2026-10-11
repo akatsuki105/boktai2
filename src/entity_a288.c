@@ -196,7 +196,7 @@ NAKED void FUN_082139b4(EntityA288* p, s16 param_2) { INCFUNC("asm/func/FUN_0821
 
 void FUN_08213a50(EntityA288* p) {
   p->sprite_98.flags |= SPRFLAG_HIDDEN;
-  TextBox_Close();
+  MessageWindow_Close();
 }
 
 NAKED s32 FUN_08213a64(EntityA288* p) { INCFUNC("asm/func/FUN_08213a64.inc"); }
@@ -214,11 +214,11 @@ void FUN_08213d70(EntityA288* p) {
 
 // 上半分のテキストボックスを BGP_C486 で開いて1行目を即時表示する
 void EntityA288_ShowText(EntityA288* p) {
-  TextBox_SetBgPltt(BGP_C486);
-  TextBox_Start(p->unk_1cc);
-  TextBox_ShowLine(0);
-  TextBox_SetRect(2, 3, 32, 6);
-  TextBox_SetInstant(1);
+  MessageWindow_SetBgPltt(BGP_C486);
+  MessageWindow_Start(p->unk_1cc);
+  MessageWindow_ShowLine(0);
+  MessageWindow_SetRect(2, 3, 32, 6);
+  MessageWindow_SetInstant(1);
 }
 
 NAKED void FUN_08213dc8(EntityA288* p) { INCFUNC("asm/func/FUN_08213dc8.inc"); }

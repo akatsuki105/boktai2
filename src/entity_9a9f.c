@@ -19,7 +19,7 @@ s32 FUN_081de360(Entity9A9F*);
 s32 FUN_081de844(Entity9A9F*);
 s32 FUN_081de960(Entity9A9F*);
 void FUN_081df568(Entity9A9F* p);
-void FUN_081df62c(Entity9A9F* p);
+s32 FUN_081df62c(Entity9A9F* p);
 void FUN_080a5e4c(void);
 s32 FUN_0809c08c(s32 mode);
 
@@ -102,7 +102,20 @@ NAKED void FUN_081dde98(Entity9A9F* p, unknown* param_2) { INCFUNC("asm/func/FUN
 
 NAKED void FUN_081dded4(Entity9A9F* p) { INCFUNC("asm/func/FUN_081dded4.inc"); }
 
-NAKED void FUN_081ddf44(Entity9A9F* p) { INCFUNC("asm/func/FUN_081ddf44.inc"); }
+// recordCount と unk_38 / unk_3a を引数にして scriptID_2dc のスクリプトを起動する
+void FUN_081ddf44(Entity9A9F* p) {
+  ScriptArgs args;
+  u32 argv[3];
+
+  if (p->scriptID_2dc != 0) {
+    argv[0] = p->recordCount;
+    argv[1] = p->unk_38;
+    argv[2] = p->unk_3a;
+    args.argc = 3;
+    args.argv = argv;
+    VM_ExecByID(p->scriptID_2dc, &args);
+  }
+}
 
 // 上限に達している unk_2cc を 0 に戻す
 void FUN_081ddf84(Entity9A9F* p) {
@@ -139,8 +152,9 @@ NAKED void FUN_081de0dc(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de0dc.inc"); }
 
 NAKED s32 FUN_081de130(Entity9A9F* p) { INCFUNC("asm/func/FUN_081de130.inc"); }
 
-// 残差1命令, 原典は FUN_081dd9d4 の戻り値を別レジスタへ複写してから u8 に落として判定する, ローカル退避と直接 (u8) キャストは試済
-NON_MATCH void FUN_081de214(Entity9A9F* p) {
+// 残差は最後の 0 代入のレジスタのみ (原典 r0 / こちら r1), 命令列は 25 対 25 で一致
+// 値を返す宣言 + return 無しで FUN_081dd9d4 の戻り値が r0 を塞ぐ形までは再現できたが、末尾の 0 共有が合わない
+NON_MATCH s32 FUN_081de214(Entity9A9F* p) {
 #ifdef NONMATCHING_C
   if ((u8)FUN_081dd9d4(p)) {
     p->unk_23 = 0;
@@ -260,49 +274,69 @@ s32 FUN_081df3f0(Entity9A9F* p) {
 
 NAKED void FUN_081df460(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df460.inc"); }
 
-// 残差はレジスタ番号のみ (原典は捨てる FUN_081dd9d4 の戻り値で r0 を塞いだまま r1 を使う)
-NON_MATCH void FUN_081df540(Entity9A9F* p) {
-#ifdef NONMATCHING_C
+s32 FUN_081df540(Entity9A9F* p) {
   FUN_081dd9d4(p);
   if (p->unk_2a) {
     Entity9A9F_SetState(p, 23, FUN_081df568);
   }
-#else
-  INCFUNC("asm/func/FUN_081df540.inc");
-#endif
 }
 
 NAKED void FUN_081df568(Entity9A9F* param_1) { INCFUNC("asm/func/FUN_081df568.inc"); }
 
-// 残差はレジスタ番号のみ (原典は捨てる FUN_081dd9d4 の戻り値で r0 を塞いだまま r1 を使う)
-NON_MATCH void FUN_081df604(Entity9A9F* p) {
-#ifdef NONMATCHING_C
+s32 FUN_081df604(Entity9A9F* p) {
   FUN_081dd9d4(p);
   if (p->unk_2b) {
     Entity9A9F_SetState(p, 25, FUN_081df62c);
   }
-#else
-  INCFUNC("asm/func/FUN_081df604.inc");
-#endif
 }
 
-// 残差は 13 命令 vs 14 命令 で、原典は戻り値を別レジスタに複写してから u8 として判定する
-NON_MATCH void FUN_081df62c(Entity9A9F* p) {
-#ifdef NONMATCHING_C
+s32 FUN_081df62c(Entity9A9F* p) {
   if ((u8)FUN_081dd9d4(p)) {
     FUN_0809c08c(7);
     p->killRequested = 1;
   }
-#else
-  INCFUNC("asm/func/FUN_081df62c.inc");
-#endif
 }
 
 NAKED s32 FUN_081df64c(Entity9A9F* p, s32 param_2) { INCFUNC("asm/func/FUN_081df64c.inc"); }
 
-NAKED s32 FUN_081df698(Entity9A9F* p, s32 param_2) { INCFUNC("asm/func/FUN_081df698.inc"); }
+s32 FUN_081e1984(unknown* param_1);  // src/link_battle_coin.c
 
-NAKED s32 FUN_081df6dc(Entity9A9F* p) { INCFUNC("asm/func/FUN_081df6dc.inc"); }
+// unk_118 から val の枠を探して解放する
+s32 FUN_081df698(unknown* param_1, s32 val) {
+  Entity9A9F* p = gEntity9A9F;
+  s32 i;
+
+  if (p == NULL) {
+    return -1;
+  }
+
+  for (i = 0; i < 5; i++) {
+    if (p->unk_118[i] == val) {
+      FUN_081e1984(param_1);
+      p->unk_118[i] = -1;
+      break;
+    }
+  }
+  return 0;
+}
+
+// unk_118 の空き枠 (-1) に val を入れる, 空きが無ければ 0
+s32 FUN_081df6dc(s32 val) {
+  Entity9A9F* p = gEntity9A9F;
+  s32 i;
+
+  if (p == NULL) {
+    return -1;
+  }
+
+  for (i = 0; i < 5; i++) {
+    if (p->unk_118[i] == -1) {
+      p->unk_118[i] = val;
+      return 1;
+    }
+  }
+  return 0;
+}
 
 // unk_118 の5要素のうち n と等しいものの個数を返す
 s32 FUN_081df720(s32 n) {

@@ -88,7 +88,7 @@ _0801C676:
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	adds r0, r5, #0
 	movs r1, #0
 	bl FUN_0801bf88

@@ -61,15 +61,17 @@ IWRAM_DATA Entity08000a94* gEntity08000a94[4] = {};
 // BG ごとの Entity08000a94 の登録表を後ろから NULL で埋める
 // 残差は movs r2, #0 の位置と, 比較が bcs になる点の2箇所, 原典は符号付きの bge で比べているが C のポインタ比較は符号なしになる
 // 添字ループ (for (i = 3; i >= 0; i--)) にすると bge になる代わりにカウンタが残って1命令増える
+// 残差1命令: 原典はポインタを降順に歩かせて base と**符号つき**で比較する (bge) が,
+// C のポインタ比較は必ず unsigned (bcs) になるため埋められない. 添字ループでは強度低減が起きず誘導変数が残る
 NON_MATCH void Entity08000a94_ClearTable(void) {
 #ifdef NONMATCHING_C
-  Entity08000a94** head = gEntity08000a94;
-  Entity08000a94** p = head + 3;
+  Entity08000a94** base = gEntity08000a94;
+  Entity08000a94** p = base + 3;
 
   do {
     *p = NULL;
     p--;
-  } while (p >= head);
+  } while (p >= base);
 #else
   INCFUNC("asm/func/Entity08000a94_ClearTable.inc");
 #endif
@@ -92,16 +94,18 @@ NAKED Entity08000a94* Entity08000a94_Create(u16 param_1, unknown* param_2) { INC
 // 0xB4B4
 NAKED unknown* VM_SubB4B4(u32 param_1) { INCFUNC("asm/func/VM_SubB4B4.inc"); }
 
-// id が一致するレイヤの添字を返す, 無ければ 0
+// id のレイヤが何番目かを返す, 見つからなければ 0
+// 残差は layer と i のレジスタが入れ替わるのみ (命令列は 22 対 22 で一致)
 NON_MATCH s32 FUN_08000c84(Tilemaps* f, u16 id) {
 #ifdef NONMATCHING_C
   TilemapLayer* layer = f->layers;
   s32 i;
 
-  for (i = 0; i < f->layerCount; i++, layer++) {
+  for (i = 0; i < f->layerCount; i++) {
     if (layer->id == id) {
       return i;
     }
+    layer++;
   }
   return 0;
 #else

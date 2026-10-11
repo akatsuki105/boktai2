@@ -314,14 +314,23 @@ NON_MATCH bool32 Save_ReadSystemDataOrInit(void) {
 #endif
 }
 
+// マップ初期化スクリプトがあればそれを, なければ特殊スクリプトを起動する
+// 残差2命令, 原典は 2つ目の if を畳まず cmp/bne で再判定するが agbcc はどう書いても 1つ目の結果から b に畳む
+// (ネストした if / 早期 return / 代入位置を動かす形はいずれも同じか悪化, 試済)
 NON_MATCH bool32 UNUSED FUN_0823ae14(Entity0823acbc* p) {
 #ifdef NONMATCHING_C
+  u16 id = gMapInitScriptID;
+
   u32_03004798 = 0;
   p->unk_1c = 0;
   FUN_0823a9c4();
   VM_ClearScratchpad_Proxy();
-  if (gMapInitScriptID != 0) VM_ExecByID(gMapInitScriptID, NULL);
-  if (gMapInitScriptID == 0) VM_ExecSpecial();
+  if (id != 0) {
+    VM_ExecByID(id, NULL);
+  }
+  if (id == 0) {
+    VM_ExecSpecial();
+  }
   return TRUE;
 #else
   INCFUNC("asm/func/FUN_0823ae14.inc");

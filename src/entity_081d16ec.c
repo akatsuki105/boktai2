@@ -183,6 +183,7 @@ void (*const PTR_ARRAY_085ae0b8[4])(Entity081d16ec*, Entity081d16ecItem*) = {
 
 NAKED s32 Entity081d16ec_Update(Entity081d16ec* p) { INCFUNC("asm/func/Entity081d16ec_Update.inc"); }
 
+// 残差5命令, 原典は activeMask の判定を 0/1 に起こしてからもう一度判定する二段形 (FUN_08065a98 系と同じ)
 NON_MATCH s32 Entity081d16ec_Destroy(Entity081d16ec* p) {
 #ifdef NONMATCHING_C
   s32 i;

@@ -35,7 +35,8 @@ typedef struct Entity9A9F {
   u16 unk_30;                                  // 0x030, Entity9A9F_Create が 0x1C20 を入れる
   u16 unk_32;                                  // 0x032, 同上
   u32 stateTimer;                              // 0x034, FUN_081dfa98 が毎フレーム +1、Entity9A9F_SetState が 0 に戻す
-  u8 unk_38[4];                                // 0x038
+  u16 unk_38;                                  // 0x038, FUN_081ddf44 がスクリプトの第2引数として渡す
+  u16 unk_3a;                                  // 0x03A, 同じく第3引数
   s32 unk_3c;                                  // 0x03C, '.L=5000'
   u8 unk_40[2];                                // 0x040
   u16 unk_42;                                  // 0x042, FUN_081dfa98 が Sio_SetSendData に渡す
@@ -81,7 +82,7 @@ typedef struct Entity9A9F {
   u8 unk_2cf[0x2D4 - 0x2CF];                   // 0x2CF
   void (*updateCallback)(struct Entity9A9F*);  // 0x2D4
   s32 windowID;                                // 0x2D8, TextPanel_Create の戻り値
-  s16 unk_2dc;                                 // 0x2DC, '.l=0'
+  u16 scriptID_2dc;                            // 0x2DC, '.l=0', FUN_081ddf44 が VM_ExecByID へ渡す
   s16 unk_2de;                                 // 0x2DE, '.R=0'
   s16 unk_2e0;                                 // 0x2E0, '.v=0'
   s16 unk_2e2;                                 // 0x2E2, '.r=0'

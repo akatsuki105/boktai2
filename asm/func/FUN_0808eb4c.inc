@@ -47,7 +47,7 @@
 	adds r0, r4, r2
 	strh r1, [r0]
 	movs r0, #1
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r1, _0808EBE4 @ =FUN_0808eeac
 	adds r0, r4, #0
 	bl FUN_0808a33c

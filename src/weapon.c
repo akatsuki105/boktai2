@@ -88,18 +88,16 @@ NON_MATCH bool32 FUN_08242b88(WeaponData* data) {
 #endif
 }
 
-NON_MATCH void FUN_08242c08(slot32_t n) {
-#ifdef NONMATCHING_C
+// 武器を消して, 登録されていた枠も外す
+void FUN_08242c08(slot32_t n) {
   s32 i;
-  FUN_08242b6c(n, &gWeaponDB[0]);
+
+  FUN_08242b6c(n, gWeaponDB);
   for (i = 0; i < 4; i++) {
     if (REGISTERED_WEAPON(i) == n) {
       REGISTERED_WEAPON(i) = -1;
     }
   }
-#else
-  INCFUNC("asm/func/FUN_08242c08.inc");
-#endif
 }
 
 void SwapWeaponSlot(slot32_t slot1, slot32_t slot2) {
@@ -164,18 +162,16 @@ void FUN_08242f08(void) {
   }
 }
 
-NON_MATCH void FUN_08242f44(slot32_t n, s32 r1) {
-#ifdef NONMATCHING_C
+// 同じ武器が登録されている枠を外してから slot に登録し直す
+void FUN_08242f44(slot32_t n, s32 slot) {
   s32 i;
+
   for (i = 0; i < 4; i++) {
     if (REGISTERED_WEAPON(i) == n) {
       REGISTERED_WEAPON(i) = -1;
     }
   }
-  REGISTERED_WEAPON(r1) = n;
-#else
-  INCFUNC("asm/func/FUN_08242f44.inc");
-#endif
+  REGISTERED_WEAPON(slot) = n;
 }
 
 void FUN_08242f84(s32 n) {

@@ -6,7 +6,7 @@
 #include "types.h"
 
 // Particle Group ID
-#define PTCL_GROUP_0 0x1C1A
+#define PTCL_GROUP_0 BOKHASH("eff_eff_00")  // 0x1C1A
 #define PTCL_GROUP_1 0x1C1C
 #define PTCL_GROUP_2 0x1C1E
 

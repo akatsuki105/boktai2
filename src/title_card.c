@@ -25,7 +25,7 @@ typedef struct TitleCard {
   s16 openDelay;             // 0x04A, unk_46 が 0 なら 0x40、そうでなければ 0, state 0 の長さ
   s16 closeDelay;            // 0x04C, '.d=0x80', state 2 の長さ
   s16 progressMax;           // 0x04E, 0x40 固定
-  u8* text;                  // 0x050, '.r' があれば FUN_0823d340() の戻り値, 0 でなければ TextBox_Start に渡して文字を出す
+  u8* text;                  // 0x050, '.r' があれば FUN_0823d340() の戻り値, 0 でなければ MessageWindow_Start に渡して文字を出す
   u16 hblank[2][160];        // 0x054, 1画面160ライン分の HBlank テーブルを2面
   u16 bufIdx;                // 0x2D4, hblank のどちらの面を使うか, 毎フレーム反転する
   s16 noiseAmp;              // 0x2D6, 0..0x80, 乱数に掛けてノイズの振れ幅にする

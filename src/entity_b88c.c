@@ -59,7 +59,7 @@ s32 FUN_0804aa30(EntityB88C* p, s32 param_2) {
 
   Video_SetupBGLayout(1, 0, GetFile(DIR_TILE_MAP, TILEMAP_CD91), 0, 0, 1, &bgIndex);
   Video_GenerateBGMap(2, 0, 0, 0, 0);
-  CpuCopy16(GetBgPlttFile(BGP_26BB)->body, gBgPlttBuffer, 256 * sizeof(rgb555));
+  CpuCopy16(GetBgPlttFile(BOKHASH("bg_link_col_arr"))->body, gBgPlttBuffer, 256 * sizeof(rgb555));
   return 0;
 }
 

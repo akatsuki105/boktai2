@@ -29,7 +29,8 @@ typedef struct Entity286FNode {
   u16 flags;                  // 0x00E, 0x100 / 0x200 / 0x1000 のビットで分岐する
   u32 unk_10;                 // 0x010, 根拠: FUN_080441a4 が +1 して元の値を unk_2cc の第3引数に渡す
   u32 timer;                  // 0x014, 多数の関数が 0 に戻し、FUN_08042414 が +1 する
-  u8 unk_18[4];               // 0x018, まだ未解析
+  u8 unk_18[0x01B - 0x018];   // 0x018, まだ未解析
+  u8 unk_1b;                  // 0x01B, FUN_08040f0c が第4引数 (向き) を入れる
   u16 plttID;                 // 0x01C, Entity286FNode_SetPltt が書き、Entity286FNode_RefreshPltt が再適用する
   u16 curPlttID;              // 0x01E, Entity286FNode_ApplyPltt が SpriteHolder_SetPlttID へ渡した値
   u16 unk_20;                 // 0x020, FUN_08044a54 系が 0 を入れる
@@ -56,7 +57,7 @@ typedef struct Entity286FNode {
   } shadow;                           // 0x244
   u8 unk_2b0[0x2B8 - 0x2B0];          // 0x2B0, まだ未解析
   unknown* unk_2b8;                   // 0x2B8, Entity286F_FindSpriteData の戻り値
-  unknown* unk_2bc;                   // 0x2BC, FUN_08040dc0 の戻り値
+  const struct Unk085ab2b8* unk_2bc;  // 0x2BC, id と idx で引いた Unk085ab2b8_ARRAY_085ab2b8 の行
   u8 unk_2c0[0x2C8 - 0x2C0];          // 0x2C0, まだ未解析
   u16 unk_2c8;                        // 0x2C8, FUN_080411d8 が unk_2ca を複写する
   u16 unk_2ca;                        // 0x2CA, FUN_080415cc が書き、FUN_080411d8 が unk_2c8 へ移す
@@ -87,6 +88,7 @@ typedef struct Entity286F {
 } Entity286F;
 static_assert(sizeof(Entity286F) == 1084);
 
+bool32 FUN_0823b464(Mover* p, u32 unk_20);  // src/mover.c
 void FUN_08055d7c(SpriteHolder* p);
 
 COMMON_DATA Entity286F* gEntity286F = NULL;  // 0x03002B50
@@ -131,7 +133,7 @@ const Entity286FSpriteEntry sEntity286FSprites[21] = {
     {id : SPRITE_MEGAMAN,              idx : 0, data : &u16_ARRAY_085aaff4[268]}
 };  // 0x085AB210
 
-typedef struct {
+typedef struct Unk085ab2b8 {
   SpriteID16 id;  // 0x0, NPCのスプライトIDばっかり
   u8 idx;         // 0x2, 1つのグラフィックにn人分のグラフィックデータが入っているときにどのキャラクターかを示すインデックス?
   u8 unk_3;       // 0x3, 不明
@@ -183,7 +185,17 @@ unknown* Entity286F_FindSpriteData(SpriteID32 id, s32 idx) {
   return NULL;
 }
 
-NAKED unknown* FUN_08040dc0(SpriteID32 id, s32 idx) { INCFUNC("asm/func/FUN_08040dc0.inc"); }
+// スプライトIDとキャラ番号の組に対応する表の行, 無ければ NULL
+const Unk085ab2b8* FUN_08040dc0(SpriteID32 id, s32 idx) {
+  s32 i;
+
+  for (i = 0; i < 21; i++) {
+    if (Unk085ab2b8_ARRAY_085ab2b8[i].id == id && Unk085ab2b8_ARRAY_085ab2b8[i].idx == idx) {
+      return &Unk085ab2b8_ARRAY_085ab2b8[i];
+    }
+  }
+  return NULL;
+}
 
 s32 FUN_08040df4(Entity286F* p, Entity286FNode* node, SpriteID32 id, s32 idx) {
   node->unk_2b8 = Entity286F_FindSpriteData(id, idx);
@@ -243,7 +255,21 @@ Entity286FNode* Entity286FNode_Alloc(Entity286F* p, u32 kind) {
   return node;
 }
 
-NAKED s32 FUN_08040f0c(Entity286FNode* node, u16 param_2, u32* param_3, u8 param_4) { INCFUNC("asm/func/FUN_08040f0c.inc"); }
+// ノードの Mover を初期化して unk_a0 を結び付ける
+// 残差は命令の並び順のみ (命令列は 27 対 27), 原典は unk_1b の strb と mover のアドレス計算を
+// 引数の u16/u8 マスクより前に置くが agbcc はマスクを先に出す
+NON_MATCH s32 FUN_08040f0c(Entity286FNode* node, u16 id, Vec3* pos, u8 angle) {
+#ifdef NONMATCHING_C
+  Mover* mover = &node->mover;
+
+  node->unk_1b = angle;
+  Mover_Init(mover, id, pos, angle, 7, node);
+  FUN_0823b464(mover, (u32)&node->unk_a0);
+  mover->unk_2 |= 4;
+#else
+  INCFUNC("asm/func/FUN_08040f0c.inc");
+#endif
+}
 
 NAKED s32 FUN_08040f48(Entity286FNode* node, s32 assetType, u32 fileID, u32 param_4, u32 param_5) { INCFUNC("asm/func/FUN_08040f48.inc"); }
 

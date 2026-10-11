@@ -22,14 +22,14 @@ typedef struct {
   u32 timer;                 // 0x020, step に入ってからのフレーム数, TextSlideshow_Update が毎フレーム +1
   TextSlideshowFlags flags;  // 0x024, '.f=0', bit0: gStagedDISPCNT を退避して BG0 だけにする, bit1: 最終行のあと KillEntity
   u16 savedDispcnt;          // 0x026, flags bit0 のとき _Init が gStagedDISPCNT を退避し _Destroy が戻す
-  u8* scriptS;               // 0x028, '.s' の後の FUN_0823d340(), TextBox_Start に渡す本文
+  u8* scriptS;               // 0x028, '.s' の後の FUN_0823d340(), MessageWindow_Start に渡す本文
   u8* scriptT;               // 0x02C, '.t' の後の FUN_0823d34c(), 下の7本の配列の読み出し元
   u16 exitScriptID;          // 0x030, '.e', 最終行のあと VM_ExecByID
   u16 skipScriptID;          // 0x032, '.c', 0 でなければ Start/A でスキップでき、そのとき VM_ExecByID
   s16 holdTime[64];          // 0x034, '.t[0]', 表示したまま待つフレーム数, -1 で行テーブルの終端
   u16 fadeInTime[64];        // 0x0B4, '.t[5]', 明るさを 0 から 64 まで上げるフレーム数
   u16 fadeOutTime[64];       // 0x134, '.t[6]', 明るさを 64 から 0 まで下げるフレーム数
-  u16 x[64];                 // 0x1B4, '.t[1]', TextBox_SetRect の第1引数
+  u16 x[64];                 // 0x1B4, '.t[1]', MessageWindow_SetRect の第1引数
   u16 y[64];                 // 0x234, '.t[2]', 同第2引数
   u16 w[64];                 // 0x2B4, '.t[3]', 同第3引数
   u16 h[64];                 // 0x334, '.t[4]', 同第4引数
@@ -40,7 +40,7 @@ IWRAM_DATA TextSlideshow* gTextSlideshow = NULL;  // 0x030000D0
 
 void TextSlideshow_ClearPtr(void) { gTextSlideshow = NULL; }
 
-void TextSlideshow_ApplyLineRect(TextSlideshow* p) { TextBox_SetRect(p->x[p->curLine], p->y[p->curLine], p->w[p->curLine], p->h[p->curLine]); }
+void TextSlideshow_ApplyLineRect(TextSlideshow* p) { MessageWindow_SetRect(p->x[p->curLine], p->y[p->curLine], p->w[p->curLine], p->h[p->curLine]); }
 
 void TextSlideshow_SetStep(TextSlideshow* p, u8 step) {
   p->step = step;
@@ -63,7 +63,7 @@ void TextSlideshow_StepFadeIn(TextSlideshow* p) {
   if (TextSlideshow_TakeStepChanged(p)) {
     ClearBGTilemapBuffer(0);
     TextSlideshow_ApplyLineRect(p);
-    TextBox_ShowLine(p->curLine);
+    MessageWindow_ShowLine(p->curLine);
   }
 
   if (p->timer >= p->fadeInTime[p->curLine]) {
@@ -91,7 +91,7 @@ void TextSlideshow_StepFadeOut(TextSlideshow* p) {
   if (p->timer >= p->fadeOutTime[p->curLine]) {
     gBgBrightness = 0;
     if (p->curLine == p->lastLine) {
-      TextBox_Close();
+      MessageWindow_Close();
       TextSlideshow_SetStep(p, 4);
       if (p->exitScriptID != 0) {
         VM_ExecByID(p->exitScriptID, NULL);
@@ -150,7 +150,7 @@ s32 TextSlideshow_Update(TextSlideshow* p) {
 
 s32 TextSlideshow_Destroy(TextSlideshow* p) {
   gTextSlideshow = NULL;
-  TextBox_Close();
+  MessageWindow_Close();
 
   if (p->flags & TEXTSLIDESHOW_TAKE_OVER_BG) {
     gStagedDISPCNT = p->savedDispcnt;
@@ -193,10 +193,10 @@ s32 TextSlideshow_Start(TextSlideshow* p) {
 
   p->exitScriptID = VM_GetNamedArgValue('e', 0);
   p->skipScriptID = VM_GetNamedArgValue('c', 0);
-  TextBox_Start(p->scriptS);
-  TextBox_SetInstant(TRUE);
-  TextBox_SetBgPltt(BGP_539C);
-  TextBox_ShowLine(p->curLine);
+  MessageWindow_Start(p->scriptS);
+  MessageWindow_SetInstant(TRUE);
+  MessageWindow_SetBgPltt(BGP_539C);
+  MessageWindow_ShowLine(p->curLine);
   TextSlideshow_ApplyLineRect(p);
   gBgPlttBlendColor = RGB(4, 4, 4);
   gBgPlttFadeRowMask = (1 << 15);
@@ -206,13 +206,20 @@ s32 TextSlideshow_Start(TextSlideshow* p) {
 }
 
 // BG1-BG3 を消して BG0 だけ表示する
+// 残差1命令, DISPCNT_BG0_ON の定数が原典では直接 r1 に乗るが agbcc は別レジスタに作ってコピーする
+// (|= を独立した文にしても, OR の左右を入れ替えても同じ)
 NON_MATCH s32 TextSlideshow_Init(TextSlideshow* p) {
 #ifdef NONMATCHING_C
+  s32 flags;
+
   gTextSlideshow = p;
-  p->flags = VM_GetNamedArgValue('f', 0);
-  if (p->flags & TEXTSLIDESHOW_TAKE_OVER_BG) {
-    p->savedDispcnt = gStagedDISPCNT;
-    gStagedDISPCNT = (gStagedDISPCNT & ~(DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON)) | DISPCNT_BG0_ON;
+  flags = VM_GetNamedArgValue('f', 0);
+  p->flags = flags;
+  if (flags & TEXTSLIDESHOW_TAKE_OVER_BG) {
+    u16 dispcnt = gStagedDISPCNT;
+
+    p->savedDispcnt = dispcnt;
+    gStagedDISPCNT = (dispcnt & ~(DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON)) | DISPCNT_BG0_ON;
   }
 
   return TextSlideshow_Start(p);

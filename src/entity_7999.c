@@ -7,7 +7,7 @@
 typedef struct Entity7999 {
   Entity e;                                    // 0x000, ENTITY_UNK_11
   Tilemaps* tilemap;                           // 0x018, TILEMAP_CD91
-  rgb555* bgp;                                 // 0x01C, BGP_26BB
+  rgb555* bgp;                                 // 0x01C, bg_link_col_arr
   MainSprite sprites[5];                       // 0x020, FUN_081da468 が stride 0x60 で pos を書き換える5枚
   MainSpriteGfx gfxLink;                       // 0x200, SPRITE_UI_LINK
   MainSpriteGfx gfxIcon;                       // 0x220, SPRITE_INVENTORY_ICONS

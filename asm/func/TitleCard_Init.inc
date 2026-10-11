@@ -392,18 +392,18 @@ _0800F8AA:
 	cmp r0, #0
 	beq _0800F90C
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 	ldr r0, _0800F904 @ =0x0000539C
-	bl TextBox_SetBgPltt
+	bl MessageWindow_SetBgPltt
 	ldr r0, [r5, #0x50]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	ldr r0, [sp, #0x20]
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	movs r0, #0
 	movs r1, #7
 	movs r2, #0x1a
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	bl FUN_080488dc
 	ldr r1, _0800F908 @ =0x03003ED0
 	lsls r0, r0, #2

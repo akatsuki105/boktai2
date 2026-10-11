@@ -771,10 +771,10 @@ NON_MATCH s32 FUN_0823585c(Vec3* dst, Vec3* pos, u32 kind, s32 param_4, s32 para
 #endif
 }
 
-// このゲームでこの関数が呼ばれることはない
+// 残差1命令, 原典は GetFile の戻り値を r1 へ写して r0 にプールを取るが gcc は逆に割り当てる
 NON_MATCH s32 Map_LoadNavMesh(FileID id) {
 #ifdef NONMATCHING_C
-  gCollisionMap->navMesh = GetFile(0xF63B, id);
+  gCollisionMap->navMesh = GetFile(DIR_NAV_MESH, id);
   return 0;
 #else
   INCFUNC("asm/func/Map_LoadNavMesh.inc");

@@ -371,8 +371,7 @@ NON_MATCH s32 Entity83B2_Update(Entity83B2* p) {
 #endif
 }
 
-NON_MATCH s32 Entity83B2_Destroy(Entity83B2* p) {
-#ifdef NONMATCHING_C
+s32 Entity83B2_Destroy(Entity83B2* p) {
   Entity83B2Data* data;
   s32 i;
 
@@ -383,9 +382,7 @@ NON_MATCH s32 Entity83B2_Destroy(Entity83B2* p) {
     Free(p->list);
   }
   gEntity83B2 = NULL;
-#else
-  INCFUNC("asm/func/Entity83B2_Destroy.inc");
-#endif
+  return 0;
 }
 
 s32 Entity83B2_Init(Entity83B2* p, void* _) {

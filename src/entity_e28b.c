@@ -33,13 +33,13 @@ typedef struct {
   s32 spriteCount;             // 0x24, count * 3
   u32 slotCount;               // 0x28, _Init が 0 を書く, slots の使用件数
   EntityE28BSlot slots[16];    // 0x2C, FUN_08002a00 が末尾に積む, 上限 16 件 (slotCount > 15 を弾く)
-  AuxSpriteGfx gfx;            // 0x6C, '.m'、無ければ FUN_08230860("mask_test_00") の ID
+  AuxSpriteGfx gfx;            // 0x6C, '.m'、無ければ HashName("mask_test_00") の ID
   AuxSprite* sprites;          // 0x88, &entries[count] を指す
   u32* unk_8c;                 // 0x8C, sprites の後ろを指す
   EntityE28BEntry entries[1];  // 0x90, 実際は count 個 (可変長)
 } EntityE28B;
 
-u16 FUN_08230860(const char* s);
+u16 HashName(const char* s);
 
 const ALIGNED(4) char s_mask_test_00[] = "mask_test_00";  // 0x08251B2C
 
@@ -85,6 +85,8 @@ void FUN_080029cc(EntityE28B* p, u16 id) {
 }
 
 // 種別付きで Mover の id を slots の末尾に積む, 満杯か未生成なら -1
+// 残差4命令, 原典は store ごとに (p + 0x2C) / (p + 0x2E) を作ってから添字を足すが
+// agbcc は (p + 添字*4) に畳んでメンバのオフセットを strh の即値に入れる (FUN_0808cacc と同じ加算順の問題)
 NON_MATCH s32 FUN_08002a00(s32 kind, s32 id) {
 #ifdef NONMATCHING_C
   EntityE28B* p = Registry_Find(0x7BE3);
@@ -137,7 +139,7 @@ NON_MATCH s32 EntityE28B_Init(EntityE28B* p, u16 param_2, u16 param_3) {
   if (VM_SeekToNamedArg('m')) {
     spriteID = VM_GetValue();
   } else {
-    spriteID = FUN_08230860(s_mask_test_00);
+    spriteID = HashName(s_mask_test_00);
   }
 
   if (!Video_GetAuxSprite(&p->gfx, spriteID)) {

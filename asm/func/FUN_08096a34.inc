@@ -20,7 +20,7 @@ _08096A52:
 	movs r2, #1
 	orrs r1, r2
 	str r1, [r0]
-	bl TextBox_Close
+	bl MessageWindow_Close
 	bl FUN_08049e5c
 	b _08096ADC
 	.align 2, 0
@@ -45,16 +45,16 @@ _08096A74:
 	movs r3, #1
 	bl MainSprite_SetPose
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 	ldr r0, [r6, #0x48]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	adds r0, r5, #0
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r0, _08096AEC @ =0x08DAA7B0
 	lsls r4, r5, #3
 	adds r4, r4, r0

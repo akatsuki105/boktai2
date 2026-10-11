@@ -26,13 +26,13 @@ IWRAM_DATA SunCountdown* gSunCountdown = NULL;  // 0x0300004C
 
 void SunCountdown_ClearPtr(void) { gSunCountdown = NULL; }
 
-// BG のタイルマップ上で (x, y) のエントリを指す
-// 残差は命令2つの位置だけ (tilemap のロードが x*2 の前か後か, u16 分の <<1 が y と unk_18 のどちらに乗るか), Tier A-B は試済, 未: Tier C
+// 残差1命令, 原典は width16*2 を先に作って y を掛けるが gcc は y*2 を先に作る (括弧・ローカル化とも効かず)
 NON_MATCH u16* SunCountdown_GetTilePtr(s32 bgNum, s32 x, s32 y) {
 #ifdef NONMATCHING_C
   BgState* bg = &gBgStates[bgNum];
+  u16* map = bg->tilemap;
 
-  return bg->tilemap + x + (bg->width16 * 2) * y;
+  return map + x + (bg->width16 * 2) * y;
 #else
   INCFUNC("asm/func/SunCountdown_GetTilePtr.inc");
 #endif

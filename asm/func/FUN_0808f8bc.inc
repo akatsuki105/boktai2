@@ -15,7 +15,7 @@
 	cmp r0, #0x95
 	bls _0808F914
 	movs r0, #5
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r1, _0808F900 @ =0x00004028
 	adds r0, r4, r1
 	ldr r0, [r0]
@@ -31,7 +31,7 @@ _0808F900: .4byte 0x00004028
 _0808F904:
 	movs r0, #0
 	movs r1, #3
-	bl TextBox_SetVarValue
+	bl MessageWindow_SetVarValue
 _0808F90C:
 	ldr r1, _0808F91C @ =FUN_0808f920
 	adds r0, r4, #0

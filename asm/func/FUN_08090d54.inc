@@ -154,11 +154,11 @@ _08090E9C:
 	bl FUN_08090ca4
 _08090EA8:
 	ldr r0, [r7, #0x50]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	ldr r0, _08090ED8 @ =0x0000EFDA
-	bl TextBox_SetBgPltt
+	bl MessageWindow_SetBgPltt
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 	adds r0, r7, #0
 	bl FUN_0808fbf4
 	ldr r1, _08090EDC @ =FUN_080907f0

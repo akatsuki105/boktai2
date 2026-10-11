@@ -1,14 +1,14 @@
 	push {r4, r5, r6, r7, lr}
 	sub sp, #4
 	adds r6, r0, #0
-	bl TextBox_Close
+	bl MessageWindow_Close
 	bl FUN_08049e5c
 	bl FUN_08049fa8
 	movs r0, #0
 	movs r1, #0x12
 	movs r2, #0x1e
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	ldr r0, _08091644 @ =0x0000402C
 	adds r3, r6, r0
 	ldr r2, _08091648 @ =0x085ACEC8

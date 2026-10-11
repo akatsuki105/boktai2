@@ -13,7 +13,7 @@
 	movs r0, #0xde
 	bl PlaySound_082406e0
 	movs r0, #7
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r1, _0808F854 @ =FUN_0808f670
 	adds r0, r4, #0
 	bl FUN_0808a33c

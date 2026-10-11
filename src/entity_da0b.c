@@ -56,7 +56,7 @@ typedef struct EntityDA0B {
   MainSprite sprites2[13];                     // 0x0E04, FUN_0801d084 が追加し FUN_0801d6a0 が消す
   u8 unk_12e4[0x1304 - 0x12E4];                // 0x12E4, まだ未解析
   void (*updateCallback)(struct EntityDA0B*);  // 0x1304
-  u8* unk_1308;                                // 0x1308, '.w' の FUN_0823d340 の戻り値, TextBox_Start に渡す
+  u8* unk_1308;                                // 0x1308, '.w' の FUN_0823d340 の戻り値, MessageWindow_Start に渡す
   u8* unk_130c;                                // 0x130C, '.k' の FUN_0823d340 の戻り値, VM_ParseStringRef に渡す
   bool8 unk_1310;                              // 0x1310, FUN_0801d7f8 が立て FUN_0801d7d8 が読んで落とす1フレームの目印
   u8 unk_1311[3];                              // 0x1311, まだ未解析

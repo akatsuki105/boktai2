@@ -6,19 +6,19 @@
 	cmp r0, #0
 	bne _0809334A
 	ldr r0, [r5, #0x40]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 	movs r0, #0
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #4
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	ldr r1, _080933A4 @ =0x00003F9D
 	adds r0, r5, r1
 	ldrb r0, [r0]
 	adds r0, #0xfd
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 _0809334A:
 	ldrh r0, [r4]
 	adds r0, #1
@@ -50,12 +50,12 @@ _08093368:
 	orrs r0, r1
 	str r0, [r2]
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 	movs r0, #0
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	adds r0, r5, #0
 	bl FUN_08092744
 _0809339A:

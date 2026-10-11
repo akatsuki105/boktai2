@@ -53,7 +53,10 @@ void FUN_0809df6c(void) { gEntity5CCC = NULL; }
 
 NAKED bool32 FUN_0809df78(Vec3* pos) { INCFUNC("asm/func/FUN_0809df78.inc"); }
 
-NON_MATCH bool32 FUN_0809dfec(s32 param_1) {
+// 指定エリアに有効な光柱があるか
+// 残差3命令, 原典は count != 0 のガードと i < count の判定を両方出し mapArea を r4 に置くが
+// agbcc はガードを1つに畳んで r5 まで使う (count != 0 を明示的に書くと逆に5命令増える)
+NON_MATCH bool32 FUN_0809dfec(s32 mapArea) {
 #ifdef NONMATCHING_C
   Entity5CCC* p = gEntity5CCC;
   SkylightBeam* beam;
@@ -64,7 +67,7 @@ NON_MATCH bool32 FUN_0809dfec(s32 param_1) {
   }
   beam = p->beams;
   for (i = 0; i < p->count; i++, beam++) {
-    if (beam->unk_9a && beam->mapArea == param_1) {
+    if (beam->unk_9a && beam->mapArea == mapArea) {
       return TRUE;
     }
   }
@@ -143,6 +146,8 @@ NAKED void FUN_0809e5c4(void) { INCFUNC("asm/func/FUN_0809e5c4.inc"); }
 
 NAKED void FUN_0809e630(Entity5CCC* p, s32 param_2) { INCFUNC("asm/func/FUN_0809e630.inc"); }
 
+// 残差2命令, 原典は 0x10 をレジスタに作ってから and し rsbs/lsrs #31 で 0/1 に起こすが,
+// gcc は単一ビットだと気づいて (flags >> 4) & 1 の形に縮める
 NON_MATCH void FUN_0809e734(Entity5CCC* p) {
 #ifdef NONMATCHING_C
   u32 flags = p->player->unk_20;

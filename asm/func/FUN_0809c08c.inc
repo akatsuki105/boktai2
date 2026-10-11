@@ -110,7 +110,7 @@ _0809C14C:
 	movs r0, #0
 	bl Video_SetBGLayer
 	ldr r0, _0809C1B4 @ =0x0000EFDA
-	bl TextBox_SetBgPltt
+	bl MessageWindow_SetBgPltt
 	ldr r1, _0809C1B8 @ =0x00000A31
 	adds r0, r4, r1
 	strb r6, [r0]

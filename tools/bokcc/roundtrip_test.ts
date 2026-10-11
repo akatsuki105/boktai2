@@ -1,7 +1,7 @@
 import { fail } from "@std/assert";
 
 import { ByteStream, InstructionReader } from "./instruction_reader.ts";
-import { InsnType } from "./instruction.ts";
+import { InsnType, scriptName } from "./instruction.ts";
 import { parse } from "./parser.ts";
 import { compile } from "./compiler.ts";
 import * as gba from "../common/gba/gba.ts";
@@ -70,7 +70,7 @@ Deno.test("round-trip: 全スクリプト", () => {
       reason = e instanceof Error ? e.message : String(e);
     }
     if (reason !== null) {
-      failures.push(`  Script_${String(id).padStart(4, "0")}: ${reason}`);
+      failures.push(`  ${scriptName(id)}: ${reason}`);
     }
   }
   if (failures.length > 0) {

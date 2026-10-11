@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "video.h"
 
 typedef struct {
   Entity e;  // ENTITY_UNK_10
@@ -38,16 +39,11 @@ NAKED s32 FUN_080e1100(Vec3* pos, Vec3* size, u32* out) { INCFUNC("asm/func/FUN_
 NAKED s32 FUN_080e11a8(Vec3* pos, Vec3* size, s32 idx) { INCFUNC("asm/func/FUN_080e11a8.inc"); }
 
 // 指定BGのタイルマップから (x, y) のエントリのアドレスを返す
-// 残差3命令: 原典は #0x1F を ldr 後に死ぬ r3 に置いて push 無しで収めるが、こちらは ldr より前にマスクを作るので r4 を使い push/pop が付く
-// Tier A/B と C のローカル分割 (BgState* 経由 / BgMapEntry* 経由 / 添字をまとめる), per-TU の static inline アクセサは試済
-NON_MATCH BgMapEntry* FUN_080e1218(s32 bgIdx, s32 x, s32 y) {
-#ifdef NONMATCHING_C
-  BgState* bg = &gBgStates[bgIdx];
+BgMapEntry* FUN_080e1218(s32 bgIdx, s32 x, s32 y) {
+  BgState* s = &gBgStates[bgIdx];
+  BgMapEntry* map = s->tilemap;
 
-  return bg->tilemap + (x & 0x1F) + (y & 0x1F) * 32;
-#else
-  INCFUNC("asm/func/FUN_080e1218.inc");
-#endif
+  return map + (x & 31) + (y & 31) * 32;
 }
 
 NAKED void FUN_080e1238(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6) { INCFUNC("asm/func/FUN_080e1238.inc"); }

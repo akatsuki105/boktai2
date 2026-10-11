@@ -22,7 +22,7 @@ _080B0D40:
 	adds r4, r5, #0
 	adds r4, #0x2c
 	ldr r0, _080B0D80 @ =0x08251DD0
-	bl FUN_08230860
+	bl HashName
 	adds r1, r0, #0
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
@@ -84,7 +84,7 @@ _080B0DA2:
 	adds r0, #0x64
 	strh r1, [r0]
 	ldr r0, _080B0E34 @ =0x08251DD4
-	bl FUN_08230860
+	bl HashName
 	adds r1, r0, #0
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10

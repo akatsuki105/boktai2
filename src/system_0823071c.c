@@ -56,11 +56,24 @@ void ReadKeyInput(void) {
   }
 }
 
-u16 FUN_08230860(const char* s) {
+// 識別子の文字列から16bitのIDを作るハッシュ, 5bit左ローテートしながら1バイトずつ足す, 原典はファイル名もVMのキーワードも文字列で書いていて、IDはこれで作られていた
+// HashName("if"): 0x0D86 (VM_Ctrl_If)
+// HashName("switch"): 0x4A6F (VM_Ctrl_Switch)
+// HashName("return"): 0xCD3A (VM_Ctrl_Return)
+// HashName("call"):  0x121F (VM_Ctrl_CallScriptIndirect)
+// HashName("print"): 0xB96E (VM_Ctrl_DebugPrint)
+// さらに chara 名 も EUC-JP 文字列をハッシュ化したもの
+// HashName("プレイヤー") -> 0xF5EB
+// HashName("ドヴァリン") -> 0x0074
+// HashName("シャイアン") -> 0x8E9F
+// HashName("クロウ") -> 0x9E8D
+// HashName("ボク") -> 0x05A5
+// このリポジトリでも、 文字列で表記するために BOKHASH マクロを使って同じロジックで識別子のハッシュを生成している (tools/preproc で処理)
+u16 HashName(const char* s) {
   u16 hash = 0;
   while (*s != 0) {
     s32 lo = hash << 5;
-    s32 hi = hash >> 0xB;
+    s32 hi = hash >> 11;
     hash = lo | hi;
     hash = hash + (u8)*s;
     s++;

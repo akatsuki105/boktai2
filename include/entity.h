@@ -67,6 +67,7 @@ extern EntityDisableFlags gEntityDisableFlags;  // 0x030044BC
 // --------------------------------------------
 
 void* CreateEntity(u32 kind, s32 bytesize);
+void AddEntity(Entity* p);
 u32 KillEntity(Entity* p);
 void SetEntityRoutine(void* entity, void* entity_func_onupdate, void* entity_func_ondestroy);
 

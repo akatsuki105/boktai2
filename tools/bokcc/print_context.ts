@@ -1,5 +1,5 @@
 import { ParseFile } from "../encoding/constants_header.ts";
-import { toHex } from "./instruction.ts";
+import { scriptIdOf, toHex } from "./instruction.ts";
 import type { PrintContext } from "./instruction.ts";
 
 // デコンパイル専用。出力で識別子に名前を出すための表(PrintContext)を、Cのヘッダから作る。
@@ -25,7 +25,25 @@ const loadNames = (include: string): ReadonlyMap<number, string> => {
   return names;
 };
 
+// スクリプト名のヘッダを「ID -> 名前」にする。
+// 値が数値ではなく Script_0xXXXX という綴り (#define Script_StaffRoll Script_0x1040) なので、そこからIDを取る点だけ loadNames と違う。
+const loadScriptNames = (include: string): ReadonlyMap<number, string> => {
+  const names = new Map<number, string>();
+  for (const [name, value] of Object.entries(ParseFile(`${INCLUDE_DIR}/${include}`))) {
+    if (typeof value !== "string") continue;
+    const id = scriptIdOf(value);
+    if (id === undefined) continue; // Script_0xXXXX 以外の綴りは呼び先IDが分からないので名前として使えない
+    const defined = names.get(id);
+    if (defined !== undefined) {
+      throw new Error(`${include}: ${value} に ${defined} と ${name} の2つの名前が定義されています`);
+    }
+    names.set(id, name);
+  }
+  return names;
+};
+
 // デコンパイル結果に名前を出すためのコンテキストを、namespace ごとのヘッダから作る。
-export const buildPrintContext = (headers: { strings?: string }): PrintContext => ({
+export const buildPrintContext = (headers: { strings?: string; scripts?: string }): PrintContext => ({
   stringNames: headers.strings ? loadNames(headers.strings) : undefined,
+  scriptNames: headers.scripts ? loadScriptNames(headers.scripts) : undefined,
 });

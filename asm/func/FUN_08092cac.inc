@@ -135,7 +135,7 @@ _08092D8A:
 	lsls r2, r2, #6
 	adds r0, r6, r2
 	strh r7, [r0]
-	bl TextBox_Close
+	bl MessageWindow_Close
 	bl FUN_08049e5c
 	bl FUN_08049f84
 	ldr r0, _08092E18 @ =0x0000027D

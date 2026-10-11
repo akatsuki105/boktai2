@@ -49,14 +49,14 @@
 #define SPRITE_WORM 0xD636        // 0x081ad228
 #define SPRITE_ROD 0xD638         // Root of Darkness (暗黒の根)
 #define SPRITE_SPIDER 0x528F
-#define SPRITE_BEE 0x9506
+#define SPRITE_BEE BOKHASH("bee")  // 0x9506
 #define SPRITE_BAT 0xDA6D
 #define SPRITE_CROW 0x5A6E
 #define SPRITE_CROW_B 0x5A6F
 #define SPRITE_COCKATRICE 0x41CF
 #define SPRITE_MUMMY 0x48DE
-#define SPRITE_CURORO 0xD28E  // クロロホルルン
-#define SPRITE_SLIME 0xB96C
+#define SPRITE_CURORO 0xD28E           // クロロホルルン
+#define SPRITE_SLIME BOKHASH("slime")  // スライム (0xB96C)
 #define SPRITE_GHOST 0xD637
 #define SPRITE_COFFIN 0x2499
 #define SPRITE_863A 0x863A
@@ -98,7 +98,7 @@
 #define SPRITE_PANTHER_BONUS 0xA8E7    // ブラックパンサー(ミニゲーム)のボーナス表示
 #define SPRITE_EFF_F422 0xF422         // エフェクト
 #define SPRITE_SOLAR_STATION 0xA47C    // 太陽スタンド
-#define SPRITE_MOUSE 0xD495            // チェンジマウスで変身するネズミ
+#define SPRITE_MOUSE BOKHASH("rat")    // 0xD495, チェンジマウスで変身するネズミ
 #define SPRITE_SPOTLIGHT 0x3640        // 天窓の光(汎用?, 魔方陣などのエフェクトもこれかも？)
 #define SPRITE_TREADMILL 0xC046        // 暗黒発電機(人が走ることで発電するベルドコンベア)
 #define SPRITE_B306 0xB306
@@ -116,10 +116,10 @@
 #define SPRITE_C060 0xC060
 #define SPRITE_DD5C 0xDD5C
 #define SPRITE_4AEE 0x4AEE
-#define SPRITE_A0D5 0xA0D5
+#define SPRITE_ECT BOKHASH("ect")  // エクトプラズム
 #define SPRITE_CHANDELIER_2AF0 0x2AF0
-#define SPRITE_A680 0xA680
-#define SPRITE_A6A0 0xA6A0  // ボクタイ1の血錆の館の中庭の数字が答えになる4つのレバーの上に書いてある数字(不使用?)
+#define SPRITE_TRAP_FLOOR 0xA680  // トラップ床, 水たまり(PLAYER_DARK_DJANGO, PLAYER_MOUSE のときに踏むとダメージ), 鳴り床(踏むと音が鳴る床), センサー床(太陽ゲージが1以上の時に、踏むと音が鳴る床)
+#define SPRITE_A6A0 0xA6A0        // ボクタイ1の血錆の館の中庭の数字が答えになる4つのレバーの上に書いてある数字(不使用?)
 #define SPRITE_2D41 0x2D41
 #define SPRITE_9D43 0x9D43
 #define SPRITE_008A 0x008A

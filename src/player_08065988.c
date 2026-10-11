@@ -58,7 +58,7 @@ void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames);
 void FUN_08063634(Player* p, s32 n);
 void FUN_080ec79c(u8 kind, void* payload);
 void Player_SetFlag35a(Player* p, u32 val);
-bool32 FUN_0809f658(Vec3* pos);
+bool32 Entity1DBE_TouchElemNear(Vec3* pos);
 void FUN_080d040c(Player* p);
 extern void* ptr_03002ba8;
 extern u16 u16_03002bf4;
@@ -287,6 +287,8 @@ void Player_SetupHitbox(Player* p) {
   Hitbox_Register(hitbox);
 }
 
+// 残差5命令, 原典は gStat->unk_934 の判定を 0/1 に起こしてからもう一度判定する二段形
+// bool32 を返す static inline を挟んでも && で繋いでも agbcc は内側の 0/1 を分岐に畳む, LinkShopManager_IsBusy と同じ形
 NON_MATCH bool32 FUN_08065a98(u32 val) {
 #ifdef NONMATCHING_C
   if (val & 0x80) {
@@ -300,6 +302,8 @@ NON_MATCH bool32 FUN_08065a98(u32 val) {
 #endif
 }
 
+// 残差5命令, 原典は gStat->unk_934 の判定を 0/1 に起こしてからもう一度判定する二段形
+// bool32 を返す static inline を挟んでも && で繋いでも agbcc は内側の 0/1 を分岐に畳む, LinkShopManager_IsBusy と同じ形
 NON_MATCH bool32 FUN_08065ad0(u32 val) {
 #ifdef NONMATCHING_C
   if (val & 0x80) {
@@ -313,6 +317,8 @@ NON_MATCH bool32 FUN_08065ad0(u32 val) {
 #endif
 }
 
+// 残差5命令, 原典は gStat->unk_934 の判定を 0/1 に起こしてからもう一度判定する二段形
+// bool32 を返す static inline を挟んでも && で繋いでも agbcc は内側の 0/1 を分岐に畳む, LinkShopManager_IsBusy と同じ形
 NON_MATCH bool32 FUN_08065b08(u32 val) {
 #ifdef NONMATCHING_C
   if (val & 0x80) {
@@ -326,6 +332,8 @@ NON_MATCH bool32 FUN_08065b08(u32 val) {
 #endif
 }
 
+// 残差5命令, 原典は gStat->unk_934 の判定を 0/1 に起こしてからもう一度判定する二段形
+// bool32 を返す static inline を挟んでも && で繋いでも agbcc は内側の 0/1 を分岐に畳む, LinkShopManager_IsBusy と同じ形
 NON_MATCH bool32 FUN_08065b44(u32 val) {
 #ifdef NONMATCHING_C
   if (val & 0x80) {
@@ -345,7 +353,7 @@ NAKED s32 FUN_08065cb8(Player* p) { INCFUNC("asm/func/FUN_08065cb8.inc"); }
 
 // 今踏んでいるタイルの中心座標を pos_39c に入れて ptr_398 から参照させる
 void FUN_08065dac(Player* p) {
-  if (FUN_0809f658(&p->mover.pos) && p->unk_397 == 0) {
+  if (Entity1DBE_TouchElemNear(&p->mover.pos) && p->unk_397 == 0) {
     s32 bx = Mod(p->tile.tileIdx[0], gCollisionMap->tiledata->width);
     s32 bz = Div(p->tile.tileIdx[0], gCollisionMap->tiledata->width);
 
@@ -649,12 +657,20 @@ void FUN_080672b0(Player* p) {
 
 NAKED void MagicDash_0806734c(Player* p) { INCFUNC("asm/func/MagicDash_0806734c.inc"); }
 
-// 立っているタイルの中でタイル境界から十分離れているかを見る, unk_3bd が 1/5 のときは X, それ以外は Z で判定する
+// マスの中での位置が端に寄りすぎていないか
+// 残差1命令, 原典は & 0xFF の結果を r0 に直接作るが、ローカルに受けると複写が1つ入る
+// (ローカルを u32 にすると ldrsh になり、マスクを直書きすると u16 への切り詰めが入る)
 NON_MATCH bool32 FUN_080674dc(Player* p) {
 #ifdef NONMATCHING_C
-  u16 pos = (p->unk_3bd == 1 || p->unk_3bd == 5) ? p->mover.pos.x : p->mover.pos.z;
-  u32 ofs = pos & 0xFF;
+  u16 pos;
+  u32 ofs;
 
+  if (p->unk_3bd == 1 || p->unk_3bd == 5) {
+    pos = p->mover.pos.x;
+  } else {
+    pos = p->mover.pos.z;
+  }
+  ofs = pos & 0xFF;
   if (ofs < 31 || ofs > 225) {
     return FALSE;
   }
@@ -1916,12 +1932,17 @@ bool32 FUN_0807a570(Player* p, s32 param_2) {
 NAKED s32 FUN_0807a5d8(WeaponData* w, const ArmorData* armor) { INCFUNC("asm/func/FUN_0807a5d8.inc"); }
 
 // 装備中の鎧を添えて FUN_0807a5d8 に渡す, 鎧を装備していなければ NULL を渡す
+// 残差3命令, 原典は armor >= 0 側を fall-through に置く (blt で NULL 側へ飛ぶ) が
+// agbcc は短い NULL 側を先に並べて bge にする, if/else・条件の反転・局所変数の有無では向きが変わらない
 NON_MATCH s32 FUN_0807a6cc(WeaponData* w) {
 #ifdef NONMATCHING_C
-  if (gStat->armor < 0) {
+  s16 armor = gStat->armor;
+
+  if (armor >= 0) {
+    return FUN_0807a5d8(w, &gArmorDB[GetInventoryArmor(armor)]);
+  } else {
     return FUN_0807a5d8(w, NULL);
   }
-  return FUN_0807a5d8(w, &gArmorDB[GetInventoryArmor(gStat->armor)]);
 #else
   INCFUNC("asm/func/FUN_0807a6cc.inc");
 #endif
@@ -2040,7 +2061,7 @@ void FUN_0807a904(Player* p, u32 flag) {
   }
 }
 
-// 残差2命令: 原典は gStat への3つの strh ごとに gStat を読み直すが、こちらは1回に畳まれる (agbcc-levers.md 参照)
+// 残差2命令, 原典は gStat を3回のストアごとに読み直すが gcc は1回に畳む
 NON_MATCH void FUN_0807a91c(Player* p, Vec3* pos) {
 #ifdef NONMATCHING_C
   p->mover.pos = *pos;

@@ -20,7 +20,7 @@ _08002EB8:
 	adds r4, r6, #0
 	adds r4, #0x6c
 	ldr r0, _08002EDC @ =0x08251B2C
-	bl FUN_08230860
+	bl HashName
 	adds r1, r0, #0
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10

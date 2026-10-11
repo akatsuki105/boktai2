@@ -181,7 +181,7 @@ _0806D164:
 	adds r4, r6, #0
 	adds r4, #0x2c
 	adds r0, r4, #0
-	bl FUN_0809f658
+	bl Entity1DBE_TouchElemNear
 	adds r2, r0, #0
 	cmp r2, #0
 	beq _0806D1C8

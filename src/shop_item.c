@@ -259,7 +259,24 @@ s32 FUN_080b9f10(MenuCursor* p) {
   return 0;
 }
 
-NAKED s32 FUN_080b9f70(MenuCursor* p) { INCFUNC("asm/func/FUN_080b9f70.inc"); }
+// 押された方向キーに応じてカーソル移動を振り分ける
+s32 FUN_080b9f70(MenuCursor* p) {
+  s32 keys = FUN_080b9da8(p);
+
+  if (keys & DPAD_UP) {
+    return FUN_080b9df0(p);
+  }
+  if (keys & DPAD_DOWN) {
+    return FUN_080b9e50(p);
+  }
+  if (keys & DPAD_LEFT) {
+    return FUN_080b9eb0(p);
+  }
+  if (keys & DPAD_RIGHT) {
+    return FUN_080b9f10(p);
+  }
+  return 0;
+}
 
 void FUN_080b9fc4(MenuCursor* p, MainSprite* sprite) { FUN_080b9938(&sprite->pos.x, (u8)p->slot); }
 
@@ -294,26 +311,21 @@ void Entity3019_SetState(Entity3019* p, Entity3019Func* fn) {
   p->stateTimer = 0;
 }
 
-void FUN_080ba048(Entity3019* p, u8 val) { p->unk_12ee = val; }
+void FUN_080ba048(Entity3019* p, s32 val) { p->unk_12ee = val; }
 
-// 残差は 17 命令 vs 15 命令 で、原典は p を保持したレジスタを stateTimer のアドレス計算で潰している
-NON_MATCH void FUN_080ba054(Entity3019* p, Entity3019Func* fn, u8 val) {
-#ifdef NONMATCHING_C
+void FUN_080ba054(Entity3019* p, Entity3019Func* fn, s32 val) {
   p->unk_153c = fn;
   FUN_080ba048(p, val);
   p->stateTimer = 0;
-#else
-  INCFUNC("asm/func/FUN_080ba054.inc");
-#endif
 }
 
 void FUN_080ba07c(Entity3019* p, s32 line) {
   FUN_08049e5c();
   p->sprites[33].flags |= SPRFLAG_HIDDEN;
-  TextBox_Start(p->unk_12e0);
-  TextBox_SetRect(0, 16, 30, 2);
-  TextBox_SetInstant(1);
-  TextBox_ShowLine(line);
+  MessageWindow_Start(p->unk_12e0);
+  MessageWindow_SetRect(0, 16, 30, 2);
+  MessageWindow_SetInstant(1);
+  MessageWindow_ShowLine(line);
 }
 
 // value を百の位・十の位・一の位に分解する
@@ -326,9 +338,35 @@ void SplitDecimal3_080ba0c0(s32 value, s32* digits) {
 
 NAKED void FUN_080ba0f0(Entity3019* p, s32 param_2) { INCFUNC("asm/func/FUN_080ba0f0.inc"); }
 
+u32 item_08092034(s32 slot);  // src/entity_cc28.c
+
 NAKED s32 FUN_080ba220(u32 param_1) { INCFUNC("asm/func/FUN_080ba220.inc"); }
 
-NAKED s32 FUN_080ba288(s32 slot) { INCFUNC("asm/func/FUN_080ba288.inc"); }
+// アイテムの売値, 腐敗の段階ごとに買値の 50% から 10% ずつ下げ, 20% を下限にする
+s32 FUN_080ba288(s32 slot) {
+  u32 stage = item_08092034(slot);
+  s32 pct = 50;
+  s32 price;
+
+  if (stage != 0xCF) {
+    pct = 50 - (stage - 0xD0) * 10;
+    if (pct > 50) {
+      pct = 50;
+    }
+    if (pct < 20) {
+      pct = 20;
+    }
+  }
+
+  price = Div(pct * FUN_080ba220(GetNormalItemID(slot)), 100);
+  if (price <= 0) {
+    price = 1;
+  }
+  if (price > 9999) {
+    price = 9999;
+  }
+  return price;
+}
 
 NAKED void FUN_080ba2d8(Entity3019* p) { INCFUNC("asm/func/FUN_080ba2d8.inc"); }
 
@@ -374,11 +412,39 @@ void Entity3019_SwapSelectedItem(Entity3019* p) {
   }
 }
 
-NAKED void FUN_080baf50(Entity3019* p) { INCFUNC("asm/func/FUN_080baf50.inc"); }
+void FUN_080bafa4(Entity3019* p);
+
+// カーソル確定の入力待ち, 決定なら FUN_080bafa4 へ, キャンセルなら SE を鳴らして戻る
+void FUN_080baf50(Entity3019* p) {
+  s32 r = FUN_080b977c(&p->sprites[48], &p->gfx0, &p->unk_12ef);
+
+  if (r == 1) {
+    MessageWindow_Close();
+    FUN_080ba7bc(p);
+    FUN_080ba054(p, FUN_080bafa4, 0);
+  } else if (r == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_080baa64(p);
+  }
+}
 
 NAKED void FUN_080bafa4(Entity3019* p) { INCFUNC("asm/func/FUN_080bafa4.inc"); }
 
-NAKED void FUN_080bb01c(Entity3019* p) { INCFUNC("asm/func/FUN_080bb01c.inc"); }
+void FUN_080bb070(Entity3019* p);
+
+// カーソル確定の入力待ち, 決定なら FUN_080bb070 へ, キャンセルなら SE を鳴らして戻る
+void FUN_080bb01c(Entity3019* p) {
+  s32 r = FUN_080b977c(&p->sprites[48], &p->gfx0, &p->unk_12ef);
+
+  if (r == 1) {
+    MessageWindow_Close();
+    FUN_080ba710(p);
+    FUN_080ba054(p, FUN_080bb070, 0);
+  } else if (r == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_080baa64(p);
+  }
+}
 
 NAKED void FUN_080bb070(Entity3019* p) { INCFUNC("asm/func/FUN_080bb070.inc"); }
 
@@ -431,11 +497,39 @@ void Entity3019_SwapSelectedArmor(Entity3019* p) {
   }
 }
 
-NAKED void FUN_080bc11c(Entity3019* p) { INCFUNC("asm/func/FUN_080bc11c.inc"); }
+void FUN_080bc170(Entity3019* p);
+
+// カーソル確定の入力待ち, 決定なら FUN_080bc170 へ, キャンセルなら SE を鳴らして戻る
+void FUN_080bc11c(Entity3019* p) {
+  s32 r = FUN_080b977c(&p->sprites[48], &p->gfx0, &p->unk_12ef);
+
+  if (r == 1) {
+    MessageWindow_Close();
+    FUN_080bb854(p);
+    FUN_080ba054(p, FUN_080bc170, 0);
+  } else if (r == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_080bbbdc(p);
+  }
+}
 
 NAKED void FUN_080bc170(Entity3019* p) { INCFUNC("asm/func/FUN_080bc170.inc"); }
 
-NAKED void FUN_080bc1ec(Entity3019* p) { INCFUNC("asm/func/FUN_080bc1ec.inc"); }
+void FUN_080bc240(Entity3019* p);
+
+// カーソル確定の入力待ち, 決定なら FUN_080bc240 へ, キャンセルなら SE を鳴らして戻る
+void FUN_080bc1ec(Entity3019* p) {
+  s32 r = FUN_080b977c(&p->sprites[48], &p->gfx0, &p->unk_12ef);
+
+  if (r == 1) {
+    MessageWindow_Close();
+    FUN_080bb798(p);
+    FUN_080ba054(p, FUN_080bc240, 0);
+  } else if (r == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_080bbbdc(p);
+  }
+}
 
 NAKED void FUN_080bc240(Entity3019* p) { INCFUNC("asm/func/FUN_080bc240.inc"); }
 
@@ -459,9 +553,9 @@ void FUN_080bc8c8(Entity3019* p) {
   }
 
   FUN_08049f5c();
-  TextBox_SetRect(0, 16, 30, 2);
-  TextBox_SetInstant(1);
-  TextBox_SetBgPltt(BGP_A41A);
+  MessageWindow_SetRect(0, 16, 30, 2);
+  MessageWindow_SetInstant(1);
+  MessageWindow_SetBgPltt(BGP_A41A);
 }
 
 NAKED void FUN_080bc908(Entity3019* p) { INCFUNC("asm/func/FUN_080bc908.inc"); }

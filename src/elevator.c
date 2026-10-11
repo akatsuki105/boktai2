@@ -18,7 +18,9 @@ typedef u16 ElevatorFlags;               // ElevatorUnkData.flags
 typedef struct ElevatorUnkData {
   AuxSprite sprite;                  // 0x000
   AuxSpriteGfx gfx;                  // 0x02C, Elevator_SetPltt が Video_SetAuxSpritePltt に渡す
-  u8 unk_48[0x0B0 - 0x048];          // 0x048
+  u8 unk_48[0x058 - 0x048];          // 0x048
+  u8 unk_58[8];                      // 0x058, FUN_081d4540 が ClearMemory で 0 にする
+  u8 unk_60[0x0B0 - 0x060];          // 0x060
   u16 slotIdx;                       // 0x0B0, ElevatorController_AllocSlot が確保したスロット番号
   s16 state;                         // 0x0B2, ElevatorController_Update が 0x085AE0E8 の関数テーブルを引く, 6 はスキップ
   ElevatorFlags flags;               // 0x0B4, bit0=tileOverride登録済, bit5=Elevator_Shake, bit11=tileOverrides登録済
@@ -219,13 +221,33 @@ void FUN_081d407c(ElevatorUnkData* p) {
   }
 }
 
+bool32 FUN_0807a954(Player* p, u32 mask);  // src/player_08065988.c
+bool32 FUN_08086978(u32 mask);             // asm/coffin_immortal.inc
+void FUN_081d4590(ElevatorUnkData* p);
+void FUN_081d4658(ElevatorUnkData* p);
+
 NAKED void FUN_081d40b4(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d40b4.inc"); }
 
 NAKED void FUN_081d42c4(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d42c4.inc"); }
 
 NAKED void FUN_081d43d4(Vec3* a, Vec3* b, ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d43d4.inc"); }
 
-NAKED void FUN_081d4540(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d4540.inc"); }
+void FUN_081d4540(ElevatorUnkData* p) {
+  if (gPlayerPtr[0] != NULL) {
+    FUN_081d40b4(p);
+    FUN_081d42c4(p);
+
+    if (FUN_0807a954(gPlayerPtr[0], 1)) {
+      FUN_081d4590(p);
+    }
+
+    if (FUN_08086978(1)) {
+      FUN_081d4658(p);
+    }
+
+    ClearMemory(p->unk_58, sizeof(p->unk_58));
+  }
+}
 
 NAKED void FUN_081d4590(ElevatorUnkData* p) { INCFUNC("asm/func/FUN_081d4590.inc"); }
 

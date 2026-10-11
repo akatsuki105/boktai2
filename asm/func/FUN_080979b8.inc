@@ -15,7 +15,7 @@
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	ldr r1, [r4, #0x18]
 	ldr r0, [r4, #0x30]
 	str r0, [sp]
@@ -75,7 +75,7 @@ _08097A14:
 	bl FUN_080967c0
 	bl FUN_08049f5c
 	ldr r0, _08097AB0 @ =0x0000EFDA
-	bl TextBox_SetBgPltt
+	bl MessageWindow_SetBgPltt
 	adds r0, r4, #0
 	bl FUN_08096a34
 	adds r0, r4, #0

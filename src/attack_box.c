@@ -39,7 +39,21 @@ NAKED void AttackBox_Setup(AttackBox* box, s32 power, s32 unk_40, s32 unk_44, u1
 // state 0 (空き枠) の更新, 何もしない
 void AttackBox_Idle(AttackBoxManager* p, AttackBox* box) {}
 
-NAKED void AttackBox_Update(AttackBoxManager* p, AttackBox* box) { INCFUNC("asm/func/AttackBox_Update.inc"); }
+// state 1 (判定中) の更新, 10..15 フレームの間だけ判定を登録し、0x28 を超えたら解放へ回す
+void AttackBox_Update(AttackBoxManager* p, AttackBox* box) {
+  FUN_080dd4fc(box);
+  FUN_080dd6f4(box);
+
+  if (box->timer >= 10 && box->timer <= 15) {
+    Hitbox_Register(&box->hitbox);
+  }
+
+  if (box->timer > 0x28) {
+    box->state = 2;
+  } else {
+    box->timer++;
+  }
+}
 
 // 枠を返却する, activeMask のビットを落として中身を消す
 void AttackBox_Free(AttackBoxManager* p, AttackBox* box) {

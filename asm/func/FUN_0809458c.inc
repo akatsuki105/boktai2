@@ -17,7 +17,7 @@ _080945A8:
 	ldr r0, [r1]
 	orrs r0, r2
 	str r0, [r1]
-	bl TextBox_Close
+	bl MessageWindow_Close
 	ldr r0, _080945EC @ =0x00003AEE
 	adds r4, r5, r0
 	ldrb r2, [r4]

@@ -41,7 +41,7 @@ _080A7844:
 	movs r4, #1
 	orrs r0, r4
 	str r0, [r1]
-	bl TextBox_Close
+	bl MessageWindow_Close
 	movs r0, #7
 	bl FUN_0809c08c
 	ldr r0, _080A788C @ =0x03002BE0
@@ -92,7 +92,7 @@ _080A78BA:
 	subs r2, #1
 	cmp r2, #0
 	bge _080A78BA
-	bl TextBox_Close
+	bl MessageWindow_Close
 	movs r0, #7
 	bl FUN_0809c08c
 	movs r1, #0xd4

@@ -1,7 +1,7 @@
 	push {r4, lr}
 	sub sp, #4
 	adds r4, r0, #0
-	bl TextBox_Close
+	bl MessageWindow_Close
 	bl FUN_08049e5c
 	bl FUN_08049f84
 	ldr r1, _0809A11C @ =0x00004014
@@ -16,7 +16,7 @@
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	ldr r1, [r4, #0x18]
 	ldr r0, [r4, #0x30]
 	str r0, [sp]
@@ -34,9 +34,9 @@
 	adds r0, r4, #0
 	bl FUN_08099f58
 	ldr r0, [r4, #0x58]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	ldr r0, _0809A128 @ =0x0000EFDA
-	bl TextBox_SetBgPltt
+	bl MessageWindow_SetBgPltt
 	movs r0, #5
 	bl FUN_08099b3c
 	movs r2, #0x10

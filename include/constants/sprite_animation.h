@@ -12,7 +12,7 @@
 #define ANIM_1DC3 0x1DC3
 #define ANIM_1DF8 0x1DF8
 #define ANIM_1E38 0x1E38
-#define ANIM_1FB8 0x1FB8
+#define ANIM_1FB8 BOKHASH("ect_anm")  // エクトプラズムのアニメーション
 #define ANIM_27A4 0x27A4
 #define ANIM_29FB 0x29FB
 #define ANIM_31F4 0x31F4
@@ -24,7 +24,7 @@
 #define ANIM_4EC0 0x4EC0
 #define ANIM_5BB7 0x5BB7
 #define ANIM_5C4D 0x5C4D
-#define ANIM_62C7 0x62C7
+#define ANIM_62C7 BOKHASH("bee_anm")  // 0x62C7
 #define ANIM_6830 0x6830
 #define ANIM_74C9 0x74C9
 #define ANIM_78E1 0x78E1
@@ -38,7 +38,7 @@
 #define ANIM_99DD 0x99DD
 #define ANIM_9AF2 0x9AF2
 #define ANIM_A4B2 0xA4B2
-#define ANIM_A929 0xA929
+#define ANM_SLIME BOKHASH("slime_anm")  // 0xA929
 #define ANIM_AF44 0xAF44
 #define ANIM_B6EE 0xB6EE
 #define ANIM_B952 0xB952

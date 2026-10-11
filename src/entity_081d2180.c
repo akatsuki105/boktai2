@@ -35,6 +35,7 @@ NAKED s32 FUN_081d1a9c(unknown* p) { INCFUNC("asm/func/FUN_081d1a9c.inc"); }
 void FUN_081d1ae8(Entity081d2180Item* item) {}
 
 // 現在のエリアの要素でなければ隠す
+// 残差5命令, 原典はエリア一致の判定を 0/1 に起こしてからもう一度判定する二段形 (FUN_08065a98 系と同じ)
 NON_MATCH bool32 FUN_081d1aec(Entity081d2180Item* item) {
 #ifdef NONMATCHING_C
   if (gStat->unk_248 == item->unk_58) {
@@ -83,6 +84,7 @@ void (*const PTR_ARRAY_085ae0c8[2])(Entity081d2180Item*) = {
 
 NAKED s32 Entity081d2180_Update(Entity081d2180* p) { INCFUNC("asm/func/Entity081d2180_Update.inc"); }
 
+// 残差5命令, 原典は activeMask の判定を 0/1 に起こしてからもう一度判定する二段形 (FUN_08065a98 系と同じ)
 NON_MATCH s32 Entity081d2180_Destroy(Entity081d2180* p) {
 #ifdef NONMATCHING_C
   s32 i;

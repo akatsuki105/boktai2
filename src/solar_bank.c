@@ -18,7 +18,7 @@ typedef struct Entity7F5E {
   u8 unk_590[0x5C8 - 0x590];                   // 0x590
   TilemapFile* tilemap;                        // 0x5C8, TILEMAP_83C0
   rgb555* bgPltt;                              // 0x5CC, BGP_EAA8[208]
-  u8* textPc;                                  // 0x5D0, TextBox_Start に渡すバイトコード位置
+  u8* textPc;                                  // 0x5D0, MessageWindow_Start に渡すバイトコード位置
   u8 unk_5d4[0x5DC - 0x5D4];                   // 0x5D4
   u32 scriptID;                                // 0x5DC, 閉じるときに VM_ExecByID に渡す
   u8 unk_5e0[0x5EA - 0x5E0];                   // 0x5E0
@@ -82,7 +82,7 @@ void FUN_080b3b74(Entity7F5E* p) {
   MainSprite_SetAnim(p->sprites, p->gfx, 0, 2, 0);
   p->sprites[2].flags &= ~SPRFLAG_HIDDEN;
   p->sprites[3].flags &= ~SPRFLAG_HIDDEN;
-  TextBox_ShowLine(0);
+  MessageWindow_ShowLine(0);
   FUN_0823ce68(2, 5, 4, 4, 4, 0xFFFF, 0);
   SolarBank_SetState(p, FUN_080b3e3c);
 }
@@ -97,7 +97,7 @@ void FUN_080b3c08(Entity7F5E* p) {
   p->unk_5ea = 1;
   p->sprites[1].flags &= ~SPRFLAG_HIDDEN;
   MainSprite_SetAnim(&p->sprites[1], &p->gfx[1], 4, 1, 0);
-  TextBox_ShowLine(1);
+  MessageWindow_ShowLine(1);
   SolarBank_SetState(p, FUN_080b3e80);
 }
 
@@ -110,7 +110,7 @@ void FUN_080b3dd0(Entity7F5E* p) {
   PlaySound_082406e0(0x2BF);
   p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
   MainSprite_SetAnim(p->sprites, p->gfx, 2, 2, 0);
-  TextBox_ShowLine(3);
+  MessageWindow_ShowLine(3);
   SolarBank_SetState(p, FUN_080b4334);
 }
 
@@ -208,10 +208,10 @@ void SolarBank_InitTextBox(Entity7F5E* p) {
   if (VM_SeekToNamedArg('r')) {
     p->textPc = FUN_0823d340();
   }
-  TextBox_SetBgPltt(BGP_EAA8);
-  TextBox_Start(p->textPc);
-  TextBox_SetRect(1, 15, 28, 4);
-  TextBox_SetInstant(1);
+  MessageWindow_SetBgPltt(BGP_EAA8);
+  MessageWindow_Start(p->textPc);
+  MessageWindow_SetRect(1, 15, 28, 4);
+  MessageWindow_SetInstant(1);
 }
 
 s32 Entity7F5E_Init(Entity7F5E* p) {

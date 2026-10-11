@@ -4,7 +4,7 @@
 	cmp r0, #0
 	beq _0801EB7E
 	ldrb r0, [r4, #0x1e]
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	adds r1, r4, #0
 	adds r1, #0x22
 	movs r0, #0

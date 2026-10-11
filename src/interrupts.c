@@ -38,7 +38,16 @@ void WaitForVBlank(void) {
   }
 }
 
-NAKED void FUN_08229f4c(u32 n) { INCFUNC("asm/func/FUN_08229f4c.inc"); }
+// 割り込みを強制的に有効にして n 回 VBlank を待ち、IME を元に戻す
+void WaitForVBlanks(u16 n) {
+  u16 ime = REG_IME;
+
+  REG_IME = 1;
+  while (n-- != 0) {
+    WaitForVBlank();
+  }
+  REG_IME = ime;
+}
 
 NAKED void VBlankIntr(void) { INCFUNC("asm/func/VBlankIntr.inc"); }
 

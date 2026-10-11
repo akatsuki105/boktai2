@@ -157,10 +157,11 @@ NON_MATCH bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx) {
 #endif
 }
 
-// アニメ animIdx の全コマの表示時間の合計を返す (未使用)
+// アニメ animIdx の全コマの表示フレーム数の合計
+// 残差1命令, 原典は anim を animIdx のレジスタ上で作って r4 を使わずに収める
 NON_MATCH s32 MainSprite_GetAnimDuration(MainSprite* _, MainSpriteGfx* gfx, u32 animIdx) {
 #ifdef NONMATCHING_C
-  MainAnim* anim = (MainAnim*)((animIdx << 3) + (u32)gfx->anims);  // 元は gfx->anims のロードがシフトより前に来る
+  MainAnim* anim = &gfx->anims[animIdx];
   MainAnimCmd* cmd = (MainAnimCmd*)((u8*)gfx->cmds + anim->cmdOffset);
   s32 total = 0;
   s32 i;

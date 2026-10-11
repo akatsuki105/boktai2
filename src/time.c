@@ -615,15 +615,17 @@ bool32 UNUSED FUN_0823e80c(void) {
   return FALSE;
 }
 
-// RTC の電源状態を見て、正常なら 1、異常なら -1 を返す
+// RTC の電源が入っているか, 1 なら正常, -1 なら異常
+// 残差1命令, 原典は u8 化のシフトを別レジスタ (r5) 経由で行い r0 を複写しないが、
+// ローカルの型を変えても gcc は複写してから同じレジスタ内で2回シフトする
 NON_MATCH s32 Time_CheckRtcPowerOn(void) {
 #ifdef NONMATCHING_C
-  u8 status;
+  u8 st;
 
   Time_RtcIoEnable();
-  status = RtcPowerOnCheck();
+  st = RtcPowerOnCheck();
   Time_RtcIoDisable();
-  if ((status & 0xF) == 1) {
+  if ((st & 0xF) == 1) {
     return 1;
   }
   return -1;

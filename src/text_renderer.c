@@ -273,19 +273,20 @@ s32 Text_StrNCmp(u8* s, const char* lit, s32 n) {
   return 0;
 }
 
-// 末尾の桁から見て10進の数値にする
+// 末尾から len 桁の10進数として読む
+// 残差2命令, 原典は先頭ガードを 0 < len (v の 0 を使い回す) で作り p も (s-1)+len の順で組む
 NON_MATCH s32 Text_ParseDecimal(u8* s, s32 len) {
 #ifdef NONMATCHING_C
   s32 v = 0;
   s32 mul = 1;
   u8* p = s + len - 1;
-  s32 i;
 
-  for (i = 0; i < len; i++) {
-    v += (*p-- - '0') * mul;
+  while (len != 0) {
+    v += (*p - '0') * mul;
     mul *= 10;
+    p--;
+    len--;
   }
-
   return v;
 #else
   INCFUNC("asm/func/Text_ParseDecimal.inc");
@@ -394,10 +395,14 @@ s32 Text_GetPlayerFace(void) {
   }
 }
 
+// 会話相手 (もう一人のジャンゴ) の顔グラの番号
+// 残差4命令, 原典は case 0 と case 1 を持つ switch の判定木 (cmp #1 / bgt / cmp #0) を残したまま
+// 本体だけ cross-jump しているが, 同じ本体を2つ書くと gcc が判定木ごと if に畳んでしまう
 NON_MATCH s32 Text_GetPairFace(void) {
 #ifdef NONMATCHING_C
-  if (gStat->playerKind == PLAYER_SOLAR_DJANGO) return 27;
-
+  if (gStat->playerKind == PLAYER_SOLAR_DJANGO) {
+    return 27;
+  }
   return 28;
 #else
   INCFUNC("asm/func/Text_GetPairFace.inc");

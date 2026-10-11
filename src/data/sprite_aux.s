@@ -1309,7 +1309,7 @@ gAuxSpritesFile0: @ 0x08A2291C
     .incbin "data/actor_sprites/C060.4bpp"                 @ 0x08A32770, ActorID: 0xC060, PlttID: 56, 謎の球
     .incbin "data/actor_sprites/DD5C.4bpp"                 @ 0x08A32970, ActorID: 0xDD5C, PlttID: 60, 壁?
     .incbin "data/actor_sprites/4AEE.4bpp"                 @ 0x08A33170, ActorID: 0x4AEE, PlttID: 61, 壁? 
-    .incbin "data/actor_sprites/A0D5.4bpp"                 @ 0x08A33970, ActorID: 0xA0D5, PlttID: 62, パイルドライバーのエクトプラズム?
+    .incbin "data/actor_sprites/ect.4bpp"                  @ 0x08A33970, ActorID: 0xA0D5, PlttID: 62, エクトプラズム
     .incbin "data/actor_sprites/chandelier.4bpp"           @ 0x08A354B0, ActorID: 0x2AF0, PlttID: 64, シャンデリア(スプライトセットの方との使い分けは不明)
     .incbin "data/actor_sprites/A680.4bpp"                 @ 0x08A36CB0, ActorID: 0xA680, PlttID: 66, 水たまり, 鳴り床, センサー床
     .incbin "data/actor_sprites/bok1_garden_lever_num.4bpp" @ 0x08A39930, ActorID: 0xA6A0, PlttID: 71, ボクタイ1の血錆の館の中庭の数字が答えになる4つのレバーの上に書いてある数字(不使用?)
@@ -1455,7 +1455,7 @@ gAuxSpritesFile0: @ 0x08A2291C
 		.incbin "data/actor_sprites/E769.4bpp"                 @ 0x08AC9850, ActorID: 0xE769, PlttID: 418, sandworm & serpent
 		.incbin "data/actor_sprites/E76A.4bpp"                 @ 0x08ACE9F0, ActorID: 0xE76A, PlttID: 421, unk_flame_snake?
 		.incbin "data/actor_sprites/E76B.4bpp"                 @ 0x08ACEFF0, ActorID: 0xE76B, PlttID: 421, unk_flame_snake?
-		.incbin "data/actor_sprites/mouse.4bpp"                @ 0x08AD07B0, ActorID: 0xD495, PlttID: 29
+		.incbin "data/actor_sprites/rat.4bpp"                  @ 0x08AD07B0, ActorID: 0xD495, PlttID: 29
 		.incbin "data/actor_sprites/35C7.4bpp"                 @ 0x08AD15B0, ActorID: 0x35C7, PlttID: 83
 		.incbin "data/actor_sprites/3B53.4bpp"                 @ 0x08AD5270, ActorID: 0x3B53, PlttID: 83
 		.incbin "data/actor_sprites/pinpad.4bpp"               @ 0x08AD9DF0, ActorID: 0x3C13, PlttID: 433, 時の家の暗証番号設定端末

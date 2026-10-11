@@ -99,6 +99,7 @@ void FUN_08009c28(Entity0866* p, Entity0866Elem* e) {
 
 NAKED void FUN_08009c44(Entity0866* p, Entity0866Elem* param_2) { INCFUNC("asm/func/FUN_08009c44.inc"); }
 
+// 残差は定数 0 と 2 のレジスタが入れ替わるのみ (命令列は 22 対 22 で一致)
 NON_MATCH void FUN_08009e28(Entity0866* p, Entity0866Elem* e) {
 #ifdef NONMATCHING_C
   if (e->unk_07) {

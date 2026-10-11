@@ -30,7 +30,7 @@
 	cmp r0, #0
 	bne _0808F710
 	movs r0, #8
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r2, _0808F6FC @ =0x0000401E
 	adds r0, r4, r2
 	ldrb r0, [r0]
@@ -38,7 +38,7 @@
 	movs r1, #0x32
 	muls r1, r0, r1
 	movs r0, #0
-	bl TextBox_SetVarValue
+	bl MessageWindow_SetVarValue
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_0808b6fc

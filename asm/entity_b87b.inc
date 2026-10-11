@@ -504,12 +504,12 @@ _080C1EF8:
 	movs r0, #0
 	strh r0, [r1]
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 	movs r3, #0x89
 	lsls r3, r3, #2
 	adds r0, r5, r3
 	ldrh r0, [r0]
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 _080C1F14:
 	movs r1, #0x88
 	lsls r1, r1, #2
@@ -1295,13 +1295,13 @@ _080C252C:
 	adds r0, r5, r2
 	strh r1, [r0]
 	ldr r0, _080C2598 @ =0x0000EFDA
-	bl TextBox_SetBgPltt
+	bl MessageWindow_SetBgPltt
 	ldr r0, [r6]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 	ldrh r0, [r4]
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 _080C2580:
 	movs r0, #0x63
 	bl VM_SeekToNamedArg

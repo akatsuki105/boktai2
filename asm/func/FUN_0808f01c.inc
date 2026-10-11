@@ -20,7 +20,7 @@
 	cmp r0, #0
 	beq _0808F088
 	movs r0, #5
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r1, _0808F06C @ =0x00004028
 	adds r0, r4, r1
 	ldr r0, [r0]
@@ -37,7 +37,7 @@ _0808F06C: .4byte 0x00004028
 _0808F070:
 	movs r0, #0
 	movs r1, #3
-	bl TextBox_SetVarValue
+	bl MessageWindow_SetVarValue
 _0808F078:
 	ldr r1, _0808F084 @ =FUN_0808f09c
 	adds r0, r4, #0

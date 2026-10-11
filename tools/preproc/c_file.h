@@ -51,6 +51,7 @@ class CFile {
   std::unique_ptr<unsigned char[]> ReadWholeFile(const std::string& path, int& size);
   bool CheckIdentifier(const std::string& ident);
   void TryConvertIncbin();
+  void TryConvertBokHash();
   void ReportDiagnostic(const char* type, const char* format, std::va_list args);
   void RaiseError(const char* format, ...);
   void RaiseWarning(const char* format, ...);

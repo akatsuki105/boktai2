@@ -25632,7 +25632,7 @@ FUN_081fa1bc: @ 0x081FA1BC
 	movs r0, #0
 	strh r0, [r1]
 	ldr r0, _081FA220 @ =0x08252698
-	bl FUN_08230860
+	bl HashName
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	bl GetParticleGroup

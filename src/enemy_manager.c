@@ -232,6 +232,8 @@ void FUN_080ecbe4(void) {}
 NAKED void FUN_080ecbe8(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080ecbe8.inc"); }
 
 // 生きている敵の数を数える
+// 残差2命令, 原典は flags2 のオフセット定数をループ内で作り直して r7 を使わないが
+// agbcc は両方のオフセットを巻き上げるため1本多くレジスタを食う (&& をネストした if にしても同じ)
 NON_MATCH s32 FUN_080ecf18(void) {
 #ifdef NONMATCHING_C
   EnemyListNode* node;
@@ -242,14 +244,12 @@ NON_MATCH s32 FUN_080ecf18(void) {
   node = gEnemyListHead;
   p = node->enemy;
   count = 0;
-  if (p != NULL) {
-    do {
-      if ((p->hp > 0) && ((p->flags2 & ENEFLAG2_UNK_17) == 0)) {
-        count++;
-      }
-      node = node->next;
-      p = node->enemy;
-    } while (p != NULL);
+  while (p != NULL) {
+    if (p->hp > 0 && (p->flags2 & ENEFLAG2_UNK_17) == 0) {
+      count++;
+    }
+    node = node->next;
+    p = node->enemy;
   }
   return count;
 #else
@@ -263,24 +263,21 @@ NAKED s32 Enemy_CountByKind(u32 kind) { INCFUNC("asm/func/Enemy_CountByKind.inc"
 NAKED s32 FUN_080ecfbc(u32 kind, u32 unk_480) { INCFUNC("asm/func/FUN_080ecfbc.inc"); }
 
 // 生きている敵を先頭から1体返す
+// 残差2命令, FUN_080ecf18 と同じで flags2 のオフセット定数の巻き上げ有無でレジスタが1本増える
 NON_MATCH Enemy* FUN_080ed020(void) {
 #ifdef NONMATCHING_C
   EnemyListNode* node;
   Enemy* p;
-  EnemyFlags2 mask;
 
   GetEnemyManager();
   node = gEnemyListHead;
   p = node->enemy;
-  if (p != NULL) {
-    mask = ENEFLAG2_UNK_17;
-    do {
-      if ((p->hp > 0) && ((p->flags2 & mask) == 0)) {
-        return p;
-      }
-      node = node->next;
-      p = node->enemy;
-    } while (p != NULL);
+  while (p != NULL) {
+    if (p->hp > 0 && (p->flags2 & ENEFLAG2_UNK_17) == 0) {
+      return p;
+    }
+    node = node->next;
+    p = node->enemy;
   }
   return NULL;
 #else
@@ -374,24 +371,22 @@ NAKED bool32 FUN_080edb4c(Enemy* p, Vec3* pos) { INCFUNC("asm/func/FUN_080edb4c.
 
 NAKED Enemy* FUN_080edc40(Vec3* pos) { INCFUNC("asm/func/FUN_080edc40.inc"); }
 
+// id の敵を見つけた後ろから, ENEFLAG_UNK_0 が落ちている最初の敵を返す
+// 残差1命令, 定数 1 の movs がループ入口の前に出るか中に出るかだけ違う (命令列は 31 対 31)
 NON_MATCH Enemy* FUN_080edce8(u32 id) {
 #ifdef NONMATCHING_C
   EnemyListNode* node = gEnemyListHead;
   Enemy* p = node->enemy;
-  u32 flag;
 
-  if (p != NULL) {
-    flag = 1;
-    do {
-      if (((p->flags & flag) == 0) && (id == 0)) {
-        return p;
-      }
-      if (p->mover.id == id) {
-        id = 0;
-      }
-      node = node->next;
-      p = node->enemy;
-    } while (p != NULL);
+  while (p != NULL) {
+    if ((p->flags & ENEFLAG_UNK_0) == 0 && id == 0) {
+      return p;
+    }
+    if (p->mover.id == id) {
+      id = 0;
+    }
+    node = node->next;
+    p = node->enemy;
   }
   return NULL;
 #else

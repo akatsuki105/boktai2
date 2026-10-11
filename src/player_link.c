@@ -68,7 +68,18 @@ s32 FUN_080810f8(void) {
   return COFFIN_OAK;
 }
 
-NAKED void FUN_08081118(Player* p, u32 param_2) { INCFUNC("asm/func/FUN_08081118.inc"); }
+// kind を引数にして scriptID_9c4 のスクリプトを起動する
+void FUN_08081118(Player* p, u32 kind) {
+  ScriptArgs args;
+  u32 argv[1];
+
+  if (p->scriptID_9c4 != 0) {
+    args.argc = 1;
+    argv[0] = kind;
+    args.argv = argv;
+    VM_ExecByID(p->scriptID_9c4, &args);
+  }
+}
 
 void FUN_08081150(Player* p, u32 bits) { p->unk_9bc |= bits; }
 
@@ -117,7 +128,19 @@ NAKED void FUN_080816a0(Player* p) { INCFUNC("asm/func/FUN_080816a0.inc"); }
 
 NAKED void FUN_0808175c(Player* p) { INCFUNC("asm/func/FUN_0808175c.inc"); }
 
-NAKED s32 FUN_080817ec(Player* p) { INCFUNC("asm/func/FUN_080817ec.inc"); }
+extern u16 u16_03002b68[4];  // src/iwram2.c
+
+void FUN_08084330(Player* p);
+
+s32 FUN_080817ec(Player* p) {
+  p->unk_1c = 1;
+  p->updateCallback = FUN_08084330;
+  p->action = 0;
+  p->state = 0;
+  p->stateTimer = 0;
+  u16_03002b68[p->mover.unk_4] = p->mover.id;
+  return 0;
+}
 
 NAKED void FUN_08081830(s32 param_1) { INCFUNC("asm/func/FUN_08081830.inc"); }
 

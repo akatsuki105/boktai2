@@ -19,6 +19,9 @@
 #define INCBIN_S8 INCBIN
 #define INCBIN_S16 INCBIN
 #define INCBIN_S32 INCBIN
+
+// equal to HashName(x)
+#define BOKHASH(x) 0
 #endif
 
 #define INCASM(file) \

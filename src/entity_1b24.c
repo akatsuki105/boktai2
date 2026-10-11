@@ -9,9 +9,8 @@
 #include "vm.h"
 #include "weapon.h"
 
-// 通信販売(相手と武器の売り買いをする, 実質的なアイテム交換機能) or 通信対戦の武器選択 の画面
+// 通信販売(相手と武器の売り買いをする, 実質的なアイテム交換機能) or 通信対戦の武器選択 の画面?
 // gEntity9A9F の記録から相手の武器を読み、36枚のスプライトで並べる
-// 相手の武器を詳細にみているので、多分 通信販売 の画面
 typedef struct Entity1B24 {
   Entity e;                                    // 0x000, ENTITY_UNK_8
   u8* record;                                  // 0x018, &gEntity9A9F->unk_15c, セッションが無ければ NULL で _Init は失敗する
@@ -64,7 +63,7 @@ NAKED s32 FUN_0809cfc0(Entity1B24* p) { INCFUNC("asm/func/FUN_0809cfc0.inc"); }
 NAKED void FUN_0809d00c(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d00c.inc"); }
 
 void FUN_0809d230(Entity1B24* p) {
-  TextBox_Close();
+  MessageWindow_Close();
   FUN_08049e5c();
 }
 
@@ -127,6 +126,8 @@ u16* FUN_0809d858(s32 bg, s32 x, s32 y) {
   return tilemap + (x & 31) + (y & 31) * 32;
 }
 
+const char s_bg_link_col_arr_08251d6c[] = "bg_link_col_arr";
+
 NAKED void FUN_0809d878(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d878.inc"); }
 
 NAKED void FUN_0809d934(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d934.inc"); }
@@ -182,6 +183,7 @@ void FUN_0809dde0(Entity1B24* p) {
 
 NAKED s32 Entity1B24_Init(Entity1B24* p) { INCFUNC("asm/func/Entity1B24_Init.inc"); }
 
+// 0x1B24
 Entity1B24* Entity1B24_Create(u32 subroutineID) {
   Entity1B24* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity1B24));
 

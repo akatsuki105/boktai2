@@ -89,13 +89,23 @@ s32 FUN_08211164(s32 page) {
   return total;
 }
 
-// そのマスに写真が入りうるか
+// カーソル位置が実際に写真のあるマスか
+// 残差2命令, 原典は (y*5 + 1) を作ってから x を足すが gcc は (x + 1) を先に畳む (括弧も効かず)
 NON_MATCH bool32 AlbumMenu_CheckCursorPos(s32 x, s32 y, s32 page) {
 #ifdef NONMATCHING_C
-  if (x >= 0 && x <= 4 && y >= 0 && y <= 1 && AlbumMenu_GetPhotoSlotCount(page) >= x + y * 5 + 1) {
-    return TRUE;
+  if (x < 0 || x > 4) {
+    return FALSE;
   }
-  return FALSE;
+  if (y < 0) {
+    return FALSE;
+  }
+  if (y > 1) {
+    return FALSE;
+  }
+  if (AlbumMenu_GetPhotoSlotCount(page) < (y * 5 + 1) + x) {
+    return FALSE;
+  }
+  return TRUE;
 #else
   INCFUNC("asm/func/AlbumMenu_CheckCursorPos.inc");
 #endif

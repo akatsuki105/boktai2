@@ -1,12 +1,14 @@
 #ifndef __INCLUDE_CONSTANTS_SCRIPT_H__
 #define __INCLUDE_CONSTANTS_SCRIPT_H__
 
-// scripts.bokc の Script_XXXX
+// data/scripts/scripts.bokc で include する用
 
-#define SCRIPT_SNAKE_CHAT 0x0BE6   // ???(スネーク)との会話
-#define SCRIPT_GAMECLEAR 0x103F    // ゲームクリア, 周回数++して、 偶数周ならブラックパンサーを挟んでから SCRIPT_CREDITS
-#define SCRIPT_CREDITS 0x1040      // スタッフロール
-#define SCRIPT_USE_KEY 0x010D      // 鍵を使った
-#define SCRIPT_DOOR_LOCKED 0x010E  // 鍵がかかっている
+#define Script_SnakeChat Script_0x0BE6   // ???(スネーク)との会話
+#define Script_GameClear Script_0x103F   // ゲームクリア, 周回数++して、 偶数周ならブラックパンサーを挟んでから SCRIPT_STAFF_ROLL
+#define Script_StaffRoll Script_0x1040   // スタッフロール
+#define Script_UseKey Script_0x010D      // 鍵を使った
+#define Script_DoorLocked Script_0x010E  // 鍵がかかっている
+#define Script_MorningDew Script_0x0B66  // 太陽樹の朝露
+#define Script_Valley1 Script_0x0307     // 渓谷 (st00_00)
 
 #endif  // __INCLUDE_CONSTANTS_SCRIPT_H__

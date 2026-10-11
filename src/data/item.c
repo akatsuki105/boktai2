@@ -195,4 +195,4 @@ const ItemData gItemDB[ITEM_NUM] = {
     {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_THE_HIEROPHANT
     {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_THE_HERMIT
     {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_THE_WORLD
-};
+};  // 0x08DAA8D8

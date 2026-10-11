@@ -103,7 +103,13 @@ void FUN_080bfd04(EntityB3D1* p) {
   }
 }
 
-NAKED void FUN_080bfd24(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfd24.inc"); }
+void FUN_080bfd24(EntityB3D1* p) {
+  if (gPlayerPtr[0]->unk_42e > 3) {
+    p->unk_588++;
+  } else {
+    p->unk_588 = 0;
+  }
+}
 
 // unk_588 がどの区間にあるかを 10 / 5 / 1 / 2 で返す
 s32 FUN_080bfd5c(EntityB3D1* p) {
@@ -169,7 +175,18 @@ void FUN_080bffe8(EntityB3D1* p) {
   EntityB3D1_SetState(p, FUN_080c0248);
 }
 
-NAKED void FUN_080c0014(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c0014.inc"); }
+// unk_57e を引数にして unk_5ac のスクリプトを起動する
+void FUN_080c0014(EntityB3D1* p) {
+  ScriptArgs args;
+  u32 argv[1];
+
+  if (p->unk_5ac != 0) {
+    args.argc = 1;
+    args.argv = argv;
+    argv[0] = p->unk_57e;
+    VM_ExecByID(p->unk_5ac, &args);
+  }
+}
 
 // unk_5a8 のスクリプトを引数1個で起動する
 void FUN_080c0058(EntityB3D1* p) {
@@ -182,7 +199,21 @@ void FUN_080c0058(EntityB3D1* p) {
   }
 }
 
-NAKED void FUN_080c008c(void) { INCFUNC("asm/func/FUN_080c008c.inc"); }
+void FUN_080a6180(s32 param_1, s32 param_2, void* fn, void* arg);  // src/entity_a0a6.c
+void FUN_0807b910(Player* p, s32 val);                             // src/player_08065988.c
+
+// プレイヤーを決まった座標へ戻してから FUN_080bffe8 を予約する
+void FUN_080c008c(void) {
+  EntityB3D1* p = gEntityB3D1;
+
+  if (p != NULL) {
+    FUN_080a6180(0, 0, FUN_080bffe8, p);
+    FUN_0807b910(gPlayerPtr[0], 7);
+    gPlayerPtr[0]->mover.pos.x = 0x380;
+    gPlayerPtr[0]->mover.pos.y = 0x100;
+    gPlayerPtr[0]->mover.pos.z = 0x580;
+  }
+}
 
 NAKED s32 FUN_080c00d4(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c00d4.inc"); }
 
@@ -192,18 +223,13 @@ NAKED void FUN_080c01ac(EntityB3D1* p, s32 param_2) { INCFUNC("asm/func/FUN_080c
 
 NAKED void FUN_080c0248(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c0248.inc"); }
 
-NAKED void FUN_080c04d8(void) { INCFUNC("asm/func/FUN_080c04d8.inc"); }
+NAKED void FUN_080c04d8(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c04d8.inc"); }
 
-// 残差は 15 命令 vs 16 命令 で、原典は updateCallback のアドレスを movs/lsls/adds の3命令で作る (こちらはプール定数1本で済んでしまう)
-NON_MATCH s32 EntityB3D1_Update(EntityB3D1* p) {
-#ifdef NONMATCHING_C
+s32 EntityB3D1_Update(EntityB3D1* p) {
   p->updateCallback(p);
   FUN_080bfb74(p);
-  FUN_080c04d8();
+  FUN_080c04d8(p);
   return 0;
-#else
-  INCFUNC("asm/func/EntityB3D1_Update.inc");
-#endif
 }
 
 NAKED s32 EntityB3D1_Destroy(EntityB3D1* p) { INCFUNC("asm/func/EntityB3D1_Destroy.inc"); }

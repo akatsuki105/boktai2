@@ -55,7 +55,7 @@ _0808F45C:
 	ldr r0, _0808F4A4 @ =0x000002C1
 	bl PlaySound_082406e0
 	movs r0, #3
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r1, _0808F4A8 @ =FUN_0808f8bc
 	adds r0, r4, #0
 	bl FUN_0808a33c

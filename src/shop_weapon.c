@@ -4,6 +4,7 @@
 #include "global.h"
 #include "inventory.h"
 #include "menu.h"
+#include "sound.h"
 #include "sprite.h"
 #include "text.h"
 #include "tilemap.h"
@@ -62,26 +63,21 @@ void Entity744F_SetState(Entity744F* p, Entity744FFunc* fn) {
   p->stateTimer = 0;
 }
 
-void FUN_080bcdec(Entity744F* p, u8 val) { p->unk_1655 = val; }
+void FUN_080bcdec(Entity744F* p, s32 val) { p->unk_1655 = val; }
 
-// 残差は 17 命令 vs 15 命令 で、原典は p を保持したレジスタを stateTimer のアドレス計算で潰している
-NON_MATCH void FUN_080bcdf8(Entity744F* p, Entity744FFunc* fn, u8 val) {
-#ifdef NONMATCHING_C
+void FUN_080bcdf8(Entity744F* p, Entity744FFunc* fn, s32 val) {
   p->unk_189c = fn;
   FUN_080bcdec(p, val);
   p->stateTimer = 0;
-#else
-  INCFUNC("asm/func/FUN_080bcdf8.inc");
-#endif
 }
 
 void FUN_080bce20(Entity744F* p, s32 line) {
   FUN_08049e5c();
   p->sprites[33].flags |= SPRFLAG_HIDDEN;
-  TextBox_Start(p->unk_1640);
-  TextBox_SetRect(0, 16, 30, 2);
-  TextBox_SetInstant(1);
-  TextBox_ShowLine(line);
+  MessageWindow_Start(p->unk_1640);
+  MessageWindow_SetRect(0, 16, 30, 2);
+  MessageWindow_SetInstant(1);
+  MessageWindow_ShowLine(line);
 }
 
 NAKED s32 FUN_080bce64(s32 slot) { INCFUNC("asm/func/FUN_080bce64.inc"); }
@@ -154,11 +150,40 @@ void Entity744F_SwapSelectedWeapon(Entity744F* p) {
   }
 }
 
-NAKED void FUN_080bde60(Entity744F* p) { INCFUNC("asm/func/FUN_080bde60.inc"); }
+s32 FUN_080b977c(MainSprite* sprite, MainSpriteGfx* gfx, u8* param_3);  // src/shop_item.c
+
+void FUN_080bdeb4(Entity744F* p);
+void FUN_080bdfe8(Entity744F* p);
+
+// カーソル確定の入力待ち, 決定なら FUN_080bdeb4 へ, キャンセルなら SE を鳴らして戻る
+void FUN_080bde60(Entity744F* p) {
+  s32 r = FUN_080b977c(&p->sprites[57], &p->gfx0, &p->unk_1656);
+
+  if (r == 1) {
+    MessageWindow_Close();
+    FUN_080bd624(p);
+    FUN_080bcdf8(p, FUN_080bdeb4, 0);
+  } else if (r == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_080bd964(p);
+  }
+}
 
 NAKED void FUN_080bdeb4(Entity744F* p) { INCFUNC("asm/func/FUN_080bdeb4.inc"); }
 
-NAKED void FUN_080bdf94(Entity744F* p) { INCFUNC("asm/func/FUN_080bdf94.inc"); }
+// カーソル確定の入力待ち, 決定なら FUN_080bdfe8 へ, キャンセルなら SE を鳴らして戻る
+void FUN_080bdf94(Entity744F* p) {
+  s32 r = FUN_080b977c(&p->sprites[57], &p->gfx0, &p->unk_1656);
+
+  if (r == 1) {
+    MessageWindow_Close();
+    FUN_080bd57c(p);
+    FUN_080bcdf8(p, FUN_080bdfe8, 0);
+  } else if (r == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_080bd964(p);
+  }
+}
 
 NAKED void FUN_080bdfe8(Entity744F* p) { INCFUNC("asm/func/FUN_080bdfe8.inc"); }
 
@@ -182,9 +207,9 @@ void FUN_080be650(Entity744F* p) {
   }
 
   FUN_08049f5c();
-  TextBox_SetRect(0, 16, 30, 2);
-  TextBox_SetInstant(1);
-  TextBox_SetBgPltt(BGP_A41A);
+  MessageWindow_SetRect(0, 16, 30, 2);
+  MessageWindow_SetInstant(1);
+  MessageWindow_SetBgPltt(BGP_A41A);
 }
 
 NAKED void FUN_080be690(Entity744F* p) { INCFUNC("asm/func/FUN_080be690.inc"); }

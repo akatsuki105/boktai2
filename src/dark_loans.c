@@ -1,6 +1,9 @@
+#include "bg_pltt.h"
 #include "entity.h"
 #include "global.h"
 #include "sprite.h"
+#include "text.h"
+#include "vm.h"
 
 // 暗黒ローンのメニュー(太陽バンクや暗黒カードは別)
 typedef struct {
@@ -10,7 +13,7 @@ typedef struct {
   MainSprite sprites[20];     // 0x058
   AuxSprite auxSprite;        // 0x7D8
   u8 unk_804[36];             // 0x804
-  u8* script;                 // 0x828, TextBox_Start に渡す本文
+  u8* script;                 // 0x828, MessageWindow_Start に渡す本文
   u16 unk_82c;                // 0x82C
   u8 unk_82e[2];              // 0x82E, まだ未解析
   u32 unk_830;                // 0x830, '.d'
@@ -25,7 +28,17 @@ INCASM("asm/dark_loans.inc");
 
 NAKED void EntityE9D3_Init_Helper_080b5650(EntityE9D3* p) { INCFUNC("asm/func/EntityE9D3_Init_Helper_080b5650.inc"); }
 
-NAKED void EntityE9D3_Init_Helper_080b593c(EntityE9D3* p) { INCFUNC("asm/func/EntityE9D3_Init_Helper_080b593c.inc"); }
+// '.r' があれば本文を差し替えて, メッセージ枠を開く
+void EntityE9D3_Init_Helper_080b593c(EntityE9D3* p) {
+  if (VM_SeekToNamedArg('r')) {
+    p->script = FUN_0823d340();
+  }
+
+  MessageWindow_SetBgPltt(BGP_EAA8);
+  MessageWindow_Start(p->script);
+  MessageWindow_SetRect(1, 15, 28, 4);
+  MessageWindow_SetInstant(1);
+}
 
 // 太陽ゲージが低いほど大きい値を返す
 s32 EntityE9D3_Init_Helper_080b5984(void) {

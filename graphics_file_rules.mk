@@ -10,7 +10,6 @@ data/actor_sprites/mummy_1.4bpp: GFX_OPTS := -num_tiles 185
 data/actor_sprites/mummy_2.4bpp: GFX_OPTS := -num_tiles 166
 data/actor_sprites/7AEF.4bpp: GFX_OPTS := -num_tiles 70
 data/actor_sprites/7AF0.4bpp: GFX_OPTS := -num_tiles 70
-data/actor_sprites/A0D5.4bpp: GFX_OPTS := -num_tiles 218
 data/actor_sprites/76DB.4bpp: GFX_OPTS := -num_tiles 98
 data/actor_sprites/shop_armors.4bpp: GFX_OPTS := -num_tiles 63
 data/actor_sprites/1C1B.4bpp: GFX_OPTS := -num_tiles 102

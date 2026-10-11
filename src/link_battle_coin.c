@@ -101,7 +101,23 @@ NAKED void FUN_081e169c(LinkBattleCoinManager* p, Entity150FSlot* slot, s32 idx)
 
 NAKED void FUN_081e1734(LinkBattleCoinManager* p) { INCFUNC("asm/func/FUN_081e1734.inc"); }
 
-NAKED s32 Entity150F_Update(LinkBattleCoinManager* p) { INCFUNC("asm/func/Entity150F_Update.inc"); }
+s32 Entity150F_Update(LinkBattleCoinManager* p) {
+  bool32 inited = FALSE;
+  Entity150FSlot* slot = p->coins;
+  s32 i;
+
+  for (i = 0; i < 5; i++, slot++) {
+    if (slot->updateCallback != NULL) {
+      if (!inited) {
+        FUN_081e1734(p);
+        inited = TRUE;
+      }
+      slot->updateCallback(p, slot, i);
+    }
+  }
+  p->frameCount++;
+  return 0;
+}
 
 s32 Entity150F_Destroy(LinkBattleCoinManager* p) {
   s32 i;

@@ -209,23 +209,230 @@ void FUN_080e5388(u8 param_1, u8 param_2, u8 param_3, u8 param_4) {
   }
 }
 
-NAKED void FUN_080e53a8(s32 param_1, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080e53a8.inc"); }
+void FUN_080e53a8(u8 dir, s32* outX, s32* outY) {
+  switch (dir) {
+    case 0: {
+      *outX = 400;
+      *outY = 320;
+      break;
+    }
+    case 1: {
+      *outX = 0;
+      *outY = 340;
+      break;
+    }
+    case 2: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+    case 3: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+  }
+}
 
-NAKED void FUN_080e53ec(s32 param_1, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080e53ec.inc"); }
+void FUN_080e53ec(u8 dir, s32* outX, s32* outY) {
+  switch (dir) {
+    case 0: {
+      *outX = 470;
+      *outY = 390;
+      break;
+    }
+    case 1: {
+      *outX = 0;
+      *outY = 310;
+      break;
+    }
+    case 2: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+    case 3: {
+      *outX = 0;
+      *outY = 240;
+      break;
+    }
+  }
+}
 
-NAKED void FUN_080e5438(s32 param_1, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080e5438.inc"); }
+void FUN_080e5438(u8 dir, s32* outX, s32* outY) {
+  switch (dir) {
+    case 0: {
+      *outX = 400;
+      *outY = 320;
+      break;
+    }
+    case 1: {
+      *outX = 0;
+      *outY = 340;
+      break;
+    }
+    case 2: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+    case 3: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+  }
+}
 
-NAKED void FUN_080e547c(s32 param_1, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080e547c.inc"); }
+void FUN_080e547c(u8 dir, s32* outX, s32* outY) {
+  switch (dir) {
+    case 0: {
+      *outX = 400;
+      *outY = 320;
+      break;
+    }
+    case 1: {
+      *outX = 0;
+      *outY = 340;
+      break;
+    }
+    case 2: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+    case 3: {
+      *outX = 0;
+      *outY = 390;
+      break;
+    }
+  }
+}
 
-NAKED void FUN_080e54c8(s32 param_1, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080e54c8.inc"); }
+void FUN_080e54c8(u8 dir, s32* outX, s32* outY) {
+  switch (dir) {
+    case 0: {
+      *outX = 360;
+      *outY = 280;
+      break;
+    }
+    case 1: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+    case 2: {
+      *outX = 0;
+      *outY = 210;
+      break;
+    }
+    case 3: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+  }
+}
 
-NAKED void FUN_080e5508(s32 param_1, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080e5508.inc"); }
+void FUN_080e5508(u8 dir, s32* outX, s32* outY) {
+  switch (dir) {
+    case 0: {
+      *outX = 390;
+      *outY = 310;
+      break;
+    }
+    case 1: {
+      *outX = 0;
+      *outY = 320;
+      break;
+    }
+    case 2: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+    case 3: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+  }
+}
 
-NAKED void FUN_080e554c(s32 param_1, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080e554c.inc"); }
+void FUN_080e554c(u8 dir, s32* outX, s32* outY) {
+  switch (dir) {
+    case 0: {
+      *outX = 390;
+      *outY = 310;
+      break;
+    }
+    case 1: {
+      *outX = 0;
+      *outY = 320;
+      break;
+    }
+    case 2: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+    case 3: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+  }
+}
 
-NAKED void FUN_080e5590(s32 param_1, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080e5590.inc"); }
+void FUN_080e5590(u8 dir, s32* outX, s32* outY) {
+  switch (dir) {
+    case 0: {
+      *outX = 250;
+      *outY = 200;
+      break;
+    }
+    case 1: {
+      *outX = 0;
+      *outY = 340;
+      break;
+    }
+    case 2: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+    case 3: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+  }
+}
 
-NAKED void FUN_080e55d0(s32 param_1, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/FUN_080e55d0.inc"); }
+void FUN_080e55d0(u8 dir, s32* outX, s32* outY) {
+  switch (dir) {
+    case 0: {
+      *outX = 190;
+      *outY = 120;
+      break;
+    }
+    case 1: {
+      *outX = 0;
+      *outY = 340;
+      break;
+    }
+    case 2: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+    case 3: {
+      *outX = 0;
+      *outY = 260;
+      break;
+    }
+  }
+}
 
 NAKED void FUN_080e5610(s32 param_1, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_080e5610.inc"); }
 
@@ -238,7 +445,24 @@ NAKED void FUN_080e59d0(Enemy* p, u16* param_2) { INCFUNC("asm/func/FUN_080e59d0
 
 NAKED void FUN_080e5b2c(Enemy* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_080e5b2c.inc"); }
 
-NAKED void Enemy_SetAnimFacing(Enemy* p, u8* variant, AuxAnimPlayFlags* flags) { INCFUNC("asm/func/Enemy_SetAnimFacing.inc"); }
+// mover.angle を 4方向に丸めて, 左右反転とコマ番号に振り分ける
+// 残差1命令, 原典は dir を別レジスタへ複写してから比較に使うが agbcc は複写せず同じレジスタで済ませる (命令列は 29 対 30)
+NON_MATCH void Enemy_SetAnimFacing(Enemy* p, u8* variant, AuxAnimPlayFlags* flags) {
+#ifdef NONMATCHING_C
+  u32 dir = ((((p->mover.angle + 0x20) & 0xFF) >> 6) + 1) & 3;
+
+  p->facing = dir;
+  if (dir > 1) {
+    *flags = ANIM_PLAY_XFLIP;
+    *variant = 3 - dir;
+  } else {
+    *flags = 0;
+    *variant = dir;
+  }
+#else
+  INCFUNC("asm/func/Enemy_SetAnimFacing.inc");
+#endif
+}
 
 NAKED s32 FUN_080e5d80(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_080e5d80.inc"); }
 
@@ -389,9 +613,31 @@ void nop_080ec4cc(void) {}
 // gStat->unk_308 を丸ごと 0 にする
 void FUN_080ec4d0(void) { ClearMemory(gStat->unk_308, sizeof(gStat->unk_308)); }
 
-NAKED s32 FUN_080ec4ec(void) { INCFUNC("asm/func/FUN_080ec4ec.inc"); }
+// 0x308 の表の空き (3語目の [1] が 0) を先頭から探す, 無ければ NULL
+u16* FUN_080ec4ec(void) {
+  u16* r;
+  s32 i;
 
-NAKED s32 FUN_080ec518(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_080ec518.inc"); }
+  for (i = 0, r = gStat->unk_308; i < 20; r += 3, i++) {
+    if (r[1] == 0) {
+      return r;
+    }
+  }
+  return NULL;
+}
+
+// 0x308 の表から先頭2語が (a, b) の行を探す, 無ければ NULL
+u16* FUN_080ec518(u32 a, u32 b) {
+  u16* t;
+  s32 i;
+
+  for (i = 0, t = gStat->unk_308; i < 20; i++) {
+    if (t[i * 3] == a && t[i * 3 + 1] == b) {
+      return &t[i * 3];
+    }
+  }
+  return NULL;
+}
 
 NAKED void FUN_080ec554(void) { INCFUNC("asm/func/FUN_080ec554.inc"); }
 

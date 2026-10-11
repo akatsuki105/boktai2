@@ -2,6 +2,7 @@
 #include "global.h"
 #include "particle.h"
 #include "player.h"
+#include "sound.h"
 #include "sprite.h"
 
 // 12個を使い回す粒子の枠
@@ -112,7 +113,28 @@ s32 Entity080abd14_Destroy(Entity080abd14* p) {
   }
 }
 
-NAKED s32 Entity080abd14_Init(Entity080abd14* p, void* owner, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/Entity080abd14_Init.inc"); }
+// 残差1命令, 原典は第6引数を 0x1A の下位1バイトに strb するが, u16 unk_1a だと strh になる
+// union (u16 / u8[2]) で両方を表そうとすると agbcc が共用体を4バイト境界に置くので sizeof が狂う
+NON_MATCH s32 Entity080abd14_Init(Entity080abd14* p, void* owner, u32 param_3, u32 param_4, u32 param_5, u32 param_6) {
+#ifdef NONMATCHING_C
+  p->unk_18 = param_5;
+  p->owner = owner;
+  FUN_080abb20(p, param_4);
+  FUN_080ab8f8(p, param_3);
+  FUN_080ab6f8(p);
+
+  if (param_5 == 0) {
+    PlaySound_082406e0(0x39C);
+  } else {
+    PlaySound_082406e0(0x39D);
+  }
+
+  p->unk_1a = param_6;
+  return 0;
+#else
+  INCFUNC("asm/func/Entity080abd14_Init.inc");
+#endif
+}
 
 Entity080abd14* Entity080abd14_Create(void* owner, u32 param_2, u32 param_3, u32 param_4, u32 param_5) {
   Entity080abd14* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity080abd14));

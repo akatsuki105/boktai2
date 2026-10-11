@@ -32,7 +32,7 @@ gSubroutineTable:
 	.4byte 0x0C1B, FUN_0808fdc8
 	.4byte 0x0CD4, FUN_0823cecc
 	.4byte 0x0E15, FUN_0807b2dc
-	.4byte 0x0E37, TextBox_Create
+	.4byte 0x0E37, MessageWindow_Create
 	.4byte 0x0E76, FUN_0800377c
 	.4byte 0x0E7C, FUN_080450c4
 	.4byte 0x0EE4, FUN_081d0bd4
@@ -68,8 +68,8 @@ gSubroutineTable:
 	.4byte 0x1B77, FUN_080558b8
 	.4byte 0x1BEE, FUN_0807b15c
 	.4byte 0x1C3E, Time_GetDayOfWeekScripted
-	.4byte 0x1C64, TextBox_Open
-	.4byte 0x1DBE, FUN_0809ff84
+	.4byte 0x1C64, MessageWindow_Open
+	.4byte 0x1DBE, VM_Sub1DBE
 	.4byte 0x1E97, FUN_080ef5a8
 	.4byte 0x1E98, FUN_080a4e78
 	.4byte 0x1EA4, FUN_08037174
@@ -84,7 +84,7 @@ gSubroutineTable:
 	.4byte 0x237A, FUN_0807b620
 	.4byte 0x2502, Demo_Resume
 	.4byte 0x2571, FUN_080ef584
-	.4byte 0x2575, TextBox_SetExtendStringScripted
+	.4byte 0x2575, MessageWindow_SetExtendStringScripted
 	.4byte 0x2593, FUN_0807d828
 	.4byte 0x25F3, FUN_080a1974
 	.4byte 0x2740, VM_Sub2740
@@ -128,7 +128,7 @@ gSubroutineTable:
 	.4byte 0x3469, VM_Random
 	.4byte 0x34C2, FUN_080a4f90
 	.4byte 0x34EA, EnemyDexMenu_Create
-	.4byte 0x352D, TextBox_SetExtend
+	.4byte 0x352D, MessageWindow_SetExtend
 	.4byte 0x3535, MosaicFader_StartFromScript
 	.4byte 0x3613, Player_Lock
 	.4byte 0x364D, sound_08240344
@@ -276,9 +276,9 @@ gSubroutineTable:
 	.4byte 0x7117, FUN_0807b6b8
 	.4byte 0x71BA, Entity71BA_Create
 	.4byte 0x71C6, item_082427e0
-	.4byte 0x71E7, TextBoxChoice_SetTextFromScript
+	.4byte 0x71E7, MessageChoice_SetTextFromScript
 	.4byte 0x723E, Entity723E_Create
-	.4byte 0x727F, TextBox_SetInstantScripted
+	.4byte 0x727F, MessageWindow_SetInstantScripted
 	.4byte 0x7300, FUN_080bcd94
 	.4byte 0x730A, Entity730A_Create
 	.4byte 0x7348, Demo_Start
@@ -286,7 +286,7 @@ gSubroutineTable:
 	.4byte 0x744F, Entity744F_Create
 	.4byte 0x7539, Camera_SetTilemapOffset
 	.4byte 0x7566, FUN_080866e4
-	.4byte 0x75AF, TextBox_SetScriptIdsScripted
+	.4byte 0x75AF, MessageWindow_SetScriptIdsScripted
 	.4byte 0x75B7, FUN_0823c244
 	.4byte 0x75B9, FUN_0807db9c
 	.4byte 0x7636, VM_Loop
@@ -299,7 +299,7 @@ gSubroutineTable:
 	.4byte 0x78EE, VM_Sub78EE
 	.4byte 0x7935, VM_InitArray
 	.4byte 0x794C, Entity794C_Create
-	.4byte 0x7974, TextBox_SetWaitScripted
+	.4byte 0x7974, MessageWindow_SetWaitScripted
 	.4byte 0x7999, Entity7999_Create
 	.4byte 0x79B7, Map_AddLoadingZoneIndicatorScripted
 	.4byte 0x79EC, FUN_08240fdc
@@ -364,7 +364,7 @@ gSubroutineTable:
 	.4byte 0x8EA3, FUN_0820c940
 	.4byte 0x8EC8, Entity8EC8_Create
 	.4byte 0x8ECD, WeatherManager_Create
-	.4byte 0x8F41, TextBox_SetBgPlttScripted
+	.4byte 0x8F41, MessageWindow_SetBgPlttScripted
 	.4byte 0x8FA3, FUN_0807d1c0
 	.4byte 0x904B, SetCrossoverPoint
 	.4byte 0x9053, VM_Sub9053
@@ -374,14 +374,14 @@ gSubroutineTable:
 	.4byte 0x9284, CrossoverLobby_Create
 	.4byte 0x92BE, Entity92BE_Create
 	.4byte 0x92ED, Entity92ED_Create
-	.4byte 0x930F, TextBox_SetRectScripted
+	.4byte 0x930F, MessageWindow_SetRectScripted
 	.4byte 0x9311, FUN_080ef534
 	.4byte 0x933C, Player_MoveTo
 	.4byte 0x9386, Durathror_Create
 	.4byte 0x94D9, EnemyBokuLink_Create
 	.4byte 0x94EB, FUN_0809c5f4
 	.4byte 0x9519, PasswordScreen_Create
-	.4byte 0x9531, TextBoxChoice_CreateFromScript
+	.4byte 0x9531, MessageChoice_CreateFromScript
 	.4byte 0x95A8, Entity95A8_Create
 	.4byte 0x95F8, SunCountdown_Create
 	.4byte 0x9700, FUN_080e16f4
@@ -431,7 +431,7 @@ gSubroutineTable:
 	.4byte 0xA99F, FUN_08223d68
 	.4byte 0xAA62, FUN_0808fcd8
 	.4byte 0xAA65, HazardManager_Create
-	.4byte 0xAB3C, TextBox_SetVar
+	.4byte 0xAB3C, MessageWindow_SetVar
 	.4byte 0xAB41, FUN_0823d0e8
 	.4byte 0xAB4E, EntityAB4E_Create
 	.4byte 0xAB8E, FUN_081d1dec
@@ -440,7 +440,7 @@ gSubroutineTable:
 	.4byte 0xACE3, ClockAlarm_Create
 	.4byte 0xAD03, EnemySkeleton_Create
 	.4byte 0xADB6, FUN_08240f94
-	.4byte 0xADD2, TextBox_EnableAutoAdvance
+	.4byte 0xADD2, MessageWindow_EnableAutoAdvance
 	.4byte 0xAE3A, FUN_081d5268
 	.4byte 0xAE4E, FUN_0823d3ec
 	.4byte 0xAE71, FUN_080dd364
@@ -466,7 +466,7 @@ gSubroutineTable:
 	.4byte 0xB603, FUN_0807b4b8
 	.4byte 0xB639, MapAreaManager_Create
 	.4byte 0xB683, FUN_0807d9a8
-	.4byte 0xB6CE, FUN_0809f6ec
+	.4byte 0xB6CE, VM_SubB6CE
 	.4byte 0xB6FF, EntityB6FF_Create
 	.4byte 0xB76C, FUN_08004ba4
 	.4byte 0xB838, FUN_08224074
@@ -497,7 +497,7 @@ gSubroutineTable:
 	.4byte 0xC419, Entity081d0e20_Create
 	.4byte 0xC438, DungeonMarker_Create
 	.4byte 0xC46E, FUN_080a4e1c
-	.4byte 0xC556, TextBox_CloseScripted
+	.4byte 0xC556, MessageWindow_CloseScripted
 	.4byte 0xC5D8, FUN_0803c9b8
 	.4byte 0xC60F, EntityC60F_Create
 	.4byte 0xC673, FUN_08011608
@@ -535,7 +535,7 @@ gSubroutineTable:
 	.4byte 0xD285, VM_SubD285
 	.4byte 0xD37F, Jormungandr_Create
 	.4byte 0xD3A9, EntityD3A9_Create
-	.4byte 0xD401, TextBox_SetPendingLineScripted
+	.4byte 0xD401, MessageWindow_SetPendingLineScripted
 	.4byte 0xD40E, FUN_0807da18
 	.4byte 0xD438, EntityD438_Create
 	.4byte 0xD4B5, FUN_0807b174
@@ -560,7 +560,7 @@ gSubroutineTable:
 	.4byte 0xDB6C, ScriptShadow_MoveFromScript
 	.4byte 0xDC21, EntityDC21_Create
 	.4byte 0xDD0E, FUN_0807b3e0
-	.4byte 0xDD91, TextBox_ConfigureScripted
+	.4byte 0xDD91, MessageWindow_ConfigureScripted
 	.4byte 0xDDCF, FUN_08007640
 	.4byte 0xDDD0, FUN_08041b28
 	.4byte 0xDDEE, FUN_0807d938
@@ -635,7 +635,7 @@ gSubroutineTable:
 	.4byte 0xF993, FUN_080b2314
 	.4byte 0xF9F1, CountFoundArmors
 	.4byte 0xFA5D, FUN_08223fd8
-	.4byte 0xFB53, EntityFB53_Create
+	.4byte 0xFB53, JoyspotManager_Create
 	.4byte 0xFB8C, GameOverManager_Create
 	.4byte 0xFBC1, Time_GetDayDiffScripted
 	.4byte 0xFBE5, EntityFBE5_Create

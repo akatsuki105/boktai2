@@ -17,7 +17,7 @@
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	ldr r1, [r4, #0x18]
 	ldr r0, [r4, #0x30]
 	str r0, [sp]

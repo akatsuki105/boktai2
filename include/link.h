@@ -12,6 +12,9 @@ s32 Sio_Disconnect(void);
 void Sio_StartTransferIfIdle(void);
 s32 Sio_SetSendData(u16 data);
 s32 Sio_GetRecvData(u16* dst);
+s32 Sio_SendPacket(u8* src, s32 len);
+s32 Sio_GetPacketStatus(u32 id);
+s32 Sio_RecvPacket(u8* dst);
 s32 Sio_PeekRecvData(u16* dst);
 
 #endif  // __INCLUDE_LINK_H__

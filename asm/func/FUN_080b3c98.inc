@@ -109,7 +109,7 @@ _080B3D58:
 	lsls r1, r1, #1
 	bl Video_SetAuxSpritePltt
 	movs r0, #2
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r1, _080B3DC4 @ =0x000005E2
 	adds r0, r7, r1
 	strh r4, [r0]

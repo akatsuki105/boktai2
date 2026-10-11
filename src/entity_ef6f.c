@@ -448,7 +448,7 @@ void FUN_0801eaac(EntityEF6F* p, s32 param_2) {
 NON_MATCH void FUN_0801eb64(EntityEF6F* p) {
 #ifdef NONMATCHING_C
   if (FUN_0801e26c(p)) {
-    TextBox_ShowLine(p->unk_1e);
+    MessageWindow_ShowLine(p->unk_1e);
     p->unk_22 = 0;
   }
 

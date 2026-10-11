@@ -7,7 +7,7 @@
 typedef struct Entity08F4 {
   Entity e;                                    // 0x000, ENTITY_UNK_11
   Tilemaps* tilemap;                           // 0x018, TILEMAP_CD91
-  rgb555* bgPltt;                              // 0x01C, BGP_26BB
+  rgb555* bgPltt;                              // 0x01C, bg_link_col_arr
   MainSprite sprites[7];                       // 0x020
   MainSpriteGfx gfx;                           // 0x2C0, SPRITE_UI_LINK
   MainSpriteGfxFile* gfxFile;                  // 0x2E0, SPRITE_UI_LINK

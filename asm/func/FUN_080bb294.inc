@@ -49,7 +49,7 @@ _080BB2E8:
 	movs r2, #1
 	orrs r1, r2
 	str r1, [r0]
-	bl TextBox_Close
+	bl MessageWindow_Close
 	bl FUN_08049e5c
 	b _080BB36E
 _080BB304:
@@ -71,12 +71,12 @@ _080BB304:
 	ldr r0, _080BB380 @ =0x000012E8
 	adds r5, r6, r0
 	ldr r0, [r5]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	ldr r0, _080BB384 @ =0x08DAA7B0
 	lsls r4, r7, #3
 	adds r4, r4, r0
@@ -87,9 +87,9 @@ _080BB304:
 	movs r0, #1
 	bl FUN_08049e6c
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 	adds r0, r7, #0
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r0, [r5]
 	bl VM_ParseStringRef
 	adds r0, #0x25

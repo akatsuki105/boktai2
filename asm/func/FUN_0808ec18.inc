@@ -116,7 +116,7 @@ _0808ECCA:
 	ldr r1, _0808ED6C @ =0x00000143
 	bl Video_SetAuxSpritePltt
 	movs r0, #4
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r1, _0808ED70 @ =FUN_0808ef58
 	adds r0, r7, #0
 	bl FUN_0808a33c

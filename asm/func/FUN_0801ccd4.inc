@@ -103,11 +103,11 @@ _0801CD80:
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	ldr r1, _0801CDEC @ =0x0000130C
 	adds r0, r7, r1
 	ldr r0, [r0]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	mov r2, sl
 	cmp r2, #0
 	bne _0801CDDA
@@ -122,7 +122,7 @@ _0801CD80:
 	blt _0801CDF4
 _0801CDDA:
 	movs r0, #1
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	b _0801CDFA
 	.align 2, 0
 _0801CDE4: .4byte 0x00000BC4
@@ -131,7 +131,7 @@ _0801CDEC: .4byte 0x0000130C
 _0801CDF0: .4byte 0x030046A0
 _0801CDF4:
 	movs r0, #2
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 _0801CDFA:
 	ldr r1, _0801CE40 @ =0x00000DA4
 	adds r0, r7, r1

@@ -4,7 +4,7 @@
 	adds r5, r4, #0
 	adds r5, #0x2c
 	ldr r0, _080B0BE8 @ =0x08251DD0
-	bl FUN_08230860
+	bl HashName
 	adds r1, r0, #0
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10
@@ -27,7 +27,7 @@
 	str r1, [r4, #0x20]
 	ldr r5, _080B0BEC @ =0x0000922E
 	ldr r0, _080B0BF0 @ =0x08251DD4
-	bl FUN_08230860
+	bl HashName
 	adds r1, r0, #0
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10

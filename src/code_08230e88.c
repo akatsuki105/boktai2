@@ -1,3 +1,4 @@
+#include "entity.h"
 #include "global.h"
 #include "vm.h"
 
@@ -18,7 +19,19 @@ void ScriptRecord_ResetAll(void) {
   p[1].valueCount = 0;
 }
 
-NAKED void FUN_08230eb4(void) { INCFUNC("asm/func/FUN_08230eb4.inc"); }
+// Entity の更新が止まっていないときだけ, 使う面を切り替えてそちらを空にする
+void FUN_08230eb4(void) {
+  ScriptRecordBlock* blocks = ScriptRecord_GetBlocks();
+
+  if (gEntityDisableFlags == 0) {
+    ScriptRecordBlock* p;
+
+    u32_03000740 ^= 1;
+    p = &blocks[u32_03000740];
+    p->count = 0;
+    p->valueCount = 0;
+  }
+}
 
 NAKED void FUN_08230eec(unknown* p) { INCFUNC("asm/func/FUN_08230eec.inc"); }
 

@@ -5,7 +5,8 @@
 #include "sprite_aux.h"
 
 typedef struct {
-  u8 unk_0[0x17];  // 0x00
+  u8 unk_0[0x16];  // 0x00
+  u8 unk_16;       // 0x16, FUN_080dc00c が 0 を入れる
   s8 idx;          // 0x17, 自分の添字, ptcls と activeMask のビットを指す
   u8 unk_18[4];    // 0x18
 } Entity080dc44cSlot;
@@ -30,7 +31,19 @@ s32 FUN_080dc0d0(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 p
 
 NAKED void FUN_080dbeb4(Entity080dc44c* p, Entity080dc44cSlot* elem) { INCFUNC("asm/func/FUN_080dbeb4.inc"); }
 
-NAKED void FUN_080dc00c(Entity080dc44c* p, Entity080dc44cSlot* elem) { INCFUNC("asm/func/FUN_080dc00c.inc"); }
+// 枠を解放する, パーティクルを外して activeMask のビットを落とす
+// 残差は命令の並び順のみ (31 対 31), 原典は idx の ldrsb を activeMask のアドレス計算より前に出す
+NON_MATCH void FUN_080dc00c(Entity080dc44c* p, Entity080dc44cSlot* slot) {
+#ifdef NONMATCHING_C
+  Particle_Remove(&p->ptcls[slot->idx]);
+  slot->unk_16 = 0;
+  p->activeMask &= ~(1 << slot->idx);
+  ClearMemory(slot, sizeof(*slot));
+  slot->idx = -1;
+#else
+  INCFUNC("asm/func/FUN_080dc00c.inc");
+#endif
+}
 
 NAKED s32 FUN_080dc050(Entity080dc44c* p) { INCFUNC("asm/func/FUN_080dc050.inc"); }
 

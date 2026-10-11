@@ -18,4 +18,30 @@ typedef struct Entity71BA {
 } Entity71BA;
 static_assert(sizeof(Entity71BA) == 60);
 
-INCASM("asm/entity_71ba.inc");
+NAKED bool32 Entity71BA_IsPlayerOnTile(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_IsPlayerOnTile.inc"); }
+
+NAKED bool32 Entity71BA_IsPlayerAtHeight(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_IsPlayerAtHeight.inc"); }
+
+NAKED bool32 FUN_080a0104(Entity71BA* p, s32 param_2) { INCFUNC("asm/func/FUN_080a0104.inc"); }
+
+NAKED s32 FUN_080a0140(Entity71BA* p) { INCFUNC("asm/func/FUN_080a0140.inc"); }
+
+NAKED void FUN_080a01d8(Entity71BA* p) { INCFUNC("asm/func/FUN_080a01d8.inc"); }
+
+NAKED s32 FUN_080a0268(Entity71BA* p) { INCFUNC("asm/func/FUN_080a0268.inc"); }
+
+NAKED void Entity71BA_ClampPlayer(Entity71BA* p, s32 param_2) { INCFUNC("asm/func/Entity71BA_ClampPlayer.inc"); }
+
+NAKED void FUN_080a035c(Entity71BA* p) { INCFUNC("asm/func/FUN_080a035c.inc"); }
+
+NAKED bool32 FUN_080a04c8(void) { INCFUNC("asm/func/FUN_080a04c8.inc"); }
+
+NAKED void Entity71BA_UpdateTileOverride(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_UpdateTileOverride.inc"); }
+
+NAKED s32 Entity71BA_Update(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_Update.inc"); }
+
+NAKED s32 Entity71BA_Destroy(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_Destroy.inc"); }
+
+NAKED s32 Entity71BA_Init(Entity71BA* p, u16 param_2, u32 param_3) { INCFUNC("asm/func/Entity71BA_Init.inc"); }
+
+NAKED Entity71BA* Entity71BA_Create(u16 param_1, u32 param_2) { INCFUNC("asm/func/Entity71BA_Create.inc"); }

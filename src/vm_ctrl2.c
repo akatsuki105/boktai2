@@ -25,7 +25,12 @@ void* VM_Ctrl_LoadMap(void) {
   return NULL;
 }
 
-// 0x9906, .bokc の NativeCall_9906
+// 0x9906, EntityCreate
+// IDは EUC-JPの文字列をハッシュ化した値
+//   HashName("プレイヤー") -> 0xF5EB
+//   HashName("ドヴァリン") -> 0x0074
+//   HashName("シャイアン") -> 0x8E9F
+//   HashName("クロウ") -> 0x9E8D
 s32 VM_Ctrl_CreateEntity(void) {
   u16 subID = (u16)VM_GetValue();
   EntityCreateFn fn = VM_GetSubroutine(subID);
@@ -165,14 +170,14 @@ static void nop_0823b12c(void) { return; }
 
 // こっちはランタイムに関係のないものばかりに見える
 static const Subroutine sCtrlHandlers2[8] = {
-    {id : 0x22FF, fn : VM_Ctrl_22FF           },
-    {id : 0xB745, fn : VM_Ctrl_CallSubroutine },
-    {id : 0x9906, fn : VM_Ctrl_CreateEntity   },
-    {id : 0xD4CB, fn : VM_Ctrl_SetZoneCallback},
-    {id : 0xC8BB, fn : VM_Ctrl_LoadMap        },
-    {id : 0x0BB3, fn : VM_Ctrl_Unused_0BB3    },
-    {id : 0xC091, fn : VM_Ctrl_Unused_C091    },
-    {id : 0xE43C, fn : VM_Ctrl_E43C           },
+    {id : 0x22FF,             fn : VM_Ctrl_22FF           },
+    {id : BOKHASH("command"), fn : VM_Ctrl_CallSubroutine },
+    {id : BOKHASH("chara"),   fn : VM_Ctrl_CreateEntity   },
+    {id : BOKHASH("trap"),    fn : VM_Ctrl_SetZoneCallback},
+    {id : BOKHASH("load"),    fn : VM_Ctrl_LoadMap        },
+    {id : 0x0BB3,             fn : VM_Ctrl_Unused_0BB3    },
+    {id : BOKHASH("map"),     fn : VM_Ctrl_Unused_C091    },
+    {id : BOKHASH("restart"), fn : VM_Ctrl_E43C           },
 };  // 0x08DBD758
 
 s32 FUN_0823b130(void) {

@@ -25,7 +25,7 @@ typedef struct GameOverManager {
   MainSpriteGfx menuGfx;      // 0x298, UI_START_MENU
   MainSprite menu;            // 0x2B8, コンティニューの選択肢, cursor に応じてポーズ 135 / 136 を貼る, flags に SPRFLAG_GAMEOVER を含む
   rgb555 menuPltt[16];        // 0x318, GameOverManager_SetupMenu が gObjPlttData[0x2A90] から CpuSet でコピーし、menu.pltt をここに向ける, GameOverManager_UpdateMenuPltt が最後の1色 (index 15) を点滅させる
-  u8* script;                 // 0x338, '.r', GameOverManager_StateOpenMenu が TextBox_Start に渡す
+  u8* script;                 // 0x338, '.r', GameOverManager_StateOpenMenu が MessageWindow_Start に渡す
   s10_6 scaleX;               // 0x33C, GameOverManager_UpdateLetters が毎フレーム全 letters の sprite.scaleX へコピーする
   s10_6 scaleY;               // 0x33E, 同上で sprite.scaleY
   u8 state;                   // 0x340, PTR_ARRAY_085ad034[state]
@@ -193,7 +193,9 @@ void (*const sGameOverAnimFns[8])(GameOverManager*) = {
     GameOverManager_AnimEnd,
 };  // 0x085AD014
 
-// 現在の animState の処理を呼んでから、その結果の拡大率を letters へ反映する
+// 自分の命令列は原典と完全一致するが, C化すると同じ TU の GameOverManager_StateShowLogo の
+// レジスタ割当が r5/r6/r7 → r6/r7/r5 に回転して ROM が壊れる (式の形を変えても同じ6バイトが動く)
+// 先行する GameOverManager_UpdateLetters が NON_MATCH (INCFUNC) のままだと TU の状態が原典と違うのが原因と思われる
 NON_MATCH void GameOverManager_UpdateAnim(GameOverManager* p) {
 #ifdef NONMATCHING_C
   sGameOverAnimFns[p->animState](p);
@@ -323,14 +325,14 @@ void GameOverManager_StateOpenMenu(GameOverManager* p) {
   if (p->animState == 6) {
     p->menu.flags &= ~SPRFLAG_HIDDEN;
     FUN_0809c08c(3);
-    TextBox_SetRect(1, 13, 28, 4);
-    TextBox_SetInstant(1);
-    TextBox_Start(p->script);
-    TextBox_SetVarValue(0, p->cost[p->costIdx]);
+    MessageWindow_SetRect(1, 13, 28, 4);
+    MessageWindow_SetInstant(1);
+    MessageWindow_Start(p->script);
+    MessageWindow_SetVarValue(0, p->cost[p->costIdx]);
     if ((s16)gStat->solarBank >= p->cost[p->costIdx]) {
-      TextBox_ShowLine(0);
+      MessageWindow_ShowLine(0);
     } else {
-      TextBox_ShowLine(1);
+      MessageWindow_ShowLine(1);
     }
     p->state = 3;
   }

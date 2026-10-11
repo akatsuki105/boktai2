@@ -149,7 +149,7 @@ _0822A0BE:
 _0822A0D4: .4byte 0x040000B0
 _0822A0D8: .4byte 0x03003500
 _0822A0DC:
-	bl EntityFB53_IsActive
+	bl JoyspotManager_IsActive
 	cmp r0, #0
 	beq _0822A0F0
 	ldr r4, _0822A108 @ =0x03002B54

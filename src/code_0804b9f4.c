@@ -54,7 +54,8 @@ typedef struct {
   u16 unk_f0[5];  // 0xF0, 根拠: FUN_0804ce0c が5要素に -1 を OR する
   u8 unk_fa;
   u8 unk_fb;  // 0xFB, 根拠: FUN_0804e384 が 1 を入れる
-  u8 unk_fc[0x134 - 0xFC];
+  u8 unk_fc[0x11C - 0xFC];
+  INIT_PARAM initParam;       // 0x11C, rfu_LMAN_initializeRFU に渡す
   u8 unk_134[0x40];           // 0x134, 根拠: FUN_0804bb30 が ClearMemory で 0 にする
   u8 unk_174[0x378 - 0x174];  // 0x174, まだ未解析
   void* unk_378;              // 0x378, FUN_0804e4dc が書く
@@ -65,14 +66,12 @@ typedef struct {
 } Entity0804e2c0;
 static_assert(sizeof(Entity0804e2c0) == 908);
 
-typedef s32(Entity0804e2c0Func)(Entity0804e2c0* p);
-
 IWRAM_DATA volatile u8 u8_030000dc = 0;  // 0x030000DC, 送信完了を待つビジーループが見るので volatile
 IWRAM_DATA u32 u32_030000e0 = 0;         // 0x030000E0, 型不明
 
 COMMON_DATA Entity0804e2c0* gEntity0804e2c0 = NULL;  // 0x03002B58
 
-extern const u8 u8_ARRAY_085ab5b0[8];  // src/entity_fb53.c
+extern const u8 gJoyspotContentIDs[8];  // src/joyspot.c
 
 // クロスオーバー通信で送る文字列を1文字 = 1エントリに展開した表, 根拠: Crossover_LoadMappingBuf が 0x100 個まで strh で埋める
 EWRAM_DATA u16 gCrossoverMappingBuf[256] = {};  // 0x0203FC00
@@ -84,8 +83,7 @@ static inline void Entity0804e2c0_SetMotion(Entity0804e2c0* p, u16 motion) {
   p->unk_44 = 0;
 }
 
-void FUN_08229f4c(u32 n);                     // src/interrupts.c
-void AddEntity(Entity* p);                    // src/entity.c
+void WaitForVBlanks(u16 n);
 extern u32 u32_0300481c;                      // src/time.c
 extern const u16 gAcceptableSerialNoList[2];  // src/data.c
 void FUN_0804d868(Entity0804e2c0* p);
@@ -126,7 +124,7 @@ s32 FUN_0804de40(Entity0804e2c0*);
 s32 FUN_0804de58(Entity0804e2c0*);
 
 // clang-format off
-Entity0804e2c0Func* const PTR_ARRAY_085ab5e0[33] = {
+s32 (*const PTR_ARRAY_085ab5e0[33])(Entity0804e2c0*) = {
     FUN_0804c3cc,
     FUN_0804c3e4,
     FUN_0804c438,
@@ -190,13 +188,7 @@ void FUN_0804bb30(Entity0804e2c0* p) {
 }
 
 // 残差は 3 命令 vs 4 命令 で、原典は p を別レジスタに複写してから +0xEE している (局所コピーを置いても agbcc が畳んでしまう)
-NON_MATCH void FUN_0804bb68(Entity0804e2c0* p, u16 val) {
-#ifdef NONMATCHING_C
-  p->unk_ee = val;
-#else
-  INCFUNC("asm/func/FUN_0804bb68.inc");
-#endif
-}
+s32 FUN_0804bb68(Entity0804e2c0* p, u32 val) { p->unk_ee = val; }
 
 // unk_ec の bit14 が立っていたら unk_ee を取り込む
 s32 FUN_0804bb70(Entity0804e2c0* p) {
@@ -256,7 +248,27 @@ NAKED s32 FUN_0804c3e4(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c3e4.inc")
 
 NAKED s32 FUN_0804c438(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c438.inc"); }
 
-NAKED s32 FUN_0804c57c(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c57c.inc"); }
+// 60フレーム待ってから RFU を初期化し直す
+// 残差は定数を作る順だけ (30 対 30), 原典は 4 と 0 を store の前にまとめて作るが agbcc は 0 を先に作って store と交互に出す
+NON_MATCH s32 FUN_0804c57c(Entity0804e2c0* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_32) {
+    p->unk_32 = 0;
+  }
+
+  if (p->unk_44 > 0x3B) {
+    rfu_LMAN_initializeRFU(&p->initParam);
+    u8_030000dc = 0;
+    p->unk_1c = 0;
+    p->unk_38 = 4;
+    p->unk_44 = 0;
+    p->unk_32 = 1;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_0804c57c.inc");
+#endif
+}
 
 s32 FUN_0804c5c0(Entity0804e2c0* p) {
   if (p->unk_32) {
@@ -294,7 +306,7 @@ s32 FUN_0804c888(Entity0804e2c0* p) {
   }
 
   if (p->unk_22 & 0x80) {
-    FUN_08229f4c(8);
+    WaitForVBlanks(8);
     FUN_0804d868(p);
   }
 }
@@ -611,9 +623,7 @@ s32 FUN_0804de58(Entity0804e2c0* p) {
 
 NAKED s32 FUN_0804de70(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804de70.inc"); }
 
-// unk_38 番の状態ハンドラを呼ぶ
-// 残差はレジスタ割当だけ, 原典はテーブル先頭を r0 / 添字を r1 に取るがこちらは逆になる (命令数は同じ)
-// 関数ポインタのローカルを挟んでも変わらない
+// 残差はテーブル基点と添字のレジスタが入れ替わるのみ (命令列は 20 対 20 で一致)
 NON_MATCH s32 FUN_0804dee8(Entity0804e2c0* p) {
 #ifdef NONMATCHING_C
   if (p->unk_18) {
@@ -852,9 +862,8 @@ u16* Crossover_GetMappingBuf(void) { return gCrossoverMappingBuf; }
 
 u16 FUN_0804e65c(u8 n) { return Crossover_GetMappingBuf()[n]; }
 
-// クロスオーバーのマッピング表から id の位置を探す
-// 残差は4命令, 原典はループの入口判定を上に置いたまま (rotation なし) だが agbcc は i == 0 の初回判定を剥がして複製する
-// while (buf[i] != id) i++; でも while (TRUE) + if/break でも同じ形になる
+// 対応表から id の番号を引く, 見つからないと止まらない
+// 残差2命令, 原典はループ回転なし (先頭で判定して末尾は無条件分岐) だが gcc は初回判定を剥がして回転させる
 NON_MATCH s32 FUN_0804e674(u16 id) {
 #ifdef NONMATCHING_C
   u16* buf = Crossover_GetMappingBuf();
@@ -863,7 +872,6 @@ NON_MATCH s32 FUN_0804e674(u16 id) {
   while (buf[i] != id) {
     i++;
   }
-
   return i;
 #else
   INCFUNC("asm/func/FUN_0804e674.inc");

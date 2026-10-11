@@ -72,13 +72,12 @@ void FUN_082416bc(void) { u16_03004864 = 1; }
 
 void FUN_082416c8(void) { u16_03004864 = 0; }
 
-// 今のセンサー値を暗所の基準として控える, 以降 lx は calibration からの差で出る
+// 残差1命令, 原典は raw を r0 のまま使い回してプールを r1 に取るが gcc は raw を複写してプールを r0 に取る
 NON_MATCH bool32 Taiyo_CalibrateSensor(void) {
 #ifdef NONMATCHING_C
-  s32 raw;
-
   if (gTaiyo->state == 2) {
-    raw = Sensor_GetRawLevel();
+    s32 raw = Sensor_GetRawLevel();
+
     if (raw >= 0) {
       gSystemSaveData->calibration = raw - 2;
       return TRUE;
@@ -442,17 +441,18 @@ s32 Taiyo_Destroy(Taiyo* _) {
   return 0;
 }
 
+// 日光計測をやり直す, 退避してあった照度とゲージを GameInfo に戻す
+// 残差3命令, 原典は定数 0 を3連続の store の直前で作り gStat のアドレス計算を先に済ませるが
+// agbcc は 0 を関数先頭に巻き上げ gSavedLx の読み込みを先に出す (命令列は 22 対 23)
 NON_MATCH void FUN_08241f28(Taiyo* p) {
 #ifdef NONMATCHING_C
-  u16 tmp;
   p->unk_18 = 1;
   p->updateCallback = UpdateSunlight;
   p->state = 0;
   p->stateTimer = 0;
   p->adjustTimer = 0;
   gStat->lx = gSavedLx;
-  tmp = gSavedSunGauge[0];
-  gStat->sunGauge = tmp;
+  gStat->sunGauge = gSavedSunGauge[0];
 #else
   INCFUNC("asm/func/FUN_08241f28.inc");
 #endif

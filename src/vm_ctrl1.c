@@ -187,12 +187,12 @@ bool32 VM_Ctrl_CallScriptIndirect(u8* _) {
 
 // こっちは制御構文に相当するランタイムに必要不可欠なものが集まっている
 static const Subroutine sCtrlHandlers1[6] = {
-    {id : 0x0D86, fn : VM_Ctrl_If                },
-    {id : 0x4A6F, fn : VM_Ctrl_Switch            },
-    {id : 0x64C0, fn : VM_Ctrl_Unused_64C0       },
-    {id : 0x121F, fn : VM_Ctrl_CallScriptIndirect},
-    {id : 0xCD3A, fn : VM_Ctrl_Return            },
-    {id : 0xB96E, fn : VM_Ctrl_DebugPrint        },
+    {id : BOKHASH("if"),     fn : VM_Ctrl_If                },
+    {id : BOKHASH("switch"), fn : VM_Ctrl_Switch            },
+    {id : BOKHASH("eval"),   fn : VM_Ctrl_Unused_64C0       },
+    {id : BOKHASH("call"),   fn : VM_Ctrl_CallScriptIndirect},
+    {id : BOKHASH("return"), fn : VM_Ctrl_Return            },
+    {id : BOKHASH("print"),  fn : VM_Ctrl_DebugPrint        },
 };  // 0x085B01D0
 
 void FUN_082324b0(void) {

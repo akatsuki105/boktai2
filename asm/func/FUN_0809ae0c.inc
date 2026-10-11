@@ -25,7 +25,7 @@ _0809AE3C:
 	ldrh r0, [r4]
 	cmp r0, #0xf
 	bne _0809AE52
-	bl TextBox_Close
+	bl MessageWindow_Close
 	bl FUN_08049e5c
 	bl FUN_08049f84
 _0809AE52:

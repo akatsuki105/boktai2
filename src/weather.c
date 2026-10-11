@@ -73,6 +73,7 @@ bool32 WeatherManager_IsActive(void) {
 }
 
 // 次に天候が変わるまでのフレーム数を詰め直す
+// 残差1命令, 添字の lsls #1 が gRandomTable のプールロードより前に出るか後に出るかだけ違う (命令列は 30 対 30)
 NON_MATCH void WeatherManager_ResetTimer(WeatherManager* p) {
 #ifdef NONMATCHING_C
   p->timer = p->timerBase;
@@ -80,7 +81,9 @@ NON_MATCH void WeatherManager_ResetTimer(WeatherManager* p) {
     gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
     p->timer += Mod(gRandomTable[gRandTableIdx], p->timerRand);
   }
-  if (p->timer < 10) p->timer = 10;
+  if (p->timer < 10) {
+    p->timer = 10;
+  }
 #else
   INCFUNC("asm/func/WeatherManager_ResetTimer.inc");
 #endif

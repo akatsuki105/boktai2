@@ -41,12 +41,13 @@ export const SUBROUTINE_CALL_NAME = "SubroutineCall";
 export const LOAD_MAP_NAME = "LoadMap";
 export const DEBUG_PRINT_NAME = "DebugPrint";
 export const SET_ZONE_CALLBACK_NAME = "SetZoneCallback";
-export const SCRIPT_CALL_NAME = "ScriptCall";
+export const SCRIPT_CALL_NAME = "ScriptCall"; // 0x121F 専用, 呼び先が定数の 0x70 は scriptName() の綴り
 export const STRING_REF_NAME = "StringRef";
 
 // デコンパイル時に識別子へ名前を付けるための表, namespace ごとに別のヘッダから作る, 名前が無いIDは従来通り16進で出力する。
 export type PrintContext = {
   stringNames?: ReadonlyMap<number, string>; // STRING_REF_NAME の 文字列ID
+  scriptNames?: ReadonlyMap<number, string>; // スクリプトID, 定義の見出しと 0x70 の呼び先の両方に使う
 };
 
 // ラベル(0x50)のうち if/switch の節として現れるもの。これ以外のラベルは名前付き引数で、1文字の意味は呼び出し先のエンジン関数ごとに異なる。
@@ -136,6 +137,27 @@ export const IMPLICIT_ARG_TYPES: Readonly<Record<number, DataType>> = {
 export const dataTypeOfTag = (tag: number): DataType | undefined => (tag !== DataType.Void && tag in DATA_TYPE_NAMES) ? tag as DataType : undefined;
 
 export const toHex = (n: number, minDigits = 0): string => n.toString(16).toUpperCase().padStart(minDigits, "0");
+
+// 名前の付いていない識別子の綴り。16進であることを示す 0x を名前の中に入れてあるので、ヘッダで付ける名前(Script_StaffRoll)と衝突しない。
+const SCRIPT_NAME_PREFIX = "Script_0x";
+const CTRL_NAME_PREFIX = "Ctrl_0x";
+
+// スクリプトIDの綴り。定義の見出し(tools/dumper/bokcc.ts)と 0x70 の呼び先(callToString)が同じものを使うので、綴りの定義元はここ1箇所。
+// ctx に名前の表があればそれを出す。その名前は StringRef と同じくCプリプロセッサが展開してから parser に届く前提なので、parser 側は Script_0xXXXX の形だけを受ける。
+export const scriptName = (id: number, ctx?: PrintContext): string => ctx?.scriptNames?.get(id) ?? SCRIPT_NAME_PREFIX + toHex(id, 4);
+
+// 挙動が未解明の制御命令の綴り。
+export const ctrlName = (id: number): string => CTRL_NAME_PREFIX + toHex(id, 4);
+
+// 綴りからIDを読む(その綴りでなければ undefined)。parser と print_context が同じ規則を見るために、ここから引く。
+const idOf = (prefix: string, text: string): number | undefined => {
+  if (!text.startsWith(prefix)) return undefined;
+  const digits = text.slice(prefix.length);
+  return /^[0-9A-Fa-f]{1,4}$/.test(digits) ? parseInt(digits, 16) : undefined;
+};
+
+export const scriptIdOf = (text: string): number | undefined => idOf(SCRIPT_NAME_PREFIX, text);
+export const ctrlIdOf = (text: string): number | undefined => idOf(CTRL_NAME_PREFIX, text);
 
 // String(opcode 7)のバイト列を文字列リテラルに描画する。EUC-JP として読めて元のバイト列に戻せる文字だけをそのまま出し、それ以外は \xNN のまま残す(コンパイルし直したときにバイト列が変わらないことを優先する)。
 // 引用符とバックスラッシュも、字句解析を単純に保つためにエスケープせず \xNN で出す。
@@ -517,7 +539,7 @@ export class Instruction {
         s = operands.length > 0 ? "return " + operands[0].toString(ctx) : "return";
         break;
       }
-      // 呼び先が式のスクリプト呼び出し。呼び先が定数の 0x70 と同じ綴りで書けるが、 0x70 の呼び先は常にリテラル、0x121F の呼び先は常に式なので区別できる
+      // 呼び先が式のスクリプト呼び出し。呼び先を綴れないのでこちらだけ ScriptCall(...) の形で書く(呼び先が定数の 0x70 は Script_0xXXXX(...))
       case ControlType.CallIndirect: {
         s = SCRIPT_CALL_NAME + "(" + this.paramsToString(ctx, 0) + ")";
         break;
@@ -549,17 +571,16 @@ export class Instruction {
       }
       // 挙動が未解明の制御命令は opcode をそのまま名前にして保留する。
       default: {
-        s = "Ctrl_" + toHex(this.value, 4) + "(" + this.paramsToString(ctx, 0) + ")";
+        s = ctrlName(this.value) + "(" + this.paramsToString(ctx, 0) + ")";
         break;
       }
     }
     return s;
   }
 
+  // 呼び先が定数のスクリプト呼び出し(0x70)。定義の見出しと同じ綴りで、Cの関数呼び出しのように書く。
   private callToString(ctx?: PrintContext): string {
-    const id = "0x" + toHex(this.value, 4);
-    const args = this.paramsToString(ctx, 0);
-    return SCRIPT_CALL_NAME + "(" + id + (args.length > 0 ? ", " + args : "") + ")";
+    return scriptName(this.value, ctx) + "(" + this.paramsToString(ctx, 0) + ")";
   }
 
   // s32 以外の定数はキャストで型を明示する("(u16)" のような接頭辞を返す)。 型情報を残さないとコンパイル時に正しい型が復元できない。

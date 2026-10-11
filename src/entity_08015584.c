@@ -71,11 +71,13 @@ Entity08015584* Entity08015584_Create(u32 val, u32 _) {
   return p;
 }
 
+// 残差2命令, 原典は結果を r1 に置いて最後に r0 へ写す (n が r0 = 引数レジスタに残る) が,
+// ローカルの宣言順・引数の使い回し・三項/if の書き換えでは n と結果のレジスタが入れ替わらない
 NON_MATCH u32 FUN_080155c8(s32 flags) {
 #ifdef NONMATCHING_C
-  u32 v = ((flags & 0xF000) >> 12) - 1;
+  s32 n = ((flags & 0xF000) >> 12) - 1;
 
-  return (v <= 3) ? v : 2;
+  return (n >= 0 && n <= 3) ? n : 2;
 #else
   INCFUNC("asm/func/FUN_080155c8.inc");
 #endif

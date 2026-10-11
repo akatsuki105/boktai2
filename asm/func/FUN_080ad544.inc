@@ -18,17 +18,17 @@ _080AD55C:
 	b _080AD58E
 _080AD56A:
 	ldr r0, _080AD67C @ =0x08251D7C
-	bl FUN_08230860
+	bl HashName
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	str r0, [sp]
 	ldr r0, _080AD680 @ =0x08251D98
-	bl FUN_08230860
+	bl HashName
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	str r0, [sp, #4]
 	ldr r0, _080AD684 @ =0x08251DB4
-	bl FUN_08230860
+	bl HashName
 	lsls r0, r0, #0x10
 	lsrs r0, r0, #0x10
 	str r0, [sp, #8]

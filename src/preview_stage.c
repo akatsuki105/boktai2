@@ -26,6 +26,8 @@ typedef struct PreviewStage {
 } PreviewStage;
 static_assert(sizeof(PreviewStage) == 884);
 
+void FUN_08055d7c(SpriteHolder* p);
+
 INCASM("asm/preview_stage.inc");
 
 NAKED s32 FUN_0820f9dc(PreviewStage* p, s32 val) { INCFUNC("asm/func/FUN_0820f9dc.inc"); }
@@ -36,7 +38,17 @@ NAKED void PreviewStage_Update_Helper_0820fb20(PreviewStage* p) { INCFUNC("asm/f
 
 NAKED s32 PreviewStage_Update(PreviewStage* p) { INCFUNC("asm/func/PreviewStage_Update.inc"); }
 
-NAKED s32 PreviewStage_Destroy(PreviewStage* p) { INCFUNC("asm/func/PreviewStage_Destroy.inc"); }
+s32 PreviewStage_Destroy(PreviewStage* p) {
+  s32 i;
+
+  for (i = 0; i < 5; i++) {
+    if (p->parts[i].kind != 0) {
+      FUN_08055d7c(&p->parts[i]);
+    }
+  }
+  AuxSprite_Remove(&p->subSprite);
+  return 0;
+}
 
 NAKED s32 PreviewStage_Init(PreviewStage* p, u32 _) { INCFUNC("asm/func/PreviewStage_Init.inc"); }
 
@@ -172,10 +184,10 @@ static const EnemyDexModel sEnemyDexModels[70] = {
     {SPRITE_CURORO,         ANIM_9607, 1, 0,   92,  10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 41
     {SPRITE_CURORO,         ANIM_9607, 1, 0,   93,  10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 42
     {SPRITE_CURORO,         ANIM_9607, 1, 0,   94,  10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 43
-    {SPRITE_SLIME,          ANIM_A929, 1, 1,   147, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 44
-    {SPRITE_SLIME,          ANIM_A929, 1, 1,   148, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 45
-    {SPRITE_SLIME,          ANIM_A929, 1, 1,   149, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 46
-    {SPRITE_SLIME,          ANIM_A929, 1, 1,   150, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 47
+    {SPRITE_SLIME,          ANM_SLIME, 1, 1,   147, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 44
+    {SPRITE_SLIME,          ANM_SLIME, 1, 1,   148, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 45
+    {SPRITE_SLIME,          ANM_SLIME, 1, 1,   149, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 46
+    {SPRITE_SLIME,          ANM_SLIME, 1, 1,   150, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 47
     {SPRITE_GHOST,          ANIM_29FB, 1, 0,   381, 10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   20, 32, 0,  24, 64, 64, 1}, // 48
     {SPRITE_GHOST,          ANIM_29FB, 1, 0,   382, 10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   20, 32, 0,  24, 64, 64, 1}, // 49
     {SPRITE_DUNEYRR,        0x0000,    2, 0,   0,   0,  DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         0,  0,   8,  32, 0,  0,  0,  0,  0}, // 50

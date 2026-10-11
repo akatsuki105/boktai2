@@ -1494,7 +1494,7 @@ _080C317E:
 	adds r5, r4, #0
 	adds r5, #0x2c
 	ldr r0, _080C31CC @ =0x08251E04
-	bl FUN_08230860
+	bl HashName
 	adds r1, r0, #0
 	lsls r1, r1, #0x10
 	lsrs r1, r1, #0x10

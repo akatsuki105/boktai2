@@ -40,7 +40,7 @@ _081DE182:
 	ldrb r0, [r4]
 	cmp r0, #0
 	bne _081DE1D2
-	bl TextBox_IsOpen
+	bl MessageWindow_IsOpen
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _081DE1D2

@@ -121,16 +121,16 @@ _0801F5D8: .4byte 0x00005D04
 _0801F5DC: .4byte 0x000082F1
 _0801F5E0:
 	adds r0, r1, #0
-	bl TextBox_Start
+	bl MessageWindow_Start
 	movs r0, #1
 	movs r1, #1
 	movs r2, #0x1e
 	movs r3, #6
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	ldr r0, _0801F710 @ =0x0000A41A
-	bl TextBox_SetBgPltt
+	bl MessageWindow_SetBgPltt
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 	adds r0, r6, #0
 	movs r1, #1
 	bl FUN_0801e2a8

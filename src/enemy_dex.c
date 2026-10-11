@@ -30,7 +30,10 @@ typedef struct {
   u8 unk_4a;                   // 0x004A, _Init が 0
   u8 unk_4b[0x8E - 0x4B];      // 0x004B
   u16 unk_8e;                  // 0x008E, FUN_0820ed38 が unk_48 * 16 + 8 を書く
-  u8 unk_90[0xD8C - 0x90];     // 0x0090
+  u8 unk_90[0x18C - 0x90];     // 0x0090
+  MainSprite sprites_18c[5];   // 0x018C, 根拠: FUN_0820d6e4 が5枚ぶん登録し FUN_0820ee7c が5枚ぶん隠す
+  MainSprite sprites_36c[3];   // 0x036C, 根拠: FUN_0820ee7c が3枚ぶん隠す
+  u8 unk_48c[0xD8C - 0x48C];   // 0x048C
   MainSprite sprites_d8c[4];   // 0x0D8C, 根拠: EnemyDexMenu_HideSprites が 0xD94 と 0xE54 から 0x60 刻みで flags を触る
   u8 unk_f0c[0x110C - 0xF0C];  // 0x0F0C
   u16 unk_110c;                // 0x110C, _Init が 0
@@ -57,9 +60,38 @@ void ClearBGTilemapBuffer(s32 bg);
 s32 FUN_0820cbfc(u32 param_1);
 s32 FUN_0820cc0c(u32 param_1);
 
-NAKED s32 FUN_0820d00c(u32 param_1) { INCFUNC("asm/func/FUN_0820d00c.inc"); }
+static inline s32 Div32(s32 v) { return v >= 0 ? (v >> 5) : -((-v) >> 5); }
 
-NAKED s32 FUN_0820d04c(u32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_0820d04c.inc"); }
+// 魔物 bit に出会っているか
+// 残差はレジスタ番号の入れ替えのみ (r2/r3 が逆, 命令列は 29 対 29)
+NON_MATCH bool32 FUN_0820d00c(s32 bit) {
+#ifdef NONMATCHING_C
+  u32* seen = gStat->enemyDexSeen;
+
+  if (seen[Div32(bit)] & (1 << (bit & 0x1F))) {
+    return TRUE;
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_0820d00c.inc");
+#endif
+}
+
+// 魔物 id の種別 kind のフラグが立っているか
+// 残差はレジスタ番号の入れ替えのみ (r2/r3 と r1/r2, 命令列は 24 対 24)
+NON_MATCH bool32 FUN_0820d04c(u32 id, u32 kind) {
+#ifdef NONMATCHING_C
+  u32* flags = gStat->enemyDexFlags;
+  u32 bit = id * 2 + kind;
+
+  if (flags[bit >> 5] & (1 << (bit & 31))) {
+    return TRUE;
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_0820d04c.inc");
+#endif
+}
 
 bool32 FUN_0820d084(u32 param_1) {
   s32 n = FUN_0820cbfc(param_1);
@@ -88,7 +120,18 @@ s32 FUN_0820d0b8(u32 param_1) {
   return count;
 }
 
-NAKED bool32 FUN_0820d0ec(void) { INCFUNC("asm/func/FUN_0820d0ec.inc"); }
+// 57体すべてに出会っているか
+// 残差はレジスタ番号の入れ替えのみ (大きいオフセットの一時値と加算先が r0/r1 で逆, 命令列は 23 対 23)
+NON_MATCH bool32 FUN_0820d0ec(void) {
+#ifdef NONMATCHING_C
+  if (gStat->enemyDexSeen[0] == -1 && gStat->enemyDexSeen[1] == 0x01FFFFFF) {
+    return TRUE;
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_0820d0ec.inc");
+#endif
+}
 
 void FUN_0820d124(void) {
   if (VM_SeekToNamedArg('k')) {
@@ -176,7 +219,17 @@ NAKED void FUN_0820ed48(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ed48.inc");
 
 NAKED void FUN_0820ede8(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ede8.inc"); }
 
-NAKED void FUN_0820ee7c(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820ee7c.inc"); }
+// UIスプライトを全部隠す
+void FUN_0820ee7c(EnemyDexMenu* p) {
+  s32 i;
+
+  for (i = 0; i < 5; i++) {
+    p->sprites_18c[i].flags |= SPRFLAG_HIDDEN;
+  }
+  for (i = 0; i < 3; i++) {
+    p->sprites_36c[i].flags |= SPRFLAG_HIDDEN;
+  }
+}
 
 NAKED void FUN_0820eeb8(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820eeb8.inc"); }
 

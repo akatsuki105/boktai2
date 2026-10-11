@@ -342,7 +342,7 @@ _0806949C:
 	adds r4, r5, #0
 	adds r4, #0x2c
 	adds r0, r4, #0
-	bl FUN_0809f658
+	bl Entity1DBE_TouchElemNear
 	cmp r0, #0
 	beq _080694D2
 	ldrh r0, [r7]

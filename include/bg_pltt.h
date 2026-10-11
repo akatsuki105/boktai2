@@ -33,7 +33,7 @@
 #define BGP_212B 0x212B
 #define BGP_222D 0x222D
 #define BGP_223C 0x223C
-#define BGP_2365 0x2365
+#define BGP_2365 BOKHASH("pile_driver_noon1_col_arr")  // 0x2365
 #define BGP_2465 0x2465
 #define BGP_2565 0x2565
 #define BGP_26BB 0x26BB
@@ -140,7 +140,7 @@
 #define BGP_9F3B 0x9F3B
 #define BGP_9FF4 0x9FF4
 #define BGP_A04E 0xA04E
-#define BGP_A344 0xA344
+#define BGP_A344 BOKHASH("pile_driver_night_col_arr")  // 0xA344
 #define BGP_A3B5 0xA3B5
 #define BGP_A3D9 0xA3D9
 #define BGP_A3EC 0xA3EC
@@ -232,7 +232,7 @@
 #define BGP_F42E 0xF42E
 #define BGP_F460 0xF460
 #define BGP_F5F7 0xF5F7
-#define BGP_F80C 0xF80C
+#define BGP_F80C BOKHASH("pile_driver_even_col_arr")  // 0xF80C
 #define BGP_F811 0xF811
 #define BGP_FBE8 0xFBE8
 #define BGP_FC10 0xFC10

@@ -1,7 +1,7 @@
 	push {r4, r5, lr}
 	sub sp, #4
 	adds r4, r0, #0
-	bl TextBox_Close
+	bl MessageWindow_Close
 	bl FUN_08049e5c
 	bl FUN_08049f84
 	ldr r1, _080999F4 @ =0x00004014

@@ -39,7 +39,7 @@ SECTIONS {
       src/main.o(iwram_data);
       src/entity_d9ae.o(iwram_data);
       src/entity_08004fac.o(iwram_data);
-      src/textbox_choice.o(iwram_data);
+      src/message_choice.o(iwram_data);
       src/map_item.o(iwram_data);
       src/breakable.o(iwram_data);
       src/entity_2d2b.o(iwram_data);
@@ -67,11 +67,11 @@ SECTIONS {
       . = ALIGN(8);
       src/boss.o(iwram_data);
       src/entity_ab4e.o(iwram_data);
-      src/text_0e37.o(iwram_data);
+      src/message_window.o(iwram_data);
       src/text_marquee.o(iwram_data);
       src/text_panel.o(iwram_data);
       src/text_slideshow.o(iwram_data);
-      src/entity_fb53.o(iwram_data);
+      src/joyspot.o(iwram_data);
       src/code_0804b9f4.o(iwram_data);
       src/signal_strength_icon.o(iwram_data);
       src/entity_d53d.o(iwram_data);
@@ -173,7 +173,7 @@ SECTIONS {
       src/entity_08016660.o(COMMON);
       src/msgbus.o(COMMON);
       src/entity_286f.o(COMMON);
-      src/entity_fb53.o(COMMON);
+      src/joyspot.o(COMMON);
       src/code_0804b9f4.o(COMMON);
       . = ALIGN(8);
       src/iwram2.o(COMMON);
@@ -211,7 +211,7 @@ SECTIONS {
 			src/entity_e28b.o (.text);
 			src/entity_d9ae.o (.text);
 			src/entity_08004fac.o (.text);
-			src/textbox_choice.o (.text);
+			src/message_choice.o (.text);
 			src/map_item.o (.text);
 			src/breakable.o (.text);
 			src/entity_2d2b.o (.text);
@@ -269,13 +269,13 @@ SECTIONS {
 			src/boss/shademan.o (.text);
 			src/entity_286f.o (.text);
 			src/entity_ab4e.o (.text);
-			src/text_0e37.o (.text);
+			src/message_window.o (.text);
 			src/text_renderer.o (.text);
 			src/text_marquee.o (.text);
 			src/text_panel.o (.text);
 			src/text_slideshow.o (.text);
 			src/entity_b88c.o (.text);
-			src/entity_fb53.o (.text);
+			src/joyspot.o (.text);
 			src/code_0804b9f4.o (.text);
 			src/signal_strength_icon.o (.text);
 			src/entity_d53d.o (.text);
@@ -553,8 +553,9 @@ SECTIONS {
 	ALIGN(4)
 	{
     src/entity_e28b.o (.rodata);
-    src/textbox_choice.o (.rodata);
+    src/message_choice.o (.rodata);
     src/data.o (.rodata);
+    src/entity_1b24.o (.rodata);
     src/data_pile_driver.o (.rodata);
     src/data_ect.o (.rodata);
     src/entity_f41a.o (.rodata);
@@ -627,7 +628,7 @@ SECTIONS {
     src/text_marquee.o (.rodata);
     src/text_slideshow.o (.rodata);
     src/entity_b88c.o (.rodata);
-    src/entity_fb53.o (.rodata);
+    src/joyspot.o (.rodata);
     src/code_0804b9f4.o (.rodata);
     src/entity_d53d.o (.rodata);
     src/crossover_lobby.o (.rodata);

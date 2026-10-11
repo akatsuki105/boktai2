@@ -43,7 +43,7 @@ typedef struct LinkBattleResult {
   u16 unk_82a;                                       // 0x82A, FUN_081dcd50 が 0 を入れる
   Tilemaps* tilemap0;                                // 0x82C, TILEMAP_CD91, BG2 に敷く
   Tilemaps* tilemap1;                                // 0x830, TILEMAP_A413, BG0 に敷く
-  rgb555* bgPltt;                                    // 0x834, BGP_26BB
+  rgb555* bgPltt;                                    // 0x834, bg_link_col_arr
   void (*updateCallback)(struct LinkBattleResult*);  // 0x838
   u8* scriptPc;                                      // 0x83C, '.s' の後の FUN_0823d340(), TextPanel_SetScript に渡す
   u8 unk_840[4];                                     // 0x840
@@ -79,7 +79,7 @@ void FUN_081dc6d0(LinkBattleResult* p) {
   bgIndices[0] = 3;
   Video_SetupBGLayout(0, 0, p->tilemap1, 0, 0, 1, bgIndices);
   Video_GenerateBGMap(3, 0, 0, 0, 0);
-  p->bgPltt = GetBgPlttFile(BGP_26BB)->body;
+  p->bgPltt = GetBgPlttFile(BOKHASH("bg_link_col_arr"))->body;
   CpuCopy16(p->bgPltt, gBgPlttBuffer, 512);
 }
 
@@ -293,6 +293,8 @@ NAKED void FUN_081dce14(LinkBattleResult* p, s32 steps) { INCFUNC("asm/func/FUN_
 NAKED s32 FUN_081dcf34(LinkBattleResult* p) { INCFUNC("asm/func/FUN_081dcf34.inc"); }
 
 // i 番目と j 番目の並びを入れ替える
+// 残差2命令, 原典は 0x20 のスタックフレームを取って tmp を sp+0x10 / sp+0x18 に置くが
+// agbcc は r8 を使って退避しない (ポインタに切り出す形も同じ, Tier C のレジスタ割当差)
 NON_MATCH void FUN_081dd074(LinkBattleResult* p, s32 i, s32 j) {
 #ifdef NONMATCHING_C
   u16 tmp = p->unk_6f4[i];

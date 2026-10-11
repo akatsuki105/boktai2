@@ -420,6 +420,7 @@ NAKED void FUN_08020b88(Door* door) { INCFUNC("asm/func/FUN_08020b88.inc"); }
 NAKED void FUN_08020c1c(Door* door) { INCFUNC("asm/func/FUN_08020c1c.inc"); }
 
 // 開閉の残りフレームを数え、終わったら予約してあったスクリプトを実行する
+// 残差はレジスタ番号の入れ替えのみ (door と remain が r5/r6 で逆, 命令列は同数)
 NON_MATCH void FUN_08020cd8(Door* door) {
 #ifdef NONMATCHING_C
   s32 remain = door->unk_82;
@@ -438,6 +439,7 @@ NON_MATCH void FUN_08020cd8(Door* door) {
 }
 
 // 開閉の残りフレームを数え、終わったら予約してあったスクリプトを実行する
+// 残差はレジスタ番号の入れ替えのみ (door と remain が r5/r6 で逆, 命令列は同数)
 NON_MATCH void FUN_08020d10(Door* door) {
 #ifdef NONMATCHING_C
   s32 remain = door->unk_82;

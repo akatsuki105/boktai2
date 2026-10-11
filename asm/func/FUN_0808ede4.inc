@@ -32,7 +32,7 @@
 	movs r3, #2
 	bl MainSprite_SetAnim
 	movs r0, #0xd
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r1, _0808EE4C @ =FUN_0808f0d8
 	adds r0, r4, #0
 	bl FUN_0808a33c

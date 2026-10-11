@@ -13,7 +13,7 @@
 	ldr r3, _0801BFEC @ =0x00001308
 	adds r6, r4, r3
 	ldr r0, [r6]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	adds r1, r4, #0
 	adds r1, #0xbc
 	adds r0, r5, #0

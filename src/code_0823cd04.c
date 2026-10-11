@@ -30,6 +30,8 @@ COMMON_DATA u32 u32_030047bc = 0;              // 0x030047BC, Entity0823acbc_Upd
 COMMON_DATA u32 u32_030047c0 = 0;              // 0x030047C0, FUN_0823ACBC と FUN_0823CD04 の一括クリアでしか触られない, 読み手も本来の書き手も未発見
 COMMON_DATA u32 u32_030047c4 = 0;              // 0x030047C4, Entity0823acbc_Update が 0 を書くほかは一括クリアのみ, 読み手は未発見
 
+bool8 Save_ReadSystemData(void);
+
 static inline void SystemSave_SetUnk09(u32 val) { gSystemSaveData->unk_09 = val; }
 
 void FUN_0823cd04(void) {
@@ -283,7 +285,26 @@ void UNUSED SoftResetScripted(void) { SoftReset_0823a928(); }
 
 NAKED void FUN_0823d22c(void) { INCFUNC("asm/func/FUN_0823d22c.inc"); }
 
-NAKED void FUN_0823d280(void) { INCFUNC("asm/func/FUN_0823d280.inc"); }
+// セーブデータを読み直し, 成功したらメッセージ速度と太陽センサーのキャリブレーションを既定値に戻す
+// 残差2命令, 原典は戻り値の u8 マスクを r2 に残して 0 の store に使い回すが
+// agbcc は lsls のフラグだけ使って別に movs r2, #0 を作る (戻り値型 s32/u8 と局所変数 s32/u8 の4通り試済)
+NON_MATCH void FUN_0823d280(void) {
+#ifdef NONMATCHING_C
+  if (gSystemSaveData != NULL) {
+    u8 err = Save_ReadSystemData();
+
+    if (err == 0) {
+      gStat->textSpeed = 5;
+      gSystemSaveData->calibration = 0xE6;
+      gSystemSaveData->currentSlot = 0;
+      gSystemSaveData->unk_09 = 0;
+      gSystemSaveData->unk_0a = 0;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0823d280.inc");
+#endif
+}
 
 void FUN_0823d2bc(void) { s32_0300446c = VM_GetNamedArgValue('t', 0); }
 

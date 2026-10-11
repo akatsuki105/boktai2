@@ -61,7 +61,7 @@
 	adds r0, r5, r4
 	ldrb r0, [r0]
 	strb r0, [r1]
-	bl TextBox_Close
+	bl MessageWindow_Close
 	bl FUN_08049f84
 	ldr r0, _0809A934 @ =0x00004014
 	adds r6, r5, r0

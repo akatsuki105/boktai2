@@ -16,13 +16,14 @@ const decompile = new Command()
   .argument("<rom:string>", "Path to a GBA ROM file.")
   .argument("<addr:number>", "Script address in the ROM.")
   .option("--strings <include:string>", `文字列IDの名前を定義したヘッダ, #include に書く綴りで指定する (${INCLUDE_DIR}/ 配下から読む)`)
+  .option("--scripts <include:string>", `スクリプトIDの名前を定義したヘッダ, #include に書く綴りで指定する (${INCLUDE_DIR}/ 配下から読む)`)
   .action((opts, romPath, targetAddr) => {
     const offset = (targetAddr >= gba.BASE) ? targetAddr - gba.BASE : targetAddr; // 0x08000000 以降のアドレスが指定された場合はファイルオフセットに変換する
     const data = Deno.readFileSync(romPath);
     const reader = new InstructionReader(new ByteStream(data, offset));
 
     try {
-      const ctx = buildPrintContext({ strings: opts.strings });
+      const ctx = buildPrintContext({ strings: opts.strings, scripts: opts.scripts });
       for (const instr of reader.decompile()) {
         console.log(instr.toString(ctx));
       }

@@ -31,12 +31,11 @@ void Entity8CC7Elem_SetFlags(Entity8CC7Elem* e, u16 bits) { e->flags |= bits; }
 void Entity8CC7Elem_ClearFlags(Entity8CC7Elem* e, u16 bits) { e->flags &= ~bits; }
 
 // 残差は 7 命令 vs 11 命令 で、原典は 0/1 を分岐で作る (!= 0 も ?1:0 もビット演算に畳まれる)
-NON_MATCH bool32 Entity8CC7Elem_TestFlags(Entity8CC7Elem* e, u16 bits) {
-#ifdef NONMATCHING_C
-  return (e->flags & bits) != 0;
-#else
-  INCFUNC("asm/func/Entity8CC7Elem_TestFlags.inc");
-#endif
+bool32 Entity8CC7Elem_TestFlags(Entity8CC7Elem* e, u32 bits) {
+  if (e->flags & bits) {
+    return TRUE;
+  }
+  return FALSE;
 }
 
 NAKED Entity8CC7Elem* Entity8CC7_AllocElem(Entity8CC7* p) { INCFUNC("asm/func/Entity8CC7_AllocElem.inc"); }

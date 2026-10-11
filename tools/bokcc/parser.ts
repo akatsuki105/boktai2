@@ -1,4 +1,4 @@
-import { ClauseType, ControlType, DATA_TYPE_BY_NAME, DataType, DEBUG_PRINT_NAME, ENTITY_CREATE_NAME, IMPLICIT_ARG_TYPES, InsnType, Instruction, LOAD_MAP_NAME, MEM_REGION_BY_NAME, OPERATORS, SCRIPT_CALL_NAME, SET_ZONE_CALLBACK_NAME, STRING_REF_NAME, SUBROUTINE_CALL_NAME } from "./instruction.ts";
+import { ClauseType, ControlType, ctrlIdOf, DATA_TYPE_BY_NAME, DataType, DEBUG_PRINT_NAME, ENTITY_CREATE_NAME, IMPLICIT_ARG_TYPES, InsnType, Instruction, LOAD_MAP_NAME, MEM_REGION_BY_NAME, OPERATORS, SCRIPT_CALL_NAME, scriptIdOf, SET_ZONE_CALLBACK_NAME, STRING_REF_NAME, SUBROUTINE_CALL_NAME } from "./instruction.ts";
 import { encodeChar } from "./eucjp.ts";
 
 // コンパイル専用。.bokc のテキストから Instruction を読む(コンパイル前半。 コンパイル後半の書き出しは compiler.ts)。
@@ -173,7 +173,9 @@ class Parser {
     return scripts;
   }
 
-  // Script_00F1() { ... } のように名前が付いていてもよい。名前はバイト列に現れないので読み捨てる
+  // Script_0x00F1() { ... } のように名前が付いていてもよい。名前はバイト列に現れないので読み捨てる
+  // 呼び出し文 Script_0x00F1(); と綴りが同じだが、Cと同じく位置と後ろの1トークンで区別できる
+  // (定義はトップレベルにしか現れず引数リストの後ろが "{", 呼び出しはブロックの中にしか現れず ";" で終わる)
   private parseScript(): Instruction {
     if (this.peek().type === "IDENT" && this.peek(1).text === "(" && this.peek(2).text === ")" && this.peek(3).text === "{") {
       this.next();
@@ -290,21 +292,30 @@ class Parser {
     const t = this.peek();
     if (t.type !== "IDENT" || this.peek(1).text !== "(") return null;
 
-    if (t.text === SCRIPT_CALL_NAME) return this.parseScriptCall(); // ScriptCall(...) は別で処理
+    // Script_0xXXXX(...) は呼び先が定数のスクリプト呼び出し(0x70)。制御命令ではないので先に処理する
+    const scriptId = scriptIdOf(t.text);
+    if (scriptId !== undefined) {
+      this.next();
+      this.expect("(");
+      const instr = new Instruction(InsnType.Call, scriptId);
+      this.parseArgList(instr);
+      return instr;
+    }
 
-    // 残りは制御命令, e.g. EntityCreate(0x1B77, (u16)7031), SubroutineCall(0x0C63), Ctrl_XXXX(...)
+    // 残りは制御命令, e.g. EntityCreate(0x1B77, (u16)7031), SubroutineCall(0x0C63), Ctrl_0xXXXX(...)
     let tag: number;
     // 制御命令 のうち、用途がわかっているものは専用の名前をつけているので、名前から opcode を決める
-    if (t.text === ENTITY_CREATE_NAME) tag = ControlType.EntityCreate;
+    if (t.text === SCRIPT_CALL_NAME) tag = ControlType.CallIndirect; // 呼び先が式のスクリプト呼び出し, e.g. ScriptCall(p1, 0)
+    else if (t.text === ENTITY_CREATE_NAME) tag = ControlType.EntityCreate;
     else if (t.text === SUBROUTINE_CALL_NAME) tag = ControlType.SubroutineCall;
     else if (t.text === LOAD_MAP_NAME) tag = ControlType.LoadMap;
     else if (t.text === DEBUG_PRINT_NAME) tag = ControlType.DebugPrint;
     else if (t.text === SET_ZONE_CALLBACK_NAME) tag = ControlType.SetZoneCallback;
     else {
-      // Ctrl_XXXX は opcode を直に書いた形。それ以外の識別子は呼び出しではない
-      const m = /^Ctrl_([0-9A-Fa-f]{1,4})$/.exec(t.text);
-      if (!m) return null;
-      tag = parseInt(m[1], 16);
+      // Ctrl_0xXXXX は opcode を直に書いた形。それ以外の識別子は呼び出しではない
+      const ctrlId = ctrlIdOf(t.text);
+      if (ctrlId === undefined) return null;
+      tag = ctrlId;
     }
 
     this.next();
@@ -320,30 +331,6 @@ class Parser {
     }
 
     return instr;
-  }
-
-  // ScriptCall(0xNNNN, ...)
-  // 先頭が16進リテラルかどうかで 直接呼び出し(0x70) か 間接呼び出し(0x121F) かを判定する
-  private parseScriptCall(): Instruction {
-    this.expect(SCRIPT_CALL_NAME);
-    this.expect("(");
-
-    // 2つの見分けは先頭が16進リテラルかどうか。呼び先IDは printer が必ず16進で出し、式の中の定数は必ず10進で出るので衝突しない。
-    const head = this.peek();
-    const isDirect = head.type === "NUMBER" && /^0[xX]/.test(head.text);
-
-    if (isDirect) {
-      // 直接呼び出し(0x70), e.g. ScriptCall(0x00F8, 3, (u24)85, 0);
-      const instr = new Instruction(InsnType.Call, this.expectNumber());
-      while (this.accept(",")) instr.children.push(this.parseArg());
-      this.expect(")");
-      return instr;
-    } else {
-      // 間接呼び出し(0x121F), e.g. ScriptCall(p1, 0);
-      const instr = new Instruction(InsnType.Control, ControlType.CallIndirect);
-      this.parseArgList(instr);
-      return instr;
-    }
   }
 
   // "(" を読んだ後の引数リストを ")" まで読む
@@ -369,7 +356,7 @@ class Parser {
     }
 
     const label = new Instruction(InsnType.Label, name.text.charCodeAt(0));
-    if (!this.accept("=")) return label; // 値を持たない名前付き引数 e.g. Ctrl_E43C(.r);
+    if (!this.accept("=")) return label; // 値を持たない名前付き引数 e.g. Ctrl_0xE43C(.r);
 
     // '.x=val'
     if (this.accept("[")) {
@@ -403,7 +390,7 @@ class Parser {
     return expr;
   }
 
-  // Ctrl_22FF(0x10, (p0 + 1)) の "0x10" と "(p0 + 1)", case 1: の "1", return p0; の "p0", BIT(world + 0xC, 1, 2, p0) の "2" と "p0"
+  // Ctrl_0x22FF(0x10, (p0 + 1)) の "0x10" と "(p0 + 1)", case 1: の "1", return p0; の "p0", BIT(world + 0xC, 1, 2, p0) の "2" と "p0"
   // "(" で囲まれていれば Expression コンテナ、囲みが無ければ裸のオペランドになる
   private parseExpressionNode(): Instruction {
     if (this.at("(") && !this.startsCast() && !this.startsIndexedMemory()) {

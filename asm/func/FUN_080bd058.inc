@@ -76,7 +76,7 @@ _080BD0E8:
 	movs r2, #1
 	orrs r1, r2
 	str r1, [r0]
-	bl TextBox_Close
+	bl MessageWindow_Close
 	bl FUN_08049e5c
 	b _080BD162
 	.align 2, 0
@@ -106,12 +106,12 @@ _080BD10C:
 	ldr r2, _080BD178 @ =0x00001644
 	adds r4, r6, r2
 	ldr r0, [r4]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1c
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	ldr r3, _080BD17C @ =0x0000164C
 	adds r1, r6, r3
 	mov r0, sp

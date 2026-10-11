@@ -31,9 +31,9 @@ VM 側の opcode 定数は `include/vm.h` に `OP_*` / `CLAUSE_*` として定�
 
 バイトコードの実行単位。1本がブロック (`0x80`) 1つに対応する。
 ID で引くもので、ID は `ScriptDirectory.script_entries` の添字 + 1 (ROM には 11539 本ある)。
-`scripts.bokc` の `Script_XXXX` の番号がこの ID である。
+`scripts.bokc` の `Script_0xXXXX` の番号がこの ID である。
 
-`.bokc` からは `ScriptCall(0x0003)` で呼ぶ。引数は最大16個渡せて、
+`.bokc` からは `Script_0x0003()` で呼ぶ。引数は最大16個渡せて、
 呼ばれた側は `p0` `p1` ... で読む。`return` で値を返せる。
 戻り値は呼び出した側の `result` に入る (`result` は直前の文の値を指すので、
 式の結果でも上書きされる)。
@@ -85,7 +85,7 @@ boktaihacking の wiki はこの命令を keyword と呼んでいる。
 | `0x40` | 引数参照 | `result` `p0` |
 | `0x50` | ラベル | `.p = 1` `case 3:` `else` |
 | `0x60` | 制御命令 | `if` `switch` `return` `SubroutineCall(...)` |
-| `0x70` | スクリプト呼び出し | `ScriptCall(0x0003)` |
+| `0x70` | スクリプト呼び出し | `Script_0x0003()` |
 | `0x80` | ブロック | `{ ... }` |
 | `0x90` | 変数参照 | `v0` |
 | `0xA0` `0xB0` | 演算子 | `+` `==` `=` |
@@ -141,14 +141,14 @@ bokcc はコンテナ長から同じ情報を導けるので、この欄はテ�
 | `0xC8BB` | `VM_Ctrl_LoadMap` | `LoadMap(ID, ...)` | 96 | マップ初期化スクリプトIDを設定してマップ遷移を要求する |
 | `0xD4CB` | `VM_Ctrl_SetZoneCallback` | `SetZoneCallback(...)` | 208 | Zone に重なったときのコールバックを登録する |
 | `0xB96E` | `VM_Ctrl_DebugPrint` | `DebugPrint(...)` | 107 | 文字列を Shift-JIS に変換する。出力先は残っていない |
-| `0x22FF` | `VM_Ctrl_22FF` | `Ctrl_22FF(...)` | 115 | ID と可変個の u16 を1件のレコードとして登録する |
-| `0xE43C` | `VM_Ctrl_E43C` | `Ctrl_E43C(...)` | 17 | `.s` / `.r` を見て `u32_03004798` にフラグを立てる |
-| `0x64C0` | `VM_Ctrl_Unused_64C0` | `Ctrl_64C0(...)` | 0 | 第1オペランドを `result` に入れるだけ |
-| `0x0BB3` | `VM_Ctrl_Unused_0BB3` | `Ctrl_0BB3(...)` | 0 | 何もしない |
-| `0xC091` | `VM_Ctrl_Unused_C091` | `Ctrl_C091(...)` | 0 | 引数をそのまま返すだけ |
+| `0x22FF` | `VM_Ctrl_22FF` | `Ctrl_0x22FF(...)` | 115 | ID と可変個の u16 を1件のレコードとして登録する |
+| `0xE43C` | `VM_Ctrl_E43C` | `Ctrl_0xE43C(...)` | 17 | `.s` / `.r` を見て `u32_03004798` にフラグを立てる |
+| `0x64C0` | `VM_Ctrl_Unused_64C0` | `Ctrl_0x64C0(...)` | 0 | 第1オペランドを `result` に入れるだけ |
+| `0x0BB3` | `VM_Ctrl_Unused_0BB3` | `Ctrl_0x0BB3(...)` | 0 | 何もしない |
+| `0xC091` | `VM_Ctrl_Unused_C091` | `Ctrl_0xC091(...)` | 0 | 引数をそのまま返すだけ |
 
 出現は `scripts.bokc` をテキスト検索した件数。
-名前を付けていない ID は `Ctrl_XXXX` として出す。
+名前を付けていない ID は `Ctrl_0xXXXX` として出す。名前の中に 0x を入れてあるので、将来ヘッダで名前を付けても衝突しない。
 `scripts.bokc` に出てくるのはこの表の9種類だけで、登録されていない ID は現れない。
 
 ### 構文に見える制御命令
@@ -169,8 +169,18 @@ bokcc はコンテナ長から同じ情報を導けるので、この欄はテ�
 `0x9906` は2つめのオペランドを u16 にして第1引数として渡し (`fn(値, NULL)`)、
 戻り値を `result` に入れない。
 
-### ScriptCall の2つの形
+### スクリプト呼び出しの2つの形
 
 呼び先が定数なら `0x70`、式なら `0x121F` になる。
-どちらも `ScriptCall(...)` と書くが、前者は呼び先を必ず16進リテラルで書き、
-後者の第1オペランドは16進リテラルにならないので、テキストから区別できる。
+`0x70` は `Script_0x0003(...)` と、定義の見出しと同じ綴りの関数呼び出しとして書く。
+`0x121F` は呼び先が式で綴れないので、こちらだけ `ScriptCall(式, ...)` と書く。
+
+`Script_0x0003(...)` は定義の見出し `Script_0x0003() { ... }` と綴りが同じだが、
+C が関数定義と関数呼び出しを区別するのと同じ理由で曖昧にはならない。
+定義はトップレベルにしか置けず引数リストの後ろに `{` が続き、
+呼び出しはブロックの中にしか置けず `;` で終わる。
+
+スクリプトIDの綴りを決めているのは `instruction.ts` の `scriptName` で、
+定義の見出しを出す `tools/dumper/bokcc.ts` もここを通る。
+`include/constants/script.h` を `--scripts` で渡すと、`#define Script_StaffRoll Script_0x1040`
+の名前の方で出る (コンパイル時に展開するのはCプリプロセッサなので、parser は `Script_0xXXXX` だけを受ける)。

@@ -29,7 +29,7 @@
 	movs r3, #2
 	bl MainSprite_SetAnim
 	movs r0, #3
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	ldr r0, _0808EDDC @ =0x000002C1
 	bl PlaySound_082406e0
 	ldr r1, _0808EDE0 @ =FUN_0808f01c

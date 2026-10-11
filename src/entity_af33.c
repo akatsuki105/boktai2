@@ -11,6 +11,8 @@ typedef struct {
 } EntityAF33Slot;
 static_assert(sizeof(EntityAF33Slot) == 12);
 
+void FUN_0804e5e8(void);  // src/code_0804b9f4.c
+
 typedef struct {
   Entity e;                 // 0x000, ENTITY_UNK_2
   u32 unk_18;               // 0x018, _Init が 0 を入れる
@@ -18,7 +20,9 @@ typedef struct {
   u16 unk_1e;               // 0x01E, _Init が 0 を入れる
   u32 unk_20;               // 0x020, _Init が 0 を入れる
   u32 unk_24;               // 0x024, _Init が 0 を入れる
-  u8 unk_28[0x2D - 0x28];   // 0x028, _Init が 0x28/0x2B/0x2C に 0、0x29 に 1 を入れる
+  u8 unk_28;                // 0x028, _Init が 0 を入れる, FUN_08050558 が 9 を入れる
+  bool8 unk_29;             // 0x029, _Init が 1 を入れる
+  u8 unk_2a[0x2D - 0x2A];   // 0x02A, _Init が 0x2B と 0x2C に 0 を入れる
   u8 unk_2d;                // 0x02D, _Init が 0 を入れる
   u8 unk_2e;                // 0x02E
   u8 unk_2f[0x33 - 0x2F];   // 0x02F, _Init が 0x32 に 1 を入れる
@@ -162,7 +166,27 @@ NAKED void FUN_0805043c(EntityAF33* p) { INCFUNC("asm/func/FUN_0805043c.inc"); }
 
 NAKED void FUN_080504e0(EntityAF33* p) { INCFUNC("asm/func/FUN_080504e0.inc"); }
 
-NAKED void FUN_08050558(EntityAF33* p) { INCFUNC("asm/func/FUN_08050558.inc"); }
+// 120フレームごとに unk_28 を 9 にして FUN_0804fbe0 を呼ぶ
+// 残差1命令, 原典は定数 9 を unk_28 のアドレス計算より前に作るが agbcc はアドレスを先に作る (命令列は 29 対 29)
+NON_MATCH void FUN_08050558(EntityAF33* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_29) {
+    p->unk_29 = FALSE;
+  }
+
+  if (p->unk_24 > 0x77) {
+    FUN_0804e5e8();
+    p->unk_28 = 9;
+    p->unk_29 = TRUE;
+    p->unk_24 = 0;
+    FUN_0804fbe0(p);
+  } else {
+    p->unk_24++;
+  }
+#else
+  INCFUNC("asm/func/FUN_08050558.inc");
+#endif
+}
 
 NAKED void FUN_08050598(EntityAF33* p) { INCFUNC("asm/func/FUN_08050598.inc"); }
 

@@ -151,12 +151,15 @@ void FUN_08084c58(EntityBD74* p) {
   }
 }
 
+// 開くアニメの拡大率を進め, 上限に達したら次の状態へ移る
+// 残差1命令, 原典は 0xFFFF のプールロードを最初の if より前に置いて r6 に残すが
+// agbcc は使う場所 (if の後のブロック) で読み込む
 NON_MATCH void FUN_08084c9c(EntityBD74* p) {
 #ifdef NONMATCHING_C
-  u32 scale;
+  s32 scale;
 
   p->scale1 += 4;
-  if (p->scale1 >= 0x20) {
+  if (p->scale1 > 0x1F) {
     p->scale1 = 0x20;
     FUN_08084c30(p, 3);
   }

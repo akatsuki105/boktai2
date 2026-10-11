@@ -65,16 +65,16 @@ _0801C968:
 	ldr r1, _0801C9D8 @ =0x00001308
 	adds r0, r5, r1
 	ldr r0, [r0]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	movs r0, #2
 	movs r1, #0x10
 	movs r2, #0x1e
 	movs r3, #2
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 	ldr r0, _0801C9DC @ =0x0000EFDA
-	bl TextBox_SetBgPltt
+	bl MessageWindow_SetBgPltt
 	ldr r1, _0801C9E0 @ =0x0000130C
 	adds r0, r5, r1
 	ldr r0, [r0]

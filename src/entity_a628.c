@@ -12,7 +12,7 @@ typedef struct EntityA628 {
   u8 playerIdx;         // 0x1E, '.i', 通信中は gEntity9A9F->playerIdx
   bool8 active;         // 0x1F, '.m=1', 0 なら位置更新も BG1 の表示も止まる
   Vec3 destPos;         // 0x20, pos の補間先
-  Vec3 pos;             // 0x28, アイソメトリック投影して BG1 のスクロール量にする world 座標
+  WorldPos pos;         // 0x28, アイソメトリック投影して BG1 のスクロール量にする world 座標
   u16 angle;            // 0x30, gSineTable の添字 (下位8bitのみ), player から見た pos の方角, 初期値は gStat+0x932 の太陽の角度
   s16 dist;             // 0x32, player から pos までの距離, 初期値 300
   u16 blend;            // 0x34, 0〜8 の補間の重み, Div(blend * pos + destPos, blend + 1)
@@ -58,7 +58,7 @@ void EntityA628_DeactivateScripted(void) {
   }
 }
 
-// 残差は movs r1, #0 の位置のみ (18命令中1つ), Tier A-B は試済
+// 残差1命令, 0/1 の初期値 0 を原典は ldrh の後に作るが gcc はブロック先頭へ巻き上げる
 NON_MATCH u32 EntityA628_IsActive(void) {
 #ifdef NONMATCHING_C
   bool32 overridden = gSunGaugeOverride == SUN_OVERRIDE_RISING;

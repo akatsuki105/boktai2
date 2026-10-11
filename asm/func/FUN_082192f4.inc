@@ -257,16 +257,16 @@ _082195B6:
 	lsls r1, r1, #2
 	adds r0, r7, r1
 	ldr r0, [r0]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	movs r0, #1
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	movs r0, #1
 	movs r1, #7
 	movs r2, #0x1c
 	movs r3, #4
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 _082195F4:
 	ldr r0, [r6, #0x60]
 	cmp r0, #0x1d
@@ -505,16 +505,16 @@ _082197B2:
 	lsls r2, r2, #2
 	adds r0, r7, r2
 	ldr r0, [r0]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	movs r0, #4
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	movs r0, #1
 	movs r1, #6
 	movs r2, #0x1c
 	movs r3, #4
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 	ldr r2, _08219824 @ =0x030046A0
 	ldr r0, [r2]
 	movs r1, #0
@@ -673,16 +673,16 @@ _0821990E:
 	lsls r1, r1, #2
 	adds r0, r7, r1
 	ldr r0, [r0]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	movs r0, #5
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	movs r0, #3
 	movs r1, #7
 	movs r2, #0x1c
 	movs r3, #4
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 _08219952:
 	ldr r0, [r6, #0x60]
 	cmp r0, #0x1d
@@ -723,16 +723,16 @@ _08219978:
 	lsls r2, r2, #2
 	adds r0, r7, r2
 	ldr r0, [r0]
-	bl TextBox_Start
+	bl MessageWindow_Start
 	movs r0, #6
-	bl TextBox_ShowLine
+	bl MessageWindow_ShowLine
 	movs r0, #1
 	movs r1, #8
 	movs r2, #0x1c
 	movs r3, #4
-	bl TextBox_SetRect
+	bl MessageWindow_SetRect
 	movs r0, #1
-	bl TextBox_SetInstant
+	bl MessageWindow_SetInstant
 _082199BC:
 	ldr r0, [r6, #0x60]
 	cmp r0, #0x1d
