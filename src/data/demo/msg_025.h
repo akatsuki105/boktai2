@@ -819,14 +819,14 @@ static const DemoMsg2 sMsg_d34_s3_1 = {
     0xF5EB, CLS_PLAYER, NOWAIT, 0, 5, 1, {7, 0}
 };
 static const DemoMsg2 sMsg_d34_s3_2 = {
-    0xBF31, CLS_PLAYER, NOWAIT, 0, 5, 1, {3, 0}
+    TGT_DJANGO, CLS_PLAYER, NOWAIT, 0, 5, 1, {3, 0}
 };
 /* -- step 4 -- */
 static const DemoMsg4 sMsg_d34_s4_0 = {
     0xF5EB, CLS_PLAYER, WAIT, 0, 6, 3, {3200, 256, 2688, 0}
 };
 static const DemoMsg4 sMsg_d34_s4_1 = {
-    0xBF31, CLS_PLAYER, NOWAIT, 0, 6, 3, {2176, 256, 2688, 0}
+    TGT_DJANGO, CLS_PLAYER, NOWAIT, 0, 6, 3, {2176, 256, 2688, 0}
 };
 /* -- step 5 -- */
 static const DemoMsg2 sMsg_d34_s5_0 = {
@@ -843,7 +843,7 @@ static const DemoMsg2 sMsg_d34_s8_0 = {
     0xF5EB, CLS_PLAYER, WAIT, 0, 3, 1, {7, 0}
 };
 static const DemoMsg2 sMsg_d34_s8_1 = {
-    0xBF31, CLS_PLAYER, NOWAIT, 0, 3, 1, {3, 0}
+    TGT_DJANGO, CLS_PLAYER, NOWAIT, 0, 3, 1, {3, 0}
 };
 /* -- step 9 -- */
 static const DemoMsg2 sMsg_d34_s9_0 = {
@@ -860,7 +860,7 @@ static const DemoMsg2 sMsg_d34_s12_0 = {
     0x4E69, CLS_BUS, WAIT, 0, BUS_WAIT, 1, {110, 0}
 };
 static const DemoMsg4 sMsg_d34_s12_1 = {
-    0xBF31, CLS_PLAYER, NOWAIT, 0, 28, 3, {4, 120, 120, 0}
+    TGT_DJANGO, CLS_PLAYER, NOWAIT, 0, 28, 3, {4, 120, 120, 0}
 };
 /* -- step 13 -- */
 static const DemoMsg2 sMsg_d34_s13_0 = {
@@ -1254,7 +1254,7 @@ static const DemoMsg0 sMsg_d39_s11_1 = {0x9CFE, CLS_ACTOR, NOWAIT, 0, 7, 0};
 static const DemoMsg2 sMsg_d40_s0_0 = {
     0x4E69, CLS_BUS, WAIT, 0, BUS_WAIT, 1, {50, 0}
 };
-static const DemoMsg0 sMsg_d40_s0_1 = {0x6740, CLS_ACTOR, NOWAIT, 0, 33, 0};
+static const DemoMsg0 sMsg_d40_s0_1 = {TGT_SMITH, CLS_ACTOR, NOWAIT, 0, 33, 0};
 static const DemoMsg2 sMsg_d40_s0_2 = {
     0x74E2, CLS_SOUND, NOWAIT, 0, 4, 1, {4, 0}
 };
@@ -1269,7 +1269,7 @@ static const DemoMsg2 sMsg_d40_s1_1 = {
 static const DemoMsg2 sMsg_d40_s2_0 = {
     0x4E69, CLS_BUS, WAIT, 0, BUS_WAIT, 2, {122, 260}
 };
-static const DemoMsg0 sMsg_d40_s2_1 = {0x6740, CLS_ACTOR, NOWAIT, 0, 33, 0};
+static const DemoMsg0 sMsg_d40_s2_1 = {TGT_SMITH, CLS_ACTOR, NOWAIT, 0, 33, 0};
 static const DemoMsg2 sMsg_d40_s2_2 = {
     0x74E2, CLS_SOUND, NOWAIT, 0, 2, 1, {158, 0}
 };
@@ -1298,7 +1298,7 @@ static const DemoMsg2 sMsg_d40_s5_0 = {
     0x4E69, CLS_BUS, WAIT, 0, BUS_WAIT, 1, {50, 0}
 };
 static const DemoMsg2 sMsg_d40_s5_1 = {
-    0x6740, CLS_ACTOR, NOWAIT, 0, 1, 1, {1, 0}
+    TGT_SMITH, CLS_ACTOR, NOWAIT, 0, 1, 1, {1, 0}
 };
 /* ================ demo 41  (21 steps) ================ */
 /* -- step 0 -- */

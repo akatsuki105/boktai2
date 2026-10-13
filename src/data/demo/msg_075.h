@@ -463,7 +463,7 @@ static const DemoMsg2  sMsg_d78_s1_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS
 static const DemoMsg0  sMsg_d78_s2_0      = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT_EXT,    0 };
 /* -- step 3 -- */
 static const DemoMsg2  sMsg_d78_s3_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 100, 0 } };
-static const DemoMsg4  sMsg_d78_s3_1      = { 0xB548, CLS_ACTOR,  NOWAIT, 0, 40,              3, { 2304, 768, 2304, 0 } };
+static const DemoMsg4  sMsg_d78_s3_1      = { TGT_MEGAMAN, CLS_ACTOR,  NOWAIT, 0, 40,              3, { 2304, 768, 2304, 0 } };
 static const DemoMsg2  sMsg_d78_s3_2      = { 0x74E2, CLS_SOUND,  NOWAIT, 3, 0,               1, { 542, 0 } };
 /* -- step 4 -- */
 static const DemoMsg0  sMsg_d78_s4_0      = { 0xF378, CLS_ETC,    WAIT,   0, 6,               0 };

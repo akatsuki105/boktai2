@@ -2,7 +2,7 @@ import * as gba from "../../common/gba/gba.ts";
 import * as boktai from "../../common/boktai.ts";
 import type { addr } from "../../common/gba/gba.ts";
 
-export const gSubroutineTable = {
+export const gCommandList = {
   "U32J_rev1": [0x085A9208, 643],
 } as Record<boktai.gameid, [addr, length: number]>;
 
@@ -13,7 +13,7 @@ export type SubroutineEntry = {
 
 export const getSubroutineTable = (rom: DataView): SubroutineEntry[] => {
   const meta = boktai.getGameMeta(rom);
-  const [start, length] = gSubroutineTable[meta.id];
+  const [start, length] = gCommandList[meta.id];
   return ParseSubroutineTable(rom, start, length);
 };
 

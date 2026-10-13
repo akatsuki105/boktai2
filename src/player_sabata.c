@@ -7,8 +7,6 @@
 #include "sound.h"
 #include "vm.h"
 
-// 通信対戦の自キャラ?
-
 // facing から animIDOffset と xflip を決める
 void LinkPlayer_SetAnimFacing(Player* p) {
   u8 v = p->facing;
@@ -277,7 +275,7 @@ NAKED void FUN_080843ac(s32 param_1, s32 param_2, s32 param_3) { INCFUNC("asm/fu
 
 NAKED void FUN_08084540(Player* p) { INCFUNC("asm/func/FUN_08084540.inc"); }
 
-s32 LinkPlayer_Update(Player* p) {
+s32 PlayerSabata_Update(Player* p) {
   if (!(gPlayerPtr[0]->unk_1c & 4)) {
     FUN_08080e34(p);
     FUN_08084540(p);
@@ -287,17 +285,18 @@ s32 LinkPlayer_Update(Player* p) {
   return 0;
 }
 
-NAKED s32 LinkPlayer_Destroy(Player* p) { INCFUNC("asm/func/LinkPlayer_Destroy.inc"); }
+NAKED s32 PlayerSabata_Destroy(Player* p) { INCFUNC("asm/func/PlayerSabata_Destroy.inc"); }
 
-NAKED s32 LinkPlayer_Init(Player* p, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/LinkPlayer_Init.inc"); }
+NAKED s32 PlayerSabata_Init(Player* p, unknown* param_2, unknown* param_3) { INCFUNC("asm/func/PlayerSabata_Init.inc"); }
 
-Player* LinkPlayer_Create(unknown* param_1, unknown* param_2) {
+// 0x2B06, HashName("サバタ"), プレイヤーとしてのサバタか、リンゴやダーイン戦でのNPCとしてのサバタかは要検証
+Player* PlayerSabata_Create(unknown* param_1, unknown* param_2) {
   if (gPlayerPtr[1] == NULL) {
     Player* p = CreateEntity(ENTITY_PLAYER, sizeof(Player));
 
     if (p != NULL) {
-      SetEntityRoutine(p, LinkPlayer_Update, LinkPlayer_Destroy);
-      if (LinkPlayer_Init(p, param_1, param_2) < 0) {
+      SetEntityRoutine(p, PlayerSabata_Update, PlayerSabata_Destroy);
+      if (PlayerSabata_Init(p, param_1, param_2) < 0) {
         KillEntity((Entity*)p);
         return NULL;
       }

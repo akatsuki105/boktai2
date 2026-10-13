@@ -617,7 +617,7 @@ Entity3019* Entity3019_Create(void) {
   return p;
 }
 
-// 0x7300, 道具屋(キッド)
+// 0x7300, HashName("道具屋")
 Entity3019* FUN_080bcd94(void) {
   Entity3019* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity3019));
 

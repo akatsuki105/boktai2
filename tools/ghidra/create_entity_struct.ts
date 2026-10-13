@@ -52,14 +52,21 @@ const main = () => {
     .name("create_entity_struct.ts")
     .description("EntityXXXX_Create の CreateEntity(kind, size) から Ghidra に構造体 EntityXXXX を作り、C の定義を出力する。")
     .argument("<create:string>", "EntityXXXX_Create のROMアドレスまたはシンボル名")
-    .action(async (_opts, target) => {
+    .option("--name <name:string>", "指定すると ${NAME} という名前にする。")
+    .action(async (opts, target) => {
       // 状況の報告は標準エラー出力に出し、標準出力は C の定義だけにする (そのままコピペできるように)
       const create = resolveAddress(target);
       const funcName = symbolsByAddress().get(create);
-      const entity = funcName?.match(/^(Entity[0-9A-Za-z]+)_Create$/)?.[1];
-      if (!entity) {
-        console.error(`エラー: 0x${gba.toHex32(create)} (${funcName ?? "名前なし"}) は EntityXXXX_Create という名前ではありません`);
-        Deno.exit(1);
+      let typename: string;
+      if (opts.name) {
+        typename = opts.name;
+      } else {
+        const entity = funcName?.match(/^(Entity[0-9A-Za-z]+)_Create$/)?.[1];
+        if (!entity) {
+          console.error(`エラー: 0x${gba.toHex32(create)} (${funcName ?? "名前なし"}) は EntityXXXX_Create という名前ではありません`);
+          Deno.exit(1);
+        }
+        typename = entity;
       }
 
       let kind: string | undefined;
@@ -77,7 +84,7 @@ const main = () => {
       }
 
       const res = new Deno.Command(join(REPO_ROOT, "tools/ghidra/run_pyghidra_script.ts"), {
-        args: [join(REPO_ROOT, "tools/ghidra/ghidra_scripts/create_entity_struct.py"), entity, String(size)],
+        args: [join(REPO_ROOT, "tools/ghidra/ghidra_scripts/create_entity_struct.py"), typename, String(size)],
         cwd: REPO_ROOT,
         stdout: "piped",
         stderr: "piped",
@@ -90,7 +97,7 @@ const main = () => {
 
       const exists = out.match(/^EXISTS (.+)$/m);
       if (exists) {
-        console.error(`${entity} は Ghidra にすでにあるので何もしません (${exists[1]})`);
+        console.error(`${typename} は Ghidra にすでにあるので何もしません (${exists[1]})`);
         return;
       }
       const created = out.match(/^CREATED (\S+) (\d+)$/m);
@@ -106,7 +113,7 @@ const main = () => {
         Deno.exit(1);
       }
       console.error(`Ghidra に ${created[1]} (${size} バイト) を作って保存しました`);
-      console.log(toCDefinition(entity, kind, size));
+      console.log(toCDefinition(typename, kind, size));
     })
     .parse(Deno.args);
 };

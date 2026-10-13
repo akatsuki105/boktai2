@@ -1438,7 +1438,7 @@ gAuxSpritesFile0: @ 0x08A2291C
     .incbin "data/actor_sprites/DB6C.4bpp"                 @ 0x08AB0FD0, ActorID: 0xDB6C, PlttID: 363
     .incbin "data/actor_sprites/D0A3.4bpp"                 @ 0x08AB17D0, ActorID: 0xD0A3, PlttID: 379
     .incbin "data/actor_sprites/beenest_broken.4bpp"       @ 0x08AB1A10, ActorID: 0x9385, PlttID: 380
-    .incbin "data/actor_sprites/beenest.4bpp"              @ 0x08AB1E90, ActorID: 0xB626, PlttID: 380
+    .incbin "data/actor_sprites/bee_nest.4bpp"             @ 0x08AB1E90, ActorID: 0xB626, PlttID: 380
     .incbin "data/actor_sprites/ghost.4bpp"                @ 0x08AB20F0, ActorID: 0xD637, PlttID: 381, ゴースト, レイス
     .incbin "data/actor_sprites/E7EA.4bpp"                 @ 0x08AB49B0, ActorID: 0xE7EA, PlttID: 386
     .incbin "data/actor_sprites/DFCF.4bpp"                 @ 0x08AB4A50, ActorID: 0xDFCF, PlttID: 387

@@ -48,6 +48,13 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define BUS_WAIT 1         // Demo_CmdWait
 #define BUS_WAIT_EXT 2     // Demo_CmdWaitExternal
 
+#define TGT_DJANGO 0xBF31     // BOKHASH("ジャンゴ")
+#define TGT_DUNEYRR 0x2B18    // BOKHASH("ドゥネイル")
+#define TGT_DURATHROR 0x9386  // BOKHASH("ドゥラスロール")
+#define TGT_DAIIN 0x7901      // BOKHASH("ダーイン")
+#define TGT_SMITH 0x6740      // BOKHASH("スミス")
+#define TGT_MEGAMAN 0xB548    // BOKHASH("ロックマン")
+
 #define M(x) (const MsgPacket*)&x
 
 // clang-format off

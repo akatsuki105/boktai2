@@ -499,7 +499,7 @@ static const DemoMsg2  sMsg_d63_s1_1      = { 0xF5EB, CLS_PLAYER, NOWAIT, 0, 3, 
 static const DemoMsg2  sMsg_d63_s1_2      = { 0x9CFE, CLS_ACTOR,  NOWAIT, 0, 2,               1, { 7, 0 } };
 /* -- step 2 -- */
 static const DemoMsg4  sMsg_d63_s2_0      = { 0x6773, CLS_ACTOR,  WAIT,   3, 3,               3, { 5632, 256, 2848, 0 } };
-static const DemoMsg2  sMsg_d63_s2_1      = { 0x6740, CLS_ACTOR,  NOWAIT, 3, 2,               1, { 3, 0 } };
+static const DemoMsg2  sMsg_d63_s2_1      = { TGT_SMITH, CLS_ACTOR,  NOWAIT, 3, 2,               1, { 3, 0 } };
 /* -- step 3 -- */
 static const DemoMsg2  sMsg_d63_s3_0      = { 0x6773, CLS_ACTOR,  WAIT,   3, 2,               1, { 3, 0 } };
 static const DemoMsg2  sMsg_d63_s3_1      = { 0x74E2, CLS_SOUND,  NOWAIT, 3, 0,               1, { 603, 0 } };
@@ -536,12 +536,12 @@ static const DemoMsg2  sMsg_d63_s16_0     = { 0x4E69, CLS_BUS,    WAIT,   0, BUS
 /* -- step 17 -- */
 static const DemoMsg0  sMsg_d63_s17_0     = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT_EXT,    0 };
 /* -- step 18 -- */
-static const DemoMsg4  sMsg_d63_s18_0     = { 0x6740, CLS_ACTOR,  WAIT,   3, 3,               3, { 5504, 256, 2944, 0 } };
+static const DemoMsg4  sMsg_d63_s18_0     = { TGT_SMITH, CLS_ACTOR,  WAIT,   3, 3,               3, { 5504, 256, 2944, 0 } };
 static const DemoMsg4  sMsg_d63_s18_1     = { 0x6773, CLS_ACTOR,  NOWAIT, 3, 3,               3, { 5760, 256, 2432, 0 } };
 /* -- step 19 -- */
 static const DemoMsg4  sMsg_d63_s19_0     = { 0x6773, CLS_ACTOR,  WAIT,   3, 3,               3, { 5760, 256, 2432, 0 } };
 static const DemoMsg2  sMsg_d63_s19_1     = { 0x74E2, CLS_SOUND,  NOWAIT, 3, 0,               1, { 603, 0 } };
-static const DemoMsg0  sMsg_d63_s19_2     = { 0x6740, CLS_ACTOR,  NOWAIT, 3, 0,               0 };
+static const DemoMsg0  sMsg_d63_s19_2     = { TGT_SMITH, CLS_ACTOR,  NOWAIT, 3, 0,               0 };
 /* -- step 20 -- */
 static const DemoMsg4  sMsg_d63_s20_0     = { 0x6773, CLS_ACTOR,  WAIT,   3, 3,               3, { 6016, 256, 2432, 0 } };
 static const DemoMsg2  sMsg_d63_s20_1     = { 0x74E2, CLS_SOUND,  NOWAIT, 3, 0,               1, { 603, 0 } };

@@ -264,7 +264,7 @@ SECTIONS {
 			src/entity_730a.o (.text);
 			src/boss.o (.text);
 			src/boss/duneyrr.o (.text);
-			src/boss/entity_ba4b.o (.text);
+			src/boss/ringo.o (.text);
 			src/boss/durathror.o (.text);
 			src/boss/shademan.o (.text);
 			src/entity_286f.o (.text);
@@ -305,7 +305,7 @@ SECTIONS {
 			src/enemy_entity_5941.o (.text);
 			src/django_berserk.o (.text);
 			src/entity_08080be8.o (.text);
-			src/player_link.o (.text);
+			src/player_sabata.o (.text);
 			src/entity_bd74.o (.text);
 			src/coffin_immortal.o (.text);
 			src/entity_162e.o (.text);
@@ -319,7 +319,14 @@ SECTIONS {
 			src/entity_a628.o (.text);
 			src/entity_ba36.o (.text);
 			src/entity_ef66.o (.text);
-			src/code_080917e4.o (.text);
+			src/alarm_panel.o (.text);
+			src/entity_3db0.o (.text);
+			src/solar_circle.o (.text);
+			src/entity_a8f1.o (.text);
+			src/entity_7c62.o (.text);
+			src/entity_4759.o (.text);
+			src/entity_1e98.o (.text);
+			src/entity_3117.o (.text);
 			src/entity_8af6.o (.text);
 			src/entity_cf58.o (.text);
 			src/entity_d852.o (.text);
@@ -591,7 +598,7 @@ SECTIONS {
     *libc.a:s_scalbn.o(.rodata);
     *libc.a:impure.o(.rodata);
     *libc.a:syscalls.o(.rodata);
-    src/vm_subroutine.o (.rodata);
+    src/vm_commands.o (.rodata);
     src/map_pltt_4ae5.o (.rodata);
     src/entity_d9ae.o (.rodata);
     src/entity_2d2b.o (.rodata);
@@ -619,7 +626,7 @@ SECTIONS {
     src/entity_ef6f.o (.rodata);
     src/door.o (.rodata);
     src/boss/duneyrr.o (.rodata);
-    src/boss/entity_ba4b.o (.rodata);
+    src/boss/ringo.o (.rodata);
     src/boss/durathror.o (.rodata);
     src/boss/shademan.o (.rodata);
     src/entity_286f.o (.rodata);
@@ -648,7 +655,7 @@ SECTIONS {
     src/entity_08060470.o (.rodata);
     src/player.o (.rodata);
     src/player_08065988.o (.rodata);
-    src/player_link.o (.rodata);
+    src/player_sabata.o (.rodata);
     src/coffin_immortal.o (.rodata);
     src/coffin_sealing.o (.rodata);
     src/entity_cc28.o (.rodata);

@@ -42,7 +42,7 @@ ID で引くもので、ID は `ScriptDirectory.script_entries` の添字 + 1 (R
 
 スクリプトから呼べるエンジン側の関数で、VM にとってのシステムコールに当たる。
 16bit の ID と関数ポインタの組 (`Subroutine`) を ID 順に並べた
-`gSubroutineTable` (`data/subroutine.inc`, 643件) を二分探索して引く。
+`gCommandList` (`data/subroutine.inc`, 643件) を二分探索して引く。
 
 `.bokc` からは `SubroutineCall` / `EntityCreate` の第1引数がこの ID である。
 引数の渡し方は決まっていない。呼ばれた側が `VM_GetValue` や `VM_SeekToNamedArg` で
@@ -50,7 +50,7 @@ ID で引くもので、ID は `ScriptDirectory.script_entries` の添字 + 1 (R
 
 ややこしいことに、制御命令 (`0x60`) のハンドラも同じ `Subroutine` 型で登録されている。
 こちらは `gCtrlHandlers` (`src/vm_ctrl1.c` の6件 + `src/vm_ctrl2.c` の8件) を
-線形に探すもので、`gSubroutineTable` とは別の ID 空間である。
+線形に探すもので、`gCommandList` とは別の ID 空間である。
 `if` の `0x0D86` や `SubroutineCall` の `0xB745` はこちら側の ID。
 
 ### Label

@@ -72,12 +72,15 @@ const main = () => {
     .description("EntityXXXX_Create から Init / Update / Destroy を見つけ、4つを EntityXXXX_* にリネームする。")
     .argument("<create:string>", "CreateEntity を呼ぶ関数のROMアドレスまたはシンボル名")
     .option("--sub <id:string>", "VM の Subroutine ID (16進数)。指定すると Entity${ID} (4桁大文字) という名前にする。")
+    .option("--name <name:string>", "指定すると ${NAME} という名前にする。")
     .option("-d, --dry-run", "リネーム案を表示するだけで、リネームはしない。")
     .action(async (opts, target) => {
       const create = resolveAddress(target);
 
       let entity: string;
-      if (opts.sub !== undefined) {
+      if (opts.name !== undefined) {
+        entity = opts.name;
+      } else if (opts.sub !== undefined) {
         if (!/^(0x)?[0-9A-Fa-f]{1,4}$/.test(opts.sub)) {
           console.error(`エラー: --sub には4桁以内の16進数を指定してください: ${opts.sub}`);
           Deno.exit(1);
@@ -116,9 +119,6 @@ const main = () => {
         }
         if (!oldName) {
           console.error(`エラー: 0x${gba.toHex32(addr)} が boktai2.sym にありません`);
-          ng = true;
-        } else if (!oldName.startsWith("FUN_")) {
-          console.error(`エラー: ${oldName} はすでに名前が付いています (${newName} にはしません)`);
           ng = true;
         } else if (taken.has(newName)) {
           console.error(`エラー: ${newName} はすでに別の関数の名前です`);

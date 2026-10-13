@@ -304,7 +304,7 @@ void (*const PTR_ARRAY_085aad38[62])(EntityBA4B*, s32) = {
 };  // 0x085AAD38
 // clang-format on
 
-INCASM("asm/entity_ba4b.inc");
+INCASM("asm/ringo.inc");
 
 void FUN_0802ae4c(EntityBA4B*);
 void FUN_0802e4fc(EntityBA4B*);
@@ -323,6 +323,7 @@ NAKED s32 EntityBA4B_Destroy(EntityBA4B* p) { INCFUNC("asm/func/EntityBA4B_Destr
 
 NAKED s32 EntityBA4B_Init(EntityBA4B* p, u32 id) { INCFUNC("asm/func/EntityBA4B_Init.inc"); }
 
+// 0xBA4B, HashName("リンゴ")
 EntityBA4B* EntityBA4B_Create(u32 id) {
   EntityBA4B* p = FUN_08022a2c(VM_GetNamedArgValue('t', 1));
   if (p != NULL) {

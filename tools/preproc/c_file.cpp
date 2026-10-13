@@ -78,8 +78,9 @@ void CFile::Preproc() {
         m_pos++;
       }
     } else {
-      TryConvertString();   // Convert _("") or __("") style strings to byte arrays
-      TryConvertIncbin();   // Convert INCBIN directives to byte arrays
+      TryConvertString();  // Convert _("") or __("") style strings to byte arrays
+      TryConvertIncbin();  // Convert INCBIN directives to byte arrays
+      // Boktai2 専用のパス
       TryConvertBokHash();  // Convert BOKHASH("xxx") -> 0x<hashed_value>, e.g. BOKHASH("bg_link_col_arr") -> 0x26BB
 
       if (m_pos >= m_size) break;
@@ -324,14 +325,13 @@ void CFile::TryConvertIncbin() {
 }
 
 // BOKHASH("identifier_string") -> 0x<hashed_value>
-// 計算は src/system_0823071c.c の HashName と同じで、16bit を5ビット左ローテートしながら1バイトずつ足す。
+// 計算は src/system_0823071c.c の HashName と同じで、16bitを5ビット左ローテートしながら1バイトずつ足す
 void CFile::TryConvertBokHash() {
+  if (m_buffer[m_pos] != 'B') return;  // optimization: quickly skip if the first character doesn't match
   const std::string ident = "BOKHASH";
 
   if (!CheckIdentifier(ident)) return;
-
-  // 長い識別子の一部(MY_BOKHASH)に反応しないよう、直前の文字を見る
-  if (m_pos > 0 && IsIdentifierChar(m_buffer[m_pos - 1])) return;
+  if (m_pos > 0 && IsIdentifierChar(m_buffer[m_pos - 1])) return;  // 長い識別子の一部(MY_BOKHASH)に反応しないよう、直前の文字を見る
 
   long oldPos = m_pos;
   long oldLineNum = m_lineNum;
@@ -339,26 +339,20 @@ void CFile::TryConvertBokHash() {
   m_pos += ident.length();
 
   SkipWhitespace();
-
-  // BOKHASHX のように識別子が続いていた場合もここで戻る
-  if (m_buffer[m_pos] != '(') {
+  if (m_buffer[m_pos] != '(') {  // BOKHASHX のように識別子が続いていた場合もここで戻る
     m_pos = oldPos;
     m_lineNum = oldLineNum;
     return;
   }
-
   m_pos++;
 
   SkipWhitespace();
-
   if (m_buffer[m_pos] != '"') RaiseError("expected double quote");
-
   m_pos++;
 
   // 文字列は原典の識別子そのものなので、charmap を通さず生のバイト列として読む
   unsigned int hash = 0;
   int length = 0;
-
   while (m_buffer[m_pos] != '"') {
     if (m_buffer[m_pos] == 0) {
       if (m_pos >= m_size)
@@ -366,9 +360,7 @@ void CFile::TryConvertBokHash() {
       else
         RaiseError("unexpected null character in identifier string");
     }
-
     if (m_buffer[m_pos] == '\r' || m_buffer[m_pos] == '\n') RaiseError("unexpected end of line character in identifier string");
-
     if (m_buffer[m_pos] == '\\') RaiseError("unexpected escape in identifier string");
 
     hash = ((hash << 5) | (hash >> 11)) & 0xFFFF;
@@ -377,16 +369,11 @@ void CFile::TryConvertBokHash() {
     length++;
     m_pos++;
   }
-
-  // 空文字列のハッシュは 0 になるので、書き間違いとして弾く
-  if (length == 0) RaiseError("empty identifier string");
-
+  if (length == 0) RaiseError("empty identifier string");  // 空文字列のハッシュは 0 になるので、書き間違いとして弾く
   m_pos++;
 
   SkipWhitespace();
-
   if (m_buffer[m_pos] != ')') RaiseError("expected ')'");
-
   m_pos++;
 
   std::printf("0x%04X", hash);

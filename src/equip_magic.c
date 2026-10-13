@@ -67,5 +67,5 @@ bool32 FUN_08243584(void) {
 
 void UnregisterMagic(s32 idx) { REGISTERED_MAGIC(idx) = -1; }
 
-// 0x1887
-NAKED void magic_082435b8(void) { INCFUNC("asm/func/magic_082435b8.inc"); }
+// 0x1887, HashName("魔法初期化")
+NAKED void InitMagicData(void) { INCFUNC("asm/func/InitMagicData.inc"); }

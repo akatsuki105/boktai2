@@ -8,7 +8,7 @@ const u8 String_0CEF[] = _("<LABEL=SUMIRE>スミレ</LABEL>\n「あっ、おに�
 const u8 String_0CF0[] = _("サバタちゃんがまたクロちゃん\nをたすけてくれたんだよ!」");
 const u8 String_0CF1[] = _("<LABEL=SABATA>サバタ</LABEL>\n「笑うか、<NAME>?");
 const u8 String_0CF2[] = _("俺(おれ)が他人のために何かを\nするとはな。");
-const u8 String_0CF3[] = _("カ―ミラのおせっかいが移った\nか・・・");
+const u8 String_0CF3[] = _("カーミラのおせっかいが移った\nか・・・");
 const u8 String_0CF4[] = _("・・・だがそれも悪くはない。");
 const u8 String_0CF5[] = _("<PROC=0>\n<END>");
 
@@ -28,7 +28,7 @@ const u8 String_0D02[] = _("<PROC=0>\n<END>");
 
 const u8 String_0D03[] = _("<LABEL=ZAJI>ザジ</LABEL>\n「何やの!!");
 const u8 String_0D04[] = _("何人(なんぴと)たりとも、うち\nの眠(ねむ)りをさまたげること\nはできへんで!");
-const u8 String_0D05[] = _("受けよ、\n水魔の誘惑(ゆうわく)!\n太陽魔法、フリ―ズ!!」");
+const u8 String_0D05[] = _("受けよ、\n水魔の誘惑(ゆうわく)!\n太陽魔法、フリーズ!!」");
 const u8 String_0D06[] = _("<PROC=0>\n<END>");
 const u8 String_0D07[] = _("<LABEL=ZAJI>ザジ</LABEL>\n「ほんまかんにんや。");
 const u8 String_0D08[] = _("うち低血圧で朝は弱いねん」");
@@ -48,17 +48,17 @@ const u8 String_0D15[] = _("大したもんやないけど、\nないよりか�
 const u8 String_0D16[] = _("<PROC=0>\n<END>");
 const u8 String_0D17[] = _("水の祝福を得た!");
 const u8 String_0D18[] = _("<PROC=0>\n<END>");
-const u8 String_0D19[] = _("<PROC=1><LOCK=96>太陽魔法「フリ―ズ」\nを覚えた!!");
-const u8 String_0D1A[] = _("フリ―ズは敵モンスタ―を脅(\nおど)す脅迫魔法(きょうはくま\nほう)だ。");
+const u8 String_0D19[] = _("<PROC=1><LOCK=96>太陽魔法「フリーズ」\nを覚えた!!");
+const u8 String_0D1A[] = _("フリーズは敵モンスターを脅(\nおど)す脅迫魔法(きょうはくま\nほう)だ。");
 const u8 String_0D1B[] = _("脅された敵は、しばらくの間身\n動きが取れなくなる。");
 const u8 String_0D1C[] = _("ただし脅しは相手の後ろからで\nなければ効果がなく、また脅し\nの効かない敵もいる。");
 const u8 String_0D1D[] = _("<PROC=0>\n<END>");
-const u8 String_0D1E[] = _("<LABEL=ZAJI>ザジ</LABEL>\n「太陽魔法は月光魔法と違(ち\nご)てエナジ―を使わへん。");
+const u8 String_0D1E[] = _("<LABEL=ZAJI>ザジ</LABEL>\n「太陽魔法は月光魔法と違(ち\nご)てエナジーを使わへん。");
 const u8 String_0D1F[] = _("代わりに太陽の光そのものが必\n要やねん。");
-const u8 String_0D20[] = _("つまり太陽ゲ―ジの値が魔法レ\nベルを超(こ)えてさえいれば、");
+const u8 String_0D20[] = _("つまり太陽ゲージの値が魔法レ\nベルを超(こ)えてさえいれば、");
 const u8 String_0D21[] = _("なんぼでも使えるっちゅうわけ\nや。");
-const u8 String_0D22[] = _("レベル0のフリ―ズはゲ―ジが\nゼロでも使えるんやけど、");
-const u8 String_0D23[] = _("効果時間がゲ―ジの値に比例す\nるねん。");
+const u8 String_0D22[] = _("レベル0のフリーズはゲージが\nゼロでも使えるんやけど、");
+const u8 String_0D23[] = _("効果時間がゲージの値に比例す\nるねん。");
 const u8 String_0D24[] = _("太陽の光が強いほど長く効く、\nちゅうわけや。覚えときや?」");
 const u8 String_0D25[] = _("<PROC=0>\n<END>");
 
@@ -68,11 +68,11 @@ const u8 String_0D28[] = _("<PROC=0>\n<END>");
 const u8 String_0D29[] = _("倉庫の扉が開いた!!");
 const u8 String_0D2A[] = _("<PROC=0>\n<END>");
 
-const u8 String_0D2B[] = _("<LABEL=KID>キッド</LABEL>\n「来たな、ボ―イ!!");
+const u8 String_0D2B[] = _("<LABEL=KID>キッド</LABEL>\n「来たな、ボーイ!!");
 const u8 String_0D2C[] = _("ウチの店で取りあつかってるの\nは、アイテムと防具だ。\nよろしく頼(たの)むぜ?」");
 const u8 String_0D2D[] = _("<PROC=0>\n<END>");
 
-const u8 String_0D2E[] = _("<LABEL=KID>キッド</LABEL>\n「来たな、ボ―イ!!");
+const u8 String_0D2E[] = _("<LABEL=KID>キッド</LABEL>\n「来たな、ボーイ!!");
 const u8 String_0D2F[] = _("ん!?\n何か違(ちが)うな?\n・・・ま、いいか。");
 const u8 String_0D30[] = _("ウチの店で取りあつかってるの\nは、アイテムと防具だ。\nよろしく頼(たの)むぜ?」");
 const u8 String_0D31[] = _("<PROC=0>\n<END>");
@@ -106,13 +106,13 @@ const u8 String_0D48[] = _("・・・そうだ!!");
 const u8 String_0D49[] = _("<PROC=0>\n<END>");
 const u8 String_0D4A[] = _("<LABEL=SUMIRE></LABEL>これあげる!」");
 const u8 String_0D4B[] = _("<PROC=0>\n<END>");
-const u8 String_0D4C[] = _("<LABEL=NONE></LABEL>「レインコ―ト」\nを手に入れた!!");
+const u8 String_0D4C[] = _("<LABEL=NONE></LABEL>「レインコート」\nを手に入れた!!");
 const u8 String_0D4D[] = _("<PROC=0>\n<END>");
 const u8 String_0D4E[] = _("<LABEL=SUMIRE>スミレ</LABEL>\n「これであんしんだね♪」");
 const u8 String_0D4F[] = _("<PROC=0>\n<END>");
 
 const u8 String_0D50[] = _("<LABEL=SHAIAN>シャイアン</LABEL>\n「よく来たな。");
-const u8 String_0D51[] = _("キッドのくだらないゲ―ムに興\n味はないが・・・");
+const u8 String_0D51[] = _("キッドのくだらないゲームに興\n味はないが・・・");
 const u8 String_0D52[] = _("このチャンスをムダにはしない");
 const u8 String_0D53[] = _("<NAME>!!\n私は1人の戦士として・・・");
 const u8 String_0D54[] = _("今ここで、あらためておまえに\n勝負を申し込(こ)む!");
@@ -120,7 +120,7 @@ const u8 String_0D55[] = _("行くぞ、太陽少年!!」");
 const u8 String_0D56[] = _("<PROC=0>\n<END>");
 
 const u8 String_0D57[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「よし、ここだ。");
-const u8 String_0D58[] = _("ここにパイルドライバ―を召喚\n(しょうかん)する!」");
+const u8 String_0D58[] = _("ここにパイルドライバーを召喚\n(しょうかん)する!」");
 const u8 String_0D59[] = _("<PROC=0>\n<END>");
 
 const u8 String_0D5A[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「あの黒猫(くろねこ)・・・\n気になるな。");
@@ -129,7 +129,7 @@ const u8 String_0D5C[] = _("あの宝箱がそのカギか?」");
 const u8 String_0D5D[] = _("<PROC=0>\n<END>");
 
 const u8 String_0D5E[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「白きドゥネイル・・・");
-const u8 String_0D5F[] = _("イモ―タルである以上、こいつ\nをこのままにしておくことはで\nきない。");
+const u8 String_0D5F[] = _("イモータルである以上、こいつ\nをこのままにしておくことはで\nきない。");
 const u8 String_0D60[] = _("棺桶(かんおけ)に封(ふう)じ込\n(こ)めたとはいえ、いずれは復\n活してしまう。");
 const u8 String_0D61[] = _("一刻も早く、太陽の光で浄化(\nじょうか)しなくてはならない\nだが・・・」");
 const u8 String_0D62[] = _("<PROC=0>\n<END>");
@@ -143,14 +143,14 @@ const u8 String_0D68[] = _("螺旋(らせん)の塔が、いましめ\nの槍(�
 const u8 String_0D69[] = _("<PROC=0>\n<END>");
 const u8 String_0D6A[] = _("<LABEL=OTENKO></LABEL>急ぐぞ、<NAME>!!");
 const u8 String_0D6B[] = _("だが注意しろよ?");
-const u8 String_0D6C[] = _("この瘴気だ。\nここから先は引き返すことも、\nセ―ブすることもできない!");
-const u8 String_0D6D[] = _("今の内に必ずセ―ブしておくん\nだ。いいな?」");
+const u8 String_0D6C[] = _("この瘴気だ。\nここから先は引き返すことも、\nセーブすることもできない!");
+const u8 String_0D6D[] = _("今の内に必ずセーブしておくん\nだ。いいな?」");
 const u8 String_0D6E[] = _("<PROC=0>\n<END>");
 const u8 String_0D6F[] = _("<LABEL=OTENKO>おてんこさま</LABEL>\n「ここだ・・・\nここが塔の先端(せんたん)。");
 const u8 String_0D70[] = _("この先はヨルムンガンドの頭\n・・・");
 const u8 String_0D71[] = _("<PROC=0>\n<END>");
-const u8 String_0D72[] = _("<LABEL=OTENKO></LABEL>原種の欠片、エタ―ナルである\nヨルムンガンドを倒(たお)すこ\nとはできない。");
-const u8 String_0D73[] = _("だがその頭部にダメ―ジをあた\nえ、一時的にでも意識を奪(う\nば)うことができれば、");
+const u8 String_0D72[] = _("<LABEL=OTENKO></LABEL>原種の欠片、エターナルである\nヨルムンガンドを倒(たお)すこ\nとはできない。");
+const u8 String_0D73[] = _("だがその頭部にダメージをあた\nえ、一時的にでも意識を奪(う\nば)うことができれば、");
 const u8 String_0D74[] = _("その隙(すき)を突(つ)き、再び\n封印(ふういん)をほどこすこと\nも可能なはず・・・!!");
 const u8 String_0D75[] = _("すべてはこの戦いにかかってい\nる!");
 const u8 String_0D76[] = _("行くぞ、太陽少年<NAME>!!");

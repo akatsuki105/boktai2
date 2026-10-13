@@ -4,7 +4,7 @@
 // data/scripts/scripts.bokc が StringRef で直接参照している文字列IDだけを定義する
 // 生成元は src/data/text/*.h の String_XXXX / Binary_XXXX
 
-#define STR_SAVE_PROMPT 0x0000                 // セ―ブしますか? <ALTER>はい</ALTER>  <ALTER>いいえ</ALTER>
+#define STR_SAVE_PROMPT 0x0000                 // セーブしますか? <ALTER>はい</ALTER>  <ALTER>いいえ</ALTER>
 #define STR_0002 0x0002                        // ""
 #define BIN_001E 0x001E                        // Binary_001E
 #define BIN_001F 0x001F                        // Binary_001F
@@ -20,49 +20,49 @@
 #define STR_GET_MAP 0x006E                     // <LABEL>「地図」を手に入れた!!</LABEL><PROC=1>
 #define STR_0074 0x0074                        // <LABEL=OTENKO>おてんこさま</LABEL>「大丈夫(だいじょうぶ)か、<NAME>…
 #define STR_007C 0x007C                        // <LABEL=OTENKO>おてんこさま</LABEL>「大丈夫(だいじょうぶ)か、<NAME>…
-#define STR_0084 0x0084                        // <LABEL=SABATA>サバタ</LABEL>「カ―モスの呪(のろ)いか。
+#define STR_0084 0x0084                        // <LABEL=SABATA>サバタ</LABEL>「カーモスの呪(のろ)いか。
 #define STR_0089 0x0089                        // <LABEL=NONE>???</LABEL>「呪(のろ)われたようだね、<NAME>・・・
 #define STR_008D 0x008D                        // <LABEL=NONE>???</LABEL>「<NAME>・・・
 #define STR_PHOTO_DJANGO_SOLAR 0x0094          // <LABEL>「赤<NAME>のブロマイド」を手に入れた!!</LABEL>
-#define STR_00CE 0x00CE                        // 暗黒ロ―ンの暗子ちゃん「いつもご利用ありがとうございます。暗黒ロ―ンです。
-#define STR_00D3 0x00D3                        // 暗黒ロ―ンの暗子ちゃん「いつもご利用ありがとうございます。暗黒ロ―ンです。
-#define STR_00D8 0x00D8                        // 暗黒ロ―ンの暗子ちゃん「いつもご利用ありがとうございます。暗黒ロ―ンです。
-#define STR_00DE 0x00DE                        // 暗黒ロ―ンの暗子ちゃん「・・・
-#define STR_00E7 0x00E7                        // 暗黒ロ―ンの暗子ちゃん「さあ、着きました。
-#define STR_00EB 0x00EB                        // 暗黒ロ―ンの暗子ちゃん「・・・またあなたですか?<NAME>さん・・・
-#define STR_00F0 0x00F0                        // 暗黒ロ―ンの暗子ちゃん「・・・<NAME>さん、あなたわざとやっていますね?
-#define STR_00F5 0x00F5                        // 暗黒ロ―ンの暗子ちゃん「・・・<NAME>さん、
-#define STR_00FC 0x00FC                        // 暗黒ロ―ンの暗子ちゃん「さあ、<NAME>さん。おしおきですよ♥」
-#define STR_00FE 0x00FE                        // 暗黒ロ―ンの暗子ちゃん「あなたには今からここで、発電をしてもらいます。
+#define STR_00CE 0x00CE                        // 暗黒ローンの暗子ちゃん「いつもご利用ありがとうございます。暗黒ローンです。
+#define STR_00D3 0x00D3                        // 暗黒ローンの暗子ちゃん「いつもご利用ありがとうございます。暗黒ローンです。
+#define STR_00D8 0x00D8                        // 暗黒ローンの暗子ちゃん「いつもご利用ありがとうございます。暗黒ローンです。
+#define STR_00DE 0x00DE                        // 暗黒ローンの暗子ちゃん「・・・
+#define STR_00E7 0x00E7                        // 暗黒ローンの暗子ちゃん「さあ、着きました。
+#define STR_00EB 0x00EB                        // 暗黒ローンの暗子ちゃん「・・・またあなたですか?<NAME>さん・・・
+#define STR_00F0 0x00F0                        // 暗黒ローンの暗子ちゃん「・・・<NAME>さん、あなたわざとやっていますね?
+#define STR_00F5 0x00F5                        // 暗黒ローンの暗子ちゃん「・・・<NAME>さん、
+#define STR_00FC 0x00FC                        // 暗黒ローンの暗子ちゃん「さあ、<NAME>さん。おしおきですよ♥」
+#define STR_00FE 0x00FE                        // 暗黒ローンの暗子ちゃん「あなたには今からここで、発電をしてもらいます。
 #define STR_0104 0x0104                        // ✚ボタン左
 #define STR_0106 0x0106                        // ✚ボタン上
 #define STR_0108 0x0108                        // ✚ボタン右
 #define STR_010A 0x010A                        // ✚ボタン下
-#define STR_010C 0x010C                        // 暗黒ロ―ンの暗子ちゃん「はい、けっこうです!
-#define STR_0112 0x0112                        // 暗黒ロ―ンの暗子ちゃん「はい、もうけっこうです。
-#define STR_0118 0x0118                        // 暗黒ロ―ンの暗子ちゃん「はい、お疲れさまでした!ご返済ありがとうございます。
-#define STR_011C 0x011C                        // 「チョコレ―ト」を手に入れた!!
-#define STR_011E 0x011E                        // それでは今後とも暗黒ロ―ンをよろしくお願いします。<PROC=1>ありがとうございました!!」<…
-#define STR_0120 0x0120                        // 暗黒ロ―ンの暗子ちゃん「はい、お疲れさまでした!ご返済ありがとうございます。
+#define STR_010C 0x010C                        // 暗黒ローンの暗子ちゃん「はい、けっこうです!
+#define STR_0112 0x0112                        // 暗黒ローンの暗子ちゃん「はい、もうけっこうです。
+#define STR_0118 0x0118                        // 暗黒ローンの暗子ちゃん「はい、お疲れさまでした!ご返済ありがとうございます。
+#define STR_011C 0x011C                        // 「チョコレート」を手に入れた!!
+#define STR_011E 0x011E                        // それでは今後とも暗黒ローンをよろしくお願いします。<PROC=1>ありがとうございました!!」<…
+#define STR_0120 0x0120                        // 暗黒ローンの暗子ちゃん「はい、お疲れさまでした!ご返済ありがとうございます。
 #define STR_0124 0x0124                        // 「太陽の実」を手に入れた!!
-#define STR_0126 0x0126                        // それでは今後とも暗黒ロ―ンをよろしくお願いします。<PROC=1>ありがとうございました!!」<…
-#define STR_0128 0x0128                        // 暗黒ロ―ンの暗子ちゃん「はい、お疲れさまでした!ご返済ありがとうございます。
+#define STR_0126 0x0126                        // それでは今後とも暗黒ローンをよろしくお願いします。<PROC=1>ありがとうございました!!」<…
+#define STR_0128 0x0128                        // 暗黒ローンの暗子ちゃん「はい、お疲れさまでした!ご返済ありがとうございます。
 #define STR_012C 0x012C                        // 「魔法薬」を手に入れた!!
-#define STR_012E 0x012E                        // それでは今後とも暗黒ロ―ンをよろしくお願いします。<PROC=1>ありがとうございました!!」<…
+#define STR_012E 0x012E                        // それでは今後とも暗黒ローンをよろしくお願いします。<PROC=1>ありがとうございました!!」<…
 #define STR_MORNING_DEW 0x0130                 // 太陽樹の朝露により・・・
-#define STR_MORNING_DEW_RECOVER 0x0132         // ライフとエナジ―が回復した!!
-#define STR_MORNING_DEW_CURSE_REMOVED 0x0134   // カ―モスの呪いが解かれた!!
-#define STR_0136 0x0136                        // 「ズ―ボルテルテ」が浄化され「テルテルボ―ズ」となった!!
-#define STR_0138 0x0138                        // <ALTER>クロスオ―バ―バトル</ALTER>　　<ALTER>　　ゲ―ムの説明　　</AL…
+#define STR_MORNING_DEW_RECOVER 0x0132         // ライフとエナジーが回復した!!
+#define STR_MORNING_DEW_CURSE_REMOVED 0x0134   // カーモスの呪いが解かれた!!
+#define STR_0136 0x0136                        // 「ズーボルテルテ」が浄化され「テルテルボーズ」となった!!
+#define STR_0138 0x0138                        // <ALTER>クロスオーバーバトル</ALTER>　　<ALTER>　　ゲームの説明　　</AL…
 #define STR_013A 0x013A                        // <ALTER>対戦の内容</ALTER>　　<ALTER>対戦の流れ</ALTER> <ALTE…
-#define STR_013C 0x013C                        // クロスオ―バ―バトルでは、
-#define STR_0142 0x0142                        // クロスオ―バ―バトルはラウンド制で行われる。
-#define STR_014C 0x014C                        // シェ―ドマンに特定の攻撃を当てると、ライバルにオジャマバットを送ることができる。
-#define STR_0152 0x0152                        // ライバルがシェ―ドマンに特定の攻撃を当てると、オジャマバットを送られてしまう。
+#define STR_013C 0x013C                        // クロスオーバーバトルでは、
+#define STR_0142 0x0142                        // クロスオーバーバトルはラウンド制で行われる。
+#define STR_014C 0x014C                        // シェードマンに特定の攻撃を当てると、ライバルにオジャマバットを送ることができる。
+#define STR_0152 0x0152                        // ライバルがシェードマンに特定の攻撃を当てると、オジャマバットを送られてしまう。
 #define STR_CROSSOVER_BLOCKING 0x0159          // ブロッキングを使えば、
-#define STR_015E 0x015E                        // 対戦の成績に応じて得られるクロスオ―バ―ポイントは、
+#define STR_015E 0x015E                        // 対戦の成績に応じて得られるクロスオーバーポイントは、
 #define STR_GET_MMBN_PET 0x0161                // <LABEL>「PET」を手に入れた!!</LABEL>
-#define STR_0163 0x0163                        // セ―ブしますか? <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>
+#define STR_0163 0x0163                        // セーブしますか? <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>
 #define STR_0165 0x0165                        // <LABEL=OTENKO>おてんこさま</LABEL>「もうすぐだな・・・
 #define STR_016E 0x016E                        // <LABEL=OTENKO></LABEL>行くぞ、太陽少年<NAME>!!
 #define STR_0172 0x0172                        // <LABEL=OTENKO>おてんこさま</LABEL>「まて、<NAME>!!
@@ -82,7 +82,7 @@
 #define STR_01AC 0x01AC                        // <LABEL=NONE>黒い影</LABEL>「やはり現われたね。太陽少年<NAME>・・・」
 #define STR_01BA 0x01BA                        // <LABEL=OTENKO>おてんこさま</LABEL>「さすがだな、<NAME>!
 #define STR_01C7 0x01C7                        // <LABEL=OTENKO>おてんこさま</LABEL>「<NAME>、
-#define STR_01CB 0x01CB                        // <LABEL=OTENKO>おてんこさま</LABEL>「グラディウスか・・・ソ―ド(けん)タイ…
+#define STR_01CB 0x01CB                        // <LABEL=OTENKO>おてんこさま</LABEL>「グラディウスか・・・ソード(けん)タイ…
 #define STR_01D2 0x01D2                        // <LABEL=OTENKO>おてんこさま</LABEL>「太陽機ソル・デ・バイスに月光魔法か・・…
 #define STR_01DA 0x01DA                        // <LABEL=ZAJI>魔法少女</LABEL>「あかん、あかんて。
 #define STR_01DE 0x01DE                        // <LABEL=ZAJI></LABEL>あ?
@@ -97,7 +97,7 @@
 #define STR_0209 0x0209                        // あきらめは死の友と知れ。
 #define STR_020D 0x020D                        // 太陽の光、その力を知れ。
 #define STR_0210 0x0210                        // 自らのライフ(命)、その限界を知れ。
-#define STR_0216 0x0216                        // 自らのエナジ―(太陽エネルギ―)、その限界を知れ。
+#define STR_0216 0x0216                        // 自らのエナジー(太陽エネルギー)、その限界を知れ。
 #define STR_021F 0x021F                        // 状況(じょうきょう)を理解し、万事に備えよ。
 #define STR_0225 0x0225                        // アイテムを集め、有効に活用せよ。
 #define STR_GUIDE_022B 0x022B                  // 張りつけ!!
@@ -107,21 +107,21 @@
 #define STR_GUIDE_0241 0x0241                  // 己の武器を知れ。
 #define STR_GUIDE_0245 0x0245                  // 守れ!!
 #define STR_GUIDE_BACK_ATTACK 0x0249           // 敵の後ろを取れ。
-#define STR_ZAJI_BOK1_TITLE_TOS 0x024F         // <LABEL=ZAJI></LABEL>これでトリガ―・オブ・ソルやなんて、かあちゃん情けないわ
-#define STR_ZAJI_BOK1_TITLE_GUNMASTER 0x0251   // <LABEL=ZAJI></LABEL>ガンマスタ―の称号(しょうごう)も返さなあかんなぁ。
-#define STR_ZAJI_BOK1_TITLE_DEATH 0x0253       // <LABEL=ZAJI></LABEL>コンティニュ―に頼(たよ)っとるからそんなことになんねん…
+#define STR_ZAJI_BOK1_TITLE_TOS 0x024F         // <LABEL=ZAJI></LABEL>これでトリガー・オブ・ソルやなんて、かあちゃん情けないわ
+#define STR_ZAJI_BOK1_TITLE_GUNMASTER 0x0251   // <LABEL=ZAJI></LABEL>ガンマスターの称号(しょうごう)も返さなあかんなぁ。
+#define STR_ZAJI_BOK1_TITLE_DEATH 0x0253       // <LABEL=ZAJI></LABEL>コンティニューに頼(たよ)っとるからそんなことになんねん…
 #define STR_ZAJI_BOK1_TITLE_BERSERKER 0x0255   // <LABEL=ZAJI></LABEL>もうちょい考えて行動しぃや。
 #define STR_ZAJI_BOK1_TITLE_BISHOP 0x0257      // <LABEL=ZAJI></LABEL>ザコをなんぼ倒(たお)したかて意味ないで。
 #define STR_ZAJI_BOK1_TITLE_QUEEN 0x0259       // <LABEL=ZAJI></LABEL>アンデッドに情けかけとる場合ちゃうで。
-#define STR_ZAJI_BOK1_TITLE_GLADIATOR 0x025B   // <LABEL=ZAJI></LABEL>グラディエ―タ―ちゅうのはまぐれなん?
+#define STR_ZAJI_BOK1_TITLE_GLADIATOR 0x025B   // <LABEL=ZAJI></LABEL>グラディエーターちゅうのはまぐれなん?
 #define STR_ZAJI_BOK1_TITLE_RUNNINGMAN 0x025D  // <LABEL=ZAJI></LABEL>暗子ちゃんもあきれとるで。
 #define STR_ZAJI_BOK1_TITLE_AKINDO 0x025F      // <LABEL=ZAJI></LABEL>太陽商人言うなら、せめて他の武器と交換(こうかん)しぃや…
 #define STR_ZAJI_BOK1_TITLE_DJANGO 0x0261      // <LABEL=ZAJI></LABEL>ほんまはパチモンちゃうん?
 #define STR_ZAJI_BOK1_TITLE_SABATA 0x0263      // <LABEL=ZAJI></LABEL>太陽嫌(きら)いなん?
 #define STR_ZAJI_BOK1_TITLE_KING 0x0265        // <LABEL=ZAJI></LABEL>キングの称号(しょうごう)に泥(どろ)ぬりなや。
-#define STR_ZAJI_BOK1_TITLE_LUKE 0x0267        // <LABEL=ZAJI></LABEL>称号(しょうごう)ル―クが聞いてあきれるわ。
+#define STR_ZAJI_BOK1_TITLE_LUKE 0x0267        // <LABEL=ZAJI></LABEL>称号(しょうごう)ルークが聞いてあきれるわ。
 #define STR_ZAJI_BOK1_TITLE_KNIGHT 0x0269      // <LABEL=ZAJI></LABEL>称号(しょうごう)ナイトで満足しとる場合ちゃうで。
-#define STR_ZAJI_BOK1_TITLE_PAWN 0x026B        // <LABEL=ZAJI></LABEL>称号(しょうごう)ポ―ンはダテやないな?
+#define STR_ZAJI_BOK1_TITLE_PAWN 0x026B        // <LABEL=ZAJI></LABEL>称号(しょうごう)ポーンはダテやないな?
 #define STR_026D 0x026D                        // 赤の水晶
 #define STR_026E 0x026E                        // 青の水晶
 #define STR_026F 0x026F                        // 緑の水晶
@@ -134,7 +134,7 @@
 #define STR_0277 0x0277                        // はまらないようだ・・・
 #define STR_0279 0x0279                        // 「<EXTEND=0>」がはまっている。
 #define STR_027B 0x027B                        // いつわりの墓、その全てが暴かれるとき、道は開かれる。
-#define STR_027E 0x027E                        // よく見ると、メッセ―ジが書き足されている。
+#define STR_027E 0x027E                        // よく見ると、メッセージが書き足されている。
 #define STR_0281 0x0281                        //
 #define STR_0285 0x0285                        // 2つ目の色、それは暗黒なる瞳(ひとみ)、その赤き輝(かがや)き。
 #define STR_0289 0x0289                        // 4つ目の色、それは大いなる空と海、その青き輝(かがや)き。
@@ -142,11 +142,11 @@
 #define STR_BOOK_A 0x0290                      // 「暗黒物質と吸血変異」「ヴァンパイア・血の歴史」
 #define STR_BOOK_B 0x0292                      // 「ガンマン10ヶ条」「荒野(こうや)の歩き方」
 #define STR_BOOK_C 0x0294                      // 「最後の竜・残された言葉」「世紀末の輪廻(りんね)」
-#define STR_BOOK_D 0x0296                      // 「太陽の一族・太陽仔の謎」「トロ―ルの姫」
+#define STR_BOOK_D 0x0296                      // 「太陽の一族・太陽仔の謎」「トロールの姫」
 #define STR_BOOK_E 0x0298                      // 「奈落(ならく)のナイトメア」「呪(のろ)いと浄化」
 #define STR_BOOK_F 0x029A                      // 「発掘(はっくつ)の魔法機械」「滅びの一族・月光仔の謎」
-#define STR_BOOK_G 0x029C                      // 「魔法使いになる方法」「魔法カ―ド・タロット入門」
-#define STR_BOOK_H 0x029E                      // 「闇の一族・イモ―タルの謎」「ユグドラシル幻想」
+#define STR_BOOK_G 0x029C                      // 「魔法使いになる方法」「魔法カード・タロット入門」
+#define STR_BOOK_H 0x029E                      // 「闇の一族・イモータルの謎」「ユグドラシル幻想」
 #define STR_BOOK_I 0x02A0                      // 「ラグナロク大崩壊」「螺旋(らせん)の伝承」
 #define STR_02A2 0x02A2                        // 「」「」
 #define STR_BOOK_SWITCH 0x02A4                 // 本の奥にスイッチがある。
@@ -163,10 +163,10 @@
 #define STR_02CB 0x02CB                        // 燭台(しょくだい)に火を灯(とも)すには2つの方法がある。
 #define STR_02CF 0x02CF                        // <LABEL=OTENKO>おてんこさま</LABEL>「大聖堂はこの奥(おく)か。どこにいる、…
 #define STR_02D1 0x02D1                        // <LABEL=OTENKO>おてんこさま</LABEL>「この扉(とびら)を開けるにはカギが必要…
-#define STR_02D4 0x02D4                        // <LABEL=OTENKO>おてんこさま</LABEL>「クラブか・・・ハンマ―(つち)タイプの…
+#define STR_02D4 0x02D4                        // <LABEL=OTENKO>おてんこさま</LABEL>「クラブか・・・ハンマー(つち)タイプの…
 #define STR_02D8 0x02D8                        // <LABEL=OTENKO>おてんこさま</LABEL>「ここは・・・
-#define STR_02DB 0x02DB                        // <LABEL=OTENKO>おてんこさま</LABEL>「ショ―トスピアか・・・スピア(やり)タ…
-#define STR_02E0 0x02E0                        // <LABEL=OTENKO>おてんこさま</LABEL>「この気配は・・・イモ―タル!!
+#define STR_02DB 0x02DB                        // <LABEL=OTENKO>おてんこさま</LABEL>「ショートスピアか・・・スピア(やり)タ…
+#define STR_02E0 0x02E0                        // <LABEL=OTENKO>おてんこさま</LABEL>「この気配は・・・イモータル!!
 #define STR_02E3 0x02E3                        // <LABEL=OTENKO>おてんこさま</LABEL>「まて、<NAME>!
 #define STR_02E6 0x02E6                        // <LABEL=OTENKO>おてんこさま</LABEL>「カギを手に入れたようだな。
 #define STR_02EB 0x02EB                        // <LABEL=OTENKO>おてんこさま</LABEL>「大広間の床絵(ゆかえ)が現れたようだが…
@@ -174,11 +174,11 @@
 #define STR_02F2 0x02F2                        // <NAME>、あのときの借りを返すぞ!!
 #define STR_02F5 0x02F5                        // <LABEL=OTENKO>おてんこさま</LABEL>「この暑さ、まさに砂漠だな。
 #define STR_02FA 0x02FA                        // <LABEL=OTENKO>おてんこさま</LABEL>「待て、<NAME>!!
-#define STR_0300 0x0300                        // <LABEL=OTENKO>おてんこさま</LABEL>「これはワ―プ魔方陣(まほうじん)・・・
+#define STR_0300 0x0300                        // <LABEL=OTENKO>おてんこさま</LABEL>「これはワープ魔方陣(まほうじん)・・・
 #define STR_0306 0x0306                        // <LABEL>「おいしい水」を手に入れた!!</LABEL>
 #define STR_0308 0x0308                        // <LABEL=OTENKO>おてんこさま</LABEL>「待つんだ、<NAME>!!
 #define STR_030B 0x030B                        // ヴァンパイアに正面からの攻撃は通じない。
-#define STR_030E 0x030E                        // サバタを守り、ブラックホ―ルを完成させろ。
+#define STR_030E 0x030E                        // サバタを守り、ブラックホールを完成させろ。
 #define STR_0312 0x0312                        // <LABEL=SABATA>サバタ</LABEL>「なぜ俺(おれ)がここにいるのか、不思議に思う…
 #define STR_031A 0x031A                        // <LABEL=SABATA>サバタ</LABEL>「ヤツは強い・・・
 #define STR_0320 0x0320                        // <LABEL=SABATA>サバタ</LABEL>「道具屋のキッド?あの爆発頭か・・・
@@ -190,14 +190,14 @@
 #define STR_0336 0x0336                        // <EXTEND=0>(やられた・・・)
 #define STR_0338 0x0338                        // <LABEL=R_DJUNGO><NAME></LABEL>
 #define STR_033A 0x033A                        // <LABEL=B_DJUNGO><NAME></LABEL>
-#define STR_GUIDE_033C 0x033C                  // 太陽の光をコントロ―ルせよ。
+#define STR_GUIDE_033C 0x033C                  // 太陽の光をコントロールせよ。
 #define STR_GUIDE_0340 0x0340                  // 砕(くだ)け!!
 #define STR_GUIDE_0344 0x0344                  // 消せ!!
 #define STR_GUIDE_0347 0x0347                  // 溶(と)かせ!!
 #define STR_GUIDE_034A 0x034A                  // 属性を使いこなせ。
 #define STR_GUIDE_0351 0x0351                  // 突(つ)け!!
 #define STR_GUIDE_0355 0x0355                  // 合わせろ!!
-#define STR_0358 0x0358                        // 残されたメッセ―ジ
+#define STR_0358 0x0358                        // 残されたメッセージ
 #define STR_035B 0x035B                        // 吹(ふ)き出す炎のために近づくことはできないが、
 #define STR_035E 0x035E                        // 音に注意せよ。
 #define STR_DESERT_SLOT_A 0x0363               // 四角いくぼみがある。何かをはめ込(こ)む穴のようだ
@@ -207,7 +207,7 @@
 #define STR_DESERT_MSG_READ 0x036B             // くぼみの下に文字が刻まれている。読んでみますか? <ALTER>はい</ALTER>　<ALTE…
 #define STR_DESERT_MSG 0x036D                  // 遺跡(いせき)を守るため、カギとなる石版を3つに分け砂漠(さばく)に隠(かく)した。
 #define STR_DESERT_MSG_A 0x036F                // 2つのドクロの間。
-#define STR_DESERT_MSG_B 0x0371                // 朽(く)ちたゴ―レムの後ろ。
+#define STR_DESERT_MSG_B 0x0371                // 朽(く)ちたゴーレムの後ろ。
 #define STR_DESERT_MSG_C 0x0373                // サボテンの輪の中。
 #define STR_DESERT_MSG_D 0x0375                // サボテンの王の下。
 #define STR_DESERT_MSG_E 0x0377                // バットの巣の下。
@@ -219,11 +219,11 @@
 #define STR_REMAINS_PUZZLE_0385 0x0385         // 水の王の燭台「私は最も若く美しい」
 #define STR_REMAINS_PUZZLE_0387 0x0387         // 大地の王の燭台「私は火の王よりも若いが、最も力が強い」
 #define STR_REMAINS_PUZZLE_0389 0x0389         // 風の王の燭台「私は水の王の兄であり最も素早いが、長男ではない」
-#define STR_REMAINS_PUZZLE_038B 0x038B         // 残されたメッセ―ジ
-#define STR_REMAINS_PUZZLE_0390 0x0390         // 残されたメッセ―ジ
-#define STR_REMAINS_PUZZLE_0397 0x0397         // 残されたメッセ―ジ
-#define STR_REMAINS_PUZZLE_039D 0x039D         // 残されたメッセ―ジ
-#define STR_REMAINS_PUZZLE_03A3 0x03A3         // 残されたメッセ―ジ
+#define STR_REMAINS_PUZZLE_038B 0x038B         // 残されたメッセージ
+#define STR_REMAINS_PUZZLE_0390 0x0390         // 残されたメッセージ
+#define STR_REMAINS_PUZZLE_0397 0x0397         // 残されたメッセージ
+#define STR_REMAINS_PUZZLE_039D 0x039D         // 残されたメッセージ
+#define STR_REMAINS_PUZZLE_03A3 0x03A3         // 残されたメッセージ
 #define STR_REMAINS_PUZZLE_03A8 0x03A8         // 火の試練
 #define STR_REMAINS_PUZZLE_03AB 0x03AB         // 水の試練
 #define STR_REMAINS_PUZZLE_03AE 0x03AE         // 地の試練
@@ -232,7 +232,7 @@
 #define STR_WARNING_OVERHEAD 0x03B9            // 頭上注意!!
 #define STR_WARNING_FEET 0x03BD                // 足元注意!!
 #define STR_WARNING_DARK 0x03C1                // 暗闇(くらやみ)注意!!
-#define STR_GUIDE_WEIGHT_LIFT 0x03C7           // 重量をコントロ―ルせよ。
+#define STR_GUIDE_WEIGHT_LIFT 0x03C7           // 重量をコントロールせよ。
 #define STR_TAIYO_KEKKAI 0x03CB                // 太陽結界について。
 #define STR_03CF 0x03CF                        // ???「<NAME>・・・
 #define STR_03D5 0x03D5                        // ???「<NAME>・・・
@@ -240,16 +240,16 @@
 #define STR_03E3 0x03E3                        // ???「<NAME>・・・
 #define STR_03EB 0x03EB                        // ???「<NAME>・・・
 #define STR_03F2 0x03F2                        // ???「気をつけるんだ、<NAME>・・・
-#define STR_DURATHROR_ADVICE1 0x03F9           // 囮(おとり)のつぼみが現れたらつぼみの動きに注目し、ドゥラスロ―ルを探し出せ。
-#define STR_DURATHROR_ADVICE2 0x03FC           // ドゥラスロ―ルの後を取れば、
+#define STR_DURATHROR_ADVICE1 0x03F9           // 囮(おとり)のつぼみが現れたらつぼみの動きに注目し、ドゥラスロールを探し出せ。
+#define STR_DURATHROR_ADVICE2 0x03FC           // ドゥラスロールの後を取れば、
 #define STR_TARROT_SEALED 0x03FF               // タロット封印により閉ざされている。
 #define STR_RINGO2_TARROT_3 0x0404             // <LABEL=RINGO2>リンゴ</LABEL>「さすがは<NAME>。
-#define STR_RINGO2_TARROT_2 0x0408             // <LABEL=RINGO2>リンゴ</LABEL>「残りのカ―ドは1枚・・・
-#define STR_RINGO2_TARROT_1 0x040B             // <LABEL=RINGO2>リンゴ</LABEL>「残りのカ―ドは2枚・・・
-#define STR_RINGO2_TARROT_0 0x040E             // <LABEL=RINGO2>リンゴ</LABEL>「黒のダ―インはこの扉(とびら)の向こうだ。
+#define STR_RINGO2_TARROT_2 0x0408             // <LABEL=RINGO2>リンゴ</LABEL>「残りのカードは1枚・・・
+#define STR_RINGO2_TARROT_1 0x040B             // <LABEL=RINGO2>リンゴ</LABEL>「残りのカードは2枚・・・
+#define STR_RINGO2_TARROT_0 0x040E             // <LABEL=RINGO2>リンゴ</LABEL>「黒のダーインはこの扉(とびら)の向こうだ。
 #define STR_RINGO2_TARROT_GUIDE 0x0412         // <LABEL=RINGO2>リンゴ</LABEL>「いいか、<NAME>。
 #define STR_DVALIN_ADVICE1 0x0418              // ドヴァリンの弱点は頭だ。
-#define STR_DVALIN_ADVICE2 0x041C              // ドヴァリンのダ―クブレスや墨玉(すみだま)はダ―ク属性だ。
+#define STR_DVALIN_ADVICE2 0x041C              // ドヴァリンのダークブレスや墨玉(すみだま)はダーク属性だ。
 #define STR_GUIDE_ZERO_SHIFT 0x041F            // 月光魔法「ゼロシフト」は、瞬間移動を可能にする転移魔法だ
 #define STR_GUIDE_BLACK_SUN 0x0422             // 月光魔法「ブラックサン」は、暗黒の欠片を呼び出す召喚(しょうかん)魔法だ。
 #define STR_0425 0x0425                        // 像　ら<EXTEND=0>　 マ　　に<VAR=1>　スの　にブロ　　をお
@@ -261,11 +261,11 @@
 #define STR_042D 0x042D                        // 壁に何か書いてある。
 #define STR_0430 0x0430                        // <LABEL=OTENKO>おてんこさま</LABEL>「覚悟(かくご)はいいな?」 <ALTE…
 #define STR_0432 0x0432                        // <LABEL=OTENKO>おてんこさま</LABEL>「<NAME>、
-#define STR_0436 0x0436                        // <LABEL=OTENKO>おてんこさま</LABEL>「銀河意志ダ―ク・・・
+#define STR_0436 0x0436                        // <LABEL=OTENKO>おてんこさま</LABEL>「銀河意志ダーク・・・
 #define STR_043C 0x043C                        // <LABEL=SABATA>サバタ</LABEL>「この俺(おれ)が月下美人になろうとはな・・・
 #define STR_0446 0x0446                        // <LABEL=SABATA>サバタ</LABEL>「母を失い、父を倒(たお)し、
 #define STR_044D 0x044D                        // <LABEL=SABATA>サバタ</LABEL>「<NAME>、
-#define STR_0451 0x0451                        // <LABEL=SABATA>サバタ</LABEL>「無事、イモ―タルを始末したようだな。
+#define STR_0451 0x0451                        // <LABEL=SABATA>サバタ</LABEL>「無事、イモータルを始末したようだな。
 #define STR_045F 0x045F                        // <LABEL=SABATA>サバタ</LABEL>「準備はいいな?」 <ALTER>いい</AL…
 #define STR_0461 0x0461                        // <LABEL=SABATA>サバタ</LABEL>「時間はないぞ!!早く準備を済ませるんだ!」
 #define STR_0463 0x0463                        // <LABEL=SABATA>サバタ</LABEL>「よし!
@@ -274,29 +274,29 @@
 #define STR_046F 0x046F                        // <LABEL=SABATA>サバタ</LABEL>「いいか、<NAME>。
 #define STR_0475 0x0475                        // サバタの声「<NAME>!!何をやっている!
 #define STR_0478 0x0478                        // サバタの声「<NAME>!!何をやっている!
-#define STR_047B 0x047B                        // ダ―インの攻撃(こうげき)、ダ―クブラストは、エリア全体を暗闇(くらやみ)にしてしまう。
+#define STR_047B 0x047B                        // ダーインの攻撃(こうげき)、ダークブラストは、エリア全体を暗闇(くらやみ)にしてしまう。
 #define STR_047E 0x047E                        // 足元からのつかみ攻撃(こうげき)、影(かげ)の腕(うで)に捕(つか)まれば、
-#define STR_0482 0x0482                        // <LABEL=DAAIN>黒のダ―イン</LABEL>「クッ・・・いまいましい身体だ!
+#define STR_0482 0x0482                        // <LABEL=DAAIN>黒のダーイン</LABEL>「クッ・・・いまいましい身体だ!
 #define STR_0488 0x0488                        // <LABEL=SABATA>サバタ</LABEL>「クロのことなら心配ない。
 #define STR_048B 0x048B                        // <LABEL=SABATA>サバタ</LABEL>「悪いが、アイテムはおまえのバッグから使わせて…
 #define STR_048F 0x048F                        // <LABEL=KURO_BAN>クロ</LABEL>「・・・」
 #define STR_0491 0x0491                        // <LABEL=OTENKO>おてんこさま</LABEL>「どうした、<NAME>?
 #define STR_0495 0x0495                        // <LABEL=OTENKO>おてんこさま</LABEL>「そうか、そんなことが・・・
 #define STR_049C 0x049C                        // <LABEL=OTENKO>おてんこさま</LABEL>「ロックマン、
-#define STR_04A0 0x04A0                        // <LABEL=OTENKO>おてんこさま</LABEL>「シェ―ドマン・・・
+#define STR_04A0 0x04A0                        // <LABEL=OTENKO>おてんこさま</LABEL>「シェードマン・・・
 #define STR_04A6 0x04A6                        // <LABEL=SABATA>サバタ</LABEL>「何をしている?
 #define STR_04AA 0x04AA                        // <LABEL=SABATA>サバタ</LABEL><PROC=1>「フッ、
 #define STR_04AF 0x04AF                        // <LABEL=ROCKMAN>ロックマン</LABEL>「<NAME>くん、
-#define STR_MMBN_KEY1 0x04B2                   // 「キ―デ―タ1」を手に入れた!!
-#define STR_MMBN_KEY2 0x04B7                   // 「キ―デ―タ2」を手に入れた!!
-#define STR_MMBN_KEY3 0x04BB                   // 「キ―デ―タ3」を手に入れた!!
-#define STR_MMBN_KEY4 0x04BF                   // 「キ―デ―タ4」を手に入れた!!
+#define STR_MMBN_KEY1 0x04B2                   // 「キーデータ1」を手に入れた!!
+#define STR_MMBN_KEY2 0x04B7                   // 「キーデータ2」を手に入れた!!
+#define STR_MMBN_KEY3 0x04BB                   // 「キーデータ3」を手に入れた!!
+#define STR_MMBN_KEY4 0x04BF                   // 「キーデータ4」を手に入れた!!
 #define STR_04C4 0x04C4                        // 2つの塔に挑(いど)め。
 #define STR_04D4 0x04D4                        // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
-#define STR_04D9 0x04D9                        // <LABEL=ZAJI>ザジ</LABEL>「黒きダ―イン、やったて?」
+#define STR_04D9 0x04D9                        // <LABEL=ZAJI>ザジ</LABEL>「黒きダーイン、やったて?」
 #define STR_04DF 0x04DF                        // <LABEL=ZAJI>ザジ</LABEL>「そないなことも・・・
 #define STR_04E2 0x04E2                        // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
-#define STR_04E7 0x04E7                        // <LABEL=RITA>リタ</LABEL>「黒きダ―イン、ですか?」
+#define STR_04E7 0x04E7                        // <LABEL=RITA>リタ</LABEL>「黒きダーイン、ですか?」
 #define STR_04ED 0x04ED                        // <LABEL=RITA>リタ</LABEL>「美しい・・・ですね」
 #define STR_04EF 0x04EF                        // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
 #define STR_04F4 0x04F4                        // <LABEL=R_DJUNGO><NAME></LABEL>「光が強ければ・・・
@@ -305,23 +305,23 @@
 #define STR_0500 0x0500                        // <LABEL=SABATA>サバタ</LABEL>「ヤツが・・・?」
 #define STR_0506 0x0506                        // <LABEL=SABATA>サバタ</LABEL><PROC=1>「フッ・・・
 #define STR_0509 0x0509                        // <LABEL=R_DJUNGO><NAME></LABEL>「あのとき、
-#define STR_050E 0x050E                        // <LABEL=LADY>レディ</LABEL>「例の・・・影のイモ―タル?」
+#define STR_050E 0x050E                        // <LABEL=LADY>レディ</LABEL>「例の・・・影のイモータル?」
 #define STR_0514 0x0514                        // <LABEL=LADY>レディ</LABEL>「美しい・・・か。
-#define STR_JORMY_ADVICE1 0x0517               // 闇(やみ)の力に守られている状態では、ヨルムンガンドにダメ―ジをあたえることはできない
+#define STR_JORMY_ADVICE1 0x0517               // 闇(やみ)の力に守られている状態では、ヨルムンガンドにダメージをあたえることはできない
 #define STR_JORMY_ADVICE2 0x051A               // ヨルムンガンドの弱点はその舌にある。
-#define STR_SHADEMAN_ADVICE1 0x051D            // 大量のバットを召喚(しょうかん)するシェ―ドマンの特殊攻撃(とくしゅこうげき)、
-#define STR_SHADEMAN_ADVICE2 0x0522            // ウイングスト―ムを放った後のシェ―ドマンには、隙(すき)が生まれる。
-#define STR_0525 0x0525                        // <LABEL=SHADEMAN>シェ―ドマン</LABEL>「キ、キキ・・・キサマ!!
+#define STR_SHADEMAN_ADVICE1 0x051D            // 大量のバットを召喚(しょうかん)するシェードマンの特殊攻撃(とくしゅこうげき)、
+#define STR_SHADEMAN_ADVICE2 0x0522            // ウイングストームを放った後のシェードマンには、隙(すき)が生まれる。
+#define STR_0525 0x0525                        // <LABEL=SHADEMAN>シェードマン</LABEL>「キ、キキ・・・キサマ!!
 #define STR_052F 0x052F                        // <LABEL=SABATA>サバタ</LABEL>「ん?
-#define STR_GET_JOKER_CREST 0x0533             // <PROC=1>「ジョ―カ―の紋章」を手に入れた!!
-#define STR_GUIDE_JOKER_CREST 0x0535           // <LABEL=SABATA>サバタ</LABEL>「そのジョ―カ―の紋章(もんしょう)を持つ者は…
+#define STR_GET_JOKER_CREST 0x0533             // <PROC=1>「ジョーカーの紋章」を手に入れた!!
+#define STR_GUIDE_JOKER_CREST 0x0535           // <LABEL=SABATA>サバタ</LABEL>「そのジョーカーの紋章(もんしょう)を持つ者は…
 #define STR_053B 0x053B                        // いらっしゃいませ!
 #define STR_054A 0x054A                        // <PROC=2><LABEL=NONE>???</LABEL>「<PROC=8><LOCK=48…
-#define STR_0551 0x0551                        // バンクとロ―ンについて <ALTER>太陽スタンド</ALTER>　<ALTER>太陽バンク</…
+#define STR_0551 0x0551                        // バンクとローンについて <ALTER>太陽スタンド</ALTER>　<ALTER>太陽バンク</…
 #define STR_0553 0x0553                        // <LABEL=NONE>太陽バンクの陽子ちゃん</LABEL><PROC=2>「それでは、わたし…
 #define STR_055C 0x055C                        // <LABEL=NONE>太陽バンクの陽子ちゃん</LABEL><PROC=2>「それでは、わたし…
-#define STR_0563 0x0563                        // <LABEL=NONE>暗黒ロ―ンの暗子ちゃん</LABEL><PROC=1>「それでは、わたし…
-#define STR_056C 0x056C                        // <LABEL=NONE>暗黒ロ―ンの暗子ちゃん</LABEL><PROC=1>「それでは、わたし…
+#define STR_0563 0x0563                        // <LABEL=NONE>暗黒ローンの暗子ちゃん</LABEL><PROC=1>「それでは、わたし…
+#define STR_056C 0x056C                        // <LABEL=NONE>暗黒ローンの暗子ちゃん</LABEL><PROC=1>「それでは、わたし…
 #define STR_0578 0x0578                        // <LABEL=NONE>???</LABEL>「あっ、<NAME>さま!!
 #define STR_BUY_CONFIRM 0x0581                 // これを買いますか?
 #define STR_059E 0x059E                        // 太陽鍛冶について <ALTER>太陽鍛冶とは</ALTER>　<ALTER>鍛冶の内容</ALT…
@@ -339,22 +339,22 @@
 #define STR_05D7 0x05D7                        // <LABEL=OTENKO>おてんこさま</LABEL>「準備完了(じゅんびかんりょう)!!」
 #define STR_05D9 0x05D9                        // <LABEL=OTENKO>おてんこさま</LABEL>「いいか、<NAME>。
 #define STR_05DD 0x05DD                        // <ALTER>出ている</ALTER>　<ALTER>出ていない</ALTER>
-#define STR_05DF 0x05DF                        // <LABEL=OTENKO>おてんこさま</LABEL>「よし!!太陽センサ―に太陽の光を当て
+#define STR_05DF 0x05DF                        // <LABEL=OTENKO>おてんこさま</LABEL>「よし!!太陽センサーに太陽の光を当て
 #define STR_05E2 0x05E2                        // <LABEL=OTENKO>おてんこさま</LABEL>「ううむ・・・
 #define STR_05E8 0x05E8                        // <LABEL=OTENKO>おてんこさま</LABEL>「ん?
-#define STR_PILEDRIVER_TAIYO_OTNK 0x05EC       // <LABEL=OTENKO>おてんこさま</LABEL>「太陽ぉ――――――!!」
-#define STR_PILEDRIVER_TAIYO_RDJANGO 0x05EE    // <LABEL=R_DJUNGO><NAME></LABEL>「太陽ぉ――――――!!」
-#define STR_PILEDRIVER_TAIYO_BDJANGO 0x05F0    // <LABEL=B_DJUNGO><NAME></LABEL>「太陽ぉ――――――!!」
+#define STR_PILEDRIVER_TAIYO_OTNK 0x05EC       // <LABEL=OTENKO>おてんこさま</LABEL>「太陽ぉーーーーーー!!」
+#define STR_PILEDRIVER_TAIYO_RDJANGO 0x05EE    // <LABEL=R_DJUNGO><NAME></LABEL>「太陽ぉーーーーーー!!」
+#define STR_PILEDRIVER_TAIYO_BDJANGO 0x05F0    // <LABEL=B_DJUNGO><NAME></LABEL>「太陽ぉーーーーーー!!」
 #define STR_05F2 0x05F2                        // <LABEL=OTENKO>おてんこさま</LABEL>「バトルドライブ開始!!
 #define STR_05FA 0x05FA                        // <LABEL=ZAJI>ザジ</LABEL>「サバタ、ええか?
-#define STR_05FF 0x05FF                        // <LABEL=OTENKO>おてんこさま</LABEL>「いかん!!イモ―タルが逃(に)げるぞ!
+#define STR_05FF 0x05FF                        // <LABEL=OTENKO>おてんこさま</LABEL>「いかん!!イモータルが逃(に)げるぞ!
 #define STR_0604 0x0604                        // <LABEL=OTENKO>おてんこさま</LABEL>「まずい!!逃(に)げられたぞ!
 #define STR_060A 0x060A                        // <LABEL=OTENKO>おてんこさま</LABEL>「くっ!!がんばれ、<NAME>!
-#define STR_0611 0x0611                        // <LABEL=OTENKO>おてんこさま</LABEL>「イモ―タルの源、
+#define STR_0611 0x0611                        // <LABEL=OTENKO>おてんこさま</LABEL>「イモータルの源、
 #define STR_PURIFICATION_DUNEYRR 0x0616        // <LABEL=NONE>白きドゥネイル</LABEL>「そ・・・そんな・・・
-#define STR_PURIFICATION_DURATHROR 0x061B      // <LABEL=NONE>赤きドゥラスロ―ル</LABEL>「私の世界に、光はなかった・・・
+#define STR_PURIFICATION_DURATHROR 0x061B      // <LABEL=NONE>赤きドゥラスロール</LABEL>「私の世界に、光はなかった・・・
 #define STR_PURIFICATION_DVALIN 0x0622         // <LABEL=NONE>青きドヴァリン</LABEL>「う・・・く・・・
-#define STR_PURIFICATION_DAINN 0x0628          // <LABEL=NONE>黒きダ―イン</LABEL>「クッ・・・
+#define STR_PURIFICATION_DAINN 0x0628          // <LABEL=NONE>黒きダーイン</LABEL>「クッ・・・
 #define STR_0631 0x0631                        // <LABEL=OTENKO>おてんこさま</LABEL>「<NAME>・・・」
 #define STR_0633 0x0633                        // <LABEL=RITA>リタ</LABEL>「<NAME>さま・・・」
 #define STR_0635 0x0635                        // 倉庫を使いますか? <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>
@@ -362,11 +362,11 @@
 #define STR_0639 0x0639                        // スミレの人形だ。足の裏に何か書かれている。
 #define STR_063C 0x063C                        // アクセスしますか? <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>
 #define STR_063E 0x063E                        // <LABEL=ROCKMAN>ロックマン</LABEL>「やあ、<NAME>くん!!
-#define STR_0644 0x0644                        // <LABEL=NONE></LABEL><PROC=1>現在のクロスオ―バ―ポイントは、<VAR…
+#define STR_0644 0x0644                        // <LABEL=NONE></LABEL><PROC=1>現在のクロスオーバーポイントは、<VAR…
 #define STR_0646 0x0646                        // <VAR=1>ポイント使って、防具と交換(こうかん)しますか?
 #define STR_0648 0x0648                        // <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>
 #define STR_064A 0x064A                        // <EXTEND=0>を手に入れた!!
-#define STR_064C 0x064C                        // 残りのクロスオ―バ―ポイントは、<VAR=2>ポイントです。
+#define STR_064C 0x064C                        // 残りのクロスオーバーポイントは、<VAR=2>ポイントです。
 #define STR_064E 0x064E                        // 防具と交換(こうかん)するにはあと<VAR=3>ポイント必要です。
 #define STR_0650 0x0650                        // バッグがいっぱいです。防具を減らしてください。
 #define STR_0656 0x0656                        // <LABEL=LADY>レディ</LABEL>「とうとうやったわね!
@@ -381,9 +381,9 @@
 #define STR_0679 0x0679                        // <LABEL=KURO_BAN>クロ</LABEL><PROC=2>「ミャ?」
 #define STR_067B 0x067B                        // <LABEL=KURO_BAN>クロ</LABEL><PROC=3>「・・・」
 #define STR_067D 0x067D                        // <LABEL=KURO_BAN>クロ</LABEL><PROC=2>「ミャ?」 <ALTER>ミ…
-#define STR_067F 0x067F                        // <MOJISE=MOJISE_SYSTEM>「ブラックパンサ―」ハイスコア　　　　<VAR=1>…
+#define STR_067F 0x067F                        // <MOJISE=MOJISE_SYSTEM>「ブラックパンサー」ハイスコア　　　　<VAR=1>…
 #define STR_0682 0x0682                        // <LABEL=NONE>サバタ</LABEL>「・・・」
-#define STR_0684 0x0684                        // <LABEL=NONE>サバタ</LABEL>「カ―ミラ・・・」
+#define STR_0684 0x0684                        // <LABEL=NONE>サバタ</LABEL>「カーミラ・・・」
 #define STR_0686 0x0686                        // <LABEL=NONE>ザジ</LABEL>「んにゃ・・・?もうちょい寝(ね)かせてぇや」
 #define STR_0688 0x0688                        // <LABEL=NONE>ザジ</LABEL><PROC=1>「・・・」
 #define STR_068B 0x068B                        // <LABEL=NONE>ザジ</LABEL>「んにゃ・・・?もうちょい寝(ね)かせてぇや」
@@ -395,9 +395,9 @@
 #define STR_069A 0x069A                        // <LABEL=RITA>リタ</LABEL>「あっ、<NAME>さま♥
 #define STR_069E 0x069E                        // <LABEL=RITA>リタ</LABEL>「・・・
 #define STR_06A3 0x06A3                        // <LABEL=SUMIRE>スミレ</LABEL>「あっ、おにいちゃん!!
-#define STR_06A6 0x06A6                        // <LABEL=SUMIRE>スミレ</LABEL>「きょうはすきなひとにチョコレ―トをあげるひな…
+#define STR_06A6 0x06A6                        // <LABEL=SUMIRE>スミレ</LABEL>「きょうはすきなひとにチョコレートをあげるひな…
 #define STR_06A9 0x06A9                        // <LABEL=SABATA>サバタ</LABEL>「どうした、<NAME>。腹でも減ったのか?
-#define STR_06AC 0x06AC                        // <LABEL=SABATA>サバタ</LABEL>「チョコレ―トは旧世界の太陽文明が生み出した回…
+#define STR_06AC 0x06AC                        // <LABEL=SABATA>サバタ</LABEL>「チョコレートは旧世界の太陽文明が生み出した回…
 #define STR_06AF 0x06AF                        // <LABEL=LADY>レディ</LABEL>「いらっしゃい、<NAME>くん。
 #define STR_06B2 0x06B2                        // <LABEL=LADY>レディ</LABEL>「リタちゃんにはないしょね♪」
 #define STR_RUINS_06B4 0x06B4                  // 赤：?青：?
@@ -407,9 +407,9 @@
 #define STR_RUINS_NAVIGATION 0x06BC            // 左：進む右：戻る
 #define STR_06BE 0x06BE                        // ウソじゃないって言ったのに...
 #define STR_RUINS_SWITCHES 0x06C0              // 5、7、3、の順にスイッチを入れよ。
-#define STR_06C2 0x06C2                        // 残されたメッセ―ジ
+#define STR_06C2 0x06C2                        // 残されたメッセージ
 #define STR_06C8 0x06C8                        // 心得
-#define STR_06CD 0x06CD                        // 太陽の光をコントロ―ルせよ。
+#define STR_06CD 0x06CD                        // 太陽の光をコントロールせよ。
 #define STR_06D0 0x06D0                        // クロロホルルンが示す時の方向に、4回進め。
 #define STR_06D3 0x06D3                        // 太陽の導きに従え。
 #define STR_06D5 0x06D5                        // 探せ!!
@@ -458,7 +458,7 @@
 #define STR_TIMEHOUSE_0724 0x0724              // 「 <EXTEND=0> <EXTEND=1> <EXTEND=2> <EXTEND=3> 」暗…
 #define STR_TIMEHOUSE_0726 0x0726              // 扉はかたく閉ざされている。
 #define STR_TIMEHOUSE_0728 0x0728              // <LABEL=NONE>幽霊少年</LABEL>「パパは現在の家の中にいるはずなんだ・・・
-#define STR_TIMEHOUSE_072B 0x072B              // <LABEL=NONE>幽霊少年</LABEL>「ゴ―ストたちがキミの邪魔(じゃま)をするかもし…
+#define STR_TIMEHOUSE_072B 0x072B              // <LABEL=NONE>幽霊少年</LABEL>「ゴーストたちがキミの邪魔(じゃま)をするかもし…
 #define STR_DREAM_COMPLETE 0x072E              // 夢幻のすべてを乗り越えた!!
 #define STR_DREAM_LEVEL 0x0732                 // 夢幻街：レベル<VAR=0>
 #define STR_DREAM_GUIDE_1 0x0734               // 夢幻の心得・その1
@@ -469,10 +469,10 @@
 #define STR_074C 0x074C                        // <LABEL=NONE>???</LABEL>「さすがはあいつの忘れ形見・・・
 #define STR_0754 0x0754                        // 依頼の実行を中止しますか? <ALTER>はい</ALTER>　<ALTER>いいえ</ALTE…
 #define STR_FOUR_SEALED 0x0755                 // 四方封印により閉ざされている
-#define STR_075B 0x075B                        // <LABEL=SABATA>サバタ</LABEL>「<NAME>、イモ―タルの始末はどうした?
+#define STR_075B 0x075B                        // <LABEL=SABATA>サバタ</LABEL>「<NAME>、イモータルの始末はどうした?
 #define STR_075F 0x075F                        // <LABEL=SABATA>サバタ</LABEL>「クロなら無事だ。この先で休ませている」
 #define STR_0761 0x0761                        // <LABEL=OTENKO>おてんこさま</LABEL>「外に出たようだな・・・
-#define STR_0763 0x0763                        // いいか、<NAME>。エナジ―を回復するには太陽の光が必要だが、
+#define STR_0763 0x0763                        // いいか、<NAME>。エナジーを回復するには太陽の光が必要だが、
 #define STR_076A 0x076A                        // <LABEL=OTENKO>おてんこさま</LABEL>「逃(に)げるのか!?
 #define STR_076F 0x076F                        // <LABEL=OTENKO>おてんこさま</LABEL>「何という自己再生能力だ!!
 #define STR_0773 0x0773                        // <LABEL=OTENKO>おてんこさま</LABEL>「これは・・・
@@ -482,8 +482,8 @@
 #define STR_ARENA_RANK_SELECT_LV3 0x077C       // どのランクに挑みますか? <ALTER><EXTEND=0>ブロンズ</ALTER>　<ALTE…
 #define STR_ARENA_RANK_SELECT_LV4 0x077D       // どのランクに挑みますか? <ALTER><EXTEND=0>ブロンズ</ALTER>　<ALTE…
 #define STR_ARENA_BRONZE 0x077E                // ブロンズ
-#define STR_ARENA_SILVER 0x077F                // シルバ―
-#define STR_ARENA_GOLD 0x0780                  // ゴ―ルド
+#define STR_ARENA_SILVER 0x077F                // シルバー
+#define STR_ARENA_GOLD 0x0780                  // ゴールド
 #define STR_ARENA_PLATINUM 0x0781              // プラチナ
 #define STR_ARENA_0782 0x0782                  // ★
 #define STR_ARENA_0783 0x0783                  //
@@ -493,8 +493,8 @@
 #define STR_078E 0x078E                        // <LABEL=NONE>???</LABEL>「<NAME>、こんなところで寄り道かい?
 #define STR_0794 0x0794                        // <LABEL=NONE>???</LABEL>「<NAME>・・・
 #define STR_07A1 0x07A1                        // <LABEL=ZAJI>魔法少女</LABEL>「無事来よったな。くさっても太陽少年や。
-#define STR_07A9 0x07A9                        // <LABEL=ZAJI></LABEL>くわしいことは、そこにある暗黒ロ―ンで聞いといてな」
-#define STR_07AB 0x07AB                        // <PROC=1>「暗黒カ―ド」を手に入れた!!
+#define STR_07A9 0x07A9                        // <LABEL=ZAJI></LABEL>くわしいことは、そこにある暗黒ローンで聞いといてな」
+#define STR_07AB 0x07AB                        // <PROC=1>「暗黒カード」を手に入れた!!
 #define STR_07AD 0x07AD                        // <LABEL=OTENKO>おてんこさま</LABEL>「なつかしいその言葉使い・・・
 #define STR_07B6 0x07B6                        // <LABEL=OTENKO>おてんこさま</LABEL>「世紀末の終わり・・・
 #define STR_07B9 0x07B9                        // <LABEL=ZAJI>ザジ</LABEL>「はい・・・」
@@ -510,7 +510,7 @@
 #define STR_07E5 0x07E5                        // <LABEL=OTENKO>おてんこさま</LABEL>「そのレンズが落ちていたということは・・…
 #define STR_07EA 0x07EA                        // <LABEL=OTENKO>おてんこさま</LABEL>「今のは・・・」
 #define STR_07EC 0x07EC                        // ???<PROC=1><LOCK=44>「お待ちなさい・・・」
-#define STR_07EE 0x07EE                        // <LABEL=DUNEYRR>白いコ―トの女</LABEL>「あなたが太陽少年・・・?かわいらし…
+#define STR_07EE 0x07EE                        // <LABEL=DUNEYRR>白いコートの女</LABEL>「あなたが太陽少年・・・?かわいらし…
 #define STR_07F6 0x07F6                        // <LABEL=OTENKO>おてんこさま</LABEL>「スミス!!」
 #define STR_07F9 0x07F9                        // <LABEL=SMITH>スミス</LABEL>「あんたは・・・おお、おてんこ!!」
 #define STR_0800 0x0800                        // <LABEL=OTENKO>おてんこさま</LABEL>「そう、
@@ -536,7 +536,7 @@
 #define STR_0867 0x0867                        // <LABEL=OTENKO></LABEL>彼女(かのじょ)の想いに応えるためにも・・・この戦い…
 #define STR_0869 0x0869                        // <LABEL=OTENKO>おてんこさま</LABEL>「そうか・・・
 #define STR_086D 0x086D                        // <LABEL=OTENKO>おてんこさま</LABEL>「がんばれよ、<NAME>・・・」
-#define STR_086F 0x086F                        // <LABEL=SMITH>スミス</LABEL>「無事、イモ―タルを浄化(じょうか)したようじゃ…
+#define STR_086F 0x086F                        // <LABEL=SMITH>スミス</LABEL>「無事、イモータルを浄化(じょうか)したようじゃ…
 #define STR_0872 0x0872                        // <LABEL=SUMIRE>スミレ</LABEL>「あの・・・
 #define STR_0874 0x0874                        // <LABEL=SUMIRE></LABEL>おじいちゃんをたすけてくれてありがとう!!」
 #define STR_0876 0x0876                        // <LABEL=SMITH>スミス</LABEL>「事情はひまわり娘(むすめ)から聞いた。
@@ -571,8 +571,8 @@
 #define STR_090A 0x090A                        // <LABEL=RINGO2>ヴァンパイア</LABEL>「・・・
 #define STR_090D 0x090D                        // <LABEL=SABATA>サバタ</LABEL>「<NAME>!!
 #define STR_090F 0x090F                        // <LABEL=SABATA></LABEL>くっ、ヴァンパイアの血を受け吸血変異が進行している・…
-#define STR_0915 0x0915                        // <LABEL=SABATA>サバタ</LABEL>「画面右上にあるのが<NAME>のライフゲ―ジ…
-#define STR_0918 0x0918                        // <LABEL=NONE></LABEL><PROC=1>暗黒少年サバタのエナジ―は暗黒物質ダ―ク…
+#define STR_0915 0x0915                        // <LABEL=SABATA>サバタ</LABEL>「画面右上にあるのが<NAME>のライフゲージ…
+#define STR_0918 0x0918                        // <LABEL=NONE></LABEL><PROC=1>暗黒少年サバタのエナジーは暗黒物質ダーク…
 #define STR_091D 0x091D                        // <LABEL=SABATA>サバタ</LABEL>「破壊(はかい)されたくさび・・・
 #define STR_0921 0x0921                        // <LABEL=SABATA></LABEL>フッ、やはり死を超越(ちょうえつ)できるのは不死者、…
 #define STR_0923 0x0923                        // <LABEL=RITA>リタ</LABEL>「<NAME>さま!?」
@@ -601,14 +601,14 @@
 #define STR_SHAIAN_098C 0x098C                 // <LABEL=SHAIAN>シャイアン</LABEL>「信じているぞ、太陽少年<NAME>!!」
 #define STR_DAINN_098E 0x098E                  // <LABEL=DAAIN>黒い影</LABEL>「とうとうここまでたどり着いたね。
 #define STR_099A 0x099A                        // <LABEL=NONE>???</LABEL>「勝手に俺(おれ)の名を語ってもらっては困るな!」
-#define STR_099C 0x099C                        // <LABEL=DAAIN>黒きダ―イン</LABEL>「何・・・!!
+#define STR_099C 0x099C                        // <LABEL=DAAIN>黒きダーイン</LABEL>「何・・・!!
 #define STR_099E 0x099E                        // <LABEL=DAAIN></LABEL>記憶(きおく)が戻(もど)ったのか!?」
-#define STR_09A4 0x09A4                        // <LABEL=DAAIN>黒きダ―イン</LABEL>「クッ、
+#define STR_09A4 0x09A4                        // <LABEL=DAAIN>黒きダーイン</LABEL>「クッ、
 #define STR_DURATHROR_09A7 0x09A7              // <LABEL=DURATHROR>赤毛の少女</LABEL>「黒兄さまもお遊びが過ぎる・・・
 #define STR_DURATHROR_09AC 0x09AC              // <LABEL=DURATHROR></LABEL>捨てられた街、暗黒街。その闇(やみ)が生んだ暗…
-#define STR_DURATHROR_09B5 0x09B5              // <LABEL=DURATHROR>赤きドゥラスロ―ル</LABEL>「・・・光は闇(やみ)を引き…
+#define STR_DURATHROR_09B5 0x09B5              // <LABEL=DURATHROR>赤きドゥラスロール</LABEL>「・・・光は闇(やみ)を引き…
 #define STR_09BA 0x09BA                        // リンゴの声「<NAME>・・・
-#define STR_09BD 0x09BD                        // <LABEL=ZAJI>ザジ</LABEL>「それは・・・暗黒樹のイモ―タル?
+#define STR_09BD 0x09BD                        // <LABEL=ZAJI>ザジ</LABEL>「それは・・・暗黒樹のイモータル?
 #define STR_09C3 0x09C3                        // <ALTER>やる</ALTER>　<ALTER>やらない</ALTER>
 #define STR_09C5 0x09C5                        // <LABEL=ZAJI>ザジ</LABEL>「・・・
 #define STR_09CC 0x09CC                        // <LABEL=ZAJI>ザジ</LABEL>「・・・
@@ -621,35 +621,35 @@
 #define STR_09ED 0x09ED                        // <PROC=2><LOCK=176>太陽の力を取り戻した!!
 #define STR_09F6 0x09F6                        // <LABEL=ZAJI>ザジ</LABEL>「ほんま、びびらせるんやないで・・・」
 #define STR_09F9 0x09F9                        // <LABEL=SUMIRE>スミレ</LABEL>「良かったね、おにいちゃん♪」
-#define STR_09FB 0x09FB                        // <LABEL=KID>キッド</LABEL>「オマエがいないと、この街もつまんね―からな」
+#define STR_09FB 0x09FB                        // <LABEL=KID>キッド</LABEL>「オマエがいないと、この街もつまんねーからな」
 #define STR_09FE 0x09FE                        // <LABEL=RITA>リタ</LABEL>「<NAME>さま!!わたし・・・
 #define STR_0A02 0x0A02                        // <LABEL=SABATA>サバタ</LABEL>「やれやれだな・・・」
 #define STR_0A04 0x0A04                        // <LABEL=RITA>リタ</LABEL>「暗黒樹が消えた今、
 #define STR_0A07 0x0A07                        // <LABEL=RITA></LABEL>見てください。太陽樹さまの芽がもうこんなに・・・
 #define STR_0A09 0x0A09                        // <LABEL=RITA></LABEL>太陽樹さまもお喜びですわ」
-#define STR_0A0B 0x0A0B                        // <LABEL=R_DJUNGO><NAME></LABEL>(ドゥラスロ―ル!?)
+#define STR_0A0B 0x0A0B                        // <LABEL=R_DJUNGO><NAME></LABEL>(ドゥラスロール!?)
 #define STR_BLESSING_EARTH 0x0A0D              // 大地の祝福を得た!!
-#define STR_LEARN_HEALING 0x0A0F               // <PROC=1><LOCK=96>太陽魔法「ヒ―リング」を覚えた!!
+#define STR_LEARN_HEALING 0x0A0F               // <PROC=1><LOCK=96>太陽魔法「ヒーリング」を覚えた!!
 #define STR_0A13 0x0A13                        // <LABEL=RITA>リタ</LABEL>「今はまだ小さいけれど・・・この新しい太陽樹さまと、
 #define STR_0A18 0x0A18                        // <LABEL=SABATA>サバタ</LABEL>「どうだ?
 #define STR_0A1B 0x0A1B                        // <LABEL=ZAJI>ザジ</LABEL>「あかんねん・・・
 #define STR_0A29 0x0A29                        // <LABEL=ZAJI></LABEL>そや、うちにもできることが、やるべきことがあるんや・・・
 #define STR_0A3A 0x0A3A                        // <LABEL=SABATA>サバタ</LABEL>「おい、ひまわり。のどちんこが見えてるぞ?」
-#define STR_0A3D 0x0A3D                        // <LABEL=NONE>ザジ</LABEL>「んにゃ――――――っ!!」
+#define STR_0A3D 0x0A3D                        // <LABEL=NONE>ザジ</LABEL>「んにゃーーーーーーっ!!」
 #define STR_0A3F 0x0A3F                        // <LABEL=RINGO2>リンゴ</LABEL>「<NAME>!?
-#define STR_0A45 0x0A45                        // <LABEL=RINGO2></LABEL>ダ―インはこの奥だ・・・
-#define STR_0A4C 0x0A4C                        // <LABEL=RINGO2>リンゴ</LABEL>「確かに並のイモ―タルに、この封印を破ることは…
-#define STR_0A54 0x0A54                        // <PROC=1>太陽銃レンズ「ア―ス」を取り戻した!
-#define STR_LEARN_EARTH 0x0A56                 // <PROC=2><LOCK=96>月光魔法「エンチャント・ア―ス」を覚えた!!
+#define STR_0A45 0x0A45                        // <LABEL=RINGO2></LABEL>ダーインはこの奥だ・・・
+#define STR_0A4C 0x0A4C                        // <LABEL=RINGO2>リンゴ</LABEL>「確かに並のイモータルに、この封印を破ることは…
+#define STR_0A54 0x0A54                        // <PROC=1>太陽銃レンズ「アース」を取り戻した!
+#define STR_LEARN_EARTH 0x0A56                 // <PROC=2><LOCK=96>月光魔法「エンチャント・アース」を覚えた!!
 #define STR_0A58 0x0A58                        // <LABEL=NONE>???</LABEL>「待て、<NAME>!!そいつは親父ではない!」
 #define STR_0A5A 0x0A5A                        // <LABEL=RINGO2>リンゴ</LABEL><PROC=1><LOCK=25>「遅(おそ)…
-#define STR_TARROT_UNSEAL 0x0A5C               // 3賢者のカ―ドを使った!
+#define STR_TARROT_UNSEAL 0x0A5C               // 3賢者のカードを使った!
 #define STR_TARROT_OPEN 0x0A5E                 // 扉が開いた!!
 #define STR_0A60 0x0A60                        // <LABEL=SABATA>サバタ</LABEL>「行かせるか!!」
 #define STR_0A62 0x0A62                        // <LABEL=NONE>リンゴの声</LABEL>「ありがとう、<NAME>。
 #define STR_0A68 0x0A68                        // <LABEL=RINGO2>リンゴ</LABEL>「遅(おそ)かったな、<NAME>?
 #define STR_0A6B 0x0A6B                        // <LABEL=SABATA>サバタ</LABEL>「いいかげんに本当の姿を現したらどうだ。
-#define STR_0A75 0x0A75                        // <LABEL=RINGO3>黒のダ―イン</LABEL>「イモ―タルの宿敵にしてキミたちの父親、…
+#define STR_0A75 0x0A75                        // <LABEL=RINGO3>黒のダーイン</LABEL>「イモータルの宿敵にしてキミたちの父親、…
 #define STR_0A98 0x0A98                        // <LABEL=PLAYER><NAME></LABEL>(クロ・・・!!)
 #define STR_0A9A 0x0A9A                        // <LABEL=SABATA>サバタ</LABEL>「<NAME>!!」
 #define STR_DVALINN_0A9D 0x0A9D                // <LABEL=DVALINN>青いシルエットの女</LABEL>「サバタには逃(に)げられたか・…
@@ -665,16 +665,16 @@
 #define STR_0AD1 0x0AD1                        // <LABEL=SABATA></LABEL>・・・行き止まりか?
 #define STR_0AD5 0x0AD5                        // <LABEL=SABATA>サバタ</LABEL>「<NAME>、
 #define STR_0ADF 0x0ADF                        // <LABEL=SABATA>サバタ</LABEL>「行くぞ!!」
-#define STR_0AE1 0x0AE1                        // <LABEL=RINGO3>黒きダ―イン</LABEL>「やはりドヴァリンでは足止めがいいところ…
-#define STR_0AE5 0x0AE5                        // <LABEL=RINGO3>黒きダ―イン</LABEL><PROC=1><LOCK=57>「クッ…
-#define STR_0AEA 0x0AEA                        // <LABEL=RINGO3>黒きダ―イン</LABEL>「やはり何も知らなかったか。
+#define STR_0AE1 0x0AE1                        // <LABEL=RINGO3>黒きダーイン</LABEL>「やはりドヴァリンでは足止めがいいところ…
+#define STR_0AE5 0x0AE5                        // <LABEL=RINGO3>黒きダーイン</LABEL><PROC=1><LOCK=57>「クッ…
+#define STR_0AEA 0x0AEA                        // <LABEL=RINGO3>黒きダーイン</LABEL>「やはり何も知らなかったか。
 #define STR_0AFC 0x0AFC                        // <LABEL=SABATA>サバタ</LABEL>「いましめの槍と言ったな?ではこの塔が・・・」
 #define STR_0B0F 0x0B0F                        // <ALTER>同志になる</ALTER>　<ALTER>断る!!</ALTER>
 #define STR_0B11 0x0B11                        // <LABEL=SABATA>サバタ</LABEL>「愚問(ぐもん)だったな!行くぞ、<NAME>…
 #define STR_0B15 0x0B15                        // <LABEL=SABATA>サバタ</LABEL>「バカな!?
-#define STR_0B19 0x0B19                        // <LABEL=RINGO3>黒きダ―イン</LABEL>「ボクが・・・
+#define STR_0B19 0x0B19                        // <LABEL=RINGO3>黒きダーイン</LABEL>「ボクが・・・
 #define STR_0B23 0x0B23                        // <LABEL=SABATA>サバタ</LABEL>「これで塔は・・・いましめの槍(やり)は元通り…
-#define STR_0B28 0x0B28                        // <LABEL=RINGO3>黒きダ―イン</LABEL>「嫌(いや)だ・・・
+#define STR_0B28 0x0B28                        // <LABEL=RINGO3>黒きダーイン</LABEL>「嫌(いや)だ・・・
 #define STR_0B2E 0x0B2E                        // <LABEL=PLAYER><NAME></LABEL>「ボクは生きる・・・
 #define STR_0B34 0x0B34                        // <LABEL=PLAYER></LABEL>そうだよね・・・おとうさん!!」
 #define STR_0B36 0x0B36                        // <LABEL=RINGO2>リンゴ</LABEL>「・・・その通りだ!!
@@ -684,7 +684,7 @@
 #define STR_0B46 0x0B46                        // <LABEL=ZAJI>ザジ</LABEL>「原種の欠片、ヨルムンガンド・・・
 #define STR_0B55 0x0B55                        // <LABEL=ZAJI>ザジ</LABEL>「これは・・・!!まさかヨルムンガンドが!?
 #define STR_0B59 0x0B59                        // <LABEL=ZAJI>ザジ</LABEL>「まさか・・・この子!?」
-#define STR_0B5C 0x0B5C                        // <LABEL=SABATA>サバタ</LABEL>「かつてのダ―インの身体、
+#define STR_0B5C 0x0B5C                        // <LABEL=SABATA>サバタ</LABEL>「かつてのダーインの身体、
 #define STR_0B5F 0x0B5F                        // <LABEL=SABATA>サバタ</LABEL>「終末の獣は目覚めつつある。
 #define STR_0B6A 0x0B6A                        // <LABEL=SABATA></LABEL>体力の回復した今のこいつなら魂の分離(ぶんり)にも耐…
 #define STR_0B6D 0x0B6D                        // <LABEL=OTENKO>おてんこさま</LABEL>「ふう、ようやく実体化できたか・・・
@@ -702,7 +702,7 @@
 #define STR_0BAF 0x0BAF                        // <LABEL=OTENKO>おてんこさま</LABEL>「持ちこたえてくれ、サバタ!!
 #define STR_0BB2 0x0BB2                        // <LABEL=SABATA>サバタ</LABEL>「さあ、行け!太陽少年<NAME>!!」
 #define STR_0BB4 0x0BB4                        // <LABEL=NONE>レディ</LABEL>「闇(やみ)に生まれし者たちよ・・・
-#define STR_0BB7 0x0BB7                        // <LABEL=RITA>リタ</LABEL>「さすがですわ!マスタ―!!」
+#define STR_0BB7 0x0BB7                        // <LABEL=RITA>リタ</LABEL>「さすがですわ!マスター!!」
 #define STR_0BBA 0x0BBA                        // <LABEL=RITA>リタ</LABEL>「今度はわたしが・・・!!」
 #define STR_0BBC 0x0BBC                        // <LABEL=NONE>リタ</LABEL>「ザコはすっこんでな!!」
 #define STR_0BC0 0x0BC0                        // <LABEL=KID>キッド</LABEL>「シャ、シャイアン!!」
@@ -729,17 +729,17 @@
 #define STR_0C08 0x0C08                        // <LABEL=SHADEMAN>???</LABEL>「キキキ・・・
 #define STR_0C19 0x0C19                        // <LABEL=ROCKMAN>ロックマン</LABEL>「<NAME>くん!!
 #define STR_0C1D 0x0C1D                        // <LABEL=ROCKMAN>ロックマン</LABEL>「これで塔を上ることができるね。でも・・…
-#define STR_0C22 0x0C22                        // <LABEL=SHADEMAN>シェ―ドマン</LABEL>「キッキッキッ待ちかねたよ、太陽少年…
+#define STR_0C22 0x0C22                        // <LABEL=SHADEMAN>シェードマン</LABEL>「キッキッキッ待ちかねたよ、太陽少年…
 #define STR_0C28 0x0C28                        // <LABEL=ROCKMAN>ロックマン</LABEL>「何のことだ!?」
 #define STR_0C2E 0x0C2E                        // <LABEL=ROCKMAN>ロックマン</LABEL>「そんなバカな・・・!!」
 #define STR_0C33 0x0C33                        // <LABEL=ROCKMAN>ロックマン</LABEL>「<NAME>くん!!
 #define STR_0C37 0x0C37                        // <LABEL=ROCKMAN>ロックマン</LABEL>「さあ、<NAME>くん、
-#define STR_0C3A 0x0C3A                        // <LABEL=SHADEMAN>シェ―ドマン</LABEL>「ぐぬぉぉぉぉぉぉっ!!
+#define STR_0C3A 0x0C3A                        // <LABEL=SHADEMAN>シェードマン</LABEL>「ぐぬぉぉぉぉぉぉっ!!
 #define STR_0C3E 0x0C3E                        // <LABEL=ROCKMAN>ロックマン</LABEL>「<NAME>くん!!
 #define STR_0C42 0x0C42                        // <LABEL=ROCKMAN>ロックマン</LABEL>「これは!?」
-#define STR_0C44 0x0C44                        // <LABEL=FUTARI><NAME>&ロックマン</LABEL>「いっけ――――――っ!!」
-#define STR_0C46 0x0C46                        // <LABEL=SHADEMAN>シェ―ドマン</LABEL>「何だとっ!!」
-#define STR_0C49 0x0C49                        // <LABEL=SHADEMAN>シェ―ドマン</LABEL>「グォォォォォォォォォッ!!
+#define STR_0C44 0x0C44                        // <LABEL=FUTARI><NAME>&ロックマン</LABEL>「いっけーーーーーーっ!!」
+#define STR_0C46 0x0C46                        // <LABEL=SHADEMAN>シェードマン</LABEL>「何だとっ!!」
+#define STR_0C49 0x0C49                        // <LABEL=SHADEMAN>シェードマン</LABEL>「グォォォォォォォォォッ!!
 #define STR_0C4E 0x0C4E                        // <LABEL=ROCKMAN>ロックマン</LABEL>「じゃあ、ボクは行くね。
 #define STR_0C59 0x0C59                        // <LABEL=PLAYER><NAME></LABEL>「これは・・・
 #define STR_0C5C 0x0C5C                        // ???「ロックマンか・・・
@@ -792,12 +792,12 @@
 #define STR_0D10 0x0D10                        // <LABEL=ZAJI>ザジ</LABEL>「けつの穴の小さいやっちゃなぁ・・・
 #define STR_0D14 0x0D14                        // <LABEL=ZAJI>ザジ</LABEL>「そや、あんたに1つ、魔法教えたるわ
 #define STR_BLESSING_FROST 0x0D17              // 水の祝福を得た!
-#define STR_LEARN_FREEZE 0x0D19                // <PROC=1><LOCK=96>太陽魔法「フリ―ズ」を覚えた!!
-#define STR_0D1E 0x0D1E                        // <LABEL=ZAJI>ザジ</LABEL>「太陽魔法は月光魔法と違(ちご)てエナジ―を使わへん…
+#define STR_LEARN_FREEZE 0x0D19                // <PROC=1><LOCK=96>太陽魔法「フリーズ」を覚えた!!
+#define STR_0D1E 0x0D1E                        // <LABEL=ZAJI>ザジ</LABEL>「太陽魔法は月光魔法と違(ちご)てエナジーを使わへん…
 #define STR_0D26 0x0D26                        // <LABEL=SUMIRE>スミレ</LABEL>「あっ・・・カギ!そのカギでそうこがあくのよ」
 #define STR_0D29 0x0D29                        // 倉庫の扉が開いた!!
-#define STR_0D2B 0x0D2B                        // <LABEL=KID>キッド</LABEL>「来たな、ボ―イ!!
-#define STR_0D2E 0x0D2E                        // <LABEL=KID>キッド</LABEL>「来たな、ボ―イ!!
+#define STR_0D2B 0x0D2B                        // <LABEL=KID>キッド</LABEL>「来たな、ボーイ!!
+#define STR_0D2E 0x0D2E                        // <LABEL=KID>キッド</LABEL>「来たな、ボーイ!!
 #define STR_0D32 0x0D32                        // <LABEL=SHAIAN>シャイアン</LABEL>「無事帰ったか、<NAME>。
 #define STR_0D37 0x0D37                        // <LABEL=SHAIAN>シャイアン</LABEL>「もう大丈夫(だいじょうぶ)なようだな、<…
 #define STR_0D3C 0x0D3C                        // <LABEL=SHAIAN>シャイアン</LABEL>「待っていたぞ。
@@ -814,7 +814,7 @@
 #define STR_0D66 0x0D66                        // <LABEL=OTENKO>おてんこさま</LABEL>「ここが地下最下層・・・何という瘴気(し…
 #define STR_0D6A 0x0D6A                        // <LABEL=OTENKO></LABEL>急ぐぞ、<NAME>!!
 #define STR_0D6F 0x0D6F                        // <LABEL=OTENKO>おてんこさま</LABEL>「ここだ・・・ここが塔の先端(せんたん)…
-#define STR_0D72 0x0D72                        // <LABEL=OTENKO></LABEL>原種の欠片、エタ―ナルであるヨルムンガンドを倒(たお…
+#define STR_0D72 0x0D72                        // <LABEL=OTENKO></LABEL>原種の欠片、エターナルであるヨルムンガンドを倒(たお…
 #define STR_0D79 0x0D79                        // 封印されている。まだ、この本を読むことはできないようだ・・・
 #define STR_0D7B 0x0D7B                        // 追憶の書
 #define STR_0D7D 0x0D7D                        // <ALTER>総合記録</ALTER>　<ALTER>浄化記録</ALTER> <ALTER>通…
@@ -823,7 +823,7 @@
 #define STR_0D88 0x0D88                        // 「浄化記録」倒した敵の数      <VAR=0>体
 #define STR_0D96 0x0D96                        // 「通信販売」売った武器        <VAR=0>個買った武器        <VAR=1>個
 #define STR_0D99 0x0D99                        // 「通信対戦」対戦ポイント      <VAR=0>pt
-#define STR_0D9D 0x0D9D                        // 「クロスオ―バ―バトル」クロスオ―バ―ポイント　　　　　　　<VAR=0>pt
+#define STR_0D9D 0x0D9D                        // 「クロスオーバーバトル」クロスオーバーポイント　　　　　　　<VAR=0>pt
 #define STR_0DA1 0x0DA1                        // 太陽銃ガン・デル・ソルの継承者、太陽少年。太陽機ソル・デ・バイスをも使いこなす。その身にまとうは…
 #define STR_0DBC 0x0DBC                        // 赤<NAME>
 #define STR_0DD8 0x0DD8                        // クモの巣を張る。
@@ -853,15 +853,15 @@
 #define STR_0E33 0x0E33                        // <MOJISE=MOJISE_SYSTEM>   ???   ???   ???
 #define STR_0E36 0x0E36                        // 廃墟(はいきょ)の下、閉ざされた扉の先にあるという財宝を探し出してほしい。
 #define STR_0E39 0x0E39                        // 徒手空拳(としゅくうけん)を極めるには修練あるのみです。
-#define STR_0E3C 0x0E3C                        // 実は私、トラップマスタ―でもあるのよね。
+#define STR_0E3C 0x0E3C                        // 実は私、トラップマスターでもあるのよね。
 #define STR_0E40 0x0E40                        // 森の中、館の奥(おく)に眠(ねむ)るという財宝を探し出してほしい。
 #define STR_0E43 0x0E43                        // ダンジョンの中の仕掛(しか)けを利用したり、同士討ちをさせれば、
 #define STR_0E47 0x0E47                        // おまえの実力がどれほどのものか、試させてもらうぜ?
-#define STR_0E4C 0x0E4C                        // 吸血変異によって復活したモンスタ―どもが、地下墓地からあふれだそうとしている。
-#define STR_0E4F 0x0E4F                        // やるな、ボ―イ!!さすがにまともに戦ったら勝ち目はないぜ。
+#define STR_0E4C 0x0E4C                        // 吸血変異によって復活したモンスターどもが、地下墓地からあふれだそうとしている。
+#define STR_0E4F 0x0E4F                        // やるな、ボーイ!!さすがにまともに戦ったら勝ち目はないぜ。
 #define STR_0E54 0x0E54                        // 地下の墓、その奥(おく)に眠(ねむ)るという財宝を探し出してほしい。
 #define STR_0E58 0x0E58                        // アイテムをうまく利用すれば、
-#define STR_0E5C 0x0E5C                        // さすがだな、ボ―イ!!やっぱオレのかなう相手じゃないぜ。
+#define STR_0E5C 0x0E5C                        // さすがだな、ボーイ!!やっぱオレのかなう相手じゃないぜ。
 #define STR_0E60 0x0E60                        // 過去にて待つ。
 #define STR_0E63 0x0E63                        // この依頼を受けますか? <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>…
 #define STR_0E65 0x0E65                        // 新たな依頼を受ける前に、前回の報酬(ほうしゅう)を受け取ってください。
@@ -872,10 +872,10 @@
 #define STR_LIBRARY_0E72 0x0E72                // 調査記録
 #define STR_LIBRARY_0E74 0x0E74                // ★調査記録★
 #define STR_LIBRARY_0E76 0x0E76                // 封印されている。まだ、この本を読むことはできないようだ・・・
-#define STR_LIBRARY_0E78 0x0E78                // <ALTER>イモ―タルダンジョン</ALTER>  <VAR=0>/6 <ALTER>アンデッ…
-#define STR_LIBRARY_0E7A 0x0E7A                // ★ <ALTER>イモ―タルダンジョン</ALTER>  <VAR=0>/6★ <ALTER>ア…
-#define STR_LIBRARY_0E7C 0x0E7C                // ★ <ALTER>イモ―タルダンジョン</ALTER>  <VAR=0>/6   <ALTER>…
-#define STR_LIBRARY_0E7E 0x0E7E                // <ALTER>イモ―タルダンジョン</ALTER>  <VAR=0>/6★ <ALTER>アンデ…
+#define STR_LIBRARY_0E78 0x0E78                // <ALTER>イモータルダンジョン</ALTER>  <VAR=0>/6 <ALTER>アンデッ…
+#define STR_LIBRARY_0E7A 0x0E7A                // ★ <ALTER>イモータルダンジョン</ALTER>  <VAR=0>/6★ <ALTER>ア…
+#define STR_LIBRARY_0E7C 0x0E7C                // ★ <ALTER>イモータルダンジョン</ALTER>  <VAR=0>/6   <ALTER>…
+#define STR_LIBRARY_0E7E 0x0E7E                // <ALTER>イモータルダンジョン</ALTER>  <VAR=0>/6★ <ALTER>アンデ…
 #define STR_LIBRARY_0E80 0x0E80                // <EXTEND=0><EXTEND=1><EXTEND=2><EXTEND=3><EXTEND=…
 #define STR_LIBRARY_0E83 0x0E83                // <EXTEND=0><EXTEND=1><EXTEND=2><EXTEND=3><EXTEND=…
 #define STR_LIBRARY_0E88 0x0E88                // 大聖堂
@@ -913,18 +913,18 @@
 #define STR_LIBRARY_TITLE 0x0EB2               // <MOJISE=MOJISE_SYSTEM>          称号記録
 #define STR_LIBRARY_TITLE_COMPLETED 0x0EB9     // <MOJISE=MOJISE_SYSTEM>        ★称号記録★
 #define STR_LIBRARY_TITLE_UNLOCKED 0x0EC1      // ???
-#define STR_LIBRARY_TITLE_SWORDMASTER 0x0EC2   // ソ―ドマスタ―
-#define STR_LIBRARY_TITLE_SPEARMASTER 0x0EC3   // スピアマスタ―
-#define STR_LIBRARY_TITLE_HAMMERMASTER 0x0EC4  // ハンマ―マスタ―
-#define STR_LIBRARY_TITLE_FISTMASTER 0x0EC5    // フィストマスタ―
-#define STR_LIBRARY_TITLE_GUNMASTER 0x0EC6     // ガンマスタ―
+#define STR_LIBRARY_TITLE_SWORDMASTER 0x0EC2   // ソードマスター
+#define STR_LIBRARY_TITLE_SPEARMASTER 0x0EC3   // スピアマスター
+#define STR_LIBRARY_TITLE_HAMMERMASTER 0x0EC4  // ハンマーマスター
+#define STR_LIBRARY_TITLE_FISTMASTER 0x0EC5    // フィストマスター
+#define STR_LIBRARY_TITLE_GUNMASTER 0x0EC6     // ガンマスター
 #define STR_LIBRARY_TITLE_ADEPT 0x0EC7         // アデプト
-#define STR_LIBRARY_TITLE_DAYWALKER 0x0EC8     // デイウォ―カ―
-#define STR_LIBRARY_TITLE_ADVENTURER 0x0EC9    // アドベンチャラ―
-#define STR_LIBRARY_TITLE_AGENT 0x0ECA         // エ―ジェント
-#define STR_LIBRARY_TITLE_COLLECTOR 0x0ECB     // コレクタ―
-#define STR_LIBRARY_TITLE_DARKHUNTER 0x0ECC    // ダ―クハンタ―
-#define STR_LIBRARY_TITLE_GRANDMASTER 0x0ECD   // グランドマスタ―
+#define STR_LIBRARY_TITLE_DAYWALKER 0x0EC8     // デイウォーカー
+#define STR_LIBRARY_TITLE_ADVENTURER 0x0EC9    // アドベンチャラー
+#define STR_LIBRARY_TITLE_AGENT 0x0ECA         // エージェント
+#define STR_LIBRARY_TITLE_COLLECTOR 0x0ECB     // コレクター
+#define STR_LIBRARY_TITLE_DARKHUNTER 0x0ECC    // ダークハンター
+#define STR_LIBRARY_TITLE_GRANDMASTER 0x0ECD   // グランドマスター
 #define STR_COFFINSELLER_0ECE 0x0ECE           // <LABEL=COFFIN>棺桶屋</LABEL>「やあ・・・がんばってるみたいだね。
 #define STR_COFFINSELLER_0ED5 0x0ED5           // <LABEL=COFFIN>棺桶屋</LABEL>「いいところに来たね・・・
 #define STR_COFFINSELLER_0ED9 0x0ED9           // <LABEL=COFFIN>棺桶屋</LABEL>「いいところに来たね・・・
@@ -951,17 +951,17 @@
 #define STR_ENNIO_0F21 0x0F21                  // <LABEL=CLOCK></LABEL>ええい、口の減らん小僧(こぞう)じゃな!
 #define STR_ENNIO_0F25 0x0F25                  // <LABEL=CLOCK>エンニオ</LABEL>「ダメじゃ、ダメじゃ!!
 #define STR_KID_0F31 0x0F31                    // <LABEL=KID>キッド</LABEL>「よう、買い物かい?」 <ALTER>買い物</AL…
-#define STR_KID_0F33 0x0F33                    // <LABEL=KID>キッド</LABEL>「サンキュ―!!
-#define STR_KID_0F36 0x0F36                    // <LABEL=KID>キッド</LABEL>「サンキュ―!!
-#define STR_KID_0F3A 0x0F3A                    // <LABEL=KID>キッド</LABEL>「調子はどうだい、ボ―イ?
+#define STR_KID_0F33 0x0F33                    // <LABEL=KID>キッド</LABEL>「サンキュー!!
+#define STR_KID_0F36 0x0F36                    // <LABEL=KID>キッド</LABEL>「サンキュー!!
+#define STR_KID_0F3A 0x0F3A                    // <LABEL=KID>キッド</LABEL>「調子はどうだい、ボーイ?
 #define STR_KID_0F3D 0x0F3D                    // <LABEL=KID>キッド</LABEL>「そういえばここに戻(もど)る途中(とちゅう)、
-#define STR_KID_0F42 0x0F42                    // <LABEL=KID>キッド</LABEL>「ステ―タス異常って知ってるか?
+#define STR_KID_0F42 0x0F42                    // <LABEL=KID>キッド</LABEL>「ステータス異常って知ってるか?
 #define STR_KID_0F4B 0x0F4B                    // <LABEL=KID>キッド</LABEL>「まさかオマエがヴァンパイアになっていたとはな・・・
-#define STR_KID_0F50 0x0F50                    // <LABEL=KID>キッド</LABEL>「ボ―イ、おまえゲ―ムオ―バ―になったことはあるか?
+#define STR_KID_0F50 0x0F50                    // <LABEL=KID>キッド</LABEL>「ボーイ、おまえゲームオーバーになったことはあるか?
 #define STR_KID_0F56 0x0F56                    // <LABEL=KID>キッド</LABEL>「ウチの店であつかっている回復アイテムは、
-#define STR_KID_0F5A 0x0F5A                    // <LABEL=KID>キッド</LABEL>「チョコレ―トはくさりはしないが熱には弱い。
-#define STR_KID_0F5F 0x0F5F                    // <LABEL=KID>キッド</LABEL>「聞いたぜ、ボ―イ。
-#define STR_KID_0F67 0x0F67                    // <LABEL=KID>キッド</LABEL>「防具を装備すれば敵からのダメ―ジを減らすことができ…
+#define STR_KID_0F5A 0x0F5A                    // <LABEL=KID>キッド</LABEL>「チョコレートはくさりはしないが熱には弱い。
+#define STR_KID_0F5F 0x0F5F                    // <LABEL=KID>キッド</LABEL>「聞いたぜ、ボーイ。
+#define STR_KID_0F67 0x0F67                    // <LABEL=KID>キッド</LABEL>「防具を装備すれば敵からのダメージを減らすことができ…
 #define STR_KID_0F6B 0x0F6B                    // <LABEL=KID>キッド</LABEL>「知ってるか?
 #define STR_SHAIAN_0F82 0x0F82                 // <LABEL=SHAIAN>シャイアン</LABEL>「<NAME>、
 #define STR_BLESSING_WIND 0x0F86               // 風の祝福を得た!
@@ -978,11 +978,11 @@
 #define STR_SHAIAN_0FC9 0x0FC9                 // <LABEL=SHAIAN>シャイアン</LABEL>「武器を手に入れるにはいくつかの方法がある…
 #define STR_SHAIAN_0FCD 0x0FCD                 // <LABEL=SHAIAN>シャイアン</LABEL>「・・・
 #define STR_SHAIAN_0FD4 0x0FD4                 // <LABEL=SHAIAN>シャイアン</LABEL>「レディに会ったようだな。
-#define STR_SHAIAN_0FDA 0x0FDA                 // <LABEL=SHAIAN>シャイアン</LABEL>「敵モンスタ―にはそれぞれに得意とする属性…
+#define STR_SHAIAN_0FDA 0x0FDA                 // <LABEL=SHAIAN>シャイアン</LABEL>「敵モンスターにはそれぞれに得意とする属性…
 #define STR_SHAIAN_0FE0 0x0FE0                 // <LABEL=SHAIAN>シャイアン</LABEL>「・・・
-#define STR_SHAIAN_0FEB 0x0FEB                 // <LABEL=SHAIAN>シャイアン</LABEL>「敵モンスタ―の苦手属性を知るには、
+#define STR_SHAIAN_0FEB 0x0FEB                 // <LABEL=SHAIAN>シャイアン</LABEL>「敵モンスターの苦手属性を知るには、
 #define STR_SHAIAN_0FEF 0x0FEF                 // <LABEL=SHAIAN>シャイアン</LABEL>「苦手属性でのエンチャント攻撃ほどではない…
-#define STR_SUMIRE_0FF5 0x0FF5                 // <LABEL=SUMIRE>スミレ</LABEL>「わぁ―・・・
+#define STR_SUMIRE_0FF5 0x0FF5                 // <LABEL=SUMIRE>スミレ</LABEL>「わぁー・・・
 #define STR_SUMIRE_0FF8 0x0FF8                 // <LABEL=SUMIRE>スミレ</LABEL>「あっ・・・」
 #define STR_SUMIRE_0FFA 0x0FFA                 // <LABEL=SUMIRE>スミレ</LABEL>「・・・」
 #define STR_SUMIRE_0FFC 0x0FFC                 // <LABEL=SUMIRE>スミレ</LABEL>「あのね・・・
@@ -993,21 +993,21 @@
 #define STR_SUMIRE_100D 0x100D                 // <ALTER>だいじょうぶ</ALTER>　<ALTER>ダメかも</ALTER>
 #define STR_SUMIRE_100F 0x100F                 // <LABEL=SUMIRE>スミレ</LABEL>「うん・・・
 #define STR_SUMIRE_1015 0x1015                 // <LABEL=SUMIRE>スミレ</LABEL>「くすん・・・
-#define STR_SUMIRE_1019 0x1019                 // <LABEL=SUMIRE>スミレ</LABEL>「わぁ―・・・
+#define STR_SUMIRE_1019 0x1019                 // <LABEL=SUMIRE>スミレ</LABEL>「わぁー・・・
 #define STR_SUMIRE_101C 0x101C                 // <LABEL=SUMIRE>スミレ</LABEL>「あったよ!
 #define STR_SUMIRE_101F 0x101F                 // <LABEL=SUMIRE>スミレ</LABEL>「・・・おにいちゃん!!
-#define STR_SUMIRE_1022 0x1022                 // <LABEL=SUMIRE>スミレ</LABEL>「チョコレ―トおいしいよ。
-#define STR_SUMIRE_1025 0x1025                 // <LABEL=SUMIRE>スミレ</LABEL>「チョコレ―トおいしいよ。
-#define STR_SUMIRE_1028 0x1028                 // <LABEL=SUMIRE>スミレ</LABEL>「チョコレ―トおいしいよ。
+#define STR_SUMIRE_1022 0x1022                 // <LABEL=SUMIRE>スミレ</LABEL>「チョコレートおいしいよ。
+#define STR_SUMIRE_1025 0x1025                 // <LABEL=SUMIRE>スミレ</LABEL>「チョコレートおいしいよ。
+#define STR_SUMIRE_1028 0x1028                 // <LABEL=SUMIRE>スミレ</LABEL>「チョコレートおいしいよ。
 #define STR_SUMIRE_102B 0x102B                 // <LABEL=SUMIRE>スミレ</LABEL>「クロちゃんを・・・おねがい、おにいちゃん!!…
 #define STR_SUMIRE_102D 0x102D                 // <LABEL=SUMIRE>スミレ</LABEL>「あっ・・・カギ!
 #define STR_SUMIRE_1031 0x1031                 // <MOJISE=MOJISE_SYSTEM>倉庫のボックス数が増えた!!
 #define STR_SUMIRE_1033 0x1033                 // <LABEL=SUMIRE>スミレ</LABEL>「そうこつかうの?」 <ALTER>つかう</…
 #define STR_SUMIRE_1036 0x1036                 // <LABEL=SUMIRE>スミレ</LABEL>「おじいちゃん、だいじょうぶかなぁ・・・」
-#define STR_SUMIRE_1038 0x1038                 // <LABEL=SUMIRE>スミレ</LABEL>「チョコレ―トおいしかった?
-#define STR_SUMIRE_103C 0x103C                 // <LABEL=SUMIRE>スミレ</LABEL>「クロちゃんったらねてばっかりなのよ。ぷ―だっ…
+#define STR_SUMIRE_1038 0x1038                 // <LABEL=SUMIRE>スミレ</LABEL>「チョコレートおいしかった?
+#define STR_SUMIRE_103C 0x103C                 // <LABEL=SUMIRE>スミレ</LABEL>「クロちゃんったらねてばっかりなのよ。ぷーだっ…
 #define STR_SUMIRE_103E 0x103E                 // <LABEL=SUMIRE>スミレ</LABEL>「アイテムはいっぱいもったらダメなの。
-#define STR_SUMIRE_1041 0x1041                 // <LABEL=SUMIRE>スミレ</LABEL>「クロちゃんったらまたどっかいっちゃった。ぷ―…
+#define STR_SUMIRE_1041 0x1041                 // <LABEL=SUMIRE>スミレ</LABEL>「クロちゃんったらまたどっかいっちゃった。ぷー…
 #define STR_SUMIRE_1043 0x1043                 // <LABEL=SUMIRE>スミレ</LABEL>「そうこにあずけたアイテムはくさらないの。
 #define STR_SUMIRE_1046 0x1046                 // <LABEL=SUMIRE>スミレ</LABEL>「・・・」
 #define STR_SUMIRE_1048 0x1048                 // <LABEL=SUMIRE>スミレ</LABEL>「クロちゃんのバカ!!
@@ -1034,27 +1034,27 @@
 #define STR_LADY_10AD 0x10AD                   // <LABEL=LADY>レディ</LABEL>「そういえば・・・
 #define STR_LADY_10B2 0x10B2                   // <LABEL=LADY>レディ</LABEL>「そういえば・・・
 #define STR_LADY_10B6 0x10B6                   // <LABEL=LADY>レディ</LABEL>「そういえば・・・
-#define STR_LADY_10B9 0x10B9                   // <LABEL=LADY>レディ</LABEL>「敵モンスタ―を倒(たお)すことで得られる経験値。
-#define STR_LADY_10BD 0x10BD                   // <LABEL=LADY>レディ</LABEL>「魔法カ―ドは使ってる?
+#define STR_LADY_10B9 0x10B9                   // <LABEL=LADY>レディ</LABEL>「敵モンスターを倒(たお)すことで得られる経験値。
+#define STR_LADY_10BD 0x10BD                   // <LABEL=LADY>レディ</LABEL>「魔法カードは使ってる?
 #define STR_LADY_10C2 0x10C2                   // <LABEL=LADY>レディ</LABEL>「スキル(SKILL)って知ってる?
 #define STR_LADY_10CB 0x10CB                   // <LABEL=LADY>レディ</LABEL>「景品交換(けいひんこうかん)では、
 #define STR_LINK_10D1 0x10D1                   // <MOJISE=MOJISE_SYSTEM>現在の対戦ポイントは、<VAR=1>ポイントです。
-#define STR_LINK_10D3 0x10D3                   // <MOJISE=MOJISE_SYSTEM><VAR=2>ポイント使って、魔法カ―ドと交換(こう…
+#define STR_LINK_10D3 0x10D3                   // <MOJISE=MOJISE_SYSTEM><VAR=2>ポイント使って、魔法カードと交換(こう…
 #define STR_LINK_10D5 0x10D5                   // <ALTER>はい</ALTER>　<ALTER>いいえ</ALTER>
-#define STR_LINK_THEFOOL 0x10D9                // 「愚者のカ―ド」を手に入れた!!
-#define STR_LINK_THEEMPEROR 0x10DC             // 「皇帝のカ―ド」を手に入れた!!
-#define STR_LINK_THELOVERS 0x10DF              // 「恋人のカ―ド」を手に入れた!!
-#define STR_LINK_JUSTICE 0x10E2                // 「正義のカ―ド」を手に入れた!!
-#define STR_LINK_THEHANGEDMAN 0x10E5           // 「吊るされた男のカ―ド」を手に入れた!!
-#define STR_LINK_DEATH 0x10E8                  // 「死神のカ―ド」を手に入れた!!
-#define STR_LINK_TEMPERANCE 0x10EB             // 「節制のカ―ド」を手に入れた!!
-#define STR_LINK_THEDEVIL 0x10EE               // 「悪魔のカ―ド」を手に入れた!!
-#define STR_LINK_THETOWER 0x10F1               // 「塔のカ―ド」を手に入れた!!
-#define STR_LINK_THESTAR 0x10F4                // 「星のカ―ド」を手に入れた!!
-#define STR_LINK_THEMOON 0x10F7                // 「月のカ―ド」を手に入れた!!
-#define STR_LINK_THESUN 0x10FA                 // 「太陽のカ―ド」を手に入れた!!
-#define STR_LINK_JUDGEMENT 0x10FD              // 「審判のカ―ド」を手に入れた!!
-#define STR_1100 0x1100                        // <MOJISE=MOJISE_SYSTEM>魔法カ―ドと交換(こうかん)するには、あと<VAR=…
+#define STR_LINK_THEFOOL 0x10D9                // 「愚者のカード」を手に入れた!!
+#define STR_LINK_THEEMPEROR 0x10DC             // 「皇帝のカード」を手に入れた!!
+#define STR_LINK_THELOVERS 0x10DF              // 「恋人のカード」を手に入れた!!
+#define STR_LINK_JUSTICE 0x10E2                // 「正義のカード」を手に入れた!!
+#define STR_LINK_THEHANGEDMAN 0x10E5           // 「吊るされた男のカード」を手に入れた!!
+#define STR_LINK_DEATH 0x10E8                  // 「死神のカード」を手に入れた!!
+#define STR_LINK_TEMPERANCE 0x10EB             // 「節制のカード」を手に入れた!!
+#define STR_LINK_THEDEVIL 0x10EE               // 「悪魔のカード」を手に入れた!!
+#define STR_LINK_THETOWER 0x10F1               // 「塔のカード」を手に入れた!!
+#define STR_LINK_THESTAR 0x10F4                // 「星のカード」を手に入れた!!
+#define STR_LINK_THEMOON 0x10F7                // 「月のカード」を手に入れた!!
+#define STR_LINK_THESUN 0x10FA                 // 「太陽のカード」を手に入れた!!
+#define STR_LINK_JUDGEMENT 0x10FD              // 「審判のカード」を手に入れた!!
+#define STR_1100 0x1100                        // <MOJISE=MOJISE_SYSTEM>魔法カードと交換(こうかん)するには、あと<VAR=…
 #define STR_1102 0x1102                        // <MOJISE=MOJISE_SYSTEM>バッグがいっぱいです。アイテムを減らしてください。
 #define STR_SMITH_PANEL 0x1105                 // <LABEL=SMITH>スミス</LABEL>「パネルの説明は読んだか?」
 #define STR_SMITH_PROMPT 0x1107                // <LABEL=SMITH>スミス</LABEL>「鍛冶(かじ)をするか?」 <ALTER>鍛冶を…
@@ -1089,17 +1089,17 @@
 #define STR_SMITH_11A5 0x11A5                  // <LABEL=SMITH>スミス</LABEL>「リンゴ・・・
 #define STR_SMITH_11A9 0x11A9                  // <LABEL=SMITH>スミス</LABEL>「太陽鍛冶(たいようかじ)においては、
 #define STR_SMITH_11B0 0x11B0                  // <LABEL=SMITH>スミス</LABEL>「<NAME>、
-#define STR_SMITH_11B5 0x11B5                  // <LABEL=SMITH>スミス</LABEL>「おまえが1番得意な武器は、ソ―ドタイプのようじ…
+#define STR_SMITH_11B5 0x11B5                  // <LABEL=SMITH>スミス</LABEL>「おまえが1番得意な武器は、ソードタイプのようじ…
 #define STR_SMITH_11B7 0x11B7                  // <LABEL=SMITH>スミス</LABEL>「おまえが1番得意な武器は、スピアタイプのようじ…
-#define STR_SMITH_11B9 0x11B9                  // <LABEL=SMITH>スミス</LABEL>「おまえが1番得意な武器は、ハンマ―タイプのよう…
-#define STR_SMITH_ASK_LICENSE_SPADE 0x11BB     // <LABEL=SMITH>スミス</LABEL>「ソ―ドタイプの限定解除でいいか?」
+#define STR_SMITH_11B9 0x11B9                  // <LABEL=SMITH>スミス</LABEL>「おまえが1番得意な武器は、ハンマータイプのよう…
+#define STR_SMITH_ASK_LICENSE_SPADE 0x11BB     // <LABEL=SMITH>スミス</LABEL>「ソードタイプの限定解除でいいか?」
 #define STR_SMITH_ASK_LICENSE_DIAMOND 0x11BD   // <LABEL=SMITH>スミス</LABEL>「スピアタイプの限定解除でいいか?」
-#define STR_SMITH_ASK_LICENSE_CLUB 0x11BF      // <LABEL=SMITH>スミス</LABEL>「ハンマ―タイプの限定解除でいいか?」
+#define STR_SMITH_ASK_LICENSE_CLUB 0x11BF      // <LABEL=SMITH>スミス</LABEL>「ハンマータイプの限定解除でいいか?」
 #define STR_SMITH_LICENSE_PROMPT 0x11C1        // <ALTER>いい</ALTER>　<ALTER>ダメ</ALTER>
-#define STR_SMITH_SPADE_CREST 0x11C3           // <LABEL=SMITH>スミス</LABEL>「ではソ―ドタイプ限定解除の証、
+#define STR_SMITH_SPADE_CREST 0x11C3           // <LABEL=SMITH>スミス</LABEL>「ではソードタイプ限定解除の証、
 #define STR_SMITH_DIAMOND_CREST 0x11C6         // <LABEL=SMITH>スミス</LABEL>「ではスピアタイプ限定解除の証、
-#define STR_SMITH_CLUB_CREST 0x11C9            // <LABEL=SMITH>スミス</LABEL>「ではハンマ―タイプ限定解除の証、
-#define STR_GET_SPADE_CREST 0x11CC             // <PROC=1>「スペ―ドの紋章」を手に入れた!!
+#define STR_SMITH_CLUB_CREST 0x11C9            // <LABEL=SMITH>スミス</LABEL>「ではハンマータイプ限定解除の証、
+#define STR_GET_SPADE_CREST 0x11CC             // <PROC=1>「スペードの紋章」を手に入れた!!
 #define STR_GET_DIAMOND_CREST 0x11CE           // <PROC=1>「ダイヤの紋章」を手に入れた!!
 #define STR_GET_CLUB_CREST 0x11D0              // <PROC=1>「クラブの紋章」を手に入れた!!
 #define STR_SMITH_11D2 0x11D2                  // <LABEL=SMITH>スミス</LABEL>「Sランクとは、レベル49以上の武器のことを指す…
@@ -1107,11 +1107,11 @@
 #define STR_SMITH_11D9 0x11D9                  // <LABEL=SMITH>スミス</LABEL>「<NAME>、
 #define STR_SMITH_11DD 0x11DD                  // <LABEL=SMITH>スミス</LABEL>「<NAME>、
 #define STR_SMITH_11E1 0x11E1                  // <LABEL=SMITH>スミス</LABEL>「<NAME>、
-#define STR_SMITH_11E9 0x11E9                  // <ALTER>ソ―ド</ALTER>　<ALTER>スピア</ALTER>　<ALTER>ハンマ…
+#define STR_SMITH_11E9 0x11E9                  // <ALTER>ソード</ALTER>　<ALTER>スピア</ALTER>　<ALTER>ハンマ…
 #define STR_SMITH_11EA 0x11EA                  // <LABEL=SMITH>スミス</LABEL>「できたぞ!!」
-#define STR_GET_ASTRO_SWORD 0x11EC             // <FACEOFF><PROC=1>「アストロソ―ド」を手に入れた!!
+#define STR_GET_ASTRO_SWORD 0x11EC             // <FACEOFF><PROC=1>「アストロソード」を手に入れた!!
 #define STR_GET_ASTRO_SPEAR 0x11EE             // <FACEOFF><PROC=1>「アストロスピア」を手に入れた!!
-#define STR_GET_ASTRO_HAMMER 0x11F0            // <FACEOFF><PROC=1>「アストロハンマ―」を手に入れた!!
+#define STR_GET_ASTRO_HAMMER 0x11F0            // <FACEOFF><PROC=1>「アストロハンマー」を手に入れた!!
 #define STR_SMITH_11F2 0x11F2                  // <LABEL=SMITH>スミス</LABEL>「その武器は鍛冶(かじ)の材料に使うことができな…
 #define STR_RITA_SHOP_WELCOME 0x11F9           // <LABEL=RITA>リタ</LABEL>「いらっしゃいませ!!お買い物ですか?」
 #define STR_RITA_SHOP_TALK 0x11FB              // <ALTER>お買い物</ALTER>　<ALTER>お話</ALTER>
@@ -1153,14 +1153,14 @@
 #define STR_RITA_12AC 0x12AC                   // <LABEL=RITA>リタ</LABEL>「成木になられた太陽樹さまからは、
 #define STR_RITA_12B4 0x12B4                   // <LABEL=RITA>リタ</LABEL>「<NAME>さま!!
 #define STR_RITA_12BB 0x12BB                   // <LABEL=RITA>リタ</LABEL>「<NAME>さま・・・
-#define STR_RITA_12BF 0x12BF                   // <LABEL=RITA>リタ</LABEL><PROC=1>(うわ――――――っ!!何言ってんの…
+#define STR_RITA_12BF 0x12BF                   // <LABEL=RITA>リタ</LABEL><PROC=1>(うわーーーーーーっ!!何言ってんの…
 #define STR_RITA_12C2 0x12C2                   // <LABEL=RITA>リタ</LABEL>「<NAME>さま・・・
 #define STR_RITA_12C6 0x12C6                   // <LABEL=RITA>リタ</LABEL>「<NAME>さま・・・
 #define STR_RITA_12CA 0x12CA                   // <LABEL=RITA>リタ</LABEL>「<NAME>さま・・・
-#define STR_RITA_12CE 0x12CE                   // <LABEL=RITA>リタ</LABEL><PROC=1>(うわ――――――っ!!やっぱり言え…
+#define STR_RITA_12CE 0x12CE                   // <LABEL=RITA>リタ</LABEL><PROC=1>(うわーーーーーーっ!!やっぱり言え…
 #define STR_RITA_12D2 0x12D2                   // <LABEL=RITA>リタ</LABEL>「すごいです!!
-#define STR_GET_HEART_CREST 0x12D8             // <PROC=1>「ハ―トの紋章」を手に入れた!!
-#define STR_RITA_12DA 0x12DA                   // <LABEL=RITA>リタ</LABEL>「そのハ―トの紋章(もんしょう)を受け継いだ者は、
+#define STR_GET_HEART_CREST 0x12D8             // <PROC=1>「ハートの紋章」を手に入れた!!
+#define STR_RITA_12DA 0x12DA                   // <LABEL=RITA>リタ</LABEL>「そのハートの紋章(もんしょう)を受け継いだ者は、
 #define STR_12DE 0x12DE                        // <LABEL=OTENKO>おてんこさま</LABEL>「かつての太陽の街がこのありさまか・・・…
 #define STR_12E0 0x12E0                        // <LABEL=OTENKO>おてんこさま</LABEL>「まずはあの少女から話を聞こう」
 #define STR_12E2 0x12E2                        // <LABEL=OTENKO>おてんこさま</LABEL>「スミス・・・無事でいてくれるといいのだ…
@@ -1192,7 +1192,7 @@
 #define STR_SNAKE_1356 0x1356                  // <LABEL=PEOPLE2>???</LABEL>「終末の獣(けもの)とはな。
 #define STR_SNAKE_135A 0x135A                  // <LABEL=PEOPLE2>???</LABEL>「最後の戦いだ。
 #define STR_SNAKE_1360 0x1360                  // <LABEL=PEOPLE2>???</LABEL>「とうとうやったな、少年!!
-#define STR_GET_THEWORLD 0x1365                // <PROC=1>「世界のカ―ド」を手に入れた!!
+#define STR_GET_THEWORLD 0x1365                // <PROC=1>「世界のカード」を手に入れた!!
 #define STR_SNAKE_1367 0x1367                  // <LABEL=PEOPLE2>???</LABEL>「おまえのおかげで俺(おれ)の商売も順調だ。
 #define STR_SNAKE_136B 0x136B                  // <LABEL=PEOPLE2>???</LABEL>「おう、少年!!
 #define STR_SNAKE_136F 0x136F                  // <LABEL=PEOPLE2>???</LABEL>「おう、少年!!
@@ -1208,18 +1208,18 @@
 #define STR_SNAKE_13A9 0x13A9                  // <LABEL=PEOPLE2>???</LABEL>「いいか、少年。
 #define STR_SNAKE_13B0 0x13B0                  // <LABEL=PEOPLE2>???</LABEL>「ところで少年、
 #define STR_SNAKE_13B7 0x13B7                  // <LABEL=PEOPLE2>???</LABEL>「ところで少年、
-#define STR_SNAKE_TITLE_SWORDMASTER 0x13BB     // <LABEL=PEOPLE2>???</LABEL>「ソ―ドマスタ―は、
-#define STR_SNAKE_TITLE_SPEARMASTER 0x13BE     // <LABEL=PEOPLE2>???</LABEL>「スピアマスタ―は、
-#define STR_SNAKE_TITLE_HAMMERMASTER 0x13C1    // <LABEL=PEOPLE2>???</LABEL>「ハンマ―マスタ―は、
-#define STR_SNAKE_TITLE_FISTMASTER 0x13C4      // <LABEL=PEOPLE2>???</LABEL>「フィストマスタ―は、
-#define STR_SNAKE_TITLE_GUNMASTER 0x13C7       // <LABEL=PEOPLE2>???</LABEL>「ガンマスタ―は、
+#define STR_SNAKE_TITLE_SWORDMASTER 0x13BB     // <LABEL=PEOPLE2>???</LABEL>「ソードマスターは、
+#define STR_SNAKE_TITLE_SPEARMASTER 0x13BE     // <LABEL=PEOPLE2>???</LABEL>「スピアマスターは、
+#define STR_SNAKE_TITLE_HAMMERMASTER 0x13C1    // <LABEL=PEOPLE2>???</LABEL>「ハンマーマスターは、
+#define STR_SNAKE_TITLE_FISTMASTER 0x13C4      // <LABEL=PEOPLE2>???</LABEL>「フィストマスターは、
+#define STR_SNAKE_TITLE_GUNMASTER 0x13C7       // <LABEL=PEOPLE2>???</LABEL>「ガンマスターは、
 #define STR_SNAKE_TITLE_ADEPT 0x13CA           // <LABEL=PEOPLE2>???</LABEL>「アデプト(達人)は、
-#define STR_SNAKE_TITLE_DAYWALKER 0x13CD       // <LABEL=PEOPLE2>???</LABEL>「デイウォ―カ―(日の下を歩く者)は、
-#define STR_SNAKE_TITLE_ADVENTURER 0x13D1      // <LABEL=PEOPLE2>???</LABEL>「アドベンチャラ―(冒険者)は
-#define STR_SNAKE_TITLE_AGENT 0x13D4           // <LABEL=PEOPLE2>???</LABEL>「エ―ジェント(仕事人)は、
-#define STR_SNAKE_TITLE_COLLECTOR 0x13D7       // <LABEL=PEOPLE2>???</LABEL>「コレクタ―(収集家)は、
-#define STR_SNAKE_TITLE_DARKHUNTER 0x13DA      // <LABEL=PEOPLE2>???</LABEL>「ダ―クハンタ―(闇狩師)は、
-#define STR_SNAKE_TITLE_GRANDMASTER 0x13DD     // <LABEL=PEOPLE2>???</LABEL>「グランドマスタ―は、
+#define STR_SNAKE_TITLE_DAYWALKER 0x13CD       // <LABEL=PEOPLE2>???</LABEL>「デイウォーカー(日の下を歩く者)は、
+#define STR_SNAKE_TITLE_ADVENTURER 0x13D1      // <LABEL=PEOPLE2>???</LABEL>「アドベンチャラー(冒険者)は
+#define STR_SNAKE_TITLE_AGENT 0x13D4           // <LABEL=PEOPLE2>???</LABEL>「エージェント(仕事人)は、
+#define STR_SNAKE_TITLE_COLLECTOR 0x13D7       // <LABEL=PEOPLE2>???</LABEL>「コレクター(収集家)は、
+#define STR_SNAKE_TITLE_DARKHUNTER 0x13DA      // <LABEL=PEOPLE2>???</LABEL>「ダークハンター(闇狩師)は、
+#define STR_SNAKE_TITLE_GRANDMASTER 0x13DD     // <LABEL=PEOPLE2>???</LABEL>「グランドマスターは、
 #define STR_SNAKE_13E0 0x13E0                  // <LABEL=PEOPLE2></LABEL>???「いいか、少年。
 #define STR_ZAJI_13E4 0x13E4                   // <LABEL=ZAJI>ザジ</LABEL>「言い忘れとったけど、
 #define STR_ZAJI_13E9 0x13E9                   // <LABEL=ZAJI>ザジ</LABEL>「星読みっちゅうのは、
@@ -1240,7 +1240,7 @@
 #define STR_ZAJI_140C 0x140C                   // <LABEL=ZAJI>ザジ</LABEL>「さよか!!
 #define STR_ZAJI_1411 0x1411                   // <LABEL=ZAJI>ザジ</LABEL>「あんた、呪(のろ)われてるやないの!?
 #define STR_ZAJI_1415 0x1415                   // <LABEL=ZAJI>ザジ</LABEL>「ライフ、大丈夫(だいじょうぶ)なん?
-#define STR_ZAJI_1418 0x1418                   // <LABEL=ZAJI>ザジ</LABEL>「エナジ―、大丈夫(だいじょうぶ)なん?
+#define STR_ZAJI_1418 0x1418                   // <LABEL=ZAJI>ザジ</LABEL>「エナジー、大丈夫(だいじょうぶ)なん?
 #define STR_ZAJI_141B 0x141B                   // <LABEL=ZAJI>ザジ</LABEL>「うちが結界守っとるうちは、
 #define STR_ZAJI_1420 0x1420                   // <LABEL=ZAJI>ザジ</LABEL>「太陽銃(たいようじゅう)のこと、
 #define STR_ZAJI_SABATA_PILEDRIVER 0x1426      // <LABEL=ZAJI>ザジ</LABEL>「あんたのその身体・・・」
@@ -1254,12 +1254,12 @@
 #define STR_1453 0x1453                        // <LABEL=ZAJI>ザジ</LABEL>「闇夜(やみよ)にあり太陽を映す鏡、月・・・
 #define STR_145D 0x145D                        // <LABEL=ZAJI>ザジ</LABEL>「あんたら兄弟は太陽と月、2つの血を受け継(つ)いど…
 #define STR_1465 0x1465                        // <LABEL=ZAJI>ザジ</LABEL>「<NAME>、何やっとんねん!!
-#define STR_1468 0x1468                        // <LABEL=ZAJI>ザジ</LABEL>「何や、<NAME>。そないにカ―ド集めて?
+#define STR_1468 0x1468                        // <LABEL=ZAJI>ザジ</LABEL>「何や、<NAME>。そないにカード集めて?
 #define STR_146C 0x146C                        // <LABEL=ZAJI>ザジ</LABEL>「はぁ・・・<PROC=1><LOCK=60>」
-#define STR_146E 0x146E                        // <LABEL=ZAJI>ザジ</LABEL>「3賢者(けんじゃ)のカ―ド?
-#define STR_1477 0x1477                        // <LABEL=ZAJI>ザジ</LABEL>「魔術師のカ―ドのありかは、
-#define STR_147D 0x147D                        // <LABEL=ZAJI>ザジ</LABEL>「教皇のカ―ドのありかは、
-#define STR_1483 0x1483                        // <LABEL=ZAJI>ザジ</LABEL>「隠者(いんじゃ)のカ―ドのありかは、
+#define STR_146E 0x146E                        // <LABEL=ZAJI>ザジ</LABEL>「3賢者(けんじゃ)のカード?
+#define STR_1477 0x1477                        // <LABEL=ZAJI>ザジ</LABEL>「魔術師のカードのありかは、
+#define STR_147D 0x147D                        // <LABEL=ZAJI>ザジ</LABEL>「教皇のカードのありかは、
+#define STR_1483 0x1483                        // <LABEL=ZAJI>ザジ</LABEL>「隠者(いんじゃ)のカードのありかは、
 #define STR_1489 0x1489                        // <LABEL=ZAJI>ザジ</LABEL>「3賢者(けんじゃ)がすべてそろたみたいやね。
 #define STR_148E 0x148E                        // <LABEL=ZAJI>ザジ</LABEL>「実はな・・・
 #define STR_1491 0x1491                        // <LABEL=ZAJI>ザジ</LABEL>「太陽と月いうんは、
@@ -1269,18 +1269,18 @@
 #define STR_14A4 0x14A4                        // <LABEL=ZAJI>ザジ</LABEL>「ばばあは何も言わんかったけど、
 #define STR_14A7 0x14A7                        // <LABEL=ZAJI>ザジ</LABEL>「なんや<NAME>、びびっとるんか?
 #define STR_14B0 0x14B0                        // <LABEL=ZAJI>ザジ</LABEL>「結局、
-#define STR_ZAJI_CARMILLA 0x14B7               // <LABEL=ZAJI>ザジ</LABEL>「なぁ、<NAME>・・・カ―ミラって誰(だれ)なん…
+#define STR_ZAJI_CARMILLA 0x14B7               // <LABEL=ZAJI>ザジ</LABEL>「なぁ、<NAME>・・・カーミラって誰(だれ)なん…
 #define STR_STAFF_ROLL 0x14BE                  // <WEIGHT>キャスト</WEIGHT>
 #define STR_EPILOGUE 0x14F0                    // 太陽と月、闇に帰りし時
 #define STR_THE_END 0x14F6                     // 続・ボクらの太陽         終
 #define BIN_14F8 0x14F8                        // Binary_14F8
 #define STR_MAP_CODENAME 0x14F9                // no_area
-#define STR_1603 0x1603                        // コンティニュ―しますか?
-#define STR_1605 0x1605                        // 暗黒ロ―ンに<WEIGHT><VAR=0>ソル</WEIGHT>払ってコンティニュ―しますか?
+#define STR_1603 0x1603                        // コンティニューしますか?
+#define STR_1605 0x1605                        // 暗黒ローンに<WEIGHT><VAR=0>ソル</WEIGHT>払ってコンティニューしますか?
 #define EXP_TABLE 0x1607                       // gExpTable
 #define STR_STARTMENU_ITEMS 0x1608             // 大地の実
 #define STR_STARTMENU_WEAPONS 0x170D           //
-#define STR_STARTMENU_ARMORS 0x17B7            // クロスア―マ―
+#define STR_STARTMENU_ARMORS 0x17B7            // クロスアーマー
 #define STR_STARTMENU_MAGICS 0x1802            // エンチャント・ソル
 #define STR_STARTMENU_MAP 0x1826               // 渓谷
 #define STR_STARTMENU_MISC 0x1880              // <NAME>
@@ -1288,7 +1288,7 @@
 #define BIN_189A 0x189A                        // Binary_189A
 #define BIN_189B 0x189B                        // Binary_189B
 #define STR_189C 0x189C                        // 廃墟
-#define STR_18AA 0x18AA                        // ソ―ド
+#define STR_18AA 0x18AA                        // ソード
 #define STR_18B8 0x18B8                        // ★
 #define STR_18B9 0x18B9                        //
 #define STR_18BA 0x18BA                        //
@@ -1299,17 +1299,17 @@
 #define BIN_18F6 0x18F6                        //
 #define STR_18F7 0x18F7                        // 通信中です。相手からの接続を待っていますＢボタンでキャンセルします。
 #define STR_18FF 0x18FF                        // <EXTEND=1>
-#define STR_1918 0x1918                        // スパイダ―
+#define STR_1918 0x1918                        // スパイダー
 #define BIN_1952 0x1952                        //
 #define BIN_1953 0x1953                        //
 #define STR_1954 0x1954                        // 通常:
 #define STR_1956 0x1956                        // ---
 #define STR_1957 0x1957                        // 無属性
 #define STR_195F 0x195F                        //
-#define STR_1999 0x1999                        // ビ―スト
+#define STR_1999 0x1999                        // ビースト
 #define STR_199E 0x199E                        // ???
 #define STR_199F 0x199F                        //
-#define STR_19BA 0x19BA                        // 太陽センサ―に太陽の光が当たらないようにして、<WEIGHT>Ａボタン</WEIGHT>を押して…
+#define STR_19BA 0x19BA                        // 太陽センサーに太陽の光が当たらないようにして、<WEIGHT>Ａボタン</WEIGHT>を押して…
 #define BIN_19BD 0x19BD                        //
 #define STR_19BE 0x19BE                        // お知らせ
 #define STR_1A1C 0x1A1C                        // <NAME>
@@ -1319,26 +1319,26 @@
 #define STR_1A68 0x1A68                        // あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをがぎぐ…
 #define STR_1A6A 0x1A6A                        // あ
 #define STR_1ABF 0x1ABF                        // ア
-#define STR_1B14 0x1B14                        // トリガ―・オブ・ソル
-#define STR_1B24 0x1B24                        // 太陽センサ―とは
+#define STR_1B14 0x1B14                        // トリガー・オブ・ソル
+#define STR_1B24 0x1B24                        // 太陽センサーとは
 #define STR_1B2D 0x1B2D                        // 材料にする武器を2つ選ぶんだ。
 #define STR_1B36 0x1B36                        // 材料を選択(せんたく)すると鍛冶(かじ)が開始される。
 #define BIN_1B44 0x1B44                        //
 #define STR_1B45 0x1B45                        // 誰(だれ)を訪ねますか?
 #define STR_1B47 0x1B47                        // <ALTER><EXTEND=1>僕</ALTER>
-#define STR_1B48 0x1B48                        // ロ―ドに失敗しました。セ―ブデ―タが存在しないか、壊れています。
-#define STR_1B4C 0x1B4C                        // 通信エラ―が発生しました。電源を切ってワイヤレスアダプタを接続しなおしてください。
+#define STR_1B48 0x1B48                        // ロードに失敗しました。セーブデータが存在しないか、壊れています。
+#define STR_1B4C 0x1B4C                        // 通信エラーが発生しました。電源を切ってワイヤレスアダプタを接続しなおしてください。
 #define BIN_1B54 0x1B54                        //
 #define BIN_1B55 0x1B55                        //
-#define STR_1B56 0x1B56                        // 通信ケ―ブルを正しく接続して下さい。
+#define STR_1B56 0x1B56                        // 通信ケーブルを正しく接続して下さい。
 #define STR_1B61 0x1B61                        // 赤ジャンゴ
 #define STR_1B93 0x1B93                        // あり
 #define STR_1BA5 0x1BA5                        // <EXTEND=0>
 #define STR_1BAB 0x1BAB                        // 今回の対戦ポイント
-#define STR_1BB3 0x1BB3                        // きょうもクロスオ―バ―
+#define STR_1BB3 0x1BB3                        // きょうもクロスオーバー
 #define STR_1BBB 0x1BBB                        // ジャンゴ
 #define STR_1BCB 0x1BCB                        // ドバビブベボがぎぐげござじずぜぞだぢづでどばびぶべぼぱぴぷぺぽ　!{QT}　　　&'()　　,-…
-#define STR_1BD0 0x1BD0                        // 通信エラ―が発生しました。電源を切ってワイヤレスアダプタを接続しなおしてください。
+#define STR_1BD0 0x1BD0                        // 通信エラーが発生しました。電源を切ってワイヤレスアダプタを接続しなおしてください。
 #define STR_1BDD 0x1BDD                        // あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをがぎぐ…
 #define STR_1BDE 0x1BDE                        // <EXTEND=0>　<EXTEND=1><EXTEND=2>　<EXTEND=3>
 #define BIN_1BE1 0x1BE1                        //

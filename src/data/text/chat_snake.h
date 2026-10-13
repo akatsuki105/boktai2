@@ -24,10 +24,10 @@ const u8 String_135F[] = _("<PROC=0>\n<END>");
 
 const u8 String_1360[] = _("<LABEL=PEOPLE2>???</LABEL>\n「とうとうやったな、少年!!");
 const u8 String_1361[] = _("すべての称号(しょうごう)を手\nにするとはな・・・");
-const u8 String_1362[] = _("いいだろう。今こそおまえに、\n最後の称号、グランドマスタ―\nをあたえよう!");
+const u8 String_1362[] = _("いいだろう。今こそおまえに、\n最後の称号、グランドマスター\nをあたえよう!");
 const u8 String_1363[] = _("これはその証だ」");
 const u8 String_1364[] = _("<PROC=0>\n<END>");
-const u8 String_1365[] = _("<PROC=1>「世界のカ―ド」\nを手に入れた!!");
+const u8 String_1365[] = _("<PROC=1>「世界のカード」\nを手に入れた!!");
 const u8 String_1366[] = _("<PROC=0>\n<END>");
 const u8 String_1367[] = _("<LABEL=PEOPLE2>???</LABEL>\n「おまえのおかげで俺(おれ)の\n商売も順調だ。");
 const u8 String_1368[] = _("礼と言っては何だが、ブライン\nドボックスの中身もレベルアッ\nプしておいた。");
@@ -53,7 +53,7 @@ const u8 String_1377[] = _("<LABEL=PEOPLE2>???</LABEL>\n「まさか直撃(ち�
 const u8 String_1378[] = _("うぅ、頭が・・・");
 const u8 String_1379[] = _("・・・だが、\nおかげで何か思い出せそうだ。");
 const u8 String_137A[] = _("俺(おれ)の名前は、");
-const u8 String_137B[] = _("リキッド―――ッ!!<LOCK=30>");
+const u8 String_137B[] = _("リキッドーーーッ!!<LOCK=30>");
 const u8 String_137C[] = _("いや、違(ちが)う・・・");
 const u8 String_137D[] = _("フォックスッ!!<LOCK=30>");
 const u8 String_137E[] = _("でもないな・・・");
@@ -71,7 +71,7 @@ const u8 String_1388[] = _("<LABEL=PEOPLE2>???</LABEL>\n「まさか直撃(ち�
 const u8 String_1389[] = _("うぅ、腹が・・・");
 const u8 String_138A[] = _("・・・だが、\nおかげで何か思い出せそうだ。");
 const u8 String_138B[] = _("俺(おれ)の名前は、");
-const u8 String_138C[] = _("リキッド―――ッ!!<LOCK=30>");
+const u8 String_138C[] = _("リキッドーーーッ!!<LOCK=30>");
 const u8 String_138D[] = _("いや、違(ちが)う・・・");
 const u8 String_138E[] = _("フォックスッ!!<LOCK=30>");
 const u8 String_138F[] = _("でもないな・・・");
@@ -105,18 +105,18 @@ const u8 String_13A7[] = _("がんばれよ、少年!!」");
 const u8 String_13A8[] = _("<PROC=0>\n<END>");
 
 const u8 String_13A9[] = _("<LABEL=PEOPLE2>???</LABEL>\n「いいか、少年。");
-const u8 String_13AA[] = _("グ―ルやマミ―のようなアンデ\nッドタイプのモンスタ―や、");
-const u8 String_13AB[] = _("クロロホルルンやゴ―ストのよ\nうなファントムタイプのモンス\nタ―の一部は、太陽の光に弱い");
-const u8 String_13AC[] = _("ゆえに天窓からの光でダメ―ジ\nをあたえることができる。");
+const u8 String_13AA[] = _("グールやマミーのようなアンデ\nッドタイプのモンスターや、");
+const u8 String_13AB[] = _("クロロホルルンやゴーストのよ\nうなファントムタイプのモンス\nターの一部は、太陽の光に弱い");
+const u8 String_13AC[] = _("ゆえに天窓からの光でダメージ\nをあたえることができる。");
 const u8 String_13AD[] = _("だが、太陽のない夜間は注意が\n必要だ。");
 const u8 String_13AE[] = _("昼間は屋内に潜(ひそ)んでいる\nヤツらも、夜になれば屋外にま\nでうろつくようになるからな」");
 const u8 String_13AF[] = _("<PROC=0>\n<END>");
 
 const u8 String_13B0[] = _("<LABEL=PEOPLE2>???</LABEL>\n「ところで少年、");
-const u8 String_13B1[] = _("全身が赤く染まったモンスタ―\nを見たことはあるか?");
-const u8 String_13B2[] = _("それは吸血変異を極めた、\nクリムゾン・モンスタ―だ。");
-const u8 String_13B3[] = _("暗黒物質ダ―クマタ―は、怒(\nいか)りや憎(にく)しみなどの\n負の感情によって、力を増す。");
-const u8 String_13B4[] = _("倒されたモンスタ―たちのうら\nみが、クリムゾン・モンスタ―\nを呼び起こすんだ。");
+const u8 String_13B1[] = _("全身が赤く染まったモンスター\nを見たことはあるか?");
+const u8 String_13B2[] = _("それは吸血変異を極めた、\nクリムゾン・モンスターだ。");
+const u8 String_13B3[] = _("暗黒物質ダークマターは、怒(\nいか)りや憎(にく)しみなどの\n負の感情によって、力を増す。");
+const u8 String_13B4[] = _("倒されたモンスターたちのうら\nみが、クリムゾン・モンスター\nを呼び起こすんだ。");
 const u8 String_13B5[] = _("手強い相手だ。\nなめてかかるなよ?」");
 const u8 String_13B6[] = _("<PROC=0>\n<END>");
 
@@ -125,23 +125,23 @@ const u8 String_13B8[] = _("図書館に行って、称号記録(し\nょうご�
 const u8 String_13B9[] = _("称号というのは、特定の条件を\n満たすことで得られる呼び名の\nことだ」");
 const u8 String_13BA[] = _("<PROC=0>\n<END>");
 
-const u8 String_13BB[] = _("<LABEL=PEOPLE2>???</LABEL>\n「ソ―ドマスタ―は、");
+const u8 String_13BB[] = _("<LABEL=PEOPLE2>???</LABEL>\n「ソードマスターは、");
 const u8 String_13BC[] = _("剣(つるぎ)を極めた者にあたえ\nられる称号(しょうごう)だ」");
 const u8 String_13BD[] = _("<PROC=0>\n<END>");
 
-const u8 String_13BE[] = _("<LABEL=PEOPLE2>???</LABEL>\n「スピアマスタ―は、");
+const u8 String_13BE[] = _("<LABEL=PEOPLE2>???</LABEL>\n「スピアマスターは、");
 const u8 String_13BF[] = _("槍(やり)を極めた者にあたえら\nれる称号(しょうごう)だ」");
 const u8 String_13C0[] = _("<PROC=0>\n<END>");
 
-const u8 String_13C1[] = _("<LABEL=PEOPLE2>???</LABEL>\n「ハンマ―マスタ―は、");
+const u8 String_13C1[] = _("<LABEL=PEOPLE2>???</LABEL>\n「ハンマーマスターは、");
 const u8 String_13C2[] = _("槌(つち)を極めた者にあたえら\nれる称号(しょうごう)だ」");
 const u8 String_13C3[] = _("<PROC=0>\n<END>");
 
-const u8 String_13C4[] = _("<LABEL=PEOPLE2>???</LABEL>\n「フィストマスタ―は、");
+const u8 String_13C4[] = _("<LABEL=PEOPLE2>???</LABEL>\n「フィストマスターは、");
 const u8 String_13C5[] = _("拳(けん)を極めた者にあたえら\nれる称号(しょうごう)だ」");
 const u8 String_13C6[] = _("<PROC=0>\n<END>");
 
-const u8 String_13C7[] = _("<LABEL=PEOPLE2>???</LABEL>\n「ガンマスタ―は、");
+const u8 String_13C7[] = _("<LABEL=PEOPLE2>???</LABEL>\n「ガンマスターは、");
 const u8 String_13C8[] = _("銃(じゅう)を極めた者にあたえ\nられる称号(しょうごう)だ」");
 const u8 String_13C9[] = _("<PROC=0>\n<END>");
 
@@ -149,28 +149,28 @@ const u8 String_13CA[] = _("<LABEL=PEOPLE2>???</LABEL>\n「アデプト(達人)�
 const u8 String_13CB[] = _("戦いを極め、限界まで己を鍛(\nきた)え上げた者にあたえられ\nる称号(しょうごう)だ」");
 const u8 String_13CC[] = _("<PROC=0>\n<END>");
 
-const u8 String_13CD[] = _("<LABEL=PEOPLE2>???</LABEL>\n「デイウォ―カ―(日の下を歩\nく者)は、");
+const u8 String_13CD[] = _("<LABEL=PEOPLE2>???</LABEL>\n「デイウォーカー(日の下を歩\nく者)は、");
 const u8 String_13CE[] = _("終末の獣(けもの)を封印(ふう\nいん)した者にあたえられる称\n号(しょうごう)だ。");
 const u8 String_13CF[] = _("ん?\n終末の獣はもう封印されたのか\n・・・?」");
 const u8 String_13D0[] = _("<PROC=0>\n<END>");
 
-const u8 String_13D1[] = _("<LABEL=PEOPLE2>???</LABEL>\n「アドベンチャラ―(冒険者)は");
+const u8 String_13D1[] = _("<LABEL=PEOPLE2>???</LABEL>\n「アドベンチャラー(冒険者)は");
 const u8 String_13D2[] = _("すべてのダンジョンを踏破(と\nうは)した者にあたえられる称\n号(しょうごう)だ」");
 const u8 String_13D3[] = _("<PROC=0>\n<END>");
 
-const u8 String_13D4[] = _("<LABEL=PEOPLE2>???</LABEL>\n「エ―ジェント(仕事人)は、");
+const u8 String_13D4[] = _("<LABEL=PEOPLE2>???</LABEL>\n「エージェント(仕事人)は、");
 const u8 String_13D5[] = _("すべての依頼(いらい)をやりと\nげた者にあたえられる称号だ」");
 const u8 String_13D6[] = _("<PROC=0>\n<END>");
 
-const u8 String_13D7[] = _("<LABEL=PEOPLE2>???</LABEL>\n「コレクタ―(収集家)は、");
+const u8 String_13D7[] = _("<LABEL=PEOPLE2>???</LABEL>\n「コレクター(収集家)は、");
 const u8 String_13D8[] = _("武器、防具とブロマイドのすべ\nてを手にした者にあたえられる\n称号(しょうごう)だ」");
 const u8 String_13D9[] = _("<PROC=0>\n<END>");
 
-const u8 String_13DA[] = _("<LABEL=PEOPLE2>???</LABEL>\n「ダ―クハンタ―(闇狩師)は、");
-const u8 String_13DB[] = _("すべてのモンスタ―と戦い、勝\n利を収めた者にあたえられる称\n号(しょうごう)だ」");
+const u8 String_13DA[] = _("<LABEL=PEOPLE2>???</LABEL>\n「ダークハンター(闇狩師)は、");
+const u8 String_13DB[] = _("すべてのモンスターと戦い、勝\n利を収めた者にあたえられる称\n号(しょうごう)だ」");
 const u8 String_13DC[] = _("<PROC=0>\n<END>");
 
-const u8 String_13DD[] = _("<LABEL=PEOPLE2>???</LABEL>\n「グランドマスタ―は、");
+const u8 String_13DD[] = _("<LABEL=PEOPLE2>???</LABEL>\n「グランドマスターは、");
 const u8 String_13DE[] = _("すべての称号(しょうごう)を手\nにした者にあたえられる、最後\nにして最高の称号だ」");
 const u8 String_13DF[] = _("<PROC=0>\n<END>");
 

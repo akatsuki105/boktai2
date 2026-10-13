@@ -4,16 +4,16 @@ const u8 String_1303[] = _("<LABEL=PEOPLE3>ルイス</LABEL>\n「おぬしは・
 const u8 String_1304[] = _("<PROC=0>\n<END>");
 
 const u8 String_1305[] = _("<LABEL=PEOPLE3>ルイス</LABEL>\n「おお、おぬしか!!");
-const u8 String_1306[] = _("ここにはモンスタ―どもも入っ\nて来られぬようだの。");
+const u8 String_1306[] = _("ここにはモンスターどもも入っ\nて来られぬようだの。");
 const u8 String_1307[] = _("おかげで今しばらく、命を長ら\nえることができそうじゃ。");
 const u8 String_1308[] = _("おぬしには礼を言うぞ!」");
 const u8 String_1309[] = _("<PROC=0>\n<END>");
 
 const u8 String_130A[] = _("<LABEL=PEOPLE3>ルイス</LABEL>\n「知っとるかの?");
-const u8 String_130B[] = _("メニュ―画面でSTARTボタンを\n押(お)すと、メニュ―の一覧が\n表示されるんじゃ。");
-const u8 String_130C[] = _("✚ボタンで選択(せんたく)し、\nＡボタンで決定すれば、選んだ\nメニュ―を開くことができる。");
-const u8 String_130D[] = _("Ｌ・Ｒボタンでもメニュ―の切\nり換(か)えは可能じゃが、");
-const u8 String_130E[] = _("目的のメニュ―を探したいとき\nには便利じゃぞ」");
+const u8 String_130B[] = _("メニュー画面でSTARTボタンを\n押(お)すと、メニューの一覧が\n表示されるんじゃ。");
+const u8 String_130C[] = _("✚ボタンで選択(せんたく)し、\nＡボタンで決定すれば、選んだ\nメニューを開くことができる。");
+const u8 String_130D[] = _("Ｌ・Ｒボタンでもメニューの切\nり換(か)えは可能じゃが、");
+const u8 String_130E[] = _("目的のメニューを探したいとき\nには便利じゃぞ」");
 const u8 String_130F[] = _("<PROC=0>\n<END>");
 
 const u8 String_1310[] = _("<LABEL=PEOPLE3>ルイス</LABEL>\n「この年じゃ、");
@@ -23,7 +23,7 @@ const u8 String_1313[] = _("生きるということの、意味をな\n・・�
 const u8 String_1314[] = _("<PROC=0>\n<END>");
 
 const u8 String_1315[] = _("<LABEL=PEOPLE3>ルイス</LABEL>\n「知っとるかの?");
-const u8 String_1316[] = _("メニュ―画面でアイテムや武器\n防具の説明が流れているときに\nSELECTボタンを押(お)すと、");
+const u8 String_1316[] = _("メニュー画面でアイテムや武器\n防具の説明が流れているときに\nSELECTボタンを押(お)すと、");
 const u8 String_1317[] = _("説明を早送りすることができる\nんじゃ。読みたい情報を探すの\nに便利じゃぞ」");
 const u8 String_1318[] = _("<PROC=0>\n<END>");
 

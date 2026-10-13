@@ -57,11 +57,10 @@ COMMON_DATA u8 u8_03002c16[0x03002C18 - 0x03002C16] = {};  // todo
 COMMON_DATA u16 u16_03002c18 = 0;                          // 0x03002C18, FUN_0809c040 が 1 を入れる
 COMMON_DATA u8 u8_03002c1a[0x03002C3C - 0x03002C1A] = {};  // todo
 
-COMMON_DATA struct EntityA628* gEntityA628 = NULL;  // 0x03002C3C
-COMMON_DATA struct EntityBA36* gEntityBA36 = NULL;  // 0x03002C40
-
-COMMON_DATA u8 u8_03002c44[0x03002C4C - 0x03002C44] = {};  // todo
-
+COMMON_DATA struct EntityA628* gEntityA628 = NULL;          // 0x03002C3C
+COMMON_DATA struct EntityBA36* gEntityBA36 = NULL;          // 0x03002C40
+COMMON_DATA struct Entity1E98* gEntity1E98 = NULL;          // 0x03002C44
+COMMON_DATA struct Entity3177* gEntity3177 = NULL;          // 0x03002C48
 COMMON_DATA struct Entity8AF6* gEntity8AF6 = NULL;          // 0x03002C4C
 COMMON_DATA struct Entity4063* gEntity4063 = NULL;          // 0x03002C50
 COMMON_DATA struct Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54

@@ -231,10 +231,10 @@ static const DemoMsg2  sMsg_d1_s58_2      = { 0x74E2, CLS_SOUND,  NOWAIT, 0, 3, 
 static const DemoMsg2  sMsg_d1_s59_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 50, 0 } };
 /* -- step 60 -- */
 static const DemoMsg2  sMsg_d1_s60_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 30, 0 } };
-static const DemoMsg0  sMsg_d1_s60_1      = { 0x7901, CLS_ACTOR,  NOWAIT, 0, 4,               0 };
+static const DemoMsg0  sMsg_d1_s60_1      = { TGT_DAIIN, CLS_ACTOR,  NOWAIT, 0, 4,               0 };
 /* -- step 61 -- */
 static const DemoMsg2  sMsg_d1_s61_0      = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT,        1, { 30, 0 } };
-static const DemoMsg0  sMsg_d1_s61_1      = { 0x9386, CLS_BOSS,   WAIT,   0, 7,               0 };
+static const DemoMsg0  sMsg_d1_s61_1      = { TGT_DURATHROR, CLS_BOSS,   WAIT,   0, 7,               0 };
 /* -- step 62 -- */
 static const DemoMsg2  sMsg_d1_s62_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_EXEC_SCRIPT, 1, { 3374, 0 } };
 /* -- step 63 -- */
@@ -556,7 +556,7 @@ static const DemoMsg2  sMsg_d6_s12_1      = { 0xF5EB, CLS_PLAYER, NOWAIT, 0, 28,
 static const DemoMsg2  sMsg_d6_s12_2      = { 0xF5EB, CLS_PLAYER, NOWAIT, 0, 3,               1, { 2, 0 } };
 /* -- step 13 -- */
 static const DemoMsg2  sMsg_d6_s13_0      = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT,        1, { 10, 0 } };
-static const DemoMsg0  sMsg_d6_s13_1      = { 0x2B18, CLS_BOSS,   WAIT,   0, 7,               0 };
+static const DemoMsg0  sMsg_d6_s13_1      = { TGT_DUNEYRR, CLS_BOSS,   WAIT,   0, 7,               0 };
 static const DemoMsg2  sMsg_d6_s13_2      = { 0x74E2, CLS_SOUND,  NOWAIT, 0, 2,               1, { 69, 0 } };
 /* -- step 14 -- */
 static const DemoMsg2  sMsg_d6_s14_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_EXEC_SCRIPT, 1, { -1763, 0 } };
@@ -585,12 +585,12 @@ static const DemoMsg2  sMsg_d7_s4_0       = { 0x4E69, CLS_BUS,    WAIT,   0, BUS
 static const DemoMsg0  sMsg_d7_s5_0       = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT_EXT,    0 };
 /* -- step 6 -- */
 static const DemoMsg2  sMsg_d7_s6_0       = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 80, 0 } };
-static const DemoMsg2  sMsg_d7_s6_1       = { 0x6740, CLS_ACTOR,  NOWAIT, 3, 24,              1, { 5, 0 } };
+static const DemoMsg2  sMsg_d7_s6_1       = { TGT_SMITH, CLS_ACTOR,  NOWAIT, 3, 24,              1, { 5, 0 } };
 static const DemoMsg2  sMsg_d7_s6_2       = { 0x51E2, CLS_ACTOR,  NOWAIT, 3, 2,               1, { 5, 0 } };
 static const DemoMsg2  sMsg_d7_s6_3       = { 0x74E2, CLS_SOUND,  NOWAIT, 3, 0,               1, { 602, 0 } };
 /* -- step 7 -- */
 static const DemoMsg2  sMsg_d7_s7_0       = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 45, 0 } };
-static const DemoMsg2  sMsg_d7_s7_1       = { 0x6740, CLS_ACTOR,  NOWAIT, 0, 10,              1, { 0, 0 } };
+static const DemoMsg2  sMsg_d7_s7_1       = { TGT_SMITH, CLS_ACTOR,  NOWAIT, 0, 10,              1, { 0, 0 } };
 /* -- step 8 -- */
 static const DemoMsg2  sMsg_d7_s8_0       = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_EXEC_SCRIPT, 1, { 12375, 0 } };
 /* -- step 9 -- */
@@ -616,7 +616,7 @@ static const DemoMsg2  sMsg_d7_s17_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS
 static const DemoMsg0  sMsg_d7_s18_0      = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT_EXT,    0 };
 /* -- step 19 -- */
 static const DemoMsg2  sMsg_d7_s19_0      = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT,        1, { 10, 0 } };
-static const DemoMsg2  sMsg_d7_s19_1      = { 0x6740, CLS_ACTOR,  NOWAIT, 3, 2,               1, { 1, 0 } };
+static const DemoMsg2  sMsg_d7_s19_1      = { TGT_SMITH, CLS_ACTOR,  NOWAIT, 3, 2,               1, { 1, 0 } };
 static const DemoMsg2  sMsg_d7_s19_2      = { 0x51E2, CLS_ACTOR,  NOWAIT, 3, 2,               1, { 1, 0 } };
 static const DemoMsg4  sMsg_d7_s19_3      = { 0x9CFE, CLS_ACTOR,  NOWAIT, 0, 3,               3, { 640, 256, 1024, 0 } };
 static const DemoMsg4  sMsg_d7_s19_4      = { 0xF5EB, CLS_PLAYER, NOWAIT, 0, 6,               3, { 896, 256, 1024, 0 } };
@@ -638,7 +638,7 @@ static const DemoMsg2  sMsg_d7_s25_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS
 static const DemoMsg0  sMsg_d7_s26_0      = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT_EXT,    0 };
 /* -- step 27 -- */
 static const DemoMsg2  sMsg_d7_s27_0      = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT,        1, { 10, 0 } };
-static const DemoMsg2  sMsg_d7_s27_1      = { 0x6740, CLS_ACTOR,  NOWAIT, 3, 2,               1, { 7, 0 } };
+static const DemoMsg2  sMsg_d7_s27_1      = { TGT_SMITH, CLS_ACTOR,  NOWAIT, 3, 2,               1, { 7, 0 } };
 static const DemoMsg2  sMsg_d7_s27_2      = { 0x51E2, CLS_ACTOR,  WAIT,   3, 2,               1, { 5, 0 } };
 static const DemoMsg2  sMsg_d7_s27_3      = { 0xF5EB, CLS_PLAYER, NOWAIT, 3, 3,               1, { 0, 0 } };
 /* -- step 28 -- */
@@ -654,7 +654,7 @@ static const DemoMsg2  sMsg_d7_s32_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS
 static const DemoMsg2  sMsg_d7_s32_1      = { 0x74E2, CLS_SOUND,  NOWAIT, 3, 0,               1, { 800, 0 } };
 /* -- step 33 -- */
 static const DemoMsg2  sMsg_d7_s33_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 5, 0 } };
-static const DemoMsg2  sMsg_d7_s33_1      = { 0x6740, CLS_ACTOR,  NOWAIT, 3, 2,               1, { 5, 0 } };
+static const DemoMsg2  sMsg_d7_s33_1      = { TGT_SMITH, CLS_ACTOR,  NOWAIT, 3, 2,               1, { 5, 0 } };
 static const DemoMsg2  sMsg_d7_s33_2      = { 0xF5EB, CLS_PLAYER, NOWAIT, 3, 3,               1, { 1, 0 } };
 /* -- step 34 -- */
 static const DemoMsg2  sMsg_d7_s34_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_EXEC_SCRIPT, 1, { 12375, 0 } };
@@ -668,12 +668,12 @@ static const DemoMsg2  sMsg_d7_s37_0      = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS
 static const DemoMsg2  sMsg_d7_s37_1      = { 0xF5EB, CLS_PLAYER, WAIT,   0, 3,               1, { 7, 0 } };
 /* -- step 38 -- */
 static const DemoMsg2  sMsg_d7_s38_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 45, 0 } };
-static const DemoMsg4  sMsg_d7_s38_1      = { 0x6740, CLS_ACTOR,  NOWAIT, 0, 3,               3, { 896, 256, 1792, 0 } };
+static const DemoMsg4  sMsg_d7_s38_1      = { TGT_SMITH, CLS_ACTOR,  NOWAIT, 0, 3,               3, { 896, 256, 1792, 0 } };
 /* -- step 39 -- */
 static const DemoMsg4  sMsg_d7_s39_0      = { 0x51E2, CLS_ACTOR,  WAIT,   0, 3,               3, { 896, 256, 1664, 0 } };
 static const DemoMsg2  sMsg_d7_s39_1      = { 0x74E2, CLS_SOUND,  NOWAIT, 0, 4,               1, { 12, 0 } };
 /* -- step 40 -- */
-static const DemoMsg0  sMsg_d7_s40_0      = { 0x6740, CLS_ACTOR,  NOWAIT, 0, 0,               0 };
+static const DemoMsg0  sMsg_d7_s40_0      = { TGT_SMITH, CLS_ACTOR,  NOWAIT, 0, 0,               0 };
 static const DemoMsg4  sMsg_d7_s40_1      = { 0x51E2, CLS_ACTOR,  WAIT,   0, 3,               3, { 896, 256, 1792, 0 } };
 /* -- step 41 -- */
 static const DemoMsg0  sMsg_d7_s41_0      = { 0x51E2, CLS_ACTOR,  NOWAIT, 0, 0,               0 };
@@ -1028,14 +1028,14 @@ static const DemoMsg2  sMsg_d14_s12_0     = { 0x4E69, CLS_BUS,    WAIT,   0, BUS
 static const DemoMsg4  sMsg_d14_s12_1     = { 0x9CFE, CLS_ACTOR,  NOWAIT, 0, 3,               3, { 1728, 256, 1880, 0 } };
 /* -- step 13 -- */
 static const DemoMsg2  sMsg_d14_s13_0     = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 20, 0 } };
-static const DemoMsg0  sMsg_d14_s13_1     = { 0x7901, CLS_ACTOR,  NOWAIT, 0, 4,               0 };
+static const DemoMsg0  sMsg_d14_s13_1     = { TGT_DAIIN, CLS_ACTOR,  NOWAIT, 0, 4,               0 };
 /* -- step 14 -- */
 static const DemoMsg2  sMsg_d14_s14_0     = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_EXEC_SCRIPT, 1, { 14069, 0 } };
 /* -- step 15 -- */
 static const DemoMsg0  sMsg_d14_s15_0     = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT_EXT,    0 };
 /* -- step 16 -- */
 static const DemoMsg2  sMsg_d14_s16_0     = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 20, 0 } };
-static const DemoMsg0  sMsg_d14_s16_1     = { 0x7901, CLS_ACTOR,  NOWAIT, 0, 32,              0 };
+static const DemoMsg0  sMsg_d14_s16_1     = { TGT_DAIIN, CLS_ACTOR,  NOWAIT, 0, 32,              0 };
 static const DemoMsg2  sMsg_d14_s16_2     = { 0x74E2, CLS_SOUND,  NOWAIT, 0, 0,               1, { 542, 0 } };
 /* -- step 17 -- */
 static const DemoMsg2  sMsg_d14_s17_0     = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 80, 0 } };
@@ -1474,7 +1474,7 @@ static const DemoMsg0  sMsg_d21_s31_1     = { 0x8E9F, CLS_ACTOR,  WAIT,   0, 0, 
 /* -- step 0 -- */
 static const DemoMsg4  sMsg_d22_s0_0      = { 0xF5EB, CLS_PLAYER, WAIT,   0, 6,               3, { 896, 256, 4992, 0 } };
 /* -- step 1 -- */
-static const DemoMsg0  sMsg_d22_s1_0      = { 0x7901, CLS_ACTOR,  WAIT,   0, 4,               0 };
+static const DemoMsg0  sMsg_d22_s1_0      = { TGT_DAIIN, CLS_ACTOR,  WAIT,   0, 4,               0 };
 static const DemoMsg2  sMsg_d22_s1_1      = { 0xF5EB, CLS_PLAYER, NOWAIT, 0, 3,               1, { 1, 0 } };
 static const DemoMsg4  sMsg_d22_s1_2      = { 0xD23E, CLS_CAMERA, NOWAIT, 0, 2,               4, { 1066, 256, 4802, 50 } };
 /* -- step 2 -- */
@@ -1492,7 +1492,7 @@ static const DemoMsg2  sMsg_d22_s6_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS
 static const DemoMsg0  sMsg_d22_s7_0      = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT_EXT,    0 };
 /* -- step 8 -- */
 static const DemoMsg2  sMsg_d22_s8_0      = { 0xF5EB, CLS_PLAYER, WAIT,   0, 28,              1, { 0, 0 } };
-static const DemoMsg2  sMsg_d22_s8_1      = { 0x7901, CLS_ACTOR,  NOWAIT, 0, 10,              1, { 0, 0 } };
+static const DemoMsg2  sMsg_d22_s8_1      = { TGT_DAIIN, CLS_ACTOR,  NOWAIT, 0, 10,              1, { 0, 0 } };
 /* -- step 9 -- */
 static const DemoMsg2  sMsg_d22_s9_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 70, 0 } };
 static const DemoMsg8  sMsg_d22_s9_1      = { 0xE534, CLS_ETC,    NOWAIT, 8, 1,               8, { 1152, 256, 4480, 20, 1800, 256, 0, 255 } };
@@ -1513,7 +1513,7 @@ static const DemoMsg8  sMsg_d22_s15_0     = { 0xE534, CLS_ETC,    WAIT,   8, 1, 
 static const DemoMsg2  sMsg_d22_s15_1     = { 0x74E2, CLS_SOUND,  NOWAIT, 3, 0,               1, { 234, 0 } };
 /* -- step 16 -- */
 static const DemoMsg2  sMsg_d22_s16_0     = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 10, 0 } };
-static const DemoMsg0  sMsg_d22_s16_1     = { 0x7901, CLS_ACTOR,  NOWAIT, 0, 30,              0 };
+static const DemoMsg0  sMsg_d22_s16_1     = { TGT_DAIIN, CLS_ACTOR,  NOWAIT, 0, 30,              0 };
 /* -- step 17 -- */
 static const DemoMsg2  sMsg_d22_s17_0     = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 2, 0 } };
 static const DemoMsg2  sMsg_d22_s17_1     = { 0x74E2, CLS_SOUND,  NOWAIT, 3, 0,               1, { 781, 0 } };
@@ -1524,7 +1524,7 @@ static const DemoMsg0  sMsg_d22_s19_0     = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS
 /* -- step 20 -- */
 static const DemoMsg2  sMsg_d22_s20_0     = { 0xE534, CLS_ETC,    WAIT,   2, 2,               2, { 30977, 5 } };
 /* -- step 21 -- */
-static const DemoMsg4  sMsg_d22_s21_0     = { 0x7901, CLS_ACTOR,  WAIT,   0, 31,              3, { 896, 256, 4480, 0 } };
+static const DemoMsg4  sMsg_d22_s21_0     = { TGT_DAIIN, CLS_ACTOR,  WAIT,   0, 31,              3, { 896, 256, 4480, 0 } };
 static const DemoMsg2  sMsg_d22_s21_1     = { 0x74E2, CLS_SOUND,  NOWAIT, 3, 0,               1, { 814, 0 } };
 /* -- step 22 -- */
 static const DemoMsg2  sMsg_d22_s22_0     = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_WAIT,        1, { 30, 0 } };
@@ -1548,7 +1548,7 @@ static const DemoMsg2  sMsg_d23_s2_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS
 /* -- step 3 -- */
 static const DemoMsg0  sMsg_d23_s3_0      = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT_EXT,    0 };
 /* -- step 4 -- */
-static const DemoMsg2  sMsg_d23_s4_0      = { 0x9386, CLS_BOSS,   WAIT,   0, 5,               1, { 5, 0 } };
+static const DemoMsg2  sMsg_d23_s4_0      = { TGT_DURATHROR, CLS_BOSS,   WAIT,   0, 5,               1, { 5, 0 } };
 /* -- step 5 -- */
 static const DemoMsg2  sMsg_d23_s5_0      = { 0x4E69, CLS_BUS,    WAIT,   0, BUS_EXEC_SCRIPT, 1, { 15357, 0 } };
 /* -- step 6 -- */
@@ -1567,7 +1567,7 @@ static const DemoMsg10 sMsg_d23_s9_1      = { 0x730A, CLS_FADE,   NOWAIT, 9, 2, 
 /* -- step 10 -- */
 static const DemoMsg0  sMsg_d23_s10_0     = { 0x730A, CLS_FADE,   NOWAIT, 9, 6,               0 };
 static const DemoMsg4  sMsg_d23_s10_1     = { 0xD23E, CLS_CAMERA, WAIT,   0, 2,               4, { 5568, 256, 1280, 60 } };
-static const DemoMsg4  sMsg_d23_s10_2     = { 0x9386, CLS_BOSS,   NOWAIT, 0, 1,               3, { 5504, 256, 896, 0 } };
+static const DemoMsg4  sMsg_d23_s10_2     = { TGT_DURATHROR, CLS_BOSS,   NOWAIT, 0, 1,               3, { 5504, 256, 896, 0 } };
 static const DemoMsg4  sMsg_d23_s10_3     = { 0xF5EB, CLS_PLAYER, NOWAIT, 0, 1,               3, { 5504, 256, 1408, 0 } };
 static const DemoMsg2  sMsg_d23_s10_4     = { 0x74E2, CLS_SOUND,  NOWAIT, 0, 9,               1, { 5, 0 } };
 /* -- step 11 -- */
@@ -1579,7 +1579,7 @@ static const DemoMsg2  sMsg_d23_s12_0     = { 0x4E69, CLS_BUS,    WAIT,   0, BUS
 /* -- step 13 -- */
 static const DemoMsg0  sMsg_d23_s13_0     = { 0x4E69, CLS_BUS,    NOWAIT, 0, BUS_WAIT_EXT,    0 };
 /* -- step 14 -- */
-static const DemoMsg0  sMsg_d23_s14_0     = { 0x9386, CLS_BOSS,   WAIT,   0, 22,              0 };
+static const DemoMsg0  sMsg_d23_s14_0     = { TGT_DURATHROR, CLS_BOSS,   WAIT,   0, 22,              0 };
 static const DemoMsg2  sMsg_d23_s14_1     = { 0x74E2, CLS_SOUND,  NOWAIT, 0, 4,               1, { 4, 0 } };
 static const DemoMsg2  sMsg_d23_s14_2     = { 0x74E2, CLS_SOUND,  NOWAIT, 3, 0,               1, { 383, 0 } };
 /* -- step 15 -- */
