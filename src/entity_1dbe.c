@@ -9,7 +9,6 @@ struct Entity1DBEElem;
 typedef void(Entity1DBEElemFunc)(struct Entity1DBEElem* elem);
 
 // 太陽エネルギーで state が入れ替わる設置物, 1体の Entity1DBE が最大8個を抱える
-// 多分、センサー床 (太陽ゲージが1以上の時に赤く光って、踏むとブザーが鳴って敵に感知される)
 typedef struct Entity1DBEElem {
   AuxSprite sprite;                    // 0x000, metaspriteIdx が見た目の段階 (state 0 は 0〜2, state 1 は 3〜5, state 2 は 6〜8)
   AuxSpriteGfx gfx;                    // 0x02C, SPRITE_TRAP_FLOOR

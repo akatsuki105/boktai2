@@ -44,7 +44,7 @@
 	movs r0, #1
 	movs r1, #0
 	adds r3, r7, #0
-	bl FUN_080a6180
+	bl EntityCF58_CreateWithCallback
 	b _080C0230
 	.align 2, 0
 _080C0218: .4byte 0x030046A0
@@ -55,7 +55,7 @@ _080C0224:
 	movs r0, #1
 	movs r1, #0
 	adds r3, r7, #0
-	bl FUN_080a6180
+	bl EntityCF58_CreateWithCallback
 _080C0230:
 	ldr r1, _080C0244 @ =FUN_080c01a8
 	adds r0, r7, #0

@@ -39,7 +39,7 @@ typedef struct {
   MainSpriteGfx gfx[7];          // 0x0068, Entity5645Entry.unk_08 が 2 の要素だけ
   Entity5645Elem elems[5];       // 0x0148
   u8 unk_8dc[0x17DC - 0x8DC];    // 0x08DC, この family が触らない領域, 残り63関数の担当
-  AuxAnimFile* animFiles[4];     // 0x17DC, ANIM_871C / ANIM_5BB7 / ANIM_62C7 / ANIM_6830
+  AuxAnimFile* animFiles[4];     // 0x17DC, ANIM_871C / ANIM_BAT / ANIM_BEE / ANIM_6830
   AuxSpriteGfx auxGfx1;          // 0x17EC, SPRITE_EFF_1C1B, plttID に 0x7584 を入れ、パレットを pltt に向ける
   rgb555 pltt[16];               // 0x1808, _Init が全部 0x5294 で埋める
   MainSpriteGfx mainGfx;         // 0x1828, SPRITE_UI_START_MENU

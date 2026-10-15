@@ -932,7 +932,7 @@ _080366E4:
 	ldr r5, _08036744 @ =0x000008BA
 	adds r0, r7, r5
 	ldrh r0, [r0]
-	bl FUN_0805a31c
+	bl Entity0805a31c_Create
 	ldr r6, _08036748 @ =0x0000104C
 	adds r1, r7, r6
 	str r0, [r1]
@@ -945,7 +945,7 @@ _080366E4:
 	lsls r2, r2, #4
 	adds r1, r7, r2
 	ldrh r1, [r1]
-	bl FUN_0805b068
+	bl Entity0805b068_Create
 	ldr r3, _08036750 @ =0x00001050
 	adds r1, r7, r3
 	str r0, [r1]
@@ -954,7 +954,7 @@ _080366E4:
 	ldr r4, _08036754 @ =0x0000016B
 	adds r0, r7, r4
 	ldrb r0, [r0]
-	bl FUN_0805d364
+	bl Entity0805d364_Create
 	ldr r5, _08036758 @ =0x00001058
 	adds r1, r7, r5
 	str r0, [r1]
@@ -965,7 +965,7 @@ _08036728:
 	lsls r6, r6, #4
 	adds r0, r7, r6
 	ldr r0, [r0]
-	bl FUN_0805b790
+	bl Entity0805b790_Create
 	ldr r2, _0803675C @ =0x00001054
 	adds r1, r7, r2
 	str r0, [r1]

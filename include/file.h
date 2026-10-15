@@ -5,18 +5,17 @@
 #include "types.h"
 
 // directory id
-#define DIR_OBJPLTT 0x9B1B
-#define DIR_BGPLTT 0x92B3             // 0x92B3, BOKHASH("arr")?
+#define DIR_OBJPLTT 0x9B1B            // 0x9B1B
+#define DIR_BGPLTT BOKHASH("arr")     // 0x92B3, 背景マップファイルの名前が、 `pile_driver_night_col_arr`のように `_col_arr` で終わる
 #define DIR_ANIMATION BOKHASH("anm")  // 0x922E, anim -> anm
 #define DIR_FONT BOKHASH("fnt")       // 0xA635, font -> fnt
-#define DIR_SCRIPT 0xA8D9
-#define DIR_AUX_SPRITE 0x98F5
-#define DIR_COLLISION_MAP 0xAE6C
-#define DIR_TILE_MAP BOKHASH("map")  // 0xC091
-#define DIR_MAIN_SPRITE 0xCB05       // 0xCB05, BOKHASH("boss")?
-#define DIR_TILESET BOKHASH("ptn")   // 0xCEEF, pattern -> ptn
+#define DIR_SCRIPT 0xA8D9             // 0xA8D9
+#define DIR_AUX_SPRITE 0x98F5         // 0x98F5, BOKHASH("cdt")?, Chara DaTa で意味的には矛盾しない
+#define DIR_COLLISION_MAP 0xAE6C      // 0xAE6C, BOKHASH("hpk")?
+#define DIR_TILE_MAP BOKHASH("map")   // 0xC091
+#define DIR_MAIN_SPRITE 0xCB05        // 0xCB05, BOKHASH("boss")?, BOKHASH("oud")?
+#define DIR_TILESET BOKHASH("ptn")    // 0xCEEF, tile PaTterN
 #define DIR_PARTICLE 0xCEAA
-#define DIR_NAV_MESH 0xF63B
 
 typedef u16 FileID;
 

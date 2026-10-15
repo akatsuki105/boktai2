@@ -266,14 +266,14 @@ NAKED s32 FUN_0823d03c(void) { INCFUNC("asm/func/FUN_0823d03c.inc"); }
 
 NAKED s32 FUN_0823d0e8(void) { INCFUNC("asm/func/FUN_0823d0e8.inc"); }
 
-// 0xEDE2, 指定した BG を隠す
+// 0xEDE2, HashName("BG非表示"), 指定した BG を隠す
 void FUN_0823d1d8(void) {
   u16 mask = DISPCNT_BG0_ON << (u16)VM_GetValue();
 
   gStagedDISPCNT &= ~mask;
 }
 
-// 0x1500, 指定した BG を表示する
+// 0x1500, HashName("BG表示"), 指定した BG を表示する
 void FUN_0823d1fc(void) {
   u16 mask = DISPCNT_BG0_ON << (u16)VM_GetValue();
 

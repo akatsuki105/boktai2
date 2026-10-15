@@ -252,7 +252,7 @@ _0806DBF0:
 	bl PlaySound_082406e0
 	adds r0, r5, #0
 	adds r0, #0x2c
-	bl FUN_080acd98
+	bl Entity080acd4c_Spawn
 _0806DC06:
 	ldrh r0, [r4]
 	adds r0, #1

@@ -2823,7 +2823,7 @@ _08024800: .4byte 0x00000564
 FUN_08024804: @ 0x08024804
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_08009154
+	bl Entity5DA5_AreAllLit
 	cmp r0, #0
 	bne _08024814
 	movs r0, #0
@@ -2857,7 +2857,7 @@ FUN_08024834: @ 0x08024834
 	sub sp, #8
 	adds r7, r0, #0
 	adds r4, r7, #0
-	bl FUN_08009154
+	bl Entity5DA5_AreAllLit
 	adds r2, r0, #0
 	cmp r2, #0
 	bne _08024850
@@ -6525,7 +6525,7 @@ FUN_08026334: @ 0x08026334
 	adds r0, r5, #0
 	movs r3, #9
 	bl Boss_PlayAnim
-	bl FUN_08009154
+	bl Entity5DA5_AreAllLit
 	cmp r0, #0
 	beq _080263BA
 	movs r4, #0
@@ -6680,7 +6680,7 @@ _0802648A:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #1
-	bl FUN_08009064
+	bl Entity5DA5_SetState
 _080264AC:
 	adds r4, #1
 	cmp r4, #3
@@ -7174,7 +7174,7 @@ _08026862:
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #1
-	bl FUN_08009064
+	bl Entity5DA5_SetState
 _08026884:
 	adds r4, #1
 	cmp r4, #3
@@ -7208,7 +7208,7 @@ _08026884:
 	adds r0, r5, #0
 	movs r3, #9
 	bl Boss_PlayAnim
-	bl FUN_08009154
+	bl Entity5DA5_AreAllLit
 	cmp r0, #0
 	beq _08026956
 	movs r4, #0
@@ -8151,7 +8151,7 @@ _0802701A:
 	ldr r0, _08027088 @ =0x00000383
 	bl PlaySound_0824078c
 	bl FUN_080592a4
-	bl FUN_08009154
+	bl Entity5DA5_AreAllLit
 	movs r6, #0xa9
 	add r6, r8
 	mov sb, r6
@@ -8168,7 +8168,7 @@ _0802704C:
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #1
-	bl FUN_08009064
+	bl Entity5DA5_SetState
 	adds r5, #1
 	cmp r5, #3
 	ble _0802704C

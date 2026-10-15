@@ -25,7 +25,7 @@
 	movs r1, #0x90
 	movs r2, #0x28
 	movs r3, #8
-	bl FUN_08019814
+	bl Entity99CA_CreateAt
 _0800D42E:
 	ldrh r1, [r4, #0x2a]
 	movs r0, #0x10

@@ -23,7 +23,7 @@ typedef struct {
   Entity e;                   // 0x000, ENTITY_UNK_11
   u32 unk_18;                 // 0x018, _Init が 0 を入れる
   u8 unk_1c[4];               // 0x01C, まだ未解析
-  AuxAnimFile* anim;          // 0x020, ANIM_5BB7
+  AuxAnimFile* anim;          // 0x020, ANIM_BAT
   EntityE534Elem elems[16];   // 0x024
   u8 unk_ca4[2];              // 0xCA4, まだ未解析
   u16 unk_ca6;                // 0xCA6, _Init が 0 を入れる

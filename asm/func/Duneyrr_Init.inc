@@ -704,7 +704,7 @@ _08027DCA:
 	ldrsh r3, [r1, r4]
 	movs r1, #0x1e
 	movs r2, #0xf
-	bl FUN_08059a1c
+	bl Entity08059a1c_Create
 	adds r5, #0x28
 	adds r1, r6, r5
 	str r0, [r1]

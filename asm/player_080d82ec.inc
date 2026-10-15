@@ -8697,7 +8697,7 @@ FUN_080d03bc: @ 0x080D03BC
 	beq _080D03F8
 	ldr r0, [r4, #0x18]
 	adds r1, r5, #0
-	bl FUN_0801a0a0
+	bl Entity4B15_ShowTrackingMarker
 	adds r0, r4, #0
 	adds r1, r5, #0
 	ldr r2, [sp, #0x20]
@@ -17473,7 +17473,7 @@ _080D491A:
 	bl Sound_PlayForPlayer
 	adds r0, r4, #0
 	adds r0, #0x2c
-	bl FUN_080acd98
+	bl Entity080acd4c_Spawn
 _080D493E:
 	ldrh r0, [r5]
 	adds r0, #1
@@ -20830,7 +20830,7 @@ _080D630A:
 	bl Sound_PlayForPlayer
 	adds r0, r5, #0
 	adds r0, #0x2c
-	bl FUN_080acd98
+	bl Entity080acd4c_Spawn
 _080D632E:
 	ldrh r0, [r4]
 	adds r0, #1

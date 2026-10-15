@@ -98,8 +98,7 @@ These come from the user's corrections; follow them unless told otherwise.
 
 **Do not use the `q_` prefix.** Provisional fields and new struct types get
 plain names, the same as confirmed ones (`scaleX`, `SpriteNode44`). The
-confidence of each item belongs in the report and in the field comment, not in
-the name. Existing `q_` names stay as they are — do not rename them unless the
+confidence of each item belongs in the report, not in the name. Existing `q_` names stay as they are — do not rename them unless the
 user asks.
 
 What still differs is how much evidence a name needs:
@@ -163,6 +162,12 @@ Keep working files in the scratchpad. `G=http://127.0.0.1:8089`,
    (`replaceAtOffset`, `clearComponent`, `growStructure`; guards; size check
    before/after; idempotent). Never use `remove_struct_field`,
    `recreate_struct`, `clone_data_type` or `create_enum`.
+   **Do not write field comments on the Ghidra side.** Pass `null` as
+   `replaceAtOffset`'s comment argument, whatever `edit-recipes.md`'s examples
+   show. Ghidra holds the layout — offsets, types and field names; the evidence
+   belongs in the report and, with `--reflect`, in the repository comment
+   (step 11), where it is reviewed and kept in git. A second copy in Ghidra only
+   goes stale.
 7. **Retype functions** with `/set_function_prototype`, writing the function's
    current name and `"calling_convention":"__stdcall"`. Entity `Init` /
    `Update` / `Destroy` return `s32` in this project.
@@ -198,16 +203,15 @@ Keep working files in the scratchpad. `G=http://127.0.0.1:8089`,
     A member comment carries only what the type does not already say: a concrete
     ID, what a value means or its range, which field it pairs with, who reads it.
     Never the function that fills it — `OpenMainSpriteFile に渡される` or
-    `FUN_xxxx が書く` is noise, since the type already says it. Step 6 asks for the
-    evidence in the *Ghidra* field comment; the repository comment has a different
-    job, so rewrite it here instead of copying that wording across.
+    `FUN_xxxx が書く` is noise, since the type already says it. This is the only
+    place a field comment is written — step 6 leaves the Ghidra side without one.
     Three field kinds have a fixed spelling in this repository — follow it:
     - Anything obtained through `GetFile`: the comment carries that file's ID and
       nothing else. `MainSpriteGfx` / `AuxSpriteGfx` are the common ones, but the
       rule is the same for every file type:
 
       ```c
-      MainSpriteGfx gfx;      // 0x018, SPRITE_D353
+      MainSpriteGfx gfx;      // 0x018, SPRITE_TITLE
       ParticleGroup* group;   // 0x018, PTCL_GROUP_0, ...
       AuxAnimFile* anim;      // 0x01C, ANIM_D1B8, ...
       Tilemaps* tilemap;      // 0x018, TILEMAP_CD91, ...

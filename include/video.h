@@ -33,7 +33,7 @@ extern u16 gStagedDISPCNT;
 extern s32 gBgBrightness;
 extern s32 gBgBrightness2;
 extern s32 gObjBrightness;
-extern u16 gObjPlttFadeSkipMask;
+extern u16 gObjPlttFadeSkipMask;  // 0x03004490
 
 extern u16* gHBlankEffectBuffer;
 extern vu16* gHBlankEffectReg;

@@ -9,7 +9,7 @@
 	movs r1, #0
 	movs r2, #0
 	adds r3, r5, #0
-	bl FUN_080a6180
+	bl EntityCF58_CreateWithCallback
 	movs r2, #4
 	ldr r1, _081DEF6C @ =0x030044BC
 	ldr r0, [r1]

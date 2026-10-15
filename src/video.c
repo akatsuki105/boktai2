@@ -553,7 +553,7 @@ bool32 Video_GetAuxSprite(AuxSpriteGfx* gfx, SpriteID32 id) {
   metasprites = (u8*)f + f->offsetToMetasprites;
   found = FALSE;
   a = f->entries;
-  for (i = 0; i < gAuxSpriteFile->actorCount; a++, i++) {
+  for (i = 0; i < gAuxSpriteFile->entryCount; a++, i++) {
     if (a->id == id) {
       found = TRUE;
       break;

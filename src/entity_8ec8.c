@@ -22,4 +22,18 @@ typedef struct {
 } Entity8EC8;
 static_assert(sizeof(Entity8EC8) == 128);
 
-INCASM("asm/entity_8ec8.inc");
+NAKED void Entity8EC8_HandleMessages(Entity8EC8* p) { INCFUNC("asm/func/Entity8EC8_HandleMessages.inc"); }
+
+NAKED bool32 Entity8EC8_IsStartHeld(void) { INCFUNC("asm/func/Entity8EC8_IsStartHeld.inc"); }
+
+NAKED bool32 Entity8EC8_IsSelectHeld(void) { INCFUNC("asm/func/Entity8EC8_IsSelectHeld.inc"); }
+
+NAKED s32 Entity8EC8_Update(Entity8EC8* p) { INCFUNC("asm/func/Entity8EC8_Update.inc"); }
+
+NAKED s32 Entity8EC8_Destroy(Entity8EC8* p) { INCFUNC("asm/func/Entity8EC8_Destroy.inc"); }
+
+NAKED s32 Entity8EC8_Init(Entity8EC8* p, u32 id) { INCFUNC("asm/func/Entity8EC8_Init.inc"); }
+
+NAKED Entity8EC8* Entity8EC8_Create(u32 id) { INCFUNC("asm/func/Entity8EC8_Create.inc"); }
+
+NAKED void FUN_0821bd14(unknown* p) { INCFUNC("asm/func/FUN_0821bd14.inc"); }

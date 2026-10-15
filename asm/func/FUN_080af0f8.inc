@@ -39,7 +39,7 @@ _080AF14C:
 	.align 2, 0
 _080AF154: .4byte 0x0000135C
 _080AF158:
-	bl FUN_0805d79c
+	bl Entity0805d79c_Create
 	movs r2, #0x9b
 	lsls r2, r2, #5
 	adds r1, r4, r2
@@ -74,7 +74,7 @@ _080AF198:
 	adds r0, r4, r1
 	ldrh r0, [r0]
 	movs r1, #0x32
-	bl FUN_0805b068
+	bl Entity0805b068_Create
 	movs r2, #0x9b
 	lsls r2, r2, #5
 	adds r1, r4, r2

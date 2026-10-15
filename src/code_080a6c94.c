@@ -19,7 +19,7 @@ s32 VM_InitArray(void) {
   return 0;
 }
 
-// 'a' 個の引数を読み直しながら 'e' のスクリプトを 'r' 回呼ぶ
+// 0x7636, 'a' 個の引数を読み直しながら 'e' のスクリプトを 'r' 回呼ぶ
 s32 VM_Loop(void) {
   ScriptArgs args;
   s32 count;

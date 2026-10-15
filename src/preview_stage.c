@@ -140,74 +140,74 @@ static_assert(sizeof(EnemyDexModel) == 32);
 // エンディングのスタッフロールでは クレジットと一緒にゲーム中に登場したキャラクター(主人公,NPC,ボス,雑魚)が表示されるが、ここに魔物図鑑での魔物表示と同じ処理を使っているのかもしれない
 // それならば、0..56 までは魔物図鑑とスタッフロール共用で、 57以降はスタッフロールのためのものかも
 static const EnemyDexModel sEnemyDexModels[70] = {
-    {SPRITE_SPIDER,         ANIM_B6EE, 1, 3,   143, 3,  0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  4,  50, 50, 0}, // 0
-    {SPRITE_SPIDER,         ANIM_B6EE, 1, 3,   144, 3,  0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  4,  50, 50, 0}, // 1
-    {SPRITE_BEE,            ANIM_62C7, 1, 1,   176, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 2
-    {SPRITE_BEE,            ANIM_62C7, 1, 1,   178, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 3
-    {SPRITE_BEE,            ANIM_62C7, 1, 1,   177, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 4
-    {SPRITE_BAT,            ANIM_5BB7, 1, 0,   610, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 5
-    {SPRITE_BAT,            ANIM_5BB7, 1, 0,   611, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 6
-    {SPRITE_CROW,           ANIM_7B03, 1, 0,   332, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 7
-    {SPRITE_CROW,           ANIM_7B03, 1, 0,   333, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 8
-    {SPRITE_WORM,           ANIM_C102, 1, 0,   417, 10, DEXFLAG_NO_REFRESH,                   FUN_0820f1e0, FUN_0820f310, 0,  0,   0,  0,  0,  16, 64, 64, 0}, // 9
-    {SPRITE_DOG,            ANIM_F6E7, 1, 3,   501, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  0,  64, 64, 1}, // 10
-    {SPRITE_DOG,            ANIM_F6E7, 1, 3,   503, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  0,  64, 64, 1}, // 11
-    {SPRITE_DOG,            ANIM_F6E7, 1, 3,   502, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  0,  64, 64, 1}, // 12
-    {SPRITE_DOG,            ANIM_F6E7, 1, 3,   505, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  0,  64, 64, 1}, // 13
-    {SPRITE_ROD,            ANIM_99DD, 1, 0,   220, 0,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  0,  0,  0}, // 14
-    {SPRITE_SHAIAN,         0x0000,    2, 12,  626, 3,  0,                                    NULL,         NULL,         8,  24,  0,  0,  -2, -3, 64, 64, 2}, // 15
-    {SPRITE_OCTOPUS,        ANIM_DCEB, 1, 0,   447, 0,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  0,  0,  0}, // 16
-    {SPRITE_COCKATRICE,     ANIM_DA5E, 1, 2,   506, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  6,  64, 64, 1}, // 17
-    {SPRITE_COCKATRICE,     ANIM_DA5E, 1, 8,   507, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         4,  0,   10, 64, 0,  16, 64, 64, 1}, // 18
-    {SPRITE_WORM,           ANIM_C102, 1, 5,   418, 10, 0,                                    FUN_0820f3e4, FUN_0820f4b4, 0,  0,   0,  0,  0,  32, 64, 64, 0}, // 19
-    {SPRITE_WORM,           ANIM_C102, 1, 8,   419, 10, 0,                                    FUN_0820f630, FUN_0820f700, 0,  0,   0,  0,  0,  0,  0,  0,  0}, // 20
-    {SPRITE_BOKU,           ANIM_1DF8, 1, 8,   307, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 21
-    {SPRITE_BOKU,           ANIM_1DF8, 1, 8,   308, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 22
-    {SPRITE_BOKU,           ANIM_1DF8, 1, 8,   309, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 23
-    {SPRITE_MUMMY,          ANIM_A4B2, 1, 1,   23,  3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 24
-    {SPRITE_MUMMY,          ANIM_A4B2, 1, 1,   24,  3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 25
-    {SPRITE_MUMMY,          ANIM_A4B2, 1, 1,   25,  3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 26
-    {SPRITE_SKELETONS,      0x0000,    2, 6,   247, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  1,  64, 64, 1}, // 27
-    {SPRITE_SKELETONS,      0x0000,    2, 8,   247, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  1,  64, 64, 1}, // 28
-    {SPRITE_SKELETONS,      0x0000,    2, 10,  247, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  1,  64, 64, 1}, // 29
-    {SPRITE_SKELETONS,      0x0000,    2, 6,   252, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  1,  64, 64, 1}, // 30
-    {SPRITE_SKELETONS,      0x0000,    2, 26,  249, 3,  0,                                    NULL,         NULL,         8,  16,  0,  0,  0,  1,  64, 64, 1}, // 31
-    {SPRITE_SKELETONS,      0x0000,    2, 26,  255, 3,  0,                                    NULL,         NULL,         8,  16,  0,  0,  0,  1,  64, 64, 1}, // 32
-    {SPRITE_GOLEM,          ANIM_1E38, 1, 1,   513, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  4,  64, 64, 1}, // 33
-    {SPRITE_GOLEM,          ANIM_1E38, 1, 1,   514, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  4,  64, 64, 1}, // 34
-    {SPRITE_GOLEM,          ANIM_1E38, 1, 1,   516, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  4,  64, 64, 1}, // 35
-    {SPRITE_MIMIC,          ANIM_9AF2, 1, 1,   650, 4,  DEXFLAG_NO_REFRESH,                   FUN_0820f840, FUN_0820f84c, 0,  16,  0,  0,  0,  4,  64, 64, 1}, // 36
-    {SPRITE_SWORD_AX,       ANIM_3F72, 1, 0,   301, 0,  DEXFLAG_SWAY | DEXFLAG_NO_REFRESH,    NULL,         NULL,         0,  2,   8,  40, 0,  28, 32, 32, 1}, // 37
-    {SPRITE_SWORD_AX,       ANIM_3F72, 1, 0,   302, 0,  DEXFLAG_SWAY | DEXFLAG_NO_REFRESH,    NULL,         NULL,         0,  2,   8,  40, 0,  28, 32, 32, 1}, // 38
-    {SPRITE_SWORD_AX,       ANIM_3F72, 1, 1,   301, 0,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  8,   10, 40, 0,  24, 32, 32, 1}, // 39
-    {SPRITE_SWORD_AX,       ANIM_3F72, 1, 1,   302, 0,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  8,   10, 40, 0,  24, 32, 32, 1}, // 40
-    {SPRITE_CURORO,         ANIM_9607, 1, 0,   92,  10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 41
-    {SPRITE_CURORO,         ANIM_9607, 1, 0,   93,  10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 42
-    {SPRITE_CURORO,         ANIM_9607, 1, 0,   94,  10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 43
-    {SPRITE_SLIME,          ANM_SLIME, 1, 1,   147, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 44
-    {SPRITE_SLIME,          ANM_SLIME, 1, 1,   148, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 45
-    {SPRITE_SLIME,          ANM_SLIME, 1, 1,   149, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 46
-    {SPRITE_SLIME,          ANM_SLIME, 1, 1,   150, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 47
-    {SPRITE_GHOST,          ANIM_29FB, 1, 0,   381, 10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   20, 32, 0,  24, 64, 64, 1}, // 48
-    {SPRITE_GHOST,          ANIM_29FB, 1, 0,   382, 10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   20, 32, 0,  24, 64, 64, 1}, // 49
-    {SPRITE_DUNEYRR,        0x0000,    2, 0,   0,   0,  DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         0,  0,   8,  32, 0,  0,  0,  0,  0}, // 50
-    {SPRITE_RINGO,          0x0000,    2, 3,   0,   4,  DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         4,  16,  8,  32, 0,  8,  64, 64, 2}, // 51
-    {SPRITE_DURATHROR,      0x0000,    2, 0,   0,   0,  DEXFLAG_NO_PLTT | DEXFLAG_NO_REFRESH, NULL,         FUN_0820f020, 0,  16,  0,  0,  0,  0,  0,  0,  0}, // 52
-    {SPRITE_DVALINN,        0x0000,    2, 0,   0,   3,  DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         0,  15,  8,  32, 0,  0,  0,  0,  0}, // 53
-    {SPRITE_RINGO,          0x0000,    2, 8,   0,   4,  DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         4,  16,  8,  32, 0,  8,  64, 64, 2}, // 54
-    {SPRITE_JORMUNGANDR,    0x0000,    2, 0,   0,   0,  DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         24, -24, 8,  32, 0,  0,  0,  0,  0}, // 55
-    {SPRITE_SHADEMAN,       0x0000,    2, 0,   0,   10, DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         0,  16,  8,  32, 0,  8,  64, 64, 2}, // 56
-    {SPRITE_DJANGO_SABATA,  0x0000,    2, 5,   29,  10, 0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 57
-    {SPRITE_OTNK,           ANIM_C6A0, 1, 0,   0,   10, DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         0,  0,   8,  32, 0,  8,  64, 64, 1}, // 58
-    {SPRITE_DJANGO_SABATA,  0x0000,    2, 419, 39,  10, 0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 59
-    {SPRITE_RITA,           0x0000,    2, 5,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 60
-    {SPRITE_ZAJI,           0x0000,    2, 5,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 61
-    {SPRITE_SHAIAN,         0x0000,    2, 14,  0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         8,  24,  0,  0,  -2, -3, 64, 64, 2}, // 62
-    {SPRITE_LADY,           0x0000,    2, 7,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 63
-    {SPRITE_COFFIN,         ANIM_3D95, 1, 32,  524, 10, 0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 64
-    {SPRITE_SHADEMAN,       0x0000,    2, 0,   15,  10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   8,  32, 0,  8,  64, 64, 2}, // 65
-    {SPRITE_KID,            0x0000,    2, 7,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 66
-    {SPRITE_SUMIRE,         0x0000,    2, 5,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 67
-    {SPRITE_SMITH_MARCELLO, 0x0000,    2, 7,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 68
-    {SPRITE_DJANGO_SABATA,  0x0000,    2, 204, 38,  10, 0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 69
+    {SPRITE_SPIDER,         ANIM_SPIDER,     1, 3,   143, 3,  0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  4,  50, 50, 0}, // 0
+    {SPRITE_SPIDER,         ANIM_SPIDER,     1, 3,   144, 3,  0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  4,  50, 50, 0}, // 1
+    {SPRITE_BEE,            ANIM_BEE,        1, 1,   176, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 2
+    {SPRITE_BEE,            ANIM_BEE,        1, 1,   178, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 3
+    {SPRITE_BEE,            ANIM_BEE,        1, 1,   177, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 4
+    {SPRITE_BAT,            ANIM_BAT,        1, 0,   610, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 5
+    {SPRITE_BAT,            ANIM_BAT,        1, 0,   611, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 6
+    {SPRITE_CROW,           ANIM_CROW,       1, 0,   332, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 7
+    {SPRITE_CROW,           ANIM_CROW,       1, 0,   333, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 8
+    {SPRITE_WORM,           ANIM_WORM,       1, 0,   417, 10, DEXFLAG_NO_REFRESH,                   FUN_0820f1e0, FUN_0820f310, 0,  0,   0,  0,  0,  16, 64, 64, 0}, // 9
+    {SPRITE_DOG,            ANIM_DOG,        1, 3,   501, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  0,  64, 64, 1}, // 10
+    {SPRITE_DOG,            ANIM_DOG,        1, 3,   503, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  0,  64, 64, 1}, // 11
+    {SPRITE_DOG,            ANIM_DOG,        1, 3,   502, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  0,  64, 64, 1}, // 12
+    {SPRITE_DOG,            ANIM_DOG,        1, 3,   505, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  0,  64, 64, 1}, // 13
+    {SPRITE_ROD,            ANIM_DARKROOT,   1, 0,   220, 0,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  0,  0,  0}, // 14
+    {SPRITE_SHAIAN,         0x0000,          2, 12,  626, 3,  0,                                    NULL,         NULL,         8,  24,  0,  0,  -2, -3, 64, 64, 2}, // 15
+    {SPRITE_OCTOPUS,        ANIM_OCTOPUS,    1, 0,   447, 0,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  0,  0,  0}, // 16
+    {SPRITE_COCKATRICE,     ANIM_COCKATRICE, 1, 2,   506, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  6,  64, 64, 1}, // 17
+    {SPRITE_COCKATRICE,     ANIM_COCKATRICE, 1, 8,   507, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         4,  0,   10, 64, 0,  16, 64, 64, 1}, // 18
+    {SPRITE_WORM,           ANIM_WORM,       1, 5,   418, 10, 0,                                    FUN_0820f3e4, FUN_0820f4b4, 0,  0,   0,  0,  0,  32, 64, 64, 0}, // 19
+    {SPRITE_WORM,           ANIM_WORM,       1, 8,   419, 10, 0,                                    FUN_0820f630, FUN_0820f700, 0,  0,   0,  0,  0,  0,  0,  0,  0}, // 20
+    {SPRITE_BOKU,           ANIM_1DF8,       1, 8,   307, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 21
+    {SPRITE_BOKU,           ANIM_1DF8,       1, 8,   308, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 22
+    {SPRITE_BOKU,           ANIM_1DF8,       1, 8,   309, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 23
+    {SPRITE_MUMMY,          ANIM_MUMMY,      1, 1,   23,  3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 24
+    {SPRITE_MUMMY,          ANIM_MUMMY,      1, 1,   24,  3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 25
+    {SPRITE_MUMMY,          ANIM_MUMMY,      1, 1,   25,  3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  0,  64, 64, 1}, // 26
+    {SPRITE_SKELETONS,      0x0000,          2, 6,   247, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  1,  64, 64, 1}, // 27
+    {SPRITE_SKELETONS,      0x0000,          2, 8,   247, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  1,  64, 64, 1}, // 28
+    {SPRITE_SKELETONS,      0x0000,          2, 10,  247, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  1,  64, 64, 1}, // 29
+    {SPRITE_SKELETONS,      0x0000,          2, 6,   252, 3,  0,                                    NULL,         NULL,         0,  16,  0,  0,  0,  1,  64, 64, 1}, // 30
+    {SPRITE_SKELETONS,      0x0000,          2, 26,  249, 3,  0,                                    NULL,         NULL,         8,  16,  0,  0,  0,  1,  64, 64, 1}, // 31
+    {SPRITE_SKELETONS,      0x0000,          2, 26,  255, 3,  0,                                    NULL,         NULL,         8,  16,  0,  0,  0,  1,  64, 64, 1}, // 32
+    {SPRITE_GOLEM,          ANIM_1E38,       1, 1,   513, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  4,  64, 64, 1}, // 33
+    {SPRITE_GOLEM,          ANIM_1E38,       1, 1,   514, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  4,  64, 64, 1}, // 34
+    {SPRITE_GOLEM,          ANIM_1E38,       1, 1,   516, 3,  0,                                    NULL,         NULL,         0,  8,   0,  0,  0,  4,  64, 64, 1}, // 35
+    {SPRITE_MIMIC,          ANIM_MIMIC,      1, 1,   650, 4,  DEXFLAG_NO_REFRESH,                   FUN_0820f840, FUN_0820f84c, 0,  16,  0,  0,  0,  4,  64, 64, 1}, // 36
+    {SPRITE_SWORD_AX,       ANIM_SWORDAX,    1, 0,   301, 0,  DEXFLAG_SWAY | DEXFLAG_NO_REFRESH,    NULL,         NULL,         0,  2,   8,  40, 0,  28, 32, 32, 1}, // 37
+    {SPRITE_SWORD_AX,       ANIM_SWORDAX,    1, 0,   302, 0,  DEXFLAG_SWAY | DEXFLAG_NO_REFRESH,    NULL,         NULL,         0,  2,   8,  40, 0,  28, 32, 32, 1}, // 38
+    {SPRITE_SWORD_AX,       ANIM_SWORDAX,    1, 1,   301, 0,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  8,   10, 40, 0,  24, 32, 32, 1}, // 39
+    {SPRITE_SWORD_AX,       ANIM_SWORDAX,    1, 1,   302, 0,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  8,   10, 40, 0,  24, 32, 32, 1}, // 40
+    {SPRITE_CURORO,         ANIM_CURORO,     1, 0,   92,  10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 41
+    {SPRITE_CURORO,         ANIM_CURORO,     1, 0,   93,  10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 42
+    {SPRITE_CURORO,         ANIM_CURORO,     1, 0,   94,  10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  -8,  20, 32, 0,  24, 32, 32, 1}, // 43
+    {SPRITE_SLIME,          ANM_SLIME,       1, 1,   147, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 44
+    {SPRITE_SLIME,          ANM_SLIME,       1, 1,   148, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 45
+    {SPRITE_SLIME,          ANM_SLIME,       1, 1,   149, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 46
+    {SPRITE_SLIME,          ANM_SLIME,       1, 1,   150, 3,  DEXFLAG_NO_REFRESH,                   NULL,         FUN_0820f130, 0,  8,   0,  0,  0,  8,  32, 32, 0}, // 47
+    {SPRITE_GHOST,          ANIM_GHOST,      1, 0,   381, 10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   20, 32, 0,  24, 64, 64, 1}, // 48
+    {SPRITE_GHOST,          ANIM_GHOST,      1, 0,   382, 10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   20, 32, 0,  24, 64, 64, 1}, // 49
+    {SPRITE_DUNEYRR,        0x0000,          2, 0,   0,   0,  DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         0,  0,   8,  32, 0,  0,  0,  0,  0}, // 50
+    {SPRITE_RINGO,          0x0000,          2, 3,   0,   4,  DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         4,  16,  8,  32, 0,  8,  64, 64, 2}, // 51
+    {SPRITE_DURATHROR,      0x0000,          2, 0,   0,   0,  DEXFLAG_NO_PLTT | DEXFLAG_NO_REFRESH, NULL,         FUN_0820f020, 0,  16,  0,  0,  0,  0,  0,  0,  0}, // 52
+    {SPRITE_DVALINN,        0x0000,          2, 0,   0,   3,  DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         0,  15,  8,  32, 0,  0,  0,  0,  0}, // 53
+    {SPRITE_RINGO,          0x0000,          2, 8,   0,   4,  DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         4,  16,  8,  32, 0,  8,  64, 64, 2}, // 54
+    {SPRITE_JORMUNGANDR,    0x0000,          2, 0,   0,   0,  DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         24, -24, 8,  32, 0,  0,  0,  0,  0}, // 55
+    {SPRITE_SHADEMAN,       0x0000,          2, 0,   0,   10, DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         0,  16,  8,  32, 0,  8,  64, 64, 2}, // 56
+    {SPRITE_DJANGO_SABATA,  0x0000,          2, 5,   29,  10, 0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 57
+    {SPRITE_OTENKO_00,      ANIM_OTENKO,     1, 0,   0,   10, DEXFLAG_NO_PLTT | DEXFLAG_SWAY,       NULL,         NULL,         0,  0,   8,  32, 0,  8,  64, 64, 1}, // 58
+    {SPRITE_DJANGO_SABATA,  0x0000,          2, 419, 39,  10, 0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 59
+    {SPRITE_RITA,           0x0000,          2, 5,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 60
+    {SPRITE_ZAJI,           0x0000,          2, 5,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 61
+    {SPRITE_SHAIAN,         0x0000,          2, 14,  0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         8,  24,  0,  0,  -2, -3, 64, 64, 2}, // 62
+    {SPRITE_LADY,           0x0000,          2, 7,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 63
+    {SPRITE_COFFIN,         ANIM_COFFIN,     1, 32,  524, 10, 0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 64
+    {SPRITE_SHADEMAN,       0x0000,          2, 0,   15,  10, DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   8,  32, 0,  8,  64, 64, 2}, // 65
+    {SPRITE_KID,            0x0000,          2, 7,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 66
+    {SPRITE_SUMIRE,         0x0000,          2, 5,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 67
+    {SPRITE_SMITH_MARCELLO, 0x0000,          2, 7,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 68
+    {SPRITE_DJANGO_SABATA,  0x0000,          2, 204, 38,  10, 0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 69
 };

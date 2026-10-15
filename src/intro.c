@@ -19,7 +19,7 @@ typedef u32 IntroFlags;
 // モード(GAMESTART, OPTION, LINK のどれか) からBボタンに戻ると、またこのEntityが生成される
 typedef struct Intro {
   Entity e;                               // 0x000, ENTITY_UNK_11
-  MainSpriteGfx gfx;                      // 0x018, SPRITE_D353
+  MainSpriteGfx gfx;                      // 0x018, SPRITE_TITLE
   Tilemaps* tilemap;                      // 0x038, FileID は state ごとに違う
   rgb555* bgp;                            // 0x03C, FileID は state ごとに違う
   s32 unk_40;                             // 0x040, '.Y', 1 か 2 のとき初期状態が 3 になる
@@ -302,7 +302,7 @@ NAKED void FUN_082129b8(Intro* p) { INCFUNC("asm/func/FUN_082129b8.inc"); }
 NAKED void Intro_UpdateState3(Intro* p) { INCFUNC("asm/func/Intro_UpdateState3.inc"); }
 
 void Intro_LoadGfx(Intro* p) {
-  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_D353);
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_TITLE);
 
   p->gfx = *f;
   OpenMainSpriteFile(&p->gfx, f);
@@ -404,7 +404,7 @@ s32 Intro_Init(Intro* p) {
   return 0;
 }
 
-// 0xCF79
+// 0xCF79, HashName("タイトル")
 Intro* Intro_Create(void) {
   Intro* p = CreateEntity(ENTITY_UNK_11, sizeof(Intro));
 

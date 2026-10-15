@@ -12,7 +12,7 @@ typedef struct {
 } Entity081eb2f0;
 static_assert(sizeof(Entity081eb2f0) == 2340);
 
-IWRAM_DATA Entity081eb2f0* gEntity081eb2f0 = NULL;  // 0x030001C4
+static Entity081eb2f0* gEntity081eb2f0;  // 0x030001C4
 
 void FUN_081eafbc(Entity081eb2f0* p, Particle* ptcl) {}
 
@@ -23,6 +23,13 @@ NAKED void FUN_081eb0ec(Entity081eb2f0* p, Particle* ptcl) { INCFUNC("asm/func/F
 NAKED Particle* FUN_081eb12c(Entity081eb2f0* p) { INCFUNC("asm/func/FUN_081eb12c.inc"); }
 
 NAKED s32 FUN_081eb178(Vec3* pos, u32 prio) { INCFUNC("asm/func/FUN_081eb178.inc"); }
+
+// Entity081eb2f0_Update が (p, ptcl) で呼ぶ
+void (*const PTR_ARRAY_085ae4b0[3])(Entity081eb2f0*, Particle*) = {
+    FUN_081eafbc,
+    FUN_081eafc0,
+    FUN_081eb0ec,
+};  // 0x085AE4B0
 
 NAKED s32 Entity081eb2f0_Update(Entity081eb2f0* p) { INCFUNC("asm/func/Entity081eb2f0_Update.inc"); }
 

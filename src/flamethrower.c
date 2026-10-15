@@ -5,7 +5,6 @@
 #include "mover.h"
 #include "sprite.h"
 
-// Entity081eaf6c が抱える要素
 typedef struct Entity081eaf6cItem {
   MainSprite sprite;  // 0x000, Entity081eaf6c_Destroy が要素そのものを MainSprite_Remove に渡す
   Mover unk_60;       // 0x060, flags の bit0 が立っていれば _Destroy が FUN_08002a58 に、その後 Mover_Unlink に渡す
@@ -33,9 +32,11 @@ typedef struct {
 } Entity081eaf6c;
 static_assert(sizeof(Entity081eaf6c) == 1328);
 
-IWRAM_DATA Entity081eaf6c* gEntity081eaf6c = NULL;  // 0x030001C0
+static Entity081eaf6c* gEntity081eaf6c;  // 0x030001C0
 
-void FUN_081ea878(unknown* p) {}
+const u8 u8_ARRAY_085ae478[18] = {10, 11, 12, 13, 14, 15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8, 9};  // 0x085AE478
+
+void FUN_081ea878(Entity081eaf6cItem* p) {}
 
 NAKED bool8 FUN_081ea87c(Entity081eaf6cItem* item) { INCFUNC("asm/func/FUN_081ea87c.inc"); }
 
@@ -49,15 +50,27 @@ void FUN_081eaa10(Entity081eaf6cItem* item) {
   }
 }
 
-void FUN_081eaa54(unknown* p) {}
+void FUN_081eaa54(Entity081eaf6cItem* p) {}
 
 NAKED s32 Entity081eaf6c_Destroy(Entity081eaf6c* p) { INCFUNC("asm/func/Entity081eaf6c_Destroy.inc"); }
+
+void (*const PTR_ARRAY_085ae48c[3])(Entity081eaf6cItem*) = {
+    FUN_081ea878,
+    FUN_081eaa10,
+    FUN_081eaa54,
+};  // 0x085AE48C
 
 NAKED s32 Entity081eaf6c_Update(Entity081eaf6c* p) { INCFUNC("asm/func/Entity081eaf6c_Update.inc"); }
 
 NAKED s32 FUN_081eab78(unknown* p) { INCFUNC("asm/func/FUN_081eab78.inc"); }
 
-void FUN_081eabcc(unknown* p) {}
+void FUN_081eabcc(HitboxData* a, HitboxData* b, void* p) {}
+
+const Vec3 vec3_ARRAY_085ae498[3] = {
+    {48, 32, 220},
+    {48, 32, 276},
+    {48, 32, 384}
+};  // 0x085AE498
 
 NAKED void FUN_081eabd0(unknown* p) { INCFUNC("asm/func/FUN_081eabd0.inc"); }
 

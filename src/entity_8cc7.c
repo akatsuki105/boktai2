@@ -17,7 +17,7 @@ static_assert(sizeof(Entity8CC7Elem) == 188);
 
 typedef struct {
   Entity e;                  // 0x000, ENTITY_UNK_9
-  AuxAnimFile* anim;         // 0x018, ANIM_7B03
+  AuxAnimFile* anim;         // 0x018, ANIM_CROW
   Entity8CC7Elem elems[20];  // 0x01C, usedMask のビットが立っている要素だけ _Destroy が片付ける
   u32 usedMask;              // 0xECC, elems[i] が使用中なら bit i が立つ, _Init が 0 クリアする
   u32 unk_ed0;               // 0xED0, _Init が 0xE10 (3600) を入れる
@@ -105,7 +105,7 @@ NAKED s32 Entity8CC7_Update(Entity8CC7* p) { INCFUNC("asm/func/Entity8CC7_Update
 NAKED s32 Entity8CC7_Destroy(Entity8CC7* p) { INCFUNC("asm/func/Entity8CC7_Destroy.inc"); }
 
 s32 Entity8CC7_Init(Entity8CC7* p) {
-  p->anim = GetFile(DIR_ANIMATION, ANIM_7B03);
+  p->anim = GetFile(DIR_ANIMATION, ANIM_CROW);
   gEntity8CC7 = p;
   p->usedMask = 0;
   p->unk_ed0 = 3600;

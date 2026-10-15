@@ -29,7 +29,7 @@ void FUN_080ee738(Enemy* p);
 bool8 FUN_080f3718(Enemy* p);
 s32 FUN_08240b98(u32 param_1, s8 param_2);
 void FUN_080e8ae4(unknown* param_1, u32 param_2, u32 param_3);
-void FUN_0801a0a0(s32 playerIdx, Vec3* pos);  // src/code_08017b70.s
+void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos);  // src/code_08017b70.s
 void FUN_080e5718(Enemy* p, s32 param_2, s32 param_3, s32 param_4);
 
 void FUN_080f09a4(Enemy* p);
@@ -371,7 +371,7 @@ NON_MATCH void FUN_080f8bb8(Mover* owner) {
         return;
       }
     }
-    FUN_0801a0a0(idx, &owner->pos);
+    Entity4B15_ShowTrackingMarker(idx, &owner->pos);
   }
 #else
   INCFUNC("asm/func/FUN_080f8bb8.inc");

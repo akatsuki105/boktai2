@@ -20,7 +20,7 @@ typedef struct {
   AuxSpriteGfx gfx;           // 0xDC8, SPRITE_OTNK_97D3
   u8 unk_de4[0xDF4 - 0xDE4];  // 0xDE4, まだ未解析
   ParticleShadow shadow;      // 0xDF4, ParticleShadow_Init(&shadow, &sprite.pos, 0) のあと Hide する
-  AuxAnimFile* anim;          // 0xE34, ANIM_C6A0
+  AuxAnimFile* anim;          // 0xE34, ANIM_OTENKO
   u16 unk_e38;                // 0xE38, _Init が 0 を入れる
   u8 unk_e3a;                 // 0xE3A, _Init が 1 を入れる
   u8 unk_e3b;                 // 0xE3B, まだ未解析

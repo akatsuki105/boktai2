@@ -44,7 +44,7 @@ _080F8C00:
 _080F8C02:
 	adds r1, r2, #0
 	adds r1, #8
-	bl FUN_0801a0a0
+	bl Entity4B15_ShowTrackingMarker
 _080F8C0A:
 	pop {r0}
 	bx r0

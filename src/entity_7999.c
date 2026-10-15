@@ -4,6 +4,7 @@
 #include "tilemap.h"
 #include "video.h"
 
+// 通信対戦関連?
 typedef struct Entity7999 {
   Entity e;                                    // 0x000, ENTITY_UNK_11
   Tilemaps* tilemap;                           // 0x018, TILEMAP_CD91

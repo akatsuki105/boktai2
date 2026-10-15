@@ -63272,7 +63272,7 @@ Script_0x1722() {
 }
 
 // 0x08D96074
-Script_0x0F69() {
+Script_ArenaRankSelect() {
 	if (*((u8 *)(world + 0x156)) != 0) {
 		Script_0x1722();
 	} else {

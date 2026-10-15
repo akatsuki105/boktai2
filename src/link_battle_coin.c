@@ -4,10 +4,9 @@
 #include "shadow.h"
 #include "sprite_aux.h"
 
-// 通信対戦のコイン(対戦相手を倒したりすると落とすもので、これがプレイヤーの得点になる)
-
 struct LinkBattleCoinManager;
 
+// 通信対戦のコイン(対戦相手を倒したりすると落とすもので、これがプレイヤーの得点になる)
 typedef struct Entity150FSlot {
   s8 unk_00;                                                                                      // 0x00, FUN_081e1220 の第3引数, gEntity9A9F->unk_118[i]
   u8 unk_01;                                                                                      // 0x01, FUN_081e1220 が 0 を入れる

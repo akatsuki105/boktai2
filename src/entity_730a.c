@@ -13,7 +13,7 @@ typedef struct {
 } Entity730A;
 static_assert(sizeof(Entity730A) == 88);
 
-void FUN_08019814(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
+void Entity99CA_CreateAt(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void MapPltt_PushCommand(s32 val, s32 count, u32* args);
 void Entity6978_SetRequest(s32 val, s32 count, s32* args);
@@ -24,7 +24,7 @@ void FUN_08022668(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
   pos.x = msg->args[0];
   pos.y = msg->args[1];
   pos.z = msg->args[2];
-  FUN_08019814(&pos, msg->args[3], msg->args[4], msg->args[5], msg->args[6]);
+  Entity99CA_CreateAt(&pos, msg->args[3], msg->args[4], msg->args[5], msg->args[6]);
 }
 
 void FUN_080226a8(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
@@ -35,7 +35,7 @@ void FUN_080226a8(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
     pos.x = mover->pos.x;
     pos.y = mover->pos.y;
     pos.z = mover->pos.z;
-    FUN_08019814(&pos, msg->args[1], msg->args[2], msg->args[3], msg->args[4]);
+    Entity99CA_CreateAt(&pos, msg->args[1], msg->args[2], msg->args[3], msg->args[4]);
   }
 }
 

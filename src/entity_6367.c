@@ -21,7 +21,7 @@ NAKED void FUN_0821a308(Entity6367* p) { INCFUNC("asm/func/FUN_0821a308.inc"); }
 
 void (*const PTR_ARRAY_085affa0[1])(Entity6367*) = {
     FUN_0821a308,
-};
+};  // 0x085AFFA0
 
 NAKED void FUN_0821a5d4(Entity6367* p) { INCFUNC("asm/func/FUN_0821a5d4.inc"); }
 
@@ -42,6 +42,7 @@ s32 Entity6367_Destroy(Entity6367* p) {
 
 NAKED s32 Entity6367_Init(Entity6367* p) { INCFUNC("asm/func/Entity6367_Init.inc"); }
 
+// 0x6367, HashName("エンディング"), SPRITE_EVENT_SUN_RAY は ラスボス撃破時に使うので、 エンディングで合ってる可能性は高い
 Entity6367* Entity6367_Create(void) {
   Entity6367* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity6367));
   if (p != NULL) {

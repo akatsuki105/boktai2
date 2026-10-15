@@ -28,9 +28,7 @@ void* VM_Ctrl_LoadMap(void) {
 // 0x9906, EntityCreate
 // IDは EUC-JPの文字列をハッシュ化した値
 //   HashName("プレイヤー") -> 0xF5EB
-//   HashName("ドヴァリン") -> 0x0074
 //   HashName("シャイアン") -> 0x8E9F
-//   HashName("クロウ") -> 0x9E8D
 s32 VM_Ctrl_CreateEntity(void) {
   u16 subID = (u16)VM_GetValue();
   EntityCreateFn fn = VM_GetSubroutine(subID);

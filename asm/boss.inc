@@ -4,37 +4,6 @@
 	
 	.text
 
-	thumb_func_start FUN_08022a0c
-FUN_08022a0c: @ 0x08022A0C
-	ldr r2, _08022A18 @ =0x030000A0
-	lsls r1, r1, #2
-	adds r1, r1, r2
-	str r0, [r1]
-	bx lr
-	.align 2, 0
-_08022A18: .4byte 0x030000A0
-
-	thumb_func_start FUN_08022a1c
-FUN_08022a1c: @ 0x08022A1C
-	ldr r1, _08022A28 @ =0x030000A0
-	lsls r0, r0, #2
-	adds r0, r0, r1
-	movs r1, #0
-	str r1, [r0]
-	bx lr
-	.align 2, 0
-_08022A28: .4byte 0x030000A0
-
-	thumb_func_start FUN_08022a2c
-FUN_08022a2c: @ 0x08022A2C
-	ldr r1, _08022A38 @ =0x030000A0
-	lsls r0, r0, #2
-	adds r0, r0, r1
-	ldr r0, [r0]
-	bx lr
-	.align 2, 0
-_08022A38: .4byte 0x030000A0
-
 	thumb_func_start FUN_08022a3c
 FUN_08022a3c: @ 0x08022A3C
 	push {r4, lr}

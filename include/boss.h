@@ -1,9 +1,24 @@
 #ifndef __INCLUDE_BOSS_H__
 #define __INCLUDE_BOSS_H__
 
+#include "entity.h"
 #include "gba/gba.h"
 
-typedef s32 BossID;  // see include/constants/miscs.h
+typedef s32 BossID;
+#define BOSS_DUNEYRR 0             // ドゥネイル
+#define BOSS_UNK_1 1               // ?
+#define BOSS_DURATHROR 2           // ドゥラスロール
+#define BOSS_DVALINN 3             // ドヴァリン
+#define BOSS_UNK_4 4               // ?
+#define BOSS_JORMUNGANDR 5         // ヨルムンガンド
+#define BOSS_SHADEMAN 6            // シェードマン(シングルプレイ用)
+#define BOSS_SHADEMAN_CROSSOVER 7  // シェードマン(クロスオーバーバトル用)
+
+// Boss の共通部分の定義 (各ボスの構造体はこれを先頭に持つことを想定)
+// 最終的には、 各ボスの構造体の先頭は struct Boss にする予定だが、まだ共通部分のサイズが確定してないので、保留
+typedef struct {
+  Entity e;  // 0x0, ENTITY_UNK_8
+} Boss;
 
 // 各Bossの構造体の最初の方は共通部分っぽい？ (もしそうなら、 ENEMY_HDR のように BOSS_HDR を定義するか, struct Boss を作る予定)
 //
@@ -14,6 +29,8 @@ typedef s32 BossID;  // see include/constants/miscs.h
 //   0xB0  u16  animID       animVariant + 呼び出し側のアニメ番号, MainSprite_SetAnim に渡した値
 // MainSprite / MainSpriteGfx は共通部分に入っていない (ボスごとに位置が違うので引数で渡される, 例: bee_0803aee4 は +0x280 / +0x260)
 
-void* FUN_08022a2c(BossID id);
+void FUN_08022a0c(Boss*, BossID);
+void* FUN_08022a2c(BossID);
+void FUN_08022b04(Boss*);
 
 #endif  // __INCLUDE_BOSS_H__

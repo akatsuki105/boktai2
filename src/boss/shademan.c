@@ -1,156 +1,195 @@
 #include "boss.h"
 #include "entity.h"
 #include "global.h"
+#include "hitbox.h"
 #include "shadow.h"
-#include "sprite_main.h"
 
+// シェードマン(シングルプレイ用)
 typedef struct {
-  Entity e;                  // 0x0, ENTITY_UNK_8
-  u8 unk_18[0x34C - 0x18];   // 0x034C, まだ未解析
-  MainSprite sprite;         // 0x34C, _Destroy が MainSprite_Remove に渡す
-  AuxShadow shadow;          // 0x3AC, _Destroy が AuxShadow_Remove に渡す
-  u8 unk_418[2396 - 0x418];  // 0x418, まだ未解析
-} BossShadeMan;
-static_assert(sizeof(BossShadeMan) == 2396);
-
-const u8 u8_ARRAY_085aaf2c[64] = {0, 2, 3, 4, 4, 3, 1, 6, 3, 0, 5, 0, 5, 3, 4, 6, 4, 3, 1, 6, 0, 4, 2, 3, 3, 0, 5, 0, 4, 6, 5, 3, 0, 3, 4, 2, 4, 3, 1, 6, 3, 0, 5, 0, 4, 6, 5, 3, 3, 4, 0, 2, 3, 0, 5, 0, 4, 3, 1, 6, 5, 3, 4, 6};  // 0x085AAF2C
-
-void FUN_08022b04(BossShadeMan*);  // asm/boss.inc
-void FUN_0803c264(BossShadeMan*);
-void FUN_0803c76c(BossShadeMan*);
-
-void FUN_0803d8e4(BossShadeMan*);
-void FUN_0803d93c(BossShadeMan*);
-void FUN_0803d9b4(BossShadeMan*);
-void FUN_0803da2c(BossShadeMan*);
-void FUN_0803da90(BossShadeMan*);
-void FUN_0803dd88(BossShadeMan*);
-void FUN_0803de00(BossShadeMan*);
-void FUN_0803de78(BossShadeMan*);
-void FUN_0803def0(BossShadeMan*);
-void FUN_0803df68(BossShadeMan*);
-void FUN_0803dfe0(BossShadeMan*);
-void FUN_0803e058(BossShadeMan*);
-void FUN_0803e4f4(BossShadeMan*);
-
-void (*const PTR_ARRAY_085aaf6c[13])(BossShadeMan*) = {
-    FUN_0803d8e4,
-    FUN_0803d93c,
-    FUN_0803d9b4,
-    FUN_0803da2c,
-    FUN_0803da90,
-    FUN_0803dd88,
-    FUN_0803de00,
-    FUN_0803de78,
-    FUN_0803def0,
-    FUN_0803df68,
-    FUN_0803dfe0,
-    FUN_0803e058,
-    FUN_0803e4f4,
-};  // 0x085AAF6C
-
-void FUN_0803e578(BossShadeMan*);
-void FUN_0803e5d8(BossShadeMan*);
-
-void (*const PTR_ARRAY_085aafa0[2])(BossShadeMan*) = {
-    FUN_0803e578,
-    FUN_0803e5d8,
-};  // 0x085AAFA0
-
-void FUN_0803e5fc(BossShadeMan*);
-
-void (*const PTR_ARRAY_085aafa8[1])(BossShadeMan*) = {
-    FUN_0803e5fc,
-};  // 0x085AAFA8
-
-void FUN_0803e618(BossShadeMan*);
-
-void (*const PTR_ARRAY_085aafac[1])(BossShadeMan*) = {
-    FUN_0803e618,
-};  // 0x085AAFAC
-
-void FUN_0803e634(BossShadeMan*);
-void FUN_0803e670(BossShadeMan*);
-
-void (*const PTR_ARRAY_085aafb0[2])(BossShadeMan*) = {
-    FUN_0803e634,
-    FUN_0803e670,
-};  // 0x085AAFB0
-
-void FUN_0803e6b0(BossShadeMan*, s32);
-void FUN_0803e860(BossShadeMan*, s32);
-void FUN_0803e9f4(BossShadeMan*, s32);
-void FUN_0803ea98(BossShadeMan*, s32);
-void FUN_0803ebc4(BossShadeMan*, s32);
-void FUN_0803ed40(BossShadeMan*, s32);
-void FUN_0803ee50(BossShadeMan*, s32);
-void FUN_0803ef80(BossShadeMan*, s32);
-void FUN_0803f2f4(BossShadeMan*, s32);
-void FUN_0803f5b8(BossShadeMan*, s32);
-void FUN_0803f8cc(BossShadeMan*, s32);
-void FUN_0803fc70(BossShadeMan*, s32);
-void FUN_0803fef0(BossShadeMan*, s32);
-void FUN_080400a4(BossShadeMan*, s32);
-
-void (*const PTR_ARRAY_085aafb8[15])(BossShadeMan*, s32) = {
-    NULL,
-    FUN_0803e6b0,
-    FUN_0803e860,
-    FUN_0803e9f4,
-    FUN_0803ea98,
-    FUN_0803ebc4,
-    FUN_0803ed40,
-    FUN_0803ee50,
-    FUN_0803ef80,
-    FUN_0803f2f4,
-    FUN_0803f5b8,
-    FUN_0803f8cc,
-    FUN_0803fc70,
-    FUN_0803fef0,
-    FUN_080400a4,
-};  // 0x085AAFB8
-
-s32 FUN_0803c1bc(void* _) { return BOSS_SHADEMAN; }
+  Entity e;                   // 0x000, ENTITY_UNK_8
+  u8 unk_18[0x15C - 0x18];    // 0x018, まだ未解析
+  HitboxData hitbox_15c;      // 0x15C
+  u8 unk_1ac[0x31C - 0x1AC];  // 0x1AC, まだ未解析
+  AuxShadow shadow_31c;       // 0x31C
+  u8 unk_388[3076 - 0x388];   // 0x388, まだ未解析
+} Entity0623;
+static_assert(sizeof(Entity0623) == 3076);
 
 INCASM("asm/shademan.inc");
 
-void FUN_0803cee4(BossShadeMan*);
-void FUN_0803e68c(BossShadeMan*);
-void FUN_08040184(BossShadeMan*);
-void FUN_0803d0a4(BossShadeMan*);
+void FUN_0821c918(Entity0623*);
+void FUN_0822129c(Entity0623*);
+void FUN_0821d800(Entity0623*);
+void FUN_08221194(Entity0623*);
+void FUN_08221450(Entity0623*);
 
-s32 BossShadeMan_Update(BossShadeMan* p) {
-  FUN_0803cee4(p);
-  FUN_0803e68c(p);
-  FUN_08040184(p);
-  FUN_0803d0a4(p);
+s32 Entity0623_Update(Entity0623* p) {
+  FUN_0822129c(p);
+  FUN_0821d800(p);
+  FUN_08221194(p);
+  FUN_08221450(p);
   return 0;
 }
 
-s32 BossShadeMan_Destroy(BossShadeMan* p) {
-  AuxShadow_Remove(&p->shadow);
-  FUN_0803c264(p);
-  FUN_0803c76c(p);
-  MainSprite_Remove(&p->sprite);
-  FUN_08022b04(p);
+s32 Entity0623_Destroy(Entity0623* p) {
+  FUN_0821c918(p);
+  AuxShadow_Remove(&p->shadow_31c);
+  Hitbox_Unregister(&p->hitbox_15c);
+  FUN_08022b04((Boss*)p);
   return 0;
 }
 
-NAKED s32 BossShadeMan_Init(BossShadeMan* p, u32 id) { INCFUNC("asm/func/BossShadeMan_Init.inc"); }
+NAKED s32 Entity0623_Init(Entity0623* p, u32 id) { INCFUNC("asm/func/Entity0623_Init.inc"); }
 
-BossShadeMan* BossShadeMan_Create(u32 id) {
-  BossShadeMan* p = FUN_08022a2c(BOSS_SHADEMAN);
+// 0x0623, HashName("シェードマン")
+Entity0623* Entity0623_Create(u32 id) {
+  Entity0623* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity0623));
   if (p != NULL) {
-    return p;
-  }
-
-  p = CreateEntity(ENTITY_UNK_8, sizeof(BossShadeMan));
-  if (p != NULL) {
-    SetEntityRoutine(p, BossShadeMan_Update, BossShadeMan_Destroy);
-    if (BossShadeMan_Init(p, id) < 0) {
+    SetEntityRoutine(p, Entity0623_Update, Entity0623_Destroy);
+    if (Entity0623_Init(p, id) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
   }
   return p;
 }
+
+const u8 u8_ARRAY_085affa8[16] = {9, 9, 9, 9, 6, 6, 11, 11, 6, 8, 9, 9, 10, 10, 6, 6};  // 0x085affa8
+
+void FUN_0821ce18(Entity0623*);
+void FUN_0821ce7c(Entity0623*);
+void FUN_0821d074(Entity0623*);
+void FUN_0821d0c8(Entity0623*);
+void FUN_0821d124(Entity0623*);
+void FUN_0821d18c(Entity0623*);
+void FUN_0821d1e0(Entity0623*);
+void FUN_0821d240(Entity0623*);
+void FUN_0821d294(Entity0623*);
+void FUN_0821d2f4(Entity0623*);
+void FUN_0821d348(Entity0623*);
+void FUN_0821d39c(Entity0623*);
+void FUN_0821d3fc(Entity0623*);
+
+// clang-format off
+void (*const PTR_ARRAY_085affb8[13])(Entity0623*) = {
+    FUN_0821ce18,
+    FUN_0821ce7c,
+    FUN_0821d074,
+    FUN_0821d0c8,
+    FUN_0821d124,
+    FUN_0821d18c,
+    FUN_0821d1e0,
+    FUN_0821d240,
+    FUN_0821d294,
+    FUN_0821d2f4,
+    FUN_0821d348,
+    FUN_0821d39c,
+    FUN_0821d3fc,
+}; // 0x085affb8
+// clang-format on
+
+void FUN_0821d4b4(Entity0623*);
+void FUN_0821d578(Entity0623*);
+
+void (*const PTR_ARRAY_085affec[2])(Entity0623*) = {
+    FUN_0821d4b4,
+    FUN_0821d578,
+};  // 0x085affec
+
+void FUN_0821d5a8(Entity0623*);
+void FUN_0821d5d8(Entity0623*);
+void FUN_0821d630(Entity0623*);
+void FUN_0821d660(Entity0623*);
+void FUN_0821d690(Entity0623*);
+void FUN_0821d6c0(Entity0623*);
+void FUN_0821d6f0(Entity0623*);
+
+// clang-format off
+void (*const PTR_ARRAY_085afff4[7])(Entity0623*) = {
+    FUN_0821d5a8,
+    FUN_0821d5d8,
+    FUN_0821d630,
+    FUN_0821d660,
+    FUN_0821d690,
+    FUN_0821d6c0,
+    FUN_0821d6f0,
+};  // 0x085afff4
+// clang-format on
+
+void FUN_0821d744(Entity0623*);
+
+void (*const PTR_ARRAY_085b0010[1])(Entity0623*) = {
+    FUN_0821d744,
+};  // 0x085b0010
+
+void FUN_0821d760(Entity0623*);
+
+void (*const PTR_ARRAY_085b0014[1])(Entity0623*) = {
+    FUN_0821d760,
+};  // 0x085b0014
+
+void FUN_0821d77c(Entity0623*);
+
+void (*const PTR_ARRAY_085b0018[1])(Entity0623*) = {
+    FUN_0821d77c,
+};  // 0x085b0018
+
+void FUN_0821d798(Entity0623*);
+void FUN_0821d7c8(Entity0623*);
+void FUN_0821d7e4(Entity0623*);
+
+void (*const PTR_ARRAY_085b001c[3])(Entity0623*) = {
+    FUN_0821d798,
+    FUN_0821d7c8,
+    FUN_0821d7e4,
+};  // 0x085b001c
+
+void FUN_0821deec(Entity0623*);
+void FUN_0821df64(Entity0623*);
+void FUN_0821dfdc(Entity0623*);
+void FUN_0821e0a8(Entity0623*);
+void FUN_0821e220(Entity0623*);
+void FUN_0821e3f0(Entity0623*);
+void FUN_0821e738(Entity0623*);
+void FUN_0821ea6c(Entity0623*);
+void FUN_0821f0e4(Entity0623*);
+void FUN_0821f818(Entity0623*);
+void FUN_0821ff34(Entity0623*);
+void FUN_082201ec(Entity0623*);
+void FUN_08220430(Entity0623*);
+void FUN_082206a8(Entity0623*);
+void FUN_08220758(Entity0623*);
+void FUN_0822098c(Entity0623*);
+void FUN_082209cc(Entity0623*);
+void FUN_08220a68(Entity0623*);
+void FUN_08220b64(Entity0623*);
+void FUN_08220bf0(Entity0623*);
+void FUN_08220cc4(Entity0623*);
+void FUN_08220de0(Entity0623*);
+
+// clang-format off
+void (*const PTR_ARRAY_085b0028[22])(Entity0623*) = {
+    FUN_0821deec,
+    FUN_0821df64,
+    FUN_0821dfdc,
+    FUN_0821e0a8,
+    FUN_0821e220,
+    FUN_0821e3f0,
+    FUN_0821e738,
+    FUN_0821ea6c,
+    FUN_0821f0e4,
+    FUN_0821f818,
+    FUN_0821ff34,
+    FUN_082201ec,
+    FUN_08220430,
+    FUN_082206a8,
+    FUN_08220758,
+    FUN_0822098c,
+    FUN_082209cc,
+    FUN_08220a68,
+    FUN_08220b64,
+    FUN_08220bf0,
+    FUN_08220cc4,
+    FUN_08220de0,
+}; // 0x085b0028
+// clang-format on

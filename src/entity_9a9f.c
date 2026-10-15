@@ -12,7 +12,7 @@
 s32 FUN_081dec1c(Entity9A9F* p);
 s32 FUN_081de130(Entity9A9F* p);
 void FUN_081df460(Entity9A9F*);
-void FUN_080a6180(s32 param_1, s32 param_2, void* fn, void* arg);
+void EntityCF58_CreateWithCallback(s32 param_1, s32 param_2, void* fn, void* arg);
 s32 FUN_081de250(Entity9A9F*);
 s32 FUN_081de9d8(Entity9A9F*);
 s32 FUN_081de360(Entity9A9F*);
@@ -20,7 +20,7 @@ s32 FUN_081de844(Entity9A9F*);
 s32 FUN_081de960(Entity9A9F*);
 void FUN_081df568(Entity9A9F* p);
 s32 FUN_081df62c(Entity9A9F* p);
-void FUN_080a5e4c(void);
+void EntityCF58_RequestKill(void);
 s32 FUN_0809c08c(s32 mode);
 
 IWRAM_DATA u32 bool32_030001ac = FALSE;  // 0x030001AC
@@ -77,7 +77,7 @@ void FUN_081ddbdc(Entity9A9F* p) {
   p->recordCount = 0;
   p->prevState = p->state;
   Entity9A9F_SetState(p, 0, FUN_081de130);
-  FUN_080a5e4c();
+  EntityCF58_RequestKill();
   Sio_Disconnect();
 }
 
@@ -230,7 +230,7 @@ s32 FUN_081debd4(Entity9A9F* p) {
   gUseLinkInput = TRUE;
 
   if ((u8)FUN_081dd9d4(p)) {
-    FUN_080a6180(0, 0, FUN_081debc0, p);
+    EntityCF58_CreateWithCallback(0, 0, FUN_081debc0, p);
   }
 
   if (FUN_081ddab4(p) < 0) {

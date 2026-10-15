@@ -20,7 +20,7 @@
 #define INCBIN_S16 INCBIN
 #define INCBIN_S32 INCBIN
 
-// equal to HashName(x)
+// equal to HashName(x), preprocessed by TryConvertBokHash in tools/preproc
 #define BOKHASH(x) 0
 #endif
 

@@ -48,12 +48,24 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define BUS_WAIT 1         // Demo_CmdWait
 #define BUS_WAIT_EXT 2     // Demo_CmdWaitExternal
 
+#define TGT_PLAYER 0xF5EB     // BOKHASH("プレイヤー")
 #define TGT_DJANGO 0xBF31     // BOKHASH("ジャンゴ")
+#define TGT_SABATA 0x2B06     // BOKHASH("サバタ")
+#define TGT_OTNK 0x9CFE       // BOKHASH("おてんこさま")
 #define TGT_DUNEYRR 0x2B18    // BOKHASH("ドゥネイル")
 #define TGT_DURATHROR 0x9386  // BOKHASH("ドゥラスロール")
+#define TGT_DVALINN 0x0074    // BOKHASH("ドヴァリン")
 #define TGT_DAIIN 0x7901      // BOKHASH("ダーイン")
 #define TGT_SMITH 0x6740      // BOKHASH("スミス")
+#define TGT_RITA 0x3DB5       // BOKHASH("リタ")
+#define TGT_ZAJI 0x6DAD       // BOKHASH("ザジ")
+#define TGT_SUMIRE 0x6773     // BOKHASH("スミレ")
+#define TGT_KURO 0x51E2       // BOKHASH("クロ")
+#define TGT_KID 0xF68F        // BOKHASH("キッド")
+#define TGT_MARCELLO 0xCB6B   // BOKHASH("マルチェロ")
+#define TGT_LADY 0x0A5A       // BOKHASH("レディ")
 #define TGT_MEGAMAN 0xB548    // BOKHASH("ロックマン")
+#define TGT_SHADEMAN 0x0623   // BOKHASH("シェードマン")
 
 #define M(x) (const MsgPacket*)&x
 

@@ -57,8 +57,8 @@ IWRAM_DATA u8 u8_030000f4[0x118 - 0x0F4] = {};
 
 s32 FUN_0804e514(void* param_1);  // src/code_0804b9f4.c
 
-void FUN_08052290(unknown* p);
-void FUN_080522bc(unknown* p);
+void Entity723E_SetState(unknown* p);
+void Entity723E_ConsumeStateEntered(unknown* p);
 
 EntityAF33* FUN_0804f820(void) { return gEntityAF33; }
 
@@ -120,13 +120,13 @@ NAKED void FUN_0804fb6c(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_0
 
 void FUN_0804fbd0(EntityAF33* p) {
   if (p->unk_60 != NULL) {
-    FUN_08052290(p->unk_60);
+    Entity723E_SetState(p->unk_60);
   }
 }
 
 void FUN_0804fbe0(EntityAF33* p) {
   if (p->unk_60 != NULL) {
-    FUN_080522bc(p->unk_60);
+    Entity723E_ConsumeStateEntered(p->unk_60);
   }
 }
 

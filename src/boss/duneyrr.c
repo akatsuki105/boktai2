@@ -23,7 +23,6 @@ const u16 u16_ARRAY_085aaaec[5] = {15, 16, 12, 13, 14};  // 0x085AAAEC
 
 const u16 u16_ARRAY_085aaaf6[9] = {0x400, 0x500, 0x900, 0x500, 0x400, 0xA00, 0x900, 0xA00, 0x0};  // 0x085AAAF6
 
-void FUN_08022b04(Duneyrr*);  // asm/boss.inc
 void FUN_080234dc(Duneyrr*);
 void FUN_08023ba0(Duneyrr*);
 
@@ -170,7 +169,7 @@ s32 Duneyrr_Destroy(Duneyrr* p) {
   FUN_080234dc(p);
   MainSprite_Remove(&p->sprite);
   FUN_08023ba0(p);
-  FUN_08022b04(p);
+  FUN_08022b04((Boss*)p);
   return 0;
 }
 

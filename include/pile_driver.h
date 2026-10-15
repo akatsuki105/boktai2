@@ -98,8 +98,8 @@ typedef struct Generator {
   AuxSpriteGfx gfx;                           // 0x044, SPRITE_GENERATOR
   Vec3 pos;                                   // 0x060, Generator_Create の第1引数を8バイト複写したもの,Hitbox_SetPos に渡す
   HitboxData hitbox;                          // 0x068, Generator_InitHitbox が Hitbox_Init / _SetPowerAndAttributes / _SetPos / _SetHandler する
-  AuxAnimState anim;                          // 0x0B8, ANIM_3449, animIdx は 1 or 3
-  AuxAnimFile* animFile;                      // 0x0C8, ANIM_3449
+  AuxAnimState anim;                          // 0x0B8, ANIM_PILE, animIdx は 1 or 3
+  AuxAnimFile* animFile;                      // 0x0C8, ANIM_PILE
   u8 animVariant;                             // 0x0CC
   AuxAnimPlayFlags animFlags;                 // 0x0CD
   u8 unk_ce;                                  // 0x0CE, Generator_Init の第6引数,読み手が見つかっていない

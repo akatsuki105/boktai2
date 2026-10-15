@@ -3967,7 +3967,7 @@ static s32 Player_Init(Player* p, u32 n, void* _) {
   return 0;
 }
 
-// 0xF5EB, エリア移動などでも呼ばれる
+// 0xF5EB, HashName("プレイヤー"), エリア移動などでも毎回作り直す
 Player* CreatePlayer(u32 n, void* _) {
   Player* p = CreateEntity(ENTITY_PLAYER, sizeof(Player));
 

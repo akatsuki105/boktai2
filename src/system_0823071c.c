@@ -63,11 +63,8 @@ void ReadKeyInput(void) {
 // HashName("call"):  0x121F (VM_Ctrl_CallScriptIndirect)
 // HashName("print"): 0xB96E (VM_Ctrl_DebugPrint)
 // さらに chara 名 も EUC-JP 文字列をハッシュ化したもの
-// HashName("プレイヤー") -> 0xF5EB
-// HashName("ドヴァリン") -> 0x0074
-// HashName("シャイアン") -> 0x8E9F
-// HashName("クロウ") -> 0x9E8D
-// HashName("ボク") -> 0x05A5
+//   HashName("プレイヤー") -> 0xF5EB
+//   HashName("シャイアン") -> 0x8E9F
 // このリポジトリでも、 文字列で表記するために BOKHASH マクロを使って同じロジックで識別子のハッシュを生成している (tools/preproc で処理)
 u16 HashName(const char* s) {
   u16 hash = 0;

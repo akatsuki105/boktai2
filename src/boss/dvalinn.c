@@ -12,6 +12,29 @@ static_assert(sizeof(Dvalinn) == 2120);
 extern Dvalinn* gDvalinn;  // 0x03002C80
 extern u32 u32_03002bc0;   // src/iwram2.c
 
+const u16 u16_ARRAY_085ae5fc[8] = {1536, 1536, 1536, 2304, 2304, 2304, 2304, 1536};  // 0x085AE5FC
+
+void FUN_081fb2d4(Dvalinn* p);
+void FUN_081fb518(Dvalinn* p);
+void FUN_081fb664(Dvalinn* p);
+void FUN_081fbb08(Dvalinn* p);
+void FUN_081fc0a0(Dvalinn* p);
+void FUN_081fc1e4(Dvalinn* p);
+void FUN_081fc294(Dvalinn* p);
+void FUN_081fc298(Dvalinn* p);
+
+// Dvalinn + 0xA6 で引く (FUN_081fc394)
+void (*const PTR_ARRAY_085ae60c[8])(Dvalinn*) = {
+    FUN_081fb2d4,
+    FUN_081fb518,
+    FUN_081fb664,
+    FUN_081fbb08,
+    FUN_081fc0a0,
+    FUN_081fc1e4,
+    FUN_081fc294,
+    FUN_081fc298,
+};  // 0x085AE60C
+
 static inline bool32 TestFlag03002bc0(u32 flags) { return (u32_03002bc0 & flags) != 0; }
 
 void FUN_08022e20(Dvalinn*);  // asm/boss.inc

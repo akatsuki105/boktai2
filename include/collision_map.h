@@ -157,10 +157,11 @@ typedef struct {
   } rects[1];        // NavRect[countRects]
 
   struct NavPortal {
-    u16 x;       // 0x00, 1 tile = 0x100
-    u16 y;       // 0x02
-    u16 unk_4;   // 0x04
-  } portals[1];  // NavPortal[countPortals]
+    u16 x;        // 0x00, 1 tile = 0x100
+    u16 y;        // 0x02
+    u16 unk_4;    // 0x04
+    u8 rects[6];  // 0x06, Indices into NavMesh.rects. At most 6 rects per portal, unused elements in this array must be at the end of the array, and set to 0xFF.
+  } portals[1];   // NavPortal[countPortals]
 
   u16 distanceMap[1];  // u16[countDistanceMap]
 } NavIsland;

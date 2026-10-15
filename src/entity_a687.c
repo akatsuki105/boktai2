@@ -1,8 +1,6 @@
 #include "entity.h"
 #include "global.h"
 #include "video.h"
-
-extern u16 gObjPlttFadeSkipMask;  // 0x03004490
 #include "vm.h"
 
 // 画面を暗くして一定時間保ち、元の明るさへ戻して自滅する演出, brightness は ApplyBgPlttBlend が読む明るさ係数

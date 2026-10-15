@@ -51,7 +51,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x13AC, EnemySerpent_Create @ HashName("サーペント")
 	.4byte 0x1422, FUN_08240f4c
 	.4byte 0x1488, FUN_080dd93c
-	.4byte 0x1500, FUN_0823d1fc
+	.4byte 0x1500, FUN_0823d1fc @ HashName("BG表示")
 	.4byte 0x150F, Entity150F_Create
 	.4byte 0x15A9, FUN_08200a6c
 	.4byte 0x15B3, VM_Sub15B3
@@ -67,7 +67,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x184B, Camera_ConnectToTilemap
 	.4byte 0x1870, sound_08240728
 	.4byte 0x1887, InitMagicData @ HashName("魔法初期化")
-	.4byte 0x19CC, FUN_080088bc
+	.4byte 0x19CC, Entity2D2B_SetStateScripted
 	.4byte 0x1A35, FUN_08224790
 	.4byte 0x1B24, Entity1B24_Create
 	.4byte 0x1B77, FUN_080558b8
@@ -80,7 +80,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x1EA4, FUN_08037174
 	.4byte 0x1ED1, FUN_0821a9d8
 	.4byte 0x1F3B, FUN_0807da50
-	.4byte 0x1F65, VM_Sub1F65 @ HashName("ミニゲーム")
+	.4byte 0x1F65, VM_Sub1F65
 	.4byte 0x2141, FUN_0823bdf8
 	.4byte 0x2207, FUN_081d19cc
 	.4byte 0x225B, FUN_08223f3c
@@ -107,7 +107,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x2D30, EnemyAx_Create @ HashName("アックス")
 	.4byte 0x2D36, Taiyo_Create
 	.4byte 0x2D8F, Breakable_Spawn
-	.4byte 0x2E1C, FUN_080085f8
+	.4byte 0x2E1C, Entity2D2B_AddElemScripted
 	.4byte 0x2F01, Time_GetType
 	.4byte 0x2F51, FUN_0823e468
 	.4byte 0x2FA0, FUN_0809c264
@@ -162,7 +162,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x3F4B, VM_UnlockPhoto
 	.4byte 0x3F96, FUN_0820a938
 	.4byte 0x3F99, EnemyOctopus_Create @ HashName("オクトパス")
-	.4byte 0x3FFD, FUN_081fa54c
+	.4byte 0x3FFD, Entity3FFD_Create
 	.4byte 0x4063, Entity4063_Create
 	.4byte 0x409D, FUN_0807d5f8
 	.4byte 0x40A6, FUN_08209b10
@@ -179,15 +179,15 @@ gCommandList: @ 0x085A9208
 	.4byte 0x43D6, FUN_08041d60
 	.4byte 0x440F, FUN_0807b1a4
 	.4byte 0x44BF, FUN_080b2334
-	.4byte 0x44CD, FUN_080a59a8
+	.4byte 0x44CD, Entity8AF6_SetPoseScripted
 	.4byte 0x4561, FUN_08086c50
-	.4byte 0x4631, FUN_0800a4f4 @ HashName("ガン・デル・ヘル")
+	.4byte 0x4631, FUN_0800a4f4
 	.4byte 0x4759, Entity4759_Create
 	.4byte 0x48B3, FUN_08224d5c
 	.4byte 0x490F, FUN_0807da94
 	.4byte 0x4A16, FUN_080a11b8
 	.4byte 0x4A8D, FUN_0807b4e4
-	.4byte 0x4AB1, BossShadeMan_Create
+	.4byte 0x4AB1, ShadeManCrossover_Create @ HashName("クロスオーバーシェードマン")
 	.4byte 0x4AE5, Entity4AE5_Create
 	.4byte 0x4B15, Entity4B15_Create
 	.4byte 0x4B39, FUN_082416c8
@@ -343,7 +343,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x83E7, FUN_08243584
 	.4byte 0x8400, FUN_080b2224
 	.4byte 0x8459, FUN_080a11d4
-	.4byte 0x8602, FUN_08008870
+	.4byte 0x8602, Entity2D2B_SetLitDurationScripted
 	.4byte 0x86F3, ScriptShadow_SetModeFromScript
 	.4byte 0x877F, FUN_08050e18
 	.4byte 0x87E4, EnemySpider_Create @ HashName("スパイダー")
@@ -396,14 +396,14 @@ gCommandList: @ 0x085A9208
 	.4byte 0x9817, FUN_0808fcb4
 	.4byte 0x983A, FUN_080e028c
 	.4byte 0x98EC, EnemyGolem_Create @ HashName("ゴーレム")
-	.4byte 0x997B, FUN_080a5a94
-	.4byte 0x99CA, FUN_08019874
+	.4byte 0x997B, Entity8AF6_MoveToScripted
+	.4byte 0x99CA, Entity99CA_Create
 	.4byte 0x99F8, FUN_0809c314
 	.4byte 0x99FA, FUN_08023318
 	.4byte 0x9A9F, Entity9A9F_Create
 	.4byte 0x9AC8, FUN_0807d9e0
 	.4byte 0x9BC7, FUN_08086910
-	.4byte 0x9C3F, FUN_080a5a40
+	.4byte 0x9C3F, Entity8AF6_ShowScripted
 	.4byte 0x9DFE, FUN_082097f4
 	.4byte 0x9E8B, SolarBank_GetBalanceScripted
 	.4byte 0x9E8D, EnemyCrow_Create @ HashName("クロウ")
@@ -454,7 +454,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xAF43, FUN_0807d900
 	.4byte 0xAF8E, Entity4063_Cancel
 	.4byte 0xB005, FUN_080a12d8
-	.4byte 0xB0B4, FUN_08009124
+	.4byte 0xB0B4, Entity5DA5_SetStateScripted
 	.4byte 0xB0BC, SaveSequence_Create
 	.4byte 0xB164, LevelUpper_Create
 	.4byte 0xB189, FUN_08207ed0
@@ -481,7 +481,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xB88C, EntityB88C_Create
 	.4byte 0xB8B9, MoverList_Create
 	.4byte 0xB8C7, FUN_08005034
-	.4byte 0xBA36, EntityBA36_Create @ HashName("ランク")
+	.4byte 0xBA36, EntityBA36_Create
 	.4byte 0xBA4B, EntityBA4B_Create @ HashName("リンゴ")
 	.4byte 0xBB01, FUN_0807d4ec
 	.4byte 0xBB34, FUN_08205a18 @ HashName("おてんこ")
@@ -604,9 +604,9 @@ gCommandList: @ 0x085A9208
 	.4byte 0xEA96, FUN_0807d890
 	.4byte 0xEAAC, FUN_0823a91c
 	.4byte 0xEAAF, FUN_08020260
-	.4byte 0xEAB4, FUN_080a5c04
+	.4byte 0xEAB4, Entity8AF6_AddEntryScripted
 	.4byte 0xEB42, FUN_0809e54c
-	.4byte 0xEBFF, FUN_080a5a18
+	.4byte 0xEBFF, Entity8AF6_HideScripted
 	.4byte 0xEC1F, VM_DebugAssert
 	.4byte 0xEC2A, EnemyManager_Create
 	.4byte 0xEC5B, FUN_0823a910
@@ -614,7 +614,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xED07, BreakableManager_Create
 	.4byte 0xED1F, FUN_080a59e0
 	.4byte 0xED2E, IsCrossoverUnlocked
-	.4byte 0xEDE2, FUN_0823d1d8
+	.4byte 0xEDE2, FUN_0823d1d8 @ HashName("BG非表示")
 	.4byte 0xEE18, FUN_08240668
 	.4byte 0xEF19, EntityA628_ActivateScripted
 	.4byte 0xEF66, EntityEF66_Create

@@ -29,7 +29,7 @@ typedef struct ImmortalCoffin {
   u8 unk_1a2[2];              // 0x1A2
   Vec3* unk_1a4;              // 0x1A4, &mover.pos
   u8 unk_1a8[0x1E0 - 0x1A8];  // 0x1A8
-  AuxAnimFile* anim;          // 0x1E0, ANIM_3D95
+  AuxAnimFile* anim;          // 0x1E0, ANIM_COFFIN
   EnemyTarget target;         // 0x1E4, 敵から狙われる側としての登録, coffinID が COFFIN_SILVER のときは登録しない
   bool8 unk_1f4;              // 0x1F4, target を登録済みなら 1
   u8 state;                   // 0x1F5, 1 / 0x10 / 12 / 13 などを取る, Player は 1 か 0x10 のときだけ掴める

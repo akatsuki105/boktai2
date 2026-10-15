@@ -38,7 +38,7 @@
 	str r2, [sp, #8]
 	adds r2, r5, #0
 	adds r3, r4, #0
-	bl FUN_08052b3c
+	bl Entity723E_Setup
 	movs r3, #1
 	adds r1, r6, #0
 	adds r1, #0xf4

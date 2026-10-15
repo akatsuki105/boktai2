@@ -7,7 +7,16 @@ typedef struct {
 } Entity081ee2a0;
 static_assert(sizeof(Entity081ee2a0) == 1696);
 
-IWRAM_DATA Entity081ee2a0* gEntity081ee2a0 = NULL;  // 0x030001CC
-IWRAM_DATA u8 u8_030001c8[0x218 - 0x1D0] = {};
+static Entity081ee2a0* gEntity081ee2a0;  // 0x030001CC
+
+void FUN_081edd1c(Entity081ee2a0*, unknown*);
+void FUN_081eddb0(Entity081ee2a0*, unknown*);
+void FUN_081ee02c(Entity081ee2a0*, unknown*);
+
+void (*const PTR_ARRAY_085ae4c8[3])(Entity081ee2a0*, unknown*) = {
+    FUN_081edd1c,
+    FUN_081eddb0,
+    FUN_081ee02c,
+};  // 0x085AE4C8
 
 INCASM("asm/entity_081ee2a0.inc");

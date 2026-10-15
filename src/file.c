@@ -112,63 +112,64 @@ void* GetFile(FileID directoryID, FileID fileID) {
   Directory* d;
   u32 file = fileID;
 
+  // どのディレクトリIDも `xxd` でハッシュが一致するものがある
   switch (directoryID) {
     case DIR_ANIMATION: {
-      directoryID = 0x9225;
+      directoryID = 0x9225;  // BOKHASH("and")?
       fileID = 0x5130;
       isNormalDir = TRUE;
       break;
     }
     case DIR_BGPLTT: {
-      directoryID = 0x9305;
+      directoryID = 0x9305;  // BOKHASH("aud")?
       fileID = 0xD710;
       isNormalDir = TRUE;
       break;
     }
     case DIR_OBJPLTT: {
-      directoryID = 0x9A65;
+      directoryID = 0x9A65;  // BOKHASH("cpd")?
       fileID = 0x4679;
       isNormalDir = TRUE;
       break;
     }
     case DIR_AUX_SPRITE: {
-      directoryID = 0x9B05;
+      directoryID = 0x9B05;  // BOKHASH("cud")?
       fileID = 0x2117;
       isNormalDir = TRUE;
       break;
     }
     case DIR_FONT: {
-      directoryID = 0xA705;
+      directoryID = 0xA705;  // BOKHASH("fud")?
       fileID = 0x6D24;
       isNormalDir = TRUE;
       break;
     }
     case DIR_COLLISION_MAP: {
-      directoryID = 0xAF05;
+      directoryID = 0xAF05;  // BOKHASH("hud")?
       fileID = 0xAC2C;
       isNormalDir = TRUE;
       break;
     }
     case DIR_TILE_MAP: {
-      directoryID = 0xC305;
+      directoryID = 0xC305;  // BOKHASH("mud")?
       fileID = 0xE53E;
       isNormalDir = TRUE;
       break;
     }
     case DIR_MAIN_SPRITE: {
-      directoryID = 0xC8E5;
+      directoryID = 0xC8E5;  // BOKHASH("odd")?
       fileID = 0x5F29;
       isNormalDir = TRUE;
       break;
     }
     case DIR_TILESET: {
-      directoryID = 0xCEE5;
+      directoryID = 0xCEE5;  // BOKHASH("ptd")?
       fileID = 0x4F2D;
       isNormalDir = TRUE;
       break;
     }
     case DIR_PARTICLE: {
-      directoryID = 0xCF05;
+      directoryID = 0xCF05;  // BOKHASH("pud")?
       fileID = 0x0A4D;
       isNormalDir = TRUE;
       break;

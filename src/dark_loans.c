@@ -8,7 +8,7 @@
 // 暗黒ローンのメニュー(太陽バンクや暗黒カードは別)
 typedef struct {
   Entity e;                   // 0x000, ENTITY_UNK_11
-  MainSpriteGfx gfx0;         // 0x018, SPRITE_92F0
+  MainSpriteGfx gfx0;         // 0x018, SPRITE_UI_DARKLOAN
   MainSpriteGfx gfx1;         // 0x038
   MainSprite sprites[20];     // 0x058
   AuxSprite auxSprite;        // 0x7D8
@@ -55,6 +55,7 @@ NAKED s32 EntityE9D3_Init(EntityE9D3* p) { INCFUNC("asm/func/EntityE9D3_Init.inc
 s32 EntityE9D3_Update(EntityE9D3* p);
 s32 EntityE9D3_Destroy(EntityE9D3* p);
 
+// 0xE9D3, HashName("暗黒ローン")
 EntityE9D3* EntityE9D3_Create(void) {
   EntityE9D3* p = CreateEntity(ENTITY_UNK_11, sizeof(EntityE9D3));
 

@@ -199,15 +199,15 @@ void FUN_080c0058(EntityB3D1* p) {
   }
 }
 
-void FUN_080a6180(s32 param_1, s32 param_2, void* fn, void* arg);  // src/entity_a0a6.c
-void FUN_0807b910(Player* p, s32 val);                             // src/player_08065988.c
+void EntityCF58_CreateWithCallback(s32 param_1, s32 param_2, void* fn, void* arg);  // src/entity_a0a6.c
+void FUN_0807b910(Player* p, s32 val);                                              // src/player_08065988.c
 
 // プレイヤーを決まった座標へ戻してから FUN_080bffe8 を予約する
 void FUN_080c008c(void) {
   EntityB3D1* p = gEntityB3D1;
 
   if (p != NULL) {
-    FUN_080a6180(0, 0, FUN_080bffe8, p);
+    EntityCF58_CreateWithCallback(0, 0, FUN_080bffe8, p);
     FUN_0807b910(gPlayerPtr[0], 7);
     gPlayerPtr[0]->mover.pos.x = 0x380;
     gPlayerPtr[0]->mover.pos.y = 0x100;
@@ -242,6 +242,7 @@ NAKED void FUN_080c0770(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c0770.inc"); }
 
 NAKED s32 EntityB3D1_Init(EntityB3D1* p) { INCFUNC("asm/func/EntityB3D1_Init.inc"); }
 
+// 0xB3D1
 EntityB3D1* EntityB3D1_Create(void) {
   if (gEntityB3D1 == NULL) {
     EntityB3D1* p = CreateEntity(ENTITY_UNK_8, sizeof(EntityB3D1));

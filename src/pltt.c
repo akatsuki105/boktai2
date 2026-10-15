@@ -12,7 +12,6 @@ extern s32 gObjPlttSlotCursor;
 extern s32 gBgBrightnessApplied;
 extern s32 gObjBrightnessApplied;
 extern s32 gObjPlttSlotReserved;
-extern u16 gObjPlttFadeSkipMask;
 
 rgb555* GetBgPlttBlendBuffer(void) { return gBgPlttBlendBuffer; }
 

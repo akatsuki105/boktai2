@@ -11,8 +11,8 @@ typedef u8 AuxSpriteGfxFlags;  // AuxSpriteGfx.flags, ParticleGroupFlags と同�
 
 typedef struct {
   u16 id;                   // 0x00, ID of this actor, used for loading it
-  AuxSpriteGfxFlags flags;  // 0x02, このゲームでは全て０
-  u8 unk_03;                // 0x03, このゲームでは全て０
+  AuxSpriteGfxFlags flags;  // 0x02, このゲームでは全て0
+  u8 unk_03;                // 0x03, このゲームでは全て0, padding?
   u8 pw;                    // 0x04, pixel width
   u8 ph;                    // 0x05, pixel height
   s8 px;                    // 0x06, offset pixel x
@@ -24,7 +24,7 @@ static_assert(sizeof(AuxSpriteEntry) == 12);
 // メタスプライト
 typedef struct {
   u8 subspriteCount;    // 0x00, このメタスプライトを構成する AuxSubsprite の数
-  u8 unk_01;            // 0x01
+  u8 tileCount;         // 0x01, AuxSpritePose の GBAタイル数 (AuxSubspriteのタイル数の合計)
   u16 plttID;           // 0x02, ObjPlttFile.body[plttID*16]
   u32 tileOffset;       // 0x04, tiles[]の先頭からこのスプライトの最初のタイルまでのバイトオフセット, つまり tiles[tileOffset >> 5]
   u32 subspriteOffset;  // 0x08, subsprites[]の先頭から、このスプライトの最初のsubspritesまでのバイトオフセット, つまり subsprites[subspriteOffset>>2] から subsprites[(subspriteOffset>>2) + subspriteCount] がこのメタスプライトのサブスプライト
@@ -34,7 +34,7 @@ static_assert(sizeof(AuxSpritePose) == 12);
 // これがGBAスプライトに対応
 typedef struct {
   SpriteShape shape;  // 0x00, see SpriteShape
-  u8 unk_01;          // 0x01, このゲームでは全て０
+  u8 unk_01;          // 0x01, このゲームでは全て0
   s8 x;               // 0x02
   s8 y;               // 0x03
 } AuxSubsprite;
@@ -42,7 +42,7 @@ static_assert(sizeof(AuxSubsprite) == 4);
 
 typedef struct {
   u32 unk_00;                       // 0x000000, 0x0
-  s32 actorCount;                   // 0x000004, entries[253], Video_GetAuxSprite が符号付きで比較する
+  s32 entryCount;                   // 0x000004, entries[253], Video_GetAuxSprite が符号付きで比較する
   u32 unk_08;                       // 0x000008, 0x0
   u32 offsetToTiles;                // 0x00000C
   u32 offsetToMetasprites;          // 0x000010

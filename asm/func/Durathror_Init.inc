@@ -838,7 +838,7 @@ _0803C0B2:
 	bl AuxShadow_Hide
 	adds r0, r7, #0
 	bl FUN_080389b0
-	bl FUN_0805d79c
+	bl Entity0805d79c_Create
 	ldr r3, _0803C148 @ =0x00000DE4
 	adds r1, r7, r3
 	str r0, [r1]
@@ -854,7 +854,7 @@ _0803C0B2:
 	str r0, [r1]
 	cmp r0, #0
 	beq _0803C158
-	bl FUN_0805dcd4
+	bl Entity0805dcd4_Create
 	ldr r6, _0803C154 @ =0x00000DEC
 	adds r1, r7, r6
 	str r0, [r1]

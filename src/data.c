@@ -1,13 +1,13 @@
 #include "global.h"
 
-void FUN_08019b64(void* r0, void* r1);
-void FUN_08019b90(void* r0, void* r1);
-void FUN_08019d0c(void* r0, void* r1);
+void Entity4B15Elem_UpdateIdle(void* r0, void* r1);
+void Entity4B15Elem_UpdateTracking(void* r0, void* r1);
+void Entity4B15Elem_UpdateFixed(void* r0, void* r1);
 
 const void* const PTR_ARRAY_08251b58[3] = {
-    FUN_08019b64,
-    FUN_08019b90,
-    FUN_08019d0c,
+    Entity4B15Elem_UpdateIdle,
+    Entity4B15Elem_UpdateTracking,
+    Entity4B15Elem_UpdateFixed,
 };
 
 const ALIGNED(4) char s_WEIGHT_08251b64[] = "WEIGHT";

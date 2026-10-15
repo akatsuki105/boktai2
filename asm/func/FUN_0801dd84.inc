@@ -59,7 +59,7 @@ _0801DDE6:
 	movs r1, #0x40
 	movs r2, #0x3c
 	movs r3, #8
-	bl FUN_08019814
+	bl Entity99CA_CreateAt
 	movs r0, #0xa7
 	lsls r0, r0, #2
 	bl PlaySound_082406e0
