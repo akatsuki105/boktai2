@@ -239,7 +239,20 @@ bool32 Coffin_CopyPos(WorldPos* out) {
 
 NAKED void FUN_08086a4c(Vec3* pos) { INCFUNC("asm/func/FUN_08086a4c.inc"); }
 
-NAKED s32 FUN_08086ab8(void) { INCFUNC("asm/func/FUN_08086ab8.inc"); }
+bool32 FUN_08086ab8(void) {
+  if (gCoffin == NULL) {
+    return FALSE;
+  }
+  if (gCoffin->coffinID != COFFIN_SOLAR) {
+    return FALSE;
+  }
+  if (gCoffin->state > 4) {
+    return FALSE;
+  }
+
+  Coffin_SetState(gCoffin, 9);
+  return TRUE;
+}
 
 bool32 FUN_08086af0(void) {
   if (gCoffin == NULL) {
