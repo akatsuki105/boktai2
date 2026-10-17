@@ -98,7 +98,7 @@ typedef struct Coffin {
   u16 unk_3fa;                // 0x3FA, 初期値 0
   u8 unk_3fc[0x406 - 0x3FC];  // 0x3FC
   u16 unk_406;                // 0x406, _Update が毎フレーム 0 に戻す
-  u8 unk_408[2];              // 0x408
+  u16 unk_408;                // 0x408, FUN_080893c0 が Coffin_SetState に渡す遷移先の state
   u8 unk_40a;                 // 0x40A
   bool8 killRequested;        // 0x40B, 0 以外になると _Update が KillEntity する
   Vec3 unk_40c;               // 0x40C, FUN_080865dc が丸ごと返す
