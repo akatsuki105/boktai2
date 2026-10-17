@@ -14,6 +14,7 @@
 
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
 void FUN_08087528(Coffin* p);
+s32 FUN_080155e4(s32 count, WorldPos* pos, unknown* params);
 s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u16* param_5, s32 param_6, s32 param_7, s32 param_8);
 s32 FUN_080d99d4(s32 param_1, u32 param_2, u32 param_3);
 
@@ -88,7 +89,23 @@ NAKED void FUN_08085880(void) { INCFUNC("asm/func/FUN_08085880.inc"); }
 
 NAKED void FUN_0808596c(s32 param_1) { INCFUNC("asm/func/FUN_0808596c.inc"); }
 
-NAKED void FUN_08085a74(Coffin* p, s32 param_2) { INCFUNC("asm/func/FUN_08085a74.inc"); }
+// 残差1命令, 原典は &gRandTableIdx を ip に置いて毎回 [ip] から読み直すが, こちらは値をレジスタに持つため
+// callee-saved を1本多く push する, Tier A-C は試済, 未: per-TU フラグ
+NON_MATCH void FUN_08085a74(WorldPos* pos, unknown* params) {
+#ifdef NONMATCHING_C
+  Vec3 v = *pos;
+
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  v.x = v.x - 15 + (*(gRandTableIdx + gRandomTable) & 0x1F);
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  v.z = v.z - 15 + (*(gRandTableIdx + gRandomTable) & 0x1F);
+  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+  v.y = v.y - 16 - (*(gRandTableIdx + gRandomTable) & 0x3F);
+  FUN_080155e4(1, &v, params);
+#else
+  INCFUNC("asm/func/FUN_08085a74.inc");
+#endif
+}
 
 // 残差2命令, pltt[1] への 0 書き込み (case 0) と 0x1F 書き込み (case 2) の strh を原典は共通末尾に畳むが,
 // case 0 側が switch の途中にあるため break が b になって畳まれない, Tier A-C は試済
