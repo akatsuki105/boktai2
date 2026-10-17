@@ -45,7 +45,37 @@ void (*const PTR_ARRAY_085ad35c[2])(unknown*, unknown*) = {
     FUN_080defd0,
 };  // 0x085AD35C
 
-INCASM("asm/entity_080df420.inc");
+NAKED s32 FUN_080de174(unknown* param_1) { INCFUNC("asm/func/FUN_080de174.inc"); }
+
+NAKED void FUN_080de1cc(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_080de1cc.inc"); }
+
+NAKED void FUN_080de344(unknown* param_1) { INCFUNC("asm/func/FUN_080de344.inc"); }
+
+NAKED void FUN_080de3b4(s32 param_1, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_080de3b4.inc"); }
+
+NAKED void FUN_080de52c(s32 param_1, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_080de52c.inc"); }
+
+NAKED void FUN_080de6b0(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_080de6b0.inc"); }
+
+NAKED void FUN_080de7a0(s32 param_1) { INCFUNC("asm/func/FUN_080de7a0.inc"); }
+
+NAKED void FUN_080de81c(Entity080df420* p, Entity080df420Elem* param_2) { INCFUNC("asm/func/FUN_080de81c.inc"); }
+
+NAKED void FUN_080de820(Entity080df420* p, Entity080df420Elem* param_2) { INCFUNC("asm/func/FUN_080de820.inc"); }
+
+NAKED void FUN_080debbc(unknown* p, unknown* param_2) { INCFUNC("asm/func/FUN_080debbc.inc"); }
+
+NAKED void FUN_080defd0(unknown* p, unknown* param_2) { INCFUNC("asm/func/FUN_080defd0.inc"); }
+
+NAKED void FUN_080df148(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9) { INCFUNC("asm/func/FUN_080df148.inc"); }
+
+NAKED s32 Entity080df420_Update(unknown* param_1) { INCFUNC("asm/func/Entity080df420_Update.inc"); }
+
+NAKED s32 Entity080df420_Destroy(unknown* param_1) { INCFUNC("asm/func/Entity080df420_Destroy.inc"); }
+
+NAKED s32 Entity080df420_Init(unknown* param_1) { INCFUNC("asm/func/Entity080df420_Init.inc"); }
+
+NAKED Entity080df420Elem* Entity080df420_Create(void) { INCFUNC("asm/func/Entity080df420_Create.inc"); }
 
 void FUN_080df46c(void) { gEntity080df420 = NULL; }
 

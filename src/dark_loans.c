@@ -24,7 +24,53 @@ typedef struct {
 } EntityE9D3;
 static_assert(sizeof(EntityE9D3) == 2128);
 
-INCASM("asm/dark_loans.inc");
+NAKED void FUN_080b4818(unknown* param_1) { INCFUNC("asm/func/FUN_080b4818.inc"); }
+
+NAKED void dark_loans_080b48c8(unknown* param_1) { INCFUNC("asm/func/dark_loans_080b48c8.inc"); }
+
+NAKED void FUN_080b4a50(unknown* param_1) { INCFUNC("asm/func/FUN_080b4a50.inc"); }
+
+NAKED void FUN_080b4abc(unknown* param_1) { INCFUNC("asm/func/FUN_080b4abc.inc"); }
+
+NAKED s32 FUN_080b4aec(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_080b4aec.inc"); }
+
+NAKED void FUN_080b4b04(unknown* param_1) { INCFUNC("asm/func/FUN_080b4b04.inc"); }
+
+NAKED void FUN_080b4ba4(unknown* param_1) { INCFUNC("asm/func/FUN_080b4ba4.inc"); }
+
+NAKED void FUN_080b4c5c(unknown* param_1) { INCFUNC("asm/func/FUN_080b4c5c.inc"); }
+
+NAKED void FUN_080b4d98(unknown* param_1) { INCFUNC("asm/func/FUN_080b4d98.inc"); }
+
+NAKED void FUN_080b4e04(unknown* param_1) { INCFUNC("asm/func/FUN_080b4e04.inc"); }
+
+NAKED void FUN_080b4e8c(unknown* param_1) { INCFUNC("asm/func/FUN_080b4e8c.inc"); }
+
+NAKED void FUN_080b4f08(unknown* param_1) { INCFUNC("asm/func/FUN_080b4f08.inc"); }
+
+NAKED void FUN_080b4f48(unknown* param_1) { INCFUNC("asm/func/FUN_080b4f48.inc"); }
+
+NAKED s32 FUN_080b4ffc(s32 param_1) { INCFUNC("asm/func/FUN_080b4ffc.inc"); }
+
+NAKED void dark_loans_080b5020(unknown* param_1) { INCFUNC("asm/func/dark_loans_080b5020.inc"); }
+
+NAKED void FUN_080b539c(unknown* param_1) { INCFUNC("asm/func/FUN_080b539c.inc"); }
+
+NAKED void FUN_080b5434(unknown* param_1) { INCFUNC("asm/func/FUN_080b5434.inc"); }
+
+NAKED void FUN_080b54a0(unknown* param_1) { INCFUNC("asm/func/FUN_080b54a0.inc"); }
+
+NAKED void FUN_080b54ec(unknown* param_1) { INCFUNC("asm/func/FUN_080b54ec.inc"); }
+
+NAKED void FUN_080b5528(unknown* param_1) { INCFUNC("asm/func/FUN_080b5528.inc"); }
+
+NAKED s32 EntityE9D3_Update(EntityE9D3* p) { INCFUNC("asm/func/EntityE9D3_Update.inc"); }
+
+NAKED s32 EntityE9D3_Destroy(EntityE9D3* p) { INCFUNC("asm/func/EntityE9D3_Destroy.inc"); }
+
+NAKED void FUN_080b55d4(unknown* param_1) { INCFUNC("asm/func/FUN_080b55d4.inc"); }
+
+NAKED void FUN_080b5614(unknown* param_1) { INCFUNC("asm/func/FUN_080b5614.inc"); }
 
 NAKED void EntityE9D3_Init_Helper_080b5650(EntityE9D3* p) { INCFUNC("asm/func/EntityE9D3_Init_Helper_080b5650.inc"); }
 
