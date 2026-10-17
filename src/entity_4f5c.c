@@ -46,7 +46,7 @@ void (*const PTR_ARRAY_085aa974[3])(Entity4F5C*, Entity4F5CElem*) = {
 
 const u16 u16_ARRAY_085aa980[4] = {0x0, 0x80, 0x258};  // 0x085AA980
 
-NAKED void nop_0801a170(Entity4F5C* p, Entity4F5CElem* elem) { INCFUNC("asm/func/nop_0801a170.inc"); }
+void nop_0801a170(Entity4F5C* p, Entity4F5CElem* elem) {}
 
 NAKED void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) { INCFUNC("asm/func/Entity4F5C_ElemFall.inc"); }
 

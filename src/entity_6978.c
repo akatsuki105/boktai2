@@ -21,7 +21,7 @@ NAKED void FUN_080026fc(u32 val) { INCFUNC("asm/func/FUN_080026fc.inc"); }
 
 NAKED s32 FUN_0800271c(void) { INCFUNC("asm/func/FUN_0800271c.inc"); }
 
-NAKED void Entity6978_ClearPtr(void) { INCFUNC("asm/func/Entity6978_ClearPtr.inc"); }
+void Entity6978_ClearPtr(void) { gEntity6978 = NULL; }
 
 NAKED void Entity6978_StepDown(Entity6978* p) { INCFUNC("asm/func/Entity6978_StepDown.inc"); }
 

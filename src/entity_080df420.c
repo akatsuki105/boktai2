@@ -30,11 +30,11 @@ static_assert(sizeof(Entity080df420) == 6112);
 
 IWRAM_DATA Entity080df420* gEntity080df420 = NULL;  // 0x03000178
 
-void FUN_080de81c(Entity080df420*, Entity080df420Elem*);
+void nop_080de81c(Entity080df420*, Entity080df420Elem*);
 void FUN_080de820(Entity080df420*, Entity080df420Elem*);
 
 void (*const sEntity080df420Updates[2])(Entity080df420*, Entity080df420Elem*) = {
-    FUN_080de81c,
+    nop_080de81c,
     FUN_080de820,
 };  // 0x085AD354
 
@@ -60,7 +60,7 @@ NAKED void FUN_080de6b0(Entity080df420Elem* elem, s32 param_2, s32 param_3, s32 
 
 NAKED void FUN_080de7a0(Entity080df420Elem* elem) { INCFUNC("asm/func/FUN_080de7a0.inc"); }
 
-NAKED void FUN_080de81c(Entity080df420* p, Entity080df420Elem* param_2) { INCFUNC("asm/func/FUN_080de81c.inc"); }
+void nop_080de81c(Entity080df420* p, Entity080df420Elem* elem) {}
 
 NAKED void FUN_080de820(Entity080df420* p, Entity080df420Elem* param_2) { INCFUNC("asm/func/FUN_080de820.inc"); }
 

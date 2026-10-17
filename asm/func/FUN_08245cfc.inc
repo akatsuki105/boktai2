@@ -129,7 +129,7 @@ _08245D46:
 	mov r1, r8
 	movs r2, #0
 	bl Hitbox_SetPos
-	ldr r1, _08245E64 @ =FUN_08245cf8
+	ldr r1, _08245E64 @ =nop_08245cf8
 	adds r0, r7, #0
 	mov r2, sb
 	bl Hitbox_SetHandler
@@ -159,4 +159,4 @@ _08245E54: .4byte 0x0000FFFF
 _08245E58: .4byte 0x00004005
 _08245E5C: .4byte FUN_08245c80
 _08245E60: .4byte 0x00002001
-_08245E64: .4byte FUN_08245cf8
+_08245E64: .4byte nop_08245cf8
