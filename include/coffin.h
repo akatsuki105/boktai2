@@ -74,39 +74,42 @@ typedef struct Coffin {
   u32 unk_3b0;                // 0x3B0, '.O'
   u16 unk_3b4;                // 0x3B4
   u16 unk_3b6;                // 0x3B6, state が 1 のときは毎回 2, それ以外は 1 ずつ減るカウンタ
-  u8 unk_3b8[0x3C4 - 0x3B8];  // 0x3B8
+  u8 unk_3b8[4];              // 0x3B8
+  Vec3 unk_3bc;               // 0x3BC, FUN_08086b18 が受け取る位置, プレイヤーとの角度を出すのに使う
   Vec3 unk_3c4;               // 0x3C4, pos_1f8 の写し
   u8 unk_3cc[0x3D4 - 0x3CC];  // 0x3CC
   // 0x3D4 から 0x3FA までは FUN_08087310 がそれぞれ別の定数で初期化する一群
-  u16 unk_3d4;                // 0x3D4, 初期値 2
-  u16 unk_3d6;                // 0x3D6, 初期値 0
-  u8 unk_3d8[2];              // 0x3D8
-  u16 unk_3da;                // 0x3DA, 初期値 0x40
-  u16 unk_3dc;                // 0x3DC, 初期値 3
-  u16 unk_3de;                // 0x3DE, 初期値 6
-  u16 unk_3e0;                // 0x3E0, 初期値 2
-  u16 unk_3e2;                // 0x3E2, 初期値 2
-  u16 unk_3e4;                // 0x3E4, 初期値 60
-  u16 unk_3e6;                // 0x3E6, 初期値 8
-  u16 unk_3e8;                // 0x3E8, 初期値 0
-  u16 unk_3ea;                // 0x3EA, 初期値 0xFF
-  u16 unk_3ec;                // 0x3EC, 初期値 0xFF
-  u16 unk_3ee;                // 0x3EE, 初期値 0
-  u16 unk_3f0;                // 0x3F0, 初期値 0xFF
-  u16 unk_3f2;                // 0x3F2, 初期値 0
-  u16 unk_3f4;                // 0x3F4, 初期値 0xFF
-  u16 unk_3f6;                // 0x3F6, 初期値 0
-  u16 unk_3f8;                // 0x3F8, 初期値 0xFF
-  u16 unk_3fa;                // 0x3FA, 初期値 0
-  u8 unk_3fc[0x406 - 0x3FC];  // 0x3FC
-  u16 unk_406;                // 0x406, _Update が毎フレーム 0 に戻す
-  u16 unk_408;                // 0x408, FUN_080893c0 が Coffin_SetState に渡す遷移先の state
-  u8 unk_40a;                 // 0x40A
-  bool8 killRequested;        // 0x40B, 0 以外になると _Update が KillEntity する
-  Vec3 unk_40c;               // 0x40C, FUN_080865dc が丸ごと返す
-  s32 unk_414;                // 0x414, FUN_080da9c4 に渡して結果を受け取るハンドル
-  u16 unk_418;                // 0x418, FUN_080da9c4 に渡す進捗の入れ物, 自力移動を始めるときに 0 に戻す
-  u8 unk_41a[2];              // 0x41A
+  u16 unk_3d4;          // 0x3D4, 初期値 2
+  u16 unk_3d6;          // 0x3D6, 初期値 0
+  u8 unk_3d8[2];        // 0x3D8
+  u16 unk_3da;          // 0x3DA, 初期値 0x40
+  u16 unk_3dc;          // 0x3DC, 初期値 3
+  u16 unk_3de;          // 0x3DE, 初期値 6
+  u16 unk_3e0;          // 0x3E0, 初期値 2
+  u16 unk_3e2;          // 0x3E2, 初期値 2
+  u16 unk_3e4;          // 0x3E4, 初期値 60
+  u16 unk_3e6;          // 0x3E6, 初期値 8
+  u16 unk_3e8;          // 0x3E8, 初期値 0
+  u16 unk_3ea;          // 0x3EA, 初期値 0xFF
+  u16 unk_3ec;          // 0x3EC, 初期値 0xFF
+  u16 unk_3ee;          // 0x3EE, 初期値 0
+  u16 unk_3f0;          // 0x3F0, 初期値 0xFF
+  u16 unk_3f2;          // 0x3F2, 初期値 0
+  u16 unk_3f4;          // 0x3F4, 初期値 0xFF
+  u16 unk_3f6;          // 0x3F6, 初期値 0
+  u16 unk_3f8;          // 0x3F8, 初期値 0xFF
+  u16 unk_3fa;          // 0x3FA, 初期値 0
+  u8 unk_3fc[6];        // 0x3FC
+  u16 unk_402;          // 0x402
+  u16 unk_404;          // 0x404, 8方向の向き
+  u16 unk_406;          // 0x406, _Update が毎フレーム 0 に戻す
+  u16 unk_408;          // 0x408, FUN_080893c0 が Coffin_SetState に渡す遷移先の state
+  u8 unk_40a;           // 0x40A
+  bool8 killRequested;  // 0x40B, 0 以外になると _Update が KillEntity する
+  Vec3 unk_40c;         // 0x40C, FUN_080865dc が丸ごと返す
+  s32 unk_414;          // 0x414, FUN_080da9c4 に渡して結果を受け取るハンドル
+  u16 unk_418;          // 0x418, FUN_080da9c4 に渡す進捗の入れ物, 自力移動を始めるときに 0 に戻す
+  u8 unk_41a[2];        // 0x41A
 } Coffin;
 static_assert(sizeof(Coffin) == 1052);
 

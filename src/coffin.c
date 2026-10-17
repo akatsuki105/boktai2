@@ -541,7 +541,33 @@ bool32 FUN_08086af0(void) {
   return TRUE;
 }
 
-NAKED void FUN_08086b18(WorldPos* pos) { INCFUNC("asm/func/FUN_08086b18.inc"); }
+// 残差は gRandomTable 読み出しの r0/r1 入れ替え1箇所のみ (原典は値を r0, マスク 7 を r1 に置く), 命令列は同数同順
+// FUN_080856f4 と同じ残差, 添字形 gRandomTable[i] にすると base の materialize が1命令早まって悪化する
+NON_MATCH void FUN_08086b18(WorldPos* pos) {
+#ifdef NONMATCHING_C
+  if (gCoffin != NULL) {
+    s32 dx;
+    s32 dz;
+
+    gCoffin->unk_3bc = *pos;
+    Coffin_SetState(gCoffin, 14);
+    gCoffin->unk_408 = 15;
+    dx = gPlayerPtr[0]->mover.pos.x - gCoffin->unk_3bc.x;
+    dz = gPlayerPtr[0]->mover.pos.z - gCoffin->unk_3bc.z;
+    if (dx != 0 || dz != 0) {
+      s32 angle = ((ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5;
+
+      gCoffin->unk_404 = (angle + 7) & 7;
+    } else {
+      gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+      gCoffin->unk_404 = *(gRandTableIdx + gRandomTable) & 7;
+    }
+    gCoffin->unk_402 = 0x1D;
+  }
+#else
+  INCFUNC("asm/func/FUN_08086b18.inc");
+#endif
+}
 
 void FUN_08086be0(void) {
   Coffin* p = gCoffin;
