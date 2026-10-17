@@ -4,6 +4,7 @@
 #include "entity.h"
 #include "global.h"
 #include "inventory.h"
+#include "item.h"
 #include "particle.h"
 
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
@@ -278,7 +279,23 @@ void Coffin_RequestKill(void) {
   }
 }
 
-NAKED s32 FUN_08086d7c(void) { INCFUNC("asm/func/FUN_08086d7c.inc"); }
+// 装備中の棺桶ID, 未装備なら貴重品欄にある棺桶から探す
+s32 FUN_08086d7c(void) {
+  s32 i;
+
+  if (gStat->coffin >= 0) {
+    return gStat->coffin;
+  }
+
+  for (i = 0; i < 16; i++) {
+    s32 id = GetValuableItemID(i) - ITEM_OAK_COFFIN;
+
+    if ((u32)id < COFFIN_NUM) {
+      return id;
+    }
+  }
+  return COFFIN_OAK;
+}
 
 NAKED s32 FUN_08086db4(void) { INCFUNC("asm/func/FUN_08086db4.inc"); }
 
