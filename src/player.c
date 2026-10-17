@@ -5968,7 +5968,8 @@ void Player_AddForgeExp(void) {
   }
 }
 
-// 残差1命令: 原典は gPlayerPtr[i] を読んだレジスタから写しを作る, FUN_0807b2dc / FUN_0807b66c と同じ類
+// 残差1命令, 原典は gPlayerPtr[i] を r0 に読んでから adds r1, r0, #0 でコピーするが, こちらは直接 r1 に読む
+// && を分けた if, p ローカルを使わず gPlayerPtr[i] を3回書く形, 宣言と代入の分離はいずれも無効 (agbcc がコピーを畳む)
 NON_MATCH s32 FUN_0807b1a4(void) {
 #ifdef NONMATCHING_C
   s32 i = VM_GetPlayerIdx();
@@ -5985,8 +5986,8 @@ NON_MATCH s32 FUN_0807b1a4(void) {
 
 NAKED void item_0807b1e4(Player* p) { INCFUNC("asm/func/item_0807b1e4.inc"); }
 
-// 残差1命令: 原典は gPlayerPtr[i] を読んだレジスタから別のレジスタへ写してから使う
-// ローカルの有無・宣言と代入の分離・gPlayerPtr[i] の直接参照のどれでも写しが出ない
+// 残差1命令, 原典は gPlayerPtr[i] を r0 に読んでから adds r1, r0, #0 でコピーするが, こちらは直接 r1 に読む
+// && を分けた if, p ローカルを使わず gPlayerPtr[i] を3回書く形, 宣言と代入の分離はいずれも無効 (agbcc がコピーを畳む)
 NON_MATCH s32 FUN_0807b2dc(void) {
 #ifdef NONMATCHING_C
   s32 i = VM_GetPlayerIdx();
