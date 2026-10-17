@@ -1024,7 +1024,39 @@ NAKED void FUN_08088c54(Coffin* p) { INCFUNC("asm/func/FUN_08088c54.inc"); }
 
 NAKED void FUN_08088d44(Coffin* p) { INCFUNC("asm/func/FUN_08088d44.inc"); }
 
-NAKED void FUN_08088fbc(Coffin* p) { INCFUNC("asm/func/FUN_08088fbc.inc"); }
+// 残差4命令, FUN_08089088 と同じ stateTimer の u16 切り詰めの作り直し, Tier A-C は試済
+NON_MATCH void FUN_08088fbc(Coffin* p) {
+#ifdef NONMATCHING_C
+  if (p->state != 6) {
+    Coffin_SetState(p, 6);
+  }
+
+  if (gFlag030047a4 & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  p->unk_32a = 0;
+  p->stateTimer++;
+
+  if (p->stateTimer <= 5) {
+    if (p->stateTimer == 1) {
+      p->unk_418 = 0;
+      p->unk_414 = FUN_080da9c4(p->unk_414, &p->mover, 1, 0, &p->unk_418, 200, 250, 290);
+    }
+    return;
+  }
+
+  if (p->stateTimer == 6) {
+    p->unk_414 = FUN_080d99d4(p->unk_414, 1, p->mover.id);
+  }
+  p->unk_320 -= 30;
+  if (p->stateTimer > 8) {
+    p->killRequested = TRUE;
+  }
+#else
+  INCFUNC("asm/func/FUN_08088fbc.inc");
+#endif
+}
 
 // 残差3命令, 原典は stateTimer の u16 への切り詰め (lsls/lsrs #16) を比較ごとに作り直すが, こちらは1回で済ませてしまう
 // u16 ローカル経由も試したが同じ, Tier A-C は試済, 未: per-TU フラグ
