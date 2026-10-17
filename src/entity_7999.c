@@ -102,7 +102,7 @@ NAKED void FUN_081da930(unknown* param_1) { INCFUNC("asm/func/FUN_081da930.inc")
 
 NAKED s32 Entity7999_Update(Entity7999* p) { INCFUNC("asm/func/Entity7999_Update.inc"); }
 
-NAKED s32 Entity7999_Destroy(s32 param_1) { INCFUNC("asm/func/Entity7999_Destroy.inc"); }
+NAKED s32 Entity7999_Destroy(Entity7999* p) { INCFUNC("asm/func/Entity7999_Destroy.inc"); }
 
 NAKED s32 Entity7999_Init(Entity7999* p) { INCFUNC("asm/func/Entity7999_Init.inc"); }
 

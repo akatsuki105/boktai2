@@ -38,10 +38,10 @@ NAKED void FUN_080a51d4(unknown* param_1) { INCFUNC("asm/func/FUN_080a51d4.inc")
 
 NAKED void FUN_080a5568(void) { INCFUNC("asm/func/FUN_080a5568.inc"); }
 
-NAKED s32 Entity3117_Update(unknown* param_1) { INCFUNC("asm/func/Entity3117_Update.inc"); }
+NAKED s32 Entity3117_Update(Entity3117* p) { INCFUNC("asm/func/Entity3117_Update.inc"); }
 
-NAKED s32 Entity3117_Destroy(unknown* param_1) { INCFUNC("asm/func/Entity3117_Destroy.inc"); }
+NAKED s32 Entity3117_Destroy(Entity3117* p) { INCFUNC("asm/func/Entity3117_Destroy.inc"); }
 
-NAKED s32 Entity3117_Init(unknown* param_1, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/Entity3117_Init.inc"); }
+NAKED s32 Entity3117_Init(Entity3117* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/Entity3117_Init.inc"); }
 
 NAKED Entity3117Entry* Entity3117_Create(s32 param_1, s32 param_2) { INCFUNC("asm/func/Entity3117_Create.inc"); }

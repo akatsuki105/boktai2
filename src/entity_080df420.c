@@ -69,11 +69,11 @@ NAKED void FUN_080defd0(unknown* p, unknown* param_2) { INCFUNC("asm/func/FUN_08
 
 NAKED void FUN_080df148(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9) { INCFUNC("asm/func/FUN_080df148.inc"); }
 
-NAKED s32 Entity080df420_Update(unknown* param_1) { INCFUNC("asm/func/Entity080df420_Update.inc"); }
+NAKED s32 Entity080df420_Update(Entity080df420* p) { INCFUNC("asm/func/Entity080df420_Update.inc"); }
 
-NAKED s32 Entity080df420_Destroy(unknown* param_1) { INCFUNC("asm/func/Entity080df420_Destroy.inc"); }
+NAKED s32 Entity080df420_Destroy(Entity080df420* p) { INCFUNC("asm/func/Entity080df420_Destroy.inc"); }
 
-NAKED s32 Entity080df420_Init(unknown* param_1) { INCFUNC("asm/func/Entity080df420_Init.inc"); }
+NAKED s32 Entity080df420_Init(Entity080df420* p) { INCFUNC("asm/func/Entity080df420_Init.inc"); }
 
 NAKED Entity080df420Elem* Entity080df420_Create(void) { INCFUNC("asm/func/Entity080df420_Create.inc"); }
 

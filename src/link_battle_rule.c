@@ -73,7 +73,7 @@ NAKED void FUN_081db57c(unknown* param_1) { INCFUNC("asm/func/FUN_081db57c.inc")
 
 NAKED s32 Entity08F4_Update(Entity08F4* p) { INCFUNC("asm/func/Entity08F4_Update.inc"); }
 
-NAKED s32 Entity08F4_Destroy(s32 param_1) { INCFUNC("asm/func/Entity08F4_Destroy.inc"); }
+NAKED s32 Entity08F4_Destroy(Entity08F4* p) { INCFUNC("asm/func/Entity08F4_Destroy.inc"); }
 
 NAKED s32 Entity08F4_Init(Entity08F4* p) { INCFUNC("asm/func/Entity08F4_Init.inc"); }
 
