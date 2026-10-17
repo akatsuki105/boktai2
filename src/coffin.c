@@ -671,7 +671,27 @@ void FUN_08087290(Coffin* p) {
   Hitbox_SetHandler(hitbox, NULL, p);
 }
 
-NAKED void FUN_08087310(Coffin* p) { INCFUNC("asm/func/FUN_08087310.inc"); }
+void FUN_08087310(Coffin* p) {
+  p->unk_3d4 = 2;
+  p->unk_3d6 = 0;
+  p->unk_3da = 0x40;
+  p->unk_3dc = 3;
+  p->unk_3de = 6;
+  p->unk_3e0 = 2;
+  p->unk_3e2 = 2;
+  p->unk_3e4 = 60;
+  p->unk_3e6 = 8;
+  p->unk_3e8 = 0;
+  p->unk_3ea = 0xFF;
+  p->unk_3ec = 0xFF;
+  p->unk_3ee = 0;
+  p->unk_3f0 = 0xFF;
+  p->unk_3f2 = 0;
+  p->unk_3f4 = 0xFF;
+  p->unk_3f6 = 0;
+  p->unk_3f8 = 0xFF;
+  p->unk_3fa = 0;
+}
 
 void FUN_080873b4(Coffin* p, s32 delta) {
   p->unk_326 += delta;
