@@ -354,7 +354,22 @@ bool32 FUN_08086af0(void) {
 
 NAKED void FUN_08086b18(WorldPos* pos) { INCFUNC("asm/func/FUN_08086b18.inc"); }
 
-NAKED void FUN_08086be0(void) { INCFUNC("asm/func/FUN_08086be0.inc"); }
+void FUN_08086be0(void) {
+  Coffin* p = gCoffin;
+
+  if (p != NULL) {
+    u8 desc[8];
+
+    FUN_0823167c(desc);
+    FUN_0823206c(desc, 0, p->mover.pos.x);
+    FUN_0823167c(desc);
+    FUN_0823206c(desc, 0, p->mover.pos.y);
+    FUN_0823167c(desc);
+    FUN_0823206c(desc, 0, p->mover.pos.z);
+    FUN_0823167c(desc);
+    FUN_0823206c(desc, 0, p->unk_200);
+  }
+}
 
 NAKED void FUN_08086c50(void) { INCFUNC("asm/func/FUN_08086c50.inc"); }
 
