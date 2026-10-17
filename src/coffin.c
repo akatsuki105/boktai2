@@ -343,7 +343,18 @@ bool32 Coffin_CopyPos(WorldPos* out) {
   return TRUE;
 }
 
-NAKED void FUN_08086a4c(Vec3* pos) { INCFUNC("asm/func/FUN_08086a4c.inc"); }
+void FUN_08086a4c(Vec3* pos) {
+  Coffin* p = gCoffin;
+
+  if (p != NULL) {
+    p->pos_1f8 = *pos;
+    p->mover.pos = *pos;
+    p->sprite.pos = *pos;
+    p->sprite.pos.x += p->unk_31e;
+    p->sprite.pos.z += p->unk_322;
+    p->unk_388 = *pos;
+  }
+}
 
 bool32 FUN_08086ab8(void) {
   if (gCoffin == NULL) {
