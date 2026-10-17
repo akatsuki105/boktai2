@@ -320,7 +320,24 @@ s32 FUN_08086d7c(void) {
   return COFFIN_OAK;
 }
 
-NAKED s32 FUN_08086db4(void) { INCFUNC("asm/func/FUN_08086db4.inc"); }
+// 選択中の棺種別を返す, 未選択なら貴重品の中の棺アイテムを1つ消費してその種別を返す
+s32 Coffin_TakeKind(void) {
+  s32 i;
+
+  if (gStat->coffin >= 0) {
+    return gStat->coffin;
+  }
+
+  for (i = 0; i < 16; i++) {
+    s32 id = GetValuableItemID(i) - ITEM_OAK_COFFIN;
+
+    if ((u32)id < COFFIN_NUM) {
+      RemoveValuable(i);
+      return id;
+    }
+  }
+  return COFFIN_OAK;
+}
 
 // Coffin.weight, 棺桶の重さ, 運搬時のプレイヤーの移動速度に影響する
 static const u16 sCoffinWeights[8] = {

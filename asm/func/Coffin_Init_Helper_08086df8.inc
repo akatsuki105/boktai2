@@ -1,7 +1,7 @@
 	push {r4, lr}
 	adds r4, r0, #0
 	strh r1, [r4, #0x18]
-	bl FUN_08086db4
+	bl Coffin_TakeKind
 	ldr r3, _08086E48 @ =0x030046A0
 	ldr r1, [r3]
 	ldr r2, _08086E4C @ =0x00000252
