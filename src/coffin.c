@@ -229,7 +229,38 @@ bool32 Coffin_IsState(s32 state) {
   return TRUE;
 }
 
-NAKED void FUN_08086638(void) { INCFUNC("asm/func/FUN_08086638.inc"); }
+void FUN_08086638(void) {
+  Coffin* p = gCoffin;
+
+  if (p == NULL) {
+    return;
+  }
+
+  if (VM_SeekToNamedArg('p')) {
+    p->destPos.x = VM_GetValue();
+    p->destPos.y = VM_GetValue();
+    p->destPos.z = VM_GetValue();
+  }
+  if (VM_SeekToNamedArg('R')) {
+    p->unk_3b0 = VM_GetValue();
+  }
+
+  if (p->state != 3) {
+    return;
+  }
+
+  if (Map_FindNavRectAt(&p->mover.pos) == 0xFF) {
+    Coffin_SetState(p, 0);
+    return;
+  }
+
+  Map_InitNavAgent(&p->navAgent, &p->mover.pos);
+  if (FUN_08235a84(&p->navAgent, &p->mover.pos, &p->destPos) == 0) {
+    Coffin_SetState(p, 0);
+    return;
+  }
+  Coffin_SetState(p, 3);
+}
 
 void FUN_080866e4(void) {
   if (gCoffin != NULL) {
