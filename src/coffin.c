@@ -4,6 +4,7 @@
 #include "entity.h"
 #include "global.h"
 #include "inventory.h"
+#include "particle.h"
 
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
 
@@ -15,7 +16,7 @@ NAKED void FUN_080853c0(Coffin* p) { INCFUNC("asm/func/FUN_080853c0.inc"); }
 
 NAKED void FUN_08085408(Coffin* p) { INCFUNC("asm/func/FUN_08085408.inc"); }
 
-void FUN_0808565c(Coffin* p) {
+static void Coffin_RemoveParticles(Coffin* p) {
   Particle* ptcl = p->ptcls;
   s32 i;
 
@@ -25,7 +26,7 @@ void FUN_0808565c(Coffin* p) {
 }
 
 // エフェクト用の AuxSprite を1回だけ用意する
-void FUN_0808567c(Coffin* p) {
+void Coffin_CreateEffSprite(Coffin* p) {
   if (p->effSpriteAdded == FALSE) {
     Video_GetAuxSprite(&p->effGfx, SPRITE_EFF_1C1B);
     AuxSprite_Add(&p->effSprite, &p->effGfx, SPRFLAG_BLINK_ODD);
@@ -35,7 +36,7 @@ void FUN_0808567c(Coffin* p) {
   }
 }
 
-void FUN_080856cc(Coffin* p) {
+void Coffin_RemoveEffSprite(Coffin* p) {
   if (p->effSpriteAdded == TRUE) {
     AuxSprite_Remove(&p->effSprite);
     p->effSpriteAdded = FALSE;
@@ -89,8 +90,7 @@ NAKED void FUN_0808613c(Coffin* p) { INCFUNC("asm/func/FUN_0808613c.inc"); }
 
 void Coffin_ClearGlobal(void) { gCoffin = NULL; }
 
-// 0xD24B
-// 装備している棺桶をアイテムとして持ち物に戻し, 装備を外す
+// 0xD24B, 不使用?, 装備している棺桶をアイテムとして持ち物に戻し, 装備を外す
 // 残差は17/19命令でこちらが短い, 原典は -1 を movs/rsbs で作って別レジスタから写すが agbcc はプール定数1本で済ませる
 // Tier A-B 試済 (定数の書き方, 代入順)
 NON_MATCH void coffin_0808623c(void) {
@@ -449,8 +449,8 @@ s32 Coffin_Destroy(Coffin* p) {
   Mover_Unlink(&p->mover);
   AuxSprite_Remove(&p->sprite);
   Hitbox_Unregister(&p->hitbox);
-  FUN_0808565c(p);
-  FUN_080856cc(p);
+  Coffin_RemoveParticles(p);
+  Coffin_RemoveEffSprite(p);
   gCoffin = NULL;
   return 0;
 }

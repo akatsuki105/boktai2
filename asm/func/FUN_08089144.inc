@@ -35,7 +35,7 @@ _08089160:
 	cmp r0, #0x1e
 	bhi _080891A8
 	adds r0, r7, #0
-	bl FUN_080856cc
+	bl Coffin_RemoveEffSprite
 	strh r6, [r4]
 	movs r0, #1
 	strh r0, [r5]

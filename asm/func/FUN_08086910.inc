@@ -7,7 +7,7 @@
 	movs r1, #8
 	bl Coffin_SetState
 	adds r0, r4, #0
-	bl FUN_0808567c
+	bl Coffin_CreateEffSprite
 	movs r0, #0xd6
 	lsls r0, r0, #2
 	adds r2, r4, r0
