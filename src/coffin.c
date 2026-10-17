@@ -686,7 +686,24 @@ void FUN_080892f8(Coffin* p) {
   }
 }
 
-NAKED void FUN_08089344(Coffin* p) { INCFUNC("asm/func/FUN_08089344.inc"); }
+void FUN_08089344(Coffin* p) {
+  if (p->state != 12) {
+    Coffin_SetState(p, 12);
+  }
+
+  if (p->coffinID == COFFIN_VAMPIRE) {
+    p->unk_32a = 1;
+  } else if (p->coffinID == COFFIN_IRON_MAIDEN) {
+    p->unk_406 = 1;
+    p->unk_32a = 0;
+  } else {
+    p->unk_32a = 0;
+  }
+
+  p->hitbox.flags |= HBFLAG_UNK_2;
+  p->unk_200 = 0;
+  FUN_08086024(p, 24);
+}
 
 void FUN_080893c0(Coffin* p) {
   if (p->state != 14) {
