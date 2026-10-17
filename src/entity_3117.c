@@ -42,6 +42,6 @@ NAKED s32 Entity3117_Update(Entity3117* p) { INCFUNC("asm/func/Entity3117_Update
 
 NAKED s32 Entity3117_Destroy(Entity3117* p) { INCFUNC("asm/func/Entity3117_Destroy.inc"); }
 
-NAKED s32 Entity3117_Init(Entity3117* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/Entity3117_Init.inc"); }
+NAKED s32 Entity3117_Init(Entity3117* p, u32 param_2, u32 param_3, s32 count) { INCFUNC("asm/func/Entity3117_Init.inc"); }
 
-NAKED Entity3117Entry* Entity3117_Create(s32 param_1, s32 param_2) { INCFUNC("asm/func/Entity3117_Create.inc"); }
+NAKED Entity3117* Entity3117_Create(u32 param_1, u32 param_2) { INCFUNC("asm/func/Entity3117_Create.inc"); }

@@ -50,7 +50,7 @@ NAKED void FUN_080b4f08(unknown* param_1) { INCFUNC("asm/func/FUN_080b4f08.inc")
 
 NAKED void FUN_080b4f48(unknown* param_1) { INCFUNC("asm/func/FUN_080b4f48.inc"); }
 
-NAKED s32 FUN_080b4ffc(s32 param_1) { INCFUNC("asm/func/FUN_080b4ffc.inc"); }
+NAKED s32 FUN_080b4ffc(s32 val) { INCFUNC("asm/func/FUN_080b4ffc.inc"); }
 
 NAKED void dark_loans_080b5020(unknown* param_1) { INCFUNC("asm/func/dark_loans_080b5020.inc"); }
 
