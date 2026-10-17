@@ -46,4 +46,16 @@ void (*const PTR_ARRAY_085aa974[3])(Entity4F5C*, Entity4F5CElem*) = {
 
 const u16 u16_ARRAY_085aa980[4] = {0x0, 0x80, 0x258};  // 0x085AA980
 
-INCASM("asm/entity_4f5c.inc");
+NAKED void nop_0801a170(Entity4F5C* p, Entity4F5CElem* elem) { INCFUNC("asm/func/nop_0801a170.inc"); }
+
+NAKED void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) { INCFUNC("asm/func/Entity4F5C_ElemFall.inc"); }
+
+NAKED void Entity4F5C_ElemScatter(Entity4F5C* p, Entity4F5CElem* elem) { INCFUNC("asm/func/Entity4F5C_ElemScatter.inc"); }
+
+NAKED s32 Entity4F5C_Update(Entity4F5C* p) { INCFUNC("asm/func/Entity4F5C_Update.inc"); }
+
+NAKED s32 Entity4F5C_Destroy(Entity4F5C* p) { INCFUNC("asm/func/Entity4F5C_Destroy.inc"); }
+
+NAKED s32 Entity4F5C_Init(Entity4F5C* p) { INCFUNC("asm/func/Entity4F5C_Init.inc"); }
+
+NAKED Entity4F5C* Entity4F5C_Create(u32 id, u32 _) { INCFUNC("asm/func/Entity4F5C_Create.inc"); }
