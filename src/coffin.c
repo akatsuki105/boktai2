@@ -1,6 +1,7 @@
 #include "coffin.h"
 
 #include "collision_map.h"
+#include "definition.h"
 #include "entity.h"
 #include "global.h"
 #include "inventory.h"
@@ -462,7 +463,26 @@ NAKED s32 FUN_08087970(Coffin* p) { INCFUNC("asm/func/FUN_08087970.inc"); }
 
 NAKED void FUN_08087a5c(Coffin* p) { INCFUNC("asm/func/FUN_08087a5c.inc"); }
 
-NAKED void FUN_08087bac(Coffin* p) { INCFUNC("asm/func/FUN_08087bac.inc"); }
+void FUN_08087bac(Coffin* p) {
+  if (gFlag030047a4 & FLAG030047A4_UNK_9) {
+    return;
+  }
+  if (p->canSelfMove == 0) {
+    return;
+  }
+  if (p->unk_3b4 != 0) {
+    return;
+  }
+  if (p->unk_384 != 0) {
+    return;
+  }
+
+  if (p->selfMoveTimer != 0) {
+    p->selfMoveTimer--;
+  } else {
+    FUN_080860cc(p);
+  }
+}
 
 NAKED void FUN_08087c04(Coffin* p) { INCFUNC("asm/func/FUN_08087c04.inc"); }
 
