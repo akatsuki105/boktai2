@@ -127,7 +127,23 @@ bool32 FUN_0808608c(Coffin* p) {
   return FALSE;
 }
 
-NAKED void FUN_080860cc(Coffin* p) { INCFUNC("asm/func/FUN_080860cc.inc"); }
+// 残差は unk_384 のオフセット定数を 0x3A4 から subs で作ってしまう1命令のみ (原典は movs/lsls で作り直す), Tier A-C は試済
+// inline アクセサ経由 (Coffin_ResetSelfMoveTimer) も試したが改善せず, 未: per-TU フラグ
+NON_MATCH void FUN_080860cc(Coffin* p) {
+#ifdef NONMATCHING_C
+  p->selfMoveTimer = p->selfMoveTimerInit;
+
+  if (p->canSelfMove == 0 || p->unk_384 != 0) {
+    Coffin_SetState(gCoffin, 0);
+  } else if (FUN_0808608c(p)) {
+    Coffin_SetState(gCoffin, 3);
+  } else {
+    Coffin_SetState(gCoffin, 4);
+  }
+#else
+  INCFUNC("asm/func/FUN_080860cc.inc");
+#endif
+}
 
 NAKED void FUN_0808613c(Coffin* p) { INCFUNC("asm/func/FUN_0808613c.inc"); }
 
