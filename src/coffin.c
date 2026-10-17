@@ -8,6 +8,7 @@
 #include "particle.h"
 
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
+s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u16* param_5, s32 param_6, s32 param_7, s32 param_8);
 
 extern u32 u32_03002bc0;
 
@@ -101,7 +102,13 @@ NAKED s32 FUN_08085ef8(Coffin* p, s32 param_2) { INCFUNC("asm/func/FUN_08085ef8.
 
 s32 FUN_08086024(Coffin* p, s32 param_2) { return FUN_08085ef8(p, param_2 + p->coffinID); }
 
-NAKED void FUN_08086034(Coffin* p) { INCFUNC("asm/func/FUN_08086034.inc"); }
+void FUN_08086034(Coffin* p) {
+  if (p->unk_324 != 0) {
+    p->unk_324 = 0;
+    p->unk_326 = 0;
+    p->unk_414 = FUN_080da9c4(p->unk_414, &p->mover, 0x7F, 0, NULL, 0, 250, 290);
+  }
+}
 
 void FUN_08086080(Coffin* p) { FUN_08086034(p); }
 

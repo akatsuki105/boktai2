@@ -40,7 +40,9 @@ typedef struct Coffin {
   u16 unk_31e;                // 0x31E
   u16 unk_320;                // 0x320
   u16 unk_322;                // 0x322
-  u8 unk_324[0x32A - 0x324];  // 0x324
+  u16 unk_324;                // 0x324, 0 でない間 FUN_08086034 が unk_414 の処理を回す
+  u16 unk_326;                // 0x326
+  u8 unk_328[2];              // 0x328
   u16 unk_32a;                // 0x32A
   u16 unk_32c;                // 0x32C
   u16 unk_32e;                // 0x32E, unk_31c の写し (つまり coffinID の写し), これに 519 を足したものがパレット行
@@ -99,7 +101,8 @@ typedef struct Coffin {
   u8 unk_40a;                 // 0x40A
   bool8 killRequested;        // 0x40B, 0 以外になると _Update が KillEntity する
   Vec3 unk_40c;               // 0x40C, FUN_080865dc が丸ごと返す
-  u8 unk_414[0x41C - 0x414];  // 0x414
+  s32 unk_414;                // 0x414, FUN_080da9c4 に渡して結果を受け取るハンドル
+  u8 unk_418[4];              // 0x418
 } Coffin;
 static_assert(sizeof(Coffin) == 1052);
 
