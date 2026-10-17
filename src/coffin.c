@@ -449,7 +449,21 @@ void FUN_08087494(Coffin* p) {
   }
 }
 
-NAKED void FUN_080874cc(Coffin* p) { INCFUNC("asm/func/FUN_080874cc.inc"); }
+void FUN_080874cc(Coffin* p) {
+  if (gFlag030047a4 & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  FUN_08087440(p);
+  FUN_08087494(p);
+
+  if (p->unk_332 != 0) {
+    p->hitbox.flags |= HBFLAG_UNK_2;
+    p->unk_332--;
+  } else {
+    p->hitbox.flags &= ~HBFLAG_UNK_2;
+  }
+}
 
 NAKED void FUN_08087528(Coffin* p) { INCFUNC("asm/func/FUN_08087528.inc"); }
 
