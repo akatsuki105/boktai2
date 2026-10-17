@@ -42,7 +42,7 @@ typedef struct Coffin {
   u16 unk_322;                // 0x322
   u16 unk_324;                // 0x324, 0 でない間 FUN_08086034 が unk_414 の処理を回す
   u16 unk_326;                // 0x326
-  u8 unk_328[2];              // 0x328
+  u16 unk_328;                // 0x328, 毎フレーム +1 し, 下位7bitが 0x60 を超える間だけ unk_31e/unk_322 を揺らす
   u16 unk_32a;                // 0x32A
   u16 unk_32c;                // 0x32C
   u16 unk_32e;                // 0x32E, unk_31c の写し (つまり coffinID の写し), これに 519 を足したものがパレット行

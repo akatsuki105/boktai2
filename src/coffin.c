@@ -7,6 +7,8 @@
 #include "inventory.h"
 #include "item.h"
 #include "particle.h"
+#include "random.h"
+#include "sound.h"
 #include "vm.h"
 
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
@@ -57,7 +59,25 @@ void Coffin_RemoveEffSprite(Coffin* p) {
   }
 }
 
-NAKED void FUN_080856f4(Coffin* p) { INCFUNC("asm/func/FUN_080856f4.inc"); }
+// 残差は gRandomTable 読み出しの r0/r1 入れ替え1箇所のみ (原典は読んだ値を r0, マスク 1 を r1 に置く), 命令列は同数同順
+// Tier A-C は試済 (u32 化で bls は解消, ローカル v の有無は無影響), 未: per-TU フラグ
+NON_MATCH void FUN_080856f4(Coffin* p) {
+#ifdef NONMATCHING_C
+  u32 t = p->unk_328 & 0x7F;
+
+  if (t > 0x5F) {
+    if (t == 0x60) {
+      PlaySound_082406e0(0x2AA);
+    }
+    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+    p->unk_31e = (*(gRandTableIdx + gRandomTable) & 1) * 11 - 5;
+    p->unk_322 = -p->unk_31e;
+  }
+  p->unk_328++;
+#else
+  INCFUNC("asm/func/FUN_080856f4.inc");
+#endif
+}
 
 NAKED void FUN_08085764(Coffin* p) { INCFUNC("asm/func/FUN_08085764.inc"); }
 
