@@ -532,7 +532,17 @@ NAKED void FUN_08087058(Coffin* p) { INCFUNC("asm/func/FUN_08087058.inc"); }
 
 NAKED void FUN_080871e4(Coffin* p) { INCFUNC("asm/func/FUN_080871e4.inc"); }
 
-NAKED void FUN_08087290(Coffin* p) { INCFUNC("asm/func/FUN_08087290.inc"); }
+void FUN_08087290(Coffin* p) {
+  HitboxData* hitbox = &p->attackHitbox;
+  Vec3 size;
+  Vec3 offset;
+
+  size.x = 0x80, size.y = 0x20, size.z = 0x80;
+  offset.x = 0, offset.y = 0x20, offset.z = 0;
+  Hitbox_Init(hitbox, p->subroutineID, HBFLAG_UNK_13 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_SetAttack(hitbox, 50, 50, 0, HBATTR_18, 30);
+  Hitbox_SetHandler(hitbox, NULL, p);
+}
 
 NAKED void FUN_08087310(Coffin* p) { INCFUNC("asm/func/FUN_08087310.inc"); }
 
