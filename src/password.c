@@ -13,7 +13,15 @@ static_assert(sizeof(PasswordScreen) == 1120);
 const ALIGNED(4) char sChar_085aa838[] = "<WEIGHT>";   // 0x085aa838
 const ALIGNED(4) char sChar_085aa844[] = "</WEIGHT>";  // 0x085aa844
 
-INCASM("asm/password.inc");
+NAKED void FUN_08012c74(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_08012c74.inc"); }
+
+NAKED s32 FUN_08012cec(unknown* param_1) { INCFUNC("asm/func/FUN_08012cec.inc"); }
+
+NAKED s32 FUN_08012d00(s32 param_1, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_08012d00.inc"); }
+
+NAKED s32 FUN_08012d68(s32 param_1) { INCFUNC("asm/func/FUN_08012d68.inc"); }
+
+NAKED s32 PasswordScreen_EncodeBits(PasswordScreen* p) { INCFUNC("asm/func/PasswordScreen_EncodeBits.inc"); }
 
 NAKED s32 PasswordScreen_Update(PasswordScreen* p) { INCFUNC("asm/func/PasswordScreen_Update.inc"); }
 
