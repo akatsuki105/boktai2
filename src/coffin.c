@@ -790,7 +790,30 @@ void FUN_08087bac(Coffin* p) {
   }
 }
 
-NAKED void FUN_08087c04(Coffin* p) { INCFUNC("asm/func/FUN_08087c04.inc"); }
+void FUN_08087c04(Coffin* p) {
+  if (p->state != 0) {
+    Coffin_SetState(p, 0);
+  }
+  p->hitbox.flags &= ~HBFLAG_UNK_2;
+  p->unk_32a = 0;
+  FUN_08086024(p, 0);
+
+  if (gFlag030047a4 & FLAG030047A4_UNK_9) {
+    return;
+  }
+
+  if (p->unk_394 != 0) {
+    FUN_08087a5c(p);
+  } else if (p->unk_324 != 0) {
+    FUN_080856f4(p);
+  } else if (p->unk_40a != 0) {
+    p->unk_390 = p->unk_392;
+    p->selfMoveTimer = p->selfMoveTimerInit;
+    p->unk_394 = 0;
+  } else {
+    FUN_08087bac(p);
+  }
+}
 
 NAKED void FUN_08087cbc(s32 param_1) { INCFUNC("asm/func/FUN_08087cbc.inc"); }
 
