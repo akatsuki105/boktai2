@@ -7,6 +7,7 @@
 #include "inventory.h"
 #include "item.h"
 #include "particle.h"
+#include "vm.h"
 
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
 s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u16* param_5, s32 param_6, s32 param_7, s32 param_8);
@@ -396,7 +397,30 @@ static const u16 sCoffinWeights[8] = {
     [COFFIN_IRON_MAIDEN] = 90,
 };  // 0x085BBFE8
 
-NAKED void Coffin_Init_Helper_08086df8(Coffin* p, u32 id) { INCFUNC("asm/func/Coffin_Init_Helper_08086df8.inc"); }
+// 残差は gStat->coffin の再読み込み1箇所 (原典は gStat ポインタとハーフワードを両方読み直す), Tier A-B は試済
+// static inline アクセサ経由にすると値は読み直すがポインタは r1 に残り 39/40 まで, 未: per-TU フラグ
+NON_MATCH void Coffin_Init_Helper_08086df8(Coffin* p, u32 id) {
+#ifdef NONMATCHING_C
+  s32 v;
+
+  p->subroutineID = id;
+  gStat->coffin = Coffin_TakeKind();
+  p->coffinID = gStat->coffin;
+  v = VM_SeekToNamedArg('c');
+  if (v) {
+    v = VM_GetValue();
+  }
+  p->unk_1c = v;
+  p->weight = sCoffinWeights[p->coffinID];
+  if (VM_SeekToNamedArg('a')) {
+    Coffin_SetState(p, VM_GetValue());
+  } else {
+    Coffin_SetState(p, 0);
+  }
+#else
+  INCFUNC("asm/func/Coffin_Init_Helper_08086df8.inc");
+#endif
+}
 
 // 棺桶の封印力, 高いほど棺桶が逃げにくくなる
 static const u8 sCoffinPowers[8] = {
