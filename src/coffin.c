@@ -145,7 +145,32 @@ void FUN_08085cb0(Coffin* p, s32 coffinID) {
   p->gfx.pltt = p->pltt;
 }
 
-NAKED void FUN_08085cec(Coffin* p) { INCFUNC("asm/func/FUN_08085cec.inc"); }
+void FUN_08085cec(Coffin* p) {
+  if (p->unk_40a != 0 || p->unk_406 != 0) {
+    if (p->unk_334 <= 0x3F) {
+      p->unk_334++;
+    }
+  } else if (p->unk_334 != 0) {
+    p->unk_334--;
+  }
+
+  if (p->unk_330 != 0) {
+    if (p->unk_32e != 9) {
+      p->unk_32e = 9;
+      FUN_08085cb0(p, 9);
+    }
+    p->unk_330--;
+  } else if (p->unk_334 != 0) {
+    p->unk_32e = 8;
+    FUN_08085bd0(p);
+  } else {
+    if (p->unk_32e != p->unk_31c) {
+      p->unk_32e = p->unk_31c;
+      FUN_08085cb0(p, p->unk_32e);
+    }
+    FUN_08085b34(p);
+  }
+}
 
 NAKED void FUN_08085da8(Coffin* p) { INCFUNC("asm/func/FUN_08085da8.inc"); }
 

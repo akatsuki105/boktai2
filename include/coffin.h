@@ -47,9 +47,10 @@ typedef struct Coffin {
   u16 unk_32a;                // 0x32A
   u16 unk_32c;                // 0x32C
   u16 unk_32e;                // 0x32E, unk_31c の写し (つまり coffinID の写し), これに 519 を足したものがパレット行
-  u8 unk_330[2];              // 0x330
+  u16 unk_330;                // 0x330, 0 でない間は unk_32e を 9 に固定して毎フレーム減る
   u16 unk_332;                // 0x332
-  u8 unk_334[0x33A - 0x334];  // 0x334
+  u16 unk_334;                // 0x334, 0x40 を上限に増減するカウンタ
+  u8 unk_336[4];              // 0x336
   u8 unk_33a;                 // 0x33A
   bool8 effSpriteAdded;       // 0x33B, effSprite を AuxSprite_Add 済みなら 1
   AuxSprite effSprite;        // 0x33C
