@@ -426,7 +426,7 @@ void FUN_08086be0(void) {
     FUN_0823167c(desc);
     FUN_0823206c(desc, 0, p->mover.pos.z);
     FUN_0823167c(desc);
-    FUN_0823206c(desc, 0, p->unk_200);
+    FUN_0823206c(desc, 0, p->facing);
   }
 }
 
@@ -591,7 +591,14 @@ void FUN_080874cc(Coffin* p) {
 
 NAKED void FUN_08087528(Coffin* p) { INCFUNC("asm/func/FUN_08087528.inc"); }
 
-NAKED void FUN_080875e8(Coffin* p) { INCFUNC("asm/func/FUN_080875e8.inc"); }
+void FUN_080875e8(Coffin* p) {
+  s32 angle;
+
+  p->unk_40c = p->mover.pos;
+  angle = ((p->facing + 1) & 7) << 5;
+  p->unk_40c.x += COS(angle, 0x80);
+  p->unk_40c.z += SIN(angle, 0x80);
+}
 
 NAKED void FUN_0808766c(Coffin* p) { INCFUNC("asm/func/FUN_0808766c.inc"); }
 
@@ -681,7 +688,7 @@ void FUN_080892a8(Coffin* p) {
   p->unk_32a = 0;
   p->unk_394 = 0;
   p->hitbox.flags |= HBFLAG_UNK_2;
-  p->unk_200 = 0;
+  p->facing = 0;
   FUN_08086024(p, 0);
 }
 
@@ -690,7 +697,7 @@ void FUN_080892f8(Coffin* p) {
     Coffin_SetState(p, 13);
   }
   p->hitbox.flags |= HBFLAG_UNK_2;
-  p->unk_200 = 0;
+  p->facing = 0;
   if (FUN_08086024(p, 8) != 0) {
     Coffin_SetState(p, 12);
   }
@@ -711,7 +718,7 @@ void FUN_08089344(Coffin* p) {
   }
 
   p->hitbox.flags |= HBFLAG_UNK_2;
-  p->unk_200 = 0;
+  p->facing = 0;
   FUN_08086024(p, 24);
 }
 
@@ -720,7 +727,7 @@ void FUN_080893c0(Coffin* p) {
     Coffin_SetState(p, 14);
   }
   p->hitbox.flags |= HBFLAG_UNK_2;
-  p->unk_200 = 0;
+  p->facing = 0;
   if (FUN_08086024(p, 16) != 0) {
     Coffin_SetState(p, p->unk_408);
   }
