@@ -104,7 +104,8 @@ typedef struct Coffin {
   bool8 killRequested;        // 0x40B, 0 以外になると _Update が KillEntity する
   Vec3 unk_40c;               // 0x40C, FUN_080865dc が丸ごと返す
   s32 unk_414;                // 0x414, FUN_080da9c4 に渡して結果を受け取るハンドル
-  u8 unk_418[4];              // 0x418
+  u16 unk_418;                // 0x418, FUN_080da9c4 に渡す進捗の入れ物, 自力移動を始めるときに 0 に戻す
+  u8 unk_41a[2];              // 0x41A
 } Coffin;
 static_assert(sizeof(Coffin) == 1052);
 

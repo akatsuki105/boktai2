@@ -345,7 +345,40 @@ bool32 FUN_0808672c(void) {
   return TRUE;
 }
 
-NAKED void FUN_080867a0(void) { INCFUNC("asm/func/FUN_080867a0.inc"); }
+// 残差は定数 0 のレジスタ割当のみ (原典は両分岐で r3 に 0 を作り, unk_418 への strh と第4引数で共有する), 命令列は同数同順
+// unk_418 = 0 を両分岐に置くと3命令増えて悪化, Tier A-C は試済, 未: per-TU フラグ
+NON_MATCH void FUN_080867a0(void) {
+#ifdef NONMATCHING_C
+  Coffin* p = gCoffin;
+
+  if (p == NULL) {
+    return;
+  }
+
+  if (p->state == 1) {
+    FUN_08086080(p);
+    p->unk_394 = 1;
+    p->unk_3b6 = 300;
+  } else {
+    if (p->state != 0 && p->state != 2) {
+      if (p->state != 3 && p->state != 4) {
+        return;
+      }
+      if (p->unk_324 == 0) {
+        return;
+      }
+    }
+    FUN_08086080(p);
+    FUN_080860cc(p);
+    p->unk_3b6 = 600;
+  }
+
+  p->unk_418 = 0;
+  p->unk_414 = FUN_080da9c4(p->unk_414, &p->mover, 1, 0, &p->unk_418, 200, 250, 330);
+#else
+  INCFUNC("asm/func/FUN_080867a0.inc");
+#endif
+}
 
 bool32 Coffin_IsIdle(void) {
   if (gCoffin == NULL || gCoffin->state != 1) {
