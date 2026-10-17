@@ -58,7 +58,19 @@ NAKED void FUN_08085b34(Coffin* p) { INCFUNC("asm/func/FUN_08085b34.inc"); }
 
 NAKED void FUN_08085bd0(Coffin* p) { INCFUNC("asm/func/FUN_08085bd0.inc"); }
 
-NAKED void FUN_08085cb0(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_08085cb0.inc"); }
+// 棺桶ごとのパレットを読み, 自前のバッファに複写して gfx をそちらへ向ける
+void FUN_08085cb0(Coffin* p, s32 coffinID) {
+  rgb555* src;
+  s32 i;
+
+  Video_SetAuxSpritePltt(&p->gfx, coffinID + 519);
+
+  src = p->gfx.pltt;
+  for (i = 0; i < 16; i++) {
+    p->pltt[i] = src[i];
+  }
+  p->gfx.pltt = p->pltt;
+}
 
 NAKED void FUN_08085cec(Coffin* p) { INCFUNC("asm/func/FUN_08085cec.inc"); }
 
