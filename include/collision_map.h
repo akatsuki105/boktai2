@@ -231,7 +231,9 @@ Zone* FindZonesByID(ZoneID16 id, u16* count);
 void Map_InsertEvent(CollisionMapEvent* ev, u32 param_2);
 bool32 Map_IsPosInAgentIsland(NavAgent* agent, WorldPos* pos, WorldPos* dst);
 s32 FUN_08235f40(NavAgent* agent, WorldPos* pos, WorldPos* dst);
+s32 Map_FindNavRectAt(Vec3* pos);
 s32 Map_InitNavAgent(NavAgent* agent, WorldPos* pos);
 void FUN_08234660(ZoneEventSource* src);
+s32 FUN_08235a84(NavAgent* agent, WorldPos* pos, WorldPos* dst);
 
 #endif  // __INCLUDE_COLLISION_MAP_H__

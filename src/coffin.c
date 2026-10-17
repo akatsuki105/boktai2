@@ -95,7 +95,18 @@ NAKED void FUN_08086034(Coffin* p) { INCFUNC("asm/func/FUN_08086034.inc"); }
 
 void FUN_08086080(Coffin* p) { FUN_08086034(p); }
 
-NAKED s32 FUN_0808608c(s32 param_1) { INCFUNC("asm/func/FUN_0808608c.inc"); }
+// 今いる場所がナビメッシュ上なら NavAgent を初期化して destPos への経路を引く
+bool32 FUN_0808608c(Coffin* p) {
+  if (Map_FindNavRectAt(&p->mover.pos) == 0xFF) {
+    return FALSE;
+  }
+
+  Map_InitNavAgent(&p->navAgent, &p->mover.pos);
+  if (FUN_08235a84(&p->navAgent, &p->mover.pos, &p->destPos) != 0) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
 NAKED void FUN_080860cc(Coffin* p) { INCFUNC("asm/func/FUN_080860cc.inc"); }
 
