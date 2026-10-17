@@ -59,7 +59,8 @@ typedef struct Coffin {
   Vec3 unk_388;               // 0x388, pos_1f8 の写し
   u16 unk_390;                // 0x390, 棺桶ごとの値 × 60, unk_392 と対
   u16 unk_392;                // 0x392
-  u8 unk_394[0x398 - 0x394];  // 0x394
+  u16 unk_394;                // 0x394, unk_390 が 0 になると 1 になる
+  u16 unk_396;                // 0x396
   u16 unk_398;                // 0x398
   u16 unk_39a;                // 0x39A, 初期値 300
   u8 unk_39c[0x3A0 - 0x39C];  // 0x39C

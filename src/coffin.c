@@ -445,7 +445,17 @@ NAKED void FUN_08087cbc(s32 param_1) { INCFUNC("asm/func/FUN_08087cbc.inc"); }
 
 NAKED void FUN_08087f7c(s32 param_1) { INCFUNC("asm/func/FUN_08087f7c.inc"); }
 
-NAKED void FUN_080880fc(Coffin* p) { INCFUNC("asm/func/FUN_080880fc.inc"); }
+void FUN_080880fc(Coffin* p) {
+  if (p->unk_384 == 0) {
+    if (p->unk_390 != 0) {
+      p->unk_390--;
+    } else {
+      p->unk_390 = p->unk_392;
+      p->unk_394 = 1;
+      p->unk_396 = 0;
+    }
+  }
+}
 
 NAKED void FUN_08088148(Coffin* p) { INCFUNC("asm/func/FUN_08088148.inc"); }
 
