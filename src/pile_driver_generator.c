@@ -150,7 +150,7 @@ s32 Generator_Update(Generator* p) {
   p->updateCallback(p);
   Generator_UpdateFlash(p);
   if (p->unk_e8 != 0) {
-    if (gEntityCBB0->unk_c10 == 0) {
+    if (gPileDriver->unk_c10 == 0) {
       p->unk_e8 = 0;
     } else if (p->state != 4) {
       p->unk_e8 = 0;

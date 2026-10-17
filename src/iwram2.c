@@ -64,7 +64,7 @@ COMMON_DATA struct Entity3177* gEntity3177 = NULL;          // 0x03002C48
 COMMON_DATA struct Entity8AF6* gEntity8AF6 = NULL;          // 0x03002C4C
 COMMON_DATA struct Entity4063* gEntity4063 = NULL;          // 0x03002C50
 COMMON_DATA struct Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
-COMMON_DATA struct EntityCBB0* gEntityCBB0 = NULL;          // 0x03002C58
+COMMON_DATA struct PileDriver* gPileDriver = NULL;          // 0x03002C58
 
 COMMON_DATA struct EnemyManager* gEnemyManager = NULL;        // 0x03002C5C
 COMMON_DATA struct EnemyListNode* gEnemyListHead = NULL;      // 0x03002C60, 生存中のエネミーの単方向リスト, EnemyManager.list と同じ値

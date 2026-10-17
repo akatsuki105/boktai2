@@ -6,7 +6,7 @@
 #include "sprite.h"
 #include "vm.h"
 
-// Entity95A8_Init で太陽ダケのスプライトをロードしているので太陽ダケのEntityだと思われる
+// SolarBamboo_Init で太陽ダケのスプライトをロードしているので太陽ダケのEntityだと思われる
 typedef struct {
   Entity e;                // ENTITY_UNK_8
   u16 unk_18;              // 0x18
@@ -27,7 +27,7 @@ typedef struct {
   u8 unk_3a[2];            // 0x3A, padding?
   AuxSpriteGfx gfx;        // 0x3C
   AuxSprite sprite;        // 0x58, gfx を指す描画ノード
-  ParticleShadow shadow;   // 0x84, 根拠: Entity95A8_Destroy が ParticleShadow_Remove に渡している
+  ParticleShadow shadow;   // 0x84, 根拠: SolarBamboo_Destroy が ParticleShadow_Remove に渡している
   HitboxData hitbox;       // 0xC4, 0x0800c33a
 } SolarBamboo;
 static_assert(sizeof(SolarBamboo) == 276);
@@ -59,7 +59,7 @@ void FUN_0800c0b0(HitboxData* a, HitboxData* b, SolarBamboo* p) {
 }
 
 // 別のマップにいる間は隠し、いる間はアニメーションと揺れを進める
-NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
+NON_MATCH s32 SolarBamboo_Update(SolarBamboo* p) {
 #ifdef NONMATCHING_C
   bool32 active;
 
@@ -104,11 +104,11 @@ NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
   }
   return 0;
 #else
-  INCFUNC("asm/func/Entity95A8_Update.inc");
+  INCFUNC("asm/func/SolarBamboo_Update.inc");
 #endif
 }
 
-s32 Entity95A8_Destroy(SolarBamboo* p) {
+s32 SolarBamboo_Destroy(SolarBamboo* p) {
   Hitbox_Unregister(&p->hitbox);
   AuxSprite_Remove(&p->sprite);
   ParticleShadow_Remove(&p->shadow);
@@ -120,7 +120,7 @@ void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 val1, u32 val2, u32 val3);
 void Hitbox_Register(HitboxData* p);
 
 // スクリプトから位置と耐久を読み、当たり判定・スプライト・影を用意する
-s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
+s32 SolarBamboo_Init(SolarBamboo* p, u32 param, u32 _) {
   HitboxData* hitbox;
   AuxSpriteGfx* gfx;
   AuxSprite* spr;
@@ -166,11 +166,11 @@ s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
   return 0;
 }
 
-SolarBamboo* Entity95A8_Create(u32 param, u32 _) {
+SolarBamboo* SolarBamboo_Create(u32 param, u32 _) {
   SolarBamboo* p = CreateEntity(ENTITY_UNK_8, sizeof(SolarBamboo));
   if (p != NULL) {
-    SetEntityRoutine(p, Entity95A8_Update, Entity95A8_Destroy);
-    if (Entity95A8_Init(p, param, _) < 0) {
+    SetEntityRoutine(p, SolarBamboo_Update, SolarBamboo_Destroy);
+    if (SolarBamboo_Init(p, param, _) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

@@ -387,7 +387,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x94EB, FUN_0809c5f4
 	.4byte 0x9519, PasswordScreen_Create @ HashName("パスワード")
 	.4byte 0x9531, MessageChoice_CreateFromScript
-	.4byte 0x95A8, Entity95A8_Create @ HashName("太陽竹")
+	.4byte 0x95A8, SolarBamboo_Create @ HashName("太陽竹")
 	.4byte 0x95F8, SunCountdown_Create
 	.4byte 0x9700, FUN_080e16f4
 	.4byte 0x9763, FUN_0807d438
@@ -519,7 +519,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xCAEE, FUN_0823c050
 	.4byte 0xCAFE, FUN_0807d8c8
 	.4byte 0xCB30, FUN_080201c8
-	.4byte 0xCBB0, EntityCBB0_Create @ HashName("パイルドライバー")
+	.4byte 0xCBB0, PileDriver_Create @ HashName("パイルドライバー")
 	.4byte 0xCC28, EntityCC28_Create
 	.4byte 0xCCD3, EnemyGhost_Create @ HashName("ゴースト")
 	.4byte 0xCCD9, FUN_0809c220
