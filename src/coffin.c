@@ -12,6 +12,7 @@
 #include "vm.h"
 
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
+void FUN_08087528(Coffin* p);
 s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u16* param_5, s32 param_6, s32 param_7, s32 param_8);
 
 extern u32 u32_03002bc0;
@@ -600,7 +601,30 @@ NAKED void FUN_08086f90(Coffin* p) { INCFUNC("asm/func/FUN_08086f90.inc"); }
 
 NAKED void FUN_08087058(Coffin* p) { INCFUNC("asm/func/FUN_08087058.inc"); }
 
-NAKED void FUN_080871e4(Coffin* p) { INCFUNC("asm/func/FUN_080871e4.inc"); }
+void Coffin_InitHitbox(Coffin* p) {
+  HitboxData* hitbox = &p->hitbox;
+  Vec3 size;
+  Vec3 offset;
+  s32 ignoreMask;
+
+  size.x = 90, size.y = 32, size.z = 90;
+  offset.x = 100, offset.y = 200, offset.z = 100;
+  if (p->coffinID != COFFIN_SILVER) {
+    s32 kind = p->unk_1c;
+
+    ignoreMask = 2;
+    if (kind == 0) {
+      ignoreMask = 0x10;
+    }
+  } else {
+    ignoreMask = 0x10;
+  }
+  Hitbox_Init(hitbox, p->subroutineID, HBFLAG_UNK_14 | HBFLAG_UNK_7 | HBFLAG_UNK_0, 0, ignoreMask, &size, &offset);
+  Hitbox_SetPowerAndAttributes(hitbox, 0, 0, 0);
+  Hitbox_SetHandler(hitbox, FUN_08087528, p);
+  Hitbox_SetPos(hitbox, &p->mover.pos, 0);
+  Hitbox_Register(hitbox);
+}
 
 void FUN_08087290(Coffin* p) {
   HitboxData* hitbox = &p->attackHitbox;
@@ -943,7 +967,7 @@ s32 Coffin_Init(Coffin* p, u32 id, u32 _) {
   FUN_08086f90(p);
   FUN_08087058(p);
   Coffin_Init_Helper_08086e64(p);
-  FUN_080871e4(p);
+  Coffin_InitHitbox(p);
   FUN_08087290(p);
   Coffin_InitParticles(p);
   FUN_08087310(p);
