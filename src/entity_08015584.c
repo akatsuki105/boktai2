@@ -83,17 +83,17 @@ NON_MATCH u32 FUN_080155c8(s32 flags) {
 #endif
 }
 
-NAKED s32 FUN_080155e4(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_080155e4.inc"); }
+NAKED s32 FUN_080155e4(s32 count, WorldPos* pos, unknown* params) { INCFUNC("asm/func/FUN_080155e4.inc"); }
 
-NAKED void FUN_08015a90(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6) { INCFUNC("asm/func/FUN_08015a90.inc"); }
+NAKED void FUN_08015a90(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_08015a90.inc"); }
 
-NAKED void FUN_08015b18(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_08015b18.inc"); }
+NAKED void FUN_08015b18(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11) { INCFUNC("asm/func/FUN_08015b18.inc"); }
 
-NAKED void FUN_08015c28(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7) { INCFUNC("asm/func/FUN_08015c28.inc"); }
+NAKED void FUN_08015c28(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10) { INCFUNC("asm/func/FUN_08015c28.inc"); }
 
-NAKED void FUN_08015c90(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_08015c90.inc"); }
+NAKED void FUN_08015c90(s32 count, s32 param_2, s32 param_3, s32 param_4, WorldPos* pos) { INCFUNC("asm/func/FUN_08015c90.inc"); }
 
-NAKED void FUN_08015ce0(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11) { INCFUNC("asm/func/FUN_08015ce0.inc"); }
+NAKED void FUN_08015ce0(s32 count, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, WorldPos* pos) { INCFUNC("asm/func/FUN_08015ce0.inc"); }
 
 NAKED void FUN_08015d3c(unknown* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_08015d3c.inc"); }
 
