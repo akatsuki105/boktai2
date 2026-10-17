@@ -17,9 +17,9 @@ NAKED void FUN_08012c74(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_0
 
 NAKED s32 FUN_08012cec(unknown* param_1) { INCFUNC("asm/func/FUN_08012cec.inc"); }
 
-NAKED s32 FUN_08012d00(s32 param_1, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_08012d00.inc"); }
+NAKED s32 FUN_08012d00(PasswordScreen* p, s32 value, s32* bitPos, s32 width) { INCFUNC("asm/func/FUN_08012d00.inc"); }
 
-NAKED s32 FUN_08012d68(s32 param_1) { INCFUNC("asm/func/FUN_08012d68.inc"); }
+NAKED s32 FUN_08012d68(PasswordScreen* p) { INCFUNC("asm/func/FUN_08012d68.inc"); }
 
 NAKED s32 PasswordScreen_EncodeBits(PasswordScreen* p) { INCFUNC("asm/func/PasswordScreen_EncodeBits.inc"); }
 
