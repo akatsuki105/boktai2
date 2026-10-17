@@ -473,4 +473,18 @@ MapItemManager* MapItemManager_Ensure(void) {
   return p;
 }
 
-INCASM("asm/map_item.inc");
+NAKED s32 FUN_080070a8(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_080070a8.inc"); }
+
+NAKED s32 FUN_0800720c(void) { INCFUNC("asm/func/FUN_0800720c.inc"); }
+
+NAKED s32 FUN_08007310(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11) { INCFUNC("asm/func/FUN_08007310.inc"); }
+
+NAKED s32 FUN_08007640(void) { INCFUNC("asm/func/FUN_08007640.inc"); }
+
+NAKED s32 FUN_08007770(s32 param_1) { INCFUNC("asm/func/FUN_08007770.inc"); }
+
+NAKED s32 FUN_080077a8(void) { INCFUNC("asm/func/FUN_080077a8.inc"); }
+
+NAKED s32 FUN_080077bc(unknown* param_1, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_080077bc.inc"); }
+
+NAKED s32 FUN_08007820(void) { INCFUNC("asm/func/FUN_08007820.inc"); }

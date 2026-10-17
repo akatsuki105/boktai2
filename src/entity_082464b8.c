@@ -35,7 +35,29 @@ void (*const sEntity082464b8Updates[4])(Entity082464b8*, unknown*, s32) = {
     FUN_082463cc,
 };  // 0x08DBD800
 
-INCASM("asm/entity_082464b8.inc");
+NAKED s32 FUN_08245c4c(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_08245c4c.inc"); }
+
+NAKED void FUN_08245c80(unknown* param_1, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_08245c80.inc"); }
+
+NAKED void FUN_08245cf8(void) { INCFUNC("asm/func/FUN_08245cf8.inc"); }
+
+NAKED void FUN_08245cfc(Entity082464b8* p, u8* param_2, s32 param_3) { INCFUNC("asm/func/FUN_08245cfc.inc"); }
+
+NAKED void FUN_08245e68(Entity082464b8* p, u8* param_2, s32 param_3) { INCFUNC("asm/func/FUN_08245e68.inc"); }
+
+NAKED void FUN_08245eac(unknown* param_1) { INCFUNC("asm/func/FUN_08245eac.inc"); }
+
+NAKED void FUN_08245f2c(void* param_1) { INCFUNC("asm/func/FUN_08245f2c.inc"); }
+
+NAKED void FUN_08246038(void* param_1) { INCFUNC("asm/func/FUN_08246038.inc"); }
+
+NAKED void FUN_08246090(Entity082464b8* p, unknown* param_2, s32 param_3) { INCFUNC("asm/func/FUN_08246090.inc"); }
+
+NAKED void FUN_0824617c(Entity082464b8* p, unknown* param_2, s32 param_3) { INCFUNC("asm/func/FUN_0824617c.inc"); }
+
+NAKED void FUN_082462f4(Entity082464b8* p, unknown* param_2, s32 param_3) { INCFUNC("asm/func/FUN_082462f4.inc"); }
+
+NAKED void FUN_082463cc(Entity082464b8* p, unknown* param_2, s32 param_3) { INCFUNC("asm/func/FUN_082463cc.inc"); }
 
 NAKED s32 Entity082464b8_Update(Entity082464b8* p) { INCFUNC("asm/func/Entity082464b8_Update.inc"); }
 
