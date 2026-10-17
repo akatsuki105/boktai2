@@ -32,7 +32,7 @@
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08211AEC
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r2, _08211AFC @ =0x00000874
 	adds r1, r4, r2
 	str r0, [r1]
@@ -42,7 +42,7 @@
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08211AEC
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	movs r2, #0x87
 	lsls r2, r2, #4
 	adds r1, r4, r2
@@ -53,7 +53,7 @@
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08211AEC
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r2, _08211B00 @ =0x00000878
 	adds r1, r4, r2
 	str r0, [r1]

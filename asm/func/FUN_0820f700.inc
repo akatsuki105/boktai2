@@ -110,7 +110,7 @@ _0820F7DA:
 	movs r2, #8
 	mov r3, sb
 	subs r2, r2, r3
-	ldr r3, _0820F800 @ =0x085B0A08
+	ldr r3, _0820F800 @ =gSineTable
 	movs r1, #0xff
 	ands r0, r1
 	lsls r0, r0, #1
@@ -123,7 +123,7 @@ _0820F7DA:
 	asrs r2, r0, #0xd
 	b _0820F80A
 	.align 2, 0
-_0820F800: .4byte 0x085B0A08
+_0820F800: .4byte gSineTable
 _0820F804:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xd

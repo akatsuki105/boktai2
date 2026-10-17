@@ -9,7 +9,7 @@
 	adds r0, r4, r1
 	ldrb r5, [r0]
 	adds r0, r5, #0
-	bl FUN_080bce64
+	bl WeaponShop_GetSellPrice
 	ldr r3, _080BE050 @ =0x030046A0
 	ldr r2, [r3]
 	movs r1, #0x91
@@ -35,7 +35,7 @@ _080BE028:
 	adds r0, r4, r1
 	movs r1, #1
 	strb r1, [r0]
-	ldr r1, _080BE05C @ =FUN_080be060
+	ldr r1, _080BE05C @ =WeaponShop_AnimateSale
 	adds r0, r4, #0
 	movs r2, #0
 	bl FUN_080bcdf8
@@ -49,4 +49,4 @@ _080BE04C: .4byte 0x0000178A
 _080BE050: .4byte 0x030046A0
 _080BE054: .4byte 0x0000270F
 _080BE058: .4byte 0x00001659
-_080BE05C: .4byte FUN_080be060
+_080BE05C: .4byte WeaponShop_AnimateSale

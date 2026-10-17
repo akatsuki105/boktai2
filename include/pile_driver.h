@@ -28,7 +28,11 @@ typedef struct EntityCBB0 {
   EntityCBB0Func* updateCallback;   // 0x0250
   AuxSprite sprite_254;             // 0x0254, ->gfx_280
   AuxSpriteGfx gfx_280;             // 0x0280
-  u8 unk_29c[0x4FC - 0x29C];        // 0x029C, まだ未解析
+  u8 unk_29c[0x4E0 - 0x29C];        // 0x029C, まだ未解析
+  rgb555* plttSrc;                  // 0x04E0, 点滅用のパレット4組の先頭
+  u8 unk_4e4[0x4EC - 0x4E4];        // 0x04E4, まだ未解析
+  u16 plttTimer;                    // 0x04EC, 奇数フレームごとに plttSrc の組を差し替える
+  u8 unk_4ee[0x4FC - 0x4EE];        // 0x04EE, まだ未解析
   u16 unk_4fc;                      // 0x04FC, _Update が PTR_ARRAY_085AD07C[unk_4fc](p) として引く状態番号
   u16 unk_4fe;                      // 0x04FE, FUN_080ad1ec が unk_4fc の差し替えのたびに 0 に戻すカウンタ
   u8 unk_500[0x508 - 0x500];        // 0x0500, まだ未解析

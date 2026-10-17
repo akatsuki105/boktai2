@@ -110,7 +110,7 @@
 	adds r0, r7, r0
 	adds r0, #0xa6
 	ldrh r2, [r0]
-	ldr r1, _080C176C @ =0x085B0A08
+	ldr r1, _080C176C @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	ands r0, r3
@@ -127,7 +127,7 @@
 _080C1760: .4byte 0x0203B400
 _080C1764: .4byte 0x030046B8
 _080C1768: .4byte 0x000003FF
-_080C176C: .4byte 0x085B0A08
+_080C176C: .4byte gSineTable
 _080C1770:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -151,7 +151,7 @@ _080C1776:
 	adds r0, r7, r0
 	adds r0, #0xa6
 	ldrh r2, [r0]
-	ldr r1, _080C17B0 @ =0x085B0A08
+	ldr r1, _080C17B0 @ =gSineTable
 	lsls r0, r4, #1
 	adds r0, r0, r1
 	movs r1, #0
@@ -162,7 +162,7 @@ _080C1776:
 	asrs r2, r0, #0xc
 	b _080C17BA
 	.align 2, 0
-_080C17B0: .4byte 0x085B0A08
+_080C17B0: .4byte gSineTable
 _080C17B4:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

@@ -558,7 +558,7 @@ _0822644C:
 	adds r0, r6, r3
 	movs r4, #0
 	ldrsb r4, [r0, r4]
-	ldr r3, _08226518 @ =0x085B0A08
+	ldr r3, _08226518 @ =gSineTable
 	ldr r0, [r5]
 	lsls r0, r0, #2
 	movs r1, #0xff
@@ -591,5 +591,5 @@ _08226508: .4byte 0x00000DB8
 _0822650C: .4byte 0x00000E8E
 _08226510: .4byte 0x00000E96
 _08226514: .4byte 0x00000F25
-_08226518: .4byte 0x085B0A08
+_08226518: .4byte gSineTable
 _0822651C: .4byte 0x00000DBA

@@ -157,7 +157,7 @@ _080AEC8C:
 	add r3, sp, #0x14
 	adds r5, r0, #0
 	adds r5, #8
-	ldr r1, _080AED18 @ =0x085B0A08
+	ldr r1, _080AED18 @ =gSineTable
 	adds r0, r6, #0
 	adds r0, #0x40
 	mov r2, sb
@@ -177,7 +177,7 @@ _080AED08: .4byte 0x030046B8
 _080AED0C: .4byte 0x000003FF
 _080AED10: .4byte 0x0203B400
 _080AED14: .4byte 0x00001352
-_080AED18: .4byte 0x085B0A08
+_080AED18: .4byte gSineTable
 _080AED1C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -235,7 +235,7 @@ _080AED68:
 	add r3, sp, #0x14
 	adds r5, r0, #0
 	adds r5, #0xc
-	ldr r1, _080AEDA4 @ =0x085B0A08
+	ldr r1, _080AEDA4 @ =gSineTable
 	adds r0, r6, #0
 	adds r0, #0x40
 	mov r2, sb
@@ -251,7 +251,7 @@ _080AED68:
 	b _080AEDAE
 	.align 2, 0
 _080AEDA0: .4byte 0x0203B400
-_080AEDA4: .4byte 0x085B0A08
+_080AEDA4: .4byte gSineTable
 _080AEDA8:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

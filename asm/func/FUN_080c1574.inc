@@ -14,7 +14,7 @@
 	mov sl, r0
 	movs r0, #0xff
 	mov r8, r0
-	ldr r1, _080C15D0 @ =0x085B0A08
+	ldr r1, _080C15D0 @ =gSineTable
 	mov sb, r1
 	movs r7, #0
 	str r7, [sp]
@@ -46,7 +46,7 @@ _080C15A6:
 	str r1, [r0]
 	b _080C1644
 	.align 2, 0
-_080C15D0: .4byte 0x085B0A08
+_080C15D0: .4byte gSineTable
 _080C15D4:
 	ldrh r2, [r3, #0x12]
 	ldrh r1, [r5]

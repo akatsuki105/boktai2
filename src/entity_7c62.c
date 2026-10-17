@@ -34,18 +34,42 @@ static_assert(sizeof(Entity7C62) == 276);
 
 NAKED bool32 Entity7C62_IsPlayerNear(Entity7C62* p) { INCFUNC("asm/func/Entity7C62_IsPlayerNear.inc"); }
 
-NAKED void Entity7C62_SetUpdateCallback(Entity7C62* p, Entity7C62Func* fn) { INCFUNC("asm/func/Entity7C62_SetUpdateCallback.inc"); }
+void Entity7C62_SetUpdateCallback(Entity7C62* p, Entity7C62Func* fn) {
+  p->updateCallback = fn;
+  p->stateTimer = 0;
+}
 
 NAKED void Entity7C62_UpdateIdle(Entity7C62* p) { INCFUNC("asm/func/Entity7C62_UpdateIdle.inc"); }
 
 NAKED void Entity7C62_UpdateActivated(Entity7C62* p) { INCFUNC("asm/func/Entity7C62_UpdateActivated.inc"); }
 
-NAKED void Entity7C62_UpdateDone(Entity7C62* p) { INCFUNC("asm/func/Entity7C62_UpdateDone.inc"); }
+void Entity7C62_UpdateDone(Entity7C62* p) {}
 
-NAKED s32 Entity7C62_Update(Entity7C62* p) { INCFUNC("asm/func/Entity7C62_Update.inc"); }
+s32 Entity7C62_Update(Entity7C62* p) {
+  p->updateCallback(p);
+  return 0;
+}
 
-NAKED s32 Entity7C62_Destroy(Entity7C62* p) { INCFUNC("asm/func/Entity7C62_Destroy.inc"); }
+s32 Entity7C62_Destroy(Entity7C62* p) {
+  AuxSprite_Remove(&p->sprite);
+  AuxSprite_Remove(&p->sprite2);
+  if (p->moverLinked) {
+    Mover_Unlink(&p->mover);
+  }
+  return 0;
+}
 
-NAKED s32 Entity7C62_Init(Entity7C62* p, u32 id) { INCFUNC("asm/func/Entity7C62_Init.inc"); }
+NAKED s32 Entity7C62_Init(Entity7C62* p, u32 id, u32 param_3) { INCFUNC("asm/func/Entity7C62_Init.inc"); }
 
-NAKED Entity7C62* Entity7C62_Create(u32 id, u32 _) { INCFUNC("asm/func/Entity7C62_Create.inc"); }
+Entity7C62* Entity7C62_Create(u32 id, u32 param_2) {
+  Entity7C62* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity7C62));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity7C62_Update, Entity7C62_Destroy);
+    if (Entity7C62_Init(p, id, param_2) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

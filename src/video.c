@@ -11,6 +11,15 @@
 // フレームの描画/反映の入口, 描画リスト, AuxSprite, スプライト資源の読み込み, OBJ タイルの確保と OAM の組み立て
 // BG (タイルマップ) 側は src/bg.c, 表示レジスタの退避/復帰と直書きは src/video_reg.c にある
 
+// MainSprite のタイルを OBJ VRAM へ流すための転送要求1件, MainSprite_DrawInternal が積み CopyMainSpriteTileDataToVram が流す
+typedef struct {
+  void* src;  // 0x00, 転送元, ブロックごとに 0x200 ずつ進む
+  u16 size;   // 0x04, 1ブロックのバイト数
+  u16 count;  // 0x06, ブロック数
+} MainSpriteTileRequest;
+static_assert(sizeof(MainSpriteTileRequest) == 8);
+
+extern u32 gMainSpriteTileRequestCount;  // 0x030035A4
 extern u32 gFrameCounter;
 extern OamData gOAMBuffer[128];
 extern u16 gOAMPrioCounts[4];
@@ -46,7 +55,7 @@ typedef struct {
 EWRAM_DATA u8 u8_ARRAY_02036c00[512] = {};                            // 0x02036C00
 EWRAM_DATA rgb555 gBgPlttBlendBuffer[256] = {};                       // 0x02036e00, gBgPlttBuffer に明るさとブレンド色を掛けた結果の置き場, 根拠: ApplyBgPlttBlend
 EWRAM_DATA u8 gTilemapBuffer[BG_SCREEN_SIZE * 4] = {};                // 0x02037000, BG0, BG1, BG2, BG3 のタイルマップのバッファ
-EWRAM_DATA MainSpriteTileRequest gMainSpriteTileRequests[1024] = {};  // 0x02039000, 根拠: CopyMainSpriteTileDataToVram が 8 バイト刻みで読む
+EWRAM_DATA MainSpriteTileRequest gMainSpriteTileRequests[1024] = {};  // 0x02039000
 
 IWRAM_DATA Entity gVideoCommit = {};                   // 0x03000258
 IWRAM_DATA Entity gVideoRender = {};                   // 0x03000270
@@ -54,7 +63,6 @@ IWRAM_DATA ObjTileRequest gObjTileRequests[128] = {};  // 0x03000288, 根拠: Vi
 
 void ResetPltt(rgb555* pltt, s32 val);
 void Video_ResetObjTileAlloc(void);
-void Video_ResetFrameState(u32 clearOam);
 void Video_BuildOAM(void);
 void ResetObjPlttSlotCursor(void);
 void FUN_0822d248(void);
@@ -290,7 +298,7 @@ void nop_0822a4f8(void* _, s32 unused1, s32 unused2) {}
 // ノードに AuxSpriteGfx を割り当て、OAM属性のシェイプ/サイズを作り直す
 void AuxSprite_SetGfx(AuxSprite* p, AuxSpriteGfx* gfx) {
   if (gfx != NULL) {
-    p->metaspriteIdx = 0;
+    p->poseIdx = 0;
     p->unk_12 = 0;
     p->plttOffset = 0;
     p->spriteWidth = gOAMWidthTable[gfx->shape];
@@ -541,7 +549,7 @@ void LoadAuxSpriteFile(AuxSpriteFile* f) {
 bool32 Video_GetAuxSprite(AuxSpriteGfx* gfx, SpriteID32 id) {
   AuxSpriteFile* f = gAuxSpriteFile;
   u8* tiles;
-  u8* metasprites;
+  u8* poses;
   AuxSpriteEntry* a;
   AuxSpritePose* m;
   bool32 found;
@@ -550,7 +558,7 @@ bool32 Video_GetAuxSprite(AuxSpriteGfx* gfx, SpriteID32 id) {
   if (f == NULL) return FALSE;
 
   tiles = (u8*)f + f->offsetToTiles;
-  metasprites = (u8*)f + f->offsetToMetasprites;
+  poses = (u8*)f + f->offsetToMetasprites;
   found = FALSE;
   a = f->entries;
   for (i = 0; i < gAuxSpriteFile->entryCount; a++, i++) {
@@ -561,7 +569,7 @@ bool32 Video_GetAuxSprite(AuxSpriteGfx* gfx, SpriteID32 id) {
   }
   if (!found) return FALSE;
 
-  m = (AuxSpritePose*)(metasprites + a->spritesOffset);
+  m = (AuxSpritePose*)(poses + a->spritesOffset);
   gfx->flags = a->flags;
   gfx->shape = 0;
   gfx->unk_2 = 0;
@@ -571,7 +579,7 @@ bool32 Video_GetAuxSprite(AuxSpriteGfx* gfx, SpriteID32 id) {
   gfx->plttID = m->plttID;
   gfx->pltt = &gObjPlttData[gfx->plttID * 16];
   gfx->tiles = tiles + m->tileOffset;
-  gfx->metasprites = (AuxSpritePose*)(metasprites + a->spritesOffset);
+  gfx->poses = (AuxSpritePose*)(poses + a->spritesOffset);
   return TRUE;
 }
 
@@ -595,7 +603,10 @@ void Video_ResetObjTileAlloc(void) {
 }
 
 // タイルデータの転送要求を積んで割り当てた OBJ VRAM のタイル番号を返す, 既に積んであれば積み直さずその番号を返す
-// この C は単体では原典とバイト一致するが、同じ TU の Video_ResetFrameState の2つの store の順序が入れ替わって ROM が合わなくなる (あちらの文の順序を入れ替えても出力は変わらない)
+// この C は単体では原典と完全一致する (hunk 0) が、同じ TU の Video_ResetFrameState が壊れて ROM が合わなくなる
+// 壊れ方は命令2つのレジスタ名だけ: 原典は gStagedOAMCount→r4 / gObjAffineCount→r5, こちらは逆になる
+// プール順もストア順も同じで、local-alloc の同点崩しが TU 内の SYMBOL_REF の増減で裏返るのが原因
+// あちらの文の順序を入れ替えても出力は変わらず、どちらの関数の C からも制御できない
 NON_MATCH s32 Video_AllocObjTiles(void* tiles, s32 tileCount) {
 #ifdef NONMATCHING_C
   ObjTileRequest* req;

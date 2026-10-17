@@ -90,7 +90,7 @@ _080ABE68:
 	adds r0, r4, #0
 	bl Particle_SetFrame
 	ldrb r3, [r6]
-	ldr r2, _080ABF30 @ =0x085B0A08
+	ldr r2, _080ABF30 @ =gSineTable
 	mov r1, r8
 	ldrb r0, [r1]
 	adds r0, #0x40
@@ -110,7 +110,7 @@ _080ABF20: .4byte 0x0203B400
 _080ABF24: .4byte 0x030046B8
 _080ABF28: .4byte 0x000003FF
 _080ABF2C: .4byte FUN_080abd74
-_080ABF30: .4byte 0x085B0A08
+_080ABF30: .4byte gSineTable
 _080ABF34:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -124,7 +124,7 @@ _080ABF3A:
 	adds r0, r7, #0
 	adds r0, #0x2c
 	ldrb r2, [r0]
-	ldr r1, _080ABF64 @ =0x085B0A08
+	ldr r1, _080ABF64 @ =gSineTable
 	adds r0, #1
 	ldrb r0, [r0]
 	lsls r0, r0, #1
@@ -137,7 +137,7 @@ _080ABF3A:
 	asrs r1, r0, #0xc
 	b _080ABF6E
 	.align 2, 0
-_080ABF64: .4byte 0x085B0A08
+_080ABF64: .4byte gSineTable
 _080ABF68:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

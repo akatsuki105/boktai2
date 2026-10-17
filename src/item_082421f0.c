@@ -201,9 +201,9 @@ void SwapValuable(slot32_t slot1, slot32_t slot2) {
   SetValuable(slot2, a);
 }
 
-NAKED void SortInventory(s32 slot) { INCFUNC("asm/func/SortInventory.inc"); }
+NAKED void SortInventory(slot32_t slot) { INCFUNC("asm/func/SortInventory.inc"); }
 
-NAKED void SortValuable(s32 slot) { INCFUNC("asm/func/SortValuable.inc"); }
+NAKED void SortValuable(slot32_t slot) { INCFUNC("asm/func/SortValuable.inc"); }
 
 item32_t GetRottenItemID(item32_t n) {
   switch (n) {

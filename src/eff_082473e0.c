@@ -115,7 +115,7 @@ missing Eff082473e0Emitter_Reset(Eff082473e0Emitter* e) {
   }
 }
 
-NAKED s32 FUN_082467d0(Eff082473e0Emitter* e, u32 unk_1, u32 param_3, u32* param_4) { INCFUNC("asm/func/FUN_082467d0.inc"); }
+NAKED s32 FUN_082467d0(Eff082473e0Emitter* e, u32 kind, u32 param_3, Vec3* spread) { INCFUNC("asm/func/FUN_082467d0.inc"); }
 
 // 枠を空きに戻して粒子を隠す
 void Eff082473e0Particle_Clear(Eff082473e0Particle* ptcl) {

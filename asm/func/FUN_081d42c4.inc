@@ -3,7 +3,7 @@
 	adds r5, r0, #0
 	mov r4, sp
 	mov r0, sp
-	bl FUN_08086a28
+	bl Coffin_CopyPos
 	adds r0, r5, #0
 	adds r0, #0x58
 	mov r1, sp

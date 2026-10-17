@@ -265,8 +265,7 @@ void Sio_Reset(void) {
 
 void FUN_08237eb0(void) {}
 
-NON_MATCH s32 Sio_Start(void) {
-#ifdef NONMATCHING_C
+s32 Sio_Start(void) {
   s32 i;
 
   gSioRecvWriteIdx = gSioRecvReadIdx = 0;
@@ -290,9 +289,6 @@ NON_MATCH s32 Sio_Start(void) {
   }
   Sio_StartChildIntr();
   return 1;
-#else
-  INCFUNC("asm/func/Sio_Start.inc");
-#endif
 }
 
 // 通信を止める (親ならタイマー3、子ならシリアル割り込みを止める)

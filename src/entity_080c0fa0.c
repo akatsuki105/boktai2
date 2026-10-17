@@ -13,33 +13,60 @@ typedef struct Entity080c0fa0 {
   AuxSpriteGfx gfx;                    // 0x44, SPRITE_EFF_210E, パレットは Init の第3引数
   Vec3 pos;                            // 0x60, Init の第2引数のコピー
   u8 unk_68[2];                        // 0x68, まだ未解析
-  u16 metaspriteIdx;                   // 0x6A, Init の第4引数
+  u16 poseIdx;                         // 0x6A, Init の第4引数
   u16 dir;                             // 0x6C, +1 して & 7 した値で gSineTable を引き速度を作る
   s16 vx;                              // 0x6E, -(速さ * sin(dir+0x40)) >> 12
   s16 vz;                              // 0x70, -(速さ * sin(dir)) >> 12
-  s16 delay;                           // 0x72, 0 でなければ隠して待つ方から始める
+  u16 delay;                           // 0x72, 0 でなければ隠して待つ方から始める
   u16 unk_74;                          // 0x74, Init の第8引数
   u16 stateTimer;                      // 0x76, updateCallback を差し替えるたびに 0 に戻る
   Entity080c0fa0Func* updateCallback;  // 0x78
 } Entity080c0fa0;
 static_assert(sizeof(Entity080c0fa0) == 124);
 
-NAKED void Entity080c0fa0_SetUpdateCallback(Entity080c0fa0* p, Entity080c0fa0Func* fn) { INCFUNC("asm/func/Entity080c0fa0_SetUpdateCallback.inc"); }
+void Entity080c0fa0_SetUpdateCallback(Entity080c0fa0* p, Entity080c0fa0Func* fn) {
+  p->updateCallback = fn;
+  p->stateTimer = 0;
+}
 
 NAKED void Entity080c0fa0_AdvanceAnim(Entity080c0fa0* p) { INCFUNC("asm/func/Entity080c0fa0_AdvanceAnim.inc"); }
 
 NAKED void Entity080c0fa0_UpdateActive(Entity080c0fa0* p) { INCFUNC("asm/func/Entity080c0fa0_UpdateActive.inc"); }
 
-NAKED void Entity080c0fa0_UpdateDelay(Entity080c0fa0* p) { INCFUNC("asm/func/Entity080c0fa0_UpdateDelay.inc"); }
+// delay フレーム待ってからスプライトを見せて本体の更新へ移る
+void Entity080c0fa0_UpdateDelay(Entity080c0fa0* p) {
+  p->stateTimer++;
+  if (p->stateTimer >= p->delay) {
+    p->sprite.flags &= ~SPRFLAG_HIDDEN;
+    Entity080c0fa0_SetUpdateCallback(p, Entity080c0fa0_UpdateActive);
+  }
+}
 
-NAKED s32 Entity080c0fa0_Update(Entity080c0fa0* p) { INCFUNC("asm/func/Entity080c0fa0_Update.inc"); }
+s32 Entity080c0fa0_Update(Entity080c0fa0* p) {
+  p->updateCallback(p);
+  return 0;
+}
 
-NAKED s32 Entity080c0fa0_Destroy(Entity080c0fa0* p) { INCFUNC("asm/func/Entity080c0fa0_Destroy.inc"); }
+s32 Entity080c0fa0_Destroy(Entity080c0fa0* p) {
+  AuxSprite_Remove(&p->sprite);
+  return 0;
+}
 
-NAKED s32 Entity080c0fa0_Init(Entity080c0fa0* p, Vec3* pos, SpriteID32 pltt, u16 metaspriteIdx, u16 dir, s32 speed, s16 delay, u16 param_8) { INCFUNC("asm/func/Entity080c0fa0_Init.inc"); }
+NAKED s32 Entity080c0fa0_Init(Entity080c0fa0* p, Vec3* pos, SpriteID32 pltt, u16 poseIdx, u16 dir, s32 speed, s16 delay, u16 param_8) { INCFUNC("asm/func/Entity080c0fa0_Init.inc"); }
 
-NAKED Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, u16 metaspriteIdx, u16 dir, s32 speed, s16 delay, u16 param_7) { INCFUNC("asm/func/Entity080c0fa0_Create.inc"); }
+NAKED Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, u16 poseIdx, u16 dir, s32 speed, s16 delay, u16 param_7) { INCFUNC("asm/func/Entity080c0fa0_Create.inc"); }
 
-NAKED s32 FUN_080c1008(Entity080c0fa0* p) { INCFUNC("asm/func/FUN_080c1008.inc"); }
+NAKED s32 FUN_080c1008(Entity080c0fa0* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080c1008.inc"); }
 
-NAKED Entity080c0fa0* FUN_080c1108(u32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_080c1108.inc"); }
+Entity080c0fa0* FUN_080c1108(u32 param_1, u32 param_2) {
+  Entity080c0fa0* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity080c0fa0));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity080c0fa0_Update, Entity080c0fa0_Destroy);
+    if (FUN_080c1008(p, param_1, param_2) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

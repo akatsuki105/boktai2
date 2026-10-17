@@ -219,7 +219,7 @@ _0804325C:
 _080432CA:
 	add r3, sp, #0xc
 	ldrb r4, [r6, #5]
-	ldr r0, _080432F0 @ =0x085B0A08
+	ldr r0, _080432F0 @ =gSineTable
 	adds r1, r4, #0
 	adds r1, #0x40
 	ands r1, r7
@@ -236,7 +236,7 @@ _080432CA:
 	asrs r2, r2, #0xc
 	b _080432FA
 	.align 2, 0
-_080432F0: .4byte 0x085B0A08
+_080432F0: .4byte gSineTable
 _080432F4:
 	rsbs r0, r2, #0
 	asrs r0, r0, #0xc

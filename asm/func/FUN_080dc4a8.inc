@@ -36,7 +36,7 @@
 	cmp r0, #0
 	ble _080DC570
 	add r2, sp, #8
-	ldr r0, _080DC514 @ =0x085B0A08
+	ldr r0, _080DC514 @ =gSineTable
 	adds r1, r3, #0
 	adds r1, #0x40
 	ands r1, r5
@@ -52,7 +52,7 @@
 	asrs r1, r1, #0xc
 	b _080DC51E
 	.align 2, 0
-_080DC514: .4byte 0x085B0A08
+_080DC514: .4byte gSineTable
 _080DC518:
 	rsbs r0, r1, #0
 	asrs r0, r0, #0xc
@@ -103,7 +103,7 @@ _080DC56C: .4byte 0x0000FFFC
 _080DC570:
 	add r2, sp, #8
 	movs r7, #0x12
-	ldr r0, _080DC594 @ =0x085B0A08
+	ldr r0, _080DC594 @ =gSineTable
 	adds r1, r3, #0
 	adds r1, #0x40
 	ands r1, r5
@@ -119,7 +119,7 @@ _080DC570:
 	asrs r1, r1, #0xc
 	b _080DC59E
 	.align 2, 0
-_080DC594: .4byte 0x085B0A08
+_080DC594: .4byte gSineTable
 _080DC598:
 	rsbs r0, r1, #0
 	asrs r0, r0, #0xc

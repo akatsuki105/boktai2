@@ -13,7 +13,7 @@
 _08081FCE:
 	adds r0, r4, #0
 	movs r1, #0x10
-	bl PlayerLink_SetFlag35a
+	bl PlayerSabata_SetFlag35a
 	movs r2, #0x82
 	lsls r2, r2, #2
 	adds r3, r4, r2
@@ -107,7 +107,7 @@ _08082074:
 	adds r0, r2, #0
 	bl ArcTan2_8
 	adds r5, r0, #0
-	ldr r2, _080820B0 @ =0x085B0A08
+	ldr r2, _080820B0 @ =gSineTable
 	adds r0, #0x40
 	movs r1, #0xff
 	ands r0, r1
@@ -121,14 +121,14 @@ _08082074:
 	asrs r0, r0, #0xc
 	b _080820BA
 	.align 2, 0
-_080820B0: .4byte 0x085B0A08
+_080820B0: .4byte gSineTable
 _080820B4:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
 	rsbs r0, r0, #0
 _080820BA:
 	strh r0, [r4, #0x34]
-	ldr r0, _080820D4 @ =0x085B0A08
+	ldr r0, _080820D4 @ =gSineTable
 	movs r1, #0xff
 	ands r1, r5
 	lsls r1, r1, #1
@@ -141,7 +141,7 @@ _080820BA:
 	asrs r0, r0, #0xc
 	b _080820DE
 	.align 2, 0
-_080820D4: .4byte 0x085B0A08
+_080820D4: .4byte gSineTable
 _080820D8:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -168,7 +168,7 @@ _080820DE:
 	adds r0, r4, r2
 	strb r1, [r0]
 	adds r0, r4, #0
-	bl LinkPlayer_SetAnimFacing
+	bl PlayerSabata_SetAnimFacing
 _0808210E:
 	ldr r1, _08082120 @ =0x000001A3
 	adds r0, r4, #0

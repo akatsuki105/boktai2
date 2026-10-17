@@ -66,7 +66,7 @@
 	ldrh r3, [r3]
 	adds r0, r0, r3
 	subs r4, r0, #1
-	ldr r1, _080AC928 @ =0x085B0A08
+	ldr r1, _080AC928 @ =gSineTable
 	adds r2, #0x31
 	movs r0, #0xff
 	ands r2, r0
@@ -85,7 +85,7 @@ _080AC918: .4byte 0x0203B400
 _080AC91C: .4byte 0x030046B8
 _080AC920: .4byte 0x000003FF
 _080AC924: .4byte 0x000001FF
-_080AC928: .4byte 0x085B0A08
+_080AC928: .4byte gSineTable
 _080AC92C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

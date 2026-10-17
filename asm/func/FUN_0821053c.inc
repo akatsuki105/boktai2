@@ -41,7 +41,7 @@
 	adds r0, r0, r1
 	lsls r0, r0, #2
 	adds r0, r0, r4
-	bl FUN_08094e70
+	bl GetWeaponWearPose
 	adds r2, r0, #0
 	ldr r1, _082105D8 @ =0x00000C08
 	adds r4, r6, r1

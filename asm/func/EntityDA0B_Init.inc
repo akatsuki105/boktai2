@@ -119,7 +119,7 @@ _0801E160:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0801E1A6
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r2, _0801E1AC @ =0x00001308
 	adds r1, r4, r2
 	str r0, [r1]
@@ -136,7 +136,7 @@ _0801E1B0:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0801E1A6
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r5, _0801E210 @ =0x0000130C
 	adds r1, r4, r5
 	str r0, [r1]

@@ -54,7 +54,7 @@ _080A8870:
 	movs r2, #0x68
 	adds r2, r2, r5
 	mov sb, r2
-	ldr r0, _080A88C8 @ =0x085B0A08
+	ldr r0, _080A88C8 @ =gSineTable
 	mov r8, r0
 	adds r4, r5, #0
 	adds r4, #0x6c
@@ -85,7 +85,7 @@ _080A8896:
 	asrs r2, r0, #0xc
 	b _080A88D2
 	.align 2, 0
-_080A88C8: .4byte 0x085B0A08
+_080A88C8: .4byte gSineTable
 _080A88CC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

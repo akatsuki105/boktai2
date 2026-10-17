@@ -84,6 +84,7 @@ TimerEntity* TimerEntity_Create(u32 script, ScriptArgs* args, s32 frames) {
   return p;
 }
 
+// 0x430D
 TimerEntity* TimerEntity_CreateFromScript(u32 recordID) {
   s32 frames = 0;
   u32 script = 0;

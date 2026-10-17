@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "preview_stage.h"
 #include "sprite.h"
 #include "video.h"
 
@@ -10,7 +11,7 @@ typedef struct {
 
 typedef struct {
   Entity e;                   // 0x000, ENTITY_UNK_8
-  void* p_18;                 // 0x018, 0x08653534 固定?
+  void* p_18;                 // 0x018, Tilemap_4F8F
   rgb555* pltt_1c;            // 0x01C, 根拠: 0x08210b06
   u32 frameCounter;           // 0x020, フレームカウンタ (多分カーソルの点滅とかで使う)
   u8 page;                    // 0x024, 武器図鑑のページ (0: 剣, 1: 槍, 2: ハンマー, 3: 銃)
@@ -48,11 +49,8 @@ static_assert(sizeof(WeaponDexMenu) == 3492);
 static const u8 sWeaponDexItemCounts[4] = {19, 19, 19, 3};  // 0x085af9ac, 武器図鑑の各ページのエントリ数
 
 bool32 IsWeaponAlreadyFound(weapon32_t n);
-void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, s32 zeroSuppress);
 s32 FUN_08049fa8(void);
 void FUN_08055d7c(SpriteHolder* p);
-
-INCASM("asm/weapon_dex.inc");
 
 s32 WeaponDexMenu_GetPageEntryCount(s32 page) { return sWeaponDexItemCounts[page]; }
 

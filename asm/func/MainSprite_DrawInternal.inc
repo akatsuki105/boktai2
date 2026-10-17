@@ -218,7 +218,7 @@ _0822FA04:
 _0822FA28:
 	ldr r0, [fp, #-0x2b0]
 	ldrh r3, [r0, #0x36]
-	ldr r1, _0822FC94 @ =0x085B0A08
+	ldr r1, _0822FC94 @ =gSineTable
 	rsb r3, r3, #0
 	and r2, r3, #0xff
 	lsl r2, r2, #1
@@ -375,7 +375,7 @@ _0822FB64:
 	cmn r0, r3
 	b _0822FCD0
 	.align 2, 0
-_0822FC94: .4byte 0x085B0A08
+_0822FC94: .4byte gSineTable
 _0822FC98: .4byte 0x03004030
 _0822FC9C: .4byte 0x03003FC0
 _0822FCA0:

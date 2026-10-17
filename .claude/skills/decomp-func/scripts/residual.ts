@@ -74,7 +74,7 @@ type Row = {
 };
 
 const measure = (root: string, file: string, fn: string): Row => {
-  const obj = path.join("build/boktai2", file.replace(/\.c$/, ".o"));
+  const obj = path.join("build/nonmatch", file.replace(/\.c$/, ".o"));
   const inc = `asm/func/${fn}.inc`;
   if (!existsSync(path.join(root, obj))) return { status: "OBJ_MISSING", fn, file };
   if (!existsSync(path.join(root, inc))) return { status: "INC_MISSING", fn, file };
@@ -107,11 +107,11 @@ const existsSync = (p: string): boolean => {
 const residual = (root: string, targets: string[]) => {
   Deno.chdir(root);
 
-  // NONMATCHING_C ブロックの中身は古くなっていることがあり、コンパイルが通らない
-  // ファイルが出る。-k で続行し、そのファイルの関数は OBJ_MISSING として報告する
-  console.error("--- make -k EXTRA_CPPFLAGS=-DNONMATCHING_C");
-  run("make", ["clean-code"]);
-  run("make", ["-k", `-j${nproc()}`, "EXTRA_CPPFLAGS=-DNONMATCHING_C"]);
+  // make nonmatch は build/nonmatch に吐くので、通常ビルドの build/boktai2 には触らない
+  // NONMATCHING_C ブロックの中身は古くなっていることがあり、コンパイルが通らないファイルが
+  // 出る。nonmatch 側が -k で続行するので、そのファイルの関数は OBJ_MISSING として報告する
+  console.error("--- make nonmatch");
+  run("make", ["nonmatch", `-j${nproc()}`]);
 
   const rows: Row[] = [];
   for (const file of listCFiles(root, targets)) {
@@ -136,9 +136,7 @@ const residual = (root: string, targets: string[]) => {
     for (const r of bad) console.log(`${r.status}\t${r.fn}\t${r.file}\t${r.note ?? ""}`);
   }
 
-  // フラグ付きのオブジェクトを build/ に残すと、次の make compare が嘘をつく
-  run("make", ["clean-code"]);
-  console.error("\n(build/ は掃除しました。次のビルドはやり直しになります)");
+  console.error("\n(オブジェクトは build/nonmatch/ に残してあります。streamdiff.py で個別に見られます)");
 };
 
 main();

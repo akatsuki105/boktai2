@@ -5,6 +5,7 @@
 #include "definition.h"
 #include "gba/gba.h"
 #include "struct.h"
+#include "trig.h"
 #include "types.h"
 //
 #include "game.h"
@@ -61,7 +62,11 @@ s32 SoftReset_0823a928(void);
 void ClearMemory(void* dst, s32 bytesize);  // buffer から bytesize バイト分のメモリを0で埋める
 void CopyMemory(u8* dst, u8* src, s32 bytesize);
 
-extern const s16 gSineTable[320];
-s32 ArcTan2_8(s32 x, s32 y);
+// 固定小数の除算で使う
+static inline s32 Div8(s32 v) { return v >= 0 ? (v >> 3) : -((-v) >> 3); }
+static inline s32 Div32(s32 v) { return v >= 0 ? (v >> 5) : -((-v) >> 5); }
+static inline s32 Div256(s32 v) { return v >= 0 ? (v >> 8) : -((-v) >> 8); }
+static inline s32 Div8192(s32 v) { return v >= 0 ? (v >> 13) : -((-v) >> 13); }
+static inline s32 Div65536(s32 v) { return v >= 0 ? (v >> 16) : -((-v) >> 16); }
 
 #endif  // __INCLUDE_GLOBAL_H__

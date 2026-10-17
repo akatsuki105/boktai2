@@ -8492,7 +8492,7 @@ _08125C94:
 	lsls r0, r0, #2
 	adds r1, r5, r0
 	adds r0, r5, #0
-	bl FUN_080e7150
+	bl Enemy_TargetNearestPlayer
 	mov r1, sb
 	cmp r1, #0
 	bne _08125C88
@@ -11889,7 +11889,7 @@ _08127708:
 	ands r0, r1
 	lsls r0, r0, #1
 	adds r7, r3, #0
-	ldr r2, _0812774C @ =0x085B0A08
+	ldr r2, _0812774C @ =gSineTable
 	adds r0, r0, r2
 	str r0, [sp, #0x1c]
 _0812772A:
@@ -11898,7 +11898,7 @@ _0812772A:
 	mov r1, sl
 	ands r0, r1
 	lsls r0, r0, #1
-	ldr r2, _0812774C @ =0x085B0A08
+	ldr r2, _0812774C @ =gSineTable
 	adds r0, r0, r2
 	movs r1, #0
 	ldrsh r0, [r0, r1]
@@ -11909,7 +11909,7 @@ _0812772A:
 	b _08127756
 	.align 2, 0
 _08127748: .4byte 0x000006FA
-_0812774C: .4byte 0x085B0A08
+_0812774C: .4byte gSineTable
 _08127750:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -15383,7 +15383,7 @@ FUN_08129158: @ 0x08129158
 	str r0, [sp]
 	mov r0, r8
 	str r0, [sp, #4]
-	bl FUN_080e3984
+	bl Enemy_InitAtkHitbox
 	add sp, #0x28
 	pop {r3, r4}
 	mov r8, r3
@@ -16217,7 +16217,7 @@ _0812986C:
 	lsls r2, r2, #1
 	adds r0, r6, r2
 	ldr r0, [r0]
-	bl FUN_0807a798
+	bl AddPlayerExp
 	movs r3, #0x93
 	lsls r3, r3, #3
 	adds r0, r6, r3
@@ -22791,7 +22791,7 @@ _0812CAE6:
 	beq _0812CAF2
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl FUN_0807f598
+	bl Entity5941_Unregister
 _0812CAF2:
 	adds r0, r4, #0
 	bl Mover_Unlink
@@ -23840,7 +23840,7 @@ _0812D370:
 	str r0, [sp, #4]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080e3a90
+	bl Enemy_SetRanges
 	movs r0, #0x58
 	bl VM_SeekToNamedArg
 	cmp r0, #0
@@ -24751,7 +24751,7 @@ _0812DAD6:
 	strh r0, [r2]
 _0812DAEE:
 	adds r0, r7, #0
-	bl Enemy_Init_080f3680
+	bl Enemy_InitHandlerTables
 	adds r0, r7, #0
 	bl FUN_081275a4
 	adds r0, r7, #0

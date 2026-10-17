@@ -7,7 +7,7 @@
 	movs r7, #0
 	ldr r0, _080AA174 @ =0x000003FF
 	mov sl, r0
-	ldr r1, _080AA178 @ =0x085B0A08
+	ldr r1, _080AA178 @ =gSineTable
 	mov sb, r1
 	mov ip, r5
 	movs r6, #0
@@ -73,7 +73,7 @@ _080AA102:
 	b _080AA18A
 	.align 2, 0
 _080AA174: .4byte 0x000003FF
-_080AA178: .4byte 0x085B0A08
+_080AA178: .4byte gSineTable
 _080AA17C: .4byte 0x030046B8
 _080AA180: .4byte 0x0203B400
 _080AA184:

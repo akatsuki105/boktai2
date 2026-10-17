@@ -117,82 +117,82 @@ const ArmorData gArmorDB[ARMOR_NUM] = {
 // clang-format on
 
 const ItemData gItemDB[ITEM_NUM] = {
-    {290, 1,  120, 40, 0,  0, 50,  0}, // ITEM_EARTHLY_NUT
-    {306, 2,  120, 40, 0,  0, 100, 0}, // ITEM_SOLAR_NUT
-    {786, 5,  120, 1,  30, 0, 100, 0}, // ITEM_SPEED_NUT
-    {786, 5,  120, 0,  30, 0, 100, 0}, // ITEM_TIPTOE_NUT
-    {786, 5,  120, 2,  30, 0, 100, 0}, // ITEM_POWER_NUT
-    {786, 5,  0,   2,  60, 0, 300, 0}, // ITEM_CHOCOLATE_BANANA
-    {786, 5,  120, 3,  15, 0, 400, 0}, // ITEM_BEARNUT
-    {786, 5,  120, 4,  30, 0, 50,  0}, // ITEM_SEE_ALL_NUT
-    {290, 1,  0,   5,  30, 0, 5,   0}, // ITEM_ROTTEN_NUT
-    {786, 5,  240, 5,  15, 0, 50,  0}, // ITEM_RED_MUSHROOM
-    {786, 5,  240, 6,  30, 0, 200, 0}, // ITEM_BLUE_MUSHROOM
-    {306, 2,  0,   5,  30, 0, 5,   0}, // ITEM_BAD_MUSHROOM
-    {322, 3,  120, 8,  0,  0, 50,  0}, // ITEM_DROP_OF_SUN
-    {290, 1,  240, 40, 0,  0, 50,  0}, // ITEM_TOMATO_JUICE
-    {306, 2,  0,   10, 30, 0, 5,   0}, // ITEM_ROTTEN_WATER
-    {290, 1,  120, 60, 0,  0, 150, 0}, // ITEM_TASTY_MEAT
-    {290, 1,  0,   40, 0,  0, 150, 0}, // ITEM_JERKY
-    {290, 1,  0,   5,  30, 0, 5,   0}, // ITEM_ROTTEN_MEAT
-    {290, 1,  120, 20, 0,  0, 100, 0}, // ITEM_CHOCOLATE
-    {290, 1,  0,   20, 0,  0, 50,  0}, // ITEM_MELTED_CHOCOLATE
-    {274, 1,  0,   20, 0,  0, 0,   0}, // ITEM_CHOCOLATE_COVERED
-    {290, 1,  0,   40, 0,  0, 300, 0}, // ITEM_DELUXE_CHOCOLATE
-    {290, 1,  0,   20, 0,  0, 50,  0}, // ITEM_HEALER
-    {306, 2,  0,   20, 0,  0, 100, 0}, // ITEM_MAGICAL_POTION
-    {322, 3,  0,   2,  0,  0, 50,  0}, // ITEM_ANTIDOTE
-    {322, 3,  0,   7,  0,  0, 200, 0}, // ITEM_ELIXIR
-    {786, 5,  0,   7,  60, 0, 50,  0}, // ITEM_SUNBLOCK
-    {274, 8,  0,   0,  0,  0, 400, 0}, // ITEM_MR_RAINNOT
-    {274, 8,  0,   1,  0,  0, 200, 0}, // ITEM_TONNIAR_RM
-    {274, 8,  0,   2,  0,  0, 300, 0}, // ITEM_SUNNY_CLOG
-    {786, 7,  0,   0,  0,  0, 50,  0}, // ITEM_WARP_LEAF
-    {786, 7,  0,   1,  0,  0, 200, 0}, // ITEM_THE_FOOL
-    {274, 4,  0,   1,  1,  0, 600, 0}, // ITEM_THE_HIGH_PRIESTESS
-    {274, 4,  0,   0,  1,  0, 600, 0}, // ITEM_THE_EMPRESS
-    {786, 5,  0,   8,  30, 0, 200, 0}, // ITEM_THE_EMPEROR
-    {274, 11, 0,   0,  0,  0, 200, 0}, // ITEM_THE_LOVER
-    {274, 4,  0,   3,  1,  0, 600, 0}, // ITEM_THE_CHARIOT
-    {274, 4,  0,   2,  1,  0, 600, 0}, // ITEM_STRENGTH
-    {274, 4,  0,   4,  2,  0, 800, 0}, // ITEM_WOF
-    {274, 12, 0,   0,  0,  0, 200, 0}, // ITEM_JUSTICE
-    {274, 10, 0,   0,  0,  0, 200, 0}, // ITEM_THE_HANGED_MAN
-    {274, 10, 0,   1,  0,  0, 200, 0}, // ITEM_DEATH
-    {338, 14, 0,   0,  0,  0, 400, 0}, // ITEM_TEMPERANCE
-    {786, 6,  0,   2,  10, 0, 200, 0}, // ITEM_THE_DEVIL
-    {274, 12, 0,   1,  0,  0, 200, 0}, // ITEM_THE_TOWER
-    {274, 13, 0,   0,  0,  0, 400, 0}, // ITEM_THE_STAR
-    {786, 6,  0,   1,  10, 0, 200, 0}, // ITEM_THE_MOON
-    {786, 6,  0,   0,  10, 0, 200, 0}, // ITEM_THE_SUN
-    {258, 0,  0,   0,  0,  0, 400, 0}, // ITEM_JUDGEMENT
-    {530, 9,  0,   0,  0,  0, 0,   0}, // ITEM_DARK_CARD
-    {514, 0,  0,   0,  0,  0, 0,   0}, // ITEM_PET
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_SPADE_EMBLEM
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_HEART_EMBLEM
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_DIAMOND_EMBLEM
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_CLUB_EMBLEM
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_JOKER_EMBLEM
-    {2,   0,  0,   0,  0,  0, 60,  0}, // ITEM_OAK_COFFIN
-    {2,   0,  0,   0,  0,  0, 80,  0}, // COFFIN_ITEM_ID(1)
-    {2,   0,  0,   0,  0,  0, 100, 0}, // COFFIN_ITEM_ID(2)
-    {2,   0,  0,   0,  0,  0, 120, 0}, // COFFIN_ITEM_ID(3)
-    {2,   0,  0,   0,  0,  0, 140, 0}, // COFFIN_ITEM_ID(4)
-    {2,   0,  0,   0,  0,  0, 160, 0}, // COFFIN_ITEM_ID(5)
-    {2,   0,  0,   0,  0,  0, 180, 0}, // COFFIN_ITEM_ID(6)
-    {2,   0,  0,   0,  0,  0, 200, 0}, // COFFIN_ITEM_ID(7)
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_WAREHOUSE_KEY
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_CIRCLE_KEY
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_TRIANGLE_KEY
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_SQUARE_KEY
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_RED_CRYSTAL
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_BLUE_CRYSTAL
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_GREEN_CRYSTAL
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_YELLOW_CRYSTAL
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_STONE_TABLET_PIECE
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_TASTY_WATER
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_THE_MAGICIAN
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_THE_HIEROPHANT
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_THE_HERMIT
-    {2,   0,  0,   0,  0,  0, 0,   0}, // ITEM_THE_WORLD
+    {290, 1,  120, 40, 0,  0, 50 }, // ITEM_EARTHLY_NUT
+    {306, 2,  120, 40, 0,  0, 100}, // ITEM_SOLAR_NUT
+    {786, 5,  120, 1,  30, 0, 100}, // ITEM_SPEED_NUT
+    {786, 5,  120, 0,  30, 0, 100}, // ITEM_TIPTOE_NUT
+    {786, 5,  120, 2,  30, 0, 100}, // ITEM_POWER_NUT
+    {786, 5,  0,   2,  60, 0, 300}, // ITEM_CHOCOLATE_BANANA
+    {786, 5,  120, 3,  15, 0, 400}, // ITEM_BEARNUT
+    {786, 5,  120, 4,  30, 0, 50 }, // ITEM_SEE_ALL_NUT
+    {290, 1,  0,   5,  30, 0, 5  }, // ITEM_ROTTEN_NUT
+    {786, 5,  240, 5,  15, 0, 50 }, // ITEM_RED_MUSHROOM
+    {786, 5,  240, 6,  30, 0, 200}, // ITEM_BLUE_MUSHROOM
+    {306, 2,  0,   5,  30, 0, 5  }, // ITEM_BAD_MUSHROOM
+    {322, 3,  120, 8,  0,  0, 50 }, // ITEM_DROP_OF_SUN
+    {290, 1,  240, 40, 0,  0, 50 }, // ITEM_TOMATO_JUICE
+    {306, 2,  0,   10, 30, 0, 5  }, // ITEM_ROTTEN_WATER
+    {290, 1,  120, 60, 0,  0, 150}, // ITEM_TASTY_MEAT
+    {290, 1,  0,   40, 0,  0, 150}, // ITEM_JERKY
+    {290, 1,  0,   5,  30, 0, 5  }, // ITEM_ROTTEN_MEAT
+    {290, 1,  120, 20, 0,  0, 100}, // ITEM_CHOCOLATE
+    {290, 1,  0,   20, 0,  0, 50 }, // ITEM_MELTED_CHOCOLATE
+    {274, 1,  0,   20, 0,  0, 0  }, // ITEM_CHOCOLATE_COVERED
+    {290, 1,  0,   40, 0,  0, 300}, // ITEM_DELUXE_CHOCOLATE
+    {290, 1,  0,   20, 0,  0, 50 }, // ITEM_HEALER
+    {306, 2,  0,   20, 0,  0, 100}, // ITEM_MAGICAL_POTION
+    {322, 3,  0,   2,  0,  0, 50 }, // ITEM_ANTIDOTE
+    {322, 3,  0,   7,  0,  0, 200}, // ITEM_ELIXIR
+    {786, 5,  0,   7,  60, 0, 50 }, // ITEM_SUNBLOCK
+    {274, 8,  0,   0,  0,  0, 400}, // ITEM_MR_RAINNOT
+    {274, 8,  0,   1,  0,  0, 200}, // ITEM_TONNIAR_RM
+    {274, 8,  0,   2,  0,  0, 300}, // ITEM_SUNNY_CLOG
+    {786, 7,  0,   0,  0,  0, 50 }, // ITEM_WARP_LEAF
+    {786, 7,  0,   1,  0,  0, 200}, // ITEM_THE_FOOL
+    {274, 4,  0,   1,  1,  0, 600}, // ITEM_THE_HIGH_PRIESTESS
+    {274, 4,  0,   0,  1,  0, 600}, // ITEM_THE_EMPRESS
+    {786, 5,  0,   8,  30, 0, 200}, // ITEM_THE_EMPEROR
+    {274, 11, 0,   0,  0,  0, 200}, // ITEM_THE_LOVER
+    {274, 4,  0,   3,  1,  0, 600}, // ITEM_THE_CHARIOT
+    {274, 4,  0,   2,  1,  0, 600}, // ITEM_STRENGTH
+    {274, 4,  0,   4,  2,  0, 800}, // ITEM_WOF
+    {274, 12, 0,   0,  0,  0, 200}, // ITEM_JUSTICE
+    {274, 10, 0,   0,  0,  0, 200}, // ITEM_THE_HANGED_MAN
+    {274, 10, 0,   1,  0,  0, 200}, // ITEM_DEATH
+    {338, 14, 0,   0,  0,  0, 400}, // ITEM_TEMPERANCE
+    {786, 6,  0,   2,  10, 0, 200}, // ITEM_THE_DEVIL
+    {274, 12, 0,   1,  0,  0, 200}, // ITEM_THE_TOWER
+    {274, 13, 0,   0,  0,  0, 400}, // ITEM_THE_STAR
+    {786, 6,  0,   1,  10, 0, 200}, // ITEM_THE_MOON
+    {786, 6,  0,   0,  10, 0, 200}, // ITEM_THE_SUN
+    {258, 0,  0,   0,  0,  0, 400}, // ITEM_JUDGEMENT
+    {530, 9,  0,   0,  0,  0, 0  }, // ITEM_DARK_CARD
+    {514, 0,  0,   0,  0,  0, 0  }, // ITEM_PET
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_SPADE_EMBLEM
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_HEART_EMBLEM
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_DIAMOND_EMBLEM
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_CLUB_EMBLEM
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_JOKER_EMBLEM
+    {2,   0,  0,   0,  0,  0, 60 }, // ITEM_OAK_COFFIN
+    {2,   0,  0,   0,  0,  0, 80 }, // COFFIN_ITEM_ID(1)
+    {2,   0,  0,   0,  0,  0, 100}, // COFFIN_ITEM_ID(2)
+    {2,   0,  0,   0,  0,  0, 120}, // COFFIN_ITEM_ID(3)
+    {2,   0,  0,   0,  0,  0, 140}, // COFFIN_ITEM_ID(4)
+    {2,   0,  0,   0,  0,  0, 160}, // COFFIN_ITEM_ID(5)
+    {2,   0,  0,   0,  0,  0, 180}, // COFFIN_ITEM_ID(6)
+    {2,   0,  0,   0,  0,  0, 200}, // COFFIN_ITEM_ID(7)
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_WAREHOUSE_KEY
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_CIRCLE_KEY
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_TRIANGLE_KEY
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_SQUARE_KEY
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_RED_CRYSTAL
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_BLUE_CRYSTAL
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_GREEN_CRYSTAL
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_YELLOW_CRYSTAL
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_STONE_TABLET_PIECE
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_TASTY_WATER
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_THE_MAGICIAN
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_THE_HIEROPHANT
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_THE_HERMIT
+    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_THE_WORLD
 };  // 0x08DAA8D8

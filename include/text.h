@@ -101,6 +101,7 @@ s32 TextRenderer_GetTextWidth(TextRenderer* p);
 
 s32 TextPanel_Create(s32 x, s32 y, s32 width, s32 height);
 s32 TextPanel_Destroy(s32 id);
+void TextPanelManager_DestroyAll(void);
 s32 TextPanel_Start(s32 id);
 s32 TextPanel_Hide(s32 id);
 s32 TextPanel_SetScript(s32 id, u8* scriptPc);

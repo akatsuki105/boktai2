@@ -9961,7 +9961,7 @@ FUN_081b3204: @ 0x081B3204
 	str r0, [sp]
 	mov r0, r8
 	str r0, [sp, #4]
-	bl FUN_080e3984
+	bl Enemy_InitAtkHitbox
 	add sp, #0x28
 	pop {r3, r4}
 	mov r8, r3
@@ -10371,7 +10371,7 @@ FUN_081b3568: @ 0x081B3568
 	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
-	ldr r3, _081B365C @ =0x085B0A08
+	ldr r3, _081B365C @ =gSineTable
 	adds r1, r0, #0
 	adds r1, #0x40
 	movs r2, #0xff
@@ -10462,7 +10462,7 @@ _081B3600:
 	mov sb, r0
 	b _081B36D4
 	.align 2, 0
-_081B365C: .4byte 0x085B0A08
+_081B365C: .4byte gSineTable
 _081B3660: .4byte 0xFFFF0000
 _081B3664:
 	adds r4, #8
@@ -18259,7 +18259,7 @@ _081B7306:
 	beq _081B7312
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl FUN_0807f598
+	bl Entity5941_Unregister
 _081B7312:
 	adds r0, r4, #0
 	bl Mover_Unlink
@@ -19301,7 +19301,7 @@ _081B7B80:
 	str r0, [sp, #4]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080e3a90
+	bl Enemy_SetRanges
 	movs r0, #0x58
 	bl VM_SeekToNamedArg
 	cmp r0, #0
@@ -20246,7 +20246,7 @@ _081B832E:
 	strh r0, [r5]
 _081B8346:
 	adds r0, r7, #0
-	bl Enemy_Init_080f3680
+	bl Enemy_InitHandlerTables
 	adds r0, r7, #0
 	bl FUN_081b3fa0
 	adds r0, r7, #0

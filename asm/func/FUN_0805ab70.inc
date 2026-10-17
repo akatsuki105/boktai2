@@ -170,7 +170,7 @@ _0805ACCA:
 	add r3, sp, #0x18
 	ldrb r4, [r7, #0xa]
 	ldrh r5, [r7, #0x10]
-	ldr r2, _0805AD08 @ =0x085B0A08
+	ldr r2, _0805AD08 @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -192,7 +192,7 @@ _0805ACF8: .4byte 0x030046B8
 _0805ACFC: .4byte 0x000003FF
 _0805AD00: .4byte 0x0203B400
 _0805AD04: .4byte 0x00000339
-_0805AD08: .4byte 0x085B0A08
+_0805AD08: .4byte gSineTable
 _0805AD0C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

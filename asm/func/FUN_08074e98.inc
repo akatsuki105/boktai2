@@ -117,7 +117,7 @@ _08074F80: .4byte 0x000002E6
 _08074F84: .4byte 0x000002E7
 _08074F88: .4byte FUN_08074d90
 _08074F8C:
-	ldr r2, _08074FAC @ =0x085B0A08
+	ldr r2, _08074FAC @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -133,7 +133,7 @@ _08074F8C:
 	asrs r0, r0, #0xc
 	b _08074FB6
 	.align 2, 0
-_08074FAC: .4byte 0x085B0A08
+_08074FAC: .4byte gSineTable
 _08074FB0:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

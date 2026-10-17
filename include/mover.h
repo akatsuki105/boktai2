@@ -34,7 +34,7 @@ typedef struct Mover {
   u16 sizeX;                      // 0x1C, 衝突判定の X 方向の広がり, FUN_0823349c が pos.x に足して角を見る
   u16 sizeZ;                      // 0x1E, 衝突判定の Z 方向の広がり, FUN_0823349c が pos.z に足して角を見る
   u32 unk_20;                     // 0x20, FUN_0823b464 が書くだけで読み手は未発見
-  void* path;                     // 0x24, 経路追従の状態, Mover_SetPath が Path と節点のポインタを書き込む
+  PathWalker* path;               // 0x24, 経路追従の状態, Mover_SetPath が Map_InitPathWalker に渡して初期化させる
   struct AuxSprite* auxSprite;    // 0x28, 非NULLなら Mover_ApplyMove が毎フレーム pos を書き戻す
   struct MainSprite* mainSprite;  // 0x2C, 読み手は未発見
   Vec3 unk_30;                    // 0x30, FUN_0823b47c が引数から8バイトまとめて書き、unk_2 に bit2 を立てる, 読み手は未発見
@@ -60,7 +60,7 @@ s32 FUN_08002a58(Mover* p);
 void Mover_ApplyMove(Mover* p);
 
 bool32 Mover_SetCollision(Mover* p, MoverTile* tile, u16 sizeX, u16 sizeZ);
-bool32 Mover_SetPath(Mover* p, void* path, u8 param_3, u8 param_4, u8 param_5);
+bool32 Mover_SetPath(Mover* p, PathWalker* path, u8 param_3, u8 param_4, u8 param_5);
 bool32 Mover_SetAuxSprite(Mover* p, struct AuxSprite* auxSprite);
 bool32 Mover_SetMainSprite(Mover* p, struct MainSprite* data);
 

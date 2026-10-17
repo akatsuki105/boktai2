@@ -13,7 +13,7 @@ FUN_08203b60: @ 0x08203B60
 	adds r6, r0, #0
 	adds r6, #0xc0
 	mov r5, sp
-	ldr r1, _08203BB0 @ =0x085B0A08
+	ldr r1, _08203BB0 @ =gSineTable
 	mov r8, r1
 	movs r7, #1
 	movs r1, #0xff
@@ -48,7 +48,7 @@ _08203B7C:
 	asrs r1, r0, #0xc
 	b _08203BBA
 	.align 2, 0
-_08203BB0: .4byte 0x085B0A08
+_08203BB0: .4byte gSineTable
 _08203BB4:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

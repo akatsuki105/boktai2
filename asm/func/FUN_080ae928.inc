@@ -81,7 +81,7 @@ _080AE9BA:
 	ldr r1, _080AEA00 @ =0x0203B400
 	adds r0, r0, r1
 	ldrh r4, [r0]
-	ldr r3, _080AEA04 @ =0x085B0A08
+	ldr r3, _080AEA04 @ =gSineTable
 	ldr r1, _080AEA08 @ =0x00001352
 	adds r0, r5, r1
 	ldrh r0, [r0]
@@ -103,7 +103,7 @@ _080AE9F4: .4byte 0x0000134C
 _080AE9F8: .4byte 0x030046B8
 _080AE9FC: .4byte 0x000003FF
 _080AEA00: .4byte 0x0203B400
-_080AEA04: .4byte 0x085B0A08
+_080AEA04: .4byte gSineTable
 _080AEA08: .4byte 0x00001352
 _080AEA0C:
 	rsbs r0, r0, #0

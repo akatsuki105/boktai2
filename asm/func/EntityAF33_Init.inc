@@ -360,7 +360,7 @@ _08050B10:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08050B5C
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	adds r1, r6, #0
 	adds r1, #0xb8
 	str r0, [r1]

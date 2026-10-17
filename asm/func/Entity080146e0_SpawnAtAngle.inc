@@ -212,7 +212,7 @@ _08014B4E:
 	movs r3, #0xff
 	ands r0, r3
 	lsls r0, r0, #1
-	ldr r3, _08014B9C @ =0x085B0A08
+	ldr r3, _08014B9C @ =gSineTable
 	adds r0, r0, r3
 	movs r3, #0
 	ldrsh r0, [r0, r3]
@@ -224,7 +224,7 @@ _08014B4E:
 	.align 2, 0
 _08014B94: .4byte 0x000003FF
 _08014B98: .4byte 0x0203B400
-_08014B9C: .4byte 0x085B0A08
+_08014B9C: .4byte gSineTable
 _08014BA0:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -236,7 +236,7 @@ _08014BA6:
 	movs r3, #0xff
 	ands r1, r3
 	lsls r0, r1, #1
-	ldr r1, _08014BC4 @ =0x085B0A08
+	ldr r1, _08014BC4 @ =gSineTable
 	adds r0, r0, r1
 	movs r3, #0
 	ldrsh r0, [r0, r3]
@@ -246,7 +246,7 @@ _08014BA6:
 	asrs r0, r0, #0xc
 	b _08014BCE
 	.align 2, 0
-_08014BC4: .4byte 0x085B0A08
+_08014BC4: .4byte gSineTable
 _08014BC8:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -261,7 +261,7 @@ _08014BD2:
 	movs r2, #0xff
 	ands r0, r2
 	lsls r0, r0, #1
-	ldr r3, _08014BF4 @ =0x085B0A08
+	ldr r3, _08014BF4 @ =gSineTable
 	adds r0, r0, r3
 	movs r2, #0
 	ldrsh r0, [r0, r2]
@@ -272,7 +272,7 @@ _08014BD2:
 	asrs r0, r0, #0xc
 	b _08014BFE
 	.align 2, 0
-_08014BF4: .4byte 0x085B0A08
+_08014BF4: .4byte gSineTable
 _08014BF8:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

@@ -29,7 +29,7 @@ _081D3C52:
 _081D3C58:
 	mov r4, sp
 	mov r0, sp
-	bl FUN_08086a28
+	bl Coffin_CopyPos
 	mov r0, sp
 	ldrh r0, [r0]
 	lsls r0, r0, #0x10

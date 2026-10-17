@@ -9,7 +9,7 @@
 	movs r6, #0
 	ldr r0, _0801ACC8 @ =0x030046B8
 	mov sl, r0
-	ldr r1, _0801ACCC @ =0x085B0A08
+	ldr r1, _0801ACCC @ =gSineTable
 	mov sb, r1
 	movs r2, #0xff
 	mov r8, r2
@@ -100,6 +100,6 @@ _0801ACB0:
 	bx r1
 	.align 2, 0
 _0801ACC8: .4byte 0x030046B8
-_0801ACCC: .4byte 0x085B0A08
+_0801ACCC: .4byte gSineTable
 _0801ACD0: .4byte 0x000003FF
 _0801ACD4: .4byte 0x0203B400

@@ -151,7 +151,7 @@ FUN_0805da00: @ 0x0805DA00
 	mov r3, sp
 	adds r4, r1, #0
 	adds r4, #0x10
-	ldr r2, _0805DA68 @ =0x085B0A08
+	ldr r2, _0805DA68 @ =gSineTable
 	adds r0, r5, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -169,7 +169,7 @@ FUN_0805da00: @ 0x0805DA00
 _0805DA5C: .4byte 0x0203B400
 _0805DA60: .4byte 0x030046B8
 _0805DA64: .4byte 0x000003FF
-_0805DA68: .4byte 0x085B0A08
+_0805DA68: .4byte gSineTable
 _0805DA6C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

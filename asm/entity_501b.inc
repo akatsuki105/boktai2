@@ -1610,7 +1610,7 @@ Entity501B_Init: @ 0x081E0AEC
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081E0B0C
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	movs r2, #0xf5
 	lsls r2, r2, #2
 	adds r1, r4, r2
@@ -1622,7 +1622,7 @@ _081E0B0C:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081E0B2C
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	movs r3, #0xf6
 	lsls r3, r3, #2
 	adds r1, r4, r3

@@ -29,12 +29,40 @@ NAKED void Entity78C9Elem_Respawn(Entity78C9* p, Entity78C9Elem* elem, u8 index)
 
 NAKED void Entity78C9Elem_Init(Entity78C9* p, Entity78C9Elem* elem, u32 index) { INCFUNC("asm/func/Entity78C9Elem_Init.inc"); }
 
-NAKED void Entity78C9Elem_Destroy(Entity78C9* p, Entity78C9Elem* elem, u32 index) { INCFUNC("asm/func/Entity78C9Elem_Destroy.inc"); }
+void Entity78C9Elem_Destroy(Entity78C9* p, Entity78C9Elem* elem, u32 index) { AuxSprite_Remove(&elem->sprite); }
 
 NAKED s32 Entity78C9_Update(Entity78C9* p) { INCFUNC("asm/func/Entity78C9_Update.inc"); }
 
-NAKED s32 Entity78C9_Destroy(Entity78C9* p) { INCFUNC("asm/func/Entity78C9_Destroy.inc"); }
+s32 Entity78C9_Destroy(Entity78C9* p) {
+  Entity78C9Elem* elem = &p->elems[0];
+  s32 i;
 
-NAKED s32 Entity78C9_Init(Entity78C9* p) { INCFUNC("asm/func/Entity78C9_Init.inc"); }
+  for (i = 0; i < 32; i++, elem++) {
+    Entity78C9Elem_Destroy(p, elem, i);
+  }
+  return 0;
+}
 
-NAKED Entity78C9* Entity78C9_Create(void) { INCFUNC("asm/func/Entity78C9_Create.inc"); }
+s32 Entity78C9_Init(Entity78C9* p) {
+  Entity78C9Elem* elem = &p->elems[0];
+  s32 i;
+
+  Video_GetAuxSprite(&p->gfx, SPRITE_DVALIN_2E7B);
+  for (i = 0; i < 32; i++, elem++) {
+    Entity78C9Elem_Init(p, elem, i);
+  }
+  return 0;
+}
+
+Entity78C9* Entity78C9_Create(void) {
+  Entity78C9* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity78C9));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity78C9_Update, Entity78C9_Destroy);
+    if (Entity78C9_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

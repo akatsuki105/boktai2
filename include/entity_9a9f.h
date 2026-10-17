@@ -6,9 +6,11 @@
 
 // 通信セッション1回分の相手の記録, Entity08F4 が unk_18 < 3 の要素だけを数える
 typedef struct Entity9A9FRecord {
-  u8 unk_00[24];  // 0x00
-  u32 unk_18;     // 0x18, Entity08F4 の FUN_081daf44 が 3 未満なら選択肢を1つ増やす
-  u8 unk_1c[44];  // 0x1C
+  u8 unk_00[24];           // 0x00
+  u32 unk_18;              // 0x18, Entity08F4 の FUN_081daf44 が 3 未満なら選択肢を1つ増やす
+  u8 unk_1c[0x44 - 0x1C];  // 0x1C
+  u8 unk_44;               // 0x44, FUN_080cc618 が 0/4/5 のどれかかを見る
+  u8 unk_45[72 - 0x45];    // 0x45
 } Entity9A9FRecord;
 static_assert(sizeof(Entity9A9FRecord) == 72);
 
@@ -90,8 +92,8 @@ typedef struct Entity9A9F {
   s16 exitScriptID;                            // 0x2E6, '.E=0', 終了時に VM_ExecByID で実行する, 0 ならソフトリセット
   s16 unk_2e8;                                 // 0x2E8, '.Y=0'
   s16 unk_2ea;                                 // 0x2EA, '.U=0'
-  u8* unk_2ec;                                 // 0x2EC, '.s' の後の FUN_0823d340()
-  u8* unk_2f0;                                 // 0x2F0, '.S' の後の FUN_0823d340()
+  u8* unk_2ec;                                 // 0x2EC, '.s' の後の VM_GetPC_Proxy()
+  u8* unk_2f0;                                 // 0x2F0, '.S' の後の VM_GetPC_Proxy()
 } Entity9A9F;
 static_assert(sizeof(Entity9A9F) == 756);
 

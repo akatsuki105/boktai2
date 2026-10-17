@@ -74,7 +74,7 @@ _0821C19C:
 	subs r0, #0xfe
 	strh r0, [r1]
 _0821C1D2:
-	ldr r2, _0821C1F8 @ =0x085B0A08
+	ldr r2, _0821C1F8 @ =gSineTable
 	movs r1, #0xef
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -94,7 +94,7 @@ _0821C1D2:
 	asrs r0, r0, #0xc
 	b _0821C202
 	.align 2, 0
-_0821C1F8: .4byte 0x085B0A08
+_0821C1F8: .4byte gSineTable
 _0821C1FC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

@@ -8,6 +8,7 @@
 #include "sprite.h"
 #include "vm.h"
 
+// 不使用?
 // SPRITE_BOKU の姿でうろつく生き物, 叩かれると点滅してノックバックし、また歩き出す
 typedef struct EntityF41A {
   Entity e;                            // 0x000, ENTITY_UNK_8
@@ -20,7 +21,7 @@ typedef struct EntityF41A {
   HitboxData hitbox;                   // 0x0B8
   AuxAnimState anim;                   // 0x108
   AuxAnimFile* animFile;               // 0x118, ANIM_1DF8
-  Entity5941Node detectNode;           // 0x11C, Entity5941_Register / FUN_0807f598
+  Entity5941Node detectNode;           // 0x11C, Entity5941_Register / Entity5941_Unregister
   u16 targetAngle;                     // 0x12C, 乱数で決める向き, data.unk_5 がここへ4ずつ近づく
   u16 turnTimer;                       // 0x12E, 0 になると targetAngle を引き直す (0x78..0xB7 フレーム)
   u16 animIdx;                         // 0x130, AuxAnim_SetAnim に渡すアニメ番号
@@ -32,7 +33,6 @@ typedef struct EntityF41A {
 static_assert(sizeof(EntityF41A) == 316);
 
 s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
-void FUN_0807f598(void* p);
 
 void EntityF41A_UpdateWander(EntityF41A* p);
 void EntityF41A_UpdateHit(EntityF41A* p);
@@ -118,22 +118,18 @@ void EntityF41A_UpdateHit(EntityF41A* p) {
 }
 
 // 吹き飛ばされている間, speed を 3/4 ずつ減らし、0 になったら向きを反転してうろつきに戻る
-NON_MATCH void EntityF41A_UpdateKnockback(EntityF41A* p) {
-#ifdef NONMATCHING_C
+void EntityF41A_UpdateKnockback(EntityF41A* p) {
   p->animIdx = 2;
   if (p->pushSpeed != 0) {
-    p->data.delta.x += p->pushSpeed * gSineTable[(p->data.angle + 0x40) & 0xFF] / 4096;
-    p->data.delta.z += p->pushSpeed * gSineTable[p->data.angle] / 4096;
+    p->data.delta.x += COS(p->data.angle, p->pushSpeed);
+    p->data.delta.z += SIN(p->data.angle, p->pushSpeed);
     p->pushSpeed = (p->pushSpeed * 3) >> 2;
   } else {
     p->data.angle += 0x80;
     p->targetAngle = p->data.angle;
-    p->detectNode.flags &= ~1;
+    Entity5941Node_ClearFlags(&p->detectNode, 1);
     EntityF41A_SetState(p, 0);
   }
-#else
-  INCFUNC("asm/func/EntityF41A_UpdateKnockback.inc");
-#endif
 }
 
 NAKED void EntityF41A_UpdateAnim(EntityF41A* p) { INCFUNC("asm/func/EntityF41A_UpdateAnim.inc"); }
@@ -148,7 +144,7 @@ s32 EntityF41A_Update(EntityF41A* p) {
 s32 EntityF41A_Destroy(EntityF41A* p) {
   AuxSprite_Remove(&p->sprite);
   Mover_Unlink(&p->data);
-  FUN_0807f598(&p->detectNode);
+  Entity5941_Unregister(&p->detectNode);
   return 0;
 }
 
@@ -240,6 +236,7 @@ s32 EntityF41A_Init(EntityF41A* p, u32 id, u32 param_3) {
   return 0;
 }
 
+// 0xF41A
 EntityF41A* EntityF41A_Create(u32 param_1, u32 param_2) {
   EntityF41A* p = CreateEntity(ENTITY_UNK_8, sizeof(EntityF41A));
 

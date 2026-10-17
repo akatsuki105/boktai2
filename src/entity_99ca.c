@@ -27,7 +27,16 @@ typedef struct {
 } Entity99CA;
 static_assert(sizeof(Entity99CA) == 436);
 
-NAKED bool32 Entity99CA_HasActiveElem(Entity99CA* p) { INCFUNC("asm/func/Entity99CA_HasActiveElem.inc"); }
+bool32 Entity99CA_HasActiveElem(Entity99CA* p) {
+  s32 i;
+
+  for (i = 0; i < p->count; i++) {
+    if (p->elems[i].active == 1) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
 
 NAKED void Entity99CAElem_TryRespawn(Entity99CA* p, Entity99CAElem* elem) { INCFUNC("asm/func/Entity99CAElem_TryRespawn.inc"); }
 
@@ -35,7 +44,14 @@ NAKED void Entity99CAElem_Update(Entity99CA* p, Entity99CAElem* elem) { INCFUNC(
 
 NAKED s32 Entity99CA_Update(Entity99CA* p) { INCFUNC("asm/func/Entity99CA_Update.inc"); }
 
-NAKED s32 Entity99CA_Destroy(Entity99CA* p) { INCFUNC("asm/func/Entity99CA_Destroy.inc"); }
+s32 Entity99CA_Destroy(Entity99CA* p) {
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    Particle_Remove(&p->elems[i].ptcl);
+  }
+  return 0;
+}
 
 NAKED s32 Entity99CA_Init(Entity99CA* p, Vec3* pos, u16 param_3, s32 lifetime, s32 count, s32 kind) { INCFUNC("asm/func/Entity99CA_Init.inc"); }
 

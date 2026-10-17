@@ -109,7 +109,7 @@ _0821E160:
 	adds r0, r7, r3
 	ldr r3, [r0]
 	movs r6, #0x28
-	ldr r2, _0821E1A8 @ =0x085B0A08
+	ldr r2, _0821E1A8 @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -125,7 +125,7 @@ _0821E160:
 	asrs r1, r0, #0xc
 	b _0821E1B2
 	.align 2, 0
-_0821E1A8: .4byte 0x085B0A08
+_0821E1A8: .4byte gSineTable
 _0821E1AC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

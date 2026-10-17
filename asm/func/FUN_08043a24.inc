@@ -24,7 +24,7 @@ _08043A3E:
 	mov r8, r0
 	cmp r1, #0
 	beq _08043AD0
-	bl FUN_080865c0
+	bl Coffin_GetPos
 	adds r3, r0, #0
 	movs r6, #0
 	cmp r3, #0

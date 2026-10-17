@@ -5,7 +5,8 @@
 #include "time.h"
 #include "weapon.h"
 
-#define REGISTERED_WEAPON(n) (*(gStat->registeredWeapon + n))  // 登録 = 剣槍槌銃 のスロットに登録されている
+#define KAAMOS(playerCharacterID) (*(gStat->isKaamos + (playerCharacterID)))  // playerCharacterID:  0: ジャンゴ, 1: サバタ
+#define REGISTERED_WEAPON(n) (*(gStat->registeredWeapon + n))                 // 登録 = 剣槍槌銃 のスロットに登録されている
 
 // AttackStyle, GameInfo.style, WeaponKind とは別, ゲームクリア時に、ゲーム中で1番使っていた武器を表示する仕組みがあって、それの識別番号
 #define STYLE_SWORD 0   // 剣
@@ -39,7 +40,7 @@ typedef struct {
   u8 unk_004[12];             // 0x004
   u16 controlUp;              // 0x010, 十字キー上を押した時の移動方向の設定, 0: 左上, 1: 上, 2: 右上
   s16 textSpeed;              // 0x012, メッセージ速度設定(1: 速い, 2: 普通, 4: 遅い), TextRenderer_ResetSpeed が TextRenderer.speed に入れる
-  bool16 markerEnabled;       // 0x014, マーカーの表示設定 (0: 非表示, 1: 表示)
+  s16 markerEnabled;          // 0x014, マーカーの表示設定 (0: 非表示, 1: 表示)
   u8 unk_016[2];              // 0x016
   s16 stats[STAT_KINDS * 2];  // 0x018, ステータスポイントの割り振り と (多分タロットカードの)ドーピングボーナス, ステータス画面には合計値が表示される
   u16 savedHP;                // 0x028, コンティニュー用？
@@ -106,7 +107,7 @@ typedef struct {
   s16 playerKind;                // 0x250, see PlayerKind in player.h
   coffin16_t coffin;             // 0x252
   s16 areaID;                    // 0x254, current area ID
-  u16 unk_256;                   // 0x256, 根拠: FUN_0808fc8c が '.f' の値を入れる
+  s16 unk_256;                   // 0x256, 根拠: FUN_0808fc8c が '.f' の値を入れる
   u16 unk_258;                   // 0x258, 根拠: FUN_0808fcb4 が '.s' の値を入れる
   u16 unk_25a;                   // 0x25A, 根拠: FUN_0808fcd8 が '.f' の値を入れる
   u8 unk_25c[0x260 - 0x25C];     // 0x25C
@@ -118,8 +119,8 @@ typedef struct {
   s16 unk_2b0[2];                // 0x2B0
   s32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒), s32 の根拠: Entity0823acbc_Update が 0x7FFFFFFF と符号付き比較する
   u8 unk_2b8[8];                 // 0x2B8
-  u8 unk_2c0[8];                 // 0x2C0
-  s32 unk_2c8[2];                // 0x2C8, FUN_0807a8e0 が isSabata で引いて 0 を書く
+  s32 kaamosProgress[2];         // 0x2C0, カーモスの進行カウンタ [ジャンゴ, サバタ]
+  s32 isKaamos[2];               // 0x2C8, プレイヤーがカーモス状態か？  [ジャンゴ, サバタ]
   u8 unk_2d0[8];                 // 0x2D0
   s32 solarFormFrames;           // 0x2D8, 赤ジャンゴのままボタンを押していたフレーム数, s32 の根拠: Player_CountStyleFrames が 0x7FFFFFFE と符号付き比較する
   s32 darkFormFrames;            // 0x2DC, 赤ジャンゴ以外(サバタを除く)でボタンを押していたフレーム数, s32 の根拠は同上

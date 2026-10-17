@@ -21,13 +21,8 @@ static_assert(sizeof(EntityD53D) == 48);
 
 IWRAM_DATA EntityD53D* gEntityD53D = NULL;  // 0x030000E8
 
-void Video_ResetFrameState(u32 clearOam);  // src/video.c
-void TextPanelManager_DestroyAll(void);    // src/text_panel.c
-void MosaicFader_Stop(void);               // src/mosaic_fader.c
-void nop_0822e738(void);                   // src/particle.c
-void nop_0822b09c(void);                   // src/sprite_aux.c
-void FUN_0822f584(void);                   // src/sprite_main.c
-s32 FUN_0809c08c(s32 mode);                // src/entity_cc28.c
+void MosaicFader_Stop(void);
+s32 FUN_0809c08c(s32 mode);
 s32 FUN_0804e59c(void);
 
 // 次の描画から BG を消す
@@ -100,7 +95,7 @@ s32 EntityD53D_Init(EntityD53D* p) {
   MosaicFader_Stop();
 
   if (VM_SeekToNamedArg('s')) {
-    p->msgPc = FUN_0823d340();
+    p->msgPc = VM_GetPC_Proxy();
     if (p->msgPc == NULL) {
       return -1;
     }

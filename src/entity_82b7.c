@@ -17,8 +17,19 @@ static_assert(sizeof(Entity82B7) == 44);
 
 NAKED s32 Entity82B7_Update(Entity82B7* p) { INCFUNC("asm/func/Entity82B7_Update.inc"); }
 
-NAKED s32 Entity82B7_Destroy(Entity82B7* p) { INCFUNC("asm/func/Entity82B7_Destroy.inc"); }
+s32 Entity82B7_Destroy(Entity82B7* p) { return 0; }
 
 NAKED s32 Entity82B7_Init(Entity82B7* p) { INCFUNC("asm/func/Entity82B7_Init.inc"); }
 
-NAKED Entity82B7* Entity82B7_Create(void) { INCFUNC("asm/func/Entity82B7_Create.inc"); }
+Entity82B7* Entity82B7_Create(void) {
+  Entity82B7* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity82B7));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity82B7_Update, Entity82B7_Destroy);
+    if (Entity82B7_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

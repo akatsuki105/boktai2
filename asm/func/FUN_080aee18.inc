@@ -57,7 +57,7 @@ _080AEE78:
 	ldr r2, _080AEED4 @ =0x0203B400
 	adds r1, r1, r2
 	ldrb r4, [r1]
-	ldr r1, _080AEED8 @ =0x085B0A08
+	ldr r1, _080AEED8 @ =gSineTable
 	mov sl, r1
 	add r5, sp, #8
 	adds r7, r0, #0
@@ -73,7 +73,7 @@ _080AEE9C:
 	ldr r0, [r0]
 	str r0, [sp, #8]
 	str r1, [sp, #0xc]
-	ldr r1, _080AEED8 @ =0x085B0A08
+	ldr r1, _080AEED8 @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	mov r2, r8
@@ -92,7 +92,7 @@ _080AEEC8: .4byte 0x0000134C
 _080AEECC: .4byte 0x030046B8
 _080AEED0: .4byte 0x000003FF
 _080AEED4: .4byte 0x0203B400
-_080AEED8: .4byte 0x085B0A08
+_080AEED8: .4byte gSineTable
 _080AEEDC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

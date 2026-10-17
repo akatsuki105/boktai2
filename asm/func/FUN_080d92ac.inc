@@ -147,7 +147,7 @@ _080D93A4:
 _080D93BA:
 	ldr r1, [r6, #0x4c]
 	asrs r1, r1, #1
-	ldr r2, _080D9434 @ =0x085B0A08
+	ldr r2, _080D9434 @ =gSineTable
 	adds r3, r6, #0
 	adds r3, #0x35
 	ldrb r0, [r3]
@@ -206,7 +206,7 @@ _080D93BA:
 	movs r0, #0
 	b _080D944E
 	.align 2, 0
-_080D9434: .4byte 0x085B0A08
+_080D9434: .4byte gSineTable
 _080D9438: .4byte 0x030046B8
 _080D943C: .4byte 0x000003FF
 _080D9440: .4byte 0x0203B400

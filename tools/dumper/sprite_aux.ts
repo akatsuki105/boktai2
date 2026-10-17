@@ -104,7 +104,7 @@ const tileCmd = new Command()
 
 // ./tools/dumper/sprite_aux.ts asm ./baserom.gba > tmp/sprite_aux.inc
 const asmCmd = new Command()
-  .description("Dump actor sprite data as assembly.")
+  .description("Dump aux sprite data as assembly.")
   .argument("<rom:string>", "Path to a GBA ROM file.")
   .action((opts, romPath) => {
     const macros = `
@@ -115,7 +115,7 @@ const asmCmd = new Command()
     `;
     const rom = new DataView((Deno.readFileSync(romPath)).buffer);
     const hdr = MFT.getFSEntry(rom, ID);
-    if (hdr.end == null) throw new Error(`MFT entry with id1 0x2117 has no end address.`);
+    if (hdr.end == null) throw new Error(`MFT entry with id1 0x${gba.toHex16(ID)} has no end address.`);
     const [dirStart, dirEnd]: [addr, addr] = [hdr.ptr, hdr.end];
     const dir = MFT.ParseDirectory(rom, dirStart);
 

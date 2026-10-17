@@ -28,7 +28,7 @@
 	adds r1, r1, r7
 	mov sb, r1
 	mov sl, r5
-	ldr r6, _080A8ECC @ =0x085B0A08
+	ldr r6, _080A8ECC @ =gSineTable
 _080A8E18:
 	movs r0, #0x2c
 	mov r4, r8
@@ -112,7 +112,7 @@ _080A8EBC: .4byte 0x0203B400
 _080A8EC0: .4byte 0x030046B8
 _080A8EC4: .4byte 0x000003FF
 _080A8EC8: .4byte 0x00001C1E
-_080A8ECC: .4byte 0x085B0A08
+_080A8ECC: .4byte gSineTable
 _080A8ED0: .4byte 0x000001FF
 _080A8ED4:
 	rsbs r0, r0, #0

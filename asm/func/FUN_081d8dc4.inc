@@ -49,7 +49,7 @@ _081D8DDC:
 	adds r7, r4, #0
 	adds r1, #3
 	mov ip, r1
-	ldr r4, _081D8E54 @ =0x085B0A08
+	ldr r4, _081D8E54 @ =gSineTable
 	adds r0, r7, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -69,7 +69,7 @@ _081D8DDC:
 _081D8E48: .4byte 0x0203B400
 _081D8E4C: .4byte 0x030046B8
 _081D8E50: .4byte 0x000003FF
-_081D8E54: .4byte 0x085B0A08
+_081D8E54: .4byte gSineTable
 _081D8E58:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

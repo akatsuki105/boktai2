@@ -28,7 +28,7 @@ _08068EC0:
 	rsbs r0, r0, #0
 _08068EC6:
 	mov r8, r0
-	bl FUN_080865c0
+	bl Coffin_GetPos
 	adds r5, r0, #0
 	movs r1, #0
 	ldrsh r0, [r5, r1]
@@ -58,7 +58,7 @@ _08068EFC:
 	adds r1, r2, #0
 	bl ArcTan2_8
 	adds r3, r0, #0
-	ldr r2, _08068F20 @ =0x085B0A08
+	ldr r2, _08068F20 @ =gSineTable
 	adds r0, #0x40
 	movs r1, #0xff
 	ands r0, r1
@@ -72,7 +72,7 @@ _08068EFC:
 	asrs r0, r0, #0xc
 	b _08068F2A
 	.align 2, 0
-_08068F20: .4byte 0x085B0A08
+_08068F20: .4byte gSineTable
 _08068F24:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -88,7 +88,7 @@ _08068F2A:
 	ands r0, r2
 	orrs r0, r1
 	str r0, [sp]
-	ldr r1, _08068F5C @ =0x085B0A08
+	ldr r1, _08068F5C @ =gSineTable
 	movs r0, #0xff
 	ands r0, r3
 	lsls r0, r0, #1
@@ -102,7 +102,7 @@ _08068F2A:
 	b _08068F66
 	.align 2, 0
 _08068F58: .4byte 0xFFFF0000
-_08068F5C: .4byte 0x085B0A08
+_08068F5C: .4byte gSineTable
 _08068F60:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

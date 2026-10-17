@@ -61,7 +61,7 @@ _0808C47C:
 	ldr r0, [r5, #0x10]
 	cmp r0, #0
 	beq _0808C506
-	ldr r4, _0808C4DC @ =0x085B0A08
+	ldr r4, _0808C4DC @ =gSineTable
 	ldrh r0, [r5, #0x18]
 	lsls r0, r0, #7
 	ldrh r1, [r5, #0x1a]
@@ -80,7 +80,7 @@ _0808C47C:
 	asrs r1, r0, #0xc
 	b _0808C4E6
 	.align 2, 0
-_0808C4DC: .4byte 0x085B0A08
+_0808C4DC: .4byte gSineTable
 _0808C4E0:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

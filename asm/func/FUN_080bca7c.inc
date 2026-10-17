@@ -139,7 +139,7 @@ _080BCB92:
 	bl FUN_0823ce68
 	ldr r1, _080BCBB4 @ =FUN_080bcbf4
 	adds r0, r4, #0
-	bl Entity3019_SetState
+	bl ItemShop_SetState
 	b _080BCBE2
 	.align 2, 0
 _080BCBA8: .4byte 0x030044E0

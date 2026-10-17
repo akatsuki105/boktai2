@@ -1,7 +1,7 @@
 ---
 name: decomp-func
-description: Decompile boktai2 function into C code that generates matching builds.
-argument-hint: [function-name]
+description: Decompile boktai2 function into C code that generates matching builds. `-n`/`--name` also renames the function when the evidence is solid, `-p`/`--push` commits and pushes each function as soon as it is finished, with `MATCHING: <name>` or `NON_MATCH: <name>` as the commit message.
+argument-hint: [<function-name>...] [-n|--name] [-p|--push]
 ---
 
 ## The one rule
@@ -15,15 +15,48 @@ Two things follow from that, and they are what this skill is really about:
 
 Neither licenses unnatural C. The original was written by a person, so a shape you would not defend to a colleague is more likely a wrong guess about the compiler than a discovery about it.
 
+## Invocation: `/decomp-func [FUNCTION_NAME...] [-n] [-p]`
+
+The text after the command arrives as `ARGUMENTS:` at the end of this skill.
+Nothing parses it, so read the argument string literally and resolve it
+yourself before anything else.
+
+- **The words that are not options are function names.** With several, take
+  them in the order given and run the whole workflow for one before starting
+  the next — one function at a time, never a batch. With none, pick a target
+  the way "Picking a target" says.
+- **`-n` / `--name`** — rename the function once the work is done (step 7).
+  Without it the function keeps the name it came in with, whatever the body
+  turned out to be.
+- **`-p` / `--push`** — commit and push each function as soon as it is finished
+  (step 8). Without it this skill leaves the working tree dirty for the user,
+  and that is the default: committing is the one thing it does not do unless
+  asked.
+- **Short options bundle.** One leading `-` followed by `n`, `p` or both, in
+  any order: `-n`, `-p`, `-np`, `-pn`. Long options are written out separately
+  (`--name --push`), and the two styles may be mixed.
+- A plain-language request turns the same switches on
+  (「名前も付けて」→ `-n`, 「終わったらコミットしてpushして」→ `-p`), but the
+  flags are the form to prefer.
+- **Anything else starting with `-`** — an option this skill does not have, a
+  typo of one it does (`--psuh`, `--nmae`), or a bundle containing an unknown
+  letter — means **stop and ask**. Do not guess and do not silently ignore it;
+  a mistyped `--nmae` must not quietly skip the rename.
+
+**With `-p`, check the tree before doing any work:** `git status --porcelain`.
+If anything is already modified or untracked, stop and ask the user.
+`tools/git_push.sh` stages with `git add -A`, so whatever is sitting in the tree
+lands in the first function's commit whether it belongs there or not.
+
 ## Picking a target
 
 See CLAUDE.md's "Function Decompilation Levels" for the 4-level vocabulary
 (TODO / NAKED / NON_MATCH / MATCHING). Only functions at the NAKED or
 NON_MATCH level can be targets.
 
-**If the user names a specific function** (passed as an argument to this
-skill), that function is the target — do not run `census.ts` or pick
-anything else. First confirm it's actually at the NAKED or NON_MATCH level:
+**If the user names the functions** (passed as arguments to this skill), those
+are the targets, one pass each in the order given — do not run `census.ts` or
+pick anything else. First confirm it's actually at the NAKED or NON_MATCH level:
 
 ```sh
 grep -n "^\(NAKED\|NON_MATCH\)\b.*\b<FUNCTION_NAME>\s*(" src/*.c
@@ -141,6 +174,14 @@ grep -c '^NON_MATCH' src/FILE.c
    "mysterious" codegen (staged dead zeros, merged flag stores, shared
    constants) falls out of plain porter-style statements.
 
+   **Widen to the files next to this one in address order first.** `.text` is
+   laid out in link order, so the `.c` listed just before and just after this
+   one in `ld_script.ld` holds the code that was written around the same time,
+   by the same hand, against the same subsystem — its idioms are the closest
+   match you will find outside the file itself. (This cuts the other way for
+   *type* evidence, where the file split proves nothing; see `ghidra-struct`'s
+   working agreement.)
+
 3. **Write the C into `src/*.c`**, replacing the `NAKED` stub or the NON_MATCH `#else INCFUNC` block, and removing the `NON_MATCH` marker and the `#ifdef NONMATCHING_C` wrapper with it. The draft need not be perfect — the streamdiff loop below is what sharpens it.
 
 ```c
@@ -173,8 +214,7 @@ void* DecompTargetFunc(void) {
        `.claude/skills/decomp-func/scripts/streamdiff.py BUILT_OBJECT SYMBOL ORIGINAL_INC` (keep a copy of the original inc via `git show HEAD:asm/... > <scratchpad>/orig.inc` before truncating it).
        Spelling variants, label/symbol spelling, pool offsets and immediate radix are masked, so every surviving hunk is a real codegen difference. **Branch targets are not masked** — an in-function target becomes a signed instruction-index delta (`beq ~+7`), so a branch landing on the wrong block shows up as a hunk rather than hiding behind a matching label.
        **Zero hunks is not a match.** Pool *values* and references that leave the function still differ underneath the masking. Measured on this repo: of the five NON_MATCH functions that streamdiff reported as identical, one matched the ROM and four did not. Only step 4 decides.
-       **Diffing a NON_MATCH function means `make clean-code` first.** Its C only exists in the object when the build defines `NONMATCHING_C`, and `make` does not treat `EXTRA_CPPFLAGS` as a dependency: run `make EXTRA_CPPFLAGS=-DNONMATCHING_C` right after a normal build and the untouched objects are reused, so the function is still compiled from its `INCFUNC` — the original assembly against itself. That reports "stream identical" and any `objdump` you take is the target, not your C. Always
-       `make clean-code && make EXTRA_CPPFLAGS=-DNONMATCHING_C`, or let `residual.ts` do it. Seen on seven functions in one session, three of which got a wrong instruction count written into their residual note.
+       **Diffing a NON_MATCH function means `make nonmatch` first, and the object lives in `build/nonmatch/`.** Its C only exists in the object when the build defines `NONMATCHING_C`, so an object from a normal build still holds the `INCFUNC` — the original assembly against itself, which reports "stream identical" while any `objdump` you take is the target rather than your C. `make nonmatch` builds every object with the define into its own directory, so it never collides with `build/boktai2/` and needs no cleaning in either direction; `residual.ts` uses it too. Do **not** hand-roll `make EXTRA_CPPFLAGS=-DNONMATCHING_C`: `make` does not treat `EXTRA_CPPFLAGS` as a dependency, so it reuses whatever objects are already there. That mistake cost seven functions in one session, three of which got a wrong instruction count written into their residual note.
        Two readings that save time:
        - A residual whose **only** difference is a trailing `.word <abs>` against `.word .rodata` is a real match. Those are table relocations the linker resolves.
        - When `make compare` reports a huge diff starting early in the ROM, the function's **size** changed and everything after it shifted; the body is probably fine. `Entity080abd14_Create` and `Entity080ac374_Create` both did this — an over-narrow parameter type (`u16` where the target takes `u32`) expands to `lsls`/`lsrs` at entry, keeps one more register live, and adds it to the push/pop pair. streamdiff normalises the stream, so it does not show a prologue register count as a hunk.
@@ -212,6 +252,36 @@ void* DecompTargetFunc(void) {
     Add a one-line Japanese comment directly above the function signature summarizing what it does, for human readers (e.g. `// リンクリストからノードを削除する`). Keep it to one line; skip it if an equivalent comment is already present, or if the function's behavior is self-evident from the code itself (e.g. a bare `return 0;`, or a standard `CreateEntity`/`SetEntityRoutine`/init-or-kill entity-creation function). Never write a comment that's just a literal restatement of the code (e.g. "reads pc[1..2] as a little-endian s16 and advances pc by 3" for code that visibly does exactly that) — describe the *meaning*/*purpose*, not the mechanics; if you don't know the meaning, skip the comment rather than paraphrasing the code.
     **Do not write up the lever.** The matched C is committed in `src/` and the diff that closed it is in git; that is the record. The one exception is an explanation of *why* the compiler behaves that way, which goes in `agbcc-internals.md` and only with the compiler source file and line that proves it — if you cannot point at the code, it does not get written anywhere.
 
+7. **Name it** — only with `-n`, and only when the evidence is solid. The body
+    is in front of you by now, which is the best moment this project ever gets
+    to name a function; `FUN_xxxxxxxx` is still the honest answer when you
+    cannot say in one sentence what it does, and one wrong name is worse than no
+    name.
+
+    ```sh
+    tools/rename_with_ghidra.sh --quiet OLD_NAME NEW_NAME
+    ```
+
+    That renames the repository and Ghidra together (Ghidra's GUI must be open) and `asm/func/OLD_NAME.inc` with them, so use it rather than editing either side by hand — a NON_MATCH function's `INCFUNC` still points at that file. Follow the neighbours: `Owner_Verb` (`AlarmPanel_IsTriggered`), and the `XXX_Create` / `_Init` / `_Update` / `_Destroy` family for entities. The rename can reach files outside `src`/`include`/`asm` — `data/*.inc` script tables reference these symbols — so check `git status` afterwards.
+
+    A name that says what the function does can make step 6's comment redundant; drop the comment then rather than writing the same thing twice.
+
+8. **Commit and push** — only with `-p`. Without it, stop after step 7 and leave
+    the working tree dirty for the user.
+
+    ```sh
+    tools/git_push.sh "MATCHING: FUN_08237a5c"    # 一致した
+    tools/git_push.sh "NON_MATCH: FUN_08237a5c"   # 一致せず NON_MATCH で残した
+    ```
+
+    The message is the level the function ended at, then its name — nothing else. `MATCHING:` when `make compare` accepted the C, `NON_MATCH:` when the budget ran out and the best candidate went back behind `#ifdef NONMATCHING_C`. If the function was renamed during the work, use the new name. The script re-runs `make clean-code && make compare` and refuses to commit unless the ROM matches — if it refuses, report that and stop there rather than moving on to the next function. A function left at NON_MATCH is fine: its `INCFUNC` fallback keeps the ROM matching.
+
+    Push each function's commit as soon as it is made, so that stopping partway still leaves the finished work on the remote. An `--amend` that folds a late edit into a commit already pushed would need a force-push, so make sure everything for that function — any `agbcc-internals.md` entry included — is in the commit before running the script.
+
+    The script runs a full `make clean-code && make compare` every time, so N functions means N clean rebuilds. That is deliberate (the script's own header explains why) but it is the reason a long argument list takes a long time.
+
+    **A function can end without producing a commit.** The workflow stops before the loop when the target turns out to be hand-written assembly, when `context.ts` reports a `(+4)` and the struct has to be settled first, or when too many functions in that file are already NON_MATCH and it asks whether to switch target. None of those touch `src/`, so skip this step for that function — `tools/git_push.sh` would exit with `コミットするものがありません` — say why in the report, and move on to the next one.
+
 ## Stopping
 
 **The budget scales with the target's size.** `context.ts` prints it on its own first line (`asm/func/FUN_08066d2c.inc (78 バイト, 予算: 3 反復 / 6000 トークン)`), so it is decided and on screen before the first iteration:
@@ -238,6 +308,14 @@ Without it the next session cannot tell "nobody tried hard" from "the cheap tier
 
 `scripts/residual.ts` measures every NON_MATCH function in the repo at once, so use it rather than re-deriving how close a stalled function is.
 
+## Reporting
+
+One line per function: the level it ended at, and with `-p` its commit hash
+(`git log --oneline -N`). Say why for any function that produced no commit. With
+`-n`, give the old → new name and the one sentence that justifies it, and say
+which functions you deliberately left as `FUN_xxxxxxxx`. Do not narrate the
+iterations and do not paste the C — the user reads `src/`.
+
 ## Scripts
 
 All in `.claude/skills/decomp-func/scripts/`. Run them from the repo root,
@@ -257,7 +335,8 @@ silently skipped — including the `make compare` you were relying on.
   `--brief` / `--no-ghidra` trim it.
 - `census.ts <file.c>...` — remaining-function census over the given `.c` files, smallest-first TSV with sizes and inc paths.
 - `streamdiff.py` — canonicalized instruction diff, object vs inc.
-- `residual.ts [file.c...]` — build with `-DNONMATCHING_C` and report every NON_MATCH function's hunk count, smallest-first. Cleans `build/` before and after, so its numbers are the trustworthy ones and the next build starts over.
+- `residual.ts [file.c...]` — run `make nonmatch` and report every NON_MATCH function's hunk count, smallest-first. Builds into `build/nonmatch/` and leaves the objects there, so the normal build is untouched and you can follow up with `streamdiff.py` on any single function.
+- `flag_blast.sh <flag>...` — how many objects a compiler flag changes, against the `expected/` baseline. `--baseline` for a sanity check (expect 0), `--with-lib` to count `src/lib` too. Builds into `build/flagblast/`. Read `agbcc-levers.md` Tier D before reading anything into the number.
 
 ## Resources (read when you reach that phase)
 

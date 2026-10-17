@@ -12,8 +12,7 @@ typedef struct {
   u16 value;  // 回復アイテムの場合は回復する割合
   u16 unk_08;
   u16 unk_0a;
-  u16 price;
-  u16 unk_0e;
+  u32 price;
 } ItemData;
 static_assert(sizeof(ItemData) == 16);
 

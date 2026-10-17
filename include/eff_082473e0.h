@@ -39,8 +39,10 @@ typedef struct Eff082473e0Emitter {
 static_assert(sizeof(Eff082473e0Emitter) == 312);
 
 missing Eff082473e0Emitter_Reset(Eff082473e0Emitter* e);
+s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_4, s32 unk_5);
 s32 Eff082473e0Emitter_FadeParticle(Eff082473e0Emitter* e);
 s32 Eff082473e0Emitter_BurstParticle(Eff082473e0Emitter* e, s32 count, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
 s32 Eff082473e0Emitter_Destroy(Eff082473e0Emitter* e);
+s32 FUN_082467d0(Eff082473e0Emitter* e, u32 kind, u32 param_3, Vec3* spread);
 
 #endif  // __INCLUDE_EFF_082473E0_H__

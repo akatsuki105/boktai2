@@ -17,7 +17,7 @@ typedef struct {
   u8 ph;                    // 0x05, pixel height
   s8 px;                    // 0x06, offset pixel x
   s8 py;                    // 0x07, offset pixel y
-  u32 spritesOffset;        // 0x08, metasprites[] の先頭からアクターの最初のスプライトまでのバイトオフセット, つまり metasprites[spritesOffset>>3]
+  u32 spritesOffset;        // 0x08, poses[] の先頭からアクターの最初のスプライトまでのバイトオフセット, つまり poses[spritesOffset>>3]
 } AuxSpriteEntry;
 static_assert(sizeof(AuxSpriteEntry) == 12);
 
@@ -41,16 +41,16 @@ typedef struct {
 static_assert(sizeof(AuxSubsprite) == 4);
 
 typedef struct {
-  u32 unk_00;                       // 0x000000, 0x0
-  s32 entryCount;                   // 0x000004, entries[253], Video_GetAuxSprite が符号付きで比較する
-  u32 unk_08;                       // 0x000008, 0x0
-  u32 offsetToTiles;                // 0x00000C
-  u32 offsetToMetasprites;          // 0x000010
-  u32 offsetToSubsprites;           // 0x000014
-  AuxSpriteEntry entries[253];      // 0x000018, メタスプライトをまとめたもの
-  u8 tiles[42418 * 32];             // 0x000BF4, GBA tiles
-  AuxSpritePose metasprites[2164];  // 0x14C234, メタスプライト
-  AuxSubsprite subsprites[4641];    // 0x1527A4, GBAスプライト
+  u32 unk_00;                     // 0x000000, 0x0
+  s32 entryCount;                 // 0x000004, entries[253], Video_GetAuxSprite が符号付きで比較する
+  u32 unk_08;                     // 0x000008, 0x0
+  u32 offsetToTiles;              // 0x00000C
+  u32 offsetToMetasprites;        // 0x000010
+  u32 offsetToSubsprites;         // 0x000014
+  AuxSpriteEntry entries[253];    // 0x000018, メタスプライトをまとめたもの
+  u8 tiles[42418 * 32];           // 0x000BF4, GBA tiles
+  AuxSpritePose poses[2164];      // 0x14C234, メタスプライト
+  AuxSubsprite subsprites[4641];  // 0x1527A4, GBAスプライト
 } AuxSpriteFile;
 static_assert(sizeof(AuxSpriteFile) == 1404968);
 
@@ -60,19 +60,19 @@ static_assert(sizeof(AuxSpriteFile) == 1404968);
 // AuxSpriteGfx: AuxSprite の描画に必要な情報 (タイル・パレット・ポーズ配列) を保持する構造体
 // Particle でいう ParticleGroup
 typedef struct {
-  AuxSpriteGfxFlags flags;     // 0x00, 初期値には AuxSpriteEntry.flags が入る (ただしこのゲームでは全て０)
-  SpriteShape shape;           // 0x01, see SpriteShape
-  u16 unk_2;                   // 0x02
-  u16 subspriteCount;          // 0x04
-  u16 plttID;                  // 0x06, &gObjPlttData[plttID*16]
-  u8 pw;                       // 0x08, pixel width
-  u8 ph;                       // 0x09, pixel height
-  s8 px;                       // 0x0A, offset pixel x
-  s8 py;                       // 0x0B, offset pixel y
-  rgb555* pltt;                // 0x0C, &gObjPlttData[plttID*16]
-  u8* tiles;                   // 0x10
-  AuxSpritePose* metasprites;  // 0x14
-  u32 unk_18;                  // 0x18
+  AuxSpriteGfxFlags flags;  // 0x00, 初期値には AuxSpriteEntry.flags が入る (ただしこのゲームでは全て０)
+  SpriteShape shape;        // 0x01, see SpriteShape
+  u16 unk_2;                // 0x02
+  u16 subspriteCount;       // 0x04
+  u16 plttID;               // 0x06, &gObjPlttData[plttID*16]
+  u8 pw;                    // 0x08, pixel width
+  u8 ph;                    // 0x09, pixel height
+  s8 px;                    // 0x0A, offset pixel x
+  s8 py;                    // 0x0B, offset pixel y
+  rgb555* pltt;             // 0x0C, &gObjPlttData[plttID*16]
+  u8* tiles;                // 0x10
+  AuxSpritePose* poses;     // 0x14
+  u32 unk_18;               // 0x18
 } AuxSpriteGfx;
 static_assert(sizeof(AuxSpriteGfx) == 28);
 
@@ -90,7 +90,7 @@ typedef struct AuxSprite {
   u8 listIdx;              // 0x0A, gAuxSpriteLists の添字
   u8 unk_0b;               // 0x0B, padding?
   AuxSpriteGfx* gfx;       // 0x0C, AuxSprite_SetGfx がセットする
-  s16 metaspriteIdx;       // 0x10, gfx->metasprites の添字
+  s16 poseIdx;             // 0x10, gfx->poses の添字
   u8 unk_12;               // 0x12
   u8 plttOffset;           // 0x13, gfx->plttID に加算される
   u8 spriteWidth;          // 0x14, gOAMWidthTable[AuxSpriteGfx.unk_1]
@@ -122,9 +122,10 @@ bool32 Video_GetAuxSprite(AuxSpriteGfx* gfx, SpriteID32 id);
 void Video_SetAuxSpritePltt(AuxSpriteGfx* gfx, s32 plttID);
 void AuxSprite_SetGfx(AuxSprite* p, AuxSpriteGfx* gfx);
 
-static inline void AuxSprite_SetMetaspriteIdx(AuxSprite* spr, s32 idx) { spr->metaspriteIdx = idx; }
+static inline void AuxSprite_SetFlags(AuxSprite* spr, SpriteFlags bits) { spr->flags |= bits; }
+static inline void AuxSprite_ClearFlags(AuxSprite* spr, SpriteFlags bits) { spr->flags &= ~bits; }
 static inline void AuxSprite_Show(AuxSprite* spr) { spr->flags &= ~SPRFLAG_HIDDEN; }
 static inline void AuxSprite_Hide(AuxSprite* spr) { spr->flags |= SPRFLAG_HIDDEN; }
-static inline void AuxSprite_SetPoseIdx(AuxSprite* spr, s32 val) { spr->metaspriteIdx = val; }
+static inline void AuxSprite_SetPoseIdx(AuxSprite* spr, s32 val) { spr->poseIdx = val; }
 
 #endif  // __INCLUDE_SPRITE_ACTOR_H__

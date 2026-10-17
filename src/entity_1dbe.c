@@ -2,6 +2,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
+#include "sound.h"
 #include "sprite_aux.h"
 
 struct Entity1DBEElem;
@@ -10,7 +11,7 @@ typedef void(Entity1DBEElemFunc)(struct Entity1DBEElem* elem);
 
 // 太陽エネルギーで state が入れ替わる設置物, 1体の Entity1DBE が最大8個を抱える
 typedef struct Entity1DBEElem {
-  AuxSprite sprite;                    // 0x000, metaspriteIdx が見た目の段階 (state 0 は 0〜2, state 1 は 3〜5, state 2 は 6〜8)
+  AuxSprite sprite;                    // 0x000, poseIdx が見た目の段階 (state 0 は 0〜2, state 1 は 3〜5, state 2 は 6〜8)
   AuxSpriteGfx gfx;                    // 0x02C, SPRITE_TRAP_FLOOR
   Mover mover;                         // 0x048, moverLinked が立っているときだけリストに繋がれる
   HitboxData hitbox;                   // 0x08C, 半径 {0x80, 0x32, 0x80}, ignoreMask 0x10
@@ -42,19 +43,50 @@ static_assert(sizeof(Entity1DBE) == 1980);
 
 IWRAM_DATA Entity1DBE* gEntity1DBE = NULL;  // 0x03000144
 
-NAKED void FUN_0809f64c(void) { INCFUNC("asm/func/FUN_0809f64c.inc"); }
+void FUN_0809f64c(void) { gEntity1DBE = NULL; }
 
-NAKED bool32 Entity1DBE_TouchElemNear(Vec3* pos) { INCFUNC("asm/func/Entity1DBE_TouchElemNear.inc"); }
+NAKED bool32 Entity1DBE_TouchElemNear(WorldPos* pos) { INCFUNC("asm/func/Entity1DBE_TouchElemNear.inc"); }
 
 NAKED s32 VM_SubB6CE(void) { INCFUNC("asm/func/VM_SubB6CE.inc"); }
 
-NAKED void Entity1DBEElem_SetState(Entity1DBEElem* elem, u8 state, Entity1DBEElemFunc* fn) { INCFUNC("asm/func/Entity1DBEElem_SetState.inc"); }
+s32 GetMapAreaAt(Vec3* pos);  // src/cactus.c
+void FUN_0809f8e4(Entity1DBEElem* elem);
+void FUN_0809f890(Entity1DBEElem* elem);
+void FUN_0809fabc(Entity1DBEElem* elem);
+
+void Entity1DBEElem_SetState(Entity1DBEElem* elem, u8 state, Entity1DBEElemFunc* fn) {
+  elem->state = state;
+  elem->updateCallback = fn;
+  elem->counter = 0;
+  elem->animTimer = 0;
+}
 
 NAKED void Entity1DBEElem_OnHit(HitboxData* a, HitboxData* b, Entity1DBEElem* owner) { INCFUNC("asm/func/Entity1DBEElem_OnHit.inc"); }
 
-NAKED void FUN_0809f7fc(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809f7fc.inc"); }
+// 日が出ている間だけ counter を進め, 0x12B を越えたら次の状態へ移る
+void FUN_0809f7fc(Entity1DBEElem* elem) {
+  if (gStat->sunGauge > 0) {
+    elem->counter++;
+    if (elem->counter > 0x12B) {
+      Entity1DBEElem_SetState(elem, 0, FUN_0809f890);
+    }
+  }
+}
 
-NAKED void FUN_0809f840(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809f840.inc"); }
+void FUN_0809f840(Entity1DBEElem* elem) {
+  if (elem->animTimer == 0) {
+    PlaySound_082406e0(0x19F);
+  }
+  elem->animTimer++;
+  if (elem->animTimer <= 7) {
+    elem->sprite.poseIdx = 3;
+  } else if (elem->animTimer <= 0xF) {
+    elem->sprite.poseIdx = 4;
+  } else {
+    elem->sprite.poseIdx = 5;
+    Entity1DBEElem_SetState(elem, 1, FUN_0809f7fc);
+  }
+}
 
 NAKED void FUN_0809f890(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809f890.inc"); }
 
@@ -62,28 +94,102 @@ NAKED void FUN_0809f8e4(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809f8e4.i
 
 NAKED void FUN_0809f938(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809f938.inc"); }
 
-NAKED void FUN_0809fa80(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809fa80.inc"); }
+void FUN_0809fa80(Entity1DBEElem* elem) {
+  elem->animTimer++;
+  if (elem->animTimer <= 7) {
+    elem->sprite.poseIdx = 7;
+  } else if (elem->animTimer <= 0xF) {
+    elem->sprite.poseIdx = 6;
+  } else {
+    elem->sprite.poseIdx = 2;
+    Entity1DBEElem_SetState(elem, 0, FUN_0809fabc);
+  }
+}
 
 NAKED void FUN_0809fabc(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809fabc.inc"); }
 
 NAKED void Entity1DBEElem_Update(Entity1DBEElem* elem) { INCFUNC("asm/func/Entity1DBEElem_Update.inc"); }
 
-NAKED void Entity1DBEElem_InitParams(Entity1DBEElem* elem, u16 id, Vec3* pos, u8 state, u8 lockFlags, bool8 areaBound) { INCFUNC("asm/func/Entity1DBEElem_InitParams.inc"); }
+void Entity1DBEElem_InitParams(Entity1DBEElem* elem, u32 id, Vec3* pos, u32 state, u32 lockFlags, u32 areaBound) {
+  elem->id = id;
+  elem->state = state;
+  elem->unk_e2 = 0;
+  elem->flickering = FALSE;
+  elem->touched = FALSE;
+  elem->lockFlags = lockFlags;
+  elem->areaBound = areaBound;
+  if (elem->areaBound) {
+    elem->areaID = GetMapAreaAt(pos);
+  }
+}
 
-NAKED void Entity1DBEElem_InitSprite(Entity1DBEElem* elem, Vec3* pos, bool8 moverLinked) { INCFUNC("asm/func/Entity1DBEElem_InitSprite.inc"); }
+NAKED void Entity1DBEElem_InitSprite(Entity1DBEElem* elem, Vec3* pos, u32 moverLinked) { INCFUNC("asm/func/Entity1DBEElem_InitSprite.inc"); }
 
 NAKED void Entity1DBEElem_InitHitbox(Entity1DBEElem* elem) { INCFUNC("asm/func/Entity1DBEElem_InitHitbox.inc"); }
 
-NAKED void Entity1DBEElem_InitState(Entity1DBEElem* elem) { INCFUNC("asm/func/Entity1DBEElem_InitState.inc"); }
+// '.s' の値ごとに見た目と更新関数を決める
+void Entity1DBEElem_InitState(Entity1DBEElem* elem) {
+  if (elem->state == 0) {
+    elem->sprite.poseIdx = 0;
+    Entity1DBEElem_SetState(elem, 0, FUN_0809fabc);
+  } else if (elem->state == 2) {
+    elem->sprite.poseIdx = 8;
+    Entity1DBEElem_SetState(elem, 2, FUN_0809f8e4);
+  } else if (elem->state == 1) {
+    elem->sprite.poseIdx = 5;
+    Entity1DBEElem_SetState(elem, 1, FUN_0809f7fc);
+  }
+}
 
-NAKED void Entity1DBE_AddElem(Entity1DBE* p, u16 id, Vec3* pos, u8 state, bool8 moverLinked, u8 lockFlags, bool8 areaBound) { INCFUNC("asm/func/Entity1DBE_AddElem.inc"); }
+void Entity1DBE_AddElem(Entity1DBE* p, u32 id, Vec3* pos, u32 state, u32 moverLinked, u32 lockFlags, u32 areaBound) {
+  Entity1DBEElem* elem = &p->elems[p->count];
 
-NAKED s32 Entity1DBE_Update(Entity1DBE* p) { INCFUNC("asm/func/Entity1DBE_Update.inc"); }
+  Entity1DBEElem_InitParams(elem, id, pos, state, lockFlags, areaBound);
+  Entity1DBEElem_InitSprite(elem, pos, moverLinked);
+  Entity1DBEElem_InitHitbox(elem);
+  Entity1DBEElem_InitState(elem);
+}
 
-NAKED s32 Entity1DBE_Destroy(Entity1DBE* p) { INCFUNC("asm/func/Entity1DBE_Destroy.inc"); }
+s32 Entity1DBE_Update(Entity1DBE* p) {
+  s32 i;
 
-NAKED s32 Entity1DBE_Init(Entity1DBE* p) { INCFUNC("asm/func/Entity1DBE_Init.inc"); }
+  for (i = 0; i < p->count; i++) {
+    Entity1DBEElem_Update(&p->elems[i]);
+  }
+  return 0;
+}
 
-NAKED Entity1DBE* Entity1DBE_Create(void) { INCFUNC("asm/func/Entity1DBE_Create.inc"); }
+s32 Entity1DBE_Destroy(Entity1DBE* p) {
+  s32 i;
+
+  for (i = 0; i < p->count; i++) {
+    if (p->elems[i].moverLinked) {
+      Mover_Unlink(&p->elems[i].mover);
+    }
+    AuxSprite_Remove(&p->elems[i].sprite);
+    Hitbox_Unregister(&p->elems[i].hitbox);
+  }
+  gEntity1DBE = NULL;
+  return 0;
+}
+
+s32 Entity1DBE_Init(Entity1DBE* p) {
+  p->count = 0;
+  gEntity1DBE = p;
+  return 0;
+}
+
+Entity1DBE* Entity1DBE_Create(void) {
+  Entity1DBE* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity1DBE));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity1DBE_Update, Entity1DBE_Destroy);
+    if (Entity1DBE_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
 
 NAKED void VM_Sub1DBE(void) { INCFUNC("asm/func/VM_Sub1DBE.inc"); }

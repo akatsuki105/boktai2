@@ -4716,7 +4716,7 @@ FUN_081300f4: @ 0x081300F4
 	str r0, [sp, #4]
 	adds r0, r6, #0
 	add r1, sp, #8
-	bl FUN_080e38a8
+	bl Enemy_RegisterOwnHitbox
 	ldr r0, [sp, #0x18]
 	ands r0, r4
 	movs r2, #0x40
@@ -4742,7 +4742,7 @@ FUN_081300f4: @ 0x081300F4
 	str r0, [sp]
 	str r6, [sp, #4]
 	adds r0, r6, #0
-	bl FUN_080e3984
+	bl Enemy_InitAtkHitbox
 	add sp, #0x28
 	pop {r3}
 	mov r8, r3
@@ -5162,7 +5162,7 @@ FUN_081304a8: @ 0x081304A8
 	adds r5, r0, #0
 	adds r6, r1, #0
 	adds r7, r2, #0
-	bl FUN_080865c0
+	bl Coffin_GetPos
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _081304FE
@@ -5225,7 +5225,7 @@ FUN_08130508: @ 0x08130508
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08130604
-	bl FUN_080865c0
+	bl Coffin_GetPos
 	adds r4, r0, #0
 	cmp r4, #0
 	beq _08130604
@@ -5361,7 +5361,7 @@ FUN_08130610: @ 0x08130610
 	rsbs r1, r1, #0
 	cmp r0, r1
 	bne _0813063C
-	bl FUN_08086850
+	bl Coffin_IsIdle
 	cmp r0, #0
 	bne _0813065C
 _0813063C:
@@ -5624,7 +5624,7 @@ _08130814:
 	ble _08130822
 	b _081309D0
 _08130822:
-	ldr r2, _081308AC @ =0x085B0A08
+	ldr r2, _081308AC @ =gSineTable
 	adds r0, r5, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -5687,7 +5687,7 @@ _0813089C: .4byte 0x030046B8
 _081308A0: .4byte 0x000003FF
 _081308A4: .4byte 0x00000484
 _081308A8: .4byte 0x0000065C
-_081308AC: .4byte 0x085B0A08
+_081308AC: .4byte gSineTable
 _081308B0: .4byte 0xFFFF0000
 _081308B4: .4byte 0x000004A4
 _081308B8:
@@ -6521,7 +6521,7 @@ FUN_08130eec: @ 0x08130EEC
 	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
-	ldr r3, _08130FDC @ =0x085B0A08
+	ldr r3, _08130FDC @ =gSineTable
 	adds r1, r0, #0
 	adds r1, #0x40
 	movs r2, #0xff
@@ -6611,7 +6611,7 @@ _08130F80:
 	mov sb, r0
 	b _08131000
 	.align 2, 0
-_08130FDC: .4byte 0x085B0A08
+_08130FDC: .4byte gSineTable
 _08130FE0: .4byte 0xFFFF0000
 _08130FE4:
 	adds r4, #8
@@ -7843,7 +7843,7 @@ _081319BC:
 	str r0, [sp, #4]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080e3a90
+	bl Enemy_SetRanges
 	movs r0, #0x58
 	bl VM_SeekToNamedArg
 	cmp r0, #0
@@ -8735,7 +8735,7 @@ _081320E6:
 	strh r0, [r3]
 _081320FE:
 	adds r0, r7, #0
-	bl Enemy_Init_080f3680
+	bl Enemy_InitHandlerTables
 	adds r0, r7, #0
 	bl FUN_081300d0
 	ldr r4, [sp, #0x34]

@@ -13,7 +13,7 @@
 	bne _081D46F6
 	mov r4, sp
 	mov r0, sp
-	bl FUN_08086a28
+	bl Coffin_CopyPos
 	add r3, sp, #8
 	adds r2, r5, #0
 	adds r2, #0xfc

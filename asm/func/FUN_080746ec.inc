@@ -177,7 +177,7 @@ _08074850:
 	ldrh r0, [r1]
 	adds r0, #1
 	strh r0, [r1]
-	ldr r2, _08074884 @ =0x085B0A08
+	ldr r2, _08074884 @ =gSineTable
 	mov r0, sl
 	adds r0, #0x40
 	movs r1, #0xff
@@ -196,7 +196,7 @@ _08074850:
 _08074878: .4byte 0x0000095E
 _0807487C: .4byte 0x00000127
 _08074880: .4byte 0x0000037E
-_08074884: .4byte 0x085B0A08
+_08074884: .4byte gSineTable
 _08074888:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

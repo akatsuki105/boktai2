@@ -478,7 +478,7 @@ _080FA714:
 	adds r7, #0x8c
 	adds r1, r5, r7
 	adds r0, r5, #0
-	bl FUN_080e7150
+	bl Enemy_TargetNearestPlayer
 	ldr r1, _080FA778 @ =0x00000614
 	adds r0, r5, r1
 	ldr r1, [r0]

@@ -19,7 +19,7 @@ typedef struct Breakable {
   u16 unk_6;                                                    // 0x06, Breakable_Spawn が 0 を書くだけ
   u8 unk_8;                                                     // 0x08, '.k', 読み手が見つかっていない
   u8 flashTimer;                                                // 0x09, 被弾で 4, 0 になったら Video_SetAuxSpritePltt でパレットを戻す
-  u8 brokenPose;                                                // 0x0A, '.P'+1, 壊れたときに sprite.metaspriteIdx へ入る
+  u8 brokenPose;                                                // 0x0A, '.P'+1, 壊れたときに sprite.poseIdx へ入る
   u8 shakeTimer;                                                // 0x0B, 被弾で 10, 0 でない間は hitbox.flags の bit2 を立てて当たらなくし、sprite.pos を乱数で揺らす
   u16 scriptOnBreak;                                            // 0x0C, '.d', 壊れたとき VM_ExecByID に渡す
   u16 unk_e;                                                    // 0x0E, padding?
@@ -134,7 +134,7 @@ NON_MATCH void Breakable_UpdateAlive(BreakableManager* p, Breakable* item) {
       sa.argc = 1, sa.argv = &arg;
       VM_ExecByID(item->scriptOnBreak, &sa);
     }
-    item->sprite.metaspriteIdx = item->brokenPose;
+    item->sprite.poseIdx = item->brokenPose;
     item->hitbox.flags |= HBFLAG_UNK_2;
     Breakable_SetUpdate(item, Breakable_UpdateIdle);
     Video_SetAuxSpritePltt(&item->gfx, 6);
@@ -296,7 +296,7 @@ s32 Breakable_Spawn(void) {
     return -1;
   }
   AuxSprite_SetGfx(sprite, &item->gfx);
-  sprite->metaspriteIdx = pose;
+  sprite->poseIdx = pose;
   sprite->priority = 2;
   Breakable_SetUpdate(item, Breakable_UpdateAlive);
   item->brokenPose = pose + 1;

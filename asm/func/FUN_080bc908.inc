@@ -56,7 +56,7 @@ _080BC96C:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080BC980
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r2, _080BC990 @ =0x000012E4
 	adds r1, r7, r2
 	str r0, [r1]

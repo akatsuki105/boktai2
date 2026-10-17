@@ -144,6 +144,7 @@
 #define SPRITE_A152 0xA152                     // なんかの魔方陣
 #define SPRITE_17C7 0x17C7                     // 重量スイッチ
 #define SPRITE_210E 0x210E                     // 弾に見えるが、エフェクトかもしれない
+#define SPRITE_2110 0x2110                     // 未確認, サバタの大きい攻撃判定に付くスプライト
 #define SPRITE_1FE0 0x1FE0                     // 黒塗り
 #define SPRITE_2C1A 0x2C1A                     // 岩の角みたいな何か
 #define SPRITE_SWORD_AX 0x5291                 // ソード(敵)、アックス(敵)

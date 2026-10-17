@@ -44,7 +44,7 @@ _0821C616:
 	adds r5, r4, r0
 	mov r3, sp
 	movs r7, #0x64
-	ldr r2, _0821C654 @ =0x085B0A08
+	ldr r2, _0821C654 @ =gSineTable
 	adds r0, r6, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -60,7 +60,7 @@ _0821C616:
 	b _0821C65E
 	.align 2, 0
 _0821C650: .4byte 0x0000023E
-_0821C654: .4byte 0x085B0A08
+_0821C654: .4byte gSineTable
 _0821C658:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

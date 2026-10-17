@@ -218,9 +218,9 @@ s32 ScriptShadow_Move(u32 id, Vec3* pos) {
 // スクリプト命令: n=ID, p=座標 で影を移す
 s32 ScriptShadow_MoveFromScript(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
-  Vec3 pos;
 
   if (VM_SeekToNamedArg('p')) {
+    Vec3 pos;
     pos.x = VM_GetValue();
     pos.y = VM_GetValue();
     pos.z = VM_GetValue();

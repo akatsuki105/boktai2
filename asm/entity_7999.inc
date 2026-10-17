@@ -2050,7 +2050,7 @@ Entity7999_Init: @ 0x081DACF8
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081DAD1E
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	movs r2, #0x9c
 	lsls r2, r2, #2
 	adds r1, r5, r2

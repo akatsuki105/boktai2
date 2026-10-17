@@ -15,7 +15,7 @@ typedef u8 RegistryFlags;
 typedef struct {
   u16 id;               // 0x00, 検索キー, ファイルIDやスクリプトIDと同じ16bitの名前ハッシュ空間
   RegistryFlags flags;  // 0x02, see RegistryFlags
-  u8 pad_03;            // 0x03, 読み書きするコードが見つかっていない
+  u8 _;                 // 0x03, padding
   void* ptr;            // 0x04, 預かったポインタ, Registry_Find がそのまま返す
 } RegistryEntry;
 static_assert(sizeof(RegistryEntry) == 8);

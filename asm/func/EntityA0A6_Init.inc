@@ -9,7 +9,7 @@
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081E2200
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	str r0, [r4, #0x54]
 	cmp r0, #0
 	beq _081E221C

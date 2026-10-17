@@ -201,7 +201,7 @@ NON_MATCH void FUN_081d0718(Entity081d0e20* p, Entity081d0e20Elem* elem) {
   AuxAnim_SetAnim(anim, p->anim, 0, elem->unk_b0, 0);
   anim->cmdIdx = 1;
   cmd = &anim->cmds[anim->cmdIdx];
-  elem->sprite.metaspriteIdx = *cmd >> 6;
+  elem->sprite.poseIdx = *cmd >> 6;
   if ((anim->flags & ANIM_PLAY_XFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
     elem->sprite.flags &= ~SPRFLAG_XFLIP;
   } else {
@@ -300,7 +300,7 @@ NON_MATCH void FUN_081d0864(void) {
     AuxSprite_Add(&elem->sprite, gfx, 0);
     AuxAnim_SetAnim(anim, p->anim, 0, elem->unk_b0, 0);
     cmd = &anim->cmds[anim->cmdIdx];
-    elem->sprite.metaspriteIdx = *cmd >> 6;
+    elem->sprite.poseIdx = *cmd >> 6;
     if ((anim->flags & ANIM_PLAY_XFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
       elem->sprite.flags &= ~SPRFLAG_XFLIP;
     } else {

@@ -1,26 +1,37 @@
-SpriteSetFile14: @ 0x08BEDF74
-	.2byte 695 @ palStart
-	.2byte 1 @ metaspriteCount
-	.2byte 1 @ animationCount
-	.2byte 4 @ subspriteCount
-	.2byte 1 @ cmdCount
-	.2byte 256 @ tileCount
-	.4byte 0x00000020, 0x00000034, 0x0000003C, 0x0000005C, 0x00000060
-	@ Metasprites
-		.2byte 0x698B, 0x0004, 0x0000, 0x0000, 0xFFE8, 0xFFE7, 0x0010, 0x0027
-		.4byte 0x0 @ subspriteOffset
-	@ Unk1
-		.byte 0x4E, 0xB3, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00
-	@ Subsprites
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte -8, -9, (0 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x01 @ flip, shape
-		.2byte -8, 23, (64 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x02 @ flip, shape
-		.2byte -16, 7, (2 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x02 @ flip, shape
-		.2byte 8, 7, (34 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-	@ Unk2
-		.byte 0x00, 0x00, 0x01, 0x00
-	@ Tiles
-		.incbin "data/spriteset/megaman.4bpp"
+FileAF82_Header:
+  .2byte 695 @ palStart
+  .2byte 1 @ metaspriteCount
+  .2byte 1 @ animationCount
+  .2byte 4 @ subspriteCount
+  .2byte 1 @ cmdCount
+  .2byte 256 @ tileCount
+  .4byte 32 @ offsetToPoses
+  .4byte 52 @ offsetToAnims
+  .4byte 60 @ offsetToSubsprites
+  .4byte 92 @ offsetToCmds
+  .4byte 96 @ offsetToTiles
+
+FileAF82_Poses:
+@ pose unk_0,  obj,                objcount,   bb
+  pose 0x698B, FileAF82_Obj_0,     4,          -24,  -25,   16,   39
+
+FileAF82_Anims:
+@ animation unk_0,  cmd,                cmdCount
+  animation 0xB34E, FileAF82_Cmd_0,     1
+
+1:
+FileAF82_Subsprites:
+@   subsprite size,            x,    y,   tile,  pal
+  FileAF82_Obj_0:
+    subsprite OAM_SIZE_16x32,   -8,   -9,    0,    0
+    subsprite OAM_SIZE_16x8,    -8,   23,   64,    0
+    subsprite OAM_SIZE_8x16,   -16,    7,    2,    0
+    subsprite OAM_SIZE_8x16,     8,    7,   34,    0
+
+2:
+FileAF82_Cmds:
+  FileAF82_Cmd_0:
+    animcmd  0,  1
+
+FileAF82_Tiles:
+  .incbin "data/spriteset/megaman.4bpp"

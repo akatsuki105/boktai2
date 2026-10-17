@@ -1,5 +1,4 @@
 #include "entity.h"
-#include "entity_c9bc.h"
 #include "global.h"
 #include "hitbox.h"
 
@@ -21,36 +20,6 @@ typedef struct {
   Vec3 hitPos;        // 0x84, _OnHit が当たったヒットボックスの pos を写す
 } Entity55C2;
 static_assert(sizeof(Entity55C2) == 140);
-
-// 空いている要素を1つ返す, 全部使用中なら NULL
-EntityC9BCElem* EntityC9BC_FindFreeElem(EntityC9BC* p) {
-  EntityC9BCElem* elem = p->elems;
-  u32 i;
-
-  for (i = 0; i < p->count; i++, elem++) {
-    if (!elem->active) {
-      return elem;
-    }
-  }
-
-  return NULL;
-}
-
-// 使用中の要素から obj.id が一致するものを返す, 無ければ NULL
-EntityC9BCElem* EntityC9BC_FindElemById(EntityC9BC* p, u32 id) {
-  EntityC9BCElem* elem = p->elems;
-  u32 i;
-
-  for (i = 0; i < p->count; i++, elem++) {
-    if (elem->active && elem->obj.id == id) {
-      return elem;
-    }
-  }
-
-  return NULL;
-}
-
-NAKED s32 VM_SubA062(void) { INCFUNC("asm/func/VM_SubA062.inc"); }
 
 // 当たった相手の weakness と attributes が flags で指定された条件を満たしていたら、与ダメージを足して当たった位置を覚える
 void Entity55C2_OnHit(HitboxData* a, HitboxData* b, Entity55C2* p) {

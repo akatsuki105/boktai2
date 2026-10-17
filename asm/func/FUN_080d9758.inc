@@ -42,7 +42,7 @@ _080D97A8:
 _080D97AA:
 	cmp r0, #0
 	bne _080D97C2
-	ldr r0, _080D97FC @ =0x085B0A08
+	ldr r0, _080D97FC @ =gSineTable
 	adds r1, r4, #0
 	adds r1, #0x35
 	ldrb r1, [r1]
@@ -83,4 +83,4 @@ _080D97F4:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080D97FC: .4byte 0x085B0A08
+_080D97FC: .4byte gSineTable

@@ -467,7 +467,7 @@ _0807197A:
 	ands r0, r1
 	lsls r4, r0, #5
 	ldrh r3, [r6]
-	ldr r2, _080719B8 @ =0x085B0A08
+	ldr r2, _080719B8 @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -486,7 +486,7 @@ _080719A8: .4byte 0x00000A76
 _080719AC: .4byte 0x000003E6
 _080719B0: .4byte 0xFFFF0000
 _080719B4: .4byte 0x0000FFFF
-_080719B8: .4byte 0x085B0A08
+_080719B8: .4byte gSineTable
 _080719BC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

@@ -6,7 +6,7 @@
 
 // 用途不明の構造体　はここに置いておく
 
-// gEntity5941 の単方向リストのノード, 敵は _Init で Entity5941_Register、_Destroy で FUN_0807f598 を呼んで出入りする
+// gEntity5941 の単方向リストのノード, 敵は _Init で Entity5941_Register、_Destroy で Entity5941_Unregister を呼んで出入りする
 typedef struct Entity5941Node {
   void* owner;                  // 0x00, Entity5941_Register の第2引数 (敵の Mover)
   u32 flags;                    // 0x04, bit0 が立っているノードだけ Entity5941_FindNearestInCone の対象になる
@@ -15,7 +15,10 @@ typedef struct Entity5941Node {
 } Entity5941Node;
 static_assert(sizeof(Entity5941Node) == 16);
 
-bool32 Entity5941_Register(unknown* node, unknown* owner, void* fn);
+static inline void Entity5941Node_ClearFlags(Entity5941Node* n, u32 bits) { n->flags &= ~bits; }
+
+bool32 Entity5941_Register(Entity5941Node* node, void* owner, void* fn);
+void Entity5941_Unregister(Entity5941Node* node);
 
 // --------------------------------------------
 

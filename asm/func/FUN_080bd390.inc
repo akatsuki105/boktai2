@@ -12,7 +12,7 @@
 	bl GetWeaponID
 	adds r5, r0, #0
 	ldrb r0, [r4]
-	bl FUN_080bce64
+	bl WeaponShop_GetSellPrice
 	adds r4, r0, #0
 	movs r7, #1
 	b _080BD402

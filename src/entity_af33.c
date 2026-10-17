@@ -39,7 +39,7 @@ typedef struct {
   u32 mask74;               // 0x074, unk_98 を配るときに使用済みスロットのビットを立てる
   u16 unk_78[16];           // 0x078, '.w' の値を最大16個
   u16 unk_98[16];           // 0x098, '.m' の値を最大16個
-  u8* script;               // 0x0B8, '.s' の後の FUN_0823d340() の戻り値, NULL なら _Init が失敗する
+  u8* script;               // 0x0B8, '.s' の後の VM_GetPC_Proxy() の戻り値, NULL なら _Init が失敗する
   s32 windowID;             // 0x0BC, _Destroy が TextPanel_Destroy に渡す
   u32 unk_c0;               // 0x0C0, 読み手も書き手も見つかっていない
   u32 unk_c4;               // 0x0C4, '.e'
@@ -144,7 +144,27 @@ NAKED void FUN_0804fd3c(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fd3c.inc"); }
 
 NAKED void FUN_0804fe24(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fe24.inc"); }
 
-NAKED void FUN_0804fe68(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fe68.inc"); }
+// 装備中の魔法と同じIDの枠を使用済みビットから外す
+// 残差1命令, 原典は gStat + idx*2 を先に作ってから +0x68 するが agbcc は +0x68 を先に足す
+// Tier A-B 試済: 添字をローカルに退避 / 配列の先頭をローカルに退避
+NON_MATCH void FUN_0804fe68(EntityAF33* p) {
+#ifdef NONMATCHING_C
+  s16 id = gStat->registeredMagic[gStat->equippedMagicIdx];
+  s32 i;
+
+  if (id < 0) {
+    return;
+  }
+
+  for (i = 0; i < 16; i++) {
+    if (p->unk_98[i] == id) {
+      p->mask74 &= ~(1 << i);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0804fe68.inc");
+#endif
+}
 
 NAKED void FUN_0804feb0(EntityAF33* p) { INCFUNC("asm/func/FUN_0804feb0.inc"); }
 

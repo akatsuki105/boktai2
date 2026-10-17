@@ -68,7 +68,7 @@ _081E14AA:
 	movs r4, #6
 	str r4, [sp]
 	bl LerpVec3
-	ldr r2, _081E14E8 @ =0x085B0A08
+	ldr r2, _081E14E8 @ =gSineTable
 	ldrh r0, [r5, #6]
 	lsls r0, r0, #1
 	movs r1, #0xff
@@ -88,7 +88,7 @@ _081E14AA:
 	b _081E14F2
 	.align 2, 0
 _081E14E4: .4byte 0x00000276
-_081E14E8: .4byte 0x085B0A08
+_081E14E8: .4byte gSineTable
 _081E14EC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

@@ -234,13 +234,13 @@ s32 JoyspotManager_Init(JoyspotManager* p) {
     return -1;
   }
 
-  p->scriptM = FUN_0823d340();
+  p->scriptM = VM_GetPC_Proxy();
   if (p->scriptM == NULL) {
     return -1;
   }
 
   if (VM_SeekToNamedArg('s')) {
-    p->scriptS = FUN_0823d340();
+    p->scriptS = VM_GetPC_Proxy();
     if (p->scriptS == NULL) {
       return -1;
     }

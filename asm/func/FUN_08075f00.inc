@@ -245,7 +245,7 @@ _080760C8:
 	.align 2, 0
 _080760E4: .4byte FUN_08075df8
 _080760E8:
-	ldr r2, _08076108 @ =0x085B0A08
+	ldr r2, _08076108 @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -262,7 +262,7 @@ _080760E8:
 	asrs r0, r0, #0xc
 	b _08076112
 	.align 2, 0
-_08076108: .4byte 0x085B0A08
+_08076108: .4byte gSineTable
 _0807610C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

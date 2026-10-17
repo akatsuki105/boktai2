@@ -324,9 +324,9 @@ void FUN_0823d310(s32 idx) {
 
 void UNUSED nop_0823d33c(void) {}
 
-u8* FUN_0823d340(void) { return VM_GetPC(); }
+u8* VM_GetPC_Proxy(void) { return VM_GetPC(); }
 
-void* FUN_0823d34c(void) { return VM_GetValueSafe2(); }
+void* VM_GetValueSafe2_Proxy(void) { return VM_GetValueSafe2(); }
 
 // スクリプトの変数へフレームカウンタを書き出す
 void FUN_0823d358(void) {

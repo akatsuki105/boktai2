@@ -43,6 +43,8 @@ extern u16 u16_03003514;
 extern u32 gOamDirty;
 extern u32 gVBlankCount;
 
+extern u32 gObjBlendEnabled;  // 0x030044AC, 0 以外なら flags bit14 のスプライトを半透明にする
+
 rgb555* GetBgPlttBlendBuffer(void);
 
 void Video_SetBLDCNTDirect(u32 effect, u32 target1, u32 target2);
@@ -57,6 +59,10 @@ void MainSprite_DrawListScreen(void);
 void AuxSprite_DrawListGameover(void);
 void Particle_DrawListGameover(void);
 void MainSprite_DrawListGameover(void);
+
+void nop_0822e738(void);
+void nop_0822b09c(void);
+void FUN_0822f584(void);
 
 void SetBGPrioDirect(s32 bg, u32 prio);
 void Video_GenerateBGMap(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs);
@@ -73,6 +79,7 @@ void FUN_0822f178(s32 idx, u32 evb, u32 eva);  // REG_BLDCNT / REG_BLDALPHA を�
 void Video_SetHBlankEffect(s32 bg, s32 kind, void* table);
 void Video_SetMosaic(s32 size, s32 objEnabled, s32 targets);
 void Video_ClearMosaic(void);
+void Video_ResetFrameState(u32 clearOam);
 
 void Video_SetWindowRect(s32 win, s32 left, s32 top, s32 right, s32 bottom);
 

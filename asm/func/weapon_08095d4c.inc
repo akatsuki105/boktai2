@@ -296,7 +296,7 @@ _08095FD0:
 _08095FDA:
 	ldr r1, _08096018 @ =0x00003AE8
 	adds r0, r4, r1
-	bl FUN_0808fb68
+	bl EntityCC28Cursor_Move
 	cmp r0, #0
 	beq _08096008
 	ldr r2, _0809601C @ =0x00001464

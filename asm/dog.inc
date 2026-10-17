@@ -1328,7 +1328,7 @@ _0814A93C:
 	add r6, sp, #0x44
 	ands r4, r1
 	movs r5, #0x50
-	ldr r3, _0814A9E0 @ =0x085B0A08
+	ldr r3, _0814A9E0 @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	ands r0, r1
@@ -1348,7 +1348,7 @@ _0814A9D0: .4byte 0x0203B400
 _0814A9D4: .4byte 0x030046B8
 _0814A9D8: .4byte 0x000003FF
 _0814A9DC: .4byte 0xFFFF0000
-_0814A9E0: .4byte 0x085B0A08
+_0814A9E0: .4byte gSineTable
 _0814A9E4:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -1580,7 +1580,7 @@ FUN_0814ab28: @ 0x0814AB28
 	str r0, [sp]
 	str r5, [sp, #4]
 	adds r0, r5, #0
-	bl FUN_080e3984
+	bl Enemy_InitAtkHitbox
 	mov r0, sl
 	str r0, [sp, #0x2c]
 	add r2, sp, #0x2c
@@ -1676,7 +1676,7 @@ _0814AC64:
 _0814AC66:
 	cmp r0, #0
 	beq _0814ACC0
-	ldr r2, _0814AC88 @ =0x085B0A08
+	ldr r2, _0814AC88 @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -1692,7 +1692,7 @@ _0814AC66:
 	asrs r2, r0, #0xc
 	b _0814AC92
 	.align 2, 0
-_0814AC88: .4byte 0x085B0A08
+_0814AC88: .4byte gSineTable
 _0814AC8C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -1721,7 +1721,7 @@ _0814AC92:
 	.align 2, 0
 _0814ACBC: .4byte 0xFFFF0000
 _0814ACC0:
-	ldr r2, _0814ACE0 @ =0x085B0A08
+	ldr r2, _0814ACE0 @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -1737,7 +1737,7 @@ _0814ACC0:
 	asrs r2, r0, #0xc
 	b _0814ACEA
 	.align 2, 0
-_0814ACE0: .4byte 0x085B0A08
+_0814ACE0: .4byte gSineTable
 _0814ACE4:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -3201,7 +3201,7 @@ FUN_0814b7a4: @ 0x0814B7A4
 	movs r0, #0x1f
 	add r6, sp, #4
 	ands r4, r0
-	ldr r1, _0814B7F8 @ =0x085B0A08
+	ldr r1, _0814B7F8 @ =gSineTable
 	adds r0, r7, #0
 	adds r0, #0x40
 	ands r0, r5
@@ -3218,7 +3218,7 @@ FUN_0814b7a4: @ 0x0814B7A4
 _0814B7EC: .4byte 0x0203B400
 _0814B7F0: .4byte 0x030046B8
 _0814B7F4: .4byte 0x000003FF
-_0814B7F8: .4byte 0x085B0A08
+_0814B7F8: .4byte gSineTable
 _0814B7FC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -8447,7 +8447,7 @@ _0814DFDA:
 	bgt _0814E030
 	mov r3, sp
 	movs r6, #0x18
-	ldr r2, _0814E000 @ =0x085B0A08
+	ldr r2, _0814E000 @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -8462,7 +8462,7 @@ _0814DFDA:
 	asrs r1, r0, #0xc
 	b _0814E00A
 	.align 2, 0
-_0814E000: .4byte 0x085B0A08
+_0814E000: .4byte gSineTable
 _0814E004:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -8498,7 +8498,7 @@ _0814E030:
 	mov r4, sp
 	ands r3, r1
 	movs r6, #0x18
-	ldr r2, _0814E05C @ =0x085B0A08
+	ldr r2, _0814E05C @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	ands r0, r1
@@ -8512,7 +8512,7 @@ _0814E030:
 	asrs r1, r0, #0xc
 	b _0814E066
 	.align 2, 0
-_0814E05C: .4byte 0x085B0A08
+_0814E05C: .4byte gSineTable
 _0814E060:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -8536,7 +8536,7 @@ _0814E07C:
 	mov r4, sp
 	ands r3, r1
 	movs r6, #0x18
-	ldr r2, _0814E0A4 @ =0x085B0A08
+	ldr r2, _0814E0A4 @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	ands r0, r1
@@ -8550,7 +8550,7 @@ _0814E07C:
 	asrs r1, r0, #0xc
 	b _0814E0AE
 	.align 2, 0
-_0814E0A4: .4byte 0x085B0A08
+_0814E0A4: .4byte gSineTable
 _0814E0A8:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -15924,7 +15924,7 @@ _081519CE:
 	beq _081519DA
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl FUN_0807f598
+	bl Entity5941_Unregister
 _081519DA:
 	adds r0, r4, #0
 	bl Mover_Unlink
@@ -16963,7 +16963,7 @@ _08152240:
 	str r0, [sp, #4]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080e3a90
+	bl Enemy_SetRanges
 	movs r0, #0x58
 	bl VM_SeekToNamedArg
 	cmp r0, #0
@@ -18019,7 +18019,7 @@ _08152AD6:
 	ldr r0, [r2]
 	str r0, [r1]
 	adds r0, r7, #0
-	bl Enemy_Init_080f3680
+	bl Enemy_InitHandlerTables
 	adds r0, r7, #0
 	bl FUN_081518ac
 	adds r0, r7, #0

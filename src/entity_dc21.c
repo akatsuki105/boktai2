@@ -91,7 +91,7 @@ void EntityDC21_InitSprite(EntityDC21* p) {
 
   Video_GetAuxSprite(gfx, SPRITE_SOLAR_STATION);
   AuxSprite_Add(sprite, gfx, 0);
-  sprite->metaspriteIdx = 0;
+  sprite->poseIdx = 0;
 
   if (VM_SeekToNamedArg('p')) {
     sprite->pos.x = VM_GetValue();

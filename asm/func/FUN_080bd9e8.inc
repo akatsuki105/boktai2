@@ -103,7 +103,7 @@ _080BDA90:
 	mov r1, r8
 	movs r3, #1
 	bl FUN_080b9740
-	ldr r1, _080BDAEC @ =FUN_080bddc0
+	ldr r1, _080BDAEC @ =WeaponShop_ConfirmSort
 	b _080BDC26
 	.align 2, 0
 _080BDAD4: .4byte 0x00000EB8
@@ -112,7 +112,7 @@ _080BDADC: .4byte 0x00000107
 _080BDAE0: .4byte 0x00001644
 _080BDAE4: .4byte 0x000017B4
 _080BDAE8: .4byte 0x000015D8
-_080BDAEC: .4byte FUN_080bddc0
+_080BDAEC: .4byte WeaponShop_ConfirmSort
 _080BDAF0:
 	ldr r2, _080BDB54 @ =0x00001785
 	adds r0, r5, r2
@@ -255,14 +255,14 @@ _080BDC1C:
 	adds r0, r5, #0
 	movs r1, #1
 	bl FUN_080bd6d0
-	ldr r1, _080BDC30 @ =FUN_080bdc64
+	ldr r1, _080BDC30 @ =WeaponShop_HandleActionInput
 _080BDC26:
 	adds r0, r5, #0
 	movs r2, #0
 	bl FUN_080bcdf8
 	b _080BDC5A
 	.align 2, 0
-_080BDC30: .4byte FUN_080bdc64
+_080BDC30: .4byte WeaponShop_HandleActionInput
 _080BDC34:
 	adds r0, r7, #0
 	bl FUN_080b9f70

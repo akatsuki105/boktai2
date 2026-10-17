@@ -136,7 +136,7 @@ _08019E02:
 	rsbs r1, r1, #0
 	ands r0, r1
 	str r0, [r6, #8]
-	ldr r2, _08019E34 @ =0x085B0A08
+	ldr r2, _08019E34 @ =gSineTable
 	ldrb r3, [r6, #1]
 	adds r0, r3, #0
 	adds r0, #0x40
@@ -155,7 +155,7 @@ _08019E02:
 	.align 2, 0
 _08019E2C: .4byte 0x030047C8
 _08019E30: .4byte 0x00000FFF
-_08019E34: .4byte 0x085B0A08
+_08019E34: .4byte gSineTable
 _08019E38:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -285,7 +285,7 @@ _08019F1C:
 	rsbs r1, r1, #0
 	ands r0, r1
 	str r0, [r6, #8]
-	ldr r2, _08019F48 @ =0x085B0A08
+	ldr r2, _08019F48 @ =gSineTable
 	ldrb r3, [r6, #1]
 	adds r0, r3, #0
 	adds r0, #0x40
@@ -302,7 +302,7 @@ _08019F1C:
 	asrs r0, r0, #0xc
 	b _08019F52
 	.align 2, 0
-_08019F48: .4byte 0x085B0A08
+_08019F48: .4byte gSineTable
 _08019F4C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

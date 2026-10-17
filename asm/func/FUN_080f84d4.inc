@@ -414,7 +414,7 @@ _080F87E4:
 	lsls r6, r6, #2
 	adds r1, r5, r6
 	adds r0, r5, #0
-	bl FUN_080e7150
+	bl Enemy_TargetNearestPlayer
 	mov r0, sb
 	cmp r0, #0
 	beq _080F8830

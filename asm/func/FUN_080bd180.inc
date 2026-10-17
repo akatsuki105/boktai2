@@ -61,7 +61,7 @@ _080BD1F0:
 	cmp r0, #0
 	bne _080BD204
 	adds r0, r5, #0
-	bl FUN_080bce64
+	bl WeaponShop_GetSellPrice
 	cmp r0, #0
 	bne _080BD210
 _080BD204:

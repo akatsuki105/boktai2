@@ -8,7 +8,7 @@
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0804B086
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	movs r2, #0xa0
 	lsls r2, r2, #2
 	adds r1, r6, r2

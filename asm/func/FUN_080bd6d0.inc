@@ -49,7 +49,7 @@ _080BD708:
 	cmp r0, #0
 	bge _080BD7CA
 	adds r0, r5, #0
-	bl FUN_080bce64
+	bl WeaponShop_GetSellPrice
 	cmp r0, #0
 	beq _080BD7CA
 	ldr r1, _080BD75C @ =0x00001787
@@ -76,7 +76,7 @@ _080BD760:
 	cmp r0, #0
 	bge _080BD7CA
 	adds r0, r5, #0
-	bl FUN_080bce64
+	bl WeaponShop_GetSellPrice
 	movs r6, #5
 	cmp r0, #0
 	bne _080BD7CA

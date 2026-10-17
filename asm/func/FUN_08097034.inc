@@ -144,7 +144,7 @@ _08097188: .4byte FUN_080971c4
 _0809718C:
 	ldr r1, _080971B8 @ =0x00003AE8
 	adds r0, r4, r1
-	bl FUN_0808fb68
+	bl EntityCC28Cursor_Move
 	cmp r0, #0
 	beq _080971B2
 	ldr r2, _080971BC @ =0x00001464

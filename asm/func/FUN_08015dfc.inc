@@ -39,7 +39,7 @@
 	strh r4, [r0, #0x22]
 	strh r6, [r0, #0x24]
 	strh r4, [r0, #0x26]
-	ldr r2, _08015E80 @ =0x085B0A08
+	ldr r2, _08015E80 @ =gSineTable
 	ldrh r0, [r0, #0x14]
 	adds r0, #0xc0
 	movs r1, #0xff
@@ -61,7 +61,7 @@
 _08015E74: .4byte 0x030046B8
 _08015E78: .4byte 0x000003FF
 _08015E7C: .4byte 0x0203B400
-_08015E80: .4byte 0x085B0A08
+_08015E80: .4byte gSineTable
 _08015E84:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

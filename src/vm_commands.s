@@ -31,7 +31,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x09EA, FUN_080ca430
 	.4byte 0x0AC7, EnemyCentipede_Create
 	.4byte 0x0AD8, FUN_08002fdc @ HashName("センチピード")?
-	.4byte 0x0B50, ImmortalCoffin_Create @ HashName("棺桶")
+	.4byte 0x0B50, Coffin_Create @ HashName("棺桶")
 	.4byte 0x0BCE, FUN_081d5504
 	.4byte 0x0BFD, FUN_0808fe1c
 	.4byte 0x0C1B, FUN_0808fdc8
@@ -71,7 +71,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x1A35, FUN_08224790
 	.4byte 0x1B24, Entity1B24_Create
 	.4byte 0x1B77, FUN_080558b8
-	.4byte 0x1BEE, FUN_0807b15c
+	.4byte 0x1BEE, AddPlayerExpScripted
 	.4byte 0x1C3E, Time_GetDayOfWeekScripted @ HashName("曜日取得")
 	.4byte 0x1C64, MessageWindow_Open
 	.4byte 0x1DBE, VM_Sub1DBE
@@ -115,7 +115,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x2FE4, FUN_0823adc0
 	.4byte 0x3004, FUN_08206434
 	.4byte 0x300F, FUN_080ec4d0
-	.4byte 0x3019, Entity3019_Create
+	.4byte 0x3019, RitaShop_Create
 	.4byte 0x305A, FUN_082423a8
 	.4byte 0x3062, EntityA628_IsActiveScripted
 	.4byte 0x30A3, FUN_08224d94
@@ -185,7 +185,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x4759, Entity4759_Create
 	.4byte 0x48B3, FUN_08224d5c
 	.4byte 0x490F, FUN_0807da94
-	.4byte 0x4A16, FUN_080a11b8
+	.4byte 0x4A16, EntityEF66_StopScripted
 	.4byte 0x4A8D, FUN_0807b4e4
 	.4byte 0x4AB1, ShadeManCrossover_Create @ HashName("クロスオーバーシェードマン")
 	.4byte 0x4AE5, Entity4AE5_Create
@@ -228,7 +228,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x5645, Entity5645_Create
 	.4byte 0x56AD, FUN_0820c3e0
 	.4byte 0x56DC, Entity56DC_Create
-	.4byte 0x571D, Entity571D_Create @ HashName("棺桶屋")
+	.4byte 0x571D, CoffinShop_Create @ HashName("棺桶屋")
 	.4byte 0x5844, FUN_081d5450
 	.4byte 0x58D7, FUN_0807d660
 	.4byte 0x5933, Time_GetMoonPhaseScripted
@@ -284,11 +284,11 @@ gCommandList: @ 0x085A9208
 	.4byte 0x71E7, MessageChoice_SetTextFromScript
 	.4byte 0x723E, Entity723E_Create
 	.4byte 0x727F, MessageWindow_SetInstantScripted
-	.4byte 0x7300, FUN_080bcd94 @ HashName("道具屋")
+	.4byte 0x7300, KidShop_Create @ HashName("道具屋")
 	.4byte 0x730A, Entity730A_Create
 	.4byte 0x7348, Demo_Start
 	.4byte 0x73FE, ScriptShadow_CreateFromScript
-	.4byte 0x744F, Entity744F_Create @ HashName("武器屋")
+	.4byte 0x744F, WeaponShop_Create @ HashName("武器屋")
 	.4byte 0x7539, Camera_SetTilemapOffset
 	.4byte 0x7566, FUN_080866e4
 	.4byte 0x75AF, MessageWindow_SetScriptIdsScripted
@@ -323,7 +323,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x7E73, WeatherManager_StopScripted
 	.4byte 0x7EBA, FUN_08240a90
 	.4byte 0x7F44, FUN_08224a3c
-	.4byte 0x7F5E, Entity7F5E_Create @ HashName("太陽バンク")
+	.4byte 0x7F5E, SolarBank_Create @ HashName("太陽バンク")
 	.4byte 0x7F67, FUN_08224980
 	.4byte 0x800C, BgPlttGroupFader_SetModeScripted
 	.4byte 0x8071, Camera_PanTo
@@ -392,7 +392,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x9700, FUN_080e16f4
 	.4byte 0x9763, FUN_0807d438
 	.4byte 0x9769, FUN_0823be10
-	.4byte 0x980B, Player080d82ec_Create @ HashName("通信対戦プレイヤー")
+	.4byte 0x980B, PlayerLink_Create @ HashName("通信対戦プレイヤー")
 	.4byte 0x9817, FUN_0808fcb4
 	.4byte 0x983A, FUN_080e028c
 	.4byte 0x98EC, EnemyGolem_Create @ HashName("ゴーレム")
@@ -543,7 +543,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xD401, MessageWindow_SetPendingLineScripted
 	.4byte 0xD40E, FUN_0807da18
 	.4byte 0xD438, EntityD438_Create
-	.4byte 0xD4B5, FUN_0807b174
+	.4byte 0xD4B5, Player_AddForgeExp
 	.4byte 0xD4E3, FUN_0801fb48
 	.4byte 0xD53D, EntityD53D_Create
 	.4byte 0xD562, FUN_080558bc
@@ -577,7 +577,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xDFC6, Marquee_Create
 	.4byte 0xE019, FUN_080eddc8
 	.4byte 0xE02A, FUN_08004a04
-	.4byte 0xE02E, EntityE02E_Create @ HashName("倉庫")
+	.4byte 0xE02E, Warehouse_Create @ HashName("倉庫")
 	.4byte 0xE06A, EntityE06A_Create
 	.4byte 0xE083, UnlockMagicScripted @ HashName("魔法取得")
 	.4byte 0xE0A5, FUN_0800a458
@@ -648,7 +648,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xFD6B, FUN_080e154c
 	.4byte 0xFD86, FUN_08007820
 	.4byte 0xFEBB, FUN_0800512c
-	.4byte 0xFEE0, FUN_08086d5c
+	.4byte 0xFEE0, Coffin_RequestKill
 	.4byte 0xFEF2, armor_082433bc
 	.4byte 0x0000, 0x00000000
 

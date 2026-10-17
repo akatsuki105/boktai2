@@ -1,6 +1,6 @@
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_080865c0
+	bl Coffin_GetPos
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _080A27FC

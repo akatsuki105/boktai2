@@ -1,10 +1,10 @@
 #include "entity.h"
 #include "global.h"
+#include "preview_stage.h"
 #include "sprite.h"
 #include "text.h"
+#include "video.h"
 #include "vm.h"
-
-struct PreviewStage;
 
 // _Init が '.t' から4バイトずつ57件読む
 typedef struct {
@@ -15,7 +15,7 @@ typedef struct {
 } EnemyDexEntry;
 static_assert(sizeof(EnemyDexEntry) == 4);
 
-// 魔物図鑑のメニュー
+// 魔物図鑑
 typedef struct {
   Entity e;                    // 0x0000, ENTITY_UNK_8
   u8 unk_18[8];                // 0x0018
@@ -52,15 +52,24 @@ typedef struct {
   void* scriptU;               // 0x1250, '.u'
   void* scriptT_upper;         // 0x1254, '.T'
   u32 unk_1258;                // 0x1258, '.e=0'
-  struct PreviewStage* sub;    // 0x125C, PreviewStage_Create(0, 0) の戻り値
+  PreviewStage* sub;           // 0x125C, PreviewStage_Create(0, 0) の戻り値
 } EnemyDexMenu;
 static_assert(sizeof(EnemyDexMenu) == 4704);
 
-void ClearBGTilemapBuffer(s32 bg);
 s32 FUN_0820cbfc(u32 param_1);
 s32 FUN_0820cc0c(u32 param_1);
 
-static inline s32 Div32(s32 v) { return v >= 0 ? (v >> 5) : -((-v) >> 5); }
+static const s32 sEnemyDexPageStarts[9] = {0, 7, 14, 21, 27, 34, 41, 48, 50};  // ページの先頭エントリ番号 (sEnemyDexPageEntryCounts の累積和), 0x085AF034
+static const s32 sEnemyDexPageEntryCounts[9] = {7, 7, 7, 6, 7, 7, 7, 2, 7};    // ページごとのエントリ数(ビースト1,ビースト2,ビースト3,アンデット,シング1,シング2,ファントム1,ファントム2,イモータル), 合計57, 0x085AF058
+static const s32 sEnemyDexCategoryCounts[5] = {21, 6, 14, 9, 7};               // 種族ごとのエントリ数 (ビースト,アンデット,シング,ファントム,イモータル), 0x085AF07C
+
+// 魔物図鑑メニューの UI スプライトのポーズ番号, FUN_0820d6e4 が EnemyDexMenu+0x18C から5枚を登録するループで引く
+static const u32 sEnemyDexUIPoses1[5] = {17, 18, 19, 20, 21};  // 0x085AF090
+
+// 同上, EnemyDexMenu+0x36C から3枚
+static const u32 sEnemyDexUIPoses2[3] = {1, 2, 3};  // 0x085AF0A4
+
+INCASM("asm/enemy_dex.inc");
 
 // 魔物 bit に出会っているか
 // 残差はレジスタ番号の入れ替えのみ (r2/r3 が逆, 命令列は 29 対 29)
@@ -232,21 +241,3 @@ void FUN_0820ee7c(EnemyDexMenu* p) {
 }
 
 NAKED void FUN_0820eeb8(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820eeb8.inc"); }
-
-NAKED void FUN_0820efc4(u8 param_1, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0820efc4.inc"); }
-
-NAKED void FUN_0820f020(struct PreviewStage* p) { INCFUNC("asm/func/FUN_0820f020.inc"); }
-
-NAKED void FUN_0820f130(struct PreviewStage* p) { INCFUNC("asm/func/FUN_0820f130.inc"); }
-
-NAKED void FUN_0820f1e0(struct PreviewStage* p) { INCFUNC("asm/func/FUN_0820f1e0.inc"); }
-
-NAKED void FUN_0820f310(struct PreviewStage* p) { INCFUNC("asm/func/FUN_0820f310.inc"); }
-
-NAKED void FUN_0820f3e4(struct PreviewStage* p) { INCFUNC("asm/func/FUN_0820f3e4.inc"); }
-
-NAKED void FUN_0820f4b4(struct PreviewStage* p) { INCFUNC("asm/func/FUN_0820f4b4.inc"); }
-
-NAKED void FUN_0820f630(struct PreviewStage* p) { INCFUNC("asm/func/FUN_0820f630.inc"); }
-
-NAKED void FUN_0820f700(struct PreviewStage* p) { INCFUNC("asm/func/FUN_0820f700.inc"); }

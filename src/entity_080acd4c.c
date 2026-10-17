@@ -22,18 +22,63 @@ static_assert(sizeof(Entity080acd4c) == 412);
 
 extern Entity080acd4c* gEntity080acd4c;  // 0x03002C54
 
-NAKED void FUN_080acc14(void) { INCFUNC("asm/func/FUN_080acc14.inc"); }
+void FUN_080acc14(void) { gEntity080acd4c = NULL; }
 
-NAKED void Entity080acd4cElem_Update(Entity080acd4cElem* elem) { INCFUNC("asm/func/Entity080acd4cElem_Update.inc"); }
+// コマを進めながら上へ昇り, 0x10 フレームで消える
+void Entity080acd4cElem_Update(Entity080acd4cElem* elem) {
+  Particle_SetFrame(&elem->ptcl, elem->group, (elem->timer >> 1) + 0xC);
+  elem->ptcl.pos.y += 10;
+  elem->timer++;
+  if (elem->timer == 0x10) {
+    elem->ptcl.flags |= SPRFLAG_HIDDEN;
+    elem->active = FALSE;
+  }
+}
 
-NAKED s32 Entity080acd4c_Update(Entity080acd4c* p) { INCFUNC("asm/func/Entity080acd4c_Update.inc"); }
+s32 Entity080acd4c_Update(Entity080acd4c* p) {
+  s32 i;
 
-NAKED s32 Entity080acd4c_Destroy(Entity080acd4c* p) { INCFUNC("asm/func/Entity080acd4c_Destroy.inc"); }
+  for (i = 0; i < 8; i++) {
+    if (p->elems[i].active) {
+      Entity080acd4cElem_Update(&p->elems[i]);
+    }
+  }
+  return 0;
+}
+
+s32 Entity080acd4c_Destroy(Entity080acd4c* p) {
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    Particle_Remove(&p->elems[i].ptcl);
+  }
+  gEntity080acd4c = NULL;
+  return 0;
+}
 
 NAKED void Entity080acd4c_InitElems(Entity080acd4c* p) { INCFUNC("asm/func/Entity080acd4c_InitElems.inc"); }
 
-NAKED s32 Entity080acd4c_Init(Entity080acd4c* p) { INCFUNC("asm/func/Entity080acd4c_Init.inc"); }
+s32 Entity080acd4c_Init(Entity080acd4c* p) {
+  Entity080acd4c_InitElems(p);
+  p->nextSlot = 0;
+  gEntity080acd4c = p;
+  return 0;
+}
 
-NAKED Entity080acd4c* Entity080acd4c_Create(void) { INCFUNC("asm/func/Entity080acd4c_Create.inc"); }
+Entity080acd4c* Entity080acd4c_Create(void) {
+  if (gEntity080acd4c == NULL) {
+    Entity080acd4c* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity080acd4c));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity080acd4c_Update, Entity080acd4c_Destroy);
+      if (Entity080acd4c_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity080acd4c;
+}
 
 NAKED void Entity080acd4c_Spawn(Vec3* pos) { INCFUNC("asm/func/Entity080acd4c_Spawn.inc"); }

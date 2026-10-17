@@ -100,7 +100,7 @@ _080A9C00:
 	lsls r0, r0, #7
 	movs r1, #0x14
 	bl Div
-	ldr r2, _080A9C74 @ =0x085B0A08
+	ldr r2, _080A9C74 @ =gSineTable
 	movs r1, #0xff
 	ands r1, r0
 	lsls r1, r1, #1
@@ -113,7 +113,7 @@ _080A9C00:
 	asrs r0, r0, #0xc
 	b _080A9C7E
 	.align 2, 0
-_080A9C74: .4byte 0x085B0A08
+_080A9C74: .4byte gSineTable
 _080A9C78:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

@@ -3,7 +3,7 @@
 
 #include "constants/constants.h"
 #include "eff_082473e0.h"
-#include "enedefault.h"
+#include "enemy_target.h"
 #include "entity.h"
 #include "gba/gba.h"
 #include "hitbox.h"
@@ -20,6 +20,8 @@ typedef u32 PlayerFlag20;         // Player.unk_20
 #define PFLAG20_UNK_0 (1 << 0)    // 0x00000001, Player_BeginAction が毎回これだけ立てた状態から始める
 #define PFLAG20_UNK_1 (1 << 1)    // 0x00000002
 #define PFLAG20_UNK_4 (1 << 4)    // 0x00000010, 日光が当たっているときに立つ, 根拠: Player_BeginAction
+#define PFLAG20_UNK_5 (1 << 5)    // 0x00000020
+#define PFLAG20_UNK_7 (1 << 7)    // 0x00000080
 #define PFLAG20_UNK_8 (1 << 8)    // 0x00000100
 #define PFLAG20_UNK_12 (1 << 12)  // 0x00001000
 #define PFLAG20_UNK_14 (1 << 14)  // 0x00004000, Player_UpdateDjango が先頭で毎フレーム立てる
@@ -38,6 +40,7 @@ typedef u16 PlayerFlag35A;
 #define PFLAG35A_NO_TILE (1 << 4)         // 0x0010, mover.tile を NULL にして Map_InitMoverTile を飛ばす
 #define PFLAG35A_UNK_5 (1 << 5)           // 0x0020, FUN_08082464 が立てるが読み手は未発見
 #define PFLAG35A_SHOW_SPRITE_E8 (1 << 6)  // 0x0040, 立てたときだけ sprite_e8 の SPRFLAG_HIDDEN を落とす (既定は隠す)
+#define PFLAG35A_UNK_7 (1 << 7)           // 0x0080, サバタのみ, 立てたときだけ sprite_9c8 の SPRFLAG_HIDDEN を落とす (既定は隠す)
 
 typedef u32 PlayerFlag378;                 // Player.flag378
 #define FLAG378_WET_DURABILITY (1 << 0)    // 0x00000001, WET_DURABILITY を持った武器を装備している間セットされる
@@ -192,13 +195,14 @@ typedef struct Player {
   AuxSpriteGfx gfxForms[3];         // 0x118, 変身3種のグラフィック, gfx_114 がこのどれかを指す [Bat, Mouse, Sleeping]
   HitboxData hurtbox;               // 0x16C
   MoverTile tile;                   // 0x1BC, mover.tile がここを指す
-  u8 unk_1cc[0x220 - 0x1CC];        // 0x1CC
+  u8 unk_1cc[0x1FC - 0x1CC];        // 0x1CC
+  NavAgent navAgent;                // 0x1FC, FUN_08081ab0 が Map_InitNavAgent に渡す
   EnemyTarget target;               // 0x220, kindMask 2 で登録される
   MsgQueue mq;                      // 0x230, FUN_0807ddd4 が MsgQueue_Unregister に渡す
   PlayerArmor armor;                // 0x264
   HitboxAttributes hbattrs;         // 0x27C
   PlayerMagic magic;                // 0x280, 装備魔法まわりの一群, 根拠: Player_RefreshMagicInfo が1本のベースレジスタで5フィールドを書く
-  u8 unk_288[0x28C - 0x288];        // 0x288
+  Weapon* unk_288;                  // 0x288, 根拠: FUN_080cf54c が +1 要素目を player_weapon_080ceafc に渡す
   struct Input* input;              // 0x28C, &gInput[n]
   Facing16 facingHistory[10];       // 0x290, 入力方向の履歴, 添字 0 が今フレームで大きいほど古い, 入力なしは -1
   rgb555 pltt_2a4[32];              // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
@@ -259,7 +263,9 @@ typedef struct Player {
   u8 unk_3d0;                       // 0x3D0
   u8 unk_3d1;                       // 0x3D1
   u8 unk_3d2;                       // 0x3D2, Player_SetHitDir が被弾時に 1/0 を書く
-  u8 unk_3d3[0x3D8 - 0x3D3];        // 0x3D3
+  u8 unk_3d3;                       // 0x3D3
+  u16 unk_3d4;                      // 0x3D4, 吹き飛ばされている間のカウンタ, 0x55 を超えた偶数フレームに効果音を鳴らす
+  u8 unk_3d6[2];                    // 0x3D6
   u16 unk_3d8;                      // 0x3D8, Player_ApplyBadCondition が状態異常1の残り時間が 0 のときに 0 を書く
   u16 unk_3da;                      // 0x3DA, Player_StartFormEffect が変身を始めるときに 0 に戻す
   u16 unk_3dc;                      // 0x3DC, FUN_080667b0 が毎回 太陽ゲージ+2 を足し、100 を超えるたびに FUN_08066794 を呼んで 100 引く
@@ -270,8 +276,10 @@ typedef struct Player {
   u16 unk_3ec;                      // 0x3EC, 0 以外だと FUN_0807ad60 が上書きを断る
   u8 unk_3ee[0x3F0 - 0x3EE];        // 0x3EE
   u8 unk_3f0;                       // 0x3F0, FUN_0807bdc8 が unk_4a6 と同じ値を書く
-  u8 unk_3f1[0x3F6 - 0x3F1];        // 0x3F1
-  s16 unk_3f6;                      // 0x3F6
+  u8 unk_3f1;                       // 0x3F1
+  u8 unk_3f2;                       // 0x3F2, 目的地が遠い間 0..5 で増減し, 5 で姿を消して 1 以上で点滅する
+  u8 unk_3f3[0x3F6 - 0x3F3];        // 0x3F3
+  u16 unk_3f6;                      // 0x3F6, sprite_88 の表示高さに足す浮き上がり量
   u8 unk_3f8[2];                    // 0x3F8
   u8 magicFired;                    // 0x3FA, 魔法の発動フレームに FUN_08064d6c (太陽ゲージ判定) の結果が入る, 1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
   u8 dynamiteCount;                 // 0x3FB, 生存中の Entity080a8ff8 の数, Entity080a8ff8_Init が +1、消滅時に -1, MAGIC_DYNAMITE は 0 でないと再発動できない (Player_GetMagicAction)
@@ -281,7 +289,11 @@ typedef struct Player {
   u8 angle_400;                     // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
   u8 angle_401;                     // 0x401, 同上
   u8 speedPenalty;                  // 0x402, 移動速度から引かれる量, FUN_0807a904 が +1 する
-  u8 unk_403[0x40C - 0x403];        // 0x403
+  u8 unk_403;                       // 0x403
+  u16 unk_404;                      // 0x404, 行動7 を続けたフレーム数 (5 で効果音)
+  u8 unk_406[3];                    // 0x406
+  u8 unk_409;                       // 0x409, 行動7 の効果音を鳴らしているかどうか
+  u8 unk_40a[2];                    // 0x40A
   u8 unk_40c[32];                   // 0x40C, 根拠: FUN_080bfa74 が32要素とも 0 で埋める
   u8 unk_42c[2];                    // 0x42C
   u16 unk_42e;                      // 0x42E, 根拠: FUN_080bfa74 が 0 を入れる
@@ -293,7 +305,26 @@ typedef struct Player {
   u16 unk_446;                      // 0x446, 0 でなければ unk_442 が有効
   u8 unk_448[0x456 - 0x448];        // 0x448
   s8 controlUp;                     // 0x456, 通常は gStat->controlUp が入るが、混乱(移動方向がおかしくなる状態異常)のときに書き換えられる
-  u8 unk_457[0x498 - 0x457];        // 0x457
+  u8 unk_457[0x464 - 0x457];        // 0x457
+  u8 unk_464;                       // 0x464, FUN_08081ab0 が 1 を入れる
+  u8 unk_465;                       // 0x465
+  bool8 unk_466;                    // 0x466, 1 なら今の接近チャンスを使い切った状態, gPlayerPtr[0] の action が 0x15 でなくなると 0 に戻る
+  u8 unk_467;                       // 0x467, 接近を試みる確率 (%)
+  u8 unk_468;                       // 0x468, unk_469 の上限
+  u8 unk_469;                       // 0x469, 行動8 で弾いた回数, unk_468 に達すると弾き返す
+  u8 unk_46a;                       // 0x46A, unk_46b の上限
+  u8 unk_46b;                       // 0x46B, 行動8 で HBATTR_12 の攻撃を受けた回数, unk_46a に達すると行動 0x14 に移る
+  u8 unk_46c;                       // 0x46C, '.G[0]', 既定 4
+  u8 unk_46d;                       // 0x46D
+  u8 unk_46e;                       // 0x46E, 行動3 で斬った回数
+  u8 unk_46f;                       // 0x46F, 行動3 で斬る回数 (2 か 3 を乱数で決める)
+  u8 unk_470;                       // 0x470, 経路の終点に着いたときに移る action
+  u8 unk_471;                       // 0x471, 経路の終点に着いたときの facing
+  s16 unk_472;                      // 0x472, FUN_080da9c4 の第6引数
+  u16 unk_474;                      // 0x474, 行動 0x12 の残りフレーム数, FUN_080da9c4 に書き込み先として渡される
+  u8 unk_476;                       // 0x476, 非0なら FUN_08084540 が無敵中の点滅をしない
+  u8 unk_477;                       // 0x477
+  WorldPos waypoints[4];            // 0x478, 巡回地点, val に着いたときの向きが入る
   PlayerFunc fn_498;                // 0x498, Player_UpdateDjango
   Vec3 unk_49c;                     // 0x49C, FUN_0807c88c が引数の座標をそのまま写す
   u16 unk_4a4;                      // 0x4A4, FUN_0807bee0 の第3引数
@@ -308,7 +339,11 @@ typedef struct Player {
   u8 unk_4ae;                       // 0x4AE, 8 フレームごとに Player_SpawnFootHitbox を呼ぶためのカウンタ
   u8 unk_4af;                       // 0x4AF
   s32 scriptID_4b0;                 // 0x4B0, FUN_08072650
-  u8 unk_4b4[0x4c4 - 0x4b4];        // 0x4B4
+  u8 unk_4b4[0x4BC - 0x4B4];        // 0x4B4
+  s16 unk_4bc;                      // 0x4BC, unk_4c0 と対で (乱数 & 0xF) - 7 とその符号反転が入る (FUN_0806e4b4), Player_UpdateSleeping が両方 0 に戻す
+  u8 unk_4be[0x4C0 - 0x4BE];        // 0x4BE
+  s16 unk_4c0;                      // 0x4C0, unk_4bc の符号反転
+  u8 unk_4c2[0x4C4 - 0x4C2];        // 0x4C2
   Eff082473e0Emitter unk_4c4;       // 0x4C4
   Vec3 shadowPos;                   // 0x5FC, mover.pos に下の3つを足した値, 根拠: Player_UpdatePoseAndShadow
   Vec3 shadowOffset;                // 0x604, shadowPos を作るときに mover.pos に足す分, Player_BeginAction が 0 に戻す
@@ -356,7 +391,8 @@ typedef struct Player {
   u16 pad_9be;                      // 0x9BE, padding
   s32 scriptID_9c0;                 // 0x9C0
   s32 scriptID_9c4;                 // 0x9C4, 0x0089 (Script_0089) を指しているときがあった
-  u8 unk_9c8[0xA10 - 0x9C8];        // 0x9C8
+  AuxSprite sprite_9c8;             // 0x9C8, 根拠: PlayerSabata_Destroy が AuxSprite_Remove に渡す
+  AuxSpriteGfx gfx_9f4;             // 0x9F4, SPRITE_2110, sprite_9c8 が参照する
   HitboxData unk_a10;               // 0xA10, 根拠: 0x08064644
   u8 unk_a60[0xA70 - 0xA60];        // 0xA60
   Weapon* weapon_a70;               // 0xA70

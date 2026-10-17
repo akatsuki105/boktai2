@@ -34,7 +34,7 @@ _081D5F8C:
 	add r0, ip
 	movs r1, #0
 	ldrsh r4, [r0, r1]
-	ldr r3, _081D5FBC @ =0x085B0A08
+	ldr r3, _081D5FBC @ =gSineTable
 	mov r0, ip
 	ldrb r2, [r0, #6]
 	adds r0, r2, #0
@@ -53,7 +53,7 @@ _081D5F8C:
 	asrs r0, r0, #0xc
 	b _081D5FC6
 	.align 2, 0
-_081D5FBC: .4byte 0x085B0A08
+_081D5FBC: .4byte gSineTable
 _081D5FC0:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

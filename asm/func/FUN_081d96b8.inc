@@ -29,7 +29,7 @@
 	adds r6, #0x58
 	adds r7, r1, #0
 	adds r7, #0xc
-	ldr r2, _081D9720 @ =0x085B0A08
+	ldr r2, _081D9720 @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -47,7 +47,7 @@
 _081D9714: .4byte 0x030046B8
 _081D9718: .4byte 0x000003FF
 _081D971C: .4byte 0x0203B400
-_081D9720: .4byte 0x085B0A08
+_081D9720: .4byte gSineTable
 _081D9724:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

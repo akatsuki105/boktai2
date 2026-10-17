@@ -44,7 +44,7 @@ _080B2932:
 	bl ArcTan2_8
 	ldr r4, [r6]
 	mov ip, r4
-	ldr r4, _080B29A0 @ =0x085B0A08
+	ldr r4, _080B29A0 @ =gSineTable
 	adds r1, r0, #0
 	adds r1, #0x40
 	movs r3, #0xff
@@ -82,4 +82,4 @@ _080B298C:
 	.align 2, 0
 _080B2998: .4byte 0x03002BE0
 _080B299C: .4byte 0x00003FFF
-_080B29A0: .4byte 0x085B0A08
+_080B29A0: .4byte gSineTable

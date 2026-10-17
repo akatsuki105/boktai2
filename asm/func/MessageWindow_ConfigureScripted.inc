@@ -12,7 +12,7 @@
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08047E36
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	adds r1, r0, #0
 	movs r2, #0xd0
 	lsls r2, r2, #1

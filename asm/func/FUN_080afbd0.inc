@@ -134,7 +134,7 @@ _080AFCBC:
 	asrs r0, r0, #4
 	strh r0, [r1]
 	ldrh r3, [r1]
-	ldr r1, _080AFD18 @ =0x085B0A08
+	ldr r1, _080AFD18 @ =gSineTable
 	mov r2, ip
 	adds r2, #0x40
 	movs r0, #0xff
@@ -159,7 +159,7 @@ _080AFD08: .4byte 0x00000FFF
 _080AFD0C: .4byte 0x0000067E
 _080AFD10: .4byte 0x00000686
 _080AFD14: .4byte 0x00000684
-_080AFD18: .4byte 0x085B0A08
+_080AFD18: .4byte gSineTable
 _080AFD1C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

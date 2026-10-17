@@ -18,7 +18,7 @@
 	ldr r2, _0822BC04 @ =0x03003E9C
 	mov sb, r2
 	strh r4, [r2]
-	ldr r4, _0822BC08 @ =0x085B0A08
+	ldr r4, _0822BC08 @ =gSineTable
 	mov r8, r4
 	ldrh r0, [r6]
 	adds r0, #0x40
@@ -172,7 +172,7 @@ _0822BBF8: .4byte 0x03003E88
 _0822BBFC: .4byte 0x03003E50
 _0822BC00: .4byte 0x03003EB4
 _0822BC04: .4byte 0x03003E9C
-_0822BC08: .4byte 0x085B0A08
+_0822BC08: .4byte gSineTable
 _0822BC0C: .4byte 0x03003E70
 _0822BC10: .4byte 0x03003E98
 _0822BC14: .4byte 0x03003EA0

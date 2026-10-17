@@ -26,7 +26,7 @@ typedef struct EntityBD74 {
   u8 unk_ae;                                   // 0x0AE, '.p[0]' なければ 8
   u8 unk_af;                                   // 0x0AF, '.p[1]', なければ 12
   u8 unk_b0;                                   // 0x0B0, _Update が毎フレーム 0 にする
-  u8 state;                                    // 0x0B1, PTR_ARRAY_085abfc8 の添字, updateCallback と一緒に差し替えられる
+  u8 state;                                    // 0x0B1, sEntityBD74Updates の添字, updateCallback と一緒に差し替えられる
   u16 stateTimer;                              // 0x0B2, state を変えるとき 0 に戻る
   u8 unk_b4;                                   // 0x0B4, _Init が 0x50 を書く
   u8 unk_b5;                                   // 0x0B5, _Init が 0 を書く
@@ -47,13 +47,30 @@ void FUN_08084b5c(EntityBD74* p);
 void FUN_08084c30(EntityBD74* p, u8 param_2);
 void FUN_0808509c(EntityBD74* p);
 
+extern EntityBD74* gEntityBD74;  // 0x03002BFC
 extern u32 u32_03002bc0;
 
 static inline bool32 TestPauseFlag(u32 bits) { return u32_03002bc0 & bits; }
 
-extern void (*const PTR_ARRAY_085abfc8[8])(EntityBD74*);
+void FUN_08084c58(EntityBD74*);
+void FUN_08084c9c(EntityBD74*);
+void FUN_08084ce8(EntityBD74*);
+void FUN_08084d44(EntityBD74*);
+void FUN_08084dc8(EntityBD74*);
+void FUN_08084e54(EntityBD74*);
+void FUN_08084ecc(EntityBD74*);
+void FUN_08084f7c(EntityBD74*);
 
-extern EntityBD74* gEntityBD74;  // 0x03002BFC
+void (*const sEntityBD74Updates[8])(EntityBD74*) = {
+    FUN_08084c58,
+    FUN_08084c9c,
+    FUN_08084ce8,
+    FUN_08084d44,
+    FUN_08084dc8,
+    FUN_08084e54,
+    FUN_08084ecc,
+    FUN_08084f7c,
+};  // 0x085ABFC8
 
 void FUN_080846c8(void) {
   if (gEntityBD74 != NULL && gEntityBD74->state == 6) {
@@ -137,7 +154,7 @@ NAKED void FUN_08084bb0(EntityBD74* p) { INCFUNC("asm/func/FUN_08084bb0.inc"); }
 // 状態を差し替える
 void FUN_08084c30(EntityBD74* p, u8 state) {
   p->state = state;
-  p->updateCallback = PTR_ARRAY_085abfc8[p->state];
+  p->updateCallback = sEntityBD74Updates[p->state];
   p->stateTimer = 0;
 }
 

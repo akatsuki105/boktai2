@@ -271,7 +271,7 @@ _0800D66C:
 	add r4, sp, #0x20
 	ldrh r3, [r0]
 	ldrh r6, [r5, #0x3c]
-	ldr r2, _0800D6BC @ =0x085B0A08
+	ldr r2, _0800D6BC @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -291,7 +291,7 @@ _0800D6AC: .4byte 0x030046A4
 _0800D6B0: .4byte 0x030046B8
 _0800D6B4: .4byte 0x000003FF
 _0800D6B8: .4byte 0x0203B400
-_0800D6BC: .4byte 0x085B0A08
+_0800D6BC: .4byte gSineTable
 _0800D6C0:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

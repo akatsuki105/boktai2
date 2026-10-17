@@ -66,7 +66,7 @@ s32 SaveSequence_Init(SaveSequence* p) {
   p->timer = 0;
   p->result = err = -1;
   if (VM_SeekToNamedArg('s')) {
-    p->msgPc = FUN_0823d340();
+    p->msgPc = VM_GetPC_Proxy();
     if (p->msgPc != NULL) {
       p->windowID = TextPanel_Create(1, 13, 28, 6);
       if (p->windowID >= 0) {

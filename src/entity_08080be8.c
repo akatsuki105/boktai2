@@ -37,7 +37,7 @@ typedef struct Entity08080be8 {
   u16 eneCost;                        // 0x0C4, Init の第12引数, Entity08080be8_PayENE が Player_ReduceENE_0807aa60 に渡す
   u8 unk_c6[2];                       // 0x0C6
   Facing8 dir;                        // 0x0C8, プレイヤーの向きから作る 0..7 の方向, 8bit角度の基準になる
-  u8 charge;                          // 0x0C9, player の 0xA8F の写し, damage を 1 + charge/2 倍にし、sprite.metaspriteIdx にも入る
+  u8 charge;                          // 0x0C9, player の 0xA8F の写し, damage を 1 + charge/2 倍にし、sprite.poseIdx にも入る
   u16 timer;                          // 0x0CA, Entity08080be8_SetState が状態を変えるたび 0 に戻し、各状態が毎フレーム +1 する
   u8 ptclIdx;                         // 0x0CC, 次に撒く ptcls の添字, 4 で 0 に戻る
   u8 unk_cd;                          // 0x0CD, Init の第13引数, hitbox のオフセットを変え、0 以外なら damage が 8 固定になる
@@ -192,7 +192,7 @@ NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
   if (p->player->state == 5) {
     Entity08080be8_ClearParticles(p);
     AuxSprite_Show(&p->sprite);
-    p->sprite.metaspriteIdx = p->charge;
+    p->sprite.poseIdx = p->charge;
     p->hitbox.power = Entity08080be8_GetDamage(p);
     Entity08080be8_PayENE(p);
     Entity08080be8_SetState(p, Entity08080be8_StateFly);
@@ -213,7 +213,7 @@ NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
     AuxSprite_Show(&p->sprite);
   }
   p->charge = p->player->unk_a8f;
-  p->sprite.metaspriteIdx = ((p->timer >> 2) & 1) ? p->charge + 1 : p->charge;
+  p->sprite.poseIdx = ((p->timer >> 2) & 1) ? p->charge + 1 : p->charge;
   p->timer++;
 #else
   INCFUNC("asm/func/Entity08080be8_StateChargeDjango.inc");
@@ -231,7 +231,7 @@ NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
     if (state == 5) {
       Entity08080be8_ClearParticles(p);
       AuxSprite_Show(&p->sprite);
-      p->sprite.metaspriteIdx = p->charge + 1;
+      p->sprite.poseIdx = p->charge + 1;
       p->hitbox.power = Entity08080be8_GetDamage(p);
       Entity08080be8_PayENE(p);
       Entity08080be8_SetState(p, Entity08080be8_StateFly);
@@ -284,7 +284,7 @@ NON_MATCH void Entity08080be8_StateImpact(Entity08080be8* p) {
 #ifdef NONMATCHING_C
   p->timer++;
   if (p->timer == 1) {
-    p->sprite.metaspriteIdx = 4;
+    p->sprite.poseIdx = 4;
     return;
   }
   if (p->timer == 4) {
@@ -292,11 +292,11 @@ NON_MATCH void Entity08080be8_StateImpact(Entity08080be8* p) {
     AuxSprite* spr = &p->sprite;
 
     if (dir & 1) {
-      spr->metaspriteIdx = 7;
+      spr->poseIdx = 7;
     } else if ((dir >> 1) & 1) {
-      spr->metaspriteIdx = 8;
+      spr->poseIdx = 8;
     } else {
-      spr->metaspriteIdx = 6;
+      spr->poseIdx = 6;
     }
     if (dir <= 2) {
       spr->flags &= ~(SPRFLAG_XFLIP | SPRFLAG_YFLIP);

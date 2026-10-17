@@ -1,5 +1,6 @@
 #include "enemy.h"
 #include "global.h"
+#include "hitbox.h"
 #include "malloc.h"
 
 typedef struct {
@@ -11,7 +12,6 @@ static_assert(sizeof(Boku) == 1708);
 bool32 FUN_080f06b0(Enemy* p);
 void FUN_080e4964(Enemy* p);
 
-void FUN_080f2644(Enemy* p);
 void FUN_080f2864(Enemy* p);
 void FUN_080f248c(Enemy* p);
 void FUN_080f2364(Enemy* p);
@@ -25,48 +25,131 @@ void FUN_080f34a0(Enemy* p);
 void FUN_080f0e78(Enemy* p);
 void FUN_080f11d0(Enemy* p);
 void FUN_080f12c4(Enemy* p);
-void FUN_080ff06c(unknown* p);
-void FUN_080ff270(unknown* p);
 void FUN_080ff36c(Enemy* p);
-void FUN_080ff470(unknown* p);
 
-// FUN_080ff45c が handlerTables[2] に入れる, 先頭15要素は gEnemyHandlerTable2 と同じ中身
-void (*const PTR_ARRAY_085ad490[18])(Enemy*) = {
-    FUN_080f2644,
-    FUN_080f2864,
-    FUN_080f248c,
-    FUN_080f2364,
-    NULL,
-    FUN_080f2ec0,
-    FUN_080f2d04,
-    FUN_080f2a40,
-    FUN_080f31c4,
-    FUN_080f19cc,
-    FUN_080f33e8,
-    FUN_080f34a0,
-    FUN_080f0e78,
-    FUN_080f11d0,
-    FUN_080f12c4,
-    (void*)FUN_080ff06c,
-    (void*)FUN_080ff270,
-    FUN_080ff36c,
-};  // 0x085AD490
+void FUN_080fadd4(unknown* param_1, MsgPacket* msg, Enemy* enemy) {
+  if (Enemy_IsDead(enemy) == 0) {
+    if ((msg->args[1] & 0xF) != 0) {
+      enemy->unk_1d4 = msg->unk_4;
+      Enemy_ClearFlag2(enemy, ENEFLAG2_UNK_24);
+    }
+  }
+}
 
-// FUN_080ff668 が handlerTables[4] に入れる
-void (*const PTR_ARRAY_085ad4d8[1])(Enemy*) = {
-    (void*)FUN_080ff470,
-};  // 0x085AD4D8
+NAKED void FUN_080fae14(HitboxData* a, HitboxData* b, Enemy* enemy) { INCFUNC("asm/func/FUN_080fae14.inc"); }
 
-// FUN_080ffcd0 が引く
-const u16 u16_ARRAY_085ad4dc[4] = {336, 336, 0, 180};  // 0x085AD4DC
+NAKED void FUN_080fb4d0(unknown* p) { INCFUNC("asm/func/FUN_080fb4d0.inc"); }
+
+void FUN_080fba28(Enemy* p) {
+  if (p->stateBegun != 0) {
+    p->stateBegun = 0;
+  }
+}
+
+void FUN_080fba40(Enemy* p) {
+  if (p->stateBegun != 0) {
+    p->stateBegun = 0;
+  }
+  Enemy_PlayAnim(p, 0);
+}
+
+NAKED void FUN_080fba64(Enemy* p) { INCFUNC("asm/func/FUN_080fba64.inc"); }
+
+NAKED void FUN_080fc0b8(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fc0b8.inc"); }
+
+// 残差2命令, 原典は then と else で 0 を別々に作る (FUN_080f3cdc と同じ)
+NON_MATCH void FUN_080fc174(Enemy* p, s32 param_2) {
+#ifdef NONMATCHING_C
+  bool32 begun = FALSE;
+
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
+    begun = TRUE;
+  }
+  if (begun) {
+    Enemy_PlayAnim(p, 7);
+    Enemy_ClearFlag3(p, ENEFLAG3_UNK_0);
+  }
+
+  if (param_2 == 40) {
+    Enemy_SetFlag4(p, ENEFLAG4_UNK_4);
+  }
+
+  if (p->animForceRestart != 0 && param_2 > 120) {
+    p->unk_46b = 1;
+  }
+#else
+  INCFUNC("asm/func/FUN_080fc174.inc");
+#endif
+}
+
+NAKED void FUN_080fc1e4(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fc1e4.inc"); }
+
+NAKED void FUN_080fc28c(Enemy* p) { INCFUNC("asm/func/FUN_080fc28c.inc"); }
+
+NAKED void FUN_080fc4ec(Enemy* p) { INCFUNC("asm/func/FUN_080fc4ec.inc"); }
+
+NAKED void FUN_080fc548(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fc548.inc"); }
+
+NAKED void FUN_080fc6f4(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fc6f4.inc"); }
+
+NAKED void FUN_080fd08c(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fd08c.inc"); }
+
+NAKED void FUN_080fe1bc(Enemy* p) { INCFUNC("asm/func/FUN_080fe1bc.inc"); }
+
+NAKED void FUN_080fe274(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080fe274.inc"); }
+
+NAKED void FUN_080fe704(Enemy* p) { INCFUNC("asm/func/FUN_080fe704.inc"); }
+
+NAKED void FUN_080fe7f4(Enemy* p) { INCFUNC("asm/func/FUN_080fe7f4.inc"); }
+
+void FUN_080ff05c(Enemy* p) {
+  static void (*const PTR_ARRAY_085ad488[2])(Enemy*) = {
+      FUN_080fe704,
+      FUN_080fe7f4,
+  };  // 0x085AD488
+  p->handlerTables[3] = (void*)PTR_ARRAY_085ad488;
+}
+
+NAKED void FUN_080ff06c(Enemy* p) { INCFUNC("asm/func/FUN_080ff06c.inc"); }
+
+NAKED void FUN_080ff270(Enemy* p) { INCFUNC("asm/func/FUN_080ff270.inc"); }
 
 INCASM("asm/boku.inc");
 
-void FUN_080ff45c(Boku* p) { p->handlerTables[2] = (void*)0x085AD490; }
+void FUN_080ff45c(Boku* p) {
+  // 先頭15要素は gEnemyHandlerTable2 と同じ中身
+  static void (*const PTR_ARRAY_085ad490[18])(Enemy*) = {
+      FUN_080f2644,
+      FUN_080f2864,
+      FUN_080f248c,
+      FUN_080f2364,
+      NULL,
+      FUN_080f2ec0,
+      FUN_080f2d04,
+      FUN_080f2a40,
+      FUN_080f31c4,
+      FUN_080f19cc,
+      FUN_080f33e8,
+      FUN_080f34a0,
+      FUN_080f0e78,
+      FUN_080f11d0,
+      FUN_080f12c4,
+      FUN_080ff06c,
+      FUN_080ff270,
+      FUN_080ff36c,
+  };  // 0x085AD490
+  p->handlerTables[2] = (void*)PTR_ARRAY_085ad490;
+}
 
-NAKED void FUN_080ff470(unknown* p) { INCFUNC("asm/func/FUN_080ff470.inc"); }
+NAKED void FUN_080ff470(Enemy* p) { INCFUNC("asm/func/FUN_080ff470.inc"); }
 
-void FUN_080ff668(Boku* p) { p->handlerTables[4] = (void*)0x085AD4D8; }
+void FUN_080ff668(Boku* p) {
+  static void (*const PTR_ARRAY_085ad4d8[1])(Enemy*) = {
+      FUN_080ff470,
+  };  // 0x085AD4D8
+  p->handlerTables[4] = (void*)PTR_ARRAY_085ad4d8;
+}
 
 NAKED void FUN_080ff67c(unknown* p) { INCFUNC("asm/func/FUN_080ff67c.inc"); }
 
@@ -81,6 +164,8 @@ NAKED void FUN_080ffad8(unknown* p) { INCFUNC("asm/func/FUN_080ffad8.inc"); }
 void FUN_080ffc28(void) {}
 
 NAKED void FUN_080ffc2c(Boku* p) { INCFUNC("asm/func/FUN_080ffc2c.inc"); }
+
+const u16 u16_ARRAY_085ad4dc[4] = {336, 336, 0, 180};  // 0x085AD4DC
 
 NAKED unknown* FUN_080ffcd0(unknown* p) { INCFUNC("asm/func/FUN_080ffcd0.inc"); }
 

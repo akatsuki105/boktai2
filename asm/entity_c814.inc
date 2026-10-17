@@ -31,7 +31,7 @@ _080CB502:
 	adds r0, r2, #0
 	bl ArcTan2_8
 	adds r3, r0, #0
-	ldr r2, _080CB528 @ =0x085B0A08
+	ldr r2, _080CB528 @ =gSineTable
 	adds r0, #0x40
 	movs r1, #0xff
 	ands r0, r1
@@ -47,7 +47,7 @@ _080CB502:
 	asrs r0, r0, #0xc
 	b _080CB532
 	.align 2, 0
-_080CB528: .4byte 0x085B0A08
+_080CB528: .4byte gSineTable
 _080CB52C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -55,7 +55,7 @@ _080CB52C:
 _080CB532:
 	rsbs r0, r0, #0
 	strh r0, [r4, #0x2c]
-	ldr r1, _080CB554 @ =0x085B0A08
+	ldr r1, _080CB554 @ =gSineTable
 	movs r0, #0xff
 	ands r0, r3
 	lsls r0, r0, #1
@@ -70,7 +70,7 @@ _080CB532:
 	asrs r0, r0, #0xc
 	b _080CB55E
 	.align 2, 0
-_080CB554: .4byte 0x085B0A08
+_080CB554: .4byte gSineTable
 _080CB558:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

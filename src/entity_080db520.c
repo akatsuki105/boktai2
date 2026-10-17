@@ -30,7 +30,7 @@ IWRAM_DATA Entity080db520* gEntity080db520 = NULL;  // 0x03000160
 
 const u8 u8_ARRAY_085ad310[4] = {8, 4, 2, 1};  // 0x085AD310
 
-NAKED s32 FUN_080da9c4(Entity080db520* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080da9c4.inc"); }
+NAKED s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u16* param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_080da9c4.inc"); }
 
 NAKED void FUN_080dab9c(Entity080db520* p) { INCFUNC("asm/func/FUN_080dab9c.inc"); }
 

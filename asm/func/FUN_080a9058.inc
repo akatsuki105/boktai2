@@ -49,7 +49,7 @@ _080A90AC:
 	adds r0, r0, r1
 	strb r0, [r4, #0x10]
 	ldrh r3, [r4, #0x16]
-	ldr r2, _080A90D8 @ =0x085B0A08
+	ldr r2, _080A90D8 @ =gSineTable
 	ldrb r0, [r4, #0x10]
 	adds r0, #0x40
 	movs r1, #0xff
@@ -64,7 +64,7 @@ _080A90AC:
 	asrs r3, r0, #0xc
 	b _080A90E2
 	.align 2, 0
-_080A90D8: .4byte 0x085B0A08
+_080A90D8: .4byte gSineTable
 _080A90DC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

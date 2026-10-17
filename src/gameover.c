@@ -10,7 +10,7 @@
 
 // "GAME OVER" の1文字ぶん, 8個並べて1つのロゴになる
 typedef struct {
-  AuxSprite sprite;  // 0x00, GameOverManager_SetupLetters が AuxSprite_Setup に渡す, flags は 0x1033 = SPRFLAG_GAMEOVER|SPRFLAG_OAM_DIRECT|SPRFLAG_SCREEN_COORD|SPRFLAG_AFFINE|SPRFLAG_HIDDEN で、metaspriteIdx に 0..7 が入る
+  AuxSprite sprite;  // 0x00, GameOverManager_SetupLetters が AuxSprite_Setup に渡す, flags は 0x1033 = SPRFLAG_GAMEOVER|SPRFLAG_OAM_DIRECT|SPRFLAG_SCREEN_COORD|SPRFLAG_AFFINE|SPRFLAG_HIDDEN で、 poseIdx に 0..7 が入る
   AuxSpriteGfx gfx;  // 0x2C, SPRITE_GAMEOVER
   s16 baseX;         // 0x48, GameOverManager_SetupLetters が 56 + i * 16 (i >= 4 ならさらに +16) を入れる, GameOverManager_UpdateLetters がここから sprite.pos.x を作る
   s16 baseY;         // 0x4A, GameOverManager_SetupLetters が 72 を入れる
@@ -193,9 +193,11 @@ void (*const sGameOverAnimFns[8])(GameOverManager*) = {
     GameOverManager_AnimEnd,
 };  // 0x085AD014
 
-// 自分の命令列は原典と完全一致するが, C化すると同じ TU の GameOverManager_StateShowLogo の
+// 自分の命令列は原典と完全一致する (hunk 0) が, C化すると同じ TU の GameOverManager_StateShowLogo の
 // レジスタ割当が r5/r6/r7 → r6/r7/r5 に回転して ROM が壊れる (式の形を変えても同じ6バイトが動く)
-// 先行する GameOverManager_UpdateLetters が NON_MATCH (INCFUNC) のままだと TU の状態が原典と違うのが原因と思われる
+// 引き金は sGameOverAnimFns 経由の間接呼び出しそのもの: この1文を消すと StateShowLogo は r5/r6/r7 に戻る
+// GameOverManager_UpdateLetters を C にしても回転は消えないので TU 内の他の NON_MATCH/NAKED
+// (SetupLetters / SetupMenu / FUN_080a7800) が原典と違うのが残りの原因, TU 全体が C になるまで一致しない見込み
 NON_MATCH void GameOverManager_UpdateAnim(GameOverManager* p) {
 #ifdef NONMATCHING_C
   sGameOverAnimFns[p->animState](p);
@@ -239,7 +241,7 @@ NON_MATCH void GameOverManager_SetupLetters(GameOverManager* p) {
     p->letters[i].sprite.pos.y = p->letters[i].baseY;
     p->letters[i].sprite.scaleX = p->scaleX;
     p->letters[i].sprite.scaleY = p->scaleY;
-    p->letters[i].sprite.metaspriteIdx = i;
+    p->letters[i].sprite.poseIdx = i;
     x += 16;
   }
 #else
@@ -385,7 +387,7 @@ s32 GameOverManager_Init(GameOverManager* p) {
   p->animState = 0;
   p->timer = 0;
   p->spritesAdded = FALSE;
-  if (VM_SeekToNamedArg('r')) p->script = FUN_0823d340();
+  if (VM_SeekToNamedArg('r')) p->script = VM_GetPC_Proxy();
   if (VM_SeekToNamedArg('c')) {
     p->cost[0] = VM_GetValue();
     p->cost[1] = VM_GetValue();

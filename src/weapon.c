@@ -154,6 +154,7 @@ bool32 FUN_08242eb0(void) {
   return FALSE;
 }
 
+// 0x7D90, ゲーム序盤のイベントで太陽銃を奪われるときに使用
 void FUN_08242f08(void) {
   FUN_08242c08(REGISTERED_WEAPON(gStat->equippedWeaponIdx));
   if (gPlayerPtr[0] != NULL) {

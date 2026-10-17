@@ -322,7 +322,7 @@ _0805D830:
 	movs r0, #0
 	adds r4, r3, #0
 	stm r4!, {r0}
-	ldr r2, _0805D858 @ =0x085B0A08
+	ldr r2, _0805D858 @ =gSineTable
 	adds r0, r5, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -337,7 +337,7 @@ _0805D830:
 	asrs r1, r0, #0xc
 	b _0805D862
 	.align 2, 0
-_0805D858: .4byte 0x085B0A08
+_0805D858: .4byte gSineTable
 _0805D85C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

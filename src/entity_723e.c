@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "sprite.h"
+#include "text.h"
 #include "tilemap.h"
 
 // 通信対戦の結果画面, 2人のタイムと得点を出す
@@ -49,13 +50,21 @@ void (*const PTR_ARRAY_085ab724[6])(Entity723E*) = {
 
 NAKED s32 Entity723E_SetState(Entity723E* p, u8 state) { INCFUNC("asm/func/Entity723E_SetState.inc"); }
 
-NAKED bool32 Entity723E_ConsumeStateEntered(Entity723E* p) { INCFUNC("asm/func/Entity723E_ConsumeStateEntered.inc"); }
+bool32 Entity723E_ConsumeStateEntered(Entity723E* p) {
+  p->timeA[0] = 1;
+  return FALSE;
+}
 
-NAKED Entity723E* GetEntity723E(void) { INCFUNC("asm/func/GetEntity723E.inc"); }
+Entity723E* GetEntity723E(void) { return gEntity723E; }
 
 NAKED void FUN_080522d0(Entity723E* p) { INCFUNC("asm/func/FUN_080522d0.inc"); }
 
-NAKED void FUN_08052338(Entity723E* p) { INCFUNC("asm/func/FUN_08052338.inc"); }
+// 入場フラグを食うだけ
+void FUN_08052338(Entity723E* p) {
+  if (p->stateEntered) {
+    p->stateEntered = FALSE;
+  }
+}
 
 NAKED void FUN_0805234c(Entity723E* p) { INCFUNC("asm/func/FUN_0805234c.inc"); }
 
@@ -69,10 +78,42 @@ NAKED void FUN_080528c4(Entity723E* p) { INCFUNC("asm/func/FUN_080528c4.inc"); }
 
 NAKED s32 Entity723E_Update(Entity723E* p) { INCFUNC("asm/func/Entity723E_Update.inc"); }
 
-NAKED s32 Entity723E_Destroy(Entity723E* p) { INCFUNC("asm/func/Entity723E_Destroy.inc"); }
+s32 Entity723E_Destroy(Entity723E* p) {
+  MainSprite* spr = &p->sprites[0];
+  s32* panel;
+  s32 i;
+
+  for (i = 20; i >= 0; i--, spr++) {
+    MainSprite_Remove(spr);
+  }
+  spr = &p->portrait;
+  MainSprite_Remove(spr);
+  panel = &p->textPanels[0];
+  for (i = 3; i >= 0; i--) {
+    TextPanel_Destroy(*panel++);
+  }
+  gEntity723E = NULL;
+  return 0;
+}
 
 NAKED s32 Entity723E_Init(Entity723E* p) { INCFUNC("asm/func/Entity723E_Init.inc"); }
 
-NAKED Entity723E* Entity723E_Create(void) { INCFUNC("asm/func/Entity723E_Create.inc"); }
+Entity723E* Entity723E_Create(void) {
+  Entity723E* p = GetEntity723E();
+
+  if (p != NULL) {
+    return p;
+  }
+
+  p = CreateEntity(ENTITY_UNK_11, sizeof(Entity723E));
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity723E_Update, Entity723E_Destroy);
+    if (Entity723E_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
 
 NAKED s32 Entity723E_Setup(u8 param_1, u8 param_2, s32 param_3, s32 param_4, s16 param_5, s16 param_6, u32 param_7) { INCFUNC("asm/func/Entity723E_Setup.inc"); }

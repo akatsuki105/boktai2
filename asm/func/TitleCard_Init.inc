@@ -101,7 +101,7 @@ _0800F5E6:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0800F662
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 _0800F662:
 	str r0, [r5, #0x50]
 	movs r0, #0x79

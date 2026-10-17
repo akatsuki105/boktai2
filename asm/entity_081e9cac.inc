@@ -1160,7 +1160,7 @@ FUN_081e98e8: @ 0x081E98E8
 	adds r5, r2, #0
 	adds r6, r3, #0
 	add r3, sp, #0x14
-	ldr r2, _081E9914 @ =0x085B0A08
+	ldr r2, _081E9914 @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -1175,7 +1175,7 @@ FUN_081e98e8: @ 0x081E98E8
 	asrs r1, r0, #0xc
 	b _081E991E
 	.align 2, 0
-_081E9914: .4byte 0x085B0A08
+_081E9914: .4byte gSineTable
 _081E9918:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

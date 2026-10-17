@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "sprite.h"
+#include "vm.h"
 
 // スクリプトから足せる飾りのスプライト1枚, 位置の補間とマーカー設定への追従を持つ
 typedef struct {
@@ -9,7 +10,7 @@ typedef struct {
   MainSprite sprite;   // 0x38
   u16 id;              // 0x98, '.n', スクリプトから枠を引くときの番号
   s16 moving;          // 0x9A, 0 以外なら pos を fromPos から toPos へ補間する
-  s16 markerGated;     // 0x9C, 0 以外なら gStat->markerEnabled に従って表示を切り替える
+  bool16 markerGated;  // 0x9C, 0 以外なら gStat->markerEnabled に従って表示を切り替える
   s16 hiddenByScript;  // 0x9E, スクリプトから隠されているか
   u16 elapsed;         // 0xA0, 補間の経過フレーム
   u16 duration;        // 0xA2, 補間の全体フレーム数
@@ -32,15 +33,56 @@ extern Entity8AF6* gEntity8AF6;  // 0x03002C4C
 
 NAKED Entity8AF6Entry* Entity8AF6_FindEntry(void) { INCFUNC("asm/func/Entity8AF6_FindEntry.inc"); }
 
-NAKED void Entity8AF6_SetPoseScripted(void) { INCFUNC("asm/func/Entity8AF6_SetPoseScripted.inc"); }
+void Entity8AF6_SetPoseScripted(void) {
+  Entity8AF6Entry* e = Entity8AF6_FindEntry();
 
-NAKED void FUN_080a59e0(void) { INCFUNC("asm/func/FUN_080a59e0.inc"); }
+  if (e != NULL && VM_SeekToNamedArg('p')) {
+    MainSprite_SetPose(&e->sprite, &e->gfx, VM_GetValue(), 0);
+  }
+}
 
-NAKED void Entity8AF6_HideScripted(void) { INCFUNC("asm/func/Entity8AF6_HideScripted.inc"); }
+// '.f' で左右反転を切り替える
+void FUN_080a59e0(void) {
+  Entity8AF6Entry* e = Entity8AF6_FindEntry();
 
-NAKED void Entity8AF6_ShowScripted(void) { INCFUNC("asm/func/Entity8AF6_ShowScripted.inc"); }
+  if (e != NULL && VM_SeekToNamedArg('f')) {
+    if (VM_GetValue()) {
+      e->sprite.flags |= SPRFLAG_XFLIP;
+    } else {
+      e->sprite.flags &= ~SPRFLAG_XFLIP;
+    }
+  }
+}
 
-NAKED void FUN_080a5a6c(void) { INCFUNC("asm/func/FUN_080a5a6c.inc"); }
+void Entity8AF6_HideScripted(void) {
+  Entity8AF6Entry* e = Entity8AF6_FindEntry();
+
+  if (e != NULL) {
+    e->sprite.flags |= SPRFLAG_HIDDEN;
+    if (e->markerGated != 0) {
+      e->hiddenByScript = 1;
+    }
+  }
+}
+
+void Entity8AF6_ShowScripted(void) {
+  Entity8AF6Entry* e = Entity8AF6_FindEntry();
+
+  if (e != NULL) {
+    e->sprite.flags &= ~SPRFLAG_HIDDEN;
+    if (e->markerGated != 0) {
+      e->hiddenByScript = 0;
+    }
+  }
+}
+
+void FUN_080a5a6c(void) {
+  Entity8AF6Entry* e = Entity8AF6_FindEntry();
+
+  if (e != NULL && VM_SeekToNamedArg('p')) {
+    e->sprite.priority = VM_GetValue();
+  }
+}
 
 NAKED void Entity8AF6_MoveToScripted(void) { INCFUNC("asm/func/Entity8AF6_MoveToScripted.inc"); }
 
@@ -48,10 +90,30 @@ NAKED void Entity8AF6Entry_Update(Entity8AF6Entry* p) { INCFUNC("asm/func/Entity
 
 NAKED void Entity8AF6_AddEntryScripted(void) { INCFUNC("asm/func/Entity8AF6_AddEntryScripted.inc"); }
 
-NAKED s32 Entity8AF6_Update(Entity8AF6* p) { INCFUNC("asm/func/Entity8AF6_Update.inc"); }
+s32 Entity8AF6_Update(Entity8AF6* p) {
+  s32 i;
 
-NAKED s32 Entity8AF6_Destroy(Entity8AF6* p) { INCFUNC("asm/func/Entity8AF6_Destroy.inc"); }
+  for (i = 0; i < p->used; i++) {
+    Entity8AF6Entry_Update(&p->entries[i]);
+  }
+  return 0;
+}
 
-NAKED s32 Entity8AF6_Init(Entity8AF6* p, u32 param_2, u32 param_3, u8 count) { INCFUNC("asm/func/Entity8AF6_Init.inc"); }
+s32 Entity8AF6_Destroy(Entity8AF6* p) {
+  s32 i;
+
+  for (i = 0; i < p->used; i++) {
+    MainSprite_Remove(&p->entries[i].sprite);
+  }
+  gEntity8AF6 = NULL;
+  return 0;
+}
+
+s32 Entity8AF6_Init(Entity8AF6* p, u32 param_2, u32 param_3, u8 count) {
+  p->count = count;
+  p->used = 0;
+  gEntity8AF6 = p;
+  return 0;
+}
 
 NAKED Entity8AF6* Entity8AF6_Create(u32 param_1, u32 param_2) { INCFUNC("asm/func/Entity8AF6_Create.inc"); }

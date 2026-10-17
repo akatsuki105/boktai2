@@ -14,6 +14,13 @@ struct Entity286FNode;
 typedef void(Entity286FNodeCb)(struct Entity286F* p, struct Entity286FNode* node);
 typedef void(Entity286FNodeUpdate)(struct Entity286F* p, struct Entity286FNode* node, s32 elapsed);
 
+// Entity286FNode.flags (0x00E)
+typedef u16 Entity286FNodeFlags;
+#define E286FNODE_UNK_8 (1 << 8)    // 0x0100, FUN_08042178 が立てる
+#define E286FNODE_UNK_12 (1 << 12)  // 0x1000, FUN_080421bc が立てる
+
+static inline void Entity286FNode_SetFlags(struct Entity286FNode* p, Entity286FNodeFlags bits);
+
 typedef struct Entity286FNode {
   u8 active;                  // 0x000, Entity286F_LinkNode が 1 を入れ、FUN_0804114c が 0 にして Free する
   u8 kind;                    // 0x001, Entity286FNode_Alloc の第2引数
@@ -26,7 +33,7 @@ typedef struct Entity286FNode {
   u8 unk_09;                  // 0x009, まだ未解析
   u8 unk_0a;                  // 0x00A, FUN_080411d8 が 0 以外のときだけ進み、処理後 0 に戻す
   u8 unk_0b[3];               // 0x00B, まだ未解析
-  u16 flags;                  // 0x00E, 0x100 / 0x200 / 0x1000 のビットで分岐する
+  Entity286FNodeFlags flags;  // 0x00E, 0x100 / 0x200 / 0x1000 のビットで分岐する
   u32 unk_10;                 // 0x010, 根拠: FUN_080441a4 が +1 して元の値を unk_2cc の第3引数に渡す
   u32 timer;                  // 0x014, 多数の関数が 0 に戻し、FUN_08042414 が +1 する
   u8 unk_18[0x01B - 0x018];   // 0x018, まだ未解析
@@ -42,7 +49,10 @@ typedef struct Entity286FNode {
   u8 unk_a8[0x0D0 - 0x0A8];   // 0x0A8, まだ未解析
   SpriteHolder sprite;        // 0x0D0, 0x08055XXX のスプライト API に渡す
   MsgQueue mq;                // 0x164
-  u8 unk_198[0x1EE - 0x198];  // 0x198, まだ未解析
+  u8 unk_198[0x1E8 - 0x198];  // 0x198, まだ未解析
+  u8 unk_1e8;                 // 0x1E8, FUN_08042868 が FUN_08041480 の第2引数に渡す
+  u8 unk_1e9;                 // 0x1E9, 同じく第3引数
+  u8 unk_1ea[0x1EE - 0x1EA];  // 0x1EA, まだ未解析
   u8 unk_1ee;                 // 0x1EE, 根拠: Entity286FNode_RemoveMover が 0 以外のときだけ mover を切り離して 0 に戻す
   u8 unk_1ef[0x214 - 0x1EF];  // 0x1EF, まだ未解析
   u8 shadowKind;              // 0x214, 1 なら shadow.ptcl, 2 なら shadow.aux
@@ -68,6 +78,8 @@ typedef struct Entity286FNode {
   struct Entity286FNode* prev;        // 0x2E8
   struct Entity286FNode* next;        // 0x2EC
 } Entity286FNode;
+
+static inline void Entity286FNode_SetFlags(struct Entity286FNode* p, Entity286FNodeFlags bits) { p->flags |= bits; }
 static_assert(sizeof(Entity286FNode) == 752);
 
 typedef struct Entity286F {
@@ -221,7 +233,17 @@ void Entity286F_LinkNode(Entity286F* p, Entity286FNode* node) {
   node->active = 1;
 }
 
-NAKED void FUN_08040e68(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08040e68.inc"); }
+// リンクリストからノードを外す
+void FUN_08040e68(Entity286F* p, Entity286FNode* node) {
+  if (node->prev != NULL) {
+    node->prev->next = node->next;
+  } else {
+    p->head = node->next;
+  }
+  if (node->next != NULL) {
+    node->next->prev = node->prev;
+  }
+}
 
 // mover.id が id のノードを探す
 Entity286FNode* Entity286F_FindNodeByMoverID(Entity286F* p, u32 id) {
@@ -396,7 +418,37 @@ NAKED s32 FUN_08041480(Entity286FNode* node, s32 param_2, s32 param_3, s32 param
 
 NAKED void FUN_080414fc(Entity286FNode* node, s32 param_2) { INCFUNC("asm/func/FUN_080414fc.inc"); }
 
-NAKED s32 FUN_0804157c(s16* param_1, s16* param_2, s32 param_3) { INCFUNC("asm/func/FUN_0804157c.inc"); }
+// 2点が x/z は range 未満, y は 0xFF 以内に収まっているかを返す
+s32 FUN_0804157c(Vec3* a, Vec3* b, s32 range) {
+  s32 dx = b->x - a->x;
+  s32 dy;
+  s32 dz;
+
+  if (dx < 0) {
+    dx = -dx;
+  }
+  if (dx >= range) {
+    return 0;
+  }
+
+  dy = b->y - a->y;
+  if (dy < 0) {
+    dy = -dy;
+  }
+  if (dy > 0xFF) {
+    return 0;
+  }
+
+  dz = b->z - a->z;
+  if (dz < 0) {
+    dz = -dz;
+  }
+  if (dz >= range) {
+    return 0;
+  }
+
+  return 1;
+}
 
 NAKED void FUN_080415cc(Entity286FNode* node, s32 param_2, u16 param_3, s16 param_4) { INCFUNC("asm/func/FUN_080415cc.inc"); }
 
@@ -433,9 +485,25 @@ bool32 FUN_08041dcc(void) {
 
 NAKED s32 FUN_08041e10(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08041e10.inc"); }
 
-NAKED void FUN_08042178(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08042178.inc"); }
+void FUN_08042178(Entity286F* p, Entity286FNode* node, s32 elapsed) {
+  if (node->unk_09 != 0) {
+    node->unk_09 = 0;
+    node->unk_07 = 0;
+    FUN_08041480(node, 0, 2, 0, 4);
+  }
+  Entity286FNode_SetFlags(node, E286FNODE_UNK_8);
+  node->fn(node);
+}
 
-NAKED void FUN_080421bc(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_080421bc.inc"); }
+void FUN_080421bc(Entity286F* p, Entity286FNode* node, s32 elapsed) {
+  if (node->unk_09 != 0) {
+    node->unk_09 = 0;
+    node->unk_07 = 0;
+    FUN_08041480(node, 0, 1, 0, 4);
+  }
+  Entity286FNode_SetFlags(node, E286FNODE_UNK_12);
+  node->fn(node);
+}
 
 NAKED void FUN_08042200(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08042200.inc"); }
 
@@ -445,7 +513,15 @@ NAKED void FUN_08042414(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCF
 
 NAKED void FUN_08042638(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08042638.inc"); }
 
-NAKED void FUN_08042868(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08042868.inc"); }
+void FUN_08042868(Entity286F* p, Entity286FNode* node) {
+  if (node->unk_09 != 0) {
+    node->unk_09 = 0;
+    node->unk_07 = 0;
+    FUN_08041480(node, node->unk_1e8, node->unk_1e9, 0, 4);
+  }
+  Entity286FNode_SetFlags(node, E286FNODE_UNK_12);
+  node->fn(node);
+}
 
 NAKED void FUN_080428b8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_080428b8.inc"); }
 
@@ -629,7 +705,24 @@ s32 Entity286F_Destroy(Entity286F* p) {
   return 0;
 }
 
-NAKED s32 Entity286F_Init(Entity286F* p) { INCFUNC("asm/func/Entity286F_Init.inc"); }
+s32 Entity286F_Init(Entity286F* p) {
+  Player* pl;
+
+  gEntity286F = p;
+  p->frameCount = 0;
+  p->head = NULL;
+  p->unk_28 = 0;
+  p->unk_2c[0] = 0;
+  p->unk_2c[1] = 0;
+  pl = gPlayerPtr[0];
+  p->player = pl;
+  if (pl != NULL) {
+    p->playerPos = &pl->mover.pos;
+  } else {
+    p->playerPos = NULL;
+  }
+  return 0;
+}
 
 Entity286F* Entity286F_Create(void) {
   if (gEntity286F == NULL) {
@@ -905,7 +998,16 @@ s32 FUN_08044730(Entity286F* p, Entity286FNode* node) {
   return 0;
 }
 
-NAKED void FUN_0804473c(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_0804473c.inc"); }
+void FUN_0804473c(Entity286F* p, Entity286FNode* node, s32 elapsed) {
+  if (node->unk_09 != 0) {
+    node->unk_09 = 0;
+    node->unk_07 = 0;
+    FUN_08041480(node, 0, 1, 0, 4);
+  }
+  if ((u8)node->fn(node) != 1) {
+    FUN_08041480(node, 0, 1, 0, 1);
+  }
+}
 
 NAKED void FUN_0804478c(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_0804478c.inc"); }
 

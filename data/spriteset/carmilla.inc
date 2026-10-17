@@ -1,42 +1,48 @@
-SpriteSetFile36: @ 0x08CB04B0
-	.2byte 750 @ palStart
-	.2byte 3 @ metaspriteCount
-	.2byte 1 @ animationCount
-	.2byte 9 @ subspriteCount
-	.2byte 3 @ cmdCount
-	.2byte 256 @ tileCount
-	.4byte 0x00000020, 0x0000005C, 0x00000064, 0x000000AC, 0x000000B8
-	@ Metasprites
-		.2byte 0x3229, 0x0003, 0x0000, 0x0000, 0xFFE8, 0xFFC7, 0x0008, 0x0007
-		.4byte 0x0 @ subspriteOffset
-		.2byte 0x322A, 0x0003, 0x0000, 0x0000, 0xFFE8, 0xFFC7, 0x0008, 0x0007
-		.4byte 0x18 @ subspriteOffset
-		.2byte 0x322B, 0x0003, 0x0000, 0x0000, 0xFFE8, 0xFFC7, 0x0008, 0x0007
-		.4byte 0x30 @ subspriteOffset
-	@ Unk1
-		.byte 0x29, 0x32, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00
-	@ Subsprites
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte -8, -41, (0 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte -8, -25, (32 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x01 @ flip, shape
-		.2byte -8, -9, (64 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte -8, -41, (2 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte -8, -25, (34 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x01 @ flip, shape
-		.2byte -8, -9, (64 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte -8, -41, (4 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte -8, -25, (36 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x01 @ flip, shape
-		.2byte -8, -9, (64 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-	@ Unk2
-		.byte 0x00, 0x00, 0x08, 0x00
-		.byte 0x01, 0x00, 0x08, 0x00
-		.byte 0x02, 0x00, 0x08, 0x00
-	@ Tiles
-		.incbin "data/spriteset/carmilla.4bpp"
+FileE2DE_Header:
+  .2byte 750 @ palStart
+  .2byte 3 @ metaspriteCount
+  .2byte 1 @ animationCount
+  .2byte 9 @ subspriteCount
+  .2byte 3 @ cmdCount
+  .2byte 256 @ tileCount
+  .4byte 32 @ offsetToPoses
+  .4byte 92 @ offsetToAnims
+  .4byte 100 @ offsetToSubsprites
+  .4byte 172 @ offsetToCmds
+  .4byte 184 @ offsetToTiles
+
+FileE2DE_Poses:
+@ pose unk_0,  obj,               objcount,   bb
+  pose 0x3229, FileE2DE_Obj_0,    3,          -24,  -57,    8,    7
+  pose 0x322A, FileE2DE_Obj_3,    3,          -24,  -57,    8,    7
+  pose 0x322B, FileE2DE_Obj_6,    3,          -24,  -57,    8,    7
+
+FileE2DE_Anims:
+@ animation unk_0,  cmd,             cmdCount
+  animation 0x3229, FileE2DE_Cmd_0,  3
+
+1:
+FileE2DE_Subsprites:
+@   subsprite size,            x,    y,   tile,  pal
+  FileE2DE_Obj_0:
+    subsprite OAM_SIZE_16x16,   -8,  -41,    0,    0
+    subsprite OAM_SIZE_16x16,   -8,  -25,   32,    0
+    subsprite OAM_SIZE_16x8,    -8,   -9,   64,    0
+  FileE2DE_Obj_3:
+    subsprite OAM_SIZE_16x16,   -8,  -41,    2,    0
+    subsprite OAM_SIZE_16x16,   -8,  -25,   34,    0
+    subsprite OAM_SIZE_16x8,    -8,   -9,   64,    0
+  FileE2DE_Obj_6:
+    subsprite OAM_SIZE_16x16,   -8,  -41,    4,    0
+    subsprite OAM_SIZE_16x16,   -8,  -25,   36,    0
+    subsprite OAM_SIZE_16x8,    -8,   -9,   64,    0
+
+2:
+FileE2DE_Cmds:
+  FileE2DE_Cmd_0:
+    animcmd  0,  8
+    animcmd  1,  8
+    animcmd  2,  8
+
+FileE2DE_Tiles:
+  .incbin "data/spriteset/carmilla.4bpp"

@@ -1043,7 +1043,7 @@ _080F5104:
 	lsls r1, r1, #1
 	adds r3, r6, r1
 	ldrb r4, [r6, #5]
-	ldr r2, _080F5158 @ =0x085B0A08
+	ldr r2, _080F5158 @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -1060,7 +1060,7 @@ _080F5104:
 	b _080F5162
 	.align 2, 0
 _080F5154: .4byte 0xFFFF7FFF
-_080F5158: .4byte 0x085B0A08
+_080F5158: .4byte gSineTable
 _080F515C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

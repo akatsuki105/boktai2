@@ -9,7 +9,17 @@
 
 static void (*const sGeneratorUpdates[8])(Generator*);
 
-NAKED void Generator_SetState(Generator* p, s32 state) { INCFUNC("asm/func/Generator_SetState.inc"); }
+// 状態番号と更新関数を入れ替える, 状態3と5に入るときは効果音を鳴らす
+void Generator_SetState(Generator* p, s32 state) {
+  p->state = state;
+  p->stateTimer = 0;
+  p->updateCallback = sGeneratorUpdates[p->state];
+  if (p->state == 3) {
+    PlaySound_082406e0(0xFB);
+  } else if (p->state == 5) {
+    PlaySound_082406e0(0xFC);
+  }
+}
 
 // スプライトを本来の位置から ±5 揺らす
 NON_MATCH void FUN_080b2888(Generator* p) {

@@ -89,7 +89,7 @@ _080AFEA2:
 	asrs r0, r0, #3
 	strh r0, [r2]
 	ldrh r3, [r2]
-	ldr r2, _080AFEE8 @ =0x085B0A08
+	ldr r2, _080AFEE8 @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -107,7 +107,7 @@ _080AFEA2:
 	.align 2, 0
 _080AFEE0: .4byte 0x0000067C
 _080AFEE4: .4byte 0x00000684
-_080AFEE8: .4byte 0x085B0A08
+_080AFEE8: .4byte gSineTable
 _080AFEEC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

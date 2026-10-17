@@ -45,7 +45,7 @@ _080847F0:
 	movs r1, #0xff
 	ands r0, r1
 	strh r0, [r3, #0x30]
-	ldr r2, _08084828 @ =0x085B0A08
+	ldr r2, _08084828 @ =gSineTable
 	movs r1, #0x30
 	ldrsh r0, [r3, r1]
 	adds r0, #0x40
@@ -61,7 +61,7 @@ _080847F0:
 	asrs r1, r0, #0xc
 	b _08084832
 	.align 2, 0
-_08084828: .4byte 0x085B0A08
+_08084828: .4byte gSineTable
 _0808482C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

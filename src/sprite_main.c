@@ -61,7 +61,7 @@ NAKED void FUN_0822f264(void) { ARM_TRAMPOLINE(FUN_08230594); }
 // spriteset ファイルのヘッダをコピーし、各オフセットをファイル先頭からのポインタに変換する
 s32 OpenMainSpriteFile(MainSpriteGfx* gfx, MainSpriteGfxFile* f) {
   *gfx = *(MainSpriteGfx*)f;
-  gfx->sprites = (MainSpritePose*)((u32)gfx->sprites + (u32)f);
+  gfx->poses = (MainSpritePose*)((u32)gfx->poses + (u32)f);
   gfx->anims = (MainAnim*)((u32)gfx->anims + (u32)f);
   gfx->subsprites = (MainSubsprite*)((u32)gfx->subsprites + (u32)f);
   gfx->cmds = (MainAnimCmd*)((u32)gfx->cmds + (u32)f);
@@ -72,10 +72,10 @@ s32 OpenMainSpriteFile(MainSpriteGfx* gfx, MainSpriteGfxFile* f) {
 // Unused?
 // unk_0 が poseIdx と一致する MainSpritePose を探して返す, 無ければ NULL
 MainSpritePose* FUN_0822f2bc(MainSpriteGfx* gfx, u16 poseIdx) {
-  MainSpritePose* pose = gfx->sprites;
+  MainSpritePose* pose = gfx->poses;
   s32 i;
 
-  for (i = 0; i < gfx->spriteCount; i++) {
+  for (i = 0; i < gfx->poseCount; i++) {
     if (pose->unk_0 == poseIdx) {
       return pose;
     }
@@ -86,7 +86,7 @@ MainSpritePose* FUN_0822f2bc(MainSpriteGfx* gfx, u16 poseIdx) {
 
 // MainSpriteGfx の poseIdx 番目のメタスプライトを MainSprite に読み込む (パレットは未設定のときだけ設定する)
 s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx) {
-  MainSpritePose* m = &gfx->sprites[poseIdx];
+  MainSpritePose* m = &gfx->poses[poseIdx];
 
   if (m == NULL) return -1;
 

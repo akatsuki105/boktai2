@@ -28,7 +28,7 @@ _0821B492:
 	adds r2, r0, #0
 	movs r1, #0xf
 	mov ip, r1
-	ldr r0, _0821B4CC @ =0x085B0A08
+	ldr r0, _0821B4CC @ =gSineTable
 	adds r1, r2, #0
 	adds r1, #0x40
 	movs r6, #0xff
@@ -46,7 +46,7 @@ _0821B492:
 	asrs r1, r1, #0xc
 	b _0821B4D6
 	.align 2, 0
-_0821B4CC: .4byte 0x085B0A08
+_0821B4CC: .4byte gSineTable
 _0821B4D0:
 	rsbs r0, r1, #0
 	asrs r0, r0, #0xc

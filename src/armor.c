@@ -49,7 +49,7 @@ void SwapArmorSlot(slot32_t slot1, slot32_t slot2) {
   }
 }
 
-NON_MATCH void SortArmors(s32 from) {
+NON_MATCH void SortArmors(slot32_t from) {
 #ifdef NONMATCHING_C
   s32 emptyCount;
   s32 validCount;

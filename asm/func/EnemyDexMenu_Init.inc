@@ -26,7 +26,7 @@
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E8E0
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r7, _0820E8EC @ =0x00001110
 	adds r1, r6, r7
 	str r0, [r1]
@@ -68,7 +68,7 @@ _0820E8F8:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E94C
-	bl FUN_0823d34c
+	bl VM_GetValueSafe2_Proxy
 	bl VM_SetPC
 	movs r4, #0
 	ldr r7, _0820EAB4 @ =0x00001114
@@ -85,7 +85,7 @@ _0820E94C:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E996
-	bl FUN_0823d34c
+	bl VM_GetValueSafe2_Proxy
 	adds r2, r0, #0
 	ldr r0, _0820EAB8 @ =0x00001150
 	adds r0, r0, r6
@@ -122,7 +122,7 @@ _0820E996:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E9AA
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r2, _0820EAC4 @ =0x00001234
 	adds r1, r6, r2
 	str r0, [r1]
@@ -131,7 +131,7 @@ _0820E9AA:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E9BE
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r7, _0820EAC8 @ =0x0000123C
 	adds r1, r6, r7
 	str r0, [r1]
@@ -140,7 +140,7 @@ _0820E9BE:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E9D2
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r2, _0820EACC @ =0x00001238
 	adds r1, r6, r2
 	str r0, [r1]
@@ -149,7 +149,7 @@ _0820E9D2:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E9E8
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	movs r7, #0x92
 	lsls r7, r7, #5
 	adds r1, r6, r7
@@ -159,7 +159,7 @@ _0820E9E8:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820E9FC
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r2, _0820EAD0 @ =0x00001244
 	adds r1, r6, r2
 	str r0, [r1]
@@ -168,7 +168,7 @@ _0820E9FC:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820EA10
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r7, _0820EAD4 @ =0x00001248
 	adds r1, r6, r7
 	str r0, [r1]
@@ -177,7 +177,7 @@ _0820EA10:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820EA24
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r2, _0820EAD8 @ =0x0000124C
 	adds r1, r6, r2
 	str r0, [r1]
@@ -186,7 +186,7 @@ _0820EA24:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820EA38
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r7, _0820EADC @ =0x00001250
 	adds r1, r6, r7
 	str r0, [r1]
@@ -195,7 +195,7 @@ _0820EA38:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0820EA4C
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r2, _0820EAE0 @ =0x00001254
 	adds r1, r6, r2
 	str r0, [r1]

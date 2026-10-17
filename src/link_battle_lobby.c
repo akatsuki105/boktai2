@@ -26,7 +26,7 @@ typedef struct LinkBattleLobby {
   u8 unk_3aa[2];                                    // 0x3AA, 読み手も書き手も見つかっていない
   LinkBattleLobbySlot slots[4];                     // 0x3AC, 4人分,FUN_081dc38c が毎フレーム gEntity9A9F から埋める
   void (*updateCallback)(struct LinkBattleLobby*);  // 0x3BC, Init は FUN_081dc38c、キャンセルすると FUN_081dc350
-  u8* scriptPc;                                     // 0x3C0, '.s' の後の FUN_0823d340(), FUN_081dc100 が VM_ParseStringRef に渡す
+  u8* scriptPc;                                     // 0x3C0, '.s' の後の VM_GetPC_Proxy(), FUN_081dc100 が VM_ParseStringRef に渡す
   u8 unk_3c4[4];                                    // 0x3C4, 読み手も書き手も見つかっていない
   s32 playerIdx;                                    // 0x3C8, FUN_081dc38c が Sio_GetMultiId() を入れる,負なら通信していない
   u32 recordCount;                                  // 0x3CC, FUN_081dc38c が gEntity9A9F->recordCount を入れる,セッションが無ければ -1

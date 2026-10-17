@@ -132,12 +132,12 @@ s32 FUN_08049eb0(s32 idx, void* str) {
 
 s32 FUN_08049ed4(void) {
   s32 n = VM_GetValue();
-  return FUN_08049eb0(n, FUN_0823d340());
+  return FUN_08049eb0(n, VM_GetPC_Proxy());
 }
 
 s32 FUN_08049ef0(void) {
   s32 n = VM_GetValue();
-  return FUN_08049eb0(n, FUN_0823d34c());
+  return FUN_08049eb0(n, VM_GetValueSafe2_Proxy());
 }
 
 s32 FUN_08049f0c(void) {

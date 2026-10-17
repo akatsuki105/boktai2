@@ -77,7 +77,7 @@ _08073EA6:
 	movs r1, #7
 	ands r0, r1
 	lsls r3, r0, #5
-	ldr r2, _08073EE0 @ =0x085B0A08
+	ldr r2, _08073EE0 @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -97,7 +97,7 @@ _08073EA6:
 	.align 2, 0
 _08073ED8: .4byte 0x000002E6
 _08073EDC: .4byte 0x000002E7
-_08073EE0: .4byte 0x085B0A08
+_08073EE0: .4byte gSineTable
 _08073EE4: .4byte 0x000004A4
 _08073EE8:
 	rsbs r0, r0, #0

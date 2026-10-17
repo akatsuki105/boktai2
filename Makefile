@@ -65,6 +65,11 @@ ROM := $(RONNAME).gba
 ELF := $(RONNAME).elf
 SYM := $(RONNAME).sym
 
+# make nonmatch 用のビルドディレクトリ
+NONMATCH_BUILD_DIR := build/nonmatch
+# .claude/skills/decomp-func/scripts/flag_blast.sh 用
+FLAGBLAST_BUILD_DIR := build/flagblast
+
 # Flag --------------------------------------------
 
 ASFLAGS := -mcpu=arm7tdmi --defsym MODERN=$(MODERN)
@@ -73,8 +78,10 @@ O_LEVEL ?= 2
 ifeq ($(MODERN),0)
   # Vanilla
   # agbcc: akatsuki105/agbcc (pret/agbcc + thumb_patch03-OCT-03)
-  # EXTRA_CPPFLAGS: 調査用フック, 既定では空 (例: make EXTRA_CPPFLAGS=-DNONMATCHING_C)
-  # EXTRA_CFLAGS: フラグの影響範囲を測るためのフック, 既定では空, tools/flag_blast.sh が使う, 末尾に足すので -O1 のような既定値の上書きもできる (例: make EXTRA_CFLAGS=-fno-gcse)
+  # EXTRA_CPPFLAGS: 調査用フック, 既定では空. make はこれを依存関係として見ないので、直に渡すと
+  #   作り置きのオブジェクトを使い回してしまう。-DNONMATCHING_C は make nonmatch を使うこと
+  # EXTRA_CFLAGS: フラグの影響範囲を測るためのフック, 既定では空, .claude/skills/decomp-func/scripts/flag_blast.sh が使う, 末尾に足すので -O1 のような既定値の上書きもできる
+  #   こちらも依存関係に入らないので、直に渡すなら BUILD_DIR も別にすること (例: make objs BUILD_DIR=build/x EXTRA_CFLAGS=-fno-gcse)
   CPPFLAGS := -I tools/agbcc -I tools/agbcc/include -iquote include -nostdinc -undef -std=gnu89 -Wno-trigraphs -DMODERN=$(MODERN) $(EXTRA_CPPFLAGS)
   CC1 := tools/agbcc/bin/agbcc$(EXE)
   override CFLAGS += -mthumb-interwork -Wimplicit -Wparentheses -Werror -O$(O_LEVEL) -fhex-asm $(EXTRA_CFLAGS)
@@ -123,9 +130,9 @@ else
 	LDSCRIPT := ld_script.ld
 endif
 
-# RULES_NO_SCAN: ビルドを伴わないルールの一覧
-RULES_NO_SCAN += clean clean-code clean-scripts clean-collisionmap clean-tilemap clean-graphics clean-midi
-.PHONY: all modern compare $(RULES_NO_SCAN)
+# RULES_NO_SCAN: ビルドしないルールの一覧 (nonmatch は子 make に投げるのでここに入れる)
+RULES_NO_SCAN += nonmatch clean clean-code clean-scripts clean-collisionmap clean-tilemap clean-graphics clean-midi
+.PHONY: all modern compare objs $(RULES_NO_SCAN)
 
 NODEP ?= 0
 DO_BUILD ?= 1
@@ -156,12 +163,22 @@ compare: $(ROM)
 	@$(MAKE) syms
 	tools/refresh-expected.sh
 
+# リンクまで行かず、全オブジェクトだけを作る
+objs: $(OBJS)
+
+# NONMATCHING_C を有効にして $(NONMATCH_BUILD_DIR) に .o と .s を作る調査用ビルド
+# #ifdef NONMATCHING_C の中の C が実際にコンパイルされるので、NON_MATCH の関数を streamdiff.py や residual.ts で原典と比べられるようになる
+# ROM は一致しないのでリンクも compare もしない (compare は expected/ を上書きしてしまう)
+# -k は一部のファイルが通らなくても残りを測れるようにするため
+nonmatch:
+	@$(MAKE) -k objs BUILD_DIR=$(NONMATCH_BUILD_DIR) EXTRA_CPPFLAGS=-DNONMATCHING_C
+
 syms: $(SYM)
 
 clean: clean-code clean-scripts clean-graphics clean-collisionmap clean-tilemap
 
 clean-code:
-	rm -rf ./$(BUILD_DIR)
+	rm -rf ./$(BUILD_DIR) ./$(NONMATCH_BUILD_DIR) ./$(FLAGBLAST_BUILD_DIR)
 	rm -f $(ELF)
 
 clean-scripts:

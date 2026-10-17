@@ -75,7 +75,7 @@ NAKED void FUN_080bfaac(EntityB3D1* p) { INCFUNC("asm/func/FUN_080bfaac.inc"); }
 
 // unk_b4 を unk_b6 ずつ進めて, 8 で割った値を sprite1 のコマ番号にする
 void FUN_080bfb74(EntityB3D1* p) {
-  AuxSprite_SetMetaspriteIdx(&p->sprite1, p->unk_b4 >> 3);
+  AuxSprite_SetPoseIdx(&p->sprite1, p->unk_b4 >> 3);
   p->unk_b4 += p->unk_b6;
 
   if (p->unk_b4 > 23) {
@@ -200,7 +200,7 @@ void FUN_080c0058(EntityB3D1* p) {
 }
 
 void EntityCF58_CreateWithCallback(s32 param_1, s32 param_2, void* fn, void* arg);  // src/entity_a0a6.c
-void FUN_0807b910(Player* p, s32 val);                                              // src/player_08065988.c
+void FUN_0807b910(Player* p, s32 val);
 
 // プレイヤーを決まった座標へ戻してから FUN_080bffe8 を予約する
 void FUN_080c008c(void) {

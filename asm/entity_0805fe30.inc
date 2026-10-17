@@ -358,7 +358,7 @@ _0805F910:
 	subs r1, r1, r0
 	mov r2, r8
 	strh r1, [r2, #0x18]
-	ldr r1, _0805F964 @ =0x085B0A08
+	ldr r1, _0805F964 @ =gSineTable
 	movs r0, #0xff
 	ands r5, r0
 	lsls r0, r5, #1
@@ -372,7 +372,7 @@ _0805F910:
 	b _0805F96E
 	.align 2, 0
 _0805F960: .4byte 0x085ABA88
-_0805F964: .4byte 0x085B0A08
+_0805F964: .4byte gSineTable
 _0805F968:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -695,7 +695,7 @@ _0805FB84:
 	mov r6, sp
 	ldr r0, _0805FBF4 @ =0x085ABA88
 	mov r8, r0
-	ldr r1, _0805FBF8 @ =0x085B0A08
+	ldr r1, _0805FBF8 @ =gSineTable
 	mov ip, r1
 	movs r7, #0
 _0805FBBA:
@@ -729,7 +729,7 @@ _0805FBC8:
 	.align 2, 0
 _0805FBF0: .4byte 0x030047C8
 _0805FBF4: .4byte 0x085ABA88
-_0805FBF8: .4byte 0x085B0A08
+_0805FBF8: .4byte gSineTable
 _0805FBFC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

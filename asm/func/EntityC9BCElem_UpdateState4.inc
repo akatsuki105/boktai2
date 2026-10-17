@@ -20,7 +20,7 @@ _0800D1E6:
 	adds r0, #0x31
 	mov r5, sp
 	ldrb r6, [r0]
-	ldr r2, _0800D214 @ =0x085B0A08
+	ldr r2, _0800D214 @ =gSineTable
 	adds r0, r6, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -35,7 +35,7 @@ _0800D1E6:
 	asrs r1, r0, #0xc
 	b _0800D21E
 	.align 2, 0
-_0800D214: .4byte 0x085B0A08
+_0800D214: .4byte gSineTable
 _0800D218:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

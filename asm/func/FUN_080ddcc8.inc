@@ -194,7 +194,7 @@ _080DDE18:
 	cmp r0, #0
 	beq _080DDE9A
 	mov r3, sl
-	ldr r2, _080DDE68 @ =0x085B0A08
+	ldr r2, _080DDE68 @ =gSineTable
 	ldr r0, [sp, #0xc]
 	adds r0, #0x40
 	movs r1, #0xff
@@ -211,7 +211,7 @@ _080DDE18:
 	b _080DDE72
 	.align 2, 0
 _080DDE64: .4byte 0x05000002
-_080DDE68: .4byte 0x085B0A08
+_080DDE68: .4byte gSineTable
 _080DDE6C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

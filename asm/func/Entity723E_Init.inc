@@ -11,7 +11,7 @@
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080529DA
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	ldr r2, _080529E4 @ =0x000008B4
 	adds r1, r7, r2
 	str r0, [r1]

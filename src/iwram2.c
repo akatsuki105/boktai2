@@ -47,8 +47,8 @@ COMMON_DATA u8 u8_03002bf6[2] = {};                // todo
 COMMON_DATA struct Entity5941* gEntity5941 = NULL;  // 0x03002BF8
 COMMON_DATA struct EntityBD74* gEntityBD74 = NULL;  // 0x03002BFC
 
-COMMON_DATA struct ImmortalCoffin* gImmortalCoffin = NULL;  // 0x03002C00
-COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};   // padding?
+COMMON_DATA struct Coffin* gCoffin = NULL;                 // 0x03002C00
+COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 
 COMMON_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
 COMMON_DATA u8 u8_03002c12[0x03002C14 - 0x03002C12] = {};  // todo

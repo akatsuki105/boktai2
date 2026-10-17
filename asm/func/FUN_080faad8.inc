@@ -28,7 +28,7 @@
 	bl ArcTan2_8
 	lsls r0, r0, #0x18
 	lsrs r0, r0, #0x18
-	ldr r3, _080FABCC @ =0x085B0A08
+	ldr r3, _080FABCC @ =gSineTable
 	adds r1, r0, #0
 	adds r1, #0x40
 	movs r2, #0xff
@@ -119,7 +119,7 @@ _080FAB70:
 	mov sb, r0
 	b _080FAC44
 	.align 2, 0
-_080FABCC: .4byte 0x085B0A08
+_080FABCC: .4byte gSineTable
 _080FABD0: .4byte 0xFFFF0000
 _080FABD4:
 	adds r4, #8

@@ -16,7 +16,7 @@ typedef struct Entity08F4 {
   u16 unk_304;                                 // 0x304, FUN_081db32c が 0 を入れるだけ
   u16 unk_306;                                 // 0x306, 読み手も書き手も見つかっていない, padding?
   void (*updateCallback)(struct Entity08F4*);  // 0x308
-  u8* scriptPc;                                // 0x30C, Init が FUN_0823d340() を入れる, VM_ParseStringRef / TextPanel_SetScript に渡す
+  u8* scriptPc;                                // 0x30C, Init が VM_GetPC_Proxy() を入れる, VM_ParseStringRef / TextPanel_SetScript に渡す
   u32 unk_310;                                 // 0x310, FUN_081db074 が bit0 を落とし、FUN_081db57c が立てる
   s32 panelID0;                                // 0x314, TextPanel_Create(22, 4, 6, 2)
   u32 unk_318;                                 // 0x318, FUN_081db57c が初回だけの初期化を行うための番兵

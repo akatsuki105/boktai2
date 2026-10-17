@@ -113,6 +113,7 @@ typedef struct {
 } PathWalker;
 static_assert(sizeof(PathWalker) == 12);
 
+PathNode* Map_GetPathNodes(Path* path);
 bool32 Map_InitPathWalker(PathWalker* p, u32 pathIdx, u32 param_3, u32 nodeIdx);
 bool32 Map_AdvancePathWalker(PathWalker* p);
 
@@ -228,5 +229,9 @@ void Map_RemoveTileOverride(MapTileOverride* p);
 u16 Map_GetTileHeightAt(Vec3* pos);
 Zone* FindZonesByID(ZoneID16 id, u16* count);
 void Map_InsertEvent(CollisionMapEvent* ev, u32 param_2);
+bool32 Map_IsPosInAgentIsland(NavAgent* agent, WorldPos* pos, WorldPos* dst);
+s32 FUN_08235f40(NavAgent* agent, WorldPos* pos, WorldPos* dst);
+s32 Map_InitNavAgent(NavAgent* agent, WorldPos* pos);
+void FUN_08234660(ZoneEventSource* src);
 
 #endif  // __INCLUDE_COLLISION_MAP_H__

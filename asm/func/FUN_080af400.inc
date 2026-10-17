@@ -41,7 +41,7 @@
 	bhi _080AF478
 _080AF454:
 	lsls r0, r6, #0xc
-	ldr r2, _080AF474 @ =0x085B0A08
+	ldr r2, _080AF474 @ =gSineTable
 	movs r1, #0xff
 	ands r1, r4
 	lsls r1, r1, #1
@@ -52,10 +52,10 @@ _080AF464: .4byte 0x0000061C
 _080AF468: .4byte 0x00000674
 _080AF46C: .4byte 0x0000067C
 _080AF470: .4byte 0x0000067E
-_080AF474: .4byte 0x085B0A08
+_080AF474: .4byte gSineTable
 _080AF478:
 	lsls r0, r7, #0xc
-	ldr r3, _080AF49C @ =0x085B0A08
+	ldr r3, _080AF49C @ =gSineTable
 	adds r1, r4, #0
 	adds r1, #0x40
 	movs r2, #0xff
@@ -73,5 +73,5 @@ _080AF488:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080AF49C: .4byte 0x085B0A08
+_080AF49C: .4byte gSineTable
 _080AF4A0: .4byte 0x00000684

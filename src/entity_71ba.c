@@ -1,6 +1,7 @@
 #include "collision_map.h"
 #include "entity.h"
 #include "global.h"
+#include "player.h"
 
 // 条件 (プレイヤーのタイル位置・高さ・フォーム) が揃っている間だけ、あるタイルの当たり判定を上書きする
 typedef struct Entity71BA {
@@ -10,7 +11,7 @@ typedef struct Entity71BA {
   u8 flags;                                    // 0x1C, '.t=9', bit0/bit1 で fn を選び、bit3 で x/z のどちらを見るかが変わる
   bool8 tileOverrideActive;                    // 0x1D, tileOverride を衝突マップに繋いであるか, _Destroy が立っていれば Map_RemoveTileOverride で外す
   u16 tileIdx;                                 // 0x1E, gCollisionMap->rowOffsets[z] + x, '.p' の x/z から _Init が計算する
-  s16 height;                                  // 0x20, '.p[1]' (>> 8 した値)
+  u16 height;                                  // 0x20, '.p[1]' (>> 8 した値)
   bool16 unk_22;                               // 0x22, FUN_080a035c が 0/1 を入れ替えるたび gPlayerPtr[0]->unk_3f3 を +1/-1 する
   MapTileOverride tileOverride;                // 0x24
   u32 unk_34;                                  // 0x34, '.R'
@@ -20,9 +21,31 @@ static_assert(sizeof(Entity71BA) == 60);
 
 NAKED bool32 Entity71BA_IsPlayerOnTile(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_IsPlayerOnTile.inc"); }
 
-NAKED bool32 Entity71BA_IsPlayerAtHeight(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_IsPlayerAtHeight.inc"); }
+bool32 Entity71BA_IsPlayerAtHeight(Entity71BA* p) {
+  if (gPlayerPtr[0]->mover.pos.y == p->height << 8) {
+    return TRUE;
+  }
+  return FALSE;
+}
 
-NAKED bool32 FUN_080a0104(Entity71BA* p, s32 param_2) { INCFUNC("asm/func/FUN_080a0104.inc"); }
+// 残差は AND の結果を置くレジスタだけ (原典はマスク側, こちらは値側)
+NON_MATCH bool32 FUN_080a0104(Entity71BA* p, s32 param_2) {
+#ifdef NONMATCHING_C
+  u16 v;
+
+  if (p->flags & 8) {
+    v = gPlayerPtr[0]->mover.pos.x;
+  } else {
+    v = gPlayerPtr[0]->mover.pos.z;
+  }
+  if ((v & 0xFF) <= param_2) {
+    return TRUE;
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_080a0104.inc");
+#endif
+}
 
 NAKED s32 FUN_080a0140(Entity71BA* p) { INCFUNC("asm/func/FUN_080a0140.inc"); }
 
@@ -38,10 +61,31 @@ NAKED bool32 FUN_080a04c8(void) { INCFUNC("asm/func/FUN_080a04c8.inc"); }
 
 NAKED void Entity71BA_UpdateTileOverride(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_UpdateTileOverride.inc"); }
 
-NAKED s32 Entity71BA_Update(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_Update.inc"); }
+s32 Entity71BA_Update(Entity71BA* p) {
+  if (!(gPlayerPtr[0]->unk_1c & 4)) {
+    p->updateCallback(p);
+  }
+  return 0;
+}
 
-NAKED s32 Entity71BA_Destroy(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_Destroy.inc"); }
+// 原典は return を書き忘れている
+s32 Entity71BA_Destroy(Entity71BA* p) {
+  if (p->tileOverrideActive) {
+    Map_RemoveTileOverride(&p->tileOverride);
+  }
+}
 
-NAKED s32 Entity71BA_Init(Entity71BA* p, u16 param_2, u32 param_3) { INCFUNC("asm/func/Entity71BA_Init.inc"); }
+NAKED s32 Entity71BA_Init(Entity71BA* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/Entity71BA_Init.inc"); }
 
-NAKED Entity71BA* Entity71BA_Create(u16 param_1, u32 param_2) { INCFUNC("asm/func/Entity71BA_Create.inc"); }
+Entity71BA* Entity71BA_Create(u32 param_1, u32 param_2) {
+  Entity71BA* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity71BA));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity71BA_Update, Entity71BA_Destroy);
+    if (Entity71BA_Init(p, param_1, param_2) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

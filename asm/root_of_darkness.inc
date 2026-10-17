@@ -2748,7 +2748,7 @@ _081A4004:
 	movs r0, #0x1f
 	adds r6, r4, #0
 	ands r5, r0
-	ldr r2, _081A40D8 @ =0x085B0A08
+	ldr r2, _081A40D8 @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -2771,7 +2771,7 @@ _081A40C8: .4byte 0x000001DD
 _081A40CC: .4byte 0x030046B8
 _081A40D0: .4byte 0x000003FF
 _081A40D4: .4byte 0x0203B400
-_081A40D8: .4byte 0x085B0A08
+_081A40D8: .4byte gSineTable
 _081A40DC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -2780,7 +2780,7 @@ _081A40E2:
 	movs r0, #0
 	strh r1, [r6]
 	strh r0, [r6, #2]
-	ldr r1, _081A40FC @ =0x085B0A08
+	ldr r1, _081A40FC @ =gSineTable
 	lsls r0, r3, #1
 	adds r0, r0, r1
 	movs r2, #0
@@ -2791,7 +2791,7 @@ _081A40E2:
 	asrs r0, r0, #0xc
 	b _081A4106
 	.align 2, 0
-_081A40FC: .4byte 0x085B0A08
+_081A40FC: .4byte gSineTable
 _081A4100:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -3366,7 +3366,7 @@ _081A45A4:
 	lsls r2, r2, #1
 	adds r0, r7, r2
 	ldr r0, [r0]
-	bl FUN_0807a798
+	bl AddPlayerExp
 	movs r3, #0x93
 	lsls r3, r3, #3
 	adds r0, r7, r3
@@ -4574,7 +4574,7 @@ FUN_081a5060: @ 0x081A5060
 	str r0, [sp, #4]
 	adds r0, r5, #0
 	add r1, sp, #8
-	bl FUN_080e38a8
+	bl Enemy_RegisterOwnHitbox
 	movs r2, #0
 	str r2, [sp, #0x18]
 	add r1, sp, #0x18
@@ -4591,7 +4591,7 @@ FUN_081a5060: @ 0x081A5060
 	str r0, [sp]
 	str r5, [sp, #4]
 	adds r0, r5, #0
-	bl FUN_080e3984
+	bl Enemy_InitAtkHitbox
 	add sp, #0x28
 	pop {r4, r5}
 	pop {r0}

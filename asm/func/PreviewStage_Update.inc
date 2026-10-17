@@ -157,7 +157,7 @@ _0820FCD8:
 _0820FCDE:
 	adds r1, #0x80
 	ldrb r4, [r7, #0x16]
-	ldr r3, _0820FCFC @ =0x085B0A08
+	ldr r3, _0820FCFC @ =gSineTable
 	movs r2, #0xff
 	ands r1, r2
 	lsls r1, r1, #1
@@ -170,7 +170,7 @@ _0820FCDE:
 	asrs r4, r1, #0xd
 	b _0820FD06
 	.align 2, 0
-_0820FCFC: .4byte 0x085B0A08
+_0820FCFC: .4byte gSineTable
 _0820FD00:
 	rsbs r1, r1, #0
 	asrs r1, r1, #0xd

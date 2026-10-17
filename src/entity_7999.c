@@ -18,7 +18,7 @@ typedef struct Entity7999 {
   u16 unk_268;                                 // 0x268, _SavePltt が 0 を入れる
   u8 unk_26a[2];                               // 0x26A, 読み手も書き手も見つかっていない, padding?
   void (*updateCallback)(struct Entity7999*);  // 0x26C, _Init で FUN_081da930
-  u8* script;                                  // 0x270, '.s' の後の FUN_0823d340() の戻り値, NULL なら _Init が失敗する
+  u8* script;                                  // 0x270, '.s' の後の VM_GetPC_Proxy() の戻り値, NULL なら _Init が失敗する
   u32 flags;                                   // 0x274, _InitPanels が bit0 を立てる
   s32 windowID0;                               // 0x278, TextPanel_Create(18, 4, 10, 2)
   s32 windowID1;                               // 0x27C, TextPanel_Create(18, 8, 10, 2)

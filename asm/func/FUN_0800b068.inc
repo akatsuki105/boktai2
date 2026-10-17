@@ -113,7 +113,7 @@ _0800B116:
 _0800B140:
 	strb r0, [r5, #3]
 _0800B142:
-	ldr r2, _0800B17C @ =0x085B0A08
+	ldr r2, _0800B17C @ =gSineTable
 	ldrb r0, [r6]
 	adds r0, #0x40
 	movs r1, #0xff
@@ -140,7 +140,7 @@ _0800B142:
 _0800B170: .4byte 0x030046B8
 _0800B174: .4byte 0x000003FF
 _0800B178: .4byte 0x0203B400
-_0800B17C: .4byte 0x085B0A08
+_0800B17C: .4byte gSineTable
 _0800B180:
 	mov r3, sb
 	ldrh r0, [r3, #6]

@@ -10,7 +10,7 @@
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08211E54
-	bl FUN_0823d34c
+	bl VM_GetValueSafe2_Proxy
 	bl VM_SetPC
 	movs r5, #0
 	movs r0, #1
@@ -49,7 +49,7 @@ _08211E54:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08211E92
-	bl FUN_0823d34c
+	bl VM_GetValueSafe2_Proxy
 	bl VM_SetPC
 	movs r5, #0
 	movs r7, #1

@@ -817,12 +817,12 @@ NON_MATCH u16 Map_GetNavDistance(u16* distanceMap, u16 n, s32 a, s32 b) {
 }
 
 // pos を含むナビ島が agent->islandIdx と同じかを返す, 壁タイルの上なら FALSE
-NAKED bool32 Map_IsPosInAgentIsland(NavAgent* agent, s32 param_2, Vec3* pos) { INCFUNC("asm/func/Map_IsPosInAgentIsland.inc"); }
+NAKED bool32 Map_IsPosInAgentIsland(NavAgent* agent, WorldPos* pos, WorldPos* dst) { INCFUNC("asm/func/Map_IsPosInAgentIsland.inc"); }
 
-NAKED s32 FUN_08235a84(NavAgent* agent, Vec3* param_2, Vec3* pos) { INCFUNC("asm/func/FUN_08235a84.inc"); }
+NAKED s32 FUN_08235a84(NavAgent* agent, WorldPos* pos, WorldPos* dst) { INCFUNC("asm/func/FUN_08235a84.inc"); }
 
-// pos のタイルが壁なら進行をやめさせ, そうでなければ FUN_08235a84 に任せる
-s32 FUN_08235f40(NavAgent* agent, Vec3* param_2, Vec3* pos) {
+// dst のタイルが壁なら進行をやめさせ, そうでなければ FUN_08235a84 に任せる
+s32 FUN_08235f40(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
   CollisionMapTile* tile;
   MapTileOverride* ov;
   TileAttr attr;
@@ -830,8 +830,8 @@ s32 FUN_08235f40(NavAgent* agent, Vec3* param_2, Vec3* pos) {
   s32 bz;
   s32 idx;
 
-  bx = (s8)(pos->x >> 8);
-  bz = (s8)(pos->z >> 8);
+  bx = (s8)(dst->x >> 8);
+  bz = (s8)(dst->z >> 8);
   if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
     idx = 0;
   } else {
@@ -850,7 +850,7 @@ s32 FUN_08235f40(NavAgent* agent, Vec3* param_2, Vec3* pos) {
     agent->flags = 0;
     return 0;
   }
-  return FUN_08235a84(agent, param_2, pos);
+  return FUN_08235a84(agent, pos, dst);
 }
 
 void FUN_08235fd0(u16* p) { *p = 0; }
@@ -898,7 +898,7 @@ s32 Map_FindNavRectAt(Vec3* pos) {
 }
 
 // pos を含むナビ矩形を総当たりで探して NavAgent を初期化する, 見つからなければ 0xFF のまま
-s32 Map_InitNavAgent(NavAgent* agent, Vec3* pos) {
+s32 Map_InitNavAgent(NavAgent* agent, WorldPos* pos) {
   NavMesh* navMesh = gCollisionMap->navMesh;
   s32 i;
 

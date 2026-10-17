@@ -1,60 +1,68 @@
-SpriteSetFile37: @ 0x08CB2568
-	.2byte 744 @ palStart
-	.2byte 7 @ metaspriteCount
-	.2byte 4 @ animationCount
-	.2byte 10 @ subspriteCount
-	.2byte 8 @ cmdCount
-	.2byte 256 @ tileCount
-	.4byte 0x00000020, 0x000000AC, 0x000000CC, 0x0000011C, 0x0000013C
-	@ Metasprites
-		.2byte 0xCBC3, 0x0002, 0x0000, 0x0000, 0xFFD0, 0xFFBD, 0x0010, 0x000D
-		.4byte 0x0 @ subspriteOffset
-		.2byte 0xCEB2, 0x0002, 0x0000, 0x0000, 0xFFD0, 0xFFBD, 0x0010, 0x000D
-		.4byte 0x10 @ subspriteOffset
-		.2byte 0xCEB3, 0x0002, 0x0000, 0x0000, 0xFFD0, 0xFFBD, 0x0010, 0x000D
-		.4byte 0x20 @ subspriteOffset
-		.2byte 0xCEB4, 0x0001, 0x0000, 0x0000, 0xFFD0, 0xFFC5, 0x0010, 0x0005
-		.4byte 0x30 @ subspriteOffset
-		.2byte 0xCEB5, 0x0001, 0x0000, 0x0000, 0xFFD0, 0xFFCD, 0x0010, 0x000D
-		.4byte 0x38 @ subspriteOffset
-		.2byte 0xCEB6, 0x0001, 0x0000, 0x0000, 0xFFE8, 0xFFE6, 0x0008, 0x0006
-		.4byte 0x40 @ subspriteOffset
-		.2byte 0x71F8, 0x0001, 0x0000, 0x0000, 0xFFD1, 0xFFC6, 0x0011, 0x0006
-		.4byte 0x48 @ subspriteOffset
-	@ Unk1
-		.byte 0x74, 0x4E, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00
-		.byte 0x94, 0x4E, 0x01, 0x00, 0x04, 0x00, 0x00, 0x00
-		.byte 0xC2, 0x98, 0x05, 0x00, 0x08, 0x00, 0x00, 0x00
-		.byte 0x8D, 0xDF, 0x01, 0x00, 0x1C, 0x00, 0x00, 0x00
-	@ Subsprites
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte -16, -35, (112 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x01 @ flip, shape
-		.2byte -8, -3, (177 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte -16, -35, (0 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x01 @ flip, shape
-		.2byte -8, -3, (65 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte -16, -35, (4 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x01 @ flip, shape
-		.2byte -8, -3, (69 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte -16, -27, (8 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte -16, -19, (12 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte -8, -10, (80 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte -15, -26, (76 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-	@ Unk2
-		.byte 0x00, 0x00, 0x01, 0x00
-		.byte 0x01, 0x00, 0x01, 0x00
-		.byte 0x01, 0x00, 0x06, 0x00
-		.byte 0x02, 0x00, 0x06, 0x00
-		.byte 0x03, 0x00, 0x06, 0x00
-		.byte 0x04, 0x00, 0x06, 0x00
-		.byte 0x05, 0x00, 0x06, 0x00
-		.byte 0x06, 0x00, 0x01, 0x00
-	@ Tiles
-		.incbin "data/spriteset/dainn.4bpp"
+FileE349_Header:
+  .2byte 744 @ palStart
+  .2byte 7 @ metaspriteCount
+  .2byte 4 @ animationCount
+  .2byte 10 @ subspriteCount
+  .2byte 8 @ cmdCount
+  .2byte 256 @ tileCount
+  .4byte 32 @ offsetToPoses
+  .4byte 172 @ offsetToAnims
+  .4byte 204 @ offsetToSubsprites
+  .4byte 284 @ offsetToCmds
+  .4byte 316 @ offsetToTiles
+
+FileE349_Poses:
+@ pose unk_0,  obj,               objcount,   bb
+  pose 0xCBC3, FileE349_Obj_0,    2,          -48,  -67,   16,   13
+  pose 0xCEB2, FileE349_Obj_2,    2,          -48,  -67,   16,   13
+  pose 0xCEB3, FileE349_Obj_4,    2,          -48,  -67,   16,   13
+  pose 0xCEB4, FileE349_Obj_6,    1,          -48,  -59,   16,    5
+  pose 0xCEB5, FileE349_Obj_7,    1,          -48,  -51,   16,   13
+  pose 0xCEB6, FileE349_Obj_8,    1,          -24,  -26,    8,    6
+  pose 0x71F8, FileE349_Obj_9,    1,          -47,  -58,   17,    6
+
+FileE349_Anims:
+@ animation unk_0,  cmd,             cmdCount
+  animation 0x4E74, FileE349_Cmd_0,  1
+  animation 0x4E94, FileE349_Cmd_1,  1
+  animation 0x98C2, FileE349_Cmd_2,  5
+  animation 0xDF8D, FileE349_Cmd_7,  1
+
+1:
+FileE349_Subsprites:
+@   subsprite size,            x,    y,   tile,  pal
+  FileE349_Obj_0:
+    subsprite OAM_SIZE_32x32,  -16,  -35,  112,    0
+    subsprite OAM_SIZE_16x8,    -8,   -3,  177,    0
+  FileE349_Obj_2:
+    subsprite OAM_SIZE_32x32,  -16,  -35,    0,    0
+    subsprite OAM_SIZE_16x8,    -8,   -3,   65,    0
+  FileE349_Obj_4:
+    subsprite OAM_SIZE_32x32,  -16,  -35,    4,    0
+    subsprite OAM_SIZE_16x8,    -8,   -3,   69,    0
+  FileE349_Obj_6:
+    subsprite OAM_SIZE_32x32,  -16,  -27,    8,    0
+  FileE349_Obj_7:
+    subsprite OAM_SIZE_32x32,  -16,  -19,   12,    0
+  FileE349_Obj_8:
+    subsprite OAM_SIZE_16x16,   -8,  -10,   80,    0
+  FileE349_Obj_9:
+    subsprite OAM_SIZE_32x32,  -15,  -26,   76,    0
+
+2:
+FileE349_Cmds:
+  FileE349_Cmd_0:
+    animcmd  0,  1
+  FileE349_Cmd_1:
+    animcmd  1,  1
+  FileE349_Cmd_2:
+    animcmd  1,  6
+    animcmd  2,  6
+    animcmd  3,  6
+    animcmd  4,  6
+    animcmd  5,  6
+  FileE349_Cmd_7:
+    animcmd  6,  1
+
+FileE349_Tiles:
+  .incbin "data/spriteset/dainn.4bpp"

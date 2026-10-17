@@ -2,7 +2,7 @@
 
 #include "bg_pltt.h"
 #include "camera.h"
-#include "coffin_immortal.h"
+#include "coffin.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -23,7 +23,6 @@ const FileID FileID_ARRAY_085ad048[6] = {
 void FUN_080df478(void);        // src/entity_080df420.c
 void FUN_0805b1a0(unknown* p);  // src/code_08052eb8.s
 void FUN_08086b18(WorldPos* pos);
-void FUN_0823bca8(s32 n);  // src/camera.c
 
 void FUN_080ada64(EntityCBB0*);
 void FUN_080ada9c(EntityCBB0*);
@@ -339,7 +338,19 @@ NAKED void FUN_080adfa0(EntityCBB0* p, s32 param_2, s32 param_3, u32 param_4, s3
 
 NAKED void FUN_080ae394(EntityCBB0* p) { INCFUNC("asm/func/FUN_080ae394.inc"); }
 
-NAKED void FUN_080ae428(EntityCBB0* p) { INCFUNC("asm/func/FUN_080ae428.inc"); }
+// 2フレームごとに plttSrc の4組を順に BG パレットの11行目へ送る
+// 残差4命令, 原典は plttTimer の u16 切り捨て (0xFFFF) をプール定数で別に作ってから & 1 するが, agbcc はこれを & 1 に畳む
+// Tier A-B 試済: u16 ローカルに退避 (レジスタが1本増える)
+NON_MATCH void FUN_080ae428(EntityCBB0* p) {
+#ifdef NONMATCHING_C
+  p->plttTimer++;
+  if (p->plttTimer & 1) {
+    CpuCopy32(&p->plttSrc[((p->plttTimer >> 1) & 3) * 16], &gBgPlttBuffer[176], 32);
+  }
+#else
+  INCFUNC("asm/func/FUN_080ae428.inc");
+#endif
+}
 
 NAKED void FUN_080ae478(s32 param_1, s32 param_2, s32 param_3, u16 param_4, u16 param_5) { INCFUNC("asm/func/FUN_080ae478.inc"); }
 
@@ -500,7 +511,7 @@ bool32 FUN_080b1038(Vec3* a, Vec3* b, s32 radius) {
 }
 
 s32 FUN_080b1078(EntityCBB0* p) {
-  if (gImmortalCoffin != NULL && gPlayerPtr[0]->unk_1c == 1 && gPlayerPtr[0]->action == 6 && FUN_080b1038(&gImmortalCoffin->mover.pos, &p->pos_510, 70)) {
+  if (gCoffin != NULL && gPlayerPtr[0]->unk_1c == 1 && gPlayerPtr[0]->action == 6 && FUN_080b1038(&gCoffin->mover.pos, &p->pos_510, 70)) {
     return 1;
   }
   return 0;
@@ -535,9 +546,9 @@ s32 FUN_080b10f8(EntityCBB0* p) {
   return 1;
 }
 
-// gImmortalCoffin が 800 以内にいなければ 1
+// gCoffin が 800 以内にいなければ 1
 s32 FUN_080b1148(EntityCBB0* p) {
-  if (FUN_080b1038(&gImmortalCoffin->mover.pos, &p->pos_510, 800)) {
+  if (FUN_080b1038(&gCoffin->mover.pos, &p->pos_510, 800)) {
     return 0;
   }
   return 1;
@@ -612,13 +623,13 @@ void FUN_080b176c(EntityCBB0* p) {
     p->unk_4fe++;
   } else if (!p->unk_c12) {
     PlaySound_082406e0(0x1EA);
-    gImmortalCoffin->state = 13;
+    gCoffin->state = 13;
     FUN_080ad1ec(p, 9);
   }
 }
 
 void FUN_080b17bc(EntityCBB0* p) {
-  if (gImmortalCoffin->state == 12) {
+  if (gCoffin->state == 12) {
     FUN_080af374(p->unk_c6c, 1);
     FUN_080ad1ec(p, 10);
   }

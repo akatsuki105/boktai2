@@ -22,7 +22,7 @@ _0821E610:
 	lsls r0, r0, #2
 	add r0, ip
 	ldr r3, [r0]
-	ldr r2, _0821E638 @ =0x085B0A08
+	ldr r2, _0821E638 @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -37,7 +37,7 @@ _0821E610:
 	asrs r1, r0, #0xc
 	b _0821E642
 	.align 2, 0
-_0821E638: .4byte 0x085B0A08
+_0821E638: .4byte gSineTable
 _0821E63C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

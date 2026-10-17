@@ -5,7 +5,7 @@
 	push {r5, r6, r7}
 	sub sp, #8
 	adds r5, r0, #0
-	ldr r0, _0800D8F0 @ =0x085B0A08
+	ldr r0, _0800D8F0 @ =gSineTable
 	adds r1, r5, #0
 	adds r1, #0x22
 	ldrb r1, [r1]
@@ -19,7 +19,7 @@
 	asrs r0, r0, #0xc
 	b _0800D8FA
 	.align 2, 0
-_0800D8F0: .4byte 0x085B0A08
+_0800D8F0: .4byte gSineTable
 _0800D8F4:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

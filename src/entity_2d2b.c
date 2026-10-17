@@ -3,7 +3,9 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "malloc.h"
 #include "sprite.h"
+#include "vm.h"
 
 // 炎を当てると点き、氷を当てると消える照明, 1体の Entity2D2B が count 個を抱える
 typedef struct {
@@ -65,19 +67,56 @@ void (*const PTR_ARRAY_085aa67c[5])(Entity2D2B*, Entity2D2BElem*) = {
     Entity2D2BElem_UpdateExtinguishing,
 };  // 0x085aa67c
 
-NAKED Entity2D2BElem* Entity2D2B_FindFreeElem(Entity2D2B* p) { INCFUNC("asm/func/Entity2D2B_FindFreeElem.inc"); }
+// 空いている枠を先頭から探す
+Entity2D2BElem* Entity2D2B_FindFreeElem(Entity2D2B* p) {
+  Entity2D2BElem* elem = p->elems;
+  u32 i;
 
-NAKED void Entity2D2BElem_SetState(Entity2D2BElem* p, u8 state) { INCFUNC("asm/func/Entity2D2BElem_SetState.inc"); }
+  for (i = 0; i < (u32)p->count; i++, elem++) {
+    if (!elem->active) {
+      return elem;
+    }
+  }
+  return NULL;
+}
 
-NAKED bool32 Entity2D2BElem_ConsumeStateEntered(Entity2D2BElem* p) { INCFUNC("asm/func/Entity2D2BElem_ConsumeStateEntered.inc"); }
+void Entity2D2BElem_SetState(Entity2D2BElem* p, u8 state) {
+  p->state = state;
+  p->stateTimer = 0;
+  p->stateEntered = TRUE;
+}
 
-NAKED void Entity2D2BElem_OnHit(HitboxData* a, HitboxData* b, Entity2D2BElem* owner) { INCFUNC("asm/func/Entity2D2BElem_OnHit.inc"); }
+bool32 Entity2D2BElem_ConsumeStateEntered(Entity2D2BElem* p) {
+  if (p->stateEntered != 0) {
+    p->stateEntered = FALSE;
+    return TRUE;
+  }
+  return FALSE;
+}
+
+// 消灯中に炎属性で当たると点灯へ, 点灯中に氷属性で当たると消灯へ遷移する
+// 残差1命令, 原典は owner のレジスタから写しを作って2つ目の遷移に使う (FUN_0807b1a4 系と同じ)
+NON_MATCH void Entity2D2BElem_OnHit(HitboxData* a, HitboxData* b, Entity2D2BElem* owner) {
+#ifdef NONMATCHING_C
+  if (owner->state == 1) {
+    if (Hitbox_TestAttribute(a, HBATTR_FLAME)) {
+      Entity2D2BElem_SetState(owner, 3);
+    }
+  } else if (owner->state == 2) {
+    if (Hitbox_TestAttribute(a, HBATTR_FROST)) {
+      Entity2D2BElem_SetState(owner, 4);
+    }
+  }
+#else
+  INCFUNC("asm/func/Entity2D2BElem_OnHit.inc");
+#endif
+}
 
 NAKED s32 Entity2D2BElem_Init(Entity2D2B* p, Entity2D2BElem* elem) { INCFUNC("asm/func/Entity2D2BElem_Init.inc"); }
 
 NAKED void Entity2D2BElem_RunScript(Entity2D2BElem* p) { INCFUNC("asm/func/Entity2D2BElem_RunScript.inc"); }
 
-NAKED void FUN_080080a8(Entity2D2B* p, Entity2D2BElem* elem) { INCFUNC("asm/func/FUN_080080a8.inc"); }
+void FUN_080080a8(Entity2D2B* p, Entity2D2BElem* elem) {}
 
 NAKED void Entity2D2BElem_UpdateUnlit(Entity2D2B* p, Entity2D2BElem* elem) { INCFUNC("asm/func/Entity2D2BElem_UpdateUnlit.inc"); }
 
@@ -89,18 +128,73 @@ NAKED void Entity2D2BElem_UpdateExtinguishing(Entity2D2B* p, Entity2D2BElem* ele
 
 NAKED void Entity2D2BElem_WalkPath(Entity2D2BElem* p) { INCFUNC("asm/func/Entity2D2BElem_WalkPath.inc"); }
 
-NAKED void Entity2D2BElem_FollowElevator(Entity2D2BElem* p) { INCFUNC("asm/func/Entity2D2BElem_FollowElevator.inc"); }
+// エレベータの現在位置に yOffset を足した高さへ貼り付く
+void Entity2D2BElem_FollowElevator(Entity2D2BElem* p) {
+  Vec3* pos = p->elevatorPos;
+
+  if (pos != NULL) {
+    p->sprite.pos.x = pos->x;
+    p->sprite.pos.y = pos->y + p->yOffset;
+    p->sprite.pos.z = pos->z;
+  }
+}
 
 NAKED s32 Entity2D2B_Update(Entity2D2B* p) { INCFUNC("asm/func/Entity2D2B_Update.inc"); }
 
-NAKED s32 Entity2D2B_Destroy(Entity2D2B* p) { INCFUNC("asm/func/Entity2D2B_Destroy.inc"); }
+// 原典は return を書き忘れている
+s32 Entity2D2B_Destroy(Entity2D2B* p) {
+  Entity2D2BElem* elem = p->elems;
+  u32 i;
+
+  for (i = 0; i < (u32)p->count; i++, elem++) {
+    if (elem->active) {
+      Hitbox_Unregister(&elem->hitbox);
+      MainSprite_Remove(&elem->sprite);
+    }
+  }
+  if (p->elems != NULL) {
+    Free(p->elems);
+    p->elems = NULL;
+  }
+  gEntity2D2B = NULL;
+}
 
 NAKED s32 Entity2D2B_Init(Entity2D2B* p) { INCFUNC("asm/func/Entity2D2B_Init.inc"); }
 
-NAKED Entity2D2B* Entity2D2B_Create(void) { INCFUNC("asm/func/Entity2D2B_Create.inc"); }
+Entity2D2B* Entity2D2B_Create(void) {
+  if (gEntity2D2B == NULL) {
+    Entity2D2B* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity2D2B));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity2D2B_Update, Entity2D2B_Destroy);
+      if (Entity2D2B_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity2D2B;
+}
 
 NAKED s32 Entity2D2B_AddElemScripted(void) { INCFUNC("asm/func/Entity2D2B_AddElemScripted.inc"); }
 
-NAKED void Entity2D2B_SetLitDurationScripted(void) { INCFUNC("asm/func/Entity2D2B_SetLitDurationScripted.inc"); }
+// '.n' で指定した枠の点灯時間を '.d' に差し替える
+void Entity2D2B_SetLitDurationScripted(void) {
+  Entity2D2B* p = gEntity2D2B;
+
+  if (p != NULL) {
+    s32 id = VM_GetNamedArgValue('n', 0);
+    s32 duration = VM_GetNamedArgValue('d', -1);
+    Entity2D2BElem* elem = p->elems;
+    u32 i;
+
+    for (i = 0; i < (u32)p->count; i++, elem++) {
+      if (elem->active == 1 && elem->id == id) {
+        elem->litDuration = duration;
+      }
+    }
+  }
+}
 
 NAKED void Entity2D2B_SetStateScripted(void) { INCFUNC("asm/func/Entity2D2B_SetStateScripted.inc"); }

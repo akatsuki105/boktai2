@@ -17,7 +17,7 @@ _080712EC:
 	lsrs r0, r0, #0x10
 	cmp r0, #5
 	bhi _0807139A
-	ldr r2, _08071328 @ =0x085B0A08
+	ldr r2, _08071328 @ =gSineTable
 	ldr r3, _0807132C @ =0x00000A8C
 	adds r0, r6, r3
 	ldrb r0, [r0]
@@ -38,7 +38,7 @@ _080712EC:
 _0807131C: .4byte 0x000009C8
 _08071320: .4byte 0x00000A8A
 _08071324: .4byte 0x00000391
-_08071328: .4byte 0x085B0A08
+_08071328: .4byte gSineTable
 _0807132C: .4byte 0x00000A8C
 _08071330:
 	rsbs r0, r0, #0

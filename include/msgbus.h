@@ -1,6 +1,7 @@
 #ifndef __INCLUDE_MSGBUS_H__
 #define __INCLUDE_MSGBUS_H__
 
+#include "entity.h"
 #include "gba/gba.h"
 #include "types.h"
 
@@ -10,7 +11,7 @@
 
 // MsgBus 経由で受け手に届くメッセージ, 可変長で、実体サイズは 8 + ceil(argc/2)*4 バイト
 // 組み立ての手本は FUN_08041b28 ('.n'/'.k'/'.f'/'.a'/'.p' から1件作って送る)
-typedef struct MsgPacket {
+typedef struct {
   u16 targetID;    // 0x00, 宛先, MsgQueue.targetID と照合される (生成元のサブルーチンID)
   u8 targetClass;  // 0x02, 宛先の種別 1..10, MsgQueue.targetClass と照合される, 根拠: MsgBus_FindQueue
   bool8 waitFlag;  // 0x03, 非0なら受け手が処理を終えるまでデモの進行が止まる, 根拠: MsgQueue_BeginWait / MsgQueue_EndWait
@@ -33,6 +34,34 @@ typedef struct MsgQueue {
   struct MsgQueue* next;  // 0x30
 } MsgQueue;
 static_assert(sizeof(MsgQueue) == 52);
+
+// メッセージバス兼デモ再生機, シングルトン (gMsgBus) で、これがいないとメッセージ機構そのものが動かない
+// 受け口: 全ての MsgQueue を queues のリストで持ち、登録・解除・ダブルバッファの面切り替えを一手に引き受ける
+// 再生: デモスクリプト (PTR_ARRAY_08dbd564) を demoID/step で読み進め、各 MsgPacket を宛先の受け口へ配る
+// 自身も targetClass 1 の宛先で、cmd 0=スクリプト実行 / 1=ウェイト / 2=外部待ち を Demo_HandleMsgs で処理する
+typedef struct {
+  Entity e;            // ENTITY_UNK_2
+  s16 demoID;          // 0x18, '.d', DemoTable_GetMsg の第1添字
+  s16 step;            // 0x1A, ('.c'-1) から1ずつ進む, 第2添字
+  u16 msgIdx;          // 0x1C, 第3添字, 0件のステップに来たらデモ終了
+  bool8 advanceReq;    // 0x1E, Demo_RequestNextStep が立て、Update が step を進めて落とす
+  bool8 stepBegun;     // 0x1F, ステップが切り替わった回だけ 1, この回にメッセージを配る
+  u16 endScriptID;     // 0x20, '.e', デモ終了時に実行するスクリプト
+  u8 scriptCount;      // 0x22, scriptKeys/scriptIDs の件数
+  bool8 running;       // 0x23, デモ再生中か？
+  u8 bufIdx;           // 0x24, MsgQueue のダブルバッファの現在面
+  u8 unk_25[3];        // 0x25, padding?
+  u16 scriptKeys[16];  // 0x28, Demo_FindScriptID で検索されるキー
+  u16 scriptIDs[16];   // 0x48, scriptKeys に対応するスクリプトID
+  s32 waitTimer;       // 0x68, cmd 1 の待ちフレーム数, 根拠: Demo_CmdWait
+  u32 unk_6c;          // 0x6C
+  u32 extWait;         // 0x70, cmd 2 で 1 になり、Demo_Resume が外部から解除する
+  MsgQueue* queues;    // 0x74, 登録済みの受け口のリスト先頭
+  MsgQueue mq;         // 0x78, 自分宛て (targetClass 1) の受け口
+} MsgBus;
+static_assert(sizeof(MsgBus) == 172);
+
+extern MsgBus* gMsgBus;  // 0x03002B4C;
 
 // --------------------------------------------
 

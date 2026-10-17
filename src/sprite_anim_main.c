@@ -1,6 +1,10 @@
 #include "global.h"
 #include "sprite.h"
 
+#define PLAYMODE_PAUSE 0           // 停止
+#define PLAYMODE_ONCE_AND_STOP 2   // 1回再生して停止
+#define PLAYMODE_PLAY_ONCE_HIDE 3  // 1回再生して非表示
+
 NAKED void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 playMode, MainAnimPlayFlags16 flags) { INCFUNC("asm/func/MainSprite_SetAnim.inc"); }
 
 // 指定したアニメの cmdIdx 番目のコマに切り替え、表示時間と「次で終わる」通知を設定し直す
@@ -33,12 +37,12 @@ NON_MATCH void MainSprite_SetAnimFrame(MainSprite* p, MainSpriteGfx* gfx, u16 an
   p->animCmdTimer = 0;
   p->animEvents = 0;
   if (p->animCmdTimer + 1 >= p->animCmdDuration) {
-    if (p->animFlags & (1 << 1)) {
+    if (p->animFlags & MAIN_ANIM_REVERSE) {
       if (p->animCmdIdx == 0) {
-        p->animEvents = 1;
+        p->animEvents = MAIN_ANIM_EVENT_WILL_END;
       }
     } else if (p->animCmdIdx + 1 >= p->animCmdLength) {
-      p->animEvents = 1;
+      p->animEvents = MAIN_ANIM_EVENT_WILL_END;
     }
   }
 #else
@@ -61,14 +65,14 @@ s32 MainSprite_SetAnimSpeed(MainSprite* p, u32 speed) {
   if ((p->animCmdDuration = n) == 0) {
     p->animCmdDuration = 1;
   }
-  p->animEvents &= ~1;
+  p->animEvents &= ~MAIN_ANIM_EVENT_WILL_END;
   if (p->animCmdTimer + 1 >= p->animCmdDuration) {
-    if (p->animFlags & (1 << 1)) {
+    if (p->animFlags & MAIN_ANIM_REVERSE) {
       if (p->animCmdIdx == 0) {
-        p->animEvents |= 1;
+        p->animEvents |= MAIN_ANIM_EVENT_WILL_END;
       }
     } else if (p->animCmdIdx + 1 >= p->animCmdLength) {
-      p->animEvents |= 1;
+      p->animEvents |= MAIN_ANIM_EVENT_WILL_END;
     }
   }
   return 0;
@@ -89,7 +93,7 @@ NON_MATCH bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx) {
   u16 idx;
   s32 n;
 
-  if (p->playMode == 0) {
+  if (p->playMode == PLAYMODE_PAUSE) {
     return FALSE;
   }
   finished = FALSE;
@@ -100,7 +104,7 @@ NON_MATCH bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx) {
   }
   p->animCmdTimer++;
   if (p->animCmdTimer >= p->animCmdDuration) {
-    if (p->animFlags & (1 << 1)) {
+    if (p->animFlags & MAIN_ANIM_REVERSE) {
       if (p->animCmdIdx == 0) {
         finished = TRUE;
       } else {
@@ -114,22 +118,22 @@ NON_MATCH bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx) {
       }
     }
     if (finished) {
-      p->animEvents = 2 | p->animEvents;
-      if (p->playMode == 2) {
-        p->playMode = 0;
-      } else if (p->playMode == 3) {
-        p->playMode = 0;
+      p->animEvents |= MAIN_ANIM_EVENT_ENDED;
+      if (p->playMode == PLAYMODE_ONCE_AND_STOP) {
+        p->playMode = PLAYMODE_PAUSE;
+      } else if (p->playMode == PLAYMODE_PLAY_ONCE_HIDE) {
+        p->playMode = PLAYMODE_PAUSE;
         p->flags |= SPRFLAG_HIDDEN;
       } else {
-        idx = p->animFlags & (1 << 1);
+        idx = p->animFlags & MAIN_ANIM_REVERSE;
         if (idx != 0) {
           idx = p->animCmdLength - 1;
         }
         p->animCmdIdx = idx;
-        p->animEvents = 4 | p->animEvents;
+        p->animEvents |= MAIN_ANIM_EVENT_ADVANCED;
       }
     } else {
-      p->animEvents = 4 | p->animEvents;
+      p->animEvents |= MAIN_ANIM_EVENT_ADVANCED;
     }
     frame = &p->animCmds[p->animCmdIdx];
     p->animCmdTimer = 0;
@@ -143,12 +147,12 @@ NON_MATCH bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx) {
       p->animCmdDuration = 1;
     }
   } else if (p->animCmdTimer + 1 >= p->animCmdDuration) {
-    if (p->animFlags & (1 << 1)) {
+    if (p->animFlags & MAIN_ANIM_REVERSE) {
       if (p->animCmdIdx == 0) {
-        p->animEvents |= 1;
+        p->animEvents |= MAIN_ANIM_EVENT_WILL_END;
       }
     } else if (p->animCmdIdx + 1 >= p->animCmdLength) {
-      p->animEvents |= 1;
+      p->animEvents |= MAIN_ANIM_EVENT_WILL_END;
     }
   }
   return finished;
@@ -159,7 +163,7 @@ NON_MATCH bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx) {
 
 // アニメ animIdx の全コマの表示フレーム数の合計
 // 残差1命令, 原典は anim を animIdx のレジスタ上で作って r4 を使わずに収める
-NON_MATCH s32 MainSprite_GetAnimDuration(MainSprite* _, MainSpriteGfx* gfx, u32 animIdx) {
+NON_MATCH s32 UNUSED MainSprite_GetAnimDuration(MainSprite* _, MainSpriteGfx* gfx, u32 animIdx) {
 #ifdef NONMATCHING_C
   MainAnim* anim = &gfx->anims[animIdx];
   MainAnimCmd* cmd = (MainAnimCmd*)((u8*)gfx->cmds + anim->cmdOffset);

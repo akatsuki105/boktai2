@@ -93,7 +93,7 @@ _08141566:
 	beq _08141572
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl FUN_0807f598
+	bl Entity5941_Unregister
 _08141572:
 	adds r0, r4, #0
 	bl Mover_Unlink

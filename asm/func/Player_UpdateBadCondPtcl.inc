@@ -34,7 +34,7 @@ _080614F2:
 	adds r3, r0, r1
 	movs r1, #0xff
 	ands r3, r1
-	ldr r2, _08061524 @ =0x085B0A08
+	ldr r2, _08061524 @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	ands r0, r1
@@ -51,7 +51,7 @@ _080614F2:
 	b _0806152E
 	.align 2, 0
 _08061520: .4byte 0x000006A9
-_08061524: .4byte 0x085B0A08
+_08061524: .4byte gSineTable
 _08061528:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

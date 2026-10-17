@@ -1,10 +1,10 @@
+#include "armor.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "input.h"
 #include "inventory.h"
 #include "item.h"
-#include "menu.h"
 #include "particle.h"
 #include "player.h"
 #include "save.h"
@@ -28,7 +28,13 @@ static_assert(sizeof(EntityCC28Sprite100) == 100);
 
 typedef struct {
   Particle ptcl;           // 0x00, FUN_0808cacc が Particle_Remove に渡す
-  u8 unk_28[0x40 - 0x28];  // 0x28, まだ未解析
+  u8 unk_28[0x30 - 0x28];  // 0x28, まだ未解析
+  u16 velX;                // 0x30, 毎フレーム ptcl.pos.x に足す
+  u16 velY;                // 0x32, 毎フレーム ptcl.pos.y に足す, 4フレームごとに1増える
+  u8 unk_34[0x38 - 0x34];  // 0x34, まだ未解析
+  u8 unk_38;               // 0x38, 0 になると使い終わり
+  u8 unk_39;               // 0x39, 経過フレーム数, 20 で打ち止め
+  u8 unk_3a[0x40 - 0x3A];  // 0x3A, まだ未解析
 } EntityCC28ParticleNode;
 static_assert(sizeof(EntityCC28ParticleNode) == 64);
 
@@ -46,6 +52,20 @@ typedef struct {
   u8 unk_66[104 - 0x66];  // 0x0066, まだ未解析, padding?
 } EntityCC28Sprite104;
 static_assert(sizeof(EntityCC28Sprite104) == 104);
+
+// MenuCursor と同じ作りだが slots が +8 から始まる44バイト版
+typedef struct {
+  u8 flags;        // 0x00, bit0/bit3/bit4/bit5 を各所で見る
+  u8 row;          // 0x01, slots の行
+  u8 col;          // 0x02, slots の列
+  u8 slot;         // 0x03, slots[row * 4 + col] の結果
+  u8 savedRow;     // 0x04, FUN_0808fbbc が row を退避し, FUN_0808fbcc が戻す
+  u8 savedCol;     // 0x05, 同じく col
+  u8 savedSlot;    // 0x06, 同じく slot
+  u8 repeatTimer;  // 0x07, 十字キーを押しっぱなしにしている間のフレーム数
+  s8 slots[36];    // 0x08, 負の値は選べない枠
+} EntityCC28Cursor;
+static_assert(sizeof(EntityCC28Cursor) == 44);
 
 // メニューのインベントリに関係してそう
 typedef struct EntityCC28 {
@@ -133,7 +153,7 @@ typedef struct EntityCC28 {
   AuxSpriteGfx unk_be4;               // 0x0BE4
   u8 unk_c00;                         // 0x0C00
   u8 unk_c01;                         // 0x0C01
-  u8 unk_c02;                         // 0x0C02
+  s8 unk_c02;                         // 0x0C02, unk_c0c の1始まりの添字, 負なら選択なし
   u8 unk_c03;                         // 0x0C03
   u32 unk_c04;                        // 0x0C04
   u8 unk_c08;                         // 0x0C08
@@ -154,18 +174,7 @@ typedef struct EntityCC28 {
   u8 unk_3ae5[0x3AE6 - 0x3AE5];       // 0x3AE5, まだ未解析
   u8 unk_3ae6;                        // 0x3AE6
   u8 unk_3ae7;                        // 0x3AE7
-  u8 unk_3ae8;                        // 0x3AE8
-  u8 unk_3ae9[0x3AEB - 0x3AE9];       // 0x3AE9, まだ未解析
-  u8 unk_3aeb;                        // 0x3AEB
-  u8 unk_3aec;                        // 0x3AEC
-  u8 unk_3aed;                        // 0x3AED
-  u8 selectedSlot;                    // 0x3AEE
-  u8 unk_3aef[0x3AF0 - 0x3AEF];       // 0x3AEF, まだ未解析
-  u8 unk_3af0;                        // 0x3AF0
-  u8 unk_3af1[0x3B10 - 0x3AF1];       // 0x3AF1, まだ未解析
-  u8 unk_3b10;                        // 0x3B10
-  u8 unk_3b11[0x3B13 - 0x3B11];       // 0x3B11, まだ未解析
-  u8 unk_3b13;                        // 0x3B13
+  EntityCC28Cursor cursor;            // 0x3AE8
   u16 unk_3b14;                       // 0x3B14
   u16 unk_3b16;                       // 0x3B16
   u16 unk_3b18;                       // 0x3B18
@@ -190,22 +199,35 @@ typedef struct EntityCC28 {
   u8 unk_3f9f;                        // 0x3F9F
   u8 unk_3fa0[2];                     // 0x3FA0
   u16 unk_3fa2;                       // 0x3FA2, 根拠: FUN_08091bbc が 0 を入れる
-  u8 unk_3fa4[0x3FB0 - 0x3FA4];       // 0x3FA4
+  u8 unk_3fa4[0x3FAC - 0x3FA4];       // 0x3FA4
+  u8 unk_3fac;                        // 0x3FAC, 根拠: FUN_08091adc が 1 を入れる
+  u8 unk_3fad;                        // 0x3FAD, 根拠: 同上, 引数の値が入る
+  u16 unk_3fae;                       // 0x3FAE, 根拠: 同上, 第3引数が入る
   u8 unk_3fb0;                        // 0x3FB0, 根拠: FUN_08091b40 が 1 を入れる
   u8 unk_3fb1;                        // 0x3FB1, 根拠: 同上, 引数の値が入る
   u8 unk_3fb2[0x3FB8 - 0x3FB2];       // 0x3FB2
   u8 unk_3fb8;                        // 0x3FB8, 根拠: FUN_08091c50 が 1 を入れる
   u8 unk_3fb9;                        // 0x3FB9, 根拠: 同上, 引数の値が入る
-  u8 unk_3fba[0x3FF0 - 0x3FBA];       // 0x3FBA
+  u8 unk_3fba[0x3FDC - 0x3FBA];       // 0x3FBA
+  s8 unk_3fdc;                        // 0x3FDC, unk_3fe0 の添字, この枠だけは選べない
+  u8 unk_3fdd[0x3FE0 - 0x3FDD];       // 0x3FDD, まだ未解析
+  s8 unk_3fe0[16];                    // 0x3FE0, 枠ごとの防具ID, 負なら空き
   s8 unk_3ff0[16];                    // 0x3FF0, 根拠: FUN_0809890c / FUN_08098934 が 8..11 と 12..15 を負かどうかで見る
-  u8 unk_4000[0x401D - 0x4000];       // 0x4000
+  u16 unk_4000;                       // 0x4000, 残りのステータスポイント, 確定時に gStat->statusPoint へ書き戻す
+  u8 unk_4002[0x4008 - 0x4002];       // 0x4002, まだ未解析
+  u8 unk_4008[4];                     // 0x4008, 画面で振り分けた分, 確定時に gStat->stats へ足す
+  u8 unk_400c[0x4018 - 0x400C];       // 0x400C, まだ未解析
+  s32 textPanelID;                    // 0x4018, TextPanel_Hide に渡す
+  u8 unk_401c;                        // 0x401C, まだ未解析
   u8 unk_401d;                        // 0x401D, 根拠: FUN_08091bbc が 1 を入れる
   u8 unk_401e;                        // 0x401E, 根拠: FUN_0808f95c が FUN_0808f140 の戻り値を入れる
   u8 unk_401f;                        // 0x401F, 根拠: FUN_0808f190 が非0かどうかを見る
-  u8 unk_4020[0x402C - 0x4020];       // 0x4020, まだ未解析
+  u8 unk_4020[0x4028 - 0x4020];       // 0x4020, まだ未解析
+  u32 scriptID;                       // 0x4028, 0 以外なら VM_ExecByID で実行する
   u8 (*unk_402c[3])[16];              // 0x402C, 1件16バイトの表, +0x0F が MessageWindow_ShowLine に渡す行番号
   u8 unk_4038;                        // 0x4038, unk_402c[0] の添字
-  u8 unk_4039[3];                     // 0x4039, まだ未解析
+  u8 unk_4039;                        // 0x4039, 1 なら unk_402c の表に沿って BG1 を差し替える
+  u8 unk_403a[2];                     // 0x403A, まだ未解析
   u8 unk_403c[20];                    // 0x403C
   u16 unk_4050;                       // 0x4050
   u16 unk_4052;                       // 0x4052
@@ -227,7 +249,6 @@ extern EntityCC28Func* const sEntityCC28State2Fns[];  // 0x085ACFDC
 static inline void DisableEntityFlags(u32 flags) { gEntityDisableFlags |= flags; }
 static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
 
-void FUN_08242c08(slot32_t n);  // src/weapon.c
 void FUN_0809630c(EntityCC28* p);
 void FUN_0808eef8(EntityCC28* p);
 s32 GetRotCount2(slot32_t slot);  // src/item_082421f0.c
@@ -253,7 +274,15 @@ void FUN_0808a33c(EntityCC28* p, EntityCC28Func* fn) {
 // 状態関数を差し替えて, hide で2枚のスプライトの表示/非表示を切り替える
 NAKED void EntityCC28_SetState(EntityCC28* p, EntityCC28Func* fn, s8 hide) { INCFUNC("asm/func/EntityCC28_SetState.inc"); }
 
-NAKED void FUN_0808a3c4(EntityCC28* p, TilemapFile* param_2, s16 param_3, s32 param_4, unknown* param_5) { INCFUNC("asm/func/FUN_0808a3c4.inc"); }
+// BG0 をタイルマップで組み直して, パレット行13〜15 を差し替える
+void FUN_0808a3c4(EntityCC28* p, TilemapFile* tilemap, s16 param_3, s32 layerIdx, const rgb555* pltt) {
+  s32 bgIndex = 0;
+
+  Video_SetupBGLayout(0, param_3, tilemap, 0, 0, 1, &bgIndex);
+  Video_SetBGLayer(0, tilemap, layerIdx);
+  Video_GenerateBGMap(0, 0, 0, 0, 0);
+  CpuCopy32(pltt, &gBgPlttBuffer[208], 96);
+}
 
 BgMapEntry* FUN_0808a420(s32 bg, u32 x, u32 y) {
   BgState* s = &gBgStates[bg];
@@ -322,9 +351,50 @@ NAKED void FUN_0808b11c(EntityCC28* p, s32 param_2, u32 param_3) { INCFUNC("asm/
 
 NAKED void FUN_0808b1bc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808b1bc.inc"); }
 
-NAKED void FUN_0808b30c(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_0808b30c.inc"); }
+// value を place の位から順に10進数のタイルとして BG0 の (x, y) から並べる
+// 残差は38/38命令でレジスタ番号のみ (value と map が r5/r6 で逆になる)
+NON_MATCH void FUN_0808b30c(s32 value, s32 place, u32 x, u32 y, s32 kind) {
+#ifdef NONMATCHING_C
+  s32 base = 0x31;
+  BgMapEntry* map;
 
-NAKED void FUN_0808b360(s32 param_1) { INCFUNC("asm/func/FUN_0808b360.inc"); }
+  if (kind == 0) {
+    base = 0x91;
+  }
+
+  map = FUN_0808a420(0, x, y);
+  while (place > 0) {
+    s32 digit = Div(value, place);
+    BgMapEntry tile = digit + base;
+
+    *map = tile | 0xF000;
+    map++;
+    value -= place * digit;
+    place = Div(place, 10);
+  }
+#else
+  INCFUNC("asm/func/FUN_0808b30c.inc");
+#endif
+}
+
+// 残差1命令, 原典は 0xF090 のプール定数をループ変数の初期化より前に作る (FUN_0808b97c と同じ)
+NON_MATCH void FUN_0808b360(s32 count, u32 x, u32 y) {
+#ifdef NONMATCHING_C
+  BgMapEntry* entry = FUN_0808a420(0, x, y);
+
+  if (count > 0) {
+    s32 n = count;
+
+    do {
+      *entry = 0xF090;
+      entry++;
+      n--;
+    } while (n != 0);
+  }
+#else
+  INCFUNC("asm/func/FUN_0808b360.inc");
+#endif
+}
 
 NAKED void FUN_0808b38c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808b38c.inc"); }
 
@@ -332,11 +402,43 @@ NAKED void FUN_0808b4c0(EntityCC28* p) { INCFUNC("asm/func/FUN_0808b4c0.inc"); }
 
 NAKED void FUN_0808b604(EntityCC28* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0808b604.inc"); }
 
-NAKED u32 FUN_0808b6a4(EntityCC28* p) { INCFUNC("asm/func/FUN_0808b6a4.inc"); }
+// 十字キーの入力を返す, 押しっぱなしのときは10フレームごとに1回だけ返す
+// 残差は36/36命令でレジスタ番号のみ (p, gInput, 0xF0 の3つが回る)
+NON_MATCH s32 FUN_0808b6a4(EntityCC28* p) {
+#ifdef NONMATCHING_C
+  if (gInput[0].pressed & DPAD_ANY) {
+    p->unk_3b24 = 0;
+    return gInput[0].pressed;
+  }
 
-NAKED void FUN_0808b6fc(EntityCC28* p, s8 param_2) { INCFUNC("asm/func/FUN_0808b6fc.inc"); }
+  if (gInput[0].down & DPAD_ANY) {
+    p->unk_3b24++;
+    if (p->unk_3b24 > 9) {
+      p->unk_3b24 = 0;
+      return gInput[0].down;
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_0808b6a4.inc");
+#endif
+}
 
-NAKED bool32 FUN_0808b760(EntityCC28* p) { INCFUNC("asm/func/FUN_0808b760.inc"); }
+// 15番のスプライトを原点に出して, 引数の有無でアニメを選ぶ
+void FUN_0808b6fc(EntityCC28* p, s32 param_2) {
+  s32 anim;
+
+  p->sprites[15].flags &= ~SPRFLAG_HIDDEN;
+  p->sprites[15].pos.x = 0;
+  p->sprites[15].pos.y = 0;
+  p->unk_3b25 = param_2;
+
+  anim = (u8)param_2 != 0 ? 4 : 5;
+  MainSprite_SetAnim(&p->sprites[15], p->gfx, anim, 1, 0);
+  MainSprite_AdvanceAnim(&p->sprites[15], p->gfx);
+}
+
+NAKED s32 FUN_0808b760(EntityCC28* p) { INCFUNC("asm/func/FUN_0808b760.inc"); }
 
 // 116枚のスプライトと2枚の AuxSprite を全部隠す
 void FUN_0808b82c(EntityCC28* p) {
@@ -359,18 +461,73 @@ NAKED void FUN_0808b8a4(EntityCC28* p) { INCFUNC("asm/func/FUN_0808b8a4.inc"); }
 
 NAKED void FUN_0808b910(EntityCC28* p) { INCFUNC("asm/func/FUN_0808b910.inc"); }
 
-NAKED void FUN_0808b97c(s32 param_1, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_0808b97c.inc"); }
+// 命令数は一致 (33/33) だが, 原典は i + 1 を先に作ってから 0xF001 のプール定数を読むのに対し agbcc は逆順でレジスタが入れ替わる
+NON_MATCH void FUN_0808b97c(s32 param_1, s32 param_2, s32 param_3, s32 param_4) {
+#ifdef NONMATCHING_C
+  s32 i;
 
-NAKED void FUN_0808b9c4(s32 param_1, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_0808b9c4.inc"); }
+  for (i = 0; i < param_4; i++) {
+    BgMapEntry* entry = FUN_0808a420(0, param_1, param_2 + i);
+
+    if (param_3 > 0) {
+      s32 n = param_3;
+
+      do {
+        *entry = 0xF001;
+        entry++;
+        n--;
+      } while (n != 0);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0808b97c.inc");
+#endif
+}
+
+// 命令数は一致 (33/33) だが, 原典は i + 1 を先に作ってから 0xF002 のプール定数を読むのに対し agbcc は逆順でレジスタが入れ替わる
+NON_MATCH void FUN_0808b9c4(s32 param_1, s32 param_2, s32 param_3, s32 param_4) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < param_4; i++) {
+    BgMapEntry* entry = FUN_0808a420(0, param_1, param_2 + i);
+
+    if (param_3 > 0) {
+      s32 n = param_3;
+
+      do {
+        *entry = 0xF002;
+        entry++;
+        n--;
+      } while (n != 0);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0808b9c4.inc");
+#endif
+}
 
 void MainSprite_SetPltt(MainSprite* p, u16 plttID) {
   p->plttID = plttID;
   p->pltt = &gObjPlttData[p->plttID * 16];
 }
 
-NAKED void FUN_0808ba20(unknown* param_1, s16* param_2, s32 param_3) { INCFUNC("asm/func/FUN_0808ba20.inc"); }
+// x と y を目標値へ weight : 1 の比で近づける
+void FUN_0808ba20(WorldPos* pos, s16* target, s32 weight) {
+  pos->x = Div(pos->x * weight + target[0], weight + 1);
+  pos->y = Div(pos->y * weight + target[1], weight + 1);
+}
 
-NAKED s32 FUN_0808ba64(EntityCC28* p) { INCFUNC("asm/func/FUN_0808ba64.inc"); }
+// プレイヤーの状態に応じたパレットIDを返す (毒, カーモス, 通常)
+s32 FUN_0808ba64(EntityCC28* p) {
+  s32 i;
+  if (p->player->badCondTimer[1] != 0) {  // 毒
+    i = 2;
+  } else {
+    i = (KAAMOS(p->player->isSabata) > 0) ? 6 : 0;
+  }
+  return p->player->plttIDs[i];
+}
 
 NAKED void FUN_0808bac4(EntityCC28* p) { INCFUNC("asm/func/FUN_0808bac4.inc"); }
 
@@ -382,7 +539,7 @@ NAKED bool32 FUN_0808c1cc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808c1cc.inc");
 
 NAKED void FUN_0808c334(s32 param_1, s32 param_2, u16 param_3, s32 param_4, s16* param_5, s16* param_6, s32 param_7, u16 param_8) { INCFUNC("asm/func/FUN_0808c334.inc"); }
 
-NAKED s32 FUN_0808c434(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_0808c434.inc"); }
+NAKED s32 FUN_0808c434(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_0808c434.inc"); }
 
 // 画面下2行のテキストボックスに1行表示する
 void EntityCC28_ShowBottomLine(u8* pc, s32 line, s32 playSound) {
@@ -419,13 +576,27 @@ void FUN_0808c700(EntityCC28* p) { FUN_0808c658(p, -1, -1); }
 
 NAKED s32 FUN_0808c710(unknown* param_1, ParticleGroup* param_2) { INCFUNC("asm/func/FUN_0808c710.inc"); }
 
-NAKED s32 FUN_0808c770(unknown* param_1) { INCFUNC("asm/func/FUN_0808c770.inc"); }
+// 粒を放物線で飛ばす, 20フレーム経ったら隠して使い終わりにする
+s32 FUN_0808c770(EntityCC28ParticleNode* p) {
+  p->unk_39++;
+  if (p->unk_39 > 19) {
+    p->ptcl.flags |= SPRFLAG_HIDDEN;
+    p->unk_38 = 0;
+  } else {
+    p->ptcl.pos.x += p->velX;
+    p->ptcl.pos.y += p->velY;
+    if (!(p->unk_39 & 3)) {
+      p->velY++;
+    }
+  }
+  return p->unk_38;
+}
 
 NAKED void FUN_0808c7c4(EntityCC28* p) { INCFUNC("asm/func/FUN_0808c7c4.inc"); }
 
 NAKED void FUN_0808c834(s32 param_1, s32 param_2, s16 param_3, s16 param_4) { INCFUNC("asm/func/FUN_0808c834.inc"); }
 
-NAKED void FUN_0808c95c(s32 param_1, s32 param_2, s16 param_3, s16 param_4) { INCFUNC("asm/func/FUN_0808c95c.inc"); }
+NAKED void FUN_0808c95c(EntityCC28* p, s32 param_2, s16 param_3, s16 param_4) { INCFUNC("asm/func/FUN_0808c95c.inc"); }
 
 // 2組のパーティクルを描画リストから全部外す
 void FUN_0808cacc(EntityCC28* p) {
@@ -442,25 +613,33 @@ void FUN_0808cacc(EntityCC28* p) {
 
 NAKED void FUN_0808cb00(s32 param_1) { INCFUNC("asm/func/FUN_0808cb00.inc"); }
 
-NAKED void FUN_0808cb90(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cb90.inc"); }
+// BG0 の先頭9タイルに 0xA0 からの連番を並べる
+void FUN_0808cb90(EntityCC28* p) {
+  if (!p->unk_a30) {
+    BgMapEntry* entry = FUN_0808a420(0, 0, 0);
+    s32 i;
 
-// 残差は29/29命令で 0xD000 を作る位置のみ, 原典はループカウンタより前に作る, 昇順ループとローカル退避は試済
-NON_MATCH void FUN_0808cbd8(EntityCC28* p) {
-#ifdef NONMATCHING_C
+    for (i = 0; i < 9; i++) {
+      *entry = (i + 0xA0) | 0xD000;
+      entry++;
+    }
+
+    p->unk_a30 = 1;
+  }
+}
+
+void FUN_0808cbd8(EntityCC28* p) {
   if (p->unk_a30) {
     BgMapEntry* entry = FUN_0808a420(0, 0, 0);
     s32 i;
 
-    for (i = 8; i >= 0; i--) {
+    for (i = 0; i < 9; i++) {
       *entry = 0xD000;
       entry++;
     }
 
     p->unk_a30 = 0;
   }
-#else
-  INCFUNC("asm/func/FUN_0808cbd8.inc");
-#endif
 }
 
 NAKED void FUN_0808cc14(EntityCC28* p) { INCFUNC("asm/func/FUN_0808cc14.inc"); }
@@ -511,11 +690,51 @@ NAKED void FUN_0808d01c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d01c.inc"); }
 
 NAKED void FUN_0808d0c0(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d0c0.inc"); }
 
-NAKED void FUN_0808d1a8(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d1a8.inc"); }
+// 経過フレームでパレット行13の14番の色を変えて点滅させる
+void FUN_0808d1a8(EntityCC28* p) {
+  u8 t = p->unk_da0[3].unk_64;
+  rgb555 color = 0x1F;
+
+  if (t > 9) {
+    color = 0x1B;
+    if (t > 0x11) {
+      color = 0x12;
+      if (t > 0x19) {
+        color = 0x0A;
+        if (t > 0x21) {
+          color = 0x1B;
+          if (t <= 0x29) {
+            color = 0x12;
+          }
+        }
+      }
+    }
+  }
+
+  p->unk_da0[3].unk_64++;
+  if (p->unk_da0[3].unk_64 > 0x31) {
+    p->unk_da0[3].unk_64 = 0;
+  }
+  gBgPlttBuffer[210] = color;
+}
 
 NAKED void FUN_0808d200(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d200.inc"); }
 
-NAKED void FUN_0808d268(void) { INCFUNC("asm/func/FUN_0808d268.inc"); }
+// 画面左右の縁 (x=0 と x=26 から4列ぶん) の4行を空タイルで塗る
+void FUN_0808d268(void) {
+  s32 y;
+
+  for (y = 0; y < 4; y++) {
+    BgMapEntry* left = FUN_0808a420(0, 0, y + 16);
+    BgMapEntry* right = FUN_0808a420(0, 26, y + 16);
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+      *left++ = 0xD000;
+      *right++ = 0xD000;
+    }
+  }
+}
 
 NAKED void FUN_0808d2ac(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d2ac.inc"); }
 
@@ -531,7 +750,21 @@ void EntityCC28_HideSprites(EntityCC28* p) {
 
 NAKED void FUN_0808d3d4(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d3d4.inc"); }
 
-NAKED s32 FUN_0808d49c(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_0808d49c.inc"); }
+// スクロール位置から行の表示Y座標を出す, 画面外に出たら1周ぶん下へ回す
+NON_MATCH s32 FUN_0808d49c(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5) {
+#ifdef NONMATCHING_C
+  s32 row = Mod(param_4 + param_2 - param_3, param_4);
+  s32 y = 136 - param_5 * 3;
+
+  y -= row * 24;
+  if (y < 136 - (param_4 - 1) * 24) {
+    y += param_4 * 24;
+  }
+  return y;
+#else
+  INCFUNC("asm/func/FUN_0808d49c.inc");
+#endif
+}
 
 NAKED void FUN_0808d4dc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d4dc.inc"); }
 
@@ -549,7 +782,19 @@ void FUN_0808d908(EntityCC28* p) {
   FUN_0808a33c(p, FUN_0808db68);
 }
 
-NAKED void FUN_0808d93c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808d93c.inc"); }
+// 選んでいる魔法をプレイヤーに持たせる, 選択なしなら外す
+// 残差は39/39命令で1命令, 原典は p + 添字*100 の加算の被演算子が逆
+NON_MATCH void FUN_0808d93c(EntityCC28* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_c02 >= 0 && p->unk_c00 != 0) {
+    Player_EquipMagic(p->player, (s8)(&p->unk_c09)[p->unk_c02 * 100]);
+  } else {
+    Player_EquipMagic(p->player, -1);
+  }
+#else
+  INCFUNC("asm/func/FUN_0808d93c.inc");
+#endif
+}
 
 // 4つめのスプライトが指す武器を Player に適用する
 void EntityCC28_ApplyWeapon(EntityCC28* p) { Player_ApplyWeapon(p->player, p->unk_da0[p->unk_c0c[3].unk_60].weapon); }
@@ -629,7 +874,12 @@ void FUN_0808de50(EntityCC28* p) {
 
 NAKED void FUN_0808de70(EntityCC28* p) { INCFUNC("asm/func/FUN_0808de70.inc"); }
 
-NAKED void FUN_0808df7c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808df7c.inc"); }
+// 選ばれている武器のスプライトだけを見せる
+void FUN_0808df7c(EntityCC28* p) {
+  EntityCC28_HideSprites(p);
+  p->unk_da0[p->unk_c0c[3].unk_60].sprite.flags &= ~SPRFLAG_HIDDEN;
+  MainSprite_SetPose(&p->unk_da0[p->unk_c0c[3].unk_60].sprite, &p->gfx[2], 0, 1);
+}
 
 void FUN_0808dfcc(EntityCC28* p) {
   if (!(gEntityDisableFlags & ENTITY_DISABLE_0) && p->unk_9fe <= 2) {
@@ -746,7 +996,22 @@ NAKED void FUN_0808ed74(EntityCC28* p) { INCFUNC("asm/func/FUN_0808ed74.inc"); }
 
 NAKED void FUN_0808ede4(EntityCC28* p) { INCFUNC("asm/func/FUN_0808ede4.inc"); }
 
-NAKED void FUN_0808ee50(EntityCC28* p) { INCFUNC("asm/func/FUN_0808ee50.inc"); }
+void FUN_0808eeac(EntityCC28* p);
+
+// 16フレームかけて画面を暗くし, 終わったら次の状態へ移る
+void FUN_0808ee50(EntityCC28* p) {
+  if (p->unk_9ec <= 0xF) {
+    FUN_0808a458(p->unk_9ec * 4, 0);
+  } else {
+    FUN_0808a458(0x40, 0);
+  }
+
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+
+  if (p->unk_9ec++ > 0xF) {
+    FUN_0808a33c(p, FUN_0808eeac);
+  }
+}
 
 void FUN_0808eeac(EntityCC28* p) {
   s32 result;
@@ -763,7 +1028,22 @@ void FUN_0808eeac(EntityCC28* p) {
   }
 }
 
-NAKED void FUN_0808eef8(EntityCC28* p) { INCFUNC("asm/func/FUN_0808eef8.inc"); }
+void FUN_0808f2f0(EntityCC28* p);
+
+// 16フレームかけて画面を明るく戻し, 終わったら次の状態へ移る
+void FUN_0808eef8(EntityCC28* p) {
+  if (p->unk_9ec <= 0xF) {
+    FUN_0808a458((0x10 - p->unk_9ec) * 4, 0);
+  } else {
+    FUN_0808a458(0, 0);
+  }
+
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+
+  if (p->unk_9ec++ > 0xF) {
+    FUN_0808f2f0(p);
+  }
+}
 
 NAKED void FUN_0808ef58(EntityCC28* p) { INCFUNC("asm/func/FUN_0808ef58.inc"); }
 
@@ -778,7 +1058,22 @@ void FUN_0808f09c(EntityCC28* p) {
   }
 }
 
-NAKED void FUN_0808f0d8(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f0d8.inc"); }
+// 最初の16フレームで明るくし, 150フレーム目から暗くして次の状態へ移る
+void FUN_0808f0d8(EntityCC28* p) {
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+
+  if (p->unk_9ec <= 0xF) {
+    FUN_0808a458(p->unk_9ec * 4, 0);
+  } else if (p->unk_9ec <= 133) {
+    FUN_0808a458(0x40, 0);
+  } else {
+    FUN_0808a458((150 - p->unk_9ec) * 4, 0);
+  }
+
+  if (p->unk_9ec++ > 149) {
+    FUN_0808f2f0(p);
+  }
+}
 
 // 太陽ゲージをメニューの表示段階 (2..9) に直す
 s32 FUN_0808f140(void) {
@@ -809,7 +1104,13 @@ void FUN_0808f170(EntityCC28* p) {
   }
 }
 
-NAKED void FUN_0808f1bc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f1bc.inc"); }
+// unk_401c の段階に合わせて2枚のポーズと矢印の高さを決める
+void FUN_0808f1bc(EntityCC28* p) {
+  MainSprite_SetPose(&p->sprites[101], &p->gfx[3], p->unk_401c + 0x19, 1);
+  MainSprite_SetPose(&p->sprites[102], &p->gfx[3], 0x1C - p->unk_401c, 1);
+  p->sprites[103].pos.x = 0;
+  p->sprites[103].pos.y = p->unk_401c << 5;
+}
 
 NAKED void FUN_0808f21c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f21c.inc"); }
 
@@ -821,17 +1122,71 @@ NAKED void FUN_0808f4ac(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f4ac.inc"); }
 
 NAKED void FUN_0808f520(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f520.inc"); }
 
-NAKED void FUN_0808f604(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f604.inc"); }
+void FUN_0808f670(EntityCC28* p);
+
+// 16フレームかけて明るくしてから次の状態へ移る
+void FUN_0808f604(EntityCC28* p) {
+  if (p->unk_9ec <= 0xF) {
+    FUN_0808a458(p->unk_9ec * 4, 0);
+  } else {
+    FUN_0808a458(0x40, 0);
+  }
+
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[103], &p->gfx[3]);
+
+  p->unk_9ec++;
+  if (p->unk_9ec > 0xF) {
+    FUN_0808a33c(p, FUN_0808f670);
+  }
+}
 
 NAKED void FUN_0808f670(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f670.inc"); }
 
-NAKED void FUN_0808f774(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f774.inc"); }
+void FUN_0808f774(EntityCC28* p) {
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
 
-NAKED void FUN_0808f7cc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f7cc.inc"); }
+  if (p->sprites[100].pos.x > -88) {
+    p->sprites[100].pos.x -= 5;
+  }
+
+  p->unk_9ec++;
+  if (p->unk_9ec > 149) {
+    FUN_0808a33c(p, FUN_0809ae0c);
+  }
+}
+
+// 16フレームかけて画面を明るく戻し, 終わったらメッセージへ進む
+void FUN_0808f7cc(EntityCC28* p) {
+  if (p->unk_9ec <= 0xF) {
+    FUN_0808a458((0x10 - p->unk_9ec) * 4, 0);
+  } else {
+    FUN_0808a458(0, 0);
+  }
+  p->unk_9ec++;
+  if (p->unk_9ec > 0xF) {
+    FUN_0808f170(p);
+  }
+}
 
 NAKED void FUN_0808f81c(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f81c.inc"); }
 
-NAKED void FUN_0808f8bc(EntityCC28* p) { INCFUNC("asm/func/FUN_0808f8bc.inc"); }
+void FUN_0808f920(EntityCC28* p);
+
+void FUN_0808f8bc(EntityCC28* p) {
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+
+  p->unk_9ec++;
+  if (p->unk_9ec > 149) {
+    MessageWindow_ShowLine(5);
+    if (p->scriptID != 0) {
+      VM_ExecByID(p->scriptID, NULL);
+    } else {
+      MessageWindow_SetVarValue(0, 3);
+    }
+    FUN_0808a33c(p, FUN_0808f920);
+  }
+}
 
 void FUN_0808f920(EntityCC28* p) {
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
@@ -851,39 +1206,179 @@ void FUN_0808f95c(EntityCC28* p) {
   FUN_0808f21c(p);
 }
 
-NAKED void FUN_0808f98c(s32 param_1) { INCFUNC("asm/func/FUN_0808f98c.inc"); }
+s32 EntityCC28Cursor_GetSlot(EntityCC28Cursor* p) { return p->slots[p->row * 4 + p->col]; }
 
-NAKED s32 FUN_0808f9a0(s32 param_1) { INCFUNC("asm/func/FUN_0808f9a0.inc"); }
+// 十字キーの入力を返す, 押しっぱなしのときは10フレームごとに1回だけ返す
+s32 EntityCC28Cursor_ReadDpad(EntityCC28Cursor* p) {
+  if (gInput[0].pressed & DPAD_ANY) {
+    p->repeatTimer = 0;
+    return gInput[0].pressed;
+  }
 
-NAKED s32 FUN_0808f9e8(s32 param_1) { INCFUNC("asm/func/FUN_0808f9e8.inc"); }
+  if (gInput[0].down & DPAD_ANY) {
+    p->repeatTimer++;
+    if (p->repeatTimer > 9) {
+      p->repeatTimer = 0;
+      return gInput[0].down;
+    }
+  } else {
+    p->repeatTimer = 0;
+  }
+  return 0;
+}
 
-NAKED s32 FUN_0808fa48(s32 param_1) { INCFUNC("asm/func/FUN_0808fa48.inc"); }
+// 同じ行を左へ辿って別のスロットへカーソルを移す
+s32 EntityCC28Cursor_PrevCol(EntityCC28Cursor* p) {
+  s32 cur = p->slots[p->col + p->row * 4];
+  u8 col = (p->col + 3) & 3;
 
-NAKED s32 FUN_0808faa8(s32 param_1) { INCFUNC("asm/func/FUN_0808faa8.inc"); }
+  while (col != p->col) {
+    s32 slot = p->slots[col + p->row * 4];
 
-NAKED s32 FUN_0808fb08(s32 param_1) { INCFUNC("asm/func/FUN_0808fb08.inc"); }
+    if (slot >= 0 && slot != cur) {
+      p->col = col;
+      p->slot = EntityCC28Cursor_GetSlot(p);
+      PlaySound_082406e0(0xDC);
+      return 1;
+    }
+    col = (col + 3) & 3;
+  }
+  return 0;
+}
 
-NAKED s32 FUN_0808fb68(s32 param_1) { INCFUNC("asm/func/FUN_0808fb68.inc"); }
+// 同じ行を右へ辿って別のスロットへカーソルを移す
+s32 EntityCC28Cursor_NextCol(EntityCC28Cursor* p) {
+  s32 cur = p->slots[p->col + p->row * 4];
+  u8 col = (p->col + 1) & 3;
+
+  while (col != p->col) {
+    s32 slot = p->slots[col + p->row * 4];
+
+    if (slot >= 0 && slot != cur) {
+      p->col = col;
+      p->slot = EntityCC28Cursor_GetSlot(p);
+      PlaySound_082406e0(0xDC);
+      return 1;
+    }
+    col = (col + 1) & 3;
+  }
+  return 0;
+}
+
+// 同じ列を上へ辿って別のスロットへカーソルを移す
+s32 EntityCC28Cursor_PrevRow(EntityCC28Cursor* p) {
+  s32 orig = p->row;
+  s32 cur = p->slots[orig * 4 + p->col];
+  s32 row = orig - 1;
+
+  if (orig == 0) {
+    row = 8;
+  }
+
+  while (row != orig) {
+    s32 slot = p->slots[row * 4 + p->col];
+
+    if (slot >= 0 && slot != cur) {
+      p->row = row;
+      p->slot = EntityCC28Cursor_GetSlot(p);
+      PlaySound_082406e0(0xDC);
+      return 1;
+    }
+    if (row == 0) {
+      row = 8;
+    } else {
+      row--;
+    }
+  }
+  return 0;
+}
+
+// 同じ列を下へ辿って別のスロットへカーソルを移す
+s32 EntityCC28Cursor_NextRow(EntityCC28Cursor* p) {
+  s32 orig = p->row;
+  s32 cur = p->slots[orig * 4 + p->col];
+  s32 row = orig + 1;
+
+  if (orig == 8) {
+    row = 0;
+  }
+
+  while (row != orig) {
+    s32 slot = p->slots[row * 4 + p->col];
+
+    if (slot >= 0 && slot != cur) {
+      p->row = row;
+      p->slot = EntityCC28Cursor_GetSlot(p);
+      PlaySound_082406e0(0xDC);
+      return 1;
+    }
+    if (row == 8) {
+      row = 0;
+    } else {
+      row++;
+    }
+  }
+  return 0;
+}
+
+// 押された方向キーに応じてカーソル移動を振り分ける
+s32 EntityCC28Cursor_Move(EntityCC28Cursor* p) {
+  s32 keys = EntityCC28Cursor_ReadDpad(p);
+
+  if (keys & DPAD_UP) {
+    return EntityCC28Cursor_PrevCol(p);
+  }
+  if (keys & DPAD_DOWN) {
+    return EntityCC28Cursor_NextCol(p);
+  }
+  if (keys & DPAD_LEFT) {
+    return EntityCC28Cursor_PrevRow(p);
+  }
+  if (keys & DPAD_RIGHT) {
+    return EntityCC28Cursor_NextRow(p);
+  }
+  return 0;
+}
 
 // MenuCursor の位置を退避する, FUN_080b9fd8 と同じ実装
-void FUN_0808fbbc(MenuCursor* p) {
+void FUN_0808fbbc(EntityCC28Cursor* p) {
   p->savedRow = p->row;
   p->savedCol = p->col;
   p->savedSlot = p->slot;
 }
 
 // 退避した MenuCursor の位置を戻す, FUN_080b9fe8 と同じ実装
-void FUN_0808fbcc(MenuCursor* p) {
+void FUN_0808fbcc(EntityCC28Cursor* p) {
   p->row = p->savedRow;
   p->col = p->savedCol;
   p->slot = p->savedSlot;
 }
 
-NAKED void FUN_0808fbdc(s32 param_1, u8 param_2, u8 param_3) { INCFUNC("asm/func/FUN_0808fbdc.inc"); }
+// カーソルを指定の行と列へ動かしてスロット番号を引き直す
+void EntityCC28Cursor_SetPos(EntityCC28Cursor* p, u32 row, u32 col) {
+  p->row = row;
+  p->col = col;
+  p->slot = EntityCC28Cursor_GetSlot(p);
+  p->repeatTimer = 0;
+}
 
 void FUN_0808fbf4(EntityCC28* p) { MessageWindow_ShowLine(p->unk_402c[0][p->unk_4038][0xF]); }
 
-NAKED s32 FUN_0808fc14(void) { INCFUNC("asm/func/FUN_0808fc14.inc"); }
+extern const u8 (*const PTR_ARRAY_085acec8[15])[16];
+extern const u8 (*const PTR_ARRAY_085acf04[15])[4];
+
+// 現在のエリアと '.f' の組からメッセージの行番号を引く
+s32 FUN_0808fc14(void) {
+  if (gStat->areaID > 14) {
+    return gStat->areaID + 0x40;
+  }
+  {
+    const u8(*records)[16] = PTR_ARRAY_085acec8[gStat->areaID];
+    const u8(*index)[4] = PTR_ARRAY_085acf04[gStat->areaID];
+
+    return records[index[gStat->unk_256][0]][0xF];
+  }
+}
 
 void FUN_0808fc68(void) {
   if (VM_SeekToNamedArg('s')) {
@@ -950,9 +1445,45 @@ NON_MATCH void FUN_0808fd8c(void) {
 #endif
 }
 
-NAKED void FUN_0808fdc8(void) { INCFUNC("asm/func/FUN_0808fdc8.inc"); }
+// '.s' のエリア (なければ現在のエリア) のフラグから '.i' のビットを立てる
+// 残差は35/35命令でレジスタ番号のみ, FUN_0808fd8c と同じ
+NON_MATCH void FUN_0808fdc8(void) {
+#ifdef NONMATCHING_C
+  s32 idx;
 
-NAKED void FUN_0808fe1c(void) { INCFUNC("asm/func/FUN_0808fe1c.inc"); }
+  if (VM_SeekToNamedArg('s')) {
+    idx = VM_GetValue();
+  } else {
+    idx = gStat->areaID;
+  }
+
+  if (VM_SeekToNamedArg('i')) {
+    gStat->unk_268[idx] |= 1 << VM_GetValue();
+  }
+#else
+  INCFUNC("asm/func/FUN_0808fdc8.inc");
+#endif
+}
+
+// '.s' のエリア (なければ現在のエリア) のフラグから '.i' のビットを落とす
+// 残差は35/35命令でレジスタ番号のみ, FUN_0808fd8c と同じ
+NON_MATCH void FUN_0808fe1c(void) {
+#ifdef NONMATCHING_C
+  s32 idx;
+
+  if (VM_SeekToNamedArg('s')) {
+    idx = VM_GetValue();
+  } else {
+    idx = gStat->areaID;
+  }
+
+  if (VM_SeekToNamedArg('i')) {
+    gStat->unk_268[idx] &= ~(1 << VM_GetValue());
+  }
+#else
+  INCFUNC("asm/func/FUN_0808fe1c.inc");
+#endif
+}
 
 u32 FUN_0808fe70(u32 param_1) { return param_1 & 0xF; }
 
@@ -962,16 +1493,29 @@ NAKED void FUN_0808fe7c(EntityCC28* p, s32 param_2, s32 param_3) { INCFUNC("asm/
 
 NAKED void FUN_0808ff84(EntityCC28* p) { INCFUNC("asm/func/FUN_0808ff84.inc"); }
 
-NAKED void FUN_08090004(EntityCC28* p) { INCFUNC("asm/func/FUN_08090004.inc"); }
+void FUN_08090004(EntityCC28* p) {
+  p->sprites[78].flags |= SPRFLAG_HIDDEN;
+  p->sprites[79].flags |= SPRFLAG_HIDDEN;
+  p->sprites[80].flags |= SPRFLAG_HIDDEN;
+  p->sprites[81].flags |= SPRFLAG_HIDDEN;
+}
 
 NAKED void FUN_08090040(EntityCC28* p) { INCFUNC("asm/func/FUN_08090040.inc"); }
 
-NAKED void FUN_08090120(EntityCC28* p) { INCFUNC("asm/func/FUN_08090120.inc"); }
+void FUN_08090120(EntityCC28* p) {
+  MainSprite* spr = &p->sprites[78];
+  s32 i;
+
+  for (i = 3; i >= 0; i--) {
+    MainSprite_AdvanceAnim(spr, &p->gfx[1]);
+    spr++;
+  }
+}
 
 NAKED void FUN_08090148(EntityCC28* p) { INCFUNC("asm/func/FUN_08090148.inc"); }
 
 // BG1 のタイルマップ全面を 0xE002 で埋める
-void EntityCC28_FillBg1(void) {
+void EntityCC28_FillBg1(EntityCC28* p) {
   s32 x, y;
 
   for (y = 0; y < 32; y++) {
@@ -981,7 +1525,17 @@ void EntityCC28_FillBg1(void) {
   }
 }
 
-NAKED void FUN_080906c8(EntityCC28* p) { INCFUNC("asm/func/FUN_080906c8.inc"); }
+void FUN_080906c8(EntityCC28* p) {
+  if (p->unk_4039 == 1) {
+    Video_SetBGLayer(1, p->unk_28, p->unk_402c[0][p->unk_4038][1]);
+    FUN_0808ff84(p);
+    FUN_08090148(p);
+  } else {
+    EntityCC28_FillBg1(p);
+    FUN_08090004(p);
+    FUN_08090148(p);
+  }
+}
 
 NAKED bool32 FUN_08090724(EntityCC28* p) { INCFUNC("asm/func/FUN_08090724.inc"); }
 
@@ -1070,7 +1624,23 @@ NAKED void FUN_080919a4(EntityCC28* p, u16 param_2, s16 param_3) { INCFUNC("asm/
 
 NAKED void FUN_08091a34(EntityCC28* p, s32 param_2, u8 param_3) { INCFUNC("asm/func/FUN_08091a34.inc"); }
 
-NAKED void FUN_08091adc(EntityCC28* p, s8 param_2, u16 param_3) { INCFUNC("asm/func/FUN_08091adc.inc"); }
+void FUN_08091adc(EntityCC28* p, s32 param_2, s32 param_3) {
+  Player* player = p->player;
+
+  if (player != NULL) {
+    p->unk_3fad = param_2;
+    if (player->kind == 5) {
+      if ((u8)param_2 == 0) {
+        p->unk_3fad = 2;
+      } else if ((u8)param_2 == 2) {
+        p->unk_3fad = 0;
+      }
+    }
+    p->unk_3fae = param_3;
+    p->unk_3fac = 1;
+    p->unk_3ae4 = 1;
+  }
+}
 
 void FUN_08091b40(EntityCC28* p, u8 val) {
   p->unk_3fb0 = 1;
@@ -1078,7 +1648,20 @@ void FUN_08091b40(EntityCC28* p, u8 val) {
   p->unk_3ae4 = 1;
 }
 
-NAKED void FUN_08091b68(EntityCC28* p) { INCFUNC("asm/func/FUN_08091b68.inc"); }
+// 残差は30/32命令, 原典は1つ目の書き込みの後で gStat を読み直す
+NON_MATCH void FUN_08091b68(EntityCC28* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_3f9d == 0) {
+    gStat->unk_2b0[0] = 1;
+    gStat->unk_2b0[1] = 0;
+  } else {
+    gStat->unk_2b0[0] = 0;
+    gStat->unk_2b0[1] = 1;
+  }
+#else
+  INCFUNC("asm/func/FUN_08091b68.inc");
+#endif
+}
 
 void FUN_08091bbc(EntityCC28* p) {
   p->unk_3fa2 = 0;
@@ -1156,7 +1739,7 @@ NAKED void FUN_08092070(EntityCC28* p) { INCFUNC("asm/func/FUN_08092070.inc"); }
 
 // 選択中のアイテムが HP/Ene 回復アイテムかどうか
 bool32 FUN_080921a8(EntityCC28* p) {
-  item32_t id = GetItemID(p->inValuableInventory, p->selectedSlot);
+  item32_t id = GetItemID(p->inValuableInventory, p->cursor.savedSlot);
 
   if (gItemDB[id].effectType == IET_HP || gItemDB[id].effectType == IET_MP) {
     return TRUE;
@@ -1164,7 +1747,25 @@ bool32 FUN_080921a8(EntityCC28* p) {
   return FALSE;
 }
 
-NAKED void FUN_080921e8(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_080921e8.inc"); }
+// 枠番号から画面上の表示位置を出す
+void FUN_080921e8(WorldPos* pos, s32 idx) {
+  if (idx <= 15) {
+    pos->x = (idx & 3) * 24 + 144;
+    pos->y = (idx >> 2) * 24 + 32;
+  } else if (idx == 21) {
+    pos->x = 120;
+    pos->y = 104;
+  } else if (idx == 20) {
+    pos->x = 117;
+    pos->y = 70;
+  } else if (idx == 16) {
+    pos->x = 28;
+    pos->y = 88;
+  } else {
+    pos->x = 144;
+    pos->y = 32;
+  }
+}
 
 NAKED void FUN_0809223c(EntityCC28* p) { INCFUNC("asm/func/FUN_0809223c.inc"); }
 
@@ -1191,30 +1792,30 @@ NAKED void FUN_08092608(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_0809
 // 残差は50/50命令で return 0 と return 3 の基本ブロックの並びだけ, 原典は両方を末尾の共通ブロックにして 0 を先に置く, 条件の反転と末尾のネスト化は試済
 NON_MATCH s32 FUN_080926c4(EntityCC28* p) {
 #ifdef NONMATCHING_C
-  if (GetItemID(p->inValuableInventory, p->selectedSlot) < 0) {
-    if (GetItemID(p->inValuableInventory, p->unk_3aeb) < 0) {
+  if (GetItemID(p->inValuableInventory, p->cursor.savedSlot) < 0) {
+    if (GetItemID(p->inValuableInventory, p->cursor.slot) < 0) {
       return 0;
     }
     return 3;
   }
 
-  if (p->unk_3aeb == 20) {
+  if (p->cursor.slot == 20) {
     return 2;
   }
 
-  if (p->unk_3aeb == 16) {
+  if (p->cursor.slot == 16) {
     return 1;
   }
 
-  if (p->selectedSlot != p->unk_3aeb) {
+  if (p->cursor.savedSlot != p->cursor.slot) {
     return 3;
   }
 
-  if (!(p->unk_3ae8 & 1)) {
+  if (!(p->cursor.flags & 1)) {
     return 0;
   }
 
-  p->unk_3aeb = 16;
+  p->cursor.slot = 16;
   return 1;
 #else
   INCFUNC("asm/func/FUN_080926c4.inc");
@@ -1295,13 +1896,37 @@ NAKED void FUN_08093b20(EntityCC28* p) { INCFUNC("asm/func/FUN_08093b20.inc"); }
 
 NAKED void FUN_08093bb4(EntityCC28* p) { INCFUNC("asm/func/FUN_08093bb4.inc"); }
 
-NAKED void FUN_08093c64(EntityCC28* p) { INCFUNC("asm/func/FUN_08093c64.inc"); }
+void FUN_08093cc8(EntityCC28* p);
+
+void FUN_08093c64(EntityCC28* p) {
+  if (FUN_0808c434(p, 0)) {
+    p->unk_9ee++;
+    if (p->unk_9ee > 7) {
+      PlaySound_082406e0(0x10D);
+      p->sprites[46].flags |= SPRFLAG_HIDDEN;
+      FUN_08091e64(p, p->cursor.savedSlot);
+      EntityCC28_SetState(p, FUN_08093cc8, 1);
+    }
+  }
+}
 
 NAKED void FUN_08093cc8(EntityCC28* p) { INCFUNC("asm/func/FUN_08093cc8.inc"); }
 
 NAKED void FUN_08093d38(EntityCC28* p) { INCFUNC("asm/func/FUN_08093d38.inc"); }
 
-NAKED void FUN_08093de8(EntityCC28* p) { INCFUNC("asm/func/FUN_08093de8.inc"); }
+void FUN_08093e4c(EntityCC28* p);
+
+void FUN_08093de8(EntityCC28* p) {
+  if (FUN_0808c434(p, 0)) {
+    p->unk_9ee++;
+    if (p->unk_9ee > 7) {
+      p->sprites[46].flags |= SPRFLAG_HIDDEN;
+      FUN_08091e64(p, p->cursor.savedSlot);
+      EntityCC28_SetState(p, FUN_08093e4c, 1);
+      PlaySound_082406e0(0x10D);
+    }
+  }
+}
 
 NAKED void FUN_08093e4c(EntityCC28* p) { INCFUNC("asm/func/FUN_08093e4c.inc"); }
 
@@ -1313,7 +1938,27 @@ NAKED void FUN_08094200(EntityCC28* p) { INCFUNC("asm/func/FUN_08094200.inc"); }
 
 NAKED void FUN_08094440(EntityCC28* p) { INCFUNC("asm/func/FUN_08094440.inc"); }
 
-NAKED void FUN_080944f4(EntityCC28* p) { INCFUNC("asm/func/FUN_080944f4.inc"); }
+void SortValuable(slot32_t slot);  // src/item_082421f0.c
+
+void FUN_080944f4(EntityCC28* p) {
+  s32 result = FUN_0808b760(p);
+
+  if (result == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_08092744(p);
+  } else if (result == 1) {
+    PlaySound_082406e0(0xDD);
+    if (p->inValuableInventory == 0) {
+      SortInventory(0);
+    } else {
+      SortValuable(0);
+    }
+    p->cursor.savedRow = 0;
+    p->cursor.savedCol = 0;
+    p->cursor.savedSlot = 0;
+    FUN_08092744(p);
+  }
+}
 
 // はい/いいえの選択結果で、決定なら効果音を鳴らして次へ進み、キャンセルならテキストボックスを閉じる
 void FUN_0809455c(EntityCC28* p) {
@@ -1328,9 +1973,40 @@ void FUN_0809455c(EntityCC28* p) {
   }
 }
 
-NAKED void FUN_0809458c(EntityCC28* p) { INCFUNC("asm/func/FUN_0809458c.inc"); }
+void FUN_080945f4(EntityCC28* p);
 
-NAKED void FUN_080945f4(EntityCC28* p) { INCFUNC("asm/func/FUN_080945f4.inc"); }
+void FUN_0809458c(EntityCC28* p) {
+  s32 result = FUN_0808b760(p);
+
+  if (result == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_08092744(p);
+  } else if (result == 1) {
+    p->sprites[13].flags |= SPRFLAG_HIDDEN;
+    MessageWindow_Close();
+    FUN_08092300(p, 0, p->cursor.savedSlot, 20);
+    FUN_08091e48(p, p->cursor.savedSlot);
+    FUN_0809223c(p);
+    EntityCC28_SetState(p, FUN_080945f4, 1);
+  }
+}
+
+void FUN_08094660(EntityCC28* p);
+
+// 12フレームかけて46番のスプライトを退避先へ寄せ, 着いたら隠して次の状態へ移る
+void FUN_080945f4(EntityCC28* p) {
+  if (p->unk_9ee == 0) {
+    PlaySound_082406e0(0x38A);
+  }
+
+  p->unk_9ee++;
+  if (p->unk_9ee <= 11) {
+    FUN_0808ba20(&p->sprites[46].pos, p->unk_3b68, 12 - p->unk_9ee);
+  } else {
+    p->sprites[46].flags |= SPRFLAG_HIDDEN;
+    EntityCC28_SetState(p, FUN_08094660, 1);
+  }
+}
 
 NAKED void FUN_08094660(EntityCC28* p) { INCFUNC("asm/func/FUN_08094660.inc"); }
 
@@ -1374,7 +2050,27 @@ void FUN_08094d30(s32 param_1, u8* param_2, s8* param_3) { FUN_08094cdc(1, param
 
 NAKED void FUN_08094d48(unknown* w, u8* pc) { INCFUNC("asm/func/FUN_08094d48.inc"); }
 
-NAKED s32 FUN_08094e70(s32 param_1) { INCFUNC("asm/func/FUN_08094e70.inc"); }
+// 武器アイコンの絵柄番号を損耗度から決める, 特殊効果が付いているものは目減りが遅い
+s32 GetWeaponWearPose(WeaponData* w) {
+  s32 n;
+
+  if ((s16)w->quality > 0) {
+    n = Div(w->wear * 4, 200);
+    if (n > 3) {
+      n = 3;
+    }
+    return n + 0xD0;
+  }
+
+  if (*(u8*)&w->effects[2] != 0 || *(u8*)&w->effects[1] != 0) {
+    n = Div(w->wear * 4, 2000);
+    if (n > 3) {
+      n = 3;
+    }
+    return n + 0xD0;
+  }
+  return 0xCF;
+}
 
 NAKED void FUN_08094eb0(EntityCC28* p) { INCFUNC("asm/func/FUN_08094eb0.inc"); }
 
@@ -1404,7 +2100,21 @@ NAKED void weapon_08095d4c(EntityCC28* p) { INCFUNC("asm/func/weapon_08095d4c.in
 
 NAKED void FUN_08096024(EntityCC28* p) { INCFUNC("asm/func/FUN_08096024.inc"); }
 
-NAKED void FUN_080960c8(EntityCC28* p) { INCFUNC("asm/func/FUN_080960c8.inc"); }
+void FUN_080960c8(EntityCC28* p) {
+  s32 result = FUN_0808b760(p);
+
+  if (result == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_08095a5c(p);
+  } else if (result == 1) {
+    PlaySound_082406e0(0xDD);
+    SortWeapons(0);
+    p->cursor.savedRow = 0;
+    p->cursor.savedCol = 0;
+    p->cursor.savedSlot = 0;
+    FUN_08095a5c(p);
+  }
+}
 
 NAKED void FUN_0809611c(EntityCC28* p) { INCFUNC("asm/func/FUN_0809611c.inc"); }
 
@@ -1419,8 +2129,8 @@ void FUN_080962b0(EntityCC28* p) {
     PlaySound_082406e0(0xDE);
     FUN_08095a5c(p);
   } else if (result == 1) {
-    FUN_080956c4(p, 0, p->selectedSlot, 20);
-    FUN_08242c08(p->selectedSlot);
+    FUN_080956c4(p, 0, p->cursor.savedSlot, 20);
+    FUN_08242c08(p->cursor.savedSlot);
     FUN_0809536c(p);
     FUN_080954a8(p, 1);
     EntityCC28_SetState(p, FUN_0809630c, 1);
@@ -1445,7 +2155,25 @@ NAKED void FUN_080967c0(EntityCC28* p) { INCFUNC("asm/func/FUN_080967c0.inc"); }
 
 NAKED void FUN_08096a34(EntityCC28* p) { INCFUNC("asm/func/FUN_08096a34.inc"); }
 
-NAKED void FUN_08096af0(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_08096af0.inc"); }
+// 枠番号から画面上の表示位置を出す
+void FUN_08096af0(WorldPos* pos, s32 idx) {
+  if (idx <= 15) {
+    pos->x = (idx & 3) * 24 + 144;
+    pos->y = (idx >> 2) * 24 + 32;
+  } else if (idx == 21) {
+    pos->x = 120;
+    pos->y = 104;
+  } else if (idx == 20) {
+    pos->x = 117;
+    pos->y = 70;
+  } else if (idx == 16) {
+    pos->x = 64;
+    pos->y = 76;
+  } else {
+    pos->x = 144;
+    pos->y = 32;
+  }
+}
 
 NAKED void FUN_08096b44(EntityCC28* p) { INCFUNC("asm/func/FUN_08096b44.inc"); }
 
@@ -1453,7 +2181,17 @@ NAKED void FUN_08096bb8(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_0809
 
 NAKED void FUN_08096cac(EntityCC28* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_08096cac.inc"); }
 
-NAKED s32 FUN_08096d40(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_08096d40.inc"); }
+// 枠の防具が選べるかどうかを返す, 値段が付いているものは 0x11
+s32 FUN_08096d40(EntityCC28* p, s32 slot) {
+  if (p->unk_3fe0[slot] < 0 || slot == p->unk_3fdc) {
+    return 0;
+  }
+
+  if (gArmorDB[p->unk_3fe0[slot]].price == 0) {
+    return 1;
+  }
+  return 0x11;
+}
 
 NAKED void FUN_08096d90(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_08096d90.inc"); }
 
@@ -1469,7 +2207,21 @@ NAKED void FUN_080971c4(EntityCC28* p) { INCFUNC("asm/func/FUN_080971c4.inc"); }
 
 NAKED void FUN_0809748c(EntityCC28* p) { INCFUNC("asm/func/FUN_0809748c.inc"); }
 
-NAKED void FUN_08097530(EntityCC28* p) { INCFUNC("asm/func/FUN_08097530.inc"); }
+void FUN_08097530(EntityCC28* p) {
+  s32 result = FUN_0808b760(p);
+
+  if (result == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_08096fa8(p);
+  } else if (result == 1) {
+    PlaySound_082406e0(0xDD);
+    SortArmors(0);
+    p->cursor.savedRow = 0;
+    p->cursor.savedCol = 0;
+    p->cursor.savedSlot = 0;
+    FUN_08096fa8(p);
+  }
+}
 
 NAKED void FUN_08097584(EntityCC28* p) { INCFUNC("asm/func/FUN_08097584.inc"); }
 
@@ -1528,7 +2280,13 @@ NAKED void FUN_080985ec(unknown* p) { INCFUNC("asm/func/FUN_080985ec.inc"); }
 
 NAKED void FUN_08098684(EntityCC28* p) { INCFUNC("asm/func/FUN_08098684.inc"); }
 
-NAKED void FUN_08098734(EntityCC28* p) { INCFUNC("asm/func/FUN_08098734.inc"); }
+void FUN_08098734(EntityCC28* p) {
+  s32 i;
+
+  for (i = 0; i < 16; i++) {
+    FUN_08097ca0(&p->sprites[i + 17].pos, i);
+  }
+}
 
 void FUN_08098758(EntityCC28* p) {
   s32 i;
@@ -1580,24 +2338,67 @@ NAKED void FUN_0809895c(s32 param_1) { INCFUNC("asm/func/FUN_0809895c.inc"); }
 
 NAKED void FUN_080989c4(EntityCC28* p) { INCFUNC("asm/func/FUN_080989c4.inc"); }
 
-NAKED void FUN_08098a98(s32 param_1, s32 param_2, MainSpriteGfx* param_3, MainSprite* param_4, MainSprite* param_5) { INCFUNC("asm/func/FUN_08098a98.inc"); }
+// 2桁の数値を十の位と一の位のスプライトに出す, 増減の符号で絵柄の組を変える
+void FUN_08098a98(s32 base, s32 delta, MainSpriteGfx* gfx, MainSprite* tens, MainSprite* ones) {
+  s32 value = base + delta;
+  s32 high = Div(value, 10);
+  s32 low = value - high * 10;
+  s32 poseBase = 10;
+
+  if (delta <= 0) {
+    poseBase = 0;
+    if (delta < 0) {
+      poseBase = 20;
+    }
+  }
+
+  MainSprite_SetPose(tens, gfx, poseBase + high, 1);
+  MainSprite_SetPose(ones, gfx, poseBase + low, 1);
+}
 
 NAKED void FUN_08098af4(EntityCC28* p) { INCFUNC("asm/func/FUN_08098af4.inc"); }
 
-NAKED void FUN_08098bdc(EntityCC28* p) { INCFUNC("asm/func/FUN_08098bdc.inc"); }
+// 2列8枚のスプライトを8ドットずつ下げながら並べて見せる
+void FUN_08098bdc(EntityCC28* p) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    p->sprites[i * 2 + 48].flags &= ~SPRFLAG_HIDDEN;
+    p->sprites[i * 2 + 48].pos.x = 40;
+    p->sprites[i * 2 + 48].pos.y = i * 8 + 104;
+    p->sprites[i * 2 + 49].flags &= ~SPRFLAG_HIDDEN;
+    p->sprites[i * 2 + 49].pos.x = 48;
+    p->sprites[i * 2 + 49].pos.y = i * 8 + 104;
+  }
+  FUN_08098af4(p);
+}
 
 NAKED void FUN_08098c24(EntityCC28* p) { INCFUNC("asm/func/FUN_08098c24.inc"); }
 
 NAKED void FUN_08098d98(EntityCC28* p) { INCFUNC("asm/func/FUN_08098d98.inc"); }
 
-// 46番のスプライトにポーズを入れ, 13番の y を unk_4000[2] の8倍に合わせる
+// 46番のスプライトにポーズを入れ, 13番の y を unk_4002[0] の8倍に合わせる
 void FUN_08098e48(EntityCC28* p) {
   p->sprites[13].pos.x = 0;
-  p->sprites[13].pos.y = p->unk_4000[2] << 3;
-  MainSprite_SetPose(&p->sprites[46], p->gfx, p->unk_4000[2] + 0x42, 1);
+  p->sprites[13].pos.y = p->unk_4002[0] << 3;
+  MainSprite_SetPose(&p->sprites[46], p->gfx, p->unk_4002[0] + 0x42, 1);
 }
 
-NAKED void FUN_08098e88(EntityCC28* p) { INCFUNC("asm/func/FUN_08098e88.inc"); }
+// 振り分けたステータスポイントを確定して, 残りポイントも書き戻す
+// 残差は38/37命令, 原典は gStat + i*2 を作ってから 0x18 を変位として残す
+NON_MATCH void FUN_08098e88(EntityCC28* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    gStat->stats[i] += p->unk_4008[i];
+    p->unk_4008[i] = 0;
+  }
+  gStat->statusPoint = p->unk_4000;
+#else
+  INCFUNC("asm/func/FUN_08098e88.inc");
+#endif
+}
 
 NAKED void FUN_08098edc(EntityCC28* p) { INCFUNC("asm/func/FUN_08098edc.inc"); }
 
@@ -1666,10 +2467,10 @@ s32 FUN_08099b84(s32 n) {
 NAKED void FUN_08099b9c(EntityCC28* p) { INCFUNC("asm/func/FUN_08099b9c.inc"); }
 
 void FUN_08099c1c(EntityCC28* p) {
-  p->unk_4000[13] = 0;
-  p->unk_4000[14] = gStat->controlUp;
-  p->unk_4000[15] = FUN_08099b5c();
-  p->unk_4000[16] = gStat->markerEnabled;
+  p->unk_400c[1] = 0;
+  p->unk_400c[2] = gStat->controlUp;
+  p->unk_400c[3] = FUN_08099b5c();
+  p->unk_400c[4] = gStat->markerEnabled;
 }
 
 NAKED void FUN_08099c64(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_08099c64.inc"); }
@@ -1704,9 +2505,39 @@ NAKED void FUN_0809a084(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a084.inc"); }
 
 NAKED void FUN_0809a130(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a130.inc"); }
 
-NAKED void FUN_0809a1a4(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a1a4.inc"); }
+void FUN_0809a20c(EntityCC28* p);
 
-NAKED void FUN_0809a20c(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a20c.inc"); }
+void FUN_0809a1a4(EntityCC28* p) {
+  s32 result = FUN_0808b760(p);
+
+  if (result == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_08099b3c(17);
+    TextPanel_Hide(p->textPanelID);
+    FUN_0808c658(p, 0, -1);
+    EntityCC28_SetState(p, FUN_0809a130, 0);
+  } else if (result == 1) {
+    PlaySound_082406e0(0xDD);
+    FUN_08099b3c(19);
+    EntityCC28_SetState(p, FUN_0809a20c, 1);
+  }
+}
+
+void FUN_0823d22c(void);  // src/code_0823cd04.c
+
+void FUN_0809a20c(EntityCC28* p) {
+  gSoftResetInhibit = TRUE;
+
+  p->unk_9ee++;
+  if (p->unk_9ee > 119) {
+    FUN_08099b3c(17);
+    TextPanel_Hide(p->textPanelID);
+    FUN_0808c658(p, 0, -1);
+    EntityCC28_SetState(p, FUN_0809a130, 0);
+    p->unk_400c[0] = 30;
+    FUN_0823d22c();
+  }
+}
 
 NAKED void FUN_0809a274(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a274.inc"); }
 
@@ -1722,7 +2553,21 @@ void FUN_0809a324(EntityCC28* p) {
 
 NAKED void FUN_0809a368(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a368.inc"); }
 
-NAKED void FUN_0809a3f4(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a3f4.inc"); }
+void FUN_0809a448(EntityCC28* p);
+
+void FUN_0809a3f4(EntityCC28* p) {
+  s32 result = FUN_0808b760(p);
+
+  if (result == 0) {
+    PlaySound_082406e0(0xDE);
+    FUN_08099b3c(8);
+    FUN_0808c658(p, 0, -1);
+    EntityCC28_SetState(p, FUN_0809a324, 0);
+  } else if (result == 1) {
+    PlaySound_082406e0(0xDD);
+    EntityCC28_SetState(p, FUN_0809a448, 1);
+  }
+}
 
 NAKED void FUN_0809a448(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a448.inc"); }
 
@@ -1741,9 +2586,35 @@ void FUN_0809a4c0(EntityCC28* p) {
   }
 }
 
-NAKED void FUN_0809a510(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a510.inc"); }
+void FUN_0809a510(EntityCC28* p) {
+  if (p->unk_9ee == 0) {
+    PlaySound_082406e0(0x2AE);
+    TextPanel_Hide(p->textPanelID);
+    FUN_08099b3c(14);
+  }
 
-NAKED void FUN_0809a574(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a574.inc"); }
+  p->unk_9ee++;
+  if (p->unk_9ee > 119) {
+    FUN_08099b3c(8);
+    FUN_0808c658(p, 0, -1);
+    EntityCC28_SetState(p, FUN_0809a324, 0);
+  }
+}
+
+void FUN_0809a574(EntityCC28* p) {
+  if (p->unk_9ee == 0) {
+    PlaySound_082406e0(0x192);
+    TextPanel_Hide(p->textPanelID);
+    FUN_08099b3c(15);
+  }
+
+  p->unk_9ee++;
+  if (p->unk_9ee > 119) {
+    FUN_08099b3c(8);
+    FUN_0808c658(p, 0, -1);
+    EntityCC28_SetState(p, FUN_0809a324, 0);
+  }
+}
 
 NAKED void FUN_0809a5d8(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a5d8.inc"); }
 
@@ -1824,7 +2695,23 @@ NAKED void FUN_0809ae0c(EntityCC28* p) { INCFUNC("asm/func/FUN_0809ae0c.inc"); }
 
 NAKED void FUN_0809aeb0(EntityCC28* p) { INCFUNC("asm/func/FUN_0809aeb0.inc"); }
 
-NAKED void FUN_0809b12c(EntityCC28* p) { INCFUNC("asm/func/FUN_0809b12c.inc"); }
+void FUN_0809b180(EntityCC28* p);
+
+// フェードの進み具合を9枚のスプライトへ配り, 0 に戻ったら次の状態へ移る
+void FUN_0809b12c(EntityCC28* p) {
+  s32 i;
+
+  FUN_0808a458(0x40, 0x1084);
+  p->sprites[3].pos.x += 15;
+  if (p->sprites[3].pos.x >= 0) {
+    p->sprites[3].pos.x = 0;
+    FUN_0808a33c(p, FUN_0809b180);
+  }
+
+  for (i = 0; i < 9; i++) {
+    p->sprites[i + 4].pos.x = p->sprites[3].pos.x;
+  }
+}
 
 NAKED void FUN_0809b180(EntityCC28* p) { INCFUNC("asm/func/FUN_0809b180.inc"); }
 
@@ -1995,11 +2882,39 @@ void FUN_0809c464(void) {
   }
 }
 
-NAKED void FUN_0809c4f4(void) { INCFUNC("asm/func/FUN_0809c4f4.inc"); }
+void FUN_0809c4f4(void) {
+  EntityCC28* p = gEntityCC28;
 
-NAKED void FUN_0809c544(void* param_1) { INCFUNC("asm/func/FUN_0809c544.inc"); }
+  if (p != NULL && p->unk_9fc == 0 && p->unk_9fe <= 2) {
+    FUN_0808c95c(p, 0, 0xE0, 0x90);
+    p->unk_c0c[3].unk_61 = 6;
+    PlaySound_082406e0(0x382);
+  }
+}
 
-NAKED void FUN_0809c58c(void) { INCFUNC("asm/func/FUN_0809c58c.inc"); }
+void FUN_0809c544(u16* param_1) {
+  EntityCC28* p = gEntityCC28;
+
+  if (p != NULL) {
+    p->unk_a9c = param_1;
+    p->unk_a97 = 1;
+    if (gFlag030047a4 & FLAG030047A4_LINK) {
+      p->unk_a98 = 1;
+    }
+  }
+}
+
+void FUN_0809c58c(void) {
+  EntityCC28* p = gEntityCC28;
+
+  if (p != NULL) {
+    p->unk_a9c = NULL;
+    p->unk_aa0[0].flags |= SPRFLAG_HIDDEN;
+    p->unk_aa0[1].flags |= SPRFLAG_HIDDEN;
+    p->unk_a97 = 0;
+    p->unk_a98 = 0;
+  }
+}
 
 void FUN_0809c5dc(void) {
   if (gEntityCC28 != NULL) {
@@ -2029,11 +2944,22 @@ void FUN_0809c63c(void) {
 
 NAKED void FUN_0809c668(EntityCC28* p) { INCFUNC("asm/func/FUN_0809c668.inc"); }
 
-NAKED void FUN_0809c70c(void) { INCFUNC("asm/func/FUN_0809c70c.inc"); }
+NAKED void FUN_0809c70c(EntityCC28* p) { INCFUNC("asm/func/FUN_0809c70c.inc"); }
 
 NAKED void FUN_0809c780(EntityCC28* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_0809c780.inc"); }
 
-NAKED void FUN_0809c880(EntityCC28* p) { INCFUNC("asm/func/FUN_0809c880.inc"); }
+void FUN_0809c880(EntityCC28* p) {
+  if (p->player != NULL && p->unk_9fe != 7 && p->unk_9fe <= 2) {
+    FUN_0808a610(p, 0, 3, 1);
+    FUN_0808a768(p, 0, 3, 2);
+    FUN_0809c780(p, 0, 9, 18);
+    FUN_0808afac(p);
+    FUN_0808ad5c(p);
+    FUN_0809c668(p);
+    FUN_0809c70c(p);
+    FUN_0808b1bc(p);
+  }
+}
 
 // 残差1命令, 原典は 0x9DF と 0x9E0 のオフセットを別々に作るが agbcc は前者を使い回して add #1 に畳む, ローカル分割 (Player* / 添字) は試済
 NON_MATCH s32 FUN_0809c8e8(EntityCC28* p) {
@@ -3059,7 +3985,7 @@ void FUN_08091860(struct EntityCC28* p, s32 param_2, s32 param_3);
 void FUN_0809193c(struct EntityCC28* p, u32 param_2);
 void FUN_08091a34(struct EntityCC28* p, s32 param_2, u8 param_3);
 void FUN_080919a4(struct EntityCC28* p, u16 param_2, s16 param_3);
-void FUN_08091adc(struct EntityCC28* p, s8 param_2, u16 param_3);
+void FUN_08091adc(struct EntityCC28* p, s32 param_2, s32 param_3);
 void FUN_08091b40(struct EntityCC28* p, u8 val);
 void FUN_08091b68(struct EntityCC28* p);
 void FUN_08091bbc(struct EntityCC28* p);

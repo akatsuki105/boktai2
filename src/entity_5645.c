@@ -43,11 +43,11 @@ typedef struct {
   AuxSpriteGfx auxGfx1;          // 0x17EC, SPRITE_EFF_1C1B, plttID に 0x7584 を入れ、パレットを pltt に向ける
   rgb555 pltt[16];               // 0x1808, _Init が全部 0x5294 で埋める
   MainSpriteGfx mainGfx;         // 0x1828, SPRITE_UI_START_MENU
-  MainSprite mainSprites1[4];    // 0x1848, metaspriteIdx 30 で登録
+  MainSprite mainSprites1[4];    // 0x1848, poseIdx 30 で登録
   MainSprite mainSprites2[4];    // 0x19C8, 同上だが最初は非表示
   MainSprite mainSprites3[3];    // 0x1B48, 同上
   AuxSpriteGfx auxGfx2;          // 0x1C68, SPRITE_PANTHER_BONUS, ブラックパンサー(ミニゲーム)用
-  AuxSprite auxSprites1[6];      // 0x1C84, metaspriteIdx は 3,4,7,8,9,10, unk_44 に応じて表示が切り替わる
+  AuxSprite auxSprites1[6];      // 0x1C84, poseIdx は 3,4,7,8,9,10, unk_44 に応じて表示が切り替わる
   AuxSpriteGfx auxGfx3;          // 0x1D8C, SPRITE_COMBO_SCORE, ブラックパンサー(ミニゲーム)用
   AuxSprite auxSprites2[2];      // 0x1DA8
   u8 unk_1e00[0x1E0C - 0x1E00];  // 0x1E00

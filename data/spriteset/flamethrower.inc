@@ -1,562 +1,432 @@
-SpriteSetFile3: @ 0x08B81EC4
-	.2byte 657 @ palStart
-	.2byte 63 @ metaspriteCount
-	.2byte 19 @ animationCount
-	.2byte 163 @ subspriteCount
-	.2byte 77 @ cmdCount
-	.2byte 512 @ tileCount
-	.4byte 0x00000020, 0x0000050C, 0x000005A4, 0x00000ABC, 0x00000BF0
-	@ Metasprites
-		.2byte 0x6D67, 0x0001, 0x0000, 0x0000, 0xFFF4, 0xFFEC, 0x0004, 0x0000
-		.4byte 0x0 @ subspriteOffset
-		.2byte 0x6D68, 0x0001, 0x0000, 0x0000, 0xFFF4, 0xFFEC, 0x0004, 0x0000
-		.4byte 0x8 @ subspriteOffset
-		.2byte 0x6D69, 0x0001, 0x0000, 0x0000, 0xFFF4, 0xFFEC, 0x0004, 0x0000
-		.4byte 0x10 @ subspriteOffset
-		.2byte 0x6D6A, 0x0001, 0x0000, 0x0000, 0xFFF4, 0xFFEC, 0x0004, 0x0000
-		.4byte 0x18 @ subspriteOffset
-		.2byte 0x6D6B, 0x0001, 0x0000, 0x0000, 0xFFF4, 0xFFEC, 0x0004, 0x0000
-		.4byte 0x20 @ subspriteOffset
-		.2byte 0x6D6C, 0x0001, 0x0000, 0x0000, 0xFFD2, 0xFFCA, 0x0012, 0x000A
-		.4byte 0x28 @ subspriteOffset
-		.2byte 0x6D6D, 0x0003, 0x0000, 0x0000, 0xFFE3, 0xFFDC, 0x0023, 0x001C
-		.4byte 0x30 @ subspriteOffset
-		.2byte 0x6D6E, 0x0003, 0x0000, 0x0000, 0xFFF0, 0xFFE8, 0x0030, 0x0028
-		.4byte 0x48 @ subspriteOffset
-		.2byte 0x6D6F, 0x0003, 0x0000, 0x0000, 0xFFF0, 0xFFE0, 0x0030, 0x0028
-		.4byte 0x60 @ subspriteOffset
-		.2byte 0x6D70, 0x0003, 0x0000, 0x0000, 0xFFF0, 0xFFE0, 0x0030, 0x0028
-		.4byte 0x78 @ subspriteOffset
-		.2byte 0x6D98, 0x0004, 0x0000, 0x0000, 0xFFF0, 0xFFDD, 0x0030, 0x0025
-		.4byte 0x90 @ subspriteOffset
-		.2byte 0x6D99, 0x0003, 0x0000, 0x0000, 0xFFF0, 0xFFE7, 0x0030, 0x0027
-		.4byte 0xB0 @ subspriteOffset
-		.2byte 0x6D9A, 0x0001, 0x0000, 0x0000, 0xFFF0, 0xFFE2, 0x0030, 0x0022
-		.4byte 0xC8 @ subspriteOffset
-		.2byte 0x6D9B, 0x0001, 0x0000, 0x0000, 0xFFF8, 0xFFE0, 0x0038, 0x0020
-		.4byte 0xD0 @ subspriteOffset
-		.2byte 0x6D9C, 0x0001, 0x0000, 0x0000, 0x0000, 0xFFEF, 0x0028, 0x000F
-		.4byte 0xD8 @ subspriteOffset
-		.2byte 0x6D9D, 0x0001, 0x0000, 0x0000, 0x0000, 0xFFF0, 0x0027, 0x0010
-		.4byte 0xE0 @ subspriteOffset
-		.2byte 0x6D87, 0x0004, 0x0000, 0x0000, 0xFFF0, 0xFFF0, 0x0040, 0x0034
-		.4byte 0xE8 @ subspriteOffset
-		.2byte 0x6D88, 0x0004, 0x0000, 0x0000, 0xFFF0, 0xFFEC, 0x0040, 0x0034
-		.4byte 0x108 @ subspriteOffset
-		.2byte 0x6D89, 0x0004, 0x0000, 0x0000, 0xFFF0, 0xFFEC, 0x0040, 0x0034
-		.4byte 0x128 @ subspriteOffset
-		.2byte 0x6D8A, 0x0004, 0x0000, 0x0000, 0xFFF0, 0xFFEC, 0x0040, 0x0034
-		.4byte 0x148 @ subspriteOffset
-		.2byte 0x6D8B, 0x0005, 0x0000, 0x0000, 0x0000, 0xFFF8, 0x0040, 0x0038
-		.4byte 0x168 @ subspriteOffset
-		.2byte 0x6D8C, 0x0001, 0x0000, 0x0000, 0x0000, 0xFFF2, 0x0040, 0x0032
-		.4byte 0x190 @ subspriteOffset
-		.2byte 0x6D8D, 0x0001, 0x0000, 0x0000, 0x0000, 0xFFEF, 0x0047, 0x002F
-		.4byte 0x198 @ subspriteOffset
-		.2byte 0x6D8E, 0x0001, 0x0000, 0x0000, 0x0000, 0xFFFF, 0x0038, 0x001F
-		.4byte 0x1A0 @ subspriteOffset
-		.2byte 0x6D8F, 0x0001, 0x0000, 0x0000, 0x0000, 0xFFFF, 0x0036, 0x001F
-		.4byte 0x1A8 @ subspriteOffset
-		.2byte 0x6D90, 0x0005, 0x0000, 0x0000, 0xFFF0, 0xFFF0, 0x0050, 0x0044
-		.4byte 0x1B0 @ subspriteOffset
-		.2byte 0x6DB8, 0x0005, 0x0000, 0x0000, 0xFFF0, 0xFFF0, 0x0050, 0x0044
-		.4byte 0x1D8 @ subspriteOffset
-		.2byte 0x6DB9, 0x0005, 0x0000, 0x0000, 0xFFF0, 0xFFF0, 0x0050, 0x0044
-		.4byte 0x200 @ subspriteOffset
-		.2byte 0x6DBA, 0x0005, 0x0000, 0x0000, 0xFFF0, 0xFFF0, 0x0050, 0x0044
-		.4byte 0x228 @ subspriteOffset
-		.2byte 0x6DBB, 0x0006, 0x0000, 0x0000, 0x0000, 0x0000, 0x0050, 0x0048
-		.4byte 0x250 @ subspriteOffset
-		.2byte 0x6DBC, 0x0001, 0x0000, 0x0000, 0x0000, 0x0000, 0x0050, 0x0042
-		.4byte 0x280 @ subspriteOffset
-		.2byte 0x6DBD, 0x0001, 0x0000, 0x0000, 0x0000, 0xFFFF, 0x0057, 0x003F
-		.4byte 0x288 @ subspriteOffset
-		.2byte 0x6DA7, 0x0001, 0x0000, 0x0000, 0x0000, 0x0000, 0x0048, 0x002F
-		.4byte 0x290 @ subspriteOffset
-		.2byte 0x6DA8, 0x0001, 0x0000, 0x0000, 0x0000, 0x0000, 0x0047, 0x0030
-		.4byte 0x298 @ subspriteOffset
-		.2byte 0x6DA9, 0x0001, 0x0000, 0x0000, 0xFFC9, 0xFFCF, 0x0009, 0x000F
-		.4byte 0x2A0 @ subspriteOffset
-		.2byte 0x6DAA, 0x0003, 0x0000, 0x0000, 0xFFBC, 0xFFE0, 0x000C, 0x0020
-		.4byte 0x2A8 @ subspriteOffset
-		.2byte 0x6DAB, 0x0003, 0x0000, 0x0000, 0xFFB0, 0xFFE8, 0x0000, 0x0028
-		.4byte 0x2C0 @ subspriteOffset
-		.2byte 0x6DAC, 0x0003, 0x0000, 0x0000, 0xFFB0, 0xFFE0, 0x0000, 0x0028
-		.4byte 0x2D8 @ subspriteOffset
-		.2byte 0x6DAD, 0x0003, 0x0000, 0x0000, 0xFFB0, 0xFFE0, 0x0000, 0x0028
-		.4byte 0x2F0 @ subspriteOffset
-		.2byte 0x6DAE, 0x0004, 0x0000, 0x0000, 0xFFB0, 0xFFE0, 0x0000, 0x0028
-		.4byte 0x308 @ subspriteOffset
-		.2byte 0x6DAF, 0x0003, 0x0000, 0x0000, 0xFFAE, 0xFFEC, 0x0000, 0x002C
-		.4byte 0x328 @ subspriteOffset
-		.2byte 0x6DB0, 0x0001, 0x0000, 0x0000, 0xFFB3, 0xFFE2, 0x0000, 0x0022
-		.4byte 0x340 @ subspriteOffset
-		.2byte 0x6DD8, 0x0001, 0x0000, 0x0000, 0xFFAE, 0xFFDE, 0x0000, 0x001E
-		.4byte 0x348 @ subspriteOffset
-		.2byte 0x6DD9, 0x0001, 0x0000, 0x0000, 0xFFCE, 0xFFEE, 0x0000, 0x000E
-		.4byte 0x350 @ subspriteOffset
-		.2byte 0x6DDA, 0x0001, 0x0000, 0x0000, 0xFFD0, 0xFFEF, 0x0000, 0x000F
-		.4byte 0x358 @ subspriteOffset
-		.2byte 0x6DDB, 0x0004, 0x0000, 0x0000, 0xFFA0, 0xFFF0, 0x0000, 0x0034
-		.4byte 0x360 @ subspriteOffset
-		.2byte 0x6DDC, 0x0004, 0x0000, 0x0000, 0xFFA0, 0xFFEC, 0x0000, 0x0034
-		.4byte 0x380 @ subspriteOffset
-		.2byte 0x6DDD, 0x0004, 0x0000, 0x0000, 0xFFA0, 0xFFEC, 0x0000, 0x0034
-		.4byte 0x3A0 @ subspriteOffset
-		.2byte 0x6DC7, 0x0004, 0x0000, 0x0000, 0xFFA0, 0xFFEC, 0x0000, 0x0034
-		.4byte 0x3C0 @ subspriteOffset
-		.2byte 0x6DC8, 0x0005, 0x0000, 0x0000, 0xFF9B, 0xFFF8, 0x0000, 0x0038
-		.4byte 0x3E0 @ subspriteOffset
-		.2byte 0x6DC9, 0x0001, 0x0000, 0x0000, 0xFFA0, 0xFFF0, 0x0000, 0x0030
-		.4byte 0x408 @ subspriteOffset
-		.2byte 0x6DCA, 0x0001, 0x0000, 0x0000, 0xFF9A, 0xFFEC, 0x0000, 0x002C
-		.4byte 0x410 @ subspriteOffset
-		.2byte 0x6DCB, 0x0001, 0x0000, 0x0000, 0xFFB9, 0xFFFE, 0x0000, 0x001E
-		.4byte 0x418 @ subspriteOffset
-		.2byte 0x6DCC, 0x0001, 0x0000, 0x0000, 0xFFBA, 0xFFFE, 0x0000, 0x001E
-		.4byte 0x420 @ subspriteOffset
-		.2byte 0x6DCD, 0x0005, 0x0000, 0x0000, 0xFF90, 0xFFF0, 0x0000, 0x0044
-		.4byte 0x428 @ subspriteOffset
-		.2byte 0x6DCE, 0x0005, 0x0000, 0x0000, 0xFF90, 0xFFF0, 0x0000, 0x0044
-		.4byte 0x450 @ subspriteOffset
-		.2byte 0x6DCF, 0x0005, 0x0000, 0x0000, 0xFF90, 0xFFF0, 0x0000, 0x0044
-		.4byte 0x478 @ subspriteOffset
-		.2byte 0x6DD0, 0x0005, 0x0000, 0x0000, 0xFF90, 0xFFF0, 0x0000, 0x0044
-		.4byte 0x4A0 @ subspriteOffset
-		.2byte 0x6DF8, 0x0006, 0x0000, 0x0000, 0xFF90, 0x0000, 0x0000, 0x0048
-		.4byte 0x4C8 @ subspriteOffset
-		.2byte 0x6DF9, 0x0001, 0x0000, 0x0000, 0xFF99, 0xFFFE, 0x0000, 0x003E
-		.4byte 0x4F8 @ subspriteOffset
-		.2byte 0x6DFA, 0x0001, 0x0000, 0x0000, 0xFF97, 0xFFF6, 0x0000, 0x0036
-		.4byte 0x500 @ subspriteOffset
-		.2byte 0x6DFB, 0x0001, 0x0000, 0x0000, 0xFFB6, 0x0000, 0x0000, 0x0027
-		.4byte 0x508 @ subspriteOffset
-		.2byte 0x6DFC, 0x0001, 0x0000, 0x0000, 0xFFB8, 0x0000, 0x0000, 0x0026
-		.4byte 0x510 @ subspriteOffset
-	@ Unk1
-		.byte 0x67, 0x31, 0x05, 0x00, 0x00, 0x00, 0x00, 0x00
-		.byte 0x68, 0x31, 0x02, 0x00, 0x14, 0x00, 0x00, 0x00
-		.byte 0x69, 0x31, 0x04, 0x00, 0x1C, 0x00, 0x00, 0x00
-		.byte 0x6A, 0x31, 0x05, 0x00, 0x2C, 0x00, 0x00, 0x00
-		.byte 0x6B, 0x31, 0x03, 0x00, 0x40, 0x00, 0x00, 0x00
-		.byte 0x6C, 0x31, 0x04, 0x00, 0x4C, 0x00, 0x00, 0x00
-		.byte 0x6D, 0x31, 0x05, 0x00, 0x5C, 0x00, 0x00, 0x00
-		.byte 0x6E, 0x31, 0x04, 0x00, 0x70, 0x00, 0x00, 0x00
-		.byte 0x6F, 0x31, 0x04, 0x00, 0x80, 0x00, 0x00, 0x00
-		.byte 0x70, 0x31, 0x05, 0x00, 0x90, 0x00, 0x00, 0x00
-		.byte 0x98, 0x31, 0x02, 0x00, 0xA4, 0x00, 0x00, 0x00
-		.byte 0x99, 0x31, 0x04, 0x00, 0xAC, 0x00, 0x00, 0x00
-		.byte 0x9A, 0x31, 0x05, 0x00, 0xBC, 0x00, 0x00, 0x00
-		.byte 0x9B, 0x31, 0x03, 0x00, 0xD0, 0x00, 0x00, 0x00
-		.byte 0x9C, 0x31, 0x04, 0x00, 0xDC, 0x00, 0x00, 0x00
-		.byte 0x9D, 0x31, 0x05, 0x00, 0xEC, 0x00, 0x00, 0x00
-		.byte 0x9E, 0x31, 0x04, 0x00, 0x00, 0x01, 0x00, 0x00
-		.byte 0x9F, 0x31, 0x04, 0x00, 0x10, 0x01, 0x00, 0x00
-		.byte 0xA0, 0x31, 0x05, 0x00, 0x20, 0x01, 0x00, 0x00
-	@ Subsprites
-		.byte 0x00, 0x02 @ flip, shape
-		.2byte -4, -12, (204 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x02 @ flip, shape
-		.2byte -4, -12, (205 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x02 @ flip, shape
-		.2byte -4, -12, (206 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x02 @ flip, shape
-		.2byte -4, -12, (207 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x02 @ flip, shape
-		.2byte -4, -12, (208 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte -14, -22, (136 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 3, -4, (144 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte -13, -4, (148 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x01 @ flip, shape
-		.2byte 3, -12, (132 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 16, 8, (8 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x00 @ flip, shape
-		.2byte 24, 0, (100 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 0, -8, (180 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 16, 8, (12 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x05 @ flip, shape
-		.2byte 16, 0, (96 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 0, -8, (198 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 16, 8, (72 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x05 @ flip, shape
-		.2byte 16, 0, (112 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 0, -8, (200 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 16, 5, (76 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x05 @ flip, shape
-		.2byte 16, -3, (128 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 0, -8, (202 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 0, -8, (209 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 16, 7, (144 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x01 @ flip, shape
-		.2byte 8, -1, (132 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 0, 7, (148 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 16, 2, (136 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 24, 0, (140 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 24, -1, (134 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 23, 0, (101 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 0, 0, (0 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 16, 4, (32 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 32, 20, (8 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x00 @ flip, shape
-		.2byte 40, 12, (100 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 0, 0, (2 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 16, 4, (34 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 32, 20, (12 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x05 @ flip, shape
-		.2byte 32, 12, (96 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 0, 0, (4 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 16, 4, (36 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 32, 20, (72 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x05 @ flip, shape
-		.2byte 32, 12, (112 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 0, 0, (6 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 16, 4, (38 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 32, 20, (76 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x05 @ flip, shape
-		.2byte 32, 12, (128 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 32, 24, (144 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x01 @ flip, shape
-		.2byte 24, 16, (132 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 16, 24, (148 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x00 @ flip, shape
-		.2byte 16, 16, (116 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x00 @ flip, shape
-		.2byte 16, 8, (116 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 32, 18, (136 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 39, 15, (140 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 40, 15, (134 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 38, 15, (101 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 0, 0, (0 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 16, 4, (32 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 48, 36, (8 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x00 @ flip, shape
-		.2byte 56, 28, (100 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 32, 20, (32 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 0, 0, (2 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 16, 4, (34 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 32, 20, (34 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 48, 36, (12 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x05 @ flip, shape
-		.2byte 48, 28, (96 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 0, 0, (4 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 16, 4, (36 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 32, 20, (36 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 48, 36, (72 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x05 @ flip, shape
-		.2byte 48, 28, (112 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 0, 0, (6 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 16, 4, (38 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 32, 20, (38 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 48, 36, (76 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x05 @ flip, shape
-		.2byte 48, 28, (128 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 48, 40, (144 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x01 @ flip, shape
-		.2byte 40, 32, (132 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 32, 40, (148 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x00 @ flip, shape
-		.2byte 32, 32, (116 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x00 @ flip, shape
-		.2byte 16, 16, (116 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x02 @ flip, shape
-		.2byte 24, 16, (103 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 48, 34, (136 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x08 @ flip, shape
-		.2byte 55, 31, (140 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0A @ flip, shape
-		.2byte 56, 31, (134 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte 55, 32, (101 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -23, -17, (136 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -36, 0, (144 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -4, 0, (148 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x01 @ flip, shape
-		.2byte -12, -8, (132 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -48, 8, (8 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x00 @ flip, shape
-		.2byte -24, 0, (100 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -16, -8, (180 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -48, 8, (12 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x05 @ flip, shape
-		.2byte -48, 0, (96 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -16, -8, (198 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -48, 8, (72 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x05 @ flip, shape
-		.2byte -48, 0, (112 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -16, -8, (200 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -48, 8, (76 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x05 @ flip, shape
-		.2byte -48, 0, (128 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -16, -8, (202 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -16, -8, (209 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -50, 12, (144 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x01 @ flip, shape
-		.2byte -34, 5, (132 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -18, 13, (148 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -45, 2, (136 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -50, -2, (140 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -34, -2, (134 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -32, -1, (101 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -16, 0, (0 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -32, 4, (32 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -64, 20, (8 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x00 @ flip, shape
-		.2byte -48, 12, (100 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -16, 0, (2 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -32, 4, (34 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -64, 20, (12 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x05 @ flip, shape
-		.2byte -64, 12, (96 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -16, 0, (4 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -32, 4, (36 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -64, 20, (72 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x05 @ flip, shape
-		.2byte -64, 12, (112 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -16, 0, (6 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -32, 4, (38 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -64, 20, (76 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x05 @ flip, shape
-		.2byte -64, 12, (128 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -69, 24, (144 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x01 @ flip, shape
-		.2byte -29, 16, (132 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -37, 24, (148 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x00 @ flip, shape
-		.2byte -45, 16, (116 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x00 @ flip, shape
-		.2byte -29, 8, (116 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -64, 16, (136 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -70, 12, (140 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -55, 14, (134 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -54, 14, (101 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -16, 0, (0 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -32, 4, (32 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -80, 36, (8 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x00 @ flip, shape
-		.2byte -72, 28, (100 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -48, 20, (32 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -16, 0, (2 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -32, 4, (34 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -48, 20, (34 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -80, 36, (12 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x05 @ flip, shape
-		.2byte -80, 28, (96 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -16, 0, (4 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -32, 4, (36 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -48, 20, (36 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -80, 36, (72 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x05 @ flip, shape
-		.2byte -80, 28, (112 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -16, 0, (6 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -32, 4, (38 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -48, 20, (38 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -80, 36, (76 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x05 @ flip, shape
-		.2byte -80, 28, (128 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -80, 40, (144 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x01 @ flip, shape
-		.2byte -40, 32, (132 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -48, 40, (148 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x00 @ flip, shape
-		.2byte -16, 16, (116 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x00 @ flip, shape
-		.2byte -32, 16, (116 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x02 @ flip, shape
-		.2byte -48, 24, (103 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -71, 30, (136 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x08 @ flip, shape
-		.2byte -73, 22, (140 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x0A @ flip, shape
-		.2byte -58, 23, (134 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x04, 0x04 @ flip, shape
-		.2byte -56, 22, (101 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-	@ Unk2
-		.byte 0x00, 0x00, 0x03, 0x00
-		.byte 0x01, 0x00, 0x03, 0x00
-		.byte 0x02, 0x00, 0x03, 0x00
-		.byte 0x03, 0x00, 0x03, 0x00
-		.byte 0x04, 0x00, 0x03, 0x00
-		.byte 0x05, 0x00, 0x03, 0x00
-		.byte 0x06, 0x00, 0x03, 0x00
-		.byte 0x07, 0x00, 0x02, 0x00
-		.byte 0x08, 0x00, 0x02, 0x00
-		.byte 0x09, 0x00, 0x02, 0x00
-		.byte 0x0A, 0x00, 0x02, 0x00
-		.byte 0x0B, 0x00, 0x05, 0x00
-		.byte 0x0C, 0x00, 0x05, 0x00
-		.byte 0x0D, 0x00, 0x05, 0x00
-		.byte 0x0E, 0x00, 0x05, 0x00
-		.byte 0x0F, 0x00, 0x05, 0x00
-		.byte 0x05, 0x00, 0x03, 0x00
-		.byte 0x06, 0x00, 0x03, 0x00
-		.byte 0x0A, 0x00, 0x03, 0x00
-		.byte 0x10, 0x00, 0x02, 0x00
-		.byte 0x11, 0x00, 0x02, 0x00
-		.byte 0x12, 0x00, 0x02, 0x00
-		.byte 0x13, 0x00, 0x02, 0x00
-		.byte 0x14, 0x00, 0x05, 0x00
-		.byte 0x15, 0x00, 0x05, 0x00
-		.byte 0x16, 0x00, 0x05, 0x00
-		.byte 0x17, 0x00, 0x05, 0x00
-		.byte 0x18, 0x00, 0x05, 0x00
-		.byte 0x05, 0x00, 0x03, 0x00
-		.byte 0x06, 0x00, 0x03, 0x00
-		.byte 0x09, 0x00, 0x03, 0x00
-		.byte 0x13, 0x00, 0x03, 0x00
-		.byte 0x19, 0x00, 0x02, 0x00
-		.byte 0x1A, 0x00, 0x02, 0x00
-		.byte 0x1B, 0x00, 0x02, 0x00
-		.byte 0x1C, 0x00, 0x02, 0x00
-		.byte 0x1D, 0x00, 0x05, 0x00
-		.byte 0x1E, 0x00, 0x05, 0x00
-		.byte 0x1F, 0x00, 0x05, 0x00
-		.byte 0x20, 0x00, 0x05, 0x00
-		.byte 0x21, 0x00, 0x05, 0x00
-		.byte 0x22, 0x00, 0x03, 0x00
-		.byte 0x23, 0x00, 0x03, 0x00
-		.byte 0x24, 0x00, 0x02, 0x00
-		.byte 0x25, 0x00, 0x02, 0x00
-		.byte 0x26, 0x00, 0x02, 0x00
-		.byte 0x27, 0x00, 0x02, 0x00
-		.byte 0x28, 0x00, 0x05, 0x00
-		.byte 0x29, 0x00, 0x05, 0x00
-		.byte 0x2A, 0x00, 0x05, 0x00
-		.byte 0x2B, 0x00, 0x05, 0x00
-		.byte 0x2C, 0x00, 0x05, 0x00
-		.byte 0x22, 0x00, 0x03, 0x00
-		.byte 0x23, 0x00, 0x03, 0x00
-		.byte 0x27, 0x00, 0x03, 0x00
-		.byte 0x2D, 0x00, 0x02, 0x00
-		.byte 0x2E, 0x00, 0x02, 0x00
-		.byte 0x2F, 0x00, 0x02, 0x00
-		.byte 0x30, 0x00, 0x02, 0x00
-		.byte 0x31, 0x00, 0x05, 0x00
-		.byte 0x32, 0x00, 0x05, 0x00
-		.byte 0x33, 0x00, 0x05, 0x00
-		.byte 0x34, 0x00, 0x05, 0x00
-		.byte 0x35, 0x00, 0x05, 0x00
-		.byte 0x22, 0x00, 0x03, 0x00
-		.byte 0x23, 0x00, 0x03, 0x00
-		.byte 0x26, 0x00, 0x03, 0x00
-		.byte 0x30, 0x00, 0x03, 0x00
-		.byte 0x36, 0x00, 0x02, 0x00
-		.byte 0x37, 0x00, 0x02, 0x00
-		.byte 0x38, 0x00, 0x01, 0x00
-		.byte 0x39, 0x00, 0x02, 0x00
-		.byte 0x3A, 0x00, 0x05, 0x00
-		.byte 0x3B, 0x00, 0x05, 0x00
-		.byte 0x3C, 0x00, 0x05, 0x00
-		.byte 0x3D, 0x00, 0x05, 0x00
-		.byte 0x3E, 0x00, 0x04, 0x00
-	@ Tiles
-		.incbin "data/spriteset/flamethrower.4bpp"
+File1BC7_Header:
+  .2byte 657 @ palStart
+  .2byte 63 @ metaspriteCount
+  .2byte 19 @ animationCount
+  .2byte 163 @ subspriteCount
+  .2byte 77 @ cmdCount
+  .2byte 512 @ tileCount
+  .4byte 32 @ offsetToPoses
+  .4byte 1292 @ offsetToAnims
+  .4byte 1444 @ offsetToSubsprites
+  .4byte 2748 @ offsetToCmds
+  .4byte 3056 @ offsetToTiles
+
+File1BC7_Poses:
+@ pose unk_0,  obj,               objcount,   bb
+  pose 0x6D67, File1BC7_Obj_0,    1,          -12,  -20,    4,    0
+  pose 0x6D68, File1BC7_Obj_1,    1,          -12,  -20,    4,    0
+  pose 0x6D69, File1BC7_Obj_2,    1,          -12,  -20,    4,    0
+  pose 0x6D6A, File1BC7_Obj_3,    1,          -12,  -20,    4,    0
+  pose 0x6D6B, File1BC7_Obj_4,    1,          -12,  -20,    4,    0
+  pose 0x6D6C, File1BC7_Obj_5,    1,          -46,  -54,   18,   10
+  pose 0x6D6D, File1BC7_Obj_6,    3,          -29,  -36,   35,   28
+  pose 0x6D6E, File1BC7_Obj_9,    3,          -16,  -24,   48,   40
+  pose 0x6D6F, File1BC7_Obj_12,   3,          -16,  -32,   48,   40
+  pose 0x6D70, File1BC7_Obj_15,   3,          -16,  -32,   48,   40
+  pose 0x6D98, File1BC7_Obj_18,   4,          -16,  -35,   48,   37
+  pose 0x6D99, File1BC7_Obj_22,   3,          -16,  -25,   48,   39
+  pose 0x6D9A, File1BC7_Obj_25,   1,          -16,  -30,   48,   34
+  pose 0x6D9B, File1BC7_Obj_26,   1,           -8,  -32,   56,   32
+  pose 0x6D9C, File1BC7_Obj_27,   1,            0,  -17,   40,   15
+  pose 0x6D9D, File1BC7_Obj_28,   1,            0,  -16,   39,   16
+  pose 0x6D87, File1BC7_Obj_29,   4,          -16,  -16,   64,   52
+  pose 0x6D88, File1BC7_Obj_33,   4,          -16,  -20,   64,   52
+  pose 0x6D89, File1BC7_Obj_37,   4,          -16,  -20,   64,   52
+  pose 0x6D8A, File1BC7_Obj_41,   4,          -16,  -20,   64,   52
+  pose 0x6D8B, File1BC7_Obj_45,   5,            0,   -8,   64,   56
+  pose 0x6D8C, File1BC7_Obj_50,   1,            0,  -14,   64,   50
+  pose 0x6D8D, File1BC7_Obj_51,   1,            0,  -17,   71,   47
+  pose 0x6D8E, File1BC7_Obj_52,   1,            0,   -1,   56,   31
+  pose 0x6D8F, File1BC7_Obj_53,   1,            0,   -1,   54,   31
+  pose 0x6D90, File1BC7_Obj_54,   5,          -16,  -16,   80,   68
+  pose 0x6DB8, File1BC7_Obj_59,   5,          -16,  -16,   80,   68
+  pose 0x6DB9, File1BC7_Obj_64,   5,          -16,  -16,   80,   68
+  pose 0x6DBA, File1BC7_Obj_69,   5,          -16,  -16,   80,   68
+  pose 0x6DBB, File1BC7_Obj_74,   6,            0,    0,   80,   72
+  pose 0x6DBC, File1BC7_Obj_80,   1,            0,    0,   80,   66
+  pose 0x6DBD, File1BC7_Obj_81,   1,            0,   -1,   87,   63
+  pose 0x6DA7, File1BC7_Obj_82,   1,            0,    0,   72,   47
+  pose 0x6DA8, File1BC7_Obj_83,   1,            0,    0,   71,   48
+  pose 0x6DA9, File1BC7_Obj_84,   1,          -55,  -49,    9,   15
+  pose 0x6DAA, File1BC7_Obj_85,   3,          -68,  -32,   12,   32
+  pose 0x6DAB, File1BC7_Obj_88,   3,          -80,  -24,    0,   40
+  pose 0x6DAC, File1BC7_Obj_91,   3,          -80,  -32,    0,   40
+  pose 0x6DAD, File1BC7_Obj_94,   3,          -80,  -32,    0,   40
+  pose 0x6DAE, File1BC7_Obj_97,   4,          -80,  -32,    0,   40
+  pose 0x6DAF, File1BC7_Obj_101,  3,          -82,  -20,    0,   44
+  pose 0x6DB0, File1BC7_Obj_104,  1,          -77,  -30,    0,   34
+  pose 0x6DD8, File1BC7_Obj_105,  1,          -82,  -34,    0,   30
+  pose 0x6DD9, File1BC7_Obj_106,  1,          -50,  -18,    0,   14
+  pose 0x6DDA, File1BC7_Obj_107,  1,          -48,  -17,    0,   15
+  pose 0x6DDB, File1BC7_Obj_108,  4,          -96,  -16,    0,   52
+  pose 0x6DDC, File1BC7_Obj_112,  4,          -96,  -20,    0,   52
+  pose 0x6DDD, File1BC7_Obj_116,  4,          -96,  -20,    0,   52
+  pose 0x6DC7, File1BC7_Obj_120,  4,          -96,  -20,    0,   52
+  pose 0x6DC8, File1BC7_Obj_124,  5,         -101,   -8,    0,   56
+  pose 0x6DC9, File1BC7_Obj_129,  1,          -96,  -16,    0,   48
+  pose 0x6DCA, File1BC7_Obj_130,  1,         -102,  -20,    0,   44
+  pose 0x6DCB, File1BC7_Obj_131,  1,          -71,   -2,    0,   30
+  pose 0x6DCC, File1BC7_Obj_132,  1,          -70,   -2,    0,   30
+  pose 0x6DCD, File1BC7_Obj_133,  5,         -112,  -16,    0,   68
+  pose 0x6DCE, File1BC7_Obj_138,  5,         -112,  -16,    0,   68
+  pose 0x6DCF, File1BC7_Obj_143,  5,         -112,  -16,    0,   68
+  pose 0x6DD0, File1BC7_Obj_148,  5,         -112,  -16,    0,   68
+  pose 0x6DF8, File1BC7_Obj_153,  6,         -112,    0,    0,   72
+  pose 0x6DF9, File1BC7_Obj_159,  1,         -103,   -2,    0,   62
+  pose 0x6DFA, File1BC7_Obj_160,  1,         -105,  -10,    0,   54
+  pose 0x6DFB, File1BC7_Obj_161,  1,          -74,    0,    0,   39
+  pose 0x6DFC, File1BC7_Obj_162,  1,          -72,    0,    0,   38
+
+File1BC7_Anims:
+@ animation unk_0,  cmd,             cmdCount
+  animation 0x3167, File1BC7_Cmd_0,  5
+  animation 0x3168, File1BC7_Cmd_5,  2
+  animation 0x3169, File1BC7_Cmd_7,  4
+  animation 0x316A, File1BC7_Cmd_11, 5
+  animation 0x316B, File1BC7_Cmd_16, 3
+  animation 0x316C, File1BC7_Cmd_19, 4
+  animation 0x316D, File1BC7_Cmd_23, 5
+  animation 0x316E, File1BC7_Cmd_28, 4
+  animation 0x316F, File1BC7_Cmd_32, 4
+  animation 0x3170, File1BC7_Cmd_36, 5
+  animation 0x3198, File1BC7_Cmd_41, 2
+  animation 0x3199, File1BC7_Cmd_43, 4
+  animation 0x319A, File1BC7_Cmd_47, 5
+  animation 0x319B, File1BC7_Cmd_52, 3
+  animation 0x319C, File1BC7_Cmd_55, 4
+  animation 0x319D, File1BC7_Cmd_59, 5
+  animation 0x319E, File1BC7_Cmd_64, 4
+  animation 0x319F, File1BC7_Cmd_68, 4
+  animation 0x31A0, File1BC7_Cmd_72, 5
+
+1:
+File1BC7_Subsprites:
+@   subsprite size,            x,    y,   tile,  pal
+  File1BC7_Obj_0:
+    subsprite OAM_SIZE_8x16,    -4,  -12,  204,    0
+  File1BC7_Obj_1:
+    subsprite OAM_SIZE_8x16,    -4,  -12,  205,    0
+  File1BC7_Obj_2:
+    subsprite OAM_SIZE_8x16,    -4,  -12,  206,    0
+  File1BC7_Obj_3:
+    subsprite OAM_SIZE_8x16,    -4,  -12,  207,    0
+  File1BC7_Obj_4:
+    subsprite OAM_SIZE_8x16,    -4,  -12,  208,    0
+  File1BC7_Obj_5:
+    subsprite OAM_SIZE_32x32,  -14,  -22,  136,    0
+  File1BC7_Obj_6:
+    subsprite OAM_SIZE_32x32,    3,   -4,  144,    0
+    subsprite OAM_SIZE_16x16,  -13,   -4,  148,    0
+    subsprite OAM_SIZE_16x8,     3,  -12,  132,    0
+  File1BC7_Obj_9:
+    subsprite OAM_SIZE_32x32,   16,    8,    8,    0
+    subsprite OAM_SIZE_8x8,     24,    0,  100,    0
+    subsprite OAM_SIZE_16x32,    0,   -8,  180,    0
+  File1BC7_Obj_12:
+    subsprite OAM_SIZE_32x32,   16,    8,   12,    0
+    subsprite OAM_SIZE_32x8,    16,    0,   96,    0
+    subsprite OAM_SIZE_16x32,    0,   -8,  198,    0
+  File1BC7_Obj_15:
+    subsprite OAM_SIZE_32x32,   16,    8,   72,    0
+    subsprite OAM_SIZE_32x8,    16,    0,  112,    0
+    subsprite OAM_SIZE_16x32,    0,   -8,  200,    0
+  File1BC7_Obj_18:
+    subsprite OAM_SIZE_32x32,   16,    5,   76,    0
+    subsprite OAM_SIZE_32x8,    16,   -3,  128,    0
+    subsprite OAM_SIZE_16x32,    0,   -8,  202,    0
+    subsprite OAM_SIZE_16x16,    0,   -8,  209,    0
+  File1BC7_Obj_22:
+    subsprite OAM_SIZE_32x32,   16,    7,  144,    0
+    subsprite OAM_SIZE_16x8,     8,   -1,  132,    0
+    subsprite OAM_SIZE_16x16,    0,    7,  148,    0
+  File1BC7_Obj_25:
+    subsprite OAM_SIZE_32x32,   16,    2,  136,    0
+  File1BC7_Obj_26:
+    subsprite OAM_SIZE_32x32,   24,    0,  140,    0
+  File1BC7_Obj_27:
+    subsprite OAM_SIZE_16x32,   24,   -1,  134,    0
+  File1BC7_Obj_28:
+    subsprite OAM_SIZE_16x16,   23,    0,  101,    0
+  File1BC7_Obj_29:
+    subsprite OAM_SIZE_16x16,    0,    0,    0,    0
+    subsprite OAM_SIZE_16x32,   16,    4,   32,    0
+    subsprite OAM_SIZE_32x32,   32,   20,    8,    0
+    subsprite OAM_SIZE_8x8,     40,   12,  100,    0
+  File1BC7_Obj_33:
+    subsprite OAM_SIZE_16x16,    0,    0,    2,    0
+    subsprite OAM_SIZE_16x32,   16,    4,   34,    0
+    subsprite OAM_SIZE_32x32,   32,   20,   12,    0
+    subsprite OAM_SIZE_32x8,    32,   12,   96,    0
+  File1BC7_Obj_37:
+    subsprite OAM_SIZE_16x16,    0,    0,    4,    0
+    subsprite OAM_SIZE_16x32,   16,    4,   36,    0
+    subsprite OAM_SIZE_32x32,   32,   20,   72,    0
+    subsprite OAM_SIZE_32x8,    32,   12,  112,    0
+  File1BC7_Obj_41:
+    subsprite OAM_SIZE_16x16,    0,    0,    6,    0
+    subsprite OAM_SIZE_16x32,   16,    4,   38,    0
+    subsprite OAM_SIZE_32x32,   32,   20,   76,    0
+    subsprite OAM_SIZE_32x8,    32,   12,  128,    0
+  File1BC7_Obj_45:
+    subsprite OAM_SIZE_32x32,   32,   24,  144,    0
+    subsprite OAM_SIZE_16x8,    24,   16,  132,    0
+    subsprite OAM_SIZE_16x16,   16,   24,  148,    0
+    subsprite OAM_SIZE_8x8,     16,   16,  116,    0
+    subsprite OAM_SIZE_8x8,     16,    8,  116,    0
+  File1BC7_Obj_50:
+    subsprite OAM_SIZE_32x32,   32,   18,  136,    0
+  File1BC7_Obj_51:
+    subsprite OAM_SIZE_32x32,   39,   15,  140,    0
+  File1BC7_Obj_52:
+    subsprite OAM_SIZE_16x32,   40,   15,  134,    0
+  File1BC7_Obj_53:
+    subsprite OAM_SIZE_16x16,   38,   15,  101,    0
+  File1BC7_Obj_54:
+    subsprite OAM_SIZE_16x16,    0,    0,    0,    0
+    subsprite OAM_SIZE_16x32,   16,    4,   32,    0
+    subsprite OAM_SIZE_32x32,   48,   36,    8,    0
+    subsprite OAM_SIZE_8x8,     56,   28,  100,    0
+    subsprite OAM_SIZE_16x32,   32,   20,   32,    0
+  File1BC7_Obj_59:
+    subsprite OAM_SIZE_16x16,    0,    0,    2,    0
+    subsprite OAM_SIZE_16x32,   16,    4,   34,    0
+    subsprite OAM_SIZE_16x32,   32,   20,   34,    0
+    subsprite OAM_SIZE_32x32,   48,   36,   12,    0
+    subsprite OAM_SIZE_32x8,    48,   28,   96,    0
+  File1BC7_Obj_64:
+    subsprite OAM_SIZE_16x16,    0,    0,    4,    0
+    subsprite OAM_SIZE_16x32,   16,    4,   36,    0
+    subsprite OAM_SIZE_16x32,   32,   20,   36,    0
+    subsprite OAM_SIZE_32x32,   48,   36,   72,    0
+    subsprite OAM_SIZE_32x8,    48,   28,  112,    0
+  File1BC7_Obj_69:
+    subsprite OAM_SIZE_16x16,    0,    0,    6,    0
+    subsprite OAM_SIZE_16x32,   16,    4,   38,    0
+    subsprite OAM_SIZE_16x32,   32,   20,   38,    0
+    subsprite OAM_SIZE_32x32,   48,   36,   76,    0
+    subsprite OAM_SIZE_32x8,    48,   28,  128,    0
+  File1BC7_Obj_74:
+    subsprite OAM_SIZE_32x32,   48,   40,  144,    0
+    subsprite OAM_SIZE_16x8,    40,   32,  132,    0
+    subsprite OAM_SIZE_16x16,   32,   40,  148,    0
+    subsprite OAM_SIZE_8x8,     32,   32,  116,    0
+    subsprite OAM_SIZE_8x8,     16,   16,  116,    0
+    subsprite OAM_SIZE_8x16,    24,   16,  103,    0
+  File1BC7_Obj_80:
+    subsprite OAM_SIZE_32x32,   48,   34,  136,    0
+  File1BC7_Obj_81:
+    subsprite OAM_SIZE_32x32,   55,   31,  140,    0
+  File1BC7_Obj_82:
+    subsprite OAM_SIZE_16x32,   56,   31,  134,    0
+  File1BC7_Obj_83:
+    subsprite OAM_SIZE_16x16,   55,   32,  101,    0
+  File1BC7_Obj_84:
+    subsprite OAM_SIZE_32x32,  -23,  -17,  136,    0, xflip=1
+  File1BC7_Obj_85:
+    subsprite OAM_SIZE_32x32,  -36,    0,  144,    0, xflip=1
+    subsprite OAM_SIZE_16x16,   -4,    0,  148,    0, xflip=1
+    subsprite OAM_SIZE_16x8,   -12,   -8,  132,    0, xflip=1
+  File1BC7_Obj_88:
+    subsprite OAM_SIZE_32x32,  -48,    8,    8,    0, xflip=1
+    subsprite OAM_SIZE_8x8,    -24,    0,  100,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -16,   -8,  180,    0, xflip=1
+  File1BC7_Obj_91:
+    subsprite OAM_SIZE_32x32,  -48,    8,   12,    0, xflip=1
+    subsprite OAM_SIZE_32x8,   -48,    0,   96,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -16,   -8,  198,    0, xflip=1
+  File1BC7_Obj_94:
+    subsprite OAM_SIZE_32x32,  -48,    8,   72,    0, xflip=1
+    subsprite OAM_SIZE_32x8,   -48,    0,  112,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -16,   -8,  200,    0, xflip=1
+  File1BC7_Obj_97:
+    subsprite OAM_SIZE_32x32,  -48,    8,   76,    0, xflip=1
+    subsprite OAM_SIZE_32x8,   -48,    0,  128,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -16,   -8,  202,    0, xflip=1
+    subsprite OAM_SIZE_16x16,  -16,   -8,  209,    0, xflip=1
+  File1BC7_Obj_101:
+    subsprite OAM_SIZE_32x32,  -50,   12,  144,    0, xflip=1
+    subsprite OAM_SIZE_16x8,   -34,    5,  132,    0, xflip=1
+    subsprite OAM_SIZE_16x16,  -18,   13,  148,    0, xflip=1
+  File1BC7_Obj_104:
+    subsprite OAM_SIZE_32x32,  -45,    2,  136,    0, xflip=1
+  File1BC7_Obj_105:
+    subsprite OAM_SIZE_32x32,  -50,   -2,  140,    0, xflip=1
+  File1BC7_Obj_106:
+    subsprite OAM_SIZE_16x32,  -34,   -2,  134,    0, xflip=1
+  File1BC7_Obj_107:
+    subsprite OAM_SIZE_16x16,  -32,   -1,  101,    0, xflip=1
+  File1BC7_Obj_108:
+    subsprite OAM_SIZE_16x16,  -16,    0,    0,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -32,    4,   32,    0, xflip=1
+    subsprite OAM_SIZE_32x32,  -64,   20,    8,    0, xflip=1
+    subsprite OAM_SIZE_8x8,    -48,   12,  100,    0, xflip=1
+  File1BC7_Obj_112:
+    subsprite OAM_SIZE_16x16,  -16,    0,    2,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -32,    4,   34,    0, xflip=1
+    subsprite OAM_SIZE_32x32,  -64,   20,   12,    0, xflip=1
+    subsprite OAM_SIZE_32x8,   -64,   12,   96,    0, xflip=1
+  File1BC7_Obj_116:
+    subsprite OAM_SIZE_16x16,  -16,    0,    4,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -32,    4,   36,    0, xflip=1
+    subsprite OAM_SIZE_32x32,  -64,   20,   72,    0, xflip=1
+    subsprite OAM_SIZE_32x8,   -64,   12,  112,    0, xflip=1
+  File1BC7_Obj_120:
+    subsprite OAM_SIZE_16x16,  -16,    0,    6,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -32,    4,   38,    0, xflip=1
+    subsprite OAM_SIZE_32x32,  -64,   20,   76,    0, xflip=1
+    subsprite OAM_SIZE_32x8,   -64,   12,  128,    0, xflip=1
+  File1BC7_Obj_124:
+    subsprite OAM_SIZE_32x32,  -69,   24,  144,    0, xflip=1
+    subsprite OAM_SIZE_16x8,   -29,   16,  132,    0, xflip=1
+    subsprite OAM_SIZE_16x16,  -37,   24,  148,    0, xflip=1
+    subsprite OAM_SIZE_8x8,    -45,   16,  116,    0, xflip=1
+    subsprite OAM_SIZE_8x8,    -29,    8,  116,    0, xflip=1
+  File1BC7_Obj_129:
+    subsprite OAM_SIZE_32x32,  -64,   16,  136,    0, xflip=1
+  File1BC7_Obj_130:
+    subsprite OAM_SIZE_32x32,  -70,   12,  140,    0, xflip=1
+  File1BC7_Obj_131:
+    subsprite OAM_SIZE_16x32,  -55,   14,  134,    0, xflip=1
+  File1BC7_Obj_132:
+    subsprite OAM_SIZE_16x16,  -54,   14,  101,    0, xflip=1
+  File1BC7_Obj_133:
+    subsprite OAM_SIZE_16x16,  -16,    0,    0,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -32,    4,   32,    0, xflip=1
+    subsprite OAM_SIZE_32x32,  -80,   36,    8,    0, xflip=1
+    subsprite OAM_SIZE_8x8,    -72,   28,  100,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -48,   20,   32,    0, xflip=1
+  File1BC7_Obj_138:
+    subsprite OAM_SIZE_16x16,  -16,    0,    2,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -32,    4,   34,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -48,   20,   34,    0, xflip=1
+    subsprite OAM_SIZE_32x32,  -80,   36,   12,    0, xflip=1
+    subsprite OAM_SIZE_32x8,   -80,   28,   96,    0, xflip=1
+  File1BC7_Obj_143:
+    subsprite OAM_SIZE_16x16,  -16,    0,    4,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -32,    4,   36,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -48,   20,   36,    0, xflip=1
+    subsprite OAM_SIZE_32x32,  -80,   36,   72,    0, xflip=1
+    subsprite OAM_SIZE_32x8,   -80,   28,  112,    0, xflip=1
+  File1BC7_Obj_148:
+    subsprite OAM_SIZE_16x16,  -16,    0,    6,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -32,    4,   38,    0, xflip=1
+    subsprite OAM_SIZE_16x32,  -48,   20,   38,    0, xflip=1
+    subsprite OAM_SIZE_32x32,  -80,   36,   76,    0, xflip=1
+    subsprite OAM_SIZE_32x8,   -80,   28,  128,    0, xflip=1
+  File1BC7_Obj_153:
+    subsprite OAM_SIZE_32x32,  -80,   40,  144,    0, xflip=1
+    subsprite OAM_SIZE_16x8,   -40,   32,  132,    0, xflip=1
+    subsprite OAM_SIZE_16x16,  -48,   40,  148,    0, xflip=1
+    subsprite OAM_SIZE_8x8,    -16,   16,  116,    0, xflip=1
+    subsprite OAM_SIZE_8x8,    -32,   16,  116,    0, xflip=1
+    subsprite OAM_SIZE_8x16,   -48,   24,  103,    0, xflip=1
+  File1BC7_Obj_159:
+    subsprite OAM_SIZE_32x32,  -71,   30,  136,    0, xflip=1
+  File1BC7_Obj_160:
+    subsprite OAM_SIZE_32x32,  -73,   22,  140,    0, xflip=1
+  File1BC7_Obj_161:
+    subsprite OAM_SIZE_16x32,  -58,   23,  134,    0, xflip=1
+  File1BC7_Obj_162:
+    subsprite OAM_SIZE_16x16,  -56,   22,  101,    0, xflip=1
+
+2:
+File1BC7_Cmds:
+  File1BC7_Cmd_0:
+    animcmd   0,  3
+    animcmd   1,  3
+    animcmd   2,  3
+    animcmd   3,  3
+    animcmd   4,  3
+  File1BC7_Cmd_5:
+    animcmd   5,  3
+    animcmd   6,  3
+  File1BC7_Cmd_7:
+    animcmd   7,  2
+    animcmd   8,  2
+    animcmd   9,  2
+    animcmd  10,  2
+  File1BC7_Cmd_11:
+    animcmd  11,  5
+    animcmd  12,  5
+    animcmd  13,  5
+    animcmd  14,  5
+    animcmd  15,  5
+  File1BC7_Cmd_16:
+    animcmd   5,  3
+    animcmd   6,  3
+    animcmd  10,  3
+  File1BC7_Cmd_19:
+    animcmd  16,  2
+    animcmd  17,  2
+    animcmd  18,  2
+    animcmd  19,  2
+  File1BC7_Cmd_23:
+    animcmd  20,  5
+    animcmd  21,  5
+    animcmd  22,  5
+    animcmd  23,  5
+    animcmd  24,  5
+  File1BC7_Cmd_28:
+    animcmd   5,  3
+    animcmd   6,  3
+    animcmd   9,  3
+    animcmd  19,  3
+  File1BC7_Cmd_32:
+    animcmd  25,  2
+    animcmd  26,  2
+    animcmd  27,  2
+    animcmd  28,  2
+  File1BC7_Cmd_36:
+    animcmd  29,  5
+    animcmd  30,  5
+    animcmd  31,  5
+    animcmd  32,  5
+    animcmd  33,  5
+  File1BC7_Cmd_41:
+    animcmd  34,  3
+    animcmd  35,  3
+  File1BC7_Cmd_43:
+    animcmd  36,  2
+    animcmd  37,  2
+    animcmd  38,  2
+    animcmd  39,  2
+  File1BC7_Cmd_47:
+    animcmd  40,  5
+    animcmd  41,  5
+    animcmd  42,  5
+    animcmd  43,  5
+    animcmd  44,  5
+  File1BC7_Cmd_52:
+    animcmd  34,  3
+    animcmd  35,  3
+    animcmd  39,  3
+  File1BC7_Cmd_55:
+    animcmd  45,  2
+    animcmd  46,  2
+    animcmd  47,  2
+    animcmd  48,  2
+  File1BC7_Cmd_59:
+    animcmd  49,  5
+    animcmd  50,  5
+    animcmd  51,  5
+    animcmd  52,  5
+    animcmd  53,  5
+  File1BC7_Cmd_64:
+    animcmd  34,  3
+    animcmd  35,  3
+    animcmd  38,  3
+    animcmd  48,  3
+  File1BC7_Cmd_68:
+    animcmd  54,  2
+    animcmd  55,  2
+    animcmd  56,  1
+    animcmd  57,  2
+  File1BC7_Cmd_72:
+    animcmd  58,  5
+    animcmd  59,  5
+    animcmd  60,  5
+    animcmd  61,  5
+    animcmd  62,  4
+
+File1BC7_Tiles:
+  .incbin "data/spriteset/flamethrower.4bpp"

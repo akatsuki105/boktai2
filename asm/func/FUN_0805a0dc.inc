@@ -36,7 +36,7 @@ _0805A120:
 	mov r3, sp
 	ldrb r5, [r4, #0xc]
 	ldrh r6, [r4, #0xe]
-	ldr r2, _0805A144 @ =0x085B0A08
+	ldr r2, _0805A144 @ =gSineTable
 	adds r0, r5, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -52,7 +52,7 @@ _0805A120:
 	asrs r1, r0, #0xc
 	b _0805A14E
 	.align 2, 0
-_0805A144: .4byte 0x085B0A08
+_0805A144: .4byte gSineTable
 _0805A148:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

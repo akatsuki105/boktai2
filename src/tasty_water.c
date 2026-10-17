@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "inventory.h"
 #include "item.h"
 #include "vm.h"
 
@@ -14,7 +15,6 @@ static_assert(sizeof(EntityBA36) == 32);
 
 extern EntityBA36* gEntityBA36;  // 0x03002C40
 
-bool32 TryAddItem(item32_t n, s32 rotCount);
 void FUN_0809c544(void* param_1);
 void FUN_0809c58c(void);
 
@@ -72,9 +72,9 @@ s32 EntityBA36_Destroy(EntityBA36* p) {
 }
 
 s32 EntityBA36_Init(EntityBA36* p, u32 param_2, u32 param_3) {
-  s32 v = VM_SeekToNamedArg('c');
+  s32 v;
 
-  if (v != 0) {
+  if (VM_SeekToNamedArg('c')) {
     v = VM_GetValue();
   } else {
     v = 1800;

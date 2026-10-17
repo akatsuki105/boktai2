@@ -9,7 +9,7 @@
 	adds r0, r5, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_0808fbdc
+	bl EntityCC28Cursor_SetPos
 	ldr r1, _0809489C @ =0x00001464
 	adds r6, r4, r1
 	ldr r0, _080948A0 @ =0x00003AEB

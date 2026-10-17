@@ -1215,7 +1215,7 @@ LinkBattleLobby_Init: @ 0x081DC57C
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081DC5A2
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	movs r2, #0xf0
 	lsls r2, r2, #2
 	adds r1, r5, r2

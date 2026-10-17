@@ -870,7 +870,7 @@ _08057046:
 	adds r3, r2, r0
 	adds r5, r4, #0
 	adds r5, #0x20
-	ldr r2, _08057094 @ =0x085B0A08
+	ldr r2, _08057094 @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -890,7 +890,7 @@ _08057046:
 _08057088: .4byte 0x030046B8
 _0805708C: .4byte 0x000003FF
 _08057090: .4byte 0x0203B400
-_08057094: .4byte 0x085B0A08
+_08057094: .4byte gSineTable
 _08057098:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -3362,7 +3362,7 @@ _08058250:
 	movs r1, #0x10
 	bl AuxAnim_SetAnimSpeed
 _08058262:
-	ldr r2, _08058284 @ =0x085B0A08
+	ldr r2, _08058284 @ =gSineTable
 	ldr r0, [r4, #0x14]
 	lsls r0, r0, #2
 	movs r1, #0xff
@@ -3379,7 +3379,7 @@ _08058262:
 	b _0805828E
 	.align 2, 0
 _08058280: .4byte 0x00000EBC
-_08058284: .4byte 0x085B0A08
+_08058284: .4byte gSineTable
 _08058288:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -3833,7 +3833,7 @@ _080585DA:
 	subs r1, r1, r0
 _080585DC:
 	adds r3, r1, #0
-	ldr r2, _080585FC @ =0x085B0A08
+	ldr r2, _080585FC @ =gSineTable
 	ldr r0, [r5, #0x14]
 	lsls r0, r0, #2
 	movs r1, #0xff
@@ -3849,7 +3849,7 @@ _080585DC:
 	asrs r0, r0, #0xc
 	b _08058606
 	.align 2, 0
-_080585FC: .4byte 0x085B0A08
+_080585FC: .4byte gSineTable
 _08058600:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -4328,7 +4328,7 @@ _08058996:
 	subs r1, r1, r0
 _08058998:
 	adds r3, r1, #0
-	ldr r2, _080589B8 @ =0x085B0A08
+	ldr r2, _080589B8 @ =gSineTable
 	ldr r0, [r5, #0x14]
 	lsls r0, r0, #2
 	movs r1, #0xff
@@ -4344,7 +4344,7 @@ _08058998:
 	asrs r0, r0, #0xc
 	b _080589C2
 	.align 2, 0
-_080589B8: .4byte 0x085B0A08
+_080589B8: .4byte gSineTable
 _080589BC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -4443,7 +4443,7 @@ _08058A44:
 	bics r0, r1
 	str r0, [r2, #0x1c]
 	ldr r0, [r2, #0x34]
-	bl FUN_0807a798
+	bl AddPlayerExp
 	mov r1, r8
 	ldr r0, [r1, #0x2c]
 	adds r0, #1
@@ -4642,7 +4642,7 @@ _08058BF2:
 	subs r1, r1, r0
 _08058BF4:
 	adds r3, r1, #0
-	ldr r2, _08058C14 @ =0x085B0A08
+	ldr r2, _08058C14 @ =gSineTable
 	ldr r0, [r4, #0x14]
 	lsls r0, r0, #2
 	movs r1, #0xff
@@ -4658,7 +4658,7 @@ _08058BF4:
 	asrs r0, r0, #0xc
 	b _08058C1E
 	.align 2, 0
-_08058C14: .4byte 0x085B0A08
+_08058C14: .4byte gSineTable
 _08058C18:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

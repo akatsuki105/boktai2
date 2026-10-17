@@ -1,42 +1,624 @@
+#include "preview_stage.h"
+
 #include "entity.h"
 #include "global.h"
+#include "random.h"
 #include "sprite.h"
 
-struct EnemyDexModel;
+// ファイル名, 及び PreviewStage という構造体名はまだ暫定
 
-typedef struct PreviewStage {
-  Entity e;                           // 0x000, ENTITY_UNK_8
-  s32 swayAngle;                      // 0x018, PreviewStage_Update が毎フレーム model->swaySpeed を足し、>>5 して sin テーブルの角度にする
-  u32 modelID;                        // 0x01C, sEnemyDexModels[modelID]
-  u32 stateTimer;                     // 0x020, state に入ってからのフレーム数, FUN_0820f84c などが数え、state が変わると 0 に戻る
-  u8 state;                           // 0x024, onLoad / onUpdate を持つ魔物だけが使う演出の段階 (FUN_0820f84c は 0..3)
-  bool8 hidden;                       // 0x025, 1 の間は _Update が parts と subSprite を全部隠して何もしない, FUN_0820fea8 が 1、FUN_0820feb0 が 0
-  u16 posOverridden;                  // 0x026, 非0なら pos を model->x / model->y で上書きしない, FUN_0820fe94 が入れる
-  SpriteHolder parts[5];              // 0x028, スプライトの器, 単体の魔物は [0] だけ、多関節の魔物は sEnemyDexSegments に沿って5つ使う
-  AuxSprite subSprite;                // 0x30C, model->subSprite が非0のときだけ出す重ね絵 (メタスプライト 5/6/7)
-  AuxSpriteGfx subSpriteGfx;          // 0x338, SPRITE_EFF_1C1B
-  Vec3 pos;                           // 0x354, model->x + 64, model->y + 88, FUN_0820feb8 が直接入れることもある
-  u8 unk_35c[0x364 - 0x35C];          // 0x35C, 読み手も書き手も見つかっていない
-  u16 poseBase;                       // 0x364, model->poseBase の写し, SpriteHolder_SetAnim の第2引数になる
-  u8 frameIdx;                        // 0x366, FUN_0820efc4 が model->direction から作るコマ番号
-  u8 hFlip;                           // 0x367, 同上の左右反転
-  bool8 reloadRequested;              // 0x368, FUN_0820fe98 が立て、_Update が読み込み直して 0 に戻す
-  u8 unk_369[0x370 - 0x369];          // 0x369, 読み手も書き手も見つかっていない
-  const struct EnemyDexModel* model;  // 0x370, &sEnemyDexModels[modelID], 毎フレーム入れ直す
-} PreviewStage;
-static_assert(sizeof(PreviewStage) == 884);
+// 多関節のモデルの5枚のスプライトの並べ方
+typedef struct {
+  s8 offset[5][2];  // 0x00, [i][0] を pos.x に、[i][1] を pos.y に足して i 番目の器の座標にする
+  u16 pose[5];      // 0x0A, i 番目の器に渡す SpriteHolder_SetAnim の第2引数, i == 0 だけ direction 由来の向きを伴う
+} PreviewSegments;
+static_assert(sizeof(PreviewSegments) == 20);
+
+// 多関節の魔物の節の並べ方, PreviewModel の 9 / 19 / 20 番の onLoad / onUpdate がそれぞれ [0] / [1] / [2] を名指しする
+static const PreviewSegments sPreviewSegments[3] = {
+    {{{0, -12}, {6, -10}, {12, -2}, {8, 6}, {0, 15}},    {0, 2, 2, 2, 1}},
+    {{{-12, 0}, {0, -10}, {10, -1}, {16, 12}, {16, 27}}, {5, 6, 6, 6, 6}},
+    {{{-12, 0}, {0, -10}, {10, 0}, {16, 15}, {16, 29}},  {8, 9, 9, 9, 9}},
+};  // 0x085AF0B0
+
+// PreviewModel.flags
+typedef u8 PreviewModelFlags;
+#define DEXFLAG_NO_PLTT (1 << 0)     // 0x01, plttID を SpriteHolder_SetPlttID に渡さない, 立っている件は plttID も 0
+#define DEXFLAG_SWAY (1 << 1)        // 0x02, swayAmplitude / swaySpeed で上下にゆれる
+#define DEXFLAG_NO_REFRESH (1 << 2)  // 0x04, PreviewStage_Update が毎フレームの向き・ポーズ更新をしない
+
+typedef struct PreviewModel {
+  SpriteID16 id;                    // 0x00
+  u16 animFileID;                   // 0x02, FUN_08055dac の第3引数, kind == 2 では常に 0 (MainSprite は 自身にアニメーションを持つので、animFileID は不要)
+  u16 kind;                         // 0x04, 1: AuxSprite+AuxAnimState, 2: MainSprite
+  u16 poseBase;                     // 0x06, PreviewStage.poseBase に控え、SpriteHolder_SetAnim の第2引数になる
+  u16 plttID;                       // 0x08, SpriteHolder_SetPlttID に渡すパレットID
+  u8 direction;                     // 0x0A, FUN_0820efc4 が (コマ番号, 左右反転) に展開する向き
+  PreviewModelFlags flags;          // 0x0B, see PreviewModelFlags
+  void (*onLoad)(PreviewStage*);    // 0x0C, 非0なら既定のロード (FUN_0820f9dc) の代わりに呼ぶ
+  void (*onUpdate)(PreviewStage*);  // 0x10
+  s8 x;                             // 0x14, 表示位置, +64 して pos.x に入る
+  s8 y;                             // 0x15, 表示位置, +88 して pos.y に入る
+  u8 swayAmplitude;                 // 0x16, ゆれの振幅, sin テーブルとの積を >>13 して y に足す
+  u8 swaySpeed;                     // 0x17, ゆれの角速度, 毎フレーム swayAngle に積算し >>5 して角度にする
+  s8 subX;                          // 0x18, 追加スプライトの x ずらし, FUN_0820fa80 のみ読む
+  s8 subY;                          // 0x19, 追加スプライトの y ずらし, 同上
+  u2_6 scaleX;                      // 0x1A, 2.6 固定小数 (64 が等倍)
+  u2_6 scaleY;                      // 0x1B, 同上, 全70件で scaleX と同値
+  u8 subSprite;                     // 0x1C, 0: 追加スプライトなし, 1/2/3 でメタスプライト 5/6/7 を重ねる
+  u8 unused[3];                     // 0x1D, padding?
+} PreviewModel;
+static_assert(sizeof(PreviewModel) == 32);
+
+static const PreviewModel sPreviewModels[70];
 
 void FUN_08055d7c(SpriteHolder* p);
+s32 FUN_08055dac(SpriteHolder* p, u32 spriteID, u32 animFileID, u32 param_4, Vec3* pos);
+s32 FUN_08055e34(SpriteHolder* p, u32 spriteID, u32 param_3, Vec3* pos);
+void FUN_08055f5c(SpriteHolder* p, u32 param_2);
+void FUN_08055f1c(SpriteHolder* p, u32 param_2);
+s32 FUN_08055c04(SpriteHolder* p);
+s32 FUN_08055d20(SpriteHolder* p);
+void FUN_08055ef8(SpriteHolder* p, u32 param_2);
 
-INCASM("asm/preview_stage.inc");
+s32 FUN_0820f9dc(PreviewStage* p, s32 modelID);
 
-NAKED s32 FUN_0820f9dc(PreviewStage* p, s32 val) { INCFUNC("asm/func/FUN_0820f9dc.inc"); }
+// 向きの番号を (コマ番号, 左右反転) に展開する, 1..4 は2コマ, 5..13 は5コマのスプライト用の割り当て
+void FUN_0820efc4(u8 direction, u8* frameIdx, u8* hFlip) {
+  if (direction > 4) {
+    u8 dir = direction - 5;
 
-NAKED void FUN_0820fa80(PreviewStage* p, s32 val) { INCFUNC("asm/func/FUN_0820fa80.inc"); }
+    if (dir > 4) {
+      *frameIdx = 8 - dir;
+      *hFlip = 1;
+    } else {
+      *frameIdx = dir;
+      *hFlip = 0;
+    }
+  } else if (direction != 0) {
+    u8 dir = direction - 1;
 
-NAKED void PreviewStage_Update_Helper_0820fb20(PreviewStage* p) { INCFUNC("asm/func/PreviewStage_Update_Helper_0820fb20.inc"); }
+    if (dir == 1 || dir == 2) {
+      *frameIdx = 1;
+    } else {
+      *frameIdx = 0;
+    }
+    if (dir > 1) {
+      *hFlip = 1;
+    } else {
+      *hFlip = 0;
+    }
+  } else {
+    *frameIdx = 0;
+    *hFlip = 0;
+  }
+}
 
-NAKED s32 PreviewStage_Update(PreviewStage* p) { INCFUNC("asm/func/PreviewStage_Update.inc"); }
+// ドヴァリンの開帳, アニメが終わるたび poseBase を次の段へ送り、12番まで行ったら state を 1 にして止める
+void FUN_0820f020(PreviewStage* p) {
+  if (p->state == 0) {
+    if (FUN_08055d20(&p->parts[0]) != 0) {
+      switch (p->poseBase) {
+        case 0: {
+          p->poseBase = 1;
+          break;
+        }
+        case 1: {
+          p->poseBase = 2;
+          break;
+        }
+        case 2: {
+          p->poseBase = 3;
+          break;
+        }
+        case 3: {
+          p->poseBase = 4;
+          break;
+        }
+        case 4: {
+          p->poseBase = 5;
+          break;
+        }
+        case 5: {
+          p->poseBase = 6;
+          break;
+        }
+        case 6: {
+          p->poseBase = 12;
+          break;
+        }
+        case 12: {
+          p->state = 1;
+          break;
+        }
+      }
+    }
+    FUN_0820efc4(p->model->direction, &p->frameIdx, &p->hFlip);
+    SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, 1, 0, 5);
+    FUN_08055c04(&p->parts[0]);
+  }
+}
+
+// スライムの待機, 一定フレームごとに1コマだけ跳ねさせ、次の間隔を乱数で決める
+void FUN_0820f130(PreviewStage* p) {
+  if (p->swayAngle == 0) {
+    p->poseBase = 1;
+    FUN_0820efc4(p->model->direction, &p->frameIdx, &p->hFlip);
+    SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, 1, 0, 5);
+    FUN_08055c04(&p->parts[0]);
+    if (FUN_08055d20(&p->parts[0]) != 0) {
+      gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+      p->swayAngle = Mod(*(gRandomTable + gRandTableIdx), 32) + 60;
+    }
+  } else {
+    p->swayAngle--;
+  }
+}
+
+// 多関節の節を sPreviewSegments[0] の並びで5つ分作り、節ごとのポーズまで入れる
+// 残差はレジスタ割り当てのみ (126 対 132), 原典は ローカルをスタックに多くこぼしている
+// Tier A-C 試済: const s8* off / SpriteHolder* の送り / Vec3* 経由のストア / int の一時変数 / 除算の明示 if/else 展開 / 宣言と代入の分離
+NON_MATCH void FUN_0820f1e0(PreviewStage* p) {
+#ifdef NONMATCHING_C
+  const PreviewModel* model;
+  SpriteHolder* holder;
+  Vec3 buf;
+  Vec3* pos = &buf;
+  s32 i;
+
+  p->swayAngle = 0;
+  model = p->model;
+  holder = &p->parts[0];
+  for (i = 0; i < 5; i++) {
+    const s8* off = sPreviewSegments[0].offset[i];
+    s32 x = p->pos.x + off[0];
+    s32 y = p->pos.y + off[1];
+    s32 z = p->pos.z;
+
+    pos->x = x, pos->y = y, pos->z = z;
+    if (FUN_08055dac(holder, model->id, model->animFileID, 16, pos) < 0) {
+      break;
+    }
+    FUN_08055f1c(holder, 1);
+    if ((model->flags & DEXFLAG_NO_PLTT) == 0) {
+      SpriteHolder_SetPlttID(holder, model->plttID);
+    }
+    FUN_08055f5c(holder, 2);
+    FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
+    if (i == 0) {
+      SpriteHolder_SetAnim(holder, sPreviewSegments[0].pose[0], p->frameIdx, p->hFlip, 2, 0, 5);
+    } else {
+      SpriteHolder_SetAnim(holder, sPreviewSegments[0].pose[i], 1, 0, 2, 0, 5);
+    }
+    FUN_08055c04(holder);
+    holder++;
+  }
+#else
+  INCFUNC("asm/func/FUN_0820f1e0.inc");
+#endif
+}
+
+// 多関節の節を並べ直し、節ごとに振幅を変えて左右にうねらせる
+// 残差はレジスタ割り当てのみ (91 対 98, こちらが7命令短い), 原典は &p->pos.x と &p->pos.y をスタックにこぼしている
+// Tier A-C 試済: 除算の明示 if/else 展開 (これで /32 と /8192 が一致) / angle += i*32 を独立文に / 乗算の被演算子順 / const s8* off と SpriteHolder* の送り / 加算の遅延 (悪化)
+NON_MATCH void FUN_0820f310(PreviewStage* p) {
+#ifdef NONMATCHING_C
+  SpriteHolder* holder;
+  s32 i;
+
+  p->swayAngle += 32;
+  holder = &p->parts[0];
+  for (i = 0; i < 5; i++) {
+    const s8* off = sPreviewSegments[0].offset[i];
+    s32 x = p->pos.x + off[0];
+    s32 y = p->pos.y + off[1];
+    s32 z = p->pos.z;
+    Vec3* pos = holder->pos;
+    s32 angle;
+    s32 sin;
+
+    pos->x = x, pos->y = y, pos->z = z;
+    if (p->swayAngle >= 0) {
+      angle = p->swayAngle >> 5;
+    } else {
+      angle = -((-p->swayAngle) >> 5);
+    }
+    angle += i * 32;
+    sin = (8 - i) * gSineTable[angle & 0xFF];
+    if (sin >= 0) {
+      sin >>= 13;
+    } else {
+      sin = -((-sin) >> 13);
+    }
+    holder->pos->x += sin;
+    holder++;
+  }
+#else
+  INCFUNC("asm/func/FUN_0820f310.inc");
+#endif
+}
+
+// 多関節の節を sPreviewSegments[1] の並びで5つ分作る
+// 残差はレジスタ割り当てのみ (85 対 93, こちらが8命令短い), 原典は 6つの値を r5-r10 に散らして high レジスタ用の mov を多く挟む
+// Tier A-C 試済: Vec3* 経由のストア (bitfield insert が消えた) / int の一時変数 (ldrsh になる) / const s8* off で offset[i] を1本の giv に / SpriteHolder* の送り / 宣言と代入の分離
+NON_MATCH void FUN_0820f3e4(PreviewStage* p) {
+#ifdef NONMATCHING_C
+  const PreviewModel* model;
+  SpriteHolder* holder;
+  Vec3 buf;
+  Vec3* pos = &buf;
+  s32 i;
+
+  p->swayAngle = 0;
+  model = p->model;
+  holder = &p->parts[0];
+  for (i = 0; i < 5; i++) {
+    const s8* off = sPreviewSegments[1].offset[i];
+    s32 x = p->pos.x + off[0];
+    s32 y = p->pos.y + off[1];
+    s32 z = p->pos.z;
+
+    pos->x = x, pos->y = y, pos->z = z;
+    if (FUN_08055dac(holder, model->id, model->animFileID, 16, pos) < 0) {
+      break;
+    }
+    FUN_08055f1c(holder, 1);
+    if ((model->flags & DEXFLAG_NO_PLTT) == 0) {
+      SpriteHolder_SetPlttID(holder, model->plttID);
+    }
+    FUN_08055f5c(holder, 2);
+    FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
+    holder++;
+  }
+#else
+  INCFUNC("asm/func/FUN_0820f3e4.inc");
+#endif
+}
+
+// 多関節の節を並べ直し、節ごとに振幅を変えて上下にうねらせる (sPreviewSegments[1])
+// 残差は 163 対 172, 原典は offset[i][0] と [i][1] を別々のプール定数から引く (こちらは const s8* off の1本にまとまる)
+// Tier A-C 試済: const s8* off / SpriteHolder* の送り / Vec3* 経由のストア / int の一時変数 / 除算の明示 if/else 展開 / 宣言と代入の分離
+NON_MATCH void FUN_0820f4b4(PreviewStage* p) {
+#ifdef NONMATCHING_C
+  SpriteHolder* holder;
+  s32 i;
+
+  p->swayAngle += 32;
+  holder = &p->parts[0];
+  for (i = 0; i < 5; i++) {
+    const s8* off = sPreviewSegments[1].offset[i];
+    Vec3* pos;
+    s32 angle;
+    s32 sin;
+
+    if (i == 0) {
+      SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], p->frameIdx, p->hFlip, 1, 0, 5);
+    } else if (i < 2) {
+      SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], 0, 0, 1, 0, 5);
+    } else if (i < 3) {
+      SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], 1, 0, 1, 0, 5);
+    } else {
+      SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], 2, 0, 1, 0, 5);
+    }
+    FUN_08055c04(holder);
+    pos = p->parts[i].pos;
+    pos->x = p->pos.x + off[0], pos->y = p->pos.y + off[1], pos->z = p->pos.z;
+    if (p->swayAngle >= 0) {
+      angle = p->swayAngle >> 5;
+    } else {
+      angle = -((-p->swayAngle) >> 5);
+    }
+    angle += i * 32;
+    sin = (8 - i) * gSineTable[angle & 0xFF];
+    if (sin >= 0) {
+      sin >>= 13;
+    } else {
+      sin = -((-sin) >> 13);
+    }
+    p->parts[i].pos->y += sin;
+    holder++;
+  }
+#else
+  INCFUNC("asm/func/FUN_0820f4b4.inc");
+#endif
+}
+
+// 多関節の節を sPreviewSegments[2] の並びで5つ分作る
+// 残差はレジスタ割り当てのみ (85 対 93, こちらが8命令短い), 原典は 6つの値を r5-r10 に散らして high レジスタ用の mov を多く挟む
+// Tier A-C 試済: Vec3* 経由のストア (bitfield insert が消えた) / int の一時変数 (ldrsh になる) / const s8* off で offset[i] を1本の giv に / SpriteHolder* の送り / 宣言と代入の分離
+NON_MATCH void FUN_0820f630(PreviewStage* p) {
+#ifdef NONMATCHING_C
+  const PreviewModel* model;
+  SpriteHolder* holder;
+  Vec3 buf;
+  Vec3* pos = &buf;
+  s32 i;
+
+  p->swayAngle = 0;
+  model = p->model;
+  holder = &p->parts[0];
+  for (i = 0; i < 5; i++) {
+    const s8* off = sPreviewSegments[2].offset[i];
+    s32 x = p->pos.x + off[0];
+    s32 y = p->pos.y + off[1];
+    s32 z = p->pos.z;
+
+    pos->x = x, pos->y = y, pos->z = z;
+    if (FUN_08055dac(holder, model->id, model->animFileID, 16, pos) < 0) {
+      break;
+    }
+    FUN_08055f1c(holder, 1);
+    if ((model->flags & DEXFLAG_NO_PLTT) == 0) {
+      SpriteHolder_SetPlttID(holder, model->plttID);
+    }
+    FUN_08055f5c(holder, 2);
+    FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
+    holder++;
+  }
+#else
+  INCFUNC("asm/func/FUN_0820f630.inc");
+#endif
+}
+
+// 多関節の節を並べ直し、節ごとに振幅を変えて上下にうねらせる (sPreviewSegments[2])
+// 残差はレジスタ割り当てのみ (123 対 140), 原典は pose の添字を [sp,#0xc] にこぼして誘導変数を3本持つが、こちらは畳んでしまう
+// Tier A-C 試済: const s8* off / SpriteHolder* の送り / Vec3* 経由のストア / int の一時変数 / 除算の明示 if/else 展開 / 宣言と代入の分離
+NON_MATCH void FUN_0820f700(PreviewStage* p) {
+#ifdef NONMATCHING_C
+  SpriteHolder* holder;
+  s32 i;
+
+  p->swayAngle += 32;
+  holder = &p->parts[0];
+  for (i = 0; i < 5; i++) {
+    const s8* off = sPreviewSegments[2].offset[i];
+    Vec3* pos;
+    s32 angle;
+    s32 sin;
+
+    if (i == 0) {
+      SpriteHolder_SetAnim(holder, sPreviewSegments[2].pose[0], p->frameIdx, p->hFlip, 1, 0, 5);
+    } else {
+      SpriteHolder_SetAnim(holder, sPreviewSegments[2].pose[i], 1, 0, 1, 0, 5);
+    }
+    FUN_08055c04(holder);
+    pos = p->parts[i].pos;
+    pos->x = p->pos.x + off[0], pos->y = p->pos.y + off[1], pos->z = p->pos.z;
+    if (p->swayAngle >= 0) {
+      angle = p->swayAngle >> 5;
+    } else {
+      angle = -((-p->swayAngle) >> 5);
+    }
+    angle += i * 32;
+    sin = (8 - i) * gSineTable[angle & 0xFF];
+    if (sin >= 0) {
+      sin >>= 13;
+    } else {
+      sin = -((-sin) >> 13);
+    }
+    p->parts[i].pos->y += sin;
+    holder++;
+  }
+#else
+  INCFUNC("asm/func/FUN_0820f700.inc");
+#endif
+}
+
+void FUN_0820f840(PreviewStage* p) { FUN_0820f9dc(p, p->modelID); }
+
+// 宝箱のふたが開く演出, ふたを持ち上げて中身を見せ、30フレーム待って閉じ直す
+void FUN_0820f84c(PreviewStage* p) {
+  const PreviewModel* model;
+  u32 timer = p->stateTimer;
+  bool32 first = timer == 0;
+  bool32 done;
+
+  p->stateTimer = timer + 1;
+  model = p->model;
+  switch (p->state) {
+    case 0: {
+      if (first) {
+        FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
+        SpriteHolder_SetAnim(&p->parts[0], 1, p->frameIdx, p->hFlip, 2, 0, 4);
+      }
+      done = FUN_08055c04(&p->parts[0]);
+      if (done) {
+        p->stateTimer = 0;
+        p->state = 1;
+      }
+      break;
+    }
+    case 1: {
+      if (first) {
+        FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
+        SpriteHolder_SetAnim(&p->parts[0], 2, p->frameIdx, p->hFlip, 2, 0, 4);
+      }
+      done = FUN_08055c04(&p->parts[0]);
+      if (p->stateTimer <= 11) {
+        p->parts[0].pos->y--;
+      } else {
+        p->parts[0].pos->y++;
+      }
+      if (done) {
+        p->stateTimer = 0;
+        p->state = 2;
+      }
+      break;
+    }
+    case 2: {
+      if (first) {
+        FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
+        SpriteHolder_SetAnim(&p->parts[0], 3, p->frameIdx, p->hFlip, 2, 0, 4);
+        *p->parts[0].pos = p->pos;
+      }
+      done = FUN_08055c04(&p->parts[0]);
+      if (done) {
+        p->stateTimer = 0;
+        p->state = 3;
+      }
+      break;
+    }
+    case 3: {
+      if (p->stateTimer > 30) {
+        p->stateTimer = 0;
+        p->state = 0;
+      }
+      break;
+    }
+  }
+}
+
+// 既定のロード, 器を1つだけ作って位置・パレット・向きを入れる
+s32 FUN_0820f9dc(PreviewStage* p, s32 modelID) {
+  SpriteHolder* holder = &p->parts[0];
+  const PreviewModel* model = &sPreviewModels[modelID];
+  s32 ret;
+
+  if (p->posOverridden == 0) {
+    s32 x = model->x;
+    s32 y = model->y;
+    Vec3* pos = &p->pos;
+
+    x += 64, y += 84;
+    pos->x = x, pos->y = y, pos->z = 0, pos->val = 0;
+  }
+  if (model->kind == 2) {
+    ret = FUN_08055e34(holder, model->id, 16, &p->pos);
+  } else {
+    ret = FUN_08055dac(holder, model->id, model->animFileID, 16, &p->pos);
+  }
+  if (ret < 0) {
+    return -1;
+  }
+  if ((model->flags & DEXFLAG_NO_PLTT) == 0) {
+    SpriteHolder_SetPlttID(holder, model->plttID);
+  }
+  FUN_08055f5c(holder, 2);
+  FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
+  return 0;
+}
+
+// 重ね絵のメタスプライト・座標・拡大率を本体に合わせる
+void FUN_0820fa80(PreviewStage* p, s32 subSprite) {
+  switch (subSprite) {
+    case 1: {
+      AuxSprite_SetPoseIdx(&p->subSprite, 5);
+      break;
+    }
+    case 2: {
+      AuxSprite_SetPoseIdx(&p->subSprite, 6);
+      break;
+    }
+    case 3: {
+      AuxSprite_SetPoseIdx(&p->subSprite, 7);
+      break;
+    }
+  }
+  p->subSprite.pos.x = p->parts[0].pos->x + p->model->subX;
+  p->subSprite.pos.y = p->pos.y + p->model->subY;
+  p->subSprite.pos.z = p->parts[0].pos->z;
+  p->subSprite.scaleX = p->model->scaleX;
+  p->subSprite.scaleY = p->model->scaleY;
+}
+
+// modelID から model を引き直し、器を全部捨てて位置と poseBase を入れ直してからロードし直す
+void PreviewStage_Update_Helper_0820fb20(PreviewStage* p) {
+  const PreviewModel* model = &sPreviewModels[p->modelID];
+  s32 i;
+
+  p->model = model;
+  for (i = 0; i < 5; i++) {
+    if (p->parts[i].kind != 0) {
+      FUN_08055d7c(&p->parts[i]);
+    }
+  }
+  p->poseBase = model->poseBase;
+  if (p->posOverridden == 0) {
+    s32 x = model->x;
+    s32 y = model->y;
+    Vec3* pos = &p->pos;
+
+    x += 64, y += 84;
+    pos->x = x, pos->y = y, pos->z = 0, pos->val = 0;
+  }
+  if (model->onLoad == NULL) {
+    FUN_0820f9dc(p, p->modelID);
+  } else {
+    model->onLoad(p);
+  }
+}
+
+// 隠されていれば器を全部隠して抜け、そうでなければ model を引き直してロード・向き・ゆれ・重ね絵を更新する
+// 原典は通常経路で return を書き忘れていて r0 を設定しないまま戻る (hidden の経路だけ 0 を返す)
+// 残差はレジスタ割り当てのみ (202 対 202, 命令列は完全一致), 原典は 0xC3<<2 等のスクラッチに r1/r0/r3 を使うがこちらは r4 を使う
+// Tier A-C 試済: 除算の明示 if/else 展開 / angle のその場シフト (悪化) / 乗算の被演算子順 (悪化) / angle・d の関数スコープ化 / AuxSprite_Show,Hide 経由 / 宣言順の入れ替え / arg6 に noRefresh を明示
+NON_MATCH s32 PreviewStage_Update(PreviewStage* p) {
+#ifdef NONMATCHING_C
+  const PreviewModel* model;
+  PreviewModelFlags noRefresh;
+  s32 angle;
+  s32 d;
+  s32 i;
+
+  if (p->hidden) {
+    for (i = 0; i < 5; i++) {
+      if (p->parts[i].kind != 0) {
+        FUN_08055ef8(&p->parts[i], 1);
+      }
+    }
+    p->subSprite.flags |= SPRFLAG_HIDDEN;
+    return 0;
+  }
+  for (i = 0; i < 5; i++) {
+    if (p->parts[i].kind != 0) {
+      FUN_08055f1c(&p->parts[i], 1);
+    }
+  }
+  p->subSprite.flags &= ~SPRFLAG_HIDDEN;
+  model = &sPreviewModels[p->modelID];
+  p->model = model;
+  if (p->reloadRequested) {
+    p->swayAngle = 0;
+    p->stateTimer = 0;
+    p->state = 0;
+    PreviewStage_Update_Helper_0820fb20(p);
+  }
+  if (model->onUpdate != NULL) {
+    model->onUpdate(p);
+  }
+  noRefresh = model->flags & DEXFLAG_NO_REFRESH;
+  if (noRefresh == 0) {
+    FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
+    SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, 1, 0, 5);
+    FUN_08055c04(&p->parts[0]);
+  }
+  if (model->flags & DEXFLAG_SWAY) {
+    p->swayAngle += model->swaySpeed;
+    if (p->swayAngle >= 0) {
+      angle = p->swayAngle >> 5;
+    } else {
+      angle = -((-p->swayAngle) >> 5);
+    }
+    angle += 128;
+    d = model->swayAmplitude * gSineTable[angle & 0xFF];
+    if (d >= 0) {
+      d >>= 13;
+    } else {
+      d = -((-d) >> 13);
+    }
+    p->parts[0].pos->y = p->pos.y + d;
+  }
+  if (model->subSprite == 0) {
+    p->subSprite.flags |= SPRFLAG_HIDDEN;
+  } else {
+    p->subSprite.flags &= ~SPRFLAG_HIDDEN;
+    FUN_0820fa80(p, model->subSprite);
+  }
+  p->reloadRequested = 0;
+#else
+  INCFUNC("asm/func/PreviewStage_Update.inc");
+#endif
+}
 
 s32 PreviewStage_Destroy(PreviewStage* p) {
   s32 i;
@@ -50,7 +632,35 @@ s32 PreviewStage_Destroy(PreviewStage* p) {
   return 0;
 }
 
-NAKED s32 PreviewStage_Init(PreviewStage* p, u32 _) { INCFUNC("asm/func/PreviewStage_Init.inc"); }
+// 第2引数は読まれず, modelID は 0 固定で始まる (直後の > 56 の判定も死んでいる)
+// 残差は CpuFill32 の引数を置く順の1命令だけ (75 対 75), 原典は mov r0,sp が ldr r2,=0x05000002 より前
+// 引数の綴り (マクロ / 手書き CpuSet / 定数リテラル / vu32 と u32) では動かず, 一致済みの FUN_0823a76c も同じ順なので原典だけが逆
+NON_MATCH s32 PreviewStage_Init(PreviewStage* p, u32 _) {
+#ifdef NONMATCHING_C
+  p->modelID = 0;
+  p->reloadRequested = 0;
+  p->hidden = 0;
+  if (p->modelID > 56) {
+    p->modelID = 0;
+  }
+  FUN_0820f9dc(p, p->modelID);
+  Video_GetAuxSprite(&p->subSpriteGfx, SPRITE_EFF_1C1B);
+  AuxSprite_Add(&p->subSprite, &p->subSpriteGfx, SPRFLAG_AFFINE | SPRFLAG_SCREEN_COORD | SPRFLAG_BLINK_ODD);
+  AuxSprite_SetPoseIdx(&p->subSprite, 5);
+  p->subSprite.priority = 3;
+  p->subSprite.pos.x = p->pos.x;
+  p->subSprite.pos.y = p->pos.y;
+  p->subSprite.pos.z = p->pos.y;
+  p->subSprite.scaleX = 128;
+  p->subSprite.scaleY = 64;
+  p->swayAngle = 0;
+  p->posOverridden = 0;
+  CpuFill32(0, &p->pos, sizeof(Vec3));
+  return 0;
+#else
+  INCFUNC("asm/func/PreviewStage_Init.inc");
+#endif
+}
 
 PreviewStage* PreviewStage_Create(u32 arg, u32 _) {
   PreviewStage* p = CreateEntity(ENTITY_UNK_8, sizeof(PreviewStage));
@@ -66,80 +676,24 @@ PreviewStage* PreviewStage_Create(u32 arg, u32 _) {
 
 void FUN_0820fe94(PreviewStage* p, u32 val) { p->posOverridden = val; }
 
-// 多関節の魔物1体ぶんの、5枚のスプライトの並べ方
-typedef struct {
-  s8 offset[5][2];  // 0x00, [i][0] を pos.x に、[i][1] を pos.y に足して i 番目の器の座標にする
-  u16 pose[5];      // 0x0A, i 番目の器に渡す SpriteHolder_SetAnim の第2引数, i == 0 だけ direction 由来の向きを伴う
-} EnemyDexSegments;
-static_assert(sizeof(EnemyDexSegments) == 20);
+void FUN_0820fe98(PreviewStage* p, u32 modelID) {
+  p->modelID = modelID;
+  p->reloadRequested = 1;
+}
 
-static const s32 sEnemyDexPageStarts[9] = {0, 7, 14, 21, 27, 34, 41, 48, 50};  // ページの先頭エントリ番号 (sEnemyDexPageEntryCounts の累積和), 0x085AF034
-static const s32 sEnemyDexPageEntryCounts[9] = {7, 7, 7, 6, 7, 7, 7, 2, 7};    // ページごとのエントリ数(ビースト1,ビースト2,ビースト3,アンデット,シング1,シング2,ファントム1,ファントム2,イモータル), 合計57, 0x085AF058
-static const s32 sEnemyDexCategoryCounts[5] = {21, 6, 14, 9, 7};               // 種族ごとのエントリ数 (ビースト,アンデット,シング,ファントム,イモータル), 0x085AF07C
+void FUN_0820fea8(PreviewStage* p) { p->hidden = 1; }
 
-// 魔物図鑑メニューの UI スプライトのポーズ番号, FUN_0820d6e4 が EnemyDexMenu+0x18C から5枚を登録するループで引く
-static const u32 sEnemyDexUIPoses1[5] = {17, 18, 19, 20, 21};  // 0x085AF090
+void FUN_0820feb0(PreviewStage* p) { p->hidden = 0; }
 
-// 同上, EnemyDexMenu+0x36C から3枚
-static const u32 sEnemyDexUIPoses2[3] = {1, 2, 3};  // 0x085AF0A4
-
-// 多関節の魔物の節の並べ方, EnemyDexModel の 9 / 19 / 20 番の onLoad / onUpdate がそれぞれ [0] / [1] / [2] を名指しする
-static const EnemyDexSegments sEnemyDexSegments[3] = {
-    // 0x085AF0B0
-    {{{0, -12}, {6, -10}, {12, -2}, {8, 6}, {0, 15}},    {0, 2, 2, 2, 1}},
-    {{{-12, 0}, {0, -10}, {10, -1}, {16, 12}, {16, 27}}, {5, 6, 6, 6, 6}},
-    {{{-12, 0}, {0, -10}, {10, 0}, {16, 15}, {16, 29}},  {8, 9, 9, 9, 9}},
-};
-
-typedef void EnemyDexModelFunc(PreviewStage* p);
-
-// EnemyDexModel.flags
-typedef u8 EnemyDexModelFlags;
-#define DEXFLAG_NO_PLTT (1 << 0)     // 0x01, plttID を SpriteHolder_SetPlttID に渡さない, 立っている件は plttID も 0
-#define DEXFLAG_SWAY (1 << 1)        // 0x02, swayAmplitude / swaySpeed で上下にゆれる
-#define DEXFLAG_NO_REFRESH (1 << 2)  // 0x04, PreviewStage_Update が毎フレームの向き・ポーズ更新をしない
-
-// onLoad / onUpdate から呼ばれる, リンク順の都合で本体は enemy_dex.c 側にある
-void FUN_0820f020(PreviewStage* p);
-void FUN_0820f130(PreviewStage* p);
-void FUN_0820f1e0(PreviewStage* p);
-void FUN_0820f310(PreviewStage* p);
-void FUN_0820f3e4(PreviewStage* p);
-void FUN_0820f4b4(PreviewStage* p);
-void FUN_0820f630(PreviewStage* p);
-void FUN_0820f700(PreviewStage* p);
-
-// 本体はこのファイルの INCASM の中にある
-void FUN_0820f840(PreviewStage* p);
-void FUN_0820f84c(PreviewStage* p);
-
-// 魔物図鑑に1体を表示するための定義, PreviewStage が unk_1c 番目を引く
-typedef struct EnemyDexModel {
-  SpriteID16 id;                // 0x00
-  u16 animFileID;               // 0x02, FUN_08055dac の第3引数, kind == 2 では常に 0 (MainSprite は 自身にアニメーションを持つので、animFileID は不要)
-  u16 kind;                     // 0x04, 1: AuxSprite+AuxAnimState, 2: MainSprite
-  u16 poseBase;                 // 0x06, PreviewStage.poseBase に控え、SpriteHolder_SetAnim の第2引数になる
-  u16 plttID;                   // 0x08, SpriteHolder_SetPlttID に渡すパレットID
-  u8 direction;                 // 0x0A, FUN_0820efc4 が (コマ番号, 左右反転) に展開する向き
-  EnemyDexModelFlags flags;     // 0x0B, see EnemyDexModelFlags
-  EnemyDexModelFunc* onLoad;    // 0x0C, 非0なら既定のロード (FUN_0820f9dc) の代わりに呼ぶ
-  EnemyDexModelFunc* onUpdate;  // 0x10, 非0なら毎フレーム呼ぶ
-  s8 x;                         // 0x14, 表示位置, +64 して pos.x に入る
-  s8 y;                         // 0x15, 表示位置, +88 して pos.y に入る
-  u8 swayAmplitude;             // 0x16, ゆれの振幅, sin テーブルとの積を >>13 して y に足す
-  u8 swaySpeed;                 // 0x17, ゆれの角速度, 毎フレーム swayAngle に積算し >>5 して角度にする
-  s8 subX;                      // 0x18, 追加スプライトの x ずらし, FUN_0820fa80 のみ読む
-  s8 subY;                      // 0x19, 追加スプライトの y ずらし, 同上
-  u2_6 scaleX;                  // 0x1A, 2.6 固定小数 (64 が等倍)
-  u2_6 scaleY;                  // 0x1B, 同上, 全70件で scaleX と同値
-  u8 subSprite;                 // 0x1C, 0: 追加スプライトなし, 1/2/3 でメタスプライト 5/6/7 を重ねる
-  u8 unused[3];                 // 0x1D, padding?
-} EnemyDexModel;
-static_assert(sizeof(EnemyDexModel) == 32);
+void FUN_0820feb8(PreviewStage* p, s32 x, s32 y) {
+  p->pos.x = x;
+  p->pos.y = y;
+  p->pos.z = 0;
+}
 
 // エンディングのスタッフロールでは クレジットと一緒にゲーム中に登場したキャラクター(主人公,NPC,ボス,雑魚)が表示されるが、ここに魔物図鑑での魔物表示と同じ処理を使っているのかもしれない
 // それならば、0..56 までは魔物図鑑とスタッフロール共用で、 57以降はスタッフロールのためのものかも
-static const EnemyDexModel sEnemyDexModels[70] = {
+static const PreviewModel sPreviewModels[70] = {
     {SPRITE_SPIDER,         ANIM_SPIDER,     1, 3,   143, 3,  0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  4,  50, 50, 0}, // 0
     {SPRITE_SPIDER,         ANIM_SPIDER,     1, 3,   144, 3,  0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  4,  50, 50, 0}, // 1
     {SPRITE_BEE,            ANIM_BEE,        1, 1,   176, 3,  DEXFLAG_SWAY,                         NULL,         NULL,         0,  0,   10, 32, 0,  16, 32, 32, 1}, // 2
@@ -210,4 +764,4 @@ static const EnemyDexModel sEnemyDexModels[70] = {
     {SPRITE_SUMIRE,         0x0000,          2, 5,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 67
     {SPRITE_SMITH_MARCELLO, 0x0000,          2, 7,   0,   3,  DEXFLAG_NO_PLTT,                      NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 68
     {SPRITE_DJANGO_SABATA,  0x0000,          2, 204, 38,  10, 0,                                    NULL,         NULL,         0,  0,   0,  0,  0,  2,  64, 64, 1}, // 69
-};
+};  // 0x085AF0EC

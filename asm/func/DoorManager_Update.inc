@@ -291,7 +291,7 @@ _080212F0:
 	bl FUN_08020680
 	add r6, sp, #8
 	adds r0, r6, #0
-	bl FUN_08086a28
+	bl Coffin_CopyPos
 	cmp r0, #0
 	bne _08021306
 	b _08021A64
@@ -567,7 +567,7 @@ _0802151C:
 	bl FUN_08020680
 	add r6, sp, #0x20
 	adds r0, r6, #0
-	bl FUN_08086a28
+	bl Coffin_CopyPos
 	cmp r0, #0
 	bne _08021532
 	b _08021A64
@@ -721,7 +721,7 @@ _0802164E:
 	bl FUN_08020680
 	add r6, sp, #0x28
 	adds r0, r6, #0
-	bl FUN_08086a28
+	bl Coffin_CopyPos
 	cmp r0, #0
 	bne _08021664
 	b _08021A64
@@ -875,7 +875,7 @@ _08021782:
 	bl FUN_08020680
 	add r6, sp, #0x30
 	adds r0, r6, #0
-	bl FUN_08086a28
+	bl Coffin_CopyPos
 	cmp r0, #0
 	beq _08021816
 	ldr r1, [r7, #0x68]
@@ -1158,7 +1158,7 @@ _080219CE:
 	add r6, sp, #0x40
 _080219D0:
 	adds r0, r6, #0
-	bl FUN_08086a28
+	bl Coffin_CopyPos
 	cmp r0, #0
 	beq _08021A64
 	ldr r1, [r7, #0x68]

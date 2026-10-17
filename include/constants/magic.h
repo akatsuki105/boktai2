@@ -20,9 +20,9 @@
 #define MAGIC_HEALING 12    // ヒーリング
 #define MAGIC_DYNAMITE 13   // ダイナマイト
 #define MAGIC_SLEEPING 14   // スリーピング
-#define MAGIC_BAT 15        // チェンジ・バット
-#define MAGIC_RAT 16        // チェンジ・マウス
-#define MAGIC_WOLF 17       // チェンジ・ウルフ
+#define MAGIC_BAT 15        // チェンジ・バット (Cバット)
+#define MAGIC_RAT 16        // チェンジ・マウス (Cマウス)
+#define MAGIC_WOLF 17       // チェンジ・ウルフ (Cウルフ)
 #define MAGIC_NONE (-1)
 
 #define MAGIC_NUM 18

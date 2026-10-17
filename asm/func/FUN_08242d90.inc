@@ -101,7 +101,7 @@ _08242E5C:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _08242EA0
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _08242EA0

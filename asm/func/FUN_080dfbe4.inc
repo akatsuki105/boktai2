@@ -28,7 +28,7 @@
 	ands r3, r1
 	adds r6, r4, #0
 	movs r4, #0xc
-	ldr r2, _080DFC3C @ =0x085B0A08
+	ldr r2, _080DFC3C @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	ands r0, r1
@@ -42,7 +42,7 @@
 	asrs r1, r0, #0xc
 	b _080DFC46
 	.align 2, 0
-_080DFC3C: .4byte 0x085B0A08
+_080DFC3C: .4byte gSineTable
 _080DFC40:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -51,7 +51,7 @@ _080DFC46:
 	movs r0, #0
 	strh r1, [r6]
 	strh r0, [r6, #2]
-	ldr r1, _080DFC64 @ =0x085B0A08
+	ldr r1, _080DFC64 @ =gSineTable
 	movs r0, #0xff
 	ands r0, r3
 	lsls r0, r0, #1
@@ -64,7 +64,7 @@ _080DFC46:
 	asrs r0, r0, #0xc
 	b _080DFC6E
 	.align 2, 0
-_080DFC64: .4byte 0x085B0A08
+_080DFC64: .4byte gSineTable
 _080DFC68:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

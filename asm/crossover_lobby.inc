@@ -1079,7 +1079,7 @@ _0804F67A:
 	bne _0804F6A0
 	b _0804F7C8
 _0804F6A0:
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	str r0, [r6, #0x28]
 	cmp r0, #0
 	bne _0804F6AC

@@ -14,7 +14,7 @@ _08061E44:
 	movs r2, #0
 	mov sb, r2
 	movs r7, #0
-	ldr r0, _08061E98 @ =0x085B0A08
+	ldr r0, _08061E98 @ =gSineTable
 	mov sl, r0
 	movs r1, #0xff
 	mov r8, r1
@@ -56,7 +56,7 @@ _08061E82:
 	b _08061F44
 	.align 2, 0
 _08061E94: .4byte 0x0000085C
-_08061E98: .4byte 0x085B0A08
+_08061E98: .4byte gSineTable
 _08061E9C:
 	movs r2, #0x2c
 	ldrsh r0, [r4, r2]

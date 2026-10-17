@@ -470,7 +470,7 @@ Four positions, cheapest first:
   *before* the scaled index, and only `*(i + arr)` emits the index first and
   brings the base in between it and the `add`. Both `VM_Random`
   (`*(gRandTableIdx + gRandomTable)`) and `Player_WeaponEffectStatCond`
-  (`*(p->isSabata + gStat->unk_2c8)`, where the target reads the index before
+  (`*(p->isSabata + gStat->isKaamos)`, where the target reads the index before
   loading `gStat`) only closed on the index-first spelling, which is also what
   the rest of `src/` uses for `gRandomTable`.
 - **Mixing a walked pointer and an indexed access in one loop creates a second
@@ -550,8 +550,8 @@ Known dead ends, so nobody re-tries them:
 ### Measuring a flag's reach
 
 ```sh
-tools/flag_blast.sh -fno-gcse             # 数える
-tools/flag_blast.sh --baseline            # 健全性確認、0 でなければ何かおかしい
+.claude/skills/decomp-func/scripts/flag_blast.sh -fno-gcse             # 数える
+.claude/skills/decomp-func/scripts/flag_blast.sh --baseline            # 健全性確認、0 でなければ何かおかしい
 ```
 
 It builds with the flag appended to `CFLAGS` (through the `EXTRA_CFLAGS` hook in
@@ -568,7 +568,7 @@ where the original had it on — the source would simply have been written
 differently. A zero-reach flag is indistinguishable from an absent one; a
 small-reach flag gives you a short list of functions to inspect.
 
-Measured so far, with `tools/flag_blast.sh` (denominator 283, `src/lib`
+Measured so far, with `.claude/skills/decomp-func/scripts/flag_blast.sh` (denominator 283, `src/lib`
 excluded):
 
 | flag | reach | status |

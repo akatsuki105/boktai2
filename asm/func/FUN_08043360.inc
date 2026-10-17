@@ -75,7 +75,7 @@ _080433E6:
 	lsls r1, r1, #2
 	adds r0, r5, r1
 	ldr r7, [r0]
-	ldr r2, _08043418 @ =0x085B0A08
+	ldr r2, _08043418 @ =gSineTable
 	adds r0, r6, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -91,7 +91,7 @@ _080433E6:
 	asrs r1, r0, #0xc
 	b _08043422
 	.align 2, 0
-_08043418: .4byte 0x085B0A08
+_08043418: .4byte gSineTable
 _0804341C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

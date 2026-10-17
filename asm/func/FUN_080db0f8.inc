@@ -106,10 +106,10 @@ _080DB1C6:
 	bne _080DB24C
 _080DB1CA:
 	adds r0, r7, #0
-	bl FUN_08086a28
+	bl Coffin_CopyPos
 	cmp r0, #0
 	beq _080DB24C
-	bl FUN_08086850
+	bl Coffin_IsIdle
 	cmp r0, #0
 	beq _080DB24C
 	ldrh r0, [r7]

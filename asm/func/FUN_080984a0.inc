@@ -114,7 +114,7 @@ _08098594:
 _0809859E:
 	ldr r1, _080985DC @ =0x00003AE8
 	adds r0, r5, r1
-	bl FUN_0808fb68
+	bl EntityCC28Cursor_Move
 	cmp r0, #0
 	beq _080985C6
 	ldr r2, _080985E0 @ =0x00001464

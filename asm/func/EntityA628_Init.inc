@@ -6,7 +6,7 @@
 	bl EntityA628_SetupBG
 	adds r0, r4, #0
 	bl EntityA628_ResetOrbit
-	ldr r2, _080A0ECC @ =0x085B0A08
+	ldr r2, _080A0ECC @ =gSineTable
 	ldrh r0, [r4, #0x30]
 	adds r0, #0x40
 	movs r1, #0xff
@@ -23,7 +23,7 @@
 	asrs r1, r0, #0xc
 	b _080A0ED6
 	.align 2, 0
-_080A0ECC: .4byte 0x085B0A08
+_080A0ECC: .4byte gSineTable
 _080A0ED0:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -52,7 +52,7 @@ _080A0ED6:
 	ldrh r2, [r2, #0x2e]
 	adds r0, r0, r2
 	strh r0, [r4, #0x2a]
-	ldr r2, _080A0F2C @ =0x085B0A08
+	ldr r2, _080A0F2C @ =gSineTable
 	ldrh r1, [r4, #0x30]
 	movs r0, #0xff
 	ands r0, r1
@@ -71,7 +71,7 @@ _080A0ED6:
 	.align 2, 0
 _080A0F24: .4byte 0x03002BE0
 _080A0F28: .4byte 0x0000097A
-_080A0F2C: .4byte 0x085B0A08
+_080A0F2C: .4byte gSineTable
 _080A0F30:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

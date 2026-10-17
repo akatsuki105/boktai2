@@ -40,7 +40,7 @@ static_assert(sizeof(MainAnim) == 8);
 // これがGBAスプライトに対応
 typedef struct {
   u8 flip;             // 0x00, bit2: xflip, bit3: yflip, TODO: other bits?
-  u8 shape;            // 0x01, (OAM1.14-15 << 2) | (OAM0.14-15); (size << 2) | shape
+  SpriteShape shape;   // 0x01
   s16 x;               // 0x02
   s16 y;               // 0x04
   u16 tileNum : 12;    // 0x06.0-11, GBAのタイルIDは 10bitなので、 bit10-11　が本当にタイル番号かは要検証
@@ -58,13 +58,13 @@ static_assert(sizeof(MainAnimCmd) == 4);
 // 1キャラ分の絵 (タイル・パレット・ポーズ配列) の所在を持つ, MainSprite が読み込み時にここからグラフィックを取り出す
 typedef struct {
   u16 palStart;        // 0x00, MainSprite_LoadPose で MainSprite.plttID にセットされる, gObjPlttData[(MainSpriteGfx.palStart + MainSubsprite.paletteNum) * 16] が実際のパレットデータ
-  u16 spriteCount;     // 0x02, number of sprites in this sprite set
+  u16 poseCount;       // 0x02, number of .poses
   u16 animationCount;  // 0x04, このファイルの MainAnim の数
   u16 subspriteCount;  // 0x06, このファイルの MainSubsprite の数
   u16 cmdCount;        // 0x08, このファイルの MainAnimCmd の数
   u16 tileCount;       // 0x0A, このファイルのタイル枚数
   // これらのメンバは、 ROMでは &MainSpriteGfxFile からのオフセットでRAM読み込み時にポインタに変換される
-  MainSpritePose* sprites;    // 0x0C, MainSpritePose[spriteCount]
+  MainSpritePose* poses;      // 0x0C, MainSpritePose[poseCount]
   MainAnim* anims;            // 0x10, MainAnim[animationCount]
   MainSubsprite* subsprites;  // 0x14, MainSubsprite[subspriteCount]
   MainAnimCmd* cmds;          // 0x18, MainAnimCmd[cmdCount]
@@ -139,20 +139,8 @@ s32 MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags
 bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx);
 s32 MainSprite_SetAnimSpeed(MainSprite* p, u32 speed);
 void MainSprite_Remove(MainSprite* p);
-
-extern u32 gObjBlendEnabled;  // 0 以外なら flags bit14 のスプライトを半透明にする
 void FUN_0822f588(MainSprite* p, MainSprite* src, u32 val);
 void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 playMode, MainAnimPlayFlags16 flags);
-
-// MainSprite のタイルを OBJ VRAM へ流すための転送要求1件, MainSprite_DrawInternal が積み CopyMainSpriteTileDataToVram が流す
-typedef struct {
-  void* src;  // 0x00, 転送元, ブロックごとに 0x200 ずつ進む
-  u16 size;   // 0x04, 1ブロックのバイト数
-  u16 count;  // 0x06, ブロック数
-} MainSpriteTileRequest;
-static_assert(sizeof(MainSpriteTileRequest) == 8);
-
-extern MainSpriteTileRequest gMainSpriteTileRequests[1024];  // 0x02039000
-extern u32 gMainSpriteTileRequestCount;                      // 0x030035A4
+void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, s32 zeroSuppress);
 
 #endif  // __INCLUDE_SPRITE_MAIN_H__

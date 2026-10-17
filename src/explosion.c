@@ -6,7 +6,7 @@
 typedef struct {
   bool8 active;      // 0x00, ExplosionManager_Spawn が空きスロットに 1 を立て、_Update が timer > 24 で 0 に戻す
   u8 flags;          // 0x01, Spawn の第2引数の下位バイト, bit0 で sprite.flags の BLINK_ODD、bit1 で SCREEN_COORD が決まる
-  u16 timer;         // 0x02, 毎フレーム +1, sprite.metaspriteIdx = timer >> 2
+  u16 timer;         // 0x02, 毎フレーム +1, sprite.poseIdx = timer >> 2
   u16 dampFrom;      // 0x04, timer がこの値以上になったら vel を減衰させる, Spawn の第5引数
   u16 damping;       // 0x06, vel = vel * damping >> 8 (0 方向に丸める), Spawn の第6引数
   Vec3 vel;          // 0x08, Spawn が第4引数を 2 ワードでコピーする, _Update が sprite.pos に足す

@@ -2,8 +2,10 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "player.h"
 #include "random.h"
 #include "shadow.h"
+#include "sound.h"
 #include "sprite_aux.h"
 
 // スプライト・ヒットボックス・影を1つずつ持つ

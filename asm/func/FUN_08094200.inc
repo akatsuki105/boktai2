@@ -231,7 +231,7 @@ _080943FC:
 _08094406:
 	ldr r1, _08094434 @ =0x00003AE8
 	adds r0, r4, r1
-	bl FUN_0808fb68
+	bl EntityCC28Cursor_Move
 	cmp r0, #0
 	beq _0809442E
 	ldr r2, _08094438 @ =0x00001464

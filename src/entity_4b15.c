@@ -24,13 +24,35 @@ static_assert(sizeof(Entity4B15) == 260);
 
 IWRAM_DATA Entity4B15* gEntity4B15 = NULL;  // 0x03000090
 
-NAKED void FUN_08019ae8(void) { INCFUNC("asm/func/FUN_08019ae8.inc"); }
+static inline void SetEntity4B15(Entity4B15* p) { gEntity4B15 = p; }
+
+// 入場フラグが立っていたら食って TRUE を返す
+static inline bool32 Entity4B15Elem_ConsumeStateEntered(Entity4B15Elem* p) {
+  if (p->stateEntered != 0) {
+    p->stateEntered = FALSE;
+    return TRUE;
+  }
+  return FALSE;
+}
+
+void FUN_08019ae8(void) { gEntity4B15 = NULL; }
 
 NAKED void Entity4B15Elem_Init(Entity4B15* p, Entity4B15Elem* elem) { INCFUNC("asm/func/Entity4B15Elem_Init.inc"); }
 
-NAKED void Entity4B15Elem_Destroy(Entity4B15* p, Entity4B15Elem* elem) { INCFUNC("asm/func/Entity4B15Elem_Destroy.inc"); }
+void Entity4B15Elem_Destroy(Entity4B15* p, Entity4B15Elem* elem) { Particle_Remove(&elem->ptcl); }
 
-NAKED void Entity4B15Elem_UpdateIdle(Entity4B15* p, Entity4B15Elem* elem) { INCFUNC("asm/func/Entity4B15Elem_UpdateIdle.inc"); }
+// state 0 (非表示) の更新, 入場時に Particle を隠すだけ
+// 残差5命令, 原典は入場フラグを食ったかどうかを 0/1 に起こしてからもう一度判定する二段形だが agbcc はどの綴りでも分岐に畳む
+NON_MATCH void Entity4B15Elem_UpdateIdle(Entity4B15* p, Entity4B15Elem* elem) {
+#ifdef NONMATCHING_C
+  if (Entity4B15Elem_ConsumeStateEntered(elem)) {
+    elem->ptcl.flags |= SPRFLAG_HIDDEN;
+  }
+  elem->timer++;
+#else
+  INCFUNC("asm/func/Entity4B15Elem_UpdateIdle.inc");
+#endif
+}
 
 NAKED void Entity4B15Elem_UpdateTracking(Entity4B15* p, Entity4B15Elem* elem) { INCFUNC("asm/func/Entity4B15Elem_UpdateTracking.inc"); }
 
@@ -38,11 +60,48 @@ NAKED void Entity4B15Elem_UpdateFixed(Entity4B15* p, Entity4B15Elem* elem) { INC
 
 NAKED s32 Entity4B15_Update(Entity4B15* p) { INCFUNC("asm/func/Entity4B15_Update.inc"); }
 
-NAKED s32 Entity4B15_Destroy(Entity4B15* p) { INCFUNC("asm/func/Entity4B15_Destroy.inc"); }
+s32 Entity4B15_Destroy(Entity4B15* p) {
+  Entity4B15Elem* elem = &p->elems[0];
+  s32 i;
 
-NAKED s32 Entity4B15_Init(Entity4B15* p) { INCFUNC("asm/func/Entity4B15_Init.inc"); }
+  for (i = 3; i >= 0; i--) {
+    Entity4B15Elem_Destroy(p, elem);
+    elem++;
+  }
+  SetEntity4B15(NULL);
+  return 0;
+}
 
-NAKED Entity4B15* Entity4B15_Create(void) { INCFUNC("asm/func/Entity4B15_Create.inc"); }
+s32 Entity4B15_Init(Entity4B15* p) {
+  Entity4B15Elem* elem;
+  s32 i;
+
+  gEntity4B15 = p;
+  p->group = GetParticleGroup(PTCL_GROUP_0);
+  p->origin.x = 120, p->origin.y = 80, p->origin.z = 0;
+  elem = &p->elems[0];
+  for (i = 3; i >= 0; i--) {
+    Entity4B15Elem_Init(p, elem);
+    elem++;
+  }
+  return 0;
+}
+
+Entity4B15* Entity4B15_Create(void) {
+  if (gEntity4B15 == NULL) {
+    Entity4B15* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity4B15));
+
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity4B15_Update, Entity4B15_Destroy);
+      if (Entity4B15_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity4B15;
+}
 
 NAKED void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos) { INCFUNC("asm/func/Entity4B15_ShowTrackingMarker.inc"); }
 

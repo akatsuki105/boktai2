@@ -13,7 +13,7 @@
 	adds r3, #0x80
 	movs r6, #0xff
 	ands r3, r6
-	ldr r0, _080F8964 @ =0x085B0A08
+	ldr r0, _080F8964 @ =gSineTable
 	mov ip, r0
 	adds r0, r3, #0
 	adds r0, #0x40
@@ -140,7 +140,7 @@ _080F894E:
 	bx r0
 	.align 2, 0
 _080F8960: .4byte 0x000001DD
-_080F8964: .4byte 0x085B0A08
+_080F8964: .4byte gSineTable
 _080F8968: .4byte 0xFFFF0000
 _080F896C: .4byte 0x0203B400
 _080F8970: .4byte 0x030046B8

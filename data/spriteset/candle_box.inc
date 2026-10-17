@@ -1,49 +1,56 @@
-SpriteSetFile16: @ 0x08BF813C
-	.2byte 739 @ palStart
-	.2byte 5 @ metaspriteCount
-	.2byte 2 @ animationCount
-	.2byte 9 @ subspriteCount
-	.2byte 5 @ cmdCount
-	.2byte 512 @ tileCount
-	.4byte 0x00000020, 0x00000084, 0x00000094, 0x000000DC, 0x000000F0
-	@ Metasprites
-		.2byte 0x7740, 0x0001, 0x0000, 0x0000, 0xFFA8, 0xFFA0, 0x0028, 0x0020
-		.4byte 0x0 @ subspriteOffset
-		.2byte 0x780A, 0x0002, 0x0000, 0x0000, 0xFFA8, 0xFFA0, 0x0028, 0x0020
-		.4byte 0x8 @ subspriteOffset
-		.2byte 0x780B, 0x0002, 0x0000, 0x0000, 0xFFA8, 0xFFA0, 0x0028, 0x0020
-		.4byte 0x18 @ subspriteOffset
-		.2byte 0x780C, 0x0002, 0x0000, 0x0000, 0xFFA8, 0xFFA0, 0x0028, 0x0020
-		.4byte 0x28 @ subspriteOffset
-		.2byte 0x780D, 0x0002, 0x0000, 0x0000, 0xFFA8, 0xFFA0, 0x0028, 0x0020
-		.4byte 0x38 @ subspriteOffset
-	@ Unk1
-		.byte 0x27, 0xC9, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00
-		.byte 0x4E, 0x0E, 0x04, 0x00, 0x04, 0x00, 0x00, 0x00
-	@ Subsprites
-		.byte 0x00, 0x0C @ flip, shape
-		.2byte -24, -32, (0 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0C @ flip, shape
-		.2byte -24, -32, (0 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte -7, -33, (8 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0C @ flip, shape
-		.2byte -24, -32, (0 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte -7, -33, (10 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0C @ flip, shape
-		.2byte -24, -32, (0 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte -7, -33, (12 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x0C @ flip, shape
-		.2byte -24, -32, (0 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-		.byte 0x00, 0x04 @ flip, shape
-		.2byte -7, -33, (14 | 0 << 12) @ x, y, (tileIdx | (palID << 12))
-	@ Unk2
-		.byte 0x00, 0x00, 0x01, 0x00
-		.byte 0x01, 0x00, 0x04, 0x00
-		.byte 0x02, 0x00, 0x04, 0x00
-		.byte 0x03, 0x00, 0x04, 0x00
-		.byte 0x04, 0x00, 0x04, 0x00
-	@ Tiles
-		.incbin "data/spriteset/candle_box.4bpp"
+FileB991_Header:
+  .2byte 739 @ palStart
+  .2byte 5 @ metaspriteCount
+  .2byte 2 @ animationCount
+  .2byte 9 @ subspriteCount
+  .2byte 5 @ cmdCount
+  .2byte 512 @ tileCount
+  .4byte 32 @ offsetToPoses
+  .4byte 132 @ offsetToAnims
+  .4byte 148 @ offsetToSubsprites
+  .4byte 220 @ offsetToCmds
+  .4byte 240 @ offsetToTiles
+
+FileB991_Poses:
+@ pose unk_0,  obj,               objcount,   bb
+  pose 0x7740, FileB991_Obj_0,    1,          -88,  -96,   40,   32
+  pose 0x780A, FileB991_Obj_1,    2,          -88,  -96,   40,   32
+  pose 0x780B, FileB991_Obj_3,    2,          -88,  -96,   40,   32
+  pose 0x780C, FileB991_Obj_5,    2,          -88,  -96,   40,   32
+  pose 0x780D, FileB991_Obj_7,    2,          -88,  -96,   40,   32
+
+FileB991_Anims:
+@ animation unk_0,  cmd,             cmdCount
+  animation 0xC927, FileB991_Cmd_0,  1
+  animation 0x0E4E, FileB991_Cmd_1,  4
+
+1:
+FileB991_Subsprites:
+@   subsprite size,            x,    y,   tile,  pal
+  FileB991_Obj_0:
+    subsprite OAM_SIZE_64x64,  -24,  -32,    0,    0
+  FileB991_Obj_1:
+    subsprite OAM_SIZE_64x64,  -24,  -32,    0,    0
+    subsprite OAM_SIZE_16x16,   -7,  -33,    8,    0
+  FileB991_Obj_3:
+    subsprite OAM_SIZE_64x64,  -24,  -32,    0,    0
+    subsprite OAM_SIZE_16x16,   -7,  -33,   10,    0
+  FileB991_Obj_5:
+    subsprite OAM_SIZE_64x64,  -24,  -32,    0,    0
+    subsprite OAM_SIZE_16x16,   -7,  -33,   12,    0
+  FileB991_Obj_7:
+    subsprite OAM_SIZE_64x64,  -24,  -32,    0,    0
+    subsprite OAM_SIZE_16x16,   -7,  -33,   14,    0
+
+2:
+FileB991_Cmds:
+  FileB991_Cmd_0:
+    animcmd  0,  1
+  FileB991_Cmd_1:
+    animcmd  1,  4
+    animcmd  2,  4
+    animcmd  3,  4
+    animcmd  4,  4
+
+FileB991_Tiles:
+  .incbin "data/spriteset/candle_box.4bpp"

@@ -223,7 +223,7 @@ s32 AuxShadow_Init(AuxShadow* shadow, Vec3* pos, s32 scale, s32 farScale, s32 ba
   Video_GetAuxSprite(gfx, SPRITE_EFF_1C1B);
   sprite = &shadow->sprite;
   AuxSprite_Add(sprite, gfx, SPRFLAG_BLINK_ODD | SPRFLAG_AFFINE);
-  sprite->metaspriteIdx = 5;
+  sprite->poseIdx = 5;
   shadow->sprite.priority = 2;
   AuxShadowManager_Add(mgr, shadow);
   return 0;
@@ -246,7 +246,7 @@ s32 AuxShadow_SetSprite(AuxShadow* shadow, SpriteID32 id, s32 poseIdx) {
   Video_GetAuxSprite(gfx, id);
   sprite = &shadow->sprite;
   AuxSprite_SetGfx(sprite, gfx);
-  sprite->metaspriteIdx = poseIdx;
+  sprite->poseIdx = poseIdx;
   // 戻り値のある宣言だが return なし
 }
 

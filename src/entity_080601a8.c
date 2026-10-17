@@ -12,7 +12,7 @@ typedef struct Entity080601a8Elem {
   s16 velY;          // 0x06, 毎フレーム sprite.pos.y に加算される, 根拠: FUN_0805ff58
   s8 angle;          // 0x08, gSineTable の添字 (向き), 毎フレーム angleStep が足される, 根拠: FUN_0805ff58 の ldrsb
   s8 angleStep;      // 0x09, 生成時 (rand & 3) - 2, 根拠: FUN_0805ff58
-  u8 frame;          // 0x0A, 0..3, sprite.metaspriteIdx = frame + 0x36, 根拠: FUN_0805ff58 / FUN_08060220
+  u8 frame;          // 0x0A, 0..3, sprite.poseIdx = frame + 0x36, 根拠: FUN_0805ff58 / FUN_08060220
   u8 frameTimer;     // 0x0B, 毎フレーム +1、frameDuration に達したら frame を進めて0に戻す, 根拠: FUN_0805ff58
   u8 frameDuration;  // 0x0C, 生成時 (rand & 3) + 7, 根拠: FUN_0805ff58
   u8 unk_d;          // 0x0D, FUN_08060220 の第6引数が入る, 読み手は未発見
@@ -45,7 +45,7 @@ void FUN_0805ff04(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) {
   elem->velY = 0;
   elem->angleStep = 0;
   AuxSprite_Setup(sprite, &p->gfx, 0);
-  sprite->metaspriteIdx = 54;
+  sprite->poseIdx = 54;
 }
 
 void FUN_0805ff34(Entity080601a8* p, Entity080601a8Elem* elem, s32 idx) {

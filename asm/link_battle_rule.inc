@@ -1424,7 +1424,7 @@ Entity08F4_Init: @ 0x081DB930
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081DB954
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	movs r2, #0xc3
 	lsls r2, r2, #2
 	adds r1, r4, r2

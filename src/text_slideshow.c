@@ -22,8 +22,8 @@ typedef struct {
   u32 timer;                 // 0x020, step に入ってからのフレーム数, TextSlideshow_Update が毎フレーム +1
   TextSlideshowFlags flags;  // 0x024, '.f=0', bit0: gStagedDISPCNT を退避して BG0 だけにする, bit1: 最終行のあと KillEntity
   u16 savedDispcnt;          // 0x026, flags bit0 のとき _Init が gStagedDISPCNT を退避し _Destroy が戻す
-  u8* scriptS;               // 0x028, '.s' の後の FUN_0823d340(), MessageWindow_Start に渡す本文
-  u8* scriptT;               // 0x02C, '.t' の後の FUN_0823d34c(), 下の7本の配列の読み出し元
+  u8* scriptS;               // 0x028, '.s' の後の VM_GetPC_Proxy(), MessageWindow_Start に渡す本文
+  u8* scriptT;               // 0x02C, '.t' の後の VM_GetValueSafe2_Proxy(), 下の7本の配列の読み出し元
   u16 exitScriptID;          // 0x030, '.e', 最終行のあと VM_ExecByID
   u16 skipScriptID;          // 0x032, '.c', 0 でなければ Start/A でスキップでき、そのとき VM_ExecByID
   s16 holdTime[64];          // 0x034, '.t[0]', 表示したまま待つフレーム数, -1 で行テーブルの終端
@@ -168,13 +168,13 @@ s32 TextSlideshow_Start(TextSlideshow* p) {
   p->unk_1c = 0;
 
   if (!VM_SeekToNamedArg('s')) return -1;
-  p->scriptS = FUN_0823d340();
+  p->scriptS = VM_GetPC_Proxy();
   if (p->scriptS == NULL) return -1;
 
   if (VM_SeekToNamedArg('t')) {
     s32 i;
 
-    p->scriptT = FUN_0823d34c();
+    p->scriptT = VM_GetValueSafe2_Proxy();
     VM_SetPC(p->scriptT);
     for (i = 0; i < 64; i++) {
       p->holdTime[i] = VM_GetValue();

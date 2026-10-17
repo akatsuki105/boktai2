@@ -50,7 +50,6 @@ s32 VM_Ctrl_CallSubroutine(void) {
   return 0;
 }
 
-// https://boktaihacking.net/wiki/Bytecode#Control_0x22ff_(TODO)
 // スクリプトからIDと可変個のu16値を読み取り、1件のレコードとして FUN_08230eec のテーブルに登録する
 s32 VM_Ctrl_22FF(void) {
   u16 args[16];
@@ -150,8 +149,7 @@ s32 VM_Ctrl_SetZoneCallback(u32 param) {
   return 0;
 }
 
-// https://boktaihacking.net/wiki/Bytecode#Control_0xe43c_(TODO)
-void* VM_Ctrl_E43C(void) {
+void* VM_Ctrl_Restart(void) {
   bool32 bVar1 = FUN_0823a8b0();
   if (!bVar1) {
     u32_03004798 = 0x40;
@@ -175,7 +173,7 @@ static const Subroutine sCtrlHandlers2[8] = {
     {id : BOKHASH("load"),    fn : VM_Ctrl_LoadMap        },
     {id : 0x0BB3,             fn : VM_Ctrl_Unused_0BB3    },
     {id : BOKHASH("map"),     fn : VM_Ctrl_Unused_C091    },
-    {id : BOKHASH("restart"), fn : VM_Ctrl_E43C           },
+    {id : BOKHASH("restart"), fn : VM_Ctrl_Restart        },
 };  // 0x08DBD758
 
 s32 FUN_0823b130(void) {

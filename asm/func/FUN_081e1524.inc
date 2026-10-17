@@ -32,7 +32,7 @@ _081E1554:
 _081E155E:
 	strh r1, [r3, #0x34]
 _081E1560:
-	ldr r2, _081E157C @ =0x085B0A08
+	ldr r2, _081E157C @ =gSineTable
 	ldrh r0, [r3, #6]
 	lsls r0, r0, #2
 	movs r1, #0xff
@@ -47,7 +47,7 @@ _081E1560:
 	asrs r1, r0, #0xc
 	b _081E1586
 	.align 2, 0
-_081E157C: .4byte 0x085B0A08
+_081E157C: .4byte gSineTable
 _081E1580:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

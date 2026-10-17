@@ -85,7 +85,7 @@ _08012236:
 	movs r3, #7
 	ldrsb r3, [r4, r3]
 	ldrh r6, [r4, #0xc]
-	ldr r2, _0801226C @ =0x085B0A08
+	ldr r2, _0801226C @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -103,7 +103,7 @@ _08012236:
 _08012260: .4byte 0x0203B400
 _08012264: .4byte 0x030046B8
 _08012268: .4byte 0x000003FF
-_0801226C: .4byte 0x085B0A08
+_0801226C: .4byte gSineTable
 _08012270:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

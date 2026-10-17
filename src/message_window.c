@@ -32,7 +32,7 @@ typedef struct MessageWindow {
   u32 unk_194;                                    // 0x194, '.m', MessageWindow_SetAutoAdvance の第3引数
   u32 unk_198;                                    // 0x198, 表示が終わると 1 になり MessageWindow_IsFinished が返す
   u8 unk_19c[4];                                  // 0x19C
-  u8* scriptPc;                                   // 0x1A0, FUN_0823d340 の戻り値、または MessageWindow_Start / MessageWindow_StartWithLabels の第1引数
+  u8* scriptPc;                                   // 0x1A0, VM_GetPC_Proxy の戻り値、または MessageWindow_Start / MessageWindow_StartWithLabels の第1引数
   u16 labelIdx;                                   // 0x1A4, labels の添字, pendingLine = labels[labelIdx]
   u16 labelCount;                                 // 0x1A6, MessageWindow_StartWithLabels が 32 に丸める
   u16 labels[32];                                 // 0x1A8, MessageWindow_StartWithLabels が呼び出し側の配列をコピーする行番号表
@@ -148,7 +148,7 @@ s32 MessageWindow_Start(u8* pc) {
 NAKED s32 MessageWindow_StartWithLabels(u8* pc, u16 labelCount, u16 labelIdx, u16* labels) { INCFUNC("asm/func/MessageWindow_StartWithLabels.inc"); }
 
 // '.r' があればそこを、なければ現在位置を本文の先頭にする
-s32 MessageWindow_Open(void) { return MessageWindow_Start(!VM_SeekToNamedArg('r') ? VM_GetPC() : FUN_0823d340()); }
+s32 MessageWindow_Open(void) { return MessageWindow_Start(!VM_SeekToNamedArg('r') ? VM_GetPC() : VM_GetPC_Proxy()); }
 
 NAKED s32 MessageWindow_ShowLine(s32 line) { INCFUNC("asm/func/MessageWindow_ShowLine.inc"); }
 
@@ -225,7 +225,7 @@ s32 MessageWindow_SetExtendValue(s32 idx, char* text) {
 
 s32 MessageWindow_SetExtendStringScripted(void) {
   s32 idx = VM_GetValue();
-  u8* pc = FUN_0823d340();
+  u8* pc = VM_GetPC_Proxy();
   s32 offset;
 
   if (pc == NULL) return -1;
@@ -237,7 +237,7 @@ s32 MessageWindow_SetExtendStringScripted(void) {
 
 s32 MessageWindow_SetExtend(void) {
   s32 idx = VM_GetValue();
-  return MessageWindow_SetExtendValue(idx, FUN_0823d34c());
+  return MessageWindow_SetExtendValue(idx, VM_GetValueSafe2_Proxy());
 }
 
 s32 MessageWindow_SetScriptIdsScripted(void) {

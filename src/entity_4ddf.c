@@ -1,7 +1,6 @@
 #include "entity.h"
 #include "global.h"
-
-struct PreviewStage;
+#include "preview_stage.h"
 
 // スライド1枚ぶん, '.t' が holdTime / fadeInTime / fadeOutTime を、'.c' が x / y / previewID を同じ添字に書き込む
 typedef struct Entity4DDFData {
@@ -10,20 +9,20 @@ typedef struct Entity4DDFData {
   u16 fadeOutTime;  // 0x4, 明るさを 64 から 0 まで下げるフレーム数
   u16 x;            // 0x6, 絵の表示位置
   u16 y;            // 0x8, 同上
-  s16 previewID;    // 0xA, sEnemyDexModels の添字, 0x46 なら絵を出さずに待つだけ、-1 でスライドショー終了
+  s16 previewID;    // 0xA, sPreviewModels の添字, 0x46 なら絵を出さずに待つだけ、-1 でスライドショー終了
 } Entity4DDFData;
 static_assert(sizeof(Entity4DDFData) == 12);  // 0x08211db8
 
 // スクリプトから貰った絵を1枚ずつ、画面の明るさをフェードさせながら順に見せる, スタッフロールの右下で行われるキャラクターのスライドショーを担当すると思われるがまだ未確定
 typedef struct Entity4DDF {
-  Entity e;                      // 0x000, ENTITY_UNK_8
-  Entity4DDFData slides[64];     // 0x018, _Init が '.t' と '.c' から読む
-  struct PreviewStage* preview;  // 0x318, 絵を出す担当, _Init が PreviewStage_Create(arg, 0) で作る
-  s32 lastSlide;                 // 0x31C, 最後のスライドの添字 (件数 - 1), _Update はここを超えたら何もしない
-  s16 curSlide;                  // 0x320, 再生中のスライドの添字
-  s16 timer;                     // 0x322, step に入ってからのフレーム数, Entity4DDF_SetStep が 0 に戻す
-  u8 step;                       // 0x324, 0: フェードイン, 1: 表示待ち, 2: フェードアウト, 3: 絵なしで待つ, 4: 終了
-  u8 unk_325[3];                 // 0x325, 読み手も書き手も見つかっていない, padding?
+  Entity e;                   // 0x000, ENTITY_UNK_8
+  Entity4DDFData slides[64];  // 0x018, _Init が '.t' と '.c' から読む
+  PreviewStage* preview;      // 0x318, 絵を出す担当, _Init が PreviewStage_Create(arg, 0) で作る
+  s32 lastSlide;              // 0x31C, 最後のスライドの添字 (件数 - 1), _Update はここを超えたら何もしない
+  s16 curSlide;               // 0x320, 再生中のスライドの添字
+  s16 timer;                  // 0x322, step に入ってからのフレーム数, Entity4DDF_SetStep が 0 に戻す
+  u8 step;                    // 0x324, 0: フェードイン, 1: 表示待ち, 2: フェードアウト, 3: 絵なしで待つ, 4: 終了
+  u8 unk_325[3];              // 0x325, 読み手も書き手も見つかっていない, padding?
 } Entity4DDF;
 static_assert(sizeof(Entity4DDF) == 808);
 

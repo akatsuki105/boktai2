@@ -33,7 +33,7 @@ s32 Entity080cbabc_Destroy(Entity080cbabc* p) {
   return 0;
 }
 
-void FUN_080cb8f8(Entity080cbabc* p, Vec3* pos, s32 poseIdx, s32 plttID) {
+void FUN_080cb8f8(Entity080cbabc* p, WorldPos* pos, s32 poseIdx, s32 plttID) {
   Video_GetAuxSprite(&p->gfx, SPRITE_210E);
   AuxSprite_Add(&p->sprite, &p->gfx, 0);
   AuxSprite_SetPoseIdx(&p->sprite, poseIdx);
@@ -57,9 +57,9 @@ void FUN_080cb94c(Entity080cbabc* p, s32 angle, s32 power, s32 unk_40, HitboxAtt
   Hitbox_Register(hitbox);
 }
 
-NAKED s32 Entity080cbabc_Init(Entity080cbabc* p, Vec3* pos, s32 poseIdx, s32 angle, s32 speed, s32 plttID, s32 param_7, s32 param_8, s32 param_9, u32 param_10) { INCFUNC("asm/func/Entity080cbabc_Init.inc"); }
+NAKED s32 Entity080cbabc_Init(Entity080cbabc* p, WorldPos* pos, s32 poseIdx, s32 angle, s32 speed, s32 plttID, s32 param_7, s32 param_8, s32 param_9, u32 param_10) { INCFUNC("asm/func/Entity080cbabc_Init.inc"); }
 
-Entity080cbabc* Entity080cbabc_Create(Vec3* pos, s32 poseIdx, s32 angle, s32 speed, s32 plttID, s32 param_6, s32 param_7, s32 param_8, u32 param_9) {
+Entity080cbabc* Entity080cbabc_Create(WorldPos* pos, s32 poseIdx, s32 angle, s32 speed, s32 plttID, s32 param_6, s32 param_7, s32 param_8, u32 param_9) {
   Entity080cbabc* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity080cbabc));
 
   if (p != NULL) {

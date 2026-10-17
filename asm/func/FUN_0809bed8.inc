@@ -4,49 +4,49 @@
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809BEEC
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	str r0, [r4, #0x40]
 _0809BEEC:
 	movs r0, #0x77
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809BEFC
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	str r0, [r4, #0x44]
 _0809BEFC:
 	movs r0, #0x61
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809BF0C
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	str r0, [r4, #0x48]
 _0809BF0C:
 	movs r0, #0x6d
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809BF1C
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	str r0, [r4, #0x4c]
 _0809BF1C:
 	movs r0, #0x41
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809BF2C
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	str r0, [r4, #0x50]
 _0809BF2C:
 	movs r0, #0x6c
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809BF3C
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	str r0, [r4, #0x54]
 _0809BF3C:
 	movs r0, #0x45
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _0809BF4C
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	str r0, [r4, #0x58]
 _0809BF4C:
 	movs r0, #0x65

@@ -7,7 +7,7 @@
 
 typedef struct {
   Entity e;    // 0x0, ENTITY_UNK_8
-  void* p_18;  // 0x18, 0x08653534 固定?
+  void* p_18;  // 0x18, Tilemap_4F8F 固定?
   u8 unk_1c[4];
   u32 frameCounter;               // 0x020, フレームカウンタ (多分カーソルの点滅とかで使う)
   u8 page;                        // 0x024, 現在のページ (0: ページ1, 1: ページ2, 2: ページ3)
@@ -35,7 +35,6 @@ typedef struct {
 static_assert(sizeof(AlbumMenu) == 2176);
 
 s32 FUN_08049fa8(void);
-void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, s32 zeroSuppress);
 
 const u8 gAlbumPhotoSlotCounts[3] = {10, 10, 7};  // アルバムの各ページのブロマイドスロット数
 

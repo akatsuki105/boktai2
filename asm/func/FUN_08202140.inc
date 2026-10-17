@@ -84,7 +84,7 @@ _082021E0:
 	mov r4, sp
 	ldr r3, [r5, #0x1c]
 	movs r6, #0x64
-	ldr r2, _08202214 @ =0x085B0A08
+	ldr r2, _08202214 @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -104,7 +104,7 @@ _08202204: .4byte 0x00000692
 _08202208: .4byte 0x03002BE0
 _0820220C: .4byte 0x000006E4
 _08202210: .4byte 0x00000694
-_08202214: .4byte 0x085B0A08
+_08202214: .4byte gSineTable
 _08202218:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -193,7 +193,7 @@ _082022A0:
 	mov r6, sp
 	movs r0, #0x64
 	mov r8, r0
-	ldr r1, _082022EC @ =0x085B0A08
+	ldr r1, _082022EC @ =gSineTable
 	mov sl, r1
 _082022BE:
 	movs r0, #7
@@ -203,7 +203,7 @@ _082022BE:
 	muls r0, r1, r0
 	lsrs r0, r0, #3
 	adds r3, r0, r1
-	ldr r2, _082022EC @ =0x085B0A08
+	ldr r2, _082022EC @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -220,7 +220,7 @@ _082022BE:
 	asrs r1, r0, #0xc
 	b _082022F6
 	.align 2, 0
-_082022EC: .4byte 0x085B0A08
+_082022EC: .4byte gSineTable
 _082022F0:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

@@ -21,6 +21,7 @@ typedef u32 SpriteFlags;
 #define SPRFLAG_UNK_11 (1 << 11)       // 0x00000800, 不明
 #define SPRFLAG_GAMEOVER (1 << 12)     // 0x00001000, ゲームオーバー画面に残すスプライト, ゲームオーバー中は Video_SetDrawPasses がこのビットだけを描くパス (XXX_DrawListGameover) に差し替えるので、立っていないものは一斉に消える
 #define SPRFLAG_UNK_13 (1 << 13)       // 0x00002000, SPRFLAG_GAMEOVER と同じ用途(特定の場面での描画制御), まだどの場面かで使われるかは未解析, Particle: Particle_DrawListUnk13, AuxSprite: AuxSprite_DrawListUnk13, MainSprite: FUN_08230594
+#define SPRFLAG_UNK_15 (1 << 15)       // 0x00008000, 不明
 
 // 0..15
 // (OAM1.14-15 << 2) | (OAM0.14-15), ie. ((sizeidx << 2) | shape)

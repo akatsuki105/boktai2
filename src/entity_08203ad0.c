@@ -123,7 +123,7 @@ NON_MATCH void Entity08203ad0_Update(Entity08203ad0* p) {
       AuxAnimState* anim = &slot->anim;
       AuxAnimCmd* cmd = slot->anim.cmds + anim->cmdIdx;
 
-      slot->sprite.metaspriteIdx = *cmd >> 6;
+      slot->sprite.poseIdx = *cmd >> 6;
       if ((anim->flags & ANIM_PLAY_XFLIP) == ((*cmd & 0x30) >> 4 & ANIM_PLAY_XFLIP)) {
         slot->sprite.flags &= ~SPRFLAG_XFLIP;
       } else {

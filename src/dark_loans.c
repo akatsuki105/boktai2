@@ -31,7 +31,7 @@ NAKED void EntityE9D3_Init_Helper_080b5650(EntityE9D3* p) { INCFUNC("asm/func/En
 // '.r' があれば本文を差し替えて, メッセージ枠を開く
 void EntityE9D3_Init_Helper_080b593c(EntityE9D3* p) {
   if (VM_SeekToNamedArg('r')) {
-    p->script = FUN_0823d340();
+    p->script = VM_GetPC_Proxy();
   }
 
   MessageWindow_SetBgPltt(BGP_EAA8);

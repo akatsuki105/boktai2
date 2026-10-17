@@ -89,7 +89,7 @@ _080AC7C4:
 	ldrh r2, [r2]
 	adds r0, r0, r2
 	subs r5, r0, #1
-	ldr r2, _080AC814 @ =0x085B0A08
+	ldr r2, _080AC814 @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -106,7 +106,7 @@ _080AC7C4:
 	.align 2, 0
 _080AC80C: .4byte 0x000003FF
 _080AC810: .4byte 0x0203B400
-_080AC814: .4byte 0x085B0A08
+_080AC814: .4byte gSineTable
 _080AC818:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

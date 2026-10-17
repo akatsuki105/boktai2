@@ -58,7 +58,7 @@ _080ABDD6:
 	adds r4, r6, #0
 	adds r4, #0x2c
 	ldrb r5, [r4]
-	ldr r3, _080ABE04 @ =0x085B0A08
+	ldr r3, _080ABE04 @ =gSineTable
 	ldrb r0, [r2]
 	adds r0, #0x40
 	movs r1, #0xff
@@ -73,7 +73,7 @@ _080ABDD6:
 	asrs r5, r0, #0xc
 	b _080ABE0E
 	.align 2, 0
-_080ABE04: .4byte 0x085B0A08
+_080ABE04: .4byte gSineTable
 _080ABE08:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

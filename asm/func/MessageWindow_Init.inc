@@ -92,7 +92,7 @@ _080485D4:
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08048650
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	adds r1, r0, #0
 	movs r2, #0xd0
 	lsls r2, r2, #1

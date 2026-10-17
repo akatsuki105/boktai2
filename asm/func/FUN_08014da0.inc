@@ -187,7 +187,7 @@ _08014EF4:
 	adds r2, r1, r0
 	ldr r3, [sp, #0x18]
 _08014F14:
-	ldr r0, _08014F48 @ =0x085B0A08
+	ldr r0, _08014F48 @ =gSineTable
 	mov ip, r0
 	adds r0, r2, #0
 	adds r0, #0x40
@@ -212,7 +212,7 @@ _08014F14:
 	.align 2, 0
 _08014F40: .4byte 0x000003FF
 _08014F44: .4byte 0x0203B400
-_08014F48: .4byte 0x085B0A08
+_08014F48: .4byte gSineTable
 _08014F4C:
 	ldr r0, [r6]
 	adds r0, #1

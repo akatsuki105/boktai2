@@ -73,7 +73,7 @@ _0807F7B8:
 	adds r0, r7, #0
 	movs r2, #4
 	bl Particle_SetFrame
-	ldr r2, _0807F84C @ =0x085B0A08
+	ldr r2, _0807F84C @ =gSineTable
 	mov r0, r8
 	adds r0, #0x40
 	movs r1, #0xff
@@ -93,14 +93,14 @@ _0807F7B8:
 _0807F840: .4byte 0x0203B400
 _0807F844: .4byte 0x030046B8
 _0807F848: .4byte 0x000003FF
-_0807F84C: .4byte 0x085B0A08
+_0807F84C: .4byte gSineTable
 _0807F850:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
 	rsbs r0, r0, #0
 _0807F856:
 	strh r0, [r7, #0x34]
-	ldr r1, _0807F878 @ =0x085B0A08
+	ldr r1, _0807F878 @ =gSineTable
 	movs r0, #0xff
 	mov r2, r8
 	ands r0, r2
@@ -116,7 +116,7 @@ _0807F856:
 	asrs r0, r0, #0xc
 	b _0807F882
 	.align 2, 0
-_0807F878: .4byte 0x085B0A08
+_0807F878: .4byte gSineTable
 _0807F87C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

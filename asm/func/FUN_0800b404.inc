@@ -111,7 +111,7 @@ _0800B4AE:
 _0800B4D8:
 	strb r0, [r5, #3]
 _0800B4DA:
-	ldr r2, _0800B514 @ =0x085B0A08
+	ldr r2, _0800B514 @ =gSineTable
 	ldrb r0, [r6]
 	adds r0, #0x40
 	movs r1, #0xff
@@ -138,7 +138,7 @@ _0800B4DA:
 _0800B508: .4byte 0x030046B8
 _0800B50C: .4byte 0x000003FF
 _0800B510: .4byte 0x0203B400
-_0800B514: .4byte 0x085B0A08
+_0800B514: .4byte gSineTable
 _0800B518:
 	mov r3, r8
 	ldrh r0, [r3, #6]

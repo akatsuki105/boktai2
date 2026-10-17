@@ -220,7 +220,7 @@ _0822A700:
 	ldr r1, [sp, #0x114]
 	orrs r1, r0
 	str r1, [sp, #0x114]
-	ldr r3, _0822A778 @ =0x085B0A08
+	ldr r3, _0822A778 @ =gSineTable
 	ldr r2, [sp, #0x100]
 	ldrb r1, [r2, #6]
 	rsbs r1, r1, #0
@@ -276,7 +276,7 @@ _0822A734:
 	b _0822A788
 	.align 2, 0
 _0822A774: .4byte 0x030035B0
-_0822A778: .4byte 0x085B0A08
+_0822A778: .4byte gSineTable
 _0822A77C: .4byte 0x0300359C
 _0822A780:
 	ldr r3, [sp, #0x134]

@@ -1882,7 +1882,7 @@ _080568D0:
 	adds r3, #0xc
 	ldrb r5, [r4, #3]
 	ldrb r6, [r4, #4]
-	ldr r2, _08056904 @ =0x085B0A08
+	ldr r2, _08056904 @ =gSineTable
 	adds r0, r5, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -1900,7 +1900,7 @@ _080568D0:
 _080568F8: .4byte 0x030046B8
 _080568FC: .4byte 0x000003FF
 _08056900: .4byte 0x0203B400
-_08056904: .4byte 0x085B0A08
+_08056904: .4byte gSineTable
 _08056908:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

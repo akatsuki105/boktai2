@@ -12,7 +12,7 @@
 	movs r6, #8
 _08245F44:
 	movs r7, #0
-	ldr r0, _08245F78 @ =0x085B0A08
+	ldr r0, _08245F78 @ =gSineTable
 	mov sl, r0
 	movs r1, #0xff
 	mov sb, r1
@@ -38,7 +38,7 @@ _08245F56:
 	movs r6, #8
 	b _08245FEE
 	.align 2, 0
-_08245F78: .4byte 0x085B0A08
+_08245F78: .4byte gSineTable
 _08245F7C:
 	mov r1, ip
 	adds r1, #0x70

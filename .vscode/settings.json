@@ -53,9 +53,10 @@
     "*.gbapal": "hexEditor.hexedit"
   },
   "files.watcherExclude": {
-    "build/**": true,
     "expected/**": true,
-    "data/**": true,
-    "asm/func/*.inc": true
+    "asm/func/*.inc": true,
+    "build/**/*.o": true,
+    "build/**/*.i": true,
+    "build/**/*.d": true
   }
 }

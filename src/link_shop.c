@@ -295,7 +295,7 @@ NON_MATCH bool32 LinkShopManager_IsReady(void) {
 }
 
 // 残差は LinkShopManager_IsBusy と同じ, フラグ判定の 0/1 実体化が元は2回ある
-NON_MATCH bool32 LinkShopManager_IsFinished(void) {
+NON_MATCH bool8 LinkShopManager_IsFinished(void) {
 #ifdef NONMATCHING_C
   if (gLinkShopManager == NULL) {
     return TRUE;
@@ -311,7 +311,7 @@ NON_MATCH bool32 LinkShopManager_IsFinished(void) {
 
 NAKED void LinkShopManager_Abort(void) { INCFUNC("asm/func/LinkShopManager_Abort.inc"); }
 
-NAKED bool32 LinkShopManager_Send(s32* args, s32 kind, u16 tag) { INCFUNC("asm/func/LinkShopManager_Send.inc"); }
+NAKED bool8 LinkShopManager_Send(s32* args, s32 kind, u32 tag) { INCFUNC("asm/func/LinkShopManager_Send.inc"); }
 
 void LinkShopManager_Kill(void) {
   if (gLinkShopManager != NULL) {

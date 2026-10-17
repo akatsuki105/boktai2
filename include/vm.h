@@ -91,17 +91,6 @@ typedef struct {
 } ScriptRecord;
 static_assert(sizeof(ScriptRecord) == 8);
 
-// レコードの置き場, 0x03000740 の深さで 2 面を切り替えて使う
-typedef struct {
-  u32 count;              // 0x00, recs の件数
-  u32 valueCount;         // 0x04, values に積んだ u16 の個数
-  ScriptRecord recs[32];  // 0x08
-  u16 values[64];         // 0x108, recs[].values が指す先
-} ScriptRecordBlock;
-static_assert(sizeof(ScriptRecordBlock) == 392);
-
-ScriptRecordBlock* ScriptRecord_GetBlocks(void);
-
 // id で引いたレコードの先頭を *out に入れ、件数を返す
 s32 FUN_08230f94(u32 id, ScriptRecord** out);
 
@@ -179,8 +168,8 @@ void FUN_0823206c(u8* pc, s32 offset, u32 val);
 u32 FUN_082320e4(u8* pc, s32 offset);
 
 u8* FUN_08232160(u8* pc);
-u8* FUN_0823d340(void);
-void* FUN_0823d34c(void);
+u8* VM_GetPC_Proxy(void);
+void* VM_GetValueSafe2_Proxy(void);
 
 void SetMapInitScriptID(u32 scriptID);
 

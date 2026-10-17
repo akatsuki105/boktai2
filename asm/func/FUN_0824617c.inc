@@ -76,7 +76,7 @@ _08246206:
 	str r0, [sp]
 	adds r0, r4, #0
 	bl LerpVec3
-	ldr r3, _08246258 @ =0x085B0A08
+	ldr r3, _08246258 @ =gSineTable
 	ldrh r0, [r5, #6]
 	lsls r0, r0, #2
 	movs r2, #0xff
@@ -107,7 +107,7 @@ _08246206:
 	asrs r1, r0, #0xc
 	b _08246262
 	.align 2, 0
-_08246258: .4byte 0x085B0A08
+_08246258: .4byte gSineTable
 _0824625C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -116,7 +116,7 @@ _08246262:
 	movs r0, #0
 	strh r1, [r7]
 	strh r0, [r7, #2]
-	ldr r1, _08246284 @ =0x085B0A08
+	ldr r1, _08246284 @ =gSineTable
 	mov r3, ip
 	lsls r0, r3, #1
 	adds r0, r0, r1
@@ -130,7 +130,7 @@ _08246262:
 	asrs r0, r0, #0xc
 	b _0824628E
 	.align 2, 0
-_08246284: .4byte 0x085B0A08
+_08246284: .4byte gSineTable
 _08246288:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

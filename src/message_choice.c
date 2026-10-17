@@ -54,7 +54,7 @@ static_assert(sizeof(MessageChoice) == 452);
 
 IWRAM_DATA MessageChoice* gMessageChoice = NULL;  // 0x03000028
 
-u8* FUN_0823d340(void);
+u8* VM_GetPC_Proxy(void);
 s32 FUN_080488fc(void);
 
 const char s_ALTER_08251b3c[] = "ALTER";
@@ -564,7 +564,7 @@ MessageChoice* MessageChoice_CreateFromScript(void) {
   if (gMessageChoice != NULL) {
     return NULL;
   }
-  textPC = VM_SeekToNamedArg('r') ? FUN_0823d340() : NULL;
+  textPC = VM_SeekToNamedArg('r') ? VM_GetPC_Proxy() : NULL;
   stringBase = VM_GetNamedArgValue('i', 0);
   scriptID = 0;
   if (VM_SeekToNamedArg('p')) {
@@ -618,7 +618,7 @@ void MessageChoice_SetTextFromScript(void) {
   MessageChoice* p = gMessageChoice;
 
   if (p != NULL && VM_SeekToNamedArg('r')) {
-    p->textPC = FUN_0823d340();
+    p->textPC = VM_GetPC_Proxy();
     p->stringBase = VM_GetNamedArgValue('i', 0);
     if (VM_SeekToNamedArg('w')) p->selected = VM_GetValue();
     if (p->textPC != NULL) {

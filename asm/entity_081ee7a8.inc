@@ -73,7 +73,7 @@ _081EE348:
 	mov ip, r0
 	movs r1, #0
 	ldrsh r2, [r0, r1]
-	ldr r3, _081EE3B8 @ =0x085B0A08
+	ldr r3, _081EE3B8 @ =gSineTable
 	adds r6, r5, #0
 	adds r6, #0x5a
 	ldrb r0, [r6]
@@ -111,7 +111,7 @@ _081EE348:
 	strh r0, [r2]
 	b _081EE3DC
 	.align 2, 0
-_081EE3B8: .4byte 0x085B0A08
+_081EE3B8: .4byte gSineTable
 _081EE3BC:
 	adds r0, r5, #0
 	adds r0, #0x5c

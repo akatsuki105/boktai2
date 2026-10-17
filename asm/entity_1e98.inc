@@ -240,7 +240,7 @@ FUN_080a472c: @ 0x080A472C
 	subs r0, r0, r1
 	ldrh r1, [r2]
 	bl Div
-	ldr r2, _080A4768 @ =0x085B0A08
+	ldr r2, _080A4768 @ =gSineTable
 	movs r1, #0xff
 	ands r1, r0
 	lsls r1, r1, #1
@@ -255,7 +255,7 @@ FUN_080a472c: @ 0x080A472C
 	asrs r1, r0, #0xc
 	b _080A4772
 	.align 2, 0
-_080A4768: .4byte 0x085B0A08
+_080A4768: .4byte gSineTable
 _080A476C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

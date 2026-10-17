@@ -351,7 +351,7 @@ static inline void MapItem_AdvanceAnim(MapItem* item) {
   AuxAnimState* anim = item->anim;
   AuxAnimCmd* cmd = &anim->cmds[anim->cmdIdx];
 
-  sprite->metaspriteIdx = *cmd >> 6;
+  sprite->poseIdx = *cmd >> 6;
   if ((anim->flags & ANIM_PLAY_XFLIP) == (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
     sprite->flags &= ~SPRFLAG_XFLIP;
   } else {

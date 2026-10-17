@@ -139,7 +139,7 @@ void FUN_0809dd34(Entity1B24* p) {
 
 void FUN_0809dd68(Entity1B24* p) {
   if (VM_SeekToNamedArg('w')) {
-    p->unk_24 = FUN_0823d340();
+    p->unk_24 = VM_GetPC_Proxy();
   }
   FUN_0809cea8(p);
 }

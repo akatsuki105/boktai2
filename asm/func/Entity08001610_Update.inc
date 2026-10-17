@@ -55,7 +55,7 @@ _0800120C:
 	adds r2, #0xa0
 	movs r4, #0xff
 	ands r2, r4
-	ldr r1, _0800128C @ =0x085B0A08
+	ldr r1, _0800128C @ =gSineTable
 	mov sb, r1
 	adds r1, r2, #0
 	adds r1, #0x40
@@ -86,7 +86,7 @@ _0800120C:
 	.align 2, 0
 _08001284: .4byte 0x03002BAC
 _08001288: .4byte 0x03002B90
-_0800128C: .4byte 0x085B0A08
+_0800128C: .4byte gSineTable
 _08001290:
 	rsbs r1, r3, #0
 	asrs r1, r1, #0x12

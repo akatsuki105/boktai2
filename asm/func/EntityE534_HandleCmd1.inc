@@ -106,7 +106,7 @@ _08011D76:
 	adds r3, #0x10
 	movs r2, #6
 	ldrsb r2, [r4, r2]
-	ldr r0, _08011DD4 @ =0x085B0A08
+	ldr r0, _08011DD4 @ =gSineTable
 	adds r1, r2, #0
 	adds r1, #0x40
 	mov r5, sb
@@ -135,7 +135,7 @@ _08011DC4: .4byte 0x00000CA8
 _08011DC8: .4byte 0x030046B8
 _08011DCC: .4byte 0x000003FF
 _08011DD0: .4byte 0x0203B400
-_08011DD4: .4byte 0x085B0A08
+_08011DD4: .4byte gSineTable
 _08011DD8:
 	rsbs r0, r1, #0
 	asrs r0, r0, #0xc

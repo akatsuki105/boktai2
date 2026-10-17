@@ -130,7 +130,7 @@ _0822B55E:
 	ldr r0, [r2]
 	cmp r4, r0
 	bge _0822B600
-	ldr r0, _0822B5B0 @ =0x085B0A08
+	ldr r0, _0822B5B0 @ =gSineTable
 	mov sb, r0
 _0822B56C:
 	ldrb r1, [r6]
@@ -161,7 +161,7 @@ _0822B5A0: .4byte 0x03003A30
 _0822B5A4: .4byte 0x03003A40
 _0822B5A8: .4byte 0x030035B0
 _0822B5AC: .4byte 0x03003E40
-_0822B5B0: .4byte 0x085B0A08
+_0822B5B0: .4byte gSineTable
 _0822B5B4:
 	movs r1, #1
 	ldrsb r1, [r6, r1]

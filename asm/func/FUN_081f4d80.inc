@@ -223,7 +223,7 @@ _081F4F32:
 	ldrb r4, [r0]
 	ldrb r1, [r1]
 	mov ip, r1
-	ldr r2, _081F4F6C @ =0x085B0A08
+	ldr r2, _081F4F6C @ =gSineTable
 	adds r0, r4, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -242,7 +242,7 @@ _081F4F32:
 	.align 2, 0
 _081F4F64: .4byte 0x00000175
 _081F4F68: .4byte 0x00000173
-_081F4F6C: .4byte 0x085B0A08
+_081F4F6C: .4byte gSineTable
 _081F4F70:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

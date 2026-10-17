@@ -143,7 +143,7 @@ _080B06BE:
 	ands r0, r7
 	adds r7, r0, #0
 	orrs r7, r1
-	ldr r2, _080B06F8 @ =0x085B0A08
+	ldr r2, _080B06F8 @ =gSineTable
 	mov r3, ip
 	adds r3, #0x64
 	ldrh r1, [r3]
@@ -164,7 +164,7 @@ _080B06BE:
 	b _080B0702
 	.align 2, 0
 _080B06F4: .4byte 0xFFFF0000
-_080B06F8: .4byte 0x085B0A08
+_080B06F8: .4byte gSineTable
 _080B06FC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

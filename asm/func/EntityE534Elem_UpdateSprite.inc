@@ -154,7 +154,7 @@ _080119E8:
 	adds r0, #1
 	strh r0, [r2, #0x12]
 _080119F4:
-	ldr r0, _08011A0C @ =0x085B0A08
+	ldr r0, _08011A0C @ =gSineTable
 	mov r2, ip
 	ldrb r1, [r2, #3]
 	lsls r1, r1, #1
@@ -167,7 +167,7 @@ _080119F4:
 	asrs r1, r0, #0xc
 	b _08011A16
 	.align 2, 0
-_08011A0C: .4byte 0x085B0A08
+_08011A0C: .4byte gSineTable
 _08011A10:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

@@ -459,7 +459,7 @@ _080ED44C:
 	lsls r2, r2, #1
 	adds r0, r7, r2
 	ldr r0, [r0]
-	bl FUN_0807a798
+	bl AddPlayerExp
 	mov r3, r8
 	ldr r0, [r3]
 	ldr r4, _080ED478 @ =0x00000189

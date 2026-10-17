@@ -24,7 +24,7 @@ _08041804:
 	mov r8, r2
 	cmp r2, #0
 	beq _08041906
-	ldr r0, _0804187C @ =0x085B0A08
+	ldr r0, _0804187C @ =gSineTable
 	mov sl, r0
 	add r7, sp, #8
 _08041812:
@@ -79,7 +79,7 @@ _08041812:
 	.align 2, 0
 _08041874: .4byte 0x03002B50
 _08041878: .4byte 0x030047A4
-_0804187C: .4byte 0x085B0A08
+_0804187C: .4byte gSineTable
 _08041880: .4byte 0x0000270F
 _08041884:
 	rsbs r0, r0, #0

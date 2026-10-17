@@ -1,6 +1,10 @@
+#include "definition.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "random.h"
+#include "sound.h"
+#include "vm.h"
 
 // 持ち主のいない単発の攻撃判定, AttackBoxManager が5個を貸し出す
 typedef struct {
@@ -26,15 +30,54 @@ static_assert(sizeof(AttackBoxManager) == 528);
 
 IWRAM_DATA AttackBoxManager* gAttackBoxManager = NULL;  // 0x03000170
 
+AttackBoxManager* AttackBoxManager_Create(void);
+
+static inline bool32 AttackBoxManager_IsSlotUsed(AttackBoxManager* p, s32 i) {
+  if (p->activeMask & (1 << i)) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
 NAKED s32 FUN_080dd324(unknown* p) { INCFUNC("asm/func/FUN_080dd324.inc"); }
 
 NAKED void FUN_080dd364(void) { INCFUNC("asm/func/FUN_080dd364.inc"); }
 
 NAKED void FUN_080dd4fc(AttackBox* box) { INCFUNC("asm/func/FUN_080dd4fc.inc"); }
 
-NAKED void FUN_080dd6f4(AttackBox* box) { INCFUNC("asm/func/FUN_080dd6f4.inc"); }
+// 通信中でない通常の判定のとき、9〜12フレームごとに1回だけ効果音を鳴らす
+void FUN_080dd6f4(AttackBox* box) {
+  if (!(gFlag030047a4 & FLAG030047A4_LINK) && box->unk_60 == 0) {
+    s32 t = box->timer;
+    s32 r;
 
-NAKED void AttackBox_Setup(AttackBox* box, s32 power, s32 unk_40, s32 unk_44, u16 ignoreMask) { INCFUNC("asm/func/AttackBox_Setup.inc"); }
+    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
+    r = *(gRandomTable + gRandTableIdx);
+    if (Mod(t, (r & 3) + 9) == 0) {
+      PlaySound_082406e0(0x339);
+    }
+  }
+}
+
+// 借りた枠に 0x100 角の判定を作って攻撃値を入れる
+void AttackBox_Setup(AttackBox* box, s32 power, s32 unk_40, s32 unk_44, s32 ignoreMask) {
+  HitboxData* hitbox = &box->hitbox;
+  Vec3 halfSize;
+  Vec3 offset;
+
+  halfSize.x = 0x100, halfSize.y = 0x100, halfSize.z = 0x100;
+  offset.x = 0, offset.y = 0, offset.z = 0;
+  Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
+  if (box->unk_60 == 0) {
+    Hitbox_SetAttack(hitbox, power, unk_40, 0x40, 0x240004, unk_44);
+  } else {
+    Hitbox_SetAttack(hitbox, power, unk_40, 0x40, HBATTR_18, unk_44);
+  }
+
+  hitbox->unk_4 = 0x3246;
+  Hitbox_SetPos(hitbox, &box->pos, 0);
+  Hitbox_SetHandler(hitbox, NULL, box);
+}
 
 // state 0 (空き枠) の更新, 何もしない
 void AttackBox_Idle(AttackBoxManager* p, AttackBox* box) {}
@@ -63,11 +106,104 @@ void AttackBox_Free(AttackBoxManager* p, AttackBox* box) {
   ClearMemory(box, sizeof(AttackBox));
 }
 
-NAKED AttackBox* AttackBoxManager_Alloc(AttackBoxManager* p) { INCFUNC("asm/func/AttackBoxManager_Alloc.inc"); }
+// 空いている枠を1つ確保して返す, 全部埋まっていれば NULL
+// 命令数は一致 (34/34) だが, 原典は使用中判定の 0/1 を一度レジスタに作ってから test するのでループの強度低減が起きない
+// こちらはその 0/1 が畳まれて &pool[0] のアドレスがループ外に巻き上げられる
+// Tier A-B 試済: static inline の if/else と != 0 と ローカルの bool32 受け, static (非 inline) は bl が出て不可
+NON_MATCH AttackBox* AttackBoxManager_Alloc(AttackBoxManager* p) {
+#ifdef NONMATCHING_C
+  s32 i;
 
-NAKED s32 SpawnAttackBox(Vec3* pos, u8 kind, u32 unk_60, s32 power, s32 unk_40, s32 unk_44, u16 ignoreMask) { INCFUNC("asm/func/SpawnAttackBox.inc"); }
+  for (i = 0; i < 5; i++) {
+    bool32 used = AttackBoxManager_IsSlotUsed(p, i);
 
-NAKED void FUN_080dd93c(void) { INCFUNC("asm/func/FUN_080dd93c.inc"); }
+    if (!used) {
+      AttackBox* box = &p->pool[i];
+
+      box->slot = i;
+      p->activeMask |= 1 << i;
+      return box;
+    }
+  }
+
+  return NULL;
+#else
+  INCFUNC("asm/func/AttackBoxManager_Alloc.inc");
+#endif
+}
+
+// 持ち主のいない判定を1つ出す, マネージャが無ければ作る
+s32 SpawnAttackBox(Vec3* pos, u32 kind, u32 unk_60, s32 power, s32 unk_40, s32 unk_44, s32 ignoreMask) {
+  if (pos != NULL) {
+    AttackBoxManager* mgr = gAttackBoxManager;
+    AttackBox* box;
+
+    if (mgr == NULL) {
+      mgr = AttackBoxManager_Create();
+      if (mgr == NULL) {
+        return 0;
+      }
+    }
+
+    box = AttackBoxManager_Alloc(mgr);
+    if (box != NULL) {
+      box->state = 1;
+      box->pos = *pos;
+      box->timer = 0;
+      box->kind = kind;
+      box->unk_60 = unk_60;
+      AttackBox_Setup(box, power, unk_40, unk_44, ignoreMask);
+    }
+  }
+
+  return 0;
+}
+
+// スクリプトから判定を1つ出す, '.p' が座標, '.P' が攻撃値4つ
+void FUN_080dd93c(void) {
+  AttackBoxManager* mgr = gAttackBoxManager;
+  AttackBox* box;
+  s32 power;
+  s32 unk_40;
+  s32 unk_44;
+  s32 ignoreMask;
+
+  if (mgr == NULL) {
+    mgr = AttackBoxManager_Create();
+    if (mgr == NULL) {
+      return;
+    }
+  }
+
+  box = AttackBoxManager_Alloc(mgr);
+  if (box == NULL) {
+    return;
+  }
+
+  if (VM_SeekToNamedArg('p')) {
+    box->pos.x = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    box->pos.y = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    box->pos.z = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  }
+
+  if (VM_SeekToNamedArg('P')) {
+    power = VM_GetPC() != NULL ? (s16)VM_GetValue() : 0;
+    unk_40 = VM_GetPC() != NULL ? (s16)VM_GetValue() : 0;
+    unk_44 = VM_GetPC() != NULL ? (s16)VM_GetValue() : 0;
+    ignoreMask = VM_GetPC() != NULL ? (s16)VM_GetValue() : 0;
+  } else {
+    power = 0;
+    unk_40 = 0;
+    unk_44 = 0;
+    ignoreMask = 0;
+  }
+
+  box->unk_60 = VM_GetNamedArgValue('c', 0);
+  box->state = 1;
+  box->timer = 0;
+  box->kind = 2;
+  AttackBox_Setup(box, power, unk_40, unk_44, ignoreMask);
+}
 
 void (*const sAttackBoxUpdates[3])(AttackBoxManager*, AttackBox*) = {
     AttackBox_Idle,
@@ -75,7 +211,29 @@ void (*const sAttackBoxUpdates[3])(AttackBoxManager*, AttackBox*) = {
     AttackBox_Free,
 };  // 0x085AD348
 
-NAKED s32 AttackBoxManager_Update(AttackBoxManager* p) { INCFUNC("asm/func/AttackBoxManager_Update.inc"); }
+// 使用中の枠について state ごとの更新関数を呼ぶ
+// 残差3命令 (35/38) でこちらが短い: 同じく使用中判定の 0/1 が畳まれる (AttackBoxManager_Alloc と同じ現象)
+NON_MATCH s32 AttackBoxManager_Update(AttackBoxManager* p) {
+#ifdef NONMATCHING_C
+  if (p->activeMask != 0) {
+    s32 i;
+
+    for (i = 0; i < 5; i++) {
+      bool32 used = AttackBoxManager_IsSlotUsed(p, i);
+
+      if (used) {
+        AttackBox* box = &p->pool[i];
+
+        sAttackBoxUpdates[box->state](p, box);
+      }
+    }
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/AttackBoxManager_Update.inc");
+#endif
+}
 
 s32 AttackBoxManager_Destroy(AttackBoxManager* p) {
   gAttackBoxManager = NULL;

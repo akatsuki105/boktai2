@@ -47,7 +47,7 @@ _0807F276:
 	cmp r0, #2
 	bne _0807F2AE
 	adds r0, r4, #0
-	bl FUN_0806521c
+	bl Player_ClearInputHistory
 	movs r0, #0xd9
 	lsls r0, r0, #2
 	adds r1, r4, r0

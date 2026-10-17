@@ -19,7 +19,7 @@
 	ldrh r0, [r3, #0x1e]
 	adds r0, #0xbe
 	strh r0, [r3, #0x1e]
-	ldr r2, _080618AC @ =0x085B0A08
+	ldr r2, _080618AC @ =gSineTable
 	adds r0, r5, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -37,7 +37,7 @@
 	b _080618B6
 	.align 2, 0
 _080618A8: .4byte 0x000006AC
-_080618AC: .4byte 0x085B0A08
+_080618AC: .4byte gSineTable
 _080618B0:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

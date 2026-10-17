@@ -18,7 +18,7 @@
 	bl MainSprite_Remove
 	ldr r1, _0803BA00 @ =0x00000E14
 	adds r0, r4, r1
-	bl FUN_0807f598
+	bl Entity5941_Unregister
 	adds r0, r4, #0
 	bl FUN_08022b04
 	movs r0, #0

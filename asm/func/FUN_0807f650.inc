@@ -10,7 +10,7 @@
 	strb r0, [r1]
 	mov r0, ip
 	ldrh r3, [r0, #0x30]
-	ldr r2, _0807F688 @ =0x085B0A08
+	ldr r2, _0807F688 @ =gSineTable
 	ldrb r0, [r1]
 	adds r0, #0x40
 	movs r1, #0xff
@@ -26,7 +26,7 @@
 	asrs r3, r0, #0xc
 	b _0807F692
 	.align 2, 0
-_0807F688: .4byte 0x085B0A08
+_0807F688: .4byte gSineTable
 _0807F68C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

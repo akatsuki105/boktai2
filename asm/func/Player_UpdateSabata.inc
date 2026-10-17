@@ -173,7 +173,7 @@ _08079284:
 	movs r1, #7
 	ands r0, r1
 	lsls r3, r0, #5
-	ldr r2, _080792CC @ =0x085B0A08
+	ldr r2, _080792CC @ =gSineTable
 	adds r0, r3, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -194,7 +194,7 @@ _080792BC: .4byte 0x000003CE
 _080792C0: .4byte 0x00000446
 _080792C4: .4byte 0x00000442
 _080792C8: .4byte 0x000003BE
-_080792CC: .4byte 0x085B0A08
+_080792CC: .4byte gSineTable
 _080792D0:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

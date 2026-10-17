@@ -6,7 +6,7 @@
 // _Create が Entity080d84f8_Create と FUN_080d8568 と FUN_080d85d8 の 3つある (_Init, _Update, _Destroy は共有)
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_10
-  AuxSprite sprite;   // 0x18, metaspriteIdx は timer >> 2
+  AuxSprite sprite;   // 0x18, poseIdx は timer >> 2
   AuxSpriteGfx gfx;   // 0x44
   HitboxData hitbox;  // 0x60, timer が 8 未満の間だけ毎フレーム登録し直す
   u16 delay;          // 0xB0, 0 になるまで何もしない
@@ -16,7 +16,10 @@ static_assert(sizeof(Entity080d84f8) == 180);
 
 NAKED s32 Entity080d84f8_Update(Entity080d84f8* p) { INCFUNC("asm/func/Entity080d84f8_Update.inc"); }
 
-NAKED s32 Entity080d84f8_Destroy(Entity080d84f8* p) { INCFUNC("asm/func/Entity080d84f8_Destroy.inc"); }
+s32 Entity080d84f8_Destroy(Entity080d84f8* p) {
+  AuxSprite_Remove(&p->sprite);
+  return 0;
+}
 
 NAKED void FUN_080d83a8(AuxSprite* sprite, AuxSpriteGfx* gfx, Vec3* pos, u32 param_4) { INCFUNC("asm/func/FUN_080d83a8.inc"); }
 

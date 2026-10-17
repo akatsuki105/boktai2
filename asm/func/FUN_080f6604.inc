@@ -227,7 +227,7 @@ _080F67C4:
 	lsls r2, r2, #1
 	adds r0, r5, r2
 	ldr r0, [r0]
-	bl FUN_0807a798
+	bl AddPlayerExp
 	movs r7, #0x93
 	lsls r7, r7, #3
 	adds r0, r5, r7

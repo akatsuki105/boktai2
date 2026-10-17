@@ -728,7 +728,7 @@ _08226F26:
 	cmp r2, #0
 	beq _08226FA0
 _08226F32:
-	ldr r3, _08226FB8 @ =0x085B0A08
+	ldr r3, _08226FB8 @ =gSineTable
 	mov sb, r3
 	ldr r5, _08226FBC @ =0x00000F1C
 	adds r6, r7, r5
@@ -792,7 +792,7 @@ _08226FA0:
 	.align 2, 0
 _08226FB0: .4byte 0x00000E9E
 _08226FB4: .4byte 0x00000F38
-_08226FB8: .4byte 0x085B0A08
+_08226FB8: .4byte gSineTable
 _08226FBC: .4byte 0x00000F1C
 _08226FC0: .4byte 0x00000E84
 _08226FC4: .4byte 0x00000E88

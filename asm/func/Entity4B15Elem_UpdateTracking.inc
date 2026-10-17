@@ -133,7 +133,7 @@ _08019C88:
 	rsbs r1, r1, #0
 	ands r0, r1
 	str r0, [r6, #8]
-	ldr r2, _08019CB4 @ =0x085B0A08
+	ldr r2, _08019CB4 @ =gSineTable
 	ldrb r3, [r6, #1]
 	adds r0, r3, #0
 	adds r0, #0x40
@@ -150,7 +150,7 @@ _08019C88:
 	asrs r0, r0, #0xc
 	b _08019CBE
 	.align 2, 0
-_08019CB4: .4byte 0x085B0A08
+_08019CB4: .4byte gSineTable
 _08019CB8:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

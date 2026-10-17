@@ -63,5 +63,6 @@ extern Vec3 gCameraVpCoords;        // 0x030047C8
 void Camera_0823b744(void);
 void FUN_0823b8ac(Vec3* pos);
 void FUN_0823b9cc(s32 n);
+void FUN_0823bca8(s32 n);
 
 #endif  // __INCLUDE_CAMERA_H__

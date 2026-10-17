@@ -85,7 +85,7 @@ NON_MATCH s32 Entity95A8_Update(SolarBamboo* p) {
       if (++p->q_unk_2a > 3) {
         p->q_unk_2a = 0;
       }
-      p->sprite.metaspriteIdx = p->q_unk_2a;
+      p->sprite.poseIdx = p->q_unk_2a;
     }
     if (p->q_unk_30 != 0) {
       p->q_unk_34 += 2;
@@ -159,7 +159,7 @@ s32 Entity95A8_Init(SolarBamboo* p, u32 param, u32 _) {
   Video_GetAuxSprite(gfx, SPRITE_SOLAR_BAMBOO);
   spr = &p->sprite;
   AuxSprite_Add(spr, gfx, 0);
-  spr->metaspriteIdx = 0;
+  spr->poseIdx = 0;
   Video_SetAuxSpritePltt(gfx, 361);
   p->sprite.pos = pos;
   ParticleShadow_Init(&p->shadow, &p->sprite.pos, 0);

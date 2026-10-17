@@ -76,7 +76,7 @@
 	movs r1, #3
 	ands r0, r1
 	adds r3, r0, #5
-	ldr r2, _08070CFC @ =0x085B0A08
+	ldr r2, _08070CFC @ =gSineTable
 	adds r0, r7, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -97,7 +97,7 @@ _08070CEC: .4byte 0x030046B8
 _08070CF0: .4byte 0x000003FF
 _08070CF4: .4byte 0xFFFF0000
 _08070CF8: .4byte 0x0000FFFF
-_08070CFC: .4byte 0x085B0A08
+_08070CFC: .4byte gSineTable
 _08070D00:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

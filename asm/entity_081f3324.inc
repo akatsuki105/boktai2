@@ -705,7 +705,7 @@ _081F2C04:
 	bl ArcTan2_8
 	mov ip, r0
 	mov r3, sp
-	ldr r2, _081F2C60 @ =0x085B0A08
+	ldr r2, _081F2C60 @ =gSineTable
 	adds r0, #0x40
 	movs r1, #0xff
 	ands r0, r1
@@ -721,7 +721,7 @@ _081F2C04:
 	asrs r1, r0, #0xc
 	b _081F2C6A
 	.align 2, 0
-_081F2C60: .4byte 0x085B0A08
+_081F2C60: .4byte gSineTable
 _081F2C64:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -730,7 +730,7 @@ _081F2C6A:
 	movs r0, #0
 	strh r1, [r3]
 	strh r0, [r3, #2]
-	ldr r1, _081F2C8C @ =0x085B0A08
+	ldr r1, _081F2C8C @ =gSineTable
 	movs r0, #0xff
 	mov r2, ip
 	ands r0, r2
@@ -745,7 +745,7 @@ _081F2C6A:
 	asrs r0, r0, #0xc
 	b _081F2C96
 	.align 2, 0
-_081F2C8C: .4byte 0x085B0A08
+_081F2C8C: .4byte gSineTable
 _081F2C90:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -1451,7 +1451,7 @@ _081F3146:
 	ldrsh r1, [r2, r3]
 	bl ArcTan2_8
 	adds r3, r0, #0
-	ldr r2, _081F31EC @ =0x085B0A08
+	ldr r2, _081F31EC @ =gSineTable
 	adds r0, #0x40
 	movs r1, #0xff
 	ands r0, r1
@@ -1467,7 +1467,7 @@ _081F3146:
 	b _081F31F6
 	.align 2, 0
 _081F31E8: .4byte 0x030001F0
-_081F31EC: .4byte 0x085B0A08
+_081F31EC: .4byte gSineTable
 _081F31F0:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc
@@ -1476,7 +1476,7 @@ _081F31F6:
 	adds r0, r5, #0
 	adds r0, #0x88
 	strh r1, [r0]
-	ldr r1, _081F3218 @ =0x085B0A08
+	ldr r1, _081F3218 @ =gSineTable
 	movs r0, #0xff
 	ands r0, r3
 	lsls r0, r0, #1
@@ -1490,7 +1490,7 @@ _081F31F6:
 	asrs r2, r0, #0xc
 	b _081F3222
 	.align 2, 0
-_081F3218: .4byte 0x085B0A08
+_081F3218: .4byte gSineTable
 _081F321C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

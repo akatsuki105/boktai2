@@ -193,7 +193,7 @@ _081DFE0E:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081DFE28
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	movs r2, #0xbb
 	lsls r2, r2, #2
 	adds r1, r6, r2
@@ -211,7 +211,7 @@ _081DFE34:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _081DFE28
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	movs r2, #0xbc
 	lsls r2, r2, #2
 	adds r1, r6, r2

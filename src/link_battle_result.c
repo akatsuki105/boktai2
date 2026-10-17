@@ -45,7 +45,7 @@ typedef struct LinkBattleResult {
   Tilemaps* tilemap1;                                // 0x830, TILEMAP_A413, BG0 に敷く
   rgb555* bgPltt;                                    // 0x834, bg_link_col_arr
   void (*updateCallback)(struct LinkBattleResult*);  // 0x838
-  u8* scriptPc;                                      // 0x83C, '.s' の後の FUN_0823d340(), TextPanel_SetScript に渡す
+  u8* scriptPc;                                      // 0x83C, '.s' の後の VM_GetPC_Proxy(), TextPanel_SetScript に渡す
   u8 unk_840[4];                                     // 0x840
   s32 panelID[4];                                    // 0x844, TextPanel_Create(12, 4 + i*4, 10, 2) の戻り値を4つ
   u8 unk_854;                                        // 0x854, _Init が 0 を入れる

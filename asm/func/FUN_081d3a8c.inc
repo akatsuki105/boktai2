@@ -27,7 +27,7 @@ _081D3AB8:
 	b _081D3C18
 _081D3ABE:
 	mov r0, sp
-	bl FUN_08086a28
+	bl Coffin_CopyPos
 	adds r0, r7, #0
 	adds r0, #0xfc
 	ldrh r1, [r0]

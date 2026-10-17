@@ -10,33 +10,33 @@
 #include "vm.h"
 
 // 太陽バンクのメニュー
-typedef struct Entity7F5E {
-  Entity e;                                    // ENTITY_UNK_11
-  MainSpriteGfx gfx[2];                        // 0x018
-  MainSprite sprites[13];                      // 0x058
-  AuxSprite auxSprites[2];                     // 0x538
-  u8 unk_590[0x5C8 - 0x590];                   // 0x590
-  TilemapFile* tilemap;                        // 0x5C8, TILEMAP_83C0
-  rgb555* bgPltt;                              // 0x5CC, BGP_EAA8[208]
-  u8* textPc;                                  // 0x5D0, MessageWindow_Start に渡すバイトコード位置
-  u8 unk_5d4[0x5DC - 0x5D4];                   // 0x5D4
-  u32 scriptID;                                // 0x5DC, 閉じるときに VM_ExecByID に渡す
-  u8 unk_5e0[0x5EA - 0x5E0];                   // 0x5E0
-  u16 unk_5ea;                                 // 0x5EA
-  u16 stateTimer;                              // 0x5EC
-  u16 unk_5ee;                                 // 0x5EE
-  void (*updateCallback)(struct Entity7F5E*);  // 0x5F0
-} Entity7F5E;
-static_assert(sizeof(Entity7F5E) == 1524);
+typedef struct SolarBank {
+  Entity e;                                   // ENTITY_UNK_11
+  MainSpriteGfx gfx[2];                       // 0x018
+  MainSprite sprites[13];                     // 0x058
+  AuxSprite auxSprites[2];                    // 0x538
+  u8 unk_590[0x5C8 - 0x590];                  // 0x590
+  TilemapFile* tilemap;                       // 0x5C8, TILEMAP_83C0
+  rgb555* bgPltt;                             // 0x5CC, BGP_EAA8[208]
+  u8* textPc;                                 // 0x5D0, MessageWindow_Start に渡すバイトコード位置
+  u8 unk_5d4[0x5DC - 0x5D4];                  // 0x5D4
+  u32 scriptID;                               // 0x5DC, 閉じるときに VM_ExecByID に渡す
+  u8 unk_5e0[0x5EA - 0x5E0];                  // 0x5E0
+  u16 unk_5ea;                                // 0x5EA
+  u16 stateTimer;                             // 0x5EC
+  u16 unk_5ee;                                // 0x5EE
+  void (*updateCallback)(struct SolarBank*);  // 0x5F0
+} SolarBank;
+static_assert(sizeof(SolarBank) == 1524);
 
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
-void FUN_080b3c98(Entity7F5E* p);
-void FUN_080b3dd0(Entity7F5E* p);
-void FUN_080b3e3c(Entity7F5E* p);
-void FUN_080b3e80(Entity7F5E* p);
-void FUN_080b4334(Entity7F5E* p);
-void FUN_080b438c(Entity7F5E* p);
+void FUN_080b3c98(SolarBank* p);
+void FUN_080b3dd0(SolarBank* p);
+void FUN_080b3e3c(SolarBank* p);
+void FUN_080b3e80(SolarBank* p);
+void FUN_080b4334(SolarBank* p);
+void FUN_080b438c(SolarBank* p);
 
 // 0x61A0
 NAKED void SolarBank_CalcInterestRate(void) { INCFUNC("asm/func/SolarBank_CalcInterestRate.inc"); }
@@ -54,10 +54,10 @@ void SolarBank_SetBalanceScripted(void) {
   }
 }
 
-NAKED void solar_bank_080b3a10(Entity7F5E* p) { INCFUNC("asm/func/solar_bank_080b3a10.inc"); }
+NAKED void solar_bank_080b3a10(SolarBank* p) { INCFUNC("asm/func/solar_bank_080b3a10.inc"); }
 
 // スプライトを全部隠す
-void SolarBank_HideAllSprites(Entity7F5E* p) {
+void SolarBank_HideAllSprites(SolarBank* p) {
   s32 i;
 
   for (i = 0; i < 13; i++) {
@@ -69,12 +69,12 @@ void SolarBank_HideAllSprites(Entity7F5E* p) {
   }
 }
 
-void SolarBank_SetState(Entity7F5E* p, void (*fn)(Entity7F5E*)) {
+void SolarBank_SetState(SolarBank* p, void (*fn)(SolarBank*)) {
   p->updateCallback = fn;
   p->stateTimer = 0;
 }
 
-void FUN_080b3b74(Entity7F5E* p) {
+void FUN_080b3b74(SolarBank* p) {
   Video_SetBGLayer(0, p->tilemap, 0);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   SolarBank_HideAllSprites(p);
@@ -87,7 +87,7 @@ void FUN_080b3b74(Entity7F5E* p) {
   SolarBank_SetState(p, FUN_080b3e3c);
 }
 
-void FUN_080b3c08(Entity7F5E* p) {
+void FUN_080b3c08(SolarBank* p) {
   Video_SetBGLayer(0, p->tilemap, 0);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   SolarBank_HideAllSprites(p);
@@ -101,9 +101,9 @@ void FUN_080b3c08(Entity7F5E* p) {
   SolarBank_SetState(p, FUN_080b3e80);
 }
 
-NAKED void FUN_080b3c98(Entity7F5E* p) { INCFUNC("asm/func/FUN_080b3c98.inc"); }
+NAKED void FUN_080b3c98(SolarBank* p) { INCFUNC("asm/func/FUN_080b3c98.inc"); }
 
-void FUN_080b3dd0(Entity7F5E* p) {
+void FUN_080b3dd0(SolarBank* p) {
   Video_SetBGLayer(0, p->tilemap, 2);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   SolarBank_HideAllSprites(p);
@@ -114,7 +114,7 @@ void FUN_080b3dd0(Entity7F5E* p) {
   SolarBank_SetState(p, FUN_080b4334);
 }
 
-void FUN_080b3e3c(Entity7F5E* p) {
+void FUN_080b3e3c(SolarBank* p) {
   if (p->stateTimer == 32) {
     PlaySound_082406e0(0x2BE);
   }
@@ -125,7 +125,7 @@ void FUN_080b3e3c(Entity7F5E* p) {
   }
 }
 
-void FUN_080b3e80(Entity7F5E* p) {
+void FUN_080b3e80(SolarBank* p) {
   if (gInput[0].pressed & A_BUTTON) {
     if (p->unk_5ea != 0) {
       PlaySound_082406e0(0xDD);
@@ -151,9 +151,9 @@ void FUN_080b3e80(Entity7F5E* p) {
   MainSprite_AdvanceAnim(p->sprites, p->gfx);
 }
 
-NAKED void solar_bank_080b3f38(Entity7F5E* p) { INCFUNC("asm/func/solar_bank_080b3f38.inc"); }
+NAKED void solar_bank_080b3f38(SolarBank* p) { INCFUNC("asm/func/solar_bank_080b3f38.inc"); }
 
-void FUN_080b4334(Entity7F5E* p) {
+void FUN_080b4334(SolarBank* p) {
   MainSprite_AdvanceAnim(p->sprites, p->gfx);
   p->stateTimer++;
   if (p->stateTimer > 149) {
@@ -162,7 +162,7 @@ void FUN_080b4334(Entity7F5E* p) {
   }
 }
 
-void FUN_080b438c(Entity7F5E* p) {
+void FUN_080b438c(SolarBank* p) {
   p->stateTimer++;
   if (p->stateTimer > 31 && p->scriptID != 0) {
     VM_ExecByID(p->scriptID, NULL);
@@ -170,12 +170,12 @@ void FUN_080b438c(Entity7F5E* p) {
   }
 }
 
-s32 Entity7F5E_Update(Entity7F5E* p) {
+s32 SolarBank_Update(SolarBank* p) {
   p->updateCallback(p);
   return 0;
 }
 
-s32 Entity7F5E_Destroy(Entity7F5E* p) {
+s32 SolarBank_Destroy(SolarBank* p) {
   s32 i;
 
   for (i = 0; i < 13; i++) {
@@ -189,7 +189,7 @@ s32 Entity7F5E_Destroy(Entity7F5E* p) {
   return 0;
 }
 
-void SolarBank_InitBgLayout(Entity7F5E* p) {
+void SolarBank_InitBgLayout(SolarBank* p) {
   s32 indices;
 
   p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_83C0);
@@ -197,16 +197,16 @@ void SolarBank_InitBgLayout(Entity7F5E* p) {
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, &indices);
 }
 
-void SolarBank_InitBgPltt(Entity7F5E* p) {
+void SolarBank_InitBgPltt(SolarBank* p) {
   p->bgPltt = &GetBgPlttFile(BGP_EAA8)->body[208];
   CpuCopy32(p->bgPltt, &gBgPlttBuffer[208], 96);
 }
 
-NAKED void FUN_080b4490(Entity7F5E* p) { INCFUNC("asm/func/FUN_080b4490.inc"); }
+NAKED void FUN_080b4490(SolarBank* p) { INCFUNC("asm/func/FUN_080b4490.inc"); }
 
-void SolarBank_InitTextBox(Entity7F5E* p) {
+void SolarBank_InitTextBox(SolarBank* p) {
   if (VM_SeekToNamedArg('r')) {
-    p->textPc = FUN_0823d340();
+    p->textPc = VM_GetPC_Proxy();
   }
   MessageWindow_SetBgPltt(BGP_EAA8);
   MessageWindow_Start(p->textPc);
@@ -214,7 +214,7 @@ void SolarBank_InitTextBox(Entity7F5E* p) {
   MessageWindow_SetInstant(1);
 }
 
-s32 Entity7F5E_Init(Entity7F5E* p) {
+s32 SolarBank_Init(SolarBank* p) {
   SolarBank_InitBgLayout(p);
   SolarBank_InitBgPltt(p);
   FUN_080b4490(p);
@@ -228,12 +228,12 @@ s32 Entity7F5E_Init(Entity7F5E* p) {
   return 0;
 }
 
-Entity7F5E* Entity7F5E_Create(u32 unused1, u32 unused2) {
-  Entity7F5E* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity7F5E));
+SolarBank* SolarBank_Create(u32 unused1, u32 unused2) {
+  SolarBank* p = CreateEntity(ENTITY_UNK_11, sizeof(SolarBank));
 
   if (p != NULL) {
-    SetEntityRoutine(p, Entity7F5E_Update, Entity7F5E_Destroy);
-    if (Entity7F5E_Init(p) < 0) {
+    SetEntityRoutine(p, SolarBank_Update, SolarBank_Destroy);
+    if (SolarBank_Init(p) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

@@ -7,7 +7,7 @@
 	ldr r1, _080B00D4 @ =0x0000068E
 	adds r0, r4, r1
 	ldrh r3, [r0]
-	ldr r2, _080B00D8 @ =0x085B0A08
+	ldr r2, _080B00D8 @ =gSineTable
 	subs r1, #1
 	adds r0, r4, r1
 	ldrb r0, [r0]
@@ -26,7 +26,7 @@
 	.align 2, 0
 _080B00D0: .4byte 0x0000068A
 _080B00D4: .4byte 0x0000068E
-_080B00D8: .4byte 0x085B0A08
+_080B00D8: .4byte gSineTable
 _080B00DC:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

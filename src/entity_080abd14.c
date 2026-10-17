@@ -71,7 +71,7 @@ NAKED void FUN_080ab898(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab898.inc"
 
 void FUN_080ab8ec(Entity080abd14* p) { AuxSprite_Remove(&p->spr2); }
 
-NAKED void FUN_080ab8f8(Entity080abd14* p, u32 param_2) { INCFUNC("asm/func/FUN_080ab8f8.inc"); }
+NAKED void FUN_080ab8f8(Entity080abd14* p, WorldPos* pos) { INCFUNC("asm/func/FUN_080ab8f8.inc"); }
 
 NAKED void FUN_080ab99c(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab99c.inc"); }
 
@@ -96,7 +96,7 @@ void FUN_080abb08(Entity080abd14* p) {
   AuxSprite_Remove(&p->spr1);
 }
 
-NAKED void FUN_080abb20(Entity080abd14* p, u32 param_2) { INCFUNC("asm/func/FUN_080abb20.inc"); }
+NAKED void FUN_080abb20(Entity080abd14* p, WorldPos* pos) { INCFUNC("asm/func/FUN_080abb20.inc"); }
 
 NAKED s32 Entity080abd14_Update(Entity080abd14* p) { INCFUNC("asm/func/Entity080abd14_Update.inc"); }
 
@@ -115,12 +115,12 @@ s32 Entity080abd14_Destroy(Entity080abd14* p) {
 
 // 残差1命令, 原典は第6引数を 0x1A の下位1バイトに strb するが, u16 unk_1a だと strh になる
 // union (u16 / u8[2]) で両方を表そうとすると agbcc が共用体を4バイト境界に置くので sizeof が狂う
-NON_MATCH s32 Entity080abd14_Init(Entity080abd14* p, void* owner, u32 param_3, u32 param_4, u32 param_5, u32 param_6) {
+NON_MATCH s32 Entity080abd14_Init(Entity080abd14* p, void* owner, WorldPos* pos1, WorldPos* pos2, u32 param_5, u32 param_6) {
 #ifdef NONMATCHING_C
   p->unk_18 = param_5;
   p->owner = owner;
-  FUN_080abb20(p, param_4);
-  FUN_080ab8f8(p, param_3);
+  FUN_080abb20(p, pos2);
+  FUN_080ab8f8(p, pos1);
   FUN_080ab6f8(p);
 
   if (param_5 == 0) {
@@ -136,12 +136,12 @@ NON_MATCH s32 Entity080abd14_Init(Entity080abd14* p, void* owner, u32 param_3, u
 #endif
 }
 
-Entity080abd14* Entity080abd14_Create(void* owner, u32 param_2, u32 param_3, u32 param_4, u32 param_5) {
+Entity080abd14* Entity080abd14_Create(void* owner, WorldPos* pos1, WorldPos* pos2, u32 param_4, u32 param_5) {
   Entity080abd14* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity080abd14));
 
   if (p != NULL) {
     SetEntityRoutine(p, Entity080abd14_Update, Entity080abd14_Destroy);
-    if (Entity080abd14_Init(p, owner, param_2, param_3, param_4, param_5) < 0) {
+    if (Entity080abd14_Init(p, owner, pos1, pos2, param_4, param_5) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

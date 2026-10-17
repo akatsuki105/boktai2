@@ -73,7 +73,7 @@ _080E5F56:
 	adds r1, r2, #0
 	bl ArcTan2_8
 	strb r0, [r5, #5]
-	ldr r2, _080E5F80 @ =0x085B0A08
+	ldr r2, _080E5F80 @ =gSineTable
 	ldrb r0, [r5, #5]
 	adds r0, #0x40
 	movs r1, #0xff
@@ -89,14 +89,14 @@ _080E5F56:
 	asrs r0, r0, #0x10
 	b _080E5F8A
 	.align 2, 0
-_080E5F80: .4byte 0x085B0A08
+_080E5F80: .4byte gSineTable
 _080E5F84:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0x10
 	rsbs r0, r0, #0
 _080E5F8A:
 	adds r3, r0, #0
-	ldr r0, _080E5FA4 @ =0x085B0A08
+	ldr r0, _080E5FA4 @ =gSineTable
 	ldrb r1, [r5, #5]
 	lsls r1, r1, #1
 	adds r1, r1, r0
@@ -109,7 +109,7 @@ _080E5F8A:
 	asrs r0, r0, #0x10
 	b _080E5FAE
 	.align 2, 0
-_080E5FA4: .4byte 0x085B0A08
+_080E5FA4: .4byte gSineTable
 _080E5FA8:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0x10

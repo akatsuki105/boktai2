@@ -492,7 +492,7 @@ _082268B8:
 	movs r1, #0x20
 	bl Div
 	adds r3, r0, #0
-	ldr r2, _08226960 @ =0x085B0A08
+	ldr r2, _08226960 @ =gSineTable
 	ldr r0, [r4]
 	lsls r0, r0, #2
 	movs r1, #0xff
@@ -523,7 +523,7 @@ _08226950: .4byte 0x00000E84
 _08226954: .4byte 0x00000F58
 _08226958: .4byte 0x00000DB8
 _0822695C: .4byte 0x00000E86
-_08226960: .4byte 0x085B0A08
+_08226960: .4byte gSineTable
 _08226964: .4byte 0x00000F25
 _08226968:
 	rsbs r0, r0, #0

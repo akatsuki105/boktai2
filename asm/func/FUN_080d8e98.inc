@@ -397,7 +397,7 @@ _080D9168:
 	asrs r0, r0, #6
 	strb r0, [r3, #7]
 _080D917E:
-	ldr r5, _080D929C @ =0x085B0A08
+	ldr r5, _080D929C @ =gSineTable
 	adds r4, r7, #0
 	adds r4, #0x35
 	add r4, sb
@@ -542,7 +542,7 @@ _080D928C:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080D929C: .4byte 0x085B0A08
+_080D929C: .4byte gSineTable
 _080D92A0: .4byte 0xFFFF0000
 _080D92A4: .4byte 0x0000FFFF
 _080D92A8: .4byte 0x000009FC

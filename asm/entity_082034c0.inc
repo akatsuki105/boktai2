@@ -1059,7 +1059,7 @@ FUN_0820350c: @ 0x0820350C
 	str r0, [r4]
 _0820352A:
 	add r3, sp, #0x28
-	ldr r2, _0820354C @ =0x085B0A08
+	ldr r2, _0820354C @ =gSineTable
 	adds r0, r5, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -1075,7 +1075,7 @@ _0820352A:
 	b _08203556
 	.align 2, 0
 _08203548: .4byte 0x03000218
-_0820354C: .4byte 0x085B0A08
+_0820354C: .4byte gSineTable
 _08203550:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

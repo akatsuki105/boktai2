@@ -578,7 +578,7 @@ _081F1004:
 _081F100A:
 	lsls r7, r0, #6
 	add r3, sp, #0x3c
-	ldr r2, _081F102C @ =0x085B0A08
+	ldr r2, _081F102C @ =gSineTable
 	adds r0, r7, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -593,7 +593,7 @@ _081F100A:
 	asrs r1, r0, #0xc
 	b _081F1036
 	.align 2, 0
-_081F102C: .4byte 0x085B0A08
+_081F102C: .4byte gSineTable
 _081F1030:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

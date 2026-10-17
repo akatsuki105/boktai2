@@ -219,7 +219,7 @@ s32 HazardManager_FindFreeSlot(CactusManager* p) {
 }
 
 // 空きスロットに Cactus を1個置く,当たり判定・地形の高さ・スプライトを用意して使用中にする
-NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, s32 requireArea, s32 scriptId, s32* args) {
+NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 poseIdx, s32 requireArea, s32 scriptId, s32* args) {
 #ifdef NONMATCHING_C
   CactusManager* p = gCactusManager;
   Cactus* hazard;
@@ -307,7 +307,7 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 metaspriteIdx, 
     return -1;
   }
   AuxSprite_Add(&hazard->sprite, gfx, 0);
-  hazard->sprite.metaspriteIdx = metaspriteIdx;
+  hazard->sprite.poseIdx = poseIdx;
   hazard->sprite.pos = hazard->pos;
   p->activeMask |= 1 << slot;
 #else

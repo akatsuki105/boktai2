@@ -89,7 +89,7 @@ _0822134A:
 	beq _082213E2
 	subs r0, #1
 	strb r0, [r3]
-	ldr r2, _08221390 @ =0x085B0A08
+	ldr r2, _08221390 @ =gSineTable
 	ldr r4, _08221394 @ =0x00000BC2
 	adds r0, r7, r4
 	ldrb r0, [r0]
@@ -112,7 +112,7 @@ _08221380: .4byte 0xFF00FFFF
 _08221384: .4byte 0x0203B400
 _08221388: .4byte 0x030046B8
 _0822138C: .4byte 0x000003FF
-_08221390: .4byte 0x085B0A08
+_08221390: .4byte gSineTable
 _08221394: .4byte 0x00000BC2
 _08221398:
 	rsbs r0, r0, #0

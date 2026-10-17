@@ -1026,7 +1026,7 @@ _0810255C:
 	str r0, [sp, #4]
 	adds r0, r7, #0
 	movs r1, #0
-	bl FUN_080e3a90
+	bl Enemy_SetRanges
 	movs r0, #0x58
 	bl VM_SeekToNamedArg
 	cmp r0, #0
@@ -1976,7 +1976,7 @@ _08102D16:
 	strh r0, [r5]
 _08102D2E:
 	adds r0, r7, #0
-	bl Enemy_Init_080f3680
+	bl Enemy_InitHandlerTables
 	adds r0, r7, #0
 	bl FUN_080ff45c
 	adds r0, r7, #0

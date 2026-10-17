@@ -68,7 +68,7 @@ _080D987C:
 	adds r1, r1, r0
 	ldrh r0, [r4, #0x30]
 	adds r1, r1, r0
-	ldr r2, _080D98D0 @ =0x085B0A08
+	ldr r2, _080D98D0 @ =gSineTable
 	adds r3, r4, #0
 	adds r3, #0x35
 	ldrb r0, [r3]
@@ -105,4 +105,4 @@ _080D98C8:
 	pop {r0}
 	bx r0
 	.align 2, 0
-_080D98D0: .4byte 0x085B0A08
+_080D98D0: .4byte gSineTable

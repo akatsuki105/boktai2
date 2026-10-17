@@ -1,6 +1,9 @@
 #include "entity.h"
 #include "global.h"
+#include "input.h"
 #include "msgbus.h"
+#include "player.h"
+#include "sound.h"
 
 // 一定間隔で gCamera->shakeAmplitude を上げて NOISE_QUAKE_121 を鳴らすシングルトン, メッセージ (cmd 4/5) で外部からも起こせる
 typedef struct {
@@ -24,16 +27,55 @@ static_assert(sizeof(Entity8EC8) == 128);
 
 NAKED void Entity8EC8_HandleMessages(Entity8EC8* p) { INCFUNC("asm/func/Entity8EC8_HandleMessages.inc"); }
 
-NAKED bool32 Entity8EC8_IsStartHeld(void) { INCFUNC("asm/func/Entity8EC8_IsStartHeld.inc"); }
+// 残差1命令, 原典は gPlayerPtr[0] のレジスタから写しを作る (FUN_0807b1a4 系と同じ)
+NON_MATCH bool32 Entity8EC8_IsStartHeld(void) {
+#ifdef NONMATCHING_C
+  Player* p = gPlayerPtr[0];
 
-NAKED bool32 Entity8EC8_IsSelectHeld(void) { INCFUNC("asm/func/Entity8EC8_IsSelectHeld.inc"); }
+  if ((gInput[0].down & START_BUTTON) && p != NULL && p->unk_1c == 1 && !(p->unk_20 & PFLAG20_UNK_0)) {
+    return TRUE;
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/Entity8EC8_IsStartHeld.inc");
+#endif
+}
+
+// 残差1命令, 原典は gPlayerPtr[0] のレジスタから写しを作る (FUN_0807b1a4 系と同じ)
+NON_MATCH bool32 Entity8EC8_IsSelectHeld(void) {
+#ifdef NONMATCHING_C
+  Player* p = gPlayerPtr[0];
+
+  if ((gInput[0].down & SELECT_BUTTON) && p != NULL && p->unk_1c == 1 && !(p->unk_20 & PFLAG20_UNK_0)) {
+    return TRUE;
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/Entity8EC8_IsSelectHeld.inc");
+#endif
+}
 
 NAKED s32 Entity8EC8_Update(Entity8EC8* p) { INCFUNC("asm/func/Entity8EC8_Update.inc"); }
 
-NAKED s32 Entity8EC8_Destroy(Entity8EC8* p) { INCFUNC("asm/func/Entity8EC8_Destroy.inc"); }
+s32 Entity8EC8_Destroy(Entity8EC8* p) {
+  MsgQueue_Unregister(&p->mq);
+  sound_08240740(0x6A);
+  return 0;
+}
 
 NAKED s32 Entity8EC8_Init(Entity8EC8* p, u32 id) { INCFUNC("asm/func/Entity8EC8_Init.inc"); }
 
-NAKED Entity8EC8* Entity8EC8_Create(u32 id) { INCFUNC("asm/func/Entity8EC8_Create.inc"); }
+Entity8EC8* Entity8EC8_Create(u32 id) {
+  Entity8EC8* p = CreateEntity(ENTITY_UNK_4, sizeof(Entity8EC8));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity8EC8_Update, Entity8EC8_Destroy);
+    if (Entity8EC8_Init(p, id) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
 
 NAKED void FUN_0821bd14(unknown* p) { INCFUNC("asm/func/FUN_0821bd14.inc"); }

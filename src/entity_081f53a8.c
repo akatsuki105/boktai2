@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "hitbox.h"
 #include "sprite_aux.h"
@@ -35,7 +36,7 @@ NAKED void FUN_081f4758(Entity081f53a8Elem* elem, u16 param_2, u16 param_3, u32 
 
 NAKED void FUN_081f4858(Entity081f53a8Elem* elem) { INCFUNC("asm/func/FUN_081f4858.inc"); }
 
-NAKED void FUN_081f48ac(Entity081f53a8* p, Entity081f53a8Elem* elem) { INCFUNC("asm/func/FUN_081f48ac.inc"); }
+void FUN_081f48ac(Entity081f53a8* p, Entity081f53a8Elem* elem) {}
 
 NAKED void FUN_081f48b0(Entity081f53a8* p, Entity081f53a8Elem* elem) { INCFUNC("asm/func/FUN_081f48b0.inc"); }
 
@@ -47,7 +48,14 @@ NAKED void FUN_081f4d80(Entity081f53a8* p, Entity081f53a8Elem* elem) { INCFUNC("
 
 NAKED s32 FUN_081f5138(Entity081f53a8* p, Entity081f53a8Elem* elem) { INCFUNC("asm/func/FUN_081f5138.inc"); }
 
-NAKED Entity081f53a8Elem* FUN_081f519c(Entity081f53a8* p) { INCFUNC("asm/func/FUN_081f519c.inc"); }
+s32 FUN_081f519c(Entity081f53a8* p, Entity081f53a8Elem* elem) {
+  s32 result = FUN_081f5138(p, elem);
+
+  if (result == 0) {
+    return 0;
+  }
+  return result;
+}
 
 NAKED void FUN_081f51ac(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, s16 param_7, s16 param_8, u16 param_9, u8 param_10) { INCFUNC("asm/func/FUN_081f51ac.inc"); }
 
@@ -62,10 +70,29 @@ NAKED s32 Entity081f53a8_Update(Entity081f53a8* p) { INCFUNC("asm/func/Entity081
 
 NAKED s32 Entity081f53a8_Destroy(Entity081f53a8* p) { INCFUNC("asm/func/Entity081f53a8_Destroy.inc"); }
 
-NAKED s32 Entity081f53a8_Init(Entity081f53a8* p) { INCFUNC("asm/func/Entity081f53a8_Init.inc"); }
+s32 Entity081f53a8_Init(Entity081f53a8* p) {
+  p->anim = GetFile(DIR_ANIMATION, ANIM_1DC3);
+  p->activeMask = 0;
+  gEntity081f53a8 = p;
+  return 0;
+}
 
-NAKED Entity081f53a8* Entity081f53a8_Create(void) { INCFUNC("asm/func/Entity081f53a8_Create.inc"); }
+Entity081f53a8* Entity081f53a8_Create(void) {
+  if (gEntity081f53a8 == NULL) {
+    Entity081f53a8* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity081f53a8));
 
-NAKED void FUN_081f53f4(void) { INCFUNC("asm/func/FUN_081f53f4.inc"); }
+    if (p != NULL) {
+      SetEntityRoutine(p, Entity081f53a8_Update, Entity081f53a8_Destroy);
+      if (Entity081f53a8_Init(p) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+    return p;
+  }
+  return gEntity081f53a8;
+}
+
+void FUN_081f53f4(void) { gEntity081f53a8 = NULL; }
 
 NAKED void FUN_081f5400(void) { INCFUNC("asm/func/FUN_081f5400.inc"); }

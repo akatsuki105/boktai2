@@ -44,7 +44,7 @@ _0800BAA4:
 	adds r1, r6, #0
 	bl ArcTan2_8
 	strb r0, [r5, #2]
-	ldr r2, _0800BB9C @ =0x085B0A08
+	ldr r2, _0800BB9C @ =gSineTable
 	ldrb r0, [r5, #2]
 	adds r0, #0x40
 	movs r1, #0xff
@@ -143,7 +143,7 @@ _0800BB6C:
 	bl _call_via_r2
 	b _0800BCDE
 	.align 2, 0
-_0800BB9C: .4byte 0x085B0A08
+_0800BB9C: .4byte gSineTable
 _0800BBA0: .4byte 0x03002BC0
 _0800BBA4: .4byte 0x0000018F
 _0800BBA8: .4byte 0x085AA6E8

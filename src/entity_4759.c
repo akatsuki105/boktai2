@@ -31,18 +31,39 @@ static_assert(sizeof(Entity4759) == 204);
 
 NAKED bool32 Entity4759_IsPlayerNear(Entity4759* p) { INCFUNC("asm/func/Entity4759_IsPlayerNear.inc"); }
 
-NAKED void Entity4759_SetUpdateCallback(Entity4759* p, Entity4759Func* fn) { INCFUNC("asm/func/Entity4759_SetUpdateCallback.inc"); }
+void Entity4759_SetUpdateCallback(Entity4759* p, Entity4759Func* fn) {
+  p->updateCallback = fn;
+  p->stateTimer = 0;
+}
 
 NAKED void Entity4759_UpdateIdle(Entity4759* p) { INCFUNC("asm/func/Entity4759_UpdateIdle.inc"); }
 
 NAKED void Entity4759_UpdateActivated(Entity4759* p) { INCFUNC("asm/func/Entity4759_UpdateActivated.inc"); }
 
-NAKED void Entity4759_UpdateDone(Entity4759* p) { INCFUNC("asm/func/Entity4759_UpdateDone.inc"); }
+void Entity4759_UpdateDone(Entity4759* p) {}
 
-NAKED s32 Entity4759_Update(Entity4759* p) { INCFUNC("asm/func/Entity4759_Update.inc"); }
+s32 Entity4759_Update(Entity4759* p) {
+  p->updateCallback(p);
+  return 0;
+}
 
-NAKED s32 Entity4759_Destroy(Entity4759* p) { INCFUNC("asm/func/Entity4759_Destroy.inc"); }
+s32 Entity4759_Destroy(Entity4759* p) {
+  AuxSprite_Remove(&p->sprite);
+  AuxSprite_Remove(&p->sprite2);
+  return 0;
+}
 
-NAKED s32 Entity4759_Init(Entity4759* p) { INCFUNC("asm/func/Entity4759_Init.inc"); }
+NAKED s32 Entity4759_Init(Entity4759* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/Entity4759_Init.inc"); }
 
-NAKED Entity4759* Entity4759_Create(u32 param_1, u32 param_2) { INCFUNC("asm/func/Entity4759_Create.inc"); }
+Entity4759* Entity4759_Create(u32 param_1, u32 param_2) {
+  Entity4759* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity4759));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity4759_Update, Entity4759_Destroy);
+    if (Entity4759_Init(p, param_1, param_2) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}

@@ -27,7 +27,7 @@
 	adds r0, r5, #0
 	bl FUN_08094d48
 	adds r0, r5, #0
-	bl FUN_08094e70
+	bl GetWeaponWearPose
 	adds r2, r0, #0
 	ldr r3, _081E45C0 @ =0x0000150C
 	adds r0, r4, r3

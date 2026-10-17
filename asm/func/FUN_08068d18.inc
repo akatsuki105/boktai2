@@ -157,7 +157,7 @@ _08068E3C:
 	ands r5, r0
 	cmp r5, #0
 	beq _08068E8C
-	bl FUN_080865c0
+	bl Coffin_GetPos
 	adds r4, r0, #0
 	movs r0, #0
 	ldrsh r1, [r4, r0]

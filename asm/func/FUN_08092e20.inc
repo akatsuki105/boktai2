@@ -307,7 +307,7 @@ _08093078:
 	ands r0, r1
 	ldr r1, [sp]
 	strh r0, [r1]
-	ldr r2, _080930B0 @ =0x085B0A08
+	ldr r2, _080930B0 @ =gSineTable
 	ldrh r0, [r1]
 	adds r0, #0x40
 	movs r1, #0xff
@@ -323,7 +323,7 @@ _08093078:
 	asrs r0, r0, #0xc
 	b _080930B8
 	.align 2, 0
-_080930B0: .4byte 0x085B0A08
+_080930B0: .4byte gSineTable
 _080930B4:
 	asrs r0, r1, #0xc
 	rsbs r0, r0, #0

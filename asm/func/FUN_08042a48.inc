@@ -190,7 +190,7 @@ _08042B94:
 	ldrb r0, [r0]
 	cmp r0, #6
 	bne _08042BC6
-	bl FUN_080865c0
+	bl Coffin_GetPos
 	movs r1, #1
 	cmp r0, #0
 	bne _08042BC8

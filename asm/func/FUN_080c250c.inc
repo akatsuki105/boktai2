@@ -19,7 +19,7 @@ _080C252C:
 	bl VM_SeekToNamedArg
 	cmp r0, #0
 	beq _080C25B2
-	bl FUN_0823d340
+	bl VM_GetPC_Proxy
 	movs r1, #0x86
 	lsls r1, r1, #2
 	adds r6, r5, r1

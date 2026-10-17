@@ -63,7 +63,7 @@ _08094F1C:
 	adds r5, r6, #0
 	adds r5, #0xa0
 	mov r0, sp
-	bl FUN_08094e70
+	bl GetWeaponWearPose
 	adds r2, r0, #0
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10

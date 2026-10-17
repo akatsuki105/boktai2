@@ -9,14 +9,14 @@
 	cmp r0, #0
 	bne _081CFD30
 	movs r0, #6
-	bl FUN_0808660c
+	bl Coffin_IsState
 	cmp r0, #0
 	bne _081CFD30
 	movs r0, #7
-	bl FUN_0808660c
+	bl Coffin_IsState
 	cmp r0, #0
 	bne _081CFD30
-	bl FUN_080865c0
+	bl Coffin_GetPos
 	adds r3, r0, #0
 	cmp r3, #0
 	beq _081CFD30

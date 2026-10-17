@@ -46,7 +46,7 @@ _0806F9CC:
 	cmp r0, #1
 	bne _0806FA22
 	adds r0, r6, #0
-	bl FUN_08060e1c
+	bl Player_IsNight
 	cmp r0, #0
 	beq _0806FA22
 	adds r2, r5, #0

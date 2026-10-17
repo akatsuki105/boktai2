@@ -199,7 +199,7 @@ bool32 FUN_0823b47c(Mover* p, Vec3* unk_30) {
   return TRUE;
 }
 
-bool32 Mover_SetPath(Mover* p, void* path, u8 param_3, u8 param_4, u8 param_5) {
+bool32 Mover_SetPath(Mover* p, PathWalker* path, u8 param_3, u8 param_4, u8 param_5) {
   p->path = path;
   Map_InitPathWalker(path, param_3, param_4, param_5);
   return TRUE;

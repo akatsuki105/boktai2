@@ -17,16 +17,7 @@ typedef struct {
 } MosaicFader;
 static_assert(sizeof(MosaicFader) == 52);
 
-IWRAM_DATA MosaicFader* gMosaicFader = NULL;  // 0x03000068
-
-void MosaicFader_UpdateIncrease(MosaicFader*);
-void MosaicFader_UpdateDecrease(MosaicFader*);
-
-void (*const sMosaicFaderUpdates[3])(MosaicFader*) = {
-    NULL,
-    MosaicFader_UpdateIncrease,
-    MosaicFader_UpdateDecrease,
-};  // 0x085AA920
+static MosaicFader* gMosaicFader;  // 0x03000068
 
 void MosaicFader_ClearGlobal(void) { gMosaicFader = NULL; }
 
@@ -83,6 +74,11 @@ void MosaicFader_UpdateDecrease(MosaicFader* p) {
 }
 
 s32 MosaicFader_Update(MosaicFader* p) {
+  static void (*const sMosaicFaderUpdates[3])(MosaicFader*) = {
+      NULL,
+      MosaicFader_UpdateIncrease,
+      MosaicFader_UpdateDecrease,
+  };  // 0x085AA920
   if (sMosaicFaderUpdates[p->mode] != NULL) {
     sMosaicFaderUpdates[p->mode](p);
   }
@@ -153,7 +149,7 @@ s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u
   return 0;
 }
 
-// モザイクをかけるスクリプトコマンド, 'c' が開始値、'a' が目標値、'i' が1段あたりのフレーム数
+// 0x3535, モザイクをかけるスクリプトコマンド, 'c' が開始値、'a' が目標値、'i' が1段あたりのフレーム数
 s32 MosaicFader_StartFromScript(void) {
   u8 from[4], to[4];
   u16 interval[4];

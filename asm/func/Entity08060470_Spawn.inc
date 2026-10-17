@@ -33,7 +33,7 @@ _08060518:
 	mov r1, r8
 	muls r1, r0, r1
 	mov ip, r1
-	ldr r2, _08060558 @ =0x085B0A08
+	ldr r2, _08060558 @ =gSineTable
 	adds r0, r6, #0
 	adds r0, #0x40
 	movs r1, #0xff
@@ -51,7 +51,7 @@ _08060518:
 	asrs r1, r0, #0xc
 	b _08060562
 	.align 2, 0
-_08060558: .4byte 0x085B0A08
+_08060558: .4byte gSineTable
 _0806055C:
 	rsbs r0, r0, #0
 	asrs r0, r0, #0xc

@@ -96,8 +96,22 @@ s32 EntityA628_Destroy(EntityA628* p) {
 
 NAKED void EntityA628_SetupBG(EntityA628* p) { INCFUNC("asm/func/EntityA628_SetupBG.inc"); }
 
-NAKED s32 EntityA628_Init(EntityA628* p, u16 param_2, u8 playerIdx, bool8 active) { INCFUNC("asm/func/EntityA628_Init.inc"); }
+NAKED s32 EntityA628_Init(EntityA628* p, u32 param_2, u32 playerIdx, u32 active) { INCFUNC("asm/func/EntityA628_Init.inc"); }
 
-NAKED EntityA628* EntityA628_Create(u16 param_1, u8 playerIdx, bool8 active) { INCFUNC("asm/func/EntityA628_Create.inc"); }
+EntityA628* EntityA628_Create(u32 param_1, u32 playerIdx, u32 active) {
+  EntityA628* p = gEntityA628;
+
+  if (p == NULL) {
+    p = CreateEntity(ENTITY_UNK_9, sizeof(EntityA628));
+    if (p != NULL) {
+      SetEntityRoutine(p, EntityA628_Update, EntityA628_Destroy);
+      if (EntityA628_Init(p, param_1, playerIdx, active) < 0) {
+        KillEntity((Entity*)p);
+        return NULL;
+      }
+    }
+  }
+  return p;
+}
 
 NAKED s32 EntityA628_CreateScripted(u16 param_1) { INCFUNC("asm/func/EntityA628_CreateScripted.inc"); }
