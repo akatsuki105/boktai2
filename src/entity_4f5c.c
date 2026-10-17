@@ -1,8 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "particle.h"
-
-struct Player;
+#include "player.h"
 
 // 粒子3枚を1組にした要素, Entity4F5C_ElemFall がプレイヤーの高さまで落とし、Entity4F5C_ElemScatter が円状に散らす
 typedef struct {
@@ -16,7 +15,7 @@ typedef struct {
   Vec3 pos;           // 0x08, ptcls[].pos の基準位置
   u8 animIdx[3];      // 0x10, 粒子ごとのアニメ番号 (0 か 1)
   u8 animTimer[3];    // 0x13, u16_ARRAY_085aa970[animIdx] に達したら animIdx を進める
-  u8 unk_16[2];       // 0x16, まだ未解析
+  u8 unk_16[2];       // 0x16, まだ未解析, padding?
   Particle ptcls[3];  // 0x18
 } Entity4F5CElem;
 static_assert(sizeof(Entity4F5CElem) == 144);
@@ -25,11 +24,11 @@ typedef struct {
   Entity e;                 // 0x000, ENTITY_UNK_10
   u16 unk_18;               // 0x018, Entity4F5C_Init が 0 を書く, 読み手は未発見
   u16 scriptID;             // 0x01A, '.e' の値, elems が全部終わったら VM_ExecByID に渡す
-  Vec3 playerPos;           // 0x01C, player->mover.pos の写し
+  WorldPos playerPos;       // 0x01C, player->mover.pos の写し
   ParticleGroup* group1;    // 0x024, PTCL_GROUP_1
   ParticleGroup* group2;    // 0x028, PTCL_GROUP_2
   Entity4F5CElem elems[3];  // 0x02C
-  struct Player* player;    // 0x1DC, gPlayerPtr[0]
+  Player* player;           // 0x1DC, gPlayerPtr[0]
 } Entity4F5C;
 static_assert(sizeof(Entity4F5C) == 480);
 
