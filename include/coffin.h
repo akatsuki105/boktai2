@@ -68,7 +68,8 @@ typedef struct Coffin {
   Vec3 destPos;               // 0x3A8, '.r', 自力で動くときの目的地
   u32 unk_3b0;                // 0x3B0, '.O'
   u16 unk_3b4;                // 0x3B4
-  u8 unk_3b6[0x3C4 - 0x3B6];  // 0x3B6
+  u16 unk_3b6;                // 0x3B6, state が 1 のときは毎回 2, それ以外は 1 ずつ減るカウンタ
+  u8 unk_3b8[0x3C4 - 0x3B8];  // 0x3B8
   Vec3 unk_3c4;               // 0x3C4, pos_1f8 の写し
   u8 unk_3cc[0x3D4 - 0x3CC];  // 0x3CC
   // 0x3D4 から 0x3FA までは FUN_08087310 がそれぞれ別の定数で初期化する一群
