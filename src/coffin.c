@@ -13,7 +13,17 @@ extern u32 u32_03002bc0;
 
 static inline u32 GetFlag03002bc0(u32 bits) { return u32_03002bc0 & bits; }
 
-NAKED void FUN_080853c0(Coffin* p) { INCFUNC("asm/func/FUN_080853c0.inc"); }
+void Coffin_InitParticles(Coffin* p) {
+  Particle* ptcl = p->ptcls;
+  s32 i;
+
+  for (i = 0; i < 7; i++, ptcl++) {
+    Particle_Add(ptcl, GetParticleGroup(PTCL_GROUP_1), 0);
+    Particle_SetOffset(ptcl, -4, -4);
+    ptcl->offsetZ = 0xFF;
+    Particle_Hide(ptcl);
+  }
+}
 
 NAKED void FUN_08085408(Coffin* p) { INCFUNC("asm/func/FUN_08085408.inc"); }
 
@@ -544,7 +554,7 @@ s32 Coffin_Init(Coffin* p, u32 id, u32 _) {
   Coffin_Init_Helper_08086e64(p);
   FUN_080871e4(p);
   FUN_08087290(p);
-  FUN_080853c0(p);
+  Coffin_InitParticles(p);
   FUN_08087310(p);
 
   p->unk_32a = 0;
