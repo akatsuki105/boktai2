@@ -225,7 +225,18 @@ void FUN_0808689c(s32 val) {
 
 NAKED void FUN_080868b8(s32 param_1) { INCFUNC("asm/func/FUN_080868b8.inc"); }
 
-NAKED void FUN_08086910(void) { INCFUNC("asm/func/FUN_08086910.inc"); }
+// 棺を state 8 に入れ, エフェクトスプライトを棺と同じ位置に出す
+void FUN_08086910(void) {
+  Coffin* p = gCoffin;
+
+  if (p != NULL) {
+    Coffin_SetState(p, 8);
+    Coffin_CreateEffSprite(p);
+    p->effSprite.pos = p->sprite.pos;
+    p->unk_320 = 1500;
+    FUN_08086080(p);
+  }
+}
 
 s32 FUN_08086958(void) {
   if (gCoffin == NULL) {
