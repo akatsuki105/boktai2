@@ -244,7 +244,35 @@ void FUN_0808670c(s32 n) {
   }
 }
 
-NAKED bool32 FUN_0808672c(void) { INCFUNC("asm/func/FUN_0808672c.inc"); }
+bool32 FUN_0808672c(void) {
+  Coffin* p = gCoffin;
+
+  if (p == NULL) {
+    return FALSE;
+  }
+  if (p->unk_394 != 0) {
+    return FALSE;
+  }
+  if (p->unk_40a != 0) {
+    return FALSE;
+  }
+  if (p->unk_384 != 0) {
+    return FALSE;
+  }
+  if (p->unk_3b6 != 0) {
+    return FALSE;
+  }
+  if (p->state <= 1) {
+    return TRUE;
+  }
+  if (p->state != 3 && p->state != 4) {
+    return FALSE;
+  }
+  if (p->unk_324 == 0) {
+    return FALSE;
+  }
+  return TRUE;
+}
 
 NAKED void FUN_080867a0(void) { INCFUNC("asm/func/FUN_080867a0.inc"); }
 
