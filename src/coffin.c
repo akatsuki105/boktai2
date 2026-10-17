@@ -714,7 +714,32 @@ NAKED void FUN_08088718(Coffin* p) { INCFUNC("asm/func/FUN_08088718.inc"); }
 
 NAKED void FUN_0808890c(Coffin* p) { INCFUNC("asm/func/FUN_0808890c.inc"); }
 
-NAKED void FUN_08088bbc(Coffin* p) { INCFUNC("asm/func/FUN_08088bbc.inc"); }
+void FUN_08088bbc(Coffin* p) {
+  p->facing = 0;
+  p->hitbox.flags |= HBFLAG_UNK_2;
+  p->stateTimer++;
+  FUN_08086024(p, 0);
+
+  if (p->stateTimer <= 0x1B) {
+    return;
+  }
+
+  if (p->stateTimer <= 0x2B) {
+    s32 t = p->stateTimer;
+    s32 n = t - 0x1C;
+
+    p->sprite.flags |= SPRFLAG_AFFINE;
+    p->sprite.scaleX = 0x40 - (n << 2);
+    if (n > 8) {
+      p->sprite.scaleY = n << 3;
+      p->unk_320 = (t - 0x24) * 30;
+    }
+  } else if (p->stateTimer <= 0x33) {
+    p->unk_320 = (p->stateTimer - 0x2C) * 200 + 240;
+  } else {
+    p->sprite.flags |= SPRFLAG_HIDDEN;
+  }
+}
 
 NAKED void FUN_08088c54(Coffin* p) { INCFUNC("asm/func/FUN_08088c54.inc"); }
 
