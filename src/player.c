@@ -108,9 +108,9 @@ void Player_SetAnimFacing(Player* p) {
   }
 }
 
-// sprite_88 に animIdx のアニメを設定して1フレーム進める, 前回と同じIDならコマ番号を引き継ぐ
-// 命令数は57で一致, 残差は animIdx + animIDOffset の adds のオペランド順だけ (原典は adds r2, r1, r2)
-// Tier A/B と複合代入・オペランド入れ替えは試済
+// 残差1命令, adds の第1オペランドが入れ替わるだけ (原典 adds r2, r1, r2 / こちら adds r2, r2, r1)
+// animIdx + p->animIDOffset のソース順入れ替えと flags の三項演算子化はどちらも無効 (agbcc が正規化する)
+// 未: animIdx の型 (u32 -> u16) だが一致済みの呼び出し元に影響が出る
 NON_MATCH bool32 Player_PlayAnim(Player* p, u32 animIdx, s32 animSpeed) {
 #ifdef NONMATCHING_C
   MainAnimPlayFlags16 flags = 0;
