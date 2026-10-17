@@ -3,6 +3,7 @@
 #include "collision_map.h"
 #include "definition.h"
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "inventory.h"
 #include "item.h"
@@ -682,7 +683,33 @@ static const u8 sCoffinPowers[8] = {
 
 NAKED void Coffin_Init_Helper_08086e64(Coffin* p) { INCFUNC("asm/func/Coffin_Init_Helper_08086e64.inc"); }
 
-NAKED void FUN_08086f90(Coffin* p) { INCFUNC("asm/func/FUN_08086f90.inc"); }
+void Coffin_InitSprite(Coffin* p) {
+  rgb555* src;
+  s32 i;
+
+  p->unk_31c = p->coffinID;
+  Video_GetAuxSprite(&p->gfx, SPRITE_COFFIN);
+  AuxSprite_Add(&p->sprite, &p->gfx, 0);
+  p->unk_32e = p->unk_31c;
+  Video_SetAuxSpritePltt(&p->gfx, p->unk_32e + 519);
+
+  src = p->gfx.pltt;
+  for (i = 0; i < 16; i++) {
+    p->pltt[i] = src[i];
+  }
+  p->gfx.pltt = p->pltt;
+
+  if (VM_SeekToNamedArg('d')) {
+    p->facing = VM_GetValue();
+  } else {
+    p->facing = 0;
+  }
+  p->anim = GetFile(DIR_ANIMATION, ANIM_COFFIN);
+  FUN_08086024(p, 0);
+  p->unk_31e = 0;
+  p->unk_320 = 0;
+  p->unk_322 = 0;
+}
 
 NAKED void FUN_08087058(Coffin* p) { INCFUNC("asm/func/FUN_08087058.inc"); }
 
@@ -1120,7 +1147,7 @@ s32 Coffin_Destroy(Coffin* p) {
 
 s32 Coffin_Init(Coffin* p, u32 id, u32 _) {
   Coffin_Init_Helper_08086df8(p, id);
-  FUN_08086f90(p);
+  Coffin_InitSprite(p);
   FUN_08087058(p);
   Coffin_Init_Helper_08086e64(p);
   Coffin_InitHitbox(p);
