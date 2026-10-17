@@ -14,6 +14,7 @@
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
 void FUN_08087528(Coffin* p);
 s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u16* param_5, s32 param_6, s32 param_7, s32 param_8);
+s32 FUN_080d99d4(s32 param_1, u32 param_2, u32 param_3);
 
 extern u32 u32_03002bc0;
 
@@ -911,7 +912,35 @@ NAKED void FUN_08088d44(Coffin* p) { INCFUNC("asm/func/FUN_08088d44.inc"); }
 
 NAKED void FUN_08088fbc(Coffin* p) { INCFUNC("asm/func/FUN_08088fbc.inc"); }
 
-NAKED void FUN_08089088(Coffin* p) { INCFUNC("asm/func/FUN_08089088.inc"); }
+// 残差3命令, 原典は stateTimer の u16 への切り詰め (lsls/lsrs #16) を比較ごとに作り直すが, こちらは1回で済ませてしまう
+// u16 ローカル経由も試したが同じ, Tier A-C は試済, 未: per-TU フラグ
+NON_MATCH void FUN_08089088(Coffin* p) {
+#ifdef NONMATCHING_C
+  if (p->state != 7) {
+    Coffin_SetState(p, 7);
+  }
+  p->unk_32a = 0;
+  p->stateTimer++;
+
+  if (p->stateTimer <= 5) {
+    if (p->stateTimer == 1) {
+      p->unk_418 = 0;
+      p->unk_414 = FUN_080da9c4(p->unk_414, &p->mover, 1, 0, &p->unk_418, 200, 250, 290);
+    }
+    return;
+  }
+
+  if (p->stateTimer == 6) {
+    p->unk_414 = FUN_080d99d4(p->unk_414, 1, p->mover.id);
+  }
+  p->unk_320 -= 60;
+  if (p->stateTimer > 0x1D) {
+    p->killRequested = TRUE;
+  }
+#else
+  INCFUNC("asm/func/FUN_08089088.inc");
+#endif
+}
 
 NAKED void FUN_08089144(Coffin* p) { INCFUNC("asm/func/FUN_08089144.inc"); }
 
