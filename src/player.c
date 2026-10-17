@@ -4016,9 +4016,8 @@ void FUN_080672b0(Player* p) {
 
 NAKED void MagicDash_0806734c(Player* p) { INCFUNC("asm/func/MagicDash_0806734c.inc"); }
 
-// マスの中での位置が端に寄りすぎていないか
-// 残差1命令, 原典は & 0xFF の結果を r0 に直接作るが、ローカルに受けると複写が1つ入る
-// (ローカルを u32 にすると ldrsh になり、マスクを直書きすると u16 への切り詰めが入る)
+// 残差1命令, 原典は ands の宛先に 0xFF を作ってから ands r0, r1 とするが, こちらは pos 側のレジスタで and してコピーが1つ増える
+// ローカルを1本に畳む (u16 pos &= 0xFF) と u16 への切り詰めが増えて 25/22 で悪化, マスクを先に書く (0xFF & pos) は無効
 NON_MATCH bool32 FUN_080674dc(Player* p) {
 #ifdef NONMATCHING_C
   u16 pos;
