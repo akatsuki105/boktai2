@@ -230,7 +230,23 @@ void FUN_0808689c(s32 val) {
   }
 }
 
-NAKED void FUN_080868b8(s32 param_1) { INCFUNC("asm/func/FUN_080868b8.inc"); }
+void FUN_080868b8(s32 param_1) {
+  Coffin* p = gCoffin;
+
+  if (p != NULL) {
+    if (param_1 != 0) {
+      Coffin_SetState(p, 7);
+    } else {
+      Coffin_SetState(p, 6);
+    }
+    if (p->unk_1f4 != FALSE) {
+      EnemyTargetManager_Remove(&p->target);
+      p->unk_1f4 = FALSE;
+    }
+    p->unk_320 = 0;
+    FUN_08086080(p);
+  }
+}
 
 // 棺を state 8 に入れ, エフェクトスプライトを棺と同じ位置に出す
 void FUN_08086910(void) {
