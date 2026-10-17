@@ -87,7 +87,46 @@ NAKED void FUN_0808596c(s32 param_1) { INCFUNC("asm/func/FUN_0808596c.inc"); }
 
 NAKED void FUN_08085a74(Coffin* p, s32 param_2) { INCFUNC("asm/func/FUN_08085a74.inc"); }
 
-NAKED void FUN_08085b34(Coffin* p) { INCFUNC("asm/func/FUN_08085b34.inc"); }
+// 残差2命令, pltt[1] への 0 書き込み (case 0) と 0x1F 書き込み (case 2) の strh を原典は共通末尾に畳むが,
+// case 0 側が switch の途中にあるため break が b になって畳まれない, Tier A-C は試済
+NON_MATCH void FUN_08085b34(Coffin* p) {
+#ifdef NONMATCHING_C
+  switch (p->unk_32a) {
+    case 0: {
+      s32 n = p->unk_32c;
+
+      if (n != 0) {
+        p->pltt[1] = (n * 31) >> 6;
+        p->unk_32c--;
+        break;
+      }
+      p->pltt[1] = 0;
+      break;
+    }
+    case 1: {
+      s32 n = p->unk_32c <= 0x3F ? p->unk_32c : 0x80 - p->unk_32c;
+
+      p->pltt[1] = (n * 31) >> 6;
+      p->unk_32c++;
+      if (p->unk_32c > 0x7F) {
+        p->unk_32c = 0;
+      }
+      break;
+    }
+    case 2: {
+      if (p->unk_32c <= 0x3F) {
+        p->pltt[1] = (p->unk_32c * 31) >> 6;
+        p->unk_32c++;
+      } else {
+        p->pltt[1] = 0x1F;
+      }
+      break;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_08085b34.inc");
+#endif
+}
 
 NAKED void FUN_08085bd0(Coffin* p) { INCFUNC("asm/func/FUN_08085bd0.inc"); }
 
