@@ -17,7 +17,19 @@ static_assert(sizeof(Entity6978) == 52);
 
 COMMON_DATA Entity6978* gEntity6978 = NULL;  // 0x03002B30
 
-INCASM("asm/entity_6978.inc");
+NAKED void FUN_080026fc(u32 val) { INCFUNC("asm/func/FUN_080026fc.inc"); }
+
+NAKED s32 FUN_0800271c(void) { INCFUNC("asm/func/FUN_0800271c.inc"); }
+
+NAKED void Entity6978_ClearPtr(void) { INCFUNC("asm/func/Entity6978_ClearPtr.inc"); }
+
+NAKED void Entity6978_StepDown(Entity6978* p) { INCFUNC("asm/func/Entity6978_StepDown.inc"); }
+
+NAKED void Entity6978_StepUp(Entity6978* p) { INCFUNC("asm/func/Entity6978_StepUp.inc"); }
+
+NAKED void Entity6978_SetRequestScripted(void) { INCFUNC("asm/func/Entity6978_SetRequestScripted.inc"); }
+
+NAKED void Entity6978_SetRequest(u32 request, s32 count, u32* params) { INCFUNC("asm/func/Entity6978_SetRequest.inc"); }
 
 NAKED s32 Entity6978_Update(Entity6978* p) { INCFUNC("asm/func/Entity6978_Update.inc"); }
 
