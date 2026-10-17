@@ -57,9 +57,9 @@ NAKED void FUN_081db14c(unknown* param_1) { INCFUNC("asm/func/FUN_081db14c.inc")
 
 NAKED void FUN_081db1e8(unknown* param_1) { INCFUNC("asm/func/FUN_081db1e8.inc"); }
 
-NAKED void FUN_081db2f4(s32 param_1) { INCFUNC("asm/func/FUN_081db2f4.inc"); }
+NAKED void FUN_081db2f4(Entity08F4* p) { INCFUNC("asm/func/FUN_081db2f4.inc"); }
 
-NAKED void FUN_081db310(s32 param_1) { INCFUNC("asm/func/FUN_081db310.inc"); }
+NAKED void FUN_081db310(Entity08F4* p) { INCFUNC("asm/func/FUN_081db310.inc"); }
 
 NAKED void FUN_081db32c(unknown* param_1) { INCFUNC("asm/func/FUN_081db32c.inc"); }
 

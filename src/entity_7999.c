@@ -80,9 +80,9 @@ NAKED void Entity7999_InitSprites(Entity7999* p) { INCFUNC("asm/func/Entity7999_
 
 NAKED void FUN_081da468(unknown* param_1) { INCFUNC("asm/func/FUN_081da468.inc"); }
 
-NAKED void FUN_081da5d0(s32 param_1) { INCFUNC("asm/func/FUN_081da5d0.inc"); }
+NAKED void FUN_081da5d0(Entity7999* p) { INCFUNC("asm/func/FUN_081da5d0.inc"); }
 
-NAKED void FUN_081da5ec(s32 param_1) { INCFUNC("asm/func/FUN_081da5ec.inc"); }
+NAKED void FUN_081da5ec(Entity7999* p) { INCFUNC("asm/func/FUN_081da5ec.inc"); }
 
 NAKED void Entity7999_SavePltt(Entity7999* p) { INCFUNC("asm/func/Entity7999_SavePltt.inc"); }
 
