@@ -13,7 +13,7 @@
 #include "vm.h"
 
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
-void FUN_08087528(Coffin* p);
+void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p);
 s32 FUN_080155e4(s32 count, WorldPos* pos, unknown* params);
 s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u16* param_5, s32 param_6, s32 param_7, s32 param_8);
 s32 FUN_080d99d4(s32 param_1, u32 param_2, u32 param_3);
@@ -846,7 +846,51 @@ void FUN_080874cc(Coffin* p) {
   }
 }
 
-NAKED void FUN_08087528(Coffin* p) { INCFUNC("asm/func/FUN_08087528.inc"); }
+// 残差9命令, 原典は unk_1c != 0 を 0/1 のフラグ (r2) に落としてから || の残りを見る bool diamond 形
+// && の早期 return では materialize が消えて短くなる, Tier A-B は試済, 未: bool diamond の再現方法
+NON_MATCH void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p) {
+#ifdef NONMATCHING_C
+  s32 damage;
+  s32 timer;
+
+  if (a->flags & HBFLAG_UNK_11) {
+    return;
+  }
+  if (p->unk_1b == 1) {
+    return;
+  }
+  if (p->unk_1c == 0 && (a->ignoreMask & 1) == 0 && (a->attributes & HBATTR_6) == 0) {
+    return;
+  }
+  if (p->unk_332 != 0) {
+    return;
+  }
+  if (a->power == 0) {
+    return;
+  }
+
+  timer = 8;
+  if (a->attributes & HBATTR_SOL) {
+    damage = 200;
+  } else if (a->attributes & HBATTR_DARK) {
+    damage = 300;
+    timer = 12;
+  } else if (a->attributes & HBATTR_FLAME) {
+    damage = 500;
+  } else if (a->attributes & HBATTR_FROST) {
+    damage = 150;
+  } else if (a->attributes & HBATTR_CLOUD) {
+    damage = 500;
+  } else {
+    damage = 400;
+  }
+  FUN_080873b4(p, damage);
+  p->unk_330 = 4;
+  p->unk_332 = timer;
+#else
+  INCFUNC("asm/func/FUN_08087528.inc");
+#endif
+}
 
 void FUN_080875e8(Coffin* p) {
   s32 angle;

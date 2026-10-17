@@ -15,6 +15,7 @@ typedef u32 HitboxFlags32;
 #define HBFLAG_UNK_8 (1 << 8)    // 0x100
 #define HBFLAG_UNK_9 (1 << 9)    // 0x200, 立っていると相手の hitState bit0 を消費する (FUN_0807e784)
 #define HBFLAG_UNK_10 (1 << 10)  // 0x400, 立っていると相手の hitState bit1 で1回だけに制限する (FUN_0807e784)
+#define HBFLAG_UNK_11 (1 << 11)  // 0x800
 #define HBFLAG_UNK_12 (1 << 12)  // 0x1000
 #define HBFLAG_UNK_13 (1 << 13)  // 0x2000
 #define HBFLAG_UNK_14 (1 << 14)  // 0x4000
