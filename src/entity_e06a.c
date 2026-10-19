@@ -90,7 +90,7 @@ void EntityE06A_SetupHitbox(EntityE06A* p) {
 
   size.x = 50, size.y = 100, size.z = 50;
   offset.x = 0, offset.y = 100, offset.z = 0;
-  Hitbox_Init(hitbox, p->id, HBFLAG_UNK_13 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_Init(hitbox, p->id, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetAttack(hitbox, 100, 0x78, 0, HBATTR_18 | HBATTR_DARK, 0x1E);
   Hitbox_SetHandler(hitbox, nop_080cb254, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
@@ -104,8 +104,8 @@ void EntityE06A_SetupHitbox2(EntityE06A* p) {
 
   size.x = 50, size.y = 100, size.z = 50;
   offset.x = 0, offset.y = 100, offset.z = 0;
-  Hitbox_Init(hitbox, p->id, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
-  Hitbox_SetPowerAndAttributes(hitbox, 10, HBATTR_DARK, 1);
+  Hitbox_Init(hitbox, p->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_SetPowerAndAttributes(hitbox, 10, HBATTR_DARK, HBATTR_SOL);
   Hitbox_SetHandler(hitbox, nop_080cb258, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);
   Hitbox_Register(hitbox);
@@ -118,6 +118,7 @@ s32 EntityE06A_Init(EntityE06A* p, u32 id, u32 _) {
   return 0;
 }
 
+// 0xE06A
 EntityE06A* EntityE06A_Create(u32 id, u32 _) {
   EntityE06A* p = CreateEntity(ENTITY_UNK_8, sizeof(EntityE06A));
 

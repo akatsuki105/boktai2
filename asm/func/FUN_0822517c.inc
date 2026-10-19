@@ -72,7 +72,7 @@ _082251AE:
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
 	adds r0, r6, #0
-	bl FUN_08223984
+	bl Entity8AAB_Pause
 	ldr r3, _08225270 @ =0x00000DC8
 	adds r0, r6, r3
 	ldr r1, _08225274 @ =0x00000117

@@ -1,8 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "particle.h"
-
-struct Player;
+#include "player.h"
 
 // 粒子3枚を1組にした要素, Entity4F5C_ElemFall がプレイヤーの高さまで落とし、Entity4F5C_ElemScatter が円状に散らす
 typedef struct {
@@ -16,7 +15,7 @@ typedef struct {
   Vec3 pos;           // 0x08, ptcls[].pos の基準位置
   u8 animIdx[3];      // 0x10, 粒子ごとのアニメ番号 (0 か 1)
   u8 animTimer[3];    // 0x13, u16_ARRAY_085aa970[animIdx] に達したら animIdx を進める
-  u8 unk_16[2];       // 0x16, まだ未解析
+  u8 unk_16[2];       // 0x16, まだ未解析, padding?
   Particle ptcls[3];  // 0x18
 } Entity4F5CElem;
 static_assert(sizeof(Entity4F5CElem) == 144);
@@ -25,15 +24,13 @@ typedef struct {
   Entity e;                 // 0x000, ENTITY_UNK_10
   u16 unk_18;               // 0x018, Entity4F5C_Init が 0 を書く, 読み手は未発見
   u16 scriptID;             // 0x01A, '.e' の値, elems が全部終わったら VM_ExecByID に渡す
-  Vec3 playerPos;           // 0x01C, player->mover.pos の写し
+  WorldPos playerPos;       // 0x01C, player->mover.pos の写し
   ParticleGroup* group1;    // 0x024, PTCL_GROUP_1
   ParticleGroup* group2;    // 0x028, PTCL_GROUP_2
   Entity4F5CElem elems[3];  // 0x02C
-  struct Player* player;    // 0x1DC, gPlayerPtr[0]
+  Player* player;           // 0x1DC, gPlayerPtr[0]
 } Entity4F5C;
 static_assert(sizeof(Entity4F5C) == 480);
-
-INCASM("asm/entity_4f5c.inc");
 
 const u16 u16_ARRAY_085aa970[2] = {3, 3};  // 0x085AA970
 
@@ -47,6 +44,45 @@ void (*const PTR_ARRAY_085aa974[3])(Entity4F5C*, Entity4F5CElem*) = {
     Entity4F5C_ElemScatter,
 };  // 0x085AA974
 
-const u16 u16_ARRAY_085aa980[3] = {0x0, 0x80, 0x258};  // 0x085AA980
+const u16 u16_ARRAY_085aa980[4] = {0x0, 0x80, 0x258};  // 0x085AA980
 
-static const u16 padding_085aa986 = 0;  // 後で消す
+void nop_0801a170(Entity4F5C* p, Entity4F5CElem* elem) {}
+
+NAKED void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) { INCFUNC("asm/func/Entity4F5C_ElemFall.inc"); }
+
+NAKED void Entity4F5C_ElemScatter(Entity4F5C* p, Entity4F5CElem* elem) { INCFUNC("asm/func/Entity4F5C_ElemScatter.inc"); }
+
+NAKED s32 Entity4F5C_Update(Entity4F5C* p) { INCFUNC("asm/func/Entity4F5C_Update.inc"); }
+
+// 残差0命令 (23/23), レジスタ名だけ違う: 原典は e を p のレジスタに重ねるが, こちらは p が別レジスタに残る
+NON_MATCH s32 Entity4F5C_Destroy(Entity4F5C* p) {
+#ifdef NONMATCHING_C
+  Entity4F5CElem* e = p->elems;
+  s32 i;
+  s32 j;
+
+  for (i = 0; i < 3; i++, e++) {
+    for (j = 0; j < 3; j++) {
+      Particle_Remove(&e->ptcls[j]);
+    }
+  }
+#else
+  INCFUNC("asm/func/Entity4F5C_Destroy.inc");
+#endif
+}
+
+NAKED s32 Entity4F5C_Init(Entity4F5C* p) { INCFUNC("asm/func/Entity4F5C_Init.inc"); }
+
+Entity4F5C* Entity4F5C_Create(u32 id, u32 _) {
+  Entity4F5C* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity4F5C));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity4F5C_Update, Entity4F5C_Destroy);
+    if (Entity4F5C_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}

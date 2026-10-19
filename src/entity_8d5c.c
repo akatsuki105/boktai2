@@ -1,10 +1,9 @@
+#include "bg_pltt.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "video.h"
 #include "vm.h"
-
-void* VM_GetValueAtSafe(u8* addr);  // src/vm.c
 
 // 不使用?
 // 上下キーで選ぶ縦並びのメニュー, 項目は '.s' から値の対として読む
@@ -55,7 +54,7 @@ s32 Entity8D5C_Init(Entity8D5C* p) {
   p->index = 0;
   p->lastDir = 0;
   Entity8D5C_MoveSelection(p, 0);
-  CpuCopy32(&((rgb555*)GetFile(DIR_BGPLTT, 0x519C))[250], &gBgPlttBuffer[240], 32);
+  CpuCopy32(&GetBgPlttFile(BGP_519C)->body[240], &gBgPlttBuffer[240], 16 * sizeof(rgb555));
   return 0;
 }
 

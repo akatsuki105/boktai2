@@ -46,6 +46,16 @@ const u8 u8_ARRAY_08dbd798[6][2] = {
     {2, 2},
 };  // 0x08DBD798
 
+// 自分が何番目の参加者かを返す, セッションが無ければ -1
+static inline s32 Entity9A9F_GetPlayerIdx(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return -1;
+  }
+  return p->playerIdx;
+}
+
 // 太陽光まわりを初期状態に戻す
 NON_MATCH void UNUSED Taiyo_Reset(void) {
 #ifdef NONMATCHING_C
@@ -111,7 +121,7 @@ void Taiyo_Enable(void) {
 }
 
 // 0x31FF
-s32 Taiyo_GetGameGauge(void) { return gStat->sunGauge; }
+s32 Cmd_GetSolarGauge(void) { return gStat->sunGauge; }
 
 // 照度(lx)を 0〜10 の太陽レベルに変換する
 s32 Taiyo_LxToGauge(s32 lx) {

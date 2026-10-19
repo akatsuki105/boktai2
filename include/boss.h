@@ -32,5 +32,7 @@ typedef struct {
 void FUN_08022a0c(Boss*, BossID);
 void* FUN_08022a2c(BossID);
 void FUN_08022b04(Boss*);
+void FUN_08022e20(Boss*);
+void FUN_08022ec0(Boss*);
 
 #endif  // __INCLUDE_BOSS_H__

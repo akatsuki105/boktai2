@@ -205,7 +205,7 @@ void CoffinShop_StartSwapAnim(CoffinShop* p) {
   FUN_080b9938(&to[1].x, (u8)p->cursor.slot);
 
   FUN_080b9a28(&p->pair0.gfx, unk1, from, to, anims, strIDs, 12);
-  PlaySound_082406e0(0x38A);
+  PlaySound_082406e0(SONG_906);
 }
 
 // カーソルが選べる棺桶の上にいるかどうかで pair1 のスプライトを切り替える
@@ -280,7 +280,7 @@ NON_MATCH void FUN_080bf058(CoffinShop* p) {
     FUN_080beaf4(p, 0);
     MainSprite_SetPose(&p->sprites[30], &p->gfx0, 56, 1);
     if (gInput[0].pressed & A_BUTTON) {
-      PlaySound_082406e0(0xDC);
+      PlaySound_082406e0(SONG_220);
       p->kind++;
       if (p->kind > 2) {
         p->kind = 0;
@@ -299,7 +299,7 @@ NON_MATCH void FUN_080bf058(CoffinShop* p) {
         }
 
         if (ok) {
-          PlaySound_082406e0(0xDD);
+          PlaySound_082406e0(SE_SELECT);
           FUN_080b9fd8(&p->cursor);
           p->sprites[31].flags &= ~SPRFLAG_HIDDEN;
           p->sprites[31].pos = p->sprites[30].pos;
@@ -307,10 +307,10 @@ NON_MATCH void FUN_080bf058(CoffinShop* p) {
           FUN_080bef00(p, 1);
           CoffinShop_SetSubState(p, CoffinShop_HandleSelectInput, 0);
         } else {
-          PlaySound_082406e0(0x192);
+          PlaySound_082406e0(SE_NG);
         }
       } else {
-        PlaySound_082406e0(0x192);
+        PlaySound_082406e0(SE_NG);
       }
     } else if (FUN_080b9f70(&p->cursor)) {
       FUN_080b9fc4(&p->cursor, &p->sprites[30]);
@@ -330,15 +330,15 @@ void CoffinShop_HandleSelectInput(CoffinShop* p) {
 
     FUN_080b98c0(&p->pair1.gfx, -1, -1);
     if (r == 4) {
-      PlaySound_082406e0(0x107);
+      PlaySound_082406e0(SONG_263);
       CoffinShop_ShowMessage(p, 0, p->unk_ec4, 0);
       FUN_080b9740(&p->sprites[37], &p->gfx0, (char*)&p->unk_ec9, 1);
       CoffinShop_SetSubState(p, FUN_080bf29c, 0);
     } else {
-      PlaySound_082406e0(0x192);
+      PlaySound_082406e0(SE_NG);
     }
   } else if (gInput[0].pressed & B_BUTTON) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_080beff4(p);
   } else if (FUN_080b9f70(&p->cursor)) {
     FUN_080b9fc4(&p->cursor, &p->sprites[30]);
@@ -358,7 +358,7 @@ void FUN_080bf29c(CoffinShop* p) {
     CoffinShop_StartSwapAnim(p);
     CoffinShop_SetSubState(p, CoffinShop_BuyCoffin, 0);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_080beff4(p);
   }
 }
@@ -375,7 +375,7 @@ void CoffinShop_BuyCoffin(CoffinShop* p) {
     p->items[heldID - ITEM_OAK_COFFIN] = heldID;
     p->items[buyID - ITEM_OAK_COFFIN] = 0xFF;
     p->unk_10e1 = 1;
-    PlaySound_082406e0(0x111);
+    PlaySound_082406e0(SE_EQUIP);
     FUN_080beff4(p);
   }
 }
@@ -496,7 +496,7 @@ NON_MATCH void FUN_080bf754(CoffinShop* p) {
       }
     }
 
-    for (; i <= 11; i++) {
+    for (; i < 12; i++) {
       p->items[i] = (u8)p->items[i] | 0xFF;
     }
 
@@ -531,7 +531,7 @@ void FUN_080bf828(CoffinShop* p) {
 // B でショップを閉じにかかり, それ以外は unk_10ec のステートを回す
 void FUN_080bf854(CoffinShop* p) {
   if (p->unk_ec8 != 0 && (gInput[0].pressed & B_BUTTON)) {
-    PlaySound_082406e0(0x119);
+    PlaySound_082406e0(SE_CLOSE_MENU);
     FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
     CoffinShop_SetState(p, CoffinShop_Close);
   } else {
@@ -588,7 +588,7 @@ s32 CoffinShop_Init(CoffinShop* p) {
   p->unk_10e2 = 0;
   FUN_0823ce68(2, 5, 4, 4, 4, 0xFFFF, 0);
   FUN_080bf3a0(p);
-  PlaySound_082406e0(0x118);
+  PlaySound_082406e0(SE_OPEN_MENU);
   CoffinShop_SetState(p, FUN_080bf828);
   return 0;
 }

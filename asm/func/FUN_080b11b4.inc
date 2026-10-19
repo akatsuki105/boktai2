@@ -141,7 +141,7 @@ _080B12C4:
 	bne _080B12E6
 	ldr r1, _080B12FC @ =FUN_080adb5c
 	adds r0, r7, #0
-	bl EntityCBB0_SetState
+	bl PileDriver_SetState
 	movs r0, #0x93
 	lsls r0, r0, #1
 	bl PlaySound_082406e0

@@ -10,7 +10,7 @@
 	adds r0, r5, #0
 	bl FUN_080cf560
 	adds r0, r5, #0
-	bl FUN_080ceec0
+	bl PlayerLink_RefreshMagicInfo
 	adds r0, r5, #0
 	bl FUN_080cf54c
 	adds r0, r5, #0

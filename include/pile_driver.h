@@ -6,29 +6,50 @@
 #include "gba/gba.h"
 #include "hitbox.h"
 #include "msgbus.h"
+#include "particle.h"
 #include "sprite_aux.h"
 #include "types.h"
 
 struct Generator;
 
-struct EntityCBB0;
-typedef void(EntityCBB0Func)(struct EntityCBB0* p);
+struct PileDriver;
+typedef void(PileDriverFunc)(struct PileDriver* p);
+
+// AuxSprite と専用の AuxSpriteGfx に 0x81 周期のアニメーションカウンタを足した一式
+typedef struct {
+  AuxSprite spr;           // 0x00, ->gfx
+  AuxSpriteGfx gfx;        // 0x2C
+  u8 unk_48[0x68 - 0x48];  // 0x48, まだ未解析
+  u16 unk_68;              // 0x68, 0 の間は止まっている
+  u16 pose;                // 0x6A, animTimer から決まる 0〜3
+  u8 unk_6c[2];            // 0x6C, まだ未解析
+  u16 animTimer;           // 0x6E, 0x81 を越えると 0 に戻る
+} PileDriverAnimSprite;
+static_assert(sizeof(PileDriverAnimSprite) == 112);
+
+// PileDriver が 0x0564 から32個持つ粒子の枠
+typedef struct {
+  Particle ptcl;           // 0x00, PTCL_GROUP_2
+  u8 unk_28[0x30 - 0x28];  // 0x28, まだ未解析
+  u8 unk_30;               // 0x30, FUN_080ad388 が枠を作るたびに 0 を入れる
+  u8 unk_31[3];            // 0x31, padding?
+} PileDriverParticle;
+static_assert(sizeof(PileDriverParticle) == 52);
 
 // パイルドライバー という 複数の 太陽ジェネレータ (struct Generator) の照射でイモータルを浄化するゲームのギミック のシーンEntity
-typedef struct EntityCBB0 {
+typedef struct PileDriver {
   Entity e;                         // 0x0000, ENTITY_UNK_9
-  u16 subroutineID;                 // 0x0018, 0xCBB0 (EntityCBB0_Create)
+  u16 subroutineID;                 // 0x0018, 0xCBB0 (PileDriver_Create)
   u16 unk_1a;                       // 0x001A
   u8 unk_1c[0x1E - 0x1C];           // 0x001C, まだ未解析
   u8 unk_1e;                        // 0x001E, 0 以外のときだけ generators を走査する
   u8 unk_1f;                        // 0x001F, 意味は未解析
   u8 unk_20[0x22E - 0x20];          // 0x0020, まだ未解析
-  u16 stateTimer;                   // 0x022E, EntityCBB0_SetState が updateCallback の差し替えのたびに 0 に戻す
+  u16 stateTimer;                   // 0x022E, PileDriver_SetState が updateCallback の差し替えのたびに 0 に戻す
   u16 unk_230[16];                  // 0x0230, FUN_080ad9d4 が添字つきで書く以外の用途は未解析
-  EntityCBB0Func* updateCallback;   // 0x0250
-  AuxSprite sprite_254;             // 0x0254, ->gfx_280
-  AuxSpriteGfx gfx_280;             // 0x0280
-  u8 unk_29c[0x4E0 - 0x29C];        // 0x029C, まだ未解析
+  PileDriverFunc* updateCallback;   // 0x0250
+  PileDriverAnimSprite sprite_254;  // 0x0254
+  u8 unk_2c4[0x4E0 - 0x2C4];        // 0x02C4, まだ未解析
   rgb555* plttSrc;                  // 0x04E0, 点滅用のパレット4組の先頭
   u8 unk_4e4[0x4EC - 0x4E4];        // 0x04E4, まだ未解析
   u16 plttTimer;                    // 0x04EC, 奇数フレームごとに plttSrc の組を差し替える
@@ -38,17 +59,12 @@ typedef struct EntityCBB0 {
   u8 unk_500[0x508 - 0x500];        // 0x0500, まだ未解析
   Vec3 unk_508;                     // 0x0508, FUN_080b10f8 が FUN_080b1038 に渡す座標
   WorldPos pos_510;                 // 0x0510, FUN_080b1038 が距離判定に使うワールド座標
-  u8 unk_518[0x67A - 0x518];        // 0x0518, まだ未解析
-  u16 unk_67a;                      // 0x067A, 根拠: FUN_080b01b4 が毎フレーム +1 して unk_690 と比べる
-  u8 unk_67c[0x68A - 0x67C];        // 0x067C, まだ未解析
-  u16 unk_68a;                      // 0x068A
-  u8 unk_68c[0x690 - 0x68C];        // 0x068C, まだ未解析
-  u16 unk_690;                      // 0x0690, 根拠: FUN_080b01b4 が unk_67a の上限として見る
-  u8 unk_692[0x69C - 0x692];        // 0x0692, まだ未解析
-  Vec3 unk_69c;                     // 0x069C, FUN_080b0e58 が 3成分とも 0xA0 を入れる
-  Vec3 unk_6a4;                     // 0x06A4, FUN_080b0e58 が入れる当たり判定の広がりらしい値
-  struct EntityCBB0* unk_6ac;       // 0x06AC, *(*unk_6ac + 0xBE8 + i*4) を引くので EntityCBB0 を指す (暫定)
-  u8 unk_6b0[0xBE8 - 0x6B0];        // 0x06B0, まだ未解析
+  AuxSprite sprite_518;             // 0x0518
+  u8 unk_544[0x560 - 0x544];        // 0x0544, まだ未解析
+  ParticleGroup* ptclGroup;         // 0x0560, PTCL_GROUP_2
+  PileDriverParticle ptcls[32];     // 0x0564
+  u8 unk_be4;                       // 0x0BE4, FUN_080ad388 が 0 を入れる
+  u8 unk_be5[3];                    // 0x0BE5, padding?
   struct Generator* generators[6];  // 0x0BE8, i*4 刻みで引き、要素の +0xCF / +0xEC / +0xE2 を触る
   u8 unk_c00[0xC0B - 0xC00];        // 0x0C00, まだ未解析
   u8 state_c0b;                     // 0x0C0B
@@ -75,7 +91,7 @@ typedef struct EntityCBB0 {
   u8 unk_133f;                      // 0x133F, unk_1340 の添字
   SoundID16 unk_1340[4];            // 0x1340, PlaySound_082406e0(unk_1340[unk_133f]) で鳴らす
   u8 unk_1348[0x135C - 0x1348];     // 0x1348, まだ未解析
-  EntityCBB0Func* unk_135c;         // 0x135C, FUN_080af0ac が非NULLのとき unk_135c(p) を呼ぶ
+  PileDriverFunc* unk_135c;         // 0x135C, FUN_080af0ac が非NULLのとき unk_135c(p) を呼ぶ
   unknown* unk_1360;                // 0x1360, 根拠: FUN_080af0c8 が FUN_0805b1a0 に渡す
   u8 unk_1364[0x1374 - 0x1364];     // 0x1364, まだ未解析
   bool16 unk_1374;                  // 0x1374, FUN_080adf60 が立て, FUN_080adfa0 が見る
@@ -86,10 +102,10 @@ typedef struct EntityCBB0 {
   u8 unk_142a[0x17A4 - 0x142A];     // 0x142A, まだ未解析
   u32 unk_17a4;                     // 0x17A4, '.p'
   MsgQueue mq;                      // 0x17A8
-} EntityCBB0;
-static_assert(sizeof(EntityCBB0) == 6108);
+} PileDriver;
+static_assert(sizeof(PileDriver) == 6108);
 
-extern EntityCBB0* gEntityCBB0;  // 0x03002C58
+extern PileDriver* gPileDriver;  // 0x03002C58
 
 // --------------------------------------------
 
@@ -101,7 +117,7 @@ typedef struct Generator {
   AuxSprite sprite;                           // 0x018, ->gfx
   AuxSpriteGfx gfx;                           // 0x044, SPRITE_GENERATOR
   Vec3 pos;                                   // 0x060, Generator_Create の第1引数を8バイト複写したもの,Hitbox_SetPos に渡す
-  HitboxData hitbox;                          // 0x068, Generator_InitHitbox が Hitbox_Init / _SetPowerAndAttributes / _SetPos / _SetHandler する
+  HitboxData hurtbox;                         // 0x068, Generator_InitHurtbox が Hitbox_Init / _SetPowerAndAttributes / _SetPos / _SetHandler する
   AuxAnimState anim;                          // 0x0B8, ANIM_PILE, animIdx は 1 or 3
   AuxAnimFile* animFile;                      // 0x0C8, ANIM_PILE
   u8 animVariant;                             // 0x0CC
@@ -120,7 +136,7 @@ typedef struct Generator {
   u16 unk_e2;                                 // 0x0E2, 0 でない間 Generator_UpdateFlash が flashTimer を増やし、その後 0 に戻す
   u16 flashTimer;                             // 0x0E4, 12 でパレット 455, 1〜11 で 454, 0 で plttID に戻る
   u8 unk_e6[2];                               // 0x0E6
-  u16 unk_e8;                                 // 0x0E8, gEntityCBB0 の field_0xc10 が立ち、かつ state が 4 のときだけ減る
+  u16 unk_e8;                                 // 0x0E8, gPileDriver の field_0xc10 が立ち、かつ state が 4 のときだけ減る
   u8 unk_ea;                                  // 0x0EA, Init が 0,読み手が見つかっていない
   u8 unk_eb;                                  // 0x0EB, 0 でない間 Generator_UpdateFlash がパレット 0x132 を強制して減らす
   u8 unk_ec;                                  // 0x0EC, Init が 0,読み手が見つかっていない

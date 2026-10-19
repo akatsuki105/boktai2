@@ -3901,7 +3901,7 @@ _08054D58:
 	bge _08054D58
 	adds r0, r6, #0
 	adds r0, #0x60
-	bl FUN_0823b8ac
+	bl Camera_MoveTo
 	ldr r0, [r6, #0x50]
 	cmp r0, #0x63
 	bls _08054D94
@@ -4351,7 +4351,7 @@ _08055120:
 	strh r2, [r0]
 	adds r0, r1, #0
 _08055132:
-	bl FUN_0823b8ac
+	bl Camera_MoveTo
 	movs r0, #0x70
 	movs r1, #0
 	bl VM_GetNamedArgValue

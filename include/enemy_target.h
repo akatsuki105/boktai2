@@ -24,5 +24,7 @@ typedef struct EnemyTarget {
 static_assert(sizeof(EnemyTarget) == 16);
 
 void EnemyTargetManager_Remove(EnemyTarget* t);
+void EnemyTargetManager_Release(EnemyTarget* node);
+EnemyTarget* EnemyTargetManager_FindByKind(u32 kindMask);
 
 #endif  // __INCLUDE_ENEMY_TARGET_H__

@@ -45,7 +45,7 @@ _0801DDC4:
 	bl LerpVec3
 _0801DDE6:
 	adds r0, r4, #0
-	bl FUN_0823b8ac
+	bl Camera_MoveTo
 	ldr r0, [r6, #0x44]
 	cmp r0, #0x1e
 	bne _0801DE12

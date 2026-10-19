@@ -1,4 +1,5 @@
 #include "global.h"
+#include "input.h"
 #include "random.h"
 #include "sprite.h"
 
@@ -61,7 +62,7 @@ const u16 gRandomTable2[1024] = {
 
 const s16 s16_ARRAY_085b0a00[3] = {8, 4, 2};
 
-const ALIGNED(4) s16 gSineTable[320] = {
+const ALIGNED(4) s4_12 gSineTable[320] = {
     Q_4_12(0),                // sin(0*(π/128))
     Q_4_12(0.0244140625),     // sin(1*(π/128))
     Q_4_12(0.048828125),      // sin(2*(π/128))
@@ -652,11 +653,11 @@ void CreateRandomTable(void) {
   s32 i;
 
   for (i = 0; i < 1024; i++) {
-    s32 r = Random();
-    gRandomTable[i] = r >> (Random() & 3);
+    s32 r = RandomLCG();
+    gRandomTable[i] = r >> (RandomLCG() & 3);
   }
-  gRandTableIdx = Random() & 0x3FF;
-  gRandTableIdx2 = Random() & 0x3FF;
+  gRandTableIdx = RandomLCG() & 0x3FF;
+  gRandTableIdx2 = RandomLCG() & 0x3FF;
 }
 
 // パレット16色を src1 から src2 へ t / (1 << shift) の割合で混ぜて dst に書き出す
@@ -718,7 +719,29 @@ bool8 FUN_082375c8(u32* flags, s32 t, s32 t1, s32 t2) {
   return FALSE;
 }
 
-NAKED u32 FUN_08237624(s32 param_1, u8* param_2, Keys32 param_3, u32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_08237624.inc"); }
+// キーリピート: mask のキーが limit フレーム押され続けるたびに result を返す
+u32 FUN_08237624(s32 playerIdx, u8* counter, Keys32 mask, u32 result, s32 limit) {
+  u32 ret = 0;
+  s32 n = *counter;
+
+  if (gInput[playerIdx].pressed & mask) {
+    n = limit;
+  } else if (gInput[playerIdx].down & mask) {
+    if (n < limit) {
+      n++;
+    }
+  } else {
+    n = 0;
+  }
+
+  if (n >= limit) {
+    n = 0;
+    ret = result;
+  }
+
+  *counter = n;
+  return ret;
+}
 
 // 文字列を固定長 (length 文字 + 終端) のバッファにコピーし、余りを 0 で埋める
 u32 StrCopyPadded(u8* src, u8* dst, s32 length) {

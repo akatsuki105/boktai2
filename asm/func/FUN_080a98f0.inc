@@ -22,7 +22,7 @@ _080A9914:
 	lsrs r0, r0, #0x10
 	cmp r0, #0x3b
 	bls _080A9942
-	bl FUN_0824082c
+	bl Sound_Resume
 	ldr r2, _080A994C @ =0x030044BC
 	movs r1, #5
 	rsbs r1, r1, #0

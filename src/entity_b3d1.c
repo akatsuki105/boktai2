@@ -223,7 +223,18 @@ NAKED void FUN_080c01ac(EntityB3D1* p, s32 param_2) { INCFUNC("asm/func/FUN_080c
 
 NAKED void FUN_080c0248(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c0248.inc"); }
 
-NAKED void FUN_080c04d8(EntityB3D1* p) { INCFUNC("asm/func/FUN_080c04d8.inc"); }
+void FUN_080c04d8(EntityB3D1* p) {
+  Player* q = gPlayerPtr[0];
+
+  if (q->unk_42e <= 3) {
+    REG_BLDCNT = 0xEE;
+    REG_BLDY = (4 - q->unk_42e) * 2;
+  } else {
+    REG_BLDCNT = 0xAE;
+    REG_BLDY = q->unk_42e - 4;
+  }
+  REG_BLDALPHA = 0;
+}
 
 s32 EntityB3D1_Update(EntityB3D1* p) {
   p->updateCallback(p);

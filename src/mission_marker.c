@@ -7,35 +7,31 @@
 
 // スクリプトが出すマーカーのスプライト, 寿命が尽きるとスクリプトを起動して自分を消す
 // スクリプトが出す "TRAP", "MISSION COMPLETED", "PURIFICATION COMPLETED" "MISSION FAILED" のどれか
-typedef struct Entity92BE {
-  Entity e;                                    // 0x00, ENTITY_UNK_9
-  MainSpriteGfx gfx;                           // 0x18, SPRITE_MARKERS
-  MainSprite sprite;                           // 0x38
-  u8 unk_98[0x9A - 0x98];                      // 0x98, padding?
-  u16 timer;                                   // 0x9A, Entity92BE_Update が毎フレーム +1 して lifetime と比べる
-  u16 lifetime;                                // 0x9C, '.I=60'
-  u8 unk_9e[0xA0 - 0x9E];                      // 0x9E, padding?
-  Vec3 pos;                                    // 0xA0, MainSprite_Add に渡す位置, Init が x/y/z を 0 で埋める
-  u32 scriptID;                                // 0xA8, '.p'
-  void (*updateCallback)(struct Entity92BE*);  // 0xAC, Init は Entity92BE_Shake を入れる
-} Entity92BE;
-static_assert(sizeof(Entity92BE) == 176);
+typedef struct MissionMarker {
+  Entity e;                                       // 0x00, ENTITY_UNK_9
+  MainSpriteGfx gfx;                              // 0x18, SPRITE_MARKERS
+  MainSprite sprite;                              // 0x38
+  u8 unk_98[0x9A - 0x98];                         // 0x98, padding?
+  u16 timer;                                      // 0x9A, MissionMarker_Update が毎フレーム +1 して lifetime と比べる
+  u16 lifetime;                                   // 0x9C, '.I=60'
+  u8 unk_9e[0xA0 - 0x9E];                         // 0x9E, padding?
+  Vec3 pos;                                       // 0xA0, MainSprite_Add に渡す位置, Init が x/y/z を 0 で埋める
+  u32 scriptID;                                   // 0xA8, '.p'
+  void (*updateCallback)(struct MissionMarker*);  // 0xAC, Init は MissionMarker_Shake を入れる
+} MissionMarker;
+static_assert(sizeof(MissionMarker) == 176);
 
 // 出現から6フレームだけ左右に揺らす
-void Entity92BE_Shake(Entity92BE* p) {
-  s32 r;
-
+void MissionMarker_Shake(MissionMarker* p) {
   if (p->timer <= 5) {
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    r = *(gRandomTable + gRandTableIdx);
-    p->sprite.pos.x = ((r >> 4) & 0xF) - 7;
+    p->sprite.pos.x = ((Random() >> 4) & 0xF) - 7;
   } else {
     p->sprite.pos.x = 0;
     p->sprite.pos.y = 0;
   }
 }
 
-s32 Entity92BE_Update(Entity92BE* p) {
+s32 MissionMarker_Update(MissionMarker* p) {
   p->updateCallback(p);
   p->timer++;
   if (p->timer >= p->lifetime) {
@@ -46,13 +42,13 @@ s32 Entity92BE_Update(Entity92BE* p) {
   }
 }
 
-s32 Entity92BE_Destroy(Entity92BE* p) {
+s32 MissionMarker_Destroy(MissionMarker* p) {
   MainSprite_Remove(&p->sprite);
   return 0;
 }
 
 // マーカーのスプライトを読み込み、スクリプトの指定に従って表示する
-s32 Entity92BE_Init(Entity92BE* p) {
+s32 MissionMarker_Init(MissionMarker* p) {
   MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_MARKERS);
   s32 idx;
 
@@ -67,7 +63,7 @@ s32 Entity92BE_Init(Entity92BE* p) {
   } else {
     p->lifetime = 60;
   }
-  p->updateCallback = Entity92BE_Shake;
+  p->updateCallback = MissionMarker_Shake;
   p->pos.x = 0, p->pos.y = 0, p->pos.z = 0;
   MainSprite_Add(&p->sprite, &p->gfx, idx + 11, SPRFLAG_SCREEN_COORD, 1, 0, 60, &p->pos);
   if (VM_SeekToNamedArg('p')) {
@@ -78,12 +74,12 @@ s32 Entity92BE_Init(Entity92BE* p) {
   return 0;
 }
 
-Entity92BE* Entity92BE_Create(void) {
-  Entity92BE* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity92BE));
+MissionMarker* MissionMarker_Create(void) {
+  MissionMarker* p = CreateEntity(ENTITY_UNK_9, sizeof(MissionMarker));
 
   if (p != NULL) {
-    SetEntityRoutine(p, Entity92BE_Update, Entity92BE_Destroy);
-    if (Entity92BE_Init(p) != 0) {
+    SetEntityRoutine(p, MissionMarker_Update, MissionMarker_Destroy);
+    if (MissionMarker_Init(p) != 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

@@ -1,5 +1,7 @@
 #include "entity.h"
 #include "global.h"
+#include "input.h"
+#include "sound.h"
 #include "sprite.h"
 #include "text.h"
 #include "tilemap.h"
@@ -39,6 +41,8 @@ void FUN_080526d8(Entity723E*);
 void FUN_08052798(Entity723E*);
 void FUN_080528c4(Entity723E*);
 
+bool32 FUN_0804e59c(void);
+
 void (*const PTR_ARRAY_085ab724[6])(Entity723E*) = {
     FUN_08052338,
     FUN_0805234c,
@@ -48,7 +52,23 @@ void (*const PTR_ARRAY_085ab724[6])(Entity723E*) = {
     FUN_080528c4,
 };  // 0x085AB724
 
-NAKED s32 Entity723E_SetState(Entity723E* p, u8 state) { INCFUNC("asm/func/Entity723E_SetState.inc"); }
+// state を差し替えて MainSprite 4つ分の flags に bit0 を立てる
+// ただし先頭は p+0x40 なので gfx の末尾と sprites[0..2] の途中を踏んでおり, 原典の書き間違いとみられる
+s32 Entity723E_SetState(Entity723E* p, u8 state) {
+  MainSprite* spr;
+  s32 i;
+
+  p->state = state;
+  p->stateEntered = TRUE;
+  p->timer = 0;
+  p->timeA[0] = 0;
+
+  spr = (MainSprite*)&p->gfx.anims;
+  for (i = 0; i < 4; i++, spr++) {
+    spr->flags |= SPRFLAG_HIDDEN;
+  }
+  return 0;
+}
 
 bool32 Entity723E_ConsumeStateEntered(Entity723E* p) {
   p->timeA[0] = 1;
@@ -74,23 +94,51 @@ NAKED void FUN_080526d8(Entity723E* p) { INCFUNC("asm/func/FUN_080526d8.inc"); }
 
 NAKED void FUN_08052798(Entity723E* p) { INCFUNC("asm/func/FUN_08052798.inc"); }
 
-NAKED void FUN_080528c4(Entity723E* p) { INCFUNC("asm/func/FUN_080528c4.inc"); }
+// 30フレーム経ったあと何かボタンが押されたら後始末して自分を消す
+void FUN_080528c4(Entity723E* p) {
+  if (p->stateEntered) {
+    p->stateEntered = FALSE;
+  }
 
-NAKED s32 Entity723E_Update(Entity723E* p) { INCFUNC("asm/func/Entity723E_Update.inc"); }
+  if (p->timer > 29 && (gInput[0].pressed & (A_BUTTON | B_BUTTON | SELECT_BUTTON | START_BUTTON | R_BUTTON | L_BUTTON))) {
+    Sound_FadeOutBGMTemporarily(4);
+    PlaySound_082406e0(SE_SELECT);
+    if (p->unk_8b0 != 0) {
+      ((void (*)(void))p->unk_8b0)();
+    }
+    KillEntity((Entity*)p);
+  } else {
+    p->timer++;
+  }
+}
+
+s32 Entity723E_Update(Entity723E* p) {
+  if (FUN_0804e59c()) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+      TextPanel_Destroy(p->textPanels[i]);
+    }
+    KillEntity((Entity*)p);
+  } else {
+    PTR_ARRAY_085ab724[p->state](p);
+  }
+  return 0;
+}
 
 s32 Entity723E_Destroy(Entity723E* p) {
-  MainSprite* spr = &p->sprites[0];
-  s32* panel;
   s32 i;
 
-  for (i = 20; i >= 0; i--, spr++) {
+  MainSprite* spr = &p->sprites[0];
+  for (i = 0; i < 21; i++, spr++) {
     MainSprite_Remove(spr);
   }
+
   spr = &p->portrait;
   MainSprite_Remove(spr);
-  panel = &p->textPanels[0];
-  for (i = 3; i >= 0; i--) {
-    TextPanel_Destroy(*panel++);
+
+  for (i = 0; i < 4; i++) {
+    TextPanel_Destroy(p->textPanels[i]);
   }
   gEntity723E = NULL;
   return 0;

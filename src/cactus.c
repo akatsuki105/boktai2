@@ -57,7 +57,7 @@ void Cactus_OnHit(HitboxData* a, HitboxData* b, Cactus* owner) {
     } else {
       p->damageTimer = 10;
       Video_SetAuxSpritePltt(&p->gfx, 306);
-      if (!Hitbox_HasWeakness(a, (1 << 2))) PlaySound_082406e0(0x13E);
+      if (!Hitbox_HasWeakness(a, (1 << 2))) PlaySound_082406e0(SE_ENEMY_DAMAGED);
     }
     b->damage = 0;
   }
@@ -73,7 +73,7 @@ s32 Hazard_Remove(CactusManager* p, Cactus* hazard, u32 idx) {
 
 // 破壊音を鳴らし、破片のパーティクルを2種類まき散らす
 void Hazard_EmitBreakEffect(Cactus* p) {
-  PlaySound_082406e0(0x14A);
+  PlaySound_082406e0(SONG_330);
   FUN_08014da0(3, 3, &p->pos, 0x3C, 0x1E, 0x10, 8, 8, 0, 0x100, 0x18, 0x10);
   FUN_08014da0(8, 7, &p->pos, 0x3C, 0x1E, 0x16, 8, 8, 0, 0x100, 0x18, 0x10);
 }
@@ -177,7 +177,7 @@ s32 HazardManager_Init(CactusManager* p) {
   hitbox = &p->hitbox;
   halfSize.x = 0xA4, halfSize.y = 0x80, halfSize.z = 0xA4;
   offset.x = 0, offset.y = 0x80, offset.z = 0;
-  Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetAttack(hitbox, power, unk_40, 0, 0, unk_44);
   list = Malloc(p->count * sizeof(Cactus));
@@ -268,7 +268,7 @@ NON_MATCH s32 HazardManager_Spawn(Vec3* pos, s32 id, s32 hp, s32 poseIdx, s32 re
   hazard->pos = *pos;
   size.x = 0x82, size.y = 0x80, size.z = 0x82;
   offset.x = 0, offset.y = 0x80, offset.z = 0;
-  Hitbox_Init(hitbox, hazard->id, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_Init(hitbox, hazard->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetPos(hitbox, hazardPos, 0);
   Hitbox_SetPowerAndAttributes(hitbox, 0, 0, 0);
   Hitbox_SetHandler(hitbox, Cactus_OnHit, hazard);

@@ -3,6 +3,7 @@
 #include "file.h"
 #include "global.h"
 #include "link.h"
+#include "sound.h"
 #include "text.h"
 #include "tilemap.h"
 #include "video.h"
@@ -74,7 +75,8 @@ static inline void LinkShopManager_MaskFlags(LinkShopManager* p, LinkShopFlags m
 void nop_081e19e0(void) {}
 
 // 呼び出し元がなく, 戻り値を捨てるエピローグなのに p->flags & LSFLAG_PARENT を計算している
-// 元は void 宣言のまま return していたとみられるが, このプロジェクトは警告をエラーにするので C では書けない
+// void 宣言のまま return p->flags & LSFLAG_PARENT; と書けば一致するが, agbcc の
+// 「`return' with a value, in function returning void」は -Wno-return-type でも消せず -Werror で止まる
 NAKED void FUN_081e19e4(LinkShopManager* p) { INCFUNC("asm/func/FUN_081e19e4.inc"); }
 
 void nop_081e19f0(void) {}
@@ -104,7 +106,27 @@ void LinkShopManager_SetupBG(LinkShopManager* p) {
 
 NAKED void LinkShopManager_OnConnected(LinkShopManager* p, s32 handle, s32 canceled) { INCFUNC("asm/func/LinkShopManager_OnConnected.inc"); }
 
-NAKED void LinkShopManager_OnConnectFailed(LinkShopManager* p, s32 handle, s32 canceled) { INCFUNC("asm/func/LinkShopManager_OnConnectFailed.inc"); }
+void LinkShopManager_StateClose(LinkShopManager* p);
+
+// 接続に失敗したときの後始末, canceled ならキャンセル扱いの行を出す
+// 残差4命令 (32 対 36), 原典は結果を捨てる flags の ands が入る, このファイルの他の関数と同じで再現できず
+NON_MATCH void LinkShopManager_OnConnectFailed(LinkShopManager* p, s32 handle, s32 canceled) {
+#ifdef NONMATCHING_C
+  if (canceled != 0) {
+    p->resultLine = 3;
+    PlaySound_082406e0(SE_CANCEL);
+  } else {
+    p->resultLine = 4;
+  }
+
+  p->stateFn = LinkShopManager_StateClose;
+  p->stateEnter = TRUE;
+  p->state = 6;
+  LinkShopManager_SetFlags(p, LSFLAG_FINISHED);
+#else
+  INCFUNC("asm/func/LinkShopManager_OnConnectFailed.inc");
+#endif
+}
 
 NAKED bool32 LinkShopManager_CheckLinkLost(LinkShopManager* p) { INCFUNC("asm/func/LinkShopManager_CheckLinkLost.inc"); }
 

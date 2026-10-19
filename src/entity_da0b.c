@@ -19,7 +19,7 @@ static_assert(sizeof(EntityDA0BElem) == 132);
 // 武器の付け替えメニュー
 typedef struct EntityDA0B {
   Entity e;                                    // 0x0000, ENTITY_UNK_11
-  Vec3 pos;                                    // 0x0018, '.p' の x, y, z, FUN_0823b8ac に渡す
+  Vec3 pos;                                    // 0x0018, '.p' の x, y, z, Camera_MoveTo に渡す
   Vec3 pos2;                                   // 0x0020, pos の写し
   u8 unk_28[0x3C - 0x28];                      // 0x0028, まだ未解析
   bool8 fnChanged;                             // 0x003C, EntityDA0B_SetFn が立て EntityDA0B_TakeFnChanged が読んで落とす, updateCallback に入った最初の1フレームの目印
@@ -165,15 +165,15 @@ NAKED void FUN_0801c01c(EntityDA0B* p) { INCFUNC("asm/func/FUN_0801c01c.inc"); }
 void FUN_0801c0d8(bool32 param_1, s32 kind) {
   switch (kind) {
     case 0: {
-      PlaySound_082406e0(0x394);
+      PlaySound_082406e0(SONG_916);
       break;
     }
     case 1: {
-      PlaySound_082406e0(0x395);
+      PlaySound_082406e0(SONG_917);
       break;
     }
     case 2: {
-      PlaySound_082406e0(0x396);
+      PlaySound_082406e0(SONG_918);
       break;
     }
   }
@@ -245,7 +245,7 @@ s32 FUN_0801c5d0(EntityDA0B* p) {
 
 void FUN_0801c5f0(EntityDA0B* p) {
   if (p->unk_3e <= 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     EntityDA0B_SetFn(p, FUN_0801cbc4);
   }
 }
@@ -404,7 +404,7 @@ void FUN_0801d788(EntityDA0B* p) {
     EntityDA0B_SetFn(p, FUN_0801db1c);
   } else {
     if (Mod(p->fnTimer, 61) == 60) {
-      PlaySound_082406e0(0x21C);
+      PlaySound_082406e0(SONG_540);
     }
 
     FUN_0801d540(p);
@@ -438,11 +438,11 @@ NAKED void FUN_0801db1c(EntityDA0B* p) { INCFUNC("asm/func/FUN_0801db1c.inc"); }
 void FUN_0801dc90(EntityDA0B* p) {
   if (EntityDA0B_TakeFnChanged(p)) {
     FUN_0801d4dc(p, 9, 0, 0);
-    sound_08240264(0xA9);
+    sound_08240264(SONG_169);
   }
 
   FUN_0801d540(p);
-  FUN_0823b8ac(&p->pos);
+  Camera_MoveTo(&p->pos);
   if (p->fnTimer >= 30) {
     EntityDA0B_SetFn(p, FUN_0801dcdc);
   } else {
@@ -460,7 +460,7 @@ void FUN_0801dfb0(EntityDA0B* p) {
     FUN_0801c01c(p);
   } else {
     FUN_0801d540(p);
-    FUN_0823b8ac(&p->pos);
+    Camera_MoveTo(&p->pos);
   }
 }
 
@@ -482,7 +482,7 @@ s32 FUN_0801e00c(void) {
 }
 
 s32 EntityDA0B_Update(EntityDA0B* p) {
-  p->sunGauge = Taiyo_GetGameGauge();
+  p->sunGauge = Cmd_GetSolarGauge();
   p->updateCallback(p);
   return 0;
 }

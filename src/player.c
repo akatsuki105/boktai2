@@ -20,11 +20,11 @@
 extern void* ptr_03002ba8;
 extern u16 u16_03002bf4;
 extern u16 u16_03002bd0;
-extern u16 u16_03002b64;
+extern u16 gConfusedDir;
 extern u16 gSabataDefence;
 extern u16 u16_03002bb0;
 extern u16 u16_ARRAY_03002ba0[3];
-extern u16 u16_03002b78;
+extern u16 u16_03002b68[4];
 extern u16 u16_03002b84;
 extern u16 u16_03002b90;
 extern u16 u16_03002bac;
@@ -34,6 +34,8 @@ extern u16 u16_03002b8c;
 extern u16 u16_03002b60;
 
 struct Entity080a8ff8* Entity080a8ff8_Create(Player* owner, Vec3* pos, s32 mode);
+struct TransEffect* TransEffect_Create(Player* player, u32 param_2, Vec3* pos, u32 param_4, u32 param_5);
+struct Entity080abd14* Entity080abd14_Create(void* owner, WorldPos* pos1, WorldPos* pos2, u32 param_4, u32 param_5);
 struct FreezeEffect* FreezeEffect_Create(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5);
 struct HealingEffect* HealingParticles_Create(Player* player, Vec3* pos);
 bool32 Entity1DBE_TouchElemNear(WorldPos* pos);
@@ -42,7 +44,7 @@ struct Entity08080be8* Entity08080be8_Create(Player* player, u32 heightOffset, u
 void FUN_08072724(Player* p);
 void FUN_080d040c(Player* p);
 s32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 b);
-void FUN_0807e784(HitboxData* a, HitboxData* b, Player* p);
+void Django_OnHurt(HitboxData* a, HitboxData* b, Player* p);
 void FUN_0807bdc8(Player* p, s32 facing, s32 param_3, u32 scriptID);
 s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
 bool32 FUN_0809e138(Player* p);
@@ -50,7 +52,7 @@ s32 GetMagicCategory(magic32_t id);
 s32 FUN_080ddcc8(WorldPos* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);
 void FUN_0809c4f4(void);
 magic32_t Player_CheckMagicEnchant(Player* p);
-void dark_django_0806f990(HitboxData* a, HitboxData* b, void* _);
+void dark_django_0806f990(HitboxData* a, HitboxData* b, Player* _);
 void* Entity080dc44c_Create(void);
 s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u16* interval);
 s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u16* param_5, s32 param_6, s32 param_7, s32 param_8);
@@ -60,16 +62,8 @@ void FUN_08071b14(Player* p);
 void FUN_0807e854(Player* p);
 void FUN_080ec79c(u8 kind, void* payload);
 void FUN_08079f1c(Player* p);
-void FUN_0823bac8(Vec3* pos);
+void Camera_LookAt(Vec3* pos);
 bool32 IsMagicUnlocked(magic32_t n);
-
-// 4.12 固定小数の積を 0 方向に丸めて整数に戻す, `/ 4096` だと agbcc がバイアス加算で割るので一致しない
-static inline s32 Fix12ToInt(s32 v) {
-  if (v >= 0) {
-    return v >> 12;
-  }
-  return -(-v >> 12);
-}
 
 // pos のブロックのコリジョンタイルを引く, 差し替えがあればそちら, マップ外なら tiles[0]
 // Map_GetTileHeightAt (src/collision_map.c) の前半と同じ処理だが, 原典ではこの関数の中に2回展開されているのでインラインで持つ
@@ -108,9 +102,9 @@ void Player_SetAnimFacing(Player* p) {
   }
 }
 
-// sprite_88 に animIdx のアニメを設定して1フレーム進める, 前回と同じIDならコマ番号を引き継ぐ
-// 命令数は57で一致, 残差は animIdx + animIDOffset の adds のオペランド順だけ (原典は adds r2, r1, r2)
-// Tier A/B と複合代入・オペランド入れ替えは試済
+// 残差1命令, adds の第1オペランドが入れ替わるだけ (原典 adds r2, r1, r2 / こちら adds r2, r2, r1)
+// animIdx + p->animIDOffset のソース順入れ替えと flags の三項演算子化はどちらも無効 (agbcc が正規化する)
+// 未: animIdx の型 (u32 -> u16) だが一致済みの呼び出し元に影響が出る
 NON_MATCH bool32 Player_PlayAnim(Player* p, u32 animIdx, s32 animSpeed) {
 #ifdef NONMATCHING_C
   MainAnimPlayFlags16 flags = 0;
@@ -194,17 +188,17 @@ void Player_SetAction(Player* p, u32 action, u32 state) {
 
 // 行動を始める前のフラグ初期化, 日光と武器効果を見て unk_20 を組み立て直し各種タイマを 0 に戻す
 void Player_BeginAction(Player* p) {
-  p->unk_20 = PFLAG20_UNK_0;
+  p->flag20 = PFLAG20_UNK_0;
   if (KAAMOS(p->isSabata) == 0 && FUN_0809e138(p)) {
-    Player_SetFlag20(p, PFLAG20_UNK_4);
+    Player_SetFlag20(p, PFLAG20_SUNBATHING);
   }
   if (Player_TestFlag378(p, FLAG378_SKULLSUIT)) {
-    Player_SetFlag20(p, PFLAG20_UNK_16);
+    Player_SetFlag20(p, PFLAG20_SNEAKING);
   }
 
   p->shadowOffset.x = 0, p->shadowOffset.y = 0, p->shadowOffset.z = 0;
   p->flag35a = 0;
-  p->hurtbox.hitState &= ~2;
+  p->hurtbox.hitState &= ~HBHITSTATE_UNK_1;
 }
 
 void Player_SetFlag35a(Player* p, u32 val) { p->flag35a |= val; }
@@ -214,12 +208,12 @@ u32 Player_TestFlag35a(Player* p, u32 mask) { return p->flag35a & mask; }
 // エネルギーチャージ音を止める
 void Player_StopEneChargeSound(Player* p) {
   if (p->kind != PLAYER_SABATA) {
-    sound_08240740(0xD8);
+    sound_08240740(NOISE_SOLAR_CHARGE);
     return;
   }
-  sound_08240740(0x239);
-  sound_08240740(0x202);
-  sound_08240740(0x366);
+  sound_08240740(SONG_569);
+  sound_08240740(SONG_514);
+  sound_08240740(SONG_870);
 }
 
 // 攻撃側 a から被弾側 b へ向かう向きを 1/3/5/7 の4象限に落として返す
@@ -228,7 +222,7 @@ u32 Player_GetHitDirIdx(HitboxData* a, HitboxData* b) {
   s32 dx;
   s32 dz;
 
-  if (a->flags & HBFLAG_UNK_8) {
+  if (a->flags & HBFLAG_ANGLE) {
     angle = a->angle + 0xE0;
     return ((angle & 0xFF) >> 6) * 2 + 1;
   }
@@ -264,16 +258,16 @@ void Player_SetHitDir(Player* p, HitboxData* a, HitboxData* b) {
   }
 
   if (Player_TestFlag20(p, PFLAG20_UNK_15)) {
-    if (a->flags & HBFLAG_UNK_8) {
-      p->unk_3e8 = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+    if (a->flags & HBFLAG_ANGLE) {
+      p->hitDir = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
     } else {
       s32 dx = a->center.x - b->center.x;
       s32 dz = a->center.z - b->center.z;
 
       if (dx == 0 && dz == 0) {
-        p->unk_3e8 = p->facing;
+        p->hitDir = p->facing;
       } else {
-        p->unk_3e8 = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
+        p->hitDir = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
       }
     }
 
@@ -471,7 +465,7 @@ NON_MATCH void Player_RefreshDefence(Player* p) {
     }
     power = p->stats[3];
     attrs = p->hbattrs | HBATTR_DARK;
-    weakness = 1;
+    weakness = HBATTR_SOL;
   } else {
     lv = gStat->lv;
     if (p->kind == PLAYER_SOLAR_DJANGO) {
@@ -944,7 +938,7 @@ void Player_ShowGunSpread(Player* p, u32 _, Vec3* pos) {
   p->meleeShockwave.sprite.flags &= ~SPRFLAG_HIDDEN;
   p->meleeShockwave.sprite.pos = *pos;
   p->meleeShockwave.sprite.pos.y += 0xE6;
-  p->meleeShockwave.sprite.rotation = p->unk_a8a;
+  p->meleeShockwave.sprite.rotation = p->gunSpreadAngle;
   p->meleeShockwave.finished = TRUE;
 }
 
@@ -1057,7 +1051,7 @@ void Player_InitPtcl718(Player* p) {
   for (i = 0; i < 6; i++) {
     Particle52* ptcl = &st->ptcls[i];
 
-    Particle_Add(&ptcl->base, st->group, 1);
+    Particle_Add(&ptcl->base, st->group, SPRFLAG_HIDDEN);
     Particle_SetOffset(&ptcl->base, -4, -4);
     Particle_SetPltt(&ptcl->base, 1);
     ptcl->base.priority = 2;
@@ -1267,7 +1261,7 @@ void Player_InitPtcl858(Player* p) {
   for (i = 0; i < 4; i++) {
     PlayerPtcl858* ptcl = &st->ptcls[i];
 
-    Particle_Add(&ptcl->base, st->group, 1);
+    Particle_Add(&ptcl->base, st->group, SPRFLAG_HIDDEN);
     Particle_SetOffset(&ptcl->base, -4, -4);
     Particle_SetPltt(&ptcl->base, 1);
     ptcl->base.priority = 2;
@@ -1355,11 +1349,11 @@ NON_MATCH u32 FUN_0806241c(Player* p) {
   u32 r = 0;
 
   if (gStat->unk_934 & SF934_OUTDOOR) {
-    if (Player_TestFlag20(p, PFLAG20_UNK_4)) {
+    if (Player_TestFlag20(p, PFLAG20_SUNBATHING)) {
       r = 4;
     }
   } else {
-    if (Player_TestFlag20(p, PFLAG20_UNK_4)) {
+    if (Player_TestFlag20(p, PFLAG20_SUNBATHING)) {
       r = 8;
     }
   }
@@ -1716,7 +1710,7 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
 }
 
 void Player_SetBasePlttID(Player* p) {
-  if (p->unk_18 == 0) {
+  if (p->playerIdx == 0) {
     p->plttID_94a = 29;
   } else {
     p->plttID_94a = 40;
@@ -1843,9 +1837,9 @@ NON_MATCH void Player_BurstFormEffect(Player* p) {
   }
 
   if (p->unk_4c4.kind == 2) {
-    PlaySound_082406e0(0x134);
+    PlaySound_082406e0(SE_308);
   } else if (p->unk_4c4.kind == 3) {
-    PlaySound_082406e0(0x134);
+    PlaySound_082406e0(SE_308);
   }
 
   src = p->unk_4c4.pos;
@@ -1935,12 +1929,12 @@ NON_MATCH void Player_StartFormEffect(Player* p, u32 kind) {
   spread.z = 0;
   if (FUN_082467d0(&p->unk_4c4, kind, 0xE10, &spread) >= 0) {
     if (p->unk_4c4.kind == 1) {
-      PlaySound_082406e0(0x191);
+      PlaySound_082406e0(SE_401);
     } else if (p->unk_4c4.kind == 2) {
       p->unk_376 += 10;
-      PlaySound_082406e0(0x133);
+      PlaySound_082406e0(SE_CRASH_307);
     } else if (p->unk_4c4.kind == 3) {
-      PlaySound_082406e0(0x133);
+      PlaySound_082406e0(SE_CRASH_307);
     }
 
     p->badCondTimer[1] = 0;
@@ -2020,9 +2014,9 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
     case 2: {  // 混乱
       if (p->badCondTimer[2] == 0) {
         gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-        u16_03002b64 = (p->controlUp + 1 + Mod(gRandomTable[gRandTableIdx], 7)) & 7;
-        p->controlUp = u16_03002b64;
-        PlaySound_082406e0(0x138);
+        gConfusedDir = (p->controlUp + 1 + Mod(gRandomTable[gRandTableIdx], 7)) & 7;
+        p->controlUp = gConfusedDir;
+        PlaySound_082406e0(SE_CONFUSE);
       }
       break;
     }
@@ -2057,12 +2051,12 @@ u32 Player_TickBadCondTimers(Player* p, u32 n) {
       }
     }
     n = 6;
-    p->unk_958 = 0x40;
-  } else if (p->unk_958 != 0) {
-    if ((p->unk_958 >> 2) & 1) {
+    p->sunDrainBlinkTimer = 0x40;
+  } else if (p->sunDrainBlinkTimer != 0) {
+    if ((p->sunDrainBlinkTimer >> 2) & 1) {
       n = 6;
     }
-    p->unk_958--;
+    p->sunDrainBlinkTimer--;
   }
 
   for (i = 0; i < 3; i++) {
@@ -2073,12 +2067,12 @@ u32 Player_TickBadCondTimers(Player* p, u32 n) {
             p->badCondTimer[1]--;
           }
           n = 2;
-          p->unk_956 = 0x40;
-        } else if (p->unk_956 != 0) {
-          if ((p->unk_956 >> 2) & 1) {
+          p->badCondBlinkTimer = 0x40;
+        } else if (p->badCondBlinkTimer != 0) {
+          if ((p->badCondBlinkTimer >> 2) & 1) {
             n = 2;
           }
-          p->unk_956--;
+          p->badCondBlinkTimer--;
         }
         break;
       }
@@ -2086,7 +2080,7 @@ u32 Player_TickBadCondTimers(Player* p, u32 n) {
         if (p->badCondTimer[0] != 0 && (p->unk_1c & 1)) {
           p->badCondTimer[0]--;
           if (p->input->down & 0xF0) {
-            MosaicFader_Start(2, 1, 0x1E, p->unk_97c, p->unk_980, p->unk_984);
+            MosaicFader_Start(2, 1, 0x1E, p->mosaicFrom, p->unk_980, p->mosaicInterval);
           }
         }
         break;
@@ -2134,7 +2128,7 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
     if (p->unk_442 == 5) {
       if (p->unk_97a <= 0x3F) {
         if (p->unk_97a == 0) {
-          PlaySound_082406e0(0x1EE);
+          PlaySound_082406e0(SONG_494);
           p->unk_3f1 = 1;
         }
         p->unk_97a++;
@@ -2147,7 +2141,7 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
       p->unk_20 |= 0x50000;
     } else if (p->unk_97a != 0) {
       if (p->unk_3f1 != 0) {
-        PlaySound_082406e0(0x336);
+        PlaySound_082406e0(SONG_822);
         p->unk_3f1 = 0;
       }
 
@@ -2176,7 +2170,7 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
   } else {
     if (p->unk_97a != 0) {
       if (p->unk_3f1 != 0) {
-        PlaySound_082406e0(0x336);
+        PlaySound_082406e0(SONG_822);
         p->unk_3f1 = 0;
       }
 
@@ -2398,11 +2392,9 @@ u32 Player_WeaponEffectKillCount(Player* p, HitboxData* a, HitboxData* b) {
 
 // 一定確率で追加ダメージ 10
 u32 Player_WeaponEffectRandom(Player* p, HitboxData* a, HitboxData* b) {
-  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-  if (Mod(*(gRandomTable + gRandTableIdx), 100) <= 10) {
+  if (Mod(Random(), 100) <= 10) {
     return 10;
   }
-
   return 0;
 }
 
@@ -2471,17 +2463,15 @@ u32 Player_WeaponEffectEarth(Player* p, HitboxData* a, HitboxData* b) {
 
 // 一定確率で防御無視(なまくら系の特殊効果)
 u32 CheckNamakuraProc(Player* p) {
-  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-  if (Mod(*(gRandomTable + gRandTableIdx), 100) <= 10) {
-    return 1 << 12;
+  if (Mod(Random(), 100) <= 10) {
+    return HBATTR_NAMAKURA;
   }
   return 0;
 }
 
 // 一定確率で麻痺
 u32 CheckParalyzeProc(Player* p) {
-  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-  if (Mod(*(gRandomTable + gRandTableIdx), 100) <= 10) {
+  if (Mod(Random(), 100) <= 10) {
     return 1 << 19;
   }
   return 0;
@@ -2668,7 +2658,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
     offset.x = 0;
     offset.y = 0xFFEC;
     offset.z = 0;
-    Hitbox_Init(hitbox, 0, (HBFLAG_UNK_13 | HBFLAG_UNK_8 | HBFLAG_UNK_0), 0, (0x10000 << p->mover.unk_4) >> 16, &halfSize, &offset);
+    Hitbox_Init(hitbox, 0, (HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0), 0, (0x10000 << p->mover.unk_4) >> 16, &halfSize, &offset);
     Hitbox_SetAttack(hitbox, 20, 0x32, 0x10, HBATTR_DARK, 0x14);
     Hitbox_SetHandler(hitbox, NULL, p);
     return;
@@ -2741,7 +2731,7 @@ NON_MATCH void Player_SetWeaponHitbox(Player* p) {
     }
   }
 
-  Hitbox_Init(hitbox, 0, (HBFLAG_UNK_13 | HBFLAG_UNK_8 | HBFLAG_UNK_0), 0, (0x10000 << p->mover.unk_4) >> 16, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, (HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0), 0, (0x10000 << p->mover.unk_4) >> 16, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, p->totalAtk_a7a, p->unk_a7c, attrs, 0, p->unk_a7e);
   Hitbox_SetHandler(hitbox, dark_django_0806f990, p);
 #else
@@ -2989,7 +2979,7 @@ NON_MATCH void Player_ApplyArmorEffect(Player* p, const ArmorData* a) {
       break;
     }
     case AET_BLACK_ARMOR: {
-      *flags |= FLAG378_UNK_19;
+      *flags |= FLAG378_BLACKARMOR;
       break;
     }
     case AET_MEGA_POWER: {
@@ -3281,7 +3271,7 @@ NON_MATCH u32 Player_GetMagicAction(Player* p) {
         } else {
           m->enchanted = TRUE;
           if (Player_CheckMagicEnchant(p) >= 0) {
-            p->unk_979 = 1;
+            p->enchantStarted = 1;
             p->unk_964 = 0x20;
             p->unk_951 = id + 1;
           }
@@ -3408,7 +3398,7 @@ void Player_EquipMagic(Player* p, magic32_t n) {
     m->cat = 0xFF;
     m->availableForm = FALSE;
     m->basicCost = 0;
-    p->unk_979 = 0;
+    p->enchantStarted = 0;
     if (p->unk_962 == 0) {
       p->unk_964 = 0;
     }
@@ -3423,7 +3413,7 @@ void Player_EquipMagic(Player* p, magic32_t n) {
     if (m->id <= MAGIC_EARTH) {
       m->enchanted = TRUE;
       if (Player_CheckMagicEnchant(p) >= 0) {
-        p->unk_979 = 1;
+        p->enchantStarted = 1;
         p->unk_964 = 0x20;
         p->unk_962 = m->id + 0x121;
         p->unk_951 = m->id + 1;
@@ -3432,7 +3422,7 @@ void Player_EquipMagic(Player* p, magic32_t n) {
     }
 
     m->enchanted = FALSE;
-    p->unk_979 = 0;
+    p->enchantStarted = 0;
     if (p->unk_962 == 0) {
       p->unk_964 = 0;
     }
@@ -3448,8 +3438,8 @@ s32 Player_GetEquippedMagic(Player* p) {
   }
 
   u16_03002bb0 = 0;
-  if (gStat->unk_5e == 0) return MAGIC_ZERO_SHIFT;
 
+  if (gStat->sabataMagicIdx == 0) return MAGIC_ZERO_SHIFT;
   return MAGIC_BLACK_SUN;
 }
 
@@ -3491,9 +3481,9 @@ void Player_RefreshMagicInfo(Player* p) {
 
 void FUN_08065200(Player* p) {
   if (VM_SeekToNamedArg('i')) {
-    p->unk_18 = VM_GetValue();
+    p->playerIdx = VM_GetValue();
   } else {
-    p->unk_18 = 0;
+    p->playerIdx = 0;
   }
 }
 
@@ -3558,10 +3548,10 @@ s32 Player_InitState(Player* p) {
   }
 
   Player_SetAction(p, 0, 0);
-  p->input = &gInput[p->unk_18];
+  p->input = &gInput[p->playerIdx];
   Player_ClearInputHistory(p);
 
-  if (p->unk_18 == 0) {
+  if (p->playerIdx == 0) {
     s32 i;
 
     p->unk_442 = u16_03002b60;
@@ -3583,7 +3573,7 @@ s32 Player_InitState(Player* p) {
 
   p->controlUp = gStat->controlUp;
   if (p->badCondTimer[2] != 0) {
-    p->controlUp = u16_03002b64;
+    p->controlUp = gConfusedDir;
   }
   return 0;
 }
@@ -3603,7 +3593,7 @@ void Player_InitWeapon(Player* p) {
     }
   } else {
     Player_ApplyWeapon(p, NULL);
-    if (p->unk_18 == 0) {
+    if (p->playerIdx == 0) {
       SetWeaponFoundFlag(WEAPON_GUN_DEL_HELL);
     }
   }
@@ -3628,19 +3618,19 @@ void Player_InitArmor(Player* p) {
 }
 
 // 本体の当たり判定を組み立てる, 赤ジャンゴは属性がソル・弱点がダークで、それ以外は逆になる
-void Player_SetupHitbox(Player* p) {
+void Player_SetupHurtbox(Player* p) {
   HitboxData* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
   halfSize.x = 50, halfSize.y = 127, halfSize.z = 50;
   offset.x = 0, offset.y = 127, offset.z = 0;
-  Hitbox_Init(hurtbox, p->mover.id, HBFLAG_UNK_14 | HBFLAG_UNK_12 | HBFLAG_UNK_0, 0, 1 << p->unk_18, &halfSize, &offset);
+  Hitbox_Init(hurtbox, p->mover.id, HBFLAG_HURTBOX | HBFLAG_UNK_12 | HBFLAG_UNK_0, 0, 1 << p->playerIdx, &halfSize, &offset);
   if (p->kind == PLAYER_SOLAR_DJANGO) {
     Hitbox_SetPowerAndAttributes(hurtbox, 20, HBATTR_SOL, HBATTR_DARK);
   } else {
     Hitbox_SetPowerAndAttributes(hurtbox, 20, HBATTR_DARK, HBATTR_SOL);
   }
-  Hitbox_SetHandler(hurtbox, FUN_0807e784, p);
+  Hitbox_SetHandler(hurtbox, Django_OnHurt, p);
   Hitbox_SetPos(hurtbox, &p->sprite_e8.pos, 0);
   Hitbox_Register(hurtbox);
 }
@@ -3815,13 +3805,14 @@ NON_MATCH void FUN_08066df8(Player* p) {
   p->pos_3c0.x = Div(p->mover.pos.x + p->lookAroundOffset.x + gCameraCoords.worldPos.x * 4, 5);
   p->pos_3c0.y = Div(p->mover.pos.y + p->lookAroundOffset.y + gCameraCoords.worldPos.y * 4 + 150, 5);
   p->pos_3c0.z = Div(p->mover.pos.z + p->lookAroundOffset.z + gCameraCoords.worldPos.z * 4, 5);
-  FUN_0823bac8(&p->pos_3c0);
+  Camera_LookAt(&p->pos_3c0);
 #else
   INCFUNC("asm/func/FUN_08066df8.inc");
 #endif
 }
 
-void FUN_08066e84(void) {
+// 呼び出し元は3つとも r0 に Player を載せるが, この関数自体は使っていない
+void FUN_08066e84(Player* p) {
   u16 payload = 6;
 
   FUN_080ec79c(0x11, &payload);
@@ -3903,7 +3894,7 @@ void FUN_08066f7c(Player* p) {
     p->facing = FUN_08066f18(p);
     Player_SetAnimFacing(p);
   }
-  p->unk_20 &= ~1;
+  p->flag20 &= ~PFLAG20_UNK_0;
   Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), 0x40);
 }
 
@@ -3991,9 +3982,9 @@ NAKED void FUN_080670fc(Player* p, u32 val) { INCFUNC("asm/func/FUN_080670fc.inc
 // 歩き始めるときの初期化, 移動速度とアニメを設定する
 void FUN_080672b0(Player* p) {
   p->action = 1;
-  p->unk_20 &= ~1;
+  p->flag20 &= ~PFLAG20_UNK_0;
   p->facing = FUN_08067068(p);
-  if (p->unk_3a4 == 0) {
+  if (p->useForcedDelta == 0) {
     s32 val = CalcMoveSpeed(p);
     bool32 scaled;
     u16 n;
@@ -4016,9 +4007,8 @@ void FUN_080672b0(Player* p) {
 
 NAKED void MagicDash_0806734c(Player* p) { INCFUNC("asm/func/MagicDash_0806734c.inc"); }
 
-// マスの中での位置が端に寄りすぎていないか
-// 残差1命令, 原典は & 0xFF の結果を r0 に直接作るが、ローカルに受けると複写が1つ入る
-// (ローカルを u32 にすると ldrsh になり、マスクを直書きすると u16 への切り詰めが入る)
+// 残差1命令, 原典は ands の宛先に 0xFF を作ってから ands r0, r1 とするが, こちらは pos 側のレジスタで and してコピーが1つ増える
+// ローカルを1本に畳む (u16 pos &= 0xFF) と u16 への切り詰めが増えて 25/22 で悪化, マスクを先に書く (0xFF & pos) は無効
 NON_MATCH bool32 FUN_080674dc(Player* p) {
 #ifdef NONMATCHING_C
   u16 pos;
@@ -4044,7 +4034,7 @@ NAKED void FUN_08067510(Player* p) { INCFUNC("asm/func/FUN_08067510.inc"); }
 NAKED void FUN_08067de8(Player* p) { INCFUNC("asm/func/FUN_08067de8.inc"); }
 
 bool32 FUN_08067f58(Player* p) {
-  if (Player_TestFlag20(p, PFLAG20_UNK_4) && p->ene < p->maxEne) {
+  if (Player_TestFlag20(p, PFLAG20_SUNBATHING) && p->ene < p->maxEne) {
     return TRUE;
   }
   return FALSE;
@@ -4066,7 +4056,7 @@ void FUN_08067f88(Player* p) {
 NAKED void FUN_08067ffc(Player* p) { INCFUNC("asm/func/FUN_08067ffc.inc"); }
 
 bool32 FUN_080682dc(Player* p) {
-  if (!Player_TestFlag20(p, PFLAG20_UNK_4) && p->ene < p->maxEne) {
+  if (!Player_TestFlag20(p, PFLAG20_SUNBATHING) && p->ene < p->maxEne) {
     return TRUE;
   }
   return FALSE;
@@ -4128,7 +4118,7 @@ void FUN_080695ec(Player* p) {
 }
 
 void FUN_0806961c(Player* p) {
-  p->unk_20 &= ~1;
+  p->flag20 &= ~PFLAG20_UNK_0;
   if (p->unk_4c4.unk_3 == 0) {
     Player_SetAction(p, 0, 0);
   }
@@ -4140,28 +4130,12 @@ NAKED void FUN_08069648(Player* p) { INCFUNC("asm/func/FUN_08069648.inc"); }
 void MagicFreeze_08069710(Player* p) {
   if (p->action != 0xF) {
     if (FUN_08064d6c(p, 0)) {
-      WorldPos pos = p->mover.pos;
-      s32 angle = ((p->facing + 5) & 7) * 32;
-      s32 sin;
-      s32 d;
       s32 radius;
 
-      sin = 150 * gSineTable[(angle + 0x40) & 0xFF];
-      if (sin >= 0) {
-        d = sin >> 12;
-      } else {
-        d = -((-sin) >> 12);
-      }
-      pos.x += d;
-
-      sin = 150 * gSineTable[angle];
-      if (sin >= 0) {
-        d = sin >> 12;
-      } else {
-        d = -((-sin) >> 12);
-      }
-      pos.z += d;
-
+      WorldPos pos = p->mover.pos;
+      s32 angle = ((p->facing + 5) & 7) * 32;
+      pos.x += COS(angle, 150);
+      pos.z += SIN(angle, 150);
       radius = gStat->sunGauge * 60 + 120;
       FreezeEffect_Create(&pos, 1 << p->mover.unk_4, radius, angle, 90);
       p->magicFired = TRUE;
@@ -4169,48 +4143,48 @@ void MagicFreeze_08069710(Player* p) {
       p->magicFired = FALSE;
     }
 
-    PlaySound_082406e0(0x306);
-    Player_SetAction(p, 0xF, 0);
+    PlaySound_082406e0(VO_DJANGO_MAGIC);
+    Player_SetAction(p, 15, 0);
   }
 
   switch (p->state) {
     case 0: {
       if (p->magicFired) {
-        p->plttID_95e = 0x124;
+        p->plttID_95e = 292;
         p->unk_960 = 0x20;
       }
-      if (Player_PlayAnim(p, 0xA4, 0x40)) {
+      if (Player_PlayAnim(p, 164, 0x40)) {
         if (p->magicFired) {
-          Player_SetAction(p, 0xF, 1);
+          Player_SetAction(p, 15, 1);
         } else {
-          Player_SetAction(p, 0xF, 2);
+          Player_SetAction(p, 15, 2);
         }
       }
       break;
     }
     case 1: {
-      p->plttID_95e = 0x124;
+      p->plttID_95e = 292;
       p->unk_960 = 0x20;
-      Player_PlayAnim(p, 0xAE, 0x40);
+      Player_PlayAnim(p, 174, 0x40);
       p->stateTimer++;
       if (p->stateTimer > 31) {
-        Player_SetAction(p, 0xF, 3);
+        Player_SetAction(p, 15, 3);
       }
       break;
     }
     case 2: {
       if (p->stateTimer == 0) {
-        PlaySound_082406e0(0x192);
+        PlaySound_082406e0(SE_NG);
       }
-      Player_PlayAnim(p, 0xA9, 0x40);
+      Player_PlayAnim(p, 169, 0x40);
       p->stateTimer++;
       if (p->stateTimer > 15) {
-        Player_SetAction(p, 0xF, 3);
+        Player_SetAction(p, 15, 3);
       }
       break;
     }
     case 3: {
-      if (Player_PlayAnim(p, 0xA4, 0x40)) {
+      if (Player_PlayAnim(p, 164, 0x40)) {
         Player_SetAction(p, 0, 0);
       }
       break;
@@ -4249,48 +4223,48 @@ void MagicHealing_08069928(Player* p) {
       p->magicFired = FALSE;
     }
 
-    PlaySound_082406e0(0x306);
-    Player_SetAction(p, 0x10, 0);
+    PlaySound_082406e0(VO_DJANGO_MAGIC);
+    Player_SetAction(p, 16, 0);
   }
 
   switch (p->state) {
     case 0: {
       if (p->magicFired) {
-        p->plttID_95e = 0x126;
+        p->plttID_95e = 294;
         p->unk_960 = 0x20;
       }
-      if (Player_PlayAnim(p, 0xA4, 0x40)) {
+      if (Player_PlayAnim(p, 164, 0x40)) {
         if (p->magicFired) {
-          Player_SetAction(p, 0x10, 1);
+          Player_SetAction(p, 16, 1);
         } else {
-          Player_SetAction(p, 0x10, 2);
+          Player_SetAction(p, 16, 2);
         }
       }
       break;
     }
     case 1: {
-      p->plttID_95e = 0x126;
+      p->plttID_95e = 294;
       p->unk_960 = 0x20;
-      Player_PlayAnim(p, 0xAE, 0x40);
+      Player_PlayAnim(p, 174, 0x40);
       p->stateTimer++;
       if (p->stateTimer > 31) {
-        Player_SetAction(p, 0x10, 3);
+        Player_SetAction(p, 16, 3);
       }
       break;
     }
     case 2: {
       if (p->stateTimer == 0) {
-        PlaySound_082406e0(0x192);
+        PlaySound_082406e0(SE_NG);
       }
-      Player_PlayAnim(p, 0xA9, 0x40);
+      Player_PlayAnim(p, 169, 0x40);
       p->stateTimer++;
       if (p->stateTimer > 15) {
-        Player_SetAction(p, 0x10, 3);
+        Player_SetAction(p, 16, 3);
       }
       break;
     }
     case 3: {
-      if (Player_PlayAnim(p, 0xA4, 0x40)) {
+      if (Player_PlayAnim(p, 164, 0x40)) {
         Player_SetAction(p, 0, 0);
       }
       break;
@@ -4309,48 +4283,48 @@ void MagicDynamite_08069b18(Player* p) {
     } else {
       p->magicFired = FALSE;
     }
-    Player_SetAction(p, 0x11, 0);
+    Player_SetAction(p, 17, 0);
   }
 
   switch (p->state) {
     case 0: {
       if (p->magicFired) {
-        p->plttID_95e = 0x123;
+        p->plttID_95e = 291;
         p->unk_960 = 0x20;
       }
-      if (Player_PlayAnim(p, 0xB8, 0x40)) {
+      if (Player_PlayAnim(p, 184, 0x40)) {
         if (p->magicFired) {
-          Player_SetAction(p, 0x11, 1);
+          Player_SetAction(p, 17, 1);
         } else {
-          Player_SetAction(p, 0x11, 2);
+          Player_SetAction(p, 17, 2);
         }
       }
       break;
     }
     case 1: {
       if (p->magicFired) {
-        p->plttID_95e = 0x123;
+        p->plttID_95e = 291;
         p->unk_960 = 0x20;
       }
       p->stateTimer++;
       if (p->stateTimer > 11) {
-        Player_SetAction(p, 0x11, 3);
+        Player_SetAction(p, 17, 3);
       }
       break;
     }
     case 2: {
       if (p->stateTimer == 0) {
-        PlaySound_082406e0(0x192);
+        PlaySound_082406e0(SE_NG);
       }
-      Player_PlayAnim(p, 0xC2, 0x40);
+      Player_PlayAnim(p, 194, 0x40);
       p->stateTimer++;
       if (p->stateTimer > 11) {
-        Player_SetAction(p, 0x11, 3);
+        Player_SetAction(p, 17, 3);
       }
       break;
     }
     case 3: {
-      if (Player_PlayAnim(p, 0xBD, 0x40)) {
+      if (Player_PlayAnim(p, 189, 0x40)) {
         Player_SetAction(p, 0, 1);
       }
       break;
@@ -4391,17 +4365,505 @@ NAKED void FUN_0806b06c(Player* p) { INCFUNC("asm/func/FUN_0806b06c.inc"); }
 
 NAKED void FUN_0806b374(Player* p) { INCFUNC("asm/func/FUN_0806b374.inc"); }
 
-NAKED void Sabata_BlackSun(Player* p) { INCFUNC("asm/func/Sabata_BlackSun.inc"); }
+// サバタの魔法ブラックサン, 真上か真下を向いて暗黒の柱を出す
+void Sabata_BlackSun(Player* p) {
+  if (p->action != 9) {
+    p->unk_951 = 0;
+    if (Player_HasEnoughEne(p, 100) && u16_03002bd0 == 0) {
+      p->magicFired = TRUE;
+    } else {
+      p->magicFired = FALSE;
+    }
+    Player_SetAction(p, 9, 0);
+  }
+
+  switch (p->state) {
+    case 0: {
+      if (p->facing >= FACE_RIGHT && p->facing <= FACE_LEFT) {
+        p->facing = FACE_DOWN;
+        p->animIDOffset = 4;
+        p->xflip = FALSE;
+        p->pos_930 = p->mover.pos;
+        p->pos_930.x -= 20;
+        p->pos_930.y += 330;
+        p->pos_930.z += 60;
+      } else {
+        p->facing = FACE_UP;
+        p->animIDOffset = 0;
+        p->xflip = FALSE;
+        p->pos_930 = p->mover.pos;
+        p->pos_930.x += 20;
+        p->pos_930.y += 330;
+        p->pos_930.z -= 20;
+      }
+
+      Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), 0x40);
+      if (p->facing == FACE_DOWN) {
+        p->animIDOffset = 1;
+      } else {
+        p->animIDOffset = 0;
+      }
+
+      if (p->magicFired) {
+        PlaySound_082406e0(VO_SABATA_ANKOKU);
+        p->plttID_95e = 290;
+        p->unk_960 = 2;
+        Entity080abd14_Create(p, &p->mover.pos, &p->pos_930, 1, p->unk_3ba);
+      }
+
+      Player_SetAction(p, 9, 1);
+      break;
+    }
+    case 1: {
+      if (p->magicFired) {
+        p->plttID_95e = 290;
+        p->unk_960 += 3;
+        if (p->unk_960 > 32) {
+          p->unk_960 = 32;
+        }
+      }
+
+      p->shadowOffset.z = 15;
+      if (Player_PlayAnim(p, FUN_08066ee4(p->kind, 8), 0x40)) {
+        PlaySound_082406e0(SONG_203);
+        if (p->magicFired && p->unk_3ba == 0) {
+          u16_03002bd0 = 1;
+        }
+        Player_SetAction(p, 9, 2);
+      }
+      break;
+    }
+    case 2: {
+      if (p->magicFired) {
+        p->plttID_95e = 290;
+        p->unk_960 += 3;
+        if (p->unk_960 > 32) {
+          p->unk_960 = 32;
+        }
+      } else if (p->stateTimer == 0) {
+        PlaySound_082406e0(SE_NG);
+      }
+
+      Player_PlayAnim(p, FUN_08066ee4(p->kind, 10), 0x40);
+      p->shadowOffset.z = 30;
+      p->stateTimer++;
+      if (p->stateTimer > 23) {
+        Player_SetAction(p, 9, 3);
+      }
+      break;
+    }
+    case 3: {
+      p->shadowOffset.z = 15;
+      if (Player_PlayAnim(p, FUN_08066ee4(p->kind, 11), 0x40)) {
+        Player_SetAnimFacing(p);
+        Player_SetAction(p, 0, 0);
+      }
+      break;
+    }
+  }
+}
 
 NAKED void FUN_0806b758(Player* p) { INCFUNC("asm/func/FUN_0806b758.inc"); }
 
-NAKED void MagicTransform_0806b92c(Player* p) { INCFUNC("asm/func/MagicTransform_0806b92c.inc"); }
+// 魔法トランス, 赤ジャンゴと黒ジャンゴを入れ替える
+// 残差2命令 (331/333): case 2 の stateTimer の16bit化だけ, 原典は 0xFFFF をレジスタに置いて ands で切るが agbcc は lsls/lsrs を選ぶ
+// ands になるのは u32 の中間変数に受けて & 0xFFFF と書いたときだけ (単体で確認), 不自然なので採らない
+// stateTimer++ / u16 の中間変数 / (u16) キャスト / > 31 と < 32 の反転はいずれも lsls/lsrs, clamp を static inline にしても変わらない
+// Tier A-C 試済, 未: per-TU フラグ
+NON_MATCH void MagicTransform_0806b92c(Player* p) {
+#ifdef NONMATCHING_C
+  if (p->action != 10) {
+    if (Player_HasEnoughEne(p, 0)) {
+      p->plttID_95e = 295;
+      p->unk_960 = 0;
+      p->magicFired = TRUE;
+    } else {
+      p->magicFired = FALSE;
+    }
+    PlaySound_082406e0(VO_DJANGO_MAGIC);
+    Player_SetAction(p, 10, 0);
+  }
 
-NAKED void MagicChangeBat_0806bc74(Player* p) { INCFUNC("asm/func/MagicChangeBat_0806bc74.inc"); }
+  switch (p->state) {
+    case 0: {
+      if (p->facing >= FACE_RIGHT && p->facing <= FACE_LEFT) {
+        p->facing = FACE_DOWN;
+        p->animIDOffset = 4;
+        p->xflip = FALSE;
+      } else {
+        p->facing = FACE_UP;
+        p->animIDOffset = 0;
+        p->xflip = FALSE;
+      }
 
-NAKED void MagicChangeMouse_0806bf18(Player* p) { INCFUNC("asm/func/MagicChangeMouse_0806bf18.inc"); }
+      Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), 0x40);
+      p->animIDOffset >>= 2;
 
-NAKED void MagicSleeping_0806c124(Player* p) { INCFUNC("asm/func/MagicSleeping_0806c124.inc"); }
+      if (p->magicFired) {
+        Vec3 pos;
+
+        pos.x = 0, pos.y = 0, pos.z = 15;
+        if (p->kind == PLAYER_SOLAR_DJANGO) {
+          TransEffect_Create(p, 7, &pos, 50, 69);
+        } else {
+          TransEffect_Create(p, 7, &pos, 50, 69);
+        }
+        PlaySound_082406e0(SE_TRANSFORM);
+      }
+
+      Player_SetAction(p, 10, 1);
+      break;
+    }
+    case 1: {
+      if (p->magicFired) {
+        p->unk_960 += 3;
+        if (p->unk_960 > 32) {
+          p->unk_960 = 32;
+        }
+      }
+
+      p->shadowOffset.z = 15;
+      if (Player_PlayAnim(p, FUN_08066ee4(p->kind, 8), 0x40)) {
+        if (p->magicFired) {
+          Player_SetAction(p, 10, 2);
+        } else {
+          Player_SetAction(p, 10, 3);
+        }
+      }
+      break;
+    }
+    case 2: {
+      if ((p->stateTimer & 7) < 7 - (p->stateTimer >> 2)) {
+        Player_PlayAnim(p, FUN_08066ee4(p->kind, 10), 0x40);
+      } else if (p->kind == PLAYER_SOLAR_DJANGO) {
+        Player_PlayAnim(p, FUN_08066ee4(PLAYER_DARK_DJANGO, 10), 0x40);
+      } else {
+        Player_PlayAnim(p, FUN_08066ee4(PLAYER_SOLAR_DJANGO, 10), 0x40);
+      }
+
+      p->unk_960 += 3;
+      if (p->unk_960 > 32) {
+        p->unk_960 = 32;
+      }
+
+      p->shadowOffset.z = 30;
+      p->stateTimer++;
+      if (p->stateTimer > 31) {
+        if (p->kind == PLAYER_SOLAR_DJANGO) {
+          p->kind = PLAYER_DARK_DJANGO;
+        } else {
+          p->kind = PLAYER_SOLAR_DJANGO;
+        }
+
+        Player_SetPlttIDs(p);
+        p->unk_94c = -1;
+        if (p->unk_444 != 5 && p->unk_444 != 0x22) {
+          p->unk_446 = 0;
+        }
+
+        Player_SetAction(p, 10, 4);
+      }
+      break;
+    }
+    case 3: {
+      if (p->stateTimer == 0) {
+        PlaySound_082406e0(SE_NG);
+      }
+
+      Player_PlayAnim(p, FUN_08066ee4(p->kind, 10), 0x40);
+      p->shadowOffset.z = 30;
+      p->stateTimer++;
+      if (p->stateTimer > 15) {
+        Player_SetAction(p, 10, 4);
+      }
+      break;
+    }
+    case 4: {
+      p->shadowOffset.z = 15;
+      if (Player_PlayAnim(p, FUN_08066ee4(p->kind, 11), 0x40)) {
+        Player_SetAnimFacing(p);
+        Player_SetAction(p, 0, 0);
+      }
+      break;
+    }
+  }
+#else
+  INCFUNC("asm/func/MagicTransform_0806b92c.inc");
+#endif
+}
+
+// 魔法チェンジ・バット, 本体を隠して sprite_e8 のコウモリを点滅させながら出し, 31フレームでバットのフォームへ切り替える
+// 残差1命令 (293/294): 反転判定の定数をレジスタに作って両辺で使い回す形, MagicChangeMouse / MagicSleeping_Update / PlayerShockwave_UpdateAnim / MapItem_AdvanceAnim / Entity08203ad0_Update と同じ既知の残差
+// 点滅判定は & 7 と >> 2 が原典どおり (% 8 だとマスクを持つレジスタの向きが逆になり, / 4 だと stateTimer を2回読む), Tier A-C 試済
+NON_MATCH void MagicChangeBat_0806bc74(Player* p) {
+#ifdef NONMATCHING_C
+  AuxAnimState* anim;
+  AuxAnimCmd* cmd;
+  AuxSprite* spr;
+
+  if (p->action != 12) {
+    Player_SetAction(p, 12, 0);
+    p->unk_960 = 0;
+    FUN_08063220(p);
+    FUN_08066e84(p);
+    PlaySound_082406e0(SONG_922);
+    TransEffect_Create(p, 1, NULL, 32, 56);
+  }
+
+  if (p->stateTimer == 16) {
+    PlaySound_082406e0(SE_CHANGE_BAT);
+  }
+
+  if ((p->stateTimer & 7) < 7 - (p->stateTimer >> 2)) {
+    if (p->facing >= FACE_DOWN_LEFT) {
+      p->animIDOffset = 8 - p->facing;
+      p->xflip = TRUE;
+    } else {
+      p->animIDOffset = p->facing;
+      p->xflip = FALSE;
+    }
+  } else {
+    Player_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_SHOW_SPRITE_E8);
+    p->sprite_e8.pos = p->mover.pos;
+    p->sprite_e8.pos.y += p->unk_382;
+
+    if (p->facing >= FACE_DOWN) {
+      p->animIDOffset = (7 - p->facing) >> 1;
+      p->xflip = TRUE;
+    } else {
+      p->animIDOffset = p->facing >> 1;
+      p->xflip = FALSE;
+    }
+  }
+
+  Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), 0x40);
+  p->plttID_95e = 290;
+  p->unk_960 += 3;
+  if (p->unk_960 > 32) {
+    p->unk_960 = 32;
+  }
+
+  anim = &p->anim_33c;
+  AuxAnim_SetAnim(anim, p->anim_34c, 0, p->animIDOffset, p->xflip);
+
+  spr = &p->sprite_e8;
+  cmd = &anim->cmds[anim->cmdIdx];
+  spr->poseIdx = *cmd >> 6;
+
+  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+    spr->flags |= SPRFLAG_XFLIP;
+  } else {
+    spr->flags &= ~SPRFLAG_XFLIP;
+  }
+
+  if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+    spr->flags |= SPRFLAG_YFLIP;
+  } else {
+    spr->flags &= ~SPRFLAG_YFLIP;
+  }
+
+  anim->tick++;
+  if (anim->tick >= anim->wait) {
+    anim->tick = 0;
+    if (anim->flags & ANIM_PLAY_REVERSE) {
+      s32 idx = anim->cmdIdx;
+
+      if (idx == 0) {
+        idx = anim->cmdCount;
+      }
+      anim->cmdIdx = idx - 1;
+    } else {
+      anim->cmdIdx++;
+      if (anim->cmdIdx >= anim->cmdCount) {
+        anim->cmdIdx = 0;
+      }
+    }
+
+    cmd = &anim->cmds[anim->cmdIdx];
+    anim->duration = *cmd & 0xF;
+    anim->wait = anim->duration * anim->speed >> 6;
+    if (anim->wait == 0) {
+      anim->wait = 1;
+    }
+  }
+
+  Video_SetAuxSpritePltt(p->gfx_114, 621);
+  p->stateTimer++;
+  if (p->stateTimer > 31) {
+    p->formRequest = TRUE;
+    p->formRequestKind = PLAYER_BAT;
+    Player_SetAction(p, 0, 0);
+  }
+#else
+  INCFUNC("asm/func/MagicChangeBat_0806bc74.inc");
+#endif
+}
+
+// 魔法チェンジ・マウス, 点滅が消えている間だけ本体を隠して sprite_e8 のネズミを出し, 31フレームでマウスのフォームへ切り替える
+// 残差1命令 (234/235): 反転判定の定数をレジスタに作って両辺で使い回す形, MagicSleeping_Update / PlayerShockwave_UpdateAnim / MapItem_AdvanceAnim / Entity08203ad0_Update と同じ既知の残差
+// 点滅判定は & 7 と >> 2 が原典どおり (% 8 だとマスクを持つレジスタの向きが逆になり, / 4 だと stateTimer を2回読む), Tier A-C 試済
+NON_MATCH void MagicChangeMouse_0806bf18(Player* p) {
+#ifdef NONMATCHING_C
+  AuxAnimState* anim;
+  AuxAnimCmd* cmd;
+  AuxSprite* spr;
+
+  if (p->action != 13) {
+    Player_SetAction(p, 13, 0);
+    p->unk_960 = 0;
+    FUN_08063220(p);
+    FUN_08066e84(p);
+    PlaySound_082406e0(SONG_922);
+    TransEffect_Create(p, 1, NULL, 32, 56);
+  }
+
+  if (p->stateTimer == 16) {
+    PlaySound_082406e0(SE_CHANGE_MOUSE);
+  }
+
+  if ((p->stateTimer & 7) >= 7 - (p->stateTimer >> 2)) {
+    Player_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_SHOW_SPRITE_E8);
+    p->sprite_e8.pos = p->mover.pos;
+  }
+
+  Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), 0x40);
+  p->plttID_95e = 290;
+  p->unk_960 += 3;
+  if (p->unk_960 > 32) {
+    p->unk_960 = 32;
+  }
+
+  anim = &p->anim_33c;
+  AuxAnim_SetAnim(anim, p->anim_350, 0, p->animIDOffset, p->xflip);
+
+  spr = &p->sprite_e8;
+  cmd = &anim->cmds[anim->cmdIdx];
+  spr->poseIdx = *cmd >> 6;
+
+  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+    spr->flags |= SPRFLAG_XFLIP;
+  } else {
+    spr->flags &= ~SPRFLAG_XFLIP;
+  }
+
+  if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+    spr->flags |= SPRFLAG_YFLIP;
+  } else {
+    spr->flags &= ~SPRFLAG_YFLIP;
+  }
+
+  anim->tick++;
+  if (anim->tick >= anim->wait) {
+    anim->tick = 0;
+    if (anim->flags & ANIM_PLAY_REVERSE) {
+      s32 idx = anim->cmdIdx;
+
+      if (idx == 0) {
+        idx = anim->cmdCount;
+      }
+      anim->cmdIdx = idx - 1;
+    } else {
+      anim->cmdIdx++;
+      if (anim->cmdIdx >= anim->cmdCount) {
+        anim->cmdIdx = 0;
+      }
+    }
+
+    cmd = &anim->cmds[anim->cmdIdx];
+    anim->duration = *cmd & 0xF;
+    anim->wait = anim->duration * anim->speed >> 6;
+    if (anim->wait == 0) {
+      anim->wait = 1;
+    }
+  }
+
+  Video_SetAuxSpritePltt(p->gfx_114, 290);
+  p->stateTimer++;
+  if (p->stateTimer > 31) {
+    p->formRequest = TRUE;
+    p->formRequestKind = PLAYER_MOUSE;
+    Player_SetAction(p, 0, 0);
+  }
+#else
+  INCFUNC("asm/func/MagicChangeMouse_0806bf18.inc");
+#endif
+}
+
+// 魔法スリーピング, 棺桶の絵を sprite_e8 に出して8フレームでスリーピングのフォームへ切り替える
+// 残差1命令 (195/196): 反転判定の定数をレジスタに作って両辺で使い回す形, MagicChangeBat / MagicChangeMouse / MagicSleeping_Update / PlayerShockwave_UpdateAnim / MapItem_AdvanceAnim / Entity08203ad0_Update と同じ既知の残差
+// AuxAnimPlayFlags を返す static inline を挟むとコマ側の抽出が CSE されて 193/196 と逆に遠のく, Tier A-C 試済
+NON_MATCH void MagicSleeping_0806c124(Player* p) {
+#ifdef NONMATCHING_C
+  AuxAnimState* anim;
+  AuxAnimCmd* cmd;
+  AuxSprite* spr;
+
+  if (p->action != 14) {
+    p->coffin = GetPlayerCoffinID();
+    FUN_08063220(p);
+    FUN_08066e84(p);
+    Player_SetAction(p, 14, 0);
+  }
+
+  Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), 0x40);
+  Player_SetFlag35a(p, PFLAG35A_SHOW_SPRITE_E8);
+  p->sprite_e8.pos = p->mover.pos;
+
+  anim = &p->anim_33c;
+  AuxAnim_SetAnim(anim, p->anim_354, p->coffin + 24, 0, 0);
+
+  spr = &p->sprite_e8;
+  cmd = &anim->cmds[anim->cmdIdx];
+  spr->poseIdx = *cmd >> 6;
+
+  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+    spr->flags |= SPRFLAG_XFLIP;
+  } else {
+    spr->flags &= ~SPRFLAG_XFLIP;
+  }
+
+  if ((u8)(anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+    spr->flags |= SPRFLAG_YFLIP;
+  } else {
+    spr->flags &= ~SPRFLAG_YFLIP;
+  }
+
+  anim->tick++;
+  if (anim->tick >= anim->wait) {
+    anim->tick = 0;
+    if (anim->flags & ANIM_PLAY_REVERSE) {
+      s32 idx = anim->cmdIdx;
+
+      if (idx == 0) {
+        idx = anim->cmdCount;
+      }
+      anim->cmdIdx = idx - 1;
+    } else {
+      anim->cmdIdx++;
+      if (anim->cmdIdx >= anim->cmdCount) {
+        anim->cmdIdx = 0;
+      }
+    }
+
+    cmd = &anim->cmds[anim->cmdIdx];
+    anim->duration = *cmd & 0xF;
+    anim->wait = anim->duration * anim->speed >> 6;
+    if (anim->wait == 0) {
+      anim->wait = 1;
+    }
+  }
+
+  Video_SetAuxSpritePltt(p->gfx_114, p->coffin + 519);
+  p->stateTimer++;
+  if (p->stateTimer > 7) {
+    p->formRequest = TRUE;
+    p->formRequestKind = PLAYER_SLEEPING;
+    Player_SetAction(p, 4, 0);
+  }
+#else
+  INCFUNC("asm/func/MagicSleeping_0806c124.inc");
+#endif
+}
 
 NAKED void FUN_0806c2dc(Player* p) { INCFUNC("asm/func/FUN_0806c2dc.inc"); }
 
@@ -4551,13 +5013,13 @@ void FUN_0806e404(Player* p) {
   }
   if (p->stateTimer == 0) {
     if (p->ene < 10) {
-      PlaySound_082406e0(0xD5);
+      PlaySound_082406e0(SONG_213);
     } else {
       if (p->unk_38a == 0) {
-        PlaySound_082406e0(0x26B);
+        PlaySound_082406e0(SONG_619);
         p->unk_38a = 40;
       }
-      PlaySound_082406e0(0xCD);
+      PlaySound_082406e0(SE_GUN_FIRE);
       Entity08080be8_Create(p, 20, 180, 0, 32, 44, 32, HBATTR_SOL, 20, 3, 10, 1);
     }
   }
@@ -4580,7 +5042,7 @@ NAKED void MagicChangeWolf_0806eb40(Player* p) { INCFUNC("asm/func/MagicChangeWo
 void FUN_0806f1ec(Player* p) {
   switch (p->state) {
     case 0: {
-      PlaySound_082406e0(0x39E);
+      PlaySound_082406e0(SE_CHANGE_WOLF);
       Player_PlayAnim(p, 403, FRACUNIT_6);
       Player_SetAction(p, 31, 1);
       break;
@@ -4624,9 +5086,9 @@ bool32 FUN_0806f738(Player* p) {
 }
 
 void FUN_0806f780(Player* p) {
-  p->unk_a8d = Player_CheckMagicEnchant(p);
-  if (p->unk_a8d >= 0) {
-    p->unk_951 = p->unk_a8d + 1;
+  p->enchantIdx = Player_CheckMagicEnchant(p);
+  if (p->enchantIdx >= 0) {
+    p->unk_951 = p->enchantIdx + 1;
   } else {
     p->unk_951 = 0;
   }
@@ -4644,7 +5106,7 @@ s32 FUN_0806f900(Player* p) {
       total += p->weaponExDamageCb[i](p);
     }
   }
-  if (Player_GetFlag378(p, FLAG378_UNK_19)) {
+  if (Player_GetFlag378(p, FLAG378_BLACKARMOR)) {  // 黒の鎧
     total += Div(p->hp * 20, p->maxHP);
   }
   return total;
@@ -4662,7 +5124,7 @@ s32 FUN_0806f960(Player* p) {
   return result;
 }
 
-NAKED void dark_django_0806f990(HitboxData* a, HitboxData* b, void* _) { INCFUNC("asm/func/dark_django_0806f990.inc"); }
+NAKED void dark_django_0806f990(HitboxData* a, HitboxData* b, Player* _) { INCFUNC("asm/func/dark_django_0806f990.inc"); }
 
 NAKED void FUN_0806fad8(Player* p) { INCFUNC("asm/func/FUN_0806fad8.inc"); }
 
@@ -4764,11 +5226,11 @@ void FUN_080726b4(Player* p) {
 void FUN_080726e0(Player* p) { Player_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_HIDE_SHADOW); }
 
 void FUN_080726ec(Player* p) {
-  if (p->unk_4ad != 0) {
-    p->unk_4ae++;
-    if (p->unk_4ae > 7) {
+  if (p->footHitboxOn != 0) {
+    p->footHitboxTimer++;
+    if (p->footHitboxTimer > 7) {
       Player_SpawnFootHitbox(p);
-      p->unk_4ae = 0;
+      p->footHitboxTimer = 0;
     }
   }
 }
@@ -5063,7 +5525,7 @@ NON_MATCH void Player_UpdateDjango(Player* p) {
           FUN_0806687c(p);
         }
       } else {
-        if (p->unk_20 & PFLAG20_UNK_4) {
+        if (p->unk_20 & PFLAG20_SUNBATHING) {
           FUN_080667b0(p, gStat->sunGauge);
         }
         if (FUN_0806680c(p)) {
@@ -5256,7 +5718,7 @@ void Player_UpdateBat(Player* p) {
     case 1: {
       s32 action;
 
-      if (p->unk_20 & PFLAG20_UNK_4) {
+      if (p->flag20 & PFLAG20_SUNBATHING) {
         FUN_080667b0(p, gStat->sunGauge);
       }
       if (FUN_0806680c(p)) {
@@ -5269,8 +5731,8 @@ void Player_UpdateBat(Player* p) {
       FUN_08066d7c(p, action);
       sPlayerBatUpdates[action](p);
 
-      if (p->unk_3a4 != 0) {
-        p->mover.delta = p->unk_3a8;
+      if (p->useForcedDelta != 0) {
+        p->mover.delta = p->forcedDelta;
       }
 
       FUN_08066408(p);
@@ -5331,13 +5793,13 @@ void Player_UpdateMouse(Player* p) {
   };  // 0x085ABE1C
   // clang-format on
 
-  Player_SetFlag20(p, PFLAG20_UNK_14 | PFLAG20_UNK_16 | PFLAG20_UNK_18);
+  Player_SetFlag20(p, PFLAG20_UNK_14 | PFLAG20_SNEAKING | PFLAG20_UNK_18);
 
   switch (p->unk_1c) {
     case 1: {
       s32 action;
 
-      if (p->unk_20 & PFLAG20_UNK_4) {
+      if (p->flag20 & PFLAG20_SUNBATHING) {
         FUN_080667b0(p, gStat->sunGauge);
       }
       if (FUN_0806680c(p)) {
@@ -5350,8 +5812,8 @@ void Player_UpdateMouse(Player* p) {
       FUN_08066d7c(p, action);
       sPlayerMouseUpdates[action](p);
 
-      if (p->unk_3a4 != 0) {
-        p->mover.delta = p->unk_3a8;
+      if (p->useForcedDelta != 0) {
+        p->mover.delta = p->forcedDelta;
       }
 
       FUN_08079a64(p);
@@ -5423,8 +5885,8 @@ void Player_UpdateSleeping(Player* p) {
       FUN_08066d7c(p, action);
       sPlayerSleepingUpdates[action](p);
 
-      if (p->unk_3a4 != 0) {
-        p->mover.delta = p->unk_3a8;
+      if (p->useForcedDelta != 0) {
+        p->mover.delta = p->forcedDelta;
       }
 
       FUN_08079d40(p);
@@ -5510,7 +5972,34 @@ const PlayerFunc PTR_ARRAY_085abedc[28] = {
 
 NAKED void FUN_08079f1c(Player* p) { INCFUNC("asm/func/FUN_08079f1c.inc"); }
 
-NAKED void UNUSED FUN_0807a270(Player* p) { INCFUNC("asm/func/FUN_0807a270.inc"); }
+// Player の登録表と関連するグローバルをまとめて 0 に戻す
+void UNUSED FUN_0807a270(Player* p) {
+  s32 i;
+
+  gPlayerCount = 0;
+  for (i = 0; i < 4; i++) {
+    gPlayerPtr[i] = NULL;
+    u16_03002b68[i] = 0;
+    u32_03002bc0[i] = 0;
+  }
+
+  u16_03002b60 = 0;
+  u16_03002b7c = 0;
+  u16_03002b8c = 0;
+  u16_03002bf0 = 0;
+  u16_03002bd0 = 0;
+  gSunGaugeOverride = 0;
+  gSunGaugeOverrideTimer = 0;
+
+  for (i = 0; i < 3; i++) {
+    u16_ARRAY_03002ba0[i] = 0;
+  }
+
+  u16_03002b84 = 0;
+  u16_03002bac = 0;
+  u16_03002b90 = 0;
+  u16_03002bb0 = 0;
+}
 
 NAKED void FUN_0807a334(Player* p) { INCFUNC("asm/func/FUN_0807a334.inc"); }
 
@@ -5551,7 +6040,7 @@ void FUN_0807a528(Player* p, Vec3* pos, u16 param_3) {
   p->action = 8;
   p->stateTimer = 0;
   p->state = 0;
-  p->unk_3f6 = 0;
+  p->floatHeight = 0;
   p->unk_3b0 = *pos;
   p->unk_3b8 = param_3;
 }
@@ -5958,7 +6447,7 @@ void AddPlayerExpScripted(void) {
 }
 
 // 0xD4B5, 鍛治による武器経験値取得
-void Player_AddForgeExp(void) {
+void Cmd_AddForgeExp(void) {
   if (VM_SeekToNamedArg('t')) {
     s32 kind = VM_GetValue();
 
@@ -5968,7 +6457,8 @@ void Player_AddForgeExp(void) {
   }
 }
 
-// 残差1命令: 原典は gPlayerPtr[i] を読んだレジスタから写しを作る, FUN_0807b2dc / FUN_0807b66c と同じ類
+// 残差1命令, 原典は gPlayerPtr[i] を r0 に読んでから adds r1, r0, #0 でコピーするが, こちらは直接 r1 に読む
+// && を分けた if, p ローカルを使わず gPlayerPtr[i] を3回書く形, 宣言と代入の分離はいずれも無効 (agbcc がコピーを畳む)
 NON_MATCH s32 FUN_0807b1a4(void) {
 #ifdef NONMATCHING_C
   s32 i = VM_GetPlayerIdx();
@@ -5985,8 +6475,8 @@ NON_MATCH s32 FUN_0807b1a4(void) {
 
 NAKED void item_0807b1e4(Player* p) { INCFUNC("asm/func/item_0807b1e4.inc"); }
 
-// 残差1命令: 原典は gPlayerPtr[i] を読んだレジスタから別のレジスタへ写してから使う
-// ローカルの有無・宣言と代入の分離・gPlayerPtr[i] の直接参照のどれでも写しが出ない
+// 残差1命令, 原典は gPlayerPtr[i] を r0 に読んでから adds r1, r0, #0 でコピーするが, こちらは直接 r1 に読む
+// && を分けた if, p ローカルを使わず gPlayerPtr[i] を3回書く形, 宣言と代入の分離はいずれも無効 (agbcc がコピーを畳む)
 NON_MATCH s32 FUN_0807b2dc(void) {
 #ifdef NONMATCHING_C
   s32 i = VM_GetPlayerIdx();
@@ -6130,7 +6620,7 @@ void FUN_0807b528(void) {
 void FUN_0807b564(void) {
   u16_03002bd0 = 0;
   gSunGaugeOverride = 0;
-  u16_03002b78 = 0;
+  gSunGaugeOverrideTimer = 0;
 }
 
 void FUN_0807b580(void) {
@@ -6348,7 +6838,7 @@ void FUN_0807bcfc(Player* p, s32 param_2) {
     p->facing = param_2;
   }
   Player_SetAnimFacing(p);
-  PlaySound_082406e0(0xC6);
+  PlaySound_082406e0(SONG_198);
   FUN_0807b7a4(p);
   Player_SetAction(p, 18, 2);
   p->fn_498 = FUN_08073574;
@@ -6404,7 +6894,7 @@ void FUN_0807be58(Player* p, s32 facing, s32 param_3, u32 scriptID) {
   p->facing |= 1;
   p->scriptID_4b0 = scriptID;
   FUN_0807b7a4(p);
-  p->unk_3f6 = param_3;
+  p->floatHeight = param_3;
   Player_SetAction(p, 23, 0);
   if (p->kind == PLAYER_MOUSE) {
     p->fn_498 = FUN_080765a0;
@@ -7390,7 +7880,8 @@ void FUN_0807e278(Player* p, s32 cmd, s32 argc, s16* args) {
   MsgPacket_Send(msg);
 }
 
-NAKED void FUN_0807e2cc(Player* p) { INCFUNC("asm/func/FUN_0807e2cc.inc"); }
+// スパイクメイル(攻撃を受けると、周囲の敵にダメージを与える) の攻撃判定 を作る
+NAKED void Django_Spike(Player* p) { INCFUNC("asm/func/Django_Spike.inc"); }
 
 // hitboxTimer が残っている間 hitbox_2ec を当たり判定に出し続ける
 void FUN_0807e388(Player* p) {
@@ -7402,23 +7893,23 @@ void FUN_0807e388(Player* p) {
 
 NAKED u32 FUN_0807e3b0(Player* p, HitboxData* a, HitboxData* b) { INCFUNC("asm/func/FUN_0807e3b0.inc"); }
 
-void FUN_0807e784(HitboxData* a, HitboxData* b, Player* p) {
+void Django_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
   if (p->unk_1c == 1) {
     if (Hitbox_TestFlags(a, HBFLAG_UNK_9)) {
-      if ((b->hitState & 1) == 0) {
+      if ((b->hitState & HBHITSTATE_UNK_0) == 0) {
         return;
       }
-      b->hitState &= ~1;
+      b->hitState &= ~HBHITSTATE_UNK_0;
     }
     if (Hitbox_TestFlags(a, HBFLAG_UNK_10)) {
-      if (b->hitState & 2) {
+      if (b->hitState & HBHITSTATE_UNK_1) {
         return;
       }
-      b->hitState |= 2;
+      b->hitState |= HBHITSTATE_UNK_1;
     }
     FUN_0807e3b0(p, a, b);
     if (Player_GetFlag378(p, FLAG378_SPIKE)) {
-      FUN_0807e2cc(p);
+      Django_Spike(p);
     }
   }
 }
@@ -7431,7 +7922,7 @@ s32 FUN_0807e7fc(Player* p, s32 power, s32 unk_40, s32 angle, s32 unk_44, Hitbox
     s32 n = p->hurtbox.unk_44;
 
     if (n <= 0) {
-      hb.flags = HBFLAG_UNK_13;
+      hb.flags = HBFLAG_HITBOX;
       hb.power = power;
       hb.unk_40 = unk_40;
       hb.angle = angle;
@@ -7573,7 +8064,65 @@ NON_MATCH void Player_CountStyleFrames(Player* p) {
 
 NAKED void dark_django_0807f13c(Player* p) { INCFUNC("asm/func/dark_django_0807f13c.inc"); }
 
-NAKED static s32 Player_Update(Player* p) { INCFUNC("asm/func/Player_Update.inc"); }
+// unk_1c の状態ごとに更新を振り分け, 共通の後処理と範囲イベントの拾い上げまでを毎フレーム回す
+static s32 Player_Update(Player* p) {
+  Player_Update_Helper_0807dde4(p);
+  Player_BeginAction(p);
+
+  if (p->unk_1c == 1) {
+    Player_CountStyleFrames(p);
+    Player_UpdateWeaponWear(p);
+    FUN_0807e388(p);
+
+    if (gSunGaugeOverride != 0) {
+      if (gSunGaugeOverrideTimer != 0) {
+        gSunGaugeOverrideTimer--;
+      } else {
+        gSunGaugeOverride = 0;
+      }
+    }
+
+    if (Player_Update_Helper_0807e968(p)) {
+      FUN_0807e854(p);
+    } else {
+      FUN_0807eca8(p);
+      dark_django_0807f13c(p);
+    }
+  } else if (p->unk_1c == 2) {
+    s32 n;
+
+    Player_ClearInputHistory(p);
+    if (p->hp == 0) {
+      p->hp = 1;
+    }
+    p->unk_376 = 0;
+    p->hurtbox.unk_40 = 0;
+    n = p->hurtbox.unk_44;
+    if (n > 0) {
+      p->hurtbox.unk_44 = 0;
+    }
+  }
+
+  Player_ApplyFormRequest(p);
+  if (p->enchantStarted) {
+    PlaySound_082406e0(SE_ENCHANT);
+    p->enchantStarted = FALSE;
+  }
+
+  p->updateCallback(p);
+  Player_UpdatePoseAndShadow(p);
+  FUN_080612a8(p);
+  p->unk_3ea = 0;
+  if (p->mover.unk_4 == 0) {
+    FUN_0807ed04(p);
+  }
+
+  if (p->unk_1c != 4) {
+    p->zoneEvents.pos = &p->mover.pos;
+    FUN_08234660(&p->zoneEvents);
+  }
+  return 0;
+}
 
 static s32 Player_Destroy(Player* p) {
   EnemyTargetManager_Remove(&p->target);
@@ -7595,7 +8144,7 @@ static s32 Player_Init(Player* p, u32 n, void* _) {
   FUN_08065200(p);
   Player_InitState(p);
   FUN_08065744(p, n);
-  Player_SetupHitbox(p);
+  Player_SetupHurtbox(p);
   Player_RefreshMagicInfo(p);
   Player_InitWeapon(p);
   Player_InitArmor(p);

@@ -6,16 +6,17 @@
 #include "vm.h"
 
 typedef struct {
-  AuxSprite sprite;  // 0x00
-  u8 unk_2c[44];     // 0x2C
-  u16 unk_58;        // 0x58, gStat->unk_248 と一致しなければ要素を隠す
-  u16 unk_5a;        // 0x5A, FUN_081d1bf8 の第2引数
-  u8 unk_5c[34];     // 0x5C
-  s16 state;         // 0x7E, _Update が PTR_FUN_081D1AE8_085AE0C8[state](item) を呼ぶ
-  u16 flags;         // 0x80
-  u16 unk_82;        // 0x82
-  u16 unk_84;        // 0x84, FUN_081d1bf8 が 0 を入れる
-  u16 unk_86;        // 0x86
+  AuxSprite sprite;        // 0x00
+  u8 unk_2c[44];           // 0x2C
+  u16 unk_58;              // 0x58, gStat->unk_248 と一致しなければ要素を隠す
+  u16 unk_5a;              // 0x5A, FUN_081d1bf8 の第2引数
+  u8 unk_5c[0x7C - 0x5C];  // 0x5C
+  u16 unk_7c;              // 0x7C, 枠を確保したときに 0 に戻す
+  s16 state;               // 0x7E, _Update が PTR_FUN_081D1AE8_085AE0C8[state](item) を呼ぶ
+  u16 flags;               // 0x80
+  u16 unk_82;              // 0x82
+  u16 unk_84;              // 0x84, FUN_081d1bf8 が 0 を入れる
+  u16 unk_86;              // 0x86
 } Entity081d2180Item;
 static_assert(sizeof(Entity081d2180Item) == 136);
 
@@ -29,7 +30,25 @@ static_assert(sizeof(Entity081d2180) == 1116);
 
 IWRAM_DATA Entity081d2180* gEntity081d2180 = NULL;  // 0x03000190
 
-NAKED s32 FUN_081d1a9c(unknown* p) { INCFUNC("asm/func/FUN_081d1a9c.inc"); }
+// 空いている枠を確保して返す, 空きが無ければ NULL
+// 残差8命令 (30 対 38), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
+// 同じファイルの FUN_081d1aec も同じ形で止まっている
+NON_MATCH Entity081d2180Item* FUN_081d1a9c(Entity081d2180* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    if (!(p->activeMask & (1 << i))) {
+      p->activeMask |= 1 << i;
+      p->items[i].unk_7c = 0;
+      return &p->items[i];
+    }
+  }
+  return NULL;
+#else
+  INCFUNC("asm/func/FUN_081d1a9c.inc");
+#endif
+}
 
 // state 0 のハンドラ, 何もしない
 void FUN_081d1ae8(Entity081d2180Item* item) {}
@@ -61,9 +80,9 @@ NON_MATCH void FUN_081d1bf8(Entity081d2180Item* item, s32 param_2) {
     AuxSprite_SetPoseIdx(&item->sprite, 1);
     Video_SetAuxSpritePltt(item->sprite.gfx, 288);
     if (item->flags & 4) {
-      PlaySound_082406e0(0x389);
+      PlaySound_082406e0(SONG_905);
     } else {
-      PlaySound_082406e0(0x155);
+      PlaySound_082406e0(SONG_341);
     }
   }
 #else

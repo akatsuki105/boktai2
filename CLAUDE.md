@@ -5,6 +5,8 @@ This project's goal is a **matching decompile** of the GBA title *Zoku Bokura no
 
 NEVER PRINT YOUR OWN SCAFFOLDING TO THE CONSOLE — PLANS, STEP ANNOUNCEMENTS, RAW TOOL OUTPUT, VERIFICATION NARRATION. WRITE ONLY WHAT THE USER NEEDS TO READ.
 
+FINISH WHAT YOU WERE ASKED TO DO. Do not stop partway, cut the scope, or defer the rest on your own judgment. Stop early only for a reason you can name: a skill's iteration budget is spent, the build is broken, or a decision is genuinely the user's. Other queued work, and your own guess that the remaining effort will not pay off, are not reasons.
+
 ---
 
 ## Project Overview

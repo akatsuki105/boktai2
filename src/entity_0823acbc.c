@@ -119,9 +119,9 @@ s32 SoftReset_0823a928(void) {
   rfu_setREQCallback(NULL);
   rfu_REQ_stopMode();
   if (rfu_waitREQComplete() == 0) {
-    SoftResetExram(0xDC);
+    SoftResetExram(RESET_REGS | RESET_SOUND_REGS | RESET_OAM | RESET_VRAM | RESET_PALETTE);
   } else {
-    SoftResetExram(0xDC);
+    SoftResetExram(RESET_REGS | RESET_SOUND_REGS | RESET_OAM | RESET_VRAM | RESET_PALETTE);
   }
   return 0;
 }
@@ -136,7 +136,7 @@ void FUN_0823a9c4(void) {
 }
 
 void FUN_0823a9f4(void) {
-  FUN_0824082c();
+  Sound_Resume();
   EnableEntityFlags(ENTITY_DISABLE_1);
 }
 

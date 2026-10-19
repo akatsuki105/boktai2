@@ -6,6 +6,7 @@
 #include "text.h"
 #include "tilemap.h"
 #include "video.h"
+#include "vm.h"
 
 // '.I' が並べる1件, count 個ぶんだけ3つの配列が埋まる
 typedef struct {
@@ -16,6 +17,9 @@ typedef struct {
   u32 unk_20[5];  // 0x20
 } EntityA288Entry;
 static_assert(sizeof(EntityA288Entry) == 52);
+
+void FUN_0821b28c(u32 x8, u32 y8, u32 w8, u32 h8);
+void Video_DrawText(s32 x8, s32 y8, char* s);
 
 typedef struct EntityA288 {
   Entity e;                                    // 0x0000, ENTITY_UNK_11
@@ -61,11 +65,15 @@ typedef struct EntityA288 {
   MainSprite sprites_dbc[2];                   // 0x0DBC
   s32 unk_e7c;                                 // 0x0E7C, 24倍して sprites_dbc[0] の縦位置にする
   u8* unk_e80;                                 // 0x0E80, '.X'
-  u8 unk_e84[4];                               // 0x0E84, まだ未解析
+  s32 unk_e84;                                 // 0x0E84, '.X' の参照先に足す文字列IDのオフセット, gStat->unk_944 にも写す
   u32 unk_e88;                                 // 0x0E88, '.E'
-  u8 unk_e8c[0x12AC - 0xE8C];                  // 0x0E8C, まだ未解析
+  MainSprite sprites_e8c[2];                   // 0x0E8C
+  MainSprite sprites_f4c[3][3];                // 0x0F4C
   u8* unk_12ac;                                // 0x12AC, '.b'
-  u8 unk_12b0[0x1650 - 0x12B0];                // 0x12B0, まだ未解析
+  u32 unk_12b0;                                // 0x12B0, 32倍したものが sprite_e8c の縦位置, +0x4B が sprite_eec のポーズ番号
+  u8 unk_12b4[0x12BA - 0x12B4];                // 0x12B4, まだ未解析
+  s16 unk_12ba;                                // 0x12BA, '.b' の参照先に足す文字列IDのオフセット
+  u8 unk_12bc[0x1650 - 0x12BC];                // 0x12BC, まだ未解析
   u8* unk_1650;                                // 0x1650, '.g'
   u8* unk_1654;                                // 0x1654, '.T'
   u8* unk_1658;                                // 0x1658, '.A'
@@ -79,7 +87,15 @@ typedef struct EntityA288 {
   u8* unk_1798;                                // 0x1798, '.N' の PC
   u8* unk_179c;                                // 0x179C, '.H'
   u8* unk_17a0;                                // 0x17A0, '.K'
-  u8 unk_17a4[0x1FE8 - 0x17A4];                // 0x17A4, まだ未解析
+  u8 lines[4][256];                            // 0x17A4, 行ごとに組み立てた文字列
+  u8 text[1024];                               // 0x1BA4, lines を順に連結したもの
+  u8 unk_1fa4[0x1FC4 - 0x1FA4];                // 0x1FA4, まだ未解析
+  u8 text_1fc4[24];                            // 0x1FC4, 1文字ずつ積む入力中の文字列
+  s16 len_1fdc;                                // 0x1FDC, text_1fc4 に積んだ文字数, 0x16 を超えると打ち切る
+  u8 unk_1fde[0x1FE2 - 0x1FDE];                // 0x1FDE, まだ未解析
+  u16 unk_1fe2;                                // 0x1FE2
+  u16 unk_1fe4;                                // 0x1FE4
+  u16 unk_1fe6;                                // 0x1FE6
   void (*updateCallback)(struct EntityA288*);  // 0x1FE8
 } EntityA288;
 static_assert(sizeof(EntityA288) == 8172);
@@ -301,7 +317,14 @@ void FUN_0821587c(EntityA288* p) {
   MainSprite_Remove(&p->sprites_dbc[1]);
 }
 
-NAKED void FUN_082158a0(EntityA288* p) { INCFUNC("asm/func/FUN_082158a0.inc"); }
+// カーソルのスプライトを出して unk_e7c 行目の高さに置く
+void FUN_082158a0(EntityA288* p) {
+  MainSprite* spr = &p->sprites_dbc[0];
+
+  spr->flags &= ~SPRFLAG_HIDDEN;
+  MainSprite_SetAnim(spr, &p->gfx, 7, 1, 0);
+  spr->pos.y = p->unk_e7c * 24;
+}
 
 void FUN_082158e4(EntityA288* p) {
   MainSprite* sprite = &p->sprites_dbc[0];
@@ -309,7 +332,18 @@ void FUN_082158e4(EntityA288* p) {
   sprite->pos.y = p->unk_e7c * 24;
 }
 
-NAKED void FUN_082158fc(EntityA288* p) { INCFUNC("asm/func/FUN_082158fc.inc"); }
+// 残差0命令 (31/31), レジスタ名だけ違う: 0xE84 のプール定数が原典は r1, こちらは r2 に載る
+NON_MATCH void FUN_082158fc(EntityA288* p) {
+#ifdef NONMATCHING_C
+  char* text = Textbox_LookupString(VM_ParseStringRef(p->unk_e80) + p->unk_e84);
+
+  FUN_0821b28c(9, 10, 0x12, 2);
+  Video_DrawText(9, 10, text);
+  gStat->unk_944 = p->unk_e84;
+#else
+  INCFUNC("asm/func/FUN_082158fc.inc");
+#endif
+}
 
 NAKED void FUN_08215950(EntityA288* p) { INCFUNC("asm/func/FUN_08215950.inc"); }
 
@@ -317,17 +351,45 @@ NAKED void FUN_08215d24(EntityA288* p) { INCFUNC("asm/func/FUN_08215d24.inc"); }
 
 NAKED void FUN_08215db4(EntityA288* p) { INCFUNC("asm/func/FUN_08215db4.inc"); }
 
-NAKED void FUN_08215f3c(EntityA288* p) { INCFUNC("asm/func/FUN_08215f3c.inc"); }
+// 追加分のスプライト11枚をまとめて外す
+void FUN_08215f3c(EntityA288* p) {
+  s32 i;
+
+  MainSprite_Remove(&p->sprites_e8c[0]);
+  MainSprite_Remove(&p->sprites_e8c[1]);
+  for (i = 0; i < 3; i++) {
+    MainSprite_Remove(&p->sprites_f4c[0][i]);
+    MainSprite_Remove(&p->sprites_f4c[1][i]);
+    MainSprite_Remove(&p->sprites_f4c[2][i]);
+  }
+}
 
 NAKED void FUN_08215f98(EntityA288* p) { INCFUNC("asm/func/FUN_08215f98.inc"); }
 
-NAKED void FUN_08216000(EntityA288* p) { INCFUNC("asm/func/FUN_08216000.inc"); }
+// BG を消してから '.b' の文字列を (10, 4) に描く
+void FUN_08216000(EntityA288* p) {
+  char* str;
+
+  ClearBGTilemapBuffer(0);
+  Video_GenerateBGMap(0, 0, 0, 0, 0);
+  str = Textbox_LookupString(VM_ParseStringRef(p->unk_12ac) + p->unk_12ba);
+  FUN_0821b28c(10, 4, 16, 2);
+  Video_DrawText(10, 4, str);
+}
 
 NAKED void FUN_0821605c(EntityA288* p) { INCFUNC("asm/func/FUN_0821605c.inc"); }
 
 NAKED void FUN_082160d8(EntityA288* p) { INCFUNC("asm/func/FUN_082160d8.inc"); }
 
-NAKED void FUN_08216154(EntityA288* p) { INCFUNC("asm/func/FUN_08216154.inc"); }
+// unk_12b0 行目にカーソルを置いてポーズを当て直す
+void FUN_08216154(EntityA288* p) {
+  MainSprite* spr = p->sprites_e8c;
+
+  spr[0].pos.y = p->unk_12b0 * 32;
+  MainSprite_SetPose(&spr[1], &p->gfx, p->unk_12b0 + 0x4B, 1);
+  spr[1].flags &= ~SPRFLAG_HIDDEN;
+  p->unk_68 = 0;
+}
 
 NAKED void FUN_0821619c(EntityA288* p) { INCFUNC("asm/func/FUN_0821619c.inc"); }
 
@@ -341,7 +403,21 @@ NAKED void FUN_082167dc(EntityA288* p) { INCFUNC("asm/func/FUN_082167dc.inc"); }
 
 NAKED void FUN_08216894(EntityA288* p) { INCFUNC("asm/func/FUN_08216894.inc"); }
 
-NAKED void FUN_08216968(EntityA288* p, unknown* param_2) { INCFUNC("asm/func/FUN_08216968.inc"); }
+// lines の4行を順に out へ連結する, 1行は 256 文字で打ち切る
+void FUN_08216968(u8 lines[4][256], u8* out) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    u8* src = lines[i];
+    s32 n = 0;
+
+    while (n <= 255 && *src != 0) {
+      *out++ = *src++;
+      n++;
+    }
+  }
+  *out = 0;
+}
 
 NAKED void FUN_082169a0(EntityA288* p) { INCFUNC("asm/func/FUN_082169a0.inc"); }
 
@@ -375,7 +451,30 @@ NAKED void FUN_08216cf4(EntityA288* p, s32 param_2) { INCFUNC("asm/func/FUN_0821
 
 NAKED void FUN_08216dd8(EntityA288* p, s32 param_2) { INCFUNC("asm/func/FUN_08216dd8.inc"); }
 
-NAKED s32 FUN_08216e60(EntityA288* p, u8 param_2) { INCFUNC("asm/func/FUN_08216e60.inc"); }
+// 文字を1つ積む, 入りきらなければ 1 を返す
+// 残差はレジスタ割当だけ (29 対 29), 原典は添字の 0 オフセット用スクラッチに後で full が入る r5 を使い回すが, こちらは r2 を取る
+// 宣言順 / bool32 / 引数の型 / len を直読みする形は試済
+NON_MATCH s32 FUN_08216e60(EntityA288* p, u8 c) {
+#ifdef NONMATCHING_C
+  s32 len;
+  s32 full;
+
+  p->text_1fc4[p->len_1fdc] = c;
+  len = p->len_1fdc;
+  if (p->len_1fdc <= 0x16) {
+    p->len_1fdc++;
+    full = 0;
+  } else {
+    full = 1;
+  }
+
+  FUN_08216dd8(p, len);
+  FUN_08216bdc(p);
+  return full;
+#else
+  INCFUNC("asm/func/FUN_08216e60.inc");
+#endif
+}
 
 NAKED s32 FUN_08216ea8(EntityA288* p) { INCFUNC("asm/func/FUN_08216ea8.inc"); }
 
@@ -466,7 +565,21 @@ void FUN_08219e9c(EntityA288* p) {
   EntityA288_LoadBgPltt(p);
 }
 
-NAKED void FUN_08219ed0(EntityA288* p) { INCFUNC("asm/func/FUN_08219ed0.inc"); }
+// スプライトを読み込んで各パーツを順に初期化する
+void FUN_08219ed0(EntityA288* p) {
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_42E2);
+
+  p->gfx = *(MainSpriteGfx*)f;
+  OpenMainSpriteFile(&p->gfx, f);
+  FUN_082138d4(p);
+  FUN_08213ce4(p);
+  FUN_08214160(p);
+  FUN_082150e8(p);
+  FUN_082157d4(p);
+  FUN_08215db4(p);
+  FUN_08218c30(p);
+  FUN_082169a0(p);
+}
 
 void (*const sEntityA288StateFns[7])(EntityA288*) = {
     FUN_08213dc8,

@@ -3,6 +3,9 @@
 #include "global.h"
 #include "player.h"
 
+extern u16 u16_03002b8c;
+extern u16 u16_03002b60;
+
 // 条件 (プレイヤーのタイル位置・高さ・フォーム) が揃っている間だけ、あるタイルの当たり判定を上書きする
 typedef struct Entity71BA {
   Entity e;                                    // 0x00, ENTITY_UNK_8
@@ -57,7 +60,26 @@ NAKED void Entity71BA_ClampPlayer(Entity71BA* p, s32 param_2) { INCFUNC("asm/fun
 
 NAKED void FUN_080a035c(Entity71BA* p) { INCFUNC("asm/func/FUN_080a035c.inc"); }
 
-NAKED bool32 FUN_080a04c8(void) { INCFUNC("asm/func/FUN_080a04c8.inc"); }
+// サバタ操作中か, 変身中 (バット/マウス) かを返す
+// 残差0命令 (28/28), 命令順だけ違う: 原典は 0/1 の初期値 0 を最初のグローバル読み出しの後に置く
+NON_MATCH bool32 FUN_080a04c8(void) {
+#ifdef NONMATCHING_C
+  bool32 isSabata = u16_03002b8c != 0 && u16_03002b60 == 5;
+
+  if (isSabata) {
+    return TRUE;
+  }
+  if (gPlayerPtr[0]->kind == PLAYER_BAT) {
+    return TRUE;
+  }
+  if (gPlayerPtr[0]->kind == PLAYER_MOUSE) {
+    return TRUE;
+  }
+  return FALSE;
+#else
+  INCFUNC("asm/func/FUN_080a04c8.inc");
+#endif
+}
 
 NAKED void Entity71BA_UpdateTileOverride(Entity71BA* p) { INCFUNC("asm/func/Entity71BA_UpdateTileOverride.inc"); }
 

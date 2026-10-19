@@ -103,7 +103,7 @@ _082265C0:
 	movs r0, #0xf5
 	lsls r0, r0, #4
 	adds r1, r5, r0
-	ldr r0, _08226690 @ =FUN_082239c0
+	ldr r0, _08226690 @ =Entity8AAB_ScaleUp
 	str r0, [r1]
 _082265F4:
 	ldr r1, _08226670 @ =0x00000E8C
@@ -170,7 +170,7 @@ _08226680: .4byte 0x00000F25
 _08226684: .4byte 0x00000DF4
 _08226688: .4byte 0x00000DA4
 _0822668C: .4byte 0x00000D9C
-_08226690: .4byte FUN_082239c0
+_08226690: .4byte Entity8AAB_ScaleUp
 _08226694: .4byte 0x00000E8E
 _08226698: .4byte 0x00000DE4
 _0822669C:

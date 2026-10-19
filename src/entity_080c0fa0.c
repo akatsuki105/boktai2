@@ -31,7 +31,17 @@ void Entity080c0fa0_SetUpdateCallback(Entity080c0fa0* p, Entity080c0fa0Func* fn)
 
 NAKED void Entity080c0fa0_AdvanceAnim(Entity080c0fa0* p) { INCFUNC("asm/func/Entity080c0fa0_AdvanceAnim.inc"); }
 
-NAKED void Entity080c0fa0_UpdateActive(Entity080c0fa0* p) { INCFUNC("asm/func/Entity080c0fa0_UpdateActive.inc"); }
+// 速度ぶん進めてスプライトへ写し, unk_74 フレーム経ったらアニメを進める方へ移る
+void Entity080c0fa0_UpdateActive(Entity080c0fa0* p) {
+  p->pos.x += p->vx;
+  p->pos.z += p->vz;
+  p->sprite.pos = p->pos;
+
+  p->stateTimer++;
+  if (p->stateTimer >= p->unk_74) {
+    Entity080c0fa0_SetUpdateCallback(p, Entity080c0fa0_AdvanceAnim);
+  }
+}
 
 // delay フレーム待ってからスプライトを見せて本体の更新へ移る
 void Entity080c0fa0_UpdateDelay(Entity080c0fa0* p) {

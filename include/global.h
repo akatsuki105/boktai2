@@ -62,11 +62,7 @@ s32 SoftReset_0823a928(void);
 void ClearMemory(void* dst, s32 bytesize);  // buffer から bytesize バイト分のメモリを0で埋める
 void CopyMemory(u8* dst, u8* src, s32 bytesize);
 
-// 固定小数の除算で使う
-static inline s32 Div8(s32 v) { return v >= 0 ? (v >> 3) : -((-v) >> 3); }
-static inline s32 Div32(s32 v) { return v >= 0 ? (v >> 5) : -((-v) >> 5); }
-static inline s32 Div256(s32 v) { return v >= 0 ? (v >> 8) : -((-v) >> 8); }
-static inline s32 Div8192(s32 v) { return v >= 0 ? (v >> 13) : -((-v) >> 13); }
-static inline s32 Div65536(s32 v) { return v >= 0 ? (v >> 16) : -((-v) >> 16); }
+// 固定小数の値を整数に変換するための関数
+static inline s32 FixToInt(s32 fracBits, s32 fixedPointValS32) { return fixedPointValS32 >= 0 ? (fixedPointValS32 >> fracBits) : -((-fixedPointValS32) >> fracBits); }
 
 #endif  // __INCLUDE_GLOBAL_H__

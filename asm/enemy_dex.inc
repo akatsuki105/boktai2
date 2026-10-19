@@ -574,8 +574,8 @@ _0820CFAA:
 	bx r0
 	.align 2, 0
 
-	thumb_func_start VM_SubD1C0
-VM_SubD1C0: @ 0x0820CFC0
+	thumb_func_start Cmd_D1C0
+Cmd_D1C0: @ 0x0820CFC0
 	push {lr}
 	movs r1, #1
 	rsbs r1, r1, #0

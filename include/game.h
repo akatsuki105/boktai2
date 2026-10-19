@@ -65,7 +65,7 @@ typedef struct {
   s16 equippedWeaponIdx;         // 0x058
   s16 equippedMagicIdx;          // 0x05A, registeredMagic[equippedMagicIdx] が現在装備中の魔法ID
   slot16_t armor;                // 0x05C
-  s16 unk_5e;                    // 0x05E, Player_GetEquippedMagic がサバタの魔法番号を選ぶときに 0 かどうかを見る
+  s16 sabataMagicIdx;            // 0x05E, Player_GetEquippedMagic がサバタの魔法番号を選ぶときに 0 かどうかを見る
   slot16_t registeredWeapon[4];  // 0x060, 剣槍槌銃, 登録武器のIDではなく、武器インベントリのどこにある武器を登録しているかのインデックス(0~15)が入る
   magic16_t registeredMagic[4];  // 0x068, 登録中の魔法4種のID
   item16_t items[16 + 16 + 16];  // 0x070
@@ -86,7 +86,8 @@ typedef struct {
   u8 unk_1c8[12];                // 0x1C8
   u32 loan_1d4;                  // 0x1D4
   u32 treeExp;                   // 0x1D8, 今まで浴びた太陽エネルギー (太陽樹の成長経験値 や リザルト画面の "ENERGY")
-  u8 unk_1dc[4];                 // 0x1DC
+  u8 unk_1dc[2];                 // 0x1DC
+  s16 priceRate;                 // 0x1DE, 買値の倍率 (百分率), 根拠: Item_GetBuyPrice が price * priceRate / 100 を出す
   s32 unk_1e0;                   // 0x1E0, ApplySunlightGain が sunGauge を足し続ける, treeExp と同じ 0x7FFFFFFF 飽和
   s32 unk_1e4;                   // 0x1E4, unk_1e0 を更新した回数
   u8 unk_1e8[6];                 // 0x1E8
@@ -118,7 +119,8 @@ typedef struct {
   u32 unk_2ac;                   // 0x2AC
   s16 unk_2b0[2];                // 0x2B0
   s32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒), s32 の根拠: Entity0823acbc_Update が 0x7FFFFFFF と符号付き比較する
-  u8 unk_2b8[8];                 // 0x2B8
+  s32 unk_2b8;                   // 0x2B8, Entity162E が interval ごとに1つ減らす残り回数, 1未満なら 1 に戻す
+  s32 unk_2bc;                   // 0x2BC, unk_2b8 と組で FUN_0809c3c0 に渡る
   s32 kaamosProgress[2];         // 0x2C0, カーモスの進行カウンタ [ジャンゴ, サバタ]
   s32 isKaamos[2];               // 0x2C8, プレイヤーがカーモス状態か？  [ジャンゴ, サバタ]
   u8 unk_2d0[8];                 // 0x2D0
@@ -160,7 +162,7 @@ typedef struct {
   u8 unk_93c[4];              // 0x93C
   s16 lx;                     // 0x940, 太陽光の強さ(ルクス), ライジングサンの効果も反映される,
   s16 sunGauge;               // 0x942, 現在の太陽ゲージ ライジングサンによる太陽ゲージも反映される, ゲームと同じく 0..10
-  u8 unk_944[2];              // 0x944
+  u16 unk_944;                // 0x944, FUN_082158fc が EntityA288.unk_e84 を写す
   s16 unk_946;                // 0x946, WeatherManager_Update が state 3 で 0x7FFF にし、それ以外では 0 まで減らす
   s16 unk_948[4];             // 0x948, FUN_0823d2e0 が 9998 を上限に +1 する
   s16 unk_950[4];             // 0x950, FUN_0823d310 が 9998 を上限に +1 する

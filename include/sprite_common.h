@@ -16,11 +16,13 @@ typedef u32 SpriteFlags;
 #define SPRFLAG_OAM_DIRECT (1 << 5)    // 0x00000020, OAM直書き
 #define SPRFLAG_NO_CLIP (1 << 6)       // 0x00000040, クリップ省略
 #define SPRFLAG_DRAWLIST (1 << 7)      // 0x00000080, セットされていると描画リスト(gAuxSpriteLists, gMainSpriteLists, gParticleLists) の idx が 1の方に追加される
+#define SPRFLAG_UNK_8 (1 << 8)         // 0x00000100, 不明
 #define SPRFLAG_BLINK_ODD (1 << 9)     // 0x00000200, 奇数フレームだけ描画しない
 #define SPRFLAG_BLINK_EVEN (1 << 10)   // 0x00000400, 偶数フレームだけ描画しない
 #define SPRFLAG_UNK_11 (1 << 11)       // 0x00000800, 不明
 #define SPRFLAG_GAMEOVER (1 << 12)     // 0x00001000, ゲームオーバー画面に残すスプライト, ゲームオーバー中は Video_SetDrawPasses がこのビットだけを描くパス (XXX_DrawListGameover) に差し替えるので、立っていないものは一斉に消える
 #define SPRFLAG_UNK_13 (1 << 13)       // 0x00002000, SPRFLAG_GAMEOVER と同じ用途(特定の場面での描画制御), まだどの場面かで使われるかは未解析, Particle: Particle_DrawListUnk13, AuxSprite: AuxSprite_DrawListUnk13, MainSprite: FUN_08230594
+#define SPRFLAG_UNK_14 (1 << 14)       // 0x00004000, 不明
 #define SPRFLAG_UNK_15 (1 << 15)       // 0x00008000, 不明
 
 // 0..15

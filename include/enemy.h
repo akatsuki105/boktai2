@@ -11,7 +11,7 @@
 #include "sprite.h"
 #include "struct.h"
 
-struct EnemyTarget;  // include/enedefault.h
+struct EnemyTarget;
 
 // data.c の "../enemy/system/eneinline.h" という文字列から察するに EnemyXXX_Init の関数サイズがすべて異様に大きいのは、共通部分を eneinline.h にまとめていてそれをインライン展開しているからだと思われる(なんで？)
 
@@ -29,6 +29,7 @@ typedef struct {
   AuxAnimState anim;       // 0x48, AuxAnim_SetAnim に animFile と一緒に渡る
   AuxAnimFile* animFile;   // 0x58
 } EnemyAuxSpriteData;
+static_assert(sizeof(EnemyAuxSpriteData) == 92);
 
 // Enemy.flags (0x178)
 typedef u32 EnemyFlags;
@@ -43,6 +44,7 @@ typedef u32 EnemyFlags;
 
 // Enemy.flags2 (0x17C)
 typedef u32 EnemyFlags2;
+#define ENEFLAG2_UNK_4 (1 << 4)    // 0x00000010, FUN_080f47c8 が立っているときだけ状態14へ遷移する
 #define ENEFLAG2_UNK_11 (1 << 11)  // 0x00000800, FUN_080e49c4 が立っているときだけ ENEFLAG4_UNK_12 へ進む
 #define ENEFLAG2_UNK_17 (1 << 17)  // 0x00020000, FUN_080ecf18 / FUN_080ed020 が「数えない敵」の判定に使う
 #define ENEFLAG2_UNK_21 (1 << 21)  // 0x00200000, FUN_080edebc がパレット転送の向きとして反転させる
@@ -125,7 +127,11 @@ static_assert(sizeof(EnemyAnimEntry) == 4);
   u16 unk_192;                     /* 0x192, Enemy_Sleep / FUN_080ed564 / FUN_080ee738 が書く */                                                                                 \
   u16 unk_194;                     /* 0x194, Enemy の _Init が &unk_194 を控える (unk_196 と対) */                                                                               \
   u16 scriptID;                    /* 0x196, 0 以外なら FUN_080e6750 が VM_ExecByID(scriptID, NULL) で実行する */                                                                \
-  u8 unk_198[0x1C8 - 0x198];       /* 0x198 */                                                                                                                                   \
+  u8 unk_198[0x1C0 - 0x198];       /* 0x198 */                                                                                                                                   \
+  s16 unk_1c0;                     /* 0x1C0, FUN_080f6af0 が Div(unk_20c.x - mover.pos.x, 0x24) を入れる */                                                                      \
+  s16 unk_1c2;                     /* 0x1C2, FUN_080f6af0 が 0x14 を入れる */                                                                                                    \
+  s16 unk_1c4;                     /* 0x1C4, FUN_080f6af0 が Div(unk_20c.z - mover.pos.z, 0x24) を入れる */                                                                      \
+  u8 unk_1c6[0x1C8 - 0x1C6];       /* 0x1C6 */                                                                                                                                   \
   u16 unk_1c8;                     /* 0x1C8, 状態を切り替えるときに 0 でクリアされる */                                                                                          \
   u8 unk_1ca[0x1CC - 0x1CA];       /* 0x1CA */                                                                                                                                   \
   void* unk_1cc;                   /* 0x1CC, handlerUpdate/handlerDestroy の唯一の引数, 破棄時にこれが Free される */                                                            \
@@ -159,7 +165,11 @@ static_assert(sizeof(EnemyAnimEntry) == 4);
   u16 atkUnk40[4];                 /* 0x22C, Hitbox_SetAttack の unk_40 */                                                                                                       \
   u16 atkUnk44[4];                 /* 0x234, Hitbox_SetAttack の unk_44 */                                                                                                       \
   HitboxAttributes atkAttrs[4];    /* 0x23C, Hitbox_SetAttack の attrs */                                                                                                        \
-  u8 unk_24c[0x256 - 0x24C];       /* 0x24C */                                                                                                                                   \
+  u8 unk_24c[0x250 - 0x24C];       /* 0x24C */                                                                                                                                   \
+  u8 unk_250;                      /* 0x250, '.r[0]' */                                                                                                                          \
+  u8 unk_251;                      /* 0x251 */                                                                                                                                   \
+  u8 unk_252;                      /* 0x252, '.r[1]' */                                                                                                                          \
+  u8 unk_253[0x256 - 0x253];       /* 0x253 */                                                                                                                                   \
   u16 unk_256;                     /* 0x256, FUN_080e4384 が引数座標のタイル索引と突き合わせる */                                                                                \
   u8 unk_258[0x25C - 0x258];       /* 0x258 */                                                                                                                                   \
   u8 prevPathNode;                 /* 0x25C, 直前にいた経路ノード番号, FUN_080e7204 が次のノードを選ぶときに避ける */                                                            \
@@ -190,7 +200,7 @@ static_assert(sizeof(EnemyAnimEntry) == 4);
   u16 unk_47a;                     /* 0x47A, unk_480 と足して遷移先パレット番号になる */                                                                                         \
   u8 unk_47c[0x480 - 0x47C];       /* 0x47C */                                                                                                                                   \
   u16 unk_480;                     /* 0x480, FUN_080eca74 が 1 と比較 */                                                                                                         \
-  u8 unk_482[0x484 - 0x482];       /* 0x482 */                                                                                                                                   \
+  u16 unk_482;                     /* 0x482, FUN_080f47c8 が 1 を書く */                                                                                                         \
   u32 unk_484;                     /* 0x484, handlerTables を切り替えるときに 0 でクリアされる */                                                                                \
   u8 unk_488[0x48A - 0x488];       /* 0x488 */                                                                                                                                   \
   u16 unk_48a;                     /* 0x48A, FUN_080e499c が 0 を書く */                                                                                                         \
@@ -224,11 +234,16 @@ static_assert(sizeof(EnemyAnimEntry) == 4);
   EnemyMsgHandler handlerMsg;      /* 0x57C, FUN_080ec758/080ec79c/080ec848 が (enemy, payload) で呼ぶ */                                                                        \
   u8 unk_580[0x584 - 0x580];       /* 0x580 */                                                                                                                                   \
   void* unk_584;                   /* 0x584, 状態12のハンドラ, FUN_080f0868 が handlerState へ写す */                                                                            \
-  u8 unk_588[0x594 - 0x588];       /* 0x588 */                                                                                                                                   \
+  u8 unk_588[0x590 - 0x588];       /* 0x588 */                                                                                                                                   \
+  void* unk_590;                   /* 0x590, 状態ハンドラの控え, FUN_080f2074 が handlerState へ写す */                                                                          \
   void* unk_594;                   /* 0x594, Enemy_Sleep が非NULLのときだけ動く */                                                                                               \
-  u8 unk_598[0x5A4 - 0x598];       /* 0x598 */                                                                                                                                   \
+  u8 unk_598[0x59C - 0x598];       /* 0x598 */                                                                                                                                   \
+  void* unk_59c;                   /* 0x59C, 状態ハンドラの控え, FUN_080f5b34 が handlerState へ写す */                                                                          \
+  u8 unk_5a0[0x5A4 - 0x5A0];       /* 0x5A0 */                                                                                                                                   \
   void* unk_5a4;                   /* 0x5A4, 状態ハンドラの控え, FUN_080f1e78 が handlerState へ写す */                                                                          \
-  u8 unk_5a8[0x5C0 - 0x5A8];       /* 0x5A8 */                                                                                                                                   \
+  u8 unk_5a8[0x5B8 - 0x5A8];       /* 0x5A8 */                                                                                                                                   \
+  void* unk_5b8;                   /* 0x5B8, 状態26のハンドラ, FUN_080f11d0 が handlerState へ写す */                                                                            \
+  u8 unk_5bc[0x5C0 - 0x5BC];       /* 0x5BC */                                                                                                                                   \
   void* unk_5c0;                   /* 0x5C0, 既定の状態ハンドラ, FUN_080ed724 が handlerState へコピーする */                                                                    \
   EnemyHandler unk_5c4;            /* 0x5C4, fn(p), FUN_080faa98 が座標の検索に失敗したときだけ呼ぶ */                                                                           \
   u8 unk_5c8[0x5CC - 0x5C8];       /* 0x5C8 */                                                                                                                                   \

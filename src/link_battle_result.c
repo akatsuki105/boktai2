@@ -61,6 +61,26 @@ s32 FUN_0804a40c(s32 id, s32 idx, char* str);
 s32 FUN_081dfa04(void);
 void FUN_081df8f0(s32 n);
 
+// 通信相手の記録を1件引く, まだセッションが無ければ NULL
+static inline Entity9A9FRecord* Entity9A9F_GetRecord(s32 idx) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return NULL;
+  }
+  return &p->records[idx];
+}
+
+// 自分が何番目の参加者かを返す, セッションが無ければ -1
+static inline s32 Entity9A9F_GetPlayerIdx(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return -1;
+  }
+  return p->playerIdx;
+}
+
 // 状態関数を差し替えて、切り替え直後の1フレームだけ立つフラグを付ける
 static inline void LinkBattleResult_SetState(LinkBattleResult* p, void* fn, u8 state) {
   p->updateCallback = fn;
@@ -212,24 +232,16 @@ void FUN_081dcb8c(LinkBattleResult* p, s32 idx) {
 }
 
 // 経過時間と乱数からその参加者のスコアを決め、桁を並べ直す
-NON_MATCH void FUN_081dcc48(LinkBattleResult* p, s32 idx) {
-#ifdef NONMATCHING_C
+void FUN_081dcc48(LinkBattleResult* p, s32 idx) {
   s32 score = p->unk_856 * p->unk_856 >> 2;
-
-  gRandTableIdx2 = (gRandTableIdx2 + 1) & 0x3FF;
-  score += (gRandomTable2[gRandTableIdx2] & 7) * 10;
-  gRandTableIdx2 = (gRandTableIdx2 + 1) & 0x3FF;
-  score += (gRandomTable2[gRandTableIdx2] & 7) * 100;
-  gRandTableIdx2 = (gRandTableIdx2 + 1) & 0x3FF;
-  score += (gRandomTable2[gRandTableIdx2] & 7) * 1000;
+  score += (Random2() % 8) * 10;
+  score += (Random2() % 8) * 100;
+  score += (Random2() % 8) * 1000;
   if (score > 9999) {
     score = 9999;
   }
   p->unk_6e4[idx] = score;
   FUN_081dcb8c(p, idx);
-#else
-  INCFUNC("asm/func/FUN_081dcc48.inc");
-#endif
 }
 
 // 1フレームおきに効果音を鳴らしつつ、参加者ごとのスロットを更新する
@@ -237,7 +249,7 @@ void FUN_081dccec(LinkBattleResult* p) {
   s32 i;
 
   if (Mod(p->unk_856, 2) == 0) {
-    PlaySound_082406e0(0x2A5);
+    PlaySound_082406e0(SONG_677);
   }
   for (i = 0; i < p->playerCount; i++) {
     if (p->unk_6ec[i] != 0) {
@@ -339,7 +351,7 @@ void FUN_081dd1d8(LinkBattleResult* p) {
         FUN_081dcb8c(p, i);
         FUN_081dc8c0(p, i);
         FUN_081dc818(p, i);
-        PlaySound_082406e0(0x167);
+        PlaySound_082406e0(SE_359);
         p->unk_858++;
       }
     }
@@ -407,7 +419,7 @@ NON_MATCH void FUN_081dd36c(LinkBattleResult* p) {
   count = p->playerCount;
   for (i = 0; i < count; i++) {
     if (p->unk_6fc[i] == playerIdx && p->unk_700[i] == 0) {
-      sound_08240264(0xA9);
+      sound_08240264(SONG_169);
       return;
     }
   }
@@ -451,7 +463,7 @@ void FUN_081dd628(LinkBattleResult* p) {
   if (p->unk_856 <= 9) {
     p->unk_856++;
   } else if (gInput[0].pressed & (A_BUTTON | START_BUTTON)) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     LinkBattleResult_SetState(p, FUN_081dd434, 3);
   }
 }

@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "sprite.h"
+#include "video.h"
 
 typedef struct EntityB87B {
   Entity e;                                    // 0x000, ENTITY_UNK_8
@@ -42,7 +43,18 @@ s32 EntityB87B_Destroy(EntityB87B* p) {
   return 0;
 }
 
-NAKED void FUN_080c1f5c(EntityB87B* p) { INCFUNC("asm/func/FUN_080c1f5c.inc"); }
+// BG0 のタイルマップを全面 0xF001 で塗る
+void FUN_080c1f5c(EntityB87B* p) {
+  BgMapEntry* dst = gBgStates[0].tilemap;
+  s32 i;
+  s32 j;
+
+  for (i = 0; i < 32; i++) {
+    for (j = 0; j < 32; j++) {
+      *dst++ = 0xF001;
+    }
+  }
+}
 
 NAKED void FUN_080c1f88(EntityB87B* p) { INCFUNC("asm/func/FUN_080c1f88.inc"); }
 

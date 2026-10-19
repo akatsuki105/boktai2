@@ -12,6 +12,42 @@
 #include "sound.h"
 #include "sprite.h"
 #include "sprite_main.h"
+#include "trig.h"
+
+// 演出で飛ばす粒子1個ぶんの枠, 8個を使い回す
+typedef struct Entity080aace8Particle {
+  Particle ptcl;                               // 0x00, _Destroy が Particle_Remove に渡す
+  u16 timer;                                   // 0x28, 16 フレームで消える
+  u16 active;                                  // 0x2A, FUN_080aa208 が 0 の枠を飛ばす
+  u16 velX;                                    // 0x2C, 毎フレーム ptcl.pos.x に足す
+  u16 velY;                                    // 0x2E, 毎フレーム ptcl.pos.y に足す, 8フレームごとに 1 増える
+  u8 unk_30[4];                                // 0x30
+  ParticleGroup* group;                        // 0x34, Particle_SetFrame に渡す
+  void (*fn)(struct Entity080aace8Particle*);  // 0x38, FUN_080aa208 が active な枠について呼ぶ
+} Entity080aace8Particle;
+static_assert(sizeof(Entity080aace8Particle) == 60);
+
+typedef struct Entity080aace8 {
+  Entity e;                                        // 0x000, ENTITY_UNK_11
+  Player* player;                                  // 0x018, _Init の第2引数
+  MainSprite sprite;                               // 0x01C, _Destroy が MainSprite_Remove に渡す
+  Vec3 spritePos;                                  // 0x07C, screen から少しずらした sprite の表示位置
+  Vec3 screen;                                     // 0x084, player->mover.pos の y に +0x96 した点を投影した画面座標
+  u8 unk_8c[8];                                    // 0x08C
+  HitboxData hitbox;                               // 0x094
+  AuxSprite auxSprites[2];                         // 0x0E4, 根拠: _Destroy の stride 0x2C × 2
+  AuxSpriteGfx gfx;                                // 0x13C, SPRITE_SPIKEBALL
+  u16 unk_158;                                     // 0x158, 次に使う auxSprites の添字 (0 と 1 を交互)
+  u8 unk_15a[2];                                   // 0x15A, auxSprites[i] の演出段階 (0: 停止, 1: 落下, 2: 跳ね)
+  u16 unk_15c[2];                                  // 0x15C, auxSprites[i] の着地する y
+  u16 unk_160[2];                                  // 0x160, 段階ごとの経過フレーム数
+  Entity080aace8Particle ptcls[8];                 // 0x164, 根拠: _Destroy の stride 0x3C × 8
+  u8 unk_344[4];                                   // 0x344
+  u16 unk_348;                                     // 0x348, _Init の第3引数, 0 のときだけ _Destroy が auxSprites を外す
+  u16 unk_34a;                                     // 0x34A, 消えるまでの経過フレーム数
+  void (*updateCallback)(struct Entity080aace8*);  // 0x34C
+} Entity080aace8;
+static_assert(sizeof(Entity080aace8) == 848);
 
 // pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
 static inline s32 GetTileHeightAt(WorldPos* pos) {
@@ -54,50 +90,7 @@ static inline s32 GetTileHeightAt(WorldPos* pos) {
   return height;
 }
 
-// 4.12 固定小数の積を 0 方向に丸めて整数に戻す, `/ 4096` だと agbcc がバイアス加算で割るので一致しない
-static inline s32 Fix12ToInt(s32 v) {
-  if (v >= 0) {
-    return v >> 12;
-  }
-  return -(-v >> 12);
-}
-
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
-
-// 演出で飛ばす粒子1個ぶんの枠, 8個を使い回す
-typedef struct Entity080aace8Particle {
-  Particle ptcl;                               // 0x00, _Destroy が Particle_Remove に渡す
-  u16 timer;                                   // 0x28, 16 フレームで消える
-  u16 active;                                  // 0x2A, FUN_080aa208 が 0 の枠を飛ばす
-  u16 velX;                                    // 0x2C, 毎フレーム ptcl.pos.x に足す
-  u16 velY;                                    // 0x2E, 毎フレーム ptcl.pos.y に足す, 8フレームごとに 1 増える
-  u8 unk_30[4];                                // 0x30
-  ParticleGroup* group;                        // 0x34, Particle_SetFrame に渡す
-  void (*fn)(struct Entity080aace8Particle*);  // 0x38, FUN_080aa208 が active な枠について呼ぶ
-} Entity080aace8Particle;
-static_assert(sizeof(Entity080aace8Particle) == 60);
-
-typedef struct Entity080aace8 {
-  Entity e;                                        // 0x000, ENTITY_UNK_11
-  Player* player;                                  // 0x018, _Init の第2引数
-  MainSprite sprite;                               // 0x01C, _Destroy が MainSprite_Remove に渡す
-  Vec3 spritePos;                                  // 0x07C, screen から少しずらした sprite の表示位置
-  Vec3 screen;                                     // 0x084, player->mover.pos の y に +0x96 した点を投影した画面座標
-  u8 unk_8c[8];                                    // 0x08C
-  HitboxData hitbox;                               // 0x094
-  AuxSprite auxSprites[2];                         // 0x0E4, 根拠: _Destroy の stride 0x2C × 2
-  AuxSpriteGfx gfx;                                // 0x13C, SPRITE_SPIKEBALL
-  u16 unk_158;                                     // 0x158, 次に使う auxSprites の添字 (0 と 1 を交互)
-  u8 unk_15a[2];                                   // 0x15A, auxSprites[i] の演出段階 (0: 停止, 1: 落下, 2: 跳ね)
-  u16 unk_15c[2];                                  // 0x15C, auxSprites[i] の着地する y
-  u16 unk_160[2];                                  // 0x160, 段階ごとの経過フレーム数
-  Entity080aace8Particle ptcls[8];                 // 0x164, 根拠: _Destroy の stride 0x3C × 8
-  u8 unk_344[4];                                   // 0x344
-  u16 unk_348;                                     // 0x348, _Init の第3引数, 0 のときだけ _Destroy が auxSprites を外す
-  u16 unk_34a;                                     // 0x34A, 消えるまでの経過フレーム数
-  void (*updateCallback)(struct Entity080aace8*);  // 0x34C
-} Entity080aace8;
-static_assert(sizeof(Entity080aace8) == 848);
 
 // 1枠を1フレーム進める, 16フレームで消える
 // 残差1命令 (41/42) でこちらが短い: 原典は timer の 16bit 切り詰めを使うたびに作り直すが, こちらは最初の (timer << 16) を使い回す
@@ -122,27 +115,26 @@ NON_MATCH void FUN_080aa08c(Entity080aace8Particle* q) {
 }
 
 // 8枠を spritePos から放射状に飛ばす
-// 残差2命令 (133/135) でこちらが短い: 原典は 0x3FF と gSineTable と 0xFF を全部高位レジスタに巻き上げるが, こちらは一部を使う場所で作る
+// 残差1命令 (135/135, レジスタは全一致): 原典は i * 32 の lsls を乱数のロードとシフトの間に出すが, 文の順序では挟めない (digit をローカルに分ける前は早すぎ, 分けると遅すぎ)
+// Tier A-C は試済: RNG の項を先に書く / % 16 と % 4 (シフト後の値には符号補正が入って悪化) はいずれも hunk 増加
 NON_MATCH void FUN_080aa0e4(Entity080aace8* p) {
 #ifdef NONMATCHING_C
   s32 i;
 
   for (i = 0; i < 8; i++) {
+    u16* table = gRandomTable;
+    s32 digit;
     s32 angle;
     s32 speed;
-    s32 idx;
 
     p->ptcls[i].ptcl.pos.x = p->spritePos.x + 8;
     p->ptcls[i].ptcl.pos.y = p->spritePos.y + 8;
 
-    idx = (gRandTableIdx + 1) & 0x3FF;
-    angle = i * 32 + ((*(gRandomTable + idx) >> 3) & 0xF);
-    idx = (idx + 1) & 0x3FF;
-    gRandTableIdx = idx;
-    speed = ((*(gRandomTable + idx) >> 3) & 3) + 4;
-
-    p->ptcls[i].velX = Fix12ToInt(speed * gSineTable[(angle + 0x38) & 0xFF]);
-    p->ptcls[i].velY = Fix12ToInt(speed * gSineTable[(angle - 8) & 0xFF]);
+    digit = (_Random(table) >> 3) & 0xF;
+    angle = i * 32 + digit - 8;
+    speed = ((_Random(table) >> 3) & 3) + 4;
+    p->ptcls[i].velX = COS(angle, speed);
+    p->ptcls[i].velY = SIN(angle, speed);
     p->ptcls[i].ptcl.flags &= ~SPRFLAG_HIDDEN;
     p->ptcls[i].active = 1;
     p->ptcls[i].timer = 0;
@@ -201,8 +193,8 @@ NON_MATCH void FUN_080aa29c(Entity080aace8* p) {
   gRandTableIdx = idx;
   dist = (*(gRandomTable + idx) & 0xFF) + 0x80;
 
-  dx = Fix12ToInt(dist * gSineTable[(angle + 0x40) & 0xFF]);
-  dy = Div8192(gSineTable[angle] * dist * 3);
+  dx = FixToInt(12, dist * gSineTable[(angle + 0x40) & 0xFF]);
+  dy = FixToInt(13, gSineTable[angle] * dist * 3);
 
   spr->flags &= ~SPRFLAG_HIDDEN;
   spr->pos = gCameraCoords.worldPos;
@@ -260,7 +252,7 @@ NON_MATCH void FUN_080aa4e8(Entity080aace8* p) {
             p->unk_160[i] = 0;
           }
         } else {
-          PlaySound_082406e0(0x1FF);
+          PlaySound_082406e0(SE_511);
           spr->pos.y = p->unk_15c[i];
           p->unk_15a[i] = 2;
           p->unk_160[i] = 0;
@@ -314,7 +306,7 @@ NON_MATCH void FUN_080aa658(Entity080aace8* p) {
 #ifdef NONMATCHING_C
   if (p->unk_34a == 0) {
     gEntityDisableFlags &= ~ENTITY_DISABLE_2;
-    PlaySound_082406e0(0x67);
+    PlaySound_082406e0(SOUND_103);
     FUN_0823ce68(2, 4, 0x1F, 0x1F, 0x1F, 0x1FFF, 1);
   }
 
@@ -338,33 +330,29 @@ NON_MATCH void FUN_080aa658(Entity080aace8* p) {
 }
 
 // アイコンを8フレーム揺らし、0x1E フレームで弾けさせて 0x2D フレームで次の演出に移る
-// 残差6命令 (119/125) でこちらが短い: 原典は gRandomTable と 0x3FF を揺らしループの前に高位レジスタへ巻き上げるが, こちらは使う場所で作る
+// 残差10命令 (115/125) でこちらが短い: 原典は p を r7 に置き &unk_34a を r10 に巻き上げて読み回す (高位レジスタ3本) が, こちらは p が r4 で2本, &unk_34a は使用箇所でプールから作り直す
+// レジスタ名違いの hunk は全部この派生, Tier C は試済 (amp は >> 1 でなければ符号付き除算の補正が入る, unk_348 の u16 は正しい)
 NON_MATCH void FUN_080aa708(Entity080aace8* p) {
 #ifdef NONMATCHING_C
   p->unk_34a++;
-  if (p->unk_34a <= 7) {
+  if (p->unk_34a < 8) {
+    u16* table = gRandomTable;
     s32 amp = 8 - p->unk_34a;
-    s32 r;
-
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    r = *(gRandomTable + gRandTableIdx) >> 3;
-    p->sprite.pos.x = p->spritePos.x + Mod(r, amp) - (amp >> 1);
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    r = *(gRandomTable + gRandTableIdx) >> 3;
-    p->sprite.pos.y = p->spritePos.y + Mod(r, amp) - (amp >> 1);
+    p->sprite.pos.x = p->spritePos.x + Mod(_Random(table) / 8, amp) - (amp >> 1);
+    p->sprite.pos.y = p->spritePos.y + Mod(_Random(table) / 8, amp) - (amp >> 1);
   }
 
-  if (p->unk_34a == 0x1E) {
+  if (p->unk_34a == 30) {
     FUN_080aa0e4(p);
-    PlaySound_082406e0(0x285);
+    PlaySound_082406e0(SONG_645);
     p->sprite.flags |= SPRFLAG_HIDDEN;
   }
 
-  if (p->unk_348 == 1 && p->unk_34a == 0x1D) {
+  if (p->unk_348 == 1 && p->unk_34a == 29) {
     FUN_0823ce68(3, 5, 4, 4, 4, 0x1FFF, 1);
   }
 
-  if (p->unk_34a > 0x2C) {
+  if (p->unk_34a > 44) {
     if (p->unk_348 == 0) {
       p->updateCallback = FUN_080aa5d0;
     } else {
@@ -386,7 +374,7 @@ void FUN_080aa834(Entity080aace8* p) {
     p->sprite.flags &= ~SPRFLAG_AFFINE;
     p->updateCallback = FUN_080aa708;
     p->unk_34a = 0;
-    PlaySound_082406e0(0x284);
+    PlaySound_082406e0(SONG_644);
   } else {
     s32 scale = p->unk_34a * 2 + 0x20;
 
@@ -443,7 +431,7 @@ void FUN_080aa9d0(Entity080aace8* p) {
   Video_GetAuxSprite(&p->gfx, SPRITE_SPIKEBALL);
   for (i = 0; i < 2; i++) {
     AuxSprite_Add(&p->auxSprites[i], &p->gfx, SPRFLAG_HIDDEN);
-    Video_SetAuxSpritePltt(&p->gfx, 0x27D);
+    Video_SetAuxSpritePltt(&p->gfx, 637);
     p->auxSprites[i].pos = p->player->mover.pos;
   }
 }
@@ -458,7 +446,7 @@ NON_MATCH void FUN_080aaa2c(Entity080aace8* p) {
 
   for (i = 7; i >= 0; i--) {
     q->group = g;
-    Particle_Add(&q->ptcl, g, 0x11);
+    Particle_Add(&q->ptcl, g, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     Particle_SetOffset(&q->ptcl, -4, -4);
     Particle_SetFrame(&q->ptcl, q->group, 2);
     Particle_SetPltt(&q->ptcl, 1);
@@ -473,7 +461,7 @@ NON_MATCH void FUN_080aaa2c(Entity080aace8* p) {
 }
 
 // 画面全体を覆う当たり判定を作る, 威力は失った HP か (変身中なら) レベル から決める
-// 残差1命令 (105/106) でこちらが短い: 原典は HBATTR_12 の 0x1000 を Hitbox_Init の前に作って高位レジスタに持ち越すが, こちらは使う直前に作る
+// 残差1命令 (105/106) でこちらが短い: 原典は HBATTR_NAMAKURA の 0x1000 を Hitbox_Init の前に作って高位レジスタに持ち越すが, こちらは使う直前に作る
 NON_MATCH void FUN_080aaaa8(Entity080aace8* p) {
 #ifdef NONMATCHING_C
   HitboxData* hitbox = &p->hitbox;
@@ -504,8 +492,8 @@ NON_MATCH void FUN_080aaaa8(Entity080aace8* p) {
     power = lv * 8;
   }
 
-  Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_12 | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
-  Hitbox_SetAttack(hitbox, power, 0xA, 0, HBATTR_12, 0x1E);
+  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_12 | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
+  Hitbox_SetAttack(hitbox, power, 0xA, 0, HBATTR_NAMAKURA, 0x1E);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetPos(hitbox, &p->player->mover.pos, 0);
 #else
@@ -530,9 +518,9 @@ NON_MATCH s32 Entity080aace8_Init(Entity080aace8* p, Player* player, u32 param_3
 
   sx = pos.x >> 1;
   sz = pos.z >> 1;
-  p->screen.x = Div256((sx - sz) * 48);
-  sy = Div256((sx + sz) * 48);
-  h = Div256(pos.y * 24);
+  p->screen.x = FixToInt(8, (sx - sz) * 48);
+  sy = FixToInt(8, (sx + sz) * 48);
+  h = FixToInt(8, pos.y * 24);
   p->screen.x = p->screen.x - gCameraVpCoords.x + 0x78;
   p->screen.y = sy - h - gCameraVpCoords.y + 0x5A;
   p->screen.z = sy + h - gCameraVpCoords.z;

@@ -28,16 +28,6 @@ static_assert(sizeof(Entity08004fac) == 28);
 
 IWRAM_DATA Entity08004fac* gEntity08004fac = NULL;  // 0x03000024
 
-NAKED s32 FUN_08004668(s32 param_1) { INCFUNC("asm/func/FUN_08004668.inc"); }
-
-NAKED s32 FUN_08004694(s32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_08004694.inc"); }
-
-NAKED s32 FUN_080046c8(u16 param_1, s32 param_2, s32 param_3, unknown* param_4, s32 param_5, s32 param_6) { INCFUNC("asm/func/FUN_080046c8.inc"); }
-
-NAKED s32 FUN_08004a04(void) { INCFUNC("asm/func/FUN_08004a04.inc"); }
-
-NAKED s32 FUN_08004ba4(void) { INCFUNC("asm/func/FUN_08004ba4.inc"); }
-
 void FUN_08004c78(void) { gEntity08004fac = NULL; }
 
 s32 Entity08004fac_LinkNode(Entity08004facNode* node) {
@@ -122,7 +112,27 @@ s32 Entity08004fac_FreeNodesById(u16 id) {
   return 0;
 }
 
-NAKED s32 Entity08004fac_DisableNodesById(u16 id) { INCFUNC("asm/func/Entity08004fac_DisableNodesById.inc"); }
+// id が一致するノードを衝突マップから外す
+s32 Entity08004fac_DisableNodesById(u16 id) {
+  Entity08004fac* p = gEntity08004fac;
+  Entity08004facNode* node;
+
+  if (p == NULL) {
+    return -1;
+  }
+
+  node = p->head;
+  while (node != NULL) {
+    Entity08004facNode* next = node->next;
+
+    if (node->id == id && node->active) {
+      node->active = FALSE;
+      Map_RemoveTileOverride(&node->tileOverride);
+    }
+    node = next;
+  }
+  return 0;
+}
 
 NAKED s32 Entity08004fac_EnableNodesById(u16 id) { INCFUNC("asm/func/Entity08004fac_EnableNodesById.inc"); }
 
@@ -156,14 +166,17 @@ Entity08004fac* Entity08004fac_Create(u32 param_1) {
   return p;
 }
 
-s32 VM_Sub3E1F(void) { return Entity08004fac_FreeNodesById(VM_GetNamedArgValue('n', 0)); }
+// 0x3E1F
+s32 Cmd_3E1F(void) { return Entity08004fac_FreeNodesById(VM_GetNamedArgValue('n', 0)); }
 
-// '.n' が指すノードを衝突マップから外す
+// 0x8153, '.n' が指すノードを衝突マップから外す
 s32 FUN_08005004(void) { return Entity08004fac_DisableNodesById(VM_GetNamedArgValue('n', 0)); }
 
-// '.n' が指すノードを衝突マップへ戻す
+// 0xF0CC, '.n' が指すノードを衝突マップへ戻す
 s32 FUN_0800501c(void) { return Entity08004fac_EnableNodesById(VM_GetNamedArgValue('n', 0)); }
 
+// 0xB8C7
 NAKED s32 FUN_08005034(void) { INCFUNC("asm/func/FUN_08005034.inc"); }
 
+// 0xFEBB
 NAKED s32 FUN_0800512c(void) { INCFUNC("asm/func/FUN_0800512c.inc"); }

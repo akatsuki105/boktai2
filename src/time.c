@@ -353,10 +353,10 @@ NON_MATCH u32 Time_GetSpanOfTime(void) {
 #endif
 }
 
-u32 Time_GetRtcStatus(void) { return gClock.rtcStatus; }
+u32 Cmd_GetRtcStatus(void) { return gClock.rtcStatus; }
 
 // 0xB55A, 現在の年月日と時分秒をスクリプトへ返す
-void Time_GetDateTimeScripted(void) {
+void Cmd_GetDateTime(void) {
   s32 ymd[3];
   u8 buf[8];
 
@@ -384,7 +384,7 @@ void Time_GetDayOfWeekScripted(void) {
 }
 
 // 0xFBC1, スクリプトから2つの日付を受け取り、その間の日数をスクリプトへ返す
-void Time_GetDayDiffScripted(void) {
+void Cmd_GetDayDiff(void) {
   u8 buf[8];
   s32 year1 = VM_GetValue();
   s32 month1 = VM_GetValue();
@@ -399,7 +399,7 @@ void Time_GetDayDiffScripted(void) {
 }
 
 // 0x3C47, 日の出の時刻と日の出までの残り時間をスクリプトへ返す
-void Time_GetSunriseScripted(void) {
+void Cmd_GetSunriseTime(void) {
   u8 buf[8];
 
   FUN_0823167c(buf);
@@ -413,7 +413,7 @@ void Time_GetSunriseScripted(void) {
 }
 
 // 0x5365, 日の入りの時刻と日の入りまでの残り時間をスクリプトへ返す
-void Time_GetSunsetScripted(void) {
+void Cmd_GetSunsetTime(void) {
   u8 buf[8];
 
   FUN_0823167c(buf);
@@ -427,7 +427,7 @@ void Time_GetSunsetScripted(void) {
 }
 
 // 0x2F01
-u32 Time_GetType(void) {
+u32 Cmd_GetSpanOfTime(void) {
   u8 buf[8];
   u32 type = gClock.spanOfTime;
 
@@ -484,7 +484,7 @@ u32 Time_GetMoonAge(void) { return gClock.moonAge; }
 u32 Time_GetMoonPhase(void) { return gClock.moonPhase; }
 
 // 0x5933
-u32 Time_GetMoonPhaseScripted(void) { return gClock.moonPhase; }
+u32 Cmd_GetMoonPhase(void) { return gClock.moonPhase; }
 
 // RTC の起動を5回まで待ち、駄目なら 2004/7/22 12:00 で初期化する
 void Time_InitFromRtc(void) {

@@ -9,9 +9,9 @@ struct AuxSprite;
 struct MainSprite;
 
 // Mover が踏んでいるタイルの控え, どの配列も [0] が前、[1] が今
-// タイルが変わったときだけ FUN_082332f8 が今の値を [0] へ押し出してから [1] を新しいタイルで更新する
+// タイルが変わったときだけ Map_UpdateMoverTile が今の値を [0] へ押し出してから [1] を新しいタイルで更新する
 typedef struct {
-  u8 unk_0[4];       // 0x00, Map_InitMoverTile も FUN_082332f8 も触らない
+  u8 unk_0[4];       // 0x00, Map_InitMoverTile も Map_UpdateMoverTile も触らない
   u16 tileIdx[2];    // 0x04, gCollisionMap->rowOffsets[z >> 8] + (x >> 8)
   u8 height[2];      // 0x08, CollisionMapTile.heightStairs の下位4bit
   u8 stairs[2];      // 0x0A, CollisionMapTile.heightStairs の上位4bit
@@ -25,7 +25,7 @@ static_assert(sizeof(MoverTile) == 16);
 typedef struct Mover {
   u16 id;                         // 0x00, Mover_FindByID の検索キー
   u16 unk_2;                      // 0x02, フラグっぽい
-  u8 unk_4;                       // 0x04, 衝突解決 FUN_0823349c の第6引数
+  u8 unk_4;                       // 0x04, 衝突解決 FUN_0823349c の第6引数, また gPlayerPtr では idx として使われる
   u8 angle;                       // 0x05, 8bit の向き, gSineTable の添字
   u8 unk_6[2];                    // 0x06, 読み手も書き手も未発見, padding?
   WorldPos pos;                   // 0x08, ワールド座標
@@ -69,6 +69,8 @@ bool32 Mover_Unlink(Mover* p);
 Mover* Mover_FindByID(u16 id);
 
 void MoverList_ClearPtr(void);
+
+bool32 FUN_0823b464(Mover* p, u32 unk_20);
 
 // Mover_FindByID を呼ぶだけのラッパ, 他モジュールが使っているのはこちら (11箇所)
 Mover* Mover_FindByID_Proxy(u16 id);

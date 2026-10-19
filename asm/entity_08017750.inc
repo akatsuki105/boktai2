@@ -30,8 +30,8 @@ FUN_08016fe4: @ 0x08016FE4
 	bx lr
 	.align 2, 0
 
-	thumb_func_start FUN_08017000
-FUN_08017000: @ 0x08017000
+	thumb_func_start Entity08017750_ProjectPos
+Entity08017750_ProjectPos: @ 0x08017000
 	push {r4, r5, r6, r7, lr}
 	adds r6, r0, #0
 	adds r6, #0x24
@@ -141,7 +141,7 @@ _080170BC:
 _080170C0:
 	strh r0, [r4, #0x1a]
 	adds r0, r4, #0
-	bl FUN_08017000
+	bl Entity08017750_ProjectPos
 	ldr r0, [r4, #0xc]
 	cmp r0, #3
 	bls _080170DA
@@ -175,7 +175,7 @@ FUN_080170e4: @ 0x080170E4
 	str r0, [r4, #0x2c]
 _080170FC:
 	adds r0, r4, #0
-	bl FUN_08017000
+	bl Entity08017750_ProjectPos
 	ldr r0, [r4, #0xc]
 	ldrh r1, [r4, #0x10]
 	cmp r0, r1
@@ -278,7 +278,7 @@ _0801719E:
 	adds r0, #8
 	strh r0, [r4, #0x1c]
 	adds r0, r4, #0
-	bl FUN_08017000
+	bl Entity08017750_ProjectPos
 	ldrb r1, [r6]
 	movs r0, #0x40
 	subs r0, r0, r1
@@ -351,7 +351,7 @@ _08017234:
 _08017238:
 	strh r0, [r7, #0x1a]
 	adds r0, r7, #0
-	bl FUN_08017000
+	bl Entity08017750_ProjectPos
 	ldrb r0, [r7, #7]
 	cmp r0, #3
 	bne _080172A8
@@ -469,7 +469,7 @@ _08017314:
 	adds r0, #0x40
 	strh r0, [r4, #0x1a]
 	adds r0, r4, #0
-	bl FUN_08017000
+	bl Entity08017750_ProjectPos
 	ldrb r1, [r5]
 	movs r0, #0x40
 	subs r0, r0, r1

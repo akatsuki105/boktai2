@@ -1,4 +1,5 @@
 #include "entity.h"
+#include "file.h"
 #include "global.h"
 #include "particle.h"
 #include "sprite.h"
@@ -6,11 +7,16 @@
 typedef struct {
   u8 unk_0[0x2D];     // 0x000
   u8 unk_2d;          // 0x02D, FUN_080da8a0 が 0 かどうかを見る
-  u8 unk_2e[10];      // 0x02E
+  u8 unk_2e[4];       // 0x02E
+  u8 unk_32[3];       // 0x032, 根拠: FUN_080d8644 が3要素を 0 で埋める
+  u8 unk_35[3];       // 0x035, 同上
   u8 ptclMask;        // 0x038, bit0..2 が立っている枠だけ _Destroy が Particle_Remove する
-  u8 unk_39[11];      // 0x039
+  u8 unk_39[5];       // 0x039
+  u16 unk_3e[3];      // 0x03E, 根拠: FUN_080d8644 が3要素を 0 で埋める
   u8 hasSprite;       // 0x044, 0 以外なら _Destroy が spr を AuxSprite_Remove する
-  u8 unk_45[0x17];    // 0x045
+  u8 unk_45[7];       // 0x045
+  u32 unk_4c[3];      // 0x04C, 根拠: FUN_080d8644 が3要素を 0 で埋める
+  u8 unk_58[4];       // 0x058
   AuxSprite spr;      // 0x05C, _Destroy が AuxSprite_Remove に渡す
   Particle ptcls[3];  // 0x088, 根拠: _Destroy の stride 0x28 × 3
   u8 unk_100[0x34];   // 0x100
@@ -19,14 +25,11 @@ static_assert(sizeof(Entity080da848Elem) == 308);
 
 typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_9
-  u8 unk_18[0x32 - 0x18];       // 0x018, まだ未解析
-  u8 unk_32[3];                 // 0x032, 根拠: FUN_080d8644 が3要素を 0 で埋める
-  u8 unk_35[3];                 // 0x035, 同上
-  u8 unk_38[0x3E - 0x38];       // 0x038, まだ未解析
-  u16 unk_3e[3];                // 0x03E, 同上
-  u8 unk_44[0x4C - 0x44];       // 0x044, まだ未解析
-  u32 unk_4c[3];                // 0x04C, 同上
-  u8 unk_58[0x5C - 0x58];       // 0x058, まだ未解析
+  AuxSpriteGfx gfx_18;          // 0x018, SPRITE_EMOTION_ICONS
+  AuxSpriteGfx gfx_34;          // 0x034, SPRITE_363D
+  AuxAnimFile* anim_50;         // 0x050, ANIM_6830
+  AuxAnimFile* anim_54;         // 0x054, ANIM_D41F
+  ParticleGroup* group;         // 0x058, PTCL_GROUP_1
   Entity080da848Elem elems[8];  // 0x05C, 根拠: _Destroy の stride 0x134 × 8
   u32 activeMask;               // 0x9FC, 使用中の elems のビットマスク
 } Entity080da848;
@@ -34,7 +37,7 @@ static_assert(sizeof(Entity080da848) == 2560);
 
 IWRAM_DATA Entity080da848* gEntity080da848 = NULL;  // 0x0300015C
 
-void FUN_080d8644(Entity080da848* p) {
+void FUN_080d8644(Entity080da848Elem* p) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
@@ -182,11 +185,32 @@ void (*const PTR_ARRAY_085ad304[3])(Entity080da848Elem*) = {
     NULL,
 };  // 0x085AD304
 
-NAKED s32 Entity080da848_Update(Entity080da848* p) { INCFUNC("asm/func/Entity080da848_Update.inc"); }
+// 残差1命令 (32/31): 原典はハンドラ表の先頭を r7 に抱えるが, こちらは r7 を使わずループ内で引き直す
+NON_MATCH s32 Entity080da848_Update(Entity080da848* p) {
+#ifdef NONMATCHING_C
+  Entity080da848Elem* e = p->elems;
+
+  if (p->activeMask != 0) {
+    for (; e <= &p->elems[7]; e++) {
+      PTR_ARRAY_085ad304[e->unk_2d](e);
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/Entity080da848_Update.inc");
+#endif
+}
 
 NAKED s32 Entity080da848_Destroy(Entity080da848* p) { INCFUNC("asm/func/Entity080da848_Destroy.inc"); }
 
-NAKED void FUN_080da7cc(Entity080da848* p) { INCFUNC("asm/func/FUN_080da7cc.inc"); }
+// スプライト2種とアニメ2本、粒子グループを読み込む
+void FUN_080da7cc(Entity080da848* p) {
+  Video_GetAuxSprite(&p->gfx_18, SPRITE_EMOTION_ICONS);
+  Video_GetAuxSprite(&p->gfx_34, SPRITE_363D);
+  p->group = GetParticleGroup(PTCL_GROUP_1);
+  p->anim_50 = GetFile(DIR_ANIMATION, ANIM_6830);
+  p->anim_54 = GetFile(DIR_ANIMATION, ANIM_D41F);
+}
 
 s32 Entity080da848_Init(Entity080da848* p) {
   p->activeMask = 0;

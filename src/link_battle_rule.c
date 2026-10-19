@@ -1,7 +1,17 @@
+#include "bg_pltt.h"
 #include "entity.h"
+#include "entity_9a9f.h"
+#include "file.h"
 #include "global.h"
+#include "link_battle_lobby.h"
 #include "sprite_main.h"
+#include "sprite_pltt.h"
+#include "text.h"
 #include "tilemap.h"
+#include "video.h"
+
+bool32 FUN_081dfa04(void);
+s32 FUN_08049fa8(void);
 
 // おそらく、通信対戦のルール設定
 // 3行の選択肢を持つ通信メニュー, 各行は values[i] を counts[i] で巻き戻しながら左右で切り替える
@@ -12,8 +22,8 @@ typedef struct Entity08F4 {
   MainSprite sprites[7];                       // 0x020
   MainSpriteGfx gfx;                           // 0x2C0, SPRITE_UI_LINK
   MainSpriteGfxFile* gfxFile;                  // 0x2E0, SPRITE_UI_LINK
-  rgb555 objPltt[16];                          // 0x2E4, FUN_081db32c が gObjPlttData+0x2930 から16色複写し、sprites[0].pltt をここへ向ける
-  u16 unk_304;                                 // 0x304, FUN_081db32c が 0 を入れるだけ
+  rgb555 objPltt[16];                          // 0x2E4, Entity08F4_SavePltt が gObjPlttData+0x2930 から16色複写し、sprites[0].pltt をここへ向ける
+  u16 unk_304;                                 // 0x304, Entity08F4_SavePltt が 0 を入れるだけ
   u16 unk_306;                                 // 0x306, 読み手も書き手も見つかっていない, padding?
   void (*updateCallback)(struct Entity08F4*);  // 0x308
   u8* scriptPc;                                // 0x30C, Init が VM_GetPC_Proxy() を入れる, VM_ParseStringRef / TextPanel_SetScript に渡す
@@ -41,4 +51,137 @@ const s32 s32_ARRAY_085ae1e4[6] = {0, 0, 0, 32, 0, 64};  // 0x085AE1E4
 
 const u16 u16_ARRAY_085ae1fc[4] = {60, 90, 120, 0};  // 0x085AE1FC
 
-INCASM("asm/link_battle_rule.inc");
+// 3行の選択値を通信セッション側へ写す
+s32 FUN_081dae74(Entity08F4* p) {
+  Entity9A9F* q = gEntity9A9F;
+  u8* dst;
+
+  if (q == NULL || (dst = &q->unk_2c4) == NULL) {
+    return -1;
+  }
+
+  dst[0] = p->values[0];
+  dst[1] = p->values[1];
+  dst[2] = p->values[2];
+  return 0;
+}
+
+NAKED void FUN_081daeb8(unknown* param_1) { INCFUNC("asm/func/FUN_081daeb8.inc"); }
+
+NAKED void FUN_081daf44(unknown* param_1) { INCFUNC("asm/func/FUN_081daf44.inc"); }
+
+NAKED void FUN_081daff0(unknown* param_1) { INCFUNC("asm/func/FUN_081daff0.inc"); }
+
+NAKED void FUN_081db074(unknown* param_1) { INCFUNC("asm/func/FUN_081db074.inc"); }
+
+void Entity08F4_HidePanels(Entity08F4* p) {
+  TextPanel_Hide(p->panelID0);
+  TextPanel_Hide(p->panelID1);
+}
+
+NAKED void FUN_081db14c(unknown* param_1) { INCFUNC("asm/func/FUN_081db14c.inc"); }
+
+NAKED void FUN_081db1e8(unknown* param_1) { INCFUNC("asm/func/FUN_081db1e8.inc"); }
+
+void Entity08F4_HideSprites(Entity08F4* p) {
+  s32 i;
+
+  for (i = 0; i < 7; i++) {
+    p->sprites[i].flags |= SPRFLAG_HIDDEN;
+  }
+}
+
+void Entity08F4_RemoveSprites(Entity08F4* p) {
+  s32 i;
+
+  for (i = 0; i < 7; i++) {
+    MainSprite_Remove(&p->sprites[i]);
+  }
+}
+
+void Entity08F4_SavePltt(Entity08F4* p) {
+  rgb555* src = &gObjPlttData[0x2930];
+  s32 i;
+
+  for (i = 0; i < 16; i++) {
+    p->objPltt[i] = src[i];
+  }
+  p->sprites[0].pltt = p->objPltt;
+  p->unk_304 = 0;
+}
+
+NAKED void FUN_081db370(unknown* param_1) { INCFUNC("asm/func/FUN_081db370.inc"); }
+
+NAKED void FUN_081db3c0(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_081db3c0.inc"); }
+
+NAKED void FUN_081db4b0(unknown* param_1) { INCFUNC("asm/func/FUN_081db4b0.inc"); }
+
+NAKED void FUN_081db57c(unknown* param_1) { INCFUNC("asm/func/FUN_081db57c.inc"); }
+
+s32 Entity08F4_Update(Entity08F4* p) {
+  if (!FUN_081dfa04()) {
+    FUN_08049fa8();
+    Entity08F4_HideSprites(p);
+    KillEntity((Entity*)p);
+    return -1;
+  }
+
+  if (p->updateCallback != NULL) {
+    p->updateCallback(p);
+  }
+  return 1;
+}
+
+s32 Entity08F4_Destroy(Entity08F4* p) {
+  Entity08F4_RemoveSprites(p);
+  Entity08F4_HidePanels(p);
+  return 1;
+}
+
+NAKED s32 Entity08F4_Init(Entity08F4* p) { INCFUNC("asm/func/Entity08F4_Init.inc"); }
+
+Entity08F4* Entity08F4_Create(void) {
+  Entity08F4* p = CreateEntity(ENTITY_UNK_11, sizeof(Entity08F4));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity08F4_Update, Entity08F4_Destroy);
+    if (Entity08F4_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}
+
+// BG2 にルール画面のタイルマップを敷き, パレットを BG パレットへ送る
+void FUN_081db9f4(LinkBattleLobby* p) {
+  s32 layer;
+
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  layer = 7;
+  Video_SetupBGLayout(2, 0, p->tilemap, 0, 0, 1, &layer);
+
+  p->bgPltt = GetBgPlttFile(BGP_26BB)->body;
+  CpuCopy16(p->bgPltt, gBgPlttBuffer, 256 * sizeof(rgb555));
+}
+
+// 背景パレットの後半16色を控えてから点滅タイマーを戻す
+void FUN_081dba54(LinkBattleLobby* p) {
+  CpuCopy16(&p->bgPltt[32], p->pltt, 16 * sizeof(rgb555));
+  p->blinkTimer = 0;
+}
+
+NAKED void FUN_081dba78(unknown* param_1) { INCFUNC("asm/func/FUN_081dba78.inc"); }
+
+// 立ち絵4枚とアイコン4枚のアニメ番号を初期値に戻す
+void FUN_081dbc14(LinkBattleLobby* p) {
+  p->animID[0] = 4;
+  p->animID[1] = 4;
+  p->animID[2] = 4;
+  p->animID[3] = 4;
+  p->animID[4] = 0x3A;
+  p->animID[5] = 0x3B;
+  p->animID[6] = 0x3C;
+  p->animID[7] = 0x3D;
+}

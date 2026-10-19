@@ -49,7 +49,11 @@ const FileID u16_ARRAY_085aa66c[2] = {
     SPRITE_CANDLE_BOX,
 };  // 0x085aa66c
 
-const u16 u16_ARRAY_085aa670[4] = {0, 1, 0, 1};
+// 種類ごとの [消灯時, 点灯時] のアニメ番号
+const u16 u16_ARRAY_085aa670[2][2] = {
+    {0, 1},
+    {0, 1},
+};  // 0x085AA670
 
 const u16 u16_ARRAY_085aa678[2] = {64, 739};
 
@@ -114,11 +118,38 @@ NON_MATCH void Entity2D2BElem_OnHit(HitboxData* a, HitboxData* b, Entity2D2BElem
 
 NAKED s32 Entity2D2BElem_Init(Entity2D2B* p, Entity2D2BElem* elem) { INCFUNC("asm/func/Entity2D2BElem_Init.inc"); }
 
-NAKED void Entity2D2BElem_RunScript(Entity2D2BElem* p) { INCFUNC("asm/func/Entity2D2BElem_RunScript.inc"); }
+// 遷移に対応するスクリプトを (id, 点灯/消灯, scriptArg) の3引数で実行する
+void Entity2D2BElem_RunScript(Entity2D2BElem* p) {
+  u32 argv[3];
+  ScriptArgs args;
+
+  if (p->scriptID == 0) {
+    return;
+  }
+
+  argv[0] = p->id;
+  if (p->state == 3) {
+    argv[1] = 1;
+  } else if (p->state == 4) {
+    argv[1] = 0;
+  }
+  argv[2] = p->scriptArg;
+
+  args.argc = 3, args.argv = argv;
+  VM_ExecByID(p->scriptID, &args);
+}
 
 void FUN_080080a8(Entity2D2B* p, Entity2D2BElem* elem) {}
 
-NAKED void Entity2D2BElem_UpdateUnlit(Entity2D2B* p, Entity2D2BElem* elem) { INCFUNC("asm/func/Entity2D2BElem_UpdateUnlit.inc"); }
+// 消灯のアニメとパレットを当てる
+void Entity2D2BElem_UpdateUnlit(Entity2D2B* p, Entity2D2BElem* elem) {
+  if (Entity2D2BElem_ConsumeStateEntered(elem)) {
+    MainSprite* spr = &elem->sprite;
+
+    MainSprite_SetAnim(spr, elem->gfx, u16_ARRAY_085aa670[elem->kindIdx][0], 1, 0);
+    MainSprite_SetPlttID(spr, u16_ARRAY_085aa678[elem->kindIdx] + 1);
+  }
+}
 
 NAKED void Entity2D2BElem_UpdateLit(Entity2D2B* p, Entity2D2BElem* elem) { INCFUNC("asm/func/Entity2D2BElem_UpdateLit.inc"); }
 

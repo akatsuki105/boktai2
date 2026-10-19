@@ -61,7 +61,24 @@ void (*const PTR_ARRAY_085ad32c[3])(Entity080dc44c*, Entity080dc44cSlot*) = {
 
 NAKED s32 Entity080dc44c_Update(Entity080dc44c* p) { INCFUNC("asm/func/Entity080dc44c_Update.inc"); }
 
-NAKED s32 Entity080dc44c_Destroy(Entity080dc44c* p) { INCFUNC("asm/func/Entity080dc44c_Destroy.inc"); }
+// 使用中の枠の粒子をまとめて外す
+// 残差6命令 (32 対 38), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
+NON_MATCH s32 Entity080dc44c_Destroy(Entity080dc44c* p) {
+#ifdef NONMATCHING_C
+  Entity080dc44cSlot* slot = &p->slots[0];
+  s32 i;
+
+  for (i = 0; i < 8; i++, slot++) {
+    if (p->activeMask & (1 << i)) {
+      Particle_Remove(&p->ptcls[slot->idx]);
+    }
+  }
+  gEntity080dc44c = NULL;
+  return 0;
+#else
+  INCFUNC("asm/func/Entity080dc44c_Destroy.inc");
+#endif
+}
 
 void FUN_080dc418(Entity080dc44c* p) {
   p->group = GetParticleGroup(PTCL_GROUP_0);

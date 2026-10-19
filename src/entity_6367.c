@@ -4,18 +4,31 @@
 
 // SPRITE_EVENT_SUN_RAY をロードしている
 typedef struct Entity6367 {
-  Entity e;               // 0x000, ENTITY_UNK_11
-  MainSpriteGfx gfx;      // 0x018
-  MainSprite sprites[3];  // 0x038
-  u32 unk_158;            // 0x158
-  s32 scriptID_15c;       // 0x15C
-  s32 mode;               // 0x160, PTR_ARRAY_085affa0 の idx
-  u8 unk_164[0x190 - 0x164];
+  Entity e;                                    // 0x000, ENTITY_UNK_11
+  MainSpriteGfx gfx;                           // 0x018
+  MainSprite sprites[3];                       // 0x038
+  u32 unk_158;                                 // 0x158
+  s32 scriptID_15c;                            // 0x15C
+  s32 mode;                                    // 0x160, PTR_ARRAY_085affa0 の idx
+  u32 timer_164;                               // 0x164, unk_158 の bit0 が立っていない間だけ毎フレーム +1
+  u32 unk_168;                                 // 0x168, まだ未解析
+  u32 timer_16c;                               // 0x16C, unk_158 の bit1 が立っていない間だけ毎フレーム +1
+  u2_6 scaleX;                                 // 0x170, 3枚のスプライトへ写す拡大率
+  u2_6 scaleY;                                 // 0x171, 同上
+  u8 unk_172[0x190 - 0x172];                   // 0x172, まだ未解析
   void (*updateCallback)(struct Entity6367*);  // 0x190
 } Entity6367;
 static_assert(sizeof(Entity6367) == 404);
 
-NAKED void FUN_0821a2bc(Entity6367* p) { INCFUNC("asm/func/FUN_0821a2bc.inc"); }
+// 拡大率を3枚のスプライトへ配る
+void FUN_0821a2bc(Entity6367* p) {
+  p->sprites[0].scaleX = p->scaleX;
+  p->sprites[0].scaleY = p->scaleY;
+  p->sprites[1].scaleX = p->scaleX;
+  p->sprites[1].scaleY = p->scaleY;
+  p->sprites[2].scaleX = p->scaleX;
+  p->sprites[2].scaleY = p->scaleY;
+}
 
 NAKED void FUN_0821a308(Entity6367* p) { INCFUNC("asm/func/FUN_0821a308.inc"); }
 
@@ -33,7 +46,16 @@ void Entity6367_Destroy_Internal(Entity6367* p) {
 
 NAKED void FUN_0821a714(Entity6367* p, s32 idx) { INCFUNC("asm/func/FUN_0821a714.inc"); }
 
-NAKED s32 Entity6367_Update(Entity6367* p) { INCFUNC("asm/func/Entity6367_Update.inc"); }
+s32 Entity6367_Update(Entity6367* p) {
+  if (!(p->unk_158 & 1)) {
+    p->timer_164++;
+  }
+  if (!(p->unk_158 & 2)) {
+    p->timer_16c++;
+  }
+  p->updateCallback(p);
+  return 0;
+}
 
 s32 Entity6367_Destroy(Entity6367* p) {
   Entity6367_Destroy_Internal(p);

@@ -1,5 +1,8 @@
 #include "entity.h"
 #include "global.h"
+#include "map_pltt.h"
+#include "video.h"
+#include "vm.h"
 
 // 画面全体のフェード (ブレンド係数 gObjBrightness と フェード色 gObjPlttBlendColor) を動かすシングルトン
 typedef struct {
@@ -17,7 +20,76 @@ static_assert(sizeof(Entity6978) == 52);
 
 COMMON_DATA Entity6978* gEntity6978 = NULL;  // 0x03002B30
 
-INCASM("asm/entity_6978.inc");
+void FUN_080026fc(u32 val) {
+  Entity4AE5* p = gEntity4AE5;
+
+  if (p != NULL) {
+    p->weatherState = val;
+  }
+}
+
+s32 FUN_0800271c(void) {
+  if (gEntity4AE5 == NULL) {
+    return 0;
+  }
+  return gEntity4AE5->unk_20;
+}
+
+void Entity6978_ClearPtr(void) { gEntity6978 = NULL; }
+
+// 明るさを 1 << durationShift ステップかけて 0 まで下げる
+void Entity6978_StepDown(Entity6978* p) {
+  gObjBrightness = FRACUNIT_6 - ((p->timer << 6) >> p->durationShift);
+  p->timer++;
+  if (p->timer >= 1 << p->durationShift) {
+    gObjBrightness = 0;
+    if (p->state == 2) {
+      p->state = 0;
+    } else {
+      p->state = 5;
+    }
+  }
+}
+
+// 明るさを 1 << durationShift ステップかけて等倍まで上げる
+void Entity6978_StepUp(Entity6978* p) {
+  gObjBrightness = (p->timer << 6) >> p->durationShift;
+  p->timer++;
+  if (p->timer >= 1 << p->durationShift) {
+    gObjBrightness = FRACUNIT_6;
+    p->state = 0;
+  }
+}
+
+void Entity6978_SetRequestScripted(void) {
+  Entity6978* p = gEntity6978;
+
+  if (p != NULL) {
+    p->request = VM_GetNamedArgValue('r', 0);
+    if (VM_SeekToNamedArg('p')) {
+      s32 i;
+      u16* dst;
+
+      for (i = 0, dst = p->params; VM_GetPC() != NULL && i <= 6; i++) {
+        *dst++ = VM_GetValue();
+      }
+    }
+  }
+}
+
+void Entity6978_SetRequest(u32 request, s32 count, u32* params) {
+  Entity6978* p = gEntity6978;
+  s32 i;
+
+  if (p == NULL) {
+    return;
+  }
+
+  p->request = request;
+  for (i = 0; i < count; i++) {
+    p->params[i] = params[i];
+  }
+}
 
 NAKED s32 Entity6978_Update(Entity6978* p) { INCFUNC("asm/func/Entity6978_Update.inc"); }
 

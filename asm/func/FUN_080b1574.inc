@@ -74,7 +74,7 @@
 	bl PlaySound_082406e0
 	ldr r1, _080B1634 @ =FUN_080ada44
 	adds r0, r4, #0
-	bl EntityCBB0_SetState
+	bl PileDriver_SetState
 	adds r0, r4, #0
 	movs r1, #7
 	bl FUN_080ad1ec

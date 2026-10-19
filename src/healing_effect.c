@@ -2,6 +2,7 @@
 #include "global.h"
 #include "particle.h"
 #include "player.h"
+#include "sound.h"
 
 // 魔法"ヒーリング"で生成されるエフェクト
 typedef struct {
@@ -16,9 +17,14 @@ typedef void HealingEffectFunc(struct HealingEffect* p);
 
 typedef struct HealingEffect {
   Entity e;                           // 0x000, ENTITY_UNK_8
-  u8 unk_18[0x074 - 0x018];           // 0x018
+  Player* player;                     // 0x018, _Init の第2引数
+  Vec3 pos;                           // 0x01C, _Init の第3引数を8バイトまるごと写す
+  u8 unk_24[0x074 - 0x024];           // 0x024
   HealingEffectParticle ptcls[8];     // 0x074, _Destroy が Particle_Remove に渡す
-  u8 unk_1f4[0x1FE - 0x1F4];          // 0x1F4
+  u8 unk_1f4[4];                      // 0x1F4
+  u16 unk_1f8;                        // 0x1F8, unk_1fa を3で割った値
+  u16 unk_1fa;                        // 0x1FA, _Init が 180 を入れる
+  u16 unk_1fc;                        // 0x1FC, _Init が 900 を入れる
   u16 timer;                          // 0x1FE, HealingParticles_SetState が 0 に戻す
   HealingEffectFunc* updateCallback;  // 0x200
   u8 unk_204[516 - 0x204];            // 0x204
@@ -51,7 +57,18 @@ NAKED void HealingParticles_InitParticles(HealingEffect* p) { INCFUNC("asm/func/
 
 NAKED void HealingParticles_InitHitbox(HealingEffect* p) { INCFUNC("asm/func/HealingParticles_InitHitbox.inc"); }
 
-NAKED s32 HealingParticles_Init(HealingEffect* p, Player* player, Vec3* pos) { INCFUNC("asm/func/HealingParticles_Init.inc"); }
+s32 HealingParticles_Init(HealingEffect* p, Player* player, Vec3* pos) {
+  p->pos = *pos;
+  p->player = player;
+  HealingParticles_InitParticles(p);
+  HealingParticles_InitHitbox(p);
+  p->unk_1fa = 180;
+  p->unk_1f8 = Div(180, 3);
+  p->unk_1fc = 900;
+  PlaySound_082406e0(919);
+  HealingParticles_SetState(p, FUN_080a9058);
+  return 0;
+}
 
 HealingEffect* HealingParticles_Create(Player* player, Vec3* pos) {
   HealingEffect* p = CreateEntity(ENTITY_UNK_8, sizeof(HealingEffect));

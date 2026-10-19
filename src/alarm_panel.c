@@ -40,7 +40,7 @@ s32 AlarmPanel_IsTriggered(AlarmPanel* p) {
 s32 AlarmPanel_Update(AlarmPanel* p) {
   if (gStat->sunGauge == 0) {
     if (p->stateTimer == 1) {
-      sound_08240740(0x237);
+      sound_08240740(SONG_567);
       p->stateTimer = 0;
     }
     Video_SetAuxSpritePltt(&p->gfx, 70);
@@ -48,7 +48,7 @@ s32 AlarmPanel_Update(AlarmPanel* p) {
     p->animTimer = 0;
   } else if (AlarmPanel_IsTriggered(p)) {
     if (p->stateTimer == 0) {
-      PlaySound_082406e0(0x237);
+      PlaySound_082406e0(SONG_567);
       p->stateTimer = 1;
       if (p->scriptID != 0) {
         VM_ExecByID(p->scriptID, NULL);
@@ -67,7 +67,7 @@ s32 AlarmPanel_Update(AlarmPanel* p) {
     p->animTimer++;
   } else {
     if (p->stateTimer == 1) {
-      sound_08240740(0x237);
+      sound_08240740(SONG_567);
       p->stateTimer = 0;
     }
     Video_SetAuxSpritePltt(&p->gfx, 68);
@@ -83,7 +83,7 @@ s32 AlarmPanel_Destroy(AlarmPanel* p) {
   }
   AuxSprite_Remove(&p->sprite);
   AuxSprite_Remove(&p->sprite2);
-  sound_08240740(0x237);
+  sound_08240740(SONG_567);
   return 0;
 }
 

@@ -12,6 +12,14 @@ typedef struct {
 } Entity080abd14Particle;
 static_assert(sizeof(Entity080abd14Particle) == 68);
 
+// FUN_080ab780 / FUN_080ab848 が受け取る一式, 呼び出し元は自分の中の AuxSprite の先頭を渡す
+typedef struct {
+  AuxSprite spr;           // 0x00
+  u8 unk_2c[0x6C - 0x2C];  // 0x2C, まだ未解析
+  u8 unk_6c;               // 0x6C, FUN_080ab848 が timer 0 のとき 0 を書く
+  u8 timer;                // 0x6D, FUN_080ab848 が 0 でなければ -1
+} Entity080abd14Sprite;
+
 typedef struct {
   Entity e;                          // 0x000, ENTITY_UNK_8
   u8 unk_18;                         // 0x018, _Init の第5引数, 0 かどうかで鳴らす SE が変わる
@@ -61,11 +69,25 @@ void FUN_080ab6d8(Entity080abd14* p) {
 
 NAKED void FUN_080ab6f8(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab6f8.inc"); }
 
-NAKED void FUN_080ab780(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab780.inc"); }
+NAKED void FUN_080ab780(Entity080abd14Sprite* s) { INCFUNC("asm/func/FUN_080ab780.inc"); }
 
 NAKED void FUN_080ab7f0(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab7f0.inc"); }
 
-NAKED void FUN_080ab848(AuxSprite* spr) { INCFUNC("asm/func/FUN_080ab848.inc"); }
+void FUN_080ab848(Entity080abd14Sprite* s) {
+  if (s->timer <= 5) {
+    s->spr.flags |= SPRFLAG_BLINK_EVEN;
+  } else {
+    s->spr.flags &= ~SPRFLAG_BLINK_EVEN;
+  }
+
+  if (s->timer == 0) {
+    s->spr.flags |= SPRFLAG_HIDDEN;
+    s->unk_6c = 0;
+  } else {
+    s->timer--;
+    FUN_080ab780(s);
+  }
+}
 
 NAKED void FUN_080ab898(Entity080abd14* p) { INCFUNC("asm/func/FUN_080ab898.inc"); }
 
@@ -124,9 +146,9 @@ NON_MATCH s32 Entity080abd14_Init(Entity080abd14* p, void* owner, WorldPos* pos1
   FUN_080ab6f8(p);
 
   if (param_5 == 0) {
-    PlaySound_082406e0(0x39C);
+    PlaySound_082406e0(SONG_924);
   } else {
-    PlaySound_082406e0(0x39D);
+    PlaySound_082406e0(SONG_925);
   }
 
   p->unk_1a = param_6;

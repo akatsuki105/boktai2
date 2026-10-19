@@ -7,8 +7,8 @@
 // Hitbox_CheckAllPairs が attacks × targets の総当たりで重なりを見る
 typedef struct {
   Entity e;                   // 0x0, ENTITY_UNK_11
-  HitboxData* targets;        // 0x18, &targetSentinel, Hitbox_Register が HBFLAG_UNK_13 なしの Hitbox をここへ繋ぐ, Hitbox_Unregister で外すまで残り続ける
-  HitboxData* attacks;        // 0x1C, &attackSentinel, Hitbox_Register が HBFLAG_UNK_13 付きの Hitbox をここへ繋ぐ, HitboxManager_Update が毎フレーム空にするので、攻撃側は毎フレーム登録し直す
+  HitboxData* targets;        // 0x18, &targetSentinel, Hitbox_Register が HBFLAG_HITBOX なしの Hitbox をここへ繋ぐ, Hitbox_Unregister で外すまで残り続ける
+  HitboxData* attacks;        // 0x1C, &attackSentinel, Hitbox_Register が HBFLAG_HITBOX 付きの Hitbox をここへ繋ぐ, HitboxManager_Update が毎フレーム空にするので、攻撃側は毎フレーム登録し直す
   HitboxData* targetsTail;    // 0x20, targets リストの末尾, Hitbox_LinkTarget がここに繋いで更新し、Hitbox_Unregister が末尾を外すときに戻す
   HitboxData* attacksTail;    // 0x24, targetsTail と対になる attacks 側の末尾, Hitbox_LinkAttack が先頭挿入なので誰も読まない
   HitboxData targetSentinel;  // 0x28, targets リストのダミー先頭ノード, next しか使われない
@@ -64,7 +64,7 @@ NON_MATCH void Hitbox_LinkAttack(HitboxData* p) {
 }
 
 void Hitbox_Register(HitboxData* p) {
-  if (p->flags & HBFLAG_UNK_13) {
+  if (p->flags & HBFLAG_HITBOX) {
     Hitbox_LinkAttack(p);
   } else {
     Hitbox_LinkTarget(p);
@@ -99,9 +99,9 @@ void Hitbox_Unregister(HitboxData* p) {
 }
 
 // 当たり判定1つを作る, 属性やダメージ関係は全部 0 に戻す
-void Hitbox_Init(HitboxData* p, u32 id, HitboxFlags32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset) {
+void Hitbox_Init(HitboxData* p, u16 id, HitboxFlags32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset) {
   p->flags = flags;
-  p->unk_4 = id;
+  p->id = id;
   p->unk_8 = unk_8;
   p->ignoreMask = ignoreMask;
   p->halfSize = *halfSize;
@@ -115,7 +115,7 @@ void Hitbox_Init(HitboxData* p, u32 id, HitboxFlags32 flags, u32 unk_8, u16 igno
   p->unk_47 = 1;
 }
 
-void Hitbox_SetPos(HitboxData* p, Vec3* pos, u32 unk_8) {
+void Hitbox_SetPos(HitboxData* p, WorldPos* pos, u32 unk_8) {
   p->pos.x = pos->x;
   p->pos.y = pos->y;
   p->pos.z = pos->z;
@@ -165,53 +165,51 @@ NON_MATCH void Hitbox_ApplyDamage(HitboxData* a, HitboxData* b) {
   if (b->damage != 0) {
     return;
   }
-  if (a->attributes & HBATTR_12) {
-    damage = a->power;
-  } else {
-    damage = a->power - b->power;
-  }
+  damage = (a->attributes & HBATTR_NAMAKURA) ? a->power : a->power - b->power;
   if (damage <= 0) {
     damage = 1;
   }
+
   if (a->attributes & HBATTR_13) {
     def = 0;
   } else {
     def = b->attributes & 0x7F;
   }
+
   weak = b->weakness & 0x7F;
   atk = a->attributes & 0x7F;
   if (atk == 0) {
-    b->damage = damage;
+    b->damage = damage;  // 等倍
     b->hitResult = HBRESULT_NORMAL;
   } else if (def == 0) {
-    b->damage = damage * 5 >> 2;
+    b->damage = damage * 5 >> 2;  // 1.25倍
     b->hitResult = HBRESULT_NORMAL;
   } else if (def == 0x40) {
-    b->damage = damage >> 2;
+    b->damage = damage >> 2;  // 0.25倍
     b->hitResult = HBRESULT_RESIST;
   } else if (atk == 0x40) {
-    b->damage = damage * 5 >> 2;
+    b->damage = damage * 5 >> 2;  // 1.25倍
     b->hitResult = HBRESULT_NORMAL;
   } else if (def & atk) {
-    b->damage = damage >> 2;
+    b->damage = damage >> 2;  // 0.25倍
     b->hitResult = HBRESULT_RESIST;
   } else if (weak & atk) {
-    b->damage = damage * 4;
+    b->damage = damage * 4;  // 4倍
     b->hitResult = HBRESULT_WEAK;
   } else {
-    b->damage = damage * 5 >> 2;
+    b->damage = damage * 5 >> 2;  // 1.25倍
     b->hitResult = HBRESULT_NORMAL;
   }
-  if ((b->flags & HBFLAG_UNK_8) && (a->flags & HBFLAG_UNK_8)) {
-    diff = b->angle - a->angle;
-    if (diff < 0) {
-      diff = -diff;
-    }
+
+  // バックアタック
+  if ((b->flags & HBFLAG_ANGLE) && (a->flags & HBFLAG_ANGLE)) {
+    s32 diff = abs(b->angle - a->angle);
     if (diff <= 0x20) {
-      b->damage = (u32)b->damage * 3 >> 1;
+      b->damage = (u32)b->damage * 3 >> 1;  // 1.5倍
       b->hitResult |= HBRESULT_BONUS;
     }
   }
+
   if (b->damage == 0) {
     b->damage = 1;
   }

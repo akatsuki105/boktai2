@@ -93,7 +93,7 @@ Mover* Mover_FindByID_Proxy(u16 id) {
 Mover* Mover_FindInList_Proxy(Mover* p) { return Mover_FindInList(p); }
 
 // スクリプトから ID を受け取り、そのノードの pos.x/y/z をスクリプト側へ返す
-s32 Mover_GetPosScripted(void) {
+s32 Cmd_GetMoverPos(void) {
   u8 buf[8];
   Mover* p = Mover_FindByID(VM_GetValue());
 

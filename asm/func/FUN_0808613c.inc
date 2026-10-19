@@ -16,7 +16,7 @@
 	adds r0, r0, r2
 	strh r0, [r1]
 	adds r0, r5, #0
-	bl FUN_0808567c
+	bl Coffin_CreateEffSprite
 	movs r0, #0xd6
 	lsls r0, r0, #2
 	adds r2, r5, r0

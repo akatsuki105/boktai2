@@ -460,7 +460,7 @@ NON_MATCH void FUN_0801eb64(EntityEF6F* p) {
   if (p->unk_24 > 31 && p->unk_22 == 0 && (gInput[0].pressed & A_BUTTON)) {
     p->unk_21 = 16;
     p->unk_22 = 1;
-    PlaySound_082406e0(0x107);
+    PlaySound_082406e0(SONG_263);
     MainSprite_SetFlags(&p->sprite, SPRFLAG_HIDDEN);
   }
 
@@ -506,7 +506,7 @@ void FUN_0801ec6c(EntityEF6F* p) {
         p->unk_20 = 1;
       }
       if ((p->unk_24 & 0x1F) == 16) {
-        PlaySound_082406e0(0x2B0);
+        PlaySound_082406e0(SONG_688);
       }
       if (p->unk_6c > 89) {
         SetSubState(p, p->unk_1a + 1);
@@ -595,7 +595,7 @@ void FUN_0801ed7c(EntityEF6F* p) {
           spr->flags &= ~SPRFLAG_HIDDEN;
           p->unk_69 = 30;
           p->unk_6a--;
-          PlaySound_082406e0(0x2B0);
+          PlaySound_082406e0(SONG_688);
         }
       }
     }
@@ -620,7 +620,7 @@ void FUN_0801ee6c(EntityEF6F* p) {
         MainSprite_Show(&p->sprites[4]);
         p->unk_69 = 30;
         p->unk_6a--;
-        PlaySound_082406e0(0x2B0);
+        PlaySound_082406e0(SONG_688);
       }
     }
   }
@@ -649,7 +649,7 @@ void FUN_0801eefc(EntityEF6F* p) {
       }
       if ((p->unk_6c & 0x1F) == 16) {
         p->unk_6a--;
-        PlaySound_082406e0(0x2B0);
+        PlaySound_082406e0(SONG_688);
       }
     } else {
       ptcl->flags &= ~SPRFLAG_HIDDEN;
@@ -822,7 +822,7 @@ void FUN_0801f214(EntityEF6F* p) {
           p->unk_1f = 1;
         }
         if ((p->unk_6c & 0x1F) == 16) {
-          PlaySound_082406e0(0x2B0);
+          PlaySound_082406e0(SONG_688);
         }
       }
       if (p->unk_6c == 120) {

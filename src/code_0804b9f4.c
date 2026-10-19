@@ -1,13 +1,22 @@
 #include "entity.h"
 #include "gba/agbrfu.h"
+#include "gba/linkManager.h"
 #include "global.h"
 #include "input.h"
 #include "malloc.h"
 #include "random.h"
+#include "save.h"
 #include "solar.h"
 #include "sound.h"
 #include "time.h"
 #include "video.h"
+#include "vm.h"
+
+// Entity0804e2c0.unk_22
+typedef u16 LinkFlags22;
+#define LINKFLAG22_UNK_0 (1 << 0)  // 0x1, FUN_0804e514 が送信バッファ unk_b8 を埋めたあとに立てる
+#define LINKFLAG22_UNK_1 (1 << 1)  // 0x2, 立っている間は FUN_0804e514 が送信を断る
+#define LINKFLAG22_UNK_7 (1 << 7)  // 0x80, 立っていると FUN_0804c888 が FUN_0804d868 を呼ぶ
 
 // 通信まわり, 他の Entity と 違って、 _Init, _Update, _Destroy を持たない
 typedef struct {
@@ -21,8 +30,8 @@ typedef struct {
   u8 unk_1e;  // 0x1E, 根拠: FUN_0804bb30 が 0 を入れる
   s8 unk_1f;  // 0x1F, 根拠: FUN_0804e3a0 が ldrsb で読んで返す
   u8 unk_20;
-  u8 unk_21;   // 0x21, 根拠: FUN_0804e3c0 が返す
-  u16 unk_22;  // 0x22, 根拠: FUN_0804c888 が bit7 を見る
+  u8 unk_21;           // 0x21, 根拠: FUN_0804e3c0 が返す
+  LinkFlags22 unk_22;  // 0x22, see LinkFlags22
   u8 unk_24[0x26 - 0x24];
   u8 unk_26;  // 0x26, 根拠: FUN_0804dee8 が 0 を入れる
   u8 unk_27[0x30 - 0x27];
@@ -45,9 +54,15 @@ typedef struct {
   u8 unk_48[0x50 - 0x48];
   u8 unk_50[0x6C - 0x50];  // 0x50, 根拠: FUN_0804e61c がこの位置のアドレスを返す
   u16 unk_6c;              // 0x6C, 根拠: FUN_0804e638 が返す
-  u8 unk_6e[0xC4 - 0x6E];
+  u8 unk_6e[0xB8 - 0x6E];
+  u32 unk_b8[3];  // 0xB8, FUN_0804e514 が引数のバッファから 12バイトまとめて写す
   u32 unk_c4[3];  // 0xC4, FUN_0804e55c が 12バイトまとめて引数のバッファに写す
-  u8 unk_d0[0xEA - 0xD0];
+  u8 unk_d0[0xE0 - 0xD0];
+  u32 unk_e0;  // 0x0E0, ACK が揃わないまま FUN_0804ccd0 が呼ばれた回数
+  u8 unk_e4[0xE7 - 0xE4];
+  u8 unk_e7;      // 0x0E7, lman.parentAck_flag を1bit ずらして溜めたもの, unk_134[2] と揃うまで待つ
+  u8 unk_e8;      // 0x0E8, ACK がまだ揃っていなければ 1
+  u8 unk_e9;      // 0x0E9
   u16 unk_ea;     // 0xEA, 根拠: FUN_0804ce0c が 0xFFFF を入れる
   u16 unk_ec;     // 0xEC, 根拠: FUN_0804bb70 が bit14 を見て unk_ee を書き込む
   u16 unk_ee;     // 0xEE, 根拠: FUN_0804bb68 が書く
@@ -161,7 +176,32 @@ s32 (*const PTR_ARRAY_085ab5e0[33])(Entity0804e2c0*) = {
 };  // 0x085AB5E0
 // clang-format on
 
-NAKED s32 FUN_0804b9f4(void) { INCFUNC("asm/func/FUN_0804b9f4.inc"); }
+// '.n' 番の配信コンテンツIDがセーブデータに書かれているか
+// 残差はループの向きだけ (30 対 30), 原典は i を上に数えるが agbcc は使い捨ての添字とみて下に数える形へ反転する
+// u32 / do-while / i != 2 / flags をループ内で引く形 / flags[dst + i] と id[i] は試済
+NON_MATCH s32 FUN_0804b9f4(void) {
+#ifdef NONMATCHING_C
+  s32 dst = VM_GetValue() * 2;
+  s32 match = 0;
+  u8* flags = (u8*)gSystemSaveData->eventFlags;
+  const u8* id = &gJoyspotContentIDs[dst];
+  s32 i;
+
+  for (i = 0; i < 2; i++) {
+    if (flags[dst] == *id) {
+      match++;
+    }
+    id++;
+    dst++;
+  }
+  if (match == 2) {
+    return 1;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_0804b9f4.inc");
+#endif
+}
 
 Entity0804e2c0* FUN_0804ba3c(void) { return gEntity0804e2c0; }
 
@@ -226,11 +266,11 @@ NAKED s32 FUN_0804bdd4(s32 param_1) { INCFUNC("asm/func/FUN_0804bdd4.inc"); }
 
 NAKED void FUN_0804bed4(s32 param_1) { INCFUNC("asm/func/FUN_0804bed4.inc"); }
 
-NAKED void FUN_0804bf90(u8 param_1) { INCFUNC("asm/func/FUN_0804bf90.inc"); }
+NAKED void FUN_0804bf90(u8 msg, u8 paramCount) { INCFUNC("asm/func/FUN_0804bf90.inc"); }
 
 NAKED void FUN_0804c190(u8 param_1) { INCFUNC("asm/func/FUN_0804c190.inc"); }
 
-void FUN_0804c3a8(void) { rfu_REQ_recvData(); }
+void FUN_0804c3a8(u16 reqCommandId) { rfu_REQ_recvData(); }
 
 void FUN_0804c3b4(void) {
   if (gEntity0804e2c0 != NULL) {
@@ -244,7 +284,22 @@ s32 FUN_0804c3cc(Entity0804e2c0* p) {
   }
 }
 
-NAKED s32 FUN_0804c3e4(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c3e4.inc"); }
+// リンクマネージャーを初期化し, 成否でモーションを分ける
+s32 FUN_0804c3e4(Entity0804e2c0* p) {
+  if (p->unk_32) {
+    p->unk_32 = 0;
+  }
+
+  if (rfu_LMAN_initializeManager(FUN_0804bf90, FUN_0804c3a8) != 0) {
+    Entity0804e2c0_SetMotion(p, 0x1B);
+    p->unk_32 = 1;
+  } else {
+    Entity0804e2c0_SetMotion(p, 2);
+    p->unk_32 = 1;
+    p->unk_18 = 1;
+  }
+  return 0;
+}
 
 NAKED s32 FUN_0804c438(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c438.inc"); }
 
@@ -302,10 +357,10 @@ NAKED s32 FUN_0804c7c8(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804c7c8.inc")
 s32 FUN_0804c888(Entity0804e2c0* p) {
   if (p->unk_32) {
     p->unk_32 = 0;
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
   }
 
-  if (p->unk_22 & 0x80) {
+  if (p->unk_22 & LINKFLAG22_UNK_7) {
     WaitForVBlanks(8);
     FUN_0804d868(p);
   }
@@ -328,7 +383,7 @@ NON_MATCH s32 FUN_0804c8f4(Entity0804e2c0* p) {
 #ifdef NONMATCHING_C
   if (p->unk_32) {
     p->unk_32 = 0;
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
   }
 
   if (p->unk_44 > 89) {
@@ -462,7 +517,18 @@ s32 FUN_0804ccbc(Entity0804e2c0* p) {
   FUN_0804ba64(p);
 }
 
-NAKED void FUN_0804ccd0(s32 param_1) { INCFUNC("asm/func/FUN_0804ccd0.inc"); }
+// 子機からの ACK を溜めて, 待っている全スロットから返ってきたかどうかを見る
+void FUN_0804ccd0(Entity0804e2c0* p) {
+  p->unk_e7 |= lman.parentAck_flag << 1;
+
+  if ((p->unk_e7 & p->unk_134[2]) == p->unk_134[2]) {
+    p->unk_e8 = 0;
+    p->unk_36 = 0;
+  } else {
+    p->unk_e8 = 1;
+    p->unk_e0++;
+  }
+}
 
 NAKED s32 FUN_0804cd1c(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804cd1c.inc"); }
 
@@ -745,7 +811,27 @@ s32 FUN_0804e3c0(void) {
   return p->unk_21;
 }
 
-NAKED s32 FUN_0804e3ec(void) { INCFUNC("asm/func/FUN_0804e3ec.inc"); }
+// 通信相手とつながっているか
+s32 FUN_0804e3ec(void) {
+  if (gEntity0804e2c0 == NULL) {
+    return 0;
+  }
+
+  if (gEntity0804e2c0->unk_30 != 0) {
+    if (gEntity0804e2c0->unk_38 <= 4) {
+      return 0;
+    }
+    if (gRfuLinkStatus->parent_child == MODE_NEUTRAL) {
+      return 0;
+    }
+    return 1;
+  }
+
+  if (gRfuLinkStatus->parent_child == MODE_CHILD) {
+    return 1;
+  }
+  return 0;
+}
 
 u8* FUN_0804e438(void) {
   if (gEntity0804e2c0 == NULL) {
@@ -798,7 +884,24 @@ void FUN_0804e4dc(void* param_1, Entity* param_2, EntityFunc* param_3, EntityFun
   }
 }
 
-NAKED s32 FUN_0804e514(Entity0804e2c0* p) { INCFUNC("asm/func/FUN_0804e514.inc"); }
+// 送信バッファに 12バイト積む, 送信中なら -1
+s32 FUN_0804e514(u8* src) {
+  Entity0804e2c0* p = gEntity0804e2c0;
+  u32* dst;
+
+  if (p == NULL) {
+    return -1;
+  }
+  if (p->unk_22 & LINKFLAG22_UNK_1) {
+    return -1;
+  }
+
+  dst = p->unk_b8;
+  src[0]++;
+  CpuCopy32(src, dst, 12);
+  p->unk_22 |= LINKFLAG22_UNK_0;
+  return 0;
+}
 
 s32 FUN_0804e55c(void* dest) {
   if (gEntity0804e2c0 == NULL) {

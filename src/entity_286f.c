@@ -1,3 +1,5 @@
+#include "entity_286f.h"
+
 #include "entity.h"
 #include "global.h"
 #include "malloc.h"
@@ -8,175 +10,249 @@
 #include "sprite.h"
 #include "vm.h"
 
-struct Entity286F;
-struct Entity286FNode;
-
-typedef void(Entity286FNodeCb)(struct Entity286F* p, struct Entity286FNode* node);
-typedef void(Entity286FNodeUpdate)(struct Entity286F* p, struct Entity286FNode* node, s32 elapsed);
-
-// Entity286FNode.flags (0x00E)
-typedef u16 Entity286FNodeFlags;
-#define E286FNODE_UNK_8 (1 << 8)    // 0x0100, FUN_08042178 が立てる
-#define E286FNODE_UNK_12 (1 << 12)  // 0x1000, FUN_080421bc が立てる
-
-static inline void Entity286FNode_SetFlags(struct Entity286FNode* p, Entity286FNodeFlags bits);
-
-typedef struct Entity286FNode {
-  u8 active;                  // 0x000, Entity286F_LinkNode が 1 を入れ、FUN_0804114c が 0 にして Free する
-  u8 kind;                    // 0x001, Entity286FNode_Alloc の第2引数
-  u8 unk_02[2];               // 0x002, まだ未解析
-  u8 state;                   // 0x004, FUN_08044138 / FUN_0804470c が関数テーブルの添字として使う
-  u8 unk_05;                  // 0x005, コールバックが 1,2,4,6 などを入れる, FUN_080442d4 は 0
-  u8 unk_06;                  // 0x006, まだ未解析
-  u8 unk_07;                  // 0x007, unk_08 と一緒に 0 に戻される
-  u8 unk_08;                  // 0x008, 0 以外ならコールバックが待ちを解除して 0 に戻す
-  u8 unk_09;                  // 0x009, まだ未解析
-  u8 unk_0a;                  // 0x00A, FUN_080411d8 が 0 以外のときだけ進み、処理後 0 に戻す
-  u8 unk_0b[3];               // 0x00B, まだ未解析
-  Entity286FNodeFlags flags;  // 0x00E, 0x100 / 0x200 / 0x1000 のビットで分岐する
-  u32 unk_10;                 // 0x010, 根拠: FUN_080441a4 が +1 して元の値を unk_2cc の第3引数に渡す
-  u32 timer;                  // 0x014, 多数の関数が 0 に戻し、FUN_08042414 が +1 する
-  u8 unk_18[0x01B - 0x018];   // 0x018, まだ未解析
-  u8 unk_1b;                  // 0x01B, FUN_08040f0c が第4引数 (向き) を入れる
-  u16 plttID;                 // 0x01C, Entity286FNode_SetPltt が書き、Entity286FNode_RefreshPltt が再適用する
-  u16 curPlttID;              // 0x01E, Entity286FNode_ApplyPltt が SpriteHolder_SetPlttID へ渡した値
-  u16 unk_20;                 // 0x020, FUN_08044a54 系が 0 を入れる
-  u8 unk_22[0x05C - 0x022];   // 0x022, まだ未解析
-  Mover mover;                // 0x05C
-  u16 unk_a0;                 // 0x0A0, FUN_080412fc が mover.id を複写し、&unk_a0 を FUN_08234660 に渡す
-  u8 unk_a2[2];               // 0x0A2, まだ未解析
-  Vec3* unk_a4;               // 0x0A4, FUN_080412fc が &mover.pos を入れる
-  u8 unk_a8[0x0D0 - 0x0A8];   // 0x0A8, まだ未解析
-  SpriteHolder sprite;        // 0x0D0, 0x08055XXX のスプライト API に渡す
-  MsgQueue mq;                // 0x164
-  u8 unk_198[0x1E8 - 0x198];  // 0x198, まだ未解析
-  u8 unk_1e8;                 // 0x1E8, FUN_08042868 が FUN_08041480 の第2引数に渡す
-  u8 unk_1e9;                 // 0x1E9, 同じく第3引数
-  u8 unk_1ea[0x1EE - 0x1EA];  // 0x1EA, まだ未解析
-  u8 unk_1ee;                 // 0x1EE, 根拠: Entity286FNode_RemoveMover が 0 以外のときだけ mover を切り離して 0 に戻す
-  u8 unk_1ef[0x214 - 0x1EF];  // 0x1EF, まだ未解析
-  u8 shadowKind;              // 0x214, 1 なら shadow.ptcl, 2 なら shadow.aux
-  u8 unk_215[0x217 - 0x215];  // 0x215, まだ未解析
-  u8 unk_217;                 // 0x217, 0 以外なら次の state を unk_227 から取る
-  u8 unk_218[0x227 - 0x218];  // 0x218, まだ未解析
-  u8 unk_227;                 // 0x227, unk_217 が立っているときの遷移先 state
-  u8 unk_228[0x244 - 0x228];  // 0x228, まだ未解析
-  union {
-    ParticleShadow ptcl;              // shadowKind == 1
-    AuxShadow aux;                    // shadowKind == 2
-  } shadow;                           // 0x244
-  u8 unk_2b0[0x2B8 - 0x2B0];          // 0x2B0, まだ未解析
-  unknown* unk_2b8;                   // 0x2B8, Entity286F_FindSpriteData の戻り値
-  const struct Unk085ab2b8* unk_2bc;  // 0x2BC, id と idx で引いた Unk085ab2b8_ARRAY_085ab2b8 の行
-  u8 unk_2c0[0x2C8 - 0x2C0];          // 0x2C0, まだ未解析
-  u16 unk_2c8;                        // 0x2C8, FUN_080411d8 が unk_2ca を複写する
-  u16 unk_2ca;                        // 0x2CA, FUN_080415cc が書き、FUN_080411d8 が unk_2c8 へ移す
-  Entity286FNodeUpdate* unk_2cc;      // 0x2CC, 根拠: FUN_080441a4 が (p, node, unk_10) で呼ぶ
-  Entity286FNodeCb* cbs[4];           // 0x2D0, FUN_080411a0 が 0 以外のものを順に呼ぶ
-  Entity286FNodeCb* onDestroy;        // 0x2E0, _Destroy が呼ぶ
-  s32 (*fn)(struct Entity286FNode*);  // 0x2E4, node だけを渡して呼ぶ
-  struct Entity286FNode* prev;        // 0x2E8
-  struct Entity286FNode* next;        // 0x2EC
-} Entity286FNode;
-
-static inline void Entity286FNode_SetFlags(struct Entity286FNode* p, Entity286FNodeFlags bits) { p->flags |= bits; }
-static_assert(sizeof(Entity286FNode) == 752);
-
-typedef struct Entity286F {
-  Entity e;                 // 0x000, ENTITY_UNK_9
-  u32 frameCount;           // 0x018, _Update が毎フレーム +1
-  Entity286FNode* head;     // 0x01C, リストの先頭, 解放は FUN_0804114c
-  bool8 minuteChanged;      // 0x020, prevMinute != minute
-  u8 prevMinute;            // 0x021, 1フレーム前の minute
-  u8 hour;                  // 0x022, Time_GetHour
-  u8 minute;                // 0x023, Time_GetMinute
-  s8 unk_24;                // 0x024, FUN_08018a08 の戻り値
-  u8 unk_25[3];             // 0x025, padding?
-  s32 unk_28;               // 0x028, _Update が毎フレーム 1 - x で 0/1 を往復させる, unk_2c の添字
-  u32 unk_2c[2];            // 0x02C, _Update が unk_28 の側だけ 0 にする
-  u8 unk_34[0x434 - 0x34];  // 0x034, まだ未解析, C/I/U/D のどれからも触らない
-  Vec3* playerPos;          // 0x434, gPlayerPtr[0] があれば &gPlayerPtr[0]->mover.pos
-  Player* player;           // 0x438, &gPlayerPtr[0], 毎フレーム更新
-} Entity286F;
-static_assert(sizeof(Entity286F) == 1084);
-
-bool32 FUN_0823b464(Mover* p, u32 unk_20);  // src/mover.c
-void FUN_08055d7c(SpriteHolder* p);
-
 COMMON_DATA Entity286F* gEntity286F = NULL;  // 0x03002B50
 
-const u16 u16_ARRAY_085aaff4[270] = {
-    0x103, 0x0,   0x103, 0x5,   0x103, 0x0,   0x103, 0x5,   0x103, 0x19E, 0x103, 0x1A3, 0x103, 0x19E, 0x103, 0x1A3, 0x103, 0x0,   0x103, 0x1,   0x103, 0x0,   0x103, 0x1,   0x102, 0x0,   0x102, 0x6,   0x102, 0x1E,  0x102, 0x6,   0x2,   0x7,   0x2,   0x8,   0x2,   0x9,   0x2,
-    0x8,   0x3,   0x0,   0x3,   0x0,   0x3,   0x0,   0x3,   0x0,   0x0,   0x1,   0x0,   0xA,   0x0,   0x3,   0x0,   0x13,  0x0,   0x0,   0x103, 0x0,   0x102, 0x5,   0x103, 0x0,   0x102, 0x7,   0x1,   0x9,   0x1,   0xA,   0x1,   0xB,   0x1,   0xC,   0x1,   0xD,   0x1,   0xE,
-    0x1,   0xF,   0x103, 0x7,   0x102, 0xE,   0x103, 0x7,   0x102, 0xE,   0x103, 0x7,   0x102, 0xC,   0x101, 0x28,  0x101, 0x29,  0x100, 0x0,   0x103, 0x0,   0x102, 0x5,   0x103, 0x0,   0x102, 0x5,   0x202, 0x7,   0x202, 0xB,   0x202, 0xC,   0x101, 0xF,   0x302, 0x11,  0x302,
-    0x12,  0x302, 0x13,  0x103, 0x0,   0x102, 0x5,   0x103, 0x0,   0x102, 0x5,   0x202, 0xA,   0x1,   0xE,   0x100, 0x7,   0x100, 0x8,   0x100, 0x9,   0x100, 0x11,  0x100, 0x10,  0x103, 0x0,   0x102, 0x5,   0x103, 0x0,   0x102, 0x5,   0x100, 0x7,   0x100, 0x8,   0x100, 0xA,
-    0x100, 0x9,   0x103, 0x0,   0x102, 0x5,   0x101, 0x9,   0x102, 0x7,   0x101, 0xA,   0x101, 0xB,   0x101, 0xC,   0x101, 0xD,   0x101, 0xE,   0x101, 0xF,   0x103, 0x10,  0x102, 0x15,  0x101, 0x19,  0x102, 0x17,  0x101, 0x1A,  0x101, 0x1B,  0x101, 0x1C,  0x101, 0x1D,  0x101,
-    0x1E,  0x101, 0x1F,  0x100, 0x20,  0x103, 0x0,   0x102, 0x5,   0x103, 0x0,   0x102, 0x7,   0x103, 0x0,   0x102, 0x5,   0x103, 0x0,   0x102, 0x7,   0x103, 0x0,   0x103, 0x0,   0x103, 0x0,   0x103, 0x0,   0x103, 0x0,   0x103, 0x0,   0x103, 0x0,   0x103, 0x0,   0x102, 0x0,
-    0x102, 0x0,   0x102, 0x0,   0x102, 0x0,   0x101, 0x3,   0x101, 0x2,   0x103, 0x10,  0x102, 0x15,  0x103, 0x10,  0x102, 0x17,  0x103, 0x5,   0x102, 0xA,   0x103, 0x5,   0x102, 0xC,   0x103, 0x7,   0x102, 0xC,   0x103, 0x7,   0x102, 0xE,   0x100, 0x0,
+// キャラクターごとのアニメ表, 区切りは sEntity286FSprites の data が指す位置
+// clang-format off
+const Entity286FAnim sEntity286FAnims[135] = {
+    // SPRITE_DJANGO_SABATA idx 0
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 3, unk_1 : 1, pose :   5},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 3, unk_1 : 1, pose :   5},
+
+    // SPRITE_DJANGO_SABATA idx 1
+    {dirMode : 3, unk_1 : 1, pose : 414},
+    {dirMode : 3, unk_1 : 1, pose : 419},
+    {dirMode : 3, unk_1 : 1, pose : 414},
+    {dirMode : 3, unk_1 : 1, pose : 419},
+
+    // SPRITE_MOUSE idx 0
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 3, unk_1 : 1, pose :   1},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 3, unk_1 : 1, pose :   1},
+
+    // SPRITE_SKELETONS idx 0
+    {dirMode : 2, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   6},
+    {dirMode : 2, unk_1 : 1, pose :  30},
+    {dirMode : 2, unk_1 : 1, pose :   6},
+
+    // SPRITE_BOKU idx 0
+    {dirMode : 2, unk_1 : 0, pose :   7},
+    {dirMode : 2, unk_1 : 0, pose :   8},
+    {dirMode : 2, unk_1 : 0, pose :   9},
+    {dirMode : 2, unk_1 : 0, pose :   8},
+
+    // SPRITE_OTENKO_00 idx 0
+    {dirMode : 3, unk_1 : 0, pose :   0},
+    {dirMode : 3, unk_1 : 0, pose :   0},
+    {dirMode : 3, unk_1 : 0, pose :   0},
+    {dirMode : 3, unk_1 : 0, pose :   0},
+    {dirMode : 0, unk_1 : 0, pose :   1},
+    {dirMode : 0, unk_1 : 0, pose :  10},
+    {dirMode : 0, unk_1 : 0, pose :   3},
+    {dirMode : 0, unk_1 : 0, pose :  19},
+    {dirMode : 0, unk_1 : 0, pose :   0},
+
+    // SPRITE_SMITH_MARCELLO idx 0
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   5},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   7},
+    {dirMode : 1, unk_1 : 0, pose :   9},
+    {dirMode : 1, unk_1 : 0, pose :  10},
+    {dirMode : 1, unk_1 : 0, pose :  11},
+    {dirMode : 1, unk_1 : 0, pose :  12},
+    {dirMode : 1, unk_1 : 0, pose :  13},
+    {dirMode : 1, unk_1 : 0, pose :  14},
+    {dirMode : 1, unk_1 : 0, pose :  15},
+
+    // SPRITE_SHAIAN idx 0
+    {dirMode : 3, unk_1 : 1, pose :   7},
+    {dirMode : 2, unk_1 : 1, pose :  14},
+    {dirMode : 3, unk_1 : 1, pose :   7},
+    {dirMode : 2, unk_1 : 1, pose :  14},
+    {dirMode : 3, unk_1 : 1, pose :   7},
+    {dirMode : 2, unk_1 : 1, pose :  12},
+    {dirMode : 1, unk_1 : 1, pose :  40},
+    {dirMode : 1, unk_1 : 1, pose :  41},
+    {dirMode : 0, unk_1 : 1, pose :   0},
+
+    // SPRITE_RITA idx 0
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   5},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   5},
+    {dirMode : 2, unk_1 : 2, pose :   7},
+    {dirMode : 2, unk_1 : 2, pose :  11},
+    {dirMode : 2, unk_1 : 2, pose :  12},
+    {dirMode : 1, unk_1 : 1, pose :  15},
+    {dirMode : 2, unk_1 : 3, pose :  17},
+    {dirMode : 2, unk_1 : 3, pose :  18},
+    {dirMode : 2, unk_1 : 3, pose :  19},
+
+    // SPRITE_ZAJI idx 0
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   5},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   5},
+    {dirMode : 2, unk_1 : 2, pose :  10},
+    {dirMode : 1, unk_1 : 0, pose :  14},
+    {dirMode : 0, unk_1 : 1, pose :   7},
+    {dirMode : 0, unk_1 : 1, pose :   8},
+    {dirMode : 0, unk_1 : 1, pose :   9},
+    {dirMode : 0, unk_1 : 1, pose :  17},
+    {dirMode : 0, unk_1 : 1, pose :  16},
+
+    // SPRITE_SUMIRE idx 0
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   5},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   5},
+    {dirMode : 0, unk_1 : 1, pose :   7},
+    {dirMode : 0, unk_1 : 1, pose :   8},
+    {dirMode : 0, unk_1 : 1, pose :  10},
+    {dirMode : 0, unk_1 : 1, pose :   9},
+
+    // SPRITE_KURO idx 0
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   5},
+    {dirMode : 1, unk_1 : 1, pose :   9},
+    {dirMode : 2, unk_1 : 1, pose :   7},
+    {dirMode : 1, unk_1 : 1, pose :  10},
+    {dirMode : 1, unk_1 : 1, pose :  11},
+    {dirMode : 1, unk_1 : 1, pose :  12},
+    {dirMode : 1, unk_1 : 1, pose :  13},
+    {dirMode : 1, unk_1 : 1, pose :  14},
+    {dirMode : 1, unk_1 : 1, pose :  15},
+    {dirMode : 3, unk_1 : 1, pose :  16},
+    {dirMode : 2, unk_1 : 1, pose :  21},
+    {dirMode : 1, unk_1 : 1, pose :  25},
+    {dirMode : 2, unk_1 : 1, pose :  23},
+    {dirMode : 1, unk_1 : 1, pose :  26},
+    {dirMode : 1, unk_1 : 1, pose :  27},
+    {dirMode : 1, unk_1 : 1, pose :  28},
+    {dirMode : 1, unk_1 : 1, pose :  29},
+    {dirMode : 1, unk_1 : 1, pose :  30},
+    {dirMode : 1, unk_1 : 1, pose :  31},
+    {dirMode : 0, unk_1 : 1, pose :  32},
+
+    // SPRITE_KID idx 0
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   5},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   7},
+
+    // SPRITE_LADY idx 0
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   5},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   7},
+
+    // SPRITE_COFFINSELLER_UNKNOWN idx 0
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+
+    // SPRITE_ENNIO_LUIS idx 0
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+    {dirMode : 3, unk_1 : 1, pose :   0},
+
+    // SPRITE_DAINN idx 0
+    {dirMode : 2, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   0},
+    {dirMode : 2, unk_1 : 1, pose :   0},
+    {dirMode : 1, unk_1 : 1, pose :   3},
+    {dirMode : 1, unk_1 : 1, pose :   2},
+
+    // SPRITE_SMITH_MARCELLO idx 1
+    {dirMode : 3, unk_1 : 1, pose :  16},
+    {dirMode : 2, unk_1 : 1, pose :  21},
+    {dirMode : 3, unk_1 : 1, pose :  16},
+    {dirMode : 2, unk_1 : 1, pose :  23},
+
+    // SPRITE_COFFINSELLER_UNKNOWN idx 1
+    {dirMode : 3, unk_1 : 1, pose :   5},
+    {dirMode : 2, unk_1 : 1, pose :  10},
+    {dirMode : 3, unk_1 : 1, pose :   5},
+    {dirMode : 2, unk_1 : 1, pose :  12},
+
+    // SPRITE_ENNIO_LUIS idx 1
+    {dirMode : 3, unk_1 : 1, pose :   7},
+    {dirMode : 2, unk_1 : 1, pose :  12},
+    {dirMode : 3, unk_1 : 1, pose :   7},
+    {dirMode : 2, unk_1 : 1, pose :  14},
+
+    // SPRITE_MEGAMAN idx 0
+    {dirMode : 0, unk_1 : 1, pose :   0},
 };  // 0x085AAFF4
+// clang-format on
 
 typedef struct {
-  SpriteID16 id;     // 0x0, NPCのスプライトIDばっかり
-  u8 idx;            // 0x2, 1つのグラフィックにn人分のグラフィックデータが入っているときにどのキャラクターかを示すインデックス?
-  const void* data;  // 0x4, u16_ARRAY_085aaff4 のどの要素を指しているか
+  SpriteID16 id;               // 0x0, NPCのスプライトIDばっかり
+  u8 idx;                      // 0x2, 1つのグラフィックにn人分のグラフィックデータが入っているときにどのキャラクターかを示すインデックス?
+  const Entity286FAnim* data;  // 0x4, そのキャラのアニメ表の先頭
 } Entity286FSpriteEntry;
 
 const Entity286FSpriteEntry sEntity286FSprites[21] = {
-    {id : SPRITE_DJANGO_SABATA,        idx : 0, data : &u16_ARRAY_085aaff4[0]  },
-    {id : SPRITE_MOUSE,                idx : 0, data : &u16_ARRAY_085aaff4[16] },
-    {id : SPRITE_SKELETONS,            idx : 0, data : &u16_ARRAY_085aaff4[24] },
-    {id : SPRITE_BOKU,                 idx : 0, data : &u16_ARRAY_085aaff4[32] },
-    {id : SPRITE_OTENKO_00,            idx : 0, data : &u16_ARRAY_085aaff4[40] },
-    {id : SPRITE_SMITH_MARCELLO,       idx : 0, data : &u16_ARRAY_085aaff4[58] },
-    {id : SPRITE_SHAIAN,               idx : 0, data : &u16_ARRAY_085aaff4[80] },
-    {id : SPRITE_RITA,                 idx : 0, data : &u16_ARRAY_085aaff4[98] },
-    {id : SPRITE_ZAJI,                 idx : 0, data : &u16_ARRAY_085aaff4[120]},
-    {id : SPRITE_SUMIRE,               idx : 0, data : &u16_ARRAY_085aaff4[142]},
-    {id : SPRITE_KURO,                 idx : 0, data : &u16_ARRAY_085aaff4[158]},
-    {id : SPRITE_KID,                  idx : 0, data : &u16_ARRAY_085aaff4[200]},
-    {id : SPRITE_LADY,                 idx : 0, data : &u16_ARRAY_085aaff4[208]},
-    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 0, data : &u16_ARRAY_085aaff4[216]},
-    {id : SPRITE_ENNIO_LUIS,           idx : 0, data : &u16_ARRAY_085aaff4[224]},
-    {id : SPRITE_DAINN,                idx : 0, data : &u16_ARRAY_085aaff4[232]},
-    {id : SPRITE_DJANGO_SABATA,        idx : 1, data : &u16_ARRAY_085aaff4[8]  },
-    {id : SPRITE_SMITH_MARCELLO,       idx : 1, data : &u16_ARRAY_085aaff4[244]},
-    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 1, data : &u16_ARRAY_085aaff4[252]},
-    {id : SPRITE_ENNIO_LUIS,           idx : 1, data : &u16_ARRAY_085aaff4[260]},
-    {id : SPRITE_MEGAMAN,              idx : 0, data : &u16_ARRAY_085aaff4[268]}
+    {id : SPRITE_DJANGO_SABATA,        idx : 0, data : &sEntity286FAnims[0]  },
+    {id : SPRITE_MOUSE,                idx : 0, data : &sEntity286FAnims[8]  },
+    {id : SPRITE_SKELETONS,            idx : 0, data : &sEntity286FAnims[12] },
+    {id : SPRITE_BOKU,                 idx : 0, data : &sEntity286FAnims[16] },
+    {id : SPRITE_OTENKO_00,            idx : 0, data : &sEntity286FAnims[20] },
+    {id : SPRITE_SMITH_MARCELLO,       idx : 0, data : &sEntity286FAnims[29] },
+    {id : SPRITE_SHAIAN,               idx : 0, data : &sEntity286FAnims[40] },
+    {id : SPRITE_RITA,                 idx : 0, data : &sEntity286FAnims[49] },
+    {id : SPRITE_ZAJI,                 idx : 0, data : &sEntity286FAnims[60] },
+    {id : SPRITE_SUMIRE,               idx : 0, data : &sEntity286FAnims[71] },
+    {id : SPRITE_KURO,                 idx : 0, data : &sEntity286FAnims[79] },
+    {id : SPRITE_KID,                  idx : 0, data : &sEntity286FAnims[100]},
+    {id : SPRITE_LADY,                 idx : 0, data : &sEntity286FAnims[104]},
+    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 0, data : &sEntity286FAnims[108]},
+    {id : SPRITE_ENNIO_LUIS,           idx : 0, data : &sEntity286FAnims[112]},
+    {id : SPRITE_DAINN,                idx : 0, data : &sEntity286FAnims[116]},
+    {id : SPRITE_DJANGO_SABATA,        idx : 1, data : &sEntity286FAnims[4]  },
+    {id : SPRITE_SMITH_MARCELLO,       idx : 1, data : &sEntity286FAnims[122]},
+    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 1, data : &sEntity286FAnims[126]},
+    {id : SPRITE_ENNIO_LUIS,           idx : 1, data : &sEntity286FAnims[130]},
+    {id : SPRITE_MEGAMAN,              idx : 0, data : &sEntity286FAnims[134]}
 };  // 0x085AB210
 
-typedef struct Unk085ab2b8 {
-  SpriteID16 id;  // 0x0, NPCのスプライトIDばっかり
-  u8 idx;         // 0x2, 1つのグラフィックにn人分のグラフィックデータが入っているときにどのキャラクターかを示すインデックス?
-  u8 unk_3;       // 0x3, 不明
-  u8 unk_4[4];    // 0x4, 不明, 型も不明
-} Unk085ab2b8;
-
-const Unk085ab2b8 Unk085ab2b8_ARRAY_085ab2b8[21] = {
-    {id : SPRITE_DJANGO_SABATA,        idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
-    {id : SPRITE_MOUSE,                idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
-    {id : SPRITE_SKELETONS,            idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
-    {id : SPRITE_BOKU,                 idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
-    {id : SPRITE_OTENKO_00,            idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
-    {id : SPRITE_SMITH_MARCELLO,       idx : 0, unk_3 : 0, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
-    {id : SPRITE_SHAIAN,               idx : 0, unk_3 : 0, unk_4 : {0x4, 0x0, 0x4, 0x0}    },
-    {id : SPRITE_RITA,                 idx : 0, unk_3 : 1, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
-    {id : SPRITE_ZAJI,                 idx : 0, unk_3 : 1, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
-    {id : SPRITE_SUMIRE,               idx : 0, unk_3 : 2, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
-    {id : SPRITE_KURO,                 idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
-    {id : SPRITE_KID,                  idx : 0, unk_3 : 0, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
-    {id : SPRITE_LADY,                 idx : 0, unk_3 : 1, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
-    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
-    {id : SPRITE_ENNIO_LUIS,           idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
-    {id : SPRITE_DAINN,                idx : 0, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
-    {id : SPRITE_DJANGO_SABATA,        idx : 1, unk_3 : 0, unk_4 : {0xFF, 0xFF, 0xFF, 0xFF}},
-    {id : SPRITE_SMITH_MARCELLO,       idx : 1, unk_3 : 0, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
-    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 1, unk_3 : 0, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
-    {id : SPRITE_ENNIO_LUIS,           idx : 1, unk_3 : 0, unk_4 : {0x2, 0x0, 0x2, 0x0}    },
-    {id : SPRITE_MEGAMAN,              idx : 0, unk_3 : 0, unk_4 : {0x2, 0x0, 0x2, 0x0}    }
+const NPCFootStepSound sNPCFootStepSounds[21] = {
+    {id : SPRITE_DJANGO_SABATA,        idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_MOUSE,                idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_SKELETONS,            idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_BOKU,                 idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_OTENKO_00,            idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_SMITH_MARCELLO,       idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_SHAIAN,               idx : 0, soundSet : 0, stepFrames : {4, 0, 4, 0}    },
+    {id : SPRITE_RITA,                 idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_ZAJI,                 idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_SUMIRE,               idx : 0, soundSet : 2, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_KURO,                 idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_KID,                  idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_LADY,                 idx : 0, soundSet : 1, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_ENNIO_LUIS,           idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_DAINN,                idx : 0, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_DJANGO_SABATA,        idx : 1, soundSet : 0, stepFrames : {-1, -1, -1, -1}},
+    {id : SPRITE_SMITH_MARCELLO,       idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_COFFINSELLER_UNKNOWN, idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_ENNIO_LUIS,           idx : 1, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
+    {id : SPRITE_MEGAMAN,              idx : 0, soundSet : 0, stepFrames : {2, 0, 2, 0}    },
 };  // 0x085AB2B8
 
-const SoundID16 sound16_t_ARRAY_085ab360[6] = {0xC9, 0xCA, 0x25B, 0x25C, 0x25B, 0x25C};  // 0x085AB360
+const SoundID16 sFootStepSEs[6] = {SONG_201, SONG_202, SONG_603, SONG_604, SONG_603, SONG_604};  // 0x085AB360
+
+void FUN_08055d7c(SpriteHolder* p);
+
+static inline void Entity286FNode_SetFlags(struct Entity286FNode* p, Entity286FNodeFlags bits) { p->flags |= bits; }
 
 // 状態を差し替えて経過フレーム数を 0 に戻す
 static inline void Entity286FNode_SetState(Entity286FNode* node, u32 state) {
@@ -185,12 +261,12 @@ static inline void Entity286FNode_SetState(Entity286FNode* node, u32 state) {
 }
 
 // id と idx の組に対応するデータを表から探す
-unknown* Entity286F_FindSpriteData(SpriteID32 id, s32 idx) {
+const Entity286FAnim* Entity286F_FindSpriteData(SpriteID32 id, s32 idx) {
   s32 i;
 
   for (i = 0; i < 21; i++) {
     if (sEntity286FSprites[i].id == id && sEntity286FSprites[i].idx == idx) {
-      return (void*)sEntity286FSprites[i].data;
+      return sEntity286FSprites[i].data;
     }
   }
 
@@ -198,12 +274,12 @@ unknown* Entity286F_FindSpriteData(SpriteID32 id, s32 idx) {
 }
 
 // スプライトIDとキャラ番号の組に対応する表の行, 無ければ NULL
-const Unk085ab2b8* FUN_08040dc0(SpriteID32 id, s32 idx) {
+const NPCFootStepSound* FUN_08040dc0(SpriteID32 id, s32 idx) {
   s32 i;
 
   for (i = 0; i < 21; i++) {
-    if (Unk085ab2b8_ARRAY_085ab2b8[i].id == id && Unk085ab2b8_ARRAY_085ab2b8[i].idx == idx) {
-      return &Unk085ab2b8_ARRAY_085ab2b8[i];
+    if (sNPCFootStepSounds[i].id == id && sNPCFootStepSounds[i].idx == idx) {
+      return &sNPCFootStepSounds[i];
     }
   }
   return NULL;
@@ -286,7 +362,7 @@ NON_MATCH s32 FUN_08040f0c(Entity286FNode* node, u16 id, Vec3* pos, u8 angle) {
 
   node->unk_1b = angle;
   Mover_Init(mover, id, pos, angle, 7, node);
-  FUN_0823b464(mover, (u32)&node->unk_a0);
+  FUN_0823b464(mover, (u32)&node->zoneEvent);
   mover->unk_2 |= 4;
 #else
   INCFUNC("asm/func/FUN_08040f0c.inc");
@@ -408,7 +484,26 @@ NAKED s32 FUN_080412fc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/
 
 NAKED s32 FUN_0804135c(Entity286FNode* node, s32 param_2, u16 param_3, s8 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_0804135c.inc"); }
 
-NAKED s32 FUN_080413b8(Entity286FNode* node, s32 param_2, u16 param_3, s32 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_080413b8.inc"); }
+// unk_19 から再生の引数2つを作ってアニメを設定する
+// 残差1命令 (34 対 33), 原典は b を r3 (第4引数レジスタ) に直接置くが, こちらは r4 に取るので呼び出し直前に移し替える
+// 宣言順 / s32・bool32 / SpriteHolder* ローカル / 呼び出しを2本に分ける形は試済
+NON_MATCH s32 FUN_080413b8(Entity286FNode* node, u32 pose, u32 param_3, s32 param_4, u32 param_5, u32 param_6) {
+#ifdef NONMATCHING_C
+  u32 a;
+  u32 b;
+
+  if (node->sprite.kind == 1) {
+    a = node->unk_19;
+    b = a > 1;
+  } else {
+    a = 0;
+    b = node->unk_19 > 1;
+  }
+  return SpriteHolder_SetAnim(&node->sprite, pose, a, b, param_3, param_5, param_6);
+#else
+  INCFUNC("asm/func/FUN_080413b8.inc");
+#endif
+}
 
 NAKED s32 FUN_080413fc(Entity286FNode* node, s32 param_2, u16 param_3, s8 param_4, u8 param_5, u16 param_6) { INCFUNC("asm/func/FUN_080413fc.inc"); }
 
@@ -419,35 +514,22 @@ NAKED s32 FUN_08041480(Entity286FNode* node, s32 param_2, s32 param_3, s32 param
 NAKED void FUN_080414fc(Entity286FNode* node, s32 param_2) { INCFUNC("asm/func/FUN_080414fc.inc"); }
 
 // 2点が x/z は range 未満, y は 0xFF 以内に収まっているかを返す
-s32 FUN_0804157c(Vec3* a, Vec3* b, s32 range) {
-  s32 dx = b->x - a->x;
-  s32 dy;
-  s32 dz;
+bool32 UNUSED FUN_0804157c(Vec3* a, Vec3* b, s32 range) {
+  s32 dx, dy, dz;
 
-  if (dx < 0) {
-    dx = -dx;
-  }
+  dx = abs(b->x - a->x);
   if (dx >= range) {
-    return 0;
+    return FALSE;
   }
-
-  dy = b->y - a->y;
-  if (dy < 0) {
-    dy = -dy;
-  }
+  dy = abs(b->y - a->y);
   if (dy > 0xFF) {
-    return 0;
+    return FALSE;
   }
-
-  dz = b->z - a->z;
-  if (dz < 0) {
-    dz = -dz;
-  }
+  dz = abs(b->z - a->z);
   if (dz >= range) {
-    return 0;
+    return FALSE;
   }
-
-  return 1;
+  return TRUE;
 }
 
 NAKED void FUN_080415cc(Entity286FNode* node, s32 param_2, u16 param_3, s16 param_4) { INCFUNC("asm/func/FUN_080415cc.inc"); }
@@ -513,7 +595,7 @@ NAKED void FUN_08042414(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCF
 
 NAKED void FUN_08042638(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08042638.inc"); }
 
-void FUN_08042868(Entity286F* p, Entity286FNode* node) {
+void FUN_08042868(Entity286F* p, Entity286FNode* node, s32 elapsed) {
   if (node->unk_09 != 0) {
     node->unk_09 = 0;
     node->unk_07 = 0;
@@ -523,23 +605,51 @@ void FUN_08042868(Entity286F* p, Entity286FNode* node) {
   node->fn(node);
 }
 
-NAKED void FUN_080428b8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_080428b8.inc"); }
+NAKED void FUN_080428b8(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_080428b8.inc"); }
 
-NAKED void FUN_08042a48(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08042a48.inc"); }
+NAKED void FUN_08042a48(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08042a48.inc"); }
 
 NAKED void FUN_08042cf0(Entity286F* p, Entity286FNode* node, s32 param_3) { INCFUNC("asm/func/FUN_08042cf0.inc"); }
 
-NAKED void FUN_08042d50(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08042d50.inc"); }
+NAKED void FUN_08042d50(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08042d50.inc"); }
 
-NAKED void FUN_08042f34(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08042f34.inc"); }
+NAKED void FUN_08042f34(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08042f34.inc"); }
 
-NAKED void FUN_08043108(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08043108.inc"); }
+NAKED void FUN_08043108(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08043108.inc"); }
 
-NAKED void FUN_08043360(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08043360.inc"); }
+NAKED void FUN_08043360(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08043360.inc"); }
 
-NAKED s32 FUN_080434ac(Entity286FNode* node, s32 param_2) { INCFUNC("asm/func/FUN_080434ac.inc"); }
+NAKED s32 FUN_080434ac(Entity286FNode* node, Entity286FRecord* rec) { INCFUNC("asm/func/FUN_080434ac.inc"); }
 
-NAKED s32 FUN_08043510(Entity286FNode* node) { INCFUNC("asm/func/FUN_08043510.inc"); }
+// レコードの位置が 0x28 以内にあるときだけ FUN_080434ac へ進む
+// 残差はアドレスの作り方だけ (36 対 36), 原典は node+0x198 を作って [r0, #8] で読むが agbcc は node+0x1A0 に畳む
+// u8 配列経由のキャストでも畳まれる
+NON_MATCH s32 FUN_08043510(Entity286FNode* node) {
+#ifdef NONMATCHING_C
+  Entity286FRecord* rec = node->unk_1a0;
+  s32 dx = rec->x - node->mover.pos.x;
+  s32 dz;
+
+  if (dx < 0) {
+    dx = -dx;
+  }
+  if (dx > 0x28) {
+    return 9;
+  }
+
+  dz = rec->y - node->mover.pos.z;
+  if (dz < 0) {
+    dz = -dz;
+  }
+  if (dz > 0x28) {
+    return 9;
+  }
+
+  return FUN_080434ac(node, rec);
+#else
+  INCFUNC("asm/func/FUN_08043510.inc");
+#endif
+}
 
 // 待ちが解除されたら unk_05 を 1 にしてメッセージの待ちを終える
 void FUN_0804355c(Entity286F* p, Entity286FNode* node) {
@@ -779,13 +889,14 @@ void FUN_08044104(Entity286F* p, Entity286FNode* node) {
   }
 }
 
-void (*const PTR_ARRAY_085ab36c[3])(Entity286F*, Entity286FNode*) = {
-    FUN_080440ac,
-    FUN_080440d0,
-    FUN_08044104,
-};  // 0x085AB36C
-
-void FUN_08044138(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085ab36c[node->state](p, node); }
+void FUN_08044138(Entity286F* p, Entity286FNode* node) {
+  static void (*const PTR_ARRAY_085ab36c[3])(Entity286F*, Entity286FNode*) = {
+      FUN_080440ac,
+      FUN_080440d0,
+      FUN_08044104,
+  };  // 0x085AB36C
+  PTR_ARRAY_085ab36c[node->state](p, node);
+}
 
 void FUN_08044150(Entity286F* p, Entity286FNode* node) { FUN_08044138(p, node); }
 
@@ -794,18 +905,18 @@ s32 FUN_0804415c(Entity286F* p, Entity286FNode* node) {
   return 0;
 }
 
-void (*const PTR_ARRAY_085ab378[14])(Entity286F*, Entity286FNode*, s32) = {
-    NULL,
-    FUN_08042178,
-    FUN_080421bc,
-    FUN_08042200,
-    FUN_0804234c,
-    FUN_08042414,
-    FUN_08042638,
-};  // 0x085AB378
-
 // unk_05 に対応する更新関数を割り当てて動き出せる状態にする
 s32 FUN_08044168(Entity286FNode* node) {
+  static void (*const PTR_ARRAY_085ab378[14])(Entity286F*, Entity286FNode*, s32) = {
+      NULL,
+      FUN_08042178,
+      FUN_080421bc,
+      FUN_08042200,
+      FUN_0804234c,
+      FUN_08042414,
+      FUN_08042638,
+  };  // 0x085AB378
+
   Entity286FNodeUpdate* fn;
 
   if (node->unk_05 == 0 || node->unk_05 > 14) {  // 本来は >= 14 と書くべきものと思われる...
@@ -817,7 +928,7 @@ s32 FUN_08044168(Entity286FNode* node) {
   node->unk_2cc = fn;
   node->unk_10 = 0;
   node->unk_09 = 1;
-  node->unk_18[0] = 0;
+  node->unk_18 = 0;
   return 1;
 }
 
@@ -852,6 +963,7 @@ s32 FUN_080442f4(Entity286F* p, Entity286FNode* node) {
 
 s32 FUN_08044300(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
+// 0x920F, Unused?
 NAKED void FUN_08044310(void) { INCFUNC("asm/func/FUN_08044310.inc"); }
 
 void FUN_0804454c(Entity286F* p, Entity286FNode* node) {
@@ -976,20 +1088,21 @@ void FUN_080446d8(Entity286F* p, Entity286FNode* node) {
   }
 }
 
-void (*const PTR_ARRAY_085ab3b0[10])(Entity286F*, Entity286FNode*) = {
-    FUN_0804454c,
-    FUN_08044570,
-    FUN_080445a4,
-    FUN_080445d8,
-    FUN_080445fc,
-    FUN_08044634,
-    FUN_08044658,
-    FUN_08044690,
-    FUN_080446b4,
-    FUN_080446d8,
-};  // 0x085AB3B0
-
-void FUN_0804470c(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085ab3b0[node->state](p, node); }
+void FUN_0804470c(Entity286F* p, Entity286FNode* node) {
+  static void (*const PTR_ARRAY_085ab3b0[10])(Entity286F*, Entity286FNode*) = {
+      FUN_0804454c,
+      FUN_08044570,
+      FUN_080445a4,
+      FUN_080445d8,
+      FUN_080445fc,
+      FUN_08044634,
+      FUN_08044658,
+      FUN_08044690,
+      FUN_080446b4,
+      FUN_080446d8,
+  };  // 0x085AB3B0
+  PTR_ARRAY_085ab3b0[node->state](p, node);
+}
 
 void FUN_08044724(Entity286F* p, Entity286FNode* node) { FUN_0804470c(p, node); }
 
@@ -1044,22 +1157,22 @@ NAKED void FUN_08044dd8(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCF
 
 NAKED void FUN_08044e6c(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08044e6c.inc"); }
 
-void (*const PTR_ARRAY_085ab3d8[11])(Entity286F*, Entity286FNode*, s32) = {
-    NULL,
-    FUN_0804473c,
-    FUN_0804478c,
-    FUN_080448c8,
-    FUN_0804494c,
-    FUN_080449c0,
-    FUN_08044a54,
-    FUN_08044a90,
-    FUN_08044d9c,
-    FUN_08044dd8,
-    FUN_08044e6c,
-};  // 0x085AB3D8
-
 // unk_05 に対応する更新関数を割り当てて動き出せる状態にする
 s32 FUN_08044ee0(Entity286FNode* node) {
+  static void (*const PTR_ARRAY_085ab3d8[11])(Entity286F*, Entity286FNode*, s32) = {
+      NULL,
+      FUN_0804473c,
+      FUN_0804478c,
+      FUN_080448c8,
+      FUN_0804494c,
+      FUN_080449c0,
+      FUN_08044a54,
+      FUN_08044a90,
+      FUN_08044d9c,
+      FUN_08044dd8,
+      FUN_08044e6c,
+  };  // 0x085AB3D8
+
   Entity286FNodeUpdate* fn;
 
   if (node->unk_05 == 0 || node->unk_05 > 11) {  // 本来は >= 11 と書くべきものと思われる...
@@ -1071,7 +1184,7 @@ s32 FUN_08044ee0(Entity286FNode* node) {
   node->unk_2cc = fn;
   node->unk_10 = 0;
   node->unk_09 = 1;
-  node->unk_18[0] = 0;
+  node->unk_18 = 0;
   return 1;
 }
 
@@ -1106,4 +1219,5 @@ s32 FUN_080450a8(Entity286F* p, Entity286FNode* node) {
 
 s32 FUN_080450b4(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
+// 0x0E7C
 NAKED void FUN_080450c4(void) { INCFUNC("asm/func/FUN_080450c4.inc"); }

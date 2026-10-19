@@ -144,10 +144,10 @@ s32 LevelUpper_Update(LevelUpper* p) {
       FUN_080a841c(p);
       if (TryPlayerLevelUp(p)) {
         LevelUpper_EmitLevelUpEffect(p);
-        PlaySound_082406e0(0x388);
+        PlaySound_082406e0(SE_LEVEL_UP);
       } else if (p->unk_60 == 0 && IsWeaponLevelChanged(p)) {
         LevelUpper_EmitWeaponLevelUpEffect(p);
-        PlaySound_082406e0(0x381);
+        PlaySound_082406e0(SE_WEAPON_LV_UP);
       }
       for (i = 0; i < 5; i++) {
         p->weaponLv[i] = GetWeaponSkillLevel(i);
@@ -185,7 +185,7 @@ void LevelUpper_InitParticles(LevelUpper* p) {
 
   p->p_7c = GetParticleGroup(PTCL_GROUP_2);
   for (i = 0; i < 8; i++) {
-    Particle_Add(&p->ptcls[i].base, p->p_7c, 1);
+    Particle_Add(&p->ptcls[i].base, p->p_7c, SPRFLAG_HIDDEN);
     Particle_SetFrame(&p->ptcls[i].base, p->p_7c, 0);
     Particle_SetOffset(&p->ptcls[i].base, -4, -4);
     Particle_SetPltt(&p->ptcls[i].base, 1);

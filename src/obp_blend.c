@@ -5,12 +5,6 @@
 #include "video.h"
 #include "vm.h"
 
-extern s32 gObjPlttSlotCursor;
-extern s32 gObjPlttSlotReserved;
-extern s32 gObjPlttSlotCount;
-s32 FUN_0823ce10(u16* a, u16* b);
-u32 FUN_0823cdf8(u16 id);
-
 // 1枚ぶんの補間スロット, 同じ絵の時刻帯バリエーション3枚を srcs に持ち、2枚の間を混ぜた結果を pltt に書く
 typedef struct {
   u16 id;           // 0x00, スクリプトの '.p', FUN_0823cdf8 に渡して plttID を引く
@@ -35,6 +29,12 @@ typedef struct {
   ObjPlttBlend slots[6];  // 0x28
 } ObjPlttBlender;
 static_assert(sizeof(ObjPlttBlender) == 328);
+
+extern s32 gObjPlttSlotCursor;
+extern s32 gObjPlttSlotReserved;
+extern s32 gObjPlttSlotCount;
+s32 FUN_0823ce10(u16* a, u16* b);
+u32 FUN_0823cdf8(u16 id);
 
 // 1スロットぶん, srcs[srcFrom] と srcs[srcTo] を blend の割合で混ぜて pltt に書く
 // 残差3命令: 原典は 0x1F を2本のレジスタに分けて持ち srcA も退避するが、こちらは 0x1F が1本に畳まれる (Tier A-B 試済, 未: Tier C)
@@ -105,9 +105,7 @@ s32 ObjPlttBlender_Update(ObjPlttBlender* p) {
 s32 ObjPlttBlender_Destroy(ObjPlttBlender* p) { return 0; }
 
 // スクリプトの '.p' で指定された OBJ パレットを最大6件スロットに積み、'.o' のオフセットを足した plttID から3枚のバリエーションを引く
-// 残差2命令: 0 埋めの下りループが原典では符号付き比較のポインタ walk で前置ガードも無いが、こちらはガードが付いて bcs になる (Tier A-B 試済, 未: Tier C)
-NON_MATCH s32 ObjPlttBlender_Init(ObjPlttBlender* p, u16 val) {
-#ifdef NONMATCHING_C
+s32 ObjPlttBlender_Init(ObjPlttBlender* p, u16 val) {
   u16 ofs[6];
   s32 i;
 
@@ -124,11 +122,8 @@ NON_MATCH s32 ObjPlttBlender_Init(ObjPlttBlender* p, u16 val) {
       ofs[i] = 0;
     }
   } else {
-    u16* q = &ofs[5];
-
-    while (q >= ofs) {
-      *q = 0;
-      q--;
+    for (i = 0; i < 6; i++) {
+      ofs[i] = 0;
     }
   }
 
@@ -155,9 +150,6 @@ NON_MATCH s32 ObjPlttBlender_Init(ObjPlttBlender* p, u16 val) {
     ObjPlttBlender_UpdateSlot(p, &p->slots[i]);
   }
   return 0;
-#else
-  INCFUNC("asm/func/ObjPlttBlender_Init.inc");
-#endif
 }
 
 // 0x4D4D

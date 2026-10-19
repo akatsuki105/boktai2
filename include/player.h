@@ -16,20 +16,20 @@
 #include "types.h"
 #include "weapon.h"
 
-typedef u32 PlayerFlag20;         // Player.unk_20
-#define PFLAG20_UNK_0 (1 << 0)    // 0x00000001, Player_BeginAction が毎回これだけ立てた状態から始める
-#define PFLAG20_UNK_1 (1 << 1)    // 0x00000002
-#define PFLAG20_UNK_4 (1 << 4)    // 0x00000010, 日光が当たっているときに立つ, 根拠: Player_BeginAction
-#define PFLAG20_UNK_5 (1 << 5)    // 0x00000020
-#define PFLAG20_UNK_7 (1 << 7)    // 0x00000080
-#define PFLAG20_UNK_8 (1 << 8)    // 0x00000100
-#define PFLAG20_UNK_12 (1 << 12)  // 0x00001000
-#define PFLAG20_UNK_14 (1 << 14)  // 0x00004000, Player_UpdateDjango が先頭で毎フレーム立てる
-#define PFLAG20_UNK_15 (1 << 15)  // 0x00008000, 立っていると Player_SetHitDir が被弾方向を facing ではなく unk_3e8 に書く
-#define PFLAG20_UNK_16 (1 << 16)  // 0x00010000, FLAG378_SKULLSUIT が立っているときに立つ
-#define PFLAG20_UNK_17 (1 << 17)  // 0x00020000, 棺桶が COFFIN_SILVER のとき寝ている間だけ立つ
-#define PFLAG20_UNK_18 (1 << 18)  // 0x00040000, Player_UpdateDjango が unk_1c が 2 か 4 のとき立てる
-#define PFLAG20_UNK_19 (1 << 19)  // 0x00080000
+typedef u32 PlayerFlag20;            // Player.flag20
+#define PFLAG20_UNK_0 (1 << 0)       // 0x00000001, Player_BeginAction が毎回これだけ立てた状態から始める
+#define PFLAG20_UNK_1 (1 << 1)       // 0x00000002
+#define PFLAG20_SUNBATHING (1 << 4)  // 0x00000010, プレイヤーに日光が当たっているか
+#define PFLAG20_UNK_5 (1 << 5)       // 0x00000020
+#define PFLAG20_UNK_7 (1 << 7)       // 0x00000080
+#define PFLAG20_UNK_8 (1 << 8)       // 0x00000100
+#define PFLAG20_UNK_12 (1 << 12)     // 0x00001000
+#define PFLAG20_UNK_14 (1 << 14)     // 0x00004000, Player_UpdateDjango が先頭で毎フレーム立てる
+#define PFLAG20_UNK_15 (1 << 15)     // 0x00008000, 立っていると Player_SetHitDir が被弾方向を facing ではなく unk_3e8 に書く
+#define PFLAG20_SNEAKING (1 << 16)   // 0x00010000, 敵から見つかりにくい状態(スカルスーツ装備, Cマウス形態 など)
+#define PFLAG20_UNK_17 (1 << 17)     // 0x00020000, 棺桶が COFFIN_SILVER のとき寝ている間だけ立つ (多分、敵から完全に見つからなくなる状態)
+#define PFLAG20_UNK_18 (1 << 18)     // 0x00040000, Player_UpdateDjango が unk_1c が 2 か 4 のとき立てる
+#define PFLAG20_UNK_19 (1 << 19)     // 0x00080000
 
 // Player.flag35a, Player_BeginAction が毎フレーム 0 に戻し、行動関数が立てたものを FUN_08078bc0 がその場で反映する
 typedef u16 PlayerFlag35A;
@@ -61,7 +61,7 @@ typedef u32 PlayerFlag378;                 // Player.flag378
 #define FLAG378_AET_NORMAL_DROP (1 << 15)  // 0x00008000, 盗人の服
 #define FLAG378_AET_RARE_DROP (1 << 16)    // 0x00010000, 狩人の服
 #define FLAG378_PARADE (1 << 17)           // 0x00020000, パレードアーマー
-#define FLAG378_UNK_19 (1 << 19)           // 0x00080000, 立っていると FUN_0806f900 が HP 割合ぶんの補正を足す
+#define FLAG378_BLACKARMOR (1 << 19)       // 0x00080000, 黒の鎧
 #define FLAG378_SPIKE (1 << 18)            // 0x00040000, スパイクメイル
 #define FLAG378_MEGAPOWER (1 << 20)        // 0x00100000, ロックパワー
 #define FLAG378_GUTSPOWER (1 << 21)        // 0x00200000, ガッツパワー
@@ -99,7 +99,7 @@ typedef struct {
   armor16_t id;               // 0x00 (Player: 0x264), ArmorData.id
   u16 defence;                // 0x02 (Player: 0x266), ArmorData.defence
   u16 weight;                 // 0x04 (Player: 0x268), ArmorData.weight
-  u16 unk_26a;                // 0x06 (Player: 0x26A)
+  u16 unk_26a;                // 0x06 (Player: 0x26A), padding?
   u16 bonus[STAT_KINDS];      // 0x08 (Player: 0x26C), 武者鎧などのステータスに対する補正値
   s16 sideBonus[STAT_KINDS];  // 0x10 (Player: 0x274), 赤/黒による符号付き補正 (赤なら+, 黒なら-), [0] が HP, [1] が Ene に効く
 } PlayerArmor;
@@ -184,10 +184,10 @@ static_assert(sizeof(PlayerShockwave) == 108);
 // 通常プレイでは gPlayerPtr[0] にこの構造体がある, 通信対戦の相手キャラもこの構造体を使う
 typedef struct Player {
   Entity e;                         // 0x000
-  u32 unk_18;                       // 0x018, `.i`, 0 or 1 他にもあるか不明, 多分イベントシーンとかで作られたやつを区別するためのものとか？
-  u32 unk_1c;                       // 0x01C, ステート?, (0: ??, 1: 通常状態, 2: マップ移動などの操作できない状態?, 3: ???, 4: HP0, 5: ???, ...)
-  PlayerFlag20 unk_20;              // 0x020, see PlayerFlag20
-  Mover mover;                      // 0x024, 根拠: FUN_08081ab0 と Player_Destroy によるとここから Mover
+  u32 playerIdx;                    // 0x018, `.i`, 0 or 1 他にもあるか不明
+  u32 unk_1c;                       // 0x01C, 入る値は 0 / 1 / 2 / 4 の4通り (1: 通常更新中, 2: 操作できない状態, 4: HP0), switch で引く箇所と & 1 / & 4 で見る箇所が混在する
+  PlayerFlag20 flag20;              // 0x020, see PlayerFlag20
+  Mover mover;                      // 0x024
   MainSpriteGfx spriteSet_68;       // 0x068, 根拠： Player_PlayAnim
   MainSprite sprite_88;             // 0x088, 根拠： Player_PlayAnim
   AuxSprite sprite_e8;              // 0x0E8, Player_Destroy が AuxSprite_Remove に渡す, pos は 0x104 で FUN_0807a91c が mover.pos / sprite_88.pos と一緒に書く
@@ -195,7 +195,7 @@ typedef struct Player {
   AuxSpriteGfx gfxForms[3];         // 0x118, 変身3種のグラフィック, gfx_114 がこのどれかを指す [Bat, Mouse, Sleeping]
   HitboxData hurtbox;               // 0x16C
   MoverTile tile;                   // 0x1BC, mover.tile がここを指す
-  u8 unk_1cc[0x1FC - 0x1CC];        // 0x1CC
+  ZoneEventSource zoneEvents;       // 0x1CC, pos は mover.pos を指す, 毎フレーム FUN_08234660 に渡して範囲内のイベントを拾う
   NavAgent navAgent;                // 0x1FC, FUN_08081ab0 が Map_InitNavAgent に渡す
   EnemyTarget target;               // 0x220, kindMask 2 で登録される
   MsgQueue mq;                      // 0x230, FUN_0807ddd4 が MsgQueue_Unregister に渡す
@@ -205,13 +205,13 @@ typedef struct Player {
   Weapon* unk_288;                  // 0x288, 根拠: FUN_080cf54c が +1 要素目を player_weapon_080ceafc に渡す
   struct Input* input;              // 0x28C, &gInput[n]
   Facing16 facingHistory[10];       // 0x290, 入力方向の履歴, 添字 0 が今フレームで大きいほど古い, 入力なしは -1
-  rgb555 pltt_2a4[32];              // 0x2A4, pltt_2a4 から rgb555 が入っているのは確定だが、長さは不明
+  rgb555 pltt_2a4[32];              // 0x2A4
   u16 animID;                       // 0x2E4, 今 sprite_88 で再生しているアニメのID, Player_PlayAnim が前回と同じIDかどうかの判定に使う
   u8 animIDOffset;                  // 0x2E6, Player_PlayAnim がアニメIDに足すオフセット
   bool8 xflip;                      // 0x2E7, 0 以外なら Player_PlayAnim が sprite_88.flags に SPRFLAG_XFLIP を立てる
   Facing8 facing;                   // 0x2E8, see Facing8
   u8 unk_2e9[2];                    // 0x2E9
-  u8 hitboxTimer;                   // 0x2EB, hitbox_2ec を Hitbox_Register し続ける残りフレーム数, FUN_0807e2cc が 6 を入れる
+  u8 hitboxTimer;                   // 0x2EB, hitbox_2ec を Hitbox_Register し続ける残りフレーム数, Django_Spike が 6 を入れる
   HitboxData hitbox_2ec;            // 0x2EC
   AuxAnimState anim_33c;            // 0x33C, 変身アニメの再生状態, 根拠: Player_GetMagicAction が AuxAnim_RestartAnim に渡す
   AuxAnimFile* anim_34c;            // 0x34C
@@ -249,29 +249,29 @@ typedef struct Player {
   u8 unk_397;                       // 0x397, 0 以外だと FUN_08065dac が何もしない
   Vec3* ptr_398;                    // 0x398, FUN_0807a9b8 の第2引数, FUN_08065dac は pos_39c を指させる
   Vec3 pos_39c;                     // 0x39C, FUN_08065dac が今踏んでいるタイルの中心を書く
-  u8 unk_3a4;                       // 0x3A4, 0 以外だと FUN_080672b0 が移動速度を設定しない
+  u8 useForcedDelta;                // 0x3A4, 0 以外だと FUN_080672b0 が移動速度を設定しない
   u8 unk_3a5[3];                    // 0x3A5, padding?
-  Vec3 unk_3a8;                     // 0x3A8, unk_3a4 が 0 以外のとき Player_UpdateDjango が mover.delta にそのまま写す移動量
+  Vec3 forcedDelta;                 // 0x3A8, useForcedDelta が 0 以外のとき Player_UpdateDjango が mover.delta にそのまま写す移動量
   Vec3 unk_3b0;                     // 0x3B0, FUN_0807a528 が引数の座標をそのまま写す
   u16 unk_3b8;                      // 0x3B8, FUN_0807a528 の第3引数
   u16 unk_3ba;                      // 0x3BA, FUN_0807b5a8 が 1 を書く
   u8 unk_3bc;                       // 0x3BC, FUN_08066d2c が見る
   u8 unk_3bd;                       // 0x3BD, FUN_080674dc / FUN_0807b0c0 が見る
   u16 unk_3be;                      // 0x3BE, Player_UpdateDjango が毎フレーム +1 し, 5 になった回だけ処理をする
-  Vec3 pos_3c0;                     // 0x3C0, FUN_08066df8 が mover.pos とカメラの注視点から作って FUN_0823bac8 に渡す
+  Vec3 pos_3c0;                     // 0x3C0, FUN_08066df8 が mover.pos とカメラの注視点から作って Camera_LookAt に渡す
   Vec3 lookAroundOffset;            // 0x3C8, 見回し開始時のカメラ注視点からプレイヤーへのオフセット, val は見回しモード中か(0 or 1)
   u8 unk_3d0;                       // 0x3D0
   u8 unk_3d1;                       // 0x3D1
   u8 unk_3d2;                       // 0x3D2, Player_SetHitDir が被弾時に 1/0 を書く
   u8 unk_3d3;                       // 0x3D3
-  u16 unk_3d4;                      // 0x3D4, 吹き飛ばされている間のカウンタ, 0x55 を超えた偶数フレームに効果音を鳴らす
+  u16 knockbackTimer;               // 0x3D4, 吹き飛ばされている間のカウンタ, 0x55 を超えた偶数フレームに効果音を鳴らす
   u8 unk_3d6[2];                    // 0x3D6
   u16 unk_3d8;                      // 0x3D8, Player_ApplyBadCondition が状態異常1の残り時間が 0 のときに 0 を書く
   u16 unk_3da;                      // 0x3DA, Player_StartFormEffect が変身を始めるときに 0 に戻す
   u16 unk_3dc;                      // 0x3DC, FUN_080667b0 が毎回 太陽ゲージ+2 を足し、100 を超えるたびに FUN_08066794 を呼んで 100 引く
   u8 unk_3de[0x3E6 - 0x3DE];        // 0x3DE
   u16 unk_3e6;                      // 0x3E6, Player_SetHitDir が相手の HitboxData.unk_40 を退避する
-  u16 unk_3e8;                      // 0x3E8, Player_SetHitDir が被弾方向 (0..7) を入れる
+  Facing16 hitDir;                  // 0x3E8, Player_SetHitDir が被弾方向 (0..7) を入れる
   u16 unk_3ea;                      // 0x3EA, FUN_0807ad60 が 1 を書く
   u16 unk_3ec;                      // 0x3EC, 0 以外だと FUN_0807ad60 が上書きを断る
   u8 unk_3ee[0x3F0 - 0x3EE];        // 0x3EE
@@ -279,7 +279,7 @@ typedef struct Player {
   u8 unk_3f1;                       // 0x3F1
   u8 unk_3f2;                       // 0x3F2, 目的地が遠い間 0..5 で増減し, 5 で姿を消して 1 以上で点滅する
   u8 unk_3f3[0x3F6 - 0x3F3];        // 0x3F3
-  u16 unk_3f6;                      // 0x3F6, sprite_88 の表示高さに足す浮き上がり量
+  u16 floatHeight;                  // 0x3F6, sprite_88 の表示高さに足す浮き上がり量
   u8 unk_3f8[2];                    // 0x3F8
   u8 magicFired;                    // 0x3FA, 魔法の発動フレームに FUN_08064d6c (太陽ゲージ判定) の結果が入る, 1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
   u8 dynamiteCount;                 // 0x3FB, 生存中の Entity080a8ff8 の数, Entity080a8ff8_Init が +1、消滅時に -1, MAGIC_DYNAMITE は 0 でないと再発動できない (Player_GetMagicAction)
@@ -308,18 +308,18 @@ typedef struct Player {
   u8 unk_457[0x464 - 0x457];        // 0x457
   u8 unk_464;                       // 0x464, FUN_08081ab0 が 1 を入れる
   u8 unk_465;                       // 0x465
-  bool8 unk_466;                    // 0x466, 1 なら今の接近チャンスを使い切った状態, gPlayerPtr[0] の action が 0x15 でなくなると 0 に戻る
+  bool8 approachUsed;               // 0x466, 1 なら今の接近チャンスを使い切った状態, gPlayerPtr[0] の action が 0x15 でなくなると 0 に戻る
   u8 unk_467;                       // 0x467, 接近を試みる確率 (%)
-  u8 unk_468;                       // 0x468, unk_469 の上限
-  u8 unk_469;                       // 0x469, 行動8 で弾いた回数, unk_468 に達すると弾き返す
-  u8 unk_46a;                       // 0x46A, unk_46b の上限
-  u8 unk_46b;                       // 0x46B, 行動8 で HBATTR_12 の攻撃を受けた回数, unk_46a に達すると行動 0x14 に移る
+  u8 blockLimit;                    // 0x468, blockCount の上限
+  u8 blockCount;                    // 0x469, 行動8 で弾いた回数, blockLimit に達すると弾き返す
+  u8 namakuraLimit;                 // 0x46A, namakuraCount の上限
+  u8 namakuraCount;                 // 0x46B, 行動8 で HBATTR_NAMAKURA の攻撃を受けた回数, namakuraLimit に達すると行動 0x14 に移る
   u8 unk_46c;                       // 0x46C, '.G[0]', 既定 4
   u8 unk_46d;                       // 0x46D
   u8 unk_46e;                       // 0x46E, 行動3 で斬った回数
-  u8 unk_46f;                       // 0x46F, 行動3 で斬る回数 (2 か 3 を乱数で決める)
-  u8 unk_470;                       // 0x470, 経路の終点に着いたときに移る action
-  u8 unk_471;                       // 0x471, 経路の終点に着いたときの facing
+  u8 slashCount;                    // 0x46F, 行動3 で斬る回数 (2 か 3 を乱数で決める)
+  u8 pathEndAction;                 // 0x470, 経路の終点に着いたときに移る action
+  u8 pathEndFacing;                 // 0x471, 経路の終点に着いたときの facing
   s16 unk_472;                      // 0x472, FUN_080da9c4 の第6引数
   u16 unk_474;                      // 0x474, 行動 0x12 の残りフレーム数, FUN_080da9c4 に書き込み先として渡される
   u8 unk_476;                       // 0x476, 非0なら FUN_08084540 が無敵中の点滅をしない
@@ -335,8 +335,8 @@ typedef struct Player {
   u8 unk_4aa;                       // 0x4AA, FUN_080726b4
   u8 unk_4ab;                       // 0x4AB, FUN_08072670 が 1 を書く
   u8 unk_4ac;                       // 0x4AC
-  u8 unk_4ad;                       // 0x4AD, 0 以外なら FUN_080726ec が unk_4ae を数える
-  u8 unk_4ae;                       // 0x4AE, 8 フレームごとに Player_SpawnFootHitbox を呼ぶためのカウンタ
+  u8 footHitboxOn;                  // 0x4AD, 0 以外なら FUN_080726ec が footHitboxTimer を数える
+  u8 footHitboxTimer;               // 0x4AE, 8 フレームごとに Player_SpawnFootHitbox を呼ぶためのカウンタ
   u8 unk_4af;                       // 0x4AF
   s32 scriptID_4b0;                 // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4BC - 0x4B4];        // 0x4B4
@@ -360,11 +360,11 @@ typedef struct Player {
   u8 unk_94e;                       // 0x94E, Player_UpdatePltt
   u8 unk_94f;                       // 0x94F
   u8 unk_950;                       // 0x950, Player_ResetPltt
-  u8 unk_951;                       // 0x951, FUN_0806f780 が unk_a8d + 1 (負なら 0) を入れる
+  u8 unk_951;                       // 0x951, FUN_0806f780 が enchantIdx + 1 (負なら 0) を入れる
   u16 altPose;                      // 0x952, Player_ApplyPoseHold が pose が変わったときに控える値
   u16 altPoseTimer;                 // 0x954, 変化時に 0x40 を入れて毎回 1 減らす, bit2 が立つ間は altPose を返す
-  u16 unk_956;                      // 0x956, Player_TickBadCondTimers が状態異常1の残り時間が切れたあと 0x40 から減らす点滅タイマ
-  u16 unk_958;                      // 0x958, 同じく太陽ゲージ消費側の点滅タイマ
+  u16 badCondBlinkTimer;            // 0x956, Player_TickBadCondTimers が状態異常1の残り時間が切れたあと 0x40 から減らす点滅タイマ
+  u16 sunDrainBlinkTimer;           // 0x958, 同じく太陽ゲージ消費側の点滅タイマ
   u16 flashPose;                    // 0x95A, flashTimer の bit2 が立っている間 Player_ApplyFlashPose が pose の代わりに返す値
   u16 flashTimer;                   // 0x95C, Player_ApplyFlashPose が毎フレーム 1 減らす点滅タイマ
   u16 plttID_95e;                   // 0x95E, FUN_0807b890 / FUN_0807b8a8 が第2引数を書く
@@ -376,11 +376,11 @@ typedef struct Player {
   u8 unk_96e[2];                    // 0x96E, padding?
   Vec3 pos_970;                     // 0x970, Player_UpdateBloodSword が FUN_0805fe7c の第5引数に渡す
   u8 unk_978;                       // 0x978, 同じく第6引数
-  u8 unk_979;                       // 0x979, Player_EquipMagic がエンチャントの有無で 1/0 を書く
+  bool8 enchantStarted;             // 0x979, エンチャントが始まったフレームだけ立つ, Player_Update が効果音を鳴らして 0 に戻す
   u16 unk_97a;                      // 0x97A, Player_InitEffects が条件付きで 0x40 を入れる
-  u8 unk_97c[4];                    // 0x97C, MosaicFader_Start の from, 初期値は全部 4
+  u8 mosaicFrom[4];                 // 0x97C, MosaicFader_Start の from, 初期値は全部 4
   u8 unk_980[4];                    // 0x980, 同じく to, 初期値は全部 0
-  u16 unk_984[4];                   // 0x984, 同じく interval, 初期値は全部 4
+  u16 mosaicInterval[4];            // 0x984, 同じく interval, 初期値は全部 4
   s32 unk_98c;                      // 0x98C, FUN_080da9c4 の戻り値を入れて次回の第1引数に渡す
   u8 unk_990;                       // 0x990, 同じ呼び出しの第3引数
   u8 unk_991;                       // 0x991
@@ -404,11 +404,11 @@ typedef struct Player {
   u16 unk_a7c;                      // 0xA7C, Hitbox_SetAttack の第3引数, 武器種ごとの値
   u16 unk_a7e;                      // 0xA7E, 同じく第6引数
   u8 unk_a80[0xA8A - 0xA80];        // 0xA80
-  u16 unk_a8a;                      // 0xA8A, Player_ShowGunSpread が散弾スプライトの rotation に入れる向き
+  u16 gunSpreadAngle;               // 0xA8A, Player_ShowGunSpread が散弾スプライトの rotation に入れる向き
   u8 unk_a8c;                       // 0xA8C
-  s8 unk_a8d;                       // 0xA8D, FUN_0806f780 が Player_CheckMagicEnchant の結果を入れる, 負ならエンチャントなし
+  s8 enchantIdx;                    // 0xA8D, FUN_0806f780 が Player_CheckMagicEnchant の結果を入れる, 負ならエンチャントなし
   u8 unk_a8e;                       // 0xA8E
-  u8 unk_a8f;                       // 0xA8F, Entity08080be8 が毎フレーム charge に写す, 威力を 1 + n/2 倍にし、スプライトの絵も選ぶ
+  u8 charge;                        // 0xA8F, Entity08080be8 が毎フレーム charge に写す, 威力を 1 + n/2 倍にし、スプライトの絵も選ぶ
   u8 unk_a90[5];                    // 0xA90
   u8 unk_a95;                       // 0xA95, アストロ武器の種類ごとの値 (剣: 0, 槍: 4, 槌: 8)
   u8 unk_a96[2];                    // 0xA96, padding?
@@ -442,8 +442,8 @@ void Player_EquipMagic(Player* p, magic32_t n);
 u32 FUN_08066ee4(s32 playerKind, s32 idx);
 void FUN_0807a91c(Player* p, Vec3* pos);
 
-static inline void Player_SetFlag20(Player* p, PlayerFlag20 bit) { p->unk_20 |= bit; }
-static inline bool32 Player_TestFlag20(Player* p, PlayerFlag20 bit) { return p->unk_20 & bit; }
+static inline void Player_SetFlag20(Player* p, PlayerFlag20 bit) { p->flag20 |= bit; }
+static inline bool32 Player_TestFlag20(Player* p, PlayerFlag20 bit) { return p->flag20 & bit; }
 
 static inline void Player_SetFlag378(Player* p, PlayerFlag378 bits) { p->flag378 |= bits; }
 static inline void Player_ClearFlag378(Player* p, PlayerFlag378 bits) { p->flag378 &= ~bits; }

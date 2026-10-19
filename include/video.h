@@ -66,6 +66,7 @@ void FUN_0822f584(void);
 
 void SetBGPrioDirect(s32 bg, u32 prio);
 void Video_GenerateBGMap(s32 bg, u32 param_2, u32 param_3, u32 hofs, u32 vofs);
+void Video_FillBGRect(s32 bg, s32 x, s32 y, s32 w, s32 h, u32 tileidx, u32 flip, u32 pltt);
 void Video_SetupBGLayout(s32 layout, u32 param_2, TilemapFile* tilemap, u32 param_4, u32 param_5, s32 count, s32* indices);
 void Video_SetupBG(s32 bg, u32 param_2, unknown* f, u32 unused, s16 param_5, s16 param_6, u32 prio, BgMapEntry* tilemap);
 void Video_SetBGLayer(s32 bg, TilemapFile* tilemap, s32 layerIdx);

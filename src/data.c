@@ -1,15 +1,5 @@
 #include "global.h"
 
-void Entity4B15Elem_UpdateIdle(void* r0, void* r1);
-void Entity4B15Elem_UpdateTracking(void* r0, void* r1);
-void Entity4B15Elem_UpdateFixed(void* r0, void* r1);
-
-const void* const PTR_ARRAY_08251b58[3] = {
-    Entity4B15Elem_UpdateIdle,
-    Entity4B15Elem_UpdateTracking,
-    Entity4B15Elem_UpdateFixed,
-};
-
 const ALIGNED(4) char s_WEIGHT_08251b64[] = "WEIGHT";
 const ALIGNED(4) char s_NONSEL_08251b6c[] = "NONSEL";
 const ALIGNED(4) char s_UVMOJI_08251b74[] = "UVMOJI";

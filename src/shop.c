@@ -17,7 +17,27 @@ static BgMapEntry* GetBgTilemapAddr(s32 bgID, u32 x, u32 y) {
   return tilemap + (x & 0x1F) + (y & 0x1F) * 32;
 }
 
-NAKED void FUN_080b93b0(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s16 param_5) { INCFUNC("asm/func/FUN_080b93b0.inc"); }
+// value を divisor の桁から順に BG のタイルマップへ書く, タイル番号は plttRow * 16 + 0x21 + 数字
+// 残差はレジスタ割当だけ (36 対 36), 原典は value/divisor を引数順に r5/r6 へ置いて dst を r7 に回すが, こちらは dst が r6 を取る
+// 宣言順の入れ替えと digit/tile を関数スコープに出す形は試済
+NON_MATCH void FUN_080b93b0(s32 value, s32 divisor, u32 x, u32 y, s32 plttRow) {
+#ifdef NONMATCHING_C
+  BgMapEntry* dst = GetBgTilemapAddr(0, x, y);
+  s32 base = plttRow * 16 + 0x21;
+
+  while (divisor > 0) {
+    s32 digit = Div(value, divisor);
+    u16 tile = digit + base;
+
+    *dst = tile | 0xF000;
+    dst++;
+    value -= divisor * digit;
+    divisor = Div(divisor, 10);
+  }
+#else
+  INCFUNC("asm/func/FUN_080b93b0.inc");
+#endif
+}
 
 NAKED void FUN_080b9400(s32 kind) { INCFUNC("asm/func/FUN_080b9400.inc"); }
 
@@ -133,7 +153,7 @@ s32 FUN_080b9df0(MenuCursor* p) {
     if (slot >= 0 && slot != cur) {
       p->col = col;
       p->slot = MenuCursor_GetSlot(p);
-      PlaySound_082406e0(0xDC);
+      PlaySound_082406e0(SONG_220);
       return 1;
     }
     col = (col + 3) & 3;
@@ -152,7 +172,7 @@ s32 FUN_080b9e50(MenuCursor* p) {
     if (slot >= 0 && slot != cur) {
       p->col = col;
       p->slot = MenuCursor_GetSlot(p);
-      PlaySound_082406e0(0xDC);
+      PlaySound_082406e0(SONG_220);
       return 1;
     }
     col = (col + 1) & 3;
@@ -176,7 +196,7 @@ s32 FUN_080b9eb0(MenuCursor* p) {
     if (slot >= 0 && slot != cur) {
       p->row = row;
       p->slot = MenuCursor_GetSlot(p);
-      PlaySound_082406e0(0xDC);
+      PlaySound_082406e0(SONG_220);
       return 1;
     }
     if (row == 0) {
@@ -204,7 +224,7 @@ s32 FUN_080b9f10(MenuCursor* p) {
     if (slot >= 0 && slot != cur) {
       p->row = row;
       p->slot = MenuCursor_GetSlot(p);
-      PlaySound_082406e0(0xDC);
+      PlaySound_082406e0(SONG_220);
       return 1;
     }
     if (row == 8) {

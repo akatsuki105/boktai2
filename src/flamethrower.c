@@ -52,7 +52,28 @@ void FUN_081eaa10(Entity081eaf6cItem* item) {
 
 void FUN_081eaa54(Entity081eaf6cItem* p) {}
 
-NAKED s32 Entity081eaf6c_Destroy(Entity081eaf6c* p) { INCFUNC("asm/func/Entity081eaf6c_Destroy.inc"); }
+// 使用中のスロットのスプライトと Mover を片付けてシングルトンを手放す
+// 残差5命令 (54/59): FUN_081eab78 と同じく, 原典は使用中判定を 0/1 に起こしてから cmp で読み直す
+NON_MATCH s32 Entity081eaf6c_Destroy(Entity081eaf6c* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    if (p->activeMask & (1 << i)) {
+      MainSprite_Remove(&p->items[i].sprite);
+      if (p->items[i].flags & 1) {
+        FUN_08002a58(&p->items[i].unk_60);
+      }
+      Mover_Unlink(&p->items[i].unk_60);
+    }
+  }
+
+  gEntity081eaf6c = NULL;
+  return 0;
+#else
+  INCFUNC("asm/func/Entity081eaf6c_Destroy.inc");
+#endif
+}
 
 void (*const PTR_ARRAY_085ae48c[3])(Entity081eaf6cItem*) = {
     FUN_081ea878,
@@ -60,9 +81,54 @@ void (*const PTR_ARRAY_085ae48c[3])(Entity081eaf6cItem*) = {
     FUN_081eaa54,
 };  // 0x085AE48C
 
-NAKED s32 Entity081eaf6c_Update(Entity081eaf6c* p) { INCFUNC("asm/func/Entity081eaf6c_Update.inc"); }
+// 使用中のスロットごとに unk_132 の状態ハンドラを呼ぶ
+// 残差5命令 (61/66): FUN_081eab78 と同じく, 原典は使用中判定を 0/1 に起こしてから cmp で読み直す
+NON_MATCH s32 Entity081eaf6c_Update(Entity081eaf6c* p) {
+#ifdef NONMATCHING_C
+  s32 i;
 
-NAKED s32 FUN_081eab78(unknown* p) { INCFUNC("asm/func/FUN_081eab78.inc"); }
+  if (p->activeMask == 0) {
+    return 0;
+  }
+  if ((gFlag030047a4 | u32_030047a0) & FLAG030047A4_GAMEOVER) {
+    return 0;
+  }
+  if (u32_03002bc0[0] & FLAG03002BC0_UNK_2) {
+    return 0;
+  }
+
+  for (i = 0; i < 4; i++) {
+    if (p->activeMask & (1 << i)) {
+      PTR_ARRAY_085ae48c[p->items[i].unk_132](&p->items[i]);
+    }
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/Entity081eaf6c_Update.inc");
+#endif
+}
+
+// 空いているスロットを1つ確保して返す, 空きがなければ NULL
+// 残差6命令 (33/39): 原典は使用中判定を 0/1 に起こしてから cmp で読み直し, 1 << i も再計算する
+// Elevator_IsSlotUsed 相当の static inline を挟むと 36 まで戻るが一致はしないので入れていない
+NON_MATCH Entity081eaf6cItem* FUN_081eab78(Entity081eaf6c* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    if (!(p->activeMask & (1 << i))) {
+      p->activeMask |= 1 << i;
+      p->items[i].unk_136 = i;
+      return &p->items[i];
+    }
+  }
+
+  return NULL;
+#else
+  INCFUNC("asm/func/FUN_081eab78.inc");
+#endif
+}
 
 void FUN_081eabcc(HitboxData* a, HitboxData* b, void* p) {}
 

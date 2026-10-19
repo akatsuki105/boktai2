@@ -3,14 +3,16 @@
 #include "shadow.h"
 #include "sprite_aux.h"
 
-typedef struct {
-  AuxSprite sprite;        // 0x00, Entity7B9F_Destroy が AuxSprite_Remove に渡す
-  u8 unk_2c[0x8C - 0x2C];  // 0x2C, まだ未解析
-  ParticleShadow shadow;   // 0x8C, unk_d2 が -1 でなければ _Destroy が ParticleShadow_Remove に渡す
-  u8 unk_cc[4];            // 0xCC, まだ未解析
-  s16 slotIdx;             // 0xD0, _AllocElem が確保したスロット番号
-  s16 unk_d2;              // 0xD2, _AllocElem が -1 を入れる, -1 でなければ shadow が生きている
-  u8 unk_d4[220 - 0xD4];   // 0xD4, まだ未解析
+typedef struct Entity7B9FElem {
+  AuxSprite sprite;                                // 0x00, Entity7B9F_Destroy が AuxSprite_Remove に渡す
+  u8 unk_2c[0x8C - 0x2C];                          // 0x2C, まだ未解析
+  ParticleShadow shadow;                           // 0x8C, unk_d2 が -1 でなければ _Destroy が ParticleShadow_Remove に渡す
+  u8 unk_cc[4];                                    // 0xCC, まだ未解析
+  s16 slotIdx;                                     // 0xD0, _AllocElem が確保したスロット番号
+  s16 unk_d2;                                      // 0xD2, _AllocElem が -1 を入れる, -1 でなければ shadow が生きている
+  u8 unk_d4[0xD8 - 0xD4];                          // 0xD4, まだ未解析
+  void (*updateCallback)(struct Entity7B9FElem*);  // 0xD8
+  u8 unk_dc[220 - 0xDC];                           // 0xDC, まだ未解析
 } Entity7B9FElem;
 static_assert(sizeof(Entity7B9FElem) == 220);
 
@@ -24,6 +26,8 @@ static_assert(sizeof(Entity7B9F) == 940);
 
 IWRAM_DATA Entity7B9F* gEntity7B9F = NULL;  // 0x030001A0
 
+void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
+
 NAKED Entity7B9FElem* Entity7B9F_AllocElem(Entity7B9F* p) { INCFUNC("asm/func/Entity7B9F_AllocElem.inc"); }
 
 NAKED void FUN_081d822c(Entity7B9FElem* e) { INCFUNC("asm/func/FUN_081d822c.inc"); }
@@ -34,13 +38,34 @@ void nop_081d8368(void) {}
 
 NAKED void FUN_081d836c(Entity7B9FElem* e) { INCFUNC("asm/func/FUN_081d836c.inc"); }
 
-NAKED void FUN_081d8560(Entity7B9FElem* e) { INCFUNC("asm/func/FUN_081d8560.inc"); }
+// スプライトの位置から3方向ぶんのエフェクトを出す
+void FUN_081d8560(Entity7B9FElem* e) {
+  s32 i;
+
+  for (i = 0; i < 3; i++) {
+    FUN_081ee584(&e->sprite.pos, 8, 0x10, 4, 0xC, 0x12, i * 32, 8, 0x40, 1, 0, 0x200);
+  }
+}
 
 NAKED void FUN_081d85a8(Entity7B9FElem* e) { INCFUNC("asm/func/FUN_081d85a8.inc"); }
 
 NAKED void FUN_081d8714(Entity7B9FElem* e, s32 param_2) { INCFUNC("asm/func/FUN_081d8714.inc"); }
 
-NAKED s32 Entity7B9F_Update(Entity7B9F* p) { INCFUNC("asm/func/Entity7B9F_Update.inc"); }
+// 残差5命令 (29 対 34), 原典は使用中判定の結果を 1/0 として一度作ってから改めて 0 と比べる (いわゆる 0/1 の作り置き)
+NON_MATCH s32 Entity7B9F_Update(Entity7B9F* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    if (p->usedMask & (1 << i)) {
+      p->elems[i].updateCallback(&p->elems[i]);
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/Entity7B9F_Update.inc");
+#endif
+}
 
 NAKED s32 Entity7B9F_Destroy(Entity7B9F* p) { INCFUNC("asm/func/Entity7B9F_Destroy.inc"); }
 

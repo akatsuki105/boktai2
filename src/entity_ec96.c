@@ -32,16 +32,16 @@ NON_MATCH void FUN_08013288(HitboxData* a, HitboxData* b, EntityEC96* p) {
   if (b->damage != 0) {
     if (!p->breakable) {
       p->damageTimer = 10;
-      PlaySound_082406e0(0x13E);
+      PlaySound_082406e0(SE_ENEMY_DAMAGED);
     } else {
       if ((s16)(p->hp -= b->damage) < 0) {
         p->broken = TRUE;
         p->timer = 0;
-        PlaySound_082406e0(0x14A);
+        PlaySound_082406e0(SONG_330);
       } else {
         p->damageTimer = 10;
         Video_SetAuxSpritePltt(&p->gfx, 306);
-        PlaySound_082406e0(0x13E);
+        PlaySound_082406e0(SE_ENEMY_DAMAGED);
       }
     }
     b->damage = 0;
@@ -62,7 +62,7 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
     if (p->damageTimer != 0) {
       p->sprite.pos = p->pos;
       if (--p->damageTimer == 0) {
-        if (p->breakable) Video_SetAuxSpritePltt(&p->gfx, 0x288);
+        if (p->breakable) Video_SetAuxSpritePltt(&p->gfx, 648);
         Hitbox_ClearFlags(&p->hitbox, HBFLAG_UNK_2);
       } else {
         idx = (gRandTableIdx + 1) & 0x3FF;
@@ -129,14 +129,14 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   AuxSprite_Add(&p->sprite, gfx, 0);
   p->sprite.pos = p->pos;
   if (p->breakable == 1) {
-    Video_SetAuxSpritePltt(gfx, 0x288);
+    Video_SetAuxSpritePltt(gfx, 648);
   } else {
-    Video_SetAuxSpritePltt(gfx, 0x287);
+    Video_SetAuxSpritePltt(gfx, 647);
   }
   hitbox = &p->hitbox;
   size.x = 0x82, size.y = 0x80, size.z = 0x82;
   offset.x = 0, offset.y = 0x80, offset.z = 0;
-  Hitbox_Init(hitbox, p->id, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_Init(hitbox, p->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   pos = &p->pos;
   Hitbox_SetPos(hitbox, pos, 0);
   Hitbox_SetPowerAndAttributes(hitbox, 0, 0, 0);

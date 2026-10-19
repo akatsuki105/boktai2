@@ -317,7 +317,7 @@ _0803C3E6:
 	orrs r1, r0
 	str r1, [sp, #4]
 	mov r0, sp
-	bl FUN_0823b8ac
+	bl Camera_MoveTo
 	add sp, #8
 	pop {r4, r5, r6}
 	pop {r0}
@@ -2745,7 +2745,7 @@ _0803D6C8:
 	adds r1, r4, #0
 	movs r2, #6
 	mov r3, r8
-	bl FUN_0823556c
+	bl Map_FindPathNodeBeyond
 	movs r3, #0
 	ldrsh r2, [r4, r3]
 	movs r1, #0
@@ -2772,7 +2772,7 @@ _0803D6C8:
 	adds r0, r6, #0
 	movs r2, #6
 	mov r3, r8
-	bl FUN_0823556c
+	bl Map_FindPathNodeBeyond
 _0803D71C:
 	movs r0, #0xb6
 	lsls r0, r0, #1
@@ -2795,7 +2795,7 @@ _0803D72C:
 	adds r1, r4, #0
 	movs r2, #4
 	mov r3, r8
-	bl FUN_0823556c
+	bl Map_FindPathNodeBeyond
 	movs r3, #0
 	ldrsh r2, [r4, r3]
 	movs r1, #0
@@ -2822,7 +2822,7 @@ _0803D72C:
 	adds r0, r6, #0
 	movs r2, #4
 	mov r3, r8
-	bl FUN_0823556c
+	bl Map_FindPathNodeBeyond
 _0803D780:
 	movs r0, #0xb6
 	lsls r0, r0, #1
@@ -4512,7 +4512,7 @@ _0803E3B0:
 	adds r1, r7, #0
 	adds r1, #0x50
 	movs r2, #4
-	bl FUN_08235178
+	bl Map_FindNearestPathNode
 	adds r3, r0, #0
 	ldr r5, _0803E3EC @ =0x030046B8
 	ldr r0, [r5]

@@ -76,7 +76,7 @@ _080CFBB8:
 	movs r1, #0xf0
 	lsls r1, r1, #2
 	adds r0, r5, r1
-	bl FUN_0823bac8
+	bl Camera_LookAt
 _080CFBC6:
 	pop {r4, r5}
 	pop {r0}

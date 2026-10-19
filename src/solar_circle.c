@@ -8,7 +8,34 @@
 #include "sprite_aux.h"
 #include "vm.h"
 
-WorldPos* Coffin_GetPos(void);
+typedef struct {
+  Particle ptcl;  // 0x00
+  Vec3 vel;       // 0x28, 毎フレーム ptcl.pos に足す
+  bool16 active;  // 0x30, 0 でない枠だけ更新する
+  u16 timer;      // 0x32, 16 フレームで消える
+} SolarCirclePtcl;
+static_assert(sizeof(SolarCirclePtcl) == 52);
+
+// 太陽結界(この上に置いたイモータルが入った棺桶は逃げ出さない)
+typedef struct SolarCircle {
+  Entity e;                                     // 0x000, ENTITY_UNK_9
+  AuxSprite sprite;                             // 0x018, flags に SPRFLAG_BLINK_ODD が立つ, pos より y が 0x1E 高い (立体的に見せるため)
+  AuxSpriteGfx gfx;                             // 0x044, SPRITE_MAGIC_CIRCLE, パレット 99
+  AuxSprite sprite2;                            // 0x060, flags に SPRFLAG_BLINK_EVEN が立つ
+  AuxSpriteGfx gfx2;                            // 0x08C, SPRITE_MAGIC_CIRCLE, パレット 97
+  u16 enabled;                                  // 0x0A8, IsCoffinInside の結果
+  u16 stateTimer;                               // 0x0AA, Init が 0 を書く
+  Vec3 pos;                                     // 0x0AC, '.p', y はタイルの attr から計算し直す
+  void (*updateCallback)(struct SolarCircle*);  // 0x0B4, '.m' があるかで切り替える
+  ParticleGroup* group;                         // 0x0B8, 各枠の更新に渡す
+  u8 unk_bc;                                    // 0x0BC
+  u8 unk_bd;                                    // 0x0BD
+  u16 unk_be;                                   // 0x0BE, 2フレームに1回だけ FUN_080a1e78 を呼ぶためのカウンタ
+  SolarCirclePtcl ptcls[8];                     // 0x0C0
+  u32 unk_260;                                  // 0x260, '.i'
+  u32 unk_264;                                  // 0x264, '.o'
+} SolarCircle;
+static_assert(sizeof(SolarCircle) == 616);
 
 // pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
 static inline s32 GetTileHeightAt(WorldPos* pos) {
@@ -50,40 +77,6 @@ static inline s32 GetTileHeightAt(WorldPos* pos) {
 
   return height;
 }
-void FUN_0808670c(s32 n);
-
-struct SolarCircle;
-
-typedef void(SolarCircleFunc)(struct SolarCircle* p);
-
-typedef struct {
-  Particle ptcl;  // 0x00
-  Vec3 vel;       // 0x28, 毎フレーム ptcl.pos に足す
-  u16 active;     // 0x30, 0 でない枠だけ更新する
-  u16 timer;      // 0x32, 16 フレームで消える
-} SolarCirclePtcl;
-static_assert(sizeof(SolarCirclePtcl) == 52);
-
-// 太陽結界(この上に置いたイモータルが入った棺桶は逃げ出さない)
-typedef struct SolarCircle {
-  Entity e;                         // 0x000, ENTITY_UNK_9
-  AuxSprite sprite;                 // 0x018, flags に SPRFLAG_BLINK_ODD が立つ, pos より y が 0x1E 高い (立体的に見せるため)
-  AuxSpriteGfx gfx;                 // 0x044, SPRITE_MAGIC_CIRCLE, パレット 99
-  AuxSprite sprite2;                // 0x060, flags に SPRFLAG_BLINK_EVEN が立つ
-  AuxSpriteGfx gfx2;                // 0x08C, SPRITE_MAGIC_CIRCLE, パレット 97
-  u16 enabled;                      // 0x0A8, FUN_080a1f5c の結果
-  u16 stateTimer;                   // 0x0AA, Init が 0 を書く
-  Vec3 pos;                         // 0x0AC, '.p', y はタイルの attr から計算し直す
-  SolarCircleFunc* updateCallback;  // 0x0B4, '.m' があるかで切り替える
-  ParticleGroup* group;             // 0x0B8, 各枠の更新に渡す
-  u8 unk_bc;                        // 0x0BC
-  u8 unk_bd;                        // 0x0BD
-  u16 unk_be;                       // 0x0BE, 2フレームに1回だけ FUN_080a1e78 を呼ぶためのカウンタ
-  SolarCirclePtcl ptcls[8];         // 0x0C0
-  u32 unk_260;                      // 0x260, '.i'
-  u32 unk_264;                      // 0x264, '.o'
-} SolarCircle;
-static_assert(sizeof(SolarCircle) == 616);
 
 // 1枠を1フレーム進める, 16フレームで消える
 // 残差1命令 (37/38) でこちらが短い: 原典は timer の 16bit 切り詰めを使うたびに作り直すが, こちらは最初の (timer << 16) を使い回す
@@ -92,7 +85,7 @@ NON_MATCH void FUN_080a1e28(SolarCirclePtcl* elem, ParticleGroup* g) {
   elem->timer++;
   if (elem->timer > 15) {
     elem->ptcl.flags |= SPRFLAG_HIDDEN;
-    elem->active = 0;
+    elem->active = FALSE;
   } else {
     elem->ptcl.pos.x += elem->vel.x;
     elem->ptcl.pos.y += elem->vel.y;
@@ -126,7 +119,7 @@ NON_MATCH void FUN_080a1e78(SolarCircle* p, ParticleGroup* g) {
   q->vel.y = (*(gRandomTable + idx) & 0xF) + 0x10;
   q->vel.z = 0;
   q->timer = 0;
-  q->active = 1;
+  q->active = TRUE;
 
   p->unk_bd++;
   if (p->unk_bd > 7) {
@@ -137,18 +130,17 @@ NON_MATCH void FUN_080a1e78(SolarCircle* p, ParticleGroup* g) {
 #endif
 }
 
-// プレイヤーが結界の内側 (半径 0x7F の円) にいるかどうか, 原典は円の外のとき return を書き忘れている
-bool32 FUN_080a1f5c(SolarCircle* p) {
-  WorldPos* q = Coffin_GetPos();
-  u16 dx;
-  u16 dz;
+// 棺桶が結界の内側 (半径 0x7F の円) にいるかどうか
+static bool32 IsCoffinInside(SolarCircle* p) {
+  WorldPos* pos = Coffin_GetPos();
+  u16 dx, dz;
 
-  if (q == NULL) {
+  if (pos == NULL) {
     return FALSE;
   }
 
-  dx = abs(q->x - p->pos.x);
-  dz = abs(q->z - p->pos.z);
+  dx = abs(pos->x - p->pos.x);
+  dz = abs(pos->z - p->pos.z);
   if (dx > 0x7F || dz > 0x7F) {
     return FALSE;
   }
@@ -156,21 +148,23 @@ bool32 FUN_080a1f5c(SolarCircle* p) {
   if (dx * dx + dz * dz <= 0x3FFF) {
     return TRUE;
   }
+
+  // 原典は円の外のとき return を書き忘れている
 }
 
-// 結界の内側に不死の棺桶が入ったかどうかを見て、入った/出たタイミングでスクリプトを実行する
+// 結界の内側に棺桶が入ったかどうかを見て、入った/出たタイミングでスクリプトを実行する
 // 残差7命令 (81/88) でこちらが短い: 原典は unk_be の 16bit 切り詰め (0xFFFF のレジスタ AND) が & 7 / & 3 と畳まれずに残る
 // Tier A-B 試済: (u16) の明示キャスト, ローカルへの代入 (どちらも畳まれたまま)
 NON_MATCH void FUN_080a1fc4(SolarCircle* p) {
 #ifdef NONMATCHING_C
   if (p->enabled == 0) {
-    if (FUN_080a1f5c(p) && gCoffin->state == 1) {
+    if (IsCoffinInside(p) && gCoffin->state == 1) {
       p->enabled = 1;
       if (p->unk_260 != 0) {
         VM_ExecByID(p->unk_260, NULL);
       }
       FUN_0808670c(1);
-      PlaySound_082406e0(0x198);
+      PlaySound_082406e0(SONG_408);
     }
 
     p->unk_be++;
@@ -178,13 +172,13 @@ NON_MATCH void FUN_080a1fc4(SolarCircle* p) {
       FUN_080a1e78(p, p->group);
     }
   } else {
-    if (!FUN_080a1f5c(p)) {
+    if (!IsCoffinInside(p)) {
       if (p->unk_264 != 0) {
         VM_ExecByID(p->unk_264, NULL);
       }
       FUN_0808670c(0);
       p->enabled = 0;
-      PlaySound_082406e0(0x199);
+      PlaySound_082406e0(SONG_409);
     }
 
     p->unk_be++;
@@ -231,7 +225,7 @@ void FUN_080a2114(SolarCircle* p) {
     p->sprite2.scaleY = 0x40;
     p->stateTimer = 0;
     p->updateCallback = FUN_080a20a0;
-    PlaySound_082406e0(0x32F);
+    PlaySound_082406e0(SONG_815);
   } else {
     p->sprite2.flags |= SPRFLAG_AFFINE;
     p->sprite2.scaleX = p->stateTimer;
@@ -245,7 +239,7 @@ s32 SolarCircle_Update(SolarCircle* p) {
   s32 i;
 
   for (i = 0; i < 8; i++) {
-    if (p->ptcls[i].active != 0) {
+    if (p->ptcls[i].active) {
       FUN_080a1e28(&p->ptcls[i], p->group);
     }
   }
@@ -255,15 +249,12 @@ s32 SolarCircle_Update(SolarCircle* p) {
 }
 
 s32 SolarCircle_Destroy(SolarCircle* p) {
-  SolarCirclePtcl* q;
   s32 i;
 
   AuxSprite_Remove(&p->sprite);
   AuxSprite_Remove(&p->sprite2);
-  q = p->ptcls;
-  for (i = 7; i >= 0; i--) {
-    Particle_Remove(&q->ptcl);
-    q++;
+  for (i = 0; i < 8; i++) {
+    Particle_Remove((Particle*)&p->ptcls[i]);
   }
   return 0;
 }
@@ -283,7 +274,7 @@ void FUN_080a21fc(SolarCircle* p) {
     ptcl->priority = 1;
     ptcl->offsetZ = 0x14;
     ptcl->flags |= SPRFLAG_HIDDEN;
-    p->ptcls[i].active = 0;
+    p->ptcls[i].active = FALSE;
   }
 
   p->unk_bd = 0;
@@ -334,13 +325,13 @@ NON_MATCH s32 SolarCircle_Init(SolarCircle* p, u32 id, u32 _) {
     p->sprite.flags |= SPRFLAG_HIDDEN;
     p->sprite2.flags |= SPRFLAG_HIDDEN;
     p->updateCallback = FUN_080a2114;
-    PlaySound_082406e0(0x15E);
+    PlaySound_082406e0(SONG_350);
   } else {
     p->updateCallback = FUN_080a1fc4;
   }
 
   p->stateTimer = 0;
-  if (FUN_080a1f5c(p)) {
+  if (IsCoffinInside(p)) {
     p->enabled = 1;
   } else {
     p->enabled = 0;
@@ -358,7 +349,7 @@ NON_MATCH s32 SolarCircle_Init(SolarCircle* p, u32 id, u32 _) {
     p->unk_264 = 0;
   }
 
-  if (FUN_080a1f5c(p)) {
+  if (IsCoffinInside(p)) {
     p->enabled = 1;
     FUN_0808670c(1);
   } else {

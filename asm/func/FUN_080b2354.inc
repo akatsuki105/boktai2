@@ -55,7 +55,7 @@ _080B23C4: .4byte 0x00000C11
 _080B23C8:
 	adds r0, r7, #0
 	ldr r1, _080B23F8 @ =FUN_080ada44
-	bl EntityCBB0_SetState
+	bl PileDriver_SetState
 	adds r0, r5, #0
 	movs r1, #1
 	bl MsgQueue_EndWait

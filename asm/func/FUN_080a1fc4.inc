@@ -6,7 +6,7 @@
 	cmp r0, #0
 	bne _080A2040
 	adds r0, r4, #0
-	bl FUN_080a1f5c
+	bl IsCoffinInside
 	cmp r0, #0
 	beq _080A200C
 	ldr r0, _080A2034 @ =0x03002C00
@@ -56,7 +56,7 @@ _080A2038: .4byte 0x000001F5
 _080A203C: .4byte 0x0000FFFF
 _080A2040:
 	adds r0, r4, #0
-	bl FUN_080a1f5c
+	bl IsCoffinInside
 	adds r6, r0, #0
 	cmp r6, #0
 	bne _080A206C

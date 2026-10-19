@@ -21,7 +21,7 @@ typedef struct {
   HitboxData attackHitbox;  // 0x048, flags 0x2001, ignoreMask 0x10, 攻撃側
   HitboxData bodyHitbox;    // 0x098, flags 0x5005, ignoreMask 0x10, 被弾側
   AuxAnimState animState;   // 0x0E8, sprites[0] の再生状態
-  AuxSprite sprites[4];     // 0x0F8, [0] は priority 1 でアニメ付き, [1..3] は priority 2
+  AuxSprite sprites[4];     // 0x0F8, [0] は priority 1 でアニメ付き, [1..3] は priority 2, 0 と 1..3 を別のメンバにした方がいいかも？
   AuxSpriteGfx gfx;         // 0x1A8, SPRITE_EFF_3668, パレット 200
 } Entity0805b068Elem;
 static_assert(sizeof(Entity0805b068Elem) == 452);
@@ -34,6 +34,7 @@ typedef struct {
   AuxAnimFile* anim;            // 0x020, ANIM_78E1
   Entity0805b068Elem elems[8];  // 0x024
 } Entity0805b068;
+static_assert(sizeof(Entity0805b068) == 3652);
 
 // 状態を入れ替えて経過フレームを0に戻す
 static inline void Entity0805b068Elem_SetState(Entity0805b068Elem* p, u8 state) {
@@ -41,7 +42,6 @@ static inline void Entity0805b068Elem_SetState(Entity0805b068Elem* p, u8 state) 
   p->active = TRUE;
   p->timer = 0;
 }
-static_assert(sizeof(Entity0805b068) == 3652);
 
 void FUN_0805a938(Entity0805b068*, Entity0805b068Elem*, s32);
 void FUN_0805a988(Entity0805b068*, Entity0805b068Elem*, s32);
@@ -62,6 +62,19 @@ void (*const PTR_ARRAY_085aba04[7])(Entity0805b068*, Entity0805b068Elem*, s32) =
     FUN_0805ae44,
 };  // 0x085ABA04
 
+// 空いている枠を返し, 添字を *outIdx に入れる, 無ければ NULL
+Entity0805b068Elem* FUN_0805a43c(Entity0805b068* p, u32* outIdx) {
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    if (!(p->activeMask & 1 << i)) {
+      *outIdx = i;
+      return &p->elems[i];
+    }
+  }
+  return NULL;
+}
+
 NAKED void FUN_0805a470(HitboxData* a, HitboxData* b, Entity0805b068Elem* owner) { INCFUNC("asm/func/FUN_0805a470.inc"); }
 
 // 当たったら状態4 (被弾) へ入れ直す
@@ -75,8 +88,9 @@ s32 FUN_0805a6c8(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) {
   s32 i;
 
   Hitbox_Unregister(&elem->bodyHitbox);
+
   spr = &elem->sprites[0];
-  for (i = 3; i >= 0; i--, spr++) {
+  for (i = 0; i < 4; i++, spr++) {
     AuxSprite_Remove(spr);
   }
 }
@@ -113,15 +127,12 @@ NON_MATCH void FUN_0805a8b0(Entity0805b068Elem* elem) {
 }
 
 // sprites[1..3] を隠す
-// 残差1命令, 原典は OR のマスク 1 をループ変数の初期化より前に作るが, こちらは後に作る
-// Tier A-C 試済: 添字形の前進ループ (agbcc が反転する) / spr++ をループ本体に / AuxSprite_SetFlags 経由
 NON_MATCH void FUN_0805a8d0(Entity0805b068Elem* elem) {
 #ifdef NONMATCHING_C
-  AuxSprite* spr = &elem->sprites[1];
   s32 i;
 
-  for (i = 2; i >= 0; i--, spr++) {
-    spr->flags |= SPRFLAG_HIDDEN;
+  for (i = 0; i < 3; i++) {
+    elem->sprites[1 + i].flags |= SPRFLAG_HIDDEN;
   }
 #else
   INCFUNC("asm/func/FUN_0805a8d0.inc");
@@ -144,7 +155,28 @@ void FUN_0805a8f0(Entity0805b068Elem* elem) {
   elem->angle += d;
 }
 
-NAKED void FUN_0805a938(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) { INCFUNC("asm/func/FUN_0805a938.inc"); }
+// 再生し直しの要求を受けてアニメを張り替える
+// 残差1命令ぶんの位置ずれ (37 対 37), 原典は 2つめのブロックで 1 を 0 より先に作るが gcc は 0 を先に作る
+// 代入順を入れ替えると strb の順まで変わるので, state → active → timer の順自体は原典どおり
+NON_MATCH void FUN_0805a938(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) {
+#ifdef NONMATCHING_C
+  if (elem->active) {
+    elem->active = FALSE;
+    AuxAnim_SetAnim(&elem->animState, p->anim, 1, 0, 0);
+  }
+
+  if (elem->unk_2[2] != 0) {
+    elem->state = 1;
+    elem->active = TRUE;
+    elem->timer = 0;
+    AuxAnim_SetAnim(&elem->animState, p->anim, 0, 0, 0);
+  }
+
+  elem->timer++;
+#else
+  INCFUNC("asm/func/FUN_0805a938.inc");
+#endif
+}
 
 NAKED void FUN_0805a988(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) { INCFUNC("asm/func/FUN_0805a988.inc"); }
 
@@ -158,7 +190,18 @@ NAKED void FUN_0805ad78(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) 
 
 NAKED void FUN_0805ae44(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) { INCFUNC("asm/func/FUN_0805ae44.inc"); }
 
-NAKED s32 Entity0805b068_Update(Entity0805b068* p) { INCFUNC("asm/func/Entity0805b068_Update.inc"); }
+s32 Entity0805b068_Update(Entity0805b068* p) {
+  Entity0805b068Elem* e = p->elems;
+  s32 i;
+
+  for (i = 0; i < 8; i++, e++) {
+    if (p->activeMask & 1 << i) {
+      PTR_ARRAY_085aba04[e->state](p, e, i);
+      FUN_0805a728(e);
+    }
+  }
+  return 0;
+}
 
 s32 Entity0805b068_Destroy(Entity0805b068* p) {
   Entity0805b068Elem* elem = &p->elems[0];

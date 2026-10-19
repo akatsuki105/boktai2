@@ -33,6 +33,11 @@ typedef struct {
 } CoffinSealEffect;
 static_assert(sizeof(CoffinSealEffect) == 400);
 
+static inline void CoffinSealEffect_SetState(CoffinSealEffect* p, u16 state) {
+  p->state = state;
+  p->stateTimer = 0;
+}
+
 // パレット行 from と to を t/64 の割合でブレンドして pltt にする (t が 0 か 64 ならブレンドせずにそのパレットを指す)
 void FUN_08089b48(CoffinSealEffect* p, s32 from, s32 to, s32 t) {
   rgb555* src1 = &gObjPlttData[(from + 519) * 16];
@@ -84,11 +89,6 @@ void FUN_08089c60(CoffinSealEffect* p) {
 
 NAKED bool32 FUN_08089c7c(CoffinSealEffect* p) { INCFUNC("asm/func/FUN_08089c7c.inc"); }
 
-static inline void CoffinSealEffect_SetState(CoffinSealEffect* p, u16 state) {
-  p->state = state;
-  p->stateTimer = 0;
-}
-
 // MsgBus から種類3のコマンドが届くのを待ち、届いたら状態1に進めて効果音を鳴らす
 void FUN_08089ce0(CoffinSealEffect* p) {
   s32 i;
@@ -97,7 +97,7 @@ void FUN_08089ce0(CoffinSealEffect* p) {
       p->sprites[i].flags &= ~SPRFLAG_HIDDEN;
     }
     CoffinSealEffect_SetState(p, 1);
-    PlaySound_082406e0(0x1C6);
+    PlaySound_082406e0(SONG_454);
   }
 }
 
@@ -114,17 +114,10 @@ void FUN_08089d24(CoffinSealEffect* p) {
 
 // 最初の4フレームで揺れ幅を乱数で決め、16フレーム揺らしてから状態3へ進む
 void FUN_08089d50(CoffinSealEffect* p) {
-  u16* table;
-  u32 idx;
-  u16 r;
   if (p->stateTimer < 4) {
-    table = gRandomTable;
-    idx = (gRandTableIdx + 1) & 0x3FF;
-    r = table[idx];
-    p->shakeX = (r & 0x1F) - 16;
-    gRandTableIdx = (idx + 1) & 0x3FF;
-    r = table[gRandTableIdx];
-    p->shakeZ = (r & 0x1F) - 16;
+    u16* table = gRandomTable;
+    p->shakeX = (_Random(table) & 0x1F) - 16;
+    p->shakeZ = (_Random(table) & 0x1F) - 16;
   }
   if ((p->stateTimer & 3) == 0) {
     FUN_08089c60(p);
@@ -143,16 +136,9 @@ NAKED void FUN_08089ddc(CoffinSealEffect* p) { INCFUNC("asm/func/FUN_08089ddc.in
 
 // 揺らしながらパレットを8番の色へ寄せてから戻し、状態5へ進む
 void FUN_08089e98(CoffinSealEffect* p) {
-  u16* table;
-  u32 idx;
-  u16 r;
-  table = gRandomTable;
-  idx = (gRandTableIdx + 1) & 0x3FF;
-  r = table[idx];
-  p->shakeX = (r & 0x1F) - 16;
-  gRandTableIdx = (idx + 1) & 0x3FF;
-  r = table[gRandTableIdx];
-  p->shakeZ = (r & 0x1F) - 16;
+  u16* table = gRandomTable;
+  p->shakeX = (_Random(table) & 0x1F) - 16;
+  p->shakeZ = (_Random(table) & 0x1F) - 16;
   if (p->stateTimer < 4) {
     FUN_0823b9cc(40);
     FUN_08089b48(p, p->coffinID, 8, p->stateTimer * 16);
@@ -179,23 +165,16 @@ void FUN_08089f38(CoffinSealEffect* p) {
 
 // 10〜29 と 60〜79 フレームのあいだ揺らして効果音を鳴らし、90フレームで状態7へ進む
 void FUN_08089f58(CoffinSealEffect* p) {
-  u16* table;
-  u32 idx;
-  u16 r;
   if ((10 <= p->stateTimer && p->stateTimer < 30) || (60 <= p->stateTimer && p->stateTimer < 80)) {
-    table = gRandomTable;
-    idx = (gRandTableIdx + 1) & 0x3FF;
-    r = table[idx];
-    p->shakeX = (r & 0x1F) - 16;
-    gRandTableIdx = (idx + 1) & 0x3FF;
-    r = table[gRandTableIdx];
-    p->shakeZ = (r & 0x1F) - 16;
+    u16* table = gRandomTable;
+    p->shakeX = (_Random(table) & 0x1F) - 16;
+    p->shakeZ = (_Random(table) & 0x1F) - 16;
   } else {
     p->shakeX = 0;
     p->shakeZ = 0;
   }
   if (p->stateTimer == 10 || p->stateTimer == 20 || p->stateTimer == 60 || p->stateTimer == 70) {
-    PlaySound_082406e0(0xD3);
+    PlaySound_082406e0(SONG_211);
   }
   if (p->stateTimer >= 90) {
     CoffinSealEffect_SetState(p, 7);

@@ -10,8 +10,6 @@
 #include "sprite.h"
 #include "vm.h"
 
-extern u32 u32_03002bc0[];  // 0x03002BC0, プレイヤーごとのフラグ
-
 bool8 FUN_082375c8(u32* flags, s32 t, s32 t1, s32 t2);
 
 // プレイヤーの位置をアイソメトリック投影したもの, MapItem_TryAutoPickup が拾える距離の判定に使う
@@ -104,7 +102,7 @@ NON_MATCH s32 MapItem_ExecScript(MapItem* item, u16 scriptID, s32 param_3) {
     return -1;
   }
   owner = item->owner;
-  if (owner == -1 || (u32_03002bc0[owner] & 0xC) != 0) {
+  if (owner == -1 || (u32_03002bc0[owner] & (FLAG03002BC0_UNK_3 | FLAG03002BC0_UNK_2))) {
     return -1;
   }
   if (item->kind == 1) {
@@ -186,10 +184,9 @@ NON_MATCH void MapItem_UpdateShake(MapItem* item) {
       item->pos->x = item->shakeBaseX;
       item->pos->z = item->shakeBaseZ;
     } else {
-      gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-      item->pos->x = (gRandomTable[gRandTableIdx] & 0xF) + item->shakeBaseX - 4;
-      gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-      item->pos->z = (gRandomTable[gRandTableIdx] & 7) + item->shakeBaseZ - 4;
+      u16* table = gRandomTable;
+      item->pos->x = item->shakeBaseX + ((_Random(table) % 16) - 4);
+      item->pos->z = item->shakeBaseZ + ((_Random(table) % 8) - 4);
     }
   }
 #else
@@ -473,4 +470,36 @@ MapItemManager* MapItemManager_Ensure(void) {
   return p;
 }
 
-INCASM("asm/map_item.inc");
+NAKED s32 FUN_080070a8(WorldPos* pos, s32 category, s32 itemID, u32 scriptOnPickup, s32 param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_080070a8.inc"); }
+
+NAKED s32 FUN_0800720c(void) { INCFUNC("asm/func/FUN_0800720c.inc"); }
+
+NAKED s32 FUN_08007310(WorldPos* pos, s32 category, s32 itemID, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11) { INCFUNC("asm/func/FUN_08007310.inc"); }
+
+NAKED s32 FUN_08007640(void) { INCFUNC("asm/func/FUN_08007640.inc"); }
+
+// kind が一致するマップアイテムを全部解放する
+s32 FUN_08007770(s32 kind) {
+  MapItemManager* m = MapItemManager_Ensure();
+  MapItem* item;
+
+  if (m == NULL) {
+    return -1;
+  }
+
+  item = m->items;
+  while (item != NULL) {
+    MapItem* next = item->next;
+
+    if (item->kind == kind) {
+      MapItem_Free(item);
+    }
+    item = next;
+  }
+}
+
+s32 FUN_080077a8(void) { return FUN_08007770(VM_GetNamedArgValue('t', 0)); }
+
+NAKED s32 FUN_080077bc(unknown* param_1, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_080077bc.inc"); }
+
+NAKED s32 FUN_08007820(void) { INCFUNC("asm/func/FUN_08007820.inc"); }

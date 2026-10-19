@@ -63,7 +63,7 @@ NON_MATCH void FUN_081d6eb8(EntityC60FItem* p) {
   }
   halfSize.x = radius, halfSize.y = height, halfSize.z = radius;
   offset.x = 0, offset.y = height, offset.z = 0;
-  Hitbox_Init(hitbox, 0, HBFLAG_UNK_14 | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &p->pos, 0);
   Hitbox_SetHandler(hitbox, FUN_081d6d28, p);
   Hitbox_Register(hitbox);

@@ -38,7 +38,7 @@
 	orrs r0, r1
 	str r0, [sp, #4]
 	mov r0, sp
-	bl FUN_0823b8ac
+	bl Camera_MoveTo
 	add sp, #8
 	pop {r4, r5}
 	pop {r0}

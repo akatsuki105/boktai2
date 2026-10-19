@@ -6,6 +6,17 @@
 #include "registry.h"
 #include "vm.h"
 
+// ロードゾーンの目印を粒子で表示するエンティティ
+typedef struct {
+  Entity e;            // 0x00, ENTITY_UNK_9
+  u16 mode;            // 0x18, '.m', 1 なら粒子を隠して点滅を止める
+  u8 unk_1a[2];        // 0x1A, まだ未解析
+  u16 count;           // 0x1C, ptcls に積んだ数
+  u16 blinkTimer;      // 0x1E, 毎フレーム +1 して 0x48 で 0 に戻り、0x30 未満の間だけ表示する
+  Particle ptcls[17];  // 0x20
+} EntityD852;
+static_assert(sizeof(EntityD852) == 712);
+
 // pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
 static inline s32 GetTileHeightAt(WorldPos* pos) {
   MapTileOverride* ov;
@@ -46,17 +57,6 @@ static inline s32 GetTileHeightAt(WorldPos* pos) {
 
   return height;
 }
-
-// ロードゾーンの目印を粒子で表示するエンティティ
-typedef struct {
-  Entity e;            // 0x00, ENTITY_UNK_9
-  u16 mode;            // 0x18, '.m', 1 なら粒子を隠して点滅を止める
-  u8 unk_1a[2];        // 0x1A, まだ未解析
-  u16 count;           // 0x1C, ptcls に積んだ数
-  u16 blinkTimer;      // 0x1E, 毎フレーム +1 して 0x48 で 0 に戻り、0x30 未満の間だけ表示する
-  Particle ptcls[17];  // 0x20
-} EntityD852;
-static_assert(sizeof(EntityD852) == 712);
 
 void Map_SetLoadingZoneIndicatorMode(void) {
   if (VM_SeekToNamedArg('m')) {

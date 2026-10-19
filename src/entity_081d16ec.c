@@ -89,7 +89,7 @@ NAKED void FUN_081d0f64(unknown* p) { INCFUNC("asm/func/FUN_081d0f64.inc"); }
 void FUN_081d11b8(Entity081d16ecItem* item) {
   Entity081d16ec* p = gEntity081d16ec;
 
-  PlaySound_082406e0(0x14C);
+  PlaySound_082406e0(SONG_332);
   if (item->state == 2) {
     if (item->anim.flags & ANIM_PLAY_REVERSE) {
       item->anim.flags &= ~ANIM_PLAY_REVERSE;
@@ -233,11 +233,8 @@ void FUN_081d1744(Entity081d16ecItem* item) {
     item->sprite.pos = item->basePos;
   } else {
     u16* table = gRandomTable;
-
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    item->sprite.pos.x = item->basePos.x + Mod(table[gRandTableIdx], 20) - 10;
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    item->sprite.pos.z = item->basePos.z + Mod(table[gRandTableIdx], 20) - 10;
+    item->sprite.pos.x = item->basePos.x + Mod(_Random(table), 20) - 10;
+    item->sprite.pos.z = item->basePos.z + Mod(_Random(table), 20) - 10;
     item->unk_c7--;
   }
 }
@@ -251,8 +248,8 @@ void FUN_081d1924(Entity081d16ecItem* item) {
 
   offset.x = 0, offset.y = 0x80, offset.z = 0;
   halfSize.x = 0x40, halfSize.y = 0x80, halfSize.z = 0x40;
-  hitbox->unk_4 = item->unk_be;
-  Hitbox_Init(hitbox, 0, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  hitbox->id = item->unk_be;
+  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &item->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_081d17c8, item);
   Hitbox_Register(hitbox);

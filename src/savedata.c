@@ -52,12 +52,12 @@ typedef struct {
   u8 desc[4];  // 0x0, Pointer/Indexed Pointer 記述子
   u16 count;   // 0x4, 記述子が指す値の個数
   u16 unk_6;   // 0x6
-} q_VarDesc;
+} VarDesc;
 
 typedef struct {
-  u32 count;             // 0x0000, values に退避した値の数
-  q_VarDesc descs[512];  // 0x0004
-  u32 values[512];       // 0x1004
+  u32 count;           // 0x0000, values に退避した値の数
+  VarDesc descs[512];  // 0x0004
+  u32 values[512];     // 0x1004
 } UnkData6148;
 static_assert(sizeof(UnkData6148) == 6148);
 
@@ -223,7 +223,7 @@ void UNUSED nop_08241420(void) {}
 
 // スクリプトの引数で指定された変数の値を p に退避する
 s32 VM_BackupVars(UnkData6148* p) {
-  q_VarDesc* desc = p->descs;
+  VarDesc* desc = p->descs;
   u32* dst = p->values;
   while (p->count < 512 && VM_GetPC() != NULL) {
     s32 i;
@@ -239,7 +239,7 @@ s32 VM_BackupVars(UnkData6148* p) {
 
 // VM_BackupVars で退避した値を元の変数に書き戻す
 s32 VM_RestoreVars(UnkData6148* p) {
-  q_VarDesc* desc = p->descs;
+  VarDesc* desc = p->descs;
   u32* src = p->values;
   u32 n = 0;
   while (n < p->count) {

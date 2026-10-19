@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "random.h"
 #include "sound.h"
 
 // Enemy の共通部分?
@@ -11,8 +12,10 @@
 typedef u16 EnemyFlags222;       // Enemy.unk_222
 #define ENEMY222_UNK_0 (1 << 0)  // FUN_080f624c が unk_1e4 < 0x100000 のときだけ立てる
 
-extern u32 u32_03002bc0;
-
+void FUN_080f897c(Enemy* p);
+void FUN_080e6794(Enemy* p, s32 priority);
+s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
+void FUN_080e81dc(Enemy* p, s32 param_2);
 void FUN_080f22e8(Enemy* p);
 void FUN_080f230c(Enemy* p);
 void FUN_080f2330(Enemy* p);
@@ -124,7 +127,7 @@ const EnemyHandler gEnemyHandlerTable9[2] = {
 
 static inline u32 TestFlag030047a4(u32 flags) { return (gFlag030047a4 | u32_030047a0) & flags; }
 
-static inline u32 TestFlag03002bc0(u32 flags) { return u32_03002bc0 & flags; }
+static inline u32 TestFlag03002bc0(u32 flags) { return u32_03002bc0[0] & flags; }
 
 // 状態を指定の組に戻して経過フレームを0に巻き戻す, unk_46c は巻き戻した印
 static inline void Enemy_ResetState(Enemy* p, u8 state, u8 unk_469, u8 step) {
@@ -269,7 +272,41 @@ NAKED void FUN_080f0b3c(Enemy* p) { INCFUNC("asm/func/FUN_080f0b3c.inc"); }
 NAKED void FUN_080f0e78(Enemy* p) { INCFUNC("asm/func/FUN_080f0e78.inc"); }
 
 // いろんなEnemyで使われるハンドラ
-NAKED void FUN_080f11d0(Enemy* p) { INCFUNC("asm/func/FUN_080f11d0.inc"); }
+// 残差11命令 (92/103): 先頭の unk_46c 消費の 0/1 が分岐に畳まれる
+NON_MATCH void FUN_080f11d0(Enemy* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_46c) {
+    p->unk_46c = 0;
+    p->stateBegun = TRUE;
+    p->unk_46b = 0;
+    p->state = 2;
+    p->handlerState = p->unk_590;
+    p->unk_1c8 = 0;
+  }
+
+  if (p->unk_608(p)) {
+    return;
+  }
+  if (FUN_080f0a0c(p)) {
+    return;
+  }
+  if (p->unk_46b) {
+    Enemy_PlayAnim(p, 0);
+    p->unk_46a = 12;
+    p->unk_484 = 0;
+    p->unk_46c = 1;
+    p->stateBegun = TRUE;
+    p->unk_46b = 0;
+    p->state = 26;
+    p->handlerState = p->unk_5b8;
+    p->unk_1c8 = 0;
+  } else {
+    p->unk_484++;
+  }
+#else
+  INCFUNC("asm/func/FUN_080f11d0.inc");
+#endif
+}
 
 NAKED void FUN_080f12c4(Enemy* p) { INCFUNC("asm/func/FUN_080f12c4.inc"); }
 
@@ -307,21 +344,11 @@ void FUN_080f1de4(Enemy* p) {
 }
 
 // 巻き戻しの印が立っていたら状態16(入場フラグを食うだけのハンドラ)へ移す
-// 残差2命令, unk_46c を食った印の 0/1 が畳まれる (FUN_080f3cdc と同じ)
 NON_MATCH void FUN_080f1e0c(Enemy* p) {
 #ifdef NONMATCHING_C
-  bool32 reset = FALSE;
-
-  if (p->unk_46c) {
+  if (p->unk_46c != 0) {
     p->unk_46c = 0;
-    reset = TRUE;
-  }
-  if (reset) {
-    p->stateBegun = TRUE;
-    p->unk_46b = 0;
-    p->state = 0x10;
-    p->handlerState = Enemy_ClearStateBegun;
-    p->unk_1c8 = 0;
+    Enemy_EnterState(p, Enemy_ClearStateBegun, 16);
   }
   p->unk_484++;
 #else
@@ -358,7 +385,46 @@ NON_MATCH void FUN_080f1e78(Enemy* p) {
 
 NAKED void FUN_080f1ef8(Enemy* p) { INCFUNC("asm/func/FUN_080f1ef8.inc"); }
 
-NAKED void FUN_080f2074(Enemy* p) { INCFUNC("asm/func/FUN_080f2074.inc"); }
+// 残差6命令 (89/95): begun の 0/1 が分岐に畳まれる
+NON_MATCH void FUN_080f2074(Enemy* p) {
+#ifdef NONMATCHING_C
+  bool8 restart = p->unk_46c;
+  bool32 begun = FALSE;
+
+  if (restart) {
+    p->unk_46c = 0;
+    begun = TRUE;
+  }
+  if (begun) {
+    void* handler = p->unk_590;
+
+    p->stateBegun = TRUE;
+    p->unk_46b = 0;
+    p->state = 1;
+    p->handlerState = p->unk_59c;
+    p->unk_1c8 = 0;
+  } else if (p->unk_46b) {
+    void* handler;
+
+    MsgQueue_EndWait(&p->mq, 1);
+    handler = p->unk_5a4;
+    p->stateBegun = TRUE;
+    p->unk_46b = 0;
+    p->state = 0;
+    p->handlerState = p->unk_59c;
+    p->unk_1c8 = 0;
+    p->unk_468 = 2;
+    p->unk_469 = 0;
+    p->unk_46a = 2;
+    p->unk_484 = 0;
+    p->unk_46c = 1;
+  } else {
+    p->unk_484++;
+  }
+#else
+  INCFUNC("asm/func/FUN_080f2074.inc");
+#endif
+}
 
 NAKED void FUN_080f2160(Enemy* p) { INCFUNC("asm/func/FUN_080f2160.inc"); }
 
@@ -424,7 +490,45 @@ NAKED void FUN_080f2ec0(Enemy* p) { INCFUNC("asm/func/FUN_080f2ec0.inc"); }
 
 NAKED void FUN_080f31c4(Enemy* p) { INCFUNC("asm/func/FUN_080f31c4.inc"); }
 
-NAKED void FUN_080f33e8(Enemy* p) { INCFUNC("asm/func/FUN_080f33e8.inc"); }
+// 残差5命令 (73/78): begun の 0/1 が分岐に畳まれる
+NON_MATCH void FUN_080f33e8(Enemy* p) {
+#ifdef NONMATCHING_C
+  bool8 restart = p->unk_46c;
+  bool32 begun = FALSE;
+
+  if (restart) {
+    p->unk_46c = 0;
+    begun = TRUE;
+  }
+  if (begun) {
+    void* handler = p->unk_5a4;
+
+    p->stateBegun = TRUE;
+    p->unk_46b = 0;
+    p->state = 0;
+    p->handlerState = handler;
+    p->unk_1c8 = 0;
+  }
+
+  if (p->unk_608(p)) {
+    return;
+  }
+  if (FUN_080f0a0c(p)) {
+    return;
+  }
+  if (p->unk_484 > 0x3B) {
+    p->unk_468 = 0;
+    p->unk_469 = 0;
+    p->unk_46a = 2;
+    p->unk_484 = 0;
+    p->unk_46c = 1;
+  } else {
+    p->unk_484++;
+  }
+#else
+  INCFUNC("asm/func/FUN_080f33e8.inc");
+#endif
+}
 
 void FUN_080f34a0(Enemy* p) {
   if (p->unk_46c != 0) {
@@ -439,7 +543,7 @@ void FUN_080f34a0(Enemy* p) {
 
 // ゲームオーバー中なら状態を 2/0/1 に戻し、そうでなければ handlerTables[2] を回す
 void FUN_080f34ec(Enemy* p) {
-  if (TestFlag030047a4(FLAG030047A4_GAMEOVER) || TestFlag03002bc0(4)) {
+  if (TestFlag030047a4(FLAG030047A4_GAMEOVER) || TestFlag03002bc0(FLAG03002BC0_UNK_2)) {
     Enemy_ResetState(p, 2, 0, 1);
   } else {
     u32 idx = p->unk_46a;
@@ -450,7 +554,7 @@ void FUN_080f34ec(Enemy* p) {
 
 // ゲームオーバー中なら状態を 2/0/1 に戻し、そうでなければ handlerTables[4] を回す
 void FUN_080f3574(Enemy* p) {
-  if (TestFlag030047a4(FLAG030047A4_GAMEOVER) || TestFlag03002bc0(4)) {
+  if (TestFlag030047a4(FLAG030047A4_GAMEOVER) || TestFlag03002bc0(FLAG03002BC0_UNK_2)) {
     Enemy_ResetState(p, 2, 0, 1);
   } else {
     u32 idx = p->unk_46a;
@@ -461,7 +565,7 @@ void FUN_080f3574(Enemy* p) {
 
 // ゲームオーバー中なら状態を 2/0/1 に戻し、そうでなければ handlerTables[3] を回す
 void FUN_080f35fc(Enemy* p) {
-  if (TestFlag030047a4(FLAG030047A4_GAMEOVER) || TestFlag03002bc0(4)) {
+  if (TestFlag030047a4(FLAG030047A4_GAMEOVER) || TestFlag03002bc0(FLAG03002BC0_UNK_2)) {
     Enemy_ResetState(p, 2, 0, 1);
   } else {
     u32 idx = p->unk_46a;
@@ -487,12 +591,14 @@ void Enemy_InitHandlerTables(Enemy* p) {
 NAKED bool8 FUN_080f3718(Enemy* p) { INCFUNC("asm/func/FUN_080f3718.inc"); }
 
 // state に入った最初のフレームだけ11番のアニメを鳴らす
-// 残差2命令, 原典は then と else で 0 を別々に作るが agbcc は begun の初期化と共有してロードより前に巻き上げる
+// 残差2命令 (27/29): 原典は then の中で 0 を作って strb し else でも別に 0 を作るが, agbcc は p->stateBegun = FALSE と begun の初期値で 0 を1つ共有する
+// Tier A-C は試済: levers の「先頭オペランドをローカルに退避」で 24→27 まで戻せた (これが無いと diamond ごと畳まれる), 明示 else を足すと逆に 24 に戻る
 NON_MATCH void FUN_080f3cdc(Enemy* p) {
 #ifdef NONMATCHING_C
+  bool8 stateBegun = p->stateBegun;
   bool32 begun = FALSE;
 
-  if (p->stateBegun) {
+  if (stateBegun) {
     p->stateBegun = FALSE;
     begun = TRUE;
   }
@@ -515,7 +621,45 @@ NAKED void FUN_080f44f4(Enemy* p) { INCFUNC("asm/func/FUN_080f44f4.inc"); }
 
 NAKED void FUN_080f46a4(Enemy* p) { INCFUNC("asm/func/FUN_080f46a4.inc"); }
 
-NAKED void FUN_080f47c8(Enemy* p) { INCFUNC("asm/func/FUN_080f47c8.inc"); }
+// 残差4命令 (98/102): begun の 0/1 が分岐に畳まれる
+// 残りは ENEFLAG2_UNK_4 のマスク 0x10 の materialize 位置で, diamond が合えば追随する見込み
+NON_MATCH void FUN_080f47c8(Enemy* p) {
+#ifdef NONMATCHING_C
+  bool8 stateBegun = p->stateBegun;
+  bool32 begun = FALSE;
+
+  if (stateBegun) {
+    p->stateBegun = FALSE;
+    begun = TRUE;
+  }
+  if (begun) {
+    p->mover.angle = ((p->mover.angle + 0x80) & 0xFF) >> 6 << 6;
+    Enemy_PlayAnim(p, 0);
+  }
+
+  if (p->flags2 & ENEFLAG2_UNK_4) {
+    p->flags |= ENEFLAG_UNK_4;
+    p->unk_554 = 0x1E;
+    p->unk_558 = FUN_080f3cdc;
+    p->unk_550 = 0;
+    p->unk_551 = 1;
+    p->unk_552 = 1;
+    p->stateBegun = TRUE;
+    p->unk_46b = 0;
+    p->state = 14;
+    p->handlerState = FUN_080e6794;
+    p->unk_1c8 = 0;
+    p->unk_468 = 3;
+    p->unk_469 = 1;
+    p->unk_46a = 0;
+    p->unk_484 = 0;
+    p->unk_46c = 1;
+    p->unk_482 = 1;
+  }
+#else
+  INCFUNC("asm/func/FUN_080f47c8.inc");
+#endif
+}
 
 NAKED bool32 FUN_080f48ac(Enemy* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_080f48ac.inc"); }
 
@@ -525,7 +669,37 @@ NAKED void FUN_080f54e4(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080f54e4.
 
 NAKED void FUN_080f56ec(Enemy* p) { INCFUNC("asm/func/FUN_080f56ec.inc"); }
 
-NAKED void FUN_080f5b34(Enemy* p) { INCFUNC("asm/func/FUN_080f5b34.inc"); }
+// 残差4命令 (96/92): stateBegun の 0/1 が分岐に畳まれるのに加え,
+// こちらは r8/r9 を push するぶん長い. Tier A-C は試済: 2文形+オペランド退避は 99 と悪化, handler のローカル化は無影響
+NON_MATCH void FUN_080f5b34(Enemy* p) {
+#ifdef NONMATCHING_C
+  if (p->stateBegun) {
+    p->stateBegun = FALSE;
+    Enemy_PlayAnim(p, 7);
+    FUN_080e499c(p);
+    p->flags3 &= ~(ENEFLAG3_UNK_0 | ENEFLAG3_UNK_1);
+  }
+
+  if (p->animForceRestart) {
+    p->unk_192 = 0;
+    p->unk_46b = 1;
+    p->flags |= ENEFLAG_UNK_4;
+    Enemy_PlayAnim(p, 0);
+    p->unk_468 = 3;
+    p->unk_469 = 1;
+    p->unk_46a = 0;
+    p->unk_484 = 0;
+    p->unk_46c = 1;
+    p->stateBegun = TRUE;
+    p->unk_46b = 0;
+    p->state = 15;
+    p->handlerState = p->unk_59c;
+    p->unk_1c8 = 0;
+  }
+#else
+  INCFUNC("asm/func/FUN_080f5b34.inc");
+#endif
+}
 
 NAKED void FUN_080f5c0c(Enemy* p) { INCFUNC("asm/func/FUN_080f5c0c.inc"); }
 
@@ -558,7 +732,7 @@ bool32 FUN_080f64f0(Enemy* p) {
     Enemy_SetFlag3(p, ENEFLAG3_UNK_5);
   }
 
-  Enemy_EnterState(p, p->unk_5cc, 0x12);
+  Enemy_EnterState(p, p->unk_5cc, 18);
   Enemy_ResetState(p, 3, 0, 0);
   Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
   Enemy_ClearFlags4(p, ENEFLAG4_UNK_0 | ENEFLAG4_UNK_3 | ENEFLAG4_UNK_6 | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
@@ -570,7 +744,7 @@ bool32 FUN_080f65a8(Enemy* p) {
   FUN_080e5718(p, 3, 0, p->kind);
   Enemy_ClearFlag(p, ENEFLAG_UNK_26);
   Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
-  PlaySound_082406e0(0x13E);
+  PlaySound_082406e0(SE_ENEMY_DAMAGED);
   return TRUE;
 }
 
@@ -578,7 +752,31 @@ NAKED s32 FUN_080f6604(Enemy* p) { INCFUNC("asm/func/FUN_080f6604.inc"); }
 
 NAKED s32 FUN_080f6868(Enemy* p) { INCFUNC("asm/func/FUN_080f6868.inc"); }
 
-NAKED s32 FUN_080f6af0(Enemy* p) { INCFUNC("asm/func/FUN_080f6af0.inc"); }
+// 残差13命令 (98/85) でこちらが長い: 原典は delta をスタックに置き strh/ldrsh で往復するが agbcc は Vec3 をレジスタに展開し, そのぶん p が r8 に追い出されてフィールドアクセスごとに mov/add が余る
+// Tier A-C は試済: src/pos のローカルポインタで 102→98, delta を関数スコープへ上げるのは無影響, s16 ローカル3つは 72 / s32 は 70 と逆に短くなる
+NON_MATCH s32 FUN_080f6af0(Enemy* p) {
+#ifdef NONMATCHING_C
+  if (p->kind == 3 && (p->flags3 & ENEFLAG3_UNK_8) && (p->unk_498 & 0x80)) {
+    Vec3* src = &p->unk_20c;
+    Vec3* pos = &p->mover.pos;
+    Vec3 delta;
+
+    delta.x = src->x - pos->x;
+    delta.y = src->y - pos->y;
+    delta.z = src->z - pos->z;
+    p->unk_1c0 = Div(delta.x, 0x24);
+    p->unk_1c2 = 0x14;
+    p->unk_1c4 = Div(delta.z, 0x24);
+    p->mover.angle = ArcTan2_8(delta.x, delta.z);
+    FUN_080f897c(p);
+    FUN_080e81dc(p, 6);
+    return 1;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_080f6af0.inc");
+#endif
+}
 
 // 種族10(かつ ENEFLAG6_UNK_14 付き)の敵だけ状態3に戻して hitbox.unk_44 を 0x26 にする, 原典はフラグが立っていない経路の return を書き忘れている
 bool32 FUN_080f6bac(Enemy* p) {
@@ -615,16 +813,16 @@ bool32 FUN_080f8400(Enemy* p) {
   Enemy_ClearFlag3(p, ENEFLAG3_UNK_8);
   switch (p->kind) {
     case 0x12: {
-      PlaySound_082406e0(0x108);
+      PlaySound_082406e0(SONG_264);
       break;
     }
     case 0x13: {
-      PlaySound_082406e0(0x109);
+      PlaySound_082406e0(SONG_265);
       break;
     }
   }
 
-  Enemy_EnterState(p, p->unk_5cc, 0x12);
+  Enemy_EnterState(p, p->unk_5cc, 18);
   Enemy_ResetState(p, 3, 0, 0);
   Enemy_ClearFlags4(p, ENEFLAG4_UNK_0 | ENEFLAG4_UNK_3 | ENEFLAG4_UNK_6 | ENEFLAG4_UNK_7 | ENEFLAG4_UNK_8 | ENEFLAG4_UNK_11);
   Enemy_ClearFlag2(p, ENEFLAG2_UNK_24);
@@ -635,7 +833,7 @@ NAKED s32 FUN_080f84d4(Enemy* p) { INCFUNC("asm/func/FUN_080f84d4.inc"); }
 
 NAKED void FUN_080f8844(Enemy* p, s32 param_2) { INCFUNC("asm/func/FUN_080f8844.inc"); }
 
-NAKED void FUN_080f897c(unknown* param_1) { INCFUNC("asm/func/FUN_080f897c.inc"); }
+NAKED void FUN_080f897c(Enemy* p) { INCFUNC("asm/func/FUN_080f897c.inc"); }
 
 s32 FUN_080f8abc(Enemy* p) {
   switch (p->unk_480) {
@@ -653,12 +851,36 @@ s32 FUN_080f8abc(Enemy* p) {
   }
 }
 
-NAKED void FUN_080f8ae0(Enemy* p) { INCFUNC("asm/func/FUN_080f8ae0.inc"); }
+// 残差3命令 (96/93) でこちらが長い: 原典は定数 0x18 を使用箇所ごとに movs で作るが agbcc は r9 に巻き上げて使い回す, 他はレジスタ順列
+// Tier A-C は試済: table の代入を vel.x の後に下げると 97, Random() 形も 97 と悪化
+NON_MATCH void FUN_080f8ae0(Enemy* p) {
+#ifdef NONMATCHING_C
+  Vec3 vel;
+  Vec3 velRange;
+  u16* table = gRandomTable;
+  vel.x = -12;
+  vel.y = _Random(table) & 7;
+  vel.z = -12;
+  velRange.x = 24;
+  velRange.y = (_Random(table) & 7) + 3;
+  velRange.z = 24;
+  FUN_08014730((_Random(table) & 3) + 4, FUN_080f8abc(p), &p->mover.pos, &vel, &velRange, 0x3C, 0x3F);
+#else
+  INCFUNC("asm/func/FUN_080f8ae0.inc");
+#endif
+}
 
-// 残差5命令, 原典はフラグ判定の結果を 0/1 に起こしてから if で見るが agbcc は条件を直接分岐に畳む, ローカルの bool32 と static inline (引数あり/オペランド順) は試済
+// 残差5命令 (34/39): 原典は linked の 0/1 を materialize して cmp で読み直すが, agbcc は分岐に畳む
+// 約400箇所で未解決の return-value 形と同じ. 先頭オペランドのローカル退避と2文形で hunk 1件まで詰めた
 NON_MATCH void FUN_080f8bb8(Mover* owner) {
 #ifdef NONMATCHING_C
-  if (gFlag030047a4 & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
+  u32 flags = gFlag030047a4;
+  bool32 linked = FALSE;
+
+  if (flags & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) {
+    linked = TRUE;
+  }
+  if (linked) {
     s32 idx;
 
     switch (owner->unk_4) {

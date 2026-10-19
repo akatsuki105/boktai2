@@ -115,7 +115,7 @@ void MessageChoice_SetCursor(MessageChoice* p, s32 idx) {
     MessageChoice_PlaceCursors(p, e);
   }
   if (idx != p->selected) {
-    PlaySound_082406e0(0xDC);
+    PlaySound_082406e0(SONG_220);
   }
   p->selected = idx;
 }
@@ -176,7 +176,7 @@ NON_MATCH void MessageChoice_HandleInput(MessageChoice* p) {
       }
     }
     MessageChoice_SetCursor(p, p->defaultIndex);
-    PlaySound_082406e0(0x107);
+    PlaySound_082406e0(SONG_263);
     return;
   }
   if (p->cursorDelay != 0) {
@@ -221,13 +221,13 @@ NON_MATCH void MessageChoice_HandleInput(MessageChoice* p) {
   }
   if (gInput[0].pressed & B_BUTTON) {
     if (p->cancelable != 0) {
-      PlaySound_082406e0(0xDE);
+      PlaySound_082406e0(SE_CANCEL);
       MessageWindow_Close();
       MessageChoice_Finish(p, -1);
       KillEntity((Entity*)p);
     }
   } else if (gInput[0].pressed & A_BUTTON) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     MessageWindow_Close();
     MessageChoice_Finish(p, p->selected);
     KillEntity((Entity*)p);
@@ -526,7 +526,7 @@ s32 MessageChoice_Init(MessageChoice* p, u8* textPC, s32 stringBase, s32* settin
     MessageChoice_OpenBox(p);
   }
   if (FUN_080488fc() == 0) {
-    PlaySound_082406e0(0x107);
+    PlaySound_082406e0(SONG_263);
   }
   return 0;
 }

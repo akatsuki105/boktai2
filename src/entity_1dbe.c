@@ -35,7 +35,7 @@ static_assert(sizeof(Entity1DBEElem) == 244);
 
 typedef struct {
   Entity e;                 // 0x000, ENTITY_UNK_9
-  u16 count;                // 0x018, 使用中の elems の数, VM_Sub1DBE は 8 未満のときだけ足す
+  u16 count;                // 0x018, 使用中の elems の数, Cmd_1DBE は 8 未満のときだけ足す
   u8 unk_1a[2];             // 0x01A, padding?
   Entity1DBEElem elems[8];  // 0x01C
 } Entity1DBE;
@@ -52,6 +52,7 @@ NAKED s32 VM_SubB6CE(void) { INCFUNC("asm/func/VM_SubB6CE.inc"); }
 s32 GetMapAreaAt(Vec3* pos);  // src/cactus.c
 void FUN_0809f8e4(Entity1DBEElem* elem);
 void FUN_0809f890(Entity1DBEElem* elem);
+void FUN_0809fa80(Entity1DBEElem* elem);
 void FUN_0809fabc(Entity1DBEElem* elem);
 
 void Entity1DBEElem_SetState(Entity1DBEElem* elem, u8 state, Entity1DBEElemFunc* fn) {
@@ -75,7 +76,7 @@ void FUN_0809f7fc(Entity1DBEElem* elem) {
 
 void FUN_0809f840(Entity1DBEElem* elem) {
   if (elem->animTimer == 0) {
-    PlaySound_082406e0(0x19F);
+    PlaySound_082406e0(SONG_415);
   }
   elem->animTimer++;
   if (elem->animTimer <= 7) {
@@ -88,9 +89,38 @@ void FUN_0809f840(Entity1DBEElem* elem) {
   }
 }
 
-NAKED void FUN_0809f890(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809f890.inc"); }
+// 太陽エネルギーで state 1 へ上がる間のコマ送り
+void FUN_0809f890(Entity1DBEElem* elem) {
+  if (elem->animTimer == 0) {
+    PlaySound_082406e0(SONG_416);
+  }
+  elem->animTimer++;
+  if (elem->animTimer <= 7) {
+    elem->sprite.poseIdx = 4;
+  } else if (elem->animTimer <= 0xF) {
+    elem->sprite.poseIdx = 3;
+  } else {
+    elem->sprite.poseIdx = 2;
+    PlaySound_082406e0(SONG_416);
+    Entity1DBEElem_SetState(elem, 0, FUN_0809fabc);
+  }
+}
 
-NAKED void FUN_0809f8e4(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809f8e4.inc"); }
+// gStat->unk_934 の bit11 が立っている間だけ数え, 300 フレームで state 0 へ戻す
+// 残差5命令 (27 対 32), 原典はフラグ判定の結果を 1/0 として一度作ってから改めて 0 と比べる (いわゆる 0/1 の作り置き)
+// enemy_manager.c の Stat_SetFlag934 と同じ形の static inline bool32 Stat_TestFlag934(u16 bit) にすると 0x800 を先に作る並びまでは一致する
+NON_MATCH void FUN_0809f8e4(Entity1DBEElem* elem) {
+#ifdef NONMATCHING_C
+  if (gStat->unk_934 & 0x800) {
+    elem->counter++;
+    if (elem->counter > 299) {
+      Entity1DBEElem_SetState(elem, 0, FUN_0809fa80);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0809f8e4.inc");
+#endif
+}
 
 NAKED void FUN_0809f938(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809f938.inc"); }
 
@@ -192,4 +222,4 @@ Entity1DBE* Entity1DBE_Create(void) {
   return p;
 }
 
-NAKED void VM_Sub1DBE(void) { INCFUNC("asm/func/VM_Sub1DBE.inc"); }
+NAKED void Cmd_1DBE(void) { INCFUNC("asm/func/Cmd_1DBE.inc"); }

@@ -28,7 +28,7 @@ typedef struct {
 } Entity08203ad0;
 static_assert(sizeof(Entity08203ad0) == 1280);
 
-IWRAM_DATA Entity08203ad0* gEntity08203ad0 = NULL;  // 0x0300021C
+static Entity08203ad0* gEntity08203ad0;  // 0x0300021C
 
 // 実体は src/code_08200ab4.s
 void FUN_08203690(Entity08203ad0Slot* slot, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44);

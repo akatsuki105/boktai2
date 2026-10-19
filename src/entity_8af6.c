@@ -31,7 +31,27 @@ static_assert(sizeof(Entity8AF6) == 216);
 
 extern Entity8AF6* gEntity8AF6;  // 0x03002C4C
 
-NAKED Entity8AF6Entry* Entity8AF6_FindEntry(void) { INCFUNC("asm/func/Entity8AF6_FindEntry.inc"); }
+// '.n' と id が一致する枠を返す, 無ければ NULL
+Entity8AF6Entry* Entity8AF6_FindEntry(void) {
+  u32 id;
+  s32 i;
+
+  if (gEntity8AF6 == NULL) {
+    return NULL;
+  }
+
+  if (!VM_SeekToNamedArg('n')) {
+    return NULL;
+  }
+
+  id = VM_GetValue();
+  for (i = 0; i < gEntity8AF6->used; i++) {
+    if (gEntity8AF6->entries[i].id == id) {
+      return &gEntity8AF6->entries[i];
+    }
+  }
+  return NULL;
+}
 
 void Entity8AF6_SetPoseScripted(void) {
   Entity8AF6Entry* e = Entity8AF6_FindEntry();

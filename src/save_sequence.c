@@ -33,10 +33,10 @@ s32 SaveSequence_Update(SaveSequence* p) {
     p->result = Save_WriteToNextSlot();
     if (p->result == 1) {
       TextPanel_SetMessage(p->windowID, 14);
-      PlaySound_082406e0(0x2AE);
+      PlaySound_082406e0(SONG_686);
     } else {
       TextPanel_SetMessage(p->windowID, 15);
-      PlaySound_082406e0(0x192);
+      PlaySound_082406e0(SE_NG);
     }
   }
   if ((p->result >= 0 && p->timer > 119 && (gInput[0].pressed & A_BUTTON)) || p->timer > 299) {

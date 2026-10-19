@@ -162,11 +162,8 @@ void FUN_081d6444(EntityF1F9Item* item) {
     item->sprite.pos = item->basePos;
   } else {
     u16* table = gRandomTable;
-
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    item->sprite.pos.x = item->basePos.x + Mod(table[gRandTableIdx], 20) - 10;
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    item->sprite.pos.z = item->basePos.z + Mod(table[gRandTableIdx], 20) - 10;
+    item->sprite.pos.x = item->basePos.x + Mod(_Random(table), 20) - 10;
+    item->sprite.pos.z = item->basePos.z + Mod(_Random(table), 20) - 10;
     item->unk_157--;
   }
 }
@@ -175,14 +172,14 @@ NAKED void FUN_081d64d4(HitboxData* a, HitboxData* b, EntityF1F9Item* p) { INCFU
 
 NAKED void FUN_081d65e8(unknown* p) { INCFUNC("asm/func/FUN_081d65e8.inc"); }
 
-void FUN_081d66c0(EntityF1F9Item* item, u32 power, u32 attributes, u32 weakness) {
+void FUN_081d66c0(EntityF1F9Item* item, u32 power, HitboxAttributes attributes, u32 weakness) {
   HitboxData* hitbox = &item->hitbox;
   Vec3 offset, halfSize;
 
   offset.x = 0, offset.y = 0x50, offset.z = 0;
   halfSize.x = 0x40, halfSize.y = 0x50, halfSize.z = 0x40;
-  hitbox->unk_4 = item->unk_150;
-  Hitbox_Init(hitbox, 0, HBFLAG_UNK_14 | HBFLAG_UNK_12 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  hitbox->id = item->unk_150;
+  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_12 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hitbox, power, attributes, weakness);
   Hitbox_SetPos(hitbox, &item->sprite.pos, 0);
   Hitbox_SetHandler(hitbox, FUN_081d64d4, item);
@@ -220,7 +217,7 @@ NON_MATCH void FUN_081d6c24(EntityF1F9Item* item) {
     if (item->unk_130 < item->unk_134) {
       FUN_081d6ae8(item, 2);
       FUN_081d5820(item, 1);
-      PlaySound_082406e0(0x3C7);
+      PlaySound_082406e0(SONG_967);
     }
   }
 #else

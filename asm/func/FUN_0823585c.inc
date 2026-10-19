@@ -33,13 +33,13 @@ _082358A6:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_08235178
+	bl Map_FindNearestPathNode
 	b _082358E2
 _082358B2:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_082352c0
+	bl Map_FindFarthestPathNode
 	b _082358E2
 _082358BE:
 	adds r0, r5, #0
@@ -51,7 +51,7 @@ _082358CA:
 	adds r0, r5, #0
 	adds r1, r6, #0
 	adds r2, r4, #0
-	bl FUN_0823556c
+	bl Map_FindPathNodeBeyond
 	b _082358E2
 _082358D6:
 	adds r0, r5, #0

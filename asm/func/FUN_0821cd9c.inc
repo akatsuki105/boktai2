@@ -51,7 +51,7 @@
 	ldr r2, _0821CE14 @ =0x00000BCC
 	adds r0, r5, r2
 	movs r2, #4
-	bl FUN_082352c0
+	bl Map_FindFarthestPathNode
 	add sp, #8
 	pop {r4, r5}
 	pop {r0}

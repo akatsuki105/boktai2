@@ -26,7 +26,18 @@ IWRAM_DATA u32 u32_03000720 = 0;            // 0x03000720, なんかのカウン
 IWRAM_DATA FontInfo* gFontInfo = NULL;  // 0x03000724
 
 // 多分、バッファのフォントのタイルデータをVRAMに転送する関数
-NAKED void FUN_0822e73c(void) { INCFUNC("asm/func/FUN_0822e73c.inc"); }
+void FUN_0822e73c(void) {
+  u8* src = u8_02035c00;
+  u32 i;
+
+  for (i = 0; i < u32_03000720; i++) {
+    void* dst = (void*)(BG_VRAM + 0xA000 + (u8_ARRAY_030006a0[i] << 5));
+
+    DmaCopy32(3, src, dst, 32);
+    src += 0x20;
+  }
+  u32_03000720 = 0;
+}
 
 // タイル1枚ぶんの字形を u8_02035c00 に積む
 // 残差1命令, 原典は src を r1 のまま使い val を r3 に退避するが, こちらはカウンタに r1 を取るので src の退避が1本増える

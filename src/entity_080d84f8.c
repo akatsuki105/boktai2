@@ -21,7 +21,16 @@ s32 Entity080d84f8_Destroy(Entity080d84f8* p) {
   return 0;
 }
 
-NAKED void FUN_080d83a8(AuxSprite* sprite, AuxSpriteGfx* gfx, Vec3* pos, u32 param_4) { INCFUNC("asm/func/FUN_080d83a8.inc"); }
+// 爆発のスプライトを1枚用意する, 隠した状態で始める
+void FUN_080d83a8(AuxSprite* sprite, AuxSpriteGfx* gfx, Vec3* pos, u32 plttOffset) {
+  Video_GetAuxSprite(gfx, SPRITE_EXPLOSION);
+  AuxSprite_Add(sprite, gfx, 0);
+  sprite->poseIdx = 0;
+  Video_SetAuxSpritePltt(gfx, plttOffset + 275);
+  sprite->pos = *pos;
+  sprite->priority = 1;
+  sprite->flags |= SPRFLAG_HIDDEN;
+}
 
 NAKED void FUN_080d8400(Entity080d84f8* p, HitboxData* hitbox, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080d8400.inc"); }
 

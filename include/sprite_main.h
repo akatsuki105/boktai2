@@ -134,6 +134,7 @@ void Video_RemoveMainSpriteFromDrawList(MainSprite* p, s32 idx);
 s32 OpenMainSpriteFile(MainSpriteGfx* gfx, MainSpriteGfxFile* f);
 s32 MainSprite_LoadPose(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx);
 s32 MainSprite_SetPose(MainSprite* p, MainSpriteGfx* gfx, u16 param_3, u8 playMode);
+void MainSprite_SetPlttID(MainSprite* p, u32 plttID);
 s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
 s32 MainSprite_Setup(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags flags, u8 prio, u8 playMode, u8 animCmdDuration, Vec3* pos);
 bool32 MainSprite_AdvanceAnim(MainSprite* p, MainSpriteGfx* gfx);

@@ -45,7 +45,15 @@ void Entity4DDF_StepHold(Entity4DDF* p, Entity4DDFData* slide) {
 
 NAKED void Entity4DDF_StepFadeOut(Entity4DDF* p, Entity4DDFData* slide) { INCFUNC("asm/func/Entity4DDF_StepFadeOut.inc"); }
 
-NAKED void Entity4DDF_StepBlank(Entity4DDF* p, Entity4DDFData* slide) { INCFUNC("asm/func/Entity4DDF_StepBlank.inc"); }
+// 絵を出さずに待つ, 3つの時間の合計を過ぎたら次のスライドへ
+void Entity4DDF_StepBlank(Entity4DDF* p, Entity4DDFData* slide) {
+  FUN_0820fea8(p->preview);
+
+  if (++p->timer > slide->fadeOutTime + slide->fadeInTime + slide->holdTime) {
+    Entity4DDF_SetStep(p, 0);
+    p->curSlide++;
+  }
+}
 
 void Entity4DDF_StepEnd(Entity4DDF* p, Entity4DDFData* slide) { FUN_0820fea8(p->preview); }
 

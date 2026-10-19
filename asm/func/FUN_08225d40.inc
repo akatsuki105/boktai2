@@ -46,7 +46,7 @@ _08225D72:
 	adds r0, r6, r1
 	bl ParticleShadow_Hide
 	adds r0, r6, #0
-	bl FUN_08223984
+	bl Entity8AAB_Pause
 	ldr r2, _08225E50 @ =0x00000DC8
 	adds r0, r6, r2
 	ldr r1, _08225E54 @ =0x00000117

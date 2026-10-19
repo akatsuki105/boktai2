@@ -2,6 +2,8 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "mover.h"
+#include "player.h"
 #include "sound.h"
 #include "sprite_aux.h"
 
@@ -23,7 +25,7 @@ typedef struct Entity08202cd8 {
   Vec3 pos;                                 // 0x694, Create の引数が指すマスの衝突タイルから作り、全スプライトの pos へ複写する
   AuxSpriteGfx gfx0;                        // 0x69C, SPRITE_DVALIN_2E78
   AuxSpriteGfx gfx1;                        // 0x6B8, SPRITE_DVALIN_2E7B
-  void (*fn)(struct Entity08202cd8*, u32);  // 0x6D4, FUN_08202910 が p と加算前の unk_18 を渡して呼ぶ
+  void (*fn)(struct Entity08202cd8*, s32);  // 0x6D4, FUN_08202910 が p と加算前の unk_18 を渡して呼ぶ
   u8 unk_6d8;                               // 0x6D8, _Init で 1
   u8 unk_6d9;                               // 0x6D9
   u8 unk_6da;                               // 0x6DA, _Update が 0 を入れる
@@ -38,11 +40,15 @@ typedef struct Entity08202cd8 {
 } Entity08202cd8;
 static_assert(sizeof(Entity08202cd8) == 1776);
 
-extern u32 u32_03002bc0;
-extern void (*const PTR_ARRAY_085ae7f8[8])(unknown*);  // src/rodata4.c
-
 s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
 void FUN_081fa608(void);
+void FUN_081ea540(Mover* a, Mover* b, s32 param_3, s32 param_4, s32 param_5, s32 param_6);
+
+const u16 u16_ARRAY_085ae7b8[8] = {64, 64, 64, 64, 64, 128, 128, 128};  // 0x085AE7B8
+
+const u16 u16_ARRAY_085ae7c8[8] = {4096, 4096, 4096, 4096, 4096, 16384, 16384, 16384};  // 0x085AE7C8
+
+const s32 s32_ARRAY_085ae7d8[8] = {-100, -60, -40, -30, -20, 10, 45, 0};  // 0x085AE7D8
 
 NAKED s32 FUN_08200ab4(unknown* p) { INCFUNC("asm/func/FUN_08200ab4.inc"); }
 
@@ -52,7 +58,14 @@ void FUN_08200b38(AuxSprite* spr) { Video_SetAuxSpritePltt(spr->gfx, 306); }
 
 void FUN_08200b48(AuxSprite* spr, Entity08202cd8* p) { Video_SetAuxSpritePltt(spr->gfx, 561); }
 
-NAKED void FUN_08200b5c(unknown* p) { INCFUNC("asm/func/FUN_08200b5c.inc"); }
+// 1枚目のスプライトの位置から自機へ向けて何かを飛ばす
+void FUN_08200b5c(Entity08202cd8* p) {
+  Mover* q = &gPlayerPtr[0]->mover;
+  Mover m;
+
+  m.pos = p->sprites[0].pos;
+  FUN_081ea540(&m, q, 10, 30, 0, 10);
+}
 
 // 被弾の点滅を戻し、溜まったダメージを両端の中点にまとめて出す
 NON_MATCH void FUN_08200b8c(Entity08202cd8* p) {
@@ -136,17 +149,17 @@ void FUN_082010f0(Entity08202cd8* p, u16 a, u16 b) {
   p->unk_22 = b;
 }
 
-NAKED void FUN_082010f8(unknown* p) { INCFUNC("asm/func/FUN_082010f8.inc"); }
+NAKED void FUN_082010f8(Entity08202cd8* p, s32 val) { INCFUNC("asm/func/FUN_082010f8.inc"); }
 
-NAKED void FUN_082013d4(unknown* p) { INCFUNC("asm/func/FUN_082013d4.inc"); }
+NAKED void FUN_082013d4(Entity08202cd8* p, s32 val) { INCFUNC("asm/func/FUN_082013d4.inc"); }
 
-NAKED void FUN_082017cc(unknown* p) { INCFUNC("asm/func/FUN_082017cc.inc"); }
+NAKED void FUN_082017cc(Entity08202cd8* p, s32 val) { INCFUNC("asm/func/FUN_082017cc.inc"); }
 
-NAKED void FUN_08201f74(unknown* p) { INCFUNC("asm/func/FUN_08201f74.inc"); }
+NAKED void FUN_08201f74(Entity08202cd8* p, s32 val) { INCFUNC("asm/func/FUN_08201f74.inc"); }
 
-NAKED void FUN_08202140(unknown* p) { INCFUNC("asm/func/FUN_08202140.inc"); }
+NAKED void FUN_08202140(Entity08202cd8* p, s32 val) { INCFUNC("asm/func/FUN_08202140.inc"); }
 
-NAKED void FUN_082024e8(unknown* p) { INCFUNC("asm/func/FUN_082024e8.inc"); }
+NAKED void FUN_082024e8(Entity08202cd8* p, s32 val) { INCFUNC("asm/func/FUN_082024e8.inc"); }
 
 void FUN_0820287c(Entity08202cd8* p, s32 keep) {
   if (keep == 0) {
@@ -164,11 +177,22 @@ void FUN_0820287c(Entity08202cd8* p, s32 keep) {
 
 // unk_6db で指定された状態関数を fn に移す
 s32 FUN_082028b8(Entity08202cd8* p) {
+  static void (*const PTR_ARRAY_085ae7f8[8])(Entity08202cd8*, s32) = {
+      NULL,
+      FUN_082010f8,
+      FUN_082013d4,
+      FUN_082017cc,
+      FUN_08202140,
+      FUN_08201f74,
+      FUN_082024e8,
+      FUN_0820287c,
+  };  // 0x085AE7F8
+
   if (p->unk_6db == 0 || p->unk_6db > 8) {
     return 0;
   }
 
-  p->fn = (void*)PTR_ARRAY_085ae7f8[p->unk_6db];
+  p->fn = PTR_ARRAY_085ae7f8[p->unk_6db];
   p->unk_6dc = p->unk_6db;
   p->unk_6db = 0;
   p->unk_18 = 0;
@@ -191,8 +215,8 @@ s32 Entity08202cd8_Update(Entity08202cd8* p) {
   u32 mask;
 
   p->unk_6da = 0;
-  mask = 1 << 2;
-  if (!(u32_03002bc0 & mask)) {
+  mask = FLAG03002BC0_UNK_2;
+  if (!(u32_03002bc0[0] & mask)) {
     FUN_08200b8c(p);
     FUN_082028b8(p);
     FUN_08202910(p);
@@ -229,7 +253,7 @@ void FUN_082029bc(HitboxData* a, HitboxData* b, Entity08202cd8* p) {
   }
   Hitbox_ApplyDamage(a, b);
   p->unk_6ec = b->damage;
-  PlaySound_082406e0(0x13E);
+  PlaySound_082406e0(SE_ENEMY_DAMAGED);
 }
 
 NAKED s32 Entity08202cd8_Init(Entity08202cd8* p, u16* pos, s32 param_3, s32 param_4) { INCFUNC("asm/func/Entity08202cd8_Init.inc"); }

@@ -91,8 +91,9 @@ s32 Entity5DA5_Destroy(Entity5DA5* p) {
   s32 i;
 
   MainSprite_Remove(&p->sprite);
+
   elem = &p->elems[0];
-  for (i = 3; i >= 0; i--, elem++) {
+  for (i = 0; i < 4; i++, elem++) {
     Hitbox_Unregister(&elem->hitbox);
     MainSprite_Remove(&elem->sprite);
   }
@@ -132,7 +133,6 @@ s32 Entity5DA5_AreAllLit(void) {
   Entity5DA5* p = gEntity5DA5;
   Entity5DA5Elem* elem;
   s32 lit;
-  s32 result;
   s32 i;
 
   if (p == NULL) {
@@ -141,17 +141,13 @@ s32 Entity5DA5_AreAllLit(void) {
 
   lit = 0;
   elem = &p->elems[0];
-  for (i = 3; i >= 0; i--, elem++) {
+  for (i = 0; i < 4; i++, elem++) {
     if (elem->state == 1) {
       lit++;
     }
   }
 
-  result = 0;
-  if (lit == 4) {
-    result = 1;
-  }
-  return result;
+  return (lit == 4) ? 1 : 0;
 }
 
 // 4つ全部消えていれば 1, 実体が無ければ -1
@@ -159,7 +155,6 @@ s32 Entity5DA5_AreAllUnlit(void) {
   Entity5DA5* p = gEntity5DA5;
   Entity5DA5Elem* elem;
   s32 lit;
-  s32 result;
   s32 i;
 
   if (p == NULL) {
@@ -168,15 +163,12 @@ s32 Entity5DA5_AreAllUnlit(void) {
 
   lit = 0;
   elem = &p->elems[0];
-  for (i = 3; i >= 0; i--, elem++) {
+
+  for (i = 0; i < 4; i++, elem++) {
     if (elem->state == 1) {
       lit++;
     }
   }
 
-  result = 0;
-  if (lit == 0) {
-    result = 1;
-  }
-  return result;
+  return (lit == 0) ? 1 : 0;
 }

@@ -494,7 +494,22 @@ NAKED void FUN_080eeee0(Enemy* p) { INCFUNC("asm/func/FUN_080eeee0.inc"); }
 
 NAKED void FUN_080eef6c(Enemy* p) { INCFUNC("asm/func/FUN_080eef6c.inc"); }
 
-NAKED void FUN_080eefec(void) { INCFUNC("asm/func/FUN_080eefec.inc"); }
+// '.n' の敵に '.r' の2値を入れる
+void FUN_080eefec(void) {
+  u32 id = VM_GetNamedArgValue('n', 0);
+
+  if (id != 0) {
+    Enemy* e = FindEnemyById(id);
+
+    if (e != NULL && VM_SeekToNamedArg('r')) {
+      s32 a = VM_GetPC() != NULL ? VM_GetValue() : 0;
+      s32 b = VM_GetPC() != NULL ? VM_GetValue() : 0;
+
+      e->unk_250 = a;
+      e->unk_252 = b;
+    }
+  }
+}
 
 NAKED void FUN_080ef048(void) { INCFUNC("asm/func/FUN_080ef048.inc"); }
 

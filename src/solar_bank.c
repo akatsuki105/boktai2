@@ -39,11 +39,11 @@ void FUN_080b4334(SolarBank* p);
 void FUN_080b438c(SolarBank* p);
 
 // 0x61A0
-NAKED void SolarBank_CalcInterestRate(void) { INCFUNC("asm/func/SolarBank_CalcInterestRate.inc"); }
+NAKED void Cmd_CalcInterestRate(void) { INCFUNC("asm/func/Cmd_CalcInterestRate.inc"); }
 
-s32 SolarBank_GetBalanceScripted(void) { return (s16)gStat->solarBank; }
+s32 Cmd_GetSolarBankBalance(void) { return (s16)gStat->solarBank; }
 
-void SolarBank_SetBalanceScripted(void) {
+void Cmd_SetSolarBankBalance(void) {
   if (VM_SeekToNamedArg('a')) {
     s32 n = VM_GetValue();
 
@@ -107,7 +107,7 @@ void FUN_080b3dd0(SolarBank* p) {
   Video_SetBGLayer(0, p->tilemap, 2);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   SolarBank_HideAllSprites(p);
-  PlaySound_082406e0(0x2BF);
+  PlaySound_082406e0(SONG_703);
   p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
   MainSprite_SetAnim(p->sprites, p->gfx, 2, 2, 0);
   MessageWindow_ShowLine(3);
@@ -116,7 +116,7 @@ void FUN_080b3dd0(SolarBank* p) {
 
 void FUN_080b3e3c(SolarBank* p) {
   if (p->stateTimer == 32) {
-    PlaySound_082406e0(0x2BE);
+    PlaySound_082406e0(SONG_702);
   }
   MainSprite_AdvanceAnim(p->sprites, p->gfx);
   p->stateTimer++;
@@ -128,17 +128,17 @@ void FUN_080b3e3c(SolarBank* p) {
 void FUN_080b3e80(SolarBank* p) {
   if (gInput[0].pressed & A_BUTTON) {
     if (p->unk_5ea != 0) {
-      PlaySound_082406e0(0xDD);
+      PlaySound_082406e0(SE_SELECT);
       FUN_080b3c98(p);
     } else {
-      PlaySound_082406e0(0xDE);
+      PlaySound_082406e0(SE_CANCEL);
       FUN_080b3dd0(p);
     }
   } else if (gInput[0].pressed & B_BUTTON) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_080b3dd0(p);
   } else if (gInput[0].pressed & (DPAD_RIGHT | DPAD_LEFT)) {
-    PlaySound_082406e0(0xDC);
+    PlaySound_082406e0(SONG_220);
     p->unk_5ea = 1 - p->unk_5ea;
     if (p->unk_5ea != 0) {
       MainSprite_SetAnim(&p->sprites[1], &p->gfx[1], 4, 1, 0);

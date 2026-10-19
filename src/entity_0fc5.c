@@ -9,10 +9,17 @@ typedef struct Entity0FC5 {
   MainSprite sprite_38;  // 0x38, 根拠: Entity0FC5_RemoveSprites が unk_f4 == 0 のとき MainSprite_Remove に渡す
   AuxSprite sprite_98;   // 0x98, 根拠: Entity0FC5_RemoveSprites が unk_f4 != 0 のとき AuxSprite_Remove に渡す
   u8 unk_c4[0xF4 - 0xC4];
-  s32 unk_f4;  // 0xF4, gEntity0FC5s での自分の添字, '.k' の値
-  u8 unk_f8[0x13C - 0xF8];
-  AuxSprite sprite_13c;  // 0x13C, 根拠: Entity0FC5_RemoveSprites が AuxSprite_Remove に渡す
-  u8 unk_168[392 - 0x168];
+  s32 unk_f4;                                  // 0xF4, gEntity0FC5s での自分の添字, '.k' の値
+  u32 pauseFlags;                              // 0x0F8, bit0/bit1 が立っている間 timer_100 / timer_108 を止める
+  u32 unk_fc;                                  // 0x0FC, まだ未解析
+  u32 timer_100;                               // 0x100
+  u32 unk_104;                                 // 0x104, まだ未解析
+  u32 timer_108;                               // 0x108
+  u8 unk_10c[0x13C - 0x10C];                   // 0x10C, まだ未解析
+  AuxSprite sprite_13c;                        // 0x13C, 根拠: Entity0FC5_RemoveSprites が AuxSprite_Remove に渡す
+  u8 unk_168[0x184 - 0x168];                   // 0x168, まだ未解析
+  void (*updateCallback)(struct Entity0FC5*);  // 0x184
+  u8 unk_188[392 - 0x188];                     // 0x188, まだ未解析
 } Entity0FC5;
 static_assert(sizeof(Entity0FC5) == 392);
 
@@ -34,7 +41,18 @@ void (*const PTR_ARRAY_085affa4[1])(Entity0FC5*) = {
     FUN_0821abfc,
 };
 
-NAKED void FUN_0821ae64(Entity0FC5* p, s32 val) { INCFUNC("asm/func/FUN_0821ae64.inc"); }
+static inline void Entity0FC5_SetPauseFlags(Entity0FC5* p, u32 bits) { p->pauseFlags |= bits; }
+
+// val 番の処理へ切り替えて2本のタイマーを止める
+void FUN_0821ae64(Entity0FC5* p, s32 val) {
+  p->unk_fc = val;
+  p->timer_100 = 0;
+  p->updateCallback = PTR_ARRAY_085affa4[val];
+  Entity0FC5_SetPauseFlags(p, 1);
+  p->unk_104 = 0;
+  p->timer_108 = 0;
+  Entity0FC5_SetPauseFlags(p, 2);
+}
 
 NAKED void FUN_0821aeb0(Entity0FC5* p) { INCFUNC("asm/func/FUN_0821aeb0.inc"); }
 
@@ -49,7 +67,16 @@ void Entity0FC5_RemoveSprites(Entity0FC5* p) {
   AuxSprite_Remove(&p->sprite_13c);
 }
 
-NAKED s32 Entity0FC5_Update(Entity0FC5* p) { INCFUNC("asm/func/Entity0FC5_Update.inc"); }
+s32 Entity0FC5_Update(Entity0FC5* p) {
+  if (!(p->pauseFlags & 1)) {
+    p->timer_100++;
+  }
+  if (!(p->pauseFlags & 2)) {
+    p->timer_108++;
+  }
+  p->updateCallback(p);
+  return 0;
+}
 
 // 描画を畳んで gEntity0FC5s の登録枠を空ける
 s32 Entity0FC5_Destroy(Entity0FC5* p) {

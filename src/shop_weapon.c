@@ -406,7 +406,7 @@ NON_MATCH void FUN_080bd47c(WeaponShop* p) {
   }
 
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
-  PlaySound_082406e0(0x38A);
+  PlaySound_082406e0(SONG_906);
 #else
   INCFUNC("asm/func/FUN_080bd47c.inc");
 #endif
@@ -435,7 +435,7 @@ void WeaponShop_StartMoveAnim(WeaponShop* p) {
   to[1].y = 0;
   to[1].z = 0;
   FUN_080b9a28(&p->pair0.gfx, unk1, from, to, anims, strIDs, 12);
-  PlaySound_082406e0(0x38A);
+  PlaySound_082406e0(SONG_906);
 }
 
 // unk_1654 のタブ (1=剣 2=槍 3=槌) の savedSlot 番目の武器を slot へ飛ばすアニメを仕込む
@@ -465,7 +465,7 @@ NON_MATCH void FUN_080bd624(WeaponShop* p) {
   to[1].y = 0;
   to[1].z = 0;
   FUN_080b9a28(&p->pair0.gfx, unk1, from, to, anims, strIDs, 12);
-  PlaySound_082406e0(0x38A);
+  PlaySound_082406e0(SONG_906);
 #else
   INCFUNC("asm/func/FUN_080bd624.inc");
 #endif
@@ -602,7 +602,7 @@ NON_MATCH void FUN_080bd9e8(WeaponShop* p) {
     FUN_080bcdec(p, 0);
     MainSprite_SetPose(&p->sprites[38], &p->gfx0, 56, 1);
     if (gInput[0].pressed & A_BUTTON) {
-      PlaySound_082406e0(0xDC);
+      PlaySound_082406e0(SONG_220);
       p->kind++;
       if (p->kind > 2) {
         p->kind = 0;
@@ -614,7 +614,7 @@ NON_MATCH void FUN_080bd9e8(WeaponShop* p) {
 
     if (gInput[0].pressed & A_BUTTON) {
       if ((u8)p->cursor.slot == 33) {
-        PlaySound_082406e0(0x107);
+        PlaySound_082406e0(SONG_263);
         FUN_080bce20(p, 3, p->unk_1644, -1);
         FUN_080b98c0(&p->pair1.gfx, -1, -1);
         FUN_080b9740(&p->sprites[57], &p->gfx0, (char*)&p->unk_1656, 1);
@@ -632,9 +632,9 @@ NON_MATCH void FUN_080bd9e8(WeaponShop* p) {
         }
 
         if (!ok) {
-          PlaySound_082406e0(0x192);
+          PlaySound_082406e0(SE_NG);
         } else {
-          PlaySound_082406e0(0xDD);
+          PlaySound_082406e0(SE_SELECT);
           FUN_080b9fd8(&p->cursor);
           p->sprites[39].flags &= ~SPRFLAG_HIDDEN;
           p->sprites[39].pos = p->sprites[38].pos;
@@ -645,7 +645,7 @@ NON_MATCH void FUN_080bd9e8(WeaponShop* p) {
       } else {
         weapon32_t id;
 
-        PlaySound_082406e0(0xDD);
+        PlaySound_082406e0(SE_SELECT);
         FUN_080b9fd8(&p->cursor);
         p->sprites[39].flags &= ~SPRFLAG_HIDDEN;
         p->sprites[39].pos = p->sprites[38].pos;
@@ -684,26 +684,26 @@ void WeaponShop_HandleActionInput(WeaponShop* p) {
         break;
       }
       case 4: {
-        PlaySound_082406e0(0x107);
+        PlaySound_082406e0(SONG_263);
         FUN_080bce20(p, 0, p->unk_1644, 0);
         FUN_080b9740(&p->sprites[57], &p->gfx0, (char*)&p->unk_1656, 1);
         FUN_080bcdf8(p, FUN_080bde60, 0);
         break;
       }
       case 5: {
-        PlaySound_082406e0(0x107);
+        PlaySound_082406e0(SONG_263);
         FUN_080bce20(p, 1, p->unk_1644, 0);
         FUN_080b9740(&p->sprites[57], &p->gfx0, (char*)&p->unk_1656, 0);
         FUN_080bcdf8(p, FUN_080bdf94, 0);
         break;
       }
       default: {
-        PlaySound_082406e0(0x192);
+        PlaySound_082406e0(SE_NG);
         break;
       }
     }
   } else if (gInput[0].pressed & B_BUTTON) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     WeaponShop_ReturnToList(p);
   } else if (FUN_080b9f70(&p->cursor)) {
     FUN_080b9fc4(&p->cursor, &p->sprites[38]);
@@ -719,14 +719,14 @@ void WeaponShop_ConfirmSort(WeaponShop* p) {
   s32 r = FUN_080b977c(&p->sprites[57], &p->gfx0, &p->unk_1656);
 
   if (r == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     SortWeapons(0);
     p->cursor.savedRow = 0;
     p->cursor.savedCol = 0;
     p->cursor.savedSlot = 0;
     WeaponShop_ReturnToList(p);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     WeaponShop_ReturnToList(p);
   }
 }
@@ -751,7 +751,7 @@ void FUN_080bde60(WeaponShop* p) {
     FUN_080bd624(p);
     FUN_080bcdf8(p, WeaponShop_BuyWeapon, 0);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     WeaponShop_ReturnToList(p);
   }
 }
@@ -767,7 +767,7 @@ void WeaponShop_BuyWeapon(WeaponShop* p) {
     FUN_08242b6c(slot, &w);
     gStat->solarBank -= gWeaponDB[(s8)p->swords[idx + p->unk_1654 * 16]].price;
     p->unk_1658 = 1;
-    PlaySound_082406e0(0x111);
+    PlaySound_082406e0(SE_EQUIP);
     WeaponShop_ReturnToList(p);
   }
 }
@@ -781,7 +781,7 @@ void FUN_080bdf94(WeaponShop* p) {
     WeaponShop_StartMoveAnim(p);
     FUN_080bcdf8(p, FUN_080bdfe8, 0);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     WeaponShop_ReturnToList(p);
   }
 }
@@ -808,7 +808,7 @@ NON_MATCH void FUN_080bdfe8(WeaponShop* p) {
 
 void WeaponShop_AnimateSale(WeaponShop* p) {
   if (p->stateTimer == 0) {
-    PlaySound_082406e0(0x276);
+    PlaySound_082406e0(SONG_630);
   }
 
   p->stateTimer++;
@@ -1061,7 +1061,7 @@ void WeaponShop_HandleTabInput(WeaponShop* p) {
         p->unk_1654--;
       }
 
-      PlaySound_082406e0(0x10A);
+      PlaySound_082406e0(SONG_266);
       WeaponShop_OpenList(p);
     } else if (gInput[0].pressed & R_BUTTON) {
       if (p->unk_1654 == 2) {
@@ -1070,10 +1070,10 @@ void WeaponShop_HandleTabInput(WeaponShop* p) {
         p->unk_1654++;
       }
 
-      PlaySound_082406e0(0x10A);
+      PlaySound_082406e0(SONG_266);
       WeaponShop_OpenList(p);
     } else if (gInput[0].pressed & B_BUTTON) {
-      PlaySound_082406e0(0x119);
+      PlaySound_082406e0(SE_CLOSE_MENU);
       FUN_0823ce68(3, 5, 4, 4, 4, 0xFFFF, 0);
       WeaponShop_SetState(p, WeaponShop_Close);
       return;
@@ -1138,7 +1138,7 @@ s32 WeaponShop_Init(WeaponShop* p) {
   WeaponShop_OpenList(p);
   p->unk_1658 = 0;
   p->unk_1659 = 0;
-  PlaySound_082406e0(0x118);
+  PlaySound_082406e0(SE_OPEN_MENU);
   WeaponShop_SetState(p, FUN_080be7e4);
   return 0;
 }

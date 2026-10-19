@@ -71,7 +71,7 @@
 #define AET_PARADE 25         // クリムゾンの出現率を20%に(パレードアーマー)
 #define AET_AGILITY 26        // ハヤサ+<value>(忍者着)
 #define AET_SPIKE 27          // ダメージを受けると、敵に<value>のダメージを与える(スパイクメイル)
-#define AET_BLACK_ARMOR 28    // 忘れた(黒の鎧)
+#define AET_BLACK_ARMOR 28    // 装着中はライフが徐々に減っていくが、攻撃力が上がる(黒の鎧)
 #define AET_MEGA_POWER 29     // ロックバスターでチャージショットができるようになる(ロックパワー)
 #define AET_GUTS_POWER 30     // 全てのダメージ半減(ガッツパワー)
 #define AET_PROTO_POWER 31    // 赤ジャンゴのとき攻撃速度1.5倍(ブルースパワー)

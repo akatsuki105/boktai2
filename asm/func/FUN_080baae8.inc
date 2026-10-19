@@ -137,7 +137,7 @@ _080BABF4:
 	movs r2, #0
 	ldrsh r4, [r0, r2]
 	adds r0, r1, #0
-	bl FUN_080ba220
+	bl Item_GetBuyPrice
 	cmp r4, r0
 	blt _080BAC3A
 	ldr r1, _080BAC50 @ =0x000012F2

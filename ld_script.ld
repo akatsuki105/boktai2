@@ -141,9 +141,10 @@ SECTIONS {
       src/entity_081f959c.o(.bss);
       src/entity_081f9cb8.o(.bss);
       src/entity_081fa164.o(.bss);
-      src/entity_082034c0.o(iwram_data);
-      src/entity_08203ad0.o(iwram_data);
-      src/entity_08204cb8.o(iwram_data);
+      src/entity_082034c0.o(.bss);
+      src/entity_08203ad0.o(.bss);
+      src/entity_08204cb8.o(.bss);
+      src/code_08204d2c.o(.bss);
       src/entity_8aab.o(iwram_data);
       . = ALIGN(8);
       src/interrupts.o(iwram_data);
@@ -368,7 +369,7 @@ SECTIONS {
 			src/entity_080aace8.o (.text);
 			src/dungeon_marker.o (.text);
 			src/entity_080abd14.o (.text);
-			src/entity_080ac374.o (.text);
+			src/eff_trans.o (.text);
 			src/entity_080ac574.o (.text);
 			src/entity_b6ff.o (.text);
 			src/entity_080acd4c.o (.text);
@@ -481,7 +482,9 @@ SECTIONS {
 			src/entity_081f959c.o (.text);
 			src/entity_081f9cb8.o (.text);
 			src/entity_081fa164.o (.text);
+			src/entity_081fa1bc.o (.text);
 			src/entity_3ffd.o (.text);
+			src/nested_state.o (.text);
 			src/boss/dvalinn.o (.text);
 			src/entity_08202cd8.o (.text);
 			src/entity_082034c0.o (.text);
@@ -608,6 +611,7 @@ SECTIONS {
 	{
     src/entity_e28b.o (.rodata);
     src/message_choice.o (.rodata);
+    src/entity_4b15.o (.rodata);
     src/data.o (.rodata);
     src/entity_1b24.o (.rodata);
     src/data_pile_driver.o (.rodata);
@@ -790,7 +794,11 @@ SECTIONS {
     src/entity_081f9cb8.o (.rodata);
     src/entity_081fa164.o (.rodata);
     src/boss/dvalinn.o (.rodata);
-    src/rodata4.o (.rodata);
+    src/entity_08202cd8.o (.rodata);
+    src/entity_082034c0.o (.rodata);
+    src/entity_082047f0.o (.rodata);
+    src/entity_08204cb8.o (.rodata);
+    src/code_08204d2c.o (.rodata);
     src/enemy_dex.o (.rodata);
     src/preview_stage.o (.rodata);
     src/weapon_dex.o (.rodata);

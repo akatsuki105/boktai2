@@ -528,7 +528,32 @@ s32 VM_CallScript(u8* pc) {
   return VM_ExecByID(scriptID, &args);
 }
 
-NAKED void* UNUSED FUN_0823193c(void* p, u32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0823193c.inc"); }
+// key で昇順に並んだ8バイト要素の表を二分探索する
+typedef struct {
+  u32 key;  // 0x0
+  u32 val;  // 0x4
+} SortedEntry;
+
+void* UNUSED FUN_0823193c(void* p, u32 key, s32 count) {
+  SortedEntry* table = p;
+  s32 lo = 0;
+  s32 hi = count - 1;
+
+  while (lo < hi) {
+    s32 mid = (lo + hi) >> 1;
+
+    if (table[mid].key < key) {
+      lo = mid + 1;
+    } else {
+      hi = mid;
+    }
+  }
+
+  if (table[lo].key == key) {
+    return &table[lo];
+  }
+  return NULL;
+}
 
 // stringID で指定した文字列を返す
 char* Textbox_LookupString(s32 stringID) {
@@ -682,8 +707,8 @@ void VM_ExecSpecial(void) {
   VM_ExecByPointer(pc, (ScriptArgs*)&sEmptyArgs);
 }
 
-// デバッグ用の assert, SubroutineID: 0xEC1F
-s32 VM_DebugAssert(void) {
+// 0xEC1F, HashName("assert")
+s32 Cmd_Assert(void) {
   if (!VM_GetValue()) {
     VM_GetValueSafe1();  // 何もせず握り潰す, 開発環境では何かしらのエラー表示や停止処理が行われていたと思われる
   }

@@ -84,14 +84,12 @@ void Warehouse_SetSubState(Warehouse* p, WarehouseFunc* fn, s32 val) {
 
 // 前半16バイトに 0..15 を、後半16バイトに val を足した 16..31 を詰める
 void FUN_080b5afc(Warehouse* p, s32 val) {
-  u8* q;
   s32 i;
 
-  for (i = 15, q = &p->unk_1458[15]; i >= 0; i--) {
-    *q-- = i;
+  for (i = 0; i < 16; i++) {
+    p->unk_1458[i] = i;
   }
-
-  for (i = 16; i <= 31; i++) {
+  for (i = 16; i < 32; i++) {
     p->unk_1458[i] = i + val;
   }
 }
@@ -151,14 +149,14 @@ void FUN_080b6754(Warehouse* p) {
   s32 r = FUN_080b977c(&p->sprites[46], &p->gfx0, &p->unk_140d);
 
   if (r == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     SortInventory(0);
     p->cursor.savedRow = 0;
     p->cursor.savedCol = 0;
     p->cursor.savedSlot = 0;
     FUN_080b61c4(p);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_080b61c4(p);
   }
 }
@@ -167,14 +165,14 @@ void FUN_080b67c0(Warehouse* p) {
   s32 r = FUN_080b977c(&p->sprites[46], &p->gfx0, &p->unk_140d);
 
   if (r == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     SortInventory(p->unk_1458[16]);
     p->cursor.savedRow = 4;
     p->cursor.savedCol = 0;
     p->cursor.savedSlot = 16;
     FUN_080b61c4(p);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_080b61c4(p);
   }
 }
@@ -195,7 +193,7 @@ void FUN_080b685c(Warehouse* p) {
     FUN_080b6114(p);
     Warehouse_SetSubState(p, FUN_080b68bc, 0);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_080b61c4(p);
   }
 }
@@ -203,7 +201,7 @@ void FUN_080b685c(Warehouse* p) {
 void FUN_080b68bc(Warehouse* p) {
   if (FUN_080b9adc(&p->pair0)) {
     FUN_080b6000(p);
-    PlaySound_082406e0(0x10E);
+    PlaySound_082406e0(SE_TRASH);
     Warehouse_SetSubState(p, FUN_080b68f4, 0);
   }
 }
@@ -283,14 +281,14 @@ void FUN_080b7670(Warehouse* p) {
   s32 r = FUN_080b977c(&p->sprites[46], &p->gfx0, &p->unk_140d);
 
   if (r == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     SortWeapons(0);
     p->cursor.savedRow = 0;
     p->cursor.savedCol = 0;
     p->cursor.savedSlot = 0;
     FUN_080b70ac(p);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_080b70ac(p);
   }
 }
@@ -299,14 +297,14 @@ void FUN_080b76dc(Warehouse* p) {
   s32 r = FUN_080b977c(&p->sprites[46], &p->gfx0, &p->unk_140d);
 
   if (r == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     SortWeapons(p->unk_1458[16]);
     p->cursor.savedRow = 4;
     p->cursor.savedCol = 0;
     p->cursor.savedSlot = 16;
     FUN_080b70ac(p);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_080b70ac(p);
   }
 }
@@ -327,7 +325,7 @@ void FUN_080b7794(Warehouse* p) {
     FUN_080b6dc4(p);
     Warehouse_SetSubState(p, FUN_080b77f4, 0);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_080b70ac(p);
   }
 }
@@ -335,7 +333,7 @@ void FUN_080b7794(Warehouse* p) {
 void FUN_080b77f4(Warehouse* p) {
   if (FUN_080b9adc(&p->pair0)) {
     FUN_08242c08(p->unk_1458[(u8)p->cursor.savedSlot]);
-    PlaySound_082406e0(0x10E);
+    PlaySound_082406e0(SE_TRASH);
     Warehouse_SetSubState(p, FUN_080b783c, 0);
   }
 }
@@ -429,14 +427,14 @@ void FUN_080b86bc(Warehouse* p) {
   s32 r = FUN_080b977c(&p->sprites[46], &p->gfx0, &p->unk_140d);
 
   if (r == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     SortArmors(0);
     p->cursor.savedRow = 0;
     p->cursor.savedCol = 0;
     p->cursor.savedSlot = 0;
     FUN_080b8104(p);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_080b8104(p);
   }
 }
@@ -445,14 +443,14 @@ void FUN_080b8728(Warehouse* p) {
   s32 r = FUN_080b977c(&p->sprites[46], &p->gfx0, &p->unk_140d);
 
   if (r == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     SortArmors(p->unk_1458[16]);
     p->cursor.savedRow = 4;
     p->cursor.savedCol = 0;
     p->cursor.savedSlot = 16;
     FUN_080b8104(p);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_080b8104(p);
   }
 }
@@ -473,7 +471,7 @@ void FUN_080b87c4(Warehouse* p) {
     FUN_080b8044(p);
     Warehouse_SetSubState(p, FUN_080b8824, 0);
   } else if (r == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_080b8104(p);
   }
 }
@@ -481,7 +479,7 @@ void FUN_080b87c4(Warehouse* p) {
 void FUN_080b8824(Warehouse* p) {
   if (FUN_080b9adc(&p->pair0)) {
     FUN_080b7ef0(p);
-    PlaySound_082406e0(0x10E);
+    PlaySound_082406e0(SE_TRASH);
     Warehouse_SetSubState(p, FUN_080b885c, 0);
   }
 }
@@ -617,7 +615,7 @@ s32 Warehouse_Init(Warehouse* p) {
   Warehouse_SetupMessageWindow(p);
   FUN_0823ce68(2, 5, 4, 4, 4, 0xFFFF, 0);
   FUN_080b695c(p, 0);
-  PlaySound_082406e0(0x118);
+  PlaySound_082406e0(SE_OPEN_MENU);
   Warehouse_SetState(p, FUN_080b8f08);
   return 0;
 }

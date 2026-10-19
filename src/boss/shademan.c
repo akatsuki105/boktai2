@@ -1,19 +1,10 @@
+#include "shademan.h"
+
 #include "boss.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
 #include "shadow.h"
-
-// シェードマン(シングルプレイ用)
-typedef struct {
-  Entity e;                   // 0x000, ENTITY_UNK_8
-  u8 unk_18[0x15C - 0x18];    // 0x018, まだ未解析
-  HitboxData hitbox_15c;      // 0x15C
-  u8 unk_1ac[0x31C - 0x1AC];  // 0x1AC, まだ未解析
-  AuxShadow shadow_31c;       // 0x31C
-  u8 unk_388[3076 - 0x388];   // 0x388, まだ未解析
-} Entity0623;
-static_assert(sizeof(Entity0623) == 3076);
 
 INCASM("asm/shademan.inc");
 

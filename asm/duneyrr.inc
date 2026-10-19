@@ -7423,7 +7423,7 @@ _08026A68:
 	orrs r0, r1
 	str r0, [sp, #8]
 	add r0, sp, #8
-	bl FUN_0823b8ac
+	bl Camera_MoveTo
 	movs r6, #0xa8
 	lsls r6, r6, #3
 	adds r1, r5, r6
@@ -7757,7 +7757,7 @@ _08026D08:
 	orrs r0, r1
 	str r0, [sp, #8]
 	add r0, sp, #8
-	bl FUN_0823b8ac
+	bl Camera_MoveTo
 	movs r1, #0xa8
 	lsls r1, r1, #3
 	add r1, r8
@@ -8266,7 +8266,7 @@ _080270F2:
 	orrs r0, r1
 	str r0, [sp, #8]
 	add r0, sp, #8
-	bl FUN_0823b8ac
+	bl Camera_MoveTo
 	mov r2, r8
 	cmp r2, #7
 	bgt _08027134

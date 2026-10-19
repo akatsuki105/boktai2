@@ -150,4 +150,16 @@ void CopyMemory(u8* dst, u8* src, s32 bytesize) {
   }
 }
 
-NAKED void FUN_08230af8(void* dst, void* src, s32 bytesize) { INCFUNC("asm/func/FUN_08230af8.inc"); }
+// DMA3 で 0x200 バイトずつ転送する, 端数は最後に1回で送る
+void FUN_08230af8(void* src, void* dst, u32 bytesize) {
+  while (bytesize > 0x200) {
+    DmaCopy32(3, src, dst, 0x200);
+    src += 0x200;
+    dst += 0x200;
+    bytesize -= 0x200;
+  }
+
+  if (bytesize != 0) {
+    DmaCopy32(3, src, dst, bytesize);
+  }
+}

@@ -775,7 +775,7 @@ _0802844E:
 	orrs r1, r0
 	str r1, [sp, #4]
 	mov r0, sp
-	bl FUN_0823b8ac
+	bl Camera_MoveTo
 	add sp, #8
 	pop {r4, r5, r6}
 	pop {r0}

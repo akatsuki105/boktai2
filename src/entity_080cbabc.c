@@ -49,7 +49,7 @@ void FUN_080cb94c(Entity080cbabc* p, s32 angle, s32 power, s32 unk_40, HitboxAtt
 
   halfSize.x = 30, halfSize.y = 30, halfSize.z = 30;
   offset.x = 0, offset.y = 0, offset.z = 0;
-  Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_8 | HBFLAG_UNK_0, 0, 1, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 1, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, power, unk_40, 0x10, attrs, unk_44);
   Hitbox_SetHandler(hitbox, FUN_080cb7b4, p);
   Hitbox_SetPos(hitbox, &p->sprite.pos, 0);

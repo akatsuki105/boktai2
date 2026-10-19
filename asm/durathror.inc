@@ -4695,7 +4695,7 @@ FUN_08038b54: @ 0x08038B54
 	lsls r3, r3, #2
 	add r0, sp, #4
 	movs r2, #4
-	bl FUN_0823556c
+	bl Map_FindPathNodeBeyond
 	movs r0, #0
 	str r0, [sp]
 	adds r0, r4, #0

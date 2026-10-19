@@ -32,7 +32,7 @@ s32 MorningDew_Update(MorningDew* p) {
     }
   }
   if (p->hpDone && p->eneDone) {
-    sound_08240740(0x259);
+    sound_08240740(SONG_601);
     if (p->scriptID != 0) VM_ExecByID(p->scriptID, NULL);
     KillEntity((Entity*)p);
   }
@@ -70,7 +70,7 @@ s32 MorningDew_Init(MorningDew* p) {
   } else {
     p->eneDone = TRUE;
   }
-  if (!p->hpDone || !p->eneDone) PlaySound_082406e0(0x259);
+  if (!p->hpDone || !p->eneDone) PlaySound_082406e0(SONG_601);
 
   if (VM_SeekToNamedArg('p')) {
     p->scriptID = VM_GetValue();

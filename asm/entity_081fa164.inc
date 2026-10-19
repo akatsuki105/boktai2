@@ -41,13 +41,13 @@ FUN_081f9db4: @ 0x081F9DB4
 _081F9DF4: .4byte 0xFFFF0000
 _081F9DF8: .4byte 0x0000FFFF
 
-	thumb_func_start FUN_081f9dfc
-FUN_081f9dfc: @ 0x081F9DFC
+	thumb_func_start Entity081fa164_UpdateIdle
+Entity081fa164_UpdateIdle: @ 0x081F9DFC
 	bx lr
 	.align 2, 0
 
-	thumb_func_start FUN_081f9e00
-FUN_081f9e00: @ 0x081F9E00
+	thumb_func_start Entity081fa164_AllocElem
+Entity081fa164_AllocElem: @ 0x081F9E00
 	push {r4, r5, lr}
 	movs r2, #0
 	ldr r1, _081F9E24 @ =0x0000069C
@@ -96,8 +96,8 @@ _081F9E4E:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_081f9e54
-FUN_081f9e54: @ 0x081F9E54
+	thumb_func_start Entity081fa164_AdvanceAnim
+Entity081fa164_AdvanceAnim: @ 0x081F9E54
 	push {lr}
 	adds r2, r0, #0
 	mov ip, r1
@@ -132,8 +132,8 @@ _081F9E8C:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_081f9e94
-FUN_081f9e94: @ 0x081F9E94
+	thumb_func_start Entity081fa164_UpdateMove
+Entity081fa164_UpdateMove: @ 0x081F9E94
 	push {r4, r5, lr}
 	adds r2, r0, #0
 	adds r4, r1, #0
@@ -160,7 +160,7 @@ _081F9EB2:
 	strh r0, [r4, #0x1c]
 	adds r0, r2, #0
 	adds r1, r4, #0
-	bl FUN_081f9e54
+	bl Entity081fa164_AdvanceAnim
 	ldrh r0, [r4, #0x38]
 	cmp r0, #0
 	beq _081F9ED6
@@ -179,8 +179,8 @@ _081F9EE2:
 	pop {r0}
 	bx r0
 
-	thumb_func_start FUN_081f9ee8
-FUN_081f9ee8: @ 0x081F9EE8
+	thumb_func_start Entity081fa164_UpdateRelease
+Entity081fa164_UpdateRelease: @ 0x081F9EE8
 	push {r4, r5, r6, lr}
 	adds r5, r1, #0
 	adds r1, #0x34
@@ -226,7 +226,7 @@ FUN_081f9f38: @ 0x081F9F38
 	sub sp, #4
 	movs r4, #1
 	str r4, [sp]
-	bl FUN_081f9f60
+	bl Entity081fa164_SpawnElem
 	add sp, #4
 	pop {r4}
 	pop {r1}
@@ -238,14 +238,14 @@ FUN_081f9f4c: @ 0x081F9F4C
 	sub sp, #4
 	ldr r4, [sp, #0xc]
 	str r4, [sp]
-	bl FUN_081f9f60
+	bl Entity081fa164_SpawnElem
 	add sp, #4
 	pop {r4}
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_081f9f60
-FUN_081f9f60: @ 0x081F9F60
+	thumb_func_start Entity081fa164_SpawnElem
+Entity081fa164_SpawnElem: @ 0x081F9F60
 	push {r4, r5, r6, r7, lr}
 	mov r7, sb
 	mov r6, r8
@@ -264,7 +264,7 @@ FUN_081f9f60: @ 0x081F9F60
 	beq _081F9F8E
 _081F9F82:
 	adds r0, r6, #0
-	bl FUN_081f9e00
+	bl Entity081fa164_AllocElem
 	adds r5, r0, #0
 	cmp r5, #0
 	bne _081F9F98
@@ -550,8 +550,8 @@ _081FA1AA:
 	pop {r1}
 	bx r1
 
-	thumb_func_start FUN_081fa1b0
-FUN_081fa1b0: @ 0x081FA1B0
+	thumb_func_start Entity081fa164_ClearGlobal
+Entity081fa164_ClearGlobal: @ 0x081FA1B0
 	ldr r1, _081FA1B8 @ =0x03000214
 	movs r0, #0
 	str r0, [r1]

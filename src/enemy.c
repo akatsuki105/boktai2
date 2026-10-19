@@ -3,6 +3,7 @@
 #include "collision_map.h"
 #include "eff_082473e0.h"
 #include "enemy_manager.h"
+#include "enemy_target.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -24,8 +25,20 @@ const s16 s16_ARRAY_085ad3cc[4] = {1600, 0, 1600};  // 0x085AD3CC
 extern const char s_enemy_c_08251f60[];  // "enemy.c"
 
 s32 FUN_08240b98(u8* param_1, s8 param_2);
-void EnemyTargetManager_Release(EnemyTarget* node);
-EnemyTarget* EnemyTargetManager_FindByKind(u32 kindMask);
+
+static inline void Enemy_EnterState(Enemy* p, void* handlerState, s32 state) {
+  p->stateBegun = TRUE;
+  p->unk_46b = 0;
+  p->state = state;
+  p->handlerState = handlerState;
+  p->unk_1c8 = 0;
+}
+
+static inline void Enemy_SetHandlerIdx(Enemy* p, u8 idx0, u8 idx1, u8 idx2) {
+  p->unk_468 = idx0;
+  p->unk_469 = idx1;
+  p->unk_46a = idx2;
+}
 
 NAKED s32 FUN_080e191c(Enemy* p) { INCFUNC("asm/func/FUN_080e191c.inc"); }
 
@@ -40,17 +53,14 @@ void FUN_080e37e8(Enemy* p, void* arg, u8 spriteKind) {
 }
 
 // AuxSprite 系のエネミーにアニメーションファイルを読み込ませて先頭から再生する
-void FUN_080e3804(EnemyAuxSpriteData* p, s32 animID) {
-  FileID id = animID;
-  AuxAnimFile* f = GetFile(DIR_ANIMATION, id);
-
-  p->animFile = f;
-  AuxAnim_SetAnim(&p->anim, f, 0, 0, 0);
+void FUN_080e3804(EnemyAuxSpriteData* p, FileID animID) {
+  p->animFile = GetFile(DIR_ANIMATION, animID);
+  AuxAnim_SetAnim(&p->anim, p->animFile, 0, 0, 0);
 }
 
 // 自前の Hitbox を固定フラグで組んで登録する
 void FUN_080e3834(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner) {
-  Hitbox_Init(&p->hitbox, p->mover.id, (HBFLAG_UNK_14 | HBFLAG_UNK_12 | HBFLAG_UNK_8 | HBFLAG_UNK_3 | HBFLAG_UNK_0), 0, 0x10, halfSize, offset);
+  Hitbox_Init(&p->hitbox, p->mover.id, (HBFLAG_HURTBOX | HBFLAG_UNK_12 | HBFLAG_ANGLE | HBFLAG_UNK_3 | HBFLAG_UNK_0), 0, 0x10, halfSize, offset);
   Hitbox_SetPowerAndAttributes(&p->hitbox, p->power, p->attrs, p->weakness);
   Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
   Hitbox_SetHandler(&p->hitbox, handler, owner);
@@ -77,7 +87,7 @@ void Enemy_RegisterHitbox(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* of
 
 // 攻撃判定を組む, 攻撃パラメータは idx 番目の atk テーブルから取る (登録はしない)
 void Enemy_InitAtkHitbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, s32 idx, void* owner) {
-  HitboxFlags32 flags = HBFLAG_UNK_13 | HBFLAG_UNK_10 | HBFLAG_UNK_0;
+  HitboxFlags32 flags = HBFLAG_HITBOX | HBFLAG_UNK_10 | HBFLAG_UNK_0;
 
   Hitbox_Init(&p->atkHitbox, p->mover.id, flags, 0, 0x10, halfSize, offset);
   Hitbox_SetAttack(&p->atkHitbox, p->atkPower[idx], p->atkUnk40[idx], 0, p->atkAttrs[idx], p->atkUnk44[idx]);
@@ -87,7 +97,7 @@ void Enemy_InitAtkHitbox(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, 
 
 // index 番目の攻撃データを載せた Hitbox を組む (登録はしない)
 void FUN_080e3a14(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* offset, void* handler, s32 index, void* owner) {
-  HitboxFlags32 flags = HBFLAG_UNK_13 | HBFLAG_UNK_0;
+  HitboxFlags32 flags = HBFLAG_HITBOX | HBFLAG_UNK_0;
 
   Hitbox_Init(hitbox, p->mover.id, flags, 0, 0x10, halfSize, offset);
   Hitbox_SetAttack(hitbox, p->atkPower[index], p->atkUnk40[index], 0, p->atkAttrs[index], p->atkUnk44[index]);
@@ -96,7 +106,7 @@ void FUN_080e3a14(Enemy* p, HitboxData* hitbox, Vec3* halfSize, Vec3* offset, vo
 }
 
 // 3つの距離しきい値を二乗つきで設定する, 第2引数は読まれない
-void Enemy_SetRanges(Enemy* p, s32 unused, u16 range0, u16 range1, u16 range2, u8 param_6) {
+void Enemy_SetRanges(Enemy* p, s32 _, u16 range0, u16 range1, u16 range2, u8 param_6) {
   p->playerMover = NULL;
   p->range0 = range0;
   p->range1 = range1;
@@ -123,7 +133,7 @@ bool32 FUN_080e3ed8(Vec3* a, Vec3* b, s32 kind, s32 expected) {
       if (d < 0) {
         d = -d;
       }
-      n = Div256(d + 0x80) + 1;
+      n = FixToInt(8, d + 0x80) + 1;
       break;
     }
     case 1:
@@ -132,7 +142,7 @@ bool32 FUN_080e3ed8(Vec3* a, Vec3* b, s32 kind, s32 expected) {
       if (d < 0) {
         d = -d;
       }
-      n = Div256(d + 0x80) + 1;
+      n = FixToInt(8, d + 0x80) + 1;
       break;
     }
     default: {
@@ -663,8 +673,8 @@ bool32 FUN_080e5fe4(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed
   if (dx != 0 || dz != 0) {
     u32 angle = (u8)ArcTan2_8(dx, dz);
 
-    p->mover.delta.x = p->unk_20c.x + Div65536(speed * gSineTable[(angle + 0x40) & 0xFF]) + p->mover.delta.x;
-    p->mover.delta.z = p->unk_20c.z + Div65536(speed * gSineTable[angle]) + p->mover.delta.z;
+    p->mover.delta.x = p->unk_20c.x + FixToInt(16, speed * gSineTable[(angle + 0x40) & 0xFF]) + p->mover.delta.x;
+    p->mover.delta.z = p->unk_20c.z + FixToInt(16, speed * gSineTable[angle]) + p->mover.delta.z;
     p->mover.angle = angle;
   }
   return FALSE;
@@ -702,7 +712,7 @@ NON_MATCH bool32 FUN_080e60b8(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ)
       d = -d;
     }
     if (d != 0) {
-      p->unk_1dc = (Div32((u8)(quad * 64)) + 3) & 7;
+      p->unk_1dc = (FixToInt(5, (u8)(quad * 64)) + 3) & 7;
       return TRUE;
     }
   }
@@ -801,14 +811,8 @@ void FUN_080e6408(Enemy* p, s32 count, u32 kind, s32 rangeX, s32 rangeY, u32 par
   spread.val = 0;
   for (i = 0; i < count; i++) {
     u16* table = gRandomTable;
-    s32 r;
-
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    r = table[gRandTableIdx];
-    spread.x = Mod(r >> 4, rangeX) - (rangeX >> 1);
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    r = table[gRandTableIdx];
-    spread.y = -Mod(r >> 3, rangeY) - 6;
+    spread.x = Mod(_Random(table) >> 4, rangeX) - (rangeX >> 1);
+    spread.y = -Mod(_Random(table) >> 3, rangeY) - 6;
     FUN_082467d0(&p->emitter, kind, param_6, &spread);
   }
 }
@@ -858,20 +862,6 @@ void Enemy_ClearPendingState(Enemy* p, const char* filename, s32 val) {
   p->unk_558 = NULL;
 }
 
-static inline void Enemy_EnterState(Enemy* p, void* handlerState, s32 state) {
-  p->stateBegun = TRUE;
-  p->unk_46b = 0;
-  p->state = state;
-  p->handlerState = handlerState;
-  p->unk_1c8 = 0;
-}
-
-static inline void Enemy_SetHandlerIdx(Enemy* p, u8 idx0, u8 idx1, u8 idx2) {
-  p->unk_468 = idx0;
-  p->unk_469 = idx1;
-  p->unk_46a = idx2;
-}
-
 // 優先度が足りていれば状態14へ遷移させる
 void FUN_080e6794(Enemy* p, s32 priority) {
   if (p->unk_554 <= priority) {
@@ -909,26 +899,17 @@ void FUN_080e68d8(Enemy* p, s32 priority) {
 NAKED void FUN_080e6978(Enemy* p, unknown* param_2, unknown* param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_080e6978.inc"); }
 
 // プレイヤーか kindMask 4 の標的が XZ 両軸とも 1ブロック以内にいるか
-bool32 FUN_080e7078(Enemy* p) {
+bool8 FUN_080e7078(Enemy* p) {
   Vec3 d;
   EnemyTarget* t;
-  s32 v;
   s32 i;
 
   for (i = 0; i <= gPlayerCount; i++) {
     if (gPlayerPtr[i] != NULL) {
       d.x = p->mover.pos.x - gPlayerPtr[i]->mover.pos.x;
-      v = d.x;
-      if (v < 0) {
-        v = -v;
-      }
-      if (v <= 0xFF) {
+      if (abs(d.x) <= 0xFF) {
         d.z = p->mover.pos.z - gPlayerPtr[i]->mover.pos.z;
-        v = d.z;
-        if (v < 0) {
-          v = -v;
-        }
-        if (v <= 0xFF) {
+        if (abs(d.z) <= 0xFF) {
           return TRUE;
         }
       }
@@ -941,23 +922,14 @@ bool32 FUN_080e7078(Enemy* p) {
   }
 
   d.x = p->mover.pos.x - t->owner->pos.x;
-  v = d.x;
-  if (v < 0) {
-    v = -v;
-  }
-  if (v > 0xFF) {
-    return FALSE;
+  if (abs(d.x) <= 0xFF) {
+    d.z = p->mover.pos.z - t->owner->pos.z;
+    if (abs(d.z) <= 0xFF) {
+      return TRUE;
+    }
   }
 
-  d.z = p->mover.pos.z - t->owner->pos.z;
-  v = d.z;
-  if (v < 0) {
-    v = -v;
-  }
-  if (v > 0xFF) {
-    return FALSE;
-  }
-  return TRUE;
+  return FALSE;
 }
 
 // pos に一番近いプレイヤーを狙う相手にする (距離はXZ平面で見る)
@@ -1003,7 +975,7 @@ NON_MATCH void FUN_080e7204(Enemy* p) {
 
   for (i = 0; i < 4; i++) {
     gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    next = Mod(gRandomTable[gRandTableIdx], (u8)p->pathWalker.path->nodeCount);
+    next = Mod(gRandomTable[gRandTableIdx], p->pathWalker.path->nodeCount);
     if (next != cur && next != p->prevPathNode) {
       break;
     }
@@ -1011,7 +983,7 @@ NON_MATCH void FUN_080e7204(Enemy* p) {
 
   if (next == cur || next == p->prevPathNode) {
     next = cur + 1;
-    if (next >= (u8)p->pathWalker.path->nodeCount) {
+    if (next >= p->pathWalker.path->nodeCount) {
       next = 0;
     }
   }

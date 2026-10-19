@@ -145,12 +145,71 @@ s32 MessageWindow_Start(u8* pc) {
   return 0;
 }
 
-NAKED s32 MessageWindow_StartWithLabels(u8* pc, u16 labelCount, u16 labelIdx, u16* labels) { INCFUNC("asm/func/MessageWindow_StartWithLabels.inc"); }
+// 行番号表つきで表示を始める, labels を最大32件まで取り込んで labelIdx の行から出す
+// 残差1命令 (84/83): 原典は p を r5, &renderer を r4 に置くが, agbcc は &renderer を高位レジスタに追い出して mov を1つ払う
+NON_MATCH s32 MessageWindow_StartWithLabels(u8* pc, s32 labelCount, s32 labelIdx, u16* labels) {
+#ifdef NONMATCHING_C
+  MessageWindow* p = gMessageWindow;
+
+  if (p != NULL) {
+    TextRenderer* r = &p->renderer;
+    s32 i;
+
+    p->scriptPc = pc;
+    r->text = MessageWindow_GetLine(p, 0);
+    p->labelIdx = labelIdx;
+    p->labelCount = labelCount;
+    if ((u16)labelCount > 32) {
+      p->labelCount = 32;
+    }
+
+    for (i = 0; i < p->labelCount; i++) {
+      p->labels[i] = labels[i];
+    }
+
+    p->pendingLine = p->labels[p->labelIdx];
+    TextRenderer_ResetModeStack(r);
+    p->arrow.flags |= SPRFLAG_HIDDEN;
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/MessageWindow_StartWithLabels.inc");
+#endif
+}
 
 // '.r' があればそこを、なければ現在位置を本文の先頭にする
 s32 MessageWindow_Open(void) { return MessageWindow_Start(!VM_SeekToNamedArg('r') ? VM_GetPC() : VM_GetPC_Proxy()); }
 
-NAKED s32 MessageWindow_ShowLine(s32 line) { INCFUNC("asm/func/MessageWindow_ShowLine.inc"); }
+// 指定行の表示を始める, unk_17e が 0 なら1文字ずつ, それ以外なら一気に描く状態へ入る
+// 残差0命令 (103/103), レジスタ割当だけ違う: 原典は定数 0x18 を r9 に残して p を r5 に置くが, こちらは p が r6 を取る
+NON_MATCH s32 MessageWindow_ShowLine(s32 line) {
+#ifdef NONMATCHING_C
+  MessageWindow* p = gMessageWindow;
+
+  if (p != NULL && p->scriptPc != NULL) {
+    FUN_0822ea60(p->rectX, p->rectY, p->rectW, p->rectH);
+    TextRenderer_SetRect(&p->renderer, p->rectX, p->rectY, p->rectW, p->rectH);
+    p->lineIdx = line;
+    p->renderer.text = MessageWindow_GetLine(p, p->lineIdx);
+    if (p->unk_17e == 0) {
+      p->updateCallback = MessageWindow_StateType;
+      p->unk_183 = 3;
+    } else {
+      p->unk_198 = 0;
+      p->updateCallback = MessageWindow_StateRenderAll;
+    }
+
+    TextRenderer_ResetModeStack(&p->renderer);
+    p->pendingLine = -1;
+    p->arrow.flags |= SPRFLAG_HIDDEN;
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/MessageWindow_ShowLine.inc");
+#endif
+}
 
 s32 MessageWindow_SetPendingLineScripted(void) {
   MessageWindow* p = gMessageWindow;
@@ -331,7 +390,32 @@ void MessageWindow_StateIdle(MessageWindow* p) { TextRenderer_SetFinished(&p->re
 
 void MessageWindow_StateDone(MessageWindow* p) {}
 
-NAKED void MessageWindow_StateRenderAll(MessageWindow* p) { INCFUNC("asm/func/MessageWindow_StateRenderAll.inc"); }
+// 残りの文字を一気に描き切る, 1フレームで最大4歩進め, 行を描き終えたら次の状態へ移す
+// 残差2命令 (43/45): 原典は MessageWindow_StateIdle のプール値を r8 に巻き上げてループ内で使い回すが, こちらは毎回読み直す
+// Tier A-C は試済: 三項演算子は 41 と更に短くなる
+NON_MATCH void MessageWindow_StateRenderAll(MessageWindow* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  p->renderer.unk_0a = 1;
+  for (i = 0; i < 4; i++) {
+    if (p->renderer.text != NULL) {
+      p->renderer.unk_08 = 0;
+      if (TextRenderer_Advance(&p->renderer)) {
+        p->unk_198 = 1;
+        if (p->renderer.finished) {
+          p->updateCallback = MessageWindow_StateIdle;
+        } else {
+          p->updateCallback = MessageWindow_StateDone;
+        }
+        return;
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/MessageWindow_StateRenderAll.inc");
+#endif
+}
 
 NAKED s32 MessageWindow_Update(MessageWindow* p) { INCFUNC("asm/func/MessageWindow_Update.inc"); }
 

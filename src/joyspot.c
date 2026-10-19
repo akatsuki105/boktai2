@@ -1,7 +1,9 @@
 #include "entity.h"
 #include "global.h"
+#include "input.h"
 #include "save.h"
 #include "solar.h"
+#include "sound.h"
 #include "text.h"
 #include "vm.h"
 
@@ -46,6 +48,11 @@ const u8 gJoyspotContentIDs[8] = {
 };  // 0x085AB5B0
 // clang-format on
 
+s32 InitRfuAPI(void);  // src/rfu.c
+
+extern const char s_Zokutai_08251d30[];  // src/data.c
+extern const char s_Djungo_08251d38[];   // src/data.c
+
 void SignalStrengthIcon_CreateAt(s32 x, s32 y);
 
 static inline void JoyspotManager_SetState(JoyspotManager* p, u8 state) {
@@ -62,7 +69,7 @@ s32 JoyspotManager_IsActive(void) {
 }
 
 // リンク状態を見て, 切れていたら linkError の bit0 を立てる
-void JoyspotManager_WatchLink(void) {
+void JoyspotManager_WatchLink(u16 reqCommandId) {
   JoyspotManager* p = gJoyspotManager;
 
   if (p != NULL) {
@@ -74,16 +81,51 @@ void JoyspotManager_WatchLink(void) {
   }
 }
 
-// 第1引数は使っておらず、グローバルの方に書く
-void JoyspotManager_SetLinkError(JoyspotManager* _, u16 reason) {
+// 第1引数は使っておらず, グローバルの方に書く
+void JoyspotManager_SetLinkError(u16 reqCommandId, u16 reason) {
   if (gJoyspotManager != NULL && reason != 0) {
     gJoyspotManager->linkError |= 0xF0 | reason;
   }
 }
 
-NAKED s32 JoyspotManager_InitAdapter(JoyspotManager* unused) { INCFUNC("asm/func/JoyspotManager_InitAdapter.inc"); }
+// 通信カートリッジを初期化してゲーム識別情報を設定する
+s32 JoyspotManager_InitAdapter(JoyspotManager* unused) {
+  if (InitRfuAPI() < 0) {
+    return -1;
+  }
 
-NAKED void JoyspotManager_Disconnect(void) { INCFUNC("asm/func/JoyspotManager_Disconnect.inc"); }
+  rfu_setREQCallback(JoyspotManager_SetLinkError);
+  if (rfu_REQBN_softReset_and_checkID() != RFU_ID) {
+    return -1;
+  }
+
+  rfu_REQ_reset();
+  rfu_waitREQComplete();
+  rfu_REQ_configSystem(0, 4, 0x20);
+  rfu_waitREQComplete();
+  rfu_REQ_configGameData(0, 0x10, s_Zokutai_08251d30, s_Djungo_08251d38);
+  rfu_waitREQComplete();
+  rfu_setMSCCallback(JoyspotManager_WatchLink);
+  return 0;
+}
+
+// 接続中の最初のスロットを切って通信を止める
+void JoyspotManager_Disconnect(void) {
+  u8 i;
+
+  for (i = 0; i < 4; i++) {
+    if ((gRfuLinkStatus->connectSlot_flag >> i) & 1) {
+      break;
+    }
+  }
+
+  rfu_REQ_disconnect(1 << i);
+  rfu_waitREQComplete();
+  rfu_clearAllSlot();
+  rfu_setREQCallback(NULL);
+  rfu_REQ_stopMode();
+  rfu_waitREQComplete();
+}
 
 NAKED void JoyspotManager_SetupBG(JoyspotManager* p, s32 param_2) { INCFUNC("asm/func/JoyspotManager_SetupBG.inc"); }
 
@@ -110,7 +152,28 @@ void JoyspotManager_Start(JoyspotManager* p) {
   }
 }
 
-NAKED void JoyspotManager_StateInitFailed(JoyspotManager* p) { INCFUNC("asm/func/JoyspotManager_StateInitFailed.inc"); }
+// 初期化に失敗した旨を出し, 30フレーム後に A/B/START のどれかで state 8 へ進む
+// 残差1命令 (32 対 33), 原典は timer への 0 代入と +1 代入を別々の str で持つが agbcc は共通の末尾として1本に畳む
+// early return / if のネスト / timer をローカルに退避する形は試済
+NON_MATCH void JoyspotManager_StateInitFailed(JoyspotManager* p) {
+#ifdef NONMATCHING_C
+  if (p->stateChanged) {
+    p->stateChanged = FALSE;
+    PlaySound_082406e0(SE_NG);
+  }
+
+  if (p->timer > 29 && (gInput[0].pressed & (A_BUTTON | B_BUTTON | START_BUTTON))) {
+    PlaySound_082406e0(SE_CANCEL);
+    p->state = 8;
+    p->stateChanged = TRUE;
+    p->timer = 0;
+  } else {
+    p->timer++;
+  }
+#else
+  INCFUNC("asm/func/JoyspotManager_StateInitFailed.inc");
+#endif
+}
 
 // record の先頭2バイトと一致する配信コンテンツIDの番号, 見つからなければ -1
 s32 JoyspotManager_FindContentIdx(u8* record) {

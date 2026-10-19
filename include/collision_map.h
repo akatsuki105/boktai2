@@ -21,6 +21,7 @@ static_assert(sizeof(CollisionMapFile) == 20);
 // --------------------------------------------
 
 typedef u16 TileAttr;             // CollisionMapTile.attr
+#define TATTR_UNK_0 (1 << 0)      // 0x0001, FUN_08020b24 が閉じた扉のタイルに立てる
 #define TATTR_WALL (1 << 1)       // 0x0002, 壁(常に侵入不可), 根拠: FUN_08235f40 がこのビットで NavAgent を止める, CactusManager も上書きタイルに立てる
 #define TATTR_UNK_2 (1 << 2)      // 0x0004, 以下は未検証
 #define TATTR_NOISE (1 << 5)      // 0x0020, alerts enemies when stepping onto the tile
@@ -97,7 +98,8 @@ typedef struct {
 } PathNode;
 
 typedef struct {
-  u16 nodeCount;   // 0x00, PathNode の数
+  u8 nodeCount;    // 0x00, PathNode の数, 読み手はすべて ldrb
+  u8 unk_1;        // 0x01
   u16 nodeOffset;  // 0x02, Byte offset from start of PathData to first node
 } Path;
 
@@ -125,8 +127,8 @@ typedef struct NavAgent {
   u16 unk_02;     // 0x02
   u16 islandIdx;  // 0x04, NavMesh.offsets[] の添字
   u16 rectIdx;    // 0x06, islandIdx の島の中のナビ矩形番号
-  u8 unk_08[2];   // 0x08
-  u16 unk_0a;     // 0x0A
+  u16 unk_08;     // 0x08, 目標のポータル番号, FUN_08236130 が unk_0a と一致したら到着扱いにする
+  u16 unk_0a;     // 0x0A, いま向かっているポータル番号
   Vec3 unk_0c;    // 0x0C
   Vec3 unk_14;    // 0x14
   Vec3 unk_1c;    // 0x1C
@@ -179,11 +181,13 @@ typedef struct {
 // ゾーンイベントを起こした側の情報, Map_RunZoneEventScript がスクリプトの引数に積む
 // 根拠: FUN_080412fc が Entity286F の 0x0A0 に mover.id と &mover.pos を入れて FUN_08234660 に渡す
 typedef struct {
-  u16 id;       // 0x00, Mover.id の複写
-  u8 unk_2[2];  // 0x02, padding?
-  Vec3* pos;    // 0x04, Mover.pos を指す
+  u16 id;                // 0x00, Mover.id の複写
+  u8 unk_2;              // 0x02
+  u8 activeCount;        // 0x03, activeEvents の件数
+  Vec3* pos;             // 0x04, Mover.pos を指す
+  u32 activeEvents[10];  // 0x08, いま範囲内にいる CollisionMapEvent.id, 要素数は Entity286F の空き領域ちょうど (暫定)
 } ZoneEventSource;
-static_assert(sizeof(ZoneEventSource) == 8);
+static_assert(sizeof(ZoneEventSource) == 48);
 
 // スクリプトから登録されるイベント, VM_Ctrl_SetZoneCallback が 44バイトを組み立てる
 // Map_InsertEvent は同じ zoneID が連続するように挿し込む: 末尾から同じ zoneID を探し、見つかればその次へ (後続を1つずつずらす)、無ければ末尾に追加する
@@ -197,7 +201,7 @@ typedef struct CollisionMapEvent {
   u16 zoneCount;    // 0x0E, FindZonesByID が zones の件数を書き込む
   u16 args1[4];     // 0x10, Map_RunZoneEventScript が ScriptArgs にコピーする4語
   u16 args2[4];     // 0x18, 同上、もう4語
-  u8* unk_20;       // 0x20
+  u32 keys;         // 0x20, flags に 0x10 が立っているとき, gInput[0].pressed と重なったときだけ発火する, VM_Ctrl_SetZoneCallback の '.b'
   u8* scriptPC;     // 0x24, Map_RunZoneEventScript がスクリプトの PC として実行する
   Zone* zones;      // 0x28, FindZonesByID が返す Zone の先頭, NULL なら登録しない
 } CollisionMapEvent;
@@ -231,7 +235,9 @@ Zone* FindZonesByID(ZoneID16 id, u16* count);
 void Map_InsertEvent(CollisionMapEvent* ev, u32 param_2);
 bool32 Map_IsPosInAgentIsland(NavAgent* agent, WorldPos* pos, WorldPos* dst);
 s32 FUN_08235f40(NavAgent* agent, WorldPos* pos, WorldPos* dst);
+s32 Map_FindNavRectAt(Vec3* pos);
 s32 Map_InitNavAgent(NavAgent* agent, WorldPos* pos);
 void FUN_08234660(ZoneEventSource* src);
+s32 FUN_08235a84(NavAgent* agent, WorldPos* pos, WorldPos* dst);
 
 #endif  // __INCLUDE_COLLISION_MAP_H__

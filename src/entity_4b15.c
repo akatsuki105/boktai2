@@ -58,31 +58,40 @@ NAKED void Entity4B15Elem_UpdateTracking(Entity4B15* p, Entity4B15Elem* elem) { 
 
 NAKED void Entity4B15Elem_UpdateFixed(Entity4B15* p, Entity4B15Elem* elem) { INCFUNC("asm/func/Entity4B15Elem_UpdateFixed.inc"); }
 
-NAKED s32 Entity4B15_Update(Entity4B15* p) { INCFUNC("asm/func/Entity4B15_Update.inc"); }
-
-s32 Entity4B15_Destroy(Entity4B15* p) {
-  Entity4B15Elem* elem = &p->elems[0];
+s32 Entity4B15_Update(Entity4B15* p) {
+  void (*const handlers[3])(Entity4B15*, Entity4B15Elem*) = {
+      Entity4B15Elem_UpdateIdle,
+      Entity4B15Elem_UpdateTracking,
+      Entity4B15Elem_UpdateFixed,
+  };
+  Entity4B15Elem* e = p->elems;
   s32 i;
 
-  for (i = 3; i >= 0; i--) {
-    Entity4B15Elem_Destroy(p, elem);
-    elem++;
+  for (i = 0; i < 4; i++, e++) {
+    handlers[e->state](p, e);
+  }
+  return 0;
+}
+
+s32 Entity4B15_Destroy(Entity4B15* p) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    Entity4B15Elem_Destroy(p, &p->elems[i]);
   }
   SetEntity4B15(NULL);
   return 0;
 }
 
 s32 Entity4B15_Init(Entity4B15* p) {
-  Entity4B15Elem* elem;
   s32 i;
 
   gEntity4B15 = p;
   p->group = GetParticleGroup(PTCL_GROUP_0);
   p->origin.x = 120, p->origin.y = 80, p->origin.z = 0;
-  elem = &p->elems[0];
-  for (i = 3; i >= 0; i--) {
-    Entity4B15Elem_Init(p, elem);
-    elem++;
+
+  for (i = 0; i < 4; i++) {
+    Entity4B15Elem_Init(p, &p->elems[i]);
   }
   return 0;
 }

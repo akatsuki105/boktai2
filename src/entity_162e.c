@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "vm.h"
 
 // interval フレームごとに gStat->unk_2b8 を1つ減らし、0 になったらプレイヤーを action 0x1F にして自分を消す
 typedef struct {
@@ -13,7 +14,23 @@ NAKED s32 Entity162E_Update(Entity162E* p) { INCFUNC("asm/func/Entity162E_Update
 
 s32 Entity162E_Destroy(Entity162E* p) { return 0; }
 
-NAKED s32 Entity162E_Init(Entity162E* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/Entity162E_Init.inc"); }
+void FUN_0809c3c0(s32 param_1, s32 param_2, s32 param_3);
+
+s32 Entity162E_Init(Entity162E* p, u32 param_2, u32 param_3) {
+  if (gStat->unk_2b8 <= 0) {
+    gStat->unk_2b8 = 1;
+  }
+
+  if (VM_SeekToNamedArg('s')) {
+    p->interval = VM_GetValue();
+  } else {
+    p->interval = 30;
+  }
+
+  p->timer = 0;
+  FUN_0809c3c0(gStat->unk_2b8, gStat->unk_2bc, 0);
+  return 0;
+}
 
 Entity162E* Entity162E_Create(u32 param_1, u32 param_2) {
   Entity162E* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity162E));

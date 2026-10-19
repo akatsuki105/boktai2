@@ -18,7 +18,7 @@
 	lsls r2, r2, #2
 	adds r0, r4, r2
 	movs r1, #6
-	bl FUN_081ddfb0
+	bl CalcCRC16
 	ldr r3, _081DEA28 @ =0x000002CA
 	adds r1, r4, r3
 	strh r0, [r1]
@@ -66,7 +66,7 @@ _081DEA4A:
 	bne _081DEAD2
 	adds r0, r5, #0
 	movs r1, #6
-	bl FUN_081ddfb0
+	bl CalcCRC16
 	ldr r2, _081DEADC @ =FUN_081deaf4
 	adds r0, r4, #0
 	movs r1, #0xa

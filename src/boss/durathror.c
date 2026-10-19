@@ -1,14 +1,26 @@
 #include "boss.h"
 #include "entity.h"
 #include "global.h"
+#include "shadow.h"
+#include "sprite_main.h"
+#include "struct.h"
 
 // カワイイ
 typedef struct Durathror {
-  Entity e;  // 0x0, ENTITY_UNK_8
-  u8 unk_18[3620 - 0x18];
+  Entity e;                   // 0x000, ENTITY_UNK_8
+  u8 unk_18[0x280 - 0x18];    // 0x018, まだ未解析
+  MainSprite sprite_280;      // 0x280
+  u8 unk_2e0[0x4E8 - 0x2E0];  // 0x2E0, まだ未解析
+  MainSprite sprite_4e8;      // 0x4E8
+  u8 unk_548[0xD70 - 0x548];  // 0x548, まだ未解析
+  AuxShadow shadow;           // 0xD70
+  u8 unk_ddc[0xE14 - 0xDDC];  // 0xDDC, まだ未解析
+  Entity5941Node node;        // 0xE14
 } Durathror;
 static_assert(sizeof(Durathror) == 3620);
 
+void FUN_08036848(Durathror*);
+void FUN_08038a60(Durathror*);
 void FUN_0803787c(Durathror*);
 void FUN_08037888(Durathror*);
 void FUN_080378b4(Durathror*);
@@ -175,7 +187,16 @@ s32 Durathror_Update(Durathror* p) {
   return 0;
 }
 
-NAKED s32 Durathror_Destroy(Durathror* p) { INCFUNC("asm/func/Durathror_Destroy.inc"); }
+s32 Durathror_Destroy(Durathror* p) {
+  AuxShadow_Remove(&p->shadow);
+  FUN_08038a60(p);
+  FUN_08036848(p);
+  MainSprite_Remove(&p->sprite_280);
+  MainSprite_Remove(&p->sprite_4e8);
+  Entity5941_Unregister(&p->node);
+  FUN_08022b04((Boss*)p);
+  return 0;
+}
 
 NAKED s32 Durathror_Init(Durathror* p, u32 id) { INCFUNC("asm/func/Durathror_Init.inc"); }
 

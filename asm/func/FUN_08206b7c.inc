@@ -1,0 +1,239 @@
+	push {r4, r5, r6, r7, lr}
+	mov r7, sb
+	mov r6, r8
+	push {r6, r7}
+	adds r6, r0, #0
+	movs r0, #0xb2
+	lsls r0, r0, #1
+	adds r0, r0, r6
+	mov sb, r0
+	movs r1, #0
+	mov r8, r1
+	ldr r0, _08206BA0 @ =0x03002B4C
+	ldr r1, [r0]
+	adds r1, #0x24
+	movs r2, #0xb5
+	lsls r2, r2, #1
+	adds r0, r6, r2
+	b _08206D6E
+	.align 2, 0
+_08206BA0: .4byte 0x03002B4C
+_08206BA4:
+	ldr r0, _08206BD8 @ =0x03002B4C
+	ldr r0, [r0]
+	mov r3, r8
+	lsls r1, r3, #2
+	adds r0, #0x24
+	ldrb r0, [r0]
+	lsls r0, r0, #4
+	adds r1, r1, r0
+	mov r0, sb
+	adds r0, #8
+	adds r0, r0, r1
+	ldr r7, [r0]
+	mov r0, sb
+	adds r1, r7, #0
+	bl MsgQueue_BeginWait
+	ldrb r0, [r7, #6]
+	cmp r0, #0x29
+	bls _08206BCC
+	b _08206D60
+_08206BCC:
+	lsls r0, r0, #2
+	ldr r1, _08206BDC @ =_08206BE0
+	adds r0, r0, r1
+	ldr r0, [r0]
+	mov pc, r0
+	.align 2, 0
+_08206BD8: .4byte 0x03002B4C
+_08206BDC: .4byte _08206BE0
+_08206BE0: @ jump table
+	.4byte _08206C88 @ case 0
+	.4byte _08206C92 @ case 1
+	.4byte _08206CF0 @ case 2
+	.4byte _08206CAA @ case 3
+	.4byte _08206D06 @ case 4
+	.4byte _08206D0A @ case 5
+	.4byte _08206D60 @ case 6
+	.4byte _08206D60 @ case 7
+	.4byte _08206D60 @ case 8
+	.4byte _08206D60 @ case 9
+	.4byte _08206D0E @ case 10
+	.4byte _08206D22 @ case 11
+	.4byte _08206D60 @ case 12
+	.4byte _08206D26 @ case 13
+	.4byte _08206D2A @ case 14
+	.4byte _08206D2E @ case 15
+	.4byte _08206D60 @ case 16
+	.4byte _08206D60 @ case 17
+	.4byte _08206D32 @ case 18
+	.4byte _08206D36 @ case 19
+	.4byte _08206D60 @ case 20
+	.4byte _08206D60 @ case 21
+	.4byte _08206D60 @ case 22
+	.4byte _08206D60 @ case 23
+	.4byte _08206D60 @ case 24
+	.4byte _08206D60 @ case 25
+	.4byte _08206D60 @ case 26
+	.4byte _08206D60 @ case 27
+	.4byte _08206D60 @ case 28
+	.4byte _08206D60 @ case 29
+	.4byte _08206D60 @ case 30
+	.4byte _08206D60 @ case 31
+	.4byte _08206D60 @ case 32
+	.4byte _08206D60 @ case 33
+	.4byte _08206D60 @ case 34
+	.4byte _08206D60 @ case 35
+	.4byte _08206D60 @ case 36
+	.4byte _08206D60 @ case 37
+	.4byte _08206D60 @ case 38
+	.4byte _08206D60 @ case 39
+	.4byte _08206D60 @ case 40
+	.4byte _08206D48 @ case 41
+_08206C88:
+	movs r0, #0
+	strb r0, [r6, #2]
+	strb r0, [r6, #3]
+	strb r0, [r6, #4]
+	b _08206D40
+_08206C92:
+	ldrb r0, [r7, #8]
+	adds r0, #5
+	lsls r0, r0, #5
+	movs r1, #0
+	strb r0, [r6, #0x1b]
+	movs r0, #1
+	strb r1, [r6, #2]
+	strb r1, [r6, #3]
+	strb r0, [r6, #4]
+	str r1, [r6, #0x14]
+	strb r0, [r6, #8]
+	b _08206D60
+_08206CAA:
+	ldrh r0, [r7, #8]
+	adds r3, r6, #0
+	adds r3, #0x54
+	movs r4, #0
+	movs r5, #0
+	strh r0, [r3]
+	ldrh r0, [r7, #0xa]
+	adds r1, r6, #0
+	adds r1, #0x56
+	strh r0, [r1]
+	ldrh r1, [r7, #0xc]
+	adds r0, r6, #0
+	adds r0, #0x58
+	strh r1, [r0]
+	adds r2, r6, #0
+	adds r2, #0x64
+	movs r7, #0
+	ldrsh r0, [r3, r7]
+	movs r7, #0
+	ldrsh r1, [r2, r7]
+	subs r0, r0, r1
+	movs r7, #4
+	ldrsh r1, [r3, r7]
+	movs r3, #4
+	ldrsh r2, [r2, r3]
+	subs r1, r1, r2
+	bl ArcTan2_8
+	strb r0, [r6, #0x1b]
+	movs r0, #2
+	strb r4, [r6, #2]
+	strb r4, [r6, #3]
+	strb r0, [r6, #4]
+	str r5, [r6, #0x14]
+	b _08206D42
+_08206CF0:
+	ldrb r0, [r7, #8]
+	adds r0, #5
+	lsls r0, r0, #5
+	movs r1, #0
+	strb r0, [r6, #0x1b]
+	movs r0, #3
+	strb r1, [r6, #2]
+	strb r1, [r6, #3]
+	strb r0, [r6, #4]
+	str r1, [r6, #0x14]
+	b _08206D42
+_08206D06:
+	movs r1, #4
+	b _08206D38
+_08206D0A:
+	movs r1, #5
+	b _08206D38
+_08206D0E:
+	movs r0, #8
+	ldrsh r1, [r7, r0]
+	movs r3, #0xa
+	ldrsh r2, [r7, r3]
+	movs r0, #0xc
+	ldrsh r3, [r7, r0]
+	adds r0, r6, #0
+	bl FUN_080415cc
+	b _08206D60
+_08206D22:
+	movs r1, #0x10
+	b _08206D38
+_08206D26:
+	movs r1, #0x11
+	b _08206D38
+_08206D2A:
+	movs r1, #0x12
+	b _08206D38
+_08206D2E:
+	movs r1, #0x13
+	b _08206D38
+_08206D32:
+	movs r1, #0x14
+	b _08206D38
+_08206D36:
+	movs r1, #0x15
+_08206D38:
+	movs r0, #0
+	strb r0, [r6, #2]
+	strb r0, [r6, #3]
+	strb r1, [r6, #4]
+_08206D40:
+	str r0, [r6, #0x14]
+_08206D42:
+	movs r0, #1
+	strb r0, [r6, #8]
+	b _08206D60
+_08206D48:
+	ldrh r1, [r7, #8]
+	adds r0, r6, #0
+	adds r0, #0x64
+	strh r1, [r0]
+	ldrh r0, [r7, #0xa]
+	adds r1, r6, #0
+	adds r1, #0x66
+	strh r0, [r1]
+	ldrh r1, [r7, #0xc]
+	adds r0, r6, #0
+	adds r0, #0x68
+	strh r1, [r0]
+_08206D60:
+	movs r1, #1
+	add r8, r1
+	ldr r0, _08206D88 @ =0x03002B4C
+	ldr r1, [r0]
+	adds r1, #0x24
+	mov r0, sb
+	adds r0, #6
+_08206D6E:
+	ldrb r1, [r1]
+	adds r0, r0, r1
+	ldrb r0, [r0]
+	cmp r8, r0
+	bge _08206D7A
+	b _08206BA4
+_08206D7A:
+	pop {r3, r4}
+	mov r8, r3
+	mov sb, r4
+	pop {r4, r5, r6, r7}
+	pop {r0}
+	bx r0
+	.align 2, 0
+_08206D88: .4byte 0x03002B4C

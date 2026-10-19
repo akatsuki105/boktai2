@@ -49,7 +49,7 @@ _08075B9A:
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0x20
-	bl Entity080ac374_Create
+	bl TransEffect_Create
 _08075BBA:
 	ldr r1, _08075BF0 @ =0x0000037E
 	adds r0, r5, r1

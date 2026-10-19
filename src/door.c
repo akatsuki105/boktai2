@@ -3,6 +3,7 @@
 #include "entity.h"
 #include "global.h"
 #include "malloc.h"
+#include "player.h"
 #include "registry.h"
 #include "sound.h"
 #include "sprite.h"
@@ -13,25 +14,31 @@ typedef struct Door {
   AuxSprite sprite;          // 0x00, DoorManager_Destroy が AuxSprite_Remove に渡す
   MapTileOverride* unk_2c;   // 0x2C, DoorManager_Destroy が NULL でなければ Free する
   void (*fn)(struct Door*);  // 0x30, FUN_08020AF8 が FUN_08020B88 を、FUN_08020B24 が別のハンドラを入れる
-  u16 unk_34;                // 0x34, 扉のID, FUN_0801fe58 が一致する扉に unk_36 の bit0 を立てる
-  u8 unk_36;                 // 0x36
-  u8 unk_37;                 // 0x37, FUN_08020af8 が 2 を入れる
-  u8 unk_38;                 // 0x38, ここから 0x40 にかけては 32bit の ldr とバイト単位の strb が重なっていて境界が決まらない
-  u8 unk_39;                 // 0x39, FUN_08020af8 が 0 を入れる
-  u8 unk_3a;                 // 0x3A, FUN_08020af8 が 0 を入れる
-  u8 unk_3b;                 // 0x3B
+  u16 id;                    // 0x34, 扉のID, FUN_0801fe58 が一致する扉に unk_36 の bit0 を立てる
+  u8 unk_36;                 // 0x36, bitfield
+  u8 phase;                  // 0x37, 0=開ききった 1=閉じきった 2=開いている途中 3=閉じている途中
+  u8 dir;                    // 0x38, 扉の向き, step と組で絵の優先度と facing の表を引く, bit0 で閉じたときの煙がずれる軸が決まる, 0x38 から 0x40 にかけては 32bit の ldr とバイト単位の strb が重なっていて境界が決まらない (u32 と u8[4] の union?)
+  u8 step;                   // 0x39, 絵のコマ (0〜2), dir と組で表を引く
+  u8 unk_3a;                 // 0x3A, step を変えるたびに 0 に戻る, 読み手は asm 側だけ
+  u8 tileHeight;             // 0x3B, tile.heightStairs の下位4bit に入る高さ, 閉じているときは +1 した値が入る
   u16 unk_3c;                // 0x3C, 扉のID (FUN_08020358 が unk_40 == 2 の扉と突き合わせる)
   u8 unk_3e;                 // 0x3E
   u8 unk_3f;                 // 0x3F
   u8 unk_40;                 // 0x40, 2 のとき unk_3c が有効
   u8 unk_41;                 // 0x41, FUN_0801fc88 が 1 を入れる
   u8 unk_42[30];             // 0x42
-  s32 unk_60;                // 0x60, FUN_08020CD8 / FUN_08020D10 が読み書きする
-  s32 scriptID;              // 0x64, FUN_08020D10 が VM_ExecByID に渡してから 0 を入れる
-  u8 unk_68[24];             // 0x68, 0x72 の strh と 0x7A の ldrh がある
-  u16 unk_80;                // 0x80, FUN_08020B88 が +0xF、FUN_08020C1C が -0xF する
-  s16 unk_82;                // 0x82, FUN_08020D10 が ldrsh で読んで減らす
-  u8 unk_84[8];              // 0x84, 0x84 の ldrb と 0x88 の ldrh がある
+  s32 openScriptID;          // 0x60, '.p', 開き終わったときに VM_ExecByID する
+  s32 closeScriptID;         // 0x64, '.p', 閉じ終わったときに VM_ExecByID する
+  u8 unk_68[0x70 - 0x68];    // 0x68
+  Vec3 pos_70;               // 0x70, 扉の絵の基準位置, FUN_0801f7f4 が種類ごとに下駄を履かせて sprite.pos へ入れる
+  u8 unk_78[0x7A - 0x78];    // 0x78
+  u16 baseY;                 // 0x7A, pos_70.y の基準, openOffset を足した値が pos_70.y に入る
+  u8 unk_7c[0x80 - 0x7C];    // 0x7C
+  u16 openOffset;            // 0x80, 開き具合, 1フレームに 15 ずつ 0 と openMax の間を動く
+  s16 timer;                 // 0x82, 開閉し終わってからスクリプトを実行するまでの残りフレーム, 30 から減る
+  u8 unk_84[0x88 - 0x84];    // 0x84
+  s16 openMax;               // 0x88, openOffset の上限
+  u8 unk_8a[0x8C - 0x8A];    // 0x8A
 } Door;
 static_assert(sizeof(Door) == 140);
 
@@ -69,7 +76,7 @@ typedef struct {
   DoorSpriteSet* unk_420;       // 0x420
   DoorSpriteSet* unk_424;       // 0x424
   DoorSpriteSet* unk_428;       // 0x428
-  Door* doors;                  // 0x42C, Malloc(doorMax * 140)
+  Door* doors;                  // 0x42C
   u8 unk_430[4];                // 0x430, 読み手も書き手も見つかっていない
 } DoorManager;
 static_assert(sizeof(DoorManager) == 1076);
@@ -77,6 +84,10 @@ static_assert(sizeof(DoorManager) == 1076);
 void FUN_080206b0(Door* door);
 void FUN_08020af8(Door* door);
 void FUN_08020b24(Door* door);
+void FUN_08020c1c(Door* door);
+void FUN_08020cd8(Door* door);
+void FUN_08020d10(Door* door);
+s32 FUN_080dbd08(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6);
 void FUN_080206b8(Door* door);
 void FUN_08020734(Door* door);
 void FUN_080206b4(Door* door);
@@ -89,18 +100,71 @@ const u32 u32_ARRAY_085aaa5c[12] = {2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};  // 0x0
 
 const u32 u32_ARRAY_085aaa8c[12] = {0, 6, 7, 0, 1, 2, 2, 3, 4, 4, 5, 6};  // 0x085AAA8C
 
-static inline void Door_SetPhase(Door* door, u32 phase) { door->unk_37 = phase; }
+static inline void Door_SetPhase(Door* door, u32 phase) { door->phase = phase; }
 
 static inline void Door_SetStep(Door* door, u32 step) {
-  door->unk_39 = step;
+  door->step = step;
   door->unk_3a = 0;
 }
 
-NAKED void FUN_0801f764(DoorManager* p) { INCFUNC("asm/func/FUN_0801f764.inc"); }
+// 扉の絵の優先度と表示位置を決める (開き方向ごとに下駄を履かせる形)
+// 残差4命令 (65/69): FUN_0801f7f4 と同じく, 原典は &step を ip に退避して2回そこから読むが agbcc は都度組み立てる
+NON_MATCH void FUN_0801f764(Door* door) {
+#ifdef NONMATCHING_C
+  door->sprite.priority = u32_ARRAY_085aa9cc[door->dir * 3 + door->step];
+  if (door->step == 2) {
+    door->sprite.pos.x = door->pos_70.x - 40;
+    door->sprite.pos.y = door->pos_70.y - 90;
+    door->sprite.pos.z = door->pos_70.z - 40;
+  } else if (door->step == 0 && (u8)(door->dir - 2) <= 1) {
+    door->sprite.pos.x = door->pos_70.x + 80;
+    door->sprite.pos.y = door->pos_70.y + 180;
+    door->sprite.pos.z = door->pos_70.z + 80;
+  } else {
+    door->sprite.pos = door->pos_70;
+  }
+#else
+  INCFUNC("asm/func/FUN_0801f764.inc");
+#endif
+}
 
-NAKED void FUN_0801f7f4(DoorManager* p) { INCFUNC("asm/func/FUN_0801f7f4.inc"); }
+// 扉の絵の優先度と表示位置を種類ごとに決める
+// 残差1命令 (49/48): 原典は &step を ip に退避して低位レジスタを使い切るが, こちらは1本余るぶん組み立てが短い
+NON_MATCH void FUN_0801f7f4(Door* door) {
+#ifdef NONMATCHING_C
+  door->sprite.priority = u32_ARRAY_085aa9fc[door->dir * 3 + door->step];
+  if (door->dir <= 1 || door->dir == 4 || door->dir == 5) {
+    door->sprite.pos = door->pos_70;
+  } else {
+    door->sprite.pos.x = door->pos_70.x + 40;
+    door->sprite.pos.y = door->pos_70.y + 90;
+    door->sprite.pos.z = door->pos_70.z + 40;
+  }
+#else
+  INCFUNC("asm/func/FUN_0801f7f4.inc");
+#endif
+}
 
-NAKED void FUN_0801f858(DoorManager* p) { INCFUNC("asm/func/FUN_0801f858.inc"); }
+// FUN_0801f764 と同じ処理で, 優先度の表だけ別のものを引く
+// 残差4命令 (65/69): FUN_0801f764 と同じ残差クラス
+NON_MATCH void FUN_0801f858(Door* door) {
+#ifdef NONMATCHING_C
+  door->sprite.priority = u32_ARRAY_085aaa5c[door->dir * 3 + door->step];
+  if (door->step == 2) {
+    door->sprite.pos.x = door->pos_70.x - 40;
+    door->sprite.pos.y = door->pos_70.y - 90;
+    door->sprite.pos.z = door->pos_70.z - 40;
+  } else if (door->step == 0 && (u8)(door->dir - 2) <= 1) {
+    door->sprite.pos.x = door->pos_70.x + 80;
+    door->sprite.pos.y = door->pos_70.y + 180;
+    door->sprite.pos.z = door->pos_70.z + 80;
+  } else {
+    door->sprite.pos = door->pos_70;
+  }
+#else
+  INCFUNC("asm/func/FUN_0801f858.inc");
+#endif
+}
 
 NAKED s32 FUN_0801f8e8(DoorManager* p, u16 param_2, Vec3* param_3, u32 param_4, u8 param_5, u8 param_6, u8 param_7, u8 param_8, u16 param_9, u32 param_10, u8 param_11, unknown* param_12, u8 param_13) { INCFUNC("asm/func/FUN_0801f8e8.inc"); }
 
@@ -128,7 +192,23 @@ bool32 FUN_0801fad8(DoorManager* p, u16 id) {
   return FALSE;
 }
 
-NAKED bool32 FUN_0801fb08(unknown* param_1, s32 param_2) { INCFUNC("asm/func/FUN_0801fb08.inc"); }
+// プレイヤーの向きが扉の種類ごとに許された3方向のどれかなら FALSE
+// 残差0命令 (28/28), レジスタ名だけ違う: 原典は i を r3 に置くが, こちらは r2 を取る
+NON_MATCH bool32 FUN_0801fb08(Door* door, s32 param_2) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 3; i++) {
+    if (gPlayerPtr[0]->facing == u32_ARRAY_085aaa8c[door->dir * 3 + i]) {
+      return FALSE;
+    }
+  }
+
+  return TRUE;
+#else
+  INCFUNC("asm/func/FUN_0801fb08.inc");
+#endif
+}
 
 NAKED s32 FUN_0801fb48(void) { INCFUNC("asm/func/FUN_0801fb48.inc"); }
 
@@ -140,7 +220,7 @@ NON_MATCH void FUN_0801fc88(DoorManager* p, u16 id) {
   for (i = 0; i < p->unk_1a; i++) {
     Door* door = &p->doors[i];
 
-    if (door->unk_34 == id && (door->unk_37 == 0 || door->unk_37 == 3) && !(door->unk_36 & 1)) {
+    if (door->id == id && (door->phase == 0 || door->phase == 3) && !(door->unk_36 & 1)) {
       door->unk_41 = 1;
       Door_SetPhase(door, 2);
       door->fn = FUN_08020734;
@@ -159,7 +239,7 @@ void FUN_0801fd10(DoorManager* p, u16 id) {
   for (i = 0; i < p->unk_1a; i++) {
     Door* door = &p->doors[i];
 
-    if (door->unk_34 == id && (door->unk_37 == 1 || door->unk_37 == 2)) {
+    if (door->id == id && (door->phase == 1 || door->phase == 2)) {
       Door_SetPhase(door, 3);
       door->fn = FUN_080206b8;
       Door_SetStep(door, 2);
@@ -174,10 +254,10 @@ void FUN_0801fd88(DoorManager* p, u16 id) {
   for (i = 0; i < p->unk_1a; i++) {
     Door* door = &p->doors[i];
 
-    if (door->unk_34 == id) {
+    if (door->id == id) {
       Door_SetPhase(door, 1);
       door->fn = FUN_080206b4;
-      door->unk_39 = 0;
+      door->step = 0;
       door->unk_3a = 0;
     }
   }
@@ -191,7 +271,7 @@ NON_MATCH void FUN_0801fdf0(DoorManager* p, u16 id) {
   for (i = 0; i < p->unk_1a; i++) {
     Door* door = &p->doors[i];
 
-    if (door->unk_34 == id) {
+    if (door->id == id) {
       Door_SetPhase(door, 0);
       door->fn = FUN_080206b0;
       Door_SetStep(door, 2);
@@ -208,7 +288,7 @@ void FUN_0801fe58(DoorManager* p, u16 id) {
 
   for (i = 0; i < p->unk_1a; i++) {
     Door* door = &p->doors[i];
-    if (door->unk_34 == id) {
+    if (door->id == id) {
       door->unk_36 |= 1;
     }
   }
@@ -220,13 +300,13 @@ void FUN_0801fe98(DoorManager* p, u16 id) {
 
   for (i = 0; i < p->unk_1a; i++) {
     Door* door = &p->doors[i];
-    if (door->unk_34 == id) {
+    if (door->id == id) {
       door->unk_36 &= ~1;
     }
   }
 }
 
-// '.n' が指す扉を開かせる, 1体でも見つかれば 1 を返す
+// 0x8B67, '.n' が指す扉を開かせる, 1体でも見つかれば 1 を返す
 s32 FUN_0801fedc(void) {
   DoorManager* p = Registry_Find(0x85E6);
   s32 found;
@@ -244,12 +324,12 @@ s32 FUN_0801fedc(void) {
   for (i = 0; i < p->unk_1a; i++) {
     Door* door = &p->doors[i];
 
-    if (door->unk_34 == id) {
+    if (door->id == id) {
       if (VM_SeekToNamedArg('p')) {
-        door->unk_60 = VM_GetValue();
+        door->openScriptID = VM_GetValue();
       }
-      if (door->unk_37 == 1 || door->unk_37 == 3) {
-        door->unk_37 = 2;
+      if (door->phase == 1 || door->phase == 3) {
+        door->phase = 2;
         door->fn = FUN_08020af8;
       }
       found = 1;
@@ -258,7 +338,7 @@ s32 FUN_0801fedc(void) {
   return found;
 }
 
-// '.n' が指す扉を閉じさせる, 1体でも見つかれば 1 を返す
+// 0xD6F7, '.n' が指す扉を閉じさせる, 1体でも見つかれば 1 を返す
 s32 FUN_0801ff78(void) {
   DoorManager* p = Registry_Find(0x85E6);
   s32 found;
@@ -276,12 +356,12 @@ s32 FUN_0801ff78(void) {
   for (i = 0; i < p->unk_1a; i++) {
     Door* door = &p->doors[i];
 
-    if (door->unk_34 == id) {
+    if (door->id == id) {
       if (VM_SeekToNamedArg('p')) {
-        door->scriptID = VM_GetValue();
+        door->closeScriptID = VM_GetValue();
       }
-      if (door->unk_37 == 0 || door->unk_37 == 2) {
-        door->unk_37 = 3;
+      if (door->phase == 0 || door->phase == 2) {
+        door->phase = 3;
         door->fn = FUN_08020b24;
       }
       found = 1;
@@ -290,11 +370,90 @@ s32 FUN_0801ff78(void) {
   return found;
 }
 
-NAKED s32 FUN_08020010(void) { INCFUNC("asm/func/FUN_08020010.inc"); }
+// '.n' が指す扉を開いた状態に戻す, 1体でも見つかれば 1 を返す
+// 残差1命令 (100/101): FUN_08020c1c と同じく, 原典は末尾で &pos_70.y を作り直すが agbcc は直前の &openOffset から引いて作る
+NON_MATCH s32 FUN_08020010(void) {
+#ifdef NONMATCHING_C
+  DoorManager* p = Registry_Find(0x85E6);
+  s32 found;
+  s32 id;
+  s32 i;
 
-NAKED s32 FUN_080200f0(void) { INCFUNC("asm/func/FUN_080200f0.inc"); }
+  if (p == NULL) {
+    return -1;
+  }
+  found = 0;
+  if (!VM_SeekToNamedArg('n')) {
+    return 0;
+  }
+  id = VM_GetValue();
+  for (i = 0; i < p->unk_1a; i++) {
+    Door* door = &p->doors[i];
 
-// '.n' が指す扉を開き始めさせる
+    if (door->id == id) {
+      door->timer = 0;
+      door->phase = 0;
+      door->fn = FUN_08020cd8;
+      door->step = 0;
+      door->unk_3a = 0;
+      door->unk_2c->tile.attr &= ~(TATTR_UNK_0 | TATTR_WALL);
+      door->unk_2c->tile.attr |= TATTR_WALL;
+      door->unk_2c->tile.heightStairs = (door->unk_2c->tile.heightStairs & 0xF0) | door->tileHeight;
+      door->openOffset = door->openMax;
+      door->sprite.pos.y = door->openMax + door->pos_70.y;
+      found = 1;
+    }
+  }
+
+  return found;
+#else
+  INCFUNC("asm/func/FUN_08020010.inc");
+#endif
+}
+
+// '.n' が指す扉を閉じた状態に戻す, 1体でも見つかれば 1 を返す
+// 残差はプール定数の巻き上げ先1組のみ (97/97): 原典は ~TATTR_WALL (0xFFFD) を r10 に巻き上げて FUN_08020d10 を毎回 ldr するが, agbcc は逆を選ぶ
+// Door_SetPhase / Door_SetStep 経由にすると定数 1 が巻き上がる (直書きだと 98命令), 文の順序と found の形は FUN_0801ff78 と同じで原典どおり
+// Tier A-C 試済 (早期 return は 85命令で原典と別物), 未: per-TU フラグ
+NON_MATCH s32 FUN_080200f0(void) {
+#ifdef NONMATCHING_C
+  DoorManager* p = Registry_Find(0x85E6);
+  s32 found;
+  s32 id;
+  s32 i;
+
+  if (p == NULL) {
+    return -1;
+  }
+  found = 0;
+  if (!VM_SeekToNamedArg('n')) {
+    return -1;
+  }
+  id = VM_GetValue();
+  for (i = 0; i < p->unk_1a; i++) {
+    Door* door = &p->doors[i];
+
+    if (door->id == id) {
+      door->timer = 0;
+      Door_SetPhase(door, 1);
+      door->fn = FUN_08020d10;
+      Door_SetStep(door, door->unk_84[0]);
+      door->unk_2c->tile.attr &= ~TATTR_WALL;
+      door->unk_2c->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
+      door->unk_2c->tile.heightStairs = (door->unk_2c->tile.heightStairs & 0xF0) | (door->tileHeight + 1);
+      door->openOffset = 0;
+      door->sprite.pos.y = door->pos_70.y;
+      found = 1;
+    }
+  }
+
+  return found;
+#else
+  INCFUNC("asm/func/FUN_080200f0.inc");
+#endif
+}
+
+// 0xCB30, '.n' が指す扉を開き始めさせる
 void FUN_080201c8(void) {
   DoorManager* p = Registry_Find(0x85E6);
 
@@ -305,9 +464,9 @@ void FUN_080201c8(void) {
     for (i = 0; i < p->unk_1a; i++) {
       Door* door = &p->doors[i];
 
-      if (door->unk_34 == id) {
+      if (door->id == id) {
         door->unk_41 = 1;
-        p->unk_1e[p->unk_1c] = door->unk_34;
+        p->unk_1e[p->unk_1c] = door->id;
         p->unk_1c++;
         Door_SetPhase(door, 2);
         door->fn = FUN_08020734;
@@ -330,7 +489,7 @@ NON_MATCH void FUN_08020260(void) {
     u8 out[8];
 
     for (; i < p->unk_1a; i++) {
-      if (p->doors[i].unk_34 == id) {
+      if (p->doors[i].id == id) {
         count++;
         found = i;
       }
@@ -406,54 +565,100 @@ void FUN_08020b88(Door* door);
 
 // 扉が開き始めるときの処理
 void FUN_08020af8(Door* door) {
-  PlaySound_082406e0(0x152);
-  door->unk_39 = 0;
+  PlaySound_082406e0(SONG_338);
+  door->step = 0;
   door->unk_3a = 0;
   Door_SetPhase(door, 2);
   door->fn = FUN_08020b88;
 }
 
-NAKED void FUN_08020b24(Door* door) { INCFUNC("asm/func/FUN_08020b24.inc"); }
+// 扉を閉める, タイルを壁に戻して高さを 1 段上げ, 閉じるアニメのハンドラへ移す
+void FUN_08020b24(Door* door) {
+  PlaySound_082406e0(SONG_338);
+  door->step = 0;
+  door->unk_3a = 0;
+  door->unk_2c->tile.attr |= TATTR_WALL;
+  door->unk_2c->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
+  door->phase = 3;
+  door->unk_2c->tile.heightStairs = (door->unk_2c->tile.heightStairs & 0xF0) | (door->tileHeight + 1);
+  door->unk_2c->flags &= ~1;
+  door->fn = FUN_08020c1c;
+}
 
-NAKED void FUN_08020b88(Door* door) { INCFUNC("asm/func/FUN_08020b88.inc"); }
-
-NAKED void FUN_08020c1c(Door* door) { INCFUNC("asm/func/FUN_08020c1c.inc"); }
-
-// 開閉の残りフレームを数え、終わったら予約してあったスクリプトを実行する
-// 残差はレジスタ番号の入れ替えのみ (door と remain が r5/r6 で逆, 命令列は同数)
-NON_MATCH void FUN_08020cd8(Door* door) {
-#ifdef NONMATCHING_C
-  s32 remain = door->unk_82;
-
-  if (remain != 0) {
-    FUN_0823b9cc(remain);
-    door->unk_82--;
-  } else if (door->unk_60 != 0) {
-    VM_ExecByID(door->unk_60, NULL);
-    door->unk_60 = remain;
+// 扉を開けていく, 上限まで開いたら効果音を鳴らしてタイルの壁属性を外す
+void FUN_08020b88(Door* door) {
+  door->openOffset += 15;
+  if ((s16)door->openOffset > door->openMax) {
+    door->openOffset = door->openMax;
+    sound_08240740(SONG_338);
+    PlaySound_082406e0(SONG_340);
+    door->timer = 30;
+    door->phase = 0;
+    door->unk_2c->tile.attr &= ~(TATTR_UNK_0 | TATTR_WALL);
+    door->unk_2c->tile.attr |= TATTR_WALL;
+    door->unk_2c->tile.heightStairs = (door->unk_2c->tile.heightStairs & 0xF0) | door->tileHeight;
+    door->unk_2c->flags |= 1;
+    door->fn = FUN_08020cd8;
   }
-  door->sprite.priority = 2;
+
+  door->pos_70.y = door->openOffset + door->baseY;
+}
+
+// 扉を閉めていく, 閉まり切ったら効果音と煙のエフェクトを出して待機状態へ移す
+// 残差0命令 (84/84), 組み立て順だけ違う: 原典は末尾で &openOffset と door を作り直すが, agbcc は冒頭で作ったアドレスを使い回す
+NON_MATCH void FUN_08020c1c(Door* door) {
+#ifdef NONMATCHING_C
+  Vec3 v;
+
+  door->openOffset -= 15;
+  if ((s16)door->openOffset < 0) {
+    door->openOffset = 0;
+    sound_08240740(SONG_338);
+    PlaySound_082406e0(SONG_339);
+    door->timer = 30;
+    door->phase = 1;
+    door->step = door->unk_84[0];
+    door->unk_3a = 0;
+    door->fn = FUN_08020d10;
+    v.z = 0;
+    v.x = 0;
+    v.y = 0;
+    if (door->dir & 1) {
+      v.x = 0x80;
+      FUN_080dbd08(&door->pos_70, 0, (u32)&v, 5, 2, 0);
+    } else {
+      v.z = 0x80;
+      FUN_080dbd08(&door->pos_70, 0, (u32)&v, 5, 2, 0);
+    }
+  }
+
+  door->pos_70.y = door->baseY + door->openOffset;
 #else
-  INCFUNC("asm/func/FUN_08020cd8.inc");
+  INCFUNC("asm/func/FUN_08020c1c.inc");
 #endif
 }
 
 // 開閉の残りフレームを数え、終わったら予約してあったスクリプトを実行する
-// 残差はレジスタ番号の入れ替えのみ (door と remain が r5/r6 で逆, 命令列は同数)
-NON_MATCH void FUN_08020d10(Door* door) {
-#ifdef NONMATCHING_C
-  s32 remain = door->unk_82;
-
-  if (remain != 0) {
-    FUN_0823b9cc(remain);
-    door->unk_82--;
-  } else if (door->scriptID != 0) {
-    VM_ExecByID(door->scriptID, NULL);
-    door->scriptID = remain;
+void FUN_08020cd8(Door* door) {
+  if (door->timer != 0) {
+    FUN_0823b9cc(door->timer);
+    door->timer--;
+  } else if (door->openScriptID != 0) {
+    VM_ExecByID(door->openScriptID, NULL);
+    door->openScriptID = 0;
   }
-#else
-  INCFUNC("asm/func/FUN_08020d10.inc");
-#endif
+  door->sprite.priority = 2;
+}
+
+// 開閉の残りフレームを数え、終わったら予約してあったスクリプトを実行する
+void FUN_08020d10(Door* door) {
+  if (door->timer != 0) {
+    FUN_0823b9cc(door->timer);
+    door->timer--;
+  } else if (door->closeScriptID != 0) {
+    VM_ExecByID(door->closeScriptID, NULL);
+    door->closeScriptID = 0;
+  }
 }
 
 NAKED void FUN_08020d44(DoorManager* p, AuxSprite* sprite) { INCFUNC("asm/func/FUN_08020d44.inc"); }
@@ -492,6 +697,7 @@ s32 DoorManager_Destroy(DoorManager* p) {
 
 NAKED s32 DoorManager_Init(DoorManager* p, u32 subroutineID, unknown* param_3) { INCFUNC("asm/func/DoorManager_Init.inc"); }
 
+// 0x6D69
 DoorManager* DoorManager_Create(u32 subroutineID, unknown* param_2) {
   DoorManager* p = CreateEntity(ENTITY_UNK_9, sizeof(DoorManager));
 

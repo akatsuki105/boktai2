@@ -34,7 +34,26 @@ NAKED void FUN_081f4704(unknown* param_1, u32 param_2, unknown* param_3) { INCFU
 
 NAKED void FUN_081f4758(Entity081f53a8Elem* elem, u16 param_2, u16 param_3, u32 param_4, u32 param_5) { INCFUNC("asm/func/FUN_081f4758.inc"); }
 
-NAKED void FUN_081f4858(Entity081f53a8Elem* elem) { INCFUNC("asm/func/FUN_081f4858.inc"); }
+// 判定2つを今の位置で登録し直し, hitbox1 は unk_44 が残っている間だけ有効にする
+void FUN_081f4858(Entity081f53a8Elem* elem) {
+  HitboxData* hitbox0 = &elem->hitbox0;
+  Vec3* pos = &elem->sprite.pos;
+  HitboxData* hitbox1;
+
+  Hitbox_SetPos(hitbox0, pos, 0);
+
+  hitbox1 = &elem->hitbox1;
+  Hitbox_SetPos(hitbox1, pos, 0);
+  Hitbox_Register(hitbox0);
+  Hitbox_Register(hitbox1);
+
+  if (hitbox1->unk_44 != 0) {
+    hitbox1->unk_44--;
+    hitbox1->flags |= HBFLAG_UNK_2;
+  } else {
+    Hitbox_ClearFlags(hitbox1, HBFLAG_UNK_2);
+  }
+}
 
 void FUN_081f48ac(Entity081f53a8* p, Entity081f53a8Elem* elem) {}
 
@@ -68,7 +87,25 @@ void (*const PTR_ARRAY_085ae578[4])(Entity081f53a8*, Entity081f53a8Elem*) = {
 
 NAKED s32 Entity081f53a8_Update(Entity081f53a8* p) { INCFUNC("asm/func/Entity081f53a8_Update.inc"); }
 
-NAKED s32 Entity081f53a8_Destroy(Entity081f53a8* p) { INCFUNC("asm/func/Entity081f53a8_Destroy.inc"); }
+// 残差8命令 (28 対 36), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
+// 加えて原典は sprite と hitbox1 を別々のポインタで進めるが, gcc は elem 1本に +0xA8 を足す形を選ぶ
+NON_MATCH s32 Entity081f53a8_Destroy(Entity081f53a8* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+  Entity081f53a8Elem* elem = &p->elems[0];
+
+  for (i = 0; i < 8; i++, elem++) {
+    if (p->activeMask & (1 << i)) {
+      AuxSprite_Remove(&elem->sprite);
+      Hitbox_Unregister(&elem->hitbox1);
+    }
+  }
+  gEntity081f53a8 = NULL;
+  return 0;
+#else
+  INCFUNC("asm/func/Entity081f53a8_Destroy.inc");
+#endif
+}
 
 s32 Entity081f53a8_Init(Entity081f53a8* p) {
   p->anim = GetFile(DIR_ANIMATION, ANIM_1DC3);

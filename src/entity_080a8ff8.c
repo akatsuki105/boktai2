@@ -39,7 +39,15 @@ NAKED void FUN_080a881c(Entity080a8ff8* p) { INCFUNC("asm/func/FUN_080a881c.inc"
 
 NAKED void FUN_080a8950(Entity080a8ff8* p) { INCFUNC("asm/func/FUN_080a8950.inc"); }
 
-NAKED void FUN_080a8cfc(Entity080a8ff8* p) { INCFUNC("asm/func/FUN_080a8cfc.inc"); }
+void FUN_080a8cfc(Entity080a8ff8* p) {
+  p->pos.y -= 0x14;
+  p->sprite.pos = p->pos;
+  p->stateTimer++;
+  if (p->stateTimer > 2) {
+    p->owner->dynamiteCount--;
+    KillEntity((Entity*)p);
+  }
+}
 
 s32 Entity080a8ff8_Update(Entity080a8ff8* p) {
   p->updateCallback(p);

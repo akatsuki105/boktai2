@@ -30,6 +30,8 @@ def canon(x):
     x = re.sub(r"\s+", " ", x).strip()
     x = re.sub(r"^adds (r\d+), #", r"add \1, #", x)
     x = re.sub(r"\bnegs (r\d+), (r\d+)\b", r"rsbs \1, \2, #0x0", x)
+    # objdump は ldmia/stmia、agbcc の .inc は ldm/stm を出す
+    x = re.sub(r"^(ld|st)mia\b", r"\1m", x)
     x = re.sub(r"\bip\b", "r12", x)
     x = re.sub(r"\bsb\b", "r9", x)
     x = re.sub(r"\bsl\b", "r10", x)

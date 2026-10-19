@@ -42,13 +42,32 @@ void FUN_080db970(Entity080dbe54* p, Entity080dbe54Slot* slot) {
   slot->idx = -1;
 }
 
-NAKED s32 FUN_080db9b4(Entity080dbe54* p) { INCFUNC("asm/func/FUN_080db9b4.inc"); }
+// 空いている枠を確保して返す, 空きが無ければ NULL
+// 残差10命令 (28 対 38), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
+NON_MATCH Entity080dbe54Slot* FUN_080db9b4(Entity080dbe54* p) {
+#ifdef NONMATCHING_C
+  s32 i;
 
-NAKED s32 FUN_080dba00(Entity080dbe54* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080dba00.inc"); }
+  for (i = 0; i < 32; i++) {
+    if (!(p->activeMask & (1 << i))) {
+      Entity080dbe54Slot* slot = &p->slots[i];
 
-s32 FUN_080dbcec(Entity080dbe54* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return FUN_080dba00(p, param_2, param_3, param_4, param_5, param_6, 1); }
+      slot->idx = i;
+      p->activeMask |= 1 << i;
+      return slot;
+    }
+  }
+  return NULL;
+#else
+  INCFUNC("asm/func/FUN_080db9b4.inc");
+#endif
+}
 
-s32 FUN_080dbd08(Entity080dbe54* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return FUN_080dba00(p, param_2, param_3, param_4, param_5, param_6, 0); }
+NAKED s32 FUN_080dba00(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080dba00.inc"); }
+
+s32 FUN_080dbcec(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return FUN_080dba00(pos, param_2, param_3, param_4, param_5, param_6, 1); }
+
+s32 FUN_080dbd08(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return FUN_080dba00(pos, param_2, param_3, param_4, param_5, param_6, 0); }
 
 void (*const PTR_ARRAY_085ad320[3])(Entity080dbe54*, Entity080dbe54Slot*) = {
     FUN_080db7e4,
@@ -58,7 +77,24 @@ void (*const PTR_ARRAY_085ad320[3])(Entity080dbe54*, Entity080dbe54Slot*) = {
 
 NAKED s32 Entity080dbe54_Update(Entity080dbe54* p) { INCFUNC("asm/func/Entity080dbe54_Update.inc"); }
 
-NAKED s32 Entity080dbe54_Destroy(Entity080dbe54* p) { INCFUNC("asm/func/Entity080dbe54_Destroy.inc"); }
+// 使用中の枠の粒子をまとめて外す
+// 残差6命令 (32 対 38), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
+NON_MATCH s32 Entity080dbe54_Destroy(Entity080dbe54* p) {
+#ifdef NONMATCHING_C
+  Entity080dbe54Slot* slot = &p->slots[0];
+  s32 i;
+
+  for (i = 0; i < 32; i++, slot++) {
+    if (p->activeMask & (1 << i)) {
+      Particle_Remove(&p->ptcls[slot->idx]);
+    }
+  }
+  gEntity080dbe54 = NULL;
+  return 0;
+#else
+  INCFUNC("asm/func/Entity080dbe54_Destroy.inc");
+#endif
+}
 
 void FUN_080dbe14(Entity080dbe54* p) {
   p->group = GetParticleGroup(PTCL_GROUP_0);

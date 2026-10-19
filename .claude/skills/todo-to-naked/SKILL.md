@@ -150,6 +150,9 @@ connection is down (see `.claude/skills/ghidra-struct/references/http-api.md`).
   callee), use that struct.
 - Ghidra's own prototype (`get_function_by_address`) is a starting point, not
   evidence; it is often `undefined FUN_xxx(void)`.
+- **Always go to the callers in Ghidra.** Deriving a signature from the
+  function's own prologue with a script instead produces plausible, wrong
+  signatures in bulk.
 
 **When a type doesn't fall out quickly, use `unknown*`** — a `void*` alias that
 says "not analysed yet" out loud — and move on. This step is about getting the

@@ -27,7 +27,18 @@ const u8 u8_ARRAY_085aa988[4] = {8, 14, 9, 15};  // 0x085AA988
 
 NAKED void Entity78C9Elem_Respawn(Entity78C9* p, Entity78C9Elem* elem, u8 index) { INCFUNC("asm/func/Entity78C9Elem_Respawn.inc"); }
 
-NAKED void Entity78C9Elem_Init(Entity78C9* p, Entity78C9Elem* elem, u32 index) { INCFUNC("asm/func/Entity78C9Elem_Init.inc"); }
+// 残差3命令 (27 対 30), 原典は index を r8 に逃がして elem+8 を呼び出しをまたいで保持するが, こちらは呼び出し後に elem から作り直す
+// AuxSprite* ローカル / AuxSprite_SetPoseIdx / 引数の型 (u8/s32) はいずれも 31〜32 命令で遠ざかる
+NON_MATCH void Entity78C9Elem_Init(Entity78C9* p, Entity78C9Elem* elem, u32 index) {
+#ifdef NONMATCHING_C
+  AuxSprite_Add(&elem->sprite, &p->gfx, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
+  elem->sprite.poseIdx = u8_ARRAY_085aa988[index & 3];
+  elem->sprite.priority = 1;
+  Entity78C9Elem_Respawn(p, elem, index);
+#else
+  INCFUNC("asm/func/Entity78C9Elem_Init.inc");
+#endif
+}
 
 void Entity78C9Elem_Destroy(Entity78C9* p, Entity78C9Elem* elem, u32 index) { AuxSprite_Remove(&elem->sprite); }
 

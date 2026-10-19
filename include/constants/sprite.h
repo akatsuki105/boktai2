@@ -98,6 +98,7 @@
 #define SPRITE_LILYPAD 0xD166                  // ハスの葉
 #define SPRITE_MAGIC_CIRCLE 0x0BA8             // 魔法陣
 #define SPRITE_EMOTION_ICONS 0x363C            // "!"
+#define SPRITE_363D 0x363D                     // Entity080da848 が SPRITE_EMOTION_ICONS と一緒に読む
 #define SPRITE_1FBD 0x1FBD                     // なんかの壁
 #define SPRITE_SAMURAI_ARMOR 0x6AF7            // キッドの店の内装(武者鎧)
 #define SPRITE_1B59 0x1B59                     // 扉(鉄格子)

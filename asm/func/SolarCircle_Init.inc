@@ -207,7 +207,7 @@ _080A2438:
 	movs r0, #0
 	strh r0, [r1]
 	adds r0, r7, #0
-	bl FUN_080a1f5c
+	bl IsCoffinInside
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _080A245C
@@ -260,7 +260,7 @@ _080A24A0:
 	str r1, [r0]
 _080A24A8:
 	adds r0, r7, #0
-	bl FUN_080a1f5c
+	bl IsCoffinInside
 	cmp r0, #0
 	beq _080A24BC
 	movs r0, #1

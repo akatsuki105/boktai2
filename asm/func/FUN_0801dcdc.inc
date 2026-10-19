@@ -23,7 +23,7 @@ _0801DD0C:
 	bl FUN_0801d540
 	adds r0, r4, #0
 	adds r0, #0x18
-	bl FUN_0823b8ac
+	bl Camera_MoveTo
 	ldr r1, [r4, #0x44]
 	adds r0, r1, #0
 	subs r0, #0x1e

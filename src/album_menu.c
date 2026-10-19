@@ -53,7 +53,7 @@ void Unused_UnlockPhoto(u32 photoIdx) { UnlockPhoto(photoIdx); }
 u32 CheckPhotoUnlocked(u32 photoIdx) { return gStat->photo & (1 << photoIdx); }
 
 // '.i' が指すブロマイドを取得済みにする
-void VM_UnlockPhoto(void) {
+void Cmd_UnlockPhoto(void) {
   if (VM_SeekToNamedArg('i')) {
     UnlockPhoto(VM_GetValue());  // 本来は Unused_UnlockPhoto をインライン展開していると思われる
   }

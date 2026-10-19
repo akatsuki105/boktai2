@@ -415,7 +415,16 @@ typedef struct {
 } UnusedTilemapFile;
 static_assert(sizeof(UnusedTilemapFile) == 64);
 
-NAKED void* UNUSED FUN_0822bf80(void* dst, u32 val) { INCFUNC("asm/func/FUN_0822bf80.inc"); }
+// ヘッダをコピーしてオフセット4本を絶対アドレスに直し, val 行目の mtmap の先頭を返す
+void* UNUSED FUN_0822bf80(void* dst, u32 val) {
+  UnusedTilemapFile f = *(UnusedTilemapFile*)dst;
+
+  f.unk_1c = (u8*)f.unk_1c + (u32)dst;
+  f.mtmap = (MetatileIdx16*)((u8*)f.mtmap + (u32)dst);
+  f.unk_0c = (u8*)f.unk_0c + (u32)dst;
+  f.tiles += (u32)dst;
+  return (u8*)f.unk_0c + val * f.pitch * 2;
+}
 
 // UnusedTilemapFile を BG に設定する, 到達しないので f の型も呼び出し元 (Tilemaps* を渡している) と食い違ったままになっている
 NAKED void Video_SetupBG(s32 bg, u32 param_2, unknown* f, u32 unused, s16 param_5, s16 param_6, u32 prio, BgMapEntry* tilemap) { INCFUNC("asm/func/Video_SetupBG.inc"); }

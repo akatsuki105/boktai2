@@ -93,7 +93,7 @@ void Entity080c1abc_InitSprite(Entity080c1abc* p) {
   spr = &p->sprite;
   AuxSprite_Add(spr, gfx, 1);
   spr->poseIdx = 0;
-  Video_SetAuxSpritePltt(gfx, 0x2E);
+  Video_SetAuxSpritePltt(gfx, 46);
 }
 
 NAKED void Entity080c1abc_InitParticles(Entity080c1abc* p) { INCFUNC("asm/func/Entity080c1abc_InitParticles.inc"); }

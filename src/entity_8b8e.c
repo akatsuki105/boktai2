@@ -27,7 +27,8 @@ typedef struct Entity8B8E {
   u8 unk_e04[0xE4C - 0xE04];       // 0x0E04, まだ未解析
   MainSprite sprites2[18];         // 0x0E4C
   MainSprite sprite_150c;          // 0x150C
-  u8 unk_156c[0x1598 - 0x156C];    // 0x156C, まだ未解析
+  MainSpriteGfx gfx_156c;          // 0x156C
+  u8 unk_158c[0x1598 - 0x158C];    // 0x158C, まだ未解析
   u8 spriteCount;                  // 0x1598, FUN_081e3fe0 が隠す sprites の個数
   s8 selectedSlot;                 // 0x1599, 選んでいる武器の枠
   u8 unk_159a[0x15BC - 0x159A];    // 0x159A, まだ未解析
@@ -68,6 +69,8 @@ bool8 LinkShopManager_IsFinished(void);                    // src/link_shop.c
 bool32 FUN_08243180(slot32_t n);                           // src/weapon.c
 u8 Save_SwitchSlot(void);                                  // src/savedata.c
 bool8 LinkShopManager_Send(s32* args, s32 kind, u32 tag);  // src/link_shop.c
+void LinkShopManager_SetOwner(void* owner);
+void LinkShopManager_SetCallbacks(void (*onRecv)(s32, unknown*), void (*onFinish)(void), void (*onSendDone)(Entity8B8E*));
 extern u32 gFrameCounter;
 void FUN_081e6388(Entity8B8E* p);
 void FUN_081e4484(Entity8B8E* p);
@@ -75,6 +78,8 @@ void FUN_081e44b4(Entity8B8E* p);
 void FUN_081e44d0(Entity8B8E* p);
 void FUN_081e6458(Entity8B8E* p);
 void FUN_081e64cc(Entity8B8E* p);
+void FUN_081e5290(Entity8B8E* p);
+void FUN_081e4d04(Entity8B8E* p);
 
 static inline void Entity8B8E_SetFlags1610(Entity8B8E* p, u32 bits) { p->unk_1610 |= bits; }
 
@@ -205,7 +210,12 @@ void FUN_081e3fe0(Entity8B8E* p) {
   }
 }
 
-NAKED s32 FUN_081e4014(s32 param_1) { INCFUNC("asm/func/FUN_081e4014.inc"); }
+s32 FUN_081e4014(Entity8B8E* p) {
+  Vec3 pos;
+
+  pos.x = 0, pos.y = 0x80, pos.z = 0;
+  return MainSprite_Add(&p->sprite_150c, &p->gfx_156c, 0xD0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, 0, 0, &pos);
+}
 
 NAKED void FUN_081e4054(s32 param_1) { INCFUNC("asm/func/FUN_081e4054.inc"); }
 
@@ -234,23 +244,19 @@ void FUN_081e4450(Entity8B8E* p) {
 }
 
 void FUN_081e4484(Entity8B8E* p) {
-  MainSprite* spr = &p->sprites2[0];
   s32 i;
 
-  for (i = 0x11; i >= 0; i--) {
-    MainSprite_Remove(spr);
-    spr++;
+  for (i = 0; i < (s32)ARRAY_COUNT(p->sprites2); i++) {
+    MainSprite_Remove(&p->sprites2[i]);
   }
   MainSprite_Remove(&p->sprite_150c);
 }
 
 void FUN_081e44b4(Entity8B8E* p) {
-  MainSprite* spr = &p->sprites[0];
   s32 i;
 
-  for (i = 0x1B; i >= 0; i--) {
-    MainSprite_Remove(spr);
-    spr++;
+  for (i = 0; i < (s32)ARRAY_COUNT(p->sprites); i++) {
+    MainSprite_Remove(&p->sprites[i]);
   }
 }
 
@@ -286,7 +292,20 @@ NON_MATCH void FUN_081e4604(s32 value, s32 divisor, u32 x, u32 y) {
 #endif
 }
 
-NAKED void FUN_081e4644(u32 param_1, s32 param_2, s32 param_3, s32 param_4, u16 param_5, u32 param_6) { INCFUNC("asm/func/FUN_081e4644.inc"); }
+// 指定BGのタイルマップの (x, y) から width × height を value で塗る
+void FUN_081e4644(u32 x, s32 y, s32 width, s32 height, s32 value, u32 bgIdx) {
+  s32 i;
+
+  for (i = 0; i < height; i++) {
+    BgMapEntry* dst = FUN_081e45e4(bgIdx, x, y + i);
+    s32 j;
+
+    for (j = 0; j < width; j++) {
+      *dst = value;
+      dst++;
+    }
+  }
+}
 
 NAKED s32 FUN_081e468c(s32 param_1, unknown* param_2, u32 param_3) { INCFUNC("asm/func/FUN_081e468c.inc"); }
 
@@ -324,7 +343,17 @@ NON_MATCH void FUN_081e4b68(Entity8B8E* p, u32 slot) {
 
 void FUN_081e4bb8(Entity8B8E* p) { Entity8B8E_SetState(p, FUN_081e6458, 0x19); }
 
-NAKED void FUN_081e4bdc(unknown* param_1, u32 param_2) { INCFUNC("asm/func/FUN_081e4bdc.inc"); }
+// セーブ枠が一致していれば通信ショップの受け手を自分に向ける, 違っていれば状態 0x1C へ飛ばす
+void FUN_081e4bdc(Entity8B8E* p, u32 slot) {
+  if (p->unk_162c != slot) {
+    Entity8B8E_SetState(p, FUN_081e64cc, 0x1C);
+  } else {
+    FUN_081e5290(p);
+    LinkShopManager_SetOwner(p);
+    LinkShopManager_SetCallbacks(FUN_081e3958, FUN_081e3cd4, FUN_081e3cc0);
+    FUN_081e4d04(p);
+  }
+}
 
 void FUN_081e4c40(Entity8B8E* p) { Entity8B8E_SetState(p, FUN_081e64cc, 0x1C); }
 
@@ -358,7 +387,7 @@ NON_MATCH void FUN_081e4cb4(Entity8B8E* p, s32* args, s32 kind) {
 #endif
 }
 
-NAKED void FUN_081e4d04(s32 param_1) { INCFUNC("asm/func/FUN_081e4d04.inc"); }
+NAKED void FUN_081e4d04(Entity8B8E* p) { INCFUNC("asm/func/FUN_081e4d04.inc"); }
 
 NAKED void FUN_081e4de0(s32 param_1) { INCFUNC("asm/func/FUN_081e4de0.inc"); }
 

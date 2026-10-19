@@ -55,7 +55,7 @@ _081DF2AC:
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	movs r1, #0x46
-	bl FUN_081ddfb0
+	bl CalcCRC16
 	movs r2, #0xd1
 	lsls r2, r2, #1
 	adds r1, r5, r2
@@ -132,7 +132,7 @@ _081DF342:
 	bne _081DF362
 	adds r0, r4, #0
 	movs r1, #0x46
-	bl FUN_081ddfb0
+	bl CalcCRC16
 	adds r7, #1
 _081DF362:
 	adds r4, #0x48

@@ -3,6 +3,7 @@
 #include "hitbox.h"
 #include "particle.h"
 #include "sprite.h"
+#include "vm.h"
 
 // Entity0866 が16個抱える枠
 typedef struct {
@@ -152,7 +153,27 @@ Entity0866* Entity0866_Create(u32 _, u32 unused) {
 NAKED s32 FUN_0800a2f8(void) { INCFUNC("asm/func/FUN_0800a2f8.inc"); }
 
 // 使われてなさそう
-NAKED u32 VM_Sub78EE(void) { INCFUNC("asm/func/VM_Sub78EE.inc"); }
+// 使用中の枠の数を数えてスクリプト変数へ書き出す
+u32 Cmd_78EE(void) {
+  Entity0866* p = gEntity0866;
+  u8 desc[8];
+  s32 count = 0;
+
+  if (p != NULL) {
+    Entity0866Elem* e = p->elems;
+    s32 i;
+
+    for (i = 0; i < 16; e++, i++) {
+      if (e->active) {
+        count++;
+      }
+    }
+  }
+
+  FUN_0823167c(desc);
+  FUN_0823206c(desc, 0, count);
+  return count;
+}
 
 void FUN_0800a458(void) {
   Entity0866* p = gEntity0866;

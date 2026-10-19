@@ -83,7 +83,41 @@ NON_MATCH u32 FUN_080155c8(s32 flags) {
 #endif
 }
 
-INCASM("asm/entity_08015584.inc");
+NAKED s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params) { INCFUNC("asm/func/FUN_080155e4.inc"); }
+
+NAKED void FUN_08015a90(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_08015a90.inc"); }
+
+NAKED void FUN_08015b18(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11) { INCFUNC("asm/func/FUN_08015b18.inc"); }
+
+NAKED void FUN_08015c28(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10) { INCFUNC("asm/func/FUN_08015c28.inc"); }
+
+// 発生パラメータを決め打ちで組んで count 個ぶん発生させる
+void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos) {
+  ParticleSpawnParam param;
+
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = 0xC;
+  param.speedYRand = 0xC;
+  param.speedXZ = 4;
+  param.speedXZRand = 4;
+  param.angleY = 0x3C;
+  param.angleYRand = 8;
+  param.angleXZ = 0;
+  param.angleXZRand = 0xFF;
+  param.decayStartY = 0xFF;
+  param.decayStartYRand = 0;
+  param.unk_1c = 0xFF;
+  param.unk_1e = 0;
+  param.decayStartXZ = 0xFF;
+  param.decayStartXZRand = 0;
+  param.unk_24 = 0xFF;
+  param.unk_26 = 0;
+  FUN_080155e4(count, pos, &param);
+}
+
+NAKED void FUN_08015ce0(s32 count, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, WorldPos* pos) { INCFUNC("asm/func/FUN_08015ce0.inc"); }
 
 NAKED void FUN_08015d3c(unknown* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_08015d3c.inc"); }
 

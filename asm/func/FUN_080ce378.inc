@@ -40,9 +40,9 @@
 	adds r0, r5, #0
 	bl FUN_080cc8e0
 	adds r0, r5, #0
-	bl FUN_080cd098
+	bl PlayerLink_InitPtcl718
 	adds r0, r5, #0
-	bl FUN_080cd548
+	bl PlayerLink_InitPtcl858
 	adds r0, r5, #0
 	bl FUN_080cce70
 	ldr r3, _080CE450 @ =0x0000097C

@@ -15,27 +15,21 @@ void Generator_SetState(Generator* p, s32 state) {
   p->stateTimer = 0;
   p->updateCallback = sGeneratorUpdates[p->state];
   if (p->state == 3) {
-    PlaySound_082406e0(0xFB);
+    PlaySound_082406e0(SE_GENERATOR_ENABLED);
   } else if (p->state == 5) {
-    PlaySound_082406e0(0xFC);
+    PlaySound_082406e0(SE_GENERATOR_DISABLED);
   }
 }
 
 // スプライトを本来の位置から ±5 揺らす
-NON_MATCH void FUN_080b2888(Generator* p) {
-#ifdef NONMATCHING_C
-  u16* table;
-
+void FUN_080b2888(Generator* p) {
   p->sprite.pos = p->pos;
   p->unk_ed = 1;
-  table = gRandomTable;
-  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-  p->sprite.pos.x = p->sprite.pos.x - 5 + Mod(table[gRandTableIdx], 10);
-  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-  p->sprite.pos.z = p->sprite.pos.z - 5 + Mod(table[gRandTableIdx], 10);
-#else
-  INCFUNC("asm/func/FUN_080b2888.inc");
-#endif
+  {
+    u16* table = gRandomTable;
+    p->sprite.pos.x += Mod(_Random(table), 10) - 5;
+    p->sprite.pos.z += Mod(_Random(table), 10) - 5;
+  }
 }
 
 NAKED void Generator_PushPlayer(Generator* p) { INCFUNC("asm/func/Generator_PushPlayer.inc"); }
@@ -53,7 +47,7 @@ NON_MATCH void FUN_080b29a4(HitboxData* a, HitboxData* b, Generator* p) {
     p->unk_d2 += power;
     if (p->unk_d2 < p->unk_d4) {
       p->unk_e0 = 12;
-      PlaySound_082406e0(0x127);
+      PlaySound_082406e0(SE_UNK_295);
     } else {
       p->unk_d2 = p->unk_d4;
       Generator_SetState(p, 3);
@@ -93,7 +87,7 @@ void FUN_080b32e0(Generator* p) {
       p->sprite.pos = p->pos;
       p->plttID = 453;
       Generator_SetState(p, 4);
-      p->hitbox.damage = 0;
+      p->hurtbox.damage = 0;
       p->stateTimer = 0;
     } else {
       p->plttID = p->unk_f0 - 1;
@@ -150,12 +144,12 @@ s32 Generator_Update(Generator* p) {
   p->updateCallback(p);
   Generator_UpdateFlash(p);
   if (p->unk_e8 != 0) {
-    if (gEntityCBB0->unk_c10 == 0) {
+    if (gPileDriver->unk_c10 == 0) {
       p->unk_e8 = 0;
     } else if (p->state != 4) {
       p->unk_e8 = 0;
     } else {
-      p->hitbox.damage = 0;
+      p->hurtbox.damage = 0;
       p->unk_e8--;
     }
   }
@@ -164,22 +158,21 @@ s32 Generator_Update(Generator* p) {
 
 s32 Generator_Destroy(Generator* p) {
   AuxSprite_Remove(&p->sprite);
-  Hitbox_Unregister(&p->hitbox);
+  Hitbox_Unregister(&p->hurtbox);
   Eff082473e0Emitter_Destroy(&p->eff_100);
   return 0;
 }
 
-void Generator_InitHitbox(Generator* p, u32 power) {
-  HitboxData* hitbox = &p->hitbox;
-  Vec3 halfSize;
-  Vec3 offset;
+void Generator_InitHurtbox(Generator* p, u32 power) {
+  HitboxData* hurtbox = &p->hurtbox;
+  Vec3 halfSize, offset;
 
   halfSize.x = 100, halfSize.y = 200, halfSize.z = 100;
   offset.x = 0, offset.y = 200, offset.z = 0;
-  Hitbox_Init(hitbox, 0, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
-  Hitbox_SetPowerAndAttributes(hitbox, power, 0, 0);
-  Hitbox_SetPos(hitbox, &p->pos, 0);
-  Hitbox_SetHandler(hitbox, FUN_080b29a4, p);
+  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_SetPowerAndAttributes(hurtbox, power, 0, 0);
+  Hitbox_SetPos(hurtbox, &p->pos, 0);
+  Hitbox_SetHandler(hurtbox, FUN_080b29a4, p);
 }
 
 NAKED s32 Generator_Init(Generator* p, Vec3* pos, s32 param_3, s32 param_4, s32 state, s32 param_6, s32 param_7, u32 power, s32 param_9) { INCFUNC("asm/func/Generator_Init.inc"); }

@@ -254,7 +254,7 @@ bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param_3) {
       return TRUE;
     }
   } else if (kind == 1) {
-    if (player->unk_20 & param_3) {
+    if (player->flag20 & param_3) {
       return TRUE;
     }
   }

@@ -25,7 +25,8 @@ typedef struct {
   u8 unk_2a[0x2D - 0x2A];   // 0x02A, _Init が 0x2B と 0x2C に 0 を入れる
   u8 unk_2d;                // 0x02D, _Init が 0 を入れる
   u8 unk_2e;                // 0x02E
-  u8 unk_2f[0x33 - 0x2F];   // 0x02F, _Init が 0x32 に 1 を入れる
+  u8 unk_2f[0x32 - 0x2F];   // 0x02F, まだ未解析
+  u8 unk_32;                // 0x032, _Init が 1 を入れる, FUN_0804fa04 が 0 でなければ減らす
   u8 unk_33;                // 0x033, _Init が 0、FUN_0804fb24 が 1 を入れる
   u8 unk_34;                // 0x034, FUN_0804fbf0 が 1 を入れる
   u8 unk_35[0x38 - 0x35];   // 0x035
@@ -78,9 +79,45 @@ void FUN_0804f970(void) { FUN_0804f820(); }
 
 NAKED void FUN_0804f97c(EntityAF33* p) { INCFUNC("asm/func/FUN_0804f97c.inc"); }
 
-NAKED s32 FUN_0804fa04(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fa04.inc"); }
+s32 FUN_0804fa04(EntityAF33* p) {
+  EntityAF33Slot* a = &p->slots[0];
+  EntityAF33Slot* b = &p->slots[1];
 
-NAKED s32 FUN_0804fa44(EntityAF33* p, u8 param_2, u32* param_3, s32 param_4) { INCFUNC("asm/func/FUN_0804fa44.inc"); }
+  if (a->unk_04[2] || b->unk_04[2] || *(u32*)a->unk_00 != 0 || *(u32*)b->unk_00 != 0) {
+    if (a->unk_04[2] && p->unk_32 != 0) {
+      p->unk_32--;
+    }
+    return 1;
+  }
+
+  return 0;
+}
+
+// 3件目の枠に種別と本体を詰めて送信を頼む, 送れなければ保留フラグを立てて -1
+s32 FUN_0804fa44(EntityAF33* p, u32 kind, u32* src, s32 wordCount) {
+  EntityAF33Slot* slot = &p->slots[2];
+  s32 result;
+
+  if (p->unk_2a[0] != 0 && slot->unk_00[1] != 0) {
+    return -1;
+  }
+
+  slot->unk_00[1] = kind;
+  if (wordCount > 0) {
+    u32* dst = (u32*)slot->unk_04;
+
+    do {
+      *dst++ = *src++;
+      wordCount--;
+    } while (wordCount != 0);
+  }
+
+  result = FUN_0804e514((u8*)slot);
+  if (result < 0 && slot->unk_00[1] != 0) {
+    p->unk_2a[0] = 1;
+  }
+  return result;
+}
 
 NAKED u32 FUN_0804fa94(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fa94.inc"); }
 
@@ -138,11 +175,30 @@ void FUN_0804fbf0(void) {
   }
 }
 
+s32 FUN_08050d64(void);
+s32 FUN_08050d7c(void);
+
 NAKED void FUN_0804fc08(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fc08.inc"); }
 
 NAKED void FUN_0804fd3c(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fd3c.inc"); }
 
-NAKED void FUN_0804fe24(EntityAF33* p) { INCFUNC("asm/func/FUN_0804fe24.inc"); }
+// 装備中の武器が登録されていればそのスロットの使用済みビットを外す
+// 間の空ループは原典のまま, agbcc は -O2 でも体が無いループを消さない
+void FUN_0804fe24(EntityAF33* p) {
+  s32 slot = REGISTERED_WEAPON(gStat->equippedWeaponIdx);
+  s32 i;
+
+  if (slot < 0) {
+    return;
+  }
+
+  for (i = 0; i < 4; i++) {
+  }
+
+  if (GetWeaponID(slot) != WEAPON_NONE) {
+    p->mask70 &= ~(1 << slot);
+  }
+}
 
 // 装備中の魔法と同じIDの枠を使用済みビットから外す
 // 残差1命令, 原典は gStat + idx*2 を先に作ってから +0x68 するが agbcc は +0x68 を先に足す
@@ -166,7 +222,41 @@ NON_MATCH void FUN_0804fe68(EntityAF33* p) {
 #endif
 }
 
-NAKED void FUN_0804feb0(EntityAF33* p) { INCFUNC("asm/func/FUN_0804feb0.inc"); }
+void FUN_0803cb24(void);
+void FUN_0803cb4c(u32 val);
+void FUN_0803cb6c(u32 val);
+void FUN_0803cbb4(u32 val);
+void FUN_0803cc54(u32 val);
+
+// 溜めてあった4つの値をそれぞれの受け取り手に流してから捨てる
+void FUN_0804feb0(EntityAF33* p) {
+  s32 i;
+
+  FUN_0803cb24();
+
+  for (i = 0; i < 4; i++) {
+  }
+
+  if (p->unk_38[0] != 0) {
+    FUN_0803cb4c(p->unk_38[0]);
+    p->unk_38[0] = 0;
+  }
+
+  if (p->unk_38[1] != 0) {
+    FUN_0803cb6c(p->unk_38[1]);
+    p->unk_38[1] = 0;
+  }
+
+  if (p->unk_38[2] != 0) {
+    FUN_0803cbb4(p->unk_38[2]);
+    p->unk_38[2] = 0;
+  }
+
+  if (p->unk_38[3] != 0) {
+    FUN_0803cc54(p->unk_38[3]);
+    p->unk_38[3] = 0;
+  }
+}
 
 NAKED void FUN_0804ff10(EntityAF33* p) { INCFUNC("asm/func/FUN_0804ff10.inc"); }
 
@@ -176,7 +266,29 @@ NAKED void FUN_08050070(EntityAF33* p) { INCFUNC("asm/func/FUN_08050070.inc"); }
 
 NAKED void FUN_0805010c(EntityAF33* p) { INCFUNC("asm/func/FUN_0805010c.inc"); }
 
-NAKED void FUN_080501c8(EntityAF33* p) { INCFUNC("asm/func/FUN_080501c8.inc"); }
+// 2つの残量に応じてアイコンのポーズを 0xD4/0xD7 からの3段階で選ぶ
+void FUN_080501c8(EntityAF33* p) {
+  s32 n = FUN_08050d64();
+  s32 idx = 0;
+
+  if (n <= 0x3C) {
+    idx = 2;
+    if (n > 0x19) {
+      idx = 1;
+    }
+  }
+  MainSprite_SetPose(&p->sprites[0], &p->gfx, idx + 0xD4, 0);
+
+  n = FUN_08050d7c();
+  idx = 0;
+  if (n <= 0x3C) {
+    idx = 2;
+    if (n > 0x19) {
+      idx = 1;
+    }
+  }
+  MainSprite_SetPose(&p->sprites[1], &p->gfx, idx + 0xD7, 0);
+}
 
 NAKED void FUN_08050218(EntityAF33* p) { INCFUNC("asm/func/FUN_08050218.inc"); }
 

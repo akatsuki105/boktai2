@@ -77,9 +77,9 @@ void Breakable_OnHit(HitboxData* a, HitboxData* b, Breakable* item) {
   item->hp -= b->damage;
   if (item->hp <= 0) {
     item->hp = 0;
-    PlaySound_082406e0(0x14F);
+    PlaySound_082406e0(SONG_335);
   } else {
-    PlaySound_082406e0(0x14E);
+    PlaySound_082406e0(SONG_334);
   }
   item->flashTimer = 4;
   Video_SetAuxSpritePltt(&item->gfx, 306);
@@ -235,6 +235,7 @@ s32 BreakableManager_Init(BreakableManager* p) {
   return 0;
 }
 
+// 0xED07
 BreakableManager* BreakableManager_Create(void) {
   if (gBreakableManager == NULL) {
     BreakableManager* p = CreateEntity(ENTITY_UNK_8, sizeof(BreakableManager));
@@ -262,7 +263,7 @@ Breakable* BreakableManager_FindFreeSlot(BreakableManager* p) {
   return NULL;
 }
 
-// スクリプトコマンド 0x2D8F, 空きスロットに壊せるオブジェクトを1つ置く
+// 0x2D8F, 空きスロットに壊せるオブジェクトを1つ置く
 s32 Breakable_Spawn(void) {
   Breakable* item;
   AuxSprite* sprite;
@@ -304,7 +305,7 @@ s32 Breakable_Spawn(void) {
   hitbox = &item->hitbox;
   size.x = 0x80, size.y = 0x100, size.z = 0x80;
   offset.x = -0x80, offset.y = 0x80, offset.z = 0x80;
-  Hitbox_Init(hitbox, item->id, HBFLAG_UNK_14 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_Init(hitbox, item->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetHandler(hitbox, Breakable_OnHit, item);
   Hitbox_SetPos(hitbox, &item->pos, 0);
   Hitbox_Register(hitbox);

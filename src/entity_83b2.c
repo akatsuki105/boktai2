@@ -44,8 +44,6 @@ IWRAM_DATA Entity83B2* gEntity83B2 = NULL;  // 0x0300003C
 
 s32 GetMapAreaAt(Vec3* pos);
 
-extern u32 u32_03002bc0;
-
 s32 FUN_080091c4(Entity83B2Data* p, u32 n) {
   p->state = n;
   p->unk_6 = TRUE;
@@ -156,7 +154,7 @@ void FUN_080092f0(Entity83B2* p, Entity83B2Data* data) {
 bool32 FUN_08009364(Entity83B2* p, Entity83B2Data* data) {
   Player* player = p->player;
   u32 mask = 0x186C;
-  if ((player->unk_20 & mask) == 0 && player->formRequest == 0 && p->unk_19 < 0) {
+  if ((player->flag20 & mask) == 0 && player->formRequest == 0 && p->unk_19 < 0) {
     return TRUE;
   }
   return FALSE;
@@ -192,9 +190,9 @@ s32 FUN_080093ec(Entity83B2* p, s32 n) {
 s32 FUN_080093f8(Entity83B2* p, Entity83B2Data* data, s32 idx) {
   FUN_080091d0(data);
   if (p->player != NULL) {
-    u32 mask = (1 << 2) | (1 << 1);
-    u32 flags = u32_03002bc0;
-    if (!(flags & mask) && (flags & (1 << 0))) {
+    u32 mask = FLAG03002BC0_UNK_2 | FLAG03002BC0_UNK_1;
+    u32 flags = u32_03002bc0[0];
+    if (!(flags & mask) && (flags & FLAG03002BC0_UNK_0)) {
       s32 dx = data->pos.x - p->pos.x;
       s32 dz = data->pos.z - p->pos.z;
       u32 dist2 = dx * dx + dz * dz;
@@ -233,9 +231,9 @@ s32 FUN_080094ac(Entity83B2* p, Entity83B2Data* data, s32 idx) {
 
   FUN_080091d0(data);
   if (p->player != NULL) {
-    mask = 6;
-    flags = u32_03002bc0;
-    if (!(flags & mask) && (flags & 1)) {
+    mask = FLAG03002BC0_UNK_2 | FLAG03002BC0_UNK_1;
+    flags = u32_03002bc0[0];
+    if (!(flags & mask) && (flags & FLAG03002BC0_UNK_0)) {
       dx = data->pos.x - p->pos.x;
       dz = data->pos.z - p->pos.z;
       dist2 = dx * dx + dz * dz;
@@ -288,9 +286,9 @@ s32 FUN_0800959c(Entity83B2* p, Entity83B2Data* data, s32 idx) {
 
   FUN_080091d0(data);
   if (p->player != NULL) {
-    mask = 6;
-    flags = u32_03002bc0;
-    if (!(flags & mask) && (flags & 1)) {
+    mask = FLAG03002BC0_UNK_2 | FLAG03002BC0_UNK_1;
+    flags = u32_03002bc0[0];
+    if (!(flags & mask) && (flags & FLAG03002BC0_UNK_0)) {
       dx = data->pos.x - p->pos.x;
       dz = data->pos.z - p->pos.z;
       dist2 = dx * dx + dz * dz;
@@ -431,7 +429,7 @@ Entity83B2* Entity83B2_Create(void* _) {
 
 // マップ切り替わり時に (多分 Entity83B2 の数だけ)　呼ばれた (銀行に入ると3回呼ばれた, 多分 ヒントパネル1個 + ATM2個 で3回と思われる)
 // マップ切り替え時に呼ばれ、スクリプトの名前付き引数から list の各要素を作る
-NON_MATCH s32 VM_Sub883A(void) {
+NON_MATCH s32 Cmd_883A(void) {
 #ifdef NONMATCHING_C
   Vec3 pos;
   s32 kind;
@@ -500,12 +498,12 @@ NON_MATCH s32 VM_Sub883A(void) {
   }
   return 0;
 #else
-  INCFUNC("asm/func/VM_Sub883A.inc");
+  INCFUNC("asm/func/Cmd_883A.inc");
 #endif
 }
 
 // ヒントパネルを閉じると呼ばれる, ATMを終了しても呼ばれない
-s32 VM_Sub2740(void) {
+s32 Cmd_2740(void) {
   Entity83B2* p = gEntity83B2;
   if (p == NULL || p->unk_19 < 0 || p->unk_19 >= p->length) {
     return -1;
@@ -516,7 +514,7 @@ s32 VM_Sub2740(void) {
 }
 
 // スクリプトから対象の座標を設定し直す
-s32 VM_Sub1F65(void) {
+s32 Cmd_1F65(void) {
   Vec3 pos;
   Entity83B2Data* data;
 

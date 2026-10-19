@@ -48,7 +48,7 @@ void UnlockMagic(magic32_t n) {
 }
 
 // 0xE083
-void UnlockMagicScripted(void) {
+void Cmd_UnlockMagic(void) {
   if (VM_SeekToNamedArg('m')) {
     UnlockMagic(VM_GetValue());
   }
@@ -68,4 +68,4 @@ bool32 FUN_08243584(void) {
 void UnregisterMagic(s32 idx) { REGISTERED_MAGIC(idx) = -1; }
 
 // 0x1887, HashName("魔法初期化")
-NAKED void InitMagicData(void) { INCFUNC("asm/func/InitMagicData.inc"); }
+NAKED void Cmd_InitMagicData(void) { INCFUNC("asm/func/Cmd_InitMagicData.inc"); }

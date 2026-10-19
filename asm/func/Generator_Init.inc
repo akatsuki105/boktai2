@@ -62,7 +62,7 @@
 	str r0, [r6]
 	adds r0, r7, #0
 	ldr r1, [sp, #0x34]
-	bl Generator_InitHitbox
+	bl Generator_InitHurtbox
 	adds r0, r7, #0
 	ldr r1, [sp, #0x28]
 	bl Generator_SetState

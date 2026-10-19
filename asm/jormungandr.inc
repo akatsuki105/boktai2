@@ -17003,7 +17003,7 @@ _080CAAAA:
 	strh r2, [r0]
 	ldr r2, _080CAAC0 @ =0x000025F0
 	adds r0, r5, r2
-	bl FUN_0823b8ac
+	bl Camera_MoveTo
 	b _080CAB20
 	.align 2, 0
 _080CAABC: .4byte 0x000025F4

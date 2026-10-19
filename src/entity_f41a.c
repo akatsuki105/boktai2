@@ -87,17 +87,9 @@ void EntityF41A_UpdateWander(EntityF41A* p) {
     }
   }
   if (p->turnTimer == 0) {
-    u16* table;
-    u32 idx;
-    u16 r;
-
-    table = gRandomTable;
-    idx = (gRandTableIdx + 1) & 0x3FF;
-    r = table[idx];
-    p->targetAngle = (r & 3) << 6;
-    gRandTableIdx = (idx + 1) & 0x3FF;
-    r = table[gRandTableIdx];
-    p->turnTimer = (r & 0x3F) + 0x78;
+    u16* table = gRandomTable;
+    p->targetAngle = 64 * (_Random(table) & 3);
+    p->turnTimer = 120 + (_Random(table) & 0x3F);
   } else {
     p->turnTimer--;
   }
@@ -220,7 +212,7 @@ void EntityF41A_InitHitbox(EntityF41A* p) {
 
   size.x = 64, size.y = 100, size.z = 64;
   offset.x = 0, offset.y = 100, offset.z = 0;
-  Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetAttack(hitbox, 10, 0x1E, 0, 0, 0x10);
   Hitbox_SetHandler(hitbox, NULL, p);
 }

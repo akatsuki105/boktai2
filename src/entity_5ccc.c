@@ -49,6 +49,16 @@ IWRAM_DATA Entity5CCC* gEntity5CCC = NULL;  // 0x03000140
 
 extern u16 u16_03002bf0;
 
+// まだセッションが無ければ 0
+static inline u16 Entity9A9F_GetUnk66(void) {
+  Entity9A9F* p = gEntity9A9F;
+
+  if (p == NULL) {
+    return 0;
+  }
+  return p->unk_66;
+}
+
 void FUN_0809df6c(void) { gEntity5CCC = NULL; }
 
 NAKED bool32 FUN_0809df78(Vec3* pos) { INCFUNC("asm/func/FUN_0809df78.inc"); }

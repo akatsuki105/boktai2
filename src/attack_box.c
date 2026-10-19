@@ -1,4 +1,3 @@
-#include "definition.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
@@ -39,22 +38,13 @@ static inline bool32 AttackBoxManager_IsSlotUsed(AttackBoxManager* p, s32 i) {
   return FALSE;
 }
 
-NAKED s32 FUN_080dd324(unknown* p) { INCFUNC("asm/func/FUN_080dd324.inc"); }
-
-NAKED void FUN_080dd364(void) { INCFUNC("asm/func/FUN_080dd364.inc"); }
-
 NAKED void FUN_080dd4fc(AttackBox* box) { INCFUNC("asm/func/FUN_080dd4fc.inc"); }
 
 // 通信中でない通常の判定のとき、9〜12フレームごとに1回だけ効果音を鳴らす
 void FUN_080dd6f4(AttackBox* box) {
   if (!(gFlag030047a4 & FLAG030047A4_LINK) && box->unk_60 == 0) {
-    s32 t = box->timer;
-    s32 r;
-
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    r = *(gRandomTable + gRandTableIdx);
-    if (Mod(t, (r & 3) + 9) == 0) {
-      PlaySound_082406e0(0x339);
+    if (Mod(box->timer, 9 + (Random() & 3)) == 0) {
+      PlaySound_082406e0(SONG_825);
     }
   }
 }
@@ -67,14 +57,14 @@ void AttackBox_Setup(AttackBox* box, s32 power, s32 unk_40, s32 unk_44, s32 igno
 
   halfSize.x = 0x100, halfSize.y = 0x100, halfSize.z = 0x100;
   offset.x = 0, offset.y = 0, offset.z = 0;
-  Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
+  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
   if (box->unk_60 == 0) {
     Hitbox_SetAttack(hitbox, power, unk_40, 0x40, 0x240004, unk_44);
   } else {
     Hitbox_SetAttack(hitbox, power, unk_40, 0x40, HBATTR_18, unk_44);
   }
 
-  hitbox->unk_4 = 0x3246;
+  hitbox->id = 0x3246;
   Hitbox_SetPos(hitbox, &box->pos, 0);
   Hitbox_SetHandler(hitbox, NULL, box);
 }

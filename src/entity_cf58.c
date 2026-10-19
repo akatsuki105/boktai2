@@ -66,7 +66,7 @@ NAKED void FUN_080a5f40(EntityCF58* p) { INCFUNC("asm/func/FUN_080a5f40.inc"); }
 
 void FUN_080a5fd0(EntityCF58* p) {
   if (p->stateTimer == 0) {
-    PlaySound_082406e0(0x294);
+    PlaySound_082406e0(SONG_660);
   }
   p->stateTimer++;
   if (p->stateTimer > 0x59) {
@@ -92,7 +92,15 @@ s32 EntityCF58_Destroy(EntityCF58* p) {
 
 NAKED void FUN_080a6048(EntityCF58* p, u32 param_2) { INCFUNC("asm/func/FUN_080a6048.inc"); }
 
-NAKED void FUN_080a6110(EntityCF58* p, u32 param_2) { INCFUNC("asm/func/FUN_080a6110.inc"); }
+void FUN_080a6110(EntityCF58* p, u32 param_2) {
+  if (param_2 == 0) {
+    EntityCF58_SetUpdateCallback(p, FUN_080a5ec4);
+  } else if (param_2 == 1) {
+    EntityCF58_SetUpdateCallback(p, FUN_080a5fd0);
+  } else {
+    EntityCF58_SetUpdateCallback(p, FUN_080a5ec4);
+  }
+}
 
 // 原典は return を書き忘れている
 s32 EntityCF58_InitWithCallback(EntityCF58* p, u32 param_2, u32 param_3, EntityCF58DoneFunc* doneCallback, void* owner) {

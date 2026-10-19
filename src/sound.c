@@ -36,6 +36,7 @@ void sound_08240264(SoundID32 id) {
   gSoundIDs[gSongTable[id].ms] = id;
 }
 
+// 0x53BF
 void FUN_082402c8(void) {
   if (VM_SeekToNamedArg('i')) {
     sound_08240264(VM_GetValue());
@@ -61,6 +62,7 @@ void sound_082402f8(SoundID32 id) {
   }
 }
 
+// 0x364D
 void sound_08240344(void) { sound_082402f8(VM_SeekToNamedArg('i') ? VM_GetValue() : 0); }
 
 // 再生中のBGMを最小音量から指定速度でフェードインさせ直す
@@ -76,7 +78,8 @@ void Sound_FadeInBGM(u32 speed) {
   }
 }
 
-void sound_082403b8(void) {
+// 0x4ED4, HashName("ＢＧＭフェードイン")
+void Cmd_FadeInBGM(void) {
   if (VM_SeekToNamedArg('f')) {
     Sound_FadeInBGM(VM_GetValue());
   }
@@ -90,10 +93,11 @@ void Sound_FadeOutBGMTemporarily(u32 speed) {
     m4aMPlayImmInit(mplay);
     m4aMPlayVolumeControl(mplay, 0xFFFF, 0x100);
     m4aMPlayFadeOutTemporarily(mplay, speed);
-    gSoundIDs[ms] = MUS_DUMMY;
+    gSoundIDs[ms] = SONG_NONE;
   }
 }
 
+// 0xD0C7
 void FUN_08240428(void) {
   if (VM_SeekToNamedArg('f')) {
     Sound_FadeOutBGMTemporarily(VM_GetValue());
@@ -108,10 +112,11 @@ void Sound_FadeOutBGM(u32 speed) {
     m4aMPlayImmInit(mplay);
     m4aMPlayVolumeControl(mplay, 0xFFFF, 0xFF);
     m4aMPlayFadeOut(mplay, speed);
-    gSoundIDs[ms] = 0;
+    gSoundIDs[ms] = SONG_NONE;
   }
 }
 
+// 0x6AFF
 void FUN_08240498(void) {
   if (VM_SeekToNamedArg('f')) {
     Sound_FadeOutBGM(VM_GetValue());
@@ -139,6 +144,7 @@ void FUN_082404fc(u32 speed) {
   }
 }
 
+// 0x3EA2
 void FUN_08240550(void) {
   if (VM_SeekToNamedArg('f')) {
     FUN_082404fc(VM_GetValue());
@@ -153,6 +159,7 @@ void FUN_08240568(u32 speed) {
   }
 }
 
+// 0x4CBB
 void FUN_082405a8(void) {
   if (VM_SeekToNamedArg('f')) {
     FUN_08240568(VM_GetValue());
@@ -172,6 +179,7 @@ void FUN_082405c0(u32 speed) {
   }
 }
 
+// 0xE6F2
 void FUN_08240618(void) {
   if (VM_SeekToNamedArg('f')) {
     FUN_082405c0(VM_GetValue());
@@ -187,13 +195,14 @@ void Sound_SetBGMTempo(u32 tempo) {
   }
 }
 
+// 0xEE18
 void FUN_08240668(void) {
   if (VM_SeekToNamedArg('t')) {
     Sound_SetBGMTempo(VM_GetValue());
   }
 }
 
-// 再生中の BGM の音量をスクリプト引数 'v'(音量) と 't'(対象トラック、省略時 0xFF) で変更する
+// 0x3ED0, 再生中の BGM の音量をスクリプト引数 'v'(音量) と 't'(対象トラック、省略時 0xFF) で変更する
 void FUN_08240680(void) {
   u32 volume, trackBits;
   SoundID16 id;
@@ -221,6 +230,7 @@ void PlaySound_082406e0(SoundID32 id) {
 // サンミゲルで建物に入った時のNPCのボイス時に呼ばれる(それ以外はまだ不明)
 void PlaySound_08240718(SoundID32 id) { m4aSongNumStart(id); }
 
+// 0x1870
 void sound_08240728(void) {
   if (VM_SeekToNamedArg('i')) {
     PlaySound_08240718(VM_GetValue());
@@ -271,7 +281,7 @@ void FUN_082407e0(void) {
 }
 
 // 記録されている BGM(10) と 12/29/30 のサウンドを再開する
-void FUN_0824082c(void) {
+void Sound_Resume(void) {
   s32 i;
 
   for (i = 0; i < MUSIC_PLAYER_LENGTH; i++) {
@@ -285,7 +295,8 @@ void FUN_0824082c(void) {
   }
 }
 
-void FUN_0824087c(void) { FUN_0824082c(); }
+// 0xE6CA, HashName("サウンド再開")
+void Cmd_SoundResume(void) { Sound_Resume(); }
 
 // 全ミュージックプレイヤーを停止して再生中 ID の記録を消し、サウンドドライバを初期化し直す
 void UNUSED Sound_Reset(void) {
@@ -298,6 +309,7 @@ void UNUSED Sound_Reset(void) {
   m4aSoundInit();
 }
 
+// 0xCA3D
 void FUN_082408b8(void) {
   if (gSoundIDs[30] != 0) sound_08240740(gSoundIDs[30]);
 }

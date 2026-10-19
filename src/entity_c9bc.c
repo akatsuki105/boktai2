@@ -14,12 +14,20 @@ typedef struct {
   u8 unk_02;  // 0x02, 根拠: EntityC9BCElem_SaveState が unk_46 に退避する
   u8 state;   // 0x03, sC9BCElemUpdates の添字
   u32 timer;  // 0x04, state を変えるたびに 0 に戻る
-  u8 unk_08[0x28 - 0x08];
+  u8 unk_08[0x1C - 0x08];
+  u32 unk_1c;  // 0x1C, FUN_0800cbd0 が被弾時に 1 を入れる
+  u32 unk_20;  // 0x20, 被弾させた側の HitboxData.weakness
+  u32 unk_24;  // 0x24, 被弾させた側の HitboxData.attributes
   u16 unk_28;  // 0x28, bit0 が立っていると FUN_0800cb7c が FUN_08002a58 を飛ばす
   u16 unk_2a;  // 0x2A, 根拠: EntityC9BCElem_SaveState が 0 に戻し、各 UpdateState 関数がビットを立てる
   u8 unk_2c[0x34 - 0x2C];
   s16 unk_34;  // 0x34, EntityC9BCElem_UpdateState2 が毎フレーム -2 し, 0 以下で state 1 へ戻す
-  u8 unk_36[0x44 - 0x36];
+  s16 unk_36;  // 0x36, unk_34 の上限 (bobOffset を足した値)
+  u16 unk_38;  // 0x38, FUN_0800cd70 が 0 に戻す
+  u8 unk_3a[0x40 - 0x3A];
+  u8 unk_40;  // 0x40, 0 以外の間は被弾を受け付けない, FUN_0800cbd0 が 10 を入れる
+  u8 unk_41;  // 0x41, FUN_0800cd70 が 10 を入れる
+  u8 unk_42[0x44 - 0x42];
   bool8 releaseReq;  // 0x44, 0 以外なら EntityC9BC_Update が FUN_0800cb7c で解放する
   u8 unk_45;         // 0x45, 根拠: EntityC9BCElem_SaveState が state を退避する
   u8 unk_46;         // 0x46, 根拠: EntityC9BCElem_SaveState が unk_02 を退避する
@@ -91,7 +99,19 @@ void FUN_0800cb7c(EntityC9BC* p, EntityC9BCElem* elem) {
   }
 }
 
-NAKED void FUN_0800cbd0(unknown* param_1, unknown* param_2, EntityC9BCElem* elem) { INCFUNC("asm/func/FUN_0800cbd0.inc"); }
+// 残差0命令 (26/26), レジスタ名だけ違う: 原典は weakness をスクラッチ (r1) に置くが, こちらは r4 に載る
+NON_MATCH void FUN_0800cbd0(HitboxData* a, HitboxData* b, EntityC9BCElem* elem) {
+#ifdef NONMATCHING_C
+  if (a->id != b->id && (a->weakness & 7) && elem->unk_40 == 0) {
+    elem->unk_1c = 1;
+    elem->unk_20 = a->weakness;
+    elem->unk_24 = a->attributes;
+    elem->unk_40 = 10;
+  }
+#else
+  INCFUNC("asm/func/FUN_0800cbd0.inc");
+#endif
+}
 
 void nop_0800cc04(void) {}
 
@@ -99,7 +119,25 @@ NAKED s32 FUN_0800cc08(EntityC9BCElem* elem) { INCFUNC("asm/func/FUN_0800cc08.in
 
 NAKED s32 FUN_0800ccd0(EntityC9BC* p, EntityC9BCElem* elem) { INCFUNC("asm/func/FUN_0800ccd0.inc"); }
 
-NAKED s32 FUN_0800cd70(EntityC9BC* p, EntityC9BCElem* elem) { INCFUNC("asm/func/FUN_0800cd70.inc"); }
+// 残差1命令 (31/32): 原典は定数 2 を state 用と unk_02 のビット用に別々に積むが, agbcc は1本に畳む
+NON_MATCH s32 FUN_0800cd70(EntityC9BC* p, EntityC9BCElem* elem) {
+#ifdef NONMATCHING_C
+  if (elem->state == 0) {
+    elem->state = 2;
+    elem->timer = 0;
+    elem->unk_01 = 1;
+    elem->unk_02 = (elem->unk_02 | 2) & ~1;
+    elem->unk_38 = 0;
+    elem->unk_41 = 10;
+    Video_SetAuxSpritePltt(&elem->gfx, 306);
+    return 1;
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_0800cd70.inc");
+#endif
+}
 
 NAKED s32 FUN_0800cdb4(EntityC9BC* p, EntityC9BCElem* elem) { INCFUNC("asm/func/FUN_0800cdb4.inc"); }
 
@@ -116,7 +154,7 @@ void FUN_08003014(Vec3* pos, s32 param_2);
 void EntityC9BCElem_UpdateState2(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
   if (elem->unk_01 != 0) {
     elem->unk_01 = 0;
-    PlaySound_082406e0(0x218);
+    PlaySound_082406e0(SE_536);
   }
   elem->unk_2a |= 0x10;
   elem->unk_34 -= 2;
@@ -130,7 +168,25 @@ void EntityC9BCElem_UpdateState2(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
   FUN_08003014(&elem->obj.pos, 0x80);
 }
 
-NAKED void EntityC9BCElem_UpdateState3(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/EntityC9BCElem_UpdateState3.inc"); }
+// unk_34 を上限まで毎フレーム +2 で戻し, 届いたら state 0 へ
+void EntityC9BCElem_UpdateState3(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
+  s32 target;
+
+  if (elem->unk_01) {
+    elem->unk_01 = 0;
+    PlaySound_082406e0(0x21A);
+  }
+
+  elem->unk_2a |= 0x10;
+  target = elem->unk_36 + p->bobOffset;
+  elem->unk_34 += 2;
+  if (elem->unk_34 >= target) {
+    elem->unk_34 = target;
+    elem->state = 0;
+    elem->timer = 0;
+    elem->unk_01 = 1;
+  }
+}
 
 NAKED void EntityC9BCElem_UpdateState4(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) { INCFUNC("asm/func/EntityC9BCElem_UpdateState4.inc"); }
 
@@ -217,4 +273,4 @@ EntityC9BCElem* EntityC9BC_FindElemById(EntityC9BC* p, u32 id) {
 }
 
 // 0xA062
-NAKED s32 VM_SubA062(void) { INCFUNC("asm/func/VM_SubA062.inc"); }
+NAKED s32 Cmd_A062(void) { INCFUNC("asm/func/Cmd_A062.inc"); }

@@ -26,7 +26,8 @@ typedef struct Entity1B24 {
   u8 weaponKindMask;                           // 0xF71, GetWeaponKind(slot) を16スロット分見て bit0..3 を立てる, record[0x40] が 2 なら 0xF
   u16 unk_f72;                                 // 0xF72, FUN_0809ce90 が状態遷移のたびに 0 を入れる
   u32 unk_f74;                                 // 0xF74, _Init が 0x1E を入れる
-  u8 unk_f78[12];                              // 0xF78
+  u8 unk_f78[8];                               // 0xF78
+  s32 unk_f80;                                 // 0xF80
   void* unk_f84;                               // 0xF84, FUN_0809ce90 が GetFile の戻り値か 0 を入れる
   void* unk_f88;                               // 0xF88, 同上
   void (*updateCallback)(struct Entity1B24*);  // 0xF8C
@@ -58,7 +59,20 @@ bool32 FUN_0809cf98(s32 slot) {
   return TRUE;
 }
 
-NAKED s32 FUN_0809cfc0(Entity1B24* p) { INCFUNC("asm/func/FUN_0809cfc0.inc"); }
+// 武器種ごとの表示用の値を作る
+s32 FUN_0809cfc0(Entity1B24* p, WeaponData* w) {
+  switch (w->kind) {
+    case WK_SWORD:
+    case WK_SPEAR:
+    case WK_HAMMER: {
+      return ((p->unk_f80 + 0x63) >> 1) + w->atk + (s16)w->quality;
+    }
+    case WK_GUN: {
+      return ((Div(0x28, 10) - 8) * 5 + w->atk) * 2;
+    }
+  }
+  return 0;
+}
 
 NAKED void FUN_0809d00c(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d00c.inc"); }
 
@@ -86,7 +100,7 @@ NAKED void FUN_0809d3d0(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d3d0.inc"); }
 
 void FUN_0809d7a4(Entity1B24* p) {
   if (FUN_080b9adc(p->unk_e58)) {
-    PlaySound_082406e0(0x111);
+    PlaySound_082406e0(SE_EQUIP);
     FUN_0809d300(p);
     FUN_0809d00c(p);
     FUN_0809ce90(p, FUN_0809d3d0);

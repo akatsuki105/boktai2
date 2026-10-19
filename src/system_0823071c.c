@@ -79,7 +79,7 @@ u16 HashName(const char* s) {
 }
 
 // ゲームの初期化時に乱数表を作るために使う(それ以降は使用されない)
-u32 Random(void) {
+u32 RandomLCG(void) {
   gRngValue = (gRngValue * 0x5D588B65) + 1;
   return (gRngValue & 0x7FFF);
 }

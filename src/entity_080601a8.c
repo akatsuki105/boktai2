@@ -62,7 +62,18 @@ void (*const PTR_ARRAY_085abaa4[2])(Entity080601a8*, Entity080601a8Elem*, s32) =
     FUN_0805ff58,
 };  // 0x085ABAA4
 
-NAKED s32 Entity080601a8_Update(Entity080601a8* p) { INCFUNC("asm/func/Entity080601a8_Update.inc"); }
+s32 Entity080601a8_Update(Entity080601a8* p) {
+  Entity080601a8Elem* e = p->elems;
+  s32 i;
+
+  for (i = 0; i < 32; i++, e++) {
+    if (p->activeMask & 1 << i) {
+      PTR_ARRAY_085abaa4[e->state](p, e, i);
+      e->timer++;
+    }
+  }
+  return 0;
+}
 
 s32 Entity080601a8_Destroy(Entity080601a8* p) {
   Entity080601a8Elem* e = p->elems;
@@ -77,7 +88,23 @@ s32 Entity080601a8_Destroy(Entity080601a8* p) {
   return 0;
 }
 
-NAKED s32 Entity080601a8_Init(Entity080601a8* p, s32 plttID, rgb555* pltt) { INCFUNC("asm/func/Entity080601a8_Init.inc"); }
+s32 Entity080601a8_Init(Entity080601a8* p, s32 plttID, rgb555* pltt) {
+  Entity080601a8Elem* e;
+  s32 i;
+
+  p->activeMask = 0;
+  Video_GetAuxSprite(&p->gfx, 0x61F9);
+  Video_SetAuxSpritePltt(&p->gfx, 758);
+  if (pltt != NULL) {
+    p->gfx.plttID = plttID;
+    p->gfx.pltt = pltt;
+  }
+
+  for (e = p->elems, i = 0; i < 32; i++, e++) {
+    FUN_0805ff04(p, e, i);
+  }
+  return 0;
+}
 
 Entity080601a8* Entity080601a8_Create(s32 plttID, rgb555* pltt) {
   Entity080601a8* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity080601a8));

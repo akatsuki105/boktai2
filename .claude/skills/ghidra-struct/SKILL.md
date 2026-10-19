@@ -304,6 +304,11 @@ Strongest first. Most of these produced a confirmed field on this project.
 - If an edit damaged a struct or signatures and was not saved, tell the user
   at once: closing Ghidra without saving discards it, and they keep `.gar`
   backups. Do not paper over a large mistake with more edits.
+- `cp` and `rm` are interactive here, and `-f` does not save you — `cp -f`
+  still stops on `overwrite src/foo.c? (y/n)`, which never gets an answer, so
+  the call hangs until it is killed and every later command in the same
+  invocation is silently skipped. Put step 11's rewritten file in place with a
+  redirect (`cat new.c > src/foo.c`) instead of copying it.
 
 ## Scripts
 

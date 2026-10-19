@@ -128,7 +128,7 @@ _080BA4D0:
 	movs r1, #0
 	ldrsh r4, [r0, r1]
 	adds r0, r5, #0
-	bl FUN_080ba220
+	bl Item_GetBuyPrice
 	cmp r4, r0
 	bge _080BA530
 	adds r0, r7, #0

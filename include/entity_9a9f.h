@@ -5,19 +5,28 @@
 #include "types.h"
 
 // 通信セッション1回分の相手の記録, Entity08F4 が unk_18 < 3 の要素だけを数える
+// レコードから抜き出して Entity9A9F.bodies[] に写す36バイト, 中身は未解析
+typedef struct {
+  u8 unk_0[36];  // 0x00
+} Entity9A9FRecordBody;
+static_assert(sizeof(Entity9A9FRecordBody) == 36);
+
 typedef struct Entity9A9FRecord {
-  u8 unk_00[24];           // 0x00
-  u32 unk_18;              // 0x18, Entity08F4 の FUN_081daf44 が 3 未満なら選択肢を1つ増やす
-  u8 unk_1c[0x44 - 0x1C];  // 0x1C
-  u8 unk_44;               // 0x44, FUN_080cc618 が 0/4/5 のどれかかを見る
-  u8 unk_45[72 - 0x45];    // 0x45
+  u8 unk_00[0x16];            // 0x00
+  u8 unk_16;                  // 0x16, records[0] のものはスクリプトの第2引数 (unk_38) に写される
+  u8 unk_17;                  // 0x17
+  u32 unk_18;                 // 0x18, Entity08F4 の FUN_081daf44 が 3 未満なら選択肢を1つ増やす
+  Entity9A9FRecordBody body;  // 0x1C, FUN_081dde98 が bodies[i] へまるごと写す
+  u8 unk_40[4];               // 0x40
+  u8 unk_44;                  // 0x44, FUN_080cc618 が 0/4/5 のどれかかを見る
+  u8 unk_45[72 - 0x45];       // 0x45
 } Entity9A9FRecord;
 static_assert(sizeof(Entity9A9FRecord) == 72);
 
 // 通信プレイのセッション管理, state と updateCallback の組を Entity9A9F_SetState で進める状態機械
 typedef struct Entity9A9F {
   Entity e;                                    // 0x000, ENTITY_UNK_1
-  s16 playerIdx;                               // 0x018, gPlayerPtr の添字 (-1 は該当なし), 根拠: Entity9A9F_Create が 0xFFFF で初期化し、FUN_0823c450 が負を弾いて gPlayerPtr[playerIdx] を引く
+  s16 playerIdx;                               // 0x018, gPlayerPtr の添字 (-1 は該当なし), 根拠: Entity9A9F_Create が 0xFFFF で初期化し、Camera_StepMove が負を弾いて gPlayerPtr[playerIdx] を引く
   u16 recordCount;                             // 0x01A, FUN_081ddbdc が 0 に戻す, Entity08F4 が records[] をこの数だけ走査する
   u8 state;                                    // 0x01C
   u8 unk_1d;                                   // 0x01D, FUN_081dfa98 が state < 6 のときだけ見る
@@ -59,7 +68,7 @@ typedef struct Entity9A9F {
   u8 unk_78[0x7E - 0x78];                      // 0x078, 根拠: FUN_081de004 が recordCount 個ぶん 0 以外を探す
   u16 unk_7e;                                  // 0x07E, 根拠: FUN_081dd9f0 が 0 に戻す
   u16 unk_80[4];                               // 0x080, 根拠: 同上
-  u8 unk_88[0x118 - 0x88];                     // 0x088
+  Entity9A9FRecordBody bodies[4];              // 0x088, records[i].body の写し
   s8 unk_118[5];                               // 0x118, FUN_081de0dc が 0x11C から下へ 5要素に 4 を入れる
   u8 unk_11d[3];                               // 0x11D
   u16 unk_120[4];                              // 0x120, FUN_081de0dc が 0 にする
@@ -73,7 +82,7 @@ typedef struct Entity9A9F {
   u8 unk_173;                                  // 0x173, FUN_081de090 が 0xFF を入れる
   u8 unk_174[40];                              // 0x174
   u8 unk_19c[4];                               // 0x19C, FUN_081de090 が ClearMemory で 0 にする
-  s8 unk_1a0;                                  // 0x1A0, FUN_081de090 が Time_GetSpanOfTime() の戻り値を入れる
+  s8 spanOfTime;                               // 0x1A0
   u8 unk_1a1[3];                               // 0x1A1
   Entity9A9FRecord records[4];                 // 0x1A4, Entity08F4 が 0x48 刻みで走査する, 4個で 0x2C4 の手前まで埋まる
   u8 unk_2c4;                                  // 0x2C4, FUN_081de090 が 0 にする
@@ -100,35 +109,5 @@ static_assert(sizeof(Entity9A9F) == 756);
 extern Entity9A9F* gEntity9A9F;  // 0x03002C68
 
 void FUN_081df8f0(s32 val);
-
-// 自分が何番目の参加者かを返す, セッションが無ければ -1
-static inline s32 Entity9A9F_GetPlayerIdx(void) {
-  Entity9A9F* p = gEntity9A9F;
-
-  if (p == NULL) {
-    return -1;
-  }
-  return p->playerIdx;
-}
-
-// まだセッションが無ければ 0
-static inline u16 Entity9A9F_GetUnk66(void) {
-  Entity9A9F* p = gEntity9A9F;
-
-  if (p == NULL) {
-    return 0;
-  }
-  return p->unk_66;
-}
-
-// 通信相手の記録を1件引く, まだセッションが無ければ NULL
-static inline Entity9A9FRecord* Entity9A9F_GetRecord(s32 idx) {
-  Entity9A9F* p = gEntity9A9F;
-
-  if (p == NULL) {
-    return NULL;
-  }
-  return &p->records[idx];
-}
 
 #endif  // __INCLUDE_ENTITY_9A9F_H__

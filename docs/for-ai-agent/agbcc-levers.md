@@ -141,14 +141,14 @@ printf 'void f(unsigned short*a){int i;for(i=0;i<4;i++){a[i]=0;}}\n' \
 - **`lsls #5` / `lsrs #3` on a count, then `sub sp`, is a variable-length
   array.** agbcc sizes a VLA in bits and divides by 8, so `u32 argv[n]` becomes
   `n << 5 >> 3`. The base address gets its own stack slot, the old `sp` another,
-  and both are restored in the epilogue (`VM_Loop`).
+  and both are restored in the epilogue (`Cmd_Loop`).
 - **Index the array, do not walk a pointer.** `argv[j] = ...` lets strength
   reduction create the walking pointer in the loop's preheader, i.e. *after* the
   entry guard; `u32* dst = argv;` above the loop materializes it before the
-  guard and takes a different register (`VM_Loop`). Strength reduction also
+  guard and takes a different register (`Cmd_Loop`). Strength reduction also
   folds the member offset into the pointer (`ldr r0, [r1]` on `p->a[i].flags`,
   stride `sizeof(a[0])`), and turns an ascending `i < N` into a countdown trip
-  counter; a hand-written `for (i = N - 1; i >= 0; i--, q++)` keeps the offset
+  counter; a hand-written `for (i = 0; i < N; i++, q++)` keeps the offset
   (`ldr r0, [r1, #0x8]`) and does not match (`SolarBank_HideAllSprites`).
 
 ### A repeated `||` comparison is CSE'd; an inlined predicate is not
@@ -192,6 +192,14 @@ and leaves the pivot wrong. `case 1: { return; }` keeps the node — the `return
 is real code, and after jump optimization its jump lands on the same end label,
 which is why the case looks empty in the disassembly (`FUN_0806f1ec`).
 
+### A loop with no body survives
+
+agbcc keeps the counter of a loop whose body compiles to nothing, so a bare
+`movs rN,#3` / `subs` / `cmp` / `bge` between two unrelated statements is a
+real empty loop in the source, not a disassembly artifact. Write it as an
+empty `for` and the stream matches (`FUN_0804fe24`, `FUN_0804feb0` in
+`src/entity_af33.c`).
+
 ### A cached global pointer that the target reloads per store
 
 `gStat->playerX = pos->x;` three times in a row emits one `ldr rG, [=gStat]`
@@ -229,103 +237,6 @@ reading the element twice so CSE makes the temp explicit, a
 the call nested inside, and splitting the two early-outs. Leaves
 `FUN_0807b1a4` and `FUN_0807b2dc` at a one-instruction residual.
 
-### The 0/1 materialization: it comes back from two plain statements
-
-**Closed for the assignment form** (`Entity0809eb24_Update`). The materialization
-survives when the flag is set by its own `if` statement and read by a later one:
-
-```c
-u16 override = gSunGaugeOverride;   /* 先頭オペランドをローカルに退避する */
-bool32 forced = FALSE;
-
-if (override == 1) {
-  forced = TRUE;
-}
-if (forced && u16_03002bf0 != 0) { ... }
-```
-
-That emits `ldrh` → `movs rK, #0` → `cmp` → `movs rK, #1` → `cmp rK, #0`, exactly
-the target. What folds it is writing the flag as one expression —
-`bool32 forced = (gSunGaugeOverride == 1);` collapses into the branch and comes
-out 5 instructions short, and so does a `static inline` predicate whose `return`
-is the materialized value. The local for the first operand is what puts the
-`movs #0` *after* the load (see "Caching an operand in a local" above); without it
-the init is hoisted ahead of it.
-
-Untried lead for the sites below: they all consume an inline predicate's return
-value directly (`if (!T(bit)) { return TRUE; }`). Rewriting them in the two-statement
-form — `bool32 ok = FALSE; if (gStat->unk_934 & mask) { ok = TRUE; } if (!ok) …` —
-has not been measured yet and is the first thing to try.
-
-The rest of this entry is the record of what was tried against the
-*return-value* form, which is still open.
-
-About 400 sites across 255 unmatched functions end a predicate test like this:
-
-```asm
-	ands r0, r1          @ flags & mask
-	cmp r0, #0
-	beq _0f
-	movs r0, #1
-	b _0j
-_0f:
-	movs r0, #0
-_0j:
-	cmp r0, #0           @ and only now the real branch
-	bne _false
-```
-
-The value is materialized as 0/1 and *then* compared. `src/` has never
-reproduced it: every spelling collapses the materialization into the following
-branch, leaving the function exactly 5 instructions short
-(`FUN_08065a98`, `FUN_08065ad0`, `FUN_08065b08`, `FUN_08065b44`,
-`FUN_0809e0d4`, `FUN_0809e138`).
-
-Two partial observations, neither of which shortens the residual:
-
-- A one-argument `static inline` predicate such as `Stat_TestFlag934(0x18)`
-  reproduces `movs r1, #0x18` **ahead of** the `gStat` load, because the inline
-  argument materializes before the body (see the Tier C bullet). Two levels of
-  inlining push the mask *after* the load, so it would be one level with a literal.
-- The inline's source polarity decides which constant is emitted first:
-  `if ((x & bit) == 0) { return FALSE; } return TRUE;` gives `beq` → `movs 0`
-  with `movs 1` on the fallthrough, which is what the targets have. The
-  `if (x & bit) { return TRUE; } return FALSE;` spelling gives the inverse.
-
-A `static inline` accessor only earns its place in `src/` when a function matches
-*because of it*. Writing one, failing to match, and committing both together
-leaves an invented accessor that no matching function justifies — delete it and
-spell the access out before committing the NON_MATCH.
-
-**Do not put that helper back in `src/`.** It was there for a while and every one
-of its six callers stayed NON_MATCH at the same 5-instruction residual, so it
-bought nothing while inventing an accessor no matching function justifies — and
-the two copies had drifted to opposite polarities. The tree now spells these
-tests as the plain `gStat->unk_934 & SF934_x`. Reintroduce an accessor only
-together with a spelling that actually closes the residual.
-
-What does **not** work: `!T(b)`, `T(b) == FALSE`, `T(b) == TRUE`, `T(b) & 1`,
-`T(b) + 0`, a local for the result at block or function scope, `register`, a
-`volatile` local, a second `Not(bool32)` inline (that collapses to the
-accumulator `movs r,#0 / … / movs r,#1` form), non-static `inline`, and a
-`static` non-inline helper (that becomes a real `bl`). No flag reaches it
-either: `-O1`, `-fno-thread-jumps`, `-fno-cse-follow-jumps`,
-`-fno-cse-skip-blocks`, `-fno-gcse`, `-fno-rerun-cse-after-loop`,
-`-fno-expensive-optimizations`, `-fno-optimize-comparisons`, `-fno-regmove`,
-`-fno-peephole`, `-fno-force-mem`, `-fkeep-inline-functions`, and `old_agbcc`
-all fold it. The fold happens during RTL expansion, not in a pass that can be
-switched off.
-
-The two places it *does* survive are the clue to finish this: when the inlined
-predicate's body contains a **loop**, so its result is not a two-way constant
-(`FUN_08234660` inlines a linear search and gets `movs r0,#1 / b / movs r0,#0 /
-cmp r0,#1`), and when the result has a second real use such as a store. A
-spelling that makes the simple mask test opaque the same way is still missing;
-until then these functions stay NON_MATCH at a 5-instruction residual, and
-writing more spellings of the same four shapes is not worth the build.
-
----
-
 ## 3. Tier B — types and signedness
 
 Still source-level, still defensible.
@@ -345,7 +256,7 @@ Still source-level, still defensible.
 - **A `u16` read shifted in place still gives `lsr`**, because the value's range
   is known where it is loaded. Route it through an `s32` local
   (`r = *(gRandomTable + i); ... r >> 3`) to get the `asr` the target has
-  (`VM_Random`). Passing the value through a `static inline`'s return does the
+  (`Cmd_Random`). Passing the value through a `static inline`'s return does the
   same thing, so an `asr` is not by itself evidence of a helper.
 - **Widen once at entry.** When the target sign-extends a narrow parameter or
   field once at the top and reuses the wide value, write `int v = narrowThing;`
@@ -353,25 +264,14 @@ Still source-level, still defensible.
 - **Keep it narrow.** The opposite case: when the target operates in the
   shifted domain (`lsl #24` … `asr #24` around the operation, constants shifted
   into the top byte), the value stayed narrow. Do not widen it.
-- **`/ 4096` is not how the original divides a fixed-point product.** agbcc
-  expands `v / 4096` into the bias form — `cmp v, #0 / bge / add v, #0xfff /
-  asr #12`, four instructions with the positive case falling through. Many
-  targets instead have `cmp r0, #0 / blt / asr #12 / b / neg / asr #12 / neg`,
-  which is the hand-written truncating shift and needs the positive arm in the
-  `if` body:
+- **Use `FixToInt` for fixed-point division**
 
   ```c
-  static inline s32 Fix12ToInt(s32 v) {
-    if (v >= 0) {
-      return v >> 12;
-    }
-    return -(-v >> 12);
-  }
-  ```
+  // Defined in global.h, so don't redefine it.
+  static inline s32 FixToInt(s32 fracBits, s32 fixedPointValS32) { return fixedPointValS32 >= 0 ? (fixedPointValS32 >> fracBits) : -((-fixedPointValS32) >> fracBits); }
 
-  `FUN_080700a4` closed on it (two uses, one per axis); `v < 0` as the `if`
-  condition swaps the two arms and does not match. Any `gSineTable[...] * dist /
-  4096` written the C way is a candidate for the same substitution.
+  FixToInt(8, s24_8); // example usage
+  ```
 - **Narrowing at a boundary.** A trailing `lsl`/`asr` pair at the end of a
   function is a narrow return type; the same pair after a `bl` is a cast of the
   call's result; a plain `strh`/`strb` with no shifts is a store-only
@@ -386,13 +286,6 @@ Still source-level, still defensible.
   and `u8` ones — and for the same reason its sound id has to stay `SoundID32`,
   since `PlaySound_082406e0` takes the wide type and the target never truncates
   it.
-
----
-
-- **A signed branch on an address means the source compared ints.** Comparing
-  two pointers emits the unsigned form (`bcs`/`bcc`); `bge`/`blt` on two
-  address-valued registers means both operands were declared as an integer type,
-  not as a pointer (`Entity08001610_ClearTable`, still open).
 
 ---
 
@@ -455,8 +348,7 @@ Four positions, cheapest first:
   reaches it: `static inline PlayerFlag378 Player_GetFlag378(Player* p,
   PlayerFlag378 bits) { return p->flag378 & bits; }` closed `FUN_0806f900`,
   where the local spelling stayed four instructions out of order. Note the
-  accessor returns the masked value, not a `bool32` — a `bool32` one adds the
-  0/1 materialization described in Tier A.
+  accessor returns the masked value, not a `bool32` — a `bool32` one adds a 0/1 materialization.
 - **So the converse is a lever too.** If the target loads the memory operand
   *first* and only then materializes the constant, the original did **not**
   route that constant through an inline parameter — write the statement out
@@ -468,7 +360,7 @@ Four positions, cheapest first:
 - **`arr[i]`, `*(arr + i)` and `*(i + arr)` are not interchangeable.** The tree
   keeps the source's operand order, so the subscript form materializes the base
   *before* the scaled index, and only `*(i + arr)` emits the index first and
-  brings the base in between it and the `add`. Both `VM_Random`
+  brings the base in between it and the `add`. Both `Cmd_Random`
   (`*(gRandTableIdx + gRandomTable)`) and `Player_WeaponEffectStatCond`
   (`*(p->isSabata + gStat->isKaamos)`, where the target reads the index before
   loading `gStat`) only closed on the index-first spelling, which is also what

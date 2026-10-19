@@ -53,8 +53,8 @@ void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_
 // animState 0, BGM を切り替えて、横に潰れた状態からロゴのアニメーションを始める
 void GameOverManager_AnimStart(GameOverManager* p) {
   Sound_StopAll();
-  PlaySound_082406e0(0x2);
-  PlaySound_082406e0(0x12C);
+  PlaySound_082406e0(BGM_GAMEOVER);
+  PlaySound_082406e0(SE_UNK_300);
   p->scaleX = 0x0A;
   p->scaleY = FRACUNIT_6;
   p->animState = 1;
@@ -113,14 +113,14 @@ void GameOverManager_AnimHold(GameOverManager* p) {
 void GameOverManager_AnimClose(GameOverManager* p) {
   p->timer++;
   if (p->timer == 30) {
-    PlaySound_082406e0(0x2F9);
+    PlaySound_082406e0(VO_OTENKO_TAIYO_TO_TOMO_NI);
     return;
   }
   if (p->timer <= 149) {
     return;
   }
   if (p->timer == 150) {
-    PlaySound_082406e0(0x12D);
+    PlaySound_082406e0(SE_UNK_301);
   }
   p->scaleX += 0x05;
   p->scaleY -= 0x05;
@@ -174,10 +174,10 @@ NON_MATCH void GameOverManager_UpdateLetters(GameOverManager* p) {
 #endif
 }
 
-// スクリプトコマンド 0xF04A, ゲームオーバー状態を解除して BGM を止める
+// 0xF04A, ゲームオーバー状態を解除して BGM を止める
 void GameOver_CancelScripted(void) {
   gFlag030047a4 &= ~FLAG030047A4_GAMEOVER;
-  sound_08240740(0x2);
+  sound_08240740(BGM_GAMEOVER);
   FUN_0823a8f4(0);
 }
 

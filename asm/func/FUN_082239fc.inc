@@ -81,14 +81,14 @@ _08223A78:
 	movs r3, #0xf5
 	lsls r3, r3, #4
 	adds r1, r2, r3
-	ldr r0, _08223ABC @ =FUN_082239c0
+	ldr r0, _08223ABC @ =Entity8AAB_ScaleUp
 	b _08223AC6
 	.align 2, 0
 _08223AAC: .4byte 0x00002A30
 _08223AB0: .4byte 0x00000F2B
 _08223AB4: .4byte 0x00000DA4
 _08223AB8: .4byte 0x00000D9C
-_08223ABC: .4byte FUN_082239c0
+_08223ABC: .4byte Entity8AAB_ScaleUp
 _08223AC0:
 	ldr r0, _08223ACC @ =0x00000F4C
 	adds r1, r2, r0

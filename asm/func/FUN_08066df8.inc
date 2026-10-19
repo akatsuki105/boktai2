@@ -54,7 +54,7 @@
 	adds r1, r6, r2
 	strh r0, [r1]
 	adds r0, r5, #0
-	bl FUN_0823bac8
+	bl Camera_LookAt
 	pop {r4, r5, r6}
 	pop {r0}
 	bx r0

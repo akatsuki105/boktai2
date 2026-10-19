@@ -27,7 +27,7 @@
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0x20
-	bl Entity080ac374_Create
+	bl TransEffect_Create
 _080D644C:
 	ldr r3, _080D64E8 @ =0x0000037E
 	adds r0, r6, r3

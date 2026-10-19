@@ -544,7 +544,7 @@ NAKED s32 FUN_0808c434(EntityCC28* p, s32 param_2) { INCFUNC("asm/func/FUN_0808c
 // 画面下2行のテキストボックスに1行表示する
 void EntityCC28_ShowBottomLine(u8* pc, s32 line, s32 playSound) {
   if (playSound) {
-    PlaySound_082406e0(0x107);
+    PlaySound_082406e0(SONG_263);
   }
 
   FUN_08049e5c();
@@ -667,7 +667,7 @@ void FUN_0808cf14(EntityCC28* p) {
   if (!(gEntityDisableFlags & ENTITY_DISABLE_0)) {
     FUN_0808ce98(p);
     if (FUN_0808da88(p)) {
-      PlaySound_082406e0(0x10C);
+      PlaySound_082406e0(SE_SLOT);
     } else {
       FUN_0809b3b0(p);
     }
@@ -1020,10 +1020,10 @@ void FUN_0808eeac(EntityCC28* p) {
 
   result = FUN_0808b760(p);
   if (result == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_0808a33c(p, FUN_0808eef8);
   } else if (result == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     FUN_0808ec18(p);
   }
 }
@@ -1238,7 +1238,7 @@ s32 EntityCC28Cursor_PrevCol(EntityCC28Cursor* p) {
     if (slot >= 0 && slot != cur) {
       p->col = col;
       p->slot = EntityCC28Cursor_GetSlot(p);
-      PlaySound_082406e0(0xDC);
+      PlaySound_082406e0(SONG_220);
       return 1;
     }
     col = (col + 3) & 3;
@@ -1257,7 +1257,7 @@ s32 EntityCC28Cursor_NextCol(EntityCC28Cursor* p) {
     if (slot >= 0 && slot != cur) {
       p->col = col;
       p->slot = EntityCC28Cursor_GetSlot(p);
-      PlaySound_082406e0(0xDC);
+      PlaySound_082406e0(SONG_220);
       return 1;
     }
     col = (col + 1) & 3;
@@ -1281,7 +1281,7 @@ s32 EntityCC28Cursor_PrevRow(EntityCC28Cursor* p) {
     if (slot >= 0 && slot != cur) {
       p->row = row;
       p->slot = EntityCC28Cursor_GetSlot(p);
-      PlaySound_082406e0(0xDC);
+      PlaySound_082406e0(SONG_220);
       return 1;
     }
     if (row == 0) {
@@ -1309,7 +1309,7 @@ s32 EntityCC28Cursor_NextRow(EntityCC28Cursor* p) {
     if (slot >= 0 && slot != cur) {
       p->row = row;
       p->slot = EntityCC28Cursor_GetSlot(p);
-      PlaySound_082406e0(0xDC);
+      PlaySound_082406e0(SONG_220);
       return 1;
     }
     if (row == 8) {
@@ -1506,7 +1506,7 @@ void FUN_08090120(EntityCC28* p) {
   MainSprite* spr = &p->sprites[78];
   s32 i;
 
-  for (i = 3; i >= 0; i--) {
+  for (i = 0; i < 4; i++) {
     MainSprite_AdvanceAnim(spr, &p->gfx[1]);
     spr++;
   }
@@ -1902,7 +1902,7 @@ void FUN_08093c64(EntityCC28* p) {
   if (FUN_0808c434(p, 0)) {
     p->unk_9ee++;
     if (p->unk_9ee > 7) {
-      PlaySound_082406e0(0x10D);
+      PlaySound_082406e0(SE_HEAL);
       p->sprites[46].flags |= SPRFLAG_HIDDEN;
       FUN_08091e64(p, p->cursor.savedSlot);
       EntityCC28_SetState(p, FUN_08093cc8, 1);
@@ -1923,7 +1923,7 @@ void FUN_08093de8(EntityCC28* p) {
       p->sprites[46].flags |= SPRFLAG_HIDDEN;
       FUN_08091e64(p, p->cursor.savedSlot);
       EntityCC28_SetState(p, FUN_08093e4c, 1);
-      PlaySound_082406e0(0x10D);
+      PlaySound_082406e0(SE_HEAL);
     }
   }
 }
@@ -1944,10 +1944,10 @@ void FUN_080944f4(EntityCC28* p) {
   s32 result = FUN_0808b760(p);
 
   if (result == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_08092744(p);
   } else if (result == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     if (p->inValuableInventory == 0) {
       SortInventory(0);
     } else {
@@ -1965,7 +1965,7 @@ void FUN_0809455c(EntityCC28* p) {
   s32 v = FUN_0808b760(p);
 
   if (v == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_08092744(p);
   } else if (v == 1) {
     MessageWindow_Close();
@@ -1979,7 +1979,7 @@ void FUN_0809458c(EntityCC28* p) {
   s32 result = FUN_0808b760(p);
 
   if (result == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_08092744(p);
   } else if (result == 1) {
     p->sprites[13].flags |= SPRFLAG_HIDDEN;
@@ -1996,7 +1996,7 @@ void FUN_08094660(EntityCC28* p);
 // 12フレームかけて46番のスプライトを退避先へ寄せ, 着いたら隠して次の状態へ移る
 void FUN_080945f4(EntityCC28* p) {
   if (p->unk_9ee == 0) {
-    PlaySound_082406e0(0x38A);
+    PlaySound_082406e0(SONG_906);
   }
 
   p->unk_9ee++;
@@ -2104,10 +2104,10 @@ void FUN_080960c8(EntityCC28* p) {
   s32 result = FUN_0808b760(p);
 
   if (result == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_08095a5c(p);
   } else if (result == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     SortWeapons(0);
     p->cursor.savedRow = 0;
     p->cursor.savedCol = 0;
@@ -2126,7 +2126,7 @@ void FUN_080962b0(EntityCC28* p) {
   s32 result = FUN_0808b760(p);
 
   if (result == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_08095a5c(p);
   } else if (result == 1) {
     FUN_080956c4(p, 0, p->cursor.savedSlot, 20);
@@ -2211,10 +2211,10 @@ void FUN_08097530(EntityCC28* p) {
   s32 result = FUN_0808b760(p);
 
   if (result == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_08096fa8(p);
   } else if (result == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     SortArmors(0);
     p->cursor.savedRow = 0;
     p->cursor.savedCol = 0;
@@ -2479,7 +2479,7 @@ NAKED s32 FUN_08099d2c(EntityCC28* p) { INCFUNC("asm/func/FUN_08099d2c.inc"); }
 
 void FUN_08099e2c(EntityCC28* p) {
   if (gInput[0].pressed & A_BUTTON) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     FUN_08099c64(p, 1);
     FUN_08099b3c(6);
     FUN_0808c700(p);
@@ -2511,13 +2511,13 @@ void FUN_0809a1a4(EntityCC28* p) {
   s32 result = FUN_0808b760(p);
 
   if (result == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_08099b3c(17);
     TextPanel_Hide(p->textPanelID);
     FUN_0808c658(p, 0, -1);
     EntityCC28_SetState(p, FUN_0809a130, 0);
   } else if (result == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     FUN_08099b3c(19);
     EntityCC28_SetState(p, FUN_0809a20c, 1);
   }
@@ -2543,7 +2543,7 @@ NAKED void FUN_0809a274(EntityCC28* p) { INCFUNC("asm/func/FUN_0809a274.inc"); }
 
 void FUN_0809a324(EntityCC28* p) {
   if (gInput[0].pressed & A_BUTTON) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     FUN_0808b6fc(p, 1);
     FUN_08099b3c(9);
     FUN_0808c700(p);
@@ -2559,12 +2559,12 @@ void FUN_0809a3f4(EntityCC28* p) {
   s32 result = FUN_0808b760(p);
 
   if (result == 0) {
-    PlaySound_082406e0(0xDE);
+    PlaySound_082406e0(SE_CANCEL);
     FUN_08099b3c(8);
     FUN_0808c658(p, 0, -1);
     EntityCC28_SetState(p, FUN_0809a324, 0);
   } else if (result == 1) {
-    PlaySound_082406e0(0xDD);
+    PlaySound_082406e0(SE_SELECT);
     EntityCC28_SetState(p, FUN_0809a448, 1);
   }
 }
@@ -2588,7 +2588,7 @@ void FUN_0809a4c0(EntityCC28* p) {
 
 void FUN_0809a510(EntityCC28* p) {
   if (p->unk_9ee == 0) {
-    PlaySound_082406e0(0x2AE);
+    PlaySound_082406e0(SONG_686);
     TextPanel_Hide(p->textPanelID);
     FUN_08099b3c(14);
   }
@@ -2603,7 +2603,7 @@ void FUN_0809a510(EntityCC28* p) {
 
 void FUN_0809a574(EntityCC28* p) {
   if (p->unk_9ee == 0) {
-    PlaySound_082406e0(0x192);
+    PlaySound_082406e0(SE_NG);
     TextPanel_Hide(p->textPanelID);
     FUN_08099b3c(15);
   }
@@ -2838,7 +2838,7 @@ void FUN_0809c314(void) {
 
 NAKED void FUN_0809c344(s32 param_1, s32 param_2, u16 param_3, u8 param_4, s32 param_5) { INCFUNC("asm/func/FUN_0809c344.inc"); }
 
-NAKED void FUN_0809c3c0(s32 param_1, u16 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0809c3c0.inc"); }
+NAKED void FUN_0809c3c0(s32 param_1, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_0809c3c0.inc"); }
 
 void FUN_0809c430(void) {
   EntityCC28* p = gEntityCC28;
@@ -2888,7 +2888,7 @@ void FUN_0809c4f4(void) {
   if (p != NULL && p->unk_9fc == 0 && p->unk_9fe <= 2) {
     FUN_0808c95c(p, 0, 0xE0, 0x90);
     p->unk_c0c[3].unk_61 = 6;
-    PlaySound_082406e0(0x382);
+    PlaySound_082406e0(SONG_898);
   }
 }
 

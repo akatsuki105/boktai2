@@ -35,7 +35,7 @@ typedef struct {
   u32 unk_54;                    // 0x0054, _Update が下位16bitを gStat+0x3B2 へ写す
   u32 unk_58;                    // 0x0058, 1 で画面を明転, 2 で暗転 (gObjBrightness を 4 ずつ動かす), 終わると 0 に戻る
   u32 unk_5c;                    // 0x005C, _Init が 0
-  Vec3 pos;                      // 0x0060, '.c', FUN_0823b8ac に渡す
+  Vec3 pos;                      // 0x0060, '.c', Camera_MoveTo に渡す
   MainSpriteGfx gfx[7];          // 0x0068, Entity5645Entry.unk_08 が 2 の要素だけ
   Entity5645Elem elems[5];       // 0x0148
   u8 unk_8dc[0x17DC - 0x8DC];    // 0x08DC, この family が触らない領域, 残り63関数の担当

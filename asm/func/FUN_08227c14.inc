@@ -43,7 +43,7 @@ _08227C46:
 	movs r3, #0
 	bl AuxAnim_SetAnim
 	adds r0, r6, #0
-	bl FUN_08223998
+	bl Entity8AAB_RestoreAnimState
 	ldr r1, _08227CD0 @ =0x00000DF4
 	adds r0, r6, r1
 	bl ParticleShadow_Hide

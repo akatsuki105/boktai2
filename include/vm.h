@@ -153,6 +153,7 @@ u8* VM_ReadContainerLength(u8* pc, u32* length);
 u32 VM_GetValueAt(u8* addr);
 u32 VM_GetValue(void);
 u8* VM_DecodeValue(u8* pc, s32* type, void* val);
+void* VM_GetValueAtSafe(u8* addr);
 void* VM_GetValueSafe2(void);
 s32 VM_ParseStringRef(u8* pc);
 char* Textbox_LookupString(s32 stringID);

@@ -10,7 +10,8 @@ typedef struct {
   char* charTable;         // 0x74, パスワードに使える文字の並び
   u8* nameTablePc;         // 0x78, 名前に使える文字テーブルの VM バイトコード位置
   u32 rngState;            // 0x7C, 線形合同法の内部状態, 初期値 0x0008C159
-  u8 unk_80[140 - 0x80];   // 0x80, まだ未解析
+  u8 unk_80[0x88 - 0x80];  // 0x80, まだ未解析
+  u32 unk_88;              // 0x88, 乱数を空回しする回数 + 4
 } PasswordDecoder;
 static_assert(sizeof(PasswordDecoder) == 140);
 
@@ -20,7 +21,27 @@ u32 FUN_08011110(PasswordDecoder* p) {
   return p->rngState;
 }
 
-NAKED s32 FUN_08011124(PasswordDecoder* p) { INCFUNC("asm/func/FUN_08011124.inc"); }
+// 乱数を unk_88 + 4 回空回ししてから, decoded の後半20文字を乱数列で XOR して解く
+// 残差6命令 (44 対 38), gcc は 0x3F をループ外へ出して r8 まで使い出すが, 原典は毎回 movs で作り直す
+// 添字形 / ポインタ形 / % 64 のいずれでも同じく巻き上げられる
+NON_MATCH s32 FUN_08011124(PasswordDecoder* p) {
+#ifdef NONMATCHING_C
+  u32 acc = 0xFFFF;
+  u32 i;
+
+  for (i = 0; i < p->unk_88 + 4; i++) {
+    acc ^= FUN_08011110(p);
+  }
+
+  for (i = 0; i < 20; i++) {
+    p->decoded[4 + i] = (acc ^ p->decoded[4 + i]) & 0x3F;
+    acc ^= FUN_08011110(p);
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_08011124.inc");
+#endif
+}
 
 // 2バイト1組のテーブル64エントリから (lo, hi) の組を探して添字を返す, 無ければ -1
 s32 FUN_08011178(u8* table, s32 lo, s32 hi) {
@@ -59,7 +80,7 @@ NAKED s32 PasswordDecoder_Parse(PasswordDecoder* p) { INCFUNC("asm/func/Password
 void PasswordDecoder_NOP(PasswordDecoder* p) {
   s32 i;
 
-  for (i = 4; i >= 0; i--) {
+  for (i = 0; i < 5; i++) {
   }
 }
 

@@ -127,7 +127,7 @@ s32 VM_Ctrl_SetZoneCallback(u32 param) {
 
   if (VM_SeekToNamedArg('b')) {
     ev.flags |= 0x10;
-    ev.unk_20 = (u8*)VM_GetValue();
+    ev.keys = VM_GetValue();
   }
 
   if (VM_SeekToNamedArg('e')) {

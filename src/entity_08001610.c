@@ -4,7 +4,7 @@
 #include "video.h"
 #include "vm.h"
 
-// Entity08001610 を作るときに渡す引数の塊, VM_Sub9053 がスクリプトの引数から組み立てる
+// Entity08001610 を作るときに渡す引数の塊, Cmd_9053 がスクリプトの引数から組み立てる
 typedef struct {
   u8 flags;       // 0x00, '.f'
   u8 bgIdx;       // 0x01, '.i'
@@ -69,26 +69,19 @@ typedef struct {
   u8 unk_62[2];       // 0x62
   u32 cmdCount;       // 0x64, Entity08001610_PushCmd は 8 未満のときだけ足す
   u16 cmdKinds[8];    // 0x68, Entity08001610_RunCmds の switch の値
-  s16 cmdArgs[8][8];  // 0x78, 1件16バイト, VM_SubD285 が最大8語積む
+  s16 cmdArgs[8][8];  // 0x78, 1件16バイト, Cmd_D285 が最大8語積む
 } Entity08001610;
 static_assert(sizeof(Entity08001610) == 248);
 
 IWRAM_DATA Entity08001610* gEntity08001610[4] = {};  // 0x03000010, BG ごとの Entity08001610, Init が bgIdx の位置に自分を入れ、Destroy が NULL に戻す
 
-// 残差1命令: 原典はポインタを降順に歩かせて base と**符号つき**で比較する (bge) が,
-// C のポインタ比較は必ず unsigned (bcs) になるため埋められない. 添字ループでは強度低減が起きず誘導変数が残る
-NON_MATCH void Entity08001610_ClearTable(void) {
-#ifdef NONMATCHING_C
-  Entity08001610** base = gEntity08001610;
-  Entity08001610** p = base + 3;
+// BG ごとの Entity08001610 の登録表を NULL で埋める
+void Entity08001610_ClearTable(void) {
+  s32 i;
 
-  do {
-    *p = NULL;
-    p--;
-  } while (p >= base);
-#else
-  INCFUNC("asm/func/Entity08001610_ClearTable.inc");
-#endif
+  for (i = 0; i < 4; i++) {
+    gEntity08001610[i] = NULL;
+  }
 }
 
 // 積まれたコマンドを順に処理する
@@ -173,7 +166,7 @@ Entity08001610* Entity08001610_Create(u16 param_1, Entity08001610Config* cfg) {
   return p;
 }
 
-NAKED Entity08001610* VM_Sub9053(u16 param_1) { INCFUNC("asm/func/VM_Sub9053.inc"); }
+NAKED Entity08001610* Cmd_9053(u16 param_1) { INCFUNC("asm/func/Cmd_9053.inc"); }
 
 // BG のコマンドキューに1件積む, 8件たまっていたら捨てる
 void Entity08001610_PushCmd(s32 bgIdx, s32 kind, s32 argc, u32* argv) {
@@ -191,7 +184,7 @@ void Entity08001610_PushCmd(s32 bgIdx, s32 kind, s32 argc, u32* argv) {
 }
 
 // スクリプトから BG のコマンドを1件積む
-void VM_SubD285(void) {
+void Cmd_D285(void) {
   u32 argv[8];
   s32 argc;
   u32* dst;

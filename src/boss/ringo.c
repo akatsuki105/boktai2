@@ -1,12 +1,17 @@
 #include "boss.h"
 #include "entity.h"
 #include "global.h"
+#include "shadow.h"
+#include "sprite_main.h"
 #include "vm.h"
 
 // 紅のリンゴ, ダーイン
 typedef struct {
-  Entity e;  // 0x0, ENTITY_UNK_8
-  u8 unk_18[4188 - 0x18];
+  Entity e;                  // 0x000, ENTITY_UNK_8
+  u8 unk_18[0x2F4 - 0x18];   // 0x018, まだ未解析
+  MainSprite sprites[2];     // 0x2F4
+  AuxShadow shadow;          // 0x3B4
+  u8 unk_420[4188 - 0x420];  // 0x420, まだ未解析
 } EntityBA4B;
 static_assert(sizeof(EntityBA4B) == 4188);
 
@@ -23,6 +28,12 @@ const u8 u8_ARRAY_085aabd8[64] = {
 
 const rgb555 rgb555_ARRAY_085aac18[16] = {0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F};  // 0x085AAC18
 
+void FUN_08028054(EntityBA4B*);
+void FUN_08028818(EntityBA4B*);
+void FUN_08028eb8(EntityBA4B*);
+void FUN_08029b30(EntityBA4B*);
+void FUN_08029de0(EntityBA4B*);
+void FUN_0802a2e0(EntityBA4B*);
 void FUN_0802c3a0(EntityBA4B*);
 void FUN_0802c564(EntityBA4B*);
 void FUN_0802c6e8(EntityBA4B*);
@@ -319,7 +330,19 @@ s32 EntityBA4B_Update(EntityBA4B* p) {
   return 0;
 }
 
-NAKED s32 EntityBA4B_Destroy(EntityBA4B* p) { INCFUNC("asm/func/EntityBA4B_Destroy.inc"); }
+s32 EntityBA4B_Destroy(EntityBA4B* p) {
+  AuxShadow_Remove(&p->shadow);
+  FUN_08028054(p);
+  FUN_08028818(p);
+  FUN_08028eb8(p);
+  FUN_08029de0(p);
+  FUN_0802a2e0(p);
+  FUN_08029b30(p);
+  MainSprite_Remove(&p->sprites[0]);
+  MainSprite_Remove(&p->sprites[1]);
+  FUN_08022b04((Boss*)p);
+  return 0;
+}
 
 NAKED s32 EntityBA4B_Init(EntityBA4B* p, u32 id) { INCFUNC("asm/func/EntityBA4B_Init.inc"); }
 

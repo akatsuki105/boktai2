@@ -8,7 +8,7 @@
 static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
 
 // スクリプトの配列変数に, 続く引数を先頭から順に書き込む
-s32 VM_InitArray(void) {
+s32 Cmd_InitArray(void) {
   u8 desc[8];
   s32 i;
 
@@ -20,7 +20,7 @@ s32 VM_InitArray(void) {
 }
 
 // 0x7636, 'a' 個の引数を読み直しながら 'e' のスクリプトを 'r' 回呼ぶ
-s32 VM_Loop(void) {
+s32 Cmd_Loop(void) {
   ScriptArgs args;
   s32 count;
   s32 repeat;
@@ -54,24 +54,18 @@ s32 VM_Loop(void) {
 }
 
 // スクリプトへ乱数を返す, 'p' があればその値未満に収める
-s32 VM_Random(void) {
-  s32 r;
-
+s32 Cmd_Random(void) {
   if (VM_SeekToNamedArg('p')) {
     s32 n = VM_GetValue();
-
     if (n > 0) {
-      gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-      r = *(gRandomTable + gRandTableIdx);
-      return Mod(r >> 3, n);
+      return Mod(Random() / 8, n);
     }
   }
-  gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-  return *(gRandomTable + gRandTableIdx);
+  return Random();
 }
 
 // スクリプトへ1Pのキー入力を返す, 既定は押された瞬間のボタン
-s32 VM_GetKeys(void) {
+s32 Cmd_GetInputKeys(void) {
   if (VM_SeekToNamedArg('p')) return gInput[0].pressed;
   if (VM_SeekToNamedArg('s')) return gInput[0].down;
   if (VM_SeekToNamedArg('r')) return gInput[0].released;

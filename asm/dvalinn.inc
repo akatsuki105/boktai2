@@ -1677,7 +1677,7 @@ _081FB2FE:
 	cmp r0, #0
 	beq _081FB310
 	adds r0, r6, #0
-	bl FUN_081fa590
+	bl NestedState_Reset0
 	movs r1, #4
 	adds r0, r4, #0
 	adds r0, #0xa2
@@ -1919,7 +1919,7 @@ _081FB4CC:
 	beq _081FB50A
 _081FB4EA:
 	adds r0, r6, #0
-	bl FUN_081fa5b0
+	bl NestedState_Advance0
 	b _081FB50A
 	.align 2, 0
 _081FB4F4: .4byte 0x0000083C
@@ -1965,7 +1965,7 @@ _081FB53C:
 	cmp r0, #0
 	beq _081FB546
 	adds r0, r4, #0
-	bl FUN_081fa590
+	bl NestedState_Reset0
 _081FB546:
 	ldrb r0, [r4]
 	cmp r0, #0
@@ -1981,7 +1981,7 @@ _081FB546:
 	bne _081FB566
 	adds r0, r4, #0
 	movs r1, #4
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 _081FB566:
 	ldrb r0, [r4]
 	cmp r0, #5
@@ -2037,7 +2037,7 @@ _081FB5D4:
 	beq _081FB65C
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FB65C
 _081FB5E8:
 	ldr r0, [r4, #4]
@@ -2058,7 +2058,7 @@ _081FB5FC:
 	beq _081FB65C
 	adds r0, r4, #0
 	movs r1, #3
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FB65C
 _081FB610:
 	ldr r0, [r4, #4]
@@ -2068,7 +2068,7 @@ _081FB610:
 	bls _081FB65C
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FB65C
 _081FB624:
 	ldr r0, [r4, #4]
@@ -2093,7 +2093,7 @@ _081FB634:
 _081FB648:
 	adds r0, r4, #0
 	movs r1, #5
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FB65C
 _081FB652:
 	movs r0, #0xfb
@@ -2137,7 +2137,7 @@ _081FB692:
 	cmp r0, #0
 	beq _081FB69C
 	adds r0, r5, #0
-	bl FUN_081fa590
+	bl NestedState_Reset0
 _081FB69C:
 	adds r0, r4, #0
 	adds r0, #0xa3
@@ -2224,7 +2224,7 @@ _081FB740:
 _081FB74C:
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FBAF8
 _081FB756:
 	ldr r0, [r5, #4]
@@ -2433,7 +2433,7 @@ _081FB8E2:
 _081FB8EA:
 	adds r0, r5, #0
 	movs r1, #2
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FBAF8
 	.align 2, 0
 _081FB8F4: .4byte 0x030046A4
@@ -2451,7 +2451,7 @@ _081FB908:
 _081FB914:
 	adds r0, r5, #0
 	movs r1, #3
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FBAF8
 _081FB91E:
 	ldr r0, [r5, #4]
@@ -2659,7 +2659,7 @@ _081FBAAC:
 	bls _081FBAF8
 	adds r0, r5, #0
 	movs r1, #4
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FBAF8
 	.align 2, 0
 _081FBABC: .4byte 0x030046A4
@@ -2675,12 +2675,12 @@ _081FBAD0:
 	bls _081FBAF8
 	adds r0, r5, #0
 	movs r1, #5
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FBAF8
 _081FBAE4:
 	adds r0, r5, #0
 	movs r1, #6
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FBAF8
 _081FBAEE:
 	movs r1, #0xfb
@@ -2729,7 +2729,7 @@ _081FBB38:
 	cmp r0, #0
 	beq _081FBC0E
 	mov r0, sb
-	bl FUN_081fa590
+	bl NestedState_Reset0
 	ldr r3, _081FBC24 @ =0x0203B400
 	ldr r2, _081FBC28 @ =0x030046B8
 	ldr r0, [r2]
@@ -3321,7 +3321,7 @@ _081FBFBC:
 _081FBFCC:
 	mov r0, sb
 	movs r1, #2
-	bl FUN_081fa5d0
+	bl NestedState_Set1
 	b _081FC08E
 	.align 2, 0
 _081FBFD8: .4byte 0x000006DB
@@ -3353,7 +3353,7 @@ _081FC002:
 	bls _081FC08E
 _081FC00E:
 	mov r0, sb
-	bl FUN_081fa5dc
+	bl NestedState_Advance1
 	b _081FC08E
 	.align 2, 0
 _081FC018: .4byte 0x0000083C
@@ -3404,7 +3404,7 @@ _081FC06A:
 	beq _081FC08E
 _081FC070:
 	mov r0, sb
-	bl FUN_081fa5b0
+	bl NestedState_Advance0
 	b _081FC08E
 	.align 2, 0
 _081FC078: .4byte 0x0000083C
@@ -3452,7 +3452,7 @@ _081FC0C4:
 	cmp r0, #0
 	beq _081FC0CE
 	adds r0, r4, #0
-	bl FUN_081fa590
+	bl NestedState_Reset0
 _081FC0CE:
 	ldrb r0, [r4]
 	cmp r0, #1
@@ -3517,7 +3517,7 @@ _081FC13A:
 	bne _081FC1DC
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FC1DC
 _081FC152:
 	ldr r0, [r4, #4]
@@ -3560,7 +3560,7 @@ _081FC18E:
 	bne _081FC1DC
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FC1DC
 _081FC1A6:
 	ldr r0, [r4, #4]
@@ -3578,7 +3578,7 @@ _081FC1B4:
 	bls _081FC1DC
 	adds r0, r4, #0
 	movs r1, #3
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FC1DC
 _081FC1C8:
 	ldr r0, [r4, #4]
@@ -3622,7 +3622,7 @@ _081FC208:
 	cmp r0, #0
 	beq _081FC212
 	adds r0, r4, #0
-	bl FUN_081fa590
+	bl NestedState_Reset0
 _081FC212:
 	ldrb r0, [r4]
 	cmp r0, #1
@@ -3641,7 +3641,7 @@ _081FC222:
 _081FC22C:
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FC28E
 _081FC236:
 	ldr r0, [r4, #4]
@@ -3664,7 +3664,7 @@ _081FC244:
 	beq _081FC28E
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FC28E
 _081FC262:
 	ldr r0, [r4, #4]
@@ -3682,7 +3682,7 @@ _081FC270:
 	bls _081FC28E
 	adds r0, r4, #0
 	movs r1, #3
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FC28E
 _081FC284:
 	movs r0, #0xfb
@@ -3728,7 +3728,7 @@ _081FC2C2:
 	cmp r0, #0
 	beq _081FC322
 	adds r0, r6, #0
-	bl FUN_081fa590
+	bl NestedState_Reset0
 	movs r1, #0x10
 	adds r0, r5, #0
 	adds r0, #0x98
@@ -3813,7 +3813,7 @@ _081FC33C:
 	bne _081FC388
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FC388
 	.align 2, 0
 _081FC378: .4byte 0x0000083C
@@ -5004,10 +5004,10 @@ _081FCBA4:
 	movs r3, #0
 	bl Boss_PlayAnimFacing
 	mov r0, sl
-	bl FUN_081fa590
+	bl NestedState_Reset0
 	mov r0, sl
 	movs r1, #1
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 _081FCC28:
 	mov r1, sl
 	ldrb r0, [r1]
@@ -5110,7 +5110,7 @@ _081FCCE4:
 	bgt _081FCCF8
 	mov r0, sl
 	movs r1, #1
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FCE2E
 	.align 2, 0
 _081FCCF4: .4byte 0x0000038B
@@ -5285,7 +5285,7 @@ _081FCE44:
 	bls _081FCE58
 	mov r0, sl
 	movs r1, #2
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 _081FCE58:
 	mov r0, sl
 	ldr r1, [r0, #4]
@@ -5375,7 +5375,7 @@ _081FCF04:
 	str r0, [r4]
 	mov r0, sl
 	movs r1, #3
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FCF3E
 	.align 2, 0
 _081FCF18: .4byte 0x000001B7
@@ -5514,10 +5514,10 @@ FUN_081fd000: @ 0x081FD000
 	movs r0, #0
 	strb r0, [r1]
 	mov r0, r8
-	bl FUN_081fa590
+	bl NestedState_Reset0
 	mov r0, r8
 	movs r1, #0
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	ldr r1, _081FD07C @ =0x000007CC
 	adds r0, r5, r1
 	ldr r0, [r0]
@@ -5635,7 +5635,7 @@ _081FD0E6:
 	bl Boss_PlayAnimFacing
 	mov r0, r8
 	movs r1, #1
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 _081FD126:
 	ldr r2, _081FD150 @ =0x030046B8
 	ldr r0, [r2]
@@ -5708,7 +5708,7 @@ _081FD182:
 	bl Boss_PlayAnimFacing
 	mov r0, r8
 	movs r1, #2
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FD1F8
 _081FD1C4:
 	movs r2, #0x8f
@@ -5769,7 +5769,7 @@ FUN_081fd20c: @ 0x081FD20C
 	movs r0, #0
 	strb r0, [r1]
 	ldr r0, [sp, #0x48]
-	bl FUN_081fa590
+	bl NestedState_Reset0
 	ldr r0, _081FD2B4 @ =0x03002BE0
 	ldr r2, [r0]
 	adds r3, r6, #0
@@ -6195,7 +6195,7 @@ _081FD574:
 	cmp r7, #0
 	bge _081FD506
 	ldr r0, [sp, #0x48]
-	bl FUN_081fa5dc
+	bl NestedState_Advance1
 	b _081FD7EA
 _081FD584:
 	adds r0, r6, #0
@@ -6248,7 +6248,7 @@ _081FD584:
 	adds r0, #1
 	str r0, [r5, #4]
 	ldr r0, [sp, #0x48]
-	bl FUN_081fa5dc
+	bl NestedState_Advance1
 	ldr r1, _081FD610 @ =0x000007CC
 	adds r0, r7, r1
 	ldr r0, [r0]
@@ -6285,14 +6285,14 @@ _081FD614:
 	cmp r0, #2
 	bls _081FD650
 	adds r0, r2, #0
-	bl FUN_081fa5b0
+	bl NestedState_Advance0
 	b _081FD7EA
 	.align 2, 0
 _081FD64C: .4byte 0x000007CC
 _081FD650:
 	ldr r0, [sp, #0x48]
 	movs r1, #1
-	bl FUN_081fa5d0
+	bl NestedState_Set1
 	b _081FD7EA
 _081FD65A:
 	cmp r5, #1
@@ -6498,7 +6498,7 @@ _081FD7D0:
 	beq _081FD7EA
 _081FD7DA:
 	ldr r0, [sp, #0x48]
-	bl FUN_081fa5b0
+	bl NestedState_Advance0
 	b _081FD7EA
 _081FD7E2:
 	adds r1, r6, #0
@@ -6635,7 +6635,7 @@ _081FD880:
 	movs r4, #0x83
 	lsls r4, r4, #2
 	adds r0, r6, r4
-	bl FUN_081fa590
+	bl NestedState_Reset0
 _081FD8E6:
 	adds r0, r5, #0
 	adds r0, #0xfc
@@ -6741,7 +6741,7 @@ _081FD9A8:
 _081FD9C6:
 	mov r0, r8
 	movs r1, #2
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FDD08
 _081FD9D0:
 	mov r4, r8
@@ -7028,7 +7028,7 @@ _081FDBFE:
 _081FDC08:
 	mov r0, r8
 	movs r1, #4
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FDD08
 _081FDC12:
 	mov r3, r8
@@ -7147,7 +7147,7 @@ _081FDCEE:
 	beq _081FDD08
 _081FDCF8:
 	mov r0, r8
-	bl FUN_081fa5b0
+	bl NestedState_Advance0
 	b _081FDD08
 _081FDD00:
 	adds r1, r5, #0
@@ -7282,7 +7282,7 @@ _081FDD9C:
 	movs r4, #0x83
 	lsls r4, r4, #2
 	adds r0, r6, r4
-	bl FUN_081fa590
+	bl NestedState_Reset0
 _081FDE02:
 	adds r0, r7, #0
 	adds r0, #0xfc
@@ -7453,7 +7453,7 @@ _081FDF4E:
 _081FDF6C:
 	mov r0, r8
 	movs r1, #2
-	bl FUN_081fa5a0
+	bl NestedState_Set0
 	b _081FE2D0
 _081FDF76:
 	mov r4, r8
@@ -7883,7 +7883,7 @@ _081FE2B6:
 	beq _081FE2D0
 _081FE2C0:
 	mov r0, r8
-	bl FUN_081fa5b0
+	bl NestedState_Advance0
 	b _081FE2D0
 _081FE2C8:
 	adds r1, r7, #0
@@ -7968,7 +7968,7 @@ FUN_081fe2e0: @ 0x081FE2E0
 	adds r0, #0xa1
 	strb r1, [r0]
 	mov r0, sl
-	bl FUN_081fa590
+	bl NestedState_Reset0
 _081FE36A:
 	adds r0, r7, #0
 	adds r0, #0xfc
@@ -8395,7 +8395,7 @@ _081FE6A6:
 	bl PlaySound_082406e0
 	bl FUN_081fafd4
 	mov r0, sl
-	bl FUN_081fa5b0
+	bl NestedState_Advance0
 	b _081FE6F6
 	.align 2, 0
 _081FE6D8: .4byte 0x0000022B
@@ -8709,7 +8709,7 @@ _081FE940:
 	str r0, [r7, #0x50]
 	str r1, [r7, #0x54]
 	mov r0, sl
-	bl FUN_081fa5b0
+	bl NestedState_Advance0
 	b _081FE96C
 _081FE952:
 	add r0, sp, #0x1c
@@ -8850,7 +8850,7 @@ _081FEA54:
 	beq _081FEA6E
 _081FEA5E:
 	mov r0, sl
-	bl FUN_081fa5b0
+	bl NestedState_Advance0
 	b _081FEA6E
 _081FEA66:
 	adds r1, r7, #0
@@ -9084,7 +9084,7 @@ FUN_081febe4: @ 0x081FEBE4
 	movs r2, #0x83
 	lsls r2, r2, #2
 	adds r0, r4, r2
-	bl FUN_081fa590
+	bl NestedState_Reset0
 _081FEC2E:
 	movs r2, #0x1c
 	adds r1, r4, #0
@@ -9149,7 +9149,7 @@ FUN_081fec60: @ 0x081FEC60
 	movs r2, #0x83
 	lsls r2, r2, #2
 	adds r0, r5, r2
-	bl FUN_081fa590
+	bl NestedState_Reset0
 	ldr r0, [r4, #8]
 	movs r1, #2
 	orrs r0, r1
@@ -9234,7 +9234,7 @@ FUN_081fed08: @ 0x081FED08
 	movs r1, #0x83
 	lsls r1, r1, #2
 	adds r0, r5, r1
-	bl FUN_081fa590
+	bl NestedState_Reset0
 _081FED50:
 	movs r0, #0xf
 	ands r0, r4
@@ -9520,7 +9520,7 @@ FUN_081fef30: @ 0x081FEF30
 	movs r1, #0x83
 	lsls r1, r1, #2
 	adds r0, r5, r1
-	bl FUN_081fa590
+	bl NestedState_Reset0
 	movs r2, #0xf1
 	lsls r2, r2, #2
 	adds r0, r5, r2
@@ -9789,7 +9789,7 @@ FUN_081ff148: @ 0x081FF148
 	movs r1, #0x83
 	lsls r1, r1, #2
 	adds r0, r5, r1
-	bl FUN_081fa590
+	bl NestedState_Reset0
 	movs r2, #0xf1
 	lsls r2, r2, #2
 	adds r1, r5, r2
@@ -10051,7 +10051,7 @@ FUN_081ff34c: @ 0x081FF34C
 	movs r1, #0x83
 	lsls r1, r1, #2
 	adds r0, r5, r1
-	bl FUN_081fa590
+	bl NestedState_Reset0
 	movs r2, #0xf1
 	lsls r2, r2, #2
 	adds r0, r5, r2

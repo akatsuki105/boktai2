@@ -32,7 +32,26 @@ const u8 u8_ARRAY_085ad310[4] = {8, 4, 2, 1};  // 0x085AD310
 
 NAKED s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u16* param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_080da9c4.inc"); }
 
-NAKED void FUN_080dab9c(Entity080db520* p) { INCFUNC("asm/func/FUN_080dab9c.inc"); }
+// idx 番の枠の判定を1フレームだけ有効にする
+void FUN_080dab9c(s32 idx) {
+  Entity080db520* p = gEntity080db520;
+  Entity080db520Elem* e;
+
+  if (idx < 0) {
+    return;
+  }
+
+  e = &p->elems[idx];
+  if (e->unk_42 < 0) {
+    return;
+  }
+  if (e->unk_3e == 2) {
+    return;
+  }
+
+  e->unk_40 |= 2;
+  e->hitbox.flags |= HBFLAG_UNK_2;
+}
 
 // idx 番の要素の unk_40 に bit2 を立てる
 void FUN_080dabe4(s32 idx) {
@@ -58,7 +77,27 @@ void FUN_080dacac(Entity080db520* p, u32 param_2, Entity080db520Elem* elem) {
 
 NAKED void FUN_080dacc4(Entity080db520* p) { INCFUNC("asm/func/FUN_080dacc4.inc"); }
 
-NAKED s32 FUN_080dad4c(Entity080db520* p) { INCFUNC("asm/func/FUN_080dad4c.inc"); }
+// 空いている枠を確保して返す, 無ければ NULL
+// 残差1命令 (34 対 35), 原典は &elems[i] を muls で毎回作るが agbcc は誘導変数に落として基底をループ外へ巻き上げる
+// 使用中判定を static inline bool32 (attack_box.c の AttackBoxManager_IsSlotUsed と同じ形) にすると 0/1 の作り置きは再現できるが, 誘導変数の方は動かない
+NON_MATCH Entity080db520Elem* FUN_080dad4c(Entity080db520* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    if (!(p->activeMask & (1 << i))) {
+      Entity080db520Elem* e = &p->elems[i];
+
+      p->activeMask |= 1 << i;
+      e->unk_42 = i;
+      return e;
+    }
+  }
+  return NULL;
+#else
+  INCFUNC("asm/func/FUN_080dad4c.inc");
+#endif
+}
 
 NAKED s32 FUN_080dad94(Entity080db520* p) { INCFUNC("asm/func/FUN_080dad94.inc"); }
 
@@ -93,7 +132,29 @@ void (*const PTR_ARRAY_085ad314[3])(Entity080db520*, Entity080db520Elem*) = {
 
 NAKED s32 Entity080db520_Update(Entity080db520* p) { INCFUNC("asm/func/Entity080db520_Update.inc"); }
 
-NAKED s32 Entity080db520_Destroy(Entity080db520* p) { INCFUNC("asm/func/Entity080db520_Destroy.inc"); }
+// 残差5命令 (30 対 35), 原典は使用中判定の結果を 1/0 として一度作ってから改めて 0 と比べる (いわゆる 0/1 の作り置き)
+// static inline bool32 の判定関数にすると 32 対 35 まで寄るが作り置きは出ない, FUN_080dad4c と同じ壁
+NON_MATCH s32 Entity080db520_Destroy(Entity080db520* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    if (p->activeMask & (1 << i)) {
+      Entity080db520Elem* e = &p->elems[i];
+
+      if (e->spr.active) {
+        AuxSprite_Remove(&e->spr);
+      }
+      Hitbox_Unregister(&e->hitbox);
+    }
+  }
+
+  gEntity080db520 = NULL;
+  return 0;
+#else
+  INCFUNC("asm/func/Entity080db520_Destroy.inc");
+#endif
+}
 
 s32 Entity080db520_Init(Entity080db520* p) {
   Video_GetAuxSprite(&p->gfx, SPRITE_EFF_1C1B);

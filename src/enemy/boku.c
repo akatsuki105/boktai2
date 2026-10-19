@@ -2,10 +2,18 @@
 #include "global.h"
 #include "hitbox.h"
 #include "malloc.h"
+#include "vm.h"
 
 typedef struct {
   ENEMY_HDR;
-  u8 unk_654[1708 - sizeof(Enemy)];
+  u8 unk_654[0x658 - 0x654];  // 0x654
+  u16 scriptID_658;           // 0x658, 0 でなければ unk_65b が unk_65a に届いたときに実行する
+  u8 unk_65a;                 // 0x65A, scriptID_658 を実行するまでのフレーム数
+  u8 unk_65b;                 // 0x65B, 毎フレーム +1
+  u8 unk_65c[0x670 - 0x65C];  // 0x65C
+  u16 timer_670;              // 0x670, FUN_080ffd28 が毎フレーム 1 減らす, 0 になるまで FUN_080ff270 が状態ハンドラを呼ばない
+  u16 unk_672;                // 0x672, FUN_080ff470 が timer_670 の初期値として写す
+  u8 unk_674[1708 - 0x674];   // 0x674
 } Boku;
 static_assert(sizeof(Boku) == 1708);
 
@@ -169,7 +177,13 @@ const u16 u16_ARRAY_085ad4dc[4] = {336, 336, 0, 180};  // 0x085AD4DC
 
 NAKED unknown* FUN_080ffcd0(unknown* p) { INCFUNC("asm/func/FUN_080ffcd0.inc"); }
 
-NAKED void FUN_080ffd28(Boku* p) { INCFUNC("asm/func/FUN_080ffd28.inc"); }
+void FUN_080ffd28(Boku* p) {
+  Boku* q = p->unk_1cc;
+
+  if (q->timer_670 != 0) {
+    q->timer_670--;
+  }
+}
 
 NAKED void FUN_080ffd48(Boku* p) { INCFUNC("asm/func/FUN_080ffd48.inc"); }
 
@@ -179,7 +193,24 @@ NAKED void FUN_081000a4(Boku* p) { INCFUNC("asm/func/FUN_081000a4.inc"); }
 
 NAKED void FUN_08100164(Boku* p) { INCFUNC("asm/func/FUN_08100164.inc"); }
 
-NAKED void FUN_081001dc(Boku* p) { INCFUNC("asm/func/FUN_081001dc.inc"); }
+// 予約してあるスクリプトを unk_65a フレーム後に実行する
+void FUN_081001dc(Boku* p) {
+  Boku* q = p->unk_1cc;
+
+  if (q->scriptID_658 == 0) {
+    return;
+  }
+
+  q->unk_65b++;
+  if (q->unk_65b < q->unk_65a) {
+    return;
+  }
+
+  VM_ExecByID(q->scriptID_658, NULL);
+  q->scriptID_658 = 0;
+  q->unk_65a = 0;
+  q->unk_65b = 0;
+}
 
 // デカすぎて複数の関数を1つの関数として間違って扱っている可能性がある
 NAKED bool32 FUN_08100228(Boku* p) { INCFUNC("asm/func/FUN_08100228.inc"); }

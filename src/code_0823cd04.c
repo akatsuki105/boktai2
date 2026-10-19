@@ -46,7 +46,7 @@ void FUN_0823cd04(void) {
 char* GetPlayerName(void) { return gStat->name; }
 
 // 0x0272
-NAKED void SetPlayerName(void) { INCFUNC("asm/func/SetPlayerName.inc"); }
+NAKED void Cmd_SetPlayerName(void) { INCFUNC("asm/func/Cmd_SetPlayerName.inc"); }
 
 // key でソート済みの {u16 key; u16 value;} のテーブルを二分探索して value を返す, 見つからなければ 0
 // 4バイト1組 {key, value} の表を二分探索して value を返す, 見つからなければ 0
@@ -283,7 +283,20 @@ void FUN_0823d1fc(void) {
 // 0x138E
 void UNUSED SoftResetScripted(void) { SoftReset_0823a928(); }
 
-NAKED void FUN_0823d22c(void) { INCFUNC("asm/func/FUN_0823d22c.inc"); }
+// 画面と音を落としてスリープに入り, 復帰したら元に戻す
+void FUN_0823d22c(void) {
+  REG_DISPCNT |= DISPCNT_FORCED_BLANK;
+  WaitForVBlank();
+  WaitForVBlank();
+  REG_KEYCNT = 0xC304;
+  SoundBias_0();
+  asm("svc #3");
+  SoundBias_200();
+  gSaveSucceeded = TRUE;
+  REG_DISPCNT &= ~DISPCNT_FORCED_BLANK;
+  REG_KEYCNT = 0;
+  WaitForVBlank();
+}
 
 // セーブデータを読み直し, 成功したらメッセージ速度と太陽センサーのキャリブレーションを既定値に戻す
 // 残差2命令, 原典は戻り値の u8 マスクを r2 に残して 0 の store に使い回すが
@@ -384,11 +397,11 @@ s32 FUN_0823d5b8(void) {
 NAKED bool32 FUN_0823d5f0(void) { INCFUNC("asm/func/FUN_0823d5f0.inc"); }
 
 // 0xDAA4
-u32 GetPrefecture(void) { return gSystemSaveData->prefecture; }
+u32 Cmd_GetPrefecture(void) { return gSystemSaveData->prefecture; }
 
 // 0xED2E, クロスオーバーバトルが解放されているか
 // タイトル画面 -> "LINK" -> "通信対戦"にカーソルを当てて、 L,R,L,R,L,L,R,R,R,R,L,L,SELECT,START,SELECT,START と入力するとクロスオーバーバトルが解放される
-bool32 IsCrossoverUnlocked(void) {
+bool32 Cmd_IsCrossoverUnlocked(void) {
   if (gSystemSaveData->crossoverUnlocked == 0x369F) {
     return TRUE;
   }
@@ -396,10 +409,10 @@ bool32 IsCrossoverUnlocked(void) {
 }
 
 // 0xB45F
-s32 GetCrossoverPoint(void) { return gSystemSaveData->crossoverPoint; }
+s32 Cmd_GetCrossoverPoint(void) { return gSystemSaveData->crossoverPoint; }
 
 // 0x904B
-s32 SetCrossoverPoint(void) {
+s32 Cmd_SetCrossoverPoint(void) {
   s32 point = VM_GetNamedArgValue('p', gSystemSaveData->crossoverPoint);
 
   if (point < 0) {
@@ -413,7 +426,7 @@ s32 SetCrossoverPoint(void) {
 }
 
 // 0x2354
-u16 GetCrossoverBattleCount(void) { return gSystemSaveData->crossoverCount; }
+u16 Cmd_GetCrossoverBattleCount(void) { return gSystemSaveData->crossoverCount; }
 
 // 0x3F3B
 u16 GetCrossoverBattleWins(void) { return gSystemSaveData->crossoverWins; }

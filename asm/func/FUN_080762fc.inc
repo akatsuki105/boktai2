@@ -42,7 +42,7 @@ _0807632A:
 	orrs r0, r1
 	str r0, [sp, #0xc]
 	add r0, sp, #0xc
-	bl FUN_0823bac8
+	bl Camera_LookAt
 	movs r2, #0xfc
 	lsls r2, r2, #2
 	adds r0, r6, r2

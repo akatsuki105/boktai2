@@ -43,7 +43,7 @@
 	bl LinkShopManager_ClearGlobal
 	bl FUN_081dc688
 	bl FUN_081e0c14
-	bl FUN_081fa1b0
+	bl Entity081fa164_ClearGlobal
 	bl LinkConnect_ClearGlobal
 	bl ClearEntity9A9F
 	pop {r0}

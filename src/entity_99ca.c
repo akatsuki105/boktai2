@@ -40,7 +40,19 @@ bool32 Entity99CA_HasActiveElem(Entity99CA* p) {
 
 NAKED void Entity99CAElem_TryRespawn(Entity99CA* p, Entity99CAElem* elem) { INCFUNC("asm/func/Entity99CAElem_TryRespawn.inc"); }
 
-NAKED void Entity99CAElem_Update(Entity99CA* p, Entity99CAElem* elem) { INCFUNC("asm/func/Entity99CAElem_Update.inc"); }
+void Entity99CAElem_Update(Entity99CA* p, Entity99CAElem* elem) {
+  elem->height += p->riseSpeed;
+  if ((elem->timer & 3) == 0) {
+    Particle_SetFrame(&elem->ptcl, p->group, p->frame + (((u16)elem->timer >> 2) & 1));
+  }
+  elem->timer++;
+
+  if ((u16)elem->height >= p->maxHeight) {
+    elem->active = FALSE;
+    elem->ptcl.flags |= SPRFLAG_HIDDEN;
+    elem->timer = (8 - p->count) * 4 + 4;
+  }
+}
 
 NAKED s32 Entity99CA_Update(Entity99CA* p) { INCFUNC("asm/func/Entity99CA_Update.inc"); }
 

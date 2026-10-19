@@ -13,8 +13,8 @@ FUN_0800fc90: @ 0x0800FC90
 	.align 2, 0
 _0800FC98: .4byte 0x03000048
 
-	thumb_func_start FUN_0800fc9c
-FUN_0800fc9c: @ 0x0800FC9C
+	thumb_func_start Entity329B_GetTilePtr
+Entity329B_GetTilePtr: @ 0x0800FC9C
 	push {r4, lr}
 	lsls r3, r0, #1
 	adds r3, r3, r0
@@ -36,8 +36,8 @@ FUN_0800fc9c: @ 0x0800FC9C
 	.align 2, 0
 _0800FCC0: .4byte 0x03003ED0
 
-	thumb_func_start FUN_0800fcc4
-FUN_0800fcc4: @ 0x0800FCC4
+	thumb_func_start Entity329B_DrawDate
+Entity329B_DrawDate: @ 0x0800FCC4
 	push {r4, r5, r6, r7, lr}
 	mov r7, sb
 	mov r6, r8
@@ -58,7 +58,7 @@ _0800FCD8:
 	movs r0, #0
 	movs r1, #6
 	movs r2, #0xb
-	bl FUN_0800fc9c
+	bl Entity329B_GetTilePtr
 	adds r4, r0, #0
 	movs r3, #0
 	mov ip, sp
@@ -102,7 +102,7 @@ _0800FD04:
 	movs r0, #0
 	movs r1, #0xa
 	movs r2, #0xb
-	bl FUN_0800fc9c
+	bl Entity329B_GetTilePtr
 	adds r4, r0, #0
 	movs r3, #0
 	mov ip, sp
@@ -145,8 +145,8 @@ _0800FD5E:
 _0800FD90: .4byte 0xFFFFD000
 _0800FD94: .4byte 0x03003ED0
 
-	thumb_func_start FUN_0800fd98
-FUN_0800fd98: @ 0x0800FD98
+	thumb_func_start Entity329B_DrawClock
+Entity329B_DrawClock: @ 0x0800FD98
 	push {r4, r5, r6, r7, lr}
 	mov r7, sb
 	mov r6, r8
@@ -168,7 +168,7 @@ FUN_0800fd98: @ 0x0800FD98
 	movs r0, #0
 	movs r1, #0x10
 	movs r2, #0xb
-	bl FUN_0800fc9c
+	bl Entity329B_GetTilePtr
 	adds r4, r0, #0
 	movs r3, #0
 	mov ip, sp
@@ -212,7 +212,7 @@ _0800FDE2:
 	movs r0, #0
 	movs r1, #0x14
 	movs r2, #0xb
-	bl FUN_0800fc9c
+	bl Entity329B_GetTilePtr
 	adds r4, r0, #0
 	movs r3, #0
 	mov ip, sp
@@ -255,8 +255,8 @@ _0800FE3C:
 _0800FE6C: .4byte 0xFFFFD000
 _0800FE70: .4byte 0x03003ED0
 
-	thumb_func_start FUN_0800fe74
-FUN_0800fe74: @ 0x0800FE74
+	thumb_func_start Entity329B_DrawSunTime
+Entity329B_DrawSunTime: @ 0x0800FE74
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -279,7 +279,7 @@ _0800FE96:
 	movs r0, #0
 	movs r1, #4
 	movs r2, #0xf
-	bl FUN_0800fc9c
+	bl Entity329B_GetTilePtr
 	adds r5, r0, #0
 	ldr r1, _0800FEB0 @ =gClock
 	ldrb r1, [r1, #0x12]
@@ -294,7 +294,7 @@ _0800FEB4:
 	movs r0, #0
 	movs r1, #4
 	movs r2, #0xf
-	bl FUN_0800fc9c
+	bl Entity329B_GetTilePtr
 	adds r5, r0, #0
 	ldr r7, _0800FF24 @ =gClock
 	ldrb r7, [r7, #0x10]
@@ -334,7 +334,7 @@ _0800FEDE:
 	movs r0, #0
 	movs r1, #8
 	movs r2, #0xf
-	bl FUN_0800fc9c
+	bl Entity329B_GetTilePtr
 	adds r5, r0, #0
 	ldr r7, _0800FF24 @ =gClock
 	ldrb r0, [r7, #0xe]
@@ -401,7 +401,7 @@ _0800FF5A:
 	movs r0, #0
 	movs r1, #0x10
 	movs r2, #0xf
-	bl FUN_0800fc9c
+	bl Entity329B_GetTilePtr
 	adds r5, r0, #0
 	movs r4, #0
 	mov ip, sp
@@ -445,7 +445,7 @@ _0800FFA2:
 	movs r0, #0
 	movs r1, #0x16
 	movs r2, #0xf
-	bl FUN_0800fc9c
+	bl Entity329B_GetTilePtr
 	adds r5, r0, #0
 	movs r4, #0
 	mov ip, sp
@@ -490,8 +490,8 @@ _0801001E:
 _08010030: .4byte 0x03003ED0
 _08010034: .4byte 0xFFFFD000
 
-	thumb_func_start FUN_08010038
-FUN_08010038: @ 0x08010038
+	thumb_func_start Entity329B_Redraw
+Entity329B_Redraw: @ 0x08010038
 	push {r4, r5, r6, lr}
 	sub sp, #0xc
 	adds r6, r0, #0
@@ -511,7 +511,7 @@ FUN_08010038: @ 0x08010038
 	ldr r1, [sp, #4]
 	ldr r2, [sp, #8]
 	adds r0, r6, #0
-	bl FUN_0800fcc4
+	bl Entity329B_DrawDate
 _08010066:
 	ldrh r1, [r6, #0x28]
 	movs r0, #2
@@ -519,7 +519,7 @@ _08010066:
 	cmp r0, #0
 	beq _08010076
 	adds r0, r6, #0
-	bl FUN_0800fd98
+	bl Entity329B_DrawClock
 _08010076:
 	ldrh r1, [r6, #0x28]
 	movs r0, #4
@@ -527,7 +527,7 @@ _08010076:
 	cmp r0, #0
 	beq _08010086
 	adds r0, r6, #0
-	bl FUN_0800fe74
+	bl Entity329B_DrawSunTime
 _08010086:
 	movs r0, #0
 	strh r0, [r6, #0x28]
@@ -537,8 +537,8 @@ _08010086:
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_08010094
-FUN_08010094: @ 0x08010094
+	thumb_func_start Entity329B_HandleSkipInput
+Entity329B_HandleSkipInput: @ 0x08010094
 	push {r4, r5, lr}
 	sub sp, #0xc
 	adds r5, r0, #0
@@ -805,7 +805,7 @@ _080102A0:
 	movs r0, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_0800fc9c
+	bl Entity329B_GetTilePtr
 	adds r1, r0, #0
 	movs r3, #0
 	ldr r0, _08010348 @ =0x03003ED0
@@ -887,7 +887,7 @@ _0801034C: .4byte FUN_0801019c
 FUN_08010350: @ 0x08010350
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_08010094
+	bl Entity329B_HandleSkipInput
 	adds r3, r0, #0
 	cmp r3, #0
 	bne _08010398
@@ -934,7 +934,7 @@ _080103A8: .4byte FUN_080109b0
 FUN_080103ac: @ 0x080103AC
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
-	bl FUN_08010094
+	bl Entity329B_HandleSkipInput
 	adds r6, r0, #0
 	cmp r6, #0
 	bne _08010448
@@ -1027,7 +1027,7 @@ _08010468: .4byte FUN_0801046c
 FUN_0801046c: @ 0x0801046C
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_08010094
+	bl Entity329B_HandleSkipInput
 	adds r3, r0, #0
 	cmp r3, #0
 	bne _080104B6
@@ -1173,8 +1173,8 @@ _0801057C:
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_0801058c
-FUN_0801058c: @ 0x0801058C
+	thumb_func_start Entity329B_UpdateWait
+Entity329B_UpdateWait: @ 0x0801058C
 	push {r4, r5, r6, lr}
 	adds r4, r0, #0
 	movs r6, #0x80
@@ -1184,7 +1184,7 @@ FUN_0801058c: @ 0x0801058C
 	bics r0, r6
 	strh r0, [r5]
 	adds r0, r4, #0
-	bl FUN_08010094
+	bl Entity329B_HandleSkipInput
 	cmp r0, #0
 	bne _080105D4
 	ldrh r0, [r4, #0x2a]
@@ -1802,7 +1802,7 @@ _08010A50:
 	movs r4, #0
 	strh r0, [r2]
 	adds r0, r5, #0
-	bl FUN_08010038
+	bl Entity329B_Redraw
 	str r4, [sp]
 	movs r0, #0
 	movs r1, #0
@@ -2068,7 +2068,7 @@ _08010C62:
 	movs r1, #0
 	bl VM_GetNamedArgValue
 	strh r0, [r6, #0x2a]
-	ldr r1, _08010D1C @ =FUN_0801058c
+	ldr r1, _08010D1C @ =Entity329B_UpdateWait
 	movs r2, #0xb3
 	lsls r2, r2, #2
 	adds r0, r6, r2
@@ -2139,7 +2139,7 @@ _08010D0C:
 	.align 2, 0
 _08010D14: .4byte 0x05000018
 _08010D18: .4byte 0x04000008
-_08010D1C: .4byte FUN_0801058c
+_08010D1C: .4byte Entity329B_UpdateWait
 _08010D20: .4byte 0x000002C2
 _08010D24: .4byte 0x00001084
 _08010D28: .4byte 0x05000091

@@ -2,6 +2,7 @@
 #include "global.h"
 #include "msgbus.h"
 #include "particle.h"
+#include "sound.h"
 #include "sprite_aux.h"
 
 typedef struct {
@@ -65,6 +66,9 @@ void FUN_080a3208(EntityA8F1* p);
 void FUN_080a32a4(EntityA8F1* p);
 
 // 更新関数を差し替えて経過フレームを0に戻す
+void FUN_080a2c2c(EntityA8F1* p);
+void FUN_080a310c(EntityA8F1* p);
+
 void FUN_080a2a14(EntityA8F1* p, EntityA8F1Func* fn) {
   p->updateCallback = fn;
   p->stateTimer = 0;
@@ -87,7 +91,18 @@ void FUN_080a2b30(EntityA8F1* p) {
 
 NAKED void FUN_080a2b78(EntityA8F1* p) { INCFUNC("asm/func/FUN_080a2b78.inc"); }
 
-NAKED void FUN_080a2bdc(EntityA8F1* p) { INCFUNC("asm/func/FUN_080a2bdc.inc"); }
+void FUN_080a2bdc(EntityA8F1* p) {
+  if (p->unk_1c0 <= 6) {
+    p->unk_1c0++;
+    FUN_080a2804(p);
+  } else {
+    p->stateTimer++;
+    if (p->stateTimer > 0x1F) {
+      PlaySound_082406e0(0x15F);
+      FUN_080a2a14(p, FUN_080a2c2c);
+    }
+  }
+}
 
 void FUN_080a2c2c(EntityA8F1* p) {
   p->stateTimer++;
@@ -106,7 +121,18 @@ NAKED void FUN_080a2e20(EntityA8F1* p) { INCFUNC("asm/func/FUN_080a2e20.inc"); }
 
 NAKED void FUN_080a3004(EntityA8F1* p) { INCFUNC("asm/func/FUN_080a3004.inc"); }
 
-NAKED void FUN_080a30bc(EntityA8F1* p) { INCFUNC("asm/func/FUN_080a30bc.inc"); }
+void FUN_080a30bc(EntityA8F1* p) {
+  if (p->unk_1c0 <= 6) {
+    p->unk_1c0++;
+    FUN_080a2804(p);
+  } else {
+    p->stateTimer++;
+    if (p->stateTimer > 0x1F) {
+      PlaySound_082406e0(0x15F);
+      FUN_080a2a14(p, FUN_080a310c);
+    }
+  }
+}
 
 void FUN_080a310c(EntityA8F1* p) {
   p->stateTimer++;
@@ -153,25 +179,17 @@ s32 EntityA8F1_Update(EntityA8F1* p) {
 }
 
 s32 EntityA8F1_Destroy(EntityA8F1* p) {
-  AuxSprite* spr;
-  EntityA8F1Ptcl* ptcl;
-  MsgQueue* mq;
   s32 i;
 
   AuxSprite_Remove(&p->sprite);
   AuxSprite_Remove(&p->sprite2);
-  spr = &p->subSprites[0];
-  for (i = 2; i >= 0; i--) {
-    AuxSprite_Remove(spr);
-    spr++;
+  for (i = 0; i < 3; i++) {
+    AuxSprite_Remove(&p->subSprites[i]);
   }
-  mq = &p->mq;
-  ptcl = &p->ptcls[0];
-  for (i = 7; i >= 0; i--) {
-    Particle_Remove(&ptcl->ptcl);
-    ptcl++;
+  for (i = 0; i < 8; i++) {
+    Particle_Remove((Particle*)&p->ptcls[i]);
   }
-  MsgQueue_Unregister(mq);
+  MsgQueue_Unregister(&p->mq);
   return 0;
 }
 

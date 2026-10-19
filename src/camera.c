@@ -1,10 +1,12 @@
 #include "camera.h"
 
 #include "collision_map.h"
+#include "entity_9a9f.h"
 #include "file.h"
 #include "global.h"
 #include "mover.h"
 #include "msgbus.h"
+#include "player.h"
 #include "random.h"
 #include "registry.h"
 #include "video.h"
@@ -198,7 +200,35 @@ void FUN_0823b880(s32 n) {
   }
 }
 
-NAKED void FUN_0823b8ac(Vec3* pos) { INCFUNC("asm/func/FUN_0823b8ac.inc"); }
+// ワールド座標をアイソメトリック投影して視点座標にする
+static inline void WorldToVp(Vec3* vp, WorldPos* world) {
+  s32 hx = world->x >> 1;
+  s32 hz = world->z >> 1;
+  s32 a, b;
+
+  vp->x = FixToInt(8, (hx - hz) * 48);
+  a = FixToInt(8, (hx + hz) * 48);
+  b = FixToInt(8, world->y * 24);
+  vp->y = a - b;
+  vp->z = a + b;
+}
+
+// 移動先を指定して即座に移動させる, 補間中でなければその場で投影までやりなおす
+void Camera_MoveTo(Vec3* pos) {
+  if (gCamera != NULL) {
+    gCamera->destPos.x = pos->x;
+    gCamera->destPos.y = pos->y;
+    gCamera->destPos.z = pos->z;
+    Camera_ApplyBounds(gCamera, &gCamera->destPos);
+    gCamera->moveMode = 1;
+    if (gCamera->lookEnabled == 0) {
+      gCameraCoords.worldPos.x = gCamera->destPos.x + gCamera->shakeOffsetX;
+      gCameraCoords.worldPos.y = gCamera->destPos.y;
+      gCameraCoords.worldPos.z = gCamera->destPos.z + gCamera->shakeOffsetZ;
+      WorldToVp(&gCameraVpCoords, &gCameraCoords.worldPos);
+    }
+  }
+}
 
 void FUN_0823b980(s32 n, Vec3* pos) {
   if (gCamera != NULL) {
@@ -222,19 +252,6 @@ void FUN_0823b9cc(s32 n) {
   }
 }
 
-// ワールド座標をアイソメトリック投影して視点座標にする
-static inline void WorldToVp(Vec3* vp, WorldPos* world) {
-  s32 hx = world->x >> 1;
-  s32 hz = world->z >> 1;
-  s32 a, b;
-
-  vp->x = Div256((hx - hz) * 48);
-  a = Div256((hx + hz) * 48);
-  b = Div256(world->y * 24);
-  vp->y = a - b;
-  vp->z = a + b;
-}
-
 // カメラのワールド座標に画面ゆれを反映して、投影しなおす
 void Camera_Translate(void) {
   if (gCamera != NULL) {
@@ -249,27 +266,41 @@ void Camera_Translate(void) {
 
 void FUN_0823baa8(void) {
   if (gCamera != NULL) {
-    gCamera->unk_1c = 1;
+    gCamera->lookEnabled = 1;
     gCamera->lookMode = 0;
-    gCamera->unk_1e = 0;
+    gCamera->completeAction = 0;
   }
 }
 
-NAKED void FUN_0823bac8(Vec3* pos) { INCFUNC("asm/func/FUN_0823bac8.inc"); }
+// 注視点を指定座標に固定して, すぐに投影しなおす
+void Camera_LookAt(Vec3* pos) {
+  if (gCamera != NULL) {
+    gCamera->pos_6c.x = pos->x;
+    gCamera->pos_6c.y = pos->y;
+    gCamera->pos_6c.z = pos->z;
+    gCameraCoords.worldPos.x = gCamera->pos_6c.x;
+    gCameraCoords.worldPos.y = gCamera->pos_6c.y;
+    gCameraCoords.worldPos.z = gCamera->pos_6c.z;
+    WorldToVp(&gCameraVpCoords, &gCameraCoords.worldPos);
+    gCamera->lookEnabled = 1;
+    gCamera->lookMode = 1;
+    gCamera->completeAction = 0;
+  }
+}
 
 void FUN_0823bb7c(s32 n, Vec3* pos) {
   if (gCamera != NULL) {
     gCamera->pos_6c.x = pos->x;
     gCamera->pos_6c.y = pos->y;
     gCamera->pos_6c.z = pos->z;
-    gCamera->unk_1c = 1;
+    gCamera->lookEnabled = 1;
     if (n < 2) {
       gCamera->lookMode = 1;
     } else {
       gCamera->lookTimer = n;
       gCamera->lookMode = 2;
     }
-    gCamera->unk_1e = 0;
+    gCamera->completeAction = 0;
   }
 }
 
@@ -277,10 +308,10 @@ void FUN_0823bbd4(u32 targetID, Vec3* pos) {
   if (gCamera != NULL) {
     gCamera->lookTargetID = targetID;
     if (Mover_FindByID_Proxy(gCamera->lookTargetID) != NULL) {
-      gCamera->unk_1c = 1;
+      gCamera->lookEnabled = 1;
       gCamera->pos_74 = *pos;
       gCamera->lookMode = 3;
-      gCamera->unk_1e = 0;
+      gCamera->completeAction = 0;
     }
   }
 }
@@ -289,7 +320,7 @@ void FUN_0823bc14(u32 targetID, s32 n, Vec3* pos) {
   if (gCamera != NULL) {
     gCamera->lookTargetID = targetID;
     if (Mover_FindByID_Proxy(gCamera->lookTargetID) != NULL) {
-      gCamera->unk_1c = 1;
+      gCamera->lookEnabled = 1;
       gCamera->pos_74 = *pos;
       if (n < 2) {
         gCamera->lookMode = 3;
@@ -297,34 +328,34 @@ void FUN_0823bc14(u32 targetID, s32 n, Vec3* pos) {
         gCamera->lookTimer = n;
         gCamera->lookMode = 4;
       }
-      gCamera->unk_1e = 0;
+      gCamera->completeAction = 0;
     }
   }
 }
 
 void FUN_0823bc70(s32 n) {
   if (gCamera != NULL) {
-    gCamera->unk_1c = 1;
+    gCamera->lookEnabled = 1;
     if (n < 2) {
       gCamera->lookMode = 0;
     } else {
       gCamera->lookTimer = n;
       gCamera->lookMode = 5;
     }
-    gCamera->unk_1e = 0;
+    gCamera->completeAction = 0;
   }
 }
 
 void FUN_0823bca8(s32 n) {
   if (gCamera != NULL) {
     if (n < 2) {
-      gCamera->unk_1c = 0;
+      gCamera->lookEnabled = 0;
     } else {
-      gCamera->unk_1c = 1;
+      gCamera->lookEnabled = 1;
       gCamera->lookMode = 6;
       gCamera->lookTimer = n;
     }
-    gCamera->unk_1e = 0;
+    gCamera->completeAction = 0;
   }
 }
 
@@ -333,12 +364,15 @@ void FUN_0823bce4(Vec3* pos, s32* enabled) {
   if (gCamera != NULL) {
     gCamera->targetPos = pos;
     gCamera->unk_a0 = enabled;
-    gCamera->unk_1c = 1;
+    gCamera->lookEnabled = 1;
     gCamera->lookMode = 7;
-    gCamera->unk_1e = 0;
+    gCamera->completeAction = 0;
   }
 }
 
+// 画面ゆれを開始する, frames が 0 で stopOnEnd が 1 のときは即座に止める
+// 残差0命令 (60/60), レジスタ名だけ違う: 原典は frames を r3, gCamera を r2, &gCamera を r4 に割り当てるが, こちらは &gCamera が r2 を取る
+// Tier A-C は試済: 早期 return 形, shakeTimer 経由の 0 判定 (これで命令数は一致した)
 NON_MATCH void FUN_0823bd14(u32 amplitude, u32 frames, s32 stopOnEnd) {
 #ifdef NONMATCHING_C
   if (gCamera != NULL && (gFlag030047a4 & FLAG030047A4_LINK) == 0) {
@@ -351,12 +385,12 @@ NON_MATCH void FUN_0823bd14(u32 amplitude, u32 frames, s32 stopOnEnd) {
       gCamera->shakeActive = TRUE;
       gCamera->shakeTarget = amplitude;
       gCamera->shakeTimer = frames;
-      if ((u16)frames == 0) {
+      if (gCamera->shakeTimer == 0) {
         gCamera->shakeCurrent = gCamera->shakeTarget;
       }
       gCamera->shakeStopOnEnd = stopOnEnd;
     }
-    gCamera->unk_1e = 0;
+    gCamera->completeAction = 0;
   }
 #else
   INCFUNC("asm/func/FUN_0823bd14.inc");
@@ -365,7 +399,7 @@ NON_MATCH void FUN_0823bd14(u32 amplitude, u32 frames, s32 stopOnEnd) {
 
 void FUN_0823bd98(Camera* cam) {
   if (cam != NULL) {
-    cam->unk_1e = 1;
+    cam->completeAction = 1;
     if (VM_SeekToNamedArg('e')) {
       s32 type, val;
       VM_DecodeValue(VM_GetPC(), &type, &val);
@@ -391,12 +425,12 @@ void FUN_0823be10(void) {
     pos.x = VM_GetValue();
     pos.y = VM_GetValue();
     pos.z = VM_GetValue();
-    FUN_0823bac8(&pos);
+    Camera_LookAt(&pos);
     FUN_0823bd98(gCamera);
   }
 }
 
-void Camera_PanTo(void) {
+void Cmd_CameraPanTo(void) {
   if (VM_SeekToNamedArg('f')) {
     Vec3 pos;
     s32 n = VM_GetValue();
@@ -469,13 +503,71 @@ void FUN_0823c050(void) {
   }
 }
 
-void FUN_0823c0a4(Camera* cam) { cam->unk_1e = 2; }
+void FUN_0823c0a4(Camera* cam) { cam->completeAction = 2; }
 
 void FUN_0823c0ac(Camera* cam) { MsgQueue_EndWait(&cam->mq, 1); }
 
-NAKED void FUN_0823c0bc(Camera* cam) { INCFUNC("asm/func/FUN_0823c0bc.inc"); }
+// 溜まったメッセージを受け取り, 注視点・移動・画面ゆれの指示を振り分ける
+// 残差2命令 (114/117): 原典は gMsgBus のプール定数を r0 に載せてループ内で読み直すが, こちらは cam が r0 に残るぶん r2 に載って使い回される
+// Tier A-C は試済: mq ローカルの有無/宣言順, bus ローカルの追加, 条件式のベースを cam->mq にする形
+NON_MATCH void Camera_PollMessages(Camera* cam) {
+#ifdef NONMATCHING_C
+  MsgQueue* mq = &cam->mq;
+  s32 i;
 
-void FUN_0823c1f8(Camera* cam) {
+  for (i = 0; i < mq->count[gMsgBus->bufIdx]; i++) {
+    MsgPacket* msg = mq->msgs[gMsgBus->bufIdx][i];
+
+    MsgQueue_BeginWait(mq, msg);
+    switch (msg->cmd) {
+      case 0: {
+        FUN_0823baa8();
+        FUN_0823c0a4(cam);
+        FUN_0823c0ac(cam);
+        break;
+      }
+      case 1: {
+        Vec3 pos;
+        pos.x = msg->args[0];
+        pos.y = msg->args[1];
+        pos.z = msg->args[2];
+        Camera_LookAt(&pos);
+        FUN_0823c0a4(cam);
+        FUN_0823c0ac(cam);
+        break;
+      }
+      case 2: {
+        Vec3 pos;
+        pos.x = msg->args[0];
+        pos.y = msg->args[1];
+        pos.z = msg->args[2];
+        FUN_0823bb7c(msg->args[3], &pos);
+        FUN_0823c0a4(cam);
+        break;
+      }
+      case 3: {
+        FUN_0823bc70(msg->args[0]);
+        FUN_0823c0a4(cam);
+        break;
+      }
+      case 4: {
+        FUN_0823bd14(msg->args[0], msg->args[1], msg->args[2]);
+        FUN_0823c0a4(cam);
+        break;
+      }
+      case 5: {
+        FUN_0823bca8(msg->args[0]);
+        FUN_0823c0a4(cam);
+        break;
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/Camera_PollMessages.inc");
+#endif
+}
+
+void Camera_RunScript(Camera* cam) {
   s32 scriptID = cam->scriptID;
   if (scriptID != 0) {
     if (cam->scriptIDType == 0) {
@@ -488,10 +580,10 @@ void FUN_0823c1f8(Camera* cam) {
   }
 }
 
-void FUN_0823c228(Camera* cam) {
-  if (cam->unk_1e == 1) {
-    FUN_0823c1f8(cam);
-  } else if (cam->unk_1e == 2) {
+void Camera_RunCompleteAction(Camera* cam) {
+  if (cam->completeAction == 1) {
+    Camera_RunScript(cam);
+  } else if (cam->completeAction == 2) {
     FUN_0823c0ac(cam);
   }
 }
@@ -546,12 +638,152 @@ void Camera_SetBoundsType2Scripted(void) {
   }
 }
 
-NAKED void FUN_0823c450(Camera* cam) { INCFUNC("asm/func/FUN_0823c450.inc"); }
+// moveMode に従ってカメラ自身の位置を1フレーム分進める
+void Camera_StepMove(Camera* cam) {
+  switch (cam->moveMode) {
+    case 0: {
+      if (gFlag030047a4 & FLAG030047A4_LINK) {
+        if (gEntity9A9F != NULL) {
+          s32 idx = gEntity9A9F->playerIdx;
 
-NAKED void FUN_0823c620(Camera* cam) { INCFUNC("asm/func/FUN_0823c620.inc"); }
+          if (idx >= 0 && gPlayerPtr[idx] != NULL) {
+            cam->pos.x = gPlayerPtr[idx]->mover.pos.x;
+            cam->pos.y = gPlayerPtr[idx]->mover.pos.y + 0x96;
+            cam->pos.z = gPlayerPtr[idx]->mover.pos.z;
+          }
+        }
+      } else if (gCameraCoords.unk_12 == 0) {
+        cam->pos.x = gStat->playerX;
+        cam->pos.y = gStat->playerY + 0x96;
+        cam->pos.z = gStat->playerZ;
+      } else {
+        cam->pos.x = gStat->playerX;
+        cam->pos.y = gStat->playerY - 0x96;
+        cam->pos.z = gStat->playerZ;
+      }
+      break;
+    }
+    case 1: {
+      cam->pos.x = cam->destPos.x;
+      cam->pos.y = cam->destPos.y;
+      cam->pos.z = cam->destPos.z;
+      break;
+    }
+    case 2: {
+      cam->pos.x = Div(cam->pos.x * (cam->moveTimer - 1) + cam->destPos.x, cam->moveTimer);
+      cam->pos.y = Div(cam->pos.y * (cam->moveTimer - 1) + cam->destPos.y, cam->moveTimer);
+      cam->pos.z = Div(cam->pos.z * (cam->moveTimer - 1) + cam->destPos.z, cam->moveTimer);
+      cam->moveTimer--;
+      if (cam->moveTimer <= 1) {
+        cam->moveMode = 1;
+      }
+      break;
+    }
+    case 3: {
+      cam->pos.x = Div(cam->pos.x * (cam->moveTimer - 1) + gStat->playerX, cam->moveTimer);
+      cam->pos.y = Div(cam->pos.y * (cam->moveTimer - 1) + gStat->playerY + 0x96, cam->moveTimer);
+      cam->pos.z = Div(cam->pos.z * (cam->moveTimer - 1) + gStat->playerZ, cam->moveTimer);
+      cam->moveTimer--;
+      if (cam->moveTimer <= 1) {
+        cam->moveMode = 0;
+      }
+      break;
+    }
+  }
+}
+
+// lookMode に従って注視点 (gCameraCoords.worldPos) を1フレーム分進める
+void Camera_StepLook(Camera* cam) {
+  Mover* target;
+
+  switch (cam->lookMode) {
+    case 0: {
+      if (gCameraCoords.unk_12 == 0) {
+        gCameraCoords.worldPos.x = gStat->playerX;
+        gCameraCoords.worldPos.y = gStat->playerY + 0x96;
+        gCameraCoords.worldPos.z = gStat->playerZ;
+      } else {
+        gCameraCoords.worldPos.x = gStat->playerX;
+        gCameraCoords.worldPos.y = gStat->playerY - 0x96;
+        gCameraCoords.worldPos.z = gStat->playerZ;
+      }
+      break;
+    }
+    case 1: {
+      gCameraCoords.worldPos.x = cam->pos_6c.x;
+      gCameraCoords.worldPos.y = cam->pos_6c.y;
+      gCameraCoords.worldPos.z = cam->pos_6c.z;
+      break;
+    }
+    case 2: {
+      gCameraCoords.worldPos.x = Div(gCameraCoords.worldPos.x * (cam->lookTimer - 1) + cam->pos_6c.x, cam->lookTimer);
+      gCameraCoords.worldPos.y = Div(gCameraCoords.worldPos.y * (cam->lookTimer - 1) + cam->pos_6c.y, cam->lookTimer);
+      gCameraCoords.worldPos.z = Div(gCameraCoords.worldPos.z * (cam->lookTimer - 1) + cam->pos_6c.z, cam->lookTimer);
+      cam->lookTimer--;
+      if (cam->lookTimer <= 1) {
+        cam->lookMode = 1;
+        Camera_RunCompleteAction(cam);
+      }
+      break;
+    }
+    case 3: {
+      target = Mover_FindByID_Proxy(cam->lookTargetID);
+      if (target != NULL) {
+        gCameraCoords.worldPos.x = target->pos.x + cam->pos_74.x;
+        gCameraCoords.worldPos.y = target->pos.y + cam->pos_74.y;
+        gCameraCoords.worldPos.z = target->pos.z + cam->pos_74.z;
+      }
+      break;
+    }
+    case 4: {
+      target = Mover_FindByID_Proxy(cam->lookTargetID);
+      if (target != NULL) {
+        gCameraCoords.worldPos.x = Div(gCameraCoords.worldPos.x * (cam->lookTimer - 1) + (target->pos.x + cam->pos_74.x), cam->lookTimer);
+        gCameraCoords.worldPos.y = Div(gCameraCoords.worldPos.y * (cam->lookTimer - 1) + (target->pos.y + cam->pos_74.y), cam->lookTimer);
+        gCameraCoords.worldPos.z = Div(gCameraCoords.worldPos.z * (cam->lookTimer - 1) + (target->pos.z + cam->pos_74.z), cam->lookTimer);
+        cam->lookTimer--;
+        if (cam->lookTimer <= 1) {
+          cam->lookMode = 3;
+          Camera_RunCompleteAction(cam);
+        }
+      }
+      break;
+    }
+    case 5: {
+      gCameraCoords.worldPos.x = Div(gCameraCoords.worldPos.x * (cam->lookTimer - 1) + gStat->playerX, cam->lookTimer);
+      gCameraCoords.worldPos.y = Div(gCameraCoords.worldPos.y * (cam->lookTimer - 1) + gStat->playerY + 0x96, cam->lookTimer);
+      gCameraCoords.worldPos.z = Div(gCameraCoords.worldPos.z * (cam->lookTimer - 1) + gStat->playerZ, cam->lookTimer);
+      cam->lookTimer--;
+      if (cam->lookTimer <= 1) {
+        cam->lookMode = 0;
+        Camera_RunCompleteAction(cam);
+      }
+      break;
+    }
+    case 6: {
+      gCameraCoords.worldPos.x = Div(gCameraCoords.worldPos.x * (cam->lookTimer - 1) + cam->pos.x, cam->lookTimer);
+      gCameraCoords.worldPos.y = Div(gCameraCoords.worldPos.y * (cam->lookTimer - 1) + cam->pos.y, cam->lookTimer);
+      gCameraCoords.worldPos.z = Div(gCameraCoords.worldPos.z * (cam->lookTimer - 1) + cam->pos.z, cam->lookTimer);
+      cam->lookTimer--;
+      if (cam->lookTimer <= 1) {
+        cam->lookEnabled = 0;
+        Camera_RunCompleteAction(cam);
+      }
+      break;
+    }
+    case 7: {
+      if (*cam->unk_a0 != 0) {
+        gCameraCoords.worldPos = *cam->targetPos;
+      }
+      break;
+    }
+  }
+}
 
 // 画面揺れを1フレーム進め、worldPos に揺れのオフセットを足す
-NON_MATCH void* FUN_0823c928(Camera* cam) {
+// 画面ゆれを1フレーム分進め, 振幅ぶんの乱数オフセットをカメラ座標に反映する
+// 残差2命令 (131/129): 原典は gRandomTable のアドレスを r8 に巻き上げて 2回の Random() で共有するが, こちらは r8 が &shakeOffsetX に取られてテーブルを毎回ロードしなおす
+NON_MATCH void* Camera_StepShake(Camera* cam) {
 #ifdef NONMATCHING_C
   if (cam->shakeActive) {
     if (cam->shakeTimer != 0) {
@@ -567,17 +799,15 @@ NON_MATCH void* FUN_0823c928(Camera* cam) {
         } else {
           cam->shakeCurrent = cam->shakeTarget;
         }
-        FUN_0823c228(cam);
+        Camera_RunCompleteAction(cam);
       }
     } else {
       cam->shakeAmplitude = cam->shakeCurrent;
     }
   }
   if (cam->shakeAmplitude != 0) {
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    cam->shakeOffsetX = ModArm(cam->shakeAmplitude, gRandomTable[gRandTableIdx]) - (cam->shakeAmplitude >> 1);
-    gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-    cam->shakeOffsetZ = ModArm(cam->shakeAmplitude, gRandomTable[gRandTableIdx]) - (cam->shakeAmplitude >> 1);
+    cam->shakeOffsetX = ModArm(cam->shakeAmplitude, Random()) - (cam->shakeAmplitude >> 1);
+    cam->shakeOffsetZ = ModArm(cam->shakeAmplitude, Random()) - (cam->shakeAmplitude >> 1);
     gCameraCoords.worldPos.x += cam->shakeOffsetX;
     gCameraCoords.worldPos.z += cam->shakeOffsetZ;
     cam->shakeAmplitude = 0;
@@ -586,11 +816,30 @@ NON_MATCH void* FUN_0823c928(Camera* cam) {
     cam->shakeOffsetZ = 0;
   }
 #else
-  INCFUNC("asm/func/FUN_0823c928.inc");
+  INCFUNC("asm/func/Camera_StepShake.inc");
 #endif
 }
 
-NAKED s32 Camera_Update(Camera* cam) { INCFUNC("asm/func/Camera_Update.inc"); }
+s32 Camera_Update(Camera* cam) {
+  if (!(gFlag030047a4 & FLAG030047A4_LINK)) {
+    Camera_PollMessages(cam);
+  }
+
+  if (!(gEntityDisableFlags & ENTITY_DISABLE_2)) {
+    Camera_StepMove(cam);
+    if (cam->lookEnabled == 0) {
+      gCameraCoords.worldPos.x = cam->pos.x;
+      gCameraCoords.worldPos.y = cam->pos.y;
+      gCameraCoords.worldPos.z = cam->pos.z;
+    } else {
+      Camera_StepLook(cam);
+    }
+    Camera_StepShake(cam);
+    Camera_ApplyBounds(cam, &gCameraCoords.worldPos);
+  }
+  WorldToVp(&gCameraVpCoords, &gCameraCoords.worldPos);
+  return 0;
+}
 
 s32 Camera_Destroy(Camera* cam) {
   if (!(gFlag030047a4 & FLAG030047A4_LINK)) {
@@ -600,7 +849,33 @@ s32 Camera_Destroy(Camera* cam) {
   return 0;
 }
 
-NAKED s32 Camera_Init(Camera* cam, u32 val) { INCFUNC("asm/func/Camera_Init.inc"); }
+s32 Camera_Init(Camera* cam, u32 val) {
+  cam->unk_18 = val;
+  cam->lookEnabled = 0;
+  cam->moveMode = 0;
+  cam->pos.x = gStat->playerX;
+  cam->pos.y = gStat->playerY + 0x96;
+  cam->pos.z = gStat->playerZ;
+  cam->unk_8c = 0;
+  gCameraCoords.worldPos.x = cam->pos.x;
+  gCameraCoords.worldPos.y = cam->pos.y;
+  gCameraCoords.worldPos.z = cam->pos.z;
+  WorldToVp(&gCameraVpCoords, &gCameraCoords.worldPos);
+  cam->shakeActive = FALSE;
+  cam->shakeStopOnEnd = FALSE;
+  cam->shakeCurrent = 0;
+  cam->shakeTarget = 0;
+  cam->shakeAmplitude = 0;
+  cam->shakeOffsetX = 0;
+  cam->shakeOffsetZ = 0;
+  cam->scriptID = 0;
+  WorldToVp(&gCameraVpCoords, &gCameraCoords.worldPos);
+  if (!(gFlag030047a4 & FLAG030047A4_LINK)) {
+    MsgQueue_Register(&cam->mq, cam->unk_18, 6);
+  }
+  gCamera = cam;
+  return 0;
+}
 
 Camera* Camera_Create(u32 val) {
   if (gCamera == NULL) {

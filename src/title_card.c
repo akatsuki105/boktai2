@@ -138,7 +138,7 @@ NON_MATCH s32 TitleCard_Update(TitleCard* p) {
         p->stateTimer = 0;
         p->progressFn = TitleCard_UpdateOpen;
         if (p->lineTop != p->lineBottom) {
-          PlaySound_082406e0(0xE1);
+          PlaySound_082406e0(SONG_225);
         }
         p->noiseAmp = 0x80;
         p->noiseAmpStep = -2;
@@ -159,7 +159,7 @@ NON_MATCH s32 TitleCard_Update(TitleCard* p) {
         p->stateTimer = 0;
         p->progressFn = TitleCard_UpdateClose;
         if (p->lineTop != p->lineBottom) {
-          PlaySound_082406e0(0xE3);
+          PlaySound_082406e0(SONG_227);
         }
         p->noiseAmp = 0;
         p->noiseAmpStep = 4;

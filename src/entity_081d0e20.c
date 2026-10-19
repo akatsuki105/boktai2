@@ -169,9 +169,9 @@ void FUN_081d006c(Entity081d0e20Elem* p) {
       case 0:
       case 1: {
         if (gFlag030047a4 & FLAG030047A4_LINK) {
-          PlaySound_082406e0(0x26D);
+          PlaySound_082406e0(SE_WOOD_DOOR_621);
         } else {
-          PlaySound_082406e0(0x1AB);
+          PlaySound_082406e0(SE_WOOD_DOOR_427);
         }
         break;
       }

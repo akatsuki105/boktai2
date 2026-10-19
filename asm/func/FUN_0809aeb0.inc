@@ -97,7 +97,7 @@ _0809AF36:
 	ldr r0, [r2]
 	ands r0, r1
 	str r0, [r2]
-	bl FUN_0824082c
+	bl Sound_Resume
 	ldr r0, _0809B0F4 @ =0x00003FB8
 	adds r4, r6, r0
 	ldrb r0, [r4]

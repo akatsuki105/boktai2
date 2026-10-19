@@ -259,7 +259,7 @@ _08223642:
 	orrs r1, r0
 	strb r1, [r7]
 	adds r0, r5, #0
-	bl FUN_08223984
+	bl Entity8AAB_Pause
 	b _08223720
 	.align 2, 0
 _08223668: .4byte 0x030046A0

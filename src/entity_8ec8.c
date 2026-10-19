@@ -3,6 +3,7 @@
 #include "input.h"
 #include "msgbus.h"
 #include "player.h"
+#include "shademan.h"
 #include "sound.h"
 
 // 一定間隔で gCamera->shakeAmplitude を上げて NOISE_QUAKE_121 を鳴らすシングルトン, メッセージ (cmd 4/5) で外部からも起こせる
@@ -59,7 +60,7 @@ NAKED s32 Entity8EC8_Update(Entity8EC8* p) { INCFUNC("asm/func/Entity8EC8_Update
 
 s32 Entity8EC8_Destroy(Entity8EC8* p) {
   MsgQueue_Unregister(&p->mq);
-  sound_08240740(0x6A);
+  sound_08240740(NOISE_QUAKE);
   return 0;
 }
 
@@ -78,4 +79,14 @@ Entity8EC8* Entity8EC8_Create(u32 id) {
   return p;
 }
 
-NAKED void FUN_0821bd14(unknown* p) { INCFUNC("asm/func/FUN_0821bd14.inc"); }
+// 点滅をやめて unk_38c の bit8 を立てる
+// 残差は命令の並び順だけ (17 対 17), 原典は定数 0x100 を unk_38c のアドレス計算より前に作る
+// 0x100 を左に書く形 / AuxSprite_SetFlags 経由 / MainSprite* ローカルは試済
+NON_MATCH void FUN_0821bd14(Entity0623* p) {
+#ifdef NONMATCHING_C
+  MainSprite_ClearFlags(&p->sprite_2bc, SPRFLAG_BLINK_ODD);
+  p->unk_38c |= 0x100;
+#else
+  INCFUNC("asm/func/FUN_0821bd14.inc");
+#endif
+}

@@ -147,8 +147,7 @@ void FUN_0820f130(PreviewStage* p) {
     SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, 1, 0, 5);
     FUN_08055c04(&p->parts[0]);
     if (FUN_08055d20(&p->parts[0]) != 0) {
-      gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
-      p->swayAngle = Mod(*(gRandomTable + gRandTableIdx), 32) + 60;
+      p->swayAngle = Mod(Random(), 32) + 60;
     }
   } else {
     p->swayAngle--;

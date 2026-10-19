@@ -102,7 +102,7 @@ _0801E160:
 	ldr r2, [r4, #0x1c]
 	str r1, [r4, #0x20]
 	str r2, [r4, #0x24]
-	bl FUN_0823b8ac
+	bl Camera_MoveTo
 	movs r0, #0x63
 	movs r1, #0
 	bl VM_GetNamedArgValue

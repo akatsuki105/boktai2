@@ -269,7 +269,7 @@ _08088F32:
 	cmp r0, #0xff
 	bls _08088FAE
 	adds r0, r4, #0
-	bl FUN_080856cc
+	bl Coffin_RemoveEffSprite
 	ldr r0, _08088F8C @ =0x03002C00
 	ldr r0, [r0]
 	movs r1, #0

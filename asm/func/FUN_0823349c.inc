@@ -163,7 +163,7 @@ _0823361C:
 	adds r0, r7, #0
 	mov r1, r8
 	mov r2, sp
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	movs r0, #0
 	b _08233D3E
 _0823362A:
@@ -242,7 +242,7 @@ _082336BA:
 	adds r0, r7, #0
 	mov r1, r8
 	mov r2, sp
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	movs r0, #0
 	b _08233D3E
 _082336C8:
@@ -308,7 +308,7 @@ _0823373E:
 	adds r0, r7, #0
 	mov r1, r8
 	mov r2, sp
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	movs r0, #0
 	b _08233D3E
 _0823374C:
@@ -375,7 +375,7 @@ _082337C4:
 	adds r0, r7, #0
 	mov r1, r8
 	mov r2, sp
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	movs r0, #0
 	b _08233D3E
 _082337D2:
@@ -442,7 +442,7 @@ _0823384A:
 	adds r0, r7, #0
 	mov r1, r8
 	mov r2, sp
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	movs r0, #0
 	b _08233D3E
 _08233858:
@@ -529,7 +529,7 @@ _08233894:
 	adds r0, r7, #0
 	mov r1, r8
 	mov r2, sp
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	movs r0, #0
 	b _08233D3E
 	.align 2, 0
@@ -582,7 +582,7 @@ _08233950:
 	adds r0, r7, #0
 	mov r1, r8
 	adds r2, r5, #0
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	b _08233D3C
 _0823397A:
 	adds r0, r7, #0
@@ -685,7 +685,7 @@ _082339D4:
 	adds r0, r7, #0
 	mov r1, r8
 	mov r2, sp
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	movs r0, #0
 	b _08233D3E
 	.align 2, 0
@@ -817,7 +817,7 @@ _08233AE4:
 	adds r0, r7, #0
 	mov r1, r8
 	mov r2, sp
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	movs r0, #0
 	b _08233D3E
 	.align 2, 0
@@ -871,7 +871,7 @@ _08233B9C:
 	adds r0, r7, #0
 	mov r1, r8
 	mov r2, sb
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	b _08233D3C
 _08233BCA:
 	adds r0, r7, #0
@@ -920,7 +920,7 @@ _08233BE8:
 	adds r0, r7, #0
 	mov r1, r8
 	adds r2, r4, #0
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	b _08233D3C
 _08233C2E:
 	mov r4, r8
@@ -978,7 +978,7 @@ _08233C2E:
 	adds r0, r7, #0
 	mov r1, r8
 	mov r2, sp
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	movs r0, #0
 	b _08233D3E
 	.align 2, 0
@@ -1011,7 +1011,7 @@ _08233CDC:
 	adds r0, r7, #0
 	mov r1, r8
 	add r2, sp, #8
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	b _08233D3C
 	.align 2, 0
 _08233CE8: .4byte 0x030046A8
@@ -1032,7 +1032,7 @@ _08233CEC:
 	strh r0, [r2, #4]
 	adds r0, r7, #0
 	mov r1, r8
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 	b _08233D3C
 _08233D14:
 	adds r0, r7, #0
@@ -1053,7 +1053,7 @@ _08233D30:
 	adds r0, r7, #0
 	mov r1, r8
 	adds r2, r6, #0
-	bl FUN_082332f8
+	bl Map_UpdateMoverTile
 _08233D3C:
 	movs r0, #1
 _08233D3E:

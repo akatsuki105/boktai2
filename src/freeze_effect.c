@@ -98,7 +98,7 @@ void FreezeEffect_StateGather(FreezeEffect* p) {
   FreezeEffect_SpawnSubParticle(p);
   if (++p->stateTimer > 31) {
     p->ptcl.flags &= ~SPRFLAG_HIDDEN;
-    PlaySound_082406e0(0x133);
+    PlaySound_082406e0(SE_CRASH_307);
     FreezeEffect_SetState(p, FreezeEffect_StateVanish);
   }
 }
@@ -192,7 +192,7 @@ void FreezeEffect_InitHitbox(FreezeEffect* p, s32 param_2, s32 param_3, s32 para
   Vec3 size, offset;
   size.x = 100, size.y = 100, size.z = 100;
   offset.x = 0, offset.y = 0, offset.z = 0;
-  Hitbox_Init(hitbox, 0, HBFLAG_UNK_13 | HBFLAG_UNK_8, 0, param_2, &size, &offset);
+  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE, 0, param_2, &size, &offset);
   Hitbox_SetAttack(hitbox, param_3, 0, 0x4000, 0, 0);
   hitbox->angle = param_4;
   Hitbox_SetHandler(hitbox, NULL, p);
@@ -204,7 +204,7 @@ void FreezeEffect_InitCenterParticle(FreezeEffect* p) {
   Particle* ptcl = &p->ptcl;
 
   p->ptclGroup = GetParticleGroup(PTCL_GROUP_0);
-  Particle_Add(ptcl, p->ptclGroup, 1);
+  Particle_Add(ptcl, p->ptclGroup, SPRFLAG_HIDDEN);
   Particle_SetOffset(ptcl, -8, -8);
   Particle_SetFrame(ptcl, p->ptclGroup, 10);
   ptcl->pos = p->pos;
@@ -220,7 +220,7 @@ void FreezeEffect_InitSubParticles(FreezeEffect* p) {
   p->subPtclGroup = GetParticleGroup(PTCL_GROUP_2);
   for (i = 0; i < 8; i++) {
     Particle* ptcl = &p->subPtcls[i].base;
-    Particle_Add(ptcl, p->subPtclGroup, 1);
+    Particle_Add(ptcl, p->subPtclGroup, SPRFLAG_HIDDEN);
     Particle_SetOffset(ptcl, -4, -4);
     Particle_SetFrame(ptcl, p->subPtclGroup, 8);
     Particle_SetPltt(ptcl, 1);
@@ -238,7 +238,7 @@ s32 FreezeEffect_Init(FreezeEffect* p, Vec3* pos, s32 param_3, s32 param_4, s32 
   FreezeEffect_InitHitbox(p, param_3, param_4, param_5);
   p->unk_202 = 0;
   p->unk_204 = param_6;
-  PlaySound_082406e0(0x398);
+  PlaySound_082406e0(SONG_920);
   FreezeEffect_SetState(p, FreezeEffect_StateGather);
   return 0;
 }

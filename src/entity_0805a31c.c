@@ -72,7 +72,7 @@ Entity0805a31cElem* FUN_08059b7c(Entity0805a31c* p, u32* outIndex) {
 // 当たったら状態5 (被弾) へ入れ直して効果音を鳴らす
 void FUN_08059bb0(HitboxData* a, HitboxData* b, Entity0805a31cElem* owner) {
   Entity0805a31cElem_SetState(owner, 5);
-  PlaySound_082406e0(0x170);
+  PlaySound_082406e0(SONG_368);
 }
 
 void FUN_08059bcc(void) {}
@@ -102,7 +102,7 @@ void FUN_08059d60(Entity0805a31c* p, Entity0805a31cElem* elem, s32 index) {
   }
   if (elem->timer >= elem->duration) {
     Entity0805a31cElem_SetState(elem, 1);
-    PlaySound_082406e0(0x16D);
+    PlaySound_082406e0(SONG_365);
   }
   elem->timer++;
 }
@@ -171,5 +171,3 @@ Entity0805a31c* Entity0805a31c_Create(u32 attackID) {
 }
 
 NAKED s32 FUN_0805a360(u32 param_1, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_0805a360.inc"); }
-
-NAKED s32 FUN_0805a43c(Entity0805a31c* p, u32 param_2) { INCFUNC("asm/func/FUN_0805a43c.inc"); }
