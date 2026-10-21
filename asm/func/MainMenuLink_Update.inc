@@ -18,7 +18,7 @@
 	adds r0, r2, r3
 	str r1, [r0]
 	adds r0, r2, #0
-	bl FUN_0809c880
+	bl MainMenuLink_Update_Internal
 _0809C914:
 	movs r0, #0
 	pop {r1}

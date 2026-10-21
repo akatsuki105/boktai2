@@ -194,7 +194,7 @@ _080B756A:
 	ldr r0, _080B7598 @ =0x00001428
 	adds r4, r5, r0
 	adds r0, r4, #0
-	bl FUN_080b9f70
+	bl ShopCursor_Move
 	cmp r0, #0
 	beq _080B7590
 	ldr r0, _080B759C @ =0x000010F8

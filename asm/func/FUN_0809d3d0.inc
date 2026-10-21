@@ -456,7 +456,7 @@ _0809D770:
 	ldr r2, _0809D7A0 @ =0x00000E28
 	adds r4, r6, r2
 	adds r0, r4, #0
-	bl FUN_080b9f70
+	bl ShopCursor_Move
 	cmp r0, #0
 	beq _0809D792
 	adds r0, r6, #0

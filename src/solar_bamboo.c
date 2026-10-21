@@ -43,7 +43,7 @@ void FUN_0800c0b0(HitboxData* a, HitboxData* b, SolarBamboo* p) {
 
   damage = a->damage;
   if (damage == 0) {
-    damage = Hitbox_TestAttr(a, HBATTR_6) ? 50 : 30;
+    damage = Hitbox_TestAttr(a, HBATTR_ALL) ? 50 : 30;
   }
   if (p->unk_28 == 0 && damage > 0) {
     p->unk_28 = 8;

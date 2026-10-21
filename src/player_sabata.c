@@ -614,8 +614,6 @@ void PlayerSabata_SetupHurtbox(Player* p) {
   Hitbox_Register(hurtbox);
 }
 
-extern u16 u16_03002b68[4];  // src/iwram2.c
-
 void FUN_08084330(Player* p);
 
 s32 FUN_080817ec(Player* p) {

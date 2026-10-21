@@ -39,7 +39,7 @@ bool32 FUN_081dfa04(void);
 void FUN_080b9a0c(unknown* p);
 bool32 FUN_080b9adc(unknown* p);
 void FUN_080b9fc4(unknown* p, unknown* q);
-void MenuCursor_Init(unknown* p, s32 a, s32 b, s32 c, s32 d);
+void ShopCursor_Init(unknown* p, s32 a, s32 b, s32 c, s32 d);
 
 // 状態関数を差し替える
 void FUN_0809ce90(Entity1B24* p, void* fn) {
@@ -147,7 +147,7 @@ NAKED void FUN_0809d878(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d878.inc"); }
 NAKED void FUN_0809d934(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d934.inc"); }
 
 void FUN_0809dd34(Entity1B24* p) {
-  MenuCursor_Init(p->unk_e28, 0, 0, 0, 30);
+  ShopCursor_Init(p->unk_e28, 0, 0, 0, 30);
   FUN_080b9fc4(p->unk_e28, &p->sprites[18]);
 }
 

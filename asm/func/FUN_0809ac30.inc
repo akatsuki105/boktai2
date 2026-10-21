@@ -198,7 +198,7 @@ _0809ADC4:
 _0809ADDC:
 	strb r0, [r4]
 	adds r0, r5, #0
-	bl FUN_0809a67c
+	bl MainMenu_InitPage
 	b _0809AE02
 	.align 2, 0
 _0809ADE8: .4byte 0x00000F56

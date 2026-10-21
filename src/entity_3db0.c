@@ -66,7 +66,7 @@ static inline s32 GetTileHeightAt(WorldPos* pos) {
 }
 
 void Entity3DB0_OnHit(HitboxData* a, HitboxData* b, Entity3DB0* p) {
-  if (Hitbox_HasWeakness(a, HBATTR_6)) {
+  if (Hitbox_HasWeakness(a, HBATTR_ALL)) {
     p->triggered = TRUE;
   }
 }

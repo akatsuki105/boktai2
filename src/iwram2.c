@@ -14,35 +14,24 @@
 #include "video.h"
 #include "vm.h"
 
-COMMON_DATA u16 u16_03002b60 = 0;                       // 0x03002B60
-COMMON_DATA u16 ALIGNED(4) gConfusedDir = 0;            // 0x03002B64, 混乱の状態異常のときに動く方向 (エリア移動などで Player を再生成したときにこれを引き継ぐ)
-COMMON_DATA u16 ALIGNED(4) u16_03002b68[4] = {};        // 0x03002B68
-COMMON_DATA u16 u16_03002b70 = 0;                       // 0x03002B70
-COMMON_DATA u16 ALIGNED(4) gSabataDefence = 0;          // 0x03002B74, サバタの防御力
-COMMON_DATA u16 ALIGNED(4) gSunGaugeOverrideTimer = 0;  // 0x03002B78, FUN_0807b564 が 0 に戻す
-COMMON_DATA u16 ALIGNED(4) u16_03002b7c = 0;            // 0x03002B7C
-COMMON_DATA u16 ALIGNED(4) gSunGaugeOverride = 0;       // 0x03002B80, ApplyLxModifiers が 1 なら太陽レベル +4、2 なら日光なしにする
-COMMON_DATA u16 ALIGNED(4) u16_03002b84 = 0;            // 0x03002B84, Player_InitEffects が 1 を入れる
-COMMON_DATA u16 ALIGNED(4) u16_03002b88 = 0;            // 0x03002B88
-COMMON_DATA u16 ALIGNED(4) u16_03002b8c = 0;            // 0x03002B8C
-COMMON_DATA u16 ALIGNED(4) gWindAngle = 0;              // 0x03002B90, Player_InitEffects が 0 に戻す
-COMMON_DATA u16 ALIGNED(8) gPlayerCount = 0;            // 0x03002B98, Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
-COMMON_DATA u8 u8_03002b9a[6] = {};                     // todo
-COMMON_DATA u16 u16_ARRAY_03002ba0[3] = {};             // 0x03002BA0, Player がいないときに FUN_0807b428 が書き込む退避先
-COMMON_DATA u8 u8_03002ba6[2] = {};                     // todo
-COMMON_DATA Entity5941Node* gChangeWolfTarget = NULL;   // 0x03002BA8, チェンジウルフで噛みつく相手のノード, Player_Destroy が NULL に戻す
-COMMON_DATA u16 u16_03002bac = 0;                       // 0x03002BAC, Player_InitEffects が 0 に戻す
-COMMON_DATA u8 u8_03002bae[2] = {};                     // todo
-COMMON_DATA u16 u16_03002bb0 = 0;                       // 0x03002BB0, Player_GetEquippedMagic がサバタのとき 0 に戻す
-COMMON_DATA u8 u8_03002bb2[14] = {};                    // todo
-COMMON_DATA u32 u32_03002bc0[4] = {};                   // 0x03002BC0, Playerごとのビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る
-COMMON_DATA u16 u16_03002bd0 = 0;                       // 0x03002BD0, FUN_0807b564 が 0 に戻す
-COMMON_DATA u8 u8_03002bd2[14] = {};                    // todo
-COMMON_DATA struct Player* gPlayerPtr[4] = {};          // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
-COMMON_DATA u16 u16_03002bf0 = 0;                       // 0x03002BF0, 0 以外かつ gSunGaugeOverride が 1 のとき Entity0809eb24_Update が unk_29 を立てる
-COMMON_DATA u8 u8_03002bf2[2] = {};                     // todo
-COMMON_DATA u16 u16_03002bf4 = 0;                       // 0x03002BF4, Player_Destroy が 0 に戻す
-COMMON_DATA u8 u8_03002bf6[2] = {};                     // todo
+COMMON_DATA u16 ALIGNED(4) gWindAngle = 0;             // 0x03002B90, Player_InitEffects が 0 に戻す
+COMMON_DATA u16 ALIGNED(8) gPlayerCount = 0;           // 0x03002B98, Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
+COMMON_DATA u8 u8_03002b9a[6] = {};                    // todo
+COMMON_DATA u16 u16_ARRAY_03002ba0[3] = {};            // 0x03002BA0, Player がいないときに FUN_0807b428 が書き込む退避先
+COMMON_DATA u8 u8_03002ba6[2] = {};                    // todo
+COMMON_DATA Entity5941Node* gChangeWolfTarget = NULL;  // 0x03002BA8, チェンジウルフで噛みつく相手のノード, Player_Destroy が NULL に戻す
+COMMON_DATA u16 u16_03002bac = 0;                      // 0x03002BAC, Player_InitEffects が 0 に戻す
+COMMON_DATA u8 u8_03002bae[2] = {};                    // todo
+COMMON_DATA u16 u16_03002bb0 = 0;                      // 0x03002BB0, Player_GetEquippedMagic がサバタのとき 0 に戻す
+COMMON_DATA u8 u8_03002bb2[14] = {};                   // todo
+COMMON_DATA u32 u32_03002bc0[4] = {};                  // 0x03002BC0, Playerごとのビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る
+COMMON_DATA u16 u16_03002bd0 = 0;                      // 0x03002BD0, FUN_0807b564 が 0 に戻す
+COMMON_DATA u8 u8_03002bd2[14] = {};                   // todo
+COMMON_DATA struct Player* gPlayerPtr[4] = {};         // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
+COMMON_DATA u16 u16_03002bf0 = 0;                      // 0x03002BF0, 0 以外かつ gSunGaugeOverride が 1 のとき Entity0809eb24_Update が unk_29 を立てる
+COMMON_DATA u8 u8_03002bf2[2] = {};                    // todo
+COMMON_DATA u16 u16_03002bf4 = 0;                      // 0x03002BF4, Player_Destroy が 0 に戻す
+COMMON_DATA u8 u8_03002bf6[2] = {};                    // todo
 
 COMMON_DATA struct Entity5941* gEntity5941 = NULL;  // 0x03002BF8
 COMMON_DATA struct EntityBD74* gEntityBD74 = NULL;  // 0x03002BFC
@@ -52,7 +41,7 @@ COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
 
 COMMON_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
 COMMON_DATA u8 u8_03002c12[0x03002C14 - 0x03002C12] = {};  // todo
-COMMON_DATA u16 u16_03002c14 = 0;                          // 0x03002C14, 根拠: EntityCC28_Destroy_0809cc04 が EntityCC28.state2 を書き込む
+COMMON_DATA u16 u16_03002c14 = 0;                          // 0x03002C14, 根拠: MainMenu1P_Destroy が MainMenu.page を書き込む
 COMMON_DATA u8 u8_03002c16[0x03002C18 - 0x03002C16] = {};  // todo
 COMMON_DATA u16 u16_03002c18 = 0;                          // 0x03002C18, FUN_0809c040 が 1 を入れる
 COMMON_DATA u8 u8_03002c1a[0x03002C3C - 0x03002C1A] = {};  // todo

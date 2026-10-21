@@ -17,7 +17,7 @@
 	ldrb r0, [r5]
 	adds r4, r4, r0
 	ldrb r0, [r4]
-	bl item_08092034
+	bl Item_GetRotStageIcon
 	adds r3, r0, #0
 	b _080B5BD2
 	.align 2, 0

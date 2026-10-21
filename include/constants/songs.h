@@ -221,9 +221,9 @@
 #define SONG_217 217
 #define SONG_218 218
 #define SONG_219 219
-#define SONG_220 220
-#define SE_SELECT 221  // メニュー画面でアイテムとかを選んだ時の音
-#define SE_CANCEL 222  // インベントリでAボタンで選択したものをBボタンで選択キャンセルしたときのSE
+#define SE_CURSOR_MOVE 220  // インベントリでカーソルを動かした時の音
+#define SE_SELECT 221       // メニュー画面でアイテムとかを選んだ時の音
+#define SE_CANCEL 222       // インベントリでAボタンで選択したものをBボタンで選択キャンセルしたときのSE
 #define SONG_223 223
 #define SONG_224 224
 #define SONG_225 225
@@ -264,7 +264,7 @@
 #define CRY_MUMMY_260 260
 #define SE_NONE_261 261  // 無音？
 #define SONG_262 262
-#define SONG_263 263
+#define SE_CHOICE 263  // 選択肢が表示された時の音 (例: 図書館でレディに話しかけた時)
 #define SONG_264 264
 #define SONG_265 265
 #define SONG_266 266
@@ -687,7 +687,7 @@
 #define SONG_683 683
 #define SONG_684 684
 #define SONG_685 685
-#define SONG_686 686
+#define SE_SAVE_SUCCESS 686  // save成功時の音
 #define SONG_687 687
 #define SONG_688 688
 #define SONG_689 689
@@ -899,7 +899,7 @@
 #define SONG_895 895
 #define SONG_896 896
 #define SE_WEAPON_LV_UP 897
-#define SONG_898 898
+#define SE_BREAK_898 898  // 何かが砕けるような音 (武器が壊れた時？)
 #define SE_899 899
 #define SONG_900 900
 #define SONG_901 901
@@ -907,7 +907,7 @@
 #define SONG_903 903
 #define SE_LEVEL_UP 904
 #define SONG_905 905
-#define SONG_906 906
+#define SE_SWAP_SLOT 906  // インベントリのスロットをスワップする時の音
 #define SONG_907 907
 #define SONG_908 908
 #define SONG_909 909

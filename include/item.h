@@ -6,7 +6,7 @@
 typedef u16 ItemEffectType;  // see "include/constants/item.h", gItemEffectHandlers の idx
 
 typedef struct {
-  u16 unk_00;                 // 0x00
+  u16 unk_00;                 // 0x00, TODO: item_08091774, item_08091788, item_0809179c, item_080917b4 の内容を考慮する
   ItemEffectType effectType;  // 0x02, see ItemEffectType
   u16 durability;             // 0x04, 腐りにくさ (0: 腐らない, 大きいほど腐りにくい)
   u16 value1;                 // 0x06, パラメータ1, ItemEffectType に依存 e.g. 回復アイテム(IET_HP)の場合は回復するHPの割合, gItemEffectHandlers の 第2引数

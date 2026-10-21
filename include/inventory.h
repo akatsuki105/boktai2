@@ -11,6 +11,8 @@ void RemoveValuable(slot32_t slot);
 void SetItem(slot32_t slot, item32_t id);
 void SetValuable(slot32_t slot, item32_t id);
 s32 GetRotCount(slot32_t slot);
+s32 GetRotCount2(slot32_t slot);
+void SetRotCount(slot32_t slot, u32 value);
 void SetRotCount2(slot32_t slot, u32 value);
 void SortInventory(slot32_t slot);
 void SortArmors(slot32_t from);

@@ -38,7 +38,7 @@ _080961EC:
 	ldr r1, _08096204 @ =FUN_08095ae8
 	adds r0, r4, #0
 	movs r2, #0
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 	ldr r0, _08096208 @ =0x00001BE6
 	adds r1, r4, r0
 _080961FA:

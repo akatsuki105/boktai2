@@ -276,7 +276,7 @@ _080B7388:
 	ldr r0, _080B73B4 @ =0x00001428
 	adds r4, r5, r0
 	adds r0, r4, #0
-	bl FUN_080b9f70
+	bl ShopCursor_Move
 	cmp r0, #0
 	beq _080B73AC
 	adds r0, r4, #0

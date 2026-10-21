@@ -240,7 +240,7 @@ _080BACF2:
 _080BACFC: .4byte FUN_080bad30
 _080BAD00:
 	adds r0, r6, #0
-	bl FUN_080b9f70
+	bl ShopCursor_Move
 	cmp r0, #0
 	beq _080BAD26
 	adds r0, r6, #0

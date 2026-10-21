@@ -5,7 +5,6 @@
 #include "global.h"
 #include "inventory.h"
 #include "item.h"
-#include "menu.h"
 #include "shop.h"
 #include "sound.h"
 #include "sprite.h"
@@ -14,6 +13,10 @@
 #include "video.h"
 #include "vm.h"
 
+#define SPECIAL_COL 8  // 追加UI(整頓 or 売る)
+#define SLOT_SORT 0x21
+#define SLOT_SELL 0x22
+
 struct ItemShop;
 typedef void(ItemShopFunc)(struct ItemShop*);
 
@@ -21,7 +24,7 @@ typedef void(ItemShopFunc)(struct ItemShop*);
 typedef struct ItemShop {
   Entity e;                      // 0x0000, ENTITY_UNK_11
   MainSpriteGfx gfx0;            // 0x0018, SPRITE_UI_START_MENU
-  MainSpriteGfx gfx1;            // 0x0038, SPRITE_INVENTORY_ICONS
+  MainSpriteGfx icons;           // 0x0038, SPRITE_INVENTORY_ICONS
   MainSpriteGfx gfx2;            // 0x0058, SPRITE_UI_MISC
   MainSprite sprites[49];        // 0x0078, [35] がカーソル
   Tilemaps* tilemap;             // 0x12D8, TILEMAP_9F57
@@ -37,10 +40,10 @@ typedef struct ItemShop {
   u16 unk_12f2;                  // 0x12F2, FUN_080baa40 の戻り値
   s8 items0[16];                 // 0x12F4, '.I' の個数だけ '.T' から読んで残りは -1. [12..15] には [8..11] の写し
   s8 items1[16];                 // 0x1304, '.A' の個数だけ '.R' から読んで残りは -1. [12..15] には [8..11] の写し
-  MenuSpritePair pair0;          // 0x1314, _Destroy が FUN_080b9a0c に渡す
+  ShopSpritePair pair0;          // 0x1314, _Destroy が FUN_080b9a0c に渡す
   u8 unk_13f4[0x1408 - 0x13F4];  // 0x13F4, まだ未解析
-  MenuCursor cursor;             // 0x1408, MenuCursor_Init(&cursor, 1, 4, 0, 20)
-  MenuSpritePair pair1;          // 0x1438, _Destroy が FUN_080b9894 に渡す
+  ShopCursor cursor;             // 0x1408, ShopCursor_Init(&cursor, 1, 4, 0, 20)
+  ShopSpritePair pair1;          // 0x1438, _Destroy が FUN_080b9894 に渡す
   u8 unk_1518[2];                // 0x1518, まだ未解析
   u8 kind;                       // 0x151A, _Update が FUN_080b94cc / FUN_080b9400 に渡す
   u8 unk_151b;                   // 0x151B, _Init が 0 を入れる
@@ -60,6 +63,7 @@ void FUN_080bc2d8(ItemShop* p);
 s32 FindEmptyArmorSlot(ItemShop* p);
 void FUN_080bb0e8(ItemShop* p);
 void FUN_080bca7c(ItemShop* p);
+u32 Item_GetRotStageIcon(s32 slot);
 
 void ItemShop_SetState(ItemShop* p, ItemShopFunc* fn) {
   p->updateCallback = fn;
@@ -93,8 +97,6 @@ void SplitDecimal3_080ba0c0(s32 value, s32* digits) {
 
 NAKED void FUN_080ba0f0(ItemShop* p, s32 param_2) { INCFUNC("asm/func/FUN_080ba0f0.inc"); }
 
-u32 item_08092034(s32 slot);  // src/entity_cc28.c
-
 // 道具の買値を返す, 消耗品だけ priceRate を掛けて 1〜9999 に収める
 s32 Item_GetBuyPrice(u32 itemID) {
   if (itemID <= 4 || itemID == 6 || itemID == 7 || itemID == 9 || itemID == 10) {
@@ -114,12 +116,12 @@ s32 Item_GetBuyPrice(u32 itemID) {
 
 // アイテムの売値, 腐敗の段階ごとに買値の 50% から 10% ずつ下げ, 20% を下限にする
 s32 FUN_080ba288(s32 slot) {
-  u32 stage = item_08092034(slot);
+  u32 stage = Item_GetRotStageIcon(slot);
   s32 pct = 50;
   s32 price;
 
-  if (stage != 0xCF) {
-    pct = 50 - (stage - 0xD0) * 10;
+  if (stage != ICON_TIMER_NONE) {
+    pct = 50 - (stage - ICON_TIMER_100) * 10;
     if (pct > 50) {
       pct = 50;
     }
@@ -143,21 +145,21 @@ void FUN_080ba2d8(ItemShop* p) {
   s32 id;
   s32 pose;
 
-  if (p->cursor.row <= 3) {
+  if (p->cursor.shopColX <= 3) {
     id = GetNormalItemID((u8)p->cursor.slot);
-    pose = item_08092034((u8)p->cursor.slot);
-  } else if (p->cursor.row <= 7) {
+    pose = Item_GetRotStageIcon((u8)p->cursor.slot);
+  } else if (p->cursor.shopColX <= 7) {
     u16 durability;
 
     id = p->items0[(u8)p->cursor.slot - 16];
     durability = gItemDB[id].durability;
-    pose = 0xD0;
+    pose = ICON_TIMER_100;
     if (durability == 0) {
-      pose = 0xCF;
+      pose = ICON_TIMER_NONE;
     }
   } else {
     id = -1;
-    pose = 0xCF;
+    pose = ICON_TIMER_NONE;
   }
 
   if (id < 0) {
@@ -168,7 +170,7 @@ void FUN_080ba2d8(ItemShop* p) {
     s32 base;
 
     p->sprites[33].flags &= ~SPRFLAG_HIDDEN;
-    MainSprite_SetPose(&p->sprites[33], &p->gfx1, pose, 1);
+    MainSprite_SetPose(&p->sprites[33], &p->icons, pose, 1);
     MessageWindow_Start(p->unk_12e4);
     MessageWindow_SetRect(2, 16, 28, 2);
     MessageWindow_SetInstant(1);
@@ -202,13 +204,13 @@ void FUN_080ba57c(ItemShop* p) {
   s32 price;
   s32 kind;
 
-  if (p->cursor.row <= 3) {
+  if (p->cursor.shopColX <= 3) {
     id = GetNormalItemID((u8)p->cursor.slot);
     if (id >= 0) {
       price = FUN_080ba288((u8)p->cursor.slot);
       kind = 1;
     }
-  } else if (p->cursor.row <= 7) {
+  } else if (p->cursor.shopColX <= 7) {
     id = p->items0[(u8)p->cursor.slot - 16];
     if (id >= 0) {
       price = Item_GetBuyPrice(id);
@@ -271,7 +273,7 @@ NON_MATCH void FUN_080ba624(ItemShop* p) {
   }
 
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
-  PlaySound_082406e0(SONG_906);
+  PlaySound_082406e0(SE_SWAP_SLOT);
 #else
   INCFUNC("asm/func/FUN_080ba624.inc");
 #endif
@@ -301,7 +303,7 @@ void FUN_080ba710(ItemShop* p) {
   b[1].y = 0;
   b[1].z = 0;
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
-  PlaySound_082406e0(SONG_906);
+  PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
 // 道具の入れ替え演出を仕込む, 元の位置と入れ替え先の位置をそれぞれ求めて渡す
@@ -327,7 +329,7 @@ void FUN_080ba7bc(ItemShop* p) {
   b[1].y = 0;
   b[1].z = 0;
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
-  PlaySound_082406e0(SONG_906);
+  PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
 // カーソルの状態から操作ガイドの表示種別を決めて反映する
@@ -335,7 +337,7 @@ void FUN_080ba85c(ItemShop* p, s32 param_2) {
   s32 kind;
 
   if (param_2 == 0) {
-    if (p->cursor.row == 8) {
+    if (p->cursor.shopColX == SPECIAL_COL) {
       FUN_080b98c0(&p->pair1.gfx, 0, 4);
     } else {
       FUN_080b98c0(&p->pair1.gfx, 0, -1);
@@ -344,11 +346,11 @@ void FUN_080ba85c(ItemShop* p, s32 param_2) {
   }
 
   kind = 0;
-  if (p->cursor.savedRow <= 3) {
+  if (p->cursor.savedShopColX <= 3) {
     if (GetNormalItemID((u8)p->cursor.savedSlot) >= 0) {
       if ((u8)p->cursor.slot == (u8)p->cursor.savedSlot) {
         kind = 5;
-      } else if ((u8)p->cursor.slot == 0x22) {
+      } else if ((u8)p->cursor.slot == SLOT_SELL) {
         kind = 5;
       } else {
         kind = 1;
@@ -358,7 +360,7 @@ void FUN_080ba85c(ItemShop* p, s32 param_2) {
     }
   } else if ((u8)p->cursor.slot == (u8)p->cursor.savedSlot) {
     kind = 4;
-  } else if (p->cursor.row <= 3) {
+  } else if (p->cursor.shopColX <= 3) {
     kind = (GetNormalItemID((u8)p->cursor.slot) < 0) ? 4 : 0;
   }
 
@@ -386,13 +388,13 @@ void FUN_080ba85c(ItemShop* p, s32 param_2) {
 // 残差0命令 (74/74), レジスタ名だけ違う: 原典は unk_12f2 の値を r1, 定数 3 を r0 に置くが, こちらは逆になる
 NON_MATCH s32 FUN_080ba980(ItemShop* p) {
 #ifdef NONMATCHING_C
-  if (p->cursor.savedRow <= 3) {
+  if (p->cursor.savedShopColX <= 3) {
     if (GetNormalItemID((u8)p->cursor.savedSlot) >= 0) {
       if ((u8)p->cursor.slot == (u8)p->cursor.savedSlot) {
-        p->cursor.slot = 0x22;
+        p->cursor.slot = SLOT_SELL;
         return 5;
       }
-      if ((u8)p->cursor.slot == 0x22) {
+      if ((u8)p->cursor.slot == SLOT_SELL) {
         return 5;
       }
       return 1;
@@ -408,12 +410,12 @@ NON_MATCH s32 FUN_080ba980(ItemShop* p) {
     s32 n = p->unk_12f2;
 
     p->cursor.slot = n;
-    p->cursor.row = n & 3;
-    p->cursor.col = (u8)p->cursor.slot >> 2;
+    p->cursor.shopColX = n & 3;
+    p->cursor.shopRowY = (u8)p->cursor.slot >> 2;
     return 4;
   }
 
-  if (p->cursor.row <= 3 && GetNormalItemID((u8)p->cursor.slot) < 0) {
+  if (p->cursor.shopColX <= 3 && GetNormalItemID((u8)p->cursor.slot) < 0) {
     return 4;
   }
 
@@ -461,8 +463,8 @@ void FUN_080baeb0(ItemShop* p) {
   if (ret == 1) {
     PlaySound_082406e0(SE_SELECT);
     SortInventory(0);
-    p->cursor.savedRow = 0;
-    p->cursor.savedCol = 0;
+    p->cursor.savedShopColX = 0;
+    p->cursor.savedShopRowY = 0;
     p->cursor.savedSlot = 0;
     FUN_080baa64(p);
   } else if (ret == 0) {
@@ -589,7 +591,7 @@ NON_MATCH void FUN_080bb160(ItemShop* p) {
   tm[124] = 0xF010;
   FUN_080b94cc(p->kind);
   FUN_080b9400(p->kind);
-  MenuCursor_Init(&p->cursor, 1, 4, 0, 20);
+  ShopCursor_Init(&p->cursor, 1, 4, 0, 20);
   FUN_080b9fc4(&p->cursor, &p->sprites[35]);
   FUN_080ba410(p);
   FUN_080ba57c(p);
@@ -610,9 +612,9 @@ NON_MATCH void FUN_080bb160(ItemShop* p) {
 void FUN_080bb294(ItemShop* p) {
   s32 id;
 
-  if (p->cursor.row <= 3) {
+  if (p->cursor.shopColX <= 3) {
     id = ARMORS((u8)p->cursor.slot);
-  } else if (p->cursor.row <= 7) {
+  } else if (p->cursor.shopColX <= 7) {
     id = p->items1[(u8)p->cursor.slot - 16];
   } else {
     id = -1;
@@ -624,7 +626,7 @@ void FUN_080bb294(ItemShop* p) {
     FUN_08049e5c();
   } else {
     p->sprites[33].flags &= ~SPRFLAG_HIDDEN;
-    MainSprite_SetPose(&p->sprites[33], &p->gfx1, 0xCF, 1);
+    MainSprite_SetPose(&p->sprites[33], &p->icons, ICON_TIMER_NONE, 1);
     MessageWindow_Start(p->unk_12e8);
     MessageWindow_SetRect(2, 16, 28, 2);
     FUN_08049e6c(0, gArmorDB[id].defence);
@@ -649,11 +651,11 @@ void FUN_080bb5bc(ItemShop* p) {
   s32 price;
   s32 kind;
 
-  if (p->cursor.row <= 3) {
+  if (p->cursor.shopColX <= 3) {
     id = ARMORS((u8)p->cursor.slot);
     price = Div(gArmorDB[id].price * 50, 100);
     kind = 1;
-  } else if (p->cursor.row <= 7) {
+  } else if (p->cursor.shopColX <= 7) {
     id = p->items1[(u8)p->cursor.slot - 16];
     price = gArmorDB[id].price;
     kind = 0;
@@ -718,7 +720,7 @@ NON_MATCH void FUN_080bb688(ItemShop* p) {
   }
 
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
-  PlaySound_082406e0(SONG_906);
+  PlaySound_082406e0(SE_SWAP_SLOT);
 #else
   INCFUNC("asm/func/FUN_080bb688.inc");
 #endif
@@ -748,7 +750,7 @@ void FUN_080bb798(ItemShop* p) {
   b[1].y = 0;
   b[1].z = 0;
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
-  PlaySound_082406e0(SONG_906);
+  PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
 // 防具の入れ替え演出を仕込む, 元の位置と入れ替え先の位置をそれぞれ求めて渡す
@@ -774,24 +776,24 @@ void FUN_080bb854(ItemShop* p) {
   b[1].y = 0;
   b[1].z = 0;
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
-  PlaySound_082406e0(SONG_906);
+  PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
 NAKED void FUN_080bb8f4(ItemShop* p, s32 param_2) { INCFUNC("asm/func/FUN_080bb8f4.inc"); }
 
 // 防具のカーソル入れ替え操作の可否を判定し, 必要ならカーソルを移し替えて種別コードを返す
-// 残差1命令 (115/116): 原典は row==8 側の return 5 を別ブロックで持つが, agbcc はもう一方の return 5 と畳む
+// 残差1命令 (115/116): 原典は shopColX==SPECIAL_COL 側の return 5 を別ブロックで持つが, agbcc はもう一方の return 5 と畳む
 NON_MATCH s32 FUN_080bba88(ItemShop* p) {
 #ifdef NONMATCHING_C
-  if (p->cursor.savedRow <= 3) {
+  if (p->cursor.savedShopColX <= 3) {
     s32 slot = (u8)p->cursor.savedSlot;
 
     if (ARMORS(slot) >= 0) {
-      if (p->cursor.row == 8) {
+      if (p->cursor.shopColX == SPECIAL_COL) {
         if (gStat->armor == slot) {
           return 0;
         }
-        if ((u8)p->cursor.slot != 0x22) {
+        if ((u8)p->cursor.slot != SLOT_SELL) {
           return 0;
         }
         return 5;
@@ -801,7 +803,7 @@ NON_MATCH s32 FUN_080bba88(ItemShop* p) {
         if (p->cursor.unk_7 & 0x10) {
           return 0;
         }
-        p->cursor.slot = 0x22;
+        p->cursor.slot = SLOT_SELL;
         return 5;
       }
       return 1;
@@ -817,12 +819,12 @@ NON_MATCH s32 FUN_080bba88(ItemShop* p) {
     s32 n = p->unk_12f2;
 
     p->cursor.slot = n;
-    p->cursor.row = n & 3;
-    p->cursor.col = (u8)p->cursor.slot >> 2;
+    p->cursor.shopColX = n & 3;
+    p->cursor.shopRowY = (u8)p->cursor.slot >> 2;
     return 4;
   }
 
-  if (p->cursor.row <= 3 && ARMORS((u8)p->cursor.slot) < 0) {
+  if (p->cursor.shopColX <= 3 && ARMORS((u8)p->cursor.slot) < 0) {
     return 4;
   }
 
@@ -871,8 +873,8 @@ void FUN_080bc07c(ItemShop* p) {
   if (ret == 1) {
     PlaySound_082406e0(SE_SELECT);
     SortArmors(0);
-    p->cursor.savedRow = 0;
-    p->cursor.savedCol = 0;
+    p->cursor.savedShopColX = 0;
+    p->cursor.savedShopRowY = 0;
     p->cursor.savedSlot = 0;
     FUN_080bbbdc(p);
   } else if (ret == 0) {
@@ -989,7 +991,7 @@ void FUN_080bc350(ItemShop* p) {
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   FUN_080b94cc(p->kind);
   FUN_080b9400(p->kind);
-  MenuCursor_Init(&p->cursor, 1, 4, 0, 20);
+  ShopCursor_Init(&p->cursor, 1, 4, 0, 20);
   FUN_080b9fc4(&p->cursor, &p->sprites[35]);
   FUN_080bb388(p);
   FUN_080bb5bc(p);

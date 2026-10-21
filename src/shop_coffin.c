@@ -20,7 +20,7 @@ typedef void(CoffinShopFunc)(struct CoffinShop*);
 typedef struct CoffinShop {
   Entity e;                        // 0x0000, ENTITY_UNK_11
   MainSpriteGfx gfx0;              // 0x0018, SPRITE_UI_START_MENU
-  MainSpriteGfx gfx1;              // 0x0038, SPRITE_INVENTORY_ICONS
+  MainSpriteGfx icons;             // 0x0038, SPRITE_INVENTORY_ICONS
   MainSpriteGfx gfx2;              // 0x0058, SPRITE_UI_MISC
   MainSprite sprites[38];          // 0x0078, [1..16] と [17..28] がアイテム枠2面, [30] がカーソル
   Tilemaps* tilemap;               // 0x0EB8, TILEMAP_9F57
@@ -31,10 +31,10 @@ typedef struct CoffinShop {
   u8 unk_ec9;                      // 0x0EC9, FUN_080bf29c が FUN_080b977c に渡す
   u16 stateTimer;                  // 0x0ECA, CoffinShop_SetState が fn を差し替えるときに 0 に戻す
   s8 items[16];                    // 0x0ECC, '.O' から12個読んで残りは -1. [12..15] には [8..11] の写し
-  MenuSpritePair pair0;            // 0x0EDC, SPRITE_INVENTORY_ICONS
+  ShopSpritePair pair0;            // 0x0EDC, SPRITE_INVENTORY_ICONS
   u8 unk_fbc[0xFD0 - 0xFBC];       // 0x0FBC, まだ未解析
-  MenuCursor cursor;               // 0x0FD0, MenuCursor_Init(&cursor, 1, 4, 0, 29)
-  MenuSpritePair pair1;            // 0x1000, SPRITE_UI_START_MENU
+  ShopCursor cursor;               // 0x0FD0, ShopCursor_Init(&cursor, 1, 4, 0, 29)
+  ShopSpritePair pair1;            // 0x1000, SPRITE_UI_START_MENU
   u8 kind;                         // 0x10E0, 0=太陽バンク 1=暗黒ローン それ以外=太陽スタンド
   u8 unk_10e1;                     // 0x10E1, _Init が 0 を入れる
   u8 unk_10e2;                     // 0x10E2, _Init が 0 を入れる
@@ -79,9 +79,9 @@ void CoffinShop_ShowMessage(CoffinShop* p, s32 line, u8* unused1, s32 unused2) {
 void CoffinShop_UpdateDescription(CoffinShop* p) {
   item32_t id;
 
-  if (p->cursor.row <= 3) {
+  if (p->cursor.shopColX <= 3) {
     id = GetValuableItemID((u8)p->cursor.slot);
-  } else if (p->cursor.row <= 7) {
+  } else if (p->cursor.shopColX <= 7) {
     id = p->items[(u8)p->cursor.slot - 16];
   } else {
     id = -1;
@@ -105,9 +105,7 @@ void CoffinShop_UpdateDescription(CoffinShop* p) {
 }
 
 void CoffinShop_DrawItemIcons(CoffinShop* p) {
-  s32 i;
-  s32 j;
-  s32 n;
+  s32 i, j, n;
 
   for (i = 0; i < 4; i++) {
     for (j = 0; j < 4; j++) {
@@ -118,7 +116,7 @@ void CoffinShop_DrawItemIcons(CoffinShop* p) {
 
       if (id >= 0) {
         p->sprites[n + 1].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[n + 1], &p->gfx1, id + 0x68, 1);
+        MainSprite_SetPose(&p->sprites[n + 1], &p->icons, ICON_ITEM(id), 1);
         if (id >= ITEM_OAK_COFFIN && id <= ITEM_IRON_MAIDEN) {
           FUN_080b95bc(&p->sprites[n + 1], 0x2DF);
         } else {
@@ -139,7 +137,7 @@ void CoffinShop_DrawItemIcons(CoffinShop* p) {
 
       if (id >= 0) {
         p->sprites[n + 17].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[n + 17], &p->gfx1, id + 0x68, 1);
+        MainSprite_SetPose(&p->sprites[n + 17], &p->icons, ICON_ITEM(id), 1);
         if ((s16)gStat->solarBank < gItemDB[id].price) {
           FUN_080b95bc(&p->sprites[n + 17], 0x2E0);
         } else {
@@ -205,7 +203,7 @@ void CoffinShop_StartSwapAnim(CoffinShop* p) {
   FUN_080b9938(&to[1].x, (u8)p->cursor.slot);
 
   FUN_080b9a28(&p->pair0.gfx, unk1, from, to, anims, strIDs, 12);
-  PlaySound_082406e0(SONG_906);
+  PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
 // カーソルが選べる棺桶の上にいるかどうかで pair1 のスプライトを切り替える
@@ -220,7 +218,7 @@ void FUN_080bef00(CoffinShop* p, s32 param_2) {
   r = 0;
   if ((u8)p->cursor.slot == (u8)p->cursor.savedSlot) {
     r = 4;
-  } else if (p->cursor.row <= 3) {
+  } else if (p->cursor.shopColX <= 3) {
     item32_t id = GetValuableItemID((u8)p->cursor.slot);
 
     if ((u8)p->cursor.slot == CoffinShop_FindCoffinSlot()) {
@@ -241,12 +239,12 @@ void FUN_080bef00(CoffinShop* p, s32 param_2) {
 s32 FUN_080bef88(CoffinShop* p) {
   if ((u8)p->cursor.slot == (u8)p->cursor.savedSlot) {
     p->cursor.slot = CoffinShop_FindCoffinSlot();
-    p->cursor.row = p->cursor.slot & 3;
-    p->cursor.col = (u8)p->cursor.slot >> 2;
+    p->cursor.shopColX = p->cursor.slot & 3;
+    p->cursor.shopRowY = (u8)p->cursor.slot >> 2;
     return 4;
   }
 
-  if (p->cursor.row <= 3) {
+  if (p->cursor.shopColX <= 3) {
     item32_t id = GetValuableItemID((u8)p->cursor.slot);
 
     if ((u8)p->cursor.slot == CoffinShop_FindCoffinSlot()) {
@@ -280,7 +278,7 @@ NON_MATCH void FUN_080bf058(CoffinShop* p) {
     FUN_080beaf4(p, 0);
     MainSprite_SetPose(&p->sprites[30], &p->gfx0, 56, 1);
     if (gInput[0].pressed & A_BUTTON) {
-      PlaySound_082406e0(SONG_220);
+      PlaySound_082406e0(SE_CURSOR_MOVE);
       p->kind++;
       if (p->kind > 2) {
         p->kind = 0;
@@ -312,7 +310,7 @@ NON_MATCH void FUN_080bf058(CoffinShop* p) {
       } else {
         PlaySound_082406e0(SE_NG);
       }
-    } else if (FUN_080b9f70(&p->cursor)) {
+    } else if (ShopCursor_Move(&p->cursor)) {
       FUN_080b9fc4(&p->cursor, &p->sprites[30]);
       CoffinShop_UpdateDescription(p);
       CoffinShop_DrawPrice(p);
@@ -330,7 +328,7 @@ void CoffinShop_HandleSelectInput(CoffinShop* p) {
 
     FUN_080b98c0(&p->pair1.gfx, -1, -1);
     if (r == 4) {
-      PlaySound_082406e0(SONG_263);
+      PlaySound_082406e0(SE_CHOICE);
       CoffinShop_ShowMessage(p, 0, p->unk_ec4, 0);
       FUN_080b9740(&p->sprites[37], &p->gfx0, (char*)&p->unk_ec9, 1);
       CoffinShop_SetSubState(p, FUN_080bf29c, 0);
@@ -340,7 +338,7 @@ void CoffinShop_HandleSelectInput(CoffinShop* p) {
   } else if (gInput[0].pressed & B_BUTTON) {
     PlaySound_082406e0(SE_CANCEL);
     FUN_080beff4(p);
-  } else if (FUN_080b9f70(&p->cursor)) {
+  } else if (ShopCursor_Move(&p->cursor)) {
     FUN_080b9fc4(&p->cursor, &p->sprites[30]);
     CoffinShop_UpdateDescription(p);
     FUN_080bef00(p, 1);
@@ -381,7 +379,7 @@ void CoffinShop_BuyCoffin(CoffinShop* p) {
 }
 
 void FUN_080bf3a0(CoffinShop* p) {
-  MenuCursor_Init(&p->cursor, 1, 4, 0, 29);
+  ShopCursor_Init(&p->cursor, 1, 4, 0, 29);
   FUN_080b9fc4(&p->cursor, &p->sprites[30]);
   CoffinShop_DrawItemIcons(p);
   CoffinShop_DrawPrice(p);
@@ -413,8 +411,8 @@ NON_MATCH void FUN_080bf494(CoffinShop* p) {
   s32 i;
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
-  p->gfx1 = *f;
-  OpenMainSpriteFile(&p->gfx1, f);
+  p->icons = *f;
+  OpenMainSpriteFile(&p->icons, f);
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
   p->gfx0 = *f;
@@ -430,18 +428,18 @@ NON_MATCH void FUN_080bf494(CoffinShop* p) {
   for (i = 0; i < 16; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 144;
-    MainSprite_Add(&p->sprites[1 + i], &p->gfx1, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[1 + i], &p->icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
   }
 
   for (i = 0; i < 12; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 8;
-    MainSprite_Add(&p->sprites[17 + i], &p->gfx1, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[17 + i], &p->icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
   }
 
   pos.x = 0;
   pos.y = 128;
-  MainSprite_Add(&p->sprites[29], &p->gfx1, 207, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[29], &p->icons, ICON_TIMER_NONE, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
   MainSprite_Add(&p->sprites[31], &p->gfx0, 60, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
 
   pos.x = 144;

@@ -67,4 +67,9 @@ typedef union {
   u32 offset;
 } AssetRef;
 
+// 方向を8段階にしたもの, "include/constants/miscs.h" の FACE_* に対応 (e.g. FACE_UP)
+typedef u8 Facing8;
+typedef u16 Facing16;
+typedef s32 Facing32;
+
 #endif  // __INCLUDE_BOKTAI2_TYPES_H__

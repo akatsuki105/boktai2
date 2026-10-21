@@ -20,7 +20,7 @@
 	ldr r1, _08096068 @ =weapon_08095d4c
 	adds r0, r4, #0
 	movs r2, #1
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 	b _080960A4
 	.align 2, 0
 _0809605C: .4byte 0x030044E0
@@ -45,14 +45,14 @@ _0809606C:
 	str r0, [r1]
 	ldr r0, [r4, #0x58]
 	movs r1, #2
-	bl EntityCC28_ShowBottomLine
+	bl MainMenu_ShowBottomLine
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_0808b6fc
 	ldr r1, _080960C0 @ =FUN_080962b0
 	adds r0, r4, #0
 	movs r2, #1
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 _080960A4:
 	ldr r1, _080960C4 @ =0x00001444
 	adds r0, r4, r1

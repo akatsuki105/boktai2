@@ -108,7 +108,7 @@ _0809A774:
 	adds r0, r7, r2
 	strb r1, [r0]
 	adds r0, r7, #0
-	bl FUN_0809a67c
+	bl MainMenu_InitPage
 	ldr r3, _0809A7FC @ =0x00004003
 	adds r1, r7, r3
 	movs r0, #0xff

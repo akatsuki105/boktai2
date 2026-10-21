@@ -11,7 +11,7 @@
 	ldrb r1, [r0]
 	adds r1, #0x14
 	adds r0, r4, #0
-	bl EntityCC28_ShowLineInstant
+	bl MainMenu_ShowLineInstant
 	movs r2, #1
 	rsbs r2, r2, #0
 	adds r0, r4, #0
@@ -20,7 +20,7 @@
 	ldr r1, _08099300 @ =FUN_08099008
 	adds r0, r4, #0
 	movs r2, #1
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 	b _080993B4
 	.align 2, 0
 _080992FC: .4byte 0x00004002
@@ -69,11 +69,11 @@ _08099304:
 	str r0, [r1]
 	adds r0, r4, #0
 	adds r1, r6, #0
-	bl EntityCC28_ShowLineInstant
+	bl MainMenu_ShowLineInstant
 	ldr r1, _08099380 @ =FUN_08098f7c
 	adds r0, r4, #0
 	movs r2, #0
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 	b _080993B4
 	.align 2, 0
 _08099378: .4byte 0x0000144C
@@ -85,21 +85,21 @@ _08099384:
 	ldrb r1, [r0]
 	adds r1, #0x14
 	adds r0, r4, #0
-	bl EntityCC28_ShowLineInstant
+	bl MainMenu_ShowLineInstant
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #5
 	movs r3, #7
-	bl EntityCC28_DrawHP
+	bl MainMenu_DrawHP
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #5
 	movs r3, #8
-	bl EntityCC28_DrawEne
+	bl MainMenu_DrawEne
 	ldr r1, _080993C0 @ =FUN_08099008
 	adds r0, r4, #0
 	movs r2, #0
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 _080993B4:
 	pop {r4, r5, r6}
 	pop {r0}

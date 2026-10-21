@@ -16,28 +16,23 @@
 #define VALUABLES(slot) (*(gStat->valuables + slot))  // gStat->valuables[slot]
 #define ROTCOUNT(slot) (*(gStat->rotTimer + slot))    // gStat->rotTimer[slot]
 
+#define CHOCO_COVERED (1 << 15)
+
 s32 GetRotCount(slot32_t slot) { return ROTCOUNT(slot); }
 
 void SetRotCount(slot32_t slot, u32 value) { ROTCOUNT(slot) = value; }
 
+// CHOCO_COVERED を含まない GetRotCount
 s32 GetRotCount2(slot32_t slot) { return ROTCOUNT(slot) & 0x7FFF; }
 
-void SetRotCount2(slot32_t slot, u32 value) {
-  ROTCOUNT(slot) = (value & 0x7FFF) | (ROTCOUNT(slot) & 0x8000);
-  return;
-}
+// CHOCO_COVERED は維持した SetRotCount
+void SetRotCount2(slot32_t slot, u32 value) { ROTCOUNT(slot) = (value & 0x7FFF) | (ROTCOUNT(slot) & CHOCO_COVERED); }
 
-void CoverChocolate(slot32_t slot) {
-  ROTCOUNT(slot) |= 0x8000;
-  return;
-}
+void CoverChocolate(slot32_t slot) { ROTCOUNT(slot) |= CHOCO_COVERED; }
 
-void UncoverChocolate(slot32_t slot) {
-  ROTCOUNT(slot) &= 0x7FFF;
-  return;
-}
+void UncoverChocolate(slot32_t slot) { ROTCOUNT(slot) &= ~CHOCO_COVERED; }
 
-s32 IsChocolateCovered(slot32_t slot) { return *(gStat->rotTimer + slot) & 0x8000; }
+s32 IsChocolateCovered(slot32_t slot) { return ROTCOUNT(slot) & CHOCO_COVERED; }
 
 item32_t GetNormalItemID(slot32_t slot) {
   if (IsChocolateCovered(slot)) {
@@ -48,10 +43,7 @@ item32_t GetNormalItemID(slot32_t slot) {
 
 item32_t GetValuableItemID(slot32_t slot) { return VALUABLES(slot); }
 
-void SetItem(slot32_t slot, item32_t id) {
-  ITEM(slot) = id;
-  return;
-}
+void SetItem(slot32_t slot, item32_t id) { ITEM(slot) = id; }
 
 void SetValuable(slot32_t slot, item32_t id) { VALUABLES(slot) = id; }
 

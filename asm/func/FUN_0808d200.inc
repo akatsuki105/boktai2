@@ -38,7 +38,7 @@ _0808D22C:
 	movs r0, #0
 	strb r0, [r1]
 	mov r0, r8
-	bl FUN_0808d1a8
+	bl MainMenu_QC_PulseCursor
 	pop {r3}
 	mov r8, r3
 	pop {r4, r5, r6, r7}

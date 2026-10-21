@@ -69,8 +69,8 @@ typedef struct {
   s16 sabataMagicIdx;            // 0x05E, Player_GetEquippedMagic がサバタの魔法番号を選ぶときに 0 かどうかを見る
   slot16_t registeredWeapon[4];  // 0x060, 剣槍槌銃, 登録武器のIDではなく、武器インベントリのどこにある武器を登録しているかのインデックス(0~15)が入る
   magic16_t registeredMagic[4];  // 0x068, 登録中の魔法4種のID
-  item16_t items[16 + 16 + 16];  // 0x070
-  s16 rotTimer[16 + 16 + 16];    // 0x0D0, if MSB is set, item is chocolate-covered
+  item16_t items[16 + 16 + 16];  // 0x070, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
+  s16 rotTimer[16 + 16 + 16];    // 0x0D0, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
   item16_t valuables[16];        // 0x130
   armor16_t armors[16];          // 0x150
   u8 unk_170[40];                // 0x170

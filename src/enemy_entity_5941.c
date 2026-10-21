@@ -88,7 +88,7 @@ NON_MATCH Entity5941Node* Entity5941_FindNearestInCone(Vec3* pos, s32 angle, s32
 
 // ノードをリスト先頭に繋ぐ, 既に繋がっていれば何もしない
 // 残差は28/29命令で1命令, 原典は node->next への書き込みのあと gEntity5941 を読み直すが agbcc はレジスタを使い回す
-// (FUN_08091b68 と同じ型の残差), Tier A-C 試済
+// (ItemEffect_Solar と同じ型の残差), Tier A-C 試済
 NON_MATCH bool32 Entity5941_Register(Entity5941Node* node, void* owner, void* fn) {
 #ifdef NONMATCHING_C
   Entity5941Node* cur;

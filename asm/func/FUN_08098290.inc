@@ -76,7 +76,7 @@ _080982D4:
 _0809833C:
 	adds r0, r5, #0
 	movs r2, #1
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 	b _08098390
 	.align 2, 0
 _08098348: .4byte 0x000009F8
@@ -90,7 +90,7 @@ _08098364: .4byte FUN_080984a0
 _08098368:
 	ldr r1, _08098398 @ =0x00003AE8
 	adds r0, r5, r1
-	bl EntityCC28Cursor_Move
+	bl InventoryCursor_Move
 	cmp r0, #0
 	beq _08098390
 	ldr r2, _0809839C @ =0x00001464

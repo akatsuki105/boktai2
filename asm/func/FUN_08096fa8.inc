@@ -42,7 +42,7 @@
 	ldr r1, _08097030 @ =FUN_08097034
 	adds r0, r4, #0
 	movs r2, #0
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 	pop {r4}
 	pop {r0}
 	bx r0

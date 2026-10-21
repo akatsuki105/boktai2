@@ -140,7 +140,7 @@ void FUN_080b3e80(SolarBank* p) {
     PlaySound_082406e0(SE_CANCEL);
     FUN_080b3dd0(p);
   } else if (gInput[0].pressed & (DPAD_RIGHT | DPAD_LEFT)) {
-    PlaySound_082406e0(SONG_220);
+    PlaySound_082406e0(SE_CURSOR_MOVE);
     p->unk_5ea = 1 - p->unk_5ea;
     if (p->unk_5ea != 0) {
       MainSprite_SetAnim(&p->sprites[1], &p->gfx[1], 4, 1, 0);

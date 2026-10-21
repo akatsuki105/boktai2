@@ -33,7 +33,7 @@ _0808E04C:
 	movs r1, #0
 	movs r2, #3
 	movs r3, #1
-	bl EntityCC28_DrawHP
+	bl MainMenu_DrawHP
 _0808E058:
 	ldr r0, _0808E084 @ =0x00000A16
 	adds r1, r4, r0

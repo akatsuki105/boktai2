@@ -265,7 +265,7 @@ _080BDC26:
 _080BDC30: .4byte WeaponShop_HandleActionInput
 _080BDC34:
 	adds r0, r7, #0
-	bl FUN_080b9f70
+	bl ShopCursor_Move
 	cmp r0, #0
 	beq _080BDC5A
 	adds r0, r7, #0

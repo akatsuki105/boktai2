@@ -5,7 +5,6 @@
 #include "global.h"
 #include "input.h"
 #include "inventory.h"
-#include "menu.h"
 #include "shop.h"
 #include "sound.h"
 #include "sprite.h"
@@ -24,9 +23,9 @@ typedef struct Warehouse {
   MainSpriteGfx gfx1;             // 0x0038, SPRITE_INVENTORY_ICONS
   MainSpriteGfx gfx2;             // 0x0058, SPRITE_UI_MISC
   MainSprite sprites[47];         // 0x0078, [44] がカーソル
-  MenuSpritePair pair0;           // 0x1218, SPRITE_INVENTORY_ICONS
+  ShopSpritePair pair0;           // 0x1218, SPRITE_INVENTORY_ICONS
   u8 unk_12f8[0x130C - 0x12F8];   // 0x12F8, まだ未解析
-  MenuSpritePair pair1;           // 0x130C, SPRITE_UI_START_MENU
+  ShopSpritePair pair1;           // 0x130C, SPRITE_UI_START_MENU
   Tilemaps* tilemap;              // 0x13EC, TILEMAP_9F57
   rgb555* bgPltt;                 // 0x13F0, BGP_A41A
   u8* unk_13f4;                   // 0x13F4, '.i' の VM_GetPC_Proxy の戻り値
@@ -46,7 +45,7 @@ typedef struct Warehouse {
   u8 unk_1419[5];                 // 0x1419, kinds ごとに 'P' / 'Z' / 'S'
   u8 unk_141e[5];                 // 0x141E, kinds ごとに 3 / 5 / 7
   u8 unk_1423[5];                 // 0x1423, kinds ごとに 44 / 45 / 16
-  MenuCursor cursor;              // 0x1428, MenuCursor_Init(&cursor, 0, 0, 0, 4)
+  ShopCursor cursor;              // 0x1428, ShopCursor_Init(&cursor, 0, 0, 0, 4)
   u8 unk_1458[32];                // 0x1458, [0..15] と [16..31] を別の用途で使う
   u8 kind;                        // 0x1478, 0=太陽バンク 1=暗黒ローン それ以外=太陽スタンド
   u8 unk_1479;                    // 0x1479
@@ -151,8 +150,8 @@ void FUN_080b6754(Warehouse* p) {
   if (r == 1) {
     PlaySound_082406e0(SE_SELECT);
     SortInventory(0);
-    p->cursor.savedRow = 0;
-    p->cursor.savedCol = 0;
+    p->cursor.savedShopColX = 0;
+    p->cursor.savedShopRowY = 0;
     p->cursor.savedSlot = 0;
     FUN_080b61c4(p);
   } else if (r == 0) {
@@ -167,8 +166,8 @@ void FUN_080b67c0(Warehouse* p) {
   if (r == 1) {
     PlaySound_082406e0(SE_SELECT);
     SortInventory(p->unk_1458[16]);
-    p->cursor.savedRow = 4;
-    p->cursor.savedCol = 0;
+    p->cursor.savedShopColX = 4;
+    p->cursor.savedShopRowY = 0;
     p->cursor.savedSlot = 16;
     FUN_080b61c4(p);
   } else if (r == 0) {
@@ -224,7 +223,7 @@ void FUN_080b68f4(Warehouse* p) {
 void FUN_080b695c(Warehouse* p, s32 val) {
   FUN_080b5afc(p, val);
   FUN_080b5cac(p);
-  MenuCursor_Init(&p->cursor, 0, 0, 0, 4);
+  ShopCursor_Init(&p->cursor, 0, 0, 0, 4);
   FUN_080b9fc4(&p->cursor, &p->sprites[44]);
   FUN_080b5b94(p);
   FUN_080b5e48(p, 0);
@@ -283,8 +282,8 @@ void FUN_080b7670(Warehouse* p) {
   if (r == 1) {
     PlaySound_082406e0(SE_SELECT);
     SortWeapons(0);
-    p->cursor.savedRow = 0;
-    p->cursor.savedCol = 0;
+    p->cursor.savedShopColX = 0;
+    p->cursor.savedShopRowY = 0;
     p->cursor.savedSlot = 0;
     FUN_080b70ac(p);
   } else if (r == 0) {
@@ -299,8 +298,8 @@ void FUN_080b76dc(Warehouse* p) {
   if (r == 1) {
     PlaySound_082406e0(SE_SELECT);
     SortWeapons(p->unk_1458[16]);
-    p->cursor.savedRow = 4;
-    p->cursor.savedCol = 0;
+    p->cursor.savedShopColX = 4;
+    p->cursor.savedShopRowY = 0;
     p->cursor.savedSlot = 16;
     FUN_080b70ac(p);
   } else if (r == 0) {
@@ -356,7 +355,7 @@ void FUN_080b783c(Warehouse* p) {
 void FUN_080b78a4(Warehouse* p, s32 val) {
   FUN_080b5afc(p, val);
   FUN_080b6a74(p);
-  MenuCursor_Init(&p->cursor, 0, 0, 0, 4);
+  ShopCursor_Init(&p->cursor, 0, 0, 0, 4);
   FUN_080b9fc4(&p->cursor, &p->sprites[44]);
   FUN_080b69b8(p);
   FUN_080b6e70(p, 0);
@@ -429,8 +428,8 @@ void FUN_080b86bc(Warehouse* p) {
   if (r == 1) {
     PlaySound_082406e0(SE_SELECT);
     SortArmors(0);
-    p->cursor.savedRow = 0;
-    p->cursor.savedCol = 0;
+    p->cursor.savedShopColX = 0;
+    p->cursor.savedShopRowY = 0;
     p->cursor.savedSlot = 0;
     FUN_080b8104(p);
   } else if (r == 0) {
@@ -445,8 +444,8 @@ void FUN_080b8728(Warehouse* p) {
   if (r == 1) {
     PlaySound_082406e0(SE_SELECT);
     SortArmors(p->unk_1458[16]);
-    p->cursor.savedRow = 4;
-    p->cursor.savedCol = 0;
+    p->cursor.savedShopColX = 4;
+    p->cursor.savedShopRowY = 0;
     p->cursor.savedSlot = 16;
     FUN_080b8104(p);
   } else if (r == 0) {
@@ -502,7 +501,7 @@ void FUN_080b885c(Warehouse* p) {
 void FUN_080b88c4(Warehouse* p, s32 val) {
   FUN_080b5afc(p, val);
   FUN_080b79d8(p);
-  MenuCursor_Init(&p->cursor, 0, 0, 0, 4);
+  ShopCursor_Init(&p->cursor, 0, 0, 0, 4);
   FUN_080b9fc4(&p->cursor, &p->sprites[44]);
   FUN_080b7900(p);
   FUN_080b7c18(p, 0);

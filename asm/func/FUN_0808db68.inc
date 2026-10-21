@@ -3,12 +3,12 @@
 	movs r1, #0
 	movs r2, #3
 	movs r3, #1
-	bl EntityCC28_DrawHP
+	bl MainMenu_DrawHP
 	adds r0, r4, #0
 	movs r1, #0
 	movs r2, #3
 	movs r3, #2
-	bl EntityCC28_DrawEne
+	bl MainMenu_DrawEne
 	ldr r0, _0808DBAC @ =0x030044E0
 	ldrh r1, [r0]
 	movs r0, #4
@@ -26,7 +26,7 @@
 	cmp r0, #0
 	bne _0808DBB8
 	adds r0, r4, #0
-	bl FUN_0808d9c8
+	bl MainMenu_QC_0808d9c8
 	b _0808DCA4
 	.align 2, 0
 _0808DBAC: .4byte 0x030044E0
@@ -154,7 +154,7 @@ _0808DCA4:
 	adds r0, r4, #0
 	bl FUN_0808daa8
 	adds r0, r4, #0
-	bl FUN_0808d1a8
+	bl MainMenu_QC_PulseCursor
 	pop {r4, r5, r6, r7}
 	pop {r0}
 	bx r0

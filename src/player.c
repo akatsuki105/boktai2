@@ -19,22 +19,14 @@
 #include "vm.h"
 
 extern Entity5941Node* gChangeWolfTarget;
-extern u16 u16_03002b70;
-extern u16 u16_03002b88;
 extern u16 u16_03002bf4;
 extern u16 u16_03002bd0;
-extern u16 gConfusedDir;
-extern u16 gSabataDefence;
 extern u16 u16_03002bb0;
 extern u16 u16_ARRAY_03002ba0[3];
-extern u16 u16_03002b68[4];
 extern u16 u16_03002b84;
 extern u16 gWindAngle;
 extern u16 u16_03002bac;
 extern u16 u16_03002bf0;
-extern u16 u16_03002b7c;
-extern u16 u16_03002b8c;
-extern u16 u16_03002b60;
 
 struct Entity080a8ff8* Entity080a8ff8_Create(Player* owner, Vec3* pos, s32 mode);
 struct TransEffect* TransEffect_Create(Player* player, u32 param_2, Vec3* pos, u32 param_4, u32 param_5);
@@ -68,6 +60,18 @@ void FUN_080ec79c(u8 kind, void* payload);
 void FUN_08079f1c(Player* p);
 void Camera_LookAt(Vec3* pos);
 bool32 IsMagicUnlocked(magic32_t n);
+
+COMMON_DATA u16 gGoodCondID = 0;                        // 0x03002B60, 現在の良い状態効果のID (= Player.goodCondID, Player再生成時の退避用, 他のEntityから参照するなどの用途で使用される)
+COMMON_DATA u16 ALIGNED(4) gConfusedDir = 0;            // 0x03002B64, 混乱の状態異常のときに動く方向 (エリア移動などで Player を再生成したときにこれを引き継ぐ)
+COMMON_DATA u16 ALIGNED(4) u16_03002b68[4] = {};        // 0x03002B68, 多分プレイヤーの moverID
+COMMON_DATA u16 u16_03002b70 = 0;                       // 0x03002B70, チェンジウルフの噛みつき回数
+COMMON_DATA u16 ALIGNED(4) gSabataDefence = 0;          // 0x03002B74, サバタの防御力
+COMMON_DATA u16 ALIGNED(4) gSunGaugeOverrideTimer = 0;  // 0x03002B78, FUN_0807b564 が 0 に戻す
+COMMON_DATA u16 ALIGNED(4) u16_03002b7c = 0;            // 0x03002B7C
+COMMON_DATA u16 ALIGNED(4) gSunGaugeOverride = 0;       // 0x03002B80, ApplyLxModifiers が 1 なら太陽レベル +4、2 なら日光なしにする
+COMMON_DATA u16 ALIGNED(4) u16_03002b84 = 0;            // 0x03002B84, Player_InitEffects が 1 を入れる
+COMMON_DATA u16 ALIGNED(4) u16_03002b88 = 0;            // 0x03002B88, チェンジウルフに関連するフラグ
+COMMON_DATA u16 ALIGNED(4) gGoodCondTimer = 0;          // 0x03002B8C, Player.goodCondTimer の退避
 
 // pos のブロックのコリジョンタイルを引く, 差し替えがあればそちら, マップ外なら tiles[0]
 // Map_GetTileHeightAt (src/collision_map.c) の前半と同じ処理だが, 原典ではこの関数の中に2回展開されているのでインラインで持つ
@@ -459,7 +463,7 @@ NON_MATCH void Player_RefreshDefence(Player* p) {
   s32 power;
   HitboxAttributes attrs;
   u32 weakness;
-  bool32 special;
+  bool32 isEmperor;  // 皇帝のカード(全属性に耐性)の効果発動中かどうか
 
   if (p->kind == PLAYER_SABATA) {  // サバタの場合、常にジャンゴのレベル+10　
     lv = gStat->lv + 10;
@@ -482,12 +486,12 @@ NON_MATCH void Player_RefreshDefence(Player* p) {
     }
   }
 
-  special = FALSE;
-  if (p->goodCondTimer != 0 && p->unk_442 == 8) {
-    special = TRUE;
+  isEmperor = FALSE;
+  if (p->goodCondTimer != 0 && p->goodCondID == GOOD_EMPEROR) {
+    isEmperor = TRUE;
   }
-  if (special || p->hbattrs == HBATTR_6) {
-    attrs = HBATTR_6;
+  if (isEmperor || p->hbattrs == HBATTR_ALL) {
+    attrs = HBATTR_ALL;
   }
 
   if (power > 99) {
@@ -2120,7 +2124,7 @@ NON_MATCH u32 Player_ApplyFlashPose(Player* p, u32 pose) {
 #endif
 }
 
-// 変身の拡縮演出を1フレーム進める, unk_442 が 5 の間は縮み, それ以外では元の大きさへ戻る
+// 変身の拡縮演出を1フレーム進める, goodCondID が GOOD_MINI の間は縮み, それ以外では元の大きさへ戻る
 // 残差4命令 (186/190): レジスタ割当 (原典は p を r4) と定数の作り直し
 // 分岐の並び (goodCondTimer != 0 を先) は原典と一致した, Tier A/B は試済
 NON_MATCH void Player_UpdateFormScale(Player* p) {
@@ -2128,7 +2132,7 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
   s32 scale;
 
   if (p->goodCondTimer != 0) {
-    if (p->unk_442 == 5) {
+    if (p->goodCondID == GOOD_MINI) {
       if (p->unk_97a <= 0x3F) {
         if (p->unk_97a == 0) {
           PlaySound_082406e0(SONG_494);
@@ -2160,7 +2164,7 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
       p->sprite_88.scaleY = scale;
     }
 
-    if (p->unk_442 == 6) {
+    if (p->goodCondID == GOOD_INVISIBLE) {
       p->sprite_88.flags |= SPRFLAG_BLINK_ODD;
       p->flag20 |= 0x20000;
     } else {
@@ -2271,7 +2275,7 @@ NON_MATCH void Player_InitEffects(Player* p) {
   ParticleShadow_Init(&p->shadow, &p->shadowPos, 0);
   Entity080dc44c_Create();
 
-  valid = p->goodCondTimer != 0 && p->unk_442 == 5;
+  valid = p->goodCondTimer != 0 && p->goodCondID == 5;
   if (valid) {
     p->unk_97a = 0x40;
     p->unk_3f1 = 1;
@@ -2898,7 +2902,7 @@ NON_MATCH void Player_ApplyArmorEffect(Player* p, const ArmorData* a) {
       break;
     }
     case AET_RES_ALL: {
-      p->hbattrs = HBATTR_6;
+      p->hbattrs = HBATTR_ALL;
       break;
     }
     case AET_FAIRY_ROBE: {
@@ -3536,16 +3540,16 @@ s32 Player_InitState(Player* p) {
   if (p->playerIdx == 0) {
     s32 i;
 
-    p->unk_442 = u16_03002b60;
+    p->goodCondID = gGoodCondID;
     p->unk_444 = u16_03002b7c;
-    p->goodCondTimer = u16_03002b8c;
+    p->goodCondTimer = gGoodCondTimer;
     for (i = 0; i < 3; i++) {
       p->badCondTimer[i] = u16_ARRAY_03002ba0[i];
     }
   } else {
     s32 i;
 
-    p->unk_442 = 0;
+    p->goodCondID = 0;
     p->unk_444 = 0;
     p->goodCondTimer = 0;
     for (i = 0; i < 3; i++) {
@@ -3711,11 +3715,12 @@ void FUN_08066794(Player* p) {
   p->unk_376++;
 }
 
+// 黒ジャンゴ, マウス, ラット が太陽にあたっているときのダメージ処理
 // 太陽ゲージから unk_3dc を貯め、100 たまるごとに FUN_08066794 を1回呼ぶ
 void FUN_080667b0(Player* p, s32 sungauge) {
   if (p->unk_43a == 0) {
     u16 state = p->goodCondTimer;
-    bool32 skip = state != 0 && p->unk_442 == 7;
+    bool32 skip = state != 0 && p->goodCondID == GOOD_UVCUT;
 
     if (!skip) {
       p->unk_3dc += sungauge + 2;
@@ -3957,7 +3962,7 @@ static s32 CalcMoveSpeed(Player* p) {
   bool32 heaviest = FALSE;
   s32 val;
 
-  if (n != 0 && p->unk_442 == 1) {
+  if (n != 0 && p->goodCondID == GOOD_SPEED) {
     heaviest = TRUE;
   }
 
@@ -4045,7 +4050,7 @@ void FUN_080672b0(Player* p) {
     FUN_080670d4(val);
     n = p->goodCondTimer;
     scaled = FALSE;
-    if (n != 0 && p->unk_442 == 5) {
+    if (n != 0 && p->goodCondID == GOOD_MINI) {
       scaled = TRUE;
     }
     if (scaled) {
@@ -4127,7 +4132,7 @@ s32 FUN_08068c6c(Player* p) {
   bool32 heaviest = FALSE;
   s32 val;
 
-  if (n != 0 && p->unk_442 == 2) {
+  if (n != 0 && p->goodCondID == GOOD_POWER) {
     heaviest = TRUE;
   }
 
@@ -5806,7 +5811,7 @@ NON_MATCH void Player_UpdateDjango(Player* p) {
       }
       FUN_0806623c(p);
 
-      busy = p->goodCondTimer != 0 && p->unk_442 == 5;
+      busy = p->goodCondTimer != 0 && p->goodCondID == GOOD_MINI;
       if (busy) {
         return;
       }
@@ -6245,9 +6250,9 @@ void UNUSED FUN_0807a270(Player* p) {
     u32_03002bc0[i] = 0;
   }
 
-  u16_03002b60 = 0;
+  gGoodCondID = 0;
   u16_03002b7c = 0;
-  u16_03002b8c = 0;
+  gGoodCondTimer = 0;
   u16_03002bf0 = 0;
   u16_03002bd0 = 0;
   gSunGaugeOverride = 0;
@@ -6749,7 +6754,7 @@ NON_MATCH s32 FUN_0807b2dc(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL && p->goodCondTimer != 0) {
-    return p->unk_442;
+    return p->goodCondID;
   }
   return -1;
 #else
@@ -6762,7 +6767,7 @@ void FUN_0807b314(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    p->unk_442 = 0;
+    p->goodCondID = 0;
     p->goodCondTimer = 0;
     p->unk_444 = 0;
   }

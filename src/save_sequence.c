@@ -33,7 +33,7 @@ s32 SaveSequence_Update(SaveSequence* p) {
     p->result = Save_WriteToNextSlot();
     if (p->result == 1) {
       TextPanel_SetMessage(p->windowID, 14);
-      PlaySound_082406e0(SONG_686);
+      PlaySound_082406e0(SE_SAVE_SUCCESS);
     } else {
       TextPanel_SetMessage(p->windowID, 15);
       PlaySound_082406e0(SE_NG);

@@ -57,7 +57,6 @@ typedef struct LinkBattleResult {
 } LinkBattleResult;
 static_assert(sizeof(LinkBattleResult) == 2140);
 
-s32 FUN_0804a40c(s32 id, s32 idx, char* str);
 s32 FUN_081dfa04(void);
 void FUN_081df8f0(s32 n);
 

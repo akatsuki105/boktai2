@@ -107,6 +107,7 @@ s32 TextPanel_Hide(s32 id);
 s32 TextPanel_SetScript(s32 id, u8* scriptPc);
 s32 TextPanel_SetRect(s32 id, s32 x, s32 y, s32 width, s32 height);
 s32 TextPanel_SetMessage(s32 id, s32 msgIdx);
+s32 FUN_0804a40c(s32 id, s32 idx, char* str);
 
 s32 FUN_08049e5c(void);
 s32 FUN_08049f84(void);

@@ -157,7 +157,7 @@ void FUN_0823aa44(void) {
   }
 }
 
-void FUN_0823aa70(void) {}
+void nop_0823aa70(void) {}
 
 void FUN_0823aa74(void) {
   Registry_Sweep(FALSE);
@@ -230,7 +230,7 @@ NON_MATCH s32 Entity0823acbc_Update(Entity0823acbc* p) {
       } else {
         p->unk_1c--;
         if (p->unk_1c < 1) {
-          FUN_0823aa70();
+          nop_0823aa70();
           FUN_0823aa74();
           if (gFlag030047a4 & FLAG030047A4_UNK_9) {
             gFlag030047a4 &= ~FLAG030047A4_UNK_9;

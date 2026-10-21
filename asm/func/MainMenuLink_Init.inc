@@ -35,9 +35,9 @@ _0809CB04:
 	adds r0, r4, #0
 	bl FUN_0809bd14
 	adds r0, r4, #0
-	bl FUN_0809ca08
+	bl MainMenuLink_0809ca08
 	adds r0, r4, #0
-	bl FUN_0809c880
+	bl MainMenuLink_Update_Internal
 	ldr r3, _0809CB64 @ =0x00000A9A
 	adds r1, r4, r3
 	movs r0, #0xff

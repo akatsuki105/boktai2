@@ -149,7 +149,7 @@ _08090E94: .4byte 0x00004038
 _08090E98: .4byte 0x0000402C
 _08090E9C:
 	adds r0, r7, #0
-	bl EntityCC28_FillBg1
+	bl MainMenu_FillBG1
 	adds r0, r7, #0
 	bl FUN_08090ca4
 _08090EA8:
@@ -164,7 +164,7 @@ _08090EA8:
 	ldr r1, _08090EDC @ =FUN_080907f0
 	adds r0, r7, #0
 	movs r2, #0
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 	add sp, #0x10
 	pop {r3}
 	mov r8, r3

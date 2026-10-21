@@ -70,24 +70,11 @@ typedef u32 EquipBuffs;                  // Player.equipBuffs
 #define EBUFF_HEART (1 << 28)            // 0x10000000, ハートの紋章所持
 #define EBUFF_JOKER (1 << 29)            // 0x20000000, ジョーカーの紋章所持
 
-// プレイヤーの向き
-typedef u8 Facing8;
-typedef u16 Facing16;
-typedef s32 Facing32;
-#define FACE_UP 0          // 上
-#define FACE_UP_RIGHT 1    // 右上
-#define FACE_RIGHT 2       // 右
-#define FACE_DOWN_RIGHT 3  // 右下
-#define FACE_DOWN 4        // 下
-#define FACE_DOWN_LEFT 5   // 左下
-#define FACE_LEFT 6        // 左
-#define FACE_UP_LEFT 7     // 左上
-
 // PlayerKind, Player.kind
 #define PLAYER_SOLAR_DJANGO 0  // 赤ジャンゴ (Red Django)
 #define PLAYER_DARK_DJANGO 1   // 黒ジャンゴ (Dark Django)
-#define PLAYER_BAT 2           // バット, 魔法"チェンジ・バット"でコウモリに変身した状態
-#define PLAYER_MOUSE 3         // マウス, 魔法"チェンジ・マウス"でネズミに変身した状態
+#define PLAYER_BAT 2           // バット, 魔法"チェンジ・バット"(Cバット)でコウモリに変身した状態
+#define PLAYER_MOUSE 3         // マウス, 魔法"チェンジ・マウス"(Cマウス)でネズミに変身した状態
 #define PLAYER_SLEEPING 4      // スリーピング, 魔法"スリーピング"で棺桶の中で寝ている状態
 #define PLAYER_SABATA 5        // サバタ
 
@@ -302,9 +289,9 @@ typedef struct Player {
   u8 unk_430[0x43A - 0x430];        // 0x430
   u16 unk_43a;                      // 0x43A, FUN_0807b580 が 1 を書く
   u16 badCondTimer[3];              // 0x43C, 時間経過で治る状態異常の残り時間 [0: 腹痛, 1: 毒, 2: 混乱]
-  u16 unk_442;                      // 0x442, FUN_0807b2dc が goodCondTimer が 0 でないときに返す値
+  u16 goodCondID;                   // 0x442, よいステータス効果のID, see GOOD_XXXX (e.g. GOOD_NINJA)
   u16 unk_444;                      // 0x444
-  u16 goodCondTimer;                // 0x446, 0 でなければ unk_442 が有効
+  u16 goodCondTimer;                // 0x446, 0 でなければ goodCondID が有効
   u8 unk_448[0x456 - 0x448];        // 0x448
   s8 controlUp;                     // 0x456, 通常は gStat->controlUp が入るが、混乱(移動方向がおかしくなる状態異常)のときに書き換えられる
   u8 unk_457[0x464 - 0x457];        // 0x457
@@ -431,6 +418,10 @@ static_assert(sizeof(Player) == 2756);
 // ------------------------------------------------------------------------------------------------------------------------------------
 
 extern Player* gPlayerPtr[4];
+extern u16 gGoodCondID;      // 0x03002B60
+extern u16 gConfusedDir;     // 0x03002B64
+extern u16 u16_03002b68[4];  // 0x03002B68, 多分プレイヤーの moverID
+extern u16 gGoodCondTimer;   // 0x03002B8C, Player.goodCondTimer の退避, 他Entityからの参照用
 
 Player* CreatePlayer(u32 n, void* _);
 s32 FUN_0806f900(Player* player);

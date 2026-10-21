@@ -16,12 +16,12 @@
 	movs r1, #1
 	movs r2, #5
 	movs r3, #7
-	bl EntityCC28_DrawHP
+	bl MainMenu_DrawHP
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #5
 	movs r3, #8
-	bl EntityCC28_DrawEne
+	bl MainMenu_DrawEne
 	adds r0, r4, #0
 	bl FUN_0808c700
 	b _08098FE4

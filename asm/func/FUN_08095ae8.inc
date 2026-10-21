@@ -87,7 +87,7 @@ _08095B30:
 	ldr r0, [r5, #0x58]
 	movs r1, #4
 	movs r2, #0
-	bl EntityCC28_ShowBottomLine
+	bl MainMenu_ShowBottomLine
 	adds r0, r5, #0
 	movs r1, #1
 	bl FUN_0808b6fc
@@ -124,14 +124,14 @@ _08095BF0:
 _08095C12:
 	adds r0, r5, #0
 	movs r2, #1
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 	b _08095C4E
 	.align 2, 0
 _08095C1C: .4byte weapon_08095d4c
 _08095C20:
 	ldr r1, _08095C54 @ =0x00003AE8
 	adds r0, r5, r1
-	bl EntityCC28Cursor_Move
+	bl InventoryCursor_Move
 	cmp r0, #0
 	beq _08095C4E
 	ldr r2, _08095C58 @ =0x00001464

@@ -6,6 +6,7 @@
 #include "constants/collision_map.h"
 #include "constants/enemy.h"
 #include "constants/item.h"
+#include "constants/item_icon.h"
 #include "constants/magic.h"
 #include "constants/map.h"
 #include "constants/miscs.h"

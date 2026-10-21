@@ -54,7 +54,7 @@ void Cactus_OnHit(HitboxData* a, HitboxData* b, Cactus* owner) {
     } else {
       p->damageTimer = 10;
       Video_SetAuxSpritePltt(&p->gfx, 306);
-      if (!Hitbox_HasWeakness(a, (1 << 2))) PlaySound_082406e0(SE_ENEMY_DAMAGED);
+      if (!Hitbox_HasWeakness(a, HBATTR_FLAME)) PlaySound_082406e0(SE_ENEMY_DAMAGED);
     }
     b->damage = 0;
   }

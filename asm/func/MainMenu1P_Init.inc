@@ -24,17 +24,17 @@
 	adds r1, r4, r2
 	bl BuildWeapon
 	adds r0, r4, #0
-	bl FUN_0809bed8
+	bl MainMenu1P_0809bed8
 	adds r0, r4, #0
 	bl FUN_0809bf88
 	adds r0, r4, #0
-	bl FUN_0809c010
+	bl MainMenu1P_0809c010
 	adds r0, r4, #0
 	bl FUN_0809bd14
 	adds r0, r4, #0
-	bl FUN_0808dddc
+	bl MainMenu1P_0808dddc
 	adds r0, r4, #0
-	bl FUN_0809b468
+	bl MainMenu1P_0809b468
 	movs r0, #0x64
 	bl VM_SeekToNamedArg
 	adds r1, r0, #0
@@ -128,7 +128,7 @@ _0809CD52:
 	adds r1, r4, r2
 	str r0, [r1]
 	adds r0, r4, #0
-	bl FUN_0808d0c0
+	bl MainMenu1P_0808d0c0
 	ldr r0, _0809CDA8 @ =0x030047A4
 	ldr r0, [r0]
 	movs r1, #0x80
@@ -156,7 +156,7 @@ _0809CDB0:
 	bl FUN_0808a33c
 _0809CDBE:
 	adds r0, r4, #0
-	bl FUN_0808cb00
+	bl MainMenu1P_0808cb00
 	ldr r0, _0809CDF4 @ =0x00000A99
 	adds r1, r4, r0
 	movs r0, #2

@@ -854,7 +854,7 @@ NON_MATCH void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p) {
   if (p->unk_1b == 1) {
     return;
   }
-  if (p->unk_1c == 0 && (a->ignoreMask & 1) == 0 && (a->attributes & HBATTR_6) == 0) {
+  if (p->unk_1c == 0 && (a->ignoreMask & 1) == 0 && (a->attributes & HBATTR_ALL) == 0) {
     return;
   }
   if (p->unk_332 != 0) {

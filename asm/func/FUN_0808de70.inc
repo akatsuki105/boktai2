@@ -106,7 +106,7 @@ _0808DF3E:
 	adds r0, r4, #0
 	bl FUN_0808daa8
 	adds r0, r4, #0
-	bl FUN_0808d1a8
+	bl MainMenu_QC_PulseCursor
 	pop {r3}
 	mov r8, r3
 	pop {r4, r5, r6, r7}

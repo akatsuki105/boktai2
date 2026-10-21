@@ -13,6 +13,10 @@
 #include "vm.h"
 #include "weapon.h"
 
+#define SPECIAL_COL 8  // 追加UI(整頓 or 売る)
+#define SLOT_SORT 0x21
+#define SLOT_SELL 0x22
+
 struct WeaponShop;
 typedef void(WeaponShopFunc)(struct WeaponShop* p);
 
@@ -20,7 +24,7 @@ typedef void(WeaponShopFunc)(struct WeaponShop* p);
 typedef struct WeaponShop {
   Entity e;                        // 0x0000, ENTITY_UNK_11
   MainSpriteGfx gfx0;              // 0x0018, SPRITE_UI_START_MENU
-  MainSpriteGfx gfx1;              // 0x0038, SPRITE_INVENTORY_ICONS
+  MainSpriteGfx icons;             // 0x0038, SPRITE_INVENTORY_ICONS
   MainSpriteGfx gfx2;              // 0x0058, SPRITE_UI_MISC
   MainSprite sprites[58];          // 0x0078, [38] がカーソル
   Tilemaps* tilemap;               // 0x1638, TILEMAP_9F57
@@ -41,10 +45,10 @@ typedef struct WeaponShop {
   weapon8_t hammers[16];           // 0x167C, 同じく WK_HAMMER
   u16 emptySlot;                   // 0x168C, FindEmptyWeaponSlot の戻り値
   u16 stateTimer;                  // 0x168E, WeaponShop_SetState / FUN_080bcdf8 が差し替えのたびに 0 に戻す
-  MenuSpritePair pair0;            // 0x1690
+  ShopSpritePair pair0;            // 0x1690
   u8 unk_1770[0x1784 - 0x1770];    // 0x1770, まだ未解析
-  MenuCursor cursor;               // 0x1784, MenuCursor_Init(&cursor, 1, 4, 0, 20)
-  MenuSpritePair pair1;            // 0x17B4
+  ShopCursor cursor;               // 0x1784, ShopCursor_Init(&cursor, 1, 4, 0, 20)
+  ShopSpritePair pair1;            // 0x17B4
   u32 unk_1894;                    // 0x1894, '.e' (なければ 0)
   WeaponShopFunc* updateCallback;  // 0x1898
   WeaponShopFunc* unk_189c;        // 0x189C, FUN_080bcdf8 が入れる, 読み手は未調査
@@ -58,7 +62,7 @@ bool32 IsWeaponRegistered(slot32_t n);
 s32 FUN_0807a6cc(WeaponData* w);
 void FUN_08094d1c(u8* param_1, s8* param_2);
 void FUN_08094d48(unknown* w, u8* pc);
-s32 GetWeaponWearPose(WeaponData* w);  // src/entity_cc28.c
+s32 GetWeaponWearPose(WeaponData* w);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
 void WeaponShop_ConfirmSort(WeaponShop* p);
@@ -224,9 +228,9 @@ NON_MATCH void FUN_080bd058(WeaponShop* p) {
 #ifdef NONMATCHING_C
   WeaponData w;
 
-  if (p->cursor.row <= 3) {
+  if (p->cursor.shopColX <= 3) {
     GetWeaponData((u8)p->cursor.slot, &w);
-  } else if (p->cursor.row <= 7) {
+  } else if (p->cursor.shopColX <= 7) {
     w = gWeaponDB[(s8)p->swords[(u8)p->cursor.slot + p->unk_1654 * 16 - 16]];
     *(u8*)&w.effects[0] = 0;
     WeaponShop_WritePS(p, &w);
@@ -240,7 +244,7 @@ NON_MATCH void FUN_080bd058(WeaponShop* p) {
     FUN_08049e5c();
   } else {
     p->sprites[33].flags &= ~SPRFLAG_HIDDEN;
-    MainSprite_SetPose(&p->sprites[33], &p->gfx1, GetWeaponWearPose(&w), 1);
+    MainSprite_SetPose(&p->sprites[33], &p->icons, GetWeaponWearPose(&w), 1);
     MessageWindow_Start(p->unk_1644);
     MessageWindow_SetRect(2, 16, 28, 2);
     FUN_08094d1c((u8*)&w, (s8*)p->unk_164c);
@@ -267,15 +271,16 @@ NON_MATCH void FUN_080bd180(WeaponShop* p) {
 
       if (id > 0) {
         p->sprites[3 + i * 4 + j].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[3 + i * 4 + j], &p->gfx1, id, 1);
+        MainSprite_SetPose(&p->sprites[3 + i * 4 + j], &p->icons, id, 1);
       } else {
         p->sprites[3 + i * 4 + j].flags |= SPRFLAG_HIDDEN;
       }
 
+      // 装備中か売値がない武器は売ることができないので、それらのアイコンはパレットを 735 にする
       if (IsWeaponRegistered(slot) == 0 && WeaponShop_GetSellPrice(slot) != 0) {
-        FUN_080b95bc(&p->sprites[3 + i * 4 + j], 0x2DF);
+        FUN_080b95bc(&p->sprites[3 + i * 4 + j], 735);
       } else {
-        FUN_080b95bc(&p->sprites[3 + i * 4 + j], 0x2E0);
+        FUN_080b95bc(&p->sprites[3 + i * 4 + j], 736);
       }
     }
   }
@@ -287,7 +292,7 @@ NON_MATCH void FUN_080bd180(WeaponShop* p) {
 
       if (id > 0) {
         p->sprites[19 + i * 4 + j].flags &= ~SPRFLAG_HIDDEN;
-        MainSprite_SetPose(&p->sprites[19 + i * 4 + j], &p->gfx1, id, 1);
+        MainSprite_SetPose(&p->sprites[19 + i * 4 + j], &p->icons, id, 1);
         if ((s16)gStat->solarBank < gWeaponDB[id].price) {
           FUN_080b95bc(&p->sprites[19 + i * 4 + j], 0x2E0);
         } else {
@@ -322,11 +327,11 @@ NON_MATCH void FUN_080bd390(WeaponShop* p) {
   s32 price;
   s32 flag;
 
-  if (p->cursor.row <= 3) {
+  if (p->cursor.shopColX <= 3) {
     id = GetWeaponID((u8)p->cursor.slot);
     price = WeaponShop_GetSellPrice((u8)p->cursor.slot);
     flag = 1;
-  } else if (p->cursor.row <= 7) {
+  } else if (p->cursor.shopColX <= 7) {
     id = (s8)p->swords[p->unk_1654 * 16 - 16 + (u8)p->cursor.slot];
     price = gWeaponDB[id].price;
     flag = 0;
@@ -406,7 +411,7 @@ NON_MATCH void FUN_080bd47c(WeaponShop* p) {
   }
 
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
-  PlaySound_082406e0(SONG_906);
+  PlaySound_082406e0(SE_SWAP_SLOT);
 #else
   INCFUNC("asm/func/FUN_080bd47c.inc");
 #endif
@@ -435,7 +440,7 @@ void WeaponShop_StartMoveAnim(WeaponShop* p) {
   to[1].y = 0;
   to[1].z = 0;
   FUN_080b9a28(&p->pair0.gfx, unk1, from, to, anims, strIDs, 12);
-  PlaySound_082406e0(SONG_906);
+  PlaySound_082406e0(SE_SWAP_SLOT);
 }
 
 // unk_1654 のタブ (1=剣 2=槍 3=槌) の savedSlot 番目の武器を slot へ飛ばすアニメを仕込む
@@ -465,7 +470,7 @@ NON_MATCH void FUN_080bd624(WeaponShop* p) {
   to[1].y = 0;
   to[1].z = 0;
   FUN_080b9a28(&p->pair0.gfx, unk1, from, to, anims, strIDs, 12);
-  PlaySound_082406e0(SONG_906);
+  PlaySound_082406e0(SE_SWAP_SLOT);
 #else
   INCFUNC("asm/func/FUN_080bd624.inc");
 #endif
@@ -478,7 +483,7 @@ NON_MATCH void FUN_080bd6d0(WeaponShop* p, s32 param_2) {
   s32 r;
 
   if (param_2 == 0) {
-    if (p->cursor.row == 8) {
+    if (p->cursor.shopColX == SPECIAL_COL) {
       FUN_080b98c0(&p->pair1.gfx, 0, 4);
     } else {
       FUN_080b98c0(&p->pair1.gfx, 0, -1);
@@ -488,12 +493,12 @@ NON_MATCH void FUN_080bd6d0(WeaponShop* p, s32 param_2) {
   }
 
   r = 0;
-  if (p->cursor.savedRow <= 3) {
+  if (p->cursor.savedShopColX <= 3) {
     s32 slot = (u8)p->cursor.savedSlot;
 
     if (GetWeaponID(slot) > 0) {
-      if (p->cursor.row == 8) {
-        if (FindRegisteredWeaponSlot(slot) < 0 && WeaponShop_GetSellPrice(slot) != 0 && (u8)p->cursor.slot == 34) {
+      if (p->cursor.shopColX == SPECIAL_COL) {
+        if (FindRegisteredWeaponSlot(slot) < 0 && WeaponShop_GetSellPrice(slot) != 0 && (u8)p->cursor.slot == SLOT_SELL) {
           r = 5;
         }
       } else if ((u8)p->cursor.slot != (u8)p->cursor.savedSlot) {
@@ -509,7 +514,7 @@ NON_MATCH void FUN_080bd6d0(WeaponShop* p, s32 param_2) {
     }
   } else if ((u8)p->cursor.slot == (u8)p->cursor.savedSlot) {
     r = 4;
-  } else if (p->cursor.row <= 3 && GetWeaponID((u8)p->cursor.slot) == 0) {
+  } else if (p->cursor.shopColX <= 3 && GetWeaponID((u8)p->cursor.slot) == 0) {
     r = 4;
   }
 
@@ -537,18 +542,18 @@ NON_MATCH void FUN_080bd6d0(WeaponShop* p, s32 param_2) {
 }
 
 s32 FUN_080bd83c(WeaponShop* p) {
-  if (p->cursor.savedRow <= 3) {
+  if (p->cursor.savedShopColX <= 3) {
     s32 slot = (u8)p->cursor.savedSlot;
 
     if (GetWeaponID(slot) > 0) {
-      if (p->cursor.row == 8) {
-        if (FindRegisteredWeaponSlot(slot) < 0 && WeaponShop_GetSellPrice(slot) != 0 && (u8)p->cursor.slot == 34) {
+      if (p->cursor.shopColX == SPECIAL_COL) {
+        if (FindRegisteredWeaponSlot(slot) < 0 && WeaponShop_GetSellPrice(slot) != 0 && (u8)p->cursor.slot == SLOT_SELL) {
           return 5;
         }
       } else if ((u8)p->cursor.slot != (u8)p->cursor.savedSlot) {
         return 1;
       } else if (FindRegisteredWeaponSlot(slot) < 0 && WeaponShop_GetSellPrice(slot) != 0) {
-        p->cursor.slot = 34;
+        p->cursor.slot = SLOT_SELL;
         return 5;
       }
     } else if (GetWeaponID((u8)p->cursor.slot) > 0) {
@@ -556,10 +561,10 @@ s32 FUN_080bd83c(WeaponShop* p) {
     }
   } else if ((u8)p->cursor.slot == (u8)p->cursor.savedSlot) {
     p->cursor.slot = p->emptySlot;
-    p->cursor.row = p->cursor.slot & 3;
-    p->cursor.col = (u8)p->cursor.slot >> 2;
+    p->cursor.shopColX = p->cursor.slot & 3;
+    p->cursor.shopRowY = (u8)p->cursor.slot >> 2;
     return 4;
-  } else if (p->cursor.row <= 3 && GetWeaponID((u8)p->cursor.slot) == 0) {
+  } else if (p->cursor.shopColX <= 3 && GetWeaponID((u8)p->cursor.slot) == 0) {
     return 4;
   }
 
@@ -602,7 +607,7 @@ NON_MATCH void FUN_080bd9e8(WeaponShop* p) {
     FUN_080bcdec(p, 0);
     MainSprite_SetPose(&p->sprites[38], &p->gfx0, 56, 1);
     if (gInput[0].pressed & A_BUTTON) {
-      PlaySound_082406e0(SONG_220);
+      PlaySound_082406e0(SE_CURSOR_MOVE);
       p->kind++;
       if (p->kind > 2) {
         p->kind = 0;
@@ -613,13 +618,13 @@ NON_MATCH void FUN_080bd9e8(WeaponShop* p) {
     MainSprite_AdvanceAnim(&p->sprites[38], &p->gfx0);
 
     if (gInput[0].pressed & A_BUTTON) {
-      if ((u8)p->cursor.slot == 33) {
-        PlaySound_082406e0(SONG_263);
+      if ((u8)p->cursor.slot == SLOT_SORT) {
+        PlaySound_082406e0(SE_CHOICE);
         FUN_080bce20(p, 3, p->unk_1644, -1);
         FUN_080b98c0(&p->pair1.gfx, -1, -1);
         FUN_080b9740(&p->sprites[57], &p->gfx0, (char*)&p->unk_1656, 1);
         FUN_080bcdf8(p, WeaponShop_ConfirmSort, 0);
-      } else if (p->cursor.row > 3) {
+      } else if (p->cursor.shopColX > 3) {
         bool32 ok = TRUE;
         weapon32_t id = (s8)p->swords[p->unk_1654 * 16 - 16 + (u8)p->cursor.slot];
 
@@ -660,7 +665,7 @@ NON_MATCH void FUN_080bd9e8(WeaponShop* p) {
         FUN_080bd6d0(p, 1);
         FUN_080bcdf8(p, WeaponShop_HandleActionInput, 0);
       }
-    } else if (FUN_080b9f70(&p->cursor)) {
+    } else if (ShopCursor_Move(&p->cursor)) {
       FUN_080b9fc4(&p->cursor, &p->sprites[38]);
       FUN_080bd058(p);
       FUN_080bd390(p);
@@ -684,14 +689,14 @@ void WeaponShop_HandleActionInput(WeaponShop* p) {
         break;
       }
       case 4: {
-        PlaySound_082406e0(SONG_263);
+        PlaySound_082406e0(SE_CHOICE);
         FUN_080bce20(p, 0, p->unk_1644, 0);
         FUN_080b9740(&p->sprites[57], &p->gfx0, (char*)&p->unk_1656, 1);
         FUN_080bcdf8(p, FUN_080bde60, 0);
         break;
       }
       case 5: {
-        PlaySound_082406e0(SONG_263);
+        PlaySound_082406e0(SE_CHOICE);
         FUN_080bce20(p, 1, p->unk_1644, 0);
         FUN_080b9740(&p->sprites[57], &p->gfx0, (char*)&p->unk_1656, 0);
         FUN_080bcdf8(p, FUN_080bdf94, 0);
@@ -705,7 +710,7 @@ void WeaponShop_HandleActionInput(WeaponShop* p) {
   } else if (gInput[0].pressed & B_BUTTON) {
     PlaySound_082406e0(SE_CANCEL);
     WeaponShop_ReturnToList(p);
-  } else if (FUN_080b9f70(&p->cursor)) {
+  } else if (ShopCursor_Move(&p->cursor)) {
     FUN_080b9fc4(&p->cursor, &p->sprites[38]);
     FUN_080bd058(p);
     FUN_080bd6d0(p, 1);
@@ -721,8 +726,8 @@ void WeaponShop_ConfirmSort(WeaponShop* p) {
   if (r == 1) {
     PlaySound_082406e0(SE_SELECT);
     SortWeapons(0);
-    p->cursor.savedRow = 0;
-    p->cursor.savedCol = 0;
+    p->cursor.savedShopColX = 0;
+    p->cursor.savedShopRowY = 0;
     p->cursor.savedSlot = 0;
     WeaponShop_ReturnToList(p);
   } else if (r == 0) {
@@ -826,7 +831,7 @@ void WeaponShop_AnimateSale(WeaponShop* p) {
 }
 
 void WeaponShop_OpenList(WeaponShop* p) {
-  MenuCursor_Init(&p->cursor, 1, 4, 0, 20);
+  ShopCursor_Init(&p->cursor, 1, 4, 0, 20);
   FUN_080b9fc4(&p->cursor, &p->sprites[38]);
   p->emptySlot = FindEmptyWeaponSlot(p);
   FUN_080bd180(p);
@@ -866,8 +871,8 @@ NON_MATCH void FUN_080be204(WeaponShop* p) {
   s32 i;
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
-  p->gfx1 = *f;
-  OpenMainSpriteFile(&p->gfx1, f);
+  p->icons = *f;
+  OpenMainSpriteFile(&p->icons, f);
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
   p->gfx0 = *f;
@@ -885,13 +890,13 @@ NON_MATCH void FUN_080be204(WeaponShop* p) {
   for (i = 0; i < 16; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 144;
-    MainSprite_Add(&p->sprites[3 + i], &p->gfx1, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[3 + i], &p->icons, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
   }
 
   for (i = 0; i < 12; i++) {
     pos.y = (i >> 2) * 24 + 32;
     pos.x = (i & 3) * 24 + 8;
-    MainSprite_Add(&p->sprites[19 + i], &p->gfx1, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[19 + i], &p->icons, 104, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
   }
 
   for (i = 0; i < 4; i++) {
@@ -900,16 +905,16 @@ NON_MATCH void FUN_080be204(WeaponShop* p) {
 
   pos.x = 0;
   pos.y = 128;
-  MainSprite_Add(&p->sprites[33], &p->gfx1, 208, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[33], &p->icons, ICON_TIMER_100, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
 
   pos.x = 120;
   pos.y = 104;
-  MainSprite_Add(&p->sprites[32], &p->gfx1, 203, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[32], &p->icons, ICON_SORT, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
 
   pos.x = 104;
   pos.y = 32;
-  MainSprite_Add(&p->sprites[31], &p->gfx1, 204, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
-  FUN_080b95bc(&p->sprites[31], 0x2E0);
+  MainSprite_Add(&p->sprites[31], &p->icons, ICON_SELL, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
+  FUN_080b95bc(&p->sprites[31], 736);
   MainSprite_Add(&p->sprites[39], &p->gfx0, 60, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT, 0, 0, 60, &pos);
 
   pos.x = 144;

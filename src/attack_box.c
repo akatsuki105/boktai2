@@ -59,9 +59,9 @@ void AttackBox_Setup(AttackBox* box, s32 power, s32 unk_40, s32 unk_44, s32 igno
   offset.x = 0, offset.y = 0, offset.z = 0;
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
   if (box->unk_60 == 0) {
-    Hitbox_SetAttack(hitbox, power, unk_40, HBATTR_6, HBATTR_21 | HBATTR_18 | HBATTR_FLAME, unk_44);
+    Hitbox_SetAttack(hitbox, power, unk_40, HBATTR_ALL, HBATTR_21 | HBATTR_18 | HBATTR_FLAME, unk_44);
   } else {
-    Hitbox_SetAttack(hitbox, power, unk_40, HBATTR_6, HBATTR_18, unk_44);
+    Hitbox_SetAttack(hitbox, power, unk_40, HBATTR_ALL, HBATTR_18, unk_44);
   }
 
   hitbox->id = 0x3246;

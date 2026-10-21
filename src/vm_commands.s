@@ -520,7 +520,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xCAFE, FUN_0807d8c8
 	.4byte 0xCB30, FUN_080201c8
 	.4byte 0xCBB0, PileDriver_Create @ HashName("パイルドライバー")
-	.4byte 0xCC28, EntityCC28_Create
+	.4byte 0xCC28, MainMenu_Create
 	.4byte 0xCCD3, EnemyGhost_Create @ HashName("ゴースト")
 	.4byte 0xCCD9, FUN_0809c220
 	.4byte 0xCD57, FUN_0807b34c

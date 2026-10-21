@@ -7,7 +7,7 @@
 	adds r0, r4, r1
 	movs r1, #0
 	movs r2, #0
-	bl EntityCC28Cursor_SetPos
+	bl InventoryCursor_SetPos
 	ldr r0, _080979A8 @ =0x00001464
 	adds r6, r4, r0
 	ldr r1, _080979AC @ =0x00003AEB

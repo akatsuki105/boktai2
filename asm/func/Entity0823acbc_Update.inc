@@ -144,7 +144,7 @@ _0823ABCC:
 	str r0, [r6, #0x1c]
 	cmp r0, #0
 	bgt _0823AC4C
-	bl FUN_0823aa70
+	bl nop_0823aa70
 	bl FUN_0823aa74
 	ldr r2, _0823AC18 @ =0x030047A4
 	ldr r1, [r2]

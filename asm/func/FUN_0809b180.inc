@@ -35,7 +35,7 @@ _0809B1B8:
 	beq _0809B1E8
 	strb r1, [r2]
 	adds r0, r6, #0
-	bl FUN_0809a67c
+	bl MainMenu_InitPage
 	movs r0, #0xdd
 	bl PlaySound_082406e0
 	b _0809B1EE

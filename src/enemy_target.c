@@ -210,8 +210,8 @@ void EnemyTargetManager_Release(EnemyTarget* node) {
   }
 }
 
-// owner->unk_4 のプレイヤーについて, kind 0 なら unk_442 が param_3 と一致するか, kind 1 なら unk_20 のビットが立っているかを返す
-bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param_3) {
+// owner->unk_4 のプレイヤーについて, kind 0 なら goodCondID が param と一致するか, kind 1 なら unk_20 のビットが立っているかを返す
+bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param) {
   s32 n = 0;
   Player* player;
 
@@ -246,7 +246,7 @@ bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param_3) {
     bool32 ok = FALSE;
 
     if (bound != 0) {
-      if (player->unk_442 == param_3) {
+      if (player->goodCondID == param) {
         ok = TRUE;
       }
     }
@@ -254,7 +254,7 @@ bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param_3) {
       return TRUE;
     }
   } else if (kind == 1) {
-    if (player->flag20 & param_3) {
+    if (player->flag20 & param) {
       return TRUE;
     }
   }

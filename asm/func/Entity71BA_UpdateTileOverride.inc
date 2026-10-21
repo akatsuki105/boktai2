@@ -10,7 +10,7 @@
 	cmp r0, #0
 	beq _080A0580
 	adds r0, r4, #0
-	bl FUN_080a04c8
+	bl IsPlayerSmall
 	cmp r0, #0
 	beq _080A053E
 	adds r0, r4, #0
@@ -52,7 +52,7 @@ _080A056E:
 _080A057C: .4byte 0x03002BE0
 _080A0580:
 	adds r0, r4, #0
-	bl FUN_080a04c8
+	bl IsPlayerSmall
 	cmp r0, #0
 	beq _080A05BC
 	adds r0, r4, #0

@@ -37,7 +37,7 @@
 	ldr r1, _080935F0 @ =FUN_08093710
 	adds r0, r5, #0
 	movs r2, #1
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 	b _080935FE
 	.align 2, 0
 _080935DC: .4byte 0x000009EE
@@ -50,7 +50,7 @@ _080935F4:
 	ldr r1, _08093604 @ =FUN_08093608
 	adds r0, r5, #0
 	movs r2, #1
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 _080935FE:
 	pop {r4, r5}
 	pop {r0}

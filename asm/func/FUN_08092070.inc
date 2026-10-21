@@ -15,7 +15,7 @@
 	cmp r0, #0
 	bne _080920A8
 	ldrb r0, [r5]
-	bl item_08092034
+	bl Item_GetRotStageIcon
 	adds r3, r0, #0
 	b _080920AA
 	.align 2, 0

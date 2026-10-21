@@ -4,11 +4,11 @@
 	bl MessageWindow_Close
 	bl FUN_08049e5c
 	bl FUN_08049f84
-	ldr r1, _0809A11C @ =0x00004014
+	ldr r1, _0809A30C @ =0x00004014
 	adds r0, r4, r1
 	ldr r0, [r0]
 	bl TextPanel_Hide
-	ldr r1, _0809A120 @ =0x00004018
+	ldr r1, _0809A310 @ =0x00004018
 	adds r0, r4, r1
 	ldr r0, [r0]
 	bl TextPanel_Hide
@@ -26,19 +26,21 @@
 	bl FUN_0808a3c4
 	adds r0, r4, #0
 	bl FUN_0808b82c
-	ldr r1, _0809A124 @ =0x00000F56
+	ldr r1, _0809A314 @ =0x00000F56
 	adds r0, r4, r1
 	ldrb r1, [r0]
 	adds r0, r4, #0
 	bl FUN_0808b86c
-	adds r0, r4, #0
-	bl FUN_08099f58
 	ldr r0, [r4, #0x58]
 	bl MessageWindow_Start
-	ldr r0, _0809A128 @ =0x0000EFDA
+	ldr r0, _0809A318 @ =0x0000EFDA
 	bl MessageWindow_SetBgPltt
-	movs r0, #5
+	movs r0, #0x11
 	bl FUN_08099b3c
+	ldr r0, _0809A31C @ =0x0000400C
+	adds r1, r4, r0
+	movs r0, #0
+	strb r0, [r1]
 	movs r2, #0x10
 	rsbs r2, r2, #0
 	adds r0, r4, #0
@@ -49,17 +51,18 @@
 	adds r0, r4, #0
 	movs r1, #0
 	bl FUN_0808c658
-	ldr r1, _0809A12C @ =FUN_08099e2c
+	ldr r1, _0809A320 @ =FUN_0809a130
 	adds r0, r4, #0
 	movs r2, #0
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 	add sp, #4
 	pop {r4}
 	pop {r0}
 	bx r0
 	.align 2, 0
-_0809A11C: .4byte 0x00004014
-_0809A120: .4byte 0x00004018
-_0809A124: .4byte 0x00000F56
-_0809A128: .4byte 0x0000EFDA
-_0809A12C: .4byte FUN_08099e2c
+_0809A30C: .4byte 0x00004014
+_0809A310: .4byte 0x00004018
+_0809A314: .4byte 0x00000F56
+_0809A318: .4byte 0x0000EFDA
+_0809A31C: .4byte 0x0000400C
+_0809A320: .4byte FUN_0809a130

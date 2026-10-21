@@ -20,9 +20,9 @@
 #define MAGIC_HEALING 12    // ヒーリング
 #define MAGIC_DYNAMITE 13   // ダイナマイト
 #define MAGIC_SLEEPING 14   // スリーピング
-#define MAGIC_BAT 15        // チェンジ・バット (Cバット)
-#define MAGIC_RAT 16        // チェンジ・マウス (Cマウス)
-#define MAGIC_WOLF 17       // チェンジ・ウルフ (Cウルフ)
+#define MAGIC_BAT 15        // チェンジ・バット (Cバット), PLAYER_BAT に変身
+#define MAGIC_RAT 16        // チェンジ・マウス (Cマウス), PLAYER_MOUSE に変身
+#define MAGIC_WOLF 17       // チェンジ・ウルフ (Cウルフ), CバットやCマウスと違って、狼に変身して相手に噛み付くという技
 #define MAGIC_NONE (-1)
 
 #define MAGIC_NUM 18

@@ -26,12 +26,12 @@
 	movs r1, #1
 	movs r2, #5
 	movs r3, #3
-	bl EntityCC28_DrawHP
+	bl MainMenu_DrawHP
 	adds r0, r4, #0
 	movs r1, #1
 	movs r2, #5
 	movs r3, #4
-	bl EntityCC28_DrawEne
+	bl MainMenu_DrawEne
 	b _080971B2
 	.align 2, 0
 _08097084: .4byte 0x030044E0
@@ -101,7 +101,7 @@ _08097090:
 	ldr r0, [r4, #0x58]
 	movs r1, #4
 	movs r2, #0
-	bl EntityCC28_ShowBottomLine
+	bl MainMenu_ShowBottomLine
 	adds r0, r4, #0
 	movs r1, #1
 	bl FUN_0808b6fc
@@ -137,14 +137,14 @@ _0809715C:
 _0809717E:
 	adds r0, r4, #0
 	movs r2, #1
-	bl EntityCC28_SetState
+	bl MainMenu_SetState
 	b _080971B2
 	.align 2, 0
 _08097188: .4byte FUN_080971c4
 _0809718C:
 	ldr r1, _080971B8 @ =0x00003AE8
 	adds r0, r4, r1
-	bl EntityCC28Cursor_Move
+	bl InventoryCursor_Move
 	cmp r0, #0
 	beq _080971B2
 	ldr r2, _080971BC @ =0x00001464

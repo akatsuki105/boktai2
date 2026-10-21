@@ -104,7 +104,7 @@ s32 FUN_08049e30(char* str) {
     return -1;
   }
   gMarquee->unk_194 = str;
-  FUN_0804990c(gMarquee, 1);
+  FUN_0804990c(gMarquee, TRUE);
   return 0;
 }
 

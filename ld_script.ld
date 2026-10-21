@@ -86,7 +86,7 @@ SECTIONS {
       src/entity_0805fe30.o(iwram_data);
       src/entity_08060470.o(iwram_data);
       src/explosion.o(iwram_data);
-      src/entity_cc28.o(iwram_data);
+      src/menu.o(iwram_data);
       src/entity_5ccc.o(iwram_data);
       src/entity_1dbe.o(.bss);
       src/entity_ef66.o(iwram_data);
@@ -195,6 +195,7 @@ SECTIONS {
       src/joyspot.o(COMMON);
       src/code_0804b9f4.o(COMMON);
       . = ALIGN(8);
+      src/player.o(COMMON);
       src/iwram2.o(COMMON);
       src/link.o(COMMON);
       src/lib/linkManager.o(COMMON);
@@ -336,7 +337,7 @@ SECTIONS {
 			src/coffin.o (.text);
 			src/entity_162e.o (.text);
 			src/coffin_sealing.o (.text);
-			src/entity_cc28.o (.text);
+			src/menu.o (.text);
 			src/entity_1b24.o (.text);
 			src/entity_5ccc.o (.text);
 			src/entity_dc21.o (.text);
@@ -713,7 +714,7 @@ SECTIONS {
     src/entity_bd74.o (.rodata);
     src/coffin.o (.rodata);
     src/coffin_sealing.o (.rodata);
-    src/entity_cc28.o (.rodata);
+    src/menu.o (.rodata);
     src/entity_5ccc.o (.rodata);
     src/gameover.o (.rodata);
     src/pile_driver.o (.rodata);
