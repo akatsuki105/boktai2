@@ -2,6 +2,7 @@
 #include "global.h"
 #include "vm.h"
 
+// HashName("delay")
 // 一定時間経過したらスクリプトを実行するタイマー (スクリプトは IDとポインタ どちらかで指定)
 // スクリプト側の返り値(result) に応じて一度きり(oneshot)か定期実行(periodically)かが決まる
 typedef struct TimerEntity {
@@ -15,7 +16,7 @@ typedef struct TimerEntity {
   u32 argv[8];        // 0x30, 呼び出し元から写した引数
   ScriptRecord* rec;  // 0x50, FUN_08230f94 が引いてくるレコード
 } TimerEntity;
-static_assert(sizeof(TimerEntity) == 84);  // CreateEntity(ENTITY_UNK_5, 0x54)
+static_assert(sizeof(TimerEntity) == 84);
 
 #define TIMERFLAG_SCRIPT_ID (1 << 0)
 
@@ -84,8 +85,8 @@ TimerEntity* TimerEntity_Create(u32 script, ScriptArgs* args, s32 frames) {
   return p;
 }
 
-// 0x430D
-TimerEntity* TimerEntity_CreateFromScript(u32 recordID) {
+// 0x430D, HashName("delay")
+TimerEntity* Cmd_Delay(u32 recordID) {
   s32 frames = 0;
   u32 script = 0;
   bool32 isScriptID;

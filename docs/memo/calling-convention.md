@@ -167,7 +167,7 @@ bx  r2
 
 境界は **4バイト**(APCS)。AAPCS の8バイト境界要求はないので、`sub sp, #0xC` のような4の倍数が普通に出る。
 
-`FUN_0822ea60`(4引数、r8以上まで使う関数)の実物。**アドレスが小さいほうが上**。
+`Font_ReleaseRect`(4引数、r8以上まで使う関数)の実物。**アドレスが小さいほうが上**。
 
 ```
                         低位アドレス
@@ -256,14 +256,14 @@ Thumb バックエンドは `-momit-frame-pointer` 相当が既定で `fp`(r11)�
 
 レジスタが足りなくなったとき、コンパイラが値を一時的にスタックへ追い出すこと。`sub sp, #N` の領域が置き場になる。
 
-`FUN_0822ea60` の内側ループ:
+`Font_ReleaseRect` の内側ループ:
 
 ```asm
 	ldrh r0, [r4]
 	ands r0, r2
 	str  r1, [sp]        ← 退避
 	str  r2, [sp, #4]    ← 退避
-	bl   FUN_0822ea10
+	bl   Font_ReleaseGlyph
 	ldr  r1, [sp]        ← 復帰
 	ldr  r2, [sp, #4]    ← 復帰
 ```

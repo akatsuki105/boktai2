@@ -42,7 +42,7 @@ _0804160C:
 	str r2, [sp, #0xc]
 	movs r2, #0
 	movs r3, #1
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 	ldr r0, _08041640 @ =0x000001B1
 	bl PlaySound_082406e0
@@ -89,7 +89,7 @@ _0804166A:
 	movs r2, #0
 	movs r3, #3
 _0804168E:
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 	movs r0, #0xf6
 	lsls r0, r0, #1
@@ -114,7 +114,7 @@ _0804169E:
 	str r2, [sp, #0xc]
 	movs r2, #0
 	movs r3, #2
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 	ldr r0, _080416D0 @ =0x000001ED
 	bl PlaySound_082406e0
@@ -182,7 +182,7 @@ _08041710:
 	movs r2, #3
 _08041746:
 	movs r3, #0
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r5]
 	b _080417D2
 	.align 2, 0
@@ -251,7 +251,7 @@ _080417A4:
 	adds r0, r3, #0
 	movs r3, #0x7f
 _080417CC:
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 _080417D2:
 	add sp, #0x10

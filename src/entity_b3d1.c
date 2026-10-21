@@ -200,7 +200,7 @@ void FUN_080c0058(EntityB3D1* p) {
 }
 
 void EntityCF58_CreateWithCallback(s32 param_1, s32 param_2, void* fn, void* arg);  // src/entity_a0a6.c
-void FUN_0807b910(Player* p, s32 val);
+void Player_Lock(Player* p, s32 val);
 
 // プレイヤーを決まった座標へ戻してから FUN_080bffe8 を予約する
 void FUN_080c008c(void) {
@@ -208,7 +208,7 @@ void FUN_080c008c(void) {
 
   if (p != NULL) {
     EntityCF58_CreateWithCallback(0, 0, FUN_080bffe8, p);
-    FUN_0807b910(gPlayerPtr[0], 7);
+    Player_Lock(gPlayerPtr[0], 7);
     gPlayerPtr[0]->mover.pos.x = 0x380;
     gPlayerPtr[0]->mover.pos.y = 0x100;
     gPlayerPtr[0]->mover.pos.z = 0x580;

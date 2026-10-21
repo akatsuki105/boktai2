@@ -48,6 +48,7 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define BUS_WAIT 1         // Demo_CmdWait
 #define BUS_WAIT_EXT 2     // Demo_CmdWaitExternal
 
+#define TGT_BUS 0x4E69        // hash元見特定, gMsgBus
 #define TGT_PLAYER 0xF5EB     // BOKHASH("プレイヤー")
 #define TGT_DJANGO 0xBF31     // BOKHASH("ジャンゴ")
 #define TGT_SABATA 0x2B06     // BOKHASH("サバタ")
@@ -63,6 +64,7 @@ typedef struct { u16 targetID; u8 targetClass; u8 waitFlag; u16 unk_4; u8 cmd; u
 #define TGT_KURO 0x51E2       // BOKHASH("クロ")
 #define TGT_KID 0xF68F        // BOKHASH("キッド")
 #define TGT_MARCELLO 0xCB6B   // BOKHASH("マルチェロ")
+#define TGT_LUIS 0x7E5F       // BOKHASH("ルイス")
 #define TGT_LADY 0x0A5A       // BOKHASH("レディ")
 #define TGT_MEGAMAN 0xB548    // BOKHASH("ロックマン")
 #define TGT_SHADEMAN 0x0623   // BOKHASH("シェードマン")

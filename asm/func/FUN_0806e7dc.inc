@@ -42,7 +42,7 @@ _0806E7FE:
 	str r4, [sp, #8]
 	str r4, [sp, #0xc]
 	movs r3, #0x7f
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r5]
 	movs r0, #0xf5
 	lsls r0, r0, #1

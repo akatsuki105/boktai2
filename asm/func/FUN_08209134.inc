@@ -34,7 +34,7 @@
 	str r4, [sp, #0xc]
 	movs r2, #2
 	movs r3, #0x7f
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r6, #0x18]
 	strh r4, [r6, #4]
 	strh r5, [r6, #6]

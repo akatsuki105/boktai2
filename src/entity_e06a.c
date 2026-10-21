@@ -13,7 +13,7 @@ typedef struct {
   AuxSprite sprite;    // 0x1C
   AuxSpriteGfx gfx;    // 0x48, SPRITE_NODATA_9DA7
   HitboxData hitbox;   // 0x64
-  HitboxData hitbox2;  // 0xB4
+  HitboxData hurtbox;  // 0xB4
 } EntityE06A;
 static_assert(sizeof(EntityE06A) == 260);
 
@@ -63,19 +63,15 @@ void EntityE06A_SetupSprite(EntityE06A* p) {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
   ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
+  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
   stairs = tile->heightStairs >> 4;
   y = (tile->heightStairs & 0xF) << 8;
   switch (stairs) {
-    case 1: {
+    case STAIRS_VERTICAL: {
       y -= (u8)pos->z;
       break;
     }
-    case 2: {
+    case STAIRS_HORIZONTAL: {
       y -= (u8)pos->x;
       break;
     }
@@ -97,9 +93,9 @@ void EntityE06A_SetupHitbox(EntityE06A* p) {
   Hitbox_Register(hitbox);
 }
 
-// hitbox2 を組み立てて登録する, 呼び出し元は未発見
-void EntityE06A_SetupHitbox2(EntityE06A* p) {
-  HitboxData* hitbox = &p->hitbox2;
+// hurtbox を組み立てて登録する, 呼び出し元は未発見
+void EntityE06A_SetupHurtbox(EntityE06A* p) {
+  HitboxData* hitbox = &p->hurtbox;
   Vec3 size, offset;
 
   size.x = 50, size.y = 100, size.z = 50;

@@ -596,7 +596,7 @@ _080F3BE0:
 	adds r1, r7, #0
 	movs r2, #5
 	movs r3, #0
-	bl FUN_080da9c4
+	bl Emote_Show
 	b _080F3C90
 	.align 2, 0
 _080F3C10: .4byte 0x000001DF
@@ -622,7 +622,7 @@ _080F3C18:
 	adds r1, r7, #0
 	movs r2, #4
 	movs r3, #0
-	bl FUN_080da9c4
+	bl Emote_Show
 	b _080F3C90
 	.align 2, 0
 _080F3C48: .4byte 0x000001DF
@@ -633,27 +633,27 @@ _080F3C50:
 	ldr r0, [r4]
 	ldrh r2, [r7]
 	movs r1, #0
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r4]
 	ldrh r2, [r7]
 	movs r1, #1
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r4]
 	ldrh r2, [r7]
 	movs r1, #2
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r4]
 	ldrh r2, [r7]
 	movs r1, #4
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r4]
 	ldrh r2, [r7]
 	movs r1, #5
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r4]
 	ldrh r2, [r7]
 	movs r1, #3
-	bl FUN_080d9a9c
+	bl Emote_RemovePtcl
 _080F3C90:
 	str r0, [r4]
 _080F3C92:

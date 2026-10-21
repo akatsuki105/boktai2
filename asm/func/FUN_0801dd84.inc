@@ -26,7 +26,7 @@
 	strb r0, [r1]
 	ldr r0, [r7]
 	movs r1, #4
-	bl FUN_0807b910
+	bl Player_Lock
 _0801DDC4:
 	adds r0, r6, #0
 	bl FUN_0801d540
@@ -247,7 +247,7 @@ _0801DF72:
 	adds r1, r6, #0
 	adds r1, #0x94
 	ldrb r1, [r1]
-	bl FUN_0807b910
+	bl Player_Lock
 	b _0801DFA0
 	.align 2, 0
 _0801DF90: .4byte 0x00000FFF

@@ -17,7 +17,7 @@
 	b _0800CA0A
 _0800C842:
 	mov r0, sl
-	bl HazardManager_FindFreeSlot
+	bl CactusManager_FindFreeSlot
 	str r0, [sp, #0x24]
 	cmp r0, #0
 	bge _0800C850
@@ -35,7 +35,7 @@ _0800C850:
 	cmp r7, #0
 	beq _0800C874
 	ldr r0, [sp, #0x1c]
-	bl GetMapAreaAt
+	bl GetZoneAt
 	str r0, [r5, #4]
 	b _0800C876
 	.align 2, 0

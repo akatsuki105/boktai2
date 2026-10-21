@@ -107,7 +107,7 @@ _0807E912:
 	cmp r0, #0
 	beq _0807E934
 	adds r0, r5, #0
-	bl FUN_08066d10
+	bl Player_EndLookAround
 _0807E934:
 	pop {r4, r5}
 	pop {r0}

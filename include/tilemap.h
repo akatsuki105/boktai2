@@ -2,6 +2,7 @@
 #define __INCLUDE_TILEMAP_H__
 
 #include "constants/tilemap.h"
+#include "file.h"
 #include "gba/gba.h"
 
 struct TilemapLayer;
@@ -37,5 +38,7 @@ typedef struct TilemapLayer {
   u16 unk_6;             // 0x6, padding?
   MetatileIdx16* mtmap;  // 0x8, Tilemaps.mtmap の開始位置, ROMでは &Tilemaps からの オフセット で RAM読み込み時にポインタに変換される
 } TilemapLayer;
+
+TilemapFile* GetTilemapFile(FileID id);
 
 #endif  // __INCLUDE_TILEMAP_H__

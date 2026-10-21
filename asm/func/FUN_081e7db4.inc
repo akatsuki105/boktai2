@@ -118,7 +118,7 @@ _081E7E96:
 	subs r0, r0, r1
 	cmp r0, #0
 	ble _081E7F4C
-	bl FUN_08243104
+	bl CountSellableWeapons
 	cmp r0, #0
 	ble _081E7F4C
 	bl FUN_08049e5c
@@ -181,9 +181,9 @@ _081E7F28:
 	ands r0, r1
 	cmp r0, #0
 	beq _081E7FAE
-	bl FUN_08243140
+	bl CountSellableOrEmptySlots
 	adds r4, r0, #0
-	bl FUN_08243104
+	bl CountSellableWeapons
 	subs r4, r4, r0
 	cmp r4, #0
 	ble _081E7F4C

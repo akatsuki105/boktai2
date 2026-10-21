@@ -38,7 +38,7 @@
 	movs r0, #7
 	ands r1, r0
 	adds r0, r4, #0
-	bl FUN_0807b910
+	bl Player_Lock
 _080B1A16:
 	ldrh r0, [r5]
 	cmp r0, #0x40

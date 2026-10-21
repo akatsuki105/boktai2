@@ -112,7 +112,7 @@ _0807DEFC:
 	str r0, [sp, #8]
 	adds r0, r5, #0
 	add r1, sp, #4
-	bl FUN_0807b8d0
+	bl Player_SetPos
 	b _0807E1D8
 	.align 2, 0
 _0807DF28: .4byte 0xFFFF0000
@@ -121,7 +121,7 @@ _0807DF30:
 	movs r0, #8
 	ldrsh r1, [r4, r0]
 	adds r0, r5, #0
-	bl FUN_0807b910
+	bl Player_Lock
 	b _0807E1D8
 _0807DF3C:
 	movs r2, #8

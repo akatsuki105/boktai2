@@ -6,13 +6,12 @@
 typedef u16 ItemEffectType;  // see "include/constants/item.h", gItemEffectHandlers の idx
 
 typedef struct {
-  u16 unk_00;
-  ItemEffectType effectType;  // see ItemEffectType
-  u16 unk_04;
-  u16 value;  // 回復アイテムの場合は回復する割合
-  u16 unk_08;
-  u16 unk_0a;
-  u32 price;
+  u16 unk_00;                 // 0x00
+  ItemEffectType effectType;  // 0x02, see ItemEffectType
+  u16 durability;             // 0x04, 腐りにくさ (0: 腐らない, 大きいほど腐りにくい)
+  u16 value1;                 // 0x06, パラメータ1, ItemEffectType に依存 e.g. 回復アイテム(IET_HP)の場合は回復するHPの割合, gItemEffectHandlers の 第2引数
+  u16 value2;                 // 0x08, パラメータ2 e.g. IET_GOOD は value1 がバフ種類で, value2 がバフの効果時間, gItemEffectHandlers の 第3引数
+  u32 price;                  // 0x0C
 } ItemData;
 static_assert(sizeof(ItemData) == 16);
 

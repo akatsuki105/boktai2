@@ -90,7 +90,7 @@ _08001124:
 	ldrsh r1, [r3, r4]
 	movs r4, #2
 	ldrsh r2, [r3, r4]
-	bl FUN_0822f178
+	bl Video_SetBGBlend
 	b _080011BC
 _08001134:
 	adds r1, r7, #0
@@ -148,7 +148,7 @@ _08001134:
 	mov r3, r8
 	ldrh r2, [r3]
 	lsrs r2, r2, #8
-	bl FUN_0822f178
+	bl Video_SetBGBlend
 	b _080011BC
 _080011AC:
 	adds r1, r7, #0

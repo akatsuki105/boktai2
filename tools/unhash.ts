@@ -31,7 +31,7 @@ const TABLE_LEN = 3;
 const MAX_LEN = TABLE_LEN * 2;
 
 // 確定している名前から取れる語彙。候補の順位付けにだけ使う。
-const VOCAB = new Set(["anm", "map", "bg", "link", "col", "arr", "mask", "test", "00", "ect", "bee", "if", "switch", "return", "call", "print"]);
+const VOCAB = new Set(["anm", "map", "bg", "link", "col", "arr", "mask", "test", "00"]);
 
 // HashName の1文字分。
 const stepForward = (h: number, byte: number): number => {

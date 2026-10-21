@@ -169,7 +169,7 @@ _08048126:
 	ldr r3, _08048184 @ =0x0000017B
 	adds r6, r5, r3
 	ldrb r3, [r6]
-	bl FUN_0822ea60
+	bl Font_ReleaseRect
 	ldrb r1, [r4]
 	mov r0, r8
 	ldrb r2, [r0]

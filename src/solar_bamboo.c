@@ -1,3 +1,4 @@
+#include "collision_map.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
@@ -11,7 +12,7 @@ typedef struct {
   Entity e;                // ENTITY_UNK_8
   u16 unk_18;              // 0x18
   u8 unk_1a[0x20 - 0x1A];  // 0x1A
-  u32 unk_20;              // 0x20
+  ZoneID32 zoneID;         // 0x20
   u16 hp;                  // 0x24
   u16 maxHP;               // 0x26, '.l=200'
   u16 unk_28;              // 0x28
@@ -33,7 +34,6 @@ static_assert(sizeof(SolarBamboo) == 276);
 
 const u16 u16_ARRAY_085aa76c[4] = {0x6F, 0x3, 0x3, 0x3};  // 0x085aa76c
 
-s32 GetMapAreaAt(Vec3* pos);
 void Entity0800a89c_SpawnAt(u16 param_1, s32 param_2, u16 param_3, Vec3* pos, s32 param_5, s32 param_6, s32 param_7);
 
 // 被弾時に呼ばれる, 点滅させて耐久を削り、0 以下になったら演出を出して耐久を戻す
@@ -43,7 +43,7 @@ void FUN_0800c0b0(HitboxData* a, HitboxData* b, SolarBamboo* p) {
 
   damage = a->damage;
   if (damage == 0) {
-    damage = Hitbox_TestAttribute(a, HBATTR_6) ? 50 : 30;
+    damage = Hitbox_TestAttr(a, HBATTR_6) ? 50 : 30;
   }
   if (p->unk_28 == 0 && damage > 0) {
     p->unk_28 = 8;
@@ -63,7 +63,7 @@ NON_MATCH s32 SolarBamboo_Update(SolarBamboo* p) {
 #ifdef NONMATCHING_C
   bool32 active;
 
-  active = (p->unk_20 == gStat->unk_248) ? TRUE : FALSE;
+  active = (p->zoneID == gStat->zoneID) ? TRUE : FALSE;
   if (!active) {
     p->sprite.flags |= SPRFLAG_HIDDEN;
     p->hurtbox.flags |= HBFLAG_UNK_2;
@@ -140,7 +140,7 @@ s32 SolarBamboo_Init(SolarBamboo* p, u32 param, u32 _) {
   } else {
     pos.x = 0, pos.y = 0, pos.z = 0;
   }
-  p->unk_20 = GetMapAreaAt(&pos);
+  p->zoneID = GetZoneAt(&pos);
   p->unk_30 = 0;
   p->unk_32 = pos.y;
   p->unk_34 = 0;

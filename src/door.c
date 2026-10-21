@@ -12,7 +12,7 @@
 // 扉1体, DoorManager.doors が doorMax 体ぶん並べて持つ
 typedef struct Door {
   AuxSprite sprite;          // 0x00, DoorManager_Destroy が AuxSprite_Remove に渡す
-  MapTileOverride* unk_2c;   // 0x2C, DoorManager_Destroy が NULL でなければ Free する
+  MapTileOverride* ov;       // 0x2C, DoorManager_Destroy が NULL でなければ Free する
   void (*fn)(struct Door*);  // 0x30, FUN_08020AF8 が FUN_08020B88 を、FUN_08020B24 が別のハンドラを入れる
   u16 id;                    // 0x34, 扉のID, FUN_0801fe58 が一致する扉に unk_36 の bit0 を立てる
   u8 unk_36;                 // 0x36, bitfield
@@ -396,9 +396,9 @@ NON_MATCH s32 FUN_08020010(void) {
       door->fn = FUN_08020cd8;
       door->step = 0;
       door->unk_3a = 0;
-      door->unk_2c->tile.attr &= ~(TATTR_UNK_0 | TATTR_WALL);
-      door->unk_2c->tile.attr |= TATTR_WALL;
-      door->unk_2c->tile.heightStairs = (door->unk_2c->tile.heightStairs & 0xF0) | door->tileHeight;
+      door->ov->tile.attr &= ~(TATTR_UNK_0 | TATTR_WALL);
+      door->ov->tile.attr |= TATTR_WALL;
+      door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | door->tileHeight;
       door->openOffset = door->openMax;
       door->sprite.pos.y = door->openMax + door->pos_70.y;
       found = 1;
@@ -438,9 +438,9 @@ NON_MATCH s32 FUN_080200f0(void) {
       Door_SetPhase(door, 1);
       door->fn = FUN_08020d10;
       Door_SetStep(door, door->unk_84[0]);
-      door->unk_2c->tile.attr &= ~TATTR_WALL;
-      door->unk_2c->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
-      door->unk_2c->tile.heightStairs = (door->unk_2c->tile.heightStairs & 0xF0) | (door->tileHeight + 1);
+      door->ov->tile.attr &= ~TATTR_WALL;
+      door->ov->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
+      door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | (door->tileHeight + 1);
       door->openOffset = 0;
       door->sprite.pos.y = door->pos_70.y;
       found = 1;
@@ -577,11 +577,11 @@ void FUN_08020b24(Door* door) {
   PlaySound_082406e0(SONG_338);
   door->step = 0;
   door->unk_3a = 0;
-  door->unk_2c->tile.attr |= TATTR_WALL;
-  door->unk_2c->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
+  door->ov->tile.attr |= TATTR_WALL;
+  door->ov->tile.attr |= TATTR_UNK_0 | TATTR_WALL;
   door->phase = 3;
-  door->unk_2c->tile.heightStairs = (door->unk_2c->tile.heightStairs & 0xF0) | (door->tileHeight + 1);
-  door->unk_2c->flags &= ~1;
+  door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | (door->tileHeight + 1);
+  door->ov->flags &= ~1;
   door->fn = FUN_08020c1c;
 }
 
@@ -594,10 +594,10 @@ void FUN_08020b88(Door* door) {
     PlaySound_082406e0(SONG_340);
     door->timer = 30;
     door->phase = 0;
-    door->unk_2c->tile.attr &= ~(TATTR_UNK_0 | TATTR_WALL);
-    door->unk_2c->tile.attr |= TATTR_WALL;
-    door->unk_2c->tile.heightStairs = (door->unk_2c->tile.heightStairs & 0xF0) | door->tileHeight;
-    door->unk_2c->flags |= 1;
+    door->ov->tile.attr &= ~(TATTR_UNK_0 | TATTR_WALL);
+    door->ov->tile.attr |= TATTR_WALL;
+    door->ov->tile.heightStairs = (door->ov->tile.heightStairs & 0xF0) | door->tileHeight;
+    door->ov->flags |= 1;
     door->fn = FUN_08020cd8;
   }
 
@@ -675,9 +675,9 @@ s32 DoorManager_Destroy(DoorManager* p) {
   for (i = 0; i < p->unk_1a; i++) {
     Door* door = &p->doors[i];
 
-    if (door->unk_2c != NULL) {
-      Map_RemoveTileOverride(door->unk_2c);
-      Free(door->unk_2c);
+    if (door->ov != NULL) {
+      Map_RemoveTileOverride(door->ov);
+      Free(door->ov);
     }
     AuxSprite_Remove(&door->sprite);
   }

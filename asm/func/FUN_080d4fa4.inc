@@ -276,7 +276,7 @@ _080D51D0:
 	adds r0, r1, r0
 _080D51DC:
 	ldrh r0, [r0, #2]
-	bl FUN_080cfc04
+	bl PlayerLink_IsFrozenLava
 	cmp r0, #0
 	beq _080D51EC
 	movs r0, #0
@@ -455,7 +455,7 @@ _080D5330:
 	adds r0, r1, r0
 _080D533C:
 	ldrh r0, [r0, #2]
-	bl FUN_080cfc04
+	bl PlayerLink_IsFrozenLava
 	cmp r0, #0
 	beq _080D534C
 	movs r0, #0

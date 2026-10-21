@@ -34,7 +34,7 @@ _080A32CE:
 _080A32E6:
 	ldr r0, _080A3314 @ =0x03002BE0
 	ldr r0, [r0]
-	bl FUN_0807d118
+	bl Player_Unlock
 	bl FUN_080a6edc
 	adds r1, r4, #0
 	adds r1, #0xa0

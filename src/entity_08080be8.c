@@ -212,7 +212,7 @@ NON_MATCH void Entity08080be8_StateChargeDjango(Entity08080be8* p) {
   } else if (p->charge != 0) {
     AuxSprite_Show(&p->sprite);
   }
-  p->charge = p->player->unk_a8f;
+  p->charge = p->player->charge;
   p->sprite.poseIdx = ((p->timer >> 2) & 1) ? p->charge + 1 : p->charge;
   p->timer++;
 #else
@@ -250,7 +250,7 @@ NON_MATCH void Entity08080be8_StateChargeSabata(Entity08080be8* p) {
       } else if (state == 3 && (p->timer & 3) == 3) {
         Entity08080be8_SpawnParticle(p);
       }
-      p->charge = p->player->unk_a8f;
+      p->charge = p->player->charge;
       p->timer++;
       return;
     }

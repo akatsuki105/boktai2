@@ -179,7 +179,7 @@ _08008D44:
 	movs r1, #2
 	movs r2, #2
 	mov r3, sp
-	bl Entity08000a94_PushCmd
+	bl BgMapScroller_PushCmd
 	movs r1, #0x80
 	lsls r1, r1, #2
 	ldr r3, _08008DC0 @ =0x03003E78

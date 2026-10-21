@@ -156,7 +156,7 @@ NON_MATCH s32 ApplyLxModifiers(s32 lx) {
   if ((gFlag030047a4 & FLAG030047A4_LINK) == 0) {
     s32 slv;
 
-    if (gPlayerPtr[0] != NULL && (gPlayerPtr[0]->flag378 & FLAG378_AET_SUNLIGHT)) {
+    if (gPlayerPtr[0] != NULL && (gPlayerPtr[0]->equipBuffs & EBUFF_AET_SUNLIGHT)) {
       slv = Taiyo_LxToGauge(lx) * 2;  // 光のガーブ装備時は(太陽センサー由来の)太陽ゲージを2倍にする
       if (slv > 10) {
         slv = 10;
@@ -283,7 +283,7 @@ NON_MATCH void ApplySunlightGain(Taiyo* p) {
           if ((s32)gStat->solarStand < 9999) {
             u16 carry;
 
-            if (gPlayerPtr[0]->flag378 & FLAG378_AET_RES_SOL) {
+            if (gPlayerPtr[0]->equipBuffs & EBUFF_AET_RES_SOL) {
               p->solarStandFrac += ((gStat->sunGauge >> 1) + 5) * 2;  // メイルオブソル装備時
             } else {
               p->solarStandFrac += (gStat->sunGauge >> 1) + 5;

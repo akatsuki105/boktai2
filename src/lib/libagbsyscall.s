@@ -48,14 +48,14 @@ RegisterRamReset: @ 0x0824C1D8
 	svc #1
 	bx lr
 
-	thumb_func_start SoundBias_0
-SoundBias_0: @ 0x0824C1DC
+	thumb_func_start SoundBiasReset
+SoundBiasReset: @ 0x0824C1DC
 	movs r0, #0
 	svc #0x19
 	bx lr
 
-	thumb_func_start SoundBias_200
-SoundBias_200: @ 0x0824C1E4
+	thumb_func_start SoundBiasSet
+SoundBiasSet: @ 0x0824C1E4
 	movs r0, #1
 	svc #0x19
 	bx lr

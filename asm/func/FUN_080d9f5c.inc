@@ -13,7 +13,7 @@
 	ldr r0, [r0]
 	cmp r0, #0
 	bne _080D9F8C
-	bl Entity080da848_Create
+	bl EmoteManager_Create
 	mov sl, r0
 	cmp r0, #0
 	bne _080D9F8E
@@ -29,7 +29,7 @@ _080D9F8E:
 	cmp r0, #0
 	beq _080D9F84
 	mov r0, sl
-	bl FUN_080d99c4
+	bl EmoteManager_AllocSlot
 	adds r7, r0, #0
 	adds r1, r7, #0
 	adds r1, #0x88
@@ -63,7 +63,7 @@ _080D9F8E:
 	ldrh r1, [r1, #0x1c]
 	strh r1, [r7, #0x28]
 	adds r0, r7, #0
-	bl FUN_080d8644
+	bl Emote_ClearPtclState
 	strh r4, [r7, #0x3c]
 	strh r4, [r7, #8]
 	strh r4, [r7, #6]
@@ -115,7 +115,7 @@ _080DA020:
 	str r4, [sp]
 	ldr r4, [r7, #0x58]
 	str r4, [sp, #4]
-	bl FUN_080d8cc0
+	bl Emote_CalcPtclOffset
 	ldr r1, [sp, #0xc]
 	ldr r2, [sp, #0x10]
 	adds r0, r6, #0

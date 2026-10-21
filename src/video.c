@@ -74,7 +74,7 @@ void StageBGRegs(void);
 void CopyBGTileDataAndTilemapToVram(void);
 void CopyObjTileDataToVram(void);
 void CopyMainSpriteTileDataToVram(s32 tileIdx);
-void FUN_0822e73c(void);
+void Font_FlushGlyphTiles(void);
 void FUN_0822eef4(void);
 void Video_ApplyMosaic(void);
 void CommitPalette(void);
@@ -91,7 +91,7 @@ s32 VideoCommit_Update(VideoCommit* p) {
   }
   CommitPalette();
   CopyObjTileDataToVram();
-  FUN_0822e73c();
+  Font_FlushGlyphTiles();
   CopyBGTileDataAndTilemapToVram();
   REG_DISPCNT &= ~(DISPCNT_BG_ALL_ON | DISPCNT_OBJ_ON);
   if (gDispcntLocked == 0) {
@@ -248,8 +248,8 @@ void Video_RemoveMainSpriteFromDrawList(MainSprite* p, s32 idx) {
 }
 
 // この場面で使う3つの描画パスを差し替える, 引数の順は実行順ではないので注意
-void Video_SetDrawPasses(s32 val, Procedure ptclFn, Procedure auxsprFn, Procedure mainsprFn) {
-  gCameraCoords.unk_12 = val;
+void Video_SetDrawPasses(s32 drawMode, Procedure ptclFn, Procedure auxsprFn, Procedure mainsprFn) {
+  gCameraCoords.drawMode = drawMode;
   gDrawParticles = ptclFn;
   gDrawAuxSprites = auxsprFn;
   gDrawMainSprites = mainsprFn;

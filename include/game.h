@@ -16,23 +16,24 @@
 #define STYLE_FIST 4    // 拳 (WeaponKind だと 3)
 #define STYLE_NONE 5    // なし
 
-// gStat->unk_934
-#define SF934_UNK_0 (1 << 0)    // 0x1
-#define SF934_OUTDOOR (1 << 1)  // 0x2, プレイヤーのいるマップが屋外のときにセット (屋内で天窓の下にいるのは含まれない)
-#define SF934_UNK_2 (1 << 2)    // 0x4
-#define SF934_UNK_3 (1 << 3)    // 0x8
-#define SF934_UNK_4 (1 << 4)    // 0x10
-#define SF934_UNK_5 (1 << 5)    // 0x20
-#define SF934_UNK_6 (1 << 6)    // 0x40
-#define SF934_UNK_7 (1 << 7)    // 0x80
-#define SF934_UNK_8 (1 << 8)    // 0x100
-#define SF934_UNK_9 (1 << 9)    // 0x200
-#define SF934_UNK_10 (1 << 10)  // 0x400
-#define SF934_UNK_11 (1 << 11)  // 0x800
-#define SF934_UNK_12 (1 << 12)  // 0x1000
-#define SF934_UNK_13 (1 << 13)  // 0x2000
-#define SF934_UNK_14 (1 << 14)  // 0x4000
-#define SF934_UNK_15 (1 << 15)  // 0x8000
+// gStat->unk_934, FUN_0823acbc がマップ読み込み時に 0 で初期化する
+// 立てているのは weather.c の SF934_RAIN だけで, 溶岩の状態 (SF934_UNK_3 / SF934_LAVA_FROZEN / SF934_UNK_13) をセットするコードはROM中に存在しない
+#define SF934_UNK_0 (1 << 0)        // 0x1
+#define SF934_OUTDOOR (1 << 1)      // 0x2, プレイヤーのいるマップが屋外のときにセット (屋内で天窓の下にいるのは含まれない)
+#define SF934_UNK_2 (1 << 2)        // 0x4
+#define SF934_UNK_3 (1 << 3)        // 0x8, 溶岩タイルの第3の状態, Player_IsLiveLava の対象から外れ FUN_08065b44 の読み手3件が別のアニメ/別のフラグ経路に進むが, 正体は不明
+#define SF934_LAVA_FROZEN (1 << 4)  // 0x10, 溶岩タイルが氷結している, 根拠: Player_IsIcyTileAt と FUN_08068d18 がどちらも「TATTR_LAVA かつこのビット」を TATTR_ICE と同一に扱う
+#define SF934_UNK_5 (1 << 5)        // 0x20
+#define SF934_UNK_6 (1 << 6)        // 0x40
+#define SF934_UNK_7 (1 << 7)        // 0x80
+#define SF934_UNK_8 (1 << 8)        // 0x100
+#define SF934_UNK_9 (1 << 9)        // 0x200
+#define SF934_UNK_10 (1 << 10)      // 0x400
+#define SF934_RAIN (1 << 11)        // 0x800, 本降りのときにセットされる, 根拠: weather.c の FUN_08018284
+#define SF934_DESERT (1 << 12)      // 0x1000, 砂漠エリア(おいしい水を持っていない場合に、HPが徐々に減っていく)
+#define SF934_UNK_13 (1 << 13)      // 0x2000, 溶岩タイルの状態の1つらしいが, 見ているのは FUN_08065b08 / FUN_080cfc3c だけで, その2つを呼ぶ側がいない
+#define SF934_UNK_14 (1 << 14)      // 0x4000
+#define SF934_UNK_15 (1 << 15)      // 0x8000
 
 // 0x0203C400 (ハードリセット時, ソフトリセット時は配置先が変動する)
 typedef struct {
@@ -96,14 +97,14 @@ typedef struct {
   s16 enemyKillCount[24];        // 0x1F2, idx: include/constants/enemy.h の EnemyCategoryID?
   u16 unk_222;                   // 0x222
   u8 unk_224[0x228 - 0x224];     // 0x224
-  u16 killCounts[5];             // 0x228, ビースト/シング/ファントム/アンデッド/イモータルの撃破数, 根拠: Player_WeaponEffectKillCount が敵の系統ビットで引く
+  s16 killCounts[5];             // 0x228, ビースト/シング/ファントム/アンデッド/イモータルの撃破数, 根拠: Player_WeaponEffectKillCount が敵の系統ビットで引く
   u8 unk_232[0x23A - 0x232];     // 0x232
   s16 solarBankInterestRate;     // 0x23A, Solar bank interest rate (stored as (1+r)*64, e.g. 14.0625% = 73). Defaults to 65 when starting a new game.
   u8 unk_23c[4];                 // 0x23C
   s16 lap;                       // 0x240, 現在のゲーム周回数
   u8 unk_242[4];                 // 0x242
   u16 unk_246;                   // 0x246, FUN_08231ca8
-  s32 unk_248;                   // 0x248, Entity83B2_Update で何かのIDとして使う? これをいじると Entity83B2 が機能しなくなる (戻すと機能する)
+  ZoneID32 zoneID;               // 0x248, 現在のゾーンID
   s32 mapInitScriptID;           // 0x24C, Current map's init script ID
   s16 playerKind;                // 0x250, see PlayerKind in player.h
   coffin16_t coffin;             // 0x252
@@ -131,7 +132,7 @@ typedef struct {
   u16 side;                      // 0x2F8, 赤(Solar)寄りか黒(Dark)寄りか, 次の3つのどれかを取る, 0: 赤, 1: 中立, 2: 黒
   u16 style;                     // 0x2FA, プレイ中、最も使用フレーム数が多かった攻撃種別, see AttackStyle
   u16 forge;                     // 0x2FC, 0..127, 用途まだ不明
-  s16 unk_2fe[5];                // 0x2FE
+  s16 unk_2fe[5];                // 0x2FE, 好感度?
   u16 unk_308[64];               // 0x308, u16 3つで1件の表が20件 ([0] と [1] で引く, [1] が 0 なら空き), 末尾8バイトは未解析
   u32 enemyDexSeen[2];           // 0x388, 魔物図鑑の57体ぶんの出会ったフラグ, 全部そろうと [0] = -1, [1] = 0x01FFFFFF
   u32 enemyDexFlags[4];          // 0x390, 魔物1体につき2bit, 添字は id * 2 + 種別
@@ -144,7 +145,7 @@ typedef struct {
   u8 unk_3ba[2];                 // 0x3BA
   u32 solarStand;                // 0x3BC
   u8 name[16];                   // 0x3C0, JP: 5文字, EN: 9文字
-  Weapon weapons[16 + 16 + 16];  // 0x3D0
+  Weapon weapons[16 + 16 + 16];  // 0x3D0, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
   u16 solarBank;                 // 0x910, 太陽バンクの残高(= 所持金)
   u16 linkBattlePoint;           // 0x912, 対戦ポイント
   s16 linkBattleCount;           // 0x914, 通信対戦の参加回数 (勝率計算に使用)

@@ -1,10 +1,35 @@
-#include "shademan.h"
-
 #include "boss.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
 #include "shadow.h"
+#include "sprite.h"
+
+// シェードマン(シングルプレイ用)
+typedef struct {
+  Entity e;                   // 0x000, ENTITY_UNK_8
+  u8 unk_18[0x15C - 0x18];    // 0x018, まだ未解析
+  HitboxData hitbox_15c;      // 0x15C
+  u8 unk_1ac[0x2BC - 0x1AC];  // 0x1AC, まだ未解析
+  MainSprite sprite_2bc;      // 0x2BC
+  AuxShadow shadow_31c;       // 0x31C
+  u8 unk_388[0x38C - 0x388];  // 0x388, まだ未解析
+  u32 unk_38c;                // 0x38C, FUN_0821bd14 が bit8 を立てる
+  u8 unk_390[3076 - 0x390];   // 0x390, まだ未解析
+} Entity0623;
+static_assert(sizeof(Entity0623) == 3076);
+
+// 点滅をやめて unk_38c の bit8 を立てる
+// 残差は命令の並び順だけ (17 対 17), 原典は定数 0x100 を unk_38c のアドレス計算より前に作る
+// 0x100 を左に書く形 / AuxSprite_SetFlags 経由 / MainSprite* ローカルは試済
+NON_MATCH void FUN_0821bd14(Entity0623* p) {
+#ifdef NONMATCHING_C
+  MainSprite_ClearFlags(&p->sprite_2bc, SPRFLAG_BLINK_ODD);
+  p->unk_38c |= 0x100;
+#else
+  INCFUNC("asm/func/FUN_0821bd14.inc");
+#endif
+}
 
 INCASM("asm/shademan.inc");
 

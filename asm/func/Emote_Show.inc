@@ -47,63 +47,63 @@ _080DAA24:
 	ldrh r2, [r5]
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080d99d4
+	bl Emote_Remove
 	b _080DAB8C
 _080DAA30:
 	ldrh r2, [r5]
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_080d99d4
+	bl Emote_Remove
 	b _080DAB8C
 _080DAA3C:
 	ldrh r2, [r5]
 	adds r0, r4, #0
 	movs r1, #3
-	bl FUN_080d9a9c
+	bl Emote_RemovePtcl
 	b _080DAB8C
 _080DAA48:
 	ldrh r2, [r5]
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_080d99d4
+	bl Emote_Remove
 	b _080DAB8C
 _080DAA54:
 	ldrh r2, [r5]
 	adds r0, r4, #0
 	movs r1, #4
-	bl FUN_080d99d4
+	bl Emote_Remove
 	b _080DAB8C
 _080DAA60:
 	ldrh r2, [r5]
 	adds r0, r4, #0
 	movs r1, #5
-	bl FUN_080d99d4
+	bl Emote_Remove
 	b _080DAB8C
 _080DAA6C:
 	ldrh r2, [r5]
 	adds r0, r4, #0
 	movs r1, #0
-	bl FUN_080d99d4
+	bl Emote_Remove
 	adds r4, r0, #0
 	ldrh r2, [r5]
 	movs r1, #1
-	bl FUN_080d99d4
+	bl Emote_Remove
 	adds r4, r0, #0
 	ldrh r2, [r5]
 	movs r1, #2
-	bl FUN_080d99d4
+	bl Emote_Remove
 	adds r4, r0, #0
 	ldrh r2, [r5]
 	movs r1, #4
-	bl FUN_080d99d4
+	bl Emote_Remove
 	adds r4, r0, #0
 	ldrh r2, [r5]
 	movs r1, #5
-	bl FUN_080d99d4
+	bl Emote_Remove
 	adds r4, r0, #0
 	ldrh r2, [r5]
 	movs r1, #3
-	bl FUN_080d9a9c
+	bl Emote_RemovePtcl
 	movs r2, #4
 	ldrh r1, [r5, #2]
 	ands r1, r2

@@ -303,8 +303,8 @@ s32 Breakable_Spawn(void) {
   item->brokenPose = pose + 1;
   item->flashTimer = 0;
   hitbox = &item->hitbox;
-  size.x = 0x80, size.y = 0x100, size.z = 0x80;
-  offset.x = -0x80, offset.y = 0x80, offset.z = 0x80;
+  size.x = (BLOCK / 2), size.y = BLOCK, size.z = (BLOCK / 2);
+  offset.x = -(BLOCK / 2), offset.y = (BLOCK / 2), offset.z = (BLOCK / 2);
   Hitbox_Init(hitbox, item->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetHandler(hitbox, Breakable_OnHit, item);
   Hitbox_SetPos(hitbox, &item->pos, 0);

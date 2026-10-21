@@ -5,6 +5,13 @@
 #include "vm.h"
 #include "weapon.h"
 
+// ItemCategory16, ItemCategory32
+#define ITEM_CATEGORY_USABLE 0  // 消費アイテム, 貴重品 (名前は後でもっといいものにする)
+#define ITEM_CATEGORY_WEAPON 1
+#define ITEM_CATEGORY_ARMOR 2
+#define ITEM_CATEGORY_UNK3 3
+#define ITEM_CATEGORY_UNK4 4
+
 #define ITEM(slot) (*(gStat->items + slot))           // gStat->items[slot]
 #define VALUABLES(slot) (*(gStat->valuables + slot))  // gStat->valuables[slot]
 #define ROTCOUNT(slot) (*(gStat->rotTimer + slot))    // gStat->rotTimer[slot]
@@ -76,17 +83,17 @@ static bool32 tryAddItem(item32_t n, s32 rotCount) {
 
 static bool32 tryAddValuable(item32_t n) {
   s32 slot = 0;
-  u32 flagHeart = FLAG378_HEART;
-  u32 flagJoker = FLAG378_JOKER;
+  u32 flagHeart = EBUFF_HEART;
+  u32 flagJoker = EBUFF_JOKER;
 
   for (; slot < 16; slot++) {
     if (GetValuableItemID(slot) < 0) {
       SetValuable(slot, n);
       if (gPlayerPtr[0] != NULL) {
         if (n == ITEM_HEART_EMBLEM) {
-          gPlayerPtr[0]->flag378 |= flagHeart;
+          gPlayerPtr[0]->equipBuffs |= flagHeart;
         } else if (n == ITEM_JOKER_EMBLEM) {
-          gPlayerPtr[0]->flag378 |= flagJoker;
+          gPlayerPtr[0]->equipBuffs |= flagJoker;
         }
       }
       return TRUE;

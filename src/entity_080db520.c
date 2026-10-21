@@ -19,8 +19,8 @@ static_assert(sizeof(Entity080db520Elem) == 164);
 
 typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_10
-  AuxSpriteGfx gfx;             // 0x018
-  AuxAnimFile* anim;            // 0x034
+  AuxSpriteGfx gfx;             // 0x018, SPRITE_EFF_1C1B
+  AuxAnimFile* anim;            // 0x034, ANIM_3DC2
   u32 activeMask;               // 0x038, 使用中の elems のビットマスク
   Entity080db520Elem elems[8];  // 0x03C, 根拠: _Destroy の stride 0xA4 × 8
 } Entity080db520;
@@ -29,8 +29,6 @@ static_assert(sizeof(Entity080db520) == 1372);
 IWRAM_DATA Entity080db520* gEntity080db520 = NULL;  // 0x03000160
 
 const u8 u8_ARRAY_085ad310[4] = {8, 4, 2, 1};  // 0x085AD310
-
-NAKED s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u16* param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_080da9c4.inc"); }
 
 // idx 番の枠の判定を1フレームだけ有効にする
 void FUN_080dab9c(s32 idx) {
@@ -181,6 +179,8 @@ Entity080db520* Entity080db520_Create(void) {
 
 void FUN_080db56c(void) { gEntity080db520 = NULL; }
 
+// 不使用?
 NAKED void FUN_080db578(void) { INCFUNC("asm/func/FUN_080db578.inc"); }
 
+// 不使用?
 NAKED void FUN_080db780(void) { INCFUNC("asm/func/FUN_080db780.inc"); }

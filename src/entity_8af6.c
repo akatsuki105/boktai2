@@ -6,7 +6,7 @@
 // スクリプトから足せる飾りのスプライト1枚, 位置の補間とマーカー設定への追従を持つ
 typedef struct {
   u8 unk_0[24];        // 0x00, どの関数も触っていない
-  MainSpriteGfx gfx;   // 0x18, '.i' で指定したスプライトファイル
+  MainSpriteGfx gfx;   // 0x18, '.d' で指定したスプライトファイル (e.g. SPRITE_DJANGO_LARGE, SPRITE_E89F, SPRITE_UI_SOLARBANK)
   MainSprite sprite;   // 0x38
   u16 id;              // 0x98, '.n', スクリプトから枠を引くときの番号
   s16 moving;          // 0x9A, 0 以外なら pos を fromPos から toPos へ補間する
@@ -108,6 +108,7 @@ NAKED void Entity8AF6_MoveToScripted(void) { INCFUNC("asm/func/Entity8AF6_MoveTo
 
 NAKED void Entity8AF6Entry_Update(Entity8AF6Entry* p) { INCFUNC("asm/func/Entity8AF6Entry_Update.inc"); }
 
+// 0xEAB4
 NAKED void Entity8AF6_AddEntryScripted(void) { INCFUNC("asm/func/Entity8AF6_AddEntryScripted.inc"); }
 
 s32 Entity8AF6_Update(Entity8AF6* p) {

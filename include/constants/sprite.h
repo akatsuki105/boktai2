@@ -97,8 +97,8 @@
 #define SPRITE_A606 0xA606                     // 黒塗り
 #define SPRITE_LILYPAD 0xD166                  // ハスの葉
 #define SPRITE_MAGIC_CIRCLE 0x0BA8             // 魔法陣
-#define SPRITE_EMOTION_ICONS 0x363C            // "!"
-#define SPRITE_363D 0x363D                     // Entity080da848 が SPRITE_EMOTION_ICONS と一緒に読む
+#define SPRITE_EMOTION_ICONS_0 0x363C          // "!"
+#define SPRITE_EMOTION_ICONS_1 0x363D          // EmoteManager が SPRITE_EMOTION_ICONS_0 と一緒に読む
 #define SPRITE_1FBD 0x1FBD                     // なんかの壁
 #define SPRITE_SAMURAI_ARMOR 0x6AF7            // キッドの店の内装(武者鎧)
 #define SPRITE_1B59 0x1B59                     // 扉(鉄格子)
@@ -134,7 +134,7 @@
 #define SPRITE_EF69 0xEF69                     // 暗黒の根
 #define SPRITE_5BA7 0x5BA7                     // 天窓の光
 #define SPRITE_5BB7 0x5BB7                     // 天窓の光
-#define SPRITE_9A1F 0x9A1F                     // "PUSH START BUTTON"の文字(どこで使ってるか不明)
+#define SPRITE_9A1F BOKHASH("start")           // 0x9A1F, "PUSH START BUTTON"の文字(どこで使ってるか不明)
 #define SPRITE_C459 0xC459                     // 太陽床
 #define SPRITE_DC07 0xDC07                     // 天窓の光
 #define SPRITE_D45E 0xD45E                     // 水たまり?, スケルトン
@@ -257,7 +257,7 @@
 #define SPRITE_EFF_354D 0x354D                 // 何かのエフェクト
 #define SPRITE_SHAIAN_AX 0x39A3                // シャイアンが投げる斧
 #define SPRITE_LVUP_INDICATOR 0x1C1D           // レベルアップのインジケータ
-#define SPRITE_GAMEOVER 0x654B                 // "GAMEOVER"
+#define SPRITE_GAMEOVER BOKHASH("over")        // 0x654B, "GAMEOVER"
 #define SPRITE_B0BC 0xB0BC                     // 重量スイッチ
 #define SPRITE_SPIKEBALL 0x24BA                // 棘鉄球
 #define SPRITE_PITFALL_A945 0xA945             // 落とし穴

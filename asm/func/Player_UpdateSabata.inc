@@ -41,7 +41,7 @@ _08079162:
 	bl FUN_080667b0
 _08079186:
 	adds r0, r5, #0
-	bl FUN_0806680c
+	bl Player_IsInRain
 	cmp r0, #0
 	beq _08079196
 	adds r0, r5, #0
@@ -92,7 +92,7 @@ _080791EA:
 	cmp r0, #0
 	beq _08079202
 	adds r0, r5, #0
-	bl FUN_08066df8
+	bl Player_UpdateCameraLookAt
 _08079202:
 	adds r0, r5, #0
 	bl FUN_08065b7c

@@ -18,7 +18,7 @@ typedef struct {
   bool8 reverse;           // 0x0F, 0 なら startPltt -> endPltt、 1 なら逆向き
   u8 fadeIn;               // 0x10, '.S=10', 往路のフレーム数
   u8 fadeOut;              // 0x11, '.D=10', 復路のフレーム数
-  u8 unk_12[2];            // 0x12, padding
+  u8 _[2];                 // 0x12, padding
 } BgPlttBlend;
 static_assert(sizeof(BgPlttBlend) == 20);
 

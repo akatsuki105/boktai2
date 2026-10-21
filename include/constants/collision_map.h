@@ -124,7 +124,7 @@
 #define HP_8BF6 0x8BF6
 #define HP_8C76 0x8C76
 #define HP_8CF6 0x8CF6
-#define HP_8F62 0x8F62
+#define HP_8F62 0x8F62  // サンミゲル (b00_00)
 #define HP_97CD 0x97CD
 #define HP_97CE 0x97CE
 #define HP_97D1 0x97D1
@@ -230,7 +230,7 @@
 #define HP_DA2F 0xDA2F
 #define HP_DA3F 0xDA3F
 #define HP_DA97 0xDA97
-#define HP_EAC3 0xEAC3
+#define HP_EAC3 0xEAC3  // random
 #define HP_F312 0xF312
 #define HP_F38C 0xF38C
 #define HP_F7CD 0xF7CD

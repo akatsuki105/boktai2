@@ -39,7 +39,7 @@
 	ldr r0, _080504D0 @ =0x03002BE0
 	ldr r0, [r0]
 	subs r1, #5
-	bl FUN_0807b910
+	bl Player_Lock
 _0805049C:
 	ldr r2, [r4, #0x24]
 	cmp r2, #0x1d

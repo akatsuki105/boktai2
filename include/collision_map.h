@@ -20,6 +20,11 @@ static_assert(sizeof(CollisionMapFile) == 20);
 
 // --------------------------------------------
 
+// (heightStairs >> 4) & 0xF
+#define STAIRS_NONE 0
+#define STAIRS_VERTICAL 1
+#define STAIRS_HORIZONTAL 2
+
 typedef u16 TileAttr;             // CollisionMapTile.attr
 #define TATTR_UNK_0 (1 << 0)      // 0x0001, FUN_08020b24 が閉じた扉のタイルに立てる
 #define TATTR_WALL (1 << 1)       // 0x0002, 壁(常に侵入不可), 根拠: FUN_08235f40 がこのビットで NavAgent を止める, CactusManager も上書きタイルに立てる
@@ -36,7 +41,7 @@ typedef u16 TileAttr;             // CollisionMapTile.attr
 // 根拠: heightStairs を 上位/下位4bit に割って使うのは Map_GetTileHeightAt と EntityE06A_Create など6ファイル, attr の位置は FUN_08235f40
 typedef struct {
   u8 heightStairs;  // 0x00, 下位4bit が高さ (同じ高さのタイル か 高さが合う階段タイル から侵入可能), 上位4bit が階段 (0: なし, 1: 縦, 2: 横)
-  u8 obj;           // 0x01, タイルで隠されるべき場合に使用されるスプライト, 0xFF でなし
+  u8 occluder;      // 0x01, タイルで隠されるべき場合に使用されるスプライト, 0xFF でなし
   TileAttr attr;    // 0x02, see TileAttr
 } CollisionMapTile;
 static_assert(sizeof(CollisionMapTile) == 4);
@@ -64,9 +69,6 @@ typedef struct {
 } CollisionMapTileData;
 
 // --------------------------------------------
-
-typedef u16 ZoneID16;
-typedef s32 ZoneID32;
 
 // ID付きの範囲情報 (イベント（カットシーン、ロードゾーンなど）のトリガー に使われる？)
 typedef struct {
@@ -123,15 +125,15 @@ bool32 Map_AdvancePathWalker(PathWalker* p);
 // Enemy は実体を持たず Enemy.navAgent (0x4A4) にポインタで持つので, 確保元が見つかるまで全体サイズは未確定
 // 触っていることが分かっている +0x23 までだけ書いてある
 typedef struct NavAgent {
-  u16 flags;      // 0x00, bit0 が立っているときだけ経路の後段処理も走る
-  u16 unk_02;     // 0x02
-  u16 islandIdx;  // 0x04, NavMesh.offsets[] の添字
-  u16 rectIdx;    // 0x06, islandIdx の島の中のナビ矩形番号
-  u16 unk_08;     // 0x08, 目標のポータル番号, FUN_08236130 が unk_0a と一致したら到着扱いにする
-  u16 unk_0a;     // 0x0A, いま向かっているポータル番号
-  Vec3 unk_0c;    // 0x0C
-  Vec3 unk_14;    // 0x14
-  Vec3 unk_1c;    // 0x1C
+  u16 flags;       // 0x00, bit0 が立っているときだけ経路の後段処理も走る
+  u16 unk_02;      // 0x02
+  u16 islandIdx;   // 0x04, NavMesh.offsets[] の添字
+  u16 rectIdx;     // 0x06, islandIdx の島の中のナビ矩形番号
+  u16 goalPortal;  // 0x08, 目標のポータル番号, FUN_08236130 が nextPortal と一致したら到着扱いにする
+  u16 nextPortal;  // 0x0A, いま向かっているポータル番号
+  Vec3 unk_0c;     // 0x0C
+  Vec3 unk_14;     // 0x14
+  Vec3 unk_1c;     // 0x1C
 } NavAgent;
 
 typedef struct {
@@ -168,6 +170,9 @@ typedef struct {
 
   u16 distanceMap[1];  // u16[countDistanceMap]
 } NavIsland;
+
+typedef struct NavRect NavRect;
+typedef struct NavPortal NavPortal;
 
 typedef struct {
   u16 countIslands;      // 0x00
@@ -229,9 +234,11 @@ static_assert(sizeof(CollisionMapData) == 3620);
 extern CollisionMapData* gCollisionMap;
 
 MapTileOverride* Map_FindTileOverride(u32 tileIdx, u32 mask);
+s32 Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 stairs, s32 height, s32 occluder, s32 attr);
 void Map_RemoveTileOverride(MapTileOverride* p);
 u16 Map_GetTileHeightAt(Vec3* pos);
 Zone* FindZonesByID(ZoneID16 id, u16* count);
+bool8 Map_IsPosInZoneByID(ZoneID16 id, Vec3* pos);
 void Map_InsertEvent(CollisionMapEvent* ev, u32 param_2);
 bool32 Map_IsPosInAgentIsland(NavAgent* agent, WorldPos* pos, WorldPos* dst);
 s32 FUN_08235f40(NavAgent* agent, WorldPos* pos, WorldPos* dst);
@@ -239,5 +246,7 @@ s32 Map_FindNavRectAt(Vec3* pos);
 s32 Map_InitNavAgent(NavAgent* agent, WorldPos* pos);
 void FUN_08234660(ZoneEventSource* src);
 s32 FUN_08235a84(NavAgent* agent, WorldPos* pos, WorldPos* dst);
+bool32 Map_ResetCollisionMap(void);
+ZoneID32 GetZoneAt(Vec3* pos);
 
 #endif  // __INCLUDE_COLLISION_MAP_H__

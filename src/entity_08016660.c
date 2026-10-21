@@ -32,12 +32,12 @@ typedef struct {
 } Entity08016660;
 static_assert(sizeof(Entity08016660) == 32);
 
+COMMON_DATA Entity08016660* gEntity08016660 = NULL;  // 0x03002B44
+
 static inline void Entity08016660Node_SetFn(Entity08016660Node* p, u32 idx) {
   p->fnIdx = idx;
   p->timer = 0;
 }
-
-COMMON_DATA Entity08016660* gEntity08016660 = NULL;  // 0x03002B44
 
 void FUN_08016430(Entity08016660Node*);
 void FUN_08016454(Entity08016660Node*);
@@ -53,7 +53,7 @@ void FUN_08016060(void) { gEntity08016660 = NULL; }
 void FUN_0801606c(HitboxData* a, HitboxData* b, Entity08016660Node* node) {
   s32 damage = b->damage;
 
-  if (Hitbox_TestAttribute(a, HBATTR_FROST)) {
+  if (Hitbox_TestAttr(a, HBATTR_FROST)) {
     damage *= 2;
   }
 

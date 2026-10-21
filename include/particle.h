@@ -49,13 +49,13 @@ typedef struct Particle {
   u8 priority;            // 0x0F
   u8 offsetZ;             // 0x10
   u8 listIdx;             // 0x11
-  u8 unk_12[2];           // 0x12, padding?
+  u8 _[2];                // 0x12, padding
   u32 oamAttr01;          // 0x14
   Vec3 pos;               // 0x18
   struct Particle* prev;  // 0x20
   struct Particle* next;  // 0x24
 } Particle;
-static_assert(sizeof(Particle) == 40);  // 　Video_RemoveParticleFromDrawList から 40バイト以上は確定 で 0x0805fdfe のループでは 40バイトずつアドレスが増えていくので、 40バイトで確定と思われる
+static_assert(sizeof(Particle) == 40);
 
 // --------------------------------------------
 

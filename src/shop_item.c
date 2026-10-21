@@ -147,12 +147,12 @@ void FUN_080ba2d8(ItemShop* p) {
     id = GetNormalItemID((u8)p->cursor.slot);
     pose = item_08092034((u8)p->cursor.slot);
   } else if (p->cursor.row <= 7) {
-    u16 effect;
+    u16 durability;
 
     id = p->items0[(u8)p->cursor.slot - 16];
-    effect = gItemDB[id].unk_04;
+    durability = gItemDB[id].durability;
     pose = 0xD0;
-    if (effect == 0) {
+    if (durability == 0) {
       pose = 0xCF;
     }
   } else {

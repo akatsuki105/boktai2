@@ -45,7 +45,7 @@ _08096164:
 	adds r1, r4, r2
 	ldrb r1, [r1]
 	subs r1, #0x10
-	bl FUN_08242f44
+	bl RegisterWeapon
 	adds r0, r4, #0
 	bl FUN_08095a5c
 _0809618E:

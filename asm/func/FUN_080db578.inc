@@ -84,7 +84,7 @@ _080DB614:
 	lsls r4, r4, #0x18
 	lsrs r4, r4, #0x18
 	adds r0, r5, #0
-	bl GetMapAreaAt
+	bl GetZoneAt
 	movs r1, #0x46
 	adds r1, r1, r7
 	mov r8, r1

@@ -9,10 +9,10 @@
 	mov sb, r3
 	lsls r0, r0, #0x10
 	lsrs r7, r0, #0x10
-	bl FUN_0822e7d8
+	bl Font_GetInfo
 	cmp r0, #0
 	bne _0822EB56
-	bl FUN_0822e7e4
+	bl Font_LoadInfo
 	cmp r0, #0
 	blt _0822EBA2
 _0822EB56:
@@ -30,7 +30,7 @@ _0822EB68:
 	adds r1, r7, #0
 	adds r2, r5, #0
 	mov r3, sb
-	bl FUN_0822e920
+	bl Font_AcquireGlyph
 	adds r2, r0, #0
 	cmp r2, #0
 	blt _0822EBA2

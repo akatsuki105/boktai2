@@ -51,7 +51,7 @@ _080E5770:
 	ldr r0, [r4]
 	ldrh r2, [r5]
 	movs r1, #3
-	bl FUN_080d9a9c
+	bl Emote_RemovePtcl
 	str r0, [r4]
 	b _080E59B0
 	.align 2, 0
@@ -63,7 +63,7 @@ _080E5788:
 	ldrh r2, [r5]
 	movs r1, #2
 _080E5792:
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r4]
 	b _080E59B0
 	.align 2, 0
@@ -92,15 +92,15 @@ _080E57BC:
 	ldr r0, [r4]
 	ldrh r2, [r5]
 	movs r1, #0
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r4]
 	ldrh r2, [r5]
 	movs r1, #1
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r4]
 	ldrh r2, [r5]
 	movs r1, #2
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r4]
 	add r3, sp, #0x20
 	adds r0, r7, #0
@@ -185,17 +185,17 @@ _080E587E:
 	ldr r0, [r6]
 	ldrh r2, [r5]
 	movs r1, #0
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r6]
 	ldrh r2, [r5]
 	movs r1, #1
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r6]
 	ldrh r2, [r5]
 	movs r1, #2
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r6]
-	bl FUN_080da8a0
+	bl Emote_IsInactive
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _080E58AE
@@ -276,19 +276,19 @@ _080E5944:
 	ldr r0, [r6]
 	ldrh r2, [r5]
 	movs r1, #0
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r6]
 	ldrh r2, [r5]
 	movs r1, #1
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r6]
 	ldrh r2, [r5]
 	movs r1, #2
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r6]
 	ldrh r2, [r5]
 	movs r1, #3
-	bl FUN_080d9a9c
+	bl Emote_RemovePtcl
 	str r0, [r6]
 	add r3, sp, #0x20
 	adds r0, r7, #0

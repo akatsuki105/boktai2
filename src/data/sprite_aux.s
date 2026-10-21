@@ -391,7 +391,7 @@ Tiles:
   .incbin "data/actor_sprites/5BA7.4bpp"                 @ 0x08A7D770, SpriteID: 0x5BA7, PlttID: 236, 天窓の光
   .incbin "data/actor_sprites/5BB7.4bpp"                 @ 0x08A7DBF0, SpriteID: 0x5BB7, PlttID: 239, 天窓の光
   .incbin "data/actor_sprites/bomb.4bpp"                 @ 0x08A7DF70, SpriteID: 0xE74B, PlttID: 0, (ガストの吐き出す)爆弾, ???, ダイナマイト
-  .incbin "data/actor_sprites/9A1F.4bpp"                 @ 0x08A7EB70, SpriteID: 0x9A1F, PlttID: 242, "PUSH START BUTTON"の文字(どこで使ってるか不明)
+  .incbin "data/actor_sprites/start.4bpp"                @ 0x08A7EB70, SpriteID: 0x9A1F, PlttID: 242, "PUSH START BUTTON"
   .incbin "data/actor_sprites/C459.4bpp"                 @ 0x08A7F0F0, SpriteID: 0xC459, PlttID: 243, 太陽床
   .incbin "data/actor_sprites/DC07.4bpp"                 @ 0x08A7F4F0, SpriteID: 0xDC07, PlttID: 244, 天窓の光
   .incbin "data/actor_sprites/D45E.4bpp"                 @ 0x08A7F970, SpriteID: 0xD45E, PlttID: 247, 水たまり, スケルトン
@@ -399,8 +399,8 @@ Tiles:
   .incbin "data/actor_sprites/2817.4bpp"                 @ 0x08A86970, SpriteID: 0x2817, PlttID: 263, 大聖堂の水晶?
   .incbin "data/actor_sprites/EFD8.4bpp"                 @ 0x08A869B0, SpriteID: 0xEFD8, PlttID: 268, 0..9の数字とまだ何も数字が書かれていないパネルの絵
   .incbin "data/actor_sprites/8639.4bpp"                 @ 0x08A87A30, SpriteID: 0x8639, PlttID: 275, 爆発エフェクト
-  .incbin "data/actor_sprites/otenko_00.4bpp"               @ 0x08A89A30, SpriteID: 0x97D3, PlttID: 279, おてんこさま(よく使うやつ)
-  .incbin "data/actor_sprites/otenko_01.4bpp"               @ 0x08A8B4F0, SpriteID: 0x97D4, PlttID: 279, おてんこさま(あまり使わないやつ)
+  .incbin "data/actor_sprites/otenko_00.4bpp"            @ 0x08A89A30, SpriteID: 0x97D3, PlttID: 279, おてんこさま(よく使うやつ)
+  .incbin "data/actor_sprites/otenko_01.4bpp"            @ 0x08A8B4F0, SpriteID: 0x97D4, PlttID: 279, おてんこさま(あまり使わないやつ)
   .incbin "data/actor_sprites/C42D.4bpp"                 @ 0x08A8C330, SpriteID: 0xC42D, PlttID: 283, なんかの破片?
   .incbin "data/actor_sprites/0334.4bpp"                 @ 0x08A8C530, SpriteID: 0x0334, PlttID: 283, C42Dの破片の小さいやつ?
   .incbin "data/actor_sprites/9DFF.4bpp"                 @ 0x08A8C550, SpriteID: 0x9DFF, PlttID: 83, 黒塗り
@@ -528,7 +528,7 @@ Tiles:
   .incbin "data/actor_sprites/354D.4bpp"                 @ 0x08B5E330, SpriteID: 0x354D, PlttID: 627, 何かのエフェクト
   .incbin "data/actor_sprites/shaian_ax.4bpp"            @ 0x08B5E830, SpriteID: 0x39A3, PlttID: 626, シャイアンが投げる斧
   .incbin "data/actor_sprites/level_up_indicator.4bpp"   @ 0x08B5E950, SpriteID: 0x1C1D, PlttID: 44
-  .incbin "data/actor_sprites/gameover.4bpp"             @ 0x08B5EE50, SpriteID: 0x654B, PlttID: 634
+  .incbin "data/actor_sprites/over.4bpp"                 @ 0x08B5EE50, SpriteID: 0x654B, PlttID: 634, "GAMEOVER"
   .incbin "data/actor_sprites/weight_switch.4bpp"        @ 0x08B5F650, SpriteID: 0xB0BC, PlttID: 287, 重量スイッチ
   .incbin "data/actor_sprites/spike_ball.4bpp"           @ 0x08B5FF50, SpriteID: 0x24BA, PlttID: 637
   .incbin "data/actor_sprites/A945.4bpp"                 @ 0x08B60750, SpriteID: 0xA945, PlttID: 642, 落とし穴

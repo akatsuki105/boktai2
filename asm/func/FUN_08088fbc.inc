@@ -52,7 +52,7 @@ _08088FD4:
 	str r2, [sp, #0xc]
 	movs r2, #1
 	movs r3, #0
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 	b _08089076
 	.align 2, 0
@@ -72,7 +72,7 @@ _08089040:
 	adds r1, #0x40
 	ldrh r2, [r1]
 	movs r1, #1
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r4]
 _0808905C:
 	movs r1, #0xc8

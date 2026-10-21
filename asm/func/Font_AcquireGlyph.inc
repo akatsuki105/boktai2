@@ -8,13 +8,13 @@
 	mov r8, r1
 	adds r7, r2, #0
 	adds r6, r3, #0
-	bl FUN_0822e8c8
+	bl Font_GetGlyphCache
 	adds r4, r0, #0
 	mov r0, r8
 	adds r1, r7, #0
 	adds r2, r6, #0
 	ldr r3, [sp, #0x40]
-	bl FUN_0822e8d0
+	bl Font_FindGlyph
 	adds r5, r0, #0
 	cmp r5, #0
 	blt _0822E96C
@@ -107,7 +107,7 @@ _0822E9C8:
 	bge _0822E9C8
 	adds r0, r5, #0
 	mov r1, sp
-	bl FUN_0822e794
+	bl Font_QueueGlyphTile
 _0822E9F6:
 	adds r0, r5, #0
 _0822E9F8:

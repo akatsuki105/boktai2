@@ -77,7 +77,7 @@
 	adds r0, #0x80
 	strh r3, [r0]
 	adds r0, r6, #0
-	bl GetMapAreaAt
+	bl GetZoneAt
 	adds r1, r4, #0
 	adds r1, #0x42
 	strh r0, [r1]

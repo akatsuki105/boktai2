@@ -843,10 +843,10 @@ NON_MATCH void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 co
 }
 
 // 角度 (0〜255) を 8 方向のインデックスに変換する
-u16 FUN_08237834(u16 val) { return ((((val + 0x10) & 0xFF) >> 5) + 3) & 7; }
+u16 UNUSED FUN_08237834(u16 val) { return ((((val + 0x10) & 0xFF) >> 5) + 3) & 7; }
 
 // 角度 (0〜255) を 4 方向のインデックスに変換する
-u16 FUN_08237848(u16 val) { return ((((val + 0x20) & 0xFF) >> 6) + 1) & 3; }
+u16 UNUSED FUN_08237848(u16 val) { return ((((val + 0x20) & 0xFF) >> 6) + 1) & 3; }
 
 // ベクトル (x, y) の向きを角度 (0〜255) で返す (atan2)
 s32 ArcTan2_8(s32 x, s32 y) {

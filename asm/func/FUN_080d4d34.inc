@@ -208,7 +208,7 @@ _080D4EC0:
 	adds r0, r1, r0
 _080D4ECC:
 	ldrh r0, [r0, #2]
-	bl FUN_080cfc04
+	bl PlayerLink_IsFrozenLava
 	cmp r0, #0
 	beq _080D4EDC
 	movs r0, #0

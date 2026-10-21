@@ -10,7 +10,7 @@
 	cmp r1, r0
 	beq _081E3E98
 	adds r0, r1, #0
-	bl FUN_08243180
+	bl IsWeaponSellable
 	cmp r0, #0
 	bne _081E3EA0
 _081E3E98:

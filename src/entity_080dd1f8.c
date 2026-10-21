@@ -42,9 +42,9 @@ NAKED void FUN_080dc4a8(Entity080dd1f8* p, u32 param_2, u32 param_3) { INCFUNC("
 // && / 条件の反転 / u16* ローカルは試済
 NON_MATCH void FUN_080dc614(HitboxData* a, HitboxData* b, Entity080dd1f8Elem* elem) {
 #ifdef NONMATCHING_C
-  if (Hitbox_TestAttribute(a, HBATTR_FLAME)) {
+  if (Hitbox_TestAttr(a, HBATTR_FLAME)) {
     elem->unk_132 = 0;
-  } else if (Hitbox_TestAttribute(a, HBATTR_FROST)) {
+  } else if (Hitbox_TestAttr(a, HBATTR_FROST)) {
     if (elem->unk_132 > 0x59) {
       elem->unk_132 = elem->unk_13e;
     }

@@ -14,7 +14,7 @@
 	adds r1, r1, r0
 	ldrb r0, [r1]
 	mov r1, sp
-	bl FUN_08242b14
+	bl GetWeaponData
 	b _080B69EE
 	.align 2, 0
 _080B69E0: .4byte 0x00001429

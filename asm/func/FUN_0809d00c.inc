@@ -102,7 +102,7 @@ _0809D0CC:
 	cmp r0, #0
 	blt _0809D162
 	mov r1, sp
-	bl FUN_08242b14
+	bl GetWeaponData
 	mov r0, sp
 	ldrb r0, [r0, #1]
 	movs r7, #0
@@ -173,7 +173,7 @@ _0809D162:
 	beq _0809D21E
 	ldrb r0, [r4]
 	mov r1, sp
-	bl FUN_08242b14
+	bl GetWeaponData
 	mov r0, sp
 	ldrb r0, [r0, #1]
 	movs r1, #0

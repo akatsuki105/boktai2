@@ -263,7 +263,7 @@ NON_MATCH void FUN_080cc43c(Player* p) {
 #ifdef NONMATCHING_C
   s32 idx = gEntity9A9F != NULL ? gEntity9A9F->playerIdx : -1;
 
-  if (p->unk_18 == idx) {
+  if (p->playerIdx == idx) {
     if (p->kind == PLAYER_SABATA) {
       sound_08240740(0x239);
       sound_08240740(0x202);
@@ -456,11 +456,11 @@ NON_MATCH s32 FUN_080cd6ec(Player* p) {
   s32 ret = 0;
 
   if (gStat->unk_934 & SF934_OUTDOOR) {
-    if (p->unk_20 & PFLAG20_SUNBATHING) {
+    if (p->flag20 & PFLAG20_SUNBATHING) {
       ret = 8;
     }
   } else {
-    if (p->unk_20 & PFLAG20_SUNBATHING) {
+    if (p->flag20 & PFLAG20_SUNBATHING) {
       ret = 4;
     }
   }
@@ -566,7 +566,7 @@ s32 FUN_080ce4f0(void) {
 
 // 相手が魔物なら 10, そうでなければ 0
 s32 FUN_080ce504(Player* p, s32 param_2, HitboxData* b) {
-  if (Hitbox_TestAttribute(b, HBATTR_BEAST) || Hitbox_TestAttribute(b, HBATTR_THING) || Hitbox_TestAttribute(b, HBATTR_PHANTOM) || Hitbox_TestAttribute(b, HBATTR_UNDEAD) || Hitbox_TestAttribute(b, HBATTR_IMMORTAL)) {
+  if (Hitbox_TestAttr(b, HBATTR_BEAST) || Hitbox_TestAttr(b, HBATTR_THING) || Hitbox_TestAttr(b, HBATTR_PHANTOM) || Hitbox_TestAttr(b, HBATTR_UNDEAD) || Hitbox_TestAttr(b, HBATTR_IMMORTAL)) {
     return 10;
   }
   return 0;
@@ -593,7 +593,7 @@ s32 FUN_080ceba8(Player* p) {
   }
 
   cost = GetMagicCost(p->magic.id);
-  if (p->magic.id <= 5 && Player_TestFlag378(p, FLAG378_WET_ENE_COST)) {
+  if (p->magic.id <= 5 && Player_TestEquipBuff(p, EBUFF_WET_ENE_COST)) {
     cost = Div(cost * 80, 100);
   }
   return cost;
@@ -772,7 +772,7 @@ NON_MATCH void FUN_080cfa24(Player* p) {
     idx = gEntity9A9F->playerIdx;
   }
 
-  if (p->unk_18 == idx) {
+  if (p->playerIdx == idx) {
     FUN_0823bca8(8);
   }
   p->lookAroundOffset.val = 0;
@@ -803,27 +803,29 @@ NAKED void FUN_080cfaa4(Player* p, s32 param_2) { INCFUNC("asm/func/FUN_080cfaa4
 
 NAKED void FUN_080cfb20(Player* p) { INCFUNC("asm/func/FUN_080cfb20.inc"); }
 
+// Player_IsLiveLava の通信プレイ版
 // 残差5命令 (19/24): 原典は unk_934 の判定を 0/1 に起こしてから改めて test する, bool32 の static inline でも && でも畳まれる
-NON_MATCH s32 FUN_080cfbcc(u32 flags) {
+NON_MATCH s32 PlayerLink_IsLiveLava(u32 flags) {
 #ifdef NONMATCHING_C
-  if ((flags & 0x80) && (!(gStat->unk_934 & (SF934_UNK_3 | SF934_UNK_4)))) {
+  if ((flags & 0x80) && (!(gStat->unk_934 & (SF934_UNK_3 | SF934_LAVA_FROZEN)))) {
     return 1;
   }
   return 0;
 #else
-  INCFUNC("asm/func/FUN_080cfbcc.inc");
+  INCFUNC("asm/func/PlayerLink_IsLiveLava.inc");
 #endif
 }
 
+// Player_IsFrozenLava の通信プレイ版
 // 残差5命令 (19/24): 原典は unk_934 の判定を 0/1 に起こしてから改めて test する, bool32 の static inline でも && でも畳まれる
-NON_MATCH s32 FUN_080cfc04(u32 flags) {
+NON_MATCH s32 PlayerLink_IsFrozenLava(u32 flags) {
 #ifdef NONMATCHING_C
-  if ((flags & 0x80) && (gStat->unk_934 & SF934_UNK_4)) {
+  if ((flags & 0x80) && (gStat->unk_934 & SF934_LAVA_FROZEN)) {
     return 1;
   }
   return 0;
 #else
-  INCFUNC("asm/func/FUN_080cfc04.inc");
+  INCFUNC("asm/func/PlayerLink_IsFrozenLava.inc");
 #endif
 }
 
@@ -928,7 +930,7 @@ NON_MATCH s32 FUN_080d0c38(Player* p) {
   s32 pos;
   s32 frac;
 
-  if (p->unk_3bd == 1 || p->unk_3bd == 5) {
+  if (p->actionDir == 1 || p->actionDir == 5) {
     pos = (u16)p->mover.pos.x;
   } else {
     pos = (u16)p->mover.pos.z;
@@ -1031,11 +1033,11 @@ s32 FUN_080d2230(CollisionMapTile* tile, Vec3* pos) {
   s32 height = (tile->heightStairs & 0xF) << 8;
 
   switch (tile->heightStairs >> 4) {
-    case 1: {
+    case STAIRS_VERTICAL: {
       height -= (u8)pos->z;
       break;
     }
-    case 2: {
+    case STAIRS_HORIZONTAL: {
       height -= (u8)pos->x;
       break;
     }

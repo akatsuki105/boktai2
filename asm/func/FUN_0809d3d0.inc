@@ -57,7 +57,7 @@ _0809D43A:
 	ldrsb r0, [r1, r0]
 	ldr r2, _0809D460 @ =0x00000F4C
 	adds r1, r6, r2
-	bl FUN_08242b14
+	bl GetWeaponData
 	adds r0, r6, #0
 	bl FUN_0809d270
 	ldr r1, _0809D464 @ =FUN_0809d7a4

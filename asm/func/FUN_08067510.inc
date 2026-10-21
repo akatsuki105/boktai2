@@ -153,7 +153,7 @@ _08067610:
 	cmp r6, r5
 	beq _080676B8
 	adds r0, r7, #0
-	bl FUN_080674dc
+	bl Player_IsNearTileCenter
 	cmp r0, #0
 	bne _0806765C
 	b _08067A50

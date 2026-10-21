@@ -151,7 +151,7 @@ _08000520:
 _0800058E:
 	ldrh r2, [r3]
 	lsrs r2, r2, #8
-	bl FUN_0822f178
+	bl Video_SetBGBlend
 	b _080005A4
 _08000598:
 	movs r1, #0

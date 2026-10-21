@@ -51,7 +51,7 @@ _08065BD4:
 	adds r0, r1, r0
 _08065BE0:
 	ldrh r0, [r0, #2]
-	bl FUN_08065ad0
+	bl Player_IsFrozenLava
 	cmp r0, #0
 	beq _08065CB0
 	movs r1, #0xe4

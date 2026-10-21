@@ -159,7 +159,7 @@ s32 TextPanel_Destroy(s32 id) {
   if (p == NULL) {
     return -1;
   }
-  FUN_0822ea60(p->x, p->y, p->width, p->height);
+  Font_ReleaseRect(p->x, p->y, p->width, p->height);
   p->updateCallback = TextPanel_StateIdle;
   TextPanelManager_Unlink(mgr, p);
   Free(p);
@@ -184,7 +184,7 @@ s32 TextPanel_Hide(s32 id) {
   if (p == NULL) {
     return -1;
   }
-  FUN_0822ea60(p->x, p->y, p->width, p->height);
+  Font_ReleaseRect(p->x, p->y, p->width, p->height);
   p->updateCallback = TextPanel_StateIdle;
   return 0;
 }
@@ -247,7 +247,7 @@ s32 TextPanel_SetMessage(s32 id, s32 msgIdx) {
   }
   r = &p->renderer;
   if (p->scriptPc != NULL) {
-    FUN_0822ea60(p->x, p->y, p->width, p->height);
+    Font_ReleaseRect(p->x, p->y, p->width, p->height);
     TextRenderer_SetRect(r, p->x, p->y, p->width, p->height);
     p->msgIdx = msgIdx;
     r->text = TextPanel_LookupText(p, p->msgIdx);
@@ -284,7 +284,7 @@ s32 TextPanel_SetRect(s32 id, s32 x, s32 y, s32 width, s32 height) {
     return -1;
   }
   r = &p->renderer;
-  FUN_0822ea60(p->x, p->y, p->width, p->height);
+  Font_ReleaseRect(p->x, p->y, p->width, p->height);
   p->x = x, p->y = y;
   p->width = width, p->height = height;
   TextRenderer_SetRect(r, p->x, p->y, p->width, p->height);

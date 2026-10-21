@@ -1,6 +1,5 @@
 #include "entity.h"
 #include "global.h"
-#include "map_pltt.h"
 #include "video.h"
 #include "vm.h"
 
@@ -19,21 +18,6 @@ typedef struct {
 static_assert(sizeof(Entity6978) == 52);
 
 COMMON_DATA Entity6978* gEntity6978 = NULL;  // 0x03002B30
-
-void FUN_080026fc(u32 val) {
-  Entity4AE5* p = gEntity4AE5;
-
-  if (p != NULL) {
-    p->weatherState = val;
-  }
-}
-
-s32 FUN_0800271c(void) {
-  if (gEntity4AE5 == NULL) {
-    return 0;
-  }
-  return gEntity4AE5->unk_20;
-}
 
 void Entity6978_ClearPtr(void) { gEntity6978 = NULL; }
 

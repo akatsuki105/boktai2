@@ -208,12 +208,12 @@ bool32 Mover_SetPath(Mover* p, PathWalker* path, u8 param_3, u8 param_4, u8 para
 // delta の分だけ pos を進めて delta をクリアする
 void Mover_ApplyMove(Mover* p) {
   if (p->tile != NULL) {
-    switch (gCameraCoords.unk_12) {
-      case 0: {
+    switch (gCameraCoords.drawMode) {
+      case DRAW_ISOMETRIC: {
         FUN_0823349c(p->tile, &p->pos, &p->delta, p->sizeX, p->sizeZ, p->unk_4);
         break;
       }
-      case 1: {
+      case DRAW_SCREEN: {
         p->pos.x += p->delta.x;
         p->pos.y += p->delta.z;
         p->pos.z = 0;

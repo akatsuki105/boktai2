@@ -12,6 +12,49 @@
 #include "video.h"
 #include "vm.h"
 
+// Camera.moveMode
+typedef enum {
+  FOLLOW_PLAYER = 0,          // プレイヤー追従
+  TO_DEST_IMMEDIATE = 1,      // destPos へ即座に移動
+  TO_DEST_INTERPOLATE = 2,    // destPos へ moveTimer フレームかけて補間
+  TO_PLAYER_INTERPOLATE = 3,  // player へ moveTimer フレームかけて補間
+} CameraMoveMode;
+
+typedef struct {
+  Entity e;              // 0x00, ENTITY_CAMERA
+  u32 id;                // 0x18, メッセージキューの送信先IDとして利用
+  bool16 lookEnabled;    // 0x1C, 0 なら Camera_Update が pos をそのまま注視点にする, 1 なら lookMode に従って Camera_StepLook が決める
+  u16 completeAction;    // 0x1E, 移動/注視が終わったときの後始末 (0: なし, 1: scriptID を実行, 2: メッセージの待ちを解除), 根拠: Camera_RunCompleteAction
+  MsgQueue mq;           // 0x20
+  u16 moveMode;          // 0x54, see CameraMoveMode
+  u16 moveTimer;         // 0x56, pos を destPos へ寄せる補間の残りフレーム数, 根拠: Camera_StepMove が Div の除数に使い毎フレーム減算する
+  Vec3 pos;              // 0x58, カメラ自身の現在位置, 根拠: Camera_Update が gCameraWorldCoords にそのまま代入し、Camera_Init が gStat->playerPos から初期化する
+  Vec3 destPos;          // 0x60, 移動先の座標, 根拠: Camera_MoveTo / FUN_0823b980 が外部から書き、Camera_StepMove が pos をここへ寄せる
+  u16 lookMode;          // 0x68, 注視点の決め方 (0-7), 根拠: Camera_StepLook の switch 対象
+  u16 lookTimer;         // 0x6A, 注視点補間の残りフレーム数, 根拠: Camera_StepLook が Div の除数に使い毎フレーム減算する
+  Vec3 pos_6c;           // 0x6C, lookMode が 1/2 のときの注視点
+  Vec3 pos_74;           // 0x74, lookMode が 3/4 のときの注視対象からのオフセット
+  u16 lookTargetID;      // 0x7C, 注視対象の ID, 根拠: Camera_StepLook が Mover_FindByID_Proxy(lookTargetID) に渡して Mover* を得る
+  u16 shakeAmplitude;    // 0x7E, 今フレームの画面揺れの振幅, 根拠: Camera_StepShake が shakeCurrent から取って毎回0に戻す
+  s16 shakeOffsetX;      // 0x80, 画面揺れの X オフセット, 根拠: Camera_StepShake が gCameraWorldCoords.x に加算する
+  s16 shakeOffsetZ;      // 0x82, 画面揺れの Z オフセット, 根拠: Camera_StepShake が gCameraWorldCoords.z に加算する
+  bool8 shakeActive;     // 0x84, 0以外なら画面揺れ中, 根拠: FUN_0823bd14 が開始で1/停止で0を書く
+  bool8 shakeStopOnEnd;  // 0x85, 0以外なら shakeTimer が尽きた時に揺れを完全に止める, 0なら shakeTarget のまま揺れ続ける
+  u16 shakeCurrent;      // 0x86, 現在の振幅, 根拠: Camera_StepShake が shakeTarget へ向けて Div で補間する
+  u16 shakeTarget;       // 0x88, 目標の振幅, 根拠: FUN_0823bd14 の第1引数
+  u16 shakeTimer;        // 0x8A, 揺れの残りフレーム数, 根拠: FUN_0823bd14 の第2引数を Camera_StepShake が減算する
+  u16 unk_8c;            // 0x8C
+  s16 unk_8e;            // 0x8E
+  s16 unk_90;            // 0x90
+  s16 unk_92;            // 0x92
+  s16 unk_94;            // 0x94
+  u16 scriptIDType;      // 0x96, scriptID の型 を示す, 0 ならポインタ、 それ以外なら ID(数値)
+  s32 scriptID;          // 0x98, scriptIDType が 0 ならポインタ(u8*)、それ以外なら ID(数値)
+  Vec3* targetPos;       // 0x9C, lookMode が 7 のときの注視点, 根拠: Camera_StepLook が指す先から8バイトを gCameraWorldCoords へコピーする
+  s32* unk_a0;           // 0xA0, 0以外を指している間だけ targetPos が使われる, 根拠: Camera_StepLook
+} Camera;
+static_assert(sizeof(Camera) == 164);
+
 // CollisionMapFile が圧縮されている場合、ここに展開してファイル内容を読み込む, 圧縮されていないならROMから直接読み込むのでここは使われない
 EWRAM_DATA u8 gDecompressedCollisionMapHeader[4] = {};    // 0x02031400, 展開先の先頭4バイト, 圧縮処理のメタデータが格納されるが使われてなさそう
 EWRAM_DATA u8 gDecompressedCollisionMapFile[16380] = {};  // 0x02031404, 展開された CollisionMapFile 本体, 根拠: OpenCollisionMapFile がここを返す
@@ -185,17 +228,17 @@ void Camera_ApplyBounds(Camera* cam, Vec3* pos) {
 
 void FUN_0823b864(void) {
   if (gCamera != NULL) {
-    gCamera->moveMode = 0;
+    gCamera->moveMode = FOLLOW_PLAYER;
   }
 }
 
 void FUN_0823b880(s32 n) {
   if (gCamera != NULL) {
     if (n < 2) {
-      gCamera->moveMode = 0;
+      gCamera->moveMode = FOLLOW_PLAYER;
     } else {
       gCamera->moveTimer = n;
-      gCamera->moveMode = 3;
+      gCamera->moveMode = TO_PLAYER_INTERPOLATE;
     }
   }
 }
@@ -220,8 +263,8 @@ void Camera_MoveTo(Vec3* pos) {
     gCamera->destPos.y = pos->y;
     gCamera->destPos.z = pos->z;
     Camera_ApplyBounds(gCamera, &gCamera->destPos);
-    gCamera->moveMode = 1;
-    if (gCamera->lookEnabled == 0) {
+    gCamera->moveMode = TO_DEST_IMMEDIATE;
+    if (!gCamera->lookEnabled) {
       gCameraCoords.worldPos.x = gCamera->destPos.x + gCamera->shakeOffsetX;
       gCameraCoords.worldPos.y = gCamera->destPos.y;
       gCameraCoords.worldPos.z = gCamera->destPos.z + gCamera->shakeOffsetZ;
@@ -236,10 +279,10 @@ void FUN_0823b980(s32 n, Vec3* pos) {
     gCamera->destPos.y = pos->y;
     gCamera->destPos.z = pos->z;
     if (n < 2) {
-      gCamera->moveMode = 1;
+      gCamera->moveMode = TO_DEST_IMMEDIATE;
     } else {
       gCamera->moveTimer = n;
-      gCamera->moveMode = 2;
+      gCamera->moveMode = TO_DEST_INTERPOLATE;
     }
   }
 }
@@ -266,7 +309,7 @@ void Camera_Translate(void) {
 
 void FUN_0823baa8(void) {
   if (gCamera != NULL) {
-    gCamera->lookEnabled = 1;
+    gCamera->lookEnabled = TRUE;
     gCamera->lookMode = 0;
     gCamera->completeAction = 0;
   }
@@ -282,7 +325,7 @@ void Camera_LookAt(Vec3* pos) {
     gCameraCoords.worldPos.y = gCamera->pos_6c.y;
     gCameraCoords.worldPos.z = gCamera->pos_6c.z;
     WorldToVp(&gCameraVpCoords, &gCameraCoords.worldPos);
-    gCamera->lookEnabled = 1;
+    gCamera->lookEnabled = TRUE;
     gCamera->lookMode = 1;
     gCamera->completeAction = 0;
   }
@@ -293,7 +336,7 @@ void FUN_0823bb7c(s32 n, Vec3* pos) {
     gCamera->pos_6c.x = pos->x;
     gCamera->pos_6c.y = pos->y;
     gCamera->pos_6c.z = pos->z;
-    gCamera->lookEnabled = 1;
+    gCamera->lookEnabled = TRUE;
     if (n < 2) {
       gCamera->lookMode = 1;
     } else {
@@ -308,7 +351,7 @@ void FUN_0823bbd4(u32 targetID, Vec3* pos) {
   if (gCamera != NULL) {
     gCamera->lookTargetID = targetID;
     if (Mover_FindByID_Proxy(gCamera->lookTargetID) != NULL) {
-      gCamera->lookEnabled = 1;
+      gCamera->lookEnabled = TRUE;
       gCamera->pos_74 = *pos;
       gCamera->lookMode = 3;
       gCamera->completeAction = 0;
@@ -320,7 +363,7 @@ void FUN_0823bc14(u32 targetID, s32 n, Vec3* pos) {
   if (gCamera != NULL) {
     gCamera->lookTargetID = targetID;
     if (Mover_FindByID_Proxy(gCamera->lookTargetID) != NULL) {
-      gCamera->lookEnabled = 1;
+      gCamera->lookEnabled = TRUE;
       gCamera->pos_74 = *pos;
       if (n < 2) {
         gCamera->lookMode = 3;
@@ -335,7 +378,7 @@ void FUN_0823bc14(u32 targetID, s32 n, Vec3* pos) {
 
 void FUN_0823bc70(s32 n) {
   if (gCamera != NULL) {
-    gCamera->lookEnabled = 1;
+    gCamera->lookEnabled = TRUE;
     if (n < 2) {
       gCamera->lookMode = 0;
     } else {
@@ -349,9 +392,9 @@ void FUN_0823bc70(s32 n) {
 void FUN_0823bca8(s32 n) {
   if (gCamera != NULL) {
     if (n < 2) {
-      gCamera->lookEnabled = 0;
+      gCamera->lookEnabled = FALSE;
     } else {
-      gCamera->lookEnabled = 1;
+      gCamera->lookEnabled = TRUE;
       gCamera->lookMode = 6;
       gCamera->lookTimer = n;
     }
@@ -364,7 +407,7 @@ void FUN_0823bce4(Vec3* pos, s32* enabled) {
   if (gCamera != NULL) {
     gCamera->targetPos = pos;
     gCamera->unk_a0 = enabled;
-    gCamera->lookEnabled = 1;
+    gCamera->lookEnabled = TRUE;
     gCamera->lookMode = 7;
     gCamera->completeAction = 0;
   }
@@ -641,7 +684,7 @@ void Camera_SetBoundsType2Scripted(void) {
 // moveMode に従ってカメラ自身の位置を1フレーム分進める
 void Camera_StepMove(Camera* cam) {
   switch (cam->moveMode) {
-    case 0: {
+    case FOLLOW_PLAYER: {
       if (gFlag030047a4 & FLAG030047A4_LINK) {
         if (gEntity9A9F != NULL) {
           s32 idx = gEntity9A9F->playerIdx;
@@ -652,24 +695,26 @@ void Camera_StepMove(Camera* cam) {
             cam->pos.z = gPlayerPtr[idx]->mover.pos.z;
           }
         }
-      } else if (gCameraCoords.unk_12 == 0) {
+      } else if (!gCameraCoords.drawMode) {
+        // DRAW_ISOMETRIC
         cam->pos.x = gStat->playerX;
         cam->pos.y = gStat->playerY + 0x96;
         cam->pos.z = gStat->playerZ;
       } else {
+        // DRAW_SCREEN
         cam->pos.x = gStat->playerX;
         cam->pos.y = gStat->playerY - 0x96;
         cam->pos.z = gStat->playerZ;
       }
       break;
     }
-    case 1: {
+    case TO_DEST_IMMEDIATE: {
       cam->pos.x = cam->destPos.x;
       cam->pos.y = cam->destPos.y;
       cam->pos.z = cam->destPos.z;
       break;
     }
-    case 2: {
+    case TO_DEST_INTERPOLATE: {
       cam->pos.x = Div(cam->pos.x * (cam->moveTimer - 1) + cam->destPos.x, cam->moveTimer);
       cam->pos.y = Div(cam->pos.y * (cam->moveTimer - 1) + cam->destPos.y, cam->moveTimer);
       cam->pos.z = Div(cam->pos.z * (cam->moveTimer - 1) + cam->destPos.z, cam->moveTimer);
@@ -679,7 +724,7 @@ void Camera_StepMove(Camera* cam) {
       }
       break;
     }
-    case 3: {
+    case TO_PLAYER_INTERPOLATE: {
       cam->pos.x = Div(cam->pos.x * (cam->moveTimer - 1) + gStat->playerX, cam->moveTimer);
       cam->pos.y = Div(cam->pos.y * (cam->moveTimer - 1) + gStat->playerY + 0x96, cam->moveTimer);
       cam->pos.z = Div(cam->pos.z * (cam->moveTimer - 1) + gStat->playerZ, cam->moveTimer);
@@ -698,11 +743,13 @@ void Camera_StepLook(Camera* cam) {
 
   switch (cam->lookMode) {
     case 0: {
-      if (gCameraCoords.unk_12 == 0) {
+      if (!gCameraCoords.drawMode) {
+        // DRAW_ISOMETRIC
         gCameraCoords.worldPos.x = gStat->playerX;
         gCameraCoords.worldPos.y = gStat->playerY + 0x96;
         gCameraCoords.worldPos.z = gStat->playerZ;
       } else {
+        // DRAW_SCREEN
         gCameraCoords.worldPos.x = gStat->playerX;
         gCameraCoords.worldPos.y = gStat->playerY - 0x96;
         gCameraCoords.worldPos.z = gStat->playerZ;
@@ -766,7 +813,7 @@ void Camera_StepLook(Camera* cam) {
       gCameraCoords.worldPos.z = Div(gCameraCoords.worldPos.z * (cam->lookTimer - 1) + cam->pos.z, cam->lookTimer);
       cam->lookTimer--;
       if (cam->lookTimer <= 1) {
-        cam->lookEnabled = 0;
+        cam->lookEnabled = FALSE;
         Camera_RunCompleteAction(cam);
       }
       break;
@@ -827,7 +874,7 @@ s32 Camera_Update(Camera* cam) {
 
   if (!(gEntityDisableFlags & ENTITY_DISABLE_2)) {
     Camera_StepMove(cam);
-    if (cam->lookEnabled == 0) {
+    if (!cam->lookEnabled) {
       gCameraCoords.worldPos.x = cam->pos.x;
       gCameraCoords.worldPos.y = cam->pos.y;
       gCameraCoords.worldPos.z = cam->pos.z;
@@ -849,9 +896,9 @@ s32 Camera_Destroy(Camera* cam) {
   return 0;
 }
 
-s32 Camera_Init(Camera* cam, u32 val) {
-  cam->unk_18 = val;
-  cam->lookEnabled = 0;
+s32 Camera_Init(Camera* cam, u32 id) {
+  cam->id = id;
+  cam->lookEnabled = FALSE;
   cam->moveMode = 0;
   cam->pos.x = gStat->playerX;
   cam->pos.y = gStat->playerY + 0x96;
@@ -871,18 +918,19 @@ s32 Camera_Init(Camera* cam, u32 val) {
   cam->scriptID = 0;
   WorldToVp(&gCameraVpCoords, &gCameraCoords.worldPos);
   if (!(gFlag030047a4 & FLAG030047A4_LINK)) {
-    MsgQueue_Register(&cam->mq, cam->unk_18, 6);
+    MsgQueue_Register(&cam->mq, cam->id, 6);
   }
   gCamera = cam;
   return 0;
 }
 
-Camera* Camera_Create(u32 val) {
+// 0xC0B0
+Camera* Camera_Create(u32 id) {
   if (gCamera == NULL) {
     Camera* cam = CreateEntity(ENTITY_CAMERA, sizeof(Camera));
     if (cam != NULL) {
       SetEntityRoutine(cam, Camera_Update, Camera_Destroy);
-      if (Camera_Init(cam, val) < 0) {
+      if (Camera_Init(cam, id) < 0) {
         KillEntity((Entity*)cam);
         return NULL;
       }

@@ -28,15 +28,15 @@
 #define BGP_1EB2 0x1EB2
 #define BGP_1F3A 0x1F3A
 #define BGP_1F7A 0x1F7A
-#define BGP_2010 0x2010
+#define BGP_2010 0x2010  // BOKHASH("lk00_00_col_arr")?
 #define BGP_211E 0x211E
 #define BGP_212B 0x212B
 #define BGP_222D 0x222D
 #define BGP_223C 0x223C
-#define BGP_2365 BOKHASH("pile_driver_noon1_col_arr")  // 0x2365
-#define BGP_2465 0x2465
-#define BGP_2565 0x2565
-#define BGP_26BB 0x26BB
+#define BGP_PD_NOON1 BOKHASH("pile_driver_noon1_col_arr")  // 0x2365
+#define BGP_PD_NOON2 BOKHASH("pile_driver_noon2_col_arr")  // 0x2465
+#define BGP_PD_NOON3 BOKHASH("pile_driver_noon3_col_arr")  // 0x2565
+#define BGP_LINK BOKHASH("bg_link_col_arr")                // 0x26BB
 #define BGP_270B 0x270B
 #define BGP_2737 0x2737
 #define BGP_280B 0x280B
@@ -45,7 +45,7 @@
 #define BGP_2CDA 0x2CDA
 #define BGP_2F7E 0x2F7E
 #define BGP_2FE3 0x2FE3
-#define BGP_313A 0x313A
+#define BGP_PD BOKHASH("pile_driver_col_arr")  // 0x313A
 #define BGP_327B 0x327B
 #define BGP_32DF 0x32DF
 #define BGP_35B3 0x35B3
@@ -73,7 +73,7 @@
 #define BGP_4F2B 0x4F2B
 #define BGP_4F31 0x4F31
 #define BGP_50AE 0x50AE
-#define BGP_513D 0x513D
+#define BGP_513D 0x513D  // BOKHASH("random_col_arr")?
 #define BGP_5170 0x5170
 #define BGP_519C 0x519C
 #define BGP_529C 0x529C
@@ -140,9 +140,9 @@
 #define BGP_9F3B 0x9F3B
 #define BGP_9FF4 0x9FF4
 #define BGP_A04E 0xA04E
-#define BGP_A344 BOKHASH("pile_driver_night_col_arr")  // 0xA344
+#define BGP_PD_NIGHT BOKHASH("pile_driver_night_col_arr")  // 0xA344
 #define BGP_A3B5 0xA3B5
-#define BGP_A3D9 0xA3D9
+#define BGP_WEDGE BOKHASH("wedge_col_arr")  // 0xA3D9, ボスを倒した後の封印の楔のある部屋
 #define BGP_A3EC 0xA3EC
 #define BGP_A3EE 0xA3EE
 #define BGP_A41A 0xA41A
@@ -198,7 +198,7 @@
 #define BGP_D8C3 0xD8C3
 #define BGP_D914 0xD914
 #define BGP_D93E 0xD93E
-#define BGP_D97C 0xD97C
+#define BGP_TORTURE BOKHASH("torture_col_arr")  // 0xD97C
 #define BGP_DCE3 0xDCE3
 #define BGP_DD4B 0xDD4B
 #define BGP_DD87 0xDD87
@@ -232,7 +232,7 @@
 #define BGP_F42E 0xF42E
 #define BGP_F460 0xF460
 #define BGP_F5F7 0xF5F7
-#define BGP_F80C BOKHASH("pile_driver_even_col_arr")  // 0xF80C
+#define BGP_PD_EVEN BOKHASH("pile_driver_even_col_arr")  // 0xF80C
 #define BGP_F811 0xF811
 #define BGP_FBE8 0xFBE8
 #define BGP_FC10 0xFC10

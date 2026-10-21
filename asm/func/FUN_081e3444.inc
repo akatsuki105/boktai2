@@ -19,7 +19,7 @@ _081E3462:
 	b _081E3582
 _081E3468:
 	movs r6, #0
-	bl FUN_08243104
+	bl CountSellableWeapons
 	adds r4, r0, #0
 	movs r2, #0
 	cmp r4, #9
@@ -55,7 +55,7 @@ _081E349E:
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10
 	bl MainSprite_LoadPose
-	bl FUN_08243140
+	bl CountSellableOrEmptySlots
 	adds r4, r0, #0
 	adds r2, r6, #0
 	cmp r4, #9

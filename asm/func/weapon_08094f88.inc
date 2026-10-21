@@ -89,7 +89,7 @@ _08095028:
 _08095036:
 	adds r0, r4, #0
 	add r1, sp, #4
-	bl FUN_08242b28
+	bl GetRegisteredWeaponData
 	cmp r4, #3
 	beq _0809504A
 	add r0, sp, #4
@@ -153,7 +153,7 @@ _080950AC:
 _080950B8:
 	adds r0, r4, #0
 	add r1, sp, #4
-	bl FUN_08242b28
+	bl GetRegisteredWeaponData
 	cmp r4, #3
 	beq _080950CC
 	add r0, sp, #4
@@ -209,7 +209,7 @@ _08095124: .4byte 0x0000F001
 _08095128:
 	ldrb r0, [r4]
 	add r1, sp, #4
-	bl FUN_08242b14
+	bl GetWeaponData
 	add r0, sp, #4
 	bl FUN_0807a6cc
 	str r0, [sp, #0x64]
@@ -267,7 +267,7 @@ _0809518E:
 _08095196:
 	adds r0, r4, #0
 	ldr r1, [sp, #0x6c]
-	bl FUN_08242b28
+	bl GetRegisteredWeaponData
 	ldr r0, [sp, #0x6c]
 	bl FUN_0807a6cc
 	mov r8, r0

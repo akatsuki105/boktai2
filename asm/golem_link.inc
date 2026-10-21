@@ -27401,7 +27401,7 @@ _081C596A:
 _081C5980: .4byte 0x030046A0
 _081C5984:
 	ldr r0, [sp, #0x18c]
-	bl GetMapAreaAt
+	bl GetZoneAt
 	ldr r6, [sp, #0x60]
 	strh r0, [r6]
 _081C598E:

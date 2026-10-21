@@ -12,7 +12,7 @@
 typedef struct MessageWindow {
   Entity e;                                       // 0x000, ENTITY_UNK_12
   TextRenderer renderer;                          // 0x018
-  u8 rectX;                                       // 0x178, '.r[0]', TextRenderer_SetRect と FUN_0822ea60 に渡す
+  u8 rectX;                                       // 0x178, '.r[0]', TextRenderer_SetRect と Font_ReleaseRect に渡す
   u8 rectY;                                       // 0x179, '.r[1]'
   u8 rectW;                                       // 0x17A, '.r[2]'
   u8 rectH;                                       // 0x17B, '.r[3]'
@@ -113,7 +113,7 @@ NON_MATCH s32 MessageWindow_Close(void) {
 
   if (p == NULL) return 0;
 
-  FUN_0822ea60(p->rectX, p->rectY, p->rectW, p->rectH);
+  Font_ReleaseRect(p->rectX, p->rectY, p->rectW, p->rectH);
   p->updateCallback = MessageWindow_StateIdle;
   p->arrow.flags |= SPRFLAG_HIDDEN;
   p->renderer.face = -1;
@@ -188,7 +188,7 @@ NON_MATCH s32 MessageWindow_ShowLine(s32 line) {
   MessageWindow* p = gMessageWindow;
 
   if (p != NULL && p->scriptPc != NULL) {
-    FUN_0822ea60(p->rectX, p->rectY, p->rectW, p->rectH);
+    Font_ReleaseRect(p->rectX, p->rectY, p->rectW, p->rectH);
     TextRenderer_SetRect(&p->renderer, p->rectX, p->rectY, p->rectW, p->rectH);
     p->lineIdx = line;
     p->renderer.text = MessageWindow_GetLine(p, p->lineIdx);
@@ -238,14 +238,14 @@ s32 MessageWindow_SetText(char* text) {
   return 0;
 }
 
-// 描画矩形を設定し直す, 古い矩形は FUN_0822ea60 に渡して後始末させる
+// 描画矩形を設定し直す, 古い矩形は Font_ReleaseRect に渡して後始末させる
 s32 MessageWindow_SetRect(s32 x, s32 y, s32 w, s32 h) {
   MessageWindow* p = gMessageWindow;
 
   if (p == NULL) {
     return 0;
   }
-  FUN_0822ea60(p->rectX, p->rectY, p->rectW, p->rectH);
+  Font_ReleaseRect(p->rectX, p->rectY, p->rectW, p->rectH);
   p->rectX = x;
   p->rectY = y;
   p->rectW = w;

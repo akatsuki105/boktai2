@@ -111,7 +111,7 @@ printf 'void f(unsigned short*a){int i;for(i=0;i<4;i++){a[i]=0;}}\n' \
 - **`x = (a && b)` puts its accumulator init where the first operand ends.**
   The `movs rX, #0` that starts a materialized `&&` is emitted *after* whatever
   RTL the first operand needed. If the target has it after the first `ldrh` and
-  you have it before, cache that operand in a local: `u16 state = p->unk_446;`
+  you have it before, cache that operand in a local: `u16 state = p->goodCondTimer;`
   then `skip = state != 0 && p->unk_442 == 7;` moves the init past the load and
   nothing else changes (`FUN_080667b0`).
 - **Do not collapse a duplicated body into `||`.** `if (a) {X} else if (b) {X}`
@@ -141,11 +141,11 @@ printf 'void f(unsigned short*a){int i;for(i=0;i<4;i++){a[i]=0;}}\n' \
 - **`lsls #5` / `lsrs #3` on a count, then `sub sp`, is a variable-length
   array.** agbcc sizes a VLA in bits and divides by 8, so `u32 argv[n]` becomes
   `n << 5 >> 3`. The base address gets its own stack slot, the old `sp` another,
-  and both are restored in the epilogue (`Cmd_Loop`).
+  and both are restored in the epilogue (`Cmd_ForEach`).
 - **Index the array, do not walk a pointer.** `argv[j] = ...` lets strength
   reduction create the walking pointer in the loop's preheader, i.e. *after* the
   entry guard; `u32* dst = argv;` above the loop materializes it before the
-  guard and takes a different register (`Cmd_Loop`). Strength reduction also
+  guard and takes a different register (`Cmd_ForEach`). Strength reduction also
   folds the member offset into the pointer (`ldr r0, [r1]` on `p->a[i].flags`,
   stride `sizeof(a[0])`), and turns an ascending `i < N` into a countdown trip
   counter; a hand-written `for (i = 0; i < N; i++, q++)` keeps the offset
@@ -341,12 +341,12 @@ Four positions, cheapest first:
   lever closed `FUN_0801f214`, `FUN_0801f328` and `FUN_0801f38c`, each of which
   had sat at a one-instruction residual.
 - **A mask local is not the same lever as an inline parameter.**
-  `PlayerFlag378 mask = FLAG378_FAIRY; if (p->flag378 & mask)` materializes the
+  `EquipBuffs mask = FLAG378_FAIRY; if (p->equipBuffs & mask)` materializes the
   constant where the `&` needs it, i.e. *after* the field's offset and load, and
   that is what `Player_ApplyDarkbug` matches. When the target materializes the
   mask *before* the offset constant, only an inline with the mask as a parameter
-  reaches it: `static inline PlayerFlag378 Player_GetFlag378(Player* p,
-  PlayerFlag378 bits) { return p->flag378 & bits; }` closed `FUN_0806f900`,
+  reaches it: `static inline EquipBuffs Player_GetFlag378(Player* p,
+  EquipBuffs bits) { return p->equipBuffs & bits; }` closed `FUN_0806f900`,
   where the local spelling stayed four instructions out of order. Note the
   accessor returns the masked value, not a `bool32` — a `bool32` one adds a 0/1 materialization.
 - **So the converse is a lever too.** If the target loads the memory operand

@@ -56,7 +56,7 @@ _0809CF24: .4byte 0x00000E2B
 _0809CF28:
 	ldrb r0, [r4]
 	mov r1, sp
-	bl FUN_08242b14
+	bl GetWeaponData
 	movs r0, #0xe2
 	lsls r0, r0, #3
 	adds r2, r6, r0

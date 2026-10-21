@@ -24520,7 +24520,7 @@ _0812D91E:
 _0812D934: .4byte 0x030046A0
 _0812D938:
 	ldr r0, [sp, #0x144]
-	bl GetMapAreaAt
+	bl GetZoneAt
 	ldr r6, [sp, #0x184]
 	strh r0, [r6]
 _0812D942:

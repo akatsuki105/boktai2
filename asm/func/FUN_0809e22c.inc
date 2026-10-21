@@ -57,7 +57,7 @@
 	mov r3, sb
 	bl FUN_0809e198
 	adds r0, r7, #0
-	bl GetMapAreaAt
+	bl GetZoneAt
 	adds r1, r7, #0
 	adds r1, #0x9e
 	strh r0, [r1]

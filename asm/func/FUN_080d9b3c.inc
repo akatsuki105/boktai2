@@ -14,7 +14,7 @@
 	ldr r0, [r0]
 	cmp r0, #0
 	bne _080D9B70
-	bl Entity080da848_Create
+	bl EmoteManager_Create
 	mov sb, r0
 	cmp r0, #0
 	bne _080D9B72
@@ -29,7 +29,7 @@ _080D9B72:
 	cmp r5, #0
 	beq _080D9B66
 	mov r0, sb
-	bl FUN_080d99c4
+	bl EmoteManager_AllocSlot
 	adds r7, r0, #0
 	cmp r7, #0
 	beq _080D9B66
@@ -141,7 +141,7 @@ _080D9C38:
 	ldr r3, [r7, #0x58]
 	str r3, [sp, #4]
 	add r3, sp, #8
-	bl FUN_080d8cc0
+	bl Emote_CalcPtclOffset
 	ldr r0, [sp, #8]
 	movs r1, #0
 	strh r0, [r7, #0x1c]

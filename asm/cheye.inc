@@ -17898,7 +17898,7 @@ _08184302:
 _08184318: .4byte 0x030046A0
 _0818431C:
 	ldr r0, [sp, #0x19c]
-	bl GetMapAreaAt
+	bl GetZoneAt
 	ldr r6, [sp, #0x78]
 	strh r0, [r6]
 _08184326:

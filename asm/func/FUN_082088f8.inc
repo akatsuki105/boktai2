@@ -63,7 +63,7 @@ _0820893E:
 	str r3, [sp, #0xc]
 	movs r2, #2
 	movs r3, #0
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r6, #0x18]
 _08208986:
 	add sp, #0x10

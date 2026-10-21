@@ -1,3 +1,4 @@
+#include "emote.h"
 #include "enemy.h"
 #include "enemy_target.h"
 #include "entity.h"
@@ -155,7 +156,6 @@ void FUN_080e4a68(Enemy* p);
 void FUN_080ee2c8(Enemy* p);
 bool8 FUN_080f3718(Enemy* p);
 void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos);
-s32 FUN_080d9a9c(void* p, u32 param_2, u32 param_3);
 void FUN_080e5098(Enemy* p, s32 param_2, s32 param_3);
 void FUN_080e499c(Enemy* p);
 void FUN_080e5718(Enemy* p, s32 param_2, s32 param_3, s32 param_4);
@@ -792,7 +792,7 @@ bool32 FUN_080f6bac(Enemy* p) {
     Enemy_ResetState(p, 3, 0, 0);
     p->hitbox.unk_44 = 0x26;
     if (Enemy_GetFlag3(p, ENEFLAG3_UNK_1)) {
-      FUN_080d9a9c(p->unk_454, 3, p->mover.id);
+      Emote_RemovePtcl(p->emote, 3, p->mover.id);
     }
     return TRUE;
   }

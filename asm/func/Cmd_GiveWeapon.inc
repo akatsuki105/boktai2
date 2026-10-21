@@ -131,7 +131,7 @@ _08242E9A:
 	strb r0, [r1]
 _08242EA0:
 	mov r0, sp
-	bl FUN_08242b88
+	bl AddWeapon
 _08242EA6:
 	add sp, #0x24
 	pop {r4, r5}

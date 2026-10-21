@@ -153,12 +153,12 @@ _08049A84:
 	movs r1, #0x12
 	movs r2, #1
 	movs r3, #2
-	bl FUN_0822ea60
+	bl Font_ReleaseRect
 	ldr r0, [r4]
 	movs r1, #0x12
 	movs r2, #1
 	movs r3, #2
-	bl FUN_0822eadc
+	bl Font_FillRect
 	ldr r0, [r4]
 	adds r0, #1
 	str r0, [r4]

@@ -22,7 +22,7 @@ _08047878:
 	ldr r5, _080478D8 @ =0x0000017B
 	adds r3, r4, r5
 	ldrb r3, [r3]
-	bl FUN_0822ea60
+	bl Font_ReleaseRect
 	ldr r2, _080478DC @ =MessageWindow_StateIdle
 	movs r3, #0xbb
 	lsls r3, r3, #2

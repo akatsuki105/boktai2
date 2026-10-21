@@ -102,7 +102,7 @@ _081E625E:
 	beq _081E62AC
 	ldr r1, _081E6298 @ =0x00000E28
 	adds r0, r6, r1
-	bl FUN_08242b88
+	bl AddWeapon
 	ldr r3, _081E629C @ =0x030046A0
 	ldr r0, [r3]
 	movs r4, #0x91
@@ -139,7 +139,7 @@ _081E62AC:
 	ldrb r0, [r0]
 	lsls r0, r0, #0x18
 	asrs r0, r0, #0x18
-	bl FUN_08242c08
+	bl RemoveWeapon
 	ldr r4, _081E6314 @ =0x030046A0
 	ldr r0, [r4]
 	movs r1, #0x91

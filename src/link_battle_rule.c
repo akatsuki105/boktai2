@@ -1,13 +1,10 @@
-#include "bg_pltt.h"
 #include "entity.h"
 #include "entity_9a9f.h"
 #include "file.h"
 #include "global.h"
-#include "link_battle_lobby.h"
 #include "sprite_main.h"
 #include "sprite_pltt.h"
 #include "text.h"
-#include "tilemap.h"
 #include "video.h"
 
 bool32 FUN_081dfa04(void);
@@ -100,7 +97,7 @@ void Entity08F4_RemoveSprites(Entity08F4* p) {
 }
 
 void Entity08F4_SavePltt(Entity08F4* p) {
-  rgb555* src = &gObjPlttData[0x2930];
+  rgb555* src = &gObjPlttData[659 * 16];
   s32 i;
 
   for (i = 0; i < 16; i++) {
@@ -152,36 +149,4 @@ Entity08F4* Entity08F4_Create(void) {
   }
 
   return p;
-}
-
-// BG2 にルール画面のタイルマップを敷き, パレットを BG パレットへ送る
-void FUN_081db9f4(LinkBattleLobby* p) {
-  s32 layer;
-
-  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
-  layer = 7;
-  Video_SetupBGLayout(2, 0, p->tilemap, 0, 0, 1, &layer);
-
-  p->bgPltt = GetBgPlttFile(BGP_26BB)->body;
-  CpuCopy16(p->bgPltt, gBgPlttBuffer, 256 * sizeof(rgb555));
-}
-
-// 背景パレットの後半16色を控えてから点滅タイマーを戻す
-void FUN_081dba54(LinkBattleLobby* p) {
-  CpuCopy16(&p->bgPltt[32], p->pltt, 16 * sizeof(rgb555));
-  p->blinkTimer = 0;
-}
-
-NAKED void FUN_081dba78(unknown* param_1) { INCFUNC("asm/func/FUN_081dba78.inc"); }
-
-// 立ち絵4枚とアイコン4枚のアニメ番号を初期値に戻す
-void FUN_081dbc14(LinkBattleLobby* p) {
-  p->animID[0] = 4;
-  p->animID[1] = 4;
-  p->animID[2] = 4;
-  p->animID[3] = 4;
-  p->animID[4] = 0x3A;
-  p->animID[5] = 0x3B;
-  p->animID[6] = 0x3C;
-  p->animID[7] = 0x3D;
 }

@@ -23,7 +23,6 @@ typedef struct Entity3DB0 {
 static_assert(sizeof(Entity3DB0) == 204);
 
 s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params);
-void Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
 
 // pos が乗っているタイルの索引, マップ外なら 0
 static inline s32 TileIndexAt(WorldPos* pos) {

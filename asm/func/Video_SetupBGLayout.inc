@@ -285,7 +285,7 @@ _0822C2E0:
 	cmp r7, #0
 	bne _0822C300
 	str r3, [sp, #0x40]
-	bl FUN_0822e8b4
+	bl Font_ClearGlyphCache
 	ldr r3, [sp, #0x40]
 _0822C300:
 	ldr r2, [sp, #0x68]

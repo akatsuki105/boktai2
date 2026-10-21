@@ -11,7 +11,6 @@
 
 IWRAM_DATA bool32 bool32_0300077c = FALSE;  // 0x0300077C
 
-bool32 Map_ResetCollisionMap(void);
 void Map_ClearEvent(CollisionMapEvent* ev);
 CollisionMapEvent* Map_FindEventByID(u32 id);
 void Map_RunZoneEventScript(ZoneEventSource* src, CollisionMapEvent* ev, u16 msg);
@@ -38,20 +37,16 @@ static inline s32 TileHeightAt(Vec3* pos) {
   }
 
   ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
+  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
 
   stairs = tile->heightStairs >> 4;
   height = (tile->heightStairs & 0xF) << 8;
   switch (stairs) {
-    case 1: {
+    case STAIRS_VERTICAL: {
       height -= (u8)pos->z;
       break;
     }
-    case 2: {
+    case STAIRS_HORIZONTAL: {
       height -= (u8)pos->x;
       break;
     }
@@ -255,11 +250,7 @@ TileAttr Map_GetTileAttr(Vec3* pos) {
 // pos1 と pos2 のタイル高さの差を返す
 u16 Map_GetTileHeightDiff(Vec3* pos1, Vec3* pos2) {
   s32 diff = TileHeightAt(pos1) - TileHeightAt(pos2);
-
-  if (diff < 0) {
-    diff = -diff;
-  }
-  return diff;
+  return abs(diff);
 }
 
 // pos1 から pos2 へ移れるか, 階段タイルどうしの繋がりと段差を見て判定する
@@ -295,11 +286,7 @@ NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
   idx2 = (u16)raw;
 
   ov = Map_FindTileOverride(idx2, 1);
-  if (ov != NULL) {
-    tile2 = &ov->tile;
-  } else {
-    tile2 = &gCollisionMap->tiledata->tiles[idx2];
-  }
+  tile2 = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx2];
 
   attr2 = tile2->attr;
   if (val == 4) {
@@ -327,20 +314,16 @@ NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
   idx1 = (u16)raw;
 
   ov = Map_FindTileOverride(idx1, 1);
-  if (ov != NULL) {
-    tile1 = &ov->tile;
-  } else {
-    tile1 = &gCollisionMap->tiledata->tiles[idx1];
-  }
+  tile1 = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx1];
 
   stairs1 = tile1->heightStairs >> 4;
   stairs2 = tile2->heightStairs >> 4;
   d = idx2 - idx1;
-  if (stairs1 == 1) {
+  if (stairs1 == STAIRS_VERTICAL) {
     if (d != 1 && d != -1) {
       return TRUE;
     }
-    if ((gStat->unk_934 & 0x10) && (attr2 & 0x80)) {
+    if ((gStat->unk_934 & SF934_LAVA_FROZEN) && (attr2 & TATTR_LAVA)) {
       return FALSE;
     }
     if (stairs2 != 0) {
@@ -358,11 +341,11 @@ NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
     }
     height = tile3->heightStairs & 0xF;
     base = tile2;
-  } else if (stairs1 == 2) {
+  } else if (stairs1 == STAIRS_HORIZONTAL) {
     if (d != gMapBlockW && d != -gMapBlockW) {
       return TRUE;
     }
-    if ((gStat->unk_934 & 0x10) && (attr2 & 0x80)) {
+    if ((gStat->unk_934 & SF934_LAVA_FROZEN) && (attr2 & TATTR_LAVA)) {
       return FALSE;
     }
     if (stairs2 != 0) {
@@ -382,7 +365,7 @@ NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
     base = tile2;
   } else {
     if (d == gMapBlockW || d == -gMapBlockW) {
-      if (stairs2 != 2) {
+      if (stairs2 != STAIRS_HORIZONTAL) {
         return TRUE;
       }
       if ((u8)pos2->x <= 0x7F) {
@@ -391,7 +374,7 @@ NON_MATCH bool32 FUN_08232b00(Vec3* pos1, Vec3* pos2, u8 val) {
         tile3 = TileAtIndex(idx1 + 1);
       }
     } else if (d == 1 || d == -1) {
-      if (stairs2 != 1) {
+      if (stairs2 != STAIRS_VERTICAL) {
         return TRUE;
       }
       if ((u8)pos2->z <= 0x7F) {
@@ -1285,12 +1268,12 @@ NON_MATCH s32 FUN_082340c8(Vec3* pos, Vec3* dir, s32 count, s32 limit) {
 #endif
 }
 
-void Map_InitTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 param_4, s32 param_5, s32 param_6) {
+void Map_InitTileOverride(MapTileOverride* p, s32 tileIdx, s32 stairs, s32 height, s32 occluder, s32 attr) {
   p->tileIdx = tileIdx;
   p->flags = 0;
-  p->tile.heightStairs = (param_3 << 4) | param_4;
-  p->tile.obj = param_5;
-  p->tile.attr = param_6;
+  p->tile.heightStairs = (stairs << 4) | height;
+  p->tile.occluder = occluder;
+  p->tile.attr = attr;
 }
 
 // tileIdx の上書き情報のうち、mask のビットを持たず height の下位4bitが最大のものを返す
@@ -1311,8 +1294,8 @@ MapTileOverride* Map_FindTileOverride(u32 tileIdx, u32 mask) {
 }
 
 // 上書き情報を初期化して、コリジョンマップが持つ双方向リストの先頭に繋ぐ
-s32 Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6) {
-  Map_InitTileOverride(p, tileIdx, param_3, height, param_5, param_6);
+s32 Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 stairs, s32 height, s32 occluder, s32 attr) {
+  Map_InitTileOverride(p, tileIdx, stairs, height, occluder, attr);
   p->prev = NULL;
   p->next = gCollisionMap->tileOverrides;
   if (p->next != NULL) {
@@ -2260,8 +2243,8 @@ NON_MATCH s32 Map_LoadNavMesh(FileID id) {
 void Map_SetNavMesh(NavMesh* navMesh) { gCollisionMap->navMesh = navMesh; }
 
 // pos が rects[idx] の矩形の中にあるか, 矩形は1タイル単位なので 8bit 左シフトして比べる
-bool32 Map_IsPosInNavRect(struct NavRect* rects, Vec3* pos, u32 idx) {
-  struct NavRect* rect = &rects[idx];
+bool32 Map_IsPosInNavRect(NavRect* rects, Vec3* pos, u32 idx) {
+  NavRect* rect = &rects[idx];
 
   if (pos->x >= (rect->minX << 8) && pos->x < (rect->maxX << 8) && pos->z >= (rect->minY << 8) && pos->z < (rect->maxY << 8)) {
     return TRUE;
@@ -2325,7 +2308,7 @@ bool32 Map_IsPosInAgentIsland(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
 
   for (i = 0; i < navMesh->countIslands; i++) {
     NavIsland* island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[i]);
-    struct NavRect* rects = (struct NavRect*)((u8*)island + island->offsetToRects);
+    NavRect* rects = (NavRect*)((u8*)island + island->offsetToRects);
     s32 j;
 
     for (j = 0; j < island->countRects; j++) {
@@ -2349,12 +2332,12 @@ NON_MATCH s32 FUN_08235a84(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
   u16 posRects[6];
   NavMesh* navMesh;
   NavIsland* island;
-  struct NavRect* rects;
-  struct NavPortal* portals;
+  NavRect* rects;
+  NavPortal* portals;
   u16* distanceMap;
-  struct NavRect* posRect;
-  struct NavRect* dstRect;
-  struct NavPortal* portal;
+  NavRect* posRect;
+  NavRect* dstRect;
+  NavPortal* portal;
   u32 best;
   s32 nextPortal;
   s32 goalPortal;
@@ -2383,7 +2366,7 @@ NON_MATCH s32 FUN_08235a84(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
   rects = NULL;
   for (i = 0; i < navMesh->countIslands; i++) {
     island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[i]);
-    rects = (struct NavRect*)((u8*)island + island->offsetToRects);
+    rects = (NavRect*)((u8*)island + island->offsetToRects);
     for (j = 0; j < island->countRects; j++) {
       if (Map_IsPosInNavRect(rects, dst, j)) {
         island0 = i;
@@ -2413,7 +2396,7 @@ NON_MATCH s32 FUN_08235a84(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
     return 0;
   }
 
-  portals = (struct NavPortal*)((u8*)island + island->offsetToPortals);
+  portals = (NavPortal*)((u8*)island + island->offsetToPortals);
   distanceMap = (u16*)((u8*)island + island->offsetToDistanceMap);
 
   // dst を含む矩形をポータル伝いに集める
@@ -2521,10 +2504,10 @@ NON_MATCH s32 FUN_08235a84(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
     return 0;
   }
 
-  agent->unk_08 = goalPortal;
+  agent->goalPortal = goalPortal;
   agent->unk_0c = *dst;
   agent->unk_14 = *pos;
-  agent->unk_0a = nextPortal;
+  agent->nextPortal = nextPortal;
   agent->unk_1c.x = portals[nextPortal].x;
   agent->unk_1c.y = 0;
   agent->unk_1c.z = portals[nextPortal].y;
@@ -2584,9 +2567,9 @@ bool32 FUN_08235fd8(u16* p) {
 NON_MATCH void FUN_08235ffc(NavMesh* navMesh, NavAgent* agent, Vec3* pos) {
 #ifdef NONMATCHING_C
   NavIsland* island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[agent->islandIdx]);
-  struct NavRect* rects = (struct NavRect*)((u8*)island + island->offsetToRects);
-  struct NavPortal* portals;
-  struct NavRect* rect;
+  NavRect* rects = (NavRect*)((u8*)island + island->offsetToRects);
+  NavPortal* portals;
+  NavRect* rect;
   s32 i;
   s32 j;
 
@@ -2594,10 +2577,10 @@ NON_MATCH void FUN_08235ffc(NavMesh* navMesh, NavAgent* agent, Vec3* pos) {
     return;
   }
 
-  portals = (struct NavPortal*)((u8*)island + island->offsetToPortals);
+  portals = (NavPortal*)((u8*)island + island->offsetToPortals);
   rect = &rects[agent->rectIdx];
   for (i = 0; i < 12 && rect->portals[i] != 0xFF; i++) {
-    struct NavPortal* portal = &portals[rect->portals[i]];
+    NavPortal* portal = &portals[rect->portals[i]];
 
     for (j = 0; j < 6; j++) {
       if (portal->rects[j] == 0xFF) {
@@ -2620,7 +2603,7 @@ NON_MATCH void FUN_08235ffc(NavMesh* navMesh, NavAgent* agent, Vec3* pos) {
   for (i = 0; i < navMesh->countIslands; i++) {
     if (i != agent->islandIdx) {
       island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[i]);
-      rects = (struct NavRect*)((u8*)island + island->offsetToRects);
+      rects = (NavRect*)((u8*)island + island->offsetToRects);
       for (j = 0; j < island->countRects; j++) {
         if (Map_IsPosInNavRect(rects, pos, j)) {
           agent->islandIdx = i;
@@ -2641,10 +2624,10 @@ NON_MATCH void FUN_08235ffc(NavMesh* navMesh, NavAgent* agent, Vec3* pos) {
 NON_MATCH void FUN_08236130(NavMesh* navMesh, NavAgent* agent, Vec3* pos) {
 #ifdef NONMATCHING_C
   NavIsland* island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[agent->islandIdx]);
-  struct NavRect* rects = (struct NavRect*)((u8*)island + island->offsetToRects);
-  struct NavPortal* portals = (struct NavPortal*)((u8*)island + island->offsetToPortals);
+  NavRect* rects = (NavRect*)((u8*)island + island->offsetToRects);
+  NavPortal* portals = (NavPortal*)((u8*)island + island->offsetToPortals);
   u16* distanceMap = (u16*)((u8*)island + island->offsetToDistanceMap);
-  struct NavPortal* portal = &portals[agent->unk_0a];
+  NavPortal* portal = &portals[agent->nextPortal];
   s32 dx = pos->x - portal->x;
   s32 dz = pos->z - portal->y;
   s32 best;
@@ -2655,7 +2638,7 @@ NON_MATCH void FUN_08236130(NavMesh* navMesh, NavAgent* agent, Vec3* pos) {
     return;
   }
 
-  if (agent->unk_08 == agent->unk_0a) {
+  if (agent->goalPortal == agent->nextPortal) {
     agent->unk_1c = agent->unk_0c;
     agent->flags = 6;
     return;
@@ -2664,12 +2647,12 @@ NON_MATCH void FUN_08236130(NavMesh* navMesh, NavAgent* agent, Vec3* pos) {
   best = 0xFFFF;
   bestPortal = 0xFF;
   for (i = 0; i < 6 && portal->rects[i] != 0xFF; i++) {
-    struct NavRect* rect = &rects[portal->rects[i]];
+    NavRect* rect = &rects[portal->rects[i]];
     s32 j;
 
     for (j = 0; j < 12 && rect->portals[j] != 0xFF; j++) {
       if (rect->portals[j] != bestPortal) {
-        s32 d = Map_GetNavDistance(distanceMap, island->countPortals, agent->unk_08, rect->portals[j]);
+        s32 d = Map_GetNavDistance(distanceMap, island->countPortals, agent->goalPortal, rect->portals[j]);
 
         if (d < best) {
           best = d;
@@ -2682,7 +2665,7 @@ NON_MATCH void FUN_08236130(NavMesh* navMesh, NavAgent* agent, Vec3* pos) {
   if (best > 0xFFFE) {
     agent->flags = 0;
   } else {
-    agent->unk_0a = bestPortal;
+    agent->nextPortal = bestPortal;
     agent->unk_1c.x = portals[bestPortal].x;
     agent->unk_1c.y = 0;
     agent->unk_1c.z = portals[bestPortal].y;
@@ -2710,7 +2693,7 @@ s32 Map_FindNavRectAt(Vec3* pos) {
 
   for (i = 0; i < navMesh->countIslands; i++) {
     NavIsland* island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[i]);
-    struct NavRect* rects = (struct NavRect*)((u8*)island + island->offsetToRects);
+    NavRect* rects = (NavRect*)((u8*)island + island->offsetToRects);
     s32 j;
 
     for (j = 0; j < island->countRects; j++) {
@@ -2731,7 +2714,7 @@ s32 Map_InitNavAgent(NavAgent* agent, WorldPos* pos) {
   agent->rectIdx = 0xFF;
   for (i = 0; i < navMesh->countIslands; i++) {
     NavIsland* island = (NavIsland*)((u8*)navMesh + navMesh->islandOffsets[i]);
-    struct NavRect* rects = (struct NavRect*)((u8*)island + island->offsetToRects);
+    NavRect* rects = (NavRect*)((u8*)island + island->offsetToRects);
     s32 j;
 
     for (j = 0; j < island->countRects; j++) {

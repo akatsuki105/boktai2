@@ -37,7 +37,7 @@ NAKED void Generator_PushPlayer(Generator* p) { INCFUNC("asm/func/Generator_Push
 // 攻撃属性を持つ判定を受けたらダメージを溜め、上限に届いたら state 3 へ進む
 NON_MATCH void FUN_080b29a4(HitboxData* a, HitboxData* b, Generator* p) {
 #ifdef NONMATCHING_C
-  if (Hitbox_TestAttribute(a, 0x7F) && p->unk_e0 == 0 && p->state == 2) {
+  if (Hitbox_TestAttr(a, 0x7F) && p->unk_e0 == 0 && p->state == 2) {
     s32 power = a->power - b->power;
 
     if (power < 0) {

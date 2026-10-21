@@ -12,6 +12,7 @@
 #include "struct.h"
 
 struct EnemyTarget;
+struct emote;
 
 // data.c の "../enemy/system/eneinline.h" という文字列から察するに EnemyXXX_Init の関数サイズがすべて異様に大きいのは、共通部分を eneinline.h にまとめていてそれをインライン展開しているからだと思われる(なんで？)
 
@@ -183,7 +184,7 @@ static_assert(sizeof(EnemyAnimEntry) == 4);
   u8 unk_44c;                      /* 0x44C */                                                                                                                                   \
   u8 unk_44d;                      /* 0x44D, 0 以外だと FUN_080e64b4 がパーティクルを消さない */                                                                                 \
   u8 unk_44e[0x454 - 0x44E];       /* 0x44E */                                                                                                                                   \
-  void* unk_454;                   /* 0x454, Entity080da848, FUN_080f6bac が FUN_080d9a9c に渡す */                                                                              \
+  struct Emote* emote;             /* 0x454, EmoteManager, FUN_080f6bac が Emote_RemovePtcl に渡す */                                                                            \
   u8 unk_458[0x468 - 0x458];       /* 0x458 */                                                                                                                                   \
   u8 unk_468;                      /* 0x468, FUN_080f34ec 系が 2 か 3 を書く */                                                                                                  \
   u8 unk_469;                      /* 0x469, handlerTables[1] [5] [7] [9] の添字 (ldrb) */                                                                                       \
@@ -208,7 +209,7 @@ static_assert(sizeof(EnemyAnimEntry) == 4);
   u8 unk_48d;                      /* 0x48D */                                                                                                                                   \
   u8 unk_48e;                      /* 0x48E, FUN_080ec9b0 のカウントダウン */                                                                                                    \
   u8 unk_48f;                      /* 0x48F */                                                                                                                                   \
-  u16 unk_490;                     /* 0x490, gStat->unk_248 と一致するかを FUN_080edebc が見る */                                                                                \
+  ZoneID16 zoneID;                 /* 0x490, gStat->zoneID と一致するかを FUN_080edebc が見る */                                                                                 \
   u8 unk_492[0x498 - 0x492];       /* 0x492 */                                                                                                                                   \
   u32 unk_498;                     /* 0x498, FUN_080ef5a8 が 0x40 を書く */                                                                                                      \
   EnemyFlags6 flags6;              /* 0x49C, FUN_080f6e34 が bit14/18/19 を見る */                                                                                               \

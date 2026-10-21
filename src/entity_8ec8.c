@@ -3,7 +3,6 @@
 #include "input.h"
 #include "msgbus.h"
 #include "player.h"
-#include "shademan.h"
 #include "sound.h"
 
 // 一定間隔で gCamera->shakeAmplitude を上げて NOISE_QUAKE_121 を鳴らすシングルトン, メッセージ (cmd 4/5) で外部からも起こせる
@@ -33,7 +32,7 @@ NON_MATCH bool32 Entity8EC8_IsStartHeld(void) {
 #ifdef NONMATCHING_C
   Player* p = gPlayerPtr[0];
 
-  if ((gInput[0].down & START_BUTTON) && p != NULL && p->unk_1c == 1 && !(p->unk_20 & PFLAG20_UNK_0)) {
+  if ((gInput[0].down & START_BUTTON) && p != NULL && p->unk_1c == 1 && !(p->flag20 & PFLAG20_UNK_0)) {
     return TRUE;
   }
   return FALSE;
@@ -47,7 +46,7 @@ NON_MATCH bool32 Entity8EC8_IsSelectHeld(void) {
 #ifdef NONMATCHING_C
   Player* p = gPlayerPtr[0];
 
-  if ((gInput[0].down & SELECT_BUTTON) && p != NULL && p->unk_1c == 1 && !(p->unk_20 & PFLAG20_UNK_0)) {
+  if ((gInput[0].down & SELECT_BUTTON) && p != NULL && p->unk_1c == 1 && !(p->flag20 & PFLAG20_UNK_0)) {
     return TRUE;
   }
   return FALSE;
@@ -77,16 +76,4 @@ Entity8EC8* Entity8EC8_Create(u32 id) {
     }
   }
   return p;
-}
-
-// 点滅をやめて unk_38c の bit8 を立てる
-// 残差は命令の並び順だけ (17 対 17), 原典は定数 0x100 を unk_38c のアドレス計算より前に作る
-// 0x100 を左に書く形 / AuxSprite_SetFlags 経由 / MainSprite* ローカルは試済
-NON_MATCH void FUN_0821bd14(Entity0623* p) {
-#ifdef NONMATCHING_C
-  MainSprite_ClearFlags(&p->sprite_2bc, SPRFLAG_BLINK_ODD);
-  p->unk_38c |= 0x100;
-#else
-  INCFUNC("asm/func/FUN_0821bd14.inc");
-#endif
 }

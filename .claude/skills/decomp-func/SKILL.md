@@ -1,6 +1,6 @@
 ---
 name: decomp-func
-description: Decompile boktai2 function into C code that generates matching builds. `-n`/`--name` also renames the function when the evidence is solid, `-p`/`--push` commits and pushes each function as soon as it is finished, with `MATCHING: <name>` or `NON_MATCH: <name>` as the commit message.
+description: Decompile boktai2 function into C code that generates matching builds. `-n`/`--name` also names what the body settled — the function, and the struct members and globals it just explained — whether or not it ended MATCHING, `-p`/`--push` commits and pushes each function as soon as it is finished, with `MATCHING: <name>` or `NON_MATCH: <name>` as the commit message.
 argument-hint: [<function-name>...] [-n|--name] [-p|--push]
 ---
 
@@ -25,9 +25,10 @@ yourself before anything else.
   them in the order given and run the whole workflow for one before starting
   the next — one function at a time, never a batch. With none, pick a target
   the way "Picking a target" says.
-- **`-n` / `--name`** — rename the function once the work is done (step 7).
-  Without it the function keeps the name it came in with, whatever the body
-  turned out to be.
+- **`-n` / `--name`** — name what the work settled, once it is done (step 7):
+  the function, and also the struct members and globals whose meaning the body
+  just revealed. Without it everything keeps the name it came in with, whatever
+  the body turned out to be.
 - **`-p` / `--push`** — commit and push each function as soon as it is finished
   (step 8). Without it this skill leaves the working tree dirty for the user,
   and that is the default: committing is the one thing it does not do unless
@@ -184,6 +185,14 @@ grep -c '^NON_MATCH' src/FILE.c
 
 3. **Write the C into `src/*.c`**, replacing the `NAKED` stub or the NON_MATCH `#else INCFUNC` block, and removing the `NON_MATCH` marker and the `#ifdef NONMATCHING_C` wrapper with it. The draft need not be perfect — the streamdiff loop below is what sharpens it.
 
+   **Let `wrap.ts` take the wrapper off and put it back on**, rather than editing the `#ifdef` lines by hand:
+
+```sh
+.claude/skills/decomp-func/scripts/wrap.ts open <FUNCTION_NAME>    # 殻を外して C を書ける形にする
+```
+
+   Hand-editing this costs a whole build every time it goes wrong, and it goes wrong silently: a `#else` that ends up anywhere but column 0 is not a directive, so the preprocessor swallows the `INCFUNC` with it and the function compiles to nothing. `make compare` then prints `FAILED` with no hint, and the ROM diff points at whatever shifted rather than at the typo. `wrap.ts` only ever splices whole lines, and it re-reads the file afterwards to check that every `#ifdef` / `#else` / `#endif` starts its own line and that the `#if` and `#endif` counts still balance.
+
 ```c
 NAKED void* DecompTargetFunc(void) { INCFUNC("asm/xxx.inc"); }
 // ↓
@@ -266,6 +275,30 @@ void* DecompTargetFunc(void) {
 
     A name that says what the function does can make step 6's comment redundant; drop the comment then rather than writing the same thing twice.
 
+    **Name the fields and globals the body settled, not just the function.**
+    Reading a function is usually how an `unk_38` or a `u16_03002b90` stops
+    being unknown, and that knowledge is lost if only the function gets a name.
+    Rename every member and global this pass can now explain, with the same bar
+    as the function: one sentence of evidence, or it keeps its address name.
+    Prefer the names an already-analysed sibling type uses, so the two read
+    alike. A field rename is also the moment to fix a wrong *type*: the load
+    mnemonic in the asm is the oracle (`ldrh` + a zero-extended compare means
+    `u16`, not `s16`), and the repo's comment on that member is the place for
+    the evidence. Members of a type declared in a `.c` are local to it, so a
+    rename there is a plain edit; for one in `include/`, rename in the header,
+    run `make objs -k`, and fix only the lines the compiler reports as
+    "structure has no member named X" — grep and sed are unsafe because many
+    structs share `unk_18`-style names. Reflect the same names into Ghidra
+    (`tools/ghidra/rename_struct_field.ts`, `/rename_data`) and save, so the
+    next decompile reads in the new vocabulary. A header edit means the next
+    build needs `make clean-code`.
+
+    **A NON_MATCH ending does not block any of this.** Naming is paid for by
+    having read the body, not by the ROM accepting the C, so rename on the way
+    out of step 5 exactly as you would after a match. The `INCFUNC` keeps
+    pointing at `asm/func/NEW_NAME.inc` because `rename_with_ghidra.sh` moves
+    the file too.
+
 8. **Commit and push** — only with `-p`. Without it, stop after step 7 and leave
     the working tree dirty for the user.
 
@@ -296,7 +329,12 @@ The thresholds are the quartiles of what is left in the repo (p25 = 98, p75 = 33
 
 Stop at that iteration count and keep whichever candidate is best. Step 5 states the iteration number against the budget, so the count is on screen rather than remembered. The token figure is the secondary rule — apply it only when the remaining count (`N tokens left`) happens to be visible, because it is not always on screen and resets across a compaction.
 
-Leave the best candidate as NON_MATCH: its C inside `#ifdef NONMATCHING_C`, the `INCFUNC` restored in `#else` (restore the `.inc` from git if it was deleted), and `make compare` printing OK.
+Leave the best candidate as NON_MATCH: its C inside `#ifdef NONMATCHING_C`, the `INCFUNC` restored in `#else` (restore the `.inc` from git if it was deleted), and `make compare` printing OK. `wrap.ts` does all of that, the note included:
+
+```sh
+.claude/skills/decomp-func/scripts/wrap.ts close <FUNCTION_NAME> \
+  --note "残差1命令, 原典は ..." --note "Tier A-C は試済 (...)"
+```
 
 **Write one line above the `#ifdef` saying how far you got** — the residual in one phrase, and which tiers of `agbcc-levers.md` you actually exhausted:
 
@@ -334,6 +372,7 @@ silently skipped — including the `make compare` you were relying on.
   declarations, the `bl` targets' declarations, and the current C.
   `--brief` / `--no-ghidra` trim it.
 - `census.ts <file.c>...` — remaining-function census over the given `.c` files, smallest-first TSV with sizes and inc paths.
+- `wrap.ts open|close <FUNCTION_NAME>` — take the `NAKED` / NON_MATCH `INCFUNC` wrapper off so the C can be written, or put it back on with `--note` lines above the signature (repeatable). `close` restores a deleted `.inc` from `HEAD`, and `open` drops the old residual note (the `残差` / `Tier` / `未:` lines) while keeping the comment that says what the function does, so the pair round-trips cleanly. Line-based, and it verifies the directives afterwards.
 - `streamdiff.py` — canonicalized instruction diff, object vs inc.
 - `residual.ts [file.c...]` — run `make nonmatch` and report every NON_MATCH function's hunk count, smallest-first. Builds into `build/nonmatch/` and leaves the objects there, so the normal build is untouched and you can follow up with `streamdiff.py` on any single function.
 - `flag_blast.sh <flag>...` — how many objects a compiler flag changes, against the `expected/` baseline. `--baseline` for a sanity check (expect 0), `--with-lib` to count `src/lib` too. Builds into `build/flagblast/`. Read `agbcc-levers.md` Tier D before reading anything into the number.

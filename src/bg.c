@@ -45,7 +45,7 @@ void ClearTilemapBuffer(void) { ClearMemory(gTilemapBuffer, sizeof(gTilemapBuffe
 
 void ClearBGTilemapBuffer(s32 bg) {
   if (bg == 0) {
-    FUN_0822e8b4();
+    Font_ClearGlyphCache();
   }
   ClearMemory(GetTilemapBuffer(bg), BG_SCREEN_SIZE);
 }
@@ -439,7 +439,7 @@ void Video_SetBGLayer(s32 bg, TilemapFile* f, s32 layerIdx) {
   u16 w, h;
 
   if (bg == 0) {
-    FUN_0822e8b4();
+    Font_ClearGlyphCache();
   }
 
   // 相対オフセットをROMアドレスに変換する

@@ -26,7 +26,7 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PFLAG20_UNK_12 (1 << 12)     // 0x00001000
 #define PFLAG20_UNK_14 (1 << 14)     // 0x00004000, Player_UpdateDjango が先頭で毎フレーム立てる
 #define PFLAG20_UNK_15 (1 << 15)     // 0x00008000, 立っていると Player_SetHitDir が被弾方向を facing ではなく unk_3e8 に書く
-#define PFLAG20_SNEAKING (1 << 16)   // 0x00010000, 敵から見つかりにくい状態(スカルスーツ装備, Cマウス形態 など)
+#define PFLAG20_SNEAKING (1 << 16)   // 0x00010000, スニーク状態(スカルスーツ装備, Cマウス形態 など), 処理的には、 "敵の視界が半分になる"
 #define PFLAG20_UNK_17 (1 << 17)     // 0x00020000, 棺桶が COFFIN_SILVER のとき寝ている間だけ立つ (多分、敵から完全に見つからなくなる状態)
 #define PFLAG20_UNK_18 (1 << 18)     // 0x00040000, Player_UpdateDjango が unk_1c が 2 か 4 のとき立てる
 #define PFLAG20_UNK_19 (1 << 19)     // 0x00080000
@@ -42,33 +42,33 @@ typedef u16 PlayerFlag35A;
 #define PFLAG35A_SHOW_SPRITE_E8 (1 << 6)  // 0x0040, 立てたときだけ sprite_e8 の SPRFLAG_HIDDEN を落とす (既定は隠す)
 #define PFLAG35A_UNK_7 (1 << 7)           // 0x0080, サバタのみ, 立てたときだけ sprite_9c8 の SPRFLAG_HIDDEN を落とす (既定は隠す)
 
-typedef u32 PlayerFlag378;                 // Player.flag378
-#define FLAG378_WET_DURABILITY (1 << 0)    // 0x00000001, WET_DURABILITY を持った武器を装備している間セットされる
-#define FLAG378_WET_ENE_COST (1 << 1)      // 0x00000002, WET_ENE_COST を持った武器を装備している間セットされる
-#define FLAG378_BLOOD_SWORD (1 << 2)       // 0x00000004, WET_BLOOD_SWORD を持った武器を装備している間セットされる
-#define FLAG378_ASTRO (1 << 3)             // 0x00000008, アストロ武器 を装備している間セットされる
-#define FLAG378_SOLAR_WIND (1 << 4)        // 0x00000010, ブリガンダイン (AET_SOLAR_WIND)
-#define FLAG378_IMMUNEPOISON (1 << 5)      // 0x00000020, ポイズンガード (AET_IMMUNE_POISON)
-#define FLAG378_WEAPONGUARD (1 << 6)       // 0x00000040, ウェポンガード〃
-#define FLAG378_FAIRY (1 << 7)             // 0x00000080, 精霊の衣〃
-#define FLAG378_MAGICROBE (1 << 8)         // 0x00000100, マジックローブ (魔法のMP消費を軽減)
-#define FLAG378_SKULLSUIT (1 << 9)         // 0x00000200, スカルスーツ (AET_SKULL_SUIT)
-#define FLAG378_ALLNIGHT (1 << 10)         // 0x00000400, 闇のガーブ (AET_ALLNIGHT)
-#define FLAG378_TRAININGGEAR (1 << 11)     // 0x00000800, トラックスーツ (AET_EXP_BOOST, 経験値1.5倍)
-#define FLAG378_EARTHLYROBE (1 << 12)      // 0x00001000, 大地の衣 (AET_EARTHLY_ROBE)
-#define FLAG378_AET_SUNLIGHT (1 << 13)     // 0x00002000, 光のガーブ装備時, ApplyLxModifiers が太陽レベルを2倍にする
-#define FLAG378_AET_RES_SOL (1 << 14)      // 0x00004000, メイルオブソル装備時, 立っていると ApplySunlightGain の太陽スタンド加算が2倍になる
-#define FLAG378_AET_NORMAL_DROP (1 << 15)  // 0x00008000, 盗人の服
-#define FLAG378_AET_RARE_DROP (1 << 16)    // 0x00010000, 狩人の服
-#define FLAG378_PARADE (1 << 17)           // 0x00020000, パレードアーマー
-#define FLAG378_BLACKARMOR (1 << 19)       // 0x00080000, 黒の鎧
-#define FLAG378_SPIKE (1 << 18)            // 0x00040000, スパイクメイル
-#define FLAG378_MEGAPOWER (1 << 20)        // 0x00100000, ロックパワー
-#define FLAG378_GUTSPOWER (1 << 21)        // 0x00200000, ガッツパワー
-#define FLAG378_PROTOPOWER (1 << 22)       // 0x00400000, ブルースパワー
-#define FLAG378_TOADPOWER (1 << 23)        // 0x00800000, トードパワー
-#define FLAG378_HEART (1 << 28)            // 0x10000000, ハートの紋章所持
-#define FLAG378_JOKER (1 << 29)            // 0x20000000, ジョーカーの紋章所持
+typedef u32 EquipBuffs;                  // Player.equipBuffs
+#define EBUFF_WET_DURABILITY (1 << 0)    // 0x00000001, WET_DURABILITY を持った武器を装備している間セットされる
+#define EBUFF_WET_ENE_COST (1 << 1)      // 0x00000002, WET_ENE_COST を持った武器を装備している間セットされる
+#define EBUFF_BLOOD_SWORD (1 << 2)       // 0x00000004, WET_BLOOD_SWORD を持った武器を装備している間セットされる
+#define EBUFF_ASTRO (1 << 3)             // 0x00000008, アストロ武器 を装備している間セットされる
+#define EBUFF_SOLAR_WIND (1 << 4)        // 0x00000010, ブリガンダイン (AET_SOLAR_WIND)
+#define EBUFF_IMMUNEPOISON (1 << 5)      // 0x00000020, ポイズンガード (AET_IMMUNE_POISON)
+#define EBUFF_WEAPONGUARD (1 << 6)       // 0x00000040, ウェポンガード〃
+#define EBUFF_FAIRY (1 << 7)             // 0x00000080, 精霊の衣〃
+#define EBUFF_MAGICROBE (1 << 8)         // 0x00000100, マジックローブ (魔法のMP消費を軽減)
+#define EBUFF_SKULLSUIT (1 << 9)         // 0x00000200, スカルスーツ (AET_SKULL_SUIT)
+#define EBUFF_ALLNIGHT (1 << 10)         // 0x00000400, 闇のガーブ (AET_ALLNIGHT)
+#define EBUFF_TRAININGGEAR (1 << 11)     // 0x00000800, トラックスーツ (AET_EXP_BOOST, 経験値1.5倍)
+#define EBUFF_EARTHLYROBE (1 << 12)      // 0x00001000, 大地の衣 (AET_EARTHLY_ROBE)
+#define EBUFF_AET_SUNLIGHT (1 << 13)     // 0x00002000, 光のガーブ装備時, ApplyLxModifiers が太陽レベルを2倍にする
+#define EBUFF_AET_RES_SOL (1 << 14)      // 0x00004000, メイルオブソル装備時, 立っていると ApplySunlightGain の太陽スタンド加算が2倍になる
+#define EBUFF_AET_NORMAL_DROP (1 << 15)  // 0x00008000, 盗人の服
+#define EBUFF_AET_RARE_DROP (1 << 16)    // 0x00010000, 狩人の服
+#define EBUFF_PARADE (1 << 17)           // 0x00020000, パレードアーマー
+#define EBUFF_BLACKARMOR (1 << 19)       // 0x00080000, 黒の鎧
+#define EBUFF_SPIKE (1 << 18)            // 0x00040000, スパイクメイル
+#define EBUFF_MEGAPOWER (1 << 20)        // 0x00100000, ロックパワー
+#define EBUFF_GUTSPOWER (1 << 21)        // 0x00200000, ガッツパワー
+#define EBUFF_PROTOPOWER (1 << 22)       // 0x00400000, ブルースパワー
+#define EBUFF_TOADPOWER (1 << 23)        // 0x00800000, トードパワー
+#define EBUFF_HEART (1 << 28)            // 0x10000000, ハートの紋章所持
+#define EBUFF_JOKER (1 << 29)            // 0x20000000, ジョーカーの紋章所持
 
 // プレイヤーの向き
 typedef u8 Facing8;
@@ -91,12 +91,14 @@ typedef s32 Facing32;
 #define PLAYER_SLEEPING 4      // スリーピング, 魔法"スリーピング"で棺桶の中で寝ている状態
 #define PLAYER_SABATA 5        // サバタ
 
+struct Emote;
+
 struct Player;
 struct Input;
 typedef void (*PlayerFunc)(struct Player*);
 
 typedef struct {
-  armor16_t id;               // 0x00 (Player: 0x264), ArmorData.id
+  u16 id;                     // 0x00 (Player: 0x264), ArmorData.id, 未装備は 0xFFFF (gStat->armors は s16 で負を空き扱いするが, こちらは符号なしで読まれる)
   u16 defence;                // 0x02 (Player: 0x266), ArmorData.defence
   u16 weight;                 // 0x04 (Player: 0x268), ArmorData.weight
   u16 unk_26a;                // 0x06 (Player: 0x26A), padding?
@@ -227,7 +229,7 @@ typedef struct Player {
   u16 maxEne;                       // 0x36A
   u8 unk_36c[10];                   // 0x36C
   u16 unk_376;                      // 0x376
-  PlayerFlag378 flag378;            // 0x378, see PlayerFlag378
+  EquipBuffs equipBuffs;            // 0x378, see EquipBuffs
   u8 action;                        // 0x37C, いま実行している行動, kind ごとの PlayerFunc テーブル (0x085abcac など) の添字
   u8 state;                         // 0x37D, action の中の段階, 行動関数はこれで switch する
   u16 stateTimer;                   // 0x37E, Player_SetAction が 0 に戻してから経ったフレーム数, 行動関数が自分で数える
@@ -244,7 +246,7 @@ typedef struct Player {
   u16 unk_390;                      // 0x390
   u16 elevatorID;                   // 0x392, 搭乗中のエレベータのID
   u8 unk_394;                       // 0x394, FUN_0807a9b8 が 1 を書く
-  u8 unk_395;                       // 0x395, FUN_0807d118 が 0 を入れる
+  u8 unk_395;                       // 0x395, Player_Unlock が 0 を入れる
   u8 unk_396;                       // 0x396, FUN_08065dac が 1 を書く
   u8 unk_397;                       // 0x397, 0 以外だと FUN_08065dac が何もしない
   Vec3* ptr_398;                    // 0x398, FUN_0807a9b8 の第2引数, FUN_08065dac は pos_39c を指させる
@@ -256,9 +258,9 @@ typedef struct Player {
   u16 unk_3b8;                      // 0x3B8, FUN_0807a528 の第3引数
   u16 unk_3ba;                      // 0x3BA, FUN_0807b5a8 が 1 を書く
   u8 unk_3bc;                       // 0x3BC, FUN_08066d2c が見る
-  u8 unk_3bd;                       // 0x3BD, FUN_080674dc / FUN_0807b0c0 が見る
+  Facing8 actionDir;                // 0x3BD, 行動4/5 の基準方向, FUN_0807a44c が設定して facing をその反対向きにし, FUN_0807b0c0 は行動4/5 のときだけ facing の代わりに (actionDir + 4) & 7 を返す
   u16 unk_3be;                      // 0x3BE, Player_UpdateDjango が毎フレーム +1 し, 5 になった回だけ処理をする
-  Vec3 pos_3c0;                     // 0x3C0, FUN_08066df8 が mover.pos とカメラの注視点から作って Camera_LookAt に渡す
+  Vec3 pos_3c0;                     // 0x3C0, Player_UpdateCameraLookAt が mover.pos とカメラの注視点から作って Camera_LookAt に渡す
   Vec3 lookAroundOffset;            // 0x3C8, 見回し開始時のカメラ注視点からプレイヤーへのオフセット, val は見回しモード中か(0 or 1)
   u8 unk_3d0;                       // 0x3D0
   u8 unk_3d1;                       // 0x3D1
@@ -300,9 +302,9 @@ typedef struct Player {
   u8 unk_430[0x43A - 0x430];        // 0x430
   u16 unk_43a;                      // 0x43A, FUN_0807b580 が 1 を書く
   u16 badCondTimer[3];              // 0x43C, 時間経過で治る状態異常の残り時間 [0: 腹痛, 1: 毒, 2: 混乱]
-  u16 unk_442;                      // 0x442, FUN_0807b2dc が unk_446 が 0 でないときに返す値
+  u16 unk_442;                      // 0x442, FUN_0807b2dc が goodCondTimer が 0 でないときに返す値
   u16 unk_444;                      // 0x444
-  u16 unk_446;                      // 0x446, 0 でなければ unk_442 が有効
+  u16 goodCondTimer;                // 0x446, 0 でなければ unk_442 が有効
   u8 unk_448[0x456 - 0x448];        // 0x448
   s8 controlUp;                     // 0x456, 通常は gStat->controlUp が入るが、混乱(移動方向がおかしくなる状態異常)のときに書き換えられる
   u8 unk_457[0x464 - 0x457];        // 0x457
@@ -320,8 +322,8 @@ typedef struct Player {
   u8 slashCount;                    // 0x46F, 行動3 で斬る回数 (2 か 3 を乱数で決める)
   u8 pathEndAction;                 // 0x470, 経路の終点に着いたときに移る action
   u8 pathEndFacing;                 // 0x471, 経路の終点に着いたときの facing
-  s16 unk_472;                      // 0x472, FUN_080da9c4 の第6引数
-  u16 unk_474;                      // 0x474, 行動 0x12 の残りフレーム数, FUN_080da9c4 に書き込み先として渡される
+  s16 unk_472;                      // 0x472, Emote_Show の第6引数
+  u16 unk_474;                      // 0x474, 行動 0x12 の残りフレーム数, Emote_Show に書き込み先として渡される
   u8 unk_476;                       // 0x476, 非0なら FUN_08084540 が無敵中の点滅をしない
   u8 unk_477;                       // 0x477
   WorldPos waypoints[4];            // 0x478, 巡回地点, val に着いたときの向きが入る
@@ -381,10 +383,10 @@ typedef struct Player {
   u8 mosaicFrom[4];                 // 0x97C, MosaicFader_Start の from, 初期値は全部 4
   u8 unk_980[4];                    // 0x980, 同じく to, 初期値は全部 0
   u16 mosaicInterval[4];            // 0x984, 同じく interval, 初期値は全部 4
-  s32 unk_98c;                      // 0x98C, FUN_080da9c4 の戻り値を入れて次回の第1引数に渡す
-  u8 unk_990;                       // 0x990, 同じ呼び出しの第3引数
+  struct Emote* emote;              // 0x98C
+  u8 emoteKind;                     // 0x990, see EmoteKind
   u8 unk_991;                       // 0x991
-  u16 unk_992;                      // 0x992, 0 でなければ毎フレーム 1 減らし, 0 になった回に FUN_080da9c4 を呼ぶ
+  u16 unk_992;                      // 0x992, 0 でなければ毎フレーム 1 減らし, 0 になった回に Emote_Show を呼ぶ
   MsgPacket msg_994;                // 0x994, FUN_0807e278 が組み立てて送る, args は可変長なので後ろの unk_9a0 まで伸びる
   u8 unk_9a0[0x9BC - 0x9A0];        // 0x9A0
   u16 unk_9bc;                      // 0x9BC
@@ -395,7 +397,7 @@ typedef struct Player {
   AuxSpriteGfx gfx_9f4;             // 0x9F4, SPRITE_2110, sprite_9c8 が参照する
   HitboxData unk_a10;               // 0xA10, 根拠: 0x08064644
   u8 unk_a60[0xA70 - 0xA60];        // 0xA60
-  Weapon* weapon_a70;               // 0xA70
+  Weapon* weapon;                   // 0xA70, 装備中の武器の実体, Player_ApplyWeapon が差し替え, 外すときは NULL
   weapon8_t weaponID;               // 0xA74, 装備中(画面右下に表示される攻撃ボタンで使用する)武器のID
   u8 weaponKind;                    // 0xA75, 装備中の武器種 (see WeaponKind)
   u8 unk_a76[2];                    // 0xA76, padding?
@@ -434,7 +436,7 @@ Player* CreatePlayer(u32 n, void* _);
 s32 FUN_0806f900(Player* player);
 s32 FUN_080d1b04(Player* player);
 void Player_ReduceENE_0807aa60(Player* player, s32 amount);
-void FUN_0807d118(Player* p);
+void Player_Unlock(Player* p);
 void FUN_0807bb3c(Player* p, Vec3* pos, s32 param_3, s32 param_4, u32 scriptID);
 void FUN_0807bc64(Player* p, u32 scriptID);
 void Player_SetAction(Player* p, u32 action, u32 state);
@@ -445,8 +447,8 @@ void FUN_0807a91c(Player* p, Vec3* pos);
 static inline void Player_SetFlag20(Player* p, PlayerFlag20 bit) { p->flag20 |= bit; }
 static inline bool32 Player_TestFlag20(Player* p, PlayerFlag20 bit) { return p->flag20 & bit; }
 
-static inline void Player_SetFlag378(Player* p, PlayerFlag378 bits) { p->flag378 |= bits; }
-static inline void Player_ClearFlag378(Player* p, PlayerFlag378 bits) { p->flag378 &= ~bits; }
-static inline bool32 Player_TestFlag378(Player* p, PlayerFlag378 bits) { return p->flag378 & bits; }
+static inline void Player_SetEquipBuff(Player* p, EquipBuffs bits) { p->equipBuffs |= bits; }
+static inline void Player_ClearEquipBuff(Player* p, EquipBuffs bits) { p->equipBuffs &= ~bits; }
+static inline bool32 Player_TestEquipBuff(Player* p, EquipBuffs bits) { return p->equipBuffs & bits; }
 
 #endif  // GUARD_ZOKTAI_PLAYER_H

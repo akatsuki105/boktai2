@@ -49,6 +49,7 @@ typedef u32 HitboxAttributes;      // 低位7bitが自分の属性マスク, 攻
 #define HBATTR_13 (1 << 13)        // 0x2000, 守備側の耐性を無視する
 #define HBATTR_14 (1 << 14)        // 0x4000, FUN_08009b30 が立っていたら何もしない
 #define HBATTR_18 (1 << 18)        // 0x40000, ???
+#define HBATTR_21 (1 << 21)        // 0x200000, ???
 
 // TODO: 解析が終わって問題なさそうなら HitboxData じゃなくて Hitbox にリネームする
 // 当たり判定も食らい判定も同じ構造体で扱う, HBFLAG_HITBOX で攻撃判定かどうかを区別する
@@ -96,7 +97,7 @@ static inline void Hitbox_SetFlags(HitboxData* hitbox, HitboxFlags flags) { hitb
 static inline void Hitbox_ClearFlags(HitboxData* hitbox, HitboxFlags flags) { hitbox->flags &= ~flags; }
 static inline HitboxFlags Hitbox_TestFlags(HitboxData* hitbox, HitboxFlags flags) { return hitbox->flags & flags; }
 static inline bool32 Hitbox_HasWeakness(HitboxData* hitbox, u32 mask) { return hitbox->weakness & mask; }
-static inline u32 Hitbox_TestAttribute(HitboxData* hitbox, HitboxAttributes mask) { return (hitbox->attributes & mask); }
+static inline u32 Hitbox_TestAttr(HitboxData* hitbox, HitboxAttributes mask) { return (hitbox->attributes & mask); }
 
 void Hitbox_Register(HitboxData* p);
 void Hitbox_Init(HitboxData* p, u16 id, HitboxFlags32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset);

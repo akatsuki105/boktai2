@@ -190,14 +190,16 @@ void FUN_0822f0d8(void) {
   gHBlankEffectTable = NULL;
 }
 
-void FUN_0822f178(s32 idx, u32 evb, u32 eva) {
-  static const u16 u16_ARRAY_085b0150[4] = {
+// bg を第1ブレンド対象にしてαブレンドの係数を設定する, 第2対象は BG2/BG3/OBJ/BD 固定
+// 引数の順は原典どおり evb が先, BLDALPHA には eva, evb の順で入る
+void Video_SetBGBlend(s32 bg, u32 evb, u32 eva) {
+  static const u16 sBgBlendCnt[4] = {
       (BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ | BLDCNT_TGT2_BD) | BLDCNT_TGT1_BG0,
       (BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ | BLDCNT_TGT2_BD) | BLDCNT_TGT1_BG1,
       (BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ | BLDCNT_TGT2_BD) | BLDCNT_TGT1_BG2,
       (BLDCNT_TGT2_BG2 | BLDCNT_TGT2_BG3 | BLDCNT_TGT2_OBJ | BLDCNT_TGT2_BD) | BLDCNT_TGT1_BG3,
   };  // 0x085b0150
-  REG_BLDCNT = u16_ARRAY_085b0150[idx] | BLDCNT_EFFECT_BLEND;
+  REG_BLDCNT = sBgBlendCnt[bg] | BLDCNT_EFFECT_BLEND;
   REG_BLDALPHA = BLDALPHA_BLEND(eva, evb);
   REG_BLDY = 0;
 }

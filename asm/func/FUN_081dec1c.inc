@@ -43,7 +43,7 @@ _081DEC7C:
 	ldr r0, [r5]
 	cmp r0, #0
 	beq _081DEC86
-	bl FUN_0807d118
+	bl Player_Unlock
 _081DEC86:
 	adds r5, #4
 	adds r6, #1

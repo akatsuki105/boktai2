@@ -117,7 +117,7 @@ _0807C700:
 	adds r0, r4, r5
 	str r7, [r0]
 	adds r0, r4, #0
-	bl FUN_0807b7a4
+	bl Player_EnterLockedState
 	adds r0, r4, #0
 	movs r1, #3
 	movs r2, #2

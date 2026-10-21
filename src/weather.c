@@ -210,7 +210,7 @@ NON_MATCH bool32 FUN_08018284(WeatherManager* p) {
 #ifdef NONMATCHING_C
   if (p->unk_18 != 0) {
     p->unk_18 = 0;
-    gStat->unk_934 |= SF934_UNK_11;
+    gStat->unk_934 |= SF934_RAIN;
     if (p->unk_54 != 0) {
       VM_ExecByID(p->unk_54, NULL);
     }

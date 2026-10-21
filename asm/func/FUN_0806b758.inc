@@ -50,7 +50,7 @@ _0806B794:
 	movs r3, #0x50
 	str r3, [sp, #0xc]
 	movs r3, #1
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 	ldr r0, _0806B864 @ =0x000001B1
 	bl PlaySound_082406e0

@@ -19,11 +19,11 @@ typedef struct {
   MainSprite sprite;          // 0x0A4, _Update が MainSprite_AdvanceAnim に渡す
   ParticleShadow shadow;      // 0x104, _Destroy が ParticleShadow_Remove に渡す
   u8 unk_144[0x174 - 0x144];  // 0x144, まだ未解析
-  s16 unk_174;                // 0x174, 0/1 で FUN_080da9c4 の呼び分けをする
-  s16 unk_176;                // 0x176, FUN_080da9c4 に渡す
+  s16 unk_174;                // 0x174, 0/1 で Emote_Show の呼び分けをする
+  s16 unk_176;                // 0x176, Emote_Show に渡す
   s16 counter;                // 0x178, 毎フレーム減らし, 0 になると period に戻す
   s16 period;                 // 0x17A, counter の初期値
-  u32 handle;                 // 0x17C, FUN_080da9c4 の戻り値
+  u32 handle;                 // 0x17C, Emote_Show の戻り値
 } EntityAB4EElem;
 static_assert(sizeof(EntityAB4EElem) == 384);
 

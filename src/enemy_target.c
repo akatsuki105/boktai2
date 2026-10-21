@@ -242,7 +242,7 @@ bool32 FUN_080f8e84(Mover* owner, s32 kind, u32 param_3) {
   }
 
   if (kind == 0) {
-    u16 bound = player->unk_446;
+    u16 bound = player->goodCondTimer;
     bool32 ok = FALSE;
 
     if (bound != 0) {

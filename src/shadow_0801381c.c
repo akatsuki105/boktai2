@@ -101,11 +101,11 @@ NON_MATCH void ParticleShadow_FollowGround(ParticleShadow* shadow) {
     kind = h >> 4;
     h = (h & 0xF) << 8;
     switch (kind) {
-      case 1: {
+      case STAIRS_VERTICAL: {
         h -= (u8)pos->z;
         break;
       }
-      case 2: {
+      case STAIRS_HORIZONTAL: {
         h -= (u8)pos->x;
         break;
       }

@@ -24,7 +24,7 @@
 	movs r1, #0
 	ldrsh r0, [r0, r1]
 	add r1, sp, #4
-	bl FUN_08242b14
+	bl GetWeaponData
 	ldr r2, _08093F1C @ =0x00004018
 	adds r4, r5, r2
 	ldr r0, [r4]

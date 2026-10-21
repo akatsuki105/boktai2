@@ -35,7 +35,7 @@ _0801C538:
 	str r1, [sp, #0x24]
 	adds r0, r6, #0
 	mov r1, sp
-	bl FUN_08242b14
+	bl GetWeaponData
 	mov r0, r8
 	adds r1, r7, #0
 	mov r2, sp

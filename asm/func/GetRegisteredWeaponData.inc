@@ -26,7 +26,7 @@ _08242B5C:
 	movs r4, #0
 	ldrsh r0, [r1, r4]
 	adds r1, r2, #0
-	bl FUN_08242b14
+	bl GetWeaponData
 _08242B66:
 	pop {r4}
 	pop {r0}

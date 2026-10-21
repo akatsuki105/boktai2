@@ -61,7 +61,7 @@ _08098C78:
 	movs r2, #0
 	ldrsh r0, [r0, r2]
 	add r1, sp, #8
-	bl FUN_08242b28
+	bl GetRegisteredWeaponData
 	add r0, sp, #8
 	ldrb r0, [r0, #1]
 	adds r2, r0, #0

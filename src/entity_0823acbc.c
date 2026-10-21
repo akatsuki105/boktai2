@@ -48,7 +48,6 @@ u32 FUN_082321e0(u8* pc);
 void ResetParticlePlttSlots(void);
 void Save_BackupStatAndWorld(void);
 void FUN_0823cd04(void);
-bool32 Map_ResetCollisionMap(void);
 void* HitboxManager_Create(void);
 bool8 Save_ReadSystemData(void);
 void entity_08230ca4(s32 r0);
@@ -64,11 +63,11 @@ static inline void ShowBG(u32 bits) { gStagedDISPCNT |= bits; }
 
 void FUN_0823a870(void) { gSystemSaveData = &gSystemSaveDataBuffer; }
 
-s32 FUN_0823a880(u8* pc, ScriptArgs* args) { return VM_ExecByPointer(pc, args); }
+static s32 UNUSED FUN_0823a880(u8* pc, ScriptArgs* args) { return VM_ExecByPointer(pc, args); }
 
 s32 FUN_0823a88c(u8* pc, ScriptArgs* args) { return VM_ExecByPointer(pc, args); }
 
-static s32 FUN_0823a898(u32 scriptID, ScriptArgs* args) { return VM_ExecByID(scriptID, args); }
+static s32 UNUSED FUN_0823a898(u32 scriptID, ScriptArgs* args) { return VM_ExecByID(scriptID, args); }
 
 s32 VM_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args) { return VM_ExecByID(scriptID, args); }
 

@@ -352,7 +352,7 @@ _08000814:
 	lsrs r1, r1, #8
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x18
-	bl FUN_0822f178
+	bl Video_SetBGBlend
 	adds r1, r6, #0
 	adds r1, #0x7a
 	ldrh r0, [r1]

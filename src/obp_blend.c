@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "sprite_common.h"
 #include "sprite_pltt.h"
 #include "time.h"
 #include "video.h"
@@ -7,7 +8,7 @@
 
 // 1枚ぶんの補間スロット, 同じ絵の時刻帯バリエーション3枚を srcs に持ち、2枚の間を混ぜた結果を pltt に書く
 typedef struct {
-  u16 id;           // 0x00, スクリプトの '.p', FUN_0823cdf8 に渡して plttID を引く
+  SpriteID16 id;    // 0x00, スクリプトの '.p', FUN_0823cdf8 に渡して plttID を引く
   u16 plttID;       // 0x02, '.o[i]' + FUN_0823cdf8(id), AllocBlendPlttSlot に渡す OBJ パレットのID
   rgb555 pltt[16];  // 0x04, 混ぜた結果, これを AllocBlendPlttSlot で OBJ パレットスロットに載せる
   rgb555* srcs[3];  // 0x24, gObjPlttData の plttID * 32 から 32 バイトおきの3枚
@@ -34,7 +35,7 @@ extern s32 gObjPlttSlotCursor;
 extern s32 gObjPlttSlotReserved;
 extern s32 gObjPlttSlotCount;
 s32 FUN_0823ce10(u16* a, u16* b);
-u32 FUN_0823cdf8(u16 id);
+u32 FUN_0823cdf8(SpriteID16 id);
 
 // 1スロットぶん, srcs[srcFrom] と srcs[srcTo] を blend の割合で混ぜて pltt に書く
 // 残差3命令: 原典は 0x1F を2本のレジスタに分けて持ち srcA も退避するが、こちらは 0x1F が1本に畳まれる (Tier A-B 試済, 未: Tier C)

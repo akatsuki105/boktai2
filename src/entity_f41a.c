@@ -167,19 +167,16 @@ void EntityF41A_InitData(EntityF41A* p) {
   }
 
   ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
+
+  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
   stairs = tile->heightStairs >> 4;
   ground = (tile->heightStairs & 0xF) << 8;
   switch (stairs) {
-    case 1: {
+    case STAIRS_VERTICAL: {
       ground -= (u8)q->z;
       break;
     }
-    case 2: {
+    case STAIRS_HORIZONTAL: {
       ground -= (u8)q->x;
       break;
     }

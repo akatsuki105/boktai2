@@ -245,7 +245,7 @@ _080D944E:
 	orrs r0, r3
 	str r0, [r7]
 	adds r0, r6, #0
-	bl FUN_080d8644
+	bl Emote_ClearPtclState
 	movs r4, #0
 	strh r5, [r6, #0x24]
 	adds r0, r7, #0

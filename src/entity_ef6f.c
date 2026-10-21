@@ -443,7 +443,7 @@ void FUN_0801eaac(EntityEF6F* p, s32 param_2) {
   p->unk_60++;
 }
 
-// 残差4命令: FUN_0822f178 の2箇所の呼び出しで、原典は読んだ値を r1 に置いて第2/第3引数を別レジスタ経由で渡す (こちらは値が r2 に乗り引数を直接作る)
+// 残差4命令: Video_SetBGBlend の2箇所の呼び出しで、原典は読んだ値を r1 に置いて第2/第3引数を別レジスタ経由で渡す (こちらは値が r2 に乗り引数を直接作る)
 // Tier A-B は試済 (ローカル変数の有無/スコープ, インライン包み), 未: Tier C
 NON_MATCH void FUN_0801eb64(EntityEF6F* p) {
 #ifdef NONMATCHING_C
@@ -454,7 +454,7 @@ NON_MATCH void FUN_0801eb64(EntityEF6F* p) {
 
   if (p->unk_1c != 0 && p->unk_24 <= 15) {
     u32 n = p->unk_24 >> 1;
-    FUN_0822f178(0, 8 - n, n + 8);
+    Video_SetBGBlend(0, 8 - n, n + 8);
   }
 
   if (p->unk_24 > 31 && p->unk_22 == 0 && (gInput[0].pressed & A_BUTTON)) {
@@ -472,7 +472,7 @@ NON_MATCH void FUN_0801eb64(EntityEF6F* p) {
       p->unk_21--;
       if (p->unk_1d != 0) {
         u32 n = p->unk_21;
-        FUN_0822f178(0, 16 - n, (n >> 1) + 8);
+        Video_SetBGBlend(0, 16 - n, (n >> 1) + 8);
       }
     }
   } else {

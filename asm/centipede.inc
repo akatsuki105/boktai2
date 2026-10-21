@@ -16093,7 +16093,7 @@ _08139E3A:
 _08139E50: .4byte 0x030046A0
 _08139E54:
 	ldr r0, [sp, #0x58]
-	bl GetMapAreaAt
+	bl GetZoneAt
 	ldr r5, [sp, #0x98]
 	strh r0, [r5]
 _08139E5E:

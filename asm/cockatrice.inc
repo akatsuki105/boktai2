@@ -1696,7 +1696,7 @@ _081538D0:
 	ldr r1, _081538F4 @ =0x00000454
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_080da8a0
+	bl Emote_IsInactive
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081538E4
@@ -30016,7 +30016,7 @@ _0816160E:
 _08161624: .4byte 0x030046A0
 _08161628:
 	ldr r0, [sp, #0x30]
-	bl GetMapAreaAt
+	bl GetZoneAt
 	ldr r6, [sp, #0x68]
 	strh r0, [r6]
 _08161632:

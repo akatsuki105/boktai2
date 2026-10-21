@@ -51,7 +51,7 @@ _080BCF4A:
 _080BCF58:
 	adds r0, r6, #0
 	ldr r1, [sp, #0x3c]
-	bl FUN_08242b28
+	bl GetRegisteredWeaponData
 	ldr r0, [sp, #0x3c]
 	bl FUN_0807a6cc
 	adds r4, r0, #0

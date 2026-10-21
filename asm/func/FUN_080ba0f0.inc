@@ -85,7 +85,7 @@ _080BA172:
 	movs r1, #0
 	ldrsh r0, [r0, r1]
 	mov r1, sp
-	bl FUN_08242b28
+	bl GetRegisteredWeaponData
 	mov r0, sp
 	bl FUN_0807a6cc
 	adds r5, r0, #0

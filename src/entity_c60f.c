@@ -11,7 +11,7 @@
 // EntityC60FItem.flags
 typedef u32 EntityC60FItemFlags;
 #define C60FITEM_TILE_OVERRIDE (1 << 5)  // 衝突タイルの上書きを持っている, 落とすときに Map_RemoveTileOverride で取り消す
-#define C60FITEM_FIXED_AREA (1 << 7)     // state を回さず unk_10a を gStat->unk_248 と比べる
+#define C60FITEM_FIXED_AREA (1 << 7)     // state を回さず zoneID を gStat->zoneID と比べる
 
 typedef struct {
   AuxSprite sprite;              // 0x000
@@ -19,7 +19,7 @@ typedef struct {
   Mover unk_48;                  // 0x048
   u8 unk_8c[16];                 // 0x08C
   Vec3 pos;                      // 0x09C, Hitbox_SetPos に渡す
-  HitboxData hitbox;             // 0x0A4, FUN_081d6eb8 が組み立てる
+  HitboxData hurtbox;            // 0x0A4, FUN_081d6eb8 が組み立てる
   u8 unk_f4[8];                  // 0x0F4
   u16 slotIndex;                 // 0x0FC, 確保時に自分のスロット番号が入る
   s16 state;                     // 0x0FE, PTR_FUN_081D6F60_085AE118[state]
@@ -27,7 +27,7 @@ typedef struct {
   u8 unk_104[4];                 // 0x104
   u8 unk_108;                    // 0x108, 0 でないときだけ _Destroy が FUN_08002a58 / Mover_Unlink を呼ぶ
   u8 unk_109;                    // 0x109
-  u16 unk_10a;                   // 0x10A, unk_100 の bit7 が立っているとき gStat->unk_248 と比較される
+  ZoneID16 zoneID;               // 0x10A, unk_100 の bit7 が立っているとき gStat->zoneID と比較される
   MapTileOverride tileOverride;  // 0x10C, unk_100 の bit5 が立っているとき _Destroy が Map_RemoveTileOverride に渡す
 } EntityC60FItem;
 static_assert(sizeof(EntityC60FItem) == 284);
@@ -51,7 +51,7 @@ NAKED void FUN_081d6d28(HitboxData* a, HitboxData* b, EntityC60FItem* p) { INCFU
 // 種別に応じた大きさで当たり判定を作る
 NON_MATCH void FUN_081d6eb8(EntityC60FItem* p) {
 #ifdef NONMATCHING_C
-  HitboxData* hitbox = &p->hitbox;
+  HitboxData* hurtbox = &p->hurtbox;
   Vec3 halfSize;
   Vec3 offset;
   s32 radius, height;
@@ -63,10 +63,10 @@ NON_MATCH void FUN_081d6eb8(EntityC60FItem* p) {
   }
   halfSize.x = radius, halfSize.y = height, halfSize.z = radius;
   offset.x = 0, offset.y = height, offset.z = 0;
-  Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
-  Hitbox_SetPos(hitbox, &p->pos, 0);
-  Hitbox_SetHandler(hitbox, FUN_081d6d28, p);
-  Hitbox_Register(hitbox);
+  Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_SetPos(hurtbox, &p->pos, 0);
+  Hitbox_SetHandler(hurtbox, FUN_081d6d28, p);
+  Hitbox_Register(hurtbox);
 #else
   INCFUNC("asm/func/FUN_081d6eb8.inc");
 #endif
@@ -75,7 +75,7 @@ NON_MATCH void FUN_081d6eb8(EntityC60FItem* p) {
 // state 0 のハンドラ, 何もしない
 void FUN_081d6f60(EntityC60FItem* p) {}
 
-NAKED s32 FUN_081d6f64(unknown* p) { INCFUNC("asm/func/FUN_081d6f64.inc"); }
+NAKED EntityC60FItem* EntityC60F_AllocSlot(EntityC60F* p) { INCFUNC("asm/func/EntityC60F_AllocSlot.inc"); }
 
 NAKED void FUN_081d6fd4(unknown* p) { INCFUNC("asm/func/FUN_081d6fd4.inc"); }
 
@@ -101,7 +101,8 @@ NAKED void FUN_081d785c(EntityC60FItem* p) { INCFUNC("asm/func/FUN_081d785c.inc"
 
 NAKED void FUN_081d7a60(EntityC60FItem* p) { INCFUNC("asm/func/FUN_081d7a60.inc"); }
 
-NAKED void FUN_081d7ca8(unknown* p) { INCFUNC("asm/func/FUN_081d7ca8.inc"); }
+// 0x377D
+NAKED void FUN_081d7ca8(void) { INCFUNC("asm/func/FUN_081d7ca8.inc"); }
 
 void (*const PTR_ARRAY_085ae118[5])(EntityC60FItem*) = {
     FUN_081d6f60,

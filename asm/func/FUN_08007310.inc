@@ -359,7 +359,7 @@ _080075CA:
 	beq _080075EE
 	ldr r0, [r5, #0x20]
 	adds r0, #0x1c
-	bl GetMapAreaAt
+	bl GetZoneAt
 	strh r0, [r5, #0x16]
 	b _080075F4
 _080075EE:

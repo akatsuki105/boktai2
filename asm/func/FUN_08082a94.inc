@@ -36,7 +36,7 @@
 	str r2, [sp, #0xc]
 	movs r2, #0
 	movs r3, #3
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 	adds r0, r5, #0
 	movs r1, #0x13
@@ -137,7 +137,7 @@ _08082B86:
 	adds r3, #0x50
 	str r3, [sp, #0xc]
 	movs r3, #0x7f
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 	adds r0, r5, #0
 	movs r1, #2

@@ -24,7 +24,7 @@ _080D87B2:
 	cmp r0, #0
 	beq _080D884A
 	adds r0, r5, #0
-	bl FUN_080d8644
+	bl Emote_ClearPtclState
 	movs r4, #0
 	movs r0, #0
 	strh r0, [r5, #0x24]

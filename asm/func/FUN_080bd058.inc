@@ -10,7 +10,7 @@
 	adds r0, r6, r2
 	ldrb r0, [r0]
 	mov r1, sp
-	bl FUN_08242b14
+	bl GetWeaponData
 	b _080BD0E8
 	.align 2, 0
 _080BD078: .4byte 0x00001785

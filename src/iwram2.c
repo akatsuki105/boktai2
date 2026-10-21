@@ -9,6 +9,7 @@
 #include "solar_sensor.h"
 #include "sound.h"
 #include "sprite.h"
+#include "struct.h"
 #include "time.h"
 #include "video.h"
 #include "vm.h"
@@ -24,12 +25,12 @@ COMMON_DATA u16 ALIGNED(4) gSunGaugeOverride = 0;       // 0x03002B80, ApplyLxMo
 COMMON_DATA u16 ALIGNED(4) u16_03002b84 = 0;            // 0x03002B84, Player_InitEffects が 1 を入れる
 COMMON_DATA u16 ALIGNED(4) u16_03002b88 = 0;            // 0x03002B88
 COMMON_DATA u16 ALIGNED(4) u16_03002b8c = 0;            // 0x03002B8C
-COMMON_DATA u16 ALIGNED(4) u16_03002b90 = 0;            // 0x03002B90, Player_InitEffects が 0 に戻す
+COMMON_DATA u16 ALIGNED(4) gWindAngle = 0;              // 0x03002B90, Player_InitEffects が 0 に戻す
 COMMON_DATA u16 ALIGNED(8) gPlayerCount = 0;            // 0x03002B98, Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
 COMMON_DATA u8 u8_03002b9a[6] = {};                     // todo
 COMMON_DATA u16 u16_ARRAY_03002ba0[3] = {};             // 0x03002BA0, Player がいないときに FUN_0807b428 が書き込む退避先
 COMMON_DATA u8 u8_03002ba6[2] = {};                     // todo
-COMMON_DATA void* ptr_03002ba8 = NULL;                  // 0x03002BA8, Player_Destroy が NULL に戻す
+COMMON_DATA Entity5941Node* gChangeWolfTarget = NULL;   // 0x03002BA8, チェンジウルフで噛みつく相手のノード, Player_Destroy が NULL に戻す
 COMMON_DATA u16 u16_03002bac = 0;                       // 0x03002BAC, Player_InitEffects が 0 に戻す
 COMMON_DATA u8 u8_03002bae[2] = {};                     // todo
 COMMON_DATA u16 u16_03002bb0 = 0;                       // 0x03002BB0, Player_GetEquippedMagic がサバタのとき 0 に戻す

@@ -264,6 +264,6 @@ s32 VM_ResetGameKeepingVars(void) {
 }
 
 void FUN_08241550(void) {
-  gStat->unk_248 = VM_GetValue();
+  gStat->zoneID = VM_GetValue();
   u32_03004860 = 1;
 }

@@ -32,7 +32,7 @@ _080DB2B0:
 	str r0, [r4]
 	str r1, [r4, #4]
 	adds r0, r4, #0
-	bl GetMapAreaAt
+	bl GetZoneAt
 	movs r1, #0x46
 	adds r1, r1, r7
 	mov sl, r1

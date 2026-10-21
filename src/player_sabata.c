@@ -1,4 +1,5 @@
 #include "collision_map.h"
+#include "emote.h"
 #include "enemy_target.h"
 #include "entity.h"
 #include "file.h"
@@ -24,7 +25,6 @@ WorldPos* FUN_080230c4(void);
 void FUN_08084734(WorldPos* out);
 void FUN_08084754(void);
 void FUN_08084798(s32 val);
-s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u16* param_5, s32 param_6, s32 param_7, s32 param_8);
 void* Entity080cbabc_Create(WorldPos* pos, s32 poseIdx, s32 angle, s32 speed, s32 plttID, s32 param_6, s32 param_7, s32 param_8, u32 param_9);
 s32 FUN_080ddcc8(WorldPos* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);
 
@@ -82,11 +82,11 @@ static inline s32 GetTileHeightAt(WorldPos* pos) {
   stairs = tile->heightStairs >> 4;
   height = (tile->heightStairs & 0xF) << 8;
   switch (stairs) {
-    case 1: {
+    case STAIRS_VERTICAL: {
       height -= pos->z & 0xFF;
       break;
     }
-    case 2: {
+    case STAIRS_HORIZONTAL: {
       height -= pos->x & 0xFF;
       break;
     }
@@ -140,22 +140,10 @@ NON_MATCH bool32 FUN_08080cac(Player* p, u32 animIdx, s32 animSpeed) {
 // Tier A-C 試済: stairs のローカル化 / ローカルの宣言順の入れ替え (どちらも割当は動かない)
 NON_MATCH void FUN_08080d2c(Player* p, s32 val) {
 #ifdef NONMATCHING_C
-  s32 angle = ((p->facing + 5) & 7) * 32;
   s32 v;
-
-  v = val * gSineTable[(angle + 0x40) & 0xFF];
-  if (v >= 0) {
-    p->mover.delta.x = v >> 12;
-  } else {
-    p->mover.delta.x = -((-v) >> 12);
-  }
-
-  v = val * gSineTable[angle];
-  if (v >= 0) {
-    p->mover.delta.z = v >> 12;
-  } else {
-    p->mover.delta.z = -((-v) >> 12);
-  }
+  s32 angle = ((p->facing + 5) & 7) * 32;
+  p->mover.delta.x = COS(angle, val);
+  p->mover.delta.z = SIN(angle, val);
 
   if (p->tile.stairs[1] == 1) {
     if (p->mover.delta.z < 0) {
@@ -163,24 +151,14 @@ NON_MATCH void FUN_08080d2c(Player* p, s32 val) {
     } else {
       v = p->mover.delta.z * 52;
     }
-
-    if (v >= 0) {
-      p->mover.delta.z = v >> 6;
-    } else {
-      p->mover.delta.z = -((-v) >> 6);
-    }
+    p->mover.delta.z = FixToInt(6, v);
   } else if (p->tile.stairs[1] == 2) {
     if (p->mover.delta.x < 0) {
       v = p->mover.delta.x * 40;
     } else {
       v = p->mover.delta.x * 52;
     }
-
-    if (v >= 0) {
-      p->mover.delta.x = v >> 6;
-    } else {
-      p->mover.delta.x = -((-v) >> 6);
-    }
+    p->mover.delta.x = FixToInt(6, v);
   }
 #else
   INCFUNC("asm/func/FUN_08080d2c.inc");
@@ -199,7 +177,7 @@ void FUN_08080e34(Player* p) {
   if (KAAMOS(p->isSabata) == 0 && FUN_0809e138(p)) {
     Player_SetFlag20(p, PFLAG20_SUNBATHING);
   }
-  if (Player_TestFlag378(p, FLAG378_SKULLSUIT)) {
+  if (Player_TestEquipBuff(p, EBUFF_SKULLSUIT)) {
     Player_SetFlag20(p, PFLAG20_SNEAKING);
   }
 
@@ -256,7 +234,7 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
     b->unk_40 = 200;
   }
 
-  if (Hitbox_TestAttribute(a, HBATTR_18)) {
+  if (Hitbox_TestAttr(a, HBATTR_18)) {
     p->unk_3d2 = 1;
     p->facing = FUN_08080f20(a, b);
     return;
@@ -299,7 +277,7 @@ bool32 PlayerSabata_IsNight(Player* p) {
   if (KAAMOS(p->isSabata) > 0) {
     return TRUE;
   }
-  if (Player_TestFlag378(p, FLAG378_ALLNIGHT)) {
+  if (Player_TestEquipBuff(p, EBUFF_ALLNIGHT)) {
     return TRUE;
   }
 
@@ -393,11 +371,11 @@ NON_MATCH s32 FUN_08081240(Player* p) {
   bool32 outdoor = (gStat->unk_934 & SF934_OUTDOOR) != 0;
 
   if (outdoor) {
-    if (p->unk_20 & PFLAG20_SUNBATHING) {
+    if (p->flag20 & PFLAG20_SUNBATHING) {
       ret = 4;
     }
   } else {
-    if (p->unk_20 & PFLAG20_SUNBATHING) {
+    if (p->flag20 & PFLAG20_SUNBATHING) {
       ret = 8;
     }
   }
@@ -920,7 +898,7 @@ NON_MATCH void FUN_08081fb4(Player* p) {
     u8 dir;
 
     p->mover.pos = p->navAgent.unk_0c;
-    dir = p->unk_471;
+    dir = p->pathEndFacing;
     p->facing = dir;
     if (dir > 4) {
       p->animIDOffset = 8 - dir;
@@ -931,7 +909,7 @@ NON_MATCH void FUN_08081fb4(Player* p) {
     }
 
     FUN_08080cac(p, 0x19E, 0x40);
-    FUN_08080e0c(p, p->unk_470, 0);
+    FUN_08080e0c(p, p->pathEndAction, 0);
   } else {
     s32 angle = ArcTan2_8(p->navAgent.unk_1c.x - p->mover.pos.x, p->navAgent.unk_1c.z - p->mover.pos.z);
 
@@ -1219,7 +1197,7 @@ void FUN_08082670(Player* p) {
   }
 }
 
-// サバタの行動 0x12, 構えて unk_474 フレーム数えてから FUN_080da9c4 を呼び直し、アニメが終わったら行動 0 に戻す
+// サバタの行動 0x12, 構えて unk_474 フレーム数えてから Emote_Show を呼び直し、アニメが終わったら行動 0 に戻す
 void FUN_08082970(Player* p) {
   if (p->action != 0x12) {
     sound_08240740(SONG_870);
@@ -1230,8 +1208,8 @@ void FUN_08082970(Player* p) {
   switch (p->state) {
     case 0: {
       if (FUN_08080cac(p, 0x1F2, 0x40)) {
-        p->unk_990 = 1;
-        p->unk_98c = FUN_080da9c4(p->unk_98c, &p->mover, 1, 0, &p->unk_474, p->unk_472, 300, 380);
+        p->emoteKind = EMOTE_1;
+        p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->unk_474, p->unk_472, 300, 380);
         FUN_08080e0c(p, 0x12, 1);
       }
       break;
@@ -1239,7 +1217,7 @@ void FUN_08082970(Player* p) {
     case 1: {
       p->unk_474--;
       if (p->unk_474 == 0) {
-        p->unk_98c = FUN_080da9c4(p->unk_98c, &p->mover, p->unk_990, 0x7F, NULL, 0, 300, 380);
+        p->emote = Emote_Show(p->emote, &p->mover, p->emoteKind, 0x7F, NULL, 0, 300, 380);
         FUN_08080e0c(p, 0x12, 2);
       }
       break;
@@ -1261,8 +1239,8 @@ NON_MATCH void FUN_08082a94(Player* p) {
   if (p->action != 0x13) {
     sound_08240740(SONG_870);
     PlaySound_082406e0(SONG_873);
-    p->unk_990 = 0;
-    p->unk_98c = FUN_080da9c4(p->unk_98c, &p->mover, 0, 3, &p->unk_474, p->unk_472, 300, 380);
+    p->emoteKind = EMOTE_0;
+    p->emote = Emote_Show(p->emote, &p->mover, EMOTE_0, 3, &p->unk_474, p->unk_472, 300, 380);
     FUN_08080e0c(p, 0x13, 0);
   }
 
@@ -1285,7 +1263,7 @@ NON_MATCH void FUN_08082a94(Player* p) {
 
   p->stateTimer++;
   if (p->stateTimer > 15) {
-    p->unk_98c = FUN_080da9c4(p->unk_98c, &p->mover, p->unk_990, 0x7F, NULL, 0, 300, 380);
+    p->emote = Emote_Show(p->emote, &p->mover, p->emoteKind, 0x7F, NULL, 0, 300, 380);
     FUN_08080e0c(p, 2, 0);
   }
 #else
@@ -1314,9 +1292,9 @@ NON_MATCH void FUN_08082bdc(Player* p) {
     p->mover.pos.x = p->navAgent.unk_0c.x;
     p->mover.pos.z = p->navAgent.unk_0c.z;
     FUN_08080cac(p, 0x1A3, 0x20);
-    p->facing = p->unk_471;
+    p->facing = p->pathEndFacing;
     PlayerSabata_SetAnimFacing(p);
-    FUN_08080e0c(p, p->unk_470, 0);
+    FUN_08080e0c(p, p->pathEndAction, 0);
   } else {
     s32 angle;
 
@@ -1508,8 +1486,8 @@ NON_MATCH void FUN_0808301c(Player* p) {
         }
 
         if (((p->unk_4a6 + 3) & 3) != idx && FUN_08235f40(&p->navAgent, &p->mover.pos, &p->waypoints[idx])) {
-          p->unk_470 = 8;
-          p->unk_471 = p->waypoints[idx].val;
+          p->pathEndAction = 8;
+          p->pathEndFacing = p->waypoints[idx].val;
           p->unk_4a6 = (idx + 1) & 3;
           FUN_08084798(0x1E);
           FUN_08080e0c(p, 2, 0);
@@ -1835,7 +1813,7 @@ NON_MATCH void FUN_08084330(Player* p) {
 #ifdef NONMATCHING_C
   switch (p->unk_1c) {
     case 1: {
-      if (p->unk_20 & PFLAG20_SUNBATHING) {
+      if (p->flag20 & PFLAG20_SUNBATHING) {
         s32 gauge = gStat->sunGauge;
 
         FUN_08081d18(p, gauge >> 1);
@@ -1878,16 +1856,16 @@ NON_MATCH void Sabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
   if (p->action == 8 && p->state != 0) {
     p->unk_476 = 4;
     if (Hitbox_HasWeakness(a, HBATTR_NAMAKURA)) {
-      p->unk_46b++;
-      if (p->unk_46b >= p->unk_46a) {
-        p->unk_46b = 0;
+      p->namakuraCount++;
+      if (p->namakuraCount >= p->namakuraLimit) {
+        p->namakuraCount = 0;
         FUN_08080e0c(p, 0x14, 0);
         return;
       }
     } else {
-      p->unk_469++;
-      if (p->unk_469 >= p->unk_468) {
-        p->unk_469 = 0;
+      p->blockCount++;
+      if (p->blockCount >= p->blockLimit) {
+        p->blockCount = 0;
         p->facing = FUN_08080f20(a, b);
         p->unk_3d2 = 1;
         b->unk_40 = 100;
@@ -1899,20 +1877,20 @@ NON_MATCH void Sabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
     return;
   }
 
-  p->unk_469 = 0;
-  if (Hitbox_TestAttribute(a, HBATTR_18) || !Player_TestFlag20(p, PFLAG20_UNK_15)) {
+  p->blockCount = 0;
+  if (Hitbox_TestAttr(a, HBATTR_18) || !Player_TestFlag20(p, PFLAG20_UNK_15)) {
     FUN_08080f80(p, a, b);
     return;
   }
 
   p->unk_3e6 = a->unk_40;
   if (a->flags & HBFLAG_ANGLE) {
-    p->unk_3e8 = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+    p->hitDir = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
   } else {
     s32 dx = a->center.x - b->center.x;
     s32 dz = a->center.z - b->center.z;
 
-    p->unk_3e8 = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
+    p->hitDir = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
   }
 #else
   INCFUNC("asm/func/Sabata_OnHurt.inc");

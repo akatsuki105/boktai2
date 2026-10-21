@@ -123,26 +123,17 @@ NAKED s32 FUN_080e3cc8(unknown* param_1, s32 param_2, s32 param_3) { INCFUNC("as
 
 // a と b の距離をブロック数に直して FUN_080e3cc8 に渡し, 結果が expected と違うかどうかを返す
 bool32 FUN_080e3ed8(Vec3* a, Vec3* b, s32 kind, s32 expected) {
-  s32 d;
   s32 n;
 
   switch (kind) {
     case 0:
     case 2: {
-      d = a->x - b->x;
-      if (d < 0) {
-        d = -d;
-      }
-      n = FixToInt(8, d + 0x80) + 1;
+      n = FixToInt(8, abs(a->x - b->x) + 0x80) + 1;
       break;
     }
     case 1:
     case 3: {
-      d = a->z - b->z;
-      if (d < 0) {
-        d = -d;
-      }
-      n = FixToInt(8, d + 0x80) + 1;
+      n = FixToInt(8, abs(a->z - b->z) + 0x80) + 1;
       break;
     }
     default: {
@@ -228,8 +219,8 @@ void FUN_080e48e8(Enemy* p, s32 hp, s32 param_3, s32 param_4) {
   p->unk_18e = param_3;
   p->unk_190 = param_4;
   p->unk_21c[0] = 0;
-  p->unk_454 = NULL;
-  p->unk_490 = 0;
+  p->emote = NULL;
+  p->zoneID = 0;
 }
 
 void FUN_080e4964(Enemy* p) {

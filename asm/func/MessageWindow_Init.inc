@@ -10,7 +10,7 @@
 	adds r5, r6, #0
 	adds r5, #0x18
 	bl nop_0822ec58
-	bl FUN_0822ec5c
+	bl Font_ClearGlyphVram
 	movs r0, #0x72
 	bl VM_SeekToNamedArg
 	adds r1, r0, #0

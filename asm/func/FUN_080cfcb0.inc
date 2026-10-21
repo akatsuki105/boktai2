@@ -51,7 +51,7 @@ _080CFD08:
 	adds r0, r1, r0
 _080CFD14:
 	ldrh r0, [r0, #2]
-	bl FUN_080cfc04
+	bl PlayerLink_IsFrozenLava
 	cmp r0, #0
 	beq _080CFDE4
 	movs r1, #0xe4

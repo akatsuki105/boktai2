@@ -129,7 +129,7 @@ _08007196:
 	ldr r1, [sp, #0x3c]
 	cmp r1, #0
 	beq _080071BE
-	bl GetMapAreaAt
+	bl GetZoneAt
 	strh r0, [r5, #0x16]
 	b _080071C4
 _080071BE:

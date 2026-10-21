@@ -93,8 +93,6 @@ s32 EntityEC96_Destroy(EntityEC96* p) {
   return 0;
 }
 
-void Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 param_3, s32 height, s32 param_5, s32 param_6);
-
 // スクリプトから位置と耐久を読み、スプライト・当たり判定・マップノードを用意する
 s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   AuxSpriteGfx* gfx;
@@ -150,11 +148,7 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
     idx = gCollisionMap->rowOffsets[bz] + bx;
   }
   ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
+  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
   h = tile->heightStairs & 0xF;
   if (h < 0xF) {
     h++;

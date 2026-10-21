@@ -36,8 +36,8 @@ void FUN_080498c8(void) { gMarquee = NULL; }
 void FUN_080498d4(Marquee* p) {
   TextRenderer* r = &p->renderer;
 
-  FUN_0822ea60(0, 18, 32, 2);
-  FUN_0822eadc(0, 18, 32, 2);
+  Font_ReleaseRect(0, 18, 32, 2);
+  Font_FillRect(0, 18, 32, 2);
   TextRenderer_SetRect(r, 0, 18, 32, 2);
 }
 

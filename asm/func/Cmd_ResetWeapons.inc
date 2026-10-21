@@ -18,7 +18,7 @@ _08242FFA:
 _0824300C:
 	adds r0, r4, #0
 	ldr r1, _08243054 @ =gWeaponDB
-	bl FUN_08242b6c
+	bl SetWeaponData
 	adds r4, #1
 	cmp r4, #0x2f
 	ble _0824300C
@@ -84,7 +84,7 @@ _08243070:
 	strb r0, [r5, #0x18]
 _08243096:
 	mov r0, sp
-	bl FUN_08242b88
+	bl AddWeapon
 	subs r4, #1
 	cmp r4, #0
 	bne _08243070

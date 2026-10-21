@@ -13,7 +13,7 @@ _08242B92:
 	bne _08242B90
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08242b6c
+	bl SetWeaponData
 	ldrb r0, [r4, #1]
 	cmp r0, #2
 	bhi _08242BF6

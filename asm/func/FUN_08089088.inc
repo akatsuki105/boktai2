@@ -45,7 +45,7 @@ _080890A0:
 	adds r2, #0x28
 	str r2, [sp, #0xc]
 	movs r2, #1
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 	b _08089132
 	.align 2, 0
@@ -64,7 +64,7 @@ _080890FC:
 	adds r1, #0x40
 	ldrh r2, [r1]
 	movs r1, #1
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r4]
 _08089118:
 	movs r1, #0xc8

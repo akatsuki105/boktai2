@@ -141,7 +141,7 @@ _08050980:
 	bl FUN_0823d414
 	adds r1, r0, #0
 	adds r0, r4, #0
-	bl FUN_08242b6c
+	bl SetWeaponData
 	mov r1, sl
 	ldr r0, [r1]
 	adds r0, #1

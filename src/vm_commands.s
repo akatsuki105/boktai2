@@ -47,14 +47,14 @@ gCommandList: @ 0x085A9208
 	.4byte 0x12C4, Entity12C4_Create
 	.4byte 0x1320, FUN_080a6f20
 	.4byte 0x1343, FUN_0807d7dc
-	.4byte 0x138E, SoftResetScripted
+	.4byte 0x138E, Cmd_SoftReset
 	.4byte 0x13AC, EnemySerpent_Create @ HashName("サーペント")
 	.4byte 0x1422, FUN_08240f4c
 	.4byte 0x1488, FUN_080dd93c
-	.4byte 0x1500, FUN_0823d1fc @ HashName("BG表示")
+	.4byte 0x1500, Cmd_ShowBG @ HashName("BG表示")
 	.4byte 0x150F, Entity150F_Create
 	.4byte 0x15A9, FUN_08200a6c
-	.4byte 0x15B3, VM_Sub15B3
+	.4byte 0x15B3, Cmd_15B3
 	.4byte 0x15ED, FUN_081d5414
 	.4byte 0x162E, Entity162E_Create
 	.4byte 0x164D, FUN_08018990
@@ -135,11 +135,11 @@ gCommandList: @ 0x085A9208
 	.4byte 0x34EA, EnemyDexMenu_Create @ HashName("魔物図鑑")
 	.4byte 0x352D, MessageWindow_SetExtend
 	.4byte 0x3535, MosaicFader_StartFromScript
-	.4byte 0x3613, Player_Lock
+	.4byte 0x3613, Cmd_LockPlayer
 	.4byte 0x364D, sound_08240344
 	.4byte 0x3699, FUN_0804b9f4
 	.4byte 0x3705, FUN_0807d6a8
-	.4byte 0x3757, FUN_08242d90
+	.4byte 0x3757, Cmd_GiveWeapon
 	.4byte 0x377D, FUN_081d7ca8
 	.4byte 0x3A5D, FUN_08242450
 	.4byte 0x3A89, BgPlttBlender_AddSlotFromScript
@@ -158,7 +158,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x3E93, FUN_0823d408
 	.4byte 0x3EA2, FUN_08240550
 	.4byte 0x3ED0, FUN_08240680
-	.4byte 0x3F3B, GetCrossoverBattleWins
+	.4byte 0x3F3B, Cmd_GetCrossoverBattleWins
 	.4byte 0x3F4B, Cmd_UnlockPhoto
 	.4byte 0x3F96, FUN_0820a938
 	.4byte 0x3F99, EnemyOctopus_Create @ HashName("オクトパス")
@@ -172,7 +172,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x41D3, FUN_0807b5d0
 	.4byte 0x4235, WeatherManager_StartScripted
 	.4byte 0x42EF, FUN_080d7f48
-	.4byte 0x430D, TimerEntity_CreateFromScript
+	.4byte 0x430D, Cmd_Delay @ HashName("delay")
 	.4byte 0x435E, ScriptShadow_DeleteFromScript
 	.4byte 0x4383, VM_Sub4383
 	.4byte 0x43A0, VM_ReadTable
@@ -193,7 +193,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x4B39, FUN_082416c8
 	.4byte 0x4B41, FUN_0823d03c
 	.4byte 0x4B57, FUN_082416bc
-	.4byte 0x4C4D, Player_Unlock
+	.4byte 0x4C4D, Cmd_UnlockPlayer
 	.4byte 0x4CBB, FUN_082405a8
 	.4byte 0x4CCD, FUN_0823d37c
 	.4byte 0x4CDD, FUN_0807dc60
@@ -245,7 +245,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x5E27, Entity5E27_Create
 	.4byte 0x5F5F, Cmd_GetInputKeys
 	.4byte 0x5FDA, FUN_0807b314
-	.4byte 0x6057, FUN_080a6f14
+	.4byte 0x6057, Cmd_6057
 	.4byte 0x60FB, FUN_080ed9d0
 	.4byte 0x610A, FUN_0809c5dc
 	.4byte 0x612E, FUN_08020010
@@ -261,7 +261,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x6487, FUN_0823d2bc
 	.4byte 0x650B, FUN_0807b428
 	.4byte 0x65E1, FUN_080a5a6c
-	.4byte 0x65E2, FUN_08242fec @ HashName("ガッツパワー")
+	.4byte 0x65E2, Cmd_ResetWeapons @ HashName("ガッツパワー")
 	.4byte 0x667C, FUN_08224110
 	.4byte 0x6688, FUN_08041dcc
 	.4byte 0x6790, FUN_080eddf8
@@ -294,7 +294,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x75AF, MessageWindow_SetScriptIdsScripted
 	.4byte 0x75B7, FUN_0823c244
 	.4byte 0x75B9, FUN_0807db9c
-	.4byte 0x7636, Cmd_Loop
+	.4byte 0x7636, Cmd_ForEach @ HashName("foreach")
 	.4byte 0x7659, FUN_080ed724
 	.4byte 0x778B, Entity778B_Create
 	.4byte 0x779F, FUN_081d0c6c
@@ -318,7 +318,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x7B9F, FUN_081d8948
 	.4byte 0x7C62, Entity7C62_Create
 	.4byte 0x7CE7, FUN_0808fd44
-	.4byte 0x7D90, FUN_08242f08
+	.4byte 0x7D90, Cmd_TakeEquippedWeapon
 	.4byte 0x7E33, Elevator_Start
 	.4byte 0x7E73, WeatherManager_StopScripted
 	.4byte 0x7EBA, FUN_08240a90
@@ -435,7 +435,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xA995, FUN_0808fd8c
 	.4byte 0xA99F, FUN_08223d68
 	.4byte 0xAA62, FUN_0808fcd8
-	.4byte 0xAA65, HazardManager_Create
+	.4byte 0xAA65, CactusManager_Create
 	.4byte 0xAB3C, MessageWindow_SetVar
 	.4byte 0xAB41, FUN_0823d0e8
 	.4byte 0xAB4E, EntityAB4E_Create
@@ -465,13 +465,13 @@ gCommandList: @ 0x085A9208
 	.4byte 0xB426, TitleCard_Create @ HashName("ダンジョンタイトル")
 	.4byte 0xB45F, Cmd_GetCrossoverPoint
 	.4byte 0xB47E, Entity3117_SetPriorityScripted
-	.4byte 0xB4B4, Cmd_B4B4
+	.4byte 0xB4B4, Cmd_CreateBG
 	.4byte 0xB50D, FUN_08224d28
 	.4byte 0xB55A, Cmd_GetDateTime @ HashName("時間取得")
 	.4byte 0xB603, FUN_0807b4b8
-	.4byte 0xB639, MapAreaManager_Create
+	.4byte 0xB639, ZoneList_Create
 	.4byte 0xB683, FUN_0807d9a8
-	.4byte 0xB6CE, VM_SubB6CE
+	.4byte 0xB6CE, Cmd_B6CE
 	.4byte 0xB6FF, EntityB6FF_Create
 	.4byte 0xB76C, FUN_08004ba4
 	.4byte 0xB838, FUN_08224074
@@ -553,7 +553,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xD852, EntityD852_Create
 	.4byte 0xD854, EnemyTargetManager_Create
 	.4byte 0xD8DF, FUN_0807b66c
-	.4byte 0xD916, FUN_08242eb0
+	.4byte 0xD916, Cmd_ReplaceWeapon
 	.4byte 0xD935, Entity0804e2c0_Create
 	.4byte 0xD9AE, EntityD9AE_Create @ HashName("パス")?
 	.4byte 0xD9B7, FUN_0807b528
@@ -588,7 +588,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xE28B, EntityE28B_Create
 	.4byte 0xE435, EntityE435_Create
 	.4byte 0xE4A3, FUN_0807d5c8
-	.4byte 0xE4B1, Cmd_E4B1
+	.4byte 0xE4B1, Cmd_SetBGLayer
 	.4byte 0xE534, EntityE534_Create
 	.4byte 0xE6CA, Cmd_SoundResume @ HashName("サウンド再開")
 	.4byte 0xE6F2, FUN_08240618
@@ -614,7 +614,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xED07, BreakableManager_Create
 	.4byte 0xED1F, FUN_080a59e0
 	.4byte 0xED2E, Cmd_IsCrossoverUnlocked
-	.4byte 0xEDE2, FUN_0823d1d8 @ HashName("BG非表示")
+	.4byte 0xEDE2, Cmd_HideBG @ HashName("BG非表示")
 	.4byte 0xEE18, FUN_08240668
 	.4byte 0xEF19, EntityA628_ActivateScripted
 	.4byte 0xEF66, EntityEF66_Create
@@ -624,7 +624,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xF04A, GameOver_CancelScripted
 	.4byte 0xF04B, FUN_081d0f64
 	.4byte 0xF0CC, FUN_0800501c
-	.4byte 0xF11C, FUN_08242f9c
+	.4byte 0xF11C, Cmd_HasWeapon
 	.4byte 0xF156, SolarCircle_Create @ HashName("太陽結界")
 	.4byte 0xF1F9, FUN_081d5924
 	.4byte 0xF200, FUN_080ef154

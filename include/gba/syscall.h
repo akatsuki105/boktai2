@@ -13,6 +13,8 @@ typedef u32 ResetFlags;
 #define RESET_REGS 0x80        // RESET_SIO_REGS と RESET_SOUND_REGS 以外のレジスタ
 #define RESET_ALL 0xFF
 
+#define SystemCall(No) asm("svc " #No)
+
 // flags で指定したレジスタとRAMをリセットする, ただし IWRAM の 0x03007E00..0x03007FFF の領域はクリアしない
 void RegisterRamReset(ResetFlags flags);
 
@@ -21,6 +23,17 @@ void SoftResetExram(ResetFlags flags);
 
 // Vブランク割り込みが発生するまでHalt状態で待ち続ける
 void VBlankIntrWait(void);
+
+void SoundBiasReset(void);  // サウンドBIASを中間値(0x200)から0にする
+void SoundBiasSet(void);    // サウンドBIASを0から中間値(0x200)にする
+
+// 原発振を停止
+#define Stop()        \
+  {                   \
+    SoundBiasReset(); \
+    SystemCall(3);    \
+    SoundBiasSet();   \
+  }
 
 // 平方根を算出, 精度を良くするために引数Xを2の倍数だけ左シフトして渡し、戻り値もシフトして桁合わせを行なうことを推奨
 u16 Sqrt(u32 X);
@@ -70,8 +83,5 @@ void ObjAffineSet(struct ObjAffineSrcData* src, void* dest, s32 count, s32 offse
  * @param dest 展開先のWRAMの先頭アドレス
  */
 void LZ77UnCompWram(const void* src, void* dest);
-
-void SoundBias_0(void);
-void SoundBias_200(void);
 
 #endif  // GUARD_GBA_SYSCALL_H

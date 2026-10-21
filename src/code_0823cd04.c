@@ -1,5 +1,6 @@
 #include "global.h"
 #include "save.h"
+#include "sprite_common.h"
 #include "time.h"
 #include "video.h"
 #include "vm.h"
@@ -67,8 +68,8 @@ static u32 FUN_0823cdc0(u32 key, const u16* table, s32 lo, s32 hi) {
   return 0;
 }
 
-u32 FUN_0823cdf8(u16 key) {
-  // {key, obpID}
+u32 FUN_0823cdf8(SpriteID16 id) {
+  // {spriteID, obpID}
   static const u16 sObpBlendPlttIDLut[171][2] = {
       {0x8A,   0x50 },
       {0x48A,  0x34 },
@@ -242,7 +243,7 @@ u32 FUN_0823cdf8(u16 key) {
       {0xFB4D, 0x10C},
       {0xFDC5, 0xA5 },
   };  // 0x08DBD83C
-  return FUN_0823cdc0(key, (const u16*)sObpBlendPlttIDLut, 0, ARRAY_COUNT(sObpBlendPlttIDLut) - 1);
+  return FUN_0823cdc0(id, (const u16*)sObpBlendPlttIDLut, 0, ARRAY_COUNT(sObpBlendPlttIDLut) - 1);
 }
 
 s32 FUN_0823ce10(u16* param_1, u16* param_2) {
@@ -258,40 +259,42 @@ void FUN_0823ce3c(u16* param_1, u16* param_2) {
 
 NAKED void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7) { INCFUNC("asm/func/FUN_0823ce68.inc"); }
 
+// 0x0CD4
 NAKED s32 FUN_0823cecc(void) { INCFUNC("asm/func/FUN_0823cecc.inc"); }
 
+// 0xA39F
 NAKED s32 FUN_0823cf90(void) { INCFUNC("asm/func/FUN_0823cf90.inc"); }
 
+// 0x4B41
 NAKED s32 FUN_0823d03c(void) { INCFUNC("asm/func/FUN_0823d03c.inc"); }
 
+// 0xAB41
 NAKED s32 FUN_0823d0e8(void) { INCFUNC("asm/func/FUN_0823d0e8.inc"); }
 
 // 0xEDE2, HashName("BG非表示"), 指定した BG を隠す
-void FUN_0823d1d8(void) {
+void Cmd_HideBG(void) {
   u16 mask = DISPCNT_BG0_ON << (u16)VM_GetValue();
 
   gStagedDISPCNT &= ~mask;
 }
 
 // 0x1500, HashName("BG表示"), 指定した BG を表示する
-void FUN_0823d1fc(void) {
+void Cmd_ShowBG(void) {
   u16 mask = DISPCNT_BG0_ON << (u16)VM_GetValue();
 
   gStagedDISPCNT |= mask;
 }
 
 // 0x138E
-void UNUSED SoftResetScripted(void) { SoftReset_0823a928(); }
+void Cmd_SoftReset(void) { SoftReset_0823a928(); }
 
 // 画面と音を落としてスリープに入り, 復帰したら元に戻す
-void FUN_0823d22c(void) {
+void SleepGame(void) {
   REG_DISPCNT |= DISPCNT_FORCED_BLANK;
   WaitForVBlank();
   WaitForVBlank();
-  REG_KEYCNT = 0xC304;
-  SoundBias_0();
-  asm("svc #3");
-  SoundBias_200();
+  REG_KEYCNT = KEY_AND_INTR | KEY_INTR_ENABLE | L_BUTTON | R_BUTTON | SELECT_BUTTON;
+  Stop();
   gSaveSucceeded = TRUE;
   REG_DISPCNT &= ~DISPCNT_FORCED_BLANK;
   REG_KEYCNT = 0;
@@ -319,8 +322,10 @@ NON_MATCH void FUN_0823d280(void) {
 #endif
 }
 
+// 0x6487
 void FUN_0823d2bc(void) { s32_0300446c = VM_GetNamedArgValue('t', 0); }
 
+// 0x686E
 void FUN_0823d2d4(void) { s32_0300446c = 0; }
 
 void FUN_0823d2e0(s32 idx) {
@@ -335,13 +340,13 @@ void FUN_0823d310(s32 idx) {
   }
 }
 
-void UNUSED nop_0823d33c(void) {}
+static void UNUSED nop_0823d33c(void) {}
 
 u8* VM_GetPC_Proxy(void) { return VM_GetPC(); }
 
 void* VM_GetValueSafe2_Proxy(void) { return VM_GetValueSafe2(); }
 
-// スクリプトの変数へフレームカウンタを書き出す
+// 0x81C4, スクリプトの変数へフレームカウンタを書き出す
 void FUN_0823d358(void) {
   u8 desc[8];
 
@@ -349,16 +354,21 @@ void FUN_0823d358(void) {
   FUN_0823206c(desc, 0, gSystemSaveData->frameCounter);
 }
 
+// 0x4CCD
 NAKED void FUN_0823d37c(void) { INCFUNC("asm/func/FUN_0823d37c.inc"); }
 
+// 0xAE4E
 void FUN_0823d3ec(void) { SystemSave_SetUnk09(1); }
 
+// 0x3C48
 u32 FUN_0823d3fc(void) { return gSystemSaveData->unk_09; }
 
+// 0x3E93
 u32 FUN_0823d408(void) { return gSystemSaveData->unk_0a; }
 
 const WeaponData* FUN_0823d414(s32 idx) { return &gWeaponDB[idx]; }
 
+// 0x7806
 NAKED void FUN_0823d428(void) { INCFUNC("asm/func/FUN_0823d428.inc"); }
 
 void FUN_0823d4ac(void) {
@@ -378,7 +388,7 @@ NAKED s32 UpdateSolDarkSide(void) { INCFUNC("asm/func/UpdateSolDarkSide.inc"); }
 
 NAKED s32 UpdateWeaponStyle(void) { INCFUNC("asm/func/UpdateWeaponStyle.inc"); }
 
-// unk_2fe が一番大きい添字を返す
+// 0xA285, unk_2fe が一番大きい添字を返す
 s32 FUN_0823d5b8(void) {
   s32 best = 0;
   s32 bestVal = -100;
@@ -429,7 +439,7 @@ s32 Cmd_SetCrossoverPoint(void) {
 u16 Cmd_GetCrossoverBattleCount(void) { return gSystemSaveData->crossoverCount; }
 
 // 0x3F3B
-u16 GetCrossoverBattleWins(void) { return gSystemSaveData->crossoverWins; }
+u16 Cmd_GetCrossoverBattleWins(void) { return gSystemSaveData->crossoverWins; }
 
 // 0x058D, '.s' の文字列のIDを覚えておく
 void FUN_0823d70c(void) {

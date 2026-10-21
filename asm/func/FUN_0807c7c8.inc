@@ -68,7 +68,7 @@ _0807C840:
 	strb r4, [r0]
 _0807C856:
 	adds r0, r5, #0
-	bl FUN_0807b7a4
+	bl Player_EnterLockedState
 	ldr r1, _0807C884 @ =0x0000037D
 	adds r0, r5, r1
 	ldrb r2, [r0]

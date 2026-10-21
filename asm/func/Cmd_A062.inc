@@ -325,7 +325,7 @@ _0800DDEC:
 	cmp r0, #0
 	beq _0800DE12
 	add r0, sp, #0xc
-	bl GetMapAreaAt
+	bl GetZoneAt
 _0800DE12:
 	strh r0, [r5, #0x2c]
 	ldrb r0, [r5, #2]

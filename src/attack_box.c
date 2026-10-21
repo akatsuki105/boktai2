@@ -55,13 +55,13 @@ void AttackBox_Setup(AttackBox* box, s32 power, s32 unk_40, s32 unk_44, s32 igno
   Vec3 halfSize;
   Vec3 offset;
 
-  halfSize.x = 0x100, halfSize.y = 0x100, halfSize.z = 0x100;
+  halfSize.x = (1 * BLOCK), halfSize.y = (1 * BLOCK), halfSize.z = (1 * BLOCK);
   offset.x = 0, offset.y = 0, offset.z = 0;
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
   if (box->unk_60 == 0) {
-    Hitbox_SetAttack(hitbox, power, unk_40, 0x40, 0x240004, unk_44);
+    Hitbox_SetAttack(hitbox, power, unk_40, HBATTR_6, HBATTR_21 | HBATTR_18 | HBATTR_FLAME, unk_44);
   } else {
-    Hitbox_SetAttack(hitbox, power, unk_40, 0x40, HBATTR_18, unk_44);
+    Hitbox_SetAttack(hitbox, power, unk_40, HBATTR_6, HBATTR_18, unk_44);
   }
 
   hitbox->id = 0x3246;
@@ -81,7 +81,7 @@ void AttackBox_Update(AttackBoxManager* p, AttackBox* box) {
     Hitbox_Register(&box->hitbox);
   }
 
-  if (box->timer > 0x28) {
+  if (box->timer > 40) {
     box->state = 2;
   } else {
     box->timer++;
@@ -149,7 +149,7 @@ s32 SpawnAttackBox(Vec3* pos, u32 kind, u32 unk_60, s32 power, s32 unk_40, s32 u
   return 0;
 }
 
-// スクリプトから判定を1つ出す, '.p' が座標, '.P' が攻撃値4つ
+// 0x1488, スクリプトから判定を1つ出す, '.p' が座標, '.P' が攻撃値4つ
 void FUN_080dd93c(void) {
   AttackBoxManager* mgr = gAttackBoxManager;
   AttackBox* box;

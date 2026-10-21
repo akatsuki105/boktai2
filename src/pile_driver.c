@@ -337,7 +337,7 @@ void FUN_080addac(PileDriver* p) {
   }
 }
 
-// 太陽ゲージに応じた BGP_313A のパレット行を返す
+// 太陽ゲージに応じた BGP_PD のパレット行を返す
 s32 FUN_080adde4(PileDriver* p) {
   switch (p->unk_c10) {
     case 0: {
@@ -367,9 +367,8 @@ s32 FUN_080adde4(PileDriver* p) {
   }
 }
 
-// BGP_313A
 void PileDriver_LoadBgPltt(PileDriver* p) {
-  rgb555* bgp = GetBgPlttFile(BGP_313A)->body;
+  rgb555* bgp = GetBgPlttFile(BGP_PD)->body;
   CpuCopy32(&bgp[FUN_080adde4(p) * 16], gBgPlttBuffer, 32 * sizeof(rgb555));
 }
 
@@ -665,7 +664,7 @@ NAKED void FUN_080b11b4(PileDriver* p) { INCFUNC("asm/func/FUN_080b11b4.inc"); }
 
 void FUN_080b1404(PileDriver* p) {
   if (FUN_080b10c4(p)) {
-    FUN_0807d118(gPlayerPtr[0]);
+    Player_Unlock(gPlayerPtr[0]);
     FUN_080ad1ec(p, 3);
     FUN_080ad204(p, 0);
   }
@@ -694,7 +693,7 @@ void FUN_080b165c(PileDriver* p) {
     FUN_0807bc64(gPlayerPtr[0], 0);
   } else if (p->unk_4fe > 105) {
     if (gPlayerPtr[0]->action == 0) {
-      FUN_0807d118(gPlayerPtr[0]);
+      Player_Unlock(gPlayerPtr[0]);
       FUN_080ad1ec(p, 3);
       p->unk_1332 = 0;
       FUN_080ad204(p, 2);

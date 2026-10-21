@@ -368,7 +368,7 @@ _080694D2:
 	lsls r6, r6, #1
 	adds r0, r5, r6
 	ldrh r0, [r0]
-	bl FUN_08065a98
+	bl Player_IsLiveLava
 	cmp r0, #0
 	beq _0806952C
 	mov r1, r8

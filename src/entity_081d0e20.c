@@ -138,7 +138,7 @@ void FUN_081cfd40(Entity081d0e20Elem* p) {
   s32 i;
 
   p->sprite.flags |= SPRFLAG_HIDDEN;
-  size.z = 0x80, size.x = 0x80, size.y = 0x10;
+  size.z = (BLOCK / 2), size.x = (BLOCK / 2), size.y = (BLOCK / 16);
   for (i = 0; i < 4; i++) {
     if (FUN_080e11a8(&p->pos, &size, i) != 0) {
       goto blocked;

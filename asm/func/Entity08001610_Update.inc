@@ -291,7 +291,7 @@ _080013CA:
 	lsrs r1, r1, #8
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x18
-	bl FUN_0822f178
+	bl Video_SetBGBlend
 	adds r2, r7, #0
 	adds r2, #0x50
 	ldrh r1, [r2]

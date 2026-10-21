@@ -32,7 +32,7 @@ _08078D86:
 	cmp r0, #0
 	bne _08078DAA
 	adds r0, r5, #0
-	bl FUN_0806680c
+	bl Player_IsInRain
 	cmp r0, #0
 	beq _08078DDC
 	adds r0, r5, #0
@@ -54,7 +54,7 @@ _08078DAA:
 	bl FUN_080667b0
 _08078DC6:
 	adds r0, r5, #0
-	bl FUN_0806680c
+	bl Player_IsInRain
 	cmp r0, #0
 	beq _08078DDC
 	adds r0, r5, #0
@@ -107,7 +107,7 @@ _08078E2E:
 	cmp r0, #0
 	beq _08078E46
 	adds r0, r5, #0
-	bl FUN_08066df8
+	bl Player_UpdateCameraLookAt
 _08078E46:
 	adds r0, r5, #0
 	bl FUN_08065b7c

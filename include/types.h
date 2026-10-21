@@ -35,6 +35,11 @@ typedef s32 magic32_t;
 typedef s16 slot16_t;
 typedef s32 slot32_t;
 
+// Zone.id in include/collision_map.h
+typedef u16 ZoneID16;
+typedef s16 ZoneID16s;
+typedef s32 ZoneID32;
+
 typedef void unknown;  // まだ型が不明なときは unknown* で一応 void* と区別しておく
 
 // このゲームでは、返り値の型が void でないのに、 何も return しない関数がそこそこある

@@ -59,7 +59,7 @@ _0820731A:
 	str r2, [sp, #0xc]
 	movs r2, #2
 	movs r3, #0
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 _08207372:
 	adds r0, r5, #0

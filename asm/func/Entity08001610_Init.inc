@@ -213,7 +213,7 @@ _08001568:
 	ldrb r0, [r7, #0x1b]
 	mov r1, ip
 	mov r2, r8
-	bl FUN_0822f178
+	bl Video_SetBGBlend
 _080015FE:
 	movs r0, #0
 	add sp, #0x10

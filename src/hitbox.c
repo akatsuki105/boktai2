@@ -331,7 +331,7 @@ void HitboxManager_Init(void) {
   }
 }
 
-HitboxManager* HitboxManager_Create(void) {
+void* HitboxManager_Create(void) {
   HitboxManager* p;
 
   if (gHitboxManager == NULL) {

@@ -45,6 +45,9 @@
 
 #define Q_4_12(n) ((s16)((n) * 4096))  // Converts a number to Q4.12 fixed-point format
 
+// マップのユニットサイズ (Q8 マクロ作った方がいいかも？)
+#define BLOCK 256
+
 // 1.0 に相当する値は小数部のビット数だけで決まり、整数部の幅にも符号にも依存しない
 #define FRACBITS_6 6                  // u2_6 / s2_6 / u10_6 / s10_6 の小数部
 #define FRACUNIT_6 (1 << FRACBITS_6)  // 64

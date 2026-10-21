@@ -60,7 +60,7 @@ _08068D80:
 	cmp r0, #0
 	bne _08068DA4
 	adds r0, r5, #0
-	bl FUN_08065ad0
+	bl Player_IsFrozenLava
 	cmp r0, #0
 	bne _08068E38
 	movs r0, #0x40

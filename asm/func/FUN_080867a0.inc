@@ -71,7 +71,7 @@ _08086814:
 	adds r2, #0x50
 	str r2, [sp, #0xc]
 	movs r2, #1
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 _0808683E:
 	add sp, #0x10

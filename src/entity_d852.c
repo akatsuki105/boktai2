@@ -36,20 +36,16 @@ static inline s32 GetTileHeightAt(WorldPos* pos) {
   }
 
   ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
 
+  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
   stairs = tile->heightStairs >> 4;
   height = (tile->heightStairs & 0xF) << 8;
   switch (stairs) {
-    case 1: {
+    case STAIRS_VERTICAL: {
       height -= pos->z & 0xFF;
       break;
     }
-    case 2: {
+    case STAIRS_HORIZONTAL: {
       height -= pos->x & 0xFF;
       break;
     }

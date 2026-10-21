@@ -55,14 +55,14 @@ _081E4236:
 	strh r0, [r1, #2]
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08242b14
+	bl GetWeaponData
 	ldrb r2, [r4]
 	adds r0, r7, #0
 	ldr r1, _081E42A8 @ =0x000009A8
 	add r1, r8
 	bl MainSprite_LoadPose
 	adds r0, r5, #0
-	bl FUN_08243180
+	bl IsWeaponSellable
 	cmp r0, #0
 	bne _081E42B0
 	movs r0, #0xb8

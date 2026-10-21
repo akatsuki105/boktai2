@@ -217,7 +217,7 @@ _08046EC8:
 	str r1, [sp, #0xc]
 	ldr r1, [sp, #0x20]
 	mov r3, ip
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4, #8]
 	movs r0, #1
 	strh r0, [r4]
@@ -251,7 +251,7 @@ _08046F4A:
 	str r1, [sp, #0xc]
 	ldr r1, [sp, #0x20]
 	movs r3, #0x7f
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4, #8]
 	strh r5, [r4]
 _08046F70:

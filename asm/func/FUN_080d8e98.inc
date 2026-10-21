@@ -515,7 +515,7 @@ _080D9254:
 	cmp r0, #0
 	beq _080D9270
 	adds r0, r7, #0
-	bl FUN_080d8644
+	bl Emote_ClearPtclState
 	adds r0, r4, #0
 	bl Particle_Remove
 _080D9270:

@@ -27,12 +27,12 @@ _08094ED0:
 	lsls r1, r1, #6
 	adds r0, r6, r1
 	mov r1, sp
-	bl FUN_08242a98
+	bl BuildWeaponData
 	b _08094EFA
 _08094EF2:
 	ldrb r0, [r1]
 	mov r1, sp
-	bl FUN_08242b14
+	bl GetWeaponData
 _08094EFA:
 	mov r0, sp
 	ldrb r0, [r0]

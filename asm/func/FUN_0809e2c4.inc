@@ -79,7 +79,7 @@ _0809E30C:
 	orrs r0, r1
 	str r0, [sp, #4]
 	mov r0, sp
-	bl GetMapAreaAt
+	bl GetZoneAt
 	ldrb r1, [r5]
 	muls r1, r4, r1
 	adds r1, r6, r1

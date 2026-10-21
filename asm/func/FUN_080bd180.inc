@@ -57,7 +57,7 @@ _080BD1E8:
 	str r0, [r6]
 _080BD1F0:
 	adds r0, r5, #0
-	bl FUN_082430d4
+	bl IsWeaponRegistered
 	cmp r0, #0
 	bne _080BD204
 	adds r0, r5, #0

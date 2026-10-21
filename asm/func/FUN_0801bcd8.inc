@@ -127,7 +127,7 @@ _0801BDB4:
 	adds r4, #0x41
 	ldrb r0, [r4]
 	mov r1, sp
-	bl FUN_08242b14
+	bl GetWeaponData
 	add r0, sp, #0x18
 	ldrb r0, [r0]
 	mov sb, r4
@@ -174,7 +174,7 @@ _0801BE14:
 	adds r4, #0x42
 	ldrb r0, [r4]
 	add r1, sp, #0x24
-	bl FUN_08242b14
+	bl GetWeaponData
 	add r0, sp, #0x3c
 	ldrb r0, [r0]
 	mov r8, r4
@@ -296,10 +296,10 @@ _0801BF16:
 _0801BF1E:
 	mov r2, sb
 	ldrb r0, [r2]
-	bl FUN_08242c08
+	bl RemoveWeapon
 	mov r3, r8
 	ldrb r0, [r3]
-	bl FUN_08242c08
+	bl RemoveWeapon
 	ldr r4, _0801BF80 @ =0x030046A0
 	ldr r1, [r4]
 	movs r0, #0xf0
@@ -311,7 +311,7 @@ _0801BF1E:
 	movs r0, #0
 	strb r0, [r5, #0x16]
 	adds r0, r5, #0
-	bl FUN_08242b88
+	bl AddWeapon
 	ldr r1, [r4]
 	movs r2, #0xbf
 	lsls r2, r2, #2

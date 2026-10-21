@@ -82,7 +82,7 @@ _080B6B12:
 	str r0, [r4]
 _080B6B1A:
 	adds r0, r6, #0
-	bl FUN_082430d4
+	bl IsWeaponRegistered
 	cmp r0, #0
 	beq _080B6B34
 	adds r0, r5, #0

@@ -969,7 +969,7 @@ _0802311C:
 	str r2, [sp, #0xc]
 	movs r2, #0
 	movs r3, #1
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 	ldr r0, _08023148 @ =0x000001B1
 	bl PlaySound_082406e0
@@ -1008,7 +1008,7 @@ _0802316A:
 	movs r2, #0
 	movs r3, #3
 _08023186:
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 	movs r0, #0xf6
 	lsls r0, r0, #1
@@ -1029,7 +1029,7 @@ _08023196:
 	str r2, [sp, #0xc]
 	movs r2, #0
 	movs r3, #2
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 	ldr r0, _080231C0 @ =0x000001ED
 	bl PlaySound_082406e0
@@ -1118,7 +1118,7 @@ _08023240:
 _0802325A:
 	movs r3, #0
 _0802325C:
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 _08023262:
 	add sp, #0x10

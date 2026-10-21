@@ -8042,7 +8042,7 @@ _081884BA:
 _081884D0: .4byte 0x030046A0
 _081884D4:
 	ldr r0, [sp, #0x184]
-	bl GetMapAreaAt
+	bl GetZoneAt
 	ldr r6, [sp, #0x60]
 	strh r0, [r6]
 _081884DE:

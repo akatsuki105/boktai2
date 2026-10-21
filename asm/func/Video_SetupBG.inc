@@ -117,7 +117,7 @@ _0822C06C:
 	str r0, [r6, #0x2c]
 	cmp r7, #0
 	bne _0822C0A6
-	bl FUN_0822e8b4
+	bl Font_ClearGlyphCache
 _0822C0A6:
 	add sp, #0x40
 	pop {r3}

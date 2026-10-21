@@ -65,11 +65,11 @@ static inline s32 GetTileHeightAt(WorldPos* pos) {
   stairs = tile->heightStairs >> 4;
   height = (tile->heightStairs & 0xF) << 8;
   switch (stairs) {
-    case 1: {
+    case STAIRS_VERTICAL: {
       height -= pos->z & 0xFF;
       break;
     }
-    case 2: {
+    case STAIRS_HORIZONTAL: {
       height -= pos->x & 0xFF;
       break;
     }

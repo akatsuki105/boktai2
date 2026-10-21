@@ -214,7 +214,7 @@ _080087B8:
 	cmp r0, #0
 	beq _080087CC
 	add r0, sp, #4
-	bl GetMapAreaAt
+	bl GetZoneAt
 	b _080087D0
 _080087CC:
 	movs r0, #1

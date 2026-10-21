@@ -19,7 +19,7 @@
 _081E43AC:
 	adds r0, r6, #0
 	str r3, [sp]
-	bl FUN_08243180
+	bl IsWeaponSellable
 	ldr r3, [sp]
 	cmp r0, #0
 	bne _081E43D8

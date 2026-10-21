@@ -116,83 +116,85 @@ const ArmorData gArmorDB[ARMOR_NUM] = {
 };
 // clang-format on
 
+// clang-format off
 const ItemData gItemDB[ITEM_NUM] = {
-    {290, 1,  120, 40, 0,  0, 50 }, // ITEM_EARTHLY_NUT
-    {306, 2,  120, 40, 0,  0, 100}, // ITEM_SOLAR_NUT
-    {786, 5,  120, 1,  30, 0, 100}, // ITEM_SPEED_NUT
-    {786, 5,  120, 0,  30, 0, 100}, // ITEM_TIPTOE_NUT
-    {786, 5,  120, 2,  30, 0, 100}, // ITEM_POWER_NUT
-    {786, 5,  0,   2,  60, 0, 300}, // ITEM_CHOCOLATE_BANANA
-    {786, 5,  120, 3,  15, 0, 400}, // ITEM_BEARNUT
-    {786, 5,  120, 4,  30, 0, 50 }, // ITEM_SEE_ALL_NUT
-    {290, 1,  0,   5,  30, 0, 5  }, // ITEM_ROTTEN_NUT
-    {786, 5,  240, 5,  15, 0, 50 }, // ITEM_RED_MUSHROOM
-    {786, 5,  240, 6,  30, 0, 200}, // ITEM_BLUE_MUSHROOM
-    {306, 2,  0,   5,  30, 0, 5  }, // ITEM_BAD_MUSHROOM
-    {322, 3,  120, 8,  0,  0, 50 }, // ITEM_DROP_OF_SUN
-    {290, 1,  240, 40, 0,  0, 50 }, // ITEM_TOMATO_JUICE
-    {306, 2,  0,   10, 30, 0, 5  }, // ITEM_ROTTEN_WATER
-    {290, 1,  120, 60, 0,  0, 150}, // ITEM_TASTY_MEAT
-    {290, 1,  0,   40, 0,  0, 150}, // ITEM_JERKY
-    {290, 1,  0,   5,  30, 0, 5  }, // ITEM_ROTTEN_MEAT
-    {290, 1,  120, 20, 0,  0, 100}, // ITEM_CHOCOLATE
-    {290, 1,  0,   20, 0,  0, 50 }, // ITEM_MELTED_CHOCOLATE
-    {274, 1,  0,   20, 0,  0, 0  }, // ITEM_CHOCOLATE_COVERED
-    {290, 1,  0,   40, 0,  0, 300}, // ITEM_DELUXE_CHOCOLATE
-    {290, 1,  0,   20, 0,  0, 50 }, // ITEM_HEALER
-    {306, 2,  0,   20, 0,  0, 100}, // ITEM_MAGICAL_POTION
-    {322, 3,  0,   2,  0,  0, 50 }, // ITEM_ANTIDOTE
-    {322, 3,  0,   7,  0,  0, 200}, // ITEM_ELIXIR
-    {786, 5,  0,   7,  60, 0, 50 }, // ITEM_SUNBLOCK
-    {274, 8,  0,   0,  0,  0, 400}, // ITEM_MR_RAINNOT
-    {274, 8,  0,   1,  0,  0, 200}, // ITEM_TONNIAR_RM
-    {274, 8,  0,   2,  0,  0, 300}, // ITEM_SUNNY_CLOG
-    {786, 7,  0,   0,  0,  0, 50 }, // ITEM_WARP_LEAF
-    {786, 7,  0,   1,  0,  0, 200}, // ITEM_THE_FOOL
-    {274, 4,  0,   1,  1,  0, 600}, // ITEM_THE_HIGH_PRIESTESS
-    {274, 4,  0,   0,  1,  0, 600}, // ITEM_THE_EMPRESS
-    {786, 5,  0,   8,  30, 0, 200}, // ITEM_THE_EMPEROR
-    {274, 11, 0,   0,  0,  0, 200}, // ITEM_THE_LOVER
-    {274, 4,  0,   3,  1,  0, 600}, // ITEM_THE_CHARIOT
-    {274, 4,  0,   2,  1,  0, 600}, // ITEM_STRENGTH
-    {274, 4,  0,   4,  2,  0, 800}, // ITEM_WOF
-    {274, 12, 0,   0,  0,  0, 200}, // ITEM_JUSTICE
-    {274, 10, 0,   0,  0,  0, 200}, // ITEM_THE_HANGED_MAN
-    {274, 10, 0,   1,  0,  0, 200}, // ITEM_DEATH
-    {338, 14, 0,   0,  0,  0, 400}, // ITEM_TEMPERANCE
-    {786, 6,  0,   2,  10, 0, 200}, // ITEM_THE_DEVIL
-    {274, 12, 0,   1,  0,  0, 200}, // ITEM_THE_TOWER
-    {274, 13, 0,   0,  0,  0, 400}, // ITEM_THE_STAR
-    {786, 6,  0,   1,  10, 0, 200}, // ITEM_THE_MOON
-    {786, 6,  0,   0,  10, 0, 200}, // ITEM_THE_SUN
-    {258, 0,  0,   0,  0,  0, 400}, // ITEM_JUDGEMENT
-    {530, 9,  0,   0,  0,  0, 0  }, // ITEM_DARK_CARD
-    {514, 0,  0,   0,  0,  0, 0  }, // ITEM_PET
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_SPADE_EMBLEM
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_HEART_EMBLEM
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_DIAMOND_EMBLEM
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_CLUB_EMBLEM
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_JOKER_EMBLEM
-    {2,   0,  0,   0,  0,  0, 60 }, // ITEM_OAK_COFFIN
-    {2,   0,  0,   0,  0,  0, 80 }, // COFFIN_ITEM_ID(1)
-    {2,   0,  0,   0,  0,  0, 100}, // COFFIN_ITEM_ID(2)
-    {2,   0,  0,   0,  0,  0, 120}, // COFFIN_ITEM_ID(3)
-    {2,   0,  0,   0,  0,  0, 140}, // COFFIN_ITEM_ID(4)
-    {2,   0,  0,   0,  0,  0, 160}, // COFFIN_ITEM_ID(5)
-    {2,   0,  0,   0,  0,  0, 180}, // COFFIN_ITEM_ID(6)
-    {2,   0,  0,   0,  0,  0, 200}, // COFFIN_ITEM_ID(7)
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_WAREHOUSE_KEY
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_CIRCLE_KEY
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_TRIANGLE_KEY
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_SQUARE_KEY
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_RED_CRYSTAL
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_BLUE_CRYSTAL
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_GREEN_CRYSTAL
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_YELLOW_CRYSTAL
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_STONE_TABLET_PIECE
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_TASTY_WATER
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_THE_MAGICIAN
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_THE_HIEROPHANT
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_THE_HERMIT
-    {2,   0,  0,   0,  0,  0, 0  }, // ITEM_THE_WORLD
+    [ITEM_EARTHLY_NUT] =        {.unk_00 = 290, .effectType = IET_HP,         .durability = 120, .value1 = 40, .value2 = 0,  .price = 50  },
+    [ITEM_SOLAR_NUT] =          {.unk_00 = 306, .effectType = IET_MP,         .durability = 120, .value1 = 40, .value2 = 0,  .price = 100 },
+    [ITEM_SPEED_NUT] =          {.unk_00 = 786, .effectType = IET_GOOD,       .durability = 120, .value1 = 1,  .value2 = 30, .price = 100 },
+    [ITEM_TIPTOE_NUT] =         {.unk_00 = 786, .effectType = IET_GOOD,       .durability = 120, .value1 = 0,  .value2 = 30, .price = 100 },
+    [ITEM_POWER_NUT] =          {.unk_00 = 786, .effectType = IET_GOOD,       .durability = 120, .value1 = 2,  .value2 = 30, .price = 100 },
+    [ITEM_CHOCOLATE_BANANA] =   {.unk_00 = 786, .effectType = IET_GOOD,       .durability = 0,   .value1 = 2,  .value2 = 60, .price = 300 },
+    [ITEM_BEARNUT] =            {.unk_00 = 786, .effectType = IET_GOOD,       .durability = 120, .value1 = 3,  .value2 = 15, .price = 400 },
+    [ITEM_SEE_ALL_NUT] =        {.unk_00 = 786, .effectType = IET_GOOD,       .durability = 120, .value1 = 4,  .value2 = 30, .price = 50  },
+    [ITEM_ROTTEN_NUT] =         {.unk_00 = 290, .effectType = IET_HP,         .durability = 0,   .value1 = 5,  .value2 = 30, .price = 5   },
+    [ITEM_RED_MUSHROOM] =       {.unk_00 = 786, .effectType = IET_GOOD,       .durability = 240, .value1 = 5,  .value2 = 15, .price = 50  },
+    [ITEM_BLUE_MUSHROOM] =      {.unk_00 = 786, .effectType = IET_GOOD,       .durability = 240, .value1 = 6,  .value2 = 30, .price = 200 },
+    [ITEM_BAD_MUSHROOM] =       {.unk_00 = 306, .effectType = IET_MP,         .durability = 0,   .value1 = 5,  .value2 = 30, .price = 5   },
+    [ITEM_DROP_OF_SUN] =        {.unk_00 = 322, .effectType = IET_BAD_STATUS, .durability = 120, .value1 = 8,  .value2 = 0,  .price = 50  },
+    [ITEM_TOMATO_JUICE] =       {.unk_00 = 290, .effectType = IET_HP,         .durability = 240, .value1 = 40, .value2 = 0,  .price = 50  },
+    [ITEM_ROTTEN_WATER] =       {.unk_00 = 306, .effectType = IET_MP,         .durability = 0,   .value1 = 10, .value2 = 30, .price = 5   },
+    [ITEM_TASTY_MEAT] =         {.unk_00 = 290, .effectType = IET_HP,         .durability = 120, .value1 = 60, .value2 = 0,  .price = 150 },
+    [ITEM_JERKY] =              {.unk_00 = 290, .effectType = IET_HP,         .durability = 0,   .value1 = 40, .value2 = 0,  .price = 150 },
+    [ITEM_ROTTEN_MEAT] =        {.unk_00 = 290, .effectType = IET_HP,         .durability = 0,   .value1 = 5,  .value2 = 30, .price = 5   },
+    [ITEM_CHOCOLATE] =          {.unk_00 = 290, .effectType = IET_HP,         .durability = 120, .value1 = 20, .value2 = 0,  .price = 100 },
+    [ITEM_MELTED_CHOCOLATE] =   {.unk_00 = 290, .effectType = IET_HP,         .durability = 0,   .value1 = 20, .value2 = 0,  .price = 50  },
+    [ITEM_CHOCOLATE_COVERED] =  {.unk_00 = 274, .effectType = IET_HP,         .durability = 0,   .value1 = 20, .value2 = 0,  .price = 0   },
+    [ITEM_DELUXE_CHOCOLATE] =   {.unk_00 = 290, .effectType = IET_HP,         .durability = 0,   .value1 = 40, .value2 = 0,  .price = 300 },
+    [ITEM_HEALER] =             {.unk_00 = 290, .effectType = IET_HP,         .durability = 0,   .value1 = 20, .value2 = 0,  .price = 50  },
+    [ITEM_MAGICAL_POTION] =     {.unk_00 = 306, .effectType = IET_MP,         .durability = 0,   .value1 = 20, .value2 = 0,  .price = 100 },
+    [ITEM_ANTIDOTE] =           {.unk_00 = 322, .effectType = IET_BAD_STATUS, .durability = 0,   .value1 = 2,  .value2 = 0,  .price = 50  },
+    [ITEM_ELIXIR] =             {.unk_00 = 322, .effectType = IET_BAD_STATUS, .durability = 0,   .value1 = 7,  .value2 = 0,  .price = 200 },
+    [ITEM_SUNBLOCK] =           {.unk_00 = 786, .effectType = IET_GOOD,       .durability = 0,   .value1 = 7,  .value2 = 60, .price = 50  },
+    [ITEM_MR_RAINNOT] =         {.unk_00 = 274, .effectType = IET_SOLAR,      .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 400 },
+    [ITEM_TONNIAR_RM] =         {.unk_00 = 274, .effectType = IET_SOLAR,      .durability = 0,   .value1 = 1,  .value2 = 0,  .price = 200 },
+    [ITEM_SUNNY_CLOG] =         {.unk_00 = 274, .effectType = IET_SOLAR,      .durability = 0,   .value1 = 2,  .value2 = 0,  .price = 300 },
+    [ITEM_WARP_LEAF] =          {.unk_00 = 786, .effectType = IET_WARP,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 50  },
+    [ITEM_THE_FOOL] =           {.unk_00 = 786, .effectType = IET_WARP,       .durability = 0,   .value1 = 1,  .value2 = 0,  .price = 200 },
+    [ITEM_THE_HIGH_PRIESTESS] = {.unk_00 = 274, .effectType = IET_VITAMINS,   .durability = 0,   .value1 = 1,  .value2 = 1,  .price = 600 },
+    [ITEM_THE_EMPRESS] =        {.unk_00 = 274, .effectType = IET_VITAMINS,   .durability = 0,   .value1 = 0,  .value2 = 1,  .price = 600 },
+    [ITEM_THE_EMPEROR] =        {.unk_00 = 786, .effectType = IET_GOOD,       .durability = 0,   .value1 = 8,  .value2 = 30, .price = 200 },
+    [ITEM_THE_LOVER] =          {.unk_00 = 274, .effectType = IET_LOVER,      .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 200 },
+    [ITEM_THE_CHARIOT] =        {.unk_00 = 274, .effectType = IET_VITAMINS,   .durability = 0,   .value1 = 3,  .value2 = 1,  .price = 600 },
+    [ITEM_STRENGTH] =           {.unk_00 = 274, .effectType = IET_VITAMINS,   .durability = 0,   .value1 = 2,  .value2 = 1,  .price = 600 },
+    [ITEM_WOF] =                {.unk_00 = 274, .effectType = IET_VITAMINS,   .durability = 0,   .value1 = 4,  .value2 = 2,  .price = 800 },
+    [ITEM_JUSTICE] =            {.unk_00 = 274, .effectType = IET_AOE,        .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 200 },
+    [ITEM_THE_HANGED_MAN] =     {.unk_00 = 274, .effectType = IET_HPMP,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 200 },
+    [ITEM_DEATH] =              {.unk_00 = 274, .effectType = IET_HPMP,       .durability = 0,   .value1 = 1,  .value2 = 0,  .price = 200 },
+    [ITEM_TEMPERANCE] =         {.unk_00 = 338, .effectType = IET_REPAIR,     .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 400 },
+    [ITEM_THE_DEVIL] =          {.unk_00 = 786, .effectType = IET_BUGS,       .durability = 0,   .value1 = 2,  .value2 = 10, .price = 200 },
+    [ITEM_THE_TOWER] =          {.unk_00 = 274, .effectType = IET_AOE,        .durability = 0,   .value1 = 1,  .value2 = 0,  .price = 200 },
+    [ITEM_THE_STAR] =           {.unk_00 = 274, .effectType = IET_REFRESH,    .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 400 },
+    [ITEM_THE_MOON] =           {.unk_00 = 786, .effectType = IET_BUGS,       .durability = 0,   .value1 = 1,  .value2 = 10, .price = 200 },
+    [ITEM_THE_SUN] =            {.unk_00 = 786, .effectType = IET_BUGS,       .durability = 0,   .value1 = 0,  .value2 = 10, .price = 200 },
+    [ITEM_JUDGEMENT] =          {.unk_00 = 258, .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 400 },
+    [ITEM_DARK_CARD] =          {.unk_00 = 530, .effectType = IET_LOAN,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_PET] =                {.unk_00 = 514, .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_SPADE_EMBLEM] =       {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_HEART_EMBLEM] =       {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_DIAMOND_EMBLEM] =     {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_CLUB_EMBLEM] =        {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_JOKER_EMBLEM] =       {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_OAK_COFFIN] =         {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 60  },
+    [ITEM_BRONZE_COFFIN] =      {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 80  },
+    [ITEM_IRON_COFFIN] =        {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 100 },
+    [ITEM_SILVER_COFFIN] =      {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 120 },
+    [ITEM_SOLAR_COFFIN] =       {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 140 },
+    [ITEM_ELEFAN_COFFIN] =      {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 160 },
+    [ITEM_VAMPIRE_COFFIN] =     {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 180 },
+    [ITEM_IRON_MAIDEN] =        {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 200 },
+    [ITEM_WAREHOUSE_KEY] =      {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_CIRCLE_KEY] =         {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_TRIANGLE_KEY] =       {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_SQUARE_KEY] =         {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_RED_CRYSTAL] =        {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_BLUE_CRYSTAL] =       {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_GREEN_CRYSTAL] =      {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_YELLOW_CRYSTAL] =     {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_STONE_TABLET_PIECE] = {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_TASTY_WATER] =        {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_THE_MAGICIAN] =       {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_THE_HIEROPHANT] =     {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_THE_HERMIT] =         {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
+    [ITEM_THE_WORLD] =          {.unk_00 = 2,   .effectType = IET_NONE,       .durability = 0,   .value1 = 0,  .value2 = 0,  .price = 0   },
 };  // 0x08DAA8D8
+// clang-format on

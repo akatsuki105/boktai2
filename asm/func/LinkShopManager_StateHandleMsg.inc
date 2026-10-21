@@ -108,9 +108,9 @@ _081E1EEC:
 	str r0, [r4, #0x64]
 	movs r0, #2
 	strh r0, [r4, #0x3c]
-	bl FUN_08243104
+	bl CountSellableWeapons
 	str r0, [r4, #0x40]
-	bl FUN_08243140
+	bl CountSellableOrEmptySlots
 	str r0, [r4, #0x44]
 	ldr r2, _081E1F30 @ =LinkShopManager_StateSendWait
 	movs r1, #0x80

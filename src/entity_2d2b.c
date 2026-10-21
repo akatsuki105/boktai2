@@ -21,7 +21,7 @@ typedef struct {
   s32 stateTimer;      // 0x00C, state が変わってからのフレーム数
   u16 id;              // 0x010, '.n=0', hitbox の id と スクリプトの第1引数を兼ねる
   u16 scriptID;        // 0x012, '.p=0', 遷移するたびに実行する, 0 なら実行しない
-  s32 areaID;          // 0x014, '.M' が 0 なら -1 でエリア無制限, それ以外は設置位置のエリア, gStat->unk_248 と比べる
+  ZoneID32 zoneID;     // 0x014, '.M' が 0 なら -1 でエリア無制限, それ以外は設置位置のエリア, gStat->zoneID と比べる
   s32 kindIdx;         // 0x018, '.D=0', 0 シャンデリア, 1 ろうそく箱
   u32 scriptArg;       // 0x01C, '.a=0', スクリプトの第3引数
   Vec3* elevatorPos;   // 0x020, '.t[0]' で指定したエレベータの現在位置
@@ -103,11 +103,11 @@ bool32 Entity2D2BElem_ConsumeStateEntered(Entity2D2BElem* p) {
 NON_MATCH void Entity2D2BElem_OnHit(HitboxData* a, HitboxData* b, Entity2D2BElem* owner) {
 #ifdef NONMATCHING_C
   if (owner->state == 1) {
-    if (Hitbox_TestAttribute(a, HBATTR_FLAME)) {
+    if (Hitbox_TestAttr(a, HBATTR_FLAME)) {
       Entity2D2BElem_SetState(owner, 3);
     }
   } else if (owner->state == 2) {
-    if (Hitbox_TestAttribute(a, HBATTR_FROST)) {
+    if (Hitbox_TestAttr(a, HBATTR_FROST)) {
       Entity2D2BElem_SetState(owner, 4);
     }
   }

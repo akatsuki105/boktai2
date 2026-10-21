@@ -20014,7 +20014,7 @@ _081B8176:
 _081B818C: .4byte 0x030046A0
 _081B8190:
 	ldr r0, [sp, #0x190]
-	bl GetMapAreaAt
+	bl GetZoneAt
 	ldr r1, [sp, #0x70]
 	strh r0, [r1]
 _081B819A:

@@ -28,7 +28,7 @@ _080D98FA:
 	ldr r3, [r6, #0x58]
 	str r3, [sp, #4]
 	add r3, sp, #8
-	bl FUN_080d8cc0
+	bl Emote_CalcPtclOffset
 	ldrb r0, [r4]
 	subs r0, #2
 	lsls r0, r0, #0x18

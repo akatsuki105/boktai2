@@ -66,7 +66,7 @@ static_assert(sizeof(Entity8B8E) == 5680);
 extern u32 u32_0300481c;  // src/time.c
 
 bool8 LinkShopManager_IsFinished(void);                    // src/link_shop.c
-bool32 FUN_08243180(slot32_t n);                           // src/weapon.c
+bool32 IsWeaponSellable(slot32_t n);                       // src/weapon.c
 u8 Save_SwitchSlot(void);                                  // src/savedata.c
 bool8 LinkShopManager_Send(s32* args, s32 kind, u32 tag);  // src/link_shop.c
 void LinkShopManager_SetOwner(void* owner);
@@ -181,7 +181,7 @@ NAKED void FUN_081e3dec(s32 param_1) { INCFUNC("asm/func/FUN_081e3dec.inc"); }
 // agbcc は return 1 を先に置く (FUN_080ce4f0 と同じ)
 NON_MATCH s32 FUN_081e3e78(Entity8B8E* p) {
 #ifdef NONMATCHING_C
-  if (p->unk_161a != p->selectedSlot && FUN_08243180(p->unk_161a)) {
+  if (p->unk_161a != p->selectedSlot && IsWeaponSellable(p->unk_161a)) {
     return 1;
   }
   return 0;

@@ -7,7 +7,8 @@
 
 // BG1枚分の状態 (gBgStates[4] @ 0x03003ED0), 要素の区切りの根拠: pile_driver, enemy_dex が &gBgStates[3] (0x03003F60) を起点に +0x10..+0x28 を触る
 typedef struct {
-  u8 unk_00[16];         // 0x00
+  u16 unk_00;            // 0x00, BgMapScroller_Init が flags bit4 を 0/1 にして入れる, Video_SetupBG の第2引数と同じ値
+  u8 unk_02[14];         // 0x02
   u16 unk_10;            // 0x10, Video_SetBGLayer が 0x1000 を入れる
   u16 unk_12;            // 0x12, 同上
   u8 unk_14[4];          // 0x14
@@ -49,7 +50,7 @@ rgb555* GetBgPlttBlendBuffer(void);
 
 void Video_SetBLDCNTDirect(u32 effect, u32 target1, u32 target2);
 void Video_SetBLDALPHADirect(u32 target1, u32 target2);
-void Video_SetDrawPasses(s32 val, Procedure ptclFn, Procedure auxsprFn, Procedure mainsprFn);
+void Video_SetDrawPasses(s32 drawMode, Procedure ptclFn, Procedure auxsprFn, Procedure mainsprFn);
 void Particle_DrawList(void);
 void AuxSprite_DrawList(void);
 void MainSprite_DrawList(void);
@@ -76,7 +77,7 @@ void Video_ResetBG(void);
 BgMapEntry* GetTilemapBuffer(s32 bg);
 
 void FUN_0822f0d8(void);
-void FUN_0822f178(s32 idx, u32 evb, u32 eva);  // REG_BLDCNT / REG_BLDALPHA を設定する
+void Video_SetBGBlend(s32 bg, u32 evb, u32 eva);  // 第2ブレンド対象は BG2/BG3/OBJ/BD 固定, BLDY は 0 に落ちる
 void Video_SetHBlankEffect(s32 bg, s32 kind, void* table);
 void Video_SetMosaic(s32 size, s32 objEnabled, s32 targets);
 void Video_ClearMosaic(void);

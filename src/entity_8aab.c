@@ -31,7 +31,7 @@ typedef struct Entity8AABElem {
   u8 unk_b0;                                                     // 0xB0, 0 から 10 までを往復するカウンタ
   u8 unk_b1[3];                                                  // 0xB1, まだ未解析
   s32 unk_b4;                                                    // 0xB4
-  s32 unk_b8;                                                    // 0xB8, gStat->unk_248 (エリアID) と比べる
+  ZoneID32 zoneID;                                               // 0xB8, gStat->zoneID (エリアID) と比べる
   u8 unk_bc[0xCB - 0xBC];                                        // 0xBC, まだ未解析
   u8 unk_cb;                                                     // 0xCB, 0 になるまで毎フレーム減るカウンタ
   u16 plttBase;                                                  // 0xCC, gObjPlttData のパレット行の基準, +0/+1/+2 の行を使う

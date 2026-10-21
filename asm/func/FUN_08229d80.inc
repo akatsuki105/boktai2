@@ -117,7 +117,7 @@
 	bl Video_CreateSpriteLUT
 	bl FUN_0822f1b0
 	bl Video_ResetHBlankEffect
-	bl FUN_0822e7e4
+	bl Font_LoadInfo
 	ldr r1, _08229F10 @ =Particle_DrawList
 	ldr r2, _08229F14 @ =AuxSprite_DrawList
 	ldr r3, _08229F18 @ =MainSprite_DrawList

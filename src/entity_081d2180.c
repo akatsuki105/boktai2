@@ -8,7 +8,7 @@
 typedef struct {
   AuxSprite sprite;        // 0x00
   u8 unk_2c[44];           // 0x2C
-  u16 unk_58;              // 0x58, gStat->unk_248 と一致しなければ要素を隠す
+  ZoneID16 zoneID;         // 0x58, gStat->zoneID と一致しなければ要素を隠す
   u16 unk_5a;              // 0x5A, FUN_081d1bf8 の第2引数
   u8 unk_5c[0x7C - 0x5C];  // 0x5C
   u16 unk_7c;              // 0x7C, 枠を確保したときに 0 に戻す
@@ -54,10 +54,10 @@ NON_MATCH Entity081d2180Item* FUN_081d1a9c(Entity081d2180* p) {
 void FUN_081d1ae8(Entity081d2180Item* item) {}
 
 // 現在のエリアの要素でなければ隠す
-// 残差5命令, 原典はエリア一致の判定を 0/1 に起こしてからもう一度判定する二段形 (FUN_08065a98 系と同じ)
+// 残差5命令, 原典はエリア一致の判定を 0/1 に起こしてからもう一度判定する二段形 (Player_IsLiveLava 系と同じ)
 NON_MATCH bool32 FUN_081d1aec(Entity081d2180Item* item) {
 #ifdef NONMATCHING_C
-  if (gStat->unk_248 == item->unk_58) {
+  if (gStat->zoneID == item->zoneID) {
     AuxSprite_Show(&item->sprite);
     return TRUE;
   }
@@ -103,7 +103,7 @@ void (*const PTR_ARRAY_085ae0c8[2])(Entity081d2180Item*) = {
 
 NAKED s32 Entity081d2180_Update(Entity081d2180* p) { INCFUNC("asm/func/Entity081d2180_Update.inc"); }
 
-// 残差5命令, 原典は activeMask の判定を 0/1 に起こしてからもう一度判定する二段形 (FUN_08065a98 系と同じ)
+// 残差5命令, 原典は activeMask の判定を 0/1 に起こしてからもう一度判定する二段形 (Player_IsLiveLava 系と同じ)
 NON_MATCH s32 Entity081d2180_Destroy(Entity081d2180* p) {
 #ifdef NONMATCHING_C
   s32 i;

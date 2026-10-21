@@ -1,11 +1,50 @@
-#include "link_battle_lobby.h"
-
+#include "bg_pltt.h"
 #include "entity.h"
 #include "global.h"
 #include "sprite.h"
 #include "tilemap.h"
+#include "video.h"
 
-IWRAM_DATA LinkBattleLobby* gLinkBattleLobby = NULL;  // 0x030001A8
+typedef struct {
+  u8 status;    // 0x0, gEntity9A9F->unk_68[i] の写し,2 未満なら未参加で立ち絵は出ない
+  u8 unk_1[3];  // 0x1, 読み手も書き手も見つかっていない, padding?
+} LinkBattleLobbySlot;
+static_assert(sizeof(LinkBattleLobbySlot) == 4);
+
+// 通信の参加者一覧画面,4人分の枠に UI_LINK のアイコンと DJANGO_SABATA の立ち絵を並べ、gEntity9A9F の進行状況を表示する
+typedef struct LinkBattleLobby {
+  Entity e;                                         // 0x000, ENTITY_UNK_11
+  Tilemaps* tilemap;                                // 0x018, FUN_081db9f4 が TILEMAP_CD91 を入れ、Video_SetupBGLayout / Video_SetBGLayer に渡す
+  rgb555* bgPltt;                                   // 0x01C, bg_link_col_arr
+  MainSprite sprites[8];                            // 0x020, FUN_081dbd74 が 0..3 に立ち絵を、FUN_081dbc60 が 4..7 にアイコンを登録する
+  MainSpriteGfx uiGfx;                              // 0x320, sprites[4..7] 用,FUN_081dbc60 が uiSpriteFile から開く
+  MainSpriteGfx charGfx;                            // 0x340, sprites[0..3] 用,FUN_081dbd74 が charSpriteFile から開く
+  u16 animID[8];                                    // 0x360, FUN_081dbc14 が 4,4,4,4,0x3A,0x3B,0x3C,0x3D を入れ、FUN_081dbea0 が状態に応じて差し替える
+  s16 shownAnimID[8];                               // 0x370, 表示済みの animID,初期値 -1,違うときだけ FUN_081dbea0 が貼り直す
+  MainSpriteGfxFile* uiGfxFile;                     // 0x380, SPRITE_UI_LINK
+  MainSpriteGfxFile* charGfxFile;                   // 0x384, SPRITE_DJANGO_SABATA
+  rgb555 pltt[16];                                  // 0x388, FUN_081dba54 が bgPltt+0x40 から複写,FUN_081dba78 が点滅させて gBgPlttBuffer のバンク2へ送る
+  u16 blinkTimer;                                   // 0x3A8, FUN_081dba78 が 0..0x31 で回し、選択中の枠の色を決める
+  u8 unk_3aa[2];                                    // 0x3AA, 読み手も書き手も見つかっていない
+  LinkBattleLobbySlot slots[4];                     // 0x3AC, 4人分,FUN_081dc38c が毎フレーム gEntity9A9F から埋める
+  void (*updateCallback)(struct LinkBattleLobby*);  // 0x3BC, Init は FUN_081dc38c、キャンセルすると FUN_081dc350
+  u8* scriptPc;                                     // 0x3C0, '.s' の後の VM_GetPC_Proxy(), FUN_081dc100 が VM_ParseStringRef に渡す
+  u8 unk_3c4[4];                                    // 0x3C4, 読み手も書き手も見つかっていない
+  s32 playerIdx;                                    // 0x3C8, FUN_081dc38c が Sio_GetMultiId() を入れる,負なら通信していない
+  u32 recordCount;                                  // 0x3CC, FUN_081dc38c が gEntity9A9F->recordCount を入れる,セッションが無ければ -1
+  u8 unk_3d0;                                       // 0x3D0, Init が 0、B でキャンセルすると 1,読む箇所なし
+  s8 shownStringIdx;                                // 0x3D1, 表示済みの文字列番号,同じなら FUN_081dc100 は引き直さない
+  u8 shownRecordCount;                              // 0x3D2, recordCount の下位バイトの控え,FUN_081dc100 が変化を見る
+  u8 unk_3d3;                                       // 0x3D3, 読み手も書き手も見つかっていない
+  bool8 needsInit;                                  // 0x3D4, Init が 1 を入れ、FUN_081dc38c / FUN_081dc350 が初回だけの処理をして 0 に戻す
+  u8 unk_3d5;                                       // 0x3D5, 読み手も書き手も見つかっていない
+  u16 timer;                                        // 0x3D6, FUN_081dc38c は 0x3C 未満の間 入力を受け付けない,FUN_081dc350 は 10 で FUN_081dc2e0 を呼ぶ
+  u16 unk_3d8;                                      // 0x3D8, FUN_081dc32c が VM_ExecByID に渡す,書き手が見つかっていない
+  u16 exitScriptID;                                 // 0x3DA, '.e=0', FUN_081dc2e0 がこれを実行して自分を消す
+} LinkBattleLobby;
+static_assert(sizeof(LinkBattleLobby) == 988);
+
+static LinkBattleLobby* gLinkBattleLobby;  // 0x030001A8
 
 // FUN_081dbea0 がバイト単位で引く
 // clang-format off
@@ -41,5 +80,37 @@ const u8 u8_ARRAY_085ae204[456] = {
     0x04, 0x00, 0x11, 0x00, 0x05, 0x00, 0x11, 0x00,
 };  // 0x085AE204
 // clang-format on
+
+// BG2 にルール画面のタイルマップを敷き, パレットを BG パレットへ送る
+void FUN_081db9f4(LinkBattleLobby* p) {
+  s32 layer;
+
+  p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_CD91);
+  layer = 7;
+  Video_SetupBGLayout(2, 0, p->tilemap, 0, 0, 1, &layer);
+
+  p->bgPltt = GetBgPlttFile(BGP_LINK)->body;
+  CpuCopy16(p->bgPltt, gBgPlttBuffer, 256 * sizeof(rgb555));
+}
+
+// 背景パレットの後半16色を控えてから点滅タイマーを戻す
+void FUN_081dba54(LinkBattleLobby* p) {
+  CpuCopy16(&p->bgPltt[32], p->pltt, 16 * sizeof(rgb555));
+  p->blinkTimer = 0;
+}
+
+NAKED void FUN_081dba78(unknown* param_1) { INCFUNC("asm/func/FUN_081dba78.inc"); }
+
+// 立ち絵4枚とアイコン4枚のアニメ番号を初期値に戻す
+void FUN_081dbc14(LinkBattleLobby* p) {
+  p->animID[0] = 4;
+  p->animID[1] = 4;
+  p->animID[2] = 4;
+  p->animID[3] = 4;
+  p->animID[4] = 0x3A;
+  p->animID[5] = 0x3B;
+  p->animID[6] = 0x3C;
+  p->animID[7] = 0x3D;
+}
 
 INCASM("asm/link_battle_lobby.inc");

@@ -108,7 +108,7 @@ _080796FA:
 _08079710: .4byte 0xFFFF0000
 _08079714:
 	mov r0, sp
-	bl FUN_080795bc
+	bl Player_IsIcyTileAt
 	cmp r0, #0
 	beq _08079722
 	strh r4, [r5, #0x34]

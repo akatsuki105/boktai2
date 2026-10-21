@@ -183,7 +183,7 @@ _080B132A:
 	ldr r0, [r0]
 	movs r1, #1
 	rsbs r1, r1, #0
-	bl FUN_0807b910
+	bl Player_Lock
 	movs r0, #0xfa
 	bl PlaySound_082406e0
 	adds r0, r7, #0
@@ -201,9 +201,9 @@ _080B1354:
 	ldr r0, [r4]
 	movs r1, #1
 	rsbs r1, r1, #0
-	bl FUN_0807b910
+	bl Player_Lock
 	ldr r0, [r4]
-	bl FUN_0807d118
+	bl Player_Unlock
 	movs r3, #0
 	ldrb r0, [r7, #0x1e]
 	cmp r3, r0
@@ -243,9 +243,9 @@ _080B13AE:
 	ldr r0, [r4]
 	movs r1, #1
 	rsbs r1, r1, #0
-	bl FUN_0807b910
+	bl Player_Lock
 	ldr r0, [r4]
-	bl FUN_0807d118
+	bl Player_Unlock
 	movs r0, #0xf5
 	lsls r0, r0, #1
 	bl PlaySound_082406e0

@@ -220,7 +220,7 @@ _0806E100:
 	str r7, [sp, #0xc]
 	movs r2, #2
 	movs r3, #0
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 	strh r7, [r5]
 _0806E13A:

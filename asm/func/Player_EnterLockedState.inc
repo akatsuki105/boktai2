@@ -22,7 +22,7 @@
 	movs r3, #0x50
 	str r3, [sp, #0xc]
 	movs r3, #0x7f
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r4]
 _0807B7DA:
 	movs r0, #2
@@ -88,7 +88,7 @@ _0807B824:
 	cmp r0, #0
 	beq _0807B85C
 	adds r0, r5, #0
-	bl FUN_08066d10
+	bl Player_EndLookAround
 _0807B85C:
 	adds r0, r5, #0
 	movs r1, #8

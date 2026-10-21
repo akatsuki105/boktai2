@@ -84,7 +84,7 @@ _08045484:
 	str r3, [sp, #0xc]
 	ldr r2, [sp, #0x48]
 	movs r3, #0x7f
-	bl FUN_080da9c4
+	bl Emote_Show
 	str r0, [r5, #8]
 	mov r3, r8
 	strh r3, [r5]

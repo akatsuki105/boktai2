@@ -260,11 +260,11 @@ _080EE93E:
 	ldr r0, [r4]
 	ldrh r2, [r7]
 	movs r1, #1
-	bl FUN_080d99d4
+	bl Emote_Remove
 	str r0, [r4]
 	ldrh r2, [r7]
 	movs r1, #3
-	bl FUN_080d9a9c
+	bl Emote_RemovePtcl
 	str r0, [r4]
 	adds r0, r7, #0
 	bl FUN_080ecbe4

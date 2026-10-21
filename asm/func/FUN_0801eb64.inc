@@ -23,7 +23,7 @@ _0801EB7E:
 	adds r2, #8
 	movs r0, #0
 	adds r1, r3, #0
-	bl FUN_0822f178
+	bl Video_SetBGBlend
 _0801EB9C:
 	ldr r0, [r4, #0x24]
 	adds r5, r4, #0
@@ -88,7 +88,7 @@ _0801EC00:
 	adds r2, #8
 	movs r0, #0
 	adds r1, r3, #0
-	bl FUN_0822f178
+	bl Video_SetBGBlend
 	b _0801EC46
 _0801EC20:
 	ldr r0, [r4, #0x24]

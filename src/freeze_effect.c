@@ -141,11 +141,11 @@ NON_MATCH void FreezeEffect_StateVanish(FreezeEffect* p) {
     kind = attr >> 4;
     h = (attr & 0xF) << 8;
     switch (kind) {
-      case 1: {
+      case STAIRS_VERTICAL: {
         h -= (u8)pos->z;
         break;
       }
-      case 2: {
+      case STAIRS_HORIZONTAL: {
         h -= (u8)pos->x;
         break;
       }

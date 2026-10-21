@@ -66,7 +66,7 @@ _08079F92:
 	cmp r0, #0
 	beq _08079FAA
 	adds r0, r5, #0
-	bl FUN_08066df8
+	bl Player_UpdateCameraLookAt
 _08079FAA:
 	adds r0, r5, #0
 	bl FUN_08065b7c

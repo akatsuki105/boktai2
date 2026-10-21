@@ -11,7 +11,7 @@
 	bne _081D7CC0
 	b _081D7FD2
 _081D7CC0:
-	bl FUN_081d6f64
+	bl EntityC60F_AllocSlot
 	adds r7, r0, #0
 	cmp r7, #0
 	bne _081D7CCC
@@ -353,7 +353,7 @@ _081D7F3A:
 	str r0, [r4]
 _081D7F70:
 	ldr r0, [sp, #0x14]
-	bl GetMapAreaAt
+	bl GetZoneAt
 	movs r2, #0x85
 	lsls r2, r2, #1
 	adds r1, r7, r2

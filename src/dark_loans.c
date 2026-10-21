@@ -9,9 +9,7 @@
 #include "video.h"
 #include "vm.h"
 
-void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
-struct DarkLoans;
-void FUN_080b54ec(struct DarkLoans* p);
+// solar_bank.c と同形
 
 // 暗黒ローンのメニュー(太陽バンクや暗黒カードは別)
 typedef struct DarkLoans {
@@ -36,6 +34,9 @@ typedef struct DarkLoans {
 } DarkLoans;
 static_assert(sizeof(DarkLoans) == 2128);
 
+void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
+void FUN_080b54ec(DarkLoans* p);
+
 NAKED void FUN_080b4818(unknown* param_1) { INCFUNC("asm/func/FUN_080b4818.inc"); }
 
 NAKED void dark_loans_080b48c8(unknown* param_1) { INCFUNC("asm/func/dark_loans_080b48c8.inc"); }
@@ -52,7 +53,7 @@ void FUN_080b4abc(DarkLoans* p) {
 }
 
 // 毎フレーム呼ぶ処理を差し替える
-void DarkLoans_SetUpdate(DarkLoans* p, void (*fn)(DarkLoans*)) {
+void DarkLoans_SetUpdate(DarkLoans* p, void* fn) {
   p->updateCallback = fn;
   p->unk_844 = 0;
 }

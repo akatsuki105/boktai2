@@ -7,7 +7,7 @@
 
 static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
 
-// スクリプトの配列変数に, 続く引数を先頭から順に書き込む
+// 0x7935, スクリプトの配列変数に, 続く引数を先頭から順に書き込む
 s32 Cmd_InitArray(void) {
   u8 desc[8];
   s32 i;
@@ -19,8 +19,8 @@ s32 Cmd_InitArray(void) {
   return 0;
 }
 
-// 0x7636, 'a' 個の引数を読み直しながら 'e' のスクリプトを 'r' 回呼ぶ
-s32 Cmd_Loop(void) {
+// 0x7636, HashName("foreach"), 'a' 個の引数を読み直しながら 'e' のスクリプトを 'r' 回呼ぶ
+s32 Cmd_ForEach(void) {
   ScriptArgs args;
   s32 count;
   s32 repeat;
@@ -53,7 +53,7 @@ s32 Cmd_Loop(void) {
   return 0;
 }
 
-// スクリプトへ乱数を返す, 'p' があればその値未満に収める
+// 0x3469, HashName("ランダム"), スクリプトへ乱数を返す, 'p' があればその値未満に収める
 s32 Cmd_Random(void) {
   if (VM_SeekToNamedArg('p')) {
     s32 n = VM_GetValue();
@@ -64,7 +64,7 @@ s32 Cmd_Random(void) {
   return Random();
 }
 
-// スクリプトへ1Pのキー入力を返す, 既定は押された瞬間のボタン
+// 0x5F5F, スクリプトへ1Pのキー入力を返す, 既定は押された瞬間のボタン
 s32 Cmd_GetInputKeys(void) {
   if (VM_SeekToNamedArg('p')) return gInput[0].pressed;
   if (VM_SeekToNamedArg('s')) return gInput[0].down;
@@ -100,6 +100,7 @@ void FUN_080a6e88(bool32 stopSound) {
   }
 }
 
+// 0x6206
 void FUN_080a6ec0(void) { FUN_080a6e88(VM_SeekToNamedArg('p') ? VM_GetValue() : 0); }
 
 // FLAG030047A4_UNK_9 による停止を解除し, 止めていたEntityとBGMを再開する
@@ -111,11 +112,14 @@ void FUN_080a6edc(void) {
   }
 }
 
-void FUN_080a6f14(void) { FUN_080a6edc(); }
+// 0x6057
+void Cmd_6057(void) { FUN_080a6edc(); }
 
+// 0x1320
 bool32 FUN_080a6f20(void) {
   if (gFlag030047a4 & FLAG030047A4_UNK_9) return TRUE;
   return FALSE;
 }
 
-s32 VM_Sub15B3(void) { gFlag030047a4 |= FLAG030047A4_LINK; }
+// 0x15B3
+s32 Cmd_15B3(void) { gFlag030047a4 |= FLAG030047A4_LINK; }

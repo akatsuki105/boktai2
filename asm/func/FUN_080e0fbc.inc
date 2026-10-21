@@ -4,7 +4,7 @@
 	bl Entity081d0e20_ClearGlobal
 	bl FUN_081d1738
 	bl FUN_080eeb08
-	bl FUN_080da894
+	bl EmoteManager_Clear
 	bl FUN_080dbea4
 	bl FUN_080dc498
 	bl FUN_080ec4d0

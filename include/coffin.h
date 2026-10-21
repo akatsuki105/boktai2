@@ -10,21 +10,23 @@
 #include "sprite.h"
 #include "types.h"
 
+struct Emote;
+
 // 運搬中の棺桶
 typedef struct Coffin {
   Entity e;                   // 0x000, ENTITY_UNK_9
-  u16 subroutineID;           // 0x018, mover.id と両 hitbox の id になる
+  u16 subroutineID;           // 0x018, mover.id と両 hurtbox の id になる
   coffin8_t coffinID;         // 0x01A, gStat->coffin の写し, 棺桶ごとのパラメータ表の添字
   u8 unk_1b;                  // 0x01B
-  u16 unk_1c;                 // 0x01C, '.c', 0 以外だと EnemyTargetManager への登録種別と hitbox の ignoreMask が変わる
+  u16 unk_1c;                 // 0x01C, '.c', 0 以外だと EnemyTargetManager への登録種別と hurtbox の ignoreMask が変わる
   u16 weight;                 // 0x01E, 棺桶ごとの重さ, Player の移動速度から引かれる
   rgb555 pltt[16];            // 0x020, gfx.pltt の複写先, gfx.pltt はここを指すように差し替えられる
   Mover mover;                // 0x040, angle は (facing + 5) * 32
   AuxSprite sprite;           // 0x084, ->gfx
   AuxSpriteGfx gfx;           // 0x0B0, SPRITE_COFFIN, パレット行は coffinID + 519
   u8 unk_cc[0xDC - 0xCC];     // 0x0CC
-  HitboxData hitbox;          // 0x0DC, mover.pos に追従する被弾判定, これだけ Init で登録される
-  HitboxData attackHitbox;    // 0x12C, 威力50の攻撃判定 (多分棺桶が暴れ出した時の攻撃判定)
+  HitboxData hurtbox;         // 0x0DC, mover.pos に追従する被弾判定, これだけ Init で登録される
+  HitboxData hitbox;          // 0x12C, 威力50の攻撃判定 (多分棺桶が暴れ出した時の攻撃判定)
   NavAgent navAgent;          // 0x17C, mover.pos から destPos への経路を見るのに使う
   ZoneEventSource zoneEvent;  // 0x1A0, id は mover.id の写し, pos は &mover.pos
   u8 unk_1d0[0x1E0 - 0x1D0];  // 0x1D0
@@ -107,8 +109,8 @@ typedef struct Coffin {
   u8 unk_40a;           // 0x40A
   bool8 killRequested;  // 0x40B, 0 以外になると _Update が KillEntity する
   Vec3 unk_40c;         // 0x40C, FUN_080865dc が丸ごと返す
-  s32 unk_414;          // 0x414, FUN_080da9c4 に渡して結果を受け取るハンドル
-  u16 unk_418;          // 0x418, FUN_080da9c4 に渡す進捗の入れ物, 自力移動を始めるときに 0 に戻す
+  struct Emote* emote;  // 0x414, 棺桶の中のイモータルがおとなしくなったときの "..." アイコン用?
+  u16 unk_418;          // 0x418, Emote_Show に渡す進捗の入れ物, 自力移動を始めるときに 0 に戻す
   u8 unk_41a[2];        // 0x41A
 } Coffin;
 static_assert(sizeof(Coffin) == 1052);

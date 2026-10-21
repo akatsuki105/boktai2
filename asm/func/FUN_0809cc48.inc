@@ -22,7 +22,7 @@
 	movs r2, #0xff
 	lsls r2, r2, #6
 	adds r1, r4, r2
-	bl FUN_08242a38
+	bl BuildWeapon
 	adds r0, r4, #0
 	bl FUN_0809bed8
 	adds r0, r4, #0

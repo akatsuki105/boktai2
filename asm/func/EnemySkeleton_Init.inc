@@ -1850,7 +1850,7 @@ _08114E0A:
 _08114E20: .4byte 0x030046A0
 _08114E24:
 	ldr r0, [sp, #0x38]
-	bl GetMapAreaAt
+	bl GetZoneAt
 	ldr r1, [sp, #0x74]
 	strh r0, [r1]
 _08114E2E:

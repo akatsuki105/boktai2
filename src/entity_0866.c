@@ -73,7 +73,7 @@ Entity0866Elem* FUN_08009b10(Entity0866* p) {
 }
 
 void FUN_08009b30(HitboxData* a, HitboxData* b, Entity0866Elem* elem) {
-  if (!Hitbox_TestAttribute(a, HBATTR_14) && !Hitbox_HasWeakness(a, HBATTR_6 | HBATTR_BEAST | HBATTR_THING)) {
+  if (!Hitbox_TestAttr(a, HBATTR_14) && !Hitbox_HasWeakness(a, HBATTR_6 | HBATTR_BEAST | HBATTR_THING)) {
     b->hitResult = HBRESULT_NORMAL;
     elem->unk_02 = 1;
     elem->unk_0a = 0;

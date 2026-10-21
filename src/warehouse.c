@@ -332,7 +332,7 @@ void FUN_080b7794(Warehouse* p) {
 
 void FUN_080b77f4(Warehouse* p) {
   if (FUN_080b9adc(&p->pair0)) {
-    FUN_08242c08(p->unk_1458[(u8)p->cursor.savedSlot]);
+    RemoveWeapon(p->unk_1458[(u8)p->cursor.savedSlot]);
     PlaySound_082406e0(SE_TRASH);
     Warehouse_SetSubState(p, FUN_080b783c, 0);
   }

@@ -9,6 +9,8 @@
 #include "video.h"
 #include "vm.h"
 
+// dark_loans.c と同形
+
 // 太陽バンクのメニュー
 typedef struct SolarBank {
   Entity e;                                   // ENTITY_UNK_11

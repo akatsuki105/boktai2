@@ -1,3 +1,4 @@
+#include "collision_map.h"
 #include "global.h"
 #include "input.h"
 #include "malloc.h"
@@ -14,7 +15,7 @@ typedef struct {
   u8 state;          // 0x05, 0: 範囲外, 1: インタラクト可能(プレイヤーが範囲内でそのオブジェクトを向いている), 2: インタラクト中(ヒントパネルなら読んでいる時, ATMなら操作中)
   bool8 unk_6;       // 0x06
   u8 unk_7;          // 0x07
-  s32 id_8;          // 0x08, GameInfo.unk_248 と比較して等しくない場合は、オブジェクトが消えた(消えた後でも等しくなると復活した)
+  ZoneID32 zoneID;   // 0x08, GameInfo.zoneID と比較して等しくない場合は、オブジェクトが消えた(消えた後でも等しくなると復活した)
   u16 unk_c;         // 0x0C
   u16 unk_e;         // 0x0E
   u32 unk_10;        // 0x10, 反応範囲の半径の2乗, 根拠: FUN_080093f8 がプレイヤーとの距離の2乗と符号なしで比較する
@@ -41,8 +42,6 @@ typedef struct Entity83B2 {
 static_assert(sizeof(Entity83B2) == 48);
 
 IWRAM_DATA Entity83B2* gEntity83B2 = NULL;  // 0x0300003C
-
-s32 GetMapAreaAt(Vec3* pos);
 
 s32 FUN_080091c4(Entity83B2Data* p, u32 n) {
   p->state = n;
@@ -336,8 +335,8 @@ NON_MATCH s32 Entity83B2_Update(Entity83B2* p) {
   data = p->list;
   for (i = 0; i < p->length; i++, data++) {
     if (p->unk_1c & (1 << i)) {
-      if (data->id_8 >= 0) {
-        alive = gStat->unk_248 == data->id_8;
+      if (data->zoneID >= 0) {
+        alive = gStat->zoneID == data->zoneID;
         if (!alive) {
           if (data->unk_4 != 1) {
             data->sprite.flags |= SPRFLAG_HIDDEN;
@@ -483,9 +482,9 @@ NON_MATCH s32 Cmd_883A(void) {
       }
       FUN_08009298(p, data, &pos);
       if (kind != 0) {
-        data->id_8 = GetMapAreaAt(&data->pos);
+        data->zoneID = GetZoneAt(&data->pos);
       } else {
-        data->id_8 = -1;
+        data->zoneID = -1;
       }
       FUN_08009278(data, 2);
       p->unk_1c |= 1 << i;
@@ -534,7 +533,7 @@ s32 Cmd_1F65(void) {
     pos.x = 0, pos.y = 0, pos.z = 0;
   }
   FUN_08009298(p, data, &pos);
-  if (data->id_8 >= 0) {
-    data->id_8 = GetMapAreaAt(&data->pos);
+  if (data->zoneID >= 0) {
+    data->zoneID = GetZoneAt(&data->pos);
   }
 }

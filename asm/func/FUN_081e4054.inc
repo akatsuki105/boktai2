@@ -54,7 +54,7 @@ _081E40A4:
 	strh r0, [r2, #0x16]
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_08242b14
+	bl GetWeaponData
 	ldrb r2, [r4]
 	movs r0, #1
 	str r0, [sp]
@@ -69,7 +69,7 @@ _081E40A4:
 	movs r3, #0x10
 	bl MainSprite_Add
 	adds r0, r5, #0
-	bl FUN_08243180
+	bl IsWeaponSellable
 	cmp r0, #0
 	bne _081E4130
 	movs r0, #0xb8

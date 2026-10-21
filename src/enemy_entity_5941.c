@@ -31,7 +31,7 @@ NON_MATCH Entity5941Node* FUN_0807f478(s32 id) {
     return NULL;
   }
 
-  while (((Mover*)node->owner)->id != id) {
+  while (node->owner->id != id) {
   }
 
   if (node->flags & 1) {

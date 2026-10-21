@@ -160,7 +160,7 @@ _08095EB8:
 	adds r0, r4, r7
 	ldrb r0, [r0]
 	subs r0, #0x10
-	bl FUN_08242f84
+	bl UnregisterWeapon
 _08095EC4:
 	movs r0, #0xde
 	bl PlaySound_082406e0

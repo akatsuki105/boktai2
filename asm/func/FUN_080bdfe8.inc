@@ -30,7 +30,7 @@
 	strh r2, [r0]
 _080BE028:
 	adds r0, r5, #0
-	bl FUN_08242c08
+	bl RemoveWeapon
 	ldr r1, _080BE058 @ =0x00001659
 	adds r0, r4, r1
 	movs r1, #1

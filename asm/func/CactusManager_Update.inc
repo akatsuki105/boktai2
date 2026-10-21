@@ -80,11 +80,11 @@ _0800C54E:
 	strh r0, [r5, #8]
 _0800C5A6:
 	adds r0, r6, #0
-	bl Hazard_EmitBreakEffect
+	bl Cactus_EmitBreakEffect
 	adds r0, r7, #0
 	adds r1, r6, #0
 	mov r2, r8
-	bl Hazard_Remove
+	bl Cactus_Remove
 	b _0800C65E
 	.align 2, 0
 _0800C5B8: .4byte 0x03002BE0

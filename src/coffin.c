@@ -2,6 +2,7 @@
 
 #include "collision_map.h"
 #include "definition.h"
+#include "emote.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -15,8 +16,6 @@
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
 void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p);
 s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params);
-s32 FUN_080da9c4(s32 param_1, Mover* mover, u32 param_3, u32 param_4, u16* param_5, s32 param_6, s32 param_7, s32 param_8);
-s32 FUN_080d99d4(s32 param_1, u32 param_2, u32 param_3);
 
 static inline u32 GetFlag03002bc0(u32 bits) { return u32_03002bc0[0] & bits; }
 
@@ -209,7 +208,7 @@ void FUN_08086034(Coffin* p) {
   if (p->unk_324 != 0) {
     p->unk_324 = 0;
     p->unk_326 = 0;
-    p->unk_414 = FUN_080da9c4(p->unk_414, &p->mover, 0x7F, 0, NULL, 0, 250, 290);
+    p->emote = Emote_Show(p->emote, &p->mover, 0x7F, 0, NULL, 0, 250, 290);
   }
 }
 
@@ -415,7 +414,7 @@ NON_MATCH void FUN_080867a0(void) {
   }
 
   p->unk_418 = 0;
-  p->unk_414 = FUN_080da9c4(p->unk_414, &p->mover, 1, 0, &p->unk_418, 200, 250, 330);
+  p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->unk_418, 200, 250, 330);
 #else
   INCFUNC("asm/func/FUN_080867a0.inc");
 #endif
@@ -727,13 +726,13 @@ void Coffin_InitSprite(Coffin* p) {
 
 NAKED void FUN_08087058(Coffin* p) { INCFUNC("asm/func/FUN_08087058.inc"); }
 
-void Coffin_InitHitbox(Coffin* p) {
-  HitboxData* hitbox = &p->hitbox;
+void Coffin_InitHurtbox(Coffin* p) {
+  HitboxData* hurtbox = &p->hurtbox;
   Vec3 size;
   Vec3 offset;
   s32 ignoreMask;
 
-  size.x = 90, size.y = 32, size.z = 90;
+  size.x = (BLOCK * 90 / 256), size.y = (BLOCK / 8), size.z = (BLOCK * 90 / 256);
   offset.x = 100, offset.y = 200, offset.z = 100;
   if (p->coffinID != COFFIN_SILVER) {
     s32 kind = p->unk_1c;
@@ -745,20 +744,19 @@ void Coffin_InitHitbox(Coffin* p) {
   } else {
     ignoreMask = 0x10;
   }
-  Hitbox_Init(hitbox, p->subroutineID, HBFLAG_HURTBOX | HBFLAG_UNK_7 | HBFLAG_UNK_0, 0, ignoreMask, &size, &offset);
-  Hitbox_SetPowerAndAttributes(hitbox, 0, 0, 0);
-  Hitbox_SetHandler(hitbox, FUN_08087528, p);
-  Hitbox_SetPos(hitbox, &p->mover.pos, 0);
-  Hitbox_Register(hitbox);
+  Hitbox_Init(hurtbox, p->subroutineID, HBFLAG_HURTBOX | HBFLAG_UNK_7 | HBFLAG_UNK_0, 0, ignoreMask, &size, &offset);
+  Hitbox_SetPowerAndAttributes(hurtbox, 0, 0, 0);
+  Hitbox_SetHandler(hurtbox, FUN_08087528, p);
+  Hitbox_SetPos(hurtbox, &p->mover.pos, 0);
+  Hitbox_Register(hurtbox);
 }
 
-void FUN_08087290(Coffin* p) {
-  HitboxData* hitbox = &p->attackHitbox;
-  Vec3 size;
-  Vec3 offset;
+void Coffin_InitHitbox(Coffin* p) {
+  HitboxData* hitbox = &p->hitbox;
+  Vec3 size, offset;
 
-  size.x = 0x80, size.y = 0x20, size.z = 0x80;
-  offset.x = 0, offset.y = 0x20, offset.z = 0;
+  size.x = (BLOCK / 2), size.y = (BLOCK / 8), size.z = (BLOCK / 2);
+  offset.x = 0, offset.y = (BLOCK / 8), offset.z = 0;
   Hitbox_Init(hitbox, p->subroutineID, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetAttack(hitbox, 50, 50, 0, HBATTR_18, 30);
   Hitbox_SetHandler(hitbox, NULL, p);
@@ -794,7 +792,7 @@ void FUN_080873b4(Coffin* p, s32 delta) {
       p->unk_326 = 1200;
       if (p->unk_394 == 0 && p->state != 2) {
         p->unk_324 = 1;
-        p->unk_414 = FUN_080da9c4(p->unk_414, &p->mover, 1, 0, &p->unk_326, 1200, 250, 290);
+        p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->unk_326, 1200, 250, 290);
       }
     }
   } else if (p->unk_326 > 1200) {
@@ -808,7 +806,7 @@ void FUN_08087440(Coffin* p) {
     if (p->unk_326 == 1) {
       p->unk_324 = 0;
       p->unk_326 = 0;
-      p->unk_414 = FUN_080da9c4(p->unk_414, &p->mover, 0x7F, 0, NULL, 0, 250, 290);
+      p->emote = Emote_Show(p->emote, &p->mover, 0x7F, 0, NULL, 0, 250, 290);
     }
   }
 }
@@ -836,10 +834,10 @@ void FUN_080874cc(Coffin* p) {
   FUN_08087494(p);
 
   if (p->unk_332 != 0) {
-    p->hitbox.flags |= HBFLAG_UNK_2;
+    p->hurtbox.flags |= HBFLAG_UNK_2;
     p->unk_332--;
   } else {
-    p->hitbox.flags &= ~HBFLAG_UNK_2;
+    p->hurtbox.flags &= ~HBFLAG_UNK_2;
   }
 }
 
@@ -931,7 +929,7 @@ void FUN_08087c04(Coffin* p) {
   if (p->state != 0) {
     Coffin_SetState(p, 0);
   }
-  p->hitbox.flags &= ~HBFLAG_UNK_2;
+  p->hurtbox.flags &= ~HBFLAG_UNK_2;
   p->unk_32a = 0;
   FUN_08086024(p, 0);
 
@@ -1026,7 +1024,7 @@ NAKED void FUN_0808890c(Coffin* p) { INCFUNC("asm/func/FUN_0808890c.inc"); }
 
 void FUN_08088bbc(Coffin* p) {
   p->facing = 0;
-  p->hitbox.flags |= HBFLAG_UNK_2;
+  p->hurtbox.flags |= HBFLAG_UNK_2;
   p->stateTimer++;
   FUN_08086024(p, 0);
 
@@ -1072,13 +1070,13 @@ NON_MATCH void FUN_08088fbc(Coffin* p) {
   if (p->stateTimer <= 5) {
     if (p->stateTimer == 1) {
       p->unk_418 = 0;
-      p->unk_414 = FUN_080da9c4(p->unk_414, &p->mover, 1, 0, &p->unk_418, 200, 250, 290);
+      p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->unk_418, 200, 250, 290);
     }
     return;
   }
 
   if (p->stateTimer == 6) {
-    p->unk_414 = FUN_080d99d4(p->unk_414, 1, p->mover.id);
+    p->emote = Emote_Remove(p->emote, 1, p->mover.id);
   }
   p->unk_320 -= 30;
   if (p->stateTimer > 8) {
@@ -1102,13 +1100,13 @@ NON_MATCH void FUN_08089088(Coffin* p) {
   if (p->stateTimer <= 5) {
     if (p->stateTimer == 1) {
       p->unk_418 = 0;
-      p->unk_414 = FUN_080da9c4(p->unk_414, &p->mover, 1, 0, &p->unk_418, 200, 250, 290);
+      p->emote = Emote_Show(p->emote, &p->mover, EMOTE_1, 0, &p->unk_418, 200, 250, 290);
     }
     return;
   }
 
   if (p->stateTimer == 6) {
-    p->unk_414 = FUN_080d99d4(p->unk_414, 1, p->mover.id);
+    p->emote = Emote_Remove(p->emote, 1, p->mover.id);
   }
   p->unk_320 -= 60;
   if (p->stateTimer > 0x1D) {
@@ -1127,7 +1125,7 @@ void FUN_080892a8(Coffin* p) {
   }
   p->unk_32a = 0;
   p->unk_394 = 0;
-  p->hitbox.flags |= HBFLAG_UNK_2;
+  p->hurtbox.flags |= HBFLAG_UNK_2;
   p->facing = 0;
   FUN_08086024(p, 0);
 }
@@ -1136,7 +1134,7 @@ void FUN_080892f8(Coffin* p) {
   if (p->state != 13) {
     Coffin_SetState(p, 13);
   }
-  p->hitbox.flags |= HBFLAG_UNK_2;
+  p->hurtbox.flags |= HBFLAG_UNK_2;
   p->facing = 0;
   if (FUN_08086024(p, 8) != 0) {
     Coffin_SetState(p, 12);
@@ -1157,7 +1155,7 @@ void FUN_08089344(Coffin* p) {
     p->unk_32a = 0;
   }
 
-  p->hitbox.flags |= HBFLAG_UNK_2;
+  p->hurtbox.flags |= HBFLAG_UNK_2;
   p->facing = 0;
   FUN_08086024(p, 24);
 }
@@ -1166,7 +1164,7 @@ void FUN_080893c0(Coffin* p) {
   if (p->state != 14) {
     Coffin_SetState(p, 14);
   }
-  p->hitbox.flags |= HBFLAG_UNK_2;
+  p->hurtbox.flags |= HBFLAG_UNK_2;
   p->facing = 0;
   if (FUN_08086024(p, 16) != 0) {
     Coffin_SetState(p, p->unk_408);
@@ -1179,7 +1177,7 @@ void FUN_08089548(Coffin* p) {
   if (p->state != 15) {
     Coffin_SetState(p, 15);
   }
-  p->hitbox.flags &= ~HBFLAG_UNK_2;
+  p->hurtbox.flags &= ~HBFLAG_UNK_2;
   p->unk_32a = 1;
   FUN_08086024(p, 0);
 
@@ -1262,7 +1260,7 @@ s32 Coffin_Destroy(Coffin* p) {
 
   Mover_Unlink(&p->mover);
   AuxSprite_Remove(&p->sprite);
-  Hitbox_Unregister(&p->hitbox);
+  Hitbox_Unregister(&p->hurtbox);
   Coffin_RemoveParticles(p);
   Coffin_RemoveEffSprite(p);
   gCoffin = NULL;
@@ -1274,8 +1272,8 @@ s32 Coffin_Init(Coffin* p, u32 id, u32 _) {
   Coffin_InitSprite(p);
   FUN_08087058(p);
   Coffin_Init_Helper_08086e64(p);
+  Coffin_InitHurtbox(p);
   Coffin_InitHitbox(p);
-  FUN_08087290(p);
   Coffin_InitParticles(p);
   FUN_08087310(p);
 

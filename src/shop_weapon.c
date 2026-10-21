@@ -51,10 +51,10 @@ typedef struct WeaponShop {
 } WeaponShop;
 static_assert(sizeof(WeaponShop) == 6304);
 
-void FUN_08242b28(s32 idx, WeaponData* data);
-void FUN_08242b6c(slot32_t n, const WeaponData* data);
-void FUN_08242b14(slot32_t n, WeaponData* data);
-bool32 FUN_082430d4(slot32_t n);
+void GetRegisteredWeaponData(s32 idx, WeaponData* data);
+void SetWeaponData(slot32_t n, const WeaponData* data);
+void GetWeaponData(slot32_t n, WeaponData* data);
+bool32 IsWeaponRegistered(slot32_t n);
 s32 FUN_0807a6cc(WeaponData* w);
 void FUN_08094d1c(u8* param_1, s8* param_2);
 void FUN_08094d48(unknown* w, u8* pc);
@@ -175,7 +175,7 @@ NON_MATCH void FUN_080bcf04(WeaponShop* p, WeaponData* data) {
   for (i = 0; i < 4; i++) {
     s32 cur;
 
-    FUN_08242b28(i, &w);
+    GetRegisteredWeaponData(i, &w);
     cur = FUN_0807a6cc(&w);
 
     if (i != col) {
@@ -225,7 +225,7 @@ NON_MATCH void FUN_080bd058(WeaponShop* p) {
   WeaponData w;
 
   if (p->cursor.row <= 3) {
-    FUN_08242b14((u8)p->cursor.slot, &w);
+    GetWeaponData((u8)p->cursor.slot, &w);
   } else if (p->cursor.row <= 7) {
     w = gWeaponDB[(s8)p->swords[(u8)p->cursor.slot + p->unk_1654 * 16 - 16]];
     *(u8*)&w.effects[0] = 0;
@@ -272,7 +272,7 @@ NON_MATCH void FUN_080bd180(WeaponShop* p) {
         p->sprites[3 + i * 4 + j].flags |= SPRFLAG_HIDDEN;
       }
 
-      if (FUN_082430d4(slot) == 0 && WeaponShop_GetSellPrice(slot) != 0) {
+      if (IsWeaponRegistered(slot) == 0 && WeaponShop_GetSellPrice(slot) != 0) {
         FUN_080b95bc(&p->sprites[3 + i * 4 + j], 0x2DF);
       } else {
         FUN_080b95bc(&p->sprites[3 + i * 4 + j], 0x2E0);
@@ -764,7 +764,7 @@ void WeaponShop_BuyWeapon(WeaponShop* p) {
 
     *(u8*)&w.effects[0] = 0;
     WeaponShop_WritePS(p, &w);
-    FUN_08242b6c(slot, &w);
+    SetWeaponData(slot, &w);
     gStat->solarBank -= gWeaponDB[(s8)p->swords[idx + p->unk_1654 * 16]].price;
     p->unk_1658 = 1;
     PlaySound_082406e0(SE_EQUIP);
@@ -797,7 +797,7 @@ NON_MATCH void FUN_080bdfe8(WeaponShop* p) {
       gStat->solarBank = 9999;
     }
 
-    FUN_08242c08(slot);
+    RemoveWeapon(slot);
     p->unk_1659 = 1;
     FUN_080bcdf8(p, WeaponShop_AnimateSale, 0);
   }
@@ -845,7 +845,7 @@ void WeaponShop_SetupBg(WeaponShop* p) {
   Video_SetupBGLayout(0, 0, p->tilemap, 0, 0, 1, indices);
   Video_SetBGLayer(0, p->tilemap, 4);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
-  FUN_08242b28(3, &w);
+  GetRegisteredWeaponData(3, &w);
   if (w.kind == WK_GUN) {
     gBgStates[0].tilemap[457] = 0xF06E;
   }

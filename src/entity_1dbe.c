@@ -1,3 +1,4 @@
+#include "collision_map.h"
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
@@ -23,9 +24,9 @@ typedef struct Entity1DBEElem {
   u16 unk_e2;                          // 0x0E2, 状態が変わるたび 0x10 が入るが読み手が見つかっていない
   bool8 moverLinked;                   // 0x0E4, '.h', 立っていれば mover を使う
   bool8 flickering;                    // 0x0E5, touched のあと animTimer が 90 になるまで点滅する
-  bool8 areaBound;                     // 0x0E6, '.m', 立っていれば areaID が現在のエリアと一致する間だけ更新する
+  bool8 areaBound;                     // 0x0E6, '.m', 立っていれば zoneID が現在のエリアと一致する間だけ更新する
   bool8 unk_e7;                        // 0x0E7, 立っていると状態の振り分けをやり直して 0 に戻る, 書き手が見つかっていない
-  u16 areaID;                          // 0x0E8, GetMapAreaAt(sprite.pos) の結果, gStat->unk_248 と比べる
+  ZoneID16 zoneID;                     // 0x0E8, GetZoneAt(sprite.pos) の結果, gStat->zoneID と比べる
   u8 unk_ea[2];                        // 0x0EA, 読み手も書き手も見つかっていない, padding?
   s16 counter;                         // 0x0EC, 日照で増え暗所で減る, ±300 を越えると state が切り替わる, state 1/2 では復帰までのフレーム数
   u16 animTimer;                       // 0x0EE, 遷移アニメと点滅のコマ送り
@@ -41,16 +42,15 @@ typedef struct {
 } Entity1DBE;
 static_assert(sizeof(Entity1DBE) == 1980);
 
-IWRAM_DATA Entity1DBE* gEntity1DBE = NULL;  // 0x03000144
+static Entity1DBE* gEntity1DBE;  // 0x03000144
 
 void FUN_0809f64c(void) { gEntity1DBE = NULL; }
 
 NAKED bool32 Entity1DBE_TouchElemNear(WorldPos* pos) { INCFUNC("asm/func/Entity1DBE_TouchElemNear.inc"); }
 
-NAKED s32 VM_SubB6CE(void) { INCFUNC("asm/func/VM_SubB6CE.inc"); }
+// 0xB6CE
+NAKED s32 Cmd_B6CE(void) { INCFUNC("asm/func/Cmd_B6CE.inc"); }
 
-s32 GetMapAreaAt(Vec3* pos);  // src/cactus.c
-void FUN_0809f8e4(Entity1DBEElem* elem);
 void FUN_0809f890(Entity1DBEElem* elem);
 void FUN_0809fa80(Entity1DBEElem* elem);
 void FUN_0809fabc(Entity1DBEElem* elem);
@@ -111,7 +111,7 @@ void FUN_0809f890(Entity1DBEElem* elem) {
 // enemy_manager.c の Stat_SetFlag934 と同じ形の static inline bool32 Stat_TestFlag934(u16 bit) にすると 0x800 を先に作る並びまでは一致する
 NON_MATCH void FUN_0809f8e4(Entity1DBEElem* elem) {
 #ifdef NONMATCHING_C
-  if (gStat->unk_934 & 0x800) {
+  if (gStat->unk_934 & SF934_RAIN) {
     elem->counter++;
     if (elem->counter > 299) {
       Entity1DBEElem_SetState(elem, 0, FUN_0809fa80);
@@ -149,7 +149,7 @@ void Entity1DBEElem_InitParams(Entity1DBEElem* elem, u32 id, Vec3* pos, u32 stat
   elem->lockFlags = lockFlags;
   elem->areaBound = areaBound;
   if (elem->areaBound) {
-    elem->areaID = GetMapAreaAt(pos);
+    elem->zoneID = GetZoneAt(pos);
   }
 }
 

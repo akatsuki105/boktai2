@@ -63,7 +63,7 @@ _0807DD52:
 	adds r0, r4, #0
 	bl Player_SetAnimFacing
 	adds r0, r4, #0
-	bl FUN_0807b7a4
+	bl Player_EnterLockedState
 	adds r0, r4, #0
 	movs r1, #7
 	movs r2, #0

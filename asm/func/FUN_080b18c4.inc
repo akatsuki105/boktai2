@@ -87,7 +87,7 @@ _080B1968:
 	movs r0, #7
 	ands r1, r0
 	adds r0, r4, #0
-	bl FUN_0807b910
+	bl Player_Lock
 	ldr r0, [r6]
 	movs r1, #0
 	bl FUN_0807cc84

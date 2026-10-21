@@ -148,7 +148,7 @@ _081E3020: .4byte 0x00000BB4
 _081E3024: .4byte 0x00001617
 _081E3028: .4byte 0x000015F0
 _081E302C:
-	bl FUN_08243104
+	bl CountSellableWeapons
 	cmp r0, #0
 	bgt _081E3068
 	ldr r2, _081E3060 @ =0x00001617
@@ -195,9 +195,9 @@ _081E3076:
 _081E3094: .4byte 0x00001617
 _081E3098: .4byte 0x000015F0
 _081E309C:
-	bl FUN_08243140
+	bl CountSellableOrEmptySlots
 	adds r4, r0, #0
-	bl FUN_08243104
+	bl CountSellableWeapons
 	subs r4, r4, r0
 	cmp r4, #0
 	bgt _081E30E0

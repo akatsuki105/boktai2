@@ -3,7 +3,7 @@
 #include "random.h"
 #include "vm.h"
 
-// u16_03002b90 に風向きを書き続けるシングルトン
+// gWindAngle に風向きを書き続けるシングルトン
 typedef struct {
   Entity e;         // 0x00, ENTITY_UNK_9
   u16 id;           // 0x18, EntityEF66_Init の第2引数
@@ -14,7 +14,7 @@ typedef struct {
   u16 holdRange;    // 0x22, '.t[1]', 0 以外なら乱数で holdBase に足す幅
   u16 angleMin;     // 0x24, angleBase << 4
   u16 angleTarget;  // 0x26, (angleBase + 乱数 % angleRange) << 4
-  u16 angle;        // 0x28, 12bit で回る値, >> 4 したものを u16_03002b90 に入れる
+  u16 angle;        // 0x28, 12bit で回る値, >> 4 したものを gWindAngle に入れる
   u16 speed;        // 0x2A, 乱数表から入る1バイト, *0x10 して angle に足す
   u16 timer;        // 0x2C, 0 まで減ると speed と angleTarget を引き直す
 } EntityEF66;
@@ -23,7 +23,7 @@ static_assert(sizeof(EntityEF66) == 48);
 IWRAM_DATA EntityEF66* gEntityEF66 = NULL;  // 0x03000148
 
 extern u16 u16_03002b84;
-extern u16 u16_03002b90;
+extern u16 gWindAngle;
 extern u16 u16_03002bac;
 
 void EntityEF66_StopScripted(void) {
@@ -88,7 +88,7 @@ void FUN_080a12d8(void) {
   }
 }
 
-// 風向きを angleTarget へ近づけて u16_03002b90 に書き、保持時間が切れたら次の向きと速さを乱数で引き直す
+// 風向きを angleTarget へ近づけて gWindAngle に書き、保持時間が切れたら次の向きと速さを乱数で引き直す
 // 残差は d の計算で 0x1000 がどちら側に付くかだけ (147 対 151)
 // 原典は angle に -0x1000 (プール定数) を足してから speed*16 から引くが、agbcc は 0x1000 を speed*16 側に寄せて movs/lsls で作る
 // Tier A-B 試済: 括弧でのグループ化 / angle-0x1000 をローカルに / speed*16 をローカルに / 0xFFFFF000 の直書き (いずれも寄せ直される)
@@ -104,7 +104,7 @@ NON_MATCH s32 EntityEF66_Update(EntityEF66* p) {
     p->angle = (p->angle + (d >> 4)) & 0xFFF;
   }
   u16_03002bac = p->angleMin >> 4;
-  u16_03002b90 = p->angle >> 4;
+  gWindAngle = p->angle >> 4;
 
   switch (p->mode) {
     case 1: {
@@ -157,7 +157,7 @@ NON_MATCH s32 EntityEF66_Update(EntityEF66* p) {
 s32 EntityEF66_Destroy(EntityEF66* p) {
   u16_03002b84 = 0;
   u16_03002bac = 0;
-  u16_03002b90 = 0;
+  gWindAngle = 0;
   gEntityEF66 = NULL;
   return 0;
 }
