@@ -97,10 +97,10 @@ void SplitDecimal3_080ba0c0(s32 value, s32* digits) {
 
 NAKED void FUN_080ba0f0(ItemShop* p, s32 param_2) { INCFUNC("asm/func/FUN_080ba0f0.inc"); }
 
-// 道具の買値を返す, 消耗品だけ priceRate を掛けて 1〜9999 に収める
+// 道具の買値を返す, 果実系は nutsRate を掛けて 1〜9999 に収める (太陽光に応じて値段が変わる設定)
 s32 Item_GetBuyPrice(u32 itemID) {
   if (itemID <= 4 || itemID == 6 || itemID == 7 || itemID == 9 || itemID == 10) {
-    s32 price = Div(gItemDB[itemID].price * gStat->priceRate, 100);
+    s32 price = Div(gItemDB[itemID].price * gStat->nutsRate, 100);
 
     if (price <= 0) {
       price = 1;

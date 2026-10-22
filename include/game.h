@@ -73,8 +73,8 @@ typedef struct {
   item16_t items[16 + 16 + 16];  // 0x070, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
   s16 rotTimer[16 + 16 + 16];    // 0x0D0, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
   item16_t valuables[16];        // 0x130
-  armor16_t armors[16];          // 0x150
-  u8 unk_170[40];                // 0x170
+  armor16_t armors[16 + 16];     // 0x150, 0..15: インベントリ, 16..31: 倉庫
+  u8 unk_190[8];                 // 0x190
   BCDDate date;                  // 0x198
   s32 hour;                      // 0x19C, ReflectClock / ApplyDayRollover が gClock.sunset と符号付きで比べる
   s32 minute;                    // 0x1A0, 同上
@@ -89,16 +89,18 @@ typedef struct {
   u32 loan_1d4;                  // 0x1D4
   u32 treeExp;                   // 0x1D8, 今まで浴びた太陽エネルギー (太陽樹の成長経験値 や リザルト画面の "ENERGY")
   u8 unk_1dc[2];                 // 0x1DC
-  s16 priceRate;                 // 0x1DE, 買値の倍率 (百分率), 根拠: Item_GetBuyPrice が price * priceRate / 100 を出す
-  s32 unk_1e0;                   // 0x1E0, ApplySunlightGain が sunGauge を足し続ける, treeExp と同じ 0x7FFFFFFF 飽和
-  s32 unk_1e4;                   // 0x1E4, unk_1e0 を更新した回数
-  u8 unk_1e8[6];                 // 0x1E8
+  s16 nutsRate;                  // 0x1DE, 果実の価格倍率 (百分率, 前日得た太陽エネルギーに応じて変動)
+  s32 unk_1e0;                   // 0x1E0, 果実の価格倍率に関係, ApplySunlightGain が sunGauge を足し続ける, treeExp と同じ 0x7FFFFFFF 飽和
+  s32 unk_1e4;                   // 0x1E4, 果実の価格倍率に関係, unk_1e0 を更新した回数
+  s16 alertCount;                // 0x1E8, 敵に見つかった回数
+  u8 unk_1ea[2];                 // 0x1EA
+  s16 tortureCount;              // 0x1EC, おしおき回数
   u16 titles;                    // 0x1EE, 獲得した称号のビットマスク
   s16 totalEnemyKillCount;       // 0x1F0
-  s16 enemyKillCount[24];        // 0x1F2, idx: include/constants/enemy.h の EnemyCategoryID?
+  s16 enemyKillCount[24];        // 0x1F2, idx: include/constants/misc.h の ENEKD_XXX
   u16 unk_222;                   // 0x222
   u8 unk_224[0x228 - 0x224];     // 0x224
-  s16 killCounts[5];             // 0x228, ビースト/シング/ファントム/アンデッド/イモータルの撃破数, 根拠: Player_WeaponEffectKillCount が敵の系統ビットで引く
+  s16 killCounts[5];             // 0x228, ビースト/シング/ファントム/アンデッド/イモータルの撃破数
   u8 unk_232[0x23A - 0x232];     // 0x232
   s16 solarBankInterestRate;     // 0x23A, Solar bank interest rate (stored as (1+r)*64, e.g. 14.0625% = 73). Defaults to 65 when starting a new game.
   u8 unk_23c[4];                 // 0x23C
