@@ -1720,7 +1720,36 @@ void ItemEffect_HP(MainMenu* p, s32 percent, s32 badCondSec) {
   }
 }
 
-NAKED void ItemEffect_MP(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_MP.inc"); }
+// maxEne の percent % ぶん Ene を回復する, badCondSec が正なら状態異常を付ける (悪いキノコ, 腐った水)
+void ItemEffect_MP(MainMenu* p, s32 percent, s32 badCondSec) {
+  Player* player = p->player;
+
+  if (player != NULL) {
+    s32 ene;
+
+    p->effectAmount = Div(player->maxEne * percent, 100);
+    ene = player->ene + Div(player->maxEne * percent, 100);
+    if (ene > player->maxEne) {
+      p->effectAmount = player->maxEne - player->ene;
+      player->ene = player->maxEne;
+    } else if (ene < 0) {
+      player->ene = 0;
+    } else {
+      player->ene = ene;
+    }
+    if (p->effectAmount < 0) {
+      p->effectAmount = 0;
+    }
+    FUN_0808a768(p, 1, 5, 4);
+    if (badCondSec > 0) {
+      if (GetItemID(p->inValuableInventory, p->cursor.savedSlot) == ITEM_BAD_MUSHROOM) {
+        Player_ApplyBadCondition(player, 2, badCondSec * 60);
+      } else {
+        Player_ApplyBadCondition(player, 0, badCondSec * 60);
+      }
+    }
+  }
+}
 
 NAKED void ItemEffect_BadStatus(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_BadStatus.inc"); }
 
