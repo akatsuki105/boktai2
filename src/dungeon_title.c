@@ -198,6 +198,7 @@ s32 DungeonTitle_Destroy(DungeonTitle* p) {
 
 NAKED s32 DungeonTitle_Init(DungeonTitle* p) { INCFUNC("asm/func/DungeonTitle_Init.inc"); }
 
+// 0xB426, HashName("ダンジョンタイトル")
 DungeonTitle* DungeonTitle_Create(void) {
   DungeonTitle* p = CreateEntity(ENTITY_UNK_8, sizeof(DungeonTitle));
 

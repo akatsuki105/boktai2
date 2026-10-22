@@ -117,7 +117,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x3004, FUN_08206434
 	.4byte 0x300F, FUN_080ec4d0
 	.4byte 0x3019, RitaShop_Create
-	.4byte 0x305A, FUN_082423a8
+	.4byte 0x305A, Cmd_GetItem @ HashName("アイテム取得")
 	.4byte 0x3062, EntityA628_IsActiveScripted
 	.4byte 0x30A3, FUN_08224d94
 	.4byte 0x30AD, Map_LoadMapScripted
@@ -142,7 +142,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x3705, FUN_0807d6a8
 	.4byte 0x3757, Cmd_GiveWeapon @ HashName("武器取得")
 	.4byte 0x377D, FUN_081d7ca8
-	.4byte 0x3A5D, FUN_08242450
+	.4byte 0x3A5D, Cmd_RemoveItem @ HashName("アイテム破棄")
 	.4byte 0x3A89, BgPlttBlender_AddSlotFromScript
 	.4byte 0x3C3E, FUN_0807dbe0
 	.4byte 0x3C47, Cmd_GetSunriseTime @ HashName("日の出時間取得")
@@ -199,7 +199,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x4CCD, FUN_0823d37c
 	.4byte 0x4CDD, FUN_0807dc60
 	.4byte 0x4D4D, ObjPlttBlender_Create
-	.4byte 0x4D88, item_0824292c
+	.4byte 0x4D88, Cmd_CheckEmptySlotExist
 	.4byte 0x4DDF, Entity4DDF_Create
 	.4byte 0x4E22, FUN_080eda24
 	.4byte 0x4E30, Cmd_GetRtcStatus
@@ -281,7 +281,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x706D, EnemySandWorm_Create @ HashName("サンドウォーム")
 	.4byte 0x7117, FUN_0807b6b8
 	.4byte 0x71BA, Entity71BA_Create
-	.4byte 0x71C6, item_082427e0
+	.4byte 0x71C6, Cmd_ResetItems @ HashName("アイテム初期化")
 	.4byte 0x71E7, MessageChoice_SetTextFromScript
 	.4byte 0x723E, Entity723E_Create
 	.4byte 0x727F, MessageWindow_SetInstantScripted
@@ -329,7 +329,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x800C, BgPlttGroupFader_SetModeScripted
 	.4byte 0x8071, Cmd_CameraPanTo
 	.4byte 0x8089, Map_SpawnLoadingZoneIndicator
-	.4byte 0x814C, FUN_082424d4
+	.4byte 0x814C, Cmd_HasItem
 	.4byte 0x8153, FUN_08005004
 	.4byte 0x815C, FUN_0809e5c4
 	.4byte 0x81C4, FUN_0823d358
@@ -512,7 +512,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xC783, LinkBattleLobby_Create
 	.4byte 0xC7DC, FUN_080ef048
 	.4byte 0xC814, EntityC814_Create
-	.4byte 0xC946, PreviewStage_Create @ HashName("ゲームクリア")
+	.4byte 0xC946, PreviewStage_Create @ HashName("ゲームクリア")?
 	.4byte 0xC9BC, EntityC9BC_Create
 	.4byte 0xCA3D, FUN_082408b8
 	.4byte 0xCA73, EnemyDogLink_Create @ HashName("通信ドッグ")
@@ -595,7 +595,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xE6F2, FUN_08240618
 	.4byte 0xE70E, FUN_08055484
 	.4byte 0xE756, FUN_0807b138
-	.4byte 0xE77C, Entity3117_SetAnimScripted @ HashName("タイルマップバッファ")
+	.4byte 0xE77C, Entity3117_SetAnimScripted
 	.4byte 0xE7CA, FUN_082402e0
 	.4byte 0xE990, FUN_0807d3b8
 	.4byte 0xE9D3, DarkLoans_Create @ HashName("暗黒ローン")

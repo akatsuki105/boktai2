@@ -101,7 +101,8 @@ bool32 TryAddItem(item32_t n, s32 rotCount) {
   return tryAddValuable(n);
 }
 
-bool32 FUN_082423a8(void) {
+// 0x305A, HashName("アイテム取得")
+bool32 Cmd_GetItem(void) {
   item32_t n;
   s32 rotCount;
   if (!VM_SeekToNamedArg('i')) {
@@ -141,7 +142,8 @@ bool32 RemoveSpecifiedItem(item32_t id) {
   return removeSpecifiedValuable(id);
 }
 
-bool32 FUN_08242450(void) {
+// 0x3A5D, HashName("アイテム破棄")
+bool32 Cmd_RemoveItem(void) {
   if (VM_SeekToNamedArg('i') != 0) {
     return RemoveSpecifiedItem(VM_GetValue());
   }
@@ -176,7 +178,8 @@ bool32 CheckItemOwn(item32_t id) {
   return checkValuableOwn(id);
 }
 
-bool32 FUN_082424d4(void) {
+// 0x814C
+bool32 Cmd_HasItem(void) {
   if (VM_SeekToNamedArg('i') != 0) {
     return CheckItemOwn(VM_GetValue());
   }
@@ -238,7 +241,8 @@ item32_t GetRottenItemID(item32_t n) {
 
 NAKED void RotItem(s32 rotDelta) { INCFUNC("asm/func/RotItem.inc"); }
 
-NON_MATCH void item_082427e0(void) {
+// 0x71C6, HashName("アイテム初期化")
+NON_MATCH void Cmd_ResetItems(void) {
 #ifdef NONMATCHING_C
   s32 i;
   s32 val;
@@ -260,15 +264,16 @@ NON_MATCH void item_082427e0(void) {
     }
   }
 #else
-  INCFUNC("asm/func/item_082427e0.inc");
+  INCFUNC("asm/func/Cmd_ResetItems.inc");
 #endif
 }
 
-bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t n) {
+// 空きエントリがあるかチェックする (itemID は ITEM_CATEGORY_USABLE のときに、 消費アイテムか貴重品かの判定につかうだけ)
+bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t itemID) {
   s32 i;
   switch (category) {
     case ITEM_CATEGORY_USABLE: {
-      if (!IsValuable(n)) {
+      if (!IsValuable(itemID)) {
         for (i = 0; i < 16; i++) {
           if (GetNormalItemID(i) < 0) {
             return TRUE;
@@ -318,14 +323,16 @@ bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t n) {
   return FALSE;
 }
 
-bool32 item_0824292c(void) {
-  if (VM_SeekToNamedArg('k') == 0) {
+// 0x4D88, .k=カテゴリ, .i=追加対象のアイテムID(単に、アイテムが消費アイテムか貴重品かの判定につかうだけ)
+bool32 Cmd_CheckEmptySlotExist(void) {
+  u32 kind;
+  if (!VM_SeekToNamedArg('k')) {
     return FALSE;
-  } else {
-    u32 category = VM_GetValue();
-    if (VM_SeekToNamedArg('i')) {
-      return CheckEmptySlotExist(category, VM_GetValue());
-    }
+  }
+
+  kind = VM_GetValue();
+  if (VM_SeekToNamedArg('i')) {
+    return CheckEmptySlotExist(kind, VM_GetValue());
   }
   return FALSE;
 }
