@@ -214,7 +214,7 @@ typedef struct MainMenu {
   u8 unk_3f9e;                   // 0x3F9E
   u8 unk_3f9f;                   // 0x3F9F
   u8 unk_3fa0[2];                // 0x3FA0
-  u16 unk_3fa2;                  // 0x3FA2, 根拠: ItemEffect_Loan が 0 を入れる
+  s16 effectAmount;              // 0x3FA2, アイテム使用時のポップアップに出す効果量, FUN_0809296c が符号付きで読んで FUN_08092868 に渡す
   u8 unk_3fa4[0x3FAC - 0x3FA4];  // 0x3FA4
   u8 unk_3fac;                   // 0x3FAC, 根拠: ItemEffect_Bugs が 1 を入れる
   u8 unk_3fad;                   // 0x3FAD, 根拠: 同上, 引数の値が入る
@@ -1698,7 +1698,27 @@ item32_t GetItemID(bool32 isValuable, s32 slot) {
   return GetValuableItemID(slot);
 }
 
-NAKED void ItemEffect_HP(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_HP.inc"); }
+// maxHP の percent % ぶん回復する, badCondSec が正なら状態異常0を付ける (腐ったアイテム)
+void ItemEffect_HP(MainMenu* p, s32 percent, s32 badCondSec) {
+  Player* player = p->player;
+
+  if (player != NULL) {
+    s32 hp;
+
+    p->effectAmount = Div(percent * player->maxHP, 100);
+    hp = player->hp + p->effectAmount;
+    if (hp > player->maxHP) {
+      p->effectAmount = player->maxHP - player->hp;
+      player->hp = player->maxHP;
+    } else {
+      player->hp = hp;
+    }
+    FUN_0808a610(p, 1, 5, 3);
+    if (badCondSec > 0) {
+      Player_ApplyBadCondition(player, 0, badCondSec * 60);
+    }
+  }
+}
 
 NAKED void ItemEffect_MP(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_MP.inc"); }
 
@@ -1751,7 +1771,7 @@ NON_MATCH void ItemEffect_Solar(MainMenu* p, s32 _, s32 __) {
 }
 
 void ItemEffect_Loan(MainMenu* p, s32 _, s32 __) {
-  p->unk_3fa2 = 0;
+  p->effectAmount = 0;
   p->unk_401d = 1;
   p->unk_3ae4 = 1;
 }
