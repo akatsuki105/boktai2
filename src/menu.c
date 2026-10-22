@@ -87,21 +87,25 @@ static_assert(sizeof(InventoryCursor) == 44);
 // このときにキャラと会話すると、 顔アイコンと文字のタイルは表示されるが、テキストボックスが表示されない (会話自体は正常に処理される)
 // 機能としては(今のところ判明してるだけでも) HUD + スタートメニュー + テキストウィンドウ といった感じ
 typedef struct MainMenu {
-  Entity e;                // 0x0000, ENTITY_UNK_12
-  Tilemaps* tm_18;         // 0x0018, TILEMAP_A413
-  Tilemaps* tm_1c;         // 0x001C, TILEMAP_A7D7
-  Tilemaps* tm_20;         // 0x0020, TILEMAP_A7E7
-  Tilemaps* tm_24;         // 0x0024, TILEMAP_A7F7
-  void* unk_28;            // 0x0028
-  TilemapFile* tm_2c;      // 0x002C, TILEMAP_83C0
-  rgb555* bgp_30;          // 0x0030, BGP_EFDA
-  rgb555* bgp_34;          // 0x0034, BGP_ECBF
-  rgb555* bgp_38;          // 0x0038, BGP_5F5E
-  rgb555* bgp_3c;          // 0x003C, BGP_EAA8
-  u8 unk_40[0x54 - 0x40];  // 0x0040, まだ未解析
-  u8* unk_54;              // 0x0054, FUN_0808f170 が MessageWindow_Start に渡す
-  u8* unk_58;              // 0x0058, 根拠: MainMenu_ShowLineInstant が MessageWindow_Start に渡す
-  s32* unk_5c;             // 0x005C, gStat->lv で引く表, weapon_080993c4 がその10倍を返す
+  Entity e;            // 0x0000, ENTITY_UNK_12
+  Tilemaps* tm_18;     // 0x0018, TILEMAP_A413
+  Tilemaps* tm_1c;     // 0x001C, TILEMAP_A7D7
+  Tilemaps* tm_20;     // 0x0020, TILEMAP_A7E7
+  Tilemaps* tm_24;     // 0x0024, TILEMAP_A7F7
+  void* unk_28;        // 0x0028
+  TilemapFile* tm_2c;  // 0x002C, TILEMAP_83C0
+  rgb555* bgp_30;      // 0x0030, BGP_EFDA
+  rgb555* bgp_34;      // 0x0034, BGP_ECBF
+  rgb555* bgp_38;      // 0x0038, BGP_5F5E
+  rgb555* bgp_3c;      // 0x003C, BGP_EAA8
+  u8* unk_40;          // 0x0040, '.i'
+  u8* unk_44;          // 0x0044, '.w'
+  u8* unk_48;          // 0x0048, '.a'
+  u8* unk_4c;          // 0x004C, '.m'
+  u8* unk_50;          // 0x0050, '.A'
+  u8* unk_54;          // 0x0054, '.l', FUN_0808f170 が MessageWindow_Start に渡す
+  u8* unk_58;          // 0x0058, '.E', 根拠: MainMenu_ShowLineInstant が MessageWindow_Start に渡す
+  s32* unk_5c;         // 0x005C, '.e', gStat->lv で引く表, weapon_080993c4 がその10倍を返す
   struct {
     MainSpriteGfx smenu;
     MainSpriteGfx map;
@@ -233,7 +237,8 @@ typedef struct MainMenu {
   u8 unk_3f9d;                   // 0x3F9D
   u8 vitaminStat;                // 0x3F9E, ビタミン剤で上げるステータス番号, FUN_08092bf0 が +255 してメッセージ行IDにする
   u8 vitaminAmount;              // 0x3F9F, ビタミン剤で上げる量, 合計99で頭打ちになる前の値
-  u8 unk_3fa0[2];                // 0x3FA0
+  u8 unk_3fa0;                   // 0x3FA0, '.p'
+  u8 unk_3fa1;                   // 0x3FA1
   s16 effectAmount;              // 0x3FA2, アイテム使用時のポップアップに出す効果量, FUN_0809296c が符号付きで読んで FUN_08092868 に渡す
   u8 unk_3fa4[2];                // 0x3FA4
   u16 targetHP;                  // 0x3FA6, 変化後のHP, FUN_08093608 が player->hp をここまで1ずつ動かす
@@ -3077,7 +3082,38 @@ void MainMenu_OpenSpriteFiles(MainMenu* p) {
   OpenMainSpriteFile(&p->gfx.link, f);
 }
 
-NAKED void MainMenu1P_0809bed8(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0809bed8.inc"); }
+void MainMenu1P_ReadNamedArgs(MainMenu* p) {
+  if (VM_SeekToNamedArg('i')) {
+    p->unk_40 = VM_GetPC_Proxy();
+  }
+  if (VM_SeekToNamedArg('w')) {
+    p->unk_44 = VM_GetPC_Proxy();
+  }
+  if (VM_SeekToNamedArg('a')) {
+    p->unk_48 = VM_GetPC_Proxy();
+  }
+  if (VM_SeekToNamedArg('m')) {
+    p->unk_4c = VM_GetPC_Proxy();
+  }
+  if (VM_SeekToNamedArg('A')) {
+    p->unk_50 = VM_GetPC_Proxy();
+  }
+  if (VM_SeekToNamedArg('l')) {
+    p->unk_54 = VM_GetPC_Proxy();
+  }
+  if (VM_SeekToNamedArg('E')) {
+    p->unk_58 = VM_GetPC_Proxy();
+  }
+  if (VM_SeekToNamedArg('e')) {
+    p->unk_5c = VM_GetValueSafe2();
+  }
+
+  if (VM_SeekToNamedArg('p')) {
+    p->unk_3fa0 = VM_GetValue();
+  } else {
+    p->unk_3fa0 = 0;
+  }
+}
 
 // '.o' で選択可能なページを受け取り, 今のページが選べないなら選べるページまで進める
 void MainMenu_InitAvailPages(MainMenu* p) {
@@ -3293,7 +3329,7 @@ void FUN_0809c63c(void) {
   MainMenu* p = gMainMenu;
 
   if (p != NULL && VM_SeekToNamedArg('i')) {
-    p->unk_3fa0[0] = VM_GetValue();
+    p->unk_3fa0 = VM_GetValue();
   }
 }
 
@@ -3383,7 +3419,7 @@ s32 MainMenu1P_Init(MainMenu* p, u32 id) {
   p->page = u16_03002c14;
   p->player = GetPlayer(0);
   BuildWeapon((WeaponData*)&gWeaponDB[WEAPON_GUN_DEL_HELL], &p->weapon);
-  MainMenu1P_0809bed8(p);
+  MainMenu1P_ReadNamedArgs(p);
   MainMenu_InitAvailPages(p);
   MainMenu1P_0809c010(p);
   MainMenu_OpenSpriteFiles(p);
