@@ -528,7 +528,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xCE28, FUN_0820b2f8
 	.4byte 0xCED9, FUN_081d54a8
 	.4byte 0xCF58, EntityCF58_Create
-	.4byte 0xCF79, Intro_Create @ HashName("タイトル")
+	.4byte 0xCF79, Title_Create @ HashName("タイトル")
 	.4byte 0xCF82, EntityCF82_Create
 	.4byte 0xD0C3, Demo_Stop
 	.4byte 0xD0C7, FUN_08240428

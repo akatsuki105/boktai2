@@ -201,7 +201,7 @@ _082122CE:
 	beq _082122F6
 	adds r0, r5, #0
 	movs r1, #2
-	bl Intro_SetState
+	bl Title_SetState
 _082122F6:
 	add sp, #4
 	pop {r3}

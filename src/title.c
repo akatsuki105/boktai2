@@ -10,10 +10,10 @@
 #include "video.h"
 #include "vm.h"
 
-typedef u32 IntroFlags;
-#define INTRO_FLAG_UNK_0 (1 << 0)    // 0x1, stateTimer を止める
-#define INTRO_FLAG_UNK_1 (1 << 1)    // 0x2, timer_68 を止める
-#define INTRO_FLAG_UNK_28 (1 << 28)  // 0x10000000, '.D' が 0 以外のとき立つ
+typedef u32 TitleFlags;
+#define TITLE_FLAG_UNK_0 (1 << 0)    // 0x1, stateTimer を止める
+#define TITLE_FLAG_UNK_1 (1 << 1)    // 0x2, timer_68 を止める
+#define TITLE_FLAG_UNK_28 (1 << 28)  // 0x10000000, '.D' が 0 以外のとき立つ
 
 // ゲーム起動時からタイトル画面でモード(GAMESTART, OPTION, LINK のどれか)を選択するまでの処理を行う
 // モード(GAMESTART, OPTION, LINK のどれか) からBボタンに戻ると、またこのEntityが生成される
@@ -23,17 +23,17 @@ typedef struct Title {
   Tilemaps* tilemap;                      // 0x038, FileID は state ごとに違う
   rgb555* bgp;                            // 0x03C, FileID は state ごとに違う
   s32 unk_40;                             // 0x040, '.Y', 1 か 2 のとき初期状態が 3 になる
-  IntroFlags flags;                       // 0x044
+  TitleFlags flags;                       // 0x044
   s32 unk_48;                             // 0x048, '.g'
   s32 unk_4c;                             // 0x04C, '.o'
   s32 unk_50;                             // 0x050, '.l'
   s32 unk_54;                             // 0x054, '.s'
   s32 unk_58;                             // 0x058, '.d'
-  s32 state;                              // 0x05C, sIntroUpdates[state]
-  s32 stateTimer;                         // 0x060, 状態遷移で 0 に戻り, flags bit0 が落ちている間 Intro_Update が +1 する
-  s32 unk_64;                             // 0x064, Intro_SetState が 0 にするだけ, 読み手は未発見
-  s32 timer_68;                           // 0x068, 状態遷移で 0 に戻り, flags bit1 が落ちている間 Intro_Update が +1 する
-  s32 unk_6c;                             // 0x06C, Intro_Init が -1 を入れる
+  s32 state;                              // 0x05C, sTitleUpdates[state]
+  s32 stateTimer;                         // 0x060, 状態遷移で 0 に戻り, flags bit0 が落ちている間 Title_Update が +1 する
+  s32 unk_64;                             // 0x064, Title_SetState が 0 にするだけ, 読み手は未発見
+  s32 timer_68;                           // 0x068, 状態遷移で 0 に戻り, flags bit1 が落ちている間 Title_Update が +1 する
+  s32 unk_6c;                             // 0x06C, Title_Init が -1 を入れる
   u16 unk_70[4][3];                       // 0x070, state で引く3値, 行は順に '.k' '.j' '.w' '.t'
   s32 unk_88;                             // 0x088, FUN_0821b21c に s32* として渡す
   s32 unk_8c;                             // 0x08C, unk_70[state][2] * gBgBrightness / 64
@@ -66,10 +66,10 @@ extern const u8 u8_ARRAY_08252778[8];
 
 bool32 FUN_0821b21c(s32* p, s32 val1, s32 val2, u16 val3);
 void FUN_0823d4ac(void);
-void Intro_SetState(Title* p, s32 state);
+void Title_SetState(Title* p, s32 state);
 
-static inline void Intro_SetFlags(Title* p, IntroFlags bits) { p->flags |= bits; }
-static inline IntroFlags Intro_TestFlags(Title* p, IntroFlags bits) { return p->flags & bits; }
+static inline void Title_SetFlags(Title* p, TitleFlags bits) { p->flags |= bits; }
+static inline TitleFlags Title_TestFlags(Title* p, TitleFlags bits) { return p->flags & bits; }
 
 void FUN_08211f20(Title* p) {
   s32 idx;
@@ -84,18 +84,18 @@ void FUN_08211f64(Title* p) {
   CpuCopy32(p->bgp, gBgPlttBuffer, 48 * sizeof(rgb555));
 }
 
-NAKED void Intro_UpdateState0(Title* p) { INCFUNC("asm/func/Intro_UpdateState0.inc"); }
+NAKED void Title_UpdateState0(Title* p) { INCFUNC("asm/func/Title_UpdateState0.inc"); }
 
-NAKED void Intro_UpdateState1(Title* p) { INCFUNC("asm/func/Intro_UpdateState1.inc"); }
+NAKED void Title_UpdateState1(Title* p) { INCFUNC("asm/func/Title_UpdateState1.inc"); }
 
 // 残差14命令: 原典は関数の先頭で p + 0x88 を r8 に置き、case 2 の unk_8c への store だけにそれを使う (FUN_0821b21c の引数は毎回 p + 0x88 を作り直す) ため、r7/r8 の退避が増える
-// さらに case 0 と case 1 の先頭に flags & INTRO_FLAG_UNK_1 を計算して捨てる ands が1つずつ入っている (使っているのは case 2 だけ)。Tier A-C 試済
-NON_MATCH void Intro_UpdateState2(Title* p) {
+// さらに case 0 と case 1 の先頭に flags & TITLE_FLAG_UNK_1 を計算して捨てる ands が1つずつ入っている (使っているのは case 2 だけ)。Tier A-C 試済
+NON_MATCH void Title_UpdateState2(Title* p) {
 #ifdef NONMATCHING_C
-  bool32 redraw = (p->flags & INTRO_FLAG_UNK_0) != 0;
+  bool32 redraw = (p->flags & TITLE_FLAG_UNK_0) != 0;
   bool32 fade;
 
-  p->flags &= ~INTRO_FLAG_UNK_0;
+  p->flags &= ~TITLE_FLAG_UNK_0;
   if (redraw) {
     ClearBGTilemapBuffer(0);
     Video_GenerateBGMap(0, 0, 0, 0, 0);
@@ -111,43 +111,43 @@ NON_MATCH void Intro_UpdateState2(Title* p) {
   if ((gInput[0].pressed & A_BUTTON) && p->unk_64 < 2) {
     p->unk_64 = 2;
     p->timer_68 = 0;
-    Intro_SetFlags(p, INTRO_FLAG_UNK_1);
+    Title_SetFlags(p, TITLE_FLAG_UNK_1);
   }
 
   switch (p->unk_64) {
     case 0: {
-      p->flags &= ~INTRO_FLAG_UNK_1;
+      p->flags &= ~TITLE_FLAG_UNK_1;
       if (FUN_0821b21c(&p->unk_88, 0, p->unk_70[p->state][0], 7)) {
         p->unk_64 = 1;
         p->timer_68 = 0;
-        Intro_SetFlags(p, INTRO_FLAG_UNK_1);
+        Title_SetFlags(p, TITLE_FLAG_UNK_1);
       }
       break;
     }
     case 1: {
-      p->flags &= ~INTRO_FLAG_UNK_1;
+      p->flags &= ~TITLE_FLAG_UNK_1;
       if (p->timer_68 >= p->unk_70[p->state][1]) {
         p->unk_64 = 2;
         p->timer_68 = 0;
-        Intro_SetFlags(p, INTRO_FLAG_UNK_1);
+        Title_SetFlags(p, TITLE_FLAG_UNK_1);
       }
       break;
     }
     case 2: {
-      fade = (p->flags & INTRO_FLAG_UNK_1) != 0;
-      p->flags &= ~INTRO_FLAG_UNK_1;
+      fade = (p->flags & TITLE_FLAG_UNK_1) != 0;
+      p->flags &= ~TITLE_FLAG_UNK_1;
       if (fade) {
         p->unk_8c = Div(p->unk_70[p->state][2] * gBgBrightness, 64);
       }
       if (FUN_0821b21c(&p->unk_88, 1, p->unk_70[p->state][p->unk_64], 7)) {
-        Intro_SetState(p, 3);
+        Title_SetState(p, 3);
         FUN_0823d4ac();
       }
       break;
     }
   }
 #else
-  INCFUNC("asm/func/Intro_UpdateState2.inc");
+  INCFUNC("asm/func/Title_UpdateState2.inc");
 #endif
 }
 
@@ -193,9 +193,9 @@ void FUN_08212570(Title* p) {
   CpuCopy32(p->bgp, gBgPlttBuffer, 144 * sizeof(rgb555));
 }
 
-NAKED void Intro_SetupSprites(Title* p) { INCFUNC("asm/func/Intro_SetupSprites.inc"); }
+NAKED void Title_SetupSprites(Title* p) { INCFUNC("asm/func/Title_SetupSprites.inc"); }
 
-static void Intro_DestroyInternal(Title* p) {
+static void Title_DestroyInternal(Title* p) {
   MainSprite_Remove(&p->spr_94);
   MainSprite_Remove(&p->spr_f4);
   MainSprite_Remove(&p->spr_154);
@@ -299,49 +299,49 @@ void FUN_08212910(Title* p) {
 
 NAKED void FUN_082129b8(Title* p) { INCFUNC("asm/func/FUN_082129b8.inc"); }
 
-NAKED void Intro_UpdateState3(Title* p) { INCFUNC("asm/func/Intro_UpdateState3.inc"); }
+NAKED void Title_UpdateState3(Title* p) { INCFUNC("asm/func/Title_UpdateState3.inc"); }
 
-void Intro_LoadGfx(Title* p) {
+void Title_LoadGfx(Title* p) {
   MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_TITLE);
 
   p->gfx = *f;
   OpenMainSpriteFile(&p->gfx, f);
-  Intro_SetupSprites(p);
+  Title_SetupSprites(p);
 }
 
-void Intro_SetState(Title* p, s32 state) {
-  static void (*const sIntroUpdates[4])(Title*) = {
-      Intro_UpdateState0,
-      Intro_UpdateState1,
-      Intro_UpdateState2,
-      Intro_UpdateState3,
+void Title_SetState(Title* p, s32 state) {
+  static void (*const sTitleUpdates[4])(Title*) = {
+      Title_UpdateState0,
+      Title_UpdateState1,
+      Title_UpdateState2,
+      Title_UpdateState3,
   };  // 0x085AFA20
 
   p->state = state;
   p->stateTimer = 0;
-  p->updateCallback = sIntroUpdates[state];
-  Intro_SetFlags(p, INTRO_FLAG_UNK_0);
+  p->updateCallback = sTitleUpdates[state];
+  Title_SetFlags(p, TITLE_FLAG_UNK_0);
   p->unk_64 = 0;
   p->timer_68 = 0;
-  Intro_SetFlags(p, INTRO_FLAG_UNK_1);
+  Title_SetFlags(p, TITLE_FLAG_UNK_1);
   gBgBrightness = 0;
   gObjBrightness = 0;
   gBgPlttFadeRowMask |= ((1 << 1) | (1 << 0));
 }
 
-s32 Intro_Update(Title* p) {
-  if (!(p->flags & INTRO_FLAG_UNK_0)) p->stateTimer++;
-  if (!(p->flags & INTRO_FLAG_UNK_1)) p->timer_68++;
+s32 Title_Update(Title* p) {
+  if (!(p->flags & TITLE_FLAG_UNK_0)) p->stateTimer++;
+  if (!(p->flags & TITLE_FLAG_UNK_1)) p->timer_68++;
   p->updateCallback(p);
   return 0;
 }
 
-s32 Intro_Destroy(Title* p) {
-  Intro_DestroyInternal(p);
+s32 Title_Destroy(Title* p) {
+  Title_DestroyInternal(p);
   return 0;
 }
 
-s32 Intro_Init(Title* p) {
+s32 Title_Init(Title* p) {
   s32 d;
 
   if (VM_SeekToNamedArg('Y')) {
@@ -388,29 +388,29 @@ s32 Intro_Init(Title* p) {
     p->unk_58 = VM_GetValue();
   }
 
-  p->flags = (d == 0) ? 0 : INTRO_FLAG_UNK_28;
+  p->flags = (d == 0) ? 0 : TITLE_FLAG_UNK_28;
   p->state = 0;
   p->stateTimer = 0;
   p->unk_64 = 0;
   p->timer_68 = 0;
   p->unk_6c = -1;
-  Intro_LoadGfx(p);
+  Title_LoadGfx(p);
 
-  if (p->unk_40 == 1 || p->unk_40 == 2 || Intro_TestFlags(p, INTRO_FLAG_UNK_28)) {
-    Intro_SetState(p, 3);
+  if (p->unk_40 == 1 || p->unk_40 == 2 || Title_TestFlags(p, TITLE_FLAG_UNK_28)) {
+    Title_SetState(p, 3);
   } else {
-    Intro_SetState(p, 0);
+    Title_SetState(p, 0);
   }
   return 0;
 }
 
 // 0xCF79, HashName("タイトル")
-Title* Intro_Create(void) {
+Title* Title_Create(void) {
   Title* p = CreateEntity(ENTITY_UNK_11, sizeof(Title));
 
   if (p != NULL) {
-    SetEntityRoutine(p, Intro_Update, Intro_Destroy);
-    if (Intro_Init(p) < 0) {
+    SetEntityRoutine(p, Title_Update, Title_Destroy);
+    if (Title_Init(p) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
