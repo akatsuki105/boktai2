@@ -39,7 +39,7 @@ static_assert(sizeof(LevelUpper) == 608);
 IWRAM_DATA LevelUpper* gLevelUpper = NULL;  // 0x03000154
 
 // 次のレベルになるために必要な"総"経験値量を返す
-u32 GetNextLvExp(LevelUpper* p, s32 lv) {
+static u32 GetNextLvExp(LevelUpper* p, s32 lv) {
   // = return p->expTable[lv] * 10;
   u32* exp = p->expTable;
   exp += lv;

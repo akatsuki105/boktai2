@@ -66,7 +66,7 @@ _0809946C: .4byte 0x000186A0
 _08099470: .4byte 0x0000F0BC
 _08099474:
 	adds r0, r6, #0
-	bl weapon_080993c4
+	bl MainMenu_GetNextLvExp
 	adds r1, r7, #0
 	bl MinS32
 	str r5, [sp]

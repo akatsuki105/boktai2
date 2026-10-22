@@ -105,7 +105,7 @@ typedef struct MainMenu {
   u8* unk_50;          // 0x0050, '.A'
   u8* unk_54;          // 0x0054, '.l', FUN_0808f170 が MessageWindow_Start に渡す
   u8* unk_58;          // 0x0058, '.E', 根拠: MainMenu_ShowLineInstant が MessageWindow_Start に渡す
-  s32* unk_5c;         // 0x005C, '.e', gStat->lv で引く表, weapon_080993c4 がその10倍を返す
+  u32* expTable;       // 0x005C, '.e', 経験値テーブル(レベルごとの必要経験値 の 1/10)
   struct {
     MainSpriteGfx smenu;
     MainSpriteGfx map;
@@ -388,7 +388,7 @@ void FUN_0808a458(s32 brightness, s32 color) {
   gObjBrightness = brightness;
 }
 
-s32 MinS32(s32 a, s32 b) {
+static s32 MinS32(s32 a, s32 b) {
   s32 min = b;
   if (a <= b) {
     min = a;
@@ -2679,16 +2679,11 @@ NAKED void FUN_08099008(MainMenu* p) { INCFUNC("asm/func/FUN_08099008.inc"); }
 
 NAKED void FUN_080992c0(MainMenu* p) { INCFUNC("asm/func/FUN_080992c0.inc"); }
 
-// 武器のレベル別の値を10倍して返す
-// 残差1命令, 原典は table + idx の和を r1 に作る (こちらは r0) だけの違い
-NON_MATCH s32 weapon_080993c4(MainMenu* p) {
-#ifdef NONMATCHING_C
-  s32* table = p->unk_5c;
-
-  return table[gStat->lv] * 10;
-#else
-  INCFUNC("asm/func/weapon_080993c4.inc");
-#endif
+// 次のレベルになるために必要な"総"経験値量を返す
+static u32 MainMenu_GetNextLvExp(MainMenu* p) {
+  u32* exp = p->expTable;
+  exp += gStat->lv;
+  return 10 * (*exp);
 }
 
 NAKED void weapon_080993e4(MainMenu* p) { INCFUNC("asm/func/weapon_080993e4.inc"); }
@@ -3105,7 +3100,7 @@ void MainMenu1P_ReadNamedArgs(MainMenu* p) {
     p->unk_58 = VM_GetPC_Proxy();
   }
   if (VM_SeekToNamedArg('e')) {
-    p->unk_5c = VM_GetValueSafe2();
+    p->expTable = VM_GetValueSafe2();
   }
 
   if (VM_SeekToNamedArg('p')) {
