@@ -36,8 +36,8 @@ typedef struct {
   magic8_t id;        // 0x01, 魔法のID
   u8 unk_02[2];       // 0x02, まだ未解析, padding?
   MainSprite sprite;  // 0x0004
-} QCMagicIcon;
-static_assert(sizeof(QCMagicIcon) == 100);
+} QCMagicSlot;
+static_assert(sizeof(QCMagicSlot) == 100);
 
 typedef struct {
   u8 unk_0[8];  // 0x000, まだ未解析
@@ -64,8 +64,8 @@ typedef struct {
   u8 unk_02[2];       // 0x0002, まだ未解析, padding?
   Weapon* weapon;     // 0x0004, 根拠: MainMenu_ApplyWeapon が Player_ApplyWeapon の第2引数に渡す
   MainSprite sprite;  // 0x0008
-} QCWeapon;
-static_assert(sizeof(QCWeapon) == 104);
+} QCWeaponSlot;
+static_assert(sizeof(QCWeaponSlot) == 104);
 
 // スタートメニューのインベントリカーソル(スタートメニューの道具,貴重品,武器,防具,魔法 のインベントリで使用)
 typedef struct {
@@ -186,13 +186,13 @@ typedef struct MainMenu {
     s8 idx;                // 0x0C02, 現在選択中のインデックス (0..3), 負なら選択なし
     u8 unk_c03;            // 0x0C03
     u32 unk_c04;           // 0x0C04
-    QCMagicIcon icons[4];  // 0x0C08, HUD上の魔法アイコン, 4つ分
+    QCMagicSlot slots[4];  // 0x0C08, HUD上の魔法アイコン, 4つ分
   } qcMagic;               // 0x0C00, 魔法のクイックチェンジ(HUD上)
   struct {
-    s8 idx;                     // 0x0D98, 現在選択中のインデックス (0..3)
-    s8 unk_d99;                 // 0x0D99
-    u8 unk_d9a[0xD9C - 0xD9A];  // 0x0D9A, まだ未解析
-    QCWeapon icons[4];          // 0x0D9C, HUD上の武器アイコン, 4つ分
+    s8 idx;                 // 0x0D98, 現在選択中のインデックス (0..3)
+    s8 unk_d99;             // 0x0D99
+    u8 unk_d9a[2];          // 0x0D9A, まだ未解析
+    QCWeaponSlot slots[4];  // 0x0D9C, HUD上の武器アイコン, 4つ分
   } qcWeapon;
   u8 qcCursorPulseCounter;       // 0x0F3C
   u8 unk_f3d;                    // 0x0F3D
@@ -808,8 +808,8 @@ void MainMenu_HideSprites(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    p->qcMagic.icons[i].sprite.flags |= SPRFLAG_HIDDEN;
-    p->qcWeapon.icons[i].sprite.flags |= SPRFLAG_HIDDEN;
+    p->qcMagic.slots[i].sprite.flags |= SPRFLAG_HIDDEN;
+    p->qcWeapon.slots[i].sprite.flags |= SPRFLAG_HIDDEN;
   }
 }
 
@@ -850,14 +850,14 @@ void FUN_0808d908(MainMenu* p) {
 // 選んでいる魔法をプレイヤーに持たせる, 選択なしなら外す
 void FUN_0808d93c(MainMenu* p) {
   if (p->qcMagic.idx >= 0 && p->qcMagic.iconNums != 0) {
-    Player_EquipMagic(p->player, p->qcMagic.icons[p->qcMagic.idx].id);
+    Player_EquipMagic(p->player, p->qcMagic.slots[p->qcMagic.idx].id);
   } else {
     Player_EquipMagic(p->player, -1);
   }
 }
 
 // 4つめのスプライトが指す武器を Player に適用する
-void MainMenu_ApplyWeapon(MainMenu* p) { Player_ApplyWeapon(p->player, p->qcWeapon.icons[p->qcWeapon.idx].weapon); }
+void MainMenu_ApplyWeapon(MainMenu* p) { Player_ApplyWeapon(p->player, p->qcWeapon.slots[p->qcWeapon.idx].weapon); }
 
 // クイックチェンジ で呼ばれた (武器魔法両方), スタートメニューでの 武器魔法切り替え処理 はここを呼んでいない
 void MainMenu_QC_0808d9c8(MainMenu* p) {
@@ -896,9 +896,9 @@ NON_MATCH void MainMenu1P_AddIconSprites(MainMenu* p) {
   posA.x = 8, posA.y = 136, posA.z = 0;
   posB.x = 216, posB.y = 136, posB.z = 0;
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->qcMagic.icons[i].sprite, &p->gfx.icons, ICON_MAGIC(MAGIC_SOL), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posA);
-    MainSprite_SetPltt(&p->qcMagic.icons[i].sprite, 1);
-    MainSprite_Add(&p->qcWeapon.icons[i].sprite, &p->gfx.icons, ICON_WEAPON(WEAPON_GRADIUS), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posB);
+    MainSprite_Add(&p->qcMagic.slots[i].sprite, &p->gfx.icons, ICON_MAGIC(MAGIC_SOL), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posA);
+    MainSprite_SetPltt(&p->qcMagic.slots[i].sprite, 1);
+    MainSprite_Add(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, ICON_WEAPON(WEAPON_GRADIUS), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posB);
   }
 #else
   INCFUNC("asm/func/MainMenu1P_AddIconSprites.inc");
@@ -913,8 +913,8 @@ NON_MATCH void FUN_0808dda4(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    MainSprite_Remove(&p->qcMagic.icons[i].sprite);
-    MainSprite_Remove(&p->qcWeapon.icons[i].sprite);
+    MainSprite_Remove(&p->qcMagic.slots[i].sprite);
+    MainSprite_Remove(&p->qcWeapon.slots[i].sprite);
   }
 #else
   INCFUNC("asm/func/FUN_0808dda4.inc");
@@ -956,8 +956,8 @@ NAKED void FUN_0808de70(MainMenu* p) { INCFUNC("asm/func/FUN_0808de70.inc"); }
 // 選ばれている武器のスプライトだけを見せる
 void FUN_0808df7c(MainMenu* p) {
   MainMenu_HideSprites(p);
-  p->qcWeapon.icons[p->qcWeapon.idx].sprite.flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetPose(&p->qcWeapon.icons[p->qcWeapon.idx].sprite, &p->gfx.icons, 0, 1);
+  p->qcWeapon.slots[p->qcWeapon.idx].sprite.flags &= ~SPRFLAG_HIDDEN;
+  MainSprite_SetPose(&p->qcWeapon.slots[p->qcWeapon.idx].sprite, &p->gfx.icons, 0, 1);
 }
 
 void FUN_0808dfcc(MainMenu* p) {
@@ -3313,8 +3313,8 @@ s32 MainMenuLink_Update(MainMenu* p) {
 s32 MainMenuLink_Destroy(MainMenu* p) {
   FUN_0808cf50(p);
   FUN_0808cffc(p);
-  MainSprite_Remove(&p->qcMagic.icons[0].sprite);
-  MainSprite_Remove(&p->qcWeapon.icons[0].sprite);
+  MainSprite_Remove(&p->qcMagic.slots[0].sprite);
+  MainSprite_Remove(&p->qcWeapon.slots[0].sprite);
   gMainMenu = NULL;
   return 0;
 }
