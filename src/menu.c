@@ -803,8 +803,8 @@ void FUN_0808d268(void) {
 
 NAKED void FUN_0808d2ac(MainMenu* p) { INCFUNC("asm/func/FUN_0808d2ac.inc"); }
 
-// 4組のスプライトを隠す
-void MainMenu_HideSprites(MainMenu* p) {
+// QC用のスプライトを非表示にする
+void MainMenu_HideQCSprites(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
@@ -905,20 +905,14 @@ NON_MATCH void MainMenu1P_AddIconSprites(MainMenu* p) {
 #endif
 }
 
-// 4組のスプライトを描画リストから外す
-// 残差は adds のオペランド順と pool ロードの位置だけ (命令数は同じ), 原典は (i * 100) + p の順で足している
-// 要素ポインタのローカルを挟むとレジスタが1本増えて悪化し, 添字を u32 にしても変わらない
-NON_MATCH void FUN_0808dda4(MainMenu* p) {
-#ifdef NONMATCHING_C
+// QC用のスプライトを削除
+void MainMenu_RemoveQCSprites(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
     MainSprite_Remove(&p->qcMagic.slots[i].sprite);
     MainSprite_Remove(&p->qcWeapon.slots[i].sprite);
   }
-#else
-  INCFUNC("asm/func/FUN_0808dda4.inc");
-#endif
 }
 
 void MainMenu1P_0808dddc(MainMenu* p) {
@@ -930,7 +924,7 @@ void MainMenu1P_0808dddc(MainMenu* p) {
     FUN_0808d4dc(p);
     FUN_0808d564(p);
     if (gFlag030047a4 & FLAG030047A4_UNK_12) {
-      MainMenu_HideSprites(p);
+      MainMenu_HideQCSprites(p);
     } else {
       FUN_0808d3d4(p);
     }
@@ -955,7 +949,7 @@ NAKED void FUN_0808de70(MainMenu* p) { INCFUNC("asm/func/FUN_0808de70.inc"); }
 
 // 選ばれている武器のスプライトだけを見せる
 void FUN_0808df7c(MainMenu* p) {
-  MainMenu_HideSprites(p);
+  MainMenu_HideQCSprites(p);
   p->qcWeapon.slots[p->qcWeapon.idx].sprite.flags &= ~SPRFLAG_HIDDEN;
   MainSprite_SetPose(&p->qcWeapon.slots[p->qcWeapon.idx].sprite, &p->gfx.icons, 0, 1);
 }
@@ -972,21 +966,21 @@ NAKED void FUN_0808e008(MainMenu* p) { INCFUNC("asm/func/FUN_0808e008.inc"); }
 NAKED void FUN_0808e0e0(MainMenu* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_0808e0e0.inc"); }
 
 void FUN_0808e17c(MainMenu* p) {
-  BgMapEntry* e = MainMenu_GetBgMapAddr(0, 0x13, 3);
+  BgMapEntry* e = MainMenu_GetBgMapAddr(0, 19, 3);
 
   *e++ = BGMAP_BGP13 | 0x4D;
   e[0] = BGMAP_BGP13 | 0x4E;
   e[1] = BGMAP_BGP13 | 0x5B;
-  FUN_0808e0e0(p, 0x16, 3, FUN_08050d64());
+  FUN_0808e0e0(p, 22, 3, FUN_08050d64());
 }
 
 void FUN_0808e1b8(MainMenu* p) {
-  BgMapEntry* e = MainMenu_GetBgMapAddr(0, 0x14, 4);
+  BgMapEntry* e = MainMenu_GetBgMapAddr(0, 20, 4);
 
   *e++ = BGMAP_BGP13 | 0x0F;
   e[0] = BGMAP_BGP13 | 0x10;
   e[1] = BGMAP_BGP13 | 0x5B;
-  FUN_0808e0e0(p, 0x17, 4, FUN_08050d7c());
+  FUN_0808e0e0(p, 23, 4, FUN_08050d7c());
 }
 
 // BG0 の (9, 0x11) から2行ぶん 12 タイルを 0xD000 で埋める
@@ -995,7 +989,7 @@ void FUN_0808e1f4(void) {
   s32 x, y;
 
   for (y = 0; y < 2; y++) {
-    e = MainMenu_GetBgMapAddr(0, 9, y + 0x11);
+    e = MainMenu_GetBgMapAddr(0, 9, y + 17);
 
     for (x = 0; x < 12; x++) {
       *e = BGMAP_BGP13;
@@ -3212,7 +3206,7 @@ void FUN_0809c464(void) {
         if (gMainMenu->unk_9fe == 0) {
           FUN_0808e224(gMainMenu);
         }
-        MainMenu_HideSprites(gMainMenu);
+        MainMenu_HideQCSprites(gMainMenu);
       } else {
         if (gMainMenu->unk_9fe == 0) {
           FUN_0808d3d4(gMainMenu);
@@ -3352,7 +3346,7 @@ s32 MainMenu1P_Update(MainMenu* p) {
 }
 
 s32 MainMenu1P_Destroy(MainMenu* p) {
-  FUN_0808dda4(p);
+  MainMenu_RemoveQCSprites(p);
   FUN_0808cf50(p);
   FUN_0808cacc(p);
   MainMenu1P_RemoveSprites(p);
