@@ -198,7 +198,7 @@ typedef struct MainMenu {
   u8 unk_f40[0xF56 - 0xF40];     // 0x0F40, まだ未解析
   u8 page;                       // 0x0F56, スタートメニューのページ番号
   u8 unk_f57;                    // 0x0F57, まだ未解析
-  u8 slots[10];                  // 0x0F58, 非0 のところだけ選べる, FUN_0809a93c / FUN_0809a978 が前後の非0を循環で探す
+  u8 availPages[10];             // 0x0F58, 非0 のところだけ選べる, FUN_0809a93c / FUN_0809a978 が前後の非0を循環で探す
   u8 unk_f62[0xF64 - 0xF62];     // 0x0F62, まだ未解析
   MainSprite sprites[116];       // 0x0F64, 根拠: MainMenu1P_RemoveSprites が 116個ぶん MainSprite_Remove に渡す
   u8 unk_3ae4;                   // 0x3AE4, メニューを閉じて効果を実行する要求
@@ -2914,7 +2914,7 @@ void UNUSED FUN_0809a800(void) { LoadParticleFile(GetFile(DIR_PARTICLE, 0x3002))
 
 NAKED void FUN_0809a81c(MainMenu* p) { INCFUNC("asm/func/FUN_0809a81c.inc"); }
 
-// cur の次から循環で非0の slots を探す, 無ければ cur のまま
+// cur の次から循環で非0の availPages を探す, 無ければ cur のまま
 s32 FUN_0809a93c(MainMenu* p, s32 cur) {
   s32 idx = cur + 1;
   s32 i;
@@ -2923,7 +2923,7 @@ s32 FUN_0809a93c(MainMenu* p, s32 cur) {
     idx = 0;
   }
   for (i = 0; i < 10; i++) {
-    if (p->slots[idx] != 0) {
+    if (p->availPages[idx] != 0) {
       return idx;
     }
     idx++;
@@ -2934,7 +2934,7 @@ s32 FUN_0809a93c(MainMenu* p, s32 cur) {
   return cur;
 }
 
-// cur の手前から循環で非0の slots を探す, 無ければ cur のまま
+// cur の手前から循環で非0の availPages を探す, 無ければ cur のまま
 s32 FUN_0809a978(MainMenu* p, s32 cur) {
   s32 idx = cur - 1;
   s32 i;
@@ -2943,7 +2943,7 @@ s32 FUN_0809a978(MainMenu* p, s32 cur) {
     idx = 9;
   }
   for (i = 0; i < 10; i++) {
-    if (p->slots[idx] != 0) {
+    if (p->availPages[idx] != 0) {
       return idx;
     }
     if (idx == 0) {
