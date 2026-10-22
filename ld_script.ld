@@ -244,7 +244,7 @@ SECTIONS {
 			src/entity_c9bc.o (.text);
 			src/entity_55c2.o (.text);
 			src/entity_0800f110.o (.text);
-			src/title_card.o (.text);
+			src/dungeon_title.o (.text);
 			src/obp_blend.o (.text);
 			src/entity_329b.o (.text);
 			src/sun_countdown.o (.text);

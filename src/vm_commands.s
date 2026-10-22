@@ -463,7 +463,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xB294, FUN_080554d8
 	.4byte 0xB3D1, EntityB3D1_Create
 	.4byte 0xB3D7, FUN_080eefec @ HashName("アルバム")
-	.4byte 0xB426, TitleCard_Create @ HashName("ダンジョンタイトル")
+	.4byte 0xB426, DungeonTitle_Create @ HashName("ダンジョンタイトル")
 	.4byte 0xB45F, Cmd_GetCrossoverPoint
 	.4byte 0xB47E, Entity3117_SetPriorityScripted
 	.4byte 0xB4B4, Cmd_CreateBG

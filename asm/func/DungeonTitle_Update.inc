@@ -143,7 +143,7 @@ _0800F450:
 	movs r0, #1
 	strh r0, [r5, #0x38]
 	strh r2, [r5, #0x3a]
-	ldr r0, _0800F498 @ =TitleCard_UpdateOpen
+	ldr r0, _0800F498 @ =DungeonTitle_UpdateOpen
 	str r0, [r6]
 	ldr r1, _0800F49C @ =0x000002DA
 	adds r0, r5, r1
@@ -167,7 +167,7 @@ _0800F486:
 	ldr r0, _0800F4A4 @ =0x0000FFFE
 	b _0800F4FA
 	.align 2, 0
-_0800F498: .4byte TitleCard_UpdateOpen
+_0800F498: .4byte DungeonTitle_UpdateOpen
 _0800F49C: .4byte 0x000002DA
 _0800F4A0: .4byte 0x000002D6
 _0800F4A4: .4byte 0x0000FFFE
@@ -193,7 +193,7 @@ _0800F4B4:
 	movs r0, #3
 	strh r0, [r5, #0x38]
 	strh r4, [r5, #0x3a]
-	ldr r0, _0800F510 @ =TitleCard_UpdateClose
+	ldr r0, _0800F510 @ =DungeonTitle_UpdateClose
 	str r0, [r6]
 	ldr r3, _0800F514 @ =0x000002DA
 	adds r0, r5, r3
@@ -216,7 +216,7 @@ _0800F4EC:
 	movs r0, #4
 _0800F4FA:
 	strh r0, [r1]
-	ldr r0, _0800F51C @ =TitleCard_BuildHBlankTable
+	ldr r0, _0800F51C @ =DungeonTitle_BuildHBlankTable
 	str r0, [r7]
 _0800F500:
 	ldr r0, [r5, #0x3c]
@@ -228,7 +228,7 @@ _0800F506:
 	pop {r1}
 	bx r1
 	.align 2, 0
-_0800F510: .4byte TitleCard_UpdateClose
+_0800F510: .4byte DungeonTitle_UpdateClose
 _0800F514: .4byte 0x000002DA
 _0800F518: .4byte 0x000002D6
-_0800F51C: .4byte TitleCard_BuildHBlankTable
+_0800F51C: .4byte DungeonTitle_BuildHBlankTable

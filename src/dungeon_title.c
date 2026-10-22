@@ -7,44 +7,44 @@
 #include "video.h"
 #include "vm.h"
 
-struct TitleCard;
-typedef void (*TitleCardFunc)(struct TitleCard*);
+struct DungeonTitle;
+typedef void (*DungeonTitleFunc)(struct DungeonTitle*);
 
 // ダンジョンやボスラッシュに入るときに出すタイトルカード, デバッグ文字列に "mini dungeon title" / "boss rush title" とある
 // 文字とアイコンをスプライトで並べ、HBlank テーブルでノイズの帯をかけながら開閉する
-typedef struct TitleCard {
-  Entity e;                  // 0x000, ENTITY_UNK_8
-  MainSpriteGfx gfx;         // 0x018, SPRITE_E89F
-  u16 state;                 // 0x038, 0 = 開くまでの待ち, 1 = 開く, 2 = 開いたまま, 3 = 閉じる
-  u16 stateTimer;            // 0x03A, state 0 と 2 で毎フレーム +1, openDelay / closeDelay を超えたら次の state へ
-  s32 frameCounter;          // 0x03C, TitleCard_Update が毎フレーム +1, 読み手が見つかっていない
-  s32 scriptOnClose;         // 0x040, '.e', 閉じるときに VM_ExecByID へ渡す
-  s16 closable;              // 0x044, '.C', 0 以外なら A/B で閉じられる
-  s16 unk_46;                // 0x046, '.n', 0 なら DAT_03004040 と gObjBrightness を進行度に連動させ、パレットのフェード設定もする
-  s16 progress;              // 0x048, 0..progressMax, DAT_03004040 = progress * 64 / progressMax
-  s16 openDelay;             // 0x04A, unk_46 が 0 なら 0x40、そうでなければ 0, state 0 の長さ
-  s16 closeDelay;            // 0x04C, '.d=0x80', state 2 の長さ
-  s16 progressMax;           // 0x04E, 0x40 固定
-  u8* text;                  // 0x050, '.r' があれば VM_GetPC_Proxy() の戻り値, 0 でなければ MessageWindow_Start に渡して文字を出す
-  u16 hblank[2][160];        // 0x054, 1画面160ライン分の HBlank テーブルを2面
-  u16 bufIdx;                // 0x2D4, hblank のどちらの面を使うか, 毎フレーム反転する
-  s16 noiseAmp;              // 0x2D6, 0..0x80, 乱数に掛けてノイズの振れ幅にする
-  s16 noiseAmpStep;          // 0x2D8, 開くとき -2、閉じるとき +4
-  u16 lineTop;               // 0x2DA, '.y[0]', ノイズをかける最初のスキャンライン
-  u16 lineBottom;            // 0x2DC, '.y[1]', lineTop と等しければ効果音も鳴らさない
-  s8 number;                 // 0x2DE, '.o=-1', 0 以上なら1の位と10の位を別々のスプライトで出す
-  s8 unk_2df;                // 0x2DF, '.t=-1', 0 以上ならその番号のスプライトを sprites[3] に出す
-  s8 unk_2e0;                // 0x2E0, '.l=0', 0 以外なら sprites[4] のスプライト番号が 1 でなく 0x26 になる
-  u8 unk_2e1[3];             // 0x2E1
-  TitleCardFunc progressFn;  // 0x2E4, 毎フレーム呼ぶ, TitleCard_UpdateOpen / TitleCard_UpdateClose, 終わると自分で NULL を入れる
-  TitleCardFunc hblankFn;    // 0x2E8, 毎フレーム呼ぶ, TitleCard_BuildHBlankTable だけが入る
-  MainSprite sprites[6];     // 0x2EC
-} TitleCard;
-static_assert(sizeof(TitleCard) == 1324);
+typedef struct DungeonTitle {
+  Entity e;                     // 0x000, ENTITY_UNK_8
+  MainSpriteGfx gfx;            // 0x018, SPRITE_E89F
+  u16 state;                    // 0x038, 0 = 開くまでの待ち, 1 = 開く, 2 = 開いたまま, 3 = 閉じる
+  u16 stateTimer;               // 0x03A, state 0 と 2 で毎フレーム +1, openDelay / closeDelay を超えたら次の state へ
+  s32 frameCounter;             // 0x03C, DungeonTitle_Update が毎フレーム +1, 読み手が見つかっていない
+  s32 scriptOnClose;            // 0x040, '.e', 閉じるときに VM_ExecByID へ渡す
+  s16 closable;                 // 0x044, '.C', 0 以外なら A/B で閉じられる
+  s16 unk_46;                   // 0x046, '.n', 0 なら DAT_03004040 と gObjBrightness を進行度に連動させ、パレットのフェード設定もする
+  s16 progress;                 // 0x048, 0..progressMax, DAT_03004040 = progress * 64 / progressMax
+  s16 openDelay;                // 0x04A, unk_46 が 0 なら 0x40、そうでなければ 0, state 0 の長さ
+  s16 closeDelay;               // 0x04C, '.d=0x80', state 2 の長さ
+  s16 progressMax;              // 0x04E, 0x40 固定
+  u8* text;                     // 0x050, '.r' があれば VM_GetPC_Proxy() の戻り値, 0 でなければ MessageWindow_Start に渡して文字を出す
+  u16 hblank[2][160];           // 0x054, 1画面160ライン分の HBlank テーブルを2面
+  u16 bufIdx;                   // 0x2D4, hblank のどちらの面を使うか, 毎フレーム反転する
+  s16 noiseAmp;                 // 0x2D6, 0..0x80, 乱数に掛けてノイズの振れ幅にする
+  s16 noiseAmpStep;             // 0x2D8, 開くとき -2、閉じるとき +4
+  u16 lineTop;                  // 0x2DA, '.y[0]', ノイズをかける最初のスキャンライン
+  u16 lineBottom;               // 0x2DC, '.y[1]', lineTop と等しければ効果音も鳴らさない
+  s8 number;                    // 0x2DE, '.o=-1', 0 以上なら1の位と10の位を別々のスプライトで出す
+  s8 unk_2df;                   // 0x2DF, '.t=-1', 0 以上ならその番号のスプライトを sprites[3] に出す
+  s8 unk_2e0;                   // 0x2E0, '.l=0', 0 以外なら sprites[4] のスプライト番号が 1 でなく 0x26 になる
+  u8 unk_2e1[3];                // 0x2E1
+  DungeonTitleFunc progressFn;  // 0x2E4, 毎フレーム呼ぶ, DungeonTitle_UpdateOpen / DungeonTitle_UpdateClose, 終わると自分で NULL を入れる
+  DungeonTitleFunc hblankFn;    // 0x2E8, 毎フレーム呼ぶ, DungeonTitle_BuildHBlankTable だけが入る
+  MainSprite sprites[6];        // 0x2EC
+} DungeonTitle;
+static_assert(sizeof(DungeonTitle) == 1324);
 
 // lineTop から lineBottom までのスキャンラインに乱数のノイズを入れ、それ以外は 0 に戻す
 // 129 命令対 138 命令, agbcc が行頭アドレスなどを畳みすぎていて、ターゲットより短くなる
-NON_MATCH void TitleCard_BuildHBlankTable(TitleCard* p) {
+NON_MATCH void DungeonTitle_BuildHBlankTable(DungeonTitle* p) {
 #ifdef NONMATCHING_C
   s32 i;
   s32 n;
@@ -67,12 +67,12 @@ NON_MATCH void TitleCard_BuildHBlankTable(TitleCard* p) {
     p->noiseAmp = 0x80;
   }
 #else
-  INCFUNC("asm/func/TitleCard_BuildHBlankTable.inc");
+  INCFUNC("asm/func/DungeonTitle_BuildHBlankTable.inc");
 #endif
 }
 
 // 開くほうの進行, progress を上げきったら自分を外す
-void TitleCard_UpdateOpen(TitleCard* p) {
+void DungeonTitle_UpdateOpen(DungeonTitle* p) {
   if (p->unk_46 == 0) {
     gBgBrightness = Div(p->progress << 6, p->progressMax);
   }
@@ -84,7 +84,7 @@ void TitleCard_UpdateOpen(TitleCard* p) {
 }
 
 // 閉じるほうの進行, progress が 0 を切ったらスクリプトを走らせて自分を消す
-void TitleCard_UpdateClose(TitleCard* p) {
+void DungeonTitle_UpdateClose(DungeonTitle* p) {
   if (p->unk_46 == 0) {
     gBgBrightness = Div(p->progress << 6, p->progressMax);
   }
@@ -100,7 +100,7 @@ void TitleCard_UpdateClose(TitleCard* p) {
 }
 
 // 202命令対202命令, スクラッチレジスタの番号だけがずれる
-NON_MATCH s32 TitleCard_Update(TitleCard* p) {
+NON_MATCH s32 DungeonTitle_Update(DungeonTitle* p) {
 #ifdef NONMATCHING_C
   if (p->unk_46 == 0) {
     gObjBrightness = gBgBrightness;
@@ -136,13 +136,13 @@ NON_MATCH s32 TitleCard_Update(TitleCard* p) {
       if (p->stateTimer > p->openDelay) {
         p->state = 1;
         p->stateTimer = 0;
-        p->progressFn = TitleCard_UpdateOpen;
+        p->progressFn = DungeonTitle_UpdateOpen;
         if (p->lineTop != p->lineBottom) {
           PlaySound_082406e0(SONG_225);
         }
         p->noiseAmp = 0x80;
         p->noiseAmpStep = -2;
-        p->hblankFn = TitleCard_BuildHBlankTable;
+        p->hblankFn = DungeonTitle_BuildHBlankTable;
       }
       break;
     }
@@ -157,13 +157,13 @@ NON_MATCH s32 TitleCard_Update(TitleCard* p) {
       if (p->stateTimer > p->closeDelay) {
         p->state = 3;
         p->stateTimer = 0;
-        p->progressFn = TitleCard_UpdateClose;
+        p->progressFn = DungeonTitle_UpdateClose;
         if (p->lineTop != p->lineBottom) {
           PlaySound_082406e0(SONG_227);
         }
         p->noiseAmp = 0;
         p->noiseAmpStep = 4;
-        p->hblankFn = TitleCard_BuildHBlankTable;
+        p->hblankFn = DungeonTitle_BuildHBlankTable;
       }
       break;
     }
@@ -174,11 +174,11 @@ NON_MATCH s32 TitleCard_Update(TitleCard* p) {
   p->frameCounter++;
   return 0;
 #else
-  INCFUNC("asm/func/TitleCard_Update.inc");
+  INCFUNC("asm/func/DungeonTitle_Update.inc");
 #endif
 }
 
-s32 TitleCard_Destroy(TitleCard* p) {
+s32 DungeonTitle_Destroy(DungeonTitle* p) {
   MainSprite* spr;
   s32 i;
 
@@ -196,14 +196,14 @@ s32 TitleCard_Destroy(TitleCard* p) {
   return 0;
 }
 
-NAKED s32 TitleCard_Init(TitleCard* p) { INCFUNC("asm/func/TitleCard_Init.inc"); }
+NAKED s32 DungeonTitle_Init(DungeonTitle* p) { INCFUNC("asm/func/DungeonTitle_Init.inc"); }
 
-TitleCard* TitleCard_Create(void) {
-  TitleCard* p = CreateEntity(ENTITY_UNK_8, sizeof(TitleCard));
+DungeonTitle* DungeonTitle_Create(void) {
+  DungeonTitle* p = CreateEntity(ENTITY_UNK_8, sizeof(DungeonTitle));
 
   if (p != NULL) {
-    SetEntityRoutine(p, TitleCard_Update, TitleCard_Destroy);
-    if (TitleCard_Init(p) < 0) {
+    SetEntityRoutine(p, DungeonTitle_Update, DungeonTitle_Destroy);
+    if (DungeonTitle_Init(p) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

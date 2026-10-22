@@ -10,7 +10,7 @@
 //     |            枠も id もフレームも知らず、渡された char* を進めてタグを展開するだけ
 //     +- MessageWindow  画面に1つしかない共有の本文表示領域 (src/message_window.c)
 //     |    |            使う側が MessageWindow_SetRect で設定し直して借りる, 顔グラ・送り矢印・オート送り・行ラベルつき
-//     |    |            会話だけでなく gameover / title_card / credits / 各種図鑑も使う
+//     |    |            会話だけでなく gameover / dungeon_title / credits / 各種図鑑も使う
 //     |    +- MessageChoice  MessageWindow を操作して <ALTER> を選択肢として選ばせる UI (src/message_choice.c)
 //     |                       自分では描かず、カーソルのスプライトを左右に置く
 //     +- TextPanel      各画面が必要なだけ自分で開き、id で持って自分で閉じる追加パネル (src/text_panel.c)
