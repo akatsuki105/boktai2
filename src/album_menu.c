@@ -6,9 +6,9 @@
 #include "vm.h"
 
 typedef struct {
-  Entity e;    // 0x0, ENTITY_UNK_8
-  void* p_18;  // 0x18, Tilemap_4F8F 固定?
-  u8 unk_1c[4];
+  Entity e;                       // 0x0, ENTITY_UNK_8
+  Tilemaps* tilemap;              // 0x18, TILEMAP_4F8F
+  u8 unk_1c[4];                   // 0x1C
   u32 frameCounter;               // 0x020, フレームカウンタ (多分カーソルの点滅とかで使う)
   u8 page;                        // 0x024, 現在のページ (0: ページ1, 1: ページ2, 2: ページ3)
   u8 cursor;                      // 0x025, 現在のカーソルの位置番号, = (cursorY * 5) + cursorX
