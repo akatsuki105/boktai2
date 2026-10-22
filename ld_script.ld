@@ -551,10 +551,10 @@ SECTIONS {
 			src/savedata.o (.text);
 			src/zonelist.o (.text);
 			src/solar.o (.text);
-			src/item_082421f0.o (.text);
-			src/weapon.o (.text);
-			src/armor.o (.text);
-			src/equip_magic.o (.text);
+			src/item/item.o (.text);
+			src/item/weapon.o (.text);
+			src/item/armor.o (.text);
+			src/item/magic.o (.text);
 			src/eeprom.o (.text);
     } >rom = 0x00
 
@@ -832,7 +832,7 @@ SECTIONS {
     src/data/sprite_main.o (.rodata);
     src/data/obp.o (.rodata);
     src/data/scripts.o (.rodata);
-    src/data/item.o (.rodata);
+    src/item/data.o (.rodata);
     src/demo.o (.rodata);
     src/vm_ctrl2.o (.rodata);
     src/solar.o (.rodata);

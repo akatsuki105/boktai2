@@ -2041,8 +2041,6 @@ NAKED void FUN_08094200(MainMenu* p) { INCFUNC("asm/func/FUN_08094200.inc"); }
 
 NAKED void FUN_08094440(MainMenu* p) { INCFUNC("asm/func/FUN_08094440.inc"); }
 
-void SortValuable(slot32_t slot);  // src/item_082421f0.c
-
 void FUN_080944f4(MainMenu* p) {
   s32 result = FUN_0808b760(p);
 

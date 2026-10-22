@@ -1,7 +1,6 @@
-#include "item.h"
-
 #include "armor.h"
 #include "global.h"
+#include "item.h"
 #include "weapon.h"
 
 const WeaponData gWeaponDB[WEAPON_NUM] = {
