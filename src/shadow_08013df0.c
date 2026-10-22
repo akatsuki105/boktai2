@@ -147,7 +147,7 @@ s32 ScriptShadow_Create(u32 id, s32 mode, Vec3* pos) {
   return -1;
 }
 
-// スクリプト命令: n=ID, m=モード, p=座標 で影を作る
+// 0x73FE, HashName("影配置"), n=ID, m=モード, p=座標 で影を作る
 s32 ScriptShadow_CreateFromScript(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
   s32 mode = VM_GetNamedArgValue('m', 1);
@@ -178,6 +178,7 @@ s32 ScriptShadow_Delete(u32 id) {
   return 0;
 }
 
+// 0x435E, HashName("影削除")
 s32 ScriptShadow_DeleteFromScript(void) { return ScriptShadow_Delete(VM_GetNamedArgValue('n', 0)); }
 
 // ID の影のモードを変える (1 なら表示、2 なら非表示)
@@ -196,7 +197,7 @@ s32 ScriptShadow_SetMode(u32 id, s32 mode) {
   return 0;
 }
 
-// スクリプト命令: n=ID, m=モード で影のモードを変える
+// 0x86F3, n=ID, m=モード で影のモードを変える
 s32 ScriptShadow_SetModeFromScript(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
   s32 mode = VM_GetNamedArgValue('m', 1);
@@ -215,7 +216,7 @@ s32 ScriptShadow_Move(u32 id, Vec3* pos) {
   return -1;
 }
 
-// スクリプト命令: n=ID, p=座標 で影を移す
+// 0xDB6C, n=ID, p=座標 で影を移す
 s32 ScriptShadow_MoveFromScript(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 

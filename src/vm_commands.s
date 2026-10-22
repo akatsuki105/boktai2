@@ -173,7 +173,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x4235, WeatherManager_StartScripted
 	.4byte 0x42EF, FUN_080d7f48
 	.4byte 0x430D, Cmd_Delay @ HashName("delay")
-	.4byte 0x435E, ScriptShadow_DeleteFromScript
+	.4byte 0x435E, ScriptShadow_DeleteFromScript @ HashName("影削除")
 	.4byte 0x4383, VM_Sub4383
 	.4byte 0x43A0, VM_ReadTable
 	.4byte 0x43D6, FUN_08041d60
@@ -287,7 +287,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x7300, KidShop_Create @ HashName("道具屋")
 	.4byte 0x730A, Entity730A_Create
 	.4byte 0x7348, Demo_Start
-	.4byte 0x73FE, ScriptShadow_CreateFromScript
+	.4byte 0x73FE, ScriptShadow_CreateFromScript @ HashName("影配置")
 	.4byte 0x744F, WeaponShop_Create @ HashName("武器屋")
 	.4byte 0x7539, Camera_SetTilemapOffset
 	.4byte 0x7566, FUN_080866e4
