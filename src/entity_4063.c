@@ -72,6 +72,7 @@ s32 Entity4063_Init(Entity4063* p, u32 param_2, u32 param_3) {
   return 0;
 }
 
+// 0x4063
 Entity4063* Entity4063_Create(u32 param_1, u32 param_2) {
   if (gEntity4063 == NULL) {
     Entity4063* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity4063));

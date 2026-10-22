@@ -186,7 +186,7 @@ typedef struct MainMenu {
   u8 slots[10];                  // 0x0F58, 非0 のところだけ選べる, FUN_0809a93c / FUN_0809a978 が前後の非0を循環で探す
   u8 unk_f62[0xF64 - 0xF62];     // 0x0F62, まだ未解析
   MainSprite sprites[116];       // 0x0F64, 根拠: MainMenu1P_RemoveSprites が 116個ぶん MainSprite_Remove に渡す
-  u8 unk_3ae4;                   // 0x3AE4
+  u8 unk_3ae4;                   // 0x3AE4, メニューを閉じて効果を実行する要求
   u8 unk_3ae5[0x3AE6 - 0x3AE5];  // 0x3AE5, まだ未解析
   u8 unk_3ae6;                   // 0x3AE6
   u8 unk_3ae7;                   // 0x3AE7
@@ -1708,12 +1708,13 @@ NAKED void ItemEffect_Good(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm
 
 NAKED void ItemEffect_Vitamins(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_Vitamins.inc"); }
 
+// 精霊虫召喚
 void ItemEffect_Bugs(MainMenu* p, s32 param_2, s32 param_3) {
   Player* player = p->player;
 
   if (player != NULL) {
     p->unk_3fad = param_2;
-    if (player->kind == 5) {
+    if (player->kind == PLAYER_SABATA) {
       if ((u8)param_2 == 0) {
         p->unk_3fad = 2;
       } else if ((u8)param_2 == 2) {
@@ -1726,12 +1727,14 @@ void ItemEffect_Bugs(MainMenu* p, s32 param_2, s32 param_3) {
   }
 }
 
+// IET_WARP
 void ItemEffect_Warp(MainMenu* p, s32 val, s32 _) {
   p->unk_3fb0 = 1;
   p->unk_3fb1 = val;
   p->unk_3ae4 = 1;
 }
 
+// IET_SOLAR
 // 残差は30/32命令, 原典は1つ目の書き込みの後で gStat を読み直す
 NON_MATCH void ItemEffect_Solar(MainMenu* p, s32 _, s32 __) {
 #ifdef NONMATCHING_C
