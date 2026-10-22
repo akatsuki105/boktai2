@@ -3105,10 +3105,8 @@ void FUN_0809c430(void) {
 
 void FUN_0809c464(void) {
   if (gMainMenu != NULL) {
-    Player* player = gPlayerPtr[0];
-
-    gMainMenu->player = player;
-    if (player != NULL) {
+    gMainMenu->player = GetPlayer(0);
+    if (gMainMenu->player != NULL) {
       FUN_0808d774(gMainMenu);
       FUN_0808d564(gMainMenu);
       FUN_0808d5cc(gMainMenu);
@@ -3208,19 +3206,12 @@ void MainMenuLink_Update_Internal(MainMenu* p) {
   }
 }
 
-// 残差1命令, 原典は 0x9DF と 0x9E0 のオフセットを別々に作るが agbcc は前者を使い回して add #1 に畳む, ローカル分割 (Player* / 添字) は試済
-NON_MATCH s32 MainMenuLink_Update(MainMenu* p) {
-#ifdef NONMATCHING_C
+s32 MainMenuLink_Update(MainMenu* p) {
   if (!(gEntityDisableFlags & ENTITY_DISABLE_0)) {
-    Player* player = gPlayerPtr[p->playerIdx];
-
-    p->player = player;
+    p->player = GetPlayer(p->playerIdx);
     MainMenuLink_Update_Internal(p);
   }
   return 0;
-#else
-  INCFUNC("asm/func/MainMenuLink_Update.inc");
-#endif
 }
 
 s32 MainMenuLink_Destroy(MainMenu* p) {
@@ -3256,9 +3247,7 @@ MainMenu* MainMenuLink_Create(u32 id, u32 _) {
 }
 
 s32 MainMenu1P_Update(MainMenu* p) {
-  Player* player = gPlayerPtr[0];
-
-  p->player = player;
+  p->player = GetPlayer(0);
   if (p->updateCallback != NULL) {
     p->updateCallback(p);
   }
