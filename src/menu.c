@@ -882,7 +882,25 @@ NAKED void FUN_0808daa8(MainMenu* p) { INCFUNC("asm/func/FUN_0808daa8.inc"); }
 
 NAKED void FUN_0808db68(MainMenu* p) { INCFUNC("asm/func/FUN_0808db68.inc"); }
 
-NAKED void FUN_0808dcdc(MainMenu* p) { INCFUNC("asm/func/FUN_0808dcdc.inc"); }
+// 残差1命令 (86/86), 原典は (p + i*100) + 0xC0C の順に足すが fold が定数を添字側へ寄せて (i*100 + 0xC0C) + p になる (unk_da0 側は同じ形で一致している)
+// Tier A-C 試済 (スプライトポインタのローカル化, 配列基底のローカル化は命令数が減るので不可)
+NON_MATCH void MainMenu1P_AddIconSprites(MainMenu* p) {
+#ifdef NONMATCHING_C
+  Vec3 posA;
+  Vec3 posB;
+  s32 i;
+
+  posA.x = 8, posA.y = 136, posA.z = 0;
+  posB.x = 216, posB.y = 136, posB.z = 0;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->unk_c0c[i].sprite, &p->gfx.icons, 182, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posA);
+    MainSprite_SetPltt(&p->unk_c0c[i].sprite, 1);
+    MainSprite_Add(&p->unk_da0[i].sprite, &p->gfx.icons, 1, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posB);
+  }
+#else
+  INCFUNC("asm/func/MainMenu1P_AddIconSprites.inc");
+#endif
+}
 
 // 4組のスプライトを描画リストから外す
 // 残差は adds のオペランド順と pool ロードの位置だけ (命令数は同じ), 原典は (i * 100) + p の順で足している
@@ -901,7 +919,7 @@ NON_MATCH void FUN_0808dda4(MainMenu* p) {
 }
 
 void MainMenu1P_0808dddc(MainMenu* p) {
-  FUN_0808dcdc(p);
+  MainMenu1P_AddIconSprites(p);
 
   if (p->player != NULL) {
     FUN_0808d5cc(p);
