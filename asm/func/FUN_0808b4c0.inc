@@ -52,7 +52,7 @@ _0808B524:
 	movs r0, #0
 	movs r1, #0x12
 	movs r2, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r1, r0, #0
 	ldr r2, _0808B570 @ =0x00003AE6
 	adds r0, r4, r2

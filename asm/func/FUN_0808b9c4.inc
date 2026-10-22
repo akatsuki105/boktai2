@@ -12,7 +12,7 @@ _0808B9D8:
 	adds r2, r7, r4
 	movs r0, #0
 	mov r1, r8
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r2, r4, #1
 	cmp r5, #0
 	ble _0808B9F8

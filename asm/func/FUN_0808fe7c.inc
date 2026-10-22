@@ -84,7 +84,7 @@ _0808FF28:
 _0808FF2A:
 	movs r0, #1
 	adds r1, r3, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r5, r0, #0
 	ldrb r0, [r6]
 	bl FUN_0808fe78

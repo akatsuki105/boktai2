@@ -322,7 +322,7 @@ void FUN_0808a3c4(MainMenu* p, TilemapFile* tilemap, s16 param_3, s32 layerIdx, 
   CpuCopy32(pltt, &gBgPlttBuffer[208], 96);
 }
 
-BgMapEntry* FUN_0808a420(s32 bg, u32 x, u32 y) {
+static BgMapEntry* MainMenu_GetBgMapAddr(s32 bg, u32 x, u32 y) {
   BgState* s = &gBgStates[bg];
   BgMapEntry* map = s->tilemap;
 
@@ -398,7 +398,7 @@ NON_MATCH void FUN_0808b30c(s32 value, s32 place, u32 x, u32 y, s32 kind) {
     base = 0x91;
   }
 
-  map = FUN_0808a420(0, x, y);
+  map = MainMenu_GetBgMapAddr(0, x, y);
   while (place > 0) {
     s32 digit = Div(value, place);
     BgMapEntry tile = digit + base;
@@ -416,7 +416,7 @@ NON_MATCH void FUN_0808b30c(s32 value, s32 place, u32 x, u32 y, s32 kind) {
 // 残差1命令, 原典は 0xF090 のプール定数をループ変数の初期化より前に作る (FUN_0808b97c と同じ)
 NON_MATCH void FUN_0808b360(s32 count, u32 x, u32 y) {
 #ifdef NONMATCHING_C
-  BgMapEntry* entry = FUN_0808a420(0, x, y);
+  BgMapEntry* entry = MainMenu_GetBgMapAddr(0, x, y);
 
   if (count > 0) {
     s32 n = count;
@@ -503,7 +503,7 @@ NON_MATCH void FUN_0808b97c(s32 param_1, s32 param_2, s32 param_3, s32 param_4) 
   s32 i;
 
   for (i = 0; i < param_4; i++) {
-    BgMapEntry* entry = FUN_0808a420(0, param_1, param_2 + i);
+    BgMapEntry* entry = MainMenu_GetBgMapAddr(0, param_1, param_2 + i);
 
     if (param_3 > 0) {
       s32 n = param_3;
@@ -526,7 +526,7 @@ NON_MATCH void FUN_0808b9c4(s32 param_1, s32 param_2, s32 param_3, s32 param_4) 
   s32 i;
 
   for (i = 0; i < param_4; i++) {
-    BgMapEntry* entry = FUN_0808a420(0, param_1, param_2 + i);
+    BgMapEntry* entry = MainMenu_GetBgMapAddr(0, param_1, param_2 + i);
 
     if (param_3 > 0) {
       s32 n = param_3;
@@ -652,7 +652,7 @@ NAKED void MainMenu1P_0808cb00(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0808c
 // BG0 の先頭9タイルに 0xA0 からの連番を並べる
 void FUN_0808cb90(MainMenu* p) {
   if (!p->unk_a30) {
-    BgMapEntry* entry = FUN_0808a420(0, 0, 0);
+    BgMapEntry* entry = MainMenu_GetBgMapAddr(0, 0, 0);
     s32 i;
 
     for (i = 0; i < 9; i++) {
@@ -666,7 +666,7 @@ void FUN_0808cb90(MainMenu* p) {
 
 void FUN_0808cbd8(MainMenu* p) {
   if (p->unk_a30) {
-    BgMapEntry* entry = FUN_0808a420(0, 0, 0);
+    BgMapEntry* entry = MainMenu_GetBgMapAddr(0, 0, 0);
     s32 i;
 
     for (i = 0; i < 9; i++) {
@@ -761,8 +761,8 @@ void FUN_0808d268(void) {
   s32 y;
 
   for (y = 0; y < 4; y++) {
-    BgMapEntry* left = FUN_0808a420(0, 0, y + 16);
-    BgMapEntry* right = FUN_0808a420(0, 26, y + 16);
+    BgMapEntry* left = MainMenu_GetBgMapAddr(0, 0, y + 16);
+    BgMapEntry* right = MainMenu_GetBgMapAddr(0, 26, y + 16);
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -930,7 +930,7 @@ NAKED void FUN_0808e008(MainMenu* p) { INCFUNC("asm/func/FUN_0808e008.inc"); }
 NAKED void FUN_0808e0e0(MainMenu* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_0808e0e0.inc"); }
 
 void FUN_0808e17c(MainMenu* p) {
-  BgMapEntry* e = FUN_0808a420(0, 0x13, 3);
+  BgMapEntry* e = MainMenu_GetBgMapAddr(0, 0x13, 3);
 
   *e++ = BGMAP_BGP13 | 0x4D;
   e[0] = BGMAP_BGP13 | 0x4E;
@@ -939,7 +939,7 @@ void FUN_0808e17c(MainMenu* p) {
 }
 
 void FUN_0808e1b8(MainMenu* p) {
-  BgMapEntry* e = FUN_0808a420(0, 0x14, 4);
+  BgMapEntry* e = MainMenu_GetBgMapAddr(0, 0x14, 4);
 
   *e++ = BGMAP_BGP13 | 0x0F;
   e[0] = BGMAP_BGP13 | 0x10;
@@ -953,7 +953,7 @@ void FUN_0808e1f4(void) {
   s32 x, y;
 
   for (y = 0; y < 2; y++) {
-    e = FUN_0808a420(0, 9, y + 0x11);
+    e = MainMenu_GetBgMapAddr(0, 9, y + 0x11);
 
     for (x = 0; x < 12; x++) {
       *e = BGMAP_BGP13;
@@ -1585,7 +1585,7 @@ void MainMenu_FillBG1(MainMenu* p) {
 
   for (y = 0; y < 32; y++) {
     for (x = 0; x < 32; x++) {
-      *FUN_0808a420(1, x, y) = 0xE002;
+      *MainMenu_GetBgMapAddr(1, x, y) = 0xE002;
     }
   }
 }
@@ -2126,7 +2126,7 @@ void FUN_08094988(void) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    *FUN_0808a420(0, i + 14, 8) = 0xF001;
+    *MainMenu_GetBgMapAddr(0, i + 14, 8) = 0xF001;
   }
 }
 

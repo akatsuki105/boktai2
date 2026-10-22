@@ -48,7 +48,7 @@ _08099404:
 	movs r0, #0
 	movs r1, #0x17
 	movs r2, #5
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	ldr r3, _08099470 @ =0x0000F0BC
 	adds r1, r3, #0
 	movs r4, #5
@@ -142,7 +142,7 @@ _08099502:
 	asrs r2, r4, #1
 	adds r2, #8
 	movs r0, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r1, r4, #1
 	ldr r3, _08099530 @ =0x0000F001
 	adds r2, r3, #0
