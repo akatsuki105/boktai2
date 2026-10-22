@@ -3095,9 +3095,7 @@ void MainMenu_InitAvailPages(MainMenu* p) {
 
   if (!p->availPages[p->page]) {
     for (i = 0; i < PAGE_NUM; i++) {
-      u8 page = ++p->page;
-
-      if (page >= PAGE_NUM) {
+      if (++p->page >= PAGE_NUM) {
         p->page = 0;
       }
       if (p->availPages[p->page]) {
