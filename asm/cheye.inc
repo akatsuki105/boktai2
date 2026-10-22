@@ -9729,10 +9729,10 @@ _08180262:
 	str r0, [sp]
 	mov r0, sp
 	movs r1, #0
-	bl FUN_081f7b8c
+	bl Entity081f7de4_Spawn
 	mov r0, sp
 	movs r1, #0x80
-	bl FUN_081f7b8c
+	bl Entity081f7de4_Spawn
 	adds r0, r5, #0
 	movs r1, #0x10
 	bl FUN_080efe38
@@ -9762,7 +9762,7 @@ _081802B4:
 	ldrb r0, [r0]
 	cmp r0, #0
 	beq _081802EC
-	bl FUN_081f7e3c
+	bl Entity081f7de4_RemoveAll
 	ldr r0, _081802F8 @ =0x00000898
 	adds r2, r6, r0
 	ldr r1, _0818030C @ =0xFFEFFFFF
@@ -10635,7 +10635,7 @@ _08180918:
 	movs r0, #4
 	orrs r0, r1
 	strh r0, [r2, #6]
-	bl FUN_081f7e3c
+	bl Entity081f7de4_RemoveAll
 	bl FUN_080e0214
 	movs r7, #0xcd
 	lsls r7, r7, #1
