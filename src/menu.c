@@ -2990,7 +2990,7 @@ void MainMenu1P_RemoveSprites(MainMenu* p) {
 
 NAKED void MainMenu1P_0809b468(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0809b468.inc"); }
 
-void MainMenu1P_OpenSpriteFiles(MainMenu* p) {
+void MainMenu_OpenSpriteFiles(MainMenu* p) {
   MainSpriteGfxFile* f;
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
@@ -3341,7 +3341,7 @@ s32 MainMenu1P_Init(MainMenu* p, u32 id) {
   MainMenu1P_0809bed8(p);
   FUN_0809bf88(p);
   MainMenu1P_0809c010(p);
-  MainMenu1P_OpenSpriteFiles(p);
+  MainMenu_OpenSpriteFiles(p);
   MainMenu1P_0808dddc(p);
   MainMenu1P_0809b468(p);
   if (VM_SeekToNamedArg('d')) {

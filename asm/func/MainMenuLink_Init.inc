@@ -33,7 +33,7 @@ _0809CB04:
 	adds r0, r4, r2
 	str r1, [r0]
 	adds r0, r4, #0
-	bl MainMenu1P_OpenSpriteFiles
+	bl MainMenu_OpenSpriteFiles
 	adds r0, r4, #0
 	bl MainMenuLink_0809ca08
 	adds r0, r4, #0
