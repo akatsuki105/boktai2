@@ -99,7 +99,7 @@ typedef struct MainMenu {
   u8* unk_54;                    // 0x0054, FUN_0808f170 が MessageWindow_Start に渡す
   u8* unk_58;                    // 0x0058, 根拠: MainMenu_ShowLineInstant が MessageWindow_Start に渡す
   s32* unk_5c;                   // 0x005C, gStat->lv で引く表, weapon_080993c4 がその10倍を返す
-  MainSpriteGfx gfx[9];          // 0x0060
+  MainSpriteGfx gfx[9];          // 0x0060, [0] SPRITE_UI_START_MENU, [1] SPRITE_UI_MAP, [2] SPRITE_INVENTORY_ICONS, [3] SPRITE_UI_DARKLOAN, [4] SPRITE_PORTRAITS, [5] SPRITE_DJANGO_SABATA, [6] SPRITE_RITA, [7] SPRITE_CARMILLA, [8] SPRITE_UI_LINK
   BgState savedBg1;              // 0x0180
   u16 savedTilemap1[1024];       // 0x01B0
   u16 unk_9b0;                   // 0x09B0
@@ -2990,7 +2990,72 @@ void MainMenu1P_RemoveSprites(MainMenu* p) {
 
 NAKED void MainMenu1P_0809b468(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0809b468.inc"); }
 
-NAKED void FUN_0809bd14(MainMenu* p) { INCFUNC("asm/func/FUN_0809bd14.inc"); }
+void MainMenu1P_OpenSpriteFiles(MainMenu* p) {
+  MainSpriteGfxFile* f;
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[0] = *f;
+  OpenMainSpriteFile(&p->gfx[0], f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[2] = *f;
+  OpenMainSpriteFile(&p->gfx[2], f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_MAP);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[1] = *f;
+  OpenMainSpriteFile(&p->gfx[1], f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_DARKLOAN);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[3] = *f;
+  OpenMainSpriteFile(&p->gfx[3], f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[5] = *f;
+  OpenMainSpriteFile(&p->gfx[5], f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_RITA);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[6] = *f;
+  OpenMainSpriteFile(&p->gfx[6], f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_CARMILLA);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[7] = *f;
+  OpenMainSpriteFile(&p->gfx[7], f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_PORTRAITS);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[4] = *f;
+  OpenMainSpriteFile(&p->gfx[4], f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx[8] = *f;
+  OpenMainSpriteFile(&p->gfx[8], f);
+}
 
 NAKED void MainMenu1P_0809bed8(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0809bed8.inc"); }
 
@@ -3276,7 +3341,7 @@ s32 MainMenu1P_Init(MainMenu* p, u32 id) {
   MainMenu1P_0809bed8(p);
   FUN_0809bf88(p);
   MainMenu1P_0809c010(p);
-  FUN_0809bd14(p);
+  MainMenu1P_OpenSpriteFiles(p);
   MainMenu1P_0808dddc(p);
   MainMenu1P_0809b468(p);
   if (VM_SeekToNamedArg('d')) {
