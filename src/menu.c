@@ -30,6 +30,7 @@
 struct MainMenu;
 typedef void(MainMenuFunc)(struct MainMenu* p);  // _Update が p->fn(p) として呼ぶ
 
+// HUD上の魔法アイコン
 typedef struct {
   MainSprite sprite;  // 0x0000
   s8 unk_60;          // 0x0060, 根拠: MainMenu_ApplyWeapon が ldrsb で読んで配列の添字にする
@@ -56,6 +57,7 @@ static_assert(sizeof(MMenuPtclSet) == 520);
 typedef struct MMenuPtclNode MMenuPtclNode;
 static_assert(sizeof(MMenuPtclNode) == 64);
 
+// HUD上の武器アイコン
 typedef struct {
   Weapon* weapon;     // 0x0000, 根拠: MainMenu_ApplyWeapon が Player_ApplyWeapon の第2引数に渡す
   MainSprite sprite;  // 0x0004
