@@ -51,7 +51,7 @@
 #define SPRITE_PLANT_2567 0x2567               // 多分、ドゥラスロール倒すまで奥の楔の部屋への入り口を塞いでる植物
 #define SPRITE_DEBRIS_C42D 0xC42D              // なんかの破片?
 #define SPRITE_DEBRIS_0334 0x0334              // C42Dの破片の小さいやつ?
-#define SPRITE_EFF_1C1B 0x1C1B                 // エフェクト群(煙、蜘蛛の巣,???)
+#define SPRITE_EFF_1C1B 0x1C1B                 // エフェクト群(煙、蜘蛛の巣,影)
 #define SPRITE_KOMAINU 0xF680                  // 大聖堂の狛犬
 #define SPRITE_EXPLOSION 0x8639                // ExplosionManager が使う爆発
 #define SPRITE_BOMB 0xE74B                     // 丸い爆弾, エフェクト(煙?), ダイナマイト

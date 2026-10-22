@@ -173,7 +173,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x4235, WeatherManager_StartScripted
 	.4byte 0x42EF, FUN_080d7f48
 	.4byte 0x430D, Cmd_Delay @ HashName("delay")
-	.4byte 0x435E, ScriptShadow_DeleteFromScript @ HashName("影削除")
+	.4byte 0x435E, Cmd_DeleteShadow @ HashName("影削除")
 	.4byte 0x4383, VM_Sub4383
 	.4byte 0x43A0, VM_ReadTable
 	.4byte 0x43D6, FUN_08041d60
@@ -287,7 +287,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x7300, KidShop_Create @ HashName("道具屋")
 	.4byte 0x730A, Entity730A_Create
 	.4byte 0x7348, Demo_Start
-	.4byte 0x73FE, ScriptShadow_CreateFromScript @ HashName("影配置")
+	.4byte 0x73FE, Cmd_CreateShadow @ HashName("影配置")
 	.4byte 0x744F, WeaponShop_Create @ HashName("武器屋")
 	.4byte 0x7539, Camera_SetTilemapOffset
 	.4byte 0x7566, FUN_080866e4
@@ -344,7 +344,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x8400, FUN_080b2224
 	.4byte 0x8459, FUN_080a11d4
 	.4byte 0x8602, Entity2D2B_SetLitDurationScripted
-	.4byte 0x86F3, ScriptShadow_SetModeFromScript
+	.4byte 0x86F3, Cmd_SetShadowMode
 	.4byte 0x877F, FUN_08050e18
 	.4byte 0x87E4, EnemySpider_Create @ HashName("スパイダー")
 	.4byte 0x87FE, MorningDew_Create
@@ -562,7 +562,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xDA19, FUN_08090ee0
 	.4byte 0xDA5A, Cmd_GetZoneBounds
 	.4byte 0xDAA4, Cmd_GetPrefecture
-	.4byte 0xDB6C, ScriptShadow_MoveFromScript
+	.4byte 0xDB6C, Cmd_MoveShadow @ HashName("影位置変更")
 	.4byte 0xDC21, EntityDC21_Create @ HashName("太陽スタンド")
 	.4byte 0xDD0E, FUN_0807b3e0
 	.4byte 0xDD91, MessageWindow_ConfigureScripted
