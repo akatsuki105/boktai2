@@ -20,7 +20,7 @@
 	movs r3, #0xa
 	bl FUN_0808a3c4
 	adds r0, r4, #0
-	bl weapon_080993e4
+	bl FUN_080993e4
 	adds r0, r4, #0
 	movs r1, #5
 	movs r2, #7

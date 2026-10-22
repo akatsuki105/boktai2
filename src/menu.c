@@ -98,13 +98,13 @@ typedef struct MainMenu {
   rgb555* bgp_34;      // 0x0034, BGP_ECBF
   rgb555* bgp_38;      // 0x0038, BGP_5F5E
   rgb555* bgp_3c;      // 0x003C, BGP_EAA8
-  u8* unk_40;          // 0x0040, '.i'
-  u8* unk_44;          // 0x0044, '.w'
-  u8* unk_48;          // 0x0048, '.a'
-  u8* unk_4c;          // 0x004C, '.m'
-  u8* unk_50;          // 0x0050, '.A'
-  u8* unk_54;          // 0x0054, '.l', FUN_0808f170 が MessageWindow_Start に渡す
-  u8* unk_58;          // 0x0058, '.E', 根拠: MainMenu_ShowLineInstant が MessageWindow_Start に渡す
+  char* itemNames;     // 0x0040, '.i', String_1608
+  char* weaponNames;   // 0x0044, '.w', String_170D
+  char* armorNames;    // 0x0048, '.a', String_17B7
+  char* magicNames;    // 0x004C, '.m', String_1802
+  char* areaNames;     // 0x0050, '.A', String_1826
+  char* loanTexts;     // 0x0054, '.l', String_053B, 暗黒カードを使ったに表示されるテキスト
+  char* etcTexts;      // 0x0058, '.E', String_1880, その他のテキスト
   u32* expTable;       // 0x005C, '.e', 経験値テーブル(レベルごとの必要経験値 の 1/10)
   struct {
     MainSpriteGfx smenu;
@@ -1163,7 +1163,7 @@ void FUN_0808f170(MainMenu* p) {
   FUN_08049e5c();
   FUN_08049f84();
   MessageWindow_SetRect(1, 15, 28, 4);
-  MessageWindow_Start(p->unk_54);
+  MessageWindow_Start(p->loanTexts);
   MessageWindow_SetInstant(1);
 
   if (p->unk_401f != 0) {
@@ -2667,7 +2667,7 @@ void MainMenu_ShowLineInstant(MainMenu* p, s32 line) {
     MessageWindow_Close();
   } else {
     MessageWindow_SetInstant(1);
-    MessageWindow_Start(p->unk_58);
+    MessageWindow_Start(p->etcTexts);
     MessageWindow_SetRect(0, 18, 30, 2);
     MessageWindow_ShowLine(line);
   }
@@ -2686,7 +2686,7 @@ static u32 MainMenu_GetNextLvExp(MainMenu* p) {
   return 10 * (*exp);
 }
 
-NAKED void weapon_080993e4(MainMenu* p) { INCFUNC("asm/func/weapon_080993e4.inc"); }
+NAKED void FUN_080993e4(MainMenu* p) { INCFUNC("asm/func/FUN_080993e4.inc"); }
 
 NAKED void FUN_080995b0(MainMenu* p, u8 param_2) { INCFUNC("asm/func/FUN_080995b0.inc"); }
 
@@ -3079,25 +3079,25 @@ void MainMenu_OpenSpriteFiles(MainMenu* p) {
 
 void MainMenu1P_ReadNamedArgs(MainMenu* p) {
   if (VM_SeekToNamedArg('i')) {
-    p->unk_40 = VM_GetPC_Proxy();
+    p->itemNames = VM_GetPC_Proxy();
   }
   if (VM_SeekToNamedArg('w')) {
-    p->unk_44 = VM_GetPC_Proxy();
+    p->weaponNames = VM_GetPC_Proxy();
   }
   if (VM_SeekToNamedArg('a')) {
-    p->unk_48 = VM_GetPC_Proxy();
+    p->armorNames = VM_GetPC_Proxy();
   }
   if (VM_SeekToNamedArg('m')) {
-    p->unk_4c = VM_GetPC_Proxy();
+    p->magicNames = VM_GetPC_Proxy();
   }
   if (VM_SeekToNamedArg('A')) {
-    p->unk_50 = VM_GetPC_Proxy();
+    p->areaNames = VM_GetPC_Proxy();  // String_1826
   }
   if (VM_SeekToNamedArg('l')) {
-    p->unk_54 = VM_GetPC_Proxy();
+    p->loanTexts = VM_GetPC_Proxy();
   }
   if (VM_SeekToNamedArg('E')) {
-    p->unk_58 = VM_GetPC_Proxy();
+    p->etcTexts = VM_GetPC_Proxy();  // STR_STARTMENU_MISC
   }
   if (VM_SeekToNamedArg('e')) {
     p->expTable = VM_GetValueSafe2();
