@@ -9,7 +9,6 @@
 typedef struct ScriptShadow {
   u16 id;                     // 0x00, ScriptShadowManager_Find がこの値で探す, ScriptShadow_Create でスクリプトの値をセット
   u8 mode;                    // 0x02, 0 ならリスト外 (ScriptShadowManager_Add で 1, ScriptShadowManager_Remove で 0), ScriptShadow_Create / ScriptShadow_SetMode がスクリプトの値を入れ 1 なら ParticleShadow_Show, 2 なら ParticleShadow_Hide
-  u8 unk_03;                  // 0x03
   Vec3 pos;                   // 0x04, 影を置く座標, ScriptShadow_Create / ScriptShadow_Move がコピーし、shadow の持ち主座標として渡す
   ParticleShadow shadow;      // 0x0C, 根拠: ParticleShadow_Init / ParticleShadow_Remove
   struct ScriptShadow* prev;  // 0x4C

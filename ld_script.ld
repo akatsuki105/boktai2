@@ -49,8 +49,8 @@ SECTIONS {
       src/spirit_bugs.o(iwram_data);
       src/entity_329b.o(iwram_data);
       src/sun_countdown.o(iwram_data);
-      src/shadow_0801381c.o(iwram_data);
-      src/shadow_08013b68.o(iwram_data);
+      src/shadow_normal.o(.bss);
+      src/shadow_large.o(.bss);
       src/entity_080146e0.o(iwram_data);
       src/entity_08015220.o(iwram_data);
       src/entity_08015584.o(iwram_data);
@@ -188,7 +188,7 @@ SECTIONS {
       src/cactus.o(COMMON);
       src/entity_c9bc.o(COMMON);
       src/entity_0800f110.o(COMMON);
-      src/shadow_08013df0.o(COMMON);
+      src/shadow_scripted.o(COMMON);
       src/entity_08016660.o(COMMON);
       src/msgbus.o(COMMON);
       src/entity_286f.o(COMMON);
@@ -253,9 +253,9 @@ SECTIONS {
 			src/entity_e534.o (.text);
 			src/password.o (.text);
 			src/entity_ec96.o (.text);
-			src/shadow_0801381c.o (.text);
-			src/shadow_08013b68.o (.text);
-			src/shadow_08013df0.o (.text);
+			src/shadow_normal.o (.text);
+			src/shadow_large.o (.text);
+			src/shadow_scripted.o (.text);
 			src/entity_080146e0.o (.text);
 			src/entity_08015220.o (.text);
 			src/entity_08015584.o (.text);

@@ -5,6 +5,7 @@
 #include "shadow.h"
 #include "sprite.h"
 
+// 影, ボスなどの巨大モンスター以外は全部この影を使う
 typedef struct ParticleShadowManager {
   Entity e;               // ENTITY_UNK_9
   ParticleGroup* group0;  // 0x18, PTCL_GROUP_0
@@ -12,7 +13,7 @@ typedef struct ParticleShadowManager {
 } ParticleShadowManager;
 static_assert(sizeof(ParticleShadowManager) == 32);
 
-IWRAM_DATA ParticleShadowManager* gParticleShadowManager = NULL;  // 0x03000050
+static ParticleShadowManager* gParticleShadowManager;  // 0x03000050
 
 void ParticleShadow_FollowGround(ParticleShadow* shadow);
 

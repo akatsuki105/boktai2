@@ -4,6 +4,7 @@
 #include "shadow.h"
 #include "sprite_aux.h"
 
+// ボスなどの巨大モンスター用の影
 typedef struct {
   Entity e;         // 0x00, ENTITY_UNK_9
   u8 unk_18[4];     // 0x18, 参照なし
@@ -11,7 +12,7 @@ typedef struct {
 } AuxShadowManager;
 static_assert(sizeof(AuxShadowManager) == 32);
 
-IWRAM_DATA AuxShadowManager* gAuxShadowManager = NULL;  // 0x03000054
+static AuxShadowManager* gAuxShadowManager;  // 0x03000054
 
 void AuxShadow_UpdateNone(AuxShadow* _);
 void AuxShadow_FollowGround(AuxShadow* shadow);
