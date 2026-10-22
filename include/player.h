@@ -433,6 +433,7 @@ void FUN_0807bc64(Player* p, u32 scriptID);
 void Player_SetAction(Player* p, u32 action, u32 state);
 void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames);
 void Player_ClearBadCondition(Player* p, s32 badcondID);
+void Player_RefreshAllStats(Player* p);
 void Player_EquipMagic(Player* p, magic32_t n);
 u32 FUN_08066ee4(s32 playerKind, s32 idx);
 void FUN_0807a91c(Player* p, Vec3* pos);

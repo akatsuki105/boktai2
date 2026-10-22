@@ -7,6 +7,7 @@
 #include "item.h"
 #include "particle.h"
 #include "player.h"
+#include "random.h"
 #include "save.h"
 #include "sound.h"
 #include "sprite.h"
@@ -211,8 +212,8 @@ typedef struct MainMenu {
   MMenuPtclSet ptclSets[2];      // 0x3B8C, FUN_0808cacc が2組とも Particle_Remove で片付ける
   bool8 inValuableInventory;     // 0x3F9C
   u8 unk_3f9d;                   // 0x3F9D
-  u8 unk_3f9e;                   // 0x3F9E
-  u8 unk_3f9f;                   // 0x3F9F
+  u8 vitaminStat;                // 0x3F9E, ビタミン剤で上げるステータス番号, FUN_08092bf0 が +255 してメッセージ行IDにする
+  u8 vitaminAmount;              // 0x3F9F, ビタミン剤で上げる量, 合計99で頭打ちになる前の値
   u8 unk_3fa0[2];                // 0x3FA0
   s16 effectAmount;              // 0x3FA2, アイテム使用時のポップアップに出す効果量, FUN_0809296c が符号付きで読んで FUN_08092868 に渡す
   u8 unk_3fa4[0x3FAC - 0x3FA4];  // 0x3FA4
@@ -1786,7 +1787,36 @@ void ItemEffect_Good(MainMenu* p, s32 goodCondID, s32 goodCondSec) {
   }
 }
 
-NAKED void ItemEffect_Vitamins(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_Vitamins.inc"); }
+// statIdx のステータスのドーピングボーナスを amount 上げる (合計99が上限), statIdx が範囲外ならランダムな1種
+// 残差4命令 (69/65), 原典は gStat + statIdx*2 を共通の基底にして 0x18 / 0x20 をレジスタオフセットで ldrsh するが, こちらは gStat+0x18 と gStat+0x20 を別々に組む (associate_trees が定数を gStat 側へ寄せる)
+// Tier A-C 試済 (添字をローカルにする/フィールド直読み, stats の2配列分割)
+NON_MATCH void ItemEffect_Vitamins(MainMenu* p, s32 statIdx, s32 amount) {
+#ifdef NONMATCHING_C
+  Player* player = p->player;
+
+  if (player != NULL) {
+    s32 add;
+    s32 i;
+
+    if (statIdx < STAT_KINDS) {
+      p->vitaminStat = statIdx;
+    } else {
+      p->vitaminStat = Mod(Random() >> 3, STAT_KINDS);
+    }
+    p->vitaminAmount = amount;
+    add = p->vitaminAmount;
+    i = p->vitaminStat;
+    if (gStat->stats[i] + gStat->statBonus[i] + add > 99) {
+      add = 99 - gStat->statBonus[i] - gStat->stats[i];
+    }
+    gStat->statBonus[i] += add;
+    Player_RefreshAllStats(player);
+    FUN_0808b604(p, 5, 3);
+  }
+#else
+  INCFUNC("asm/func/ItemEffect_Vitamins.inc");
+#endif
+}
 
 // 精霊虫召喚
 void ItemEffect_Bugs(MainMenu* p, s32 param_2, s32 param_3) {

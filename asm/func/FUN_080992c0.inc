@@ -36,7 +36,7 @@ _08099304:
 	lsls r1, r1, #4
 	adds r0, r4, r1
 	ldr r0, [r0]
-	bl FUN_080612bc
+	bl Player_RefreshAllStats
 	adds r0, r4, #0
 	bl FUN_08098af4
 	adds r0, r4, #0

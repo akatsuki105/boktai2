@@ -346,7 +346,7 @@ NON_MATCH void Player_RefreshStats(Player* p) {
 
   if (p->kind != PLAYER_SABATA) {
     for (i = 0; i < STAT_KINDS; i++) {
-      p->stats[i] = gStat->stats[i] + gStat->stats[i + STAT_KINDS];
+      p->stats[i] = gStat->stats[i] + gStat->statBonus[i];
       if (p->stats[i] > 99) {
         p->stats[i] = 99;
       }
@@ -367,7 +367,7 @@ NON_MATCH void Player_RefreshStats(Player* p) {
     base += 10;
 
     for (i = 0; i < STAT_KINDS; i++) {
-      p->stats[i] = gStat->stats[i + STAT_KINDS] + base;
+      p->stats[i] = gStat->statBonus[i] + base;
       if (rem > 0) {
         p->stats[i]++;
         rem--;
@@ -518,7 +518,7 @@ void FUN_080612a8(Player* p) {
   Player_RefreshDefence(p);
 }
 
-void FUN_080612bc(Player* p) {
+void Player_RefreshAllStats(Player* p) {
   Player_RefreshStats(p);
   UpdateMaxHPEne(p);
   Player_RefreshDefence(p);
@@ -3006,7 +3006,7 @@ void Player_EquipArmor(Player* p, const ArmorData* a) {
   }
 
   Player_ApplyArmorEffect(p, a);
-  FUN_080612bc(p);
+  Player_RefreshAllStats(p);
 }
 
 void CheckHeartJokerEmblem(Player* p) {

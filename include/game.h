@@ -43,7 +43,8 @@ typedef struct {
   s16 textSpeed;              // 0x012, メッセージ速度設定(1: 速い, 2: 普通, 4: 遅い), TextRenderer_ResetSpeed が TextRenderer.speed に入れる
   s16 markerEnabled;          // 0x014, マーカーの表示設定 (0: 非表示, 1: 表示)
   u8 unk_016[2];              // 0x016
-  s16 stats[STAT_KINDS * 2];  // 0x018, ステータスポイントの割り振り と (多分タロットカードの)ドーピングボーナス, ステータス画面には合計値が表示される
+  s16 stats[STAT_KINDS];      // 0x018, 振り分けたステータスポイント
+  s16 statBonus[STAT_KINDS];  // 0x020, ドーピングボーナス, ステータス画面には stats との合計が表示される
   u16 savedHP;                // 0x028, コンティニュー用？
   u16 savedMaxHP;             // 0x02A
   u16 savedEne;               // 0x02C
