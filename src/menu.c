@@ -804,7 +804,7 @@ void FUN_0808d268(void) {
 NAKED void FUN_0808d2ac(MainMenu* p) { INCFUNC("asm/func/FUN_0808d2ac.inc"); }
 
 // QC用のスプライトを非表示にする
-void MainMenu_HideQCSprites(MainMenu* p) {
+void MainMenu_HideQCIcons(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
@@ -885,28 +885,22 @@ NAKED void FUN_0808daa8(MainMenu* p) { INCFUNC("asm/func/FUN_0808daa8.inc"); }
 
 NAKED void FUN_0808db68(MainMenu* p) { INCFUNC("asm/func/FUN_0808db68.inc"); }
 
-// 残差1命令 (86/86), 原典は (p + i*100) + 0xC0C の順に足すが fold が定数を添字側へ寄せて (i*100 + 0xC0C) + p になる (unk_f3d 側は同じ形で一致している)
-// Tier A-C 試済 (スプライトポインタのローカル化, 配列基底のローカル化は命令数が減るので不可)
-NON_MATCH void MainMenu1P_AddIconSprites(MainMenu* p) {
-#ifdef NONMATCHING_C
-  Vec3 posA;
-  Vec3 posB;
+// クイックチェンジ用のスプライトを追加する (通信対戦では武器を1つしか使えないので、別処理)
+void MainMenu1P_AddQCIcons(MainMenu* p) {
+  Vec3 posMagic, posWeapon;
   s32 i;
 
-  posA.x = 8, posA.y = 136, posA.z = 0;
-  posB.x = 216, posB.y = 136, posB.z = 0;
+  posMagic.x = 8, posMagic.y = 136, posMagic.z = 0;       // 左下
+  posWeapon.x = 216, posWeapon.y = 136, posWeapon.z = 0;  // 右下
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->qcMagic.slots[i].sprite, &p->gfx.icons, ICON_MAGIC(MAGIC_SOL), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posA);
+    MainSprite_Add(&p->qcMagic.slots[i].sprite, &p->gfx.icons, ICON_MAGIC(MAGIC_SOL), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posMagic);
     MainSprite_SetPltt(&p->qcMagic.slots[i].sprite, 1);
-    MainSprite_Add(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, ICON_WEAPON(WEAPON_GRADIUS), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posB);
+    MainSprite_Add(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, ICON_WEAPON(WEAPON_GRADIUS), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posWeapon);
   }
-#else
-  INCFUNC("asm/func/MainMenu1P_AddIconSprites.inc");
-#endif
 }
 
 // QC用のスプライトを削除
-void MainMenu_RemoveQCSprites(MainMenu* p) {
+void MainMenu_RemoveQCIcons(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
@@ -916,7 +910,7 @@ void MainMenu_RemoveQCSprites(MainMenu* p) {
 }
 
 void MainMenu1P_0808dddc(MainMenu* p) {
-  MainMenu1P_AddIconSprites(p);
+  MainMenu1P_AddQCIcons(p);
 
   if (p->player != NULL) {
     FUN_0808d5cc(p);
@@ -924,7 +918,7 @@ void MainMenu1P_0808dddc(MainMenu* p) {
     FUN_0808d4dc(p);
     FUN_0808d564(p);
     if (gFlag030047a4 & FLAG030047A4_UNK_12) {
-      MainMenu_HideQCSprites(p);
+      MainMenu_HideQCIcons(p);
     } else {
       FUN_0808d3d4(p);
     }
@@ -949,7 +943,7 @@ NAKED void FUN_0808de70(MainMenu* p) { INCFUNC("asm/func/FUN_0808de70.inc"); }
 
 // 選ばれている武器のスプライトだけを見せる
 void FUN_0808df7c(MainMenu* p) {
-  MainMenu_HideQCSprites(p);
+  MainMenu_HideQCIcons(p);
   p->qcWeapon.slots[p->qcWeapon.idx].sprite.flags &= ~SPRFLAG_HIDDEN;
   MainSprite_SetPose(&p->qcWeapon.slots[p->qcWeapon.idx].sprite, &p->gfx.icons, 0, 1);
 }
@@ -3206,7 +3200,7 @@ void FUN_0809c464(void) {
         if (gMainMenu->unk_9fe == 0) {
           FUN_0808e224(gMainMenu);
         }
-        MainMenu_HideQCSprites(gMainMenu);
+        MainMenu_HideQCIcons(gMainMenu);
       } else {
         if (gMainMenu->unk_9fe == 0) {
           FUN_0808d3d4(gMainMenu);
@@ -3346,7 +3340,7 @@ s32 MainMenu1P_Update(MainMenu* p) {
 }
 
 s32 MainMenu1P_Destroy(MainMenu* p) {
-  MainMenu_RemoveQCSprites(p);
+  MainMenu_RemoveQCIcons(p);
   FUN_0808cf50(p);
   FUN_0808cacc(p);
   MainMenu1P_RemoveSprites(p);
