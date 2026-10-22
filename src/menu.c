@@ -1751,7 +1751,24 @@ void ItemEffect_MP(MainMenu* p, s32 percent, s32 badCondSec) {
   }
 }
 
-NAKED void ItemEffect_BadStatus(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_BadStatus.inc"); }
+// cureBits が立っている状態異常を治す (bit0: 腹痛, bit1: 毒, bit2: 混乱, bit3: カーモス)
+void ItemEffect_BadStatus(MainMenu* p, s32 cureBits, s32 _) {
+  Player* player = p->player;
+
+  if (player != NULL) {
+    s32 i;
+
+    p->effectAmount = 0;
+    for (i = 0; i < 3; i++) {
+      if ((cureBits >> i) & 1) {
+        Player_ClearBadCondition(player, i);
+      }
+    }
+    if (cureBits & 8) {
+      KAAMOS(player->isSabata) = 0;
+    }
+  }
+}
 
 NAKED void ItemEffect_Good(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_Good.inc"); }
 

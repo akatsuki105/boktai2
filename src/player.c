@@ -2038,7 +2038,7 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
 #endif
 }
 
-void FUN_08063634(Player* p, s32 n) {
+void Player_ClearBadCondition(Player* p, s32 n) {
   p->badCondTimer[n] = 0;
   if (n == 2) {
     p->controlUp = gStat->controlUp;
@@ -6845,7 +6845,7 @@ void FUN_0807b484(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL && VM_SeekToNamedArg('s')) {
-    FUN_08063634(p, VM_GetValue());
+    Player_ClearBadCondition(p, VM_GetValue());
   }
 }
 
@@ -6857,7 +6857,7 @@ void FUN_0807b4b8(void) {
     s32 j;
 
     for (j = 0; j < 3; j++) {
-      FUN_08063634(p, j);
+      Player_ClearBadCondition(p, j);
     }
   }
 }
