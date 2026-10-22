@@ -518,6 +518,7 @@ void FUN_080612a8(Player* p) {
   Player_RefreshDefence(p);
 }
 
+// プレイヤーの全パラメータを再計算する
 void Player_RefreshAllStats(Player* p) {
   Player_RefreshStats(p);
   UpdateMaxHPEne(p);
@@ -2003,23 +2004,23 @@ u32 Player_ApplyPoseHold(Player* p, u32 n) {
 NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
 #ifdef NONMATCHING_C
   switch (badcondID) {
-    case 0: {  // 腹痛
+    case BAD_HARAITA: {
       break;
     }
-    case 1: {  // 毒
+    case BAD_POISON: {
       if (p->unk_4c4.unk_3 != 0) {
         if (p->unk_4c4.kind == 3) {
           break;
         }
         FUN_08063220(p);
       }
-      if (p->badCondTimer[1] == 0) {
+      if (p->badCondTimer[BAD_POISON] == 0) {
         p->unk_3d8 = 0;
       }
       break;
     }
-    case 2: {  // 混乱
-      if (p->badCondTimer[2] == 0) {
+    case BAD_CONFUSE: {
+      if (p->badCondTimer[BAD_CONFUSE] == 0) {
         gRandTableIdx = (gRandTableIdx + 1) & 0x3FF;
         gConfusedDir = (p->controlUp + 1 + Mod(gRandomTable[gRandTableIdx], 7)) & 7;
         p->controlUp = gConfusedDir;
@@ -2038,9 +2039,9 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
 #endif
 }
 
-void Player_ClearBadCondition(Player* p, s32 n) {
-  p->badCondTimer[n] = 0;
-  if (n == 2) {
+void Player_ClearBadCondition(Player* p, s32 badcondID) {
+  p->badCondTimer[badcondID] = 0;
+  if (badcondID == BAD_CONFUSE) {
     p->controlUp = gStat->controlUp;
   }
 }
@@ -2058,7 +2059,7 @@ u32 Player_TickBadCondTimers(Player* p, u32 n) {
       }
     }
     n = 6;
-    p->sunDrainBlinkTimer = 0x40;
+    p->sunDrainBlinkTimer = 64;
   } else if (p->sunDrainBlinkTimer != 0) {
     if ((p->sunDrainBlinkTimer >> 2) & 1) {
       n = 6;
@@ -2068,13 +2069,13 @@ u32 Player_TickBadCondTimers(Player* p, u32 n) {
 
   for (i = 0; i < 3; i++) {
     switch (i) {
-      case 1: {
-        if (p->badCondTimer[1] != 0) {
+      case BAD_POISON: {
+        if (p->badCondTimer[BAD_POISON] != 0) {
           if (p->unk_1c & 1) {
-            p->badCondTimer[1]--;
+            p->badCondTimer[BAD_POISON]--;
           }
           n = 2;
-          p->badCondBlinkTimer = 0x40;
+          p->badCondBlinkTimer = 64;
         } else if (p->badCondBlinkTimer != 0) {
           if ((p->badCondBlinkTimer >> 2) & 1) {
             n = 2;
@@ -2083,19 +2084,19 @@ u32 Player_TickBadCondTimers(Player* p, u32 n) {
         }
         break;
       }
-      case 0: {
-        if (p->badCondTimer[0] != 0 && (p->unk_1c & 1)) {
-          p->badCondTimer[0]--;
-          if (p->input->down & 0xF0) {
+      case BAD_HARAITA: {
+        if (p->badCondTimer[BAD_HARAITA] != 0 && (p->unk_1c & 1)) {
+          p->badCondTimer[BAD_HARAITA]--;
+          if (p->input->down & DPAD_ANY) {
             MosaicFader_Start(2, 1, 0x1E, p->mosaicFrom, p->unk_980, p->mosaicInterval);
           }
         }
         break;
       }
-      case 2: {
-        if (p->badCondTimer[2] != 0 && (p->unk_1c & 1)) {
-          p->badCondTimer[2]--;
-          if (p->badCondTimer[2] == 0) {
+      case BAD_CONFUSE: {
+        if (p->badCondTimer[BAD_CONFUSE] != 0 && (p->unk_1c & 1)) {
+          p->badCondTimer[BAD_CONFUSE]--;
+          if (p->badCondTimer[BAD_CONFUSE] == 0) {
             p->controlUp = gStat->controlUp;
           }
         }

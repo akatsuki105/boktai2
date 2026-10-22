@@ -1721,7 +1721,7 @@ void ItemEffect_HP(MainMenu* p, s32 percent, s32 badCondSec) {
     }
     FUN_0808a610(p, 1, 5, 3);
     if (badCondSec > 0) {
-      Player_ApplyBadCondition(player, 0, badCondSec * 60);
+      Player_ApplyBadCondition(player, BAD_HARAITA, badCondSec * 60);
     }
   }
 }
@@ -1749,9 +1749,9 @@ void ItemEffect_MP(MainMenu* p, s32 percent, s32 badCondSec) {
     FUN_0808a768(p, 1, 5, 4);
     if (badCondSec > 0) {
       if (GetItemID(p->inValuableInventory, p->cursor.savedSlot) == ITEM_BAD_MUSHROOM) {
-        Player_ApplyBadCondition(player, 2, badCondSec * 60);
+        Player_ApplyBadCondition(player, BAD_CONFUSE, badCondSec * 60);
       } else {
-        Player_ApplyBadCondition(player, 0, badCondSec * 60);
+        Player_ApplyBadCondition(player, BAD_HARAITA, badCondSec * 60);
       }
     }
   }
@@ -1865,13 +1865,14 @@ NON_MATCH void ItemEffect_Solar(MainMenu* p, s32 _, s32 __) {
 #endif
 }
 
+// IET_LOAN, 暗黒カード
 void ItemEffect_Loan(MainMenu* p, s32 _, s32 __) {
   p->effectAmount = 0;
   p->unk_401d = 1;
   p->unk_3ae4 = 1;
 }
 
-// HP と Ene を targetHP / targetEne に書き換える, HPが0になったら審判のカード持ちだけ unk_3fbb を落とす
+// HP と Ene を targetHP / targetEne に書き換える, HPが0になったら 審判のカード 持ちだけ unk_3fbb を落とす
 void ItemEffect_HPMP(MainMenu* p, s32 _, s32 __) {
   p->player->hp = p->targetHP;
   p->player->ene = p->targetEne;

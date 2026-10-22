@@ -28,4 +28,9 @@
 #define GOOD_UVCUT 7      // 日焼け止め
 #define GOOD_EMPEROR 8    // 全属性に耐性(皇帝のカード)
 
+// 悪いステータス効果
+#define BAD_HARAITA 0  // 腹痛 (移動すると画面にモザイクがかかる)
+#define BAD_POISON 1   // 毒
+#define BAD_CONFUSE 2  // 混乱
+
 #endif  // __INCLUDE_CONSTANTS_MISCS_H__
