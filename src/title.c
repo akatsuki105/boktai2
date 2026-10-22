@@ -17,7 +17,7 @@ typedef u32 IntroFlags;
 
 // ゲーム起動時からタイトル画面でモード(GAMESTART, OPTION, LINK のどれか)を選択するまでの処理を行う
 // モード(GAMESTART, OPTION, LINK のどれか) からBボタンに戻ると、またこのEntityが生成される
-typedef struct Intro {
+typedef struct Title {
   Entity e;                               // 0x000, ENTITY_UNK_11
   MainSpriteGfx gfx;                      // 0x018, SPRITE_TITLE
   Tilemaps* tilemap;                      // 0x038, FileID は state ごとに違う
@@ -58,20 +58,20 @@ typedef struct Intro {
   u16 unk_420;                            // 0x420
   u16 unk_422;                            // 0x422
   u8 unk_424[4];                          // 0x424
-  void (*updateCallback)(struct Intro*);  // 0x428
-} Intro;
-static_assert(sizeof(Intro) == 1068);
+  void (*updateCallback)(struct Title*);  // 0x428
+} Title;
+static_assert(sizeof(Title) == 1068);
 
 extern const u8 u8_ARRAY_08252778[8];
 
 bool32 FUN_0821b21c(s32* p, s32 val1, s32 val2, u16 val3);
 void FUN_0823d4ac(void);
-void Intro_SetState(Intro* p, s32 state);
+void Intro_SetState(Title* p, s32 state);
 
-static inline void Intro_SetFlags(Intro* p, IntroFlags bits) { p->flags |= bits; }
-static inline IntroFlags Intro_TestFlags(Intro* p, IntroFlags bits) { return p->flags & bits; }
+static inline void Intro_SetFlags(Title* p, IntroFlags bits) { p->flags |= bits; }
+static inline IntroFlags Intro_TestFlags(Title* p, IntroFlags bits) { return p->flags & bits; }
 
-void FUN_08211f20(Intro* p) {
+void FUN_08211f20(Title* p) {
   s32 idx;
   p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_32A2);
   idx = 0;
@@ -79,18 +79,18 @@ void FUN_08211f20(Intro* p) {
   SetBGPrioDirect(2, 2);
 }
 
-void FUN_08211f64(Intro* p) {
+void FUN_08211f64(Title* p) {
   p->bgp = GetBgPlttFile(BGP_D8C3)->body;
   CpuCopy32(p->bgp, gBgPlttBuffer, 48 * sizeof(rgb555));
 }
 
-NAKED void Intro_UpdateState0(Intro* p) { INCFUNC("asm/func/Intro_UpdateState0.inc"); }
+NAKED void Intro_UpdateState0(Title* p) { INCFUNC("asm/func/Intro_UpdateState0.inc"); }
 
-NAKED void Intro_UpdateState1(Intro* p) { INCFUNC("asm/func/Intro_UpdateState1.inc"); }
+NAKED void Intro_UpdateState1(Title* p) { INCFUNC("asm/func/Intro_UpdateState1.inc"); }
 
 // 残差14命令: 原典は関数の先頭で p + 0x88 を r8 に置き、case 2 の unk_8c への store だけにそれを使う (FUN_0821b21c の引数は毎回 p + 0x88 を作り直す) ため、r7/r8 の退避が増える
 // さらに case 0 と case 1 の先頭に flags & INTRO_FLAG_UNK_1 を計算して捨てる ands が1つずつ入っている (使っているのは case 2 だけ)。Tier A-C 試済
-NON_MATCH void Intro_UpdateState2(Intro* p) {
+NON_MATCH void Intro_UpdateState2(Title* p) {
 #ifdef NONMATCHING_C
   bool32 redraw = (p->flags & INTRO_FLAG_UNK_0) != 0;
   bool32 fade;
@@ -175,7 +175,7 @@ static s32 GetCurrentMonth(void) {
   return month;
 }
 
-void FUN_08212510(Intro* p) {
+void FUN_08212510(Title* p) {
   s32 idx;
 
   p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_C423);
@@ -188,14 +188,14 @@ void FUN_08212510(Intro* p) {
   SetBGPrioDirect(3, 3);
 }
 
-void FUN_08212570(Intro* p) {
+void FUN_08212570(Title* p) {
   p->bgp = GetBgPlttFile(BGP_F0DC)->body;
   CpuCopy32(p->bgp, gBgPlttBuffer, 144 * sizeof(rgb555));
 }
 
-NAKED void Intro_SetupSprites(Intro* p) { INCFUNC("asm/func/Intro_SetupSprites.inc"); }
+NAKED void Intro_SetupSprites(Title* p) { INCFUNC("asm/func/Intro_SetupSprites.inc"); }
 
-static void Intro_DestroyInternal(Intro* p) {
+static void Intro_DestroyInternal(Title* p) {
   MainSprite_Remove(&p->spr_94);
   MainSprite_Remove(&p->spr_f4);
   MainSprite_Remove(&p->spr_154);
@@ -207,7 +207,7 @@ static void Intro_DestroyInternal(Intro* p) {
 }
 
 // 残差3命令: 原典は関数の先頭で p + 0x94 を作り、末尾の unk_415 への strb をそこから +0x381 で組む。こちらは p をそのまま base にするので p + 0x94 が現れない。Tier A-C 試済
-NON_MATCH void FUN_082127e4(Intro* p) {
+NON_MATCH void FUN_082127e4(Title* p) {
 #ifdef NONMATCHING_C
   s32 val;
 
@@ -270,16 +270,16 @@ NON_MATCH void FUN_082127e4(Intro* p) {
 #endif
 }
 
-void FUN_082128b0(Intro* p) { MainSprite_SetPose(&p->spr_f4, &p->gfx, p->unk_41c + 11, 1); }
+void FUN_082128b0(Title* p) { MainSprite_SetPose(&p->spr_f4, &p->gfx, p->unk_41c + 11, 1); }
 
-void FUN_082128d8(Intro* p) {
+void FUN_082128d8(Title* p) {
   MainSprite_Show(&p->spr_214);
   MainSprite_Show(&p->spr_274);
   p->spr_2d4.flags &= ~SPRFLAG_HIDDEN;
   p->spr_334.flags &= ~SPRFLAG_HIDDEN;
 }
 
-void FUN_08212910(Intro* p) {
+void FUN_08212910(Title* p) {
   p->spr_94.flags |= SPRFLAG_HIDDEN;
   p->spr_f4.flags |= SPRFLAG_HIDDEN;
   p->spr_154.flags |= SPRFLAG_HIDDEN;
@@ -297,11 +297,11 @@ void FUN_08212910(Intro* p) {
   Video_GenerateBGMap(3, 0, 0, 0, 0);
 }
 
-NAKED void FUN_082129b8(Intro* p) { INCFUNC("asm/func/FUN_082129b8.inc"); }
+NAKED void FUN_082129b8(Title* p) { INCFUNC("asm/func/FUN_082129b8.inc"); }
 
-NAKED void Intro_UpdateState3(Intro* p) { INCFUNC("asm/func/Intro_UpdateState3.inc"); }
+NAKED void Intro_UpdateState3(Title* p) { INCFUNC("asm/func/Intro_UpdateState3.inc"); }
 
-void Intro_LoadGfx(Intro* p) {
+void Intro_LoadGfx(Title* p) {
   MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_TITLE);
 
   p->gfx = *f;
@@ -309,8 +309,8 @@ void Intro_LoadGfx(Intro* p) {
   Intro_SetupSprites(p);
 }
 
-void Intro_SetState(Intro* p, s32 state) {
-  static void (*const sIntroUpdates[4])(Intro*) = {
+void Intro_SetState(Title* p, s32 state) {
+  static void (*const sIntroUpdates[4])(Title*) = {
       Intro_UpdateState0,
       Intro_UpdateState1,
       Intro_UpdateState2,
@@ -329,19 +329,19 @@ void Intro_SetState(Intro* p, s32 state) {
   gBgPlttFadeRowMask |= ((1 << 1) | (1 << 0));
 }
 
-s32 Intro_Update(Intro* p) {
+s32 Intro_Update(Title* p) {
   if (!(p->flags & INTRO_FLAG_UNK_0)) p->stateTimer++;
   if (!(p->flags & INTRO_FLAG_UNK_1)) p->timer_68++;
   p->updateCallback(p);
   return 0;
 }
 
-s32 Intro_Destroy(Intro* p) {
+s32 Intro_Destroy(Title* p) {
   Intro_DestroyInternal(p);
   return 0;
 }
 
-s32 Intro_Init(Intro* p) {
+s32 Intro_Init(Title* p) {
   s32 d;
 
   if (VM_SeekToNamedArg('Y')) {
@@ -405,8 +405,8 @@ s32 Intro_Init(Intro* p) {
 }
 
 // 0xCF79, HashName("タイトル")
-Intro* Intro_Create(void) {
-  Intro* p = CreateEntity(ENTITY_UNK_11, sizeof(Intro));
+Title* Intro_Create(void) {
+  Title* p = CreateEntity(ENTITY_UNK_11, sizeof(Title));
 
   if (p != NULL) {
     SetEntityRoutine(p, Intro_Update, Intro_Destroy);

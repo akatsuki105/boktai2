@@ -208,10 +208,11 @@ bool32 IsSpecialWeapon(weapon32_t w) {
   return FALSE;
 }
 
-// 0x3757, '.w' の武器を DB から作って渡す, '.q' で品質, '.o' で特殊効果, '.n' で PS を上書きできる
+// 0x3757, HashName("武器取得"), '.w' の武器を DB から作って渡す, '.q' で品質, '.o' で特殊効果, '.n' で PS を上書きできる
 NAKED bool32 Cmd_GiveWeapon(void) { INCFUNC("asm/func/Cmd_GiveWeapon.inc"); }
 
 // 0xD916, '.f' の武器を持っているスロットを探して '.t' の武器に差し替える
+// 星のかけら から アストロ武器 を作成するときに使う ('.f'= WEAPON_STAR_PIECE, '.t'= WEAPON_ASTRO_XXX)
 bool32 Cmd_ReplaceWeapon(void) {
   s32 i, slot;
 
@@ -279,7 +280,7 @@ bool32 Cmd_HasWeapon(void) {
   return FALSE;
 }
 
-// 0x65E2, 図鑑と48スロットと登録枠を全部白紙に戻してから, '.n' 個ぶん '.w' の武器を入れ直す
+// 0x65E2, HashName("武器初期化"), 図鑑と48スロットと登録枠を全部白紙に戻してから, '.n' 個ぶん '.w' の武器を入れ直す
 NAKED void Cmd_ResetWeapons(void) { INCFUNC("asm/func/Cmd_ResetWeapons.inc"); }
 
 // スロット n の武器が剣槍槌銃のどれかの枠に登録されているかを返す

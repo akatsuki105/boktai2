@@ -4,8 +4,9 @@
 .space 256, 0
 
 @ ID, handler
-@ ID は EUC-JP文字列 を HashName したもの
-@ コメントの HashName("XXX") は あくまで Hash が衝突しただけで本来の文字列とは限らない (参考: tools/hash.ts)
+@ ID は EUC-JP文字列 を HashName したもの (参考: tools/hash.ts)
+@ コメントの HashName("XXX") は あくまでハッシュが一致しただけで本来の文字列とは限らない, ハッシュは16bitなので衝突の可能性は低くない
+@ なので、実際の処理と一致するものを HashName のコメントとして付けている
 .global gCommandList
 gCommandList: @ 0x085A9208
 	.4byte 0x0074, Dvalinn_Create @ HashName("ドヴァリン")
@@ -71,8 +72,8 @@ gCommandList: @ 0x085A9208
 	.4byte 0x1A35, FUN_08224790
 	.4byte 0x1B24, Entity1B24_Create
 	.4byte 0x1B77, FUN_080558b8
-	.4byte 0x1BEE, AddPlayerExpScripted
-	.4byte 0x1C3E, Time_GetDayOfWeekScripted @ HashName("曜日取得")
+	.4byte 0x1BEE, Cmd_AddPlayerExp
+	.4byte 0x1C3E, Cmd_GetDayOfWeek @ HashName("曜日取得")
 	.4byte 0x1C64, MessageWindow_Open
 	.4byte 0x1DBE, Cmd_1DBE
 	.4byte 0x1E97, FUN_080ef5a8
@@ -139,7 +140,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x364D, sound_08240344
 	.4byte 0x3699, FUN_0804b9f4
 	.4byte 0x3705, FUN_0807d6a8
-	.4byte 0x3757, Cmd_GiveWeapon
+	.4byte 0x3757, Cmd_GiveWeapon @ HashName("武器取得")
 	.4byte 0x377D, FUN_081d7ca8
 	.4byte 0x3A5D, FUN_08242450
 	.4byte 0x3A89, BgPlttBlender_AddSlotFromScript
@@ -261,7 +262,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x6487, FUN_0823d2bc
 	.4byte 0x650B, FUN_0807b428
 	.4byte 0x65E1, FUN_080a5a6c
-	.4byte 0x65E2, Cmd_ResetWeapons @ HashName("ガッツパワー")
+	.4byte 0x65E2, Cmd_ResetWeapons @ HashName("武器初期化")
 	.4byte 0x667C, FUN_08224110
 	.4byte 0x6688, FUN_08041dcc
 	.4byte 0x6790, FUN_080eddf8

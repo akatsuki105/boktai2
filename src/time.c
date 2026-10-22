@@ -376,7 +376,7 @@ void Cmd_GetDateTime(void) {
 }
 
 // 0x1C3E, 曜日をスクリプトへ返す
-void Time_GetDayOfWeekScripted(void) {
+void Cmd_GetDayOfWeek(void) {
   u8 buf[8];
 
   FUN_0823167c(buf);

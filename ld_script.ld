@@ -498,7 +498,7 @@ SECTIONS {
 			src/weapon_dex.o (.text);
 			src/album_menu.o (.text);
 			src/entity_4ddf.o (.text);
-			src/intro.o (.text);
+			src/title.o (.text);
 			src/entity_a288.o (.text);
 			src/entity_6367.o (.text);
 			src/entity_0fc5.o (.text);
@@ -805,7 +805,7 @@ SECTIONS {
     src/preview_stage.o (.rodata);
     src/weapon_dex.o (.rodata);
     src/album_menu.o (.rodata);
-    src/intro.o (.rodata);
+    src/title.o (.rodata);
     src/entity_a288.o (.rodata);
     src/entity_6367.o (.rodata);
     src/entity_0fc5.o (.rodata);

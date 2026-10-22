@@ -6708,7 +6708,7 @@ s32 FUN_0807b138(void) {
 }
 
 // 0x1BEE
-void AddPlayerExpScripted(void) {
+void Cmd_AddPlayerExp(void) {
   if (VM_SeekToNamedArg('e')) {
     AddPlayerExp(VM_GetValue());
   }

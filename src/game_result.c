@@ -11,7 +11,7 @@ typedef u32 GameResultFlags;
 #define GRF_UNK_1 (1 << 1)  // 0x2, unk_54 を止める
 
 // ゲームクリア時のリザルト画面
-// なんか GameResultFlags とかが IntroFlags と似てるし、 他にも Intro との共通点がある気がする...
+// なんか GameResultFlags とかが IntroFlags と似てるし、 他にも Title との共通点がある気がする...
 typedef struct GameResult {
   Entity e;                // 0x000, ENTITY_UNK_11
   MainSpriteGfx gfx;       // 0x018, SPRITE_42E2

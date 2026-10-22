@@ -225,7 +225,7 @@ Keep working files in the scratchpad. `G=http://127.0.0.1:8089`,
       out: `// 0x058, '.d'`, never `// 0x058, VM の名前付き引数 '.d'`.
     - The function `T_Update` calls through: spell the pointer out and name the
       field `updateCallback`
-      (`void (*updateCallback)(struct Intro*);  // 0x428`). Put the information
+      (`void (*updateCallback)(struct Title*);  // 0x428`). Put the information
       in the member name, not in a comment beside a contentless `fn`.
     A new sub-type starts in the `.c` that needs it; move it out to a header in
     `include/` as soon as a second file needs it, rather than duplicating the
