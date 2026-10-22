@@ -59,11 +59,11 @@ static_assert(sizeof(MMenuPtclNode) == 64);
 
 // HUD上の武器アイコン
 typedef struct {
-  u8 unk_00;          // 0x0000
-  u8 slotIdx;         // 0x0001
-  u8 unk_02[2];       // 0x0002, まだ未解析, padding?
-  Weapon* weapon;     // 0x0004, 根拠: MainMenu_ApplyWeapon が Player_ApplyWeapon の第2引数に渡す
-  MainSprite sprite;  // 0x0008
+  u8 unk_00;            // 0x0000
+  u8 inventorySlotIdx;  // 0x0001, このQCスロットの武器のインベントリ上のスロット番号
+  u8 unk_02[2];         // 0x0002, まだ未解析, padding?
+  Weapon* weapon;       // 0x0004, 根拠: MainMenu_ApplyWeapon が Player_ApplyWeapon の第2引数に渡す
+  MainSprite sprite;    // 0x0008
 } QCWeaponSlot;
 static_assert(sizeof(QCWeaponSlot) == 104);
 
