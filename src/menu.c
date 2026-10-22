@@ -84,22 +84,32 @@ static_assert(sizeof(InventoryCursor) == 44);
 // このときにキャラと会話すると、 顔アイコンと文字のタイルは表示されるが、テキストボックスが表示されない (会話自体は正常に処理される)
 // 機能としては(今のところ判明してるだけでも) HUD + スタートメニュー + テキストウィンドウ といった感じ
 typedef struct MainMenu {
-  Entity e;                      // 0x0000, ENTITY_UNK_12
-  Tilemaps* tm_18;               // 0x0018, TILEMAP_A413
-  Tilemaps* tm_1c;               // 0x001C, TILEMAP_A7D7
-  Tilemaps* tm_20;               // 0x0020, TILEMAP_A7E7
-  Tilemaps* tm_24;               // 0x0024, TILEMAP_A7F7
-  void* unk_28;                  // 0x0028
-  TilemapFile* tm_2c;            // 0x002C, TILEMAP_83C0
-  rgb555* bgp_30;                // 0x0030, BGP_EFDA
-  rgb555* bgp_34;                // 0x0034, BGP_ECBF
-  rgb555* bgp_38;                // 0x0038, BGP_5F5E
-  rgb555* bgp_3c;                // 0x003C, BGP_EAA8
-  u8 unk_40[0x54 - 0x40];        // 0x0040, まだ未解析
-  u8* unk_54;                    // 0x0054, FUN_0808f170 が MessageWindow_Start に渡す
-  u8* unk_58;                    // 0x0058, 根拠: MainMenu_ShowLineInstant が MessageWindow_Start に渡す
-  s32* unk_5c;                   // 0x005C, gStat->lv で引く表, weapon_080993c4 がその10倍を返す
-  MainSpriteGfx gfx[9];          // 0x0060, [0] SPRITE_UI_START_MENU, [1] SPRITE_UI_MAP, [2] SPRITE_INVENTORY_ICONS, [3] SPRITE_UI_DARKLOAN, [4] SPRITE_PORTRAITS, [5] SPRITE_DJANGO_SABATA, [6] SPRITE_RITA, [7] SPRITE_CARMILLA, [8] SPRITE_UI_LINK
+  Entity e;                // 0x0000, ENTITY_UNK_12
+  Tilemaps* tm_18;         // 0x0018, TILEMAP_A413
+  Tilemaps* tm_1c;         // 0x001C, TILEMAP_A7D7
+  Tilemaps* tm_20;         // 0x0020, TILEMAP_A7E7
+  Tilemaps* tm_24;         // 0x0024, TILEMAP_A7F7
+  void* unk_28;            // 0x0028
+  TilemapFile* tm_2c;      // 0x002C, TILEMAP_83C0
+  rgb555* bgp_30;          // 0x0030, BGP_EFDA
+  rgb555* bgp_34;          // 0x0034, BGP_ECBF
+  rgb555* bgp_38;          // 0x0038, BGP_5F5E
+  rgb555* bgp_3c;          // 0x003C, BGP_EAA8
+  u8 unk_40[0x54 - 0x40];  // 0x0040, まだ未解析
+  u8* unk_54;              // 0x0054, FUN_0808f170 が MessageWindow_Start に渡す
+  u8* unk_58;              // 0x0058, 根拠: MainMenu_ShowLineInstant が MessageWindow_Start に渡す
+  s32* unk_5c;             // 0x005C, gStat->lv で引く表, weapon_080993c4 がその10倍を返す
+  struct {
+    MainSpriteGfx smenu;
+    MainSpriteGfx map;
+    MainSpriteGfx icons;
+    MainSpriteGfx loans;
+    MainSpriteGfx portraits;
+    MainSpriteGfx player;
+    MainSpriteGfx rita;
+    MainSpriteGfx carmilla;
+    MainSpriteGfx link;
+  } gfx;                         // 0x0060
   BgState savedBg1;              // 0x0180
   u16 savedTilemap1[1024];       // 0x01B0
   u16 unk_9b0;                   // 0x09B0
@@ -481,8 +491,8 @@ void FUN_0808b6fc(MainMenu* p, s32 param_2) {
   p->unk_3b25 = param_2;
 
   anim = (u8)param_2 != 0 ? 4 : 5;
-  MainSprite_SetAnim(&p->sprites[15], p->gfx, anim, 1, 0);
-  MainSprite_AdvanceAnim(&p->sprites[15], p->gfx);
+  MainSprite_SetAnim(&p->sprites[15], &p->gfx.smenu, anim, 1, 0);
+  MainSprite_AdvanceAnim(&p->sprites[15], &p->gfx.smenu);
 }
 
 NAKED s32 FUN_0808b760(MainMenu* p) { INCFUNC("asm/func/FUN_0808b760.inc"); }
@@ -501,7 +511,7 @@ void FUN_0808b82c(MainMenu* p) {
 // sprite_f64 を表示してポーズを差し替える
 void FUN_0808b86c(MainMenu* p, u32 poseIdx) {
   p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetPose(&p->sprites[0], p->gfx, poseIdx + 0x29, 1);
+  MainSprite_SetPose(&p->sprites[0], &p->gfx.smenu, poseIdx + 41, 1);
 }
 
 NAKED void FUN_0808b8a4(MainMenu* p) { INCFUNC("asm/func/FUN_0808b8a4.inc"); }
@@ -926,7 +936,7 @@ NAKED void FUN_0808de70(MainMenu* p) { INCFUNC("asm/func/FUN_0808de70.inc"); }
 void FUN_0808df7c(MainMenu* p) {
   MainMenu_HideSprites(p);
   p->unk_da0[p->unk_c0c[3].unk_60].sprite.flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetPose(&p->unk_da0[p->unk_c0c[3].unk_60].sprite, &p->gfx[2], 0, 1);
+  MainSprite_SetPose(&p->unk_da0[p->unk_c0c[3].unk_60].sprite, &p->gfx.icons, 0, 1);
 }
 
 void FUN_0808dfcc(MainMenu* p) {
@@ -1051,7 +1061,7 @@ void FUN_0808ee50(MainMenu* p) {
     FUN_0808a458(0x40, 0);
   }
 
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
   if (p->unk_9ec++ > 0xF) {
     FUN_0808a33c(p, FUN_0808eeac);
@@ -1061,7 +1071,7 @@ void FUN_0808ee50(MainMenu* p) {
 void FUN_0808eeac(MainMenu* p) {
   s32 result;
 
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
   result = FUN_0808b760(p);
   if (result == 0) {
@@ -1083,7 +1093,7 @@ void FUN_0808eef8(MainMenu* p) {
     FUN_0808a458(0, 0);
   }
 
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
   if (p->unk_9ec++ > 0xF) {
     FUN_0808f2f0(p);
@@ -1095,7 +1105,7 @@ NAKED void FUN_0808ef58(MainMenu* p) { INCFUNC("asm/func/FUN_0808ef58.inc"); }
 NAKED void FUN_0808f01c(MainMenu* p) { INCFUNC("asm/func/FUN_0808f01c.inc"); }
 
 void FUN_0808f09c(MainMenu* p) {
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
   p->unk_9ec++;
   if (p->unk_9ec > 149) {
@@ -1105,7 +1115,7 @@ void FUN_0808f09c(MainMenu* p) {
 
 // 最初の16フレームで明るくし, 150フレーム目から暗くして次の状態へ移る
 void FUN_0808f0d8(MainMenu* p) {
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
   if (p->unk_9ec <= 0xF) {
     FUN_0808a458(p->unk_9ec * 4, 0);
@@ -1150,8 +1160,8 @@ void FUN_0808f170(MainMenu* p) {
 
 // unk_401c の段階に合わせて2枚のポーズと矢印の高さを決める
 void FUN_0808f1bc(MainMenu* p) {
-  MainSprite_SetPose(&p->sprites[101], &p->gfx[3], p->unk_401c + 25, 1);
-  MainSprite_SetPose(&p->sprites[102], &p->gfx[3], 28 - p->unk_401c, 1);
+  MainSprite_SetPose(&p->sprites[101], &p->gfx.loans, p->unk_401c + 25, 1);
+  MainSprite_SetPose(&p->sprites[102], &p->gfx.loans, 28 - p->unk_401c, 1);
   p->sprites[103].pos.x = 0;
   p->sprites[103].pos.y = p->unk_401c << 5;
 }
@@ -1176,8 +1186,8 @@ void FUN_0808f604(MainMenu* p) {
     FUN_0808a458(0x40, 0);
   }
 
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
-  MainSprite_AdvanceAnim(&p->sprites[103], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
+  MainSprite_AdvanceAnim(&p->sprites[103], &p->gfx.loans);
 
   p->unk_9ec++;
   if (p->unk_9ec > 0xF) {
@@ -1188,7 +1198,7 @@ void FUN_0808f604(MainMenu* p) {
 NAKED void FUN_0808f670(MainMenu* p) { INCFUNC("asm/func/FUN_0808f670.inc"); }
 
 void FUN_0808f774(MainMenu* p) {
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
   if (p->sprites[100].pos.x > -88) {
     p->sprites[100].pos.x -= 5;
@@ -1218,7 +1228,7 @@ NAKED void FUN_0808f81c(MainMenu* p) { INCFUNC("asm/func/FUN_0808f81c.inc"); }
 void FUN_0808f920(MainMenu* p);
 
 void FUN_0808f8bc(MainMenu* p) {
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
   p->unk_9ec++;
   if (p->unk_9ec > 149) {
@@ -1233,7 +1243,7 @@ void FUN_0808f8bc(MainMenu* p) {
 }
 
 void FUN_0808f920(MainMenu* p) {
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
   p->unk_9ec++;
   if (p->unk_9ec > 149) {
@@ -1583,7 +1593,7 @@ void FUN_08090120(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    MainSprite_AdvanceAnim(spr, &p->gfx[1]);
+    MainSprite_AdvanceAnim(spr, &p->gfx.map);
     spr++;
   }
 }
@@ -2434,7 +2444,7 @@ NAKED void FUN_08096d90(MainMenu* p, s32 param_2) { INCFUNC("asm/func/FUN_08096d
 
 NAKED s32 FUN_08096ec4(MainMenu* p) { INCFUNC("asm/func/FUN_08096ec4.inc"); }
 
-void FUN_08096f90(MainMenu* p) { MainSprite_AdvanceAnim(&p->sprites[13], p->gfx); }
+void FUN_08096f90(MainMenu* p) { MainSprite_AdvanceAnim(&p->sprites[13], &p->gfx.smenu); }
 
 NAKED void FUN_08096fa8(MainMenu* p) { INCFUNC("asm/func/FUN_08096fa8.inc"); }
 
@@ -2615,7 +2625,7 @@ NAKED void FUN_08098d98(MainMenu* p) { INCFUNC("asm/func/FUN_08098d98.inc"); }
 void FUN_08098e48(MainMenu* p) {
   p->sprites[13].pos.x = 0;
   p->sprites[13].pos.y = p->unk_4002[0] << 3;
-  MainSprite_SetPose(&p->sprites[46], p->gfx, p->unk_4002[0] + 0x42, 1);
+  MainSprite_SetPose(&p->sprites[46], &p->gfx.smenu, p->unk_4002[0] + 66, 1);
 }
 
 // 振り分けたステータスポイントを確定して, 残りポイントも書き戻す
@@ -2997,64 +3007,64 @@ void MainMenu_OpenSpriteFiles(MainMenu* p) {
   if (f == NULL) {
     return;
   }
-  p->gfx[0] = *f;
-  OpenMainSpriteFile(&p->gfx[0], f);
+  p->gfx.smenu = *f;
+  OpenMainSpriteFile(&p->gfx.smenu, f);
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
   if (f == NULL) {
     return;
   }
-  p->gfx[2] = *f;
-  OpenMainSpriteFile(&p->gfx[2], f);
+  p->gfx.icons = *f;
+  OpenMainSpriteFile(&p->gfx.icons, f);
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_MAP);
   if (f == NULL) {
     return;
   }
-  p->gfx[1] = *f;
-  OpenMainSpriteFile(&p->gfx[1], f);
+  p->gfx.map = *f;
+  OpenMainSpriteFile(&p->gfx.map, f);
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_DARKLOAN);
   if (f == NULL) {
     return;
   }
-  p->gfx[3] = *f;
-  OpenMainSpriteFile(&p->gfx[3], f);
+  p->gfx.loans = *f;
+  OpenMainSpriteFile(&p->gfx.loans, f);
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
   if (f == NULL) {
     return;
   }
-  p->gfx[5] = *f;
-  OpenMainSpriteFile(&p->gfx[5], f);
+  p->gfx.player = *f;
+  OpenMainSpriteFile(&p->gfx.player, f);
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_RITA);
   if (f == NULL) {
     return;
   }
-  p->gfx[6] = *f;
-  OpenMainSpriteFile(&p->gfx[6], f);
+  p->gfx.rita = *f;
+  OpenMainSpriteFile(&p->gfx.rita, f);
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_CARMILLA);
   if (f == NULL) {
     return;
   }
-  p->gfx[7] = *f;
-  OpenMainSpriteFile(&p->gfx[7], f);
+  p->gfx.carmilla = *f;
+  OpenMainSpriteFile(&p->gfx.carmilla, f);
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_PORTRAITS);
   if (f == NULL) {
     return;
   }
-  p->gfx[4] = *f;
-  OpenMainSpriteFile(&p->gfx[4], f);
+  p->gfx.portraits = *f;
+  OpenMainSpriteFile(&p->gfx.portraits, f);
 
   f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
   if (f == NULL) {
     return;
   }
-  p->gfx[8] = *f;
-  OpenMainSpriteFile(&p->gfx[8], f);
+  p->gfx.link = *f;
+  OpenMainSpriteFile(&p->gfx.link, f);
 }
 
 NAKED void MainMenu1P_0809bed8(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0809bed8.inc"); }
