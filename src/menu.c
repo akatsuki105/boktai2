@@ -216,7 +216,10 @@ typedef struct MainMenu {
   u8 vitaminAmount;              // 0x3F9F, ビタミン剤で上げる量, 合計99で頭打ちになる前の値
   u8 unk_3fa0[2];                // 0x3FA0
   s16 effectAmount;              // 0x3FA2, アイテム使用時のポップアップに出す効果量, FUN_0809296c が符号付きで読んで FUN_08092868 に渡す
-  u8 unk_3fa4[0x3FAC - 0x3FA4];  // 0x3FA4
+  u8 unk_3fa4[2];                // 0x3FA4
+  u16 targetHP;                  // 0x3FA6, 変化後のHP, FUN_08093608 が player->hp をここまで1ずつ動かす
+  u8 unk_3fa8[2];                // 0x3FA8
+  u16 targetEne;                 // 0x3FAA, 変化後のEne, 同上
   u8 unk_3fac;                   // 0x3FAC, 根拠: ItemEffect_Bugs が 1 を入れる
   u8 unk_3fad;                   // 0x3FAD, 根拠: 同上, 引数の値が入る
   u16 unk_3fae;                  // 0x3FAE, 根拠: 同上, 第3引数が入る
@@ -225,7 +228,9 @@ typedef struct MainMenu {
   u8 unk_3fb2[0x3FB8 - 0x3FB2];  // 0x3FB2
   u8 unk_3fb8;                   // 0x3FB8, 根拠: ItemEffect_AOE が 1 を入れる
   u8 unk_3fb9;                   // 0x3FB9, 根拠: 同上, 引数の値が入る
-  u8 unk_3fba[0x3FDC - 0x3FBA];  // 0x3FBA
+  u8 unk_3fba;                   // 0x3FBA
+  u8 unk_3fbb;                   // 0x3FBB, 根拠: ItemEffect_HPMP が 0 を入れる
+  u8 unk_3fbc[0x3FDC - 0x3FBC];  // 0x3FBC, まだ未解析
   s8 unk_3fdc;                   // 0x3FDC, unk_3fe0 の添字, この枠だけは選べない
   u8 unk_3fdd[0x3FE0 - 0x3FDD];  // 0x3FDD, まだ未解析
   s8 unk_3fe0[16];               // 0x3FE0, 枠ごとの防具ID, 負なら空き
@@ -1866,7 +1871,19 @@ void ItemEffect_Loan(MainMenu* p, s32 _, s32 __) {
   p->unk_3ae4 = 1;
 }
 
-NAKED void ItemEffect_HPMP(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_HPMP.inc"); }
+// HP と Ene を targetHP / targetEne に書き換える, HPが0になったら審判のカード持ちだけ unk_3fbb を落とす
+void ItemEffect_HPMP(MainMenu* p, s32 _, s32 __) {
+  p->player->hp = p->targetHP;
+  p->player->ene = p->targetEne;
+  if (p->player->hp == 0) {
+    p->unk_3ae4 = 1;
+    if (CheckItemOwn(ITEM_JUDGEMENT)) {
+      p->unk_3fbb = 0;
+    }
+  } else {
+    p->unk_3fbb = 0;
+  }
+}
 
 void ItemEffect_AOE(MainMenu* p, s32 val, s32 _) {
   p->unk_3fb8 = 1;
