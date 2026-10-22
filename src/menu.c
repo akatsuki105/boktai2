@@ -893,9 +893,9 @@ NON_MATCH void MainMenu1P_AddIconSprites(MainMenu* p) {
   posA.x = 8, posA.y = 136, posA.z = 0;
   posB.x = 216, posB.y = 136, posB.z = 0;
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->unk_c0c[i].sprite, &p->gfx.icons, 182, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posA);
+    MainSprite_Add(&p->unk_c0c[i].sprite, &p->gfx.icons, ICON_MAGIC(MAGIC_SOL), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posA);
     MainSprite_SetPltt(&p->unk_c0c[i].sprite, 1);
-    MainSprite_Add(&p->unk_da0[i].sprite, &p->gfx.icons, 1, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posB);
+    MainSprite_Add(&p->unk_da0[i].sprite, &p->gfx.icons, ICON_WEAPON(WEAPON_GRADIUS), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posB);
   }
 #else
   INCFUNC("asm/func/MainMenu1P_AddIconSprites.inc");
