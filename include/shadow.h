@@ -15,7 +15,7 @@ typedef struct ParticleShadow {
   u16 unk_04;                                      // 0x04, ParticleShadow_Init で 0
   u16 unk_06;                                      // 0x06, ParticleShadow_Init で 0
   Vec3* pos;                                       // 0x08, 持ち主の座標
-  Particle particle;                               // 0x0C
+  Particle ptcl;                                   // 0x0C
   void (*updateCallback)(struct ParticleShadow*);  // 0x34, ParticleShadowManager_Update が影を引数にして呼ぶ
   struct ParticleShadow* prev;                     // 0x38
   struct ParticleShadow* next;                     // 0x3C

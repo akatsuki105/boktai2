@@ -7,10 +7,10 @@
 // 1発ぶんの破片, 速度を持って飛びながらアニメを進める
 typedef struct {
   bool8 active;       // 0x00, Entity08016ba4_Spawn が 1 を入れる
-  u8 life;            // 0x01, Entity08016ba4Burst_Update が毎フレーム 1 減らし, 0 で particle を隠す
+  u8 life;            // 0x01, Entity08016ba4Burst_Update が毎フレーム 1 減らし, 0 で ptcl を隠す
   s16 speed;          // 0x02, vel.x / vel.z に掛けて >>12 してから pos に足す
   Vec3 vel;           // 0x04, x は gSineTable[angle + 0x40], z は gSineTable[angle], y は Entity08016ba4Burst_Update が毎フレーム 2 減らす
-  Particle particle;  // 0x0C, Particle_Setup で確保し Particle_Remove で返す
+  Particle ptcl;      // 0x0C, Particle_Setup で確保し Particle_Remove で返す
   AuxAnimState anim;  // 0x34, AuxAnim_SetAnim が初期化し AuxAnim_SetAnimSpeed が進める
 } Entity08016ba4Piece;
 static_assert(sizeof(Entity08016ba4Piece) == 68);
@@ -57,16 +57,13 @@ s32 Entity08016ba4_Update(Entity08016ba4* p) {
 }
 
 s32 Entity08016ba4_Destroy(Entity08016ba4* p) {
-  s32 i;
+  s32 i, j;
 
   for (i = 0; i < 6; i++) {
     Entity08016ba4Burst* b = &p->bursts[i];
-
     if (b->active) {
-      s32 j;
-
       for (j = 0; j < b->count; j++) {
-        Particle_Remove(&b->pieces[j].particle);
+        Particle_Remove(&b->pieces[j].ptcl);
       }
     }
   }
@@ -76,7 +73,7 @@ s32 Entity08016ba4_Destroy(Entity08016ba4* p) {
 }
 
 s32 Entity08016ba4_Init(Entity08016ba4* p, u32 id) {
-  s32 i;
+  s32 i, j;
 
   gEntity08016ba4 = p;
   p->group = GetParticleGroup(PTCL_GROUP_0);
@@ -84,11 +81,9 @@ s32 Entity08016ba4_Init(Entity08016ba4* p, u32 id) {
 
   for (i = 0; i < 6; i++) {
     Entity08016ba4Burst* b = &p->bursts[i];
-    s32 j;
-
-    b->active = 0;
+    b->active = FALSE;
     for (j = 0; j < 8; j++) {
-      Particle_Setup(&b->pieces[j].particle, p->group, 0);
+      Particle_Setup(&b->pieces[j].ptcl, p->group, 0);
       AuxAnim_SetAnim(&b->pieces[j].anim, p->anim, 3, 0, 0);
     }
   }

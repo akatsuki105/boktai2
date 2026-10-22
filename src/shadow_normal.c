@@ -56,14 +56,14 @@ s32 ParticleShadowManager_Remove(ParticleShadowManager* p, ParticleShadow* shado
 
 // 影を表示し、床に追従する更新関数に切り替えてすぐ1回呼ぶ, リネーム案: Shadow_Show
 void ParticleShadow_Show(ParticleShadow* shadow) {
-  shadow->particle.flags &= ~SPRFLAG_HIDDEN;
+  shadow->ptcl.flags &= ~SPRFLAG_HIDDEN;
   shadow->updateCallback = ParticleShadow_FollowGround;
   shadow->updateCallback(shadow);
 }
 
 // 影を非表示にし、何もしない更新関数に切り替える, リネーム案: Shadow_Hide
 void ParticleShadow_Hide(ParticleShadow* shadow) {
-  shadow->particle.flags |= SPRFLAG_HIDDEN;
+  shadow->ptcl.flags |= SPRFLAG_HIDDEN;
   shadow->updateCallback = ParticleShadow_UpdateNone;
 }
 
@@ -74,8 +74,8 @@ void ParticleShadow_UpdateNone(ParticleShadow* shadow) {}
 NON_MATCH void ParticleShadow_FollowGround(ParticleShadow* shadow) {
 #ifdef NONMATCHING_C
   s32 idx;  // 元は idx が r7、ptcl が r6, この形だと逆になる
-  Particle* ptcl = &shadow->particle;
-  Vec3* dst = &shadow->particle.pos;
+  Particle* ptcl = &shadow->ptcl;
+  Vec3* dst = &shadow->ptcl.pos;
   Vec3* pos = shadow->pos;
   s32 bx = pos->x >> 8;
   s32 bz = pos->z >> 8;
@@ -187,18 +187,18 @@ s32 ParticleShadow_Init(ParticleShadow* shadow, Vec3* ownerPos, s32 kind) {
   } else {
     shadow->updateCallback = ParticleShadow_UpdateNone;
   }
-  Particle_Add(&shadow->particle, gParticleShadowManager->group0, SPRFLAG_BLINK_ODD);
-  Particle_SetOffset(&shadow->particle, -8, -8);
-  shadow->particle.tileNum = gParticleShadowManager->group0->tile + (shadow->particle.spriteWidth >> 3) * (shadow->particle.spriteHeight >> 3) * 34;
-  shadow->particle.offsetZ = -4;
-  shadow->particle.priority = 2;
+  Particle_Add(&shadow->ptcl, gParticleShadowManager->group0, SPRFLAG_BLINK_ODD);
+  Particle_SetOffset(&shadow->ptcl, -8, -8);
+  shadow->ptcl.tileNum = gParticleShadowManager->group0->tile + (shadow->ptcl.spriteWidth >> 3) * (shadow->ptcl.spriteHeight >> 3) * 34;
+  shadow->ptcl.offsetZ = -4;
+  shadow->ptcl.priority = 2;
   ParticleShadowManager_Add(gParticleShadowManager, shadow);
   return 0;
 }
 
 // 影を描画リストと影のリストから外す, リネーム案: Shadow_Remove
 s32 ParticleShadow_Remove(ParticleShadow* shadow) {
-  Particle_Remove(&shadow->particle);
+  Particle_Remove(&shadow->ptcl);
   if (gParticleShadowManager != NULL) {
     ParticleShadowManager_Remove(gParticleShadowManager, shadow);
   }
