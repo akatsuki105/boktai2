@@ -203,7 +203,7 @@ typedef struct MainMenu {
   u8 unk_f42[0xF56 - 0xF42];     // 0x0F42, まだ未解析
   u8 page;                       // 0x0F56, スタートメニューのページ番号
   u8 unk_f57;                    // 0x0F57, まだ未解析
-  bool8 availPages[PAGE_NUM];    // 0x0F58, スタートメニューで選択可能なページ
+  bool8 availPages[PAGE_NUM];    // 0x0F58, '.o', スタートメニューで選択可能なページ, 指定がなければ全ページ選択可
   u8 unk_f62[0xF64 - 0xF62];     // 0x0F62, まだ未解析
   MainSprite sprites[116];       // 0x0F64, 根拠: MainMenu1P_RemoveSprites が 116個ぶん MainSprite_Remove に渡す
   u8 unk_3ae4;                   // 0x3AE4, メニューを閉じて効果を実行する要求
@@ -3079,7 +3079,34 @@ void MainMenu_OpenSpriteFiles(MainMenu* p) {
 
 NAKED void MainMenu1P_0809bed8(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0809bed8.inc"); }
 
-NAKED void FUN_0809bf88(MainMenu* p) { INCFUNC("asm/func/FUN_0809bf88.inc"); }
+// '.o' で選択可能なページを受け取り, 今のページが選べないなら選べるページまで進める
+void MainMenu_InitAvailPages(MainMenu* p) {
+  s32 i;
+
+  if (VM_SeekToNamedArg('o')) {
+    for (i = 0; i < PAGE_NUM; i++) {
+      p->availPages[i] = VM_GetValue();
+    }
+  } else {
+    for (i = 0; i < PAGE_NUM; i++) {
+      p->availPages[i] = TRUE;
+    }
+  }
+
+  if (!p->availPages[p->page]) {
+    for (i = 0; i < PAGE_NUM; i++) {
+      u8 page = ++p->page;
+
+      if (page >= PAGE_NUM) {
+        p->page = 0;
+      }
+      if (p->availPages[p->page]) {
+        return;
+      }
+    }
+    p->page = 0;
+  }
+}
 
 // VM の q 引数があればその値を, なければ 1 を unk_f3d に書き込む
 void MainMenu1P_0809c010(MainMenu* p) {
@@ -3143,7 +3170,7 @@ void FUN_0809c244(void) {
 // 0x2FA0
 void FUN_0809c264(void) {
   if (gMainMenu != NULL && gMainMenu->unk_9fc == 0) {
-    FUN_0809bf88(gMainMenu);
+    MainMenu_InitAvailPages(gMainMenu);
   }
 }
 
@@ -3359,7 +3386,7 @@ s32 MainMenu1P_Init(MainMenu* p, u32 id) {
   p->player = GetPlayer(0);
   BuildWeapon((WeaponData*)&gWeaponDB[WEAPON_GUN_DEL_HELL], &p->weapon);
   MainMenu1P_0809bed8(p);
-  FUN_0809bf88(p);
+  MainMenu_InitAvailPages(p);
   MainMenu1P_0809c010(p);
   MainMenu_OpenSpriteFiles(p);
   MainMenu1P_0808dddc(p);
