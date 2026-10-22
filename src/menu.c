@@ -268,8 +268,7 @@ extern u16 u16_03002c10;
 
 #define BGMAP_BGP13 (13 << 12)
 
-void SleepGame(void);                           // src/code_0823cd04.c
-void BuildWeapon(WeaponData* tmpl, Weapon* w);  // src/item/weapon.c
+void SleepGame(void);
 
 #define INVENTORY_SLOT(p, colX, rowY) ((p)->slotmap[(rowY) + (colX) * 4])  // InventoryCursor で カーソルの位置に対応するスロット番号を取得するマクロ
 
@@ -278,6 +277,8 @@ static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags;
 
 // 次の描画から BG を消す
 static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
+
+static inline Player* GetPlayer(s32 idx) { return gPlayerPtr[idx]; }
 
 s32 FUN_08050d64(void);
 s32 FUN_08050d7c(void);
@@ -3278,13 +3279,10 @@ s32 MainMenu1P_Destroy(MainMenu* p) {
 
 // HUD とスタートメニューを組み立て, gMainMenu に自分を登録する
 s32 MainMenu1P_Init(MainMenu* p, u32 id) {
-  Player* player;
-
   SetBGPrioDirect(0, 0);
   p->unk_9fc = 0;
   p->page = u16_03002c14;
-  player = gPlayerPtr[0];
-  p->player = player;
+  p->player = GetPlayer(0);
   BuildWeapon((WeaponData*)&gWeaponDB[WEAPON_GUN_DEL_HELL], &p->weapon);
   MainMenu1P_0809bed8(p);
   FUN_0809bf88(p);
