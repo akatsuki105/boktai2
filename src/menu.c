@@ -30,14 +30,14 @@
 struct MainMenu;
 typedef void(MainMenuFunc)(struct MainMenu* p);  // _Update が p->fn(p) として呼ぶ
 
-// HUD上の魔法アイコン
+// HUD上のクイックチェンジの魔法アイコン
 typedef struct {
-  MainSprite sprite;  // 0x0000
-  s8 unk_60;          // 0x0060, 根拠: MainMenu_ApplyWeapon が ldrsb で読んで配列の添字にする
-  u8 unk_61;          // 0x0061
-  u8 unk_62[2];       // 0x0062, まだ未解析, padding?
-} MMenuSprite100;
-static_assert(sizeof(MMenuSprite100) == 100);
+  s8 idx;             // 0x00, HUD上の魔法アイコンのインデックス
+  magic8_t id;        // 0x01, 魔法のID
+  u8 unk_02[2];       // 0x02, まだ未解析, padding?
+  MainSprite sprite;  // 0x0004
+} QCMagicIcon;
+static_assert(sizeof(QCMagicIcon) == 100);
 
 typedef struct {
   u8 unk_0[8];  // 0x000, まだ未解析
@@ -180,15 +180,17 @@ typedef struct MainMenu {
   u8 unk_b8c[0xBB8 - 0xB8C];     // 0x0B8C, まだ未解析
   AuxSprite sprite_bb8;          // 0x0BB8, 根拠: 同上
   AuxSpriteGfx unk_be4;          // 0x0BE4
-  u8 unk_c00;                    // 0x0C00
-  u8 unk_c01;                    // 0x0C01
-  s8 unk_c02;                    // 0x0C02, unk_c0c の1始まりの添字, 負なら選択なし
-  u8 unk_c03;                    // 0x0C03
-  u32 unk_c04;                   // 0x0C04
-  u8 unk_c08;                    // 0x0C08
-  u8 unk_c09;                    // 0x0C09
-  u8 unk_c0a[0xC0C - 0xC0A];     // 0x0C0A, まだ未解析
-  MMenuSprite100 unk_c0c[4];     // 0x0C0C
+  struct {
+    u8 iconNums;
+    u8 unk_c01;
+    s8 idx;                      // 現在選択中のインデックス (0..3), 負なら選択なし
+    u8 unk_c03;                  // 0x0C03
+    u32 unk_c04;                 // 0x0C04
+    QCMagicIcon icons[4];        // 0x0C08, HUD上の魔法アイコン, 4つ分
+  } qcMagic;                     // 0x0C00, 魔法のクイックチェンジ(HUD上)
+  s8 qcWeaponIdx;                // 0x0D98
+  s8 unk_d99;                    // 0x0D99
+  u8 unk_d9a[0xD9C - 0xD9A];     // 0x0D9A, まだ未解析
   u8 unk_d9c;                    // 0x0D9C
   u8 unk_d9d;                    // 0x0D9D
   u8 unk_d9e[0xDA0 - 0xD9E];     // 0x0D9E, まだ未解析
@@ -802,7 +804,7 @@ void MainMenu_HideSprites(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    p->unk_c0c[i].sprite.flags |= SPRFLAG_HIDDEN;
+    p->qcMagic.icons[i].sprite.flags |= SPRFLAG_HIDDEN;
     p->unk_da0[i].sprite.flags |= SPRFLAG_HIDDEN;
   }
 }
@@ -845,8 +847,8 @@ void FUN_0808d908(MainMenu* p) {
 // 残差は39/39命令で1命令, 原典は p + 添字*100 の加算の被演算子が逆
 NON_MATCH void FUN_0808d93c(MainMenu* p) {
 #ifdef NONMATCHING_C
-  if (p->unk_c02 >= 0 && p->unk_c00 != 0) {
-    Player_EquipMagic(p->player, (s8)(&p->unk_c09)[p->unk_c02 * 100]);
+  if (p->qcMagic.idx >= 0 && p->qcMagic.iconNums != 0) {
+    Player_EquipMagic(p->player, (s8)(&p->unk_c09)[p->qcMagic.idx * 100]);
   } else {
     Player_EquipMagic(p->player, -1);
   }
@@ -856,14 +858,14 @@ NON_MATCH void FUN_0808d93c(MainMenu* p) {
 }
 
 // 4つめのスプライトが指す武器を Player に適用する
-void MainMenu_ApplyWeapon(MainMenu* p) { Player_ApplyWeapon(p->player, p->unk_da0[p->unk_c0c[3].unk_60].weapon); }
+void MainMenu_ApplyWeapon(MainMenu* p) { Player_ApplyWeapon(p->player, p->unk_da0[p->qcWeaponIdx].weapon); }
 
 // クイックチェンジ で呼ばれた (武器魔法両方), スタートメニューでの 武器魔法切り替え処理 はここを呼んでいない
 void MainMenu_QC_0808d9c8(MainMenu* p) {
   FUN_0808d268();
   MainMenu_ApplyWeapon(p);
   FUN_0808d93c(p);
-  p->unk_c03 = 0;
+  p->qcMagic.unk_c03 = 0;
   FUN_0808d3d4(p);
   FUN_082408f4();
   EnableEntityFlags(ENTITY_DISABLE_2);
@@ -895,8 +897,8 @@ NON_MATCH void MainMenu1P_AddIconSprites(MainMenu* p) {
   posA.x = 8, posA.y = 136, posA.z = 0;
   posB.x = 216, posB.y = 136, posB.z = 0;
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->unk_c0c[i].sprite, &p->gfx.icons, ICON_MAGIC(MAGIC_SOL), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posA);
-    MainSprite_SetPltt(&p->unk_c0c[i].sprite, 1);
+    MainSprite_Add(&p->qcMagic.icons[i].sprite, &p->gfx.icons, ICON_MAGIC(MAGIC_SOL), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posA);
+    MainSprite_SetPltt(&p->qcMagic.icons[i].sprite, 1);
     MainSprite_Add(&p->unk_da0[i].sprite, &p->gfx.icons, ICON_WEAPON(WEAPON_GRADIUS), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posB);
   }
 #else
@@ -912,7 +914,7 @@ NON_MATCH void FUN_0808dda4(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    MainSprite_Remove(&p->unk_c0c[i].sprite);
+    MainSprite_Remove(&p->qcMagic.icons[i].sprite);
     MainSprite_Remove(&p->unk_da0[i].sprite);
   }
 #else
@@ -955,8 +957,8 @@ NAKED void FUN_0808de70(MainMenu* p) { INCFUNC("asm/func/FUN_0808de70.inc"); }
 // 選ばれている武器のスプライトだけを見せる
 void FUN_0808df7c(MainMenu* p) {
   MainMenu_HideSprites(p);
-  p->unk_da0[p->unk_c0c[3].unk_60].sprite.flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetPose(&p->unk_da0[p->unk_c0c[3].unk_60].sprite, &p->gfx.icons, 0, 1);
+  p->unk_da0[p->qcWeaponIdx].sprite.flags &= ~SPRFLAG_HIDDEN;
+  MainSprite_SetPose(&p->unk_da0[p->qcWeaponIdx].sprite, &p->gfx.icons, 0, 1);
 }
 
 void FUN_0808dfcc(MainMenu* p) {
@@ -3227,7 +3229,7 @@ void FUN_0809c4f4(void) {
 
   if (p != NULL && p->unk_9fc == 0 && p->unk_9fe <= 2) {
     FUN_0808c95c(p, 0, 0xE0, 0x90);
-    p->unk_c0c[3].unk_61 = 6;
+    p->unk_d99 = 6;
     PlaySound_082406e0(SE_BREAK_898);
   }
 }
@@ -3312,7 +3314,7 @@ s32 MainMenuLink_Update(MainMenu* p) {
 s32 MainMenuLink_Destroy(MainMenu* p) {
   FUN_0808cf50(p);
   FUN_0808cffc(p);
-  MainSprite_Remove(&p->unk_c0c[0].sprite);
+  MainSprite_Remove(&p->qcMagic.icons[0].sprite);
   MainSprite_Remove(&p->unk_da0[0].sprite);
   gMainMenu = NULL;
   return 0;
