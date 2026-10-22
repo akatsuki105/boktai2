@@ -225,12 +225,14 @@ typedef struct MainMenu {
   u16 unk_3fae;                  // 0x3FAE, 根拠: 同上, 第3引数が入る
   u8 unk_3fb0;                   // 0x3FB0, 根拠: ItemEffect_Warp が 1 を入れる
   u8 unk_3fb1;                   // 0x3FB1, 根拠: 同上, 引数の値が入る
-  u8 unk_3fb2[0x3FB8 - 0x3FB2];  // 0x3FB2
+  u8 unk_3fb2[2];                // 0x3FB2
+  u32 unk_3fb4;                  // 0x3FB4, '.R'
   u8 unk_3fb8;                   // 0x3FB8, 根拠: ItemEffect_AOE が 1 を入れる
   u8 unk_3fb9;                   // 0x3FB9, 根拠: 同上, 引数の値が入る
   u8 unk_3fba;                   // 0x3FBA
   u8 unk_3fbb;                   // 0x3FBB, 根拠: ItemEffect_HPMP が 0 を入れる
-  u8 unk_3fbc[0x3FDC - 0x3FBC];  // 0x3FBC, まだ未解析
+  u32 unk_3fbc;                  // 0x3FBC, '.D'
+  Weapon weapon;                 // 0x3FC0, WEAPON_GUN_DEL_HELL の内容が入る
   s8 unk_3fdc;                   // 0x3FDC, unk_3fe0 の添字, この枠だけは選べない
   u8 unk_3fdd[0x3FE0 - 0x3FDD];  // 0x3FDD, まだ未解析
   s8 unk_3fe0[16];               // 0x3FE0, 枠ごとの防具ID, 負なら空き
@@ -238,7 +240,8 @@ typedef struct MainMenu {
   u16 unk_4000;                  // 0x4000, 残りのステータスポイント, 確定時に gStat->statusPoint へ書き戻す
   u8 unk_4002[0x4008 - 0x4002];  // 0x4002, まだ未解析
   u8 unk_4008[4];                // 0x4008, 画面で振り分けた分, 確定時に gStat->stats へ足す
-  u8 unk_400c[0x4018 - 0x400C];  // 0x400C, まだ未解析
+  u8 unk_400c[8];                // 0x400C, まだ未解析
+  s32 textPanelID_4014;          // 0x4014, 6,4 の位置の 10x2 のテキストパネル
   s32 textPanelID;               // 0x4018, TextPanel_Hide に渡す
   u8 unk_401c;                   // 0x401C, まだ未解析
   u8 unk_401d;                   // 0x401D, 根拠: ItemEffect_Loan が 1 を入れる
@@ -265,7 +268,8 @@ extern u16 u16_03002c10;
 
 #define BGMAP_BGP13 (13 << 12)
 
-void SleepGame(void);  // src/code_0823cd04.c
+void SleepGame(void);                           // src/code_0823cd04.c
+void BuildWeapon(WeaponData* tmpl, Weapon* w);  // src/item/weapon.c
 
 #define INVENTORY_SLOT(p, colX, rowY) ((p)->slotmap[(rowY) + (colX) * 4])  // InventoryCursor で カーソルの位置に対応するスロット番号を取得するマクロ
 
@@ -3272,7 +3276,60 @@ s32 MainMenu1P_Destroy(MainMenu* p) {
   return 0;
 }
 
-NAKED s32 MainMenu1P_Init(MainMenu* p, u32 id) { INCFUNC("asm/func/MainMenu1P_Init.inc"); }
+// HUD とスタートメニューを組み立て, gMainMenu に自分を登録する
+s32 MainMenu1P_Init(MainMenu* p, u32 id) {
+  Player* player;
+
+  SetBGPrioDirect(0, 0);
+  p->unk_9fc = 0;
+  p->page = u16_03002c14;
+  player = gPlayerPtr[0];
+  p->player = player;
+  BuildWeapon((WeaponData*)&gWeaponDB[WEAPON_GUN_DEL_HELL], &p->weapon);
+  MainMenu1P_0809bed8(p);
+  FUN_0809bf88(p);
+  MainMenu1P_0809c010(p);
+  FUN_0809bd14(p);
+  MainMenu1P_0808dddc(p);
+  MainMenu1P_0809b468(p);
+  if (VM_SeekToNamedArg('d')) {
+    p->scriptID = VM_GetValue();
+  } else {
+    p->scriptID = 0;
+  }
+  if (VM_SeekToNamedArg('V')) {
+    p->unk_401f = VM_GetValue();
+  } else {
+    p->unk_401f = 0;
+  }
+  if (VM_SeekToNamedArg('R')) {
+    p->unk_3fb4 = VM_GetValue();
+  } else {
+    p->unk_3fb4 = 0;
+  }
+  if (VM_SeekToNamedArg('D')) {
+    p->unk_3fbc = VM_GetValue();
+  } else {
+    p->unk_3fbc = 0;
+  }
+  p->textPanelID_4014 = TextPanel_Create(6, 4, 10, 2);
+  p->textPanelID = TextPanel_Create(4, 6, 22, 6);
+  MainMenu1P_0808d0c0(p);
+  if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+    FUN_0808e224(p);
+    FUN_0808a33c(p, FUN_0808e400);
+  } else {
+    FUN_0808ce98(p);
+    FUN_0808a33c(p, FUN_0808cf14);
+  }
+  MainMenu1P_0808cb00(p);
+  p->unk_a99 = 2;
+  p->unk_a9a = 0xFF;
+  p->unk_a9b = -1;
+  p->unk_9ff = -1;
+  gMainMenu = p;
+  return 0;
+}
 
 MainMenu* MainMenu1P_Create(u32 id, u32 _) {
   if (gMainMenu == NULL) {
