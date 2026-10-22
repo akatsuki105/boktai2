@@ -26,6 +26,7 @@
 #define PAGE_CONFIG 7
 #define PAGE_SLEEP 8
 #define PAGE_SAVE 9
+#define PAGE_NUM 10
 
 struct MainMenu;
 typedef void(MainMenuFunc)(struct MainMenu* p);  // _Update が p->fn(p) として呼ぶ
@@ -202,7 +203,7 @@ typedef struct MainMenu {
   u8 unk_f42[0xF56 - 0xF42];     // 0x0F42, まだ未解析
   u8 page;                       // 0x0F56, スタートメニューのページ番号
   u8 unk_f57;                    // 0x0F57, まだ未解析
-  u8 availPages[10];             // 0x0F58, 非0 のところだけ選べる, FUN_0809a93c / FUN_0809a978 が前後の非0を循環で探す
+  bool8 availPages[PAGE_NUM];    // 0x0F58, スタートメニューで選択可能なページ
   u8 unk_f62[0xF64 - 0xF62];     // 0x0F62, まだ未解析
   MainSprite sprites[116];       // 0x0F64, 根拠: MainMenu1P_RemoveSprites が 116個ぶん MainSprite_Remove に渡す
   u8 unk_3ae4;                   // 0x3AE4, メニューを閉じて効果を実行する要求
@@ -2901,45 +2902,45 @@ void UNUSED FUN_0809a800(void) { LoadParticleFile(GetFile(DIR_PARTICLE, 0x3002))
 
 NAKED void FUN_0809a81c(MainMenu* p) { INCFUNC("asm/func/FUN_0809a81c.inc"); }
 
-// cur の次から循環で非0の availPages を探す, 無ければ cur のまま
-s32 FUN_0809a93c(MainMenu* p, s32 cur) {
-  s32 idx = cur + 1;
+// スタートメニューで引数の page の次のページ番号を返す
+s32 MainMenu_GetNextPage(MainMenu* p, s32 page) {
+  s32 idx = page + 1;
   s32 i;
 
-  if (idx > 9) {
-    idx = 0;
+  if (idx > PAGE_SAVE) {
+    idx = PAGE_MAP;
   }
-  for (i = 0; i < 10; i++) {
-    if (p->availPages[idx] != 0) {
+  for (i = 0; i < PAGE_NUM; i++) {
+    if (p->availPages[idx]) {
       return idx;
     }
     idx++;
-    if (idx > 9) {
-      idx = 0;
+    if (idx > PAGE_SAVE) {
+      idx = PAGE_MAP;
     }
   }
-  return cur;
+  return page;
 }
 
-// cur の手前から循環で非0の availPages を探す, 無ければ cur のまま
-s32 FUN_0809a978(MainMenu* p, s32 cur) {
-  s32 idx = cur - 1;
+// スタートメニューで引数の page の前のページ番号を返す
+s32 MainMenu_GetPrevPage(MainMenu* p, s32 page) {
+  s32 idx = page - 1;
   s32 i;
 
-  if (cur == 0) {
-    idx = 9;
+  if (page == PAGE_MAP) {
+    idx = PAGE_SAVE;
   }
-  for (i = 0; i < 10; i++) {
-    if (p->availPages[idx] != 0) {
+  for (i = 0; i < PAGE_NUM; i++) {
+    if (p->availPages[idx]) {
       return idx;
     }
     if (idx == 0) {
-      idx = 9;
+      idx = PAGE_SAVE;
     } else {
       idx--;
     }
   }
-  return cur;
+  return page;
 }
 
 NAKED void FUN_0809a9b0(MainMenu* p) { INCFUNC("asm/func/FUN_0809a9b0.inc"); }
