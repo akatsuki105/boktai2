@@ -1770,7 +1770,21 @@ void ItemEffect_BadStatus(MainMenu* p, s32 cureBits, s32 _) {
   }
 }
 
-NAKED void ItemEffect_Good(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_Good.inc"); }
+// goodCondID のよいステータス効果を goodCondSec 秒ぶん付ける
+void ItemEffect_Good(MainMenu* p, s32 goodCondID, s32 goodCondSec) {
+  Player* player = p->player;
+
+  if (player != NULL) {
+    player->unk_444 = GetItemID(p->inValuableInventory, p->cursor.savedSlot);
+    player->goodCondID = goodCondID;
+    player->goodCondTimer = goodCondSec * 60;
+    player->plttID_95e = 289;
+    player->unk_960 = 0x30;
+    p->effectAmount = 0;
+    p->unk_a95 = 1;
+    p->unk_3ae4 = 1;
+  }
+}
 
 NAKED void ItemEffect_Vitamins(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_Vitamins.inc"); }
 
