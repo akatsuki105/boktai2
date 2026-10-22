@@ -20,9 +20,10 @@ typedef struct {
 static_assert(sizeof(Entity081f7de4Elem) == 156);
 
 // 指定座標にアフィン回転するエフェクトを最大2個まで出すエンティティ
+// おそらく、シャイアンの回転斬り
 typedef struct {
   Entity e;                     // 0x000, ENTITY_UNK_10
-  AuxSpriteGfx gfx;             // 0x018, SPRITE_EFF_354D
+  AuxSpriteGfx gfx;             // 0x018, SPRITE_EFF_SHAIAN_SPIN
   u8 unk_34[4];                 // 0x034
   u32 activeMask;               // 0x038, elems のどのスロットが使用中かのビットマスク
   Entity081f7de4Elem elems[2];  // 0x03C

@@ -149,7 +149,7 @@ NAKED s32 Entity080e01bc_Destroy(Entity080e01bc* p) { INCFUNC("asm/func/Entity08
 
 s32 Entity080e01bc_Init(Entity080e01bc* p) {
   p->unk_38 = 0;
-  Video_GetAuxSprite((AuxSpriteGfx*)p->unk_18, SPRITE_EFF_354D);
+  Video_GetAuxSprite((AuxSpriteGfx*)p->unk_18, SPRITE_EFF_SHAIAN_SPIN);
   gEntity080e01bc = p;
   return 0;
 }

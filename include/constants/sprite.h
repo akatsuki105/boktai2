@@ -254,7 +254,7 @@
 #define SPRITE_7BE2 0x7BE2                     // 黒塗り
 #define SPRITE_2EC0 0x2EC0                     // 遺跡ステージの4人の燭台の床パネル?
 #define SPRITE_BAT 0xDA6D                      // バット
-#define SPRITE_EFF_354D 0x354D                 // 何かのエフェクト
+#define SPRITE_EFF_SHAIAN_SPIN 0x354D          // シャイアンの回転斬りのエフェクト
 #define SPRITE_SHAIAN_AX 0x39A3                // シャイアンが投げる斧
 #define SPRITE_LVUP_INDICATOR 0x1C1D           // レベルアップのインジケータ
 #define SPRITE_GAMEOVER BOKHASH("over")        // 0x654B, "GAMEOVER"
