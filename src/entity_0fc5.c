@@ -1,15 +1,20 @@
 #include "entity.h"
+#include "file.h"
+#include "gba/macro.h"
 #include "global.h"
+#include "sprite_animation.h"
 #include "sprite_aux.h"
 #include "sprite_main.h"
 #include "vm.h"
 
 typedef struct Entity0FC5 {
-  Entity e;  // 0x0, ENTITY_UNK_8
-  u8 unk_18[0x38 - 0x18];
-  MainSprite sprite_38;  // 0x38, 根拠: Entity0FC5_RemoveSprites が unk_f4 == 0 のとき MainSprite_Remove に渡す
-  AuxSprite sprite_98;   // 0x98, 根拠: Entity0FC5_RemoveSprites が unk_f4 != 0 のとき AuxSprite_Remove に渡す
-  u8 unk_c4[0xF4 - 0xC4];
+  Entity e;                                    // 0x0, ENTITY_UNK_8
+  MainSpriteGfx gfx_18;                        // 0x018, SPRITE_DJANGO_SABATA
+  MainSprite sprite_38;                        // 0x38, 根拠: Entity0FC5_RemoveSprites が unk_f4 == 0 のとき MainSprite_Remove に渡す
+  AuxSprite sprite_98;                         // 0x98, 根拠: Entity0FC5_RemoveSprites が unk_f4 != 0 のとき AuxSprite_Remove に渡す
+  AuxSpriteGfx gfx_c4;                         // 0x0C4, SPRITE_OTENKO_00
+  AuxAnimState anim_e0;                        // 0x0E0
+  AuxAnimFile* animFile;                       // 0x0F0, ANIM_OTENKO
   s32 unk_f4;                                  // 0xF4, gEntity0FC5s での自分の添字, '.k' の値
   u32 pauseFlags;                              // 0x0F8, bit0/bit1 が立っている間 timer_100 / timer_108 を止める
   u32 unk_fc;                                  // 0x0FC, まだ未解析
@@ -31,7 +36,7 @@ typedef struct Entity0FC5 {
   s16 unk_136;                                 // 0x136
   u8 unk_138[0x13C - 0x138];                   // 0x138, まだ未解析
   AuxSprite sprite_13c;                        // 0x13C, 根拠: Entity0FC5_RemoveSprites が AuxSprite_Remove に渡す
-  u8 unk_168[0x184 - 0x168];                   // 0x168, まだ未解析
+  AuxSpriteGfx gfx_168;                        // 0x168, SPRITE_EFF_1C1B
   void (*updateCallback)(struct Entity0FC5*);  // 0x184
   u8 unk_188[392 - 0x188];                     // 0x188, まだ未解析
 } Entity0FC5;
@@ -68,7 +73,57 @@ void FUN_0821ae64(Entity0FC5* p, s32 val) {
   Entity0FC5_SetPauseFlags(p, 2);
 }
 
-NAKED void FUN_0821aeb0(Entity0FC5* p) { INCFUNC("asm/func/FUN_0821aeb0.inc"); }
+// 残差は CpuFill32 の引数準備順の2命令だけ (188/188), 原典は dest の add r4,sp,#0x14 が tmp の0代入より前
+// enemy_dex.c の同じ残差と同種, Tier A-C 試済
+NON_MATCH void Entity0FC5_AddSprites(Entity0FC5* p) {
+#ifdef NONMATCHING_C
+  s32 x = FixToInt(16, p->unk_10c);
+  s32 y = FixToInt(16, p->unk_110);
+  s32 scale = p->unk_130;
+  s32 idx = p->unk_f4;
+  s32 subScale;
+
+  if (idx == 0) {
+    MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+    Vec3 pos;
+
+    p->gfx_18 = *f;
+    OpenMainSpriteFile(&p->gfx_18, f);
+    CpuFill32(0, &pos, sizeof(pos));
+    pos.x = x;
+    pos.y = y;
+    MainSprite_Add(&p->sprite_38, &p->gfx_18, 7, SPRFLAG_UNK_15 | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE, 1, 0, 60, &pos);
+    MainSprite_SetAnim(&p->sprite_38, &p->gfx_18, 5, 1, 0);
+    p->sprite_38.scaleX = scale;
+    p->sprite_38.scaleY = scale;
+  } else {
+    AuxAnimFile* files;
+
+    Video_GetAuxSprite(&p->gfx_c4, SPRITE_OTENKO_00);
+    AuxSprite_Add(&p->sprite_98, &p->gfx_c4, SPRFLAG_UNK_15 | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE);
+    p->sprite_98.pos.x = x;
+    p->sprite_98.pos.y = y;
+    p->sprite_98.scaleX = scale;
+    p->sprite_98.scaleY = scale;
+    p->sprite_98.priority = 0;
+    files = GetFile(DIR_ANIMATION, ANIM_OTENKO);
+    p->animFile = files;
+    AuxAnim_SetAnim(&p->anim_e0, files, 0, 0, 0);
+  }
+
+  Video_GetAuxSprite(&p->gfx_168, SPRITE_EFF_1C1B);
+  AuxSprite_Add(&p->sprite_13c, &p->gfx_168, SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE);
+  AuxSprite_SetPoseIdx(&p->sprite_13c, 5);
+  p->sprite_13c.pos.x = x;
+  p->sprite_13c.pos.y = y;
+  subScale = Div(scale * 3, 4);
+  p->sprite_13c.scaleX = subScale;
+  p->sprite_13c.scaleY = subScale;
+  p->sprite_13c.priority = 2;
+#else
+  INCFUNC("asm/func/Entity0FC5_AddSprites.inc");
+#endif
+}
 
 // スプライトを描画リストから外す
 void Entity0FC5_RemoveSprites(Entity0FC5* p) {
@@ -124,7 +179,7 @@ s32 Entity0FC5_Init(Entity0FC5* p) {
   p->unk_132 = scale;
   p->unk_134 = 0;
   p->unk_136 = 0;
-  FUN_0821aeb0(p);
+  Entity0FC5_AddSprites(p);
   FUN_0821ae64(p, 0);
   gEntity0FC5s[p->unk_f4] = p;
   return 0;
