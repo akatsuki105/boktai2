@@ -56,7 +56,7 @@ typedef struct ItemShop {
 static_assert(sizeof(ItemShop) == 5440);
 
 void FUN_080baae8(ItemShop* p);
-s32 FUN_08049e6c(s32 idx, s32 value);
+s32 Marquee_SetVarValue(s32 idx, s32 value);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void FUN_080bbc60(ItemShop* p);
 void FUN_080bc2d8(ItemShop* p);
@@ -629,8 +629,8 @@ void FUN_080bb294(ItemShop* p) {
     MainSprite_SetPose(&p->sprites[33], &p->icons, ICON_TIMER_NONE, 1);
     MessageWindow_Start(p->unk_12e8);
     MessageWindow_SetRect(2, 16, 28, 2);
-    FUN_08049e6c(0, gArmorDB[id].defence);
-    FUN_08049e6c(1, gArmorDB[id].weight);
+    Marquee_SetVarValue(0, gArmorDB[id].defence);
+    Marquee_SetVarValue(1, gArmorDB[id].weight);
     MessageWindow_SetInstant(1);
     MessageWindow_ShowLine(id);
     {

@@ -72,10 +72,10 @@ _080B795C:
 	adds r4, r4, r0
 	ldrb r1, [r4, #1]
 	movs r0, #0
-	bl FUN_08049e6c
+	bl Marquee_SetVarValue
 	ldrb r1, [r4, #2]
 	movs r0, #1
-	bl FUN_08049e6c
+	bl Marquee_SetVarValue
 	movs r0, #1
 	bl MessageWindow_SetInstant
 	adds r0, r6, #0

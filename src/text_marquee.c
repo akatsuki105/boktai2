@@ -110,7 +110,8 @@ s32 FUN_08049e30(char* str) {
 
 s32 FUN_08049e5c(void) { return FUN_08049e30((char*)gBlankText); }
 
-s32 FUN_08049e6c(s32 idx, s32 value) {
+// 文字列の <VAR=idx> に対応する値を設定する
+s32 Marquee_SetVarValue(s32 idx, s32 value) {
   if (gMarquee == NULL) {
     return -1;
   }
@@ -118,27 +119,18 @@ s32 FUN_08049e6c(s32 idx, s32 value) {
   return 0;
 }
 
-s32 FUN_08049e94(void) {
-  s32 n = VM_GetValue();
-  return FUN_08049e6c(n, VM_GetValue());
-}
+s32 UNUSED FUN_08049e94(void) { return Marquee_SetVarValue(VM_GetValue(), VM_GetValue()); }
 
-s32 FUN_08049eb0(s32 idx, void* str) {
+s32 Marquee_SetExtendValue(s32 idx, char* str) {
   if (gMarquee != NULL) {
     return TextRenderer_SetExtend(&gMarquee->renderer, idx, str);
   }
   return -1;
 }
 
-s32 FUN_08049ed4(void) {
-  s32 n = VM_GetValue();
-  return FUN_08049eb0(n, VM_GetPC_Proxy());
-}
+s32 UNUSED FUN_08049ed4(void) { return Marquee_SetExtendValue(VM_GetValue(), VM_GetPC_Proxy()); }
 
-s32 FUN_08049ef0(void) {
-  s32 n = VM_GetValue();
-  return FUN_08049eb0(n, VM_GetValueSafe2_Proxy());
-}
+s32 UNUSED FUN_08049ef0(void) { return Marquee_SetExtendValue(VM_GetValue(), VM_GetValueSafe2_Proxy()); }
 
 s32 FUN_08049f0c(void) {
   TextRenderer* r;

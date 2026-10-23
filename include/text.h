@@ -56,11 +56,11 @@ typedef struct {
   u32 tagValueLen;       // 0x030, tagValue に積んだ文字数
   char tagValue[68];     // 0x034, TextRenderer_ReadTagValue が '=' の後ろから '>' までを最大64文字写す
   char numBuf[12];       // 0x078, VAR タグが Text_FormatDecimal で vars[i] を10進に直す先, numText が指す
-  s32 vars[16];          // 0x084, TextRenderer_SetVar が書き、TextRenderer_GetVarWidth が符号つき10進の桁数を数える, MessageWindow_SetVarValue の格納先
+  s32 vars[16];          // 0x084, <VAR=idx> で参照される
   s32 scriptIds[16];     // 0x0C4, '.p' で積まれたスクリプトID, 0x104 の直前までで16個
   u8 stackDepth;         // 0x104, TextRenderer_PushMode が 7 未満のときだけ積む
   u8 stack[7];           // 0x105, TextRenderer_PushMode が 0x07 の値を退避する
-  char* extends[16];     // 0x10C, TextRenderer_SetExtend が書き、TextRenderer_GetExtendWidth が文字列として走査する, MessageWindow_SetExtendValue の格納先
+  char* extends[16];     // 0x10C, <EXTEND=idx> で参照される
   u32 pendingCount;      // 0x14C, TextRenderer_ClearPending が毎フレーム 0 に戻し、TextRenderer_RunPending がこの数だけ pending を実行する
   u8 pending[16];        // 0x150, TextRenderer_RunPending が scriptIds の添字として読む, 構造体末尾までで16個
 } TextRenderer;

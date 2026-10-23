@@ -60,10 +60,10 @@ _08096A74:
 	adds r4, r4, r0
 	ldrb r1, [r4, #1]
 	movs r0, #0
-	bl FUN_08049e6c
+	bl Marquee_SetVarValue
 	ldrb r1, [r4, #2]
 	movs r0, #1
-	bl FUN_08049e6c
+	bl Marquee_SetVarValue
 	ldr r0, [r6, #0x48]
 	bl VM_ParseStringRef
 	adds r0, #0x25

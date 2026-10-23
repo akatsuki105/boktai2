@@ -824,7 +824,7 @@ _081DC264:
 	bl FUN_08049e5c
 	ldr r1, [r5]
 	movs r0, #0
-	bl FUN_08049e6c
+	bl Marquee_SetVarValue
 	movs r1, #0xf0
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -849,7 +849,7 @@ _081DC2A4:
 	bl FUN_08049e5c
 	ldr r1, [r5]
 	movs r0, #0
-	bl FUN_08049e6c
+	bl Marquee_SetVarValue
 	movs r1, #0xf0
 	lsls r1, r1, #2
 	adds r0, r4, r1

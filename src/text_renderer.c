@@ -638,8 +638,13 @@ void TextRenderer_Init(TextRenderer* p, s32 x, s32 y, s32 width, s32 height) {
   p->waitFrames = 0;
 }
 
-s32 TextRenderer_SetVar(TextRenderer* p, s32 idx, u32 val) { p->vars[idx] = val; }
+// 文字列の <VAR=idx> に対応する値を設定する
+s32 TextRenderer_SetVar(TextRenderer* p, s32 idx, u32 val) {
+  p->vars[idx] = val;
+  // return の書き忘れか シグネチャの設定ミス
+}
 
+// <EXTEND=idx> に対応する文字列を設定する
 s32 TextRenderer_SetExtend(TextRenderer* p, s32 idx, char* str) { p->extends[idx] = str; }
 
 s32 TextRenderer_SetScriptIds(TextRenderer* p, s32 count, u32* ids) {
