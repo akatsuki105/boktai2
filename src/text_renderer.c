@@ -29,7 +29,7 @@
 // 値が PLAYER と FUTARI のときだけ固定値ではなく Text_GetPlayerFace / Text_GetPairFace がプレイヤーを見て決める
 // src/data/text に実際に出てくるのは PROC / END / LABEL / EXTEND / VAR / NAME / ALTER / WEIGHT / LOCK / WAIT / MOJISE / FACEOFF の12種類だけで, NONSEL / UVMOJI / SOUND / PAREN は本文側には現れない
 
-const s16 gCharSounds[2] = {0x105, 0x106};  // 0x085AB458, TextRenderer_PlayCharSound が charSoundIdx で選ぶ文字送り音
+const s16 gCharSounds[2] = {SE_NONE_261, SONG_262};  // 0x085AB458, TextRenderer_PlayCharSound が charSoundIdx で選ぶ文字送り音
 
 // 0x1F エスケープの次のバイトと文字コードの組, bit15 が立っていれば全角 (Font_DrawZenkakuChar 側)
 // clang-format off

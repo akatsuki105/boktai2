@@ -55,6 +55,7 @@ const ALIGNED(4) char s_UVMOJI_08251d10[] = "/UVMOJI";
 const ALIGNED(4) char s_LABEL_08251d18[] = "/LABEL";
 const ALIGNED(4) char s_PAREN_08251d20[] = "/PAREN";
 const ALIGNED(4) char s_ALTER_08251d28[] = "/ALTER";
+
 const ALIGNED(4) char s_Zokutai_08251d30[] = "Zokutai";
 const ALIGNED(4) char s_Djungo_08251d38[] = "Djungo";
 
