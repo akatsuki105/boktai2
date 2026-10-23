@@ -8,12 +8,12 @@
 typedef struct Entity0FC5 {
   Entity e;                                    // 0x0, ENTITY_UNK_8
   MainSpriteGfx djangoGfx;                     // 0x18, SPRITE_DJANGO_SABATA
-  MainSprite django;                           // 0x38, 根拠: Entity0FC5_RemoveSprites が unk_f4 == 0 のとき MainSprite_Remove に渡す
-  AuxSprite otenko;                            // 0x98, 根拠: Entity0FC5_RemoveSprites が unk_f4 != 0 のとき AuxSprite_Remove に渡す
+  MainSprite django;                           // 0x38, 根拠: Entity0FC5_RemoveSprites が kind == 0 のとき MainSprite_Remove に渡す
+  AuxSprite otenko;                            // 0x98, 根拠: Entity0FC5_RemoveSprites が kind != 0 のとき AuxSprite_Remove に渡す
   AuxSpriteGfx otenkoGfx;                      // 0xC4, SPRITE_OTENKO_00
-  AuxAnimState otenkoAnim;                     // 0xE0 ->animFile
-  AuxAnimFile* animFile;                       // 0xF0, ANIM_OTENKO
-  s32 unk_f4;                                  // 0xF4, gEntity0FC5s での自分の添字, '.k' の値
+  AuxAnimState otenkoAnim;                     // 0xE0 ->otenkoAnimFile
+  AuxAnimFile* otenkoAnimFile;                 // 0xF0, ANIM_OTENKO
+  s32 kind;                                    // 0xF4, '.k', 0: ジャンゴ, 1: おてんこ
   u32 pauseFlags;                              // 0xF8, bit0/bit1 が立っている間 timer_100 / timer_108 を止める
   u32 unk_fc;                                  // 0xFC, まだ未解析
   u32 timer_100;                               // 0x100
@@ -40,7 +40,7 @@ typedef struct Entity0FC5 {
 } Entity0FC5;
 static_assert(sizeof(Entity0FC5) == 392);
 
-COMMON_DATA Entity0FC5* gEntity0FC5s[2] = {};  // 0x03002C98, '.k' の値を添字にして Entity0FC5 が自分を登録する
+COMMON_DATA Entity0FC5* gEntity0FC5s[2] = {};  // 0x03002C98, [0: ジャンゴ, 1: おてんこ]
 
 NAKED void FUN_0821a87c(void) { INCFUNC("asm/func/FUN_0821a87c.inc"); }
 
@@ -78,7 +78,7 @@ NON_MATCH void Entity0FC5_AddSprites(Entity0FC5* p) {
   s32 x = FixToInt(16, p->unk_10c);
   s32 y = FixToInt(16, p->unk_110);
   s32 scale = p->unk_130;
-  s32 idx = p->unk_f4;
+  s32 idx = p->kind;
   s32 subScale;
 
   if (idx == 0) {
@@ -105,7 +105,7 @@ NON_MATCH void Entity0FC5_AddSprites(Entity0FC5* p) {
     p->otenko.scaleY = scale;
     p->otenko.priority = 0;
     files = GetFile(DIR_ANIMATION, ANIM_OTENKO);
-    p->animFile = files;
+    p->otenkoAnimFile = files;
     AuxAnim_SetAnim(&p->otenkoAnim, files, 0, 0, 0);
   }
 
@@ -125,7 +125,7 @@ NON_MATCH void Entity0FC5_AddSprites(Entity0FC5* p) {
 
 // スプライトを描画リストから外す
 void Entity0FC5_RemoveSprites(Entity0FC5* p) {
-  if (p->unk_f4 == 0) {
+  if (p->kind == 0) {
     MainSprite_Remove(&p->django);
   } else {
     AuxSprite_Remove(&p->otenko);
@@ -148,7 +148,7 @@ s32 Entity0FC5_Update(Entity0FC5* p) {
 // 描画を畳んで gEntity0FC5s の登録枠を空ける
 s32 Entity0FC5_Destroy(Entity0FC5* p) {
   Entity0FC5_RemoveSprites(p);
-  gEntity0FC5s[p->unk_f4] = NULL;
+  gEntity0FC5s[p->kind] = NULL;
   return 0;
 }
 
@@ -156,7 +156,7 @@ s32 Entity0FC5_Init(Entity0FC5* p) {
   s32 scale;
 
   p->pauseFlags = 0;
-  p->unk_f4 = VM_GetNamedArgValue('k', -1);
+  p->kind = VM_GetNamedArgValue('k', -1);
   if (VM_SeekToNamedArg('p')) {
     p->unk_10c = VM_GetValue() << 16;
     p->unk_110 = VM_GetValue() << 16;
@@ -179,7 +179,7 @@ s32 Entity0FC5_Init(Entity0FC5* p) {
   p->unk_136 = 0;
   Entity0FC5_AddSprites(p);
   FUN_0821ae64(p, 0);
-  gEntity0FC5s[p->unk_f4] = p;
+  gEntity0FC5s[p->kind] = p;
   return 0;
 }
 
