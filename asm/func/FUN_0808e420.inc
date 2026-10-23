@@ -8,7 +8,7 @@
 	adds r0, r5, #0
 	bl MainMenu_BuildQCWeaponSlots
 	adds r0, r5, #0
-	bl FUN_0808d4dc
+	bl MainMenu_RefreshQCWeaponIcons
 	adds r0, r5, #0
 	bl MainMenu_BuildQCMagicSlots
 	adds r0, r5, #0

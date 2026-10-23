@@ -898,7 +898,19 @@ NON_MATCH s32 FUN_0808d49c(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s
 #endif
 }
 
-NAKED void FUN_0808d4dc(MainMenu* p) { INCFUNC("asm/func/FUN_0808d4dc.inc"); }
+// 各武器アイコンの絵柄を装備中の武器に, 縦位置を選択中インデックスからの並び順に合わせる
+void MainMenu_RefreshQCWeaponIcons(MainMenu* p) {
+  s32 i;
+
+  for (i = 0; i < p->qcWeaponIconNums; i++) {
+    if (p->qcWeapon.slots[i].weapon == NULL) {
+      MainSprite_SetPose(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, 0, 1);
+    } else {
+      MainSprite_SetPose(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, ICON_WEAPON(p->qcWeapon.slots[i].weapon->id), 1);
+    }
+    p->qcWeapon.slots[i].sprite.pos.y = FUN_0808d49c((s32)p, i, p->qcWeapon.idx, p->qcWeaponIconNums, 0);
+  }
+}
 
 NAKED void FUN_0808d564(MainMenu* p) { INCFUNC("asm/func/FUN_0808d564.inc"); }
 
@@ -1131,7 +1143,7 @@ void MainMenu1P_0808dddc(MainMenu* p) {
   if (p->player != NULL) {
     MainMenu_BuildQCWeaponSlots(p);
     MainMenu_BuildQCMagicSlots(p);
-    FUN_0808d4dc(p);
+    MainMenu_RefreshQCWeaponIcons(p);
     FUN_0808d564(p);
     if (gFlag030047a4 & FLAG030047A4_UNK_12) {
       MainMenu_HideQCIcons(p);
@@ -1143,7 +1155,7 @@ void MainMenu1P_0808dddc(MainMenu* p) {
 
 void FUN_0808de30(MainMenu* p) {
   MainMenu_BuildQCWeaponSlots(p);
-  FUN_0808d4dc(p);
+  MainMenu_RefreshQCWeaponIcons(p);
   FUN_0808d3d4(p);
   MainMenu_ApplyWeapon(p);
 }
@@ -3612,7 +3624,7 @@ void FUN_0809c264(void) {
 void FUN_0809c28c(void) {
   if (gMainMenu != NULL && gMainMenu->player != NULL) {
     MainMenu_BuildQCWeaponSlots(gMainMenu);
-    FUN_0808d4dc(gMainMenu);
+    MainMenu_RefreshQCWeaponIcons(gMainMenu);
     if (gMainMenu->unk_9fe <= 2) {
       FUN_0808d3d4(gMainMenu);
     }
@@ -3657,7 +3669,7 @@ void FUN_0809c464(void) {
       MainMenu_BuildQCMagicSlots(gMainMenu);
       FUN_0808d564(gMainMenu);
       MainMenu_BuildQCWeaponSlots(gMainMenu);
-      FUN_0808d4dc(gMainMenu);
+      MainMenu_RefreshQCWeaponIcons(gMainMenu);
 
       if (gFlag030047a4 & FLAG030047A4_UNK_12) {
         if (gMainMenu->unk_9fe == 0) {
