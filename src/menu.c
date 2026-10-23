@@ -912,7 +912,17 @@ void MainMenu_RefreshQCWeaponIcons(MainMenu* p) {
   }
 }
 
-NAKED void FUN_0808d564(MainMenu* p) { INCFUNC("asm/func/FUN_0808d564.inc"); }
+// 各魔法アイコンの絵柄を登録中の魔法に, 縦位置を選択中インデックスからの並び順に合わせる
+void MainMenu_RefreshQCMagicIcons(MainMenu* p) {
+  s32 i;
+
+  for (i = 0; i < p->qcMagic.iconNums; i++) {
+    QCMagicSlot* slot = &p->qcMagic.slots[i];
+
+    MainSprite_SetPose(&slot->sprite, &p->gfx.icons, ICON_MAGIC(slot->id), 1);
+    slot->sprite.pos.y = FUN_0808d49c((s32)p, i, p->qcMagic.idx, p->qcMagic.iconNums, 0);
+  }
+}
 
 // 残差1箇所2命令 (187/187, 同じ命令が同じ順), 原典は &qcWeapon.slots[n] を添字レジスタ r0 に上書きで作るが, こちらは r1 に作って r0 を残す
 // Tier A-C 試済 (分岐順の入替, u8+（s8)キャスト, slot ポインタのローカル化, 宣言順, ブロックローカル化)
@@ -1144,7 +1154,7 @@ void MainMenu1P_0808dddc(MainMenu* p) {
     MainMenu_BuildQCWeaponSlots(p);
     MainMenu_BuildQCMagicSlots(p);
     MainMenu_RefreshQCWeaponIcons(p);
-    FUN_0808d564(p);
+    MainMenu_RefreshQCMagicIcons(p);
     if (gFlag030047a4 & FLAG030047A4_UNK_12) {
       MainMenu_HideQCIcons(p);
     } else {
@@ -1162,7 +1172,7 @@ void FUN_0808de30(MainMenu* p) {
 
 void FUN_0808de50(MainMenu* p) {
   MainMenu_BuildQCMagicSlots(p);
-  FUN_0808d564(p);
+  MainMenu_RefreshQCMagicIcons(p);
   FUN_0808d3d4(p);
   FUN_0808d93c(p);
 }
@@ -3634,7 +3644,7 @@ void FUN_0809c28c(void) {
 void FUN_0809c2d0(void) {
   if (gMainMenu != NULL && gMainMenu->player != NULL) {
     MainMenu_BuildQCMagicSlots(gMainMenu);
-    FUN_0808d564(gMainMenu);
+    MainMenu_RefreshQCMagicIcons(gMainMenu);
     if (gMainMenu->unk_9fe <= 2) {
       FUN_0808d3d4(gMainMenu);
     }
@@ -3667,7 +3677,7 @@ void FUN_0809c464(void) {
     gMainMenu->player = GetPlayer(0);
     if (gMainMenu->player != NULL) {
       MainMenu_BuildQCMagicSlots(gMainMenu);
-      FUN_0808d564(gMainMenu);
+      MainMenu_RefreshQCMagicIcons(gMainMenu);
       MainMenu_BuildQCWeaponSlots(gMainMenu);
       MainMenu_RefreshQCWeaponIcons(gMainMenu);
 

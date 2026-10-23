@@ -12,7 +12,7 @@
 	adds r0, r5, #0
 	bl MainMenu_BuildQCMagicSlots
 	adds r0, r5, #0
-	bl FUN_0808d564
+	bl MainMenu_RefreshQCMagicIcons
 	adds r0, r5, #0
 	bl FUN_0808d2ac
 	ldr r1, _0808E478 @ =0x000009F9
