@@ -1511,14 +1511,14 @@ const u8 (*const PTR_ARRAY_085acf04[15])[4] = {
     u8_ARRAY_085ace3c,
 };  // 0x085ACF04
 
-// 現在のエリアと '.f' の組からメッセージの行番号を引く
+// 現在のステージと '.f' の組からメッセージの行番号を引く
 s32 FUN_0808fc14(void) {
-  if (gStat->areaID > 14) {
-    return gStat->areaID + 0x40;
+  if (gStat->stageID > 14) {
+    return gStat->stageID + 0x40;
   }
   {
-    const u8(*records)[16] = PTR_ARRAY_085acec8[gStat->areaID];
-    const u8(*index)[4] = PTR_ARRAY_085acf04[gStat->areaID];
+    const u8(*records)[16] = PTR_ARRAY_085acec8[gStat->stageID];
+    const u8(*index)[4] = PTR_ARRAY_085acf04[gStat->stageID];
 
     return records[index[gStat->unk_256][0]][15];
   }
@@ -1527,7 +1527,7 @@ s32 FUN_0808fc14(void) {
 // 0x82B3
 void FUN_0808fc68(void) {
   if (VM_SeekToNamedArg('s')) {
-    gStat->areaID = VM_GetValue();
+    gStat->stageID = VM_GetValue();
   }
 }
 
@@ -1571,7 +1571,7 @@ NON_MATCH s32 FUN_0808fd44(void) {
 
     return gStat->unk_268[i];
   }
-  return gStat->unk_268[gStat->areaID];
+  return gStat->unk_268[gStat->stageID];
 #else
   INCFUNC("asm/func/FUN_0808fd44.inc");
 #endif
@@ -1585,7 +1585,7 @@ NON_MATCH void FUN_0808fd8c(void) {
   if (VM_SeekToNamedArg('s')) {
     idx = VM_GetValue();
   } else {
-    idx = gStat->areaID;
+    idx = gStat->stageID;
   }
 
   gStat->unk_268[idx] = 0;
@@ -1603,7 +1603,7 @@ NON_MATCH void FUN_0808fdc8(void) {
   if (VM_SeekToNamedArg('s')) {
     idx = VM_GetValue();
   } else {
-    idx = gStat->areaID;
+    idx = gStat->stageID;
   }
 
   if (VM_SeekToNamedArg('i')) {
@@ -1623,7 +1623,7 @@ NON_MATCH void FUN_0808fe1c(void) {
   if (VM_SeekToNamedArg('s')) {
     idx = VM_GetValue();
   } else {
-    idx = gStat->areaID;
+    idx = gStat->stageID;
   }
 
   if (VM_SeekToNamedArg('i')) {
