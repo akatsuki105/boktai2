@@ -33,7 +33,7 @@ extern bool32 gMarqueeActive;  // 0x03003520
 
 void FUN_080498c8(void) { gMarquee = NULL; }
 
-void FUN_080498d4(Marquee* p) {
+void Marquee_ResetRect(Marquee* p) {
   TextRenderer* r = &p->renderer;
 
   Font_ReleaseRect(0, 18, 32, 2);
@@ -41,7 +41,21 @@ void FUN_080498d4(Marquee* p) {
   TextRenderer_SetRect(r, 0, 18, 32, 2);
 }
 
-NAKED s32 FUN_0804990c(Marquee* p, bool32 reset) { INCFUNC("asm/func/FUN_0804990c.inc"); }
+s32 Marquee_Rewind(Marquee* p, bool32 resetRect) {
+  TextRenderer* r = &p->renderer;
+
+  if (resetRect) Marquee_ResetRect(p);
+  p->unk_18c = 0;
+  p->unk_188 = 0;
+  p->offset = 0;
+  p->manualScroll = 0;
+  p->delay = 30;
+  p->unk_17d = 0;
+  p->unk_190 = 0;
+  r->text = p->text;
+  r->mode = 0;
+  TextRenderer_ResetModeStack(r);
+}
 
 NAKED void FUN_0804996c(Marquee* p) { INCFUNC("asm/func/FUN_0804996c.inc"); }
 
@@ -49,7 +63,7 @@ s32 FUN_08049c3c(Marquee* p) {
   if (p->active) return -1;
 
   p->offset = 0;
-  FUN_0804990c(p, TRUE);
+  Marquee_Rewind(p, TRUE);
   gMarqueeActive = TRUE;
   p->active = TRUE;
   return 0;
@@ -104,7 +118,7 @@ s32 FUN_08049e30(char* str) {
     return -1;
   }
   gMarquee->text = str;
-  FUN_0804990c(gMarquee, TRUE);
+  Marquee_Rewind(gMarquee, TRUE);
   return 0;
 }
 
