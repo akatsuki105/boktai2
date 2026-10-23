@@ -90,7 +90,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x237A, FUN_0807b620
 	.4byte 0x2502, Demo_Resume
 	.4byte 0x2571, FUN_080ef584
-	.4byte 0x2575, MessageWindow_SetExtendStringScripted
+	.4byte 0x2575, Cmd_2575
 	.4byte 0x2593, FUN_0807d828
 	.4byte 0x25F3, AlarmPanel_Create @ HashName("太陽警報機")
 	.4byte 0x2740, Cmd_2740
@@ -305,7 +305,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x78EE, Cmd_78EE
 	.4byte 0x7935, Cmd_InitArray
 	.4byte 0x794C, Entity794C_Create
-	.4byte 0x7974, MessageWindow_SetWaitScripted
+	.4byte 0x7974, Cmd_SetMessageWindowWait
 	.4byte 0x7999, Entity7999_Create
 	.4byte 0x79B7, Map_AddLoadingZoneIndicatorScripted
 	.4byte 0x79EC, FUN_08240fdc
@@ -380,7 +380,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x9284, CrossoverLobby_Create
 	.4byte 0x92BE, MissionMarker_Create
 	.4byte 0x92ED, Entity92ED_Create
-	.4byte 0x930F, MessageWindow_SetRectScripted
+	.4byte 0x930F, Cmd_SetMessageWindowRect
 	.4byte 0x9311, FUN_080ef534
 	.4byte 0x933C, Player_MoveTo @ HashName("バロメータ")?
 	.4byte 0x9386, Durathror_Create @ HashName("ドゥラスロール")
@@ -437,7 +437,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xA99F, FUN_08223d68
 	.4byte 0xAA62, FUN_0808fcd8
 	.4byte 0xAA65, CactusManager_Create
-	.4byte 0xAB3C, MessageWindow_SetVar
+	.4byte 0xAB3C, Cmd_SetMessageWindowVar
 	.4byte 0xAB41, FUN_0823d0e8
 	.4byte 0xAB4E, EntityAB4E_Create
 	.4byte 0xAB8E, FUN_081d1dec

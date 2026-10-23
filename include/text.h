@@ -93,7 +93,7 @@ void TextRenderer_ClearPending(TextRenderer* p);
 void TextRenderer_RunPending(TextRenderer* p);
 s32 TextRenderer_Advance(TextRenderer* p);
 void TextRenderer_ResetModeStack(TextRenderer* p);
-s32 TextRenderer_SetVar(TextRenderer* p, s32 idx, u32 value);
+s32 TextRenderer_SetVar(TextRenderer* p, s32 idx, u32 value);  // 文字列の <VAR=idx> に対応する値を設定する
 s32 TextRenderer_SetExtend(TextRenderer* p, s32 idx, char* str);
 s32 TextRenderer_GetVarWidth(TextRenderer* p, s32 idx);
 s32 TextRenderer_GetExtendWidth(TextRenderer* p, s32 idx);
