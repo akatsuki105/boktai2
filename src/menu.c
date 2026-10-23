@@ -290,6 +290,8 @@ static_assert(sizeof(MainMenu) == 16476);
 IWRAM_DATA MainMenu* gMainMenu = NULL;  // 0x0300013C
 
 extern u16 u16_03002c10;
+extern u16 gSavedMenuPage;  // src/iwram2.c
+extern u16 u16_03002c18;    // src/iwram2.c
 
 #define BGMAP_BGP13 (13 << 12)
 
@@ -593,7 +595,7 @@ void FUN_0808ba20(WorldPos* pos, s16* target, s32 weight) {
 // プレイヤーの状態に応じたパレットIDを返す (毒, カーモス, 通常)
 s32 FUN_0808ba64(MainMenu* p) {
   s32 i;
-  if (p->player->badCondTimer[1] != 0) {  // 毒
+  if (p->player->badCondTimer[BAD_POISON] != 0) {  // 毒
     i = 2;
   } else {
     i = (KAAMOS(p->player->isSabata) > 0) ? 6 : 0;
@@ -672,11 +674,9 @@ NAKED void FUN_0808c95c(MainMenu* p, s32 param_2, s16 param_3, s16 param_4) { IN
 
 // 2組のパーティクルを描画リストから全部外す
 void FUN_0808cacc(MainMenu* p) {
-  s32 i;
+  s32 i, j;
 
   for (i = 0; i < 2; i++) {
-    s32 j;
-
     for (j = 0; j < 8; j++) {
       Particle_Remove(&p->ptclSets[i].nodes[j].ptcl);
     }
@@ -690,12 +690,10 @@ void FUN_0808cb90(MainMenu* p) {
   if (!p->unk_a30) {
     BgMapEntry* entry = MainMenu_GetBgMapAddr(0, 0, 0);
     s32 i;
-
     for (i = 0; i < 9; i++) {
-      *entry = (i + 0xA0) | BGMAP_BGP13;
+      *entry = BGMAP_BGP13 | (160 + i);
       entry++;
     }
-
     p->unk_a30 = 1;
   }
 }
@@ -1711,9 +1709,6 @@ void FUN_08091684(void) {
     }
   }
 }
-
-extern u16 u16_03002c14;  // src/iwram2.c
-extern u16 u16_03002c18;  // src/iwram2.c
 
 u32 FUN_080916bc(u32 bitidx) { return u16_03002c10 & (1 << bitidx); }
 
@@ -3308,7 +3303,7 @@ void MainMenu1P_0809c010(MainMenu* p) {
 
 void FUN_0809c040(void) {
   gMainMenu = NULL;
-  u16_03002c14 = 1;
+  gSavedMenuPage = PAGE_ITEM;
   u16_03002c10 = 0;
   u16_03002c18 = 1;
 }
@@ -3562,7 +3557,7 @@ s32 MainMenu1P_Destroy(MainMenu* p) {
   FUN_0808cacc(p);
   MainMenu1P_RemoveSprites(p);
   FUN_0808cffc(p);
-  u16_03002c14 = p->page;
+  gSavedMenuPage = p->page;
   gMainMenu = NULL;
   return 0;
 }
@@ -3571,7 +3566,7 @@ s32 MainMenu1P_Destroy(MainMenu* p) {
 s32 MainMenu1P_Init(MainMenu* p, u32 id) {
   SetBGPrioDirect(0, 0);
   p->unk_9fc = 0;
-  p->page = u16_03002c14;
+  p->page = gSavedMenuPage;
   p->player = GetPlayer(0);
   BuildWeapon((WeaponData*)&gWeaponDB[WEAPON_GUN_DEL_HELL], &p->weapon);
   MainMenu1P_ReadNamedArgs(p);
