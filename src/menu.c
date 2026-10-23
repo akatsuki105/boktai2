@@ -274,9 +274,9 @@ typedef struct MainMenu {
   u8 unk_401c;                   // 0x401C, まだ未解析
   u8 unk_401d;                   // 0x401D, 根拠: ItemEffect_Loan が 1 を入れる
   u8 unk_401e;                   // 0x401E, 根拠: FUN_0808f95c が FUN_0808f140 の戻り値を入れる
-  u8 unk_401f;                   // 0x401F, 根拠: FUN_0808f190 が非0かどうかを見る
+  bool8 unk_401f;                // 0x401F, '.V'
   u8 unk_4020[0x4028 - 0x4020];  // 0x4020, まだ未解析
-  u32 scriptID;                  // 0x4028, 0 以外なら VM_ExecByID で実行する
+  u32 scriptID;                  // 0x4028, '.d'
   u8 (*unk_402c[3])[16];         // 0x402C, 1件16バイトの表, +0x0F が MessageWindow_ShowLine に渡す行番号
   u8 unk_4038;                   // 0x4038, unk_402c[0] の添字
   u8 unk_4039;                   // 0x4039, 1 なら unk_402c の表に沿って BG1 を差し替える
@@ -698,16 +698,12 @@ void FUN_0808cacc(MainMenu* p) {
 }
 
 void MainMenu1P_AddParticles(MainMenu* p) {
-  s32 i;
-  s32 j;
+  s32 i, j;
 
   for (i = 0; i < 2; i++) {
     MMenuPtclSet* set = &p->ptclSets[i];
     SpriteFlags flags = SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST;
-
-    if (i == 0) {
-      flags = SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD;
-    }
+    if (i == 0) flags = SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD;
     set->group = GetParticleGroup(PTCL_GROUP_2);
     set->unk_4 = 0;
     set->unk_5 = 0;
@@ -1199,8 +1195,7 @@ void FUN_0808f170(MainMenu* p) {
   MessageWindow_SetRect(1, 15, 28, 4);
   MessageWindow_Start(p->loanTexts);
   MessageWindow_SetInstant(1);
-
-  if (p->unk_401f != 0) {
+  if (p->unk_401f) {
     FUN_0808ede4(p);
   } else {
     FUN_0808ebe8(p);
