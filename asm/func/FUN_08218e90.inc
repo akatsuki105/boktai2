@@ -66,7 +66,7 @@ _08218F1E:
 	movs r1, #7
 	movs r2, #0xc
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	movs r0, #8
 	movs r1, #7
 	adds r2, r4, #0
@@ -159,7 +159,7 @@ _08218FBE:
 	movs r1, #0xa
 	movs r2, #0x18
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	str r6, [sp, #0x64]
 	ldr r2, _0821901C @ =0x05000008
 	adds r0, r7, #0
@@ -384,7 +384,7 @@ _08219164:
 	movs r1, #7
 	movs r2, #3
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	movs r0, #0x15
 	movs r1, #7
 	adds r2, r4, #0
@@ -418,7 +418,7 @@ _082191E4:
 	movs r1, #6
 	movs r2, #0x12
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	movs r0, #8
 	movs r1, #6
 	adds r2, r4, #0

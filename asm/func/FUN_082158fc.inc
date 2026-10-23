@@ -15,7 +15,7 @@
 	movs r1, #0xa
 	movs r2, #0x12
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	movs r0, #9
 	movs r1, #0xa
 	adds r2, r5, #0

@@ -249,7 +249,7 @@ const SoundID16 u16_ARRAY_085afeb2[99] = {
 };  // 0x085afeb2
 // clang-format on
 
-void FUN_0821b28c(u32 x8, u32 y8, u32 w8, u32 h8);
+void Video_ClearTextRect(u32 x8, u32 y8, u32 w8, u32 h8);
 void Video_DrawText(s32 x8, s32 y8, char* s);
 
 static inline void EntityA288_SetFlags(EntityA288* p, u32 bits) { p->flags |= bits; }
@@ -407,7 +407,7 @@ NON_MATCH void FUN_082158fc(EntityA288* p) {
 #ifdef NONMATCHING_C
   char* text = GetStringByID(VM_ParseStringRef(p->unk_e80) + p->unk_e84);
 
-  FUN_0821b28c(9, 10, 0x12, 2);
+  Video_ClearTextRect(9, 10, 0x12, 2);
   Video_DrawText(9, 10, text);
   gStat->unk_944 = p->unk_e84;
 #else
@@ -443,7 +443,7 @@ void FUN_08216000(EntityA288* p) {
   ClearBGTilemapBuffer(0);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
   str = GetStringByID(VM_ParseStringRef(p->unk_12ac) + p->unk_12ba);
-  FUN_0821b28c(10, 4, 16, 2);
+  Video_ClearTextRect(10, 4, 16, 2);
   Video_DrawText(10, 4, str);
 }
 

@@ -36,7 +36,7 @@ _08217C3A:
 	movs r1, #1
 	movs r2, #0xa
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	movs r0, #0x12
 	movs r1, #1
 	mov r2, sp

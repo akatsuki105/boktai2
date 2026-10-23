@@ -4,7 +4,7 @@
 
 NAKED bool32 FUN_0821b21c(unknown* param_1, s32 val1, s32 val2, u16 val3) { INCFUNC("asm/func/FUN_0821b21c.inc"); }
 
-void FUN_0821b28c(u32 x8, u32 y8, u32 w8, u32 h8) {
+void Video_ClearTextRect(u32 x8, u32 y8, u32 w8, u32 h8) {
   Font_ReleaseRect(x8, y8, w8, h8);
   Font_FillRect(x8, y8, w8, h8);
 }

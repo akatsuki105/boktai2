@@ -49,7 +49,7 @@ _08215230:
 	movs r1, #7
 	movs r2, #0x10
 	movs r3, #0xa
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	movs r6, #7
 	movs r4, #0
 	b _08215280

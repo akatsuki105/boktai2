@@ -42,7 +42,7 @@
 	mov r1, r8
 	movs r2, #2
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	adds r0, r4, #0
 	mov r1, r8
 	adds r2, r5, #0
