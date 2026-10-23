@@ -29,7 +29,7 @@ typedef struct {
 } Entity8AF6;                  // Entity8AF6 はサイズが可変
 static_assert(sizeof(Entity8AF6) == 216);
 
-extern Entity8AF6* gEntity8AF6;  // 0x03002C4C
+COMMON_DATA Entity8AF6* gEntity8AF6 = NULL;  // 0x03002C4C
 
 // '.n' と id が一致する枠を返す, 無ければ NULL
 Entity8AF6Entry* Entity8AF6_FindEntry(void) {

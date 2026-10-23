@@ -1,9 +1,10 @@
 #include "entity_286f.h"
 #include "global.h"
 
-// おそらく、複数のTUのコードが混ざっているが、まだどこでファイル分けするかわかっていない
-
 static rgb555 rgb555_ARRAY_03000228[16];  // 0x03000228
+
+COMMON_DATA u32 u32_03002c90 = 0;                          // 0x03002C90
+COMMON_DATA u8 u8_03002c94[0x03002C98 - 0x03002C94] = {};  // unused?
 
 // src/entity_286f.c
 void FUN_08042178(Entity286F*, Entity286FNode*, s32);

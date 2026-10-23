@@ -14,49 +14,6 @@
 #include "video.h"
 #include "vm.h"
 
-COMMON_DATA struct Entity5941* gEntity5941 = NULL;  // 0x03002BF8
-COMMON_DATA struct EntityBD74* gEntityBD74 = NULL;  // 0x03002BFC
-
-COMMON_DATA struct Coffin* gCoffin = NULL;                 // 0x03002C00
-COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
-
-COMMON_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
-COMMON_DATA u8 u8_03002c12[0x03002C14 - 0x03002C12] = {};  // todo
-COMMON_DATA u16 gSavedMenuPage = 0;                        // 0x03002C14, 根拠: MainMenu1P_Destroy が MainMenu.page を書き込む
-COMMON_DATA u8 u8_03002c16[0x03002C18 - 0x03002C16] = {};  // todo
-COMMON_DATA u16 u16_03002c18 = 0;                          // 0x03002C18, FUN_0809c040 が 1 を入れる
-COMMON_DATA u8 u8_03002c1a[0x03002C3C - 0x03002C1A] = {};  // todo
-
-COMMON_DATA struct EntityA628* gEntityA628 = NULL;          // 0x03002C3C
-COMMON_DATA struct EntityBA36* gEntityBA36 = NULL;          // 0x03002C40
-COMMON_DATA struct Entity1E98* gEntity1E98 = NULL;          // 0x03002C44
-COMMON_DATA struct Entity3117* gEntity3117 = NULL;          // 0x03002C48
-COMMON_DATA struct Entity8AF6* gEntity8AF6 = NULL;          // 0x03002C4C
-COMMON_DATA struct Entity4063* gEntity4063 = NULL;          // 0x03002C50
-COMMON_DATA struct Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
-COMMON_DATA struct PileDriver* gPileDriver = NULL;          // 0x03002C58
-
-COMMON_DATA struct EnemyManager* gEnemyManager = NULL;        // 0x03002C5C
-COMMON_DATA struct EnemyListNode* gEnemyListHead = NULL;      // 0x03002C60, 生存中のエネミーの単方向リスト, EnemyManager.list と同じ値
-COMMON_DATA struct LinkConnect* gLinkConnect = NULL;          // 0x03002C64
-COMMON_DATA struct Entity9A9F* gEntity9A9F = NULL;            // 0x03002C68
-COMMON_DATA struct LinkShopManager* gLinkShopManager = NULL;  // 0x03002C6C
-COMMON_DATA u8 u8_03002c70[16] = {};                          // unused?
-
-COMMON_DATA struct Dvalinn* gDvalinn = NULL;  // 0x03002C80
-
-COMMON_DATA u8 u8_03002c84[0x03002C98 - 0x03002C84] = {};  // todo
-
-COMMON_DATA struct Entity0FC5* gEntity0FC5s[2] = {};  // 0x03002C98, '.k' の値を添字にして Entity0FC5 が自分を登録する
-
-COMMON_DATA vu16* gHBlankEffectReg = NULL;  // 0x03002CA0, HBlank 毎に gHBlankEffectBuffer の値を書き込む I/O レジスタ, 根拠: FUN_0822f0d8, FUN_0822eef4
-
-COMMON_DATA u32 gOamDirty = 0;  // 0x03002CA4, MainSprite_DrawInternal / Particle_DrawList が bit0 を立て、VideoCommit_Update が gOAMBuffer を OAM へ転送して落とす, bit0 以外は使われていない
-
-COMMON_DATA bool32 gDispcntLocked = FALSE;  // 0x03002CA8, 0 以外だと VideoCommit_Update が DISPCNT の表示ビットを組み直さない
-
-COMMON_DATA u8 u8_03002cac[0x03002CB0 - 0x03002CAC] = {};  // todo
-
 COMMON_DATA IntrFunc gIntrTable[13] = {};    // 0x03002CB0
 COMMON_DATA vu32 gVblankFlag = FALSE;        // 0x03002CE4
 COMMON_DATA u32 gMarqueeOffset = 0;          // 0x03002CE8

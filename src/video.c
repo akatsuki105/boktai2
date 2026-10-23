@@ -61,6 +61,11 @@ IWRAM_DATA Entity gVideoCommit = {};                   // 0x03000258
 IWRAM_DATA Entity gVideoRender = {};                   // 0x03000270
 IWRAM_DATA ObjTileRequest gObjTileRequests[128] = {};  // 0x03000288, 根拠: Video_AllocObjTiles が 8 バイト刻みで積み、上限を 127 で弾く
 
+COMMON_DATA vu16* gHBlankEffectReg = NULL;                 // 0x03002CA0, HBlank 毎に gHBlankEffectBuffer の値を書き込む I/O レジスタ, 根拠: FUN_0822f0d8, FUN_0822eef4
+COMMON_DATA u32 gOamDirty = 0;                             // 0x03002CA4, MainSprite_DrawInternal / Particle_DrawList が bit0 を立て、VideoCommit_Update が gOAMBuffer を OAM へ転送して落とす, bit0 以外は使われていない
+COMMON_DATA bool32 gDispcntLocked = FALSE;                 // 0x03002CA8, 0 以外だと VideoCommit_Update が DISPCNT の表示ビットを組み直さない
+COMMON_DATA u8 u8_03002cac[0x03002CB0 - 0x03002CAC] = {};  // todo
+
 void ResetPltt(rgb555* pltt, s32 val);
 void Video_ResetObjTileAlloc(void);
 void Video_BuildOAM(void);

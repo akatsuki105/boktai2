@@ -35,7 +35,8 @@ typedef struct Dvalinn {
 } Dvalinn;
 static_assert(sizeof(Dvalinn) == 2120);
 
-extern Dvalinn* gDvalinn;  // 0x03002C80
+COMMON_DATA Dvalinn* gDvalinn = NULL;                      // 0x03002C80
+COMMON_DATA u8 u8_03002c84[0x03002C90 - 0x03002C84] = {};  // unused?
 
 const u16 u16_ARRAY_085ae5fc[8] = {1536, 1536, 1536, 2304, 2304, 2304, 2304, 1536};  // 0x085AE5FC
 

@@ -50,7 +50,7 @@ typedef struct Entity3117 {
   Entity3117Entry entries[1];  // 0x1C, 実際は capacity 個 (可変長)
 } Entity3117;
 
-extern struct Entity3117* gEntity3117;  // 0x03002C48
+COMMON_DATA Entity3117* gEntity3117 = NULL;  // 0x03002C48
 
 // '.n' と id が一致する要素を返す, 無ければ NULL
 Entity3117Entry* Entity3117_FindEntry(void) {

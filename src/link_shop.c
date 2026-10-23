@@ -67,7 +67,8 @@ typedef struct LinkShopManager {
 } LinkShopManager;
 static_assert(sizeof(LinkShopManager) == 132);
 
-extern LinkShopManager* gLinkShopManager;  // 0x03002C6C, 0 以外なら SoftReset_0823a928 が Sio_Stop を呼ぶ
+COMMON_DATA LinkShopManager* gLinkShopManager = NULL;  // 0x03002C6C
+COMMON_DATA u8 u8_03002c70[16] = {};                   // unused?
 
 static inline void LinkShopManager_SetFlags(LinkShopManager* p, LinkShopFlags bits) { p->flags |= bits; }
 static inline void LinkShopManager_MaskFlags(LinkShopManager* p, LinkShopFlags mask) { p->flags &= mask; }

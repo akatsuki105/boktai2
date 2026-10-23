@@ -11,7 +11,7 @@ typedef struct Entity4063 {
 } Entity4063;
 static_assert(sizeof(Entity4063) == 32);
 
-extern Entity4063* gEntity4063;  // 0x03002C50
+COMMON_DATA Entity4063* gEntity4063 = NULL;  // 0x03002C50
 
 void FUN_0809c544(void* param_1);
 void FUN_0809c58c(void);

@@ -42,15 +42,12 @@ typedef struct EntityBD74 {
 } EntityBD74;
 static_assert(sizeof(EntityBD74) == 940);
 
-void FUN_08084a14(EntityBD74* p);
-void FUN_08084b5c(EntityBD74* p);
-void FUN_08084c30(EntityBD74* p, u8 param_2);
-void FUN_0808509c(EntityBD74* p);
+COMMON_DATA EntityBD74* gEntityBD74 = NULL;  // 0x03002BFC
 
-extern EntityBD74* gEntityBD74;  // 0x03002BFC
-
-static inline bool32 TestPauseFlag(u32 bits) { return u32_03002bc0[0] & bits; }
-
+void FUN_08084a14(EntityBD74*);
+void FUN_08084b5c(EntityBD74*);
+void FUN_08084c30(EntityBD74*, u8);
+void FUN_0808509c(EntityBD74*);
 void FUN_08084c58(EntityBD74*);
 void FUN_08084c9c(EntityBD74*);
 void FUN_08084ce8(EntityBD74*);
@@ -70,6 +67,8 @@ void (*const sEntityBD74Updates[8])(EntityBD74*) = {
     FUN_08084ecc,
     FUN_08084f7c,
 };  // 0x085ABFC8
+
+static inline bool32 TestPauseFlag(u32 bits) { return u32_03002bc0[0] & bits; }
 
 void FUN_080846c8(void) {
   if (gEntityBD74 != NULL && gEntityBD74->state == 6) {

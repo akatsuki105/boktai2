@@ -303,9 +303,12 @@ static_assert(sizeof(MainMenu) == 16476);
 
 IWRAM_DATA MainMenu* gMainMenu = NULL;  // 0x0300013C
 
-extern u16 u16_03002c10;
-extern u16 gSavedMenuPage;  // src/iwram2.c
-extern u16 u16_03002c18;    // src/iwram2.c
+COMMON_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
+COMMON_DATA u8 u8_03002c12[0x03002C14 - 0x03002C12] = {};  // todo
+COMMON_DATA u16 gSavedMenuPage = 0;                        // 0x03002C14, 根拠: MainMenu1P_Destroy が MainMenu.page を書き込む
+COMMON_DATA u8 u8_03002c16[0x03002C18 - 0x03002C16] = {};  // todo
+COMMON_DATA u16 u16_03002c18 = 0;                          // 0x03002C18, FUN_0809c040 が 1 を入れる
+COMMON_DATA u8 u8_03002c1a[0x03002C3C - 0x03002C1A] = {};  // todo
 
 #define BGMAP_BGP13 (13 << 12)
 #define BGMAP_BGP15 (15 << 12)

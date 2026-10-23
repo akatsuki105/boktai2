@@ -13,6 +13,9 @@
 #include "sound.h"
 #include "vm.h"
 
+COMMON_DATA Coffin* gCoffin = NULL;                        // 0x03002C00
+COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
+
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
 void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p);
 s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params);

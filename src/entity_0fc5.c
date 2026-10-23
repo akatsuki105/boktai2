@@ -23,7 +23,7 @@ typedef struct Entity0FC5 {
 } Entity0FC5;
 static_assert(sizeof(Entity0FC5) == 392);
 
-extern Entity0FC5* gEntity0FC5s[2];  // 0x03002C98
+COMMON_DATA Entity0FC5* gEntity0FC5s[2] = {};  // 0x03002C98, '.k' の値を添字にして Entity0FC5 が自分を登録する
 
 NAKED void FUN_0821a87c(void) { INCFUNC("asm/func/FUN_0821a87c.inc"); }
 

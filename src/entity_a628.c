@@ -21,7 +21,7 @@ typedef struct EntityA628 {
 } EntityA628;
 static_assert(sizeof(EntityA628) == 56);
 
-extern EntityA628* gEntityA628;  // 0x03002C3C
+COMMON_DATA EntityA628* gEntityA628 = NULL;  // 0x03002C3C
 
 void EntityA628_ResetOrbit(EntityA628*);
 

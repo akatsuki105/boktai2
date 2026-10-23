@@ -8,6 +8,9 @@
 
 u32 EntityA628_IsActive(void);
 
+COMMON_DATA EnemyManager* gEnemyManager = NULL;    // 0x03002C5C
+COMMON_DATA EnemyListNode* gEnemyListHead = NULL;  // 0x03002C60, 生存中のエネミーの単方向リスト, EnemyManager.list と同じ値
+
 static inline void Stat_SetFlag934(u16 bit) { gStat->unk_934 |= bit; }
 static inline void Stat_ClearFlag934(u16 bit) { gStat->unk_934 &= ~bit; }
 

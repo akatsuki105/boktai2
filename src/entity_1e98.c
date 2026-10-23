@@ -7,6 +7,6 @@ typedef struct {
 } Entity1E98;
 static_assert(sizeof(Entity1E98) == 2236);
 
-extern Entity1E98* gEntity1E98;  // 0x03002C44
+COMMON_DATA Entity1E98* gEntity1E98 = NULL;  // 0x03002C44
 
 INCASM("asm/entity_1e98.inc");

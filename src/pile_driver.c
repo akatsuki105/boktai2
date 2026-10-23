@@ -25,6 +25,8 @@ typedef struct {
   PileDriver* owner;          // 0x6AC
 } PileDriverSub;
 
+COMMON_DATA PileDriver* gPileDriver = NULL;  // 0x03002C58
+
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_pile_driver_noon1_col_arr_08251d7c[] = "pile_driver_noon1_col_arr";
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_pile_driver_even_col_arr_08251d98[] = "pile_driver_even_col_arr";
 const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_pile_driver_night_col_arr_08251db4[] = "pile_driver_night_col_arr";

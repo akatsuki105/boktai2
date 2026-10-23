@@ -9,6 +9,9 @@
 #include "video.h"
 #include "vm.h"
 
+COMMON_DATA Entity9A9F* gEntity9A9F = NULL;  // 0x03002C68
+IWRAM_DATA u32 bool32_030001ac = FALSE;      // 0x030001AC
+
 s32 FUN_081dec1c(Entity9A9F* p);
 s32 FUN_081de130(Entity9A9F* p);
 void FUN_081df460(Entity9A9F*);
@@ -22,8 +25,6 @@ void FUN_081df568(Entity9A9F* p);
 s32 FUN_081df62c(Entity9A9F* p);
 void EntityCF58_RequestKill(void);
 s32 FUN_0809c08c(s32 mode);
-
-IWRAM_DATA u32 bool32_030001ac = FALSE;  // 0x030001AC
 
 Entity9A9F* GetEntity9A9F(void) { return gEntity9A9F; }
 
