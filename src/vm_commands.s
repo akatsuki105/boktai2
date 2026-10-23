@@ -42,7 +42,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x0E76, FUN_0800377c
 	.4byte 0x0E7C, FUN_080450c4
 	.4byte 0x0EE4, FUN_081d0bd4
-	.4byte 0x0FC5, Entity0FC5_Create
+	.4byte 0x0FC5, OpRunner_Create
 	.4byte 0x11D4, Cmd_LoadTileSet
 	.4byte 0x11D9, FUN_08205ee0
 	.4byte 0x12C4, Entity12C4_Create
