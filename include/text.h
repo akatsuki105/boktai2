@@ -15,7 +15,7 @@
 //     |                       自分では描かず、カーソルのスプライトを左右に置く
 //     +- TextPanel      各画面が必要なだけ自分で開き、id で持って自分で閉じる追加パネル (src/text_panel.c)
 //     |                 TextPanelManager が双方向リストで抱え、複数同時に存在できる
-//     +- Marquee        おそらく横スクロールするテキスト (src/text_marquee.c), offset を毎フレーム進めて DAT_03002CE8 に流す
+//     +- Marquee        おそらく横スクロールするテキスト (src/text_marquee.c), offset を毎フレーム進めて gMarqueeOffset に流す
 //
 // MessageWindow と TextPanel の違いは用途ではなく所有関係, どちらも同じ BG0 のタイルマップに描く
 // (閉じるときの FUN_0822EA60 が GetTilemapBuffer(0) を使う)
