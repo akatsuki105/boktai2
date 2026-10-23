@@ -71,7 +71,7 @@ _081DEA4A:
 	adds r0, r4, #0
 	movs r1, #0xa
 	bl Entity9A9F_SetState
-	bl FUN_08049fa8
+	bl Marquee_CloseGlobal
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 	adds r0, r4, #0

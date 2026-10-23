@@ -28,7 +28,7 @@
 	adds r1, r4, r2
 	str r0, [r1]
 	bl FUN_08049f5c
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	movs r2, #1
 	movs r0, #0x9d
 	lsls r0, r0, #2

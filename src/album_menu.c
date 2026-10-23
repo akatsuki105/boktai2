@@ -34,7 +34,7 @@ typedef struct {
 } AlbumMenu;
 static_assert(sizeof(AlbumMenu) == 2176);
 
-s32 FUN_08049fa8(void);
+s32 Marquee_CloseGlobal(void);
 
 const u8 gAlbumPhotoSlotCounts[3] = {10, 10, 7};  // アルバムの各ページのブロマイドスロット数
 
@@ -120,14 +120,14 @@ NON_MATCH void FUN_082111cc(AlbumMenu* p) {
     TextPanel_SetScript(p->panelID, p->scriptPc);
     TextPanel_SetMessage(p->panelID, p->cursor);
     TextPanel_Start(p->panelID);
-    FUN_08049e5c();
-    FUN_08049e30(Textbox_LookupString(VM_ParseStringRef(p->unk_874) + p->cursor));
+    Marquee_Clear();
+    Marquee_SetText(Textbox_LookupString(VM_ParseStringRef(p->unk_874) + p->cursor));
   } else {
     TextPanel_SetScript(p->panelID, p->scriptPc);
     TextPanel_SetMessage(p->panelID, 27);
     TextPanel_Start(p->panelID);
-    FUN_08049e5c();
-    FUN_08049e30(Textbox_LookupString(VM_ParseStringRef(p->unk_878) + p->cursor));
+    Marquee_Clear();
+    Marquee_SetText(Textbox_LookupString(VM_ParseStringRef(p->unk_878) + p->cursor));
   }
 #else
   INCFUNC("asm/func/FUN_082111cc.inc");
@@ -247,7 +247,7 @@ s32 AlbumMenu_Destroy(AlbumMenu* p) {
   MainSprite_Remove(&p->sprites_3a8[0]);
   MainSprite_Remove(&p->sprites_3a8[1]);
   TextPanel_Hide(p->panelID);
-  FUN_08049fa8();
+  Marquee_CloseGlobal();
   SetBGPrioDirect(0, 0);
   return 0;
 }

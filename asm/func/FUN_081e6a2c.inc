@@ -101,7 +101,7 @@ _081E6AFA:
 	ldrsh r0, [r0, r2]
 	cmp r0, #4
 	bne _081E6B42
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	adds r0, r4, #0
 	bl FUN_081e4544
 	ldr r3, _081E6B48 @ =0x0000161A

@@ -46,7 +46,7 @@ _08094F06:
 	orrs r1, r2
 	str r1, [r0]
 	bl MessageWindow_Close
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	b _08094F72
 	.align 2, 0
 _08094F18: .4byte 0x0000204C

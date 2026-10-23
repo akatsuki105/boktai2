@@ -136,7 +136,7 @@ _08092D8A:
 	adds r0, r6, r2
 	strh r7, [r0]
 	bl MessageWindow_Close
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	bl FUN_08049f84
 	ldr r0, _08092E18 @ =0x0000027D
 	bl PlaySound_082406e0

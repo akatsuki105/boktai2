@@ -11,7 +11,7 @@
 	bne _081E5DE0
 	b _081E5FA8
 _081E5DE0:
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	bl FUN_08049f84
 	ldr r2, _081E5EF8 @ =0x00001610
 	adds r2, r2, r7

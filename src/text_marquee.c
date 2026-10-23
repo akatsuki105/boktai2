@@ -61,7 +61,7 @@ s32 Marquee_Rewind(Marquee* p, bool32 resetRect) {
 
 NAKED void FUN_0804996c(Marquee* p) { INCFUNC("asm/func/FUN_0804996c.inc"); }
 
-s32 FUN_08049c3c(Marquee* p) {
+s32 Marquee_Open(Marquee* p) {
   if (p->active) return -1;
 
   p->offset = 0;
@@ -71,12 +71,12 @@ s32 FUN_08049c3c(Marquee* p) {
   return 0;
 }
 
-s32 FUN_08049c78(Marquee* p) {
+s32 Marquee_Close(Marquee* p) {
   if (!p->active) {
     return -1;
   }
 
-  FUN_08049e5c();
+  Marquee_Clear();
   gMarqueeActive = FALSE;
   p->active = FALSE;
   return 0;
@@ -84,11 +84,11 @@ s32 FUN_08049c78(Marquee* p) {
 
 s32 Marquee_Update(Marquee* p) {
   if (p->openReq) {
-    FUN_08049c3c(p);
+    Marquee_Open(p);
     p->openReq = FALSE;
   }
   if (p->closeReq) {
-    FUN_08049c78(p);
+    Marquee_Close(p);
     p->closeReq = FALSE;
   }
 
@@ -139,7 +139,7 @@ Marquee* Marquee_Create(u32 id) {
   return p;
 }
 
-s32 FUN_08049e30(char* str) {
+s32 Marquee_SetText(char* str) {
   if (gMarquee == NULL) {
     return -1;
   }
@@ -148,7 +148,7 @@ s32 FUN_08049e30(char* str) {
   return 0;
 }
 
-s32 FUN_08049e5c(void) { return FUN_08049e30((char*)gBlankText); }
+s32 Marquee_Clear(void) { return Marquee_SetText((char*)gBlankText); }
 
 // 文字列の <VAR=idx> に対応する値を設定する
 s32 Marquee_SetVarValue(s32 idx, s32 value) {
@@ -208,10 +208,10 @@ s32 FUN_08049f84(void) {
   return 0;
 }
 
-s32 FUN_08049fa8(void) {
+s32 Marquee_CloseGlobal(void) {
   if (gMarquee == NULL) {
     return -1;
   }
-  FUN_08049c78(gMarquee);
+  Marquee_Close(gMarquee);
   return 0;
 }

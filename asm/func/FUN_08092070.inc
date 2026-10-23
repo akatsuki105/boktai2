@@ -36,7 +36,7 @@ _080920AA:
 	orrs r1, r2
 	str r1, [r0]
 	bl MessageWindow_Close
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	b _080921A0
 	.align 2, 0
 _080920C4: .4byte 0x0000204C
@@ -116,7 +116,7 @@ _0809214E:
 	adds r0, #0xa9
 _08092168:
 	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl Marquee_SetText
 	b _080921A0
 	.align 2, 0
 _08092174: .4byte 0x030046A0
@@ -141,7 +141,7 @@ _08092194:
 _08092196:
 	adds r0, r2, r7
 	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl Marquee_SetText
 _080921A0:
 	pop {r4, r5, r6, r7}
 	pop {r0}

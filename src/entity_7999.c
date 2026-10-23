@@ -9,7 +9,7 @@
 bool32 IsMagicUnlocked(magic32_t n);
 void FUN_081df974(void);
 bool32 FUN_081dfa04(void);
-s32 FUN_08049fa8(void);
+s32 Marquee_CloseGlobal(void);
 
 // 通信対戦関連?
 typedef struct Entity7999 {
@@ -77,7 +77,7 @@ void FUN_081d9ef4(Entity7999* p) {
   ClearBGTilemapBuffer(1);
   ClearBGTilemapBuffer(2);
   ClearBGTilemapBuffer(3);
-  FUN_08049e5c();
+  Marquee_Clear();
   Entity7999_HideSprites(p);
   if (p->unk_2a0 != 0) {
     VM_ExecByID(p->unk_2a0, 0);
@@ -86,7 +86,7 @@ void FUN_081d9ef4(Entity7999* p) {
 }
 
 void FUN_081d9f3c(Entity7999* p) {
-  FUN_08049fa8();
+  Marquee_CloseGlobal();
   Entity7999_HidePanels(p);
   ClearBGTilemapBuffer(0);
   ClearBGTilemapBuffer(1);
@@ -207,7 +207,7 @@ NAKED void FUN_081da930(unknown* param_1) { INCFUNC("asm/func/FUN_081da930.inc")
 
 s32 Entity7999_Update(Entity7999* p) {
   if (!FUN_081dfa04()) {
-    FUN_08049fa8();
+    Marquee_CloseGlobal();
     Entity7999_HideSprites(p);
     KillEntity((Entity*)p);
     return -1;

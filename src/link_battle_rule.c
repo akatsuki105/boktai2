@@ -8,7 +8,7 @@
 #include "video.h"
 
 bool32 FUN_081dfa04(void);
-s32 FUN_08049fa8(void);
+s32 Marquee_CloseGlobal(void);
 
 // おそらく、通信対戦のルール設定
 // 3行の選択肢を持つ通信メニュー, 各行は values[i] を counts[i] で巻き戻しながら左右で切り替える
@@ -117,7 +117,7 @@ NAKED void FUN_081db57c(unknown* param_1) { INCFUNC("asm/func/FUN_081db57c.inc")
 
 s32 Entity08F4_Update(Entity08F4* p) {
   if (!FUN_081dfa04()) {
-    FUN_08049fa8();
+    Marquee_CloseGlobal();
     Entity08F4_HideSprites(p);
     KillEntity((Entity*)p);
     return -1;

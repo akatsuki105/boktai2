@@ -662,7 +662,7 @@ FUN_081dc100: @ 0x081DC100
 	bne _081DC11E
 	b _081DC2D4
 _081DC11E:
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	movs r1, #0xf0
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -670,7 +670,7 @@ _081DC11E:
 	bl VM_ParseStringRef
 	adds r0, #2
 	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl Marquee_SetText
 	movs r0, #2
 	strb r0, [r5]
 	b _081DC2D4
@@ -690,7 +690,7 @@ _081DC144:
 	bne _081DC15E
 	b _081DC2D4
 _081DC15E:
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	movs r1, #0xf0
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -698,7 +698,7 @@ _081DC15E:
 	bl VM_ParseStringRef
 	adds r0, #4
 	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl Marquee_SetText
 	movs r0, #4
 	strb r0, [r5]
 	b _081DC2D4
@@ -732,7 +732,7 @@ _081DC19E:
 	bne _081DC1B4
 	b _081DC2D4
 _081DC1B4:
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	movs r1, #0xf0
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -740,7 +740,7 @@ _081DC1B4:
 	bl VM_ParseStringRef
 	adds r0, #6
 	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl Marquee_SetText
 	movs r0, #6
 	strb r0, [r5]
 	b _081DC2D4
@@ -777,7 +777,7 @@ _081DC1FE:
 	ldrsb r0, [r5, r0]
 	cmp r0, #1
 	beq _081DC2D4
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	movs r1, #0xf0
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -785,7 +785,7 @@ _081DC1FE:
 	bl VM_ParseStringRef
 	adds r0, #1
 	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl Marquee_SetText
 	movs r0, #1
 	strb r0, [r5]
 	b _081DC2D4
@@ -798,7 +798,7 @@ _081DC234:
 	ldrsb r0, [r5, r0]
 	cmp r0, #2
 	beq _081DC2D4
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	movs r1, #0xf0
 	lsls r1, r1, #2
 	adds r0, r4, r1
@@ -806,7 +806,7 @@ _081DC234:
 	bl VM_ParseStringRef
 	adds r0, #2
 	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl Marquee_SetText
 	strb r6, [r5]
 	b _081DC2D4
 	.align 2, 0
@@ -821,7 +821,7 @@ _081DC264:
 	ldrb r1, [r1]
 	cmp r0, r1
 	beq _081DC2A4
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r1, [r5]
 	movs r0, #0
 	bl Marquee_SetVarValue
@@ -832,7 +832,7 @@ _081DC264:
 	bl VM_ParseStringRef
 	adds r0, #3
 	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl Marquee_SetText
 	ldr r1, _081DC2A0 @ =0x000003D1
 	adds r0, r4, r1
 	strb r6, [r0]
@@ -846,7 +846,7 @@ _081DC2A4:
 	ldrsb r0, [r7, r0]
 	cmp r0, #3
 	beq _081DC2D4
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r1, [r5]
 	movs r0, #0
 	bl Marquee_SetVarValue
@@ -857,7 +857,7 @@ _081DC2A4:
 	bl VM_ParseStringRef
 	adds r0, #3
 	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl Marquee_SetText
 	strb r6, [r7]
 _081DC2D4:
 	pop {r4, r5, r6, r7}
@@ -870,7 +870,7 @@ _081DC2DC: .4byte 0x000003D1
 FUN_081dc2e0: @ 0x081DC2E0
 	push {r4, lr}
 	adds r4, r0, #0
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 	movs r0, #1
@@ -1170,7 +1170,7 @@ LinkBattleLobby_Update: @ 0x081DC52C
 	bl FUN_081dfa04
 	cmp r0, #0
 	bne _081DC548
-	bl FUN_08049fa8
+	bl Marquee_CloseGlobal
 	adds r0, r4, #0
 	bl KillEntity
 	movs r0, #1
@@ -1353,7 +1353,7 @@ FUN_081dc694: @ 0x081DC694
 	bl ClearBGTilemapBuffer
 	movs r0, #3
 	bl ClearBGTilemapBuffer
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r0, [r4]
 	bl KillEntity
 _081DC6C4:

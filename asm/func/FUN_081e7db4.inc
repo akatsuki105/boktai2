@@ -121,7 +121,7 @@ _081E7E96:
 	bl CountSellableWeapons
 	cmp r0, #0
 	ble _081E7F4C
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r1, _081E7EE4 @ =0x00001618
 	adds r0, r5, r1
 	strb r6, [r0]
@@ -200,7 +200,7 @@ _081E7F4C:
 	.align 2, 0
 _081E7F58: .4byte 0x00000BB4
 _081E7F5C:
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	movs r1, #0xb0
 	lsls r1, r1, #5
 	adds r0, r5, r1

@@ -84,7 +84,7 @@ _08211B04:
 	adds r1, r4, r2
 	str r0, [r1]
 	bl FUN_08049f5c
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	adds r0, r4, #0
 	bl FUN_082111cc
 	movs r0, #4

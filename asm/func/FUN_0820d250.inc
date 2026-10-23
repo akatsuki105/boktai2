@@ -140,7 +140,7 @@ _0820D37C:
 	ldr r0, _0820D394 @ =0x0000FFFE
 	ands r0, r1
 	strh r0, [r2]
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	b _0820D5E4
 	.align 2, 0
 _0820D390: .4byte 0x0000110E

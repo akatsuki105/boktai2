@@ -2,7 +2,7 @@
 	sub sp, #4
 	adds r4, r0, #0
 	bl MessageWindow_Close
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	bl FUN_08049f84
 	ldr r1, _0809A668 @ =0x00004014
 	adds r0, r4, r1

@@ -40,7 +40,7 @@ _080B7940:
 	orrs r1, r2
 	str r1, [r0]
 	bl MessageWindow_Close
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	b _080B79C6
 _080B795C:
 	movs r0, #0xf2
@@ -85,7 +85,7 @@ _080B795C:
 	adds r0, #0x25
 	adds r0, r0, r6
 	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl Marquee_SetText
 _080B79C6:
 	pop {r4, r5, r6}
 	pop {r0}

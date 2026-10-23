@@ -39,7 +39,7 @@ _081E658C:
 _081E658E:
 	cmp r0, #0
 	beq _081E65A8
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	bl FUN_08049f84
 	ldr r0, _081E6660 @ =0x00001610
 	adds r2, r7, r0

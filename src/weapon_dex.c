@@ -49,7 +49,7 @@ static_assert(sizeof(WeaponDexMenu) == 3492);
 static const u8 sWeaponDexItemCounts[4] = {19, 19, 19, 3};  // 0x085af9ac, 武器図鑑の各ページのエントリ数
 
 bool32 IsWeaponAlreadyFound(weapon32_t n);
-s32 FUN_08049fa8(void);
+s32 Marquee_CloseGlobal(void);
 void FUN_08055d7c(SpriteHolder* p);
 
 s32 WeaponDexMenu_GetPageEntryCount(s32 page) { return sWeaponDexItemCounts[page]; }
@@ -270,7 +270,7 @@ s32 WeaponDexMenu_Destroy(WeaponDexMenu* p) {
   FUN_08055d7c(&p->preview);
   MainSprite_Remove(&p->sprite_c08);
   SetBGPrioDirect(0, 0);
-  FUN_08049fa8();
+  Marquee_CloseGlobal();
   return 0;
 }
 

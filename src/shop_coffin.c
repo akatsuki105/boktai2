@@ -68,7 +68,7 @@ void CoffinShop_SetSubState(CoffinShop* p, CoffinShopFunc* fn, s32 val) {
 }
 
 void CoffinShop_ShowMessage(CoffinShop* p, s32 line, u8* unused1, s32 unused2) {
-  FUN_08049e5c();
+  Marquee_Clear();
   p->sprites[29].flags |= SPRFLAG_HIDDEN;
   MessageWindow_Start(p->unk_ec0);
   MessageWindow_SetRect(0, 16, 30, 2);
@@ -90,7 +90,7 @@ void CoffinShop_UpdateDescription(CoffinShop* p) {
   if (id < 0) {
     p->sprites[29].flags |= SPRFLAG_HIDDEN;
     MessageWindow_Close();
-    FUN_08049e5c();
+    Marquee_Clear();
   } else {
     s32 base;
 
@@ -100,7 +100,7 @@ void CoffinShop_UpdateDescription(CoffinShop* p) {
     MessageWindow_SetInstant(1);
     MessageWindow_ShowLine(id);
     base = VM_ParseStringRef(p->unk_ec4) + 78;
-    FUN_08049e30(Textbox_LookupString(base + id));
+    Marquee_SetText(Textbox_LookupString(base + id));
   }
 }
 

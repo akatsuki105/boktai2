@@ -36,7 +36,7 @@ _080B69EE:
 	orrs r1, r2
 	str r1, [r0]
 	bl MessageWindow_Close
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	b _080B6A60
 _080B6A0E:
 	mov r0, sp

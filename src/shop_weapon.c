@@ -89,7 +89,7 @@ void FUN_080bcdf8(WeaponShop* p, WeaponShopFunc* fn, s32 val) {
 }
 
 void FUN_080bce20(WeaponShop* p, s32 line, u8* unused1, s32 unused2) {
-  FUN_08049e5c();
+  Marquee_Clear();
   p->sprites[33].flags |= SPRFLAG_HIDDEN;
   MessageWindow_Start(p->unk_1640);
   MessageWindow_SetRect(0, 16, 30, 2);
@@ -241,7 +241,7 @@ NON_MATCH void FUN_080bd058(WeaponShop* p) {
   if (w.id == 0) {
     p->sprites[33].flags |= SPRFLAG_HIDDEN;
     MessageWindow_Close();
-    FUN_08049e5c();
+    Marquee_Clear();
   } else {
     p->sprites[33].flags &= ~SPRFLAG_HIDDEN;
     MainSprite_SetPose(&p->sprites[33], &p->icons, GetWeaponWearPose(&w), 1);

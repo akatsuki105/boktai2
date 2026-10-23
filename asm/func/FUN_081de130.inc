@@ -31,7 +31,7 @@
 	str r0, [r1]
 	movs r0, #1
 	bl Sound_FadeOutBGM
-	bl FUN_08049fa8
+	bl Marquee_CloseGlobal
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 _081DE182:

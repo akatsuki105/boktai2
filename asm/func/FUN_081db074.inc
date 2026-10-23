@@ -20,7 +20,7 @@
 	lsls r2, r2, #2
 	adds r6, r7, r2
 	str r0, [r6]
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	bl FUN_08049f84
 	movs r0, #0xc4
 	lsls r0, r0, #2

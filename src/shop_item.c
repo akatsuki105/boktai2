@@ -79,7 +79,7 @@ void FUN_080ba054(ItemShop* p, ItemShopFunc* fn, s32 val) {
 }
 
 void FUN_080ba07c(ItemShop* p, s32 line) {
-  FUN_08049e5c();
+  Marquee_Clear();
   p->sprites[33].flags |= SPRFLAG_HIDDEN;
   MessageWindow_Start(p->unk_12e0);
   MessageWindow_SetRect(0, 16, 30, 2);
@@ -165,7 +165,7 @@ void FUN_080ba2d8(ItemShop* p) {
   if (id < 0) {
     p->sprites[33].flags |= SPRFLAG_HIDDEN;
     MessageWindow_Close();
-    FUN_08049e5c();
+    Marquee_Clear();
   } else {
     s32 base;
 
@@ -178,11 +178,11 @@ void FUN_080ba2d8(ItemShop* p) {
     base = VM_ParseStringRef(p->unk_12e4);
     if (gStat->playerKind == 5) {
       if (id == 1) {
-        FUN_08049e30(Textbox_LookupString(base + 0xEA));
+        Marquee_SetText(Textbox_LookupString(base + 0xEA));
         return;
       }
       if (id == 0xD) {
-        FUN_08049e30(Textbox_LookupString(base + 0xA9));
+        Marquee_SetText(Textbox_LookupString(base + 0xA9));
         return;
       }
     }
@@ -192,7 +192,7 @@ void FUN_080ba2d8(ItemShop* p) {
     } else {
       base += 0x9C;
     }
-    FUN_08049e30(Textbox_LookupString(base + id));
+    Marquee_SetText(Textbox_LookupString(base + id));
   }
 }
 
@@ -623,7 +623,7 @@ void FUN_080bb294(ItemShop* p) {
   if (id < 0) {
     p->sprites[33].flags |= SPRFLAG_HIDDEN;
     MessageWindow_Close();
-    FUN_08049e5c();
+    Marquee_Clear();
   } else {
     p->sprites[33].flags &= ~SPRFLAG_HIDDEN;
     MainSprite_SetPose(&p->sprites[33], &p->icons, ICON_TIMER_NONE, 1);
@@ -636,7 +636,7 @@ void FUN_080bb294(ItemShop* p) {
     {
       s32 base = VM_ParseStringRef(p->unk_12e8) + 0x25;
 
-      FUN_08049e30(Textbox_LookupString(base + id));
+      Marquee_SetText(Textbox_LookupString(base + id));
     }
   }
 

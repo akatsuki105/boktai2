@@ -645,7 +645,7 @@ void MainMenu_ShowBottomLine(u8* pc, s32 line, s32 playSound) {
     PlaySound_082406e0(SE_CHOICE);
   }
 
-  FUN_08049e5c();
+  Marquee_Clear();
   MessageWindow_Start(pc);
   MessageWindow_SetRect(0, 16, 30, 2);
   MessageWindow_ShowLine(line);
@@ -1216,7 +1216,7 @@ s32 FUN_0808f140(void) {
 
 void FUN_0808f170(MainMenu* p) {
   MessageWindow_Close();
-  FUN_08049e5c();
+  Marquee_Clear();
   FUN_08049f84();
   MessageWindow_SetRect(1, 15, 28, 4);
   MessageWindow_Start(p->loanTexts);
@@ -2177,7 +2177,7 @@ NAKED void FUN_08092bf0(MainMenu* p) { INCFUNC("asm/func/FUN_08092bf0.inc"); }
 void FUN_08092c7c(MainMenu* p, u8 val) {
   p->unk_3f9d = val;
   MessageWindow_Close();
-  FUN_08049e5c();
+  Marquee_Clear();
   FUN_08049f84();
   MainMenu_SetState(p, FUN_080931cc, 1);
 }

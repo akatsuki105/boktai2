@@ -28,7 +28,7 @@ _0801CCEC:
 	movs r2, #0x39
 	movs r3, #0
 	bl MainSprite_SetPose
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	adds r0, r7, #0
 	mov r1, sb
 	bl FUN_0801b688
@@ -139,7 +139,7 @@ _0801CDFA:
 	movs r2, #1
 	orrs r1, r2
 	str r1, [r0, #8]
-	bl FUN_08049e5c
+	bl Marquee_Clear
 _0801CE0A:
 	ldr r4, _0801CE44 @ =0x030044E0
 	ldrh r1, [r4]

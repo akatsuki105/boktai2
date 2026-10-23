@@ -22,7 +22,7 @@ _08094D6E:
 	ldrb r0, [r7]
 	add r0, r8
 	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl Marquee_SetText
 	movs r6, #0
 	ldrb r0, [r7, #0x18]
 	cmp r0, #0

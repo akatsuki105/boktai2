@@ -102,7 +102,7 @@ static BgMapEntry* FUN_080b5b30(s32 bgID, s32 x, s32 y) {
 }
 
 void Warehouse_ShowMessage(Warehouse* p, s32 line) {
-  FUN_08049e5c();
+  Marquee_Clear();
   p->sprites[39].flags |= SPRFLAG_HIDDEN;
   MessageWindow_Start(p->unk_1400);
   MessageWindow_SetRect(0, 16, 30, 2);

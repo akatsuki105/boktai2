@@ -4,7 +4,7 @@
 	sub sp, #4
 	adds r4, r0, #0
 	bl MessageWindow_Close
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	bl FUN_08049f84
 	movs r0, #1
 	movs r1, #1

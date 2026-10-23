@@ -49,7 +49,7 @@ _081DB03E:
 	adds r4, #9
 	cmp r0, r4
 	beq _081DB06A
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	movs r1, #0xc3
 	lsls r1, r1, #2
 	adds r0, r5, r1
@@ -57,7 +57,7 @@ _081DB03E:
 	bl VM_ParseStringRef
 	adds r0, r0, r4
 	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl Marquee_SetText
 	strb r4, [r6]
 _081DB06A:
 	pop {r4, r5, r6}

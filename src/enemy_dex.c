@@ -71,7 +71,7 @@ typedef struct {
 } EnemyDexMenu;
 static_assert(sizeof(EnemyDexMenu) == 4704);
 
-s32 FUN_08049fa8(void);
+s32 Marquee_CloseGlobal(void);
 void FUN_0820fea8(PreviewStage* p);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 PreviewStage* PreviewStage_Create(u32 arg, u32 _);
@@ -230,19 +230,19 @@ NAKED void FUN_0820d250(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d250.inc");
 void FUN_0820d5f8(EnemyDexMenu* p) {
   if (p->flags & EDEXFLAG_UNK_0) {
     if (p->flags & EDEXFLAG_UNK_1) {
-      FUN_08049e5c();
-      FUN_08049fa8();
+      Marquee_Clear();
+      Marquee_CloseGlobal();
       p->flags = (p->flags & ~EDEXFLAG_UNK_1) | EDEXFLAG_UNK_2;
     }
   } else if (p->flags & EDEXFLAG_UNK_3) {
     if (p->flags & EDEXFLAG_UNK_2) {
-      FUN_08049e5c();
+      Marquee_Clear();
       FUN_08049f5c();
       p->flags &= ~EDEXFLAG_UNK_2;
     }
 
-    FUN_08049e5c();
-    FUN_08049e30(Textbox_LookupString(VM_ParseStringRef(p->scriptM) + p->unk_26));
+    Marquee_Clear();
+    Marquee_SetText(Textbox_LookupString(VM_ParseStringRef(p->scriptM) + p->unk_26));
     p->flags &= ~EDEXFLAG_UNK_3;
     p->flags |= EDEXFLAG_UNK_1;
     p->flags &= ~EDEXFLAG_UNK_2;
@@ -430,7 +430,7 @@ s32 EnemyDexMenu_Init(EnemyDexMenu* p, u32 val) {
   p->unk_1258 = VM_GetNamedArgValue('e', 0);
 
   p->flags = 5;
-  FUN_08049e5c();
+  Marquee_Clear();
   p->sub = PreviewStage_Create(0, 0);
   FUN_0820fea8(p->sub);
   FUN_0820d6e4(p);

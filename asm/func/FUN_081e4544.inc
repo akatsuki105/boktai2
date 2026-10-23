@@ -20,7 +20,7 @@
 	cmp r0, #0
 	beq _081E45C8
 	bl FUN_08049f5c
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r1, _081E45BC @ =0x00001590
 	adds r0, r4, r1
 	ldr r1, [r0]
@@ -52,7 +52,7 @@ _081E45BC: .4byte 0x00001590
 _081E45C0: .4byte 0x0000150C
 _081E45C4: .4byte 0x0000156C
 _081E45C8:
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r1, _081E45E0 @ =0x0000150C
 	adds r0, r4, r1
 	ldr r1, [r0, #8]
