@@ -20,7 +20,7 @@ typedef struct {
   u32 unk_188;            // 0x188, _Init と FUN_0804990C が 0 を入れる
   u32 unk_18c;            // 0x18C, 同上
   u32 unk_190;            // 0x190, FUN_0804990C が 0 を入れる
-  char* unk_194;          // 0x194, _Init が u32_ARRAY_085AB548 を入れ、FUN_0804990C が renderer+0x1C へ複写する
+  char* text;             // 0x194, _Init が u32_ARRAY_085AB548 を入れ、FUN_0804990C が renderer+0x1C へ複写する
 } Marquee;
 static_assert(sizeof(Marquee) == 408);
 
@@ -103,7 +103,7 @@ s32 FUN_08049e30(char* str) {
   if (gMarquee == NULL) {
     return -1;
   }
-  gMarquee->unk_194 = str;
+  gMarquee->text = str;
   FUN_0804990c(gMarquee, TRUE);
   return 0;
 }
