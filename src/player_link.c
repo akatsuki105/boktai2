@@ -298,7 +298,7 @@ s32 FUN_080cc618(void) {
 
 NAKED void FUN_080cc648(Player* p) { INCFUNC("asm/func/FUN_080cc648.inc"); }
 
-Facing32 Player_GetDpadFacing(Player* p);
+DirS32 Player_GetDpadFacing(Player* p);
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
 void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos);
 

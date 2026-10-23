@@ -193,12 +193,12 @@ typedef struct Player {
   PlayerMagic magic;                // 0x280, 装備魔法まわりの一群, 根拠: Player_RefreshMagicInfo が1本のベースレジスタで5フィールドを書く
   Weapon* unk_288;                  // 0x288, 根拠: FUN_080cf54c が +1 要素目を player_weapon_080ceafc に渡す
   struct Input* input;              // 0x28C, &gInput[n]
-  Facing16 facingHistory[10];       // 0x290, 入力方向の履歴, 添字 0 が今フレームで大きいほど古い, 入力なしは -1
+  DirU16 facingHistory[10];         // 0x290, 入力方向の履歴, 添字 0 が今フレームで大きいほど古い, 入力なしは -1
   rgb555 pltt_2a4[32];              // 0x2A4
   u16 animID;                       // 0x2E4, 今 sprite_88 で再生しているアニメのID, Player_PlayAnim が前回と同じIDかどうかの判定に使う
   u8 animIDOffset;                  // 0x2E6, Player_PlayAnim がアニメIDに足すオフセット
   bool8 xflip;                      // 0x2E7, 0 以外なら Player_PlayAnim が sprite_88.flags に SPRFLAG_XFLIP を立てる
-  Facing8 facing;                   // 0x2E8, see Facing8
+  DirU8 facing;                     // 0x2E8
   u8 unk_2e9[2];                    // 0x2E9
   u8 hitboxTimer;                   // 0x2EB, hitbox_2ec を Hitbox_Register し続ける残りフレーム数, Django_Spike が 6 を入れる
   HitboxData hitbox_2ec;            // 0x2EC
@@ -245,7 +245,7 @@ typedef struct Player {
   u16 unk_3b8;                      // 0x3B8, FUN_0807a528 の第3引数
   u16 unk_3ba;                      // 0x3BA, FUN_0807b5a8 が 1 を書く
   u8 unk_3bc;                       // 0x3BC, FUN_08066d2c が見る
-  Facing8 actionDir;                // 0x3BD, 行動4/5 の基準方向, FUN_0807a44c が設定して facing をその反対向きにし, FUN_0807b0c0 は行動4/5 のときだけ facing の代わりに (actionDir + 4) & 7 を返す
+  DirU8 actionDir;                  // 0x3BD, 行動4/5 の基準方向, FUN_0807a44c が設定して facing をその反対向きにし, FUN_0807b0c0 は行動4/5 のときだけ facing の代わりに (actionDir + 4) & 7 を返す
   u16 unk_3be;                      // 0x3BE, Player_UpdateDjango が毎フレーム +1 し, 5 になった回だけ処理をする
   Vec3 pos_3c0;                     // 0x3C0, Player_UpdateCameraLookAt が mover.pos とカメラの注視点から作って Camera_LookAt に渡す
   Vec3 lookAroundOffset;            // 0x3C8, 見回し開始時のカメラ注視点からプレイヤーへのオフセット, val は見回しモード中か(0 or 1)
@@ -260,7 +260,7 @@ typedef struct Player {
   u16 unk_3dc;                      // 0x3DC, FUN_080667b0 が毎回 太陽ゲージ+2 を足し、100 を超えるたびに FUN_08066794 を呼んで 100 引く
   u8 unk_3de[0x3E6 - 0x3DE];        // 0x3DE
   u16 unk_3e6;                      // 0x3E6, Player_SetHitDir が相手の HitboxData.unk_40 を退避する
-  Facing16 hitDir;                  // 0x3E8, Player_SetHitDir が被弾方向 (0..7) を入れる
+  DirU16 hitDir;                    // 0x3E8, Player_SetHitDir が被弾方向 (0..7) を入れる
   u16 unk_3ea;                      // 0x3EA, FUN_0807ad60 が 1 を書く
   u16 unk_3ec;                      // 0x3EC, 0 以外だと FUN_0807ad60 が上書きを断る
   u8 unk_3ee[0x3F0 - 0x3EE];        // 0x3EE
@@ -320,7 +320,7 @@ typedef struct Player {
   u8 unk_4a6;                       // 0x4A6, FUN_0807bc14 の第2引数
   u8 unk_4a7;                       // 0x4A7, FUN_0807c748 の第3引数
   u8 unk_4a8;                       // 0x4A8
-  s8 dir_4a9;                       // 0x4A9, Facing
+  DirS8 dir_4a9;                    // 0x4A9
   u8 unk_4aa;                       // 0x4AA, FUN_080726b4
   u8 unk_4ab;                       // 0x4AB, FUN_08072670 が 1 を書く
   u8 unk_4ac;                       // 0x4AC
@@ -428,7 +428,7 @@ s32 FUN_0806f900(Player* player);
 s32 FUN_080d1b04(Player* player);
 void Player_ReduceENE_0807aa60(Player* player, s32 amount);
 void Player_Unlock(Player* p);
-void FUN_0807bb3c(Player* p, Vec3* pos, Facing32 dir, s32 param_4, u32 scriptID);
+void FUN_0807bb3c(Player* p, Vec3* pos, DirS32 dir, s32 param_4, u32 scriptID);
 void FUN_0807bc64(Player* p, u32 scriptID);
 void Player_SetAction(Player* p, u32 action, u32 state);
 void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames);

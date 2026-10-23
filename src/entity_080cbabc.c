@@ -15,7 +15,7 @@ typedef struct {
   s16 velZ;           // 0xB4, gSineTable[angle & 0xFF] * speed >> 12 (0方向への丸め)
   u8 unk_b6[2];       // 0xB6, 読み書きとも無し, padding?
   s32 state;          // 0xB8, 0 の間は飛行、それ以外は着弾処理
-  Facing16 dir;       // 0xBC, ((angle + 0x10 & 0xFF) >> 5) + 3 & 7
+  DirU16 dir;         // 0xBC, ((angle + 0x10 & 0xFF) >> 5) + 3 & 7
   u16 timer;          // 0xBE, 飛行中は 60 で、着弾後は 6 で終わる
 } Entity080cbabc;
 static_assert(sizeof(Entity080cbabc) == 192);

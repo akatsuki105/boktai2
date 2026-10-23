@@ -40,7 +40,7 @@ void FUN_08072724(Player* p);
 void FUN_080d040c(Player* p);
 s32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 b);
 void Django_OnHurt(HitboxData* a, HitboxData* b, Player* p);
-void FUN_0807bdc8(Player* p, Facing32 dir, s32 param_3, u32 scriptID);
+void FUN_0807bdc8(Player* p, DirS32 dir, s32 param_3, u32 scriptID);
 s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
 bool32 FUN_0809df78(Vec3* pos);
 s32 FUN_080dc0b8(Vec3* pos, Vec3* param_2, u32 param_3, u32 param_4, u32 param_5);
@@ -3751,7 +3751,7 @@ NAKED void FUN_08066a04(Player* p) { INCFUNC("asm/func/FUN_08066a04.inc"); }
 
 // 見回しモードを始める (行動4 以外), 注視点からプレイヤーへのオフセットを作り, 入力方向があればその分ずらす
 // 残差はレジスタ2本の入れ替えだけ (189対189), 原典は facing の & 7 の結果をマスク側のレジスタに入れてアドレスに r0 を回すが, こちらは値が r0 でアドレスが r1 になる
-// Tier A-C は試済 (値を s32/Facing8 のローカルに置く, static inline の引数経由にする). アドレスのオフセットは直前の z アクセスの定数レジスタを subs で使い回したもので, C 側から作り直せない
+// Tier A-C は試済 (値を s32/DirU8 のローカルに置く, static inline の引数経由にする). アドレスのオフセットは直前の z アクセスの定数レジスタを subs で使い回したもので, C 側から作り直せない
 NON_MATCH void Player_UpdateLookAround(Player* p) {
 #ifdef NONMATCHING_C
   if (p->lookAroundOffset.val == 0) {
@@ -5641,7 +5641,7 @@ NAKED void FUN_08077cbc(Player* p) { INCFUNC("asm/func/FUN_08077cbc.inc"); }
 NAKED void FUN_08078060(Player* p) { INCFUNC("asm/func/FUN_08078060.inc"); }
 
 // 十字キーの押下状態を 4bit に畳んで方向番号に引き直す, どれも押していない or ありえない組み合わせは -1
-Facing32 Player_GetDpadFacing(Player* p) {
+DirS32 Player_GetDpadFacing(Player* p) {
   static const s16 sDpadFacingTable[17] = {
       [0] = -1,
       [1] = FACE_UP,           // ↑
@@ -7022,7 +7022,7 @@ void Player_Lock(Player* p, s32 val) {
   Player_SetAction(p, 0, 0);
 }
 
-void FUN_0807b9dc(Player* p, Facing32 dir, u32 param_3) {
+void FUN_0807b9dc(Player* p, DirS32 dir, u32 param_3) {
   p->dir_4a9 = dir;
   p->scriptID_4b0 = param_3;
   p->fn_498 = FUN_080727d4;
@@ -7030,7 +7030,7 @@ void FUN_0807b9dc(Player* p, Facing32 dir, u32 param_3) {
   Player_SetAction(p, 0, 0);
 }
 
-void FUN_0807ba14(Player* p, Facing32 dir) {
+void FUN_0807ba14(Player* p, DirS32 dir) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7040,7 +7040,7 @@ void FUN_0807ba14(Player* p, Facing32 dir) {
   p->fn_498 = FUN_08072724;
 }
 
-void FUN_0807ba50(Player* p, Facing32 dir, u32 param_3) {
+void FUN_0807ba50(Player* p, DirS32 dir, u32 param_3) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7051,7 +7051,7 @@ void FUN_0807ba50(Player* p, Facing32 dir, u32 param_3) {
   p->fn_498 = FUN_08072724;
 }
 
-void FUN_0807ba94(Player* p, Vec3* pos, u32 scriptID, Facing32 dir) {
+void FUN_0807ba94(Player* p, Vec3* pos, u32 scriptID, DirS32 dir) {
   p->unk_49c = *pos;
   p->scriptID_4b0 = scriptID;
   p->dir_4a9 = dir;
@@ -7075,7 +7075,7 @@ void FUN_0807ba94(Player* p, Vec3* pos, u32 scriptID, Facing32 dir) {
   Player_SetAction(p, 1, 0);
 }
 
-void FUN_0807bb3c(Player* p, Vec3* pos, Facing32 dir, s32 param_4, u32 scriptID) {
+void FUN_0807bb3c(Player* p, Vec3* pos, DirS32 dir, s32 param_4, u32 scriptID) {
   if (pos == NULL) {
     p->unk_49c = p->mover.pos;
   } else {
@@ -7122,7 +7122,7 @@ void FUN_0807bc64(Player* p, u32 scriptID) {
   }
 }
 
-void FUN_0807bcb0(Player* p, Facing32 dir, u32 param_3) {
+void FUN_0807bcb0(Player* p, DirS32 dir, u32 param_3) {
   Player_EnterLockedState(p);
   if (dir >= 0) {
     p->facing = dir;
@@ -7134,7 +7134,7 @@ void FUN_0807bcb0(Player* p, Facing32 dir, u32 param_3) {
   p->fn_498 = FUN_08073574;
 }
 
-void FUN_0807bcfc(Player* p, Facing32 dir) {
+void FUN_0807bcfc(Player* p, DirS32 dir) {
   Player_EnterLockedState(p);
   if (dir >= 0) {
     p->facing = dir;
@@ -7146,7 +7146,7 @@ void FUN_0807bcfc(Player* p, Facing32 dir) {
   p->fn_498 = FUN_08073574;
 }
 
-void FUN_0807bd44(Player* p, Facing32 dir) {
+void FUN_0807bd44(Player* p, DirS32 dir) {
   Player_EnterLockedState(p);
   if (dir >= 0) {
     p->facing = dir;
@@ -7157,7 +7157,7 @@ void FUN_0807bd44(Player* p, Facing32 dir) {
   p->fn_498 = FUN_08073574;
 }
 
-void FUN_0807bd84(Player* p, Facing32 dir, u32 param_3) {
+void FUN_0807bd84(Player* p, DirS32 dir, u32 param_3) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7168,7 +7168,7 @@ void FUN_0807bd84(Player* p, Facing32 dir, u32 param_3) {
   p->fn_498 = FUN_08073574;
 }
 
-void FUN_0807bdc8(Player* p, Facing32 dir, s32 param_3, u32 scriptID) {
+void FUN_0807bdc8(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7189,7 +7189,7 @@ void FUN_0807bdc8(Player* p, Facing32 dir, s32 param_3, u32 scriptID) {
   }
 }
 
-void FUN_0807be58(Player* p, Facing32 dir, s32 param_3, u32 scriptID) {
+void FUN_0807be58(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7209,7 +7209,7 @@ void FUN_0807be58(Player* p, Facing32 dir, s32 param_3, u32 scriptID) {
   }
 }
 
-void FUN_0807bee0(Player* p, Facing32 dir, s32 param_3, u32 scriptID) {
+void FUN_0807bee0(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7234,7 +7234,7 @@ void FUN_0807bee0(Player* p, Facing32 dir, s32 param_3, u32 scriptID) {
   }
 }
 
-void FUN_0807bfa4(Player* p, Facing32 dir, s32 param_3, s32 param_4, u32 scriptID) {
+void FUN_0807bfa4(Player* p, DirS32 dir, s32 param_3, s32 param_4, u32 scriptID) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7262,7 +7262,7 @@ void FUN_0807c048(Player* p, s32 scriptID) {
   }
 }
 
-void FUN_0807c084(Player* p, Facing32 facing, s32 param_3, u32 scriptID) {
+void FUN_0807c084(Player* p, DirS32 facing, s32 param_3, u32 scriptID) {
   if (facing >= 0) {
     p->facing = facing;
   }
@@ -7281,7 +7281,7 @@ void FUN_0807c084(Player* p, Facing32 facing, s32 param_3, u32 scriptID) {
   p->fn_498 = FUN_08073e18;
 }
 
-void FUN_0807c11c(Player* p, Facing32 facing) {
+void FUN_0807c11c(Player* p, DirS32 facing) {
   u16 animID;
 
   if (facing >= 0) {
@@ -7308,7 +7308,7 @@ void FUN_0807c11c(Player* p, Facing32 facing) {
   p->fn_498 = FUN_08073e18;
 }
 
-void FUN_0807c200(Player* p, Facing32 facing, u32 scriptID) {
+void FUN_0807c200(Player* p, DirS32 facing, u32 scriptID) {
   if (facing >= 0) {
     p->facing = facing;
   }
@@ -7344,7 +7344,7 @@ void FUN_0807c200(Player* p, Facing32 facing, u32 scriptID) {
   }
 }
 
-void FUN_0807c30c(Player* p, Facing32 dir, u32 param_3) {
+void FUN_0807c30c(Player* p, DirS32 dir, u32 param_3) {
   if (p->kind >= PLAYER_BAT && p->kind <= PLAYER_SLEEPING) {
     FUN_0807c200(p, dir, param_3);
   }
@@ -7360,7 +7360,7 @@ void FUN_0807c30c(Player* p, Facing32 dir, u32 param_3) {
 
 NAKED void FUN_0807c36c(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c36c.inc"); }
 
-void FUN_0807c458(Player* p, Facing32 dir, u32 param_3) {
+void FUN_0807c458(Player* p, DirS32 dir, u32 param_3) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7371,7 +7371,7 @@ void FUN_0807c458(Player* p, Facing32 dir, u32 param_3) {
   p->fn_498 = FUN_08073f88;
 }
 
-void FUN_0807c49c(Player* p, Facing32 dir, u32 param_3) {
+void FUN_0807c49c(Player* p, DirS32 dir, u32 param_3) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7382,7 +7382,7 @@ void FUN_0807c49c(Player* p, Facing32 dir, u32 param_3) {
   p->fn_498 = FUN_08073f88;
 }
 
-void FUN_0807c4e0(Player* p, Facing32 dir, u32 param_3) {
+void FUN_0807c4e0(Player* p, DirS32 dir, u32 param_3) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7393,7 +7393,7 @@ void FUN_0807c4e0(Player* p, Facing32 dir, u32 param_3) {
   p->fn_498 = FUN_080740b0;
 }
 
-void FUN_0807c524(Player* p, Facing32 dir, u32 param_3) {
+void FUN_0807c524(Player* p, DirS32 dir, u32 param_3) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7404,7 +7404,7 @@ void FUN_0807c524(Player* p, Facing32 dir, u32 param_3) {
   p->fn_498 = FUN_080740b0;
 }
 
-void FUN_0807c568(Player* p, Facing32 dir, u32 param_3) {
+void FUN_0807c568(Player* p, DirS32 dir, u32 param_3) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7415,7 +7415,7 @@ void FUN_0807c568(Player* p, Facing32 dir, u32 param_3) {
   p->fn_498 = FUN_08074244;
 }
 
-void FUN_0807c5ac(Player* p, Facing32 dir, u32 param_3) {
+void FUN_0807c5ac(Player* p, DirS32 dir, u32 param_3) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7426,7 +7426,7 @@ void FUN_0807c5ac(Player* p, Facing32 dir, u32 param_3) {
   p->fn_498 = FUN_08074244;
 }
 
-void FUN_0807c5f0(Player* p, Facing32 dir, u32 param_3) {
+void FUN_0807c5f0(Player* p, DirS32 dir, u32 param_3) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7439,7 +7439,7 @@ void FUN_0807c5f0(Player* p, Facing32 dir, u32 param_3) {
 
 NAKED void FUN_0807c634(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c634.inc"); }
 
-void FUN_0807c748(Player* p, Facing32 dir, s32 param_3, u32 param_4) {
+void FUN_0807c748(Player* p, DirS32 dir, s32 param_3, u32 param_4) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7460,7 +7460,7 @@ void FUN_0807c798(Player* p, s32 scriptID) {
 
 NAKED void FUN_0807c7c8(Player* p) { INCFUNC("asm/func/FUN_0807c7c8.inc"); }
 
-void FUN_0807c88c(Player* p, Vec3* pos, Facing32 dir, u32 param_4) {
+void FUN_0807c88c(Player* p, Vec3* pos, DirS32 dir, u32 param_4) {
   p->unk_49c = *pos;
   p->scriptID_4b0 = param_4;
   p->dir_4a9 = dir;
@@ -7469,7 +7469,7 @@ void FUN_0807c88c(Player* p, Vec3* pos, Facing32 dir, u32 param_4) {
   p->fn_498 = FUN_080746ec;
 }
 
-void FUN_0807c8d4(Player* p, Facing32 dir) {
+void FUN_0807c8d4(Player* p, DirS32 dir) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7562,7 +7562,7 @@ void FUN_0807cb14(Player* p, s32 xflip, u32 param_3) {
   p->fn_498 = FUN_080728a8;
 }
 
-void FUN_0807cb8c(Player* p, Facing32 dir, u32 scriptID) {
+void FUN_0807cb8c(Player* p, DirS32 dir, u32 scriptID) {
   if (dir >= 0) {
     p->facing = dir;
   }
@@ -7640,7 +7640,7 @@ void Player_Unlock(Player* p) {
 }
 
 // コマンドのヘルパーで、 '.d' で渡されたプレイヤーの向きを取得する
-Facing32 Player_GetCmdArgDir(void) {
+DirS32 Player_GetCmdArgDir(void) {
   if (VM_SeekToNamedArg('d')) {
     return VM_GetValue();
   }
@@ -7740,7 +7740,7 @@ void Player_MoveTo(void) {
 
   if (p != NULL && VM_SeekToNamedArg('p')) {
     Vec3 pos;
-    Facing32 dir;
+    DirS32 dir;
     u32 scriptID;
 
     pos.x = VM_GetValue();
@@ -7760,7 +7760,7 @@ void Cmd_E990(void) {
 
   if (p != NULL && VM_SeekToNamedArg('p')) {
     Vec3 pos;
-    Facing32 dir;
+    DirS32 dir;
     u32 scriptID;
 
     pos.x = VM_GetValue();
@@ -7779,7 +7779,7 @@ void FUN_0807d438(void) {
 
   if (p != NULL) {
     s32 param_4 = VM_SeekToNamedArg('f') ? VM_GetValue() : 0;
-    Facing32 dir = Player_GetCmdArgDir();
+    DirS32 dir = Player_GetCmdArgDir();
     u32 scriptID = FUN_0807d180();
 
     if (VM_SeekToNamedArg('p')) {
@@ -7869,7 +7869,7 @@ void FUN_0807d660(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    Facing32 dir = Player_GetCmdArgDir();
+    DirS32 dir = Player_GetCmdArgDir();
     u32 b = FUN_0807d180();
 
     FUN_0807bdc8(p, dir, VM_SeekToNamedArg('f') ? VM_GetValue() : 0, b);
@@ -7881,7 +7881,7 @@ void FUN_0807d6a8(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    Facing32 dir = Player_GetCmdArgDir();
+    DirS32 dir = Player_GetCmdArgDir();
     u32 b = FUN_0807d180();
 
     FUN_0807be58(p, dir, VM_SeekToNamedArg('h') ? VM_GetValue() : 1500, b);
@@ -7908,7 +7908,7 @@ void FUN_0807d744(void) {
   if (p != NULL) {
     s32 param_3 = VM_SeekToNamedArg('f') ? VM_GetValue() : 50;
     s32 param_4 = VM_SeekToNamedArg('L') ? VM_GetValue() : 0;
-    Facing32 dir = Player_GetCmdArgDir();
+    DirS32 dir = Player_GetCmdArgDir();
     u32 scriptID = FUN_0807d180();
 
     FUN_0807bfa4(p, dir, param_3, param_4, scriptID);
