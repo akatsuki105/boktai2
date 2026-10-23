@@ -2,6 +2,7 @@
 #include "global.h"
 #include "sprite_aux.h"
 #include "sprite_main.h"
+#include "vm.h"
 
 typedef struct Entity0FC5 {
   Entity e;  // 0x0, ENTITY_UNK_8
@@ -15,7 +16,20 @@ typedef struct Entity0FC5 {
   u32 timer_100;                               // 0x100
   u32 unk_104;                                 // 0x104, まだ未解析
   u32 timer_108;                               // 0x108
-  u8 unk_10c[0x13C - 0x10C];                   // 0x10C, まだ未解析
+  s32 unk_10c;                                 // 0x10C, '.p[0]' を16ビット左シフトした値 (16.16 固定小数)
+  s32 unk_110;                                 // 0x110, '.p[1]' を同様に入れる
+  u8 unk_114[0x124 - 0x114];                   // 0x114, まだ未解析
+  s16 unk_124;                                 // 0x124, '.s'
+  u8 unk_126[2];                               // 0x126, まだ未解析
+  s16 unk_128;                                 // 0x128, 64 で初期化, unk_130 と対
+  s16 unk_12a;                                 // 0x12A, 64 で初期化, unk_132 と対
+  s16 unk_12c;                                 // 0x12C
+  s16 unk_12e;                                 // 0x12E
+  s16 unk_130;                                 // 0x130, '.S=64'
+  s16 unk_132;                                 // 0x132, '.S=64' (unk_130 と同じ値)
+  s16 unk_134;                                 // 0x134
+  s16 unk_136;                                 // 0x136
+  u8 unk_138[0x13C - 0x138];                   // 0x138, まだ未解析
   AuxSprite sprite_13c;                        // 0x13C, 根拠: Entity0FC5_RemoveSprites が AuxSprite_Remove に渡す
   u8 unk_168[0x184 - 0x168];                   // 0x168, まだ未解析
   void (*updateCallback)(struct Entity0FC5*);  // 0x184
@@ -85,7 +99,36 @@ s32 Entity0FC5_Destroy(Entity0FC5* p) {
   return 0;
 }
 
-NAKED s32 Entity0FC5_Init(Entity0FC5* p) { INCFUNC("asm/func/Entity0FC5_Init.inc"); }
+s32 Entity0FC5_Init(Entity0FC5* p) {
+  s32 scale;
+
+  p->pauseFlags = 0;
+  p->unk_f4 = VM_GetNamedArgValue('k', -1);
+  if (VM_SeekToNamedArg('p')) {
+    p->unk_10c = VM_GetValue() << 16;
+    p->unk_110 = VM_GetValue() << 16;
+  }
+  if (VM_SeekToNamedArg('s')) {
+    p->unk_124 = VM_GetValue();
+  }
+  scale = VM_GetNamedArgValue('S', 64);
+  p->unk_fc = 0;
+  p->timer_100 = 0;
+  p->unk_104 = 0;
+  p->timer_108 = 0;
+  p->unk_128 = 64;
+  p->unk_12a = 64;
+  p->unk_12c = 0;
+  p->unk_12e = 0;
+  p->unk_130 = scale;
+  p->unk_132 = scale;
+  p->unk_134 = 0;
+  p->unk_136 = 0;
+  FUN_0821aeb0(p);
+  FUN_0821ae64(p, 0);
+  gEntity0FC5s[p->unk_f4] = p;
+  return 0;
+}
 
 Entity0FC5* Entity0FC5_Create(void) {
   Entity0FC5* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity0FC5));
