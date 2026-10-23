@@ -76,19 +76,21 @@ COMMON_DATA bool32 gDispcntLocked = FALSE;  // 0x03002CA8, 0 以外だと VideoC
 
 COMMON_DATA u8 u8_03002cac[0x03002CB0 - 0x03002CAC] = {};  // todo
 
-COMMON_DATA IntrFunc gIntrTable[13] = {};  // 0x03002cb0
-COMMON_DATA vu32 gVblankFlag = FALSE;      // 0x03002cb4
-COMMON_DATA u8 u8_03002ce8[8] = {};        // todo
-COMMON_DATA u32 gFrameCounter = 0;         // 0x03002CF0, bit0 が点滅の偶奇を決める, 根拠: MainSprite_DrawList が tst #1 で SPRFLAG_BLINK_ODD / SPRFLAG_BLINK_EVEN を選ぶ
-COMMON_DATA u8 u8_03002cf4[12] = {};       // todo
+COMMON_DATA IntrFunc gIntrTable[13] = {};    // 0x03002CB0
+COMMON_DATA vu32 gVblankFlag = FALSE;        // 0x03002CE4
+COMMON_DATA u32 gMarqueeOffset = 0;          // 0x03002CE8
+COMMON_DATA bool32 gMarqueeActive2 = FALSE;  // 0x03002CEC
+COMMON_DATA u32 gFrameCounter = 0;           // 0x03002CF0, bit0 が点滅の偶奇を決める, 根拠: MainSprite_DrawList が tst #1 で SPRFLAG_BLINK_ODD / SPRFLAG_BLINK_EVEN を選ぶ
+COMMON_DATA u8 u8_03002cf4[12] = {};         // todo
 
 COMMON_DATA u32 IntrMain_Buffer[0x200] = {0};  // 0x03002D00, INTR_MAIN のRAMコード
 
 COMMON_DATA bool32 gVBlankDone = FALSE;  // 0x03003500, VBlankIntr が立て、VideoCommit_Update が落とす
 
-COMMON_DATA u32 gVBlankCount = 0;  // 0x03003504, VBlankIntr が毎フレーム +1 する
+COMMON_DATA u32 gVBlankCount = 0;     // 0x03003504, VBlankIntr が毎フレーム +1 する
+COMMON_DATA u32 gMarqueeOffset2 = 0;  // 0x03003508
 
-COMMON_DATA u8 u8_03003508[0x03003510 - 0x03003508] = {};  // todo
+COMMON_DATA u8 u8_0300350C[0x03003510 - 0x0300350C] = {};  // todo
 
 COMMON_DATA u16 u16_03003510 = 0;             // 0x03003510, FUN_0822f0d8, FUN_0822eef4 が 1 を書く
 COMMON_DATA u8 u8_03003512[2] = {};           // todo

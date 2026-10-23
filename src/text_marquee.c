@@ -16,7 +16,7 @@ typedef struct {
   u8 unk_17d;             // 0x17D, FUN_0804990C が 0 を入れる
   u8 unk_17e[2];          // 0x17E, padding?
   s32 timer;              // 0x180, active の間 _Update が毎フレーム +1
-  s32 offset;             // 0x184, _Update が u8_03002ce8 へ写し、VBlankIntr が 0x03003508 へ転送する
+  s32 offset;             // 0x184, _Update が gMarqueeOffset へ写し、VBlankIntr が 0x03003508 へ転送する
   u32 unk_188;            // 0x188, _Init と FUN_0804990C が 0 を入れる
   u32 unk_18c;            // 0x18C, 同上
   u32 unk_190;            // 0x190, FUN_0804990C が 0 を入れる
@@ -28,8 +28,10 @@ IWRAM_DATA Marquee* gMarquee = NULL;  // 0x030000C8
 
 const char gBlankText[8] = " ";  // 0x085AB548
 
-extern u8 u8_03002ce8[8];      // 0x03002CE8
-extern bool32 gMarqueeActive;  // 0x03003520
+extern u32 gMarqueeOffset;      // 0x03002CE8
+extern u32 gMarqueeOffset2;     // 0x03003508
+extern bool32 gMarqueeActive;   // 0x03003520
+extern bool32 gMarqueeActive2;  // 0x03002CEC
 
 void FUN_080498c8(void) { gMarquee = NULL; }
 
@@ -87,7 +89,7 @@ s32 Marquee_Destroy(Marquee* p) {
     p->active = FALSE;
   }
 
-  *(u32*)u8_03002ce8 = 0;
+  gMarqueeOffset = 0;
   gMarquee = NULL;
   return 0;
 }
