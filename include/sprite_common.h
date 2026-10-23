@@ -12,9 +12,9 @@ typedef u32 SpriteFlags;
 #define SPRFLAG_AFFINE (1 << 1)        // 0x00000002, アフィン
 #define SPRFLAG_XFLIP (1 << 2)         // 0x00000004, X軸反転
 #define SPRFLAG_YFLIP (1 << 3)         // 0x00000008, Y軸反転
-#define SPRFLAG_SCREEN_COORD (1 << 4)  // 0x00000010, スクリーン座標系
+#define SPRFLAG_SCREEN_COORD (1 << 4)  // 0x00000010, スクリーン座標系 (Vec3.x と Vec3.y をスクリーン座標として扱う)
 #define SPRFLAG_OAM_DIRECT (1 << 5)    // 0x00000020, OAM直書き
-#define SPRFLAG_NO_CLIP (1 << 6)       // 0x00000040, クリップ省略
+#define SPRFLAG_NO_CLIP (1 << 6)       // 0x00000040, クリッピングをしない
 #define SPRFLAG_DRAWLIST (1 << 7)      // 0x00000080, セットされていると描画リスト(gAuxSpriteLists, gMainSpriteLists, gParticleLists) の idx が 1の方に追加される
 #define SPRFLAG_UNK_8 (1 << 8)         // 0x00000100, 不明
 #define SPRFLAG_BLINK_ODD (1 << 9)     // 0x00000200, 奇数フレームだけ描画しない

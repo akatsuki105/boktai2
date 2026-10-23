@@ -4,12 +4,12 @@
 #include "sprite.h"
 #include "vm.h"
 
-// おそらく、オープニングのサンミゲルに向かって、ジャンゴとおてんこが走っていく演出 (手前から奥へ走っていくので、スプライトが徐々に小さくなる)
+// (太陽銃を奪われた後の)サンミゲルに向かって、ジャンゴとおてんこが走っていく演出 (手前から奥へ走っていくので、スプライトが徐々に小さくなる)
 typedef struct Entity0FC5 {
   Entity e;                                    // 0x0, ENTITY_UNK_8
   MainSpriteGfx djangoGfx;                     // 0x18, SPRITE_DJANGO_SABATA
-  MainSprite django;                           // 0x38, 根拠: Entity0FC5_RemoveSprites が kind == 0 のとき MainSprite_Remove に渡す
-  AuxSprite otenko;                            // 0x98, 根拠: Entity0FC5_RemoveSprites が kind != 0 のとき AuxSprite_Remove に渡す
+  MainSprite django;                           // 0x38, kind=0
+  AuxSprite otenko;                            // 0x98, kind=1
   AuxSpriteGfx otenkoGfx;                      // 0xC4, SPRITE_OTENKO_00
   AuxAnimState otenkoAnim;                     // 0xE0 ->otenkoAnimFile
   AuxAnimFile* otenkoAnimFile;                 // 0xF0, ANIM_OTENKO
@@ -19,7 +19,7 @@ typedef struct Entity0FC5 {
   u32 timer_100;                               // 0x100
   u32 unk_104;                                 // 0x104, まだ未解析
   u32 timer_108;                               // 0x108
-  s32 unk_10c;                                 // 0x10C, '.p[0]' を16ビット左シフトした値 (16.16 固定小数)
+  s32 unk_10c;                                 // 0x10C, '.p[0]' を16ビット左シフトした値 (s16_16)
   s32 unk_110;                                 // 0x110, '.p[1]' を同様に入れる
   u8 unk_114[0x124 - 0x114];                   // 0x114, まだ未解析
   s16 unk_124;                                 // 0x124, '.s'
