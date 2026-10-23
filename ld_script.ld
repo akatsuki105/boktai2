@@ -28,7 +28,7 @@ SECTIONS {
       src/vm.o(ewram_data);
       src/code_08230e88.o(ewram_data);
       src/link.o(ewram_data);
-      src/code_0804b9f4.o(ewram_data);
+      src/entity_0804e2c0.o(ewram_data);
     } >ewram = 0x00
 
 	. = 0x3000000;
@@ -73,11 +73,11 @@ SECTIONS {
       src/text_panel.o(iwram_data);
       src/text_slideshow.o(iwram_data);
       src/joyspot.o(iwram_data);
-      src/code_0804b9f4.o(iwram_data);
+      src/entity_0804e2c0.o(iwram_data);
       src/signal_strength_icon.o(iwram_data);
       src/entity_d53d.o(iwram_data);
       . = ALIGN(8);
-      src/entity_af33.o(iwram_data);
+      src/crossover_af33.o(iwram_data);
       src/entity_08051b70.o(iwram_data);
       src/entity_723e.o(iwram_data);
       src/entity_5645.o(iwram_data);
@@ -194,7 +194,7 @@ SECTIONS {
       src/msgbus.o(COMMON);
       src/entity_286f.o(COMMON);
       src/joyspot.o(COMMON);
-      src/code_0804b9f4.o(COMMON);
+      src/entity_0804e2c0.o(COMMON);
       . = ALIGN(8);
       src/player.o(COMMON);
       src/iwram2.o(COMMON);
@@ -299,11 +299,11 @@ SECTIONS {
 			src/text_slideshow.o (.text);
 			src/entity_b88c.o (.text);
 			src/joyspot.o (.text);
-			src/code_0804b9f4.o (.text);
+			src/entity_0804e2c0.o (.text);
 			src/signal_strength_icon.o (.text);
 			src/entity_d53d.o (.text);
 			src/crossover_lobby.o (.text);
-			src/entity_af33.o (.text);
+			src/crossover_af33.o (.text);
 			src/entity_08051b70.o (.text);
 			src/entity_08052250.o (.text);
 			src/entity_723e.o (.text);
@@ -617,7 +617,7 @@ SECTIONS {
     src/entity_4b15.o (.rodata);
     src/text_renderer.o (.rodata.string);
     src/joyspot.o (.rodata.string);
-    src/code_0804b9f4.o (.rodata.faraddr);
+    src/entity_0804e2c0.o (.rodata.faraddr);
     src/data.o (.rodata);
     src/entity_1b24.o (.rodata);
     src/pile_driver.o (.rodata.string);
@@ -692,10 +692,10 @@ SECTIONS {
     src/text_slideshow.o (.rodata);
     src/entity_b88c.o (.rodata);
     src/joyspot.o (.rodata);
-    src/code_0804b9f4.o (.rodata);
+    src/entity_0804e2c0.o (.rodata);
     src/entity_d53d.o (.rodata);
     src/crossover_lobby.o (.rodata);
-    src/entity_af33.o (.rodata);
+    src/crossover_af33.o (.rodata);
     src/entity_08051b70.o (.rodata);
     src/entity_08052250.o (.rodata);
     src/entity_723e.o (.rodata);

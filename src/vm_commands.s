@@ -138,7 +138,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x3535, MosaicFader_StartFromScript
 	.4byte 0x3613, Cmd_LockPlayer
 	.4byte 0x364D, sound_08240344
-	.4byte 0x3699, FUN_0804b9f4
+	.4byte 0x3699, Cmd_3699
 	.4byte 0x3705, Cmd_3705
 	.4byte 0x3757, Cmd_GiveWeapon @ HashName("武器取得")
 	.4byte 0x377D, FUN_081d7ca8

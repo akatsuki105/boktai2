@@ -86,8 +86,6 @@ IWRAM_DATA u32 u32_030000e0 = 0;         // 0x030000E0, 型不明
 
 COMMON_DATA Entity0804e2c0* gEntity0804e2c0 = NULL;  // 0x03002B58
 
-extern const u8 gJoyspotContentIDs[8];  // src/joyspot.c
-
 // クロスオーバー通信で送る文字列を1文字 = 1エントリに展開した表, 根拠: Crossover_LoadMappingBuf が 0x100 個まで strh で埋める
 EWRAM_DATA u16 gCrossoverMappingBuf[256] = {};  // 0x0203FC00
 
@@ -175,33 +173,6 @@ static inline void Entity0804e2c0_SetMotion(Entity0804e2c0* p, u16 motion) {
   p->unk_1c = 0;
   p->unk_38 = motion;
   p->unk_44 = 0;
-}
-
-// '.n' 番の配信コンテンツIDがセーブデータに書かれているか
-// 残差はループの向きだけ (30 対 30), 原典は i を上に数えるが agbcc は使い捨ての添字とみて下に数える形へ反転する
-// u32 / do-while / i != 2 / flags をループ内で引く形 / flags[dst + i] と id[i] は試済
-NON_MATCH s32 FUN_0804b9f4(void) {
-#ifdef NONMATCHING_C
-  s32 dst = VM_GetValue() * 2;
-  s32 match = 0;
-  u8* flags = (u8*)gSystemSaveData->eventFlags;
-  const u8* id = &gJoyspotContentIDs[dst];
-  s32 i;
-
-  for (i = 0; i < 2; i++) {
-    if (flags[dst] == *id) {
-      match++;
-    }
-    id++;
-    dst++;
-  }
-  if (match == 2) {
-    return 1;
-  }
-  return 0;
-#else
-  INCFUNC("asm/func/FUN_0804b9f4.inc");
-#endif
 }
 
 Entity0804e2c0* FUN_0804ba3c(void) { return gEntity0804e2c0; }
@@ -402,14 +373,10 @@ NON_MATCH s32 FUN_0804c8f4(Entity0804e2c0* p) {
 }
 
 s32 FUN_0804c940(Entity0804e2c0* p) {
-  bool8 mode;
-
   if (p->unk_32) {
     p->unk_32 = 0;
   }
-
-  mode = rfu_getMasterSlave();
-  if (mode == 1) {
+  if (rfu_getMasterSlave() == AGB_CLK_MASTER) {
     rfu_REQ_disconnect(gRfuLinkStatus->connectSlot_flag | gRfuLinkStatus->linkLossSlot_flag);
     rfu_waitREQComplete();
   }
@@ -1004,4 +971,5 @@ void FUN_0804e69c(u8* src, u8* dst, s32 count) {
 
 NAKED void FUN_0804e6d8(unknown* s, s32 param_2, s32 charcount) { INCFUNC("asm/func/FUN_0804e6d8.inc"); }
 
+// 0xC015
 NAKED void Crossover_LoadMappingBuf(void) { INCFUNC("asm/func/Crossover_LoadMappingBuf.inc"); }

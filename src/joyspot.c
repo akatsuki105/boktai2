@@ -333,3 +333,30 @@ JoyspotManager* JoyspotManager_Create(void) {
 
   return p;
 }
+
+// 0x3699, '.n' 番の配信コンテンツIDがセーブデータに書かれているか
+// 残差はループの向きだけ (30 対 30), 原典は i を上に数えるが agbcc は使い捨ての添字とみて下に数える形へ反転する
+// u32 / do-while / i != 2 / flags をループ内で引く形 / flags[dst + i] と id[i] は試済
+NON_MATCH s32 Cmd_3699(void) {
+#ifdef NONMATCHING_C
+  s32 dst = VM_GetValue() * 2;
+  s32 match = 0;
+  u8* flags = (u8*)gSystemSaveData->eventFlags;
+  const u8* id = &gJoyspotContentIDs[dst];
+  s32 i;
+
+  for (i = 0; i < 2; i++) {
+    if (flags[dst] == *id) {
+      match++;
+    }
+    id++;
+    dst++;
+  }
+  if (match == 2) {
+    return 1;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/Cmd_3699.inc");
+#endif
+}

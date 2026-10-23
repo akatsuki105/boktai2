@@ -198,7 +198,7 @@ agbcc keeps the counter of a loop whose body compiles to nothing, so a bare
 `movs rN,#3` / `subs` / `cmp` / `bge` between two unrelated statements is a
 real empty loop in the source, not a disassembly artifact. Write it as an
 empty `for` and the stream matches (`FUN_0804fe24`, `FUN_0804feb0` in
-`src/entity_af33.c`).
+`src/crossover_af33.c`).
 
 ### A cached global pointer that the target reloads per store
 

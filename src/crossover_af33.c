@@ -11,8 +11,7 @@ typedef struct {
 } EntityAF33Slot;
 static_assert(sizeof(EntityAF33Slot) == 12);
 
-void FUN_0804e5e8(void);  // src/code_0804b9f4.c
-
+// クロスオーバーバトルに関係
 typedef struct {
   Entity e;                 // 0x000, ENTITY_UNK_2
   u32 unk_18;               // 0x018, _Init が 0 を入れる
@@ -45,7 +44,7 @@ typedef struct {
   u32 unk_c0;               // 0x0C0, 読み手も書き手も見つかっていない
   u32 unk_c4;               // 0x0C4, '.e'
   u32 unk_c8;               // 0x0C8, _Init が 0 を入れる
-  MainSpriteGfx gfx;        // 0x0CC, SPRITE_INVENTORY_ICONS
+  MainSpriteGfx iconGfx;    // 0x0CC, SPRITE_INVENTORY_ICONS
   MainSprite sprites[2];    // 0x0EC, _Destroy が MainSprite_Remove に渡す2枚
   u16 unk_1ac;              // 0x1AC, '.M=11'
   u16 unk_1ae[4];           // 0x1AE, '.p'
@@ -56,7 +55,8 @@ static_assert(sizeof(EntityAF33) == 444);
 IWRAM_DATA EntityAF33* gEntityAF33 = NULL;  // 0x030000F0
 IWRAM_DATA u8 u8_030000f4[0x118 - 0x0F4] = {};
 
-s32 FUN_0804e514(void* param_1);  // src/code_0804b9f4.c
+s32 FUN_0804e514(void* param_1);  // src/entity_0804e2c0.c
+void FUN_0804e5e8(void);          // src/entity_0804e2c0.c
 
 void Entity723E_SetState(unknown* p);
 void Entity723E_ConsumeStateEntered(unknown* p);
@@ -266,28 +266,28 @@ NAKED void FUN_08050070(EntityAF33* p) { INCFUNC("asm/func/FUN_08050070.inc"); }
 
 NAKED void FUN_0805010c(EntityAF33* p) { INCFUNC("asm/func/FUN_0805010c.inc"); }
 
-// 2つの残量に応じてアイコンのポーズを 0xD4/0xD7 からの3段階で選ぶ
+// クロスオーバーバトルで、 自分（ロックマン) と 相手（シェードマン) のアイコンをHPに応じて切り替える
 void FUN_080501c8(EntityAF33* p) {
   s32 n = FUN_08050d64();
   s32 idx = 0;
 
-  if (n <= 0x3C) {
+  if (n <= 60) {
     idx = 2;
-    if (n > 0x19) {
+    if (n > 25) {
       idx = 1;
     }
   }
-  MainSprite_SetPose(&p->sprites[0], &p->gfx, idx + 0xD4, 0);
+  MainSprite_SetPose(&p->sprites[0], &p->iconGfx, ICON_MEGAMAN(idx), 0);
 
   n = FUN_08050d7c();
   idx = 0;
-  if (n <= 0x3C) {
+  if (n <= 60) {
     idx = 2;
-    if (n > 0x19) {
+    if (n > 25) {
       idx = 1;
     }
   }
-  MainSprite_SetPose(&p->sprites[1], &p->gfx, idx + 0xD7, 0);
+  MainSprite_SetPose(&p->sprites[1], &p->iconGfx, ICON_SHADEMAN(idx), 0);
 }
 
 NAKED void FUN_08050218(EntityAF33* p) { INCFUNC("asm/func/FUN_08050218.inc"); }
