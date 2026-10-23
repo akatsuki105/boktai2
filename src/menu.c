@@ -310,7 +310,7 @@ static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags;
 static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
 
 // BGパレットの行13 (色208) 以降を指す
-static inline rgb555* BgPlttRow13(BgPlttFile* f) { return &f->body[208]; }
+static inline rgb555* BgPlttRow13(BgPlttFile* f) { return &f->body[13 * 16]; }
 
 static inline Player* GetPlayer(s32 idx) { return gPlayerPtr[idx]; }
 
