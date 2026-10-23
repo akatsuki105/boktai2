@@ -136,12 +136,12 @@ NON_MATCH void FUN_082111cc(AlbumMenu* p) {
 
 // 取得数 "n/27" の数字を並べる
 void FUN_0821126c(AlbumMenu* p) {
-  FUN_082376a4(&p->sprites_108[0], &p->gfx1, CountUnlockedPhotos(), 2, 0, 176, 104, 8, 0);
+  MainSprite_SetNumber(&p->sprites_108[0], &p->gfx1, CountUnlockedPhotos(), 2, 0, 176, 104, 8, 0);
   MainSprite_SetPose(&p->sprites_108[2], &p->gfx1, 11, 0);
   p->sprites_108[2].pos.x = 192;
   p->sprites_108[2].pos.y = 104;
   p->sprites_108[2].flags &= ~SPRFLAG_HIDDEN;
-  FUN_082376a4(&p->sprites_108[3], &p->gfx1, 27, 2, 0, 200, 104, 8, 0);
+  MainSprite_SetNumber(&p->sprites_108[3], &p->gfx1, 27, 2, 0, 200, 104, 8, 0);
 }
 
 // カーソルのスプライトをマス目に合わせて置き直す

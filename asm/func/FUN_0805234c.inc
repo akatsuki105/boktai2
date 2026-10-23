@@ -215,7 +215,7 @@ _080524DE:
 	adds r1, r5, #0
 	ldr r2, [sp, #0x14]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r1, #0xc8
 	lsls r1, r1, #1
 	adds r0, r7, r1
@@ -230,7 +230,7 @@ _080524DE:
 	adds r1, r5, #0
 	ldr r2, [sp, #0x18]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r1, #0x94
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -246,7 +246,7 @@ _080524DE:
 	adds r1, r5, #0
 	mov r2, sl
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r1, #0xc4
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -261,7 +261,7 @@ _080524DE:
 	adds r1, r5, #0
 	ldr r2, [sp, #0x1c]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r1, #0xf4
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -276,7 +276,7 @@ _080524DE:
 	adds r1, r5, #0
 	ldr r2, [sp, #0x20]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r1, #0x92
 	lsls r1, r1, #3
 	adds r0, r7, r1
@@ -291,7 +291,7 @@ _080524DE:
 	adds r1, r5, #0
 	ldr r2, [sp, #0x24]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	ldr r0, [r7, #0x18]
 	cmp r0, #0x63
 	bls _080525BC

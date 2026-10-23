@@ -76,7 +76,7 @@ _0805275A:
 	str r4, [sp, #0x10]
 	adds r0, r3, #0
 	movs r3, #4
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	ldr r0, [r5, #0x18]
 	cmp r0, #0x7f
 	bls _0805278A

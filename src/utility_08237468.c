@@ -757,7 +757,8 @@ u32 StrCopyPadded(u8* src, u8* dst, s32 length) {
 }
 
 // 値を8桁に分解し、各桁を1つずつスプライトで表示する
-NON_MATCH void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, bool32 zeroSuppress) {
+// 残差は zeroSuppress != 0 の 0/1 化だけ (原典は (z|-z)>>31, 当方は cmp/beq/movs), 命令数は 178 で一致
+NON_MATCH void MainSprite_SetNumber(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, bool32 zeroSuppress) {
 #ifdef NONMATCHING_C
   s32 digits[8];
   s32 i, j, n;
@@ -837,7 +838,7 @@ NON_MATCH void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 co
     p++;
   }
 #else
-  INCFUNC("asm/func/FUN_082376a4.inc");
+  INCFUNC("asm/func/MainSprite_SetNumber.inc");
 #endif
 }
 

@@ -40,7 +40,7 @@ typedef struct {
   u8 unk_49;                     // 0x0049, _Init が 0x20
   u8 unk_4a;                     // 0x004A, _Init が 0
   u8 unk_4b;                     // 0x004B
-  MainSpriteGfx gfx;             // 0x004C, FUN_082376a4 に渡す数字のスプライト
+  MainSpriteGfx gfx;             // 0x004C, MainSprite_SetNumber に渡す数字のスプライト
   MainSprite sprites_6c[3];      // 0x006C
   MainSprite sprites_18c[5];     // 0x018C, 根拠: FUN_0820d6e4 が5枚ぶん登録し FUN_0820ee7c が5枚ぶん隠す
   MainSprite sprites_36c[3];     // 0x036C, 根拠: FUN_0820ee7c が3枚ぶん隠す
@@ -489,7 +489,7 @@ void FUN_0820eb84(EnemyDexMenu* p) {
   count = FUN_0820cbec(p->unk_25);
   base = FUN_0820cbdc(p->unk_25) + 1;
   for (i = 0; i < count; i++) {
-    FUN_082376a4(&p->sprites_84c[i][0], &p->gfx, base + i, 2, 0, 24, i * 16 + 40, 8, 0);
+    MainSprite_SetNumber(&p->sprites_84c[i][0], &p->gfx, base + i, 2, 0, 24, i * 16 + 40, 8, 0);
     p->sprites_5ac[i].flags &= ~SPRFLAG_HIDDEN;
     p->sprites_5ac[i].pos.x = 40;
     p->sprites_5ac[i].pos.y = i * 16 + 40;
@@ -499,7 +499,7 @@ void FUN_0820eb84(EnemyDexMenu* p) {
 // ページ用スプライトを全部隠し, 選択中ページの番号を描き直す
 void FUN_0820ec6c(EnemyDexMenu* p) {
   EnemyDexMenu_HidePageSprites(p);
-  FUN_082376a4(&p->sprites_84c[0][0], &p->gfx, p->unk_26 + 1, 2, 0, 40, 24, 8, 0);
+  MainSprite_SetNumber(&p->sprites_84c[0][0], &p->gfx, p->unk_26 + 1, 2, 0, 40, 24, 8, 0);
 }
 
 // sprites_d8c を全部隠す
@@ -525,8 +525,8 @@ void FUN_0820ed48(EnemyDexMenu* p) {
   }
 
   cat = FUN_0820cc8c(p->unk_26);
-  FUN_082376a4(&p->sprites_d8c[0], &p->gfx, FUN_0820d0b8(cat), 2, 0, 152, 19, 8, 0);
-  FUN_082376a4(&p->sprites_d8c[2], &p->gfx, FUN_0820cbfc(cat), 2, 0, 176, 19, 8, 0);
+  MainSprite_SetNumber(&p->sprites_d8c[0], &p->gfx, FUN_0820d0b8(cat), 2, 0, 152, 19, 8, 0);
+  MainSprite_SetNumber(&p->sprites_d8c[2], &p->gfx, FUN_0820cbfc(cat), 2, 0, 176, 19, 8, 0);
 }
 
 // 選択中ページのエントリ名を上から順にパネルへ流す, 未発見なら 57 番のメッセージ

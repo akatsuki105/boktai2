@@ -334,7 +334,7 @@ _0820DE26:
 	adds r0, r6, #0
 	ldr r1, [sp, #0x3c]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	ldr r0, [r4]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -388,7 +388,7 @@ _0820DE72:
 	ldr r0, [sp, #0x2c]
 	ldr r1, [sp, #0x3c]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	mov r0, r8
 	bl FUN_0820cbfc
 	adds r2, r0, #0
@@ -401,7 +401,7 @@ _0820DE72:
 	ldr r0, [sp, #0x20]
 	ldr r1, [sp, #0x3c]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	ldr r2, _0820DEF0 @ =0x0000125C
 	adds r0, r7, r2
 	ldr r0, [r0]
@@ -544,7 +544,7 @@ _0820DFB2:
 	mov r0, sb
 	ldr r1, [sp, #0x3c]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r4, #1
 	ldr r2, [sp, #0x24]
 	ldr r1, [sp, #0x30]

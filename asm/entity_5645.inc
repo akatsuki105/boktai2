@@ -3669,7 +3669,7 @@ _08054B96:
 	movs r3, #0
 	str r3, [sp, #0x10]
 	movs r3, #4
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	add sp, #0x14
 	pop {r4}
 	pop {r0}
@@ -3750,7 +3750,7 @@ _08054C2C:
 	movs r3, #0
 	str r3, [sp, #0x10]
 	movs r3, #4
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	b _08054C62
 	.align 2, 0
 _08054C54: .4byte 0x000019C8
@@ -3786,7 +3786,7 @@ FUN_08054c6c: @ 0x08054C6C
 	str r0, [sp, #0x10]
 	adds r0, r3, #0
 	movs r3, #3
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	add sp, #0x14
 	pop {r0}
 	bx r0

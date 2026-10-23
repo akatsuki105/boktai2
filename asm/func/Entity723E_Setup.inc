@@ -155,7 +155,7 @@ _08052C70:
 	mov r1, r8
 	movs r2, #0
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r1, #0xc8
 	lsls r1, r1, #1
 	adds r7, r5, r1
@@ -170,7 +170,7 @@ _08052C70:
 	mov r1, r8
 	movs r2, #0
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r0, #0x94
 	lsls r0, r0, #2
 	adds r7, r5, r0
@@ -185,7 +185,7 @@ _08052C70:
 	mov r1, r8
 	movs r2, #0
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r1, #0xc4
 	lsls r1, r1, #2
 	adds r7, r5, r1
@@ -201,7 +201,7 @@ _08052C70:
 	mov r1, r8
 	movs r2, #0
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r0, #0xf4
 	lsls r0, r0, #2
 	adds r7, r5, r0
@@ -216,7 +216,7 @@ _08052C70:
 	mov r1, r8
 	movs r2, #0
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r1, #0x92
 	lsls r1, r1, #3
 	adds r7, r5, r1
@@ -231,7 +231,7 @@ _08052C70:
 	mov r1, r8
 	movs r2, #0
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r0, #0xaa
 	lsls r0, r0, #3
 	adds r7, r5, r0
@@ -246,7 +246,7 @@ _08052C70:
 	mov r1, r8
 	movs r2, #0
 	movs r3, #4
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r1, #0xda
 	lsls r1, r1, #3
 	adds r7, r5, r1
@@ -277,7 +277,7 @@ _08052D7E:
 	adds r0, r7, #0
 	adds r1, r3, #0
 	movs r3, #4
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	ldr r1, _08052E8C @ =0x000008B8
 	adds r4, r5, r1
 	movs r0, #0xa

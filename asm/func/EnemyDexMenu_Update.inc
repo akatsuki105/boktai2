@@ -369,7 +369,7 @@ _0820E36E:
 	adds r0, r5, #0
 	ldr r1, [sp, #0x34]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	ldr r0, [r4]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -423,7 +423,7 @@ _0820E3BA:
 	ldr r0, [sp, #0x38]
 	ldr r1, [sp, #0x34]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	mov r0, r8
 	bl FUN_0820cbfc
 	adds r2, r0, #0
@@ -436,7 +436,7 @@ _0820E3BA:
 	ldr r0, [sp, #0x1c]
 	ldr r1, [sp, #0x34]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	adds r0, r7, #0
 	bl FUN_0820d188
 _0820E420:
@@ -752,7 +752,7 @@ _0820E64A:
 	mov r0, sb
 	ldr r1, [sp, #0x34]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	ldr r2, [sp, #0x30]
 	ldrb r0, [r2]
 	bl FUN_0820d00c
