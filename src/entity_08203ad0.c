@@ -30,9 +30,7 @@ static_assert(sizeof(Entity08203ad0) == 1280);
 
 static Entity08203ad0* gEntity08203ad0;  // 0x0300021C
 
-// 実体は src/code_08200ab4.s
 void FUN_08203690(Entity08203ad0Slot* slot, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44);
-bool8 Sprite_UpdateVanishBlink(u32* flags, s32 t, s32 t1, s32 t2);
 
 // 空いている枠を探す, ttl が 0 で非表示のものが空き
 // 残差1命令: 原典は return slot のブロックをループの手前に置くので、ガードが bls + b の2段になる

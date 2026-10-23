@@ -10,8 +10,6 @@
 #include "sprite.h"
 #include "vm.h"
 
-bool8 Sprite_UpdateVanishBlink(u32* flags, s32 t, s32 t1, s32 t2);
-
 // プレイヤーの位置をアイソメトリック投影したもの, MapItem_TryAutoPickup が拾える距離の判定に使う
 typedef struct {
   s16 x;      // 0x00, (px - pz) * 0x30 >> 8

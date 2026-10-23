@@ -45,4 +45,6 @@ extern s32 gObjAffineCount;
 extern u32 gSpriteListIdx;
 extern const u16 gSpriteSizeTable[16];  // SpriteShape が idx
 
+bool8 Sprite_UpdateVanishBlink(SpriteFlags* flags, s32 t, s32 t1, s32 t2);
+
 #endif  // __INCLUDE_SPRITE_COMMON_H__
