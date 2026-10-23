@@ -30,7 +30,7 @@
 	adds r0, r4, r1
 	ldrb r1, [r0]
 	adds r0, r4, #0
-	bl FUN_0808b86c
+	bl MainMenu_ShowPageName
 	adds r0, r4, #0
 	bl FUN_08099f58
 	ldr r0, [r4, #0x58]

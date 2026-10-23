@@ -47,7 +47,7 @@
 	adds r0, r6, r1
 	ldrb r1, [r0]
 	adds r0, r6, #0
-	bl FUN_0808b86c
+	bl MainMenu_ShowPageName
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #0x18

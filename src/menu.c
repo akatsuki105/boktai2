@@ -107,15 +107,15 @@ typedef struct MainMenu {
   char* etcTexts;      // 0x0058, '.E', String_1880, その他のテキスト
   u32* expTable;       // 0x005C, '.e', 経験値テーブル(レベルごとの必要経験値 の 1/10)
   struct {
-    MainSpriteGfx smenu;
-    MainSpriteGfx map;
-    MainSpriteGfx icons;
-    MainSpriteGfx loans;
-    MainSpriteGfx portraits;
-    MainSpriteGfx player;
-    MainSpriteGfx rita;
-    MainSpriteGfx carmilla;
-    MainSpriteGfx link;
+    MainSpriteGfx smenu;         // SPRITE_UI_START_MENU
+    MainSpriteGfx map;           // SPRITE_UI_MAP
+    MainSpriteGfx icons;         // SPRITE_INVENTORY_ICONS
+    MainSpriteGfx loans;         // SPRITE_UI_DARKLOAN
+    MainSpriteGfx portraits;     // SPRITE_PORTRAITS
+    MainSpriteGfx player;        // SPRITE_DJANGO_SABATA
+    MainSpriteGfx rita;          // SPRITE_RITA
+    MainSpriteGfx carmilla;      // SPRITE_CARMILLA
+    MainSpriteGfx link;          // SPRITE_UI_LINK
   } gfx;                         // 0x0060
   BgState savedBg1;              // 0x0180
   u16 savedTilemap1[1024];       // 0x01B0
@@ -523,10 +523,10 @@ void FUN_0808b82c(MainMenu* p) {
   p->sprite_bb8.flags |= SPRFLAG_HIDDEN;
 }
 
-// sprite_f64 を表示してポーズを差し替える
-void FUN_0808b86c(MainMenu* p, u32 poseIdx) {
+// 現在のページ名を表示する
+void MainMenu_ShowPageName(MainMenu* p, u32 page) {
   p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetPose(&p->sprites[0], &p->gfx.smenu, poseIdx + 41, 1);
+  MainSprite_SetPose(&p->sprites[0], &p->gfx.smenu, SMENU_PAGE(page), 1);
 }
 
 NAKED void FUN_0808b8a4(MainMenu* p) { INCFUNC("asm/func/FUN_0808b8a4.inc"); }
@@ -2641,7 +2641,7 @@ NAKED void FUN_08098d98(MainMenu* p) { INCFUNC("asm/func/FUN_08098d98.inc"); }
 void FUN_08098e48(MainMenu* p) {
   p->sprites[13].pos.x = 0;
   p->sprites[13].pos.y = p->unk_4002[0] << 3;
-  MainSprite_SetPose(&p->sprites[46], &p->gfx.smenu, p->unk_4002[0] + 66, 1);
+  MainSprite_SetPose(&p->sprites[46], &p->gfx.smenu, SMENU_STATBAR(p->unk_4002[0]), 1);
 }
 
 // 振り分けたステータスポイントを確定して, 残りポイントも書き戻す
@@ -3017,18 +3017,18 @@ NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
   s32 i;
 
   pos.x = 0, pos.y = 0, pos.z = 0;
-  MainSprite_Add(&p->sprites[0], &p->gfx.smenu, 41, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[1], &p->gfx.smenu, 137, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[2], &p->gfx.smenu, 138, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[16], &p->gfx.smenu, 157, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[14], &p->gfx.smenu, 60, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[40], &p->gfx.smenu, 64, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[0], &p->gfx.smenu, SMENU_PAGE(0), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[1], &p->gfx.smenu, SMENU_L_ICON, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[2], &p->gfx.smenu, SMENU_R_ICON, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[16], &p->gfx.smenu, SMENU_ITEM_BAG, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[14], &p->gfx.smenu, SMENU_SELECTED, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[40], &p->gfx.smenu, SMENU_EQUIP_CURSOR(3), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
   MainSprite_SetAnim(&p->sprites[40], &p->gfx.smenu, 1, 1, 0);
-  MainSprite_SetPose(&p->sprites[40], &p->gfx.smenu, 64, 1);
-  MainSprite_Add(&p->sprites[13], &p->gfx.smenu, 57, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_SetPose(&p->sprites[40], &p->gfx.smenu, SMENU_EQUIP_CURSOR(3), 1);
+  MainSprite_Add(&p->sprites[13], &p->gfx.smenu, SMENU_CURSOR(1), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
   MainSprite_SetAnim(&p->sprites[13], &p->gfx.smenu, 0, 1, 0);
-  MainSprite_Add(&p->sprites[59], &p->gfx.smenu, 147, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[60], &p->gfx.smenu, 147, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[59], &p->gfx.smenu, SMENU_BACK, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[60], &p->gfx.smenu, SMENU_BACK, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
 
   for (i = 0; i < 16; i++) {
     MainSprite_Add(&p->sprites[17 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
@@ -3036,13 +3036,13 @@ NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
 
   for (i = 0; i < 4; i++) {
     MainSprite_Add(&p->sprites[36 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-    MainSprite_Add(&p->sprites[41 + i], &p->gfx.smenu, 65, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[41 + i], &p->gfx.smenu, SMENU_EQUIP_E, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
   }
 
   pos.x = 117, pos.y = 70;
   MainSprite_Add(&p->sprites[33], &p->gfx.icons, ICON_TRASH, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
   pos.x = 0, pos.y = 0;
-  MainSprite_Add(&p->sprites[34], &p->gfx.smenu, 156, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[34], &p->gfx.smenu, SMENU_SELECT, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
   pos.x = 120, pos.y = 104;
   MainSprite_Add(&p->sprites[35], &p->gfx.icons, ICON_SORT, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
   pos.x = 0, pos.y = 128;
@@ -3066,17 +3066,17 @@ NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
 
   pos.x = 0, pos.y = 0;
   for (i = 0; i < 9; i++) {
-    MainSprite_Add(&p->sprites[48 + i], &p->gfx.smenu, 10, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[48 + i], &p->gfx.smenu, SMENU_NUM_BLUE(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
   }
 
   pos.x = 0, pos.y = 0;
-  MainSprite_Add(&p->sprites[15], &p->gfx.smenu, 148, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[15], &p->gfx.smenu, SMENU_YESNO(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
   pos.x = 8, pos.y = 20;
   MainSprite_Add(&p->sprites[61], &p->gfx.portraits, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
 
   pos.x = 0, pos.y = 0;
   for (i = 0; i < 4; i++) {
-    MainSprite_Add(&p->sprites[62 + i], &p->gfx.smenu, 170, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[62 + i], &p->gfx.smenu, SMENU_BADCOND_NAME(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
     pos.y += 13;
   }
 

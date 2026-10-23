@@ -59,4 +59,26 @@
 #define ENEKD_SHAIAN 22            // シャイアン
 #define ENEKD_ROOT_OF_DARKNESS 23  // 暗黒の根
 
+// SPRITE_UI_START_MENU の poseIdx
+#define SMENU_NUM_BROWN(num) (0 + (num))  // 茶色の数字の poseIdx, 0 から始まる
+#define SMENU_NUM_BLUE(num) (10 + (num))  // SMENU_NUM_BROWN の青色版
+#define SMENU_NUM_RED(num) (20 + (num))   // SMENU_NUM_BROWN の赤色版
+#define SMENU_NUM_BOLD(num) (30 + (num))  // SMENU_NUM_BROWN の縁取り付き版
+#define SMENU_NUM_BOLD_DASH 40
+#define SMENU_PAGE(pageIdx) (41 + (pageIdx))              // スタートメニューで左上に表示される 現在のページ名
+#define SMENU_MAP_CHANGE 51                               // マップが複数階層あるときの階層切り替えUI
+#define SMENU_CURSOR(pulseStep) (56 + (pulseStep))        // インベントリで現在位置のカーソル(赤)
+#define SMENU_SELECTED 60                                 // インベントリで選択中を表すカーソル(青)
+#define SMENU_EQUIP_CURSOR(pulseStep) (61 + (pulseStep))  // 装備中の武器に表示されるカーソル
+#define SMENU_EQUIP_E 65                                  // 装備中のアイコンの右下につく"E"
+#define SMENU_STATBAR(kind) (66 + (kind))                 // ステータスメニューの カラダ/ココロ/チカラ/ハヤサの各ステータスバー
+#define SMENU_L_ICON 137                                  // Lボタンのアイコン, SMENU_PAGE と合わせて使う
+#define SMENU_R_ICON 138                                  // Rボタンのアイコン, SMENU_PAGE と合わせて使う
+#define SMENU_BACK 147                                    // "Bもどる"
+#define SMENU_YESNO(pulseStep) (148 + (pulseStep))        // "はい/いいえ" の選択肢
+#define SMENU_SELECT 156                                  // "SELECT"
+#define SMENU_ITEM_BAG 157                                // アイテムインベントリの左上の "ITEM BAG"
+#define SMENU_BADCOND_NAME(kind) (170 + (kind))           // 悪いステータス効果のアイコン+名前, kind は 0: ヒョウケツ, 1: インカ, 2: セキカ, 3: カーモス, 4: 毒, 5: 混乱, 6: 腹痛
+#define SMENU_BADCOND_ICON(kind) (177 + (kind))           // 悪いステータス効果のアイコンのみ, kind は 0: ヒョウケツ, 1: インカ, 2: セキカ, 3: カーモス, 4: 毒, 5: 混乱, 6: 腹痛
+
 #endif  // __INCLUDE_CONSTANTS_MISCS_H__
