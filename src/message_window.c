@@ -352,6 +352,7 @@ s32 MessageWindow_SetBgPltt(s32 fileID) {
   return 0;
 }
 
+// 0x8F41
 s32 MessageWindow_SetBgPlttScripted(void) { return MessageWindow_SetBgPltt(VM_GetValue()); }
 
 NAKED s32 MessageWindow_ConfigureScripted(void) { INCFUNC("asm/func/MessageWindow_ConfigureScripted.inc"); }
@@ -428,7 +429,8 @@ s32 MessageWindow_Destroy(MessageWindow* p) {
 
 NAKED s32 MessageWindow_Init(MessageWindow* p, u32 _) { INCFUNC("asm/func/MessageWindow_Init.inc"); }
 
-MessageWindow* MessageWindow_Create(u32 pc) {
+// 0x0E37
+MessageWindow* MessageWindow_Create(u32 id) {
   MessageWindow* p = gMessageWindow;
 
   if (p != NULL) {
@@ -438,7 +440,7 @@ MessageWindow* MessageWindow_Create(u32 pc) {
   p = CreateEntity(ENTITY_UNK_12, sizeof(MessageWindow));
   if (p != NULL) {
     SetEntityRoutine(p, MessageWindow_Update, MessageWindow_Destroy);
-    if (MessageWindow_Init(p, pc) < 0) {
+    if (MessageWindow_Init(p, id) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }
