@@ -418,7 +418,40 @@ NON_MATCH void MessageWindow_StateRenderAll(MessageWindow* p) {
 #endif
 }
 
-NAKED s32 MessageWindow_Update(MessageWindow* p) { INCFUNC("asm/func/MessageWindow_Update.inc"); }
+// 矢印を枠の上下どちらかに置き直し, updateCallback の状態に応じて顔スプライトを貼り直す
+s32 MessageWindow_Update(MessageWindow* p) {
+  TextRenderer* r = &p->renderer;
+
+  if (r->waitFrames != 0) {
+    p->waitFrames = r->waitFrames;
+    r->waitFrames = 0;
+  }
+  TextRenderer_ClearPending(r);
+  if (p->pendingLine >= 0) {
+    MessageWindow_ShowLine(p->pendingLine);
+  }
+  if (p->updateCallback != NULL) {
+    p->updateCallback(p);
+  }
+
+  if (p->rectY + p->rectH < 10) {
+    p->arrow.pos.x = 223, p->arrow.pos.y = 41, p->arrow.pos.z = 0;
+  } else {
+    p->arrow.pos.x = 223, p->arrow.pos.y = 143, p->arrow.pos.z = 0;
+  }
+
+  if (p->updateCallback != MessageWindow_StateIdle) {
+    MessageWindow_UploadBgPltt(p);
+    if (p->shownFace != r->face) {
+      MessageWindow_RefreshFace(p);
+    }
+  } else if (p->shownFace != -1) {
+    MainSprite_Hide(&p->face);
+    p->shownFace = -1;
+  }
+  TextRenderer_RunPending(r);
+  return 0;
+}
 
 s32 MessageWindow_Destroy(MessageWindow* p) {
   MainSprite_Remove(&p->arrow);
