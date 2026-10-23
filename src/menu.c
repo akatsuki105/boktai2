@@ -181,10 +181,11 @@ typedef struct MainMenu {
   u8 unk_a9b;                    // 0x0A9B
   u16* unk_a9c;                  // 0x0A9C
   MainSprite unk_aa0[2];         // 0x0AA0
-  AuxSprite sprite_b60;          // 0x0B60, 根拠: MainMenu1P_RemoveSprites が AuxSprite_Remove に渡す
-  u8 unk_b8c[0xBB8 - 0xB8C];     // 0x0B8C, まだ未解析
-  AuxSprite sprite_bb8;          // 0x0BB8, 根拠: 同上
-  AuxSpriteGfx unk_be4;          // 0x0BE4
+  AuxSprite sprite_b60;          // 0x0B60, ->gfx_b8c
+  AuxSpriteGfx gfx_b8c;          // 0x0B8C, SPRITE_BAT
+  u8 unk_ba8[0xBB8 - 0xBA8];     // 0x0BA8, まだ未解析
+  AuxSprite sprite_bb8;          // 0x0BB8, ->gfx_be4
+  AuxSpriteGfx gfx_be4;          // 0x0BE4, SPRITE_SOLAR_STATION
   struct {
     u8 iconNums;           // 0x0C00, クイックチェンジのスロット数(= 魔法装備数)
     u8 unk_c01;            // 0x0C01, まだ未解析
@@ -208,8 +209,8 @@ typedef struct MainMenu {
   u8 page;                       // 0x0F56, スタートメニューのページ番号
   u8 unk_f57;                    // 0x0F57, まだ未解析
   bool8 availPages[PAGE_NUM];    // 0x0F58, '.o', スタートメニューで選択可能なページ, 指定がなければ全ページ選択可
-  u8 unk_f62[0xF64 - 0xF62];     // 0x0F62, まだ未解析
-  MainSprite sprites[116];       // 0x0F64, 根拠: MainMenu1P_RemoveSprites が 116個ぶん MainSprite_Remove に渡す
+  u8 unk_f62[2];                 // 0x0F62, まだ未解析, padding?
+  MainSprite sprites[116];       // 0x0F64, MainMenu1P_RemoveSprites で 116回のループを回して処理するので配列と思われる
   u8 unk_3ae4;                   // 0x3AE4, メニューを閉じて効果を実行する要求
   u8 unk_3ae5[0x3AE6 - 0x3AE5];  // 0x3AE5, まだ未解析
   u8 unk_3ae6;                   // 0x3AE6
@@ -3008,7 +3009,155 @@ void MainMenu1P_RemoveSprites(MainMenu* p) {
   AuxSprite_Remove(&p->sprite_bb8);
 }
 
-NAKED void MainMenu1P_0809b468(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0809b468.inc"); }
+// 残差はレジスタ割当のみ (935/934 + 末尾のダミー b, 同じ命令が同じ順で並ぶ), 原典は 0 を r1/r4 の2本に持ち, 定数オフセットを既存レジスタから加算で作る (0x100 = 0x70 + 0x90 等) が, こちらは movs/lsls やプール定数で作り直す
+// Tier A-C 試済 (Vec3初期化をカンマ/個別文の両方, materialization order の4パターンは該当なし)
+NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
+#ifdef NONMATCHING_C
+  Vec3 pos;
+  s32 i;
+
+  pos.x = 0, pos.y = 0, pos.z = 0;
+  MainSprite_Add(&p->sprites[0], &p->gfx.smenu, 41, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[1], &p->gfx.smenu, 137, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[2], &p->gfx.smenu, 138, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[16], &p->gfx.smenu, 157, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[14], &p->gfx.smenu, 60, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[40], &p->gfx.smenu, 64, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[40], &p->gfx.smenu, 1, 1, 0);
+  MainSprite_SetPose(&p->sprites[40], &p->gfx.smenu, 64, 1);
+  MainSprite_Add(&p->sprites[13], &p->gfx.smenu, 57, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[13], &p->gfx.smenu, 0, 1, 0);
+  MainSprite_Add(&p->sprites[59], &p->gfx.smenu, 147, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[60], &p->gfx.smenu, 147, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  for (i = 0; i < 16; i++) {
+    MainSprite_Add(&p->sprites[17 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  }
+
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->sprites[36 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[41 + i], &p->gfx.smenu, 65, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  }
+
+  pos.x = 117, pos.y = 70;
+  MainSprite_Add(&p->sprites[33], &p->gfx.icons, ICON_TRASH, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  pos.x = 0, pos.y = 0;
+  MainSprite_Add(&p->sprites[34], &p->gfx.smenu, 156, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  pos.x = 120, pos.y = 104;
+  MainSprite_Add(&p->sprites[35], &p->gfx.icons, ICON_SORT, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  pos.x = 0, pos.y = 128;
+  MainSprite_Add(&p->sprites[45], &p->gfx.icons, ICON_TIMER_NONE, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  for (i = 0; i < 2; i++) {
+    MainSprite_Add(&p->sprites[46 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  }
+
+  pos.x = 36, pos.y = 112;
+  MainSprite_Add(&p->sprites[57], &p->gfx.player, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[57], &p->gfx.player, 4, 1, 0);
+  Video_GetAuxSprite(&p->gfx_b8c, SPRITE_BAT);
+  AuxSprite_Add(&p->sprite_b60, &p->gfx_b8c, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST);
+  p->sprite_b60.priority = 0;
+  p->sprite_b60.pos.x = 36, p->sprite_b60.pos.y = 112, p->sprite_b60.pos.z = 0;
+
+  pos.x = 52, pos.y = 100;
+  MainSprite_Add(&p->sprites[58], &p->gfx.rita, 0, SPRFLAG_XFLIP | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[58], &p->gfx.rita, 13, 1, 0);
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 9; i++) {
+    MainSprite_Add(&p->sprites[48 + i], &p->gfx.smenu, 10, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  }
+
+  pos.x = 0, pos.y = 0;
+  MainSprite_Add(&p->sprites[15], &p->gfx.smenu, 148, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  pos.x = 8, pos.y = 20;
+  MainSprite_Add(&p->sprites[61], &p->gfx.portraits, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->sprites[62 + i], &p->gfx.smenu, 170, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    pos.y += 13;
+  }
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 10; i++) {
+    MainSprite_Add(&p->sprites[3 + i], &p->gfx.smenu, 100, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  }
+
+  pos.x = 0, pos.y = 0;
+  MainSprite_Add(&p->sprites[66], &p->gfx.smenu, 77, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[67], &p->gfx.smenu, 78, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->sprites[68 + i], &p->gfx.smenu, 71, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[72 + i], &p->gfx.smenu, 70, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+    pos.y += 8;
+  }
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->sprites[78 + i], &p->gfx.map, i * 2 + 9, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+    MainSprite_SetAnim(&p->sprites[78 + i], &p->gfx.map, i + 1, 1, 0);
+  }
+
+  MainSprite_Add(&p->sprites[76], &p->gfx.map, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[77], &p->gfx.map, 3, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 6; i++) {
+    MainSprite_Add(&p->sprites[86 + i], &p->gfx.map, 18 + i, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+  }
+
+  for (i = 0; i < 8; i++) {
+    MainSprite_Add(&p->sprites[92 + i], &p->gfx.map, 17, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+  }
+
+  pos.x = 0, pos.y = 0;
+  MainSprite_Add(&p->sprites[82], &p->gfx.smenu, 54, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[83], &p->gfx.smenu, 55, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[84], &p->gfx.smenu, 52, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[85], &p->gfx.smenu, 53, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  pos.x = 0, pos.y = 0;
+  MainSprite_Add(&p->sprites[100], &p->gfx.loans, 4, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[101], &p->gfx.loans, 25, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[102], &p->gfx.loans, 27, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 3; i++) {
+    MainSprite_Add(&p->sprites[104 + i], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    pos.x += 8;
+  }
+
+  pos.x = 16, pos.y = -4;
+  MainSprite_Add(&p->sprites[103], &p->gfx.loans, 18, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  pos.x = -56, pos.y = 56;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->sprites[107 + i], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    pos.x += 8;
+  }
+
+  pos.x = 88, pos.y = 56;
+  MainSprite_Add(&p->sprites[111], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  pos.x = -48, pos.y = 72;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->sprites[112 + i], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    pos.x += 8;
+  }
+
+  Video_GetAuxSprite(&p->gfx_be4, SPRITE_SOLAR_STATION);
+  AuxSprite_Add(&p->sprite_bb8, &p->gfx_be4, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST);
+  Video_SetAuxSpritePltt(&p->gfx_be4, 323);
+  p->sprite_bb8.priority = 0;
+  p->sprite_bb8.pos.x = 160, p->sprite_bb8.pos.y = 88, p->sprite_bb8.pos.z = 0;
+#else
+  INCFUNC("asm/func/MainMenu1P_AddSprites.inc");
+#endif
+}
 
 void MainMenu_OpenSpriteFiles(MainMenu* p) {
   MainSpriteGfxFile* f;
@@ -3419,7 +3568,7 @@ s32 MainMenu1P_Init(MainMenu* p, u32 id) {
   MainMenu1P_0809c010(p);
   MainMenu_OpenSpriteFiles(p);
   MainMenu1P_0808dddc(p);
-  MainMenu1P_0809b468(p);
+  MainMenu1P_AddSprites(p);
   if (VM_SeekToNamedArg('d')) {
     p->scriptID = VM_GetValue();
   } else {
