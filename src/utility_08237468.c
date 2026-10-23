@@ -756,7 +756,7 @@ u32 StrCopyPadded(u8* src, u8* dst, s32 length) {
   return 0;
 }
 
-// 値を8桁に分解し、各桁を1つずつスプライトで表示する
+// 値を8桁に分解し、各桁を1つずつスプライトで表示する, このゲームでは 図鑑やアルバムの数字の描画に使う
 NON_MATCH void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, s32 zeroSuppress) {
 #ifdef NONMATCHING_C
   s32 digits[8];

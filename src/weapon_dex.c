@@ -136,13 +136,13 @@ NAKED void FUN_0820ffe8(WeaponDexMenu* p) { INCFUNC("asm/func/FUN_0820ffe8.inc")
 
 NAKED void FUN_0821053c(WeaponDexMenu* p) { INCFUNC("asm/func/FUN_0821053c.inc"); }
 
-// 「登録数 / 総数」の数字を並べる
+// "登録数 / 総数" を描画
 void FUN_08210610(WeaponDexMenu* p) {
-  FUN_082376a4(&p->unk_108[0], &p->gfx, WeaponDexMenu_CountFoundInPage(p->page), 2, 0, 32, 96, 8, 0);
+  FUN_082376a4(&p->unk_108[0], &p->gfx, WeaponDexMenu_CountFoundInPage(p->page), 2, 0, 32, 96, 8, 0);  // 登録数
   p->unk_108[2].pos.x = 48;
   p->unk_108[2].pos.y = 96;
-  MainSprite_SetPose(&p->unk_108[2], &p->gfx, 11, 0);
-  FUN_082376a4(&p->unk_108[3], &p->gfx, WeaponDexMenu_GetPageEntryCount(p->page), 2, 0, 56, 96, 8, 0);
+  MainSprite_SetPose(&p->unk_108[2], &p->gfx, 11, 0);                                                   // "/"
+  FUN_082376a4(&p->unk_108[3], &p->gfx, WeaponDexMenu_GetPageEntryCount(p->page), 2, 0, 56, 96, 8, 0);  // 総数
 }
 
 void FUN_082106a4(WeaponDexMenu* p) {
