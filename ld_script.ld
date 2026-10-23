@@ -617,8 +617,7 @@ SECTIONS {
     src/entity_4b15.o (.rodata);
     src/data.o (.rodata);
     src/entity_1b24.o (.rodata);
-    src/data_pile_driver.o (.rodata);
-    src/data_ect.o (.rodata);
+    src/pile_driver.o (.rodata.string);
     src/entity_f41a.o (.rodata);
     src/data2.o (.rodata);
     src/game_result_data.o (.rodata);

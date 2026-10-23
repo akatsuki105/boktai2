@@ -11,15 +11,6 @@
 #include "video.h"
 #include "vm.h"
 
-const FileID FileID_ARRAY_085ad048[6] = {
-    TILEMAP_8446,
-    TILEMAP_8546,
-    TILEMAP_8646,
-    TILEMAP_8746,
-    TILEMAP_8846,
-    TILEMAP_8946,
-};  // 0x085AD048
-
 // PileDriver の 0x0C6C に載っている一式, FUN_080b09d4 が PTR_ARRAY_085AD054[state] に渡す
 typedef struct {
   u8 unk_0[0x67A];            // 0x000, まだ未解析
@@ -33,6 +24,23 @@ typedef struct {
   Vec3 unk_6a4;               // 0x6A4, 当たり判定の広がりらしい値 {0x40, 0x20, 0x40}
   PileDriver* owner;          // 0x6AC
 } PileDriverSub;
+
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_pile_driver_noon1_col_arr_08251d7c[] = "pile_driver_noon1_col_arr";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_pile_driver_even_col_arr_08251d98[] = "pile_driver_even_col_arr";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_pile_driver_night_col_arr_08251db4[] = "pile_driver_night_col_arr";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_ect_08251dd0[] = "ect";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_ect_anm_08251dd4[] = "ect_anm";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char gString_08251ddc[] = "../../skoba/enemy/system/eneinline.h";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_ect_08251e04[] = "ect";
+
+const FileID FileID_ARRAY_085ad048[6] = {
+    TILEMAP_8446,
+    TILEMAP_8546,
+    TILEMAP_8646,
+    TILEMAP_8746,
+    TILEMAP_8846,
+    TILEMAP_8946,
+};  // 0x085AD048
 
 void FUN_080df478(void);        // src/entity_080df420.c
 void FUN_0805b1a0(unknown* p);  // src/code_08052eb8.s
