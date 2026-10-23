@@ -1695,11 +1695,12 @@ NAKED void FUN_080907f0(MainMenu* p) { INCFUNC("asm/func/FUN_080907f0.inc"); }
 NAKED void FUN_08090a00(MainMenu* p) { INCFUNC("asm/func/FUN_08090a00.inc"); }
 
 s32 FUN_08090b10(MainMenu* p) {
-  u8 kind = p->player->kind;
-
-  if (kind == PLAYER_SOLAR_DJANGO) return 0;
-  if (kind == PLAYER_SABATA) return 2;
-
+  if (p->player->kind == PLAYER_SOLAR_DJANGO) {
+    return 0;
+  }
+  if (p->player->kind == PLAYER_SABATA) {
+    return 2;
+  }
   return 1;
 }
 
