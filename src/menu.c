@@ -30,6 +30,10 @@
 #define PAGE_SAVE 9
 #define PAGE_NUM 10
 
+#define PT_RDJANGO 0  // PLAYER_SOLAR_DJANGO
+#define PT_BDJANGO 1  // PLAYER_DARK_DJANGO, PLAYER_BAT, PLAYER_MOUSE, PLAYER_SLEEPING
+#define PT_SABATA 2   // PLAYER_SABATA
+
 struct MainMenu;
 typedef void(MainMenuFunc)(struct MainMenu* p);  // _Update が p->fn(p) として呼ぶ
 
@@ -1694,14 +1698,14 @@ NAKED void FUN_080907f0(MainMenu* p) { INCFUNC("asm/func/FUN_080907f0.inc"); }
 
 NAKED void FUN_08090a00(MainMenu* p) { INCFUNC("asm/func/FUN_08090a00.inc"); }
 
-s32 FUN_08090b10(MainMenu* p) {
+s32 MainMenu_GetPlayerType(MainMenu* p) {
   if (p->player->kind == PLAYER_SOLAR_DJANGO) {
-    return 0;
+    return PT_RDJANGO;
   }
   if (p->player->kind == PLAYER_SABATA) {
-    return 2;
+    return PT_SABATA;
   }
-  return 1;
+  return PT_BDJANGO;
 }
 
 NAKED void FUN_08090b38(MainMenu* p) { INCFUNC("asm/func/FUN_08090b38.inc"); }
@@ -2751,9 +2755,9 @@ NAKED void FUN_080995b0(MainMenu* p, u8 param_2) { INCFUNC("asm/func/FUN_080995b
 
 // PAGE_STATS で使われるプレイヤーの肩書き部分 (56px, 32px) のタイル番号 (専用のタイルフォント, 0x01 が空白タイル)
 const u8 sPlayerTitles[3][12] = {
-    {0xB4, 0x91, 0xAF, 0xA9, 0xB3, 0x01, 0xAA, 0x91, 0xB8, 0x01, 0x01, 0x01}, // "SOLAR BOY" for PLAYER_SOLAR_DJANGO
-    {0xB7, 0xA9, 0xB0, 0xB2, 0xAD, 0xB3, 0xAC, 0x01, 0xAA, 0x91, 0xB8, 0x01}, // "VAMPIRE BOY" for PLAYER_DARK_DJANGO, PLAYER_BAT, PLAYER_MOUSE, PLAYER_SLEEPING
-    {0xAB, 0xA9, 0xB3, 0xAE, 0x01, 0xAA, 0x91, 0xB8, 0x01, 0x01, 0x01, 0x01}, // "DARK BOY" for PLAYER_SABATA
+    [PT_RDJANGO] = {0xB4, 0x91, 0xAF, 0xA9, 0xB3, 0x01, 0xAA, 0x91, 0xB8, 0x01, 0x01, 0x01}, // "SOLAR BOY"
+    [PT_BDJANGO] = {0xB7, 0xA9, 0xB0, 0xB2, 0xAD, 0xB3, 0xAC, 0x01, 0xAA, 0x91, 0xB8, 0x01}, // "VAMPIRE BOY"
+    [PT_SABATA] = {0xAB, 0xA9, 0xB3, 0xAE, 0x01, 0xAA, 0x91, 0xB8, 0x01, 0x01, 0x01, 0x01}, // "DARK BOY"
 };  // 0x085ACFB8
 
 // 残差は命令数同数 (60/60) でレジスタとマテリアライズ位置のみ, 原典は sPlayerTitles のプール定数を添字計算 (idx*12) の途中でロードし, 0xF000 を src の最終加算より前に作る
@@ -2766,12 +2770,11 @@ NON_MATCH void MainMenu_ShowPlayerTitle(MainMenu* p) {
   s32 idx;
   s32 i;
 
-  // FUN_08090b10
-  idx = 0;
+  idx = PT_RDJANGO;
   if (kind != PLAYER_SOLAR_DJANGO) {
-    idx = 1;
+    idx = PT_BDJANGO;
     if (kind == PLAYER_SABATA) {
-      idx = 2;
+      idx = PT_SABATA;
     }
   }
 
