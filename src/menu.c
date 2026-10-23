@@ -299,6 +299,7 @@ extern u16 gSavedMenuPage;  // src/iwram2.c
 extern u16 u16_03002c18;    // src/iwram2.c
 
 #define BGMAP_BGP13 (13 << 12)
+#define BGMAP_BGP15 (15 << 12)
 
 void SleepGame(void);
 
@@ -2754,7 +2755,41 @@ const u8 sPlayerTitles[3][12] = {
     {0xAB, 0xA9, 0xB3, 0xAE, 0x01, 0xAA, 0x91, 0xB8, 0x01, 0x01, 0x01, 0x01}, // "DARK BOY" for PLAYER_SABATA
 };  // 0x085ACFB8
 
-NAKED void FUN_08099650(MainMenu* p) { INCFUNC("asm/func/FUN_08099650.inc"); }
+// 残差は命令数同数 (60/60) でレジスタとマテリアライズ位置のみ, 原典は sPlayerTitles のプール定数を添字計算 (idx*12) の途中でロードし, 0xF000 を src の最終加算より前に作る
+// Tier A-C 試済 (添字先行の *(idx + arr), OR のオペランド順, kind のローカル化有無, ループ本体を添字アクセスに)
+NON_MATCH void MainMenu_ShowPlayerTitle(MainMenu* p) {
+#ifdef NONMATCHING_C
+  u8 kind = p->player->kind;
+  BgMapEntry* dst;
+  const u8* src;
+  s32 idx;
+  s32 i;
+
+  idx = 0;
+  if (kind != PLAYER_SOLAR_DJANGO) {
+    idx = 1;
+    if (kind == PLAYER_SABATA) {
+      idx = 2;
+    }
+  }
+
+  dst = MainMenu_GetBgMapAddr(0, 6, 3);
+  src = sPlayerTitles[idx];
+  for (i = 0; i < 11; i++) {
+    *dst++ = BGMAP_BGP15 | *src++;
+  }
+
+  TextPanel_SetScript(p->textPanelID_4014, p->etcTexts);
+  if (idx == 2) {
+    TextPanel_SetMessage(p->textPanelID_4014, 1);
+  } else {
+    TextPanel_SetMessage(p->textPanelID_4014, 0);
+  }
+  TextPanel_Start(p->textPanelID_4014);
+#else
+  INCFUNC("asm/func/MainMenu_ShowPlayerTitle.inc");
+#endif
+}
 
 NAKED void FUN_080996e0(MainMenu* p) { INCFUNC("asm/func/FUN_080996e0.inc"); }
 

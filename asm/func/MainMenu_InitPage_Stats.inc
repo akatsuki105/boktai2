@@ -98,7 +98,7 @@ _08099A34:
 	adds r0, r4, #0
 	bl FUN_080996e0
 	adds r0, r4, #0
-	bl FUN_08099650
+	bl MainMenu_ShowPlayerTitle
 	movs r1, #0x10
 	rsbs r1, r1, #0
 	adds r0, r4, #0

@@ -129,7 +129,7 @@ NON_MATCH bool32 FUN_0809e138(Player* p) {
 #endif
 }
 
-// FUN_08099650 ほかが引く
+// MainMenu_ShowPlayerTitle ほかが引く
 const u16 u16_ARRAY_085ad004[8] = {100, 100, 112, 112, 128, 100, 112, 112};  // 0x085AD004
 
 NAKED void FUN_0809e198(SkylightBeam* beam, s32 param_2, Vec3* pos, s32 param_4) { INCFUNC("asm/func/FUN_0809e198.inc"); }
