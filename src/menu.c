@@ -69,7 +69,7 @@ static_assert(sizeof(MMenuPtclNode) == 64);
 
 // HUD上の武器アイコン
 typedef struct {
-  u8 unk_00;            // 0x0000
+  u8 registeredIdx;     // 0x0000, registeredWeapon の添字 (0: 剣, 1: 槍, 2: 槌, 3: 銃), 読み手は (s8) を付けて負を空きと見る
   u8 inventorySlotIdx;  // 0x0001, このQCスロットの武器のインベントリ上のスロット番号
   u8 unk_02[2];         // 0x0002, まだ未解析, padding?
   Weapon* weapon;       // 0x0004, 根拠: MainMenu_ApplyWeapon が Player_ApplyWeapon の第2引数に渡す
@@ -902,7 +902,97 @@ NAKED void FUN_0808d4dc(MainMenu* p) { INCFUNC("asm/func/FUN_0808d4dc.inc"); }
 
 NAKED void FUN_0808d564(MainMenu* p) { INCFUNC("asm/func/FUN_0808d564.inc"); }
 
-NAKED void FUN_0808d5cc(MainMenu* p) { INCFUNC("asm/func/FUN_0808d5cc.inc"); }
+// 残差1箇所2命令 (187/187, 同じ命令が同じ順), 原典は &qcWeapon.slots[n] を添字レジスタ r0 に上書きで作るが, こちらは r1 に作って r0 を残す
+// Tier A-C 試済 (分岐順の入替, u8+（s8)キャスト, slot ポインタのローカル化, 宣言順, ブロックローカル化)
+NON_MATCH void MainMenu_BuildQCWeaponSlots(MainMenu* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+  s32 n = 0;
+  bool32 gunAdded;
+  QCWeaponSlot* slot;
+
+  p->qcWeapon.idx = -1;
+  gunAdded = FALSE;
+
+  if (p->player->kind != PLAYER_SABATA) {
+    for (i = 0; i < 4; i++) {
+      bool32 add = FALSE;
+      Weapon* w = NULL;
+      s32 inventorySlotIdx = -1;
+
+      if (REGISTERED_WEAPON(i) >= 0) {
+        w = GetWeapon(REGISTERED_WEAPON(i));
+        inventorySlotIdx = REGISTERED_WEAPON(i);
+        add = TRUE;
+      } else {
+        bool32 isGunSlot = FALSE;
+
+        if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+          if (!gunAdded) {
+            isGunSlot = TRUE;
+          }
+        } else if (i == 3) {
+          isGunSlot = TRUE;
+        }
+        if (isGunSlot) {
+          w = NULL;
+          gunAdded = TRUE;
+          add = TRUE;
+        }
+      }
+
+      if (add) {
+        slot = &p->qcWeapon.slots[n];
+        slot->registeredIdx = i;
+        slot->inventorySlotIdx = inventorySlotIdx;
+        slot->weapon = w;
+        if (i == gStat->equippedWeaponIdx) {
+          p->qcWeapon.idx = n;
+        }
+        n++;
+      }
+    }
+  } else {
+    slot = p->qcWeapon.slots;
+    slot->registeredIdx = 3;
+    slot->inventorySlotIdx = 0;
+    slot->weapon = &p->weapon;
+    p->qcWeapon.idx = 0;
+    n = 1;
+  }
+
+  p->qcWeaponIconNums = n;
+  if (n < 4) {
+    slot = &p->qcWeapon.slots[n];
+    do {
+      slot->registeredIdx |= 0xFF;
+      slot->inventorySlotIdx |= 0xFF;
+      slot->weapon = NULL;
+      slot++;
+      n++;
+    } while (n < 4);
+  }
+
+  if (!(gFlag030047a4 & FLAG030047A4_UNK_12) && p->qcWeapon.idx < 0) {
+    s32 idx = 0;
+
+    gStat->equippedWeaponIdx = 3;
+    slot = p->qcWeapon.slots;
+    for (i = 0; i < p->qcWeaponIconNums; i++) {
+      if ((s8)slot->registeredIdx == 3) {
+        p->qcWeapon.idx = idx;
+        return;
+      }
+      if ((s8)slot->registeredIdx >= 0) {
+        idx++;
+      }
+      slot++;
+    }
+  }
+#else
+  INCFUNC("asm/func/MainMenu_BuildQCWeaponSlots.inc");
+#endif
+}
 
 NAKED void FUN_0808d774(MainMenu* p) { INCFUNC("asm/func/FUN_0808d774.inc"); }
 
@@ -980,7 +1070,7 @@ void MainMenu1P_0808dddc(MainMenu* p) {
   MainMenu1P_AddQCIcons(p);
 
   if (p->player != NULL) {
-    FUN_0808d5cc(p);
+    MainMenu_BuildQCWeaponSlots(p);
     FUN_0808d774(p);
     FUN_0808d4dc(p);
     FUN_0808d564(p);
@@ -993,7 +1083,7 @@ void MainMenu1P_0808dddc(MainMenu* p) {
 }
 
 void FUN_0808de30(MainMenu* p) {
-  FUN_0808d5cc(p);
+  MainMenu_BuildQCWeaponSlots(p);
   FUN_0808d4dc(p);
   FUN_0808d3d4(p);
   MainMenu_ApplyWeapon(p);
@@ -3462,7 +3552,7 @@ void FUN_0809c264(void) {
 
 void FUN_0809c28c(void) {
   if (gMainMenu != NULL && gMainMenu->player != NULL) {
-    FUN_0808d5cc(gMainMenu);
+    MainMenu_BuildQCWeaponSlots(gMainMenu);
     FUN_0808d4dc(gMainMenu);
     if (gMainMenu->unk_9fe <= 2) {
       FUN_0808d3d4(gMainMenu);
@@ -3507,7 +3597,7 @@ void FUN_0809c464(void) {
     if (gMainMenu->player != NULL) {
       FUN_0808d774(gMainMenu);
       FUN_0808d564(gMainMenu);
-      FUN_0808d5cc(gMainMenu);
+      MainMenu_BuildQCWeaponSlots(gMainMenu);
       FUN_0808d4dc(gMainMenu);
 
       if (gFlag030047a4 & FLAG030047A4_UNK_12) {
