@@ -133,11 +133,11 @@ typedef struct MainMenu {
   u8 playerIdx;                  // 0x09DF, gPlayerPtr の添字
   Player* player;                // 0x09E0
   u8 unk_9e4[0x9EC - 0x9E4];     // 0x09E4, まだ未解析
-  u16 unk_9ec;                   // 0x09EC
-  u16 unk_9ee;                   // 0x09EE
+  u16 updateTimer;               // 0x09EC, updateCallback を差し替えると 0 に戻り, その関数が毎フレーム +1 する
+  u16 stateTimer;                // 0x09EE, fn を差し替えると 0 に戻り, 各状態関数が毎フレーム +1 する
   MainMenuFunc* updateCallback;  // 0x09F0
   MainMenuFunc* fn;              // 0x09F4
-  s8 unk_9f8;                    // 0x09F8
+  bool8 hidden;                  // 0x09F8, MainMenu_SetState の hide, sprites[1] と sprites[2] を隠しているか
   u8 unk_9f9;                    // 0x09F9, まだ未解析, padding?
   u16 id;                        // 0x09FA
   u16 unk_9fc;                   // 0x09FC
@@ -344,11 +344,22 @@ const u16 u16_ARRAY_085ac064[16] = {
 
 void FUN_0808a33c(MainMenu* p, MainMenuFunc* fn) {
   p->updateCallback = fn;
-  p->unk_9ec = 0;
+  p->updateTimer = 0;
 }
 
 // 状態関数を差し替えて, hide で2枚のスプライトの表示/非表示を切り替える
-NAKED void MainMenu_SetState(MainMenu* p, MainMenuFunc* fn, bool32 hide) { INCFUNC("asm/func/MainMenu_SetState.inc"); }
+void MainMenu_SetState(MainMenu* p, MainMenuFunc* fn, bool32 hide) {
+  p->fn = fn;
+  p->stateTimer = 0;
+  p->hidden = hide;
+  if (p->hidden) {
+    p->sprites[1].flags |= SPRFLAG_HIDDEN;
+    p->sprites[2].flags |= SPRFLAG_HIDDEN;
+  } else {
+    p->sprites[1].flags &= ~SPRFLAG_HIDDEN;
+    p->sprites[2].flags &= ~SPRFLAG_HIDDEN;
+  }
+}
 
 // BG0 をタイルマップで組み直して, パレット行13〜15 を差し替える
 void FUN_0808a3c4(MainMenu* p, TilemapFile* tilemap, s16 param_3, s32 layerIdx, const rgb555* pltt) {
@@ -1069,15 +1080,15 @@ void FUN_0808eeac(MainMenu* p);
 
 // 16フレームかけて画面を暗くし, 終わったら次の状態へ移る
 void FUN_0808ee50(MainMenu* p) {
-  if (p->unk_9ec <= 0xF) {
-    FUN_0808a458(p->unk_9ec * 4, 0);
+  if (p->updateTimer <= 0xF) {
+    FUN_0808a458(p->updateTimer * 4, 0);
   } else {
     FUN_0808a458(0x40, 0);
   }
 
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
-  if (p->unk_9ec++ > 0xF) {
+  if (p->updateTimer++ > 0xF) {
     FUN_0808a33c(p, FUN_0808eeac);
   }
 }
@@ -1101,15 +1112,15 @@ void FUN_0808f2f0(MainMenu* p);
 
 // 16フレームかけて画面を明るく戻し, 終わったら次の状態へ移る
 void FUN_0808eef8(MainMenu* p) {
-  if (p->unk_9ec <= 0xF) {
-    FUN_0808a458((0x10 - p->unk_9ec) * 4, 0);
+  if (p->updateTimer <= 0xF) {
+    FUN_0808a458((0x10 - p->updateTimer) * 4, 0);
   } else {
     FUN_0808a458(0, 0);
   }
 
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
-  if (p->unk_9ec++ > 0xF) {
+  if (p->updateTimer++ > 0xF) {
     FUN_0808f2f0(p);
   }
 }
@@ -1121,8 +1132,8 @@ NAKED void FUN_0808f01c(MainMenu* p) { INCFUNC("asm/func/FUN_0808f01c.inc"); }
 void FUN_0808f09c(MainMenu* p) {
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
-  p->unk_9ec++;
-  if (p->unk_9ec > 149) {
+  p->updateTimer++;
+  if (p->updateTimer > 149) {
     FUN_0808a33c(p, FUN_0809ae0c);
   }
 }
@@ -1131,15 +1142,15 @@ void FUN_0808f09c(MainMenu* p) {
 void FUN_0808f0d8(MainMenu* p) {
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
-  if (p->unk_9ec <= 0xF) {
-    FUN_0808a458(p->unk_9ec * 4, 0);
-  } else if (p->unk_9ec <= 133) {
+  if (p->updateTimer <= 0xF) {
+    FUN_0808a458(p->updateTimer * 4, 0);
+  } else if (p->updateTimer <= 133) {
     FUN_0808a458(0x40, 0);
   } else {
-    FUN_0808a458((150 - p->unk_9ec) * 4, 0);
+    FUN_0808a458((150 - p->updateTimer) * 4, 0);
   }
 
-  if (p->unk_9ec++ > 149) {
+  if (p->updateTimer++ > 149) {
     FUN_0808f2f0(p);
   }
 }
@@ -1194,8 +1205,8 @@ void FUN_0808f670(MainMenu* p);
 
 // 16フレームかけて明るくしてから次の状態へ移る
 void FUN_0808f604(MainMenu* p) {
-  if (p->unk_9ec <= 0xF) {
-    FUN_0808a458(p->unk_9ec * 4, 0);
+  if (p->updateTimer <= 0xF) {
+    FUN_0808a458(p->updateTimer * 4, 0);
   } else {
     FUN_0808a458(0x40, 0);
   }
@@ -1203,8 +1214,8 @@ void FUN_0808f604(MainMenu* p) {
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
   MainSprite_AdvanceAnim(&p->sprites[103], &p->gfx.loans);
 
-  p->unk_9ec++;
-  if (p->unk_9ec > 0xF) {
+  p->updateTimer++;
+  if (p->updateTimer > 0xF) {
     FUN_0808a33c(p, FUN_0808f670);
   }
 }
@@ -1218,21 +1229,21 @@ void FUN_0808f774(MainMenu* p) {
     p->sprites[100].pos.x -= 5;
   }
 
-  p->unk_9ec++;
-  if (p->unk_9ec > 149) {
+  p->updateTimer++;
+  if (p->updateTimer > 149) {
     FUN_0808a33c(p, FUN_0809ae0c);
   }
 }
 
 // 16フレームかけて画面を明るく戻し, 終わったらメッセージへ進む
 void FUN_0808f7cc(MainMenu* p) {
-  if (p->unk_9ec <= 0xF) {
-    FUN_0808a458((0x10 - p->unk_9ec) * 4, 0);
+  if (p->updateTimer <= 0xF) {
+    FUN_0808a458((0x10 - p->updateTimer) * 4, 0);
   } else {
     FUN_0808a458(0, 0);
   }
-  p->unk_9ec++;
-  if (p->unk_9ec > 0xF) {
+  p->updateTimer++;
+  if (p->updateTimer > 0xF) {
     FUN_0808f170(p);
   }
 }
@@ -1244,8 +1255,8 @@ void FUN_0808f920(MainMenu* p);
 void FUN_0808f8bc(MainMenu* p) {
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
-  p->unk_9ec++;
-  if (p->unk_9ec > 149) {
+  p->updateTimer++;
+  if (p->updateTimer > 149) {
     MessageWindow_ShowLine(5);
     if (p->scriptID != 0) {
       VM_ExecByID(p->scriptID, NULL);
@@ -1259,8 +1270,8 @@ void FUN_0808f8bc(MainMenu* p) {
 void FUN_0808f920(MainMenu* p) {
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
-  p->unk_9ec++;
-  if (p->unk_9ec > 149) {
+  p->updateTimer++;
+  if (p->updateTimer > 149) {
     FUN_0808a33c(p, FUN_0809ae0c);
   }
 }
@@ -2109,8 +2120,8 @@ NAKED void FUN_08092b3c(MainMenu* p) { INCFUNC("asm/func/FUN_08092b3c.inc"); }
 
 // 16フレーム待ってから次の状態へ進む
 void FUN_08092bb8(MainMenu* p) {
-  if (p->unk_9ee <= 15) {
-    p->unk_9ee++;
+  if (p->stateTimer <= 15) {
+    p->stateTimer++;
   } else if (FUN_0808c1cc(p)) {
     MainMenu_SetState(p, FUN_08092bf0, 1);
   }
@@ -2171,8 +2182,8 @@ void FUN_08093cc8(MainMenu* p);
 
 void FUN_08093c64(MainMenu* p) {
   if (FUN_0808c434(p, 0)) {
-    p->unk_9ee++;
-    if (p->unk_9ee > 7) {
+    p->stateTimer++;
+    if (p->stateTimer > 7) {
       PlaySound_082406e0(SE_HEAL);
       p->sprites[46].flags |= SPRFLAG_HIDDEN;
       FUN_08091e64(p, p->cursor.savedSlot);
@@ -2189,8 +2200,8 @@ void FUN_08093e4c(MainMenu* p);
 
 void FUN_08093de8(MainMenu* p) {
   if (FUN_0808c434(p, 0)) {
-    p->unk_9ee++;
-    if (p->unk_9ee > 7) {
+    p->stateTimer++;
+    if (p->stateTimer > 7) {
       p->sprites[46].flags |= SPRFLAG_HIDDEN;
       FUN_08091e64(p, p->cursor.savedSlot);
       MainMenu_SetState(p, FUN_08093e4c, 1);
@@ -2264,13 +2275,13 @@ void FUN_08094660(MainMenu* p);
 
 // 12フレームかけて46番のスプライトを退避先へ寄せ, 着いたら隠して次の状態へ移る
 void FUN_080945f4(MainMenu* p) {
-  if (p->unk_9ee == 0) {
+  if (p->stateTimer == 0) {
     PlaySound_082406e0(SE_SWAP_SLOT);
   }
 
-  p->unk_9ee++;
-  if (p->unk_9ee <= 11) {
-    FUN_0808ba20(&p->sprites[46].pos, p->unk_3b68, 12 - p->unk_9ee);
+  p->stateTimer++;
+  if (p->stateTimer <= 11) {
+    FUN_0808ba20(&p->sprites[46].pos, p->unk_3b68, 12 - p->stateTimer);
   } else {
     p->sprites[46].flags |= SPRFLAG_HIDDEN;
     MainMenu_SetState(p, FUN_08094660, 1);
@@ -2760,8 +2771,8 @@ NAKED void FUN_08099e70(MainMenu* p) { INCFUNC("asm/func/FUN_08099e70.inc"); }
 
 // 60フレーム待ってから FUN_08099e2c へ戻る
 void FUN_08099f18(MainMenu* p) {
-  p->unk_9ee++;
-  if (p->unk_9ee > 59) {
+  p->stateTimer++;
+  if (p->stateTimer > 59) {
     FUN_08099b3c(5);
     FUN_0808c658(p, 0, -1);
     MainMenu_SetState(p, FUN_08099e2c, 0);
@@ -2795,8 +2806,8 @@ void FUN_0809a1a4(MainMenu* p) {
 void FUN_0809a20c(MainMenu* p) {
   gSoftResetInhibit = TRUE;
 
-  p->unk_9ee++;
-  if (p->unk_9ee > 119) {
+  p->stateTimer++;
+  if (p->stateTimer > 119) {
     FUN_08099b3c(17);
     TextPanel_Hide(p->textPanelID);
     FUN_0808c658(p, 0, -1);
@@ -2854,14 +2865,14 @@ void FUN_0809a4c0(MainMenu* p) {
 }
 
 void FUN_0809a510(MainMenu* p) {
-  if (p->unk_9ee == 0) {
+  if (p->stateTimer == 0) {
     PlaySound_082406e0(SE_SAVE_SUCCESS);
     TextPanel_Hide(p->textPanelID);
     FUN_08099b3c(14);
   }
 
-  p->unk_9ee++;
-  if (p->unk_9ee >= 120) {
+  p->stateTimer++;
+  if (p->stateTimer >= 120) {
     FUN_08099b3c(8);
     FUN_0808c658(p, 0, -1);
     MainMenu_SetState(p, FUN_0809a324, 0);
@@ -2869,14 +2880,14 @@ void FUN_0809a510(MainMenu* p) {
 }
 
 void FUN_0809a574(MainMenu* p) {
-  if (p->unk_9ee == 0) {
+  if (p->stateTimer == 0) {
     PlaySound_082406e0(SE_NG);
     TextPanel_Hide(p->textPanelID);
     FUN_08099b3c(15);
   }
 
-  p->unk_9ee++;
-  if (p->unk_9ee >= 120) {
+  p->stateTimer++;
+  if (p->stateTimer >= 120) {
     FUN_08099b3c(8);
     FUN_0808c658(p, 0, -1);
     MainMenu_SetState(p, FUN_0809a324, 0);
@@ -2959,10 +2970,10 @@ void FUN_0809ac30(MainMenu* p);
 // 17フレームかけて明るさを上げ, 終わったら次の状態へ移る
 void FUN_0809ab70(MainMenu* p) {
   FUN_0808b4c0(p);
-  FUN_0808a458(p->unk_9ec * 4, RGB(4, 4, 4));
-  p->unk_9ec++;
-  if (p->unk_9ec > 16) {
-    p->unk_9f8 = 0;
+  FUN_0808a458(p->updateTimer * 4, RGB(4, 4, 4));
+  p->updateTimer++;
+  if (p->updateTimer > 16) {
+    p->hidden = 0;
     FUN_0808a33c(p, FUN_0809ac30);
   }
 }
