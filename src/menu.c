@@ -274,7 +274,12 @@ typedef struct MainMenu {
   u16 unk_4000;                  // 0x4000, 残りのステータスポイント, 確定時に gStat->statusPoint へ書き戻す
   u8 unk_4002[0x4008 - 0x4002];  // 0x4002, まだ未解析
   u8 unk_4008[4];                // 0x4008, 画面で振り分けた分, 確定時に gStat->stats へ足す
-  u8 unk_400c[8];                // 0x400C, まだ未解析
+  u8 unk_400c;                   // 0x400C
+  u8 unk_400d;                   // 0x400D
+  u8 controlUp;                  // 0x400E
+  u8 menuTextSpeed;              // 0x400F, 0: 遅い, 1: 普通, 2: 速い (なぜか gStat->textSpeed をそのまま使わない)
+  bool8 markerEnabled;           // 0x4010
+  u8 unk_4011[3];                // 0x4011, まだ未解析
   s32 textPanelID_4014;          // 0x4014, 6,4 の位置の 10x2 のテキストパネル
   s32 textPanelID;               // 0x4018, TextPanel_Hide に渡す
   u8 unk_401c;                   // 0x401C, まだ未解析
@@ -2809,13 +2814,21 @@ void FUN_08099b3c(s32 param_1) {
   }
 }
 
-// メッセージ速度の設定値を 1 と 2 で入れ替えて返す
-s32 FUN_08099b5c(void) {
+/**
+ * @brief gStat->textSpeed の値を変換して返す (なんでこんなことをするのかは不明)
+ * @return 変換後のメッセージ速度の値 (0: 遅い, 1: 普通, 2: 速い), menuTextSpeed はこの値を保持する
+ */
+s32 MainMenu_GetTextSpeed(void) {
   if (gStat->textSpeed == 1) return 2;  // 設定で "速い" を選んだ時
   if (gStat->textSpeed == 2) return 1;  // "普通"
   return 0;                             // "遅い"
 }
 
+/**
+ * @brief menuTextSpeed 形式を gStat->textSpeed 形式に変換して返す (なんでこんなことをするのかは不明)
+ * @param n menuTextSpeed の値 (0: 遅い, 1: 普通, 2: 速い)
+ * @return 変換後の gStat->textSpeed の値 (1: 速い, 2: 普通, 4: 遅い)
+ */
 s32 FUN_08099b84(s32 n) {
   if (n == 0) return 4;  // 設定で "遅い" を選んだ時
   if (n == 1) return 2;  // "普通"
@@ -2825,10 +2838,10 @@ s32 FUN_08099b84(s32 n) {
 NAKED void FUN_08099b9c(MainMenu* p) { INCFUNC("asm/func/FUN_08099b9c.inc"); }
 
 void FUN_08099c1c(MainMenu* p) {
-  p->unk_400c[1] = 0;
-  p->unk_400c[2] = gStat->controlUp;
-  p->unk_400c[3] = FUN_08099b5c();
-  p->unk_400c[4] = gStat->markerEnabled;
+  p->unk_400d = 0;
+  p->controlUp = gStat->controlUp;
+  p->menuTextSpeed = MainMenu_GetTextSpeed();
+  p->markerEnabled = gStat->markerEnabled;
 }
 
 NAKED void FUN_08099c64(MainMenu* p, s32 param_2) { INCFUNC("asm/func/FUN_08099c64.inc"); }
@@ -2890,7 +2903,7 @@ void FUN_0809a20c(MainMenu* p) {
     TextPanel_Hide(p->textPanelID);
     FUN_0808c658(p, 0, -1);
     MainMenu_SetState(p, FUN_0809a130, 0);
-    p->unk_400c[0] = 30;
+    p->unk_400c = 30;
     SleepGame();
   }
 }
