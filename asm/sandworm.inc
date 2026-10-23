@@ -4249,7 +4249,7 @@ _0817262A:
 	adds r1, r4, #0
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0817263E
@@ -14145,7 +14145,7 @@ _08177316:
 	mov r1, r8
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 _08177326:
 	movs r0, #0x92
 	lsls r0, r0, #1

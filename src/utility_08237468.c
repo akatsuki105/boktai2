@@ -106,7 +106,7 @@ void BlendPlttToColor(rgb555* dst, rgb555* src, rgb555 color, s32 t, s32 shift) 
 }
 
 // 経過時間 t に応じて点滅を速めていき、60 を超えたら非表示にしたまま TRUE を返す
-bool8 FUN_082375c8(SpriteFlags* flags, s32 t, s32 t1, s32 t2) {
+bool8 Sprite_UpdateVanishBlink(SpriteFlags* flags, s32 t, s32 t1, s32 t2) {
   static const s16 s16_ARRAY_085b0a00[3] = {8, 4, 2};  // 0x085B0A00
 
   s32 i;

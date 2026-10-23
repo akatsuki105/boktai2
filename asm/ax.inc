@@ -8916,7 +8916,7 @@ _08199DFE:
 	adds r0, r4, #0
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08199E48
@@ -12764,7 +12764,7 @@ _0819BCD2:
 	adds r1, r3, #0
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _0819BD16
@@ -15917,7 +15917,7 @@ _0819D518:
 	mov r1, sb
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0819D52C

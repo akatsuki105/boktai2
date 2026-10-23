@@ -10,7 +10,7 @@
 #include "sprite.h"
 #include "vm.h"
 
-bool8 FUN_082375c8(u32* flags, s32 t, s32 t1, s32 t2);
+bool8 Sprite_UpdateVanishBlink(u32* flags, s32 t, s32 t1, s32 t2);
 
 // プレイヤーの位置をアイソメトリック投影したもの, MapItem_TryAutoPickup が拾える距離の判定に使う
 typedef struct {
@@ -333,7 +333,7 @@ void MapItem_UpdateOnGround(MapItemManager* p, MapItem* item) {
 
 // 45F 経ったら点滅を始め、90F を過ぎたら自分を消す
 void MapItem_UpdateExpire(MapItemManager* p, MapItem* item) {
-  if (FUN_082375c8(&item->ptcl->flags, item->stateTimer, 45, 90)) {
+  if (Sprite_UpdateVanishBlink(&item->ptcl->flags, item->stateTimer, 45, 90)) {
     item->flags |= 1;
   } else {
     MapItem_TryAutoPickup(p, item);

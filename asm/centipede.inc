@@ -4190,7 +4190,7 @@ _081342AA:
 	mov r1, sb
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _081342C6
@@ -8987,7 +8987,7 @@ _0813676A:
 	mov r1, r8
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 _0813677A:
 	movs r0, #0x90
 	lsls r0, r0, #1

@@ -8594,7 +8594,7 @@ _081AA852:
 	mov r1, r8
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 _081AA862:
 	adds r5, #0xd0
 	adds r4, #0xd0

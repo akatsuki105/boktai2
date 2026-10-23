@@ -159,7 +159,7 @@ _08006A58:
 	ldr r0, [r7, #0x20]
 	movs r2, #0x1e
 	movs r3, #0x5a
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _08006A74

@@ -146,7 +146,7 @@ _08203984:
 	adds r0, r5, #0
 	movs r2, #0x14
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 _082039AE:
 	ldrh r0, [r7]
 	subs r0, #1

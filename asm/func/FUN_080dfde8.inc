@@ -57,7 +57,7 @@ _080DFE22:
 	adds r0, r5, #0
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	beq _080DFEA4
