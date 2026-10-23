@@ -1,4 +1,5 @@
 #include "armor.h"
+#include "bg_pltt.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -307,6 +308,9 @@ static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags;
 
 // 次の描画から BG を消す
 static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
+
+// BGパレットの行13 (色208) 以降を指す
+static inline rgb555* BgPlttRow13(BgPlttFile* f) { return &f->body[208]; }
 
 static inline Player* GetPlayer(s32 idx) { return gPlayerPtr[idx]; }
 
@@ -789,7 +793,23 @@ void FUN_0808cffc(MainMenu* p) {
 
 NAKED void FUN_0808d01c(MainMenu* p) { INCFUNC("asm/func/FUN_0808d01c.inc"); }
 
-NAKED void MainMenu1P_0808d0c0(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0808d0c0.inc"); }
+void MainMenu1P_SetupBg(MainMenu* p) {
+  p->tm_18 = GetFile(DIR_TILE_MAP, TILEMAP_A413);
+  p->tm_1c = GetFile(DIR_TILE_MAP, TILEMAP_A7D7);
+  p->tm_20 = GetFile(DIR_TILE_MAP, TILEMAP_A7E7);
+  p->tm_24 = GetFile(DIR_TILE_MAP, TILEMAP_A7F7);
+  p->tm_2c = GetFile(DIR_TILE_MAP, TILEMAP_83C0);
+  p->unk_9fe = 0;
+  p->bgp_30 = BgPlttRow13(GetBgPlttFile(BGP_EFDA));
+  p->bgp_34 = BgPlttRow13(GetBgPlttFile(BGP_ECBF));
+  p->bgp_38 = BgPlttRow13(GetBgPlttFile(BGP_5F5E));
+  p->bgp_3c = BgPlttRow13(GetBgPlttFile(BGP_EAA8));
+  FUN_0808a3c4(p, p->tm_18, 0, 0, p->bgp_30);
+  p->unk_a94 = 0;
+  p->unk_a2a = 0;
+  FUN_0808cf64(p);
+  FUN_0808d01c(p);
+}
 
 // クイックチェンジのカーソル点滅処理
 void MainMenu_QC_PulseCursor(MainMenu* p) {
@@ -3627,7 +3647,7 @@ s32 MainMenu1P_Init(MainMenu* p, u32 id) {
   }
   p->textPanelID_4014 = TextPanel_Create(6, 4, 10, 2);
   p->textPanelID = TextPanel_Create(4, 6, 22, 6);
-  MainMenu1P_0808d0c0(p);
+  MainMenu1P_SetupBg(p);
   if (gFlag030047a4 & FLAG030047A4_UNK_12) {
     FUN_0808e224(p);
     FUN_0808a33c(p, FUN_0808e400);
