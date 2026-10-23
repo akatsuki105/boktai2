@@ -5,6 +5,7 @@
 #include "vm.h"
 
 // (太陽銃を奪われた後の)サンミゲルに向かって、ジャンゴとおてんこが走っていく演出 (手前から奥へ走っていくので、スプライトが徐々に小さくなる)
+// このエンティティ1つは ジャンゴ または おてんこ のどちらかのみを表す (なので、 2つ必要)
 typedef struct Entity0FC5 {
   Entity e;                                    // 0x0, ENTITY_UNK_8
   MainSpriteGfx djangoGfx;                     // 0x18, SPRITE_DJANGO_SABATA
@@ -40,7 +41,7 @@ typedef struct Entity0FC5 {
 } Entity0FC5;
 static_assert(sizeof(Entity0FC5) == 392);
 
-COMMON_DATA Entity0FC5* gEntity0FC5s[2] = {};  // 0x03002C98, [0: ジャンゴ, 1: おてんこ]
+COMMON_DATA Entity0FC5* gOpRunners[2] = {};  // 0x03002C98, [0: ジャンゴ, 1: おてんこ]
 
 NAKED void FUN_0821a87c(void) { INCFUNC("asm/func/FUN_0821a87c.inc"); }
 
@@ -145,10 +146,10 @@ s32 Entity0FC5_Update(Entity0FC5* p) {
   return 0;
 }
 
-// 描画を畳んで gEntity0FC5s の登録枠を空ける
+// 描画を畳んで gOpRunners の登録枠を空ける
 s32 Entity0FC5_Destroy(Entity0FC5* p) {
   Entity0FC5_RemoveSprites(p);
-  gEntity0FC5s[p->kind] = NULL;
+  gOpRunners[p->kind] = NULL;
   return 0;
 }
 
@@ -179,7 +180,7 @@ s32 Entity0FC5_Init(Entity0FC5* p) {
   p->unk_136 = 0;
   Entity0FC5_AddSprites(p);
   FUN_0821ae64(p, 0);
-  gEntity0FC5s[p->kind] = p;
+  gOpRunners[p->kind] = p;
   return 0;
 }
 

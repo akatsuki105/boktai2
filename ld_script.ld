@@ -215,7 +215,7 @@ SECTIONS {
       src/link_shop.o(COMMON);
       src/boss/dvalinn.o(COMMON);
       src/code_08204d2c.o(COMMON);
-      src/entity_0fc5.o(COMMON);
+      src/opening_runner.o(COMMON);
       src/video.o(COMMON);
       src/iwram2.o(COMMON);
       src/link.o(COMMON);
@@ -522,7 +522,7 @@ SECTIONS {
 			src/title.o (.text);
 			src/entity_a288.o (.text);
 			src/entity_6367.o (.text);
-			src/entity_0fc5.o (.text);
+			src/opening_runner.o (.text);
 			src/code_0821b21c.o (.text);
 			src/entity_0821b7fc.o (.text);
 			src/entity_8ec8.o (.text);
@@ -832,7 +832,7 @@ SECTIONS {
     src/title.o (.rodata);
     src/entity_a288.o (.rodata);
     src/entity_6367.o (.rodata);
-    src/entity_0fc5.o (.rodata);
+    src/opening_runner.o (.rodata);
     src/boss/shademan.o (.rodata);
     src/game_result.o (.rodata);
     src/entity_8aab.o (.rodata);
