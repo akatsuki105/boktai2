@@ -249,9 +249,6 @@ const SoundID16 u16_ARRAY_085afeb2[99] = {
 };  // 0x085afeb2
 // clang-format on
 
-void Video_ClearTextRect(u32 x8, u32 y8, u32 w8, u32 h8);
-void Video_DrawText(s32 x8, s32 y8, char* s);
-
 static inline void EntityA288_SetFlags(EntityA288* p, u32 bits) { p->flags |= bits; }
 
 void FUN_08213880(EntityA288* p) { p->tilemap2 = GetFile(DIR_TILE_MAP, TILEMAP_A413); }

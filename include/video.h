@@ -83,6 +83,9 @@ void Video_SetMosaic(s32 size, s32 objEnabled, s32 targets);
 void Video_ClearMosaic(void);
 void Video_ResetFrameState(u32 clearOam);
 
+void Video_ClearTextRect(u32 x8, u32 y8, u32 w8, u32 h8);
+void Video_DrawText(s32 x8, s32 y8, char* s);
+
 void Video_SetWindowRect(s32 win, s32 left, s32 top, s32 right, s32 bottom);
 
 s32 AllocBlendPlttSlot(u32 plttID, rgb555* pltt);

@@ -1,6 +1,7 @@
 #include "font.h"
 #include "global.h"
 #include "text.h"
+#include "video.h"
 
 NAKED bool32 FUN_0821b21c(unknown* param_1, s32 val1, s32 val2, u16 val3) { INCFUNC("asm/func/FUN_0821b21c.inc"); }
 
