@@ -883,7 +883,7 @@ void MainMenu_HideQCIcons(MainMenu* p) {
 NAKED void FUN_0808d3d4(MainMenu* p) { INCFUNC("asm/func/FUN_0808d3d4.inc"); }
 
 // スクロール位置から行の表示Y座標を出す, 画面外に出たら1周ぶん下へ回す
-NON_MATCH s32 FUN_0808d49c(MainMenu* p, s32 i, s32 selectedIdx, s32 iconNums, s32 param_5) {
+NON_MATCH s32 MainMenu_CalcQCIconY(MainMenu* p, s32 i, s32 selectedIdx, s32 iconNums, s32 param_5) {
 #ifdef NONMATCHING_C
   s32 col = Mod(iconNums + i - selectedIdx, iconNums);
   s32 y = 136 - param_5 * 3;
@@ -894,7 +894,7 @@ NON_MATCH s32 FUN_0808d49c(MainMenu* p, s32 i, s32 selectedIdx, s32 iconNums, s3
   }
   return y;
 #else
-  INCFUNC("asm/func/FUN_0808d49c.inc");
+  INCFUNC("asm/func/MainMenu_CalcQCIconY.inc");
 #endif
 }
 
@@ -908,7 +908,7 @@ void MainMenu_RefreshQCWeaponIcons(MainMenu* p) {
     } else {
       MainSprite_SetPose(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, ICON_WEAPON(p->qcWeapon.slots[i].weapon->id), 1);
     }
-    p->qcWeapon.slots[i].sprite.pos.y = FUN_0808d49c(p, i, p->qcWeapon.idx, p->qcWeaponIconNums, 0);
+    p->qcWeapon.slots[i].sprite.pos.y = MainMenu_CalcQCIconY(p, i, p->qcWeapon.idx, p->qcWeaponIconNums, 0);
   }
 }
 
@@ -920,7 +920,7 @@ void MainMenu_RefreshQCMagicIcons(MainMenu* p) {
     QCMagicSlot* slot = &p->qcMagic.slots[i];
 
     MainSprite_SetPose(&slot->sprite, &p->gfx.icons, ICON_MAGIC(slot->id), 1);
-    slot->sprite.pos.y = FUN_0808d49c(p, i, p->qcMagic.idx, p->qcMagic.iconNums, 0);
+    slot->sprite.pos.y = MainMenu_CalcQCIconY(p, i, p->qcMagic.idx, p->qcMagic.iconNums, 0);
   }
 }
 
