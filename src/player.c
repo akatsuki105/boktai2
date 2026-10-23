@@ -7699,7 +7699,8 @@ void Cmd_LockPlayer(void) {
   }
 }
 
-void FUN_0807d298(void) {
+// 0x9FFD
+void Cmd_9FFD(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -7709,7 +7710,8 @@ void FUN_0807d298(void) {
   }
 }
 
-void FUN_0807d2d0(void) {
+// 0x061E
+void Cmd_061E(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -7719,7 +7721,8 @@ void FUN_0807d2d0(void) {
   }
 }
 
-void FUN_0807d300(void) {
+// 0x6E7D
+void Cmd_6E7D(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -7729,6 +7732,7 @@ void FUN_0807d300(void) {
   }
 }
 
+// 0x933C
 void Player_MoveTo(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
@@ -7748,6 +7752,7 @@ void Player_MoveTo(void) {
   }
 }
 
+// 0xE990
 void FUN_0807d3b8(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];

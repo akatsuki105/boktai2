@@ -21,7 +21,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x058D, FUN_0823d70c
 	.4byte 0x05A5, EnemyBoku_Create @ HashName("ボク")
 	.4byte 0x05E2, FUN_0807db14
-	.4byte 0x061E, FUN_0807d2d0
+	.4byte 0x061E, Cmd_061E
 	.4byte 0x0623, Entity0623_Create @ HashName("シェードマン")
 	.4byte 0x064E, FUN_081df784
 	.4byte 0x0740, FUN_080ef55c
@@ -275,7 +275,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x6B24, FUN_08086638
 	.4byte 0x6CBE, FUN_08205dec
 	.4byte 0x6D69, DoorManager_Create
-	.4byte 0x6E7D, FUN_0807d300
+	.4byte 0x6E7D, Cmd_6E7D
 	.4byte 0x6F85, FUN_0807d240
 	.4byte 0x7017, FUN_0807b0c0
 	.4byte 0x706D, EnemySandWorm_Create @ HashName("サンドウォーム")
@@ -410,7 +410,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x9E8D, EnemyCrow_Create @ HashName("クロウ")
 	.4byte 0x9EC0, Entity6978_SetRequestScripted
 	.4byte 0x9FB7, FUN_08091684
-	.4byte 0x9FFD, FUN_0807d298
+	.4byte 0x9FFD, Cmd_9FFD
 	.4byte 0xA062, Cmd_A062
 	.4byte 0xA0A6, EntityA0A6_Create
 	.4byte 0xA133, FUN_0820a480

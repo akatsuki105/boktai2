@@ -375,7 +375,7 @@ void FUN_0808a3c4(MainMenu* p, TilemapFile* tilemap, s16 param_3, s32 layerIdx, 
   Video_SetupBGLayout(0, param_3, tilemap, 0, 0, 1, &bgIndex);
   Video_SetBGLayer(0, tilemap, layerIdx);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
-  CpuCopy32(pltt, &gBgPlttBuffer[208], 96);
+  CpuCopy32(pltt, &gBgPlttBuffer[13 * 16], 48 * sizeof(rgb555));
 }
 
 static BgMapEntry* MainMenu_GetBgMapAddr(s32 bg, u32 x, u32 y) {
