@@ -1244,7 +1244,7 @@ void FUN_0808f670(MainMenu* p);
 
 // 16フレームかけて明るくしてから次の状態へ移る
 void FUN_0808f604(MainMenu* p) {
-  if (p->updateTimer <= 0xF) {
+  if (p->updateTimer < 16) {
     FUN_0808a458(p->updateTimer * 4, 0);
   } else {
     FUN_0808a458(0x40, 0);
@@ -1254,7 +1254,7 @@ void FUN_0808f604(MainMenu* p) {
   MainSprite_AdvanceAnim(&p->sprites[103], &p->gfx.loans);
 
   p->updateTimer++;
-  if (p->updateTimer > 0xF) {
+  if (p->updateTimer >= 16) {
     FUN_0808a33c(p, FUN_0808f670);
   }
 }
@@ -1263,26 +1263,25 @@ NAKED void FUN_0808f670(MainMenu* p) { INCFUNC("asm/func/FUN_0808f670.inc"); }
 
 void FUN_0808f774(MainMenu* p) {
   MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
-
   if (p->sprites[100].pos.x > -88) {
     p->sprites[100].pos.x -= 5;
   }
 
   p->updateTimer++;
-  if (p->updateTimer > 149) {
+  if (p->updateTimer >= 150) {
     FUN_0808a33c(p, FUN_0809ae0c);
   }
 }
 
 // 16フレームかけて画面を明るく戻し, 終わったらメッセージへ進む
 void FUN_0808f7cc(MainMenu* p) {
-  if (p->updateTimer <= 0xF) {
-    FUN_0808a458((0x10 - p->updateTimer) * 4, 0);
+  if (p->updateTimer < 16) {
+    FUN_0808a458((16 - p->updateTimer) * 4, 0);
   } else {
     FUN_0808a458(0, 0);
   }
   p->updateTimer++;
-  if (p->updateTimer > 0xF) {
+  if (p->updateTimer >= 16) {
     FUN_0808f170(p);
   }
 }
