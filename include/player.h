@@ -422,6 +422,7 @@ extern u16 gGoodCondID;      // 0x03002B60
 extern u16 gConfusedDir;     // 0x03002B64
 extern u16 u16_03002b68[4];  // 0x03002B68, 多分プレイヤーの moverID
 extern u16 gGoodCondTimer;   // 0x03002B8C, Player.goodCondTimer の退避, 他Entityからの参照用
+extern u16 gWindAngle;
 
 Player* CreatePlayer(u32 n, void* _);
 s32 FUN_0806f900(Player* player);

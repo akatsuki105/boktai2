@@ -70,7 +70,7 @@ _080D82BE:
 	lsls r0, r0, #2
 	adds r0, r0, r1
 	str r5, [r0]
-	ldr r1, _080D82E8 @ =0x03002B98
+	ldr r1, _080D82E8 @ =gPlayerCount
 	ldrh r0, [r1]
 	adds r0, #1
 	strh r0, [r1]
@@ -82,4 +82,4 @@ _080D82BE:
 _080D82DC: .4byte 0x030046A0
 _080D82E0: .4byte 0x00000932
 _080D82E4: .4byte 0x03002BE0
-_080D82E8: .4byte 0x03002B98
+_080D82E8: .4byte gPlayerCount

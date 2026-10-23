@@ -18,13 +18,11 @@
 #include "time.h"
 #include "vm.h"
 
-extern Entity5941Node* gChangeWolfTarget;
 extern u16 u16_03002bf4;
 extern u16 u16_03002bd0;
 extern u16 u16_03002bb0;
 extern u16 u16_ARRAY_03002ba0[3];
 extern u16 u16_03002b84;
-extern u16 gWindAngle;
 extern u16 u16_03002bac;
 extern u16 u16_03002bf0;
 
@@ -72,6 +70,24 @@ COMMON_DATA u16 ALIGNED(4) gSunGaugeOverride = 0;       // 0x03002B80, ApplyLxMo
 COMMON_DATA u16 ALIGNED(4) u16_03002b84 = 0;            // 0x03002B84, Player_InitEffects が 1 を入れる
 COMMON_DATA u16 ALIGNED(4) u16_03002b88 = 0;            // 0x03002B88, チェンジウルフに関連するフラグ
 COMMON_DATA u16 ALIGNED(4) gGoodCondTimer = 0;          // 0x03002B8C, Player.goodCondTimer の退避
+COMMON_DATA u16 ALIGNED(4) gWindAngle = 0;              // 0x03002B90, Player_InitEffects が 0 に戻す
+COMMON_DATA u16 ALIGNED(8) gPlayerCount = 0;            // 0x03002B98, Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
+COMMON_DATA u8 u8_03002b9a[6] = {};                     // todo
+COMMON_DATA u16 u16_ARRAY_03002ba0[3] = {};             // 0x03002BA0, Player がいないときに FUN_0807b428 が書き込む退避先
+COMMON_DATA u8 u8_03002ba6[2] = {};                     // todo
+COMMON_DATA Entity5941Node* gChangeWolfTarget = NULL;   // 0x03002BA8, チェンジウルフで噛みつく相手のノード, Player_Destroy が NULL に戻す
+COMMON_DATA u16 u16_03002bac = 0;                       // 0x03002BAC, Player_InitEffects が 0 に戻す
+COMMON_DATA u8 u8_03002bae[2] = {};                     // todo
+COMMON_DATA u16 u16_03002bb0 = 0;                       // 0x03002BB0, Player_GetEquippedMagic がサバタのとき 0 に戻す
+COMMON_DATA u8 u8_03002bb2[14] = {};                    // todo
+COMMON_DATA u32 u32_03002bc0[4] = {};                   // 0x03002BC0, Playerごとのビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る
+COMMON_DATA u16 u16_03002bd0 = 0;                       // 0x03002BD0, FUN_0807b564 が 0 に戻す
+COMMON_DATA u8 u8_03002bd2[14] = {};                    // todo
+COMMON_DATA Player* gPlayerPtr[4] = {};                 // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
+COMMON_DATA u16 u16_03002bf0 = 0;                       // 0x03002BF0, 0 以外かつ gSunGaugeOverride が 1 のとき Entity0809eb24_Update が unk_29 を立てる
+COMMON_DATA u8 u8_03002bf2[2] = {};                     // todo
+COMMON_DATA u16 u16_03002bf4 = 0;                       // 0x03002BF4, Player_Destroy が 0 に戻す
+COMMON_DATA u8 u8_03002bf6[2] = {};                     // todo
 
 // pos のブロックのコリジョンタイルを引く, 差し替えがあればそちら, マップ外なら tiles[0]
 // Map_GetTileHeightAt (src/collision_map.c) の前半と同じ処理だが, 原典ではこの関数の中に2回展開されているのでインラインで持つ
