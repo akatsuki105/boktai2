@@ -82,7 +82,31 @@ s32 FUN_08049c78(Marquee* p) {
   return 0;
 }
 
-NAKED s32 Marquee_Update(Marquee* p) { INCFUNC("asm/func/Marquee_Update.inc"); }
+s32 Marquee_Update(Marquee* p) {
+  if (p->openReq) {
+    FUN_08049c3c(p);
+    p->openReq = FALSE;
+  }
+  if (p->closeReq) {
+    FUN_08049c78(p);
+    p->closeReq = FALSE;
+  }
+
+  if (p->active) {
+    TextRenderer* r = &p->renderer;
+
+    TextRenderer_ClearPending(r);
+    FUN_0804996c(p);
+    if (p->manualScroll) {
+      gMarqueeOffset = p->offset;
+    } else {
+      gMarqueeOffset = 0;
+    }
+    p->timer++;
+    TextRenderer_RunPending(r);
+  }
+  return 0;
+}
 
 s32 Marquee_Destroy(Marquee* p) {
   if (p->active) {
