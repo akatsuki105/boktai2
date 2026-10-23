@@ -41,7 +41,10 @@ typedef struct {
 static_assert(sizeof(QCMagicSlot) == 100);
 
 typedef struct {
-  u8 unk_0[8];  // 0x000, まだ未解析
+  ParticleGroup* group;  // 0x000, PTCL_GROUP_2
+  u8 unk_4;              // 0x004
+  u8 unk_5;              // 0x005
+  u8 unk_6[2];           // 0x006, まだ未解析
   struct MMenuPtclNode {
     Particle ptcl;           // 0x00, FUN_0808cacc が Particle_Remove に渡す
     u8 unk_28[0x30 - 0x28];  // 0x28, まだ未解析
@@ -694,7 +697,28 @@ void FUN_0808cacc(MainMenu* p) {
   }
 }
 
-NAKED void MainMenu1P_0808cb00(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0808cb00.inc"); }
+void MainMenu1P_AddParticles(MainMenu* p) {
+  s32 i;
+  s32 j;
+
+  for (i = 0; i < 2; i++) {
+    MMenuPtclSet* set = &p->ptclSets[i];
+    SpriteFlags flags = SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST;
+
+    if (i == 0) {
+      flags = SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD;
+    }
+    set->group = GetParticleGroup(PTCL_GROUP_2);
+    set->unk_4 = 0;
+    set->unk_5 = 0;
+    for (j = 0; j < 8; j++) {
+      Particle_Add(&set->nodes[j].ptcl, set->group, flags);
+      Particle_SetOffset(&set->nodes[j].ptcl, -4, -4);
+      set->nodes[j].ptcl.priority = 0;
+      set->nodes[j].unk_38 = 0;
+    }
+  }
+}
 
 // BG0 の先頭9タイルに 0xA0 からの連番を並べる
 void FUN_0808cb90(MainMenu* p) {
@@ -3616,7 +3640,7 @@ s32 MainMenu1P_Init(MainMenu* p, u32 id) {
     FUN_0808ce98(p);
     FUN_0808a33c(p, FUN_0808cf14);
   }
-  MainMenu1P_0808cb00(p);
+  MainMenu1P_AddParticles(p);
   p->unk_a99 = 2;
   p->unk_a9a = 0xFF;
   p->unk_a9b = -1;
