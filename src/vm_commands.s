@@ -183,7 +183,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x44CD, Entity8AF6_SetPoseScripted
 	.4byte 0x4561, FUN_08086c50
 	.4byte 0x4631, FUN_0800a4f4
-	.4byte 0x4759, Entity4759_Create
+	.4byte 0x4759, TimeMC_Create
 	.4byte 0x48B3, Entity8AAB_SetPriorityScripted
 	.4byte 0x490F, FUN_0807da94
 	.4byte 0x4A16, EntityEF66_StopScripted

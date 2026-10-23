@@ -255,9 +255,9 @@ _080A44C4:
 	ldr r2, [sp, #8]
 	str r0, [r2]
 	str r1, [r2, #4]
-	ldr r1, _080A4550 @ =Entity4759_UpdateIdle
+	ldr r1, _080A4550 @ =TimeMC_UpdateIdle
 	adds r0, r6, #0
-	bl Entity4759_SetUpdateCallback
+	bl TimeMC_SetUpdateCallback
 	movs r0, #0
 	add sp, #0x10
 	pop {r3, r4, r5}
@@ -270,4 +270,4 @@ _080A44C4:
 	.align 2, 0
 _080A4548: .4byte 0x0000011D
 _080A454C: .4byte 0x0000A152
-_080A4550: .4byte Entity4759_UpdateIdle
+_080A4550: .4byte TimeMC_UpdateIdle

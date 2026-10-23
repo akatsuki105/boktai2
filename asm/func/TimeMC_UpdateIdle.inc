@@ -16,7 +16,7 @@
 	strh r0, [r1]
 _080A4120:
 	adds r0, r4, #0
-	bl Entity4759_IsPlayerNear
+	bl TimeMC_IsPlayerNear
 	adds r6, r0, #0
 	cmp r6, #0
 	beq _080A41CC
@@ -87,15 +87,15 @@ _080A4166:
 	movs r2, #0
 	movs r3, #4
 	bl FUN_0807ba94
-	ldr r1, _080A41C8 @ =Entity4759_UpdateActivated
+	ldr r1, _080A41C8 @ =TimeMC_UpdateActivated
 	adds r0, r4, #0
-	bl Entity4759_SetUpdateCallback
+	bl TimeMC_SetUpdateCallback
 	b _080A4202
 	.align 2, 0
 _080A41BC: .4byte 0x03002BC0
 _080A41C0: .4byte 0x030044E0
 _080A41C4: .4byte 0x03002BE0
-_080A41C8: .4byte Entity4759_UpdateActivated
+_080A41C8: .4byte TimeMC_UpdateActivated
 _080A41CC:
 	ldrh r0, [r4, #0x18]
 	cmp r0, #0

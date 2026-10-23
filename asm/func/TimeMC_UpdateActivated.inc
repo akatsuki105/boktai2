@@ -43,9 +43,9 @@ _080A4266:
 	movs r1, #1
 	orrs r0, r1
 	str r0, [r4, #0x6c]
-	ldr r1, _080A42F0 @ =Entity4759_UpdateDone
+	ldr r1, _080A42F0 @ =TimeMC_UpdateDone
 	adds r0, r4, #0
-	bl Entity4759_SetUpdateCallback
+	bl TimeMC_SetUpdateCallback
 	adds r0, r4, #0
 	adds r0, #0xc0
 	ldr r2, [r0]
@@ -78,5 +78,5 @@ _080A42E0:
 	.align 2, 0
 _080A42E8: .4byte 0x03002BE0
 _080A42EC: .4byte 0xFFFFFDFF
-_080A42F0: .4byte Entity4759_UpdateDone
+_080A42F0: .4byte TimeMC_UpdateDone
 _080A42F4: .4byte 0xFFFF0000
