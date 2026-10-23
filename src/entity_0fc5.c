@@ -1,23 +1,21 @@
 #include "entity.h"
 #include "file.h"
-#include "gba/macro.h"
 #include "global.h"
-#include "sprite_animation.h"
-#include "sprite_aux.h"
-#include "sprite_main.h"
+#include "sprite.h"
 #include "vm.h"
 
+// おそらく、オープニングのサンミゲルに向かって、ジャンゴとおてんこが走っていく演出 (手前から奥へ走っていくので、スプライトが徐々に小さくなる)
 typedef struct Entity0FC5 {
   Entity e;                                    // 0x0, ENTITY_UNK_8
-  MainSpriteGfx gfx_18;                        // 0x018, SPRITE_DJANGO_SABATA
-  MainSprite sprite_38;                        // 0x38, 根拠: Entity0FC5_RemoveSprites が unk_f4 == 0 のとき MainSprite_Remove に渡す
-  AuxSprite sprite_98;                         // 0x98, 根拠: Entity0FC5_RemoveSprites が unk_f4 != 0 のとき AuxSprite_Remove に渡す
-  AuxSpriteGfx gfx_c4;                         // 0x0C4, SPRITE_OTENKO_00
-  AuxAnimState anim_e0;                        // 0x0E0
-  AuxAnimFile* animFile;                       // 0x0F0, ANIM_OTENKO
+  MainSpriteGfx djangoGfx;                     // 0x18, SPRITE_DJANGO_SABATA
+  MainSprite django;                           // 0x38, 根拠: Entity0FC5_RemoveSprites が unk_f4 == 0 のとき MainSprite_Remove に渡す
+  AuxSprite otenko;                            // 0x98, 根拠: Entity0FC5_RemoveSprites が unk_f4 != 0 のとき AuxSprite_Remove に渡す
+  AuxSpriteGfx otenkoGfx;                      // 0xC4, SPRITE_OTENKO_00
+  AuxAnimState otenkoAnim;                     // 0xE0 ->animFile
+  AuxAnimFile* animFile;                       // 0xF0, ANIM_OTENKO
   s32 unk_f4;                                  // 0xF4, gEntity0FC5s での自分の添字, '.k' の値
-  u32 pauseFlags;                              // 0x0F8, bit0/bit1 が立っている間 timer_100 / timer_108 を止める
-  u32 unk_fc;                                  // 0x0FC, まだ未解析
+  u32 pauseFlags;                              // 0xF8, bit0/bit1 が立っている間 timer_100 / timer_108 を止める
+  u32 unk_fc;                                  // 0xFC, まだ未解析
   u32 timer_100;                               // 0x100
   u32 unk_104;                                 // 0x104, まだ未解析
   u32 timer_108;                               // 0x108
@@ -35,8 +33,8 @@ typedef struct Entity0FC5 {
   s16 unk_134;                                 // 0x134
   s16 unk_136;                                 // 0x136
   u8 unk_138[0x13C - 0x138];                   // 0x138, まだ未解析
-  AuxSprite sprite_13c;                        // 0x13C, 根拠: Entity0FC5_RemoveSprites が AuxSprite_Remove に渡す
-  AuxSpriteGfx gfx_168;                        // 0x168, SPRITE_EFF_1C1B
+  AuxSprite sprite_13c;                        // 0x13C
+  AuxSpriteGfx gfx_168;                        // 0x168, SPRITE_EFF_1C1B, 影用?
   void (*updateCallback)(struct Entity0FC5*);  // 0x184
   u8 unk_188[392 - 0x188];                     // 0x188, まだ未解析
 } Entity0FC5;
@@ -87,28 +85,28 @@ NON_MATCH void Entity0FC5_AddSprites(Entity0FC5* p) {
     MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
     Vec3 pos;
 
-    p->gfx_18 = *f;
-    OpenMainSpriteFile(&p->gfx_18, f);
+    p->djangoGfx = *f;
+    OpenMainSpriteFile(&p->djangoGfx, f);
     CpuFill32(0, &pos, sizeof(pos));
     pos.x = x;
     pos.y = y;
-    MainSprite_Add(&p->sprite_38, &p->gfx_18, 7, SPRFLAG_UNK_15 | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE, 1, 0, 60, &pos);
-    MainSprite_SetAnim(&p->sprite_38, &p->gfx_18, 5, 1, 0);
-    p->sprite_38.scaleX = scale;
-    p->sprite_38.scaleY = scale;
+    MainSprite_Add(&p->django, &p->djangoGfx, 7, SPRFLAG_UNK_15 | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE, 1, 0, 60, &pos);
+    MainSprite_SetAnim(&p->django, &p->djangoGfx, 5, 1, 0);
+    p->django.scaleX = scale;
+    p->django.scaleY = scale;
   } else {
     AuxAnimFile* files;
 
-    Video_GetAuxSprite(&p->gfx_c4, SPRITE_OTENKO_00);
-    AuxSprite_Add(&p->sprite_98, &p->gfx_c4, SPRFLAG_UNK_15 | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE);
-    p->sprite_98.pos.x = x;
-    p->sprite_98.pos.y = y;
-    p->sprite_98.scaleX = scale;
-    p->sprite_98.scaleY = scale;
-    p->sprite_98.priority = 0;
+    Video_GetAuxSprite(&p->otenkoGfx, SPRITE_OTENKO_00);
+    AuxSprite_Add(&p->otenko, &p->otenkoGfx, SPRFLAG_UNK_15 | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE);
+    p->otenko.pos.x = x;
+    p->otenko.pos.y = y;
+    p->otenko.scaleX = scale;
+    p->otenko.scaleY = scale;
+    p->otenko.priority = 0;
     files = GetFile(DIR_ANIMATION, ANIM_OTENKO);
     p->animFile = files;
-    AuxAnim_SetAnim(&p->anim_e0, files, 0, 0, 0);
+    AuxAnim_SetAnim(&p->otenkoAnim, files, 0, 0, 0);
   }
 
   Video_GetAuxSprite(&p->gfx_168, SPRITE_EFF_1C1B);
@@ -128,9 +126,9 @@ NON_MATCH void Entity0FC5_AddSprites(Entity0FC5* p) {
 // スプライトを描画リストから外す
 void Entity0FC5_RemoveSprites(Entity0FC5* p) {
   if (p->unk_f4 == 0) {
-    MainSprite_Remove(&p->sprite_38);
+    MainSprite_Remove(&p->django);
   } else {
-    AuxSprite_Remove(&p->sprite_98);
+    AuxSprite_Remove(&p->otenko);
   }
 
   AuxSprite_Remove(&p->sprite_13c);
