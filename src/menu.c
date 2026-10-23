@@ -544,7 +544,7 @@ void FUN_0808b82c(MainMenu* p) {
 }
 
 // 現在のページ名を表示する
-void MainMenu_ShowPageName(MainMenu* p, u32 page) {
+void MainMenu_ShowPageName(MainMenu* p, s32 page) {
   p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
   MainSprite_SetPose(&p->sprites[0], &p->gfx.smenu, SMENU_PAGE(page), 1);
 }
