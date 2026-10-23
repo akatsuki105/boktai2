@@ -320,7 +320,7 @@ typedef struct Player {
   u8 unk_4a6;                       // 0x4A6, FUN_0807bc14 の第2引数
   u8 unk_4a7;                       // 0x4A7, FUN_0807c748 の第3引数
   u8 unk_4a8;                       // 0x4A8
-  s8 unk_4a9;                       // 0x4A9, FUN_0807b9dc の第2引数
+  s8 dir_4a9;                       // 0x4A9, Facing
   u8 unk_4aa;                       // 0x4AA, FUN_080726b4
   u8 unk_4ab;                       // 0x4AB, FUN_08072670 が 1 を書く
   u8 unk_4ac;                       // 0x4AC
@@ -428,7 +428,7 @@ s32 FUN_0806f900(Player* player);
 s32 FUN_080d1b04(Player* player);
 void Player_ReduceENE_0807aa60(Player* player, s32 amount);
 void Player_Unlock(Player* p);
-void FUN_0807bb3c(Player* p, Vec3* pos, s32 param_3, s32 param_4, u32 scriptID);
+void FUN_0807bb3c(Player* p, Vec3* pos, Facing32 dir, s32 param_4, u32 scriptID);
 void FUN_0807bc64(Player* p, u32 scriptID);
 void Player_SetAction(Player* p, u32 action, u32 state);
 void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames);

@@ -40,7 +40,7 @@ void FUN_08072724(Player* p);
 void FUN_080d040c(Player* p);
 s32 FUN_08086294(Vec3* pos, u32 elevatorID, u32 b);
 void Django_OnHurt(HitboxData* a, HitboxData* b, Player* p);
-void FUN_0807bdc8(Player* p, s32 facing, s32 param_3, u32 scriptID);
+void FUN_0807bdc8(Player* p, Facing32 dir, s32 param_3, u32 scriptID);
 s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
 bool32 FUN_0809df78(Vec3* pos);
 s32 FUN_080dc0b8(Vec3* pos, Vec3* param_2, u32 param_3, u32 param_4, u32 param_5);
@@ -7022,17 +7022,17 @@ void Player_Lock(Player* p, s32 val) {
   Player_SetAction(p, 0, 0);
 }
 
-void FUN_0807b9dc(Player* p, s32 param_2, u32 param_3) {
-  p->unk_4a9 = param_2;
+void FUN_0807b9dc(Player* p, Facing32 dir, u32 param_3) {
+  p->dir_4a9 = dir;
   p->scriptID_4b0 = param_3;
   p->fn_498 = FUN_080727d4;
   Player_EnterLockedState(p);
   Player_SetAction(p, 0, 0);
 }
 
-void FUN_0807ba14(Player* p, s32 param_2) {
-  if (param_2 >= 0) {
-    p->facing = param_2;
+void FUN_0807ba14(Player* p, Facing32 dir) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   Player_EnterLockedState(p);
@@ -7040,9 +7040,9 @@ void FUN_0807ba14(Player* p, s32 param_2) {
   p->fn_498 = FUN_08072724;
 }
 
-void FUN_0807ba50(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 >= 0) {
-    p->facing = param_2;
+void FUN_0807ba50(Player* p, Facing32 dir, u32 param_3) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
@@ -7051,13 +7051,13 @@ void FUN_0807ba50(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_08072724;
 }
 
-void FUN_0807ba94(Player* p, Vec3* pos, u32 scriptID, s32 facing) {
+void FUN_0807ba94(Player* p, Vec3* pos, u32 scriptID, Facing32 dir) {
   p->unk_49c = *pos;
   p->scriptID_4b0 = scriptID;
-  p->unk_4a9 = facing;
+  p->dir_4a9 = dir;
   if (p->kind == PLAYER_BAT) {
-    if (p->unk_4a9 >= 0) {
-      p->unk_4a9 = ((p->unk_4a9 >> 1) << 1) + 1;
+    if (p->dir_4a9 >= 0) {
+      p->dir_4a9 = ((p->dir_4a9 >> 1) << 1) + 1;
     }
     p->fn_498 = FUN_08074e98;
   } else if (p->kind == PLAYER_MOUSE) {
@@ -7075,7 +7075,7 @@ void FUN_0807ba94(Player* p, Vec3* pos, u32 scriptID, s32 facing) {
   Player_SetAction(p, 1, 0);
 }
 
-void FUN_0807bb3c(Player* p, Vec3* pos, s32 param_3, s32 param_4, u32 scriptID) {
+void FUN_0807bb3c(Player* p, Vec3* pos, Facing32 dir, s32 param_4, u32 scriptID) {
   if (pos == NULL) {
     p->unk_49c = p->mover.pos;
   } else {
@@ -7083,7 +7083,7 @@ void FUN_0807bb3c(Player* p, Vec3* pos, s32 param_3, s32 param_4, u32 scriptID) 
   }
   p->scriptID_4b0 = scriptID;
   p->unk_4a6 = param_4;
-  p->unk_4a9 = param_3;
+  p->dir_4a9 = dir;
   p->unk_4a7 = 0x96;
   Player_EnterLockedState(p);
   Player_SetAction(p, 6, 0);
@@ -7122,10 +7122,10 @@ void FUN_0807bc64(Player* p, u32 scriptID) {
   }
 }
 
-void FUN_0807bcb0(Player* p, s32 param_2, u32 param_3) {
+void FUN_0807bcb0(Player* p, Facing32 dir, u32 param_3) {
   Player_EnterLockedState(p);
-  if (param_2 >= 0) {
-    p->facing = param_2;
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
@@ -7134,10 +7134,10 @@ void FUN_0807bcb0(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_08073574;
 }
 
-void FUN_0807bcfc(Player* p, s32 param_2) {
+void FUN_0807bcfc(Player* p, Facing32 dir) {
   Player_EnterLockedState(p);
-  if (param_2 >= 0) {
-    p->facing = param_2;
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   PlaySound_082406e0(SONG_198);
@@ -7146,10 +7146,10 @@ void FUN_0807bcfc(Player* p, s32 param_2) {
   p->fn_498 = FUN_08073574;
 }
 
-void FUN_0807bd44(Player* p, s32 param_2) {
+void FUN_0807bd44(Player* p, Facing32 dir) {
   Player_EnterLockedState(p);
-  if (param_2 >= 0) {
-    p->facing = param_2;
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   Player_EnterLockedState(p);
@@ -7157,9 +7157,9 @@ void FUN_0807bd44(Player* p, s32 param_2) {
   p->fn_498 = FUN_08073574;
 }
 
-void FUN_0807bd84(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 >= 0) {
-    p->facing = param_2;
+void FUN_0807bd84(Player* p, Facing32 dir, u32 param_3) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
@@ -7168,9 +7168,9 @@ void FUN_0807bd84(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_08073574;
 }
 
-void FUN_0807bdc8(Player* p, s32 facing, s32 param_3, u32 scriptID) {
-  if (facing >= 0) {
-    p->facing = facing;
+void FUN_0807bdc8(Player* p, Facing32 dir, s32 param_3, u32 scriptID) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   p->facing |= 1;
   p->scriptID_4b0 = scriptID;
@@ -7189,9 +7189,9 @@ void FUN_0807bdc8(Player* p, s32 facing, s32 param_3, u32 scriptID) {
   }
 }
 
-void FUN_0807be58(Player* p, s32 facing, s32 param_3, u32 scriptID) {
-  if (facing >= 0) {
-    p->facing = facing;
+void FUN_0807be58(Player* p, Facing32 dir, s32 param_3, u32 scriptID) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   p->facing |= 1;
   p->scriptID_4b0 = scriptID;
@@ -7209,9 +7209,9 @@ void FUN_0807be58(Player* p, s32 facing, s32 param_3, u32 scriptID) {
   }
 }
 
-void FUN_0807bee0(Player* p, s32 facing, s32 param_3, u32 scriptID) {
-  if (facing >= 0) {
-    p->facing = facing;
+void FUN_0807bee0(Player* p, Facing32 dir, s32 param_3, u32 scriptID) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   p->facing |= 1;
   if (p->facing > FACE_DOWN) {
@@ -7234,9 +7234,9 @@ void FUN_0807bee0(Player* p, s32 facing, s32 param_3, u32 scriptID) {
   }
 }
 
-void FUN_0807bfa4(Player* p, s32 facing, s32 param_3, s32 param_4, u32 scriptID) {
-  if (facing >= 0) {
-    p->facing = facing;
+void FUN_0807bfa4(Player* p, Facing32 dir, s32 param_3, s32 param_4, u32 scriptID) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   p->facing |= 1;
   if (p->facing > FACE_DOWN) {
@@ -7262,7 +7262,7 @@ void FUN_0807c048(Player* p, s32 scriptID) {
   }
 }
 
-void FUN_0807c084(Player* p, s32 facing, s32 param_3, u32 scriptID) {
+void FUN_0807c084(Player* p, Facing32 facing, s32 param_3, u32 scriptID) {
   if (facing >= 0) {
     p->facing = facing;
   }
@@ -7281,7 +7281,7 @@ void FUN_0807c084(Player* p, s32 facing, s32 param_3, u32 scriptID) {
   p->fn_498 = FUN_08073e18;
 }
 
-void FUN_0807c11c(Player* p, s32 facing) {
+void FUN_0807c11c(Player* p, Facing32 facing) {
   u16 animID;
 
   if (facing >= 0) {
@@ -7308,7 +7308,7 @@ void FUN_0807c11c(Player* p, s32 facing) {
   p->fn_498 = FUN_08073e18;
 }
 
-void FUN_0807c200(Player* p, s32 facing, u32 scriptID) {
+void FUN_0807c200(Player* p, Facing32 facing, u32 scriptID) {
   if (facing >= 0) {
     p->facing = facing;
   }
@@ -7344,12 +7344,12 @@ void FUN_0807c200(Player* p, s32 facing, u32 scriptID) {
   }
 }
 
-void FUN_0807c30c(Player* p, s32 param_2, u32 param_3) {
+void FUN_0807c30c(Player* p, Facing32 dir, u32 param_3) {
   if (p->kind >= PLAYER_BAT && p->kind <= PLAYER_SLEEPING) {
-    FUN_0807c200(p, param_2, param_3);
+    FUN_0807c200(p, dir, param_3);
   }
-  if (param_2 >= 0) {
-    p->facing = param_2;
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
@@ -7360,9 +7360,9 @@ void FUN_0807c30c(Player* p, s32 param_2, u32 param_3) {
 
 NAKED void FUN_0807c36c(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c36c.inc"); }
 
-void FUN_0807c458(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 >= 0) {
-    p->facing = param_2;
+void FUN_0807c458(Player* p, Facing32 dir, u32 param_3) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
@@ -7371,9 +7371,9 @@ void FUN_0807c458(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_08073f88;
 }
 
-void FUN_0807c49c(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 >= 0) {
-    p->facing = param_2;
+void FUN_0807c49c(Player* p, Facing32 dir, u32 param_3) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
@@ -7382,9 +7382,9 @@ void FUN_0807c49c(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_08073f88;
 }
 
-void FUN_0807c4e0(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 >= 0) {
-    p->facing = param_2;
+void FUN_0807c4e0(Player* p, Facing32 dir, u32 param_3) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
@@ -7393,9 +7393,9 @@ void FUN_0807c4e0(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_080740b0;
 }
 
-void FUN_0807c524(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 >= 0) {
-    p->facing = param_2;
+void FUN_0807c524(Player* p, Facing32 dir, u32 param_3) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
@@ -7404,9 +7404,9 @@ void FUN_0807c524(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_080740b0;
 }
 
-void FUN_0807c568(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 >= 0) {
-    p->facing = param_2;
+void FUN_0807c568(Player* p, Facing32 dir, u32 param_3) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
@@ -7415,9 +7415,9 @@ void FUN_0807c568(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_08074244;
 }
 
-void FUN_0807c5ac(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 >= 0) {
-    p->facing = param_2;
+void FUN_0807c5ac(Player* p, Facing32 dir, u32 param_3) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
@@ -7426,9 +7426,9 @@ void FUN_0807c5ac(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_08074244;
 }
 
-void FUN_0807c5f0(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 >= 0) {
-    p->facing = param_2;
+void FUN_0807c5f0(Player* p, Facing32 dir, u32 param_3) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_3;
@@ -7439,9 +7439,9 @@ void FUN_0807c5f0(Player* p, s32 param_2, u32 param_3) {
 
 NAKED void FUN_0807c634(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c634.inc"); }
 
-void FUN_0807c748(Player* p, s32 param_2, s32 param_3, u32 param_4) {
-  if (param_2 >= 0) {
-    p->facing = param_2;
+void FUN_0807c748(Player* p, Facing32 dir, s32 param_3, u32 param_4) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   p->scriptID_4b0 = param_4;
@@ -7460,18 +7460,18 @@ void FUN_0807c798(Player* p, s32 scriptID) {
 
 NAKED void FUN_0807c7c8(Player* p) { INCFUNC("asm/func/FUN_0807c7c8.inc"); }
 
-void FUN_0807c88c(Player* p, Vec3* pos, s32 param_3, u32 param_4) {
+void FUN_0807c88c(Player* p, Vec3* pos, Facing32 dir, u32 param_4) {
   p->unk_49c = *pos;
   p->scriptID_4b0 = param_4;
-  p->unk_4a9 = param_3;
+  p->dir_4a9 = dir;
   Player_EnterLockedState(p);
   Player_SetAction(p, 2, 0);
   p->fn_498 = FUN_080746ec;
 }
 
-void FUN_0807c8d4(Player* p, s32 param_2) {
-  if (param_2 >= 0) {
-    p->facing = param_2;
+void FUN_0807c8d4(Player* p, Facing32 dir) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   Player_SetAnimFacing(p);
   Player_PlayAnim(p, FUN_08066ee4(p->kind, 1), 0x20);
@@ -7498,15 +7498,15 @@ void FUN_0807c968(Player* p, s32 val) {
   p->fn_498 = FUN_080749b0;
 }
 
-void FUN_0807c9ac(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 != 0) {
+void FUN_0807c9ac(Player* p, s32 xflip, u32 param_3) {
+  if (xflip != 0) {
     p->facing = FACE_DOWN_LEFT;
     p->animIDOffset = 0;
-    p->xflip = 1;
+    p->xflip = TRUE;
   } else {
     p->facing = FACE_DOWN_RIGHT;
     p->animIDOffset = 0;
-    p->xflip = 0;
+    p->xflip = FALSE;
   }
   p->scriptID_4b0 = param_3;
   Player_EnterLockedState(p);
@@ -7514,15 +7514,15 @@ void FUN_0807c9ac(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_080728a8;
 }
 
-void FUN_0807ca24(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 != 0) {
+void FUN_0807ca24(Player* p, s32 xflip, u32 param_3) {
+  if (xflip != 0) {
     p->facing = FACE_DOWN_LEFT;
     p->animIDOffset = 0;
-    p->xflip = 1;
+    p->xflip = TRUE;
   } else {
     p->facing = FACE_DOWN_RIGHT;
     p->animIDOffset = 0;
-    p->xflip = 0;
+    p->xflip = FALSE;
   }
   p->scriptID_4b0 = param_3;
   Player_EnterLockedState(p);
@@ -7530,15 +7530,15 @@ void FUN_0807ca24(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_080728a8;
 }
 
-void FUN_0807ca9c(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 != 0) {
+void FUN_0807ca9c(Player* p, s32 xflip, u32 param_3) {
+  if (xflip != 0) {
     p->facing = FACE_DOWN_LEFT;
     p->animIDOffset = 0;
-    p->xflip = 1;
+    p->xflip = TRUE;
   } else {
     p->facing = FACE_DOWN_RIGHT;
     p->animIDOffset = 0;
-    p->xflip = 0;
+    p->xflip = FALSE;
   }
   p->scriptID_4b0 = param_3;
   Player_EnterLockedState(p);
@@ -7546,15 +7546,15 @@ void FUN_0807ca9c(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_080728a8;
 }
 
-void FUN_0807cb14(Player* p, s32 param_2, u32 param_3) {
-  if (param_2 != 0) {
+void FUN_0807cb14(Player* p, s32 xflip, u32 param_3) {
+  if (xflip != 0) {
     p->facing = FACE_DOWN_LEFT;
     p->animIDOffset = 0;
-    p->xflip = 1;
+    p->xflip = TRUE;
   } else {
     p->facing = FACE_DOWN_RIGHT;
     p->animIDOffset = 0;
-    p->xflip = 0;
+    p->xflip = FALSE;
   }
   p->scriptID_4b0 = param_3;
   Player_EnterLockedState(p);
@@ -7562,17 +7562,17 @@ void FUN_0807cb14(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_080728a8;
 }
 
-void FUN_0807cb8c(Player* p, s32 facing, u32 scriptID) {
-  if (facing >= 0) {
-    p->facing = facing;
+void FUN_0807cb8c(Player* p, Facing32 dir, u32 scriptID) {
+  if (dir >= 0) {
+    p->facing = dir;
   }
   p->facing |= 1;
   if (p->facing > FACE_DOWN) {
     p->animIDOffset = (8 - p->facing) >> 1;
-    p->xflip = 1;
+    p->xflip = TRUE;
   } else {
     p->animIDOffset = p->facing >> 1;
-    p->xflip = 0;
+    p->xflip = FALSE;
   }
   p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
@@ -7580,15 +7580,15 @@ void FUN_0807cb8c(Player* p, s32 facing, u32 scriptID) {
   p->fn_498 = FUN_080729e0;
 }
 
-void FUN_0807cc14(Player* p, s32 param_2) {
-  if (param_2 != 0) {
+void FUN_0807cc14(Player* p, s32 xflip) {
+  if (xflip != 0) {
     p->facing = FACE_DOWN_LEFT;
     p->animIDOffset = 0;
-    p->xflip = 1;
+    p->xflip = TRUE;
   } else {
     p->facing = FACE_DOWN_RIGHT;
     p->animIDOffset = 0;
-    p->xflip = 0;
+    p->xflip = FALSE;
   }
   Player_EnterLockedState(p);
   Player_SetAction(p, 0, 0);
@@ -7639,7 +7639,8 @@ void Player_Unlock(Player* p) {
   p->unk_395 = 0;
 }
 
-s32 FUN_0807d164(void) {
+// コマンドのヘルパーで、 '.d' で渡されたプレイヤーの向きを取得する
+Facing32 Player_GetCmdArgDir(void) {
   if (VM_SeekToNamedArg('d')) {
     return VM_GetValue();
   }
@@ -7694,7 +7695,7 @@ void Cmd_LockPlayer(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    Player_Lock(p, FUN_0807d164());
+    Player_Lock(p, Player_GetCmdArgDir());
     FUN_08072640(p);
   }
 }
@@ -7705,7 +7706,7 @@ void Cmd_9FFD(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807b9dc(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807b9dc(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -7716,7 +7717,7 @@ void Cmd_061E(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807ba14(p, FUN_0807d164());
+    FUN_0807ba14(p, Player_GetCmdArgDir());
     FUN_08072640(p);
   }
 }
@@ -7727,7 +7728,7 @@ void Cmd_6E7D(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807ba50(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807ba50(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -7739,35 +7740,35 @@ void Player_MoveTo(void) {
 
   if (p != NULL && VM_SeekToNamedArg('p')) {
     Vec3 pos;
-    s32 facing;
+    Facing32 dir;
     u32 scriptID;
 
     pos.x = VM_GetValue();
     pos.y = VM_GetValue();
     pos.z = VM_GetValue();
-    facing = FUN_0807d164();
+    dir = Player_GetCmdArgDir();
     scriptID = FUN_0807d180();
-    FUN_0807ba94(p, &pos, scriptID, facing);
+    FUN_0807ba94(p, &pos, scriptID, dir);
     FUN_08072640(p);
   }
 }
 
 // 0xE990
-void FUN_0807d3b8(void) {
+void Cmd_E990(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
   if (p != NULL && VM_SeekToNamedArg('p')) {
     Vec3 pos;
-    s32 facing;
+    Facing32 dir;
     u32 scriptID;
 
     pos.x = VM_GetValue();
     pos.y = VM_GetValue();
     pos.z = VM_GetValue();
-    facing = FUN_0807d164();
+    dir = Player_GetCmdArgDir();
     scriptID = FUN_0807d180();
-    FUN_0807c88c(p, &pos, facing, scriptID);
+    FUN_0807c88c(p, &pos, dir, scriptID);
     FUN_08072640(p);
   }
 }
@@ -7778,7 +7779,7 @@ void FUN_0807d438(void) {
 
   if (p != NULL) {
     s32 param_4 = VM_SeekToNamedArg('f') ? VM_GetValue() : 0;
-    s32 param_3 = FUN_0807d164();
+    Facing32 dir = Player_GetCmdArgDir();
     u32 scriptID = FUN_0807d180();
 
     if (VM_SeekToNamedArg('p')) {
@@ -7786,9 +7787,9 @@ void FUN_0807d438(void) {
       pos.x = VM_GetValue();
       pos.y = VM_GetValue();
       pos.z = VM_GetValue();
-      FUN_0807bb3c(p, &pos, param_3, param_4, scriptID);
+      FUN_0807bb3c(p, &pos, dir, param_4, scriptID);
     } else {
-      FUN_0807bb3c(p, NULL, param_3, param_4, scriptID);
+      FUN_0807bb3c(p, NULL, dir, param_4, scriptID);
     }
     FUN_08072640(p);
   }
@@ -7828,7 +7829,7 @@ void FUN_0807d590(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807bcb0(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807bcb0(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -7838,7 +7839,7 @@ void FUN_0807d5c8(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807bcfc(p, FUN_0807d164());
+    FUN_0807bcfc(p, Player_GetCmdArgDir());
     FUN_08072640(p);
   }
 }
@@ -7848,7 +7849,7 @@ void FUN_0807d5f8(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807bd44(p, FUN_0807d164());
+    FUN_0807bd44(p, Player_GetCmdArgDir());
     FUN_08072640(p);
   }
 }
@@ -7858,7 +7859,7 @@ void FUN_0807d628(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807bd84(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807bd84(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -7868,10 +7869,10 @@ void FUN_0807d660(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    s32 a = FUN_0807d164();
+    Facing32 dir = Player_GetCmdArgDir();
     u32 b = FUN_0807d180();
 
-    FUN_0807bdc8(p, a, VM_SeekToNamedArg('f') ? VM_GetValue() : 0, b);
+    FUN_0807bdc8(p, dir, VM_SeekToNamedArg('f') ? VM_GetValue() : 0, b);
   }
 }
 
@@ -7880,10 +7881,10 @@ void FUN_0807d6a8(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    s32 a = FUN_0807d164();
+    Facing32 dir = Player_GetCmdArgDir();
     u32 b = FUN_0807d180();
 
-    FUN_0807be58(p, a, VM_SeekToNamedArg('h') ? VM_GetValue() : 1500, b);
+    FUN_0807be58(p, dir, VM_SeekToNamedArg('h') ? VM_GetValue() : 1500, b);
     FUN_08072640(p);
   }
 }
@@ -7895,7 +7896,7 @@ void FUN_0807d6f8(void) {
   if (p != NULL) {
     s32 n = VM_SeekToNamedArg('f') ? VM_GetValue() : 30;
 
-    FUN_0807bee0(p, FUN_0807d164(), n, FUN_0807d180());
+    FUN_0807bee0(p, Player_GetCmdArgDir(), n, FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -7907,10 +7908,10 @@ void FUN_0807d744(void) {
   if (p != NULL) {
     s32 param_3 = VM_SeekToNamedArg('f') ? VM_GetValue() : 50;
     s32 param_4 = VM_SeekToNamedArg('L') ? VM_GetValue() : 0;
-    s32 facing = FUN_0807d164();
+    Facing32 dir = Player_GetCmdArgDir();
     u32 scriptID = FUN_0807d180();
 
-    FUN_0807bfa4(p, facing, param_3, param_4, scriptID);
+    FUN_0807bfa4(p, dir, param_3, param_4, scriptID);
     FUN_08072640(p);
   }
 }
@@ -7932,7 +7933,7 @@ void FUN_0807d7dc(void) {
   if (p != NULL) {
     s32 n = VM_SeekToNamedArg('f') ? VM_GetValue() : 50;
 
-    FUN_0807c084(p, FUN_0807d164(), n, FUN_0807d180());
+    FUN_0807c084(p, Player_GetCmdArgDir(), n, FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -7942,7 +7943,7 @@ void FUN_0807d828(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c11c(p, FUN_0807d164());
+    FUN_0807c11c(p, Player_GetCmdArgDir());
     FUN_08072640(p);
   }
 }
@@ -7952,7 +7953,7 @@ void FUN_0807d858(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c200(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807c200(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -7962,7 +7963,7 @@ void FUN_0807d890(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c36c(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807c36c(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -7972,7 +7973,7 @@ void FUN_0807d8c8(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c458(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807c458(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -7982,7 +7983,7 @@ void FUN_0807d900(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c49c(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807c49c(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -7992,7 +7993,7 @@ void FUN_0807d938(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c4e0(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807c4e0(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -8002,7 +8003,7 @@ void FUN_0807d970(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c524(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807c524(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -8012,7 +8013,7 @@ void FUN_0807d9a8(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c568(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807c568(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -8022,7 +8023,7 @@ void FUN_0807d9e0(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c5ac(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807c5ac(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }
@@ -8032,7 +8033,7 @@ void FUN_0807da18(void) {
   Player* p = gPlayerPtr[i];
 
   if (p != NULL) {
-    FUN_0807c5f0(p, FUN_0807d164(), FUN_0807d180());
+    FUN_0807c5f0(p, Player_GetCmdArgDir(), FUN_0807d180());
     FUN_08072640(p);
   }
 }

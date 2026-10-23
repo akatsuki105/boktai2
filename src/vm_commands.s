@@ -597,7 +597,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xE756, FUN_0807b138
 	.4byte 0xE77C, Entity3117_SetAnimScripted
 	.4byte 0xE7CA, FUN_082402e0
-	.4byte 0xE990, FUN_0807d3b8
+	.4byte 0xE990, Cmd_E990
 	.4byte 0xE9D3, DarkLoans_Create @ HashName("暗黒ローン")
 	.4byte 0xE9DA, FUN_080d7bdc
 	.4byte 0xE9E2, FUN_0807b5a8
