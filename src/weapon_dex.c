@@ -2,6 +2,7 @@
 #include "global.h"
 #include "preview_stage.h"
 #include "sprite.h"
+#include "text.h"
 #include "video.h"
 
 typedef struct {
@@ -49,7 +50,6 @@ static_assert(sizeof(WeaponDexMenu) == 3492);
 static const u8 sWeaponDexItemCounts[4] = {19, 19, 19, 3};  // 0x085af9ac, 武器図鑑の各ページのエントリ数
 
 bool32 IsWeaponAlreadyFound(weapon32_t n);
-s32 Marquee_CloseGlobal(void);
 void FUN_08055d7c(SpriteHolder* p);
 
 s32 WeaponDexMenu_GetPageEntryCount(s32 page) { return sWeaponDexItemCounts[page]; }

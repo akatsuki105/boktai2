@@ -6,11 +6,6 @@
 #include "video.h"
 #include "vm.h"
 
-bool32 IsMagicUnlocked(magic32_t n);
-void FUN_081df974(void);
-bool32 FUN_081dfa04(void);
-s32 Marquee_CloseGlobal(void);
-
 // 通信対戦関連?
 typedef struct Entity7999 {
   Entity e;                                    // 0x000, ENTITY_UNK_11
@@ -50,6 +45,10 @@ typedef struct Entity7999 {
   u16 unk_2a0;                                 // 0x2A0, _Init が '.l' を入れる
   u16 unk_2a2;                                 // 0x2A2, _Init が '.e' を入れる
 } Entity7999;
+
+bool32 IsMagicUnlocked(magic32_t n);
+void FUN_081df974(void);
+bool32 FUN_081dfa04(void);
 
 void Entity7999_HidePanels(Entity7999* p);
 void Entity7999_HideSprites(Entity7999* p);

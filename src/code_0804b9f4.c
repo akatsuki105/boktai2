@@ -91,18 +91,12 @@ extern const u8 gJoyspotContentIDs[8];  // src/joyspot.c
 // クロスオーバー通信で送る文字列を1文字 = 1エントリに展開した表, 根拠: Crossover_LoadMappingBuf が 0x100 個まで strh で埋める
 EWRAM_DATA u16 gCrossoverMappingBuf[256] = {};  // 0x0203FC00
 
-// 状態をリセットしてモーション番号を設定する
-static inline void Entity0804e2c0_SetMotion(Entity0804e2c0* p, u16 motion) {
-  p->unk_1c = 0;
-  p->unk_38 = motion;
-  p->unk_44 = 0;
-}
+extern u32 u32_0300481c;  // src/time.c
+
+const __attribute__((section(".rodata.faraddr"))) ALIGNED(4) u16 gAcceptableSerialNoList[2] = {0x0011, 0xFFFF};  // 0x08251D40, rfu_LMAN_establishConnection に渡す受け入れ可能シリアル番号の一覧, 0xFFFF 終端
 
 void WaitForVBlanks(u16 n);
-extern u32 u32_0300481c;                      // src/time.c
-extern const u16 gAcceptableSerialNoList[2];  // src/data.c
 void FUN_0804d868(Entity0804e2c0* p);
-
 void FUN_0804e584(s32);
 s32 FUN_0804c3cc(Entity0804e2c0*);
 s32 FUN_0804c3e4(Entity0804e2c0*);
@@ -175,6 +169,13 @@ s32 (*const PTR_ARRAY_085ab5e0[33])(Entity0804e2c0*) = {
     FUN_0804ccbc,
 };  // 0x085AB5E0
 // clang-format on
+
+// 状態をリセットしてモーション番号を設定する
+static inline void Entity0804e2c0_SetMotion(Entity0804e2c0* p, u16 motion) {
+  p->unk_1c = 0;
+  p->unk_38 = motion;
+  p->unk_44 = 0;
+}
 
 // '.n' 番の配信コンテンツIDがセーブデータに書かれているか
 // 残差はループの向きだけ (30 対 30), 原典は i を上に数えるが agbcc は使い捨ての添字とみて下に数える形へ反転する

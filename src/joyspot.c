@@ -38,6 +38,9 @@ IWRAM_DATA JoyspotManager* gJoyspotManager = NULL;  // 0x030000D8
 
 COMMON_DATA u32 u32_03002b54 = 0;  // 0x03002B54
 
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_Zokutai_08251d30[] = "Zokutai";  // 0x08251D30
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_Djungo_08251d38[] = "Djungo";    // 0x08251D38
+
 // clang-format off
 // ジョイスポットでの配信コンテンツのID
 const u8 gJoyspotContentIDs[8] = {

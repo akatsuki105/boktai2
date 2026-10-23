@@ -34,8 +34,6 @@ typedef struct {
 } AlbumMenu;
 static_assert(sizeof(AlbumMenu) == 2176);
 
-s32 Marquee_CloseGlobal(void);
-
 const u8 gAlbumPhotoSlotCounts[3] = {10, 10, 7};  // アルバムの各ページのブロマイドスロット数
 
 const u16 u16_ARRAY_085af9b4[54] = {

@@ -71,7 +71,6 @@ typedef struct {
 } EnemyDexMenu;
 static_assert(sizeof(EnemyDexMenu) == 4704);
 
-s32 Marquee_CloseGlobal(void);
 void FUN_0820fea8(PreviewStage* p);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 PreviewStage* PreviewStage_Create(u32 arg, u32 _);

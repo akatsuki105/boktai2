@@ -616,6 +616,8 @@ SECTIONS {
     src/message_choice.o (.rodata);
     src/entity_4b15.o (.rodata);
     src/text_renderer.o (.rodata.string);
+    src/joyspot.o (.rodata.string);
+    src/code_0804b9f4.o (.rodata.faraddr);
     src/data.o (.rodata);
     src/entity_1b24.o (.rodata);
     src/pile_driver.o (.rodata.string);

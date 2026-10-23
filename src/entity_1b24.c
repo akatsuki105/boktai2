@@ -34,7 +34,6 @@ typedef struct Entity1B24 {
 } Entity1B24;
 static_assert(sizeof(Entity1B24) == 3984);
 
-s32 Marquee_CloseGlobal(void);
 bool32 FUN_081dfa04(void);
 void FUN_080b9a0c(unknown* p);
 bool32 FUN_080b9adc(unknown* p);
