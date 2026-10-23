@@ -10,7 +10,7 @@
 	adds r0, r5, #0
 	bl FUN_0808d4dc
 	adds r0, r5, #0
-	bl FUN_0808d774
+	bl MainMenu_BuildQCMagicSlots
 	adds r0, r5, #0
 	bl FUN_0808d564
 	adds r0, r5, #0

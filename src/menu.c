@@ -39,8 +39,8 @@ typedef void(MainMenuFunc)(struct MainMenu* p);  // _Update が p->fn(p) とし�
 
 // HUD上のクイックチェンジの魔法アイコン
 typedef struct {
-  s8 idx;             // 0x00, HUD上の魔法アイコンのインデックス
-  magic8_t id;        // 0x01, 魔法のID
+  s8 idx;             // 0x00, registeredMagic の添字, 負なら空き枠
+  magic8_t id;        // 0x01, 魔法のID, 空き枠は -1
   u8 unk_02[2];       // 0x02, まだ未解析, padding?
   MainSprite sprite;  // 0x0004
 } QCMagicSlot;
@@ -200,7 +200,7 @@ typedef struct MainMenu {
     u8 unk_c01;            // 0x0C01, まだ未解析
     s8 idx;                // 0x0C02, 現在選択中のインデックス (0..3), 負なら選択なし
     u8 unk_c03;            // 0x0C03
-    u32 unk_c04;           // 0x0C04
+    s16* equippedIdx;      // 0x0C04, gStat->equippedMagicIdx (サバタなら sabataMagicIdx) を指す
     QCMagicSlot slots[4];  // 0x0C08, HUD上の魔法アイコン, 4つ分
   } qcMagic;               // 0x0C00, 魔法のクイックチェンジ(HUD上)
   struct {
@@ -994,7 +994,66 @@ NON_MATCH void MainMenu_BuildQCWeaponSlots(MainMenu* p) {
 #endif
 }
 
-NAKED void FUN_0808d774(MainMenu* p) { INCFUNC("asm/func/FUN_0808d774.inc"); }
+NON_MATCH void MainMenu_BuildQCMagicSlots(MainMenu* p) {
+#ifdef NONMATCHING_C
+  s32 n = 0;
+  s32 i;
+
+  p->qcMagic.idx = -1;
+
+  if (p->player->kind != PLAYER_SABATA) {
+    p->qcMagic.equippedIdx = &gStat->equippedMagicIdx;
+    for (i = 0; i < 4; i++) {
+      if (gStat->registeredMagic[i] >= 0) {
+        QCMagicSlot* slot = &p->qcMagic.slots[n];
+
+        slot->idx = i;
+        slot->id = gStat->registeredMagic[i];
+        if (i == *p->qcMagic.equippedIdx) {
+          p->qcMagic.idx = n;
+        }
+        n++;
+      }
+    }
+  } else {
+    p->qcMagic.equippedIdx = &gStat->sabataMagicIdx;
+    for (i = 0; i < 2; i++) {
+      p->qcMagic.slots[n].idx = i;
+      p->qcMagic.slots[n].id = (i == 0) ? MAGIC_ZERO_SHIFT : MAGIC_BLACK_SUN;
+      if (i == *p->qcMagic.equippedIdx) {
+        p->qcMagic.idx = n;
+      }
+      n++;
+    }
+  }
+
+  p->qcMagic.iconNums = n;
+  while (n < 4) {
+    p->qcMagic.slots[n].idx |= 0xFF;
+    p->qcMagic.slots[n].id |= 0xFF;
+    n++;
+  }
+
+  if (p->qcMagic.iconNums != 0 && p->qcMagic.idx < 0) {
+    for (i = 1; i < 4; i++) {
+      if (gStat->registeredMagic[(*p->qcMagic.equippedIdx + i) & 3] >= 0) {
+        s32 j;
+
+        *p->qcMagic.equippedIdx = (*p->qcMagic.equippedIdx + i) & 3;
+        for (j = 0; j < 4; j++) {
+          if (p->qcMagic.slots[j].idx == *p->qcMagic.equippedIdx) {
+            p->qcMagic.idx = j;
+          }
+        }
+        break;
+      }
+    }
+  }
+  p->qcMagic.unk_c03 = 0;
+#else
+  INCFUNC("asm/func/MainMenu_BuildQCMagicSlots.inc");
+#endif
+}
 
 void FUN_0808d908(MainMenu* p) {
   FUN_0808d200(p);
@@ -1071,7 +1130,7 @@ void MainMenu1P_0808dddc(MainMenu* p) {
 
   if (p->player != NULL) {
     MainMenu_BuildQCWeaponSlots(p);
-    FUN_0808d774(p);
+    MainMenu_BuildQCMagicSlots(p);
     FUN_0808d4dc(p);
     FUN_0808d564(p);
     if (gFlag030047a4 & FLAG030047A4_UNK_12) {
@@ -1090,7 +1149,7 @@ void FUN_0808de30(MainMenu* p) {
 }
 
 void FUN_0808de50(MainMenu* p) {
-  FUN_0808d774(p);
+  MainMenu_BuildQCMagicSlots(p);
   FUN_0808d564(p);
   FUN_0808d3d4(p);
   FUN_0808d93c(p);
@@ -3562,7 +3621,7 @@ void FUN_0809c28c(void) {
 
 void FUN_0809c2d0(void) {
   if (gMainMenu != NULL && gMainMenu->player != NULL) {
-    FUN_0808d774(gMainMenu);
+    MainMenu_BuildQCMagicSlots(gMainMenu);
     FUN_0808d564(gMainMenu);
     if (gMainMenu->unk_9fe <= 2) {
       FUN_0808d3d4(gMainMenu);
@@ -3595,7 +3654,7 @@ void FUN_0809c464(void) {
   if (gMainMenu != NULL) {
     gMainMenu->player = GetPlayer(0);
     if (gMainMenu->player != NULL) {
-      FUN_0808d774(gMainMenu);
+      MainMenu_BuildQCMagicSlots(gMainMenu);
       FUN_0808d564(gMainMenu);
       MainMenu_BuildQCWeaponSlots(gMainMenu);
       FUN_0808d4dc(gMainMenu);
