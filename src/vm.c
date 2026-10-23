@@ -19,6 +19,8 @@ u8* FUN_0823201c(u8* pc, u8* dst);
 
 static const ScriptArgs sEmptyArgs = {0, NULL};  // 引数無しでスクリプトを呼ぶときに束縛されるデフォルトの引数記述子
 
+EWRAM_DATA u8 gGameStateBuffer[12288] = {};  // 0x0203C400, RandomizeGameStateAddr で このバッファのランダムなアドレスに gScratch, gWorldBackup, gWorld, gStatBackup, gStat の各要素の実態が配置される (チート対策と思われる)
+
 IWRAM_DATA ScriptTable gScriptTable = {};  // 0x03000748
 IWRAM_DATA StringTable gStringTable = {};  // 0x03000758
 
@@ -727,8 +729,6 @@ void FUN_08231bec(void) {
 }
 
 void VM_ClearScratchpad_Proxy(void) { VM_ClearScratchpad(); }
-
-extern u8 gGameStateBuffer[12288];  // src/utility_08237468.c
 
 // チート対策, gGameStateBuffer の中のランダムな位置に各ゲーム状態を配置し直す
 // 残差はレジスタ割当のみ (命令列は 30 対 30 で一致), 原典は base を r1 に置いて REG_VCOUNT を r2 で受ける

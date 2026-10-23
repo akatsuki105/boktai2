@@ -25,6 +25,7 @@ SECTIONS {
       src/video.o(ewram_data);
       src/registry.o(ewram_data);
       src/utility_08237468.o(ewram_data);
+      src/vm.o(ewram_data);
       src/code_08230e88.o(ewram_data);
       src/link.o(ewram_data);
       src/code_0804b9f4.o(ewram_data);
@@ -532,6 +533,7 @@ SECTIONS {
 			src/sprite_anim_aux.o (.text);
 			src/sprite_anim_main.o (.text);
 			src/utility_08237468.o (.text);
+			src/math.o (.text);
 			src/link.o (.text);
 			src/lib/linkManager.o (.text);
 			src/rfu.o (.text);
@@ -820,6 +822,7 @@ SECTIONS {
     src/vm.o (.rodata);
     src/vm_ctrl1.o (.rodata);
     src/utility_08237468.o (.rodata);
+    src/math.o (.rodata);
     src/file.o (.rodata);
     src/data/sprite_animation.o (.rodata);
     src/data/tilemap.o (.rodata);

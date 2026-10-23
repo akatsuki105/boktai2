@@ -67,7 +67,11 @@ COMMON_DATA u16 gSioRecvRing[4][4] = {};             // 0x03004700, ゲームが
 COMMON_DATA u16 gSioRecvData[2][4] = {};             // 0x03004720, ゲームに渡す1回分の受信データ, 読む面は gSioRecvDataFace
 COMMON_DATA u16 gSioRecvRingRead = 0;                // 0x03004730, gSioRecvRing の読み位置 (0..3)
 
-void Sio_ParentTimerIntr(void);
+static void Sio_ParentTimerIntr(void);
+
+static void DisableInterrupts(void) { REG_IME = 0; }
+
+static void EnableInterrupts(void) { REG_IME = 1; }
 
 // タイマー3 を約 100Hz の割り込みで動かし、そのハンドラに Sio_ParentTimerIntr を登録する
 void Sio_StartParentTimer(void) {
@@ -102,7 +106,7 @@ void Sio_StopParentTimer(void) {
 }
 
 // 親のタイマー3割り込み: 子のデータを受信バッファに積み、送信バッファから1バイト送る
-void Sio_ParentTimerIntr(void) {
+static void Sio_ParentTimerIntr(void) {
   s32 recv, m2, m3;
   s32 send;
 
