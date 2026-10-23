@@ -142,7 +142,7 @@
 #define SPRITE_2817 0x2817                     // 大聖堂の水晶?
 #define SPRITE_EFD8 0xEFD8                     // 0..9の数字とまだ何も数字が書かれていないパネルの絵
 #define SPRITE_9DFF 0x9DFF                     // 黒塗り
-#define SPRITE_A152 0xA152                     // なんかの魔方陣
+#define SPRITE_TIME_MCIRCLE 0xA152             // タイム魔方陣
 #define SPRITE_17C7 0x17C7                     // 重量スイッチ
 #define SPRITE_210E 0x210E                     // 弾に見えるが、エフェクトかもしれない
 #define SPRITE_2110 0x2110                     // 未確認, サバタの大きい攻撃判定に付くスプライト

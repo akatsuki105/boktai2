@@ -352,7 +352,7 @@ SECTIONS {
 			src/solar_circle.o (.text);
 			src/entity_a8f1.o (.text);
 			src/entity_7c62.o (.text);
-			src/entity_4759.o (.text);
+			src/time_magic_circle.o (.text);
 			src/entity_1e98.o (.text);
 			src/entity_3117.o (.text);
 			src/entity_8af6.o (.text);

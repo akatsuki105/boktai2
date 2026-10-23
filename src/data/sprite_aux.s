@@ -404,7 +404,7 @@ Tiles:
   .incbin "data/actor_sprites/C42D.4bpp"                 @ 0x08A8C330, SpriteID: 0xC42D, PlttID: 283, なんかの破片?
   .incbin "data/actor_sprites/0334.4bpp"                 @ 0x08A8C530, SpriteID: 0x0334, PlttID: 283, C42Dの破片の小さいやつ?
   .incbin "data/actor_sprites/9DFF.4bpp"                 @ 0x08A8C550, SpriteID: 0x9DFF, PlttID: 83, 黒塗り
-  .incbin "data/actor_sprites/A152.4bpp"                 @ 0x08A8D150, SpriteID: 0xA152, PlttID: 284, なんかの魔方陣
+  .incbin "data/actor_sprites/time_magic_circle.4bpp"    @ 0x08A8D150, SpriteID: 0xA152, PlttID: 284, タイム魔方陣
   .incbin "data/actor_sprites/17C7.4bpp"                 @ 0x08A8D5D0, SpriteID: 0x17C7, PlttID: 287, 重量スイッチ
   .incbin "data/actor_sprites/210E.4bpp"                 @ 0x08A8DBD0, SpriteID: 0x210E, PlttID: 44, エフェクト
   .incbin "data/actor_sprites/210F.4bpp"                 @ 0x08A8DDD0, SpriteID: 0x210F, PlttID: 289, エフェクト(火花?)
