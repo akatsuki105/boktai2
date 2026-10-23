@@ -7022,9 +7022,9 @@ void Player_Lock(Player* p, s32 val) {
   Player_SetAction(p, 0, 0);
 }
 
-void FUN_0807b9dc(Player* p, DirS32 dir, u32 param_3) {
+void FUN_0807b9dc(Player* p, DirS32 dir, u32 scriptID) {
   p->dir_4a9 = dir;
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   p->fn_498 = FUN_080727d4;
   Player_EnterLockedState(p);
   Player_SetAction(p, 0, 0);
@@ -7040,12 +7040,12 @@ void FUN_0807ba14(Player* p, DirS32 dir) {
   p->fn_498 = FUN_08072724;
 }
 
-void FUN_0807ba50(Player* p, DirS32 dir, u32 param_3) {
+void FUN_0807ba50(Player* p, DirS32 dir, u32 scriptID) {
   if (dir >= 0) {
     p->facing = dir;
   }
   Player_SetAnimFacing(p);
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, 0, 2);
   p->fn_498 = FUN_08072724;
@@ -7090,10 +7090,10 @@ void FUN_0807bb3c(Player* p, Vec3* pos, DirS32 dir, s32 param_4, u32 scriptID) {
   p->fn_498 = FUN_08072d48;
 }
 
-void FUN_0807bbb0(Player* p, s32 param_2, u32 param_3) {
+void FUN_0807bbb0(Player* p, s32 param_2, u32 scriptID) {
   Player_Lock(p, 4);
   p->unk_4a6 = param_2;
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   p->facing = FACE_DOWN;
   p->animIDOffset = 1;
   p->xflip = 0;
@@ -7102,9 +7102,9 @@ void FUN_0807bbb0(Player* p, s32 param_2, u32 param_3) {
   p->fn_498 = FUN_0807304c;
 }
 
-void FUN_0807bc14(Player* p, s32 param_2, u32 param_3) {
+void FUN_0807bc14(Player* p, s32 param_2, u32 scriptID) {
   p->unk_4a6 = param_2;
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   p->facing = FACE_UP;
   p->animIDOffset = 0;
   p->xflip = 0;
@@ -7122,13 +7122,11 @@ void FUN_0807bc64(Player* p, u32 scriptID) {
   }
 }
 
-void FUN_0807bcb0(Player* p, DirS32 dir, u32 param_3) {
+void FUN_0807bcb0(Player* p, DirS32 dir, u32 scriptID) {
   Player_EnterLockedState(p);
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, 18, 0);
   p->fn_498 = FUN_08073574;
@@ -7136,9 +7134,7 @@ void FUN_0807bcb0(Player* p, DirS32 dir, u32 param_3) {
 
 void FUN_0807bcfc(Player* p, DirS32 dir) {
   Player_EnterLockedState(p);
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   PlaySound_082406e0(SONG_198);
   Player_EnterLockedState(p);
@@ -7148,30 +7144,24 @@ void FUN_0807bcfc(Player* p, DirS32 dir) {
 
 void FUN_0807bd44(Player* p, DirS32 dir) {
   Player_EnterLockedState(p);
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
   Player_EnterLockedState(p);
   Player_SetAction(p, 18, 1);
   p->fn_498 = FUN_08073574;
 }
 
-void FUN_0807bd84(Player* p, DirS32 dir, u32 param_3) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+void FUN_0807bd84(Player* p, DirS32 dir, u32 scriptID) {
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, 18, 3);
   p->fn_498 = FUN_08073574;
 }
 
 void FUN_0807bdc8(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+  if (dir >= 0) p->facing = dir;
   p->facing |= 1;
   p->scriptID_4b0 = scriptID;
   p->unk_4a6 = param_3;
@@ -7190,9 +7180,7 @@ void FUN_0807bdc8(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
 }
 
 void FUN_0807be58(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+  if (dir >= 0) p->facing = dir;
   p->facing |= 1;
   p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
@@ -7210,16 +7198,14 @@ void FUN_0807be58(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
 }
 
 void FUN_0807bee0(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+  if (dir >= 0) p->facing = dir;
   p->facing |= 1;
   if (p->facing > FACE_DOWN) {
     p->animIDOffset = (8 - p->facing) >> 1;
-    p->xflip = 1;
+    p->xflip = TRUE;
   } else {
     p->animIDOffset = p->facing >> 1;
-    p->xflip = 0;
+    p->xflip = FALSE;
   }
   p->unk_4a4 = param_3;
   p->scriptID_4b0 = scriptID;
@@ -7235,16 +7221,14 @@ void FUN_0807bee0(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
 }
 
 void FUN_0807bfa4(Player* p, DirS32 dir, s32 param_3, s32 param_4, u32 scriptID) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+  if (dir >= 0) p->facing = dir;
   p->facing |= 1;
   if (p->facing > FACE_DOWN) {
     p->animIDOffset = (8 - p->facing) >> 1;
-    p->xflip = 1;
+    p->xflip = TRUE;
   } else {
     p->animIDOffset = p->facing >> 1;
-    p->xflip = 0;
+    p->xflip = FALSE;
   }
   p->unk_4a4 = param_3;
   p->unk_4a6 = param_4;
@@ -7262,17 +7246,15 @@ void FUN_0807c048(Player* p, s32 scriptID) {
   }
 }
 
-void FUN_0807c084(Player* p, DirS32 facing, s32 param_3, u32 scriptID) {
-  if (facing >= 0) {
-    p->facing = facing;
-  }
+void FUN_0807c084(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
+  if (dir >= 0) p->facing = dir;
   p->facing |= 1;
   if (p->facing > FACE_DOWN) {
     p->animIDOffset = (8 - p->facing) >> 1;
-    p->xflip = 1;
+    p->xflip = TRUE;
   } else {
     p->animIDOffset = p->facing >> 1;
-    p->xflip = 0;
+    p->xflip = FALSE;
   }
   p->unk_4a4 = param_3;
   p->scriptID_4b0 = scriptID;
@@ -7281,25 +7263,23 @@ void FUN_0807c084(Player* p, DirS32 facing, s32 param_3, u32 scriptID) {
   p->fn_498 = FUN_08073e18;
 }
 
-void FUN_0807c11c(Player* p, DirS32 facing) {
+void FUN_0807c11c(Player* p, DirS32 dir) {
   u16 animID;
 
-  if (facing >= 0) {
-    p->facing = facing;
-  }
+  if (dir >= 0) p->facing = dir;
   p->facing |= 1;
   if (p->facing > FACE_DOWN) {
     p->animIDOffset = (8 - p->facing) >> 1;
-    p->xflip = 1;
+    p->xflip = TRUE;
   } else {
     p->animIDOffset = p->facing >> 1;
-    p->xflip = 0;
+    p->xflip = FALSE;
   }
   Player_EnterLockedState(p);
   animID = p->animIDOffset + FUN_08066ee4(p->kind, 46);
   MainSprite_SetAnim(&p->sprite_88, &p->spriteSet_68, animID, 1, MAIN_ANIM_REVERSE);
   MainSprite_AdvanceAnim(&p->sprite_88, &p->spriteSet_68);
-  if (p->xflip != 0) {
+  if (p->xflip) {
     p->sprite_88.flags |= SPRFLAG_XFLIP;
   } else {
     p->sprite_88.flags &= ~SPRFLAG_XFLIP;
@@ -7308,10 +7288,8 @@ void FUN_0807c11c(Player* p, DirS32 facing) {
   p->fn_498 = FUN_08073e18;
 }
 
-void FUN_0807c200(Player* p, DirS32 facing, u32 scriptID) {
-  if (facing >= 0) {
-    p->facing = facing;
-  }
+void FUN_0807c200(Player* p, DirS32 dir, u32 scriptID) {
+  if (dir >= 0) p->facing = dir;
   p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, 7, 0);
@@ -7319,10 +7297,10 @@ void FUN_0807c200(Player* p, DirS32 facing, u32 scriptID) {
     p->facing |= 1;
     if (p->facing > FACE_DOWN) {
       p->animIDOffset = (8 - p->facing) >> 1;
-      p->xflip = 1;
+      p->xflip = TRUE;
     } else {
       p->animIDOffset = p->facing >> 1;
-      p->xflip = 0;
+      p->xflip = FALSE;
     }
     p->fn_498 = FUN_08075134;
   } else {
@@ -7338,21 +7316,19 @@ void FUN_0807c200(Player* p, DirS32 facing, u32 scriptID) {
       p->fn_498 = FUN_080773f0;
     } else {
       p->animIDOffset >>= 2;
-      p->xflip = 0;
+      p->xflip = FALSE;
       p->fn_498 = FUN_0807317c;
     }
   }
 }
 
-void FUN_0807c30c(Player* p, DirS32 dir, u32 param_3) {
+void FUN_0807c30c(Player* p, DirS32 dir, u32 scriptID) {
   if (p->kind >= PLAYER_BAT && p->kind <= PLAYER_SLEEPING) {
-    FUN_0807c200(p, dir, param_3);
+    FUN_0807c200(p, dir, scriptID);
   }
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, 7, 7);
   p->fn_498 = FUN_0807317c;
@@ -7360,78 +7336,64 @@ void FUN_0807c30c(Player* p, DirS32 dir, u32 param_3) {
 
 NAKED void FUN_0807c36c(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c36c.inc"); }
 
-void FUN_0807c458(Player* p, DirS32 dir, u32 param_3) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+void FUN_0807c458(Player* p, DirS32 dir, u32 scriptID) {
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, 3, 0);
   p->fn_498 = FUN_08073f88;
 }
 
-void FUN_0807c49c(Player* p, DirS32 dir, u32 param_3) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+void FUN_0807c49c(Player* p, DirS32 dir, u32 scriptID) {
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, 3, 2);
   p->fn_498 = FUN_08073f88;
 }
 
-void FUN_0807c4e0(Player* p, DirS32 dir, u32 param_3) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+void FUN_0807c4e0(Player* p, DirS32 dir, u32 scriptID) {
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, 3, 0);
   p->fn_498 = FUN_080740b0;
 }
 
-void FUN_0807c524(Player* p, DirS32 dir, u32 param_3) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+void FUN_0807c524(Player* p, DirS32 dir, u32 scriptID) {
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, 3, 2);
   p->fn_498 = FUN_080740b0;
 }
 
-void FUN_0807c568(Player* p, DirS32 dir, u32 param_3) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+void FUN_0807c568(Player* p, DirS32 dir, u32 scriptID) {
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, 3, 0);
   p->fn_498 = FUN_08074244;
 }
 
-void FUN_0807c5ac(Player* p, DirS32 dir, u32 param_3) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+void FUN_0807c5ac(Player* p, DirS32 dir, u32 scriptID) {
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, 3, 2);
   p->fn_498 = FUN_08074244;
 }
 
-void FUN_0807c5f0(Player* p, DirS32 dir, u32 param_3) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+void FUN_0807c5f0(Player* p, DirS32 dir, u32 scriptID) {
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
-  p->scriptID_4b0 = param_3;
+  p->scriptID_4b0 = scriptID;
   Player_EnterLockedState(p);
   Player_SetAction(p, 3, 0);
   p->fn_498 = FUN_08074350;
@@ -7439,12 +7401,10 @@ void FUN_0807c5f0(Player* p, DirS32 dir, u32 param_3) {
 
 NAKED void FUN_0807c634(Player* p, s32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_0807c634.inc"); }
 
-void FUN_0807c748(Player* p, DirS32 dir, s32 param_3, u32 param_4) {
-  if (dir >= 0) {
-    p->facing = dir;
-  }
+void FUN_0807c748(Player* p, DirS32 dir, s32 param_3, u32 scriptID) {
+  if (dir >= 0) p->facing = dir;
   Player_SetAnimFacing(p);
-  p->scriptID_4b0 = param_4;
+  p->scriptID_4b0 = scriptID;
   p->unk_4a7 = param_3;
   Player_EnterLockedState(p);
   Player_SetAction(p, 3, 0);
@@ -7460,9 +7420,9 @@ void FUN_0807c798(Player* p, s32 scriptID) {
 
 NAKED void FUN_0807c7c8(Player* p) { INCFUNC("asm/func/FUN_0807c7c8.inc"); }
 
-void FUN_0807c88c(Player* p, Vec3* pos, DirS32 dir, u32 param_4) {
+void FUN_0807c88c(Player* p, Vec3* pos, DirS32 dir, u32 scriptID) {
   p->unk_49c = *pos;
-  p->scriptID_4b0 = param_4;
+  p->scriptID_4b0 = scriptID;
   p->dir_4a9 = dir;
   Player_EnterLockedState(p);
   Player_SetAction(p, 2, 0);
@@ -7844,7 +7804,8 @@ void FUN_0807d5c8(void) {
   }
 }
 
-void FUN_0807d5f8(void) {
+// 0x409D
+void Cmd_409D(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -7854,7 +7815,8 @@ void FUN_0807d5f8(void) {
   }
 }
 
-void FUN_0807d628(void) {
+// 0x40D7
+void Cmd_40D7(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -7864,7 +7826,8 @@ void FUN_0807d628(void) {
   }
 }
 
-void FUN_0807d660(void) {
+// 0x58D7
+void Cmd_58D7(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 
@@ -7876,7 +7839,8 @@ void FUN_0807d660(void) {
   }
 }
 
-void FUN_0807d6a8(void) {
+// 0x3705
+void Cmd_3705(void) {
   s32 i = VM_GetPlayerIdx();
   Player* p = gPlayerPtr[i];
 

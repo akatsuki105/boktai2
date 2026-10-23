@@ -139,7 +139,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x3613, Cmd_LockPlayer
 	.4byte 0x364D, sound_08240344
 	.4byte 0x3699, FUN_0804b9f4
-	.4byte 0x3705, FUN_0807d6a8
+	.4byte 0x3705, Cmd_3705
 	.4byte 0x3757, Cmd_GiveWeapon @ HashName("武器取得")
 	.4byte 0x377D, FUN_081d7ca8
 	.4byte 0x3A5D, Cmd_RemoveItem @ HashName("アイテム破棄")
@@ -165,9 +165,9 @@ gCommandList: @ 0x085A9208
 	.4byte 0x3F99, EnemyOctopus_Create @ HashName("オクトパス")
 	.4byte 0x3FFD, Entity3FFD_Create
 	.4byte 0x4063, Entity4063_Create
-	.4byte 0x409D, FUN_0807d5f8
+	.4byte 0x409D, Cmd_409D
 	.4byte 0x40A6, FUN_08209b10
-	.4byte 0x40D7, FUN_0807d628
+	.4byte 0x40D7, Cmd_40D7
 	.4byte 0x40F8, FUN_08241550
 	.4byte 0x4127, FUN_0807d7ac
 	.4byte 0x41D3, FUN_0807b5d0
@@ -231,7 +231,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x56DC, Entity56DC_Create
 	.4byte 0x571D, CoffinShop_Create @ HashName("棺桶屋")
 	.4byte 0x5844, FUN_081d5450
-	.4byte 0x58D7, FUN_0807d660
+	.4byte 0x58D7, Cmd_58D7
 	.4byte 0x5933, Cmd_GetMoonPhase
 	.4byte 0x5941, Entity5941_Create
 	.4byte 0x5986, FUN_0807b118
