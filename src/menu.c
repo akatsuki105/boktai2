@@ -2765,6 +2765,7 @@ NON_MATCH void MainMenu_ShowPlayerTitle(MainMenu* p) {
   s32 idx;
   s32 i;
 
+  // FUN_08090b10
   idx = 0;
   if (kind != PLAYER_SOLAR_DJANGO) {
     idx = 1;
