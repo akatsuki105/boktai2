@@ -104,7 +104,7 @@ _080485D4:
 _08048638:
 	adds r0, r1, #0
 	bl VM_ParseStringRef
-	bl Textbox_LookupString
+	bl GetStringByID
 	str r0, [r5, #0x1c]
 	cmp r0, #0
 	bne _0804865A

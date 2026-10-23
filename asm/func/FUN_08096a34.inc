@@ -68,7 +68,7 @@ _08096A74:
 	bl VM_ParseStringRef
 	adds r0, #0x25
 	adds r0, r0, r5
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 _08096ADC:
 	pop {r4, r5, r6}

@@ -21,7 +21,7 @@
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #9
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	adds r0, r5, #0
 	bl FUN_081db4b0

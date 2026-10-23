@@ -36,7 +36,7 @@
 	movs r1, #0
 	ldrsb r1, [r5, r1]
 	adds r0, r0, r1
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r5, r0, #0
 	adds r0, r4, #0
 	mov r1, r8

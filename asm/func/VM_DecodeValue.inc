@@ -102,7 +102,7 @@ _0823136C:
 	lsls r1, r1, #8
 	ldrb r0, [r4]
 	orrs r0, r1
-	bl Textbox_LookupString
+	bl GetStringByID
 	str r0, [r5]
 	movs r0, #7
 	str r0, [r6]

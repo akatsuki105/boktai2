@@ -100,7 +100,7 @@ NON_MATCH s32 FUN_08011584(char* password, u8* charTablePc, u8* nameTablePc, u8*
   }
 
   ClearMemory(p, sizeof(PasswordDecoder));
-  p->charTable = Textbox_LookupString(VM_ParseStringRef(charTablePc));
+  p->charTable = GetStringByID(VM_ParseStringRef(charTablePc));
   p->nameTablePc = nameTablePc;
   p->rngState = 0x0008C159;
   PasswordDecoder_StripTags(p->password, password, 0x30);
@@ -132,7 +132,7 @@ void FUN_08011608(void) {
         u8* passwordPc = VM_GetPC();
 
         if (passwordPc != NULL) {
-          FUN_08011584(Textbox_LookupString(VM_ParseStringRef(passwordPc)), charTablePc, nameTablePc, gStat->name);
+          FUN_08011584(GetStringByID(VM_ParseStringRef(passwordPc)), charTablePc, nameTablePc, gStat->name);
         }
       }
     }

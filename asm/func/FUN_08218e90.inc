@@ -174,7 +174,7 @@ _08218FBE:
 	bl FUN_0808fc14
 	adds r4, r4, r0
 	adds r0, r4, #0
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r4, r0, #0
 	add r1, sp, #8
 	movs r0, #0x80
@@ -378,7 +378,7 @@ _08219164:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #3
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r4, r0, #0
 	movs r0, #0x15
 	movs r1, #7
@@ -412,7 +412,7 @@ _082191E4:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #2
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r4, r0, #0
 	movs r0, #8
 	movs r1, #6

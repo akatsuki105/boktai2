@@ -52,7 +52,7 @@ _081E2F44:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #0xa
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #0xa
 	b _081E32C6
@@ -91,7 +91,7 @@ _081E2F9A:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #7
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #7
 	b _081E32C6
@@ -137,7 +137,7 @@ _081E2FFC:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #5
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #5
 	b _081E3182
@@ -165,7 +165,7 @@ _081E3042:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #0x14
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #0x14
 	b _081E3182
@@ -187,7 +187,7 @@ _081E3076:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #3
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #3
 	b _081E3182
@@ -215,7 +215,7 @@ _081E30BA:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #6
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #6
 	b _081E3182
@@ -242,7 +242,7 @@ _081E30F8:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #0x15
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #0x15
 	b _081E3182
@@ -265,7 +265,7 @@ _081E312E:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #4
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #4
 	b _081E3182
@@ -290,7 +290,7 @@ _081E3168:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #2
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #2
 _081E3182:
@@ -318,7 +318,7 @@ _081E31A0:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #0xa
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #0xa
 	b _081E32C6
@@ -359,7 +359,7 @@ _081E31E4:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #0xf
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #0xf
 	b _081E32C6
@@ -412,7 +412,7 @@ _081E324C:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #0x10
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #0x10
 	b _081E32C6
@@ -434,7 +434,7 @@ _081E32A0:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #0x11
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	movs r0, #0x11
 _081E32C6:

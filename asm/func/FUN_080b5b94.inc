@@ -99,7 +99,7 @@ _080B5C68:
 	adds r0, r1, #0
 	adds r0, #0xa9
 _080B5C70:
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	b _080B5CA4
 _080B5C7A:
@@ -123,7 +123,7 @@ _080B5C98:
 	adds r1, #0x9c
 _080B5C9A:
 	adds r0, r1, r7
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 _080B5CA4:
 	pop {r4, r5, r6, r7}

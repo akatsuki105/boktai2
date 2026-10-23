@@ -79,7 +79,7 @@ _0801C968:
 	adds r0, r5, r1
 	ldr r0, [r0]
 	bl VM_ParseStringRef
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r1, r0, #0
 	adds r0, r5, #0
 	bl FUN_0801bf88

@@ -121,13 +121,13 @@ NON_MATCH void FUN_082111cc(AlbumMenu* p) {
     TextPanel_SetMessage(p->panelID, p->cursor);
     TextPanel_Start(p->panelID);
     Marquee_Clear();
-    Marquee_SetText(Textbox_LookupString(VM_ParseStringRef(p->unk_874) + p->cursor));
+    Marquee_SetText(GetStringByID(VM_ParseStringRef(p->unk_874) + p->cursor));
   } else {
     TextPanel_SetScript(p->panelID, p->scriptPc);
     TextPanel_SetMessage(p->panelID, 27);
     TextPanel_Start(p->panelID);
     Marquee_Clear();
-    Marquee_SetText(Textbox_LookupString(VM_ParseStringRef(p->unk_878) + p->cursor));
+    Marquee_SetText(GetStringByID(VM_ParseStringRef(p->unk_878) + p->cursor));
   }
 #else
   INCFUNC("asm/func/FUN_082111cc.inc");

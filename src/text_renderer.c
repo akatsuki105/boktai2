@@ -149,7 +149,7 @@ NON_MATCH s32 Text_ConcatStringRefs(char* dst, u8* pc1, u8* pc2, s32 off1, s32 o
   s32 ref;
 
   ref = VM_ParseStringRef(pc1);
-  s = Textbox_LookupString(ref + off1);
+  s = GetStringByID(ref + off1);
   if (s == NULL) {
     *dst = 0;
     return -1;
@@ -159,7 +159,7 @@ NON_MATCH s32 Text_ConcatStringRefs(char* dst, u8* pc1, u8* pc2, s32 off1, s32 o
   }
 
   ref = VM_ParseStringRef(pc2);
-  s = Textbox_LookupString(ref + off2);
+  s = GetStringByID(ref + off2);
   if (s == NULL) {
     *dst = 0;
     return -1;

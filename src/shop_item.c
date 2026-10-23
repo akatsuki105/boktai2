@@ -178,11 +178,11 @@ void FUN_080ba2d8(ItemShop* p) {
     base = VM_ParseStringRef(p->unk_12e4);
     if (gStat->playerKind == 5) {
       if (id == 1) {
-        Marquee_SetText(Textbox_LookupString(base + 0xEA));
+        Marquee_SetText(GetStringByID(base + 0xEA));
         return;
       }
       if (id == 0xD) {
-        Marquee_SetText(Textbox_LookupString(base + 0xA9));
+        Marquee_SetText(GetStringByID(base + 0xA9));
         return;
       }
     }
@@ -192,7 +192,7 @@ void FUN_080ba2d8(ItemShop* p) {
     } else {
       base += 0x9C;
     }
-    Marquee_SetText(Textbox_LookupString(base + id));
+    Marquee_SetText(GetStringByID(base + id));
   }
 }
 
@@ -636,7 +636,7 @@ void FUN_080bb294(ItemShop* p) {
     {
       s32 base = VM_ParseStringRef(p->unk_12e8) + 0x25;
 
-      Marquee_SetText(Textbox_LookupString(base + id));
+      Marquee_SetText(GetStringByID(base + id));
     }
   }
 

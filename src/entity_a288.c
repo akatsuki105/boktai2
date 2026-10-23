@@ -405,7 +405,7 @@ void FUN_082158e4(EntityA288* p) {
 // 残差0命令 (31/31), レジスタ名だけ違う: 0xE84 のプール定数が原典は r1, こちらは r2 に載る
 NON_MATCH void FUN_082158fc(EntityA288* p) {
 #ifdef NONMATCHING_C
-  char* text = Textbox_LookupString(VM_ParseStringRef(p->unk_e80) + p->unk_e84);
+  char* text = GetStringByID(VM_ParseStringRef(p->unk_e80) + p->unk_e84);
 
   FUN_0821b28c(9, 10, 0x12, 2);
   Video_DrawText(9, 10, text);
@@ -442,7 +442,7 @@ void FUN_08216000(EntityA288* p) {
 
   ClearBGTilemapBuffer(0);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
-  str = Textbox_LookupString(VM_ParseStringRef(p->unk_12ac) + p->unk_12ba);
+  str = GetStringByID(VM_ParseStringRef(p->unk_12ac) + p->unk_12ba);
   FUN_0821b28c(10, 4, 16, 2);
   Video_DrawText(10, 4, str);
 }

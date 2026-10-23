@@ -202,7 +202,7 @@ export class InstructionReader {
           str.bytes = bytes;
           return str;
         }
-        case ConstantOp.StringRef: { // StringRef: 2バイトの文字列ID(Textbox_LookupString に渡される)
+        case ConstantOp.StringRef: { // StringRef: 2バイトの文字列ID(GetStringByID に渡される)
           const id = this.stream.readByte() | (this.stream.readByte() << 8);
           return new Instruction(InsnType.StringRef, id);
         }

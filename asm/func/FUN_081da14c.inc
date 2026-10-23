@@ -97,7 +97,7 @@ _081DA1E2:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, r0, r4
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	strb r4, [r6]
 _081DA20E:

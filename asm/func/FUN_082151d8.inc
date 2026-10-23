@@ -67,7 +67,7 @@ _08215258:
 	movs r2, #0
 	ldrsh r1, [r1, r2]
 	adds r0, r0, r1
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r2, r0, #0
 	movs r0, #4
 	adds r1, r6, #0

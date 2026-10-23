@@ -71,7 +71,7 @@ void TextPanelManager_ClearGlobal(void) { gTextPanelManager = NULL; }
 bool32 TextPanelManager_Exists(void) { return gTextPanelManager != NULL; }
 
 // 枠のスクリプト位置から文字列テーブルを引く, offset は同じ参照内での何番目かを指す
-char* TextPanel_LookupText(TextPanel* p, s32 offset) { return Textbox_LookupString(VM_ParseStringRef(p->scriptPc) + offset); }
+char* TextPanel_LookupText(TextPanel* p, s32 offset) { return GetStringByID(VM_ParseStringRef(p->scriptPc) + offset); }
 
 TextPanel* TextPanelManager_FindByID(TextPanelManager* mgr, s32 id) {
   TextPanel* p = mgr->head;

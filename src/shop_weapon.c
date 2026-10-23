@@ -31,7 +31,7 @@ typedef struct WeaponShop {
   rgb555* bgPltt;                  // 0x163C, BGP_A41A[208]
   u8* unk_1640;                    // 0x1640, '.s' があれば VM_GetPC_Proxy の戻り値
   u8* unk_1644;                    // 0x1644, '.w' があれば VM_GetPC_Proxy の戻り値
-  char* unk_1648;                  // 0x1648, '.c' を VM_ParseStringRef して Textbox_LookupString した文字列
+  char* unk_1648;                  // 0x1648, '.c' を VM_ParseStringRef して GetStringByID した文字列
   u8 unk_164c[0x1654 - 0x164C];    // 0x164C, まだ未解析
   u8 unk_1654;                     // 0x1654, _Init が 0 を入れる
   u8 unk_1655;                     // 0x1655, FUN_080bcdf8 の第3引数
@@ -1027,7 +1027,7 @@ void WeaponShop_ReadScriptArgs(WeaponShop* p) {
   if (VM_SeekToNamedArg('c')) {
     p->unk_1648 = VM_GetPC_Proxy();
     if (p->unk_1648 != 0) {
-      p->unk_1648 = Textbox_LookupString(VM_ParseStringRef((u8*)p->unk_1648) + 1);
+      p->unk_1648 = GetStringByID(VM_ParseStringRef((u8*)p->unk_1648) + 1);
     }
   }
 }

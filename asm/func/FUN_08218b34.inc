@@ -14,7 +14,7 @@
 	ldr r0, [r4]
 	bl VM_ParseStringRef
 	adds r0, #0x54
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r7, r0, #0
 	movs r1, #0
 	mov ip, r1

@@ -242,7 +242,7 @@ void FUN_0820d5f8(EnemyDexMenu* p) {
     }
 
     Marquee_Clear();
-    Marquee_SetText(Textbox_LookupString(VM_ParseStringRef(p->scriptM) + p->unk_26));
+    Marquee_SetText(GetStringByID(VM_ParseStringRef(p->scriptM) + p->unk_26));
     p->flags &= ~EDEXFLAG_UNK_3;
     p->flags |= EDEXFLAG_UNK_1;
     p->flags &= ~EDEXFLAG_UNK_2;

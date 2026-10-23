@@ -107,7 +107,7 @@ _08242E5C:
 	beq _08242EA0
 	bl VM_ParseStringRef
 	adds r0, r0, r4
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r3, r0, #0
 	movs r5, #0
 	ldrb r2, [r3]

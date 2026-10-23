@@ -127,7 +127,7 @@ NON_MATCH u8* VM_DecodeValue(u8* pc, s32* type, void* val) {
       }
       case OP_STRING_REF: {
         s32 stringID = (p[1] << 8) | p[0];
-        *(s32*)val = (s32)Textbox_LookupString(stringID);
+        *(s32*)val = (s32)GetStringByID(stringID);
         *type = OP_STRING;
         p += 2;
         break;
@@ -558,7 +558,7 @@ void* UNUSED FUN_0823193c(void* p, u32 key, s32 count) {
 }
 
 // stringID で指定した文字列を返す
-char* Textbox_LookupString(s32 stringID) {
+char* GetStringByID(s32 stringID) {
   StringTable* tbl = &gStringTable;
 
   // header = &gStringHeader[stringID]

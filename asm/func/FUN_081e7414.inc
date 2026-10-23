@@ -146,7 +146,7 @@ _081E7456:
 	ldr r0, [r3]
 	bl VM_ParseStringRef
 	adds r0, #0xf
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	ldr r0, _081E7638 @ =0x00001617
 	adds r1, r7, r0

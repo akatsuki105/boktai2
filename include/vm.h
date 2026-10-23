@@ -156,7 +156,7 @@ u8* VM_DecodeValue(u8* pc, s32* type, void* val);
 void* VM_GetValueAtSafe(u8* addr);
 void* VM_GetValueSafe2(void);
 s32 VM_ParseStringRef(u8* pc);
-char* Textbox_LookupString(s32 stringID);
+char* GetStringByID(s32 stringID);
 
 s32 VM_ExecByID(u32 scriptID, ScriptArgs* args);
 void VM_ExecSpecial(void);

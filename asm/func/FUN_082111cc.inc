@@ -27,7 +27,7 @@
 	adds r1, r0, #0
 	ldrb r0, [r6]
 	adds r0, r1, r0
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 	b _0821125E
 	.align 2, 0
@@ -54,7 +54,7 @@ _08211224:
 	adds r1, r0, #0
 	ldrb r0, [r6]
 	adds r0, r1, r0
-	bl Textbox_LookupString
+	bl GetStringByID
 	bl Marquee_SetText
 _0821125E:
 	pop {r4, r5, r6}

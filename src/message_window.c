@@ -289,7 +289,7 @@ s32 Cmd_2575(void) {
   if (pc == NULL) return -1;
 
   offset = VM_GetNamedArgValue('i', 0);
-  MessageWindow_SetExtendValue(idx, Textbox_LookupString(VM_ParseStringRef(pc) + offset));
+  MessageWindow_SetExtendValue(idx, GetStringByID(VM_ParseStringRef(pc) + offset));
   return 0;
 }
 
@@ -375,7 +375,7 @@ s32 FUN_08047fbc(void) {
 }
 
 // スクリプトの文字列表の lineIdx 行目を引く
-char* MessageWindow_GetLine(MessageWindow* p, s32 lineIdx) { return Textbox_LookupString(VM_ParseStringRef(p->scriptPc) + lineIdx); }
+char* MessageWindow_GetLine(MessageWindow* p, s32 lineIdx) { return GetStringByID(VM_ParseStringRef(p->scriptPc) + lineIdx); }
 
 NAKED void MessageWindow_StateWaitInput(MessageWindow* p) { INCFUNC("asm/func/MessageWindow_StateWaitInput.inc"); }
 

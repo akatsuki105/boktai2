@@ -8,7 +8,7 @@
 	adds r1, r4, r2
 	ldrb r1, [r1]
 	adds r0, r0, r1
-	bl Textbox_LookupString
+	bl GetStringByID
 	movs r3, #0
 	ldrb r1, [r0]
 	cmp r1, #0

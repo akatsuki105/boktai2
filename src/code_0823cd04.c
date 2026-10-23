@@ -447,7 +447,7 @@ void FUN_0823d70c(void) {
     u8* pc = VM_GetPC();
 
     if (pc != NULL) {
-      char* str = Textbox_LookupString(VM_ParseStringRef(pc));
+      char* str = GetStringByID(VM_ParseStringRef(pc));
 
       u16_030047d8 = (str[1] | (str[0] << 8)) & 0xFFF;
     }

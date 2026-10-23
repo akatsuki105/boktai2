@@ -19,7 +19,7 @@ _080115A4:
 	bl ClearMemory
 	adds r0, r4, #0
 	bl VM_ParseStringRef
-	bl Textbox_LookupString
+	bl GetStringByID
 	str r0, [r5, #0x74]
 	str r7, [r5, #0x78]
 	ldr r0, _08011604 @ =0x0008C159

@@ -15,7 +15,7 @@ _080114C4:
 	bne _080114E2
 	ldr r0, [r6, #0x78]
 	bl VM_ParseStringRef
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r1, r0, #0
 	adds r1, #0xa0
 	ldrb r1, [r1]

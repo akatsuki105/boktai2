@@ -100,7 +100,7 @@ void CoffinShop_UpdateDescription(CoffinShop* p) {
     MessageWindow_SetInstant(1);
     MessageWindow_ShowLine(id);
     base = VM_ParseStringRef(p->unk_ec4) + 78;
-    Marquee_SetText(Textbox_LookupString(base + id));
+    Marquee_SetText(GetStringByID(base + id));
   }
 }
 
