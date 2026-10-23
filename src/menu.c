@@ -184,8 +184,8 @@ typedef struct MainMenu {
   AuxSprite sprite_b60;          // 0x0B60, ->gfx_b8c
   AuxSpriteGfx gfx_b8c;          // 0x0B8C, SPRITE_BAT
   u8 unk_ba8[0xBB8 - 0xBA8];     // 0x0BA8, まだ未解析
-  AuxSprite sprite_bb8;          // 0x0BB8, ->gfx_be4
-  AuxSpriteGfx gfx_be4;          // 0x0BE4, SPRITE_SOLAR_STATION
+  AuxSprite stand;               // 0x0BB8, ->standGfx
+  AuxSpriteGfx standGfx;         // 0x0BE4, SPRITE_SOLAR_STATION (暗黒カードの太陽スタンド)
   struct {
     u8 iconNums;           // 0x0C00, クイックチェンジのスロット数(= 魔法装備数)
     u8 unk_c01;            // 0x0C01, まだ未解析
@@ -236,8 +236,8 @@ typedef struct MainMenu {
   MMenuPtclSet ptclSets[2];      // 0x3B8C, FUN_0808cacc が2組とも Particle_Remove で片付ける
   bool8 inValuableInventory;     // 0x3F9C
   u8 unk_3f9d;                   // 0x3F9D
-  u8 vitaminStat;                // 0x3F9E, ビタミン剤で上げるステータス番号, FUN_08092bf0 が +255 してメッセージ行IDにする
-  u8 vitaminAmount;              // 0x3F9F, ビタミン剤で上げる量, 合計99で頭打ちになる前の値
+  u8 vitaminStat;                // 0x3F9E, IET_VITAMINS で上げるステータス番号, FUN_08092bf0 が +255 してメッセージ行IDにする
+  u8 vitaminAmount;              // 0x3F9F, IET_VITAMINS で上げる量, 合計99で頭打ちになる前の値
   u8 unk_3fa0;                   // 0x3FA0, '.p'
   u8 unk_3fa1;                   // 0x3FA1
   s16 effectAmount;              // 0x3FA2, アイテム使用時のポップアップに出す効果量, FUN_0809296c が符号付きで読んで FUN_08092868 に渡す
@@ -520,7 +520,7 @@ void FUN_0808b82c(MainMenu* p) {
     p->sprites[i].flags |= SPRFLAG_HIDDEN;
   }
   p->sprite_b60.flags |= SPRFLAG_HIDDEN;
-  p->sprite_bb8.flags |= SPRFLAG_HIDDEN;
+  p->stand.flags |= SPRFLAG_HIDDEN;
 }
 
 // 現在のページ名を表示する
@@ -1823,7 +1823,7 @@ void ItemEffect_Good(MainMenu* p, s32 goodCondID, s32 goodCondSec) {
   }
 }
 
-// statIdx のステータスのドーピングボーナスを amount 上げる (合計99が上限), statIdx が範囲外ならランダムな1種
+// IET_VITAMINS, statIdx のステータスのドーピングボーナスを amount 上げる (合計99が上限), statIdx が範囲外ならランダムな1種
 // 残差4命令 (69/65), 原典は gStat + statIdx*2 を共通の基底にして 0x18 / 0x20 をレジスタオフセットで ldrsh するが, こちらは gStat+0x18 と gStat+0x20 を別々に組む (associate_trees が定数を gStat 側へ寄せる)
 // Tier A-C 試済 (添字をローカルにする/フィールド直読み, stats の2配列分割)
 NON_MATCH void ItemEffect_Vitamins(MainMenu* p, s32 statIdx, s32 amount) {
@@ -1854,33 +1854,40 @@ NON_MATCH void ItemEffect_Vitamins(MainMenu* p, s32 statIdx, s32 amount) {
 #endif
 }
 
-// 精霊虫召喚
-void ItemEffect_Bugs(MainMenu* p, s32 param_2, s32 param_3) {
+/**
+ * @brief IET_BUGS, 精霊虫召喚
+ * @param kind 精霊虫の種類 (0: 太陽虫, 1: 月光虫, 2: 暗黒虫)
+ * @param amount 呼び出す数
+ */
+void ItemEffect_Bugs(MainMenu* p, s32 kind, s32 amount) {
   Player* player = p->player;
 
   if (player != NULL) {
-    p->unk_3fad = param_2;
+    p->unk_3fad = kind;
     if (player->kind == PLAYER_SABATA) {
-      if ((u8)param_2 == 0) {
+      if ((u8)kind == 0) {
         p->unk_3fad = 2;
-      } else if ((u8)param_2 == 2) {
+      } else if ((u8)kind == 2) {
         p->unk_3fad = 0;
       }
     }
-    p->unk_3fae = param_3;
+    p->unk_3fae = amount;
     p->unk_3fac = 1;
     p->unk_3ae4 = 1;
   }
 }
 
-// IET_WARP
-void ItemEffect_Warp(MainMenu* p, s32 val, s32 _) {
+/**
+ * @brief IET_WARP, 転移の葉, 愚者のカード
+ * @param kind 0: 転移の葉, 1: 愚者のカード
+ */
+void ItemEffect_Warp(MainMenu* p, s32 kind, s32 _) {
   p->unk_3fb0 = 1;
-  p->unk_3fb1 = val;
+  p->unk_3fb1 = kind;
   p->unk_3ae4 = 1;
 }
 
-// IET_SOLAR
+// IET_SOLAR, 太陽ゲージ操作 (テルテルボーズ、ズーボルテルテ, おてんきゲタ)
 // 残差は30/32命令, 原典は1つ目の書き込みの後で gStat を読み直す
 NON_MATCH void ItemEffect_Solar(MainMenu* p, s32 _, s32 __) {
 #ifdef NONMATCHING_C
@@ -1917,9 +1924,13 @@ void ItemEffect_HPMP(MainMenu* p, s32 _, s32 __) {
   }
 }
 
-void ItemEffect_AOE(MainMenu* p, s32 val, s32 _) {
+/**
+ * @brief IET_AOE, 画面内の全ての敵にダメージ
+ * @param kind 0: 正義のカード, 1: 塔のカード
+ */
+void ItemEffect_AOE(MainMenu* p, s32 kind, s32 _) {
   p->unk_3fb8 = 1;
-  p->unk_3fb9 = val;
+  p->unk_3fb9 = kind;
   p->unk_3ae4 = 1;
 }
 
@@ -3006,7 +3017,7 @@ void MainMenu1P_RemoveSprites(MainMenu* p) {
   }
 
   AuxSprite_Remove(&p->sprite_b60);
-  AuxSprite_Remove(&p->sprite_bb8);
+  AuxSprite_Remove(&p->stand);
 }
 
 // 残差はレジスタ割当のみ (935/934 + 末尾のダミー b, 同じ命令が同じ順で並ぶ), 原典は 0 を r1/r4 の2本に持ち, 定数オフセットを既存レジスタから加算で作る (0x100 = 0x70 + 0x90 等) が, こちらは movs/lsls やプール定数で作り直す
@@ -3082,12 +3093,12 @@ NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
 
   pos.x = 0, pos.y = 0;
   for (i = 0; i < 10; i++) {
-    MainSprite_Add(&p->sprites[3 + i], &p->gfx.smenu, 100, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[3 + i], &p->gfx.smenu, SMENU_PAGE_LONG(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
   }
 
   pos.x = 0, pos.y = 0;
-  MainSprite_Add(&p->sprites[66], &p->gfx.smenu, 77, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[67], &p->gfx.smenu, 78, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[66], &p->gfx.smenu, SMENU_STAT_ASSIGN, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[67], &p->gfx.smenu, SMENU_STAT_ASSIGN_OK, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
 
   pos.x = 0, pos.y = 0;
   for (i = 0; i < 4; i++) {
@@ -3115,10 +3126,10 @@ NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
   }
 
   pos.x = 0, pos.y = 0;
-  MainSprite_Add(&p->sprites[82], &p->gfx.smenu, 54, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[83], &p->gfx.smenu, 55, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[84], &p->gfx.smenu, 52, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
-  MainSprite_Add(&p->sprites[85], &p->gfx.smenu, 53, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[82], &p->gfx.smenu, SMENU_MAP_SCROLL(2), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[83], &p->gfx.smenu, SMENU_MAP_SCROLL(3), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[84], &p->gfx.smenu, SMENU_MAP_SCROLL(0), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[85], &p->gfx.smenu, SMENU_MAP_SCROLL(1), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
 
   pos.x = 0, pos.y = 0;
   MainSprite_Add(&p->sprites[100], &p->gfx.loans, 4, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
@@ -3149,11 +3160,11 @@ NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
     pos.x += 8;
   }
 
-  Video_GetAuxSprite(&p->gfx_be4, SPRITE_SOLAR_STATION);
-  AuxSprite_Add(&p->sprite_bb8, &p->gfx_be4, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST);
-  Video_SetAuxSpritePltt(&p->gfx_be4, 323);
-  p->sprite_bb8.priority = 0;
-  p->sprite_bb8.pos.x = 160, p->sprite_bb8.pos.y = 88, p->sprite_bb8.pos.z = 0;
+  Video_GetAuxSprite(&p->standGfx, SPRITE_SOLAR_STATION);
+  AuxSprite_Add(&p->stand, &p->standGfx, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST);
+  Video_SetAuxSpritePltt(&p->standGfx, 323);  // 暗黒ローンなので赤色
+  p->stand.priority = 0;
+  p->stand.pos.x = 160, p->stand.pos.y = 88, p->stand.pos.z = 0;
 #else
   INCFUNC("asm/func/MainMenu1P_AddSprites.inc");
 #endif

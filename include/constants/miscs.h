@@ -67,11 +67,15 @@
 #define SMENU_NUM_BOLD_DASH 40
 #define SMENU_PAGE(pageIdx) (41 + (pageIdx))              // スタートメニューで左上に表示される 現在のページ名
 #define SMENU_MAP_CHANGE 51                               // マップが複数階層あるときの階層切り替えUI
+#define SMENU_MAP_SCROLL(dir) (52 + (dir))                // マップのスクロール方向を示すアイコン, dir は 0: 左, 1: 右, 2: 上, 3: 下
 #define SMENU_CURSOR(pulseStep) (56 + (pulseStep))        // インベントリで現在位置のカーソル(赤)
 #define SMENU_SELECTED 60                                 // インベントリで選択中を表すカーソル(青)
 #define SMENU_EQUIP_CURSOR(pulseStep) (61 + (pulseStep))  // 装備中の武器に表示されるカーソル
 #define SMENU_EQUIP_E 65                                  // 装備中のアイコンの右下につく"E"
 #define SMENU_STATBAR(kind) (66 + (kind))                 // ステータスメニューの カラダ/ココロ/チカラ/ハヤサの各ステータスバー
+#define SMENU_STAT_ASSIGN 77                              // "ふりわけ"
+#define SMENU_STAT_ASSIGN_OK 78                           // "Aけってい"
+#define SMENU_PAGE_LONG(idx) (100 + (idx))                // SMENU_PAGE の長いバージョン (どこで使ってたか忘れた)
 #define SMENU_L_ICON 137                                  // Lボタンのアイコン, SMENU_PAGE と合わせて使う
 #define SMENU_R_ICON 138                                  // Rボタンのアイコン, SMENU_PAGE と合わせて使う
 #define SMENU_BACK 147                                    // "Bもどる"
