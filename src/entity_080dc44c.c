@@ -2,13 +2,19 @@
 #include "file.h"
 #include "global.h"
 #include "particle.h"
+#include "sprite_animation.h"
 #include "sprite_aux.h"
 
 typedef struct {
-  u8 unk_0[0x16];  // 0x00
-  u8 state;        // 0x16, PTR_ARRAY_085ad32c の添字, FUN_080dc00c が 0 に戻す
-  s8 idx;          // 0x17, 自分の添字, ptcls と activeMask のビットを指す
-  u8 unk_18[4];    // 0x18
+  Vec3* basePos;  // 0x00, 位置の基準, オフセットを足して粒子の座標にする
+  s16 offsetX;    // 0x04
+  s16 offsetY;    // 0x06
+  s16 offsetZ;    // 0x08
+  u8 unk_a[12];   // 0x0A
+  u8 state;       // 0x16, PTR_ARRAY_085ad32c の添字, FUN_080dc00c が 0 に戻す
+  s8 idx;         // 0x17, 自分の添字, ptcls と activeMask のビットを指す
+  u16 timer;      // 0x18, 毎フレーム +1
+  s16 delay;      // 0x1A, 0 を超えている間は数え下げるだけで何もしない
 } Entity080dc44cSlot;
 static_assert(sizeof(Entity080dc44cSlot) == 28);
 
@@ -17,7 +23,7 @@ typedef struct {
   AuxAnimFile* anim;            // 0x018, ANIM_D1B8
   ParticleGroup* group;         // 0x01C, PTCL_GROUP_0
   Particle ptcls[8];            // 0x020, slots[i].idx が添字
-  u8 unk_160[0x80];             // 0x160
+  AuxAnimState anims[8];        // 0x160, slots[i].idx が添字, ANIM_D1B8 の再生状態
   u32 activeMask;               // 0x1E0, 使用中の slots のビットマスク
   Entity080dc44cSlot slots[8];  // 0x1E4, 根拠: _Destroy の stride 0x1C × 8
 } Entity080dc44c;
@@ -29,7 +35,73 @@ void FUN_080dbeb0(Entity080dc44c* p, Entity080dc44cSlot* elem) {}
 
 s32 FUN_080dc0d0(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6);
 
-NAKED void FUN_080dbeb4(Entity080dc44c* p, Entity080dc44cSlot* elem) { INCFUNC("asm/func/FUN_080dbeb4.inc"); }
+// state 1 の更新, 粒子を基準位置へ置いてアニメを1コマ進め, 一巡したら state 2 へ移す
+// 残差6命令 (163/169). 原典は slot を ip に追い出して使うたび低位レジスタへ mov し直すほどレジスタが足りていないが, こちらは r7 に収まってしまう
+// p->group をローカルに取っても変わらず (163). アニメ進行の本体は eff_smoke.c の SmokeEmitter_Update と同形
+NON_MATCH void FUN_080dbeb4(Entity080dc44c* p, Entity080dc44cSlot* slot) {
+#ifdef NONMATCHING_C
+  Particle* ptcl = &p->ptcls[slot->idx];
+  AuxAnimState* anim;
+  AuxAnimCmd* cmd;
+  bool32 finished;
+
+  if (slot->delay > 0) {
+    slot->delay--;
+    return;
+  }
+
+  ptcl->flags &= ~SPRFLAG_HIDDEN;
+  ptcl->pos.x = slot->offsetX + slot->basePos->x;
+  ptcl->pos.y = slot->offsetY + slot->basePos->y;
+  ptcl->pos.z = slot->offsetZ + slot->basePos->z;
+
+  anim = &p->anims[slot->idx];
+  cmd = &anim->cmds[anim->cmdIdx];
+  ptcl->tileNum = (*cmd >> 6) * ((ptcl->spriteWidth >> 3) * (ptcl->spriteHeight >> 3)) + p->group->tile;
+  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+    ptcl->flags |= SPRFLAG_XFLIP;
+  } else {
+    ptcl->flags &= ~SPRFLAG_XFLIP;
+  }
+  if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+    ptcl->flags |= SPRFLAG_YFLIP;
+  } else {
+    ptcl->flags &= ~SPRFLAG_YFLIP;
+  }
+
+  anim->tick++;
+  if (anim->tick < anim->wait) {
+    finished = FALSE;
+  } else {
+    anim->tick = 0;
+    if (anim->flags & ANIM_PLAY_REVERSE) {
+      if (anim->cmdIdx == 0) {
+        anim->cmdIdx = anim->cmdCount - 1;
+        finished = TRUE;
+      } else {
+        anim->cmdIdx--;
+        finished = FALSE;
+      }
+    } else {
+      anim->cmdIdx++;
+      if (anim->cmdIdx < anim->cmdCount) {
+        finished = FALSE;
+      } else {
+        anim->cmdIdx = 0;
+        finished = TRUE;
+      }
+    }
+    anim->wait = (anim->speed * (anim->cmds[anim->cmdIdx] & 0xF)) >> 6;
+  }
+
+  if (finished) {
+    slot->state = 2;
+  }
+  slot->timer++;
+#else
+  INCFUNC("asm/func/FUN_080dbeb4.inc");
+#endif
+}
 
 // 枠を解放する, パーティクルを外して activeMask のビットを落とす
 // 残差は命令の並び順のみ (31 対 31), 原典は idx の ldrsb を activeMask のアドレス計算より前に出す
