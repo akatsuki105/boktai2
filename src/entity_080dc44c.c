@@ -2,15 +2,15 @@
 #include "file.h"
 #include "global.h"
 #include "particle.h"
+#include "random.h"
 #include "sprite_animation.h"
 #include "sprite_aux.h"
 
 typedef struct {
   Vec3* basePos;  // 0x00, 位置の基準, オフセットを足して粒子の座標にする
-  s16 offsetX;    // 0x04
-  s16 offsetY;    // 0x06
-  s16 offsetZ;    // 0x08
-  u8 unk_a[12];   // 0x0A
+  Vec3 offset;    // 0x04, basePos からのずれ
+  Vec3 unk_c;     // 0x0C, まだ読み手が見つかっていない
+  u8 unk_14[2];   // 0x14
   u8 state;       // 0x16, PTR_ARRAY_085ad32c の添字, FUN_080dc00c が 0 に戻す
   s8 idx;         // 0x17, 自分の添字, ptcls と activeMask のビットを指す
   u16 timer;      // 0x18, 毎フレーム +1
@@ -33,7 +33,7 @@ IWRAM_DATA Entity080dc44c* gEntity080dc44c = NULL;  // 0x03000168
 
 void FUN_080dbeb0(Entity080dc44c* p, Entity080dc44cSlot* elem) {}
 
-s32 FUN_080dc0d0(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6);
+s32 FUN_080dc0d0(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority);
 
 // state 1 の更新, 粒子を基準位置へ置いてアニメを1コマ進め, 一巡したら state 2 へ移す
 // 残差6命令 (163/169). 原典は slot を ip に追い出して使うたび低位レジスタへ mov し直すほどレジスタが足りていないが, こちらは r7 に収まってしまう
@@ -51,9 +51,9 @@ NON_MATCH void FUN_080dbeb4(Entity080dc44c* p, Entity080dc44cSlot* slot) {
   }
 
   ptcl->flags &= ~SPRFLAG_HIDDEN;
-  ptcl->pos.x = slot->offsetX + slot->basePos->x;
-  ptcl->pos.y = slot->offsetY + slot->basePos->y;
-  ptcl->pos.z = slot->offsetZ + slot->basePos->z;
+  ptcl->pos.x = slot->offset.x + slot->basePos->x;
+  ptcl->pos.y = slot->offset.y + slot->basePos->y;
+  ptcl->pos.z = slot->offset.z + slot->basePos->z;
 
   anim = &p->anims[slot->idx];
   cmd = &anim->cmds[anim->cmdIdx];
@@ -139,11 +139,83 @@ NON_MATCH Entity080dc44cSlot* FUN_080dc050(Entity080dc44c* p) {
 #endif
 }
 
-s32 FUN_080dc0a0(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return FUN_080dc0d0(p, param_2, param_3, param_4, param_5, param_6); }
+s32 FUN_080dc0a0(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority) { return FUN_080dc0d0(basePos, offset, unkRand, offsetRand, count, priority); }
 
-s32 FUN_080dc0b8(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5) { return FUN_080dc0d0(p, param_2, param_3, param_4, param_5, 2); }
+s32 FUN_080dc0b8(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count) { return FUN_080dc0d0(basePos, offset, unkRand, offsetRand, count, 2); }
 
-NAKED s32 FUN_080dc0d0(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/FUN_080dc0d0.inc"); }
+// 残差11命令 (272/283). 原典はレジスタが1本足りずスタック枠が 4 バイト多く (sub sp #0x18), slot を低位に残すために unkRand/offsetRand を高位へ追い出して mov で回すが, こちらは収まってしまう
+// ループ内ローカルを関数スコープへ出しても変化なし. 第1引数は Entity ではなく Vec3* (基準位置) で, エンティティは gEntity080dc44c から取る
+NON_MATCH s32 FUN_080dc0d0(Vec3* basePos, Vec3* offset, Vec3* unkRand, Vec3* offsetRand, s32 count, u32 priority) {
+#ifdef NONMATCHING_C
+  Entity080dc44c* p;
+  s32 i;
+
+  if (basePos == NULL) {
+    return -1;
+  }
+
+  p = gEntity080dc44c;
+  if (p == NULL) {
+    return -1;
+  }
+
+  for (i = 0; i < count; i++) {
+    Entity080dc44cSlot* slot = FUN_080dc050(p);
+    Particle* ptcl;
+    Vec3 v;
+
+    if (slot == NULL) {
+      return -1;
+    }
+
+    ptcl = &p->ptcls[slot->idx];
+    slot->basePos = basePos;
+
+    if (offset == NULL) {
+      slot->offset.x = 0;
+      slot->offset.y = 0;
+      slot->offset.z = 0;
+    } else {
+      slot->offset = *offset;
+    }
+
+    if (offsetRand != NULL) {
+      if (offsetRand->x != 0) {
+        slot->offset.x = Mod(Random(), offsetRand->x * 2) - offsetRand->x + slot->offset.x;
+      }
+      if (offsetRand->y != 0) {
+        slot->offset.y = Mod(Random(), offsetRand->y * 2) - offsetRand->y + slot->offset.y;
+      }
+      if (offsetRand->z != 0) {
+        slot->offset.z = Mod(Random(), offsetRand->z * 2) - offsetRand->z + slot->offset.z;
+      }
+    }
+
+    if (unkRand == NULL) {
+      slot->unk_c.x = 0;
+      slot->unk_c.y = 0;
+      slot->unk_c.z = 0;
+    } else {
+      v.x = unkRand->x != 0 ? Mod(Random(), unkRand->x) : 0;
+      v.y = unkRand->y != 0 ? Mod(Random(), unkRand->y) : 0;
+      v.z = unkRand->z != 0 ? Mod(Random(), unkRand->z) : 0;
+      slot->unk_c = v;
+    }
+
+    slot->delay = 0;
+    Particle_Add(ptcl, p->group, 0);
+    Particle_SetOffset(ptcl, -8, -8);
+    AuxAnim_SetAnim(&p->anims[slot->idx], p->anim, 12, 0, 0);
+    ptcl->flags |= SPRFLAG_HIDDEN;
+    ptcl->priority = priority;
+    slot->state = 1;
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/FUN_080dc0d0.inc");
+#endif
+}
 
 void (*const PTR_ARRAY_085ad32c[3])(Entity080dc44c*, Entity080dc44cSlot*) = {
     FUN_080dbeb0,
