@@ -10346,7 +10346,7 @@ _081AB552:
 	movs r1, #0x10
 	movs r2, #0x40
 	movs r3, #0x2a
-	bl FUN_080d85d8
+	bl Entity080d84f8_CreateWithAttrs
 	movs r0, #0xd0
 	muls r0, r4, r0
 	adds r5, r7, r0

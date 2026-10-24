@@ -4,7 +4,7 @@
 #include "sound.h"
 #include "sprite_aux.h"
 
-// _Create が Entity080d84f8_Create と FUN_080d8568 と FUN_080d85d8 の 3つある (_Init, _Update, _Destroy は共有)
+// _Create が Entity080d84f8_Create と FUN_080d8568 と Entity080d84f8_CreateWithAttrs の 3つある (_Init, _Update, _Destroy は共有)
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_10
   AuxSprite sprite;   // 0x18, poseIdx は timer >> 2
@@ -77,4 +77,15 @@ NAKED Entity080d84f8* Entity080d84f8_Create(Vec3* pos, u32 param_2, u32 param_3,
 
 NAKED Entity080d84f8* FUN_080d8568(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { INCFUNC("asm/func/FUN_080d8568.inc"); }
 
-NAKED Entity080d84f8* FUN_080d85d8(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_080d85d8.inc"); }
+Entity080d84f8* Entity080d84f8_CreateWithAttrs(Vec3* pos, s32 ignoreMask, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44, s32 plttOffset, s32 delay) {
+  Entity080d84f8* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity080d84f8));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity080d84f8_Update, Entity080d84f8_Destroy);
+    if (Entity080d84f8_Init(p, pos, ignoreMask, power, unk_40, attrs, unk_44, plttOffset, delay) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
