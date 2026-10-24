@@ -113,7 +113,23 @@ s32 FUN_0809e034(s32 coef) {
 }
 
 // 引数の座標が天窓の下にあるかどうかを判定
-NAKED s32 FUN_0809e05c(Vec3* pos) { INCFUNC("asm/func/FUN_0809e05c.inc"); }
+// pos が入っている有効な光柱の添字を返す, 無ければ -1
+s32 FUN_0809e05c(Vec3* pos) {
+  Entity5CCC* p = gEntity5CCC;
+  s32 i;
+
+  if (p == NULL) {
+    return -1;
+  }
+
+  for (i = 0; i < p->count; i++) {
+    if (p->beams[i].unk_9a && pos->x >= p->beams[i].minX && pos->z >= p->beams[i].minZ && pos->x <= p->beams[i].maxX && pos->z <= p->beams[i].maxZ) {
+      return i;
+    }
+  }
+
+  return -1;
+}
 
 // 引数の座標が太陽光を受けているかを判定 (敵用?, 敵には太陽光でダメージを受けるものがいるのでその辺に関係)
 NON_MATCH s32 FUN_0809e0d4(Vec3* pos, s32 coef) {
