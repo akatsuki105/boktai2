@@ -43,7 +43,7 @@ typedef struct {
   bool8 unk_29;            // 0x029
   u8 unk_2a[2];            // 0x02A
   SkylightBeam beams[16];  // 0x02C
-  u8 unk_aac[8];           // 0xAAC
+  u16 charges[4];          // 0xAAC, プレイヤーごとの ENE 回復カウンタ, 120 たまるごとに ENE が1回復する
 } Entity5CCC;
 static_assert(sizeof(Entity5CCC) == 2740);
 
@@ -529,7 +529,54 @@ NON_MATCH bool32 FUN_0809ebf4(Player* p) {
 #endif
 }
 
-NAKED void FUN_0809ec60(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809ec60.inc"); }
+// 日光 (サバタは日陰) を浴びている量をプレイヤーごとに積み, 120 たまるごとに ENE を1回復させる
+// 残差7命令 (117/110). 原典は日光フラグの 0/1 を neg + lsr #31 で作るが, agbcc は分岐で作る (マスクを u32 ローカルに置いても if/else にしても変わらない)
+// 原典は i を r3 に置いて高位レジスタを r8 の1本で済ませるが, agbcc は i を r5 に置くため p と p+0xAAC で r8/r9 の2本を使い, mov が増える
+NON_MATCH void Entity5CCC_UpdateEneRecovery(Entity5CCC* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    Player* player = gPlayerPtr[i];
+    s32 light;
+    s32 heal;
+
+    if (player == NULL) {
+      continue;
+    }
+    if (player->unk_1c != 1) {
+      continue;
+    }
+
+    light = Player_TestFlag20(player, PFLAG20_UNK_5) ? 2 : ((player->flag20 & PFLAG20_SUNBATHING) != 0);
+
+    if (player->kind == PLAYER_SABATA) {
+      if (light == 2) {
+        p->charges[i] += 40;
+      } else if (light == 0) {
+        p->charges[i] += 5;
+      }
+    } else {
+      if (light == 2) {
+        p->charges[i] += (gEntity9A9F != NULL ? gEntity9A9F->unk_60[i] : 0) * 8;
+      } else if (light == 1) {
+        p->charges[i] += gEntity9A9F != NULL ? gEntity9A9F->unk_60[i] : 0;
+      }
+    }
+
+    heal = 0;
+    while (p->charges[i] >= 120) {
+      p->charges[i] -= 120;
+      heal++;
+    }
+    if (heal > 0) {
+      FUN_0807aa30(player, heal);
+    }
+  }
+#else
+  INCFUNC("asm/func/Entity5CCC_UpdateEneRecovery.inc");
+#endif
+}
 
 void FUN_0809ed54(Entity5CCC* p) {}
 
@@ -576,7 +623,7 @@ s32 Entity0809eeb4_Update(Entity5CCC* p) {
   } else {
     FUN_0809ed58(p);
   }
-  FUN_0809ec60(p);
+  Entity5CCC_UpdateEneRecovery(p);
   return 0;
 }
 

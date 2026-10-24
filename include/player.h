@@ -426,6 +426,7 @@ static_assert(sizeof(Player) == 2756);
 extern Player* gPlayerPtr[4];
 void FUN_0807a524(Vec3* pos);
 void FUN_0807a8e0(Player* p);
+void FUN_0807aa30(Player* p, s32 amount);
 
 extern u16 gGoodCondID;      // 0x03002B60
 extern u16 gConfusedDir;     // 0x03002B64
