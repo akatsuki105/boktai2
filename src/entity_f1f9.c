@@ -7,6 +7,7 @@
 #include "shadow.h"
 #include "sound.h"
 #include "sprite_aux.h"
+#include "vm.h"
 
 // スプライト・ヒットボックス・影を1つずつ持つ
 typedef struct EntityF1F9Item {
@@ -19,7 +20,7 @@ typedef struct EntityF1F9Item {
   s32 unk_12c;        // 0x12C, 1フレーム前の距離の2乗
   s32 unk_130;        // 0x130, プレイヤーとの距離の2乗
   s32 unk_134;        // 0x134, この距離まで近づかれると反応する
-  u8 unk_138[2];      // 0x138
+  u16 scriptID;       // 0x138, 破片1個ごとに VM_ExecByID へ渡す
   u16 unk_13a;        // 0x13A, 1マスぶんの距離
   u8 unk_13c;         // 0x13C, 全体のマス数
   u8 unk_13d;         // 0x13D, 現在のマス番号
@@ -327,7 +328,39 @@ void FUN_081d66c0(EntityF1F9Item* item, u32 power, HitboxAttributes attributes, 
 
 NAKED void FUN_081d6764(EntityF1F9Item* item) { INCFUNC("asm/func/FUN_081d6764.inc"); }
 
-NAKED void FUN_081d6ae8(EntityF1F9Item* item, s32 n) { INCFUNC("asm/func/FUN_081d6ae8.inc"); }
+// スプライト位置の周りにばらつかせた座標でスクリプトを n 回呼ぶ
+// 残差3命令 (96/99). 原典は while の入口判定 (cmp n,#0) を冒頭のガードと別に残すが agbcc は消す, また n を低位の呼び出し保存レジスタに置いてしまう
+// table の代入をガードの後ろに下げるとプール読みの位置は合う
+NON_MATCH void FUN_081d6ae8(EntityF1F9Item* item, s32 n) {
+#ifdef NONMATCHING_C
+  s32 argv[4];
+  ScriptArgs sa;
+  u16* table;
+
+  if (n <= 0) {
+    return;
+  }
+  if (item->scriptID == 0) {
+    return;
+  }
+
+  sa.argc = 4;
+  sa.argv = argv;
+  table = gRandomTable;
+
+  while (n > 0) {
+    argv[0] = item->sprite.pos.x - 0x40 + (_Random(table) & 0x7F);
+    argv[1] = item->sprite.pos.y - 0x40 + (_Random(table) & 0x7F);
+    argv[2] = item->sprite.pos.z - 0x40 + (_Random(table) & 0x7F);
+    argv[3] = item->unk_13c;
+    VM_ExecByID(item->scriptID, &sa);
+    item->unk_13c++;
+    n--;
+  }
+#else
+  INCFUNC("asm/func/FUN_081d6ae8.inc");
+#endif
+}
 
 // 終端まで動いたら状態を切り替える
 void FUN_081d6bc0(EntityF1F9Item* item) {
