@@ -7,6 +7,7 @@ COMMON_DATA u32 u32_03002c90 = 0;                          // 0x03002C90
 COMMON_DATA u8 u8_03002c94[0x03002C98 - 0x03002C94] = {};  // unused?
 
 extern void (*const PTR_ARRAY_085ae83c[21])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085aeb5c[26])(Entity286F*, Entity286FNode*);
 extern void (*const PTR_ARRAY_085aeacc[19])(Entity286F*, Entity286FNode*);
 extern void (*const PTR_ARRAY_085aea70[23])(Entity286F*, Entity286FNode*);
 extern void (*const PTR_ARRAY_085ae96c[23])(Entity286F*, Entity286FNode*);
@@ -334,7 +335,7 @@ NAKED void FUN_082082c0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_082082f4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082082f4.inc"); }
 
-NAKED void FUN_08208320(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08208320.inc"); }
+void FUN_08208320(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085aeb5c[node->state](p, node); }
 
 void FUN_08208338(Entity286F* p, Entity286FNode* node) { FUN_08208320(p, node); }
 
