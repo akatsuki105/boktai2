@@ -298,7 +298,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x7636, Cmd_ForEach @ HashName("foreach")
 	.4byte 0x7659, FUN_080ed724
 	.4byte 0x778B, Entity778B_Create
-	.4byte 0x779F, FUN_081d0c6c
+	.4byte 0x779F, Cmd_779F
 	.4byte 0x7806, FUN_0823d428
 	.4byte 0x7843, FUN_0807d590
 	.4byte 0x78C9, Entity78C9_Create

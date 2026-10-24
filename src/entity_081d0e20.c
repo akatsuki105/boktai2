@@ -369,7 +369,7 @@ s32 FUN_081d0c38(void) {
 }
 
 // 0x779F, '.i', '.s'
-void FUN_081d0c6c(void) {
+void Cmd_779F(void) {
   s32 val = VM_GetNamedArgValue('s', 0);
   Entity081d0e20Elem* elem = Entity081d0e20_FindElem(VM_GetNamedArgValue('i', 0));
 
