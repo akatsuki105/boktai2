@@ -9,7 +9,7 @@
 
 typedef struct {
   AuxSprite sprite;   // 0x00
-  Mover unk_2c;       // 0x2C
+  Mover mover;        // 0x2C
   AuxAnimState anim;  // 0x70
   Vec3 pos;           // 0x80, 8バイトまとめて sprite.pos にコピーされる, 根拠: FUN_081d0864
   s16 id;             // 0x88, '.i=0', Entity081d0e20_FindElem が引数と比較する (ldrsh)
@@ -22,7 +22,7 @@ typedef struct {
   u16 unk_b2;         // 0xB2, '.o=60',
   s16 slotIdx;        // 0xB4, Entity081d0e20_AllocElem が確保時にスロット番号を書く
   s16 state;          // 0xB6, PTR_ARRAY_085ae098 の添字, 根拠: Entity081d0e20_Update (ldrsh)
-  u16 flags;          // 0xB8, bit9 で Update をスキップ、bit3 で unk_2c を後始末する, 根拠: Entity081d0e20_Update / _Destroy
+  u16 flags;          // 0xB8, bit9 で Update をスキップ、bit3 で mover を後始末する, 根拠: Entity081d0e20_Update / _Destroy
   u8 unk_ba;          // 0xBA, 生成時に0
   u8 unk_bb;          // 0xBB, 生成時に0, FUN_081d006c が unk_b2 と比較する
   u32 unk_bc;         // 0xBC, FUN_081d0838 が str で0を書く
@@ -350,9 +350,9 @@ NON_MATCH void FUN_081d0864(void) {
     FUN_081ee9bc(&pos);
     if (VM_GetNamedArgValue('s', 0) != 0) {
       elem->flags |= 8;
-      Mover_Init(&elem->unk_2c, elem->id, &elem->pos, 0, 7, elem);
-      Mover_SetAuxSprite(&elem->unk_2c, &elem->sprite);
-      FUN_08002a48(&elem->unk_2c);
+      Mover_Init(&elem->mover, elem->id, &elem->pos, 0, 7, elem);
+      Mover_SetAuxSprite(&elem->mover, &elem->sprite);
+      FUN_08002a48(&elem->mover);
     }
   }
 #else
@@ -427,7 +427,6 @@ NAKED s32 Entity081d0e20_Update(Entity081d0e20* p) { INCFUNC("asm/func/Entity081
 NON_MATCH s32 Entity081d0e20_Destroy(Entity081d0e20* p) {
 #ifdef NONMATCHING_C
   Entity081d0e20Elem* elem;
-  Mover* unk;
   bool32 used;
   s32 i;
 
@@ -437,9 +436,9 @@ NON_MATCH s32 Entity081d0e20_Destroy(Entity081d0e20* p) {
       elem = p->items[i];
       AuxSprite_Remove(&elem->sprite);
       if (elem->flags & 8) {
-        unk = &elem->unk_2c;
-        FUN_08002a58(unk);
-        Mover_Unlink(unk);
+        Mover* mover = &elem->mover;
+        FUN_08002a58(mover);
+        Mover_Unlink(mover);
       }
       Free(elem);
     }
