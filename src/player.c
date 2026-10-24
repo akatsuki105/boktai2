@@ -6412,7 +6412,7 @@ s32 FUN_0807a4c4(s32 n) {
   }
 }
 
-void FUN_0807a524(Player* p) {}
+void FUN_0807a524(Vec3* pos) {}
 
 void FUN_0807a528(Player* p, Vec3* pos, u16 param_3) {
   p->action = 8;

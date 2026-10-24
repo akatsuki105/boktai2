@@ -31,8 +31,8 @@ typedef struct {
   s16 unk_42;                      // 0x42, 負なら FUN_080dabe4 が何もしない
   s16 shakeTimer;                  // 0x44, 20 から数え下げ, 10 を超えている間はスプライトを揺らす
   ZoneID16 zoneID;                 // 0x46, gStat->zoneID と一致するかを FUN_080dad94 が見る
-  u16 unk_48;                      // 0x48, プレイヤーの angle_400 の控え
-  u8 unk_4a[2];                    // 0x4A
+  u16 baseAngle;                   // 0x48, 掴んだ瞬間のプレイヤーの angle_400
+  u16 prevAngleDelta;              // 0x4A, 前回 FUN_080dac24 を回したときの角度差
   HitboxData hitbox;               // 0x4C, _Destroy が Hitbox_Unregister に渡す
   Vec3 pos;                        // 0x9C, Hitbox_SetPos と spr.pos へ渡される
 } Entity080db520Elem;
@@ -48,6 +48,7 @@ typedef struct {
 static_assert(sizeof(Entity080db520) == 1372);
 
 bool32 FUN_0809dfec(s32 mapArea);
+void FUN_080db0f8(Entity080db520Elem* elem);
 
 IWRAM_DATA Entity080db520* gEntity080db520 = NULL;  // 0x03000160
 
@@ -211,7 +212,91 @@ NON_MATCH void FUN_080dadec(Entity080db520* p) {
 #endif
 }
 
-NAKED void FUN_080dae60(Entity080db520* p, Entity080db520Elem* elem) { INCFUNC("asm/func/FUN_080dae60.inc"); }
+// state 1 の更新, プレイヤーに掴まれている間は角度差で揺らし, 条件が切れたら state 2 へ移す
+// 残差1命令 (218/219). 原典は UNK_4 のマスク判定と角度差を1つの s16 スクラッチで使い回しており (lsls/asrs で符号拡張して保持), こちらは代入時の切り捨てが1命令多い
+// s32 のまま素直に書くと 212/219, マスクと角度差を別ローカルにすると 214/219, spr のローカル化は 223/219 でいずれも悪化
+NON_MATCH void FUN_080dae60(Entity080db520* p, Entity080db520Elem* elem) {
+#ifdef NONMATCHING_C
+  s16 delta;
+
+  elem->spr.pos = elem->pos;
+
+  delta = elem->unk_40 & E080DB520_UNK_4;
+  if (delta != 0) {
+    if (gPlayerPtr[0]->angle_400 >= elem->baseAngle) {
+      delta = gPlayerPtr[0]->angle_400 - elem->baseAngle;
+    } else {
+      delta = gPlayerPtr[0]->angle_400 - (elem->baseAngle - 256);
+    }
+
+    if (elem->prevAngleDelta != delta && (delta & 4)) {
+      elem->unk_40 |= E080DB520_UNK_2;
+    }
+
+    if (!elem->spr.active) {
+      Video_AddAuxSpriteIntoDrawList(&elem->spr, 0);
+    }
+
+    if (elem->unk_40 & E080DB520_UNK_2) {
+      elem->shakeTimer = 60;
+      FUN_080dac24(p, elem);
+      FUN_0807a524(&elem->spr.pos);
+      elem->prevAngleDelta = delta;
+      elem->unk_40 &= ~E080DB520_UNK_2;
+    }
+
+    if (delta > 9 || (elem->unk_40 & E080DB520_UNK_1)) {
+      elem->timer = 0;
+      elem->state = 2;
+      elem->spr.flags &= ~SPRFLAG_HIDDEN;
+      elem->unk_40 &= ~(E080DB520_UNK_1 | E080DB520_UNK_4);
+      return;
+    }
+  } else if (elem->unk_40 & E080DB520_UNK_6) {
+    if (!elem->spr.active) {
+      Video_AddAuxSpriteIntoDrawList(&elem->spr, 0);
+    }
+
+    if (elem->unk_40 & E080DB520_UNK_2) {
+      FUN_080dac24(p, elem);
+      elem->unk_40 &= ~E080DB520_UNK_2;
+    }
+
+    if (elem->unk_40 & E080DB520_UNK_1) {
+      elem->timer = 0;
+      elem->state = 2;
+      elem->unk_40 &= ~E080DB520_UNK_1;
+      return;
+    }
+  } else {
+    if ((gPlayerPtr[0]->flag20 & PFLAG20_UNK_19) || ((elem->unk_40 & E080DB520_UNK_5) && gStat->sunGauge > 0) || FUN_080dad94(elem)) {
+      if (!elem->spr.active) {
+        Video_AddAuxSpriteIntoDrawList(&elem->spr, 0);
+      }
+    } else {
+      if (elem->spr.active) {
+        Video_RemoveAuxSpriteFromDrawList(&elem->spr, 0);
+      }
+    }
+
+    if (elem->unk_40 & E080DB520_UNK_1) {
+      if (!elem->spr.active) {
+        Video_AddAuxSpriteIntoDrawList(&elem->spr, 0);
+      }
+      elem->timer = 0;
+      elem->state = 2;
+      elem->unk_40 &= ~E080DB520_UNK_1;
+      return;
+    }
+  }
+
+  if (!(elem->unk_40 & (E080DB520_UNK_4 | E080DB520_UNK_6))) {
+    FUN_080db0f8(elem);
+  }
+#else
+  INCFUNC("asm/func/FUN_080dae60.inc");
+#endif
+}
 
 // 点滅させながら 90 フレーム数え, 終わったら枠を解放する
 // 残差1命令 (82/83), ~(UNK_4|UNK_6) が HImode の AND に落ちて 0xFFAF のプール読みになる. 原典は SImode で movs #0x51 + rsbs の2命令
@@ -284,7 +369,7 @@ NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
       player->unk_3ff = elem->unk_42;
       elem->unk_40 |= E080DB520_UNK_4;
       elem->hitbox.flags |= HBFLAG_UNK_2;
-      elem->unk_48 = gPlayerPtr[0]->angle_400;
+      elem->baseAngle = gPlayerPtr[0]->angle_400;
       payload = 6;
       FUN_080ec7e8(2, 1, &payload);
       PlaySound_082406e0(SE_UNK_277);
@@ -348,7 +433,7 @@ NON_MATCH s32 FUN_080db290(Entity080db520* p, Mover* mover) {
   elem->pos = mover->pos;
   elem->zoneID = GetZoneAt(&elem->pos);
   elem->unk_40 = 0;
-  elem->unk_48 = 0;
+  elem->baseAngle = 0;
   elem->spr.pos = elem->pos;
   AuxSprite_Setup(&elem->spr, &p->gfx, 0);
 

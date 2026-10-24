@@ -423,6 +423,8 @@ static_assert(sizeof(Player) == 2756);
 // ------------------------------------------------------------------------------------------------------------------------------------
 
 extern Player* gPlayerPtr[4];
+void FUN_0807a524(Vec3* pos);
+
 extern u16 gGoodCondID;      // 0x03002B60
 extern u16 gConfusedDir;     // 0x03002B64
 extern u16 u16_03002b68[4];  // 0x03002B68, 多分プレイヤーの moverID
