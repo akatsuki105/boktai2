@@ -512,7 +512,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xC783, LinkBattleLobby_Create
 	.4byte 0xC7DC, FUN_080ef048
 	.4byte 0xC814, EntityC814_Create
-	.4byte 0xC946, PreviewStage_Create @ HashName("ゲームクリア")?
+	.4byte 0xC946, PreviewStage_Create
 	.4byte 0xC9BC, EntityC9BC_Create
 	.4byte 0xCA3D, FUN_082408b8
 	.4byte 0xCA73, EnemyDogLink_Create @ HashName("通信ドッグ")

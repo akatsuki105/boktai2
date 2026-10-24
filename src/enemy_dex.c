@@ -71,33 +71,27 @@ typedef struct {
 } EnemyDexMenu;
 static_assert(sizeof(EnemyDexMenu) == 4704);
 
-void FUN_0820fea8(PreviewStage* p);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
-PreviewStage* PreviewStage_Create(u32 arg, u32 _);
 
 static inline void ShowBG(u32 bits) { gStagedDISPCNT |= bits; }
 
-s32 EnemyDex_GetPageStart(u32 page);
-s32 EnemyDex_GetCategoryOfEntry(s32 entryIdx);
-s32 EnemyDex_GetPageEntryCount(u32 page);
-s32 EnemyDex_GetCategoryEntryCount(u32 category);
-s32 EnemyDex_GetCategoryStart(s32 category);
+s32 EnemyDex_GetPageStart(u32 page) {
+  // ページの先頭エントリ番号 (sEnemyDexPageEntryCounts の累積和)
+  static const s32 sEnemyDexPageStarts[9] = {0, 7, 14, 21, 27, 34, 41, 48, 50};  // 0x085AF034
+  return sEnemyDexPageStarts[page];
+}
 
-static const s32 sEnemyDexPageStarts[9] = {0, 7, 14, 21, 27, 34, 41, 48, 50};  // ページの先頭エントリ番号 (sEnemyDexPageEntryCounts の累積和), 0x085AF034
-static const s32 sEnemyDexPageEntryCounts[9] = {7, 7, 7, 6, 7, 7, 7, 2, 7};    // ページごとのエントリ数(ビースト1,ビースト2,ビースト3,アンデット,シング1,シング2,ファントム1,ファントム2,イモータル), 合計57, 0x085AF058
-static const s32 sEnemyDexCategoryCounts[5] = {21, 6, 14, 9, 7};               // 種族ごとのエントリ数 (ビースト,アンデット,シング,ファントム,イモータル), 0x085AF07C
+s32 EnemyDex_GetPageEntryCount(u32 page) {
+  // ページごとのエントリ数(ビースト1,ビースト2,ビースト3,アンデット,シング1,シング2,ファントム1,ファントム2,イモータル), 合計57
+  static const s32 sEnemyDexPageEntryCounts[9] = {7, 7, 7, 6, 7, 7, 7, 2, 7};  // 0x085AF058
+  return sEnemyDexPageEntryCounts[page];
+}
 
-// 魔物図鑑メニューの UI スプライトのポーズ番号, FUN_0820d6e4 が EnemyDexMenu+0x18C から5枚を登録するループで引く
-static const u32 sEnemyDexUIPoses1[5] = {17, 18, 19, 20, 21};  // 0x085AF090
-
-// 同上, EnemyDexMenu+0x36C から3枚
-static const u32 sEnemyDexUIPoses2[3] = {1, 2, 3};  // 0x085AF0A4
-
-s32 EnemyDex_GetPageStart(u32 page) { return sEnemyDexPageStarts[page]; }
-
-s32 EnemyDex_GetPageEntryCount(u32 page) { return sEnemyDexPageEntryCounts[page]; }
-
-s32 EnemyDex_GetCategoryEntryCount(u32 category) { return sEnemyDexCategoryCounts[category]; }
+s32 EnemyDex_GetCategoryEntryCount(u32 category) {
+  // 種族ごとのエントリ数 (ビースト,アンデット,シング,ファントム,イモータル)
+  static const s32 sEnemyDexCategoryCounts[5] = {21, 6, 14, 9, 7};  // 0x085AF07C
+  return sEnemyDexCategoryCounts[category];
+}
 
 // 種族 category の先頭エントリ番号 (それより前の種族のエントリ数の合計)
 s32 EnemyDex_GetCategoryStart(s32 category) {
@@ -613,6 +607,12 @@ void FUN_0820d690(EnemyDexMenu* p) {
   }
   p->unk_1104 = v;
 }
+
+// 魔物図鑑メニューの UI スプライトのポーズ番号, FUN_0820d6e4 が EnemyDexMenu+0x18C から5枚を登録するループで引く
+static const u32 sEnemyDexUIPoses1[5] = {17, 18, 19, 20, 21};  // 0x085AF090
+
+// 同上, EnemyDexMenu+0x36C から3枚
+static const u32 sEnemyDexUIPoses2[3] = {1, 2, 3};  // 0x085AF0A4
 
 NAKED s32 FUN_0820d6e4(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d6e4.inc"); }
 
