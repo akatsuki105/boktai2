@@ -113,7 +113,29 @@ Entity1E98* Entity1E98_Create_Internal(void) {
   return p;
 }
 
-NAKED s32 FUN_080a4e1c(void) { INCFUNC("asm/func/FUN_080a4e1c.inc"); }
+s32 FUN_080a4e1c(void) {
+  Entity1E98* p = gEntity1E98;
+  s32 id;
+  s32 i;
+
+  if (p == NULL) {
+    return 0;
+  }
+
+  if (VM_SeekToNamedArg('i')) {
+    id = VM_GetValue();
+  } else {
+    id = 0;
+  }
+
+  for (i = 0; i < p->count; i++) {
+    if (p->elems[i].scriptID == id) {
+      return p->elems[i].unk_f6;
+    }
+  }
+
+  return 0;
+}
 
 s32 Entity1E98_Create(void) {
   Entity1E98* p = gEntity1E98;
