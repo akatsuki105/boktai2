@@ -66,7 +66,27 @@ bool8 FUN_081d5848(EntityF1F9Item* item, u16 n) {
   return FALSE;
 }
 
-NAKED s32 FUN_081d5864(EntityF1F9* p) { INCFUNC("asm/func/FUN_081d5864.inc"); }
+// 空いているアイテムを確保して返す, 無ければ NULL
+// 残差8命令 (37/45). 5命令は使用中判定の 0/1 の作り置き, 残りは原典がビットマスクの定数 1 をループ外のレジスタに持つ点
+NON_MATCH EntityF1F9Item* FUN_081d5864(EntityF1F9* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    if (!(p->activeMask & (1 << i))) {
+      EntityF1F9Item* item = &p->items[i];
+
+      p->activeMask |= 1 << i;
+      ClearMemory(item, sizeof(EntityF1F9Item));
+      item->idx = i;
+      return item;
+    }
+  }
+  return NULL;
+#else
+  INCFUNC("asm/func/FUN_081d5864.inc");
+#endif
+}
 
 // unk_150 が id の使用中アイテムを探す
 // 残差5命令 (36/41), 使用中判定の 0/1 の作り置き1ブロックだけが足りない
