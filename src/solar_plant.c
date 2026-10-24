@@ -284,7 +284,114 @@ void Entity1E98_InitHurtbox(Entity1E98Elem* elem) {
   Hitbox_Register(hurtbox);
 }
 
-NAKED void Entity1E98_Init(Entity1E98* p) { INCFUNC("asm/func/Entity1E98_Init.inc"); }
+// VM の名前付き引数から足場1枚を生やす, '.s' が立っていれば最初から乗れる状態で置く
+// 残差2命令 (278/280), 原典はレジスタに余裕がなく '.t' の格納先アドレスを分岐ごとに作り直し, elem のコピーを r7 にもう1つ持つ
+// Tier A-C 試済 (VM 引数の if/else 化で 267→278 まで詰めた. spr/pos のローカル化は 270 で悪化)
+NON_MATCH void Entity1E98_Init(Entity1E98* p) {
+#ifdef NONMATCHING_C
+  Entity1E98Elem* elem = &p->elems[p->count];
+  SpriteID32 id;
+  void* cb;
+  s32 bx;
+  s32 bz;
+
+  if (VM_SeekToNamedArg('n')) {
+    elem->hurtboxArg = VM_GetValue();
+  } else {
+    elem->hurtboxArg = 0;
+  }
+
+  if (VM_SeekToNamedArg('p')) {
+    elem->pos.x = VM_GetValue();
+    elem->pos.y = VM_GetValue();
+    elem->pos.z = VM_GetValue();
+  } else {
+    elem->pos.x = 0, elem->pos.y = 0, elem->pos.z = 0;
+  }
+
+  bx = (s8)(elem->pos.x >> 8);
+  bz = (s8)(elem->pos.z >> 8);
+  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+    elem->tileIdx = 0;
+  } else {
+    elem->tileIdx = gCollisionMap->rowOffsets[bz] + bx;
+  }
+
+  if (VM_SeekToNamedArg('t')) {
+    elem->unk_e4 = VM_GetValue();
+  } else {
+    elem->unk_e4 = 0;
+  }
+  id = (elem->unk_e4 == 0) ? SPRITE_SOLAR_PLANT : SPRITE_LILYPAD;
+  Video_GetAuxSprite(&elem->gfx, id);
+  AuxSprite_Add(&elem->spr, &elem->gfx, 0);
+  elem->spr.priority = 3;
+
+  if (VM_SeekToNamedArg('r') && VM_GetValue() != 0) {
+    elem->spr.flags |= SPRFLAG_XFLIP;
+  }
+  elem->spr.pos = elem->pos;
+
+  if (VM_SeekToNamedArg('h')) {
+    elem->moverLinked = VM_GetValue();
+    if (elem->moverLinked) {
+      Mover_Init(&elem->mover, elem->hurtboxArg, &elem->spr.pos, 0, 7, elem);
+      FUN_08002a48(&elem->mover);
+    }
+  } else {
+    elem->moverLinked = FALSE;
+  }
+
+  elem->unk_f0 = 0;
+  if (VM_SeekToNamedArg('A')) {
+    elem->unk_f2 = VM_GetValue();
+  } else {
+    elem->unk_f2 = 10;
+  }
+  elem->unk_ee = VM_SeekToNamedArg('W') ? VM_GetValue() : 0;
+  Entity1E98_InitHurtbox(elem);
+  elem->plttTimer = 0;
+  if (VM_SeekToNamedArg('s')) {
+    elem->unk_f6 = VM_GetValue();
+  } else {
+    elem->unk_f6 = 0;
+  }
+
+  if (elem->unk_f6 != 0) {
+    FUN_080a45a8(elem);
+    elem->hurtbox.flags |= HBFLAG_UNK_2;
+    elem->spr.poseIdx = 2;
+    if (elem->unk_e4 == 0) {
+      elem->spr.priority = 2;
+      cb = FUN_080a4728;
+    } else {
+      cb = FUN_080a4854;
+    }
+  } else {
+    elem->tileOverrideAdded = FALSE;
+    elem->spr.poseIdx = 0;
+    elem->spr.priority = 3;
+    if (elem->unk_e4 == 0) {
+      cb = FUN_080a4670;
+    } else {
+      cb = FUN_080a472c;
+    }
+  }
+  Entity1E98_SetUpdateCallback(elem, cb);
+
+  if (VM_SeekToNamedArg('g')) {
+    elem->scriptID = VM_GetValue();
+    elem->unk_10c = VM_GetValue();
+  } else {
+    elem->scriptID = -1;
+    elem->unk_10c = 0;
+  }
+
+  p->count++;
+#else
+  INCFUNC("asm/func/Entity1E98_Init.inc");
+#endif
+}
 
 Entity1E98* Entity1E98_Create_Internal(void) {
   Entity1E98* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity1E98));
