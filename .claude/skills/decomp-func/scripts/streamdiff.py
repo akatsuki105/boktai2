@@ -164,18 +164,20 @@ def main():
             seg = seg[: end.start()]
     theirs = []
     label_pos = {}  # ラベル名 -> そのラベルが指す命令の index
-    for ls in seg.splitlines():
-        ls = ls.strip()
-        # ディレクティブ・コメント行はスキップ
+    for raw in seg.splitlines():
+        # コメントを先に落とす: `_0820CCE8: @ jump table` のような
+        # 注釈付きのラベル行を命令として数えてしまわないようにする
+        ls = raw.split("@")[0].strip()
+        # ディレクティブ行はスキップ
         # ラベル付き .4byte 行 (_08XXXX: .4byte ...) も除外する
-        if not ls or ls[0] in ".@" or ls.startswith("thumb_func"):
+        if not ls or ls[0] == "." or ls.startswith("thumb_func"):
             continue
         if ls.endswith(":"):
             label_pos[ls[:-1].strip()] = len(theirs)  # 分岐先の解決に使う
             continue
         if re.search(r"\.(4byte|2byte|short|byte)\b", ls):
             continue
-        theirs.append(ls.split("@")[0].strip())
+        theirs.append(ls)
     theirs = resolve_targets(theirs, label_pos)
 
     # 両者を正規化して命令ストリームを比較する
