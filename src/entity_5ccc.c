@@ -203,7 +203,35 @@ NAKED void FUN_0809e2c4(void) { INCFUNC("asm/func/FUN_0809e2c4.inc"); }
 
 NAKED void FUN_0809e3a0(void) { INCFUNC("asm/func/FUN_0809e3a0.inc"); }
 
-NAKED void FUN_0809e54c(void) { INCFUNC("asm/func/FUN_0809e54c.inc"); }
+// '.n' が指す光柱を見せる
+// 残差1命令 (57/56). FUN_0809e5c4 と同じく '.n' の値が ip へ追い出されて mov が1つ増える
+NON_MATCH void FUN_0809e54c(void) {
+#ifdef NONMATCHING_C
+  Entity5CCC* p = gEntity5CCC;
+  s32 id;
+  s32 i;
+
+  if (p == NULL) {
+    return;
+  }
+  if (!VM_SeekToNamedArg('n')) {
+    return;
+  }
+
+  id = VM_GetValue();
+  for (i = 0; i < p->count; i++) {
+    if (p->beams[i].unk_98 != 0 && p->beams[i].unk_98 == id) {
+      p->beams[i].unk_9a = TRUE;
+      if (p->beams[i].active && p->unk_28) {
+        p->beams[i].sprite[0].flags &= ~SPRFLAG_HIDDEN;
+      }
+      return;
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0809e54c.inc");
+#endif
+}
 
 // '.n' が指す光柱を消す
 // 残差1命令 (51/50). 原典は '.n' の値を r7 に置くが agbcc は ip へ追い出して mov を1つ増やす
