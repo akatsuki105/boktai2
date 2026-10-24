@@ -12,6 +12,11 @@ struct Entity1DBEElem;
 
 typedef void(Entity1DBEElemFunc)(struct Entity1DBEElem* elem);
 
+// Entity1DBEElem.lockFlags
+typedef u8 Entity1DBELockFlags;
+#define E1DBE_LOCK_STATE2 (1 << 0)  // 0x1, 日照が強くても state 2 へ遷移しない
+#define E1DBE_LOCK_STATE1 (1 << 1)  // 0x2, 日が落ちても state 1 へ遷移しない
+
 // 太陽エネルギーで state が入れ替わる設置物, 1体の Entity1DBE が最大8個を抱える
 typedef struct Entity1DBEElem {
   AuxSprite sprite;                    // 0x000, poseIdx が見た目の段階 (state 0 は 0〜2, state 1 は 3〜5, state 2 は 6〜8)
@@ -19,7 +24,7 @@ typedef struct Entity1DBEElem {
   Mover mover;                         // 0x048, moverLinked が立っているときだけリストに繋がれる
   HitboxData hitbox;                   // 0x08C, 半径 {0x80, 0x32, 0x80}, ignoreMask 0x10
   u8 state;                            // 0x0DC, '.s', 0/1/2 で updateCallback を選ぶ
-  u8 lockFlags;                        // 0x0DD, '.f', bit0 が立つと state 2 へ, bit1 が立つと state 1 へ遷移しない
+  Entity1DBELockFlags lockFlags;       // 0x0DD, '.f', see Entity1DBELockFlags
   u8 unk_de;                           // 0x0DE, 読み手も書き手も見つかっていない
   bool8 touched;                       // 0x0DF, 近くに来るか属性なしの攻撃を受けると立つ, state 0 が消費して点滅を始める
   u16 id;                              // 0x0E0, '.n', mover.id と hitbox の id を兼ねる
@@ -269,7 +274,67 @@ void FUN_0809fa80(Entity1DBEElem* elem) {
   }
 }
 
-NAKED void FUN_0809fabc(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809fabc.inc"); }
+// 点滅の進行と, 日照に応じた state 0 からの遷移
+void FUN_0809fabc(Entity1DBEElem* elem) {
+  s32 sun;
+
+  if (elem->touched) {
+    elem->flickering = TRUE;
+    elem->touched = FALSE;
+    if (elem->animTimer > 0x3F) {
+      elem->animTimer = ((elem->animTimer - 0x40) & 0x1F) >> 1;
+    } else {
+      elem->animTimer = elem->animTimer & 0xF;
+    }
+  }
+
+  if (elem->flickering) {
+    if (++elem->animTimer > 0x5F) {
+      elem->sprite.poseIdx = 2;
+      elem->flickering = FALSE;
+      elem->animTimer = 0;
+    } else if (elem->animTimer <= 0x3F) {
+      if ((elem->animTimer & 0xF) <= 7) {
+        elem->sprite.poseIdx = 1;
+      } else {
+        elem->sprite.poseIdx = 2;
+      }
+    } else {
+      if ((elem->animTimer & 0x1F) <= 0xF) {
+        elem->sprite.poseIdx = 1;
+      } else {
+        elem->sprite.poseIdx = 2;
+      }
+    }
+  }
+
+  sun = gStat->sunGauge;
+  if (sun == 0) {
+    if (elem->lockFlags & E1DBE_LOCK_STATE1) {
+      elem->counter--;
+      if (elem->counter < 0) {
+        elem->counter = 0;
+      }
+    } else {
+      elem->counter--;
+      if (elem->counter < -300) {
+        Entity1DBEElem_SetState(elem, 1, FUN_0809f840);
+      }
+    }
+  } else if (sun > 7) {
+    if (elem->lockFlags & E1DBE_LOCK_STATE2) {
+      elem->counter++;
+      if (elem->counter > 0) {
+        elem->counter = 0;
+      }
+    } else {
+      elem->counter++;
+      if (elem->counter > 300) {
+        Entity1DBEElem_SetState(elem, 2, FUN_0809f938);
+      }
+    }
+  }
+}
 
 // '.m' が立っていればエリア外では更新を止め, 戻ってきたときに状態を組み直す
 void Entity1DBEElem_Update(Entity1DBEElem* elem) {
