@@ -450,19 +450,13 @@ void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
   }
 }
 
-// 残差2命令, 原典は 0x10 をレジスタに作ってから and し rsbs/lsrs #31 で 0/1 に起こすが,
-// gcc は単一ビットだと気づいて (flags >> 4) & 1 の形に縮める
+// 残差1命令 (17/18). 原典は '.p' の日光ビットを rsbs + lsrs #31 で 0/1 に起こすが, agbcc は単一ビットと見て (flags >> 4) & 1 に縮める
+// マスクを u32 ローカルに置くと縮小は止まるが分岐で作る形になり逆に2命令増える
 NON_MATCH void FUN_0809e734(Entity5CCC* p) {
 #ifdef NONMATCHING_C
   u32 flags = p->player->flag20;
-  s32 mode;
 
-  if (flags & 0x20) {
-    mode = 2;
-  } else {
-    mode = (flags & 0x10) != 0;
-  }
-  Entity5CCC_AddEneCharge(p, mode);
+  Entity5CCC_AddEneCharge(p, (flags & PFLAG20_UNK_5) ? 2 : (flags & PFLAG20_SUNBATHING) != 0);
 #else
   INCFUNC("asm/func/FUN_0809e734.inc");
 #endif
