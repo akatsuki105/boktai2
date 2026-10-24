@@ -3,6 +3,7 @@
 #include "file.h"
 #include "global.h"
 #include "malloc.h"
+#include "mover.h"
 #include "particle.h"
 #include "player.h"
 #include "random.h"
@@ -194,7 +195,8 @@ NON_MATCH void MapItem_UpdateShake(MapItem* item) {
 
 NAKED s32 MapItem_TryAutoPickup(MapItemManager* p, MapItem* item) { INCFUNC("asm/func/MapItem_TryAutoPickup.inc"); }
 
-NAKED bool32 MapItemManager_TryOpen(unknown* param_1) { INCFUNC("asm/func/MapItemManager_TryOpen.inc"); }
+// 宝箱を開けられるか
+NAKED bool32 MapItemManager_TryOpen(Mover* mover) { INCFUNC("asm/func/MapItemManager_TryOpen.inc"); }
 
 // 当たり判定マップの地面まで落ちる, 着地したら跳ねる状態へ移る
 void MapItem_UpdateFall(MapItemManager* p, MapItem* item) {

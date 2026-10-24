@@ -57,6 +57,7 @@ void FUN_0807e854(Player* p);
 void FUN_080ec79c(u8 kind, void* payload);
 void FUN_08079f1c(Player* p);
 void Camera_LookAt(Vec3* pos);
+bool32 MapItemManager_TryOpen(Mover* mover);
 
 COMMON_DATA u16 gGoodCondID = 0;                        // 0x03002B60, 現在の良い状態効果のID (= Player.goodCondID, Player再生成時の退避用, 他のEntityから参照するなどの用途で使用される)
 COMMON_DATA u16 ALIGNED(4) gConfusedDir = 0;            // 0x03002B64, 混乱の状態異常のときに動く方向 (エリア移動などで Player を再生成したときにこれを引き継ぐ)
