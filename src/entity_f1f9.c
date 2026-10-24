@@ -196,7 +196,31 @@ NON_MATCH s32 EntityF1F9_Update(EntityF1F9* p) {
 #endif
 }
 
-NAKED s32 EntityF1F9_Destroy(EntityF1F9* p) { INCFUNC("asm/func/EntityF1F9_Destroy.inc"); }
+// 使用中のアイテムのスプライト・判定・影をまとめて外す
+// 残差5命令 (53/58), 使用中判定の 0/1 の作り置き1ブロックだけが足りない. 他は完全に一致
+NON_MATCH s32 EntityF1F9_Destroy(EntityF1F9* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    if (p->activeMask & (1 << i)) {
+      EntityF1F9Item* item = &p->items[i];
+
+      AuxSprite_Remove(&item->sprite);
+      Hitbox_Unregister(&item->hitbox);
+      if (item->shadowId != -1) {
+        AuxShadow_Remove(&item->shadow);
+        item->shadowId = -1;
+      }
+    }
+  }
+
+  gEntityF1F9 = NULL;
+  return 0;
+#else
+  INCFUNC("asm/func/EntityF1F9_Destroy.inc");
+#endif
+}
 
 s32 EntityF1F9_Init(EntityF1F9* p) {
   p->anim = GetFile(DIR_ANIMATION, ANIM_74C9);
