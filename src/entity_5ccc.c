@@ -655,15 +655,15 @@ NON_MATCH bool32 FUN_0809ebf4(Player* p) {
 }
 
 // 日光 (サバタは日陰) を浴びている量をプレイヤーごとに積み, 120 たまるごとに ENE を1回復させる
-// 残差7命令 (117/110). 原典は日光フラグの 0/1 を neg + lsr #31 で作るが, agbcc は分岐で作る (マスクを u32 ローカルに置いても if/else にしても変わらない)
-// 原典は i を r3 に置いて高位レジスタを r8 の1本で済ませるが, agbcc は i を r5 に置くため p と p+0xAAC で r8/r9 の2本を使い, mov が増える
+// 残差9命令 (119/110). light の 0/1 は FUN_0809e734 と同じ if/else + TEST_FLAGS で原典どおり rsbs + lsrs #31 になった
+// 残りは i が r3 でなく r5 に乗って p と p+0xAAC に r8/r9 を使う割り当てと, 非サバタ側で unk_60 の値を charges[i] の読みより先に作る順序. GetPlayer / Entity9A9F_GetUnk60 の inline, ローカルを関数スコープに出すのは試済 (119-120)
 NON_MATCH void Entity5CCC_UpdateEneRecovery(Entity5CCC* p) {
 #ifdef NONMATCHING_C
   s32 i;
 
   for (i = 0; i < 4; i++) {
     Player* player = gPlayerPtr[i];
-    s32 light;
+    u32 light;
     s32 heal;
 
     if (player == NULL) {
@@ -673,7 +673,13 @@ NON_MATCH void Entity5CCC_UpdateEneRecovery(Entity5CCC* p) {
       continue;
     }
 
-    light = Player_TestFlag20(player, PFLAG20_UNK_5) ? 2 : ((player->flag20 & PFLAG20_SUNBATHING) != 0);
+    if (TEST_FLAGS(player->flag20, PFLAG20_UNK_5)) {
+      light = 2;
+    } else if (TEST_FLAGS(player->flag20, PFLAG20_SUNBATHING)) {
+      light = 1;
+    } else {
+      light = 0;
+    }
 
     if (player->kind == PLAYER_SABATA) {
       if (light == 2) {
