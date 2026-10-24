@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "sound.h"
 #include "sprite_aux.h"
 
 // _Create が Entity080d84f8_Create と FUN_080d8568 と FUN_080d85d8 の 3つある (_Init, _Update, _Destroy は共有)
@@ -10,11 +11,30 @@ typedef struct {
   AuxSpriteGfx gfx;   // 0x44
   HitboxData hitbox;  // 0x60, timer が 8 未満の間だけ毎フレーム登録し直す
   u16 delay;          // 0xB0, 0 になるまで何もしない
-  u16 timer;          // 0xB2, 毎フレーム +1, 0x17 を越えると自分を消す
+  u16 timer;          // 0xB2, 毎フレーム +1, 23 を越えると自分を消す
 } Entity080d84f8;
 static_assert(sizeof(Entity080d84f8) == 180);
 
-NAKED s32 Entity080d84f8_Update(Entity080d84f8* p) { INCFUNC("asm/func/Entity080d84f8_Update.inc"); }
+// delay を待ってから爆発を見せ, アニメが終わったら自分を消す
+s32 Entity080d84f8_Update(Entity080d84f8* p) {
+  if (p->delay != 0) {
+    p->delay--;
+  } else {
+    AuxSprite_SetPoseIdx(&p->sprite, p->timer >> 2);
+    if (p->timer == 0) {
+      AuxSprite_Show(&p->sprite);
+      PlaySound_082406e0(SONG_405);
+    }
+    if (p->timer < 8) {
+      Hitbox_Register(&p->hitbox);
+    }
+    p->timer++;
+    if (p->timer > 23) {
+      KillEntity(&p->e);
+    }
+  }
+  return 0;
+}
 
 s32 Entity080d84f8_Destroy(Entity080d84f8* p) {
   AuxSprite_Remove(&p->sprite);
