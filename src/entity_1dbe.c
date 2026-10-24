@@ -114,6 +114,8 @@ s32 Cmd_B6CE(void) {
   return -1;
 }
 
+Entity1DBE* Entity1DBE_Create(void);
+void Entity1DBE_AddElem(Entity1DBE* p, u32 id, Vec3* pos, u32 state, u32 moverLinked, u32 lockFlags, u32 areaBound);
 void FUN_0809f840(Entity1DBEElem* elem);
 void FUN_0809f890(Entity1DBEElem* elem);
 void FUN_0809f938(Entity1DBEElem* elem);
@@ -339,4 +341,38 @@ Entity1DBE* Entity1DBE_Create(void) {
   return p;
 }
 
-NAKED void Cmd_1DBE(void) { INCFUNC("asm/func/Cmd_1DBE.inc"); }
+// '.p' に設置物を1個足す, 8個まで
+void Cmd_1DBE(void) {
+  Entity1DBE* p = gEntity1DBE;
+  Vec3 pos;
+  s32 id;
+  s32 state;
+  s32 moverLinked;
+  s32 lockFlags;
+  s32 areaBound;
+
+  if (p == NULL) {
+    p = Entity1DBE_Create();
+  }
+  if (p->count >= 8) {
+    return;
+  }
+
+  id = VM_SeekToNamedArg('n') ? VM_GetValue() : 0;
+
+  if (VM_SeekToNamedArg('p')) {
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
+  } else {
+    pos.x = 0, pos.y = 0, pos.z = 0;
+  }
+
+  state = VM_SeekToNamedArg('s') ? VM_GetValue() : 0;
+  moverLinked = VM_SeekToNamedArg('h') ? VM_GetValue() : 0;
+  lockFlags = VM_SeekToNamedArg('f') ? VM_GetValue() : 0;
+  areaBound = VM_SeekToNamedArg('m') ? VM_GetValue() : 0;
+
+  Entity1DBE_AddElem(p, id, &pos, state, moverLinked, lockFlags, areaBound);
+  p->count++;
+}
