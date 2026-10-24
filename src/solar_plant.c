@@ -47,4 +47,36 @@ static_assert(sizeof(Entity1E98) == 2236);
 
 COMMON_DATA Entity1E98* gEntity1E98 = NULL;  // 0x03002C44
 
-INCASM("asm/solar_plant.inc");
+NAKED void Entity1E98_SetUpdateCallback(Entity1E98Elem* elem, void* fn) { INCFUNC("asm/func/Entity1E98_SetUpdateCallback.inc"); }
+
+NAKED void FUN_080a45a8(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a45a8.inc"); }
+
+NAKED void FUN_080a4620(HitboxData* a, HitboxData* b, Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a4620.inc"); }
+
+NAKED void FUN_080a4670(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a4670.inc"); }
+
+NAKED void FUN_080a46b0(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a46b0.inc"); }
+
+NAKED void FUN_080a4728(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a4728.inc"); }
+
+NAKED void FUN_080a472c(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a472c.inc"); }
+
+NAKED void FUN_080a47d0(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a47d0.inc"); }
+
+NAKED void FUN_080a4854(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a4854.inc"); }
+
+NAKED void FUN_080a48bc(void) { INCFUNC("asm/func/FUN_080a48bc.inc"); }
+
+NAKED s32 Entity1E98_Update(Entity1E98* p) { INCFUNC("asm/func/Entity1E98_Update.inc"); }
+
+NAKED s32 Entity1E98_Destroy(Entity1E98* p) { INCFUNC("asm/func/Entity1E98_Destroy.inc"); }
+
+NAKED void Entity1E98_InitHitbox(Entity1E98Elem* elem) { INCFUNC("asm/func/Entity1E98_InitHitbox.inc"); }
+
+NAKED void Entity1E98_Init(Entity1E98* p) { INCFUNC("asm/func/Entity1E98_Init.inc"); }
+
+NAKED Entity1E98* Entity1E98_Create_Internal(void) { INCFUNC("asm/func/Entity1E98_Create_Internal.inc"); }
+
+NAKED s32 FUN_080a4e1c(void) { INCFUNC("asm/func/FUN_080a4e1c.inc"); }
+
+NAKED void Entity1E98_Create(void) { INCFUNC("asm/func/Entity1E98_Create.inc"); }
