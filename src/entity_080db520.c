@@ -235,4 +235,27 @@ void FUN_080db56c(void) { gEntity080db520 = NULL; }
 NAKED void FUN_080db578(void) { INCFUNC("asm/func/FUN_080db578.inc"); }
 
 // 不使用?
-NAKED void FUN_080db780(void) { INCFUNC("asm/func/FUN_080db780.inc"); }
+// 残差5命令 (43/48), 使用中判定の 0/1 の作り置き1ブロックだけが足りない. 他は完全に一致
+// bool8 / bool32 のローカルを if/else で埋める形も試したが, ループ内では rsbs/orrs の符号技に化けて遠のく
+NON_MATCH void Entity080db520_EnableAllHitboxes(void) {
+#ifdef NONMATCHING_C
+  Entity080db520* p = gEntity080db520;
+
+  if (p != NULL) {
+    s32 i;
+
+    for (i = 0; i < 8; i++) {
+      if (p->activeMask & (1 << i)) {
+        Entity080db520Elem* e = &p->elems[i];
+
+        if (e->unk_42 >= 0 && e->unk_3e != 2) {
+          e->unk_40 |= 2;
+          e->hitbox.flags |= HBFLAG_UNK_2;
+        }
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/Entity080db520_EnableAllHitboxes.inc");
+#endif
+}
