@@ -451,29 +451,21 @@ NON_MATCH void FUN_0809e734(Entity5CCC* p) {
 }
 
 // 光柱のパレットを 412 に切り替える (既にそうなっていれば何もしない)
-// 残差3命令 (47/50). 原典は定数 412 を p->pltt の読み込みより先に作り, 高位レジスタを1本多く使う
-NON_MATCH void FUN_0809e75c(Entity5CCC* p) {
-#ifdef NONMATCHING_C
-  s32 i;
+void FUN_0809e75c(Entity5CCC* p) {
+  u16 pltt = 412;
+  s32 i, j;
 
-  if (p->pltt == 412) {
+  if (p->pltt == pltt) {
     return;
   }
-
-  p->pltt = 412;
+  p->pltt = pltt;
   for (i = 0; i < p->count; i++) {
     if (p->beams[i].active) {
-      AuxSpriteGfx* gfx = p->beams[i].gfx;
-      s32 j;
-
-      for (j = 1; j >= 0; j--, gfx++) {
-        Video_SetAuxSpritePltt(gfx, p->pltt);
+      for (j = 0; j < 2; j++) {
+        Video_SetAuxSpritePltt(&p->beams[i].gfx[j], p->pltt);
       }
     }
   }
-#else
-  INCFUNC("asm/func/FUN_0809e75c.inc");
-#endif
 }
 
 // 有効な光柱を見せ, プレイヤーの状態に応じて Entity5CCC_AddEneCharge を呼ぶ
