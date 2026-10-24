@@ -231,7 +231,40 @@ void FUN_0809fa80(Entity1DBEElem* elem) {
 
 NAKED void FUN_0809fabc(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809fabc.inc"); }
 
-NAKED void Entity1DBEElem_Update(Entity1DBEElem* elem) { INCFUNC("asm/func/Entity1DBEElem_Update.inc"); }
+// '.m' が立っていればエリア外では更新を止め, 戻ってきたときに状態を組み直す
+void Entity1DBEElem_Update(Entity1DBEElem* elem) {
+  if (elem->areaBound) {
+    if (elem->zoneID == gStat->zoneID) {
+      if (!elem->unk_e7) {
+        elem->hitbox.flags &= ~HBFLAG_UNK_2;
+      }
+      elem->updateCallback(elem);
+    } else if (elem->unk_e7) {
+      if (elem->state == 0) {
+        Entity1DBEElem_SetState(elem, 0, FUN_0809fabc);
+        elem->sprite.poseIdx = 0;
+        elem->flickering = FALSE;
+        elem->touched = FALSE;
+      } else if (elem->state == 2) {
+        Entity1DBEElem_SetState(elem, 2, FUN_0809f8e4);
+        elem->sprite.poseIdx = 8;
+        elem->unk_e2 = 0x10;
+      } else if (elem->state == 1) {
+        Entity1DBEElem_SetState(elem, 2, FUN_0809f7fc);
+        elem->sprite.poseIdx = 5;
+        elem->unk_e2 = 0x10;
+      }
+      elem->hitbox.flags |= HBFLAG_UNK_2;
+      elem->unk_e7 = FALSE;
+    }
+  } else {
+    elem->updateCallback(elem);
+  }
+
+  if (elem->hitbox.unk_44 != 0) {
+    elem->hitbox.unk_44--;
+  }
+}
 
 void Entity1DBEElem_InitParams(Entity1DBEElem* elem, u32 id, Vec3* pos, u32 state, u32 lockFlags, u32 areaBound) {
   elem->id = id;
