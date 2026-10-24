@@ -1,4 +1,6 @@
 #include "collision_map.h"
+#include "constants/sprite.h"
+#include "constants/sprite_animation.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -68,6 +70,8 @@ void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5,
 
 void FUN_081d5f54(EntityF1F9Item* item);
 bool8 FUN_081d6cb0(EntityF1F9Item* item);
+s32 FUN_081ef708(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15);
+
 void FUN_081d6444(EntityF1F9Item* item);
 void FUN_081d65e8(EntityF1F9Item* item);
 void FUN_081d6bc0(EntityF1F9Item* item);
@@ -522,7 +526,44 @@ void FUN_081d66c0(EntityF1F9Item* item, u32 power, HitboxAttributes attributes, 
   Hitbox_Register(hitbox);
 }
 
-NAKED void FUN_081d6764(EntityF1F9Item* item) { INCFUNC("asm/func/FUN_081d6764.inc"); }
+// 壊れた蜂の巣の破片を5個, ランダムな向きへ飛ばす
+// 残差20命令 (391/371) でこちらが長い. 原典は各ブロックで 0xff / &vel / 振幅10 / gSineTable をブロック先頭に作って COS と SIN で共有するが, agbcc は使用箇所ごとに作り直す (1ブロックあたり4命令)
+// static inline void SetVelFromAngle(Vec3*, u8) を通すと 382/371 まで寄るが一致しないので外した
+NON_MATCH void FUN_081d6764(EntityF1F9Item* item) {
+#ifdef NONMATCHING_C
+  Vec3 vel;
+  u8 angle;
+
+  angle = Random();
+  vel.x = COS(angle, 10), vel.y = 0, vel.z = SIN(angle, 10);
+  vel.y = 0x40;
+  FUN_081ef708(&item->sprite.pos, &vel, SPRITE_9385, ANIM_74C9, 1, 30, 2, 0, 380, 0, 0, 0, 0, 0, 0);
+
+  angle = Random();
+  vel.x = COS(angle, 10), vel.y = 0, vel.z = SIN(angle, 10);
+  vel.y = 0x22;
+  FUN_081ef708(&item->sprite.pos, &vel, SPRITE_9385, ANIM_74C9, 1, 30, 2, 0, 380, 0, 0, 0, 0, 0, 0);
+
+  angle = Random();
+  vel.x = COS(angle, 10), vel.y = 0, vel.z = SIN(angle, 10);
+  vel.y = 0x22;
+  FUN_081ef708(&item->sprite.pos, &vel, SPRITE_9385, ANIM_74C9, 1, 30, 2, 0, 380, 0, 1, 0, 0, 0, 0);
+
+  angle = Random();
+  vel.x = COS(angle, 10), vel.y = 0, vel.z = SIN(angle, 10);
+  vel.y = 0x22;
+  FUN_081ef708(&item->sprite.pos, &vel, SPRITE_9385, ANIM_74C9, 1, 30, 2, 0, 380, 1, 0, 0, 0, 0, 0);
+
+  angle = Random();
+  vel.x = COS(angle, 10), vel.y = 0, vel.z = SIN(angle, 10);
+  vel.y = 0x22;
+  FUN_081ef708(&item->sprite.pos, &vel, SPRITE_9385, ANIM_74C9, 1, 30, 2, 0, 380, 2, 0, 0, 0, 0, 0);
+
+  FUN_081d65e8(item);
+#else
+  INCFUNC("asm/func/FUN_081d6764.inc");
+#endif
+}
 
 // スプライト位置の周りにばらつかせた座標でスクリプトを n 回呼ぶ
 // 残差3命令 (96/99). 原典は while の入口判定 (cmp n,#0) を冒頭のガードと別に残すが agbcc は消す, また n を低位の呼び出し保存レジスタに置いてしまう
