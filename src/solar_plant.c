@@ -82,4 +82,11 @@ NAKED Entity1E98* Entity1E98_Create_Internal(void) { INCFUNC("asm/func/Entity1E9
 
 NAKED s32 FUN_080a4e1c(void) { INCFUNC("asm/func/FUN_080a4e1c.inc"); }
 
-NAKED void Entity1E98_Create(void) { INCFUNC("asm/func/Entity1E98_Create.inc"); }
+s32 Entity1E98_Create(void) {
+  Entity1E98* p = gEntity1E98;
+
+  if (p == NULL) {
+    p = Entity1E98_Create_Internal();
+  }
+  Entity1E98_Init(p);
+}
