@@ -47,7 +47,10 @@ static_assert(sizeof(Entity1E98) == 2236);
 
 COMMON_DATA Entity1E98* gEntity1E98 = NULL;  // 0x03002C44
 
-NAKED void Entity1E98_SetUpdateCallback(Entity1E98Elem* elem, void* fn) { INCFUNC("asm/func/Entity1E98_SetUpdateCallback.inc"); }
+void Entity1E98_SetUpdateCallback(Entity1E98Elem* elem, void* fn) {
+  elem->updateCallback = fn;
+  elem->timer = 0;
+}
 
 NAKED void FUN_080a45a8(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a45a8.inc"); }
 
