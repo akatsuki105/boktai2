@@ -27,7 +27,7 @@ typedef struct EntityF1F9Item {
   s16 unk_140;        // 0x140, 移動の始点
   s16 unk_142;        // 0x142, 現在位置
   u8 unk_144[4];      // 0x144
-  u16 state;          // 0x148, PTR_FUN_081D5D14_085AE104[state]
+  u16 state;          // 0x148, PTR_ARRAY_085ae104 の添字
   u16 idx;            // 0x14A, items の中での自分の添字, FUN_081d5864 が入れる
   u16 flags;          // 0x14C, FUN_081d5820 が立て、FUN_081d5834 が落とし、FUN_081d5848 が読む
   s8 shadowId;        // 0x14E, -1 なら影なし
@@ -172,7 +172,29 @@ void (*const PTR_ARRAY_085ae104[5])(EntityF1F9*, EntityF1F9Item*) = {
     FUN_081d6200,
 };  // 0x085AE104
 
-NAKED s32 EntityF1F9_Update(EntityF1F9* p) { INCFUNC("asm/func/EntityF1F9_Update.inc"); }
+// 使用中のアイテムについて state ごとの更新関数を呼ぶ
+// 残差6命令 (44/50). 5命令は使用中判定の 0/1 の作り置き, 残り1命令は &activeMask の作り方の違い
+NON_MATCH s32 EntityF1F9_Update(EntityF1F9* p) {
+#ifdef NONMATCHING_C
+  EntityF1F9Item* items = p->items;
+
+  if (p->activeMask != 0) {
+    s32 i;
+
+    for (i = 0; i < 4; i++) {
+      if (p->activeMask & (1 << i)) {
+        EntityF1F9Item* item = &items[i];
+
+        PTR_ARRAY_085ae104[item->state](p, item);
+      }
+    }
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/EntityF1F9_Update.inc");
+#endif
+}
 
 NAKED s32 EntityF1F9_Destroy(EntityF1F9* p) { INCFUNC("asm/func/EntityF1F9_Destroy.inc"); }
 
