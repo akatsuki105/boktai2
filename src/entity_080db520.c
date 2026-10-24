@@ -567,7 +567,95 @@ Entity080db520* Entity080db520_Create(void) {
 void FUN_080db56c(void) { gEntity080db520 = NULL; }
 
 // 不使用?
-NAKED void FUN_080db578(void) { INCFUNC("asm/func/FUN_080db578.inc"); }
+// スクリプトから位置とアニメの variant を受け取って空き枠に1つ仕込む
+// 残差1命令 (242/241) でこちらが長い. 原典は elem のコピーを高位レジスタにもう1つ持って spr 系のアクセスをそちら経由で行うが, spr のローカル化では再現できず 245 に悪化する
+// アニメ進行の本体は FUN_080db290 と同一, そちらの残差と同種
+NON_MATCH void FUN_080db578(void) {
+#ifdef NONMATCHING_C
+  Entity080db520* p = gEntity080db520;
+  Entity080db520Elem* elem;
+  AuxAnimState* anim;
+  AuxAnimCmd* cmd;
+  u8 variant;
+
+  if (p == NULL) {
+    p = Entity080db520_Create();
+    if (p == NULL) {
+      return;
+    }
+  }
+
+  elem = FUN_080dad4c(p);
+  if (elem == NULL) {
+    return;
+  }
+
+  elem->state = 1;
+
+  if (VM_SeekToNamedArg('p')) {
+    elem->pos.x = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    elem->pos.y = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    elem->pos.z = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  } else {
+    elem->pos.x = 0;
+    elem->pos.y = 0;
+    elem->pos.z = 0;
+  }
+
+  variant = VM_GetNamedArgValue('r', 0);
+  elem->zoneID = GetZoneAt(&elem->pos);
+  elem->unk_40 = 0;
+  elem->baseAngle = 0;
+  elem->spr.pos = elem->pos;
+  AuxSprite_Setup(&elem->spr, &p->gfx, 0);
+
+  anim = &elem->anim;
+  AuxAnim_SetAnim(anim, p->anim, 1, 0, variant);
+
+  cmd = &anim->cmds[anim->cmdIdx];
+  elem->spr.poseIdx = *cmd >> 6;
+  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+    elem->spr.flags |= SPRFLAG_XFLIP;
+  } else {
+    elem->spr.flags &= ~SPRFLAG_XFLIP;
+  }
+  if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+    elem->spr.flags |= SPRFLAG_YFLIP;
+  } else {
+    elem->spr.flags &= ~SPRFLAG_YFLIP;
+  }
+
+  anim->tick++;
+  if (anim->tick >= anim->wait) {
+    anim->tick = 0;
+    if (anim->flags & ANIM_PLAY_REVERSE) {
+      if (anim->cmdIdx == 0) {
+        anim->cmdIdx = anim->cmdCount;
+      }
+      anim->cmdIdx--;
+    } else {
+      anim->cmdIdx++;
+      if (anim->cmdIdx >= anim->cmdCount) {
+        anim->cmdIdx = 0;
+      }
+    }
+    anim->duration = anim->cmds[anim->cmdIdx] & 0xF;
+    anim->wait = (anim->duration * anim->speed) >> 6;
+    if (anim->wait == 0) {
+      anim->wait = 1;
+    }
+  }
+
+  elem->spr.flags &= ~SPRFLAG_HIDDEN;
+  elem->spr.priority = 1;
+  if (FUN_0809dfec(elem->zoneID)) {
+    elem->unk_40 |= E080DB520_UNK_5;
+  }
+  Entity080db520_InitHurtbox(elem, 0, 0);
+#else
+  INCFUNC("asm/func/FUN_080db578.inc");
+#endif
+}
 
 // 不使用?
 // 残差5命令 (43/48), 使用中判定の 0/1 の作り置き1ブロックだけが足りない. 他は完全に一致
