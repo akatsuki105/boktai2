@@ -95,7 +95,7 @@ static const u32 sEnemyDexUIPoses2[3] = {1, 2, 3};  // 0x085AF0A4
 
 s32 EnemyDex_GetPageStart(u32 page) { return sEnemyDexPageStarts[page]; }
 
-NAKED s32 EnemyDex_GetPageEntryCount(u32 page) { INCFUNC("asm/func/EnemyDex_GetPageEntryCount.inc"); }
+s32 EnemyDex_GetPageEntryCount(u32 page) { return sEnemyDexPageEntryCounts[page]; }
 
 NAKED s32 EnemyDex_GetCategoryEntryCount(u32 page) { INCFUNC("asm/func/EnemyDex_GetCategoryEntryCount.inc"); }
 
