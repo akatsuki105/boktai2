@@ -18181,7 +18181,7 @@ _0812A6C6:
 	str r1, [sp, #4]
 	add r0, sp, #8
 	movs r1, #0
-	bl FUN_080d8568
+	bl Entity080d84f8_CreateDelayed
 	b _0812A79E
 _0812A6E4:
 	movs r6, #0
@@ -18223,7 +18223,7 @@ _0812A6EA:
 	str r0, [sp, #4]
 	add r0, sp, #8
 	movs r1, #0
-	bl FUN_080d8568
+	bl Entity080d84f8_CreateDelayed
 	adds r6, #1
 	cmp r6, #1
 	ble _0812A6EA
@@ -18272,7 +18272,7 @@ _0812A74E:
 	str r0, [sp, #4]
 	add r0, sp, #8
 	movs r1, #0
-	bl FUN_080d8568
+	bl Entity080d84f8_CreateDelayed
 	adds r6, #1
 	cmp r6, #3
 	ble _0812A74E
