@@ -52,7 +52,74 @@ const u16 u16_ARRAY_085aa980[4] = {0x0, 0x80, 0x258};  // 0x085AA980
 
 void nop_0801a170(Entity4F5C* p, Entity4F5CElem* elem) {}
 
-NAKED void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) { INCFUNC("asm/func/Entity4F5C_ElemFall.inc"); }
+// プレイヤーの高さまで落としながら粒子を巡回させ, 着地したら state 2 へ移す
+// 残差6命令 (282/276). 原典は p を高位レジスタ (r8) へ追い出して使うたび低位へ mov し直すが, agbcc は p を r7 に収めてしまう
+NON_MATCH void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) {
+#ifdef NONMATCHING_C
+  s32 dy = elem->pos.y - (p->playerPos.y + elem->unk_05);
+
+  if (dy > 0x4B0) {
+    Particle* ptcl = elem->ptcls;
+    s32 j;
+
+    elem->pos.y -= 0x18;
+    for (j = 2; j >= 0; j--, ptcl++) {
+      ptcl->flags |= SPRFLAG_HIDDEN;
+    }
+  } else if (dy > 0x18) {
+    elem->pos.y -= 0x18;
+    elem->ptcls[0].flags &= ~SPRFLAG_HIDDEN;
+
+    if (elem->unk_02 == 0) {
+      elem->unk_02 = 0x18;
+      elem->ptcls[elem->ptclIdx].flags |= SPRFLAG_HIDDEN;
+      elem->ptclIdx++;
+      if (elem->ptclIdx > 2) {
+        elem->ptclIdx = 1;
+      }
+      Particle_SetOffset(&elem->ptcls[elem->ptclIdx], (Random() & 1) - 4, (Random() & 1) - 4);
+      Particle_SetFrame(&elem->ptcls[elem->ptclIdx], p->group2, 2);
+      elem->ptcls[elem->ptclIdx].plttSlot = p->group2->plttID + 1;
+      elem->ptcls[elem->ptclIdx].flags &= ~SPRFLAG_HIDDEN;
+      elem->ptcls[elem->ptclIdx].flags |= SPRFLAG_BLINK_ODD;
+      elem->ptcls[elem->ptclIdx].pos = elem->pos;
+    } else {
+      elem->unk_02--;
+      if (elem->unk_02 == 0x16) {
+        Particle_SetFrame(&elem->ptcls[elem->ptclIdx], p->group2, 2);
+        elem->ptcls[elem->ptclIdx].plttSlot = p->group2->plttID + 1;
+      }
+      if (elem->unk_02 == 0x14) {
+        elem->ptcls[elem->ptclIdx].flags |= SPRFLAG_HIDDEN;
+      }
+    }
+  } else {
+    Particle* ptcl = elem->ptcls;
+    s32 j;
+
+    elem->state = 2;
+    elem->timer = 0;
+    elem->speed = (Random() & 1) + 4;
+
+    for (j = 0; j < 3; j++, ptcl++) {
+      ptcl->flags |= SPRFLAG_BLINK_ODD;
+      ptcl->flags &= ~SPRFLAG_HIDDEN;
+      Particle_SetFrame(ptcl, p->group2, 2);
+      ptcl->plttSlot = p->group2->plttID + 1;
+      Particle_SetOffset(ptcl, -4, -4);
+      ptcl->pos = elem->pos;
+      elem->animIdx[j] = 1;
+      elem->animTimer[j] = Random() & 3;
+    }
+
+    FUN_0807a8e0(gPlayerPtr[0]);
+  }
+
+  elem->ptcls[0].pos = elem->pos;
+#else
+  INCFUNC("asm/func/Entity4F5C_ElemFall.inc");
+#endif
+}
 
 // 粒子3枚を円状に散らしながらアニメを進め, 0x1F フレーム経ったら隠して終わる
 // 残差17命令 (153/170) でこちらが短い. 原典は angle を高位レジスタに追い出して gSineTable をアクセスごとにプールから読み直すが, agbcc は gSineTable を1本に巻き上げて angle を低位に収める (agbcc-levers.md の『キャッシュされたグローバルポインタを原典は毎回読み直す』と同じ壁)
