@@ -77,9 +77,9 @@ PreviewStage* PreviewStage_Create(u32 arg, u32 _);
 
 static inline void ShowBG(u32 bits) { gStagedDISPCNT |= bits; }
 
-s32 EnemyDex_GetPageStart(u32 param_1);
+s32 EnemyDex_GetPageStart(u32 page);
 s32 EnemyDex_GetCategoryOfEntry(s32 entryIdx);
-s32 EnemyDex_GetPageEntryCount(u32 param_1);
+s32 EnemyDex_GetPageEntryCount(u32 page);
 s32 EnemyDex_GetCategoryEntryCount(u32 category);
 s32 EnemyDex_GetCategoryStart(s32 category);
 
