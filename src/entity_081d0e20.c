@@ -224,7 +224,7 @@ void FUN_081d0838(Entity081d0e20* p, Entity081d0e20Elem* elem) {
   elem->flags &= ~0x42;
 }
 
-// スクリプトの引数から要素を1つ生成する
+// 0x2FA5, スクリプトの引数から要素を1つ生成する
 NON_MATCH void FUN_081d0864(void) {
 #ifdef NONMATCHING_C
   Entity081d0e20* p = gEntity081d0e20;
@@ -368,6 +368,7 @@ s32 FUN_081d0c38(void) {
   return 1;
 }
 
+// 0x779F, '.i', '.s'
 NON_MATCH void FUN_081d0c6c(void) {
 #ifdef NONMATCHING_C
   s32 val = VM_GetNamedArgValue('s', 0);
@@ -387,7 +388,7 @@ NON_MATCH void FUN_081d0c6c(void) {
         if (!(elem->flags & 0x20)) {
           elem->flags = (elem->flags | 0x20) & ~0x40;
           elem->state = 3;
-          elem->unk_ba = val;
+          elem->unk_ba = 1;
         }
         break;
       }
@@ -445,6 +446,7 @@ s32 Entity081d0e20_Init(Entity081d0e20* p) {
   return 0;
 }
 
+// 0xC419
 Entity081d0e20* Entity081d0e20_Create(void) {
   if (gEntity081d0e20 == NULL) {
     Entity081d0e20* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity081d0e20));
