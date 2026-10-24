@@ -89,7 +89,30 @@ NAKED void FUN_08015a90(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s3
 
 NAKED void FUN_08015b18(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11) { INCFUNC("asm/func/FUN_08015b18.inc"); }
 
-NAKED void FUN_08015c28(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10) { INCFUNC("asm/func/FUN_08015c28.inc"); }
+void FUN_08015c28(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+  ParticleSpawnParam param;
+
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = 0;
+  param.speedYRand = 0;
+  param.speedXZ = speedXZ;
+  param.speedXZRand = 0;
+  param.angleY = 0;
+  param.angleYRand = 0;
+  param.angleXZ = angleXZ;
+  param.angleXZRand = angleXZRand;
+  param.decayStartY = decayStart;
+  param.decayStartYRand = 0;
+  param.unk_1c = decay;
+  param.unk_1e = 0;
+  param.decayStartXZ = decayStart;
+  param.decayStartXZRand = 0;
+  param.unk_24 = decay;
+  param.unk_26 = 0;
+  FUN_080155e4(count, pos, &param);
+}
 
 // 発生パラメータを決め打ちで組んで count 個ぶん発生させる
 void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos) {
