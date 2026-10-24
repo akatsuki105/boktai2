@@ -1,6 +1,7 @@
 #include "entity.h"
 #include "global.h"
 #include "particle.h"
+#include "random.h"
 #include "registry.h"
 #include "vm.h"
 
@@ -24,7 +25,25 @@ typedef struct {
 } Entity080ac574;
 static_assert(sizeof(Entity080ac574) == 280);
 
-NAKED void FUN_080ac3d4(Entity080ac574Particle* ptcl) { INCFUNC("asm/func/FUN_080ac3d4.inc"); }
+// 残差2命令 (68/66). 原典は pos.x/pos.z を ldrh で読んでおり (s16 なのに符号拡張しない), さらに &gRandTableIdx を ip 経由で持ち直している
+// (u16) キャストを付けると ldrh になり 63/66 まで縮むが, 座標を u16 で読む C は原典として不自然なので採らない. 演算順 5通り, table ローカル有無, Random()/_Random() は試済
+NON_MATCH void FUN_080ac3d4(Entity080ac574Particle* ptcl) {
+#ifdef NONMATCHING_C
+  ptcl->ptcl.flags &= ~SPRFLAG_HIDDEN;
+  Particle_SetFrame(&ptcl->ptcl, ptcl->group, 3);
+  ptcl->ptcl.pos = ptcl->origin;
+  ptcl->ptcl.pos.x += (Random() & 0x3F) - 31;
+  ptcl->ptcl.pos.z += (Random() & 0x3F) - 31;
+  ptcl->timer = 0;
+  if (ptcl->lifetimeRand != 0) {
+    ptcl->lifetime = ptcl->lifetimeBase + Mod(Random(), ptcl->lifetimeRand);
+  } else {
+    ptcl->lifetime = ptcl->lifetimeBase;
+  }
+#else
+  INCFUNC("asm/func/FUN_080ac3d4.inc");
+#endif
+}
 
 void FUN_080ac46c(Entity080ac574Particle* ptcl) {
   ptcl->timer++;
