@@ -74,6 +74,19 @@ void Map_SetZones(ZoneData* zones);
 void Map_SetPaths(PathData* paths);
 void Map_SetNavMesh(NavMesh* navMesh);
 
+// ワールド座標をアイソメトリック投影して視点座標にする
+static inline void WorldToVp(Vec3* vp, WorldPos* world) {
+  s32 hx = world->x >> 1;
+  s32 hz = world->z >> 1;
+  s32 a, b;
+
+  vp->x = FixToInt(8, (hx - hz) * 48);
+  a = FixToInt(8, (hx + hz) * 48);
+  b = FixToInt(8, world->y * 24);
+  vp->y = a - b;
+  vp->z = a + b;
+}
+
 // Collision Map File が圧縮されてたら展開して返す、圧縮されてなかったらそのまま返す
 CollisionMapFile* OpenCollisionMapFile(void* file) {
   u8* magic = file;
@@ -241,19 +254,6 @@ void FUN_0823b880(s32 n) {
       gCamera->moveMode = TO_PLAYER_INTERPOLATE;
     }
   }
-}
-
-// ワールド座標をアイソメトリック投影して視点座標にする
-static inline void WorldToVp(Vec3* vp, WorldPos* world) {
-  s32 hx = world->x >> 1;
-  s32 hz = world->z >> 1;
-  s32 a, b;
-
-  vp->x = FixToInt(8, (hx - hz) * 48);
-  a = FixToInt(8, (hx + hz) * 48);
-  b = FixToInt(8, world->y * 24);
-  vp->y = a - b;
-  vp->z = a + b;
 }
 
 // 移動先を指定して即座に移動させる, 補間中でなければその場で投影までやりなおす
