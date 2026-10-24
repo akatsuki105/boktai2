@@ -128,7 +128,30 @@ void (*const PTR_ARRAY_085ad314[3])(Entity080db520*, Entity080db520Elem*) = {
     FUN_080db040,
 };  // 0x085AD314
 
-NAKED s32 Entity080db520_Update(Entity080db520* p) { INCFUNC("asm/func/Entity080db520_Update.inc"); }
+// 使用中の枠について unk_3e ごとの更新関数を呼ぶ
+// 残差5命令 (35/40) でこちらが短い, 使用中判定の 0/1 が畳まれる (FUN_080dad4c / Entity080db520_Destroy / attack_box.c と同じ壁)
+// static inline bool32, 明示的な if/else での TRUE/FALSE 代入, != 0, ?:, !used + continue の5通りを試したがどれも作り置きは出ない. elems の基底をローカルに取ると 9→5 ハンクまで寄る
+NON_MATCH s32 Entity080db520_Update(Entity080db520* p) {
+#ifdef NONMATCHING_C
+  if (p->activeMask != 0) {
+    Entity080db520Elem* elems = p->elems;
+    s32 i;
+
+    for (i = 0; i < 8; i++) {
+      if (p->activeMask & (1 << i)) {
+        Entity080db520Elem* e = &elems[i];
+
+        PTR_ARRAY_085ad314[e->unk_3e](p, e);
+      }
+    }
+    FUN_080dadec(p);
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/Entity080db520_Update.inc");
+#endif
+}
 
 // 残差5命令 (30 対 35), 原典は使用中判定の結果を 1/0 として一度作ってから改めて 0 と比べる (いわゆる 0/1 の作り置き)
 // static inline bool32 の判定関数にすると 32 対 35 まで寄るが作り置きは出ない, FUN_080dad4c と同じ壁
