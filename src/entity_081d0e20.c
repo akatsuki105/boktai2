@@ -41,27 +41,6 @@ static_assert(sizeof(Entity081d0e20) == 108);
 
 IWRAM_DATA Entity081d0e20* gEntity081d0e20 = NULL;  // 0x03000188
 
-void FUN_081cfd3c(Entity081d0e20Elem*);
-void FUN_081cfd40(Entity081d0e20Elem*);
-void FUN_081d006c(Entity081d0e20Elem*);
-void FUN_081d00f0(Entity081d0e20Elem*);
-void FUN_081d02bc(Entity081d0e20Elem*);
-void FUN_081d03fc(Entity081d0e20Elem*);
-void FUN_081d0578(Entity081d0e20Elem*);
-void FUN_081d070c(Entity081d0e20Elem*);
-
-// Entity081d0e20Elem.state (0xB6) で引く
-void (*const PTR_ARRAY_085ae098[8])(Entity081d0e20Elem*) = {
-    FUN_081cfd3c,
-    FUN_081cfd40,
-    FUN_081d006c,
-    FUN_081d00f0,
-    FUN_081d02bc,
-    FUN_081d03fc,
-    FUN_081d0578,
-    FUN_081d070c,
-};  // 0x085AE098
-
 unknown* FUN_081ee9bc(Vec3* pos);
 s32 FUN_080e11a8(Vec3* pos, Vec3* size, s32 idx);
 s32 FUN_080e1100(Vec3* pos, Vec3* size, u32* out);
@@ -130,7 +109,7 @@ NON_MATCH Entity081d0e20Elem* Entity081d0e20_AllocElem(Entity081d0e20* p) {
 
 NAKED s32 FUN_081cfcb8(Entity081d0e20Elem* p) { INCFUNC("asm/func/FUN_081cfcb8.inc"); }
 
-void FUN_081cfd3c(Entity081d0e20Elem* _) {}
+void nop_081cfd3c(Entity081d0e20Elem* _) {}
 
 void FUN_081cfd40(Entity081d0e20Elem* p) {
   Vec3 size;
@@ -418,6 +397,17 @@ NON_MATCH void FUN_081d0c6c(void) {
   INCFUNC("asm/func/FUN_081d0c6c.inc");
 #endif
 }
+
+void (*const PTR_ARRAY_085ae098[8])(Entity081d0e20Elem*) = {
+    nop_081cfd3c,
+    FUN_081cfd40,
+    FUN_081d006c,
+    FUN_081d00f0,
+    FUN_081d02bc,
+    FUN_081d03fc,
+    FUN_081d0578,
+    FUN_081d070c,
+};  // 0x085AE098
 
 NAKED s32 Entity081d0e20_Update(Entity081d0e20* p) { INCFUNC("asm/func/Entity081d0e20_Update.inc"); }
 
