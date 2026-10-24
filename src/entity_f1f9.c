@@ -8,6 +8,7 @@
 #include "shadow.h"
 #include "sound.h"
 #include "sprite_aux.h"
+#include "trig.h"
 #include "vm.h"
 
 // スプライト・ヒットボックス・影を1つずつ持つ
@@ -17,8 +18,13 @@ typedef struct EntityF1F9Item {
   HitboxData hitbox;  // 0x058
   AuxShadow shadow;   // 0x0A8, shadowId で管理
   Vec3 basePos;       // 0x114, 揺れの基準位置, sprite.pos へ複写する
-  Vec3 vel;           // 0x11C, y だけ使う, 落下速度 (毎フレーム +2)
-  u8 unk_124[8];      // 0x124
+  s16 unk_11c;        // 0x11C, 揺れの角速度, 折り返すたびに符号を反転して半分になる
+  s16 unk_11e;        // 0x11E, 落下速度, 毎フレーム +2
+  u8 unk_120[4];      // 0x120
+  s16 unk_124;        // 0x124, basePos からの半径 (X 成分)
+  u8 unk_126[2];      // 0x126
+  s16 unk_128;        // 0x128, basePos からの半径 (Z 成分)
+  u8 unk_12a[2];      // 0x12A
   s32 unk_12c;        // 0x12C, 1フレーム前の距離の2乗
   s32 unk_130;        // 0x130, プレイヤーとの距離の2乗
   s32 unk_134;        // 0x134, この距離まで近づかれると反応する
@@ -172,7 +178,50 @@ void FUN_081d5d18(EntityF1F9* p, EntityF1F9Item* item) {
 
 NAKED void FUN_081d5d70(EntityF1F9* p, EntityF1F9Item* item) { INCFUNC("asm/func/FUN_081d5d70.inc"); }
 
-NAKED void FUN_081d5f54(unknown* p) { INCFUNC("asm/func/FUN_081d5f54.inc"); }
+// basePos を中心に (unk_124, unk_128) を rotation ぶん回した位置へ置き, 揺れを減衰させる
+// 残差1命令 (179/180). 原典は符号付きに直した角度を r1 (スクラッチ) に置いて r7 まで使うが, agbcc は r5 に収めて1本節約する
+// basePos を中心に (unk_124, unk_128) を rotation ぶん回す 2D 回転, unk_11c は折り返すたびに符号反転して半分になる減衰
+NON_MATCH void FUN_081d5f54(EntityF1F9Item* item) {
+#ifdef NONMATCHING_C
+  s32 angle = item->sprite.rotation;
+
+  if (angle > 0x80) {
+    angle -= 0x100;
+  } else if (angle < -0x80) {
+    angle += 0x100;
+  }
+
+  if (angle == 0 && item->unk_11c == 0) {
+    return;
+  }
+
+  item->sprite.pos.x = item->basePos.x + (COS(item->sprite.rotation, item->unk_124) + SIN(item->sprite.rotation, item->unk_128));
+  item->sprite.pos.z = (-SIN(item->sprite.rotation, item->unk_124) + COS(item->sprite.rotation, item->unk_128)) + item->basePos.z;
+
+  if (item->unk_11c == 0) {
+    if (angle > 0) {
+      item->sprite.rotation--;
+    } else {
+      item->sprite.rotation++;
+    }
+    return;
+  }
+
+  item->sprite.rotation += item->unk_11c;
+  if (item->unk_11c > 0) {
+    if (angle > item->unk_11c) {
+      item->unk_11c = -item->unk_11c;
+    }
+  } else {
+    if (angle < item->unk_11c) {
+      item->unk_11c = -item->unk_11c;
+      item->unk_11c = FixToInt(1, item->unk_11c);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_081d5f54.inc");
+#endif
+}
 
 // 足元の高さを測ってから落下させ, 着地したら state 4 へ移してエフェクトを撒く
 // 残差1命令 (139/140) でこちらが短い. &item->sprite.pos を原典は r0 で作って r6 へ複写するがこちらは直接 r6 に作る, CpuSet の第1引数 (sp+0x20) の作り位置も1つずれる
@@ -215,10 +264,10 @@ NON_MATCH void FUN_081d60c8(EntityF1F9* p, EntityF1F9Item* item) {
 
     item->groundY = height;
     item->unk_156 = 0;
-    CpuFill32(0, &item->vel, sizeof(item->vel));
+    CpuFill32(0, &item->unk_11c, 8);
   } else {
-    item->sprite.pos.y -= item->vel.y;
-    item->vel.y += 2;
+    item->sprite.pos.y -= item->unk_11e;
+    item->unk_11e += 2;
     if (item->groundY >= item->sprite.pos.y) {
       s32 i;
 
