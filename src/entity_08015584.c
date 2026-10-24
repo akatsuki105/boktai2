@@ -159,7 +159,45 @@ NON_MATCH void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 a
 #endif
 }
 
-NAKED void FUN_08015b18(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11) { INCFUNC("asm/func/FUN_08015b18.inc"); }
+// base を中心に mask でマスクした乱数ぶんずらした位置へ count 個発生させる
+// 残差1命令 (124/125). base/mask は Vec3* ではなく u16* (原典は ldrh で読む) で, それに直すと 135→124 まで寄る. 残るのは count と &spawnPos のレジスタ入れ替えのみ
+NON_MATCH void FUN_08015b18(u16* base, u16* mask, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+#ifdef NONMATCHING_C
+  ParticleSpawnParam param;
+  Vec3 spawnPos;
+  u16* table = gRandomTable;
+  s32 i;
+
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = 0;
+  param.speedYRand = 0;
+  param.speedXZ = speedXZ;
+  param.speedXZRand = 0;
+  param.angleY = 0;
+  param.angleYRand = 0;
+  param.angleXZ = angleXZ;
+  param.angleXZRand = angleXZRand;
+  param.decayStartY = decayStart;
+  param.decayStartYRand = 0;
+  param.unk_1c = decay;
+  param.unk_1e = 0;
+  param.decayStartXZ = decayStart;
+  param.decayStartXZRand = 0;
+  param.unk_24 = decay;
+  param.unk_26 = 0;
+
+  for (i = count; i > 0; i--) {
+    spawnPos.x = (_Random(table) & mask[0]) + base[0];
+    spawnPos.y = (_Random(table) & mask[1]) + base[1];
+    spawnPos.z = (_Random(table) & mask[2]) + base[2];
+    FUN_080155e4(1, &spawnPos, &param);
+  }
+#else
+  INCFUNC("asm/func/FUN_08015b18.inc");
+#endif
+}
 
 void FUN_08015c28(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
   ParticleSpawnParam param;
