@@ -133,7 +133,11 @@ NAKED void FUN_08206354(Entity286FNode* node) { INCFUNC("asm/func/FUN_08206354.i
 
 NAKED s32 FUN_082063ec(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082063ec.inc"); }
 
-NAKED s32 FUN_0820640c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820640c.inc"); }
+s32 FUN_0820640c(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  FUN_08206354(node);
+  return 0;
+}
 
 s32 FUN_08206424(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
