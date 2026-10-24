@@ -53,6 +53,8 @@ IWRAM_DATA Entity5CCC* gEntity5CCC = NULL;  // 0x03000140
 
 extern u16 u16_03002bf0;
 
+s32 Entity0800a89c_Spawn(s32 count, u32 kindFlags, u8 amount, Vec3* pos, Vec3* spread, s16 lifetime, s32 lifetimeRand);
+
 // まだセッションが無ければ 0
 static inline u16 Entity9A9F_GetUnk66(void) {
   Entity9A9F* p = gEntity9A9F;
@@ -447,7 +449,59 @@ void FUN_0809e840(Entity5CCC* p) {
   Entity5CCC_AddEneCharge(p, Player_TestFlag20(p->player, PFLAG20_UNK_5) ? 2 : 0);
 }
 
-NAKED void FUN_0809e89c(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809e89c.inc"); }
+// 夜の更新, 光柱を見せたままにし, プレイヤーが action 7 / state 3 の間だけホタルを8フレームごとに出す
+// 残差1命令 (140/141). 原典は天窓判定の 0/1 を分岐で作り置きしてから cmp するが, agbcc は mvns + lsrs #31 の値計算に畳む (s32/bool8/bool32/u16, 戻り値をローカルに受ける, 代入先を定数にする, いずれも変わらない)
+NON_MATCH void Entity5CCC_UpdateNight(Entity5CCC* p) {
+#ifdef NONMATCHING_C
+  bool32 found;
+
+  if (!p->unk_28) {
+    s32 i;
+
+    p->unk_28 = TRUE;
+    for (i = 0; i < p->count; i++) {
+      if (p->beams[i].lit) {
+        p->beams[i].sprite[0].flags &= ~SPRFLAG_HIDDEN;
+      }
+    }
+  }
+
+  found = FALSE;
+  if (!(gStat->unk_934 & SF934_OUTDOOR)) {
+    if (FUN_0809e05c(&p->player->mover.pos) >= 0) {
+      found = TRUE;
+    }
+    if (found == 0) {
+      p->unk_22 = 0;
+      FUN_0809e75c(p);
+      return;
+    }
+  }
+
+  if (p->player->action == 7 && p->player->state <= 3) {
+    if (p->player->state == 3 && p->unk_22 <= 62) {
+      if ((p->unk_22 & 7) == 0) {
+        Vec3 pos;
+        Vec3 spread;
+
+        pos = p->player->mover.pos;
+        pos.x -= 100;
+        pos.z -= 100;
+        pos.y += 256;
+        spread.x = 256, spread.y = 0, spread.z = 256;
+        Entity0800a89c_Spawn(1, 1, 25, &pos, &spread, 180, 60);
+      }
+      p->unk_22++;
+    }
+  } else {
+    p->unk_22 = 0;
+  }
+
+  FUN_0809e75c(p);
+#else
+  INCFUNC("asm/func/Entity5CCC_UpdateNight.inc");
+#endif
+}
 
 bool32 FUN_0809e9d0(Entity5CCC* p) {
   if (p->unk_1c) {
@@ -473,7 +527,7 @@ s32 Entity0809eb24_Update(Entity5CCC* p) {
 
     if (gStat->lx == 0) {  // 太陽光が0 (ライジングサンなども含めたもの)
       if (FUN_0809e9d0(p)) {
-        FUN_0809e89c(p);
+        Entity5CCC_UpdateNight(p);
       } else {
         FUN_0809e840(p);
       }
