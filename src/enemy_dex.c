@@ -93,7 +93,7 @@ static const u32 sEnemyDexUIPoses1[5] = {17, 18, 19, 20, 21};  // 0x085AF090
 // 同上, EnemyDexMenu+0x36C から3枚
 static const u32 sEnemyDexUIPoses2[3] = {1, 2, 3};  // 0x085AF0A4
 
-NAKED s32 EnemyDex_GetPageStart(u32 page) { INCFUNC("asm/func/EnemyDex_GetPageStart.inc"); }
+s32 EnemyDex_GetPageStart(u32 page) { return sEnemyDexPageStarts[page]; }
 
 NAKED s32 EnemyDex_GetPageEntryCount(u32 page) { INCFUNC("asm/func/EnemyDex_GetPageEntryCount.inc"); }
 
