@@ -2,8 +2,10 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "random.h"
 #include "sprite.h"
 #include "sprite_animation.h"
+#include "trig.h"
 
 // パーティクル1個分, FUN_080155e4 で発生させる
 typedef struct {
@@ -285,6 +287,41 @@ void UNUSED FUN_08015d9c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 
   FUN_080155e4(1, pos, &param);
 }
 
-NAKED void UNUSED FUN_08015dfc(void* param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_08015dfc.inc"); }
+// ランダムな向きへ speedXZ * 40 ぶんずらした位置に1個発生させる
+// 命令数・順序とも一致 (108/108) するが &param (sp のコピー) の作り位置が1つ手前にずれる. 原典は乱数テーブルのプール読みの後に作る
+// ずらし量は COS/SIN(angleXZ + 0x80, speedXZ * 40), agbcc は (speedXZ*40)*table を speedXZ*(40*table) に再結合する
+NON_MATCH void UNUSED FUN_08015dfc(WorldPos* pos, u32 param_2, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+#ifdef NONMATCHING_C
+  ParticleSpawnParam param;
+  Vec3 spawnPos;
+
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = 0;
+  param.speedYRand = 0;
+  param.speedXZ = speedXZ;
+  param.speedXZRand = 0;
+  param.angleXZ = (u8)Random();
+  param.angleXZRand = 0;
+  param.angleYRand = 0;
+  param.angleY = 0;
+  param.decayStartY = decayStart;
+  param.decayStartYRand = 0;
+  param.unk_1c = decay;
+  param.unk_1e = 0;
+  param.decayStartXZ = decayStart;
+  param.decayStartXZRand = 0;
+  param.unk_24 = decay;
+  param.unk_26 = 0;
+
+  spawnPos.x = pos->x + COS(param.angleXZ + 0x80, speedXZ * 40);
+  spawnPos.y = pos->y;
+  spawnPos.z = pos->z + SIN(param.angleXZ + 0x80, speedXZ * 40);
+  FUN_080155e4(1, &spawnPos, &param);
+#else
+  INCFUNC("asm/func/FUN_08015dfc.inc");
+#endif
+}
 
 NAKED void VM_Sub4383(void) { INCFUNC("asm/func/VM_Sub4383.inc"); }
