@@ -6,7 +6,7 @@
 
 typedef struct {
   u8 unk_0[0x16];  // 0x00
-  u8 unk_16;       // 0x16, FUN_080dc00c が 0 を入れる
+  u8 state;        // 0x16, PTR_ARRAY_085ad32c の添字, FUN_080dc00c が 0 に戻す
   s8 idx;          // 0x17, 自分の添字, ptcls と activeMask のビットを指す
   u8 unk_18[4];    // 0x18
 } Entity080dc44cSlot;
@@ -45,7 +45,27 @@ NON_MATCH void FUN_080dc00c(Entity080dc44c* p, Entity080dc44cSlot* slot) {
 #endif
 }
 
-NAKED s32 FUN_080dc050(Entity080dc44c* p) { INCFUNC("asm/func/FUN_080dc050.inc"); }
+// 空いている枠を確保して返す, 無ければ NULL
+// 残差11命令 (28/39). 使用中判定の 0/1 の作り置きと, 原典が i*0x1C のバイトオフセットを ip に別途ためて毎回 p + 0x1E4 + offset を作り直す点 (agbcc は誘導変数に落として基底をループ外へ巻き上げる)
+// FUN_080dad4c (entity_080db520.c) と全く同じ2つの壁
+NON_MATCH Entity080dc44cSlot* FUN_080dc050(Entity080dc44c* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    if (!(p->activeMask & (1 << i))) {
+      Entity080dc44cSlot* slot = &p->slots[i];
+
+      slot->idx = i;
+      p->activeMask |= 1 << i;
+      return slot;
+    }
+  }
+  return NULL;
+#else
+  INCFUNC("asm/func/FUN_080dc050.inc");
+#endif
+}
 
 s32 FUN_080dc0a0(Entity080dc44c* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6) { return FUN_080dc0d0(p, param_2, param_3, param_4, param_5, param_6); }
 
