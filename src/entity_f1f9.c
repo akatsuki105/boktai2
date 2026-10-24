@@ -28,7 +28,7 @@ typedef struct EntityF1F9Item {
   s16 unk_142;        // 0x142, 現在位置
   u8 unk_144[4];      // 0x144
   u16 state;          // 0x148, PTR_ARRAY_085ae104 の添字
-  u16 idx;            // 0x14A, items の中での自分の添字, FUN_081d5864 が入れる
+  s16 idx;            // 0x14A, items の中での自分の添字, FUN_081d5864 が入れる
   u16 flags;          // 0x14C, FUN_081d5820 が立て、FUN_081d5834 が落とし、FUN_081d5848 が読む
   s8 shadowId;        // 0x14E, -1 なら影なし
   u8 unk_14f;         // 0x14F
@@ -53,6 +53,8 @@ static_assert(sizeof(EntityF1F9) == 1408);
 IWRAM_DATA EntityF1F9* gEntityF1F9 = NULL;  // 0x03000198
 
 void FUN_081d6444(EntityF1F9Item* item);
+void FUN_081d6764(EntityF1F9Item* item);
+void FUN_081d6ae8(EntityF1F9Item* item, s32 n);
 void FUN_081d6c24(EntityF1F9Item* item);
 
 void FUN_081d5820(EntityF1F9Item* item, u16 n) { item->flags |= n; }
@@ -162,7 +164,33 @@ NAKED void FUN_081d5f54(unknown* p) { INCFUNC("asm/func/FUN_081d5f54.inc"); }
 
 NAKED void FUN_081d60c8(EntityF1F9* p, EntityF1F9Item* item) { INCFUNC("asm/func/FUN_081d60c8.inc"); }
 
-NAKED void FUN_081d6200(EntityF1F9* p, EntityF1F9Item* item) { INCFUNC("asm/func/FUN_081d6200.inc"); }
+// 残差1命令 (81/82). 原典は &item->idx の定数 0x14A を独立に作るが, agbcc は直前の item->state の 0x148 を +2 して使い回す (定数再利用のピープホール, ソース側から向きを変えられない)
+NON_MATCH void FUN_081d6200(EntityF1F9* p, EntityF1F9Item* item) {
+#ifdef NONMATCHING_C
+  if (item->unk_156) {
+    FUN_081d6764(item);
+    if (item->unk_13d - item->unk_13c >= 0) {
+      PlaySound_082406e0(SONG_967);
+    }
+    FUN_081d6ae8(item, item->unk_13d - item->unk_13c);
+    if (item->shadowId != -1) {
+      AuxShadow_Remove(&item->shadow);
+      item->shadowId = -1;
+    }
+    PlaySound_082406e0(SONG_966);
+    item->unk_156 = 0;
+  } else {
+    item->sprite.flags |= SPRFLAG_HIDDEN;
+    AuxSprite_Remove(&item->sprite);
+    Hitbox_Unregister(&item->hitbox);
+    item->state = 0;
+    p->activeMask &= ~(1 << item->idx);
+    item->idx = -1;
+  }
+#else
+  INCFUNC("asm/func/FUN_081d6200.inc");
+#endif
+}
 
 void (*const PTR_ARRAY_085ae104[5])(EntityF1F9*, EntityF1F9Item*) = {
     FUN_081d5d14,
@@ -278,7 +306,7 @@ void FUN_081d66c0(EntityF1F9Item* item, u32 power, HitboxAttributes attributes, 
   Hitbox_Register(hitbox);
 }
 
-NAKED void FUN_081d6764(unknown* p) { INCFUNC("asm/func/FUN_081d6764.inc"); }
+NAKED void FUN_081d6764(EntityF1F9Item* item) { INCFUNC("asm/func/FUN_081d6764.inc"); }
 
 NAKED void FUN_081d6ae8(EntityF1F9Item* item, s32 n) { INCFUNC("asm/func/FUN_081d6ae8.inc"); }
 
