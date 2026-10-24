@@ -3581,7 +3581,37 @@ s32 Player_InitState(Player* p) {
   return 0;
 }
 
-NAKED void FUN_0806540c(Player* p) { INCFUNC("asm/func/FUN_0806540c.inc"); }
+void Player_InitSprite(Player* p) {
+  MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+
+  if (f != NULL) {
+    p->spriteSet_68 = *(MainSpriteGfx*)f;
+    OpenMainSpriteFile(&p->spriteSet_68, f);
+    MainSprite_Add(&p->sprite_88, &p->spriteSet_68, 0, SPRFLAG_UNK_15 | SPRFLAG_GAMEOVER, 2, 0, 60, &p->mover.pos);
+
+    if (VM_SeekToNamedArg('d')) {
+      p->facing = VM_GetValue();
+    } else {
+      p->facing = FACE_UP;
+    }
+
+    if (p->facing > 4) {
+      p->animIDOffset = 8 - p->facing;
+      p->xflip = TRUE;
+    } else {
+      p->animIDOffset = p->facing;
+      p->xflip = FALSE;
+    }
+
+    p->animID = 0;
+    MainSprite_SetAnim(&p->sprite_88, &p->spriteSet_68, p->animIDOffset, 1, 0);
+    if (p->xflip) {
+      p->sprite_88.flags |= SPRFLAG_XFLIP;
+    } else {
+      p->sprite_88.flags &= ~SPRFLAG_XFLIP;
+    }
+  }
+}
 
 NAKED void FUN_08065514(Player* p) { INCFUNC("asm/func/FUN_08065514.inc"); }
 
