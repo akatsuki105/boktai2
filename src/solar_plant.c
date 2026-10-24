@@ -195,7 +195,26 @@ s32 Entity1E98_Update(Entity1E98* p) {
   return 0;
 }
 
-NAKED s32 Entity1E98_Destroy(Entity1E98* p) { INCFUNC("asm/func/Entity1E98_Destroy.inc"); }
+// 全ての足場のスプライト, 判定, コリジョンの差し込みを畳んで登録枠を空ける
+s32 Entity1E98_Destroy(Entity1E98* p) {
+  s32 i;
+
+  for (i = 0; i < p->count; i++) {
+    Entity1E98Elem* elem = &p->elems[i];
+
+    if (elem->moverLinked) {
+      Mover_Unlink(&elem->mover);
+    }
+    AuxSprite_Remove(&elem->spr);
+    Hitbox_Unregister(&elem->hitbox);
+    if (elem->tileOverrideAdded) {
+      Map_RemoveTileOverride(&elem->ov);
+    }
+  }
+
+  gEntity1E98 = NULL;
+  return 0;
+}
 
 void Entity1E98_InitHitbox(Entity1E98Elem* elem) {
   HitboxData* hitbox = &elem->hitbox;
