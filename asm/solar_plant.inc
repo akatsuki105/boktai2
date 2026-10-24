@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_080a4598
-FUN_080a4598: @ 0x080A4598
+	thumb_func_start Entity1E98_SetUpdateCallback
+Entity1E98_SetUpdateCallback: @ 0x080A4598
 	movs r3, #0x84
 	lsls r3, r3, #1
 	adds r2, r0, r3
@@ -149,7 +149,7 @@ FUN_080a4670: @ 0x080A4670
 	strh r0, [r2]
 	ldr r1, _080A46AC @ =FUN_080a46b0
 	adds r0, r4, #0
-	bl FUN_080a4598
+	bl Entity1E98_SetUpdateCallback
 _080A46A4:
 	pop {r4}
 	pop {r0}
@@ -187,7 +187,7 @@ _080A46E0:
 	strh r6, [r5, #0x10]
 	ldr r1, _080A4720 @ =FUN_080a4728
 	adds r0, r5, #0
-	bl FUN_080a4598
+	bl Entity1E98_SetUpdateCallback
 	movs r1, #0x86
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -301,7 +301,7 @@ _080A4794:
 	strh r0, [r2]
 	ldr r1, _080A47CC @ =FUN_080a47d0
 	adds r0, r5, #0
-	bl FUN_080a4598
+	bl Entity1E98_SetUpdateCallback
 _080A47C6:
 	pop {r4, r5}
 	pop {r0}
@@ -344,7 +344,7 @@ _080A4808:
 	strh r0, [r5, #0x10]
 	ldr r1, _080A484C @ =FUN_080a4854
 	adds r0, r5, #0
-	bl FUN_080a4598
+	bl Entity1E98_SetUpdateCallback
 	movs r1, #0x86
 	lsls r1, r1, #1
 	adds r0, r5, r1
@@ -705,8 +705,8 @@ _080A4AAC:
 _080A4AC0: .4byte 0x00000121
 _080A4AC4: .4byte 0x03002C44
 
-	thumb_func_start FUN_080a4ac8
-FUN_080a4ac8: @ 0x080A4AC8
+	thumb_func_start Entity1E98_InitHitbox
+Entity1E98_InitHitbox: @ 0x080A4AC8
 	push {r4, r5, lr}
 	sub sp, #0x1c
 	adds r4, r0, #0
@@ -978,7 +978,7 @@ _080A4CF8:
 	adds r1, #0xee
 	strh r0, [r1]
 	adds r0, r5, #0
-	bl FUN_080a4ac8
+	bl Entity1E98_InitHitbox
 	adds r1, r5, #0
 	adds r1, #0xf4
 	movs r0, #0
@@ -1041,14 +1041,14 @@ _080A4D64:
 	ldr r1, _080A4D84 @ =FUN_080a4670
 _080A4D7A:
 	adds r0, r5, #0
-	bl FUN_080a4598
+	bl Entity1E98_SetUpdateCallback
 	b _080A4D90
 	.align 2, 0
 _080A4D84: .4byte FUN_080a4670
 _080A4D88:
 	ldr r1, _080A4DB4 @ =FUN_080a472c
 	adds r0, r5, #0
-	bl FUN_080a4598
+	bl Entity1E98_SetUpdateCallback
 _080A4D90:
 	movs r0, #0x67
 	bl VM_SeekToNamedArg
