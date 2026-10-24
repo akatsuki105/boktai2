@@ -208,7 +208,7 @@ _080A4CF8:
 	adds r1, #0xee
 	strh r0, [r1]
 	adds r0, r5, #0
-	bl Entity1E98_InitHitbox
+	bl Entity1E98_InitHurtbox
 	adds r1, r5, #0
 	adds r1, #0xf4
 	movs r0, #0

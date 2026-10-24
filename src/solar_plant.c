@@ -13,13 +13,13 @@
 // 足場1枚ぶん
 typedef struct Entity1E98Elem {
   AuxSprite spr;                                   // 0x000
-  AuxSpriteGfx gfx;                                // 0x02C, unk_e4 が 0 なら SPRITE_C3C3, それ以外は SPRITE_D166
-  HitboxData hitbox;                               // 0x048
+  AuxSpriteGfx gfx;                                // 0x02C, SPRITE_SOLAR_PLANT か SPRITE_LILYPAD
+  HitboxData hurtbox;                              // 0x048
   Mover mover;                                     // 0x098, moverLinked が 0 以外のときだけ繋がれる
-  Vec3 pos;                                        // 0x0DC, '.p', spr.pos へ複写され hitbox の座標にもなる
-  u8 unk_e4;                                       // 0x0E4, '.t', 0 ならハスの葉 (階段タイル扱い), それ以外は太陽の根
+  Vec3 pos;                                        // 0x0DC, '.p', spr.pos へ複写され hurtbox の座標にもなる
+  u8 unk_e4;                                       // 0x0E4, '.t', 0 なら太陽の根 (SPRITE_SOLAR_PLANT), それ以外はハスの葉 (SPRITE_LILYPAD)
   bool8 moverLinked;                               // 0x0E5, '.h'
-  s16 hitboxArg;                                   // 0x0E6, '.n', Hitbox_Init の第2引数
+  s16 hurtboxArg;                                  // 0x0E6, '.n', Hitbox_Init の第2引数 (hurtbox.id)
   s16 scriptID;                                    // 0x0E8, '.g[0]=-1', スクリプトが '.i' でこの足場を指名する
   u16 tileIdx;                                     // 0x0EA, pos が乗っているコリジョンタイルの索引
   u16 timer;                                       // 0x0EC, updateCallback が差し替わるたび 0 に戻る
@@ -61,7 +61,7 @@ void Entity1E98_SetUpdateCallback(Entity1E98Elem* elem, void* fn) {
   elem->timer = 0;
 }
 
-// 足場の乗れる面をコリジョンマップに差し込む, ハスの葉は向きに応じた階段タイル, 太陽の根は平らなタイルになる
+// 足場の乗れる面をコリジョンマップに差し込む, 太陽の根は向きに応じた階段タイル, ハスの葉は平らなタイルになる
 void FUN_080a45a8(Entity1E98Elem* elem) {
   s32 stairs;
   s32 height;
@@ -98,7 +98,7 @@ void FUN_080a4670(Entity1E98Elem* elem) {
   if (elem->unk_f0 >= elem->unk_f2) {
     elem->unk_f6 = 1;
     FUN_080a45a8(elem);
-    elem->hitbox.flags |= HBFLAG_UNK_2;
+    elem->hurtbox.flags |= HBFLAG_UNK_2;
     Entity1E98_SetUpdateCallback(elem, FUN_080a46b0);
   }
 }
@@ -141,7 +141,7 @@ void FUN_080a472c(Entity1E98Elem* elem) {
   if (elem->unk_f0 >= elem->unk_f2) {
     elem->unk_f6 = 1;
     FUN_080a45a8(elem);
-    elem->hitbox.flags |= HBFLAG_UNK_2;
+    elem->hurtbox.flags |= HBFLAG_UNK_2;
     Entity1E98_SetUpdateCallback(elem, FUN_080a47d0);
   }
 }
@@ -261,7 +261,7 @@ s32 Entity1E98_Destroy(Entity1E98* p) {
       Mover_Unlink(&elem->mover);
     }
     AuxSprite_Remove(&elem->spr);
-    Hitbox_Unregister(&elem->hitbox);
+    Hitbox_Unregister(&elem->hurtbox);
     if (elem->tileOverrideAdded) {
       Map_RemoveTileOverride(&elem->ov);
     }
@@ -271,17 +271,17 @@ s32 Entity1E98_Destroy(Entity1E98* p) {
   return 0;
 }
 
-void Entity1E98_InitHitbox(Entity1E98Elem* elem) {
-  HitboxData* hitbox = &elem->hitbox;
+void Entity1E98_InitHurtbox(Entity1E98Elem* elem) {
+  HitboxData* hurtbox = &elem->hurtbox;
   Vec3 halfSize;
   Vec3 offset;
 
   halfSize.x = 0x80, halfSize.y = 0x32, halfSize.z = 0x80;
   offset.x = 0, offset.y = 0, offset.z = 0;
-  Hitbox_Init(hitbox, elem->hitboxArg, HBFLAG_HURTBOX | HBFLAG_UNK_1, 0, 0x20, &halfSize, &offset);
-  Hitbox_SetHandler(hitbox, FUN_080a4620, elem);
-  Hitbox_SetPos(hitbox, &elem->pos, 0);
-  Hitbox_Register(hitbox);
+  Hitbox_Init(hurtbox, elem->hurtboxArg, HBFLAG_HURTBOX | HBFLAG_UNK_1, 0, 0x20, &halfSize, &offset);
+  Hitbox_SetHandler(hurtbox, FUN_080a4620, elem);
+  Hitbox_SetPos(hurtbox, &elem->pos, 0);
+  Hitbox_Register(hurtbox);
 }
 
 NAKED void Entity1E98_Init(Entity1E98* p) { INCFUNC("asm/func/Entity1E98_Init.inc"); }
