@@ -1,13 +1,14 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "vm.h"
 
 // ヒットボックスを1つ持ち、当たったらスクリプトの引数で指定された条件を見て反応するエンティティ
 typedef struct {
   Entity e;           // 0x00, ENTITY_UNK_8
   HitboxData hitbox;  // 0x18, _Destroy が Hitbox_Unregister に渡す
   u16 id;             // 0x68, _Create / _Init の引数, Hitbox_Init の第2引数にもなる
-  u16 unk_6a;         // 0x6A, _Init が '.l=100' を入れる (unk_6c と同じ値)
+  s16 unk_6a;         // 0x6A, _Init が '.l=100' を入れる (unk_6c と同じ値)
   u16 unk_6c;         // 0x6C, _Init が '.l=100' を入れる
   u16 flags;          // 0x6E, _Init が '.f' を入れ、'.w' が無ければ bit3、'.a' が無ければ bit4 を足す
   u32 unk_70;         // 0x70, _Init が '.w' を入れる, 無ければ 0 で flags bit3
@@ -53,7 +54,52 @@ void Entity55C2_OnHit(HitboxData* a, HitboxData* b, Entity55C2* p) {
   }
 }
 
-NAKED s32 Entity55C2_Update(Entity55C2* p) { INCFUNC("asm/func/Entity55C2_Update.inc"); }
+// 被弾した分だけ unk_6a を削り, 0 を切ったら '.d' のスクリプト, まだ残っていれば '.D' のスクリプトを呼ぶ
+s32 Entity55C2_Update(Entity55C2* p) {
+  HitboxData* hitbox = &p->hitbox;
+  s32 argv[3];
+
+  if (p->unk_7c != 0) {
+    p->unk_7c--;
+    p->hitbox.flags |= HBFLAG_UNK_2;
+  } else {
+    p->hitbox.flags &= ~HBFLAG_UNK_2;
+  }
+
+  if (hitbox->damage != 0) {
+    p->unk_7c = p->unk_7e;
+    p->unk_6a -= hitbox->damage;
+
+    if (p->unk_6a < 0) {
+      if (p->unk_82 != 0) {
+        ScriptArgs sa;
+
+        argv[0] = p->hitPos.x;
+        argv[1] = p->hitPos.y;
+        argv[2] = p->hitPos.z;
+        VM_ExecByID(p->unk_82, &sa);
+      }
+      if (p->flags & 1) {
+        KillEntity((Entity*)p);
+      } else {
+        p->unk_6a = p->unk_6c;
+      }
+    } else {
+      if (p->unk_80 != 0) {
+        ScriptArgs sa;
+
+        argv[0] = p->hitPos.x;
+        argv[1] = p->hitPos.y;
+        argv[2] = p->hitPos.z;
+        VM_ExecByID(p->unk_80, &sa);
+      }
+    }
+
+    hitbox->damage = 0;
+  }
+
+  return 0;
+}
 
 s32 Entity55C2_Destroy(Entity55C2* p) {
   Hitbox_Unregister(&p->hitbox);
