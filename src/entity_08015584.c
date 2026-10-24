@@ -117,7 +117,30 @@ void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos) 
   FUN_080155e4(count, pos, &param);
 }
 
-NAKED void FUN_08015ce0(s32 count, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, WorldPos* pos) { INCFUNC("asm/func/FUN_08015ce0.inc"); }
+void FUN_08015ce0(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos) {
+  ParticleSpawnParam param;
+
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = speedY;
+  param.speedYRand = speedYRand;
+  param.speedXZ = speedXZ;
+  param.speedXZRand = speedXZRand;
+  param.angleY = 0x3C;
+  param.angleYRand = 8;
+  param.angleXZ = angleXZ;
+  param.angleXZRand = angleXZRand;
+  param.decayStartY = 0xFF;
+  param.decayStartYRand = 0;
+  param.unk_1c = 0xFF;
+  param.unk_1e = 0;
+  param.decayStartXZ = 0xFF;
+  param.decayStartXZRand = 0;
+  param.unk_24 = 0xFF;
+  param.unk_26 = 0;
+  FUN_080155e4(count, pos, &param);
+}
 
 NAKED void FUN_08015d3c(unknown* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_08015d3c.inc"); }
 
