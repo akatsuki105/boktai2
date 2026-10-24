@@ -59,7 +59,7 @@ _0809E82C:
 	lsrs r1, r0, #0x1f
 _0809E834:
 	adds r0, r4, #0
-	bl FUN_0809e630
+	bl Entity5CCC_AddEneCharge
 	pop {r4, r5, r6, r7}
 	pop {r0}
 	bx r0

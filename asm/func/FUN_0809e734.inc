@@ -15,7 +15,7 @@ _0809E748:
 	lsrs r1, r0, #0x1f
 _0809E750:
 	adds r0, r2, #0
-	bl FUN_0809e630
+	bl Entity5CCC_AddEneCharge
 	pop {r0}
 	bx r0
 	.align 2, 0

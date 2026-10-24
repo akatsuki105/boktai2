@@ -1,8 +1,10 @@
 #include "collision_map.h"
 #include "constants/sprite.h"
+#include "definition.h"
 #include "entity.h"
 #include "entity_9a9f.h"
 #include "global.h"
+#include "input.h"
 #include "player.h"
 #include "solar.h"
 #include "sprite.h"
@@ -33,7 +35,7 @@ typedef struct {
   Entity e;                // 0x000, ENTITY_UNK_9
   Player* player;          // 0x018
   bool16 unk_1c;           // 0x01C
-  s16 charge;              // 0x01E, 120 たまるごとに ENE が1回復する
+  u16 charge;              // 0x01E, 120 たまるごとに ENE が1回復する
   u16 idleTimer;           // 0x020, 無操作の間 900 まで増える, 900 に達すると charge が増えなくなる
   u16 unk_22;              // 0x022
   u16 pltt;                // 0x024
@@ -316,7 +318,51 @@ NON_MATCH void FUN_0809e5c4(void) {
 #endif
 }
 
-NAKED void FUN_0809e630(Entity5CCC* p, s32 param_2) { INCFUNC("asm/func/FUN_0809e630.inc"); }
+// 日光 (サバタは日陰) を浴びている量を積み, 120 たまるごとに ENE を1回復させる
+void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
+  u32 mask;
+  s32 heal;
+
+  if (gFlag030047a4 & FLAG030047A4_UNK_8) {
+    p->idleTimer = 0;
+  } else if (gInput[0].down != 0) {
+    p->idleTimer = 0;
+  } else if (p->idleTimer < 900) {
+    p->idleTimer++;
+  }
+
+  if ((gFlag030047a4 & (FLAG030047A4_UNK_8 | FLAG030047A4_UNK_9)) == FLAG030047A4_UNK_9) {
+    return;
+  }
+  mask = FLAG03002BC0_UNK_2;
+  if (u32_03002bc0[0] & mask) {
+    return;
+  }
+
+  if (p->player->kind == PLAYER_SABATA) {
+    if (light == 2) {
+      p->charge += 40;
+    } else if (light == 0 && p->idleTimer < 900) {
+      p->charge += 5;
+    }
+  } else {
+    if (light == 2) {
+      p->charge += gStat->sunGauge * 8;
+    } else if (light == 1 && p->idleTimer < 900) {
+      s32 sun = gStat->sunGauge;
+      p->charge += sun;
+    }
+  }
+
+  heal = 0;
+  while (p->charge >= 120) {
+    p->charge -= 120;
+    heal++;
+  }
+  if (heal > 0) {
+    FUN_0807aa30(p->player, heal);
+  }
+}
 
 // 残差2命令, 原典は 0x10 をレジスタに作ってから and し rsbs/lsrs #31 で 0/1 に起こすが,
 // gcc は単一ビットだと気づいて (flags >> 4) & 1 の形に縮める
@@ -330,7 +376,7 @@ NON_MATCH void FUN_0809e734(Entity5CCC* p) {
   } else {
     mode = (flags & 0x10) != 0;
   }
-  FUN_0809e630(p, mode);
+  Entity5CCC_AddEneCharge(p, mode);
 #else
   INCFUNC("asm/func/FUN_0809e734.inc");
 #endif
@@ -362,7 +408,7 @@ NON_MATCH void FUN_0809e75c(Entity5CCC* p) {
 #endif
 }
 
-// 有効な光柱を見せ, プレイヤーの状態に応じて FUN_0809e630 を呼ぶ
+// 有効な光柱を見せ, プレイヤーの状態に応じて Entity5CCC_AddEneCharge を呼ぶ
 // 残差1命令 (59/60). 原典は三項演算子の 2 側のブロックを先に並べ, SUNBATHING の真偽化を rsbs + lsrs #31 の汎用形で出すが, agbcc は条件を反転してビットを >> 4 で落とす
 // if/else に展開すると 58/60 で悪化する
 NON_MATCH void FUN_0809e7c4(Entity5CCC* p) {
@@ -379,13 +425,13 @@ NON_MATCH void FUN_0809e7c4(Entity5CCC* p) {
   }
 
   FUN_0809e75c(p);
-  FUN_0809e630(p, Player_TestFlag20(p->player, PFLAG20_UNK_5) ? 2 : ((p->player->flag20 & PFLAG20_SUNBATHING) != 0));
+  Entity5CCC_AddEneCharge(p, Player_TestFlag20(p->player, PFLAG20_UNK_5) ? 2 : ((p->player->flag20 & PFLAG20_SUNBATHING) != 0));
 #else
   INCFUNC("asm/func/FUN_0809e7c4.inc");
 #endif
 }
 
-// unk_28 が立っていたら有効な光柱を一旦隠し, プレイヤーの状態に応じて FUN_0809e630 を呼ぶ
+// unk_28 が立っていたら有効な光柱を一旦隠し, プレイヤーの状態に応じて Entity5CCC_AddEneCharge を呼ぶ
 void FUN_0809e840(Entity5CCC* p) {
   if (p->unk_28 == 1) {
     s32 i;
@@ -398,7 +444,7 @@ void FUN_0809e840(Entity5CCC* p) {
     }
   }
 
-  FUN_0809e630(p, Player_TestFlag20(p->player, PFLAG20_UNK_5) ? 2 : 0);
+  Entity5CCC_AddEneCharge(p, Player_TestFlag20(p->player, PFLAG20_UNK_5) ? 2 : 0);
 }
 
 NAKED void FUN_0809e89c(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809e89c.inc"); }
