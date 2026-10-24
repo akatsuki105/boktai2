@@ -435,7 +435,7 @@ NON_MATCH s32 Entity081d0e20_Destroy(Entity081d0e20* p) {
     if (used) {
       elem = p->items[i];
       AuxSprite_Remove(&elem->sprite);
-      if (elem->flags & 8) {
+      if (elem->flags & (1 << 3)) {
         Mover* mover = &elem->mover;
         FUN_08002a58(mover);
         Mover_Unlink(mover);
