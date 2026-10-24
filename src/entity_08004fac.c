@@ -9,9 +9,9 @@ typedef struct Entity08004facNode {
   u16 id;                           // 0x00, 一括で操作するためのキー
   bool8 active;                     // 0x02, 1 なら tileOverride を衝突マップへ登録済み
   u8 unk_3;                         // 0x03, Entity08004fac_AddNode の第3引数, SetNodeParamsById が書き換える
-  u8 unk_4;                         // 0x04, Map_AddTileOverride の第3引数
-  u8 unk_5;                         // 0x05, Map_AddTileOverride の第4引数
-  u16 unk_6;                        // 0x06, Map_AddTileOverride の第6引数
+  u8 stairs;                        // 0x04, Map_AddTileOverride の第3引数
+  u8 height;                        // 0x05, Map_AddTileOverride の第4引数
+  u16 attr;                         // 0x06, Map_AddTileOverride の第6引数
   u16 tileIdx;                      // 0x08, gCollisionMap->rowOffsets[y] + x
   u8 unk_a[0x0C - 0x0A];            // 0x0A, padding?
   MapTileOverride tileOverride;     // 0x0C, Map_AddTileOverride / Map_RemoveTileOverride に渡す
@@ -134,7 +134,27 @@ s32 Entity08004fac_DisableNodesById(u16 id) {
   return 0;
 }
 
-NAKED s32 Entity08004fac_EnableNodesById(u16 id) { INCFUNC("asm/func/Entity08004fac_EnableNodesById.inc"); }
+// id が一致するノードを衝突マップへ戻す
+s32 Entity08004fac_EnableNodesById(u16 id) {
+  Entity08004fac* p = gEntity08004fac;
+  Entity08004facNode* node;
+
+  if (p == NULL) {
+    return -1;
+  }
+
+  node = p->head;
+  while (node != NULL) {
+    Entity08004facNode* next = node->next;
+
+    if (node->id == id && !node->active) {
+      node->active = TRUE;
+      Map_AddTileOverride(&node->tileOverride, node->tileIdx, node->stairs, node->height, 0xFF, node->attr);
+    }
+    node = next;
+  }
+  return 0;
+}
 
 NAKED s32 Entity08004fac_SetNodeParamsById(u16 id, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6) { INCFUNC("asm/func/Entity08004fac_SetNodeParamsById.inc"); }
 
