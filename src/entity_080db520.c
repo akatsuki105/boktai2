@@ -1,4 +1,5 @@
 #include "coffin.h"
+#include "enemy_manager.h"
 #include "entity.h"
 #include "file.h"
 #include "game.h"
@@ -7,6 +8,7 @@
 #include "mover.h"
 #include "player.h"
 #include "random.h"
+#include "sound.h"
 #include "sprite.h"
 #include "time.h"
 
@@ -14,7 +16,7 @@
 typedef u16 Entity080db520ElemFlags;
 #define E080DB520_UNK_1 (1 << 1)  // 0x02, FUN_080dab9c と FUN_080dacac が判定と一緒に立てる
 #define E080DB520_UNK_2 (1 << 2)  // 0x04, FUN_080dabe4 が立てる
-#define E080DB520_UNK_4 (1 << 4)  // 0x10, 使用中の枠のどこにも立っていないと FUN_080dadec が gPlayerPtr[0]->unk_3ff を 0xFF に戻す
+#define E080DB520_UNK_4 (1 << 4)  // 0x10, 使用中の枠のどこにも立っていないと FUN_080dadec が gPlayerPtr[0]->unk_3ff を -1 に戻す
 #define E080DB520_UNK_6 (1 << 6)  // 0x40, 使用中の枠のどこにも立っていないと FUN_080dadec が gCoffin->unk_3a0 を -1 に戻す
 
 typedef struct {
@@ -26,7 +28,8 @@ typedef struct {
   s16 unk_42;                      // 0x42, 負なら FUN_080dabe4 が何もしない
   s16 shakeTimer;                  // 0x44, 20 から数え下げ, 10 を超えている間はスプライトを揺らす
   ZoneID16 zoneID;                 // 0x46, gStat->zoneID と一致するかを FUN_080dad94 が見る
-  u8 unk_48[4];                    // 0x48
+  u16 unk_48;                      // 0x48, プレイヤーの angle_400 の控え
+  u8 unk_4a[2];                    // 0x4A
   HitboxData hitbox;               // 0x4C, _Destroy が Hitbox_Unregister に渡す
   Vec3 pos;                        // 0x9C, Hitbox_SetPos と spr.pos へ渡される
 } Entity080db520Elem;
@@ -193,7 +196,7 @@ NON_MATCH void FUN_080dadec(Entity080db520* p) {
   }
 
   if (!anyUnk4) {
-    gPlayerPtr[0]->unk_3ff = 0xFF;
+    gPlayerPtr[0]->unk_3ff = -1;
   }
   if (!anyUnk6) {
     FUN_0808689c(-1);
@@ -253,7 +256,59 @@ NON_MATCH void FUN_080db040(Entity080db520* p, Entity080db520Elem* elem) {
 #endif
 }
 
-NAKED void FUN_080db0f8(Entity080db520* p) { INCFUNC("asm/func/FUN_080db0f8.inc"); }
+// プレイヤーか棺桶がこの枠の範囲に入っていたら最初に見つかった方を掴む
+// 残差15命令 (181/166). Vec3 のローカルをフィールド代入で埋めると1フィールドあたり ldr/ands/orrs/str の語単位 RMW になるが, 原典は strh でポインタ経由に書いている. Vec3_Sub 相当の static inline を通すと 163/166 まで寄るが一致しないので外した (agbcc-levers.md に記録)
+// x の範囲判定 (-64..160) は && のペアを括弧で括ると符号なし1回の範囲テストに畳まれて原典と一致する. z 側は括らないのが正しい
+// 残る差は handled の 0/1 の作り置き2ブロックとレジスタ割当. GetPlayer(0) の static inline は逆に遠のく (157/166)
+NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
+#ifdef NONMATCHING_C
+  Player* player = gPlayerPtr[0];
+  Vec3 d;
+  u16 payload;
+
+  if (player == NULL) {
+    return;
+  }
+
+  d.x = player->mover.pos.x - elem->pos.x;
+  d.y = player->mover.pos.y - elem->pos.y;
+  d.z = player->mover.pos.z - elem->pos.z;
+
+  if ((d.y < 0 ? -d.y : d.y) <= 31 && (d.x >= -64 && d.x <= 160) && d.z <= 160 && d.z >= -58) {
+    if (player->unk_3ff < 0) {
+      player->unk_3ff = elem->unk_42;
+      elem->unk_40 |= E080DB520_UNK_4;
+      elem->hitbox.flags |= HBFLAG_UNK_2;
+      elem->unk_48 = gPlayerPtr[0]->angle_400;
+      payload = 6;
+      FUN_080ec7e8(2, 1, &payload);
+      PlaySound_082406e0(SE_UNK_277);
+      return;
+    }
+  }
+
+  if (!Coffin_CopyPos(&d)) {
+    return;
+  }
+  if (!Coffin_IsIdle()) {
+    return;
+  }
+
+  d.x -= elem->pos.x;
+  d.y -= elem->pos.y;
+  d.z -= elem->pos.z;
+
+  if ((d.y < 0 ? -d.y : d.y) <= 31 && (d.x >= -64 && d.x <= 160) && d.z <= 160 && d.z >= -58) {
+    if (FUN_08086878() < -1) {
+      FUN_0808689c(elem->unk_42);
+      elem->unk_40 |= E080DB520_UNK_6;
+      PlaySound_082406e0(SE_UNK_277);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_080db0f8.inc");
+#endif
+}
 
 // 向きから象限を出して, アニメーションの variant と反転フラグを決める
 void Mover_GetAnimQuadrant(Mover* mover, u8* variant, u8* flags) {

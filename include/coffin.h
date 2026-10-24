@@ -120,6 +120,8 @@ extern Coffin* gCoffin;  // 0x03002C00
 void FUN_0808670c(s32 n);
 WorldPos* Coffin_GetPos(void);
 bool32 Coffin_CopyPos(WorldPos* out);
+bool32 Coffin_IsIdle(void);
+s32 FUN_08086878(void);
 void FUN_0808689c(s32 val);
 void FUN_08086a4c(Vec3* pos);
 bool32 FUN_0808626c(u32 playerEleveterID, u32 param_2, u32 coffinEleveterID, u32 param_4);

@@ -279,7 +279,7 @@ typedef struct Player {
   u8 dashSpeed;                     // 0x3FC, 太陽ゲージ*2+14 (上限32), Player_SetMoveDelta に渡す1フレームの移動量
   u8 dashFrames;                    // 0x3FD, 512 / dashSpeed, 移動距離を一定にするためのダッシュ継続フレーム数
   u8 unk_3fe;                       // 0x3FE, FUN_0806a050 が見て Player_SetFlag35a に渡す番号を選ぶ
-  u8 unk_3ff;                       // 0x3FF
+  s8 unk_3ff;                       // 0x3FF, -1 なら未使用, Entity080db520 の枠番号が入る
   u8 angle_400;                     // 0x400, FUN_08063478 が angle_400 - angle_401 + 0x100 を 8bit に丸めて返す
   u8 angle_401;                     // 0x401, 同上
   u8 speedPenalty;                  // 0x402, 移動速度から引かれる量, FUN_0807a904 が +1 する

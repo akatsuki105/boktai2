@@ -237,6 +237,33 @@ reading the element twice so CSE makes the temp explicit, a
 the call nested inside, and splitting the two early-outs. Leaves
 `FUN_0807b1a4` and `FUN_0807b2dc` at a one-instruction residual.
 
+### A `Vec3` local filled field-by-field is a word read-modify-write
+
+`Vec3 d; d.x = a; d.y = b; d.z = c;` on a local whose address is taken does not
+emit three `strh`. agbcc models the uninitialized aggregate in SImode chunks, so
+each field store becomes `ldr` / `ands =0xFFFF0000` / `orrs` / `str` on the word
+that holds it — five instructions per field instead of one. A target that shows
+plain `strh [rD]`, `strh [rD, #2]`, `strh [rD, #4]` through a pointer register
+wrote that `Vec3` **through a pointer**, not through the struct name, and no
+spelling of the direct form reaches it. The same three stores inside a
+`static inline f(Vec3* out, ...)` do emit plain `strh`, because the parameter is
+a pointer; that is 14 instructions closer on `FUN_080db0f8` (177 -> 163 of 166).
+Note this cuts against the VM-argument idiom, where the word merge *is* what the
+target has (`Entity080ac574_SpawnScripted`) — there the local's address is only
+taken after it is filled.
+
+### `&&` is left-associative, and only sibling comparisons get range-merged
+
+agbcc folds `x >= lo && x <= hi` on one operand into a single unsigned test
+(`adds #lo; lsls/lsrs #16; cmp #hi-lo; bhi`), but `fold_truthop` only sees the
+pair when the two comparisons are **siblings** in the tree. In a flat chain
+`A && x >= lo && x <= hi && B` the parse is `(((A && x>=lo) && x<=hi) && B)`, so
+they are not siblings and you get two signed compares. Parenthesizing the pair —
+`A && (x >= lo && x <= hi) && B` — merges it and nothing else moves. The
+converse is a lever too: a target that keeps two separate compares for one
+operand's range did **not** have them parenthesized together. `FUN_080db0f8`
+needs the `x` pair grouped and the `z` pair left flat, in the same condition.
+
 ## 3. Tier B — types and signedness
 
 Still source-level, still defensible.
