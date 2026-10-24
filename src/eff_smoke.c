@@ -22,16 +22,16 @@ typedef struct {
   AuxAnimFile* animFile;  // 0xCD8, ANIM_D1B8
   ParticleGroup* group;   // 0xCDC, PTCL_GROUP_0
   u32 activeCount;        // 0xCE0, active な要素の数, 0 なら _Update は何もしない
-} Entity080de11c;
-static_assert(sizeof(Entity080de11c) == 3300);
+} SmokeEmitter;
+static_assert(sizeof(SmokeEmitter) == 3300);
 
-static Entity080de11c* gEntity080de11c;  // 0x03000174
+static SmokeEmitter* gSmokeEmitter;  // 0x03000174
 
-Entity080de11c* Entity080de11c_Create(void);
+SmokeEmitter* SmokeEmitter_Create(void);
 
 // 残差5命令 (178/183), 原典はループ外に 1 と 2 の両方を括り出すがこちらは 1 だけ, muls の前にコピーが2つ入る
 // Tier A-C 試済, 兄弟の Entity0800a89c_UpdateCollectedBug と同じ形まで追い込んだ
-NON_MATCH s32 Entity080de11c_Update(Entity080de11c* p) {
+NON_MATCH s32 SmokeEmitter_Update(SmokeEmitter* p) {
 #ifdef NONMATCHING_C
   s32 i;
 
@@ -95,19 +95,19 @@ NON_MATCH s32 Entity080de11c_Update(Entity080de11c* p) {
   }
   return 0;
 #else
-  INCFUNC("asm/func/Entity080de11c_Update.inc");
+  INCFUNC("asm/func/SmokeEmitter_Update.inc");
 #endif
 }
 
 // 全要素の粒子を描画リストから外す
-s32 Entity080de11c_Destroy(Entity080de11c* p) {
+s32 SmokeEmitter_Destroy(SmokeEmitter* p) {
   s32 i;
 
   for (i = 0; i < 48; i++) {
     Particle_Remove(&p->ptcls[i].ptcl);
   }
 
-  gEntity080de11c = NULL;
+  gSmokeEmitter = NULL;
   return 0;
 }
 
@@ -115,11 +115,11 @@ s32 Entity080de11c_Destroy(Entity080de11c* p) {
 // Tier A-C 試済 (e ローカル有無/フラグ/定数順は検証済)
 NON_MATCH s32 FUN_080ddcc8(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 speed, s32 velYMax, s32 kind, u32 priority) {
 #ifdef NONMATCHING_C
-  Entity080de11c* p = gEntity080de11c;
+  SmokeEmitter* p = gSmokeEmitter;
   s32 i;
 
   if (p == NULL) {
-    p = Entity080de11c_Create();
+    p = SmokeEmitter_Create();
     if (p == NULL) {
       return 0;
     }
@@ -205,7 +205,7 @@ NON_MATCH s32 FUN_080ddcc8(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 s
 
 NAKED void UNUSED FUN_080ddf88(void) { INCFUNC("asm/func/FUN_080ddf88.inc"); }
 
-s32 Entity080de11c_Init(Entity080de11c* p) {
+s32 SmokeEmitter_Init(SmokeEmitter* p) {
   s32 i;
 
   p->animFile = GetFile(DIR_ANIMATION, ANIM_D1B8);
@@ -228,23 +228,23 @@ s32 Entity080de11c_Init(Entity080de11c* p) {
     ptcl->flags |= SPRFLAG_HIDDEN;
   }
 
-  gEntity080de11c = p;
+  gSmokeEmitter = p;
   return 0;
 }
 
-Entity080de11c* Entity080de11c_Create(void) {
-  if (gEntity080de11c == NULL) {
-    Entity080de11c* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity080de11c));
+SmokeEmitter* SmokeEmitter_Create(void) {
+  if (gSmokeEmitter == NULL) {
+    SmokeEmitter* p = CreateEntity(ENTITY_UNK_9, sizeof(SmokeEmitter));
     if (p != NULL) {
-      SetEntityRoutine(p, Entity080de11c_Update, Entity080de11c_Destroy);
-      if (Entity080de11c_Init(p) < 0) {
+      SetEntityRoutine(p, SmokeEmitter_Update, SmokeEmitter_Destroy);
+      if (SmokeEmitter_Init(p) < 0) {
         KillEntity((Entity*)p);
         return NULL;
       }
     }
     return p;
   }
-  return gEntity080de11c;
+  return gSmokeEmitter;
 }
 
-void FUN_080de168(void) { gEntity080de11c = NULL; }
+void FUN_080de168(void) { gSmokeEmitter = NULL; }

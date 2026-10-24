@@ -15,7 +15,7 @@
 	str r0, [sp, #0x10]
 	cmp r0, #0
 	bne _080DDCFC
-	bl Entity080de11c_Create
+	bl SmokeEmitter_Create
 	str r0, [sp, #0x10]
 	cmp r0, #0
 	bne _080DDCFC
