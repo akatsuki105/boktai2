@@ -19,8 +19,9 @@ typedef u16 Entity080db520ElemFlags;
 
 typedef struct {
   AuxSprite spr;                   // 0x00, _Destroy が AuxSprite_Remove に渡す
-  u8 unk_2c[0x3E - 0x2C];          // 0x2C
-  s16 unk_3e;                      // 0x3E, 2 なら FUN_080dabe4 が何もしない
+  u8 unk_2c[16];                   // 0x2C
+  s16 timer;                       // 0x3C, 毎フレーム +1, 90 を越えると枠を解放する
+  s16 state;                       // 0x3E, sElemUpdates の添字, 2 なら判定を立てる系の関数が何もしない
   Entity080db520ElemFlags unk_40;  // 0x40
   s16 unk_42;                      // 0x42, 負なら FUN_080dabe4 が何もしない
   s16 shakeTimer;                  // 0x44, 20 から数え下げ, 10 を超えている間はスプライトを揺らす
@@ -42,7 +43,8 @@ static_assert(sizeof(Entity080db520) == 1372);
 
 IWRAM_DATA Entity080db520* gEntity080db520 = NULL;  // 0x03000160
 
-const u8 u8_ARRAY_085ad310[4] = {8, 4, 2, 1};  // 0x085AD310
+// timer が進むほど短い周期になる, FUN_080db040 の点滅間隔
+const u8 sBlinkIntervals[4] = {8, 4, 2, 1};  // 0x085AD310
 
 // idx 番の枠の判定を1フレームだけ有効にする
 void FUN_080dab9c(s32 idx) {
@@ -57,7 +59,7 @@ void FUN_080dab9c(s32 idx) {
   if (e->unk_42 < 0) {
     return;
   }
-  if (e->unk_3e == 2) {
+  if (e->state == 2) {
     return;
   }
 
@@ -72,7 +74,7 @@ void FUN_080dabe4(s32 idx) {
   if (idx >= 0) {
     Entity080db520Elem* e = &p->elems[idx];
 
-    if (e->unk_42 >= 0 && e->unk_3e != 2) {
+    if (e->unk_42 >= 0 && e->state != 2) {
       e->unk_40 |= E080DB520_UNK_2;
     }
   }
@@ -203,7 +205,53 @@ NON_MATCH void FUN_080dadec(Entity080db520* p) {
 
 NAKED void FUN_080dae60(Entity080db520* p, Entity080db520Elem* elem) { INCFUNC("asm/func/FUN_080dae60.inc"); }
 
-NAKED void FUN_080db040(Entity080db520* p, Entity080db520Elem* elem) { INCFUNC("asm/func/FUN_080db040.inc"); }
+// 点滅させながら 90 フレーム数え, 終わったら枠を解放する
+// 残差1命令 (82/83), ~(UNK_4|UNK_6) が HImode の AND に落ちて 0xFFAF のプール読みになる. 原典は SImode で movs #0x51 + rsbs の2命令
+// static inline の ClearFlags か s32 ローカル経由にすると 83/83 まで届くがそれぞれ定数の位置かレジスタ割当が1箇所ずれる. マスクの書き方4通りも試済
+// spr のローカル化 (AuxSprite* spr = &elem->spr) で原典の r7 を再現できた
+NON_MATCH void FUN_080db040(Entity080db520* p, Entity080db520Elem* elem) {
+#ifdef NONMATCHING_C
+  AuxSprite* spr = &elem->spr;
+  s32 idx;
+
+  if (!elem->spr.active) {
+    Video_AddAuxSpriteIntoDrawList(&elem->spr, 0);
+  }
+
+  if (elem->timer == 18) {
+    elem->unk_40 &= ~(E080DB520_UNK_4 | E080DB520_UNK_6);
+  }
+
+  if (elem->timer > 60) {
+    idx = 2;
+  } else if (elem->timer > 40) {
+    idx = 1;
+  } else {
+    idx = 0;
+  }
+
+  if (Mod(elem->timer, sBlinkIntervals[idx]) == 0) {
+    if (spr->flags & SPRFLAG_HIDDEN) {
+      spr->flags &= ~SPRFLAG_HIDDEN;
+    } else {
+      spr->flags |= SPRFLAG_HIDDEN;
+    }
+  }
+
+  if (elem->timer > 90) {
+    p->activeMask &= ~(1 << elem->unk_42);
+    elem->state = 0;
+    Hitbox_Unregister(&elem->hitbox);
+    Video_RemoveAuxSpriteFromDrawList(spr, 0);
+    elem->unk_42 = -1;
+    elem->unk_40 = 0;
+  } else {
+    elem->timer++;
+  }
+#else
+  INCFUNC("asm/func/FUN_080db040.inc");
+#endif
+}
 
 NAKED void FUN_080db0f8(Entity080db520* p) { INCFUNC("asm/func/FUN_080db0f8.inc"); }
 
@@ -222,7 +270,7 @@ void Mover_GetAnimQuadrant(Mover* mover, u8* variant, u8* flags) {
 
 NAKED s32 FUN_080db290(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080db290.inc"); }
 
-void (*const PTR_ARRAY_085ad314[3])(Entity080db520*, Entity080db520Elem*) = {
+void (*const sElemUpdates[3])(Entity080db520*, Entity080db520Elem*) = {
     FUN_080dac20,
     FUN_080dae60,
     FUN_080db040,
@@ -241,7 +289,7 @@ NON_MATCH s32 Entity080db520_Update(Entity080db520* p) {
       if (p->activeMask & (1 << i)) {
         Entity080db520Elem* e = &elems[i];
 
-        PTR_ARRAY_085ad314[e->unk_3e](p, e);
+        sElemUpdates[e->state](p, e);
       }
     }
     FUN_080dadec(p);
@@ -319,7 +367,7 @@ NON_MATCH void Entity080db520_EnableAllHitboxes(void) {
       if (p->activeMask & (1 << i)) {
         Entity080db520Elem* e = &p->elems[i];
 
-        if (e->unk_42 >= 0 && e->unk_3e != 2) {
+        if (e->unk_42 >= 0 && e->state != 2) {
           e->unk_40 |= E080DB520_UNK_1;
           e->hitbox.flags |= HBFLAG_UNK_2;
         }
