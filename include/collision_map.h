@@ -234,6 +234,7 @@ static_assert(sizeof(CollisionMapData) == 3620);
 extern CollisionMapData* gCollisionMap;
 
 MapTileOverride* Map_FindTileOverride(u32 tileIdx, u32 mask);
+void Map_InitTileOverride(MapTileOverride* p, s32 tileIdx, s32 stairs, s32 height, s32 occluder, s32 attr);
 s32 Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 stairs, s32 height, s32 occluder, s32 attr);
 void Map_RemoveTileOverride(MapTileOverride* p);
 u16 Map_GetTileHeightAt(Vec3* pos);

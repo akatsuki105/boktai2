@@ -156,7 +156,41 @@ s32 Entity08004fac_EnableNodesById(u16 id) {
   return 0;
 }
 
-NAKED s32 Entity08004fac_SetNodeParamsById(u16 id, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6) { INCFUNC("asm/func/Entity08004fac_SetNodeParamsById.inc"); }
+// id が一致するノードのパラメータを差し替える, -1 を渡した項目は変えない
+s32 Entity08004fac_SetNodeParamsById(s32 id, s32 stairs, s32 unk_3, s32 attr, s32 tileIdx, s32 height) {
+  Entity08004fac* p = gEntity08004fac;
+  Entity08004facNode* node;
+
+  if (p == NULL) {
+    return -1;
+  }
+
+  node = p->head;
+  while (node != NULL) {
+    Entity08004facNode* next = node->next;
+
+    if (node->id == id) {
+      if (unk_3 != -1) {
+        node->unk_3 = unk_3;
+      }
+      if (stairs != -1) {
+        node->stairs = stairs;
+      }
+      if (tileIdx != -1) {
+        node->tileIdx = tileIdx;
+      }
+      if (height != -1) {
+        node->height = height;
+      }
+      if (attr != -1) {
+        node->attr = attr;
+      }
+      Map_InitTileOverride(&node->tileOverride, node->tileIdx, node->stairs, node->height, 0xFF, node->attr);
+    }
+    node = next;
+  }
+  return 0;
+}
 
 s32 Entity08004fac_Update(Entity08004fac* p) { return 0; }
 
