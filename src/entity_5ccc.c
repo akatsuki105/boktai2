@@ -1,3 +1,5 @@
+#include "collision_map.h"
+#include "constants/sprite.h"
 #include "entity.h"
 #include "entity_9a9f.h"
 #include "global.h"
@@ -197,7 +199,28 @@ void FUN_0809e1f8(void) {
   }
 }
 
-NAKED void FUN_0809e22c(SkylightBeam* beam, s32 param_2, Vec3* pos, u32 param_4, s32 pltt) { INCFUNC("asm/func/FUN_0809e22c.inc"); }
+// 光柱1本を pos に立ち上げる
+// 残差5命令 (66/71). 原典は pos をスタックへ退避するほどレジスタが足りていないが, agbcc は r10 に収めてしまう
+NON_MATCH void FUN_0809e22c(SkylightBeam* beam, s32 param_2, Vec3* pos, u32 param_4, s32 pltt) {
+#ifdef NONMATCHING_C
+  SpriteFlags flags;
+
+  beam->pos = *pos;
+  flags = param_4 != 0 ? SPRFLAG_XFLIP : 0;
+  beam->unk_9c = param_2 * 4;
+  Video_GetAuxSprite(&beam->gfx[0], SPRITE_SPOTLIGHT);
+  AuxSprite_Add(&beam->sprite[0], &beam->gfx[0], flags);
+  beam->sprite[0].poseIdx = beam->unk_9c;
+  Video_SetAuxSpritePltt(&beam->gfx[0], pltt);
+  beam->sprite[0].pos = beam->pos;
+  beam->sprite[0].priority = 3;
+  beam->active = TRUE;
+  FUN_0809e198(beam, param_2, pos, param_4);
+  beam->mapArea = GetZoneAt(&beam->pos);
+#else
+  INCFUNC("asm/func/FUN_0809e22c.inc");
+#endif
+}
 
 NAKED void FUN_0809e2c4(void) { INCFUNC("asm/func/FUN_0809e2c4.inc"); }
 
