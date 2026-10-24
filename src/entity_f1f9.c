@@ -27,7 +27,8 @@ typedef struct EntityF1F9Item {
   u8 unk_13e[2];      // 0x13E
   s16 unk_140;        // 0x140, 移動の始点
   s16 unk_142;        // 0x142, 現在位置
-  u8 unk_144[4];      // 0x144
+  u8 unk_144[3];      // 0x144
+  u8 unk_147;         // 0x147, FUN_0809c344 の第4引数
   u16 state;          // 0x148, PTR_ARRAY_085ae104 の添字
   s16 idx;            // 0x14A, items の中での自分の添字, FUN_081d5864 が入れる
   u16 flags;          // 0x14C, FUN_081d5820 が立て、FUN_081d5834 が落とし、FUN_081d5848 が読む
@@ -56,6 +57,10 @@ IWRAM_DATA EntityF1F9* gEntityF1F9 = NULL;  // 0x03000198
 s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
 
 void FUN_081d6444(EntityF1F9Item* item);
+void FUN_081d65e8(EntityF1F9Item* item);
+void FUN_081d6bc0(EntityF1F9Item* item);
+s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* param_5, s32 param_6);
+void FUN_0809c344(s32 param_1, s32 param_2, u16 param_3, u8 param_4, s32 param_5);
 void FUN_081d6764(EntityF1F9Item* item);
 void FUN_081d6ae8(EntityF1F9Item* item, s32 n);
 void FUN_081d6c24(EntityF1F9Item* item);
@@ -291,7 +296,50 @@ void FUN_081d6444(EntityF1F9Item* item) {
   }
 }
 
-NAKED void FUN_081d64d4(HitboxData* a, HitboxData* b, EntityF1F9Item* p) { INCFUNC("asm/func/FUN_081d64d4.inc"); }
+// 被弾ハンドラ, 体力を削って演出を出し, 0 になったら state 4 へ移す
+// 残差7命令 (115/122). 原典は高位レジスタを1本多く使い &item->hitbox.unk_44 を参照のたびに作り直すが, agbcc は CSE して1本に収めてしまう
+// dealt は min(unk_140, damage) だが, 原典の形 (差を取ってから符号で分岐) に合わせて if/else で書いた
+NON_MATCH void FUN_081d64d4(HitboxData* a, HitboxData* b, EntityF1F9Item* item) {
+#ifdef NONMATCHING_C
+  s32 dealt;
+  Vec3 v;
+
+  if (item->hitbox.unk_44 != 0) {
+    return;
+  }
+
+  Hitbox_ApplyDamage(a, b);
+  b->unk_44 = a->unk_44;
+  dealt = item->unk_140 - item->hitbox.damage;
+  if (dealt >= 0) {
+    dealt = item->hitbox.damage;
+  } else {
+    dealt += item->hitbox.damage;
+  }
+
+  item->unk_140 -= item->hitbox.damage;
+  if (item->unk_140 < 0) {
+    item->unk_140 = 0;
+  }
+
+  FUN_0809c344(item->unk_150, item->unk_140, item->unk_142, item->unk_147, 0);
+  CpuFill32(0, &v, sizeof(v));
+  FUN_0805fe7c(b, dealt, 0, &item->sprite.pos, &v, 1);
+  item->unk_153 = 3;
+  item->unk_157 = 10;
+  item->hitbox.unk_44 = 0x18;
+  FUN_081d65e8(item);
+  FUN_081d6bc0(item);
+  PlaySound_082406e0(SE_ENEMY_DAMAGED);
+
+  if (item->unk_140 <= 0) {
+    item->state = 4;
+    item->unk_156 = 1;
+  }
+#else
+  INCFUNC("asm/func/FUN_081d64d4.inc");
+#endif
+}
 
 // 破片を 2〜5 個, スプライト位置からばらまく
 // 残差2命令 (92/94). 原典は item を低位レジスタに置いて &vel を先に作るが, agbcc は item を r9 へ追い出して &vel を後回しにする. table の代入位置を下げても変わらない
