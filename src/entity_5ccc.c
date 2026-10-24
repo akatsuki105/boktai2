@@ -204,21 +204,18 @@ NON_MATCH bool32 FUN_0809e138(Player* p) {
 #endif
 }
 
-// MainMenu_ShowPlayerTitle ほかが引く
-const u16 u16_ARRAY_085ad004[4] = {100, 100, 112, 112};  // 0x085AD004
-const u16 u16_ARRAY_085ad00c[4] = {128, 100, 112, 112};  // 0x085AD00C
+// pos を中心に sizeIdx 番の大きさで光の矩形を作る, shape で X と Z の半径が入れ替わる
+void FUN_0809e198(SkylightBeam* beam, s32 sizeIdx, Vec3* pos, s32 shape) {
+  static const u16 u16_ARRAY_085ad004[4] = {100, 100, 112, 112};  // 0x085AD004
+  static const u16 u16_ARRAY_085ad00c[4] = {128, 100, 112, 112};  // 0x085AD00C
 
-// pos を中心に param_2 番の大きさで光の矩形を作る, param_4 で X と Z の半径が入れ替わる
-void FUN_0809e198(SkylightBeam* beam, s32 param_2, Vec3* pos, s32 param_4) {
-  u16 halfX;
-  u16 halfZ;
-
-  if (param_4 != 0) {
-    halfX = u16_ARRAY_085ad004[param_2];
-    halfZ = u16_ARRAY_085ad00c[param_2];
+  u16 halfX, halfZ;
+  if (shape != 0) {
+    halfX = u16_ARRAY_085ad004[sizeIdx];
+    halfZ = u16_ARRAY_085ad00c[sizeIdx];
   } else {
-    halfX = u16_ARRAY_085ad00c[param_2];
-    halfZ = u16_ARRAY_085ad004[param_2];
+    halfX = u16_ARRAY_085ad00c[sizeIdx];
+    halfZ = u16_ARRAY_085ad004[sizeIdx];
   }
 
   beam->minX = pos->x - halfX;
@@ -242,13 +239,13 @@ void FUN_0809e1f8(void) {
 
 // 光柱1本を pos に立ち上げる
 // 残差5命令 (66/71). 原典は pos をスタックへ退避するほどレジスタが足りていないが, agbcc は r10 に収めてしまう
-NON_MATCH void FUN_0809e22c(SkylightBeam* beam, s32 param_2, Vec3* pos, u32 param_4, s32 pltt) {
+NON_MATCH void FUN_0809e22c(SkylightBeam* beam, s32 kind, Vec3* pos, u32 shape, s32 pltt) {
 #ifdef NONMATCHING_C
   SpriteFlags flags;
 
   beam->pos = *pos;
-  flags = param_4 != 0 ? SPRFLAG_XFLIP : 0;
-  beam->unk_9c = param_2 * 4;
+  flags = shape != 0 ? SPRFLAG_XFLIP : 0;
+  beam->unk_9c = kind * 4;
   Video_GetAuxSprite(&beam->gfx[0], SPRITE_SPOTLIGHT);
   AuxSprite_Add(&beam->sprite[0], &beam->gfx[0], flags);
   beam->sprite[0].poseIdx = beam->unk_9c;
@@ -256,7 +253,7 @@ NON_MATCH void FUN_0809e22c(SkylightBeam* beam, s32 param_2, Vec3* pos, u32 para
   beam->sprite[0].pos = beam->pos;
   beam->sprite[0].priority = 3;
   beam->active = TRUE;
-  FUN_0809e198(beam, param_2, pos, param_4);
+  FUN_0809e198(beam, kind, pos, shape);
   beam->mapArea = GetZoneAt(&beam->pos);
 #else
   INCFUNC("asm/func/FUN_0809e22c.inc");
@@ -322,19 +319,10 @@ void Entity5CCC_AddBeamScripted(void) {
   } else {
     pos.x = 0, pos.y = 0, pos.z = 0;
   }
-
   pos.y = TileHeightAt(&pos);
 
-  if (VM_SeekToNamedArg('t')) {
-    size = VM_GetValue();
-  } else {
-    size = 0;
-  }
-  if (VM_SeekToNamedArg('r')) {
-    dir = VM_GetValue();
-  } else {
-    dir = 0;
-  }
+  size = VM_SeekToNamedArg('t') ? VM_GetValue() : 0;
+  dir = VM_SeekToNamedArg('r') ? VM_GetValue() : 0;
 
   FUN_0809e22c(&p->beams[p->count], size, &pos, dir, p->pltt);
   p->beams[p->count].lit = TRUE;
