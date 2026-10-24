@@ -863,11 +863,11 @@ NAKED s32 FUN_080cffcc(Player* p) { INCFUNC("asm/func/FUN_080cffcc.inc"); }
 NAKED void FUN_080d01c8(Player* p) { INCFUNC("asm/func/FUN_080d01c8.inc"); }
 
 // 太陽ゲージ+2 を貯めて, 100 を超えるたびに1回ぶん消費する
-void FUN_080d0394(Player* p, s32 param_2) {
-  p->unk_3dc += param_2 + 2;
-  if (p->unk_3dc > 99) {
+void FUN_080d0394(Player* p, s32 sungauge) {
+  p->sunburn += sungauge + 2;
+  if (p->sunburn > 99) {
     FUN_080cf684(p);
-    p->unk_3dc -= 100;
+    p->sunburn -= 100;
   }
 }
 

@@ -540,7 +540,7 @@ void Player_RefreshAllStats(Player* p) {
 }
 
 // 足元の判定を1つ出す, コウモリ/ネズミ は小さいものを使う
-void Player_SpawnFootHitbox(Player* p) {
+void Player_EmitBurnSmoke(Player* p) {
   Vec3 size;
   Vec3 pos;
 
@@ -1953,7 +1953,7 @@ NON_MATCH void Player_StartFormEffect(Player* p, u32 kind) {
     if (p->unk_4c4.kind == 1) {
       PlaySound_082406e0(SE_401);
     } else if (p->unk_4c4.kind == 2) {
-      p->unk_376 += 10;
+      p->damage += 10;
       PlaySound_082406e0(SE_CRASH_307);
     } else if (p->unk_4c4.kind == 3) {
       PlaySound_082406e0(SE_CRASH_307);
@@ -2478,7 +2478,7 @@ u32 CheckParalyzeProc(Player* p) {
   return 0;
 }
 
-// ブラッドソードの吸収, 通常状態でジャンゴなら unk_376 を増やし, それ以外なら HP を1回復して判定を出す
+// ブラッドソードの吸収, 通常状態でジャンゴなら damage を増やし, それ以外なら HP を1回復して判定を出す
 void Player_UpdateBloodSword(Player* p) {
   if (p->unk_1c != 1 || !Player_TestEquipBuff(p, EBUFF_BLOOD_SWORD)) {
     return;
@@ -2488,7 +2488,7 @@ void Player_UpdateBloodSword(Player* p) {
     if (p->hp <= 1) {
       return;
     }
-    p->unk_376++;
+    p->damage++;
   } else {
     if (p->hp >= p->maxHP) {
       return;
@@ -3725,23 +3725,23 @@ NAKED void FUN_0806623c(Player* p) { INCFUNC("asm/func/FUN_0806623c.inc"); }
 
 NAKED void FUN_08066408(Player* p) { INCFUNC("asm/func/FUN_08066408.inc"); }
 
-void FUN_08066794(Player* p) {
-  Player_SpawnFootHitbox(p);
-  p->unk_376++;
+void Player_TakeSunburnDamage(Player* p) {
+  Player_EmitBurnSmoke(p);
+  p->damage++;
 }
 
-// 黒ジャンゴ, マウス, ラット が太陽にあたっているときのダメージ処理
-// 太陽ゲージから unk_3dc を貯め、100 たまるごとに FUN_08066794 を1回呼ぶ
+// 黒ジャンゴ, バット, マウス が太陽にあたっているときのダメージ処理
+// 太陽ゲージから sunburn を貯め、100 たまるごとに Player_TakeSunburnDamage を1回呼ぶ
 void FUN_080667b0(Player* p, s32 sungauge) {
   if (p->unk_43a == 0) {
     u16 state = p->goodCondTimer;
     bool32 skip = state != 0 && p->goodCondID == GOOD_UVCUT;
 
     if (!skip) {
-      p->unk_3dc += sungauge + 2;
-      if (p->unk_3dc > 99) {
-        FUN_08066794(p);
-        p->unk_3dc -= 100;
+      p->sunburn += sungauge + 2;
+      if (p->sunburn > 99) {
+        Player_TakeSunburnDamage(p);
+        p->sunburn -= 100;
       }
     }
   }
@@ -5500,7 +5500,7 @@ void FUN_080726ec(Player* p) {
   if (p->footHitboxOn != 0) {
     p->footHitboxTimer++;
     if (p->footHitboxTimer > 7) {
-      Player_SpawnFootHitbox(p);
+      Player_EmitBurnSmoke(p);
       p->footHitboxTimer = 0;
     }
   }
@@ -6909,6 +6909,7 @@ void FUN_0807b564(void) {
   gSunGaugeOverrideTimer = 0;
 }
 
+// 0xFD12
 void FUN_0807b580(void) {
   s32 i = VM_GetPlayerIdx();
 
@@ -8383,7 +8384,7 @@ static s32 Player_Update(Player* p) {
     if (p->hp == 0) {
       p->hp = 1;
     }
-    p->unk_376 = 0;
+    p->damage = 0;
     p->hurtbox.unk_40 = 0;
     n = p->hurtbox.unk_44;
     if (n > 0) {

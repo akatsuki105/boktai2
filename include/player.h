@@ -215,7 +215,7 @@ typedef struct Player {
   u16 ene;                          // 0x368
   u16 maxEne;                       // 0x36A
   u8 unk_36c[10];                   // 0x36C
-  u16 unk_376;                      // 0x376
+  u16 damage;                       // 0x376, プレイヤーのダメージ量, あとで HP から引く
   EquipBuffs equipBuffs;            // 0x378, see EquipBuffs
   u8 action;                        // 0x37C, いま実行している行動, kind ごとの PlayerFunc テーブル (0x085abcac など) の添字
   u8 state;                         // 0x37D, action の中の段階, 行動関数はこれで switch する
@@ -257,7 +257,7 @@ typedef struct Player {
   u8 unk_3d6[2];                    // 0x3D6
   u16 unk_3d8;                      // 0x3D8, Player_ApplyBadCondition が状態異常1の残り時間が 0 のときに 0 を書く
   u16 unk_3da;                      // 0x3DA, Player_StartFormEffect が変身を始めるときに 0 に戻す
-  u16 unk_3dc;                      // 0x3DC, FUN_080667b0 が毎回 太陽ゲージ+2 を足し、100 を超えるたびに FUN_08066794 を呼んで 100 引く
+  u16 sunburn;                      // 0x3DC, FUN_080667b0 が毎回 太陽ゲージ+2 を足し、100 を超えるたびに Player_TakeSunburnDamage を呼んで 100 引く
   u8 unk_3de[0x3E6 - 0x3DE];        // 0x3DE
   u16 unk_3e6;                      // 0x3E6, Player_SetHitDir が相手の HitboxData.unk_40 を退避する
   DirU16 hitDir;                    // 0x3E8, Player_SetHitDir が被弾方向 (0..7) を入れる
@@ -325,7 +325,7 @@ typedef struct Player {
   u8 unk_4ab;                       // 0x4AB, FUN_08072670 が 1 を書く
   u8 unk_4ac;                       // 0x4AC
   u8 footHitboxOn;                  // 0x4AD, 0 以外なら FUN_080726ec が footHitboxTimer を数える
-  u8 footHitboxTimer;               // 0x4AE, 8 フレームごとに Player_SpawnFootHitbox を呼ぶためのカウンタ
+  u8 footHitboxTimer;               // 0x4AE, 8 フレームごとに Player_EmitBurnSmoke を呼ぶためのカウンタ
   u8 unk_4af;                       // 0x4AF
   s32 scriptID_4b0;                 // 0x4B0, FUN_08072650
   u8 unk_4b4[0x4BC - 0x4B4];        // 0x4B4

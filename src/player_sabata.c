@@ -793,11 +793,11 @@ NON_MATCH void FUN_08081c04(Player* p) {
 #endif
 }
 
-// 太陽ゲージから unk_3dc を貯め、100 たまるごとに足元の判定を1つ出す
+// 太陽ゲージから sunburn を貯め、100 たまるごとに足元の判定を1つ出す
 void FUN_08081d18(Player* p, s32 sunGauge) {
   if (!(p->sprite_88.flags & SPRFLAG_HIDDEN)) {
-    p->unk_3dc += sunGauge + 2;
-    if (p->unk_3dc > 99) {
+    p->sunburn += sunGauge + 2;
+    if (p->sunburn > 99) {
       Vec3 size;
       WorldPos pos;
 
@@ -805,7 +805,7 @@ void FUN_08081d18(Player* p, s32 sunGauge) {
       pos.y += 0x50;
       size.x = 0x40, size.y = 0x3C, size.z = 0x40;
       EmitSmoke(&pos, 1, &size, 0, 0, 0xC, 2, 2);
-      p->unk_3dc -= 100;
+      p->sunburn -= 100;
     }
   }
 }

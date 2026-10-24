@@ -70,7 +70,7 @@ const WeaponData gWeaponDB[WEAPON_NUM] = {
     {id : WEAPON_ASTRO_SWORD,   kind : WK_SWORD,  rank : 4, lv : 1,  atk : 6,  durability : 0,   price : 0,    effects : {WET_ASTRO_SWORD}               },
     {id : WEAPON_ASTRO_SPEAR,   kind : WK_SPEAR,  rank : 4, lv : 1,  atk : 6,  durability : 0,   price : 0,    effects : {WET_ASTRO_SPEAR}               },
     {id : WEAPON_ASTRO_HAMMER,  kind : WK_HAMMER, rank : 4, lv : 1,  atk : 6,  durability : 0,   price : 0,    effects : {WET_ASTRO_HAMMER}              },
-};
+};  // 0x08DA9E68
 
 // clang-format off
 const ArmorData gArmorDB[ARMOR_NUM] = {
@@ -112,7 +112,7 @@ const ArmorData gArmorDB[ARMOR_NUM] = {
     {ARMOR_GUTS_POWER,         30,      40,     30,         0,     1500},
     {ARMOR_PROTO_POWER,        25,      20,     31,         0,     1500},
     {ARMOR_TOAD_POWER,         20,      20,     32,         0,     1500},
-};
+}; // 0x08DAA7B0
 // clang-format on
 
 // clang-format off
