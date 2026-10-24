@@ -383,7 +383,7 @@ NAKED s32 FUN_08209524(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/
 NAKED void FUN_08209534(s32 param_1) { INCFUNC("asm/func/FUN_08209534.inc"); }
 
 // 0xD774
-NAKED void FUN_082097dc(void) { INCFUNC("asm/func/FUN_082097dc.inc"); }
+void FUN_082097dc(void) { FUN_08209534(0); }
 
 // 0x82C8
 NAKED void FUN_082097e8(void) { INCFUNC("asm/func/FUN_082097e8.inc"); }
