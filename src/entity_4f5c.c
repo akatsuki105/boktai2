@@ -3,6 +3,7 @@
 #include "particle.h"
 #include "player.h"
 #include "random.h"
+#include "sound.h"
 #include "trig.h"
 #include "vm.h"
 
@@ -152,7 +153,73 @@ NON_MATCH s32 Entity4F5C_Destroy(Entity4F5C* p) {
 #endif
 }
 
-NAKED s32 Entity4F5C_Init(Entity4F5C* p) { INCFUNC("asm/func/Entity4F5C_Init.inc"); }
+// プレイヤーの頭上に粒子3枚×3組を円状に仕込む
+// 残差4命令 (239/243) でこちらが短い. elem と ptcl のレジスタが入れ替わり, 原典は i=0 に既存の 0 レジスタを使い回すところを agbcc は作り直す
+// gPlayerPtr[0] をローカルに取ると &p->player の作り位置が原典と揃う (それ以前は 243 対 239 で順序もずれていた)
+NON_MATCH s32 Entity4F5C_Init(Entity4F5C* p) {
+#ifdef NONMATCHING_C
+  WorldPos basePos;
+  Entity4F5CElem* elem;
+  Player* player;
+  s32 i;
+
+  player = gPlayerPtr[0];
+  p->player = player;
+  if (player == NULL) {
+    return -1;
+  }
+
+  p->scriptID = VM_GetNamedArgValue('e', 0);
+  basePos = p->player->mover.pos;
+  basePos.y += 0x4B0;
+  p->playerPos = p->player->mover.pos;
+  p->unk_18 = 0;
+  p->group1 = GetParticleGroup(PTCL_GROUP_1);
+  p->group2 = GetParticleGroup(PTCL_GROUP_2);
+
+  elem = p->elems;
+  for (i = 0; i < 3; i++, elem++) {
+    Particle* ptcl = elem->ptcls;
+    s32 radius;
+    s32 j;
+
+    elem->state = 1;
+    elem->ptclIdx = 1;
+    elem->unk_02 = Random() & 0xF;
+    elem->speed = 0;
+    elem->angle = Div(i << 8, 3) + (Random() & 0x3F);
+    elem->timer = 0;
+    radius = Random() & 0x3F;
+    elem->pos.x = COS(elem->angle, radius);
+    elem->pos.y = 0;
+    elem->pos.z = SIN(elem->angle, radius);
+    elem->unk_05 = (Random() & 0x1F) - 0x24;
+    elem->pos.x += basePos.x;
+    elem->pos.y += basePos.y + u16_ARRAY_085aa980[i];
+    elem->pos.z += basePos.z;
+
+    for (j = 0; j < 3; j++, ptcl++) {
+      Particle_Add(ptcl, p->group1, 1);
+      Particle_SetOffset(ptcl, -4, -4);
+      if (j == 0) {
+        Particle_SetFrame(ptcl, p->group1, 0x1C);
+        ptcl->plttSlot = p->group1->plttID;
+      } else {
+        Particle_SetFrame(ptcl, p->group2, 2);
+        ptcl->plttSlot = p->group2->plttID + 1;
+      }
+      ptcl->pos.x += elem->pos.x;
+      ptcl->pos.y += elem->pos.y;
+      ptcl->pos.z += elem->pos.z;
+    }
+  }
+
+  PlaySound_082406e0(SONG_636);
+  return 0;
+#else
+  INCFUNC("asm/func/Entity4F5C_Init.inc");
+#endif
+}
 
 Entity4F5C* Entity4F5C_Create(u32 id, u32 _) {
   Entity4F5C* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity4F5C));
