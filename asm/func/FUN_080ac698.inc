@@ -65,7 +65,7 @@ _080AC724:
 	adds r0, r5, #0
 	mov r1, sp
 	adds r2, r4, #0
-	bl FUN_080ac60c
+	bl Entity080ac574_Spawn
 	add sp, #8
 	pop {r4, r5}
 	pop {r0}

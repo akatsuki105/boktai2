@@ -7,13 +7,14 @@
 // 4個を使い回す粒子の枠
 typedef struct {
   Particle ptcl;         // 0x00
-  u8 unk_28[8];          // 0x28
+  Vec3 origin;           // 0x28, ばらつきを加える前の発生位置
   ParticleGroup* group;  // 0x30, PTCL_GROUP_2
   u16 unk_34;            // 0x34, FUN_080ac5b4 が探すときの照合キー
   u16 active;            // 0x36, _Update が 0 の枠を飛ばす
   u16 timer;             // 0x38, 毎フレーム +1, 3以下と7以下でコマを変え, lifetime に届くと作り直す
   u16 lifetime;          // 0x3A
-  u8 unk_3c[4];          // 0x3C
+  u16 lifetimeBase;      // 0x3C, 寿命の下限
+  u16 lifetimeRand;      // 0x3E, 0 以外なら寿命にこの範囲の乱数を足す
 } Entity080ac574Particle;
 static_assert(sizeof(Entity080ac574Particle) == 64);
 
@@ -116,6 +117,31 @@ void FUN_080ac5f4(void) {
   }
 }
 
-NAKED void FUN_080ac60c(u16 param_1, unknown* param_2, u16 param_3, u16 param_4) { INCFUNC("asm/func/FUN_080ac60c.inc"); }
+// 空いている枠を1つ探して発生位置と寿命を仕込む
+void Entity080ac574_Spawn(s32 id, Vec3* origin, s32 lifetimeBase, s32 lifetimeRand) {
+  Entity080ac574* p = Registry_Find(0xA854);
+  s32 i;
+
+  if (p == NULL) {
+    p = Entity080ac574_Create();
+  }
+
+  for (i = 0; i < 4; i++) {
+    if (p->ptcls[i].active == 0) {
+      break;
+    }
+  }
+  if (i >= 4) {
+    return;
+  }
+
+  p->ptcls[i].unk_34 = id;
+  p->ptcls[i].origin = *origin;
+  p->ptcls[i].lifetimeBase = lifetimeBase;
+  p->ptcls[i].lifetimeRand = lifetimeRand;
+  p->ptcls[i].active = 1;
+  p->ptcls[i].ptcl.flags &= ~SPRFLAG_HIDDEN;
+  FUN_080ac3d4(&p->ptcls[i]);
+}
 
 NAKED void FUN_080ac698(void) { INCFUNC("asm/func/FUN_080ac698.inc"); }
