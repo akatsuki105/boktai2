@@ -4,11 +4,15 @@
 
 // 破片の1グループ, Entity08015220_Init が 4 グループぶんまとめて初期化する
 typedef struct {
-  bool8 active;             // 0x000, 0 以外なら _Update が FUN_08015074 を呼び、_Destroy がスプライトを外す
-  u8 unk_001[0x2C - 1];     // 0x001
-  bool8 used[6];            // 0x02C, sprites の各要素が登録済みか, _Init が 0 で埋める
-  u8 unk_032[0x70 - 0x32];  // 0x032
-  AuxSprite sprites[6];     // 0x070, _Destroy が使用済みのものを AuxSprite_Remove に渡す
+  bool8 active;          // 0x000, 0 以外なら _Update が Entity08015220_UpdateGroup を呼び、_Destroy がスプライトを外す
+  u8 aliveCount;         // 0x001, まだ生きている破片の数, 0 になると active を落とす
+  u8 unk_002[0x26 - 2];  // 0x002
+  u8 lifetime[6];        // 0x026, 毎フレーム -1, 0xFF まで回り込んだ破片を外す
+  bool8 used[6];         // 0x02C, sprites の各要素が登録済みか, _Init が 0 で埋める
+  u16 speed[6];          // 0x032, vel の x と z にかける倍率 (12bit 固定小数)
+  u8 unk_03e[2];         // 0x03E
+  Vec3 vel[6];           // 0x040, y は重力で毎フレーム -2 される
+  AuxSprite sprites[6];  // 0x070, _Destroy が使用済みのものを AuxSprite_Remove に渡す
 } Entity08015220Group;
 static_assert(sizeof(Entity08015220Group) == 376);
 
@@ -40,7 +44,34 @@ void FUN_08014d94(void) { gEntity08015220 = NULL; }
 
 NAKED s32 FUN_08014da0(s32 param_1, unknown* param_2, unknown* param_3, unknown* param_4, unknown* param_5, unknown* param_6, unknown* param_7, unknown* param_8, unknown* param_9, unknown* param_10, unknown* param_11, unknown* param_12) { INCFUNC("asm/func/FUN_08014da0.inc"); }
 
-NAKED void FUN_08015074(Entity08015220* p, unknown* data) { INCFUNC("asm/func/FUN_08015074.inc"); }
+// 破片をそれぞれ速度ぶん動かし, 寿命が切れたものを外す. 全部切れたらグループを閉じる
+void Entity08015220_UpdateGroup(Entity08015220* p, Entity08015220Group* g) {
+  s32 i;
+
+  g->aliveCount = 0;
+
+  for (i = 0; i < 6; i++) {
+    AuxSprite* spr = &g->sprites[i];
+
+    if (g->used[i]) {
+      spr->pos.x += FixToInt(12, g->vel[i].x * g->speed[i]);
+      spr->pos.y += g->vel[i].y;
+      spr->pos.z += FixToInt(12, g->vel[i].z * g->speed[i]);
+      g->vel[i].y -= 2;
+      g->lifetime[i]--;
+      if (g->lifetime[i] == 0xFF) {
+        g->used[i] = FALSE;
+        AuxSprite_Remove(spr);
+      } else {
+        g->aliveCount++;
+      }
+    }
+  }
+
+  if (g->aliveCount == 0) {
+    g->active = FALSE;
+  }
+}
 
 s32 Entity08015220_Update(Entity08015220* p) {
   Entity08015220Group* g = p->groups;
@@ -48,7 +79,7 @@ s32 Entity08015220_Update(Entity08015220* p) {
 
   for (i = 0; i < 4; g++, i++) {
     if (g->active) {
-      FUN_08015074(p, g);
+      Entity08015220_UpdateGroup(p, g);
     }
   }
   p->timer++;
