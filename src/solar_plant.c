@@ -7,6 +7,7 @@
 #include "sound.h"
 #include "sprite.h"
 #include "sprite_aux.h"
+#include "trig.h"
 #include "vm.h"
 
 // 足場1枚ぶん
@@ -22,7 +23,7 @@ typedef struct Entity1E98Elem {
   s16 scriptID;                                    // 0x0E8, '.g[0]=-1', スクリプトが '.i' でこの足場を指名する
   u16 tileIdx;                                     // 0x0EA, pos が乗っているコリジョンタイルの索引
   u16 timer;                                       // 0x0EC, updateCallback が差し替わるたび 0 に戻る
-  s16 unk_ee;                                      // 0x0EE, '.W'
+  u16 unk_ee;                                      // 0x0EE, '.W', 0 以外なら上下に揺れる周期 (フレーム数)
   u16 unk_f0;                                      // 0x0F0, unk_f2 に達すると FUN_080a4670 が次の段階へ進める
   u16 unk_f2;                                      // 0x0F2, '.A=10', unk_f0 がここに達したら次の段階へ
   u8 plttTimer;                                    // 0x0F4, 0 でない間 gfx が pltt を使い, 0 になった瞬間に plttID 0x5F へ戻る
@@ -52,6 +53,7 @@ COMMON_DATA Entity1E98* gEntity1E98 = NULL;  // 0x03002C44
 void FUN_080a46b0(Entity1E98Elem* elem);
 void FUN_080a4728(Entity1E98Elem* elem);
 void FUN_080a4854(Entity1E98Elem* elem);
+void FUN_080a47d0(Entity1E98Elem* elem);
 
 void Entity1E98_SetUpdateCallback(Entity1E98Elem* elem, void* fn) {
   elem->updateCallback = fn;
@@ -125,7 +127,23 @@ void FUN_080a46b0(Entity1E98Elem* elem) {
 
 void FUN_080a4728(Entity1E98Elem* elem) {}
 
-NAKED void FUN_080a472c(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a472c.inc"); }
+// unk_ee の周期で上下に揺れながら, 太陽ゲージが溜まったら乗れる状態へ移る
+void FUN_080a472c(Entity1E98Elem* elem) {
+  if (elem->unk_ee != 0) {
+    elem->spr.pos.y = elem->pos.y + SIN(Div(elem->timer * 255, elem->unk_ee), 12);
+    elem->timer++;
+    if (elem->timer >= elem->unk_ee) {
+      elem->timer = 0;
+    }
+  }
+
+  if (elem->unk_f0 >= elem->unk_f2) {
+    elem->unk_f6 = 1;
+    FUN_080a45a8(elem);
+    elem->hitbox.flags |= HBFLAG_UNK_2;
+    Entity1E98_SetUpdateCallback(elem, FUN_080a47d0);
+  }
+}
 
 // 残差は elem と &elem->timer のレジスタ入れ替えだけ (58/58 同数同順), 原典は elem が r5 で timer が r4
 // Tier A-C 試済 (ローカルの宣言位置を動かしても入れ替わらない)
