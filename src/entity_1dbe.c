@@ -189,7 +189,19 @@ void Entity1DBEElem_InitSprite(Entity1DBEElem* elem, Vec3* pos, u32 moverLinked)
   }
 }
 
-NAKED void Entity1DBEElem_InitHitbox(Entity1DBEElem* elem) { INCFUNC("asm/func/Entity1DBEElem_InitHitbox.inc"); }
+void Entity1DBEElem_InitHitbox(Entity1DBEElem* elem) {
+  HitboxData* hitbox = &elem->hitbox;
+  Vec3 size;
+  Vec3 offset;
+
+  size.x = 0x80, size.y = 0x32, size.z = 0x80;
+  offset.x = 0, offset.y = 0, offset.z = 0;
+  Hitbox_Init(hitbox, elem->id, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_SetHandler(hitbox, Entity1DBEElem_OnHit, elem);
+  Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
+  Hitbox_Register(hitbox);
+  hitbox->damage = 600;
+}
 
 // '.s' の値ごとに見た目と更新関数を決める
 void Entity1DBEElem_InitState(Entity1DBEElem* elem) {
