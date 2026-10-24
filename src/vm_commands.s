@@ -125,7 +125,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x3117, Entity3117_Create
 	.4byte 0x31FE, Entity3117_StartMoveScripted
 	.4byte 0x31FF, Cmd_GetSolarGauge
-	.4byte 0x320C, FUN_0809e3a0
+	.4byte 0x320C, Entity5CCC_AddBeamScripted
 	.4byte 0x3215, FUN_081d0c38
 	.4byte 0x329B, Entity329B_Create
 	.4byte 0x3361, Entity3361_Create

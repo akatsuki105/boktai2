@@ -55,6 +55,43 @@ extern u16 u16_03002bf0;
 
 s32 Entity0800a89c_Spawn(s32 count, u32 kindFlags, u8 amount, Vec3* pos, Vec3* spread, s16 lifetime, s32 lifetimeRand);
 
+// pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
+// Map_GetTileHeightAt (src/collision_map.c) と同じ処理だが, 原典はこのファイルの中に展開しているのでインラインで持つ
+static inline s32 TileHeightAt(Vec3* pos) {
+  MapTileOverride* ov;
+  CollisionMapTile* tile;
+  s32 stairs;
+  s32 height;
+  s32 bx;
+  s32 bz;
+  s32 idx;
+
+  bx = (s8)(pos->x >> 8);
+  bz = (s8)(pos->z >> 8);
+  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+    idx = 0;
+  } else {
+    idx = gCollisionMap->rowOffsets[bz] + bx;
+  }
+
+  ov = Map_FindTileOverride(idx, 1);
+  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+
+  stairs = tile->heightStairs >> 4;
+  height = (tile->heightStairs & 0xF) << 8;
+  switch (stairs) {
+    case STAIRS_VERTICAL: {
+      height -= (u8)pos->z;
+      break;
+    }
+    case STAIRS_HORIZONTAL: {
+      height -= (u8)pos->x;
+      break;
+    }
+  }
+  return height;
+}
+
 // まだセッションが無ければ 0
 static inline u16 Entity9A9F_GetUnk66(void) {
   Entity9A9F* p = gEntity9A9F;
@@ -258,7 +295,54 @@ void Entity5CCC_AddLightAreaScripted(void) {
   }
 }
 
-NAKED void FUN_0809e3a0(void) { INCFUNC("asm/func/FUN_0809e3a0.inc"); }
+// '.p' のタイルの高さに合わせて光柱を1本立てる
+void Entity5CCC_AddBeamScripted(void) {
+  Entity5CCC* p = gEntity5CCC;
+  Vec3 pos;
+  s32 size;
+  s32 dir;
+
+  if (p == NULL) {
+    return;
+  }
+  if (p->count >= 16) {
+    return;
+  }
+
+  if (VM_SeekToNamedArg('n')) {
+    p->beams[p->count].id = VM_GetValue();
+  } else {
+    p->beams[p->count].id = 0;
+  }
+
+  if (VM_SeekToNamedArg('p')) {
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
+  } else {
+    pos.x = 0, pos.y = 0, pos.z = 0;
+  }
+
+  pos.y = TileHeightAt(&pos);
+
+  if (VM_SeekToNamedArg('t')) {
+    size = VM_GetValue();
+  } else {
+    size = 0;
+  }
+  if (VM_SeekToNamedArg('r')) {
+    dir = VM_GetValue();
+  } else {
+    dir = 0;
+  }
+
+  FUN_0809e22c(&p->beams[p->count], size, &pos, dir, p->pltt);
+  p->beams[p->count].lit = TRUE;
+  if (p->unk_28 == 0) {
+    p->beams[p->count].sprite[0].flags |= SPRFLAG_HIDDEN;
+  }
+  p->count++;
+}
 
 // '.n' が指す光柱を見せる
 // 残差1命令 (57/56). FUN_0809e5c4 と同じく '.n' の値が ip へ追い出されて mov が1つ増える
