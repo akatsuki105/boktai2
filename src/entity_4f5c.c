@@ -2,6 +2,7 @@
 #include "global.h"
 #include "particle.h"
 #include "player.h"
+#include "vm.h"
 
 // 粒子3枚を1組にした要素, Entity4F5C_ElemFall がプレイヤーの高さまで落とし、Entity4F5C_ElemScatter が円状に散らす
 typedef struct {
@@ -52,7 +53,41 @@ NAKED void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) { INCFUNC("a
 
 NAKED void Entity4F5C_ElemScatter(Entity4F5C* p, Entity4F5CElem* elem) { INCFUNC("asm/func/Entity4F5C_ElemScatter.inc"); }
 
-NAKED s32 Entity4F5C_Update(Entity4F5C* p) { INCFUNC("asm/func/Entity4F5C_Update.inc"); }
+// 各要素を state ごとの関数で進め, 全部終わったらスクリプトを呼んで自分を消す
+// 命令数・内容とも一致 (54/54) するが, 原典は i=2 の初期化を PTR_ARRAY_085aa974 のプール読みより後に置くのに対し agbcc は先に置く
+// done / elem の初期化を playerPos の複写より後ろの代入文に分けると, そこまでは原典と揃う
+NON_MATCH s32 Entity4F5C_Update(Entity4F5C* p) {
+#ifdef NONMATCHING_C
+  Entity4F5CElem* elem;
+  s32 done;
+  s32 i;
+
+  p->playerPos = p->player->mover.pos;
+  done = 0;
+  elem = p->elems;
+
+  for (i = 2; i >= 0; i--, elem++) {
+    if (elem->state == 0) {
+      done++;
+    } else {
+      PTR_ARRAY_085aa974[elem->state](p, elem);
+      elem->timer++;
+    }
+  }
+
+  if (done == 3) {
+    if (p->scriptID != 0) {
+      VM_ExecByID(p->scriptID, NULL);
+      p->scriptID = 0;
+    }
+    KillEntity((Entity*)p);
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/Entity4F5C_Update.inc");
+#endif
+}
 
 // 残差0命令 (23/23), レジスタ名だけ違う: 原典は e を p のレジスタに重ねるが, こちらは p が別レジスタに残る
 NON_MATCH s32 Entity4F5C_Destroy(Entity4F5C* p) {
