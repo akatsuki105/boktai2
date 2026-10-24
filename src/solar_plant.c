@@ -42,7 +42,8 @@ typedef struct {
   Entity e;                 // 0x000, ENTITY_UNK_8
   u8 count;                 // 0x018, 生えている足場の数, _Init が1枚生やすごとに1増やす
   bool8 unk_19;             // 0x019, 足場が太陽ゲージを吸った瞬間に立つ
-  u8 unk_1a[2];             // 0x01A, まだ未解析
+  u8 unk_1a;                // 0x01A, まだ未解析
+  u8 unk_1b;                // 0x01B, 吸った瞬間に 32 が入り 0 になるまで減る, pltt のクロスフェードの重み
   rgb555 pltt[16];          // 0x01C, plttTimer が動いている間 gfx.pltt がここを指す (plttID 0x60)
   Entity1E98Elem elems[8];  // 0x03C
 } Entity1E98;
@@ -188,12 +189,48 @@ void FUN_080a4854(Entity1E98Elem* elem) {
   }
 }
 
-NAKED void FUN_080a48bc(void) { INCFUNC("asm/func/FUN_080a48bc.inc"); }
+// 残差1命令 (126/125), 原典はスタックに2語 (u と &p->pltt) 退避するがこちらは1語で足りてしまう
+// Tier A-C 試済 (ローカルの宣言順, dst ローカル, lit/dark の歩進ポインタ化 はいずれも2語にならない. 歩進形だと124命令で今度は1命令足りない)
+NON_MATCH void FUN_080a48bc(Entity1E98* p) {
+#ifdef NONMATCHING_C
+  if (p->unk_19) {
+    PlaySound_082406e0(SONG_425);
+    p->unk_1b = 32;
+    p->unk_19 = FALSE;
+  }
+
+  if (p->unk_1b != 0) {
+    p->unk_1b--;
+    if (p->unk_1b == 0) {
+      CpuCopy32(&gObjPlttData[0x5F * 16], p->pltt, sizeof(p->pltt));
+    } else if (p->unk_1b > 15) {
+      CpuCopy32(&gObjPlttData[0x60 * 16], p->pltt, sizeof(p->pltt));
+    } else {
+      s32 t = p->unk_1b;
+      s32 u = 16 - t;
+      rgb555* lit = &gObjPlttData[0x60 * 16];
+      rgb555* dark = &gObjPlttData[0x5F * 16];
+      rgb555* dst = p->pltt;
+      s32 i;
+
+      for (i = 0; i < 16; i++) {
+        s32 r = ((lit[i] & 0x1F) * t + (dark[i] & 0x1F) * u) >> 4;
+        s32 g = (((lit[i] >> 5) & 0x1F) * t + ((dark[i] >> 5) & 0x1F) * u) >> 4;
+        s32 b = (((lit[i] >> 10) & 0x1F) * t + ((dark[i] >> 10) & 0x1F) * u) >> 4;
+
+        dst[i] = RGB(r, g, b);
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_080a48bc.inc");
+#endif
+}
 
 s32 Entity1E98_Update(Entity1E98* p) {
   s32 i;
 
-  FUN_080a48bc();
+  FUN_080a48bc(p);
 
   for (i = 0; i < p->count; i++) {
     Entity1E98Elem* elem = &p->elems[i];
