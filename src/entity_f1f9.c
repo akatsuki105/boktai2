@@ -52,6 +52,8 @@ static_assert(sizeof(EntityF1F9) == 1408);
 
 IWRAM_DATA EntityF1F9* gEntityF1F9 = NULL;  // 0x03000198
 
+s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
+
 void FUN_081d6444(EntityF1F9Item* item);
 void FUN_081d6764(EntityF1F9Item* item);
 void FUN_081d6ae8(EntityF1F9Item* item, s32 n);
@@ -290,7 +292,24 @@ void FUN_081d6444(EntityF1F9Item* item) {
 
 NAKED void FUN_081d64d4(HitboxData* a, HitboxData* b, EntityF1F9Item* p) { INCFUNC("asm/func/FUN_081d64d4.inc"); }
 
-NAKED void FUN_081d65e8(unknown* p) { INCFUNC("asm/func/FUN_081d65e8.inc"); }
+// 破片を 2〜5 個, スプライト位置からばらまく
+// 残差2命令 (92/94). 原典は item を低位レジスタに置いて &vel を先に作るが, agbcc は item を r9 へ追い出して &vel を後回しにする. table の代入位置を下げても変わらない
+NON_MATCH void FUN_081d65e8(EntityF1F9Item* item) {
+#ifdef NONMATCHING_C
+  Vec3 vel;
+  Vec3 velRange;
+  u16* table = gRandomTable;
+
+  CpuFill32(0, &vel, sizeof(vel));
+  vel.y = 0x10;
+  velRange.x = (_Random(table) & 3) + 15;
+  velRange.y = (_Random(table) & 7) + 15;
+  velRange.z = (_Random(table) & 3) + 15;
+  FUN_08014730((_Random(table) & 3) + 2, 0x11, &item->sprite.pos, &vel, &velRange, 12, 15);
+#else
+  INCFUNC("asm/func/FUN_081d65e8.inc");
+#endif
+}
 
 void FUN_081d66c0(EntityF1F9Item* item, u32 power, HitboxAttributes attributes, u32 weakness) {
   HitboxData* hitbox = &item->hitbox;
