@@ -57,7 +57,7 @@ NAKED void FUN_080a4670(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a4670.i
 
 NAKED void FUN_080a46b0(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a46b0.inc"); }
 
-NAKED void FUN_080a4728(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a4728.inc"); }
+void FUN_080a4728(Entity1E98Elem* elem) {}
 
 NAKED void FUN_080a472c(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a472c.inc"); }
 
