@@ -173,7 +173,21 @@ void Entity1DBEElem_InitParams(Entity1DBEElem* elem, u32 id, Vec3* pos, u32 stat
   }
 }
 
-NAKED void Entity1DBEElem_InitSprite(Entity1DBEElem* elem, Vec3* pos, u32 moverLinked) { INCFUNC("asm/func/Entity1DBEElem_InitSprite.inc"); }
+// スプライトを pos に立てて, '.h' が立っていれば Mover も繋ぐ
+void Entity1DBEElem_InitSprite(Entity1DBEElem* elem, Vec3* pos, u32 moverLinked) {
+  AuxSpriteGfx* gfx = &elem->gfx;
+
+  Video_GetAuxSprite(gfx, SPRITE_TRAP_FLOOR);
+  AuxSprite_Add(&elem->sprite, gfx, 0);
+  Video_SetAuxSpritePltt(gfx, 0x43);
+  elem->sprite.priority = 3;
+  elem->sprite.pos = *pos;
+  elem->moverLinked = moverLinked;
+  if (elem->moverLinked) {
+    Mover_Init(&elem->mover, elem->id, &elem->sprite.pos, 0, 7, elem);
+    FUN_08002a48(&elem->mover);
+  }
+}
 
 NAKED void Entity1DBEElem_InitHitbox(Entity1DBEElem* elem) { INCFUNC("asm/func/Entity1DBEElem_InitHitbox.inc"); }
 
