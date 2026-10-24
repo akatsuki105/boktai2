@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "map_inline.h"
 #include "random.h"
 #include "sprite_aux.h"
 #include "vm.h"
@@ -33,36 +34,6 @@ static inline s32 TileIndexAt(WorldPos* pos) {
     return 0;
   }
   return gCollisionMap->rowOffsets[bz] + bx;
-}
-
-// pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
-static inline s32 GetTileHeightAt(WorldPos* pos) {
-  MapTileOverride* ov;
-  CollisionMapTile* tile;
-  s32 stairs;
-  s32 height;
-  s32 idx = TileIndexAt(pos);
-
-  ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
-
-  stairs = tile->heightStairs >> 4;
-  height = (tile->heightStairs & 0xF) << 8;
-  switch (stairs) {
-    case 1: {
-      height -= pos->z & 0xFF;
-      break;
-    }
-    case 2: {
-      height -= pos->x & 0xFF;
-      break;
-    }
-  }
-  return height;
 }
 
 void Entity3DB0_OnHit(HitboxData* a, HitboxData* b, Entity3DB0* p) {
