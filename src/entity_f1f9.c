@@ -66,6 +66,8 @@ s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 
 
 void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
+void FUN_081d5f54(EntityF1F9Item* item);
+bool8 FUN_081d6cb0(EntityF1F9Item* item);
 void FUN_081d6444(EntityF1F9Item* item);
 void FUN_081d65e8(EntityF1F9Item* item);
 void FUN_081d6bc0(EntityF1F9Item* item);
@@ -176,7 +178,41 @@ void FUN_081d5d18(EntityF1F9* p, EntityF1F9Item* item) {
   item->unk_154++;
 }
 
-NAKED void FUN_081d5d70(EntityF1F9* p, EntityF1F9Item* item) { INCFUNC("asm/func/FUN_081d5d70.inc"); }
+// state 2 の更新, 入場時に揺れの半径を仕込み, 条件が揃うと揺らして回数を減らす
+// 残差4命令 (219/223). 原典は &item->unk_124 を CpuSet のプール定数より先に作るが, agbcc は後回しにする (定数の作り位置のずれ)
+// 呼び出し側が lsls #24 で丸めているので FUN_081d6cb0 の戻り値を bool8 にした (あちらの残差 69/57 は変わらない)
+NON_MATCH void FUN_081d5d70(EntityF1F9* p, EntityF1F9Item* item) {
+#ifdef NONMATCHING_C
+  if (item->unk_156) {
+    item->unk_154 = 0;
+    item->sprite.flags &= ~SPRFLAG_HIDDEN;
+    item->sprite.flags |= SPRFLAG_AFFINE;
+    item->unk_156 = 0;
+    CpuFill32(0, &item->unk_124, 8);
+    item->unk_124 = 0x29;
+    item->unk_128 = 0x94;
+    item->sprite.pos.x = item->basePos.x + (COS(item->sprite.rotation, item->unk_124) + SIN(item->sprite.rotation, item->unk_128));
+    item->sprite.pos.z = (-SIN(item->sprite.rotation, item->unk_124) + COS(item->sprite.rotation, item->unk_128)) + item->basePos.z;
+  }
+
+  if ((item->unk_154 & 1) && FUN_081d6cb0(item) && !(gPlayerPtr[0]->flag20 & PFLAG20_UNK_3) && !(gGoodCondTimer != 0 && gGoodCondID == 0) && gPlayerPtr[0]->kind != PLAYER_BAT && item->unk_12c != item->unk_130 && item->unk_11c == 0) {
+    item->unk_11c = 4;
+    item->unk_140--;
+    if (item->unk_140 > 0) {
+      PlaySound_082406e0(SONG_969);
+    } else {
+      item->state = 3;
+      item->unk_156 = 1;
+      return;
+    }
+  }
+
+  FUN_081d5f54(item);
+  item->unk_154++;
+#else
+  INCFUNC("asm/func/FUN_081d5d70.inc");
+#endif
+}
 
 // basePos を中心に (unk_124, unk_128) を rotation ぶん回した位置へ置き, 揺れを減衰させる
 // 残差1命令 (179/180). 原典は符号付きに直した角度を r1 (スクラッチ) に置いて r7 まで使うが, agbcc は r5 に収めて1本節約する
@@ -558,7 +594,7 @@ NON_MATCH void FUN_081d6c24(EntityF1F9Item* item) {
 }
 
 // プレイヤーとの距離を測り直し、反応する距離まで近づいていれば 1 を返す
-NON_MATCH s32 FUN_081d6cb0(EntityF1F9Item* item) {
+NON_MATCH bool8 FUN_081d6cb0(EntityF1F9Item* item) {
 #ifdef NONMATCHING_C
   Vec3 d;
   d.x = gPlayerPtr[0]->mover.pos.x - item->basePos.x;

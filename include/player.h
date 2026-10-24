@@ -19,6 +19,7 @@
 typedef u32 PlayerFlag20;            // Player.flag20
 #define PFLAG20_UNK_0 (1 << 0)       // 0x00000001, Player_BeginAction が毎回これだけ立てた状態から始める
 #define PFLAG20_UNK_1 (1 << 1)       // 0x00000002
+#define PFLAG20_UNK_3 (1 << 3)       // 0x00000008
 #define PFLAG20_SUNBATHING (1 << 4)  // 0x00000010, プレイヤーに日光が当たっているか
 #define PFLAG20_UNK_5 (1 << 5)       // 0x00000020
 #define PFLAG20_UNK_7 (1 << 7)       // 0x00000080
