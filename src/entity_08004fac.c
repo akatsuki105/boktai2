@@ -59,7 +59,7 @@ s32 Entity08004fac_UnlinkNode(Entity08004facNode* node) {
   return 0;
 }
 
-NAKED s32 Entity08004fac_AddNode(u16 id, s16* pos, u8 param_3, u8 param_4, u16 param_5) { INCFUNC("asm/func/Entity08004fac_AddNode.inc"); }
+NAKED s32 Entity08004fac_AddNode(s32 id, Vec3* pos, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/Entity08004fac_AddNode.inc"); }
 
 // 衝突マップから外してリストから抜き、ノードを解放する
 s32 Entity08004fac_FreeNode(Entity08004facNode* node) {
@@ -199,4 +199,23 @@ s32 FUN_0800501c(void) { return Entity08004fac_EnableNodesById(VM_GetNamedArgVal
 NAKED s32 FUN_08005034(void) { INCFUNC("asm/func/FUN_08005034.inc"); }
 
 // 0xFEBB
-NAKED s32 FUN_0800512c(void) { INCFUNC("asm/func/FUN_0800512c.inc"); }
+s32 FUN_0800512c(void) {
+  Vec3 pos;
+  s32 id = VM_GetNamedArgValue('n', 0);
+  s32 param_4 = VM_GetNamedArgValue('t', 0);
+  s32 param_3 = VM_GetNamedArgValue('f', 0);
+  s32 param_5 = VM_GetNamedArgValue('e', 0);
+
+  if (VM_SeekToNamedArg('p')) {
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
+  } else {
+    pos.x = 0;
+    pos.y = 0;
+    pos.z = 0;
+  }
+
+  Entity08004fac_AddNode(id, &pos, param_3, param_4, param_5);
+  return 0;
+}
