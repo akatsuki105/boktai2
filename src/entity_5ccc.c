@@ -296,7 +296,21 @@ Entity5CCC* Entity0809eb24_Create(u32 param_1, u32 param_2) {
 
 s32 FUN_0809eb6c(s32 param_1) { return Div(param_1 * Entity9A9F_GetUnk66(), 140); }
 
-NAKED s32 FUN_0809eb94(Vec3* pos, s32 param_2) { INCFUNC("asm/func/FUN_0809eb94.inc"); }
+// 屋外か天窓の光の中にいるときだけ param_2 に応じた値を返す
+// 残差5命令 (33/38), SF934_OUTDOOR 判定の 0/1 の作り置き1ブロックだけが足りない
+NON_MATCH s32 FUN_0809eb94(Vec3* pos, s32 param_2) {
+#ifdef NONMATCHING_C
+  if (Entity9A9F_GetUnk66() == 0) {
+    return 0;
+  }
+  if (!(gStat->unk_934 & SF934_OUTDOOR) && FUN_0809e05c(pos) < 0) {
+    return 0;
+  }
+  return FUN_0809eb6c(param_2);
+#else
+  INCFUNC("asm/func/FUN_0809eb94.inc");
+#endif
+}
 
 NAKED bool32 FUN_0809ebf4(Player* p) { INCFUNC("asm/func/FUN_0809ebf4.inc"); }
 
