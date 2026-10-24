@@ -154,7 +154,18 @@ s32 Entity1E98_Update(Entity1E98* p) {
 
 NAKED s32 Entity1E98_Destroy(Entity1E98* p) { INCFUNC("asm/func/Entity1E98_Destroy.inc"); }
 
-NAKED void Entity1E98_InitHitbox(Entity1E98Elem* elem) { INCFUNC("asm/func/Entity1E98_InitHitbox.inc"); }
+void Entity1E98_InitHitbox(Entity1E98Elem* elem) {
+  HitboxData* hitbox = &elem->hitbox;
+  Vec3 halfSize;
+  Vec3 offset;
+
+  halfSize.x = 0x80, halfSize.y = 0x32, halfSize.z = 0x80;
+  offset.x = 0, offset.y = 0, offset.z = 0;
+  Hitbox_Init(hitbox, elem->hitboxArg, HBFLAG_HURTBOX | HBFLAG_UNK_1, 0, 0x20, &halfSize, &offset);
+  Hitbox_SetHandler(hitbox, FUN_080a4620, elem);
+  Hitbox_SetPos(hitbox, &elem->pos, 0);
+  Hitbox_Register(hitbox);
+}
 
 NAKED void Entity1E98_Init(Entity1E98* p) { INCFUNC("asm/func/Entity1E98_Init.inc"); }
 
