@@ -1,4 +1,5 @@
 #include "coffin.h"
+#include "collision_map.h"
 #include "enemy_manager.h"
 #include "entity.h"
 #include "file.h"
@@ -10,6 +11,7 @@
 #include "random.h"
 #include "sound.h"
 #include "sprite.h"
+#include "sprite_animation.h"
 #include "time.h"
 
 // Entity080db520Elem.unk_40
@@ -17,11 +19,12 @@ typedef u16 Entity080db520ElemFlags;
 #define E080DB520_UNK_1 (1 << 1)  // 0x02, FUN_080dab9c と FUN_080dacac が判定と一緒に立てる
 #define E080DB520_UNK_2 (1 << 2)  // 0x04, FUN_080dabe4 が立てる
 #define E080DB520_UNK_4 (1 << 4)  // 0x10, 使用中の枠のどこにも立っていないと FUN_080dadec が gPlayerPtr[0]->unk_3ff を -1 に戻す
+#define E080DB520_UNK_5 (1 << 5)  // 0x20, zoneID が FUN_0809dfec の条件を満たすときに立つ
 #define E080DB520_UNK_6 (1 << 6)  // 0x40, 使用中の枠のどこにも立っていないと FUN_080dadec が gCoffin->unk_3a0 を -1 に戻す
 
 typedef struct {
   AuxSprite spr;                   // 0x00, _Destroy が AuxSprite_Remove に渡す
-  u8 unk_2c[16];                   // 0x2C
+  AuxAnimState anim;               // 0x2C, ANIM_3DC2
   s16 timer;                       // 0x3C, 毎フレーム +1, 90 を越えると枠を解放する
   s16 state;                       // 0x3E, sElemUpdates の添字, 2 なら判定を立てる系の関数が何もしない
   Entity080db520ElemFlags unk_40;  // 0x40
@@ -43,6 +46,8 @@ typedef struct {
   Entity080db520Elem elems[8];  // 0x03C, 根拠: _Destroy の stride 0xA4 × 8
 } Entity080db520;
 static_assert(sizeof(Entity080db520) == 1372);
+
+bool32 FUN_0809dfec(s32 mapArea);
 
 IWRAM_DATA Entity080db520* gEntity080db520 = NULL;  // 0x03000160
 
@@ -113,7 +118,7 @@ void FUN_080dacac(HitboxData* a, HitboxData* b, Entity080db520Elem* elem) {
 }
 
 // この枠の被弾判定を作って登録する
-void Entity080db520_InitHurtbox(Entity080db520Elem* elem) {
+void Entity080db520_InitHurtbox(Entity080db520Elem* elem, u32 param_2, u32 param_3) {
   Vec3 offset;
   Vec3 halfSize;
 
@@ -323,7 +328,78 @@ void Mover_GetAnimQuadrant(Mover* mover, u8* variant, u8* flags) {
   }
 }
 
-NAKED s32 FUN_080db290(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080db290.inc"); }
+// 空き枠に Mover の位置と向きでスプライトとアニメを仕込む, 枠が無ければ -1
+// 残差1命令 (203/204) でこちらが短い. レジスタ割当の違い: 原典は &elem->zoneID を r10 に置いて elem をスタックへ退避するが, agbcc は elem を r7 に残して &elem->zoneID を退避する (結果 sub sp が 0xC でなく 0x10 になる)
+// ANIM_PLAY_YFLIP の定数 2 を原典は1つのレジスタに作って copy するが agbcc は2回作る. anim / cmd のローカルを外す4通りは全て悪化 (209〜224)
+NON_MATCH s32 FUN_080db290(Entity080db520* p, Mover* mover) {
+#ifdef NONMATCHING_C
+  Entity080db520Elem* elem = FUN_080dad4c(p);
+  AuxAnimState* anim;
+  AuxAnimCmd* cmd;
+  u8 variant;
+  u8 flags;
+
+  if (elem == NULL) {
+    return -1;
+  }
+
+  elem->state = 1;
+  Mover_GetAnimQuadrant(mover, &variant, &flags);
+  elem->pos = mover->pos;
+  elem->zoneID = GetZoneAt(&elem->pos);
+  elem->unk_40 = 0;
+  elem->unk_48 = 0;
+  elem->spr.pos = elem->pos;
+  AuxSprite_Setup(&elem->spr, &p->gfx, 0);
+
+  anim = &elem->anim;
+  AuxAnim_SetAnim(anim, p->anim, 1, 0, flags);
+
+  cmd = &anim->cmds[anim->cmdIdx];
+  elem->spr.poseIdx = *cmd >> 6;
+  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+    elem->spr.flags |= SPRFLAG_XFLIP;
+  } else {
+    elem->spr.flags &= ~SPRFLAG_XFLIP;
+  }
+  if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+    elem->spr.flags |= SPRFLAG_YFLIP;
+  } else {
+    elem->spr.flags &= ~SPRFLAG_YFLIP;
+  }
+
+  anim->tick++;
+  if (anim->tick >= anim->wait) {
+    anim->tick = 0;
+    if (anim->flags & ANIM_PLAY_REVERSE) {
+      if (anim->cmdIdx == 0) {
+        anim->cmdIdx = anim->cmdCount;
+      }
+      anim->cmdIdx--;
+    } else {
+      anim->cmdIdx++;
+      if (anim->cmdIdx >= anim->cmdCount) {
+        anim->cmdIdx = 0;
+      }
+    }
+    anim->duration = anim->cmds[anim->cmdIdx] & 0xF;
+    anim->wait = (anim->duration * anim->speed) >> 6;
+    if (anim->wait == 0) {
+      anim->wait = 1;
+    }
+  }
+
+  elem->spr.flags &= ~SPRFLAG_HIDDEN;
+  elem->spr.priority = 1;
+  if (FUN_0809dfec(elem->zoneID)) {
+    elem->unk_40 |= E080DB520_UNK_5;
+  }
+  Entity080db520_InitHurtbox(elem, 0, 0);
+  return elem->unk_42;
+#else
+  INCFUNC("asm/func/FUN_080db290.inc");
+#endif
+}
 
 void (*const sElemUpdates[3])(Entity080db520*, Entity080db520Elem*) = {
     FUN_080dac20,
