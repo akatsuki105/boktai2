@@ -78,7 +78,17 @@ NAKED void Entity1E98_InitHitbox(Entity1E98Elem* elem) { INCFUNC("asm/func/Entit
 
 NAKED void Entity1E98_Init(Entity1E98* p) { INCFUNC("asm/func/Entity1E98_Init.inc"); }
 
-NAKED Entity1E98* Entity1E98_Create_Internal(void) { INCFUNC("asm/func/Entity1E98_Create_Internal.inc"); }
+Entity1E98* Entity1E98_Create_Internal(void) {
+  Entity1E98* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity1E98));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity1E98_Update, Entity1E98_Destroy);
+    p->count = 0;
+  }
+
+  gEntity1E98 = p;
+  return p;
+}
 
 NAKED s32 FUN_080a4e1c(void) { INCFUNC("asm/func/FUN_080a4e1c.inc"); }
 
