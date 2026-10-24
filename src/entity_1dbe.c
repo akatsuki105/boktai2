@@ -3,6 +3,7 @@
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
+#include "random.h"
 #include "sound.h"
 #include "sprite_aux.h"
 #include "vm.h"
@@ -116,6 +117,7 @@ s32 Cmd_B6CE(void) {
 
 Entity1DBE* Entity1DBE_Create(void);
 void Entity1DBE_AddElem(Entity1DBE* p, u32 id, Vec3* pos, u32 state, u32 moverLinked, u32 lockFlags, u32 areaBound);
+void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos);
 void FUN_0809f840(Entity1DBEElem* elem);
 void FUN_0809f890(Entity1DBEElem* elem);
 void FUN_0809f938(Entity1DBEElem* elem);
@@ -215,7 +217,45 @@ NON_MATCH void FUN_0809f8e4(Entity1DBEElem* elem) {
 #endif
 }
 
-NAKED void FUN_0809f938(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809f938.inc"); }
+// 凍結が解けるまでのアニメ, 4フレームごとに足元へ水しぶきを散らす
+// 残差0命令 (141/141) でレジスタ名だけ違う: 原典は elem を r4, &animTimer を r5 に置くが agbcc は逆に割り当てる
+// ブロック内の table と pos の宣言順を入れ替えると上は合うが, 代わりに乱数と pos.x の読み出し順が入れ替わる (static inline に切り出しても同じ)
+NON_MATCH void FUN_0809f938(Entity1DBEElem* elem) {
+#ifdef NONMATCHING_C
+  if (elem->animTimer == 0) {
+    PlaySound_082406e0(348);
+  }
+
+  elem->animTimer++;
+  if (elem->animTimer <= 7) {
+    elem->sprite.poseIdx = 6;
+    if ((elem->animTimer & 3) == 0) {
+      u16* table = gRandomTable;
+      WorldPos pos = elem->sprite.pos;
+
+      pos.x = (u16)pos.x - 0x7F + (u8)_Random(table);
+      pos.z = (u16)pos.z - 0x7F + (u8)_Random(table);
+      FUN_08015c90(1, 0, 1, 0x40, &pos);
+    }
+  } else if (elem->animTimer <= 15) {
+    elem->sprite.poseIdx = 7;
+    elem->animTimer++;
+    if ((elem->animTimer & 3) == 0) {
+      u16* table = gRandomTable;
+      WorldPos pos = elem->sprite.pos;
+
+      pos.x = (u16)pos.x - 0x7F + (u8)_Random(table);
+      pos.z = (u16)pos.z - 0x7F + (u8)_Random(table);
+      FUN_08015c90(1, 0, 1, 0x40, &pos);
+    }
+  } else {
+    elem->sprite.poseIdx = 8;
+    Entity1DBEElem_SetState(elem, 2, FUN_0809f8e4);
+  }
+#else
+  INCFUNC("asm/func/FUN_0809f938.inc");
+#endif
+}
 
 void FUN_0809fa80(Entity1DBEElem* elem) {
   elem->animTimer++;
