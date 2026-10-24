@@ -100,36 +100,65 @@ const listFiles = (dir: string, ext: string): string[] => {
 };
 
 // `(` の直前の識別子を関数名とみなす (`NAKED static s32 Foo(` のような修飾子付きも拾う)
-const defRe = (fn: string): RegExp => new RegExp(`^(NAKED|NON_MATCH)?\\s*[\\w* ]*?\\b${fn}\\s*\\(`);
+// 名前の前に語が1つ以上あることを要求して、ただの呼び出し行 (`  Foo(a, b);`) を弾く
+const defRe = (fn: string): RegExp => new RegExp(`^(NAKED|NON_MATCH)?\\s*[\\w*]+[\\w* ]*?\\b${fn}\\s*\\(`);
 
-const findSrcFile = (repo: string, fn: string): string => {
-  for (const f of listFiles(path.join(repo, "src"), ".c")) {
-    const re = defRe(fn);
-    for (const line of Deno.readTextFileSync(f).split("\n")) {
-      if (re.test(line)) return f;
+// `...);` で終わる行は前方宣言 (または呼び出し), 定義ではない
+const isDeclOnly = (line: string): boolean => line.replace(/\/\/.*$/, "").replace(/\/\*[\s\S]*?\*\//g, "").trimEnd().endsWith(";");
+
+// 関数 fn の定義行を探す。前方宣言は飛ばし、それしか無ければ declOnly で返す
+const findDef = (lines: string[], fn: string): { idx: number; declOnly: boolean } | null => {
+  const re = defRe(fn);
+  let decl = -1;
+
+  for (let i = 0; i < lines.length; i++) {
+    if (!re.test(lines[i])) continue;
+    if (isDeclOnly(lines[i])) {
+      if (decl < 0) decl = i;
+      continue;
     }
+    return { idx: i, declOnly: false };
   }
+  return decl < 0 ? null : { idx: decl, declOnly: true };
+};
+
+// 定義を持つ .c を優先する (前方宣言だけの .c は定義が見つからなかったときの保険)
+const findSrcFile = (repo: string, fn: string): string => {
+  let declFile: string | null = null;
+
+  for (const f of listFiles(path.join(repo, "src"), ".c")) {
+    const hit = findDef(Deno.readTextFileSync(f).split("\n"), fn);
+    if (!hit) continue;
+    if (!hit.declOnly) return f;
+    if (declFile === null) declFile = f;
+  }
+  if (declFile !== null) return declFile;
   return die(`関数 ${fn} の宣言が src/ に見つかりませんでした`);
 };
 
 // 関数の宣言行を (行番号, 行) で返す
 const findSignature = (srcFile: string, fn: string): { line: number; text: string; level: string } | null => {
-  const re = defRe(fn);
   const lines = Deno.readTextFileSync(srcFile).split("\n");
-  for (let i = 0; i < lines.length; i++) {
-    if (!re.test(lines[i])) continue;
-    const level = lines[i].startsWith("NAKED") ? "NAKED" : lines[i].startsWith("NON_MATCH") ? "NON_MATCH" : "MATCHING";
-    return { line: i + 1, text: lines[i], level };
-  }
-  return null;
+  const hit = findDef(lines, fn);
+  if (hit === null) return null;
+
+  const text = lines[hit.idx];
+  const level = hit.declOnly
+    ? "宣言のみ"
+    : text.startsWith("NAKED")
+    ? "NAKED"
+    : text.startsWith("NON_MATCH")
+    ? "NON_MATCH"
+    : "MATCHING";
+  return { line: hit.idx + 1, text, level };
 };
 
 // 定義行から関数ブロック全体 (波括弧の深さで終端を判定) を返す
 const extractBlock = (srcFile: string, fn: string): string => {
   const lines = Deno.readTextFileSync(srcFile).split("\n");
-  const re = defRe(fn);
-  const start = lines.findIndex((l) => re.test(l));
-  if (start < 0) return `(${fn} の実装が見つかりませんでした)`;
+  const hit = findDef(lines, fn);
+  if (hit === null || hit.declOnly) return `(${fn} の実装が見つかりませんでした)`;
+  const start = hit.idx;
 
   let depth = 0;
   let entered = false;
