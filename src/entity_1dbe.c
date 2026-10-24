@@ -5,6 +5,7 @@
 #include "mover.h"
 #include "sound.h"
 #include "sprite_aux.h"
+#include "vm.h"
 
 struct Entity1DBEElem;
 
@@ -49,7 +50,26 @@ void FUN_0809f64c(void) { gEntity1DBE = NULL; }
 NAKED bool32 Entity1DBE_TouchElemNear(WorldPos* pos) { INCFUNC("asm/func/Entity1DBE_TouchElemNear.inc"); }
 
 // 0xB6CE
-NAKED s32 Cmd_B6CE(void) { INCFUNC("asm/func/Cmd_B6CE.inc"); }
+// '.n' と id が一致する設置物の state を返す, 無ければ -1
+s32 Cmd_B6CE(void) {
+  s32 id;
+  s32 i;
+
+  if (gEntity1DBE == NULL) {
+    return -1;
+  }
+  if (!VM_SeekToNamedArg('n')) {
+    return -1;
+  }
+
+  id = VM_GetValue();
+  for (i = 0; i < gEntity1DBE->count; i++) {
+    if (gEntity1DBE->elems[i].id == id) {
+      return gEntity1DBE->elems[i].state;
+    }
+  }
+  return -1;
+}
 
 void FUN_0809f890(Entity1DBEElem* elem);
 void FUN_0809fa80(Entity1DBEElem* elem);
