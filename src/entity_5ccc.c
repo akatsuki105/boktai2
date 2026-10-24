@@ -326,7 +326,22 @@ NON_MATCH s32 FUN_0809eb94(Vec3* pos, s32 param_2) {
 #endif
 }
 
-NAKED bool32 FUN_0809ebf4(Player* p) { INCFUNC("asm/func/FUN_0809ebf4.inc"); }
+// このプレイヤーが日光を浴びられる状況か (屋外, または天窓の光の中)
+// 残差7命令 (35/42). 5命令は SF934_OUTDOOR 判定の 0/1 の作り置き (FUN_0809eb94 と同じ壁), 残り2命令は playerIdx の読みの位置
+// ファイル先頭の Entity9A9F_GetUnk66 と同形の static inline Entity9A9F_GetUnk60 を通すと 37/42 まで寄るが, 一致しないので外した
+NON_MATCH bool32 FUN_0809ebf4(Player* p) {
+#ifdef NONMATCHING_C
+  if (gEntity9A9F == NULL || gEntity9A9F->unk_60[p->playerIdx] == 0) {
+    return FALSE;
+  }
+  if (!(gStat->unk_934 & SF934_OUTDOOR) && (gEntity5CCC == NULL || FUN_0809e05c(&p->mover.pos) < 0)) {
+    return FALSE;
+  }
+  return TRUE;
+#else
+  INCFUNC("asm/func/FUN_0809ebf4.inc");
+#endif
+}
 
 NAKED void FUN_0809ec60(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809ec60.inc"); }
 
