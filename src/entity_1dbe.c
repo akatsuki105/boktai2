@@ -47,7 +47,50 @@ static Entity1DBE* gEntity1DBE;  // 0x03000144
 
 void FUN_0809f64c(void) { gEntity1DBE = NULL; }
 
-NAKED bool32 Entity1DBE_TouchElemNear(WorldPos* pos) { INCFUNC("asm/func/Entity1DBE_TouchElemNear.inc"); }
+// pos から半径 0x80 以内にある state 0 の設置物に touched を立てる, 立てたら TRUE
+bool32 Entity1DBE_TouchElemNear(WorldPos* pos) {
+  s32 i;
+
+  if (gEntity1DBE == NULL) {
+    return FALSE;
+  }
+
+  for (i = 0; i < gEntity1DBE->count; i++) {
+    Entity1DBEElem* elem = &gEntity1DBE->elems[i];
+    s32 dx;
+    s32 dz;
+
+    if (elem->state != 0) {
+      continue;
+    }
+    if (elem->sprite.pos.y < pos->y) {
+      continue;
+    }
+
+    dx = pos->x - elem->sprite.pos.x;
+    if (dx < 0) {
+      dx = -dx;
+    }
+    if (dx > 0x80) {
+      continue;
+    }
+
+    dz = pos->z - elem->sprite.pos.z;
+    if (dz < 0) {
+      dz = -dz;
+    }
+    if (dz > 0x80) {
+      continue;
+    }
+
+    if (dx * dx + dz * dz <= 0x80 * 0x80) {
+      elem->touched = TRUE;
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
 
 // 0xB6CE
 // '.n' と id が一致する設置物の state を返す, 無ければ -1
