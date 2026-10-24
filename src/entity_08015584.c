@@ -85,7 +85,44 @@ NON_MATCH u32 FUN_080155c8(s32 flags) {
 
 NAKED s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params) { INCFUNC("asm/func/FUN_080155e4.inc"); }
 
-NAKED void FUN_08015a90(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_08015a90.inc"); }
+// count 個を 256 を等分した向きへ1つずつ発生させる
+// 命令数・順序とも一致 (66/66) するが pos / count / step の3つがレジスタ3つ分入れ替わる. 原典は pos を r8, count を r7 に置くが agbcc は逆, 宣言順の入れ替えでは動かない
+// angleYRand を angleY より先に代入すると格納順が原典と揃う
+NON_MATCH void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+#ifdef NONMATCHING_C
+  ParticleSpawnParam param;
+  s32 step;
+  s32 i;
+
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = 0;
+  param.speedYRand = 0;
+  param.speedXZ = speedXZ;
+  param.speedXZRand = 0;
+  step = Div(0x100, count);
+  param.angleYRand = 0;
+  param.angleY = 0;
+  param.decayStartY = decayStart;
+  param.decayStartYRand = 0;
+  param.unk_1c = decay;
+  param.unk_1e = 0;
+  param.decayStartXZ = decayStart;
+  param.decayStartXZRand = 0;
+  param.unk_24 = decay;
+  param.unk_26 = 0;
+  param.angleXZRand = 10;
+  param.angleXZ = 0;
+
+  for (i = count; i > 0; i--) {
+    FUN_080155e4(1, pos, &param);
+    param.angleXZ += step;
+  }
+#else
+  INCFUNC("asm/func/FUN_08015a90.inc");
+#endif
+}
 
 NAKED void FUN_08015b18(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11) { INCFUNC("asm/func/FUN_08015b18.inc"); }
 
