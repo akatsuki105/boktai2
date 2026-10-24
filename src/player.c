@@ -44,7 +44,7 @@ bool32 FUN_0809df78(Vec3* pos);
 s32 FUN_080dc0b8(Vec3* pos, Vec3* param_2, u32 param_3, u32 param_4, u32 param_5);
 bool32 FUN_0809e138(Player* p);
 s32 GetMagicCategory(magic32_t id);
-s32 FUN_080ddcc8(WorldPos* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);
+s32 FUN_080ddcc8(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 speed, s32 velYMax, s32 kind, u32 priority);
 void FUN_0809c4f4(void);
 magic32_t Player_CheckMagicEnchant(Player* p);
 void dark_django_0806f990(HitboxData* a, HitboxData* b, Player* _);

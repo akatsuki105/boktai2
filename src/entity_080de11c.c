@@ -2,7 +2,9 @@
 #include "file.h"
 #include "global.h"
 #include "particle.h"
+#include "random.h"
 #include "sprite_animation.h"
+#include "trig.h"
 
 typedef struct {
   AuxAnimState anim;  // 0x00
@@ -23,6 +25,8 @@ typedef struct {
 static_assert(sizeof(Entity080de11c) == 3300);
 
 static Entity080de11c* gEntity080de11c;  // 0x03000174
+
+Entity080de11c* Entity080de11c_Create(void);
 
 // 残差5命令 (178/183), 原典はループ外に 1 と 2 の両方を括り出すがこちらは 1 だけ, muls の前にコピーが2つ入る
 // Tier A-C 試済, 兄弟の Entity0800a89c_UpdateCollectedBug と同じ形まで追い込んだ
@@ -106,7 +110,97 @@ s32 Entity080de11c_Destroy(Entity080de11c* p) {
   return 0;
 }
 
-NAKED s32 FUN_080ddcc8(WorldPos* pos, u8 param_2, Vec3* halfSize, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_080ddcc8.inc"); }
+// 残差2命令 (307/309), 原典は &e->vel を基点に active を [+8] で読むが, こちらは active 専用の IV ができて &e->vel がスタックに退避され CpuFill32 の dest 取得で2命令増える
+// Tier A-C 試済 (e ローカル有無/フラグ/定数順は検証済)
+NON_MATCH s32 FUN_080ddcc8(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 speed, s32 velYMax, s32 kind, u32 priority) {
+#ifdef NONMATCHING_C
+  Entity080de11c* p = gEntity080de11c;
+  s32 i;
+
+  if (p == NULL) {
+    p = Entity080de11c_Create();
+    if (p == NULL) {
+      return 0;
+    }
+  }
+
+  for (i = 0; i < 48; i++) {
+    Entity080de11cElem* e = &p->ptcls[i];
+
+    if (!e->active) {
+      u16 animIdx;
+
+      if (size != NULL) {
+        if (size->x == 0) {
+          e->ptcl.pos.x = pos->x;
+        } else {
+          e->ptcl.pos.x = Mod(Random(), size->x) - FixToInt(1, size->x) + pos->x;
+        }
+        if (size->y == 0) {
+          e->ptcl.pos.y = pos->y;
+        } else {
+          e->ptcl.pos.y = Mod(Random(), size->y) - FixToInt(1, size->y) + pos->y;
+        }
+        if (size->z == 0) {
+          e->ptcl.pos.z = pos->z;
+        } else {
+          e->ptcl.pos.z = Mod(Random(), size->z) - FixToInt(1, size->z) + pos->z;
+        }
+      } else {
+        e->ptcl.pos.x = pos->x;
+        e->ptcl.pos.y = pos->y;
+        e->ptcl.pos.z = pos->z;
+      }
+
+      e->ptcl.flags &= ~SPRFLAG_HIDDEN;
+      e->ptcl.priority = priority;
+      e->active = TRUE;
+      CpuFill32(0, &e->vel, sizeof(e->vel));
+      if (speed != 0) {
+        e->vel.x = COS(angle, speed), e->vel.y = 0, e->vel.z = SIN(angle, speed);
+      }
+      if (velYMax == 0) {
+        e->vel.y = Mod(Random(), 32);
+      } else {
+        e->vel.y = Mod(Random(), velYMax);
+      }
+
+      switch (kind) {
+        case 0:
+        case 1: {
+          animIdx = 15;
+          Particle_SetPltt(&e->ptcl, 1);
+          break;
+        }
+        case 2: {
+          animIdx = 16;
+          Particle_SetPltt(&e->ptcl, 0);
+          break;
+        }
+        case 3: {
+          animIdx = 17;
+          Particle_SetPltt(&e->ptcl, 0);
+          break;
+        }
+        default: {
+          animIdx = 15;
+          Particle_SetPltt(&e->ptcl, 0);
+          break;
+        }
+      }
+      AuxAnim_SetAnim(&e->anim, p->animFile, animIdx, 0, 0);
+      p->activeCount++;
+      count--;
+      if (count == 0) {
+        break;
+      }
+    }
+  }
+  return 1;
+#else
+  INCFUNC("asm/func/FUN_080ddcc8.inc");
+#endif
+}
 
 NAKED void UNUSED FUN_080ddf88(void) { INCFUNC("asm/func/FUN_080ddf88.inc"); }
 

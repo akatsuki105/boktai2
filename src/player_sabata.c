@@ -26,7 +26,7 @@ void FUN_08084734(WorldPos* out);
 void FUN_08084754(void);
 void FUN_08084798(s32 val);
 void* Entity080cbabc_Create(WorldPos* pos, s32 poseIdx, s32 angle, s32 speed, s32 plttID, s32 param_6, s32 param_7, s32 param_8, u32 param_9);
-s32 FUN_080ddcc8(WorldPos* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);
+s32 FUN_080ddcc8(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 speed, s32 velYMax, s32 kind, u32 priority);
 
 // pos のタイルの attr を返す, マップ外なら tiles[0] の値
 static inline TileAttr GetTileAttrAt(WorldPos* pos) {
