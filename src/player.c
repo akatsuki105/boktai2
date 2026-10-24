@@ -6338,7 +6338,47 @@ void UNUSED FUN_0807a270(Player* p) {
   u16_03002bb0 = 0;
 }
 
-NAKED void FUN_0807a334(Player* p) { INCFUNC("asm/func/FUN_0807a334.inc"); }
+// action 23 に入り, 足元タイルの高さから見た現在の高さを控えて向きのアニメを合わせる
+void FUN_0807a334(Player* p) {
+  Vec3* pos;
+  CollisionMapTile* tile;
+  s32 stairs;
+  s32 height;
+  u8 v;
+
+  if (p->kind == PLAYER_SLEEPING) {
+    p->formRequest = TRUE;
+    p->formRequestKind = 1;
+  }
+  Player_SetAction(p, 23, 0);
+  p->floatHeight = 0;
+
+  pos = &p->mover.pos;
+  tile = Player_GetTileAt(pos);
+  stairs = tile->heightStairs >> 4;
+  height = (tile->heightStairs & 0xF) << 8;
+  switch (stairs) {
+    case STAIRS_VERTICAL: {
+      height -= (u8)pos->z;
+      break;
+    }
+    case STAIRS_HORIZONTAL: {
+      height -= (u8)pos->x;
+      break;
+    }
+  }
+  p->heightAboveTile = p->mover.pos.y - height;
+
+  v = p->facing;
+  if (v > 4) {
+    p->animIDOffset = 8 - v;
+    p->xflip = TRUE;
+  } else {
+    p->animIDOffset = v;
+    p->xflip = FALSE;
+  }
+  p->hurtbox.unk_40 = 0;
+}
 
 void FUN_0807a44c(Player* p, s32 dir) {
   Player_SetAction(p, 4, 1);
