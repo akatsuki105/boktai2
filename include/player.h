@@ -35,8 +35,8 @@ typedef u32 PlayerFlag20;            // Player.flag20
 
 // Player.flag35a, Player_BeginAction が毎フレーム 0 に戻し、行動関数が立てたものを FUN_08078bc0 がその場で反映する
 typedef u16 PlayerFlag35A;
-#define PFLAG35A_HIDE_SPRITE (1 << 0)     // 0x0001, sprite_88 に SPRFLAG_HIDDEN を立てる
-#define PFLAG35A_BLINK (1 << 1)           // 0x0002, sprite_88 に SPRFLAG_BLINK_ODD を立てる
+#define PFLAG35A_HIDE_SPRITE (1 << 0)     // 0x0001, human に SPRFLAG_HIDDEN を立てる
+#define PFLAG35A_BLINK (1 << 1)           // 0x0002, human に SPRFLAG_BLINK_ODD を立てる
 #define PFLAG35A_HIDE_SHADOW (1 << 2)     // 0x0004, 影を ParticleShadow_Hide する
 #define PFLAG35A_NO_HITBOX (1 << 3)       // 0x0008, hurtbox に HBFLAG_UNK_2 を立てて Hitbox_SetPos を飛ばす
 #define PFLAG35A_NO_TILE (1 << 4)         // 0x0010, mover.tile を NULL にして Map_InitMoverTile を飛ばす
@@ -179,9 +179,9 @@ typedef struct Player {
   u32 unk_1c;                       // 0x01C, 入る値は 0 / 1 / 2 / 4 の4通り (1: 通常更新中, 2: 操作できない状態, 4: HP0), switch で引く箇所と & 1 / & 4 で見る箇所が混在する
   PlayerFlag20 flag20;              // 0x020, see PlayerFlag20
   Mover mover;                      // 0x024
-  MainSpriteGfx spriteSet_68;       // 0x068, 根拠： Player_PlayAnim
-  MainSprite sprite_88;             // 0x088, 根拠： Player_PlayAnim
-  AuxSprite sprite_e8;              // 0x0E8, Player_Destroy が AuxSprite_Remove に渡す, pos は 0x104 で FUN_0807a91c が mover.pos / sprite_88.pos と一緒に書く
+  MainSpriteGfx humanGfx;           // 0x068, SPRITE_DJANGO_SABATA
+  MainSprite human;                 // 0x088, 根拠： Player_PlayAnim
+  AuxSprite sprite_e8;              // 0x0E8, Player_Destroy が AuxSprite_Remove に渡す, pos は 0x104 で FUN_0807a91c が mover.pos / human.pos と一緒に書く
   AuxSpriteGfx* gfx_114;            // 0x114
   AuxSpriteGfx gfxForms[3];         // 0x118, 変身3種のグラフィック, gfx_114 がこのどれかを指す [Bat, Mouse, Sleeping]
   HitboxData hurtbox;               // 0x16C
@@ -197,9 +197,9 @@ typedef struct Player {
   struct Input* input;              // 0x28C, &gInput[n]
   DirU16 facingHistory[10];         // 0x290, 入力方向の履歴, 添字 0 が今フレームで大きいほど古い, 入力なしは -1
   rgb555 pltt_2a4[32];              // 0x2A4
-  u16 animID;                       // 0x2E4, 今 sprite_88 で再生しているアニメのID, Player_PlayAnim が前回と同じIDかどうかの判定に使う
+  u16 animID;                       // 0x2E4, 今 human で再生しているアニメのID, Player_PlayAnim が前回と同じIDかどうかの判定に使う
   u8 animIDOffset;                  // 0x2E6, Player_PlayAnim がアニメIDに足すオフセット
-  bool8 xflip;                      // 0x2E7, 0 以外なら Player_PlayAnim が sprite_88.flags に SPRFLAG_XFLIP を立てる
+  bool8 xflip;                      // 0x2E7, 0 以外なら Player_PlayAnim が human.flags に SPRFLAG_XFLIP を立てる
   DirU8 facing;                     // 0x2E8
   u8 unk_2e9[2];                    // 0x2E9
   u8 hitboxTimer;                   // 0x2EB, hitbox_2ec を Hitbox_Register し続ける残りフレーム数, Django_Spike が 6 を入れる
@@ -273,7 +273,7 @@ typedef struct Player {
   u8 unk_3f1;                       // 0x3F1
   u8 unk_3f2;                       // 0x3F2, 目的地が遠い間 0..5 で増減し, 5 で姿を消して 1 以上で点滅する
   u8 unk_3f3[0x3F6 - 0x3F3];        // 0x3F3
-  u16 floatHeight;                  // 0x3F6, sprite_88 の表示高さに足す浮き上がり量
+  u16 floatHeight;                  // 0x3F6, human の表示高さに足す浮き上がり量
   s16 heightAboveTile;              // 0x3F8, action 23 に入った時点の pos.y から足元タイルの高さ(階段補正込み)を引いた値
   u8 magicFired;                    // 0x3FA, 魔法の発動フレームに Player_HasEnoughSunGauge (太陽ゲージ判定) の結果が入る, 1 のときだけ効果が生成され、以降のフレームの演出判定にも使われる
   u8 dynamiteCount;                 // 0x3FB, 生存中の Entity080a8ff8 の数, Entity080a8ff8_Init が +1、消滅時に -1, MAGIC_DYNAMITE は 0 でないと再発動できない (Player_GetMagicAction)

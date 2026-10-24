@@ -358,8 +358,8 @@ void FUN_080ccaa0(u32 kind, s32* out1, s32* out2) {
 
 // 本体スプライトのパレットを衝撃波スプライトへ写してから出す
 void FUN_080ccae0(Player* p) {
-  p->meleeShockwave.gfx.plttID = p->sprite_88.plttID;
-  p->meleeShockwave.gfx.pltt = p->sprite_88.pltt;
+  p->meleeShockwave.gfx.plttID = p->human.plttID;
+  p->meleeShockwave.gfx.pltt = p->human.pltt;
   p->meleeShockwave.sprite.flags &= ~SPRFLAG_HIDDEN;
   p->meleeShockwave.finished = 1;
 }
@@ -1204,7 +1204,7 @@ NAKED s32 PlayerLink_Update(Player* p) { INCFUNC("asm/func/PlayerLink_Update.inc
 
 s32 PlayerLink_Destroy(Player* p) {
   EnemyTargetManager_Remove(&p->target);
-  MainSprite_Remove(&p->sprite_88);
+  MainSprite_Remove(&p->human);
   AuxSprite_Remove(&p->sprite_e8);
   Hitbox_Unregister(&p->hurtbox);
   Mover_Unlink(&p->mover);

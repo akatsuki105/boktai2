@@ -127,7 +127,7 @@ void Player_SetAnimFacing(Player* p) {
 }
 
 // 残差1命令ぶんのレジスタ順だけ (57対57), 原典は adds r2, r1, r2 (引数の animIdx が第1被演算子) だが, こちらは adds r2, r2, r1 で animIDOffset が先に来る
-// Tier A-B は試済 (animIdx + p->animIDOffset と p->animIDOffset + animIdx の両方: gcc がどちらもフィールド先に正規化する). animIDOffset をローカルに受けると第1被演算子は変わるが ldrb が sprite_88 / spriteSet_68 のアドレス計算より前に出てしまう
+// Tier A-B は試済 (animIdx + p->animIDOffset と p->animIDOffset + animIdx の両方: gcc がどちらもフィールド先に正規化する). animIDOffset をローカルに受けると第1被演算子は変わるが ldrb が human / humanGfx のアドレス計算より前に出てしまう
 NON_MATCH bool32 Player_PlayAnim(Player* p, u32 animIdx, s32 animSpeed) {
 #ifdef NONMATCHING_C
   MainAnimPlayFlags16 flags = 0;
@@ -137,15 +137,15 @@ NON_MATCH bool32 Player_PlayAnim(Player* p, u32 animIdx, s32 animSpeed) {
   }
   p->animID = animIdx;
 
-  MainSprite_SetAnim(&p->sprite_88, &p->spriteSet_68, animIdx + p->animIDOffset, 1, flags);
+  MainSprite_SetAnim(&p->human, &p->humanGfx, animIdx + p->animIDOffset, 1, flags);
   if (p->xflip) {
-    p->sprite_88.flags |= SPRFLAG_XFLIP;
+    p->human.flags |= SPRFLAG_XFLIP;
   } else {
-    p->sprite_88.flags &= ~SPRFLAG_XFLIP;
+    p->human.flags &= ~SPRFLAG_XFLIP;
   }
 
-  MainSprite_SetAnimSpeed(&p->sprite_88, (u16)animSpeed);
-  return MainSprite_AdvanceAnim(&p->sprite_88, &p->spriteSet_68);
+  MainSprite_SetAnimSpeed(&p->human, (u16)animSpeed);
+  return MainSprite_AdvanceAnim(&p->human, &p->humanGfx);
 #else
   INCFUNC("asm/func/Player_PlayAnim.inc");
 #endif
@@ -812,8 +812,8 @@ void Player_GetShockwaveDirParams(u32 dir, s32* result1, s32* result2) {
 
 // 衝撃波のスプライトに本体と同じパレットを渡して表示する
 void FUN_0806181c(Player* p) {
-  p->meleeShockwave.gfx.plttID = p->sprite_88.plttID;
-  p->meleeShockwave.gfx.pltt = p->sprite_88.pltt;
+  p->meleeShockwave.gfx.plttID = p->human.plttID;
+  p->meleeShockwave.gfx.pltt = p->human.pltt;
   AuxSprite_Show(&p->meleeShockwave.sprite);
   p->meleeShockwave.finished = TRUE;
 }
@@ -1410,7 +1410,7 @@ NON_MATCH void Player_BlendPltt(Player* p, u16* src, s32 wSrc, s32 wBase, u32 sh
 
   if (wSrc == 0) {
     if (p->unk_359 == 0) {
-      p->sprite_88.pltt = p->pltt_2a4;
+      p->human.pltt = p->pltt_2a4;
     } else {
       p->gfx_114->pltt = p->pltt_2a4;
     }
@@ -1448,7 +1448,7 @@ NON_MATCH void Player_BlendPltt(Player* p, u16* src, s32 wSrc, s32 wBase, u32 sh
       src++;
       base++;
     }
-    p->sprite_88.pltt = &p->pltt_2a4[16];
+    p->human.pltt = &p->pltt_2a4[16];
   } else {
     base = p->pltt_2a4;
     for (i = 0; i < 16; i++) {
@@ -1518,7 +1518,7 @@ NON_MATCH void Player_UpdatePltt(Player* p, u32 n) {
             p->pltt_2a4[16 + i] = src[i];
           }
         }
-        p->sprite_88.pltt = &p->pltt_2a4[16];
+        p->human.pltt = &p->pltt_2a4[16];
       } else {
         for (i = 0; i < 16; i++) {
           p->pltt_2a4[16 + i] = src[i];
@@ -1581,7 +1581,7 @@ NON_MATCH void Player_UpdatePltt(Player* p, u32 n) {
   p->unk_962 = 0;
   p->unk_964 = 0;
   if (p->unk_359 == 0) {
-    p->sprite_88.pltt = p->pltt_2a4;
+    p->human.pltt = p->pltt_2a4;
   } else {
     p->gfx_114->pltt = p->pltt_2a4;
   }
@@ -1625,7 +1625,7 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
             p->pltt_2a4[16 + i] = src[i];
           }
         }
-        p->sprite_88.pltt = &p->pltt_2a4[16];
+        p->human.pltt = &p->pltt_2a4[16];
       } else {
         for (i = 0; i < 16; i++) {
           p->pltt_2a4[16 + i] = src[i];
@@ -1682,7 +1682,7 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
             p->pltt_2a4[16 + i] = src[i];
           }
         }
-        p->sprite_88.pltt = &p->pltt_2a4[16];
+        p->human.pltt = &p->pltt_2a4[16];
       } else {
         for (i = 0; i < 16; i++) {
           p->pltt_2a4[16 + i] = src[i];
@@ -1724,7 +1724,7 @@ NON_MATCH void FUN_080628ec(Player* p, u32 n) {
 
   p->unk_964 = 0;
   if (p->unk_359 == 0) {
-    p->sprite_88.pltt = p->pltt_2a4;
+    p->human.pltt = p->pltt_2a4;
   } else {
     p->gfx_114->pltt = p->pltt_2a4;
   }
@@ -1836,8 +1836,8 @@ void Player_ResetPltt(Player* p) {
   Player_SetPlttIDs(p);
   p->unk_94c = 0xFFFF;
   p->unk_950 = 0xFF;
-  p->sprite_88.plttID = p->plttID_94a;
-  p->sprite_88.pltt = p->pltt_2a4;
+  p->human.plttID = p->plttID_94a;
+  p->human.pltt = p->pltt_2a4;
   p->gfx_114->plttID = p->plttID_94a;
   p->gfx_114->pltt = p->pltt_2a4;
   Player_UpdatePltt(p, 0);
@@ -2158,10 +2158,10 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
         p->unk_97a++;
       }
 
-      p->sprite_88.flags |= SPRFLAG_AFFINE;
+      p->human.flags |= SPRFLAG_AFFINE;
       scale = 0x40 - (p->unk_97a >> 1);
-      p->sprite_88.scaleX = scale;
-      p->sprite_88.scaleY = scale;
+      p->human.scaleX = scale;
+      p->human.scaleY = scale;
       p->flag20 |= 0x50000;
     } else if (p->unk_97a != 0) {
       if (p->unk_3f1 != 0) {
@@ -2171,21 +2171,21 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
 
       p->unk_97a--;
       if (p->unk_97a == 0) {
-        p->sprite_88.flags &= ~(SPRFLAG_HIDDEN | SPRFLAG_AFFINE);
+        p->human.flags &= ~(SPRFLAG_HIDDEN | SPRFLAG_AFFINE);
         scale = 0x40;
       } else {
-        p->sprite_88.flags |= SPRFLAG_AFFINE;
+        p->human.flags |= SPRFLAG_AFFINE;
         scale = 0x40 - (p->unk_97a >> 1);
       }
-      p->sprite_88.scaleX = scale;
-      p->sprite_88.scaleY = scale;
+      p->human.scaleX = scale;
+      p->human.scaleY = scale;
     }
 
     if (p->goodCondID == GOOD_INVISIBLE) {
-      p->sprite_88.flags |= SPRFLAG_BLINK_ODD;
+      p->human.flags |= SPRFLAG_BLINK_ODD;
       p->flag20 |= 0x20000;
     } else {
-      p->sprite_88.flags &= ~SPRFLAG_BLINK_ODD;
+      p->human.flags &= ~SPRFLAG_BLINK_ODD;
     }
 
     if (p->unk_1c & 1) {
@@ -2200,18 +2200,18 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
 
       p->unk_97a--;
       if (p->unk_97a == 0) {
-        p->sprite_88.flags &= ~(SPRFLAG_HIDDEN | SPRFLAG_AFFINE);
+        p->human.flags &= ~(SPRFLAG_HIDDEN | SPRFLAG_AFFINE);
         scale = 0x40;
       } else {
-        p->sprite_88.flags |= SPRFLAG_AFFINE;
+        p->human.flags |= SPRFLAG_AFFINE;
         scale = 0x40 - (p->unk_97a >> 1);
       }
-      p->sprite_88.scaleX = scale;
-      p->sprite_88.scaleY = scale;
+      p->human.scaleX = scale;
+      p->human.scaleY = scale;
     }
 
-    if (p->sprite_88.flags & SPRFLAG_BLINK_ODD) {
-      p->sprite_88.flags &= ~SPRFLAG_BLINK_ODD;
+    if (p->human.flags & SPRFLAG_BLINK_ODD) {
+      p->human.flags &= ~SPRFLAG_BLINK_ODD;
     }
   }
 #else
@@ -2284,10 +2284,10 @@ NON_MATCH void Player_InitEffects(Player* p) {
   if (p->unk_359 == 1) {
     Eff082473e0Emitter_Init(&p->unk_4c4, &p->sprite_e8.pos, 0, 0, 1);
   } else {
-    Eff082473e0Emitter_Init(&p->unk_4c4, &p->sprite_88.pos, 0, 0, 1);
+    Eff082473e0Emitter_Init(&p->unk_4c4, &p->human.pos, 0, 0, 1);
   }
 
-  p->shadowPos = p->sprite_88.pos;
+  p->shadowPos = p->human.pos;
   p->shadowOffset.x = 0, p->shadowOffset.y = 0, p->shadowOffset.z = 0;
   ParticleShadow_Init(&p->shadow, &p->shadowPos, 0);
   Entity080dc44c_Create();
@@ -3585,9 +3585,9 @@ void Player_InitSprite(Player* p) {
   MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
 
   if (f != NULL) {
-    p->spriteSet_68 = *(MainSpriteGfx*)f;
-    OpenMainSpriteFile(&p->spriteSet_68, f);
-    MainSprite_Add(&p->sprite_88, &p->spriteSet_68, 0, SPRFLAG_UNK_15 | SPRFLAG_GAMEOVER, 2, 0, 60, &p->mover.pos);
+    p->humanGfx = *(MainSpriteGfx*)f;
+    OpenMainSpriteFile(&p->humanGfx, f);
+    MainSprite_Add(&p->human, &p->humanGfx, 0, SPRFLAG_UNK_15 | SPRFLAG_GAMEOVER, 2, 0, 60, &p->mover.pos);
 
     if (VM_SeekToNamedArg('d')) {
       p->facing = VM_GetValue();
@@ -3604,11 +3604,11 @@ void Player_InitSprite(Player* p) {
     }
 
     p->animID = 0;
-    MainSprite_SetAnim(&p->sprite_88, &p->spriteSet_68, p->animIDOffset, 1, 0);
+    MainSprite_SetAnim(&p->human, &p->humanGfx, p->animIDOffset, 1, 0);
     if (p->xflip) {
-      p->sprite_88.flags |= SPRFLAG_XFLIP;
+      p->human.flags |= SPRFLAG_XFLIP;
     } else {
-      p->sprite_88.flags &= ~SPRFLAG_XFLIP;
+      p->human.flags &= ~SPRFLAG_XFLIP;
     }
   }
 }
@@ -4104,7 +4104,7 @@ void FUN_080672b0(Player* p) {
       scaled = TRUE;
     }
     if (scaled) {
-      val = val * p->sprite_88.scaleX >> 6;
+      val = val * p->human.scaleX >> 6;
     }
     Player_SetMoveDelta(p, val);
   }
@@ -5306,7 +5306,7 @@ NON_MATCH void MagicChangeWolf_0806eb40(Player* p) {
       }
 
       done = Player_PlayAnim(p, 410, FRACUNIT_6);
-      if (p->sprite_88.animCmdIdx == 5 && p->sprite_88.animCmdTimer == 0) {
+      if (p->human.animCmdIdx == 5 && p->human.animCmdTimer == 0) {
         s32 heal = (p->stats[STAT_VITALITY] + p->stats[STAT_STRENGTH]) >> 1;
 
         if (!gChangeWolfTarget->fn(gChangeWolfTarget->owner, 0, heal)) {
@@ -6610,7 +6610,7 @@ NON_MATCH void FUN_0807a91c(Player* p, Vec3* pos) {
 #ifdef NONMATCHING_C
   p->mover.pos = *pos;
   p->sprite_e8.pos = *pos;
-  p->sprite_88.pos = *pos;
+  p->human.pos = *pos;
   gStat->playerX = pos->x;
   gStat->playerY = pos->y;
   gStat->playerZ = pos->z;
@@ -7128,7 +7128,7 @@ void Player_SetPos(Player* p, WorldPos* src) { p->mover.pos = *src; }
 void FUN_0807b8dc(Player* p) {
   Player_EnterLockedState(p);
   Player_SetAction(p, 0, 0);
-  p->sprite_88.flags |= SPRFLAG_HIDDEN;
+  p->human.flags |= SPRFLAG_HIDDEN;
   p->fn_498 = FUN_080726e0;
 }
 
@@ -7419,12 +7419,12 @@ void FUN_0807c11c(Player* p, DirS32 dir) {
   }
   Player_EnterLockedState(p);
   animID = p->animIDOffset + FUN_08066ee4(p->kind, 46);
-  MainSprite_SetAnim(&p->sprite_88, &p->spriteSet_68, animID, 1, MAIN_ANIM_REVERSE);
-  MainSprite_AdvanceAnim(&p->sprite_88, &p->spriteSet_68);
+  MainSprite_SetAnim(&p->human, &p->humanGfx, animID, 1, MAIN_ANIM_REVERSE);
+  MainSprite_AdvanceAnim(&p->human, &p->humanGfx);
   if (p->xflip) {
-    p->sprite_88.flags |= SPRFLAG_XFLIP;
+    p->human.flags |= SPRFLAG_XFLIP;
   } else {
-    p->sprite_88.flags &= ~SPRFLAG_XFLIP;
+    p->human.flags &= ~SPRFLAG_XFLIP;
   }
   Player_SetAction(p, 24, 2);
   p->fn_498 = FUN_08073e18;
@@ -8531,8 +8531,8 @@ void Player_ApplyFormRequest(Player* p) {
     p->kind = PLAYER_DARK_DJANGO;
     p->updateCallback = Player_UpdateDjango;
     p->unk_359 = 0;
-    p->mover.mainSprite = &p->sprite_88, p->mover.auxSprite = NULL;
-    p->unk_4c4.pos = &p->sprite_88.pos;
+    p->mover.mainSprite = &p->human, p->mover.auxSprite = NULL;
+    p->unk_4c4.pos = &p->human.pos;
     Player_SetPlttIDs(p);
     p->unk_94c = 0xFFFF;
 
@@ -8541,7 +8541,7 @@ void Player_ApplyFormRequest(Player* p) {
     p->unk_950 = enchant + 1;
   }
 
-  p->sprite_88.plttID = p->plttID_94a;
+  p->human.plttID = p->plttID_94a;
   p->magic.availableForm = Player_IsMagicAvailableForm(p, p->magic.id);
   p->formRequest = FALSE;
 }
@@ -8644,7 +8644,7 @@ static s32 Player_Update(Player* p) {
 
 static s32 Player_Destroy(Player* p) {
   EnemyTargetManager_Remove(&p->target);
-  MainSprite_Remove(&p->sprite_88);
+  MainSprite_Remove(&p->human);
   AuxSprite_Remove(&p->sprite_e8);
   Hitbox_Unregister(&p->hurtbox);
   Mover_Unlink(&p->mover);

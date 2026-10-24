@@ -524,7 +524,7 @@ NON_MATCH s32 Entity080aace8_Init(Entity080aace8* p, Player* player, u32 param_3
   FUN_080aaa2c(p);
   FUN_080aaaa8(p);
   if (p->player->unk_359 == 0) {
-    p->player->sprite_88.flags &= ~SPRFLAG_HIDDEN;
+    p->player->human.flags &= ~SPRFLAG_HIDDEN;
   } else {
     p->player->sprite_e8.flags &= ~SPRFLAG_HIDDEN;
   }

@@ -106,7 +106,7 @@ void PlayerSabata_SetAnimFacing(Player* p) {
   }
 }
 
-// sprite_88 に animIdx のアニメを設定して1フレーム進める, 前回と同じIDならコマ番号を引き継ぐ
+// human に animIdx のアニメを設定して1フレーム進める, 前回と同じIDならコマ番号を引き継ぐ
 // 残差は animIdx + animIDOffset の adds のオペランド順だけ (57対57), 原典は adds r2, r1, r2
 // src/player.c の Player_PlayAnim が同じ1命令で止まっているので、この2つは同じ問題
 // Tier A-B 試済: オペランド入れ替え / u32 と u16 のキャスト / 複合代入 (加算位置が動いて悪化)
@@ -119,15 +119,15 @@ NON_MATCH bool32 FUN_08080cac(Player* p, u32 animIdx, s32 animSpeed) {
   }
   p->animID = animIdx;
 
-  MainSprite_SetAnim(&p->sprite_88, &p->spriteSet_68, animIdx + p->animIDOffset, 1, flags);
+  MainSprite_SetAnim(&p->human, &p->humanGfx, animIdx + p->animIDOffset, 1, flags);
   if (p->xflip) {
-    p->sprite_88.flags |= SPRFLAG_XFLIP;
+    p->human.flags |= SPRFLAG_XFLIP;
   } else {
-    p->sprite_88.flags &= ~SPRFLAG_XFLIP;
+    p->human.flags &= ~SPRFLAG_XFLIP;
   }
 
-  MainSprite_SetAnimSpeed(&p->sprite_88, (u16)animSpeed);
-  return MainSprite_AdvanceAnim(&p->sprite_88, &p->spriteSet_68);
+  MainSprite_SetAnimSpeed(&p->human, (u16)animSpeed);
+  return MainSprite_AdvanceAnim(&p->human, &p->humanGfx);
 #else
   INCFUNC("asm/func/FUN_08080cac.inc");
 #endif
@@ -404,7 +404,7 @@ NON_MATCH void FUN_080812d4(Player* p, rgb555* src, s32 wSrc, s32 wBase, u32 shi
   s32 i;
 
   if (wSrc == 0) {
-    p->sprite_88.pltt = p->pltt_2a4;
+    p->human.pltt = p->pltt_2a4;
     return;
   }
 
@@ -440,7 +440,7 @@ NON_MATCH void FUN_080812d4(Player* p, rgb555* src, s32 wSrc, s32 wBase, u32 shi
     src++;
     base++;
   }
-  p->sprite_88.pltt = &p->pltt_2a4[16];
+  p->human.pltt = &p->pltt_2a4[16];
 #else
   INCFUNC("asm/func/FUN_080812d4.inc");
 #endif
@@ -478,7 +478,7 @@ NON_MATCH void FUN_080813d0(Player* p, u32 n) {
       }
     }
 
-    p->sprite_88.pltt = &p->pltt_2a4[16];
+    p->human.pltt = &p->pltt_2a4[16];
     p->unk_476--;
     return;
   }
@@ -506,7 +506,7 @@ NON_MATCH void FUN_080813d0(Player* p, u32 n) {
       FUN_080812d4(p, src, w, 0x20 - w, 5);
     } else {
       p->unk_964 = 0;
-      p->sprite_88.pltt = p->pltt_2a4;
+      p->human.pltt = p->pltt_2a4;
     }
     return;
   }
@@ -523,7 +523,7 @@ NON_MATCH void FUN_080813d0(Player* p, u32 n) {
         p->pltt_2a4[16 + i] = src[i];
       }
     }
-    p->sprite_88.pltt = &p->pltt_2a4[16];
+    p->human.pltt = &p->pltt_2a4[16];
   } else {
     rgb555* src = &gObjPlttData[p->plttID_95e * 16];
     s32 w = p->unk_960;
@@ -542,8 +542,8 @@ void FUN_080815ac(Player* p) {
   p->plttID_94a = 39;
   p->unk_94c = 0;
   p->unk_950 = 0xFF;
-  p->sprite_88.plttID = 289;
-  p->sprite_88.pltt = p->pltt_2a4;
+  p->human.plttID = 289;
+  p->human.pltt = p->pltt_2a4;
   FUN_080813d0(p, p->plttID_94a);
 }
 
@@ -567,16 +567,16 @@ NON_MATCH u32 LinkPlayer_ApplyFlashPose(Player* p, u32 pose) {
 // 点滅ポーズを反映してから、影の位置をスプライト位置+オフセットで作り直す
 void FUN_08081628(Player* p) {
   FUN_080813d0(p, LinkPlayer_ApplyFlashPose(p, p->plttID_94a));
-  p->shadowPos.x = p->sprite_88.pos.x + p->shadowOffset.x;
-  p->shadowPos.y = p->sprite_88.pos.y + p->shadowOffset.y;
-  p->shadowPos.z = p->sprite_88.pos.z + p->shadowOffset.z;
+  p->shadowPos.x = p->human.pos.x + p->shadowOffset.x;
+  p->shadowPos.y = p->human.pos.y + p->shadowOffset.y;
+  p->shadowPos.z = p->human.pos.z + p->shadowOffset.z;
 }
 
 void FUN_0808168c(Player* p) { ParticleShadow_Remove(&p->shadow); }
 
 // 影とモザイクフェードの初期値をまとめて入れる
 void FUN_080816a0(Player* p) {
-  p->shadowPos = p->sprite_88.pos;
+  p->shadowPos = p->human.pos;
   p->shadowOffset.x = 0, p->shadowOffset.y = 0, p->shadowOffset.z = 0;
   ParticleShadow_Init(&p->shadow, &p->shadowPos, 0);
   FUN_080815ac(p);
@@ -635,9 +635,9 @@ void FUN_08081830(Player* p) {
     return;
   }
 
-  p->spriteSet_68 = *(MainSpriteGfx*)f;
-  OpenMainSpriteFile(&p->spriteSet_68, f);
-  MainSprite_Add(&p->sprite_88, &p->spriteSet_68, 0, SPRFLAG_UNK_15, 2, 0, 60, &p->mover.pos);
+  p->humanGfx = *(MainSpriteGfx*)f;
+  OpenMainSpriteFile(&p->humanGfx, f);
+  MainSprite_Add(&p->human, &p->humanGfx, 0, SPRFLAG_UNK_15, 2, 0, 60, &p->mover.pos);
 
   if (VM_SeekToNamedArg('d')) {
     p->facing = VM_GetValue();
@@ -654,11 +654,11 @@ void FUN_08081830(Player* p) {
   }
 
   p->animID = 0;
-  MainSprite_SetAnim(&p->sprite_88, &p->spriteSet_68, p->animIDOffset, 1, 0);
+  MainSprite_SetAnim(&p->human, &p->humanGfx, p->animIDOffset, 1, 0);
   if (p->xflip) {
-    p->sprite_88.flags |= SPRFLAG_XFLIP;
+    p->human.flags |= SPRFLAG_XFLIP;
   } else {
-    p->sprite_88.flags &= ~SPRFLAG_XFLIP;
+    p->human.flags &= ~SPRFLAG_XFLIP;
   }
 
   FUN_08084734(&base);
@@ -745,7 +745,7 @@ s32 FUN_08081ab0(Player* p, u32 id) {
   pos.y = GetTileHeightAt(&pos);
   Mover_Init(&p->mover, id, &pos, 0, (u8)p->playerIdx, p);
   FUN_08081830(p);
-  Mover_SetMainSprite(&p->mover, &p->sprite_88);
+  Mover_SetMainSprite(&p->mover, &p->human);
   Map_InitMoverTile(&p->tile, &pos);
   Mover_SetCollision(&p->mover, &p->tile, 30, 30);
   Map_InitNavAgent(&p->navAgent, &pos);
@@ -795,7 +795,7 @@ NON_MATCH void FUN_08081c04(Player* p) {
 
 // 太陽ゲージから sunburn を貯め、100 たまるごとに足元の判定を1つ出す
 void FUN_08081d18(Player* p, s32 sunGauge) {
-  if (!(p->sprite_88.flags & SPRFLAG_HIDDEN)) {
+  if (!(p->human.flags & SPRFLAG_HIDDEN)) {
     p->sunburn += sunGauge + 2;
     if (p->sunburn > 99) {
       Vec3 size;
@@ -1634,7 +1634,7 @@ s32 FUN_08083eac(Player* p) {
   }
 
   if (u16_03002bf0 != 0) {
-    p->sprite_88.flags &= ~(SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD | SPRFLAG_BLINK_EVEN);
+    p->human.flags &= ~(SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD | SPRFLAG_BLINK_EVEN);
     p->hurtbox.unk_40 = 0x32;
     p->unk_3d2 = 0;
     p->facing |= 1;
@@ -1727,19 +1727,19 @@ void FUN_08084078(Player* p) {
     Map_StepNavPath(&p->navAgent, &p->mover.pos);
   }
 
-  p->sprite_88.pos = p->mover.pos;
-  p->sprite_88.pos.y += p->floatHeight;
+  p->human.pos = p->mover.pos;
+  p->human.pos.y += p->floatHeight;
 
   if (PlayerSabata_TestFlag35a(p, PFLAG35A_HIDE_SPRITE)) {
-    p->sprite_88.flags |= SPRFLAG_HIDDEN;
+    p->human.flags |= SPRFLAG_HIDDEN;
   } else {
-    p->sprite_88.flags &= ~SPRFLAG_HIDDEN;
+    p->human.flags &= ~SPRFLAG_HIDDEN;
   }
 
   if (PlayerSabata_TestFlag35a(p, PFLAG35A_BLINK)) {
-    p->sprite_88.flags |= SPRFLAG_BLINK_ODD;
+    p->human.flags |= SPRFLAG_BLINK_ODD;
   } else {
-    p->sprite_88.flags &= ~SPRFLAG_BLINK_ODD;
+    p->human.flags &= ~SPRFLAG_BLINK_ODD;
   }
 
   if (PlayerSabata_TestFlag35a(p, PFLAG35A_HIDE_SHADOW)) {
@@ -1927,7 +1927,7 @@ s32 PlayerSabata_Update(Player* p) {
 }
 
 s32 PlayerSabata_Destroy(Player* p) {
-  MainSprite_Remove(&p->sprite_88);
+  MainSprite_Remove(&p->human);
   Hitbox_Unregister(&p->hurtbox);
   Mover_Unlink(&p->mover);
   FUN_0808168c(p);
