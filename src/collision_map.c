@@ -4,6 +4,7 @@
 #include "global.h"
 #include "input.h"
 #include "malloc.h"
+#include "map_inline.h"
 #include "mover.h"
 #include "random.h"
 #include "registry.h"
@@ -17,42 +18,6 @@ void Map_RunZoneEventScript(ZoneEventSource* src, CollisionMapEvent* ev, u16 msg
 s32 FUN_0823a88c(u8* pc, ScriptArgs* args);                      // src/entity_0823acbc.c
 s32 VM_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args);  // src/entity_0823acbc.c
 extern u32 gNextMapEventID;                                      // src/iwram2.c
-
-// pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
-static inline s32 TileHeightAt(Vec3* pos) {
-  MapTileOverride* ov;
-  CollisionMapTile* tile;
-  s32 stairs;
-  s32 height;
-  s32 bx;
-  s32 bz;
-  s32 idx;
-
-  bx = (s8)(pos->x >> 8);
-  bz = (s8)(pos->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-
-  ov = Map_FindTileOverride(idx, 1);
-  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
-
-  stairs = tile->heightStairs >> 4;
-  height = (tile->heightStairs & 0xF) << 8;
-  switch (stairs) {
-    case STAIRS_VERTICAL: {
-      height -= (u8)pos->z;
-      break;
-    }
-    case STAIRS_HORIZONTAL: {
-      height -= (u8)pos->x;
-      break;
-    }
-  }
-  return height;
-}
 
 // 索引 idx のタイルを返す, 上書きがあればそちらを返す
 static inline CollisionMapTile* TileAtIndex(s32 idx) {

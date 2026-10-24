@@ -251,7 +251,7 @@ NON_MATCH s32 SolarCircle_Init(SolarCircle* p, u32 id, u32 _) {
     p->pos.x = VM_GetValue();
     p->pos.y = VM_GetValue();
     p->pos.z = VM_GetValue();
-    p->pos.y = GetTileHeightAt(&p->pos);
+    p->pos.y = TileHeightAt(&p->pos);
   } else {
     p->pos.x = 0;
     p->pos.y = 0;

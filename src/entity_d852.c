@@ -152,7 +152,7 @@ void Map_SpawnLoadingZoneIndicator(void) {
 
   pos.x = (zone->x1 + zone->x2) >> 1;
   pos.z = (zone->y1 + zone->y2) >> 1;
-  pos.y = GetTileHeightAt(&pos);
+  pos.y = TileHeightAt(&pos);
 
   dir = FUN_080a64cc(zone);
   if (dir < 0) {

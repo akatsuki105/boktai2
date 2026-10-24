@@ -179,7 +179,7 @@ NON_MATCH void FUN_080aa29c(Entity080aace8* p) {
   if (tile->attr & TATTR_ICE) {
     p->unk_15c[p->unk_158] = 0;
   } else {
-    p->unk_15c[p->unk_158] = GetTileHeightAt(&spr->pos);
+    p->unk_15c[p->unk_158] = TileHeightAt(&spr->pos);
   }
 
   p->unk_158 = 1 - p->unk_158;

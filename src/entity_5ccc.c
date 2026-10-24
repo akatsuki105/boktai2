@@ -1,10 +1,9 @@
 #include "collision_map.h"
-#include "constants/sprite.h"
-#include "definition.h"
 #include "entity.h"
 #include "entity_9a9f.h"
 #include "global.h"
 #include "input.h"
+#include "map_inline.h"
 #include "player.h"
 #include "solar.h"
 #include "sprite.h"
@@ -54,43 +53,6 @@ IWRAM_DATA Entity5CCC* gEntity5CCC = NULL;  // 0x03000140
 extern u16 u16_03002bf0;
 
 s32 Entity0800a89c_Spawn(s32 count, u32 kindFlags, u8 amount, Vec3* pos, Vec3* spread, s16 lifetime, s32 lifetimeRand);
-
-// pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
-// Map_GetTileHeightAt (src/collision_map.c) と同じ処理だが, 原典はこのファイルの中に展開しているのでインラインで持つ
-static inline s32 TileHeightAt(Vec3* pos) {
-  MapTileOverride* ov;
-  CollisionMapTile* tile;
-  s32 stairs;
-  s32 height;
-  s32 bx;
-  s32 bz;
-  s32 idx;
-
-  bx = (s8)(pos->x >> 8);
-  bz = (s8)(pos->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-
-  ov = Map_FindTileOverride(idx, 1);
-  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
-
-  stairs = tile->heightStairs >> 4;
-  height = (tile->heightStairs & 0xF) << 8;
-  switch (stairs) {
-    case STAIRS_VERTICAL: {
-      height -= (u8)pos->z;
-      break;
-    }
-    case STAIRS_HORIZONTAL: {
-      height -= (u8)pos->x;
-      break;
-    }
-  }
-  return height;
-}
 
 // まだセッションが無ければ 0
 static inline u16 Entity9A9F_GetUnk66(void) {

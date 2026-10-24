@@ -150,7 +150,7 @@ NON_MATCH s32 Entity3DB0_Init(Entity3DB0* p, u32 param_2, u32 _) {
     pos.z = 0;
   }
 
-  pos.y = GetTileHeightAt(&pos);
+  pos.y = TileHeightAt(&pos);
   p->tileIdx = TileIndexAt(&pos);
   p->height = (s8)(pos.y >> 8) + 1;
   Map_AddTileOverride(&p->tileOverride, p->tileIdx, 0, p->height, 0xFF, 0x103);

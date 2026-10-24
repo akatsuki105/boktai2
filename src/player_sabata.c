@@ -703,7 +703,7 @@ s32 FUN_08081ab0(Player* p, u32 id) {
     pos.x = 0, pos.y = 0, pos.z = 0;
   }
 
-  pos.y = GetTileHeightAt(&pos);
+  pos.y = TileHeightAt(&pos);
   Mover_Init(&p->mover, id, &pos, 0, (u8)p->playerIdx, p);
   FUN_08081830(p);
   Mover_SetMainSprite(&p->mover, &p->human);
@@ -796,7 +796,7 @@ NON_MATCH s32 FUN_08081de0(Player* p, WorldPos* outPos, s32* outDir) {
     angle = i * 32;
     cand[i].x += FixToInt(12, gSineTable[(angle + 0x40) & 0xFF] * 512);
     cand[i].z += FixToInt(12, gSineTable[angle & 0xFF] * 512);
-    if (GetTileHeightAt(&cand[i]) == p->mover.pos.y) {
+    if (TileHeightAt(&cand[i]) == p->mover.pos.y) {
       cand[i].val = 1;
       count++;
     } else {
@@ -1662,7 +1662,7 @@ void FUN_08084078(Player* p) {
   if (PlayerSabata_TestFlag35a(p, PFLAG35A_NO_TILE)) {
     p->mover.tile = NULL;
     Mover_ApplyMove(&p->mover);
-    p->mover.pos.y = GetTileHeightAt(&p->mover.pos);
+    p->mover.pos.y = TileHeightAt(&p->mover.pos);
   } else {
     if (p->mover.tile == NULL) {
       Map_InitMoverTile(&p->tile, &p->mover.pos);

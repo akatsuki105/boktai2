@@ -7,7 +7,7 @@
 // これらは gCollisionMap といったグローバル変数を参照するため、 必要のない include は決してしないこと
 
 // pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
-static inline s32 GetTileHeightAt(WorldPos* pos) {
+static inline s32 TileHeightAt(WorldPos* pos) {
   MapTileOverride* ov;
   CollisionMapTile* tile;
   s32 stairs;
