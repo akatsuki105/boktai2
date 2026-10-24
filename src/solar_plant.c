@@ -3,6 +3,8 @@
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
+#include "player.h"
+#include "sound.h"
 #include "sprite.h"
 #include "sprite_aux.h"
 #include "vm.h"
@@ -18,7 +20,7 @@ typedef struct Entity1E98Elem {
   bool8 moverLinked;                               // 0x0E5, '.h'
   s16 hitboxArg;                                   // 0x0E6, '.n', Hitbox_Init の第2引数
   s16 scriptID;                                    // 0x0E8, '.g[0]=-1', スクリプトが '.i' でこの足場を指名する
-  s16 tileIdx;                                     // 0x0EA, pos が乗っているコリジョンタイルの索引
+  u16 tileIdx;                                     // 0x0EA, pos が乗っているコリジョンタイルの索引
   u16 timer;                                       // 0x0EC, updateCallback が差し替わるたび 0 に戻る
   s16 unk_ee;                                      // 0x0EE, '.W'
   u16 unk_f0;                                      // 0x0F0, unk_f2 に達すると FUN_080a4670 が次の段階へ進める
@@ -89,7 +91,19 @@ NAKED void FUN_080a472c(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a472c.i
 
 NAKED void FUN_080a47d0(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a47d0.inc"); }
 
-NAKED void FUN_080a4854(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a4854.inc"); }
+// プレイヤーが同じタイルに乗っている間は沈み, 離れると元の高さまで浮き上がる
+void FUN_080a4854(Entity1E98Elem* elem) {
+  if (gPlayerPtr[0]->tile.tileIdx[1] == elem->tileIdx) {
+    if (elem->spr.pos.y == elem->pos.y) {
+      PlaySound_082406e0(SONG_691);
+    }
+    if (elem->spr.pos.y > elem->pos.y - 16) {
+      elem->spr.pos.y -= 2;
+    }
+  } else if (elem->spr.pos.y < elem->pos.y) {
+    elem->spr.pos.y += 2;
+  }
+}
 
 NAKED void FUN_080a48bc(void) { INCFUNC("asm/func/FUN_080a48bc.inc"); }
 
