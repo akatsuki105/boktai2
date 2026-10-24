@@ -503,7 +503,42 @@ NAKED void FUN_0809ec60(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809ec60.inc"); }
 
 void FUN_0809ed54(Entity5CCC* p) {}
 
-NAKED void FUN_0809ed58(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809ed58.inc"); }
+// セッション側の許可に合わせて光柱をまとめて見せる/隠す
+// 残差4命令 (89/93). 原典は gEntity9A9F の NULL 判定を2回出す (playerIdx 取得用と unk_60 取得用で別々の static inline を通している形) が, agbcc は1回に畳む
+// ファイル先頭の Entity9A9F_GetUnk66 と同形の inline 2本で再現できるが, 一致しないので入れない
+NON_MATCH void FUN_0809ed58(Entity5CCC* p) {
+#ifdef NONMATCHING_C
+  s32 playerIdx = gEntity9A9F != NULL ? gEntity9A9F->playerIdx : -1;
+  u8 allowed = gEntity9A9F != NULL ? gEntity9A9F->unk_60[playerIdx] : 0;
+  s32 i;
+
+  if (allowed != 0) {
+    if (p->unk_28 != 0) {
+      return;
+    }
+
+    p->unk_28 = TRUE;
+    for (i = 0; i < p->count; i++) {
+      if (p->beams[i].active && p->beams[i].unk_9a) {
+        p->beams[i].sprite[0].flags &= ~SPRFLAG_HIDDEN;
+      }
+    }
+  } else {
+    if (p->unk_28 != 1) {
+      return;
+    }
+
+    p->unk_28 = FALSE;
+    for (i = 0; i < p->count; i++) {
+      if (p->beams[i].active) {
+        p->beams[i].sprite[0].flags |= SPRFLAG_HIDDEN;
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0809ed58.inc");
+#endif
+}
 
 s32 Entity0809eeb4_Update(Entity5CCC* p) {
   if (gStat->unk_934 & SF934_OUTDOOR) {
