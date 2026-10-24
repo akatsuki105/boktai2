@@ -1,3 +1,4 @@
+#include "collision_map.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -16,7 +17,8 @@ typedef struct EntityF1F9Item {
   HitboxData hitbox;  // 0x058
   AuxShadow shadow;   // 0x0A8, shadowId で管理
   Vec3 basePos;       // 0x114, 揺れの基準位置, sprite.pos へ複写する
-  u8 unk_11c[16];     // 0x11C
+  Vec3 vel;           // 0x11C, y だけ使う, 落下速度 (毎フレーム +2)
+  u8 unk_124[8];      // 0x124
   s32 unk_12c;        // 0x12C, 1フレーム前の距離の2乗
   s32 unk_130;        // 0x130, プレイヤーとの距離の2乗
   s32 unk_134;        // 0x134, この距離まで近づかれると反応する
@@ -24,7 +26,7 @@ typedef struct EntityF1F9Item {
   u16 unk_13a;        // 0x13A, 1マスぶんの距離
   u8 unk_13c;         // 0x13C, 全体のマス数
   u8 unk_13d;         // 0x13D, 現在のマス番号
-  u8 unk_13e[2];      // 0x13E
+  u16 groundY;        // 0x13E, 足元のタイルの高さ, 落下がここに届くと state 4 へ移る
   s16 unk_140;        // 0x140, 移動の始点
   s16 unk_142;        // 0x142, 現在位置
   u8 unk_144[3];      // 0x144
@@ -55,6 +57,8 @@ static_assert(sizeof(EntityF1F9) == 1408);
 IWRAM_DATA EntityF1F9* gEntityF1F9 = NULL;  // 0x03000198
 
 s32 FUN_08014730(s32 count, s32 kind, Vec3* pos, Vec3* vel, Vec3* velRange, s32 lifeBase, s32 lifeRandMask);
+
+void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12);
 
 void FUN_081d6444(EntityF1F9Item* item);
 void FUN_081d65e8(EntityF1F9Item* item);
@@ -170,7 +174,66 @@ NAKED void FUN_081d5d70(EntityF1F9* p, EntityF1F9Item* item) { INCFUNC("asm/func
 
 NAKED void FUN_081d5f54(unknown* p) { INCFUNC("asm/func/FUN_081d5f54.inc"); }
 
-NAKED void FUN_081d60c8(EntityF1F9* p, EntityF1F9Item* item) { INCFUNC("asm/func/FUN_081d60c8.inc"); }
+// 足元の高さを測ってから落下させ, 着地したら state 4 へ移してエフェクトを撒く
+// 残差1命令 (139/140) でこちらが短い. &item->sprite.pos を原典は r0 で作って r6 へ複写するがこちらは直接 r6 に作る, CpuSet の第1引数 (sp+0x20) の作り位置も1つずれる
+// タイル高さの算出は collision_map.c の TileHeightAt と同形, あちらは static inline なので展開形を直書きした
+NON_MATCH void FUN_081d60c8(EntityF1F9* p, EntityF1F9Item* item) {
+#ifdef NONMATCHING_C
+  if (item->unk_156) {
+    Vec3* pos = &item->sprite.pos;
+    MapTileOverride* ov;
+    CollisionMapTile* tile;
+    s32 stairs;
+    s32 height;
+    s32 bx;
+    s32 bz;
+    s32 idx;
+
+    bx = (s8)(pos->x >> 8);
+    bz = (s8)(pos->z >> 8);
+    if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+      idx = 0;
+    } else {
+      idx = gCollisionMap->rowOffsets[bz] + bx;
+    }
+
+    ov = Map_FindTileOverride(idx, 1);
+    tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
+
+    stairs = tile->heightStairs >> 4;
+    height = (tile->heightStairs & 0xF) << 8;
+    switch (stairs) {
+      case STAIRS_VERTICAL: {
+        height -= (u8)pos->z;
+        break;
+      }
+      case STAIRS_HORIZONTAL: {
+        height -= (u8)pos->x;
+        break;
+      }
+    }
+
+    item->groundY = height;
+    item->unk_156 = 0;
+    CpuFill32(0, &item->vel, sizeof(item->vel));
+  } else {
+    item->sprite.pos.y -= item->vel.y;
+    item->vel.y += 2;
+    if (item->groundY >= item->sprite.pos.y) {
+      s32 i;
+
+      item->sprite.pos.y = item->groundY;
+      item->state = 4;
+      item->unk_156 = 1;
+      for (i = 0; i < 8; i++) {
+        FUN_081ee584(&item->sprite.pos, 8, 0x10, 4, 12, 0x12, i * 32, 8, 0x40, 1, 1, 0);
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_081d60c8.inc");
+#endif
+}
 
 // 残差1命令 (81/82). 原典は &item->idx の定数 0x14A を独立に作るが, agbcc は直前の item->state の 0x148 を +2 して使い回す (定数再利用のピープホール, ソース側から向きを変えられない)
 NON_MATCH void FUN_081d6200(EntityF1F9* p, EntityF1F9Item* item) {
