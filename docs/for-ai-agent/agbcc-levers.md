@@ -275,11 +275,13 @@ Still source-level, still defensible.
 - **Signed `/` by a power of two is not `>>`**, and `/2` does not look like
   `/4` (§5.3). Signed `% 2^n` is not `& mask`.
 - **A 32-bit mask narrows to 16 bits over a `u16` operand.**
-  `gStagedDISPCNT & ~(DISPCNT_BG1_ON | …)` puts `0x0000F1FF` in the pool, because
-  the `ldrh` tells gcc the high bits are zero. The target's `0xFFFFF1FF` means
-  the operand reached the `and` as a plain register: route it through a
-  `static inline` with a `u32` parameter (`ShowOnlyBG0(u32 hide)`,
-  `HideBG(u32 bits)`) and the full mask survives (`TextSlideshow_Init`).
+  `gStagedDISPCNT &= ~(DISPCNT_BG1_ON | …)` written out puts `0x0000F1FF` in the
+  pool, because the `ldrh` tells gcc the high bits are zero. The target's
+  `0xFFFFF1FF` means the mask reached the `and` through a pseudo of its own:
+  `CLEAR_FLAGS(gStagedDISPCNT, …)` from `include/macro.h` does exactly that
+  (`Video_InitBGMode`). Its `typeof(target)` local is `u16` here, but `~` applies
+  after the promotion to `int`, so the full 32-bit mask survives. See the flag
+  macros under "Materialization order" in §4 (Tier C).
 - **A `u16` read shifted in place still gives `lsr`**, because the value's range
   is known where it is loaded. Route it through an `s32` local
   (`r = *(gRandomTable + i); ... r >> 3`) to get the `asr` the target has
@@ -361,29 +363,36 @@ Four positions, cheapest first:
   `MainSprite* spr = &p->sprites[5];` at the top of a block emits the address
   computation before the block's first statement; `MainSprite* spr;` followed
   by `spr = ...` emits it where the assignment is. Same for `Vec3* dst = &pos;`.
+- **Flag operations go through the macros in `include/macro.h`.**
+  `SET_FLAGS(target, flags)`, `CLEAR_FLAGS(target, flags)` and
+  `TEST_FLAGS(target, flags)` copy the mask into a `typeof(target)` local
+  before touching `target`, so the constant is materialized **before** the
+  memory operand's load and a single-bit mask is not folded into a shift
+  (`(x >> 4) & 1`). This is what the original used for flag fields: commit
+  `9976164ad` replaced the `static inline` setters/testers
+  (`Stat_SetFlag934`, `Title_SetFlags`, `Title_TestFlags`, `HideBG` in
+  `src/bg.c`) and the hand-written `u32 mask = X; if (v & mask)` locals across
+  19 files with these macros, and the ROM still matches.
+  `include/global.h` includes `macro.h`, so every file that includes
+  `global.h` already has them — no extra `#include` is needed.
+  Reach for them before inventing a flag accessor or a mask local. Examples:
+  `Entity5CCC_AddEneCharge` (`TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)`),
+  `Player_ApplyDarkbug` (`TEST_FLAGS(p->equipBuffs, EBUFF_FAIRY)`), the
+  `SET_FLAGS(p->flags, …)` calls in `src/title.c`. `TEST_FLAGS` yields the masked
+  value, not a 0/1; where a 0/1 argument is needed the replacement used
+  `TEST_FLAGS(x, F) ? 1 : 0` (`Particle_AddToDrawList`).
 - **A `static inline` helper materializes its arguments before its body.**
-  `HideBG(DISPCNT_BG1_ON)` with `static inline void HideBG(u32 bits) {
-  gStagedDISPCNT &= ~bits; }` emits the folded mask **before** the `ldrh` of
-  the global; the same statement written out in full emits it after. This one
-  lever closed `FUN_0801f214`, `FUN_0801f328` and `FUN_0801f38c`, each of which
-  had sat at a one-instruction residual.
-- **A mask local is not the same lever as an inline parameter.**
-  `EquipBuffs mask = FLAG378_FAIRY; if (p->equipBuffs & mask)` materializes the
-  constant where the `&` needs it, i.e. *after* the field's offset and load, and
-  that is what `Player_ApplyDarkbug` matches. When the target materializes the
-  mask *before* the offset constant, only an inline with the mask as a parameter
-  reaches it: `static inline EquipBuffs Player_GetFlag378(Player* p,
-  EquipBuffs bits) { return p->equipBuffs & bits; }` closed `FUN_0806f900`,
-  where the local spelling stayed four instructions out of order. Note the
-  accessor returns the masked value, not a `bool32` — a `bool32` one adds a 0/1 materialization.
+  This is the same mechanism as the flag macros, and it still applies to
+  non-flag helpers. Two paired field writes that always travel together go in
+  one: `SetSubState(p, n)` (`p->unk_1a = n; p->unk_6c = 0;`) in
+  `src/entity_ef6f.c` closed `FUN_0801f130`. (`src/entity_ef6f.c` also keeps its
+  own `HideBG(u32 bits)`, which is the pre-macro spelling of `CLEAR_FLAGS`.)
 - **So the converse is a lever too.** If the target loads the memory operand
   *first* and only then materializes the constant, the original did **not**
-  route that constant through an inline parameter — write the statement out
-  against a pointer local (`spr->flags |= SPRFLAG_HIDDEN;`) instead. A
-  two-argument `XXX_SetFlags(&p->sprites[5], SPRFLAG_HIDDEN)` puts the bits
-  before the load and will not match; a bit computed inside the body
-  (`p->flags &= ~bits;`) is folded and stays after it, which is why the
-  `ClearFlags` form can match where `SetFlags` does not.
+  route that constant through a macro or helper — write the statement out
+  against a pointer local (`spr->flags |= SPRFLAG_HIDDEN;`) instead, which is how
+  `FUN_0801ed7c` matches. A two-argument setter (or `SET_FLAGS`) puts the bits
+  before the load there and does not match.
 - **`arr[i]`, `*(arr + i)` and `*(i + arr)` are not interchangeable.** The tree
   keeps the source's operand order, so the subscript form materializes the base
   *before* the scaled index, and only `*(i + arr)` emits the index first and
@@ -428,8 +437,12 @@ Moving `HideBG` (`gStagedDISPCNT &= ~bits;`) from `src/bg.c` into `include/video
 so a third file could call it changed the register allocation of
 `GameOverManager_StateShowLogo` in `src/gameover.c`, which neither calls it nor
 mentions `gStagedDISPCNT`. Merely being declared in an included header is enough.
-Define the helper per translation unit instead — which is what `bg.c` and
-`entity_ef6f.c` already do with identical copies.
+Define the helper per translation unit instead (`src/entity_ef6f.c` keeps its
+own copy of `HideBG` for this reason, and `src/entity_5ccc.c` keeps its own
+`TileHeightAt` after moving `src/collision_map.c`'s into `include/collision_map.h`
+perturbed `FUN_0807a270` in `src/player.c`). For flag operations this does not
+come up: use the macros in `include/macro.h`, which reach every file through
+`include/global.h`.
 
 
 Per-file overrides go in `Makefile` after line 107, next to the existing
