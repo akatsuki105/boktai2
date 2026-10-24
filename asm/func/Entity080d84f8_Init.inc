@@ -26,7 +26,7 @@
 	adds r1, r4, #0
 	mov r2, sb
 	mov r3, sl
-	bl FUN_080d8400
+	bl Entity080d84f8_InitHitbox
 	adds r0, r4, #0
 	mov r1, r8
 	movs r2, #0

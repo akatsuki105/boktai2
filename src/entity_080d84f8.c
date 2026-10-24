@@ -52,7 +52,17 @@ void FUN_080d83a8(AuxSprite* sprite, AuxSpriteGfx* gfx, Vec3* pos, u32 plttOffse
   sprite->flags |= SPRFLAG_HIDDEN;
 }
 
-NAKED void FUN_080d8400(Entity080d84f8* p, HitboxData* hitbox, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7) { INCFUNC("asm/func/FUN_080d8400.inc"); }
+// 爆発の攻撃判定を 0x100 角で作る
+void Entity080d84f8_InitHitbox(Entity080d84f8* p, HitboxData* hitbox, s32 ignoreMask, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44) {
+  Vec3 halfSize;
+  Vec3 offset;
+
+  halfSize.x = 0x80, halfSize.y = 0x80, halfSize.z = 0x80;
+  offset.x = 0, offset.y = 0, offset.z = 0;
+  Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
+  Hitbox_SetAttack(hitbox, power, unk_40, HBATTR_ALL, attrs, unk_44);
+  Hitbox_SetHandler(hitbox, NULL, p);
+}
 
 NAKED s32 Entity080d84f8_Init(Entity080d84f8* p, Vec3* pos, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8, u16 delay) { INCFUNC("asm/func/Entity080d84f8_Init.inc"); }
 
