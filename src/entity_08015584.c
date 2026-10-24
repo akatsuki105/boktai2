@@ -1,7 +1,9 @@
+#include "constants/sprite.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "sprite.h"
+#include "sprite_animation.h"
 
 // パーティクル1個分, FUN_080155e4 で発生させる
 typedef struct {
@@ -57,7 +59,38 @@ s32 Entity08015584_Destroy(Entity08015584* p) {
   return 0;
 }
 
-NAKED s32 Entity08015584_Init(Entity08015584* p, u32 _) { INCFUNC("asm/func/Entity08015584_Init.inc"); }
+s32 Entity08015584_Init(Entity08015584* p, u32 _) {
+  Vec3 pos;
+  s32 i;
+
+  gEntity08015584 = p;
+
+  for (i = 0; i < 2; i++) {
+    p->animFiles[i] = GetFile(DIR_ANIMATION, FileID_ARRAY_085aa914[i]);
+  }
+
+  pos.x = 0, pos.y = 0, pos.z = 0;
+
+  for (i = 0; i < 32; i++) {
+    Entity08015584Elem* elem = &p->elems[i];
+
+    elem->active = FALSE;
+    elem->speedY = 0;
+    elem->dirX = 0;
+    elem->dirY = 0;
+    elem->dirZ = 0;
+    if (!Video_GetAuxSprite(&elem->gfx, SPRITE_4384)) {
+      return -1;
+    }
+    AuxSprite_Setup(&elem->sprite, &elem->gfx, 0);
+    AuxAnim_SetAnim(&elem->anim, p->animFiles[0], 0, 0, 0);
+    elem->sprite.priority = 2;
+    elem->sprite.pos = pos;
+  }
+
+  p->counter = 0;
+  return 0;
+}
 
 Entity08015584* Entity08015584_Create(u32 val, u32 _) {
   Entity08015584* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity08015584));
