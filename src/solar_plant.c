@@ -51,6 +51,7 @@ COMMON_DATA Entity1E98* gEntity1E98 = NULL;  // 0x03002C44
 
 void FUN_080a46b0(Entity1E98Elem* elem);
 void FUN_080a4728(Entity1E98Elem* elem);
+void FUN_080a4854(Entity1E98Elem* elem);
 
 void Entity1E98_SetUpdateCallback(Entity1E98Elem* elem, void* fn) {
   elem->updateCallback = fn;
@@ -126,7 +127,34 @@ void FUN_080a4728(Entity1E98Elem* elem) {}
 
 NAKED void FUN_080a472c(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a472c.inc"); }
 
-NAKED void FUN_080a47d0(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a47d0.inc"); }
+// 残差は elem と &elem->timer のレジスタ入れ替えだけ (58/58 同数同順), 原典は elem が r5 で timer が r4
+// Tier A-C 試済 (ローカルの宣言位置を動かしても入れ替わらない)
+NON_MATCH void FUN_080a47d0(Entity1E98Elem* elem) {
+#ifdef NONMATCHING_C
+  if (elem->timer == 0) {
+    PlaySound_082406e0(SONG_426);
+  }
+
+  elem->timer++;
+  if (elem->timer <= 7) {
+    elem->spr.pos = elem->pos;
+    elem->spr.poseIdx = 1;
+  } else {
+    elem->spr.poseIdx = 2;
+    Entity1E98_SetUpdateCallback(elem, FUN_080a4854);
+    if (elem->unk_10c != 0) {
+      ScriptArgs sa;
+      u32 arg;
+
+      sa.argc = 1, sa.argv = &arg;
+      arg = elem->scriptID;
+      VM_ExecByID(elem->unk_10c, &sa);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_080a47d0.inc");
+#endif
+}
 
 // プレイヤーが同じタイルに乗っている間は沈み, 離れると元の高さまで浮き上がる
 void FUN_080a4854(Entity1E98Elem* elem) {
