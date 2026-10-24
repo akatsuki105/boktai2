@@ -79,7 +79,27 @@ void (*const PTR_ARRAY_085ad32c[3])(Entity080dc44c*, Entity080dc44cSlot*) = {
     FUN_080dc00c,
 };  // 0x085AD32C
 
-NAKED s32 Entity080dc44c_Update(Entity080dc44c* p) { INCFUNC("asm/func/Entity080dc44c_Update.inc"); }
+// 使用中の枠について state ごとの更新関数を呼ぶ
+// 残差7命令 (40/47). 5命令は使用中判定の 0/1 の作り置き, 残り2命令は原典が &activeMask と &slots の定数を別々に作るのに対しこちらは片方から差分で導くため
+// Entity080db520_Update と同じ壁. slot の初期化を for の初期化節に移すと i=0 の位置だけは合う
+NON_MATCH s32 Entity080dc44c_Update(Entity080dc44c* p) {
+#ifdef NONMATCHING_C
+  if (p->activeMask != 0) {
+    Entity080dc44cSlot* slot;
+    s32 i;
+
+    for (i = 0, slot = &p->slots[0]; i < 8; i++, slot++) {
+      if (p->activeMask & (1 << i)) {
+        PTR_ARRAY_085ad32c[slot->state](p, slot);
+      }
+    }
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/Entity080dc44c_Update.inc");
+#endif
+}
 
 // 使用中の枠の粒子をまとめて外す
 // 残差6命令 (32 対 38), 原典はビット判定の結果を 1/0 として作ってから改めて 0 と比べる (0/1 の作り置き)
