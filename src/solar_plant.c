@@ -21,9 +21,8 @@ typedef struct Entity1E98Elem {
   s16 tileIdx;                                     // 0x0EA, pos が乗っているコリジョンタイルの索引
   u16 timer;                                       // 0x0EC, updateCallback が差し替わるたび 0 に戻る
   s16 unk_ee;                                      // 0x0EE, '.W'
-  u8 unk_f0;                                       // 0x0F0, まだ未解析
-  u8 unk_f1;                                       // 0x0F1, まだ未解析
-  s16 unk_f2;                                      // 0x0F2, '.A=10'
+  u16 unk_f0;                                      // 0x0F0, unk_f2 に達すると FUN_080a4670 が次の段階へ進める
+  u16 unk_f2;                                      // 0x0F2, '.A=10', unk_f0 がここに達したら次の段階へ
   u8 plttTimer;                                    // 0x0F4, 0 でない間 gfx が pltt を使い, 0 になった瞬間に plttID 0x5F へ戻る
   u8 unk_f5;                                       // 0x0F5, まだ未解析
   u8 unk_f6;                                       // 0x0F6, '.s'
@@ -47,6 +46,8 @@ static_assert(sizeof(Entity1E98) == 2236);
 
 COMMON_DATA Entity1E98* gEntity1E98 = NULL;  // 0x03002C44
 
+void FUN_080a46b0(Entity1E98Elem* elem);
+
 void Entity1E98_SetUpdateCallback(Entity1E98Elem* elem, void* fn) {
   elem->updateCallback = fn;
   elem->timer = 0;
@@ -56,7 +57,14 @@ NAKED void FUN_080a45a8(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a45a8.i
 
 NAKED void FUN_080a4620(HitboxData* a, HitboxData* b, Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a4620.inc"); }
 
-NAKED void FUN_080a4670(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a4670.inc"); }
+void FUN_080a4670(Entity1E98Elem* elem) {
+  if (elem->unk_f0 >= elem->unk_f2) {
+    elem->unk_f6 = 1;
+    FUN_080a45a8(elem);
+    elem->hitbox.flags |= HBFLAG_UNK_2;
+    Entity1E98_SetUpdateCallback(elem, FUN_080a46b0);
+  }
+}
 
 NAKED void FUN_080a46b0(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a46b0.inc"); }
 
