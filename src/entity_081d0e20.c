@@ -369,24 +369,25 @@ s32 FUN_081d0c38(void) {
 }
 
 // 0x779F, '.i', '.s'
-NON_MATCH void FUN_081d0c6c(void) {
-#ifdef NONMATCHING_C
+void FUN_081d0c6c(void) {
   s32 val = VM_GetNamedArgValue('s', 0);
   Entity081d0e20Elem* elem = Entity081d0e20_FindElem(VM_GetNamedArgValue('i', 0));
 
   if (elem != NULL) {
     switch (val) {
       case 0: {
-        if (!(elem->flags & 0x40)) {
-          elem->flags = (elem->flags | 0x40) & ~0x20;
+        if (!(elem->flags & (1 << 6))) {
+          elem->flags |= (1 << 6);
+          elem->flags &= ~(1 << 5);
           elem->state = 6;
           elem->unk_ba = 1;
         }
         break;
       }
       case 1: {
-        if (!(elem->flags & 0x20)) {
-          elem->flags = (elem->flags | 0x20) & ~0x40;
+        if (!(elem->flags & (1 << 5))) {
+          elem->flags |= (1 << 5);
+          elem->flags &= ~(1 << 6);
           elem->state = 3;
           elem->unk_ba = 1;
         }
@@ -394,9 +395,6 @@ NON_MATCH void FUN_081d0c6c(void) {
       }
     }
   }
-#else
-  INCFUNC("asm/func/FUN_081d0c6c.inc");
-#endif
 }
 
 void (*const PTR_ARRAY_085ae098[8])(Entity081d0e20Elem*) = {
