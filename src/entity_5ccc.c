@@ -61,7 +61,23 @@ static inline u16 Entity9A9F_GetUnk66(void) {
 
 void FUN_0809df6c(void) { gEntity5CCC = NULL; }
 
-NAKED bool32 FUN_0809df78(Vec3* pos) { INCFUNC("asm/func/FUN_0809df78.inc"); }
+// pos が有効な光柱の矩形の中にあるか
+bool32 FUN_0809df78(Vec3* pos) {
+  Entity5CCC* p = gEntity5CCC;
+  s32 i;
+
+  if (p == NULL) {
+    return FALSE;
+  }
+
+  for (i = 0; i < p->count; i++) {
+    if (p->beams[i].unk_9a && pos->x >= p->beams[i].minX && pos->z >= p->beams[i].minZ && pos->x <= p->beams[i].maxX && pos->z <= p->beams[i].maxZ) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
 
 // 指定エリアに有効な光柱があるか
 // 残差3命令, 原典は count != 0 のガードと i < count の判定を両方出し mapArea を r4 に置くが
