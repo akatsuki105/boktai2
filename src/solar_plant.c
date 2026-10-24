@@ -50,6 +50,7 @@ static_assert(sizeof(Entity1E98) == 2236);
 COMMON_DATA Entity1E98* gEntity1E98 = NULL;  // 0x03002C44
 
 void FUN_080a46b0(Entity1E98Elem* elem);
+void FUN_080a4728(Entity1E98Elem* elem);
 
 void Entity1E98_SetUpdateCallback(Entity1E98Elem* elem, void* fn) {
   elem->updateCallback = fn;
@@ -83,7 +84,28 @@ void FUN_080a4670(Entity1E98Elem* elem) {
   }
 }
 
-NAKED void FUN_080a46b0(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a46b0.inc"); }
+void FUN_080a46b0(Entity1E98Elem* elem) {
+  elem->spr.priority = 2;
+  if (elem->timer == 0) {
+    PlaySound_082406e0(SONG_426);
+  }
+
+  elem->timer++;
+  if (elem->timer <= 7) {
+    elem->spr.poseIdx = 1;
+  } else {
+    elem->spr.poseIdx = 2;
+    Entity1E98_SetUpdateCallback(elem, FUN_080a4728);
+    if (elem->unk_10c != 0) {
+      ScriptArgs sa;
+      u32 arg;
+
+      sa.argc = 1, sa.argv = &arg;
+      arg = elem->scriptID;
+      VM_ExecByID(elem->unk_10c, &sa);
+    }
+  }
+}
 
 void FUN_080a4728(Entity1E98Elem* elem) {}
 
