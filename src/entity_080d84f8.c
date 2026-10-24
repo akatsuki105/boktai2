@@ -64,7 +64,14 @@ void Entity080d84f8_InitHitbox(Entity080d84f8* p, HitboxData* hitbox, s32 ignore
   Hitbox_SetHandler(hitbox, NULL, p);
 }
 
-NAKED s32 Entity080d84f8_Init(Entity080d84f8* p, Vec3* pos, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8, u16 delay) { INCFUNC("asm/func/Entity080d84f8_Init.inc"); }
+s32 Entity080d84f8_Init(Entity080d84f8* p, Vec3* pos, s32 ignoreMask, s32 power, s32 unk_40, HitboxAttributes attrs, s32 unk_44, s32 plttOffset, s32 delay) {
+  FUN_080d83a8(&p->sprite, &p->gfx, pos, plttOffset);
+  Entity080d84f8_InitHitbox(p, &p->hitbox, ignoreMask, power, unk_40, attrs, unk_44);
+  Hitbox_SetPos(&p->hitbox, pos, 0);
+  p->delay = delay;
+  p->timer = 0;
+  return 0;
+}
 
 NAKED Entity080d84f8* Entity080d84f8_Create(Vec3* pos, u32 param_2, u32 param_3, u32 param_4, u32 param_5) { INCFUNC("asm/func/Entity080d84f8_Create.inc"); }
 
