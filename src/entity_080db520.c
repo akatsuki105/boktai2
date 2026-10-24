@@ -1,23 +1,32 @@
+#include "coffin.h"
 #include "entity.h"
 #include "file.h"
 #include "game.h"
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
+#include "player.h"
 #include "sprite.h"
 #include "time.h"
 
+// Entity080db520Elem.unk_40
+typedef u16 Entity080db520ElemFlags;
+#define E080DB520_UNK_1 (1 << 1)  // 0x02, FUN_080dab9c と FUN_080dacac が判定と一緒に立てる
+#define E080DB520_UNK_2 (1 << 2)  // 0x04, FUN_080dabe4 が立てる
+#define E080DB520_UNK_4 (1 << 4)  // 0x10, 使用中の枠のどこにも立っていないと FUN_080dadec が gPlayerPtr[0]->unk_3ff を 0xFF に戻す
+#define E080DB520_UNK_6 (1 << 6)  // 0x40, 使用中の枠のどこにも立っていないと FUN_080dadec が gCoffin->unk_3a0 を -1 に戻す
+
 typedef struct {
-  AuxSprite spr;           // 0x00, _Destroy が AuxSprite_Remove に渡す
-  u8 unk_2c[0x3E - 0x2C];  // 0x2C
-  s16 unk_3e;              // 0x3E, 2 なら FUN_080dabe4 が何もしない
-  u16 unk_40;              // 0x40, FUN_080dacac が bit1、FUN_080dabe4 が bit2 を立てる
-  s16 unk_42;              // 0x42, 負なら FUN_080dabe4 が何もしない
-  u8 unk_44[2];            // 0x44
-  ZoneID16 zoneID;         // 0x46, gStat->zoneID と一致するかを FUN_080dad94 が見る
-  u8 unk_48[4];            // 0x48
-  HitboxData hitbox;       // 0x4C, _Destroy が Hitbox_Unregister に渡す
-  u8 unk_9c[8];            // 0x9C
+  AuxSprite spr;                   // 0x00, _Destroy が AuxSprite_Remove に渡す
+  u8 unk_2c[0x3E - 0x2C];          // 0x2C
+  s16 unk_3e;                      // 0x3E, 2 なら FUN_080dabe4 が何もしない
+  Entity080db520ElemFlags unk_40;  // 0x40
+  s16 unk_42;                      // 0x42, 負なら FUN_080dabe4 が何もしない
+  u8 unk_44[2];                    // 0x44
+  ZoneID16 zoneID;                 // 0x46, gStat->zoneID と一致するかを FUN_080dad94 が見る
+  u8 unk_48[4];                    // 0x48
+  HitboxData hitbox;               // 0x4C, _Destroy が Hitbox_Unregister に渡す
+  u8 unk_9c[8];                    // 0x9C
 } Entity080db520Elem;
 static_assert(sizeof(Entity080db520Elem) == 164);
 
@@ -51,11 +60,11 @@ void FUN_080dab9c(s32 idx) {
     return;
   }
 
-  e->unk_40 |= 2;
+  e->unk_40 |= E080DB520_UNK_1;
   e->hitbox.flags |= HBFLAG_UNK_2;
 }
 
-// idx 番の要素の unk_40 に bit2 を立てる
+// idx 番の要素に UNK_2 を立てる
 void FUN_080dabe4(s32 idx) {
   Entity080db520* p = gEntity080db520;
 
@@ -63,7 +72,7 @@ void FUN_080dabe4(s32 idx) {
     Entity080db520Elem* e = &p->elems[idx];
 
     if (e->unk_42 >= 0 && e->unk_3e != 2) {
-      e->unk_40 |= 4;
+      e->unk_40 |= E080DB520_UNK_2;
     }
   }
 }
@@ -73,8 +82,8 @@ void FUN_080dac20(Entity080db520* p, Entity080db520Elem* elem) {}
 NAKED void FUN_080dac24(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080dac24.inc"); }
 
 void FUN_080dacac(Entity080db520* p, u32 param_2, Entity080db520Elem* elem) {
-  elem->unk_40 |= 2;
-  elem->hitbox.flags |= 4;
+  elem->unk_40 |= E080DB520_UNK_1;
+  elem->hitbox.flags |= HBFLAG_UNK_2;
 }
 
 NAKED void FUN_080dacc4(Entity080db520* p) { INCFUNC("asm/func/FUN_080dacc4.inc"); }
@@ -128,7 +137,37 @@ NON_MATCH bool8 FUN_080dad94(Entity080db520Elem* elem) {
 #endif
 }
 
-NAKED void FUN_080dadec(Entity080db520* p) { INCFUNC("asm/func/FUN_080dadec.inc"); }
+// 使用中の枠を見渡して, UNK_4 / UNK_6 がどこにも立っていなければプレイヤーと棺桶の値を戻す
+// 残差5命令 (47/52), 使用中判定の 0/1 の作り置き1ブロックだけが足りない. 他は完全に一致
+// unk_40 をローカルに取ると余計な register copy が1つ増えるので直接2回読む形にした
+NON_MATCH void FUN_080dadec(Entity080db520* p) {
+#ifdef NONMATCHING_C
+  Entity080db520Elem* elems = p->elems;
+  bool8 anyUnk4 = FALSE;
+  bool8 anyUnk6 = FALSE;
+  s32 i;
+
+  for (i = 0; i < 8; i++) {
+    if (p->activeMask & (1 << i)) {
+      if (elems[i].unk_40 & E080DB520_UNK_4) {
+        anyUnk4 = TRUE;
+      }
+      if (elems[i].unk_40 & E080DB520_UNK_6) {
+        anyUnk6 = TRUE;
+      }
+    }
+  }
+
+  if (!anyUnk4) {
+    gPlayerPtr[0]->unk_3ff = 0xFF;
+  }
+  if (!anyUnk6) {
+    FUN_0808689c(-1);
+  }
+#else
+  INCFUNC("asm/func/FUN_080dadec.inc");
+#endif
+}
 
 NAKED void FUN_080dae60(Entity080db520* p, Entity080db520Elem* elem) { INCFUNC("asm/func/FUN_080dae60.inc"); }
 
@@ -249,7 +288,7 @@ NON_MATCH void Entity080db520_EnableAllHitboxes(void) {
         Entity080db520Elem* e = &p->elems[i];
 
         if (e->unk_42 >= 0 && e->unk_3e != 2) {
-          e->unk_40 |= 2;
+          e->unk_40 |= E080DB520_UNK_1;
           e->hitbox.flags |= HBFLAG_UNK_2;
         }
       }
