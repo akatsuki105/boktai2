@@ -51,7 +51,7 @@ _08078DAA:
 	movs r3, #0
 	ldrsh r1, [r0, r3]
 	adds r0, r5, #0
-	bl FUN_080667b0
+	bl Player_StepSunburn
 _08078DC6:
 	adds r0, r5, #0
 	bl Player_IsInRain

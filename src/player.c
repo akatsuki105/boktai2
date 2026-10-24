@@ -3732,7 +3732,7 @@ void Player_TakeSunburnDamage(Player* p) {
 
 // 黒ジャンゴ, バット, マウス が太陽にあたっているときのダメージ処理
 // 太陽ゲージから sunburn を貯め、100 たまるごとに Player_TakeSunburnDamage を1回呼ぶ
-void FUN_080667b0(Player* p, s32 sungauge) {
+void Player_StepSunburn(Player* p, s32 sungauge) {
   if (p->unk_43a == 0) {
     u16 state = p->goodCondTimer;
     bool32 skip = state != 0 && p->goodCondID == GOOD_UVCUT;
@@ -5797,7 +5797,7 @@ NON_MATCH void Player_UpdateDjango(Player* p) {
         }
       } else {
         if (p->flag20 & PFLAG20_SUNBATHING) {
-          FUN_080667b0(p, gStat->sunGauge);
+          Player_StepSunburn(p, gStat->sunGauge);
         }
         if (Player_IsInRain(p)) {
           FUN_0806687c(p);
@@ -6001,7 +6001,7 @@ void Player_UpdateBat(Player* p) {
       s32 action;
 
       if (p->flag20 & PFLAG20_SUNBATHING) {
-        FUN_080667b0(p, gStat->sunGauge);
+        Player_StepSunburn(p, gStat->sunGauge);
       }
       if (Player_IsInRain(p)) {
         FUN_0806687c(p);
@@ -6082,7 +6082,7 @@ void Player_UpdateMouse(Player* p) {
       s32 action;
 
       if (p->flag20 & PFLAG20_SUNBATHING) {
-        FUN_080667b0(p, gStat->sunGauge);
+        Player_StepSunburn(p, gStat->sunGauge);
       }
       if (Player_IsInRain(p)) {
         FUN_0806687c(p);

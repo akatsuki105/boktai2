@@ -113,7 +113,7 @@ printf 'void f(unsigned short*a){int i;for(i=0;i<4;i++){a[i]=0;}}\n' \
   RTL the first operand needed. If the target has it after the first `ldrh` and
   you have it before, cache that operand in a local: `u16 state = p->goodCondTimer;`
   then `skip = state != 0 && p->goodCondID == 7;` moves the init past the load and
-  nothing else changes (`FUN_080667b0`).
+  nothing else changes (`Player_StepSunburn`).
 - **Do not collapse a duplicated body into `||`.** `if (a) {X} else if (b) {X}`
   and `if (a || b) {X}` emit different condition tests; the shared tails are
   cross-jumped but the branches stay distinct. Write the structure the target
