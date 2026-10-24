@@ -102,6 +102,21 @@ static inline u16 Entity9A9F_GetUnk66(void) {
   return p->unk_66;
 }
 
+// 光柱のパレットを設定する (既にそのパレットなら何もしない)
+static inline void Entity5CCC_SetPltt(Entity5CCC* p, u16 plttID) {
+  s32 i, j;
+  if (p->pltt != plttID) {
+    p->pltt = plttID;
+    for (i = 0; i < p->count; i++) {
+      if (p->beams[i].active) {
+        for (j = 0; j < 2; j++) {
+          Video_SetAuxSpritePltt(&p->beams[i].gfx[j], p->pltt);
+        }
+      }
+    }
+  }
+}
+
 void FUN_0809df6c(void) { gEntity5CCC = NULL; }
 
 // pos が有効な光柱の矩形の中にあるか
@@ -451,22 +466,7 @@ NON_MATCH void FUN_0809e734(Entity5CCC* p) {
 }
 
 // 光柱のパレットを 412 に切り替える (既にそうなっていれば何もしない)
-void FUN_0809e75c(Entity5CCC* p) {
-  u16 pltt = 412;
-  s32 i, j;
-
-  if (p->pltt == pltt) {
-    return;
-  }
-  p->pltt = pltt;
-  for (i = 0; i < p->count; i++) {
-    if (p->beams[i].active) {
-      for (j = 0; j < 2; j++) {
-        Video_SetAuxSpritePltt(&p->beams[i].gfx[j], p->pltt);
-      }
-    }
-  }
-}
+void FUN_0809e75c(Entity5CCC* p) { Entity5CCC_SetPltt(p, 412); }
 
 // 有効な光柱を見せ, プレイヤーの状態に応じて Entity5CCC_AddEneCharge を呼ぶ
 // 残差1命令 (59/60). 原典は三項演算子の 2 側のブロックを先に並べ, SUNBATHING の真偽化を rsbs + lsrs #31 の汎用形で出すが, agbcc は条件を反転してビットを >> 4 で落とす
