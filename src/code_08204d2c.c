@@ -6,6 +6,8 @@ static rgb555 rgb555_ARRAY_03000228[16];  // 0x03000228
 COMMON_DATA u32 u32_03002c90 = 0;                          // 0x03002C90
 COMMON_DATA u8 u8_03002c94[0x03002C98 - 0x03002C94] = {};  // unused?
 
+extern void (*const PTR_ARRAY_085ae83c[21])(Entity286F*, Entity286FNode*);
+
 // src/entity_286f.c
 s32 FUN_080412fc(Entity286F*, Entity286FNode*);
 void FUN_08042178(Entity286F*, Entity286FNode*, s32);
@@ -49,7 +51,7 @@ NAKED void FUN_08204dd8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_08204e0c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08204e0c.inc"); }
 
-NAKED void FUN_08204e40(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08204e40.inc"); }
+void FUN_08204e40(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085ae83c[node->state](p, node); }
 
 void FUN_08204e58(Entity286F* p, Entity286FNode* node) { FUN_08204e40(p, node); }
 
