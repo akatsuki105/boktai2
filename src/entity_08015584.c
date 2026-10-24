@@ -6,6 +6,7 @@
 #include "sprite.h"
 #include "sprite_animation.h"
 #include "trig.h"
+#include "vm.h"
 
 // パーティクル1個分, FUN_080155e4 で発生させる
 typedef struct {
@@ -362,4 +363,69 @@ NON_MATCH void UNUSED FUN_08015dfc(WorldPos* pos, u32 param_2, u32 kind, u32 fla
 #endif
 }
 
-NAKED void VM_Sub4383(void) { INCFUNC("asm/func/VM_Sub4383.inc"); }
+// スクリプトの名前付き引数をそのまま発生パラメータにして発生させる
+void VM_Sub4383(void) {
+  ParticleSpawnParam param;
+  Vec3 pos;
+  s32 count = VM_GetNamedArgValue('n', 1);
+
+  if (VM_SeekToNamedArg('p')) {
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
+  } else {
+    pos.x = 0;
+    pos.y = 0;
+    pos.z = 0;
+  }
+
+  param.kind = VM_GetNamedArgValue('t', 0);
+  param.flags = VM_GetNamedArgValue('f', 0);
+  param.animSpeed = VM_GetNamedArgValue('a', 0x40);
+
+  if (VM_SeekToNamedArg('s')) {
+    param.speedY = VM_GetValue();
+    param.speedYRand = VM_GetValue();
+    param.speedXZ = VM_GetValue();
+    param.speedXZRand = VM_GetValue();
+  } else {
+    param.speedY = 0;
+    param.speedYRand = 0;
+    param.speedXZ = 0;
+    param.speedXZRand = 0;
+  }
+
+  if (VM_SeekToNamedArg('d')) {
+    param.angleY = VM_GetValue();
+    param.angleYRand = VM_GetValue();
+    param.angleXZ = VM_GetValue();
+    param.angleXZRand = VM_GetValue();
+  } else {
+    param.angleY = 0;
+    param.angleYRand = 0;
+    param.angleXZ = 0;
+    param.angleXZRand = 0;
+  }
+
+  if (VM_SeekToNamedArg('c')) {
+    param.decayStartY = VM_GetValue();
+    param.decayStartYRand = VM_GetValue();
+    param.unk_1c = VM_GetValue();
+    param.unk_1e = VM_GetValue();
+    param.decayStartXZ = VM_GetValue();
+    param.decayStartXZRand = VM_GetValue();
+    param.unk_24 = VM_GetValue();
+    param.unk_26 = VM_GetValue();
+  } else {
+    param.decayStartY = 0xFF;
+    param.decayStartYRand = 0;
+    param.unk_1c = 0xFF;
+    param.unk_1e = 0;
+    param.decayStartXZ = 0xFF;
+    param.decayStartXZRand = 0;
+    param.unk_24 = 0xFF;
+    param.unk_26 = 0;
+  }
+
+  FUN_080155e4(count, &pos, &param);
+}
