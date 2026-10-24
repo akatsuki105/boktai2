@@ -5,21 +5,23 @@
 #include "random.h"
 #include "sprite_animation.h"
 
+// 煙1つ
 typedef struct {
   AuxAnimState anim;  // 0x00
   Particle ptcl;      // 0x10
   Vec3 vel;           // 0x38, 毎フレーム ptcl.pos に足す
   bool8 active;       // 0x40, アニメが一周すると 0 に戻って activeCount が1減る
   u8 unk_41[3];       // 0x41, まだ未解析
-} Entity080de11cElem;
-static_assert(sizeof(Entity080de11cElem) == 68);
+} SmokePtcl;
+static_assert(sizeof(SmokePtcl) == 68);
 
+// 煙のエフェクトマネージャ
 typedef struct {
-  Entity e;                      // 0x000, ENTITY_UNK_9
-  Entity080de11cElem ptcls[48];  // 0x018
-  AuxAnimFile* animFile;         // 0xCD8, ANIM_D1B8
-  ParticleGroup* group;          // 0xCDC, PTCL_GROUP_0
-  u32 activeCount;               // 0xCE0, active な要素の数, 0 なら _Update は何もしない
+  Entity e;               // 0x000, ENTITY_UNK_9
+  SmokePtcl ptcls[48];    // 0x018
+  AuxAnimFile* animFile;  // 0xCD8, ANIM_D1B8
+  ParticleGroup* group;   // 0xCDC, PTCL_GROUP_0
+  u32 activeCount;        // 0xCE0, active な要素の数, 0 なら _Update は何もしない
 } Entity080de11c;
 static_assert(sizeof(Entity080de11c) == 3300);
 
@@ -38,7 +40,7 @@ NON_MATCH s32 Entity080de11c_Update(Entity080de11c* p) {
   }
 
   for (i = 0; i < 48; i++) {
-    Entity080de11cElem* e = &p->ptcls[i];
+    SmokePtcl* e = &p->ptcls[i];
 
     if (e->active) {
       AuxAnimCmd* cmd;
@@ -124,7 +126,7 @@ NON_MATCH s32 FUN_080ddcc8(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 s
   }
 
   for (i = 0; i < 48; i++) {
-    Entity080de11cElem* e = &p->ptcls[i];
+    SmokePtcl* e = &p->ptcls[i];
 
     if (!e->active) {
       u16 animIdx;

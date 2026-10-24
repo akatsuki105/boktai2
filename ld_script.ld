@@ -101,7 +101,7 @@ SECTIONS {
       src/entity_080dc44c.o(iwram_data);
       src/entity_080dd1f8.o(iwram_data);
       src/attack_box.o(iwram_data);
-      src/entity_080de11c.o(.bss);
+      src/eff_smoke.o(.bss);
       src/entity_080df420.o(iwram_data);
       src/entity_080e01bc.o(iwram_data);
       src/entity_778b.o(iwram_data);
@@ -424,7 +424,7 @@ SECTIONS {
 			src/entity_080dc44c.o (.text);
 			src/entity_080dd1f8.o (.text);
 			src/attack_box.o (.text);
-			src/entity_080de11c.o (.text);
+			src/eff_smoke.o (.text);
 			src/entity_080df420.o (.text);
 			src/entity_080e01bc.o (.text);
 			src/entity_778b.o (.text);
