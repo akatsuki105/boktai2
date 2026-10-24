@@ -386,7 +386,7 @@ NAKED void FUN_08209534(s32 param_1) { INCFUNC("asm/func/FUN_08209534.inc"); }
 void FUN_082097dc(void) { FUN_08209534(0); }
 
 // 0x82C8
-NAKED void FUN_082097e8(void) { INCFUNC("asm/func/FUN_082097e8.inc"); }
+void FUN_082097e8(void) { FUN_08209534(1); }
 
 // 0x9DFE
 NAKED void FUN_082097f4(void) { INCFUNC("asm/func/FUN_082097f4.inc"); }
