@@ -14,8 +14,8 @@ typedef struct {
   Vec3 pos;             // 0x00, '.p', 足元のタイルの高さに合わせてから入る
   AuxSprite sprite[2];  // 0x08
   AuxSpriteGfx gfx[2];  // 0x60
-  s16 unk_98;           // 0x98, '.n', 読み手が見つかっていない
-  bool8 unk_9a;         // 0x9A
+  s16 id;               // 0x98, '.n', 光柱の識別番号, '.n' にこの値を渡して点灯/消灯を切り替える
+  bool8 lit;            // 0x9A, 点灯中か, 落ちていると矩形判定もスプライトも無効になる
   u8 unk_9b;            // 0x9B
   u8 unk_9c;            // 0x9C, '.t' の値の4倍
   bool8 active;         // 0x9D
@@ -73,7 +73,7 @@ bool32 FUN_0809df78(Vec3* pos) {
   }
 
   for (i = 0; i < p->count; i++) {
-    if (p->beams[i].unk_9a && pos->x >= p->beams[i].minX && pos->z >= p->beams[i].minZ && pos->x <= p->beams[i].maxX && pos->z <= p->beams[i].maxZ) {
+    if (p->beams[i].lit && pos->x >= p->beams[i].minX && pos->z >= p->beams[i].minZ && pos->x <= p->beams[i].maxX && pos->z <= p->beams[i].maxZ) {
       return TRUE;
     }
   }
@@ -95,7 +95,7 @@ NON_MATCH bool32 FUN_0809dfec(s32 mapArea) {
   }
   beam = p->beams;
   for (i = 0; i < p->count; i++, beam++) {
-    if (beam->unk_9a && beam->mapArea == mapArea) {
+    if (beam->lit && beam->mapArea == mapArea) {
       return TRUE;
     }
   }
@@ -125,7 +125,7 @@ s32 FUN_0809e05c(Vec3* pos) {
   }
 
   for (i = 0; i < p->count; i++) {
-    if (p->beams[i].unk_9a && pos->x >= p->beams[i].minX && pos->z >= p->beams[i].minZ && pos->x <= p->beams[i].maxX && pos->z <= p->beams[i].maxZ) {
+    if (p->beams[i].lit && pos->x >= p->beams[i].minX && pos->z >= p->beams[i].minZ && pos->x <= p->beams[i].maxX && pos->z <= p->beams[i].maxZ) {
       return i;
     }
   }
@@ -222,7 +222,37 @@ NON_MATCH void FUN_0809e22c(SkylightBeam* beam, s32 param_2, Vec3* pos, u32 para
 #endif
 }
 
-NAKED void FUN_0809e2c4(void) { INCFUNC("asm/func/FUN_0809e2c4.inc"); }
+// '.n' と '.a' から矩形だけの光柱 (スプライトなし) を1本登録する
+void Entity5CCC_AddLightAreaScripted(void) {
+  Entity5CCC* p = gEntity5CCC;
+  Vec3 pos;
+
+  if (p == NULL) {
+    return;
+  }
+  if (p->count >= 16) {
+    return;
+  }
+
+  if (VM_SeekToNamedArg('n')) {
+    p->beams[p->count].id = VM_GetValue();
+  } else {
+    p->beams[p->count].id = 0;
+  }
+
+  if (VM_SeekToNamedArg('a')) {
+    p->beams[p->count].minX = VM_GetValue();
+    p->beams[p->count].minZ = VM_GetValue();
+    p->beams[p->count].maxX = VM_GetValue();
+    p->beams[p->count].maxZ = VM_GetValue();
+    pos.x = p->beams[p->count].minX;
+    pos.y = 0;
+    pos.z = p->beams[p->count].minZ;
+    p->beams[p->count].mapArea = GetZoneAt(&pos);
+    p->beams[p->count].lit = TRUE;
+    p->count++;
+  }
+}
 
 NAKED void FUN_0809e3a0(void) { INCFUNC("asm/func/FUN_0809e3a0.inc"); }
 
@@ -243,8 +273,8 @@ NON_MATCH void FUN_0809e54c(void) {
 
   id = VM_GetValue();
   for (i = 0; i < p->count; i++) {
-    if (p->beams[i].unk_98 != 0 && p->beams[i].unk_98 == id) {
-      p->beams[i].unk_9a = TRUE;
+    if (p->beams[i].id != 0 && p->beams[i].id == id) {
+      p->beams[i].lit = TRUE;
       if (p->beams[i].active && p->unk_28) {
         p->beams[i].sprite[0].flags &= ~SPRFLAG_HIDDEN;
       }
@@ -273,8 +303,8 @@ NON_MATCH void FUN_0809e5c4(void) {
 
   id = VM_GetValue();
   for (i = 0; i < p->count; i++) {
-    if (p->beams[i].unk_98 != 0 && p->beams[i].unk_98 == id) {
-      p->beams[i].unk_9a = FALSE;
+    if (p->beams[i].id != 0 && p->beams[i].id == id) {
+      p->beams[i].lit = FALSE;
       if (p->beams[i].active) {
         p->beams[i].sprite[0].flags |= SPRFLAG_HIDDEN;
       }
@@ -342,7 +372,7 @@ NON_MATCH void FUN_0809e7c4(Entity5CCC* p) {
 
     p->unk_28 = TRUE;
     for (i = 0; i < p->count; i++) {
-      if (p->beams[i].active && p->beams[i].unk_9a) {
+      if (p->beams[i].active && p->beams[i].lit) {
         p->beams[i].sprite[0].flags &= ~SPRFLAG_HIDDEN;
       }
     }
@@ -519,7 +549,7 @@ NON_MATCH void FUN_0809ed58(Entity5CCC* p) {
 
     p->unk_28 = TRUE;
     for (i = 0; i < p->count; i++) {
-      if (p->beams[i].active && p->beams[i].unk_9a) {
+      if (p->beams[i].active && p->beams[i].lit) {
         p->beams[i].sprite[0].flags &= ~SPRFLAG_HIDDEN;
       }
     }

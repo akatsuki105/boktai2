@@ -537,7 +537,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xD1C0, Cmd_D1C0
 	.4byte 0xD229, FUN_0820bccc
 	.4byte 0xD24B, coffin_0808623c
-	.4byte 0xD25F, FUN_0809e2c4
+	.4byte 0xD25F, Entity5CCC_AddLightAreaScripted
 	.4byte 0xD285, Cmd_D285
 	.4byte 0xD37F, Jormungandr_Create @ HashName("ヨルムンガンド")
 	.4byte 0xD3A9, EntityD3A9_Create
