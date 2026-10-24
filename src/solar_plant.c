@@ -107,7 +107,28 @@ void FUN_080a4854(Entity1E98Elem* elem) {
 
 NAKED void FUN_080a48bc(void) { INCFUNC("asm/func/FUN_080a48bc.inc"); }
 
-NAKED s32 Entity1E98_Update(Entity1E98* p) { INCFUNC("asm/func/Entity1E98_Update.inc"); }
+s32 Entity1E98_Update(Entity1E98* p) {
+  s32 i;
+
+  FUN_080a48bc();
+
+  for (i = 0; i < p->count; i++) {
+    Entity1E98Elem* elem = &p->elems[i];
+
+    elem->updateCallback(elem);
+    if (elem->plttTimer != 0) {
+      elem->plttTimer--;
+      if (elem->plttTimer != 0) {
+        elem->gfx.plttID = 0x60;
+        elem->gfx.pltt = p->pltt;
+      } else {
+        Video_SetAuxSpritePltt(&elem->gfx, 0x5F);
+      }
+    }
+  }
+
+  return 0;
+}
 
 NAKED s32 Entity1E98_Destroy(Entity1E98* p) { INCFUNC("asm/func/Entity1E98_Destroy.inc"); }
 
