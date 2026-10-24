@@ -58,7 +58,27 @@ s32 Entity080ac574_Destroy(Entity080ac574* p) {
   return 0;
 }
 
-NAKED s32 Entity080ac574_Init(Entity080ac574* p) { INCFUNC("asm/func/Entity080ac574_Init.inc"); }
+// 粒子4枠を隠した状態で用意し, レジストリに自分を登録する
+s32 Entity080ac574_Init(Entity080ac574* p) {
+  s32 i;
+
+  for (i = 0; i < 4; i++) {
+    Entity080ac574Particle* ptcl = &p->ptcls[i];
+    ParticleGroup* g = GetParticleGroup(PTCL_GROUP_2);
+
+    ptcl->group = g;
+    Particle_Add(&ptcl->ptcl, g, 0);
+    Particle_SetPltt(&ptcl->ptcl, 1);
+    Particle_SetOffset(&ptcl->ptcl, -4, -4);
+    ptcl->ptcl.priority = 2;
+    ptcl->ptcl.offsetZ = 0xEC;
+    ptcl->ptcl.flags |= SPRFLAG_HIDDEN;
+    ptcl->unk_34 = 0;
+    ptcl->active = 0;
+  }
+  Registry_Add(0xA854, p, 0);
+  return 0;
+}
 
 Entity080ac574* Entity080ac574_Create(void) {
   Entity080ac574* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity080ac574));
