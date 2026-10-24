@@ -1,9 +1,11 @@
 #include "entity.h"
 #include "file.h"
+#include "game.h"
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
 #include "sprite.h"
+#include "time.h"
 
 typedef struct {
   AuxSprite spr;           // 0x00, _Destroy が AuxSprite_Remove に渡す
@@ -11,7 +13,9 @@ typedef struct {
   s16 unk_3e;              // 0x3E, 2 なら FUN_080dabe4 が何もしない
   u16 unk_40;              // 0x40, FUN_080dacac が bit1、FUN_080dabe4 が bit2 を立てる
   s16 unk_42;              // 0x42, 負なら FUN_080dabe4 が何もしない
-  u8 unk_44[0x4C - 0x44];  // 0x44
+  u8 unk_44[2];            // 0x44
+  ZoneID16 zoneID;         // 0x46, gStat->zoneID と一致するかを FUN_080dad94 が見る
+  u8 unk_48[4];            // 0x48
   HitboxData hitbox;       // 0x4C, _Destroy が Hitbox_Unregister に渡す
   u8 unk_9c[8];            // 0x9C
 } Entity080db520Elem;
@@ -97,7 +101,32 @@ NON_MATCH Entity080db520Elem* FUN_080dad4c(Entity080db520* p) {
 #endif
 }
 
-NAKED s32 FUN_080dad94(Entity080db520* p) { INCFUNC("asm/func/FUN_080dad94.inc"); }
+// 日中で, かつ今いるゾーンがこの枠の指定と同じなら TRUE
+// 残差1命令 (37/38), 原典は 0/1 を bne/movs#1/b/movs#0 の二分岐で作るが agbcc は movs#0 を手前のガードより上へ巻き上げて条件付き代入1つに畳む
+// bool8 のローカルを宣言と代入に分けると 0/1 の作り置き自体は再現できる (static inline bool32 や初期化子つき宣言では畳まれる). 比較の左右入れ替え, 分岐極性反転, ?: も試済
+NON_MATCH bool8 FUN_080dad94(Entity080db520Elem* elem) {
+#ifdef NONMATCHING_C
+  bool8 same;
+
+  if (gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT || gClock.spanOfTime == TIME_UNK4) {
+    return FALSE;
+  }
+  if (!(gStat->unk_934 & 2)) {
+    return FALSE;
+  }
+  if (gStat->zoneID == elem->zoneID) {
+    same = TRUE;
+  } else {
+    same = FALSE;
+  }
+  if (!same) {
+    return FALSE;
+  }
+  return TRUE;
+#else
+  INCFUNC("asm/func/FUN_080dad94.inc");
+#endif
+}
 
 NAKED void FUN_080dadec(Entity080db520* p) { INCFUNC("asm/func/FUN_080dadec.inc"); }
 
