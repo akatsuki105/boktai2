@@ -80,7 +80,7 @@ static inline void ShowBG(u32 bits) { gStagedDISPCNT |= bits; }
 s32 EnemyDex_GetPageStart(u32 param_1);
 s32 EnemyDex_GetCategoryOfEntry(u32 param_1);
 s32 EnemyDex_GetPageEntryCount(u32 param_1);
-s32 EnemyDex_GetCategoryEntryCount(u32 param_1);
+s32 EnemyDex_GetCategoryEntryCount(u32 category);
 s32 EnemyDex_GetCategoryStart(u32 param_1);
 
 static const s32 sEnemyDexPageStarts[9] = {0, 7, 14, 21, 27, 34, 41, 48, 50};  // ページの先頭エントリ番号 (sEnemyDexPageEntryCounts の累積和), 0x085AF034
@@ -97,7 +97,7 @@ s32 EnemyDex_GetPageStart(u32 page) { return sEnemyDexPageStarts[page]; }
 
 s32 EnemyDex_GetPageEntryCount(u32 page) { return sEnemyDexPageEntryCounts[page]; }
 
-NAKED s32 EnemyDex_GetCategoryEntryCount(u32 page) { INCFUNC("asm/func/EnemyDex_GetCategoryEntryCount.inc"); }
+s32 EnemyDex_GetCategoryEntryCount(u32 category) { return sEnemyDexCategoryCounts[category]; }
 
 NAKED s32 EnemyDex_GetCategoryStart(u32 param_1) { INCFUNC("asm/func/EnemyDex_GetCategoryStart.inc"); }
 
