@@ -10,11 +10,9 @@
 static inline s32 TileHeightAt(WorldPos* pos) {
   MapTileOverride* ov;
   CollisionMapTile* tile;
-  s32 stairs;
-  s32 height;
-  s32 bx;
-  s32 bz;
+  s32 bx, bz;
   s32 idx;
+  s32 stairs, height;
 
   bx = (s8)(pos->x >> 8);
   bz = (s8)(pos->z >> 8);
@@ -25,11 +23,7 @@ static inline s32 TileHeightAt(WorldPos* pos) {
   }
 
   ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
+  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
 
   stairs = tile->heightStairs >> 4;
   height = (tile->heightStairs & 0xF) << 8;
