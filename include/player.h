@@ -29,7 +29,7 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PFLAG20_UNK_14 (1 << 14)     // 0x00004000, Player_UpdateDjango が先頭で毎フレーム立てる
 #define PFLAG20_UNK_15 (1 << 15)     // 0x00008000, 立っていると Player_SetHitDir が被弾方向を facing ではなく unk_3e8 に書く
 #define PFLAG20_SNEAKING (1 << 16)   // 0x00010000, スニーク状態(スカルスーツ装備, Cマウス形態 など), 処理的には、 "敵の視界が半分になる"
-#define PFLAG20_UNK_17 (1 << 17)     // 0x00020000, 棺桶が COFFIN_SILVER のとき寝ている間だけ立つ (多分、敵から完全に見つからなくなる状態)
+#define PFLAG20_INVISIBLE (1 << 17)  // 0x00020000, 敵から見えない状態
 #define PFLAG20_UNK_18 (1 << 18)     // 0x00040000, Player_UpdateDjango が unk_1c が 2 か 4 のとき立てる
 #define PFLAG20_UNK_19 (1 << 19)     // 0x00080000
 

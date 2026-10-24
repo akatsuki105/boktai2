@@ -2162,7 +2162,7 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
       scale = 0x40 - (p->unk_97a >> 1);
       p->human.scaleX = scale;
       p->human.scaleY = scale;
-      p->flag20 |= 0x50000;
+      p->flag20 |= (PFLAG20_SNEAKING | PFLAG20_UNK_18);
     } else if (p->unk_97a != 0) {
       if (p->unk_3f1 != 0) {
         PlaySound_082406e0(SONG_822);
@@ -2183,7 +2183,7 @@ NON_MATCH void Player_UpdateFormScale(Player* p) {
 
     if (p->goodCondID == GOOD_INVISIBLE) {
       p->human.flags |= SPRFLAG_BLINK_ODD;
-      p->flag20 |= 0x20000;
+      p->flag20 |= PFLAG20_INVISIBLE;
     } else {
       p->human.flags &= ~SPRFLAG_BLINK_ODD;
     }
@@ -5079,7 +5079,7 @@ NON_MATCH void MagicSleeping_Update(Player* p) {
 
   p->flag20 &= ~PFLAG20_UNK_0;
   if (p->coffin == COFFIN_SILVER) {
-    p->flag20 |= PFLAG20_UNK_17;
+    p->flag20 |= PFLAG20_INVISIBLE;
   }
 
   anim = &p->anim_33c;
