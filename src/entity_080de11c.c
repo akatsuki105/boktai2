@@ -5,11 +5,11 @@
 #include "sprite_animation.h"
 
 typedef struct {
-  u8 unk_00[0x10];         // 0x00, まだ未解析
-  Particle ptcl;           // 0x10
-  u8 unk_38[0x40 - 0x38];  // 0x38, まだ未解析
-  u8 unk_40;               // 0x40, _Init が 0 を入れる
-  u8 unk_41[0x44 - 0x41];  // 0x41, まだ未解析
+  AuxAnimState anim;  // 0x00
+  Particle ptcl;      // 0x10
+  Vec3 vel;           // 0x38, 毎フレーム ptcl.pos に足す
+  bool8 active;       // 0x40, アニメが一周すると 0 に戻って activeCount が1減る
+  u8 unk_41[3];       // 0x41, まだ未解析
 } Entity080de11cElem;
 static_assert(sizeof(Entity080de11cElem) == 68);
 
@@ -18,13 +18,81 @@ typedef struct {
   Entity080de11cElem ptcls[48];  // 0x018
   AuxAnimFile* animFile;         // 0xCD8, ANIM_D1B8
   ParticleGroup* group;          // 0xCDC, PTCL_GROUP_0
-  u8 unk_ce0[0xCE4 - 0xCE0];     // 0xCE0, まだ未解析
+  u32 activeCount;               // 0xCE0, active な要素の数, 0 なら _Update は何もしない
 } Entity080de11c;
 static_assert(sizeof(Entity080de11c) == 3300);
 
 static Entity080de11c* gEntity080de11c;  // 0x03000174
 
-NAKED s32 Entity080de11c_Update(Entity080de11c* p) { INCFUNC("asm/func/Entity080de11c_Update.inc"); }
+// 残差5命令 (178/183), 原典はループ外に 1 と 2 の両方を括り出すがこちらは 1 だけ, muls の前にコピーが2つ入る
+// Tier A-C 試済, 兄弟の Entity0800a89c_UpdateCollectedBug と同じ形まで追い込んだ
+NON_MATCH s32 Entity080de11c_Update(Entity080de11c* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  if (p->activeCount == 0) {
+    return 0;
+  }
+
+  for (i = 0; i < 48; i++) {
+    Entity080de11cElem* e = &p->ptcls[i];
+
+    if (e->active) {
+      AuxAnimCmd* cmd;
+      bool32 finished;
+
+      e->ptcl.pos.x += e->vel.x;
+      e->ptcl.pos.y += e->vel.y;
+      e->ptcl.pos.z += e->vel.z;
+
+      cmd = &e->anim.cmds[e->anim.cmdIdx];
+      e->ptcl.tileNum = (*cmd >> 6) * ((e->ptcl.spriteWidth >> 3) * (e->ptcl.spriteHeight >> 3)) + p->group->tile;
+      if ((e->anim.flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+        e->ptcl.flags |= SPRFLAG_XFLIP;
+      } else {
+        e->ptcl.flags &= ~SPRFLAG_XFLIP;
+      }
+      if ((e->anim.flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+        e->ptcl.flags |= SPRFLAG_YFLIP;
+      } else {
+        e->ptcl.flags &= ~SPRFLAG_YFLIP;
+      }
+      e->anim.tick++;
+      if (e->anim.tick < e->anim.wait) {
+        finished = FALSE;
+      } else {
+        e->anim.tick = 0;
+        if (e->anim.flags & ANIM_PLAY_REVERSE) {
+          if (e->anim.cmdIdx == 0) {
+            e->anim.cmdIdx = e->anim.cmdCount - 1;
+            finished = TRUE;
+          } else {
+            e->anim.cmdIdx--;
+            finished = FALSE;
+          }
+        } else {
+          e->anim.cmdIdx++;
+          if (e->anim.cmdIdx < e->anim.cmdCount) {
+            finished = FALSE;
+          } else {
+            e->anim.cmdIdx = 0;
+            finished = TRUE;
+          }
+        }
+        e->anim.wait = (e->anim.speed * (e->anim.cmds[e->anim.cmdIdx] & 0xF)) >> 6;
+      }
+      if (finished) {
+        e->active = FALSE;
+        e->ptcl.flags |= SPRFLAG_HIDDEN;
+        p->activeCount--;
+      }
+    }
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/Entity080de11c_Update.inc");
+#endif
+}
 
 // 全要素の粒子を描画リストから外す
 s32 Entity080de11c_Destroy(Entity080de11c* p) {
@@ -58,7 +126,7 @@ s32 Entity080de11c_Init(Entity080de11c* p) {
   for (i = 0; i < 48; i++) {
     Particle* ptcl = &p->ptcls[i].ptcl;
 
-    p->ptcls[i].unk_40 = 0;
+    p->ptcls[i].active = FALSE;
     Particle_Add(ptcl, p->group, 0);
     Particle_SetOffset(ptcl, -8, -10);
     ptcl->offsetZ = 2;
