@@ -413,16 +413,18 @@ void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
   }
 }
 
-// 残差1命令 (17/18). 原典は '.p' の日光ビットを rsbs + lsrs #31 で 0/1 に起こすが, agbcc は単一ビットと見て (flags >> 4) & 1 に縮める
-// マスクを u32 ローカルに置くと縮小は止まるが分岐で作る形になり逆に2命令増える
-NON_MATCH void FUN_0809e734(Entity5CCC* p) {
-#ifdef NONMATCHING_C
-  u32 flags = p->player->flag20;
+void FUN_0809e734(Entity5CCC* p) {
+  Player* player = p->player;
 
-  Entity5CCC_AddEneCharge(p, (flags & PFLAG20_UNK_5) ? 2 : (flags & PFLAG20_SUNBATHING) != 0);
-#else
-  INCFUNC("asm/func/FUN_0809e734.inc");
-#endif
+  u32 light;
+  if (TEST_FLAGS(player->flag20, PFLAG20_UNK_5)) {
+    light = 2;
+  } else if (TEST_FLAGS(player->flag20, PFLAG20_SUNBATHING)) {
+    light = 1;
+  } else {
+    light = 0;
+  }
+  Entity5CCC_AddEneCharge(p, light);
 }
 
 // 光柱のパレットを 412 に切り替える (既にそうなっていれば何もしない)
