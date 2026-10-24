@@ -29,7 +29,39 @@ void Entity080c0fa0_SetUpdateCallback(Entity080c0fa0* p, Entity080c0fa0Func* fn)
   p->stateTimer = 0;
 }
 
-NAKED void Entity080c0fa0_AdvanceAnim(Entity080c0fa0* p) { INCFUNC("asm/func/Entity080c0fa0_AdvanceAnim.inc"); }
+// 向きから反転フラグと表示ポーズを決め, 6フレーム経ったら自分を消す
+void Entity080c0fa0_AdvanceAnim(Entity080c0fa0* p) {
+  if (p->stateTimer <= 2) {
+    p->sprite.poseIdx = (p->poseIdx >> 1) + 4;
+  } else {
+    s32 idx;
+    SpriteFlags flags;
+
+    if (p->dir & 1) {
+      idx = 1;
+    } else {
+      idx = ((p->dir >> 1) & 1) ? 2 : 0;
+    }
+
+    if (p->dir <= 2) {
+      flags = 0;
+    } else if (p->dir <= 4) {
+      flags = SPRFLAG_YFLIP;
+    } else if (p->dir <= 5) {
+      flags = SPRFLAG_XFLIP | SPRFLAG_YFLIP;
+    } else {
+      flags = SPRFLAG_XFLIP;
+    }
+
+    p->sprite.flags |= flags;
+    p->sprite.poseIdx = idx + 6;
+  }
+
+  p->stateTimer++;
+  if (p->stateTimer > 5) {
+    KillEntity(&p->e);
+  }
+}
 
 // 速度ぶん進めてスプライトへ写し, unk_74 フレーム経ったらアニメを進める方へ移る
 void Entity080c0fa0_UpdateActive(Entity080c0fa0* p) {
