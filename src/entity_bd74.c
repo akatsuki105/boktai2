@@ -68,8 +68,6 @@ void (*const sEntityBD74Updates[8])(EntityBD74*) = {
     FUN_08084f7c,
 };  // 0x085ABFC8
 
-static inline bool32 TestPauseFlag(u32 bits) { return u32_03002bc0[0] & bits; }
-
 void FUN_080846c8(void) {
   if (gEntityBD74 != NULL && gEntityBD74->state == 6) {
     PlaySound_082406e0(SONG_526);
@@ -220,7 +218,7 @@ NAKED void FUN_0808509c(EntityBD74* p) { INCFUNC("asm/func/FUN_0808509c.inc"); }
 s32 EntityBD74_Update(EntityBD74* p) {
   u16 scale;
 
-  if (!TestPauseFlag(FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
     FUN_08084b5c(p);
     FUN_0808509c(p);
     p->updateCallback(p);

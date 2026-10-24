@@ -252,8 +252,6 @@ const SoundID16 sFootStepSEs[6] = {SONG_201, SONG_202, SONG_603, SONG_604, SONG_
 
 void FUN_08055d7c(SpriteHolder* p);
 
-static inline void Entity286FNode_SetFlags(struct Entity286FNode* p, Entity286FNodeFlags bits) { p->flags |= bits; }
-
 // 状態を差し替えて経過フレーム数を 0 に戻す
 static inline void Entity286FNode_SetState(Entity286FNode* node, u32 state) {
   node->state = state;
@@ -573,7 +571,7 @@ void FUN_08042178(Entity286F* p, Entity286FNode* node, s32 elapsed) {
     node->unk_07 = 0;
     FUN_08041480(node, 0, 2, 0, 4);
   }
-  Entity286FNode_SetFlags(node, E286FNODE_UNK_8);
+  SET_FLAGS(node->flags, E286FNODE_UNK_8);
   node->fn(node);
 }
 
@@ -583,7 +581,7 @@ void FUN_080421bc(Entity286F* p, Entity286FNode* node, s32 elapsed) {
     node->unk_07 = 0;
     FUN_08041480(node, 0, 1, 0, 4);
   }
-  Entity286FNode_SetFlags(node, E286FNODE_UNK_12);
+  SET_FLAGS(node->flags, E286FNODE_UNK_12);
   node->fn(node);
 }
 
@@ -601,7 +599,7 @@ void FUN_08042868(Entity286F* p, Entity286FNode* node, s32 elapsed) {
     node->unk_07 = 0;
     FUN_08041480(node, node->unk_1e8, node->unk_1e9, 0, 4);
   }
-  Entity286FNode_SetFlags(node, E286FNODE_UNK_12);
+  SET_FLAGS(node->flags, E286FNODE_UNK_12);
   node->fn(node);
 }
 

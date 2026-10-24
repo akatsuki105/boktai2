@@ -371,7 +371,6 @@ NON_MATCH void FUN_0809e5c4(void) {
 
 // 日光 (サバタは日陰) を浴びている量を積み, 120 たまるごとに ENE を1回復させる
 void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
-  u32 mask;
   s32 heal;
 
   if (gFlag030047a4 & FLAG030047A4_UNK_8) {
@@ -385,8 +384,7 @@ void Entity5CCC_AddEneCharge(Entity5CCC* p, s32 light) {
   if ((gFlag030047a4 & (FLAG030047A4_UNK_8 | FLAG030047A4_UNK_9)) == FLAG030047A4_UNK_9) {
     return;
   }
-  mask = FLAG03002BC0_UNK_2;
-  if (u32_03002bc0[0] & mask) {
+  if (TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
     return;
   }
 

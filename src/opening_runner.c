@@ -43,8 +43,6 @@ static_assert(sizeof(OpRunner) == 392);
 
 COMMON_DATA OpRunner* gOpRunners[2] = {};  // 0x03002C98, [0: ジャンゴ, 1: おてんこ]
 
-static inline void OpRunner_SetPauseFlags(OpRunner* p, u32 bits) { p->pauseFlags |= bits; }
-
 NAKED void FUN_0821a87c(void) { INCFUNC("asm/func/FUN_0821a87c.inc"); }
 
 NAKED void FUN_0821a974(void) { INCFUNC("asm/func/FUN_0821a974.inc"); }
@@ -66,10 +64,10 @@ void FUN_0821ae64(OpRunner* p, s32 val) {
   p->unk_fc = val;
   p->timer_100 = 0;
   p->updateCallback = sOpRunnerUpdates[val];
-  OpRunner_SetPauseFlags(p, 1);
+  SET_FLAGS(p->pauseFlags, 1);
   p->unk_104 = 0;
   p->timer_108 = 0;
-  OpRunner_SetPauseFlags(p, 2);
+  SET_FLAGS(p->pauseFlags, 2);
 }
 
 // 残差は CpuFill32 の引数準備順の2命令だけ (188/188), 原典は dest の add r4,sp,#0x14 が tmp の0代入より前

@@ -6686,9 +6686,7 @@ void Player_ReduceENE_0807aa60(Player* p, s32 amount) {
 
 // 月光虫取得時に呼ばれる(HP回復), 精霊の衣を着ていると効果が2倍になる
 void Player_ApplyMoonbug(Player* p, s32 amount) {
-  EquipBuffs mask = EBUFF_FAIRY;
-
-  if (p->equipBuffs & mask) {
+  if (TEST_FLAGS(p->equipBuffs, EBUFF_FAIRY)) {
     FUN_0807aa00(p, amount * 2);
   } else {
     FUN_0807aa00(p, amount);
@@ -6697,9 +6695,7 @@ void Player_ApplyMoonbug(Player* p, s32 amount) {
 
 // 太陽虫取得時に呼ばれる(Ene回復), 精霊の衣を着ていると効果が2倍になる
 void Player_ApplySolarbug(Player* p, s32 amount) {
-  EquipBuffs mask = EBUFF_FAIRY;
-
-  if (p->equipBuffs & mask) {
+  if (TEST_FLAGS(p->equipBuffs, EBUFF_FAIRY)) {
     FUN_0807aa30(p, amount * 2);
   } else {
     FUN_0807aa30(p, amount);
@@ -6708,9 +6704,7 @@ void Player_ApplySolarbug(Player* p, s32 amount) {
 
 // 暗黒虫取得時に呼ばれる(Eneが減る), 精霊の衣を着ていると効果が2倍になる
 void Player_ApplyDarkbug(Player* p, s32 amount) {
-  EquipBuffs mask = EBUFF_FAIRY;
-
-  if (p->equipBuffs & mask) {
+  if (TEST_FLAGS(p->equipBuffs, EBUFF_FAIRY)) {
     Player_ReduceENE_0807aa60(p, amount * 2);
   } else {
     Player_ReduceENE_0807aa60(p, amount);

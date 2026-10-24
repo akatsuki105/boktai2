@@ -50,8 +50,6 @@ void ClearBGTilemapBuffer(s32 bg) {
   ClearMemory(GetTilemapBuffer(bg), BG_SCREEN_SIZE);
 }
 
-static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
-
 // BG のタイルマップと転送待ち状態をすべてクリアし, mode に応じた2通りのうちどちらかで BGnCNT と DISPCNT を設定する
 void Video_InitBGMode(s32 mode) {
   s32 i;
@@ -94,7 +92,7 @@ void Video_InitBGMode(s32 mode) {
     }
   }
 
-  HideBG(DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON);
+  CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON | DISPCNT_BG2_ON | DISPCNT_BG3_ON);
 }
 
 // BG のタイルマップ・モザイク・ブレンドと転送待ちを落とし, 各 BG キャラブロックの先頭タイルを空にする

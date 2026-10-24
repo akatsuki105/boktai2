@@ -68,9 +68,6 @@ bool32 FUN_0821b21c(s32* p, s32 val1, s32 val2, u16 val3);
 void FUN_0823d4ac(void);
 void Title_SetState(Title* p, s32 state);
 
-static inline void Title_SetFlags(Title* p, TitleFlags bits) { p->flags |= bits; }
-static inline TitleFlags Title_TestFlags(Title* p, TitleFlags bits) { return p->flags & bits; }
-
 void FUN_08211f20(Title* p) {
   s32 idx;
   p->tilemap = GetFile(DIR_TILE_MAP, TILEMAP_32A2);
@@ -111,16 +108,16 @@ NON_MATCH void Title_UpdateState2(Title* p) {
   if ((gInput[0].pressed & A_BUTTON) && p->unk_64 < 2) {
     p->unk_64 = 2;
     p->timer_68 = 0;
-    Title_SetFlags(p, TITLE_FLAG_UNK_1);
+    SET_FLAGS(p->flags, TITLE_FLAG_UNK_1);
   }
 
   switch (p->unk_64) {
     case 0: {
-      p->flags &= ~TITLE_FLAG_UNK_1;
+      CLEAR_FLAGS(p->flags, TITLE_FLAG_UNK_1);
       if (FUN_0821b21c(&p->unk_88, 0, p->unk_70[p->state][0], 7)) {
         p->unk_64 = 1;
         p->timer_68 = 0;
-        Title_SetFlags(p, TITLE_FLAG_UNK_1);
+        SET_FLAGS(p->flags, TITLE_FLAG_UNK_1);
       }
       break;
     }
@@ -129,7 +126,7 @@ NON_MATCH void Title_UpdateState2(Title* p) {
       if (p->timer_68 >= p->unk_70[p->state][1]) {
         p->unk_64 = 2;
         p->timer_68 = 0;
-        Title_SetFlags(p, TITLE_FLAG_UNK_1);
+        SET_FLAGS(p->flags, TITLE_FLAG_UNK_1);
       }
       break;
     }
@@ -320,10 +317,10 @@ void Title_SetState(Title* p, s32 state) {
   p->state = state;
   p->stateTimer = 0;
   p->updateCallback = sTitleUpdates[state];
-  Title_SetFlags(p, TITLE_FLAG_UNK_0);
+  SET_FLAGS(p->flags, TITLE_FLAG_UNK_0);
   p->unk_64 = 0;
   p->timer_68 = 0;
-  Title_SetFlags(p, TITLE_FLAG_UNK_1);
+  SET_FLAGS(p->flags, TITLE_FLAG_UNK_1);
   gBgBrightness = 0;
   gObjBrightness = 0;
   gBgPlttFadeRowMask |= ((1 << 1) | (1 << 0));
@@ -396,7 +393,7 @@ s32 Title_Init(Title* p) {
   p->unk_6c = -1;
   Title_LoadGfx(p);
 
-  if (p->unk_40 == 1 || p->unk_40 == 2 || Title_TestFlags(p, TITLE_FLAG_UNK_28)) {
+  if (p->unk_40 == 1 || p->unk_40 == 2 || TEST_FLAGS(p->flags, TITLE_FLAG_UNK_28)) {
     Title_SetState(p, 3);
   } else {
     Title_SetState(p, 0);

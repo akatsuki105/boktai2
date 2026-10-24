@@ -25,16 +25,13 @@ void MosaicFader_Stop(void);
 s32 FUN_0809c08c(s32 mode);
 s32 FUN_0804e59c(void);
 
-// 次の描画から BG を消す
-static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
-
 EntityD53D* FUN_0804ea10(void) { return gEntityD53D; }
 
 // テキストパネルとモザイクを片付けて, 描画パスを通常に戻す
 void FUN_0804ea1c(void) {
   TextPanelManager_DestroyAll();
   MosaicFader_Stop();
-  HideBG(DISPCNT_BG1_ON | DISPCNT_BG2_ON);
+  CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON | DISPCNT_BG2_ON);
   Video_ResetFrameState(1);
   Video_SetDrawPasses(0, nop_0822e738, nop_0822b09c, FUN_0822f584);
   FUN_0809c08c(7);

@@ -168,7 +168,7 @@ s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags f
   }
   if (!p->active) {
     _MainSprite_Setup(p, gfx, poseIdx, flags, prio, playMode, animCmdDuration, &v);
-    Video_AddMainSpriteIntoDrawList(p, (u32) - (flags & SPRFLAG_DRAWLIST) >> 31);
+    Video_AddMainSpriteIntoDrawList(p, TEST_FLAGS(flags, SPRFLAG_DRAWLIST) ? 1 : 0);
     return 0;
   }
   return -1;

@@ -11,9 +11,6 @@ u32 EntityA628_IsActive(void);
 COMMON_DATA EnemyManager* gEnemyManager = NULL;    // 0x03002C5C
 COMMON_DATA EnemyListNode* gEnemyListHead = NULL;  // 0x03002C60, 生存中のエネミーの単方向リスト, EnemyManager.list と同じ値
 
-static inline void Stat_SetFlag934(u16 bit) { gStat->unk_934 |= bit; }
-static inline void Stat_ClearFlag934(u16 bit) { gStat->unk_934 &= ~bit; }
-
 // 番兵ノードを1つ確保してリストを空の状態にする
 void EnemyManager_InitList(EnemyManager* p) {
   EnemyListNode* node;
@@ -125,7 +122,7 @@ NAKED void FUN_080ec8a4(EnemyManager* p) { INCFUNC("asm/func/FUN_080ec8a4.inc");
 
 void FUN_080ec900(u8 kind) {
   if ((kind == 1) || (kind == 25)) {
-    Stat_SetFlag934(SF934_UNK_0);
+    SET_FLAGS(gStat->unk_934, SF934_UNK_0);
   }
 }
 
@@ -289,24 +286,16 @@ NON_MATCH void FUN_080ed9d0(void) {
 }
 
 void FUN_080eda24(void) {
-  EnemyListNode* node;
-  Enemy* p;
-  s32 val;
-  EnemyFlags3 mask;
-
   if (GetEnemyManager() != NULL) {
-    node = gEnemyListHead;
-    p = node->enemy;
-    val = VM_GetNamedArgValue('d', 0);
-    if (p != NULL) {
-      mask = ENEFLAG3_UNK_14;
-      do {
-        if ((Enemy_IsDead(p) == 0) && ((p->flags3 & mask) != 0)) {
-          FUN_080ecbe8(p, val);
-        }
-        node = node->next;
-        p = node->enemy;
-      } while (p != NULL);
+    EnemyListNode* node = gEnemyListHead;
+    Enemy* p = node->enemy;
+    s32 val = VM_GetNamedArgValue('d', 0);
+    while (p != NULL) {
+      if (!Enemy_IsDead(p) && TEST_FLAGS(p->flags3, ENEFLAG3_UNK_14)) {
+        FUN_080ecbe8(p, val);
+      }
+      node = node->next;
+      p = node->enemy;
     }
   }
 }
@@ -434,9 +423,9 @@ NAKED void FUN_080ee738(Enemy* p) { INCFUNC("asm/func/FUN_080ee738.inc"); }
 void FUN_080ee9d4(EnemyManager* p) {
   if (Mod(p->frameCounter, 15) == 0) {
     if (EntityA628_IsActive() == 0) {
-      Stat_SetFlag934(SF934_UNK_5);
+      SET_FLAGS(gStat->unk_934, SF934_UNK_5);
     } else {
-      Stat_ClearFlag934(SF934_UNK_5);
+      CLEAR_FLAGS(gStat->unk_934, SF934_UNK_5);
     }
   }
 }

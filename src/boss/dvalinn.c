@@ -178,12 +178,10 @@ void (*const PTR_ARRAY_085ae768[20])(Dvalinn*) = {
 };  // 0x085AE768
 // clang-format on
 
-static inline bool32 TestFlag03002bc0(u32 flags) { return (u32_03002bc0[0] & flags) != 0; }
-
 INCASM("asm/dvalinn.inc");
 
 s32 Dvalinn_Update(Dvalinn* p) {
-  if (!TestFlag03002bc0(FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
     FUN_08022e20((Boss*)p);
     FUN_081ffd9c(p);
     FUN_081fc86c(p);

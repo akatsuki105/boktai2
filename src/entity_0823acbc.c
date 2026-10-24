@@ -57,10 +57,6 @@ void Time_UpdateSunTimers(void);
 static inline void DisableEntityFlags(u32 flags) { gEntityDisableFlags |= flags; }
 static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
 
-static inline u32 TestFlag030047a4(u32 flags) { return (gFlag030047a4 | u32_030047a0) & flags; }
-
-static inline void ShowBG(u32 bits) { gStagedDISPCNT |= bits; }
-
 void FUN_0823a870(void) { gSystemSaveData = &gSystemSaveDataBuffer; }
 
 static s32 UNUSED FUN_0823a880(u8* pc, ScriptArgs* args) { return VM_ExecByPointer(pc, args); }
@@ -72,7 +68,7 @@ static s32 UNUSED FUN_0823a898(u32 scriptID, ScriptArgs* args) { return VM_ExecB
 s32 VM_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args) { return VM_ExecByID(scriptID, args); }
 
 bool32 FUN_0823a8b0(void) {
-  if (TestFlag030047a4(FLAG030047A4_GAMEOVER)) {
+  if (TEST_FLAGS((gFlag030047a4 | u32_030047a0), FLAG030047A4_GAMEOVER)) {
     return TRUE;
   }
   if (u32_030047b0 != 0) {
@@ -131,7 +127,8 @@ void FUN_0823a9c4(void) {
   FUN_0823cd04();
   Map_ResetCollisionMap();
   HitboxManager_Create();
-  ShowBG(DISPCNT_BG0_ON);
+  SET_FLAGS(gStagedDISPCNT, DISPCNT_BG0_ON);
+  // ShowBG(DISPCNT_BG0_ON);
 }
 
 void FUN_0823a9f4(void) {
@@ -140,9 +137,9 @@ void FUN_0823a9f4(void) {
 }
 
 void FUN_0823aa10(void) {
-  if (!TestFlag030047a4(FLAG030047A4_UNK_0)) {
+  if (!TEST_FLAGS((gFlag030047a4 | u32_030047a0), FLAG030047A4_UNK_0)) {
     FUN_082407e0();
-    DisableEntityFlags(ENTITY_DISABLE_1);
+    SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_1);
   }
 }
 

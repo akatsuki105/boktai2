@@ -4,6 +4,7 @@
 #include "constants/constants.h"
 #include "definition.h"
 #include "gba/gba.h"
+#include "macro.h"
 #include "struct.h"
 #include "trig.h"
 #include "types.h"

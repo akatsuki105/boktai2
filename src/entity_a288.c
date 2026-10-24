@@ -249,8 +249,6 @@ const SoundID16 u16_ARRAY_085afeb2[99] = {
 };  // 0x085afeb2
 // clang-format on
 
-static inline void EntityA288_SetFlags(EntityA288* p, u32 bits) { p->flags |= bits; }
-
 void FUN_08213880(EntityA288* p) { p->tilemap2 = GetFile(DIR_TILE_MAP, TILEMAP_A413); }
 
 void EntityA288_LoadBgPltt(EntityA288* p) {
@@ -663,10 +661,10 @@ void EntityA288_SetState(EntityA288* p, s32 state) {
   p->state = state;
   p->timer1 = 0;
   p->updateCallback = sEntityA288StateFns[state];
-  EntityA288_SetFlags(p, 1);
+  SET_FLAGS(p->flags, 1);
   p->unk_5c = 0;
   p->timer2 = 0;
-  EntityA288_SetFlags(p, 2);
+  SET_FLAGS(p->flags, 2);
 }
 
 s32 EntityA288_Update(EntityA288* p) {

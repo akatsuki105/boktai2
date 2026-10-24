@@ -18,9 +18,6 @@ COMMON_DATA EntityBA36* gEntityBA36 = NULL;  // 0x03002C40
 void FUN_0809c544(void* param_1);
 void FUN_0809c58c(void);
 
-static inline void Stat_SetFlag934(u16 bit) { gStat->unk_934 |= bit; }
-static inline void Stat_ClearFlag934(u16 bit) { gStat->unk_934 &= ~bit; }
-
 // 残りフレーム数を '.c' で入れ直し、おいしい水と画面のカウントダウンを揃える
 void EntityBA36_SetRemaining(void) {
   s32 timer = VM_SeekToNamedArg('c') ? VM_GetValue() : 1800;
@@ -45,9 +42,9 @@ s32 EntityBA36_GetRemaining(void) {
 // 残り時間を1フレーム減らし、0 になったらおいしい水を回収してスクリプトを実行する
 s32 EntityBA36_Update(EntityBA36* p) {
   if (p->timer == 0) {
-    Stat_SetFlag934(SF934_DESERT);
+    SET_FLAGS(gStat->unk_934, SF934_DESERT);
   } else {
-    Stat_ClearFlag934(SF934_DESERT);
+    CLEAR_FLAGS(gStat->unk_934, SF934_DESERT);
     p->timer--;
     if (p->timer == 0) {
       if (CheckItemOwn(ITEM_TASTY_WATER)) {

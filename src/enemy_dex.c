@@ -73,8 +73,6 @@ static_assert(sizeof(EnemyDexMenu) == 4704);
 
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
-static inline void ShowBG(u32 bits) { gStagedDISPCNT |= bits; }
-
 s32 EnemyDex_GetPageStart(u32 page) {
   // ページの先頭エントリ番号 (sEnemyDexPageEntryCounts の累積和)
   static const s32 sEnemyDexPageStarts[9] = {0, 7, 14, 21, 27, 34, 41, 48, 50};  // 0x085AF034
@@ -636,7 +634,7 @@ s32 FUN_0820dae4(EnemyDexMenu* p, u32 param_2) {
   bg->hofs = 0;
   bg->vofs = 0;
   SetBGPrioDirect(3, 3);
-  ShowBG(DISPCNT_BG3_ON);
+  SET_FLAGS(gStagedDISPCNT, DISPCNT_BG3_ON);
   Video_FillBGRect(3, 4, 6, 8, 9, 1, 0, 0);
   return 0;
 }
