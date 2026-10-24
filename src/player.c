@@ -3814,6 +3814,9 @@ NON_MATCH void Player_UpdateLookAround(Player* p) {
 // この C はこの関数自体は原典とバイト単位で一致するが, 同じ TU の FUN_0807a270 のレジスタ割当とプール順が動いて ROM が合わなくなる
 // (FUN_0807a270 は7個のグローバルのアドレスを r5-r7/ip/r8/r9/sl に先出しする関数で, C が1本増えるだけで r5 の行き先が1番目から7番目にずれる)
 // 書き方を変えても (ローカル追加, FUN_0807a270 側の i の分割) 差分は同じ38バイトのままで, こちらからは動かせない
+// この C はこの関数自体は原典とバイト単位で一致するが, 同じ TU の FUN_0807a270 のレジスタ割当とプール順が動いて ROM が合わなくなる
+// (FUN_0807a270 は7個のグローバルのアドレスを r5-r7/ip/r8/r9/sl に先出しする関数で, C が1本増えるだけで r5 の行き先が1番目から7番目にずれる)
+// 書き方を変えても (ローカル追加, FUN_0807a270 側の i の分割) 差分は同じ38バイトのままで, こちらからは動かせない
 NON_MATCH void Player_StartLookAround(Player* p) {
 #ifdef NONMATCHING_C
   if (p->lookAroundOffset.val == 0) {
@@ -4079,7 +4082,58 @@ void FUN_080672b0(Player* p) {
 }
 
 // 魔法"ダッシュ" 前方に高速で移動する魔法 (太陽ゲージの量に応じて移動速度が変化)
-NAKED void MagicDash_0806734c(Player* p) { INCFUNC("asm/func/MagicDash_0806734c.inc"); }
+// この関数自体は命令列もプール定数も原典と一致 (160/160), ROM が合わないのは Player_StartLookAround と同じ巻き添えで, 同じ TU の FUN_0807a270 のレジスタ割当とプール順が動く38バイト
+// 両方の C を同時に有効にすると差分は27バイトに変わるだけで打ち消さない
+NON_MATCH void MagicDash_Update(Player* p) {
+#ifdef NONMATCHING_C
+  if (p->action != 2) {
+    if (FUN_08064d6c(p, 1)) {
+      PlaySound_082406e0(SONG_914);
+      p->dashSpeed = gStat->sunGauge * 2 + 14;
+      if (p->dashSpeed > 32) {
+        p->dashSpeed = 32;
+      }
+      p->dashFrames = Div(512, p->dashSpeed);
+      Player_SetAction(p, 2, 0);
+    } else {
+      PlaySound_082406e0(SE_NG);
+      Player_SetAction(p, 2, 1);
+    }
+  }
+
+  switch (p->state) {
+    case 0: {
+      p->stateTimer++;
+      if (p->stateTimer >= p->dashFrames) {
+        Player_SetAction(p, 0, 0);
+      } else {
+        if (p->stateTimer < p->dashFrames - 8) {
+          p->plttID_95e = 293;
+          p->unk_960 = 0x20;
+        }
+        if ((s16)p->facingHistory[0] != -1 && p->lookAroundOffset.val == 0) {
+          p->facing = FUN_08067068(p);
+        }
+        Player_SetMoveDelta(p, p->dashSpeed);
+        FUN_080670fc(p, 1);
+        Player_SetAnimFacing(p);
+        Player_PlayAnim(p, FUN_08066ee4(p->kind, 1), 0x20);
+      }
+      break;
+    }
+    case 1: {
+      Player_PlayAnim(p, FUN_08066ee4(p->kind, 0), 0x40);
+      p->stateTimer++;
+      if (p->stateTimer > 7) {
+        Player_SetAction(p, 0, 0);
+      }
+      break;
+    }
+  }
+#else
+  INCFUNC("asm/func/MagicDash_Update.inc");
+#endif
+}
 
 // 残差1命令 (23対22), 原典は pos & 0xFF の結果をマスク側のレジスタに入れるが (ands r0, r1), こちらは pos 側に入れて r0 へ写すので adds r0, r1, #0 が1本増える
 // Tier A-C は試済 (条件の向きを反転, ofs を消して (pos & 0xFF) を2回書く (lsls/lsrs が増えて25命令), ofs を内側のブロックで宣言する). Player_UpdateLookAround と同じマスク側destinationの詰まり
@@ -5738,7 +5792,7 @@ NAKED void FUN_08078bc0(Player* p) { INCFUNC("asm/func/FUN_08078bc0.inc"); }
 const PlayerFunc PTR_ARRAY_085abcac[33] = {
     FUN_08066f7c,
     FUN_080672b0,
-    MagicDash_0806734c,
+    MagicDash_Update,
     FUN_080695ec,
     FUN_08067510,
     FUN_08067de8,
