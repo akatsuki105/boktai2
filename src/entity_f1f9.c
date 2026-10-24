@@ -28,7 +28,7 @@ typedef struct EntityF1F9Item {
   s16 unk_142;        // 0x142, 現在位置
   u8 unk_144[4];      // 0x144
   u16 state;          // 0x148, PTR_FUN_081D5D14_085AE104[state]
-  u8 unk_14a[2];      // 0x14A
+  u16 idx;            // 0x14A, items の中での自分の添字, FUN_081d5864 が入れる
   u16 flags;          // 0x14C, FUN_081d5820 が立て、FUN_081d5834 が落とし、FUN_081d5848 が読む
   s8 shadowId;        // 0x14E, -1 なら影なし
   u8 unk_14f;         // 0x14F
@@ -68,7 +68,33 @@ bool8 FUN_081d5848(EntityF1F9Item* item, u16 n) {
 
 NAKED s32 FUN_081d5864(EntityF1F9* p) { INCFUNC("asm/func/FUN_081d5864.inc"); }
 
-NAKED s32 FUN_081d58c4(unknown* p) { INCFUNC("asm/func/FUN_081d58c4.inc"); }
+// unk_150 が id の使用中アイテムを探す
+// 残差5命令 (36/41), 使用中判定の 0/1 の作り置き1ブロックだけが足りない
+NON_MATCH EntityF1F9Item* FUN_081d58c4(s32 id) {
+#ifdef NONMATCHING_C
+  EntityF1F9* p = gEntityF1F9;
+  EntityF1F9Item* item;
+  u32 mask;
+  s32 i;
+
+  if (p == NULL) {
+    return NULL;
+  }
+
+  mask = p->activeMask;
+  item = p->items;
+  for (i = 0; i < 4; i++, item++) {
+    if (mask & (1 << i)) {
+      if (item->unk_150 == id) {
+        return item;
+      }
+    }
+  }
+  return NULL;
+#else
+  INCFUNC("asm/func/FUN_081d58c4.inc");
+#endif
+}
 
 NAKED void FUN_081d5924(unknown* p) { INCFUNC("asm/func/FUN_081d5924.inc"); }
 
