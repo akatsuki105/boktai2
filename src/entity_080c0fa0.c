@@ -1,6 +1,8 @@
+#include "constants/sprite.h"
 #include "entity.h"
 #include "global.h"
 #include "sprite_aux.h"
+#include "trig.h"
 #include "vm.h"
 
 struct Entity080c0fa0;
@@ -11,14 +13,14 @@ typedef void(Entity080c0fa0Func)(struct Entity080c0fa0* p);
 typedef struct Entity080c0fa0 {
   Entity e;                            // 0x00, ENTITY_UNK_10
   AuxSprite sprite;                    // 0x18, delay が 0 でない間は隠す
-  AuxSpriteGfx gfx;                    // 0x44, SPRITE_EFF_210E, パレットは Init の第3引数
-  Vec3 pos;                            // 0x60, Init の第2引数のコピー
+  AuxSpriteGfx gfx;                    // 0x44, SPRITE_210E
+  Vec3 pos;                            // 0x60, '.p'
   u8 unk_68[2];                        // 0x68, まだ未解析
-  u16 poseIdx;                         // 0x6A, Init の第4引数
-  u16 dir;                             // 0x6C, +1 して & 7 した値で gSineTable を引き速度を作る
-  s16 vx;                              // 0x6E, -(速さ * sin(dir+0x40)) >> 12
-  s16 vz;                              // 0x70, -(速さ * sin(dir)) >> 12
-  u16 delay;                           // 0x72, 0 でなければ隠して待つ方から始める
+  u16 poseIdx;                         // 0x6A, '.E', sprite.poseIdx の初期値
+  u16 dir;                             // 0x6C, '.d', +1 して &7 した値を32倍した角度で速度を作る
+  s16 vx;                              // 0x6E, -COS(角度, 速さ)
+  s16 vz;                              // 0x70, -SIN(角度, 速さ)
+  u16 delay;                           // 0x72, '.w', 0 でなければ隠して待つ方から始める
   u16 lifetime;                        // 0x74, '.l=90', 経過フレームがここに達したらアニメを進める方へ移る
   u16 stateTimer;                      // 0x76, updateCallback を差し替えるたびに 0 に戻る
   Entity080c0fa0Func* updateCallback;  // 0x78
@@ -95,7 +97,35 @@ s32 Entity080c0fa0_Destroy(Entity080c0fa0* p) {
   return 0;
 }
 
-NAKED s32 Entity080c0fa0_Init(Entity080c0fa0* p, Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 lifetime) { INCFUNC("asm/func/Entity080c0fa0_Init.inc"); }
+// 向きから速度を作ってスプライトを用意し, delay があれば隠して待つ状態から始める
+s32 Entity080c0fa0_Init(Entity080c0fa0* p, Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 lifetime) {
+  AuxSprite* sprite = &p->sprite;
+  AuxSpriteGfx* gfx = &p->gfx;
+  s32 angle;
+
+  Video_GetAuxSprite(gfx, SPRITE_210E);
+  AuxSprite_Add(sprite, gfx, 0);
+  p->pos = *pos;
+  sprite->pos = *pos;
+  sprite->priority = 1;
+  Video_SetAuxSpritePltt(gfx, pltt);
+  p->poseIdx = poseIdx;
+  AuxSprite_SetPoseIdx(sprite, p->poseIdx);
+  p->dir = dir;
+  angle = ((p->dir + 1) & 7) * 32;
+  p->vx = -COS(angle, speed);
+  p->vz = -SIN(angle, speed);
+  p->delay = delay;
+  p->lifetime = lifetime;
+
+  if (p->delay != 0) {
+    AuxSprite_Hide(sprite);
+    Entity080c0fa0_SetUpdateCallback(p, Entity080c0fa0_UpdateDelay);
+  } else {
+    Entity080c0fa0_SetUpdateCallback(p, Entity080c0fa0_UpdateActive);
+  }
+  return 0;
+}
 
 Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 param_7) {
   Entity080c0fa0* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity080c0fa0));
