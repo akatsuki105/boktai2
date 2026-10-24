@@ -309,7 +309,28 @@ NON_MATCH void FUN_0809e75c(Entity5CCC* p) {
 #endif
 }
 
-NAKED void FUN_0809e7c4(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809e7c4.inc"); }
+// 有効な光柱を見せ, プレイヤーの状態に応じて FUN_0809e630 を呼ぶ
+// 残差1命令 (59/60). 原典は三項演算子の 2 側のブロックを先に並べ, SUNBATHING の真偽化を rsbs + lsrs #31 の汎用形で出すが, agbcc は条件を反転してビットを >> 4 で落とす
+// if/else に展開すると 58/60 で悪化する
+NON_MATCH void FUN_0809e7c4(Entity5CCC* p) {
+#ifdef NONMATCHING_C
+  if (!p->unk_28) {
+    s32 i;
+
+    p->unk_28 = TRUE;
+    for (i = 0; i < p->count; i++) {
+      if (p->beams[i].active && p->beams[i].unk_9a) {
+        p->beams[i].sprite[0].flags &= ~SPRFLAG_HIDDEN;
+      }
+    }
+  }
+
+  FUN_0809e75c(p);
+  FUN_0809e630(p, Player_TestFlag20(p->player, PFLAG20_UNK_5) ? 2 : ((p->player->flag20 & PFLAG20_SUNBATHING) != 0));
+#else
+  INCFUNC("asm/func/FUN_0809e7c4.inc");
+#endif
+}
 
 // unk_28 が立っていたら有効な光柱を一旦隠し, プレイヤーの状態に応じて FUN_0809e630 を呼ぶ
 void FUN_0809e840(Entity5CCC* p) {
