@@ -47,7 +47,91 @@ const FileID FileID_ARRAY_085aa914[2] = {ANIM_F62B, ANIM_31F4};  // 0x085AA914
 
 void FUN_08015264(void) { gEntity08015584 = NULL; }
 
-NAKED s32 Entity08015584_Update(Entity08015584* p) { INCFUNC("asm/func/Entity08015584_Update.inc"); }
+// 使用中の粒子を減速させながら動かし, アニメが一巡したら外す
+// 残差2命令 (256/254). 原典は p をスタックへ退避して elem / sprite の歩くポインタ3本だけをレジスタに置くが, agbcc は p を r9 に残してそこから導く
+NON_MATCH s32 Entity08015584_Update(Entity08015584* p) {
+#ifdef NONMATCHING_C
+  Entity08015584Elem* elem = p->elems;
+  s32 i;
+
+  for (i = 31; i >= 0; i--, elem++) {
+    if (elem->active) {
+      AuxSprite* sprite = &elem->sprite;
+      AuxAnimCmd* cmd;
+      bool32 finished;
+
+      if (elem->timer >= elem->decayStartXZ) {
+        elem->speedXZ = FixToInt(8, elem->speedXZ * elem->decayXZ);
+        elem->velX = FixToInt(12, elem->dirX * elem->speedXZ);
+        elem->velZ = FixToInt(12, elem->dirZ * elem->speedXZ);
+      }
+      if (elem->timer >= elem->decayStartY) {
+        elem->speedY = FixToInt(8, elem->speedY * elem->decayY);
+        elem->velY = FixToInt(12, elem->dirY * elem->speedY);
+      }
+
+      sprite->pos.x += elem->velX;
+      sprite->pos.y += elem->velY;
+      if (!(sprite->flags & SPRFLAG_SCREEN_COORD)) {
+        sprite->pos.z += elem->velZ;
+      }
+
+      cmd = &elem->anim.cmds[elem->anim.cmdIdx];
+      sprite->poseIdx = *cmd >> 6;
+      if ((elem->anim.flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+        sprite->flags |= SPRFLAG_XFLIP;
+      } else {
+        sprite->flags &= ~SPRFLAG_XFLIP;
+      }
+      if ((elem->anim.flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+        sprite->flags |= SPRFLAG_YFLIP;
+      } else {
+        sprite->flags &= ~SPRFLAG_YFLIP;
+      }
+
+      elem->anim.tick++;
+      if (elem->anim.tick < elem->anim.wait) {
+        finished = FALSE;
+      } else {
+        elem->anim.tick = 0;
+        if (elem->anim.flags & ANIM_PLAY_REVERSE) {
+          if (elem->anim.cmdIdx == 0) {
+            elem->anim.cmdIdx = elem->anim.cmdCount - 1;
+            finished = TRUE;
+          } else {
+            elem->anim.cmdIdx--;
+            finished = FALSE;
+          }
+        } else {
+          elem->anim.cmdIdx++;
+          if (elem->anim.cmdIdx < elem->anim.cmdCount) {
+            finished = FALSE;
+          } else {
+            elem->anim.cmdIdx = 0;
+            finished = TRUE;
+          }
+        }
+        elem->anim.duration = elem->anim.cmds[elem->anim.cmdIdx] & 0xF;
+        elem->anim.wait = (elem->anim.duration * elem->anim.speed) >> 6;
+        if (elem->anim.wait == 0) {
+          elem->anim.wait = 1;
+        }
+      }
+
+      if (finished) {
+        elem->active = FALSE;
+        AuxSprite_Remove(sprite);
+      }
+      elem->timer++;
+    }
+  }
+
+  p->counter++;
+  return 0;
+#else
+  INCFUNC("asm/func/Entity08015584_Update.inc");
+#endif
+}
 
 s32 Entity08015584_Destroy(Entity08015584* p) {
   s32 i;
