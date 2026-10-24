@@ -144,4 +144,30 @@ void Entity080ac574_Spawn(s32 id, Vec3* origin, s32 lifetimeBase, s32 lifetimeRa
   FUN_080ac3d4(&p->ptcls[i]);
 }
 
-NAKED void FUN_080ac698(void) { INCFUNC("asm/func/FUN_080ac698.inc"); }
+// スクリプトから 'n'(ID) 'p'(発生位置) 's'(寿命) を受け取って1発生させる
+void Entity080ac574_SpawnScripted(void) {
+  Vec3 origin;
+  s32 id = VM_SeekToNamedArg('n') ? VM_GetValue() : 0;
+  s32 lifetimeBase;
+  s32 lifetimeRand;
+
+  if (VM_SeekToNamedArg('p')) {
+    origin.x = VM_GetValue();
+    origin.y = VM_GetValue();
+    origin.z = VM_GetValue();
+  } else {
+    origin.x = 0;
+    origin.y = 0;
+    origin.z = 0;
+  }
+
+  if (VM_SeekToNamedArg('s')) {
+    lifetimeBase = VM_GetValue();
+    lifetimeRand = VM_GetValue();
+  } else {
+    lifetimeBase = 16;
+    lifetimeRand = 0;
+  }
+
+  Entity080ac574_Spawn(id, &origin, lifetimeBase, lifetimeRand);
+}

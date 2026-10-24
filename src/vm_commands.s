@@ -95,7 +95,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x25F3, AlarmPanel_Create @ HashName("太陽警報機")
 	.4byte 0x2740, Cmd_2740
 	.4byte 0x274E, FUN_080a1244
-	.4byte 0x277A, FUN_080ac698
+	.4byte 0x277A, Entity080ac574_SpawnScripted
 	.4byte 0x286B, FUN_080eda7c
 	.4byte 0x286F, Entity286F_Create
 	.4byte 0x28CB, CoffinSealEffect_Create
