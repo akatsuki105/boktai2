@@ -398,7 +398,19 @@ s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
   return -1;
 }
 
-NAKED void EnemyDex_SetFlag(u32 id, u32 kind) { INCFUNC("asm/func/EnemyDex_SetFlag.inc"); }
+// 魔物 id の種別 kind のフラグを立てる
+// 残差はレジスタ番号の入れ替えのみ (18対18): 原典は gStat を r2, 0x390 を r3 に置き, 語索引に死んだ kind の r1 を使い回すが, agbcc は r3/r2 を逆に取り語索引も r2 に置く
+// 兄弟の FUN_0820d04c と同じ壁. flags ローカルを無くす / 宣言順を入れ替える は試済 (どちらも gStat の読みと bit 計算の順が入れ替わって悪化)
+NON_MATCH void EnemyDex_SetFlag(u32 id, u32 kind) {
+#ifdef NONMATCHING_C
+  u32* flags = gStat->enemyDexFlags;
+  u32 bit = id * 2 + kind;
+
+  flags[bit >> 5] |= 1 << (bit & 31);
+#else
+  INCFUNC("asm/func/EnemyDex_SetFlag.inc");
+#endif
+}
 
 NAKED void Cmd_A76D(void) { INCFUNC("asm/func/Cmd_A76D.inc"); }
 
