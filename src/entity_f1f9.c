@@ -16,7 +16,8 @@
 // スプライト・ヒットボックス・影を1つずつ持つ
 typedef struct EntityF1F9Item {
   AuxSprite sprite;   // 0x000
-  u8 unk_2c[44];      // 0x02C
+  AuxAnimState anim;  // 0x02C, ANIM_74C9
+  AuxSpriteGfx gfx;   // 0x03C, SPRITE_9385
   HitboxData hitbox;  // 0x058
   AuxShadow shadow;   // 0x0A8, shadowId で管理
   Vec3 basePos;       // 0x114, 揺れの基準位置, sprite.pos へ複写する
@@ -32,12 +33,13 @@ typedef struct EntityF1F9Item {
   s32 unk_134;        // 0x134, この距離まで近づかれると反応する
   u16 scriptID;       // 0x138, 破片1個ごとに VM_ExecByID へ渡す
   u16 unk_13a;        // 0x13A, 1マスぶんの距離
-  u8 unk_13c;         // 0x13C, 全体のマス数
-  u8 unk_13d;         // 0x13D, 現在のマス番号
+  u8 unk_13c;         // 0x13C, 現在のマス番号, FUN_081d6ae8 が1つずつ進める
+  u8 unk_13d;         // 0x13D, '.b', 全体のマス数
   u16 groundY;        // 0x13E, 足元のタイルの高さ, 落下がここに届くと state 4 へ移る
-  s16 unk_140;        // 0x140, 移動の始点
-  s16 unk_142;        // 0x142, 現在位置
-  u8 unk_144[3];      // 0x144
+  s16 hp;             // 0x140, '.A=100', 0 以下になると state 4 (または 3) へ移る
+  s16 maxHp;          // 0x142, hp の初期値, FUN_0809c344 へ渡す
+  u8 unk_144[2];      // 0x144
+  u8 unk_146;         // 0x146, '.A' の3番目
   u8 unk_147;         // 0x147, FUN_0809c344 の第4引数
   u16 state;          // 0x148, PTR_ARRAY_085ae104 の添字
   s16 idx;            // 0x14A, items の中での自分の添字, FUN_081d5864 が入れる
@@ -71,6 +73,10 @@ void FUN_081ee584(Vec3* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5,
 void FUN_081d5f54(EntityF1F9Item* item);
 bool8 FUN_081d6cb0(EntityF1F9Item* item);
 s32 FUN_081ef708(Vec3* pos, Vec3* vel, u32 spriteID, u32 animID, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11, s32 param_12, s32 param_13, s32 param_14, s32 param_15);
+
+EntityF1F9* EntityF1F9_Create(void);
+EntityF1F9Item* FUN_081d5864(EntityF1F9* p);
+void FUN_081d66c0(EntityF1F9Item* item, u32 power, HitboxAttributes attributes, u32 weakness);
 
 void FUN_081d6444(EntityF1F9Item* item);
 void FUN_081d65e8(EntityF1F9Item* item);
@@ -142,7 +148,124 @@ NON_MATCH EntityF1F9Item* FUN_081d58c4(s32 id) {
 #endif
 }
 
-NAKED void FUN_081d5924(unknown* p) { INCFUNC("asm/func/FUN_081d5924.inc"); }
+// スクリプトから1体ぶんのパラメータを受け取って空きアイテムに仕込む
+// 残差12命令 (415/403) でこちらが長い. agbcc は p の生死範囲を分けて FUN_081d5864 の呼び出しを NULL 分岐側にも複製するが, 原典は合流後に1つだけ持つ. ガードを平坦化しても変わらない
+// unk_2c[44] は AuxAnimState anim (0x2C) + AuxSpriteGfx gfx (0x3C) に分解, unk_140/unk_142 は hp/maxHp に改名
+NON_MATCH void FUN_081d5924(void) {
+#ifdef NONMATCHING_C
+  EntityF1F9* p = gEntityF1F9;
+  EntityF1F9Item* item;
+  s32 power;
+  s32 attributes;
+  s32 weakness;
+  AuxAnimCmd* cmd;
+
+  if (p == NULL) {
+    p = EntityF1F9_Create();
+    if (p == NULL) {
+      return;
+    }
+  }
+
+  item = FUN_081d5864(p);
+  if (item == NULL) {
+    return;
+  }
+
+  Video_GetAuxSprite(&item->gfx, SPRITE_9385);
+  AuxSprite_Add(&item->sprite, &item->gfx, 0);
+  item->unk_156 = 1;
+  item->unk_13c = 0;
+  item->flags = VM_GetNamedArgValue('m', 0);
+
+  if (FUN_081d5848(item, 2)) {
+    item->state = 2;
+  } else {
+    item->state = 1;
+  }
+
+  if (VM_SeekToNamedArg('p')) {
+    item->sprite.pos.x = VM_GetValue();
+    item->sprite.pos.y = VM_GetValue();
+    item->sprite.pos.z = VM_GetValue();
+  }
+  item->basePos = item->sprite.pos;
+
+  item->unk_152 = VM_GetNamedArgValue('r', 0);
+  item->unk_150 = VM_GetNamedArgValue('n', 0);
+  item->unk_134 = VM_GetNamedArgValue('a', 0x100) * VM_GetNamedArgValue('a', 0x100);
+  item->unk_13d = VM_GetNamedArgValue('b', 0);
+
+  if (VM_SeekToNamedArg('A')) {
+    item->hp = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    item->unk_147 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    item->unk_146 = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    power = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    attributes = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    weakness = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  } else {
+    item->hp = 100;
+    item->unk_147 = 3;
+    item->unk_146 = 0;
+    power = 0;
+    attributes = 0;
+    weakness = 0;
+  }
+
+  item->maxHp = item->hp;
+  item->unk_13a = Div(item->hp, item->unk_13d - 1);
+
+  if (VM_SeekToNamedArg('P')) {
+    item->scriptID = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  }
+
+  if (FUN_081d5848(item, 2)) {
+    item->shadowId = AuxShadow_Init(&item->shadow, &item->sprite.pos, 0x40, 0x10, 0x60, 100, 0xA00, 1, 5, 1, 0);
+  } else {
+    item->shadowId = AuxShadow_Init(&item->shadow, &item->sprite.pos, 0x40, 0x10, 0x80, 100, 0xA00, 1, 5, 1, 0);
+  }
+
+  AuxAnim_SetAnim(&item->anim, p->anim, 0, 0, item->unk_152);
+
+  cmd = &item->anim.cmds[item->anim.cmdIdx];
+  item->sprite.poseIdx = *cmd >> 6;
+  if ((item->anim.flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+    item->sprite.flags |= SPRFLAG_XFLIP;
+  } else {
+    item->sprite.flags &= ~SPRFLAG_XFLIP;
+  }
+  if ((item->anim.flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+    item->sprite.flags |= SPRFLAG_YFLIP;
+  } else {
+    item->sprite.flags &= ~SPRFLAG_YFLIP;
+  }
+
+  item->anim.tick++;
+  if (item->anim.tick >= item->anim.wait) {
+    item->anim.tick = 0;
+    if (item->anim.flags & ANIM_PLAY_REVERSE) {
+      if (item->anim.cmdIdx == 0) {
+        item->anim.cmdIdx = item->anim.cmdCount;
+      }
+      item->anim.cmdIdx--;
+    } else {
+      item->anim.cmdIdx++;
+      if (item->anim.cmdIdx >= item->anim.cmdCount) {
+        item->anim.cmdIdx = 0;
+      }
+    }
+    item->anim.duration = item->anim.cmds[item->anim.cmdIdx] & 0xF;
+    item->anim.wait = (item->anim.duration * item->anim.speed) >> 6;
+    if (item->anim.wait == 0) {
+      item->anim.wait = 1;
+    }
+  }
+
+  FUN_081d66c0(item, power, attributes, weakness);
+#else
+  INCFUNC("asm/func/FUN_081d5924.inc");
+#endif
+}
 
 // 無敵時間を数えつつ、点滅用のパレットを選ぶ
 NON_MATCH void FUN_081d5cac(EntityF1F9Item* item) {
@@ -201,8 +324,8 @@ NON_MATCH void FUN_081d5d70(EntityF1F9* p, EntityF1F9Item* item) {
 
   if ((item->unk_154 & 1) && FUN_081d6cb0(item) && !(gPlayerPtr[0]->flag20 & PFLAG20_UNK_3) && !(gGoodCondTimer != 0 && gGoodCondID == 0) && gPlayerPtr[0]->kind != PLAYER_BAT && item->unk_12c != item->unk_130 && item->unk_11c == 0) {
     item->unk_11c = 4;
-    item->unk_140--;
-    if (item->unk_140 > 0) {
+    item->hp--;
+    if (item->hp > 0) {
       PlaySound_082406e0(SONG_969);
     } else {
       item->state = 3;
@@ -462,19 +585,19 @@ NON_MATCH void FUN_081d64d4(HitboxData* a, HitboxData* b, EntityF1F9Item* item) 
 
   Hitbox_ApplyDamage(a, b);
   b->unk_44 = a->unk_44;
-  dealt = item->unk_140 - item->hitbox.damage;
+  dealt = item->hp - item->hitbox.damage;
   if (dealt >= 0) {
     dealt = item->hitbox.damage;
   } else {
     dealt += item->hitbox.damage;
   }
 
-  item->unk_140 -= item->hitbox.damage;
-  if (item->unk_140 < 0) {
-    item->unk_140 = 0;
+  item->hp -= item->hitbox.damage;
+  if (item->hp < 0) {
+    item->hp = 0;
   }
 
-  FUN_0809c344(item->unk_150, item->unk_140, item->unk_142, item->unk_147, 0);
+  FUN_0809c344(item->unk_150, item->hp, item->maxHp, item->unk_147, 0);
   CpuFill32(0, &v, sizeof(v));
   FUN_0805fe7c(b, dealt, 0, &item->sprite.pos, &v, 1);
   item->unk_153 = 3;
@@ -484,7 +607,7 @@ NON_MATCH void FUN_081d64d4(HitboxData* a, HitboxData* b, EntityF1F9Item* item) 
   FUN_081d6bc0(item);
   PlaySound_082406e0(SE_ENEMY_DAMAGED);
 
-  if (item->unk_140 <= 0) {
+  if (item->hp <= 0) {
     item->state = 4;
     item->unk_156 = 1;
   }
@@ -602,7 +725,7 @@ NON_MATCH void FUN_081d6ae8(EntityF1F9Item* item, s32 n) {
 // 終端まで動いたら状態を切り替える
 void FUN_081d6bc0(EntityF1F9Item* item) {
   if (item->unk_13d > item->unk_13c) {
-    s32 d = item->unk_142 - item->unk_140;
+    s32 d = item->maxHp - item->hp;
 
     if (!FUN_081d5848(item, 1)) {
       FUN_081d6ae8(item, 2);
