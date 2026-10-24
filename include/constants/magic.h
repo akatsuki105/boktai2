@@ -1,9 +1,17 @@
 #ifndef GUARD_ZOKTAI_CONST_MAGIC_H
 #define GUARD_ZOKTAI_CONST_MAGIC_H
 
-#define MC_LUNA 0  // 月光魔法(MAGIC_SOL, MAGIC_DARK, MAGIC_FLAME, MAGIC_FROST, MAGIC_CLOUD, MAGIC_EARTH, MAGIC_TRANSFORM, MAGIC_RISING_SUN)
-#define MC_SOL 1   // 太陽魔法(MAGIC_FREEZE, MAGIC_DASH, MAGIC_HEALING, MAGIC_DYNAMITE)
-#define MC_DARK 2  // 暗黒魔法(MAGIC_SLEEPING, MAGIC_BAT, MAGIC_RAT, MAGIC_WOLF)
+// 月光魔法(MAGIC_SOL, MAGIC_DARK, MAGIC_FLAME, MAGIC_FROST, MAGIC_CLOUD, MAGIC_EARTH, MAGIC_TRANSFORM, MAGIC_RISING_SUN)
+// Ene を消費して発動する (太陽ゲージは関係なし)
+#define MC_LUNA 0
+
+// 太陽魔法(MAGIC_FREEZE, MAGIC_DASH, MAGIC_HEALING, MAGIC_DYNAMITE)
+// Ene を消費しないが、 太陽ゲージの量に応じて効果が変化する (ゲージ0だと発動できない)
+#define MC_SOL 1
+
+// 暗黒魔法(MAGIC_SLEEPING, MAGIC_BAT, MAGIC_RAT, MAGIC_WOLF)
+// 黒ジャンゴ状態でのみ使用可能
+#define MC_DARK 2
 
 #define MAGIC_SOL 0         // エンチャント・ソル
 #define MAGIC_DARK 1        // エンチャント・ダーク
@@ -16,7 +24,7 @@
 #define MAGIC_ZERO_SHIFT 8  // ゼロシフト
 #define MAGIC_BLACK_SUN 9   // ブラックさん?
 #define MAGIC_FREEZE 10     // フリーズ
-#define MAGIC_DASH 11       // ダッシュ
+#define MAGIC_DASH 11       // ダッシュ, 前方に高速で移動する魔法 (太陽ゲージの量に応じて移動速度が変化)
 #define MAGIC_HEALING 12    // ヒーリング
 #define MAGIC_DYNAMITE 13   // ダイナマイト
 #define MAGIC_SLEEPING 14   // スリーピング

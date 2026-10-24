@@ -4078,6 +4078,7 @@ void FUN_080672b0(Player* p) {
   Player_PlayAnim(p, FUN_08066ee4(p->kind, 1), FRACUNIT_6);
 }
 
+// 魔法"ダッシュ" 前方に高速で移動する魔法 (太陽ゲージの量に応じて移動速度が変化)
 NAKED void MagicDash_0806734c(Player* p) { INCFUNC("asm/func/MagicDash_0806734c.inc"); }
 
 // 残差1命令 (23対22), 原典は pos & 0xFF の結果をマスク側のレジスタに入れるが (ands r0, r1), こちらは pos 側に入れて r0 へ写すので adds r0, r1, #0 が1本増える
