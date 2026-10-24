@@ -203,7 +203,7 @@ SECTIONS {
       src/menu.o(COMMON);
       src/entity_a628.o(COMMON);
       src/tasty_water.o(COMMON);
-      src/entity_1e98.o(COMMON);
+      src/solar_plant.o(COMMON);
       src/entity_3117.o(COMMON);
       src/entity_8af6.o(COMMON);
       src/entity_4063.o(COMMON);
@@ -373,7 +373,7 @@ SECTIONS {
 			src/entity_a8f1.o (.text);
 			src/entity_7c62.o (.text);
 			src/time_magic_circle.o (.text);
-			src/entity_1e98.o (.text);
+			src/solar_plant.o (.text);
 			src/entity_3117.o (.text);
 			src/entity_8af6.o (.text);
 			src/entity_cf58.o (.text);
