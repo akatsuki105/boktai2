@@ -26,7 +26,7 @@ typedef struct {
   ZoneID16 zoneID;                 // 0x46, gStat->zoneID と一致するかを FUN_080dad94 が見る
   u8 unk_48[4];                    // 0x48
   HitboxData hitbox;               // 0x4C, _Destroy が Hitbox_Unregister に渡す
-  u8 unk_9c[8];                    // 0x9C
+  Vec3 pos;                        // 0x9C, Hitbox_SetPos と spr.pos へ渡される
 } Entity080db520Elem;
 static_assert(sizeof(Entity080db520Elem) == 164);
 
@@ -81,12 +81,23 @@ void FUN_080dac20(Entity080db520* p, Entity080db520Elem* elem) {}
 
 NAKED void FUN_080dac24(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080dac24.inc"); }
 
-void FUN_080dacac(Entity080db520* p, u32 param_2, Entity080db520Elem* elem) {
+void FUN_080dacac(HitboxData* a, HitboxData* b, Entity080db520Elem* elem) {
   elem->unk_40 |= E080DB520_UNK_1;
   elem->hitbox.flags |= HBFLAG_UNK_2;
 }
 
-NAKED void FUN_080dacc4(Entity080db520* p) { INCFUNC("asm/func/FUN_080dacc4.inc"); }
+// この枠の被弾判定を作って登録する
+void Entity080db520_InitHurtbox(Entity080db520Elem* elem) {
+  Vec3 offset;
+  Vec3 halfSize;
+
+  offset.x = 0x40, offset.y = 0x80, offset.z = 0x40;
+  halfSize.x = 0x10, halfSize.y = 0x80, halfSize.z = 0x10;
+  Hitbox_Init(&elem->hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_SetPos(&elem->hitbox, &elem->pos, 0);
+  Hitbox_SetHandler(&elem->hitbox, FUN_080dacac, elem);
+  Hitbox_Register(&elem->hitbox);
+}
 
 // 空いている枠を確保して返す, 無ければ NULL
 // 残差1命令 (34 対 35), 原典は &elems[i] を muls で毎回作るが agbcc は誘導変数に落として基底をループ外へ巻き上げる

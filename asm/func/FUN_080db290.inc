@@ -201,7 +201,7 @@ _080DB41A:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080dacc4
+	bl Entity080db520_InitHurtbox
 	adds r0, r7, #0
 	adds r0, #0x42
 	movs r2, #0
