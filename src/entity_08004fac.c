@@ -26,6 +26,8 @@ typedef struct {
 } Entity08004fac;
 static_assert(sizeof(Entity08004fac) == 28);
 
+Entity08004fac* Entity08004fac_Create(u32 param_1, u32 param_2);
+
 IWRAM_DATA Entity08004fac* gEntity08004fac = NULL;  // 0x03000024
 
 void FUN_08004c78(void) { gEntity08004fac = NULL; }
@@ -59,7 +61,45 @@ s32 Entity08004fac_UnlinkNode(Entity08004facNode* node) {
   return 0;
 }
 
-NAKED s32 Entity08004fac_AddNode(s32 id, Vec3* pos, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/Entity08004fac_AddNode.inc"); }
+// id 付きのノードを作って衝突マップへ登録する
+s32 Entity08004fac_AddNode(s32 id, Vec3* pos, s32 param_3, s32 param_4, s32 param_5) {
+  Entity08004facNode* node;
+  s32 bx;
+  s32 bz;
+  s32 idx;
+
+  if (gEntity08004fac == NULL) {
+    if (Entity08004fac_Create(0x2153, 0) == NULL) {
+      return 0;
+    }
+  }
+
+  node = Malloc(sizeof(Entity08004facNode));
+  if (node == NULL) {
+    return -1;
+  }
+
+  ClearMemory(node, sizeof(Entity08004facNode));
+  node->id = id;
+  node->active = TRUE;
+  node->unk_3 = param_3;
+  node->stairs = param_4;
+
+  bx = (s8)(pos->x >> 8);
+  bz = (s8)(pos->z >> 8);
+  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+    idx = 0;
+  } else {
+    idx = gCollisionMap->rowOffsets[bz] + bx;
+  }
+  node->tileIdx = idx;
+
+  node->height = FixToInt(8, pos->y);
+  node->attr = param_5;
+  Map_AddTileOverride(&node->tileOverride, node->tileIdx, node->stairs, node->height, 0xFF, node->attr);
+  Entity08004fac_LinkNode(node);
+  return 0;
+}
 
 // 衝突マップから外してリストから抜き、ノードを解放する
 s32 Entity08004fac_FreeNode(Entity08004facNode* node) {
@@ -206,7 +246,7 @@ s32 Entity08004fac_Init(Entity08004fac* p, u32 param_2) {
   return 0;
 }
 
-Entity08004fac* Entity08004fac_Create(u32 param_1) {
+Entity08004fac* Entity08004fac_Create(u32 param_1, u32 param_2) {
   Entity08004fac* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity08004fac));
 
   if (p != NULL) {
