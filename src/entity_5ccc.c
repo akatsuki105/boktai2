@@ -130,9 +130,27 @@ NON_MATCH bool32 FUN_0809e138(Player* p) {
 }
 
 // MainMenu_ShowPlayerTitle ほかが引く
-const u16 u16_ARRAY_085ad004[8] = {100, 100, 112, 112, 128, 100, 112, 112};  // 0x085AD004
+const u16 u16_ARRAY_085ad004[4] = {100, 100, 112, 112};  // 0x085AD004
+const u16 u16_ARRAY_085ad00c[4] = {128, 100, 112, 112};  // 0x085AD00C
 
-NAKED void FUN_0809e198(SkylightBeam* beam, s32 param_2, Vec3* pos, s32 param_4) { INCFUNC("asm/func/FUN_0809e198.inc"); }
+// pos を中心に param_2 番の大きさで光の矩形を作る, param_4 で X と Z の半径が入れ替わる
+void FUN_0809e198(SkylightBeam* beam, s32 param_2, Vec3* pos, s32 param_4) {
+  u16 halfX;
+  u16 halfZ;
+
+  if (param_4 != 0) {
+    halfX = u16_ARRAY_085ad004[param_2];
+    halfZ = u16_ARRAY_085ad00c[param_2];
+  } else {
+    halfX = u16_ARRAY_085ad00c[param_2];
+    halfZ = u16_ARRAY_085ad004[param_2];
+  }
+
+  beam->minX = pos->x - halfX;
+  beam->minZ = pos->z - halfZ;
+  beam->maxX = halfX + pos->x;
+  beam->maxZ = halfZ + pos->z;
+}
 
 void FUN_0809e1f8(void) {
   Entity5CCC* p = gEntity5CCC;
