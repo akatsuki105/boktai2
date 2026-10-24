@@ -6,6 +6,7 @@
 #include "hitbox.h"
 #include "mover.h"
 #include "player.h"
+#include "random.h"
 #include "sprite.h"
 #include "time.h"
 
@@ -22,7 +23,7 @@ typedef struct {
   s16 unk_3e;                      // 0x3E, 2 なら FUN_080dabe4 が何もしない
   Entity080db520ElemFlags unk_40;  // 0x40
   s16 unk_42;                      // 0x42, 負なら FUN_080dabe4 が何もしない
-  u8 unk_44[2];                    // 0x44
+  s16 shakeTimer;                  // 0x44, 20 から数え下げ, 10 を超えている間はスプライトを揺らす
   ZoneID16 zoneID;                 // 0x46, gStat->zoneID と一致するかを FUN_080dad94 が見る
   u8 unk_48[4];                    // 0x48
   HitboxData hitbox;               // 0x4C, _Destroy が Hitbox_Unregister に渡す
@@ -79,7 +80,27 @@ void FUN_080dabe4(s32 idx) {
 
 void FUN_080dac20(Entity080db520* p, Entity080db520Elem* elem) {}
 
-NAKED void FUN_080dac24(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080dac24.inc"); }
+// 20フレーム周期で最初の10フレームだけスプライトの位置を揺らす
+// 命令数は一致 (59/59) するが2点ずれる: (1) 原典は ~UNK_2 を直前の 20 から subs #0x19 で作るのに対しこちらは 0xFFFB をプール経由で読む (HImode の AND に落ちる), (2) -20 を原典は pos.x 側に畳むのにこちらは Mod の戻り値側に畳む
+// マスクを u32 ローカル経由にする / Mod の戻り値をローカルに取る / 加算順4通り はいずれも効かず
+NON_MATCH void FUN_080dac24(Entity080db520* p, Entity080db520Elem* elem) {
+#ifdef NONMATCHING_C
+  if (elem->shakeTimer <= 0) {
+    elem->shakeTimer = 20;
+    elem->unk_40 &= ~E080DB520_UNK_2;
+  } else {
+    if (elem->shakeTimer > 10) {
+      u16* table = gRandomTable;
+
+      elem->spr.pos.x = elem->spr.pos.x - 20 + Mod(_Random(table), 40);
+      elem->spr.pos.z = elem->spr.pos.z - 20 + Mod(_Random(table), 40);
+    }
+    elem->shakeTimer--;
+  }
+#else
+  INCFUNC("asm/func/FUN_080dac24.inc");
+#endif
+}
 
 void FUN_080dacac(HitboxData* a, HitboxData* b, Entity080db520Elem* elem) {
   elem->unk_40 |= E080DB520_UNK_1;
