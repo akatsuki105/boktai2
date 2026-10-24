@@ -32,11 +32,11 @@ typedef struct {
   rgb555* pltt;                  // 0x001C, BGP_A41A
   u32 unk_20;                    // 0x0020, _Init が 0
   u8 unk_24;                     // 0x0024, _Init が 0
-  u8 unk_25;                     // 0x0025, _Init が 0
-  u8 unk_26;                     // 0x0026, _Init が 0
+  u8 page;                       // 0x0025, 選択中のページ (0..8), EnemyDexMenu_SetPageFromEntry が entryIdx から決める
+  u8 entryIdx;                   // 0x0026, 選択中のエントリ番号 (0..56)
   u8 unk_27;                     // 0x0027
   s32 panels[8];                 // 0x0028, TextPanel_Create の戻り値 (ID), TextPanel_Hide などに渡す
-  u8 unk_48;                     // 0x0048, _Init が 0
+  u8 row;                        // 0x0048, ページ内の行 (entryIdx - ページ先頭), カーソルの Y 位置になる
   u8 unk_49;                     // 0x0049, _Init が 0x20
   u8 unk_4a;                     // 0x004A, _Init が 0
   u8 unk_4b;                     // 0x004B
@@ -110,7 +110,20 @@ s32 EnemyDex_GetCategoryStart(s32 category) {
   return start;
 }
 
-NAKED void EnemyDexMenu_SetPageFromEntry(EnemyDexMenu* p) { INCFUNC("asm/func/EnemyDexMenu_SetPageFromEntry.inc"); }
+void EnemyDexMenu_SetPageFromEntry(EnemyDexMenu* p) {
+  s32 i;
+
+  for (i = 0; i < 9; i++) {
+    if (p->entryIdx < EnemyDex_GetPageStart(i)) {
+      p->page = i - 1;
+      p->row = p->entryIdx - EnemyDex_GetPageStart(p->page);
+      return;
+    }
+  }
+
+  p->page = 8;
+  p->row = p->entryIdx - EnemyDex_GetPageStart(p->page);
+}
 
 NAKED s32 EnemyDex_GetCategoryOfEntry(u32 param_1) { INCFUNC("asm/func/EnemyDex_GetCategoryOfEntry.inc"); }
 
@@ -233,7 +246,7 @@ void FUN_0820d188(EnemyDexMenu* p) {
     return;
   }
 
-  if (p->unk_24 == 0 && FUN_0820d084(EnemyDex_GetCategoryOfEntry(p->unk_26))) {
+  if (p->unk_24 == 0 && FUN_0820d084(EnemyDex_GetCategoryOfEntry(p->entryIdx))) {
     p->sprites_d8c[6].flags &= ~SPRFLAG_HIDDEN;
   } else {
     p->sprites_d8c[6].flags |= SPRFLAG_HIDDEN;
@@ -268,7 +281,7 @@ void FUN_0820d5f8(EnemyDexMenu* p) {
     }
 
     Marquee_Clear();
-    Marquee_SetText(GetStringByID(VM_ParseStringRef(p->scriptM) + p->unk_26));
+    Marquee_SetText(GetStringByID(VM_ParseStringRef(p->scriptM) + p->entryIdx));
     p->flags &= ~EDEXFLAG_UNK_3;
     p->flags |= EDEXFLAG_UNK_1;
     p->flags &= ~EDEXFLAG_UNK_2;
@@ -386,9 +399,9 @@ s32 EnemyDexMenu_Init(EnemyDexMenu* p, u32 val) {
 
   p->unk_20 = 0;
   p->unk_24 = 0;
-  p->unk_25 = 0;
-  p->unk_26 = 0;
-  p->unk_48 = 0;
+  p->page = 0;
+  p->entryIdx = 0;
+  p->row = 0;
   p->timer_110c = 0;
   p->unk_49 = 0x20;
   p->unk_4a = 0;
@@ -512,8 +525,8 @@ void FUN_0820eb84(EnemyDexMenu* p) {
 
   EnemyDexMenu_HidePageSprites(p);
 
-  count = EnemyDex_GetPageEntryCount(p->unk_25);
-  base = EnemyDex_GetPageStart(p->unk_25) + 1;
+  count = EnemyDex_GetPageEntryCount(p->page);
+  base = EnemyDex_GetPageStart(p->page) + 1;
   for (i = 0; i < count; i++) {
     MainSprite_SetNumber(&p->sprites_84c[i][0], &p->gfx, base + i, 2, 0, 24, i * 16 + 40, 8, 0);
     p->sprites_5ac[i].flags &= ~SPRFLAG_HIDDEN;
@@ -525,7 +538,7 @@ void FUN_0820eb84(EnemyDexMenu* p) {
 // ページ用スプライトを全部隠し, 選択中ページの番号を描き直す
 void FUN_0820ec6c(EnemyDexMenu* p) {
   EnemyDexMenu_HidePageSprites(p);
-  MainSprite_SetNumber(&p->sprites_84c[0][0], &p->gfx, p->unk_26 + 1, 2, 0, 40, 24, 8, 0);
+  MainSprite_SetNumber(&p->sprites_84c[0][0], &p->gfx, p->entryIdx + 1, 2, 0, 40, 24, 8, 0);
 }
 
 // sprites_d8c を全部隠す
@@ -538,7 +551,7 @@ void EnemyDexMenu_HideSprites(EnemyDexMenu* p) {
   }
 }
 
-void FUN_0820ed38(EnemyDexMenu* p) { p->sprites_6c[0].pos.y = p->unk_48 * 16 + 8; }
+void FUN_0820ed38(EnemyDexMenu* p) { p->sprites_6c[0].pos.y = p->row * 16 + 8; }
 
 // 図鑑の発見数と総数を描き直す
 void FUN_0820ed48(EnemyDexMenu* p) {
@@ -550,7 +563,7 @@ void FUN_0820ed48(EnemyDexMenu* p) {
     p->sprites_d8c[i + 2].flags |= SPRFLAG_HIDDEN;
   }
 
-  cat = EnemyDex_GetCategoryOfEntry(p->unk_26);
+  cat = EnemyDex_GetCategoryOfEntry(p->entryIdx);
   MainSprite_SetNumber(&p->sprites_d8c[0], &p->gfx, FUN_0820d0b8(cat), 2, 0, 152, 19, 8, 0);
   MainSprite_SetNumber(&p->sprites_d8c[2], &p->gfx, EnemyDex_GetCategoryEntryCount(cat), 2, 0, 176, 19, 8, 0);
 }
@@ -562,8 +575,8 @@ void FUN_0820ede8(EnemyDexMenu* p) {
   s32 i;
 
   FUN_0820d21c(p);
-  base = EnemyDex_GetPageStart(p->unk_25);
-  count = EnemyDex_GetPageEntryCount(p->unk_25);
+  base = EnemyDex_GetPageStart(p->page);
+  count = EnemyDex_GetPageEntryCount(p->page);
   for (i = 0; i < count; i++) {
     TextPanel_SetScript(p->panels[i], p->scriptN);
     TextPanel_SetRect(p->panels[i], 6, i * 2 + 5, 20, 2);
@@ -599,7 +612,7 @@ void FUN_0820ee7c(EnemyDexMenu* p) {
   }
 }
 
-// unk_25 の値に応じて, 出すカーソルとタブのスプライトを1枚ずつだけ選ぶ
+// page の値に応じて, 出すカーソルとタブのスプライトを1枚ずつだけ選ぶ
 void FUN_0820eeb8(EnemyDexMenu* p) {
   s32 cursor;
   s32 tab;
@@ -610,7 +623,7 @@ void FUN_0820eeb8(EnemyDexMenu* p) {
 
   x = 0;
   y = 0;
-  switch (p->unk_25) {
+  switch (p->page) {
     case 0: {
       cursor = 0;
       tab = 0;
