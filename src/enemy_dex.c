@@ -143,7 +143,260 @@ s32 EnemyDex_GetCategoryOfEntry(s32 entryIdx) {
   }
 }
 
-NAKED s32 FUN_0820ccd0(u32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_0820ccd0.inc"); }
+// 敵の種別と変種から魔物図鑑のエントリ番号を返す, 該当するものが無ければ -1
+s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
+  switch (kind) {
+    case 1: {
+      switch (variant) {
+        case 0: {
+          return 24;
+        }
+        case 1: {
+          return 25;
+        }
+        case 2: {
+          return 26;
+        }
+      }
+      break;
+    }
+    case 2: {
+      switch (variant) {
+        case 0: {
+          return 0;
+        }
+        case 1: {
+          return 1;
+        }
+        case 2: {
+          return 0;
+        }
+      }
+      break;
+    }
+    case 3: {
+      switch (variant) {
+        case 0: {
+          return 33;
+        }
+        case 1: {
+          return 34;
+        }
+        case 3: {
+          return 35;
+        }
+      }
+      break;
+    }
+    case 4: {
+      switch (variant) {
+        case 1: {
+          return 21;
+        }
+        case 2: {
+          return 22;
+        }
+        case 3: {
+          return 23;
+        }
+      }
+      break;
+    }
+    case 5: {
+      switch (variant) {
+        case 0: {
+          return 27;
+        }
+        case 5: {
+          return 30;
+        }
+      }
+      break;
+    }
+    case 6: {
+      return 28;
+    }
+    case 7: {
+      return 29;
+    }
+    case 8: {
+      switch (variant) {
+        case 2: {
+          return 31;
+        }
+        case 8: {
+          return 32;
+        }
+      }
+      break;
+    }
+    case 9: {
+      return 9;
+    }
+    case 10: {
+      switch (variant) {
+        case 0: {
+          return 17;
+        }
+        case 1: {
+          return 18;
+        }
+      }
+      break;
+    }
+    case 11: {
+      return 36;
+    }
+    case 12: {
+      switch (variant) {
+        case 0: {
+          return 37;
+        }
+        case 1: {
+          return 38;
+        }
+      }
+      break;
+    }
+    case 13: {
+      switch (variant) {
+        case 0: {
+          return 39;
+        }
+        case 1: {
+          return 40;
+        }
+      }
+      break;
+    }
+    case 14: {
+      return 16;
+    }
+    case 17: {
+      switch (variant) {
+        case 0: {
+          return 41;
+        }
+        case 1: {
+          return 42;
+        }
+        case 2: {
+          return 43;
+        }
+      }
+      break;
+    }
+    case 18: {
+      switch (variant) {
+        case 0: {
+          return 5;
+        }
+        case 1: {
+          return 6;
+        }
+        case 2: {
+          return 5;
+        }
+      }
+      break;
+    }
+    case 19: {
+      switch (variant) {
+        case 0: {
+          return 7;
+        }
+        case 1: {
+          return 8;
+        }
+        case 2: {
+          return 7;
+        }
+      }
+      break;
+    }
+    case 20: {
+      switch (variant) {
+        case 0: {
+          return 2;
+        }
+        case 1: {
+          return 4;
+        }
+        case 2: {
+          return 3;
+        }
+      }
+      break;
+    }
+    case 21: {
+      switch (variant) {
+        case 0: {
+          return 10;
+        }
+        case 1: {
+          return 12;
+        }
+        case 2: {
+          return 11;
+        }
+        case 4: {
+          return 13;
+        }
+      }
+      break;
+    }
+    case 22: {
+      switch (variant) {
+        case 0: {
+          return 44;
+        }
+        case 1: {
+          return 45;
+        }
+        case 2: {
+          return 46;
+        }
+        case 3: {
+          return 47;
+        }
+      }
+      break;
+    }
+    case 23: {
+      switch (variant) {
+        case 0: {
+          return 48;
+        }
+        case 1: {
+          return 49;
+        }
+      }
+      break;
+    }
+    case 24: {
+      return 14;
+    }
+    case 25: {
+      return 19;
+    }
+    case 26: {
+      return 20;
+    }
+    case 27: {
+      return 15;
+    }
+    case 0:
+    case 15:
+    case 16:
+    case 28:
+    case 29:
+    case 30:
+    case 31: {
+      break;
+    }
+  }
+  return -1;
+}
 
 NAKED void EnemyDex_SetFlag(u32 id, u32 kind) { INCFUNC("asm/func/EnemyDex_SetFlag.inc"); }
 

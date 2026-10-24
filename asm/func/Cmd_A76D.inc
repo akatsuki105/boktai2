@@ -31,7 +31,7 @@ _0820CFA8:
 _0820CFAA:
 	adds r0, r6, #0
 	adds r1, r5, #0
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r1, r4, #0
 	bl EnemyDex_SetFlag
 	pop {r4, r5, r6}

@@ -5739,7 +5739,7 @@ _0818B32A:
 	lsls r2, r2, #3
 	adds r1, r6, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	cmp r0, #0x1f
 	bgt _0818B364
 	ldr r3, _0818B360 @ =0x030046A0

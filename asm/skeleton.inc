@@ -23081,7 +23081,7 @@ _0810E11E:
 	lsls r2, r2, #3
 	adds r1, r7, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _0810E154
@@ -23611,7 +23611,7 @@ _0810E564:
 	lsls r2, r2, #3
 	adds r1, r7, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _0810E5B0
@@ -23914,7 +23914,7 @@ _0810E7E4:
 	lsls r6, r6, #3
 	adds r1, r7, r6
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _0810E820
@@ -24127,7 +24127,7 @@ _0810E9A4:
 	lsls r2, r2, #3
 	adds r1, r7, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	str r4, [sp, #0xb8]
 	cmp r3, #0x1f

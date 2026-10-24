@@ -448,7 +448,7 @@ _080FE608:
 	lsls r2, r2, #3
 	adds r1, r7, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _080FE654

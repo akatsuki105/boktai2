@@ -3245,7 +3245,7 @@ _081A44A0:
 	lsls r2, r2, #3
 	adds r1, r7, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	cmp r0, #0x1f
 	bgt _081A44DC
 	ldr r3, _081A44D8 @ =0x030046A0

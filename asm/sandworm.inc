@@ -4328,7 +4328,7 @@ _081726C6:
 	lsls r7, r7, #3
 	adds r1, r6, r7
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	cmp r0, #0x1f
 	bgt _08172704
 	ldr r3, _08172700 @ =0x030046A0

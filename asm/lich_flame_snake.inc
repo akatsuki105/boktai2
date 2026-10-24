@@ -3543,7 +3543,7 @@ _081A81A0:
 	ldrb r0, [r4]
 	mov r2, r8
 	ldrh r1, [r2]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _081A81FC

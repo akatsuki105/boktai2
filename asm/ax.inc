@@ -5226,7 +5226,7 @@ _0819813A:
 	adds r0, r7, r2
 	ldrb r1, [r0]
 	movs r0, #0xc
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _081981F8
@@ -15985,7 +15985,7 @@ _0819D59C:
 	lsls r2, r2, #3
 	adds r1, r6, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _0819D5D4
