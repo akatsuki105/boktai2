@@ -2,6 +2,8 @@
 #include "global.h"
 #include "particle.h"
 #include "player.h"
+#include "random.h"
+#include "trig.h"
 #include "vm.h"
 
 // 粒子3枚を1組にした要素, Entity4F5C_ElemFall がプレイヤーの高さまで落とし、Entity4F5C_ElemScatter が円状に散らす
@@ -51,7 +53,51 @@ void nop_0801a170(Entity4F5C* p, Entity4F5CElem* elem) {}
 
 NAKED void Entity4F5C_ElemFall(Entity4F5C* p, Entity4F5CElem* elem) { INCFUNC("asm/func/Entity4F5C_ElemFall.inc"); }
 
-NAKED void Entity4F5C_ElemScatter(Entity4F5C* p, Entity4F5CElem* elem) { INCFUNC("asm/func/Entity4F5C_ElemScatter.inc"); }
+// 粒子3枚を円状に散らしながらアニメを進め, 0x1F フレーム経ったら隠して終わる
+// 残差17命令 (153/170) でこちらが短い. 原典は angle を高位レジスタに追い出して gSineTable をアクセスごとにプールから読み直すが, agbcc は gSineTable を1本に巻き上げて angle を低位に収める (agbcc-levers.md の『キャッシュされたグローバルポインタを原典は毎回読み直す』と同じ壁)
+// y は SIN(timer * 4, 0x40) で一致, x/z は FixToInt でなく素の >> 12
+NON_MATCH void Entity4F5C_ElemScatter(Entity4F5C* p, Entity4F5CElem* elem) {
+#ifdef NONMATCHING_C
+  Particle* ptcl = elem->ptcls;
+  u8 angle = elem->angle;
+  s32 i;
+
+  for (i = 0; i < 3; i++, ptcl++) {
+    ptcl->pos.x += (gSineTable[(angle + 0x40) & 0xFF] * elem->speed) >> 12;
+    if (elem->timer <= 0x18) {
+      ptcl->pos.y = p->playerPos.y + SIN(elem->timer * 4, 0x40) + elem->unk_05;
+    } else {
+      ptcl->pos.y -= 10;
+    }
+    ptcl->pos.z += (gSineTable[angle] * elem->speed) >> 12;
+
+    elem->animTimer[i]++;
+    if (elem->animTimer[i] >= u16_ARRAY_085aa970[elem->animIdx[i]]) {
+      elem->animTimer[i] = 0;
+      elem->animIdx[i]++;
+      if (elem->animIdx[i] > 1) {
+        elem->animIdx[i] = 0;
+      }
+      Particle_SetFrame(ptcl, p->group2, elem->animIdx[i] + 2);
+      ptcl->plttSlot = p->group2->plttID + 1;
+    }
+
+    angle = (s8)angle + (Random() & 7) + 0x4C;
+  }
+
+  if (elem->timer > 0x1F) {
+    Particle* q = elem->ptcls;
+    s32 j;
+
+    for (j = 2; j >= 0; j--, q++) {
+      q->flags |= SPRFLAG_HIDDEN;
+    }
+    elem->state = 0;
+  }
+#else
+  INCFUNC("asm/func/Entity4F5C_ElemScatter.inc");
+#endif
+}
 
 // 各要素を state ごとの関数で進め, 全部終わったらスクリプトを呼んで自分を消す
 // 命令数・内容とも一致 (54/54) するが, 原典は i=2 の初期化を PTR_ARRAY_085aa974 のプール読みより後に置くのに対し agbcc は先に置く
