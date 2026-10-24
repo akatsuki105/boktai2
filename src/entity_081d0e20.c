@@ -360,22 +360,19 @@ NON_MATCH void FUN_081d0864(void) {
 #endif
 }
 
-NAKED Entity081d0e20Elem* Entity081d0e20_FindElem(s32 key) { INCFUNC("asm/func/Entity081d0e20_FindElem.inc"); }
+NAKED Entity081d0e20Elem* Entity081d0e20_FindElem(s32 id) { INCFUNC("asm/func/Entity081d0e20_FindElem.inc"); }
 
 void FUN_081d0bd4(void) {
-  s32 key = VM_GetNamedArgValue('i', -1);
-  s32 val;
-  Entity081d0e20Elem* elem;
-
-  if (key >= 0) {
-    val = VM_GetNamedArgValue('s', 0);
-    elem = Entity081d0e20_FindElem(key);
+  s32 id = VM_GetNamedArgValue('i', -1);
+  if (id >= 0) {
+    s32 val = VM_GetNamedArgValue('s', 0);
+    Entity081d0e20Elem* elem = Entity081d0e20_FindElem(id);
     if (elem != NULL) {
       if (val == 1) {
-        elem->flags |= 0x200;
+        elem->flags |= (1 << 9);
         elem->sprite.flags |= SPRFLAG_HIDDEN;
       } else {
-        elem->flags &= ~0x200;
+        elem->flags &= ~(1 << 9);
         elem->state = 1;
       }
     }
