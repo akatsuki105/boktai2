@@ -4,7 +4,6 @@
 #include "particle.h"
 #include "random.h"
 #include "sprite_animation.h"
-#include "trig.h"
 
 typedef struct {
   AuxAnimState anim;  // 0x00
