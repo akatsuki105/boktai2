@@ -424,7 +424,18 @@ void Cmd_A76D(void) {
   EnemyDex_SetFlag(EnemyDex_GetEntryIdx(kind, variant), flagKind);
 }
 
-NAKED void Cmd_D1C0(void) { INCFUNC("asm/func/Cmd_D1C0.inc"); }
+// '.k' の魔物に出会ったことにする
+void Cmd_D1C0(void) {
+  s32 bit = VM_GetNamedArgValue('k', -1);
+
+  if ((u32)bit <= 56) {
+    if (bit <= 31) {
+      gStat->enemyDexSeen[0] |= 1 << bit;
+    } else {
+      gStat->enemyDexSeen[1] |= 1 << (bit - 32);
+    }
+  }
+}
 
 // 魔物 bit に出会っているか
 // 残差はレジスタ番号の入れ替えのみ (r2/r3 が逆, 命令列は 29 対 29)
