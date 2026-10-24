@@ -195,7 +195,31 @@ NON_MATCH void FUN_0809e734(Entity5CCC* p) {
 #endif
 }
 
-NAKED void FUN_0809e75c(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809e75c.inc"); }
+// 光柱のパレットを 412 に切り替える (既にそうなっていれば何もしない)
+// 残差3命令 (47/50). 原典は定数 412 を p->pltt の読み込みより先に作り, 高位レジスタを1本多く使う
+NON_MATCH void FUN_0809e75c(Entity5CCC* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+
+  if (p->pltt == 412) {
+    return;
+  }
+
+  p->pltt = 412;
+  for (i = 0; i < p->count; i++) {
+    if (p->beams[i].active) {
+      AuxSpriteGfx* gfx = p->beams[i].gfx;
+      s32 j;
+
+      for (j = 1; j >= 0; j--, gfx++) {
+        Video_SetAuxSpritePltt(gfx, p->pltt);
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_0809e75c.inc");
+#endif
+}
 
 NAKED void FUN_0809e7c4(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809e7c4.inc"); }
 
