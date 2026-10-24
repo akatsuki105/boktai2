@@ -38,7 +38,8 @@ static_assert(sizeof(Entity1E98Elem) == 272);
 typedef struct {
   Entity e;                 // 0x000, ENTITY_UNK_8
   u8 count;                 // 0x018, 生えている足場の数, _Init が1枚生やすごとに1増やす
-  u8 unk_19[3];             // 0x019, まだ未解析
+  bool8 unk_19;             // 0x019, 足場が太陽ゲージを吸った瞬間に立つ
+  u8 unk_1a[2];             // 0x01A, まだ未解析
   rgb555 pltt[16];          // 0x01C, plttTimer が動いている間 gfx.pltt がここを指す (plttID 0x60)
   Entity1E98Elem elems[8];  // 0x03C
 } Entity1E98;
@@ -55,7 +56,21 @@ void Entity1E98_SetUpdateCallback(Entity1E98Elem* elem, void* fn) {
 
 NAKED void FUN_080a45a8(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a45a8.inc"); }
 
-NAKED void FUN_080a4620(HitboxData* a, HitboxData* b, Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a4620.inc"); }
+// 残差1命令 (32/33), 原典は &elem->plttTimer を r4 に置くため push/pop {r4} が増えるが, こちらは r3 で済ませてしまう
+// Tier A-B 試済 (sunGauge を s32 ローカルに受けると ldrsh と評価順は一致した)
+NON_MATCH void FUN_080a4620(HitboxData* a, HitboxData* b, Entity1E98Elem* elem) {
+#ifdef NONMATCHING_C
+  if (elem->plttTimer == 0 && (a->weakness & 0x8000)) {
+    s32 gauge = gStat->sunGauge;
+
+    elem->unk_f0 += gauge;
+    elem->plttTimer = 32;
+    gEntity1E98->unk_19 = TRUE;
+  }
+#else
+  INCFUNC("asm/func/FUN_080a4620.inc");
+#endif
+}
 
 void FUN_080a4670(Entity1E98Elem* elem) {
   if (elem->unk_f0 >= elem->unk_f2) {
