@@ -62,9 +62,20 @@ s32 Entity080c0fa0_Destroy(Entity080c0fa0* p) {
   return 0;
 }
 
-NAKED s32 Entity080c0fa0_Init(Entity080c0fa0* p, Vec3* pos, SpriteID32 pltt, u16 poseIdx, u16 dir, s32 speed, s16 delay, u16 param_8) { INCFUNC("asm/func/Entity080c0fa0_Init.inc"); }
+NAKED s32 Entity080c0fa0_Init(Entity080c0fa0* p, Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 param_8) { INCFUNC("asm/func/Entity080c0fa0_Init.inc"); }
 
-NAKED Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, u16 poseIdx, u16 dir, s32 speed, s16 delay, u16 param_7) { INCFUNC("asm/func/Entity080c0fa0_Create.inc"); }
+Entity080c0fa0* Entity080c0fa0_Create(Vec3* pos, SpriteID32 pltt, s32 poseIdx, s32 dir, s32 speed, s32 delay, s32 param_7) {
+  Entity080c0fa0* p = CreateEntity(ENTITY_UNK_10, sizeof(Entity080c0fa0));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, Entity080c0fa0_Update, Entity080c0fa0_Destroy);
+    if (Entity080c0fa0_Init(p, pos, pltt, poseIdx, dir, speed, delay, param_7) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+  return p;
+}
 
 NAKED s32 FUN_080c1008(Entity080c0fa0* p, u32 param_2, u32 param_3) { INCFUNC("asm/func/FUN_080c1008.inc"); }
 
