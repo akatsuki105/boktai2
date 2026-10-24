@@ -78,7 +78,7 @@ PreviewStage* PreviewStage_Create(u32 arg, u32 _);
 static inline void ShowBG(u32 bits) { gStagedDISPCNT |= bits; }
 
 s32 EnemyDex_GetPageStart(u32 param_1);
-s32 EnemyDex_GetCategoryOfEntry(u32 param_1);
+s32 EnemyDex_GetCategoryOfEntry(s32 entryIdx);
 s32 EnemyDex_GetPageEntryCount(u32 param_1);
 s32 EnemyDex_GetCategoryEntryCount(u32 category);
 s32 EnemyDex_GetCategoryStart(s32 category);
@@ -125,7 +125,23 @@ void EnemyDexMenu_SetPageFromEntry(EnemyDexMenu* p) {
   p->row = p->entryIdx - EnemyDex_GetPageStart(p->page);
 }
 
-NAKED s32 EnemyDex_GetCategoryOfEntry(u32 param_1) { INCFUNC("asm/func/EnemyDex_GetCategoryOfEntry.inc"); }
+// エントリ番号が属する種族 (0:ビースト 1:アンデット 2:シング 3:ファントム 4:イモータル)
+s32 EnemyDex_GetCategoryOfEntry(s32 entryIdx) {
+  if (entryIdx < EnemyDex_GetPageStart(3)) {
+    return 0;
+  }
+  if (entryIdx < EnemyDex_GetPageStart(4)) {
+    return 1;
+  }
+  if (entryIdx < EnemyDex_GetPageStart(6)) {
+    return 2;
+  }
+  if (entryIdx < EnemyDex_GetPageStart(8)) {
+    return 3;
+  } else {
+    return 4;
+  }
+}
 
 NAKED s32 FUN_0820ccd0(u32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_0820ccd0.inc"); }
 
