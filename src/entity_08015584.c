@@ -203,7 +203,131 @@ NON_MATCH u32 FUN_080155c8(s32 flags) {
 #endif
 }
 
-NAKED s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params) { INCFUNC("asm/func/FUN_080155e4.inc"); }
+// params に従って count 個の粒子を空き枠へ仕込む, 枠が足りなければ -1
+// 残差11命令 (531/520). 原典は &gEntity08015584 を r9 に巻き上げ params を低位レジスタに置くが, agbcc は参照のたびにプールから読み直し params を r8 へ追い出す (agbcc-levers.md のキャッシュされたグローバルポインタの項と同種)
+// i / spawned の宣言順を入れ替えるとスタック退避の位置は原典と揃う. ParticleSpawnParam の unk_1c/1e/24/26 はここでも読まれず死んでいる
+NON_MATCH s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params) {
+#ifdef NONMATCHING_C
+  s32 i;
+  s32 spawned;
+
+  if (gEntity08015584 == NULL) {
+    if (Entity08015584_Create(0, 0) == NULL) {
+      return -1;
+    }
+  }
+
+  spawned = 0;
+  for (i = 0; i < 32; i++) {
+    Entity08015584Elem* elem = &gEntity08015584->elems[i];
+    AuxAnimCmd* cmd;
+    s32 angleY;
+    s32 angleXZ;
+
+    if (elem->active) {
+      continue;
+    }
+
+    elem->active = TRUE;
+    elem->kind = params->kind;
+    elem->timer = 0;
+    elem->speedY = params->speedYRand == 0 ? params->speedY : params->speedY + Mod(Random(), params->speedYRand);
+    elem->speedXZ = params->speedXZRand == 0 ? params->speedXZ : params->speedXZ + Mod(Random(), params->speedXZRand);
+    angleY = params->angleYRand == 0 ? params->angleY : params->angleY + Mod(Random(), params->angleYRand);
+    angleXZ = params->angleXZRand == 0 ? params->angleXZ : params->angleXZ + Mod(Random(), params->angleXZRand);
+    elem->decayStartY = params->decayStartYRand == 0 ? params->decayStartY : params->decayStartY + Mod(Random(), params->decayStartYRand);
+    elem->decayStartXZ = params->decayStartXZRand == 0 ? params->decayStartXZ : params->decayStartXZ + Mod(Random(), params->decayStartXZRand);
+
+    if (params->flags & 1) {
+      elem->sprite.flags |= SPRFLAG_BLINK_ODD;
+    } else {
+      elem->sprite.flags &= ~SPRFLAG_BLINK_ODD;
+      elem->sprite.flags &= ~SPRFLAG_BLINK_EVEN;
+    }
+    if (params->flags & 2) {
+      elem->sprite.flags |= SPRFLAG_SCREEN_COORD;
+    } else {
+      elem->sprite.flags &= ~SPRFLAG_SCREEN_COORD;
+    }
+
+    elem->dirX = gSineTable[(angleXZ + 0x40) & 0xFF];
+    elem->dirY = gSineTable[angleY & 0xFF];
+    elem->dirZ = gSineTable[angleXZ & 0xFF];
+    elem->velX = FixToInt(12, elem->dirX * elem->speedXZ);
+    elem->velY = FixToInt(12, elem->dirY * elem->speedY);
+    elem->velZ = FixToInt(12, elem->dirZ * elem->speedXZ);
+
+    if (elem->kind == 5) {
+      Video_GetAuxSprite(&elem->gfx, SPRITE_61F9);
+      Video_SetAuxSpritePltt(&elem->gfx, 548);
+      elem->sprite.poseIdx = 0x20;
+      AuxAnim_SetAnim(&elem->anim, gEntity08015584->animFiles[1], 6, 0, 0);
+    } else if (elem->kind == 6) {
+      Video_GetAuxSprite(&elem->gfx, SPRITE_61F9);
+      Video_SetAuxSpritePltt(&elem->gfx, 556);
+      elem->sprite.poseIdx = 0x20;
+      AuxAnim_SetAnim(&elem->anim, gEntity08015584->animFiles[1], 6, 0, 0);
+    } else if (elem->kind == 7) {
+      Video_GetAuxSprite(&elem->gfx, SPRITE_61F9);
+      Video_SetAuxSpritePltt(&elem->gfx, 555);
+      elem->sprite.poseIdx = 0x2D;
+      AuxAnim_SetAnim(&elem->anim, gEntity08015584->animFiles[1], 8, 0, 0);
+    } else {
+      Video_GetAuxSprite(&elem->gfx, SPRITE_4384);
+      Video_SetAuxSpritePltt(&elem->gfx, elem->kind + 125);
+      AuxAnim_SetAnim(&elem->anim, gEntity08015584->animFiles[0], 0, 0, 0);
+    }
+
+    cmd = &elem->anim.cmds[elem->anim.cmdIdx];
+    elem->sprite.poseIdx = *cmd >> 6;
+    if ((elem->anim.flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+      elem->sprite.flags |= SPRFLAG_XFLIP;
+    } else {
+      elem->sprite.flags &= ~SPRFLAG_XFLIP;
+    }
+    if ((elem->anim.flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+      elem->sprite.flags |= SPRFLAG_YFLIP;
+    } else {
+      elem->sprite.flags &= ~SPRFLAG_YFLIP;
+    }
+
+    elem->anim.tick++;
+    if (elem->anim.tick >= elem->anim.wait) {
+      elem->anim.tick = 0;
+      if (elem->anim.flags & ANIM_PLAY_REVERSE) {
+        if (elem->anim.cmdIdx == 0) {
+          elem->anim.cmdIdx = elem->anim.cmdCount;
+        }
+        elem->anim.cmdIdx--;
+      } else {
+        elem->anim.cmdIdx++;
+        if (elem->anim.cmdIdx >= elem->anim.cmdCount) {
+          elem->anim.cmdIdx = 0;
+        }
+      }
+      elem->anim.duration = elem->anim.cmds[elem->anim.cmdIdx] & 0xF;
+      elem->anim.wait = (elem->anim.duration * elem->anim.speed) >> 6;
+      if (elem->anim.wait == 0) {
+        elem->anim.wait = 1;
+      }
+    }
+
+    elem->sprite.pos = *pos;
+    elem->sprite.priority = FUN_080155c8(params->flags);
+    AuxAnim_SetAnimSpeed(&elem->anim, params->animSpeed);
+    Video_AddAuxSpriteIntoDrawList(&elem->sprite, 0);
+
+    spawned++;
+    if (spawned >= count) {
+      return 0;
+    }
+  }
+
+  return -1;
+#else
+  INCFUNC("asm/func/FUN_080155e4.inc");
+#endif
+}
 
 // count 個を 256 を等分した向きへ1つずつ発生させる
 // 命令数・順序とも一致 (66/66) するが pos / count / step の3つがレジスタ3つ分入れ替わる. 原典は pos を r8, count を r7 に置くが agbcc は逆, 宣言順の入れ替えでは動かない
