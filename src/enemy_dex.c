@@ -81,7 +81,7 @@ s32 EnemyDex_GetPageStart(u32 param_1);
 s32 EnemyDex_GetCategoryOfEntry(u32 param_1);
 s32 EnemyDex_GetPageEntryCount(u32 param_1);
 s32 EnemyDex_GetCategoryEntryCount(u32 category);
-s32 EnemyDex_GetCategoryStart(u32 param_1);
+s32 EnemyDex_GetCategoryStart(s32 category);
 
 static const s32 sEnemyDexPageStarts[9] = {0, 7, 14, 21, 27, 34, 41, 48, 50};  // ページの先頭エントリ番号 (sEnemyDexPageEntryCounts の累積和), 0x085AF034
 static const s32 sEnemyDexPageEntryCounts[9] = {7, 7, 7, 6, 7, 7, 7, 2, 7};    // ページごとのエントリ数(ビースト1,ビースト2,ビースト3,アンデット,シング1,シング2,ファントム1,ファントム2,イモータル), 合計57, 0x085AF058
@@ -99,7 +99,16 @@ s32 EnemyDex_GetPageEntryCount(u32 page) { return sEnemyDexPageEntryCounts[page]
 
 s32 EnemyDex_GetCategoryEntryCount(u32 category) { return sEnemyDexCategoryCounts[category]; }
 
-NAKED s32 EnemyDex_GetCategoryStart(u32 param_1) { INCFUNC("asm/func/EnemyDex_GetCategoryStart.inc"); }
+// 種族 category の先頭エントリ番号 (それより前の種族のエントリ数の合計)
+s32 EnemyDex_GetCategoryStart(s32 category) {
+  s32 start = 0;
+  s32 i;
+
+  for (i = 0; i < category; i++) {
+    start += EnemyDex_GetCategoryEntryCount(i);
+  }
+  return start;
+}
 
 NAKED void EnemyDexMenu_SetPageFromEntry(EnemyDexMenu* p) { INCFUNC("asm/func/EnemyDexMenu_SetPageFromEntry.inc"); }
 
