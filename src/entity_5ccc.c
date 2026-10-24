@@ -199,7 +199,21 @@ NAKED void FUN_0809e75c(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809e75c.inc"); }
 
 NAKED void FUN_0809e7c4(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809e7c4.inc"); }
 
-NAKED void FUN_0809e840(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809e840.inc"); }
+// unk_28 が立っていたら有効な光柱を一旦隠し, プレイヤーの状態に応じて FUN_0809e630 を呼ぶ
+void FUN_0809e840(Entity5CCC* p) {
+  if (p->unk_28 == 1) {
+    s32 i;
+
+    p->unk_28 = FALSE;
+    for (i = 0; i < p->count; i++) {
+      if (p->beams[i].active) {
+        p->beams[i].sprite[0].flags |= SPRFLAG_HIDDEN;
+      }
+    }
+  }
+
+  FUN_0809e630(p, Player_TestFlag20(p->player, PFLAG20_UNK_5) ? 2 : 0);
+}
 
 NAKED void FUN_0809e89c(Entity5CCC* p) { INCFUNC("asm/func/FUN_0809e89c.inc"); }
 
