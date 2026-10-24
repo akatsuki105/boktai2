@@ -8,7 +8,7 @@
 	beq _080673D2
 	adds r0, r4, #0
 	movs r1, #1
-	bl FUN_08064d6c
+	bl Player_HasEnoughSunGauge
 	cmp r0, #0
 	beq _080673C0
 	ldr r0, _080673B0 @ =0x00000392

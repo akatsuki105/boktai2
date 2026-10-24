@@ -3244,9 +3244,9 @@ bool32 Player_HasEnoughEne(Player* p, s32 ene) {
   return TRUE;
 }
 
-bool32 FUN_08064d6c(Player* p, s32 val) {
+bool32 Player_HasEnoughSunGauge(Player* p, s32 sunGauge) {
   if (KAAMOS(p->isSabata) > 0) return FALSE;
-  if (gStat->sunGauge < val) return FALSE;
+  if (gStat->sunGauge < sunGauge) return FALSE;
 
   return TRUE;
 }
@@ -4087,7 +4087,7 @@ void FUN_080672b0(Player* p) {
 NON_MATCH void MagicDash_Update(Player* p) {
 #ifdef NONMATCHING_C
   if (p->action != 2) {
-    if (FUN_08064d6c(p, 1)) {
+    if (Player_HasEnoughSunGauge(p, 1)) {
       PlaySound_082406e0(SONG_914);
       p->dashSpeed = gStat->sunGauge * 2 + 14;
       if (p->dashSpeed > 32) {
@@ -4257,7 +4257,7 @@ NAKED void FUN_08069648(Player* p) { INCFUNC("asm/func/FUN_08069648.inc"); }
 // フリーズの魔法, 向いている方向の少し先に氷結エフェクトを出す
 void MagicFreeze_08069710(Player* p) {
   if (p->action != 0xF) {
-    if (FUN_08064d6c(p, 0)) {
+    if (Player_HasEnoughSunGauge(p, 0)) {
       s32 radius;
 
       WorldPos pos = p->mover.pos;
@@ -4323,7 +4323,7 @@ void MagicFreeze_08069710(Player* p) {
 // ヒーリングの魔法, 向いている方向の少し先に回復の粒を出す
 void MagicHealing_08069928(Player* p) {
   if (p->action != 0x10) {
-    if (FUN_08064d6c(p, 2)) {
+    if (Player_HasEnoughSunGauge(p, 2)) {
       WorldPos pos = p->mover.pos;
       s32 angle = ((p->facing + 5) & 7) * 32;
       pos.x += COS(angle, 150);
@@ -4388,7 +4388,7 @@ void MagicDynamite_08069b18(Player* p) {
   if (p->action != 0x11) {
     if (p->unk_390 != 0) {
       p->magicFired = FALSE;
-    } else if (FUN_08064d6c(p, 3)) {
+    } else if (Player_HasEnoughSunGauge(p, 3)) {
       p->magicFired = TRUE;
       Entity080a8ff8_Create(p, &p->mover.pos, 0);
     } else {
