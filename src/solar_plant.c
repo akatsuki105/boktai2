@@ -16,7 +16,7 @@ typedef struct Entity1E98Elem {
   HitboxData hitbox;                               // 0x048
   Mover mover;                                     // 0x098, moverLinked が 0 以外のときだけ繋がれる
   Vec3 pos;                                        // 0x0DC, '.p', spr.pos へ複写され hitbox の座標にもなる
-  s8 unk_e4;                                       // 0x0E4, '.t'
+  u8 unk_e4;                                       // 0x0E4, '.t', 0 ならハスの葉 (階段タイル扱い), それ以外は太陽の根
   bool8 moverLinked;                               // 0x0E5, '.h'
   s16 hitboxArg;                                   // 0x0E6, '.n', Hitbox_Init の第2引数
   s16 scriptID;                                    // 0x0E8, '.g[0]=-1', スクリプトが '.i' でこの足場を指名する
@@ -57,7 +57,22 @@ void Entity1E98_SetUpdateCallback(Entity1E98Elem* elem, void* fn) {
   elem->timer = 0;
 }
 
-NAKED void FUN_080a45a8(Entity1E98Elem* elem) { INCFUNC("asm/func/FUN_080a45a8.inc"); }
+// 足場の乗れる面をコリジョンマップに差し込む, ハスの葉は向きに応じた階段タイル, 太陽の根は平らなタイルになる
+void FUN_080a45a8(Entity1E98Elem* elem) {
+  s32 stairs;
+  s32 height;
+
+  if (elem->unk_e4 == 0) {
+    stairs = (elem->spr.flags & SPRFLAG_XFLIP) ? STAIRS_HORIZONTAL : STAIRS_VERTICAL;
+    height = FixToInt(8, elem->pos.y) + 1;
+  } else {
+    stairs = 0;
+    height = FixToInt(8, elem->pos.y);
+  }
+
+  Map_AddTileOverride(&elem->ov, elem->tileIdx, stairs, height, 0xFF, 0);
+  elem->tileOverrideAdded = TRUE;
+}
 
 // 残差1命令 (32/33), 原典は &elem->plttTimer を r4 に置くため push/pop {r4} が増えるが, こちらは r3 で済ませてしまう
 // Tier A-B 試済 (sunGauge を s32 ローカルに受けると ldrsh と評価順は一致した)
