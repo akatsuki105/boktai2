@@ -106,7 +106,73 @@ s32 Entity55C2_Destroy(Entity55C2* p) {
   return 0;
 }
 
-NAKED s32 Entity55C2_Init(Entity55C2* p, u32 id) { INCFUNC("asm/func/Entity55C2_Init.inc"); }
+// スクリプトの名前付き引数から判定と反応条件を組み立てる
+s32 Entity55C2_Init(Entity55C2* p, u32 id) {
+  Vec3 pos;
+  Vec3 halfSize;
+  Vec3 offset;
+
+  p->id = id;
+  p->unk_6c = VM_GetNamedArgValue('l', 100);
+  p->unk_6a = p->unk_6c;
+  p->unk_78 = VM_GetNamedArgValue('S', 0x10);
+
+  if (VM_SeekToNamedArg('p')) {
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
+  } else {
+    pos.x = 0;
+    pos.y = 0;
+    pos.z = 0;
+  }
+
+  if (VM_SeekToNamedArg('s')) {
+    halfSize.x = VM_GetValue();
+    halfSize.y = VM_GetValue();
+    halfSize.z = VM_GetValue();
+  } else {
+    halfSize.x = 0;
+    halfSize.y = 0;
+    halfSize.z = 0;
+  }
+
+  if (VM_SeekToNamedArg('o')) {
+    offset.x = VM_GetValue();
+    offset.y = VM_GetValue();
+    offset.z = VM_GetValue();
+  } else {
+    offset.x = 0;
+    offset.y = 0;
+    offset.z = 0;
+  }
+
+  Hitbox_Init(&p->hitbox, id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, p->unk_78, &halfSize, &offset);
+  Hitbox_SetPos(&p->hitbox, &pos, 0);
+  Hitbox_SetHandler(&p->hitbox, Entity55C2_OnHit, p);
+  Hitbox_SetPowerAndAttributes(&p->hitbox, 0, 0, 0);
+  Hitbox_Register(&p->hitbox);
+
+  p->flags = VM_GetNamedArgValue('f', 0);
+  if (VM_SeekToNamedArg('w')) {
+    p->unk_70 = VM_GetValue();
+  } else {
+    p->unk_70 = 0;
+    p->flags |= 8;
+  }
+  if (VM_SeekToNamedArg('a')) {
+    p->unk_74 = VM_GetValue();
+  } else {
+    p->unk_74 = 0;
+    p->flags |= 0x10;
+  }
+
+  p->unk_80 = VM_GetNamedArgValue('D', 0);
+  p->unk_82 = VM_GetNamedArgValue('d', 0);
+  p->unk_7c = 0;
+  p->unk_7e = VM_GetNamedArgValue('i', 0);
+  return 0;
+}
 
 Entity55C2* Entity55C2_Create(u32 id) {
   Entity55C2* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity55C2));
