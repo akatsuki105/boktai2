@@ -478,7 +478,7 @@ s32 FUN_0820a464(Entity286F* p, Entity286FNode* node) {
   return 0;
 }
 
-NAKED s32 FUN_0820a470(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a470.inc"); }
+s32 FUN_0820a470(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xA133
 NAKED void FUN_0820a480(void) { INCFUNC("asm/func/FUN_0820a480.inc"); }
