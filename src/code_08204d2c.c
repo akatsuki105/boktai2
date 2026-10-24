@@ -547,7 +547,10 @@ NAKED void FUN_0820b0b4(Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b0b4.i
 
 NAKED s32 FUN_0820b2bc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b2bc.inc"); }
 
-NAKED s32 FUN_0820b2dc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b2dc.inc"); }
+s32 FUN_0820b2dc(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
 NAKED s32 FUN_0820b2e8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b2e8.inc"); }
 
