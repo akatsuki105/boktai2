@@ -3,6 +3,7 @@
 #include "entity_9a9f.h"
 #include "global.h"
 #include "input.h"
+#include "magic.h"
 #include "player.h"
 #include "sound.h"
 #include "vm.h"
@@ -653,8 +654,6 @@ s32 FUN_080ced68(Player* p, s32 param_2) {
 }
 
 NAKED s32 FUN_080ced90(Player* p) { INCFUNC("asm/func/FUN_080ced90.inc"); }
-
-s32 GetMagicCategory(magic32_t id);
 
 // 通信相手の記録から装備魔法の情報を作り直す
 void PlayerLink_RefreshMagicInfo(Player* p) {

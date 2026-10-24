@@ -263,7 +263,7 @@ _080AE158:
 	add r0, sp, #0x10
 	movs r1, #1
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	b _080AE37A
 	.align 2, 0
 _080AE1C8: .4byte 0x04000052

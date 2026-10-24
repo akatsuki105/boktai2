@@ -11627,7 +11627,7 @@ _081BDD08:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x20
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _081BDF00 @ =0x000003FF
@@ -11651,7 +11651,7 @@ _081BDD08:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x40
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _081BDF00 @ =0x000003FF
@@ -11675,7 +11675,7 @@ _081BDD08:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x5e
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _081BDF00 @ =0x000003FF
@@ -11699,7 +11699,7 @@ _081BDD08:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x80
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _081BDF00 @ =0x000003FF
@@ -11723,7 +11723,7 @@ _081BDD08:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0xc4
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _081BDF00 @ =0x000003FF
@@ -11747,7 +11747,7 @@ _081BDD08:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0xf0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r1, [sp, #0x40]
 	ldrb r4, [r1]
 	cmp r4, #4

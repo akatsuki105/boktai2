@@ -150,7 +150,7 @@ _080FE33E:
 	movs r4, #2
 	str r4, [sp, #8]
 	str r4, [sp, #0xc]
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _080FE3B4:
 	cmp r6, #0x22
 	bgt _080FE3BE
@@ -254,7 +254,7 @@ _080FE424:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x20
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _080FE648 @ =0x000003FF
@@ -278,7 +278,7 @@ _080FE424:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x40
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _080FE648 @ =0x000003FF
@@ -302,7 +302,7 @@ _080FE424:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x5e
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _080FE648 @ =0x000003FF
@@ -326,7 +326,7 @@ _080FE424:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x80
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _080FE648 @ =0x000003FF
@@ -350,7 +350,7 @@ _080FE424:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0xc4
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _080FE648 @ =0x000003FF
@@ -374,7 +374,7 @@ _080FE424:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0xf0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r1, [sp, #0x4c]
 	ldrb r0, [r1]
 	cmp r0, #4

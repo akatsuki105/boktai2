@@ -2000,7 +2000,7 @@ FUN_08024100: @ 0x08024100
 	mov r0, sl
 	movs r1, #3
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	mov r1, sb
 	ldr r0, [r1]
 	adds r0, #1
@@ -2033,7 +2033,7 @@ FUN_08024100: @ 0x08024100
 	mov r0, sl
 	movs r1, #3
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	add sp, #0x18
 	pop {r3, r4, r5}
 	mov r8, r3

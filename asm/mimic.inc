@@ -1855,7 +1855,7 @@ _08147600:
 	str r1, [sp, #0xc]
 	movs r1, #1
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldrh r1, [r5]
 	movs r0, #3
 	ands r0, r1

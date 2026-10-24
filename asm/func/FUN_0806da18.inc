@@ -325,7 +325,7 @@ _0806DC62:
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _0806DC96:
 	ldrh r0, [r6]
 	adds r0, #1

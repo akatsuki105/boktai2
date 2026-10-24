@@ -139,7 +139,7 @@ _080FD136:
 	str r2, [sp, #8]
 	str r2, [sp, #0xc]
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _080FD1A8:
 	movs r4, #0x83
 	lsls r4, r4, #2

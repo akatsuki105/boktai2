@@ -11,6 +11,7 @@
 #include "hitbox.h"
 #include "input.h"
 #include "item.h"
+#include "magic.h"
 #include "random.h"
 #include "solar.h"
 #include "sound.h"
@@ -43,8 +44,6 @@ s32 FUN_0805fe7c(HitboxData* hitbox, s32 param_2, s32 param_3, Vec3* pos, Vec3* 
 bool32 FUN_0809df78(Vec3* pos);
 s32 FUN_080dc0b8(Vec3* pos, Vec3* param_2, u32 param_3, u32 param_4, u32 param_5);
 bool32 FUN_0809e138(Player* p);
-s32 GetMagicCategory(magic32_t id);
-s32 FUN_080ddcc8(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 speed, s32 velYMax, s32 kind, u32 priority);
 void FUN_0809c4f4(void);
 magic32_t Player_CheckMagicEnchant(Player* p);
 void dark_django_0806f990(HitboxData* a, HitboxData* b, Player* _);
@@ -57,7 +56,6 @@ void FUN_0807e854(Player* p);
 void FUN_080ec79c(u8 kind, void* payload);
 void FUN_08079f1c(Player* p);
 void Camera_LookAt(Vec3* pos);
-bool32 IsMagicUnlocked(magic32_t n);
 
 COMMON_DATA u16 gGoodCondID = 0;                        // 0x03002B60, 現在の良い状態効果のID (= Player.goodCondID, Player再生成時の退避用, 他のEntityから参照するなどの用途で使用される)
 COMMON_DATA u16 ALIGNED(4) gConfusedDir = 0;            // 0x03002B64, 混乱の状態異常のときに動く方向 (エリア移動などで Player を再生成したときにこれを引き継ぐ)
@@ -555,7 +553,7 @@ void Player_SpawnFootHitbox(Player* p) {
     size.x = 0x40, size.y = 0x3C, size.z = 0x40;
   }
 
-  FUN_080ddcc8(&pos, 1, &size, 0, 0, 0xC, 2, 2);
+  EmitSmoke(&pos, 1, &size, 0, 0, 0xC, 2, 2);
 }
 
 // 0x64C のパーティクルを1フレーム進める, 4フレームごとにパレットを1段ずらし6フレーム過ぎたら消す

@@ -1710,7 +1710,7 @@ _08028B28:
 	adds r0, r5, #0
 	movs r1, #3
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	mov r0, sb
 	ldr r1, [r0]
 	adds r1, #1
@@ -1745,7 +1745,7 @@ _08028B28:
 	adds r0, r5, #0
 	movs r1, #3
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [sp, #0x18]
 	subs r0, #1
 	str r0, [sp, #0x18]
@@ -1833,7 +1833,7 @@ _08028C2C:
 	adds r0, #0x20
 	movs r1, #3
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	subs r6, #1
 	cmp r6, #0
 	bge _08028C2C
@@ -1928,7 +1928,7 @@ _08028CE4:
 	add r0, sp, #0x10
 	movs r1, #3
 	adds r2, r5, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	mov r0, sb
 	ldr r1, [r0]
 	adds r1, #1
@@ -1963,7 +1963,7 @@ _08028CE4:
 	add r0, sp, #0x10
 	movs r1, #3
 	adds r2, r5, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	movs r0, #1
 	rsbs r0, r0, #0
 	add sl, r0
@@ -2814,7 +2814,7 @@ _08029368:
 	str r2, [sp, #0xc]
 	adds r0, r6, #0
 	ldr r2, [sp, #0x34]
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r3, _0802948C @ =0x030046B8
 	ldr r2, [r3]
 	adds r2, #1
@@ -2865,7 +2865,7 @@ _08029368:
 	adds r0, r6, #0
 	ldr r2, [sp, #0x34]
 	mov r3, r8
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r3, [sp, #0x28]
 	cmp r3, #1
 	beq _080294E8
@@ -29093,7 +29093,7 @@ _08035B06:
 	mov r0, sl
 	movs r1, #3
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r1, _08035BFC @ =0x030046B8
 	ldr r0, [r1]
 	adds r0, #1
@@ -29126,7 +29126,7 @@ _08035B06:
 	mov r0, sl
 	movs r1, #3
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	movs r0, #0x3c
 	ldr r1, [sp, #0x30]
 	strh r0, [r1]

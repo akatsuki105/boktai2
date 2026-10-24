@@ -312,6 +312,7 @@ bool32 Coffin_IsState(s32 state) {
   return TRUE;
 }
 
+// 0x6B24
 void FUN_08086638(void) {
   Coffin* p = gCoffin;
 
@@ -461,7 +462,7 @@ void FUN_080868b8(s32 param_1) {
   }
 }
 
-// 棺を state 8 に入れ, エフェクトスプライトを棺と同じ位置に出す
+// 0x9BC7, 棺を state 8 に入れ, エフェクトスプライトを棺と同じ位置に出す
 void FUN_08086910(void) {
   Coffin* p = gCoffin;
 
@@ -586,6 +587,7 @@ NON_MATCH void FUN_08086b18(WorldPos* pos) {
 #endif
 }
 
+// 0xA301
 void FUN_08086be0(void) {
   Coffin* p = gCoffin;
 
@@ -603,15 +605,17 @@ void FUN_08086be0(void) {
   }
 }
 
+// 0x4561
 NAKED void FUN_08086c50(void) { INCFUNC("asm/func/FUN_08086c50.inc"); }
 
+// 0xFEE0
 void Coffin_RequestKill(void) {
   if (gCoffin != NULL) {
     gCoffin->killRequested = TRUE;
   }
 }
 
-// 装備中の棺桶ID, 未装備なら貴重品欄にある棺桶から探す
+// 0x7A0A, 装備中の棺桶ID, 未装備なら貴重品欄にある棺桶から探す
 s32 FUN_08086d7c(void) {
   s32 i;
 

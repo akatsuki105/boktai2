@@ -47,19 +47,20 @@ void UnlockMagic(magic32_t n) {
   }
 }
 
-// 0xE083
+// 0xE083, HashName("魔法取得")
 void Cmd_UnlockMagic(void) {
   if (VM_SeekToNamedArg('m')) {
     UnlockMagic(VM_GetValue());
   }
 }
 
-bool32 IsMagicUnlocked(magic32_t n) {
-  const u32 unlocked = gStat->unlockedMagic & (1 << n);
+bool32 IsMagicUnlocked(magic32_t id) {
+  const u32 unlocked = gStat->unlockedMagic & (1 << id);
   return unlocked;
 }
 
-bool32 FUN_08243584(void) {
+// 0x83E7
+bool32 Cmd_IsMagicUnlocked(void) {
   if (VM_SeekToNamedArg('m')) {
     return IsMagicUnlocked(VM_GetValue());
   }

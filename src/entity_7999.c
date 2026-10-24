@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "global.h"
+#include "magic.h"
 #include "sprite.h"
 #include "text.h"
 #include "tilemap.h"
@@ -45,14 +46,13 @@ typedef struct Entity7999 {
   u16 unk_2a0;                                 // 0x2A0, _Init が '.l' を入れる
   u16 unk_2a2;                                 // 0x2A2, _Init が '.e' を入れる
 } Entity7999;
+static_assert(sizeof(Entity7999) == 676);
 
-bool32 IsMagicUnlocked(magic32_t n);
 void FUN_081df974(void);
 bool32 FUN_081dfa04(void);
 
-void Entity7999_HidePanels(Entity7999* p);
-void Entity7999_HideSprites(Entity7999* p);
-static_assert(sizeof(Entity7999) == 676);
+static void Entity7999_HidePanels(Entity7999* p);
+static void Entity7999_HideSprites(Entity7999* p);
 
 const u32 u32_ARRAY_085ae144[7] = {0, 2, 3, 4, 5, 11, 13};  // 0x085AE144
 
@@ -142,7 +142,7 @@ NAKED void FUN_081da218(unknown* param_1) { INCFUNC("asm/func/FUN_081da218.inc")
 
 NAKED void Entity7999_InitPanels(Entity7999* p) { INCFUNC("asm/func/Entity7999_InitPanels.inc"); }
 
-void Entity7999_HidePanels(Entity7999* p) {
+static void Entity7999_HidePanels(Entity7999* p) {
   TextPanel_Hide(p->windowID0);
   TextPanel_Hide(p->windowID1);
   TextPanel_Hide(p->windowID2);
@@ -152,7 +152,7 @@ NAKED void Entity7999_InitSprites(Entity7999* p) { INCFUNC("asm/func/Entity7999_
 
 NAKED void FUN_081da468(unknown* param_1) { INCFUNC("asm/func/FUN_081da468.inc"); }
 
-void Entity7999_HideSprites(Entity7999* p) {
+static void Entity7999_HideSprites(Entity7999* p) {
   s32 i;
 
   for (i = 0; i < 5; i++) {

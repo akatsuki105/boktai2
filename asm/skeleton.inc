@@ -24261,7 +24261,7 @@ _0810EA70:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x20
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0810EC10 @ =0x000003FF
@@ -24285,7 +24285,7 @@ _0810EA70:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x40
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0810EC10 @ =0x000003FF
@@ -24309,7 +24309,7 @@ _0810EA70:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x5e
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0810EC10 @ =0x000003FF
@@ -24333,7 +24333,7 @@ _0810EA70:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x80
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0810EC10 @ =0x000003FF
@@ -24357,7 +24357,7 @@ _0810EA70:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0xc4
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0810EC10 @ =0x000003FF
@@ -24381,7 +24381,7 @@ _0810EA70:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0xf0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r5, [sp, #0xb8]
 	ldrb r4, [r5]
 	cmp r4, #4

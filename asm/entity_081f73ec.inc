@@ -1590,7 +1590,7 @@ _081F5F62:
 	movs r1, #1
 	str r1, [sp, #0xc]
 	movs r1, #2
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _081F6006:
 	add sp, #0x38
 	pop {r3, r4, r5}

@@ -5183,7 +5183,7 @@ _0819813A:
 	movs r1, #2
 	mov r2, sb
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r3, [sp, #0x34]
 	ldrb r6, [r3]
 	cmp r6, #0
@@ -9000,7 +9000,7 @@ _08199E48:
 	add r0, sp, #0x10
 	movs r1, #1
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	movs r0, #0xb7
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
@@ -15911,7 +15911,7 @@ _0819D4E8:
 	movs r1, #2
 	mov r2, sl
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _0819D518:
 	ldr r0, [r6, #0x44]
 	mov r1, sb
@@ -20510,7 +20510,7 @@ _0819F854:
 	movs r1, #2
 	mov r2, r8
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _0819F884:
 	add sp, #0x2c
 	pop {r3}

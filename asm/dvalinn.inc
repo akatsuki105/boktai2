@@ -10939,7 +10939,7 @@ _081FF9A8:
 	str r1, [sp, #8]
 	str r1, [sp, #0xc]
 	movs r1, #3
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _081FFA92:
 	mov r1, sl
 	movs r2, #0

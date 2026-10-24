@@ -2252,7 +2252,7 @@ _0816BA7C:
 	str r2, [sp, #8]
 	str r2, [sp, #0xc]
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _0816BAE8:
 	movs r1, #0x83
 	lsls r1, r1, #2

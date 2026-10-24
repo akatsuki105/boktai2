@@ -101,7 +101,7 @@ _080DE038:
 	adds r1, r7, #0
 	mov r2, r8
 	adds r3, r6, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _080DE074:
 	add sp, #0x24
 	pop {r3, r4}

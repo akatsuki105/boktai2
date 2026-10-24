@@ -10,12 +10,11 @@ typedef struct {
   AuxAnimState anim;  // 0x00
   Particle ptcl;      // 0x10
   Vec3 vel;           // 0x38, 毎フレーム ptcl.pos に足す
-  bool8 active;       // 0x40, アニメが一周すると 0 に戻って activeCount が1減る
-  u8 unk_41[3];       // 0x41, まだ未解析
+  bool8 active;       // 0x40, 煙のアニメーションが終わったら FALSE になる
 } SmokePtcl;
 static_assert(sizeof(SmokePtcl) == 68);
 
-// 煙のエフェクトマネージャ
+// 煙のエフェクトエミッタ
 typedef struct {
   Entity e;               // 0x000, ENTITY_UNK_9
   SmokePtcl ptcls[48];    // 0x018
@@ -113,7 +112,7 @@ s32 SmokeEmitter_Destroy(SmokeEmitter* p) {
 
 // 残差2命令 (307/309), 原典は &e->vel を基点に active を [+8] で読むが, こちらは active 専用の IV ができて &e->vel がスタックに退避され CpuFill32 の dest 取得で2命令増える
 // Tier A-C 試済 (e ローカル有無/フラグ/定数順は検証済)
-NON_MATCH s32 FUN_080ddcc8(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 speed, s32 velYMax, s32 kind, u32 priority) {
+NON_MATCH s32 EmitSmoke(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 speed, s32 velYMax, s32 kind, u32 priority) {
 #ifdef NONMATCHING_C
   SmokeEmitter* p = gSmokeEmitter;
   s32 i;
@@ -199,7 +198,7 @@ NON_MATCH s32 FUN_080ddcc8(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 s
   }
   return 1;
 #else
-  INCFUNC("asm/func/FUN_080ddcc8.inc");
+  INCFUNC("asm/func/EmitSmoke.inc");
 #endif
 }
 

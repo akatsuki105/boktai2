@@ -163,7 +163,7 @@ _08220E6A:
 	str r0, [sp, #0xc]
 	add r0, sp, #0x10
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, _08220FA4 @ =0x00000339
 	bl PlaySound_082406e0
 _08220F34:

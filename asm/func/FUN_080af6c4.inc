@@ -58,7 +58,7 @@ _080AF6F2:
 	str r3, [sp, #8]
 	str r1, [sp, #0xc]
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	b _080AF7A4
 	.align 2, 0
 _080AF744: .4byte 0x000006AC
@@ -104,7 +104,7 @@ _080AF766:
 	movs r1, #1
 	str r1, [sp, #0xc]
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _080AF7A4:
 	cmp r6, #0
 	ble _080AF7BE

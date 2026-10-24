@@ -3021,7 +3021,7 @@ _080C3D28:
 	movs r1, #1
 	movs r2, #0
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	subs r6, #1
 	cmp r6, #0
 	bge _080C3D28
@@ -8423,7 +8423,7 @@ _080C66CA:
 	str r1, [sp, #0xc]
 	add r2, sp, #0x10
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	adds r0, r6, #0
 	movs r1, #3
 	bl FUN_080c4a54
@@ -14900,7 +14900,7 @@ _080C99CC:
 	str r1, [sp, #0xc]
 	add r2, sp, #0x10
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _080C9A5E:
 	cmp r5, #0x4f
 	bgt _080C9A94
@@ -15119,7 +15119,7 @@ _080C9B8C:
 	str r1, [sp, #0xc]
 	add r2, sp, #0x10
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _080C9C1C:
 	ldr r4, _080C9CA4 @ =0x000025EA
 	add r4, r8

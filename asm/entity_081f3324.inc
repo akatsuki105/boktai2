@@ -130,7 +130,7 @@ FUN_081f27d4: @ 0x081F27D4
 	movs r1, #1
 	add r2, sp, #0x10
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	add sp, #0x18
 	pop {r4}
 	pop {r0}

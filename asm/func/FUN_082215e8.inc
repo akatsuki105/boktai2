@@ -220,7 +220,7 @@ _08221744:
 	str r4, [sp, #8]
 	movs r4, #1
 	str r4, [sp, #0xc]
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, _082217FC @ =0x00000339
 	bl PlaySound_082406e0
 _082217B8:

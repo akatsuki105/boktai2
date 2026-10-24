@@ -2353,7 +2353,7 @@ _080E3116:
 	str r1, [sp, #0xc]
 	movs r1, #2
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _080E31E0:
 	adds r0, r7, #0
 	bl Enemy_IsDead

@@ -341,7 +341,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0x8337, Entity3117_AddEntryScripted
 	.4byte 0x83B2, Entity83B2_Create
 	.4byte 0x83E5, GameResult_Create
-	.4byte 0x83E7, FUN_08243584
+	.4byte 0x83E7, Cmd_IsMagicUnlocked
 	.4byte 0x8400, FUN_080b2224
 	.4byte 0x8459, FUN_080a11d4
 	.4byte 0x8602, Entity2D2B_SetLitDurationScripted

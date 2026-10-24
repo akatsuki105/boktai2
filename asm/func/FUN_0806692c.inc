@@ -84,7 +84,7 @@ _080669BE:
 	movs r1, #1
 	add r2, sp, #0x10
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, _080669FC @ =0x00000376
 	adds r1, r5, r0
 	ldrh r0, [r1]

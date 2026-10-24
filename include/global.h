@@ -65,6 +65,8 @@ s32 SoftReset_0823a928(void);
 void ClearMemory(void* dst, s32 bytesize);  // buffer から bytesize バイト分のメモリを0で埋める
 void CopyMemory(u8* dst, u8* src, s32 bytesize);
 
+s32 EmitSmoke(WorldPos* pos, u8 count, Vec3* size, s32 angle, s32 speed, s32 velYMax, s32 kind, u32 priority);
+
 // 固定小数の値を整数に変換するための関数
 static inline s32 FixToInt(s32 fracBits, s32 fixedPointValS32) { return fixedPointValS32 >= 0 ? (fixedPointValS32 >> fracBits) : -((-fixedPointValS32) >> fracBits); }
 

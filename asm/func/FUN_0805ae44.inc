@@ -147,7 +147,7 @@ _0805AED0:
 	movs r0, #1
 	str r0, [sp, #0xc]
 	adds r0, r6, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, _0805AF9C @ =0x00000339
 	bl PlaySound_082406e0
 _0805AF74:
