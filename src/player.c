@@ -48,6 +48,7 @@ void FUN_0809c4f4(void);
 magic32_t Player_CheckMagicEnchant(Player* p);
 void dark_django_0806f990(HitboxData* a, HitboxData* b, Player* _);
 void* Entity080dc44c_Create(void);
+struct Judgement* Judgement_Create(Player* p);
 s32 MosaicFader_Start(s32 mode, s32 objEnabled, s32 targets, u8* from, u8* to, u16* interval);
 void BuildWeaponData(Weapon* w, WeaponData* data);
 s32 FUN_0807a6cc(WeaponData* w);
@@ -2029,7 +2030,7 @@ NON_MATCH void Player_ApplyBadCondition(Player* p, s32 badcondID, s32 frames) {
         FUN_08063220(p);
       }
       if (p->badCondTimer[BAD_POISON] == 0) {
-        p->unk_3d8 = 0;
+        p->poisonTick = 0;
       }
       break;
     }
@@ -8320,7 +8321,109 @@ s32 FUN_0807e7fc(Player* p, s32 power, s32 unk_40, s32 angle, s32 unk_44, Hitbox
 
 NAKED void FUN_0807e854(Player* p) { INCFUNC("asm/func/FUN_0807e854.inc"); }
 
-NAKED bool32 Player_Update_Helper_0807e968(Player* p) { INCFUNC("asm/func/Player_Update_Helper_0807e968.inc"); }
+// 残差9命令 (341/350), 3箇所 (SF934_UNK_13 / SF934_DESERT / EBUFF_BLACKARMOR) で原典はマスクをレジスタに作ってから AND し, 真偽値を 0/1 に materialize してから cmp する
+// FUN_0806241c と同じ壁で, マスクを引数に取る static inline にするとマスクはレジスタに乗るが 0/1 の materialize は agbcc が畳む
+// 他は PFLAG20_UNK_9 の |= のマスク順と unk_3da のカウンタ順の1命令
+NON_MATCH bool32 Player_UpdateDamage(Player* p) {
+#ifdef NONMATCHING_C
+  CollisionMapTile* tile = Player_GetTileAt(&p->mover.pos);
+
+  if ((tile->attr & TATTR_ICE) && p->unk_390 == 0) {
+    if (gStat->unk_934 & SF934_UNK_13) {
+      Player_SetAction(p, 0x1D, 0);
+    } else {
+      Player_SetAction(p, 0x1C, 0);
+    }
+    return TRUE;
+  }
+
+  if (gStat->heatstroke > 4999) {
+    Player_SetAction(p, 0x1E, 0);
+    return TRUE;
+  }
+
+  if (p->unk_394) {
+    p->damage += FUN_08065cb8(p);
+  } else if (p->unk_396) {
+    p->damage += FUN_08065e24(p);
+  }
+
+  if (p->hurtbox.unk_44 == 0) {
+    if (p->badCondTimer[1] != 0) {
+      p->poisonTick++;
+      if (p->poisonTick > 59) {
+        p->damage++;
+        p->poisonTick = 0;
+      }
+    }
+    if (p->unk_4c4.kind == 1 && p->unk_4c4.unk_3 != 0) {
+      u16 t;
+
+      p->flag20 |= PFLAG20_UNK_9;
+      p->unk_3da++;
+      t = p->unk_3da;
+      if (t >= Div(60, p->unk_4c4.unk_3)) {
+        p->damage += 10;
+        p->unk_3da = 0;
+      }
+    }
+    if (gStat->unk_934 & SF934_DESERT) {
+      p->desertTimer++;
+      if (p->desertTimer > 119) {
+        p->damage++;
+        p->desertTimer = 0;
+      }
+    } else {
+      p->desertTimer = 120;
+    }
+    if (p->equipBuffs & EBUFF_BLACKARMOR) {
+      p->blackArmorTimer++;
+      if (p->blackArmorTimer > 14) {
+        p->damage++;
+        p->blackArmorTimer = 0;
+      }
+    }
+  }
+
+  if (p->damage != 0) {
+    u16 state = p->goodCondTimer;
+    bool32 skip = state != 0 && p->goodCondID == GOOD_GAMAN;
+
+    if (!skip) {
+      FUN_0805fe7c(&p->hurtbox, p->damage, 0, &p->mover.pos, &p->pos_970, 0);
+      if (p->hp < p->damage) {
+        p->hp = 0;
+      } else {
+        p->hp -= p->damage;
+      }
+    }
+  }
+
+  p->damage = 0;
+  p->pos_970.x = 0, p->pos_970.y = 0, p->pos_970.z = 0;
+
+  if (p->action == 0x15 || p->hp != 0) {
+    return FALSE;
+  }
+  if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+    return TRUE;
+  }
+  if (!CheckItemOwn(ITEM_JUDGEMENT)) {
+    return TRUE;
+  }
+
+  p->unk_3d6 = 0;
+  if (p->hurtbox.unk_40 == 0) {
+    p->facing |= 1;
+    p->hurtbox.unk_40 = 1;
+  }
+  RemoveSpecifiedItem(ITEM_JUDGEMENT);
+  Judgement_Create(p);
+  return FALSE;
+#else
+  INCFUNC("asm/func/Player_UpdateDamage.inc");
+#endif
+}
 
 // 残差なし・レジスタ割当のみ不一致 (p と n の r4/r5 が入れ替わる)
 NON_MATCH void FUN_0807eca8(Player* p) {
@@ -8466,7 +8569,7 @@ static s32 Player_Update(Player* p) {
       }
     }
 
-    if (Player_Update_Helper_0807e968(p)) {
+    if (Player_UpdateDamage(p)) {
       FUN_0807e854(p);
     } else {
       FUN_0807eca8(p);

@@ -23,6 +23,7 @@ typedef u32 PlayerFlag20;            // Player.flag20
 #define PFLAG20_UNK_5 (1 << 5)       // 0x00000020
 #define PFLAG20_UNK_7 (1 << 7)       // 0x00000080
 #define PFLAG20_UNK_8 (1 << 8)       // 0x00000100
+#define PFLAG20_UNK_9 (1 << 9)       // 0x00000200, unk_4c4 (kind 1) がダメージを与えている間 Player_UpdateDamage が立てる
 #define PFLAG20_UNK_12 (1 << 12)     // 0x00001000
 #define PFLAG20_UNK_14 (1 << 14)     // 0x00004000, Player_UpdateDjango が先頭で毎フレーム立てる
 #define PFLAG20_UNK_15 (1 << 15)     // 0x00008000, 立っていると Player_SetHitDir が被弾方向を facing ではなく unk_3e8 に書く
@@ -254,11 +255,14 @@ typedef struct Player {
   u8 unk_3d2;                       // 0x3D2, Player_SetHitDir が被弾時に 1/0 を書く
   u8 unk_3d3;                       // 0x3D3
   u16 knockbackTimer;               // 0x3D4, 吹き飛ばされている間のカウンタ, 0x55 を超えた偶数フレームに効果音を鳴らす
-  u8 unk_3d6[2];                    // 0x3D6
-  u16 unk_3d8;                      // 0x3D8, Player_ApplyBadCondition が状態異常1の残り時間が 0 のときに 0 を書く
+  u16 unk_3d6;                      // 0x3D6, 審判のカードで復活するときに 0 が入る
+  u16 poisonTick;                   // 0x3D8, 毒(badCondTimer[1])が残っている間の経過フレーム, 60 ごとに damage を1増やす, Player_ApplyBadCondition が毒が切れると 0 を書く
   u16 unk_3da;                      // 0x3DA, Player_StartFormEffect が変身を始めるときに 0 に戻す
   u16 sunburn;                      // 0x3DC, Player_StepSunburn が毎回 太陽ゲージ+2 を足し、100 を超えるたびに Player_TakeSunburnDamage を呼んで 100 引く
-  u8 unk_3de[0x3E6 - 0x3DE];        // 0x3DE
+  u8 unk_3de[2];                    // 0x3DE
+  u16 desertTimer;                  // 0x3E0, 砂漠エリアでの経過フレーム, 120 ごとに damage を1増やす (エリア外では 120 を入れておく)
+  u16 blackArmorTimer;              // 0x3E2, 黒の鎧を装備している間の経過フレーム, 15 ごとに damage を1増やす
+  u8 unk_3e4[2];                    // 0x3E4
   u16 unk_3e6;                      // 0x3E6, Player_SetHitDir が相手の HitboxData.unk_40 を退避する
   DirU16 hitDir;                    // 0x3E8, Player_SetHitDir が被弾方向 (0..7) を入れる
   u16 unk_3ea;                      // 0x3EA, FUN_0807ad60 が 1 を書く
