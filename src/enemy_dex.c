@@ -77,11 +77,11 @@ PreviewStage* PreviewStage_Create(u32 arg, u32 _);
 
 static inline void ShowBG(u32 bits) { gStagedDISPCNT |= bits; }
 
-s32 FUN_0820cbdc(u32 param_1);
-s32 FUN_0820cc8c(u32 param_1);
-s32 FUN_0820cbec(u32 param_1);
-s32 FUN_0820cbfc(u32 param_1);
-s32 FUN_0820cc0c(u32 param_1);
+s32 EnemyDex_GetPageStart(u32 param_1);
+s32 EnemyDex_GetCategoryOfEntry(u32 param_1);
+s32 EnemyDex_GetPageEntryCount(u32 param_1);
+s32 EnemyDex_GetCategoryEntryCount(u32 param_1);
+s32 EnemyDex_GetCategoryStart(u32 param_1);
 
 static const s32 sEnemyDexPageStarts[9] = {0, 7, 14, 21, 27, 34, 41, 48, 50};  // ページの先頭エントリ番号 (sEnemyDexPageEntryCounts の累積和), 0x085AF034
 static const s32 sEnemyDexPageEntryCounts[9] = {7, 7, 7, 6, 7, 7, 7, 2, 7};    // ページごとのエントリ数(ビースト1,ビースト2,ビースト3,アンデット,シング1,シング2,ファントム1,ファントム2,イモータル), 合計57, 0x085AF058
@@ -93,7 +93,25 @@ static const u32 sEnemyDexUIPoses1[5] = {17, 18, 19, 20, 21};  // 0x085AF090
 // 同上, EnemyDexMenu+0x36C から3枚
 static const u32 sEnemyDexUIPoses2[3] = {1, 2, 3};  // 0x085AF0A4
 
-INCASM("asm/enemy_dex.inc");
+NAKED s32 EnemyDex_GetPageStart(u32 page) { INCFUNC("asm/func/EnemyDex_GetPageStart.inc"); }
+
+NAKED s32 EnemyDex_GetPageEntryCount(u32 page) { INCFUNC("asm/func/EnemyDex_GetPageEntryCount.inc"); }
+
+NAKED s32 EnemyDex_GetCategoryEntryCount(u32 page) { INCFUNC("asm/func/EnemyDex_GetCategoryEntryCount.inc"); }
+
+NAKED s32 EnemyDex_GetCategoryStart(u32 param_1) { INCFUNC("asm/func/EnemyDex_GetCategoryStart.inc"); }
+
+NAKED void EnemyDexMenu_SetPageFromEntry(EnemyDexMenu* p) { INCFUNC("asm/func/EnemyDexMenu_SetPageFromEntry.inc"); }
+
+NAKED s32 EnemyDex_GetCategoryOfEntry(u32 param_1) { INCFUNC("asm/func/EnemyDex_GetCategoryOfEntry.inc"); }
+
+NAKED s32 FUN_0820ccd0(u32 param_1, u32 param_2) { INCFUNC("asm/func/FUN_0820ccd0.inc"); }
+
+NAKED void EnemyDex_SetFlag(u32 id, u32 kind) { INCFUNC("asm/func/EnemyDex_SetFlag.inc"); }
+
+NAKED void Cmd_A76D(void) { INCFUNC("asm/func/Cmd_A76D.inc"); }
+
+NAKED void Cmd_D1C0(void) { INCFUNC("asm/func/Cmd_D1C0.inc"); }
 
 // 魔物 bit に出会っているか
 // 残差はレジスタ番号の入れ替えのみ (r2/r3 が逆, 命令列は 29 対 29)
@@ -127,8 +145,8 @@ NON_MATCH bool32 FUN_0820d04c(u32 id, u32 kind) {
 }
 
 bool32 FUN_0820d084(u32 param_1) {
-  s32 n = FUN_0820cbfc(param_1);
-  s32 base = FUN_0820cc0c(param_1);
+  s32 n = EnemyDex_GetCategoryEntryCount(param_1);
+  s32 base = EnemyDex_GetCategoryStart(param_1);
   s32 i;
 
   for (i = 0; i < n; i++) {
@@ -140,8 +158,8 @@ bool32 FUN_0820d084(u32 param_1) {
 }
 
 s32 FUN_0820d0b8(u32 param_1) {
-  s32 n = FUN_0820cbfc(param_1);
-  s32 base = FUN_0820cc0c(param_1);
+  s32 n = EnemyDex_GetCategoryEntryCount(param_1);
+  s32 base = EnemyDex_GetCategoryStart(param_1);
   s32 count = 0;
   s32 i;
 
@@ -206,7 +224,7 @@ void FUN_0820d188(EnemyDexMenu* p) {
     return;
   }
 
-  if (p->unk_24 == 0 && FUN_0820d084(FUN_0820cc8c(p->unk_26))) {
+  if (p->unk_24 == 0 && FUN_0820d084(EnemyDex_GetCategoryOfEntry(p->unk_26))) {
     p->sprites_d8c[6].flags &= ~SPRFLAG_HIDDEN;
   } else {
     p->sprites_d8c[6].flags |= SPRFLAG_HIDDEN;
@@ -485,8 +503,8 @@ void FUN_0820eb84(EnemyDexMenu* p) {
 
   EnemyDexMenu_HidePageSprites(p);
 
-  count = FUN_0820cbec(p->unk_25);
-  base = FUN_0820cbdc(p->unk_25) + 1;
+  count = EnemyDex_GetPageEntryCount(p->unk_25);
+  base = EnemyDex_GetPageStart(p->unk_25) + 1;
   for (i = 0; i < count; i++) {
     MainSprite_SetNumber(&p->sprites_84c[i][0], &p->gfx, base + i, 2, 0, 24, i * 16 + 40, 8, 0);
     p->sprites_5ac[i].flags &= ~SPRFLAG_HIDDEN;
@@ -523,9 +541,9 @@ void FUN_0820ed48(EnemyDexMenu* p) {
     p->sprites_d8c[i + 2].flags |= SPRFLAG_HIDDEN;
   }
 
-  cat = FUN_0820cc8c(p->unk_26);
+  cat = EnemyDex_GetCategoryOfEntry(p->unk_26);
   MainSprite_SetNumber(&p->sprites_d8c[0], &p->gfx, FUN_0820d0b8(cat), 2, 0, 152, 19, 8, 0);
-  MainSprite_SetNumber(&p->sprites_d8c[2], &p->gfx, FUN_0820cbfc(cat), 2, 0, 176, 19, 8, 0);
+  MainSprite_SetNumber(&p->sprites_d8c[2], &p->gfx, EnemyDex_GetCategoryEntryCount(cat), 2, 0, 176, 19, 8, 0);
 }
 
 // 選択中ページのエントリ名を上から順にパネルへ流す, 未発見なら 57 番のメッセージ
@@ -535,8 +553,8 @@ void FUN_0820ede8(EnemyDexMenu* p) {
   s32 i;
 
   FUN_0820d21c(p);
-  base = FUN_0820cbdc(p->unk_25);
-  count = FUN_0820cbec(p->unk_25);
+  base = EnemyDex_GetPageStart(p->unk_25);
+  count = EnemyDex_GetPageEntryCount(p->unk_25);
   for (i = 0; i < count; i++) {
     TextPanel_SetScript(p->panels[i], p->scriptN);
     TextPanel_SetRect(p->panels[i], 6, i * 2 + 5, 20, 2);

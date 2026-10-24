@@ -429,7 +429,7 @@ gCommandList: @ 0x085A9208
 	.4byte 0xA61C, Map_SetLoadingZoneIndicatorMode
 	.4byte 0xA628, EntityA628_CreateScripted
 	.4byte 0xA687, BgPlttDimmer_Create
-	.4byte 0xA76D, FUN_0820cf6c
+	.4byte 0xA76D, Cmd_A76D
 	.4byte 0xA7CE, FUN_0820d124
 	.4byte 0xA864, FUN_080c008c
 	.4byte 0xA8F1, EntityA8F1_Create

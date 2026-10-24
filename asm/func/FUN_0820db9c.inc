@@ -52,10 +52,10 @@ _0820DBBA:
 	adds r4, r7, #0
 	adds r4, #0x25
 	ldrb r0, [r4]
-	bl FUN_0820cbdc
+	bl EnemyDex_GetPageStart
 	str r0, [sp, #0x14]
 	ldrb r0, [r4]
-	bl FUN_0820cbec
+	bl EnemyDex_GetPageEntryCount
 	mov sb, r0
 	movs r1, #0
 	mov r8, r1
@@ -301,11 +301,11 @@ _0820DDD8:
 	ble _0820DDCA
 	ldr r1, [sp, #0x34]
 	ldrb r0, [r1]
-	bl FUN_0820cbec
+	bl EnemyDex_GetPageEntryCount
 	mov sl, r0
 	ldr r2, [sp, #0x34]
 	ldrb r0, [r2]
-	bl FUN_0820cbdc
+	bl EnemyDex_GetPageStart
 	adds r0, #1
 	str r0, [sp, #0x18]
 	movs r3, #0
@@ -373,7 +373,7 @@ _0820DE72:
 	movs r4, #0
 	ldr r1, [sp, #0x38]
 	ldrb r0, [r1]
-	bl FUN_0820cc8c
+	bl EnemyDex_GetCategoryOfEntry
 	mov r8, r0
 	bl FUN_0820d0b8
 	adds r2, r0, #0
@@ -390,7 +390,7 @@ _0820DE72:
 	movs r3, #2
 	bl MainSprite_SetNumber
 	mov r0, r8
-	bl FUN_0820cbfc
+	bl EnemyDex_GetCategoryEntryCount
 	adds r2, r0, #0
 	str r4, [sp]
 	movs r0, #0xb0
