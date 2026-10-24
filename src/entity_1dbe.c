@@ -114,7 +114,9 @@ s32 Cmd_B6CE(void) {
   return -1;
 }
 
+void FUN_0809f840(Entity1DBEElem* elem);
 void FUN_0809f890(Entity1DBEElem* elem);
+void FUN_0809f938(Entity1DBEElem* elem);
 void FUN_0809fa80(Entity1DBEElem* elem);
 void FUN_0809fabc(Entity1DBEElem* elem);
 
@@ -125,7 +127,33 @@ void Entity1DBEElem_SetState(Entity1DBEElem* elem, u8 state, Entity1DBEElemFunc*
   elem->animTimer = 0;
 }
 
-NAKED void Entity1DBEElem_OnHit(HitboxData* a, HitboxData* b, Entity1DBEElem* owner) { INCFUNC("asm/func/Entity1DBEElem_OnHit.inc"); }
+// 炎属性で状態を進め, 氷属性で凍らせ, 属性なしなら touched だけ立てる
+void Entity1DBEElem_OnHit(HitboxData* a, HitboxData* b, void* owner) {
+  Entity1DBEElem* elem = owner;
+
+  if (b->unk_44 != 0) {
+    return;
+  }
+  if (!Hitbox_HasWeakness(a, HBATTR_FLAME)) {
+    return;
+  }
+
+  if (Hitbox_TestAttr(a, HBATTR_FLAME)) {
+    if (elem->state == 0) {
+      Entity1DBEElem_SetState(elem, 2, FUN_0809f938);
+    } else if (elem->state == 1) {
+      Entity1DBEElem_SetState(elem, 0, FUN_0809f890);
+    }
+    b->unk_44 = 30;
+  } else if (Hitbox_TestAttr(a, HBATTR_FROST)) {
+    if (elem->state == 0) {
+      Entity1DBEElem_SetState(elem, 1, FUN_0809f840);
+    }
+    b->unk_44 = 30;
+  } else if (elem->state == 0) {
+    elem->touched = TRUE;
+  }
+}
 
 // 日が出ている間だけ counter を進め, 0x12B を越えたら次の状態へ移る
 void FUN_0809f7fc(Entity1DBEElem* elem) {
