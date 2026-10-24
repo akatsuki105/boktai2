@@ -412,7 +412,17 @@ NON_MATCH void EnemyDex_SetFlag(u32 id, u32 kind) {
 #endif
 }
 
-NAKED void Cmd_A76D(void) { INCFUNC("asm/func/Cmd_A76D.inc"); }
+// '.k' と '.c' が指す魔物のフラグ '.i' を立てる
+void Cmd_A76D(void) {
+  s32 kind;
+  s32 variant;
+  s32 flagKind;
+
+  kind = VM_SeekToNamedArg('k') ? VM_GetValue() : 0;
+  variant = VM_SeekToNamedArg('c') ? VM_GetValue() : 0;
+  flagKind = VM_SeekToNamedArg('i') ? VM_GetValue() : 0;
+  EnemyDex_SetFlag(EnemyDex_GetEntryIdx(kind, variant), flagKind);
+}
 
 NAKED void Cmd_D1C0(void) { INCFUNC("asm/func/Cmd_D1C0.inc"); }
 
