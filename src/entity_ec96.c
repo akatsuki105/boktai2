@@ -63,13 +63,13 @@ NON_MATCH s32 EntityEC96_Update(EntityEC96* p) {
       p->sprite.pos = p->pos;
       if (--p->damageTimer == 0) {
         if (p->breakable) Video_SetAuxSpritePltt(&p->gfx, 648);
-        Hitbox_ClearFlags(&p->hitbox, HBFLAG_UNK_2);
+        Hitbox_ClearFlags(&p->hitbox, HBFLAG_HIDDEN);
       } else {
         idx = (gRandTableIdx + 1) & 0x3FF;
         p->sprite.pos.x = p->sprite.pos.x - 8 + (gRandomTable[idx] & 0xF);
         gRandTableIdx = (idx + 1) & 0x3FF;
         p->sprite.pos.z = p->sprite.pos.z - 8 + (gRandomTable[gRandTableIdx] & 0xF);
-        p->hitbox.flags |= HBFLAG_UNK_2;
+        p->hitbox.flags |= HBFLAG_HIDDEN;
       }
     }
   } else {
@@ -102,23 +102,17 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
   MapTileOverride* ov;
   s32 bx, bz, idx;
   s32 h;
-  u32 z;
   Vec3 size, offset;
 
   p->id = id;
   p->breakable = VM_GetNamedArgValue('t', 0);
   p->broken = 0;
   p->hp = VM_GetNamedArgValue('l', 50);
-  z = VM_SeekToNamedArg('p');
-  if (z != 0) {
-    p->pos.x = VM_GetValue();
-    p->pos.y = VM_GetValue();
-    z = VM_GetValue();
+  if (VM_SeekToNamedArg('p')) {
+    VEC3_SET(p->pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {
-    p->pos.x = 0;
-    p->pos.y = 0;
+    VEC3_SET(p->pos, 0, 0, 0);
   }
-  p->pos.z = z;
   p->scriptID = VM_GetNamedArgValue('e', 0);
   gfx = &p->gfx;
   if (!Video_GetAuxSprite(gfx, SPRITE_PLANT_2567)) {
@@ -132,15 +126,15 @@ s32 EntityEC96_Init(EntityEC96* p, u32 id) {
     Video_SetAuxSpritePltt(gfx, 647);
   }
   hitbox = &p->hitbox;
-  size.x = 0x82, size.y = 0x80, size.z = 0x82;
-  offset.x = 0, offset.y = 0x80, offset.z = 0;
+  VEC3_SET(size, 0x82, 0x80, 0x82);
+  VEC3_SET(offset, 0, 0x80, 0);
   Hitbox_Init(hitbox, p->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   pos = &p->pos;
   Hitbox_SetPos(hitbox, pos, 0);
   Hitbox_SetPowerAndAttributes(hitbox, 0, 0, 0);
   Hitbox_SetHandler(hitbox, FUN_08013288, p);
   Hitbox_Register(hitbox);
-  bx = p->pos.x >> 8;
+  bx = pos->x >> 8;
   bz = pos->z >> 8;
   if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
     idx = 0;

@@ -2,7 +2,7 @@
 #include "global.h"
 #include "vm.h"
 
-// interval フレームごとに gStat->unk_2b8 を1つ減らし、0 になったらプレイヤーを action 0x1F にして自分を消す
+// interval フレームごとに gStat->gaugeValue を1つ減らし、0 になったらプレイヤーを action 0x1F にして自分を消す
 typedef struct {
   Entity e;      // 0x00, ENTITY_UNK_8
   u16 timer;     // 0x18, _Update が毎フレーム +1 し interval に達したら 0 に戻す
@@ -17,8 +17,8 @@ s32 Entity162E_Destroy(Entity162E* p) { return 0; }
 void FUN_0809c3c0(s32 param_1, s32 param_2, s32 param_3);
 
 s32 Entity162E_Init(Entity162E* p, u32 param_2, u32 param_3) {
-  if (gStat->unk_2b8 <= 0) {
-    gStat->unk_2b8 = 1;
+  if (gStat->gaugeValue <= 0) {
+    gStat->gaugeValue = 1;
   }
 
   if (VM_SeekToNamedArg('s')) {
@@ -28,7 +28,7 @@ s32 Entity162E_Init(Entity162E* p, u32 param_2, u32 param_3) {
   }
 
   p->timer = 0;
-  FUN_0809c3c0(gStat->unk_2b8, gStat->unk_2bc, 0);
+  FUN_0809c3c0(gStat->gaugeValue, gStat->gaugeMax, 0);
   return 0;
 }
 

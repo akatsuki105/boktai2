@@ -15,7 +15,7 @@ typedef struct {
   s16 velZ;           // 0xB4, gSineTable[angle & 0xFF] * speed >> 12 (0方向への丸め)
   u8 unk_b6[2];       // 0xB6, 読み書きとも無し, padding?
   s32 state;          // 0xB8, 0 の間は飛行、それ以外は着弾処理
-  Facing16 dir;       // 0xBC, ((angle + 0x10 & 0xFF) >> 5) + 3 & 7
+  DirU16 dir;         // 0xBC, ((angle + 0x10 & 0xFF) >> 5) + 3 & 7
   u16 timer;          // 0xBE, 飛行中は 60 で、着弾後は 6 で終わる
 } Entity080cbabc;
 static_assert(sizeof(Entity080cbabc) == 192);
@@ -47,8 +47,8 @@ void FUN_080cb94c(Entity080cbabc* p, s32 angle, s32 power, s32 unk_40, HitboxAtt
   Vec3 halfSize;
   Vec3 offset;
 
-  halfSize.x = 30, halfSize.y = 30, halfSize.z = 30;
-  offset.x = 0, offset.y = 0, offset.z = 0;
+  VEC3_SET(halfSize, 30, 30, 30);
+  VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 1, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, power, unk_40, 0x10, attrs, unk_44);
   Hitbox_SetHandler(hitbox, FUN_080cb7b4, p);

@@ -2,7 +2,7 @@
 	sub sp, #4
 	adds r4, r0, #0
 	bl MessageWindow_Close
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	bl FUN_08049f84
 	ldr r1, _080999F4 @ =0x00004014
 	adds r0, r4, r1
@@ -20,7 +20,7 @@
 	movs r3, #0xa
 	bl FUN_0808a3c4
 	adds r0, r4, #0
-	bl weapon_080993e4
+	bl FUN_080993e4
 	adds r0, r4, #0
 	movs r1, #5
 	movs r2, #7
@@ -33,7 +33,7 @@
 	adds r0, r4, r1
 	ldrb r1, [r0]
 	adds r0, r4, #0
-	bl FUN_0808b86c
+	bl MainMenu_ShowPageName
 	ldr r0, _08099A00 @ =0x0000264C
 	adds r2, r4, r0
 	ldr r0, [r2]
@@ -98,7 +98,7 @@ _08099A34:
 	adds r0, r4, #0
 	bl FUN_080996e0
 	adds r0, r4, #0
-	bl FUN_08099650
+	bl MainMenu_ShowPlayerTitle
 	movs r1, #0x10
 	rsbs r1, r1, #0
 	adds r0, r4, #0

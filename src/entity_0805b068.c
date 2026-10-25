@@ -26,7 +26,7 @@ typedef struct {
 } Entity0805b068Elem;
 static_assert(sizeof(Entity0805b068Elem) == 452);
 
-typedef struct {
+typedef struct Entity0805b068 {
   Entity e;                     // 0x000, ENTITY_UNK_8
   u32 activeMask;               // 0x018, 立っているビットの枠だけ Update が回す
   u16 attackID;                 // 0x01C, Init の第2引数, 各枠の Hitbox_SetAttack に渡す
@@ -105,7 +105,7 @@ s32 FUN_0805a6ec(Entity0805b068* p, Entity0805b068Elem* elem, s32 index) {
     spr->flags |= SPRFLAG_HIDDEN;
   }
   hitbox = &elem->bodyHitbox;
-  hitbox->flags |= HBFLAG_UNK_2;
+  hitbox->flags |= HBFLAG_HIDDEN;
   p->activeMask &= ~(1 << index);
 }
 

@@ -26,7 +26,7 @@ _0820FBC2:
 	adds r0, #0x28
 	adds r0, r6, r0
 	movs r1, #1
-	bl FUN_08055ef8
+	bl SpriteHolder_SetFlags
 _0820FBDE:
 	adds r4, #1
 	cmp r4, #4
@@ -58,7 +58,7 @@ _0820FBFE:
 	adds r0, #0x28
 	adds r0, r6, r0
 	movs r1, #1
-	bl FUN_08055f1c
+	bl SpriteHolder_ClearFlags
 _0820FC1A:
 	adds r4, #1
 	cmp r4, #4
@@ -131,7 +131,7 @@ _0820FC6A:
 	mov r0, r8
 	bl SpriteHolder_SetAnim
 	mov r0, r8
-	bl FUN_08055c04
+	bl SpriteHolder_AdvanceAnim
 _0820FCB0:
 	ldrb r2, [r7, #0xb]
 	movs r1, #2

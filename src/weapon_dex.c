@@ -2,6 +2,7 @@
 #include "global.h"
 #include "preview_stage.h"
 #include "sprite.h"
+#include "text.h"
 #include "video.h"
 
 typedef struct {
@@ -35,7 +36,7 @@ typedef struct {
   u8 unk_c8b;                 // 0xC8B
   AuxSprite node_c8c;         // 0xC8C, 根拠: 0x08210ef8
   AuxSpriteGfx sprite_cb8;    // 0xCB8, 根拠: 0x08210a2e
-  SpriteHolder preview;       // 0xCD4, 根拠: FUN_08055e34
+  SpriteHolder preview;       // 0xCD4, 根拠: SpriteHolder_InitMain
   rgb555 pltt_d68[16];        // 0xD68, 根拠: 0x08210a20
   u8 unk_d88;                 // 0xD88, FUN_082110a4 が 1 増やすカウンタ
   u8 unk_d89;                 // 0xD89, FUN_082110a4 が 0 に戻す
@@ -49,8 +50,6 @@ static_assert(sizeof(WeaponDexMenu) == 3492);
 static const u8 sWeaponDexItemCounts[4] = {19, 19, 19, 3};  // 0x085af9ac, 武器図鑑の各ページのエントリ数
 
 bool32 IsWeaponAlreadyFound(weapon32_t n);
-s32 FUN_08049fa8(void);
-void FUN_08055d7c(SpriteHolder* p);
 
 s32 WeaponDexMenu_GetPageEntryCount(s32 page) { return sWeaponDexItemCounts[page]; }
 
@@ -136,13 +135,13 @@ NAKED void FUN_0820ffe8(WeaponDexMenu* p) { INCFUNC("asm/func/FUN_0820ffe8.inc")
 
 NAKED void FUN_0821053c(WeaponDexMenu* p) { INCFUNC("asm/func/FUN_0821053c.inc"); }
 
-// 「登録数 / 総数」の数字を並べる
+// "登録数 / 総数" を描画
 void FUN_08210610(WeaponDexMenu* p) {
-  FUN_082376a4(&p->unk_108[0], &p->gfx, WeaponDexMenu_CountFoundInPage(p->page), 2, 0, 32, 96, 8, 0);
+  MainSprite_SetNumber(&p->unk_108[0], &p->gfx, WeaponDexMenu_CountFoundInPage(p->page), 2, 0, 32, 96, 8, 0);  // 登録数
   p->unk_108[2].pos.x = 48;
   p->unk_108[2].pos.y = 96;
-  MainSprite_SetPose(&p->unk_108[2], &p->gfx, 11, 0);
-  FUN_082376a4(&p->unk_108[3], &p->gfx, WeaponDexMenu_GetPageEntryCount(p->page), 2, 0, 56, 96, 8, 0);
+  MainSprite_SetPose(&p->unk_108[2], &p->gfx, 11, 0);                                                           // "/"
+  MainSprite_SetNumber(&p->unk_108[3], &p->gfx, WeaponDexMenu_GetPageEntryCount(p->page), 2, 0, 56, 96, 8, 0);  // 総数
 }
 
 void FUN_082106a4(WeaponDexMenu* p) {
@@ -267,10 +266,10 @@ s32 WeaponDexMenu_Destroy(WeaponDexMenu* p) {
   AuxSprite_Remove(&p->node_c8c);
   MainSprite_Remove(&p->sprite_3a8);
   MainSprite_Remove(&p->sprite_408);
-  FUN_08055d7c(&p->preview);
+  SpriteHolder_Remove(&p->preview);
   MainSprite_Remove(&p->sprite_c08);
   SetBGPrioDirect(0, 0);
-  FUN_08049fa8();
+  Marquee_CloseGlobal();
   return 0;
 }
 

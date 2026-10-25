@@ -162,13 +162,13 @@ s32 MainSprite_Add(MainSprite* p, MainSpriteGfx* gfx, u16 poseIdx, SpriteFlags f
   Vec3 v;
 
   if (pos == NULL) {
-    v.x = 0, v.y = 0, v.z = 0;
+    VEC3_SET(v, 0, 0, 0);
   } else {
     v = *pos;
   }
   if (!p->active) {
     _MainSprite_Setup(p, gfx, poseIdx, flags, prio, playMode, animCmdDuration, &v);
-    Video_AddMainSpriteIntoDrawList(p, (u32) - (flags & SPRFLAG_DRAWLIST) >> 31);
+    Video_AddMainSpriteIntoDrawList(p, TEST_FLAGS(flags, SPRFLAG_DRAWLIST) ? 1 : 0);
     return 0;
   }
   return -1;

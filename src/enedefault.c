@@ -126,10 +126,6 @@ const EnemyHandler gEnemyHandlerTable9[2] = {
     FUN_080f22c4,
 };  // 0x085AD460
 
-static inline u32 TestFlag030047a4(u32 flags) { return (gFlag030047a4 | u32_030047a0) & flags; }
-
-static inline u32 TestFlag03002bc0(u32 flags) { return u32_03002bc0[0] & flags; }
-
 // 状態を指定の組に戻して経過フレームを0に巻き戻す, unk_46c は巻き戻した印
 static inline void Enemy_ResetState(Enemy* p, u8 state, u8 unk_469, u8 step) {
   p->unk_468 = state;
@@ -147,9 +143,6 @@ static inline void Enemy_EnterState(Enemy* p, void* handler, u8 state) {
   p->handlerState = handler;
   p->unk_1c8 = 0;
 }
-
-static inline void Enemy_SetFlags222(Enemy* p, EnemyFlags222 bits) { p->unk_222 |= bits; }
-static inline void Enemy_ClearFlags222(Enemy* p, EnemyFlags222 bits) { p->unk_222 &= ~bits; }
 
 void FUN_080ee738(Enemy* p);
 void FUN_080e4a68(Enemy* p);
@@ -205,7 +198,7 @@ void FUN_080f07d0(Enemy* p) {
   Enemy_SetFlag(p, ENEFLAG_UNK_1);
   Enemy_ClearSpriteFlags(p, SPRFLAG_AFFINE);
   Enemy_SetSpriteFlags(p, SPRFLAG_HIDDEN);
-  p->hitbox.flags |= HBFLAG_UNK_2;
+  p->hitbox.flags |= HBFLAG_HIDDEN;
   if (p->unk_44c == 0) {
     ParticleShadow_Hide(&p->shadow);
   }
@@ -218,7 +211,7 @@ void FUN_080f0868(Enemy* p) {
     if (p->unk_44c == 0) {
       ParticleShadow_Show(&p->shadow);
     }
-    p->hitbox.flags &= ~HBFLAG_UNK_2;
+    p->hitbox.flags &= ~HBFLAG_HIDDEN;
     FUN_080ee2c8(p);
     Enemy_ResetState(p, 3, 0, 0);
     Enemy_EnterState(p, p->unk_584, 12);
@@ -241,7 +234,7 @@ void FUN_080f0914(Enemy* p) {
   if (p->unk_44c == 0) {
     ParticleShadow_Show(&p->shadow);
   }
-  p->hitbox.flags &= ~HBFLAG_UNK_2;
+  p->hitbox.flags &= ~HBFLAG_HIDDEN;
   p->hitbox.unk_44 = 0;
   if (p->spriteKind == 0) {
     AuxSprite_ClearFlags((AuxSprite*)p->sprite, SPRFLAG_HIDDEN);
@@ -543,7 +536,7 @@ void FUN_080f34a0(Enemy* p) {
 
 // ゲームオーバー中なら状態を 2/0/1 に戻し、そうでなければ handlerTables[2] を回す
 void FUN_080f34ec(Enemy* p) {
-  if (TestFlag030047a4(FLAG030047A4_GAMEOVER) || TestFlag03002bc0(FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS((gFlag030047a4 | u32_030047a0), FLAG030047A4_GAMEOVER) || TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
     Enemy_ResetState(p, 2, 0, 1);
   } else {
     u32 idx = p->unk_46a;
@@ -554,7 +547,7 @@ void FUN_080f34ec(Enemy* p) {
 
 // ゲームオーバー中なら状態を 2/0/1 に戻し、そうでなければ handlerTables[4] を回す
 void FUN_080f3574(Enemy* p) {
-  if (TestFlag030047a4(FLAG030047A4_GAMEOVER) || TestFlag03002bc0(FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS((gFlag030047a4 | u32_030047a0), FLAG030047A4_GAMEOVER) || TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
     Enemy_ResetState(p, 2, 0, 1);
   } else {
     u32 idx = p->unk_46a;
@@ -565,7 +558,7 @@ void FUN_080f3574(Enemy* p) {
 
 // ゲームオーバー中なら状態を 2/0/1 に戻し、そうでなければ handlerTables[3] を回す
 void FUN_080f35fc(Enemy* p) {
-  if (TestFlag030047a4(FLAG030047A4_GAMEOVER) || TestFlag03002bc0(FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS((gFlag030047a4 | u32_030047a0), FLAG030047A4_GAMEOVER) || TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
     Enemy_ResetState(p, 2, 0, 1);
   } else {
     u32 idx = p->unk_46a;
@@ -712,9 +705,9 @@ void FUN_080f624c(Enemy* p) {
   }
 
   if (p->unk_1e4 <= 0xFFFFF) {
-    Enemy_SetFlags222(p, ENEMY222_UNK_0);
+    SET_FLAGS(p->unk_222, ENEMY222_UNK_0);
   } else {
-    Enemy_ClearFlags222(p, ENEMY222_UNK_0);
+    CLEAR_FLAGS(p->unk_222, ENEMY222_UNK_0);
   }
 
   Enemy_PlayAnim(p, 1);

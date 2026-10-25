@@ -9,9 +9,9 @@ typedef struct Entity08004facNode {
   u16 id;                           // 0x00, 一括で操作するためのキー
   bool8 active;                     // 0x02, 1 なら tileOverride を衝突マップへ登録済み
   u8 unk_3;                         // 0x03, Entity08004fac_AddNode の第3引数, SetNodeParamsById が書き換える
-  u8 unk_4;                         // 0x04, Map_AddTileOverride の第3引数
-  u8 unk_5;                         // 0x05, Map_AddTileOverride の第4引数
-  u16 unk_6;                        // 0x06, Map_AddTileOverride の第6引数
+  u8 stairs;                        // 0x04, Map_AddTileOverride の第3引数
+  u8 height;                        // 0x05, Map_AddTileOverride の第4引数
+  u16 attr;                         // 0x06, Map_AddTileOverride の第6引数
   u16 tileIdx;                      // 0x08, gCollisionMap->rowOffsets[y] + x
   u8 unk_a[0x0C - 0x0A];            // 0x0A, padding?
   MapTileOverride tileOverride;     // 0x0C, Map_AddTileOverride / Map_RemoveTileOverride に渡す
@@ -25,6 +25,8 @@ typedef struct {
   Entity08004facNode* head;  // 0x18, ノードの双方向リストの先頭, Init が NULL、LinkNode が先頭挿入する
 } Entity08004fac;
 static_assert(sizeof(Entity08004fac) == 28);
+
+Entity08004fac* Entity08004fac_Create(u32 param_1, u32 param_2);
 
 IWRAM_DATA Entity08004fac* gEntity08004fac = NULL;  // 0x03000024
 
@@ -59,7 +61,45 @@ s32 Entity08004fac_UnlinkNode(Entity08004facNode* node) {
   return 0;
 }
 
-NAKED s32 Entity08004fac_AddNode(u16 id, s16* pos, u8 param_3, u8 param_4, u16 param_5) { INCFUNC("asm/func/Entity08004fac_AddNode.inc"); }
+// id 付きのノードを作って衝突マップへ登録する
+s32 Entity08004fac_AddNode(s32 id, Vec3* pos, s32 unk_3, s32 stairs, s32 attr) {
+  Entity08004facNode* node;
+  s32 bx;
+  s32 bz;
+  s32 idx;
+
+  if (gEntity08004fac == NULL) {
+    if (Entity08004fac_Create(0x2153, 0) == NULL) {
+      return 0;
+    }
+  }
+
+  node = Malloc(sizeof(Entity08004facNode));
+  if (node == NULL) {
+    return -1;
+  }
+
+  ClearMemory(node, sizeof(Entity08004facNode));
+  node->id = id;
+  node->active = TRUE;
+  node->unk_3 = unk_3;
+  node->stairs = stairs;
+
+  bx = (s8)(pos->x >> 8);
+  bz = (s8)(pos->z >> 8);
+  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+    idx = 0;
+  } else {
+    idx = gCollisionMap->rowOffsets[bz] + bx;
+  }
+  node->tileIdx = idx;
+
+  node->height = FixToInt(8, pos->y);
+  node->attr = attr;
+  Map_AddTileOverride(&node->tileOverride, node->tileIdx, node->stairs, node->height, 0xFF, node->attr);
+  Entity08004fac_LinkNode(node);
+  return 0;
+}
 
 // 衝突マップから外してリストから抜き、ノードを解放する
 s32 Entity08004fac_FreeNode(Entity08004facNode* node) {
@@ -134,9 +174,63 @@ s32 Entity08004fac_DisableNodesById(u16 id) {
   return 0;
 }
 
-NAKED s32 Entity08004fac_EnableNodesById(u16 id) { INCFUNC("asm/func/Entity08004fac_EnableNodesById.inc"); }
+// id が一致するノードを衝突マップへ戻す
+s32 Entity08004fac_EnableNodesById(u16 id) {
+  Entity08004fac* p = gEntity08004fac;
+  Entity08004facNode* node;
 
-NAKED s32 Entity08004fac_SetNodeParamsById(u16 id, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6) { INCFUNC("asm/func/Entity08004fac_SetNodeParamsById.inc"); }
+  if (p == NULL) {
+    return -1;
+  }
+
+  node = p->head;
+  while (node != NULL) {
+    Entity08004facNode* next = node->next;
+
+    if (node->id == id && !node->active) {
+      node->active = TRUE;
+      Map_AddTileOverride(&node->tileOverride, node->tileIdx, node->stairs, node->height, 0xFF, node->attr);
+    }
+    node = next;
+  }
+  return 0;
+}
+
+// id が一致するノードのパラメータを差し替える, -1 を渡した項目は変えない
+s32 Entity08004fac_SetNodeParamsById(s32 id, s32 stairs, s32 unk_3, s32 attr, s32 tileIdx, s32 height) {
+  Entity08004fac* p = gEntity08004fac;
+  Entity08004facNode* node;
+
+  if (p == NULL) {
+    return -1;
+  }
+
+  node = p->head;
+  while (node != NULL) {
+    Entity08004facNode* next = node->next;
+
+    if (node->id == id) {
+      if (unk_3 != -1) {
+        node->unk_3 = unk_3;
+      }
+      if (stairs != -1) {
+        node->stairs = stairs;
+      }
+      if (tileIdx != -1) {
+        node->tileIdx = tileIdx;
+      }
+      if (height != -1) {
+        node->height = height;
+      }
+      if (attr != -1) {
+        node->attr = attr;
+      }
+      Map_InitTileOverride(&node->tileOverride, node->tileIdx, node->stairs, node->height, 0xFF, node->attr);
+    }
+    node = next;
+  }
+  return 0;
+}
 
 s32 Entity08004fac_Update(Entity08004fac* p) { return 0; }
 
@@ -152,7 +246,7 @@ s32 Entity08004fac_Init(Entity08004fac* p, u32 param_2) {
   return 0;
 }
 
-Entity08004fac* Entity08004fac_Create(u32 param_1) {
+Entity08004fac* Entity08004fac_Create(u32 param_1, u32 param_2) {
   Entity08004fac* p = CreateEntity(ENTITY_UNK_8, sizeof(Entity08004fac));
 
   if (p != NULL) {
@@ -176,7 +270,59 @@ s32 FUN_08005004(void) { return Entity08004fac_DisableNodesById(VM_GetNamedArgVa
 s32 FUN_0800501c(void) { return Entity08004fac_EnableNodesById(VM_GetNamedArgValue('n', 0)); }
 
 // 0xB8C7
-NAKED s32 FUN_08005034(void) { INCFUNC("asm/func/FUN_08005034.inc"); }
+// 残差3命令 (101/104). 原典は4つの VM 値を r8/r7/r6/r5 の低位レジスタに収めるが, こちらは r10/r9 を使った上に id をスタックへ退避してしまう
+// 宣言と代入を分けても変化なし (101)
+NON_MATCH s32 FUN_08005034(void) {
+#ifdef NONMATCHING_C
+  Vec3 pos;
+  s32 id = VM_GetNamedArgValue('n', -1);
+  s32 stairs = VM_GetNamedArgValue('t', -1);
+  s32 unk_3 = VM_GetNamedArgValue('f', -1);
+  s32 attr = VM_GetNamedArgValue('e', -1);
+  s32 tileIdx;
+  s32 height;
+
+  if (VM_SeekToNamedArg('p')) {
+    s32 bx;
+    s32 bz;
+
+    pos.x = VM_GetValue();
+    pos.y = VM_GetValue();
+    pos.z = VM_GetValue();
+
+    bx = (s8)(pos.x >> 8);
+    bz = (s8)(pos.z >> 8);
+    if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
+      tileIdx = 0;
+    } else {
+      tileIdx = gCollisionMap->rowOffsets[bz] + bx;
+    }
+    height = FixToInt(8, pos.y);
+  } else {
+    height = -1;
+    tileIdx = -1;
+  }
+
+  return Entity08004fac_SetNodeParamsById(id, stairs, unk_3, attr, tileIdx, height);
+#else
+  INCFUNC("asm/func/FUN_08005034.inc");
+#endif
+}
 
 // 0xFEBB
-NAKED s32 FUN_0800512c(void) { INCFUNC("asm/func/FUN_0800512c.inc"); }
+s32 FUN_0800512c(void) {
+  Vec3 pos;
+  s32 id = VM_GetNamedArgValue('n', 0);
+  s32 stairs = VM_GetNamedArgValue('t', 0);
+  s32 unk_3 = VM_GetNamedArgValue('f', 0);
+  s32 attr = VM_GetNamedArgValue('e', 0);
+
+  if (VM_SeekToNamedArg('p')) {
+    VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
+  } else {
+    VEC3_SET(pos, 0, 0, 0);
+  }
+
+  Entity08004fac_AddNode(id, &pos, unk_3, stairs, attr);
+  return 0;
+}

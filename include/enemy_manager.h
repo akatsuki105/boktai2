@@ -64,8 +64,7 @@ extern EnemyListNode* gEnemyListHead;  // 0x03002C60
 
 EnemyManager* GetEnemyManager(void);
 
-static inline void EnemyManager_ClearFlags(EnemyManager* p, EnemyManagerFlags bits) { p->flags &= ~bits; }
-
+void FUN_080ec7e8(u8 kind, u8 unk_480, void* payload);
 void FUN_080eeee0(Enemy* p);
 
 #endif  // __INCLUDE_ENEMY_MANAGER_H__

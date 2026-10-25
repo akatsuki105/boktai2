@@ -27,7 +27,7 @@ typedef struct MessageWindow {
   u16 autoAdvanceTimer;                           // 0x186, 毎フレーム +1
   s32 waitFrames;                                 // 0x188, 次の行へ進む前に待つフレーム数, '.l' で初期化し、MessageWindow_Update が毎フレーム renderer.waitFrames で上書きする
   u32 waitTimer;                                  // 0x18C, waitFrames の経過フレーム数, MessageWindow_StateWaitInput が waitFrames に達するまで +1 し、達したら両方 0 に戻す
-  FileID bgPlttFileID;                            // 0x190, '.c=0x519C'
+  FileID bgPlttFileID;                            // 0x190, '.c=BGP_519C'
   s16 pendingLine;                                // 0x192, 次に表示する行, -1 なら何もしない, MessageWindow_Update がこれを MessageWindow_ShowLine に渡す
   u32 unk_194;                                    // 0x194, '.m', MessageWindow_SetAutoAdvance の第3引数
   u32 unk_198;                                    // 0x198, 表示が終わると 1 になり MessageWindow_IsFinished が返す
@@ -36,7 +36,7 @@ typedef struct MessageWindow {
   u16 labelIdx;                                   // 0x1A4, labels の添字, pendingLine = labels[labelIdx]
   u16 labelCount;                                 // 0x1A6, MessageWindow_StartWithLabels が 32 に丸める
   u16 labels[32];                                 // 0x1A8, MessageWindow_StartWithLabels が呼び出し側の配列をコピーする行番号表
-  BgPlttFile* bgPltt;                             // 0x1E8, bgPlttFileID
+  BgPlttFile* bgPltt;                             // 0x1E8, BGP_519C
   MainSpriteGfx arrowGfx;                         // 0x1EC, SPRITE_MARKERS
   MainSprite arrow;                               // 0x20C, 次ページ送りの矢印, MessageWindow_Update が pos を枠の右下に置き直す
   MainSpriteGfx faceGfx;                          // 0x26C, SPRITE_PORTRAITS
@@ -246,31 +246,29 @@ s32 MessageWindow_SetRect(s32 x, s32 y, s32 w, s32 h) {
     return 0;
   }
   Font_ReleaseRect(p->rectX, p->rectY, p->rectW, p->rectH);
-  p->rectX = x;
-  p->rectY = y;
-  p->rectW = w;
-  p->rectH = h;
+  p->rectX = x, p->rectY = y, p->rectW = w, p->rectH = h;
   TextRenderer_SetRect(&p->renderer, p->rectX, p->rectY, p->rectW, p->rectH);
 }
 
-s32 MessageWindow_SetRectScripted(void) {
+// 0x930F
+s32 Cmd_SetMessageWindowRect(void) {
   s32 x = VM_GetValue();
   s32 y = VM_GetValue();
   s32 w = VM_GetValue();
-
   return MessageWindow_SetRect(x, y, w, VM_GetValue());
 }
 
+// 文字列の <VAR=idx> に対応する値を設定する
 s32 MessageWindow_SetVarValue(s32 idx, s32 value) {
   if (gMessageWindow == NULL) {
     return -1;
   }
-
   TextRenderer_SetVar(&gMessageWindow->renderer, idx, value);
   return 0;
 }
 
-s32 MessageWindow_SetVar(void) {
+// 0xAB3C
+s32 Cmd_SetMessageWindowVar(void) {
   s32 idx = VM_GetValue();
   return MessageWindow_SetVarValue(idx, VM_GetValue());
 }
@@ -282,7 +280,8 @@ s32 MessageWindow_SetExtendValue(s32 idx, char* text) {
   return 0;
 }
 
-s32 MessageWindow_SetExtendStringScripted(void) {
+// 0x2575
+s32 Cmd_2575(void) {
   s32 idx = VM_GetValue();
   u8* pc = VM_GetPC_Proxy();
   s32 offset;
@@ -290,15 +289,17 @@ s32 MessageWindow_SetExtendStringScripted(void) {
   if (pc == NULL) return -1;
 
   offset = VM_GetNamedArgValue('i', 0);
-  MessageWindow_SetExtendValue(idx, Textbox_LookupString(VM_ParseStringRef(pc) + offset));
+  MessageWindow_SetExtendValue(idx, GetStringByID(VM_ParseStringRef(pc) + offset));
   return 0;
 }
 
+// 0x352D
 s32 MessageWindow_SetExtend(void) {
   s32 idx = VM_GetValue();
   return MessageWindow_SetExtendValue(idx, VM_GetValueSafe2_Proxy());
 }
 
+// 0x75AF
 s32 MessageWindow_SetScriptIdsScripted(void) {
   MessageWindow* p = gMessageWindow;
   TextRenderer* r;
@@ -321,7 +322,6 @@ s32 MessageWindow_SetScriptIdsScripted(void) {
 
 s32 MessageWindow_SetAutoAdvance(s32 enable, s32 delay, u32 unk_194) {
   MessageWindow* p = gMessageWindow;
-
   if (p == NULL) return 0;
 
   p->autoAdvance = enable;
@@ -330,6 +330,7 @@ s32 MessageWindow_SetAutoAdvance(s32 enable, s32 delay, u32 unk_194) {
   p->unk_194 = unk_194;
 }
 
+// 0xADD2
 s32 MessageWindow_EnableAutoAdvance(void) {
   s32 enable = VM_GetValue();
   s32 delay = VM_GetValue();
@@ -339,36 +340,32 @@ s32 MessageWindow_EnableAutoAdvance(void) {
 
 s32 MessageWindow_SetBgPltt(s32 fileID) {
   MessageWindow* p = gMessageWindow;
-
   if (p == NULL) {
     return -1;
   }
-
   if (MessageWindow_LoadBgPltt(p, fileID) < 0) {
     return -1;
   }
-
   MessageWindow_UploadBgPltt(p);
   return 0;
 }
 
+// 0x8F41
 s32 MessageWindow_SetBgPlttScripted(void) { return MessageWindow_SetBgPltt(VM_GetValue()); }
 
 NAKED s32 MessageWindow_ConfigureScripted(void) { INCFUNC("asm/func/MessageWindow_ConfigureScripted.inc"); }
 
 s32 MessageWindow_SetWait(s32 frames) {
-  MessageWindow* p = gMessageWindow;
-
-  if (p == NULL) {
+  if (gMessageWindow == NULL) {
     return -1;
   }
-
-  p->waitFrames = frames;
-  p->waitTimer = 0;
+  gMessageWindow->waitFrames = frames;
+  gMessageWindow->waitTimer = 0;
   return 0;
 }
 
-s32 MessageWindow_SetWaitScripted(void) { return MessageWindow_SetWait(VM_GetValue()); }
+// 0x7974
+s32 Cmd_SetMessageWindowWait(void) { return MessageWindow_SetWait(VM_GetValue()); }
 
 s32 FUN_08047fbc(void) {
   if (gMessageWindow == NULL) {
@@ -378,7 +375,7 @@ s32 FUN_08047fbc(void) {
 }
 
 // スクリプトの文字列表の lineIdx 行目を引く
-char* MessageWindow_GetLine(MessageWindow* p, s32 lineIdx) { return Textbox_LookupString(VM_ParseStringRef(p->scriptPc) + lineIdx); }
+char* MessageWindow_GetLine(MessageWindow* p, s32 lineIdx) { return GetStringByID(VM_ParseStringRef(p->scriptPc) + lineIdx); }
 
 NAKED void MessageWindow_StateWaitInput(MessageWindow* p) { INCFUNC("asm/func/MessageWindow_StateWaitInput.inc"); }
 
@@ -417,7 +414,40 @@ NON_MATCH void MessageWindow_StateRenderAll(MessageWindow* p) {
 #endif
 }
 
-NAKED s32 MessageWindow_Update(MessageWindow* p) { INCFUNC("asm/func/MessageWindow_Update.inc"); }
+// 矢印を枠の上下どちらかに置き直し, updateCallback の状態に応じて顔スプライトを貼り直す
+s32 MessageWindow_Update(MessageWindow* p) {
+  TextRenderer* r = &p->renderer;
+
+  if (r->waitFrames != 0) {
+    p->waitFrames = r->waitFrames;
+    r->waitFrames = 0;
+  }
+  TextRenderer_ClearPending(r);
+  if (p->pendingLine >= 0) {
+    MessageWindow_ShowLine(p->pendingLine);
+  }
+  if (p->updateCallback != NULL) {
+    p->updateCallback(p);
+  }
+
+  if (p->rectY + p->rectH < 10) {
+    VEC3_SET(p->arrow.pos, 223, 41, 0);
+  } else {
+    VEC3_SET(p->arrow.pos, 223, 143, 0);
+  }
+
+  if (p->updateCallback != MessageWindow_StateIdle) {
+    MessageWindow_UploadBgPltt(p);
+    if (p->shownFace != r->face) {
+      MessageWindow_RefreshFace(p);
+    }
+  } else if (p->shownFace != -1) {
+    MainSprite_Hide(&p->face);
+    p->shownFace = -1;
+  }
+  TextRenderer_RunPending(r);
+  return 0;
+}
 
 s32 MessageWindow_Destroy(MessageWindow* p) {
   MainSprite_Remove(&p->arrow);
@@ -428,7 +458,8 @@ s32 MessageWindow_Destroy(MessageWindow* p) {
 
 NAKED s32 MessageWindow_Init(MessageWindow* p, u32 _) { INCFUNC("asm/func/MessageWindow_Init.inc"); }
 
-MessageWindow* MessageWindow_Create(u32 pc) {
+// 0x0E37
+MessageWindow* MessageWindow_Create(u32 id) {
   MessageWindow* p = gMessageWindow;
 
   if (p != NULL) {
@@ -438,7 +469,7 @@ MessageWindow* MessageWindow_Create(u32 pc) {
   p = CreateEntity(ENTITY_UNK_12, sizeof(MessageWindow));
   if (p != NULL) {
     SetEntityRoutine(p, MessageWindow_Update, MessageWindow_Destroy);
-    if (MessageWindow_Init(p, pc) < 0) {
+    if (MessageWindow_Init(p, id) < 0) {
       KillEntity((Entity*)p);
       return NULL;
     }

@@ -80,7 +80,7 @@ _0820E13A:
 	adds r4, r7, #0
 	adds r4, #0x25
 	ldrb r0, [r4]
-	bl FUN_0820cbdc
+	bl EnemyDex_GetPageStart
 	adds r5, r7, #0
 	adds r5, #0x26
 	movs r1, #0
@@ -93,10 +93,10 @@ _0820E13A:
 	adds r0, r7, #0
 	bl FUN_0820d21c
 	ldrb r0, [r4]
-	bl FUN_0820cbdc
+	bl EnemyDex_GetPageStart
 	mov sl, r0
 	ldrb r0, [r4]
-	bl FUN_0820cbec
+	bl EnemyDex_GetPageEntryCount
 	mov sb, r0
 	movs r2, #0
 	mov r8, r2
@@ -336,11 +336,11 @@ _0820E320:
 	ble _0820E312
 	ldr r1, [sp, #0x2c]
 	ldrb r0, [r1]
-	bl FUN_0820cbec
+	bl EnemyDex_GetPageEntryCount
 	mov sl, r0
 	ldr r2, [sp, #0x2c]
 	ldrb r0, [r2]
-	bl FUN_0820cbdc
+	bl EnemyDex_GetPageStart
 	adds r0, #1
 	str r0, [sp, #0x18]
 	movs r3, #0
@@ -369,7 +369,7 @@ _0820E36E:
 	adds r0, r5, #0
 	ldr r1, [sp, #0x34]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	ldr r0, [r4]
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -407,7 +407,7 @@ _0820E3BA:
 	bge _0820E3BA
 	ldr r1, [sp, #0x30]
 	ldrb r0, [r1]
-	bl FUN_0820cc8c
+	bl EnemyDex_GetCategoryOfEntry
 	mov r8, r0
 	bl FUN_0820d0b8
 	adds r2, r0, #0
@@ -423,9 +423,9 @@ _0820E3BA:
 	ldr r0, [sp, #0x38]
 	ldr r1, [sp, #0x34]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	mov r0, r8
-	bl FUN_0820cbfc
+	bl EnemyDex_GetCategoryEntryCount
 	adds r2, r0, #0
 	str r4, [sp]
 	movs r0, #0xb0
@@ -436,7 +436,7 @@ _0820E3BA:
 	ldr r0, [sp, #0x1c]
 	ldr r1, [sp, #0x34]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	adds r0, r7, #0
 	bl FUN_0820d188
 _0820E420:
@@ -471,11 +471,11 @@ _0820E45C:
 	adds r5, r7, #0
 	adds r5, #0x25
 	ldrb r0, [r5]
-	bl FUN_0820cbec
+	bl EnemyDex_GetPageEntryCount
 	subs r0, #1
 	strb r0, [r4]
 	ldrb r0, [r5]
-	bl FUN_0820cbdc
+	bl EnemyDex_GetPageStart
 	ldrb r1, [r4]
 	adds r1, r1, r0
 	strb r1, [r6]
@@ -502,7 +502,7 @@ _0820E47E:
 	adds r2, r2, r7
 	mov r8, r2
 	ldrb r0, [r2]
-	bl FUN_0820cbec
+	bl EnemyDex_GetPageEntryCount
 	subs r0, #1
 	cmp r4, r0
 	bge _0820E4C0
@@ -518,7 +518,7 @@ _0820E4BC: .4byte 0x030044E0
 _0820E4C0:
 	mov r3, r8
 	ldrb r0, [r3]
-	bl FUN_0820cbdc
+	bl EnemyDex_GetPageStart
 	movs r1, #0
 	strb r0, [r6]
 	strb r1, [r5]
@@ -752,7 +752,7 @@ _0820E64A:
 	mov r0, sb
 	ldr r1, [sp, #0x34]
 	movs r3, #2
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	ldr r2, [sp, #0x30]
 	ldrb r0, [r2]
 	bl FUN_0820d00c
@@ -799,7 +799,7 @@ _0820E6D0:
 	orrs r0, r4
 	strh r0, [r1]
 	adds r0, r7, #0
-	bl FUN_0820cc30
+	bl EnemyDexMenu_SetPageFromEntry
 	adds r0, r7, #0
 	adds r0, #0x48
 	ldrb r0, [r0]

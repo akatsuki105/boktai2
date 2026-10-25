@@ -66,11 +66,11 @@ NON_MATCH s32 SolarBamboo_Update(SolarBamboo* p) {
   active = (p->zoneID == gStat->zoneID) ? TRUE : FALSE;
   if (!active) {
     p->sprite.flags |= SPRFLAG_HIDDEN;
-    p->hurtbox.flags |= HBFLAG_UNK_2;
+    p->hurtbox.flags |= HBFLAG_HIDDEN;
     ParticleShadow_Hide(&p->shadow);
   } else {
     p->sprite.flags &= ~SPRFLAG_HIDDEN;
-    p->hurtbox.flags &= ~HBFLAG_UNK_2;
+    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
     ParticleShadow_Show(&p->shadow);
     if (p->unk_28 != 0) {
       p->unk_28--;
@@ -138,14 +138,14 @@ s32 SolarBamboo_Init(SolarBamboo* p, u32 param, u32 _) {
     pos.y = VM_GetValue() + 0x64;
     pos.z = VM_GetValue();
   } else {
-    pos.x = 0, pos.y = 0, pos.z = 0;
+    VEC3_SET(pos, 0, 0, 0);
   }
   p->zoneID = GetZoneAt(&pos);
   p->unk_30 = 0;
   p->unk_32 = pos.y;
   p->unk_34 = 0;
-  size.x = 30, size.y = 320, size.z = 30;
-  offset.x = 0, offset.y = 160, offset.z = 0;
+  VEC3_SET(size, 30, 320, 30);
+  VEC3_SET(offset, 0, 160, 0);
   hurtbox = &p->hurtbox;
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetHandler(hurtbox, FUN_0800c0b0, p);

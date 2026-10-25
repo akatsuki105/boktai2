@@ -21,7 +21,7 @@ _08097C22:
 	orrs r1, r2
 	str r1, [r0]
 	bl MessageWindow_Close
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	b _08097C92
 	.align 2, 0
 _08097C38: .4byte 0x00003AEB
@@ -57,8 +57,8 @@ _08097C44:
 	bl VM_ParseStringRef
 	adds r0, #0x12
 	adds r0, r0, r5
-	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl GetStringByID
+	bl Marquee_SetText
 _08097C92:
 	pop {r4, r5}
 	pop {r0}

@@ -79,7 +79,7 @@ _08220486:
 	movs r1, #0x10
 	movs r2, #0
 	movs r3, #1
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 _082204CE:
 	ldrh r0, [r7, #0x14]
 	cmp r0, #4
@@ -271,7 +271,7 @@ _08220626:
 	movs r1, #0x10
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 _0822064C:
 	ldr r1, _08220678 @ =0x000002D9
 	adds r0, r4, r1

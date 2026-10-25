@@ -19,6 +19,8 @@ u8* FUN_0823201c(u8* pc, u8* dst);
 
 static const ScriptArgs sEmptyArgs = {0, NULL};  // 引数無しでスクリプトを呼ぶときに束縛されるデフォルトの引数記述子
 
+EWRAM_DATA u8 gGameStateBuffer[12288] = {};  // 0x0203C400, RandomizeGameStateAddr で このバッファのランダムなアドレスに gScratch, gWorldBackup, gWorld, gStatBackup, gStat の各要素の実態が配置される (チート対策と思われる)
+
 IWRAM_DATA ScriptTable gScriptTable = {};  // 0x03000748
 IWRAM_DATA StringTable gStringTable = {};  // 0x03000758
 
@@ -125,7 +127,7 @@ NON_MATCH u8* VM_DecodeValue(u8* pc, s32* type, void* val) {
       }
       case OP_STRING_REF: {
         s32 stringID = (p[1] << 8) | p[0];
-        *(s32*)val = (s32)Textbox_LookupString(stringID);
+        *(s32*)val = (s32)GetStringByID(stringID);
         *type = OP_STRING;
         p += 2;
         break;
@@ -556,7 +558,7 @@ void* UNUSED FUN_0823193c(void* p, u32 key, s32 count) {
 }
 
 // stringID で指定した文字列を返す
-char* Textbox_LookupString(s32 stringID) {
+char* GetStringByID(s32 stringID) {
   StringTable* tbl = &gStringTable;
 
   // header = &gStringHeader[stringID]
@@ -727,8 +729,6 @@ void FUN_08231bec(void) {
 }
 
 void VM_ClearScratchpad_Proxy(void) { VM_ClearScratchpad(); }
-
-extern u8 gGameStateBuffer[12288];  // src/utility_08237468.c
 
 // チート対策, gGameStateBuffer の中のランダムな位置に各ゲーム状態を配置し直す
 // 残差はレジスタ割当のみ (命令列は 30 対 30 で一致), 原典は base を r1 に置いて REG_VCOUNT を r2 で受ける

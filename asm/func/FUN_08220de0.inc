@@ -46,7 +46,7 @@ _08220E28:
 	movs r1, #5
 	movs r2, #1
 	movs r3, #1
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 	movs r1, #0xf8
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -163,7 +163,7 @@ _08220E6A:
 	str r0, [sp, #0xc]
 	add r0, sp, #0x10
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, _08220FA4 @ =0x00000339
 	bl PlaySound_082406e0
 _08220F34:

@@ -20,7 +20,7 @@ _0804151E:
 	adds r0, r4, #0
 	adds r0, #0xd0
 	mov r1, sp
-	bl FUN_08055d48
+	bl SpriteHolder_GetAdvancedCmdIdx
 	cmp r0, #0
 	beq _08041570
 	movs r1, #0xaf

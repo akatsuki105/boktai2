@@ -92,10 +92,21 @@ const isFile = (p: string): boolean => {
   }
 };
 
+// src/ 以下を再帰的にたどって ext のファイルを集める (src/boss/*.c のようなサブディレクトリも含む)
+const listFilesRecursive = (dir: string, ext: string): string[] => {
+  const results: string[] = [];
+  for (const entry of Deno.readDirSync(dir)) {
+    const p = path.join(dir, entry.name);
+    if (entry.isDirectory) results.push(...listFilesRecursive(p, ext));
+    else if (entry.isFile && path.extname(entry.name) === ext) results.push(p);
+  }
+  return results.sort();
+};
+
 // ASM_FILE を INCASM している .c を探す
 const findCFile = (repo: string, asmRelPath: string): string => {
   const pattern = new RegExp(`INCASM\\("${escapeRegExp(asmRelPath)}"\\)`);
-  const hits = listFiles(path.join(repo, "src"), ".c").filter((p) => pattern.test(Deno.readTextFileSync(p)));
+  const hits = listFilesRecursive(path.join(repo, "src"), ".c").filter((p) => pattern.test(Deno.readTextFileSync(p)));
   if (hits.length === 0) return die(`エラー: INCASM("${asmRelPath}") を含む .c が src/ に見つかりません`);
   if (hits.length > 1) {
     const listing = hits.map((p) => `  - ${path.relative(repo, p)}`).join("\n");
@@ -227,6 +238,14 @@ const prepare = (repo: string, fn: string, asmFile?: string, sig?: string): void
             later.map((s) => `  - ${s}`).join("\n"),
         );
       }
+    }
+  }
+
+  // --sig があるときは、asm 側を書き換える前に挿入先の .c と関数名を確かめておく (途中で止まるとスタブだけ消えた状態になる)
+  if (sig !== undefined) {
+    findCFile(repo, asmRelPath);
+    if (!new RegExp(`\\b${escapeRegExp(fn)}\\s*\\(`).test(sig)) {
+      die(`エラー: --sig に関数名 ${fn} が含まれていません: ${sig}`);
     }
   }
 

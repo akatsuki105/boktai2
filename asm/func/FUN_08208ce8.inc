@@ -77,7 +77,7 @@ _08208D62:
 _08208D7E:
 	adds r0, r4, #0
 	adds r0, #0xd0
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _08208E0E
 	movs r0, #1
@@ -116,7 +116,7 @@ _08208DAC:
 _08208DCA:
 	adds r0, r4, #0
 	adds r0, #0xd0
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _08208E0E
 	movs r0, #3

@@ -209,9 +209,7 @@ void FUN_080c008c(void) {
   if (p != NULL) {
     EntityCF58_CreateWithCallback(0, 0, FUN_080bffe8, p);
     Player_Lock(gPlayerPtr[0], 7);
-    gPlayerPtr[0]->mover.pos.x = 0x380;
-    gPlayerPtr[0]->mover.pos.y = 0x100;
-    gPlayerPtr[0]->mover.pos.z = 0x580;
+    VEC3_SET(gPlayerPtr[0]->mover.pos, 0x380, 0x100, 0x580);
   }
 }
 

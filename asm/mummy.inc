@@ -4281,7 +4281,7 @@ _08123B72:
 	str r2, [sp, #8]
 	str r2, [sp, #0xc]
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _08123BE4:
 	movs r1, #0x83
 	lsls r1, r1, #2
@@ -6659,7 +6659,7 @@ _08124E00:
 	movs r4, #2
 	str r4, [sp, #8]
 	str r4, [sp, #0xc]
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _08124E70:
 	cmp r6, #0x22
 	bgt _08124E7A
@@ -6777,7 +6777,7 @@ _08124F14:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x20
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r3, _08125128 @ =0x000003FF
@@ -6801,7 +6801,7 @@ _08124F14:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x40
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _08125128 @ =0x000003FF
@@ -6825,7 +6825,7 @@ _08124F14:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x5e
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _08125128 @ =0x000003FF
@@ -6849,7 +6849,7 @@ _08124F14:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x80
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _08125128 @ =0x000003FF
@@ -6873,7 +6873,7 @@ _08124F14:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0xc4
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _08125128 @ =0x000003FF
@@ -6897,7 +6897,7 @@ _08124F14:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0xf0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r1, [sp, #0x48]
 	ldrb r0, [r1]
 	cmp r0, #4
@@ -6972,7 +6972,7 @@ _081250F6:
 	lsls r6, r6, #3
 	adds r1, r7, r6
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _08125134
@@ -18181,7 +18181,7 @@ _0812A6C6:
 	str r1, [sp, #4]
 	add r0, sp, #8
 	movs r1, #0
-	bl FUN_080d8568
+	bl Entity080d84f8_CreateDelayed
 	b _0812A79E
 _0812A6E4:
 	movs r6, #0
@@ -18223,7 +18223,7 @@ _0812A6EA:
 	str r0, [sp, #4]
 	add r0, sp, #8
 	movs r1, #0
-	bl FUN_080d8568
+	bl Entity080d84f8_CreateDelayed
 	adds r6, #1
 	cmp r6, #1
 	ble _0812A6EA
@@ -18272,7 +18272,7 @@ _0812A74E:
 	str r0, [sp, #4]
 	add r0, sp, #8
 	movs r1, #0
-	bl FUN_080d8568
+	bl Entity080d84f8_CreateDelayed
 	adds r6, #1
 	cmp r6, #3
 	ble _0812A74E

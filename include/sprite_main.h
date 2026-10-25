@@ -96,7 +96,7 @@ typedef struct MainSprite {
   u8 listIdx;                     // 0x1C, MainSprite_Remove
   MainAnimEvents8 animEvents;     // 0x1D, see MainAnimEvents8
   u8 unk_1e[2];                   // 0x1E, padding?
-  WorldPos pos;                   // 0x20, ワールド座標, flags bit4 が立っていればスクリーン座標としてそのまま使われる, 根拠: MainSprite_DrawList のアイソメトリック投影と MainSprite_Load の Vec3 コピー
+  Vec3 pos;                       // 0x20, ワールド座標 としても スクリーン座標 としても使用, flags bit4 で決まる
   u16 offsetX;                    // 0x28, 投影後のスクリーン座標に加算される, MainSpritePose.unk_4
   u16 offsetY;                    // 0x2A, MainSpritePose.unk_6
   s16 boxRight;                   // 0x2C, 画面外判定に使う矩形, MainSpritePose.unk_8
@@ -142,6 +142,7 @@ s32 MainSprite_SetAnimSpeed(MainSprite* p, u32 speed);
 void MainSprite_Remove(MainSprite* p);
 void FUN_0822f588(MainSprite* p, MainSprite* src, u32 val);
 void MainSprite_SetAnim(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 playMode, MainAnimPlayFlags16 flags);
-void FUN_082376a4(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, s32 zeroSuppress);
+void MainSprite_SetAnimFrame(MainSprite* p, MainSpriteGfx* gfx, u16 animIdx, u16 cmdIdx);
+void MainSprite_SetNumber(MainSprite* p, MainSpriteGfx* gfx, s32 value, s32 counts, s32 base, s32 x, s32 y, s32 dx, bool32 zeroSuppress);
 
 #endif  // __INCLUDE_SPRITE_MAIN_H__

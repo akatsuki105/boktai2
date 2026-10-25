@@ -178,7 +178,7 @@ _0808AEC4:
 	movs r0, #0
 	movs r1, #0x1d
 	movs r2, #1
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r2, r0, #0
 	ldr r4, _0808AF58 @ =0xFFFFD000
 	adds r1, r4, #0
@@ -265,7 +265,7 @@ _0808AF68:
 	movs r0, #0
 	movs r1, #0x1d
 	movs r2, #1
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r2, r0, #0
 	movs r1, #0xd0
 	lsls r1, r1, #8

@@ -2,8 +2,8 @@
 	sub sp, #4
 	adds r6, r0, #0
 	bl MessageWindow_Close
-	bl FUN_08049e5c
-	bl FUN_08049fa8
+	bl Marquee_Clear
+	bl Marquee_CloseGlobal
 	movs r0, #0
 	movs r1, #0x12
 	movs r2, #0x1e
@@ -47,7 +47,7 @@
 	adds r0, r6, r1
 	ldrb r1, [r0]
 	adds r0, r6, #0
-	bl FUN_0808b86c
+	bl MainMenu_ShowPageName
 	adds r0, r6, #0
 	movs r1, #0
 	movs r2, #0x18

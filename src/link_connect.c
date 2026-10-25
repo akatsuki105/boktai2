@@ -34,8 +34,9 @@ typedef struct LinkConnect {
 } LinkConnect;
 static_assert(sizeof(LinkConnect) == 116);
 
-extern LinkConnect* gLinkConnect;  // 0x03002C64
-extern u32 u32_0300481c;           // src/time.c
+COMMON_DATA LinkConnect* gLinkConnect = NULL;  // 0x03002C64
+
+extern u32 u32_0300481c;  // src/time.c
 
 s32 FUN_08238b04(void);   // src/link.c
 void FUN_08238cd4(void);  // src/link.c

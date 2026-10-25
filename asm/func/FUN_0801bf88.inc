@@ -48,11 +48,11 @@ _0801BFF0: .4byte 0x00000DA4
 _0801BFF4:
 	cmp r7, #0
 	bne _0801BFFE
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	b _0801C004
 _0801BFFE:
 	adds r0, r7, #0
-	bl FUN_08049e30
+	bl Marquee_SetText
 _0801C004:
 	ldr r1, _0801C018 @ =0x00000DA4
 	adds r0, r4, r1

@@ -4,10 +4,8 @@
 #include "gba/types.h"
 #include "types.h"
 
-extern u16 gEntityCount;
 extern bool32 bool32_03004788;
 extern u32 u32_03004798;
-extern u16 gPlayerCount;
 extern u32 u32_ARRAY_0203f400[256];
 
 #define FLAG03002BC0_UNK_0 (1 << 0)  // 0x1, 用途不明
@@ -19,7 +17,7 @@ extern u32 u32_03002bc0[4];          // 0x03002BC0, プレイヤーごとのフ�
 extern u32 u32_030047a0;  // 0x030047A0, gFlag030047a4 と OR されて使用される, デバッグ時に強制的にフラグをセットするためのものと予想
 
 #define FLAG030047A4_UNK_0 (1 << 0)      // 0x1, セットされていると、(フィールドで)START/SELECTボタンを押しても何も起きない(その他のアクションはできる), メニュー画面では特に影響なし
-#define FLAG030047A4_UNK_8 (1 << 8)      // 0x100, FUN_0809eacc と FUN_0809e630 が見ている, セットされていると天窓の光が ENE を回復しない
+#define FLAG030047A4_UNK_8 (1 << 8)      // 0x100, FUN_0809eacc と Entity5CCC_AddEneCharge が見ている, セットされていると天窓の光が ENE を回復しない
 #define FLAG030047A4_UNK_9 (1 << 9)      // 0x200, 用途はまだ不明 (マップ切り替え時, 会話中にセット)
 #define FLAG030047A4_GAMEOVER (1 << 10)  // 0x400, GAMEOVER画面の間セット, 手動でセットするとGAMEOVER画面に遷移(ジャンゴは動ける)
 #define FLAG030047A4_LINK (1 << 11)      // 0x800, 通信機能利用時にセットされる (通信対戦, 通信販売(アイテム交換) で確認)

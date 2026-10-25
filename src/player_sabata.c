@@ -7,6 +7,7 @@
 #include "hitbox.h"
 #include "input.h"
 #include "item.h"
+#include "map_inline.h"
 #include "mover.h"
 #include "player.h"
 #include "random.h"
@@ -26,88 +27,20 @@ void FUN_08084734(WorldPos* out);
 void FUN_08084754(void);
 void FUN_08084798(s32 val);
 void* Entity080cbabc_Create(WorldPos* pos, s32 poseIdx, s32 angle, s32 speed, s32 plttID, s32 param_6, s32 param_7, s32 param_8, u32 param_9);
-s32 FUN_080ddcc8(WorldPos* pos, u8 param_2, Vec3* size, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8);
-
-// pos のタイルの attr を返す, マップ外なら tiles[0] の値
-static inline TileAttr GetTileAttrAt(WorldPos* pos) {
-  MapTileOverride* ov;
-  CollisionMapTile* tile;
-  s32 bx;
-  s32 bz;
-  s32 idx;
-
-  bx = (s8)(pos->x >> 8);
-  bz = (s8)(pos->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-
-  ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
-
-  return tile->attr;
-}
-
-// pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
-static inline s32 GetTileHeightAt(WorldPos* pos) {
-  MapTileOverride* ov;
-  CollisionMapTile* tile;
-  s32 stairs;
-  s32 height;
-  s32 bx;
-  s32 bz;
-  s32 idx;
-
-  bx = (s8)(pos->x >> 8);
-  bz = (s8)(pos->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-
-  ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
-
-  stairs = tile->heightStairs >> 4;
-  height = (tile->heightStairs & 0xF) << 8;
-  switch (stairs) {
-    case STAIRS_VERTICAL: {
-      height -= pos->z & 0xFF;
-      break;
-    }
-    case STAIRS_HORIZONTAL: {
-      height -= pos->x & 0xFF;
-      break;
-    }
-  }
-  return height;
-}
 
 // facing から animIDOffset と xflip を決める
 void PlayerSabata_SetAnimFacing(Player* p) {
   u8 v = p->facing;
-
   if (v > 4) {
     p->animIDOffset = 8 - v;
-    p->xflip = 1;
+    p->xflip = TRUE;
   } else {
     p->animIDOffset = v;
-    p->xflip = 0;
+    p->xflip = FALSE;
   }
 }
 
-// sprite_88 に animIdx のアニメを設定して1フレーム進める, 前回と同じIDならコマ番号を引き継ぐ
+// human に animIdx のアニメを設定して1フレーム進める, 前回と同じIDならコマ番号を引き継ぐ
 // 残差は animIdx + animIDOffset の adds のオペランド順だけ (57対57), 原典は adds r2, r1, r2
 // src/player.c の Player_PlayAnim が同じ1命令で止まっているので、この2つは同じ問題
 // Tier A-B 試済: オペランド入れ替え / u32 と u16 のキャスト / 複合代入 (加算位置が動いて悪化)
@@ -120,15 +53,15 @@ NON_MATCH bool32 FUN_08080cac(Player* p, u32 animIdx, s32 animSpeed) {
   }
   p->animID = animIdx;
 
-  MainSprite_SetAnim(&p->sprite_88, &p->spriteSet_68, animIdx + p->animIDOffset, 1, flags);
+  MainSprite_SetAnim(&p->human, &p->humanGfx, animIdx + p->animIDOffset, 1, flags);
   if (p->xflip) {
-    p->sprite_88.flags |= SPRFLAG_XFLIP;
+    p->human.flags |= SPRFLAG_XFLIP;
   } else {
-    p->sprite_88.flags &= ~SPRFLAG_XFLIP;
+    p->human.flags &= ~SPRFLAG_XFLIP;
   }
 
-  MainSprite_SetAnimSpeed(&p->sprite_88, (u16)animSpeed);
-  return MainSprite_AdvanceAnim(&p->sprite_88, &p->spriteSet_68);
+  MainSprite_SetAnimSpeed(&p->human, (u16)animSpeed);
+  return MainSprite_AdvanceAnim(&p->human, &p->humanGfx);
 #else
   INCFUNC("asm/func/FUN_08080cac.inc");
 #endif
@@ -142,8 +75,8 @@ NON_MATCH void FUN_08080d2c(Player* p, s32 val) {
 #ifdef NONMATCHING_C
   s32 v;
   s32 angle = ((p->facing + 5) & 7) * 32;
-  p->mover.delta.x = COS(angle, val);
-  p->mover.delta.z = SIN(angle, val);
+  p->mover.delta.x = POLAR_X(val, angle);
+  p->mover.delta.z = POLAR_Z(val, angle);
 
   if (p->tile.stairs[1] == 1) {
     if (p->mover.delta.z < 0) {
@@ -181,7 +114,7 @@ void FUN_08080e34(Player* p) {
     Player_SetFlag20(p, PFLAG20_SNEAKING);
   }
 
-  p->shadowOffset.x = 0, p->shadowOffset.y = 0, p->shadowOffset.z = 0;
+  VEC3_SET(p->shadowOffset, 0, 0, 0);
   p->flag35a = 0;
   p->hurtbox.hitState &= ~HBHITSTATE_UNK_1;
 }
@@ -229,9 +162,9 @@ NON_MATCH s32 FUN_08080f20(HitboxData* a, HitboxData* b) {
 
 // 被弾した向きを決める, PFLAG20_UNK_15 が立っているときは facing でなく unk_3e8 に入れて相手の unk_40 を退避する
 void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
-  b->unk_40 = a->unk_40;
-  if (a->unk_40 > 200) {
-    b->unk_40 = 200;
+  b->knockbackPower = a->knockbackPower;
+  if (a->knockbackPower > 200) {
+    b->knockbackPower = 200;
   }
 
   if (Hitbox_TestAttr(a, HBATTR_18)) {
@@ -241,28 +174,28 @@ void FUN_08080f80(Player* p, HitboxData* a, HitboxData* b) {
   }
 
   if (p->action == 5) {
-    b->flags |= HBFLAG_UNK_2;
-    b->unk_40 = 0;
+    b->flags |= HBFLAG_HIDDEN;
+    b->knockbackPower = 0;
     return;
   }
 
   if (Player_TestFlag20(p, PFLAG20_UNK_15)) {
     if (a->flags & HBFLAG_ANGLE) {
-      p->hitDir = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+      p->knockbackDir = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
     } else {
       s32 dx = a->center.x - b->center.x;
       s32 dz = a->center.z - b->center.z;
 
       if (dx == 0 && dz == 0) {
-        p->hitDir = p->facing;
+        p->knockbackDir = p->facing;
       } else {
-        p->hitDir = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
+        p->knockbackDir = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
       }
     }
 
-    p->unk_3e6 = b->unk_40;
-    b->unk_40 = 0;
-    b->flags |= HBFLAG_UNK_2;
+    p->knockbackSpeed = b->knockbackPower;
+    b->knockbackPower = 0;
+    b->flags |= HBFLAG_HIDDEN;
     return;
   }
 
@@ -405,7 +338,7 @@ NON_MATCH void FUN_080812d4(Player* p, rgb555* src, s32 wSrc, s32 wBase, u32 shi
   s32 i;
 
   if (wSrc == 0) {
-    p->sprite_88.pltt = p->pltt_2a4;
+    p->human.pltt = p->pltt_2a4;
     return;
   }
 
@@ -441,7 +374,7 @@ NON_MATCH void FUN_080812d4(Player* p, rgb555* src, s32 wSrc, s32 wBase, u32 shi
     src++;
     base++;
   }
-  p->sprite_88.pltt = &p->pltt_2a4[16];
+  p->human.pltt = &p->pltt_2a4[16];
 #else
   INCFUNC("asm/func/FUN_080812d4.inc");
 #endif
@@ -479,7 +412,7 @@ NON_MATCH void FUN_080813d0(Player* p, u32 n) {
       }
     }
 
-    p->sprite_88.pltt = &p->pltt_2a4[16];
+    p->human.pltt = &p->pltt_2a4[16];
     p->unk_476--;
     return;
   }
@@ -507,7 +440,7 @@ NON_MATCH void FUN_080813d0(Player* p, u32 n) {
       FUN_080812d4(p, src, w, 0x20 - w, 5);
     } else {
       p->unk_964 = 0;
-      p->sprite_88.pltt = p->pltt_2a4;
+      p->human.pltt = p->pltt_2a4;
     }
     return;
   }
@@ -524,7 +457,7 @@ NON_MATCH void FUN_080813d0(Player* p, u32 n) {
         p->pltt_2a4[16 + i] = src[i];
       }
     }
-    p->sprite_88.pltt = &p->pltt_2a4[16];
+    p->human.pltt = &p->pltt_2a4[16];
   } else {
     rgb555* src = &gObjPlttData[p->plttID_95e * 16];
     s32 w = p->unk_960;
@@ -543,8 +476,8 @@ void FUN_080815ac(Player* p) {
   p->plttID_94a = 39;
   p->unk_94c = 0;
   p->unk_950 = 0xFF;
-  p->sprite_88.plttID = 289;
-  p->sprite_88.pltt = p->pltt_2a4;
+  p->human.plttID = 289;
+  p->human.pltt = p->pltt_2a4;
   FUN_080813d0(p, p->plttID_94a);
 }
 
@@ -568,17 +501,17 @@ NON_MATCH u32 LinkPlayer_ApplyFlashPose(Player* p, u32 pose) {
 // 点滅ポーズを反映してから、影の位置をスプライト位置+オフセットで作り直す
 void FUN_08081628(Player* p) {
   FUN_080813d0(p, LinkPlayer_ApplyFlashPose(p, p->plttID_94a));
-  p->shadowPos.x = p->sprite_88.pos.x + p->shadowOffset.x;
-  p->shadowPos.y = p->sprite_88.pos.y + p->shadowOffset.y;
-  p->shadowPos.z = p->sprite_88.pos.z + p->shadowOffset.z;
+  p->shadowPos.x = p->human.pos.x + p->shadowOffset.x;
+  p->shadowPos.y = p->human.pos.y + p->shadowOffset.y;
+  p->shadowPos.z = p->human.pos.z + p->shadowOffset.z;
 }
 
 void FUN_0808168c(Player* p) { ParticleShadow_Remove(&p->shadow); }
 
 // 影とモザイクフェードの初期値をまとめて入れる
 void FUN_080816a0(Player* p) {
-  p->shadowPos = p->sprite_88.pos;
-  p->shadowOffset.x = 0, p->shadowOffset.y = 0, p->shadowOffset.z = 0;
+  p->shadowPos = p->human.pos;
+  VEC3_SET(p->shadowOffset, 0, 0, 0);
   ParticleShadow_Init(&p->shadow, &p->shadowPos, 0);
   FUN_080815ac(p);
 
@@ -594,9 +527,7 @@ void FUN_080816a0(Player* p) {
   p->mosaicInterval[1] = 4;
   p->mosaicInterval[2] = 4;
   p->mosaicInterval[3] = 4;
-  p->pos_970.x = 0;
-  p->pos_970.y = 0;
-  p->pos_970.z = 0;
+  VEC3_SET(p->pos_970, 0, 0, 0);
   p->unk_3ff = 0xFF;
 }
 
@@ -605,8 +536,8 @@ void PlayerSabata_SetupHurtbox(Player* p) {
   HitboxData* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
-  halfSize.x = 50, halfSize.y = 127, halfSize.z = 50;
-  offset.x = 0, offset.y = 127, offset.z = 0;
+  VEC3_SET(halfSize, 50, 127, 50);
+  VEC3_SET(offset, 0, 127, 0);
   Hitbox_Init(hurtbox, p->mover.id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 1, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, 20, HBATTR_DARK, HBATTR_SOL);
   Hitbox_SetHandler(hurtbox, Sabata_OnHurt, p);
@@ -636,9 +567,9 @@ void FUN_08081830(Player* p) {
     return;
   }
 
-  p->spriteSet_68 = *(MainSpriteGfx*)f;
-  OpenMainSpriteFile(&p->spriteSet_68, f);
-  MainSprite_Add(&p->sprite_88, &p->spriteSet_68, 0, SPRFLAG_UNK_15, 2, 0, 60, &p->mover.pos);
+  p->humanGfx = *(MainSpriteGfx*)f;
+  OpenMainSpriteFile(&p->humanGfx, f);
+  MainSprite_Add(&p->human, &p->humanGfx, 0, SPRFLAG_UNK_15, 2, 0, 60, &p->mover.pos);
 
   if (VM_SeekToNamedArg('d')) {
     p->facing = VM_GetValue();
@@ -655,11 +586,11 @@ void FUN_08081830(Player* p) {
   }
 
   p->animID = 0;
-  MainSprite_SetAnim(&p->sprite_88, &p->spriteSet_68, p->animIDOffset, 1, 0);
+  MainSprite_SetAnim(&p->human, &p->humanGfx, p->animIDOffset, 1, 0);
   if (p->xflip) {
-    p->sprite_88.flags |= SPRFLAG_XFLIP;
+    p->human.flags |= SPRFLAG_XFLIP;
   } else {
-    p->sprite_88.flags &= ~SPRFLAG_XFLIP;
+    p->human.flags &= ~SPRFLAG_XFLIP;
   }
 
   FUN_08084734(&base);
@@ -736,17 +667,15 @@ s32 FUN_08081ab0(Player* p, u32 id) {
 
   p->playerIdx = 1;
   if (VM_SeekToNamedArg('p')) {
-    pos.x = VM_GetValue();
-    pos.y = VM_GetValue();
-    pos.z = VM_GetValue();
+    VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {
-    pos.x = 0, pos.y = 0, pos.z = 0;
+    VEC3_SET(pos, 0, 0, 0);
   }
 
-  pos.y = GetTileHeightAt(&pos);
+  pos.y = TileHeightAt(&pos);
   Mover_Init(&p->mover, id, &pos, 0, (u8)p->playerIdx, p);
   FUN_08081830(p);
-  Mover_SetMainSprite(&p->mover, &p->sprite_88);
+  Mover_SetMainSprite(&p->mover, &p->human);
   Map_InitMoverTile(&p->tile, &pos);
   Mover_SetCollision(&p->mover, &p->tile, 30, 30);
   Map_InitNavAgent(&p->navAgent, &pos);
@@ -794,19 +723,19 @@ NON_MATCH void FUN_08081c04(Player* p) {
 #endif
 }
 
-// 太陽ゲージから unk_3dc を貯め、100 たまるごとに足元の判定を1つ出す
+// 太陽ゲージから sunburn を貯め、100 たまるごとに足元の判定を1つ出す
 void FUN_08081d18(Player* p, s32 sunGauge) {
-  if (!(p->sprite_88.flags & SPRFLAG_HIDDEN)) {
-    p->unk_3dc += sunGauge + 2;
-    if (p->unk_3dc > 99) {
+  if (!(p->human.flags & SPRFLAG_HIDDEN)) {
+    p->sunburn += sunGauge + 2;
+    if (p->sunburn > 99) {
       Vec3 size;
       WorldPos pos;
 
       pos = p->mover.pos;
       pos.y += 0x50;
-      size.x = 0x40, size.y = 0x3C, size.z = 0x40;
-      FUN_080ddcc8(&pos, 1, &size, 0, 0, 0xC, 2, 2);
-      p->unk_3dc -= 100;
+      VEC3_SET(size, 0x40, 0x3C, 0x40);
+      EmitSmoke(&pos, 1, &size, 0, 0, 0xC, 2, 2);
+      p->sunburn -= 100;
     }
   }
 }
@@ -836,7 +765,7 @@ NON_MATCH s32 FUN_08081de0(Player* p, WorldPos* outPos, s32* outDir) {
     angle = i * 32;
     cand[i].x += FixToInt(12, gSineTable[(angle + 0x40) & 0xFF] * 512);
     cand[i].z += FixToInt(12, gSineTable[angle & 0xFF] * 512);
-    if (GetTileHeightAt(&cand[i]) == p->mover.pos.y) {
+    if (TileHeightAt(&cand[i]) == p->mover.pos.y) {
       cand[i].val = 1;
       count++;
     } else {
@@ -1074,7 +1003,7 @@ void FUN_08082498(Player* p) {
     return;
   }
 
-  if (p->hurtbox.unk_40 != 0) {
+  if (p->hurtbox.knockbackPower != 0) {
     if (p->unk_395 != 0) {
       s32 dx = p->mover.pos.x - p->ptr_398->x;
       s32 dz = p->mover.pos.z - p->ptr_398->z;
@@ -1087,11 +1016,11 @@ void FUN_08082498(Player* p) {
     } else {
       s32 angle = ((p->facing + 5) & 7) * 32;
 
-      p->mover.delta.x = -FixToInt(12, gSineTable[(angle + 0x40) & 0xFF] * p->hurtbox.unk_40);
-      p->mover.delta.z = -FixToInt(12, gSineTable[angle] * p->hurtbox.unk_40);
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
     }
 
-    p->hurtbox.unk_40 = (p->hurtbox.unk_40 * 3) >> 2;
+    p->hurtbox.knockbackPower = (p->hurtbox.knockbackPower * 3) >> 2;
     return;
   }
 
@@ -1101,7 +1030,7 @@ void FUN_08082498(Player* p) {
   }
 
   if (FUN_08080cac(p, 0x1C0, 0x40)) {
-    p->hurtbox.unk_40 = 0;
+    p->hurtbox.knockbackPower = 0;
     p->unk_395 = 0;
     PlayerSabata_SetAnimFacing(p);
     FUN_08080e0c(p, 0, 0);
@@ -1142,9 +1071,9 @@ void FUN_08082670(Player* p) {
 
       FUN_08080cac(p, 0x1C4, 0x40);
       angle = ((p->facing + 5) & 7) * 32;
-      p->mover.delta.x = -FixToInt(12, gSineTable[(angle + 0x40) & 0xFF] * p->hurtbox.unk_40);
-      p->mover.delta.z = -FixToInt(12, gSineTable[angle] * p->hurtbox.unk_40);
-      p->hurtbox.unk_40 = (p->hurtbox.unk_40 * 3) >> 2;
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
+      p->hurtbox.knockbackPower = (p->hurtbox.knockbackPower * 3) >> 2;
       if (p->stateTimer > 3) {
         if (p->floatHeight >= p->stateTimer * 8) {
           p->floatHeight -= p->stateTimer * 8;
@@ -1154,7 +1083,7 @@ void FUN_08082670(Player* p) {
       }
 
       p->stateTimer++;
-      if (p->hurtbox.unk_40 <= 0x13 && p->floatHeight == 0) {
+      if (p->hurtbox.knockbackPower <= 0x13 && p->floatHeight == 0) {
         p->floatHeight = 0;
         PlaySound_082406e0(SE_826);
         FUN_08080e0c(p, 0x19, 2);
@@ -1164,10 +1093,10 @@ void FUN_08082670(Player* p) {
     case 2: {
       s32 angle = ((p->facing + 5) & 7) * 32;
 
-      p->mover.delta.x = -FixToInt(12, gSineTable[(angle + 0x40) & 0xFF] * p->hurtbox.unk_40);
-      p->mover.delta.z = -FixToInt(12, gSineTable[angle] * p->hurtbox.unk_40);
+      p->mover.delta.x = -FixToInt(12, COS(angle) * p->hurtbox.knockbackPower);
+      p->mover.delta.z = -FixToInt(12, SIN(angle) * p->hurtbox.knockbackPower);
       if (FUN_08080cac(p, 0x1C6, 0x40)) {
-        p->hurtbox.unk_40 = 0;
+        p->hurtbox.knockbackPower = 0;
         FUN_08080e0c(p, 0x19, 3);
       }
       break;
@@ -1506,9 +1435,9 @@ void FUN_080831e0(Player* p, s32 param_2, s32 param_3, s32 param_4) {
   s32 angle = ((p->facing + 5) & 7) * 32;
   WorldPos pos = p->mover.pos;
 
-  pos.x = p->mover.pos.x + COS(angle, 150);
+  pos.x = p->mover.pos.x + POLAR_X(150, angle);
   pos.y = p->mover.pos.y + 0xE6;
-  pos.z = p->mover.pos.z + SIN(angle, 150);
+  pos.z = p->mover.pos.z + POLAR_Z(150, angle);
   Entity080cbabc_Create(&pos, angle, 0x20, param_2, param_3, p->totalAtk_a7a, p->unk_a7c, param_4, p->unk_a7e);
   PlaySound_082406e0(SONG_871);
 }
@@ -1622,7 +1551,7 @@ s32 FUN_08083eac(Player* p) {
     p->unk_474 = p->unk_472;
   }
 
-  if (p->hurtbox.unk_40 != 0) {
+  if (p->hurtbox.knockbackPower != 0) {
     if (p->unk_3d2 != 0) {
       return 0x19;
     }
@@ -1635,8 +1564,8 @@ s32 FUN_08083eac(Player* p) {
   }
 
   if (u16_03002bf0 != 0) {
-    p->sprite_88.flags &= ~(SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD | SPRFLAG_BLINK_EVEN);
-    p->hurtbox.unk_40 = 0x32;
+    p->human.flags &= ~(SPRFLAG_HIDDEN | SPRFLAG_BLINK_ODD | SPRFLAG_BLINK_EVEN);
+    p->hurtbox.knockbackPower = 0x32;
     p->unk_3d2 = 0;
     p->facing |= 1;
     return 0x18;
@@ -1702,7 +1631,7 @@ void FUN_08084078(Player* p) {
   if (PlayerSabata_TestFlag35a(p, PFLAG35A_NO_TILE)) {
     p->mover.tile = NULL;
     Mover_ApplyMove(&p->mover);
-    p->mover.pos.y = GetTileHeightAt(&p->mover.pos);
+    p->mover.pos.y = TileHeightAt(&p->mover.pos);
   } else {
     if (p->mover.tile == NULL) {
       Map_InitMoverTile(&p->tile, &p->mover.pos);
@@ -1712,9 +1641,9 @@ void FUN_08084078(Player* p) {
   }
 
   if (PlayerSabata_TestFlag35a(p, PFLAG35A_NO_HITBOX)) {
-    p->hurtbox.flags |= HBFLAG_UNK_2;
+    p->hurtbox.flags |= HBFLAG_HIDDEN;
   } else {
-    p->hurtbox.flags &= ~HBFLAG_UNK_2;
+    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
     Hitbox_SetPos(&p->hurtbox, &p->mover.pos, 0);
   }
 
@@ -1728,19 +1657,19 @@ void FUN_08084078(Player* p) {
     Map_StepNavPath(&p->navAgent, &p->mover.pos);
   }
 
-  p->sprite_88.pos = p->mover.pos;
-  p->sprite_88.pos.y += p->floatHeight;
+  p->human.pos = p->mover.pos;
+  p->human.pos.y += p->floatHeight;
 
   if (PlayerSabata_TestFlag35a(p, PFLAG35A_HIDE_SPRITE)) {
-    p->sprite_88.flags |= SPRFLAG_HIDDEN;
+    p->human.flags |= SPRFLAG_HIDDEN;
   } else {
-    p->sprite_88.flags &= ~SPRFLAG_HIDDEN;
+    p->human.flags &= ~SPRFLAG_HIDDEN;
   }
 
   if (PlayerSabata_TestFlag35a(p, PFLAG35A_BLINK)) {
-    p->sprite_88.flags |= SPRFLAG_BLINK_ODD;
+    p->human.flags |= SPRFLAG_BLINK_ODD;
   } else {
-    p->sprite_88.flags &= ~SPRFLAG_BLINK_ODD;
+    p->human.flags &= ~SPRFLAG_BLINK_ODD;
   }
 
   if (PlayerSabata_TestFlag35a(p, PFLAG35A_HIDE_SHADOW)) {
@@ -1866,7 +1795,7 @@ NON_MATCH void Sabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
         p->blockCount = 0;
         p->facing = FUN_08080f20(a, b);
         p->unk_3d2 = 1;
-        b->unk_40 = 100;
+        b->knockbackPower = 100;
         return;
       }
     }
@@ -1881,14 +1810,14 @@ NON_MATCH void Sabata_OnHurt(HitboxData* a, HitboxData* b, Player* p) {
     return;
   }
 
-  p->unk_3e6 = a->unk_40;
+  p->knockbackSpeed = a->knockbackPower;
   if (a->flags & HBFLAG_ANGLE) {
-    p->hitDir = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
+    p->knockbackDir = ((((a->angle + 0x10) & 0xFF) >> 5) + 3) & 7;
   } else {
     s32 dx = a->center.x - b->center.x;
     s32 dz = a->center.z - b->center.z;
 
-    p->hitDir = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
+    p->knockbackDir = (((((((u16)ArcTan2_8(dx, dz) + 0x10) & 0xFF) >> 5) + 3) & 7) + 4) & 7;
   }
 #else
   INCFUNC("asm/func/Sabata_OnHurt.inc");
@@ -1904,7 +1833,7 @@ NON_MATCH void FUN_08084540(Player* p) {
 
   if (v > 0) {
     PlayerSabata_SetFlag35a(p, PFLAG35A_NO_HITBOX);
-    if (p->hurtbox.unk_40 == 0) {
+    if (p->hurtbox.knockbackPower == 0) {
       v--;
       if (v != 0 && p->unk_476 == 0 && ((v >> 2) & 1) != 0) {
         PlayerSabata_SetFlag35a(p, PFLAG35A_HIDE_SPRITE | PFLAG35A_HIDE_SHADOW);
@@ -1928,7 +1857,7 @@ s32 PlayerSabata_Update(Player* p) {
 }
 
 s32 PlayerSabata_Destroy(Player* p) {
-  MainSprite_Remove(&p->sprite_88);
+  MainSprite_Remove(&p->human);
   Hitbox_Unregister(&p->hurtbox);
   Mover_Unlink(&p->mover);
   FUN_0808168c(p);

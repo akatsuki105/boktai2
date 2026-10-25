@@ -1,4 +1,7 @@
+#include "menu.h"
+
 #include "armor.h"
+#include "bg_pltt.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
@@ -7,6 +10,7 @@
 #include "item.h"
 #include "particle.h"
 #include "player.h"
+#include "random.h"
 #include "save.h"
 #include "sound.h"
 #include "sprite.h"
@@ -15,6 +19,7 @@
 #include "video.h"
 #include "vm.h"
 
+// スタートメニューのページ
 #define PAGE_MAP 0
 #define PAGE_ITEM 1
 #define PAGE_VALUABLE 2
@@ -25,20 +30,29 @@
 #define PAGE_CONFIG 7
 #define PAGE_SLEEP 8
 #define PAGE_SAVE 9
+#define PAGE_NUM 10
+
+#define PT_RDJANGO 0  // PLAYER_SOLAR_DJANGO
+#define PT_BDJANGO 1  // PLAYER_DARK_DJANGO, PLAYER_BAT, PLAYER_MOUSE, PLAYER_SLEEPING
+#define PT_SABATA 2   // PLAYER_SABATA
 
 struct MainMenu;
 typedef void(MainMenuFunc)(struct MainMenu* p);  // _Update が p->fn(p) として呼ぶ
 
+// HUD上のクイックチェンジの魔法アイコン
 typedef struct {
-  MainSprite sprite;  // 0x0000
-  s8 unk_60;          // 0x0060, 根拠: MainMenu_ApplyWeapon が ldrsb で読んで配列の添字にする
-  u8 unk_61;          // 0x0061
-  u8 unk_62[2];       // 0x0062, まだ未解析, padding?
-} MMenuSprite100;
-static_assert(sizeof(MMenuSprite100) == 100);
+  s8 idx;             // 0x00, registeredMagic の添字, 負なら空き枠
+  magic8_t id;        // 0x01, 魔法のID, 空き枠は -1
+  u8 unk_02[2];       // 0x02, まだ未解析, padding?
+  MainSprite sprite;  // 0x0004
+} QCMagicSlot;
+static_assert(sizeof(QCMagicSlot) == 100);
 
 typedef struct {
-  u8 unk_0[8];  // 0x000, まだ未解析
+  ParticleGroup* group;  // 0x000, PTCL_GROUP_2
+  u8 unk_4;              // 0x004
+  u8 unk_5;              // 0x005
+  u8 unk_6[2];           // 0x006, まだ未解析
   struct MMenuPtclNode {
     Particle ptcl;           // 0x00, FUN_0808cacc が Particle_Remove に渡す
     u8 unk_28[0x30 - 0x28];  // 0x28, まだ未解析
@@ -55,14 +69,15 @@ static_assert(sizeof(MMenuPtclSet) == 520);
 typedef struct MMenuPtclNode MMenuPtclNode;
 static_assert(sizeof(MMenuPtclNode) == 64);
 
+// HUD上の武器アイコン
 typedef struct {
-  Weapon* weapon;     // 0x0000, 根拠: MainMenu_ApplyWeapon が Player_ApplyWeapon の第2引数に渡す
-  MainSprite sprite;  // 0x0004
-  u8 unk_64;          // 0x0064
-  u8 unk_65;          // 0x0065
-  u8 unk_66[2];       // 0x0066, まだ未解析, padding?
-} MMenuSprite104;
-static_assert(sizeof(MMenuSprite104) == 104);
+  u8 registeredIdx;     // 0x0000, registeredWeapon の添字 (0: 剣, 1: 槍, 2: 槌, 3: 銃), 読み手は (s8) を付けて負を空きと見る
+  u8 inventorySlotIdx;  // 0x0001, このQCスロットの武器のインベントリ上のスロット番号
+  u8 unk_02[2];         // 0x0002, まだ未解析, padding?
+  Weapon* weapon;       // 0x0004, 根拠: MainMenu_ApplyWeapon が Player_ApplyWeapon の第2引数に渡す
+  MainSprite sprite;    // 0x0008
+} QCWeaponSlot;
+static_assert(sizeof(QCWeaponSlot) == 104);
 
 // スタートメニューのインベントリカーソル(スタートメニューの道具,貴重品,武器,防具,魔法 のインベントリで使用)
 typedef struct {
@@ -83,22 +98,36 @@ static_assert(sizeof(InventoryCursor) == 44);
 // このときにキャラと会話すると、 顔アイコンと文字のタイルは表示されるが、テキストボックスが表示されない (会話自体は正常に処理される)
 // 機能としては(今のところ判明してるだけでも) HUD + スタートメニュー + テキストウィンドウ といった感じ
 typedef struct MainMenu {
-  Entity e;                      // 0x0000, ENTITY_UNK_12
-  Tilemaps* tm_18;               // 0x0018, TILEMAP_A413
-  Tilemaps* tm_1c;               // 0x001C, TILEMAP_A7D7
-  Tilemaps* tm_20;               // 0x0020, TILEMAP_A7E7
-  Tilemaps* tm_24;               // 0x0024, TILEMAP_A7F7
-  void* unk_28;                  // 0x0028
-  TilemapFile* tm_2c;            // 0x002C, TILEMAP_83C0
-  rgb555* bgp_30;                // 0x0030, BGP_EFDA
-  rgb555* bgp_34;                // 0x0034, BGP_ECBF
-  rgb555* bgp_38;                // 0x0038, BGP_5F5E
-  rgb555* bgp_3c;                // 0x003C, BGP_EAA8
-  u8 unk_40[0x54 - 0x40];        // 0x0040, まだ未解析
-  u8* unk_54;                    // 0x0054, FUN_0808f170 が MessageWindow_Start に渡す
-  u8* unk_58;                    // 0x0058, 根拠: MainMenu_ShowLineInstant が MessageWindow_Start に渡す
-  s32* unk_5c;                   // 0x005C, gStat->lv で引く表, weapon_080993c4 がその10倍を返す
-  MainSpriteGfx gfx[9];          // 0x0060
+  Entity e;            // 0x0000, ENTITY_UNK_12
+  Tilemaps* tm_18;     // 0x0018, TILEMAP_A413
+  Tilemaps* tm_1c;     // 0x001C, TILEMAP_A7D7
+  Tilemaps* tm_20;     // 0x0020, TILEMAP_A7E7
+  Tilemaps* tm_24;     // 0x0024, TILEMAP_A7F7
+  void* unk_28;        // 0x0028
+  TilemapFile* tm_2c;  // 0x002C, TILEMAP_83C0
+  rgb555* bgp_30;      // 0x0030, BGP_EFDA
+  rgb555* bgp_34;      // 0x0034, BGP_ECBF
+  rgb555* bgp_38;      // 0x0038, BGP_5F5E
+  rgb555* bgp_3c;      // 0x003C, BGP_EAA8
+  char* itemNames;     // 0x0040, '.i', String_1608
+  char* weaponNames;   // 0x0044, '.w', String_170D
+  char* armorNames;    // 0x0048, '.a', String_17B7
+  char* magicNames;    // 0x004C, '.m', String_1802
+  char* areaNames;     // 0x0050, '.A', String_1826
+  char* loanTexts;     // 0x0054, '.l', String_053B, 暗黒カードを使ったに表示されるテキスト
+  char* etcTexts;      // 0x0058, '.E', String_1880, その他のテキスト
+  u32* expTable;       // 0x005C, '.e', 経験値テーブル(レベルごとの必要経験値 の 1/10)
+  struct {
+    MainSpriteGfx smenu;         // SPRITE_UI_START_MENU
+    MainSpriteGfx map;           // SPRITE_UI_MAP
+    MainSpriteGfx icons;         // SPRITE_INVENTORY_ICONS
+    MainSpriteGfx loans;         // SPRITE_UI_DARKLOAN
+    MainSpriteGfx portraits;     // SPRITE_PORTRAITS
+    MainSpriteGfx player;        // SPRITE_DJANGO_SABATA
+    MainSpriteGfx rita;          // SPRITE_RITA
+    MainSpriteGfx carmilla;      // SPRITE_CARMILLA
+    MainSpriteGfx link;          // SPRITE_UI_LINK
+  } gfx;                         // 0x0060
   BgState savedBg1;              // 0x0180
   u16 savedTilemap1[1024];       // 0x01B0
   u16 unk_9b0;                   // 0x09B0
@@ -115,11 +144,11 @@ typedef struct MainMenu {
   u8 playerIdx;                  // 0x09DF, gPlayerPtr の添字
   Player* player;                // 0x09E0
   u8 unk_9e4[0x9EC - 0x9E4];     // 0x09E4, まだ未解析
-  u16 unk_9ec;                   // 0x09EC
-  u16 unk_9ee;                   // 0x09EE
+  u16 updateTimer;               // 0x09EC, updateCallback を差し替えると 0 に戻り, その関数が毎フレーム +1 する
+  u16 stateTimer;                // 0x09EE, fn を差し替えると 0 に戻り, 各状態関数が毎フレーム +1 する
   MainMenuFunc* updateCallback;  // 0x09F0
   MainMenuFunc* fn;              // 0x09F4
-  s8 unk_9f8;                    // 0x09F8
+  bool8 hidden;                  // 0x09F8, MainMenu_SetState の hide, sprites[1] と sprites[2] を隠しているか
   u8 unk_9f9;                    // 0x09F9, まだ未解析, padding?
   u16 id;                        // 0x09FA
   u16 unk_9fc;                   // 0x09FC
@@ -161,32 +190,39 @@ typedef struct MainMenu {
   u8 unk_a99;                    // 0x0A99
   u8 unk_a9a;                    // 0x0A9A
   u8 unk_a9b;                    // 0x0A9B
-  u16* unk_a9c;                  // 0x0A9C
+  u16* unk_a9c;                  // 0x0A9C, おそらくカウントダウンの残りフレーム数を指すポインタ
   MainSprite unk_aa0[2];         // 0x0AA0
-  AuxSprite sprite_b60;          // 0x0B60, 根拠: MainMenu1P_RemoveSprites が AuxSprite_Remove に渡す
-  u8 unk_b8c[0xBB8 - 0xB8C];     // 0x0B8C, まだ未解析
-  AuxSprite sprite_bb8;          // 0x0BB8, 根拠: 同上
-  AuxSpriteGfx unk_be4;          // 0x0BE4
-  u8 unk_c00;                    // 0x0C00
-  u8 unk_c01;                    // 0x0C01
-  s8 unk_c02;                    // 0x0C02, unk_c0c の1始まりの添字, 負なら選択なし
-  u8 unk_c03;                    // 0x0C03
-  u32 unk_c04;                   // 0x0C04
-  u8 unk_c08;                    // 0x0C08
-  u8 unk_c09;                    // 0x0C09
-  u8 unk_c0a[0xC0C - 0xC0A];     // 0x0C0A, まだ未解析
-  MMenuSprite100 unk_c0c[4];     // 0x0C0C
-  u8 unk_d9c;                    // 0x0D9C
-  u8 unk_d9d;                    // 0x0D9D
-  u8 unk_d9e[0xDA0 - 0xD9E];     // 0x0D9E, まだ未解析
-  MMenuSprite104 unk_da0[4];     // 0x0DA0
-  u8 unk_f40[0xF56 - 0xF40];     // 0x0F40, まだ未解析
+  AuxSprite sprite_b60;          // 0x0B60, ->gfx_b8c
+  AuxSpriteGfx gfx_b8c;          // 0x0B8C, SPRITE_BAT
+  u8 unk_ba8[0xBB8 - 0xBA8];     // 0x0BA8, まだ未解析
+  AuxSprite stand;               // 0x0BB8, ->standGfx
+  AuxSpriteGfx standGfx;         // 0x0BE4, SPRITE_SOLAR_STATION (暗黒カードの太陽スタンド)
+  struct {
+    u8 iconNums;           // 0x0C00, クイックチェンジのスロット数(= 魔法装備数)
+    u8 unk_c01;            // 0x0C01, まだ未解析
+    s8 idx;                // 0x0C02, 現在選択中のインデックス (0..3), 負なら選択なし
+    u8 unk_c03;            // 0x0C03
+    s16* equippedIdx;      // 0x0C04, gStat->equippedMagicIdx (サバタなら sabataMagicIdx) を指す
+    QCMagicSlot slots[4];  // 0x0C08, HUD上の魔法アイコン, 4つ分
+  } qcMagic;               // 0x0C00, 魔法のクイックチェンジ(HUD上)
+  struct {
+    s8 idx;                 // 0x0D98, 現在選択中のインデックス (0..3)
+    s8 unk_d99;             // 0x0D99
+    u8 unk_d9a[2];          // 0x0D9A, まだ未解析
+    QCWeaponSlot slots[4];  // 0x0D9C, HUD上の武器アイコン, 4つ分
+  } qcWeapon;
+  u8 qcCursorPulseCounter;       // 0x0F3C
+  u8 unk_f3d;                    // 0x0F3D
+  u8 unk_f3e[2];                 // 0x0F3E, まだ未解析
+  u8 qcWeaponIconNums;           // 0x0F40, qcMagic.iconNums の武器版
+  u8 unk_f41;                    // 0x0F41
+  u8 unk_f42[0xF56 - 0xF42];     // 0x0F42, まだ未解析
   u8 page;                       // 0x0F56, スタートメニューのページ番号
   u8 unk_f57;                    // 0x0F57, まだ未解析
-  u8 slots[10];                  // 0x0F58, 非0 のところだけ選べる, FUN_0809a93c / FUN_0809a978 が前後の非0を循環で探す
-  u8 unk_f62[0xF64 - 0xF62];     // 0x0F62, まだ未解析
-  MainSprite sprites[116];       // 0x0F64, 根拠: MainMenu1P_RemoveSprites が 116個ぶん MainSprite_Remove に渡す
-  u8 unk_3ae4;                   // 0x3AE4
+  bool8 availPages[PAGE_NUM];    // 0x0F58, '.o', スタートメニューで選択可能なページ, 指定がなければ全ページ選択可
+  u8 unk_f62[2];                 // 0x0F62, まだ未解析, padding?
+  MainSprite sprites[116];       // 0x0F64, MainMenu1P_RemoveSprites で 116回のループを回して処理するので配列と思われる
+  u8 unk_3ae4;                   // 0x3AE4, メニューを閉じて効果を実行する要求
   u8 unk_3ae5[0x3AE6 - 0x3AE5];  // 0x3AE5, まだ未解析
   u8 unk_3ae6;                   // 0x3AE6
   u8 unk_3ae7;                   // 0x3AE7
@@ -211,20 +247,28 @@ typedef struct MainMenu {
   MMenuPtclSet ptclSets[2];      // 0x3B8C, FUN_0808cacc が2組とも Particle_Remove で片付ける
   bool8 inValuableInventory;     // 0x3F9C
   u8 unk_3f9d;                   // 0x3F9D
-  u8 unk_3f9e;                   // 0x3F9E
-  u8 unk_3f9f;                   // 0x3F9F
-  u8 unk_3fa0[2];                // 0x3FA0
-  u16 unk_3fa2;                  // 0x3FA2, 根拠: ItemEffect_Loan が 0 を入れる
-  u8 unk_3fa4[0x3FAC - 0x3FA4];  // 0x3FA4
+  u8 vitaminStat;                // 0x3F9E, IET_VITAMINS で上げるステータス番号, FUN_08092bf0 が +255 してメッセージ行IDにする
+  u8 vitaminAmount;              // 0x3F9F, IET_VITAMINS で上げる量, 合計99で頭打ちになる前の値
+  u8 unk_3fa0;                   // 0x3FA0, '.p'
+  u8 unk_3fa1;                   // 0x3FA1
+  s16 effectAmount;              // 0x3FA2, アイテム使用時のポップアップに出す効果量, FUN_0809296c が符号付きで読んで FUN_08092868 に渡す
+  u8 unk_3fa4[2];                // 0x3FA4
+  u16 targetHP;                  // 0x3FA6, 変化後のHP, FUN_08093608 が player->hp をここまで1ずつ動かす
+  u8 unk_3fa8[2];                // 0x3FA8
+  u16 targetEne;                 // 0x3FAA, 変化後のEne, 同上
   u8 unk_3fac;                   // 0x3FAC, 根拠: ItemEffect_Bugs が 1 を入れる
   u8 unk_3fad;                   // 0x3FAD, 根拠: 同上, 引数の値が入る
   u16 unk_3fae;                  // 0x3FAE, 根拠: 同上, 第3引数が入る
   u8 unk_3fb0;                   // 0x3FB0, 根拠: ItemEffect_Warp が 1 を入れる
   u8 unk_3fb1;                   // 0x3FB1, 根拠: 同上, 引数の値が入る
-  u8 unk_3fb2[0x3FB8 - 0x3FB2];  // 0x3FB2
+  u8 unk_3fb2[2];                // 0x3FB2
+  u32 unk_3fb4;                  // 0x3FB4, '.R'
   u8 unk_3fb8;                   // 0x3FB8, 根拠: ItemEffect_AOE が 1 を入れる
   u8 unk_3fb9;                   // 0x3FB9, 根拠: 同上, 引数の値が入る
-  u8 unk_3fba[0x3FDC - 0x3FBA];  // 0x3FBA
+  u8 unk_3fba;                   // 0x3FBA
+  u8 unk_3fbb;                   // 0x3FBB, 根拠: ItemEffect_HPMP が 0 を入れる
+  u32 unk_3fbc;                  // 0x3FBC, '.D'
+  Weapon weapon;                 // 0x3FC0, WEAPON_GUN_DEL_HELL の内容が入る
   s8 unk_3fdc;                   // 0x3FDC, unk_3fe0 の添字, この枠だけは選べない
   u8 unk_3fdd[0x3FE0 - 0x3FDD];  // 0x3FDD, まだ未解析
   s8 unk_3fe0[16];               // 0x3FE0, 枠ごとの防具ID, 負なら空き
@@ -232,14 +276,20 @@ typedef struct MainMenu {
   u16 unk_4000;                  // 0x4000, 残りのステータスポイント, 確定時に gStat->statusPoint へ書き戻す
   u8 unk_4002[0x4008 - 0x4002];  // 0x4002, まだ未解析
   u8 unk_4008[4];                // 0x4008, 画面で振り分けた分, 確定時に gStat->stats へ足す
-  u8 unk_400c[0x4018 - 0x400C];  // 0x400C, まだ未解析
+  u8 unk_400c;                   // 0x400C
+  u8 unk_400d;                   // 0x400D
+  u8 controlUp;                  // 0x400E
+  u8 menuTextSpeed;              // 0x400F, 0: 遅い, 1: 普通, 2: 速い (なぜか gStat->textSpeed をそのまま使わない)
+  bool8 markerEnabled;           // 0x4010
+  u8 unk_4011[3];                // 0x4011, まだ未解析
+  s32 textPanelID_4014;          // 0x4014, 6,4 の位置の 10x2 のテキストパネル
   s32 textPanelID;               // 0x4018, TextPanel_Hide に渡す
   u8 unk_401c;                   // 0x401C, まだ未解析
   u8 unk_401d;                   // 0x401D, 根拠: ItemEffect_Loan が 1 を入れる
   u8 unk_401e;                   // 0x401E, 根拠: FUN_0808f95c が FUN_0808f140 の戻り値を入れる
-  u8 unk_401f;                   // 0x401F, 根拠: FUN_0808f190 が非0かどうかを見る
+  bool8 unk_401f;                // 0x401F, '.V'
   u8 unk_4020[0x4028 - 0x4020];  // 0x4020, まだ未解析
-  u32 scriptID;                  // 0x4028, 0 以外なら VM_ExecByID で実行する
+  u32 scriptID;                  // 0x4028, '.d'
   u8 (*unk_402c[3])[16];         // 0x402C, 1件16バイトの表, +0x0F が MessageWindow_ShowLine に渡す行番号
   u8 unk_4038;                   // 0x4038, unk_402c[0] の添字
   u8 unk_4039;                   // 0x4039, 1 なら unk_402c の表に沿って BG1 を差し替える
@@ -255,19 +305,24 @@ static_assert(sizeof(MainMenu) == 16476);
 
 IWRAM_DATA MainMenu* gMainMenu = NULL;  // 0x0300013C
 
-extern u16 u16_03002c10;
+COMMON_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
+COMMON_DATA u8 u8_03002c12[0x03002C14 - 0x03002C12] = {};  // todo
+COMMON_DATA u16 gSavedMenuPage = 0;                        // 0x03002C14, 根拠: MainMenu1P_Destroy が MainMenu.page を書き込む
+COMMON_DATA u8 u8_03002c16[0x03002C18 - 0x03002C16] = {};  // todo
+COMMON_DATA u16 u16_03002c18 = 0;                          // 0x03002C18, FUN_0809c040 が 1 を入れる
+COMMON_DATA u8 u8_03002c1a[0x03002C3C - 0x03002C1A] = {};  // todo
 
 #define BGMAP_BGP13 (13 << 12)
+#define BGMAP_BGP15 (15 << 12)
 
-void SleepGame(void);  // src/code_0823cd04.c
+void SleepGame(void);
 
 #define INVENTORY_SLOT(p, colX, rowY) ((p)->slotmap[(rowY) + (colX) * 4])  // InventoryCursor で カーソルの位置に対応するスロット番号を取得するマクロ
 
-static inline void DisableEntityFlags(u32 flags) { gEntityDisableFlags |= flags; }
-static inline void EnableEntityFlags(u32 flags) { gEntityDisableFlags &= ~flags; }
+// BGパレットの行13 (色208) 以降を指す
+static inline rgb555* BgPlttRow13(BgPlttFile* f) { return &f->body[13 * 16]; }
 
-// 次の描画から BG を消す
-static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
+static inline Player* GetPlayer(s32 idx) { return gPlayerPtr[idx]; }
 
 s32 FUN_08050d64(void);
 s32 FUN_08050d7c(void);
@@ -306,11 +361,22 @@ const u16 u16_ARRAY_085ac064[16] = {
 
 void FUN_0808a33c(MainMenu* p, MainMenuFunc* fn) {
   p->updateCallback = fn;
-  p->unk_9ec = 0;
+  p->updateTimer = 0;
 }
 
 // 状態関数を差し替えて, hide で2枚のスプライトの表示/非表示を切り替える
-NAKED void MainMenu_SetState(MainMenu* p, MainMenuFunc* fn, bool32 hide) { INCFUNC("asm/func/MainMenu_SetState.inc"); }
+void MainMenu_SetState(MainMenu* p, MainMenuFunc* fn, bool32 hide) {
+  p->fn = fn;
+  p->stateTimer = 0;
+  p->hidden = hide;
+  if (p->hidden) {
+    p->sprites[1].flags |= SPRFLAG_HIDDEN;
+    p->sprites[2].flags |= SPRFLAG_HIDDEN;
+  } else {
+    p->sprites[1].flags &= ~SPRFLAG_HIDDEN;
+    p->sprites[2].flags &= ~SPRFLAG_HIDDEN;
+  }
+}
 
 // BG0 をタイルマップで組み直して, パレット行13〜15 を差し替える
 void FUN_0808a3c4(MainMenu* p, TilemapFile* tilemap, s16 param_3, s32 layerIdx, const rgb555* pltt) {
@@ -319,10 +385,10 @@ void FUN_0808a3c4(MainMenu* p, TilemapFile* tilemap, s16 param_3, s32 layerIdx, 
   Video_SetupBGLayout(0, param_3, tilemap, 0, 0, 1, &bgIndex);
   Video_SetBGLayer(0, tilemap, layerIdx);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
-  CpuCopy32(pltt, &gBgPlttBuffer[208], 96);
+  CpuCopy32(pltt, &gBgPlttBuffer[13 * 16], 48 * sizeof(rgb555));
 }
 
-BgMapEntry* FUN_0808a420(s32 bg, u32 x, u32 y) {
+static BgMapEntry* MainMenu_GetBgMapAddr(s32 bg, u32 x, u32 y) {
   BgState* s = &gBgStates[bg];
   BgMapEntry* map = s->tilemap;
 
@@ -353,7 +419,7 @@ void FUN_0808a458(s32 brightness, s32 color) {
   gObjBrightness = brightness;
 }
 
-s32 MinS32(s32 a, s32 b) {
+static s32 MinS32(s32 a, s32 b) {
   s32 min = b;
   if (a <= b) {
     min = a;
@@ -398,7 +464,7 @@ NON_MATCH void FUN_0808b30c(s32 value, s32 place, u32 x, u32 y, s32 kind) {
     base = 0x91;
   }
 
-  map = FUN_0808a420(0, x, y);
+  map = MainMenu_GetBgMapAddr(0, x, y);
   while (place > 0) {
     s32 digit = Div(value, place);
     BgMapEntry tile = digit + base;
@@ -416,7 +482,7 @@ NON_MATCH void FUN_0808b30c(s32 value, s32 place, u32 x, u32 y, s32 kind) {
 // 残差1命令, 原典は 0xF090 のプール定数をループ変数の初期化より前に作る (FUN_0808b97c と同じ)
 NON_MATCH void FUN_0808b360(s32 count, u32 x, u32 y) {
 #ifdef NONMATCHING_C
-  BgMapEntry* entry = FUN_0808a420(0, x, y);
+  BgMapEntry* entry = MainMenu_GetBgMapAddr(0, x, y);
 
   if (count > 0) {
     s32 n = count;
@@ -470,8 +536,8 @@ void FUN_0808b6fc(MainMenu* p, s32 param_2) {
   p->unk_3b25 = param_2;
 
   anim = (u8)param_2 != 0 ? 4 : 5;
-  MainSprite_SetAnim(&p->sprites[15], p->gfx, anim, 1, 0);
-  MainSprite_AdvanceAnim(&p->sprites[15], p->gfx);
+  MainSprite_SetAnim(&p->sprites[15], &p->gfx.smenu, anim, 1, 0);
+  MainSprite_AdvanceAnim(&p->sprites[15], &p->gfx.smenu);
 }
 
 NAKED s32 FUN_0808b760(MainMenu* p) { INCFUNC("asm/func/FUN_0808b760.inc"); }
@@ -484,13 +550,13 @@ void FUN_0808b82c(MainMenu* p) {
     p->sprites[i].flags |= SPRFLAG_HIDDEN;
   }
   p->sprite_b60.flags |= SPRFLAG_HIDDEN;
-  p->sprite_bb8.flags |= SPRFLAG_HIDDEN;
+  p->stand.flags |= SPRFLAG_HIDDEN;
 }
 
-// sprite_f64 を表示してポーズを差し替える
-void FUN_0808b86c(MainMenu* p, u32 poseIdx) {
+// 現在のページ名を表示する
+void MainMenu_ShowPageName(MainMenu* p, s32 page) {
   p->sprites[0].flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetPose(&p->sprites[0], p->gfx, poseIdx + 0x29, 1);
+  MainSprite_SetPose(&p->sprites[0], &p->gfx.smenu, SMENU_PAGE(page), 1);
 }
 
 NAKED void FUN_0808b8a4(MainMenu* p) { INCFUNC("asm/func/FUN_0808b8a4.inc"); }
@@ -503,7 +569,7 @@ NON_MATCH void FUN_0808b97c(s32 param_1, s32 param_2, s32 param_3, s32 param_4) 
   s32 i;
 
   for (i = 0; i < param_4; i++) {
-    BgMapEntry* entry = FUN_0808a420(0, param_1, param_2 + i);
+    BgMapEntry* entry = MainMenu_GetBgMapAddr(0, param_1, param_2 + i);
 
     if (param_3 > 0) {
       s32 n = param_3;
@@ -526,7 +592,7 @@ NON_MATCH void FUN_0808b9c4(s32 param_1, s32 param_2, s32 param_3, s32 param_4) 
   s32 i;
 
   for (i = 0; i < param_4; i++) {
-    BgMapEntry* entry = FUN_0808a420(0, param_1, param_2 + i);
+    BgMapEntry* entry = MainMenu_GetBgMapAddr(0, param_1, param_2 + i);
 
     if (param_3 > 0) {
       s32 n = param_3;
@@ -557,7 +623,7 @@ void FUN_0808ba20(WorldPos* pos, s16* target, s32 weight) {
 // プレイヤーの状態に応じたパレットIDを返す (毒, カーモス, 通常)
 s32 FUN_0808ba64(MainMenu* p) {
   s32 i;
-  if (p->player->badCondTimer[1] != 0) {  // 毒
+  if (p->player->badCondTimer[BAD_POISON] != 0) {  // 毒
     i = 2;
   } else {
     i = (KAAMOS(p->player->isSabata) > 0) ? 6 : 0;
@@ -583,7 +649,7 @@ void MainMenu_ShowBottomLine(u8* pc, s32 line, s32 playSound) {
     PlaySound_082406e0(SE_CHOICE);
   }
 
-  FUN_08049e5c();
+  Marquee_Clear();
   MessageWindow_Start(pc);
   MessageWindow_SetRect(0, 16, 30, 2);
   MessageWindow_ShowLine(line);
@@ -636,37 +702,50 @@ NAKED void FUN_0808c95c(MainMenu* p, s32 param_2, s16 param_3, s16 param_4) { IN
 
 // 2組のパーティクルを描画リストから全部外す
 void FUN_0808cacc(MainMenu* p) {
-  s32 i;
+  s32 i, j;
 
   for (i = 0; i < 2; i++) {
-    s32 j;
-
     for (j = 0; j < 8; j++) {
       Particle_Remove(&p->ptclSets[i].nodes[j].ptcl);
     }
   }
 }
 
-NAKED void MainMenu1P_0808cb00(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0808cb00.inc"); }
+void MainMenu1P_AddParticles(MainMenu* p) {
+  s32 i, j;
+
+  for (i = 0; i < 2; i++) {
+    MMenuPtclSet* set = &p->ptclSets[i];
+    SpriteFlags flags = SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST;
+    if (i == 0) flags = SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD;
+    set->group = GetParticleGroup(PTCL_GROUP_2);
+    set->unk_4 = 0;
+    set->unk_5 = 0;
+    for (j = 0; j < 8; j++) {
+      Particle_Add(&set->nodes[j].ptcl, set->group, flags);
+      Particle_SetOffset(&set->nodes[j].ptcl, -4, -4);
+      set->nodes[j].ptcl.priority = 0;
+      set->nodes[j].unk_38 = 0;
+    }
+  }
+}
 
 // BG0 の先頭9タイルに 0xA0 からの連番を並べる
 void FUN_0808cb90(MainMenu* p) {
   if (!p->unk_a30) {
-    BgMapEntry* entry = FUN_0808a420(0, 0, 0);
+    BgMapEntry* entry = MainMenu_GetBgMapAddr(0, 0, 0);
     s32 i;
-
     for (i = 0; i < 9; i++) {
-      *entry = (i + 0xA0) | BGMAP_BGP13;
+      *entry = BGMAP_BGP13 | (160 + i);
       entry++;
     }
-
     p->unk_a30 = 1;
   }
 }
 
 void FUN_0808cbd8(MainMenu* p) {
   if (p->unk_a30) {
-    BgMapEntry* entry = FUN_0808a420(0, 0, 0);
+    BgMapEntry* entry = MainMenu_GetBgMapAddr(0, 0, 0);
     s32 i;
 
     for (i = 0; i < 9; i++) {
@@ -724,11 +803,27 @@ void FUN_0808cffc(MainMenu* p) {
 
 NAKED void FUN_0808d01c(MainMenu* p) { INCFUNC("asm/func/FUN_0808d01c.inc"); }
 
-NAKED void MainMenu1P_0808d0c0(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0808d0c0.inc"); }
+void MainMenu1P_SetupBg(MainMenu* p) {
+  p->tm_18 = GetFile(DIR_TILE_MAP, TILEMAP_A413);
+  p->tm_1c = GetFile(DIR_TILE_MAP, TILEMAP_A7D7);
+  p->tm_20 = GetFile(DIR_TILE_MAP, TILEMAP_A7E7);
+  p->tm_24 = GetFile(DIR_TILE_MAP, TILEMAP_A7F7);
+  p->tm_2c = GetFile(DIR_TILE_MAP, TILEMAP_83C0);
+  p->unk_9fe = 0;
+  p->bgp_30 = BgPlttRow13(GetBgPlttFile(BGP_EFDA));
+  p->bgp_34 = BgPlttRow13(GetBgPlttFile(BGP_ECBF));
+  p->bgp_38 = BgPlttRow13(GetBgPlttFile(BGP_5F5E));
+  p->bgp_3c = BgPlttRow13(GetBgPlttFile(BGP_EAA8));
+  FUN_0808a3c4(p, p->tm_18, 0, 0, p->bgp_30);
+  p->unk_a94 = 0;
+  p->unk_a2a = 0;
+  FUN_0808cf64(p);
+  FUN_0808d01c(p);
+}
 
 // クイックチェンジのカーソル点滅処理
 void MainMenu_QC_PulseCursor(MainMenu* p) {
-  u8 t = p->unk_da0[3].unk_64;
+  u8 t = p->qcCursorPulseCounter;
   rgb555 color = RGB(31, 0, 0);
 
   if (t > 9) {
@@ -747,9 +842,9 @@ void MainMenu_QC_PulseCursor(MainMenu* p) {
     }
   }
 
-  p->unk_da0[3].unk_64++;
-  if (p->unk_da0[3].unk_64 >= 50) {
-    p->unk_da0[3].unk_64 = 0;
+  p->qcCursorPulseCounter++;
+  if (p->qcCursorPulseCounter >= 50) {
+    p->qcCursorPulseCounter = 0;
   }
   gBgPlttBuffer[(13 * 16) + 2] = color;  // BGP13.2
 }
@@ -761,8 +856,8 @@ void FUN_0808d268(void) {
   s32 y;
 
   for (y = 0; y < 4; y++) {
-    BgMapEntry* left = FUN_0808a420(0, 0, y + 16);
-    BgMapEntry* right = FUN_0808a420(0, 26, y + 16);
+    BgMapEntry* left = MainMenu_GetBgMapAddr(0, 0, y + 16);
+    BgMapEntry* right = MainMenu_GetBgMapAddr(0, 26, y + 16);
     s32 i;
 
     for (i = 0; i < 4; i++) {
@@ -774,76 +869,242 @@ void FUN_0808d268(void) {
 
 NAKED void FUN_0808d2ac(MainMenu* p) { INCFUNC("asm/func/FUN_0808d2ac.inc"); }
 
-// 4組のスプライトを隠す
-void MainMenu_HideSprites(MainMenu* p) {
+// QC用のスプライトを非表示にする
+void MainMenu_HideQCIcons(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    p->unk_c0c[i].sprite.flags |= SPRFLAG_HIDDEN;
-    p->unk_da0[i].sprite.flags |= SPRFLAG_HIDDEN;
+    p->qcMagic.slots[i].sprite.flags |= SPRFLAG_HIDDEN;
+    p->qcWeapon.slots[i].sprite.flags |= SPRFLAG_HIDDEN;
   }
 }
 
 NAKED void FUN_0808d3d4(MainMenu* p) { INCFUNC("asm/func/FUN_0808d3d4.inc"); }
 
 // スクロール位置から行の表示Y座標を出す, 画面外に出たら1周ぶん下へ回す
-NON_MATCH s32 FUN_0808d49c(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5) {
+NON_MATCH s32 MainMenu_CalcQCIconY(MainMenu* p, s32 i, s32 selectedIdx, s32 iconNums, s32 param_5) {
 #ifdef NONMATCHING_C
-  s32 colX = Mod(param_4 + param_2 - param_3, param_4);
+  s32 col = Mod(iconNums + i - selectedIdx, iconNums);
   s32 y = 136 - param_5 * 3;
 
-  y -= colX * 24;
-  if (y < 136 - (param_4 - 1) * 24) {
-    y += param_4 * 24;
+  y -= col * 24;
+  if (y < 136 - (iconNums - 1) * 24) {
+    y += iconNums * 24;
   }
   return y;
 #else
-  INCFUNC("asm/func/FUN_0808d49c.inc");
+  INCFUNC("asm/func/MainMenu_CalcQCIconY.inc");
 #endif
 }
 
-NAKED void FUN_0808d4dc(MainMenu* p) { INCFUNC("asm/func/FUN_0808d4dc.inc"); }
+// 各武器アイコンの絵柄を装備中の武器に, 縦位置を選択中インデックスからの並び順に合わせる
+void MainMenu_RefreshQCWeaponIcons(MainMenu* p) {
+  s32 i;
 
-NAKED void FUN_0808d564(MainMenu* p) { INCFUNC("asm/func/FUN_0808d564.inc"); }
+  for (i = 0; i < p->qcWeaponIconNums; i++) {
+    if (p->qcWeapon.slots[i].weapon == NULL) {
+      MainSprite_SetPose(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, 0, 1);
+    } else {
+      MainSprite_SetPose(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, ICON_WEAPON(p->qcWeapon.slots[i].weapon->id), 1);
+    }
+    p->qcWeapon.slots[i].sprite.pos.y = MainMenu_CalcQCIconY(p, i, p->qcWeapon.idx, p->qcWeaponIconNums, 0);
+  }
+}
 
-NAKED void FUN_0808d5cc(MainMenu* p) { INCFUNC("asm/func/FUN_0808d5cc.inc"); }
+// 各魔法アイコンの絵柄を登録中の魔法に, 縦位置を選択中インデックスからの並び順に合わせる
+void MainMenu_RefreshQCMagicIcons(MainMenu* p) {
+  s32 i;
 
-NAKED void FUN_0808d774(MainMenu* p) { INCFUNC("asm/func/FUN_0808d774.inc"); }
+  for (i = 0; i < p->qcMagic.iconNums; i++) {
+    QCMagicSlot* slot = &p->qcMagic.slots[i];
+
+    MainSprite_SetPose(&slot->sprite, &p->gfx.icons, ICON_MAGIC(slot->id), 1);
+    slot->sprite.pos.y = MainMenu_CalcQCIconY(p, i, p->qcMagic.idx, p->qcMagic.iconNums, 0);
+  }
+}
+
+// 残差1箇所2命令 (187/187, 同じ命令が同じ順), 原典は &qcWeapon.slots[n] を添字レジスタ r0 に上書きで作るが, こちらは r1 に作って r0 を残す
+// Tier A-C 試済 (分岐順の入替, u8+（s8)キャスト, slot ポインタのローカル化, 宣言順, ブロックローカル化)
+NON_MATCH void MainMenu_BuildQCWeaponSlots(MainMenu* p) {
+#ifdef NONMATCHING_C
+  s32 i;
+  s32 n = 0;
+  bool32 gunAdded;
+  QCWeaponSlot* slot;
+
+  p->qcWeapon.idx = -1;
+  gunAdded = FALSE;
+
+  if (p->player->kind != PLAYER_SABATA) {
+    for (i = 0; i < 4; i++) {
+      bool32 add = FALSE;
+      Weapon* w = NULL;
+      s32 inventorySlotIdx = -1;
+
+      if (REGISTERED_WEAPON(i) >= 0) {
+        w = GetWeapon(REGISTERED_WEAPON(i));
+        inventorySlotIdx = REGISTERED_WEAPON(i);
+        add = TRUE;
+      } else {
+        bool32 isGunSlot = FALSE;
+
+        if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+          if (!gunAdded) {
+            isGunSlot = TRUE;
+          }
+        } else if (i == 3) {
+          isGunSlot = TRUE;
+        }
+        if (isGunSlot) {
+          w = NULL;
+          gunAdded = TRUE;
+          add = TRUE;
+        }
+      }
+
+      if (add) {
+        slot = &p->qcWeapon.slots[n];
+        slot->registeredIdx = i;
+        slot->inventorySlotIdx = inventorySlotIdx;
+        slot->weapon = w;
+        if (i == gStat->equippedWeaponIdx) {
+          p->qcWeapon.idx = n;
+        }
+        n++;
+      }
+    }
+  } else {
+    slot = p->qcWeapon.slots;
+    slot->registeredIdx = 3;
+    slot->inventorySlotIdx = 0;
+    slot->weapon = &p->weapon;
+    p->qcWeapon.idx = 0;
+    n = 1;
+  }
+
+  p->qcWeaponIconNums = n;
+  if (n < 4) {
+    slot = &p->qcWeapon.slots[n];
+    do {
+      slot->registeredIdx |= 0xFF;
+      slot->inventorySlotIdx |= 0xFF;
+      slot->weapon = NULL;
+      slot++;
+      n++;
+    } while (n < 4);
+  }
+
+  if (!(gFlag030047a4 & FLAG030047A4_UNK_12) && p->qcWeapon.idx < 0) {
+    s32 idx = 0;
+
+    gStat->equippedWeaponIdx = 3;
+    slot = p->qcWeapon.slots;
+    for (i = 0; i < p->qcWeaponIconNums; i++) {
+      if ((s8)slot->registeredIdx == 3) {
+        p->qcWeapon.idx = idx;
+        return;
+      }
+      if ((s8)slot->registeredIdx >= 0) {
+        idx++;
+      }
+      slot++;
+    }
+  }
+#else
+  INCFUNC("asm/func/MainMenu_BuildQCWeaponSlots.inc");
+#endif
+}
+
+NON_MATCH void MainMenu_BuildQCMagicSlots(MainMenu* p) {
+#ifdef NONMATCHING_C
+  s32 n = 0;
+  s32 i;
+
+  p->qcMagic.idx = -1;
+
+  if (p->player->kind != PLAYER_SABATA) {
+    p->qcMagic.equippedIdx = &gStat->equippedMagicIdx;
+    for (i = 0; i < 4; i++) {
+      if (gStat->registeredMagic[i] >= 0) {
+        QCMagicSlot* slot = &p->qcMagic.slots[n];
+
+        slot->idx = i;
+        slot->id = gStat->registeredMagic[i];
+        if (i == *p->qcMagic.equippedIdx) {
+          p->qcMagic.idx = n;
+        }
+        n++;
+      }
+    }
+  } else {
+    p->qcMagic.equippedIdx = &gStat->sabataMagicIdx;
+    for (i = 0; i < 2; i++) {
+      p->qcMagic.slots[n].idx = i;
+      p->qcMagic.slots[n].id = (i == 0) ? MAGIC_ZERO_SHIFT : MAGIC_BLACK_SUN;
+      if (i == *p->qcMagic.equippedIdx) {
+        p->qcMagic.idx = n;
+      }
+      n++;
+    }
+  }
+
+  p->qcMagic.iconNums = n;
+  while (n < 4) {
+    p->qcMagic.slots[n].idx |= 0xFF;
+    p->qcMagic.slots[n].id |= 0xFF;
+    n++;
+  }
+
+  if (p->qcMagic.iconNums != 0 && p->qcMagic.idx < 0) {
+    for (i = 1; i < 4; i++) {
+      if (gStat->registeredMagic[(*p->qcMagic.equippedIdx + i) & 3] >= 0) {
+        s32 j;
+
+        *p->qcMagic.equippedIdx = (*p->qcMagic.equippedIdx + i) & 3;
+        for (j = 0; j < 4; j++) {
+          if (p->qcMagic.slots[j].idx == *p->qcMagic.equippedIdx) {
+            p->qcMagic.idx = j;
+          }
+        }
+        break;
+      }
+    }
+  }
+  p->qcMagic.unk_c03 = 0;
+#else
+  INCFUNC("asm/func/MainMenu_BuildQCMagicSlots.inc");
+#endif
+}
 
 void FUN_0808d908(MainMenu* p) {
   FUN_0808d200(p);
   FUN_0808d2ac(p);
   FUN_082408d0();
-  DisableEntityFlags(ENTITY_DISABLE_2);
+  SET_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
   FUN_0808a33c(p, FUN_0808db68);
 }
 
 // 選んでいる魔法をプレイヤーに持たせる, 選択なしなら外す
-// 残差は39/39命令で1命令, 原典は p + 添字*100 の加算の被演算子が逆
-NON_MATCH void FUN_0808d93c(MainMenu* p) {
-#ifdef NONMATCHING_C
-  if (p->unk_c02 >= 0 && p->unk_c00 != 0) {
-    Player_EquipMagic(p->player, (s8)(&p->unk_c09)[p->unk_c02 * 100]);
+void FUN_0808d93c(MainMenu* p) {
+  if (p->qcMagic.idx >= 0 && p->qcMagic.iconNums != 0) {
+    Player_EquipMagic(p->player, p->qcMagic.slots[p->qcMagic.idx].id);
   } else {
     Player_EquipMagic(p->player, -1);
   }
-#else
-  INCFUNC("asm/func/FUN_0808d93c.inc");
-#endif
 }
 
 // 4つめのスプライトが指す武器を Player に適用する
-void MainMenu_ApplyWeapon(MainMenu* p) { Player_ApplyWeapon(p->player, p->unk_da0[p->unk_c0c[3].unk_60].weapon); }
+void MainMenu_ApplyWeapon(MainMenu* p) { Player_ApplyWeapon(p->player, p->qcWeapon.slots[p->qcWeapon.idx].weapon); }
 
 // クイックチェンジ で呼ばれた (武器魔法両方), スタートメニューでの 武器魔法切り替え処理 はここを呼んでいない
 void MainMenu_QC_0808d9c8(MainMenu* p) {
   FUN_0808d268();
   MainMenu_ApplyWeapon(p);
   FUN_0808d93c(p);
-  p->unk_c03 = 0;
+  p->qcMagic.unk_c03 = 0;
   FUN_0808d3d4(p);
   FUN_082408f4();
-  EnableEntityFlags(ENTITY_DISABLE_2);
+  CLEAR_FLAGS(gEntityDisableFlags, ENTITY_DISABLE_2);
   FUN_0808a33c(p, FUN_0808cf14);
 }
 
@@ -861,34 +1122,40 @@ NAKED void FUN_0808daa8(MainMenu* p) { INCFUNC("asm/func/FUN_0808daa8.inc"); }
 
 NAKED void FUN_0808db68(MainMenu* p) { INCFUNC("asm/func/FUN_0808db68.inc"); }
 
-NAKED void FUN_0808dcdc(MainMenu* p) { INCFUNC("asm/func/FUN_0808dcdc.inc"); }
+// クイックチェンジ用のスプライトを追加する (通信対戦では武器を1つしか使えないので、別処理)
+void MainMenu1P_AddQCIcons(MainMenu* p) {
+  Vec3 posMagic, posWeapon;
+  s32 i;
 
-// 4組のスプライトを描画リストから外す
-// 残差は adds のオペランド順と pool ロードの位置だけ (命令数は同じ), 原典は (i * 100) + p の順で足している
-// 要素ポインタのローカルを挟むとレジスタが1本増えて悪化し, 添字を u32 にしても変わらない
-NON_MATCH void FUN_0808dda4(MainMenu* p) {
-#ifdef NONMATCHING_C
+  posMagic.x = 8, posMagic.y = 136, posMagic.z = 0;       // 左下
+  posWeapon.x = 216, posWeapon.y = 136, posWeapon.z = 0;  // 右下
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->qcMagic.slots[i].sprite, &p->gfx.icons, ICON_MAGIC(MAGIC_SOL), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posMagic);
+    MainSprite_SetPltt(&p->qcMagic.slots[i].sprite, 1);
+    MainSprite_Add(&p->qcWeapon.slots[i].sprite, &p->gfx.icons, ICON_WEAPON(WEAPON_GRADIUS), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_UNK_16, 0, 0, 60, &posWeapon);
+  }
+}
+
+// QC用のスプライトを削除
+void MainMenu_RemoveQCIcons(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    MainSprite_Remove(&p->unk_c0c[i].sprite);
-    MainSprite_Remove(&p->unk_da0[i].sprite);
+    MainSprite_Remove(&p->qcMagic.slots[i].sprite);
+    MainSprite_Remove(&p->qcWeapon.slots[i].sprite);
   }
-#else
-  INCFUNC("asm/func/FUN_0808dda4.inc");
-#endif
 }
 
 void MainMenu1P_0808dddc(MainMenu* p) {
-  FUN_0808dcdc(p);
+  MainMenu1P_AddQCIcons(p);
 
   if (p->player != NULL) {
-    FUN_0808d5cc(p);
-    FUN_0808d774(p);
-    FUN_0808d4dc(p);
-    FUN_0808d564(p);
+    MainMenu_BuildQCWeaponSlots(p);
+    MainMenu_BuildQCMagicSlots(p);
+    MainMenu_RefreshQCWeaponIcons(p);
+    MainMenu_RefreshQCMagicIcons(p);
     if (gFlag030047a4 & FLAG030047A4_UNK_12) {
-      MainMenu_HideSprites(p);
+      MainMenu_HideQCIcons(p);
     } else {
       FUN_0808d3d4(p);
     }
@@ -896,15 +1163,15 @@ void MainMenu1P_0808dddc(MainMenu* p) {
 }
 
 void FUN_0808de30(MainMenu* p) {
-  FUN_0808d5cc(p);
-  FUN_0808d4dc(p);
+  MainMenu_BuildQCWeaponSlots(p);
+  MainMenu_RefreshQCWeaponIcons(p);
   FUN_0808d3d4(p);
   MainMenu_ApplyWeapon(p);
 }
 
 void FUN_0808de50(MainMenu* p) {
-  FUN_0808d774(p);
-  FUN_0808d564(p);
+  MainMenu_BuildQCMagicSlots(p);
+  MainMenu_RefreshQCMagicIcons(p);
   FUN_0808d3d4(p);
   FUN_0808d93c(p);
 }
@@ -913,9 +1180,9 @@ NAKED void FUN_0808de70(MainMenu* p) { INCFUNC("asm/func/FUN_0808de70.inc"); }
 
 // 選ばれている武器のスプライトだけを見せる
 void FUN_0808df7c(MainMenu* p) {
-  MainMenu_HideSprites(p);
-  p->unk_da0[p->unk_c0c[3].unk_60].sprite.flags &= ~SPRFLAG_HIDDEN;
-  MainSprite_SetPose(&p->unk_da0[p->unk_c0c[3].unk_60].sprite, &p->gfx[2], 0, 1);
+  MainMenu_HideQCIcons(p);
+  p->qcWeapon.slots[p->qcWeapon.idx].sprite.flags &= ~SPRFLAG_HIDDEN;
+  MainSprite_SetPose(&p->qcWeapon.slots[p->qcWeapon.idx].sprite, &p->gfx.icons, 0, 1);
 }
 
 void FUN_0808dfcc(MainMenu* p) {
@@ -930,21 +1197,21 @@ NAKED void FUN_0808e008(MainMenu* p) { INCFUNC("asm/func/FUN_0808e008.inc"); }
 NAKED void FUN_0808e0e0(MainMenu* p, s32 param_2, s32 param_3, s32 param_4) { INCFUNC("asm/func/FUN_0808e0e0.inc"); }
 
 void FUN_0808e17c(MainMenu* p) {
-  BgMapEntry* e = FUN_0808a420(0, 0x13, 3);
+  BgMapEntry* e = MainMenu_GetBgMapAddr(0, 19, 3);
 
   *e++ = BGMAP_BGP13 | 0x4D;
   e[0] = BGMAP_BGP13 | 0x4E;
   e[1] = BGMAP_BGP13 | 0x5B;
-  FUN_0808e0e0(p, 0x16, 3, FUN_08050d64());
+  FUN_0808e0e0(p, 22, 3, FUN_08050d64());
 }
 
 void FUN_0808e1b8(MainMenu* p) {
-  BgMapEntry* e = FUN_0808a420(0, 0x14, 4);
+  BgMapEntry* e = MainMenu_GetBgMapAddr(0, 20, 4);
 
   *e++ = BGMAP_BGP13 | 0x0F;
   e[0] = BGMAP_BGP13 | 0x10;
   e[1] = BGMAP_BGP13 | 0x5B;
-  FUN_0808e0e0(p, 0x17, 4, FUN_08050d7c());
+  FUN_0808e0e0(p, 23, 4, FUN_08050d7c());
 }
 
 // BG0 の (9, 0x11) から2行ぶん 12 タイルを 0xD000 で埋める
@@ -953,7 +1220,7 @@ void FUN_0808e1f4(void) {
   s32 x, y;
 
   for (y = 0; y < 2; y++) {
-    e = FUN_0808a420(0, 9, y + 0x11);
+    e = MainMenu_GetBgMapAddr(0, 9, y + 17);
 
     for (x = 0; x < 12; x++) {
       *e = BGMAP_BGP13;
@@ -1034,15 +1301,15 @@ void FUN_0808eeac(MainMenu* p);
 
 // 16フレームかけて画面を暗くし, 終わったら次の状態へ移る
 void FUN_0808ee50(MainMenu* p) {
-  if (p->unk_9ec <= 0xF) {
-    FUN_0808a458(p->unk_9ec * 4, 0);
+  if (p->updateTimer <= 0xF) {
+    FUN_0808a458(p->updateTimer * 4, 0);
   } else {
     FUN_0808a458(0x40, 0);
   }
 
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
-  if (p->unk_9ec++ > 0xF) {
+  if (p->updateTimer++ > 0xF) {
     FUN_0808a33c(p, FUN_0808eeac);
   }
 }
@@ -1050,7 +1317,7 @@ void FUN_0808ee50(MainMenu* p) {
 void FUN_0808eeac(MainMenu* p) {
   s32 result;
 
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
   result = FUN_0808b760(p);
   if (result == 0) {
@@ -1066,15 +1333,15 @@ void FUN_0808f2f0(MainMenu* p);
 
 // 16フレームかけて画面を明るく戻し, 終わったら次の状態へ移る
 void FUN_0808eef8(MainMenu* p) {
-  if (p->unk_9ec <= 0xF) {
-    FUN_0808a458((0x10 - p->unk_9ec) * 4, 0);
+  if (p->updateTimer <= 0xF) {
+    FUN_0808a458((0x10 - p->updateTimer) * 4, 0);
   } else {
     FUN_0808a458(0, 0);
   }
 
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
-  if (p->unk_9ec++ > 0xF) {
+  if (p->updateTimer++ > 0xF) {
     FUN_0808f2f0(p);
   }
 }
@@ -1084,27 +1351,27 @@ NAKED void FUN_0808ef58(MainMenu* p) { INCFUNC("asm/func/FUN_0808ef58.inc"); }
 NAKED void FUN_0808f01c(MainMenu* p) { INCFUNC("asm/func/FUN_0808f01c.inc"); }
 
 void FUN_0808f09c(MainMenu* p) {
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
-  p->unk_9ec++;
-  if (p->unk_9ec > 149) {
+  p->updateTimer++;
+  if (p->updateTimer > 149) {
     FUN_0808a33c(p, FUN_0809ae0c);
   }
 }
 
 // 最初の16フレームで明るくし, 150フレーム目から暗くして次の状態へ移る
 void FUN_0808f0d8(MainMenu* p) {
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
-  if (p->unk_9ec <= 0xF) {
-    FUN_0808a458(p->unk_9ec * 4, 0);
-  } else if (p->unk_9ec <= 133) {
+  if (p->updateTimer <= 0xF) {
+    FUN_0808a458(p->updateTimer * 4, 0);
+  } else if (p->updateTimer <= 133) {
     FUN_0808a458(0x40, 0);
   } else {
-    FUN_0808a458((150 - p->unk_9ec) * 4, 0);
+    FUN_0808a458((150 - p->updateTimer) * 4, 0);
   }
 
-  if (p->unk_9ec++ > 149) {
+  if (p->updateTimer++ > 149) {
     FUN_0808f2f0(p);
   }
 }
@@ -1124,13 +1391,12 @@ s32 FUN_0808f140(void) {
 
 void FUN_0808f170(MainMenu* p) {
   MessageWindow_Close();
-  FUN_08049e5c();
+  Marquee_Clear();
   FUN_08049f84();
   MessageWindow_SetRect(1, 15, 28, 4);
-  MessageWindow_Start(p->unk_54);
+  MessageWindow_Start(p->loanTexts);
   MessageWindow_SetInstant(1);
-
-  if (p->unk_401f != 0) {
+  if (p->unk_401f) {
     FUN_0808ede4(p);
   } else {
     FUN_0808ebe8(p);
@@ -1139,8 +1405,8 @@ void FUN_0808f170(MainMenu* p) {
 
 // unk_401c の段階に合わせて2枚のポーズと矢印の高さを決める
 void FUN_0808f1bc(MainMenu* p) {
-  MainSprite_SetPose(&p->sprites[101], &p->gfx[3], p->unk_401c + 25, 1);
-  MainSprite_SetPose(&p->sprites[102], &p->gfx[3], 28 - p->unk_401c, 1);
+  MainSprite_SetPose(&p->sprites[101], &p->gfx.loans, p->unk_401c + 25, 1);
+  MainSprite_SetPose(&p->sprites[102], &p->gfx.loans, 28 - p->unk_401c, 1);
   p->sprites[103].pos.x = 0;
   p->sprites[103].pos.y = p->unk_401c << 5;
 }
@@ -1159,17 +1425,17 @@ void FUN_0808f670(MainMenu* p);
 
 // 16フレームかけて明るくしてから次の状態へ移る
 void FUN_0808f604(MainMenu* p) {
-  if (p->unk_9ec <= 0xF) {
-    FUN_0808a458(p->unk_9ec * 4, 0);
+  if (p->updateTimer < 16) {
+    FUN_0808a458(p->updateTimer * 4, 0);
   } else {
     FUN_0808a458(0x40, 0);
   }
 
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
-  MainSprite_AdvanceAnim(&p->sprites[103], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
+  MainSprite_AdvanceAnim(&p->sprites[103], &p->gfx.loans);
 
-  p->unk_9ec++;
-  if (p->unk_9ec > 0xF) {
+  p->updateTimer++;
+  if (p->updateTimer >= 16) {
     FUN_0808a33c(p, FUN_0808f670);
   }
 }
@@ -1177,27 +1443,26 @@ void FUN_0808f604(MainMenu* p) {
 NAKED void FUN_0808f670(MainMenu* p) { INCFUNC("asm/func/FUN_0808f670.inc"); }
 
 void FUN_0808f774(MainMenu* p) {
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
-
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
   if (p->sprites[100].pos.x > -88) {
     p->sprites[100].pos.x -= 5;
   }
 
-  p->unk_9ec++;
-  if (p->unk_9ec > 149) {
+  p->updateTimer++;
+  if (p->updateTimer >= 150) {
     FUN_0808a33c(p, FUN_0809ae0c);
   }
 }
 
 // 16フレームかけて画面を明るく戻し, 終わったらメッセージへ進む
 void FUN_0808f7cc(MainMenu* p) {
-  if (p->unk_9ec <= 0xF) {
-    FUN_0808a458((0x10 - p->unk_9ec) * 4, 0);
+  if (p->updateTimer < 16) {
+    FUN_0808a458((16 - p->updateTimer) * 4, 0);
   } else {
     FUN_0808a458(0, 0);
   }
-  p->unk_9ec++;
-  if (p->unk_9ec > 0xF) {
+  p->updateTimer++;
+  if (p->updateTimer >= 16) {
     FUN_0808f170(p);
   }
 }
@@ -1207,10 +1472,10 @@ NAKED void FUN_0808f81c(MainMenu* p) { INCFUNC("asm/func/FUN_0808f81c.inc"); }
 void FUN_0808f920(MainMenu* p);
 
 void FUN_0808f8bc(MainMenu* p) {
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
-  p->unk_9ec++;
-  if (p->unk_9ec > 149) {
+  p->updateTimer++;
+  if (p->updateTimer > 149) {
     MessageWindow_ShowLine(5);
     if (p->scriptID != 0) {
       VM_ExecByID(p->scriptID, NULL);
@@ -1222,17 +1487,17 @@ void FUN_0808f8bc(MainMenu* p) {
 }
 
 void FUN_0808f920(MainMenu* p) {
-  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx[3]);
+  MainSprite_AdvanceAnim(&p->sprites[100], &p->gfx.loans);
 
-  p->unk_9ec++;
-  if (p->unk_9ec > 149) {
+  p->updateTimer++;
+  if (p->updateTimer > 149) {
     FUN_0808a33c(p, FUN_0809ae0c);
   }
 }
 
 void FUN_0808f95c(MainMenu* p) {
   p->unk_401e = FUN_0808f140();
-  HideBG(DISPCNT_BG1_ON);
+  CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
   FUN_0808f21c(p);
 }
 
@@ -1427,14 +1692,14 @@ const u8 (*const PTR_ARRAY_085acf04[15])[4] = {
     u8_ARRAY_085ace3c,
 };  // 0x085ACF04
 
-// 現在のエリアと '.f' の組からメッセージの行番号を引く
+// 現在のステージと '.f' の組からメッセージの行番号を引く
 s32 FUN_0808fc14(void) {
-  if (gStat->areaID > 14) {
-    return gStat->areaID + 0x40;
+  if (gStat->stageID > 14) {
+    return gStat->stageID + 0x40;
   }
   {
-    const u8(*records)[16] = PTR_ARRAY_085acec8[gStat->areaID];
-    const u8(*index)[4] = PTR_ARRAY_085acf04[gStat->areaID];
+    const u8(*records)[16] = PTR_ARRAY_085acec8[gStat->stageID];
+    const u8(*index)[4] = PTR_ARRAY_085acf04[gStat->stageID];
 
     return records[index[gStat->unk_256][0]][15];
   }
@@ -1443,7 +1708,7 @@ s32 FUN_0808fc14(void) {
 // 0x82B3
 void FUN_0808fc68(void) {
   if (VM_SeekToNamedArg('s')) {
-    gStat->areaID = VM_GetValue();
+    gStat->stageID = VM_GetValue();
   }
 }
 
@@ -1487,7 +1752,7 @@ NON_MATCH s32 FUN_0808fd44(void) {
 
     return gStat->unk_268[i];
   }
-  return gStat->unk_268[gStat->areaID];
+  return gStat->unk_268[gStat->stageID];
 #else
   INCFUNC("asm/func/FUN_0808fd44.inc");
 #endif
@@ -1501,7 +1766,7 @@ NON_MATCH void FUN_0808fd8c(void) {
   if (VM_SeekToNamedArg('s')) {
     idx = VM_GetValue();
   } else {
-    idx = gStat->areaID;
+    idx = gStat->stageID;
   }
 
   gStat->unk_268[idx] = 0;
@@ -1519,7 +1784,7 @@ NON_MATCH void FUN_0808fdc8(void) {
   if (VM_SeekToNamedArg('s')) {
     idx = VM_GetValue();
   } else {
-    idx = gStat->areaID;
+    idx = gStat->stageID;
   }
 
   if (VM_SeekToNamedArg('i')) {
@@ -1539,7 +1804,7 @@ NON_MATCH void FUN_0808fe1c(void) {
   if (VM_SeekToNamedArg('s')) {
     idx = VM_GetValue();
   } else {
-    idx = gStat->areaID;
+    idx = gStat->stageID;
   }
 
   if (VM_SeekToNamedArg('i')) {
@@ -1572,7 +1837,7 @@ void FUN_08090120(MainMenu* p) {
   s32 i;
 
   for (i = 0; i < 4; i++) {
-    MainSprite_AdvanceAnim(spr, &p->gfx[1]);
+    MainSprite_AdvanceAnim(spr, &p->gfx.map);
     spr++;
   }
 }
@@ -1585,7 +1850,7 @@ void MainMenu_FillBG1(MainMenu* p) {
 
   for (y = 0; y < 32; y++) {
     for (x = 0; x < 32; x++) {
-      *FUN_0808a420(1, x, y) = 0xE002;
+      *MainMenu_GetBgMapAddr(1, x, y) = 0xE002;
     }
   }
 }
@@ -1608,13 +1873,14 @@ NAKED void FUN_080907f0(MainMenu* p) { INCFUNC("asm/func/FUN_080907f0.inc"); }
 
 NAKED void FUN_08090a00(MainMenu* p) { INCFUNC("asm/func/FUN_08090a00.inc"); }
 
-s32 FUN_08090b10(MainMenu* p) {
-  u8 kind = p->player->kind;
-
-  if (kind == PLAYER_SOLAR_DJANGO) return 0;
-  if (kind == PLAYER_SABATA) return 2;
-
-  return 1;
+s32 MainMenu_GetPlayerType(MainMenu* p) {
+  if (p->player->kind == PLAYER_SOLAR_DJANGO) {
+    return PT_RDJANGO;
+  }
+  if (p->player->kind == PLAYER_SABATA) {
+    return PT_SABATA;
+  }
+  return PT_BDJANGO;
 }
 
 NAKED void FUN_08090b38(MainMenu* p) { INCFUNC("asm/func/FUN_08090b38.inc"); }
@@ -1675,9 +1941,6 @@ void FUN_08091684(void) {
   }
 }
 
-extern u16 u16_03002c14;  // src/iwram2.c
-extern u16 u16_03002c18;  // src/iwram2.c
-
 u32 FUN_080916bc(u32 bitidx) { return u16_03002c10 & (1 << bitidx); }
 
 NAKED void FUN_080916d0(u8* param_1, u32 param_2) { INCFUNC("asm/func/FUN_080916d0.inc"); }
@@ -1698,40 +1961,159 @@ item32_t GetItemID(bool32 isValuable, s32 slot) {
   return GetValuableItemID(slot);
 }
 
-NAKED void ItemEffect_HP(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_HP.inc"); }
-
-NAKED void ItemEffect_MP(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_MP.inc"); }
-
-NAKED void ItemEffect_BadStatus(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_BadStatus.inc"); }
-
-NAKED void ItemEffect_Good(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_Good.inc"); }
-
-NAKED void ItemEffect_Vitamins(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_Vitamins.inc"); }
-
-void ItemEffect_Bugs(MainMenu* p, s32 param_2, s32 param_3) {
+// maxHP の percent % ぶん回復する, badCondSec が正なら状態異常0を付ける (腐ったアイテム)
+void ItemEffect_HP(MainMenu* p, s32 percent, s32 badCondSec) {
   Player* player = p->player;
 
   if (player != NULL) {
-    p->unk_3fad = param_2;
-    if (player->kind == 5) {
-      if ((u8)param_2 == 0) {
+    s32 hp;
+
+    p->effectAmount = Div(percent * player->maxHP, 100);
+    hp = player->hp + p->effectAmount;
+    if (hp > player->maxHP) {
+      p->effectAmount = player->maxHP - player->hp;
+      player->hp = player->maxHP;
+    } else {
+      player->hp = hp;
+    }
+    FUN_0808a610(p, 1, 5, 3);
+    if (badCondSec > 0) {
+      Player_ApplyBadCondition(player, BAD_HARAITA, badCondSec * 60);
+    }
+  }
+}
+
+// maxEne の percent % ぶん Ene を回復する, badCondSec が正なら状態異常を付ける (悪いキノコ, 腐った水)
+void ItemEffect_MP(MainMenu* p, s32 percent, s32 badCondSec) {
+  Player* player = p->player;
+
+  if (player != NULL) {
+    s32 ene;
+
+    p->effectAmount = Div(player->maxEne * percent, 100);
+    ene = player->ene + Div(player->maxEne * percent, 100);
+    if (ene > player->maxEne) {
+      p->effectAmount = player->maxEne - player->ene;
+      player->ene = player->maxEne;
+    } else if (ene < 0) {
+      player->ene = 0;
+    } else {
+      player->ene = ene;
+    }
+    if (p->effectAmount < 0) {
+      p->effectAmount = 0;
+    }
+    FUN_0808a768(p, 1, 5, 4);
+    if (badCondSec > 0) {
+      if (GetItemID(p->inValuableInventory, p->cursor.savedSlot) == ITEM_BAD_MUSHROOM) {
+        Player_ApplyBadCondition(player, BAD_CONFUSE, badCondSec * 60);
+      } else {
+        Player_ApplyBadCondition(player, BAD_HARAITA, badCondSec * 60);
+      }
+    }
+  }
+}
+
+// cureBits が立っている状態異常を治す (bit0: 腹痛, bit1: 毒, bit2: 混乱, bit3: カーモス)
+void ItemEffect_BadStatus(MainMenu* p, s32 cureBits, s32 _) {
+  Player* player = p->player;
+
+  if (player != NULL) {
+    s32 i;
+
+    p->effectAmount = 0;
+    for (i = 0; i < 3; i++) {
+      if ((cureBits >> i) & 1) {
+        Player_ClearBadCondition(player, i);
+      }
+    }
+    if (cureBits & 8) {
+      KAAMOS(player->isSabata) = 0;
+    }
+  }
+}
+
+// goodCondID のよいステータス効果を goodCondSec 秒ぶん付ける
+void ItemEffect_Good(MainMenu* p, s32 goodCondID, s32 goodCondSec) {
+  Player* player = p->player;
+
+  if (player != NULL) {
+    player->goodFrom = GetItemID(p->inValuableInventory, p->cursor.savedSlot);
+    player->goodCondID = goodCondID;
+    player->goodCondTimer = goodCondSec * 60;
+    player->plttID_95e = 289;
+    player->unk_960 = 0x30;
+    p->effectAmount = 0;
+    p->unk_a95 = 1;
+    p->unk_3ae4 = 1;
+  }
+}
+
+// IET_VITAMINS, statIdx のステータスのドーピングボーナスを amount 上げる (合計99が上限), statIdx が範囲外ならランダムな1種
+// 残差4命令 (69/65), 原典は gStat + statIdx*2 を共通の基底にして 0x18 / 0x20 をレジスタオフセットで ldrsh するが, こちらは gStat+0x18 と gStat+0x20 を別々に組む (associate_trees が定数を gStat 側へ寄せる)
+// Tier A-C 試済 (添字をローカルにする/フィールド直読み, stats の2配列分割)
+NON_MATCH void ItemEffect_Vitamins(MainMenu* p, s32 statIdx, s32 amount) {
+#ifdef NONMATCHING_C
+  Player* player = p->player;
+
+  if (player != NULL) {
+    s32 add;
+    s32 i;
+
+    if (statIdx < STAT_KINDS) {
+      p->vitaminStat = statIdx;
+    } else {
+      p->vitaminStat = Mod(Random() >> 3, STAT_KINDS);
+    }
+    p->vitaminAmount = amount;
+    add = p->vitaminAmount;
+    i = p->vitaminStat;
+    if (gStat->stats[i] + gStat->statBonus[i] + add > 99) {
+      add = 99 - gStat->statBonus[i] - gStat->stats[i];
+    }
+    gStat->statBonus[i] += add;
+    Player_RefreshAllStats(player);
+    FUN_0808b604(p, 5, 3);
+  }
+#else
+  INCFUNC("asm/func/ItemEffect_Vitamins.inc");
+#endif
+}
+
+/**
+ * @brief IET_BUGS, 精霊虫召喚
+ * @param kind 精霊虫の種類 (0: 太陽虫, 1: 月光虫, 2: 暗黒虫)
+ * @param amount 呼び出す数
+ */
+void ItemEffect_Bugs(MainMenu* p, s32 kind, s32 amount) {
+  Player* player = p->player;
+
+  if (player != NULL) {
+    p->unk_3fad = kind;
+    if (player->kind == PLAYER_SABATA) {
+      if ((u8)kind == 0) {
         p->unk_3fad = 2;
-      } else if ((u8)param_2 == 2) {
+      } else if ((u8)kind == 2) {
         p->unk_3fad = 0;
       }
     }
-    p->unk_3fae = param_3;
+    p->unk_3fae = amount;
     p->unk_3fac = 1;
     p->unk_3ae4 = 1;
   }
 }
 
-void ItemEffect_Warp(MainMenu* p, s32 val, s32 _) {
+/**
+ * @brief IET_WARP, 転移の葉, 愚者のカード
+ * @param kind 0: 転移の葉, 1: 愚者のカード
+ */
+void ItemEffect_Warp(MainMenu* p, s32 kind, s32 _) {
   p->unk_3fb0 = 1;
-  p->unk_3fb1 = val;
+  p->unk_3fb1 = kind;
   p->unk_3ae4 = 1;
 }
 
+// IET_SOLAR, 太陽ゲージ操作 (テルテルボーズ、ズーボルテルテ, おてんきゲタ)
 // 残差は30/32命令, 原典は1つ目の書き込みの後で gStat を読み直す
 NON_MATCH void ItemEffect_Solar(MainMenu* p, s32 _, s32 __) {
 #ifdef NONMATCHING_C
@@ -1747,17 +2129,34 @@ NON_MATCH void ItemEffect_Solar(MainMenu* p, s32 _, s32 __) {
 #endif
 }
 
+// IET_LOAN, 暗黒カード
 void ItemEffect_Loan(MainMenu* p, s32 _, s32 __) {
-  p->unk_3fa2 = 0;
+  p->effectAmount = 0;
   p->unk_401d = 1;
   p->unk_3ae4 = 1;
 }
 
-NAKED void ItemEffect_HPMP(MainMenu* p, s32 param_2, s32 param_3) { INCFUNC("asm/func/ItemEffect_HPMP.inc"); }
+// HP と Ene を targetHP / targetEne に書き換える, HPが0になったら 審判のカード 持ちだけ unk_3fbb を落とす
+void ItemEffect_HPMP(MainMenu* p, s32 _, s32 __) {
+  p->player->hp = p->targetHP;
+  p->player->ene = p->targetEne;
+  if (p->player->hp == 0) {
+    p->unk_3ae4 = 1;
+    if (CheckItemOwn(ITEM_JUDGEMENT)) {
+      p->unk_3fbb = 0;
+    }
+  } else {
+    p->unk_3fbb = 0;
+  }
+}
 
-void ItemEffect_AOE(MainMenu* p, s32 val, s32 _) {
+/**
+ * @brief IET_AOE, 画面内の全ての敵にダメージ
+ * @param kind 0: 正義のカード, 1: 塔のカード
+ */
+void ItemEffect_AOE(MainMenu* p, s32 kind, s32 _) {
   p->unk_3fb8 = 1;
-  p->unk_3fb9 = val;
+  p->unk_3fb9 = kind;
   p->unk_3ae4 = 1;
 }
 
@@ -1941,8 +2340,8 @@ NAKED void FUN_08092b3c(MainMenu* p) { INCFUNC("asm/func/FUN_08092b3c.inc"); }
 
 // 16フレーム待ってから次の状態へ進む
 void FUN_08092bb8(MainMenu* p) {
-  if (p->unk_9ee <= 15) {
-    p->unk_9ee++;
+  if (p->stateTimer <= 15) {
+    p->stateTimer++;
   } else if (FUN_0808c1cc(p)) {
     MainMenu_SetState(p, FUN_08092bf0, 1);
   }
@@ -1953,7 +2352,7 @@ NAKED void FUN_08092bf0(MainMenu* p) { INCFUNC("asm/func/FUN_08092bf0.inc"); }
 void FUN_08092c7c(MainMenu* p, u8 val) {
   p->unk_3f9d = val;
   MessageWindow_Close();
-  FUN_08049e5c();
+  Marquee_Clear();
   FUN_08049f84();
   MainMenu_SetState(p, FUN_080931cc, 1);
 }
@@ -2003,8 +2402,8 @@ void FUN_08093cc8(MainMenu* p);
 
 void FUN_08093c64(MainMenu* p) {
   if (FUN_0808c434(p, 0)) {
-    p->unk_9ee++;
-    if (p->unk_9ee > 7) {
+    p->stateTimer++;
+    if (p->stateTimer > 7) {
       PlaySound_082406e0(SE_HEAL);
       p->sprites[46].flags |= SPRFLAG_HIDDEN;
       FUN_08091e64(p, p->cursor.savedSlot);
@@ -2021,8 +2420,8 @@ void FUN_08093e4c(MainMenu* p);
 
 void FUN_08093de8(MainMenu* p) {
   if (FUN_0808c434(p, 0)) {
-    p->unk_9ee++;
-    if (p->unk_9ee > 7) {
+    p->stateTimer++;
+    if (p->stateTimer > 7) {
       p->sprites[46].flags |= SPRFLAG_HIDDEN;
       FUN_08091e64(p, p->cursor.savedSlot);
       MainMenu_SetState(p, FUN_08093e4c, 1);
@@ -2040,8 +2439,6 @@ NAKED void FUN_08094070(MainMenu* p) { INCFUNC("asm/func/FUN_08094070.inc"); }
 NAKED void FUN_08094200(MainMenu* p) { INCFUNC("asm/func/FUN_08094200.inc"); }
 
 NAKED void FUN_08094440(MainMenu* p) { INCFUNC("asm/func/FUN_08094440.inc"); }
-
-void SortValuable(slot32_t slot);  // src/item_082421f0.c
 
 void FUN_080944f4(MainMenu* p) {
   s32 result = FUN_0808b760(p);
@@ -2098,13 +2495,13 @@ void FUN_08094660(MainMenu* p);
 
 // 12フレームかけて46番のスプライトを退避先へ寄せ, 着いたら隠して次の状態へ移る
 void FUN_080945f4(MainMenu* p) {
-  if (p->unk_9ee == 0) {
+  if (p->stateTimer == 0) {
     PlaySound_082406e0(SE_SWAP_SLOT);
   }
 
-  p->unk_9ee++;
-  if (p->unk_9ee <= 11) {
-    FUN_0808ba20(&p->sprites[46].pos, p->unk_3b68, 12 - p->unk_9ee);
+  p->stateTimer++;
+  if (p->stateTimer <= 11) {
+    FUN_0808ba20(&p->sprites[46].pos, p->unk_3b68, 12 - p->stateTimer);
   } else {
     p->sprites[46].flags |= SPRFLAG_HIDDEN;
     MainMenu_SetState(p, FUN_08094660, 1);
@@ -2125,7 +2522,7 @@ void FUN_08094988(void) {
   s32 i;
 
   for (i = 0; i < 3; i++) {
-    *FUN_0808a420(0, i + 14, 8) = 0xF001;
+    *MainMenu_GetBgMapAddr(0, i + 14, 8) = 0xF001;
   }
 }
 
@@ -2300,7 +2697,7 @@ NAKED void FUN_08096d90(MainMenu* p, s32 param_2) { INCFUNC("asm/func/FUN_08096d
 
 NAKED s32 FUN_08096ec4(MainMenu* p) { INCFUNC("asm/func/FUN_08096ec4.inc"); }
 
-void FUN_08096f90(MainMenu* p) { MainSprite_AdvanceAnim(&p->sprites[13], p->gfx); }
+void FUN_08096f90(MainMenu* p) { MainSprite_AdvanceAnim(&p->sprites[13], &p->gfx.smenu); }
 
 NAKED void FUN_08096fa8(MainMenu* p) { INCFUNC("asm/func/FUN_08096fa8.inc"); }
 
@@ -2481,7 +2878,7 @@ NAKED void FUN_08098d98(MainMenu* p) { INCFUNC("asm/func/FUN_08098d98.inc"); }
 void FUN_08098e48(MainMenu* p) {
   p->sprites[13].pos.x = 0;
   p->sprites[13].pos.y = p->unk_4002[0] << 3;
-  MainSprite_SetPose(&p->sprites[46], p->gfx, p->unk_4002[0] + 0x42, 1);
+  MainSprite_SetPose(&p->sprites[46], &p->gfx.smenu, SMENU_STATBAR(p->unk_4002[0]), 1);
 }
 
 // 振り分けたステータスポイントを確定して, 残りポイントも書き戻す
@@ -2508,7 +2905,7 @@ void MainMenu_ShowLineInstant(MainMenu* p, s32 line) {
     MessageWindow_Close();
   } else {
     MessageWindow_SetInstant(1);
-    MessageWindow_Start(p->unk_58);
+    MessageWindow_Start(p->etcTexts);
     MessageWindow_SetRect(0, 18, 30, 2);
     MessageWindow_ShowLine(line);
   }
@@ -2520,31 +2917,59 @@ NAKED void FUN_08099008(MainMenu* p) { INCFUNC("asm/func/FUN_08099008.inc"); }
 
 NAKED void FUN_080992c0(MainMenu* p) { INCFUNC("asm/func/FUN_080992c0.inc"); }
 
-// 武器のレベル別の値を10倍して返す
-// 残差1命令, 原典は table + idx の和を r1 に作る (こちらは r0) だけの違い
-NON_MATCH s32 weapon_080993c4(MainMenu* p) {
-#ifdef NONMATCHING_C
-  s32* table = p->unk_5c;
-
-  return table[gStat->lv] * 10;
-#else
-  INCFUNC("asm/func/weapon_080993c4.inc");
-#endif
+// 次のレベルになるために必要な"総"経験値量を返す
+static u32 MainMenu_GetNextLvExp(MainMenu* p) {
+  u32* exp = p->expTable;
+  exp += gStat->lv;
+  return 10 * (*exp);
 }
 
-NAKED void weapon_080993e4(MainMenu* p) { INCFUNC("asm/func/weapon_080993e4.inc"); }
+NAKED void FUN_080993e4(MainMenu* p) { INCFUNC("asm/func/FUN_080993e4.inc"); }
 
 NAKED void FUN_080995b0(MainMenu* p, u8 param_2) { INCFUNC("asm/func/FUN_080995b0.inc"); }
 
-// 推測: 12バイト×3組, どの組も `0xAA 0x91 0xB8 0x01` を含む, charmap.txt の範囲外なので文字コードは不明
-// FUN_08099650
-const u8 u8_ARRAY_085acfb8[3][12] = {
-    {0xB4, 0x91, 0xAF, 0xA9, 0xB3, 0x01, 0xAA, 0x91, 0xB8, 0x01, 0x01, 0x01},
-    {0xB7, 0xA9, 0xB0, 0xB2, 0xAD, 0xB3, 0xAC, 0x01, 0xAA, 0x91, 0xB8, 0x01},
-    {0xAB, 0xA9, 0xB3, 0xAE, 0x01, 0xAA, 0x91, 0xB8, 0x01, 0x01, 0x01, 0x01},
+// PAGE_STATS で使われるプレイヤーの肩書き部分 (56px, 32px) のタイル番号 (専用のタイルフォント, 0x01 が空白タイル)
+const u8 sPlayerTitles[3][12] = {
+    [PT_RDJANGO] = {0xB4, 0x91, 0xAF, 0xA9, 0xB3, 0x01, 0xAA, 0x91, 0xB8, 0x01, 0x01, 0x01}, // "SOLAR BOY"
+    [PT_BDJANGO] = {0xB7, 0xA9, 0xB0, 0xB2, 0xAD, 0xB3, 0xAC, 0x01, 0xAA, 0x91, 0xB8, 0x01}, // "VAMPIRE BOY"
+    [PT_SABATA] = {0xAB, 0xA9, 0xB3, 0xAE, 0x01, 0xAA, 0x91, 0xB8, 0x01, 0x01, 0x01, 0x01}, // "DARK BOY"
 };  // 0x085ACFB8
 
-NAKED void FUN_08099650(MainMenu* p) { INCFUNC("asm/func/FUN_08099650.inc"); }
+// 残差は命令数同数 (60/60) でレジスタとマテリアライズ位置のみ, 原典は sPlayerTitles のプール定数を添字計算 (idx*12) の途中でロードし, 0xF000 を src の最終加算より前に作る
+// Tier A-C 試済 (添字先行の *(idx + arr), OR のオペランド順, kind のローカル化有無, ループ本体を添字アクセスに)
+NON_MATCH void MainMenu_ShowPlayerTitle(MainMenu* p) {
+#ifdef NONMATCHING_C
+  u8 kind = p->player->kind;
+  BgMapEntry* dst;
+  const u8* src;
+  s32 idx;
+  s32 i;
+
+  idx = PT_RDJANGO;
+  if (kind != PLAYER_SOLAR_DJANGO) {
+    idx = PT_BDJANGO;
+    if (kind == PLAYER_SABATA) {
+      idx = PT_SABATA;
+    }
+  }
+
+  dst = MainMenu_GetBgMapAddr(0, 6, 3);
+  src = sPlayerTitles[idx];
+  for (i = 0; i < 11; i++) {
+    *dst++ = BGMAP_BGP15 | *src++;
+  }
+
+  TextPanel_SetScript(p->textPanelID_4014, p->etcTexts);
+  if (idx == 2) {
+    TextPanel_SetMessage(p->textPanelID_4014, 1);
+  } else {
+    TextPanel_SetMessage(p->textPanelID_4014, 0);
+  }
+  TextPanel_Start(p->textPanelID_4014);
+#else
+  INCFUNC("asm/func/MainMenu_ShowPlayerTitle.inc");
+#endif
+}
 
 NAKED void FUN_080996e0(MainMenu* p) { INCFUNC("asm/func/FUN_080996e0.inc"); }
 
@@ -2559,13 +2984,21 @@ void FUN_08099b3c(s32 param_1) {
   }
 }
 
-// メッセージ速度の設定値を 1 と 2 で入れ替えて返す
-s32 FUN_08099b5c(void) {
+/**
+ * @brief gStat->textSpeed の値を変換して返す (なんでこんなことをするのかは不明)
+ * @return 変換後のメッセージ速度の値 (0: 遅い, 1: 普通, 2: 速い), menuTextSpeed はこの値を保持する
+ */
+s32 MainMenu_GetTextSpeed(void) {
   if (gStat->textSpeed == 1) return 2;  // 設定で "速い" を選んだ時
   if (gStat->textSpeed == 2) return 1;  // "普通"
   return 0;                             // "遅い"
 }
 
+/**
+ * @brief menuTextSpeed 形式を gStat->textSpeed 形式に変換して返す (なんでこんなことをするのかは不明)
+ * @param n menuTextSpeed の値 (0: 遅い, 1: 普通, 2: 速い)
+ * @return 変換後の gStat->textSpeed の値 (1: 速い, 2: 普通, 4: 遅い)
+ */
 s32 FUN_08099b84(s32 n) {
   if (n == 0) return 4;  // 設定で "遅い" を選んだ時
   if (n == 1) return 2;  // "普通"
@@ -2575,10 +3008,10 @@ s32 FUN_08099b84(s32 n) {
 NAKED void FUN_08099b9c(MainMenu* p) { INCFUNC("asm/func/FUN_08099b9c.inc"); }
 
 void FUN_08099c1c(MainMenu* p) {
-  p->unk_400c[1] = 0;
-  p->unk_400c[2] = gStat->controlUp;
-  p->unk_400c[3] = FUN_08099b5c();
-  p->unk_400c[4] = gStat->markerEnabled;
+  p->unk_400d = 0;
+  p->controlUp = gStat->controlUp;
+  p->menuTextSpeed = MainMenu_GetTextSpeed();
+  p->markerEnabled = gStat->markerEnabled;
 }
 
 NAKED void FUN_08099c64(MainMenu* p, s32 param_2) { INCFUNC("asm/func/FUN_08099c64.inc"); }
@@ -2599,8 +3032,8 @@ NAKED void FUN_08099e70(MainMenu* p) { INCFUNC("asm/func/FUN_08099e70.inc"); }
 
 // 60フレーム待ってから FUN_08099e2c へ戻る
 void FUN_08099f18(MainMenu* p) {
-  p->unk_9ee++;
-  if (p->unk_9ee > 59) {
+  p->stateTimer++;
+  if (p->stateTimer > 59) {
     FUN_08099b3c(5);
     FUN_0808c658(p, 0, -1);
     MainMenu_SetState(p, FUN_08099e2c, 0);
@@ -2634,13 +3067,13 @@ void FUN_0809a1a4(MainMenu* p) {
 void FUN_0809a20c(MainMenu* p) {
   gSoftResetInhibit = TRUE;
 
-  p->unk_9ee++;
-  if (p->unk_9ee > 119) {
+  p->stateTimer++;
+  if (p->stateTimer > 119) {
     FUN_08099b3c(17);
     TextPanel_Hide(p->textPanelID);
     FUN_0808c658(p, 0, -1);
     MainMenu_SetState(p, FUN_0809a130, 0);
-    p->unk_400c[0] = 30;
+    p->unk_400c = 30;
     SleepGame();
   }
 }
@@ -2693,14 +3126,14 @@ void FUN_0809a4c0(MainMenu* p) {
 }
 
 void FUN_0809a510(MainMenu* p) {
-  if (p->unk_9ee == 0) {
+  if (p->stateTimer == 0) {
     PlaySound_082406e0(SE_SAVE_SUCCESS);
     TextPanel_Hide(p->textPanelID);
     FUN_08099b3c(14);
   }
 
-  p->unk_9ee++;
-  if (p->unk_9ee >= 120) {
+  p->stateTimer++;
+  if (p->stateTimer >= 120) {
     FUN_08099b3c(8);
     FUN_0808c658(p, 0, -1);
     MainMenu_SetState(p, FUN_0809a324, 0);
@@ -2708,14 +3141,14 @@ void FUN_0809a510(MainMenu* p) {
 }
 
 void FUN_0809a574(MainMenu* p) {
-  if (p->unk_9ee == 0) {
+  if (p->stateTimer == 0) {
     PlaySound_082406e0(SE_NG);
     TextPanel_Hide(p->textPanelID);
     FUN_08099b3c(15);
   }
 
-  p->unk_9ee++;
-  if (p->unk_9ee >= 120) {
+  p->stateTimer++;
+  if (p->stateTimer >= 120) {
     FUN_08099b3c(8);
     FUN_0808c658(p, 0, -1);
     MainMenu_SetState(p, FUN_0809a324, 0);
@@ -2748,45 +3181,45 @@ void UNUSED FUN_0809a800(void) { LoadParticleFile(GetFile(DIR_PARTICLE, 0x3002))
 
 NAKED void FUN_0809a81c(MainMenu* p) { INCFUNC("asm/func/FUN_0809a81c.inc"); }
 
-// cur の次から循環で非0の slots を探す, 無ければ cur のまま
-s32 FUN_0809a93c(MainMenu* p, s32 cur) {
-  s32 idx = cur + 1;
+// スタートメニューで引数の page の次のページ番号を返す
+s32 MainMenu_GetNextPage(MainMenu* p, s32 page) {
+  s32 idx = page + 1;
   s32 i;
 
-  if (idx > 9) {
-    idx = 0;
+  if (idx > PAGE_SAVE) {
+    idx = PAGE_MAP;
   }
-  for (i = 0; i < 10; i++) {
-    if (p->slots[idx] != 0) {
+  for (i = 0; i < PAGE_NUM; i++) {
+    if (p->availPages[idx]) {
       return idx;
     }
     idx++;
-    if (idx > 9) {
-      idx = 0;
+    if (idx > PAGE_SAVE) {
+      idx = PAGE_MAP;
     }
   }
-  return cur;
+  return page;
 }
 
-// cur の手前から循環で非0の slots を探す, 無ければ cur のまま
-s32 FUN_0809a978(MainMenu* p, s32 cur) {
-  s32 idx = cur - 1;
+// スタートメニューで引数の page の前のページ番号を返す
+s32 MainMenu_GetPrevPage(MainMenu* p, s32 page) {
+  s32 idx = page - 1;
   s32 i;
 
-  if (cur == 0) {
-    idx = 9;
+  if (page == PAGE_MAP) {
+    idx = PAGE_SAVE;
   }
-  for (i = 0; i < 10; i++) {
-    if (p->slots[idx] != 0) {
+  for (i = 0; i < PAGE_NUM; i++) {
+    if (p->availPages[idx]) {
       return idx;
     }
     if (idx == 0) {
-      idx = 9;
+      idx = PAGE_SAVE;
     } else {
       idx--;
     }
   }
-  return cur;
+  return page;
 }
 
 NAKED void FUN_0809a9b0(MainMenu* p) { INCFUNC("asm/func/FUN_0809a9b0.inc"); }
@@ -2798,10 +3231,10 @@ void FUN_0809ac30(MainMenu* p);
 // 17フレームかけて明るさを上げ, 終わったら次の状態へ移る
 void FUN_0809ab70(MainMenu* p) {
   FUN_0808b4c0(p);
-  FUN_0808a458(p->unk_9ec * 4, RGB(4, 4, 4));
-  p->unk_9ec++;
-  if (p->unk_9ec > 16) {
-    p->unk_9f8 = 0;
+  FUN_0808a458(p->updateTimer * 4, RGB(4, 4, 4));
+  p->updateTimer++;
+  if (p->updateTimer > 16) {
+    p->hidden = 0;
     FUN_0808a33c(p, FUN_0809ac30);
   }
 }
@@ -2851,29 +3284,298 @@ void MainMenu1P_RemoveSprites(MainMenu* p) {
   }
 
   AuxSprite_Remove(&p->sprite_b60);
-  AuxSprite_Remove(&p->sprite_bb8);
+  AuxSprite_Remove(&p->stand);
 }
 
-NAKED void MainMenu1P_0809b468(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0809b468.inc"); }
+// 残差はレジスタ割当のみ (935/934 + 末尾のダミー b, 同じ命令が同じ順で並ぶ), 原典は 0 を r1/r4 の2本に持ち, 定数オフセットを既存レジスタから加算で作る (0x100 = 0x70 + 0x90 等) が, こちらは movs/lsls やプール定数で作り直す
+// Tier A-C 試済 (Vec3初期化をカンマ/個別文の両方, materialization order の4パターンは該当なし)
+NON_MATCH void MainMenu1P_AddSprites(MainMenu* p) {
+#ifdef NONMATCHING_C
+  Vec3 pos;
+  s32 i;
 
-NAKED void FUN_0809bd14(MainMenu* p) { INCFUNC("asm/func/FUN_0809bd14.inc"); }
+  pos.x = 0, pos.y = 0, pos.z = 0;
+  MainSprite_Add(&p->sprites[0], &p->gfx.smenu, SMENU_PAGE(0), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[1], &p->gfx.smenu, SMENU_L_ICON, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[2], &p->gfx.smenu, SMENU_R_ICON, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[16], &p->gfx.smenu, SMENU_ITEM_BAG, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[14], &p->gfx.smenu, SMENU_SELECTED, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[40], &p->gfx.smenu, SMENU_EQUIP_CURSOR(3), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[40], &p->gfx.smenu, 1, 1, 0);
+  MainSprite_SetPose(&p->sprites[40], &p->gfx.smenu, SMENU_EQUIP_CURSOR(3), 1);
+  MainSprite_Add(&p->sprites[13], &p->gfx.smenu, SMENU_CURSOR(1), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[13], &p->gfx.smenu, 0, 1, 0);
+  MainSprite_Add(&p->sprites[59], &p->gfx.smenu, SMENU_BACK, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[60], &p->gfx.smenu, SMENU_BACK, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
 
-NAKED void MainMenu1P_0809bed8(MainMenu* p) { INCFUNC("asm/func/MainMenu1P_0809bed8.inc"); }
+  for (i = 0; i < 16; i++) {
+    MainSprite_Add(&p->sprites[17 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  }
 
-NAKED void FUN_0809bf88(MainMenu* p) { INCFUNC("asm/func/FUN_0809bf88.inc"); }
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->sprites[36 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[41 + i], &p->gfx.smenu, SMENU_EQUIP_E, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  }
 
-// VM の q 引数があればその値を, なければ 1 を unk_da0[3] に書き込む
+  pos.x = 117, pos.y = 70;
+  MainSprite_Add(&p->sprites[33], &p->gfx.icons, ICON_TRASH, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  pos.x = 0, pos.y = 0;
+  MainSprite_Add(&p->sprites[34], &p->gfx.smenu, SMENU_SELECT, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  pos.x = 120, pos.y = 104;
+  MainSprite_Add(&p->sprites[35], &p->gfx.icons, ICON_SORT, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  pos.x = 0, pos.y = 128;
+  MainSprite_Add(&p->sprites[45], &p->gfx.icons, ICON_TIMER_NONE, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  for (i = 0; i < 2; i++) {
+    MainSprite_Add(&p->sprites[46 + i], &p->gfx.icons, ICON_ITEM(ITEM_EARTHLY_NUT), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  }
+
+  pos.x = 36, pos.y = 112;
+  MainSprite_Add(&p->sprites[57], &p->gfx.player, 0, SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[57], &p->gfx.player, 4, 1, 0);
+  Video_GetAuxSprite(&p->gfx_b8c, SPRITE_BAT);
+  AuxSprite_Add(&p->sprite_b60, &p->gfx_b8c, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST);
+  p->sprite_b60.priority = 0;
+  p->sprite_b60.pos.x = 36, p->sprite_b60.pos.y = 112, p->sprite_b60.pos.z = 0;
+
+  pos.x = 52, pos.y = 100;
+  MainSprite_Add(&p->sprites[58], &p->gfx.rita, 0, SPRFLAG_XFLIP | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_SetAnim(&p->sprites[58], &p->gfx.rita, 13, 1, 0);
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 9; i++) {
+    MainSprite_Add(&p->sprites[48 + i], &p->gfx.smenu, SMENU_NUM_BLUE(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  }
+
+  pos.x = 0, pos.y = 0;
+  MainSprite_Add(&p->sprites[15], &p->gfx.smenu, SMENU_YESNO(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  pos.x = 8, pos.y = 20;
+  MainSprite_Add(&p->sprites[61], &p->gfx.portraits, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->sprites[62 + i], &p->gfx.smenu, SMENU_BADCOND_NAME(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    pos.y += 13;
+  }
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 10; i++) {
+    MainSprite_Add(&p->sprites[3 + i], &p->gfx.smenu, SMENU_PAGE_LONG(0), SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  }
+
+  pos.x = 0, pos.y = 0;
+  MainSprite_Add(&p->sprites[66], &p->gfx.smenu, SMENU_STAT_ASSIGN, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[67], &p->gfx.smenu, SMENU_STAT_ASSIGN_OK, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->sprites[68 + i], &p->gfx.smenu, 71, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+    MainSprite_Add(&p->sprites[72 + i], &p->gfx.smenu, 70, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+    pos.y += 8;
+  }
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->sprites[78 + i], &p->gfx.map, i * 2 + 9, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+    MainSprite_SetAnim(&p->sprites[78 + i], &p->gfx.map, i + 1, 1, 0);
+  }
+
+  MainSprite_Add(&p->sprites[76], &p->gfx.map, 0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[77], &p->gfx.map, 3, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 6; i++) {
+    MainSprite_Add(&p->sprites[86 + i], &p->gfx.map, 18 + i, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+  }
+
+  for (i = 0; i < 8; i++) {
+    MainSprite_Add(&p->sprites[92 + i], &p->gfx.map, 17, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST, 1, 0, 60, &pos);
+  }
+
+  pos.x = 0, pos.y = 0;
+  MainSprite_Add(&p->sprites[82], &p->gfx.smenu, SMENU_MAP_SCROLL(2), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[83], &p->gfx.smenu, SMENU_MAP_SCROLL(3), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[84], &p->gfx.smenu, SMENU_MAP_SCROLL(0), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[85], &p->gfx.smenu, SMENU_MAP_SCROLL(1), SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  pos.x = 0, pos.y = 0;
+  MainSprite_Add(&p->sprites[100], &p->gfx.loans, 4, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[101], &p->gfx.loans, 25, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+  MainSprite_Add(&p->sprites[102], &p->gfx.loans, 27, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  pos.x = 0, pos.y = 0;
+  for (i = 0; i < 3; i++) {
+    MainSprite_Add(&p->sprites[104 + i], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    pos.x += 8;
+  }
+
+  pos.x = 16, pos.y = -4;
+  MainSprite_Add(&p->sprites[103], &p->gfx.loans, 18, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  pos.x = -56, pos.y = 56;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->sprites[107 + i], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    pos.x += 8;
+  }
+
+  pos.x = 88, pos.y = 56;
+  MainSprite_Add(&p->sprites[111], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+
+  pos.x = -48, pos.y = 72;
+  for (i = 0; i < 4; i++) {
+    MainSprite_Add(&p->sprites[112 + i], &p->gfx.loans, 8, SPRFLAG_SCREEN_COORD | SPRFLAG_OAM_DIRECT | SPRFLAG_DRAWLIST, 0, 0, 60, &pos);
+    pos.x += 8;
+  }
+
+  Video_GetAuxSprite(&p->standGfx, SPRITE_SOLAR_STATION);
+  AuxSprite_Add(&p->stand, &p->standGfx, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD | SPRFLAG_DRAWLIST);
+  Video_SetAuxSpritePltt(&p->standGfx, 323);  // 暗黒ローンなので赤色
+  p->stand.priority = 0;
+  p->stand.pos.x = 160, p->stand.pos.y = 88, p->stand.pos.z = 0;
+#else
+  INCFUNC("asm/func/MainMenu1P_AddSprites.inc");
+#endif
+}
+
+void MainMenu_OpenSpriteFiles(MainMenu* p) {
+  MainSpriteGfxFile* f;
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_START_MENU);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx.smenu = *f;
+  OpenMainSpriteFile(&p->gfx.smenu, f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_INVENTORY_ICONS);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx.icons = *f;
+  OpenMainSpriteFile(&p->gfx.icons, f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_MAP);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx.map = *f;
+  OpenMainSpriteFile(&p->gfx.map, f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_DARKLOAN);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx.loans = *f;
+  OpenMainSpriteFile(&p->gfx.loans, f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx.player = *f;
+  OpenMainSpriteFile(&p->gfx.player, f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_RITA);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx.rita = *f;
+  OpenMainSpriteFile(&p->gfx.rita, f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_CARMILLA);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx.carmilla = *f;
+  OpenMainSpriteFile(&p->gfx.carmilla, f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_PORTRAITS);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx.portraits = *f;
+  OpenMainSpriteFile(&p->gfx.portraits, f);
+
+  f = GetFile(DIR_MAIN_SPRITE, SPRITE_UI_LINK);
+  if (f == NULL) {
+    return;
+  }
+  p->gfx.link = *f;
+  OpenMainSpriteFile(&p->gfx.link, f);
+}
+
+void MainMenu1P_ReadNamedArgs(MainMenu* p) {
+  if (VM_SeekToNamedArg('i')) {
+    p->itemNames = VM_GetPC_Proxy();
+  }
+  if (VM_SeekToNamedArg('w')) {
+    p->weaponNames = VM_GetPC_Proxy();
+  }
+  if (VM_SeekToNamedArg('a')) {
+    p->armorNames = VM_GetPC_Proxy();
+  }
+  if (VM_SeekToNamedArg('m')) {
+    p->magicNames = VM_GetPC_Proxy();
+  }
+  if (VM_SeekToNamedArg('A')) {
+    p->areaNames = VM_GetPC_Proxy();  // String_1826
+  }
+  if (VM_SeekToNamedArg('l')) {
+    p->loanTexts = VM_GetPC_Proxy();
+  }
+  if (VM_SeekToNamedArg('E')) {
+    p->etcTexts = VM_GetPC_Proxy();  // STR_STARTMENU_MISC
+  }
+  if (VM_SeekToNamedArg('e')) {
+    p->expTable = VM_GetValueSafe2();
+  }
+
+  if (VM_SeekToNamedArg('p')) {
+    p->unk_3fa0 = VM_GetValue();
+  } else {
+    p->unk_3fa0 = 0;
+  }
+}
+
+// '.o' で選択可能なページを受け取り, 今のページが選べないなら選べるページまで進める
+void MainMenu_InitAvailPages(MainMenu* p) {
+  s32 i;
+
+  if (VM_SeekToNamedArg('o')) {
+    for (i = 0; i < PAGE_NUM; i++) {
+      p->availPages[i] = VM_GetValue();
+    }
+  } else {
+    for (i = 0; i < PAGE_NUM; i++) {
+      p->availPages[i] = TRUE;
+    }
+  }
+
+  if (!p->availPages[p->page]) {
+    for (i = 0; i < PAGE_NUM; i++) {
+      if (++p->page >= PAGE_NUM) {
+        p->page = 0;
+      }
+      if (p->availPages[p->page]) {
+        return;
+      }
+    }
+    p->page = 0;
+  }
+}
+
+// VM の q 引数があればその値を, なければ 1 を unk_f3d に書き込む
 void MainMenu1P_0809c010(MainMenu* p) {
   if (VM_SeekToNamedArg('q')) {
-    p->unk_da0[3].unk_65 = VM_GetValue();
+    p->unk_f3d = VM_GetValue();
   } else {
-    p->unk_da0[3].unk_65 = 1;
+    p->unk_f3d = 1;
   }
 }
 
 void FUN_0809c040(void) {
   gMainMenu = NULL;
-  u16_03002c14 = 1;
+  gSavedMenuPage = PAGE_ITEM;
   u16_03002c10 = 0;
   u16_03002c18 = 1;
 }
@@ -2924,14 +3626,14 @@ void FUN_0809c244(void) {
 // 0x2FA0
 void FUN_0809c264(void) {
   if (gMainMenu != NULL && gMainMenu->unk_9fc == 0) {
-    FUN_0809bf88(gMainMenu);
+    MainMenu_InitAvailPages(gMainMenu);
   }
 }
 
 void FUN_0809c28c(void) {
   if (gMainMenu != NULL && gMainMenu->player != NULL) {
-    FUN_0808d5cc(gMainMenu);
-    FUN_0808d4dc(gMainMenu);
+    MainMenu_BuildQCWeaponSlots(gMainMenu);
+    MainMenu_RefreshQCWeaponIcons(gMainMenu);
     if (gMainMenu->unk_9fe <= 2) {
       FUN_0808d3d4(gMainMenu);
     }
@@ -2940,19 +3642,19 @@ void FUN_0809c28c(void) {
 
 void FUN_0809c2d0(void) {
   if (gMainMenu != NULL && gMainMenu->player != NULL) {
-    FUN_0808d774(gMainMenu);
-    FUN_0808d564(gMainMenu);
+    MainMenu_BuildQCMagicSlots(gMainMenu);
+    MainMenu_RefreshQCMagicIcons(gMainMenu);
     if (gMainMenu->unk_9fe <= 2) {
       FUN_0808d3d4(gMainMenu);
     }
   }
 }
 
-// VM の f 引数を unk_da0[3] に書き込む
+// VM の f 引数を unk_f3d に書き込む
 void FUN_0809c314(void) {
   if (gMainMenu != NULL) {
     if (VM_SeekToNamedArg('f')) {
-      gMainMenu->unk_da0[3].unk_65 = VM_GetValue();
+      gMainMenu->unk_f3d = VM_GetValue();
     }
   }
 }
@@ -2971,20 +3673,18 @@ void FUN_0809c430(void) {
 
 void FUN_0809c464(void) {
   if (gMainMenu != NULL) {
-    Player* player = gPlayerPtr[0];
-
-    gMainMenu->player = player;
-    if (player != NULL) {
-      FUN_0808d774(gMainMenu);
-      FUN_0808d564(gMainMenu);
-      FUN_0808d5cc(gMainMenu);
-      FUN_0808d4dc(gMainMenu);
+    gMainMenu->player = GetPlayer(0);
+    if (gMainMenu->player != NULL) {
+      MainMenu_BuildQCMagicSlots(gMainMenu);
+      MainMenu_RefreshQCMagicIcons(gMainMenu);
+      MainMenu_BuildQCWeaponSlots(gMainMenu);
+      MainMenu_RefreshQCWeaponIcons(gMainMenu);
 
       if (gFlag030047a4 & FLAG030047A4_UNK_12) {
         if (gMainMenu->unk_9fe == 0) {
           FUN_0808e224(gMainMenu);
         }
-        MainMenu_HideSprites(gMainMenu);
+        MainMenu_HideQCIcons(gMainMenu);
       } else {
         if (gMainMenu->unk_9fe == 0) {
           FUN_0808d3d4(gMainMenu);
@@ -3000,16 +3700,17 @@ void FUN_0809c4f4(void) {
 
   if (p != NULL && p->unk_9fc == 0 && p->unk_9fe <= 2) {
     FUN_0808c95c(p, 0, 0xE0, 0x90);
-    p->unk_c0c[3].unk_61 = 6;
+    p->qcWeapon.unk_d99 = 6;
     PlaySound_082406e0(SE_BREAK_898);
   }
 }
 
-void FUN_0809c544(u16* param_1) {
+// カウントダウン系のHUD
+void HUD_StartCountdown(u16* remainingTime) {
   MainMenu* p = gMainMenu;
 
   if (p != NULL) {
-    p->unk_a9c = param_1;
+    p->unk_a9c = remainingTime;
     p->unk_a97 = 1;
     if (gFlag030047a4 & FLAG030047A4_LINK) {
       p->unk_a98 = 1;
@@ -3017,7 +3718,8 @@ void FUN_0809c544(u16* param_1) {
   }
 }
 
-void FUN_0809c58c(void) {
+// カウントダウン系のHUDに関係?
+void HUD_RemoveCountdown(void) {
   MainMenu* p = gMainMenu;
 
   if (p != NULL) {
@@ -3051,7 +3753,7 @@ void FUN_0809c63c(void) {
   MainMenu* p = gMainMenu;
 
   if (p != NULL && VM_SeekToNamedArg('i')) {
-    p->unk_3fa0[0] = VM_GetValue();
+    p->unk_3fa0 = VM_GetValue();
   }
 }
 
@@ -3074,26 +3776,19 @@ void MainMenuLink_Update_Internal(MainMenu* p) {
   }
 }
 
-// 残差1命令, 原典は 0x9DF と 0x9E0 のオフセットを別々に作るが agbcc は前者を使い回して add #1 に畳む, ローカル分割 (Player* / 添字) は試済
-NON_MATCH s32 MainMenuLink_Update(MainMenu* p) {
-#ifdef NONMATCHING_C
+s32 MainMenuLink_Update(MainMenu* p) {
   if (!(gEntityDisableFlags & ENTITY_DISABLE_0)) {
-    Player* player = gPlayerPtr[p->playerIdx];
-
-    p->player = player;
+    p->player = GetPlayer(p->playerIdx);
     MainMenuLink_Update_Internal(p);
   }
   return 0;
-#else
-  INCFUNC("asm/func/MainMenuLink_Update.inc");
-#endif
 }
 
 s32 MainMenuLink_Destroy(MainMenu* p) {
   FUN_0808cf50(p);
   FUN_0808cffc(p);
-  MainSprite_Remove(&p->unk_c0c[0].sprite);
-  MainSprite_Remove(&p->unk_da0[0].sprite);
+  MainSprite_Remove(&p->qcMagic.slots[0].sprite);
+  MainSprite_Remove(&p->qcWeapon.slots[0].sprite);
   gMainMenu = NULL;
   return 0;
 }
@@ -3122,9 +3817,7 @@ MainMenu* MainMenuLink_Create(u32 id, u32 _) {
 }
 
 s32 MainMenu1P_Update(MainMenu* p) {
-  Player* player = gPlayerPtr[0];
-
-  p->player = player;
+  p->player = GetPlayer(0);
   if (p->updateCallback != NULL) {
     p->updateCallback(p);
   }
@@ -3133,17 +3826,67 @@ s32 MainMenu1P_Update(MainMenu* p) {
 }
 
 s32 MainMenu1P_Destroy(MainMenu* p) {
-  FUN_0808dda4(p);
+  MainMenu_RemoveQCIcons(p);
   FUN_0808cf50(p);
   FUN_0808cacc(p);
   MainMenu1P_RemoveSprites(p);
   FUN_0808cffc(p);
-  u16_03002c14 = p->page;
+  gSavedMenuPage = p->page;
   gMainMenu = NULL;
   return 0;
 }
 
-NAKED s32 MainMenu1P_Init(MainMenu* p, u32 id) { INCFUNC("asm/func/MainMenu1P_Init.inc"); }
+// HUD とスタートメニューを組み立て, gMainMenu に自分を登録する
+s32 MainMenu1P_Init(MainMenu* p, u32 id) {
+  SetBGPrioDirect(0, 0);
+  p->unk_9fc = 0;
+  p->page = gSavedMenuPage;
+  p->player = GetPlayer(0);
+  BuildWeapon((WeaponData*)&gWeaponDB[WEAPON_GUN_DEL_HELL], &p->weapon);
+  MainMenu1P_ReadNamedArgs(p);
+  MainMenu_InitAvailPages(p);
+  MainMenu1P_0809c010(p);
+  MainMenu_OpenSpriteFiles(p);
+  MainMenu1P_0808dddc(p);
+  MainMenu1P_AddSprites(p);
+  if (VM_SeekToNamedArg('d')) {
+    p->scriptID = VM_GetValue();
+  } else {
+    p->scriptID = 0;
+  }
+  if (VM_SeekToNamedArg('V')) {
+    p->unk_401f = VM_GetValue();
+  } else {
+    p->unk_401f = 0;
+  }
+  if (VM_SeekToNamedArg('R')) {
+    p->unk_3fb4 = VM_GetValue();
+  } else {
+    p->unk_3fb4 = 0;
+  }
+  if (VM_SeekToNamedArg('D')) {
+    p->unk_3fbc = VM_GetValue();
+  } else {
+    p->unk_3fbc = 0;
+  }
+  p->textPanelID_4014 = TextPanel_Create(6, 4, 10, 2);
+  p->textPanelID = TextPanel_Create(4, 6, 22, 6);
+  MainMenu1P_SetupBg(p);
+  if (gFlag030047a4 & FLAG030047A4_UNK_12) {
+    FUN_0808e224(p);
+    FUN_0808a33c(p, FUN_0808e400);
+  } else {
+    FUN_0808ce98(p);
+    FUN_0808a33c(p, FUN_0808cf14);
+  }
+  MainMenu1P_AddParticles(p);
+  p->unk_a99 = 2;
+  p->unk_a9a = 0xFF;
+  p->unk_a9b = -1;
+  p->unk_9ff = -1;
+  gMainMenu = p;
+  return 0;
+}
 
 MainMenu* MainMenu1P_Create(u32 id, u32 _) {
   if (gMainMenu == NULL) {

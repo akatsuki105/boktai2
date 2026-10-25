@@ -35,7 +35,7 @@
 	movs r1, #9
 	movs r2, #1
 	movs r3, #0
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 	movs r1, #0x86
 	lsls r1, r1, #1
 	adds r0, r7, r1
@@ -177,7 +177,7 @@ _0821E1F2:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0x14
-	bl FUN_0821ddc4
+	bl ShadeMan_SpawnAfterimage
 _0821E20E:
 	add sp, #8
 	pop {r3, r4}

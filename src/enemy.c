@@ -60,7 +60,7 @@ void FUN_080e3804(EnemyAuxSpriteData* p, FileID animID) {
 
 // 自前の Hitbox を固定フラグで組んで登録する
 void FUN_080e3834(Enemy* p, Vec3* halfSize, Vec3* offset, void* handler, void* owner) {
-  Hitbox_Init(&p->hitbox, p->mover.id, (HBFLAG_HURTBOX | HBFLAG_UNK_12 | HBFLAG_ANGLE | HBFLAG_UNK_3 | HBFLAG_UNK_0), 0, 0x10, halfSize, offset);
+  Hitbox_Init(&p->hitbox, p->mover.id, (HBFLAG_HURTBOX | HBFLAG_ACTOR | HBFLAG_ANGLE | HBFLAG_UNK_3 | HBFLAG_UNK_0), 0, 0x10, halfSize, offset);
   Hitbox_SetPowerAndAttributes(&p->hitbox, p->power, p->attrs, p->weakness);
   Hitbox_SetPos(&p->hitbox, &p->mover.pos, 0);
   Hitbox_SetHandler(&p->hitbox, handler, owner);
@@ -245,7 +245,7 @@ void FUN_080e499c(Enemy* p) {
 NON_MATCH void FUN_080e49c4(Enemy* p) {
 #ifdef NONMATCHING_C
   Enemy_SetFlag(p, ENEFLAG_UNK_0 | ENEFLAG_UNK_1);
-  p->hitbox.flags |= HBFLAG_UNK_2;
+  p->hitbox.flags |= HBFLAG_HIDDEN;
   FUN_080eeee0(p);
   if (Enemy_GetFlag2(p, ENEFLAG2_UNK_11)) {
     bool32 isLink = (gFlag030047a4 & (FLAG030047A4_LINK | FLAG030047A4_UNK_14)) ? TRUE : FALSE;
@@ -270,25 +270,18 @@ void FUN_080e4a68(Enemy* p) {
 bool32 FUN_080e4aac(Vec3* a, Vec3* b, Vec3* out, u8* outAngle, u32 rangeX, u32 rangeZ, s32 speed) {
   s16 dx = b->x - a->x;
   s16 dz = b->z - a->z;
-  s32 angle = (u8)ArcTan2_8(dx, dz);
+  u8 angle = ArcTan2_8(dx, dz);
   s32 d;
 
-  out->x = (speed * gSineTable[(angle + 0x40) & 0xFF]) >> 16;
-  out->z = (speed * gSineTable[angle]) >> 16;
+  out->x = (speed * COS(angle)) >> 16;
+  out->z = (speed * SIN(angle)) >> 16;
   *outAngle = angle;
 
-  d = a->x - b->x;
-  if (d < 0) {
-    d = -d;
-  }
+  d = abs(a->x - b->x);
   if ((u32)d > rangeX) {
     return FALSE;
   }
-
-  d = a->z - b->z;
-  if (d < 0) {
-    d = -d;
-  }
+  d = abs(a->z - b->z);
   if ((u32)d > rangeZ) {
     return FALSE;
   }
@@ -306,9 +299,9 @@ void FUN_080e5098(Enemy* p, s32 dx, s32 dz) {
   s32 ax = dx << 2;
   s32 az = dz << 2;
 
-  p->unk_20c.x = ((ax * gSineTable[(p->angle + 0x40) & 0xFF]) >> 12) + p->mover.pos.x;
+  p->unk_20c.x = ((ax * COS(p->angle)) >> 12) + p->mover.pos.x;
   p->unk_20c.y = p->mover.pos.y;
-  p->unk_20c.z = ((az * gSineTable[p->angle]) >> 12) + p->mover.pos.z;
+  p->unk_20c.z = ((az * SIN(p->angle)) >> 12) + p->mover.pos.z;
   p->unk_214 = p->mover.pos;
 }
 
@@ -578,22 +571,14 @@ NON_MATCH void Enemy_SetAnimFacing(Enemy* p, u8* variant, AuxAnimPlayFlags* flag
 // (dx, dz) の長さを dx / cos から出す, 真横は cos が 0 になるので |dz| で代用する
 s16 VectorLength(s16 dx, s16 dz) {
   s32 angle = (u8)ArcTan2_8(dx, dz);
-  s32 z;
   s32 d;
 
   if (angle == 0x40 || angle == 0xC0) {
-    z = dz;
-    if (z < 0) {
-      z = -z;
-    }
-    return z;
+    return abs(dz);
   }
 
-  d = Div(dx << 12, gSineTable[(angle + 0x40) & 0xFF]);
-  if (d < 0) {
-    d = -d;
-  }
-  return d;
+  d = Div(dx << 12, COS(angle));
+  return abs(d);
 }
 
 // 種族によって影とパーティクルを持たせるかどうかを決める
@@ -613,30 +598,14 @@ void Enemy_Init_080e5dd4(Enemy* p) {
 }
 
 // pos が自分の位置を中心とした rx × rz の矩形に入っているか
-// 残差は29/31命令, 原典は dz を一度 u16 に丸めてから使う箇所で s16 へ広げ直す (dx は s16 一回だけ)
-// Tier A-B 試済: s16 ローカル (40命令) / u16 dz + (s16) キャスト (34命令)
-NON_MATCH bool32 FUN_080e5e94(Enemy* p, Vec3* pos, u32 rx, u32 rz) {
-#ifdef NONMATCHING_C
-  s32 dx = (s16)(pos->x - p->mover.pos.x);
-  s32 dz = (s16)(pos->z - p->mover.pos.z);
+bool8 Enemy_IsPosInRect(Enemy* p, WorldPos* pos, u32 rx, u32 rz) {
+  s16 dx = pos->x - p->mover.pos.x;
+  s16 dz = pos->z - p->mover.pos.z;
 
-  if (dx < 0) {
-    dx = -dx;
+  if (abs(dx) <= rx && abs(dz) <= rz) {
+    return TRUE;
   }
-  if (dx > rx) {
-    return FALSE;
-  }
-
-  if (dz < 0) {
-    dz = -dz;
-  }
-  if (dz > rz) {
-    return FALSE;
-  }
-  return TRUE;
-#else
-  INCFUNC("asm/func/FUN_080e5e94.inc");
-#endif
+  return FALSE;
 }
 
 NAKED s32 FUN_080e5ed4(unknown* param_1, unknown* param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_080e5ed4.inc"); }
@@ -647,25 +616,18 @@ bool32 FUN_080e5fe4(Enemy* p, NavAgent* agent, u32 rangeX, u32 rangeZ, s32 speed
   s16 dz = agent->unk_1c.z - p->mover.pos.z;
   s32 d;
 
-  d = agent->unk_0c.x - p->mover.pos.x;
-  if (d < 0) {
-    d = -d;
-  }
+  d = abs(agent->unk_0c.x - p->mover.pos.x);
   if ((u32)d <= rangeX) {
-    d = agent->unk_0c.z - p->mover.pos.z;
-    if (d < 0) {
-      d = -d;
-    }
+    d = abs(agent->unk_0c.z - p->mover.pos.z);
     if ((u32)d <= rangeZ) {
       return TRUE;
     }
   }
-
   if (dx != 0 || dz != 0) {
     u32 angle = (u8)ArcTan2_8(dx, dz);
 
-    p->mover.delta.x = p->unk_20c.x + FixToInt(16, speed * gSineTable[(angle + 0x40) & 0xFF]) + p->mover.delta.x;
-    p->mover.delta.z = p->unk_20c.z + FixToInt(16, speed * gSineTable[angle]) + p->mover.delta.z;
+    p->mover.delta.x = p->unk_20c.x + FixToInt(16, speed * COS(angle)) + p->mover.delta.x;
+    p->mover.delta.z = p->unk_20c.z + FixToInt(16, speed * SIN(angle)) + p->mover.delta.z;
     p->mover.angle = angle;
   }
   return FALSE;

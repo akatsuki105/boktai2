@@ -42,15 +42,12 @@ typedef struct EntityBD74 {
 } EntityBD74;
 static_assert(sizeof(EntityBD74) == 940);
 
-void FUN_08084a14(EntityBD74* p);
-void FUN_08084b5c(EntityBD74* p);
-void FUN_08084c30(EntityBD74* p, u8 param_2);
-void FUN_0808509c(EntityBD74* p);
+COMMON_DATA EntityBD74* gEntityBD74 = NULL;  // 0x03002BFC
 
-extern EntityBD74* gEntityBD74;  // 0x03002BFC
-
-static inline bool32 TestPauseFlag(u32 bits) { return u32_03002bc0[0] & bits; }
-
+void FUN_08084a14(EntityBD74*);
+void FUN_08084b5c(EntityBD74*);
+void FUN_08084c30(EntityBD74*, u8);
+void FUN_0808509c(EntityBD74*);
 void FUN_08084c58(EntityBD74*);
 void FUN_08084c9c(EntityBD74*);
 void FUN_08084ce8(EntityBD74*);
@@ -221,7 +218,7 @@ NAKED void FUN_0808509c(EntityBD74* p) { INCFUNC("asm/func/FUN_0808509c.inc"); }
 s32 EntityBD74_Update(EntityBD74* p) {
   u16 scale;
 
-  if (!TestPauseFlag(FLAG03002BC0_UNK_2)) {
+  if (!TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
     FUN_08084b5c(p);
     FUN_0808509c(p);
     p->updateCallback(p);

@@ -36,7 +36,7 @@ typedef struct Coffin {
   u8 state;                   // 0x1F5, 1 / 0x10 / 12 / 13 などを取る, Player は 1 か 0x10 のときだけ掴める
   u16 stateTimer;             // 0x1F6, state が変わるたびに 0 に戻る
   Vec3 pos_1f8;               // 0x1F8, '.p', y はタイルの高さ属性から決まる, mover / sprite.pos / unk_388 / unk_3c4 の初期値
-  Facing8 facing;             // 0x200, '.d', 8方向の向き, mover.angle は (facing + 5) * 32
+  DirU8 facing;               // 0x200, '.d', 8方向の向き, mover.angle は (facing + 5) * 32
   u8 unk_201[3];              // 0x201, padding?
   Particle ptcls[7];          // 0x204, PTCL_GROUP_1, 最初は非表示
   u16 unk_31c;                // 0x31C, coffinID の写し
@@ -120,6 +120,9 @@ extern Coffin* gCoffin;  // 0x03002C00
 void FUN_0808670c(s32 n);
 WorldPos* Coffin_GetPos(void);
 bool32 Coffin_CopyPos(WorldPos* out);
+bool32 Coffin_IsIdle(void);
+s32 FUN_08086878(void);
+void FUN_0808689c(s32 val);
 void FUN_08086a4c(Vec3* pos);
 bool32 FUN_0808626c(u32 playerEleveterID, u32 param_2, u32 coffinEleveterID, u32 param_4);
 

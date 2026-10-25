@@ -36,7 +36,7 @@ typedef struct Entity08080be8 {
   u16 offsetRadius;                   // 0x0C2, Init の第6引数, offset.x と offset.z の大きさ
   u16 eneCost;                        // 0x0C4, Init の第12引数, Entity08080be8_PayENE が Player_ReduceENE_0807aa60 に渡す
   u8 unk_c6[2];                       // 0x0C6
-  Facing8 dir;                        // 0x0C8, プレイヤーの向きから作る 0..7 の方向, 8bit角度の基準になる
+  DirU8 dir;                          // 0x0C8, プレイヤーの向きから作る 0..7 の方向, 8bit角度の基準になる
   u8 charge;                          // 0x0C9, player の 0xA8F の写し, damage を 1 + charge/2 倍にし、sprite.poseIdx にも入る
   u16 timer;                          // 0x0CA, Entity08080be8_SetState が状態を変えるたび 0 に戻し、各状態が毎フレーム +1 する
   u8 ptclIdx;                         // 0x0CC, 次に撒く ptcls の添字, 4 で 0 に戻る
@@ -58,30 +58,30 @@ void Entity08080be8_SetState(Entity08080be8* p, Entity08080be8Func fn) {
 }
 
 // プレイヤーの位置と向きから、スプライト・当たり判定・毎フレームの進み幅を作り直す
+// 残差は末尾の 0xFF 定数の生成位置と dir 計算のレジスタ割り当てのみ, 末尾の offset は 表 * offsetRadius の順 (POLAR_X/POLAR_Z は順が逆で不可)
+// dir を ((angle & 0xFF) / 32 + 3) & 7 にすると 0xFF の位置まで一致し残差は ands r1, r0 の1命令 (原典はマスク付きのマクロかも), Tier A-B は試済, 未: Tier C
 NON_MATCH void Entity08080be8_Reposition(Entity08080be8* p) {
 #ifdef NONMATCHING_C
   Player* player = p->player;
-  s32 dir;
-  s32 angle;
+  u32 angle;
   s32 cosv;
   s32 sinv;
 
   p->sprite.pos = player->mover.pos;
   p->sprite.pos.y += p->heightOffset;
-  dir = (player->facing + 5) & 7;
-  angle = dir * 32;
-  cosv = gSineTable[(angle + 0x40) & 0xFF];
-  sinv = gSineTable[angle & 0xFF];
-  if (player->xflip == 0) {
-    p->sprite.pos.x += cosv * p->unk_be / 4096 - sinv * p->unk_c0 / 4096;
-    p->sprite.pos.z += sinv * p->unk_be / 4096 + cosv * p->unk_c0 / 4096;
+  angle = ((player->facing + 5) & 7) * 32;
+  cosv = COS(angle);
+  sinv = SIN(angle);
+  if (player->xflip) {
+    p->sprite.pos.x += FixToInt(12, cosv * p->unk_be) + FixToInt(12, sinv * p->unk_c0);
+    p->sprite.pos.z += FixToInt(12, sinv * p->unk_be) - FixToInt(12, cosv * p->unk_c0);
   } else {
-    p->sprite.pos.x += cosv * p->unk_be / 4096 + sinv * p->unk_c0 / 4096;
-    p->sprite.pos.z += sinv * p->unk_be / 4096 - cosv * p->unk_c0 / 4096;
+    p->sprite.pos.x += FixToInt(12, cosv * p->unk_be) - FixToInt(12, sinv * p->unk_c0);
+    p->sprite.pos.z += FixToInt(12, sinv * p->unk_be) + FixToInt(12, cosv * p->unk_c0);
   }
-  p->dir = (dir + 3) & 7;
-  p->offset.x = gSineTable[(angle + 0x40) & 0xFF] * p->offsetRadius / 4096;
-  p->offset.z = gSineTable[angle & 0xFF] * p->offsetRadius / 4096;
+  p->dir = (angle / 32 + 3) & 7;
+  p->offset.x = FixToInt(12, COS(angle) * p->offsetRadius);
+  p->offset.z = FixToInt(12, SIN(angle) * p->offsetRadius);
   p->hitbox.angle = angle;
 #else
   INCFUNC("asm/func/Entity08080be8_Reposition.inc");
@@ -343,11 +343,11 @@ void Entity08080be8_SetupHitbox(Entity08080be8* p, u32 hitboxUnk40, HitboxAttrib
   HitboxData* hitbox = &p->hitbox;
   Vec3 offset, halfSize;
 
-  halfSize.x = 30, halfSize.y = 30, halfSize.z = 30;
+  VEC3_SET(halfSize, 30, 30, 30);
   if (p->unk_cd != 0) {
-    offset.x = 0, offset.y = 30, offset.z = 0;
+    VEC3_SET(offset, 0, 30, 0);
   } else {
-    offset.x = 0, offset.y = 0, offset.z = 0;
+    VEC3_SET(offset, 0, 0, 0);
   }
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE | HBFLAG_UNK_0, 0, 1 << p->player->mover.unk_4, &halfSize, &offset);
   Hitbox_SetAttack(hitbox, 0, hitboxUnk40, 0x10, attrs, hitboxUnk44);

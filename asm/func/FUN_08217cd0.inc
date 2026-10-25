@@ -33,7 +33,7 @@ _08217D10:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, r0, r7
-	bl Textbox_LookupString
+	bl GetStringByID
 	ldrb r1, [r0]
 	strb r1, [r5]
 	ldrb r0, [r0, #1]

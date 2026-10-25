@@ -26,7 +26,7 @@
 	bl MessageWindow_Start
 	movs r0, #3
 	bl MessageWindow_ShowLine
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r0, _0801CFD8 @ =0x00000DA4
 	adds r2, r5, r0
 	ldr r0, [r2, #8]

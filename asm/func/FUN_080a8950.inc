@@ -429,7 +429,7 @@ _080A8C68:
 	movs r1, #0
 	mov r2, r8
 	movs r3, #0x32
-	bl FUN_080d85d8
+	bl Entity080d84f8_CreateWithAttrs
 	adds r5, #1
 	cmp r5, #4
 	ble _080A8BDC

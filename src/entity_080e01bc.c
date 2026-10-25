@@ -83,9 +83,9 @@ void FUN_080df730(s32 param_1, s32 param_2, Entity080e01bc* p) {
   p->elems[0].unk_176 = 1;
 
   hb = &p->elems[0].hitbox_b8;
-  hb->flags |= HBFLAG_UNK_2;
+  hb->flags |= HBFLAG_HIDDEN;
   hb = &p->elems[0].hitbox_108;
-  hb->flags |= HBFLAG_UNK_2;
+  hb->flags |= HBFLAG_HIDDEN;
 }
 
 void FUN_080df760(s32 param_1, s32 param_2, Entity080e01bc* p) {
@@ -95,9 +95,9 @@ void FUN_080df760(s32 param_1, s32 param_2, Entity080e01bc* p) {
   p->elems[0].unk_176 = 1;
 
   hb = &p->elems[0].hitbox_b8;
-  hb->flags |= HBFLAG_UNK_2;
+  hb->flags |= HBFLAG_HIDDEN;
   hb = &p->elems[0].hitbox_108;
-  hb->flags |= HBFLAG_UNK_2;
+  hb->flags |= HBFLAG_HIDDEN;
 }
 
 NAKED void FUN_080df790(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5) { INCFUNC("asm/func/FUN_080df790.inc"); }
@@ -149,7 +149,7 @@ NAKED s32 Entity080e01bc_Destroy(Entity080e01bc* p) { INCFUNC("asm/func/Entity08
 
 s32 Entity080e01bc_Init(Entity080e01bc* p) {
   p->unk_38 = 0;
-  Video_GetAuxSprite((AuxSpriteGfx*)p->unk_18, SPRITE_EFF_354D);
+  Video_GetAuxSprite((AuxSpriteGfx*)p->unk_18, SPRITE_EFF_SHAIAN_SPIN);
   gEntity080e01bc = p;
   return 0;
 }

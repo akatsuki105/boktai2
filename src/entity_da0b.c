@@ -189,7 +189,7 @@ NAKED s32 FUN_0801c260(EntityDA0B* p) { INCFUNC("asm/func/FUN_0801c260.inc"); }
 
 s32 FUN_0801c2bc(EntityDA0B* p) {
   Vec3 pos;
-  pos.x = 0, pos.y = 0x80, pos.z = 0;
+  VEC3_SET(pos, 0, 0x80, 0);
   MainSprite_Add(&p->iconSprite, &p->gfx2, 208, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, 0, 60, &pos);
 }
 

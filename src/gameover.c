@@ -44,9 +44,6 @@ static_assert(sizeof(GameOverManager) == 852);
 IWRAM_DATA GameOverManager* gGameOverManager = NULL;  // 0x03000150
 
 void FUN_0823a8f4(u32 val);
-
-static inline u32 TestFlag030047a4(u32 flags) { return (gFlag030047a4 | u32_030047a0) & flags; }
-
 s32 FUN_0809c08c(s32 mode);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 
@@ -112,19 +109,19 @@ void GameOverManager_AnimHold(GameOverManager* p) {
 // animState 6, 声を挟んでから、ロゴを横に引き伸ばして潰し、8文字を非表示にする
 void GameOverManager_AnimClose(GameOverManager* p) {
   p->timer++;
-  if (p->timer == 30) {
+  if (p->timer == SECOND(0.5)) {
     PlaySound_082406e0(VO_OTENKO_TAIYO_TO_TOMO_NI);
     return;
   }
-  if (p->timer <= 149) {
+  if (p->timer < SECOND(2.5)) {
     return;
   }
-  if (p->timer == 150) {
+  if (p->timer == SECOND(2.5)) {
     PlaySound_082406e0(SE_UNK_301);
   }
   p->scaleX += 0x05;
   p->scaleY -= 0x05;
-  if (p->scaleX > 0x7F) {
+  if (p->scaleX >= 0x80) {
     s32 i;
 
     p->scaleX = 0x01, p->scaleY = 0x01;
@@ -139,7 +136,7 @@ void GameOverManager_AnimClose(GameOverManager* p) {
 // animState 7, 90 フレーム待ってから animState を 8 (終了) にする
 void GameOverManager_AnimEnd(GameOverManager* p) {
   p->timer++;
-  if (p->timer >= 90) p->animState = 8;
+  if (p->timer >= SECOND(1.5)) p->animState = 8;
 }
 
 // 現在の拡大率を8文字に配り、等倍を超えた分だけ中央から左右へ文字間を開く
@@ -293,7 +290,7 @@ void GameOverManager_StartScripted(void) {
 
 // state 0, ゲームオーバーのフラグが立つまで何もせず待つ
 void GameOverManager_StateWaitFlag(GameOverManager* p) {
-  if (!TestFlag030047a4(FLAG030047A4_GAMEOVER)) {
+  if (!TEST_FLAGS((gFlag030047a4 | u32_030047a0), FLAG030047A4_GAMEOVER)) {
     return;
   }
   GameOverManager_AddSprites(p);
@@ -311,7 +308,7 @@ void GameOverManager_StateShowLogo(GameOverManager* p) {
   s32 i;
 
   p->timer++;
-  if (p->timer <= 31) {
+  if (p->timer < 32) {
     return;
   }
   for (i = 0; i < 8; i++) {
@@ -331,7 +328,7 @@ void GameOverManager_StateOpenMenu(GameOverManager* p) {
     MessageWindow_SetInstant(1);
     MessageWindow_Start(p->script);
     MessageWindow_SetVarValue(0, p->cost[p->costIdx]);
-    if ((s16)gStat->solarBank >= p->cost[p->costIdx]) {
+    if (gStat->solarBank >= p->cost[p->costIdx]) {
       MessageWindow_ShowLine(0);
     } else {
       MessageWindow_ShowLine(1);
@@ -407,7 +404,6 @@ s32 GameOverManager_Init(GameOverManager* p) {
 
 GameOverManager* GameOverManager_Create(void) {
   GameOverManager* p;
-
   if (gGameOverManager != NULL) {
     return gGameOverManager;
   }

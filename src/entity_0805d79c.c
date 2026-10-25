@@ -1,7 +1,7 @@
 #include "entity.h"
 #include "global.h"
 
-typedef struct {
+typedef struct Entity0805d79c {
   Entity e;  // ENTITY_UNK_8
   u8 unk_18[4408 - 0x18];
 } Entity0805d79c;

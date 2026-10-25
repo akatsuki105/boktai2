@@ -54,7 +54,7 @@ _0821D466:
 	adds r0, r5, #0
 	movs r1, #4
 	movs r2, #1
-	bl FUN_08221268
+	bl ShadeMan_SetMotion
 	ldr r2, _0821D4AC @ =0x00000804
 	adds r1, r5, r2
 	movs r0, #0
@@ -75,7 +75,7 @@ _0821D478:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0xb
-	bl FUN_0821d870
+	bl ShadeMan_SetSubState0
 	ldr r1, _0821D4B0 @ =0x00000806
 	adds r0, r5, r1
 	strh r4, [r0]

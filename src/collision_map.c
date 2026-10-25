@@ -4,6 +4,7 @@
 #include "global.h"
 #include "input.h"
 #include "malloc.h"
+#include "map_inline.h"
 #include "mover.h"
 #include "random.h"
 #include "registry.h"
@@ -18,42 +19,6 @@ s32 FUN_0823a88c(u8* pc, ScriptArgs* args);                      // src/entity_0
 s32 VM_ExecById_Proxy_0823a8a4(u32 scriptID, ScriptArgs* args);  // src/entity_0823acbc.c
 extern u32 gNextMapEventID;                                      // src/iwram2.c
 
-// pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
-static inline s32 TileHeightAt(Vec3* pos) {
-  MapTileOverride* ov;
-  CollisionMapTile* tile;
-  s32 stairs;
-  s32 height;
-  s32 bx;
-  s32 bz;
-  s32 idx;
-
-  bx = (s8)(pos->x >> 8);
-  bz = (s8)(pos->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-
-  ov = Map_FindTileOverride(idx, 1);
-  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
-
-  stairs = tile->heightStairs >> 4;
-  height = (tile->heightStairs & 0xF) << 8;
-  switch (stairs) {
-    case STAIRS_VERTICAL: {
-      height -= (u8)pos->z;
-      break;
-    }
-    case STAIRS_HORIZONTAL: {
-      height -= (u8)pos->x;
-      break;
-    }
-  }
-  return height;
-}
-
 // 索引 idx のタイルを返す, 上書きがあればそちらを返す
 static inline CollisionMapTile* TileAtIndex(s32 idx) {
   MapTileOverride* ov = Map_FindTileOverride(idx, 1);
@@ -62,22 +27,6 @@ static inline CollisionMapTile* TileAtIndex(s32 idx) {
     return &ov->tile;
   }
   return &gCollisionMap->tiledata->tiles[idx];
-}
-
-// pos のタイルを返す, マップ外なら tiles[0]
-static inline CollisionMapTile* TileAt(Vec3* pos) {
-  s32 bx;
-  s32 bz;
-  s32 idx;
-
-  bx = (s8)(pos->x >> 8);
-  bz = (s8)(pos->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-  return TileAtIndex(idx);
 }
 
 void Map_InitCollisionMap(void) {
@@ -627,47 +576,26 @@ s32 FUN_08232df8(MoverTile* tile, Vec3* pos, Vec3* dst, u8 param_4) {
 }
 
 // dst のタイルが変わっていたら今の値を [0] へ押し出して [1] を更新し, pos を dst とそのタイルの高さで埋める
-void Map_UpdateMoverTile(MoverTile* tile, Vec3* pos, Vec3* dst) {
-  MapTileOverride* ov;
-  CollisionMapTile* t;
-  s32 bx;
-  s32 bz;
-  s32 idx;
-  u16 tileIdx;
+void Map_UpdateMoverTile(MoverTile* mTile, Vec3* pos, Vec3* dst) {
+  if (gCollisionMap->tiledata != NULL) {
+    u16 idx = GetCollisionTileIdx(dst);
+    MapTileOverride* ov = Map_FindTileOverride(idx, 1);
+    CollisionMapTile* tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
 
-  if (gCollisionMap->tiledata == NULL) {
-    return;
+    if (mTile->tileIdx[1] != idx) {
+      mTile->tileIdx[0] = mTile->tileIdx[1];
+      mTile->stairs[0] = mTile->stairs[1];
+      mTile->height[0] = mTile->height[1];
+      mTile->attr[0] = mTile->attr[1];
+      mTile->tileIdx[1] = idx;
+      mTile->stairs[1] = tile->heightStairs >> 4;
+      mTile->height[1] = tile->heightStairs & 0xF;
+      mTile->attr[1] = tile->attr;
+    }
+
+    *pos = *dst;
+    pos->y = TileHeightAt(dst);
   }
-
-  bx = (s8)(dst->x >> 8);
-  bz = (s8)(dst->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-  tileIdx = idx;
-
-  ov = Map_FindTileOverride(tileIdx, 1);
-  if (ov != NULL) {
-    t = &ov->tile;
-  } else {
-    t = &gCollisionMap->tiledata->tiles[tileIdx];
-  }
-
-  if (tile->tileIdx[1] != tileIdx) {
-    tile->tileIdx[0] = tile->tileIdx[1];
-    tile->stairs[0] = tile->stairs[1];
-    tile->height[0] = tile->height[1];
-    tile->attr[0] = tile->attr[1];
-    tile->tileIdx[1] = tileIdx;
-    tile->stairs[1] = t->heightStairs >> 4;
-    tile->height[1] = t->heightStairs & 0xF;
-    tile->attr[1] = t->attr;
-  }
-
-  *pos = *dst;
-  pos->y = TileHeightAt(dst);
 }
 
 // pos から offset だけ動いた先のタイルを MoverTile に反映する
@@ -1324,48 +1252,45 @@ void Map_RemoveTileOverride(MapTileOverride* p) {
 
 // タイルの境界付近にいるとき, 隣や斜め隣のタイルの方が高いかを見る
 s32 FUN_082342cc(Vec3* pos, s32 limit) {
-  CollisionMapTile* tile;
   Vec3 v;
   s32 h;
-  s32 x0;
-  s32 y0;
-  s32 z0;
 
-  x0 = (pos->x & 0xFF00) + 0x80;
-  y0 = pos->y & 0xFF00;
-  z0 = (pos->z & 0xFF00) + 0x80;
+  s32 x0 = (pos->x & 0xFF00) + 0x80;
+  s32 y0 = pos->y & 0xFF00;
+  s32 z0 = (pos->z & 0xFF00) + 0x80;
 
-  tile = TileAt(pos);
+  CollisionMapTile* tile = GetTileAt(pos);
   if (tile == NULL) {
     return 0;
   }
+
   h = tile->heightStairs & 0xF;
 
   if ((pos->x & 0xFF) < limit) {
     if ((pos->z & 0xFF) >= limit) {
       v.x = x0, v.y = y0, v.z = z0 + 0xFF;
-      if (h < (TileAt(&v)->heightStairs & 0xF)) {
+      if (h < (GetTileAt(&v)->heightStairs & 0xF)) {
         return 1;
       }
     }
   } else if ((pos->z & 0xFF) >= limit) {
-    v.x = x0 + 0xFF, v.y = y0, v.z = z0;
-    if (h < (TileAt(&v)->heightStairs & 0xF)) {
+    VEC3_SET(v, x0 + 0xFF, y0, z0);
+    if (h < (GetTileAt(&v)->heightStairs & 0xF)) {
       return 1;
     }
 
     v.x = x0, v.y = y0, v.z = z0 + 0xFF;
-    if (h < (TileAt(&v)->heightStairs & 0xF)) {
+    if (h < (GetTileAt(&v)->heightStairs & 0xF)) {
       return 1;
     }
 
     v.x = x0 + 0xFF, v.y = y0, v.z = z0 + 0xFF;
-    if (h < (TileAt(&v)->heightStairs & 0xF)) {
+    if (h < (GetTileAt(&v)->heightStairs & 0xF)) {
       return 1;
     }
   } else {
-    v.x = x0 + 0xFF, v.y = y0, v.z = z0;
-    if (h < (TileAt(&v)->heightStairs & 0xF)) {
+    VEC3_SET(v, x0 + 0xFF, y0, z0);
+    if (h < (GetTileAt(&v)->heightStairs & 0xF)) {
       return 1;
     }
   }
@@ -1813,8 +1738,8 @@ bool8 Map_GetStepToPathNode(PathWalker* w, Vec3* pos, Vec3* out, u8* outAngle, u
     out->z = dz;
     return TRUE;
   }
-  out->x = COS(angle, speed);
-  out->z = SIN(angle, speed);
+  out->x = POLAR_X(speed, angle);
+  out->z = POLAR_Z(speed, angle);
   return FALSE;
 }
 
@@ -1904,14 +1829,7 @@ NON_MATCH s32 Map_IsPosOutsidePathNode(PathWalker* w, Vec3* pos, u32 rx, u32 rz)
 // Tier A/B と C のガード分割は試済, 同種の CSE 残差は JudgementParticle_UpdateStill などにもある
 s32 Map_PickRandomPathNode(Vec3* dst, s32 pathIdx) {
   Path* path = Map_GetPath(pathIdx);
-  CollisionMapTile* tile;
-  MapTileOverride* ov;
   s32 nodeIdx;
-  s32 stairs;
-  s32 height;
-  s32 bx;
-  s32 bz;
-  s32 idx;
 
   if (path == NULL || path->nodeCount == 0) {
     dst->x = 0, dst->y = 0, dst->z = 0;
@@ -1920,35 +1838,7 @@ s32 Map_PickRandomPathNode(Vec3* dst, s32 pathIdx) {
 
   nodeIdx = Mod(Random(), path->nodeCount);
   Map_GetPathNodePos(dst, pathIdx, nodeIdx);
-
-  bx = (s8)(dst->x >> 8);
-  bz = (s8)(dst->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-
-  ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
-
-  stairs = tile->heightStairs >> 4;
-  height = (tile->heightStairs & 0xF) << 8;
-  switch (stairs) {
-    case 1: {
-      height -= (u8)dst->z;
-      break;
-    }
-    case 2: {
-      height -= (u8)dst->x;
-      break;
-    }
-  }
-  dst->y = height;
+  dst->y = TileHeightAt(dst);
   return nodeIdx;
 }
 
@@ -1962,17 +1852,13 @@ s32 Map_FindNearestPathNode(Vec3* dst, Vec3* pos, s32 pathIdx) {
   s32 i;
 
   if (path == NULL || path->nodeCount == 0) {
-    dst->x = 0;
-    dst->y = 0;
-    dst->z = 0;
+    dst->x = 0, dst->y = 0, dst->z = 0;
     return ret;
   }
 
   nodes = Map_GetPathNodes(path);
   if (nodes == NULL) {
-    dst->x = 0;
-    dst->y = 0;
-    dst->z = 0;
+    dst->x = 0, dst->y = 0, dst->z = 0;
     return ret;
   }
 
@@ -2008,17 +1894,13 @@ s32 Map_FindFarthestPathNode(Vec3* dst, Vec3* pos, s32 pathIdx) {
   s32 i;
 
   if (path == NULL || path->nodeCount == 0) {
-    dst->x = 0;
-    dst->y = 0;
-    dst->z = 0;
+    dst->x = 0, dst->y = 0, dst->z = 0;
     return ret;
   }
 
   nodes = Map_GetPathNodes(path);
   if (nodes == NULL) {
-    dst->x = 0;
-    dst->y = 0;
-    dst->z = 0;
+    dst->x = 0, dst->y = 0, dst->z = 0;
     return ret;
   }
 
@@ -2056,17 +1938,13 @@ NON_MATCH s32 FUN_08235408(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq) {
   s32 i;
 
   if (path == NULL || path->nodeCount == 0) {
-    dst->x = 0;
-    dst->y = 0;
-    dst->z = 0;
+    dst->x = 0, dst->y = 0, dst->z = 0;
     return ret;
   }
 
   nodes = Map_GetPathNodes(path);
   if (nodes == NULL) {
-    dst->x = 0;
-    dst->y = 0;
-    dst->z = 0;
+    dst->x = 0, dst->y = 0, dst->z = 0;
     return ret;
   }
 
@@ -2102,24 +1980,21 @@ NON_MATCH s32 FUN_08235408(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq) {
 // 経路上のランダムな位置から順に走査して, pos から minDistSq 以上離れた最初のノードを dst に入れる
 s32 Map_FindPathNodeBeyond(Vec3* dst, Vec3* pos, s32 pathIdx, u32 minDistSq) {
   Path* path = Map_GetPath(pathIdx);
-  Vec3 node;
   s32 start;
   s32 i;
-  s32 idx;
-  s32 dx;
-  s32 dz;
-  u32 d;
 
   if (path == NULL || path->nodeCount == 0) {
-    dst->x = 0;
-    dst->y = 0;
-    dst->z = 0;
+    dst->x = 0, dst->y = 0, dst->z = 0;
     return -1;
   }
 
   start = Mod(Random(), path->nodeCount);
   for (i = start; i < start + path->nodeCount; i++) {
-    idx = Mod(i, path->nodeCount);
+    Vec3 node;
+    s32 dx, dz;
+    u32 d;
+
+    s32 idx = Mod(i, path->nodeCount);
     Map_GetPathNodePos(&node, pathIdx, idx);
     dx = pos->x - node.x;
     dz = pos->z - node.z;
@@ -2147,17 +2022,13 @@ NON_MATCH s32 FUN_082356c4(Vec3* dst, Vec3* min, Vec3* max, s32 pathIdx) {
   s32 i;
 
   if (path == NULL || path->nodeCount == 0) {
-    dst->x = 0;
-    dst->y = 0;
-    dst->z = 0;
+    dst->x = 0, dst->y = 0, dst->z = 0;
     return ret;
   }
 
   nodes = Map_GetPathNodes(path);
   if (nodes == NULL) {
-    dst->x = 0;
-    dst->y = 0;
-    dst->z = 0;
+    dst->x = 0, dst->y = 0, dst->z = 0;
     return ret;
   }
 
@@ -2278,31 +2149,8 @@ NON_MATCH u16 Map_GetNavDistance(u16* distanceMap, u16 n, s32 a, s32 b) {
 // dst のタイルが壁でなく, かつ agent と同じ島のナビ矩形に入っているか
 bool32 Map_IsPosInAgentIsland(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
   NavMesh* navMesh = gCollisionMap->navMesh;
-  MapTileOverride* ov;
-  CollisionMapTile* tile;
-  s32 bx;
-  s32 bz;
-  s32 idx;
   s32 i;
-  u16 attr;
-
-  bx = (s8)(dst->x >> 8);
-  bz = (s8)(dst->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-
-  ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
-
-  attr = tile->attr;
-  if (attr & TATTR_WALL) {
+  if (GetTileAttrAt(dst) & TATTR_WALL) {
     return FALSE;
   }
 
@@ -2520,29 +2368,7 @@ NON_MATCH s32 FUN_08235a84(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
 
 // dst のタイルが壁なら進行をやめさせ, そうでなければ FUN_08235a84 に任せる
 s32 FUN_08235f40(NavAgent* agent, WorldPos* pos, WorldPos* dst) {
-  CollisionMapTile* tile;
-  MapTileOverride* ov;
-  TileAttr attr;
-  s32 bx;
-  s32 bz;
-  s32 idx;
-
-  bx = (s8)(dst->x >> 8);
-  bz = (s8)(dst->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-
-  ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
-
-  attr = tile->attr;
+  TileAttr attr = GetTileAttrAt(dst);
   if (attr & TATTR_WALL) {
     agent->flags = 0;
     return 0;

@@ -60,7 +60,7 @@ _08091AA6:
 	adds r0, r0, r2
 	strh r0, [r1, #0x20]
 	adds r0, r6, #0
-	bl FUN_080612bc
+	bl Player_RefreshAllStats
 	adds r0, r5, #0
 	movs r1, #5
 	movs r2, #3

@@ -88,7 +88,7 @@ _0808AA4C:
 	movs r0, #0
 	mov r1, r8
 	mov r2, sb
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r3, r0, #0
 	cmp r6, #0
 	beq _0808AA80
@@ -226,7 +226,7 @@ _0808AB32:
 	movs r0, #0
 	movs r1, #0xf
 	movs r2, #0x11
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r3, r0, #0
 	movs r2, #0
 	movs r0, #0xd0
@@ -266,7 +266,7 @@ _0808ABAC:
 	movs r0, #0
 	movs r1, #0xf
 	movs r2, #0x11
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r3, r0, #0
 	movs r1, #0xd0
 	lsls r1, r1, #8

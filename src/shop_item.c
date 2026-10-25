@@ -56,7 +56,7 @@ typedef struct ItemShop {
 static_assert(sizeof(ItemShop) == 5440);
 
 void FUN_080baae8(ItemShop* p);
-s32 FUN_08049e6c(s32 idx, s32 value);
+s32 Marquee_SetVarValue(s32 idx, s32 value);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void FUN_080bbc60(ItemShop* p);
 void FUN_080bc2d8(ItemShop* p);
@@ -79,7 +79,7 @@ void FUN_080ba054(ItemShop* p, ItemShopFunc* fn, s32 val) {
 }
 
 void FUN_080ba07c(ItemShop* p, s32 line) {
-  FUN_08049e5c();
+  Marquee_Clear();
   p->sprites[33].flags |= SPRFLAG_HIDDEN;
   MessageWindow_Start(p->unk_12e0);
   MessageWindow_SetRect(0, 16, 30, 2);
@@ -97,10 +97,10 @@ void SplitDecimal3_080ba0c0(s32 value, s32* digits) {
 
 NAKED void FUN_080ba0f0(ItemShop* p, s32 param_2) { INCFUNC("asm/func/FUN_080ba0f0.inc"); }
 
-// 道具の買値を返す, 消耗品だけ priceRate を掛けて 1〜9999 に収める
+// 道具の買値を返す, 果実系は nutsRate を掛けて 1〜9999 に収める (太陽光に応じて値段が変わる設定)
 s32 Item_GetBuyPrice(u32 itemID) {
   if (itemID <= 4 || itemID == 6 || itemID == 7 || itemID == 9 || itemID == 10) {
-    s32 price = Div(gItemDB[itemID].price * gStat->priceRate, 100);
+    s32 price = Div(gItemDB[itemID].price * gStat->nutsRate, 100);
 
     if (price <= 0) {
       price = 1;
@@ -165,7 +165,7 @@ void FUN_080ba2d8(ItemShop* p) {
   if (id < 0) {
     p->sprites[33].flags |= SPRFLAG_HIDDEN;
     MessageWindow_Close();
-    FUN_08049e5c();
+    Marquee_Clear();
   } else {
     s32 base;
 
@@ -178,11 +178,11 @@ void FUN_080ba2d8(ItemShop* p) {
     base = VM_ParseStringRef(p->unk_12e4);
     if (gStat->playerKind == 5) {
       if (id == 1) {
-        FUN_08049e30(Textbox_LookupString(base + 0xEA));
+        Marquee_SetText(GetStringByID(base + 0xEA));
         return;
       }
       if (id == 0xD) {
-        FUN_08049e30(Textbox_LookupString(base + 0xA9));
+        Marquee_SetText(GetStringByID(base + 0xA9));
         return;
       }
     }
@@ -192,7 +192,7 @@ void FUN_080ba2d8(ItemShop* p) {
     } else {
       base += 0x9C;
     }
-    FUN_08049e30(Textbox_LookupString(base + id));
+    Marquee_SetText(GetStringByID(base + id));
   }
 }
 
@@ -296,12 +296,8 @@ void FUN_080ba710(ItemShop* p) {
   unk1[1] = 0;
   anims[1] = 0x68;
   strIDs[1] = 0x2DF;
-  a[1].x = 0;
-  a[1].y = 0;
-  a[1].z = 0;
-  b[1].x = 0;
-  b[1].y = 0;
-  b[1].z = 0;
+  VEC3_SET(a[1], 0, 0, 0);
+  VEC3_SET(b[1], 0, 0, 0);
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
@@ -322,12 +318,8 @@ void FUN_080ba7bc(ItemShop* p) {
   unk1[1] = 0;
   anims[1] = 0x68;
   strIDs[1] = 0x2DF;
-  a[1].x = 0;
-  a[1].y = 0;
-  a[1].z = 0;
-  b[1].x = 0;
-  b[1].y = 0;
-  b[1].z = 0;
+  VEC3_SET(a[1], 0, 0, 0);
+  VEC3_SET(b[1], 0, 0, 0);
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
@@ -535,7 +527,7 @@ NON_MATCH void FUN_080bb070(ItemShop* p) {
     s32 slot = (u8)p->cursor.savedSlot;
 
     gStat->solarBank += FUN_080ba288(slot);
-    if ((s16)gStat->solarBank > 9999) {
+    if (gStat->solarBank > 9999) {
       gStat->solarBank = 9999;
     }
     RemoveItem(slot);
@@ -623,20 +615,20 @@ void FUN_080bb294(ItemShop* p) {
   if (id < 0) {
     p->sprites[33].flags |= SPRFLAG_HIDDEN;
     MessageWindow_Close();
-    FUN_08049e5c();
+    Marquee_Clear();
   } else {
     p->sprites[33].flags &= ~SPRFLAG_HIDDEN;
     MainSprite_SetPose(&p->sprites[33], &p->icons, ICON_TIMER_NONE, 1);
     MessageWindow_Start(p->unk_12e8);
     MessageWindow_SetRect(2, 16, 28, 2);
-    FUN_08049e6c(0, gArmorDB[id].defence);
-    FUN_08049e6c(1, gArmorDB[id].weight);
+    Marquee_SetVarValue(0, gArmorDB[id].defence);
+    Marquee_SetVarValue(1, gArmorDB[id].weight);
     MessageWindow_SetInstant(1);
     MessageWindow_ShowLine(id);
     {
       s32 base = VM_ParseStringRef(p->unk_12e8) + 0x25;
 
-      FUN_08049e30(Textbox_LookupString(base + id));
+      Marquee_SetText(GetStringByID(base + id));
     }
   }
 
@@ -743,12 +735,8 @@ void FUN_080bb798(ItemShop* p) {
   unk1[1] = 0;
   anims[1] = 0x43;
   strIDs[1] = 0x2DF;
-  a[1].x = 0;
-  a[1].y = 0;
-  a[1].z = 0;
-  b[1].x = 0;
-  b[1].y = 0;
-  b[1].z = 0;
+  VEC3_SET(a[1], 0, 0, 0);
+  VEC3_SET(b[1], 0, 0, 0);
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
@@ -769,12 +757,8 @@ void FUN_080bb854(ItemShop* p) {
   unk1[1] = 0;
   anims[1] = 0x68;
   strIDs[1] = 0x2DF;
-  a[1].x = 0;
-  a[1].y = 0;
-  a[1].z = 0;
-  b[1].x = 0;
-  b[1].y = 0;
-  b[1].z = 0;
+  VEC3_SET(a[1], 0, 0, 0);
+  VEC3_SET(b[1], 0, 0, 0);
   FUN_080b9a28(&p->pair0.gfx, unk1, a, b, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
@@ -951,7 +935,7 @@ NON_MATCH void FUN_080bc240(ItemShop* p) {
     s32 slot = (u8)p->cursor.savedSlot;
 
     gStat->solarBank += Div(gArmorDB[ARMORS(slot)].price * 50, 100);
-    if ((s16)gStat->solarBank > 9999) {
+    if (gStat->solarBank > 9999) {
       gStat->solarBank = 9999;
     }
     RemoveArmorFromInventory(slot);

@@ -53,12 +53,12 @@ _0820F65A:
 	str r3, [sp]
 	adds r0, r5, #0
 	movs r3, #0x10
-	bl FUN_08055dac
+	bl SpriteHolder_InitAux
 	cmp r0, #0
 	blt _0820F6E4
 	adds r0, r5, #0
 	movs r1, #1
-	bl FUN_08055f1c
+	bl SpriteHolder_ClearFlags
 	ldrb r1, [r7, #0xb]
 	movs r0, #1
 	ands r0, r1
@@ -70,7 +70,7 @@ _0820F65A:
 _0820F6BE:
 	adds r0, r5, #0
 	movs r1, #2
-	bl FUN_08055f5c
+	bl SpriteHolder_SetPriority
 	ldrb r0, [r7, #0xa]
 	ldr r4, _0820F6F8 @ =0x00000366
 	adds r1, r6, r4

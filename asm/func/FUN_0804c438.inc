@@ -104,7 +104,7 @@ _0804C4F2:
 	adds r0, #4
 _0804C504:
 	adds r0, r6, r0
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r4, r0, #0
 	ldr r0, _0804C578 @ =0x030046A0
 	ldr r0, [r0]

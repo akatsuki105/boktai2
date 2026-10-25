@@ -180,7 +180,7 @@ _0821E318:
 	movs r1, #0
 	movs r2, #2
 	movs r3, #0
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 	movs r1, #0xef
 	lsls r1, r1, #2
 	adds r0, r5, r1

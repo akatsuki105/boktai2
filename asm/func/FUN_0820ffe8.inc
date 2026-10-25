@@ -95,7 +95,7 @@ _08210080:
 _082100A6:
 	ldr r3, _082100C0 @ =0x00000CD4
 	adds r0, r4, r3
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	bne _082100B4
 	b _08210528
@@ -126,7 +126,7 @@ _082100C8:
 _082100E6:
 	ldr r1, _08210104 @ =0x00000CD4
 	adds r0, r4, r1
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	bne _082100F4
 	b _08210528
@@ -160,7 +160,7 @@ _08210110:
 _0821012E:
 	ldr r2, _0821014C @ =0x00000CD4
 	adds r0, r4, r2
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	bne _0821013C
 	b _08210528
@@ -194,7 +194,7 @@ _08210158:
 _08210176:
 	ldr r2, _08210194 @ =0x00000CD4
 	adds r0, r4, r2
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	bne _08210184
 	b _08210528
@@ -229,7 +229,7 @@ _082101BE:
 	ldr r2, _082101E0 @ =0x00000CD4
 	adds r5, r4, r2
 	adds r0, r5, #0
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	bne _082101CE
 	b _08210528
@@ -284,7 +284,7 @@ _08210206:
 _0821022A:
 	ldr r2, _08210244 @ =0x00000CD4
 	adds r0, r4, r2
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	bne _08210238
 	b _08210528
@@ -316,7 +316,7 @@ _08210250:
 _0821026C:
 	ldr r2, _08210288 @ =0x00000CD4
 	adds r0, r4, r2
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	bne _0821027A
 	b _08210528
@@ -364,7 +364,7 @@ _082102CC:
 	ldr r0, _082102EC @ =0x00000CD4
 	adds r5, r4, r0
 	adds r0, r5, #0
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	bne _082102DC
 	b _08210528
@@ -432,7 +432,7 @@ _08210334:
 _0821034E:
 	ldr r1, _08210368 @ =0x00000CD4
 	adds r0, r4, r1
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	bne _0821035C
 	b _08210528
@@ -463,7 +463,7 @@ _08210374:
 _0821038E:
 	ldr r2, _082103A8 @ =0x00000CD4
 	adds r0, r4, r2
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	bne _0821039C
 	b _08210528
@@ -495,7 +495,7 @@ _082103CE:
 	ldr r2, _082103F4 @ =0x00000CD4
 	adds r6, r4, r2
 	adds r0, r6, #0
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	bne _082103DE
 	b _08210528
@@ -552,7 +552,7 @@ _0821041A:
 _0821043E:
 	ldr r2, _08210458 @ =0x00000CD4
 	adds r0, r4, r2
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _08210528
 	ldr r3, _0821045C @ =0x00000D89
@@ -582,7 +582,7 @@ _08210464:
 _08210480:
 	ldr r2, _08210498 @ =0x00000CD4
 	adds r0, r4, r2
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _08210528
 	ldr r3, _0821049C @ =0x00000D89
@@ -612,7 +612,7 @@ _082104B6:
 _082104BE:
 	ldr r3, _082104DC @ =0x00000CD4
 	adds r0, r4, r3
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _08210528
 	ldr r1, _082104E0 @ =0x00000D89
@@ -648,7 +648,7 @@ _08210504:
 	ldr r0, _08210538 @ =0x00000CD4
 	adds r5, r4, r0
 	adds r0, r5, #0
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _08210528
 	movs r0, #2
@@ -664,7 +664,7 @@ _08210504:
 _08210528:
 	ldr r1, _08210538 @ =0x00000CD4
 	adds r0, r4, r1
-	bl FUN_08055c04
+	bl SpriteHolder_AdvanceAnim
 	add sp, #0xc
 	pop {r4, r5, r6, r7}
 	pop {r0}

@@ -1,5 +1,4 @@
 #include "entity.h"
-#include "game.h"
 #include "global.h"
 #include "mover.h"
 #include "player.h"

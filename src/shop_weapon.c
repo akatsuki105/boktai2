@@ -31,7 +31,7 @@ typedef struct WeaponShop {
   rgb555* bgPltt;                  // 0x163C, BGP_A41A[208]
   u8* unk_1640;                    // 0x1640, '.s' があれば VM_GetPC_Proxy の戻り値
   u8* unk_1644;                    // 0x1644, '.w' があれば VM_GetPC_Proxy の戻り値
-  char* unk_1648;                  // 0x1648, '.c' を VM_ParseStringRef して Textbox_LookupString した文字列
+  char* unk_1648;                  // 0x1648, '.c' を VM_ParseStringRef して GetStringByID した文字列
   u8 unk_164c[0x1654 - 0x164C];    // 0x164C, まだ未解析
   u8 unk_1654;                     // 0x1654, _Init が 0 を入れる
   u8 unk_1655;                     // 0x1655, FUN_080bcdf8 の第3引数
@@ -89,7 +89,7 @@ void FUN_080bcdf8(WeaponShop* p, WeaponShopFunc* fn, s32 val) {
 }
 
 void FUN_080bce20(WeaponShop* p, s32 line, u8* unused1, s32 unused2) {
-  FUN_08049e5c();
+  Marquee_Clear();
   p->sprites[33].flags |= SPRFLAG_HIDDEN;
   MessageWindow_Start(p->unk_1640);
   MessageWindow_SetRect(0, 16, 30, 2);
@@ -241,7 +241,7 @@ NON_MATCH void FUN_080bd058(WeaponShop* p) {
   if (w.id == 0) {
     p->sprites[33].flags |= SPRFLAG_HIDDEN;
     MessageWindow_Close();
-    FUN_08049e5c();
+    Marquee_Clear();
   } else {
     p->sprites[33].flags &= ~SPRFLAG_HIDDEN;
     MainSprite_SetPose(&p->sprites[33], &p->icons, GetWeaponWearPose(&w), 1);
@@ -293,7 +293,7 @@ NON_MATCH void FUN_080bd180(WeaponShop* p) {
       if (id > 0) {
         p->sprites[19 + i * 4 + j].flags &= ~SPRFLAG_HIDDEN;
         MainSprite_SetPose(&p->sprites[19 + i * 4 + j], &p->icons, id, 1);
-        if ((s16)gStat->solarBank < gWeaponDB[id].price) {
+        if (gStat->solarBank < gWeaponDB[id].price) {
           FUN_080b95bc(&p->sprites[19 + i * 4 + j], 0x2E0);
         } else {
           FUN_080b95bc(&p->sprites[19 + i * 4 + j], 0x2DF);
@@ -305,7 +305,7 @@ NON_MATCH void FUN_080bd180(WeaponShop* p) {
   }
 
   for (i = 0; i < 4; i++) {
-    if ((s16)gStat->registeredWeapon[i] < 0) {
+    if (gStat->registeredWeapon[i] < 0) {
       p->sprites[34 + i].flags |= SPRFLAG_HIDDEN;
     } else {
       p->sprites[34 + i].flags &= ~SPRFLAG_HIDDEN;
@@ -433,12 +433,8 @@ void WeaponShop_StartMoveAnim(WeaponShop* p) {
   unk1[1] = 0;
   anims[1] = 0;
   strIDs[1] = 0x2DF;
-  from[1].x = 0;
-  from[1].y = 0;
-  from[1].z = 0;
-  to[1].x = 0;
-  to[1].y = 0;
-  to[1].z = 0;
+  VEC3_SET(from[1], 0, 0, 0);
+  VEC3_SET(to[1], 0, 0, 0);
   FUN_080b9a28(&p->pair0.gfx, unk1, from, to, anims, strIDs, 12);
   PlaySound_082406e0(SE_SWAP_SLOT);
 }
@@ -798,7 +794,7 @@ NON_MATCH void FUN_080bdfe8(WeaponShop* p) {
     s32 slot = (u8)p->cursor.savedSlot;
 
     gStat->solarBank += WeaponShop_GetSellPrice(slot);
-    if ((s16)gStat->solarBank > 9999) {
+    if (gStat->solarBank > 9999) {
       gStat->solarBank = 9999;
     }
 
@@ -1027,7 +1023,7 @@ void WeaponShop_ReadScriptArgs(WeaponShop* p) {
   if (VM_SeekToNamedArg('c')) {
     p->unk_1648 = VM_GetPC_Proxy();
     if (p->unk_1648 != 0) {
-      p->unk_1648 = Textbox_LookupString(VM_ParseStringRef((u8*)p->unk_1648) + 1);
+      p->unk_1648 = GetStringByID(VM_ParseStringRef((u8*)p->unk_1648) + 1);
     }
   }
 }

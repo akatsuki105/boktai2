@@ -49,9 +49,9 @@ void FUN_081f4858(Entity081f53a8Elem* elem) {
 
   if (hitbox1->unk_44 != 0) {
     hitbox1->unk_44--;
-    hitbox1->flags |= HBFLAG_UNK_2;
+    hitbox1->flags |= HBFLAG_HIDDEN;
   } else {
-    Hitbox_ClearFlags(hitbox1, HBFLAG_UNK_2);
+    Hitbox_ClearFlags(hitbox1, HBFLAG_HIDDEN);
   }
 }
 

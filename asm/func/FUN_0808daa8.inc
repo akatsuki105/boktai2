@@ -28,7 +28,7 @@ _0808DACC:
 	str r0, [sp]
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_0808d49c
+	bl MainMenu_CalcQCIconY
 	movs r1, #0x64
 	muls r1, r5, r1
 	adds r1, r4, r1
@@ -67,7 +67,7 @@ _0808DB18:
 	str r0, [sp]
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_0808d49c
+	bl MainMenu_CalcQCIconY
 	movs r1, #0x68
 	muls r1, r5, r1
 	adds r1, r4, r1

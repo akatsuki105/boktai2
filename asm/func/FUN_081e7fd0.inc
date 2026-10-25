@@ -74,7 +74,7 @@ _081E8064:
 	ldr r2, _081E8098 @ =0x0000162E
 	adds r0, r4, r2
 	strh r1, [r0]
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r0, _081E809C @ =0x00001618
 	adds r1, r4, r0
 	movs r0, #0xd

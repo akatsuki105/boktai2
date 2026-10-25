@@ -334,7 +334,7 @@ _082225D0:
 	movs r1, #4
 	movs r2, #8
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	movs r0, #0x14
 	movs r1, #4
 	add r2, sp, #4
@@ -386,7 +386,7 @@ _08222634:
 	movs r1, #4
 	movs r2, #8
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	adds r2, r7, #0
 	adds r2, #0x64
 	movs r0, #0x14
@@ -415,7 +415,7 @@ _08222634:
 	movs r1, #7
 	movs r2, #0xa
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	movs r0, #0x12
 	movs r1, #7
 	adds r2, r4, #0
@@ -479,7 +479,7 @@ _08222704:
 	movs r1, #7
 	movs r2, #0xa
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	adds r2, r7, #0
 	adds r2, #0x6d
 	movs r0, #0x12
@@ -549,7 +549,7 @@ _08222786:
 	movs r1, #7
 	movs r2, #0xa
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	adds r2, r7, #0
 	adds r2, #0x6d
 	movs r0, #0x12
@@ -571,7 +571,7 @@ _082227C4:
 	movs r1, #0xa
 	movs r2, #5
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	ldr r0, _082227FC @ =0x030046A0
 	ldr r0, [r0]
 	movs r1, #0xbe
@@ -618,7 +618,7 @@ _08222828:
 	movs r1, #0xd
 	movs r2, #8
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	ldr r0, _0822285C @ =0x030046A0
 	ldr r0, [r0]
 	ldr r1, _08222860 @ =0x000002FA
@@ -684,14 +684,14 @@ _0822288E:
 	movs r1, #0x10
 	movs r2, #0xf
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	b _082228DC
 _082228C6:
 	movs r0, #9
 	movs r1, #0x10
 	movs r2, #0xf
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	movs r0, #9
 	movs r1, #0x10
 	adds r2, r6, #0

@@ -32,7 +32,7 @@ _0804FF50:
 	ands r2, r1
 	cmp r2, #0
 	beq _0804FF74
-	bl FUN_0809c58c
+	bl HUD_RemoveCountdown
 	movs r1, #6
 	adds r0, r5, #0
 	adds r0, #0x28

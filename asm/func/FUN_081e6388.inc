@@ -23,7 +23,7 @@ _081E63B4:
 _081E63B6:
 	cmp r0, #0
 	beq _081E63CC
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	bl FUN_08049f84
 	movs r1, #2
 	rsbs r1, r1, #0

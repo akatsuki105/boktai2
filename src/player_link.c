@@ -3,6 +3,7 @@
 #include "entity_9a9f.h"
 #include "global.h"
 #include "input.h"
+#include "magic.h"
 #include "player.h"
 #include "sound.h"
 #include "vm.h"
@@ -209,7 +210,7 @@ void FUN_080cc370(Player* p) {
     Player_SetFlag20(p, PFLAG20_SUNBATHING);
   }
 
-  p->shadowOffset.x = 0, p->shadowOffset.y = 0, p->shadowOffset.z = 0;
+  VEC3_SET(p->shadowOffset, 0, 0, 0);
   p->flag35a = 0;
   p->hurtbox.hitState &= ~HBHITSTATE_UNK_1;
 }
@@ -265,11 +266,11 @@ NON_MATCH void FUN_080cc43c(Player* p) {
 
   if (p->playerIdx == idx) {
     if (p->kind == PLAYER_SABATA) {
-      sound_08240740(0x239);
-      sound_08240740(0x202);
-      sound_08240740(0x366);
+      sound_08240740(SONG_569);
+      sound_08240740(SONG_514);
+      sound_08240740(SONG_870);
     } else {
-      sound_08240740(0xD8);
+      sound_08240740(NOISE_SOLAR_CHARGE);
     }
   }
 #else
@@ -298,7 +299,7 @@ s32 FUN_080cc618(void) {
 
 NAKED void FUN_080cc648(Player* p) { INCFUNC("asm/func/FUN_080cc648.inc"); }
 
-Facing32 Player_GetDpadFacing(Player* p);
+DirS32 Player_GetDpadFacing(Player* p);
 void FUN_08240cf0(s32 x, s32 z, s16 param_3, s32 param_4, u8 param_5, u16 param_6);
 void Entity4B15_ShowTrackingMarker(s32 playerIdx, Vec3* pos);
 
@@ -357,8 +358,8 @@ void FUN_080ccaa0(u32 kind, s32* out1, s32* out2) {
 
 // 本体スプライトのパレットを衝撃波スプライトへ写してから出す
 void FUN_080ccae0(Player* p) {
-  p->meleeShockwave.gfx.plttID = p->sprite_88.plttID;
-  p->meleeShockwave.gfx.pltt = p->sprite_88.pltt;
+  p->meleeShockwave.gfx.plttID = p->human.plttID;
+  p->meleeShockwave.gfx.pltt = p->human.pltt;
   p->meleeShockwave.sprite.flags &= ~SPRFLAG_HIDDEN;
   p->meleeShockwave.finished = 1;
 }
@@ -654,8 +655,6 @@ s32 FUN_080ced68(Player* p, s32 param_2) {
 
 NAKED s32 FUN_080ced90(Player* p) { INCFUNC("asm/func/FUN_080ced90.inc"); }
 
-s32 GetMagicCategory(magic32_t id);
-
 // 通信相手の記録から装備魔法の情報を作り直す
 void PlayerLink_RefreshMagicInfo(Player* p) {
   PlayerMagic* m = &p->magic;
@@ -864,11 +863,11 @@ NAKED s32 FUN_080cffcc(Player* p) { INCFUNC("asm/func/FUN_080cffcc.inc"); }
 NAKED void FUN_080d01c8(Player* p) { INCFUNC("asm/func/FUN_080d01c8.inc"); }
 
 // 太陽ゲージ+2 を貯めて, 100 を超えるたびに1回ぶん消費する
-void FUN_080d0394(Player* p, s32 param_2) {
-  p->unk_3dc += param_2 + 2;
-  if (p->unk_3dc > 99) {
+void FUN_080d0394(Player* p, s32 sungauge) {
+  p->sunburn += sungauge + 2;
+  if (p->sunburn > 99) {
     FUN_080cf684(p);
-    p->unk_3dc -= 100;
+    p->sunburn -= 100;
   }
 }
 
@@ -1205,7 +1204,7 @@ NAKED s32 PlayerLink_Update(Player* p) { INCFUNC("asm/func/PlayerLink_Update.inc
 
 s32 PlayerLink_Destroy(Player* p) {
   EnemyTargetManager_Remove(&p->target);
-  MainSprite_Remove(&p->sprite_88);
+  MainSprite_Remove(&p->human);
   AuxSprite_Remove(&p->sprite_e8);
   Hitbox_Unregister(&p->hurtbox);
   Mover_Unlink(&p->mover);

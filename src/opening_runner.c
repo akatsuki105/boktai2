@@ -1,0 +1,197 @@
+#include "entity.h"
+#include "file.h"
+#include "global.h"
+#include "sprite.h"
+#include "vm.h"
+
+// (太陽銃を奪われた後の)サンミゲルに向かって、ジャンゴとおてんこが走っていく演出 (手前から奥へ走っていくので、スプライトが徐々に小さくなる)
+// このエンティティ1つは ジャンゴ または おてんこ のどちらかのみを表す (なので、 2つ必要)
+typedef struct OpRunner {
+  Entity e;                                  // 0x0, ENTITY_UNK_8
+  MainSpriteGfx djangoGfx;                   // 0x18, SPRITE_DJANGO_SABATA
+  MainSprite django;                         // 0x38, kind=0
+  AuxSprite otenko;                          // 0x98, kind=1
+  AuxSpriteGfx otenkoGfx;                    // 0xC4, SPRITE_OTENKO_00
+  AuxAnimState otenkoAnim;                   // 0xE0 ->otenkoAnimFile
+  AuxAnimFile* otenkoAnimFile;               // 0xF0, ANIM_OTENKO
+  s32 kind;                                  // 0xF4, '.k', 0: ジャンゴ, 1: おてんこ
+  u32 pauseFlags;                            // 0xF8, bit0/bit1 が立っている間 timer_100 / timer_108 を止める
+  u32 unk_fc;                                // 0xFC, まだ未解析
+  u32 timer_100;                             // 0x100
+  u32 unk_104;                               // 0x104, まだ未解析
+  u32 timer_108;                             // 0x108
+  s32 unk_10c;                               // 0x10C, '.p[0]' を16ビット左シフトした値 (s16_16)
+  s32 unk_110;                               // 0x110, '.p[1]' を同様に入れる
+  u8 unk_114[0x124 - 0x114];                 // 0x114, まだ未解析
+  s16 unk_124;                               // 0x124, '.s'
+  u8 unk_126[2];                             // 0x126, まだ未解析
+  s16 unk_128;                               // 0x128, 64 で初期化, unk_130 と対
+  s16 unk_12a;                               // 0x12A, 64 で初期化, unk_132 と対
+  s16 unk_12c;                               // 0x12C
+  s16 unk_12e;                               // 0x12E
+  s16 unk_130;                               // 0x130, '.S=64'
+  s16 unk_132;                               // 0x132, '.S=64' (unk_130 と同じ値)
+  s16 unk_134;                               // 0x134
+  s16 unk_136;                               // 0x136
+  u8 unk_138[0x13C - 0x138];                 // 0x138, まだ未解析
+  AuxSprite sprite_13c;                      // 0x13C
+  AuxSpriteGfx gfx_168;                      // 0x168, SPRITE_EFF_1C1B, 影用?
+  void (*updateCallback)(struct OpRunner*);  // 0x184
+  u8 unk_188[392 - 0x188];                   // 0x188, まだ未解析
+} OpRunner;
+static_assert(sizeof(OpRunner) == 392);
+
+COMMON_DATA OpRunner* gOpRunners[2] = {};  // 0x03002C98, [0: ジャンゴ, 1: おてんこ]
+
+NAKED void FUN_0821a87c(void) { INCFUNC("asm/func/FUN_0821a87c.inc"); }
+
+NAKED void FUN_0821a974(void) { INCFUNC("asm/func/FUN_0821a974.inc"); }
+
+NAKED void FUN_0821a9d8(void) { INCFUNC("asm/func/FUN_0821a9d8.inc"); }
+
+NAKED void FUN_0821aa3c(OpRunner* p) { INCFUNC("asm/func/FUN_0821aa3c.inc"); }
+
+NAKED s32 FUN_0821aac0(OpRunner* p) { INCFUNC("asm/func/FUN_0821aac0.inc"); }
+
+NAKED void FUN_0821abfc(OpRunner* p) { INCFUNC("asm/func/FUN_0821abfc.inc"); }
+
+// val 番の処理へ切り替えて2本のタイマーを止める (このゲームでは val は 0 固定)
+void FUN_0821ae64(OpRunner* p, s32 val) {
+  static void (*const sOpRunnerUpdates[1])(OpRunner*) = {
+      FUN_0821abfc,
+  };  // 0x085AFFA4
+
+  p->unk_fc = val;
+  p->timer_100 = 0;
+  p->updateCallback = sOpRunnerUpdates[val];
+  SET_FLAGS(p->pauseFlags, 1);
+  p->unk_104 = 0;
+  p->timer_108 = 0;
+  SET_FLAGS(p->pauseFlags, 2);
+}
+
+// 残差は CpuFill32 の引数準備順の2命令だけ (188/188), 原典は dest の add r4,sp,#0x14 が tmp の0代入より前
+// enemy_dex.c の同じ残差と同種, Tier A-C 試済
+NON_MATCH void OpRunner_AddSprites(OpRunner* p) {
+#ifdef NONMATCHING_C
+  s32 x = FixToInt(16, p->unk_10c);
+  s32 y = FixToInt(16, p->unk_110);
+  s32 scale = p->unk_130;
+  s32 idx = p->kind;
+  s32 subScale;
+
+  if (idx == 0) {
+    MainSpriteGfxFile* f = GetFile(DIR_MAIN_SPRITE, SPRITE_DJANGO_SABATA);
+    Vec3 pos;
+
+    p->djangoGfx = *f;
+    OpenMainSpriteFile(&p->djangoGfx, f);
+    CpuFill32(0, &pos, sizeof(pos));
+    pos.x = x;
+    pos.y = y;
+    MainSprite_Add(&p->django, &p->djangoGfx, 7, SPRFLAG_UNK_15 | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE, 1, 0, 60, &pos);
+    MainSprite_SetAnim(&p->django, &p->djangoGfx, 5, 1, 0);
+    p->django.scaleX = scale;
+    p->django.scaleY = scale;
+  } else {
+    AuxAnimFile* files;
+
+    Video_GetAuxSprite(&p->otenkoGfx, SPRITE_OTENKO_00);
+    AuxSprite_Add(&p->otenko, &p->otenkoGfx, SPRFLAG_UNK_15 | SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE);
+    p->otenko.pos.x = x;
+    p->otenko.pos.y = y;
+    p->otenko.scaleX = scale;
+    p->otenko.scaleY = scale;
+    p->otenko.priority = 0;
+    files = GetFile(DIR_ANIMATION, ANIM_OTENKO);
+    p->otenkoAnimFile = files;
+    AuxAnim_SetAnim(&p->otenkoAnim, files, 0, 0, 0);
+  }
+
+  Video_GetAuxSprite(&p->gfx_168, SPRITE_EFF_1C1B);
+  AuxSprite_Add(&p->sprite_13c, &p->gfx_168, SPRFLAG_SCREEN_COORD | SPRFLAG_AFFINE);
+  AuxSprite_SetPoseIdx(&p->sprite_13c, 5);
+  p->sprite_13c.pos.x = x;
+  p->sprite_13c.pos.y = y;
+  subScale = Div(scale * 3, 4);
+  p->sprite_13c.scaleX = subScale;
+  p->sprite_13c.scaleY = subScale;
+  p->sprite_13c.priority = 2;
+#else
+  INCFUNC("asm/func/OpRunner_AddSprites.inc");
+#endif
+}
+
+// スプライトを描画リストから外す
+void OpRunner_RemoveSprites(OpRunner* p) {
+  if (p->kind == 0) {
+    MainSprite_Remove(&p->django);
+  } else {
+    AuxSprite_Remove(&p->otenko);
+  }
+
+  AuxSprite_Remove(&p->sprite_13c);
+}
+
+s32 OpRunner_Update(OpRunner* p) {
+  if (!(p->pauseFlags & 1)) {
+    p->timer_100++;
+  }
+  if (!(p->pauseFlags & 2)) {
+    p->timer_108++;
+  }
+  p->updateCallback(p);
+  return 0;
+}
+
+// 描画を畳んで gOpRunners の登録枠を空ける
+s32 OpRunner_Destroy(OpRunner* p) {
+  OpRunner_RemoveSprites(p);
+  gOpRunners[p->kind] = NULL;
+  return 0;
+}
+
+s32 OpRunner_Init(OpRunner* p) {
+  s32 scale;
+
+  p->pauseFlags = 0;
+  p->kind = VM_GetNamedArgValue('k', -1);
+  if (VM_SeekToNamedArg('p')) {
+    p->unk_10c = VM_GetValue() << 16;
+    p->unk_110 = VM_GetValue() << 16;
+  }
+  if (VM_SeekToNamedArg('s')) {
+    p->unk_124 = VM_GetValue();
+  }
+  scale = VM_GetNamedArgValue('S', 64);
+  p->unk_fc = 0;
+  p->timer_100 = 0;
+  p->unk_104 = 0;
+  p->timer_108 = 0;
+  p->unk_128 = 64;
+  p->unk_12a = 64;
+  p->unk_12c = 0;
+  p->unk_12e = 0;
+  p->unk_130 = scale;
+  p->unk_132 = scale;
+  p->unk_134 = 0;
+  p->unk_136 = 0;
+  OpRunner_AddSprites(p);
+  FUN_0821ae64(p, 0);
+  gOpRunners[p->kind] = p;
+  return 0;
+}
+
+OpRunner* OpRunner_Create(void) {
+  OpRunner* p = CreateEntity(ENTITY_UNK_8, sizeof(OpRunner));
+
+  if (p != NULL) {
+    SetEntityRoutine(p, OpRunner_Update, OpRunner_Destroy);
+    if (OpRunner_Init(p) < 0) {
+      KillEntity((Entity*)p);
+      return NULL;
+    }
+  }
+
+  return p;
+}

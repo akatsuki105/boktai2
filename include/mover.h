@@ -51,7 +51,7 @@ void Map_InitMoverTile(MoverTile* p, Vec3* pos);
 void FUN_0823349c(MoverTile* p, Vec3* pos, Vec3* delta, u16 sizeX, u16 sizeZ, u8 unk_4);
 
 // pos と向きを入れてリストに繋ぐ
-s32 Mover_Init(Mover* p, u16 id, Vec3* pos, u32 angle, u32 unk_4, void* owner);
+s32 Mover_Init(Mover* p, u16 id, Vec3* pos, u8 angle, u32 unk_4, void* owner);
 
 s32 FUN_08002a48(Mover* p);
 s32 FUN_08002a58(Mover* p);
@@ -66,6 +66,7 @@ bool32 Mover_SetMainSprite(Mover* p, struct MainSprite* data);
 
 void Mover_Link(Mover* p);
 bool32 Mover_Unlink(Mover* p);
+bool32 FUN_0823b47c(Mover* p, Vec3* unk_30);
 Mover* Mover_FindByID(u16 id);
 
 void MoverList_ClearPtr(void);

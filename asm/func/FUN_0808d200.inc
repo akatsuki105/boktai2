@@ -10,12 +10,12 @@ _0808D20C:
 	movs r0, #0
 	movs r1, #0
 	adds r2, r4, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r5, r0, #0
 	movs r0, #0
 	movs r1, #0x1a
 	adds r2, r4, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r1, r0, #0
 	adds r4, r6, #1
 	movs r2, #3

@@ -2252,7 +2252,7 @@ _0816BA7C:
 	str r2, [sp, #8]
 	str r2, [sp, #0xc]
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _0816BAE8:
 	movs r1, #0x83
 	lsls r1, r1, #2
@@ -2605,7 +2605,7 @@ _0816BD96:
 	lsls r2, r2, #3
 	adds r1, r4, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _0816BDE8

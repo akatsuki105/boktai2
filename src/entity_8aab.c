@@ -469,9 +469,7 @@ void FUN_0822913c(Entity8AAB* _) {}
 NAKED void FUN_08229140(Entity8AAB* p) { INCFUNC("asm/func/FUN_08229140.inc"); }
 
 void FUN_08229238(Entity8AAB* p) {
-  p->unk_e40.pos.x = p->pos.x;
-  p->unk_e40.pos.y = p->pos.y;
-  p->unk_e40.pos.z = p->pos.z;
+  VEC3_SET(p->unk_e40.pos, p->pos.x, p->pos.y, p->pos.z);
   PTR_ARRAY_085b0084[p->state](p);
 }
 

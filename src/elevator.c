@@ -7,7 +7,6 @@
 #include "random.h"
 #include "sound.h"
 #include "sprite.h"
-#include "trig.h"
 #include "vm.h"
 
 struct ElevatorUnkData;
@@ -23,7 +22,7 @@ typedef u16 ElevatorFlags;                // ElevatorUnkData.flags
 #define ELEVATOR_UNK_9 (1 << 9)           // FUN_081d4658 が見て落とす
 #define ELEVATOR_UNK_8 (1 << 8)           // 立っていると FUN_081d4590 がプレイヤーを運ばずにフラグだけ落とす
 #define ELEVATOR_UNK_7 (1 << 7)           // 立っていると Elevator_UpdateShake が揺らさずにフラグだけ落とす
-#define ELEVATOR_SHAKE (1 << 5)           // 揺らす, Elevator_Shake が立てて Elevator_UpdateShake が落とす
+#define ELEVATOR_SHAKE (1 << 5)           // 揺らす, Cmd_ShakeElevator が立てて Elevator_UpdateShake が落とす
 #define ELEVATOR_FLAG_12 (1 << 12)        // まだ不明
 
 typedef struct ElevatorUnkData {
@@ -34,7 +33,7 @@ typedef struct ElevatorUnkData {
   u8 unk_60[0x0B0 - 0x060];          // 0x060
   s16 slotIdx;                       // 0x0B0, ElevatorController_AllocSlot が確保したスロット番号, 解放時は 0xFFFF
   s16 state;                         // 0x0B2, ElevatorController_Update が 0x085AE0E8 の関数テーブルを引く, 6 はスキップ
-  ElevatorFlags flags;               // 0x0B4, bit0=tileOverride登録済, bit5=Elevator_Shake, bit11=tileOverrides登録済
+  ElevatorFlags flags;               // 0x0B4, bit0=tileOverride登録済, bit5=Cmd_ShakeElevator, bit11=tileOverrides登録済
   u8 unk_b6;                         // 0x0B6, FUN_081d2a14 が到着時に 1 を入れる
   u8 unk_b7[0x0BA - 0x0B7];          // 0x0B7
   s16 unk_ba;                        // 0x0BA, FUN_081d5414 が '.s=6' を入れる
@@ -105,9 +104,6 @@ static inline bool32 Elevator_TestFlags(ElevatorUnkData* p, ElevatorFlags bits) 
   }
   return FALSE;
 }
-
-static inline void Elevator_SetFlags(ElevatorUnkData* p, ElevatorFlags bits) { p->flags |= bits; }
-static inline void Elevator_ClearFlags(ElevatorUnkData* p, ElevatorFlags bits) { p->flags &= ~bits; }
 
 void FUN_0807a97c(Player* p, u32 flags, u32 value);
 void FUN_0807a99c(Player* p, u32 flags);
@@ -200,8 +196,8 @@ bool8 FUN_081d2698(Mover* mover, PathWalker* walker, Vec3* out, u32 dx, u32 dz, 
     s32 vx, vz;
 
     mover->angle = angle;
-    vx = COS(angle, speed);
-    vz = SIN(angle, speed);
+    vx = POLAR_X(speed, angle);
+    vz = POLAR_Z(speed, angle);
     mover->pos.x += vx;
     mover->pos.z += vz;
     out->x = vx;
@@ -363,7 +359,7 @@ NON_MATCH void Elevator_RemoveTileOverrides(ElevatorUnkData* p) {
       }
     }
 
-    Elevator_ClearFlags(p, ELEVATOR_TILEOVERRIDES);
+    CLEAR_FLAGS(p->flags, ELEVATOR_TILEOVERRIDES);
   }
 #else
   INCFUNC("asm/func/Elevator_RemoveTileOverrides.inc");
@@ -643,15 +639,14 @@ Elevator* ElevatorController_Create(void) {
 
 void ElevatorController_ClearPtr(void) { gElevator = NULL; }
 
-// VM: 指定した id のエレベータを揺らす
-void Elevator_Shake(void) {
+// 0xB1C4, 指定した id のエレベータを揺らす
+void Cmd_ShakeElevator(void) {
   s32 id = VM_GetNamedArgValue('n', 0);
 
   if (gElevator != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
-
     if (p != NULL) {
-      Elevator_SetFlags(p, ELEVATOR_SHAKE);
+      SET_FLAGS(p->flags, ELEVATOR_SHAKE);
     }
   }
 }
@@ -738,7 +733,7 @@ NON_MATCH void Elevator_Destroy(void) {
 
     if (Elevator_TestFlags(p, ELEVATOR_TILEOVERRIDE)) {
       Map_RemoveTileOverride(&p->tileOverride);
-      Elevator_ClearFlags(p, ELEVATOR_TILEOVERRIDE);
+      CLEAR_FLAGS(p->flags, ELEVATOR_TILEOVERRIDE);
     }
 
     Elevator_RemoveTileOverrides(p);
@@ -824,7 +819,7 @@ void FUN_081d5450(void) {
   q->ridingID = 0;
   gPlayerPtr[0]->mover.tile = &gPlayerPtr[0]->tile;
   FUN_0807a99c(gPlayerPtr[0], 1);
-  Elevator_ClearFlags(p, ELEVATOR_PLAYER_RIDING);
+  CLEAR_FLAGS(p->flags, ELEVATOR_PLAYER_RIDING);
   gPlayerPtr[0]->shadow.flags &= ~1;
 }
 
@@ -854,9 +849,8 @@ void FUN_081d5504(void) {
 
   if (gElevator != NULL && id != 0) {
     ElevatorUnkData* p = Elevator_FindByID(id);
-
     if (p != NULL) {
-      Elevator_ClearFlags(p, ELEVATOR_FLAG_12);
+      CLEAR_FLAGS(p->flags, ELEVATOR_FLAG_12);
     }
   }
 }

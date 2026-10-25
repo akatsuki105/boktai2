@@ -43,16 +43,17 @@ void FUN_080b438c(SolarBank* p);
 // 0x61A0
 NAKED void Cmd_CalcInterestRate(void) { INCFUNC("asm/func/Cmd_CalcInterestRate.inc"); }
 
-s32 Cmd_GetSolarBankBalance(void) { return (s16)gStat->solarBank; }
+// 0x9E8B
+s32 Cmd_GetSolarBankBalance(void) { return gStat->solarBank; }
 
+// 0x7A77
 void Cmd_SetSolarBankBalance(void) {
   if (VM_SeekToNamedArg('a')) {
-    s32 n = VM_GetValue();
-
-    if (n > 9999) {
-      n = 9999;
+    s32 amount = VM_GetValue();
+    if (amount > 9999) {
+      amount = 9999;
     }
-    gStat->solarBank = n;
+    gStat->solarBank = amount;
   }
 }
 
@@ -61,17 +62,15 @@ NAKED void solar_bank_080b3a10(SolarBank* p) { INCFUNC("asm/func/solar_bank_080b
 // スプライトを全部隠す
 void SolarBank_HideAllSprites(SolarBank* p) {
   s32 i;
-
   for (i = 0; i < 13; i++) {
     p->sprites[i].flags |= SPRFLAG_HIDDEN;
   }
-
   for (i = 0; i < 2; i++) {
     p->auxSprites[i].flags |= SPRFLAG_HIDDEN;
   }
 }
 
-void SolarBank_SetState(SolarBank* p, void (*fn)(SolarBank*)) {
+void SolarBank_SetState(SolarBank* p, void* fn) {
   p->updateCallback = fn;
   p->stateTimer = 0;
 }

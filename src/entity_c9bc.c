@@ -174,7 +174,7 @@ void EntityC9BCElem_UpdateState3(EntityC9BC* p, EntityC9BCElem* elem, u32 idx) {
 
   if (elem->unk_01) {
     elem->unk_01 = 0;
-    PlaySound_082406e0(0x21A);
+    PlaySound_082406e0(SE_538);
   }
 
   elem->unk_2a |= 0x10;

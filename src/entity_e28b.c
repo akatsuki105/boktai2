@@ -39,8 +39,6 @@ typedef struct {
   EntityE28BEntry entries[1];  // 0x90, 実際は count 個 (可変長)
 } EntityE28B;
 
-u16 HashName(const char* s);
-
 const ALIGNED(4) char s_mask_test_00[] = "mask_test_00";  // 0x08251B2C
 
 // 空いている entries の要素に id の Mover を結びつける

@@ -23,7 +23,7 @@ typedef struct {
 } Entity0805a31cElem;
 static_assert(sizeof(Entity0805a31cElem) == 260);
 
-typedef struct {
+typedef struct Entity0805a31c {
   Entity e;                     // 0x000, ENTITY_UNK_8
   u32 activeMask;               // 0x018, 立っているビットの枠だけ Update が回す
   u16 attackID;                 // 0x01C, Init の第2引数, 各枠の Hitbox_SetAttack に渡す
@@ -91,7 +91,7 @@ s32 FUN_08059d38(Entity0805a31c* p, Entity0805a31cElem* elem, s32 index) {
 
   elem->sprite.flags |= SPRFLAG_HIDDEN;
   hitbox = &elem->bodyHitbox;
-  hitbox->flags |= HBFLAG_UNK_2;
+  hitbox->flags |= HBFLAG_HIDDEN;
   p->activeMask &= ~(1 << index);
 }
 
@@ -120,7 +120,7 @@ void FUN_0805a09c(Entity0805a31c* p, Entity0805a31cElem* elem, s32 index) {
 
     elem->stateEntered = FALSE;
     hitbox = &elem->bodyHitbox;
-    hitbox->flags |= HBFLAG_UNK_2;
+    hitbox->flags |= HBFLAG_HIDDEN;
     elem->plttWanted = 0;
   }
   if (elem->timer > 0x1F) {
@@ -170,4 +170,4 @@ Entity0805a31c* Entity0805a31c_Create(u32 attackID) {
   return p;
 }
 
-NAKED s32 FUN_0805a360(u32 param_1, u32 param_2, u32 param_3, u32 param_4) { INCFUNC("asm/func/FUN_0805a360.inc"); }
+NAKED s32 FUN_0805a360(Entity0805a31c* p, Vec3* pos, u32 kind, Vec3* target, u32 param_5, u32 param_6) { INCFUNC("asm/func/FUN_0805a360.inc"); }

@@ -240,7 +240,7 @@ _08206FB8:
 	strb r2, [r5, #0x18]
 	adds r0, r5, #0
 	adds r0, #0xd0
-	bl FUN_08055ef8
+	bl SpriteHolder_SetFlags
 	adds r0, r5, #0
 	bl Entity286FNode_HideShadow
 	b _082070A8

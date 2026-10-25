@@ -43,7 +43,7 @@ typedef struct {
   u32 scriptID;                    // 0x54, '.p'
   void (*callback)(s32 selected);  // 0x58, fromScript が 0 のときに選択結果を渡して呼ぶ
   u8* textPC;                      // 0x5C, '.r' の位置, 選択肢の元になる文字列への参照がここにある
-  s32 stringBase;                  // 0x60, '.i', Textbox_LookupString に渡す前に足す
+  s32 stringBase;                  // 0x60, '.i', GetStringByID に渡す前に足す
   MessageChoiceEntry entries[16];  // 0x64
   u8 tagValue[64];                 // 0xA4, <TAG=...> の = 以降を詰める作業用バッファ
   MainSpriteGfx gfx;               // 0xE4, SPRITE_UI_START_MENU
@@ -410,7 +410,7 @@ NON_MATCH u8* MessageChoice_ParseTag(MessageChoice* p, u8* s) {
 // 文字列を頭から走査して行ごとの選択肢の範囲を数え直す
 NON_MATCH void MessageChoice_ScanChoices(MessageChoice* p, u8* pc) {
 #ifdef NONMATCHING_C
-  u8* s = (u8*)Textbox_LookupString(VM_ParseStringRef(pc) + p->stringBase);
+  u8* s = (u8*)GetStringByID(VM_ParseStringRef(pc) + p->stringBase);
   s32 i;
 
   p->choiceCount = 0;
@@ -515,7 +515,7 @@ s32 MessageChoice_Init(MessageChoice* p, u8* textPC, s32 stringBase, s32* settin
   p->winX = settings[3], p->winY = settings[4];
   p->winW = settings[5], p->winH = settings[6];
   p->startDelay = 2;
-  pos.x = 1, pos.y = 0, pos.z = 0;
+  VEC3_SET(pos, 1, 0, 0);
   MainSprite_Add(&p->cursorL, &p->gfx, 139, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, 0, 60, &pos);
   MainSprite_Add(&p->cursorR, &p->gfx, 143, SPRFLAG_SCREEN_COORD | SPRFLAG_HIDDEN, 0, 0, 60, &pos);
   MainSprite_SetAnim(&p->cursorL, &p->gfx, 6, 1, 0);

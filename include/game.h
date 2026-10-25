@@ -43,7 +43,8 @@ typedef struct {
   s16 textSpeed;              // 0x012, メッセージ速度設定(1: 速い, 2: 普通, 4: 遅い), TextRenderer_ResetSpeed が TextRenderer.speed に入れる
   s16 markerEnabled;          // 0x014, マーカーの表示設定 (0: 非表示, 1: 表示)
   u8 unk_016[2];              // 0x016
-  s16 stats[STAT_KINDS * 2];  // 0x018, ステータスポイントの割り振り と (多分タロットカードの)ドーピングボーナス, ステータス画面には合計値が表示される
+  s16 stats[STAT_KINDS];      // 0x018, 振り分けたステータスポイント
+  s16 statBonus[STAT_KINDS];  // 0x020, ドーピングボーナス, ステータス画面には stats との合計が表示される
   u16 savedHP;                // 0x028, コンティニュー用？
   u16 savedMaxHP;             // 0x02A
   u16 savedEne;               // 0x02C
@@ -72,8 +73,8 @@ typedef struct {
   item16_t items[16 + 16 + 16];  // 0x070, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
   s16 rotTimer[16 + 16 + 16];    // 0x0D0, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
   item16_t valuables[16];        // 0x130
-  armor16_t armors[16];          // 0x150
-  u8 unk_170[40];                // 0x170
+  armor16_t armors[16 + 16];     // 0x150, 0..15: インベントリ, 16..31: 倉庫
+  u8 unk_190[8];                 // 0x190
   BCDDate date;                  // 0x198
   s32 hour;                      // 0x19C, ReflectClock / ApplyDayRollover が gClock.sunset と符号付きで比べる
   s32 minute;                    // 0x1A0, 同上
@@ -88,16 +89,18 @@ typedef struct {
   u32 loan_1d4;                  // 0x1D4
   u32 treeExp;                   // 0x1D8, 今まで浴びた太陽エネルギー (太陽樹の成長経験値 や リザルト画面の "ENERGY")
   u8 unk_1dc[2];                 // 0x1DC
-  s16 priceRate;                 // 0x1DE, 買値の倍率 (百分率), 根拠: Item_GetBuyPrice が price * priceRate / 100 を出す
-  s32 unk_1e0;                   // 0x1E0, ApplySunlightGain が sunGauge を足し続ける, treeExp と同じ 0x7FFFFFFF 飽和
-  s32 unk_1e4;                   // 0x1E4, unk_1e0 を更新した回数
-  u8 unk_1e8[6];                 // 0x1E8
+  s16 nutsRate;                  // 0x1DE, 果実の価格倍率 (百分率, 前日得た太陽エネルギーに応じて変動)
+  s32 unk_1e0;                   // 0x1E0, 果実の価格倍率に関係, ApplySunlightGain が sunGauge を足し続ける, treeExp と同じ 0x7FFFFFFF 飽和
+  s32 unk_1e4;                   // 0x1E4, 果実の価格倍率に関係, unk_1e0 を更新した回数
+  s16 alertCount;                // 0x1E8, 敵に見つかった回数
+  u8 unk_1ea[2];                 // 0x1EA
+  s16 tortureCount;              // 0x1EC, おしおき回数
   u16 titles;                    // 0x1EE, 獲得した称号のビットマスク
   s16 totalEnemyKillCount;       // 0x1F0
-  s16 enemyKillCount[24];        // 0x1F2, idx: include/constants/enemy.h の EnemyCategoryID?
+  s16 enemyKillCount[24];        // 0x1F2, idx: include/constants/misc.h の ENEKD_XXX
   u16 unk_222;                   // 0x222
   u8 unk_224[0x228 - 0x224];     // 0x224
-  s16 killCounts[5];             // 0x228, ビースト/シング/ファントム/アンデッド/イモータルの撃破数, 根拠: Player_WeaponEffectKillCount が敵の系統ビットで引く
+  s16 killCounts[5];             // 0x228, ビースト/シング/ファントム/アンデッド/イモータルの撃破数
   u8 unk_232[0x23A - 0x232];     // 0x232
   s16 solarBankInterestRate;     // 0x23A, Solar bank interest rate (stored as (1+r)*64, e.g. 14.0625% = 73). Defaults to 65 when starting a new game.
   u8 unk_23c[4];                 // 0x23C
@@ -108,20 +111,20 @@ typedef struct {
   s32 mapInitScriptID;           // 0x24C, Current map's init script ID
   s16 playerKind;                // 0x250, see PlayerKind in player.h
   coffin16_t coffin;             // 0x252
-  s16 areaID;                    // 0x254, current area ID
+  s16 stageID;                   // 0x254, current stageID, see ST_XXX in "include/constants/map.h", e.g. ST_AQUEDUCT
   s16 unk_256;                   // 0x256, 根拠: FUN_0808fc8c が '.f' の値を入れる
   u16 unk_258;                   // 0x258, 根拠: FUN_0808fcb4 が '.s' の値を入れる
   u16 unk_25a;                   // 0x25A, 根拠: FUN_0808fcd8 が '.f' の値を入れる
   u8 unk_25c[0x260 - 0x25C];     // 0x25C
   u32 unlockedMap;               // 0x260
   u32 unk_264;                   // 0x264, なんかのbitfield? (根拠: FUN_08090f0c)
-  u32 unk_268[16];               // 0x268, areaID で引く, FUN_0808fd8c が 0 でクリアする
+  u32 unk_268[16];               // 0x268, stageID で引く, FUN_0808fd8c が 0 でクリアする
   u32 darkDjangoAtkCounter;      // 0x2A8
   u32 unk_2ac;                   // 0x2AC
   s16 unk_2b0[2];                // 0x2B0
   s32 playTime;                  // 0x2B4, ゲーム開始からの経過時間(秒), s32 の根拠: Entity0823acbc_Update が 0x7FFFFFFF と符号付き比較する
-  s32 unk_2b8;                   // 0x2B8, Entity162E が interval ごとに1つ減らす残り回数, 1未満なら 1 に戻す
-  s32 unk_2bc;                   // 0x2BC, unk_2b8 と組で FUN_0809c3c0 に渡る
+  s32 gaugeValue;                // 0x2B8, 画面のゲージの値, ボス戦ではボスの hp が写され、 Entity162E では残り回数として減っていく
+  s32 gaugeMax;                  // 0x2BC, gaugeValue の最大値, ボス戦ではボスの maxHP
   s32 kaamosProgress[2];         // 0x2C0, カーモスの進行カウンタ [ジャンゴ, サバタ]
   s32 isKaamos[2];               // 0x2C8, プレイヤーがカーモス状態か？  [ジャンゴ, サバタ]
   u8 unk_2d0[8];                 // 0x2D0
@@ -134,7 +137,7 @@ typedef struct {
   u16 forge;                     // 0x2FC, 0..127, 用途まだ不明
   s16 unk_2fe[5];                // 0x2FE, 好感度?
   u16 unk_308[64];               // 0x308, u16 3つで1件の表が20件 ([0] と [1] で引く, [1] が 0 なら空き), 末尾8バイトは未解析
-  u32 enemyDexSeen[2];           // 0x388, 魔物図鑑の57体ぶんの出会ったフラグ, 全部そろうと [0] = -1, [1] = 0x01FFFFFF
+  u32 enemyDexSeen[2];           // 0x388, 魔物図鑑の57体ぶんの出会ったフラグ, 全部そろうと [0] = 0xFFFFFFFF, [1] = 0x01FFFFFF
   u32 enemyDexFlags[4];          // 0x390, 魔物1体につき2bit, 添字は id * 2 + 種別
   u32 armorDex[2];               // 0x3A0
   u32 photo;                     // 0x3A8, ブロマイドの取得フラグ, アルバム画面のカーソル位置とbitが対応してそう
@@ -146,7 +149,7 @@ typedef struct {
   u32 solarStand;                // 0x3BC
   u8 name[16];                   // 0x3C0, JP: 5文字, EN: 9文字
   Weapon weapons[16 + 16 + 16];  // 0x3D0, 0..15: インベントリ, 16..31: 倉庫1, 32..47: 倉庫2
-  u16 solarBank;                 // 0x910, 太陽バンクの残高(= 所持金)
+  s16 solarBank;                 // 0x910, 太陽バンクの残高(= 所持金)
   u16 linkBattlePoint;           // 0x912, 対戦ポイント
   s16 linkBattleCount;           // 0x914, 通信対戦の参加回数 (勝率計算に使用)
   s16 linkBattleWins;            // 0x916, 通信対戦の勝利回数

@@ -24,8 +24,8 @@
 	adds r4, #1
 	bl VM_ParseStringRef
 	adds r0, r0, r4
-	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl GetStringByID
+	bl Marquee_SetText
 	bl FUN_08049f5c
 	adds r0, r5, #0
 	bl FUN_0804ab00

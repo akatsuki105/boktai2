@@ -214,7 +214,7 @@ _0821D03E:
 	adds r0, r5, #0
 	movs r1, #2
 	movs r2, #1
-	bl FUN_08221268
+	bl ShadeMan_SetMotion
 _0821D048:
 	movs r1, #0x10
 	movs r2, #0xe3

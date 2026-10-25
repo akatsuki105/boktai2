@@ -7,7 +7,7 @@
 	movs r1, #5
 	movs r2, #0x10
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	bl GetPlayerName
 	adds r2, r0, #0
 	movs r0, #9
@@ -22,13 +22,13 @@
 	movs r1, #8
 	movs r2, #0x18
 	movs r3, #4
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	ldr r1, _08213BBC @ =0x00001650
 	adds r0, r6, r1
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #7
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r2, r0, #0
 	movs r0, #4
 	movs r1, #8
@@ -48,7 +48,7 @@
 	movs r2, #0xe
 	ldrsh r1, [r1, r2]
 	adds r0, r0, r1
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r2, r0, #0
 	mov r1, sp
 	movs r0, #0x80

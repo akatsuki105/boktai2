@@ -26,8 +26,6 @@ typedef struct Entity4DDF {
 } Entity4DDF;
 static_assert(sizeof(Entity4DDF) == 808);
 
-void FUN_0820fea8(struct PreviewStage* p);
-
 void Entity4DDF_SetStep(Entity4DDF* p, u32 step) {
   p->step = step;
   p->timer = 0;

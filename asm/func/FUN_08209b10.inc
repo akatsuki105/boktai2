@@ -240,7 +240,7 @@ _08209CF4:
 	adds r0, r4, #0
 	adds r0, #0xd0
 	movs r1, #1
-	bl FUN_08055ef8
+	bl SpriteHolder_SetFlags
 	adds r0, r4, #0
 	bl Entity286FNode_HideShadow
 	b _08209D8A

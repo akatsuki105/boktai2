@@ -71,7 +71,7 @@ _0820C0C8:
 	adds r0, r4, #0
 	adds r0, #0xd0
 	movs r1, #1
-	bl FUN_08055ef8
+	bl SpriteHolder_SetFlags
 	b _0820C19C
 	.align 2, 0
 _0820C0F0: .4byte FUN_08042178

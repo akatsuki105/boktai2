@@ -102,7 +102,7 @@ _08052846:
 	adds r0, r3, #0
 	adds r1, r4, #0
 	movs r3, #4
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r1, #0xda
 	lsls r1, r1, #3
 	adds r3, r5, r1
@@ -132,7 +132,7 @@ _08052886:
 	adds r0, r3, #0
 	adds r1, r4, #0
 	movs r3, #4
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r2, #0x28
 	ldrsh r1, [r5, r2]
 	cmp r1, #0

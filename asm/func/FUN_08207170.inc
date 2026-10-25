@@ -27,7 +27,7 @@ _08207192:
 	beq _082071B8
 	adds r0, r4, #0
 	adds r0, #0xd0
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _082071B8
 	movs r0, #1

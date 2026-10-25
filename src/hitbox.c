@@ -18,6 +18,8 @@ typedef struct {
 } HitboxManager;
 static_assert(sizeof(HitboxManager) == 204);
 
+bool32 Hitbox_CheckOverlap(HitboxData* a, HitboxData* b);
+
 IWRAM_DATA HitboxManager* gHitboxManager = NULL;  // 0x03000780
 
 // targets リストの末尾に p を繋ぐ, 既に繋がっていれば何もしない
@@ -110,15 +112,13 @@ void Hitbox_Init(HitboxData* p, u16 id, HitboxFlags32 flags, u32 unk_8, u16 igno
   p->damage = 0;
   p->weakness = 0;
   p->attributes = 0;
-  p->unk_40 = 0;
+  p->knockbackPower = 0;
   p->fn = NULL;
   p->unk_47 = 1;
 }
 
 void Hitbox_SetPos(HitboxData* p, WorldPos* pos, u32 unk_8) {
-  p->pos.x = pos->x;
-  p->pos.y = pos->y;
-  p->pos.z = pos->z;
+  VEC3_SET(p->pos, pos->x, pos->y, pos->z);
   p->unk_8 = unk_8;
 }
 
@@ -128,14 +128,14 @@ void UNUSED Hitbox_SetPosAndOffset(HitboxData* p, Vec3* pos, Vec3* offset, u32 u
   p->unk_8 = unk_8;
 }
 
-void Hitbox_SetPower(HitboxData* p, u16 power, u16 unk_40) {
+void Hitbox_SetPower(HitboxData* p, u16 power, u16 knockbackPower) {
   p->power = power;
-  p->unk_40 = unk_40;
+  p->knockbackPower = knockbackPower;
 }
 
-void Hitbox_SetAttack(HitboxData* p, s32 power, s32 unk_40, s32 weakness, HitboxAttributes attrs, s32 unk_44) {
+void Hitbox_SetAttack(HitboxData* p, s32 power, s32 knockbackPower, s32 weakness, HitboxAttributes attrs, s32 unk_44) {
   p->power = power;
-  p->unk_40 = unk_40;
+  p->knockbackPower = knockbackPower;
   p->weakness = weakness;
   p->attributes = attrs;
   p->unk_44 = unk_44;
@@ -264,7 +264,7 @@ bool32 FUN_08236bbc(Vec3* a, Vec3* b, HitboxData* p, Vec3* out) {
 
 NAKED bool32 UNUSED FUN_08236c18(void* a, void* b) { INCFUNC("asm/func/FUN_08236c18.inc"); }
 
-// 各 Hitbox の判定範囲を pos + offset で更新する, targets 側は HBFLAG_UNK_2 が立っていれば飛ばす
+// 各 Hitbox の判定範囲を pos + offset で更新する, targets 側は HBFLAG_HIDDEN が立っていれば飛ばす
 void Hitbox_UpdateBoxes(u32 attackCount, u32 targetCount, HitboxData* attacks, HitboxData* targets) {
   HitboxData *a, *b;
 
@@ -281,7 +281,7 @@ void Hitbox_UpdateBoxes(u32 attackCount, u32 targetCount, HitboxData* attacks, H
   while (b != NULL) {
     HitboxData* p = b;
     b = b->next;
-    if (!(p->flags & HBFLAG_UNK_2)) {
+    if (!(p->flags & HBFLAG_HIDDEN)) {
       p->center.x = p->pos.x + p->offset.x;
       p->center.y = p->pos.y + p->offset.y;
       p->center.z = p->pos.z + p->offset.z;
@@ -289,7 +289,54 @@ void Hitbox_UpdateBoxes(u32 attackCount, u32 targetCount, HitboxData* attacks, H
   }
 }
 
-NAKED void Hitbox_CheckAllPairs(u32 attackCount, u32 targetCount, HitboxData* attacks, HitboxData* targets) { INCFUNC("asm/func/Hitbox_CheckAllPairs.inc"); }
+// 残差は原典が Hitbox_CheckOverlap のアドレスを外側ループの手前で r10 に置き _call_via_sl で呼ぶ点, 直接呼び出し・引数なし宣言・static const の関数ポインタでは bl になる
+// 外側ループの中で関数ポインタ変数に入れると残差は tgt->flags の読み込み順1か所まで縮む (不自然なので不採用), Tier A-B は試済, 未: Tier C
+NON_MATCH void Hitbox_CheckAllPairs(u32 attackCount, u32 targetCount, HitboxData* attacks, HitboxData* targets) {
+#ifdef NONMATCHING_C
+  HitboxData *a, *b;
+
+  Hitbox_UpdateBoxes(attackCount, targetCount, attacks, targets);
+
+  a = attacks->next;
+  while (a != NULL) {
+    HitboxData* atk = a;
+    a = a->next;
+
+    b = targets->next;
+    while (b != NULL) {
+      HitboxData* tgt = b;
+      b = b->next;
+
+      if (atk->ignoreMask & tgt->ignoreMask) {
+        continue;
+      }
+      if (Hitbox_TestFlags(tgt, HBFLAG_HIDDEN)) {
+        continue;
+      }
+      if (tgt->id != 0 && tgt->id == atk->id) {
+        continue;
+      }
+      if (!(atk->flags & HBFLAG_UNK_0) && (tgt->flags & HBFLAG_UNK_0)) {
+        continue;
+      }
+      if ((atk->flags & HBFLAG_ACTOR) && !(tgt->flags & HBFLAG_ACTOR)) {
+        continue;
+      }
+      if (Hitbox_CheckOverlap(atk, tgt)) {
+        tgt->damage = 0;
+        if (!(tgt->flags & HBFLAG_UNK_1) && atk->fn != NULL) {
+          atk->fn(atk, tgt, atk->owner);
+        }
+        if (!(atk->flags & HBFLAG_UNK_1) && tgt->fn != NULL) {
+          tgt->fn(atk, tgt, tgt->owner);
+        }
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/Hitbox_CheckAllPairs.inc");
+#endif
+}
 
 // 溜まっている攻撃側の Hitbox を targets 側と総当たりし、終わったら attacks リストを空に戻す
 s32 HitboxManager_Update(HitboxManager* p) {

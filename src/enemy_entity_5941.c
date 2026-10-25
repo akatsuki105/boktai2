@@ -6,14 +6,14 @@
 // unk_18 が単方向リストの先頭, ノードは敵の構造体に埋め込まれている (EnemyBat なら +0x7C)
 // ノードの中身: 0x0 敵自身へのポインタ / 0x4 フラグ(bit0 が立っているものだけ検索対象) / 0x8 関数ポインタ / 0xC next
 // 用途は Entity5941_FindNearestInCone (扇形の中で最も近いノードを返す) だが、これを呼ぶコードは見つかっていない
-typedef struct Entity5941 {
+typedef struct {
   Entity e;               // 0x0, ENTITY_UNK_2
   Entity5941Node* nodes;  // 0x18, 登録済みノードのリスト先頭, 根拠: Entity5941_Register / Entity5941_Unregister
   void* unk_1c;           // 0x1C
 } Entity5941;
 static_assert(sizeof(Entity5941) == 32);
 
-extern Entity5941* gEntity5941;  // 0x03002BF8
+COMMON_DATA Entity5941* gEntity5941 = NULL;  // 0x03002BF8
 
 // 原典はリストを進める node = node->next を書き忘れていて, 先頭が一致しないと無限ループになる
 // 残差は23/23命令, 空ループの手前へ原典は定数1を, agbcc は flags の ldr を追い出す (node が r1 でなく r2 になる)

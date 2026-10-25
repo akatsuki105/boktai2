@@ -1,7 +1,7 @@
 	push {r4, lr}
 	adds r4, r0, #0
 	movs r0, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r1, r0, #0
 	cmp r4, #0
 	ble _0808B380

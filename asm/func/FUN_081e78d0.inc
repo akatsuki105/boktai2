@@ -6,8 +6,8 @@
 	ldrb r0, [r7]
 	cmp r0, #0
 	beq _081E799A
-	bl FUN_08049e5c
-	bl FUN_08049fa8
+	bl Marquee_Clear
+	bl Marquee_CloseGlobal
 	ldr r1, _081E79B4 @ =0x00001610
 	adds r2, r6, r1
 	movs r1, #2

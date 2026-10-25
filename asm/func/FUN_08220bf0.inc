@@ -33,7 +33,7 @@
 	movs r1, #0x10
 	movs r2, #0
 	movs r3, #0
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 	ldr r0, _08220C74 @ =0x0000035F
 	bl PlaySound_082406e0
 _08220C40:
@@ -86,7 +86,7 @@ _08220C7C:
 	adds r0, r4, #0
 	movs r1, #0x10
 	movs r2, #1
-	bl FUN_08221268
+	bl ShadeMan_SetMotion
 	b _08220CBA
 	.align 2, 0
 _08220CAC: .4byte 0x000002D9

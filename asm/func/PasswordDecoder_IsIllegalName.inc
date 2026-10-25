@@ -19,7 +19,7 @@ _0801125A:
 	ldr r0, [r1, #0x78]
 	bl VM_ParseStringRef
 	adds r0, r0, r4
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r1, r0, #0
 	ldrb r0, [r1]
 	adds r2, r4, #1

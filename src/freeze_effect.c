@@ -190,8 +190,8 @@ s32 FreezeEffect_Destroy(FreezeEffect* p) {
 void FreezeEffect_InitHitbox(FreezeEffect* p, s32 param_2, s32 param_3, s32 param_4) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 size, offset;
-  size.x = 100, size.y = 100, size.z = 100;
-  offset.x = 0, offset.y = 0, offset.z = 0;
+  VEC3_SET(size, 100, 100, 100);
+  VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_ANGLE, 0, param_2, &size, &offset);
   Hitbox_SetAttack(hitbox, param_3, 0, 0x4000, 0, 0);
   hitbox->angle = param_4;

@@ -49,7 +49,7 @@ _0809CF0A:
 	orrs r1, r2
 	str r1, [r0]
 	bl MessageWindow_Close
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	b _0809CF8A
 	.align 2, 0
 _0809CF24: .4byte 0x00000E2B

@@ -6,9 +6,9 @@
 #include "vm.h"
 
 typedef struct {
-  Entity e;    // 0x0, ENTITY_UNK_8
-  void* p_18;  // 0x18, Tilemap_4F8F 固定?
-  u8 unk_1c[4];
+  Entity e;                       // 0x0, ENTITY_UNK_8
+  Tilemaps* tilemap;              // 0x18, TILEMAP_4F8F
+  u8 unk_1c[4];                   // 0x1C
   u32 frameCounter;               // 0x020, フレームカウンタ (多分カーソルの点滅とかで使う)
   u8 page;                        // 0x024, 現在のページ (0: ページ1, 1: ページ2, 2: ページ3)
   u8 cursor;                      // 0x025, 現在のカーソルの位置番号, = (cursorY * 5) + cursorX
@@ -34,8 +34,6 @@ typedef struct {
 } AlbumMenu;
 static_assert(sizeof(AlbumMenu) == 2176);
 
-s32 FUN_08049fa8(void);
-
 const u8 gAlbumPhotoSlotCounts[3] = {10, 10, 7};  // アルバムの各ページのブロマイドスロット数
 
 const u16 u16_ARRAY_085af9b4[54] = {
@@ -43,19 +41,14 @@ const u16 u16_ARRAY_085af9b4[54] = {
     0x0, 0xD, 0x0, 0xE, 0x0, 0xF, 0x0, 0x10, 0x0, 0x15, 0x0, 0x16, 0x0, 0x17, 0x0, 0x11, 0x0, 0x12, 0x0,  0x14, 0x0, 0x13, 0x0, 0x18, 0x0, 0x19, 0x0,
 };  // 0x085af9b4
 
-static inline void UnlockPhoto(u32 photoIdx) { gStat->photo |= (1 << photoIdx); }
-
-// 使われていない、多分 non-static な inline として定義されていた
-// こっちを inline として定義すれば static inline UnlockPhoto は不要になるのだが、non-static な inline関数の定義は GCC2.95 ではTUの末尾に強制的に配置されてしまうため、コンパイル結果が一致しない
-// この関数を別ファイルに切り出して定義すれば回避できるが、木端なファイルを増やすよりはこの形の方が無難
-void Unused_UnlockPhoto(u32 photoIdx) { UnlockPhoto(photoIdx); }
+void UNUSED UnlockPhoto(u32 photoIdx) { SET_BIT(gStat->photo, photoIdx); }
 
 u32 CheckPhotoUnlocked(u32 photoIdx) { return gStat->photo & (1 << photoIdx); }
 
 // '.i' が指すブロマイドを取得済みにする
 void Cmd_UnlockPhoto(void) {
   if (VM_SeekToNamedArg('i')) {
-    UnlockPhoto(VM_GetValue());  // 本来は Unused_UnlockPhoto をインライン展開していると思われる
+    SET_BIT(gStat->photo, VM_GetValue());
   }
 }
 
@@ -120,14 +113,14 @@ NON_MATCH void FUN_082111cc(AlbumMenu* p) {
     TextPanel_SetScript(p->panelID, p->scriptPc);
     TextPanel_SetMessage(p->panelID, p->cursor);
     TextPanel_Start(p->panelID);
-    FUN_08049e5c();
-    FUN_08049e30(Textbox_LookupString(VM_ParseStringRef(p->unk_874) + p->cursor));
+    Marquee_Clear();
+    Marquee_SetText(GetStringByID(VM_ParseStringRef(p->unk_874) + p->cursor));
   } else {
     TextPanel_SetScript(p->panelID, p->scriptPc);
     TextPanel_SetMessage(p->panelID, 27);
     TextPanel_Start(p->panelID);
-    FUN_08049e5c();
-    FUN_08049e30(Textbox_LookupString(VM_ParseStringRef(p->unk_878) + p->cursor));
+    Marquee_Clear();
+    Marquee_SetText(GetStringByID(VM_ParseStringRef(p->unk_878) + p->cursor));
   }
 #else
   INCFUNC("asm/func/FUN_082111cc.inc");
@@ -136,12 +129,12 @@ NON_MATCH void FUN_082111cc(AlbumMenu* p) {
 
 // 取得数 "n/27" の数字を並べる
 void FUN_0821126c(AlbumMenu* p) {
-  FUN_082376a4(&p->sprites_108[0], &p->gfx1, CountUnlockedPhotos(), 2, 0, 176, 104, 8, 0);
+  MainSprite_SetNumber(&p->sprites_108[0], &p->gfx1, CountUnlockedPhotos(), 2, 0, 176, 104, 8, 0);
   MainSprite_SetPose(&p->sprites_108[2], &p->gfx1, 11, 0);
   p->sprites_108[2].pos.x = 192;
   p->sprites_108[2].pos.y = 104;
   p->sprites_108[2].flags &= ~SPRFLAG_HIDDEN;
-  FUN_082376a4(&p->sprites_108[3], &p->gfx1, 27, 2, 0, 200, 104, 8, 0);
+  MainSprite_SetNumber(&p->sprites_108[3], &p->gfx1, 27, 2, 0, 200, 104, 8, 0);
 }
 
 // カーソルのスプライトをマス目に合わせて置き直す
@@ -247,7 +240,7 @@ s32 AlbumMenu_Destroy(AlbumMenu* p) {
   MainSprite_Remove(&p->sprites_3a8[0]);
   MainSprite_Remove(&p->sprites_3a8[1]);
   TextPanel_Hide(p->panelID);
-  FUN_08049fa8();
+  Marquee_CloseGlobal();
   SetBGPrioDirect(0, 0);
   return 0;
 }

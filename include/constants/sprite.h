@@ -51,7 +51,7 @@
 #define SPRITE_PLANT_2567 0x2567               // 多分、ドゥラスロール倒すまで奥の楔の部屋への入り口を塞いでる植物
 #define SPRITE_DEBRIS_C42D 0xC42D              // なんかの破片?
 #define SPRITE_DEBRIS_0334 0x0334              // C42Dの破片の小さいやつ?
-#define SPRITE_EFF_1C1B 0x1C1B                 // エフェクト群(煙、蜘蛛の巣,???)
+#define SPRITE_EFF_1C1B 0x1C1B                 // エフェクト群(煙、蜘蛛の巣,影)
 #define SPRITE_KOMAINU 0xF680                  // 大聖堂の狛犬
 #define SPRITE_EXPLOSION 0x8639                // ExplosionManager が使う爆発
 #define SPRITE_BOMB 0xE74B                     // 丸い爆弾, エフェクト(煙?), ダイナマイト
@@ -67,7 +67,7 @@
 #define SPRITE_EFF_F422 0xF422                 // エフェクト
 #define SPRITE_B306 0xB306                     // 紋章ブロック(炎氷地風)
 #define SPRITE_A5B3 0xA5B3                     // 大聖堂の水晶?
-#define SPRITE_5AFD 0x5AFD                     // シェードマンのスピーカー?
+#define SPRITE_SPEAKER 0x5AFD                  // シェードマンがクラッシュノイズのときに出すスピーカー
 #define SPRITE_5AFE 0x5AFE                     // 輪っかのエフェクト(シェードマン関連?)
 #define SPRITE_D4EE 0xD4EE                     // マミー
 #define SPRITE_924B 0x924B                     // マミー
@@ -142,7 +142,7 @@
 #define SPRITE_2817 0x2817                     // 大聖堂の水晶?
 #define SPRITE_EFD8 0xEFD8                     // 0..9の数字とまだ何も数字が書かれていないパネルの絵
 #define SPRITE_9DFF 0x9DFF                     // 黒塗り
-#define SPRITE_A152 0xA152                     // なんかの魔方陣
+#define SPRITE_TIME_MCIRCLE 0xA152             // タイム魔方陣
 #define SPRITE_17C7 0x17C7                     // 重量スイッチ
 #define SPRITE_210E 0x210E                     // 弾に見えるが、エフェクトかもしれない
 #define SPRITE_2110 0x2110                     // 未確認, サバタの大きい攻撃判定に付くスプライト
@@ -170,7 +170,7 @@
 #define SPRITE_JORMUNGANDR_8203 0x8203         // ヨルムンガンド
 #define SPRITE_JORMUNGANDR_8204 0x8204         // ヨルムンガンド
 #define SPRITE_WEDGE_8205 0x8205               // ヨルムンガンドの楔
-#define SPRITE_WEDGE_8202 0x8202               // ヨルムンガンドの楔
+#define SPRITE_JORMUNGANDR_8202 0x8202         // ヨルムンガンドの怪光線 + ヨルムンガンドの楔?
 #define SPRITE_JORMUNGANDR_LEG 0x8206          // ヨルムンガンドのタコ足
 #define SPRITE_DC38 0xDC38                     // 黒塗り
 #define SPRITE_8393 0x8393                     // 黒塗り
@@ -178,7 +178,7 @@
 #define SPRITE_17C9 0x17C9                     // 重量スイッチ
 #define SPRITE_DB6C 0xDB6C                     // 壁?
 #define SPRITE_D0A3 0xD0A3                     // カンテラ
-#define SPRITE_9385 0x9385                     // 壊れた蜂の巣
+#define SPRITE_BEE_NEST_BROKEN 0x9385          // 壊れた蜂の巣
 #define SPRITE_BEE_NEST BOKHASH("bee_nest")    // 0xB626, 蜂の巣
 #define SPRITE_GHOST 0xD637                    // ゴースト, レイス
 #define SPRITE_E7EA 0xE7EA                     // エフェクト
@@ -237,7 +237,7 @@
 #define SPRITE_4FDA 0x4FDA                     // ??
 #define SPRITE_863A 0x863A                     // 燃える(爆発?)エフェクト
 #define SPRITE_8638 0x8638                     // ??
-#define SPRITE_61F9 0x61F9                     // ドゥネイルの出すエフェクトや芋虫(ドゥネイル本体は別)
+#define SPRITE_DUNEYRR_AUX 0x61F9              // ドゥネイルの出すエフェクトや芋虫(ドゥネイル本体は別)
 #define SPRITE_2058 0x2058                     // 武器屋(シャイアンの店)の内装?
 #define SPRITE_DOOR_WOOD 0x7ACD                // ドア(木)
 #define SPRITE_DVALIN_2E78 0x2E78              // ドヴァリン
@@ -254,7 +254,7 @@
 #define SPRITE_7BE2 0x7BE2                     // 黒塗り
 #define SPRITE_2EC0 0x2EC0                     // 遺跡ステージの4人の燭台の床パネル?
 #define SPRITE_BAT 0xDA6D                      // バット
-#define SPRITE_EFF_354D 0x354D                 // 何かのエフェクト
+#define SPRITE_EFF_SHAIAN_SPIN 0x354D          // シャイアンの回転斬りのエフェクト
 #define SPRITE_SHAIAN_AX 0x39A3                // シャイアンが投げる斧
 #define SPRITE_LVUP_INDICATOR 0x1C1D           // レベルアップのインジケータ
 #define SPRITE_GAMEOVER BOKHASH("over")        // 0x654B, "GAMEOVER"

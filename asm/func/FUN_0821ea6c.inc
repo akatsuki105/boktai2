@@ -56,7 +56,7 @@ _0821EAAC:
 	movs r1, #0x11
 	movs r2, #1
 	movs r3, #1
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 _0821EADA:
 	movs r3, #0xef
 	lsls r3, r3, #2
@@ -120,7 +120,7 @@ _0821EB2E:
 	movs r1, #0x13
 	movs r2, #1
 	movs r3, #1
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 _0821EB4C:
 	ldr r0, [r4]
 	cmp r0, #0x2c
@@ -236,7 +236,7 @@ _0821EBFA:
 	movs r1, #9
 	movs r2, #1
 	movs r3, #1
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 	movs r3, #0x86
 	lsls r3, r3, #1
 	adds r0, r7, r3
@@ -559,7 +559,7 @@ _0821EE90:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0x14
-	bl FUN_0821ddc4
+	bl ShadeMan_SpawnAfterimage
 	b _0821F0D6
 _0821EE9C:
 	ands r6, r2
@@ -576,7 +576,7 @@ _0821EE9C:
 	movs r1, #0xb
 	movs r2, #1
 	movs r3, #1
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 	movs r1, #0xaf
 	lsls r1, r1, #2
 	adds r0, r7, r1
@@ -750,7 +750,7 @@ _0821EFE8:
 	movs r1, #0x15
 	movs r2, #1
 	movs r3, #1
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 	movs r0, #0x20
 	ldr r1, [r4]
 	ands r0, r1
@@ -857,7 +857,7 @@ _0821F0B6:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0x14
-	bl FUN_0821ddc4
+	bl ShadeMan_SpawnAfterimage
 _0821F0D6:
 	add sp, #0x10
 	pop {r3}

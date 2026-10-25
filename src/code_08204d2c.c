@@ -1,11 +1,20 @@
 #include "entity_286f.h"
 #include "global.h"
 
-// おそらく、複数のTUのコードが混ざっているが、まだどこでファイル分けするかわかっていない
-
 static rgb555 rgb555_ARRAY_03000228[16];  // 0x03000228
 
+COMMON_DATA u32 u32_03002c90 = 0;                          // 0x03002C90
+COMMON_DATA u8 u8_03002c94[0x03002C98 - 0x03002C94] = {};  // unused?
+
+extern void (*const PTR_ARRAY_085ae83c[21])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085aeb5c[26])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085aeacc[19])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085aea70[23])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085ae96c[23])(Entity286F*, Entity286FNode*);
+extern void (*const PTR_ARRAY_085ae8dc[19])(Entity286F*, Entity286FNode*);
+
 // src/entity_286f.c
+s32 FUN_080412fc(Entity286F*, Entity286FNode*);
 void FUN_08042178(Entity286F*, Entity286FNode*, s32);
 void FUN_080421bc(Entity286F*, Entity286FNode*, s32);
 void FUN_08042200(Entity286F*, Entity286FNode*, s32);
@@ -47,9 +56,9 @@ NAKED void FUN_08204dd8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_08204e0c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08204e0c.inc"); }
 
-NAKED void FUN_08204e40(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08204e40.inc"); }
+void FUN_08204e40(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085ae83c[node->state](p, node); }
 
-NAKED void FUN_08204e58(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08204e58.inc"); }
+void FUN_08204e58(Entity286F* p, Entity286FNode* node) { FUN_08204e40(p, node); }
 
 NAKED void FUN_08204e64(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08204e64.inc"); }
 
@@ -75,7 +84,10 @@ NAKED s32 FUN_08205990(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/
 
 NAKED s32 FUN_082059bc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082059bc.inc"); }
 
-NAKED s32 FUN_082059d8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082059d8.inc"); }
+s32 FUN_082059d8(Entity286F* p, Entity286FNode* node) {
+  FUN_08204e58(p, node);
+  return 0;
+}
 
 NAKED s32 FUN_082059e4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082059e4.inc"); }
 
@@ -103,11 +115,14 @@ NAKED void FUN_08205f38(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_08205f74(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08205f74.inc"); }
 
-NAKED void FUN_08205fb0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08205fb0.inc"); }
+void FUN_08205fb0(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085ae8dc[node->state](p, node); }
 
-NAKED void FUN_08205fc8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08205fc8.inc"); }
+void FUN_08205fc8(Entity286F* p, Entity286FNode* node) { FUN_08205fb0(p, node); }
 
-NAKED s32 FUN_08205fd4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08205fd4.inc"); }
+s32 FUN_08205fd4(Entity286F* p, Entity286FNode* node) {
+  FUN_08205fc8(p, node);
+  return 0;
+}
 
 NAKED void FUN_08205fe0(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08205fe0.inc"); }
 
@@ -125,9 +140,13 @@ NAKED void FUN_08206354(Entity286FNode* node) { INCFUNC("asm/func/FUN_08206354.i
 
 NAKED s32 FUN_082063ec(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082063ec.inc"); }
 
-NAKED s32 FUN_0820640c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820640c.inc"); }
+s32 FUN_0820640c(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  FUN_08206354(node);
+  return 0;
+}
 
-NAKED s32 FUN_08206424(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08206424.inc"); }
+s32 FUN_08206424(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x3004
 NAKED void FUN_08206434(void) { INCFUNC("asm/func/FUN_08206434.inc"); }
@@ -149,11 +168,14 @@ NAKED void FUN_0820678c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_082067c0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082067c0.inc"); }
 
-NAKED void FUN_08206898(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08206898.inc"); }
+void FUN_08206898(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085ae96c[node->state](p, node); }
 
-NAKED void FUN_082068b0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082068b0.inc"); }
+void FUN_082068b0(Entity286F* p, Entity286FNode* node) { FUN_08206898(p, node); }
 
-NAKED s32 FUN_082068bc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082068bc.inc"); }
+s32 FUN_082068bc(Entity286F* p, Entity286FNode* node) {
+  FUN_082068b0(p, node);
+  return 0;
+}
 
 NAKED void FUN_082068c8(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_082068c8.inc"); }
 
@@ -177,9 +199,12 @@ NAKED void FUN_08206b7c(Entity286FNode* node) { INCFUNC("asm/func/FUN_08206b7c.i
 
 NAKED s32 FUN_08206d8c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08206d8c.inc"); }
 
-NAKED s32 FUN_08206dac(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08206dac.inc"); }
+s32 FUN_08206dac(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
-NAKED s32 FUN_08206db8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08206db8.inc"); }
+s32 FUN_08206db8(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xC347
 NAKED void FUN_08206dc8(void) { INCFUNC("asm/func/FUN_08206dc8.inc"); }
@@ -222,19 +247,25 @@ NAKED void FUN_0820752c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_08207550(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08207550.inc"); }
 
-NAKED void FUN_08207578(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08207578.inc"); }
+void FUN_08207578(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085aea70[node->state](p, node); }
 
-NAKED void FUN_08207590(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08207590.inc"); }
+void FUN_08207590(Entity286F* p, Entity286FNode* node) { FUN_08207578(p, node); }
 
-NAKED s32 FUN_0820759c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820759c.inc"); }
+s32 FUN_0820759c(Entity286F* p, Entity286FNode* node) {
+  FUN_08207590(p, node);
+  return 0;
+}
 
 NAKED void FUN_082075a8(Entity286FNode* node) { INCFUNC("asm/func/FUN_082075a8.inc"); }
 
 NAKED s32 FUN_082077bc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082077bc.inc"); }
 
-NAKED s32 FUN_082077dc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082077dc.inc"); }
+s32 FUN_082077dc(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
-NAKED s32 FUN_082077e8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082077e8.inc"); }
+s32 FUN_082077e8(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xF33F
 NAKED void FUN_082077f8(void) { INCFUNC("asm/func/FUN_082077f8.inc"); }
@@ -248,11 +279,14 @@ NAKED void FUN_08207af0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_08207b1c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08207b1c.inc"); }
 
-NAKED void FUN_08207b48(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08207b48.inc"); }
+void FUN_08207b48(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085aeacc[node->state](p, node); }
 
-NAKED void FUN_08207b60(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08207b60.inc"); }
+void FUN_08207b60(Entity286F* p, Entity286FNode* node) { FUN_08207b48(p, node); }
 
-NAKED s32 FUN_08207b6c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08207b6c.inc"); }
+s32 FUN_08207b6c(Entity286F* p, Entity286FNode* node) {
+  FUN_08207b60(p, node);
+  return 0;
+}
 
 NAKED void FUN_08207b78(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_08207b78.inc"); }
 
@@ -268,9 +302,12 @@ NAKED void FUN_08207cb4(Entity286FNode* node) { INCFUNC("asm/func/FUN_08207cb4.i
 
 NAKED s32 FUN_08207e94(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08207e94.inc"); }
 
-NAKED s32 FUN_08207eb4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08207eb4.inc"); }
+s32 FUN_08207eb4(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
-NAKED s32 FUN_08207ec0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08207ec0.inc"); }
+s32 FUN_08207ec0(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xB189
 NAKED void FUN_08207ed0(void) { INCFUNC("asm/func/FUN_08207ed0.inc"); }
@@ -298,11 +335,14 @@ NAKED void FUN_082082c0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_082082f4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082082f4.inc"); }
 
-NAKED void FUN_08208320(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08208320.inc"); }
+void FUN_08208320(Entity286F* p, Entity286FNode* node) { PTR_ARRAY_085aeb5c[node->state](p, node); }
 
-NAKED void FUN_08208338(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08208338.inc"); }
+void FUN_08208338(Entity286F* p, Entity286FNode* node) { FUN_08208320(p, node); }
 
-NAKED s32 FUN_08208344(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08208344.inc"); }
+s32 FUN_08208344(Entity286F* p, Entity286FNode* node) {
+  FUN_08208338(p, node);
+  return 0;
+}
 
 NAKED void FUN_08208350(Entity286FNode* node, s32 param_2, s32 param_3) { INCFUNC("asm/func/FUN_08208350.inc"); }
 
@@ -344,17 +384,20 @@ NAKED void FUN_082091f0(Entity286FNode* node) { INCFUNC("asm/func/FUN_082091f0.i
 
 NAKED s32 FUN_082094f8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_082094f8.inc"); }
 
-NAKED s32 FUN_08209518(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209518.inc"); }
+s32 FUN_08209518(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
-NAKED s32 FUN_08209524(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209524.inc"); }
+s32 FUN_08209524(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 NAKED void FUN_08209534(s32 param_1) { INCFUNC("asm/func/FUN_08209534.inc"); }
 
 // 0xD774
-NAKED void FUN_082097dc(void) { INCFUNC("asm/func/FUN_082097dc.inc"); }
+void FUN_082097dc(void) { FUN_08209534(0); }
 
 // 0x82C8
-NAKED void FUN_082097e8(void) { INCFUNC("asm/func/FUN_082097e8.inc"); }
+void FUN_082097e8(void) { FUN_08209534(1); }
 
 // 0x9DFE
 NAKED void FUN_082097f4(void) { INCFUNC("asm/func/FUN_082097f4.inc"); }
@@ -366,9 +409,12 @@ NAKED void FUN_08209838(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_08209874(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209874.inc"); }
 
-NAKED void FUN_0820988c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820988c.inc"); }
+void FUN_0820988c(Entity286F* p, Entity286FNode* node) { FUN_08209874(p, node); }
 
-NAKED s32 FUN_08209898(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209898.inc"); }
+s32 FUN_08209898(Entity286F* p, Entity286FNode* node) {
+  FUN_0820988c(p, node);
+  return 0;
+}
 
 NAKED s32 FUN_082098a4(Entity286FNode* node) { INCFUNC("asm/func/FUN_082098a4.inc"); }
 
@@ -378,9 +424,12 @@ NAKED void FUN_08209914(Entity286FNode* node) { INCFUNC("asm/func/FUN_08209914.i
 
 NAKED s32 FUN_08209ad4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209ad4.inc"); }
 
-NAKED s32 FUN_08209af4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209af4.inc"); }
+s32 FUN_08209af4(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
-NAKED s32 FUN_08209b00(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209b00.inc"); }
+s32 FUN_08209b00(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x40A6
 NAKED void FUN_08209b10(void) { INCFUNC("asm/func/FUN_08209b10.inc"); }
@@ -390,9 +439,12 @@ NAKED void FUN_08209b10(void) { INCFUNC("asm/func/FUN_08209b10.inc"); }
 
 NAKED void FUN_08209da0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209da0.inc"); }
 
-NAKED void FUN_08209db8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209db8.inc"); }
+void FUN_08209db8(Entity286F* p, Entity286FNode* node) { FUN_08209da0(p, node); }
 
-NAKED s32 FUN_08209dc4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209dc4.inc"); }
+s32 FUN_08209dc4(Entity286F* p, Entity286FNode* node) {
+  FUN_08209db8(p, node);
+  return 0;
+}
 
 NAKED s32 FUN_08209dd0(Entity286FNode* node) { INCFUNC("asm/func/FUN_08209dd0.inc"); }
 
@@ -402,9 +454,12 @@ NAKED void FUN_08209e40(Entity286FNode* node) { INCFUNC("asm/func/FUN_08209e40.i
 
 NAKED s32 FUN_08209f8c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209f8c.inc"); }
 
-NAKED s32 FUN_08209fac(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209fac.inc"); }
+s32 FUN_08209fac(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
-NAKED s32 FUN_08209fb8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_08209fb8.inc"); }
+s32 FUN_08209fb8(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x5470
 NAKED void FUN_08209fc8(void) { INCFUNC("asm/func/FUN_08209fc8.inc"); }
@@ -414,9 +469,12 @@ NAKED void FUN_08209fc8(void) { INCFUNC("asm/func/FUN_08209fc8.inc"); }
 
 NAKED void FUN_0820a258(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a258.inc"); }
 
-NAKED void FUN_0820a270(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a270.inc"); }
+void FUN_0820a270(Entity286F* p, Entity286FNode* node) { FUN_0820a258(p, node); }
 
-NAKED s32 FUN_0820a27c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a27c.inc"); }
+s32 FUN_0820a27c(Entity286F* p, Entity286FNode* node) {
+  FUN_0820a270(p, node);
+  return 0;
+}
 
 NAKED s32 FUN_0820a288(Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a288.inc"); }
 
@@ -426,9 +484,12 @@ NAKED void FUN_0820a2f8(Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a2f8.i
 
 NAKED s32 FUN_0820a444(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a444.inc"); }
 
-NAKED s32 FUN_0820a464(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a464.inc"); }
+s32 FUN_0820a464(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
-NAKED s32 FUN_0820a470(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a470.inc"); }
+s32 FUN_0820a470(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xA133
 NAKED void FUN_0820a480(void) { INCFUNC("asm/func/FUN_0820a480.inc"); }
@@ -438,9 +499,12 @@ NAKED void FUN_0820a480(void) { INCFUNC("asm/func/FUN_0820a480.inc"); }
 
 NAKED void FUN_0820a710(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a710.inc"); }
 
-NAKED void FUN_0820a728(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a728.inc"); }
+void FUN_0820a728(Entity286F* p, Entity286FNode* node) { FUN_0820a710(p, node); }
 
-NAKED s32 FUN_0820a734(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a734.inc"); }
+s32 FUN_0820a734(Entity286F* p, Entity286FNode* node) {
+  FUN_0820a728(p, node);
+  return 0;
+}
 
 NAKED s32 FUN_0820a740(Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a740.inc"); }
 
@@ -450,9 +514,12 @@ NAKED void FUN_0820a7b0(Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a7b0.i
 
 NAKED s32 FUN_0820a8fc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a8fc.inc"); }
 
-NAKED s32 FUN_0820a91c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a91c.inc"); }
+s32 FUN_0820a91c(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
-NAKED s32 FUN_0820a928(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820a928.inc"); }
+s32 FUN_0820a928(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x3F96
 NAKED void FUN_0820a938(void) { INCFUNC("asm/func/FUN_0820a938.inc"); }
@@ -470,9 +537,12 @@ NAKED void FUN_0820ac44(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_0820ac80(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820ac80.inc"); }
 
-NAKED void FUN_0820ac98(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820ac98.inc"); }
+void FUN_0820ac98(Entity286F* p, Entity286FNode* node) { FUN_0820ac80(p, node); }
 
-NAKED s32 FUN_0820aca4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820aca4.inc"); }
+s32 FUN_0820aca4(Entity286F* p, Entity286FNode* node) {
+  FUN_0820ac98(p, node);
+  return 0;
+}
 
 NAKED void FUN_0820acb0(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_0820acb0.inc"); }
 
@@ -488,9 +558,12 @@ NAKED void FUN_0820b0b4(Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b0b4.i
 
 NAKED s32 FUN_0820b2bc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b2bc.inc"); }
 
-NAKED s32 FUN_0820b2dc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b2dc.inc"); }
+s32 FUN_0820b2dc(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
-NAKED s32 FUN_0820b2e8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b2e8.inc"); }
+s32 FUN_0820b2e8(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xCE28
 NAKED void FUN_0820b2f8(void) { INCFUNC("asm/func/FUN_0820b2f8.inc"); }
@@ -510,9 +583,12 @@ NAKED void FUN_0820b678(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_0820b6b4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b6b4.inc"); }
 
-NAKED void FUN_0820b6cc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b6cc.inc"); }
+void FUN_0820b6cc(Entity286F* p, Entity286FNode* node) { FUN_0820b6b4(p, node); }
 
-NAKED s32 FUN_0820b6d8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820b6d8.inc"); }
+s32 FUN_0820b6d8(Entity286F* p, Entity286FNode* node) {
+  FUN_0820b6cc(p, node);
+  return 0;
+}
 
 NAKED void FUN_0820b6e4(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_0820b6e4.inc"); }
 
@@ -532,9 +608,12 @@ NAKED void FUN_0820baa8(Entity286FNode* node) { INCFUNC("asm/func/FUN_0820baa8.i
 
 NAKED s32 FUN_0820bc90(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820bc90.inc"); }
 
-NAKED s32 FUN_0820bcb0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820bcb0.inc"); }
+s32 FUN_0820bcb0(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
-NAKED s32 FUN_0820bcbc(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820bcbc.inc"); }
+s32 FUN_0820bcbc(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0xD229
 NAKED void FUN_0820bccc(void) { INCFUNC("asm/func/FUN_0820bccc.inc"); }
@@ -546,9 +625,12 @@ NAKED void FUN_0820bf5c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_0820bf88(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820bf88.inc"); }
 
-NAKED void FUN_0820bfa0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820bfa0.inc"); }
+void FUN_0820bfa0(Entity286F* p, Entity286FNode* node) { FUN_0820bf88(p, node); }
 
-NAKED s32 FUN_0820bfac(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820bfac.inc"); }
+s32 FUN_0820bfac(Entity286F* p, Entity286FNode* node) {
+  FUN_0820bfa0(p, node);
+  return 0;
+}
 
 NAKED void FUN_0820bfb8(Entity286F* p, Entity286FNode* node, s32 elapsed) { INCFUNC("asm/func/FUN_0820bfb8.inc"); }
 
@@ -566,9 +648,12 @@ NAKED void FUN_0820c214(Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c214.i
 
 NAKED s32 FUN_0820c3a4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c3a4.inc"); }
 
-NAKED s32 FUN_0820c3c4(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c3c4.inc"); }
+s32 FUN_0820c3c4(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
-NAKED s32 FUN_0820c3d0(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c3d0.inc"); }
+s32 FUN_0820c3d0(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x56AD
 NAKED void FUN_0820c3e0(void) { INCFUNC("asm/func/FUN_0820c3e0.inc"); }
@@ -584,17 +669,23 @@ NAKED void FUN_0820c6c8(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func
 
 NAKED void FUN_0820c704(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c704.inc"); }
 
-NAKED void FUN_0820c71c(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c71c.inc"); }
+void FUN_0820c71c(Entity286F* p, Entity286FNode* node) { FUN_0820c704(p, node); }
 
-NAKED s32 FUN_0820c728(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c728.inc"); }
+s32 FUN_0820c728(Entity286F* p, Entity286FNode* node) {
+  FUN_0820c71c(p, node);
+  return 0;
+}
 
 NAKED void FUN_0820c734(Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c734.inc"); }
 
 NAKED s32 FUN_0820c904(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c904.inc"); }
 
-NAKED s32 FUN_0820c924(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c924.inc"); }
+s32 FUN_0820c924(Entity286F* p, Entity286FNode* node) {
+  FUN_080412fc(p, node);
+  return 0;
+}
 
-NAKED s32 FUN_0820c930(Entity286F* p, Entity286FNode* node) { INCFUNC("asm/func/FUN_0820c930.inc"); }
+s32 FUN_0820c930(Entity286F* p, Entity286FNode* node) { return MsgQueue_Unregister(&node->mq); }
 
 // 0x8EA3
 NAKED void FUN_0820c940(void) { INCFUNC("asm/func/FUN_0820c940.inc"); }

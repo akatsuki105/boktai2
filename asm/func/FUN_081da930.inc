@@ -6,7 +6,7 @@
 	ldrb r0, [r6]
 	cmp r0, #0
 	beq _081DA97A
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r1, _081DA998 @ =0x00000286
 	adds r0, r5, r1
 	ldrb r4, [r0]
@@ -17,8 +17,8 @@
 	adds r4, #0x19
 	bl VM_ParseStringRef
 	adds r0, r0, r4
-	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl GetStringByID
+	bl Marquee_SetText
 	adds r0, r5, #0
 	bl FUN_081da730
 	ldr r1, _081DA99C @ =0x0000029D

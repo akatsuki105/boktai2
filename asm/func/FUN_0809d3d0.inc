@@ -404,7 +404,7 @@ _0809D6EE:
 	bl FUN_081df8d4
 	adds r0, r6, #0
 	bl FUN_0809d230
-	bl FUN_08049fa8
+	bl Marquee_CloseGlobal
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 	movs r0, #1

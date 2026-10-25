@@ -10,7 +10,7 @@ _0809896E:
 	movs r0, #0
 	movs r1, #0x12
 	adds r2, r4, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r2, r4, #1
 	movs r1, #0xa
 _0809897C:
@@ -34,7 +34,7 @@ _0809899C:
 	movs r0, #0
 	movs r1, #0x12
 	adds r2, r4, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r2, r4, #1
 	movs r1, #0xa
 _080989AA:

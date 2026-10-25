@@ -22,7 +22,7 @@ _08217C14:
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #0x54
-	bl Textbox_LookupString
+	bl GetStringByID
 	ldrb r1, [r0]
 	strb r1, [r4]
 	ldrb r0, [r0, #1]
@@ -36,7 +36,7 @@ _08217C3A:
 	movs r1, #1
 	movs r2, #0xa
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	movs r0, #0x12
 	movs r1, #1
 	mov r2, sp

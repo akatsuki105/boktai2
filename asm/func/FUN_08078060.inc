@@ -275,7 +275,7 @@ _08078298:
 	bhs _080782B2
 	b _08078424
 _080782B2:
-	bl FUN_0809c58c
+	bl HUD_RemoveCountdown
 	ldr r0, _080782EC @ =0x0000037D
 	adds r1, r4, r0
 	movs r0, #5
@@ -464,7 +464,7 @@ _08078424:
 	lsrs r5, r0, #0x10
 	cmp r5, #0
 	bne _0807847E
-	bl FUN_0809c58c
+	bl HUD_RemoveCountdown
 	ldr r0, _08078494 @ =0x00000239
 	bl sound_08240740
 	adds r0, r4, #0

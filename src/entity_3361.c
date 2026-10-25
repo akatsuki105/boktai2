@@ -94,13 +94,9 @@ s32 Entity3361_Init(Entity3361* p, u32 id, u32 _) {
   p->id = id;
   MsgQueue_Register(&p->msgQueue, p->id, 10);
   if (VM_SeekToNamedArg('p')) {
-    p->pos.x = VM_GetValue();
-    p->pos.y = VM_GetValue();
-    p->pos.z = VM_GetValue();
+    VEC3_SET(p->pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {
-    p->pos.x = 0;
-    p->pos.y = 0;
-    p->pos.z = 0;
+    VEC3_SET(p->pos, 0, 0, 0);
   }
 
   priority = VM_SeekToNamedArg('R') ? VM_GetValue() : 2;

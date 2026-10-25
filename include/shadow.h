@@ -6,8 +6,7 @@
 #include "sprite_aux.h"
 #include "types.h"
 
-// 持ち主の足元に置く影, ParticleShadowManager がリストで管理して毎フレーム fn を呼ぶ
-// AuxShadow と違って"しょぼい"影
+// 持ち主の足元に置く影, ボスなどの巨大モンスター以外はすべてこの影を使う
 typedef struct ParticleShadow {
   bool8 active;                                    // 0x00, ParticleShadowManager_Add でリストに入れると 1, ParticleShadowManager_Remove で外すと 0
   u8 kind;                                         // 0x01, 0 なら fn = ParticleShadow_FollowGround (床に追従), それ以外は ParticleShadow_UpdateNone (何もしない)
@@ -16,15 +15,14 @@ typedef struct ParticleShadow {
   u16 unk_04;                                      // 0x04, ParticleShadow_Init で 0
   u16 unk_06;                                      // 0x06, ParticleShadow_Init で 0
   Vec3* pos;                                       // 0x08, 持ち主の座標
-  Particle particle;                               // 0x0C
+  Particle ptcl;                                   // 0x0C
   void (*updateCallback)(struct ParticleShadow*);  // 0x34, ParticleShadowManager_Update が影を引数にして呼ぶ
   struct ParticleShadow* prev;                     // 0x38
   struct ParticleShadow* next;                     // 0x3C
 } ParticleShadow;
 static_assert(sizeof(ParticleShadow) == 64);  // ScriptShadowManager の要素 (Malloc(0x54)) で +0x0C から +0x4C (prev) まで
 
-// 持ち主の足元に置く影 (AuxSprite 版), AuxShadowManager がリストで管理して毎フレーム fn を呼ぶ
-// 高さが増えるほど scale を小さくする, ParticleShadow と違った"高級"な影
+// 巨大モンスター用の影, 高さに応じて scale が変化する(ドゥネイルなどの飛翔ボスなど)
 typedef struct AuxShadow {
   bool8 active;                               // 0x00, AuxShadowManager_Add でリストに入れると 1, AuxShadowManager_Remove で外すと 0
   u8 kind;                                    // 0x01, 0 なら fn = AuxShadow_FollowGround (床に追従), それ以外は AuxShadow_UpdateNone
@@ -57,6 +55,8 @@ void ParticleShadow_Hide(ParticleShadow* shadow);
 
 s32 AuxShadow_Init(AuxShadow* shadow, Vec3* pos, s32 scale, s32 farScale, s32 baseScale, s32 unk_57, s32 farHeight, s32 nearHeight, s32 farShift, s32 nearShift, s32 kind);
 s32 AuxShadow_Remove(AuxShadow* shadow);
+s32 AuxShadow_SetSprite(AuxShadow* shadow, SpriteID32 id, s32 poseIdx);
+void AuxShadow_SetScaleParams(AuxShadow* shadow, s32 scale, s32 farScale, s32 baseScale, s32 unk_57, s32 farHeight, s32 nearHeight, s32 farShift, s32 nearShift);
 void AuxShadow_Show(AuxShadow* shadow);
 void AuxShadow_Hide(AuxShadow* shadow);
 

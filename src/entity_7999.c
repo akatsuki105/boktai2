@@ -1,15 +1,11 @@
 #include "entity.h"
 #include "global.h"
+#include "magic.h"
 #include "sprite.h"
 #include "text.h"
 #include "tilemap.h"
 #include "video.h"
 #include "vm.h"
-
-bool32 IsMagicUnlocked(magic32_t n);
-void FUN_081df974(void);
-bool32 FUN_081dfa04(void);
-s32 FUN_08049fa8(void);
 
 // 通信対戦関連?
 typedef struct Entity7999 {
@@ -50,10 +46,13 @@ typedef struct Entity7999 {
   u16 unk_2a0;                                 // 0x2A0, _Init が '.l' を入れる
   u16 unk_2a2;                                 // 0x2A2, _Init が '.e' を入れる
 } Entity7999;
-
-void Entity7999_HidePanels(Entity7999* p);
-void Entity7999_HideSprites(Entity7999* p);
 static_assert(sizeof(Entity7999) == 676);
+
+void FUN_081df974(void);
+bool32 FUN_081dfa04(void);
+
+static void Entity7999_HidePanels(Entity7999* p);
+static void Entity7999_HideSprites(Entity7999* p);
 
 const u32 u32_ARRAY_085ae144[7] = {0, 2, 3, 4, 5, 11, 13};  // 0x085AE144
 
@@ -77,7 +76,7 @@ void FUN_081d9ef4(Entity7999* p) {
   ClearBGTilemapBuffer(1);
   ClearBGTilemapBuffer(2);
   ClearBGTilemapBuffer(3);
-  FUN_08049e5c();
+  Marquee_Clear();
   Entity7999_HideSprites(p);
   if (p->unk_2a0 != 0) {
     VM_ExecByID(p->unk_2a0, 0);
@@ -86,7 +85,7 @@ void FUN_081d9ef4(Entity7999* p) {
 }
 
 void FUN_081d9f3c(Entity7999* p) {
-  FUN_08049fa8();
+  Marquee_CloseGlobal();
   Entity7999_HidePanels(p);
   ClearBGTilemapBuffer(0);
   ClearBGTilemapBuffer(1);
@@ -143,7 +142,7 @@ NAKED void FUN_081da218(unknown* param_1) { INCFUNC("asm/func/FUN_081da218.inc")
 
 NAKED void Entity7999_InitPanels(Entity7999* p) { INCFUNC("asm/func/Entity7999_InitPanels.inc"); }
 
-void Entity7999_HidePanels(Entity7999* p) {
+static void Entity7999_HidePanels(Entity7999* p) {
   TextPanel_Hide(p->windowID0);
   TextPanel_Hide(p->windowID1);
   TextPanel_Hide(p->windowID2);
@@ -153,7 +152,7 @@ NAKED void Entity7999_InitSprites(Entity7999* p) { INCFUNC("asm/func/Entity7999_
 
 NAKED void FUN_081da468(unknown* param_1) { INCFUNC("asm/func/FUN_081da468.inc"); }
 
-void Entity7999_HideSprites(Entity7999* p) {
+static void Entity7999_HideSprites(Entity7999* p) {
   s32 i;
 
   for (i = 0; i < 5; i++) {
@@ -207,7 +206,7 @@ NAKED void FUN_081da930(unknown* param_1) { INCFUNC("asm/func/FUN_081da930.inc")
 
 s32 Entity7999_Update(Entity7999* p) {
   if (!FUN_081dfa04()) {
-    FUN_08049fa8();
+    Marquee_CloseGlobal();
     Entity7999_HideSprites(p);
     KillEntity((Entity*)p);
     return -1;

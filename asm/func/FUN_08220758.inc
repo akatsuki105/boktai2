@@ -25,13 +25,13 @@
 	movs r1, #5
 	movs r2, #1
 	movs r3, #1
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 	movs r1, #0xac
 	lsls r1, r1, #1
 	adds r0, r5, r1
 	ldr r1, [r0]
 	adds r0, r5, #0
-	bl FUN_08023090
+	bl Boss_GiveWeaponExp
 	movs r2, #0xb7
 	lsls r2, r2, #2
 	adds r1, r5, r2

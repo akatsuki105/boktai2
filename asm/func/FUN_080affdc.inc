@@ -38,7 +38,7 @@
 	str r1, [sp, #0xc]
 	movs r1, #1
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _080B0032:
 	ldr r0, _080B0074 @ =0x0000067A
 	adds r1, r4, r0

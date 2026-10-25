@@ -1,11 +1,6 @@
+#include "boss/shademan.h"
 #include "entity.h"
 #include "global.h"
-
-typedef struct {
-  Entity e;  // ENTITY_UNK_8
-  u8 unk_18[696 - 0x18];
-} Entity0805ee80;
-static_assert(sizeof(Entity0805ee80) == 696);
 
 void FUN_0805eb58(Entity0805ee80*, unknown*, s32);
 void FUN_0805eb5c(Entity0805ee80*, unknown*, s32);

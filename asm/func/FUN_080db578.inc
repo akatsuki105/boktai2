@@ -253,7 +253,7 @@ _080DB766:
 	adds r0, r7, #0
 	movs r1, #0
 	movs r2, #0
-	bl FUN_080dacc4
+	bl Entity080db520_InitHurtbox
 _080DB770:
 	add sp, #4
 	pop {r3, r4, r5}

@@ -65,7 +65,7 @@ s32 HealingParticles_Init(HealingEffect* p, Player* player, Vec3* pos) {
   p->unk_1fa = 180;
   p->unk_1f8 = Div(180, 3);
   p->unk_1fc = 900;
-  PlaySound_082406e0(919);
+  PlaySound_082406e0(SE_HEALING);
   HealingParticles_SetState(p, FUN_080a9058);
   return 0;
 }

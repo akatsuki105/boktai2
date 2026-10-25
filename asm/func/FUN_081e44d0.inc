@@ -36,7 +36,7 @@ _081E4520:
 _081E4522:
 	cmp r0, #0
 	beq _081E4538
-	bl FUN_08049fa8
+	bl Marquee_CloseGlobal
 	ldr r0, _081E4540 @ =0x00001610
 	adds r2, r4, r0
 	movs r1, #2

@@ -14,15 +14,15 @@
 	ldr r0, [r1]
 	orrs r0, r2
 	str r0, [r1]
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	movs r1, #0xc3
 	lsls r1, r1, #2
 	adds r0, r5, r1
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #9
-	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl GetStringByID
+	bl Marquee_SetText
 	adds r0, r5, #0
 	bl FUN_081db4b0
 	ldr r2, _081DB5F0 @ =0x0000032D
@@ -388,7 +388,7 @@ _081DB84C:
 	bl FUN_081df95c
 	movs r0, #0xdd
 	bl PlaySound_082406e0
-	bl FUN_08049fa8
+	bl Marquee_CloseGlobal
 	movs r0, #0
 	bl ClearBGTilemapBuffer
 	movs r0, #3

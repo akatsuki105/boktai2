@@ -3360,7 +3360,7 @@ _0812F66A:
 	adds r1, r4, #0
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0812F67E
@@ -3425,7 +3425,7 @@ _0812F6E6:
 	lsls r2, r2, #3
 	adds r1, r5, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _0812F734

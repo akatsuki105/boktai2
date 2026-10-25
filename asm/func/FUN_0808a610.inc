@@ -78,7 +78,7 @@ _0808A6A2:
 	movs r0, #0
 	mov r1, sb
 	mov r2, sl
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r3, r0, #0
 	b _0808A6E2
 	.align 2, 0
@@ -101,7 +101,7 @@ _0808A6CC:
 	subs r1, #1
 	movs r0, #0
 	mov r2, sl
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r3, r0, #0
 	ldr r2, _0808A75C @ =0x0000D0BD
 	adds r1, r2, #0

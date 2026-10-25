@@ -25,7 +25,7 @@
 	mov r8, r0
 	adds r1, r5, #0
 	adds r2, r6, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r4, r0, #0
 	movs r6, #0
 	ldr r1, _0808E13C @ =0xFFFFD000

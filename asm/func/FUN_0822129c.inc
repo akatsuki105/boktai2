@@ -4,7 +4,7 @@
 	push {r6, r7}
 	adds r7, r0, #0
 	mov sb, r7
-	bl FUN_08221ae0
+	bl ShadeMan_PollMessages
 	adds r0, r7, #0
 	adds r0, #0x48
 	bl Mover_ApplyMove
@@ -18,7 +18,7 @@
 	ands r0, r1
 	str r0, [r2]
 	adds r0, r7, #0
-	bl FUN_082215e8
+	bl ShadeMan_HandleDamage
 	movs r1, #0xff
 	lsls r1, r1, #2
 	adds r3, r7, r1

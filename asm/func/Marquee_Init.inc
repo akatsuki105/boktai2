@@ -41,7 +41,7 @@
 	str r0, [r5, #0x1c]
 	adds r0, r6, #0
 	movs r1, #0
-	bl FUN_0804990c
+	bl Marquee_Rewind
 	strb r4, [r5, #0x11]
 	movs r0, #1
 	strb r0, [r5, #0xa]

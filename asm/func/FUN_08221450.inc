@@ -104,7 +104,7 @@ _08221520:
 	strh r0, [r2]
 _08221526:
 	mov r0, sb
-	bl FUN_0821dea4
+	bl ShadeMan_UpdateAfterimages
 	movs r2, #0xe3
 	lsls r2, r2, #2
 	add r2, sb

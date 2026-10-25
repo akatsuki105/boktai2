@@ -94,11 +94,9 @@ void EntityDC21_InitSprite(EntityDC21* p) {
   sprite->poseIdx = 0;
 
   if (VM_SeekToNamedArg('p')) {
-    sprite->pos.x = VM_GetValue();
-    sprite->pos.y = VM_GetValue();
-    sprite->pos.z = VM_GetValue();
+    VEC3_SET(sprite->pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {
-    sprite->pos.x = 0, sprite->pos.y = 0, sprite->pos.z = 0;
+    VEC3_SET(sprite->pos, 0, 0, 0);
   }
 
   flags = VM_SeekToNamedArg('f');

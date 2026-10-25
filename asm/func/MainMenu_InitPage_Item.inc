@@ -37,7 +37,7 @@
 	adds r0, r4, r1
 	ldrb r1, [r0]
 	adds r0, r4, #0
-	bl FUN_0808b86c
+	bl MainMenu_ShowPageName
 	ldr r0, _0809497C @ =0x0000156C
 	adds r2, r4, r0
 	ldr r0, [r2]

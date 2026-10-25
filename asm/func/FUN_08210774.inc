@@ -288,7 +288,7 @@ _08210990:
 	adds r0, r4, #0
 	movs r2, #0x10
 	add r3, sp, #0x14
-	bl FUN_08055e34
+	bl SpriteHolder_InitMain
 	cmp r0, #0
 	bge _08210A08
 	movs r0, #1
@@ -307,7 +307,7 @@ _08210A04: .4byte 0x0000DE23
 _08210A08:
 	adds r0, r4, #0
 	movs r1, #3
-	bl FUN_08055f5c
+	bl SpriteHolder_SetPriority
 	movs r6, #0xce
 	lsls r6, r6, #4
 	adds r5, r7, r6

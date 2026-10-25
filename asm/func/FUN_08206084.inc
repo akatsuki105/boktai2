@@ -30,10 +30,10 @@
 	str r0, [sp, #4]
 	add r0, sp, #4
 	movs r1, #0
-	bl FUN_081f7b8c
+	bl Entity081f7de4_Spawn
 	add r0, sp, #4
 	movs r1, #0x80
-	bl FUN_081f7b8c
+	bl Entity081f7de4_Spawn
 	ldr r0, _08206110 @ =0x000003CF
 	bl PlaySound_082406e0
 	ldr r0, _08206114 @ =0x000002D2
@@ -54,7 +54,7 @@ _082060DE:
 	lsrs r0, r0, #0x18
 	cmp r0, #1
 	bne _08206102
-	bl FUN_081f7e3c
+	bl Entity081f7de4_RemoveAll
 _08206102:
 	add sp, #0xc
 	pop {r4}

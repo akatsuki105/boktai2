@@ -20,13 +20,13 @@
 	adds r0, r4, #0
 	adds r0, #0xd0
 	movs r1, #1
-	bl FUN_08055ef8
+	bl SpriteHolder_SetFlags
 	b _08041346
 _08041330:
 	adds r0, r4, #0
 	adds r0, #0xd0
 	movs r1, #1
-	bl FUN_08055f1c
+	bl SpriteHolder_ClearFlags
 	movs r1, #0x80
 	lsls r1, r1, #2
 	ldrh r0, [r4, #0xe]

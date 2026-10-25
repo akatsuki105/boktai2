@@ -179,7 +179,7 @@ _0809ADA2:
 	adds r4, r5, r0
 	ldrb r1, [r4]
 	adds r0, r5, #0
-	bl FUN_0809a93c
+	bl MainMenu_GetNextPage
 	b _0809ADDC
 	.align 2, 0
 _0809ADBC: .4byte 0x00003AE5
@@ -194,7 +194,7 @@ _0809ADC4:
 	adds r4, r5, r1
 	ldrb r1, [r4]
 	adds r0, r5, #0
-	bl FUN_0809a978
+	bl MainMenu_GetPrevPage
 _0809ADDC:
 	strb r0, [r4]
 	adds r0, r5, #0

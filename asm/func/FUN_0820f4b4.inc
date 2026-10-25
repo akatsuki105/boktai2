@@ -91,7 +91,7 @@ _0820F550:
 	bl SpriteHolder_SetAnim
 _0820F56A:
 	adds r0, r7, #0
-	bl FUN_08055c04
+	bl SpriteHolder_AdvanceAnim
 	movs r1, #0xd5
 	lsls r1, r1, #2
 	adds r0, r6, r1

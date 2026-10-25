@@ -568,7 +568,7 @@ _080E6DA2:
 	mov r0, sl
 	adds r2, r5, #0
 	movs r3, #0x20
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r3, _080E6F30 @ =0x000003FF
@@ -591,7 +591,7 @@ _080E6DA2:
 	mov r0, sl
 	adds r2, r5, #0
 	movs r3, #0x40
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r3, _080E6F30 @ =0x000003FF
@@ -614,7 +614,7 @@ _080E6DA2:
 	mov r0, sl
 	adds r2, r5, #0
 	movs r3, #0x5e
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r3, _080E6F30 @ =0x000003FF
@@ -637,7 +637,7 @@ _080E6DA2:
 	mov r0, sl
 	adds r2, r5, #0
 	movs r3, #0x80
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r3, _080E6F30 @ =0x000003FF
@@ -660,7 +660,7 @@ _080E6DA2:
 	mov r0, sl
 	adds r2, r5, #0
 	movs r3, #0xc4
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r3, _080E6F30 @ =0x000003FF
@@ -683,7 +683,7 @@ _080E6DA2:
 	mov r0, sl
 	adds r2, r5, #0
 	movs r3, #0xf0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r6, _080E6F20 @ =0x000001DF
 	adds r0, r7, r6
 	ldrb r0, [r0]

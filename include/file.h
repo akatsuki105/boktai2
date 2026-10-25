@@ -15,7 +15,7 @@
 #define DIR_TILE_MAP BOKHASH("map")   // 0xC091
 #define DIR_MAIN_SPRITE 0xCB05        // 0xCB05, BOKHASH("boss")?, BOKHASH("oud")?
 #define DIR_TILESET BOKHASH("ptn")    // 0xCEEF, tile PaTterN
-#define DIR_PARTICLE 0xCEAA
+#define DIR_PARTICLE 0xCEAA           // 0xCEAA
 
 typedef u16 FileID;
 

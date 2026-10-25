@@ -109,7 +109,7 @@ _08042E2C: .4byte 0x00001103
 _08042E30:
 	mov r0, sb
 	add r1, sp, #4
-	bl FUN_08055d48
+	bl SpriteHolder_GetAdvancedCmdIdx
 	cmp r0, #0
 	beq _08042F02
 	mov r4, sb

@@ -4,7 +4,6 @@
 #include "constants/armor.h"
 #include "constants/coffin.h"
 #include "constants/collision_map.h"
-#include "constants/enemy.h"
 #include "constants/item.h"
 #include "constants/item_icon.h"
 #include "constants/magic.h"

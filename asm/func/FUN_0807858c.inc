@@ -112,7 +112,7 @@ _08078652:
 	movs r1, #1
 	add r2, sp, #0x10
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	movs r1, #0xf9
 	lsls r1, r1, #2
 	adds r0, r5, r1

@@ -26,7 +26,7 @@ _0807DD24:
 	strh r0, [r1]
 	ldr r1, _0807DD44 @ =0x00000434
 	adds r0, r4, r1
-	bl FUN_0809c544
+	bl HUD_StartCountdown
 	movs r0, #0x63
 	bl VM_SeekToNamedArg
 	cmp r0, #0

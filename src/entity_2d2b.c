@@ -14,7 +14,7 @@ typedef struct {
   u8 state;            // 0x002, '.m=1', 1 消灯, 2 点灯, 3 点灯への遷移, 4 消灯への遷移, 0 は何もしない
   u8 unk_3;            // 0x003, '.f=0', 読み手が見つかっていない
   bool8 stateEntered;  // 0x004, state が変わった直後だけ立つ, 遷移時の初期化を1回で済ませるために使う
-  u8 flashTimer;       // 0x005, 遷移の直後 10 フレーム, 0 でない間だけ hitbox.flags に HBFLAG_UNK_2 が立つ
+  u8 flashTimer;       // 0x005, 遷移の直後 10 フレーム, 0 でない間だけ hitbox.flags に HBFLAG_HIDDEN が立つ
   s16 yOffset;         // 0x006, '.t[1]', エレベータの位置に足す高さ
   s16 litDuration;     // 0x008, '.d=120', 点灯から自然に消えるまでのフレーム数, 負なら消えない
   u16 waitTimer;       // 0x00A, 経路ノードでの待ちフレーム, PathNode の下位12bit が入る

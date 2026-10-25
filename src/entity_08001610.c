@@ -2,7 +2,6 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
-#include "trig.h"
 #include "video.h"
 #include "vm.h"
 
@@ -77,6 +76,9 @@ static_assert(sizeof(Entity08001610) == 248);
 
 IWRAM_DATA Entity08001610* gEntity08001610[4] = {};  // 0x03000010, BG ごとの Entity08001610, Init が bgIdx の位置に自分を入れ、Destroy が NULL に戻す
 
+extern u16 gWindAngle;
+extern u16 u16_03002bac;
+
 // BG ごとの Entity08001610 の登録表を NULL で埋める
 void Entity08001610_ClearTable(void) {
   s32 i;
@@ -143,8 +145,6 @@ NON_MATCH void Entity08001610_RunCmds(Entity08001610* p) {
   INCFUNC("asm/func/Entity08001610_RunCmds.inc");
 #endif
 }
-extern u16 gWindAngle;
-extern u16 u16_03002bac;
 
 // BG のスクロール位置を毎フレーム決めて gBgStates の hofs/vofs に書く, flags bit3 なら風で揺らし, それ以外は speedX/speedY で流す
 // 残差15命令 (293 対 278, ハンク23件), 原典は limX/limY を r12 とスタックに置いて各腕で複写するが, こちらは低レジスタに収まってしまう
@@ -170,7 +170,7 @@ NON_MATCH s32 Entity08001610_Update(Entity08001610* p) {
     s32 vx;
     s32 vy;
 
-    // SIN/COS は FixToInt(12, ...) を内側に畳んでいるが, 原典は生の積を offsetX に積んで最後に 18bit 分まとめて落とすので使えない
+    // POLAR_Z/POLAR_X は FixToInt(12, ...) を内側に畳んでいるが, 原典は生の積を offsetX に積んで最後に 18bit 分まとめて落とすので使えない
     p->offsetX += gSineTable[(angle + 0x40) & 0xFF] * amp;
     p->offsetY += gSineTable[angle & 0xFF] * amp;
     vx = FixToInt(18, p->offsetX);

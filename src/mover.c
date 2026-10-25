@@ -152,7 +152,7 @@ MoverList* MoverList_Get(void) {
 }
 
 // リストに繋ぐところまでやる初期化
-s32 Mover_Init(Mover* p, u16 id, Vec3* pos, u32 angle, u32 unk_4, void* owner) {
+s32 Mover_Init(Mover* p, u16 id, Vec3* pos, u8 angle, u32 unk_4, void* owner) {
   p->id = id;
   p->unk_2 = 0;
   p->unk_4 = unk_4;
@@ -228,5 +228,5 @@ void Mover_ApplyMove(Mover* p) {
   if (p->auxSprite != NULL) {
     p->auxSprite->pos = p->pos;
   }
-  p->delta.x = 0, p->delta.y = 0, p->delta.z = 0;
+  VEC3_SET(p->delta, 0, 0, 0);
 }

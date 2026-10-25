@@ -113,10 +113,10 @@ void FUN_081d11b8(Entity081d16ecItem* item) {
 NON_MATCH void FUN_081d1260(Entity081d16ecItem* item) {
 #ifdef NONMATCHING_C
   if (item->hitbox.unk_44 != 0) {
-    item->hitbox.flags |= HBFLAG_UNK_2;
+    item->hitbox.flags |= HBFLAG_HIDDEN;
     item->hitbox.unk_44--;
   } else {
-    item->hitbox.flags &= ~HBFLAG_UNK_2;
+    item->hitbox.flags &= ~HBFLAG_HIDDEN;
   }
   if (item->unk_bd != 0) {
     Video_SetAuxSpritePltt(item->sprite.gfx, 306);
@@ -155,7 +155,7 @@ NON_MATCH void FUN_081d1470(Entity081d16ecItem* item) {
       busy = FUN_081d0e94(item, E081D16EC_FLAG_1);
     }
     if (!busy) {
-      item->hitbox.flags |= HBFLAG_UNK_2;
+      item->hitbox.flags |= HBFLAG_HIDDEN;
       if (!FUN_081d0e94(item, E081D16EC_FLAG_3)) {
         if (item->unk_c2 <= item->unk_c4) {
           item->hitbox.unk_44 = 24;
@@ -246,8 +246,8 @@ void FUN_081d1924(Entity081d16ecItem* item) {
   Vec3 offset;
   Vec3 halfSize;
 
-  offset.x = 0, offset.y = 0x80, offset.z = 0;
-  halfSize.x = 0x40, halfSize.y = 0x80, halfSize.z = 0x40;
+  VEC3_SET(offset, 0, 0x80, 0);
+  VEC3_SET(halfSize, 0x40, 0x80, 0x40);
   hitbox->id = item->unk_be;
   Hitbox_Init(hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPos(hitbox, &item->sprite.pos, 0);

@@ -29,7 +29,7 @@
 	adds r0, #0x54
 	strb r1, [r0]
 	subs r0, #0x22
-	bl FUN_0809c544
+	bl HUD_StartCountdown
 	movs r6, #0
 	ldr r5, _081DEC78 @ =0x03002BE0
 	b _081DEC8A
@@ -276,7 +276,7 @@ _081DEE34:
 	ldrsh r0, [r4, r1]
 	cmp r0, #0
 	bgt _081DEE60
-	bl FUN_0809c58c
+	bl HUD_RemoveCountdown
 	movs r0, #0xa0
 	lsls r0, r0, #6
 	mov r2, sb

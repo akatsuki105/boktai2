@@ -36,7 +36,7 @@ _0821CBD2:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #9
-	bl FUN_0821d870
+	bl ShadeMan_SetSubState0
 	b _0821CD84
 _0821CBE2:
 	movs r4, #0x3d
@@ -45,7 +45,7 @@ _0821CBE2:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0xb
-	bl FUN_0821d870
+	bl ShadeMan_SetSubState0
 	ldr r1, _0821CBFC @ =0x00000806
 	adds r0, r5, r1
 	strh r4, [r0]
@@ -60,7 +60,7 @@ _0821CC00:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #6
-	bl FUN_0821d870
+	bl ShadeMan_SetSubState0
 	ldr r2, _0821CC1C @ =0x00000806
 	adds r0, r5, r2
 	strh r4, [r0]
@@ -74,7 +74,7 @@ _0821CC20:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0xa
-	bl FUN_0821d870
+	bl ShadeMan_SetSubState0
 	b _0821CD84
 _0821CC32:
 	ldr r1, _0821CC54 @ =0x085AFFA8
@@ -113,7 +113,7 @@ _0821CC78:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #9
-	bl FUN_0821d870
+	bl ShadeMan_SetSubState0
 	b _0821CD38
 _0821CC8A:
 	movs r0, #0
@@ -123,7 +123,7 @@ _0821CC8A:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0xb
-	bl FUN_0821d870
+	bl ShadeMan_SetSubState0
 	ldr r1, _0821CCA4 @ =0x00000806
 	adds r0, r5, r1
 	strh r4, [r0]
@@ -138,7 +138,7 @@ _0821CCA8:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #6
-	bl FUN_0821d870
+	bl ShadeMan_SetSubState0
 	ldr r2, _0821CCC4 @ =0x00000806
 	adds r0, r5, r2
 	strh r4, [r0]
@@ -153,7 +153,7 @@ _0821CCC8:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #8
-	bl FUN_0821d870
+	bl ShadeMan_SetSubState0
 	ldr r3, _0821CD04 @ =0x00000806
 	adds r0, r5, r3
 	movs r1, #0
@@ -199,7 +199,7 @@ _0821CD28:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #0xa
-	bl FUN_0821d870
+	bl ShadeMan_SetSubState0
 _0821CD38:
 	ldr r3, _0821CD8C @ =0x0000080C
 	adds r6, r5, r3
@@ -214,7 +214,7 @@ _0821CD38:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #8
-	bl FUN_0821d870
+	bl ShadeMan_SetSubState0
 	ldr r1, _0821CD94 @ =0x00000806
 	adds r0, r5, r1
 	movs r1, #0
@@ -234,7 +234,7 @@ _0821CD60:
 	movs r1, #0
 	movs r2, #0
 	movs r3, #7
-	bl FUN_0821d870
+	bl ShadeMan_SetSubState0
 	movs r0, #0
 	str r0, [r6]
 	str r0, [r4]

@@ -124,7 +124,7 @@ _0808ACDE:
 	movs r0, #0
 	movs r1, #0x1d
 	movs r2, #1
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r2, r0, #0
 	ldr r1, _0808AD4C @ =0x0000D08C
 	adds r0, r1, #0

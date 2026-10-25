@@ -249,9 +249,8 @@ void sound_08240740(SoundID32 id) {
 
 // GAMEOVER 中でなければサウンドを鳴らす
 void PlaySound_0824078c(SoundID32 id) {
-  u32 mask = FLAG030047A4_GAMEOVER;
-
-  if (!((gFlag030047a4 | u32_030047a0) & mask)) PlaySound_082406e0(id);
+  if (TEST_FLAGS((gFlag030047a4 | u32_030047a0), FLAG030047A4_GAMEOVER)) return;
+  PlaySound_082406e0(id);
 }
 
 // 全ミュージックプレイヤーで再生中として記録されたサウンドを停止し、記録を消す

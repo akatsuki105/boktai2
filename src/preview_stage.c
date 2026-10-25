@@ -29,7 +29,7 @@ typedef u8 PreviewModelFlags;
 
 typedef struct PreviewModel {
   SpriteID16 id;                    // 0x00
-  u16 animFileID;                   // 0x02, FUN_08055dac の第3引数, kind == 2 では常に 0 (MainSprite は 自身にアニメーションを持つので、animFileID は不要)
+  u16 animFileID;                   // 0x02, SpriteHolder_InitAux の第3引数, kind == 2 では常に 0 (MainSprite は 自身にアニメーションを持つので、animFileID は不要)
   u16 kind;                         // 0x04, 1: AuxSprite+AuxAnimState, 2: MainSprite
   u16 poseBase;                     // 0x06, PreviewStage.poseBase に控え、SpriteHolder_SetAnim の第2引数になる
   u16 plttID;                       // 0x08, SpriteHolder_SetPlttID に渡すパレットID
@@ -51,15 +51,6 @@ typedef struct PreviewModel {
 static_assert(sizeof(PreviewModel) == 32);
 
 static const PreviewModel sPreviewModels[70];
-
-void FUN_08055d7c(SpriteHolder* p);
-s32 FUN_08055dac(SpriteHolder* p, u32 spriteID, u32 animFileID, u32 param_4, Vec3* pos);
-s32 FUN_08055e34(SpriteHolder* p, u32 spriteID, u32 param_3, Vec3* pos);
-void FUN_08055f5c(SpriteHolder* p, u32 param_2);
-void FUN_08055f1c(SpriteHolder* p, u32 param_2);
-s32 FUN_08055c04(SpriteHolder* p);
-s32 FUN_08055d20(SpriteHolder* p);
-void FUN_08055ef8(SpriteHolder* p, u32 param_2);
 
 s32 FUN_0820f9dc(PreviewStage* p, s32 modelID);
 
@@ -97,7 +88,7 @@ void FUN_0820efc4(u8 direction, u8* frameIdx, u8* hFlip) {
 // ドヴァリンの開帳, アニメが終わるたび poseBase を次の段へ送り、12番まで行ったら state を 1 にして止める
 void FUN_0820f020(PreviewStage* p) {
   if (p->state == 0) {
-    if (FUN_08055d20(&p->parts[0]) != 0) {
+    if (SpriteHolder_IsAnimEnded(&p->parts[0]) != 0) {
       switch (p->poseBase) {
         case 0: {
           p->poseBase = 1;
@@ -135,7 +126,7 @@ void FUN_0820f020(PreviewStage* p) {
     }
     FUN_0820efc4(p->model->direction, &p->frameIdx, &p->hFlip);
     SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, 1, 0, 5);
-    FUN_08055c04(&p->parts[0]);
+    SpriteHolder_AdvanceAnim(&p->parts[0]);
   }
 }
 
@@ -145,8 +136,8 @@ void FUN_0820f130(PreviewStage* p) {
     p->poseBase = 1;
     FUN_0820efc4(p->model->direction, &p->frameIdx, &p->hFlip);
     SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, 1, 0, 5);
-    FUN_08055c04(&p->parts[0]);
-    if (FUN_08055d20(&p->parts[0]) != 0) {
+    SpriteHolder_AdvanceAnim(&p->parts[0]);
+    if (SpriteHolder_IsAnimEnded(&p->parts[0]) != 0) {
       p->swayAngle = Mod(Random(), 32) + 60;
     }
   } else {
@@ -175,21 +166,21 @@ NON_MATCH void FUN_0820f1e0(PreviewStage* p) {
     s32 z = p->pos.z;
 
     pos->x = x, pos->y = y, pos->z = z;
-    if (FUN_08055dac(holder, model->id, model->animFileID, 16, pos) < 0) {
+    if (SpriteHolder_InitAux(holder, model->id, model->animFileID, 16, pos) < 0) {
       break;
     }
-    FUN_08055f1c(holder, 1);
+    SpriteHolder_ClearFlags(holder, 1);
     if ((model->flags & DEXFLAG_NO_PLTT) == 0) {
       SpriteHolder_SetPlttID(holder, model->plttID);
     }
-    FUN_08055f5c(holder, 2);
+    SpriteHolder_SetPriority(holder, 2);
     FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
     if (i == 0) {
       SpriteHolder_SetAnim(holder, sPreviewSegments[0].pose[0], p->frameIdx, p->hFlip, 2, 0, 5);
     } else {
       SpriteHolder_SetAnim(holder, sPreviewSegments[0].pose[i], 1, 0, 2, 0, 5);
     }
-    FUN_08055c04(holder);
+    SpriteHolder_AdvanceAnim(holder);
     holder++;
   }
 #else
@@ -258,14 +249,14 @@ NON_MATCH void FUN_0820f3e4(PreviewStage* p) {
     s32 z = p->pos.z;
 
     pos->x = x, pos->y = y, pos->z = z;
-    if (FUN_08055dac(holder, model->id, model->animFileID, 16, pos) < 0) {
+    if (SpriteHolder_InitAux(holder, model->id, model->animFileID, 16, pos) < 0) {
       break;
     }
-    FUN_08055f1c(holder, 1);
+    SpriteHolder_ClearFlags(holder, 1);
     if ((model->flags & DEXFLAG_NO_PLTT) == 0) {
       SpriteHolder_SetPlttID(holder, model->plttID);
     }
-    FUN_08055f5c(holder, 2);
+    SpriteHolder_SetPriority(holder, 2);
     FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
     holder++;
   }
@@ -299,7 +290,7 @@ NON_MATCH void FUN_0820f4b4(PreviewStage* p) {
     } else {
       SpriteHolder_SetAnim(holder, sPreviewSegments[1].pose[i], 2, 0, 1, 0, 5);
     }
-    FUN_08055c04(holder);
+    SpriteHolder_AdvanceAnim(holder);
     pos = p->parts[i].pos;
     pos->x = p->pos.x + off[0], pos->y = p->pos.y + off[1], pos->z = p->pos.z;
     if (p->swayAngle >= 0) {
@@ -343,14 +334,14 @@ NON_MATCH void FUN_0820f630(PreviewStage* p) {
     s32 z = p->pos.z;
 
     pos->x = x, pos->y = y, pos->z = z;
-    if (FUN_08055dac(holder, model->id, model->animFileID, 16, pos) < 0) {
+    if (SpriteHolder_InitAux(holder, model->id, model->animFileID, 16, pos) < 0) {
       break;
     }
-    FUN_08055f1c(holder, 1);
+    SpriteHolder_ClearFlags(holder, 1);
     if ((model->flags & DEXFLAG_NO_PLTT) == 0) {
       SpriteHolder_SetPlttID(holder, model->plttID);
     }
-    FUN_08055f5c(holder, 2);
+    SpriteHolder_SetPriority(holder, 2);
     FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
     holder++;
   }
@@ -380,7 +371,7 @@ NON_MATCH void FUN_0820f700(PreviewStage* p) {
     } else {
       SpriteHolder_SetAnim(holder, sPreviewSegments[2].pose[i], 1, 0, 1, 0, 5);
     }
-    FUN_08055c04(holder);
+    SpriteHolder_AdvanceAnim(holder);
     pos = p->parts[i].pos;
     pos->x = p->pos.x + off[0], pos->y = p->pos.y + off[1], pos->z = p->pos.z;
     if (p->swayAngle >= 0) {
@@ -420,7 +411,7 @@ void FUN_0820f84c(PreviewStage* p) {
         FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
         SpriteHolder_SetAnim(&p->parts[0], 1, p->frameIdx, p->hFlip, 2, 0, 4);
       }
-      done = FUN_08055c04(&p->parts[0]);
+      done = SpriteHolder_AdvanceAnim(&p->parts[0]);
       if (done) {
         p->stateTimer = 0;
         p->state = 1;
@@ -432,7 +423,7 @@ void FUN_0820f84c(PreviewStage* p) {
         FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
         SpriteHolder_SetAnim(&p->parts[0], 2, p->frameIdx, p->hFlip, 2, 0, 4);
       }
-      done = FUN_08055c04(&p->parts[0]);
+      done = SpriteHolder_AdvanceAnim(&p->parts[0]);
       if (p->stateTimer <= 11) {
         p->parts[0].pos->y--;
       } else {
@@ -450,7 +441,7 @@ void FUN_0820f84c(PreviewStage* p) {
         SpriteHolder_SetAnim(&p->parts[0], 3, p->frameIdx, p->hFlip, 2, 0, 4);
         *p->parts[0].pos = p->pos;
       }
-      done = FUN_08055c04(&p->parts[0]);
+      done = SpriteHolder_AdvanceAnim(&p->parts[0]);
       if (done) {
         p->stateTimer = 0;
         p->state = 3;
@@ -482,9 +473,9 @@ s32 FUN_0820f9dc(PreviewStage* p, s32 modelID) {
     pos->x = x, pos->y = y, pos->z = 0, pos->val = 0;
   }
   if (model->kind == 2) {
-    ret = FUN_08055e34(holder, model->id, 16, &p->pos);
+    ret = SpriteHolder_InitMain(holder, model->id, 16, &p->pos);
   } else {
-    ret = FUN_08055dac(holder, model->id, model->animFileID, 16, &p->pos);
+    ret = SpriteHolder_InitAux(holder, model->id, model->animFileID, 16, &p->pos);
   }
   if (ret < 0) {
     return -1;
@@ -492,7 +483,7 @@ s32 FUN_0820f9dc(PreviewStage* p, s32 modelID) {
   if ((model->flags & DEXFLAG_NO_PLTT) == 0) {
     SpriteHolder_SetPlttID(holder, model->plttID);
   }
-  FUN_08055f5c(holder, 2);
+  SpriteHolder_SetPriority(holder, 2);
   FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
   return 0;
 }
@@ -528,7 +519,7 @@ void PreviewStage_Update_Helper_0820fb20(PreviewStage* p) {
   p->model = model;
   for (i = 0; i < 5; i++) {
     if (p->parts[i].kind != 0) {
-      FUN_08055d7c(&p->parts[i]);
+      SpriteHolder_Remove(&p->parts[i]);
     }
   }
   p->poseBase = model->poseBase;
@@ -562,7 +553,7 @@ NON_MATCH s32 PreviewStage_Update(PreviewStage* p) {
   if (p->hidden) {
     for (i = 0; i < 5; i++) {
       if (p->parts[i].kind != 0) {
-        FUN_08055ef8(&p->parts[i], 1);
+        SpriteHolder_SetFlags(&p->parts[i], 1);
       }
     }
     p->subSprite.flags |= SPRFLAG_HIDDEN;
@@ -570,7 +561,7 @@ NON_MATCH s32 PreviewStage_Update(PreviewStage* p) {
   }
   for (i = 0; i < 5; i++) {
     if (p->parts[i].kind != 0) {
-      FUN_08055f1c(&p->parts[i], 1);
+      SpriteHolder_ClearFlags(&p->parts[i], 1);
     }
   }
   p->subSprite.flags &= ~SPRFLAG_HIDDEN;
@@ -589,7 +580,7 @@ NON_MATCH s32 PreviewStage_Update(PreviewStage* p) {
   if (noRefresh == 0) {
     FUN_0820efc4(model->direction, &p->frameIdx, &p->hFlip);
     SpriteHolder_SetAnim(&p->parts[0], p->poseBase, p->frameIdx, p->hFlip, 1, 0, 5);
-    FUN_08055c04(&p->parts[0]);
+    SpriteHolder_AdvanceAnim(&p->parts[0]);
   }
   if (model->flags & DEXFLAG_SWAY) {
     p->swayAngle += model->swaySpeed;
@@ -624,7 +615,7 @@ s32 PreviewStage_Destroy(PreviewStage* p) {
 
   for (i = 0; i < 5; i++) {
     if (p->parts[i].kind != 0) {
-      FUN_08055d7c(&p->parts[i]);
+      SpriteHolder_Remove(&p->parts[i]);
     }
   }
   AuxSprite_Remove(&p->subSprite);
@@ -684,11 +675,7 @@ void FUN_0820fea8(PreviewStage* p) { p->hidden = 1; }
 
 void FUN_0820feb0(PreviewStage* p) { p->hidden = 0; }
 
-void FUN_0820feb8(PreviewStage* p, s32 x, s32 y) {
-  p->pos.x = x;
-  p->pos.y = y;
-  p->pos.z = 0;
-}
+void FUN_0820feb8(PreviewStage* p, s32 x, s32 y) { VEC3_SET(p->pos, x, y, 0); }
 
 // エンディングのスタッフロールでは クレジットと一緒にゲーム中に登場したキャラクター(主人公,NPC,ボス,雑魚)が表示されるが、ここに魔物図鑑での魔物表示と同じ処理を使っているのかもしれない
 // それならば、0..56 までは魔物図鑑とスタッフロール共用で、 57以降はスタッフロールのためのものかも

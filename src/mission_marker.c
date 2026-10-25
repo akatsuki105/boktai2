@@ -64,7 +64,7 @@ s32 MissionMarker_Init(MissionMarker* p) {
     p->lifetime = 60;
   }
   p->updateCallback = MissionMarker_Shake;
-  p->pos.x = 0, p->pos.y = 0, p->pos.z = 0;
+  VEC3_SET(p->pos, 0, 0, 0);
   MainSprite_Add(&p->sprite, &p->gfx, idx + 11, SPRFLAG_SCREEN_COORD, 1, 0, 60, &p->pos);
   if (VM_SeekToNamedArg('p')) {
     p->scriptID = VM_GetValue();

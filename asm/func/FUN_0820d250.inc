@@ -64,7 +64,7 @@ _0820D2D6:
 	adds r0, r5, #0
 	adds r0, #0x26
 	ldrb r0, [r0]
-	bl FUN_0820cc8c
+	bl EnemyDex_GetCategoryOfEntry
 	adds r4, r0, #0
 	ldr r0, [r5, #0x2c]
 	ldr r3, _0820D310 @ =0x00001254
@@ -140,7 +140,7 @@ _0820D37C:
 	ldr r0, _0820D394 @ =0x0000FFFE
 	ands r0, r1
 	strh r0, [r2]
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	b _0820D5E4
 	.align 2, 0
 _0820D390: .4byte 0x0000110E

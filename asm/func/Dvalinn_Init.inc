@@ -13,7 +13,7 @@
 	mov sl, r0
 	adds r0, r7, #0
 	mov r1, sl
-	bl FUN_08022a0c
+	bl Boss_Register
 	ldr r0, _08200274 @ =0x03002BE0
 	ldr r2, [r0]
 	cmp r2, #0
@@ -364,7 +364,7 @@ _08200538:
 	ldr r1, [sp, #0x1c]
 	mov r2, sl
 	add r3, sp, #0x14
-	bl Boss_Init_08022a70
+	bl Boss_Init
 	movs r1, #0x8a
 	lsls r1, r1, #1
 	adds r0, r6, r1
@@ -388,12 +388,12 @@ _08200538:
 	adds r1, r5, #0
 	adds r2, r5, #0
 	mov r3, r8
-	bl FUN_08022b2c
+	bl Boss_InitHP
 	adds r0, r7, #0
 	mov r1, r8
-	bl FUN_081ff8b0
+	bl Dvalinn_InitHurtbox
 	adds r0, r7, #0
-	bl FUN_081ff7fc
+	bl Dvalinn_InitHitbox
 	movs r0, #0x63
 	bl VM_SeekToNamedArg
 	str r4, [sp, #0x2c]

@@ -46,7 +46,7 @@ s32 ExplosionManager_Init(ExplosionManager* p, void* _) {
   s32 i;
 
   gExplosionManager = p;
-  pos.x = 0, pos.y = 0, pos.z = 0;
+  VEC3_SET(pos, 0, 0, 0);
   for (i = 0; i < 16; i++) {
     Explosion* e = &p->items[i];
 

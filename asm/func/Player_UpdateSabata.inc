@@ -38,7 +38,7 @@ _08079162:
 	ldrsh r1, [r0, r2]
 	asrs r1, r1, #1
 	adds r0, r5, #0
-	bl FUN_080667b0
+	bl Player_StepSunburn
 _08079186:
 	adds r0, r5, #0
 	bl Player_IsInRain

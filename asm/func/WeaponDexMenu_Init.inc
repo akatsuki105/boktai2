@@ -96,7 +96,7 @@ _08210FF4:
 	movs r0, #0x8c
 	lsls r0, r0, #1
 	bl PlaySound_082406e0
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	bl FUN_08049f5c
 	mov r0, r8
 	strb r0, [r7]

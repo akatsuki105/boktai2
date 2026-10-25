@@ -167,8 +167,8 @@ void Generator_InitHurtbox(Generator* p, u32 power) {
   HitboxData* hurtbox = &p->hurtbox;
   Vec3 halfSize, offset;
 
-  halfSize.x = 100, halfSize.y = 200, halfSize.z = 100;
-  offset.x = 0, offset.y = 200, offset.z = 0;
+  VEC3_SET(halfSize, 100, 200, 100);
+  VEC3_SET(offset, 0, 200, 0);
   Hitbox_Init(hurtbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetPowerAndAttributes(hurtbox, power, 0, 0);
   Hitbox_SetPos(hurtbox, &p->pos, 0);

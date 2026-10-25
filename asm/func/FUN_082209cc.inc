@@ -36,7 +36,7 @@ _08220A08:
 	movs r1, #0
 	movs r2, #2
 	movs r3, #0
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 _08220A1A:
 	movs r3, #0xaf
 	lsls r3, r3, #2

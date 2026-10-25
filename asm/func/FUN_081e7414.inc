@@ -141,13 +141,13 @@ _081E7456:
 	adds r1, r7, r2
 	ldr r1, [r1]
 	bl TextPanel_SetScript
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	mov r3, sl
 	ldr r0, [r3]
 	bl VM_ParseStringRef
 	adds r0, #0xf
-	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl GetStringByID
+	bl Marquee_SetText
 	ldr r0, _081E7638 @ =0x00001617
 	adds r1, r7, r0
 	movs r0, #0xf

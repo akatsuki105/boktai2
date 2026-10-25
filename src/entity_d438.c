@@ -45,6 +45,7 @@ s32 EntityD438_Init(EntityD438* p, u32 param_2) {
   return 0;
 }
 
+// 0xD438
 EntityD438* EntityD438_Create(u32 id) {
   if (gEntityD438 == NULL) {
     EntityD438* p = CreateEntity(ENTITY_UNK_8, sizeof(EntityD438));

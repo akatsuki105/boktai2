@@ -32,8 +32,8 @@
 #define ITEM_MR_RAINNOT 27          // テルテルボーズ
 #define ITEM_TONNIAR_RM 28          // ズーボルテルテ
 #define ITEM_SUNNY_CLOG 29          // おてんきゲタ
-#define ITEM_WARP_LEAF 30           // 転移の葉
-#define ITEM_THE_FOOL 31            // 愚者のカード
+#define ITEM_WARP_LEAF 30           // 転移の葉, ダンジョンの外にワープ
+#define ITEM_THE_FOOL 31            // 愚者のカード, エリアの初めからやり直す
 #define ITEM_THE_HIGH_PRIESTESS 32  // 女教皇のカード
 #define ITEM_THE_EMPRESS 33         // 女帝のカード
 #define ITEM_THE_EMPEROR 34         // 皇帝のカード
@@ -41,15 +41,15 @@
 #define ITEM_THE_CHARIOT 36         // 戦車のカード
 #define ITEM_STRENGTH 37            // 力のカード
 #define ITEM_WOF 38                 // 運命の輪のカード
-#define ITEM_JUSTICE 39             // 正義のカード
+#define ITEM_JUSTICE 39             // 正義のカード (画面の敵全体にダメージ)
 #define ITEM_THE_HANGED_MAN 40      // 吊るされた男のカード
 #define ITEM_DEATH 41               // 死神のカード
 #define ITEM_TEMPERANCE 42          // 節制のカード
-#define ITEM_THE_DEVIL 43           // 悪魔のカード
-#define ITEM_THE_TOWER 44           // 塔のカード
+#define ITEM_THE_DEVIL 43           // 悪魔のカード, 暗黒虫を召喚
+#define ITEM_THE_TOWER 44           // 塔のカード (画面のプレイヤー含む全てのキャラに プレイヤーのレベルx8 のダメージ)
 #define ITEM_THE_STAR 45            // 星のカード
-#define ITEM_THE_MOON 46            // 月のカード
-#define ITEM_THE_SUN 47             // 太陽のカード
+#define ITEM_THE_MOON 46            // 月のカード, 月光虫を召喚
+#define ITEM_THE_SUN 47             // 太陽のカード, 太陽虫を召喚
 #define ITEM_JUDGEMENT 48           // 審判のカード, 所持しているとライフが0になったときに全回復して復活 (もちろんこのアイテムは消費される)
 #define ITEM_DARK_CARD 49           // 暗黒カード
 #define ITEM_PET 50                 // PET

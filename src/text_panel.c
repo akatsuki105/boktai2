@@ -19,7 +19,6 @@ typedef struct TextPanel {
   u16 unk_08;                    // 0x08, TextPanel_Create が 0 を入れる
   u16 msgIdx;                    // 0x0A, TextPanel_SetMessage の引数, FUN_08049FE8 に渡す
   s16 pendingMsgIdx;             // 0x0C, 0 以上の間 TextPanelManager_Update が TextPanel_SetMessage に流す, 適用後は -1 に戻る
-  u16 unk_0e;                    // 0x0E, 読み手も書き手も見つかっていない
   u8* scriptPc;                  // 0x10, TextPanel_SetScript の第2引数, 本文のあるスクリプト位置
   u16 unk_14;                    // 0x14, TextPanel_Create と TextPanel_SetScript が 0 を入れる
   u16 unk_16;                    // 0x16, TextPanel_Create と TextPanel_SetScript が 1 を入れる
@@ -45,12 +44,34 @@ void TextPanel_StateDone(TextPanelManager* mgr, TextPanel* p);
 void TextPanel_StateIdle(TextPanelManager* mgr, TextPanel* p);
 void TextPanel_StateTyping(TextPanelManager* mgr, TextPanel* p);
 
+static inline void TextPanelManager_Link(TextPanelManager* mgr, TextPanel* p) {
+  if (mgr->head != NULL) {
+    mgr->head->prev = p;
+  }
+  p->prev = NULL;
+  p->next = mgr->head;
+  mgr->head = p;
+}
+
+static inline void TextPanelManager_Unlink(TextPanelManager* mgr, TextPanel* p) {
+  if (p->prev != NULL) {
+    p->prev->next = p->next;
+  } else {
+    mgr->head = p->next;
+  }
+  if (p->next != NULL) {
+    p->next->prev = p->prev;
+  }
+  p->prev = NULL;
+  p->next = NULL;
+}
+
 void TextPanelManager_ClearGlobal(void) { gTextPanelManager = NULL; }
 
 bool32 TextPanelManager_Exists(void) { return gTextPanelManager != NULL; }
 
 // 枠のスクリプト位置から文字列テーブルを引く, offset は同じ参照内での何番目かを指す
-char* TextPanel_LookupText(TextPanel* p, s32 offset) { return Textbox_LookupString(VM_ParseStringRef(p->scriptPc) + offset); }
+char* TextPanel_LookupText(TextPanel* p, s32 offset) { return GetStringByID(VM_ParseStringRef(p->scriptPc) + offset); }
 
 TextPanel* TextPanelManager_FindByID(TextPanelManager* mgr, s32 id) {
   TextPanel* p = mgr->head;
@@ -88,15 +109,6 @@ s32 TextPanelManager_AllocID(TextPanelManager* mgr) {
   return -1;
 }
 
-static inline void TextPanelManager_Link(TextPanelManager* mgr, TextPanel* p) {
-  if (mgr->head != NULL) {
-    mgr->head->prev = p;
-  }
-  p->prev = NULL;
-  p->next = mgr->head;
-  mgr->head = p;
-}
-
 // 枠を1つ確保してマネージャのリストの先頭に繋ぐ, 戻り値は割り当てた id
 s32 TextPanel_Create(s32 x, s32 y, s32 width, s32 height) {
   TextPanelManager* mgr = gTextPanelManager;
@@ -132,19 +144,6 @@ s32 TextPanel_Create(s32 x, s32 y, s32 width, s32 height) {
   r->silent = TRUE;
   TextPanelManager_Link(mgr, p);
   return p->id;
-}
-
-static inline void TextPanelManager_Unlink(TextPanelManager* mgr, TextPanel* p) {
-  if (p->prev != NULL) {
-    p->prev->next = p->next;
-  } else {
-    mgr->head = p->next;
-  }
-  if (p->next != NULL) {
-    p->next->prev = p->prev;
-  }
-  p->prev = NULL;
-  p->next = NULL;
 }
 
 // 枠をリストから外して解放する, 戻り値は消した枠の id

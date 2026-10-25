@@ -13,7 +13,7 @@
 	mov r8, r0
 	adds r0, r7, #0
 	mov r1, r8
-	bl FUN_08022a0c
+	bl Boss_Register
 	ldr r0, _0804057C @ =0x03002BE0
 	ldr r2, [r0]
 	cmp r2, #0
@@ -664,7 +664,7 @@ _08040ADE:
 	ldr r1, [sp, #0x24]
 	mov r2, r8
 	add r3, sp, #0x1c
-	bl Boss_Init_08022a70
+	bl Boss_Init
 	ldrb r0, [r4]
 	cmp r0, #0
 	beq _08040B18
@@ -710,7 +710,7 @@ _08040B20:
 	adds r1, r6, #0
 	mov r2, r8
 	movs r3, #0
-	bl FUN_08022d24
+	bl Boss_PlayAnimDir8
 	movs r0, #0x78
 	mov r3, sl
 	strb r5, [r3]
@@ -733,7 +733,7 @@ _08040B20:
 	str r5, [r3]
 	ldr r5, [sp, #0x40]
 	strb r4, [r5]
-	ldr r0, _08040BE4 @ =FUN_080401ec
+	ldr r0, _08040BE4 @ =ShadeManCrossover_HandleDamage
 	ldr r6, [sp, #0x4c]
 	str r0, [r6]
 	ldr r0, _08040BE8 @ =FUN_080401a8
@@ -746,14 +746,14 @@ _08040B20:
 	mov r0, sb
 	ldr r1, [sp, #0x28]
 	adds r2, r1, #0
-	bl FUN_08022b2c
+	bl Boss_InitHP
 	adds r0, r7, #0
-	bl FUN_0803cca4
+	bl ShadeManCrossover_InitHitbox
 	ldrh r1, [r4]
 	adds r0, r7, #0
-	bl FUN_0803cdf8
+	bl ShadeManCrossover_InitHurtbox
 	adds r0, r7, #0
-	bl FUN_0803cd4c
+	bl ShadeManCrossover_InitHitbox2
 	movs r0, #0x63
 	bl VM_SeekToNamedArg
 	cmp r0, #0
@@ -768,7 +768,7 @@ _08040B20:
 	b _08040BF6
 	.align 2, 0
 _08040BE0: .4byte FUN_0803e6b0
-_08040BE4: .4byte FUN_080401ec
+_08040BE4: .4byte ShadeManCrossover_HandleDamage
 _08040BE8: .4byte FUN_080401a8
 _08040BEC:
 	mov r0, sb

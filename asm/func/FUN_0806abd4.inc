@@ -181,7 +181,7 @@ _0806AD60:
 	ldrh r1, [r1]
 	movs r2, #0xa
 	movs r3, #0x14
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 	b _0806ADC0
 _0806AD70:
 	ldr r0, _0806ADAC @ =0x000003F6

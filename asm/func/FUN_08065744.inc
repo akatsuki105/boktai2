@@ -142,7 +142,7 @@ _0806584C:
 	movs r3, #0
 	bl Mover_Init
 	adds r0, r5, #0
-	bl FUN_0806540c
+	bl Player_InitSprite
 	adds r0, r5, #0
 	bl FUN_08065514
 	movs r1, #0xd6

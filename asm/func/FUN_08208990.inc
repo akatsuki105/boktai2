@@ -105,7 +105,7 @@ _08208A5C:
 	strh r7, [r4, #6]
 	adds r0, r6, #0
 	adds r0, #0xd0
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _08208B42
 	movs r0, #1
@@ -210,7 +210,7 @@ _08208B16:
 _08208B32:
 	adds r0, r6, #0
 	adds r0, #0xd0
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _08208B42
 	movs r0, #1

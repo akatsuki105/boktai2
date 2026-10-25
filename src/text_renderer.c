@@ -28,8 +28,63 @@
 // <LABEL> の値は顔番号への名前表 (0x08251B9C 以降) で, NONE だけ 0xFF (顔なし) で, あとは R_DJUNGO が 0 から HATENA が 0x1A まで並ぶ (KURO_BAN だけ 0x1D)
 // 値が PLAYER と FUTARI のときだけ固定値ではなく Text_GetPlayerFace / Text_GetPairFace がプレイヤーを見て決める
 // src/data/text に実際に出てくるのは PROC / END / LABEL / EXTEND / VAR / NAME / ALTER / WEIGHT / LOCK / WAIT / MOJISE / FACEOFF の12種類だけで, NONSEL / UVMOJI / SOUND / PAREN は本文側には現れない
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_WEIGHT_08251b64[] = "WEIGHT";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_NONSEL_08251b6c[] = "NONSEL";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_UVMOJI_08251b74[] = "UVMOJI";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_WAIT_08251b7c[] = "WAIT";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_PROC_08251b84[] = "PROC";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_NAME_08251b8c[] = "NAME";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_LABEL_08251b94[] = "LABEL";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_NONE_08251b9c[] = "NONE";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_R_DJUNGO_08251ba4[] = "R_DJUNGO";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_B_DJUNGO_08251bb0[] = "B_DJUNGO";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_OTENKO_08251bbc[] = "OTENKO";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_SABATA_08251bc4[] = "SABATA";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_SMITH_08251bcc[] = "SMITH";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_RITA_08251bd4[] = "RITA";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_ZAJI_08251bdc[] = "ZAJI";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_SUMIRE_08251be4[] = "SUMIRE";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_KURO_BAN_08251bec[] = "KURO_BAN";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_KURO_08251bf8[] = "KURO";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_KID_08251c00[] = "KID";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_SHAIAN_08251c04[] = "SHAIAN";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_LADY_08251c0c[] = "LADY";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_COFFIN_08251c14[] = "COFFIN";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_CLOCK_08251c1c[] = "CLOCK";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_PEOPLE1_08251c24[] = "PEOPLE1";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_PEOPLE2_08251c2c[] = "PEOPLE2";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_PEOPLE3_08251c34[] = "PEOPLE3";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_DAAIN_08251c3c[] = "DAAIN";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_DUNEYRR_08251c44[] = "DUNEYRR";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_DVALINN_08251c4c[] = "DVALINN";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_DURATHROR_08251c54[] = "DURATHROR";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_RINGO1_08251c60[] = "RINGO1";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_RINGO2_08251c68[] = "RINGO2";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_RINGO3_08251c70[] = "RINGO3";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_ROCKMAN_08251c78[] = "ROCKMAN";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_SHADEMAN_08251c80[] = "SHADEMAN";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_HATENA_08251c8c[] = "HATENA";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_FUTARI_08251c94[] = "FUTARI";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_PLAYER_08251c9c[] = "PLAYER";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_FACEOFF_08251ca4[] = "FACEOFF";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_LOCK_08251cac[] = "LOCK";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_EXTEND_08251cb4[] = "EXTEND";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_SOUND_08251cbc[] = "SOUND";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_VAR_08251cc4[] = "VAR";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_MOJISE_08251cc8[] = "MOJISE";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_MOJISE_SYSTEM_08251cd0[] = "MOJISE_SYSTEM";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_MOJISE_TALK_08251ce0[] = "MOJISE_TALK";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_END_08251cec[] = "END";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_PAREN_08251cf0[] = "PAREN";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_ALTER_08251cf8[] = "ALTER";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_WEIGHT_08251d00[] = "/WEIGHT";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_NONSEL_08251d08[] = "/NONSEL";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_UVMOJI_08251d10[] = "/UVMOJI";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_LABEL_08251d18[] = "/LABEL";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_PAREN_08251d20[] = "/PAREN";
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_ALTER_08251d28[] = "/ALTER";
 
-const s16 gCharSounds[2] = {0x105, 0x106};  // 0x085AB458, TextRenderer_PlayCharSound が charSoundIdx で選ぶ文字送り音
+const s16 gCharSounds[2] = {SE_NONE_261, SONG_262};  // 0x085AB458, TextRenderer_PlayCharSound が charSoundIdx で選ぶ文字送り音
 
 // 0x1F エスケープの次のバイトと文字コードの組, bit15 が立っていれば全角 (Font_DrawZenkakuChar 側)
 // clang-format off
@@ -48,8 +103,7 @@ const u16 gEscapeCharcodes[118] = {
 };  // 0x085AB45C, 終端の 0 は無く、ループは隣の gBlankText のゼロ埋めで止まる
 // clang-format on
 
-extern u16 u16_030047d8;             // src/camera.c
-extern const char s_VAR_08251cc4[];  // src/data.c
+extern u16 u16_030047d8;  // src/camera.c
 
 static inline s32 GetTextSpeed(void) { return gStat->textSpeed; }  // 本体設定のメッセージ速度
 
@@ -149,7 +203,7 @@ NON_MATCH s32 Text_ConcatStringRefs(char* dst, u8* pc1, u8* pc2, s32 off1, s32 o
   s32 ref;
 
   ref = VM_ParseStringRef(pc1);
-  s = Textbox_LookupString(ref + off1);
+  s = GetStringByID(ref + off1);
   if (s == NULL) {
     *dst = 0;
     return -1;
@@ -159,7 +213,7 @@ NON_MATCH s32 Text_ConcatStringRefs(char* dst, u8* pc1, u8* pc2, s32 off1, s32 o
   }
 
   ref = VM_ParseStringRef(pc2);
-  s = Textbox_LookupString(ref + off2);
+  s = GetStringByID(ref + off2);
   if (s == NULL) {
     *dst = 0;
     return -1;
@@ -638,8 +692,13 @@ void TextRenderer_Init(TextRenderer* p, s32 x, s32 y, s32 width, s32 height) {
   p->waitFrames = 0;
 }
 
-s32 TextRenderer_SetVar(TextRenderer* p, s32 idx, u32 val) { p->vars[idx] = val; }
+// 文字列の <VAR=idx> に対応する値を設定する
+s32 TextRenderer_SetVar(TextRenderer* p, s32 idx, u32 val) {
+  p->vars[idx] = val;
+  // return の書き忘れか シグネチャの設定ミス
+}
 
+// <EXTEND=idx> に対応する文字列を設定する
 s32 TextRenderer_SetExtend(TextRenderer* p, s32 idx, char* str) { p->extends[idx] = str; }
 
 s32 TextRenderer_SetScriptIds(TextRenderer* p, s32 count, u32* ids) {

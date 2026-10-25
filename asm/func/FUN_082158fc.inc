@@ -9,13 +9,13 @@
 	adds r4, r4, r1
 	ldr r1, [r4]
 	adds r0, r0, r1
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r5, r0, #0
 	movs r0, #9
 	movs r1, #0xa
 	movs r2, #0x12
 	movs r3, #2
-	bl FUN_0821b28c
+	bl Video_ClearTextRect
 	movs r0, #9
 	movs r1, #0xa
 	adds r2, r5, #0

@@ -90,15 +90,15 @@ _081DA1E2:
 	adds r4, #0x19
 	cmp r0, r4
 	beq _081DA20E
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	movs r1, #0x9c
 	lsls r1, r1, #2
 	adds r0, r5, r1
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, r0, r4
-	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl GetStringByID
+	bl Marquee_SetText
 	strb r4, [r6]
 _081DA20E:
 	pop {r4, r5, r6}

@@ -7,18 +7,18 @@
 // HitboxData.flags
 typedef u16 HitboxFlags;
 typedef u32 HitboxFlags32;
-#define HBFLAG_UNK_0 (1 << 0)     // 0x1
+#define HBFLAG_UNK_0 (1 << 0)     // 0x1, 食らい側に立っていると、攻撃側にも立っているときだけ当たる (Hitbox_CheckAllPairs)
 #define HBFLAG_UNK_1 (1 << 1)     // 0x2
-#define HBFLAG_UNK_2 (1 << 2)     // 0x4
+#define HBFLAG_HIDDEN (1 << 2)    // 0x4, 一時的に食らい判定を外すためのフラグ？, 食らい側に立っていると、どの攻撃とも判定せず center も更新しない (Hitbox_CheckAllPairs, Hitbox_UpdateBoxes)
 #define HBFLAG_UNK_3 (1 << 3)     // 0x8
 #define HBFLAG_UNK_7 (1 << 7)     // 0x80
 #define HBFLAG_ANGLE (1 << 8)     // 0x100, 向きの概念があるものにつける, バックアタックの判定, 攻撃のノックバック方向 などで利用
 #define HBFLAG_UNK_9 (1 << 9)     // 0x200, 立っていると相手の hitState bit0 を消費する (Django_OnHurt)
 #define HBFLAG_UNK_10 (1 << 10)   // 0x400, 立っていると相手の hitState bit1 で1回だけに制限する (Django_OnHurt)
 #define HBFLAG_UNK_11 (1 << 11)   // 0x800
-#define HBFLAG_UNK_12 (1 << 12)   // 0x1000
-#define HBFLAG_HITBOX (1 << 13)   // 0x2000, 攻撃判定
-#define HBFLAG_HURTBOX (1 << 14)  // 0x4000, 食らい判定 (まだ確定はしてない)
+#define HBFLAG_ACTOR (1 << 12)    // 0x1000, プレイヤーと敵の食らい判定につく, 攻撃判定に立っていると HBFLAG_ACTOR 付きの食らい判定にしか当たらない (Hitbox_CheckAllPairs)
+#define HBFLAG_HITBOX (1 << 13)   // 0x2000, 攻撃判定 (このフラグがセットされていたら hitbox, そうでないなら食らい判定(hurtbox)として扱っているっぽい, つまり下の HBFLAG_HURTBOX は意味がなさそう)
+#define HBFLAG_HURTBOX (1 << 14)  // 0x4000, 食らい判定 (開発用の目印かも？ このフラグを参照しているものが見つからない)
 
 // HitboxData.hitResult, Hitbox_ApplyDamage が書く
 typedef u8 HitboxHitResult8;
@@ -48,8 +48,12 @@ typedef u32 HitboxAttributes;      // 低位7bitが自分の属性マスク, 攻
 #define HBATTR_NAMAKURA (1 << 12)  // 0x1000, 防御力無視の攻撃
 #define HBATTR_13 (1 << 13)        // 0x2000, 守備側の耐性を無視する
 #define HBATTR_14 (1 << 14)        // 0x4000, FUN_08009b30 が立っていたら何もしない
+#define HBATTR_POISON (1 << 15)    // 0x8000, 当たると毒になる (EBUFF_IMMUNEPOISON なら防ぐ)
+#define HBATTR_17 (1 << 17)        // 0x20000, 当たると Player_TakeHit が FUN_080dc0b8 を呼ぶ
 #define HBATTR_18 (1 << 18)        // 0x40000, ???
-#define HBATTR_21 (1 << 21)        // 0x200000, ???
+#define HBATTR_CONFUSE (1 << 20)   // 0x100000, 当たると混乱になる
+#define HBATTR_21 (1 << 21)        // 0x200000, 当たると引火の状態異常
+#define HBATTR_22 (1 << 22)        // 0x400000, 当たると氷結の状態異常
 
 // TODO: 解析が終わって問題なさそうなら HitboxData じゃなくて Hitbox にリネームする
 // 当たり判定も食らい判定も同じ構造体で扱う, HBFLAG_HITBOX で攻撃判定かどうかを区別する
@@ -63,7 +67,7 @@ typedef struct HitboxData {
   Vec3 offset;                  // 0x14, pos からのずれ
   Vec3 halfSize;                // 0x1C, 判定の直方体の各軸の半径, Hitbox_Init が引数の Vec3 を8バイトまるごとコピーする
   WorldPos center;              // 0x24, 判定の直方体の中心, Hitbox_UpdateBoxes が毎フレーム pos + offset で作る
-  u8 unk_2c[0x34 - 0x2C];       // 0x2C - 0x33, 未解析の領域
+  Vec3 unk_2c;                  // 0x2C, ShadeManCrossover_OnHurt が 8 バイトまるごと写す
   u32 weakness;                 // 0x34, 低位7bitが属性マスク, Hitbox_ApplyDamage が (b->weakness & 0x7F & a->attributes) != 0 でダメージ4倍にする
   HitboxAttributes attributes;  // 0x38, see HitboxAttributes
   u16 power;                    // 0x3C (Player: 0x1A8), Hitbox_ApplyDamage の基礎ダメージ = a->power - b->power (1未満なら1), 攻撃側では攻撃力、守備側では防御力
@@ -72,14 +76,14 @@ typedef struct HitboxData {
   // 攻撃側でも使われる: ジャンゴがバットに攻撃を当てると呼ばれる FUN_0813e944 の 0x0813EFFC で a->damage (Player.unk_a10.damage) に値が加算され、Player_UpdateWeaponWear がこれを武器の耐久ダメージ (Weapon.wear) として吸い上げる
   u16 damage;
 
-  u16 unk_40;  // 0x40, Hitbox_SetAttack の第3引数
+  u16 knockbackPower;  // 0x40, Hitbox_SetAttack の第3引数, 当たると Player_SetupKnockback が相手に写し (200 で頭打ち), 食らい側はこれを振幅に後ろへ動いて毎回 3/4 倍に減らす
 
   // 0x42, 8bit の向き, Hitbox_GetPushDir が (angle + 0x20 & 0xFF) >> 6 で押し出し方向の象限を出し、Breakable_OnHit が gSineTable の添字に使う
   // Hitbox_ApplyDamage は a と b の差が 33 未満なら背後から当てたとみなして 1.5倍にする
   u8 angle;
 
   HitboxHitResult8 hitResult;  // 0x43, see HBRESULT_*
-  u16 unk_44;                  // 0x44, Hitbox_SetAttack の第6引数 (FUN_0800e594 では 0x3C), 被弾時に FUN_0807e3b0 / FUN_0813e944 が a から b へそのままコピーする
+  u16 unk_44;                  // 0x44, Hitbox_SetAttack の第6引数 (FUN_0800e594 では 0x3C), 被弾時に Player_TakeHit / FUN_0813e944 が a から b へそのままコピーする
   HitboxHitState8 hitState;    // 0x46, 多段ヒット管理, see HBHITSTATE_*
   u8 unk_47;                   // 0x47, Hitbox_Init が 1 にする, 読み手が見つかっていない
 
@@ -102,7 +106,7 @@ static inline u32 Hitbox_TestAttr(HitboxData* hitbox, HitboxAttributes mask) { r
 void Hitbox_Register(HitboxData* p);
 void Hitbox_Init(HitboxData* p, u16 id, HitboxFlags32 flags, u32 unk_8, u16 ignoreMask, Vec3* halfSize, Vec3* offset);
 void Hitbox_SetPos(HitboxData* p, Vec3* pos, u32 unk_8);
-void Hitbox_SetAttack(HitboxData* p, s32 power, s32 unk_40, s32 weakness, HitboxAttributes attrs, s32 unk_44);
+void Hitbox_SetAttack(HitboxData* p, s32 power, s32 knockbackPower, s32 weakness, HitboxAttributes attrs, s32 unk_44);
 void Hitbox_SetPowerAndAttributes(HitboxData* p, u32 power, HitboxAttributes attrs, u32 weakness);
 void Hitbox_SetHandler(HitboxData* p, void* handler, void* owner);
 void Hitbox_Unregister(HitboxData* p);

@@ -81,8 +81,6 @@ void FUN_081e64cc(Entity8B8E* p);
 void FUN_081e5290(Entity8B8E* p);
 void FUN_081e4d04(Entity8B8E* p);
 
-static inline void Entity8B8E_SetFlags1610(Entity8B8E* p, u32 bits) { p->unk_1610 |= bits; }
-
 // 更新関数を差し替えて状態番号を入れる
 static inline void Entity8B8E_SetState(Entity8B8E* p, Entity8B8EFunc* fn, u8 state) {
   p->updateCallback = fn;
@@ -163,7 +161,7 @@ NAKED void FUN_081e37a0(s32 param_1, s32 param_2) { INCFUNC("asm/func/FUN_081e37
 
 NAKED void FUN_081e3958(s32 param_1, unknown* param_2) { INCFUNC("asm/func/FUN_081e3958.inc"); }
 
-void FUN_081e3cc0(Entity8B8E* p) { Entity8B8E_SetFlags1610(p, E8B8E1610_UNK_22); }
+void FUN_081e3cc0(Entity8B8E* p) { SET_FLAGS(p->unk_1610, E8B8E1610_UNK_22); }
 
 void FUN_081e3cd4(void) {
   Taiyo_Enable();
@@ -213,7 +211,7 @@ void FUN_081e3fe0(Entity8B8E* p) {
 s32 FUN_081e4014(Entity8B8E* p) {
   Vec3 pos;
 
-  pos.x = 0, pos.y = 0x80, pos.z = 0;
+  VEC3_SET(pos, 0, 0x80, 0);
   return MainSprite_Add(&p->sprite_150c, &p->gfx_156c, 0xD0, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD, 0, 0, 0, &pos);
 }
 

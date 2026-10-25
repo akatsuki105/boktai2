@@ -1,0 +1,339 @@
+#include "item.h"
+
+#include "global.h"
+#include "inventory.h"
+#include "player.h"
+#include "vm.h"
+#include "weapon.h"
+
+// ItemCategory16, ItemCategory32
+#define ITEM_CATEGORY_USABLE 0  // 消費アイテム, 貴重品 (名前は後でもっといいものにする)
+#define ITEM_CATEGORY_WEAPON 1
+#define ITEM_CATEGORY_ARMOR 2
+#define ITEM_CATEGORY_UNK3 3
+#define ITEM_CATEGORY_UNK4 4
+
+#define ITEM(slot) (*(gStat->items + slot))           // gStat->items[slot]
+#define VALUABLES(slot) (*(gStat->valuables + slot))  // gStat->valuables[slot]
+#define ROTCOUNT(slot) (*(gStat->rotTimer + slot))    // gStat->rotTimer[slot]
+
+#define CHOCO_COVERED (1 << 15)
+
+s32 GetRotCount(slot32_t slot) { return ROTCOUNT(slot); }
+
+void SetRotCount(slot32_t slot, u32 value) { ROTCOUNT(slot) = value; }
+
+// CHOCO_COVERED を含まない GetRotCount
+s32 GetRotCount2(slot32_t slot) { return ROTCOUNT(slot) & 0x7FFF; }
+
+// CHOCO_COVERED は維持した SetRotCount
+void SetRotCount2(slot32_t slot, u32 value) { ROTCOUNT(slot) = (value & 0x7FFF) | (ROTCOUNT(slot) & CHOCO_COVERED); }
+
+void CoverChocolate(slot32_t slot) { ROTCOUNT(slot) |= CHOCO_COVERED; }
+
+void UncoverChocolate(slot32_t slot) { ROTCOUNT(slot) &= ~CHOCO_COVERED; }
+
+s32 IsChocolateCovered(slot32_t slot) { return ROTCOUNT(slot) & CHOCO_COVERED; }
+
+item32_t GetNormalItemID(slot32_t slot) {
+  if (IsChocolateCovered(slot)) {
+    return ITEM_CHOCOLATE_COVERED;
+  }
+  return ITEM(slot);
+}
+
+item32_t GetValuableItemID(slot32_t slot) { return VALUABLES(slot); }
+
+void SetItem(slot32_t slot, item32_t id) { ITEM(slot) = id; }
+
+void SetValuable(slot32_t slot, item32_t id) { VALUABLES(slot) = id; }
+
+void RemoveItem(slot32_t slot) {
+  SetItem(slot, ITEM_NONE);
+  SetRotCount(slot, 0);
+}
+
+void RemoveValuable(slot32_t slot) { SetValuable(slot, ITEM_NONE); }
+
+bool32 IsValuable(item32_t id) {
+  if (ITEM_JUDGEMENT >= id) {
+    return FALSE;
+  }
+  return TRUE;
+}
+
+static bool32 tryAddItem(item32_t n, s32 rotCount) {
+  s32 slot;
+  for (slot = 0; slot < 16; slot++) {
+    if (GetNormalItemID(slot) < 0) {
+      SetItem(slot, n);
+      SetRotCount(slot, rotCount);
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+static bool32 tryAddValuable(item32_t n) {
+  s32 slot = 0;
+  u32 flagHeart = EBUFF_HEART;
+  u32 flagJoker = EBUFF_JOKER;
+
+  for (; slot < 16; slot++) {
+    if (GetValuableItemID(slot) < 0) {
+      SetValuable(slot, n);
+      if (gPlayerPtr[0] != NULL) {
+        if (n == ITEM_HEART_EMBLEM) {
+          gPlayerPtr[0]->equipBuffs |= flagHeart;
+        } else if (n == ITEM_JOKER_EMBLEM) {
+          gPlayerPtr[0]->equipBuffs |= flagJoker;
+        }
+      }
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+bool32 TryAddItem(item32_t n, s32 rotCount) {
+  if (!IsValuable(n)) {
+    return tryAddItem(n, rotCount);
+  }
+  return tryAddValuable(n);
+}
+
+// 0x305A, HashName("アイテム取得")
+bool32 Cmd_GetItem(void) {
+  item32_t n;
+  s32 rotCount;
+  if (!VM_SeekToNamedArg('i')) {
+    return FALSE;
+  }
+  n = VM_GetValue();
+  rotCount = VM_SeekToNamedArg('p') ? VM_GetValue() : 0;
+  return TryAddItem(n, rotCount);
+}
+
+bool32 _RemoveSpecifiedItem(item32_t id) {
+  s32 slot;
+  for (slot = 0; slot < 16; slot++) {
+    if (GetNormalItemID(slot) == id) {
+      RemoveItem(slot);
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+bool32 removeSpecifiedValuable(item32_t id) {
+  s32 slot;
+  for (slot = 0; slot < 16; slot++) {
+    if (GetValuableItemID(slot) == id) {
+      RemoveValuable(slot);
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+bool32 RemoveSpecifiedItem(item32_t id) {
+  if (!IsValuable(id)) {
+    return _RemoveSpecifiedItem(id);
+  }
+  return removeSpecifiedValuable(id);
+}
+
+// 0x3A5D, HashName("アイテム破棄")
+bool32 Cmd_RemoveItem(void) {
+  if (VM_SeekToNamedArg('i') != 0) {
+    return RemoveSpecifiedItem(VM_GetValue());
+  }
+  return FALSE;
+}
+
+static bool32 checkInventoryItemOwn(item32_t id) {
+  s32 slot;
+  for (slot = 0; slot < 16; slot++) {
+    if (GetNormalItemID(slot) == id) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+static bool32 checkValuableOwn(item32_t id) {
+  s32 slot;
+  for (slot = 0; slot < 16; slot++) {
+    if (GetValuableItemID(slot) == id) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+// 0x082424b4
+bool32 CheckItemOwn(item32_t id) {
+  if (!IsValuable(id)) {
+    return checkInventoryItemOwn(id);
+  }
+  return checkValuableOwn(id);
+}
+
+// 0x814C
+bool32 Cmd_HasItem(void) {
+  if (VM_SeekToNamedArg('i') != 0) {
+    return CheckItemOwn(VM_GetValue());
+  }
+  return FALSE;
+}
+
+void SwapNormalItem(slot32_t slot1, slot32_t slot2) {
+  s32 tmp;
+  tmp = ITEM(slot1);
+  ITEM(slot1) = ITEM(slot2);
+  ITEM(slot2) = tmp;
+  tmp = GetRotCount(slot1);
+  SetRotCount(slot1, GetRotCount(slot2));
+  SetRotCount(slot2, tmp);
+}
+
+void SwapValuable(slot32_t slot1, slot32_t slot2) {
+  item32_t a = GetValuableItemID(slot1);
+  item32_t b = GetValuableItemID(slot2);
+  SetValuable(slot1, b);
+  SetValuable(slot2, a);
+}
+
+NAKED void SortInventory(slot32_t slot) { INCFUNC("asm/func/SortInventory.inc"); }
+
+NAKED void SortValuable(slot32_t slot) { INCFUNC("asm/func/SortValuable.inc"); }
+
+item32_t GetRottenItemID(item32_t n) {
+  switch (n) {
+    case ITEM_EARTHLY_NUT:
+    case ITEM_SOLAR_NUT:
+    case ITEM_SPEED_NUT:
+    case ITEM_TIPTOE_NUT:
+    case ITEM_POWER_NUT:
+    case ITEM_BEARNUT:
+    case ITEM_SEE_ALL_NUT: {
+      return ITEM_ROTTEN_NUT;
+    }
+
+    case ITEM_TASTY_MEAT: {
+      return ITEM_ROTTEN_MEAT;
+    }
+
+    case ITEM_DROP_OF_SUN:
+    case ITEM_TOMATO_JUICE: {
+      return ITEM_ROTTEN_WATER;
+    }
+
+    case ITEM_RED_MUSHROOM:
+    case ITEM_BLUE_MUSHROOM: {
+      return ITEM_BAD_MUSHROOM;
+    }
+
+    default: {
+      return ITEM_NONE;
+    }
+  }
+}
+
+NAKED void RotItem(s32 rotDelta) { INCFUNC("asm/func/RotItem.inc"); }
+
+// 0x71C6, HashName("アイテム初期化")
+NON_MATCH void Cmd_ResetItems(void) {
+#ifdef NONMATCHING_C
+  s32 i;
+  s32 val;
+  for (i = 0; i < 48; i++) {
+    SetItem(i, ITEM_NONE);
+    SetRotCount(i, 0);
+    UncoverChocolate(i);
+  }
+  for (i = 0; i < VALUABLE_CAP; i++) {
+    SetValuable(i, ITEM_NONE);
+  }
+
+  val = VM_SeekToNamedArg('n') ? VM_GetValue() : 0;
+  if (val > 0) {
+    if (VM_SeekToNamedArg('i')) {
+      for (; val != 0; val--) {
+        TryAddItem(VM_GetValue(), 0);
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/Cmd_ResetItems.inc");
+#endif
+}
+
+// 空きエントリがあるかチェックする (itemID は ITEM_CATEGORY_USABLE のときに、 消費アイテムか貴重品かの判定につかうだけ)
+bool32 CheckEmptySlotExist(ItemCategory32 category, item32_t itemID) {
+  s32 i;
+  switch (category) {
+    case ITEM_CATEGORY_USABLE: {
+      if (!IsValuable(itemID)) {
+        for (i = 0; i < 16; i++) {
+          if (GetNormalItemID(i) < 0) {
+            return TRUE;
+          }
+        }
+      } else {
+        for (i = 0; i < VALUABLE_CAP; i++) {
+          if (GetValuableItemID(i) < 0) {
+            return TRUE;
+          }
+        }
+      }
+      break;
+    }
+
+    case ITEM_CATEGORY_WEAPON: {
+      if (gStat->playerKind != PLAYER_SABATA) {
+        for (i = 0; i < 16; i++) {
+          if (GetWeaponID(i) == WEAPON_NONE) {
+            return TRUE;
+          }
+        }
+      }
+      break;
+    }
+
+    case ITEM_CATEGORY_ARMOR: {
+      if (gStat->playerKind != PLAYER_SABATA) {
+        for (i = 0; i < 16; i++) {
+          if (gStat->armors[i] < 0) {
+            return TRUE;
+          }
+        }
+      }
+      break;
+    }
+
+    case ITEM_CATEGORY_UNK3:
+    case ITEM_CATEGORY_UNK4: {
+      if (gStat->playerKind != PLAYER_SABATA) {
+        return TRUE;
+      }
+      break;
+    }
+  }
+
+  return FALSE;
+}
+
+// 0x4D88, .k=カテゴリ, .i=追加対象のアイテムID(単に、アイテムが消費アイテムか貴重品かの判定につかうだけ)
+bool32 Cmd_CheckEmptySlotExist(void) {
+  u32 kind;
+  if (!VM_SeekToNamedArg('k')) {
+    return FALSE;
+  }
+
+  kind = VM_GetValue();
+  if (VM_SeekToNamedArg('i')) {
+    return CheckEmptySlotExist(kind, VM_GetValue());
+  }
+  return FALSE;
+}

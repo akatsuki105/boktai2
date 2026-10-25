@@ -165,7 +165,7 @@ _0824628E:
 	adds r0, r4, #0
 	bl Hitbox_Register
 	adds r0, r5, #0
-	bl FUN_08245eac
+	bl HomingLaser_UpdateTrail
 	ldrh r0, [r5, #6]
 	cmp r0, #0x1f
 	bls _082462E4

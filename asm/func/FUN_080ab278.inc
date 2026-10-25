@@ -26,7 +26,7 @@
 	str r2, [sp, #0xc]
 	movs r1, #1
 	movs r2, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	b _080AB398
 _080AB2B6:
 	lsls r0, r1, #0x10

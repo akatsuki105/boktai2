@@ -74,6 +74,19 @@ void Map_SetZones(ZoneData* zones);
 void Map_SetPaths(PathData* paths);
 void Map_SetNavMesh(NavMesh* navMesh);
 
+// ワールド座標をアイソメトリック投影して視点座標にする
+static inline void WorldToVp(Vec3* vp, WorldPos* world) {
+  s32 hx = world->x >> 1;
+  s32 hz = world->z >> 1;
+  s32 a, b;
+
+  vp->x = FixToInt(8, (hx - hz) * 48);
+  a = FixToInt(8, (hx + hz) * 48);
+  b = FixToInt(8, world->y * 24);
+  vp->y = a - b;
+  vp->z = a + b;
+}
+
 // Collision Map File が圧縮されてたら展開して返す、圧縮されてなかったらそのまま返す
 CollisionMapFile* OpenCollisionMapFile(void* file) {
   u8* magic = file;
@@ -243,25 +256,10 @@ void FUN_0823b880(s32 n) {
   }
 }
 
-// ワールド座標をアイソメトリック投影して視点座標にする
-static inline void WorldToVp(Vec3* vp, WorldPos* world) {
-  s32 hx = world->x >> 1;
-  s32 hz = world->z >> 1;
-  s32 a, b;
-
-  vp->x = FixToInt(8, (hx - hz) * 48);
-  a = FixToInt(8, (hx + hz) * 48);
-  b = FixToInt(8, world->y * 24);
-  vp->y = a - b;
-  vp->z = a + b;
-}
-
 // 移動先を指定して即座に移動させる, 補間中でなければその場で投影までやりなおす
 void Camera_MoveTo(Vec3* pos) {
   if (gCamera != NULL) {
-    gCamera->destPos.x = pos->x;
-    gCamera->destPos.y = pos->y;
-    gCamera->destPos.z = pos->z;
+    VEC3_SET(gCamera->destPos, pos->x, pos->y, pos->z);
     Camera_ApplyBounds(gCamera, &gCamera->destPos);
     gCamera->moveMode = TO_DEST_IMMEDIATE;
     if (!gCamera->lookEnabled) {
@@ -275,9 +273,7 @@ void Camera_MoveTo(Vec3* pos) {
 
 void FUN_0823b980(s32 n, Vec3* pos) {
   if (gCamera != NULL) {
-    gCamera->destPos.x = pos->x;
-    gCamera->destPos.y = pos->y;
-    gCamera->destPos.z = pos->z;
+    VEC3_SET(gCamera->destPos, pos->x, pos->y, pos->z);
     if (n < 2) {
       gCamera->moveMode = TO_DEST_IMMEDIATE;
     } else {
@@ -318,12 +314,8 @@ void FUN_0823baa8(void) {
 // 注視点を指定座標に固定して, すぐに投影しなおす
 void Camera_LookAt(Vec3* pos) {
   if (gCamera != NULL) {
-    gCamera->pos_6c.x = pos->x;
-    gCamera->pos_6c.y = pos->y;
-    gCamera->pos_6c.z = pos->z;
-    gCameraCoords.worldPos.x = gCamera->pos_6c.x;
-    gCameraCoords.worldPos.y = gCamera->pos_6c.y;
-    gCameraCoords.worldPos.z = gCamera->pos_6c.z;
+    VEC3_SET(gCamera->pos_6c, pos->x, pos->y, pos->z);
+    VEC3_SET(gCameraCoords.worldPos, gCamera->pos_6c.x, gCamera->pos_6c.y, gCamera->pos_6c.z);
     WorldToVp(&gCameraVpCoords, &gCameraCoords.worldPos);
     gCamera->lookEnabled = TRUE;
     gCamera->lookMode = 1;
@@ -333,9 +325,7 @@ void Camera_LookAt(Vec3* pos) {
 
 void FUN_0823bb7c(s32 n, Vec3* pos) {
   if (gCamera != NULL) {
-    gCamera->pos_6c.x = pos->x;
-    gCamera->pos_6c.y = pos->y;
-    gCamera->pos_6c.z = pos->z;
+    VEC3_SET(gCamera->pos_6c, pos->x, pos->y, pos->z);
     gCamera->lookEnabled = TRUE;
     if (n < 2) {
       gCamera->lookMode = 1;
@@ -465,9 +455,7 @@ void FUN_0823bdf8(void) {
 void FUN_0823be10(void) {
   if (VM_SeekToNamedArg('p')) {
     Vec3 pos;
-    pos.x = VM_GetValue();
-    pos.y = VM_GetValue();
-    pos.z = VM_GetValue();
+    VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
     Camera_LookAt(&pos);
     FUN_0823bd98(gCamera);
   }
@@ -478,9 +466,7 @@ void Cmd_CameraPanTo(void) {
     Vec3 pos;
     s32 n = VM_GetValue();
     if (VM_SeekToNamedArg('p')) {
-      pos.x = VM_GetValue();
-      pos.y = VM_GetValue();
-      pos.z = VM_GetValue();
+      VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
       FUN_0823bb7c(n, &pos);
       FUN_0823bd98(gCamera);
     }
@@ -492,11 +478,9 @@ void FUN_0823bee8(void) {
     Vec3 pos;
     s32 targetID = VM_GetValue();
     if (VM_SeekToNamedArg('o')) {
-      pos.x = VM_GetValue();
-      pos.y = VM_GetValue();
-      pos.z = VM_GetValue();
+      VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
     } else {
-      pos.x = 0, pos.y = 0, pos.z = 0;
+      VEC3_SET(pos, 0, 0, 0);
     }
     FUN_0823bbd4(targetID, &pos);
     FUN_0823bd98(gCamera);
@@ -510,11 +494,9 @@ void FUN_0823bf70(void) {
       Vec3 pos;
       s32 targetID = VM_GetValue();
       if (VM_SeekToNamedArg('o')) {
-        pos.x = VM_GetValue();
-        pos.y = VM_GetValue();
-        pos.z = VM_GetValue();
+        VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
       } else {
-        pos.x = 0, pos.y = 0, pos.z = 0;
+        VEC3_SET(pos, 0, 0, 0);
       }
       FUN_0823bc14(targetID, n, &pos);
       FUN_0823bd98(gCamera);
@@ -651,9 +633,9 @@ void FUN_0823c260(Vec3* min, Vec3* max) {
 void Camera_ConnectToTilemap(void) {
   if (VM_SeekToNamedArg('I')) {
     Vec3 min, max;
-    min.x = VM_GetValue(), min.y = VM_GetValue(), min.z = VM_GetValue();
+    VEC3_SET(min, VM_GetValue(), VM_GetValue(), VM_GetValue());
     if (VM_SeekToNamedArg('A')) {
-      max.x = VM_GetValue(), max.y = VM_GetValue(), max.z = VM_GetValue();
+      VEC3_SET(max, VM_GetValue(), VM_GetValue(), VM_GetValue());
       FUN_0823c260(&min, &max);
     }
   }
@@ -673,9 +655,9 @@ void FUN_0823c35c(Vec3* min, Vec3* max) {
 void Camera_SetBoundsType2Scripted(void) {
   if (VM_SeekToNamedArg('I')) {
     Vec3 min, max;
-    min.x = VM_GetValue(), min.y = VM_GetValue(), min.z = VM_GetValue();
+    VEC3_SET(min, VM_GetValue(), VM_GetValue(), VM_GetValue());
     if (VM_SeekToNamedArg('A')) {
-      max.x = VM_GetValue(), max.y = VM_GetValue(), max.z = VM_GetValue();
+      VEC3_SET(max, VM_GetValue(), VM_GetValue(), VM_GetValue());
       FUN_0823c35c(&min, &max);
     }
   }
@@ -709,9 +691,7 @@ void Camera_StepMove(Camera* cam) {
       break;
     }
     case TO_DEST_IMMEDIATE: {
-      cam->pos.x = cam->destPos.x;
-      cam->pos.y = cam->destPos.y;
-      cam->pos.z = cam->destPos.z;
+      VEC3_SET(cam->pos, cam->destPos.x, cam->destPos.y, cam->destPos.z);
       break;
     }
     case TO_DEST_INTERPOLATE: {
@@ -757,9 +737,7 @@ void Camera_StepLook(Camera* cam) {
       break;
     }
     case 1: {
-      gCameraCoords.worldPos.x = cam->pos_6c.x;
-      gCameraCoords.worldPos.y = cam->pos_6c.y;
-      gCameraCoords.worldPos.z = cam->pos_6c.z;
+      VEC3_SET(gCameraCoords.worldPos, cam->pos_6c.x, cam->pos_6c.y, cam->pos_6c.z);
       break;
     }
     case 2: {
@@ -875,9 +853,7 @@ s32 Camera_Update(Camera* cam) {
   if (!(gEntityDisableFlags & ENTITY_DISABLE_2)) {
     Camera_StepMove(cam);
     if (!cam->lookEnabled) {
-      gCameraCoords.worldPos.x = cam->pos.x;
-      gCameraCoords.worldPos.y = cam->pos.y;
-      gCameraCoords.worldPos.z = cam->pos.z;
+      VEC3_SET(gCameraCoords.worldPos, cam->pos.x, cam->pos.y, cam->pos.z);
     } else {
       Camera_StepLook(cam);
     }
@@ -904,9 +880,7 @@ s32 Camera_Init(Camera* cam, u32 id) {
   cam->pos.y = gStat->playerY + 0x96;
   cam->pos.z = gStat->playerZ;
   cam->unk_8c = 0;
-  gCameraCoords.worldPos.x = cam->pos.x;
-  gCameraCoords.worldPos.y = cam->pos.y;
-  gCameraCoords.worldPos.z = cam->pos.z;
+  VEC3_SET(gCameraCoords.worldPos, cam->pos.x, cam->pos.y, cam->pos.z);
   WorldToVp(&gCameraVpCoords, &gCameraCoords.worldPos);
   cam->shakeActive = FALSE;
   cam->shakeStopOnEnd = FALSE;

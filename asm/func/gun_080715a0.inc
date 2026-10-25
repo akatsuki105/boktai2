@@ -638,7 +638,7 @@ _08071AD8:
 	cmp r0, #1
 	bne _08071AF4
 	adds r0, r5, #0
-	bl FUN_08066794
+	bl Player_TakeSunburnDamage
 _08071AF4:
 	movs r0, #0
 	strh r0, [r4]

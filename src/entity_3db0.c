@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "map_inline.h"
 #include "random.h"
 #include "sprite_aux.h"
 #include "vm.h"
@@ -33,36 +34,6 @@ static inline s32 TileIndexAt(WorldPos* pos) {
     return 0;
   }
   return gCollisionMap->rowOffsets[bz] + bx;
-}
-
-// pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
-static inline s32 GetTileHeightAt(WorldPos* pos) {
-  MapTileOverride* ov;
-  CollisionMapTile* tile;
-  s32 stairs;
-  s32 height;
-  s32 idx = TileIndexAt(pos);
-
-  ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
-
-  stairs = tile->heightStairs >> 4;
-  height = (tile->heightStairs & 0xF) << 8;
-  switch (stairs) {
-    case 1: {
-      height -= pos->z & 0xFF;
-      break;
-    }
-    case 2: {
-      height -= pos->x & 0xFF;
-      break;
-    }
-  }
-  return height;
 }
 
 void Entity3DB0_OnHit(HitboxData* a, HitboxData* b, Entity3DB0* p) {
@@ -154,9 +125,8 @@ NON_MATCH void Entity3DB0_InitSprite(Entity3DB0* p, Vec3* pos) {
 void Entity3DB0_InitHitbox(Entity3DB0* p, u32 id, Vec3* pos) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 halfSize, offset;
-
-  halfSize.x = 0x80, halfSize.y = 0x80, halfSize.z = 0x80;
-  offset.x = 0, offset.y = 0x80, offset.z = 0;
+  VEC3_SET(halfSize, 0x80, 0x80, 0x80);
+  VEC3_SET(offset, 0, 0x80, 0);
   Hitbox_Init(hitbox, id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x20, &halfSize, &offset);
   Hitbox_SetHandler(hitbox, Entity3DB0_OnHit, p);
   Hitbox_SetPos(hitbox, pos, 0);
@@ -179,7 +149,7 @@ NON_MATCH s32 Entity3DB0_Init(Entity3DB0* p, u32 param_2, u32 _) {
     pos.z = 0;
   }
 
-  pos.y = GetTileHeightAt(&pos);
+  pos.y = TileHeightAt(&pos);
   p->tileIdx = TileIndexAt(&pos);
   p->height = (s8)(pos.y >> 8) + 1;
   Map_AddTileOverride(&p->tileOverride, p->tileIdx, 0, p->height, 0xFF, 0x103);

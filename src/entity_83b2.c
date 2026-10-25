@@ -99,12 +99,8 @@ missing FUN_08009278(Entity83B2Data* p, s32 plttID) {
 // 対象の座標を設定する, unk_2 で判定用の座標と描画位置のどちらをずらすかが変わる
 void* FUN_08009298(Entity83B2* p, Entity83B2Data* data, Vec3* pos) {
   AuxSprite* sprite = &data->sprite;
-  data->pos.x = pos->x;
-  data->pos.y = pos->y;
-  data->pos.z = pos->z;
-  sprite->pos.x = pos->x;
-  sprite->pos.y = pos->y;
-  sprite->pos.z = pos->z;
+  VEC3_SET(data->pos, pos->x, pos->y, pos->z);
+  VEC3_SET(sprite->pos, pos->x, pos->y, pos->z);
   if (data->unk_2 != 0) {
     data->pos.x += 0x80;
     sprite->pos.z -= 0x80;
@@ -406,7 +402,7 @@ s32 Entity83B2_Init(Entity83B2* p, void* _) {
   if (p->player != NULL) {
     p->pos = p->player->mover.pos;
   } else {
-    p->pos.x = 0, p->pos.y = 0, p->pos.z = 0;
+    VEC3_SET(p->pos, 0, 0, 0);
   }
   return 0;
 }
@@ -526,11 +522,9 @@ s32 Cmd_1F65(void) {
     return -1;
   }
   if (VM_SeekToNamedArg('p')) {
-    pos.x = VM_GetValue();
-    pos.y = VM_GetValue();
-    pos.z = VM_GetValue();
+    VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {
-    pos.x = 0, pos.y = 0, pos.z = 0;
+    VEC3_SET(pos, 0, 0, 0);
   }
   FUN_08009298(p, data, &pos);
   if (data->zoneID >= 0) {

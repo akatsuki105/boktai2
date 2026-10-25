@@ -60,7 +60,7 @@ _0821E448:
 	movs r1, #0x10
 	movs r2, #0
 	movs r3, #1
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 _0821E46A:
 	movs r2, #0xb4
 	lsls r2, r2, #2
@@ -203,7 +203,7 @@ _0821E530:
 	adds r0, r5, #0
 	movs r1, #0x10
 	movs r2, #0
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 	movs r2, #0
 	ldrsh r1, [r6, r2]
 	ldr r0, _0821E5AC @ =0x00000AEF

@@ -7,9 +7,6 @@
 #include "text.h"
 #include "video.h"
 
-bool32 FUN_081dfa04(void);
-s32 FUN_08049fa8(void);
-
 // おそらく、通信対戦のルール設定
 // 3行の選択肢を持つ通信メニュー, 各行は values[i] を counts[i] で巻き戻しながら左右で切り替える
 typedef struct Entity08F4 {
@@ -39,6 +36,8 @@ typedef struct Entity08F4 {
   u16 timer;                                   // 0x32E, 30 未満の間は入力を受け付けない
 } Entity08F4;
 static_assert(sizeof(Entity08F4) == 816);
+
+bool32 FUN_081dfa04(void);
 
 const s32 s32_ARRAY_085ae1b4[6] = {0, 0, 0, 32, 0, 64};  // 0x085AE1B4
 
@@ -117,7 +116,7 @@ NAKED void FUN_081db57c(unknown* param_1) { INCFUNC("asm/func/FUN_081db57c.inc")
 
 s32 Entity08F4_Update(Entity08F4* p) {
   if (!FUN_081dfa04()) {
-    FUN_08049fa8();
+    Marquee_CloseGlobal();
     Entity08F4_HideSprites(p);
     KillEntity((Entity*)p);
     return -1;

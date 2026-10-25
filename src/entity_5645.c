@@ -61,8 +61,6 @@ static_assert(sizeof(Entity5645) == 7712);
 
 IWRAM_DATA Entity5645* gEntity5645 = NULL;  // 0x03000120
 
-void FUN_08055d7c(SpriteHolder* p);
-
 // 0x085AB748 の8件のテーブル, FUN_08054848 が 0x38 刻みで引く
 typedef struct {
   SpriteID32 id;                                  // 0x00, Entity286F_FindSpriteData の第1引数

@@ -58,19 +58,15 @@ s32 DungeonMarker_Init(DungeonMarker* p) {
   OpenMainSpriteFile(&gfx, f);
 
   if (VM_SeekToNamedArg('p')) {
-    p->pos.x = VM_GetValue();
-    p->pos.y = VM_GetValue();
-    p->pos.z = VM_GetValue();
+    VEC3_SET(p->pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {
-    p->pos.x = 0, p->pos.y = 0, p->pos.z = 0;
+    VEC3_SET(p->pos, 0, 0, 0);
   }
 
   if (VM_SeekToNamedArg('o')) {
-    offset.x = VM_GetValue();
-    offset.y = VM_GetValue();
-    offset.z = VM_GetValue();
+    VEC3_SET(offset, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {
-    offset.x = 0, offset.y = 0, offset.z = 0;
+    VEC3_SET(offset, 0, 0, 0);
   }
 
   if (VM_SeekToNamedArg('I')) {

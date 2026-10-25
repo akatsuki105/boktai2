@@ -192,7 +192,7 @@ _080AEA76:
 	movs r0, #1
 	movs r1, #0
 	movs r3, #2
-	bl FUN_08056774
+	bl DustManager_Emit
 	b _080AEAD0
 	.align 2, 0
 _080AEAC0: .4byte 0x00000504

@@ -13,11 +13,12 @@
 #include "sound.h"
 #include "vm.h"
 
+COMMON_DATA Coffin* gCoffin = NULL;                        // 0x03002C00
+COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
+
 void nop_0822a4f8(void* _, s32 unused1, s32 unused2);
 void FUN_08087528(HitboxData* a, HitboxData* b, Coffin* p);
 s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params);
-
-static inline u32 GetFlag03002bc0(u32 bits) { return u32_03002bc0[0] & bits; }
 
 void Coffin_InitParticles(Coffin* p) {
   Particle* ptcl = p->ptcls;
@@ -309,6 +310,7 @@ bool32 Coffin_IsState(s32 state) {
   return TRUE;
 }
 
+// 0x6B24
 void FUN_08086638(void) {
   Coffin* p = gCoffin;
 
@@ -317,9 +319,7 @@ void FUN_08086638(void) {
   }
 
   if (VM_SeekToNamedArg('p')) {
-    p->destPos.x = VM_GetValue();
-    p->destPos.y = VM_GetValue();
-    p->destPos.z = VM_GetValue();
+    VEC3_SET(p->destPos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   }
   if (VM_SeekToNamedArg('R')) {
     p->unk_3b0 = VM_GetValue();
@@ -458,7 +458,7 @@ void FUN_080868b8(s32 param_1) {
   }
 }
 
-// 棺を state 8 に入れ, エフェクトスプライトを棺と同じ位置に出す
+// 0x9BC7, 棺を state 8 に入れ, エフェクトスプライトを棺と同じ位置に出す
 void FUN_08086910(void) {
   Coffin* p = gCoffin;
 
@@ -583,6 +583,7 @@ NON_MATCH void FUN_08086b18(WorldPos* pos) {
 #endif
 }
 
+// 0xA301
 void FUN_08086be0(void) {
   Coffin* p = gCoffin;
 
@@ -600,15 +601,17 @@ void FUN_08086be0(void) {
   }
 }
 
+// 0x4561
 NAKED void FUN_08086c50(void) { INCFUNC("asm/func/FUN_08086c50.inc"); }
 
+// 0xFEE0
 void Coffin_RequestKill(void) {
   if (gCoffin != NULL) {
     gCoffin->killRequested = TRUE;
   }
 }
 
-// 装備中の棺桶ID, 未装備なら貴重品欄にある棺桶から探す
+// 0x7A0A, 装備中の棺桶ID, 未装備なら貴重品欄にある棺桶から探す
 s32 FUN_08086d7c(void) {
   s32 i;
 
@@ -732,8 +735,8 @@ void Coffin_InitHurtbox(Coffin* p) {
   Vec3 offset;
   s32 ignoreMask;
 
-  size.x = (BLOCK * 90 / 256), size.y = (BLOCK / 8), size.z = (BLOCK * 90 / 256);
-  offset.x = 100, offset.y = 200, offset.z = 100;
+  VEC3_SET(size, (BLOCK * 90 / 256), (BLOCK / 8), (BLOCK * 90 / 256));
+  VEC3_SET(offset, 100, 200, 100);
   if (p->coffinID != COFFIN_SILVER) {
     s32 kind = p->unk_1c;
 
@@ -755,8 +758,8 @@ void Coffin_InitHitbox(Coffin* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 size, offset;
 
-  size.x = (BLOCK / 2), size.y = (BLOCK / 8), size.z = (BLOCK / 2);
-  offset.x = 0, offset.y = (BLOCK / 8), offset.z = 0;
+  VEC3_SET(size, (BLOCK / 2), (BLOCK / 8), (BLOCK / 2));
+  VEC3_SET(offset, 0, (BLOCK / 8), 0);
   Hitbox_Init(hitbox, p->subroutineID, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetAttack(hitbox, 50, 50, 0, HBATTR_18, 30);
   Hitbox_SetHandler(hitbox, NULL, p);
@@ -834,10 +837,10 @@ void FUN_080874cc(Coffin* p) {
   FUN_08087494(p);
 
   if (p->unk_332 != 0) {
-    p->hurtbox.flags |= HBFLAG_UNK_2;
+    p->hurtbox.flags |= HBFLAG_HIDDEN;
     p->unk_332--;
   } else {
-    p->hurtbox.flags &= ~HBFLAG_UNK_2;
+    p->hurtbox.flags &= ~HBFLAG_HIDDEN;
   }
 }
 
@@ -892,8 +895,8 @@ void FUN_080875e8(Coffin* p) {
 
   p->unk_40c = p->mover.pos;
   angle = ((p->facing + 1) & 7) << 5;
-  p->unk_40c.x += COS(angle, 0x80);
-  p->unk_40c.z += SIN(angle, 0x80);
+  p->unk_40c.x += POLAR_X(0x80, angle);
+  p->unk_40c.z += POLAR_Z(0x80, angle);
 }
 
 NAKED void FUN_0808766c(Coffin* p) { INCFUNC("asm/func/FUN_0808766c.inc"); }
@@ -929,7 +932,7 @@ void FUN_08087c04(Coffin* p) {
   if (p->state != 0) {
     Coffin_SetState(p, 0);
   }
-  p->hurtbox.flags &= ~HBFLAG_UNK_2;
+  p->hurtbox.flags &= ~HBFLAG_HIDDEN;
   p->unk_32a = 0;
   FUN_08086024(p, 0);
 
@@ -1024,7 +1027,7 @@ NAKED void FUN_0808890c(Coffin* p) { INCFUNC("asm/func/FUN_0808890c.inc"); }
 
 void FUN_08088bbc(Coffin* p) {
   p->facing = 0;
-  p->hurtbox.flags |= HBFLAG_UNK_2;
+  p->hurtbox.flags |= HBFLAG_HIDDEN;
   p->stateTimer++;
   FUN_08086024(p, 0);
 
@@ -1125,7 +1128,7 @@ void FUN_080892a8(Coffin* p) {
   }
   p->unk_32a = 0;
   p->unk_394 = 0;
-  p->hurtbox.flags |= HBFLAG_UNK_2;
+  p->hurtbox.flags |= HBFLAG_HIDDEN;
   p->facing = 0;
   FUN_08086024(p, 0);
 }
@@ -1134,7 +1137,7 @@ void FUN_080892f8(Coffin* p) {
   if (p->state != 13) {
     Coffin_SetState(p, 13);
   }
-  p->hurtbox.flags |= HBFLAG_UNK_2;
+  p->hurtbox.flags |= HBFLAG_HIDDEN;
   p->facing = 0;
   if (FUN_08086024(p, 8) != 0) {
     Coffin_SetState(p, 12);
@@ -1155,7 +1158,7 @@ void FUN_08089344(Coffin* p) {
     p->unk_32a = 0;
   }
 
-  p->hurtbox.flags |= HBFLAG_UNK_2;
+  p->hurtbox.flags |= HBFLAG_HIDDEN;
   p->facing = 0;
   FUN_08086024(p, 24);
 }
@@ -1164,7 +1167,7 @@ void FUN_080893c0(Coffin* p) {
   if (p->state != 14) {
     Coffin_SetState(p, 14);
   }
-  p->hurtbox.flags |= HBFLAG_UNK_2;
+  p->hurtbox.flags |= HBFLAG_HIDDEN;
   p->facing = 0;
   if (FUN_08086024(p, 16) != 0) {
     Coffin_SetState(p, p->unk_408);
@@ -1177,7 +1180,7 @@ void FUN_08089548(Coffin* p) {
   if (p->state != 15) {
     Coffin_SetState(p, 15);
   }
-  p->hurtbox.flags &= ~HBFLAG_UNK_2;
+  p->hurtbox.flags &= ~HBFLAG_HIDDEN;
   p->unk_32a = 1;
   FUN_08086024(p, 0);
 
@@ -1224,7 +1227,7 @@ s32 Coffin_Update(Coffin* p) {
 
   p->unk_406 = 0;
 
-  if (GetFlag03002bc0(FLAG03002BC0_UNK_2)) {
+  if (TEST_FLAGS(u32_03002bc0[0], FLAG03002BC0_UNK_2)) {
     FUN_08085408(p);
     return 0;
   }

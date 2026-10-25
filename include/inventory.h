@@ -15,6 +15,7 @@ s32 GetRotCount2(slot32_t slot);
 void SetRotCount(slot32_t slot, u32 value);
 void SetRotCount2(slot32_t slot, u32 value);
 void SortInventory(slot32_t slot);
+void SortValuable(slot32_t slot);
 void SortArmors(slot32_t from);
 void RemoveWeapon(slot32_t n);
 bool32 TryAddItem(item32_t n, s32 rotCount);

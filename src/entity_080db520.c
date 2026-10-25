@@ -1,19 +1,38 @@
+#include "coffin.h"
+#include "collision_map.h"
+#include "enemy_manager.h"
 #include "entity.h"
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
+#include "player.h"
+#include "random.h"
+#include "sound.h"
 #include "sprite.h"
+#include "time.h"
+
+// Entity080db520Elem.unk_40
+typedef u16 Entity080db520ElemFlags;
+#define E080DB520_UNK_1 (1 << 1)  // 0x02, FUN_080dab9c と FUN_080dacac が判定と一緒に立てる
+#define E080DB520_UNK_2 (1 << 2)  // 0x04, FUN_080dabe4 が立てる
+#define E080DB520_UNK_4 (1 << 4)  // 0x10, 使用中の枠のどこにも立っていないと FUN_080dadec が gPlayerPtr[0]->unk_3ff を -1 に戻す
+#define E080DB520_UNK_5 (1 << 5)  // 0x20, zoneID が FUN_0809dfec の条件を満たすときに立つ
+#define E080DB520_UNK_6 (1 << 6)  // 0x40, 使用中の枠のどこにも立っていないと FUN_080dadec が gCoffin->unk_3a0 を -1 に戻す
 
 typedef struct {
-  AuxSprite spr;           // 0x00, _Destroy が AuxSprite_Remove に渡す
-  u8 unk_2c[0x3E - 0x2C];  // 0x2C
-  s16 unk_3e;              // 0x3E, 2 なら FUN_080dabe4 が何もしない
-  u16 unk_40;              // 0x40, FUN_080dacac が bit1、FUN_080dabe4 が bit2 を立てる
-  s16 unk_42;              // 0x42, 負なら FUN_080dabe4 が何もしない
-  u8 unk_44[0x4C - 0x44];  // 0x44
-  HitboxData hitbox;       // 0x4C, _Destroy が Hitbox_Unregister に渡す
-  u8 unk_9c[8];            // 0x9C
+  AuxSprite spr;                   // 0x00, _Destroy が AuxSprite_Remove に渡す
+  AuxAnimState anim;               // 0x2C, ANIM_3DC2
+  s16 timer;                       // 0x3C, 毎フレーム +1, 90 を越えると枠を解放する
+  s16 state;                       // 0x3E, sElemUpdates の添字, 2 なら判定を立てる系の関数が何もしない
+  Entity080db520ElemFlags unk_40;  // 0x40
+  s16 unk_42;                      // 0x42, 負なら FUN_080dabe4 が何もしない
+  s16 shakeTimer;                  // 0x44, 20 から数え下げ, 10 を超えている間はスプライトを揺らす
+  ZoneID16 zoneID;                 // 0x46, gStat->zoneID と一致するかを FUN_080dad94 が見る
+  u16 baseAngle;                   // 0x48, 掴んだ瞬間のプレイヤーの angle_400
+  u16 prevAngleDelta;              // 0x4A, 前回 FUN_080dac24 を回したときの角度差
+  HitboxData hitbox;               // 0x4C, _Destroy が Hitbox_Unregister に渡す
+  Vec3 pos;                        // 0x9C, Hitbox_SetPos と spr.pos へ渡される
 } Entity080db520Elem;
 static_assert(sizeof(Entity080db520Elem) == 164);
 
@@ -26,9 +45,13 @@ typedef struct {
 } Entity080db520;
 static_assert(sizeof(Entity080db520) == 1372);
 
+bool32 FUN_0809dfec(s32 mapArea);
+void FUN_080db0f8(Entity080db520Elem* elem);
+
 IWRAM_DATA Entity080db520* gEntity080db520 = NULL;  // 0x03000160
 
-const u8 u8_ARRAY_085ad310[4] = {8, 4, 2, 1};  // 0x085AD310
+// timer が進むほど短い周期になる, FUN_080db040 の点滅間隔
+const u8 sBlinkIntervals[4] = {8, 4, 2, 1};  // 0x085AD310
 
 // idx 番の枠の判定を1フレームだけ有効にする
 void FUN_080dab9c(s32 idx) {
@@ -43,37 +66,68 @@ void FUN_080dab9c(s32 idx) {
   if (e->unk_42 < 0) {
     return;
   }
-  if (e->unk_3e == 2) {
+  if (e->state == 2) {
     return;
   }
 
-  e->unk_40 |= 2;
-  e->hitbox.flags |= HBFLAG_UNK_2;
+  e->unk_40 |= E080DB520_UNK_1;
+  e->hitbox.flags |= HBFLAG_HIDDEN;
 }
 
-// idx 番の要素の unk_40 に bit2 を立てる
+// idx 番の要素に UNK_2 を立てる
 void FUN_080dabe4(s32 idx) {
   Entity080db520* p = gEntity080db520;
 
   if (idx >= 0) {
     Entity080db520Elem* e = &p->elems[idx];
 
-    if (e->unk_42 >= 0 && e->unk_3e != 2) {
-      e->unk_40 |= 4;
+    if (e->unk_42 >= 0 && e->state != 2) {
+      e->unk_40 |= E080DB520_UNK_2;
     }
   }
 }
 
 void FUN_080dac20(Entity080db520* p, Entity080db520Elem* elem) {}
 
-NAKED void FUN_080dac24(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080dac24.inc"); }
+// 20フレーム周期で最初の10フレームだけスプライトの位置を揺らす
+// 命令数は一致 (59/59) するが2点ずれる: (1) 原典は ~UNK_2 を直前の 20 から subs #0x19 で作るのに対しこちらは 0xFFFB をプール経由で読む (HImode の AND に落ちる), (2) -20 を原典は pos.x 側に畳むのにこちらは Mod の戻り値側に畳む
+// マスクを u32 ローカル経由にする / Mod の戻り値をローカルに取る / 加算順4通り はいずれも効かず
+NON_MATCH void FUN_080dac24(Entity080db520* p, Entity080db520Elem* elem) {
+#ifdef NONMATCHING_C
+  if (elem->shakeTimer <= 0) {
+    elem->shakeTimer = 20;
+    elem->unk_40 &= ~E080DB520_UNK_2;
+  } else {
+    if (elem->shakeTimer > 10) {
+      u16* table = gRandomTable;
 
-void FUN_080dacac(Entity080db520* p, u32 param_2, Entity080db520Elem* elem) {
-  elem->unk_40 |= 2;
-  elem->hitbox.flags |= 4;
+      elem->spr.pos.x = elem->spr.pos.x - 20 + Mod(_Random(table), 40);
+      elem->spr.pos.z = elem->spr.pos.z - 20 + Mod(_Random(table), 40);
+    }
+    elem->shakeTimer--;
+  }
+#else
+  INCFUNC("asm/func/FUN_080dac24.inc");
+#endif
 }
 
-NAKED void FUN_080dacc4(Entity080db520* p) { INCFUNC("asm/func/FUN_080dacc4.inc"); }
+void FUN_080dacac(HitboxData* a, HitboxData* b, Entity080db520Elem* elem) {
+  elem->unk_40 |= E080DB520_UNK_1;
+  elem->hitbox.flags |= HBFLAG_HIDDEN;
+}
+
+// この枠の被弾判定を作って登録する
+void Entity080db520_InitHurtbox(Entity080db520Elem* elem, u32 param_2, u32 param_3) {
+  Vec3 offset;
+  Vec3 halfSize;
+
+  VEC3_SET(offset, 0x40, 0x80, 0x40);
+  VEC3_SET(halfSize, 0x10, 0x80, 0x10);
+  Hitbox_Init(&elem->hitbox, 0, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
+  Hitbox_SetPos(&elem->hitbox, &elem->pos, 0);
+  Hitbox_SetHandler(&elem->hitbox, FUN_080dacac, elem);
+  Hitbox_Register(&elem->hitbox);
+}
 
 // 空いている枠を確保して返す, 無ければ NULL
 // 残差1命令 (34 対 35), 原典は &elems[i] を muls で毎回作るが agbcc は誘導変数に落として基底をループ外へ巻き上げる
@@ -97,15 +151,252 @@ NON_MATCH Entity080db520Elem* FUN_080dad4c(Entity080db520* p) {
 #endif
 }
 
-NAKED s32 FUN_080dad94(Entity080db520* p) { INCFUNC("asm/func/FUN_080dad94.inc"); }
+// 日中で, かつ今いるゾーンがこの枠の指定と同じなら TRUE
+// 残差1命令 (37/38), 原典は 0/1 を bne/movs#1/b/movs#0 の二分岐で作るが agbcc は movs#0 を手前のガードより上へ巻き上げて条件付き代入1つに畳む
+// bool8 のローカルを宣言と代入に分けると 0/1 の作り置き自体は再現できる (static inline bool32 や初期化子つき宣言では畳まれる). 比較の左右入れ替え, 分岐極性反転, ?: も試済
+NON_MATCH bool8 FUN_080dad94(Entity080db520Elem* elem) {
+#ifdef NONMATCHING_C
+  bool8 same;
 
-NAKED void FUN_080dadec(Entity080db520* p) { INCFUNC("asm/func/FUN_080dadec.inc"); }
+  if (gClock.spanOfTime == TIME_UNK5 || gClock.spanOfTime == TIME_NIGHT || gClock.spanOfTime == TIME_UNK4) {
+    return FALSE;
+  }
+  if (!(gStat->unk_934 & 2)) {
+    return FALSE;
+  }
+  if (gStat->zoneID == elem->zoneID) {
+    same = TRUE;
+  } else {
+    same = FALSE;
+  }
+  if (!same) {
+    return FALSE;
+  }
+  return TRUE;
+#else
+  INCFUNC("asm/func/FUN_080dad94.inc");
+#endif
+}
 
-NAKED void FUN_080dae60(Entity080db520* p, Entity080db520Elem* elem) { INCFUNC("asm/func/FUN_080dae60.inc"); }
+// 使用中の枠を見渡して, UNK_4 / UNK_6 がどこにも立っていなければプレイヤーと棺桶の値を戻す
+// 残差5命令 (47/52), 使用中判定の 0/1 の作り置き1ブロックだけが足りない. 他は完全に一致
+// unk_40 をローカルに取ると余計な register copy が1つ増えるので直接2回読む形にした
+NON_MATCH void FUN_080dadec(Entity080db520* p) {
+#ifdef NONMATCHING_C
+  Entity080db520Elem* elems = p->elems;
+  bool8 anyUnk4 = FALSE;
+  bool8 anyUnk6 = FALSE;
+  s32 i;
 
-NAKED void FUN_080db040(Entity080db520* p, Entity080db520Elem* elem) { INCFUNC("asm/func/FUN_080db040.inc"); }
+  for (i = 0; i < 8; i++) {
+    if (p->activeMask & (1 << i)) {
+      if (elems[i].unk_40 & E080DB520_UNK_4) {
+        anyUnk4 = TRUE;
+      }
+      if (elems[i].unk_40 & E080DB520_UNK_6) {
+        anyUnk6 = TRUE;
+      }
+    }
+  }
 
-NAKED void FUN_080db0f8(Entity080db520* p) { INCFUNC("asm/func/FUN_080db0f8.inc"); }
+  if (!anyUnk4) {
+    gPlayerPtr[0]->unk_3ff = -1;
+  }
+  if (!anyUnk6) {
+    FUN_0808689c(-1);
+  }
+#else
+  INCFUNC("asm/func/FUN_080dadec.inc");
+#endif
+}
+
+// state 1 の更新, プレイヤーに掴まれている間は角度差で揺らし, 条件が切れたら state 2 へ移す
+// 残差1命令 (218/219). 原典は UNK_4 のマスク判定と角度差を1つの s16 スクラッチで使い回しており (lsls/asrs で符号拡張して保持), こちらは代入時の切り捨てが1命令多い
+// s32 のまま素直に書くと 212/219, マスクと角度差を別ローカルにすると 214/219, spr のローカル化は 223/219 でいずれも悪化
+NON_MATCH void FUN_080dae60(Entity080db520* p, Entity080db520Elem* elem) {
+#ifdef NONMATCHING_C
+  s16 delta;
+
+  elem->spr.pos = elem->pos;
+
+  delta = elem->unk_40 & E080DB520_UNK_4;
+  if (delta != 0) {
+    if (gPlayerPtr[0]->angle_400 >= elem->baseAngle) {
+      delta = gPlayerPtr[0]->angle_400 - elem->baseAngle;
+    } else {
+      delta = gPlayerPtr[0]->angle_400 - (elem->baseAngle - 256);
+    }
+
+    if (elem->prevAngleDelta != delta && (delta & 4)) {
+      elem->unk_40 |= E080DB520_UNK_2;
+    }
+
+    if (!elem->spr.active) {
+      Video_AddAuxSpriteIntoDrawList(&elem->spr, 0);
+    }
+
+    if (elem->unk_40 & E080DB520_UNK_2) {
+      elem->shakeTimer = 60;
+      FUN_080dac24(p, elem);
+      FUN_0807a524(&elem->spr.pos);
+      elem->prevAngleDelta = delta;
+      elem->unk_40 &= ~E080DB520_UNK_2;
+    }
+
+    if (delta > 9 || (elem->unk_40 & E080DB520_UNK_1)) {
+      elem->timer = 0;
+      elem->state = 2;
+      elem->spr.flags &= ~SPRFLAG_HIDDEN;
+      elem->unk_40 &= ~(E080DB520_UNK_1 | E080DB520_UNK_4);
+      return;
+    }
+  } else if (elem->unk_40 & E080DB520_UNK_6) {
+    if (!elem->spr.active) {
+      Video_AddAuxSpriteIntoDrawList(&elem->spr, 0);
+    }
+
+    if (elem->unk_40 & E080DB520_UNK_2) {
+      FUN_080dac24(p, elem);
+      elem->unk_40 &= ~E080DB520_UNK_2;
+    }
+
+    if (elem->unk_40 & E080DB520_UNK_1) {
+      elem->timer = 0;
+      elem->state = 2;
+      elem->unk_40 &= ~E080DB520_UNK_1;
+      return;
+    }
+  } else {
+    if ((gPlayerPtr[0]->flag20 & PFLAG20_UNK_19) || ((elem->unk_40 & E080DB520_UNK_5) && gStat->sunGauge > 0) || FUN_080dad94(elem)) {
+      if (!elem->spr.active) {
+        Video_AddAuxSpriteIntoDrawList(&elem->spr, 0);
+      }
+    } else {
+      if (elem->spr.active) {
+        Video_RemoveAuxSpriteFromDrawList(&elem->spr, 0);
+      }
+    }
+
+    if (elem->unk_40 & E080DB520_UNK_1) {
+      if (!elem->spr.active) {
+        Video_AddAuxSpriteIntoDrawList(&elem->spr, 0);
+      }
+      elem->timer = 0;
+      elem->state = 2;
+      elem->unk_40 &= ~E080DB520_UNK_1;
+      return;
+    }
+  }
+
+  if (!(elem->unk_40 & (E080DB520_UNK_4 | E080DB520_UNK_6))) {
+    FUN_080db0f8(elem);
+  }
+#else
+  INCFUNC("asm/func/FUN_080dae60.inc");
+#endif
+}
+
+// 点滅させながら 90 フレーム数え, 終わったら枠を解放する
+// 残差1命令 (82/83), ~(UNK_4|UNK_6) が HImode の AND に落ちて 0xFFAF のプール読みになる. 原典は SImode で movs #0x51 + rsbs の2命令
+// static inline の ClearFlags か s32 ローカル経由にすると 83/83 まで届くがそれぞれ定数の位置かレジスタ割当が1箇所ずれる. マスクの書き方4通りも試済
+// spr のローカル化 (AuxSprite* spr = &elem->spr) で原典の r7 を再現できた
+NON_MATCH void FUN_080db040(Entity080db520* p, Entity080db520Elem* elem) {
+#ifdef NONMATCHING_C
+  AuxSprite* spr = &elem->spr;
+  s32 idx;
+
+  if (!elem->spr.active) {
+    Video_AddAuxSpriteIntoDrawList(&elem->spr, 0);
+  }
+
+  if (elem->timer == 18) {
+    elem->unk_40 &= ~(E080DB520_UNK_4 | E080DB520_UNK_6);
+  }
+
+  if (elem->timer > 60) {
+    idx = 2;
+  } else if (elem->timer > 40) {
+    idx = 1;
+  } else {
+    idx = 0;
+  }
+
+  if (Mod(elem->timer, sBlinkIntervals[idx]) == 0) {
+    if (spr->flags & SPRFLAG_HIDDEN) {
+      spr->flags &= ~SPRFLAG_HIDDEN;
+    } else {
+      spr->flags |= SPRFLAG_HIDDEN;
+    }
+  }
+
+  if (elem->timer > 90) {
+    p->activeMask &= ~(1 << elem->unk_42);
+    elem->state = 0;
+    Hitbox_Unregister(&elem->hitbox);
+    Video_RemoveAuxSpriteFromDrawList(spr, 0);
+    elem->unk_42 = -1;
+    elem->unk_40 = 0;
+  } else {
+    elem->timer++;
+  }
+#else
+  INCFUNC("asm/func/FUN_080db040.inc");
+#endif
+}
+
+// プレイヤーか棺桶がこの枠の範囲に入っていたら最初に見つかった方を掴む
+// 残差15命令 (181/166). Vec3 のローカルをフィールド代入で埋めると1フィールドあたり ldr/ands/orrs/str の語単位 RMW になるが, 原典は strh でポインタ経由に書いている. Vec3_Sub 相当の static inline を通すと 163/166 まで寄るが一致しないので外した (agbcc-levers.md に記録)
+// x の範囲判定 (-64..160) は && のペアを括弧で括ると符号なし1回の範囲テストに畳まれて原典と一致する. z 側は括らないのが正しい
+// 残る差は handled の 0/1 の作り置き2ブロックとレジスタ割当. GetPlayer(0) の static inline は逆に遠のく (157/166)
+NON_MATCH void FUN_080db0f8(Entity080db520Elem* elem) {
+#ifdef NONMATCHING_C
+  Player* player = gPlayerPtr[0];
+  Vec3 d;
+  u16 payload;
+
+  if (player == NULL) {
+    return;
+  }
+
+  d.x = player->mover.pos.x - elem->pos.x;
+  d.y = player->mover.pos.y - elem->pos.y;
+  d.z = player->mover.pos.z - elem->pos.z;
+
+  if ((d.y < 0 ? -d.y : d.y) <= 31 && (d.x >= -64 && d.x <= 160) && d.z <= 160 && d.z >= -58) {
+    if (player->unk_3ff < 0) {
+      player->unk_3ff = elem->unk_42;
+      elem->unk_40 |= E080DB520_UNK_4;
+      elem->hitbox.flags |= HBFLAG_HIDDEN;
+      elem->baseAngle = gPlayerPtr[0]->angle_400;
+      payload = 6;
+      FUN_080ec7e8(2, 1, &payload);
+      PlaySound_082406e0(SE_UNK_277);
+      return;
+    }
+  }
+
+  if (!Coffin_CopyPos(&d)) {
+    return;
+  }
+  if (!Coffin_IsIdle()) {
+    return;
+  }
+
+  d.x -= elem->pos.x;
+  d.y -= elem->pos.y;
+  d.z -= elem->pos.z;
+
+  if ((d.y < 0 ? -d.y : d.y) <= 31 && (d.x >= -64 && d.x <= 160) && d.z <= 160 && d.z >= -58) {
+    if (FUN_08086878() < -1) {
+      FUN_0808689c(elem->unk_42);
+      elem->unk_40 |= E080DB520_UNK_6;
+      PlaySound_082406e0(SE_UNK_277);
+    }
+  }
+#else
+  INCFUNC("asm/func/FUN_080db0f8.inc");
+#endif
+}
 
 // 向きから象限を出して, アニメーションの variant と反転フラグを決める
 void Mover_GetAnimQuadrant(Mover* mover, u8* variant, u8* flags) {
@@ -120,15 +411,109 @@ void Mover_GetAnimQuadrant(Mover* mover, u8* variant, u8* flags) {
   }
 }
 
-NAKED s32 FUN_080db290(Entity080db520* p, u32 param_2) { INCFUNC("asm/func/FUN_080db290.inc"); }
+// 空き枠に Mover の位置と向きでスプライトとアニメを仕込む, 枠が無ければ -1
+// 残差1命令 (203/204) でこちらが短い. レジスタ割当の違い: 原典は &elem->zoneID を r10 に置いて elem をスタックへ退避するが, agbcc は elem を r7 に残して &elem->zoneID を退避する (結果 sub sp が 0xC でなく 0x10 になる)
+// ANIM_PLAY_YFLIP の定数 2 を原典は1つのレジスタに作って copy するが agbcc は2回作る. anim / cmd のローカルを外す4通りは全て悪化 (209〜224)
+NON_MATCH s32 FUN_080db290(Entity080db520* p, Mover* mover) {
+#ifdef NONMATCHING_C
+  Entity080db520Elem* elem = FUN_080dad4c(p);
+  AuxAnimState* anim;
+  AuxAnimCmd* cmd;
+  u8 variant;
+  u8 flags;
 
-void (*const PTR_ARRAY_085ad314[3])(Entity080db520*, Entity080db520Elem*) = {
+  if (elem == NULL) {
+    return -1;
+  }
+
+  elem->state = 1;
+  Mover_GetAnimQuadrant(mover, &variant, &flags);
+  elem->pos = mover->pos;
+  elem->zoneID = GetZoneAt(&elem->pos);
+  elem->unk_40 = 0;
+  elem->baseAngle = 0;
+  elem->spr.pos = elem->pos;
+  AuxSprite_Setup(&elem->spr, &p->gfx, 0);
+
+  anim = &elem->anim;
+  AuxAnim_SetAnim(anim, p->anim, 1, 0, flags);
+
+  cmd = &anim->cmds[anim->cmdIdx];
+  elem->spr.poseIdx = *cmd >> 6;
+  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+    elem->spr.flags |= SPRFLAG_XFLIP;
+  } else {
+    elem->spr.flags &= ~SPRFLAG_XFLIP;
+  }
+  if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+    elem->spr.flags |= SPRFLAG_YFLIP;
+  } else {
+    elem->spr.flags &= ~SPRFLAG_YFLIP;
+  }
+
+  anim->tick++;
+  if (anim->tick >= anim->wait) {
+    anim->tick = 0;
+    if (anim->flags & ANIM_PLAY_REVERSE) {
+      if (anim->cmdIdx == 0) {
+        anim->cmdIdx = anim->cmdCount;
+      }
+      anim->cmdIdx--;
+    } else {
+      anim->cmdIdx++;
+      if (anim->cmdIdx >= anim->cmdCount) {
+        anim->cmdIdx = 0;
+      }
+    }
+    anim->duration = anim->cmds[anim->cmdIdx] & 0xF;
+    anim->wait = (anim->duration * anim->speed) >> 6;
+    if (anim->wait == 0) {
+      anim->wait = 1;
+    }
+  }
+
+  elem->spr.flags &= ~SPRFLAG_HIDDEN;
+  elem->spr.priority = 1;
+  if (FUN_0809dfec(elem->zoneID)) {
+    elem->unk_40 |= E080DB520_UNK_5;
+  }
+  Entity080db520_InitHurtbox(elem, 0, 0);
+  return elem->unk_42;
+#else
+  INCFUNC("asm/func/FUN_080db290.inc");
+#endif
+}
+
+void (*const sElemUpdates[3])(Entity080db520*, Entity080db520Elem*) = {
     FUN_080dac20,
     FUN_080dae60,
     FUN_080db040,
 };  // 0x085AD314
 
-NAKED s32 Entity080db520_Update(Entity080db520* p) { INCFUNC("asm/func/Entity080db520_Update.inc"); }
+// 使用中の枠について unk_3e ごとの更新関数を呼ぶ
+// 残差5命令 (35/40) でこちらが短い, 使用中判定の 0/1 が畳まれる (FUN_080dad4c / Entity080db520_Destroy / attack_box.c と同じ壁)
+// static inline bool32, 明示的な if/else での TRUE/FALSE 代入, != 0, ?:, !used + continue の5通りを試したがどれも作り置きは出ない. elems の基底をローカルに取ると 9→5 ハンクまで寄る
+NON_MATCH s32 Entity080db520_Update(Entity080db520* p) {
+#ifdef NONMATCHING_C
+  if (p->activeMask != 0) {
+    Entity080db520Elem* elems = p->elems;
+    s32 i;
+
+    for (i = 0; i < 8; i++) {
+      if (p->activeMask & (1 << i)) {
+        Entity080db520Elem* e = &elems[i];
+
+        sElemUpdates[e->state](p, e);
+      }
+    }
+    FUN_080dadec(p);
+  }
+
+  return 0;
+#else
+  INCFUNC("asm/func/Entity080db520_Update.inc");
+#endif
+}
 
 // 残差5命令 (30 対 35), 原典は使用中判定の結果を 1/0 として一度作ってから改めて 0 と比べる (いわゆる 0/1 の作り置き)
 // static inline bool32 の判定関数にすると 32 対 35 まで寄るが作り置きは出ない, FUN_080dad4c と同じ壁
@@ -180,7 +565,118 @@ Entity080db520* Entity080db520_Create(void) {
 void FUN_080db56c(void) { gEntity080db520 = NULL; }
 
 // 不使用?
-NAKED void FUN_080db578(void) { INCFUNC("asm/func/FUN_080db578.inc"); }
+// スクリプトから位置とアニメの variant を受け取って空き枠に1つ仕込む
+// 残差1命令 (242/241) でこちらが長い. 原典は elem のコピーを高位レジスタにもう1つ持って spr 系のアクセスをそちら経由で行うが, spr のローカル化では再現できず 245 に悪化する
+// アニメ進行の本体は FUN_080db290 と同一, そちらの残差と同種
+NON_MATCH void FUN_080db578(void) {
+#ifdef NONMATCHING_C
+  Entity080db520* p = gEntity080db520;
+  Entity080db520Elem* elem;
+  AuxAnimState* anim;
+  AuxAnimCmd* cmd;
+  u8 variant;
+
+  if (p == NULL) {
+    p = Entity080db520_Create();
+    if (p == NULL) {
+      return;
+    }
+  }
+
+  elem = FUN_080dad4c(p);
+  if (elem == NULL) {
+    return;
+  }
+
+  elem->state = 1;
+
+  if (VM_SeekToNamedArg('p')) {
+    elem->pos.x = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    elem->pos.y = VM_GetPC() != NULL ? VM_GetValue() : 0;
+    elem->pos.z = VM_GetPC() != NULL ? VM_GetValue() : 0;
+  } else {
+    elem->pos.x = 0;
+    elem->pos.y = 0;
+    elem->pos.z = 0;
+  }
+
+  variant = VM_GetNamedArgValue('r', 0);
+  elem->zoneID = GetZoneAt(&elem->pos);
+  elem->unk_40 = 0;
+  elem->baseAngle = 0;
+  elem->spr.pos = elem->pos;
+  AuxSprite_Setup(&elem->spr, &p->gfx, 0);
+
+  anim = &elem->anim;
+  AuxAnim_SetAnim(anim, p->anim, 1, 0, variant);
+
+  cmd = &anim->cmds[anim->cmdIdx];
+  elem->spr.poseIdx = *cmd >> 6;
+  if ((anim->flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+    elem->spr.flags |= SPRFLAG_XFLIP;
+  } else {
+    elem->spr.flags &= ~SPRFLAG_XFLIP;
+  }
+  if ((anim->flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+    elem->spr.flags |= SPRFLAG_YFLIP;
+  } else {
+    elem->spr.flags &= ~SPRFLAG_YFLIP;
+  }
+
+  anim->tick++;
+  if (anim->tick >= anim->wait) {
+    anim->tick = 0;
+    if (anim->flags & ANIM_PLAY_REVERSE) {
+      if (anim->cmdIdx == 0) {
+        anim->cmdIdx = anim->cmdCount;
+      }
+      anim->cmdIdx--;
+    } else {
+      anim->cmdIdx++;
+      if (anim->cmdIdx >= anim->cmdCount) {
+        anim->cmdIdx = 0;
+      }
+    }
+    anim->duration = anim->cmds[anim->cmdIdx] & 0xF;
+    anim->wait = (anim->duration * anim->speed) >> 6;
+    if (anim->wait == 0) {
+      anim->wait = 1;
+    }
+  }
+
+  elem->spr.flags &= ~SPRFLAG_HIDDEN;
+  elem->spr.priority = 1;
+  if (FUN_0809dfec(elem->zoneID)) {
+    elem->unk_40 |= E080DB520_UNK_5;
+  }
+  Entity080db520_InitHurtbox(elem, 0, 0);
+#else
+  INCFUNC("asm/func/FUN_080db578.inc");
+#endif
+}
 
 // 不使用?
-NAKED void FUN_080db780(void) { INCFUNC("asm/func/FUN_080db780.inc"); }
+// 残差5命令 (43/48), 使用中判定の 0/1 の作り置き1ブロックだけが足りない. 他は完全に一致
+// bool8 / bool32 のローカルを if/else で埋める形も試したが, ループ内では rsbs/orrs の符号技に化けて遠のく
+NON_MATCH void Entity080db520_EnableAllHitboxes(void) {
+#ifdef NONMATCHING_C
+  Entity080db520* p = gEntity080db520;
+
+  if (p != NULL) {
+    s32 i;
+
+    for (i = 0; i < 8; i++) {
+      if (p->activeMask & (1 << i)) {
+        Entity080db520Elem* e = &p->elems[i];
+
+        if (e->unk_42 >= 0 && e->state != 2) {
+          e->unk_40 |= E080DB520_UNK_1;
+          e->hitbox.flags |= HBFLAG_HIDDEN;
+        }
+      }
+    }
+  }
+#else
+  INCFUNC("asm/func/Entity080db520_EnableAllHitboxes.inc");
+#endif
+}

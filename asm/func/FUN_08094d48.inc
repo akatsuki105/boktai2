@@ -14,33 +14,33 @@
 	beq _08094D6E
 	adds r1, r0, #0
 	movs r0, #0
-	bl FUN_08049e6c
+	bl Marquee_SetVarValue
 _08094D6E:
 	ldrb r1, [r7, #4]
 	movs r0, #1
-	bl FUN_08049e6c
+	bl Marquee_SetVarValue
 	ldrb r0, [r7]
 	add r0, r8
-	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl GetStringByID
+	bl Marquee_SetText
 	movs r6, #0
 	ldrb r0, [r7, #0x18]
 	cmp r0, #0
 	beq _08094D9C
 	adds r0, #0x42
 	add r0, r8
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r1, r0, #0
 	movs r0, #0
-	bl FUN_08049eb0
+	bl Marquee_SetExtendValue
 	b _08094DAC
 _08094D9C:
 	adds r0, r4, #0
 	adds r0, #0x84
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r1, r0, #0
 	movs r0, #0
-	bl FUN_08049eb0
+	bl Marquee_SetExtendValue
 _08094DAC:
 	adds r6, #1
 	adds r4, r7, #0
@@ -52,10 +52,10 @@ _08094DB4:
 	beq _08094DCC
 	adds r0, #0x42
 	add r0, r8
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r1, r0, #0
 	adds r0, r6, #0
-	bl FUN_08049eb0
+	bl Marquee_SetExtendValue
 	adds r6, #1
 _08094DCC:
 	adds r4, #4
@@ -118,17 +118,17 @@ _08094E14:
 _08094E3A:
 	adds r0, r6, #0
 	mov r1, ip
-	bl FUN_08049eb0
+	bl Marquee_SetExtendValue
 	mov r6, sb
 	cmp r6, #3
 	bgt _08094E5E
 _08094E48:
 	mov r0, r8
 	adds r0, #0x42
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r1, r0, #0
 	adds r0, r6, #0
-	bl FUN_08049eb0
+	bl Marquee_SetExtendValue
 	adds r6, #1
 	cmp r6, #3
 	ble _08094E48

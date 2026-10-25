@@ -5651,7 +5651,7 @@ _0818B27A:
 	adds r1, r5, #0
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _0818B28E
@@ -5739,7 +5739,7 @@ _0818B32A:
 	lsls r2, r2, #3
 	adds r1, r6, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	cmp r0, #0x1f
 	bgt _0818B364
 	ldr r3, _0818B360 @ =0x030046A0
@@ -14244,7 +14244,7 @@ _0818F5BE:
 	mov r1, r8
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 _0818F5CE:
 	movs r0, #0x92
 	lsls r0, r0, #1
@@ -17631,7 +17631,7 @@ _08190E6C:
 	movs r1, #1
 	str r1, [sp, #0xc]
 	movs r1, #2
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _08190F0E:
 	add sp, #0x28
 	pop {r3, r4, r5}
@@ -19737,7 +19737,7 @@ FUN_08191ee0: @ 0x08191EE0
 	adds r0, r7, #0
 	add r2, sp, #0x10
 	movs r3, #0x20
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	mov r1, sl
@@ -19758,7 +19758,7 @@ FUN_08191ee0: @ 0x08191EE0
 	adds r0, r7, #0
 	add r2, sp, #0x10
 	movs r3, #0x40
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	mov r1, sl
@@ -19780,7 +19780,7 @@ FUN_08191ee0: @ 0x08191EE0
 	adds r0, r7, #0
 	add r2, sp, #0x10
 	movs r3, #0x5e
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	mov r1, sl
@@ -19801,7 +19801,7 @@ FUN_08191ee0: @ 0x08191EE0
 	adds r0, r7, #0
 	add r2, sp, #0x10
 	movs r3, #0x80
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	mov r1, sl
@@ -19823,7 +19823,7 @@ FUN_08191ee0: @ 0x08191EE0
 	adds r0, r7, #0
 	add r2, sp, #0x10
 	movs r3, #0xc4
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	mov r1, sl
@@ -19844,7 +19844,7 @@ FUN_08191ee0: @ 0x08191EE0
 	adds r0, r7, #0
 	add r2, sp, #0x10
 	movs r3, #0xf0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	add sp, #0x18
 	pop {r3, r4, r5}
 	mov r8, r3

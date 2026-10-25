@@ -317,7 +317,7 @@ FUN_0804f064: @ 0x0804F064
 	str r3, [sp, #0xc]
 	str r4, [sp, #0x10]
 	movs r3, #5
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	b _0804F0B0
 	.align 2, 0
 _0804F0A4: .4byte 0x00000664
@@ -622,7 +622,7 @@ _0804F2B8:
 	str r3, [sp, #0x10]
 	mov r0, sl
 	movs r3, #5
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	movs r2, #2
 	rsbs r2, r2, #0
 	movs r0, #0xd4

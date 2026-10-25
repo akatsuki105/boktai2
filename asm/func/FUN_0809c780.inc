@@ -4,7 +4,7 @@
 	adds r1, r2, #0
 	adds r2, r3, #0
 	movs r0, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r2, r0, #0
 	cmp r4, #1
 	bne _0809C7A0

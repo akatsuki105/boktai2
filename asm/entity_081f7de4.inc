@@ -4,8 +4,8 @@
 	
 	.text
 
-	thumb_func_start FUN_081f79cc
-FUN_081f79cc: @ 0x081F79CC
+	thumb_func_start Entity081f7de4_AllocElem
+Entity081f7de4_AllocElem: @ 0x081F79CC
 	push {r4, r5, lr}
 	adds r3, r0, #0
 	movs r2, #0
@@ -48,13 +48,13 @@ _081F7A0C:
 	bx r1
 	.align 2, 0
 
-	thumb_func_start FUN_081f7a14
-FUN_081f7a14: @ 0x081F7A14
+	thumb_func_start Entity081f7de4_UpdateState0
+Entity081f7de4_UpdateState0: @ 0x081F7A14
 	bx lr
 	.align 2, 0
 
-	thumb_func_start FUN_081f7a18
-FUN_081f7a18: @ 0x081F7A18
+	thumb_func_start Entity081f7de4_UpdateState1
+Entity081f7de4_UpdateState1: @ 0x081F7A18
 	push {r4, r5, r6, lr}
 	mov ip, r1
 	mov r3, ip
@@ -226,8 +226,8 @@ _081F7B54:
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_081f7b5c
-FUN_081f7b5c: @ 0x081F7B5C
+	thumb_func_start Entity081f7de4_UpdateState2
+Entity081f7de4_UpdateState2: @ 0x081F7B5C
 	push {r4, r5, lr}
 	adds r5, r0, #0
 	adds r4, r1, #0
@@ -252,8 +252,8 @@ FUN_081f7b5c: @ 0x081F7B5C
 	bx r0
 	.align 2, 0
 
-	thumb_func_start FUN_081f7b8c
-FUN_081f7b8c: @ 0x081F7B8C
+	thumb_func_start Entity081f7de4_Spawn
+Entity081f7de4_Spawn: @ 0x081F7B8C
 	push {r4, r5, r6, r7, lr}
 	mov r7, sl
 	mov r6, sb
@@ -273,7 +273,7 @@ FUN_081f7b8c: @ 0x081F7B8C
 	b _081F7D10
 _081F7BB0:
 	adds r0, r5, #0
-	bl FUN_081f79cc
+	bl Entity081f7de4_AllocElem
 	mov sb, r0
 	cmp r0, #0
 	bne _081F7BBE
@@ -612,8 +612,8 @@ FUN_081f7e30: @ 0x081F7E30
 	.align 2, 0
 _081F7E38: .4byte 0x03000204
 
-	thumb_func_start FUN_081f7e3c
-FUN_081f7e3c: @ 0x081F7E3C
+	thumb_func_start Entity081f7de4_RemoveAll
+Entity081f7de4_RemoveAll: @ 0x081F7E3C
 	push {lr}
 	ldr r0, _081F7E64 @ =0x03000204
 	ldr r0, [r0]

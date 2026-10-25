@@ -3543,7 +3543,7 @@ _081A81A0:
 	ldrb r0, [r4]
 	mov r2, r8
 	ldrh r1, [r2]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _081A81FC
@@ -8594,7 +8594,7 @@ _081AA852:
 	mov r1, r8
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 _081AA862:
 	adds r5, #0xd0
 	adds r4, #0xd0
@@ -10346,7 +10346,7 @@ _081AB552:
 	movs r1, #0x10
 	movs r2, #0x40
 	movs r3, #0x2a
-	bl FUN_080d85d8
+	bl Entity080d84f8_CreateWithAttrs
 	movs r0, #0xd0
 	muls r0, r4, r0
 	adds r5, r7, r0
@@ -11668,7 +11668,7 @@ FUN_081abedc: @ 0x081ABEDC
 	adds r0, r7, #0
 	add r2, sp, #0x10
 	movs r3, #0x20
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	mov r1, sl
@@ -11689,7 +11689,7 @@ FUN_081abedc: @ 0x081ABEDC
 	adds r0, r7, #0
 	add r2, sp, #0x10
 	movs r3, #0x40
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	mov r1, sl
@@ -11711,7 +11711,7 @@ FUN_081abedc: @ 0x081ABEDC
 	adds r0, r7, #0
 	add r2, sp, #0x10
 	movs r3, #0x5e
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	mov r1, sl
@@ -11732,7 +11732,7 @@ FUN_081abedc: @ 0x081ABEDC
 	adds r0, r7, #0
 	add r2, sp, #0x10
 	movs r3, #0x80
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	mov r1, sl
@@ -11754,7 +11754,7 @@ FUN_081abedc: @ 0x081ABEDC
 	adds r0, r7, #0
 	add r2, sp, #0x10
 	movs r3, #0xc4
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	mov r1, sl
@@ -11775,7 +11775,7 @@ FUN_081abedc: @ 0x081ABEDC
 	adds r0, r7, #0
 	add r2, sp, #0x10
 	movs r3, #0xf0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	add sp, #0x18
 	pop {r3, r4, r5}
 	mov r8, r3

@@ -13,7 +13,7 @@
 	strh r0, [r4, #0x1c]
 	adds r0, r4, #0
 	adds r0, #0x1c
-	bl FUN_0809c544
+	bl HUD_StartCountdown
 	adds r0, r4, #0
 	movs r1, #4
 	bl FUN_0804fbd0
@@ -52,7 +52,7 @@ _0805030A:
 	ldr r0, _08050348 @ =0x03002BE0
 	ldr r5, [r0]
 	movs r0, #7
-	bl FUN_08022a2c
+	bl Boss_Get
 	adds r7, r0, #0
 	cmp r5, #0
 	beq _08050350
@@ -139,7 +139,7 @@ _080503B2:
 	cmp r0, #0
 	beq _080503E4
 _080503C6:
-	bl FUN_0809c58c
+	bl HUD_RemoveCountdown
 	movs r1, #6
 	adds r0, r4, #0
 	adds r0, #0x28
@@ -163,7 +163,7 @@ _080503E4:
 	cmp r5, #0
 	bne _0805042C
 	bl FUN_0803ca14
-	bl FUN_0809c58c
+	bl HUD_RemoveCountdown
 	ldr r0, _08050424 @ =0x00000372
 	bl PlaySound_082406e0
 	adds r0, r4, #0

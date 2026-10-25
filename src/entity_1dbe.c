@@ -3,12 +3,19 @@
 #include "global.h"
 #include "hitbox.h"
 #include "mover.h"
+#include "random.h"
 #include "sound.h"
 #include "sprite_aux.h"
+#include "vm.h"
 
 struct Entity1DBEElem;
 
 typedef void(Entity1DBEElemFunc)(struct Entity1DBEElem* elem);
+
+// Entity1DBEElem.lockFlags
+typedef u8 Entity1DBELockFlags;
+#define E1DBE_LOCK_STATE2 (1 << 0)  // 0x1, 日照が強くても state 2 へ遷移しない
+#define E1DBE_LOCK_STATE1 (1 << 1)  // 0x2, 日が落ちても state 1 へ遷移しない
 
 // 太陽エネルギーで state が入れ替わる設置物, 1体の Entity1DBE が最大8個を抱える
 typedef struct Entity1DBEElem {
@@ -17,7 +24,7 @@ typedef struct Entity1DBEElem {
   Mover mover;                         // 0x048, moverLinked が立っているときだけリストに繋がれる
   HitboxData hitbox;                   // 0x08C, 半径 {0x80, 0x32, 0x80}, ignoreMask 0x10
   u8 state;                            // 0x0DC, '.s', 0/1/2 で updateCallback を選ぶ
-  u8 lockFlags;                        // 0x0DD, '.f', bit0 が立つと state 2 へ, bit1 が立つと state 1 へ遷移しない
+  Entity1DBELockFlags lockFlags;       // 0x0DD, '.f', see Entity1DBELockFlags
   u8 unk_de;                           // 0x0DE, 読み手も書き手も見つかっていない
   bool8 touched;                       // 0x0DF, 近くに来るか属性なしの攻撃を受けると立つ, state 0 が消費して点滅を始める
   u16 id;                              // 0x0E0, '.n', mover.id と hitbox の id を兼ねる
@@ -46,12 +53,79 @@ static Entity1DBE* gEntity1DBE;  // 0x03000144
 
 void FUN_0809f64c(void) { gEntity1DBE = NULL; }
 
-NAKED bool32 Entity1DBE_TouchElemNear(WorldPos* pos) { INCFUNC("asm/func/Entity1DBE_TouchElemNear.inc"); }
+// pos から半径 0x80 以内にある state 0 の設置物に touched を立てる, 立てたら TRUE
+bool32 Entity1DBE_TouchElemNear(WorldPos* pos) {
+  s32 i;
+
+  if (gEntity1DBE == NULL) {
+    return FALSE;
+  }
+
+  for (i = 0; i < gEntity1DBE->count; i++) {
+    Entity1DBEElem* elem = &gEntity1DBE->elems[i];
+    s32 dx;
+    s32 dz;
+
+    if (elem->state != 0) {
+      continue;
+    }
+    if (elem->sprite.pos.y < pos->y) {
+      continue;
+    }
+
+    dx = pos->x - elem->sprite.pos.x;
+    if (dx < 0) {
+      dx = -dx;
+    }
+    if (dx > 0x80) {
+      continue;
+    }
+
+    dz = pos->z - elem->sprite.pos.z;
+    if (dz < 0) {
+      dz = -dz;
+    }
+    if (dz > 0x80) {
+      continue;
+    }
+
+    if (dx * dx + dz * dz <= 0x80 * 0x80) {
+      elem->touched = TRUE;
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
 
 // 0xB6CE
-NAKED s32 Cmd_B6CE(void) { INCFUNC("asm/func/Cmd_B6CE.inc"); }
+// '.n' と id が一致する設置物の state を返す, 無ければ -1
+s32 Cmd_B6CE(void) {
+  s32 id;
+  s32 i;
 
+  if (gEntity1DBE == NULL) {
+    return -1;
+  }
+  if (!VM_SeekToNamedArg('n')) {
+    return -1;
+  }
+
+  id = VM_GetValue();
+  for (i = 0; i < gEntity1DBE->count; i++) {
+    if (gEntity1DBE->elems[i].id == id) {
+      return gEntity1DBE->elems[i].state;
+    }
+  }
+  return -1;
+}
+
+Entity1DBE* Entity1DBE_Create(void);
+void Entity1DBE_AddElem(Entity1DBE* p, u32 id, Vec3* pos, u32 state, u32 moverLinked, u32 lockFlags, u32 areaBound);
+void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos);
+void FUN_0809f840(Entity1DBEElem* elem);
 void FUN_0809f890(Entity1DBEElem* elem);
+void FUN_0809f938(Entity1DBEElem* elem);
 void FUN_0809fa80(Entity1DBEElem* elem);
 void FUN_0809fabc(Entity1DBEElem* elem);
 
@@ -62,7 +136,33 @@ void Entity1DBEElem_SetState(Entity1DBEElem* elem, u8 state, Entity1DBEElemFunc*
   elem->animTimer = 0;
 }
 
-NAKED void Entity1DBEElem_OnHit(HitboxData* a, HitboxData* b, Entity1DBEElem* owner) { INCFUNC("asm/func/Entity1DBEElem_OnHit.inc"); }
+// 炎属性で状態を進め, 氷属性で凍らせ, 属性なしなら touched だけ立てる
+void Entity1DBEElem_OnHit(HitboxData* a, HitboxData* b, void* owner) {
+  Entity1DBEElem* elem = owner;
+
+  if (b->unk_44 != 0) {
+    return;
+  }
+  if (!Hitbox_HasWeakness(a, HBATTR_FLAME)) {
+    return;
+  }
+
+  if (Hitbox_TestAttr(a, HBATTR_FLAME)) {
+    if (elem->state == 0) {
+      Entity1DBEElem_SetState(elem, 2, FUN_0809f938);
+    } else if (elem->state == 1) {
+      Entity1DBEElem_SetState(elem, 0, FUN_0809f890);
+    }
+    b->unk_44 = 30;
+  } else if (Hitbox_TestAttr(a, HBATTR_FROST)) {
+    if (elem->state == 0) {
+      Entity1DBEElem_SetState(elem, 1, FUN_0809f840);
+    }
+    b->unk_44 = 30;
+  } else if (elem->state == 0) {
+    elem->touched = TRUE;
+  }
+}
 
 // 日が出ている間だけ counter を進め, 0x12B を越えたら次の状態へ移る
 void FUN_0809f7fc(Entity1DBEElem* elem) {
@@ -122,7 +222,45 @@ NON_MATCH void FUN_0809f8e4(Entity1DBEElem* elem) {
 #endif
 }
 
-NAKED void FUN_0809f938(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809f938.inc"); }
+// 凍結が解けるまでのアニメ, 4フレームごとに足元へ水しぶきを散らす
+// 残差0命令 (141/141) でレジスタ名だけ違う: 原典は elem を r4, &animTimer を r5 に置くが agbcc は逆に割り当てる
+// ブロック内の table と pos の宣言順を入れ替えると上は合うが, 代わりに乱数と pos.x の読み出し順が入れ替わる (static inline に切り出しても同じ)
+NON_MATCH void FUN_0809f938(Entity1DBEElem* elem) {
+#ifdef NONMATCHING_C
+  if (elem->animTimer == 0) {
+    PlaySound_082406e0(SONG_348);
+  }
+
+  elem->animTimer++;
+  if (elem->animTimer <= 7) {
+    elem->sprite.poseIdx = 6;
+    if ((elem->animTimer & 3) == 0) {
+      u16* table = gRandomTable;
+      WorldPos pos = elem->sprite.pos;
+
+      pos.x = (u16)pos.x - 0x7F + (u8)_Random(table);
+      pos.z = (u16)pos.z - 0x7F + (u8)_Random(table);
+      FUN_08015c90(1, 0, 1, 0x40, &pos);
+    }
+  } else if (elem->animTimer <= 15) {
+    elem->sprite.poseIdx = 7;
+    elem->animTimer++;
+    if ((elem->animTimer & 3) == 0) {
+      u16* table = gRandomTable;
+      WorldPos pos = elem->sprite.pos;
+
+      pos.x = (u16)pos.x - 0x7F + (u8)_Random(table);
+      pos.z = (u16)pos.z - 0x7F + (u8)_Random(table);
+      FUN_08015c90(1, 0, 1, 0x40, &pos);
+    }
+  } else {
+    elem->sprite.poseIdx = 8;
+    Entity1DBEElem_SetState(elem, 2, FUN_0809f8e4);
+  }
+#else
+  INCFUNC("asm/func/FUN_0809f938.inc");
+#endif
+}
 
 void FUN_0809fa80(Entity1DBEElem* elem) {
   elem->animTimer++;
@@ -136,9 +274,102 @@ void FUN_0809fa80(Entity1DBEElem* elem) {
   }
 }
 
-NAKED void FUN_0809fabc(Entity1DBEElem* elem) { INCFUNC("asm/func/FUN_0809fabc.inc"); }
+// 点滅の進行と, 日照に応じた state 0 からの遷移
+void FUN_0809fabc(Entity1DBEElem* elem) {
+  s32 sun;
 
-NAKED void Entity1DBEElem_Update(Entity1DBEElem* elem) { INCFUNC("asm/func/Entity1DBEElem_Update.inc"); }
+  if (elem->touched) {
+    elem->flickering = TRUE;
+    elem->touched = FALSE;
+    if (elem->animTimer > 0x3F) {
+      elem->animTimer = ((elem->animTimer - 0x40) & 0x1F) >> 1;
+    } else {
+      elem->animTimer = elem->animTimer & 0xF;
+    }
+  }
+
+  if (elem->flickering) {
+    if (++elem->animTimer > 0x5F) {
+      elem->sprite.poseIdx = 2;
+      elem->flickering = FALSE;
+      elem->animTimer = 0;
+    } else if (elem->animTimer <= 0x3F) {
+      if ((elem->animTimer & 0xF) <= 7) {
+        elem->sprite.poseIdx = 1;
+      } else {
+        elem->sprite.poseIdx = 2;
+      }
+    } else {
+      if ((elem->animTimer & 0x1F) <= 0xF) {
+        elem->sprite.poseIdx = 1;
+      } else {
+        elem->sprite.poseIdx = 2;
+      }
+    }
+  }
+
+  sun = gStat->sunGauge;
+  if (sun == 0) {
+    if (elem->lockFlags & E1DBE_LOCK_STATE1) {
+      elem->counter--;
+      if (elem->counter < 0) {
+        elem->counter = 0;
+      }
+    } else {
+      elem->counter--;
+      if (elem->counter < -300) {
+        Entity1DBEElem_SetState(elem, 1, FUN_0809f840);
+      }
+    }
+  } else if (sun > 7) {
+    if (elem->lockFlags & E1DBE_LOCK_STATE2) {
+      elem->counter++;
+      if (elem->counter > 0) {
+        elem->counter = 0;
+      }
+    } else {
+      elem->counter++;
+      if (elem->counter > 300) {
+        Entity1DBEElem_SetState(elem, 2, FUN_0809f938);
+      }
+    }
+  }
+}
+
+// '.m' が立っていればエリア外では更新を止め, 戻ってきたときに状態を組み直す
+void Entity1DBEElem_Update(Entity1DBEElem* elem) {
+  if (elem->areaBound) {
+    if (elem->zoneID == gStat->zoneID) {
+      if (!elem->unk_e7) {
+        elem->hitbox.flags &= ~HBFLAG_HIDDEN;
+      }
+      elem->updateCallback(elem);
+    } else if (elem->unk_e7) {
+      if (elem->state == 0) {
+        Entity1DBEElem_SetState(elem, 0, FUN_0809fabc);
+        elem->sprite.poseIdx = 0;
+        elem->flickering = FALSE;
+        elem->touched = FALSE;
+      } else if (elem->state == 2) {
+        Entity1DBEElem_SetState(elem, 2, FUN_0809f8e4);
+        elem->sprite.poseIdx = 8;
+        elem->unk_e2 = 0x10;
+      } else if (elem->state == 1) {
+        Entity1DBEElem_SetState(elem, 2, FUN_0809f7fc);
+        elem->sprite.poseIdx = 5;
+        elem->unk_e2 = 0x10;
+      }
+      elem->hitbox.flags |= HBFLAG_HIDDEN;
+      elem->unk_e7 = FALSE;
+    }
+  } else {
+    elem->updateCallback(elem);
+  }
+
+  if (elem->hitbox.unk_44 != 0) {
+    elem->hitbox.unk_44--;
+  }
+}
 
 void Entity1DBEElem_InitParams(Entity1DBEElem* elem, u32 id, Vec3* pos, u32 state, u32 lockFlags, u32 areaBound) {
   elem->id = id;
@@ -153,9 +384,33 @@ void Entity1DBEElem_InitParams(Entity1DBEElem* elem, u32 id, Vec3* pos, u32 stat
   }
 }
 
-NAKED void Entity1DBEElem_InitSprite(Entity1DBEElem* elem, Vec3* pos, u32 moverLinked) { INCFUNC("asm/func/Entity1DBEElem_InitSprite.inc"); }
+// スプライトを pos に立てて, '.h' が立っていれば Mover も繋ぐ
+void Entity1DBEElem_InitSprite(Entity1DBEElem* elem, Vec3* pos, u32 moverLinked) {
+  AuxSpriteGfx* gfx = &elem->gfx;
 
-NAKED void Entity1DBEElem_InitHitbox(Entity1DBEElem* elem) { INCFUNC("asm/func/Entity1DBEElem_InitHitbox.inc"); }
+  Video_GetAuxSprite(gfx, SPRITE_TRAP_FLOOR);
+  AuxSprite_Add(&elem->sprite, gfx, 0);
+  Video_SetAuxSpritePltt(gfx, 67);
+  elem->sprite.priority = 3;
+  elem->sprite.pos = *pos;
+  elem->moverLinked = moverLinked;
+  if (elem->moverLinked) {
+    Mover_Init(&elem->mover, elem->id, &elem->sprite.pos, 0, 7, elem);
+    FUN_08002a48(&elem->mover);
+  }
+}
+
+void Entity1DBEElem_InitHitbox(Entity1DBEElem* elem) {
+  HitboxData* hitbox = &elem->hitbox;
+  Vec3 size, offset;
+  VEC3_SET(size, 0x80, 0x32, 0x80);
+  VEC3_SET(offset, 0, 0, 0);
+  Hitbox_Init(hitbox, elem->id, HBFLAG_HURTBOX | HBFLAG_UNK_1 | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
+  Hitbox_SetHandler(hitbox, Entity1DBEElem_OnHit, elem);
+  Hitbox_SetPos(hitbox, &elem->sprite.pos, 0);
+  Hitbox_Register(hitbox);
+  hitbox->damage = 600;
+}
 
 // '.s' の値ごとに見た目と更新関数を決める
 void Entity1DBEElem_InitState(Entity1DBEElem* elem) {
@@ -222,4 +477,36 @@ Entity1DBE* Entity1DBE_Create(void) {
   return p;
 }
 
-NAKED void Cmd_1DBE(void) { INCFUNC("asm/func/Cmd_1DBE.inc"); }
+// '.p' に設置物を1個足す, 8個まで
+void Cmd_1DBE(void) {
+  Entity1DBE* p = gEntity1DBE;
+  Vec3 pos;
+  s32 id;
+  s32 state;
+  s32 moverLinked;
+  s32 lockFlags;
+  s32 areaBound;
+
+  if (p == NULL) {
+    p = Entity1DBE_Create();
+  }
+  if (p->count >= 8) {
+    return;
+  }
+
+  id = VM_SeekToNamedArg('n') ? VM_GetValue() : 0;
+
+  if (VM_SeekToNamedArg('p')) {
+    VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
+  } else {
+    VEC3_SET(pos, 0, 0, 0);
+  }
+
+  state = VM_SeekToNamedArg('s') ? VM_GetValue() : 0;
+  moverLinked = VM_SeekToNamedArg('h') ? VM_GetValue() : 0;
+  lockFlags = VM_SeekToNamedArg('f') ? VM_GetValue() : 0;
+  areaBound = VM_SeekToNamedArg('m') ? VM_GetValue() : 0;
+
+  Entity1DBE_AddElem(p, id, &pos, state, moverLinked, lockFlags, areaBound);
+  p->count++;
+}

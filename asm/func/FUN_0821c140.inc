@@ -115,7 +115,7 @@ _0821C202:
 	adds r2, r4, r0
 	adds r0, r4, #0
 	adds r1, r5, #0
-	bl FUN_08022dfc
+	bl Boss_AdvanceAnim
 	ldr r2, _0821C234 @ =0x000003BA
 	adds r1, r4, r2
 	ldrh r0, [r1]

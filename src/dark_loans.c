@@ -73,7 +73,7 @@ NAKED void FUN_080b4e8c(unknown* param_1) { INCFUNC("asm/func/FUN_080b4e8c.inc")
 void FUN_080b4f08(DarkLoans* p) {
   MainSprite_AdvanceAnim(&p->sprites[0], &p->gfx0);
   if (p->unk_844 == 0x20) {
-    PlaySound_082406e0(0x2C0);
+    PlaySound_082406e0(SONG_704);
   }
   p->unk_844++;
   if (p->unk_844 > 0x68) {

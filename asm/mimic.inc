@@ -897,7 +897,7 @@ _08146EC0:
 	adds r0, r7, #0
 	movs r2, #0x20
 	movs r3, #0x20
-	bl FUN_080e5e94
+	bl Enemy_IsPosInRect
 	lsls r0, r0, #0x18
 	lsrs r6, r0, #0x18
 	cmp r6, #0
@@ -1855,7 +1855,7 @@ _08147600:
 	str r1, [sp, #0xc]
 	movs r1, #1
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldrh r1, [r5]
 	movs r0, #3
 	ands r0, r1
@@ -1872,7 +1872,7 @@ _08147646:
 	ldrh r1, [r1]
 	movs r2, #0xa
 	movs r3, #0x1e
-	bl FUN_082375c8
+	bl Sprite_UpdateVanishBlink
 	lsls r0, r0, #0x18
 	cmp r0, #0
 	bne _08147660
@@ -1982,7 +1982,7 @@ _08147726:
 	lsls r2, r2, #3
 	adds r1, r4, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _0814776C

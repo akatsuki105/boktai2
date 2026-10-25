@@ -26,7 +26,7 @@ _0809AE3C:
 	cmp r0, #0xf
 	bne _0809AE52
 	bl MessageWindow_Close
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	bl FUN_08049f84
 _0809AE52:
 	ldrh r0, [r4]

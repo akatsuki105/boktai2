@@ -87,9 +87,6 @@ static_assert(sizeof(EntityEF6F) == 1884);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
 void FUN_0801c0d8(s32 param_1, s32 param_2);
 
-// 次の描画から BG を消す
-static inline void HideBG(u32 bits) { gStagedDISPCNT &= ~bits; }
-
 // unk_1a を次の段へ進め、段ごとの経過フレーム数を測り直す
 static inline void SetSubState(EntityEF6F* p, u8 state) {
   p->unk_1a = state;
@@ -835,9 +832,9 @@ void FUN_0801f214(EntityEF6F* p) {
       if (p->unk_6c == 32) {
         SetSubState(p, 2);
         Video_GenerateBGMap(0, 0, 0, 0, -96);
-        HideBG(DISPCNT_BG1_ON);
-        HideBG(DISPCNT_BG2_ON);
-        HideBG(DISPCNT_BG3_ON);
+        CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+        CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG2_ON);
+        CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG3_ON);
         FUN_0801e708(p);
         FUN_0823ce68(2, 4, 4, 4, 4, 0xFFFF, 0);
         FUN_0801e290(p, 1, 0);
@@ -864,7 +861,7 @@ void FUN_0801f328(EntityEF6F* p) {
     Sound_FadeOutBGMTemporarily(5);
   }
   if (p->unk_24 > 31 && p->unk_90 != 0) {
-    HideBG(DISPCNT_BG0_ON);
+    CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG0_ON);
     VM_ExecByID(p->unk_90, NULL);
     p->unk_90 = 0;
   }
@@ -878,10 +875,10 @@ void FUN_0801f38c(EntityEF6F* p) {
     Sound_FadeOutBGMTemporarily(5);
   }
   if (p->unk_24 > 31 && p->unk_90 != 0) {
-    HideBG(DISPCNT_BG3_ON);
-    HideBG(DISPCNT_BG2_ON);
-    HideBG(DISPCNT_BG1_ON);
-    HideBG(DISPCNT_BG0_ON);
+    CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG3_ON);
+    CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG2_ON);
+    CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG1_ON);
+    CLEAR_FLAGS(gStagedDISPCNT, DISPCNT_BG0_ON);
     FUN_0801e708(p);
     VM_ExecByID(p->unk_90, NULL);
     p->unk_90 = 0;

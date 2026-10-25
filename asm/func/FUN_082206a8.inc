@@ -20,7 +20,7 @@
 	movs r1, #5
 	movs r2, #1
 	movs r3, #1
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 _082206D8:
 	movs r1, #0x80
 	lsls r1, r1, #0xb

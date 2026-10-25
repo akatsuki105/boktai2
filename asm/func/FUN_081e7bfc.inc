@@ -106,7 +106,7 @@ _081E7CAE:
 	ldr r1, _081E7D40 @ =0x00001616
 	adds r0, r6, r1
 	strb r2, [r0]
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	bl FUN_08049f84
 	movs r1, #2
 	rsbs r1, r1, #0
@@ -163,7 +163,7 @@ _081E7D50:
 	ldr r2, _081E7DAC @ =0x00001616
 	adds r0, r6, r2
 	strb r1, [r0]
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	bl FUN_08049f84
 	movs r1, #2
 	rsbs r1, r1, #0

@@ -21,9 +21,7 @@ void RingoDemoAnim_Create(Vec3* pos, MsgQueue* mq);
 
 void FUN_08022668(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
   Vec3 pos;
-  pos.x = msg->args[0];
-  pos.y = msg->args[1];
-  pos.z = msg->args[2];
+  VEC3_SET(pos, msg->args[0], msg->args[1], msg->args[2]);
   Entity99CA_CreateAt(&pos, msg->args[3], msg->args[4], msg->args[5], msg->args[6]);
 }
 
@@ -32,9 +30,7 @@ void FUN_080226a8(Entity730A* p, MsgQueue* mq, MsgPacket* msg) {
 
   if (mover != NULL) {
     Vec3 pos;
-    pos.x = mover->pos.x;
-    pos.y = mover->pos.y;
-    pos.z = mover->pos.z;
+    VEC3_SET(pos, mover->pos.x, mover->pos.y, mover->pos.z);
     Entity99CA_CreateAt(&pos, msg->args[1], msg->args[2], msg->args[3], msg->args[4]);
   }
 }

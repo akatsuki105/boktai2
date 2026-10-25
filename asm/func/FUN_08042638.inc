@@ -15,12 +15,12 @@
 	adds r4, #0xd0
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_08055ef8
+	bl SpriteHolder_SetFlags
 	adds r0, r4, #0
 	movs r1, #0x40
 	movs r2, #0x40
 	movs r3, #0
-	bl FUN_08055f80
+	bl SpriteHolder_SetAffine
 	ldrb r0, [r5, #1]
 	cmp r0, #0xe
 	bne _0804267C
@@ -141,7 +141,7 @@ _0804272C:
 	mov r1, sb
 	adds r2, r7, #0
 	movs r3, #0
-	bl FUN_08055f80
+	bl SpriteHolder_SetAffine
 	b _0804280E
 	.align 2, 0
 _08042754: .4byte 0x030046A4
@@ -238,7 +238,7 @@ _080427F8:
 	adds r0, r5, #0
 	adds r0, #0xd0
 	movs r1, #2
-	bl FUN_08055f1c
+	bl SpriteHolder_ClearFlags
 _0804280E:
 	ldrb r2, [r5, #0x1b]
 	adds r0, r5, #0

@@ -14,7 +14,7 @@ typedef struct {
   s16 hp;                        // 0x02, '.l=100', Cactus_OnHit が HitboxData.damage の分だけ減らし 0 以下で破壊される
   ZoneID32 zoneID;               // 0x04, '.m' が 0 以外のときだけ GetZoneAt(pos) の戻り値が入る,負なら生成を中止する,書くだけで読み手はいない
   u16 scriptId;                  // 0x08, '.b', 破壊時に VM_ExecByID へ渡してから 0 に戻す
-  u8 damageTimer;                // 0x0A, 被弾時に 10 がセットされ毎フレーム減る,0 でない間だけ hitbox.flags に HBFLAG_UNK_2 が立つ
+  u8 damageTimer;                // 0x0A, 被弾時に 10 がセットされ毎フレーム減る,0 でない間だけ hitbox.flags に HBFLAG_HIDDEN が立つ
   u8 unk_0b;                     // 0x0B, padding?
   s16 scriptArgs[4];             // 0x0C, '.a' の4要素, 破壊時の VM_ExecByID の argv[4..7] になる
   Vec3 pos;                      // 0x14, HazardManager_Spawn の第1引数のコピー
@@ -115,12 +115,12 @@ NON_MATCH s32 CactusManager_Update(CactusManager* p) {
         Cactus_Remove(p, hazard, i);
       } else {
         if (hazard->damageTimer != 0) {
-          Hitbox_SetFlags(&hazard->hitbox, HBFLAG_UNK_2);
+          Hitbox_SetFlags(&hazard->hitbox, HBFLAG_HIDDEN);
           if (--hazard->damageTimer == 0) {
             Video_SetAuxSpritePltt(&hazard->gfx, 283);
           }
         } else {
-          Hitbox_ClearFlags(&hazard->hitbox, HBFLAG_UNK_2);
+          Hitbox_ClearFlags(&hazard->hitbox, HBFLAG_HIDDEN);
         }
         if (playerPos != NULL && !registered) {
           if (playerPos->x >= hazard->min.x && playerPos->x <= hazard->max.x && playerPos->y >= hazard->min.y && playerPos->y <= hazard->max.y && playerPos->z >= hazard->min.z && playerPos->z <= hazard->max.z) {
@@ -172,8 +172,8 @@ s32 CactusManager_Init(CactusManager* p) {
   unk_40 = VM_GetNamedArgValue('f', 10);
   unk_44 = VM_GetNamedArgValue('i', 10);
   hitbox = &p->hitbox;
-  halfSize.x = 0xA4, halfSize.y = 0x80, halfSize.z = 0xA4;
-  offset.x = 0, offset.y = 0x80, offset.z = 0;
+  VEC3_SET(halfSize, 0xA4, 0x80, 0xA4);
+  VEC3_SET(offset, 0, 0x80, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &halfSize, &offset);
   Hitbox_SetHandler(hitbox, NULL, p);
   Hitbox_SetAttack(hitbox, power, unk_40, 0, 0, unk_44);

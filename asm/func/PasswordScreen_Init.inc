@@ -14,7 +14,7 @@
 _08013098:
 	bl VM_GetPC
 	bl VM_ParseStringRef
-	bl Textbox_LookupString
+	bl GetStringByID
 	ldr r1, _08013214 @ =0x00000444
 	adds r4, r7, r1
 	str r0, [r4]

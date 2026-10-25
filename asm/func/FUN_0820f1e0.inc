@@ -56,12 +56,12 @@ _0820F20C:
 	str r3, [sp]
 	adds r0, r6, #0
 	movs r3, #0x10
-	bl FUN_08055dac
+	bl SpriteHolder_InitAux
 	cmp r0, #0
 	blt _0820F2FA
 	adds r0, r6, #0
 	movs r1, #1
-	bl FUN_08055f1c
+	bl SpriteHolder_ClearFlags
 	ldrb r1, [r5, #0xb]
 	movs r0, #1
 	ands r0, r1
@@ -73,7 +73,7 @@ _0820F20C:
 _0820F274:
 	adds r0, r6, #0
 	movs r1, #2
-	bl FUN_08055f5c
+	bl SpriteHolder_SetPriority
 	mov r1, r8
 	ldrb r0, [r1, #0xa]
 	ldr r2, _0820F2B8 @ =0x00000366
@@ -121,7 +121,7 @@ _0820F2C4:
 	bl SpriteHolder_SetAnim
 _0820F2E2:
 	adds r0, r6, #0
-	bl FUN_08055c04
+	bl SpriteHolder_AdvanceAnim
 	adds r6, #0x94
 	ldr r3, [sp, #0x18]
 	adds r3, #2

@@ -13,7 +13,7 @@
 	mov sb, r0
 	adds r0, r6, #0
 	mov r1, sb
-	bl FUN_08022a0c
+	bl Boss_Register
 	ldr r0, _08027830 @ =0x03002BE0
 	ldr r2, [r0]
 	cmp r2, #0
@@ -255,7 +255,7 @@ _08027A1E:
 	mov r1, r8
 	mov r2, sb
 	add r3, sp, #0x1c
-	bl Boss_Init_08022a70
+	bl Boss_Init
 	movs r1, #0x8a
 	lsls r1, r1, #1
 	adds r0, r7, r1
@@ -482,7 +482,7 @@ _08027BAC:
 _08027BF0:
 	strh r2, [r0]
 _08027BF2:
-	ldr r1, _08027C4C @ =FUN_080275f4
+	ldr r1, _08027C4C @ =Duneyrr_HandleDamage
 	adds r0, r7, #0
 	adds r0, #0xfc
 	str r1, [r0]
@@ -498,12 +498,12 @@ _08027BF2:
 	adds r0, r7, #0
 	ldr r1, [sp, #0x24]
 	adds r2, r1, #0
-	bl FUN_08022b2c
+	bl Boss_InitHP
 	adds r0, r6, #0
-	bl FUN_080241e4
+	bl Duneyrr_InitHitbox
 	ldrh r1, [r4]
 	adds r0, r6, #0
-	bl FUN_08024294
+	bl Duneyrr_InitHurtbox
 	movs r0, #0x63
 	bl VM_SeekToNamedArg
 	cmp r0, #0
@@ -519,7 +519,7 @@ _08027BF2:
 	.align 2, 0
 _08027C44: .4byte 0x0000055A
 _08027C48: .4byte FUN_08025654
-_08027C4C: .4byte FUN_080275f4
+_08027C4C: .4byte Duneyrr_HandleDamage
 _08027C50: .4byte FUN_080275b0
 _08027C54:
 	adds r0, r7, #0
@@ -621,7 +621,7 @@ _08027CFE:
 	adds r0, r6, #0
 	bl FUN_08024324
 	adds r0, r6, #0
-	bl FUN_0802378c
+	bl Duneyrr_InitElems
 	ldr r0, _08027D9C @ =0x000004D4
 	adds r4, r6, r0
 	movs r2, #0x9e

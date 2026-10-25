@@ -63,7 +63,7 @@ _080B022A:
 	movs r1, #1
 	add r2, sp, #0x10
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldrh r0, [r6]
 	cmp r0, #0x1f
 	bhi _080B02A6
@@ -87,7 +87,7 @@ _080B022A:
 	movs r1, #1
 	add r2, sp, #0x10
 	movs r3, #0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 _080B02A6:
 	ldr r0, _080B02B8 @ =0x0000067A
 	adds r1, r4, r0

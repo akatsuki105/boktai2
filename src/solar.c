@@ -31,7 +31,7 @@ static_assert(sizeof(Taiyo) == 48);
 
 static Taiyo* gTaiyo;  // 0x03001708
 
-COMMON_DATA u16 u16_03004864 = 0;
+COMMON_DATA u16 u16_03004864 = 0;                       // 0x03004864
 COMMON_DATA ALIGNED(4) u16 gDebugLx = 0;                // 0x03004868
 COMMON_DATA ALIGNED(4) bool16 gTaiyoSuspended = FALSE;  // 0x0300486C
 COMMON_DATA ALIGNED(4) u16 gSavedLx = 0;                // 0x03004870
@@ -78,8 +78,10 @@ bool32 UNUSED IsTaiyoActive(void) {
   return FALSE;
 }
 
+// 0x4B57
 void FUN_082416bc(void) { u16_03004864 = 1; }
 
+// 0x4B39
 void FUN_082416c8(void) { u16_03004864 = 0; }
 
 // 残差1命令, 原典は raw を r0 のまま使い回してプールを r1 に取るが gcc は raw を複写してプールを r0 に取る

@@ -30,4 +30,9 @@ typedef struct PreviewStage {
 } PreviewStage;
 static_assert(sizeof(PreviewStage) == 884);
 
+PreviewStage* PreviewStage_Create(u32 arg, u32 _);
+
+void FUN_0820feb0(PreviewStage* p);
+void FUN_0820fea8(PreviewStage* p);
+
 #endif  // __INCLUDE_PREVIEW_STAGE_H__

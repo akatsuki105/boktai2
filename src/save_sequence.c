@@ -29,7 +29,7 @@ s32 SaveSequence_Update(SaveSequence* p) {
   if (p->result <= 119) {
     gSoftResetInhibit = TRUE;
   }
-  if (p->result < 0 && p->timer == 60) {
+  if (p->result < 0 && p->timer == SECOND(1)) {
     p->result = Save_WriteToNextSlot();
     if (p->result == 1) {
       TextPanel_SetMessage(p->windowID, 14);
@@ -39,7 +39,7 @@ s32 SaveSequence_Update(SaveSequence* p) {
       PlaySound_082406e0(SE_NG);
     }
   }
-  if ((p->result >= 0 && p->timer > 119 && (gInput[0].pressed & A_BUTTON)) || p->timer > 299) {
+  if ((p->result >= 0 && p->timer >= SECOND(2) && (gInput[0].pressed & A_BUTTON)) || p->timer >= SECOND(5)) {
     FUN_0809c08c(7);
     if (p->scriptID != 0) {
       arg = p->result;

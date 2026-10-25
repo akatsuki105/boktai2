@@ -3,6 +3,7 @@
 #include "file.h"
 #include "global.h"
 #include "hitbox.h"
+#include "map_inline.h"
 #include "mover.h"
 #include "random.h"
 #include "sprite.h"
@@ -113,13 +114,13 @@ void EntityF41A_UpdateHit(EntityF41A* p) {
 void EntityF41A_UpdateKnockback(EntityF41A* p) {
   p->animIdx = 2;
   if (p->pushSpeed != 0) {
-    p->data.delta.x += COS(p->data.angle, p->pushSpeed);
-    p->data.delta.z += SIN(p->data.angle, p->pushSpeed);
+    p->data.delta.x += POLAR_X(p->pushSpeed, p->data.angle);
+    p->data.delta.z += POLAR_Z(p->pushSpeed, p->data.angle);
     p->pushSpeed = (p->pushSpeed * 3) >> 2;
   } else {
     p->data.angle += 0x80;
     p->targetAngle = p->data.angle;
-    Entity5941Node_ClearFlags(&p->detectNode, 1);
+    CLEAR_FLAGS((&p->detectNode)->flags, 1);
     EntityF41A_SetState(p, 0);
   }
 }
@@ -143,45 +144,13 @@ s32 EntityF41A_Destroy(EntityF41A* p) {
 // '.p' で位置をもらい、その足元の高さに吸着させてから data を登録する
 void EntityF41A_InitData(EntityF41A* p) {
   Vec3 pos;
-  Vec3* q;
-  s32 bx, bz;
-  u32 idx;
-  CollisionMapTile* tile;
-  MapTileOverride* ov;
-  s32 ground;
-  s32 stairs;
 
   if (VM_SeekToNamedArg('p')) {
-    pos.x = VM_GetValue();
-    pos.y = VM_GetValue();
-    pos.z = VM_GetValue();
+    VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {
-    pos.x = 0, pos.y = 0, pos.z = 0;
+    VEC3_SET(pos, 0, 0, 0);
   }
-  q = &pos;
-  bx = q->x >> 8, bz = q->z >> 8;
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-
-  ov = Map_FindTileOverride(idx, 1);
-
-  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
-  stairs = tile->heightStairs >> 4;
-  ground = (tile->heightStairs & 0xF) << 8;
-  switch (stairs) {
-    case STAIRS_VERTICAL: {
-      ground -= (u8)q->z;
-      break;
-    }
-    case STAIRS_HORIZONTAL: {
-      ground -= (u8)q->x;
-      break;
-    }
-  }
-  pos.y = ground;
+  pos.y = TileHeightAt(&pos);
   Mover_Init(&p->data, p->id, &pos, 0, 7, p);
 }
 
@@ -207,8 +176,8 @@ void EntityF41A_InitHitbox(EntityF41A* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 size, offset;
 
-  size.x = 64, size.y = 100, size.z = 64;
-  offset.x = 0, offset.y = 100, offset.z = 0;
+  VEC3_SET(size, 64, 100, 64);
+  VEC3_SET(offset, 0, 100, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetAttack(hitbox, 10, 0x1E, 0, 0, 0x10);
   Hitbox_SetHandler(hitbox, NULL, p);

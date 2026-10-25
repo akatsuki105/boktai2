@@ -11532,7 +11532,7 @@ _0811AB82:
 	lsls r2, r2, #3
 	adds r1, r7, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	str r4, [sp, #0x40]
 	cmp r3, #0x1f
@@ -11624,7 +11624,7 @@ _0811ABF4:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x20
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0811ADEC @ =0x000003FF
@@ -11648,7 +11648,7 @@ _0811ABF4:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x40
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0811ADEC @ =0x000003FF
@@ -11672,7 +11672,7 @@ _0811ABF4:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x5e
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0811ADEC @ =0x000003FF
@@ -11696,7 +11696,7 @@ _0811ABF4:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x80
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0811ADEC @ =0x000003FF
@@ -11720,7 +11720,7 @@ _0811ABF4:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0xc4
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0811ADEC @ =0x000003FF
@@ -11744,7 +11744,7 @@ _0811ABF4:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0xf0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r1, [sp, #0x40]
 	ldrb r4, [r1]
 	cmp r4, #4

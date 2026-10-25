@@ -92,7 +92,7 @@ _0805AB8A:
 	str r0, [sp, #0xc]
 	adds r0, r6, #0
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r5]
 	adds r0, #1
 	ands r0, r4
@@ -122,7 +122,7 @@ _0805AB8A:
 	str r0, [sp, #0xc]
 	adds r0, r6, #0
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r5]
 	adds r0, #1
 	ands r0, r4
@@ -163,7 +163,7 @@ _0805AB8A:
 	str r0, [sp, #0xc]
 	adds r0, r6, #0
 	add r2, sp, #0x10
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, _0805AD04 @ =0x00000339
 	bl PlaySound_082406e0
 _0805ACCA:

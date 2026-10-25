@@ -482,7 +482,7 @@ FUN_080533ec: @ 0x080533EC
 	bne _0805342E
 	adds r0, r4, #0
 	adds r2, r5, #0
-	bl FUN_08055e34
+	bl SpriteHolder_InitMain
 	adds r5, r0, #0
 	adds r0, r7, #0
 	adds r0, #0xa8
@@ -503,7 +503,7 @@ _0805342E:
 	adds r0, r4, #0
 	ldr r2, [sp, #0x20]
 	adds r3, r5, #0
-	bl FUN_08055dac
+	bl SpriteHolder_InitAux
 	adds r5, r0, #0
 	adds r1, r7, #0
 	adds r1, #0x88
@@ -522,7 +522,7 @@ _0805344E:
 _08053458:
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_08055f5c
+	bl SpriteHolder_SetPriority
 	movs r0, #0xc0
 	movs r1, #0
 	strb r0, [r7, #0xf]
@@ -2087,7 +2087,7 @@ FUN_08053fd0: @ 0x08053FD0
 _08054002:
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _08054046
 	ldr r1, [r5, #0x24]
@@ -2173,7 +2173,7 @@ _080540A2:
 	str r0, [r6, #0x24]
 	adds r0, r5, #0
 	adds r0, #0x7c
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _080540C4
 	movs r0, #3
@@ -2221,7 +2221,7 @@ _080540F6:
 _08054102:
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _0805411E
 	ldr r0, [r5, #0x1c]
@@ -3349,7 +3349,7 @@ FUN_08054930: @ 0x08054930
 	bl ParticleShadow_Remove
 	adds r0, r4, #0
 	adds r0, #0x7c
-	bl FUN_08055d7c
+	bl SpriteHolder_Remove
 	adds r0, r4, #0
 	adds r0, #0x30
 	bl Mover_Unlink
@@ -3378,7 +3378,7 @@ FUN_08054960: @ 0x08054960
 	str r0, [r2]
 	str r1, [r2, #4]
 	adds r0, r7, #0
-	bl FUN_08055c04
+	bl SpriteHolder_AdvanceAnim
 	ldr r1, _080549DC @ =0x085AB95C
 	ldrb r0, [r6, #0xb]
 	lsls r0, r0, #2
@@ -3404,7 +3404,7 @@ FUN_08054960: @ 0x08054960
 	beq _080549E0
 	adds r0, r7, #0
 	movs r1, #1
-	bl FUN_08055ef8
+	bl SpriteHolder_SetFlags
 	movs r1, #0x88
 	lsls r1, r1, #1
 	adds r0, r6, r1
@@ -3421,7 +3421,7 @@ _080549DC: .4byte 0x085AB95C
 _080549E0:
 	adds r0, r7, #0
 	movs r1, #1
-	bl FUN_08055f1c
+	bl SpriteHolder_ClearFlags
 	movs r0, #0x88
 	lsls r0, r0, #1
 	adds r2, r6, r0
@@ -3669,7 +3669,7 @@ _08054B96:
 	movs r3, #0
 	str r3, [sp, #0x10]
 	movs r3, #4
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	add sp, #0x14
 	pop {r4}
 	pop {r0}
@@ -3750,7 +3750,7 @@ _08054C2C:
 	movs r3, #0
 	str r3, [sp, #0x10]
 	movs r3, #4
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	b _08054C62
 	.align 2, 0
 _08054C54: .4byte 0x000019C8
@@ -3786,7 +3786,7 @@ FUN_08054c6c: @ 0x08054C6C
 	str r0, [sp, #0x10]
 	adds r0, r3, #0
 	movs r3, #3
-	bl FUN_082376a4
+	bl MainSprite_SetNumber
 	add sp, #0x14
 	pop {r0}
 	bx r0

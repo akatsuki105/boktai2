@@ -3,14 +3,14 @@
 #include "file.h"
 #include "global.h"
 #include "malloc.h"
+#include "map_inline.h"
+#include "mover.h"
 #include "particle.h"
 #include "player.h"
 #include "random.h"
 #include "shadow.h"
 #include "sprite.h"
 #include "vm.h"
-
-bool8 FUN_082375c8(u32* flags, s32 t, s32 t1, s32 t2);
 
 // プレイヤーの位置をアイソメトリック投影したもの, MapItem_TryAutoPickup が拾える距離の判定に使う
 typedef struct {
@@ -196,45 +196,15 @@ NON_MATCH void MapItem_UpdateShake(MapItem* item) {
 
 NAKED s32 MapItem_TryAutoPickup(MapItemManager* p, MapItem* item) { INCFUNC("asm/func/MapItem_TryAutoPickup.inc"); }
 
-NAKED bool32 MapItemManager_TryOpen(unknown* param_1) { INCFUNC("asm/func/MapItemManager_TryOpen.inc"); }
+// 宝箱を開けられるか
+NAKED bool32 MapItemManager_TryOpen(Mover* mover) { INCFUNC("asm/func/MapItemManager_TryOpen.inc"); }
 
 // 当たり判定マップの地面まで落ちる, 着地したら跳ねる状態へ移る
 void MapItem_UpdateFall(MapItemManager* p, MapItem* item) {
   s32 y = item->pos->y;
-  Vec3* pos = item->pos;
-  s32 bx = pos->x >> 8;
-  s32 bz = pos->z >> 8;
-  u32 idx;
-  CollisionMapTile* tile;
-  MapTileOverride* ov;
-  s32 ground;
-  s32 stairs;
-  s32 d;
+  s32 ground = TileHeightAt(item->pos);
+  s32 d = y - ground;
 
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-  ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
-  stairs = tile->heightStairs >> 4;
-  ground = (tile->heightStairs & 0xF) << 8;
-  switch (stairs) {
-    case 1: {
-      ground -= (u8)pos->z;
-      break;
-    }
-    case 2: {
-      ground -= (u8)pos->x;
-      break;
-    }
-  }
-  d = y - ground;
   if (d > 0) {
     Vec3* q = item->pos;
     s32 n = d;
@@ -254,38 +224,8 @@ void MapItem_UpdateFall(MapItemManager* p, MapItem* item) {
 
 // 着地したあと一度だけ跳ねる, 跳ね終わりに影を消して待機状態へ移る
 void MapItem_UpdateBounce(MapItemManager* p, MapItem* item) {
-  Vec3* pos = item->pos;
-  s32 bx = pos->x >> 8;
-  s32 bz = pos->z >> 8;
-  u32 idx;
-  CollisionMapTile* tile;
-  MapTileOverride* ov;
-  s32 ground;
-  s32 stairs;
+  s32 ground = TileHeightAt(item->pos);
 
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-  ov = Map_FindTileOverride(idx, 1);
-  if (ov != NULL) {
-    tile = &ov->tile;
-  } else {
-    tile = &gCollisionMap->tiledata->tiles[idx];
-  }
-  stairs = tile->heightStairs >> 4;
-  ground = (tile->heightStairs & 0xF) << 8;
-  switch (stairs) {
-    case 1: {
-      ground -= (u8)pos->z;
-      break;
-    }
-    case 2: {
-      ground -= (u8)pos->x;
-      break;
-    }
-  }
   if (item->stateTimer <= 2) {
     item->pos->y += 8;
   } else if (item->stateTimer > 5) {
@@ -312,17 +252,7 @@ void MapItem_UpdateOnGround(MapItemManager* p, MapItem* item) {
     return;
   }
   if ((item->stateTimer & 0xF) == 0xF) {
-    Vec3* pos = item->pos;
-    s32 bx = pos->x >> 8;
-    s32 bz = pos->z >> 8;
-    u32 idx;
-
-    if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-      idx = 0;
-    } else {
-      idx = gCollisionMap->rowOffsets[bz] + bx;
-    }
-    if (Map_FindTileOverride(idx, 1) != NULL) {
+    if (Map_FindTileOverride(GetCollisionTileIdx(item->pos), 1) != NULL) {
       item->stateTimer = 900;
     }
   }
@@ -333,7 +263,7 @@ void MapItem_UpdateOnGround(MapItemManager* p, MapItem* item) {
 
 // 45F 経ったら点滅を始め、90F を過ぎたら自分を消す
 void MapItem_UpdateExpire(MapItemManager* p, MapItem* item) {
-  if (FUN_082375c8(&item->ptcl->flags, item->stateTimer, 45, 90)) {
+  if (Sprite_UpdateVanishBlink(&item->ptcl->flags, item->stateTimer, 45, 90)) {
     item->flags |= 1;
   } else {
     MapItem_TryAutoPickup(p, item);

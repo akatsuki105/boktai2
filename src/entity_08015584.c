@@ -1,7 +1,9 @@
 #include "entity.h"
 #include "file.h"
 #include "global.h"
+#include "random.h"
 #include "sprite.h"
+#include "vm.h"
 
 // パーティクル1個分, FUN_080155e4 で発生させる
 typedef struct {
@@ -22,8 +24,8 @@ typedef struct {
   u16 velY;           // 0x1A, dirY * speedY >> 12, 毎フレーム sprite.pos.y に加算
   u16 velZ;           // 0x1C, dirZ * speedXZ >> 12, SCREEN_COORD でなければ sprite.pos.z に加算
   u8 unk_1e[2];       // 0x1E
-  AuxSpriteGfx gfx;   // 0x20
-  AuxSprite sprite;   // 0x3C
+  AuxSpriteGfx gfx;   // 0x20, SPRITE_4384
+  AuxSprite sprite;   // 0x3C, ->gfx
   AuxAnimState anim;  // 0x68
 } Entity08015584Elem;
 static_assert(sizeof(Entity08015584Elem) == 120);
@@ -42,7 +44,91 @@ const FileID FileID_ARRAY_085aa914[2] = {ANIM_F62B, ANIM_31F4};  // 0x085AA914
 
 void FUN_08015264(void) { gEntity08015584 = NULL; }
 
-NAKED s32 Entity08015584_Update(Entity08015584* p) { INCFUNC("asm/func/Entity08015584_Update.inc"); }
+// 使用中の粒子を減速させながら動かし, アニメが一巡したら外す
+// 残差2命令 (256/254). 原典は p をスタックへ退避して elem / sprite の歩くポインタ3本だけをレジスタに置くが, agbcc は p を r9 に残してそこから導く
+NON_MATCH s32 Entity08015584_Update(Entity08015584* p) {
+#ifdef NONMATCHING_C
+  Entity08015584Elem* elem = p->elems;
+  s32 i;
+
+  for (i = 31; i >= 0; i--, elem++) {
+    if (elem->active) {
+      AuxSprite* sprite = &elem->sprite;
+      AuxAnimCmd* cmd;
+      bool32 finished;
+
+      if (elem->timer >= elem->decayStartXZ) {
+        elem->speedXZ = FixToInt(8, elem->speedXZ * elem->decayXZ);
+        elem->velX = FixToInt(12, elem->dirX * elem->speedXZ);
+        elem->velZ = FixToInt(12, elem->dirZ * elem->speedXZ);
+      }
+      if (elem->timer >= elem->decayStartY) {
+        elem->speedY = FixToInt(8, elem->speedY * elem->decayY);
+        elem->velY = FixToInt(12, elem->dirY * elem->speedY);
+      }
+
+      sprite->pos.x += elem->velX;
+      sprite->pos.y += elem->velY;
+      if (!(sprite->flags & SPRFLAG_SCREEN_COORD)) {
+        sprite->pos.z += elem->velZ;
+      }
+
+      cmd = &elem->anim.cmds[elem->anim.cmdIdx];
+      sprite->poseIdx = *cmd >> 6;
+      if ((elem->anim.flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+        sprite->flags |= SPRFLAG_XFLIP;
+      } else {
+        sprite->flags &= ~SPRFLAG_XFLIP;
+      }
+      if ((elem->anim.flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+        sprite->flags |= SPRFLAG_YFLIP;
+      } else {
+        sprite->flags &= ~SPRFLAG_YFLIP;
+      }
+
+      elem->anim.tick++;
+      if (elem->anim.tick < elem->anim.wait) {
+        finished = FALSE;
+      } else {
+        elem->anim.tick = 0;
+        if (elem->anim.flags & ANIM_PLAY_REVERSE) {
+          if (elem->anim.cmdIdx == 0) {
+            elem->anim.cmdIdx = elem->anim.cmdCount - 1;
+            finished = TRUE;
+          } else {
+            elem->anim.cmdIdx--;
+            finished = FALSE;
+          }
+        } else {
+          elem->anim.cmdIdx++;
+          if (elem->anim.cmdIdx < elem->anim.cmdCount) {
+            finished = FALSE;
+          } else {
+            elem->anim.cmdIdx = 0;
+            finished = TRUE;
+          }
+        }
+        elem->anim.duration = elem->anim.cmds[elem->anim.cmdIdx] & 0xF;
+        elem->anim.wait = (elem->anim.duration * elem->anim.speed) >> 6;
+        if (elem->anim.wait == 0) {
+          elem->anim.wait = 1;
+        }
+      }
+
+      if (finished) {
+        elem->active = FALSE;
+        AuxSprite_Remove(sprite);
+      }
+      elem->timer++;
+    }
+  }
+
+  p->counter++;
+  return 0;
+#else
+  INCFUNC("asm/func/Entity08015584_Update.inc");
+#endif
+}
 
 s32 Entity08015584_Destroy(Entity08015584* p) {
   s32 i;
@@ -57,7 +143,38 @@ s32 Entity08015584_Destroy(Entity08015584* p) {
   return 0;
 }
 
-NAKED s32 Entity08015584_Init(Entity08015584* p, u32 _) { INCFUNC("asm/func/Entity08015584_Init.inc"); }
+s32 Entity08015584_Init(Entity08015584* p, u32 _) {
+  Vec3 pos;
+  s32 i;
+
+  gEntity08015584 = p;
+
+  for (i = 0; i < 2; i++) {
+    p->animFiles[i] = GetFile(DIR_ANIMATION, FileID_ARRAY_085aa914[i]);
+  }
+
+  VEC3_SET(pos, 0, 0, 0);
+
+  for (i = 0; i < 32; i++) {
+    Entity08015584Elem* elem = &p->elems[i];
+
+    elem->active = FALSE;
+    elem->speedY = 0;
+    elem->dirX = 0;
+    elem->dirY = 0;
+    elem->dirZ = 0;
+    if (!Video_GetAuxSprite(&elem->gfx, SPRITE_4384)) {
+      return -1;
+    }
+    AuxSprite_Setup(&elem->sprite, &elem->gfx, 0);
+    AuxAnim_SetAnim(&elem->anim, p->animFiles[0], 0, 0, 0);
+    elem->sprite.priority = 2;
+    elem->sprite.pos = pos;
+  }
+
+  p->counter = 0;
+  return 0;
+}
 
 Entity08015584* Entity08015584_Create(u32 val, u32 _) {
   Entity08015584* p = CreateEntity(ENTITY_UNK_9, sizeof(Entity08015584));
@@ -83,13 +200,235 @@ NON_MATCH u32 FUN_080155c8(s32 flags) {
 #endif
 }
 
-NAKED s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params) { INCFUNC("asm/func/FUN_080155e4.inc"); }
+// params に従って count 個の粒子を空き枠へ仕込む, 枠が足りなければ -1
+// 残差11命令 (531/520). 原典は &gEntity08015584 を r9 に巻き上げ params を低位レジスタに置くが, agbcc は参照のたびにプールから読み直し params を r8 へ追い出す (agbcc-levers.md のキャッシュされたグローバルポインタの項と同種)
+// i / spawned の宣言順を入れ替えるとスタック退避の位置は原典と揃う. ParticleSpawnParam の unk_1c/1e/24/26 はここでも読まれず死んでいる
+NON_MATCH s32 FUN_080155e4(s32 count, WorldPos* pos, ParticleSpawnParam* params) {
+#ifdef NONMATCHING_C
+  s32 i;
+  s32 spawned;
 
-NAKED void FUN_08015a90(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8) { INCFUNC("asm/func/FUN_08015a90.inc"); }
+  if (gEntity08015584 == NULL) {
+    if (Entity08015584_Create(0, 0) == NULL) {
+      return -1;
+    }
+  }
 
-NAKED void FUN_08015b18(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, s32 param_11) { INCFUNC("asm/func/FUN_08015b18.inc"); }
+  spawned = 0;
+  for (i = 0; i < 32; i++) {
+    Entity08015584Elem* elem = &gEntity08015584->elems[i];
+    AuxAnimCmd* cmd;
+    s32 angleY;
+    s32 angleXZ;
 
-NAKED void FUN_08015c28(WorldPos* pos, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10) { INCFUNC("asm/func/FUN_08015c28.inc"); }
+    if (elem->active) {
+      continue;
+    }
+
+    elem->active = TRUE;
+    elem->kind = params->kind;
+    elem->timer = 0;
+    elem->speedY = params->speedYRand == 0 ? params->speedY : params->speedY + Mod(Random(), params->speedYRand);
+    elem->speedXZ = params->speedXZRand == 0 ? params->speedXZ : params->speedXZ + Mod(Random(), params->speedXZRand);
+    angleY = params->angleYRand == 0 ? params->angleY : params->angleY + Mod(Random(), params->angleYRand);
+    angleXZ = params->angleXZRand == 0 ? params->angleXZ : params->angleXZ + Mod(Random(), params->angleXZRand);
+    elem->decayStartY = params->decayStartYRand == 0 ? params->decayStartY : params->decayStartY + Mod(Random(), params->decayStartYRand);
+    elem->decayStartXZ = params->decayStartXZRand == 0 ? params->decayStartXZ : params->decayStartXZ + Mod(Random(), params->decayStartXZRand);
+
+    if (params->flags & 1) {
+      elem->sprite.flags |= SPRFLAG_BLINK_ODD;
+    } else {
+      elem->sprite.flags &= ~SPRFLAG_BLINK_ODD;
+      elem->sprite.flags &= ~SPRFLAG_BLINK_EVEN;
+    }
+    if (params->flags & 2) {
+      elem->sprite.flags |= SPRFLAG_SCREEN_COORD;
+    } else {
+      elem->sprite.flags &= ~SPRFLAG_SCREEN_COORD;
+    }
+
+    elem->dirX = gSineTable[(angleXZ + 0x40) & 0xFF];
+    elem->dirY = gSineTable[angleY & 0xFF];
+    elem->dirZ = gSineTable[angleXZ & 0xFF];
+    elem->velX = FixToInt(12, elem->dirX * elem->speedXZ);
+    elem->velY = FixToInt(12, elem->dirY * elem->speedY);
+    elem->velZ = FixToInt(12, elem->dirZ * elem->speedXZ);
+
+    if (elem->kind == 5) {
+      Video_GetAuxSprite(&elem->gfx, SPRITE_DUNEYRR_AUX);
+      Video_SetAuxSpritePltt(&elem->gfx, 548);
+      elem->sprite.poseIdx = 0x20;
+      AuxAnim_SetAnim(&elem->anim, gEntity08015584->animFiles[1], 6, 0, 0);
+    } else if (elem->kind == 6) {
+      Video_GetAuxSprite(&elem->gfx, SPRITE_DUNEYRR_AUX);
+      Video_SetAuxSpritePltt(&elem->gfx, 556);
+      elem->sprite.poseIdx = 0x20;
+      AuxAnim_SetAnim(&elem->anim, gEntity08015584->animFiles[1], 6, 0, 0);
+    } else if (elem->kind == 7) {
+      Video_GetAuxSprite(&elem->gfx, SPRITE_DUNEYRR_AUX);
+      Video_SetAuxSpritePltt(&elem->gfx, 555);
+      elem->sprite.poseIdx = 0x2D;
+      AuxAnim_SetAnim(&elem->anim, gEntity08015584->animFiles[1], 8, 0, 0);
+    } else {
+      Video_GetAuxSprite(&elem->gfx, SPRITE_4384);
+      Video_SetAuxSpritePltt(&elem->gfx, elem->kind + 125);
+      AuxAnim_SetAnim(&elem->anim, gEntity08015584->animFiles[0], 0, 0, 0);
+    }
+
+    cmd = &elem->anim.cmds[elem->anim.cmdIdx];
+    elem->sprite.poseIdx = *cmd >> 6;
+    if ((elem->anim.flags & ANIM_PLAY_XFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_XFLIP)) {
+      elem->sprite.flags |= SPRFLAG_XFLIP;
+    } else {
+      elem->sprite.flags &= ~SPRFLAG_XFLIP;
+    }
+    if ((elem->anim.flags & ANIM_PLAY_YFLIP) != (((*cmd & 0x30) >> 4) & ANIM_PLAY_YFLIP)) {
+      elem->sprite.flags |= SPRFLAG_YFLIP;
+    } else {
+      elem->sprite.flags &= ~SPRFLAG_YFLIP;
+    }
+
+    elem->anim.tick++;
+    if (elem->anim.tick >= elem->anim.wait) {
+      elem->anim.tick = 0;
+      if (elem->anim.flags & ANIM_PLAY_REVERSE) {
+        if (elem->anim.cmdIdx == 0) {
+          elem->anim.cmdIdx = elem->anim.cmdCount;
+        }
+        elem->anim.cmdIdx--;
+      } else {
+        elem->anim.cmdIdx++;
+        if (elem->anim.cmdIdx >= elem->anim.cmdCount) {
+          elem->anim.cmdIdx = 0;
+        }
+      }
+      elem->anim.duration = elem->anim.cmds[elem->anim.cmdIdx] & 0xF;
+      elem->anim.wait = (elem->anim.duration * elem->anim.speed) >> 6;
+      if (elem->anim.wait == 0) {
+        elem->anim.wait = 1;
+      }
+    }
+
+    elem->sprite.pos = *pos;
+    elem->sprite.priority = FUN_080155c8(params->flags);
+    AuxAnim_SetAnimSpeed(&elem->anim, params->animSpeed);
+    Video_AddAuxSpriteIntoDrawList(&elem->sprite, 0);
+
+    spawned++;
+    if (spawned >= count) {
+      return 0;
+    }
+  }
+
+  return -1;
+#else
+  INCFUNC("asm/func/FUN_080155e4.inc");
+#endif
+}
+
+// count 個を 256 を等分した向きへ1つずつ発生させる
+// 命令数・順序とも一致 (66/66) するが pos / count / step の3つがレジスタ3つ分入れ替わる. 原典は pos を r8, count を r7 に置くが agbcc は逆, 宣言順の入れ替えでは動かない
+// angleYRand を angleY より先に代入すると格納順が原典と揃う
+NON_MATCH void FUN_08015a90(WorldPos* pos, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+#ifdef NONMATCHING_C
+  ParticleSpawnParam param;
+  s32 step;
+  s32 i;
+
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = 0;
+  param.speedYRand = 0;
+  param.speedXZ = speedXZ;
+  param.speedXZRand = 0;
+  step = Div(0x100, count);
+  param.angleYRand = 0;
+  param.angleY = 0;
+  param.decayStartY = decayStart;
+  param.decayStartYRand = 0;
+  param.unk_1c = decay;
+  param.unk_1e = 0;
+  param.decayStartXZ = decayStart;
+  param.decayStartXZRand = 0;
+  param.unk_24 = decay;
+  param.unk_26 = 0;
+  param.angleXZRand = 10;
+  param.angleXZ = 0;
+
+  for (i = count; i > 0; i--) {
+    FUN_080155e4(1, pos, &param);
+    param.angleXZ += step;
+  }
+#else
+  INCFUNC("asm/func/FUN_08015a90.inc");
+#endif
+}
+
+// base を中心に mask でマスクした乱数ぶんずらした位置へ count 個発生させる
+// 残差1命令 (124/125). base/mask は Vec3* ではなく u16* (原典は ldrh で読む) で, それに直すと 135→124 まで寄る. 残るのは count と &spawnPos のレジスタ入れ替えのみ
+NON_MATCH void FUN_08015b18(u16* base, u16* mask, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+#ifdef NONMATCHING_C
+  ParticleSpawnParam param;
+  Vec3 spawnPos;
+  u16* table = gRandomTable;
+  s32 i;
+
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = 0;
+  param.speedYRand = 0;
+  param.speedXZ = speedXZ;
+  param.speedXZRand = 0;
+  param.angleY = 0;
+  param.angleYRand = 0;
+  param.angleXZ = angleXZ;
+  param.angleXZRand = angleXZRand;
+  param.decayStartY = decayStart;
+  param.decayStartYRand = 0;
+  param.unk_1c = decay;
+  param.unk_1e = 0;
+  param.decayStartXZ = decayStart;
+  param.decayStartXZRand = 0;
+  param.unk_24 = decay;
+  param.unk_26 = 0;
+
+  for (i = count; i > 0; i--) {
+    spawnPos.x = (_Random(table) & mask[0]) + base[0];
+    spawnPos.y = (_Random(table) & mask[1]) + base[1];
+    spawnPos.z = (_Random(table) & mask[2]) + base[2];
+    FUN_080155e4(1, &spawnPos, &param);
+  }
+#else
+  INCFUNC("asm/func/FUN_08015b18.inc");
+#endif
+}
+
+void FUN_08015c28(WorldPos* pos, u32 angleXZ, u32 angleXZRand, s32 count, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+  ParticleSpawnParam param;
+
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = 0;
+  param.speedYRand = 0;
+  param.speedXZ = speedXZ;
+  param.speedXZRand = 0;
+  param.angleY = 0;
+  param.angleYRand = 0;
+  param.angleXZ = angleXZ;
+  param.angleXZRand = angleXZRand;
+  param.decayStartY = decayStart;
+  param.decayStartYRand = 0;
+  param.unk_1c = decay;
+  param.unk_1e = 0;
+  param.decayStartXZ = decayStart;
+  param.decayStartXZRand = 0;
+  param.unk_24 = decay;
+  param.unk_26 = 0;
+  FUN_080155e4(count, pos, &param);
+}
 
 // 発生パラメータを決め打ちで組んで count 個ぶん発生させる
 void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos) {
@@ -117,12 +456,177 @@ void FUN_08015c90(s32 count, u32 kind, u32 flags, u32 animSpeed, WorldPos* pos) 
   FUN_080155e4(count, pos, &param);
 }
 
-NAKED void FUN_08015ce0(s32 count, s32 param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9, s32 param_10, WorldPos* pos) { INCFUNC("asm/func/FUN_08015ce0.inc"); }
+void FUN_08015ce0(s32 count, u32 kind, u32 flags, u32 animSpeed, u32 angleXZ, u32 angleXZRand, u32 speedXZ, s32 speedXZRand, u32 speedY, s32 speedYRand, WorldPos* pos) {
+  ParticleSpawnParam param;
 
-NAKED void FUN_08015d3c(unknown* p, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_08015d3c.inc"); }
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = speedY;
+  param.speedYRand = speedYRand;
+  param.speedXZ = speedXZ;
+  param.speedXZRand = speedXZRand;
+  param.angleY = 0x3C;
+  param.angleYRand = 8;
+  param.angleXZ = angleXZ;
+  param.angleXZRand = angleXZRand;
+  param.decayStartY = 0xFF;
+  param.decayStartYRand = 0;
+  param.unk_1c = 0xFF;
+  param.unk_1e = 0;
+  param.decayStartXZ = 0xFF;
+  param.decayStartXZRand = 0;
+  param.unk_24 = 0xFF;
+  param.unk_26 = 0;
+  FUN_080155e4(count, pos, &param);
+}
 
-NAKED void UNUSED FUN_08015d9c(void* param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8, u32 param_9, u32 param_10) { INCFUNC("asm/func/FUN_08015d9c.inc"); }
+void FUN_08015d3c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand) {
+  ParticleSpawnParam param;
 
-NAKED void UNUSED FUN_08015dfc(void* param_1, u32 param_2, u32 param_3, u32 param_4, u32 param_5, u32 param_6, u32 param_7, u32 param_8) { INCFUNC("asm/func/FUN_08015dfc.inc"); }
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = speedY;
+  param.speedYRand = speedYRand;
+  param.speedXZ = speedXZ;
+  param.speedXZRand = speedXZRand;
+  param.angleY = 0x3C;
+  param.angleYRand = 8;
+  param.angleXZ = 0;
+  param.angleXZRand = 0xFF;
+  param.decayStartY = 0xFF;
+  param.decayStartYRand = 0;
+  param.unk_1c = 0xFF;
+  param.unk_1e = 0;
+  param.decayStartXZ = 0xFF;
+  param.decayStartXZRand = 0;
+  param.unk_24 = 0xFF;
+  param.unk_26 = 0;
+  FUN_080155e4(1, pos, &param);
+}
 
-NAKED void VM_Sub4383(void) { INCFUNC("asm/func/VM_Sub4383.inc"); }
+void UNUSED FUN_08015d9c(WorldPos* pos, u32 kind, u32 flags, u32 animSpeed, u32 speedY, s32 speedYRand, u32 speedXZ, s32 speedXZRand, u32 angleY, u32 angleYRand) {
+  ParticleSpawnParam param;
+
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = speedY;
+  param.speedYRand = speedYRand;
+  param.speedXZ = speedXZ;
+  param.speedXZRand = speedXZRand;
+  param.angleY = angleY;
+  param.angleYRand = angleYRand;
+  param.angleXZ = 0;
+  param.angleXZRand = 0xFF;
+  param.decayStartY = 0xFF;
+  param.decayStartYRand = 0;
+  param.unk_1c = 0xFF;
+  param.unk_1e = 0;
+  param.decayStartXZ = 0xFF;
+  param.decayStartXZRand = 0;
+  param.unk_24 = 0xFF;
+  param.unk_26 = 0;
+  FUN_080155e4(1, pos, &param);
+}
+
+// ランダムな向きへ speedXZ * 40 ぶんずらした位置に1個発生させる
+// 命令数・順序とも一致 (108/108) するが &param (sp のコピー) の作り位置が1つ手前にずれる. 原典は乱数テーブルのプール読みの後に作る
+// ずらし量は POLAR_X/POLAR_Z(speedXZ * 40, angleXZ + 0x80), agbcc は (speedXZ*40)*table を speedXZ*(40*table) に再結合する
+NON_MATCH void UNUSED FUN_08015dfc(WorldPos* pos, u32 param_2, u32 kind, u32 flags, u32 animSpeed, u32 speedXZ, u32 decayStart, u32 decay) {
+#ifdef NONMATCHING_C
+  ParticleSpawnParam param;
+  Vec3 spawnPos;
+
+  param.kind = kind;
+  param.flags = flags;
+  param.animSpeed = animSpeed;
+  param.speedY = 0;
+  param.speedYRand = 0;
+  param.speedXZ = speedXZ;
+  param.speedXZRand = 0;
+  param.angleXZ = (u8)Random();
+  param.angleXZRand = 0;
+  param.angleYRand = 0;
+  param.angleY = 0;
+  param.decayStartY = decayStart;
+  param.decayStartYRand = 0;
+  param.unk_1c = decay;
+  param.unk_1e = 0;
+  param.decayStartXZ = decayStart;
+  param.decayStartXZRand = 0;
+  param.unk_24 = decay;
+  param.unk_26 = 0;
+
+  spawnPos.x = pos->x + POLAR_X(speedXZ * 40, param.angleXZ + 0x80);
+  spawnPos.y = pos->y;
+  spawnPos.z = pos->z + POLAR_Z(speedXZ * 40, param.angleXZ + 0x80);
+  FUN_080155e4(1, &spawnPos, &param);
+#else
+  INCFUNC("asm/func/FUN_08015dfc.inc");
+#endif
+}
+
+// スクリプトの名前付き引数をそのまま発生パラメータにして発生させる
+void VM_Sub4383(void) {
+  ParticleSpawnParam param;
+  Vec3 pos;
+  s32 count = VM_GetNamedArgValue('n', 1);
+
+  if (VM_SeekToNamedArg('p')) {
+    VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
+  } else {
+    VEC3_SET(pos, 0, 0, 0);
+  }
+
+  param.kind = VM_GetNamedArgValue('t', 0);
+  param.flags = VM_GetNamedArgValue('f', 0);
+  param.animSpeed = VM_GetNamedArgValue('a', 0x40);
+
+  if (VM_SeekToNamedArg('s')) {
+    param.speedY = VM_GetValue();
+    param.speedYRand = VM_GetValue();
+    param.speedXZ = VM_GetValue();
+    param.speedXZRand = VM_GetValue();
+  } else {
+    param.speedY = 0;
+    param.speedYRand = 0;
+    param.speedXZ = 0;
+    param.speedXZRand = 0;
+  }
+
+  if (VM_SeekToNamedArg('d')) {
+    param.angleY = VM_GetValue();
+    param.angleYRand = VM_GetValue();
+    param.angleXZ = VM_GetValue();
+    param.angleXZRand = VM_GetValue();
+  } else {
+    param.angleY = 0;
+    param.angleYRand = 0;
+    param.angleXZ = 0;
+    param.angleXZRand = 0;
+  }
+
+  if (VM_SeekToNamedArg('c')) {
+    param.decayStartY = VM_GetValue();
+    param.decayStartYRand = VM_GetValue();
+    param.unk_1c = VM_GetValue();
+    param.unk_1e = VM_GetValue();
+    param.decayStartXZ = VM_GetValue();
+    param.decayStartXZRand = VM_GetValue();
+    param.unk_24 = VM_GetValue();
+    param.unk_26 = VM_GetValue();
+  } else {
+    param.decayStartY = 0xFF;
+    param.decayStartYRand = 0;
+    param.unk_1c = 0xFF;
+    param.unk_1e = 0;
+    param.decayStartXZ = 0xFF;
+    param.decayStartXZRand = 0;
+    param.unk_24 = 0xFF;
+    param.unk_26 = 0;
+  }
+
+  FUN_080155e4(count, &pos, &param);
+}

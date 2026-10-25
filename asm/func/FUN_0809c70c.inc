@@ -11,7 +11,7 @@ _0809C71E:
 	movs r0, #0
 	movs r1, #0x19
 	movs r2, #2
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r1, r0, #0
 	movs r2, #4
 _0809C72C:

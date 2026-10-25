@@ -24,7 +24,7 @@ _0804E75A:
 	adds r0, r6, #0
 	bl VM_ParseStringRef
 	adds r0, r0, r4
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r2, r0, #0
 	ldrb r1, [r2]
 	adds r4, #1

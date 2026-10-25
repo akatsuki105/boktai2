@@ -14,81 +14,21 @@
 #include "video.h"
 #include "vm.h"
 
-COMMON_DATA u16 ALIGNED(4) gWindAngle = 0;             // 0x03002B90, Player_InitEffects が 0 に戻す
-COMMON_DATA u16 ALIGNED(8) gPlayerCount = 0;           // 0x03002B98, Playerの数, シングルプレイ中は1, 通信対戦中時は参加人数になる
-COMMON_DATA u8 u8_03002b9a[6] = {};                    // todo
-COMMON_DATA u16 u16_ARRAY_03002ba0[3] = {};            // 0x03002BA0, Player がいないときに FUN_0807b428 が書き込む退避先
-COMMON_DATA u8 u8_03002ba6[2] = {};                    // todo
-COMMON_DATA Entity5941Node* gChangeWolfTarget = NULL;  // 0x03002BA8, チェンジウルフで噛みつく相手のノード, Player_Destroy が NULL に戻す
-COMMON_DATA u16 u16_03002bac = 0;                      // 0x03002BAC, Player_InitEffects が 0 に戻す
-COMMON_DATA u8 u8_03002bae[2] = {};                    // todo
-COMMON_DATA u16 u16_03002bb0 = 0;                      // 0x03002BB0, Player_GetEquippedMagic がサバタのとき 0 に戻す
-COMMON_DATA u8 u8_03002bb2[14] = {};                   // todo
-COMMON_DATA u32 u32_03002bc0[4] = {};                  // 0x03002BC0, Playerごとのビットフラグ, FUN_080093f8 が bit0 と bit1-2 を見る
-COMMON_DATA u16 u16_03002bd0 = 0;                      // 0x03002BD0, FUN_0807b564 が 0 に戻す
-COMMON_DATA u8 u8_03002bd2[14] = {};                   // todo
-COMMON_DATA struct Player* gPlayerPtr[4] = {};         // 0x03002BE0, 通信対戦時に自分が子機の場合も自キャラが 0 になるかは不明
-COMMON_DATA u16 u16_03002bf0 = 0;                      // 0x03002BF0, 0 以外かつ gSunGaugeOverride が 1 のとき Entity0809eb24_Update が unk_29 を立てる
-COMMON_DATA u8 u8_03002bf2[2] = {};                    // todo
-COMMON_DATA u16 u16_03002bf4 = 0;                      // 0x03002BF4, Player_Destroy が 0 に戻す
-COMMON_DATA u8 u8_03002bf6[2] = {};                    // todo
-
-COMMON_DATA struct Entity5941* gEntity5941 = NULL;  // 0x03002BF8
-COMMON_DATA struct EntityBD74* gEntityBD74 = NULL;  // 0x03002BFC
-
-COMMON_DATA struct Coffin* gCoffin = NULL;                 // 0x03002C00
-COMMON_DATA u8 u8_03002c04[0x03002C10 - 0x03002C04] = {};  // padding?
-
-COMMON_DATA u16 u16_03002c10 = 0;                          // 0x03002C10, FUN_080916bc がビット単位で読むフラグ
-COMMON_DATA u8 u8_03002c12[0x03002C14 - 0x03002C12] = {};  // todo
-COMMON_DATA u16 u16_03002c14 = 0;                          // 0x03002C14, 根拠: MainMenu1P_Destroy が MainMenu.page を書き込む
-COMMON_DATA u8 u8_03002c16[0x03002C18 - 0x03002C16] = {};  // todo
-COMMON_DATA u16 u16_03002c18 = 0;                          // 0x03002C18, FUN_0809c040 が 1 を入れる
-COMMON_DATA u8 u8_03002c1a[0x03002C3C - 0x03002C1A] = {};  // todo
-
-COMMON_DATA struct EntityA628* gEntityA628 = NULL;          // 0x03002C3C
-COMMON_DATA struct EntityBA36* gEntityBA36 = NULL;          // 0x03002C40
-COMMON_DATA struct Entity1E98* gEntity1E98 = NULL;          // 0x03002C44
-COMMON_DATA struct Entity3117* gEntity3117 = NULL;          // 0x03002C48
-COMMON_DATA struct Entity8AF6* gEntity8AF6 = NULL;          // 0x03002C4C
-COMMON_DATA struct Entity4063* gEntity4063 = NULL;          // 0x03002C50
-COMMON_DATA struct Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
-COMMON_DATA struct PileDriver* gPileDriver = NULL;          // 0x03002C58
-
-COMMON_DATA struct EnemyManager* gEnemyManager = NULL;        // 0x03002C5C
-COMMON_DATA struct EnemyListNode* gEnemyListHead = NULL;      // 0x03002C60, 生存中のエネミーの単方向リスト, EnemyManager.list と同じ値
-COMMON_DATA struct LinkConnect* gLinkConnect = NULL;          // 0x03002C64
-COMMON_DATA struct Entity9A9F* gEntity9A9F = NULL;            // 0x03002C68
-COMMON_DATA struct LinkShopManager* gLinkShopManager = NULL;  // 0x03002C6C
-COMMON_DATA u8 u8_03002c70[16] = {};                          // unused?
-
-COMMON_DATA struct Dvalinn* gDvalinn = NULL;  // 0x03002C80
-
-COMMON_DATA u8 u8_03002c84[0x03002C98 - 0x03002C84] = {};  // todo
-
-COMMON_DATA struct Entity0FC5* gEntity0FC5s[2] = {};  // 0x03002C98, '.k' の値を添字にして Entity0FC5 が自分を登録する
-
-COMMON_DATA vu16* gHBlankEffectReg = NULL;  // 0x03002CA0, HBlank 毎に gHBlankEffectBuffer の値を書き込む I/O レジスタ, 根拠: FUN_0822f0d8, FUN_0822eef4
-
-COMMON_DATA u32 gOamDirty = 0;  // 0x03002CA4, MainSprite_DrawInternal / Particle_DrawList が bit0 を立て、VideoCommit_Update が gOAMBuffer を OAM へ転送して落とす, bit0 以外は使われていない
-
-COMMON_DATA bool32 gDispcntLocked = FALSE;  // 0x03002CA8, 0 以外だと VideoCommit_Update が DISPCNT の表示ビットを組み直さない
-
-COMMON_DATA u8 u8_03002cac[0x03002CB0 - 0x03002CAC] = {};  // todo
-
-COMMON_DATA IntrFunc gIntrTable[13] = {};  // 0x03002cb0
-COMMON_DATA vu32 gVblankFlag = FALSE;      // 0x03002cb4
-COMMON_DATA u8 u8_03002ce8[8] = {};        // todo
-COMMON_DATA u32 gFrameCounter = 0;         // 0x03002CF0, bit0 が点滅の偶奇を決める, 根拠: MainSprite_DrawList が tst #1 で SPRFLAG_BLINK_ODD / SPRFLAG_BLINK_EVEN を選ぶ
-COMMON_DATA u8 u8_03002cf4[12] = {};       // todo
+COMMON_DATA IntrFunc gIntrTable[13] = {};    // 0x03002CB0
+COMMON_DATA vu32 gVblankFlag = FALSE;        // 0x03002CE4
+COMMON_DATA u32 gMarqueeOffset = 0;          // 0x03002CE8
+COMMON_DATA bool32 gMarqueeActive2 = FALSE;  // 0x03002CEC
+COMMON_DATA u32 gFrameCounter = 0;           // 0x03002CF0, bit0 が点滅の偶奇を決める, 根拠: MainSprite_DrawList が tst #1 で SPRFLAG_BLINK_ODD / SPRFLAG_BLINK_EVEN を選ぶ
+COMMON_DATA u8 u8_03002cf4[12] = {};         // todo
 
 COMMON_DATA u32 IntrMain_Buffer[0x200] = {0};  // 0x03002D00, INTR_MAIN のRAMコード
 
 COMMON_DATA bool32 gVBlankDone = FALSE;  // 0x03003500, VBlankIntr が立て、VideoCommit_Update が落とす
 
-COMMON_DATA u32 gVBlankCount = 0;  // 0x03003504, VBlankIntr が毎フレーム +1 する
+COMMON_DATA u32 gVBlankCount = 0;     // 0x03003504, VBlankIntr が毎フレーム +1 する
+COMMON_DATA u32 gMarqueeOffset2 = 0;  // 0x03003508
 
-COMMON_DATA u8 u8_03003508[0x03003510 - 0x03003508] = {};  // todo
+COMMON_DATA u8 u8_0300350C[0x03003510 - 0x0300350C] = {};  // todo
 
 COMMON_DATA u16 u16_03003510 = 0;             // 0x03003510, FUN_0822f0d8, FUN_0822eef4 が 1 を書く
 COMMON_DATA u8 u8_03003512[2] = {};           // todo

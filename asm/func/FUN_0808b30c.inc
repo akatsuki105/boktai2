@@ -10,7 +10,7 @@
 	movs r7, #0x91
 _0808B320:
 	movs r0, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r6, r0, #0
 	cmp r4, #0
 	ble _0808B358

@@ -255,7 +255,7 @@ s32 Eff082473e0Emitter_Init(Eff082473e0Emitter* e, Vec3* pos, s32 kind, s32 unk_
   for (i = 0; i < 4; i++) {
     e->ptcls[i].state = 0;
     e->ptcls[i].unk_2 = 0;
-    e->ptcls[i].pos.x = 0, e->ptcls[i].pos.y = 0, e->ptcls[i].pos.z = 0;
+    VEC3_SET(e->ptcls[i].pos, 0, 0, 0);
     Particle_Add(&e->ptcls[i].ptcl, sEff082473e0->group, SPRFLAG_HIDDEN | SPRFLAG_SCREEN_COORD);
     Particle_SetOffset(&e->ptcls[i].ptcl, -8, -8);
     e->ptcls[i].ptcl.priority = 2;

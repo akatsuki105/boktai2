@@ -27,8 +27,6 @@ static_assert(sizeof(Entity080dbe54) == 2600);
 
 IWRAM_DATA Entity080dbe54* gEntity080dbe54 = NULL;  // 0x03000164
 
-static inline void Entity080dbe54_ClearActive(Entity080dbe54* p, s32 idx) { p->activeMask &= ~(1 << idx); }
-
 void FUN_080db7e4(Entity080dbe54* p, Entity080dbe54Slot* param_2) {}
 
 NAKED void FUN_080db7e8(Entity080dbe54* p, Entity080dbe54Slot* param_2) { INCFUNC("asm/func/FUN_080db7e8.inc"); }
@@ -37,7 +35,7 @@ NAKED void FUN_080db7e8(Entity080dbe54* p, Entity080dbe54Slot* param_2) { INCFUN
 void FUN_080db970(Entity080dbe54* p, Entity080dbe54Slot* slot) {
   Particle_Remove(&p->ptcls[slot->idx]);
   slot->unk_12 = 0;
-  Entity080dbe54_ClearActive(p, slot->idx);
+  CLEAR_BIT(p->activeMask, slot->idx);
   ClearMemory(slot, sizeof(Entity080dbe54Slot));
   slot->idx = -1;
 }

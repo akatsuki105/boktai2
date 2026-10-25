@@ -148,7 +148,7 @@ _08091318:
 	adds r5, r7, #0
 	adds r5, #0x80
 	adds r0, r7, #0
-	bl FUN_08090b10
+	bl MainMenu_GetPlayerType
 	adds r2, r0, #0
 	lsls r2, r2, #0x10
 	lsrs r2, r2, #0x10

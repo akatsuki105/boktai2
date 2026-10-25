@@ -2,6 +2,7 @@
 #include "entity.h"
 #include "global.h"
 #include "hitbox.h"
+#include "map_inline.h"
 #include "sprite.h"
 #include "vm.h"
 
@@ -34,49 +35,16 @@ s32 EntityE06A_Destroy(EntityE06A* p) {
 
 // '.p' から位置を読み、足元のタイルの高さと階段の向きで y を補正する
 void EntityE06A_SetupSprite(EntityE06A* p) {
-  Vec3* pos;
-  CollisionMapTile* tile;
-  MapTileOverride* ov;
-  s32 bx, bz, idx;
-  s32 y, stairs;
-  u32 z;
-
   AuxSpriteGfx* gfx = &p->gfx;
+
   Video_GetAuxSprite(gfx, SPRITE_NODATA_9DA7);
   AuxSprite_Add(&p->sprite, gfx, 0);
-  z = VM_SeekToNamedArg('p');
-  if (z != 0) {
-    p->sprite.pos.x = VM_GetValue();
-    p->sprite.pos.y = VM_GetValue();
-    z = VM_GetValue();
+  if (VM_SeekToNamedArg('p')) {
+    VEC3_SET(p->sprite.pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {
-    p->sprite.pos.x = 0;
-    p->sprite.pos.y = 0;
+    VEC3_SET(p->sprite.pos, 0, 0, 0);
   }
-  p->sprite.pos.z = z;
-  pos = &p->sprite.pos;
-  bx = p->sprite.pos.x >> 8;
-  bz = pos->z >> 8;
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-  ov = Map_FindTileOverride(idx, 1);
-  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
-  stairs = tile->heightStairs >> 4;
-  y = (tile->heightStairs & 0xF) << 8;
-  switch (stairs) {
-    case STAIRS_VERTICAL: {
-      y -= (u8)pos->z;
-      break;
-    }
-    case STAIRS_HORIZONTAL: {
-      y -= (u8)pos->x;
-      break;
-    }
-  }
-  p->sprite.pos.y = y;
+  p->sprite.pos.y = TileHeightAt(&p->sprite.pos);
 }
 
 // hitbox を組み立てて登録する
@@ -84,8 +52,8 @@ void EntityE06A_SetupHitbox(EntityE06A* p) {
   HitboxData* hitbox = &p->hitbox;
   Vec3 size, offset;
 
-  size.x = 50, size.y = 100, size.z = 50;
-  offset.x = 0, offset.y = 100, offset.z = 0;
+  VEC3_SET(size, 50, 100, 50);
+  VEC3_SET(offset, 0, 100, 0);
   Hitbox_Init(hitbox, p->id, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetAttack(hitbox, 100, 0x78, 0, HBATTR_18 | HBATTR_DARK, 0x1E);
   Hitbox_SetHandler(hitbox, nop_080cb254, p);
@@ -98,8 +66,8 @@ void EntityE06A_SetupHurtbox(EntityE06A* p) {
   HitboxData* hitbox = &p->hurtbox;
   Vec3 size, offset;
 
-  size.x = 50, size.y = 100, size.z = 50;
-  offset.x = 0, offset.y = 100, offset.z = 0;
+  VEC3_SET(size, 50, 100, 50);
+  VEC3_SET(offset, 0, 100, 0);
   Hitbox_Init(hitbox, p->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetPowerAndAttributes(hitbox, 10, HBATTR_DARK, HBATTR_SOL);
   Hitbox_SetHandler(hitbox, nop_080cb258, p);

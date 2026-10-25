@@ -105,8 +105,8 @@ _0804AC4E:
 	adds r4, #1
 	bl VM_ParseStringRef
 	adds r0, r0, r4
-	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl GetStringByID
+	bl Marquee_SetText
 _0804AC6A:
 	ldrb r0, [r6]
 	mov r2, sb

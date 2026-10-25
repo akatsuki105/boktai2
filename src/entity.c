@@ -3,6 +3,8 @@
 #include "global.h"
 #include "malloc.h"
 
+extern u16 gEntityCount;
+
 const EntityList gDefaultEntityManager[ENTITY_KINDS] = {
     [ENTITY_SYSTEM] = {.head = NULL, .disableFlags = 0x0                                                                        },
     [ENTITY_UNK_1] = {.head = NULL, .disableFlags = 0x0                                                                        },

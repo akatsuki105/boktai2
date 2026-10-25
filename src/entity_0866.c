@@ -78,7 +78,7 @@ void FUN_08009b30(HitboxData* a, HitboxData* b, Entity0866Elem* elem) {
     elem->unk_02 = 1;
     elem->unk_0a = 0;
     elem->unk_07 = TRUE;
-    elem->hitbox.flags |= HBFLAG_UNK_2;
+    elem->hitbox.flags |= HBFLAG_HIDDEN;
   }
 }
 

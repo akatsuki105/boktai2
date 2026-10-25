@@ -12,9 +12,9 @@ typedef u32 SpriteFlags;
 #define SPRFLAG_AFFINE (1 << 1)        // 0x00000002, アフィン
 #define SPRFLAG_XFLIP (1 << 2)         // 0x00000004, X軸反転
 #define SPRFLAG_YFLIP (1 << 3)         // 0x00000008, Y軸反転
-#define SPRFLAG_SCREEN_COORD (1 << 4)  // 0x00000010, スクリーン座標系
+#define SPRFLAG_SCREEN_COORD (1 << 4)  // 0x00000010, スクリーン座標系 (Vec3.x と Vec3.y をスクリーン座標として扱う)
 #define SPRFLAG_OAM_DIRECT (1 << 5)    // 0x00000020, OAM直書き
-#define SPRFLAG_NO_CLIP (1 << 6)       // 0x00000040, クリップ省略
+#define SPRFLAG_NO_CLIP (1 << 6)       // 0x00000040, クリッピングをしない
 #define SPRFLAG_DRAWLIST (1 << 7)      // 0x00000080, セットされていると描画リスト(gAuxSpriteLists, gMainSpriteLists, gParticleLists) の idx が 1の方に追加される
 #define SPRFLAG_UNK_8 (1 << 8)         // 0x00000100, 不明
 #define SPRFLAG_BLINK_ODD (1 << 9)     // 0x00000200, 奇数フレームだけ描画しない
@@ -24,6 +24,7 @@ typedef u32 SpriteFlags;
 #define SPRFLAG_UNK_13 (1 << 13)       // 0x00002000, SPRFLAG_GAMEOVER と同じ用途(特定の場面での描画制御), まだどの場面かで使われるかは未解析, Particle: Particle_DrawListUnk13, AuxSprite: AuxSprite_DrawListUnk13, MainSprite: FUN_08230594
 #define SPRFLAG_UNK_14 (1 << 14)       // 0x00004000, 不明
 #define SPRFLAG_UNK_15 (1 << 15)       // 0x00008000, 不明
+#define SPRFLAG_UNK_16 (1 << 16)       // 0x00010000, 不明
 
 // 0..15
 // (OAM1.14-15 << 2) | (OAM0.14-15), ie. ((sizeidx << 2) | shape)
@@ -43,5 +44,7 @@ extern s32 gObjAffineCount;
 
 extern u32 gSpriteListIdx;
 extern const u16 gSpriteSizeTable[16];  // SpriteShape が idx
+
+bool8 Sprite_UpdateVanishBlink(SpriteFlags* flags, s32 t, s32 t1, s32 t2);
 
 #endif  // __INCLUDE_SPRITE_COMMON_H__

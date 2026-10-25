@@ -117,7 +117,7 @@ s32 TransEffect_Init(TransEffect* p, Player* player, u32 param_3, Vec3* pos, u32
   p->player = player;
 
   if (pos == NULL) {
-    p->pos.x = 0, p->pos.y = 0, p->pos.z = 0;
+    VEC3_SET(p->pos, 0, 0, 0);
   } else {
     p->pos = *pos;
   }

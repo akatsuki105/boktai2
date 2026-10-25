@@ -38,6 +38,9 @@ IWRAM_DATA JoyspotManager* gJoyspotManager = NULL;  // 0x030000D8
 
 COMMON_DATA u32 u32_03002b54 = 0;  // 0x03002B54
 
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_Zokutai_08251d30[] = "Zokutai";  // 0x08251D30
+const __attribute__((section(".rodata.string"))) ALIGNED(4) char s_Djungo_08251d38[] = "Djungo";    // 0x08251D38
+
 // clang-format off
 // ジョイスポットでの配信コンテンツのID
 const u8 gJoyspotContentIDs[8] = {
@@ -329,4 +332,31 @@ JoyspotManager* JoyspotManager_Create(void) {
   }
 
   return p;
+}
+
+// 0x3699, '.n' 番の配信コンテンツIDがセーブデータに書かれているか
+// 残差はループの向きだけ (30 対 30), 原典は i を上に数えるが agbcc は使い捨ての添字とみて下に数える形へ反転する
+// u32 / do-while / i != 2 / flags をループ内で引く形 / flags[dst + i] と id[i] は試済
+NON_MATCH s32 Cmd_3699(void) {
+#ifdef NONMATCHING_C
+  s32 dst = VM_GetValue() * 2;
+  s32 match = 0;
+  u8* flags = (u8*)gSystemSaveData->eventFlags;
+  const u8* id = &gJoyspotContentIDs[dst];
+  s32 i;
+
+  for (i = 0; i < 2; i++) {
+    if (flags[dst] == *id) {
+      match++;
+    }
+    id++;
+    dst++;
+  }
+  if (match == 2) {
+    return 1;
+  }
+  return 0;
+#else
+  INCFUNC("asm/func/Cmd_3699.inc");
+#endif
 }

@@ -13,7 +13,7 @@
 	str r0, [sp, #8]
 	adds r0, r5, #0
 	ldr r1, [sp, #8]
-	bl FUN_08022a0c
+	bl Boss_Register
 	ldr r0, _080CAD7C @ =0x03002BE0
 	ldr r2, [r0]
 	cmp r2, #0
@@ -83,13 +83,13 @@ _080CADE0:
 _080CADF2:
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_080c4520
+	bl Jormungandr_InitHurtbox
 	adds r0, r5, #0
 	adds r1, r6, #0
-	bl FUN_080c468c
+	bl Jormungandr_InitHurtbox2
 	adds r0, r5, #0
 	adds r1, r7, #0
-	bl FUN_080c47a0
+	bl Jormungandr_InitHurtbox3
 	movs r0, #0x61
 	bl VM_SeekToNamedArg
 	cmp r0, #0
@@ -159,12 +159,12 @@ _080CAEA6:
 	adds r1, r7, #0
 	adds r2, r6, #0
 	adds r3, r4, #0
-	bl FUN_080c4840
+	bl Jormungandr_InitHitbox
 	adds r0, r5, #0
 	adds r1, r7, #0
 	adds r2, r6, #0
 	adds r3, r4, #0
-	bl FUN_080c48ec
+	bl Jormungandr_InitHitbox2
 	movs r0, #0x69
 	movs r1, #0
 	bl VM_GetNamedArgValue
@@ -372,7 +372,7 @@ _080CB078:
 	bl FUN_080c3784
 	movs r0, #0x64
 	movs r1, #0x64
-	bl Entity082464b8_Create
+	bl HomingLaserManager_Create
 	movs r6, #0xc8
 	lsls r6, r6, #5
 	adds r1, r5, r6
@@ -469,12 +469,12 @@ _080CB15E:
 	mov r0, r8
 	ldr r1, [sp, #4]
 	ldr r2, [sp, #8]
-	bl Boss_Init_08022a70
+	bl Boss_Init
 	mov r0, r8
 	ldr r1, [sp, #0xc]
 	adds r2, r1, #0
 	movs r3, #0xc8
-	bl FUN_08022b2c
+	bl Boss_InitHP
 	ldr r1, _080CB1AC @ =FUN_080c9d00
 	mov r0, r8
 	adds r0, #0xfc

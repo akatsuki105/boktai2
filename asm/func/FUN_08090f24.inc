@@ -43,7 +43,7 @@ _08090F64:
 	movs r0, #1
 	adds r1, r5, #0
 	adds r2, r6, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r1, r0, #0
 	ldr r0, [sp]
 	ldr r2, _08091078 @ =0xFFFFE000
@@ -63,7 +63,7 @@ _08090F8A:
 	movs r0, #1
 	adds r1, r4, #0
 	adds r2, r6, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r1, r0, #0
 	ldr r0, [sp]
 	adds r0, #1
@@ -83,7 +83,7 @@ _08090FB4:
 	bge _08090FDC
 	movs r0, #1
 	adds r1, r5, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r1, r0, #0
 	ldr r0, [sp]
 	adds r0, #0x10
@@ -103,7 +103,7 @@ _08090FDC:
 	bge _08091004
 	movs r0, #1
 	adds r1, r4, #0
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r1, r0, #0
 	ldr r0, [sp]
 	adds r0, #0x11
@@ -144,7 +144,7 @@ _08091038:
 	movs r0, #1
 	adds r2, r7, #0
 	adds r2, #0xf
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	ldr r2, _08091078 @ =0xFFFFE000
 	adds r1, r2, #0
 	orrs r4, r1

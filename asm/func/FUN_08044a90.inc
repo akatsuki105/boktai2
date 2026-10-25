@@ -331,7 +331,7 @@ _08044D3A:
 	strh r0, [r7, #2]
 	mov r0, sl
 	adds r0, #0xd0
-	bl FUN_08055d20
+	bl SpriteHolder_IsAnimEnded
 	cmp r0, #0
 	beq _08044D8A
 	ldrh r0, [r7]

@@ -184,12 +184,12 @@ _081E4F26:
 	movs r2, #1
 	orrs r0, r2
 	str r0, [r1]
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r0, [r4]
 	bl VM_ParseStringRef
 	adds r0, #0xf
-	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl GetStringByID
+	bl Marquee_SetText
 	ldr r0, _081E5110 @ =0x00001617
 	adds r1, r7, r0
 	movs r0, #0xf
@@ -250,8 +250,8 @@ _081E511C:
 	ldr r1, _081E525C @ =0x00001616
 	adds r0, r7, r1
 	strb r2, [r0]
-	bl FUN_08049e5c
-	bl FUN_08049fa8
+	bl Marquee_Clear
+	bl Marquee_CloseGlobal
 	ldr r2, _081E5260 @ =0x00001610
 	adds r1, r7, r2
 	movs r4, #2

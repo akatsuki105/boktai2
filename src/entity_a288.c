@@ -18,9 +18,7 @@ typedef struct {
 } EntityA288Entry;
 static_assert(sizeof(EntityA288Entry) == 52);
 
-void FUN_0821b28c(u32 x8, u32 y8, u32 w8, u32 h8);
-void Video_DrawText(s32 x8, s32 y8, char* s);
-
+// タイトル画面で、 "GAME START" or "OPTION" を選んだ後に生成される "LINK" は別
 typedef struct EntityA288 {
   Entity e;                                    // 0x0000, ENTITY_UNK_11
   MainSpriteGfx gfx;                           // 0x0018, SPRITE_42E2
@@ -102,87 +100,154 @@ static_assert(sizeof(EntityA288) == 8172);
 
 // clang-format off
 const SoundID16 u16_ARRAY_085afa30[95] = {
-    0xA3, 0xA7, 0xA4, 0xB3, 0x38, 0x12, 0x3E, 0x39, 0x1,  0x13, 0xA5,   0xD,
-    0xC,  0x3B, 0x98, 0xF,  0x36, 0x2,  0x9C, 0x42, 0x9A, 0xA0, 0xA1,   0xA2,
-    0x14, 0x44, 0x15, 0x16, 0x17, 0x45, 0x18, 0x46, 0x41, 0x96, 0x97,   0x9,
-    0x3,  0x4,  0xA,  0x4A, 0xAA, 0xA9, 0x19, 0x1A, 0xB2, 0x47, 0x1B,   0x1C,
-    0x3C, 0x4C, 0x51, 0x99, 0x1D, 0x4D, 0x20, 0x1E, 0x21, 0x1F, 0x50,   0x9B,
-    0x52, 0x9F, 0x54, 0x9D, 0x10, 0xE,  0x22, 0xB5, 0x23, 0x40, 0x24,   0x27,
-    0x25, 0x53, 0x29, 0x2A, 0x3D, 0x30, 0x11, 0x48, 0x2B, 0x2C, 0x2D,   0x2E,
-    0x2F, 0x9E, 0x58, 0x5A, 0xA6, 0xA8, 0xB0, 0xB1, 0xB4, 0xAD, 0xFFFF,
+    SONG_163,             SONG_167,        SONG_164,        SONG_179,     SONG_56,
+    SONG_18,              SONG_62,         SONG_57,         BGM_PROLOGUE, SONG_19,
+    SONG_165,             BGM_TRAP_BATTLE, BGM_COMPLETE,    SONG_59,      SONG_152,
+    BGM_15,               SONG_54,         BGM_GAMEOVER,    SONG_156,     SONG_66,
+    SONG_154,             SONG_160,        SONG_161,        SONG_162,     SONG_20,
+    SONG_68,              SONG_21,         SONG_22,         SONG_23,      SONG_69,
+    SONG_24,              SONG_70,         SONG_65,         SONG_150,     SONG_151,
+    BGM_PILEDRIVER_POINT, BGM_BOSS_BATTLE, BGM_BOSS_CLIMAX, BGM_10,       SONG_74,
+    SONG_170,             SONG_169,        SONG_25,         SONG_26,      SONG_178,
+    SONG_71,              SONG_27,         SONG_28,         SONG_60,      SONG_76,
+    SONG_81,              SONG_153,        SONG_29,         SONG_77,      SONG_32,
+    SONG_30,              SONG_33,         SONG_31,         SONG_80,      SONG_155,
+    SONG_82,              SONG_159,        SONG_84,         SONG_157,     BGM_16,
+    BGM_14,               SONG_34,         SONG_181,        SONG_35,      SONG_64,
+    SONG_36,              SONG_39,         SONG_37,         SONG_83,      SONG_41,
+    SONG_42,              SONG_61,         SONG_48,         SONG_17,      SONG_72,
+    SONG_43,              SONG_44,         SONG_45,         SONG_46,      SONG_47,
+    SONG_158,             SONG_88,         SONG_90,         SONG_166,     SONG_168,
+    SONG_176,             SONG_177,        SONG_180,        SONG_173,     -1,
 };  // 0x085afa30
 // clang-format on
 
 // clang-format off
 const SoundID16 u16_ARRAY_085afaee[482] = {
-    0xE0,  0xDF,   0xDC,  0xDD,  0xDE,  0x2AE, 0x12B, 0x12C, 0x12D, 0x19A,
-    0x192, 0x296,  0x294, 0x2A5, 0x10A, 0x10B, 0x10C, 0x38A, 0x10D, 0x10E,
-    0x382, 0x118,  0x119, 0x107, 0x21C, 0x167, 0xE1,  0xE3,  0xE3,  0xE2,
-    0x23A, 0x23B,  0x23C, 0x23D, 0x23E, 0x28B, 0x275, 0x276, 0xC9,  0xCA,
-    0x28D, 0x28E,  0x162, 0x163, 0x193, 0x194, 0xC7,  0xC8,  0x335, 0xD0,
-    0xDB,  0xEC,   0xEB,  0xCB,  0x38C, 0x38B, 0x38F, 0x38D, 0x390, 0x38E,
-    0x391, 0xCD,   0xD5,  0x1F7, 0x1F8, 0x1F9, 0x1A9, 0x1AA, 0x393, 0x397,
-    0x398, 0x399,  0x39A, 0x39B, 0x39C, 0x39E, 0x3A0, 0x3A1, 0x1FA, 0x1FB,
-    0xD8,  0x124,  0x12E, 0x165, 0xE6,  0xD1,  0x2A8, 0x133, 0x134, 0x191,
-    0x138, 0x1B1,  0x1EC, 0x1ED, 0xDA,  0xD2,  0xD3,  0x2AA, 0x180, 0x181,
-    0x182, 0x1EE,  0x336, 0x27D, 0x27E, 0x27F, 0x284, 0x285, 0x259, 0x1AB,
-    0x1AC, 0x1AE,  0x1AF, 0x1B0, 0x27C, 0x11E, 0x11F, 0x25A, 0x25B, 0x25C,
-    0x327, 0x201,  0x202, 0x203, 0x29F, 0x204, 0x239, 0x298, 0x39D, 0x1FD,
-    0x1FE, 0x20D,  0x20F, 0x25D, 0x20E, 0x395, 0x21D, 0x329, 0x328, 0x21E,
-    0x31F, 0x320,  0x321, 0x322, 0x323, 0x13E, 0x211, 0x13C, 0x3A7, 0x3A8,
-    0x3A9, 0x3AA,  0x3AB, 0x3AC, 0x3AD, 0x3AE, 0x3B0, 0x3B1, 0x3B2, 0x3B3,
-    0x3A3, 0x3A4,  0x3A5, 0x3A2, 0x3BF, 0x3C0, 0x3C1, 0x3C2, 0x3C3, 0x3C4,
-    0x3C9, 0x3C6,  0x3C7, 0x3C8, 0x3C5, 0x3CB, 0x3CC, 0x3CA, 0x19C, 0x3D5,
-    0x3D6, 0x3D7,  0x19B, 0x3D9, 0x3DA, 0x3DB, 0x3DC, 0x3E2, 0x3E3, 0x1A5,
-    0x3E4, 0x3E6,  0x19D, 0x1A2, 0x1A3, 0x3DE, 0x3DF, 0x3E0, 0x3E1, 0x1B4,
-    0x3E5, 0x3E7,  0x19E, 0x1A4, 0xD4,  0xED,  0xEE,  0xD7,  0xE5,  0xD6,
-    0xF2,  0xEF,   0xF0,  0xF1,  0x12A, 0x29D, 0x2AD, 0xE4,  0xEA,  0x32D,
-    0x108, 0xE8,   0xF6,  0xF7,  0x109, 0xF8,  0xFD,  0xFE,  0xFF,  0x100,
-    0x101, 0x102,  0x103, 0x104, 0x121, 0x166, 0x195, 0x112, 0x113, 0x114,
-    0x115, 0x169,  0x16A, 0x16B, 0x16C, 0x16D, 0x16E, 0x16F, 0x170, 0x18F,
-    0x190, 0x1E2,  0x185, 0x186, 0x187, 0x188, 0x189, 0x18A, 0x18B, 0x18D,
-    0x18E, 0x1B2,  0x1B3, 0x271, 0x272, 0x1D7, 0x1D8, 0x1D9, 0x1DC, 0x1DD,
-    0x1DE, 0x1DB,  0x1DF, 0x1E0, 0x1E1, 0x1D6, 0x1C7, 0x1C8, 0x1C9, 0x1CA,
-    0x1CB, 0x1CD,  0x1CE, 0x1CF, 0x1D0, 0x1D1, 0x1D4, 0x1D5, 0x1E3, 0x1E4,
-    0x1E5, 0x1FF,  0x260, 0xF9,  0xFA,  0x126, 0x197, 0x340, 0x33F, 0x7,
-    0xFB,  0xFC,   0xF5,  0xF3,  0xF4,  0x129, 0x1EA, 0x1EB, 0x10F, 0x110,
-    0x111, 0x123,  0x183, 0x26F, 0x29C, 0x2A7, 0x2B7, 0x122, 0x11D, 0x2B8,
-    0x291, 0x292,  0x293, 0x11A, 0x11B, 0x11C, 0xCE,  0xCF,  0x28F, 0x184,
-    0x142, 0x143,  0x146, 0x151, 0x15B, 0x150, 0x14A, 0x14E, 0x14F, 0x136,
-    0x15C, 0x149,  0x267, 0x214, 0x215, 0x216, 0x217, 0x218, 0x219, 0x21A,
-    0x21B, 0x155,  0x152, 0x153, 0x154, 0x140, 0x141, 0x153, 0x14C, 0x14D,
-    0x172, 0x2B3,  0x1A8, 0x326, 0x286, 0x213, 0x222, 0x158, 0x159, 0x261,
-    0x262, 0x263,  0x289, 0x28A, 0x288, 0x282, 0x266, 0x21F, 0x220, 0x19F,
-    0x1A0, 0x237,  0x2A9, 0x223, 0x15E, 0x198, 0x199, 0x15F, 0x160, 0x1E7,
-    0x32F, 0x264,  0x265, 0x281, 0x1C5, 0x1C3, 0x1C6, 0x1C4, 0x3B6, 0x3B7,
-    0x3C3, 0x3B8,  0x3BE, 0x3BA, 0x3BB, 0x3BD, 0x346, 0x347, 0x348, 0x349,
-    0x34A, 0x34B,  0x34C, 0x34E, 0x351, 0x352, 0x353, 0x354, 0x33B, 0x343,
-    0x32C, 0x345,  0x332, 0x333, 0x33C, 0x70,  0x3CD, 0x3CE, 0x3CF, 0x3D0,
-    0x3D1, 0x3D2,  0x3D3, 0x147, 0x175, 0x177, 0x178, 0x179, 0x17A, 0x17E,
-    0x1B8, 0x1B9,  0x1BA, 0x1BB, 0x1BC, 0x22B, 0x71,  0x1BD, 0x224, 0x225,
-    0x226, 0x227,  0x228, 0x229, 0x22A, 0x22B, 0x22C, 0x22D, 0x22E, 0x22F,
-    0x230, 0x231,  0x234, 0x232, 0x233, 0x6E,  0x325, 0x6F,  0x372, 0x373,
-    0x1FC, 0x363,  0x364, 0x65,  0x83,  0x6D,  0x67,  0x68,  0x69,  0x6A,
-    0x84,  0xFFFF,
+    SONG_224,             SONG_223,              SE_CURSOR_MOVE,  SE_SELECT,                SE_CANCEL,
+    SE_SAVE_SUCCESS,      SE_UNK_299,            SE_UNK_300,      SE_UNK_301,               SONG_410,
+    SE_NG,                SONG_662,              SONG_660,        SONG_677,                 SONG_266,
+    SONG_267,             SE_SLOT,               SE_SWAP_SLOT,    SE_HEAL,                  SE_TRASH,
+    SE_BREAK_898,         SE_OPEN_MENU,          SE_CLOSE_MENU,   SE_CHOICE,                SONG_540,
+    SE_359,               SONG_225,              SONG_227,        SONG_227,                 SONG_226,
+    SONG_570,             SONG_571,              SONG_572,        SONG_573,                 SONG_574,
+    SONG_651,             SONG_629,              SONG_630,        SONG_201,                 SONG_202,
+    SONG_653,             SONG_654,              SONG_354,        SONG_355,                 SONG_403,
+    SONG_404,             SONG_199,              SONG_200,        SONG_821,                 SONG_208,
+    SONG_219,             SONG_236,              SONG_235,        SONG_203,                 SONG_908,
+    SONG_907,             SONG_911,              SONG_909,        SONG_912,                 SONG_910,
+    SONG_913,             SE_GUN_FIRE,           SONG_213,        SE_GUN_AIM,               SE_GUN_MISFIRE,
+    SE_GUN_CHARGED,       SONG_425,              SONG_426,        SE_ENCHANT,               SE_HEALING,
+    SONG_920,             SONG_921,              SONG_922,        SE_TRANSFORM,             SONG_924,
+    SE_CHANGE_WOLF,       SE_CHANGE_BAT,         SE_CHANGE_MOUSE, SE_506,                   SONG_507,
+    NOISE_SOLAR_CHARGE,   SE_SOLAR_STAND_DENY,   SE_DENY_302,     SONG_357,                 SE_DAMAGE,
+    SONG_209,             SONG_680,              SE_CRASH_307,    SE_308,                   SE_401,
+    SE_CONFUSE,           SONG_433,              SONG_492,        SONG_493,                 SONG_218,
+    SONG_210,             SONG_211,              SONG_682,        SONG_384,                 SONG_385,
+    SONG_386,             SONG_494,              SONG_822,        SONG_637,                 SONG_638,
+    SONG_639,             SONG_644,              SONG_645,        SONG_601,                 SE_WOOD_DOOR_427,
+    SONG_428,             SONG_430,              SONG_431,        SONG_432,                 SONG_636,
+    SE_INFO,              SE_UNK_287,            SONG_602,        SONG_603,                 SONG_604,
+    SONG_807,             SONG_513,              SONG_514,        SONG_515,                 SONG_671,
+    SONG_516,             SONG_569,              SONG_664,        SONG_925,                 SONG_509,
+    SONG_510,             SONG_525,              SONG_527,        SONG_605,                 SONG_526,
+    SONG_917,             SONG_541,              SONG_809,        SE_808,                   SONG_542,
+    SONG_799,             SONG_800,              SONG_801,        SONG_802,                 SONG_803,
+    SE_ENEMY_DAMAGED,     SONG_529,              SONG_316,        SONG_935,                 SONG_936,
+    SONG_937,             SONG_938,              SONG_939,        SONG_940,                 SONG_941,
+    SONG_942,             SONG_944,              SONG_945,        SONG_946,                 SONG_947,
+    SONG_931,             SONG_932,              SONG_933,        SONG_930,                 SONG_959,
+    SONG_960,             SONG_961,              SONG_962,        SONG_963,                 SONG_964,
+    SONG_969,             SONG_966,              SONG_967,        SE_BEE_968,               SONG_965,
+    SONG_971,             SONG_972,              SONG_970,        SONG_412,                 SONG_981,
+    SONG_982,             SONG_983,              SONG_411,        SONG_985,                 SONG_986,
+    SONG_987,             SONG_988,              SONG_994,        SONG_995,                 SONG_421,
+    SONG_996,             SONG_998,              SONG_413,        SONG_418,                 SONG_419,
+    SONG_990,             SONG_991,              SONG_992,        SONG_993,                 SONG_436,
+    SONG_997,             SONG_999,              SONG_414,        SONG_420,                 SONG_212,
+    SONG_237,             SONG_238,              SONG_215,        SONG_229,                 SONG_214,
+    SONG_242,             CRY_BOKU_NOTICE,       CRY_BOKU_ALERT,  CRY_BOKU_QUESTION,        SE_UNK_298,
+    SE_x29D,              SONG_685,              SONG_228,        SONG_234,                 SONG_813,
+    SONG_264,             SONG_232,              SONG_246,        SONG_247,                 SONG_265,
+    SONG_248,             SE_UNK_ENEMY_VOICE,    SE_UNK_254,      CRY_MUMMY_255,            CRY_MUMMY_DEATH,
+    CRY_MUMMY_257,        CRY_MUMMY_258,         CRY_MUMMY_259,   CRY_MUMMY_260,            CRY_MUMMY_BURN,
+    SONG_358,             SONG_405,              SE_UNK_274,      SE_UNK_275,               SE_UNK_276,
+    SE_UNK_277,           SONG_361,              SONG_362,        SONG_363,                 SONG_364,
+    SONG_365,             SONG_366,              SONG_367,        SONG_368,                 SONG_399,
+    SONG_400,             SONG_482,              CRY_GOLEM_389,   CRY_GOLEM_ALERT,          CRY_GOLEM_391,
+    SONG_392,             SONG_393,              SONG_394,        SONG_395,                 SONG_397,
+    SONG_398,             SONG_434,              SONG_435,        SONG_625,                 SONG_626,
+    SONG_471,             SONG_472,              SONG_473,        SONG_476,                 SONG_477,
+    SONG_478,             SONG_475,              SONG_479,        SONG_480,                 SONG_481,
+    SONG_470,             SONG_455,              SONG_456,        SONG_457,                 SONG_458,
+    SONG_459,             SONG_461,              SONG_462,        SONG_463,                 SONG_464,
+    SONG_465,             SONG_468,              SONG_469,        SONG_483,                 SONG_484,
+    SONG_485,             SE_511,                SONG_608,        SONG_249,                 SONG_250,
+    SE_UNK_294,           SONG_407,              SONG_832,        SONG_831,                 SE_PILEDRIVER_07,
+    SE_GENERATOR_ENABLED, SE_GENERATOR_DISABLED, SONG_245,        SONG_243,                 SONG_244,
+    SE_UNK_297,           SONG_490,              SONG_491,        SE_OPEN_TREASURE,         SE_PICKUP,
+    SE_EQUIP,             SE_UNK_291,            SONG_387,        SONG_623,                 SONG_668,
+    SONG_679,             SONG_695,              SE_UNK_290,      SE_SOLAR_INSECT_285,      SONG_696,
+    SONG_657,             SONG_658,              SONG_659,        SE_UNK_282,               SE_SPIRIT_BUGS_283,
+    SE_SPIRIT_BUGS_284,   SONG_206,              SONG_207,        SONG_655,                 SONG_388,
+    SONG_322,             SE_BLOCK_COLLISION,    SE_326,          SONG_337,                 SONG_347,
+    SONG_336,             SONG_330,              SONG_334,        SONG_335,                 SONG_310,
+    SONG_348,             SONG_329,              SONG_615,        SONG_532,                 SONG_533,
+    SONG_534,             SONG_535,              SE_536,          SE_537,                   SE_538,
+    SE_539,               SONG_341,              SONG_338,        SONG_339,                 SONG_340,
+    SONG_320,             SONG_321,              SONG_339,        SONG_332,                 SONG_333,
+    SONG_370,             SONG_691,              SONG_424,        SONG_806,                 SONG_646,
+    SONG_531,             SONG_546,              SONG_344,        SONG_345,                 SONG_609,
+    SONG_610,             SONG_611,              SONG_649,        SONG_650,                 SONG_648,
+    SONG_642,             SONG_614,              SONG_543,        SONG_544,                 SONG_415,
+    SONG_416,             SONG_567,              SONG_681,        SONG_547,                 SONG_350,
+    SONG_408,             SONG_409,              SONG_351,        SONG_352,                 SONG_487,
+    SONG_815,             SONG_612,              SONG_613,        SONG_641,                 SONG_453,
+    SONG_451,             SONG_454,              SONG_452,        SONG_950,                 SONG_951,
+    SONG_963,             SONG_952,              SONG_958,        SONG_954,                 SONG_955,
+    SONG_957,             SE_838,                SONG_839,        SONG_840,                 SONG_841,
+    SE_842,               SE_843,                SONG_844,        SE_846,                   SE_UNK_849,
+    SE_UNK_850,           SE_UNK_851,            SE_UNK_852,      SONG_827,                 SONG_835,
+    SONG_812,             SONG_837,              SONG_818,        SONG_819,                 SONG_828,
+    NOISE_SMOKE,          SONG_973,              SONG_974,        SONG_975,                 SONG_976,
+    SONG_977,             SONG_978,              SONG_979,        SONG_327,                 SE_373,
+    SE_375,               SONG_376,              SONG_377,        SE_378,                   SE_382,
+    SONG_440,             SONG_441,              SONG_442,        SONG_443,                 SONG_444,
+    SONG_555,             NOISE_UNK_113,         SONG_445,        SONG_548,                 SONG_549,
+    SONG_550,             SONG_551,              SONG_552,        SONG_553,                 SONG_554,
+    SONG_555,             SONG_556,              SONG_557,        CRY_JORMY_TONGUE_DAMAGED, SONG_559,
+    SONG_560,             SONG_561,              SONG_564,        SONG_562,                 SONG_563,
+    NOISE_HEARTBEAT,      SONG_805,              NOISE_UNK_111,   SONG_882,                 SONG_883,
+    SONG_508,             SONG_867,              SONG_868,        SONG_101,                 SONG_131,
+    NOISE_SIZZLE,         SOUND_103,             NOISE_CHICKEN,   NOISE_CROW,               NOISE_QUAKE,
+    SONG_132,             -1,
 };  // 0x085afaee
 // clang-format on
 
 // clang-format off
 const SoundID16 u16_ARRAY_085afeb2[99] = {
-    0x2BC, 0x2C4, 0x2C5, 0x2C6, 0x2C7, 0x128, 0x308, 0xE7,  0x305,  0x240,
-    0x246, 0x306, 0x303, 0x307, 0x309, 0x2BB, 0x2C8, 0x2C9, 0x2CA,  0x2CB,
-    0x2E4, 0x2E6, 0x2E7, 0x2E5, 0x2E8, 0x2E9, 0x2ED, 0x2EA, 0x36A,  0x36B,
-    0x2EB, 0x120, 0x15D, 0x2F9, 0x2FA, 0x2C2, 0x2C3, 0x316, 0x319,  0x317,
-    0x2E3, 0x2E2, 0x2F2, 0x2F3, 0x2D8, 0x2D9, 0x2DA, 0x2DB, 0x2D0,  0x2D1,
-    0x2D2, 0x2D3, 0x2D4, 0x2D5, 0x2D6, 0x2D7, 0x2F4, 0x2F5, 0x2DD,  0x2DE,
-    0x2DF, 0x2E0, 0x2E1, 0x2F6, 0x2C0, 0x2C1, 0x2BD, 0x24B, 0x252,  0x356,
-    0x357, 0x358, 0x359, 0x355, 0x35A, 0x35B, 0x35C, 0x34F, 0x350,  0x2CF,
-    0x2CC, 0x2CD, 0x2CE, 0x241, 0x247, 0x254, 0x24E, 0x255, 0x30A,  0x30B,
-    0x30C, 0x30E, 0x30F, 0x30D, 0x243, 0x311, 0x26A, 0x26B, 0xFFFF,
+    SONG_700,             SONG_708,              SONG_709,              SONG_710,                   SONG_711,
+    VO_RDJANGO_TAIYO_296, SONG_776,              SONG_231,              VO_DJANGO_773,              SONG_576,
+    SONG_582,             VO_DJANGO_MAGIC,       VO_DARK_DJANGO_SCREAM, VO_DJANGO_BOKURANO,         SONG_777,
+    SONG_699,             SONG_712,              SONG_713,              SONG_714,                   SONG_715,
+    VO_SABATA_ANKOKU,     VO_SABATA_SMIRK,       VO_SABATA_LAUGH,       VO_SABATA_DOKE,             VO_SABATA_IMADA,
+    VO_SABATA_TAKETHIS,   SONG_749,              VO_SABATA_STUN,        SONG_874,                   SONG_875,
+    VO_SABATA_DEATH,      VO_OTENKO_OTNK,        SONG_349,              VO_OTENKO_TAIYO_TO_TOMO_NI, VO_OTENKO_ASU_MO,
+    SONG_706,             SONG_707,              SONG_790,              SONG_793,                   VO_LITA_WELCOME,
+    VO_LADY_WELCOME,      SONG_738,              VO_KID_WELCOME,        VO_ENNIO,                   SONG_728,
+    SONG_729,             SONG_730,              SONG_731,              SONG_720,                   SONG_721,
+    SONG_722,             SONG_723,              SONG_724,              SONG_725,                   SONG_726,
+    VO_CHEYENNE_727,      VO_SUMIRE_ONIICHAN1,   VO_SUMIRE_ONIICHAN2,   VO_SMITH_WELCOME,           SONG_734,
+    SONG_735,             SONG_736,              SONG_737,              VO_COFFIN_SHOP,             SONG_704,
+    SONG_705,             SONG_701,              SONG_587,              SONG_594,                   SONG_854,
+    SONG_855,             SONG_856,              SONG_857,              VO_RINGO_DEFEATED,          SONG_858,
+    SONG_859,             VO_RINGO_860,          SONG_847,              SONG_848,                   SONG_719,
+    SONG_716,             VO_DURATHROR_YAHH_717, VO_DURATHROR_YAHH_718, SONG_577,                   SONG_583,
+    SONG_596,             SONG_590,              SONG_597,              SONG_778,                   VO_DAINN_779,
+    VO_DAINN_780,         VO_DAINN_LAUGH,        SONG_783,              SE_DAINN_STUN_BY_RINGO_BAT, SONG_579,
+    VO_DAINN_DEATH,       SONG_618,              SONG_619,              -1,
 };  // 0x085afeb2
 // clang-format on
-
-static inline void EntityA288_SetFlags(EntityA288* p, u32 bits) { p->flags |= bits; }
 
 void FUN_08213880(EntityA288* p) { p->tilemap2 = GetFile(DIR_TILE_MAP, TILEMAP_A413); }
 
@@ -335,9 +400,9 @@ void FUN_082158e4(EntityA288* p) {
 // 残差0命令 (31/31), レジスタ名だけ違う: 0xE84 のプール定数が原典は r1, こちらは r2 に載る
 NON_MATCH void FUN_082158fc(EntityA288* p) {
 #ifdef NONMATCHING_C
-  char* text = Textbox_LookupString(VM_ParseStringRef(p->unk_e80) + p->unk_e84);
+  char* text = GetStringByID(VM_ParseStringRef(p->unk_e80) + p->unk_e84);
 
-  FUN_0821b28c(9, 10, 0x12, 2);
+  Video_ClearTextRect(9, 10, 0x12, 2);
   Video_DrawText(9, 10, text);
   gStat->unk_944 = p->unk_e84;
 #else
@@ -372,8 +437,8 @@ void FUN_08216000(EntityA288* p) {
 
   ClearBGTilemapBuffer(0);
   Video_GenerateBGMap(0, 0, 0, 0, 0);
-  str = Textbox_LookupString(VM_ParseStringRef(p->unk_12ac) + p->unk_12ba);
-  FUN_0821b28c(10, 4, 16, 2);
+  str = GetStringByID(VM_ParseStringRef(p->unk_12ac) + p->unk_12ba);
+  Video_ClearTextRect(10, 4, 16, 2);
   Video_DrawText(10, 4, str);
 }
 
@@ -596,10 +661,10 @@ void EntityA288_SetState(EntityA288* p, s32 state) {
   p->state = state;
   p->timer1 = 0;
   p->updateCallback = sEntityA288StateFns[state];
-  EntityA288_SetFlags(p, 1);
+  SET_FLAGS(p->flags, 1);
   p->unk_5c = 0;
   p->timer2 = 0;
-  EntityA288_SetFlags(p, 2);
+  SET_FLAGS(p->flags, 2);
 }
 
 s32 EntityA288_Update(EntityA288* p) {
@@ -627,6 +692,7 @@ s32 EntityA288_Destroy(EntityA288* p) {
 
 NAKED s32 EntityA288_Init(EntityA288* p) { INCFUNC("asm/func/EntityA288_Init.inc"); }
 
+// 0xA288
 EntityA288* EntityA288_Create(void) {
   EntityA288* p = CreateEntity(ENTITY_UNK_11, sizeof(EntityA288));
 

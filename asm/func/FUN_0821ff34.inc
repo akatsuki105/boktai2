@@ -27,7 +27,7 @@
 	movs r1, #0xe
 	movs r2, #1
 	movs r3, #1
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 	movs r3, #0xf6
 	lsls r3, r3, #2
 	adds r0, r5, r3
@@ -327,7 +327,7 @@ _082201A4:
 	movs r1, #0x17
 	movs r2, #1
 	movs r3, #1
-	bl FUN_0821c400
+	bl ShadeMan_PlayAnim
 _082201CA:
 	ldr r1, _082201E8 @ =0x000002D9
 	adds r0, r5, r1

@@ -20,7 +20,7 @@ typedef struct Entity080acd4c {
 } Entity080acd4c;
 static_assert(sizeof(Entity080acd4c) == 412);
 
-extern Entity080acd4c* gEntity080acd4c;  // 0x03002C54
+COMMON_DATA Entity080acd4c* gEntity080acd4c = NULL;  // 0x03002C54
 
 void FUN_080acc14(void) { gEntity080acd4c = NULL; }
 

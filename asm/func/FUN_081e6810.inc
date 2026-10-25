@@ -145,14 +145,14 @@ _081E6916:
 	ldrsb r0, [r5, r0]
 	cmp r0, #0x10
 	beq _081E6A06
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r1, _081E6968 @ =0x000015F0
 	adds r0, r4, r1
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #0x10
-	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl GetStringByID
+	bl Marquee_SetText
 	movs r0, #0x10
 	b _081E6992
 	.align 2, 0
@@ -167,14 +167,14 @@ _081E696C:
 	ldrsb r0, [r5, r0]
 	cmp r0, #0x11
 	beq _081E6A06
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r3, _081E69A0 @ =0x000015F0
 	adds r0, r4, r3
 	ldr r0, [r0]
 	bl VM_ParseStringRef
 	adds r0, #0x11
-	bl Textbox_LookupString
-	bl FUN_08049e30
+	bl GetStringByID
+	bl Marquee_SetText
 	movs r0, #0x11
 _081E6992:
 	strb r0, [r5]
@@ -186,7 +186,7 @@ _081E699C: .4byte 0x00001617
 _081E69A0: .4byte 0x000015F0
 _081E69A4: .4byte FUN_081e6b5c
 _081E69A8:
-	bl FUN_08049e5c
+	bl Marquee_Clear
 	ldr r2, _081E6A0C @ =0x0000161A
 	adds r5, r4, r2
 	ldrb r0, [r5]

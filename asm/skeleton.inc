@@ -23081,7 +23081,7 @@ _0810E11E:
 	lsls r2, r2, #3
 	adds r1, r7, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _0810E154
@@ -23611,7 +23611,7 @@ _0810E564:
 	lsls r2, r2, #3
 	adds r1, r7, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _0810E5B0
@@ -23914,7 +23914,7 @@ _0810E7E4:
 	lsls r6, r6, #3
 	adds r1, r7, r6
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	cmp r3, #0x1f
 	bgt _0810E820
@@ -24127,7 +24127,7 @@ _0810E9A4:
 	lsls r2, r2, #3
 	adds r1, r7, r2
 	ldrh r1, [r1]
-	bl FUN_0820ccd0
+	bl EnemyDex_GetEntryIdx
 	adds r3, r0, #0
 	str r4, [sp, #0xb8]
 	cmp r3, #0x1f
@@ -24261,7 +24261,7 @@ _0810EA70:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x20
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0810EC10 @ =0x000003FF
@@ -24285,7 +24285,7 @@ _0810EA70:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x40
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0810EC10 @ =0x000003FF
@@ -24309,7 +24309,7 @@ _0810EA70:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x5e
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0810EC10 @ =0x000003FF
@@ -24333,7 +24333,7 @@ _0810EA70:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0x80
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0810EC10 @ =0x000003FF
@@ -24357,7 +24357,7 @@ _0810EA70:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0xc4
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r0, [r4]
 	adds r0, #1
 	ldr r1, _0810EC10 @ =0x000003FF
@@ -24381,7 +24381,7 @@ _0810EA70:
 	adds r0, r6, #0
 	adds r2, r5, #0
 	movs r3, #0xf0
-	bl FUN_080ddcc8
+	bl EmitSmoke
 	ldr r5, [sp, #0xb8]
 	ldrb r4, [r5]
 	cmp r4, #4

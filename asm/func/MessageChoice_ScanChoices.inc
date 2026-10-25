@@ -6,7 +6,7 @@
 	bl VM_ParseStringRef
 	ldr r1, [r4, #0x60]
 	adds r0, r0, r1
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r2, r0, #0
 	movs r0, #0
 	strb r0, [r4, #0x1b]

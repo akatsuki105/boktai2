@@ -295,7 +295,7 @@ Tiles:
   .incbin "data/actor_sprites/komainu.4bpp"              @ 0x08A24910, SpriteID: 0xF680, PlttID: 6, 大聖堂の狛犬
   .incbin "data/actor_sprites/A5B3.4bpp"                 @ 0x08A25190, SpriteID: 0xA5B3, PlttID: 0, 大聖堂の水晶?
   .incbin "data/actor_sprites/ghoul_liquid.4bpp"         @ 0x08A25210, SpriteID: 0xA5B4, PlttID: 1, グール系が出すホルルン液
-  .incbin "data/actor_sprites/5AFD.4bpp"                 @ 0x08A25A10, SpriteID: 0x5AFD, PlttID: 7, シェードマンのスピーカー?
+  .incbin "data/actor_sprites/speaker.4bpp"                 @ 0x08A25A10, SpriteID: 0x5AFD, PlttID: 7, シェードマンがクラッシュノイズのときに出すスピーカー
   .incbin "data/actor_sprites/5AFE.4bpp"                 @ 0x08A25E90, SpriteID: 0x5AFE, PlttID: 7, 輪っかのエフェクト(シェードマン関連?)
   .incbin "data/actor_sprites/mummy_0.4bpp"              @ 0x08A26B10, SpriteID: 0x48DE, PlttID: 23, マミー
   .incbin "data/actor_sprites/mummy_1.4bpp"              @ 0x08A29710, SpriteID: 0xD4EE, PlttID: 23, マミー
@@ -404,7 +404,7 @@ Tiles:
   .incbin "data/actor_sprites/C42D.4bpp"                 @ 0x08A8C330, SpriteID: 0xC42D, PlttID: 283, なんかの破片?
   .incbin "data/actor_sprites/0334.4bpp"                 @ 0x08A8C530, SpriteID: 0x0334, PlttID: 283, C42Dの破片の小さいやつ?
   .incbin "data/actor_sprites/9DFF.4bpp"                 @ 0x08A8C550, SpriteID: 0x9DFF, PlttID: 83, 黒塗り
-  .incbin "data/actor_sprites/A152.4bpp"                 @ 0x08A8D150, SpriteID: 0xA152, PlttID: 284, なんかの魔方陣
+  .incbin "data/actor_sprites/time_magic_circle.4bpp"    @ 0x08A8D150, SpriteID: 0xA152, PlttID: 284, タイム魔方陣
   .incbin "data/actor_sprites/17C7.4bpp"                 @ 0x08A8D5D0, SpriteID: 0x17C7, PlttID: 287, 重量スイッチ
   .incbin "data/actor_sprites/210E.4bpp"                 @ 0x08A8DBD0, SpriteID: 0x210E, PlttID: 44, エフェクト
   .incbin "data/actor_sprites/210F.4bpp"                 @ 0x08A8DDD0, SpriteID: 0x210F, PlttID: 289, エフェクト(火花?)
@@ -525,7 +525,7 @@ Tiles:
   .incbin "data/actor_sprites/7BE2.4bpp"                 @ 0x08B58C70, SpriteID: 0x7BE2, PlttID: 83, 黒塗り
   .incbin "data/actor_sprites/2EC0.4bpp"                 @ 0x08B5D490, SpriteID: 0x2EC0, PlttID: 594, 遺跡ステージの4人の燭台の床パネル?
   .incbin "data/actor_sprites/bat.4bpp"                  @ 0x08B5D910, SpriteID: 0xDA6D, PlttID: 610, バット
-  .incbin "data/actor_sprites/354D.4bpp"                 @ 0x08B5E330, SpriteID: 0x354D, PlttID: 627, 何かのエフェクト
+  .incbin "data/actor_sprites/shaian_spin_attack.4bpp"   @ 0x08B5E330, SpriteID: 0x354D, PlttID: 627, シャイアンの回転斬りのエフェクト
   .incbin "data/actor_sprites/shaian_ax.4bpp"            @ 0x08B5E830, SpriteID: 0x39A3, PlttID: 626, シャイアンが投げる斧
   .incbin "data/actor_sprites/level_up_indicator.4bpp"   @ 0x08B5E950, SpriteID: 0x1C1D, PlttID: 44
   .incbin "data/actor_sprites/over.4bpp"                 @ 0x08B5EE50, SpriteID: 0x654B, PlttID: 634, "GAMEOVER"

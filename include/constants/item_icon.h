@@ -20,11 +20,7 @@
 #define ICON_TIMER_75 209                       // 耐久値75%のアイコン
 #define ICON_TIMER_50 210                       // 耐久値50%のアイコン
 #define ICON_TIMER_25 211                       // 耐久値25%のアイコン
-#define ICON_MEGAMAN_0 212                      // ロックマンの顔アイコン
-#define ICON_MEGAMAN_1 213                      // ロックマンの顔アイコン
-#define ICON_MEGAMAN_2 214                      // ロックマンの顔アイコン
-#define ICON_SHADEMAN_0 215                     // シェードマンの顔アイコン
-#define ICON_SHADEMAN_1 216                     // シェードマンの顔アイコン
-#define ICON_SHADEMAN_2 217                     // シェードマンの顔アイコン
+#define ICON_MEGAMAN(idx) (212 + (idx))         // クロスオーバーバトルで使うロックマンの顔アイコン(残りHPが少ないほど険しそうな表情になる)
+#define ICON_SHADEMAN(idx) (215 + (idx))        // クロスオーバーバトルで使うシェードマンの顔アイコン(残りHPが少ないほど険しそうな表情になる)
 
 #endif  // __INCLUDE_CONSTANTS_ITEM_ICON_H__

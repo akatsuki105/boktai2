@@ -1,7 +1,7 @@
 #include "collision_map.h"
 #include "entity.h"
-#include "game.h"
 #include "global.h"
+#include "map_inline.h"
 #include "particle.h"
 #include "registry.h"
 #include "vm.h"
@@ -16,43 +16,6 @@ typedef struct {
   Particle ptcls[17];  // 0x20
 } EntityD852;
 static_assert(sizeof(EntityD852) == 712);
-
-// pos のタイルの高さを返す, 階段タイルなら上る向きの座標の端数ぶんだけ下げる
-static inline s32 GetTileHeightAt(WorldPos* pos) {
-  MapTileOverride* ov;
-  CollisionMapTile* tile;
-  s32 stairs;
-  s32 height;
-  s32 bx;
-  s32 bz;
-  s32 idx;
-
-  bx = (s8)(pos->x >> 8);
-  bz = (s8)(pos->z >> 8);
-  if (bx < 0 || bz < 0 || (u32)bx >= (u32)gMapBlockW || (u32)bz >= (u32)gMapBlockH) {
-    idx = 0;
-  } else {
-    idx = gCollisionMap->rowOffsets[bz] + bx;
-  }
-
-  ov = Map_FindTileOverride(idx, 1);
-
-  tile = (ov != NULL) ? &ov->tile : &gCollisionMap->tiledata->tiles[idx];
-  stairs = tile->heightStairs >> 4;
-  height = (tile->heightStairs & 0xF) << 8;
-  switch (stairs) {
-    case STAIRS_VERTICAL: {
-      height -= pos->z & 0xFF;
-      break;
-    }
-    case STAIRS_HORIZONTAL: {
-      height -= pos->x & 0xFF;
-      break;
-    }
-  }
-
-  return height;
-}
 
 void Map_SetLoadingZoneIndicatorMode(void) {
   if (VM_SeekToNamedArg('m')) {
@@ -137,11 +100,9 @@ void Map_AddLoadingZoneIndicatorScripted(void) {
   s32 param_3;
 
   if (VM_SeekToNamedArg('p')) {
-    pos.x = VM_GetValue();
-    pos.y = VM_GetValue();
-    pos.z = VM_GetValue();
+    VEC3_SET(pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   } else {
-    pos.x = 0, pos.y = 0, pos.z = 0;
+    VEC3_SET(pos, 0, 0, 0);
   }
 
   if (VM_SeekToNamedArg('f')) {
@@ -189,7 +150,7 @@ void Map_SpawnLoadingZoneIndicator(void) {
 
   pos.x = (zone->x1 + zone->x2) >> 1;
   pos.z = (zone->y1 + zone->y2) >> 1;
-  pos.y = GetTileHeightAt(&pos);
+  pos.y = TileHeightAt(&pos);
 
   dir = FUN_080a64cc(zone);
   if (dir < 0) {

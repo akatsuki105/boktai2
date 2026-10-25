@@ -70,8 +70,6 @@ bool32 Breakable_TakeStateChanged(Breakable* item) {
 void Breakable_OnHit(HitboxData* a, HitboxData* b, Breakable* item) {
   Vec3 pos;
   s32 angle;
-  s32 sin;
-  s32 offset;
 
   Hitbox_ApplyDamage(a, b);
   item->hp -= b->damage;
@@ -88,20 +86,8 @@ void Breakable_OnHit(HitboxData* a, HitboxData* b, Breakable* item) {
   pos.y += 0x80;
   pos.z += 0x80;
   angle = a->angle + 0x80;
-  sin = gSineTable[(a->angle + 0xC0) & 0xFF] << 5;
-  if (sin >= 0) {
-    offset = sin >> 12;
-  } else {
-    offset = -((-sin) >> 12);
-  }
-  pos.x += offset;
-  sin = gSineTable[angle & 0xFF] << 5;
-  if (sin >= 0) {
-    offset = sin >> 12;
-  } else {
-    offset = -((-sin) >> 12);
-  }
-  pos.z += offset;
+  pos.x += POLAR_X(32, angle);
+  pos.z += POLAR_Z(32, angle);
   Entity080146e0_SpawnAtAngle(4, 3, &pos, angle, 0xA4, 16, 4, 8, 3, 30, 0xF);
   item->shakeTimer = 10;
 }
@@ -135,7 +121,7 @@ NON_MATCH void Breakable_UpdateAlive(BreakableManager* p, Breakable* item) {
       VM_ExecByID(item->scriptOnBreak, &sa);
     }
     item->sprite.poseIdx = item->brokenPose;
-    item->hitbox.flags |= HBFLAG_UNK_2;
+    item->hitbox.flags |= HBFLAG_HIDDEN;
     Breakable_SetUpdate(item, Breakable_UpdateIdle);
     Video_SetAuxSpritePltt(&item->gfx, 6);
     pos = item->pos;
@@ -156,9 +142,9 @@ NON_MATCH void Breakable_UpdateAlive(BreakableManager* p, Breakable* item) {
     if (item->shakeTimer != 0) {
       item->shakeTimer--;
       if (item->shakeTimer == 0) {
-        item->hitbox.flags &= ~HBFLAG_UNK_2;
+        item->hitbox.flags &= ~HBFLAG_HIDDEN;
       } else {
-        item->hitbox.flags |= HBFLAG_UNK_2;
+        item->hitbox.flags |= HBFLAG_HIDDEN;
       }
       item->sprite.pos = item->pos;
       table = gRandomTable;
@@ -282,9 +268,7 @@ s32 Breakable_Spawn(void) {
   item->hp = VM_GetNamedArgValue('l', 10);
   item->unk_6 = 0;
   if (VM_SeekToNamedArg('p')) {
-    item->pos.x = VM_GetValue();
-    item->pos.y = VM_GetValue();
-    item->pos.z = VM_GetValue();
+    VEC3_SET(item->pos, VM_GetValue(), VM_GetValue(), VM_GetValue());
   }
   spriteID = VM_GetNamedArgValue('t', SPRITE_KOMAINU);
   pose = VM_GetNamedArgValue('P', 0);
@@ -303,8 +287,8 @@ s32 Breakable_Spawn(void) {
   item->brokenPose = pose + 1;
   item->flashTimer = 0;
   hitbox = &item->hitbox;
-  size.x = (BLOCK / 2), size.y = BLOCK, size.z = (BLOCK / 2);
-  offset.x = -(BLOCK / 2), offset.y = (BLOCK / 2), offset.z = (BLOCK / 2);
+  VEC3_SET(size, (BLOCK / 2), BLOCK, (BLOCK / 2));
+  VEC3_SET(offset, -(BLOCK / 2), (BLOCK / 2), (BLOCK / 2));
   Hitbox_Init(hitbox, item->id, HBFLAG_HURTBOX | HBFLAG_UNK_0, 0, 0x10, &size, &offset);
   Hitbox_SetHandler(hitbox, Breakable_OnHit, item);
   Hitbox_SetPos(hitbox, &item->pos, 0);

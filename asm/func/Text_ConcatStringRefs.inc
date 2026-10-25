@@ -7,7 +7,7 @@
 	adds r1, r0, #0
 	adds r4, r1, r4
 	adds r0, r4, #0
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r1, r0, #0
 	cmp r1, #0
 	beq _08048ADC
@@ -26,7 +26,7 @@ _08048AC0:
 	adds r1, r0, #0
 	ldr r0, [sp, #0x10]
 	adds r0, r1, r0
-	bl Textbox_LookupString
+	bl GetStringByID
 	adds r1, r0, #0
 	cmp r1, #0
 	bne _08048AEC

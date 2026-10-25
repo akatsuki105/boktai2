@@ -67,7 +67,7 @@ _0808A522:
 	movs r0, #0
 _0808A538:
 	ldr r2, [sp, #0x40]
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r5, r0, #0
 	adds r0, r7, #0
 	orrs r0, r6

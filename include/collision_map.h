@@ -117,7 +117,10 @@ typedef struct {
 } PathWalker;
 static_assert(sizeof(PathWalker) == 12);
 
+Path* Map_GetPath(u8 idx);
 PathNode* Map_GetPathNodes(Path* path);
+s32 Map_GetPathNodePos(Vec3* dst, u8 pathIdx, u8 nodeIdx);
+s32 Map_PickRandomPathNode(Vec3* dst, s32 pathIdx);
 bool32 Map_InitPathWalker(PathWalker* p, u32 pathIdx, u32 param_3, u32 nodeIdx);
 bool32 Map_AdvancePathWalker(PathWalker* p);
 
@@ -234,6 +237,7 @@ static_assert(sizeof(CollisionMapData) == 3620);
 extern CollisionMapData* gCollisionMap;
 
 MapTileOverride* Map_FindTileOverride(u32 tileIdx, u32 mask);
+void Map_InitTileOverride(MapTileOverride* p, s32 tileIdx, s32 stairs, s32 height, s32 occluder, s32 attr);
 s32 Map_AddTileOverride(MapTileOverride* p, s32 tileIdx, s32 stairs, s32 height, s32 occluder, s32 attr);
 void Map_RemoveTileOverride(MapTileOverride* p);
 u16 Map_GetTileHeightAt(Vec3* pos);

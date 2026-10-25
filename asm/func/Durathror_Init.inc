@@ -13,7 +13,7 @@
 	str r0, [sp, #0x34]
 	adds r0, r7, #0
 	ldr r1, [sp, #0x34]
-	bl FUN_08022a0c
+	bl Boss_Register
 	ldr r0, _0803BA48 @ =0x03002BE0
 	ldr r2, [r0]
 	cmp r2, #0
@@ -315,7 +315,7 @@ _0803BCA8:
 	mov r1, r8
 	ldr r2, [sp, #0x34]
 	add r3, sp, #0x1c
-	bl Boss_Init_08022a70
+	bl Boss_Init
 	movs r0, #0x8a
 	lsls r0, r0, #1
 	add r0, sb
@@ -590,7 +590,7 @@ _0803BEA4:
 	orrs r0, r2
 	str r0, [r1, #8]
 _0803BEE6:
-	ldr r0, _0803BF3C @ =FUN_0803b830
+	ldr r0, _0803BF3C @ =Durathror_HandleDamage
 	mov r4, r8
 	str r0, [r4]
 	ldr r0, _0803BF40 @ =FUN_0803b7ec
@@ -604,13 +604,13 @@ _0803BEE6:
 	mov r0, sb
 	mov r1, sl
 	mov r2, sl
-	bl FUN_08022b2c
+	bl Boss_InitHP
 	adds r0, r7, #0
-	bl FUN_08038dc0
+	bl Durathror_InitHitbox
 	movs r2, #0
 	ldrsh r1, [r4, r2]
 	adds r0, r7, #0
-	bl FUN_08038e6c
+	bl Durathror_InitHurtbox
 	movs r0, #0x63
 	bl VM_SeekToNamedArg
 	cmp r0, #0
@@ -625,7 +625,7 @@ _0803BEE6:
 	b _0803BF4E
 	.align 2, 0
 _0803BF38: .4byte FUN_0803a128
-_0803BF3C: .4byte FUN_0803b830
+_0803BF3C: .4byte Durathror_HandleDamage
 _0803BF40: .4byte FUN_0803b7ec
 _0803BF44:
 	mov r0, sb

@@ -71,9 +71,9 @@ void (*const PTR_ARRAY_085aa70c[3])(Player*, s32) = {
 
 // --------------------------------------------
 
-const SoundID32 gSpiritBugsSoundIDs[3] = {0x11C, 0x11B, 0x11A};
+const SoundID32 gSpiritBugsSoundIDs[3] = {SE_SPIRIT_BUGS_284, SE_SPIRIT_BUGS_283, SE_UNK_282};
 
-const SoundID32 gSoundIDs_085aa724[3] = {0x293, 0x292, 0x291};
+const SoundID32 gSoundIDs_085aa724[3] = {SONG_659, SONG_658, SONG_657};
 
 // --------------------------------------------
 
@@ -255,8 +255,8 @@ NON_MATCH void Entity0800a89c_PurifyDarkBugs(void) {
       for (j = 0; j < 4; j++) {
         if (swarm->bugs[j].state != 0) {
           AuxAnim_SetAnim(&swarm->bugs[j].anim, p->anim, u16_ARRAY_085aa6d0[(p->isSabata * 3 + swarm->kind) * 2], 0, 0);
-          if (swarm->bugs[j].state < 3 && swarm->bugs[j].timer < 180) {
-            swarm->bugs[j].timer = 180;
+          if (swarm->bugs[j].state < 3 && swarm->bugs[j].timer < SECOND(3)) {
+            swarm->bugs[j].timer = SECOND(3);
           }
         }
       }

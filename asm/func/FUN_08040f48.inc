@@ -11,7 +11,7 @@
 	adds r0, r5, #0
 	adds r1, r2, #0
 	adds r2, r6, #0
-	bl FUN_08055e34
+	bl SpriteHolder_InitMain
 	adds r6, r0, #0
 	adds r1, r4, #0
 	adds r1, #0xfc
@@ -29,7 +29,7 @@ _08040F7A:
 	adds r1, r2, #0
 	adds r2, r3, #0
 	adds r3, r6, #0
-	bl FUN_08055dac
+	bl SpriteHolder_InitAux
 	adds r6, r0, #0
 	adds r0, r4, #0
 	adds r0, #0xdc
@@ -45,7 +45,7 @@ _08040FA2:
 	strh r0, [r4, #0x1e]
 	adds r0, r5, #0
 	movs r1, #2
-	bl FUN_08055f5c
+	bl SpriteHolder_SetPriority
 	cmp r6, #0
 	bge _08040FB6
 	movs r0, #1

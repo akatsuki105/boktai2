@@ -136,4 +136,4 @@ Entity080601a8Elem* FUN_080601f0(Entity080601a8* p, u32* outIdx) {
   return NULL;
 }
 
-NAKED s32 FUN_08060220(Entity080601a8* p, s8 angle, s16 speed, s16 velY, u16 lifetime, u8 unk_d, Vec3* pos) { INCFUNC("asm/func/FUN_08060220.inc"); }
+NAKED s32 FUN_08060220(Entity080601a8* p, u32 angle, s32 speed, s32 velY, s32 lifetime, u32 unk_d, Vec3* pos) { INCFUNC("asm/func/FUN_08060220.inc"); }

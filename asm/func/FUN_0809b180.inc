@@ -81,7 +81,7 @@ _0809B21C:
 	adds r4, r6, r1
 	ldrb r1, [r4]
 	adds r0, r6, #0
-	bl FUN_0809a978
+	bl MainMenu_GetPrevPage
 	strb r0, [r4]
 	b _0809B260
 	.align 2, 0
@@ -95,7 +95,7 @@ _0809B244:
 	adds r4, r6, r0
 	ldrb r1, [r4]
 	adds r0, r6, #0
-	bl FUN_0809a93c
+	bl MainMenu_GetNextPage
 	strb r0, [r4]
 	movs r2, #1
 _0809B25C:

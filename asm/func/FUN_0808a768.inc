@@ -81,7 +81,7 @@ _0808A802:
 	movs r0, #0
 	mov r1, sl
 	ldr r2, [sp, #0x14]
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r3, r0, #0
 	b _0808A83A
 	.align 2, 0
@@ -97,7 +97,7 @@ _0808A81C:
 	subs r1, #1
 	movs r0, #0
 	ldr r2, [sp, #0x14]
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r3, r0, #0
 	ldr r2, _0808A944 @ =0x0000D0BD
 	adds r1, r2, #0
@@ -218,7 +218,7 @@ _0808A892:
 	movs r0, #0
 	movs r1, #9
 	movs r2, #3
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r4, r0, #0
 	mov r6, sp
 	movs r5, #3
@@ -254,7 +254,7 @@ _0808A95C:
 	movs r0, #0
 	movs r1, #9
 	movs r2, #3
-	bl FUN_0808a420
+	bl MainMenu_GetBgMapAddr
 	adds r1, r0, #0
 	movs r2, #0xd0
 	lsls r2, r2, #8

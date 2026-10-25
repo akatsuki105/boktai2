@@ -15,12 +15,12 @@
 	adds r4, #0xd0
 	adds r0, r4, #0
 	movs r1, #2
-	bl FUN_08055ef8
+	bl SpriteHolder_SetFlags
 	adds r0, r4, #0
 	movs r1, #0x40
 	movs r2, #0x40
 	movs r3, #0
-	bl FUN_08055f80
+	bl SpriteHolder_SetAffine
 	ldr r0, _0804247C @ =0x00000201
 	bl PlaySound_082406e0
 _0804244C:
@@ -230,7 +230,7 @@ _080425B8:
 	adds r2, r7, #0
 _080425D6:
 	movs r3, #0
-	bl FUN_08055f80
+	bl SpriteHolder_SetAffine
 	b _080425F2
 	.align 2, 0
 _080425E0: .4byte 0x030046A4
@@ -238,7 +238,7 @@ _080425E4:
 	adds r0, r5, #0
 	adds r0, #0xd0
 	movs r1, #2
-	bl FUN_08055f1c
+	bl SpriteHolder_ClearFlags
 	movs r0, #1
 	strb r0, [r5, #7]
 _080425F2:

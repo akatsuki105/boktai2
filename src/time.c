@@ -14,6 +14,80 @@ bool32 SetGameDateTimeIntoRTC(s32 year, s32 month, s32 day, s32 hour, s32 minute
 s32 Time_CheckRtcPowerOn(void);
 static bool32 ApplyRtcToClock(void);
 
+// 日の入/日の出までの残り時間を引き直し、spanOfTime と遷移の進み具合を更新する
+static inline void UpdateSunTimers(Clock* c) {
+  s32 sunsetHour, sunsetMinute;
+  s32 sunriseHour, sunriseMinute;
+  s32 blend;
+
+  sunsetHour = c->sunset.hour - c->hour;
+  sunsetMinute = c->sunset.minute - c->minute;
+  if (sunsetHour < 0) {
+    sunsetHour += 24;
+  }
+  if (sunsetMinute < 0) {
+    if (sunsetHour > 0) {
+      sunsetHour--;
+    } else {
+      sunsetHour = 23;
+    }
+    sunsetMinute += 60;
+  }
+
+  sunriseHour = c->morning.hour - c->hour;
+  sunriseMinute = c->morning.minute - c->minute;
+  if (sunriseHour < 0) {
+    sunriseHour += 24;
+  }
+  if (sunriseMinute < 0) {
+    if (sunriseHour > 0) {
+      sunriseHour--;
+    } else {
+      sunriseHour = 23;
+    }
+    sunriseMinute += 60;
+  }
+
+  c->untilSunset.hour = sunsetHour;
+  c->untilSunset.minute = sunsetMinute;
+  c->untilSunrise.hour = sunriseHour;
+  c->untilSunrise.minute = sunriseMinute;
+
+  if (c->spanOfTime >= TIME_MORNING && c->spanOfTime <= TIME_SUNSET) {
+    blend = (60 - sunsetMinute) << 6;
+  } else {
+    blend = (60 - sunriseMinute) << 6;
+  }
+
+  c->spanOfTime = Time_GetSpanOfTime();
+  switch (c->spanOfTime) {
+    case TIME_NIGHT: {
+      c->unk_0f = Div(blend, 60) >> 1;
+      break;
+    }
+    case TIME_MORNING: {
+      c->unk_0f = (Div(blend, 60) >> 1) + 32;
+      break;
+    }
+    case TIME_DAYTIME: {
+      c->unk_0f = 0;
+      break;
+    }
+    case TIME_SUNSET: {
+      c->unk_0f = Div(blend, 60);
+      break;
+    }
+    case TIME_UNK4: {
+      c->unk_0f = Div(blend, 60);
+      break;
+    }
+    case TIME_UNK5: {
+      c->unk_0f = 0;
+      break;
+    }
+  }
+}
+
 static void Delay(s32 n) {
   if (n > 0) {
     while (n != 0) {
@@ -168,80 +242,6 @@ NON_MATCH void Time_AdvanceFrame(void) {
 #endif
 }
 
-// 日の入/日の出までの残り時間を引き直し、spanOfTime と遷移の進み具合を更新する
-static inline void UpdateSunTimers(Clock* c) {
-  s32 sunsetHour, sunsetMinute;
-  s32 sunriseHour, sunriseMinute;
-  s32 blend;
-
-  sunsetHour = c->sunset.hour - c->hour;
-  sunsetMinute = c->sunset.minute - c->minute;
-  if (sunsetHour < 0) {
-    sunsetHour += 24;
-  }
-  if (sunsetMinute < 0) {
-    if (sunsetHour > 0) {
-      sunsetHour--;
-    } else {
-      sunsetHour = 23;
-    }
-    sunsetMinute += 60;
-  }
-
-  sunriseHour = c->morning.hour - c->hour;
-  sunriseMinute = c->morning.minute - c->minute;
-  if (sunriseHour < 0) {
-    sunriseHour += 24;
-  }
-  if (sunriseMinute < 0) {
-    if (sunriseHour > 0) {
-      sunriseHour--;
-    } else {
-      sunriseHour = 23;
-    }
-    sunriseMinute += 60;
-  }
-
-  c->untilSunset.hour = sunsetHour;
-  c->untilSunset.minute = sunsetMinute;
-  c->untilSunrise.hour = sunriseHour;
-  c->untilSunrise.minute = sunriseMinute;
-
-  if (c->spanOfTime >= TIME_MORNING && c->spanOfTime <= TIME_SUNSET) {
-    blend = (60 - sunsetMinute) << 6;
-  } else {
-    blend = (60 - sunriseMinute) << 6;
-  }
-
-  c->spanOfTime = Time_GetSpanOfTime();
-  switch (c->spanOfTime) {
-    case TIME_NIGHT: {
-      c->unk_0f = Div(blend, 60) >> 1;
-      break;
-    }
-    case TIME_MORNING: {
-      c->unk_0f = (Div(blend, 60) >> 1) + 32;
-      break;
-    }
-    case TIME_DAYTIME: {
-      c->unk_0f = 0;
-      break;
-    }
-    case TIME_SUNSET: {
-      c->unk_0f = Div(blend, 60);
-      break;
-    }
-    case TIME_UNK4: {
-      c->unk_0f = Div(blend, 60);
-      break;
-    }
-    case TIME_UNK5: {
-      c->unk_0f = 0;
-      break;
-    }
-  }
-}
-
 void Time_UpdateSunTimers(void) {
   Clock* c;
 
@@ -376,7 +376,7 @@ void Cmd_GetDateTime(void) {
 }
 
 // 0x1C3E, 曜日をスクリプトへ返す
-void Time_GetDayOfWeekScripted(void) {
+void Cmd_GetDayOfWeek(void) {
   u8 buf[8];
 
   FUN_0823167c(buf);
@@ -442,38 +442,31 @@ void FUN_0823e468(void) {}
 
 void FUN_0823e46c(void) {}
 
-#ifdef NONMATCHING_C
-// 月齢(10倍値)から月相 0..7 を求める
-static inline u8 MoonPhaseFromAge(u16 age) {
-  if (age <= 0x22) {
-    return 0;
-  }
-  if (age <= 0x45) {
-    return 1;
-  }
-  if (age <= 0x68) {
-    return 2;
-  }
-  if (age <= 0x95) {
-    return 3;
-  }
-  if (age <= 0x9F) {
-    return 4;
-  }
-  if (age <= 0xD1) {
-    return 5;
-  }
-  if (age <= 0xF4) {
-    return 6;
-  }
-  return 7;
-}
-#endif
-
+// 残差7命令 (34/41). 原典は段ごとに cmp + bhi で次へ進み movs で月相を作るが, if/else で phase に代入すると agbcc は bls で共通の代入へ寄せて縮める
+// 月相判定を値を返す static inline に切り出すと 41/41 まで揃い, 残りは moonAge を ldrh で読み直すか計算値を lsls/lsrs で切り詰めるかだけ (u16 ローカルで受けると 42)
 NON_MATCH void Time_SetMoonAge(s32 days, s32 tenths) {
 #ifdef NONMATCHING_C
+  u8 phase;
+
   gClock.moonAge = days * 10 + tenths;
-  gClock.moonPhase = MoonPhaseFromAge(gClock.moonAge);
+  if (gClock.moonAge <= 34) {
+    phase = 0;
+  } else if (gClock.moonAge <= 69) {
+    phase = 1;
+  } else if (gClock.moonAge <= 104) {
+    phase = 2;
+  } else if (gClock.moonAge <= 149) {
+    phase = 3;
+  } else if (gClock.moonAge <= 159) {
+    phase = 4;
+  } else if (gClock.moonAge <= 209) {
+    phase = 5;
+  } else if (gClock.moonAge <= 244) {
+    phase = 6;
+  } else {
+    phase = 7;
+  }
+  gClock.moonPhase = phase;
 #else
   INCFUNC("asm/func/Time_SetMoonAge.inc");
 #endif

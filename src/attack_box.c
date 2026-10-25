@@ -31,13 +31,6 @@ IWRAM_DATA AttackBoxManager* gAttackBoxManager = NULL;  // 0x03000170
 
 AttackBoxManager* AttackBoxManager_Create(void);
 
-static inline bool32 AttackBoxManager_IsSlotUsed(AttackBoxManager* p, s32 i) {
-  if (p->activeMask & (1 << i)) {
-    return TRUE;
-  }
-  return FALSE;
-}
-
 NAKED void FUN_080dd4fc(AttackBox* box) { INCFUNC("asm/func/FUN_080dd4fc.inc"); }
 
 // 通信中でない通常の判定のとき、9〜12フレームごとに1回だけ効果音を鳴らす
@@ -55,8 +48,8 @@ void AttackBox_Setup(AttackBox* box, s32 power, s32 unk_40, s32 unk_44, s32 igno
   Vec3 halfSize;
   Vec3 offset;
 
-  halfSize.x = (1 * BLOCK), halfSize.y = (1 * BLOCK), halfSize.z = (1 * BLOCK);
-  offset.x = 0, offset.y = 0, offset.z = 0;
+  VEC3_SET(halfSize, (1 * BLOCK), (1 * BLOCK), (1 * BLOCK));
+  VEC3_SET(offset, 0, 0, 0);
   Hitbox_Init(hitbox, 0, HBFLAG_HITBOX | HBFLAG_UNK_0, 0, ignoreMask, &halfSize, &offset);
   if (box->unk_60 == 0) {
     Hitbox_SetAttack(hitbox, power, unk_40, HBATTR_ALL, HBATTR_21 | HBATTR_18 | HBATTR_FLAME, unk_44);
@@ -91,8 +84,8 @@ void AttackBox_Update(AttackBoxManager* p, AttackBox* box) {
 // 枠を返却する, activeMask のビットを落として中身を消す
 void AttackBox_Free(AttackBoxManager* p, AttackBox* box) {
   box->state = 0;
-  p->activeMask &= ~(1 << box->slot);
-  box->slot = 0xFF;
+  CLEAR_BIT(p->activeMask, box->slot);
+  box->slot = -1;
   ClearMemory(box, sizeof(AttackBox));
 }
 
@@ -105,9 +98,7 @@ NON_MATCH AttackBox* AttackBoxManager_Alloc(AttackBoxManager* p) {
   s32 i;
 
   for (i = 0; i < 5; i++) {
-    bool32 used = AttackBoxManager_IsSlotUsed(p, i);
-
-    if (!used) {
+    if (!(p->activeMask & (1 << i))) {
       AttackBox* box = &p->pool[i];
 
       box->slot = i;
@@ -207,18 +198,13 @@ NON_MATCH s32 AttackBoxManager_Update(AttackBoxManager* p) {
 #ifdef NONMATCHING_C
   if (p->activeMask != 0) {
     s32 i;
-
     for (i = 0; i < 5; i++) {
-      bool32 used = AttackBoxManager_IsSlotUsed(p, i);
-
-      if (used) {
+      if (p->activeMask & (1 << i)) {
         AttackBox* box = &p->pool[i];
-
         sAttackBoxUpdates[box->state](p, box);
       }
     }
   }
-
   return 0;
 #else
   INCFUNC("asm/func/AttackBoxManager_Update.inc");

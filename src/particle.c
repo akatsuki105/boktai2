@@ -32,8 +32,7 @@ void Particle_Add(Particle* p, ParticleGroup* g, SpriteFlags flags) {
 // 描画リストに繋がれていなければ、flags の bit7 で選んだリストに Particle を繋ぐ
 void Particle_AddToDrawList(Particle* p, SpriteFlags flags) {
   if (!p->active) {
-    u32 mask = SPRFLAG_DRAWLIST;
-    Video_AddParticleIntoDrawList(p, (flags & mask) != 0);
+    Video_AddParticleIntoDrawList(p, TEST_FLAGS(flags, SPRFLAG_DRAWLIST) ? 1 : 0);
   }
 }
 

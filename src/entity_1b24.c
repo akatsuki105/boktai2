@@ -34,7 +34,6 @@ typedef struct Entity1B24 {
 } Entity1B24;
 static_assert(sizeof(Entity1B24) == 3984);
 
-s32 FUN_08049fa8(void);
 bool32 FUN_081dfa04(void);
 void FUN_080b9a0c(unknown* p);
 bool32 FUN_080b9adc(unknown* p);
@@ -78,7 +77,7 @@ NAKED void FUN_0809d00c(Entity1B24* p) { INCFUNC("asm/func/FUN_0809d00c.inc"); }
 
 void FUN_0809d230(Entity1B24* p) {
   MessageWindow_Close();
-  FUN_08049e5c();
+  Marquee_Clear();
 }
 
 // 一覧の n 番目のセルの画面座標を求める
@@ -111,7 +110,7 @@ s32 Entity1B24_Update(Entity1B24* p) {
   if (!FUN_081dfa04()) {
     s32 i;
 
-    FUN_08049fa8();
+    Marquee_CloseGlobal();
     for (i = 0; i < 36; i++) {
       p->sprites[i].flags |= SPRFLAG_HIDDEN;
     }

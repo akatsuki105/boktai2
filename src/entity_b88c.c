@@ -124,7 +124,7 @@ NON_MATCH void FUN_0804aecc(EntityB88C* p) {
     p->count = 3;
     FUN_0804aa30(p, 0);
     line = p->cursor + 1;
-    FUN_08049e30(Textbox_LookupString(VM_ParseStringRef(p->script) + line));
+    Marquee_SetText(GetStringByID(VM_ParseStringRef(p->script) + line));
     FUN_08049f5c();
     FUN_0804ab00(p);
   }

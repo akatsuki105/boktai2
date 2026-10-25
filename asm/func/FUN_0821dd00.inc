@@ -79,7 +79,7 @@ _0821DD54:
 	bl FUN_0821d900
 	adds r0, r5, #0
 	adds r1, r4, #0
-	bl FUN_0821d88c
+	bl ShadeMan_Heal
 	movs r0, #0xd3
 	lsls r0, r0, #2
 	bl PlaySound_082406e0

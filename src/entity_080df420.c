@@ -68,7 +68,7 @@ NAKED void FUN_080debbc(unknown* p, unknown* param_2) { INCFUNC("asm/func/FUN_08
 
 NAKED void FUN_080defd0(unknown* p, unknown* param_2) { INCFUNC("asm/func/FUN_080defd0.inc"); }
 
-NAKED void FUN_080df148(WorldPos* pos, unknown* param_2, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9) { INCFUNC("asm/func/FUN_080df148.inc"); }
+NAKED void FUN_080df148(WorldPos* pos, Vec3* vel, s32 param_3, s32 param_4, s32 param_5, s32 param_6, s32 param_7, s32 param_8, s32 param_9) { INCFUNC("asm/func/FUN_080df148.inc"); }
 
 NAKED s32 Entity080df420_Update(Entity080df420* p) { INCFUNC("asm/func/Entity080df420_Update.inc"); }
 

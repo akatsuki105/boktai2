@@ -32,15 +32,15 @@ typedef struct {
   rgb555* pltt;                  // 0x001C, BGP_A41A
   u32 unk_20;                    // 0x0020, _Init が 0
   u8 unk_24;                     // 0x0024, _Init が 0
-  u8 unk_25;                     // 0x0025, _Init が 0
-  u8 unk_26;                     // 0x0026, _Init が 0
+  u8 page;                       // 0x0025, 選択中のページ (0..8), EnemyDexMenu_SetPageFromEntry が entryIdx から決める
+  u8 entryIdx;                   // 0x0026, 選択中のエントリ番号 (0..56)
   u8 unk_27;                     // 0x0027
   s32 panels[8];                 // 0x0028, TextPanel_Create の戻り値 (ID), TextPanel_Hide などに渡す
-  u8 unk_48;                     // 0x0048, _Init が 0
+  u8 row;                        // 0x0048, ページ内の行 (entryIdx - ページ先頭), カーソルの Y 位置になる
   u8 unk_49;                     // 0x0049, _Init が 0x20
   u8 unk_4a;                     // 0x004A, _Init が 0
   u8 unk_4b;                     // 0x004B
-  MainSpriteGfx gfx;             // 0x004C, FUN_082376a4 に渡す数字のスプライト
+  MainSpriteGfx gfx;             // 0x004C, MainSprite_SetNumber に渡す数字のスプライト
   MainSprite sprites_6c[3];      // 0x006C
   MainSprite sprites_18c[5];     // 0x018C, 根拠: FUN_0820d6e4 が5枚ぶん登録し FUN_0820ee7c が5枚ぶん隠す
   MainSprite sprites_36c[3];     // 0x036C, 根拠: FUN_0820ee7c が3枚ぶん隠す
@@ -71,30 +71,387 @@ typedef struct {
 } EnemyDexMenu;
 static_assert(sizeof(EnemyDexMenu) == 4704);
 
-s32 FUN_08049fa8(void);
-void FUN_0820fea8(PreviewStage* p);
 void FUN_0823ce68(s32 param_1, s32 param_2, s32 param_3, s32 param_4, s32 param_5, u32 param_6, s32 param_7);
-PreviewStage* PreviewStage_Create(u32 arg, u32 _);
 
-static inline void ShowBG(u32 bits) { gStagedDISPCNT |= bits; }
+static inline void EnemyDexMenu_HidePageSprites(EnemyDexMenu* p) {
+  s32 i;
+  s32 j;
 
-s32 FUN_0820cbdc(u32 param_1);
-s32 FUN_0820cc8c(u32 param_1);
-s32 FUN_0820cbec(u32 param_1);
-s32 FUN_0820cbfc(u32 param_1);
-s32 FUN_0820cc0c(u32 param_1);
+  for (i = 0; i < 7; i++) {
+    for (j = 0; j < 2; j++) {
+      p->sprites_84c[i][j].flags |= SPRFLAG_HIDDEN;
+    }
+    p->sprites_5ac[i].flags |= SPRFLAG_HIDDEN;
+  }
+}
 
-static const s32 sEnemyDexPageStarts[9] = {0, 7, 14, 21, 27, 34, 41, 48, 50};  // ページの先頭エントリ番号 (sEnemyDexPageEntryCounts の累積和), 0x085AF034
-static const s32 sEnemyDexPageEntryCounts[9] = {7, 7, 7, 6, 7, 7, 7, 2, 7};    // ページごとのエントリ数(ビースト1,ビースト2,ビースト3,アンデット,シング1,シング2,ファントム1,ファントム2,イモータル), 合計57, 0x085AF058
-static const s32 sEnemyDexCategoryCounts[5] = {21, 6, 14, 9, 7};               // 種族ごとのエントリ数 (ビースト,アンデット,シング,ファントム,イモータル), 0x085AF07C
+// UIスプライトを全部隠す
+static inline void EnemyDexMenu_HideCursorSprites(EnemyDexMenu* p) {
+  s32 i;
 
-// 魔物図鑑メニューの UI スプライトのポーズ番号, FUN_0820d6e4 が EnemyDexMenu+0x18C から5枚を登録するループで引く
-static const u32 sEnemyDexUIPoses1[5] = {17, 18, 19, 20, 21};  // 0x085AF090
+  for (i = 0; i < 5; i++) {
+    p->sprites_18c[i].flags |= SPRFLAG_HIDDEN;
+  }
+  for (i = 0; i < 3; i++) {
+    p->sprites_36c[i].flags |= SPRFLAG_HIDDEN;
+  }
+}
 
-// 同上, EnemyDexMenu+0x36C から3枚
-static const u32 sEnemyDexUIPoses2[3] = {1, 2, 3};  // 0x085AF0A4
+s32 EnemyDex_GetPageStart(u32 page) {
+  // ページの先頭エントリ番号 (sEnemyDexPageEntryCounts の累積和)
+  static const s32 sEnemyDexPageStarts[9] = {0, 7, 14, 21, 27, 34, 41, 48, 50};  // 0x085AF034
+  return sEnemyDexPageStarts[page];
+}
 
-INCASM("asm/enemy_dex.inc");
+s32 EnemyDex_GetPageEntryCount(u32 page) {
+  // ページごとのエントリ数(ビースト1,ビースト2,ビースト3,アンデット,シング1,シング2,ファントム1,ファントム2,イモータル), 合計57
+  static const s32 sEnemyDexPageEntryCounts[9] = {7, 7, 7, 6, 7, 7, 7, 2, 7};  // 0x085AF058
+  return sEnemyDexPageEntryCounts[page];
+}
+
+s32 EnemyDex_GetCategoryEntryCount(u32 category) {
+  // 種族ごとのエントリ数 (ビースト,アンデット,シング,ファントム,イモータル)
+  static const s32 sEnemyDexCategoryCounts[5] = {21, 6, 14, 9, 7};  // 0x085AF07C
+  return sEnemyDexCategoryCounts[category];
+}
+
+// 種族 category の先頭エントリ番号 (それより前の種族のエントリ数の合計)
+s32 EnemyDex_GetCategoryStart(s32 category) {
+  s32 start = 0;
+  s32 i;
+
+  for (i = 0; i < category; i++) {
+    start += EnemyDex_GetCategoryEntryCount(i);
+  }
+  return start;
+}
+
+void EnemyDexMenu_SetPageFromEntry(EnemyDexMenu* p) {
+  s32 i;
+
+  for (i = 0; i < 9; i++) {
+    if (p->entryIdx < EnemyDex_GetPageStart(i)) {
+      p->page = i - 1;
+      p->row = p->entryIdx - EnemyDex_GetPageStart(p->page);
+      return;
+    }
+  }
+
+  p->page = 8;
+  p->row = p->entryIdx - EnemyDex_GetPageStart(p->page);
+}
+
+// エントリ番号が属する種族 (0:ビースト 1:アンデット 2:シング 3:ファントム 4:イモータル)
+s32 EnemyDex_GetCategoryOfEntry(s32 entryIdx) {
+  if (entryIdx < EnemyDex_GetPageStart(3)) {
+    return 0;
+  }
+  if (entryIdx < EnemyDex_GetPageStart(4)) {
+    return 1;
+  }
+  if (entryIdx < EnemyDex_GetPageStart(6)) {
+    return 2;
+  }
+  if (entryIdx < EnemyDex_GetPageStart(8)) {
+    return 3;
+  } else {
+    return 4;
+  }
+}
+
+// 敵の種別と変種から魔物図鑑のエントリ番号を返す, 該当するものが無ければ -1
+s32 EnemyDex_GetEntryIdx(u32 kind, s32 variant) {
+  switch (kind) {
+    case 1: {
+      switch (variant) {
+        case 0: {
+          return 24;
+        }
+        case 1: {
+          return 25;
+        }
+        case 2: {
+          return 26;
+        }
+      }
+      break;
+    }
+    case 2: {
+      switch (variant) {
+        case 0: {
+          return 0;
+        }
+        case 1: {
+          return 1;
+        }
+        case 2: {
+          return 0;
+        }
+      }
+      break;
+    }
+    case 3: {
+      switch (variant) {
+        case 0: {
+          return 33;
+        }
+        case 1: {
+          return 34;
+        }
+        case 3: {
+          return 35;
+        }
+      }
+      break;
+    }
+    case 4: {
+      switch (variant) {
+        case 1: {
+          return 21;
+        }
+        case 2: {
+          return 22;
+        }
+        case 3: {
+          return 23;
+        }
+      }
+      break;
+    }
+    case 5: {
+      switch (variant) {
+        case 0: {
+          return 27;
+        }
+        case 5: {
+          return 30;
+        }
+      }
+      break;
+    }
+    case 6: {
+      return 28;
+    }
+    case 7: {
+      return 29;
+    }
+    case 8: {
+      switch (variant) {
+        case 2: {
+          return 31;
+        }
+        case 8: {
+          return 32;
+        }
+      }
+      break;
+    }
+    case 9: {
+      return 9;
+    }
+    case 10: {
+      switch (variant) {
+        case 0: {
+          return 17;
+        }
+        case 1: {
+          return 18;
+        }
+      }
+      break;
+    }
+    case 11: {
+      return 36;
+    }
+    case 12: {
+      switch (variant) {
+        case 0: {
+          return 37;
+        }
+        case 1: {
+          return 38;
+        }
+      }
+      break;
+    }
+    case 13: {
+      switch (variant) {
+        case 0: {
+          return 39;
+        }
+        case 1: {
+          return 40;
+        }
+      }
+      break;
+    }
+    case 14: {
+      return 16;
+    }
+    case 17: {
+      switch (variant) {
+        case 0: {
+          return 41;
+        }
+        case 1: {
+          return 42;
+        }
+        case 2: {
+          return 43;
+        }
+      }
+      break;
+    }
+    case 18: {
+      switch (variant) {
+        case 0: {
+          return 5;
+        }
+        case 1: {
+          return 6;
+        }
+        case 2: {
+          return 5;
+        }
+      }
+      break;
+    }
+    case 19: {
+      switch (variant) {
+        case 0: {
+          return 7;
+        }
+        case 1: {
+          return 8;
+        }
+        case 2: {
+          return 7;
+        }
+      }
+      break;
+    }
+    case 20: {
+      switch (variant) {
+        case 0: {
+          return 2;
+        }
+        case 1: {
+          return 4;
+        }
+        case 2: {
+          return 3;
+        }
+      }
+      break;
+    }
+    case 21: {
+      switch (variant) {
+        case 0: {
+          return 10;
+        }
+        case 1: {
+          return 12;
+        }
+        case 2: {
+          return 11;
+        }
+        case 4: {
+          return 13;
+        }
+      }
+      break;
+    }
+    case 22: {
+      switch (variant) {
+        case 0: {
+          return 44;
+        }
+        case 1: {
+          return 45;
+        }
+        case 2: {
+          return 46;
+        }
+        case 3: {
+          return 47;
+        }
+      }
+      break;
+    }
+    case 23: {
+      switch (variant) {
+        case 0: {
+          return 48;
+        }
+        case 1: {
+          return 49;
+        }
+      }
+      break;
+    }
+    case 24: {
+      return 14;
+    }
+    case 25: {
+      return 19;
+    }
+    case 26: {
+      return 20;
+    }
+    case 27: {
+      return 15;
+    }
+    case 0:
+    case 15:
+    case 16:
+    case 28:
+    case 29:
+    case 30:
+    case 31: {
+      break;
+    }
+  }
+  return -1;
+}
+
+// 魔物 id の種別 kind のフラグを立てる
+// 残差はレジスタ番号の入れ替えのみ (18対18): 原典は gStat を r2, 0x390 を r3 に置き, 語索引に死んだ kind の r1 を使い回すが, agbcc は r3/r2 を逆に取り語索引も r2 に置く
+// 兄弟の FUN_0820d04c と同じ壁. flags ローカルを無くす / 宣言順を入れ替える は試済 (どちらも gStat の読みと bit 計算の順が入れ替わって悪化)
+NON_MATCH void EnemyDex_SetFlag(u32 id, u32 kind) {
+#ifdef NONMATCHING_C
+  u32* flags = gStat->enemyDexFlags;
+  u32 bit = id * 2 + kind;
+
+  flags[bit >> 5] |= 1 << (bit & 31);
+#else
+  INCFUNC("asm/func/EnemyDex_SetFlag.inc");
+#endif
+}
+
+// '.k' と '.c' が指す魔物のフラグ '.i' を立てる
+void Cmd_A76D(void) {
+  s32 kind;
+  s32 variant;
+  s32 flagKind;
+
+  kind = VM_SeekToNamedArg('k') ? VM_GetValue() : 0;
+  variant = VM_SeekToNamedArg('c') ? VM_GetValue() : 0;
+  flagKind = VM_SeekToNamedArg('i') ? VM_GetValue() : 0;
+  EnemyDex_SetFlag(EnemyDex_GetEntryIdx(kind, variant), flagKind);
+}
+
+// '.k' の魔物に出会ったことにする
+void Cmd_D1C0(void) {
+  s32 bit = VM_GetNamedArgValue('k', -1);
+
+  if ((u32)bit <= 56) {
+    if (bit <= 31) {
+      gStat->enemyDexSeen[0] |= 1 << bit;
+    } else {
+      gStat->enemyDexSeen[1] |= 1 << (bit - 32);
+    }
+  }
+}
 
 // 魔物 bit に出会っているか
 // 残差はレジスタ番号の入れ替えのみ (r2/r3 が逆, 命令列は 29 対 29)
@@ -128,8 +485,8 @@ NON_MATCH bool32 FUN_0820d04c(u32 id, u32 kind) {
 }
 
 bool32 FUN_0820d084(u32 param_1) {
-  s32 n = FUN_0820cbfc(param_1);
-  s32 base = FUN_0820cc0c(param_1);
+  s32 n = EnemyDex_GetCategoryEntryCount(param_1);
+  s32 base = EnemyDex_GetCategoryStart(param_1);
   s32 i;
 
   for (i = 0; i < n; i++) {
@@ -141,8 +498,8 @@ bool32 FUN_0820d084(u32 param_1) {
 }
 
 s32 FUN_0820d0b8(u32 param_1) {
-  s32 n = FUN_0820cbfc(param_1);
-  s32 base = FUN_0820cc0c(param_1);
+  s32 n = EnemyDex_GetCategoryEntryCount(param_1);
+  s32 base = EnemyDex_GetCategoryStart(param_1);
   s32 count = 0;
   s32 i;
 
@@ -207,7 +564,7 @@ void FUN_0820d188(EnemyDexMenu* p) {
     return;
   }
 
-  if (p->unk_24 == 0 && FUN_0820d084(FUN_0820cc8c(p->unk_26))) {
+  if (p->unk_24 == 0 && FUN_0820d084(EnemyDex_GetCategoryOfEntry(p->entryIdx))) {
     p->sprites_d8c[6].flags &= ~SPRFLAG_HIDDEN;
   } else {
     p->sprites_d8c[6].flags |= SPRFLAG_HIDDEN;
@@ -230,19 +587,19 @@ NAKED void FUN_0820d250(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d250.inc");
 void FUN_0820d5f8(EnemyDexMenu* p) {
   if (p->flags & EDEXFLAG_UNK_0) {
     if (p->flags & EDEXFLAG_UNK_1) {
-      FUN_08049e5c();
-      FUN_08049fa8();
+      Marquee_Clear();
+      Marquee_CloseGlobal();
       p->flags = (p->flags & ~EDEXFLAG_UNK_1) | EDEXFLAG_UNK_2;
     }
   } else if (p->flags & EDEXFLAG_UNK_3) {
     if (p->flags & EDEXFLAG_UNK_2) {
-      FUN_08049e5c();
+      Marquee_Clear();
       FUN_08049f5c();
       p->flags &= ~EDEXFLAG_UNK_2;
     }
 
-    FUN_08049e5c();
-    FUN_08049e30(Textbox_LookupString(VM_ParseStringRef(p->scriptM) + p->unk_26));
+    Marquee_Clear();
+    Marquee_SetText(GetStringByID(VM_ParseStringRef(p->scriptM) + p->entryIdx));
     p->flags &= ~EDEXFLAG_UNK_3;
     p->flags |= EDEXFLAG_UNK_1;
     p->flags &= ~EDEXFLAG_UNK_2;
@@ -273,6 +630,12 @@ void FUN_0820d690(EnemyDexMenu* p) {
   p->unk_1104 = v;
 }
 
+// 魔物図鑑メニューの UI スプライトのポーズ番号, FUN_0820d6e4 が EnemyDexMenu+0x18C から5枚を登録するループで引く
+static const u32 sEnemyDexUIPoses1[5] = {17, 18, 19, 20, 21};  // 0x085AF090
+
+// 同上, EnemyDexMenu+0x36C から3枚
+static const u32 sEnemyDexUIPoses2[3] = {1, 2, 3};  // 0x085AF0A4
+
 NAKED s32 FUN_0820d6e4(EnemyDexMenu* p) { INCFUNC("asm/func/FUN_0820d6e4.inc"); }
 
 // 図鑑画面の BG とパレットを用意する
@@ -295,7 +658,7 @@ s32 FUN_0820dae4(EnemyDexMenu* p, u32 param_2) {
   bg->hofs = 0;
   bg->vofs = 0;
   SetBGPrioDirect(3, 3);
-  ShowBG(DISPCNT_BG3_ON);
+  SET_FLAGS(gStagedDISPCNT, DISPCNT_BG3_ON);
   Video_FillBGRect(3, 4, 6, 8, 9, 1, 0, 0);
   return 0;
 }
@@ -360,9 +723,9 @@ s32 EnemyDexMenu_Init(EnemyDexMenu* p, u32 val) {
 
   p->unk_20 = 0;
   p->unk_24 = 0;
-  p->unk_25 = 0;
-  p->unk_26 = 0;
-  p->unk_48 = 0;
+  p->page = 0;
+  p->entryIdx = 0;
+  p->row = 0;
   p->timer_110c = 0;
   p->unk_49 = 0x20;
   p->unk_4a = 0;
@@ -430,13 +793,13 @@ s32 EnemyDexMenu_Init(EnemyDexMenu* p, u32 val) {
   p->unk_1258 = VM_GetNamedArgValue('e', 0);
 
   p->flags = 5;
-  FUN_08049e5c();
+  Marquee_Clear();
   p->sub = PreviewStage_Create(0, 0);
   FUN_0820fea8(p->sub);
   FUN_0820d6e4(p);
   FUN_0820e080(p, 0);
   FUN_0823ce68(0, 4, 4, 4, 4, 0xFFFF, 0);
-  PlaySound_082406e0(0x118);
+  PlaySound_082406e0(SE_OPEN_MENU);
   return 0;
 }
 
@@ -451,18 +814,6 @@ EnemyDexMenu* EnemyDexMenu_Create(u32 val) {
     }
   }
   return p;
-}
-
-static inline void EnemyDexMenu_HidePageSprites(EnemyDexMenu* p) {
-  s32 i;
-  s32 j;
-
-  for (i = 0; i < 7; i++) {
-    for (j = 0; j < 2; j++) {
-      p->sprites_84c[i][j].flags |= SPRFLAG_HIDDEN;
-    }
-    p->sprites_5ac[i].flags |= SPRFLAG_HIDDEN;
-  }
 }
 
 // ページ用スプライトを全部隠す
@@ -486,10 +837,10 @@ void FUN_0820eb84(EnemyDexMenu* p) {
 
   EnemyDexMenu_HidePageSprites(p);
 
-  count = FUN_0820cbec(p->unk_25);
-  base = FUN_0820cbdc(p->unk_25) + 1;
+  count = EnemyDex_GetPageEntryCount(p->page);
+  base = EnemyDex_GetPageStart(p->page) + 1;
   for (i = 0; i < count; i++) {
-    FUN_082376a4(&p->sprites_84c[i][0], &p->gfx, base + i, 2, 0, 24, i * 16 + 40, 8, 0);
+    MainSprite_SetNumber(&p->sprites_84c[i][0], &p->gfx, base + i, 2, 0, 24, i * 16 + 40, 8, 0);
     p->sprites_5ac[i].flags &= ~SPRFLAG_HIDDEN;
     p->sprites_5ac[i].pos.x = 40;
     p->sprites_5ac[i].pos.y = i * 16 + 40;
@@ -499,7 +850,7 @@ void FUN_0820eb84(EnemyDexMenu* p) {
 // ページ用スプライトを全部隠し, 選択中ページの番号を描き直す
 void FUN_0820ec6c(EnemyDexMenu* p) {
   EnemyDexMenu_HidePageSprites(p);
-  FUN_082376a4(&p->sprites_84c[0][0], &p->gfx, p->unk_26 + 1, 2, 0, 40, 24, 8, 0);
+  MainSprite_SetNumber(&p->sprites_84c[0][0], &p->gfx, p->entryIdx + 1, 2, 0, 40, 24, 8, 0);
 }
 
 // sprites_d8c を全部隠す
@@ -512,7 +863,7 @@ void EnemyDexMenu_HideSprites(EnemyDexMenu* p) {
   }
 }
 
-void FUN_0820ed38(EnemyDexMenu* p) { p->sprites_6c[0].pos.y = p->unk_48 * 16 + 8; }
+void FUN_0820ed38(EnemyDexMenu* p) { p->sprites_6c[0].pos.y = p->row * 16 + 8; }
 
 // 図鑑の発見数と総数を描き直す
 void FUN_0820ed48(EnemyDexMenu* p) {
@@ -524,9 +875,9 @@ void FUN_0820ed48(EnemyDexMenu* p) {
     p->sprites_d8c[i + 2].flags |= SPRFLAG_HIDDEN;
   }
 
-  cat = FUN_0820cc8c(p->unk_26);
-  FUN_082376a4(&p->sprites_d8c[0], &p->gfx, FUN_0820d0b8(cat), 2, 0, 152, 19, 8, 0);
-  FUN_082376a4(&p->sprites_d8c[2], &p->gfx, FUN_0820cbfc(cat), 2, 0, 176, 19, 8, 0);
+  cat = EnemyDex_GetCategoryOfEntry(p->entryIdx);
+  MainSprite_SetNumber(&p->sprites_d8c[0], &p->gfx, FUN_0820d0b8(cat), 2, 0, 152, 19, 8, 0);
+  MainSprite_SetNumber(&p->sprites_d8c[2], &p->gfx, EnemyDex_GetCategoryEntryCount(cat), 2, 0, 176, 19, 8, 0);
 }
 
 // 選択中ページのエントリ名を上から順にパネルへ流す, 未発見なら 57 番のメッセージ
@@ -536,8 +887,8 @@ void FUN_0820ede8(EnemyDexMenu* p) {
   s32 i;
 
   FUN_0820d21c(p);
-  base = FUN_0820cbdc(p->unk_25);
-  count = FUN_0820cbec(p->unk_25);
+  base = EnemyDex_GetPageStart(p->page);
+  count = EnemyDex_GetPageEntryCount(p->page);
   for (i = 0; i < count; i++) {
     TextPanel_SetScript(p->panels[i], p->scriptN);
     TextPanel_SetRect(p->panels[i], 6, i * 2 + 5, 20, 2);
@@ -547,18 +898,6 @@ void FUN_0820ede8(EnemyDexMenu* p) {
       TextPanel_SetMessage(p->panels[i], 57);
     }
     TextPanel_Start(p->panels[i]);
-  }
-}
-
-// UIスプライトを全部隠す
-static inline void EnemyDexMenu_HideCursorSprites(EnemyDexMenu* p) {
-  s32 i;
-
-  for (i = 0; i < 5; i++) {
-    p->sprites_18c[i].flags |= SPRFLAG_HIDDEN;
-  }
-  for (i = 0; i < 3; i++) {
-    p->sprites_36c[i].flags |= SPRFLAG_HIDDEN;
   }
 }
 
@@ -573,7 +912,7 @@ void FUN_0820ee7c(EnemyDexMenu* p) {
   }
 }
 
-// unk_25 の値に応じて, 出すカーソルとタブのスプライトを1枚ずつだけ選ぶ
+// page の値に応じて, 出すカーソルとタブのスプライトを1枚ずつだけ選ぶ
 void FUN_0820eeb8(EnemyDexMenu* p) {
   s32 cursor;
   s32 tab;
@@ -584,7 +923,7 @@ void FUN_0820eeb8(EnemyDexMenu* p) {
 
   x = 0;
   y = 0;
-  switch (p->unk_25) {
+  switch (p->page) {
     case 0: {
       cursor = 0;
       tab = 0;

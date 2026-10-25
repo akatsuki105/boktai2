@@ -92,9 +92,9 @@ _08041282:
 	adds r1, r7, #0
 	adds r1, #8
 	mov r0, r8
-	bl FUN_08055ed4
+	bl SpriteHolder_SetPos
 	mov r0, r8
-	bl FUN_08055c04
+	bl SpriteHolder_AdvanceAnim
 	movs r1, #0xb2
 	lsls r1, r1, #2
 	adds r3, r5, r1
